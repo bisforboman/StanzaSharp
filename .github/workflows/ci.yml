@@ -1,0 +1,97 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  # Build and the tests that need no model files (the model tests skip).
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - uses: actions/cache@v6
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Build.props') }}
+
+      - name: Build
+        run: dotnet build StanzaSharp.slnx
+
+      - name: Test
+        run: dotnet test StanzaSharp.slnx --no-build --logger trx --results-directory TestResults
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: test-results-build-test
+          path: TestResults/*.trx
+
+  # The full suite against Stanza's real English models, downloaded and converted with the pinned stanza version.
+  golden:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - uses: actions/cache@v6
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Build.props') }}
+
+      # The stanza version decides the models; the converter decides their converted form.
+      # Both are kept: the .pt loader tests compare models/stanza/en with models/converted/en.
+      - uses: actions/cache@v6
+        id: models
+        with:
+          path: |
+            models/stanza/en
+            models/converted/en
+          key: models-en-${{ hashFiles('tools/requirements.txt', 'tools/stanza_convert.py') }}
+
+      - uses: actions/setup-python@v7
+        if: steps.models.outputs.cache-hit != 'true'
+        with:
+          python-version: '3.12'
+
+      - name: Download and convert the models
+        if: steps.models.outputs.cache-hit != 'true'
+        run: |
+          # The CPU-only torch wheel; the default Linux wheel pulls in gigabytes of CUDA.
+          pip install -r tools/requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
+          python -c "import stanza; stanza.download('en', model_dir='models/stanza', processors='tokenize,mwt,pos,constituency')"
+          python tools/stanza_convert.py convert models/stanza/en --out models/converted/en
+
+      - name: Build
+        run: dotnet build StanzaSharp.slnx
+
+      - name: Test
+        run: dotnet test StanzaSharp.slnx --no-build --logger trx --results-directory TestResults
+
+      # A skipped test here means the models were not found.
+      - name: Check that no test was skipped
+        run: |
+          ls TestResults/*.trx
+          # Skipped tests are outcome="NotExecuted" (the Counters' notExecuted stays 0 for them).
+          if grep -q 'outcome="NotExecuted"' TestResults/*.trx; then
+            echo "::error::Tests were skipped; the models in models/stanza/en or models/converted/en were not found."
+            exit 1
+          fi
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: test-results-golden
+          path: TestResults/*.trx

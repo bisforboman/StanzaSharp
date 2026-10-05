@@ -1,0 +1,3 @@
+# LF in the repository and the working tree on every OS. tests/golden/.gitattributes keeps golden files byte-exact.
+* text=auto eol=lf
+*.safetensors binary
