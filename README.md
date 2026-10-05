@@ -7,21 +7,26 @@ See CLAUDE.md for scope, layout, decisions and build order.
 
 ## Setup
 
-Requires the .NET 10 SDK and, for the reference environment, Python 3.
+Requires the .NET 10 SDK. The library reads Stanza's original `.pt` model files directly, so using
+it needs no Python. Python 3 is only needed for the reference environment: downloading models with
+Stanza, the optional converter, and regenerating golden data.
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\setup.ps1 -Models
 ```
 
-`-Models` creates `tools\.venv` with Stanza, downloads the English models and converts them.
+`-Models` creates `tools\.venv` with Stanza, downloads the English models to `models\stanza` and
+converts them to `models\converted\en` (safetensors + JSON, slightly faster to load).
 Use `-Python` for the environment only, or no switch for just the .NET solution. Add `-Cuda` for GPU libtorch.
+If you already have Stanza's English models (e.g. `~/stanza_resources/en`), point `Pipeline.Load` at that
+directory instead.
 
 ## Usage
 
 ```csharp
 using StanzaSharp;
 
-using var nlp = Pipeline.Load("models/converted/en");
+using var nlp = Pipeline.Load("models/converted/en"); // or Stanza's own "models/stanza/en"
 var doc = nlp.Process("Barack Obama was born in Hawaii. He was elected president in 2008.");
 
 foreach (var sentence in doc.Sentences)
@@ -48,5 +53,6 @@ dotnet run --project samples/StanzaSharp.Cli -- --processors tokenize,mwt,pos in
 dotnet test
 ```
 
-Tests that need models skip when `models/converted/en` is missing. To regenerate the golden data,
-run `tools\.venv\Scripts\python tools\make_golden.py`.
+Tests that need models skip when `models/converted/en` (or, for the `.pt` loader tests,
+`models/stanza/en`) is missing. To regenerate the golden data, run
+`tools\.venv\Scripts\python tools\make_golden.py`.

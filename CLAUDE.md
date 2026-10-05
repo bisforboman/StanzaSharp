@@ -52,6 +52,9 @@ All 7 steps of the build order are done:
   is byte-identical to `tests/golden/pipeline.conllu`.
   - The `samples/StanzaSharp.Cli` sample writes the same CoNLL-U from a file or stdin.
   - `Conllu.Write` fills a missing HEAD with `id - 1`, like Stanza's writer.
+- `Checkpoint.Load` also reads Stanza's original `.pt` files (`Core/TorchCheckpoint.cs` +
+  `Core/Pickle.cs`), so `Pipeline.Load("models/stanza/en")` works without Python. For all seven
+  checkpoints the result equals the converter's: identical JSON and byte-identical tensors.
 
 Tokenizer notes:
 - Stanza passes each row's *padded* length to the LSTM, so padding reaches the backward
@@ -65,7 +68,7 @@ Tokenizer notes:
 
 ```
 src/StanzaSharp.Core           Document model, CoNLL-U I/O, constituency Tree, safetensors reader,
-                               converted-checkpoint JSON loading. No TorchSharp dependency.
+                               checkpoint loading (converted JSON or .pt). No TorchSharp dependency.
 src/StanzaSharp.Nn             TorchSharp: charlm, pretrain embeddings, shared layers, weight loading.
 src/StanzaSharp.Tokenize       Tokenizer + sentence splitting.
 src/StanzaSharp.Mwt            Multi-word token expansion.
@@ -75,10 +78,10 @@ src/StanzaSharp                Pipeline facade wiring the processors together.
 samples/StanzaSharp.Cli        Console runner for quick experiments.
 tests/StanzaSharp.Tests        xUnit; golden tests against Python Stanza output.
 tests/golden/                  Golden data generated from Python Stanza (committed, keep it small).
-tools/stanza_convert.py        Checkpoint inspector/converter (.pt -> .safetensors + .json).
+tools/stanza_convert.py        Checkpoint inspector/converter (.pt -> .safetensors + .json); optional.
 tools/.venv/                   Python env with stanza installed (gitignored).
 models/stanza/                 Original downloaded models (gitignored).
-models/converted/en/           Converted models used by C# (gitignored).
+models/converted/en/           Converted models (gitignored); C# prefers them over the .pt files.
 ```
 
 Package policy: library projects reference the managed `TorchSharp` package only. Runnable
@@ -94,6 +97,11 @@ memory of how Stanza works. Port the code paths the English checkpoints actually
 checkpoint configs tell you; skip unused options.
 
 ## Model files
+
+C# loads either format. `Checkpoint.Load(basePath)` reads `basePath.json` + `basePath.safetensors`
+when they exist, else the original `basePath.pt`, so `Pipeline.Load` accepts both `models/converted/en`
+and Stanza's own download directory `models/stanza/en` (`<processor>/<name>.pt`). Converting is
+optional: it saves about a second of load time and makes the checkpoints easy to inspect.
 
 Use `setup.ps1 -Models`, or run the steps by hand:
 
@@ -121,6 +129,26 @@ then raw little-endian tensor data. Read it with a small hand-written reader in 
 no package is needed.
 
 All seven checkpoints convert with `torch.load(weights_only=True)`; no unsafe pickling is needed.
+
+### Reading .pt files in C#
+
+All seven Stanza checkpoints use torch's legacy format (`_use_new_zipfile_serialization=False`), a
+sequence of protocol-2 pickles: magic number, protocol version (1001), sys_info (little-endian),
+the checkpoint, the list of storage keys; then per key an int64 element count and the raw bytes.
+Tensors are `torch._utils._rebuild_tensor_v2(storage, offset, size, stride, requires_grad, hooks)`
+over persistent ids `('storage', torch.FloatStorage|LongStorage, key, location, numel, None)`; LSTM
+weights share one storage at different offsets. The only globals are `collections.OrderedDict`,
+`torch._utils._rebuild_tensor_v2` and the storage types. The zip format (`archive/data.pkl` +
+`archive/data/<key>`) is read too, for checkpoints saved by newer trainers.
+
+`Unpickler` is restricted like `weights_only=True`: torch's protocol-2 opcodes only, plain data
+(None/bool/int/float/str/list/tuple/dict), and an allowlist of OrderedDict, `_rebuild_tensor_v2` and
+the typed storage classes. Anything else throws `InvalidDataException`; nothing is instantiated by
+name. Not supported (none of the models need them): sets, bytes, bfloat16, big-endian files,
+`$repr` objects. `TorchCheckpoint` then mirrors the converter's `Splitter` exactly, including
+Python's float `repr` in the JSON, key collisions (`key#2`) and numpy turning 0-d tensors into
+shape `[1]`. `tests/golden/pt/` holds tiny fixtures in both formats with their converter output
+(`make_golden.py --pt-only` regenerates them).
 
 ## Checkpoint findings
 
