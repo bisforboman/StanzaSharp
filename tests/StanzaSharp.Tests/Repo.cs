@@ -9,6 +9,9 @@ public static class Repo
     public static readonly string Models =
         Environment.GetEnvironmentVariable("STANZASHARP_MODELS") is { Length: > 0 } dir ? dir : Path.Combine(Root, "models", "converted", "en");
 
+    // The original Stanza download (<processor>/<name>.pt), found next to the converted models: models/stanza/en.
+    public static readonly string StanzaModels = Path.GetFullPath(Path.Combine(Models, "..", "..", "stanza", "en"));
+
     public static string Model(string relativeBase) => Path.Combine(Models, relativeBase);
 
     private static string FindRoot()
@@ -27,5 +30,25 @@ public sealed class ModelFactAttribute : FactAttribute
     {
         if (!Directory.Exists(Repo.Models))
             Skip = "models/converted/en not found; run setup.ps1 -Models";
+    }
+}
+
+/// <summary>A theory that is skipped unless both the original .pt models and the converted ones are present.</summary>
+public sealed class PtModelTheoryAttribute : TheoryAttribute
+{
+    public PtModelTheoryAttribute()
+    {
+        if (!Directory.Exists(Repo.Models) || !Directory.Exists(Repo.StanzaModels))
+            Skip = "models/stanza/en or models/converted/en not found; run setup.ps1 -Models";
+    }
+}
+
+/// <summary>A fact that is skipped when the original .pt models are missing.</summary>
+public sealed class PtModelFactAttribute : FactAttribute
+{
+    public PtModelFactAttribute()
+    {
+        if (!Directory.Exists(Repo.StanzaModels))
+            Skip = "models/stanza/en not found; run setup.ps1 -Models";
     }
 }
