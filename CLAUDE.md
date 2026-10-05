@@ -181,6 +181,11 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - `tokenize_stress.txt` + `.conllu`: tokenizer output for a paragraph over 1000 characters and
     for more paragraphs than fit in one batch.
   - `mwt.json`: expansions of a word list, both through the pipeline and classifier-only.
+- CI (`.github/workflows/ci.yml`, not yet run on GitHub): `build-test` runs the suite without
+  models; `golden` downloads and converts the models (CPU torch, cached on `tools/requirements.txt`
+  and `tools/stanza_convert.py`) and fails if any test is skipped (`outcome="NotExecuted"` in the
+  trx; the trx `notExecuted` counter stays 0 for skips). It runs on Linux: keep paths
+  forward-slash and file names case-exact. Root `.gitattributes` keeps sources LF.
 
 ## Design decisions
 

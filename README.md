@@ -50,3 +50,16 @@ dotnet test
 
 Tests that need models skip when `models/converted/en` is missing. To regenerate the golden data,
 run `tools\.venv\Scripts\python tools\make_golden.py`.
+
+## CI
+
+`.github/workflows/ci.yml` runs on every push and pull request (Ubuntu, .NET 10). It has not run
+on GitHub yet, since the repository has no remote.
+
+- `build-test` builds the solution and runs the tests without models (the model tests skip).
+- `golden` installs `tools/requirements.txt` with the CPU-only torch wheel, downloads and converts
+  the English models, and runs the full suite. It fails if any test was skipped. The converted
+  models are cached, keyed on `tools/requirements.txt` and `tools/stanza_convert.py`.
+
+Both upload their `.trx` test results. To reproduce `golden` locally, run `setup.ps1 -Models`, then
+`dotnet test --logger trx --results-directory TestResults` and check that nothing was skipped.
