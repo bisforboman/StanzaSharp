@@ -1,0 +1,2538 @@
+# text = Barack Obama was born in Hawaii.
+# sent_id = 0
+1	Barack	_	_	_	_	0	_	_	start_char=0|end_char=6
+2	Obama	_	_	_	_	1	_	_	start_char=7|end_char=12
+3	was	_	_	_	_	2	_	_	start_char=13|end_char=16
+4	born	_	_	_	_	3	_	_	start_char=17|end_char=21
+5	in	_	_	_	_	4	_	_	start_char=22|end_char=24
+6	Hawaii	_	_	_	_	5	_	_	SpaceAfter=No|start_char=25|end_char=31
+7	.	_	_	_	_	6	_	_	start_char=31|end_char=32
+
+# text = He was elected president in 2008.
+# sent_id = 1
+1	He	_	_	_	_	0	_	_	start_char=33|end_char=35
+2	was	_	_	_	_	1	_	_	start_char=36|end_char=39
+3	elected	_	_	_	_	2	_	_	start_char=40|end_char=47
+4	president	_	_	_	_	3	_	_	start_char=48|end_char=57
+5	in	_	_	_	_	4	_	_	start_char=58|end_char=60
+6	2008	_	_	_	_	5	_	_	SpaceAfter=No|start_char=61|end_char=65
+7	.	_	_	_	_	6	_	_	SpacesAfter=\n\n|start_char=65|end_char=66
+
+# text = Barack Obama was born in Hawaii.
+# sent_id = 2
+1	Barack	_	_	_	_	0	_	_	start_char=68|end_char=74
+2	Obama	_	_	_	_	1	_	_	start_char=75|end_char=80
+3	was	_	_	_	_	2	_	_	start_char=81|end_char=84
+4	born	_	_	_	_	3	_	_	start_char=85|end_char=89
+5	in	_	_	_	_	4	_	_	start_char=90|end_char=92
+6	Hawaii	_	_	_	_	5	_	_	SpaceAfter=No|start_char=93|end_char=99
+7	.	_	_	_	_	6	_	_	start_char=99|end_char=100
+
+# text = He was elected president in 2008.
+# sent_id = 3
+1	He	_	_	_	_	0	_	_	start_char=101|end_char=103
+2	was	_	_	_	_	1	_	_	start_char=104|end_char=107
+3	elected	_	_	_	_	2	_	_	start_char=108|end_char=115
+4	president	_	_	_	_	3	_	_	start_char=116|end_char=125
+5	in	_	_	_	_	4	_	_	start_char=126|end_char=128
+6	2008	_	_	_	_	5	_	_	SpaceAfter=No|start_char=129|end_char=133
+7	.	_	_	_	_	6	_	_	start_char=133|end_char=134
+
+# text = I don't think it's going to rain today, but we'll see.
+# sent_id = 4
+1	I	_	_	_	_	0	_	_	start_char=135|end_char=136
+2-3	don't	_	_	_	_	_	_	_	start_char=137|end_char=142
+2	do	_	_	_	_	1	_	_	start_char=137|end_char=139
+3	n't	_	_	_	_	2	_	_	start_char=139|end_char=142
+4	think	_	_	_	_	3	_	_	start_char=143|end_char=148
+5-6	it's	_	_	_	_	_	_	_	start_char=149|end_char=153
+5	it	_	_	_	_	4	_	_	start_char=149|end_char=151
+6	's	_	_	_	_	5	_	_	start_char=151|end_char=153
+7	going	_	_	_	_	6	_	_	start_char=154|end_char=159
+8	to	_	_	_	_	7	_	_	start_char=160|end_char=162
+9	rain	_	_	_	_	8	_	_	start_char=163|end_char=167
+10	today	_	_	_	_	9	_	_	SpaceAfter=No|start_char=168|end_char=173
+11	,	_	_	_	_	10	_	_	start_char=173|end_char=174
+12	but	_	_	_	_	11	_	_	start_char=175|end_char=178
+13-14	we'll	_	_	_	_	_	_	_	start_char=179|end_char=184
+13	we	_	_	_	_	12	_	_	start_char=179|end_char=181
+14	'll	_	_	_	_	13	_	_	start_char=181|end_char=184
+15	see	_	_	_	_	14	_	_	SpaceAfter=No|start_char=185|end_char=188
+16	.	_	_	_	_	15	_	_	start_char=188|end_char=189
+
+# text = Can't you hear the thunder?
+# sent_id = 5
+1-2	Can't	_	_	_	_	_	_	_	start_char=190|end_char=195
+1	Ca	_	_	_	_	0	_	_	start_char=190|end_char=192
+2	n't	_	_	_	_	1	_	_	start_char=192|end_char=195
+3	you	_	_	_	_	2	_	_	start_char=196|end_char=199
+4	hear	_	_	_	_	3	_	_	start_char=200|end_char=204
+5	the	_	_	_	_	4	_	_	start_char=205|end_char=208
+6	thunder	_	_	_	_	5	_	_	SpaceAfter=No|start_char=209|end_char=216
+7	?	_	_	_	_	6	_	_	start_char=216|end_char=217
+
+# text = Dr. Smith moved to the U.S. in Jan. 1999 and paid $4.50 for a cup of coffee at 7:30 a.m.
+# sent_id = 6
+1	Dr.	_	_	_	_	0	_	_	start_char=218|end_char=221
+2	Smith	_	_	_	_	1	_	_	start_char=222|end_char=227
+3	moved	_	_	_	_	2	_	_	start_char=228|end_char=233
+4	to	_	_	_	_	3	_	_	start_char=234|end_char=236
+5	the	_	_	_	_	4	_	_	start_char=237|end_char=240
+6	U.S.	_	_	_	_	5	_	_	start_char=241|end_char=245
+7	in	_	_	_	_	6	_	_	start_char=246|end_char=248
+8	Jan.	_	_	_	_	7	_	_	start_char=249|end_char=253
+9	1999	_	_	_	_	8	_	_	start_char=254|end_char=258
+10	and	_	_	_	_	9	_	_	start_char=259|end_char=262
+11	paid	_	_	_	_	10	_	_	start_char=263|end_char=267
+12	$	_	_	_	_	11	_	_	SpaceAfter=No|start_char=268|end_char=269
+13	4.50	_	_	_	_	12	_	_	start_char=269|end_char=273
+14	for	_	_	_	_	13	_	_	start_char=274|end_char=277
+15	a	_	_	_	_	14	_	_	start_char=278|end_char=279
+16	cup	_	_	_	_	15	_	_	start_char=280|end_char=283
+17	of	_	_	_	_	16	_	_	start_char=284|end_char=286
+18	coffee	_	_	_	_	17	_	_	start_char=287|end_char=293
+19	at	_	_	_	_	18	_	_	start_char=294|end_char=296
+20	7:30	_	_	_	_	19	_	_	start_char=297|end_char=301
+21	a.m	_	_	_	_	20	_	_	SpaceAfter=No|start_char=302|end_char=305
+22	.	_	_	_	_	21	_	_	start_char=305|end_char=306
+
+# text = "Where are you going?" she asked.
+# sent_id = 7
+1	"	_	_	_	_	0	_	_	SpaceAfter=No|start_char=307|end_char=308
+2	Where	_	_	_	_	1	_	_	start_char=308|end_char=313
+3	are	_	_	_	_	2	_	_	start_char=314|end_char=317
+4	you	_	_	_	_	3	_	_	start_char=318|end_char=321
+5	going	_	_	_	_	4	_	_	SpaceAfter=No|start_char=322|end_char=327
+6	?	_	_	_	_	5	_	_	SpaceAfter=No|start_char=327|end_char=328
+7	"	_	_	_	_	6	_	_	start_char=328|end_char=329
+8	she	_	_	_	_	7	_	_	start_char=330|end_char=333
+9	asked	_	_	_	_	8	_	_	SpaceAfter=No|start_char=334|end_char=339
+10	.	_	_	_	_	9	_	_	start_char=339|end_char=340
+
+# text = The children's toys (all 23 of them) were scattered across the room!
+# sent_id = 8
+1	The	_	_	_	_	0	_	_	start_char=341|end_char=344
+2-3	children's	_	_	_	_	_	_	_	start_char=345|end_char=355
+2	children	_	_	_	_	1	_	_	start_char=345|end_char=353
+3	's	_	_	_	_	2	_	_	start_char=353|end_char=355
+4	toys	_	_	_	_	3	_	_	start_char=356|end_char=360
+5	(	_	_	_	_	4	_	_	SpaceAfter=No|start_char=361|end_char=362
+6	all	_	_	_	_	5	_	_	start_char=362|end_char=365
+7	23	_	_	_	_	6	_	_	start_char=366|end_char=368
+8	of	_	_	_	_	7	_	_	start_char=369|end_char=371
+9	them	_	_	_	_	8	_	_	SpaceAfter=No|start_char=372|end_char=376
+10	)	_	_	_	_	9	_	_	start_char=376|end_char=377
+11	were	_	_	_	_	10	_	_	start_char=378|end_char=382
+12	scattered	_	_	_	_	11	_	_	start_char=383|end_char=392
+13	across	_	_	_	_	12	_	_	start_char=393|end_char=399
+14	the	_	_	_	_	13	_	_	start_char=400|end_char=403
+15	room	_	_	_	_	14	_	_	SpaceAfter=No|start_char=404|end_char=408
+16	!	_	_	_	_	15	_	_	start_char=408|end_char=409
+
+# text = The well-known author, who had written e-mails to info@example.com, visited https://www.example.org/about yesterday.
+# sent_id = 9
+1	The	_	_	_	_	0	_	_	start_char=410|end_char=413
+2	well	_	_	_	_	1	_	_	SpaceAfter=No|start_char=414|end_char=418
+3	-	_	_	_	_	2	_	_	SpaceAfter=No|start_char=418|end_char=419
+4	known	_	_	_	_	3	_	_	start_char=419|end_char=424
+5	author	_	_	_	_	4	_	_	SpaceAfter=No|start_char=425|end_char=431
+6	,	_	_	_	_	5	_	_	start_char=431|end_char=432
+7	who	_	_	_	_	6	_	_	start_char=433|end_char=436
+8	had	_	_	_	_	7	_	_	start_char=437|end_char=440
+9	written	_	_	_	_	8	_	_	start_char=441|end_char=448
+10	e-mails	_	_	_	_	9	_	_	start_char=449|end_char=456
+11	to	_	_	_	_	10	_	_	start_char=457|end_char=459
+12	info@example.com	_	_	_	_	11	_	_	SpaceAfter=No|start_char=460|end_char=476
+13	,	_	_	_	_	12	_	_	start_char=476|end_char=477
+14	visited	_	_	_	_	13	_	_	start_char=478|end_char=485
+15	https://www.example.org/about	_	_	_	_	14	_	_	start_char=486|end_char=515
+16	yesterday	_	_	_	_	15	_	_	SpaceAfter=No|start_char=516|end_char=525
+17	.	_	_	_	_	16	_	_	start_char=525|end_char=526
+
+# text = Mary's sister wouldn't have gone if she'd known that the meeting, which was scheduled for 3 p.m. on Friday, had been cancelled; nobody told her.
+# sent_id = 10
+1-2	Mary's	_	_	_	_	_	_	_	start_char=527|end_char=533
+1	Mary	_	_	_	_	0	_	_	start_char=527|end_char=531
+2	's	_	_	_	_	1	_	_	start_char=531|end_char=533
+3	sister	_	_	_	_	2	_	_	start_char=534|end_char=540
+4-5	wouldn't	_	_	_	_	_	_	_	start_char=541|end_char=549
+4	would	_	_	_	_	3	_	_	start_char=541|end_char=546
+5	n't	_	_	_	_	4	_	_	start_char=546|end_char=549
+6	have	_	_	_	_	5	_	_	start_char=550|end_char=554
+7	gone	_	_	_	_	6	_	_	start_char=555|end_char=559
+8	if	_	_	_	_	7	_	_	start_char=560|end_char=562
+9-10	she'd	_	_	_	_	_	_	_	start_char=563|end_char=568
+9	she	_	_	_	_	8	_	_	start_char=563|end_char=566
+10	'd	_	_	_	_	9	_	_	start_char=566|end_char=568
+11	known	_	_	_	_	10	_	_	start_char=569|end_char=574
+12	that	_	_	_	_	11	_	_	start_char=575|end_char=579
+13	the	_	_	_	_	12	_	_	start_char=580|end_char=583
+14	meeting	_	_	_	_	13	_	_	SpaceAfter=No|start_char=584|end_char=591
+15	,	_	_	_	_	14	_	_	start_char=591|end_char=592
+16	which	_	_	_	_	15	_	_	start_char=593|end_char=598
+17	was	_	_	_	_	16	_	_	start_char=599|end_char=602
+18	scheduled	_	_	_	_	17	_	_	start_char=603|end_char=612
+19	for	_	_	_	_	18	_	_	start_char=613|end_char=616
+20	3	_	_	_	_	19	_	_	start_char=617|end_char=618
+21	p.m.	_	_	_	_	20	_	_	start_char=619|end_char=623
+22	on	_	_	_	_	21	_	_	start_char=624|end_char=626
+23	Friday	_	_	_	_	22	_	_	SpaceAfter=No|start_char=627|end_char=633
+24	,	_	_	_	_	23	_	_	start_char=633|end_char=634
+25	had	_	_	_	_	24	_	_	start_char=635|end_char=638
+26	been	_	_	_	_	25	_	_	start_char=639|end_char=643
+27	cancelled	_	_	_	_	26	_	_	SpaceAfter=No|start_char=644|end_char=653
+28	;	_	_	_	_	27	_	_	start_char=653|end_char=654
+29	nobody	_	_	_	_	28	_	_	start_char=655|end_char=661
+30	told	_	_	_	_	29	_	_	start_char=662|end_char=666
+31	her	_	_	_	_	30	_	_	SpaceAfter=No|start_char=667|end_char=670
+32	.	_	_	_	_	31	_	_	start_char=670|end_char=671
+
+# text = Wow... that's amazing!!
+# sent_id = 11
+1	Wow	_	_	_	_	0	_	_	SpaceAfter=No|start_char=672|end_char=675
+2	...	_	_	_	_	1	_	_	start_char=675|end_char=678
+3-4	that's	_	_	_	_	_	_	_	start_char=679|end_char=685
+3	that	_	_	_	_	2	_	_	start_char=679|end_char=683
+4	's	_	_	_	_	3	_	_	start_char=683|end_char=685
+5	amazing	_	_	_	_	4	_	_	SpaceAfter=No|start_char=686|end_char=693
+6	!!	_	_	_	_	5	_	_	start_char=693|end_char=695
+
+# text = Barack Obama was born in Hawaii.
+# sent_id = 12
+1	Barack	_	_	_	_	0	_	_	start_char=696|end_char=702
+2	Obama	_	_	_	_	1	_	_	start_char=703|end_char=708
+3	was	_	_	_	_	2	_	_	start_char=709|end_char=712
+4	born	_	_	_	_	3	_	_	start_char=713|end_char=717
+5	in	_	_	_	_	4	_	_	start_char=718|end_char=720
+6	Hawaii	_	_	_	_	5	_	_	SpaceAfter=No|start_char=721|end_char=727
+7	.	_	_	_	_	6	_	_	start_char=727|end_char=728
+
+# text = He was elected president in 2008.
+# sent_id = 13
+1	He	_	_	_	_	0	_	_	start_char=729|end_char=731
+2	was	_	_	_	_	1	_	_	start_char=732|end_char=735
+3	elected	_	_	_	_	2	_	_	start_char=736|end_char=743
+4	president	_	_	_	_	3	_	_	start_char=744|end_char=753
+5	in	_	_	_	_	4	_	_	start_char=754|end_char=756
+6	2008	_	_	_	_	5	_	_	SpaceAfter=No|start_char=757|end_char=761
+7	.	_	_	_	_	6	_	_	start_char=761|end_char=762
+
+# text = I don't think it's going to rain today, but we'll see.
+# sent_id = 14
+1	I	_	_	_	_	0	_	_	start_char=763|end_char=764
+2-3	don't	_	_	_	_	_	_	_	start_char=765|end_char=770
+2	do	_	_	_	_	1	_	_	start_char=765|end_char=767
+3	n't	_	_	_	_	2	_	_	start_char=767|end_char=770
+4	think	_	_	_	_	3	_	_	start_char=771|end_char=776
+5-6	it's	_	_	_	_	_	_	_	start_char=777|end_char=781
+5	it	_	_	_	_	4	_	_	start_char=777|end_char=779
+6	's	_	_	_	_	5	_	_	start_char=779|end_char=781
+7	going	_	_	_	_	6	_	_	start_char=782|end_char=787
+8	to	_	_	_	_	7	_	_	start_char=788|end_char=790
+9	rain	_	_	_	_	8	_	_	start_char=791|end_char=795
+10	today	_	_	_	_	9	_	_	SpaceAfter=No|start_char=796|end_char=801
+11	,	_	_	_	_	10	_	_	start_char=801|end_char=802
+12	but	_	_	_	_	11	_	_	start_char=803|end_char=806
+13-14	we'll	_	_	_	_	_	_	_	start_char=807|end_char=812
+13	we	_	_	_	_	12	_	_	start_char=807|end_char=809
+14	'll	_	_	_	_	13	_	_	start_char=809|end_char=812
+15	see	_	_	_	_	14	_	_	SpaceAfter=No|start_char=813|end_char=816
+16	.	_	_	_	_	15	_	_	start_char=816|end_char=817
+
+# text = Can't you hear the thunder?
+# sent_id = 15
+1-2	Can't	_	_	_	_	_	_	_	start_char=818|end_char=823
+1	Ca	_	_	_	_	0	_	_	start_char=818|end_char=820
+2	n't	_	_	_	_	1	_	_	start_char=820|end_char=823
+3	you	_	_	_	_	2	_	_	start_char=824|end_char=827
+4	hear	_	_	_	_	3	_	_	start_char=828|end_char=832
+5	the	_	_	_	_	4	_	_	start_char=833|end_char=836
+6	thunder	_	_	_	_	5	_	_	SpaceAfter=No|start_char=837|end_char=844
+7	?	_	_	_	_	6	_	_	start_char=844|end_char=845
+
+# text = Dr. Smith moved to the U.S. in Jan. 1999 and paid $4.50 for a cup of coffee at 7:30 a.m.
+# sent_id = 16
+1	Dr.	_	_	_	_	0	_	_	start_char=846|end_char=849
+2	Smith	_	_	_	_	1	_	_	start_char=850|end_char=855
+3	moved	_	_	_	_	2	_	_	start_char=856|end_char=861
+4	to	_	_	_	_	3	_	_	start_char=862|end_char=864
+5	the	_	_	_	_	4	_	_	start_char=865|end_char=868
+6	U.S.	_	_	_	_	5	_	_	start_char=869|end_char=873
+7	in	_	_	_	_	6	_	_	start_char=874|end_char=876
+8	Jan.	_	_	_	_	7	_	_	start_char=877|end_char=881
+9	1999	_	_	_	_	8	_	_	start_char=882|end_char=886
+10	and	_	_	_	_	9	_	_	start_char=887|end_char=890
+11	paid	_	_	_	_	10	_	_	start_char=891|end_char=895
+12	$	_	_	_	_	11	_	_	SpaceAfter=No|start_char=896|end_char=897
+13	4.50	_	_	_	_	12	_	_	start_char=897|end_char=901
+14	for	_	_	_	_	13	_	_	start_char=902|end_char=905
+15	a	_	_	_	_	14	_	_	start_char=906|end_char=907
+16	cup	_	_	_	_	15	_	_	start_char=908|end_char=911
+17	of	_	_	_	_	16	_	_	start_char=912|end_char=914
+18	coffee	_	_	_	_	17	_	_	start_char=915|end_char=921
+19	at	_	_	_	_	18	_	_	start_char=922|end_char=924
+20	7:30	_	_	_	_	19	_	_	start_char=925|end_char=929
+21	a.m	_	_	_	_	20	_	_	SpaceAfter=No|start_char=930|end_char=933
+22	.	_	_	_	_	21	_	_	start_char=933|end_char=934
+
+# text = "Where are you going?" she asked.
+# sent_id = 17
+1	"	_	_	_	_	0	_	_	SpaceAfter=No|start_char=935|end_char=936
+2	Where	_	_	_	_	1	_	_	start_char=936|end_char=941
+3	are	_	_	_	_	2	_	_	start_char=942|end_char=945
+4	you	_	_	_	_	3	_	_	start_char=946|end_char=949
+5	going	_	_	_	_	4	_	_	SpaceAfter=No|start_char=950|end_char=955
+6	?	_	_	_	_	5	_	_	SpaceAfter=No|start_char=955|end_char=956
+7	"	_	_	_	_	6	_	_	start_char=956|end_char=957
+8	she	_	_	_	_	7	_	_	start_char=958|end_char=961
+9	asked	_	_	_	_	8	_	_	SpaceAfter=No|start_char=962|end_char=967
+10	.	_	_	_	_	9	_	_	start_char=967|end_char=968
+
+# text = The children's toys (all 23 of them) were scattered across the room!
+# sent_id = 18
+1	The	_	_	_	_	0	_	_	start_char=969|end_char=972
+2-3	children's	_	_	_	_	_	_	_	start_char=973|end_char=983
+2	children	_	_	_	_	1	_	_	start_char=973|end_char=981
+3	's	_	_	_	_	2	_	_	start_char=981|end_char=983
+4	toys	_	_	_	_	3	_	_	start_char=984|end_char=988
+5	(	_	_	_	_	4	_	_	SpaceAfter=No|start_char=989|end_char=990
+6	all	_	_	_	_	5	_	_	start_char=990|end_char=993
+7	23	_	_	_	_	6	_	_	start_char=994|end_char=996
+8	of	_	_	_	_	7	_	_	start_char=997|end_char=999
+9	them	_	_	_	_	8	_	_	SpaceAfter=No|start_char=1000|end_char=1004
+10	)	_	_	_	_	9	_	_	start_char=1004|end_char=1005
+11	were	_	_	_	_	10	_	_	start_char=1006|end_char=1010
+12	scattered	_	_	_	_	11	_	_	start_char=1011|end_char=1020
+13	across	_	_	_	_	12	_	_	start_char=1021|end_char=1027
+14	the	_	_	_	_	13	_	_	start_char=1028|end_char=1031
+15	room	_	_	_	_	14	_	_	SpaceAfter=No|start_char=1032|end_char=1036
+16	!	_	_	_	_	15	_	_	start_char=1036|end_char=1037
+
+# text = The well-known author, who had written e-mails to info@example.com, visited https://www.example.org/about yesterday.
+# sent_id = 19
+1	The	_	_	_	_	0	_	_	start_char=1038|end_char=1041
+2	well	_	_	_	_	1	_	_	SpaceAfter=No|start_char=1042|end_char=1046
+3	-	_	_	_	_	2	_	_	SpaceAfter=No|start_char=1046|end_char=1047
+4	known	_	_	_	_	3	_	_	start_char=1047|end_char=1052
+5	author	_	_	_	_	4	_	_	SpaceAfter=No|start_char=1053|end_char=1059
+6	,	_	_	_	_	5	_	_	start_char=1059|end_char=1060
+7	who	_	_	_	_	6	_	_	start_char=1061|end_char=1064
+8	had	_	_	_	_	7	_	_	start_char=1065|end_char=1068
+9	written	_	_	_	_	8	_	_	start_char=1069|end_char=1076
+10	e-mails	_	_	_	_	9	_	_	start_char=1077|end_char=1084
+11	to	_	_	_	_	10	_	_	start_char=1085|end_char=1087
+12	info@example.com	_	_	_	_	11	_	_	SpaceAfter=No|start_char=1088|end_char=1104
+13	,	_	_	_	_	12	_	_	start_char=1104|end_char=1105
+14	visited	_	_	_	_	13	_	_	start_char=1106|end_char=1113
+15	https://www.example.org/about	_	_	_	_	14	_	_	start_char=1114|end_char=1143
+16	yesterday	_	_	_	_	15	_	_	SpaceAfter=No|start_char=1144|end_char=1153
+17	.	_	_	_	_	16	_	_	start_char=1153|end_char=1154
+
+# text = Mary's sister wouldn't have gone if she'd known that the meeting, which was scheduled for 3 p.m. on Friday, had been cancelled; nobody told her.
+# sent_id = 20
+1-2	Mary's	_	_	_	_	_	_	_	start_char=1155|end_char=1161
+1	Mary	_	_	_	_	0	_	_	start_char=1155|end_char=1159
+2	's	_	_	_	_	1	_	_	start_char=1159|end_char=1161
+3	sister	_	_	_	_	2	_	_	start_char=1162|end_char=1168
+4-5	wouldn't	_	_	_	_	_	_	_	start_char=1169|end_char=1177
+4	would	_	_	_	_	3	_	_	start_char=1169|end_char=1174
+5	n't	_	_	_	_	4	_	_	start_char=1174|end_char=1177
+6	have	_	_	_	_	5	_	_	start_char=1178|end_char=1182
+7	gone	_	_	_	_	6	_	_	start_char=1183|end_char=1187
+8	if	_	_	_	_	7	_	_	start_char=1188|end_char=1190
+9-10	she'd	_	_	_	_	_	_	_	start_char=1191|end_char=1196
+9	she	_	_	_	_	8	_	_	start_char=1191|end_char=1194
+10	'd	_	_	_	_	9	_	_	start_char=1194|end_char=1196
+11	known	_	_	_	_	10	_	_	start_char=1197|end_char=1202
+12	that	_	_	_	_	11	_	_	start_char=1203|end_char=1207
+13	the	_	_	_	_	12	_	_	start_char=1208|end_char=1211
+14	meeting	_	_	_	_	13	_	_	SpaceAfter=No|start_char=1212|end_char=1219
+15	,	_	_	_	_	14	_	_	start_char=1219|end_char=1220
+16	which	_	_	_	_	15	_	_	start_char=1221|end_char=1226
+17	was	_	_	_	_	16	_	_	start_char=1227|end_char=1230
+18	scheduled	_	_	_	_	17	_	_	start_char=1231|end_char=1240
+19	for	_	_	_	_	18	_	_	start_char=1241|end_char=1244
+20	3	_	_	_	_	19	_	_	start_char=1245|end_char=1246
+21	p.m.	_	_	_	_	20	_	_	start_char=1247|end_char=1251
+22	on	_	_	_	_	21	_	_	start_char=1252|end_char=1254
+23	Friday	_	_	_	_	22	_	_	SpaceAfter=No|start_char=1255|end_char=1261
+24	,	_	_	_	_	23	_	_	start_char=1261|end_char=1262
+25	had	_	_	_	_	24	_	_	start_char=1263|end_char=1266
+26	been	_	_	_	_	25	_	_	start_char=1267|end_char=1271
+27	cancelled	_	_	_	_	26	_	_	SpaceAfter=No|start_char=1272|end_char=1281
+28	;	_	_	_	_	27	_	_	start_char=1281|end_char=1282
+29	nobody	_	_	_	_	28	_	_	start_char=1283|end_char=1289
+30	told	_	_	_	_	29	_	_	start_char=1290|end_char=1294
+31	her	_	_	_	_	30	_	_	SpaceAfter=No|start_char=1295|end_char=1298
+32	.	_	_	_	_	31	_	_	start_char=1298|end_char=1299
+
+# text = Wow... that's amazing!!
+# sent_id = 21
+1	Wow	_	_	_	_	0	_	_	SpaceAfter=No|start_char=1300|end_char=1303
+2	...	_	_	_	_	1	_	_	start_char=1303|end_char=1306
+3-4	that's	_	_	_	_	_	_	_	start_char=1307|end_char=1313
+3	that	_	_	_	_	2	_	_	start_char=1307|end_char=1311
+4	's	_	_	_	_	3	_	_	start_char=1311|end_char=1313
+5	amazing	_	_	_	_	4	_	_	SpaceAfter=No|start_char=1314|end_char=1321
+6	!!	_	_	_	_	5	_	_	start_char=1321|end_char=1323
+
+# text = Barack Obama was born in Hawaii.
+# sent_id = 22
+1	Barack	_	_	_	_	0	_	_	start_char=1324|end_char=1330
+2	Obama	_	_	_	_	1	_	_	start_char=1331|end_char=1336
+3	was	_	_	_	_	2	_	_	start_char=1337|end_char=1340
+4	born	_	_	_	_	3	_	_	start_char=1341|end_char=1345
+5	in	_	_	_	_	4	_	_	start_char=1346|end_char=1348
+6	Hawaii	_	_	_	_	5	_	_	SpaceAfter=No|start_char=1349|end_char=1355
+7	.	_	_	_	_	6	_	_	start_char=1355|end_char=1356
+
+# text = He was elected president in 2008.
+# sent_id = 23
+1	He	_	_	_	_	0	_	_	start_char=1357|end_char=1359
+2	was	_	_	_	_	1	_	_	start_char=1360|end_char=1363
+3	elected	_	_	_	_	2	_	_	start_char=1364|end_char=1371
+4	president	_	_	_	_	3	_	_	start_char=1372|end_char=1381
+5	in	_	_	_	_	4	_	_	start_char=1382|end_char=1384
+6	2008	_	_	_	_	5	_	_	SpaceAfter=No|start_char=1385|end_char=1389
+7	.	_	_	_	_	6	_	_	start_char=1389|end_char=1390
+
+# text = I don't think it's going to rain today, but we'll see.
+# sent_id = 24
+1	I	_	_	_	_	0	_	_	start_char=1391|end_char=1392
+2-3	don't	_	_	_	_	_	_	_	start_char=1393|end_char=1398
+2	do	_	_	_	_	1	_	_	start_char=1393|end_char=1395
+3	n't	_	_	_	_	2	_	_	start_char=1395|end_char=1398
+4	think	_	_	_	_	3	_	_	start_char=1399|end_char=1404
+5-6	it's	_	_	_	_	_	_	_	start_char=1405|end_char=1409
+5	it	_	_	_	_	4	_	_	start_char=1405|end_char=1407
+6	's	_	_	_	_	5	_	_	start_char=1407|end_char=1409
+7	going	_	_	_	_	6	_	_	start_char=1410|end_char=1415
+8	to	_	_	_	_	7	_	_	start_char=1416|end_char=1418
+9	rain	_	_	_	_	8	_	_	start_char=1419|end_char=1423
+10	today	_	_	_	_	9	_	_	SpaceAfter=No|start_char=1424|end_char=1429
+11	,	_	_	_	_	10	_	_	start_char=1429|end_char=1430
+12	but	_	_	_	_	11	_	_	start_char=1431|end_char=1434
+13-14	we'll	_	_	_	_	_	_	_	start_char=1435|end_char=1440
+13	we	_	_	_	_	12	_	_	start_char=1435|end_char=1437
+14	'll	_	_	_	_	13	_	_	start_char=1437|end_char=1440
+15	see	_	_	_	_	14	_	_	SpaceAfter=No|start_char=1441|end_char=1444
+16	.	_	_	_	_	15	_	_	start_char=1444|end_char=1445
+
+# text = Can't you hear the thunder?
+# sent_id = 25
+1-2	Can't	_	_	_	_	_	_	_	start_char=1446|end_char=1451
+1	Ca	_	_	_	_	0	_	_	start_char=1446|end_char=1448
+2	n't	_	_	_	_	1	_	_	start_char=1448|end_char=1451
+3	you	_	_	_	_	2	_	_	start_char=1452|end_char=1455
+4	hear	_	_	_	_	3	_	_	start_char=1456|end_char=1460
+5	the	_	_	_	_	4	_	_	start_char=1461|end_char=1464
+6	thunder	_	_	_	_	5	_	_	SpaceAfter=No|start_char=1465|end_char=1472
+7	?	_	_	_	_	6	_	_	start_char=1472|end_char=1473
+
+# text = Dr. Smith moved to the U.S. in Jan. 1999 and paid $4.50 for a cup of coffee at 7:30 a.m.
+# sent_id = 26
+1	Dr.	_	_	_	_	0	_	_	start_char=1474|end_char=1477
+2	Smith	_	_	_	_	1	_	_	start_char=1478|end_char=1483
+3	moved	_	_	_	_	2	_	_	start_char=1484|end_char=1489
+4	to	_	_	_	_	3	_	_	start_char=1490|end_char=1492
+5	the	_	_	_	_	4	_	_	start_char=1493|end_char=1496
+6	U.S.	_	_	_	_	5	_	_	start_char=1497|end_char=1501
+7	in	_	_	_	_	6	_	_	start_char=1502|end_char=1504
+8	Jan.	_	_	_	_	7	_	_	start_char=1505|end_char=1509
+9	1999	_	_	_	_	8	_	_	start_char=1510|end_char=1514
+10	and	_	_	_	_	9	_	_	start_char=1515|end_char=1518
+11	paid	_	_	_	_	10	_	_	start_char=1519|end_char=1523
+12	$	_	_	_	_	11	_	_	SpaceAfter=No|start_char=1524|end_char=1525
+13	4.50	_	_	_	_	12	_	_	start_char=1525|end_char=1529
+14	for	_	_	_	_	13	_	_	start_char=1530|end_char=1533
+15	a	_	_	_	_	14	_	_	start_char=1534|end_char=1535
+16	cup	_	_	_	_	15	_	_	start_char=1536|end_char=1539
+17	of	_	_	_	_	16	_	_	start_char=1540|end_char=1542
+18	coffee	_	_	_	_	17	_	_	start_char=1543|end_char=1549
+19	at	_	_	_	_	18	_	_	start_char=1550|end_char=1552
+20	7:30	_	_	_	_	19	_	_	start_char=1553|end_char=1557
+21	a.m	_	_	_	_	20	_	_	SpaceAfter=No|start_char=1558|end_char=1561
+22	.	_	_	_	_	21	_	_	start_char=1561|end_char=1562
+
+# text = "Where are you going?" she asked.
+# sent_id = 27
+1	"	_	_	_	_	0	_	_	SpaceAfter=No|start_char=1563|end_char=1564
+2	Where	_	_	_	_	1	_	_	start_char=1564|end_char=1569
+3	are	_	_	_	_	2	_	_	start_char=1570|end_char=1573
+4	you	_	_	_	_	3	_	_	start_char=1574|end_char=1577
+5	going	_	_	_	_	4	_	_	SpaceAfter=No|start_char=1578|end_char=1583
+6	?	_	_	_	_	5	_	_	SpaceAfter=No|start_char=1583|end_char=1584
+7	"	_	_	_	_	6	_	_	start_char=1584|end_char=1585
+8	she	_	_	_	_	7	_	_	start_char=1586|end_char=1589
+9	asked	_	_	_	_	8	_	_	SpaceAfter=No|start_char=1590|end_char=1595
+10	.	_	_	_	_	9	_	_	start_char=1595|end_char=1596
+
+# text = The children's toys (all 23 of them) were scattered across the room!
+# sent_id = 28
+1	The	_	_	_	_	0	_	_	start_char=1597|end_char=1600
+2-3	children's	_	_	_	_	_	_	_	start_char=1601|end_char=1611
+2	children	_	_	_	_	1	_	_	start_char=1601|end_char=1609
+3	's	_	_	_	_	2	_	_	start_char=1609|end_char=1611
+4	toys	_	_	_	_	3	_	_	start_char=1612|end_char=1616
+5	(	_	_	_	_	4	_	_	SpaceAfter=No|start_char=1617|end_char=1618
+6	all	_	_	_	_	5	_	_	start_char=1618|end_char=1621
+7	23	_	_	_	_	6	_	_	start_char=1622|end_char=1624
+8	of	_	_	_	_	7	_	_	start_char=1625|end_char=1627
+9	them	_	_	_	_	8	_	_	SpaceAfter=No|start_char=1628|end_char=1632
+10	)	_	_	_	_	9	_	_	start_char=1632|end_char=1633
+11	were	_	_	_	_	10	_	_	start_char=1634|end_char=1638
+12	scattered	_	_	_	_	11	_	_	start_char=1639|end_char=1648
+13	across	_	_	_	_	12	_	_	start_char=1649|end_char=1655
+14	the	_	_	_	_	13	_	_	start_char=1656|end_char=1659
+15	room	_	_	_	_	14	_	_	SpaceAfter=No|start_char=1660|end_char=1664
+16	!	_	_	_	_	15	_	_	start_char=1664|end_char=1665
+
+# text = The well-known author, who had written e-mails to info@example.com, visited https://www.example.org/about yesterday.
+# sent_id = 29
+1	The	_	_	_	_	0	_	_	start_char=1666|end_char=1669
+2	well	_	_	_	_	1	_	_	SpaceAfter=No|start_char=1670|end_char=1674
+3	-	_	_	_	_	2	_	_	SpaceAfter=No|start_char=1674|end_char=1675
+4	known	_	_	_	_	3	_	_	start_char=1675|end_char=1680
+5	author	_	_	_	_	4	_	_	SpaceAfter=No|start_char=1681|end_char=1687
+6	,	_	_	_	_	5	_	_	start_char=1687|end_char=1688
+7	who	_	_	_	_	6	_	_	start_char=1689|end_char=1692
+8	had	_	_	_	_	7	_	_	start_char=1693|end_char=1696
+9	written	_	_	_	_	8	_	_	start_char=1697|end_char=1704
+10	e-mails	_	_	_	_	9	_	_	start_char=1705|end_char=1712
+11	to	_	_	_	_	10	_	_	start_char=1713|end_char=1715
+12	info@example.com	_	_	_	_	11	_	_	SpaceAfter=No|start_char=1716|end_char=1732
+13	,	_	_	_	_	12	_	_	start_char=1732|end_char=1733
+14	visited	_	_	_	_	13	_	_	start_char=1734|end_char=1741
+15	https://www.example.org/about	_	_	_	_	14	_	_	start_char=1742|end_char=1771
+16	yesterday	_	_	_	_	15	_	_	SpaceAfter=No|start_char=1772|end_char=1781
+17	.	_	_	_	_	16	_	_	start_char=1781|end_char=1782
+
+# text = Mary's sister wouldn't have gone if she'd known that the meeting, which was scheduled for 3 p.m. on Friday, had been cancelled; nobody told her.
+# sent_id = 30
+1-2	Mary's	_	_	_	_	_	_	_	start_char=1783|end_char=1789
+1	Mary	_	_	_	_	0	_	_	start_char=1783|end_char=1787
+2	's	_	_	_	_	1	_	_	start_char=1787|end_char=1789
+3	sister	_	_	_	_	2	_	_	start_char=1790|end_char=1796
+4-5	wouldn't	_	_	_	_	_	_	_	start_char=1797|end_char=1805
+4	would	_	_	_	_	3	_	_	start_char=1797|end_char=1802
+5	n't	_	_	_	_	4	_	_	start_char=1802|end_char=1805
+6	have	_	_	_	_	5	_	_	start_char=1806|end_char=1810
+7	gone	_	_	_	_	6	_	_	start_char=1811|end_char=1815
+8	if	_	_	_	_	7	_	_	start_char=1816|end_char=1818
+9-10	she'd	_	_	_	_	_	_	_	start_char=1819|end_char=1824
+9	she	_	_	_	_	8	_	_	start_char=1819|end_char=1822
+10	'd	_	_	_	_	9	_	_	start_char=1822|end_char=1824
+11	known	_	_	_	_	10	_	_	start_char=1825|end_char=1830
+12	that	_	_	_	_	11	_	_	start_char=1831|end_char=1835
+13	the	_	_	_	_	12	_	_	start_char=1836|end_char=1839
+14	meeting	_	_	_	_	13	_	_	SpaceAfter=No|start_char=1840|end_char=1847
+15	,	_	_	_	_	14	_	_	start_char=1847|end_char=1848
+16	which	_	_	_	_	15	_	_	start_char=1849|end_char=1854
+17	was	_	_	_	_	16	_	_	start_char=1855|end_char=1858
+18	scheduled	_	_	_	_	17	_	_	start_char=1859|end_char=1868
+19	for	_	_	_	_	18	_	_	start_char=1869|end_char=1872
+20	3	_	_	_	_	19	_	_	start_char=1873|end_char=1874
+21	p.m.	_	_	_	_	20	_	_	start_char=1875|end_char=1879
+22	on	_	_	_	_	21	_	_	start_char=1880|end_char=1882
+23	Friday	_	_	_	_	22	_	_	SpaceAfter=No|start_char=1883|end_char=1889
+24	,	_	_	_	_	23	_	_	start_char=1889|end_char=1890
+25	had	_	_	_	_	24	_	_	start_char=1891|end_char=1894
+26	been	_	_	_	_	25	_	_	start_char=1895|end_char=1899
+27	cancelled	_	_	_	_	26	_	_	SpaceAfter=No|start_char=1900|end_char=1909
+28	;	_	_	_	_	27	_	_	start_char=1909|end_char=1910
+29	nobody	_	_	_	_	28	_	_	start_char=1911|end_char=1917
+30	told	_	_	_	_	29	_	_	start_char=1918|end_char=1922
+31	her	_	_	_	_	30	_	_	SpaceAfter=No|start_char=1923|end_char=1926
+32	.	_	_	_	_	31	_	_	start_char=1926|end_char=1927
+
+# text = Wow... that's amazing!!
+# sent_id = 31
+1	Wow	_	_	_	_	0	_	_	SpaceAfter=No|start_char=1928|end_char=1931
+2	...	_	_	_	_	1	_	_	start_char=1931|end_char=1934
+3-4	that's	_	_	_	_	_	_	_	start_char=1935|end_char=1941
+3	that	_	_	_	_	2	_	_	start_char=1935|end_char=1939
+4	's	_	_	_	_	3	_	_	start_char=1939|end_char=1941
+5	amazing	_	_	_	_	4	_	_	SpaceAfter=No|start_char=1942|end_char=1949
+6	!!	_	_	_	_	5	_	_	SpacesAfter=\n\n|start_char=1949|end_char=1951
+
+# text = I don't think it's going to rain today, but we'll see.
+# sent_id = 32
+1	I	_	_	_	_	0	_	_	start_char=1953|end_char=1954
+2-3	don't	_	_	_	_	_	_	_	start_char=1955|end_char=1960
+2	do	_	_	_	_	1	_	_	start_char=1955|end_char=1957
+3	n't	_	_	_	_	2	_	_	start_char=1957|end_char=1960
+4	think	_	_	_	_	3	_	_	start_char=1961|end_char=1966
+5-6	it's	_	_	_	_	_	_	_	start_char=1967|end_char=1971
+5	it	_	_	_	_	4	_	_	start_char=1967|end_char=1969
+6	's	_	_	_	_	5	_	_	start_char=1969|end_char=1971
+7	going	_	_	_	_	6	_	_	start_char=1972|end_char=1977
+8	to	_	_	_	_	7	_	_	start_char=1978|end_char=1980
+9	rain	_	_	_	_	8	_	_	start_char=1981|end_char=1985
+10	today	_	_	_	_	9	_	_	SpaceAfter=No|start_char=1986|end_char=1991
+11	,	_	_	_	_	10	_	_	start_char=1991|end_char=1992
+12	but	_	_	_	_	11	_	_	start_char=1993|end_char=1996
+13-14	we'll	_	_	_	_	_	_	_	start_char=1997|end_char=2002
+13	we	_	_	_	_	12	_	_	start_char=1997|end_char=1999
+14	'll	_	_	_	_	13	_	_	start_char=1999|end_char=2002
+15	see	_	_	_	_	14	_	_	SpaceAfter=No|start_char=2003|end_char=2006
+16	.	_	_	_	_	15	_	_	start_char=2006|end_char=2007
+
+# text = Can't you hear the thunder?
+# sent_id = 33
+1-2	Can't	_	_	_	_	_	_	_	start_char=2008|end_char=2013
+1	Ca	_	_	_	_	0	_	_	start_char=2008|end_char=2010
+2	n't	_	_	_	_	1	_	_	start_char=2010|end_char=2013
+3	you	_	_	_	_	2	_	_	start_char=2014|end_char=2017
+4	hear	_	_	_	_	3	_	_	start_char=2018|end_char=2022
+5	the	_	_	_	_	4	_	_	start_char=2023|end_char=2026
+6	thunder	_	_	_	_	5	_	_	SpaceAfter=No|start_char=2027|end_char=2034
+7	?	_	_	_	_	6	_	_	SpaceAfter=No|start_char=2034|end_char=2035
+
+# text = I don't think it's going to rain today, but we'll see.
+# sent_id = 34
+1	I	_	_	_	_	0	_	_	start_char=2035|end_char=2036
+2-3	don't	_	_	_	_	_	_	_	start_char=2037|end_char=2042
+2	do	_	_	_	_	1	_	_	start_char=2037|end_char=2039
+3	n't	_	_	_	_	2	_	_	start_char=2039|end_char=2042
+4	think	_	_	_	_	3	_	_	start_char=2043|end_char=2048
+5-6	it's	_	_	_	_	_	_	_	start_char=2049|end_char=2053
+5	it	_	_	_	_	4	_	_	start_char=2049|end_char=2051
+6	's	_	_	_	_	5	_	_	start_char=2051|end_char=2053
+7	going	_	_	_	_	6	_	_	start_char=2054|end_char=2059
+8	to	_	_	_	_	7	_	_	start_char=2060|end_char=2062
+9	rain	_	_	_	_	8	_	_	start_char=2063|end_char=2067
+10	today	_	_	_	_	9	_	_	SpaceAfter=No|start_char=2068|end_char=2073
+11	,	_	_	_	_	10	_	_	start_char=2073|end_char=2074
+12	but	_	_	_	_	11	_	_	start_char=2075|end_char=2078
+13-14	we'll	_	_	_	_	_	_	_	start_char=2079|end_char=2084
+13	we	_	_	_	_	12	_	_	start_char=2079|end_char=2081
+14	'll	_	_	_	_	13	_	_	start_char=2081|end_char=2084
+15	see	_	_	_	_	14	_	_	SpaceAfter=No|start_char=2085|end_char=2088
+16	.	_	_	_	_	15	_	_	start_char=2088|end_char=2089
+
+# text = Can't you hear the thunder?
+# sent_id = 35
+1-2	Can't	_	_	_	_	_	_	_	start_char=2090|end_char=2095
+1	Ca	_	_	_	_	0	_	_	start_char=2090|end_char=2092
+2	n't	_	_	_	_	1	_	_	start_char=2092|end_char=2095
+3	you	_	_	_	_	2	_	_	start_char=2096|end_char=2099
+4	hear	_	_	_	_	3	_	_	start_char=2100|end_char=2104
+5	the	_	_	_	_	4	_	_	start_char=2105|end_char=2108
+6	thunder	_	_	_	_	5	_	_	SpaceAfter=No|start_char=2109|end_char=2116
+7	?	_	_	_	_	6	_	_	SpacesAfter=\n\n|start_char=2116|end_char=2117
+
+# text = Dr. Smith moved to the U.S. in Jan. 1999 and paid $4.50 for a cup of coffee at 7:30 a.m.Dr. Smith moved to the U.S. in Jan. 1999 and paid $4.50 for a cup of coffee at 7:30 a.m.Dr. Smith moved to the U.S. in Jan. 1999 and paid $4.50 for a cup of coffee at 7:30 a.m.
+# sent_id = 36
+1	Dr.	_	_	_	_	0	_	_	start_char=2119|end_char=2122
+2	Smith	_	_	_	_	1	_	_	start_char=2123|end_char=2128
+3	moved	_	_	_	_	2	_	_	start_char=2129|end_char=2134
+4	to	_	_	_	_	3	_	_	start_char=2135|end_char=2137
+5	the	_	_	_	_	4	_	_	start_char=2138|end_char=2141
+6	U.S.	_	_	_	_	5	_	_	start_char=2142|end_char=2146
+7	in	_	_	_	_	6	_	_	start_char=2147|end_char=2149
+8	Jan.	_	_	_	_	7	_	_	start_char=2150|end_char=2154
+9	1999	_	_	_	_	8	_	_	start_char=2155|end_char=2159
+10	and	_	_	_	_	9	_	_	start_char=2160|end_char=2163
+11	paid	_	_	_	_	10	_	_	start_char=2164|end_char=2168
+12	$	_	_	_	_	11	_	_	SpaceAfter=No|start_char=2169|end_char=2170
+13	4.50	_	_	_	_	12	_	_	start_char=2170|end_char=2174
+14	for	_	_	_	_	13	_	_	start_char=2175|end_char=2178
+15	a	_	_	_	_	14	_	_	start_char=2179|end_char=2180
+16	cup	_	_	_	_	15	_	_	start_char=2181|end_char=2184
+17	of	_	_	_	_	16	_	_	start_char=2185|end_char=2187
+18	coffee	_	_	_	_	17	_	_	start_char=2188|end_char=2194
+19	at	_	_	_	_	18	_	_	start_char=2195|end_char=2197
+20	7:30	_	_	_	_	19	_	_	start_char=2198|end_char=2202
+21	a.m.	_	_	_	_	20	_	_	SpaceAfter=No|start_char=2203|end_char=2207
+22	Dr.	_	_	_	_	21	_	_	start_char=2207|end_char=2210
+23	Smith	_	_	_	_	22	_	_	start_char=2211|end_char=2216
+24	moved	_	_	_	_	23	_	_	start_char=2217|end_char=2222
+25	to	_	_	_	_	24	_	_	start_char=2223|end_char=2225
+26	the	_	_	_	_	25	_	_	start_char=2226|end_char=2229
+27	U.S.	_	_	_	_	26	_	_	start_char=2230|end_char=2234
+28	in	_	_	_	_	27	_	_	start_char=2235|end_char=2237
+29	Jan.	_	_	_	_	28	_	_	start_char=2238|end_char=2242
+30	1999	_	_	_	_	29	_	_	start_char=2243|end_char=2247
+31	and	_	_	_	_	30	_	_	start_char=2248|end_char=2251
+32	paid	_	_	_	_	31	_	_	start_char=2252|end_char=2256
+33	$	_	_	_	_	32	_	_	SpaceAfter=No|start_char=2257|end_char=2258
+34	4.50	_	_	_	_	33	_	_	start_char=2258|end_char=2262
+35	for	_	_	_	_	34	_	_	start_char=2263|end_char=2266
+36	a	_	_	_	_	35	_	_	start_char=2267|end_char=2268
+37	cup	_	_	_	_	36	_	_	start_char=2269|end_char=2272
+38	of	_	_	_	_	37	_	_	start_char=2273|end_char=2275
+39	coffee	_	_	_	_	38	_	_	start_char=2276|end_char=2282
+40	at	_	_	_	_	39	_	_	start_char=2283|end_char=2285
+41	7:30	_	_	_	_	40	_	_	start_char=2286|end_char=2290
+42	a.m.	_	_	_	_	41	_	_	SpaceAfter=No|start_char=2291|end_char=2295
+43	Dr.	_	_	_	_	42	_	_	start_char=2295|end_char=2298
+44	Smith	_	_	_	_	43	_	_	start_char=2299|end_char=2304
+45	moved	_	_	_	_	44	_	_	start_char=2305|end_char=2310
+46	to	_	_	_	_	45	_	_	start_char=2311|end_char=2313
+47	the	_	_	_	_	46	_	_	start_char=2314|end_char=2317
+48	U.S.	_	_	_	_	47	_	_	start_char=2318|end_char=2322
+49	in	_	_	_	_	48	_	_	start_char=2323|end_char=2325
+50	Jan.	_	_	_	_	49	_	_	start_char=2326|end_char=2330
+51	1999	_	_	_	_	50	_	_	start_char=2331|end_char=2335
+52	and	_	_	_	_	51	_	_	start_char=2336|end_char=2339
+53	paid	_	_	_	_	52	_	_	start_char=2340|end_char=2344
+54	$	_	_	_	_	53	_	_	SpaceAfter=No|start_char=2345|end_char=2346
+55	4.50	_	_	_	_	54	_	_	start_char=2346|end_char=2350
+56	for	_	_	_	_	55	_	_	start_char=2351|end_char=2354
+57	a	_	_	_	_	56	_	_	start_char=2355|end_char=2356
+58	cup	_	_	_	_	57	_	_	start_char=2357|end_char=2360
+59	of	_	_	_	_	58	_	_	start_char=2361|end_char=2363
+60	coffee	_	_	_	_	59	_	_	start_char=2364|end_char=2370
+61	at	_	_	_	_	60	_	_	start_char=2371|end_char=2373
+62	7:30	_	_	_	_	61	_	_	start_char=2374|end_char=2378
+63	a.m	_	_	_	_	62	_	_	SpaceAfter=No|start_char=2379|end_char=2382
+64	.	_	_	_	_	63	_	_	SpacesAfter=\n\n|start_char=2382|end_char=2383
+
+# text = "Where are you going?" she asked.
+# sent_id = 37
+1	"	_	_	_	_	0	_	_	SpaceAfter=No|start_char=2385|end_char=2386
+2	Where	_	_	_	_	1	_	_	start_char=2386|end_char=2391
+3	are	_	_	_	_	2	_	_	start_char=2392|end_char=2395
+4	you	_	_	_	_	3	_	_	start_char=2396|end_char=2399
+5	going	_	_	_	_	4	_	_	SpaceAfter=No|start_char=2400|end_char=2405
+6	?	_	_	_	_	5	_	_	SpaceAfter=No|start_char=2405|end_char=2406
+7	"	_	_	_	_	6	_	_	start_char=2406|end_char=2407
+8	she	_	_	_	_	7	_	_	start_char=2408|end_char=2411
+9	asked	_	_	_	_	8	_	_	SpaceAfter=No|start_char=2412|end_char=2417
+10	.	_	_	_	_	9	_	_	start_char=2417|end_char=2418
+
+# text = The children's toys (all 23 of them) were scattered across the room!
+# sent_id = 38
+1	The	_	_	_	_	0	_	_	start_char=2419|end_char=2422
+2-3	children's	_	_	_	_	_	_	_	start_char=2423|end_char=2433
+2	children	_	_	_	_	1	_	_	start_char=2423|end_char=2431
+3	's	_	_	_	_	2	_	_	start_char=2431|end_char=2433
+4	toys	_	_	_	_	3	_	_	start_char=2434|end_char=2438
+5	(	_	_	_	_	4	_	_	SpaceAfter=No|start_char=2439|end_char=2440
+6	all	_	_	_	_	5	_	_	start_char=2440|end_char=2443
+7	23	_	_	_	_	6	_	_	start_char=2444|end_char=2446
+8	of	_	_	_	_	7	_	_	start_char=2447|end_char=2449
+9	them	_	_	_	_	8	_	_	SpaceAfter=No|start_char=2450|end_char=2454
+10	)	_	_	_	_	9	_	_	start_char=2454|end_char=2455
+11	were	_	_	_	_	10	_	_	start_char=2456|end_char=2460
+12	scattered	_	_	_	_	11	_	_	start_char=2461|end_char=2470
+13	across	_	_	_	_	12	_	_	start_char=2471|end_char=2477
+14	the	_	_	_	_	13	_	_	start_char=2478|end_char=2481
+15	room	_	_	_	_	14	_	_	SpaceAfter=No|start_char=2482|end_char=2486
+16	!	_	_	_	_	15	_	_	SpacesAfter=\n\n|start_char=2486|end_char=2487
+
+# text = The well-known author, who had written e-mails to info@example.com, visited https://www.example.org/about yesterday.
+# sent_id = 39
+1	The	_	_	_	_	0	_	_	start_char=2489|end_char=2492
+2	well	_	_	_	_	1	_	_	SpaceAfter=No|start_char=2493|end_char=2497
+3	-	_	_	_	_	2	_	_	SpaceAfter=No|start_char=2497|end_char=2498
+4	known	_	_	_	_	3	_	_	start_char=2498|end_char=2503
+5	author	_	_	_	_	4	_	_	SpaceAfter=No|start_char=2504|end_char=2510
+6	,	_	_	_	_	5	_	_	start_char=2510|end_char=2511
+7	who	_	_	_	_	6	_	_	start_char=2512|end_char=2515
+8	had	_	_	_	_	7	_	_	start_char=2516|end_char=2519
+9	written	_	_	_	_	8	_	_	start_char=2520|end_char=2527
+10	e-mails	_	_	_	_	9	_	_	start_char=2528|end_char=2535
+11	to	_	_	_	_	10	_	_	start_char=2536|end_char=2538
+12	info@example.com	_	_	_	_	11	_	_	SpaceAfter=No|start_char=2539|end_char=2555
+13	,	_	_	_	_	12	_	_	start_char=2555|end_char=2556
+14	visited	_	_	_	_	13	_	_	start_char=2557|end_char=2564
+15	https://www.example.org/about	_	_	_	_	14	_	_	start_char=2565|end_char=2594
+16	yesterday	_	_	_	_	15	_	_	SpaceAfter=No|start_char=2595|end_char=2604
+17	.	_	_	_	_	16	_	_	SpaceAfter=No|start_char=2604|end_char=2605
+
+# text = The well-known author, who had written e-mails to info@example.com, visited https://www.example.org/about yesterday.
+# sent_id = 40
+1	The	_	_	_	_	0	_	_	start_char=2605|end_char=2608
+2	well	_	_	_	_	1	_	_	SpaceAfter=No|start_char=2609|end_char=2613
+3	-	_	_	_	_	2	_	_	SpaceAfter=No|start_char=2613|end_char=2614
+4	known	_	_	_	_	3	_	_	start_char=2614|end_char=2619
+5	author	_	_	_	_	4	_	_	SpaceAfter=No|start_char=2620|end_char=2626
+6	,	_	_	_	_	5	_	_	start_char=2626|end_char=2627
+7	who	_	_	_	_	6	_	_	start_char=2628|end_char=2631
+8	had	_	_	_	_	7	_	_	start_char=2632|end_char=2635
+9	written	_	_	_	_	8	_	_	start_char=2636|end_char=2643
+10	e-mails	_	_	_	_	9	_	_	start_char=2644|end_char=2651
+11	to	_	_	_	_	10	_	_	start_char=2652|end_char=2654
+12	info@example.com	_	_	_	_	11	_	_	SpaceAfter=No|start_char=2655|end_char=2671
+13	,	_	_	_	_	12	_	_	start_char=2671|end_char=2672
+14	visited	_	_	_	_	13	_	_	start_char=2673|end_char=2680
+15	https://www.example.org/about	_	_	_	_	14	_	_	start_char=2681|end_char=2710
+16	yesterday	_	_	_	_	15	_	_	SpaceAfter=No|start_char=2711|end_char=2720
+17	.	_	_	_	_	16	_	_	SpacesAfter=\n\n|start_char=2720|end_char=2721
+
+# text = Mary's sister wouldn't have gone if she'd known that the meeting, which was scheduled for 3 p.m. on Friday, had been cancelled; nobody told her.
+# sent_id = 41
+1-2	Mary's	_	_	_	_	_	_	_	start_char=2723|end_char=2729
+1	Mary	_	_	_	_	0	_	_	start_char=2723|end_char=2727
+2	's	_	_	_	_	1	_	_	start_char=2727|end_char=2729
+3	sister	_	_	_	_	2	_	_	start_char=2730|end_char=2736
+4-5	wouldn't	_	_	_	_	_	_	_	start_char=2737|end_char=2745
+4	would	_	_	_	_	3	_	_	start_char=2737|end_char=2742
+5	n't	_	_	_	_	4	_	_	start_char=2742|end_char=2745
+6	have	_	_	_	_	5	_	_	start_char=2746|end_char=2750
+7	gone	_	_	_	_	6	_	_	start_char=2751|end_char=2755
+8	if	_	_	_	_	7	_	_	start_char=2756|end_char=2758
+9-10	she'd	_	_	_	_	_	_	_	start_char=2759|end_char=2764
+9	she	_	_	_	_	8	_	_	start_char=2759|end_char=2762
+10	'd	_	_	_	_	9	_	_	start_char=2762|end_char=2764
+11	known	_	_	_	_	10	_	_	start_char=2765|end_char=2770
+12	that	_	_	_	_	11	_	_	start_char=2771|end_char=2775
+13	the	_	_	_	_	12	_	_	start_char=2776|end_char=2779
+14	meeting	_	_	_	_	13	_	_	SpaceAfter=No|start_char=2780|end_char=2787
+15	,	_	_	_	_	14	_	_	start_char=2787|end_char=2788
+16	which	_	_	_	_	15	_	_	start_char=2789|end_char=2794
+17	was	_	_	_	_	16	_	_	start_char=2795|end_char=2798
+18	scheduled	_	_	_	_	17	_	_	start_char=2799|end_char=2808
+19	for	_	_	_	_	18	_	_	start_char=2809|end_char=2812
+20	3	_	_	_	_	19	_	_	start_char=2813|end_char=2814
+21	p.m.	_	_	_	_	20	_	_	start_char=2815|end_char=2819
+22	on	_	_	_	_	21	_	_	start_char=2820|end_char=2822
+23	Friday	_	_	_	_	22	_	_	SpaceAfter=No|start_char=2823|end_char=2829
+24	,	_	_	_	_	23	_	_	start_char=2829|end_char=2830
+25	had	_	_	_	_	24	_	_	start_char=2831|end_char=2834
+26	been	_	_	_	_	25	_	_	start_char=2835|end_char=2839
+27	cancelled	_	_	_	_	26	_	_	SpaceAfter=No|start_char=2840|end_char=2849
+28	;	_	_	_	_	27	_	_	start_char=2849|end_char=2850
+29	nobody	_	_	_	_	28	_	_	start_char=2851|end_char=2857
+30	told	_	_	_	_	29	_	_	start_char=2858|end_char=2862
+31	her	_	_	_	_	30	_	_	SpaceAfter=No|start_char=2863|end_char=2866
+32	.	_	_	_	_	31	_	_	SpaceAfter=No|start_char=2866|end_char=2867
+
+# text = Mary's sister wouldn't have gone if she'd known that the meeting, which was scheduled for 3 p.m. on Friday, had been cancelled; nobody told her.
+# sent_id = 42
+1-2	Mary's	_	_	_	_	_	_	_	start_char=2867|end_char=2873
+1	Mary	_	_	_	_	0	_	_	start_char=2867|end_char=2871
+2	's	_	_	_	_	1	_	_	start_char=2871|end_char=2873
+3	sister	_	_	_	_	2	_	_	start_char=2874|end_char=2880
+4-5	wouldn't	_	_	_	_	_	_	_	start_char=2881|end_char=2889
+4	would	_	_	_	_	3	_	_	start_char=2881|end_char=2886
+5	n't	_	_	_	_	4	_	_	start_char=2886|end_char=2889
+6	have	_	_	_	_	5	_	_	start_char=2890|end_char=2894
+7	gone	_	_	_	_	6	_	_	start_char=2895|end_char=2899
+8	if	_	_	_	_	7	_	_	start_char=2900|end_char=2902
+9-10	she'd	_	_	_	_	_	_	_	start_char=2903|end_char=2908
+9	she	_	_	_	_	8	_	_	start_char=2903|end_char=2906
+10	'd	_	_	_	_	9	_	_	start_char=2906|end_char=2908
+11	known	_	_	_	_	10	_	_	start_char=2909|end_char=2914
+12	that	_	_	_	_	11	_	_	start_char=2915|end_char=2919
+13	the	_	_	_	_	12	_	_	start_char=2920|end_char=2923
+14	meeting	_	_	_	_	13	_	_	SpaceAfter=No|start_char=2924|end_char=2931
+15	,	_	_	_	_	14	_	_	start_char=2931|end_char=2932
+16	which	_	_	_	_	15	_	_	start_char=2933|end_char=2938
+17	was	_	_	_	_	16	_	_	start_char=2939|end_char=2942
+18	scheduled	_	_	_	_	17	_	_	start_char=2943|end_char=2952
+19	for	_	_	_	_	18	_	_	start_char=2953|end_char=2956
+20	3	_	_	_	_	19	_	_	start_char=2957|end_char=2958
+21	p.m.	_	_	_	_	20	_	_	start_char=2959|end_char=2963
+22	on	_	_	_	_	21	_	_	start_char=2964|end_char=2966
+23	Friday	_	_	_	_	22	_	_	SpaceAfter=No|start_char=2967|end_char=2973
+24	,	_	_	_	_	23	_	_	start_char=2973|end_char=2974
+25	had	_	_	_	_	24	_	_	start_char=2975|end_char=2978
+26	been	_	_	_	_	25	_	_	start_char=2979|end_char=2983
+27	cancelled	_	_	_	_	26	_	_	SpaceAfter=No|start_char=2984|end_char=2993
+28	;	_	_	_	_	27	_	_	start_char=2993|end_char=2994
+29	nobody	_	_	_	_	28	_	_	start_char=2995|end_char=3001
+30	told	_	_	_	_	29	_	_	start_char=3002|end_char=3006
+31	her	_	_	_	_	30	_	_	SpaceAfter=No|start_char=3007|end_char=3010
+32	.	_	_	_	_	31	_	_	SpaceAfter=No|start_char=3010|end_char=3011
+
+# text = Mary's sister wouldn't have gone if she'd known that the meeting, which was scheduled for 3 p.m. on Friday, had been cancelled; nobody told her.
+# sent_id = 43
+1-2	Mary's	_	_	_	_	_	_	_	start_char=3011|end_char=3017
+1	Mary	_	_	_	_	0	_	_	start_char=3011|end_char=3015
+2	's	_	_	_	_	1	_	_	start_char=3015|end_char=3017
+3	sister	_	_	_	_	2	_	_	start_char=3018|end_char=3024
+4-5	wouldn't	_	_	_	_	_	_	_	start_char=3025|end_char=3033
+4	would	_	_	_	_	3	_	_	start_char=3025|end_char=3030
+5	n't	_	_	_	_	4	_	_	start_char=3030|end_char=3033
+6	have	_	_	_	_	5	_	_	start_char=3034|end_char=3038
+7	gone	_	_	_	_	6	_	_	start_char=3039|end_char=3043
+8	if	_	_	_	_	7	_	_	start_char=3044|end_char=3046
+9-10	she'd	_	_	_	_	_	_	_	start_char=3047|end_char=3052
+9	she	_	_	_	_	8	_	_	start_char=3047|end_char=3050
+10	'd	_	_	_	_	9	_	_	start_char=3050|end_char=3052
+11	known	_	_	_	_	10	_	_	start_char=3053|end_char=3058
+12	that	_	_	_	_	11	_	_	start_char=3059|end_char=3063
+13	the	_	_	_	_	12	_	_	start_char=3064|end_char=3067
+14	meeting	_	_	_	_	13	_	_	SpaceAfter=No|start_char=3068|end_char=3075
+15	,	_	_	_	_	14	_	_	start_char=3075|end_char=3076
+16	which	_	_	_	_	15	_	_	start_char=3077|end_char=3082
+17	was	_	_	_	_	16	_	_	start_char=3083|end_char=3086
+18	scheduled	_	_	_	_	17	_	_	start_char=3087|end_char=3096
+19	for	_	_	_	_	18	_	_	start_char=3097|end_char=3100
+20	3	_	_	_	_	19	_	_	start_char=3101|end_char=3102
+21	p.m.	_	_	_	_	20	_	_	start_char=3103|end_char=3107
+22	on	_	_	_	_	21	_	_	start_char=3108|end_char=3110
+23	Friday	_	_	_	_	22	_	_	SpaceAfter=No|start_char=3111|end_char=3117
+24	,	_	_	_	_	23	_	_	start_char=3117|end_char=3118
+25	had	_	_	_	_	24	_	_	start_char=3119|end_char=3122
+26	been	_	_	_	_	25	_	_	start_char=3123|end_char=3127
+27	cancelled	_	_	_	_	26	_	_	SpaceAfter=No|start_char=3128|end_char=3137
+28	;	_	_	_	_	27	_	_	start_char=3137|end_char=3138
+29	nobody	_	_	_	_	28	_	_	start_char=3139|end_char=3145
+30	told	_	_	_	_	29	_	_	start_char=3146|end_char=3150
+31	her	_	_	_	_	30	_	_	SpaceAfter=No|start_char=3151|end_char=3154
+32	.	_	_	_	_	31	_	_	SpacesAfter=\n\n|start_char=3154|end_char=3155
+
+# text = Wow... that's amazing!!
+# sent_id = 44
+1	Wow	_	_	_	_	0	_	_	SpaceAfter=No|start_char=3157|end_char=3160
+2	...	_	_	_	_	1	_	_	start_char=3160|end_char=3163
+3-4	that's	_	_	_	_	_	_	_	start_char=3164|end_char=3170
+3	that	_	_	_	_	2	_	_	start_char=3164|end_char=3168
+4	's	_	_	_	_	3	_	_	start_char=3168|end_char=3170
+5	amazing	_	_	_	_	4	_	_	SpaceAfter=No|start_char=3171|end_char=3178
+6	!!	_	_	_	_	5	_	_	SpacesAfter=\n\n|start_char=3178|end_char=3180
+
+# text = Barack Obama was born in Hawaii.
+# sent_id = 45
+1	Barack	_	_	_	_	0	_	_	start_char=3182|end_char=3188
+2	Obama	_	_	_	_	1	_	_	start_char=3189|end_char=3194
+3	was	_	_	_	_	2	_	_	start_char=3195|end_char=3198
+4	born	_	_	_	_	3	_	_	start_char=3199|end_char=3203
+5	in	_	_	_	_	4	_	_	start_char=3204|end_char=3206
+6	Hawaii	_	_	_	_	5	_	_	SpaceAfter=No|start_char=3207|end_char=3213
+7	.	_	_	_	_	6	_	_	start_char=3213|end_char=3214
+
+# text = He was elected president in 2008.
+# sent_id = 46
+1	He	_	_	_	_	0	_	_	start_char=3215|end_char=3217
+2	was	_	_	_	_	1	_	_	start_char=3218|end_char=3221
+3	elected	_	_	_	_	2	_	_	start_char=3222|end_char=3229
+4	president	_	_	_	_	3	_	_	start_char=3230|end_char=3239
+5	in	_	_	_	_	4	_	_	start_char=3240|end_char=3242
+6	2008	_	_	_	_	5	_	_	SpaceAfter=No|start_char=3243|end_char=3247
+7	.	_	_	_	_	6	_	_	SpaceAfter=No|start_char=3247|end_char=3248
+
+# text = Barack Obama was born in Hawaii.
+# sent_id = 47
+1	Barack	_	_	_	_	0	_	_	start_char=3248|end_char=3254
+2	Obama	_	_	_	_	1	_	_	start_char=3255|end_char=3260
+3	was	_	_	_	_	2	_	_	start_char=3261|end_char=3264
+4	born	_	_	_	_	3	_	_	start_char=3265|end_char=3269
+5	in	_	_	_	_	4	_	_	start_char=3270|end_char=3272
+6	Hawaii	_	_	_	_	5	_	_	SpaceAfter=No|start_char=3273|end_char=3279
+7	.	_	_	_	_	6	_	_	start_char=3279|end_char=3280
+
+# text = He was elected president in 2008.
+# sent_id = 48
+1	He	_	_	_	_	0	_	_	start_char=3281|end_char=3283
+2	was	_	_	_	_	1	_	_	start_char=3284|end_char=3287
+3	elected	_	_	_	_	2	_	_	start_char=3288|end_char=3295
+4	president	_	_	_	_	3	_	_	start_char=3296|end_char=3305
+5	in	_	_	_	_	4	_	_	start_char=3306|end_char=3308
+6	2008	_	_	_	_	5	_	_	SpaceAfter=No|start_char=3309|end_char=3313
+7	.	_	_	_	_	6	_	_	SpacesAfter=\n\n|start_char=3313|end_char=3314
+
+# text = I don't think it's going to rain today, but we'll see.
+# sent_id = 49
+1	I	_	_	_	_	0	_	_	start_char=3316|end_char=3317
+2-3	don't	_	_	_	_	_	_	_	start_char=3318|end_char=3323
+2	do	_	_	_	_	1	_	_	start_char=3318|end_char=3320
+3	n't	_	_	_	_	2	_	_	start_char=3320|end_char=3323
+4	think	_	_	_	_	3	_	_	start_char=3324|end_char=3329
+5-6	it's	_	_	_	_	_	_	_	start_char=3330|end_char=3334
+5	it	_	_	_	_	4	_	_	start_char=3330|end_char=3332
+6	's	_	_	_	_	5	_	_	start_char=3332|end_char=3334
+7	going	_	_	_	_	6	_	_	start_char=3335|end_char=3340
+8	to	_	_	_	_	7	_	_	start_char=3341|end_char=3343
+9	rain	_	_	_	_	8	_	_	start_char=3344|end_char=3348
+10	today	_	_	_	_	9	_	_	SpaceAfter=No|start_char=3349|end_char=3354
+11	,	_	_	_	_	10	_	_	start_char=3354|end_char=3355
+12	but	_	_	_	_	11	_	_	start_char=3356|end_char=3359
+13-14	we'll	_	_	_	_	_	_	_	start_char=3360|end_char=3365
+13	we	_	_	_	_	12	_	_	start_char=3360|end_char=3362
+14	'll	_	_	_	_	13	_	_	start_char=3362|end_char=3365
+15	see	_	_	_	_	14	_	_	SpaceAfter=No|start_char=3366|end_char=3369
+16	.	_	_	_	_	15	_	_	start_char=3369|end_char=3370
+
+# text = Can't you hear the thunder?
+# sent_id = 50
+1-2	Can't	_	_	_	_	_	_	_	start_char=3371|end_char=3376
+1	Ca	_	_	_	_	0	_	_	start_char=3371|end_char=3373
+2	n't	_	_	_	_	1	_	_	start_char=3373|end_char=3376
+3	you	_	_	_	_	2	_	_	start_char=3377|end_char=3380
+4	hear	_	_	_	_	3	_	_	start_char=3381|end_char=3385
+5	the	_	_	_	_	4	_	_	start_char=3386|end_char=3389
+6	thunder	_	_	_	_	5	_	_	SpaceAfter=No|start_char=3390|end_char=3397
+7	?	_	_	_	_	6	_	_	SpaceAfter=No|start_char=3397|end_char=3398
+
+# text = I don't think it's going to rain today, but we'll see.
+# sent_id = 51
+1	I	_	_	_	_	0	_	_	start_char=3398|end_char=3399
+2-3	don't	_	_	_	_	_	_	_	start_char=3400|end_char=3405
+2	do	_	_	_	_	1	_	_	start_char=3400|end_char=3402
+3	n't	_	_	_	_	2	_	_	start_char=3402|end_char=3405
+4	think	_	_	_	_	3	_	_	start_char=3406|end_char=3411
+5-6	it's	_	_	_	_	_	_	_	start_char=3412|end_char=3416
+5	it	_	_	_	_	4	_	_	start_char=3412|end_char=3414
+6	's	_	_	_	_	5	_	_	start_char=3414|end_char=3416
+7	going	_	_	_	_	6	_	_	start_char=3417|end_char=3422
+8	to	_	_	_	_	7	_	_	start_char=3423|end_char=3425
+9	rain	_	_	_	_	8	_	_	start_char=3426|end_char=3430
+10	today	_	_	_	_	9	_	_	SpaceAfter=No|start_char=3431|end_char=3436
+11	,	_	_	_	_	10	_	_	start_char=3436|end_char=3437
+12	but	_	_	_	_	11	_	_	start_char=3438|end_char=3441
+13-14	we'll	_	_	_	_	_	_	_	start_char=3442|end_char=3447
+13	we	_	_	_	_	12	_	_	start_char=3442|end_char=3444
+14	'll	_	_	_	_	13	_	_	start_char=3444|end_char=3447
+15	see	_	_	_	_	14	_	_	SpaceAfter=No|start_char=3448|end_char=3451
+16	.	_	_	_	_	15	_	_	start_char=3451|end_char=3452
+
+# text = Can't you hear the thunder?
+# sent_id = 52
+1-2	Can't	_	_	_	_	_	_	_	start_char=3453|end_char=3458
+1	Ca	_	_	_	_	0	_	_	start_char=3453|end_char=3455
+2	n't	_	_	_	_	1	_	_	start_char=3455|end_char=3458
+3	you	_	_	_	_	2	_	_	start_char=3459|end_char=3462
+4	hear	_	_	_	_	3	_	_	start_char=3463|end_char=3467
+5	the	_	_	_	_	4	_	_	start_char=3468|end_char=3471
+6	thunder	_	_	_	_	5	_	_	SpaceAfter=No|start_char=3472|end_char=3479
+7	?	_	_	_	_	6	_	_	SpaceAfter=No|start_char=3479|end_char=3480
+
+# text = I don't think it's going to rain today, but we'll see.
+# sent_id = 53
+1	I	_	_	_	_	0	_	_	start_char=3480|end_char=3481
+2-3	don't	_	_	_	_	_	_	_	start_char=3482|end_char=3487
+2	do	_	_	_	_	1	_	_	start_char=3482|end_char=3484
+3	n't	_	_	_	_	2	_	_	start_char=3484|end_char=3487
+4	think	_	_	_	_	3	_	_	start_char=3488|end_char=3493
+5-6	it's	_	_	_	_	_	_	_	start_char=3494|end_char=3498
+5	it	_	_	_	_	4	_	_	start_char=3494|end_char=3496
+6	's	_	_	_	_	5	_	_	start_char=3496|end_char=3498
+7	going	_	_	_	_	6	_	_	start_char=3499|end_char=3504
+8	to	_	_	_	_	7	_	_	start_char=3505|end_char=3507
+9	rain	_	_	_	_	8	_	_	start_char=3508|end_char=3512
+10	today	_	_	_	_	9	_	_	SpaceAfter=No|start_char=3513|end_char=3518
+11	,	_	_	_	_	10	_	_	start_char=3518|end_char=3519
+12	but	_	_	_	_	11	_	_	start_char=3520|end_char=3523
+13-14	we'll	_	_	_	_	_	_	_	start_char=3524|end_char=3529
+13	we	_	_	_	_	12	_	_	start_char=3524|end_char=3526
+14	'll	_	_	_	_	13	_	_	start_char=3526|end_char=3529
+15	see	_	_	_	_	14	_	_	SpaceAfter=No|start_char=3530|end_char=3533
+16	.	_	_	_	_	15	_	_	start_char=3533|end_char=3534
+
+# text = Can't you hear the thunder?
+# sent_id = 54
+1-2	Can't	_	_	_	_	_	_	_	start_char=3535|end_char=3540
+1	Ca	_	_	_	_	0	_	_	start_char=3535|end_char=3537
+2	n't	_	_	_	_	1	_	_	start_char=3537|end_char=3540
+3	you	_	_	_	_	2	_	_	start_char=3541|end_char=3544
+4	hear	_	_	_	_	3	_	_	start_char=3545|end_char=3549
+5	the	_	_	_	_	4	_	_	start_char=3550|end_char=3553
+6	thunder	_	_	_	_	5	_	_	SpaceAfter=No|start_char=3554|end_char=3561
+7	?	_	_	_	_	6	_	_	SpacesAfter=\n\n|start_char=3561|end_char=3562
+
+# text = Dr. Smith moved to the U.S. in Jan. 1999 and paid $4.50 for a cup of coffee at 7:30 a.m.
+# sent_id = 55
+1	Dr.	_	_	_	_	0	_	_	start_char=3564|end_char=3567
+2	Smith	_	_	_	_	1	_	_	start_char=3568|end_char=3573
+3	moved	_	_	_	_	2	_	_	start_char=3574|end_char=3579
+4	to	_	_	_	_	3	_	_	start_char=3580|end_char=3582
+5	the	_	_	_	_	4	_	_	start_char=3583|end_char=3586
+6	U.S.	_	_	_	_	5	_	_	start_char=3587|end_char=3591
+7	in	_	_	_	_	6	_	_	start_char=3592|end_char=3594
+8	Jan.	_	_	_	_	7	_	_	start_char=3595|end_char=3599
+9	1999	_	_	_	_	8	_	_	start_char=3600|end_char=3604
+10	and	_	_	_	_	9	_	_	start_char=3605|end_char=3608
+11	paid	_	_	_	_	10	_	_	start_char=3609|end_char=3613
+12	$	_	_	_	_	11	_	_	SpaceAfter=No|start_char=3614|end_char=3615
+13	4.50	_	_	_	_	12	_	_	start_char=3615|end_char=3619
+14	for	_	_	_	_	13	_	_	start_char=3620|end_char=3623
+15	a	_	_	_	_	14	_	_	start_char=3624|end_char=3625
+16	cup	_	_	_	_	15	_	_	start_char=3626|end_char=3629
+17	of	_	_	_	_	16	_	_	start_char=3630|end_char=3632
+18	coffee	_	_	_	_	17	_	_	start_char=3633|end_char=3639
+19	at	_	_	_	_	18	_	_	start_char=3640|end_char=3642
+20	7:30	_	_	_	_	19	_	_	start_char=3643|end_char=3647
+21	a.m	_	_	_	_	20	_	_	SpaceAfter=No|start_char=3648|end_char=3651
+22	.	_	_	_	_	21	_	_	SpacesAfter=\n\n|start_char=3651|end_char=3652
+
+# text = "Where are you going?" she asked.
+# sent_id = 56
+1	"	_	_	_	_	0	_	_	SpaceAfter=No|start_char=3654|end_char=3655
+2	Where	_	_	_	_	1	_	_	start_char=3655|end_char=3660
+3	are	_	_	_	_	2	_	_	start_char=3661|end_char=3664
+4	you	_	_	_	_	3	_	_	start_char=3665|end_char=3668
+5	going	_	_	_	_	4	_	_	SpaceAfter=No|start_char=3669|end_char=3674
+6	?	_	_	_	_	5	_	_	SpaceAfter=No|start_char=3674|end_char=3675
+7	"	_	_	_	_	6	_	_	start_char=3675|end_char=3676
+8	she	_	_	_	_	7	_	_	start_char=3677|end_char=3680
+9	asked	_	_	_	_	8	_	_	SpaceAfter=No|start_char=3681|end_char=3686
+10	.	_	_	_	_	9	_	_	start_char=3686|end_char=3687
+
+# text = The children's toys (all 23 of them) were scattered across the room!
+# sent_id = 57
+1	The	_	_	_	_	0	_	_	start_char=3688|end_char=3691
+2-3	children's	_	_	_	_	_	_	_	start_char=3692|end_char=3702
+2	children	_	_	_	_	1	_	_	start_char=3692|end_char=3700
+3	's	_	_	_	_	2	_	_	start_char=3700|end_char=3702
+4	toys	_	_	_	_	3	_	_	start_char=3703|end_char=3707
+5	(	_	_	_	_	4	_	_	SpaceAfter=No|start_char=3708|end_char=3709
+6	all	_	_	_	_	5	_	_	start_char=3709|end_char=3712
+7	23	_	_	_	_	6	_	_	start_char=3713|end_char=3715
+8	of	_	_	_	_	7	_	_	start_char=3716|end_char=3718
+9	them	_	_	_	_	8	_	_	SpaceAfter=No|start_char=3719|end_char=3723
+10	)	_	_	_	_	9	_	_	start_char=3723|end_char=3724
+11	were	_	_	_	_	10	_	_	start_char=3725|end_char=3729
+12	scattered	_	_	_	_	11	_	_	start_char=3730|end_char=3739
+13	across	_	_	_	_	12	_	_	start_char=3740|end_char=3746
+14	the	_	_	_	_	13	_	_	start_char=3747|end_char=3750
+15	room	_	_	_	_	14	_	_	SpaceAfter=No|start_char=3751|end_char=3755
+16	!	_	_	_	_	15	_	_	SpaceAfter=No|start_char=3755|end_char=3756
+
+# text = "Where are you going?" she asked.
+# sent_id = 58
+1	"	_	_	_	_	0	_	_	SpaceAfter=No|start_char=3756|end_char=3757
+2	Where	_	_	_	_	1	_	_	start_char=3757|end_char=3762
+3	are	_	_	_	_	2	_	_	start_char=3763|end_char=3766
+4	you	_	_	_	_	3	_	_	start_char=3767|end_char=3770
+5	going	_	_	_	_	4	_	_	SpaceAfter=No|start_char=3771|end_char=3776
+6	?	_	_	_	_	5	_	_	SpaceAfter=No|start_char=3776|end_char=3777
+7	"	_	_	_	_	6	_	_	start_char=3777|end_char=3778
+8	she	_	_	_	_	7	_	_	start_char=3779|end_char=3782
+9	asked	_	_	_	_	8	_	_	SpaceAfter=No|start_char=3783|end_char=3788
+10	.	_	_	_	_	9	_	_	start_char=3788|end_char=3789
+
+# text = The children's toys (all 23 of them) were scattered across the room!
+# sent_id = 59
+1	The	_	_	_	_	0	_	_	start_char=3790|end_char=3793
+2-3	children's	_	_	_	_	_	_	_	start_char=3794|end_char=3804
+2	children	_	_	_	_	1	_	_	start_char=3794|end_char=3802
+3	's	_	_	_	_	2	_	_	start_char=3802|end_char=3804
+4	toys	_	_	_	_	3	_	_	start_char=3805|end_char=3809
+5	(	_	_	_	_	4	_	_	SpaceAfter=No|start_char=3810|end_char=3811
+6	all	_	_	_	_	5	_	_	start_char=3811|end_char=3814
+7	23	_	_	_	_	6	_	_	start_char=3815|end_char=3817
+8	of	_	_	_	_	7	_	_	start_char=3818|end_char=3820
+9	them	_	_	_	_	8	_	_	SpaceAfter=No|start_char=3821|end_char=3825
+10	)	_	_	_	_	9	_	_	start_char=3825|end_char=3826
+11	were	_	_	_	_	10	_	_	start_char=3827|end_char=3831
+12	scattered	_	_	_	_	11	_	_	start_char=3832|end_char=3841
+13	across	_	_	_	_	12	_	_	start_char=3842|end_char=3848
+14	the	_	_	_	_	13	_	_	start_char=3849|end_char=3852
+15	room	_	_	_	_	14	_	_	SpaceAfter=No|start_char=3853|end_char=3857
+16	!	_	_	_	_	15	_	_	SpacesAfter=\n\n|start_char=3857|end_char=3858
+
+# text = The well-known author, who had written e-mails to info@example.com, visited https://www.example.org/about yesterday.
+# sent_id = 60
+1	The	_	_	_	_	0	_	_	start_char=3860|end_char=3863
+2	well	_	_	_	_	1	_	_	SpaceAfter=No|start_char=3864|end_char=3868
+3	-	_	_	_	_	2	_	_	SpaceAfter=No|start_char=3868|end_char=3869
+4	known	_	_	_	_	3	_	_	start_char=3869|end_char=3874
+5	author	_	_	_	_	4	_	_	SpaceAfter=No|start_char=3875|end_char=3881
+6	,	_	_	_	_	5	_	_	start_char=3881|end_char=3882
+7	who	_	_	_	_	6	_	_	start_char=3883|end_char=3886
+8	had	_	_	_	_	7	_	_	start_char=3887|end_char=3890
+9	written	_	_	_	_	8	_	_	start_char=3891|end_char=3898
+10	e-mails	_	_	_	_	9	_	_	start_char=3899|end_char=3906
+11	to	_	_	_	_	10	_	_	start_char=3907|end_char=3909
+12	info@example.com	_	_	_	_	11	_	_	SpaceAfter=No|start_char=3910|end_char=3926
+13	,	_	_	_	_	12	_	_	start_char=3926|end_char=3927
+14	visited	_	_	_	_	13	_	_	start_char=3928|end_char=3935
+15	https://www.example.org/about	_	_	_	_	14	_	_	start_char=3936|end_char=3965
+16	yesterday	_	_	_	_	15	_	_	SpaceAfter=No|start_char=3966|end_char=3975
+17	.	_	_	_	_	16	_	_	SpaceAfter=No|start_char=3975|end_char=3976
+
+# text = The well-known author, who had written e-mails to info@example.com, visited https://www.example.org/about yesterday.
+# sent_id = 61
+1	The	_	_	_	_	0	_	_	start_char=3976|end_char=3979
+2	well	_	_	_	_	1	_	_	SpaceAfter=No|start_char=3980|end_char=3984
+3	-	_	_	_	_	2	_	_	SpaceAfter=No|start_char=3984|end_char=3985
+4	known	_	_	_	_	3	_	_	start_char=3985|end_char=3990
+5	author	_	_	_	_	4	_	_	SpaceAfter=No|start_char=3991|end_char=3997
+6	,	_	_	_	_	5	_	_	start_char=3997|end_char=3998
+7	who	_	_	_	_	6	_	_	start_char=3999|end_char=4002
+8	had	_	_	_	_	7	_	_	start_char=4003|end_char=4006
+9	written	_	_	_	_	8	_	_	start_char=4007|end_char=4014
+10	e-mails	_	_	_	_	9	_	_	start_char=4015|end_char=4022
+11	to	_	_	_	_	10	_	_	start_char=4023|end_char=4025
+12	info@example.com	_	_	_	_	11	_	_	SpaceAfter=No|start_char=4026|end_char=4042
+13	,	_	_	_	_	12	_	_	start_char=4042|end_char=4043
+14	visited	_	_	_	_	13	_	_	start_char=4044|end_char=4051
+15	https://www.example.org/about	_	_	_	_	14	_	_	start_char=4052|end_char=4081
+16	yesterday	_	_	_	_	15	_	_	SpaceAfter=No|start_char=4082|end_char=4091
+17	.	_	_	_	_	16	_	_	SpaceAfter=No|start_char=4091|end_char=4092
+
+# text = The well-known author, who had written e-mails to info@example.com, visited https://www.example.org/about yesterday.
+# sent_id = 62
+1	The	_	_	_	_	0	_	_	start_char=4092|end_char=4095
+2	well	_	_	_	_	1	_	_	SpaceAfter=No|start_char=4096|end_char=4100
+3	-	_	_	_	_	2	_	_	SpaceAfter=No|start_char=4100|end_char=4101
+4	known	_	_	_	_	3	_	_	start_char=4101|end_char=4106
+5	author	_	_	_	_	4	_	_	SpaceAfter=No|start_char=4107|end_char=4113
+6	,	_	_	_	_	5	_	_	start_char=4113|end_char=4114
+7	who	_	_	_	_	6	_	_	start_char=4115|end_char=4118
+8	had	_	_	_	_	7	_	_	start_char=4119|end_char=4122
+9	written	_	_	_	_	8	_	_	start_char=4123|end_char=4130
+10	e-mails	_	_	_	_	9	_	_	start_char=4131|end_char=4138
+11	to	_	_	_	_	10	_	_	start_char=4139|end_char=4141
+12	info@example.com	_	_	_	_	11	_	_	SpaceAfter=No|start_char=4142|end_char=4158
+13	,	_	_	_	_	12	_	_	start_char=4158|end_char=4159
+14	visited	_	_	_	_	13	_	_	start_char=4160|end_char=4167
+15	https://www.example.org/about	_	_	_	_	14	_	_	start_char=4168|end_char=4197
+16	yesterday	_	_	_	_	15	_	_	SpaceAfter=No|start_char=4198|end_char=4207
+17	.	_	_	_	_	16	_	_	SpacesAfter=\n\n|start_char=4207|end_char=4208
+
+# text = Mary's sister wouldn't have gone if she'd known that the meeting, which was scheduled for 3 p.m. on Friday, had been cancelled; nobody told her.
+# sent_id = 63
+1-2	Mary's	_	_	_	_	_	_	_	start_char=4210|end_char=4216
+1	Mary	_	_	_	_	0	_	_	start_char=4210|end_char=4214
+2	's	_	_	_	_	1	_	_	start_char=4214|end_char=4216
+3	sister	_	_	_	_	2	_	_	start_char=4217|end_char=4223
+4-5	wouldn't	_	_	_	_	_	_	_	start_char=4224|end_char=4232
+4	would	_	_	_	_	3	_	_	start_char=4224|end_char=4229
+5	n't	_	_	_	_	4	_	_	start_char=4229|end_char=4232
+6	have	_	_	_	_	5	_	_	start_char=4233|end_char=4237
+7	gone	_	_	_	_	6	_	_	start_char=4238|end_char=4242
+8	if	_	_	_	_	7	_	_	start_char=4243|end_char=4245
+9-10	she'd	_	_	_	_	_	_	_	start_char=4246|end_char=4251
+9	she	_	_	_	_	8	_	_	start_char=4246|end_char=4249
+10	'd	_	_	_	_	9	_	_	start_char=4249|end_char=4251
+11	known	_	_	_	_	10	_	_	start_char=4252|end_char=4257
+12	that	_	_	_	_	11	_	_	start_char=4258|end_char=4262
+13	the	_	_	_	_	12	_	_	start_char=4263|end_char=4266
+14	meeting	_	_	_	_	13	_	_	SpaceAfter=No|start_char=4267|end_char=4274
+15	,	_	_	_	_	14	_	_	start_char=4274|end_char=4275
+16	which	_	_	_	_	15	_	_	start_char=4276|end_char=4281
+17	was	_	_	_	_	16	_	_	start_char=4282|end_char=4285
+18	scheduled	_	_	_	_	17	_	_	start_char=4286|end_char=4295
+19	for	_	_	_	_	18	_	_	start_char=4296|end_char=4299
+20	3	_	_	_	_	19	_	_	start_char=4300|end_char=4301
+21	p.m.	_	_	_	_	20	_	_	start_char=4302|end_char=4306
+22	on	_	_	_	_	21	_	_	start_char=4307|end_char=4309
+23	Friday	_	_	_	_	22	_	_	SpaceAfter=No|start_char=4310|end_char=4316
+24	,	_	_	_	_	23	_	_	start_char=4316|end_char=4317
+25	had	_	_	_	_	24	_	_	start_char=4318|end_char=4321
+26	been	_	_	_	_	25	_	_	start_char=4322|end_char=4326
+27	cancelled	_	_	_	_	26	_	_	SpaceAfter=No|start_char=4327|end_char=4336
+28	;	_	_	_	_	27	_	_	start_char=4336|end_char=4337
+29	nobody	_	_	_	_	28	_	_	start_char=4338|end_char=4344
+30	told	_	_	_	_	29	_	_	start_char=4345|end_char=4349
+31	her	_	_	_	_	30	_	_	SpaceAfter=No|start_char=4350|end_char=4353
+32	.	_	_	_	_	31	_	_	SpacesAfter=\n\n|start_char=4353|end_char=4354
+
+# text = Wow... that's amazing!!Wow... that's amazing!!
+# sent_id = 64
+1	Wow	_	_	_	_	0	_	_	SpaceAfter=No|start_char=4356|end_char=4359
+2	...	_	_	_	_	1	_	_	start_char=4359|end_char=4362
+3-4	that's	_	_	_	_	_	_	_	start_char=4363|end_char=4369
+3	that	_	_	_	_	2	_	_	start_char=4363|end_char=4367
+4	's	_	_	_	_	3	_	_	start_char=4367|end_char=4369
+5	amazing	_	_	_	_	4	_	_	SpaceAfter=No|start_char=4370|end_char=4377
+6	!!Wow	_	_	_	_	5	_	_	SpaceAfter=No|start_char=4377|end_char=4382
+7	...	_	_	_	_	6	_	_	start_char=4382|end_char=4385
+8-9	that's	_	_	_	_	_	_	_	start_char=4386|end_char=4392
+8	that	_	_	_	_	7	_	_	start_char=4386|end_char=4390
+9	's	_	_	_	_	8	_	_	start_char=4390|end_char=4392
+10	amazing	_	_	_	_	9	_	_	SpaceAfter=No|start_char=4393|end_char=4400
+11	!!	_	_	_	_	10	_	_	SpacesAfter=\n\n|start_char=4400|end_char=4402
+
+# text = Barack Obama was born in Hawaii.
+# sent_id = 65
+1	Barack	_	_	_	_	0	_	_	start_char=4404|end_char=4410
+2	Obama	_	_	_	_	1	_	_	start_char=4411|end_char=4416
+3	was	_	_	_	_	2	_	_	start_char=4417|end_char=4420
+4	born	_	_	_	_	3	_	_	start_char=4421|end_char=4425
+5	in	_	_	_	_	4	_	_	start_char=4426|end_char=4428
+6	Hawaii	_	_	_	_	5	_	_	SpaceAfter=No|start_char=4429|end_char=4435
+7	.	_	_	_	_	6	_	_	start_char=4435|end_char=4436
+
+# text = He was elected president in 2008.
+# sent_id = 66
+1	He	_	_	_	_	0	_	_	start_char=4437|end_char=4439
+2	was	_	_	_	_	1	_	_	start_char=4440|end_char=4443
+3	elected	_	_	_	_	2	_	_	start_char=4444|end_char=4451
+4	president	_	_	_	_	3	_	_	start_char=4452|end_char=4461
+5	in	_	_	_	_	4	_	_	start_char=4462|end_char=4464
+6	2008	_	_	_	_	5	_	_	SpaceAfter=No|start_char=4465|end_char=4469
+7	.	_	_	_	_	6	_	_	SpaceAfter=No|start_char=4469|end_char=4470
+
+# text = Barack Obama was born in Hawaii.
+# sent_id = 67
+1	Barack	_	_	_	_	0	_	_	start_char=4470|end_char=4476
+2	Obama	_	_	_	_	1	_	_	start_char=4477|end_char=4482
+3	was	_	_	_	_	2	_	_	start_char=4483|end_char=4486
+4	born	_	_	_	_	3	_	_	start_char=4487|end_char=4491
+5	in	_	_	_	_	4	_	_	start_char=4492|end_char=4494
+6	Hawaii	_	_	_	_	5	_	_	SpaceAfter=No|start_char=4495|end_char=4501
+7	.	_	_	_	_	6	_	_	start_char=4501|end_char=4502
+
+# text = He was elected president in 2008.
+# sent_id = 68
+1	He	_	_	_	_	0	_	_	start_char=4503|end_char=4505
+2	was	_	_	_	_	1	_	_	start_char=4506|end_char=4509
+3	elected	_	_	_	_	2	_	_	start_char=4510|end_char=4517
+4	president	_	_	_	_	3	_	_	start_char=4518|end_char=4527
+5	in	_	_	_	_	4	_	_	start_char=4528|end_char=4530
+6	2008	_	_	_	_	5	_	_	SpaceAfter=No|start_char=4531|end_char=4535
+7	.	_	_	_	_	6	_	_	SpaceAfter=No|start_char=4535|end_char=4536
+
+# text = Barack Obama was born in Hawaii.
+# sent_id = 69
+1	Barack	_	_	_	_	0	_	_	start_char=4536|end_char=4542
+2	Obama	_	_	_	_	1	_	_	start_char=4543|end_char=4548
+3	was	_	_	_	_	2	_	_	start_char=4549|end_char=4552
+4	born	_	_	_	_	3	_	_	start_char=4553|end_char=4557
+5	in	_	_	_	_	4	_	_	start_char=4558|end_char=4560
+6	Hawaii	_	_	_	_	5	_	_	SpaceAfter=No|start_char=4561|end_char=4567
+7	.	_	_	_	_	6	_	_	start_char=4567|end_char=4568
+
+# text = He was elected president in 2008.
+# sent_id = 70
+1	He	_	_	_	_	0	_	_	start_char=4569|end_char=4571
+2	was	_	_	_	_	1	_	_	start_char=4572|end_char=4575
+3	elected	_	_	_	_	2	_	_	start_char=4576|end_char=4583
+4	president	_	_	_	_	3	_	_	start_char=4584|end_char=4593
+5	in	_	_	_	_	4	_	_	start_char=4594|end_char=4596
+6	2008	_	_	_	_	5	_	_	SpaceAfter=No|start_char=4597|end_char=4601
+7	.	_	_	_	_	6	_	_	SpacesAfter=\n\n|start_char=4601|end_char=4602
+
+# text = I don't think it's going to rain today, but we'll see.
+# sent_id = 71
+1	I	_	_	_	_	0	_	_	start_char=4604|end_char=4605
+2-3	don't	_	_	_	_	_	_	_	start_char=4606|end_char=4611
+2	do	_	_	_	_	1	_	_	start_char=4606|end_char=4608
+3	n't	_	_	_	_	2	_	_	start_char=4608|end_char=4611
+4	think	_	_	_	_	3	_	_	start_char=4612|end_char=4617
+5-6	it's	_	_	_	_	_	_	_	start_char=4618|end_char=4622
+5	it	_	_	_	_	4	_	_	start_char=4618|end_char=4620
+6	's	_	_	_	_	5	_	_	start_char=4620|end_char=4622
+7	going	_	_	_	_	6	_	_	start_char=4623|end_char=4628
+8	to	_	_	_	_	7	_	_	start_char=4629|end_char=4631
+9	rain	_	_	_	_	8	_	_	start_char=4632|end_char=4636
+10	today	_	_	_	_	9	_	_	SpaceAfter=No|start_char=4637|end_char=4642
+11	,	_	_	_	_	10	_	_	start_char=4642|end_char=4643
+12	but	_	_	_	_	11	_	_	start_char=4644|end_char=4647
+13-14	we'll	_	_	_	_	_	_	_	start_char=4648|end_char=4653
+13	we	_	_	_	_	12	_	_	start_char=4648|end_char=4650
+14	'll	_	_	_	_	13	_	_	start_char=4650|end_char=4653
+15	see	_	_	_	_	14	_	_	SpaceAfter=No|start_char=4654|end_char=4657
+16	.	_	_	_	_	15	_	_	start_char=4657|end_char=4658
+
+# text = Can't you hear the thunder?
+# sent_id = 72
+1-2	Can't	_	_	_	_	_	_	_	start_char=4659|end_char=4664
+1	Ca	_	_	_	_	0	_	_	start_char=4659|end_char=4661
+2	n't	_	_	_	_	1	_	_	start_char=4661|end_char=4664
+3	you	_	_	_	_	2	_	_	start_char=4665|end_char=4668
+4	hear	_	_	_	_	3	_	_	start_char=4669|end_char=4673
+5	the	_	_	_	_	4	_	_	start_char=4674|end_char=4677
+6	thunder	_	_	_	_	5	_	_	SpaceAfter=No|start_char=4678|end_char=4685
+7	?	_	_	_	_	6	_	_	SpacesAfter=\n\n|start_char=4685|end_char=4686
+
+# text = Dr. Smith moved to the U.S. in Jan. 1999 and paid $4.50 for a cup of coffee at 7:30 a.m.Dr. Smith moved to the U.S. in Jan. 1999 and paid $4.50 for a cup of coffee at 7:30 a.m.
+# sent_id = 73
+1	Dr.	_	_	_	_	0	_	_	start_char=4688|end_char=4691
+2	Smith	_	_	_	_	1	_	_	start_char=4692|end_char=4697
+3	moved	_	_	_	_	2	_	_	start_char=4698|end_char=4703
+4	to	_	_	_	_	3	_	_	start_char=4704|end_char=4706
+5	the	_	_	_	_	4	_	_	start_char=4707|end_char=4710
+6	U.S.	_	_	_	_	5	_	_	start_char=4711|end_char=4715
+7	in	_	_	_	_	6	_	_	start_char=4716|end_char=4718
+8	Jan.	_	_	_	_	7	_	_	start_char=4719|end_char=4723
+9	1999	_	_	_	_	8	_	_	start_char=4724|end_char=4728
+10	and	_	_	_	_	9	_	_	start_char=4729|end_char=4732
+11	paid	_	_	_	_	10	_	_	start_char=4733|end_char=4737
+12	$	_	_	_	_	11	_	_	SpaceAfter=No|start_char=4738|end_char=4739
+13	4.50	_	_	_	_	12	_	_	start_char=4739|end_char=4743
+14	for	_	_	_	_	13	_	_	start_char=4744|end_char=4747
+15	a	_	_	_	_	14	_	_	start_char=4748|end_char=4749
+16	cup	_	_	_	_	15	_	_	start_char=4750|end_char=4753
+17	of	_	_	_	_	16	_	_	start_char=4754|end_char=4756
+18	coffee	_	_	_	_	17	_	_	start_char=4757|end_char=4763
+19	at	_	_	_	_	18	_	_	start_char=4764|end_char=4766
+20	7:30	_	_	_	_	19	_	_	start_char=4767|end_char=4771
+21	a.m.	_	_	_	_	20	_	_	SpaceAfter=No|start_char=4772|end_char=4776
+22	Dr.	_	_	_	_	21	_	_	start_char=4776|end_char=4779
+23	Smith	_	_	_	_	22	_	_	start_char=4780|end_char=4785
+24	moved	_	_	_	_	23	_	_	start_char=4786|end_char=4791
+25	to	_	_	_	_	24	_	_	start_char=4792|end_char=4794
+26	the	_	_	_	_	25	_	_	start_char=4795|end_char=4798
+27	U.S.	_	_	_	_	26	_	_	start_char=4799|end_char=4803
+28	in	_	_	_	_	27	_	_	start_char=4804|end_char=4806
+29	Jan.	_	_	_	_	28	_	_	start_char=4807|end_char=4811
+30	1999	_	_	_	_	29	_	_	start_char=4812|end_char=4816
+31	and	_	_	_	_	30	_	_	start_char=4817|end_char=4820
+32	paid	_	_	_	_	31	_	_	start_char=4821|end_char=4825
+33	$	_	_	_	_	32	_	_	SpaceAfter=No|start_char=4826|end_char=4827
+34	4.50	_	_	_	_	33	_	_	start_char=4827|end_char=4831
+35	for	_	_	_	_	34	_	_	start_char=4832|end_char=4835
+36	a	_	_	_	_	35	_	_	start_char=4836|end_char=4837
+37	cup	_	_	_	_	36	_	_	start_char=4838|end_char=4841
+38	of	_	_	_	_	37	_	_	start_char=4842|end_char=4844
+39	coffee	_	_	_	_	38	_	_	start_char=4845|end_char=4851
+40	at	_	_	_	_	39	_	_	start_char=4852|end_char=4854
+41	7:30	_	_	_	_	40	_	_	start_char=4855|end_char=4859
+42	a.m	_	_	_	_	41	_	_	SpaceAfter=No|start_char=4860|end_char=4863
+43	.	_	_	_	_	42	_	_	SpacesAfter=\n\n|start_char=4863|end_char=4864
+
+# text = "Where are you going?" she asked.
+# sent_id = 74
+1	"	_	_	_	_	0	_	_	SpaceAfter=No|start_char=4866|end_char=4867
+2	Where	_	_	_	_	1	_	_	start_char=4867|end_char=4872
+3	are	_	_	_	_	2	_	_	start_char=4873|end_char=4876
+4	you	_	_	_	_	3	_	_	start_char=4877|end_char=4880
+5	going	_	_	_	_	4	_	_	SpaceAfter=No|start_char=4881|end_char=4886
+6	?	_	_	_	_	5	_	_	SpaceAfter=No|start_char=4886|end_char=4887
+7	"	_	_	_	_	6	_	_	start_char=4887|end_char=4888
+8	she	_	_	_	_	7	_	_	start_char=4889|end_char=4892
+9	asked	_	_	_	_	8	_	_	SpaceAfter=No|start_char=4893|end_char=4898
+10	.	_	_	_	_	9	_	_	start_char=4898|end_char=4899
+
+# text = The children's toys (all 23 of them) were scattered across the room!
+# sent_id = 75
+1	The	_	_	_	_	0	_	_	start_char=4900|end_char=4903
+2-3	children's	_	_	_	_	_	_	_	start_char=4904|end_char=4914
+2	children	_	_	_	_	1	_	_	start_char=4904|end_char=4912
+3	's	_	_	_	_	2	_	_	start_char=4912|end_char=4914
+4	toys	_	_	_	_	3	_	_	start_char=4915|end_char=4919
+5	(	_	_	_	_	4	_	_	SpaceAfter=No|start_char=4920|end_char=4921
+6	all	_	_	_	_	5	_	_	start_char=4921|end_char=4924
+7	23	_	_	_	_	6	_	_	start_char=4925|end_char=4927
+8	of	_	_	_	_	7	_	_	start_char=4928|end_char=4930
+9	them	_	_	_	_	8	_	_	SpaceAfter=No|start_char=4931|end_char=4935
+10	)	_	_	_	_	9	_	_	start_char=4935|end_char=4936
+11	were	_	_	_	_	10	_	_	start_char=4937|end_char=4941
+12	scattered	_	_	_	_	11	_	_	start_char=4942|end_char=4951
+13	across	_	_	_	_	12	_	_	start_char=4952|end_char=4958
+14	the	_	_	_	_	13	_	_	start_char=4959|end_char=4962
+15	room	_	_	_	_	14	_	_	SpaceAfter=No|start_char=4963|end_char=4967
+16	!	_	_	_	_	15	_	_	SpaceAfter=No|start_char=4967|end_char=4968
+
+# text = "Where are you going?" she asked.
+# sent_id = 76
+1	"	_	_	_	_	0	_	_	SpaceAfter=No|start_char=4968|end_char=4969
+2	Where	_	_	_	_	1	_	_	start_char=4969|end_char=4974
+3	are	_	_	_	_	2	_	_	start_char=4975|end_char=4978
+4	you	_	_	_	_	3	_	_	start_char=4979|end_char=4982
+5	going	_	_	_	_	4	_	_	SpaceAfter=No|start_char=4983|end_char=4988
+6	?	_	_	_	_	5	_	_	SpaceAfter=No|start_char=4988|end_char=4989
+7	"	_	_	_	_	6	_	_	start_char=4989|end_char=4990
+8	she	_	_	_	_	7	_	_	start_char=4991|end_char=4994
+9	asked	_	_	_	_	8	_	_	SpaceAfter=No|start_char=4995|end_char=5000
+10	.	_	_	_	_	9	_	_	start_char=5000|end_char=5001
+
+# text = The children's toys (all 23 of them) were scattered across the room!
+# sent_id = 77
+1	The	_	_	_	_	0	_	_	start_char=5002|end_char=5005
+2-3	children's	_	_	_	_	_	_	_	start_char=5006|end_char=5016
+2	children	_	_	_	_	1	_	_	start_char=5006|end_char=5014
+3	's	_	_	_	_	2	_	_	start_char=5014|end_char=5016
+4	toys	_	_	_	_	3	_	_	start_char=5017|end_char=5021
+5	(	_	_	_	_	4	_	_	SpaceAfter=No|start_char=5022|end_char=5023
+6	all	_	_	_	_	5	_	_	start_char=5023|end_char=5026
+7	23	_	_	_	_	6	_	_	start_char=5027|end_char=5029
+8	of	_	_	_	_	7	_	_	start_char=5030|end_char=5032
+9	them	_	_	_	_	8	_	_	SpaceAfter=No|start_char=5033|end_char=5037
+10	)	_	_	_	_	9	_	_	start_char=5037|end_char=5038
+11	were	_	_	_	_	10	_	_	start_char=5039|end_char=5043
+12	scattered	_	_	_	_	11	_	_	start_char=5044|end_char=5053
+13	across	_	_	_	_	12	_	_	start_char=5054|end_char=5060
+14	the	_	_	_	_	13	_	_	start_char=5061|end_char=5064
+15	room	_	_	_	_	14	_	_	SpaceAfter=No|start_char=5065|end_char=5069
+16	!	_	_	_	_	15	_	_	SpaceAfter=No|start_char=5069|end_char=5070
+
+# text = "Where are you going?" she asked.
+# sent_id = 78
+1	"	_	_	_	_	0	_	_	SpaceAfter=No|start_char=5070|end_char=5071
+2	Where	_	_	_	_	1	_	_	start_char=5071|end_char=5076
+3	are	_	_	_	_	2	_	_	start_char=5077|end_char=5080
+4	you	_	_	_	_	3	_	_	start_char=5081|end_char=5084
+5	going	_	_	_	_	4	_	_	SpaceAfter=No|start_char=5085|end_char=5090
+6	?	_	_	_	_	5	_	_	SpaceAfter=No|start_char=5090|end_char=5091
+7	"	_	_	_	_	6	_	_	start_char=5091|end_char=5092
+8	she	_	_	_	_	7	_	_	start_char=5093|end_char=5096
+9	asked	_	_	_	_	8	_	_	SpaceAfter=No|start_char=5097|end_char=5102
+10	.	_	_	_	_	9	_	_	start_char=5102|end_char=5103
+
+# text = The children's toys (all 23 of them) were scattered across the room!
+# sent_id = 79
+1	The	_	_	_	_	0	_	_	start_char=5104|end_char=5107
+2-3	children's	_	_	_	_	_	_	_	start_char=5108|end_char=5118
+2	children	_	_	_	_	1	_	_	start_char=5108|end_char=5116
+3	's	_	_	_	_	2	_	_	start_char=5116|end_char=5118
+4	toys	_	_	_	_	3	_	_	start_char=5119|end_char=5123
+5	(	_	_	_	_	4	_	_	SpaceAfter=No|start_char=5124|end_char=5125
+6	all	_	_	_	_	5	_	_	start_char=5125|end_char=5128
+7	23	_	_	_	_	6	_	_	start_char=5129|end_char=5131
+8	of	_	_	_	_	7	_	_	start_char=5132|end_char=5134
+9	them	_	_	_	_	8	_	_	SpaceAfter=No|start_char=5135|end_char=5139
+10	)	_	_	_	_	9	_	_	start_char=5139|end_char=5140
+11	were	_	_	_	_	10	_	_	start_char=5141|end_char=5145
+12	scattered	_	_	_	_	11	_	_	start_char=5146|end_char=5155
+13	across	_	_	_	_	12	_	_	start_char=5156|end_char=5162
+14	the	_	_	_	_	13	_	_	start_char=5163|end_char=5166
+15	room	_	_	_	_	14	_	_	SpaceAfter=No|start_char=5167|end_char=5171
+16	!	_	_	_	_	15	_	_	SpacesAfter=\n\n|start_char=5171|end_char=5172
+
+# text = The well-known author, who had written e-mails to info@example.com, visited https://www.example.org/about yesterday.
+# sent_id = 80
+1	The	_	_	_	_	0	_	_	start_char=5174|end_char=5177
+2	well	_	_	_	_	1	_	_	SpaceAfter=No|start_char=5178|end_char=5182
+3	-	_	_	_	_	2	_	_	SpaceAfter=No|start_char=5182|end_char=5183
+4	known	_	_	_	_	3	_	_	start_char=5183|end_char=5188
+5	author	_	_	_	_	4	_	_	SpaceAfter=No|start_char=5189|end_char=5195
+6	,	_	_	_	_	5	_	_	start_char=5195|end_char=5196
+7	who	_	_	_	_	6	_	_	start_char=5197|end_char=5200
+8	had	_	_	_	_	7	_	_	start_char=5201|end_char=5204
+9	written	_	_	_	_	8	_	_	start_char=5205|end_char=5212
+10	e-mails	_	_	_	_	9	_	_	start_char=5213|end_char=5220
+11	to	_	_	_	_	10	_	_	start_char=5221|end_char=5223
+12	info@example.com	_	_	_	_	11	_	_	SpaceAfter=No|start_char=5224|end_char=5240
+13	,	_	_	_	_	12	_	_	start_char=5240|end_char=5241
+14	visited	_	_	_	_	13	_	_	start_char=5242|end_char=5249
+15	https://www.example.org/about	_	_	_	_	14	_	_	start_char=5250|end_char=5279
+16	yesterday	_	_	_	_	15	_	_	SpaceAfter=No|start_char=5280|end_char=5289
+17	.	_	_	_	_	16	_	_	SpacesAfter=\n\n|start_char=5289|end_char=5290
+
+# text = Mary's sister wouldn't have gone if she'd known that the meeting, which was scheduled for 3 p.m. on Friday, had been cancelled; nobody told her.
+# sent_id = 81
+1-2	Mary's	_	_	_	_	_	_	_	start_char=5292|end_char=5298
+1	Mary	_	_	_	_	0	_	_	start_char=5292|end_char=5296
+2	's	_	_	_	_	1	_	_	start_char=5296|end_char=5298
+3	sister	_	_	_	_	2	_	_	start_char=5299|end_char=5305
+4-5	wouldn't	_	_	_	_	_	_	_	start_char=5306|end_char=5314
+4	would	_	_	_	_	3	_	_	start_char=5306|end_char=5311
+5	n't	_	_	_	_	4	_	_	start_char=5311|end_char=5314
+6	have	_	_	_	_	5	_	_	start_char=5315|end_char=5319
+7	gone	_	_	_	_	6	_	_	start_char=5320|end_char=5324
+8	if	_	_	_	_	7	_	_	start_char=5325|end_char=5327
+9-10	she'd	_	_	_	_	_	_	_	start_char=5328|end_char=5333
+9	she	_	_	_	_	8	_	_	start_char=5328|end_char=5331
+10	'd	_	_	_	_	9	_	_	start_char=5331|end_char=5333
+11	known	_	_	_	_	10	_	_	start_char=5334|end_char=5339
+12	that	_	_	_	_	11	_	_	start_char=5340|end_char=5344
+13	the	_	_	_	_	12	_	_	start_char=5345|end_char=5348
+14	meeting	_	_	_	_	13	_	_	SpaceAfter=No|start_char=5349|end_char=5356
+15	,	_	_	_	_	14	_	_	start_char=5356|end_char=5357
+16	which	_	_	_	_	15	_	_	start_char=5358|end_char=5363
+17	was	_	_	_	_	16	_	_	start_char=5364|end_char=5367
+18	scheduled	_	_	_	_	17	_	_	start_char=5368|end_char=5377
+19	for	_	_	_	_	18	_	_	start_char=5378|end_char=5381
+20	3	_	_	_	_	19	_	_	start_char=5382|end_char=5383
+21	p.m.	_	_	_	_	20	_	_	start_char=5384|end_char=5388
+22	on	_	_	_	_	21	_	_	start_char=5389|end_char=5391
+23	Friday	_	_	_	_	22	_	_	SpaceAfter=No|start_char=5392|end_char=5398
+24	,	_	_	_	_	23	_	_	start_char=5398|end_char=5399
+25	had	_	_	_	_	24	_	_	start_char=5400|end_char=5403
+26	been	_	_	_	_	25	_	_	start_char=5404|end_char=5408
+27	cancelled	_	_	_	_	26	_	_	SpaceAfter=No|start_char=5409|end_char=5418
+28	;	_	_	_	_	27	_	_	start_char=5418|end_char=5419
+29	nobody	_	_	_	_	28	_	_	start_char=5420|end_char=5426
+30	told	_	_	_	_	29	_	_	start_char=5427|end_char=5431
+31	her	_	_	_	_	30	_	_	SpaceAfter=No|start_char=5432|end_char=5435
+32	.	_	_	_	_	31	_	_	SpaceAfter=No|start_char=5435|end_char=5436
+
+# text = Mary's sister wouldn't have gone if she'd known that the meeting, which was scheduled for 3 p.m. on Friday, had been cancelled; nobody told her.
+# sent_id = 82
+1-2	Mary's	_	_	_	_	_	_	_	start_char=5436|end_char=5442
+1	Mary	_	_	_	_	0	_	_	start_char=5436|end_char=5440
+2	's	_	_	_	_	1	_	_	start_char=5440|end_char=5442
+3	sister	_	_	_	_	2	_	_	start_char=5443|end_char=5449
+4-5	wouldn't	_	_	_	_	_	_	_	start_char=5450|end_char=5458
+4	would	_	_	_	_	3	_	_	start_char=5450|end_char=5455
+5	n't	_	_	_	_	4	_	_	start_char=5455|end_char=5458
+6	have	_	_	_	_	5	_	_	start_char=5459|end_char=5463
+7	gone	_	_	_	_	6	_	_	start_char=5464|end_char=5468
+8	if	_	_	_	_	7	_	_	start_char=5469|end_char=5471
+9-10	she'd	_	_	_	_	_	_	_	start_char=5472|end_char=5477
+9	she	_	_	_	_	8	_	_	start_char=5472|end_char=5475
+10	'd	_	_	_	_	9	_	_	start_char=5475|end_char=5477
+11	known	_	_	_	_	10	_	_	start_char=5478|end_char=5483
+12	that	_	_	_	_	11	_	_	start_char=5484|end_char=5488
+13	the	_	_	_	_	12	_	_	start_char=5489|end_char=5492
+14	meeting	_	_	_	_	13	_	_	SpaceAfter=No|start_char=5493|end_char=5500
+15	,	_	_	_	_	14	_	_	start_char=5500|end_char=5501
+16	which	_	_	_	_	15	_	_	start_char=5502|end_char=5507
+17	was	_	_	_	_	16	_	_	start_char=5508|end_char=5511
+18	scheduled	_	_	_	_	17	_	_	start_char=5512|end_char=5521
+19	for	_	_	_	_	18	_	_	start_char=5522|end_char=5525
+20	3	_	_	_	_	19	_	_	start_char=5526|end_char=5527
+21	p.m.	_	_	_	_	20	_	_	start_char=5528|end_char=5532
+22	on	_	_	_	_	21	_	_	start_char=5533|end_char=5535
+23	Friday	_	_	_	_	22	_	_	SpaceAfter=No|start_char=5536|end_char=5542
+24	,	_	_	_	_	23	_	_	start_char=5542|end_char=5543
+25	had	_	_	_	_	24	_	_	start_char=5544|end_char=5547
+26	been	_	_	_	_	25	_	_	start_char=5548|end_char=5552
+27	cancelled	_	_	_	_	26	_	_	SpaceAfter=No|start_char=5553|end_char=5562
+28	;	_	_	_	_	27	_	_	start_char=5562|end_char=5563
+29	nobody	_	_	_	_	28	_	_	start_char=5564|end_char=5570
+30	told	_	_	_	_	29	_	_	start_char=5571|end_char=5575
+31	her	_	_	_	_	30	_	_	SpaceAfter=No|start_char=5576|end_char=5579
+32	.	_	_	_	_	31	_	_	SpacesAfter=\n\n|start_char=5579|end_char=5580
+
+# text = Wow... that's amazing!!Wow... that's amazing!!Wow... that's amazing!!
+# sent_id = 83
+1	Wow	_	_	_	_	0	_	_	SpaceAfter=No|start_char=5582|end_char=5585
+2	...	_	_	_	_	1	_	_	start_char=5585|end_char=5588
+3-4	that's	_	_	_	_	_	_	_	start_char=5589|end_char=5595
+3	that	_	_	_	_	2	_	_	start_char=5589|end_char=5593
+4	's	_	_	_	_	3	_	_	start_char=5593|end_char=5595
+5	amazing	_	_	_	_	4	_	_	SpaceAfter=No|start_char=5596|end_char=5603
+6	!!Wow	_	_	_	_	5	_	_	SpaceAfter=No|start_char=5603|end_char=5608
+7	...	_	_	_	_	6	_	_	start_char=5608|end_char=5611
+8-9	that's	_	_	_	_	_	_	_	start_char=5612|end_char=5618
+8	that	_	_	_	_	7	_	_	start_char=5612|end_char=5616
+9	's	_	_	_	_	8	_	_	start_char=5616|end_char=5618
+10	amazing	_	_	_	_	9	_	_	SpaceAfter=No|start_char=5619|end_char=5626
+11	!!Wow	_	_	_	_	10	_	_	SpaceAfter=No|start_char=5626|end_char=5631
+12	...	_	_	_	_	11	_	_	start_char=5631|end_char=5634
+13-14	that's	_	_	_	_	_	_	_	start_char=5635|end_char=5641
+13	that	_	_	_	_	12	_	_	start_char=5635|end_char=5639
+14	's	_	_	_	_	13	_	_	start_char=5639|end_char=5641
+15	amazing	_	_	_	_	14	_	_	SpaceAfter=No|start_char=5642|end_char=5649
+16	!!	_	_	_	_	15	_	_	SpacesAfter=\n\n|start_char=5649|end_char=5651
+
+# text = Barack Obama was born in Hawaii.
+# sent_id = 84
+1	Barack	_	_	_	_	0	_	_	start_char=5653|end_char=5659
+2	Obama	_	_	_	_	1	_	_	start_char=5660|end_char=5665
+3	was	_	_	_	_	2	_	_	start_char=5666|end_char=5669
+4	born	_	_	_	_	3	_	_	start_char=5670|end_char=5674
+5	in	_	_	_	_	4	_	_	start_char=5675|end_char=5677
+6	Hawaii	_	_	_	_	5	_	_	SpaceAfter=No|start_char=5678|end_char=5684
+7	.	_	_	_	_	6	_	_	start_char=5684|end_char=5685
+
+# text = He was elected president in 2008.
+# sent_id = 85
+1	He	_	_	_	_	0	_	_	start_char=5686|end_char=5688
+2	was	_	_	_	_	1	_	_	start_char=5689|end_char=5692
+3	elected	_	_	_	_	2	_	_	start_char=5693|end_char=5700
+4	president	_	_	_	_	3	_	_	start_char=5701|end_char=5710
+5	in	_	_	_	_	4	_	_	start_char=5711|end_char=5713
+6	2008	_	_	_	_	5	_	_	SpaceAfter=No|start_char=5714|end_char=5718
+7	.	_	_	_	_	6	_	_	SpacesAfter=\n\n|start_char=5718|end_char=5719
+
+# text = I don't think it's going to rain today, but we'll see.
+# sent_id = 86
+1	I	_	_	_	_	0	_	_	start_char=5721|end_char=5722
+2-3	don't	_	_	_	_	_	_	_	start_char=5723|end_char=5728
+2	do	_	_	_	_	1	_	_	start_char=5723|end_char=5725
+3	n't	_	_	_	_	2	_	_	start_char=5725|end_char=5728
+4	think	_	_	_	_	3	_	_	start_char=5729|end_char=5734
+5-6	it's	_	_	_	_	_	_	_	start_char=5735|end_char=5739
+5	it	_	_	_	_	4	_	_	start_char=5735|end_char=5737
+6	's	_	_	_	_	5	_	_	start_char=5737|end_char=5739
+7	going	_	_	_	_	6	_	_	start_char=5740|end_char=5745
+8	to	_	_	_	_	7	_	_	start_char=5746|end_char=5748
+9	rain	_	_	_	_	8	_	_	start_char=5749|end_char=5753
+10	today	_	_	_	_	9	_	_	SpaceAfter=No|start_char=5754|end_char=5759
+11	,	_	_	_	_	10	_	_	start_char=5759|end_char=5760
+12	but	_	_	_	_	11	_	_	start_char=5761|end_char=5764
+13-14	we'll	_	_	_	_	_	_	_	start_char=5765|end_char=5770
+13	we	_	_	_	_	12	_	_	start_char=5765|end_char=5767
+14	'll	_	_	_	_	13	_	_	start_char=5767|end_char=5770
+15	see	_	_	_	_	14	_	_	SpaceAfter=No|start_char=5771|end_char=5774
+16	.	_	_	_	_	15	_	_	start_char=5774|end_char=5775
+
+# text = Can't you hear the thunder?
+# sent_id = 87
+1-2	Can't	_	_	_	_	_	_	_	start_char=5776|end_char=5781
+1	Ca	_	_	_	_	0	_	_	start_char=5776|end_char=5778
+2	n't	_	_	_	_	1	_	_	start_char=5778|end_char=5781
+3	you	_	_	_	_	2	_	_	start_char=5782|end_char=5785
+4	hear	_	_	_	_	3	_	_	start_char=5786|end_char=5790
+5	the	_	_	_	_	4	_	_	start_char=5791|end_char=5794
+6	thunder	_	_	_	_	5	_	_	SpaceAfter=No|start_char=5795|end_char=5802
+7	?	_	_	_	_	6	_	_	SpaceAfter=No|start_char=5802|end_char=5803
+
+# text = I don't think it's going to rain today, but we'll see.
+# sent_id = 88
+1	I	_	_	_	_	0	_	_	start_char=5803|end_char=5804
+2-3	don't	_	_	_	_	_	_	_	start_char=5805|end_char=5810
+2	do	_	_	_	_	1	_	_	start_char=5805|end_char=5807
+3	n't	_	_	_	_	2	_	_	start_char=5807|end_char=5810
+4	think	_	_	_	_	3	_	_	start_char=5811|end_char=5816
+5-6	it's	_	_	_	_	_	_	_	start_char=5817|end_char=5821
+5	it	_	_	_	_	4	_	_	start_char=5817|end_char=5819
+6	's	_	_	_	_	5	_	_	start_char=5819|end_char=5821
+7	going	_	_	_	_	6	_	_	start_char=5822|end_char=5827
+8	to	_	_	_	_	7	_	_	start_char=5828|end_char=5830
+9	rain	_	_	_	_	8	_	_	start_char=5831|end_char=5835
+10	today	_	_	_	_	9	_	_	SpaceAfter=No|start_char=5836|end_char=5841
+11	,	_	_	_	_	10	_	_	start_char=5841|end_char=5842
+12	but	_	_	_	_	11	_	_	start_char=5843|end_char=5846
+13-14	we'll	_	_	_	_	_	_	_	start_char=5847|end_char=5852
+13	we	_	_	_	_	12	_	_	start_char=5847|end_char=5849
+14	'll	_	_	_	_	13	_	_	start_char=5849|end_char=5852
+15	see	_	_	_	_	14	_	_	SpaceAfter=No|start_char=5853|end_char=5856
+16	.	_	_	_	_	15	_	_	start_char=5856|end_char=5857
+
+# text = Can't you hear the thunder?
+# sent_id = 89
+1-2	Can't	_	_	_	_	_	_	_	start_char=5858|end_char=5863
+1	Ca	_	_	_	_	0	_	_	start_char=5858|end_char=5860
+2	n't	_	_	_	_	1	_	_	start_char=5860|end_char=5863
+3	you	_	_	_	_	2	_	_	start_char=5864|end_char=5867
+4	hear	_	_	_	_	3	_	_	start_char=5868|end_char=5872
+5	the	_	_	_	_	4	_	_	start_char=5873|end_char=5876
+6	thunder	_	_	_	_	5	_	_	SpaceAfter=No|start_char=5877|end_char=5884
+7	?	_	_	_	_	6	_	_	SpacesAfter=\n\n|start_char=5884|end_char=5885
+
+# text = Dr. Smith moved to the U.S. in Jan. 1999 and paid $4.50 for a cup of coffee at 7:30 a.m.Dr. Smith moved to the U.S. in Jan. 1999 and paid $4.50 for a cup of coffee at 7:30 a.m.Dr. Smith moved to the U.S. in Jan. 1999 and paid $4.50 for a cup of coffee at 7:30 a.m.
+# sent_id = 90
+1	Dr.	_	_	_	_	0	_	_	start_char=5887|end_char=5890
+2	Smith	_	_	_	_	1	_	_	start_char=5891|end_char=5896
+3	moved	_	_	_	_	2	_	_	start_char=5897|end_char=5902
+4	to	_	_	_	_	3	_	_	start_char=5903|end_char=5905
+5	the	_	_	_	_	4	_	_	start_char=5906|end_char=5909
+6	U.S.	_	_	_	_	5	_	_	start_char=5910|end_char=5914
+7	in	_	_	_	_	6	_	_	start_char=5915|end_char=5917
+8	Jan.	_	_	_	_	7	_	_	start_char=5918|end_char=5922
+9	1999	_	_	_	_	8	_	_	start_char=5923|end_char=5927
+10	and	_	_	_	_	9	_	_	start_char=5928|end_char=5931
+11	paid	_	_	_	_	10	_	_	start_char=5932|end_char=5936
+12	$	_	_	_	_	11	_	_	SpaceAfter=No|start_char=5937|end_char=5938
+13	4.50	_	_	_	_	12	_	_	start_char=5938|end_char=5942
+14	for	_	_	_	_	13	_	_	start_char=5943|end_char=5946
+15	a	_	_	_	_	14	_	_	start_char=5947|end_char=5948
+16	cup	_	_	_	_	15	_	_	start_char=5949|end_char=5952
+17	of	_	_	_	_	16	_	_	start_char=5953|end_char=5955
+18	coffee	_	_	_	_	17	_	_	start_char=5956|end_char=5962
+19	at	_	_	_	_	18	_	_	start_char=5963|end_char=5965
+20	7:30	_	_	_	_	19	_	_	start_char=5966|end_char=5970
+21	a.m.	_	_	_	_	20	_	_	SpaceAfter=No|start_char=5971|end_char=5975
+22	Dr.	_	_	_	_	21	_	_	start_char=5975|end_char=5978
+23	Smith	_	_	_	_	22	_	_	start_char=5979|end_char=5984
+24	moved	_	_	_	_	23	_	_	start_char=5985|end_char=5990
+25	to	_	_	_	_	24	_	_	start_char=5991|end_char=5993
+26	the	_	_	_	_	25	_	_	start_char=5994|end_char=5997
+27	U.S.	_	_	_	_	26	_	_	start_char=5998|end_char=6002
+28	in	_	_	_	_	27	_	_	start_char=6003|end_char=6005
+29	Jan.	_	_	_	_	28	_	_	start_char=6006|end_char=6010
+30	1999	_	_	_	_	29	_	_	start_char=6011|end_char=6015
+31	and	_	_	_	_	30	_	_	start_char=6016|end_char=6019
+32	paid	_	_	_	_	31	_	_	start_char=6020|end_char=6024
+33	$	_	_	_	_	32	_	_	SpaceAfter=No|start_char=6025|end_char=6026
+34	4.50	_	_	_	_	33	_	_	start_char=6026|end_char=6030
+35	for	_	_	_	_	34	_	_	start_char=6031|end_char=6034
+36	a	_	_	_	_	35	_	_	start_char=6035|end_char=6036
+37	cup	_	_	_	_	36	_	_	start_char=6037|end_char=6040
+38	of	_	_	_	_	37	_	_	start_char=6041|end_char=6043
+39	coffee	_	_	_	_	38	_	_	start_char=6044|end_char=6050
+40	at	_	_	_	_	39	_	_	start_char=6051|end_char=6053
+41	7:30	_	_	_	_	40	_	_	start_char=6054|end_char=6058
+42	a.m.	_	_	_	_	41	_	_	SpaceAfter=No|start_char=6059|end_char=6063
+43	Dr.	_	_	_	_	42	_	_	start_char=6063|end_char=6066
+44	Smith	_	_	_	_	43	_	_	start_char=6067|end_char=6072
+45	moved	_	_	_	_	44	_	_	start_char=6073|end_char=6078
+46	to	_	_	_	_	45	_	_	start_char=6079|end_char=6081
+47	the	_	_	_	_	46	_	_	start_char=6082|end_char=6085
+48	U.S.	_	_	_	_	47	_	_	start_char=6086|end_char=6090
+49	in	_	_	_	_	48	_	_	start_char=6091|end_char=6093
+50	Jan.	_	_	_	_	49	_	_	start_char=6094|end_char=6098
+51	1999	_	_	_	_	50	_	_	start_char=6099|end_char=6103
+52	and	_	_	_	_	51	_	_	start_char=6104|end_char=6107
+53	paid	_	_	_	_	52	_	_	start_char=6108|end_char=6112
+54	$	_	_	_	_	53	_	_	SpaceAfter=No|start_char=6113|end_char=6114
+55	4.50	_	_	_	_	54	_	_	start_char=6114|end_char=6118
+56	for	_	_	_	_	55	_	_	start_char=6119|end_char=6122
+57	a	_	_	_	_	56	_	_	start_char=6123|end_char=6124
+58	cup	_	_	_	_	57	_	_	start_char=6125|end_char=6128
+59	of	_	_	_	_	58	_	_	start_char=6129|end_char=6131
+60	coffee	_	_	_	_	59	_	_	start_char=6132|end_char=6138
+61	at	_	_	_	_	60	_	_	start_char=6139|end_char=6141
+62	7:30	_	_	_	_	61	_	_	start_char=6142|end_char=6146
+63	a.m	_	_	_	_	62	_	_	SpaceAfter=No|start_char=6147|end_char=6150
+64	.	_	_	_	_	63	_	_	SpacesAfter=\n\n|start_char=6150|end_char=6151
+
+# text = "Where are you going?" she asked.
+# sent_id = 91
+1	"	_	_	_	_	0	_	_	SpaceAfter=No|start_char=6153|end_char=6154
+2	Where	_	_	_	_	1	_	_	start_char=6154|end_char=6159
+3	are	_	_	_	_	2	_	_	start_char=6160|end_char=6163
+4	you	_	_	_	_	3	_	_	start_char=6164|end_char=6167
+5	going	_	_	_	_	4	_	_	SpaceAfter=No|start_char=6168|end_char=6173
+6	?	_	_	_	_	5	_	_	SpaceAfter=No|start_char=6173|end_char=6174
+7	"	_	_	_	_	6	_	_	start_char=6174|end_char=6175
+8	she	_	_	_	_	7	_	_	start_char=6176|end_char=6179
+9	asked	_	_	_	_	8	_	_	SpaceAfter=No|start_char=6180|end_char=6185
+10	.	_	_	_	_	9	_	_	start_char=6185|end_char=6186
+
+# text = The children's toys (all 23 of them) were scattered across the room!
+# sent_id = 92
+1	The	_	_	_	_	0	_	_	start_char=6187|end_char=6190
+2-3	children's	_	_	_	_	_	_	_	start_char=6191|end_char=6201
+2	children	_	_	_	_	1	_	_	start_char=6191|end_char=6199
+3	's	_	_	_	_	2	_	_	start_char=6199|end_char=6201
+4	toys	_	_	_	_	3	_	_	start_char=6202|end_char=6206
+5	(	_	_	_	_	4	_	_	SpaceAfter=No|start_char=6207|end_char=6208
+6	all	_	_	_	_	5	_	_	start_char=6208|end_char=6211
+7	23	_	_	_	_	6	_	_	start_char=6212|end_char=6214
+8	of	_	_	_	_	7	_	_	start_char=6215|end_char=6217
+9	them	_	_	_	_	8	_	_	SpaceAfter=No|start_char=6218|end_char=6222
+10	)	_	_	_	_	9	_	_	start_char=6222|end_char=6223
+11	were	_	_	_	_	10	_	_	start_char=6224|end_char=6228
+12	scattered	_	_	_	_	11	_	_	start_char=6229|end_char=6238
+13	across	_	_	_	_	12	_	_	start_char=6239|end_char=6245
+14	the	_	_	_	_	13	_	_	start_char=6246|end_char=6249
+15	room	_	_	_	_	14	_	_	SpaceAfter=No|start_char=6250|end_char=6254
+16	!	_	_	_	_	15	_	_	SpacesAfter=\n\n|start_char=6254|end_char=6255
+
+# text = The well-known author, who had written e-mails to info@example.com, visited https://www.example.org/about yesterday.
+# sent_id = 93
+1	The	_	_	_	_	0	_	_	start_char=6257|end_char=6260
+2	well	_	_	_	_	1	_	_	SpaceAfter=No|start_char=6261|end_char=6265
+3	-	_	_	_	_	2	_	_	SpaceAfter=No|start_char=6265|end_char=6266
+4	known	_	_	_	_	3	_	_	start_char=6266|end_char=6271
+5	author	_	_	_	_	4	_	_	SpaceAfter=No|start_char=6272|end_char=6278
+6	,	_	_	_	_	5	_	_	start_char=6278|end_char=6279
+7	who	_	_	_	_	6	_	_	start_char=6280|end_char=6283
+8	had	_	_	_	_	7	_	_	start_char=6284|end_char=6287
+9	written	_	_	_	_	8	_	_	start_char=6288|end_char=6295
+10	e-mails	_	_	_	_	9	_	_	start_char=6296|end_char=6303
+11	to	_	_	_	_	10	_	_	start_char=6304|end_char=6306
+12	info@example.com	_	_	_	_	11	_	_	SpaceAfter=No|start_char=6307|end_char=6323
+13	,	_	_	_	_	12	_	_	start_char=6323|end_char=6324
+14	visited	_	_	_	_	13	_	_	start_char=6325|end_char=6332
+15	https://www.example.org/about	_	_	_	_	14	_	_	start_char=6333|end_char=6362
+16	yesterday	_	_	_	_	15	_	_	SpaceAfter=No|start_char=6363|end_char=6372
+17	.	_	_	_	_	16	_	_	SpaceAfter=No|start_char=6372|end_char=6373
+
+# text = The well-known author, who had written e-mails to info@example.com, visited https://www.example.org/about yesterday.
+# sent_id = 94
+1	The	_	_	_	_	0	_	_	start_char=6373|end_char=6376
+2	well	_	_	_	_	1	_	_	SpaceAfter=No|start_char=6377|end_char=6381
+3	-	_	_	_	_	2	_	_	SpaceAfter=No|start_char=6381|end_char=6382
+4	known	_	_	_	_	3	_	_	start_char=6382|end_char=6387
+5	author	_	_	_	_	4	_	_	SpaceAfter=No|start_char=6388|end_char=6394
+6	,	_	_	_	_	5	_	_	start_char=6394|end_char=6395
+7	who	_	_	_	_	6	_	_	start_char=6396|end_char=6399
+8	had	_	_	_	_	7	_	_	start_char=6400|end_char=6403
+9	written	_	_	_	_	8	_	_	start_char=6404|end_char=6411
+10	e-mails	_	_	_	_	9	_	_	start_char=6412|end_char=6419
+11	to	_	_	_	_	10	_	_	start_char=6420|end_char=6422
+12	info@example.com	_	_	_	_	11	_	_	SpaceAfter=No|start_char=6423|end_char=6439
+13	,	_	_	_	_	12	_	_	start_char=6439|end_char=6440
+14	visited	_	_	_	_	13	_	_	start_char=6441|end_char=6448
+15	https://www.example.org/about	_	_	_	_	14	_	_	start_char=6449|end_char=6478
+16	yesterday	_	_	_	_	15	_	_	SpaceAfter=No|start_char=6479|end_char=6488
+17	.	_	_	_	_	16	_	_	SpacesAfter=\n\n|start_char=6488|end_char=6489
+
+# text = Mary's sister wouldn't have gone if she'd known that the meeting, which was scheduled for 3 p.m. on Friday, had been cancelled; nobody told her.
+# sent_id = 95
+1-2	Mary's	_	_	_	_	_	_	_	start_char=6491|end_char=6497
+1	Mary	_	_	_	_	0	_	_	start_char=6491|end_char=6495
+2	's	_	_	_	_	1	_	_	start_char=6495|end_char=6497
+3	sister	_	_	_	_	2	_	_	start_char=6498|end_char=6504
+4-5	wouldn't	_	_	_	_	_	_	_	start_char=6505|end_char=6513
+4	would	_	_	_	_	3	_	_	start_char=6505|end_char=6510
+5	n't	_	_	_	_	4	_	_	start_char=6510|end_char=6513
+6	have	_	_	_	_	5	_	_	start_char=6514|end_char=6518
+7	gone	_	_	_	_	6	_	_	start_char=6519|end_char=6523
+8	if	_	_	_	_	7	_	_	start_char=6524|end_char=6526
+9-10	she'd	_	_	_	_	_	_	_	start_char=6527|end_char=6532
+9	she	_	_	_	_	8	_	_	start_char=6527|end_char=6530
+10	'd	_	_	_	_	9	_	_	start_char=6530|end_char=6532
+11	known	_	_	_	_	10	_	_	start_char=6533|end_char=6538
+12	that	_	_	_	_	11	_	_	start_char=6539|end_char=6543
+13	the	_	_	_	_	12	_	_	start_char=6544|end_char=6547
+14	meeting	_	_	_	_	13	_	_	SpaceAfter=No|start_char=6548|end_char=6555
+15	,	_	_	_	_	14	_	_	start_char=6555|end_char=6556
+16	which	_	_	_	_	15	_	_	start_char=6557|end_char=6562
+17	was	_	_	_	_	16	_	_	start_char=6563|end_char=6566
+18	scheduled	_	_	_	_	17	_	_	start_char=6567|end_char=6576
+19	for	_	_	_	_	18	_	_	start_char=6577|end_char=6580
+20	3	_	_	_	_	19	_	_	start_char=6581|end_char=6582
+21	p.m.	_	_	_	_	20	_	_	start_char=6583|end_char=6587
+22	on	_	_	_	_	21	_	_	start_char=6588|end_char=6590
+23	Friday	_	_	_	_	22	_	_	SpaceAfter=No|start_char=6591|end_char=6597
+24	,	_	_	_	_	23	_	_	start_char=6597|end_char=6598
+25	had	_	_	_	_	24	_	_	start_char=6599|end_char=6602
+26	been	_	_	_	_	25	_	_	start_char=6603|end_char=6607
+27	cancelled	_	_	_	_	26	_	_	SpaceAfter=No|start_char=6608|end_char=6617
+28	;	_	_	_	_	27	_	_	start_char=6617|end_char=6618
+29	nobody	_	_	_	_	28	_	_	start_char=6619|end_char=6625
+30	told	_	_	_	_	29	_	_	start_char=6626|end_char=6630
+31	her	_	_	_	_	30	_	_	SpaceAfter=No|start_char=6631|end_char=6634
+32	.	_	_	_	_	31	_	_	SpaceAfter=No|start_char=6634|end_char=6635
+
+# text = Mary's sister wouldn't have gone if she'd known that the meeting, which was scheduled for 3 p.m. on Friday, had been cancelled; nobody told her.
+# sent_id = 96
+1-2	Mary's	_	_	_	_	_	_	_	start_char=6635|end_char=6641
+1	Mary	_	_	_	_	0	_	_	start_char=6635|end_char=6639
+2	's	_	_	_	_	1	_	_	start_char=6639|end_char=6641
+3	sister	_	_	_	_	2	_	_	start_char=6642|end_char=6648
+4-5	wouldn't	_	_	_	_	_	_	_	start_char=6649|end_char=6657
+4	would	_	_	_	_	3	_	_	start_char=6649|end_char=6654
+5	n't	_	_	_	_	4	_	_	start_char=6654|end_char=6657
+6	have	_	_	_	_	5	_	_	start_char=6658|end_char=6662
+7	gone	_	_	_	_	6	_	_	start_char=6663|end_char=6667
+8	if	_	_	_	_	7	_	_	start_char=6668|end_char=6670
+9-10	she'd	_	_	_	_	_	_	_	start_char=6671|end_char=6676
+9	she	_	_	_	_	8	_	_	start_char=6671|end_char=6674
+10	'd	_	_	_	_	9	_	_	start_char=6674|end_char=6676
+11	known	_	_	_	_	10	_	_	start_char=6677|end_char=6682
+12	that	_	_	_	_	11	_	_	start_char=6683|end_char=6687
+13	the	_	_	_	_	12	_	_	start_char=6688|end_char=6691
+14	meeting	_	_	_	_	13	_	_	SpaceAfter=No|start_char=6692|end_char=6699
+15	,	_	_	_	_	14	_	_	start_char=6699|end_char=6700
+16	which	_	_	_	_	15	_	_	start_char=6701|end_char=6706
+17	was	_	_	_	_	16	_	_	start_char=6707|end_char=6710
+18	scheduled	_	_	_	_	17	_	_	start_char=6711|end_char=6720
+19	for	_	_	_	_	18	_	_	start_char=6721|end_char=6724
+20	3	_	_	_	_	19	_	_	start_char=6725|end_char=6726
+21	p.m.	_	_	_	_	20	_	_	start_char=6727|end_char=6731
+22	on	_	_	_	_	21	_	_	start_char=6732|end_char=6734
+23	Friday	_	_	_	_	22	_	_	SpaceAfter=No|start_char=6735|end_char=6741
+24	,	_	_	_	_	23	_	_	start_char=6741|end_char=6742
+25	had	_	_	_	_	24	_	_	start_char=6743|end_char=6746
+26	been	_	_	_	_	25	_	_	start_char=6747|end_char=6751
+27	cancelled	_	_	_	_	26	_	_	SpaceAfter=No|start_char=6752|end_char=6761
+28	;	_	_	_	_	27	_	_	start_char=6761|end_char=6762
+29	nobody	_	_	_	_	28	_	_	start_char=6763|end_char=6769
+30	told	_	_	_	_	29	_	_	start_char=6770|end_char=6774
+31	her	_	_	_	_	30	_	_	SpaceAfter=No|start_char=6775|end_char=6778
+32	.	_	_	_	_	31	_	_	SpaceAfter=No|start_char=6778|end_char=6779
+
+# text = Mary's sister wouldn't have gone if she'd known that the meeting, which was scheduled for 3 p.m. on Friday, had been cancelled; nobody told her.
+# sent_id = 97
+1-2	Mary's	_	_	_	_	_	_	_	start_char=6779|end_char=6785
+1	Mary	_	_	_	_	0	_	_	start_char=6779|end_char=6783
+2	's	_	_	_	_	1	_	_	start_char=6783|end_char=6785
+3	sister	_	_	_	_	2	_	_	start_char=6786|end_char=6792
+4-5	wouldn't	_	_	_	_	_	_	_	start_char=6793|end_char=6801
+4	would	_	_	_	_	3	_	_	start_char=6793|end_char=6798
+5	n't	_	_	_	_	4	_	_	start_char=6798|end_char=6801
+6	have	_	_	_	_	5	_	_	start_char=6802|end_char=6806
+7	gone	_	_	_	_	6	_	_	start_char=6807|end_char=6811
+8	if	_	_	_	_	7	_	_	start_char=6812|end_char=6814
+9-10	she'd	_	_	_	_	_	_	_	start_char=6815|end_char=6820
+9	she	_	_	_	_	8	_	_	start_char=6815|end_char=6818
+10	'd	_	_	_	_	9	_	_	start_char=6818|end_char=6820
+11	known	_	_	_	_	10	_	_	start_char=6821|end_char=6826
+12	that	_	_	_	_	11	_	_	start_char=6827|end_char=6831
+13	the	_	_	_	_	12	_	_	start_char=6832|end_char=6835
+14	meeting	_	_	_	_	13	_	_	SpaceAfter=No|start_char=6836|end_char=6843
+15	,	_	_	_	_	14	_	_	start_char=6843|end_char=6844
+16	which	_	_	_	_	15	_	_	start_char=6845|end_char=6850
+17	was	_	_	_	_	16	_	_	start_char=6851|end_char=6854
+18	scheduled	_	_	_	_	17	_	_	start_char=6855|end_char=6864
+19	for	_	_	_	_	18	_	_	start_char=6865|end_char=6868
+20	3	_	_	_	_	19	_	_	start_char=6869|end_char=6870
+21	p.m.	_	_	_	_	20	_	_	start_char=6871|end_char=6875
+22	on	_	_	_	_	21	_	_	start_char=6876|end_char=6878
+23	Friday	_	_	_	_	22	_	_	SpaceAfter=No|start_char=6879|end_char=6885
+24	,	_	_	_	_	23	_	_	start_char=6885|end_char=6886
+25	had	_	_	_	_	24	_	_	start_char=6887|end_char=6890
+26	been	_	_	_	_	25	_	_	start_char=6891|end_char=6895
+27	cancelled	_	_	_	_	26	_	_	SpaceAfter=No|start_char=6896|end_char=6905
+28	;	_	_	_	_	27	_	_	start_char=6905|end_char=6906
+29	nobody	_	_	_	_	28	_	_	start_char=6907|end_char=6913
+30	told	_	_	_	_	29	_	_	start_char=6914|end_char=6918
+31	her	_	_	_	_	30	_	_	SpaceAfter=No|start_char=6919|end_char=6922
+32	.	_	_	_	_	31	_	_	SpacesAfter=\n\n|start_char=6922|end_char=6923
+
+# text = Wow... that's amazing!!
+# sent_id = 98
+1	Wow	_	_	_	_	0	_	_	SpaceAfter=No|start_char=6925|end_char=6928
+2	...	_	_	_	_	1	_	_	start_char=6928|end_char=6931
+3-4	that's	_	_	_	_	_	_	_	start_char=6932|end_char=6938
+3	that	_	_	_	_	2	_	_	start_char=6932|end_char=6936
+4	's	_	_	_	_	3	_	_	start_char=6936|end_char=6938
+5	amazing	_	_	_	_	4	_	_	SpaceAfter=No|start_char=6939|end_char=6946
+6	!!	_	_	_	_	5	_	_	SpacesAfter=\n\n|start_char=6946|end_char=6948
+
+# text = Barack Obama was born in Hawaii.
+# sent_id = 99
+1	Barack	_	_	_	_	0	_	_	start_char=6950|end_char=6956
+2	Obama	_	_	_	_	1	_	_	start_char=6957|end_char=6962
+3	was	_	_	_	_	2	_	_	start_char=6963|end_char=6966
+4	born	_	_	_	_	3	_	_	start_char=6967|end_char=6971
+5	in	_	_	_	_	4	_	_	start_char=6972|end_char=6974
+6	Hawaii	_	_	_	_	5	_	_	SpaceAfter=No|start_char=6975|end_char=6981
+7	.	_	_	_	_	6	_	_	start_char=6981|end_char=6982
+
+# text = He was elected president in 2008.
+# sent_id = 100
+1	He	_	_	_	_	0	_	_	start_char=6983|end_char=6985
+2	was	_	_	_	_	1	_	_	start_char=6986|end_char=6989
+3	elected	_	_	_	_	2	_	_	start_char=6990|end_char=6997
+4	president	_	_	_	_	3	_	_	start_char=6998|end_char=7007
+5	in	_	_	_	_	4	_	_	start_char=7008|end_char=7010
+6	2008	_	_	_	_	5	_	_	SpaceAfter=No|start_char=7011|end_char=7015
+7	.	_	_	_	_	6	_	_	SpaceAfter=No|start_char=7015|end_char=7016
+
+# text = Barack Obama was born in Hawaii.
+# sent_id = 101
+1	Barack	_	_	_	_	0	_	_	start_char=7016|end_char=7022
+2	Obama	_	_	_	_	1	_	_	start_char=7023|end_char=7028
+3	was	_	_	_	_	2	_	_	start_char=7029|end_char=7032
+4	born	_	_	_	_	3	_	_	start_char=7033|end_char=7037
+5	in	_	_	_	_	4	_	_	start_char=7038|end_char=7040
+6	Hawaii	_	_	_	_	5	_	_	SpaceAfter=No|start_char=7041|end_char=7047
+7	.	_	_	_	_	6	_	_	start_char=7047|end_char=7048
+
+# text = He was elected president in 2008.
+# sent_id = 102
+1	He	_	_	_	_	0	_	_	start_char=7049|end_char=7051
+2	was	_	_	_	_	1	_	_	start_char=7052|end_char=7055
+3	elected	_	_	_	_	2	_	_	start_char=7056|end_char=7063
+4	president	_	_	_	_	3	_	_	start_char=7064|end_char=7073
+5	in	_	_	_	_	4	_	_	start_char=7074|end_char=7076
+6	2008	_	_	_	_	5	_	_	SpaceAfter=No|start_char=7077|end_char=7081
+7	.	_	_	_	_	6	_	_	SpacesAfter=\n\n|start_char=7081|end_char=7082
+
+# text = I don't think it's going to rain today, but we'll see.
+# sent_id = 103
+1	I	_	_	_	_	0	_	_	start_char=7084|end_char=7085
+2-3	don't	_	_	_	_	_	_	_	start_char=7086|end_char=7091
+2	do	_	_	_	_	1	_	_	start_char=7086|end_char=7088
+3	n't	_	_	_	_	2	_	_	start_char=7088|end_char=7091
+4	think	_	_	_	_	3	_	_	start_char=7092|end_char=7097
+5-6	it's	_	_	_	_	_	_	_	start_char=7098|end_char=7102
+5	it	_	_	_	_	4	_	_	start_char=7098|end_char=7100
+6	's	_	_	_	_	5	_	_	start_char=7100|end_char=7102
+7	going	_	_	_	_	6	_	_	start_char=7103|end_char=7108
+8	to	_	_	_	_	7	_	_	start_char=7109|end_char=7111
+9	rain	_	_	_	_	8	_	_	start_char=7112|end_char=7116
+10	today	_	_	_	_	9	_	_	SpaceAfter=No|start_char=7117|end_char=7122
+11	,	_	_	_	_	10	_	_	start_char=7122|end_char=7123
+12	but	_	_	_	_	11	_	_	start_char=7124|end_char=7127
+13-14	we'll	_	_	_	_	_	_	_	start_char=7128|end_char=7133
+13	we	_	_	_	_	12	_	_	start_char=7128|end_char=7130
+14	'll	_	_	_	_	13	_	_	start_char=7130|end_char=7133
+15	see	_	_	_	_	14	_	_	SpaceAfter=No|start_char=7134|end_char=7137
+16	.	_	_	_	_	15	_	_	start_char=7137|end_char=7138
+
+# text = Can't you hear the thunder?
+# sent_id = 104
+1-2	Can't	_	_	_	_	_	_	_	start_char=7139|end_char=7144
+1	Ca	_	_	_	_	0	_	_	start_char=7139|end_char=7141
+2	n't	_	_	_	_	1	_	_	start_char=7141|end_char=7144
+3	you	_	_	_	_	2	_	_	start_char=7145|end_char=7148
+4	hear	_	_	_	_	3	_	_	start_char=7149|end_char=7153
+5	the	_	_	_	_	4	_	_	start_char=7154|end_char=7157
+6	thunder	_	_	_	_	5	_	_	SpaceAfter=No|start_char=7158|end_char=7165
+7	?	_	_	_	_	6	_	_	SpaceAfter=No|start_char=7165|end_char=7166
+
+# text = I don't think it's going to rain today, but we'll see.
+# sent_id = 105
+1	I	_	_	_	_	0	_	_	start_char=7166|end_char=7167
+2-3	don't	_	_	_	_	_	_	_	start_char=7168|end_char=7173
+2	do	_	_	_	_	1	_	_	start_char=7168|end_char=7170
+3	n't	_	_	_	_	2	_	_	start_char=7170|end_char=7173
+4	think	_	_	_	_	3	_	_	start_char=7174|end_char=7179
+5-6	it's	_	_	_	_	_	_	_	start_char=7180|end_char=7184
+5	it	_	_	_	_	4	_	_	start_char=7180|end_char=7182
+6	's	_	_	_	_	5	_	_	start_char=7182|end_char=7184
+7	going	_	_	_	_	6	_	_	start_char=7185|end_char=7190
+8	to	_	_	_	_	7	_	_	start_char=7191|end_char=7193
+9	rain	_	_	_	_	8	_	_	start_char=7194|end_char=7198
+10	today	_	_	_	_	9	_	_	SpaceAfter=No|start_char=7199|end_char=7204
+11	,	_	_	_	_	10	_	_	start_char=7204|end_char=7205
+12	but	_	_	_	_	11	_	_	start_char=7206|end_char=7209
+13-14	we'll	_	_	_	_	_	_	_	start_char=7210|end_char=7215
+13	we	_	_	_	_	12	_	_	start_char=7210|end_char=7212
+14	'll	_	_	_	_	13	_	_	start_char=7212|end_char=7215
+15	see	_	_	_	_	14	_	_	SpaceAfter=No|start_char=7216|end_char=7219
+16	.	_	_	_	_	15	_	_	start_char=7219|end_char=7220
+
+# text = Can't you hear the thunder?
+# sent_id = 106
+1-2	Can't	_	_	_	_	_	_	_	start_char=7221|end_char=7226
+1	Ca	_	_	_	_	0	_	_	start_char=7221|end_char=7223
+2	n't	_	_	_	_	1	_	_	start_char=7223|end_char=7226
+3	you	_	_	_	_	2	_	_	start_char=7227|end_char=7230
+4	hear	_	_	_	_	3	_	_	start_char=7231|end_char=7235
+5	the	_	_	_	_	4	_	_	start_char=7236|end_char=7239
+6	thunder	_	_	_	_	5	_	_	SpaceAfter=No|start_char=7240|end_char=7247
+7	?	_	_	_	_	6	_	_	SpaceAfter=No|start_char=7247|end_char=7248
+
+# text = I don't think it's going to rain today, but we'll see.
+# sent_id = 107
+1	I	_	_	_	_	0	_	_	start_char=7248|end_char=7249
+2-3	don't	_	_	_	_	_	_	_	start_char=7250|end_char=7255
+2	do	_	_	_	_	1	_	_	start_char=7250|end_char=7252
+3	n't	_	_	_	_	2	_	_	start_char=7252|end_char=7255
+4	think	_	_	_	_	3	_	_	start_char=7256|end_char=7261
+5-6	it's	_	_	_	_	_	_	_	start_char=7262|end_char=7266
+5	it	_	_	_	_	4	_	_	start_char=7262|end_char=7264
+6	's	_	_	_	_	5	_	_	start_char=7264|end_char=7266
+7	going	_	_	_	_	6	_	_	start_char=7267|end_char=7272
+8	to	_	_	_	_	7	_	_	start_char=7273|end_char=7275
+9	rain	_	_	_	_	8	_	_	start_char=7276|end_char=7280
+10	today	_	_	_	_	9	_	_	SpaceAfter=No|start_char=7281|end_char=7286
+11	,	_	_	_	_	10	_	_	start_char=7286|end_char=7287
+12	but	_	_	_	_	11	_	_	start_char=7288|end_char=7291
+13-14	we'll	_	_	_	_	_	_	_	start_char=7292|end_char=7297
+13	we	_	_	_	_	12	_	_	start_char=7292|end_char=7294
+14	'll	_	_	_	_	13	_	_	start_char=7294|end_char=7297
+15	see	_	_	_	_	14	_	_	SpaceAfter=No|start_char=7298|end_char=7301
+16	.	_	_	_	_	15	_	_	start_char=7301|end_char=7302
+
+# text = Can't you hear the thunder?
+# sent_id = 108
+1-2	Can't	_	_	_	_	_	_	_	start_char=7303|end_char=7308
+1	Ca	_	_	_	_	0	_	_	start_char=7303|end_char=7305
+2	n't	_	_	_	_	1	_	_	start_char=7305|end_char=7308
+3	you	_	_	_	_	2	_	_	start_char=7309|end_char=7312
+4	hear	_	_	_	_	3	_	_	start_char=7313|end_char=7317
+5	the	_	_	_	_	4	_	_	start_char=7318|end_char=7321
+6	thunder	_	_	_	_	5	_	_	SpaceAfter=No|start_char=7322|end_char=7329
+7	?	_	_	_	_	6	_	_	SpacesAfter=\n\n|start_char=7329|end_char=7330
+
+# text = Dr. Smith moved to the U.S. in Jan. 1999 and paid $4.50 for a cup of coffee at 7:30 a.m.
+# sent_id = 109
+1	Dr.	_	_	_	_	0	_	_	start_char=7332|end_char=7335
+2	Smith	_	_	_	_	1	_	_	start_char=7336|end_char=7341
+3	moved	_	_	_	_	2	_	_	start_char=7342|end_char=7347
+4	to	_	_	_	_	3	_	_	start_char=7348|end_char=7350
+5	the	_	_	_	_	4	_	_	start_char=7351|end_char=7354
+6	U.S.	_	_	_	_	5	_	_	start_char=7355|end_char=7359
+7	in	_	_	_	_	6	_	_	start_char=7360|end_char=7362
+8	Jan.	_	_	_	_	7	_	_	start_char=7363|end_char=7367
+9	1999	_	_	_	_	8	_	_	start_char=7368|end_char=7372
+10	and	_	_	_	_	9	_	_	start_char=7373|end_char=7376
+11	paid	_	_	_	_	10	_	_	start_char=7377|end_char=7381
+12	$	_	_	_	_	11	_	_	SpaceAfter=No|start_char=7382|end_char=7383
+13	4.50	_	_	_	_	12	_	_	start_char=7383|end_char=7387
+14	for	_	_	_	_	13	_	_	start_char=7388|end_char=7391
+15	a	_	_	_	_	14	_	_	start_char=7392|end_char=7393
+16	cup	_	_	_	_	15	_	_	start_char=7394|end_char=7397
+17	of	_	_	_	_	16	_	_	start_char=7398|end_char=7400
+18	coffee	_	_	_	_	17	_	_	start_char=7401|end_char=7407
+19	at	_	_	_	_	18	_	_	start_char=7408|end_char=7410
+20	7:30	_	_	_	_	19	_	_	start_char=7411|end_char=7415
+21	a.m	_	_	_	_	20	_	_	SpaceAfter=No|start_char=7416|end_char=7419
+22	.	_	_	_	_	21	_	_	SpacesAfter=\n\n|start_char=7419|end_char=7420
+
+# text = "Where are you going?" she asked.
+# sent_id = 110
+1	"	_	_	_	_	0	_	_	SpaceAfter=No|start_char=7422|end_char=7423
+2	Where	_	_	_	_	1	_	_	start_char=7423|end_char=7428
+3	are	_	_	_	_	2	_	_	start_char=7429|end_char=7432
+4	you	_	_	_	_	3	_	_	start_char=7433|end_char=7436
+5	going	_	_	_	_	4	_	_	SpaceAfter=No|start_char=7437|end_char=7442
+6	?	_	_	_	_	5	_	_	SpaceAfter=No|start_char=7442|end_char=7443
+7	"	_	_	_	_	6	_	_	start_char=7443|end_char=7444
+8	she	_	_	_	_	7	_	_	start_char=7445|end_char=7448
+9	asked	_	_	_	_	8	_	_	SpaceAfter=No|start_char=7449|end_char=7454
+10	.	_	_	_	_	9	_	_	start_char=7454|end_char=7455
+
+# text = The children's toys (all 23 of them) were scattered across the room!
+# sent_id = 111
+1	The	_	_	_	_	0	_	_	start_char=7456|end_char=7459
+2-3	children's	_	_	_	_	_	_	_	start_char=7460|end_char=7470
+2	children	_	_	_	_	1	_	_	start_char=7460|end_char=7468
+3	's	_	_	_	_	2	_	_	start_char=7468|end_char=7470
+4	toys	_	_	_	_	3	_	_	start_char=7471|end_char=7475
+5	(	_	_	_	_	4	_	_	SpaceAfter=No|start_char=7476|end_char=7477
+6	all	_	_	_	_	5	_	_	start_char=7477|end_char=7480
+7	23	_	_	_	_	6	_	_	start_char=7481|end_char=7483
+8	of	_	_	_	_	7	_	_	start_char=7484|end_char=7486
+9	them	_	_	_	_	8	_	_	SpaceAfter=No|start_char=7487|end_char=7491
+10	)	_	_	_	_	9	_	_	start_char=7491|end_char=7492
+11	were	_	_	_	_	10	_	_	start_char=7493|end_char=7497
+12	scattered	_	_	_	_	11	_	_	start_char=7498|end_char=7507
+13	across	_	_	_	_	12	_	_	start_char=7508|end_char=7514
+14	the	_	_	_	_	13	_	_	start_char=7515|end_char=7518
+15	room	_	_	_	_	14	_	_	SpaceAfter=No|start_char=7519|end_char=7523
+16	!	_	_	_	_	15	_	_	SpaceAfter=No|start_char=7523|end_char=7524
+
+# text = "Where are you going?" she asked.
+# sent_id = 112
+1	"	_	_	_	_	0	_	_	SpaceAfter=No|start_char=7524|end_char=7525
+2	Where	_	_	_	_	1	_	_	start_char=7525|end_char=7530
+3	are	_	_	_	_	2	_	_	start_char=7531|end_char=7534
+4	you	_	_	_	_	3	_	_	start_char=7535|end_char=7538
+5	going	_	_	_	_	4	_	_	SpaceAfter=No|start_char=7539|end_char=7544
+6	?	_	_	_	_	5	_	_	SpaceAfter=No|start_char=7544|end_char=7545
+7	"	_	_	_	_	6	_	_	start_char=7545|end_char=7546
+8	she	_	_	_	_	7	_	_	start_char=7547|end_char=7550
+9	asked	_	_	_	_	8	_	_	SpaceAfter=No|start_char=7551|end_char=7556
+10	.	_	_	_	_	9	_	_	start_char=7556|end_char=7557
+
+# text = The children's toys (all 23 of them) were scattered across the room!
+# sent_id = 113
+1	The	_	_	_	_	0	_	_	start_char=7558|end_char=7561
+2-3	children's	_	_	_	_	_	_	_	start_char=7562|end_char=7572
+2	children	_	_	_	_	1	_	_	start_char=7562|end_char=7570
+3	's	_	_	_	_	2	_	_	start_char=7570|end_char=7572
+4	toys	_	_	_	_	3	_	_	start_char=7573|end_char=7577
+5	(	_	_	_	_	4	_	_	SpaceAfter=No|start_char=7578|end_char=7579
+6	all	_	_	_	_	5	_	_	start_char=7579|end_char=7582
+7	23	_	_	_	_	6	_	_	start_char=7583|end_char=7585
+8	of	_	_	_	_	7	_	_	start_char=7586|end_char=7588
+9	them	_	_	_	_	8	_	_	SpaceAfter=No|start_char=7589|end_char=7593
+10	)	_	_	_	_	9	_	_	start_char=7593|end_char=7594
+11	were	_	_	_	_	10	_	_	start_char=7595|end_char=7599
+12	scattered	_	_	_	_	11	_	_	start_char=7600|end_char=7609
+13	across	_	_	_	_	12	_	_	start_char=7610|end_char=7616
+14	the	_	_	_	_	13	_	_	start_char=7617|end_char=7620
+15	room	_	_	_	_	14	_	_	SpaceAfter=No|start_char=7621|end_char=7625
+16	!	_	_	_	_	15	_	_	SpacesAfter=\n\n|start_char=7625|end_char=7626
+
+# text = The well-known author, who had written e-mails to info@example.com, visited https://www.example.org/about yesterday.
+# sent_id = 114
+1	The	_	_	_	_	0	_	_	start_char=7628|end_char=7631
+2	well	_	_	_	_	1	_	_	SpaceAfter=No|start_char=7632|end_char=7636
+3	-	_	_	_	_	2	_	_	SpaceAfter=No|start_char=7636|end_char=7637
+4	known	_	_	_	_	3	_	_	start_char=7637|end_char=7642
+5	author	_	_	_	_	4	_	_	SpaceAfter=No|start_char=7643|end_char=7649
+6	,	_	_	_	_	5	_	_	start_char=7649|end_char=7650
+7	who	_	_	_	_	6	_	_	start_char=7651|end_char=7654
+8	had	_	_	_	_	7	_	_	start_char=7655|end_char=7658
+9	written	_	_	_	_	8	_	_	start_char=7659|end_char=7666
+10	e-mails	_	_	_	_	9	_	_	start_char=7667|end_char=7674
+11	to	_	_	_	_	10	_	_	start_char=7675|end_char=7677
+12	info@example.com	_	_	_	_	11	_	_	SpaceAfter=No|start_char=7678|end_char=7694
+13	,	_	_	_	_	12	_	_	start_char=7694|end_char=7695
+14	visited	_	_	_	_	13	_	_	start_char=7696|end_char=7703
+15	https://www.example.org/about	_	_	_	_	14	_	_	start_char=7704|end_char=7733
+16	yesterday	_	_	_	_	15	_	_	SpaceAfter=No|start_char=7734|end_char=7743
+17	.	_	_	_	_	16	_	_	SpaceAfter=No|start_char=7743|end_char=7744
+
+# text = The well-known author, who had written e-mails to info@example.com, visited https://www.example.org/about yesterday.
+# sent_id = 115
+1	The	_	_	_	_	0	_	_	start_char=7744|end_char=7747
+2	well	_	_	_	_	1	_	_	SpaceAfter=No|start_char=7748|end_char=7752
+3	-	_	_	_	_	2	_	_	SpaceAfter=No|start_char=7752|end_char=7753
+4	known	_	_	_	_	3	_	_	start_char=7753|end_char=7758
+5	author	_	_	_	_	4	_	_	SpaceAfter=No|start_char=7759|end_char=7765
+6	,	_	_	_	_	5	_	_	start_char=7765|end_char=7766
+7	who	_	_	_	_	6	_	_	start_char=7767|end_char=7770
+8	had	_	_	_	_	7	_	_	start_char=7771|end_char=7774
+9	written	_	_	_	_	8	_	_	start_char=7775|end_char=7782
+10	e-mails	_	_	_	_	9	_	_	start_char=7783|end_char=7790
+11	to	_	_	_	_	10	_	_	start_char=7791|end_char=7793
+12	info@example.com	_	_	_	_	11	_	_	SpaceAfter=No|start_char=7794|end_char=7810
+13	,	_	_	_	_	12	_	_	start_char=7810|end_char=7811
+14	visited	_	_	_	_	13	_	_	start_char=7812|end_char=7819
+15	https://www.example.org/about	_	_	_	_	14	_	_	start_char=7820|end_char=7849
+16	yesterday	_	_	_	_	15	_	_	SpaceAfter=No|start_char=7850|end_char=7859
+17	.	_	_	_	_	16	_	_	SpaceAfter=No|start_char=7859|end_char=7860
+
+# text = The well-known author, who had written e-mails to info@example.com, visited https://www.example.org/about yesterday.
+# sent_id = 116
+1	The	_	_	_	_	0	_	_	start_char=7860|end_char=7863
+2	well	_	_	_	_	1	_	_	SpaceAfter=No|start_char=7864|end_char=7868
+3	-	_	_	_	_	2	_	_	SpaceAfter=No|start_char=7868|end_char=7869
+4	known	_	_	_	_	3	_	_	start_char=7869|end_char=7874
+5	author	_	_	_	_	4	_	_	SpaceAfter=No|start_char=7875|end_char=7881
+6	,	_	_	_	_	5	_	_	start_char=7881|end_char=7882
+7	who	_	_	_	_	6	_	_	start_char=7883|end_char=7886
+8	had	_	_	_	_	7	_	_	start_char=7887|end_char=7890
+9	written	_	_	_	_	8	_	_	start_char=7891|end_char=7898
+10	e-mails	_	_	_	_	9	_	_	start_char=7899|end_char=7906
+11	to	_	_	_	_	10	_	_	start_char=7907|end_char=7909
+12	info@example.com	_	_	_	_	11	_	_	SpaceAfter=No|start_char=7910|end_char=7926
+13	,	_	_	_	_	12	_	_	start_char=7926|end_char=7927
+14	visited	_	_	_	_	13	_	_	start_char=7928|end_char=7935
+15	https://www.example.org/about	_	_	_	_	14	_	_	start_char=7936|end_char=7965
+16	yesterday	_	_	_	_	15	_	_	SpaceAfter=No|start_char=7966|end_char=7975
+17	.	_	_	_	_	16	_	_	SpacesAfter=\n\n|start_char=7975|end_char=7976
+
+# text = Mary's sister wouldn't have gone if she'd known that the meeting, which was scheduled for 3 p.m. on Friday, had been cancelled; nobody told her.
+# sent_id = 117
+1-2	Mary's	_	_	_	_	_	_	_	start_char=7978|end_char=7984
+1	Mary	_	_	_	_	0	_	_	start_char=7978|end_char=7982
+2	's	_	_	_	_	1	_	_	start_char=7982|end_char=7984
+3	sister	_	_	_	_	2	_	_	start_char=7985|end_char=7991
+4-5	wouldn't	_	_	_	_	_	_	_	start_char=7992|end_char=8000
+4	would	_	_	_	_	3	_	_	start_char=7992|end_char=7997
+5	n't	_	_	_	_	4	_	_	start_char=7997|end_char=8000
+6	have	_	_	_	_	5	_	_	start_char=8001|end_char=8005
+7	gone	_	_	_	_	6	_	_	start_char=8006|end_char=8010
+8	if	_	_	_	_	7	_	_	start_char=8011|end_char=8013
+9-10	she'd	_	_	_	_	_	_	_	start_char=8014|end_char=8019
+9	she	_	_	_	_	8	_	_	start_char=8014|end_char=8017
+10	'd	_	_	_	_	9	_	_	start_char=8017|end_char=8019
+11	known	_	_	_	_	10	_	_	start_char=8020|end_char=8025
+12	that	_	_	_	_	11	_	_	start_char=8026|end_char=8030
+13	the	_	_	_	_	12	_	_	start_char=8031|end_char=8034
+14	meeting	_	_	_	_	13	_	_	SpaceAfter=No|start_char=8035|end_char=8042
+15	,	_	_	_	_	14	_	_	start_char=8042|end_char=8043
+16	which	_	_	_	_	15	_	_	start_char=8044|end_char=8049
+17	was	_	_	_	_	16	_	_	start_char=8050|end_char=8053
+18	scheduled	_	_	_	_	17	_	_	start_char=8054|end_char=8063
+19	for	_	_	_	_	18	_	_	start_char=8064|end_char=8067
+20	3	_	_	_	_	19	_	_	start_char=8068|end_char=8069
+21	p.m.	_	_	_	_	20	_	_	start_char=8070|end_char=8074
+22	on	_	_	_	_	21	_	_	start_char=8075|end_char=8077
+23	Friday	_	_	_	_	22	_	_	SpaceAfter=No|start_char=8078|end_char=8084
+24	,	_	_	_	_	23	_	_	start_char=8084|end_char=8085
+25	had	_	_	_	_	24	_	_	start_char=8086|end_char=8089
+26	been	_	_	_	_	25	_	_	start_char=8090|end_char=8094
+27	cancelled	_	_	_	_	26	_	_	SpaceAfter=No|start_char=8095|end_char=8104
+28	;	_	_	_	_	27	_	_	start_char=8104|end_char=8105
+29	nobody	_	_	_	_	28	_	_	start_char=8106|end_char=8112
+30	told	_	_	_	_	29	_	_	start_char=8113|end_char=8117
+31	her	_	_	_	_	30	_	_	SpaceAfter=No|start_char=8118|end_char=8121
+32	.	_	_	_	_	31	_	_	SpacesAfter=\n\n|start_char=8121|end_char=8122
+
+# text = Wow... that's amazing!!Wow... that's amazing!!
+# sent_id = 118
+1	Wow	_	_	_	_	0	_	_	SpaceAfter=No|start_char=8124|end_char=8127
+2	...	_	_	_	_	1	_	_	start_char=8127|end_char=8130
+3-4	that's	_	_	_	_	_	_	_	start_char=8131|end_char=8137
+3	that	_	_	_	_	2	_	_	start_char=8131|end_char=8135
+4	's	_	_	_	_	3	_	_	start_char=8135|end_char=8137
+5	amazing	_	_	_	_	4	_	_	SpaceAfter=No|start_char=8138|end_char=8145
+6	!!Wow	_	_	_	_	5	_	_	SpaceAfter=No|start_char=8145|end_char=8150
+7	...	_	_	_	_	6	_	_	start_char=8150|end_char=8153
+8-9	that's	_	_	_	_	_	_	_	start_char=8154|end_char=8160
+8	that	_	_	_	_	7	_	_	start_char=8154|end_char=8158
+9	's	_	_	_	_	8	_	_	start_char=8158|end_char=8160
+10	amazing	_	_	_	_	9	_	_	SpaceAfter=No|start_char=8161|end_char=8168
+11	!!	_	_	_	_	10	_	_	SpacesAfter=\n\n|start_char=8168|end_char=8170
+
+# text = Barack Obama was born in Hawaii.
+# sent_id = 119
+1	Barack	_	_	_	_	0	_	_	start_char=8172|end_char=8178
+2	Obama	_	_	_	_	1	_	_	start_char=8179|end_char=8184
+3	was	_	_	_	_	2	_	_	start_char=8185|end_char=8188
+4	born	_	_	_	_	3	_	_	start_char=8189|end_char=8193
+5	in	_	_	_	_	4	_	_	start_char=8194|end_char=8196
+6	Hawaii	_	_	_	_	5	_	_	SpaceAfter=No|start_char=8197|end_char=8203
+7	.	_	_	_	_	6	_	_	start_char=8203|end_char=8204
+
+# text = He was elected president in 2008.
+# sent_id = 120
+1	He	_	_	_	_	0	_	_	start_char=8205|end_char=8207
+2	was	_	_	_	_	1	_	_	start_char=8208|end_char=8211
+3	elected	_	_	_	_	2	_	_	start_char=8212|end_char=8219
+4	president	_	_	_	_	3	_	_	start_char=8220|end_char=8229
+5	in	_	_	_	_	4	_	_	start_char=8230|end_char=8232
+6	2008	_	_	_	_	5	_	_	SpaceAfter=No|start_char=8233|end_char=8237
+7	.	_	_	_	_	6	_	_	SpaceAfter=No|start_char=8237|end_char=8238
+
+# text = Barack Obama was born in Hawaii.
+# sent_id = 121
+1	Barack	_	_	_	_	0	_	_	start_char=8238|end_char=8244
+2	Obama	_	_	_	_	1	_	_	start_char=8245|end_char=8250
+3	was	_	_	_	_	2	_	_	start_char=8251|end_char=8254
+4	born	_	_	_	_	3	_	_	start_char=8255|end_char=8259
+5	in	_	_	_	_	4	_	_	start_char=8260|end_char=8262
+6	Hawaii	_	_	_	_	5	_	_	SpaceAfter=No|start_char=8263|end_char=8269
+7	.	_	_	_	_	6	_	_	start_char=8269|end_char=8270
+
+# text = He was elected president in 2008.
+# sent_id = 122
+1	He	_	_	_	_	0	_	_	start_char=8271|end_char=8273
+2	was	_	_	_	_	1	_	_	start_char=8274|end_char=8277
+3	elected	_	_	_	_	2	_	_	start_char=8278|end_char=8285
+4	president	_	_	_	_	3	_	_	start_char=8286|end_char=8295
+5	in	_	_	_	_	4	_	_	start_char=8296|end_char=8298
+6	2008	_	_	_	_	5	_	_	SpaceAfter=No|start_char=8299|end_char=8303
+7	.	_	_	_	_	6	_	_	SpaceAfter=No|start_char=8303|end_char=8304
+
+# text = Barack Obama was born in Hawaii.
+# sent_id = 123
+1	Barack	_	_	_	_	0	_	_	start_char=8304|end_char=8310
+2	Obama	_	_	_	_	1	_	_	start_char=8311|end_char=8316
+3	was	_	_	_	_	2	_	_	start_char=8317|end_char=8320
+4	born	_	_	_	_	3	_	_	start_char=8321|end_char=8325
+5	in	_	_	_	_	4	_	_	start_char=8326|end_char=8328
+6	Hawaii	_	_	_	_	5	_	_	SpaceAfter=No|start_char=8329|end_char=8335
+7	.	_	_	_	_	6	_	_	start_char=8335|end_char=8336
+
+# text = He was elected president in 2008.
+# sent_id = 124
+1	He	_	_	_	_	0	_	_	start_char=8337|end_char=8339
+2	was	_	_	_	_	1	_	_	start_char=8340|end_char=8343
+3	elected	_	_	_	_	2	_	_	start_char=8344|end_char=8351
+4	president	_	_	_	_	3	_	_	start_char=8352|end_char=8361
+5	in	_	_	_	_	4	_	_	start_char=8362|end_char=8364
+6	2008	_	_	_	_	5	_	_	SpaceAfter=No|start_char=8365|end_char=8369
+7	.	_	_	_	_	6	_	_	SpacesAfter=\n\n|start_char=8369|end_char=8370
+
+# text = I don't think it's going to rain today, but we'll see.
+# sent_id = 125
+1	I	_	_	_	_	0	_	_	start_char=8372|end_char=8373
+2-3	don't	_	_	_	_	_	_	_	start_char=8374|end_char=8379
+2	do	_	_	_	_	1	_	_	start_char=8374|end_char=8376
+3	n't	_	_	_	_	2	_	_	start_char=8376|end_char=8379
+4	think	_	_	_	_	3	_	_	start_char=8380|end_char=8385
+5-6	it's	_	_	_	_	_	_	_	start_char=8386|end_char=8390
+5	it	_	_	_	_	4	_	_	start_char=8386|end_char=8388
+6	's	_	_	_	_	5	_	_	start_char=8388|end_char=8390
+7	going	_	_	_	_	6	_	_	start_char=8391|end_char=8396
+8	to	_	_	_	_	7	_	_	start_char=8397|end_char=8399
+9	rain	_	_	_	_	8	_	_	start_char=8400|end_char=8404
+10	today	_	_	_	_	9	_	_	SpaceAfter=No|start_char=8405|end_char=8410
+11	,	_	_	_	_	10	_	_	start_char=8410|end_char=8411
+12	but	_	_	_	_	11	_	_	start_char=8412|end_char=8415
+13-14	we'll	_	_	_	_	_	_	_	start_char=8416|end_char=8421
+13	we	_	_	_	_	12	_	_	start_char=8416|end_char=8418
+14	'll	_	_	_	_	13	_	_	start_char=8418|end_char=8421
+15	see	_	_	_	_	14	_	_	SpaceAfter=No|start_char=8422|end_char=8425
+16	.	_	_	_	_	15	_	_	start_char=8425|end_char=8426
+
+# text = Can't you hear the thunder?
+# sent_id = 126
+1-2	Can't	_	_	_	_	_	_	_	start_char=8427|end_char=8432
+1	Ca	_	_	_	_	0	_	_	start_char=8427|end_char=8429
+2	n't	_	_	_	_	1	_	_	start_char=8429|end_char=8432
+3	you	_	_	_	_	2	_	_	start_char=8433|end_char=8436
+4	hear	_	_	_	_	3	_	_	start_char=8437|end_char=8441
+5	the	_	_	_	_	4	_	_	start_char=8442|end_char=8445
+6	thunder	_	_	_	_	5	_	_	SpaceAfter=No|start_char=8446|end_char=8453
+7	?	_	_	_	_	6	_	_	SpacesAfter=\n\n|start_char=8453|end_char=8454
+
+# text = Dr. Smith moved to the U.S. in Jan. 1999 and paid $4.50 for a cup of coffee at 7:30 a.m.Dr. Smith moved to the U.S. in Jan. 1999 and paid $4.50 for a cup of coffee at 7:30 a.m.
+# sent_id = 127
+1	Dr.	_	_	_	_	0	_	_	start_char=8456|end_char=8459
+2	Smith	_	_	_	_	1	_	_	start_char=8460|end_char=8465
+3	moved	_	_	_	_	2	_	_	start_char=8466|end_char=8471
+4	to	_	_	_	_	3	_	_	start_char=8472|end_char=8474
+5	the	_	_	_	_	4	_	_	start_char=8475|end_char=8478
+6	U.S.	_	_	_	_	5	_	_	start_char=8479|end_char=8483
+7	in	_	_	_	_	6	_	_	start_char=8484|end_char=8486
+8	Jan.	_	_	_	_	7	_	_	start_char=8487|end_char=8491
+9	1999	_	_	_	_	8	_	_	start_char=8492|end_char=8496
+10	and	_	_	_	_	9	_	_	start_char=8497|end_char=8500
+11	paid	_	_	_	_	10	_	_	start_char=8501|end_char=8505
+12	$	_	_	_	_	11	_	_	SpaceAfter=No|start_char=8506|end_char=8507
+13	4.50	_	_	_	_	12	_	_	start_char=8507|end_char=8511
+14	for	_	_	_	_	13	_	_	start_char=8512|end_char=8515
+15	a	_	_	_	_	14	_	_	start_char=8516|end_char=8517
+16	cup	_	_	_	_	15	_	_	start_char=8518|end_char=8521
+17	of	_	_	_	_	16	_	_	start_char=8522|end_char=8524
+18	coffee	_	_	_	_	17	_	_	start_char=8525|end_char=8531
+19	at	_	_	_	_	18	_	_	start_char=8532|end_char=8534
+20	7:30	_	_	_	_	19	_	_	start_char=8535|end_char=8539
+21	a.m.	_	_	_	_	20	_	_	SpaceAfter=No|start_char=8540|end_char=8544
+22	Dr.	_	_	_	_	21	_	_	start_char=8544|end_char=8547
+23	Smith	_	_	_	_	22	_	_	start_char=8548|end_char=8553
+24	moved	_	_	_	_	23	_	_	start_char=8554|end_char=8559
+25	to	_	_	_	_	24	_	_	start_char=8560|end_char=8562
+26	the	_	_	_	_	25	_	_	start_char=8563|end_char=8566
+27	U.S.	_	_	_	_	26	_	_	start_char=8567|end_char=8571
+28	in	_	_	_	_	27	_	_	start_char=8572|end_char=8574
+29	Jan.	_	_	_	_	28	_	_	start_char=8575|end_char=8579
+30	1999	_	_	_	_	29	_	_	start_char=8580|end_char=8584
+31	and	_	_	_	_	30	_	_	start_char=8585|end_char=8588
+32	paid	_	_	_	_	31	_	_	start_char=8589|end_char=8593
+33	$	_	_	_	_	32	_	_	SpaceAfter=No|start_char=8594|end_char=8595
+34	4.50	_	_	_	_	33	_	_	start_char=8595|end_char=8599
+35	for	_	_	_	_	34	_	_	start_char=8600|end_char=8603
+36	a	_	_	_	_	35	_	_	start_char=8604|end_char=8605
+37	cup	_	_	_	_	36	_	_	start_char=8606|end_char=8609
+38	of	_	_	_	_	37	_	_	start_char=8610|end_char=8612
+39	coffee	_	_	_	_	38	_	_	start_char=8613|end_char=8619
+40	at	_	_	_	_	39	_	_	start_char=8620|end_char=8622
+41	7:30	_	_	_	_	40	_	_	start_char=8623|end_char=8627
+42	a.m	_	_	_	_	41	_	_	SpaceAfter=No|start_char=8628|end_char=8631
+43	.	_	_	_	_	42	_	_	SpacesAfter=\n\n|start_char=8631|end_char=8632
+
+# text = "Where are you going?" she asked.
+# sent_id = 128
+1	"	_	_	_	_	0	_	_	SpaceAfter=No|start_char=8634|end_char=8635
+2	Where	_	_	_	_	1	_	_	start_char=8635|end_char=8640
+3	are	_	_	_	_	2	_	_	start_char=8641|end_char=8644
+4	you	_	_	_	_	3	_	_	start_char=8645|end_char=8648
+5	going	_	_	_	_	4	_	_	SpaceAfter=No|start_char=8649|end_char=8654
+6	?	_	_	_	_	5	_	_	SpaceAfter=No|start_char=8654|end_char=8655
+7	"	_	_	_	_	6	_	_	start_char=8655|end_char=8656
+8	she	_	_	_	_	7	_	_	start_char=8657|end_char=8660
+9	asked	_	_	_	_	8	_	_	SpaceAfter=No|start_char=8661|end_char=8666
+10	.	_	_	_	_	9	_	_	start_char=8666|end_char=8667
+
+# text = The children's toys (all 23 of them) were scattered across the room!
+# sent_id = 129
+1	The	_	_	_	_	0	_	_	start_char=8668|end_char=8671
+2-3	children's	_	_	_	_	_	_	_	start_char=8672|end_char=8682
+2	children	_	_	_	_	1	_	_	start_char=8672|end_char=8680
+3	's	_	_	_	_	2	_	_	start_char=8680|end_char=8682
+4	toys	_	_	_	_	3	_	_	start_char=8683|end_char=8687
+5	(	_	_	_	_	4	_	_	SpaceAfter=No|start_char=8688|end_char=8689
+6	all	_	_	_	_	5	_	_	start_char=8689|end_char=8692
+7	23	_	_	_	_	6	_	_	start_char=8693|end_char=8695
+8	of	_	_	_	_	7	_	_	start_char=8696|end_char=8698
+9	them	_	_	_	_	8	_	_	SpaceAfter=No|start_char=8699|end_char=8703
+10	)	_	_	_	_	9	_	_	start_char=8703|end_char=8704
+11	were	_	_	_	_	10	_	_	start_char=8705|end_char=8709
+12	scattered	_	_	_	_	11	_	_	start_char=8710|end_char=8719
+13	across	_	_	_	_	12	_	_	start_char=8720|end_char=8726
+14	the	_	_	_	_	13	_	_	start_char=8727|end_char=8730
+15	room	_	_	_	_	14	_	_	SpaceAfter=No|start_char=8731|end_char=8735
+16	!	_	_	_	_	15	_	_	SpaceAfter=No|start_char=8735|end_char=8736
+
+# text = "Where are you going?" she asked.
+# sent_id = 130
+1	"	_	_	_	_	0	_	_	SpaceAfter=No|start_char=8736|end_char=8737
+2	Where	_	_	_	_	1	_	_	start_char=8737|end_char=8742
+3	are	_	_	_	_	2	_	_	start_char=8743|end_char=8746
+4	you	_	_	_	_	3	_	_	start_char=8747|end_char=8750
+5	going	_	_	_	_	4	_	_	SpaceAfter=No|start_char=8751|end_char=8756
+6	?	_	_	_	_	5	_	_	SpaceAfter=No|start_char=8756|end_char=8757
+7	"	_	_	_	_	6	_	_	start_char=8757|end_char=8758
+8	she	_	_	_	_	7	_	_	start_char=8759|end_char=8762
+9	asked	_	_	_	_	8	_	_	SpaceAfter=No|start_char=8763|end_char=8768
+10	.	_	_	_	_	9	_	_	start_char=8768|end_char=8769
+
+# text = The children's toys (all 23 of them) were scattered across the room!
+# sent_id = 131
+1	The	_	_	_	_	0	_	_	start_char=8770|end_char=8773
+2-3	children's	_	_	_	_	_	_	_	start_char=8774|end_char=8784
+2	children	_	_	_	_	1	_	_	start_char=8774|end_char=8782
+3	's	_	_	_	_	2	_	_	start_char=8782|end_char=8784
+4	toys	_	_	_	_	3	_	_	start_char=8785|end_char=8789
+5	(	_	_	_	_	4	_	_	SpaceAfter=No|start_char=8790|end_char=8791
+6	all	_	_	_	_	5	_	_	start_char=8791|end_char=8794
+7	23	_	_	_	_	6	_	_	start_char=8795|end_char=8797
+8	of	_	_	_	_	7	_	_	start_char=8798|end_char=8800
+9	them	_	_	_	_	8	_	_	SpaceAfter=No|start_char=8801|end_char=8805
+10	)	_	_	_	_	9	_	_	start_char=8805|end_char=8806
+11	were	_	_	_	_	10	_	_	start_char=8807|end_char=8811
+12	scattered	_	_	_	_	11	_	_	start_char=8812|end_char=8821
+13	across	_	_	_	_	12	_	_	start_char=8822|end_char=8828
+14	the	_	_	_	_	13	_	_	start_char=8829|end_char=8832
+15	room	_	_	_	_	14	_	_	SpaceAfter=No|start_char=8833|end_char=8837
+16	!	_	_	_	_	15	_	_	SpaceAfter=No|start_char=8837|end_char=8838
+
+# text = "Where are you going?" she asked.
+# sent_id = 132
+1	"	_	_	_	_	0	_	_	SpaceAfter=No|start_char=8838|end_char=8839
+2	Where	_	_	_	_	1	_	_	start_char=8839|end_char=8844
+3	are	_	_	_	_	2	_	_	start_char=8845|end_char=8848
+4	you	_	_	_	_	3	_	_	start_char=8849|end_char=8852
+5	going	_	_	_	_	4	_	_	SpaceAfter=No|start_char=8853|end_char=8858
+6	?	_	_	_	_	5	_	_	SpaceAfter=No|start_char=8858|end_char=8859
+7	"	_	_	_	_	6	_	_	start_char=8859|end_char=8860
+8	she	_	_	_	_	7	_	_	start_char=8861|end_char=8864
+9	asked	_	_	_	_	8	_	_	SpaceAfter=No|start_char=8865|end_char=8870
+10	.	_	_	_	_	9	_	_	start_char=8870|end_char=8871
+
+# text = The children's toys (all 23 of them) were scattered across the room!
+# sent_id = 133
+1	The	_	_	_	_	0	_	_	start_char=8872|end_char=8875
+2-3	children's	_	_	_	_	_	_	_	start_char=8876|end_char=8886
+2	children	_	_	_	_	1	_	_	start_char=8876|end_char=8884
+3	's	_	_	_	_	2	_	_	start_char=8884|end_char=8886
+4	toys	_	_	_	_	3	_	_	start_char=8887|end_char=8891
+5	(	_	_	_	_	4	_	_	SpaceAfter=No|start_char=8892|end_char=8893
+6	all	_	_	_	_	5	_	_	start_char=8893|end_char=8896
+7	23	_	_	_	_	6	_	_	start_char=8897|end_char=8899
+8	of	_	_	_	_	7	_	_	start_char=8900|end_char=8902
+9	them	_	_	_	_	8	_	_	SpaceAfter=No|start_char=8903|end_char=8907
+10	)	_	_	_	_	9	_	_	start_char=8907|end_char=8908
+11	were	_	_	_	_	10	_	_	start_char=8909|end_char=8913
+12	scattered	_	_	_	_	11	_	_	start_char=8914|end_char=8923
+13	across	_	_	_	_	12	_	_	start_char=8924|end_char=8930
+14	the	_	_	_	_	13	_	_	start_char=8931|end_char=8934
+15	room	_	_	_	_	14	_	_	SpaceAfter=No|start_char=8935|end_char=8939
+16	!	_	_	_	_	15	_	_	SpacesAfter=\n\n|start_char=8939|end_char=8940
+
+# text = The well-known author, who had written e-mails to info@example.com, visited https://www.example.org/about yesterday.
+# sent_id = 134
+1	The	_	_	_	_	0	_	_	start_char=8942|end_char=8945
+2	well	_	_	_	_	1	_	_	SpaceAfter=No|start_char=8946|end_char=8950
+3	-	_	_	_	_	2	_	_	SpaceAfter=No|start_char=8950|end_char=8951
+4	known	_	_	_	_	3	_	_	start_char=8951|end_char=8956
+5	author	_	_	_	_	4	_	_	SpaceAfter=No|start_char=8957|end_char=8963
+6	,	_	_	_	_	5	_	_	start_char=8963|end_char=8964
+7	who	_	_	_	_	6	_	_	start_char=8965|end_char=8968
+8	had	_	_	_	_	7	_	_	start_char=8969|end_char=8972
+9	written	_	_	_	_	8	_	_	start_char=8973|end_char=8980
+10	e-mails	_	_	_	_	9	_	_	start_char=8981|end_char=8988
+11	to	_	_	_	_	10	_	_	start_char=8989|end_char=8991
+12	info@example.com	_	_	_	_	11	_	_	SpaceAfter=No|start_char=8992|end_char=9008
+13	,	_	_	_	_	12	_	_	start_char=9008|end_char=9009
+14	visited	_	_	_	_	13	_	_	start_char=9010|end_char=9017
+15	https://www.example.org/about	_	_	_	_	14	_	_	start_char=9018|end_char=9047
+16	yesterday	_	_	_	_	15	_	_	SpaceAfter=No|start_char=9048|end_char=9057
+17	.	_	_	_	_	16	_	_	SpacesAfter=\n|start_char=9057|end_char=9058

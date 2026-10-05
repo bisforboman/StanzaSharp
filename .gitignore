@@ -1,0 +1,14 @@
+# .NET
+bin/
+obj/
+.vs/
+*.user
+TestResults/
+
+# Model files (downloaded and converted, large, separately licensed)
+models/
+
+# Python
+tools/.venv/
+__pycache__/
+*.pyc

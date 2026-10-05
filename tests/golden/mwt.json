@@ -1,0 +1,378 @@
+[
+ {
+  "word": "don't",
+  "pipeline": [
+   "do",
+   "n't"
+  ],
+  "model": [
+   "do",
+   "n't"
+  ]
+ },
+ {
+  "word": "Don't",
+  "pipeline": [
+   "Do",
+   "n't"
+  ],
+  "model": [
+   "Do",
+   "n't"
+  ]
+ },
+ {
+  "word": "DON'T",
+  "pipeline": [
+   "DO",
+   "N'T"
+  ],
+  "model": [
+   "DO",
+   "N'T"
+  ]
+ },
+ {
+  "word": "can't",
+  "pipeline": [
+   "ca",
+   "n't"
+  ],
+  "model": [
+   "ca",
+   "n't"
+  ]
+ },
+ {
+  "word": "Can't",
+  "pipeline": [
+   "Ca",
+   "n't"
+  ],
+  "model": [
+   "Ca",
+   "n't"
+  ]
+ },
+ {
+  "word": "won't",
+  "pipeline": [
+   "wo",
+   "n't"
+  ],
+  "model": [
+   "wo",
+   "n't"
+  ]
+ },
+ {
+  "word": "it's",
+  "pipeline": [
+   "it",
+   "'s"
+  ],
+  "model": [
+   "it",
+   "'s"
+  ]
+ },
+ {
+  "word": "It's",
+  "pipeline": [
+   "It",
+   "'s"
+  ],
+  "model": [
+   "It",
+   "'s"
+  ]
+ },
+ {
+  "word": "we'll",
+  "pipeline": [
+   "we",
+   "'ll"
+  ],
+  "model": [
+   "we",
+   "'ll"
+  ]
+ },
+ {
+  "word": "she'd",
+  "pipeline": [
+   "she",
+   "'d"
+  ],
+  "model": [
+   "she",
+   "'d"
+  ]
+ },
+ {
+  "word": "I'd've",
+  "pipeline": [
+   "I'd",
+   "'ve"
+  ],
+  "model": [
+   "I'd",
+   "'ve"
+  ]
+ },
+ {
+  "word": "wouldn't've",
+  "pipeline": [
+   "would",
+   "n't",
+   "'ve"
+  ],
+  "model": [
+   "would",
+   "n't",
+   "'ve"
+  ]
+ },
+ {
+  "word": "y'all",
+  "pipeline": [
+   "y",
+   "'all"
+  ],
+  "model": [
+   "y",
+   "'all"
+  ]
+ },
+ {
+  "word": "gonna",
+  "pipeline": [
+   "gon",
+   "na"
+  ],
+  "model": [
+   "gon",
+   "na"
+  ]
+ },
+ {
+  "word": "wanna",
+  "pipeline": [
+   "wan",
+   "na"
+  ],
+  "model": [
+   "wan",
+   "na"
+  ]
+ },
+ {
+  "word": "dunno",
+  "pipeline": [
+   "du",
+   "n",
+   "no"
+  ],
+  "model": [
+   "du",
+   "n",
+   "no"
+  ]
+ },
+ {
+  "word": "cannot",
+  "pipeline": [
+   "can",
+   "not"
+  ],
+  "model": [
+   "can",
+   "not"
+  ]
+ },
+ {
+  "word": "ain't",
+  "pipeline": [
+   "ai",
+   "n't"
+  ],
+  "model": [
+   "ai",
+   "n't"
+  ]
+ },
+ {
+  "word": "o'clock",
+  "pipeline": [
+   "o'clock"
+  ],
+  "model": [
+   "o'clock"
+  ]
+ },
+ {
+  "word": "Mary's",
+  "pipeline": [
+   "Mary",
+   "'s"
+  ],
+  "model": [
+   "Mary",
+   "'s"
+  ]
+ },
+ {
+  "word": "children's",
+  "pipeline": [
+   "children",
+   "'s"
+  ],
+  "model": [
+   "children",
+   "'s"
+  ]
+ },
+ {
+  "word": "Smiths'",
+  "pipeline": [
+   "Smiths",
+   "'"
+  ],
+  "model": [
+   "Smiths",
+   "'"
+  ]
+ },
+ {
+  "word": "Kowalczyk's",
+  "pipeline": [
+   "Kowalczyk",
+   "'s"
+  ],
+  "model": [
+   "Kowalczyk",
+   "'s"
+  ]
+ },
+ {
+  "word": "Zürich's",
+  "pipeline": [
+   "Zürich",
+   "'s"
+  ],
+  "model": [
+   "Zürich",
+   "'s"
+  ]
+ },
+ {
+  "word": "naïve's",
+  "pipeline": [
+   "naïve",
+   "'s"
+  ],
+  "model": [
+   "naïve",
+   "'s"
+  ]
+ },
+ {
+  "word": "東京's",
+  "pipeline": [
+   "東京",
+   "'s"
+  ],
+  "model": [
+   "東京",
+   "'s"
+  ]
+ },
+ {
+  "word": "rock'n'roll",
+  "pipeline": [
+   "rock'n",
+   "'roll"
+  ],
+  "model": [
+   "rock'n",
+   "'roll"
+  ]
+ },
+ {
+  "word": "they’re",
+  "pipeline": [
+   "they",
+   "’re"
+  ],
+  "model": [
+   "they",
+   "’re"
+  ]
+ },
+ {
+  "word": "CEO's",
+  "pipeline": [
+   "CEO",
+   "'s"
+  ],
+  "model": [
+   "CEO",
+   "'s"
+  ]
+ },
+ {
+  "word": "1990's",
+  "pipeline": [
+   "1990",
+   "'s"
+  ],
+  "model": [
+   "1990",
+   "'s"
+  ]
+ },
+ {
+  "word": "U.S.'s",
+  "pipeline": [
+   "U.S.",
+   "'s"
+  ],
+  "model": [
+   "U.S.",
+   "'s"
+  ]
+ },
+ {
+  "word": "x",
+  "pipeline": [
+   "x"
+  ],
+  "model": [
+   "x"
+  ]
+ },
+ {
+  "word": "it'll've",
+  "pipeline": [
+   "it",
+   "'ll",
+   "'ve"
+  ],
+  "model": [
+   "it",
+   "'ll",
+   "'ve"
+  ]
+ },
+ {
+  "word": "Jean-Luc's",
+  "pipeline": [
+   "Jean-Luc",
+   "'s"
+  ],
+  "model": [
+   "Jean-Luc",
+   "'s"
+  ]
+ }
+]

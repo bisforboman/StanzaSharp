@@ -1,0 +1,92 @@
+{
+ "stanza": "1.15.0",
+ "sentences": [
+  {
+   "sentence": 0,
+   "text": "Barack Obama was born in Hawaii.",
+   "words": [
+    "Barack",
+    "Obama",
+    "was",
+    "born",
+    "in",
+    "Hawaii",
+    "."
+   ],
+   "xpos": [
+    "NNP",
+    "NNP",
+    "VBD",
+    "VBN",
+    "IN",
+    "NNP",
+    "."
+   ],
+   "tree": "(ROOT (S (NP (NNP Barack) (NNP Obama)) (VP (VBD was) (VP (VBN born) (PP (IN in) (NP (NNP Hawaii))))) (. .)))"
+  },
+  {
+   "sentence": 1,
+   "text": "He was elected president in 2008.",
+   "words": [
+    "He",
+    "was",
+    "elected",
+    "president",
+    "in",
+    "2008",
+    "."
+   ],
+   "xpos": [
+    "PRP",
+    "VBD",
+    "VBN",
+    "NN",
+    "IN",
+    "CD",
+    "."
+   ],
+   "tree": "(ROOT (S (NP (PRP He)) (VP (VBD was) (VP (VBN elected) (S (NP (NN president))) (PP (IN in) (NP (CD 2008))))) (. .)))"
+  },
+  {
+   "sentence": 2,
+   "text": "I don't think it's going to rain today, but we'll see.",
+   "words": [
+    "I",
+    "do",
+    "n't",
+    "think",
+    "it",
+    "'s",
+    "going",
+    "to",
+    "rain",
+    "today",
+    ",",
+    "but",
+    "we",
+    "'ll",
+    "see",
+    "."
+   ],
+   "xpos": [
+    "PRP",
+    "VBP",
+    "RB",
+    "VB",
+    "PRP",
+    "VBZ",
+    "VBG",
+    "TO",
+    "VB",
+    "NN",
+    ",",
+    "CC",
+    "PRP",
+    "MD",
+    "VB",
+    "."
+   ],
+   "tree": "(ROOT (S (S (NP (PRP I)) (VP (VBP do) (RB n't) (VP (VB think) (SBAR (S (NP (PRP it)) (VP (VBZ 's) (VP (VBG going) (S (VP (TO to) (VP (VB rain) (NP (NN today)))))))))))) (, ,) (CC but) (S (NP (PRP we)) (VP (MD 'll) (VP (VB see)))) (. .)))"
+  }
+ ]
+}

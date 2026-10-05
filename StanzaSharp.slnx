@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/samples/">
+    <Project Path="samples/StanzaSharp.Cli/StanzaSharp.Cli.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/StanzaSharp.Constituency/StanzaSharp.Constituency.csproj" />
+    <Project Path="src/StanzaSharp.Core/StanzaSharp.Core.csproj" />
+    <Project Path="src/StanzaSharp.Mwt/StanzaSharp.Mwt.csproj" />
+    <Project Path="src/StanzaSharp.Nn/StanzaSharp.Nn.csproj" />
+    <Project Path="src/StanzaSharp.Pos/StanzaSharp.Pos.csproj" />
+    <Project Path="src/StanzaSharp.Tokenize/StanzaSharp.Tokenize.csproj" />
+    <Project Path="src/StanzaSharp/StanzaSharp.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/StanzaSharp.Tests/StanzaSharp.Tests.csproj" />
+  </Folder>
+</Solution>

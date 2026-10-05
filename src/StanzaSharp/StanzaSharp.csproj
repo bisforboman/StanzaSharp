@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\StanzaSharp.Core\StanzaSharp.Core.csproj" />
+    <ProjectReference Include="..\StanzaSharp.Tokenize\StanzaSharp.Tokenize.csproj" />
+    <ProjectReference Include="..\StanzaSharp.Mwt\StanzaSharp.Mwt.csproj" />
+    <ProjectReference Include="..\StanzaSharp.Pos\StanzaSharp.Pos.csproj" />
+    <ProjectReference Include="..\StanzaSharp.Constituency\StanzaSharp.Constituency.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

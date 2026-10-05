@@ -1,0 +1,5 @@
+# Reference implementation + converter dependencies.
+# Golden test data (tests/golden) depends on these exact versions; regenerate it if you change them.
+stanza==1.15.0
+torch==2.14.1
+numpy==2.2.6
