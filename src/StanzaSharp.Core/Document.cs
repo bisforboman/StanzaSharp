@@ -28,6 +28,9 @@ public sealed class Token
     /// <summary>Whitespace following the token in the original text: "" for none.</summary>
     public string SpaceAfter { get; set; } = " ";
 
+    /// <summary>Whitespace before the token; only set on a document's first token, as in Stanza.</summary>
+    public string SpacesBefore { get; set; } = "";
+
     public List<Word> Words { get; } = [];
     public bool IsMultiWord => Words.Count > 1;
 

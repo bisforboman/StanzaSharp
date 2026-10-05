@@ -5,7 +5,9 @@ public static class Repo
 {
     public static readonly string Root = FindRoot();
     public static readonly string Golden = Path.Combine(Root, "tests", "golden");
-    public static readonly string Models = Path.Combine(Root, "models", "converted", "en");
+    // STANZASHARP_MODELS overrides the location, e.g. for a git worktree without its own models/.
+    public static readonly string Models =
+        Environment.GetEnvironmentVariable("STANZASHARP_MODELS") is { Length: > 0 } dir ? dir : Path.Combine(Root, "models", "converted", "en");
 
     public static string Model(string relativeBase) => Path.Combine(Models, relativeBase);
 

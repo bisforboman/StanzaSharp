@@ -12,6 +12,21 @@ public class PipelineTests
     }
 
     [ModelFact]
+    public void Process_MatchesGoldenOnValidationCorpus()
+    {
+        using var nlp = Pipeline.Load(Repo.Models);
+        var actual = Conllu.Write(nlp.Process(File.ReadAllText(Path.Combine(Repo.Golden, "validation.txt"))));
+        var golden = File.ReadAllText(Path.Combine(Repo.Golden, "validation.conllu"));
+
+        // Compare sentence by sentence so a failure names the first sentence that differs.
+        var expected = golden.Split("\n\n");
+        var got = actual.Split("\n\n");
+        for (int i = 0; i < Math.Min(expected.Length, got.Length); i++)
+            Assert.Equal(expected[i], got[i]);
+        Assert.Equal(expected.Length, got.Length);
+    }
+
+    [ModelFact]
     public void Load_RunsASubsetOfProcessors()
     {
         using var nlp = Pipeline.Load(Repo.Models, "tokenize,mwt");
