@@ -23,6 +23,13 @@ Reads <out>/corpus.txt and writes:
   validation*.conllu    full pipeline output for each validation*.txt, varied hand-written corpora
                         (validation_nonbmp has text outside the BMP; C# reports its offsets in
                         UTF-16 units, so its test ignores start_char/end_char)
+  depparse/<name>.conllu
+                        tokenize,mwt,pos,lemma,depparse output for corpus.txt (as corpus.conllu) and
+                        each validation*.txt; `--depparse-only` regenerates just depparse/
+  depparse/intermediates.safetensors + .json
+                        for the first INTERMEDIATE_SENTENCES sentences, each parsed alone from its
+                        golden words/tags/lemmas: s{i}.unlabeled (arc log-probs [n+1, n+1], -inf on
+                        the diagonal) and s{i}.deprel (label log-probs [n+1, n+1, n_deprels])
   lemma/<name>.conllu   tokenize,mwt,pos,lemma output for corpus.txt and each validation*.txt
   lemma/words.json      lemmatizer on LEMMA_WORDS: pipeline lemma, raw seq2seq output and edit class
                         (`--lemma-only` regenerates just lemma/)
@@ -36,6 +43,7 @@ import sys
 from pathlib import Path
 
 import stanza
+import numpy as np
 import torch
 
 sys.path.insert(0, str(Path(__file__).parent))
@@ -119,6 +127,83 @@ def write_mwt_golden(models, out):
     print(f"mwt.json: {len(result)} words, {sum(r['pipeline'] != r['model'] for r in result)} differ by dictionary")
 
 
+DEPPARSE_PROCESSORS = "tokenize,mwt,pos,lemma,depparse"
+
+
+def write_depparse_golden(models, out):
+    """
+    depparse/: full output with heads and deprels, kept apart from the files above. The C# parser
+    gets each file's own words, tags and lemmas, since the lemmatizer is ported separately.
+    """
+    nlp = stanza.Pipeline("en", dir=models, processors=DEPPARSE_PROCESSORS, download_method=None,
+                          use_gpu=False, logging_level="WARN")
+    dep = out / "depparse"
+    dep.mkdir(exist_ok=True)
+    write_mst_golden(out)
+    sources = [out / "corpus.txt"] + sorted(out.glob("validation*.txt"))
+    corpus_doc = None
+    for path in sources:
+        with torch.no_grad():
+            doc = nlp(path.read_bytes().decode("utf-8"))
+        name = "corpus" if path.name == "corpus.txt" else path.stem
+        corpus_doc = corpus_doc or doc
+        (dep / f"{name}.conllu").write_text("{:C}\n".format(doc), encoding="utf-8", newline="\n")
+        print(f"depparse/{name}.conllu: {len(doc.sentences)} sentences, {doc.num_words} words")
+
+    # Intermediates: parse each sentence alone, capturing GraphParser.forward's predictions.
+    processor = nlp.processors["depparse"]
+    model = processor.trainer.model
+    captured = []
+    original = model.forward
+
+    def forward(*a, **k):
+        loss, preds = original(*a, **k)
+        captured.append(preds)
+        return loss, preds
+
+    model.forward = forward
+    tensors, index = {}, []
+    try:
+        for i, sent in enumerate(corpus_doc.sentences[:INTERMEDIATE_SENTENCES]):
+            words = [{"id": w.id, "text": w.text, "lemma": w.lemma, "upos": w.upos, "xpos": w.xpos,
+                      "feats": w.feats} for w in sent.words]
+            single = stanza.Document([words])
+            captured.clear()
+            with torch.no_grad():
+                processor.process(single)
+            tensors[f"s{i}.unlabeled"] = captured[0][0][0]
+            tensors[f"s{i}.deprel"] = captured[0][2][0]
+            index.append({"sentence": i, "words": [w["text"] for w in words],
+                          "heads": [w.head for w in single.sentences[0].words],
+                          "deprels": [w.deprel for w in single.sentences[0].words]})
+    finally:
+        model.forward = original
+    write_safetensors(tensors, dep / "intermediates.safetensors", {"stanza": stanza.__version__})
+    with open(dep / "intermediates.json", "w", encoding="utf-8", newline="\n") as f:
+        json.dump({"stanza": stanza.__version__, "sentences": index}, f, indent=1, ensure_ascii=False)
+    for k, v in tensors.items():
+        print(f"  {k}: {list(v.shape)}")
+
+
+def mst_scores(n, seed):
+    """Integer-valued scores with many ties, cheap to rebuild in C# (DepparseTests.MstScores)."""
+    return np.array([[float(((i * 31 + j * 17 + seed * 7) * (i + 2 * j + seed + 1)) % 23 - 11)
+                      for j in range(n)] for i in range(n)])
+
+
+def write_mst_golden(out):
+    """depparse/mst.json: chuliu_edmonds_one_root on mst_scores(n, seed); null where Stanza asserts."""
+    from stanza.models.common.chuliu_edmonds import chuliu_edmonds_one_root
+    cases = []
+    for n in (2, 4, 7, 12, 30, 60):
+        for seed in range(40):
+            try:
+                tree = [int(h) for h in chuliu_edmonds_one_root(mst_scores(n, seed))]
+            except AssertionError:
+                tree = None
+            cases.append({"n": n, "seed": seed, "tree": tree})
+    with open(out / "depparse" / "mst.json", "w", encoding="utf-8", newline="\n") as f:
+        json.dump(cases, f, separators=(",", ":"))
 # (word, UPOS) pairs for the lemmatizer: dictionary hits by POS and POS-independent, and seq2seq
 # words for every edit type, unknown characters (copied through the delta vocab), non-BMP text,
 # a word longer than max_dec_len, and odd inputs.
@@ -211,9 +296,14 @@ def main():
     p.add_argument("--models", default="models/stanza")
     p.add_argument("--out", default="tests/golden")
     p.add_argument("--pt-only", action="store_true", help="only regenerate the pt/ loader fixtures")
+    p.add_argument("--depparse-only", action="store_true", help="only regenerate depparse/")
     p.add_argument("--lemma-only", action="store_true", help="only regenerate the lemma/ golden data")
     args = p.parse_args()
     out = Path(args.out)
+    if args.depparse_only:
+        torch.manual_seed(0)
+        write_depparse_golden(args.models, out)
+        return
     if args.lemma_only:
         write_lemma_golden(args.models, out)
         return
@@ -275,6 +365,7 @@ def main():
             entry["tree"] = "{}".format(single.sentences[0].constituency)
         index.append(entry)
 
+    write_depparse_golden(args.models, out)
     write_tokenize_stress(args.models, text, out)
     write_mwt_golden(args.models, out)
     write_lemma_golden(args.models, out)

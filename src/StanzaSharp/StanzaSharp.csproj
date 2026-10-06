@@ -25,6 +25,7 @@
     <ProjectReference Include="..\StanzaSharp.Pos\StanzaSharp.Pos.csproj" PrivateAssets="all" />
     <ProjectReference Include="..\StanzaSharp.Lemma\StanzaSharp.Lemma.csproj" PrivateAssets="all" />
     <ProjectReference Include="..\StanzaSharp.Constituency\StanzaSharp.Constituency.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\StanzaSharp.Depparse\StanzaSharp.Depparse.csproj" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

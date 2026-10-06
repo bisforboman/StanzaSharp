@@ -1,4 +1,5 @@
 using StanzaSharp.Constituency;
+using StanzaSharp.Depparse;
 using StanzaSharp.Lemma;
 using StanzaSharp.Mwt;
 using StanzaSharp.Nn;
@@ -28,6 +29,7 @@ public sealed class Pipeline : IDisposable
         ["mwt"] = ["tokenize"],
         ["pos"] = ["tokenize", "mwt"],
         ["lemma"] = ["tokenize", "mwt", "pos"], // Stanza only requires tokenize, but the model reads UPOS
+        ["depparse"] = ["tokenize", "mwt", "pos", "lemma"],
         ["constituency"] = ["tokenize", "mwt", "pos"],
     };
 
@@ -35,6 +37,7 @@ public sealed class Pipeline : IDisposable
     private readonly MwtExpander? _mwt;
     private readonly PosTagger? _pos;
     private readonly Lemmatizer? _lemma;
+    private readonly DependencyParser? _depparse;
     private readonly ConstituencyParser? _parser;
     private readonly Pretrain? _pretrain;
     private readonly CharLanguageModel? _charlmForward, _charlmBackward;
@@ -46,7 +49,7 @@ public sealed class Pipeline : IDisposable
         _tokenizer = Tokenizer.Load(Model("tokenize/combined_nocharlm"));
         if (processors.Contains("mwt"))
             _mwt = MwtExpander.Load(Model("mwt/combined"));
-        if (processors.Contains("pos") || processors.Contains("constituency"))
+        if (processors.Contains("pos") || processors.Contains("depparse") || processors.Contains("constituency"))
         {
             _pretrain = Pretrain.Load(Model("pretrain/conll17"));
             _charlmForward = CharLanguageModel.Load(Model("forward_charlm/1billion"));
@@ -56,6 +59,8 @@ public sealed class Pipeline : IDisposable
             _pos = PosTagger.Load(Model("pos/combined_charlm"), _pretrain!, _charlmForward!, _charlmBackward!);
         if (processors.Contains("lemma"))
             _lemma = Lemmatizer.Load(Model("lemma/combined_nocharlm"));
+        if (processors.Contains("depparse"))
+            _depparse = DependencyParser.Load(Model("depparse/combined_charlm"), _pretrain!, _charlmForward!, _charlmBackward!);
         if (processors.Contains("constituency"))
             _parser = ConstituencyParser.Load(Model("constituency/ptb3-revised_charlm"), _pretrain!, _charlmForward!, _charlmBackward!);
     }
@@ -64,7 +69,7 @@ public sealed class Pipeline : IDisposable
     /// Loads the English models from <paramref name="modelDir"/>: either converted ones (e.g. <c>models/converted/en</c>)
     /// or Stanza's own download with its <c>.pt</c> files (e.g. <c>models/stanza/en</c>), chosen per file.
     /// </summary>
-    /// <param name="processors">Comma-separated processors: those in <see cref="AllProcessors"/>, plus <c>lemma</c>; each needs the ones before it.</param>
+    /// <param name="processors">Comma-separated processors: those in <see cref="AllProcessors"/>, plus <c>lemma</c> and <c>depparse</c>; each needs the ones before it.</param>
     public static Pipeline Load(string modelDir, string processors = AllProcessors)
     {
         if (!Directory.Exists(modelDir))
@@ -92,6 +97,8 @@ public sealed class Pipeline : IDisposable
         using var charlms = _pos != null && _parser != null ? new CharlmCache() : null;
         _pos?.Process(doc, charlms);
         _lemma?.Process(doc);
+        // No CharlmCache: depparse runs the charlms with a ROOT word in front, so the tagger's outputs don't apply.
+        _depparse?.Process(doc);
         _parser?.Process(doc, charlms);
         return doc;
     }
@@ -99,6 +106,7 @@ public sealed class Pipeline : IDisposable
     public void Dispose()
     {
         _parser?.Dispose();
+        _depparse?.Dispose();
         _pos?.Dispose();
         _lemma?.Dispose();
         _mwt?.Dispose();

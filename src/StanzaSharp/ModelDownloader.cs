@@ -31,12 +31,13 @@ public static class ModelDownloader
         ("pretrain/conll17.pt", "c339580492002fb1f759537dfbc57fb2"),
         ("forward_charlm/1billion.pt", "468b3377455fa0311565d46865f55afb"),
         ("backward_charlm/1billion.pt", "1405948b125b4264fd17509d1b6175ca"),
+        ("depparse/combined_charlm.pt", "993a0eb712cefb881c684df8d9934f15"),
     ];
 
     private static readonly HttpClient Http = new() { DefaultRequestHeaders = { { "User-Agent", "StanzaSharp" } } };
 
     /// <summary>
-    /// Downloads the English models (about 300 MB) into <paramref name="modelDir"/>, laid out as
+    /// Downloads the English models (about 450 MB) into <paramref name="modelDir"/>, laid out as
     /// <c>&lt;processor&gt;/&lt;name&gt;.pt</c>. Files already there with the right checksum are kept;
     /// every new file is checked against its MD5 before it is put in place.
     /// </summary>
