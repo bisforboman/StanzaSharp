@@ -4,6 +4,7 @@
 - tokenization and sentence splitting
 - multi-word token expansion ("don't" → "do" + "n't")
 - part-of-speech tags and morphological features
+- lemmas (opt-in: add `lemma` to the processor list)
 - constituency parsing
 
 It runs Stanza's own pretrained models through TorchSharp, with no Python needed. The output is identical
@@ -46,7 +47,7 @@ foreach (var sentence in doc.Sentences)
 }
 ```
 
-- `Pipeline.Load(dir, "tokenize,mwt")` runs only the listed processors; each needs the ones before it.
+- `Pipeline.Load(dir, "tokenize,mwt")` runs only the listed processors; each needs the ones before it. `lemma` (after `pos`) is not in the default list yet.
 - `Conllu.Write(doc)` gives CoNLL-U in Stanza's format.
 
 ## License

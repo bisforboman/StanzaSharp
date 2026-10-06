@@ -237,6 +237,7 @@ internal static class TorchCheckpoint
                 case null: w.WriteNullValue(); break;
                 case bool b: w.WriteBooleanValue(b); break;
                 case string s: w.WriteStringValue(s); break;
+                case byte[] bytes: Tagged("$bytes", () => w.WriteStringValue(Convert.ToBase64String(bytes))); break;
                 case long l: w.WriteNumberValue(l); break;
                 case BigInteger n: w.WriteRawValue(n.ToString(CultureInfo.InvariantCulture)); break;
                 case double d when double.IsFinite(d): w.WriteRawValue(PythonRepr(d)); break;
