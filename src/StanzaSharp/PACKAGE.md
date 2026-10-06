@@ -52,7 +52,7 @@ copied. Smaller models help too: `Package = "default_fast"` and downloading only
 | Windows x64 | Yes | `StanzaSharp.Cpu.Windows`, or `StanzaSharp` + `TorchSharp-cpu` |
 | Windows on Arm64 | Yes | `StanzaSharp.Cpu.WindowsArm64` only: `TorchSharp-cpu` has no Arm64 libtorch |
 | macOS on Apple Silicon | Yes, after `brew install libomp` | `StanzaSharp.Cpu.MacOS`, or `StanzaSharp` + `TorchSharp-cpu` |
-| Alpine and other musl Linux | No | None: libtorch and TorchSharp are built for glibc only, with no `linux-musl` build |
+| Alpine and other musl Linux | No | None: libtorch and TorchSharp are built for glibc only, with no `linux-musl` build. Not even with `gcompat`: libtorch needs glibc-only symbols (`__memcpy_chk`, `backtrace`, `fcntl64`, …) it doesn't provide (tested in CI) |
 | Linux Arm64 | No | None: no `libtorch-cpu-linux-arm64` package, and TorchSharp has no `linux-arm64` native layer |
 | macOS on Intel (x64) | No | None: TorchSharp has no `osx-x64` native layer, and `libtorch-cpu-osx-x64` stops at 2.2 |
 

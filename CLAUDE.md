@@ -432,8 +432,12 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     cache via `actions/cache/restore` (no new entry; downloaded on a miss); no Docker layer cache (budget).
   - `cross-os (windows-11-arm)`: Windows on Arm64 (GA runner label for public repos). It skips the plain
     `verify-package.ps1` (TorchSharp-cpu has no Arm64 libtorch) and runs `-Platform WindowsArm64`.
-  - `alpine-experiment.yml` (workflow_dispatch, or PRs touching the Docker sample; not required): the docker
-    check on `runtime:10.0-alpine` + `gcompat libstdc++ libgcc`. Alpine stays unsupported unless it is byte-identical.
+  - `alpine-experiment.yml` (workflow_dispatch only; not required): the docker check on `runtime:10.0-alpine` +
+    `gcompat libstdc++ libgcc`.
+    - Verdict (2026-10-06, PR #10): it fails. musl's ldd shows glibc-only symbols that gcompat lacks:
+      the `__*_chk` fortify functions, `backtrace`/`backtrace_symbols`, `fcntl64`, `__res_init`, and
+      `pthread_attr_setaffinity_np` (libgomp).
+    - Alpine stays unsupported unless a musl libtorch/TorchSharp build appears. Rerun it then.
   - Keep paths forward-slash and file names case-exact (Linux). The root `.gitattributes` keeps sources
     LF; `tests/golden/.gitattributes` pins golden files (`eol=lf`, `binary`, `validation_whitespace.txt`
     `-text`), so Windows checkouts with `core.autocrlf=true` stay byte-exact. Bash steps run under

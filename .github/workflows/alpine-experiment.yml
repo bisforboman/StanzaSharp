@@ -6,13 +6,10 @@ name: Alpine experiment
 # The Docker sample is built on mcr.microsoft.com/dotnet/runtime:10.0-alpine plus gcompat and libtorch's other
 # dependencies (libstdc++, libgcc), then must reproduce tests/golden/pipeline.conllu (tools/verify-docker.sh).
 
+# Verdict (PR #10): fails. musl lacks glibc-only symbols libtorch needs (the __*_chk fortify functions,
+# backtrace, fcntl64, __res_init, pthread_attr_setaffinity_np), and gcompat doesn't provide them. Manual only.
 on:
   workflow_dispatch:
-  pull_request:
-    paths:
-      - samples/docker/**
-      - tools/verify-docker.sh
-      - .github/workflows/alpine-experiment.yml
 
 env:
   DOTNET_NOLOGO: true

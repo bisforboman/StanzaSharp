@@ -46,7 +46,7 @@ package exists. Each supported platform runs the full test suite in CI.
 | Windows x64 | Yes | `StanzaSharp.Cpu.Windows`, or `StanzaSharp` + `TorchSharp-cpu` |
 | Windows on Arm64 | Yes | `StanzaSharp.Cpu.WindowsArm64` only: `TorchSharp-cpu` has no Arm64 libtorch |
 | macOS on Apple Silicon | Yes, after `brew install libomp` | `StanzaSharp.Cpu.MacOS`, or `StanzaSharp` + `TorchSharp-cpu` |
-| Alpine and other musl Linux | No | None: libtorch and TorchSharp are built for glibc only, with no `linux-musl` build |
+| Alpine and other musl Linux | No | None: libtorch and TorchSharp are built for glibc only, with no `linux-musl` build. Not even with `gcompat`: libtorch needs glibc-only symbols (`__memcpy_chk`, `backtrace`, `fcntl64`, …) it doesn't provide (tested in CI) |
 | Linux Arm64 | No | None: no `libtorch-cpu-linux-arm64` package, and TorchSharp has no `linux-arm64` native layer |
 | macOS on Intel (x64) | No | None: TorchSharp has no `osx-x64` native layer, and `libtorch-cpu-osx-x64` stops at 2.2 |
 
@@ -251,8 +251,8 @@ Tests that need models skip when `models/converted/en` (or, for the `.pt` loader
 - `cross-os (windows-2025)`, `cross-os (macos-15)` (Apple Silicon) and `cross-os (windows-11-arm)` run the same
   full suite, the no-skip check and `tools/verify-package.ps1` (each with its platform package), against Stanza's
   `.pt` files without converting them (no Python). Their models are cached per OS, keyed on `ModelDownloader.cs`.
-- `.github/workflows/alpine-experiment.yml` (manual, or on PRs touching the Docker sample; not required) runs
-  the same Docker check on Alpine with `gcompat`.
+- `.github/workflows/alpine-experiment.yml` (manual only; not required) runs the same Docker check on Alpine with
+  `gcompat` and prints the loader's unresolved symbols. It fails today, which is why Alpine is unsupported.
 
 `build-test` and `golden` stay separate jobs, not a matrix, because branch protection requires checks
 by those exact names. All upload their `.trx` test results. To reproduce `golden` locally, run `setup.ps1 -Models`, then
