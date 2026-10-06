@@ -7,6 +7,7 @@
     <Project Path="src/StanzaSharp.Constituency/StanzaSharp.Constituency.csproj" />
     <Project Path="src/StanzaSharp.Core/StanzaSharp.Core.csproj" />
     <Project Path="src/StanzaSharp.Depparse/StanzaSharp.Depparse.csproj" />
+    <Project Path="src/StanzaSharp.Lemma/StanzaSharp.Lemma.csproj" />
     <Project Path="src/StanzaSharp.Mwt/StanzaSharp.Mwt.csproj" />
     <Project Path="src/StanzaSharp.Nn/StanzaSharp.Nn.csproj" />
     <Project Path="src/StanzaSharp.Pos/StanzaSharp.Pos.csproj" />

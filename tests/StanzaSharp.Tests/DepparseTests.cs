@@ -136,14 +136,39 @@ public class DepparseTests
             foreach (var w in doc.Sentences.SelectMany(s => s.Words))
                 (w.Head, w.Deprel) = (null, null);
             models.Parser.Process(doc);
-
-            var expected = golden.Split("\n\n");
-            var got = Conllu.Write(doc).Split("\n\n");
-            int i = 0;
-            while (i < Math.Min(expected.Length, got.Length) && expected[i] == got[i]) i++;
-            if (i < expected.Length || i < got.Length)
-                failures.Add($"{Path.GetFileName(file)}, sentence {i}:\n--- expected\n{expected.ElementAtOrDefault(i)}\n--- actual\n{got.ElementAtOrDefault(i)}");
+            Compare(Path.GetFileName(file), golden, Conllu.Write(doc), failures);
         }
         Assert.True(failures.Count == 0, string.Join("\n\n", failures));
+    }
+
+    [ModelFact]
+    public void Pipeline_ReproducesGoldenFilesFromText()
+    {
+        using var nlp = Pipeline.Load(Repo.Models, "tokenize,mwt,pos,lemma,depparse");
+        var failures = new List<string>();
+        var files = Directory.GetFiles(Golden, "*.conllu").Order().ToList();
+        Assert.Equal(13, files.Count);
+        foreach (var file in files)
+        {
+            var txt = Path.Combine(Repo.Golden, Path.GetFileNameWithoutExtension(file) + ".txt");
+            var actual = Conllu.Write(nlp.Process(File.ReadAllText(txt)));
+            var golden = File.ReadAllText(file);
+            // Outside the BMP, C# offsets are UTF-16 indices and Stanza's are code points.
+            if (Path.GetFileName(txt) == "validation_nonbmp.txt")
+                (actual, golden) = (PipelineTests.StripOffsets(actual), PipelineTests.StripOffsets(golden));
+            Compare(Path.GetFileName(file), golden, actual, failures);
+        }
+        Assert.True(failures.Count == 0, string.Join("\n\n", failures));
+    }
+
+    /// <summary>Records the first sentence where <paramref name="actual"/> differs from <paramref name="golden"/>.</summary>
+    private static void Compare(string name, string golden, string actual, List<string> failures)
+    {
+        var expected = golden.Split("\n\n");
+        var got = actual.Split("\n\n");
+        int i = 0;
+        while (i < Math.Min(expected.Length, got.Length) && expected[i] == got[i]) i++;
+        if (i < expected.Length || i < got.Length)
+            failures.Add($"{name}, sentence {i}:\n--- expected\n{expected.ElementAtOrDefault(i)}\n--- actual\n{got.ElementAtOrDefault(i)}");
     }
 }

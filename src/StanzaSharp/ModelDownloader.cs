@@ -26,6 +26,7 @@ public static class ModelDownloader
         ("tokenize/combined_nocharlm.pt", "764639a5f65cc42d84b294566ffa6215"),
         ("mwt/combined.pt", "dc569dbb26cc72b71847f9d0b8775d43"),
         ("pos/combined_charlm.pt", "a31dbf7269152bc85c3c79c5318ae848"),
+        ("lemma/combined_nocharlm.pt", "8d3742b3f507e78a9e605afd72b34c92"),
         ("constituency/ptb3-revised_charlm.pt", "74dadb9e65bc7b88889550889d0a1d16"),
         ("pretrain/conll17.pt", "c339580492002fb1f759537dfbc57fb2"),
         ("forward_charlm/1billion.pt", "468b3377455fa0311565d46865f55afb"),

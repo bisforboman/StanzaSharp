@@ -30,6 +30,9 @@ Reads <out>/corpus.txt and writes:
                         for the first INTERMEDIATE_SENTENCES sentences, each parsed alone from its
                         golden words/tags/lemmas: s{i}.unlabeled (arc log-probs [n+1, n+1], -inf on
                         the diagonal) and s{i}.deprel (label log-probs [n+1, n+1, n_deprels])
+  lemma/<name>.conllu   tokenize,mwt,pos,lemma output for corpus.txt and each validation*.txt
+  lemma/words.json      lemmatizer on LEMMA_WORDS: pipeline lemma, raw seq2seq output and edit class
+                        (`--lemma-only` regenerates just lemma/)
   pt/tiny_{legacy,zip}.pt + their stanza_convert.py output (.json/.safetensors)
                         small checkpoints in both torch.save formats for the C# .pt loader tests;
                         `python tools/make_golden.py --pt-only` regenerates just these
@@ -201,6 +204,58 @@ def write_mst_golden(out):
             cases.append({"n": n, "seed": seed, "tree": tree})
     with open(out / "depparse" / "mst.json", "w", encoding="utf-8", newline="\n") as f:
         json.dump(cases, f, separators=(",", ":"))
+# (word, UPOS) pairs for the lemmatizer: dictionary hits by POS and POS-independent, and seq2seq
+# words for every edit type, unknown characters (copied through the delta vocab), non-BMP text,
+# a word longer than max_dec_len, and odd inputs.
+LEMMA_WORDS = [
+    ("saw", "VERB"), ("saw", "NOUN"), ("was", "AUX"), ("children", "NOUN"), ("better", "ADJ"),
+    ("Running", "VERB"), ("flibbertigibbets", "NOUN"), ("unfriended", "VERB"), ("GOOGLING", "VERB"),
+    ("Zoomers", "PROPN"), ("ãntennae", "NOUN"), ("Zürichers", "PROPN"), ("naïvely", "ADV"),
+    ("東京", "PROPN"), ("𝒳s", "NOUN"), ("😀😀s", "SYM"), ("blorptastically", "ADV"),
+    ("supercalifragilisticexpialidociousnessesqwertyuiopasdfgh", "NOUN"), ("_", "PUNCT"),
+    ("<UNK>", "X"), ("quizzeroos", "NOUN"), ("Wugs", "NOUN"), ("ÉCOLES", "NOUN"), ("ﬁnalized", "VERB"),
+]
+
+
+def write_lemma_golden(models, out):
+    """
+    lemma/: lemmatizer golden data, in its own folder.
+      <name>.conllu  tokenize,mwt,pos,lemma output for corpus.txt and every validation*.txt
+      words.json     for each LEMMA_WORDS pair: the pipeline lemma (dictionary + seq2seq ensemble),
+                     and the seq2seq model alone: raw decoded string, edit class and final lemma
+    """
+    from stanza.models.lemma.data import DataLoader
+
+    lemma_out = out / "lemma"
+    lemma_out.mkdir(exist_ok=True)
+    nlp = stanza.Pipeline("en", dir=models, processors="tokenize,mwt,pos,lemma", download_method=None,
+                          use_gpu=False, logging_level="WARN")
+    for path in [out / "corpus.txt"] + sorted(out.glob("validation*.txt")):
+        with torch.no_grad():
+            doc = nlp(path.read_bytes().decode("utf-8"))
+        conllu = lemma_out / path.with_suffix(".conllu").name
+        conllu.write_text("{:C}\n".format(doc), encoding="utf-8", newline="\n")
+        print(f"lemma/{conllu.name}: {len(doc.sentences)} sentences, {doc.num_words} words")
+
+    proc = nlp.processors["lemma"]
+    trainer = proc.trainer
+    doc = stanza.Document([[{"id": 1, "text": w, "upos": u}] for w, u in LEMMA_WORDS])
+    with torch.no_grad():
+        proc.process(doc)
+        batch = DataLoader(doc, proc.config["batch_size"], proc.config, vocab=proc.vocab,
+                           evaluation=True, expand_unk_vocab=True)
+        raw, edits = [], []
+        for b in batch:
+            r, e = trainer.predict(b, proc.config["beam_size"], batch.vocab)
+            raw += r
+            edits += e
+    words = [w for w, _ in LEMMA_WORDS]
+    model = trainer.postprocess(words, raw, edits=edits)
+    result = [{"word": w, "upos": u, "lemma": s.words[0].lemma, "seq2seq": r, "edit": e, "model": m}
+              for (w, u), s, r, e, m in zip(LEMMA_WORDS, doc.sentences, raw, edits, model)]
+    with open(lemma_out / "words.json", "w", encoding="utf-8", newline="\n") as f:
+        json.dump(result, f, indent=1, ensure_ascii=False)
+    print(f"lemma/words.json: {len(result)} words")
 
 
 def write_pt_fixtures(out):
@@ -242,11 +297,15 @@ def main():
     p.add_argument("--out", default="tests/golden")
     p.add_argument("--pt-only", action="store_true", help="only regenerate the pt/ loader fixtures")
     p.add_argument("--depparse-only", action="store_true", help="only regenerate depparse/")
+    p.add_argument("--lemma-only", action="store_true", help="only regenerate the lemma/ golden data")
     args = p.parse_args()
     out = Path(args.out)
     if args.depparse_only:
         torch.manual_seed(0)
         write_depparse_golden(args.models, out)
+        return
+    if args.lemma_only:
+        write_lemma_golden(args.models, out)
         return
     write_pt_fixtures(out)
     if args.pt_only:
@@ -309,6 +368,7 @@ def main():
     write_depparse_golden(args.models, out)
     write_tokenize_stress(args.models, text, out)
     write_mwt_golden(args.models, out)
+    write_lemma_golden(args.models, out)
 
     write_safetensors(tensors, out / "intermediates.safetensors", {"stanza": stanza.__version__})
     with open(out / "intermediates.json", "w", encoding="utf-8", newline="\n") as f:

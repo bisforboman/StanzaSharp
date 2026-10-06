@@ -6,13 +6,14 @@ PyTorch-based NLP library, running the original pretrained models through TorchS
 ## Scope
 
 - **Language:** English only, to start.
-- **Processors:** `tokenize` → `mwt` → `pos` → `constituency`, plus `depparse` (ported, not yet in
-  `Pipeline`; it needs `lemma`).
+- **Processors:** `tokenize` → `mwt` → `pos` → `lemma` → `depparse` → `constituency`. `lemma` and
+  `depparse` are loadable by name but not yet in `Pipeline.AllProcessors`.
 - **Inference only.** Training stays in Python; we load Stanza's released weights.
 - **Package:** Stanza's English *default* package, which needs no transformer:
   - tokenize: `combined_nocharlm`
   - mwt: `combined`
   - pos: `combined_charlm`
+  - lemma: `combined_nocharlm`
   - constituency: `ptb3-revised_charlm`
   - depparse: `combined_charlm`
 - **Shared dependencies:** `pos` and `constituency` both depend on the forward and backward
@@ -62,16 +63,19 @@ All 7 steps of the build order are done:
   is byte-identical to `tests/golden/pipeline.conllu`.
   - The `samples/StanzaSharp.Cli` sample writes the same CoNLL-U from a file or stdin.
   - `Conllu.Write` fills a missing HEAD with `id - 1`, like Stanza's writer.
-- `Depparse.DependencyParser` (shared `Pretrain` + charlms) sets `Word.Head`/`Deprel`. Given Stanza's
-  own words, tags and lemmas, it reproduces every `tests/golden/depparse/*.conllu` byte for byte.
-  Arc/label log-prob drift ≈ 2e-5 (tolerance 1e-4). Not in `Pipeline` yet; to wire it in:
-  - order `tokenize,mwt,pos,lemma,depparse` (Stanza requires pos and lemma; constituency is
-    independent). A missing lemma is read as `_`, so without the lemmatizer the parses differ.
-  - `DependencyParser.Load(dir/depparse/combined_charlm, pretrain, forward, backward)` with the
-    pipeline's shared pretrain/charlms, then `Process(doc)`.
+- `Depparse.DependencyParser` (processor `depparse`, requires tokenize, mwt, pos, lemma; runs after
+  lemma, before constituency) sets `Word.Head`/`Deprel` with the pipeline's shared pretrain/charlms.
+  `Pipeline` with `tokenize,mwt,pos,lemma,depparse` reproduces every `tests/golden/depparse/*.conllu`
+  byte for byte (13 files, 8401 words), and so does the parser alone on Stanza's own tags and lemmas.
+  Arc/label log-prob drift ≈ 2e-5 (tolerance 1e-4).
   - No `CharlmCache`: the parser feeds the charlms `"\n"` + the words (a ROOT word), so every forward
     state and the backward ROOT state differ from the tagger's.
+  - A missing lemma is read as `_`, as in Stanza, so without the lemmatizer the parses differ.
   - `Conllu.Write` needs no change: with heads set it matches Stanza (DEPS stays `_`).
+- `Lemma.Lemmatizer` (processor `lemma`, requires tokenize, mwt, pos) reproduces `tests/golden/lemma/`
+  byte for byte: 13 files, 8401 words, 868 of them through the seq2seq model. It mirrors
+  LemmaProcessor: dictionary skip, DeltaVocab, `batch_size` 50 batches sorted like `sort_all`, greedy
+  decoding, edits, `<UNK>` fallback, and the `Word.lemma` setter turning `_` into null.
 - `Checkpoint.Load` also reads Stanza's original `.pt` files (`Core/TorchCheckpoint.cs` +
   `Core/Pickle.cs`), so `Pipeline.Load("models/stanza/en")` works without Python. For all eight
   checkpoints the result equals the converter's: identical JSON and byte-identical tensors.
@@ -95,6 +99,7 @@ src/StanzaSharp.Nn             TorchSharp: charlm, pretrain embeddings, shared l
 src/StanzaSharp.Tokenize       Tokenizer + sentence splitting.
 src/StanzaSharp.Mwt            Multi-word token expansion.
 src/StanzaSharp.Pos            POS / feature tagger.
+src/StanzaSharp.Lemma          Lemmatizer (dictionary + character seq2seq).
 src/StanzaSharp.Constituency   Constituency parser.
 src/StanzaSharp.Depparse       Dependency parser (biaffine graph parser + Chu-Liu/Edmonds).
 src/StanzaSharp                Pipeline facade wiring the processors together.
@@ -152,23 +157,24 @@ Safetensors layout: a u64 little-endian header length, a JSON header (`dtype`, `
 then raw little-endian tensor data. Read it with a small hand-written reader in `StanzaSharp.Core`;
 no package is needed.
 
-All seven checkpoints convert with `torch.load(weights_only=True)`; no unsafe pickling is needed.
+All eight checkpoints convert with `torch.load(weights_only=True)`; no unsafe pickling is needed.
 
 ### Reading .pt files in C#
 
-All seven Stanza checkpoints use torch's legacy format (`_use_new_zipfile_serialization=False`), a
+All eight Stanza checkpoints use torch's legacy format (`_use_new_zipfile_serialization=False`), a
 sequence of protocol-2 pickles: magic number, protocol version (1001), sys_info (little-endian),
 the checkpoint, the list of storage keys; then per key an int64 element count and the raw bytes.
 Tensors are `torch._utils._rebuild_tensor_v2(storage, offset, size, stride, requires_grad, hooks)`
 over persistent ids `('storage', torch.FloatStorage|LongStorage, key, location, numel, None)`; LSTM
 weights share one storage at different offsets. The only globals are `collections.OrderedDict`,
-`torch._utils._rebuild_tensor_v2` and the storage types. The zip format (`archive/data.pkl` +
+`torch._utils._rebuild_tensor_v2`, the storage types, and `_codecs.encode` (protocol 2's encoding of
+`bytes`, used by the lemma's `dicts`). The zip format (`archive/data.pkl` +
 `archive/data/<key>`) is read too, for checkpoints saved by newer trainers.
 
 `Unpickler` is restricted like `weights_only=True`: torch's protocol-2 opcodes only, plain data
-(None/bool/int/float/str/list/tuple/dict), and an allowlist of OrderedDict, `_rebuild_tensor_v2` and
-the typed storage classes. Anything else throws `InvalidDataException`; nothing is instantiated by
-name. Not supported (none of the models need them): sets, bytes, bfloat16, big-endian files,
+(None/bool/int/float/str/bytes/list/tuple/dict), and an allowlist of OrderedDict, `_rebuild_tensor_v2`,
+`_codecs.encode(str, 'latin1')` and the typed storage classes. Anything else throws `InvalidDataException`; nothing is instantiated by
+name. Not supported (none of the models need them): sets, bfloat16, big-endian files,
 `$repr` objects. `TorchCheckpoint` then mirrors the converter's `Splitter` exactly, including
 Python's float `repr` in the JSON, key collisions (`key#2`) and numpy turning 0-d tensors into
 shape `[1]`. `tests/golden/pt/` holds tiny fixtures in both formats with their converter output
@@ -197,6 +203,18 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - A 2-layer highway biLSTM with hidden size 200 and learned `h_init`/`c_init`.
   - Outputs: UPOS through an MLP. XPOS and the 21 feats use biaffine classifiers conditioned on
     UPOS (`tag_columns`).
+- **lemma** (`combined_nocharlm`): `models/lemma/trainer.py`, `models/common/seq2seq_model.py`.
+  - `dicts` (v3: gzip + JSON) `{upos: {word: lemma}}`, `"*"` POS-independent. With `ensemble_dict`,
+    words found by (UPOS, word) then `*` skip the model.
+  - Seq2seq: char embedding 50 (vocab 234), UPOS embedding 50 prepended as an extra encoder step,
+    1-layer biLSTM 2×100, `LSTMCell` decoder 200 with `soft` (dot) attention, greedy (`beam_size` 1),
+    `max_dec_len` 50. No charlm, not caseless, no contextual lemmatizers.
+  - `copy`: a copy gate mixes the vocab distribution with attention over the source chars (minus the
+    POS step), scattered onto char ids. Characters missing from the vocab get ids past it (DeltaVocab,
+    built per document over the model's words in code point order), so they can be copied.
+  - `edit`: a 3-way classifier on the final encoder state (`cat(hn[-1], hn[-2])`): 0 use the decoded
+    string, 1 the word, 2 the lowercased word. Empty or `<UNK>`-containing output falls back to the word.
+  - Stanza's LemmaProcessor only requires tokenize; we require pos too since the model reads UPOS.
 - **constituency** (`ptb3-revised_charlm`):
   - `IN_ORDER` transitions, with LSTM transition and constituent stacks.
   - `MAX` composition (`reduce_linear`), ReLU, and 2 output layers. ReLU is applied *before*
@@ -244,6 +262,10 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     - per-step parser transition logits
   - `tokenize_stress.txt` + `.conllu`: tokenizer output for a paragraph over 1000 characters and
     for more paragraphs than fit in one batch.
+  - `lemma/`: its own folder, written by `write_lemma_golden` (`--lemma-only`): `<name>.conllu` from
+    tokenize,mwt,pos,lemma for corpus.txt and every validation*.txt, plus `words.json` (pipeline lemma,
+    raw seq2seq output and edit class for hand-picked words: dictionary hits, all edit types,
+    unknown and non-BMP characters, a word past `max_dec_len`).
   - `mwt.json`: expansions of a word list, both through the pipeline and classifier-only.
   - `depparse/` (`make_golden.py --depparse-only`): `tokenize,mwt,pos,lemma,depparse` output for
     `corpus.txt` (as `corpus.conllu`) and each `validation*.txt`; arc/label log-probs for the
@@ -273,7 +295,7 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
 ## Packaging and releases
 
 - One NuGet package, `StanzaSharp`, packed from `src/StanzaSharp` (user's decision, 2026-10-06).
-  - It carries all seven assemblies plus their XML docs: the facade's ProjectReferences are
+  - It carries all eight assemblies plus their XML docs: the facade's ProjectReferences are
     `PrivateAssets="all"`, and an `IncludeProjectReferences` target adds them.
   - It depends only on managed `TorchSharp`; users add `TorchSharp-cpu`/`-cuda` themselves.
   - Every other project is `IsPackable=false` (Directory.Build.props, which also holds the shared
@@ -282,7 +304,7 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - `src/StanzaSharp/PACKAGE.md` is the package readme; `NOTICE` ships in the package.
 - Models are downloaded only explicitly (user's decision): `ModelDownloader.DownloadAsync(dir)` or
   `StanzaSharp.Cli download [DIR]`.
-  - It fetches the 7 `.pt` files from `huggingface.co/stanfordnlp/stanza-en/resolve/v1.15.0/models/`
+  - It fetches the 8 `.pt` files from `huggingface.co/stanfordnlp/stanza-en/resolve/v1.15.0/models/`
     and checks each against the MD5 from Stanza 1.15.0's resources.json, kept in
     `ModelDownloader.Files`.
   - It keeps files that already match. `Pipeline.Load` never downloads.

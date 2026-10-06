@@ -9,8 +9,8 @@
   <PropertyGroup>
     <IsPackable>true</IsPackable>
     <PackageId>StanzaSharp</PackageId>
-    <Description>Stanza's English NLP pipeline in .NET: tokenization and sentence splitting, multi-word token expansion, part-of-speech tags and morphological features, and constituency parsing. Runs Stanza's own pretrained models through TorchSharp, with output identical to Python Stanza. Add TorchSharp-cpu (or TorchSharp-cuda-*) for the native libtorch.</Description>
-    <PackageTags>nlp;stanza;tokenizer;pos-tagging;constituency-parsing;torchsharp</PackageTags>
+    <Description>Stanza's English NLP pipeline in .NET: tokenization and sentence splitting, multi-word token expansion, part-of-speech tags and morphological features, lemmas, and constituency parsing. Runs Stanza's own pretrained models through TorchSharp, with output identical to Python Stanza. Add TorchSharp-cpu (or TorchSharp-cuda-*) for the native libtorch.</Description>
+    <PackageTags>nlp;stanza;tokenizer;pos-tagging;lemmatization;constituency-parsing;torchsharp</PackageTags>
     <PackageReadmeFile>PACKAGE.md</PackageReadmeFile>
     <!-- The other projects' assemblies go into this package (see IncludeProjectReferences). -->
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);IncludeProjectReferences</TargetsForTfmSpecificBuildOutput>
@@ -23,6 +23,7 @@
     <ProjectReference Include="..\StanzaSharp.Tokenize\StanzaSharp.Tokenize.csproj" PrivateAssets="all" />
     <ProjectReference Include="..\StanzaSharp.Mwt\StanzaSharp.Mwt.csproj" PrivateAssets="all" />
     <ProjectReference Include="..\StanzaSharp.Pos\StanzaSharp.Pos.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\StanzaSharp.Lemma\StanzaSharp.Lemma.csproj" PrivateAssets="all" />
     <ProjectReference Include="..\StanzaSharp.Constituency\StanzaSharp.Constituency.csproj" PrivateAssets="all" />
     <ProjectReference Include="..\StanzaSharp.Depparse\StanzaSharp.Depparse.csproj" PrivateAssets="all" />
   </ItemGroup>
