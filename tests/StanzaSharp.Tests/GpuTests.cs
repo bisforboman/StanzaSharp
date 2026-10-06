@@ -13,6 +13,7 @@ namespace StanzaSharp.Tests;
 /// CPU ones, so these compare with a tolerance and report how much of the (CPU) golden data the GPU still
 /// reproduces exactly; see docs/gpu.md. Each runs with TF32 on (libtorch's default for cuDNN) and off.
 /// </summary>
+[Collection(TorchSettingsCollection.Name)]
 public class GpuTests(ITestOutputHelper output)
 {
     [CudaTheory]
@@ -70,7 +71,7 @@ public class GpuTests(ITestOutputHelper output)
     public void Pipeline_MostlyMatchesGoldenConllu(bool tf32)
     {
         using var tf32Scope = Tf32(tf32);
-        using var nlp = Pipeline.Load(Repo.Models, device: torch.CUDA);
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Device = torch.CUDA });
         var files = Directory.GetFiles(Repo.Golden, "validation*.conllu").Order().Append(Path.Combine(Repo.Golden, "pipeline.conllu")).ToList();
         int sentences = 0, same = 0, lines = 0, lineDiffs = 0, treeDiffs = 0;
         output.WriteLine($"{"file",-34}{"sentences",10}{"identical",10}{"lines",8}{"differ",8}{"trees",8}");

@@ -99,7 +99,7 @@ public sealed class PosTagger : IDisposable
                 words += sentences[end].Words.Count;
             var batch = sentences.GetRange(b, end - b);
             var tags = Predict(batch.Select(x => (IReadOnlyList<string>)x.Words.Select(w => w.Text).ToList()).ToList(), out _,
-                charlms == null ? null : (i, forward, backward) => charlms.Add(batch[i].Sentence, forward, backward));
+                charlms == null ? null : (i, forward, backward) => charlms.TryAdd(batch[i].Sentence, forward, backward));
             for (int i = 0; i < batch.Count; i++)
                 for (int j = 0; j < batch[i].Words.Count; j++)
                     (batch[i].Words[j].Upos, batch[i].Words[j].Xpos, batch[i].Words[j].Feats) = tags[i][j];
@@ -107,7 +107,8 @@ public sealed class PosTagger : IDisposable
     }
 
     /// <summary>Tags for each word, plus the UPOS logits (one [words, upos] array per sentence) for tests.</summary>
-    /// <param name="keepCharlm">Called with each sentence's charlm representations, which it then owns.</param>
+    /// <param name="keepCharlm">Called with each sentence's charlm representations; it may keep them by
+    /// detaching them from the current dispose scope (as <see cref="CharlmCache.TryAdd"/> does).</param>
     internal List<(string Upos, string Xpos, string? Feats)[]> Predict(IReadOnlyList<IReadOnlyList<string>> sentences, out List<float[]> uposLogits,
         Action<int, Tensor, Tensor>? keepCharlm = null)
     {
@@ -135,7 +136,7 @@ public sealed class PosTagger : IDisposable
         if (keepCharlm != null)
             for (int i = 0; i < batch; i++)
                 if (sentences[i].SequenceEqual(original[i])) // the parser reads the words before SimplifyPunct
-                    keepCharlm(i, scope.Detach(repsForward[i]), scope.Detach(repsBackward[i]));
+                    keepCharlm(i, repsForward[i], repsBackward[i]);
         var charsForward = Rnn.PadSequence(repsForward);
         var charsBackward = Rnn.PadSequence(repsBackward);
         var output = _lstm.Forward(cat([words, pretrained, charsForward, charsBackward], 2), lengths);

@@ -66,7 +66,7 @@ for (int i = 0; i < args.Length; i++)
 try
 {
     var text = file != null ? File.ReadAllText(file) : Console.In.ReadToEnd();
-    using var nlp = Pipeline.Load(modelDir, processors);
+    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Processors = processors });
     var doc = nlp.Process(text);
     Console.Out.Write(Conllu.Write(doc));
     return 0;
