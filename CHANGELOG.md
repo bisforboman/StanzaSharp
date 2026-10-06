@@ -11,6 +11,12 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 - Platform packages `StanzaSharp.Cpu.Linux`, `StanzaSharp.Cpu.Windows` and `StanzaSharp.Cpu.MacOS`. Each is
   StanzaSharp plus one platform's CPU libtorch, for deployments that don't want all three (as `TorchSharp-cpu`
   restores them). Each is verified in CI on its own OS.
+- Platform package `StanzaSharp.Cpu.WindowsArm64`: Windows on Arm64, which `TorchSharp-cpu` doesn't cover. Verified
+  in CI on a Windows Arm64 runner.
+- Supported platforms in the README and package readme: Linux x64 (glibc), Windows x64 and Arm64, macOS on Apple
+  Silicon. Alpine (musl), Linux Arm64 and Intel Macs are not supported: TorchSharp and libtorch have no builds for them.
+- A sample Dockerfile (`samples/docker`) for a Linux x64 container on the .NET runtime image (plain or chiseled),
+  verified in CI to give output identical to Stanza's.
 - Bulk processing: `Pipeline.Process(IEnumerable<string>)` returns one `Document` per text, batching all their
   sentences together, like Stanza's `bulk_process`, and with identical output (which, as in Stanza, can differ
   slightly from processing each text alone: sentiment labels depend on their batch, and sentence ids continue

@@ -24,6 +24,7 @@ Add `TorchSharp-cpu` (or a `TorchSharp-cuda-*` package for GPU) for the native l
 match the `TorchSharp` version StanzaSharp depends on.
 
 On macOS (Apple Silicon), also run `brew install libomp`: TorchSharp-cpu's libtorch loads OpenMP from Homebrew's path.
+On Windows on Arm64, use `StanzaSharp.Cpu.WindowsArm64` instead (below).
 
 **Deploying to one platform** (e.g. a small Linux service): `TorchSharp-cpu` restores libtorch for Linux,
 Windows and macOS (about 265 MB of downloads). A platform package restores StanzaSharp plus only that
@@ -33,6 +34,7 @@ platform's CPU libtorch instead. It's the only package you need:
 |---|---|---:|
 | `StanzaSharp.Cpu.Linux` | Linux x64 | 128 MB |
 | `StanzaSharp.Cpu.Windows` | Windows x64 | 80 MB |
+| `StanzaSharp.Cpu.WindowsArm64` | Windows on Arm64 | 42 MB |
 | `StanzaSharp.Cpu.MacOS` | macOS on Apple Silicon | 57 MB |
 
 ```
@@ -41,6 +43,24 @@ dotnet add package StanzaSharp.Cpu.Linux
 
 Publish with that platform's runtime identifier (`dotnet publish -r linux-x64`) so only its native files are
 copied. Smaller models help too: `Package = "default_fast"` and downloading only the processors you use.
+
+## Supported platforms
+
+| Platform | Supported | Package |
+|---|---|---|
+| Linux x64 (glibc: Ubuntu, Debian, RHEL, ...) | Yes | `StanzaSharp.Cpu.Linux`, or `StanzaSharp` + `TorchSharp-cpu` |
+| Windows x64 | Yes | `StanzaSharp.Cpu.Windows`, or `StanzaSharp` + `TorchSharp-cpu` |
+| Windows on Arm64 | Yes | `StanzaSharp.Cpu.WindowsArm64` only: `TorchSharp-cpu` has no Arm64 libtorch |
+| macOS on Apple Silicon | Yes, after `brew install libomp` | `StanzaSharp.Cpu.MacOS`, or `StanzaSharp` + `TorchSharp-cpu` |
+| Alpine and other musl Linux | No | None: libtorch and TorchSharp are built for glibc only, with no `linux-musl` build |
+| Linux Arm64 | No | None: no `libtorch-cpu-linux-arm64` package, and TorchSharp has no `linux-arm64` native layer |
+| macOS on Intel (x64) | No | None: TorchSharp has no `osx-x64` native layer, and `libtorch-cpu-osx-x64` stops at 2.2 |
+
+**Docker:** use a glibc image such as `mcr.microsoft.com/dotnet/runtime:10.0`, or the chiseled
+`mcr.microsoft.com/dotnet/runtime:10.0-noble-chiseled` (libtorch needs only glibc, libstdc++ and libgcc_s), not
+Alpine. Publish with `-r linux-x64` and mount the models read-only rather than copying them into the image. A
+sample Dockerfile is in the repository's
+[samples/docker](https://github.com/bisforboman/StanzaSharp/tree/main/samples/docker).
 
 ## Download the models
 

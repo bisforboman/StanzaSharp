@@ -15,6 +15,7 @@ dotnet add package TorchSharp-cpu
 `TorchSharp-cpu` (or a `TorchSharp-cuda-*` package) brings the native libtorch; its version must match the
 `TorchSharp` version StanzaSharp depends on (0.107.0). Requires .NET 10. Tested on Linux, Windows and macOS.
 On macOS (Apple Silicon), also run `brew install libomp`: TorchSharp-cpu's libtorch loads OpenMP from Homebrew's path.
+On Windows on Arm64, use `StanzaSharp.Cpu.WindowsArm64` instead (below). See [Supported platforms](#supported-platforms).
 
 **Deploying to one platform** (e.g. a small Linux service): `TorchSharp-cpu` restores libtorch for Linux,
 Windows and macOS (about 265 MB of downloads). A platform package restores StanzaSharp plus only that
@@ -24,6 +25,7 @@ platform's CPU libtorch instead. It's the only package you need:
 |---|---|---:|
 | `StanzaSharp.Cpu.Linux` | Linux x64 | 128 MB |
 | `StanzaSharp.Cpu.Windows` | Windows x64 | 80 MB |
+| `StanzaSharp.Cpu.WindowsArm64` | Windows on Arm64 | 42 MB |
 | `StanzaSharp.Cpu.MacOS` | macOS on Apple Silicon | 57 MB |
 
 ```
@@ -32,6 +34,51 @@ dotnet add package StanzaSharp.Cpu.Linux
 
 Publish with that platform's runtime identifier (`dotnet publish -r linux-x64`) so only its native files are
 copied. Smaller models help too: `Package = "default_fast"` and downloading only the processors you use.
+
+### Supported platforms
+
+StanzaSharp runs wherever TorchSharp 0.107 has its native layer (`LibTorchSharp`) and a CPU libtorch 2.10.0
+package exists. Each supported platform runs the full test suite in CI.
+
+| Platform | Supported | Package |
+|---|---|---|
+| Linux x64 (glibc: Ubuntu, Debian, RHEL, ...) | Yes | `StanzaSharp.Cpu.Linux`, or `StanzaSharp` + `TorchSharp-cpu` |
+| Windows x64 | Yes | `StanzaSharp.Cpu.Windows`, or `StanzaSharp` + `TorchSharp-cpu` |
+| Windows on Arm64 | Yes | `StanzaSharp.Cpu.WindowsArm64` only: `TorchSharp-cpu` has no Arm64 libtorch |
+| macOS on Apple Silicon | Yes, after `brew install libomp` | `StanzaSharp.Cpu.MacOS`, or `StanzaSharp` + `TorchSharp-cpu` |
+| Alpine and other musl Linux | No | None: libtorch and TorchSharp are built for glibc only, with no `linux-musl` build |
+| Linux Arm64 | No | None: no `libtorch-cpu-linux-arm64` package, and TorchSharp has no `linux-arm64` native layer |
+| macOS on Intel (x64) | No | None: TorchSharp has no `osx-x64` native layer, and `libtorch-cpu-osx-x64` stops at 2.2 |
+
+GPU: see [GPU](#gpu) (CUDA on Windows and Linux x64).
+
+### Docker
+
+Use a glibc-based image, such as `mcr.microsoft.com/dotnet/runtime:10.0` (Ubuntu). libtorch needs only glibc,
+libstdc++ and libgcc_s, and ships its own OpenMP, so the chiseled `mcr.microsoft.com/dotnet/runtime:10.0-noble-chiseled`
+works too. Not Alpine (see above). [samples/docker](samples/docker/Dockerfile) is a small app that reads text
+on stdin and writes CoNLL-U:
+
+```dockerfile
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+COPY . .
+RUN dotnet publish -c Release -r linux-x64 --no-self-contained -o /app
+
+FROM mcr.microsoft.com/dotnet/runtime:10.0
+WORKDIR /app
+COPY --from=build /app .
+ENTRYPOINT ["dotnet", "StanzaSharpDocker.dll", "/models"]
+```
+
+```
+docker build -t stanzasharp-sample samples/docker
+docker run -i --rm -v /path/to/models/stanza/en:/models:ro stanzasharp-sample < input.txt
+```
+
+Mount the models rather than copying them into the image: they are about 600 MB, and the image is already
+600 to 700 MB depending on the base, of which the published app is 500 MB, nearly all of it libtorch. CI builds this image on both base images and checks that its output
+is byte-identical to the golden file.
 
 ## Models
 
@@ -197,9 +244,15 @@ Tests that need models skip when `models/converted/en` (or, for the `.pt` loader
   skipped. Then `tools/verify-package.ps1` packs StanzaSharp and runs a fresh app that references the
   package. The original and converted models are cached, keyed on `ModelDownloader.cs`,
   `tools/requirements.txt` and `tools/stanza_convert.py`.
-- `cross-os (windows-2025)` and `cross-os (macos-15)` (Apple Silicon) run the same full suite, the
-  no-skip check and `tools/verify-package.ps1`, against Stanza's `.pt` files without converting them
-  (no Python). Their models are cached per OS, keyed on `ModelDownloader.cs`.
+- `docker` runs `tools/verify-docker.sh`: it packs StanzaSharp and `StanzaSharp.Cpu.Linux`, builds
+  [samples/docker](samples/docker/Dockerfile) on `mcr.microsoft.com/dotnet/runtime:10.0` and on its chiseled
+  variant, and checks that each container turns `corpus.txt` into `pipeline.conllu` byte for byte. It reports
+  the image sizes in the job summary.
+- `cross-os (windows-2025)`, `cross-os (macos-15)` (Apple Silicon) and `cross-os (windows-11-arm)` run the same
+  full suite, the no-skip check and `tools/verify-package.ps1` (each with its platform package), against Stanza's
+  `.pt` files without converting them (no Python). Their models are cached per OS, keyed on `ModelDownloader.cs`.
+- `.github/workflows/alpine-experiment.yml` (manual, or on PRs touching the Docker sample; not required) runs
+  the same Docker check on Alpine with `gcompat`.
 
 `build-test` and `golden` stay separate jobs, not a matrix, because branch protection requires checks
 by those exact names. All upload their `.trx` test results. To reproduce `golden` locally, run `setup.ps1 -Models`, then

@@ -409,7 +409,7 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   from Python need care too: Python's `\b`/`\w` count No/Nl characters such as `²` as word
   characters and combining marks as non-word (see `Tokenizer.PyRegex`).
 - CI (`.github/workflows/ci.yml`, github.com/bisforboman/StanzaSharp; pushes to `main`, PRs, and
-  `workflow_call` from release.yml; `ubuntu-24.04`, `windows-2025`, `macos-15` pinned).
+  `workflow_call` from release.yml; `ubuntu-24.04`, `windows-2025`, `macos-15`, `windows-11-arm` pinned).
   - Branch protection on `main` requires the check names `build-test` and `golden`, so they stay
     plain jobs; a matrix would rename them (`build-test (ubuntu-24.04)`) and block every PR.
   - `build-test` runs the suite without models.
@@ -426,6 +426,14 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
       links `/opt/homebrew/opt/libomp/lib/libomp.dylib` by absolute path, not the `libomp.dylib` it
       ships. Without it TorchSharp reports only "doesn't contain a reference to libtorch-cpu-osx-arm64";
       `otool -L` on the dylib shows the real cause. Users need it too (README, PACKAGE.md).
+  - `docker`: `tools/verify-docker.sh MODEL_DIR BASE...` packs StanzaSharp + StanzaSharp.Cpu.Linux into
+    `samples/docker/feed` (with a generated nuget.config), builds the sample per base image (runtime:10.0 and
+    10.0-noble-chiseled) and `cmp`s the container's CoNLL-U for corpus.txt with pipeline.conllu. Models from golden's
+    cache via `actions/cache/restore` (no new entry; downloaded on a miss); no Docker layer cache (budget).
+  - `cross-os (windows-11-arm)`: Windows on Arm64 (GA runner label for public repos). It skips the plain
+    `verify-package.ps1` (TorchSharp-cpu has no Arm64 libtorch) and runs `-Platform WindowsArm64`.
+  - `alpine-experiment.yml` (workflow_dispatch, or PRs touching the Docker sample; not required): the docker
+    check on `runtime:10.0-alpine` + `gcompat libstdc++ libgcc`. Alpine stays unsupported unless it is byte-identical.
   - Keep paths forward-slash and file names case-exact (Linux). The root `.gitattributes` keeps sources
     LF; `tests/golden/.gitattributes` pins golden files (`eol=lf`, `binary`, `validation_whitespace.txt`
     `-text`), so Windows checkouts with `core.autocrlf=true` stay byte-exact. Bash steps run under
@@ -453,14 +461,21 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - `CharlmCache.TryAdd` keeps a sentence only if it fits, detaching its tensors from the caller's
     dispose scope. Otherwise it leaves them with the caller. Before this fix the cache disposed
     rejected tensors that the tagger was still using.
-- Platform packages (user's decision, 2026-10-06): `StanzaSharp.Cpu.Linux` / `.Windows` / `.MacOS`.
+- Platform packages (user's decision, 2026-10-06): `StanzaSharp.Cpu.Linux` / `.Windows` / `.WindowsArm64` / `.MacOS`.
   - Each is a code-free package (`src/StanzaSharp.Cpu.props`, `IncludeBuildOutput=false`) depending on the
     same-version `StanzaSharp` and one `libtorch-cpu-<rid>` 2.10.0, instead of `TorchSharp-cpu`, which
     depends on all three.
   - TorchSharp loads a single platform package fine; it was checked with `libtorch-cpu-win-x64` alone.
   - `verify-package.ps1 -Platform X` tests each one on its own OS in CI (Linux in `golden`, Windows and
     macOS in `cross-os`).
-  - `release.yml` packs all four packages.
+  - `release.yml` packs all five packages.
+  - `.WindowsArm64` (`libtorch-cpu-win-arm64`): `TorchSharp-cpu` lacks it, so on a Windows Arm64 machine
+    Directory.Build.props also gives the runnable projects (tests/, samples/) `libtorch-cpu-win-arm64`.
+  - Supported platforms (README, PACKAGE.md): where TorchSharp 0.107 has `runtimes/<rid>` (linux-x64, win-x64,
+    win-arm64, osx-arm64) and a `libtorch-cpu-<rid>` 2.10.0 exists (the same four). Not Alpine/musl (glibc
+    builds only), linux-arm64 (no libtorch package, no native layer) or osx-x64 (no native layer; libtorch stops at 2.2).
+  - The linux-x64 libtorch needs only glibc, libstdc++ and libgcc_s (it bundles libgomp). `samples/docker` is a
+    standalone app (its own empty Directory.Build.props) on `mcr.microsoft.com/dotnet/runtime:10.0` (`BASE` arg).
   - Every new package ID needs the nuget.org Trusted Publishing policy to allow it.
 - One NuGet package, `StanzaSharp`, packed from `src/StanzaSharp` (user's decision, 2026-10-06).
   - It carries all nine assemblies plus their XML docs: the facade's ProjectReferences are
