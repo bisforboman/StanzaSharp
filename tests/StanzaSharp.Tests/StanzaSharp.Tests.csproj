@@ -19,6 +19,11 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <!-- GPU tests exist only in CUDA builds (STANZASHARP_CUDA=1), so a CPU run has nothing to skip. -->
+  <ItemGroup Condition="'$(TorchSharpNative)' != 'TorchSharp-cuda-windows'">
+    <Compile Remove="GpuTests.cs" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\src\StanzaSharp\StanzaSharp.csproj" />
     <ProjectReference Include="..\..\src\StanzaSharp.Core\StanzaSharp.Core.csproj" />
