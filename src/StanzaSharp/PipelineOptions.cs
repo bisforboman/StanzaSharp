@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using StanzaSharp.Nn;
 using TorchSharp;
 
@@ -48,6 +49,49 @@ public sealed class PipelineOptions
 
     /// <summary>Sharing of character-model outputs between the tagger, the constituency parser and sentiment.</summary>
     public CharlmCacheOptions CharlmCache { get; init; } = new();
+
+    /// <summary>
+    /// The number of threads libtorch uses inside each operation (intra-op threads), set by <see cref="Pipeline.Load"/>.
+    /// Null (the default) caps libtorch's current setting at <see cref="Environment.ProcessorCount"/>, which .NET limits
+    /// to a container's CPU quota. libtorch's own default is the host's physical core count, so in a container limited
+    /// to 2 CPUs on a 32-core node it would start 32 threads per operation. Outside containers the default leaves
+    /// libtorch's setting alone, and a lower count set earlier with <c>torch.set_num_threads</c> is kept.
+    /// </summary>
+    /// <remarks>
+    /// <b>Process-wide:</b> this is <c>torch.set_num_threads</c>, which applies to all TorchSharp code in the process,
+    /// and the last pipeline loaded wins. Each thread that calls <see cref="Pipeline.Process(string)"/> runs its own
+    /// operations on up to this many threads, so with N concurrent calls consider <c>ProcessorCount / N</c>.
+    /// libtorch's inter-op thread pool is not used by StanzaSharp and is left alone.
+    /// </remarks>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown by <see cref="Pipeline.Load"/> for a value below 1.</exception>
+    public int? Threads { get; init; }
+
+    /// <summary>
+    /// Whether the tokenizer splits paragraphs into sentences (true, the default, as Stanza does). False is Stanza's
+    /// <c>tokenize_no_ssplit</c>: each paragraph, i.e. text between blank lines, becomes one sentence, for input that
+    /// already has one sentence per paragraph. Tokens and multi-word tokens are the same either way. Pretokenized input
+    /// (<see cref="Pipeline.Process(IEnumerable{IEnumerable{string}})"/>) keeps its given sentences regardless, as in Stanza.
+    /// </summary>
+    public bool SplitSentences { get; init; } = true;
+
+    /// <summary>
+    /// Checks every model file <see cref="Pipeline.Load"/> reads against the MD5 that Stanza publishes for it (the
+    /// checksums <see cref="ModelDownloader"/> verifies downloads with) before loading, which catches corrupted files
+    /// or files from another Stanza version. It reads every file once more, which takes a second or two for the
+    /// <c>default</c> package. Off by default.
+    /// </summary>
+    /// <remarks>
+    /// Only Stanza's <c>.pt</c> files have published checksums. If a model would be read from converted
+    /// <c>.json</c> + <c>.safetensors</c> files instead, Load throws rather than skip the check.
+    /// </remarks>
+    public bool VerifyChecksums { get; init; }
+
+    /// <summary>
+    /// Receives timings: each model's load time and the thread count at <see cref="LogLevel.Information"/>, and each
+    /// processor's time per <see cref="Pipeline.Process(string)"/> call at <see cref="LogLevel.Debug"/>. Null (the
+    /// default) logs nothing and costs nothing.
+    /// </summary>
+    public ILogger? Logger { get; init; }
 }
 
 /// <summary>

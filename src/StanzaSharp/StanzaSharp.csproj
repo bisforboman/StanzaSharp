@@ -33,6 +33,8 @@
   <ItemGroup>
     <!-- The libraries' one external dependency, declared here so the package carries it. -->
     <PackageReference Include="TorchSharp" Version="0.107.0" />
+    <!-- PipelineOptions.Logger. The lowest .NET 10 version, so apps on any later 10.0.x don't get a forced upgrade. -->
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
   </ItemGroup>
 
   <ItemGroup>
