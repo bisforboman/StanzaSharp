@@ -1,0 +1,188 @@
+{
+ "stanza": "1.15.0",
+ "sentences": [
+  {
+   "sentence": 0,
+   "words": [
+    "Barack",
+    "Obama",
+    "was",
+    "born",
+    "in",
+    "Hawaii",
+    "."
+   ],
+   "tokens": [
+    "Barack",
+    "Obama",
+    "was",
+    "born",
+    "in",
+    "Hawaii",
+    "."
+   ],
+   "xpos": [
+    "NNP",
+    "NNP",
+    "VBD",
+    "VBN",
+    "IN",
+    "NNP",
+    "."
+   ],
+   "heads": [
+    4,
+    1,
+    4,
+    0,
+    6,
+    4,
+    4
+   ],
+   "ner": [
+    "B-PERSON",
+    "E-PERSON",
+    "O",
+    "O",
+    "O",
+    "S-GPE",
+    "O"
+   ]
+  },
+  {
+   "sentence": 1,
+   "words": [
+    "He",
+    "was",
+    "elected",
+    "president",
+    "in",
+    "2008",
+    "."
+   ],
+   "tokens": [
+    "He",
+    "was",
+    "elected",
+    "president",
+    "in",
+    "2008",
+    "."
+   ],
+   "xpos": [
+    "PRP",
+    "VBD",
+    "VBN",
+    "NN",
+    "IN",
+    "CD",
+    "."
+   ],
+   "heads": [
+    3,
+    3,
+    0,
+    3,
+    6,
+    3,
+    3
+   ],
+   "ner": [
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "S-DATE",
+    "O"
+   ]
+  },
+  {
+   "sentence": 2,
+   "words": [
+    "I",
+    "do",
+    "n't",
+    "think",
+    "it",
+    "'s",
+    "going",
+    "to",
+    "rain",
+    "today",
+    ",",
+    "but",
+    "we",
+    "'ll",
+    "see",
+    "."
+   ],
+   "tokens": [
+    "I",
+    "don't",
+    "think",
+    "it's",
+    "going",
+    "to",
+    "rain",
+    "today",
+    ",",
+    "but",
+    "we'll",
+    "see",
+    "."
+   ],
+   "xpos": [
+    "PRP",
+    "VBP",
+    "RB",
+    "VB",
+    "PRP",
+    "VBZ",
+    "VBG",
+    "TO",
+    "VB",
+    "NN",
+    ",",
+    "CC",
+    "PRP",
+    "MD",
+    "VB",
+    "."
+   ],
+   "heads": [
+    4,
+    4,
+    4,
+    0,
+    7,
+    7,
+    4,
+    9,
+    7,
+    9,
+    15,
+    15,
+    15,
+    15,
+    4,
+    4
+   ],
+   "ner": [
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "S-DATE",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O"
+   ]
+  }
+ ]
+}

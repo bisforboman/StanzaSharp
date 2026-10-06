@@ -43,6 +43,13 @@ Reads <out>/corpus.txt and writes:
   sentiment/<name>.conllu + <name>.json
                         tokenize,mwt,sentiment output for corpus.txt and each validation*.txt, and per
                         sentence the label and the 3 class logits (`--sentiment-only`)
+  fast/<name>.conllu    Stanza's package='default_fast' (tokenize,mwt,pos,lemma,depparse,sentiment,ner with
+                        the nocharlm pos/depparse/ner) for corpus.txt (as corpus.conllu) and each
+                        validation*.txt
+  fast/intermediates.safetensors + .json
+                        for the first INTERMEDIATE_SENTENCES sentences, each run alone: s{i}.pos.upos_logits,
+                        s{i}.depparse.unlabeled/.deprel (from the run's tags and lemmas) and
+                        s{i}.ner.emissions; `--fast-only` regenerates just fast/
   pt/tiny_{legacy,zip}.pt + their stanza_convert.py output (.json/.safetensors)
                         small checkpoints in both torch.save formats for the C# .pt loader tests;
                         `python tools/make_golden.py --pt-only` regenerates just these
@@ -401,6 +408,75 @@ def write_ner_golden(models, out):
         print(f"  {k}: {list(v.shape)}")
 
 
+def write_fast_golden(models, out):
+    """fast/: Stanza's default_fast package (nocharlm pos, depparse and ner; see the module docstring)."""
+    nlp = stanza.Pipeline("en", dir=models, package="default_fast", download_method=None,
+                          use_gpu=False, logging_level="WARN")
+    assert list(nlp.processors) == FAST_PROCESSORS.split(","), list(nlp.processors)
+    fast = out / "fast"
+    fast.mkdir(exist_ok=True)
+    corpus_doc = None
+    for path in [out / "corpus.txt"] + sorted(out.glob("validation*.txt")):
+        with torch.no_grad():
+            doc = nlp(path.read_bytes().decode("utf-8"))
+        name = "corpus" if path.name == "corpus.txt" else path.stem
+        corpus_doc = corpus_doc or doc
+        (fast / f"{name}.conllu").write_text("{:C}\n".format(doc), encoding="utf-8", newline="\n")
+        print(f"fast/{name}.conllu: {len(doc.sentences)} sentences, {doc.num_words} words")
+
+    # Intermediates: each sentence alone, from the run's own words (pos), tags and lemmas (depparse)
+    # and tokens (ner).
+    pos, dep, ner = (nlp.processors[n] for n in ("pos", "depparse", "ner"))
+    dep_model = dep.trainer.model
+    captured = []
+    original = dep_model.forward
+
+    def forward(*a, **k):
+        loss, preds = original(*a, **k)
+        captured.append(preds)
+        return loss, preds
+
+    tensors, index = {}, []
+    dep_model.forward = forward
+    try:
+        for i, sent in enumerate(corpus_doc.sentences[:INTERMEDIATE_SENTENCES]):
+            words = [w.text for w in sent.words]
+            with torch.no_grad():
+                single = stanza.Document([[{"id": j + 1, "text": w} for j, w in enumerate(words)]])
+                cap, h = capture_module(pos.trainer.model.upos_clf)
+                pos.process(single)
+                h.remove()
+                tensors[f"s{i}.pos.upos_logits"] = cap.outputs[0].numpy()
+
+                tagged = stanza.Document([[{"id": w.id, "text": w.text, "lemma": w.lemma, "upos": w.upos,
+                                            "xpos": w.xpos, "feats": w.feats} for w in sent.words]])
+                captured.clear()
+                dep.process(tagged)
+                tensors[f"s{i}.depparse.unlabeled"] = captured[0][0][0]
+                tensors[f"s{i}.depparse.deprel"] = captured[0][2][0]
+
+                tokens = [t.text for t in sent.tokens]
+                single = stanza.Document([[{"id": j + 1, "text": t} for j, t in enumerate(tokens)]])
+                cap, h = capture_module(ner.trainers[0].model.tag_clfs[ner.trainers[0].args["predict_tagset"]])
+                ner.process(single)
+                h.remove()
+                tensors[f"s{i}.ner.emissions"] = cap.outputs[0].numpy()
+            index.append({"sentence": i, "words": words, "tokens": tokens,
+                          "xpos": [w.xpos for w in sent.words],
+                          "heads": [w.head for w in tagged.sentences[0].words],
+                          "ner": [t.ner for t in single.sentences[0].tokens]})
+    finally:
+        dep_model.forward = original
+    write_safetensors(tensors, fast / "intermediates.safetensors", {"stanza": stanza.__version__})
+    with open(fast / "intermediates.json", "w", encoding="utf-8", newline="\n") as f:
+        json.dump({"stanza": stanza.__version__, "sentences": index}, f, indent=1, ensure_ascii=False)
+    for k, v in tensors.items():
+        print(f"  {k}: {list(v.shape)}")
+
+
+FAST_PROCESSORS = "tokenize,mwt,pos,lemma,depparse,sentiment,ner"  # what package='default_fast' loads
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--models", default="models/stanza")
@@ -410,8 +486,12 @@ def main():
     p.add_argument("--lemma-only", action="store_true", help="only regenerate the lemma/ golden data")
     p.add_argument("--ner-only", action="store_true", help="only regenerate ner/")
     p.add_argument("--sentiment-only", action="store_true", help="only regenerate sentiment/")
+    p.add_argument("--fast-only", action="store_true", help="only regenerate fast/ (package default_fast)")
     args = p.parse_args()
     out = Path(args.out)
+    if args.fast_only:
+        write_fast_golden(args.models, out)
+        return
     if args.depparse_only:
         torch.manual_seed(0)
         write_depparse_golden(args.models, out)
@@ -489,6 +569,7 @@ def main():
     write_lemma_golden(args.models, out)
     write_ner_golden(args.models, out)
     write_sentiment_golden(args.models, out)
+    write_fast_golden(args.models, out)
 
     write_safetensors(tensors, out / "intermediates.safetensors", {"stanza": stanza.__version__})
     with open(out / "intermediates.json", "w", encoding="utf-8", newline="\n") as f:
