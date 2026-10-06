@@ -39,7 +39,7 @@ public class PipelineTests
         Assert.True(failures.Count == 0, string.Join("\n\n", failures));
     }
 
-    private static string StripOffsets(string conllu) =>
+    internal static string StripOffsets(string conllu) =>
         Regex.Replace(Regex.Replace(conllu, @"\tstart_char=\d+\|end_char=\d+$", "\t_", RegexOptions.Multiline),
                       @"\|start_char=\d+\|end_char=\d+", "");
 

@@ -1,4 +1,5 @@
 using StanzaSharp.Constituency;
+using StanzaSharp.Lemma;
 using StanzaSharp.Mwt;
 using StanzaSharp.Nn;
 using StanzaSharp.Pos;
@@ -26,12 +27,14 @@ public sealed class Pipeline : IDisposable
         ["tokenize"] = [],
         ["mwt"] = ["tokenize"],
         ["pos"] = ["tokenize", "mwt"],
+        ["lemma"] = ["tokenize", "mwt", "pos"], // Stanza only requires tokenize, but the model reads UPOS
         ["constituency"] = ["tokenize", "mwt", "pos"],
     };
 
     private readonly Tokenizer _tokenizer;
     private readonly MwtExpander? _mwt;
     private readonly PosTagger? _pos;
+    private readonly Lemmatizer? _lemma;
     private readonly ConstituencyParser? _parser;
     private readonly Pretrain? _pretrain;
     private readonly CharLanguageModel? _charlmForward, _charlmBackward;
@@ -51,6 +54,8 @@ public sealed class Pipeline : IDisposable
         }
         if (processors.Contains("pos"))
             _pos = PosTagger.Load(Model("pos/combined_charlm"), _pretrain!, _charlmForward!, _charlmBackward!);
+        if (processors.Contains("lemma"))
+            _lemma = Lemmatizer.Load(Model("lemma/combined_nocharlm"));
         if (processors.Contains("constituency"))
             _parser = ConstituencyParser.Load(Model("constituency/ptb3-revised_charlm"), _pretrain!, _charlmForward!, _charlmBackward!);
     }
@@ -59,7 +64,7 @@ public sealed class Pipeline : IDisposable
     /// Loads the English models from <paramref name="modelDir"/>: either converted ones (e.g. <c>models/converted/en</c>)
     /// or Stanza's own download with its <c>.pt</c> files (e.g. <c>models/stanza/en</c>), chosen per file.
     /// </summary>
-    /// <param name="processors">Comma-separated subset of <see cref="AllProcessors"/>; each needs the ones before it.</param>
+    /// <param name="processors">Comma-separated processors: those in <see cref="AllProcessors"/>, plus <c>lemma</c>; each needs the ones before it.</param>
     public static Pipeline Load(string modelDir, string processors = AllProcessors)
     {
         if (!Directory.Exists(modelDir))
@@ -69,7 +74,7 @@ public sealed class Pipeline : IDisposable
         foreach (var p in set)
         {
             if (!Requires.TryGetValue(p, out var needs))
-                throw new ArgumentException($"Unknown processor '{p}'. Available: {AllProcessors}", nameof(processors));
+                throw new ArgumentException($"Unknown processor '{p}'. Available: {string.Join(",", Requires.Keys)}", nameof(processors));
             var missing = needs.Where(n => !set.Contains(n)).ToList();
             if (missing.Count > 0)
                 throw new ArgumentException($"Processor '{p}' requires {string.Join(", ", missing)}", nameof(processors));
@@ -86,6 +91,7 @@ public sealed class Pipeline : IDisposable
         // The parser reuses the tagger's charlm outputs instead of computing them again.
         using var charlms = _pos != null && _parser != null ? new CharlmCache() : null;
         _pos?.Process(doc, charlms);
+        _lemma?.Process(doc);
         _parser?.Process(doc, charlms);
         return doc;
     }
@@ -94,6 +100,7 @@ public sealed class Pipeline : IDisposable
     {
         _parser?.Dispose();
         _pos?.Dispose();
+        _lemma?.Dispose();
         _mwt?.Dispose();
         _tokenizer.Dispose();
         _charlmForward?.Dispose();
