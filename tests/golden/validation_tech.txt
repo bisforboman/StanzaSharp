@@ -1,0 +1,67 @@
+Run `pip install -r requirements.txt` and then `python manage.py migrate`. If that fails, check C:\Program Files\Python312\python.exe and your PATH.
+
+The config lives in ~/.config/app/settings.yaml on Linux and %APPDATA%\App\settings.yaml on Windows. Delete /var/cache/app/*.tmp before upgrading.
+
+Call foo.bar(baz, 42) to get a list[int]. The function returns None if x == 0 or y != 1.
+
+Set MAX_RETRIES=5 and TIMEOUT_MS=3000 in the .env file. Then restart nginx with sudo systemctl restart nginx.service.
+
+The error was "NullReferenceException: Object reference not set to an instance of an object." It came from line 217 of Parser.cs.
+
+Open http://localhost:8080/api/v2/users?id=17&sort=desc in your browser. You should see a JSON array like [{"id": 17, "name": "Ana"}].
+
+My email is j.doe+news@mail.example.org, and my handle is @jdoe_dev. My IP was 192.168.0.12 at the time.
+
+Version 3.10.2 was released on 2023-10-02. Upgrade from v3.9.x is recommended; v2.* is no longer supported.
+
+Use git commit -m "fix: handle empty input" && git push origin main. Hash a1b2c3d introduced the regression.
+
+The file README.md says to use Node >= 18. package.json pins "typescript": "^5.4.0".
+
+x = (a + b) * c / 2; if (x > 10) { return x; } else { return -1; }
+
+The meeting is at 9:30 a.m. on Mon., Jan. 8, 2024. Or was it 09:30 on 08/01/2024? In ISO format: 2024-01-08T09:30:00Z.
+
+We're open 9am–5pm, Mon–Fri, and 10:00–14:00 on Saturdays. Closed Dec 24–26.
+
+The war lasted from 1914 to 1918. The 1990s saw rapid growth; the '80s did not. She was born in the mid-'60s.
+
+He finished 1st, she came in 2nd, and I was 3rd. The 21st century began on 1/1/2001, not 1/1/2000. It was his 102nd birthday.
+
+Divide by ½, multiply by ¾, then add 3/8. About 2/3 of respondents agreed; 1 in 5 strongly disagreed.
+
+The deadline is 11:59 PM EST on March 3rd. Late submissions lose 10% per day.
+
+Between 1–3 June and 5–7 July the office will be closed. Call between 2 and 4 p.m. weekdays.
+
+It took 1h 23m 45s. The record is 01:19:02.7.
+
+The appointment is on Tues 12/5 @ 3:15pm. Please arrive 15 min early.
+
+Today is the twenty-first of September, two thousand twenty-three.
+
+FY2022-23 revenue was flat. FY24 is expected to be better.
+
+int main(int argc, char **argv) { printf("hello, world\n"); return 0; }
+
+The variable is named user_id, not userId or UserID. Use snake_case in Python and camelCase in JavaScript.
+
+Ctrl+Alt+Del restarts it. Press Cmd-Shift-4 for a screenshot.
+
+The ratio is 16:9. The score was 3–2 after extra time. Gate B12, seat 14C.
+
+Download the 2.4GB ISO from ftp://mirror.example.net/pub/linux/ and verify its SHA-256 checksum.
+
+Use the -v flag (or --verbose) for more output. The --dry-run option prints commands without executing them.
+
+He paid $1.5M for a 3BR/2BA house built c. 1925.
+
+The function f(x) = 2x + 1 maps 3 to 7. Let n ≥ 1.
+
+Temperatures ranged from -5 to +12 degrees. The wind was 15-20 mph, gusting to 35.
+
+Call 1-800-555-0100 ext. 42. Fax: (212) 555-0188.
+
+Room 4B, 2nd fl., 1600 Example Ave. NW, Washington, DC 20500.
+
+Mon 3 Apr 2023 14:05:59 +0200

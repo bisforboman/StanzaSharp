@@ -20,7 +20,9 @@ Reads <out>/corpus.txt and writes:
                         tokenizer-only output on text that exercises long-paragraph windowing
                         and multi-batch padding (see write_tokenize_stress)
   mwt.json              MWT expansions of MWT_WORDS, with and without the dictionary
-  validation.conllu     full pipeline output for validation.txt, a varied hand-written corpus
+  validation*.conllu    full pipeline output for each validation*.txt, varied hand-written corpora
+                        (validation_nonbmp has text outside the BMP; C# reports its offsets in
+                        UTF-16 units, so its test ignores start_char/end_char)
 """
 import argparse
 import json
@@ -128,11 +130,13 @@ def main():
     (out / "pipeline.conllu").write_text("{:C}\n".format(doc), encoding="utf-8", newline="\n")
     print(f"pipeline.conllu: {len(doc.sentences)} sentences")
 
-    validation = (out / "validation.txt").read_text(encoding="utf-8")
-    with torch.no_grad():
-        vdoc = nlp(validation)
-    (out / "validation.conllu").write_text("{:C}\n".format(vdoc), encoding="utf-8", newline="\n")
-    print(f"validation.conllu: {len(vdoc.sentences)} sentences, {vdoc.num_words} words")
+    # Read as bytes so CR/CRLF reach Stanza unchanged, as File.ReadAllText passes them in C#.
+    for path in sorted(out.glob("validation*.txt")):
+        with torch.no_grad():
+            vdoc = nlp(path.read_bytes().decode("utf-8"))
+        conllu = path.with_suffix(".conllu")
+        conllu.write_text("{:C}\n".format(vdoc), encoding="utf-8", newline="\n")
+        print(f"{conllu.name}: {len(vdoc.sentences)} sentences, {vdoc.num_words} words")
 
     tok_model = nlp.processors["tokenize"].trainer.model
     pos_model = nlp.processors["pos"].trainer.model
