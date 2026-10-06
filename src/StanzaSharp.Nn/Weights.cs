@@ -5,7 +5,7 @@ using static TorchSharp.torch;
 namespace StanzaSharp.Nn;
 
 /// <summary>Copies weights from a converted checkpoint into TorchSharp modules, on the device being loaded for.</summary>
-public static class Weights
+internal static class Weights
 {
     // The device models are loaded onto, set around a load by On. Flow-local, so concurrent loads on
     // different threads don't see each other's device, and nothing process-global is touched

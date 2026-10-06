@@ -15,7 +15,7 @@ namespace StanzaSharp.Tokenize;
 /// (<c>StartChar</c>/<c>EndChar</c>) are UTF-16 indices into the input string, so they differ from
 /// Stanza's code-point offsets only after characters outside the BMP (e.g. emoji).
 /// </remarks>
-public sealed class Tokenizer : IDisposable
+internal sealed class Tokenizer : IDisposable
 {
     // TokenizeProcessor.MAX_SEQ_LENGTH_DEFAULT; output_predictions uses max(1000, max_seqlen).
     private const int MaxSeqLen = 1000;

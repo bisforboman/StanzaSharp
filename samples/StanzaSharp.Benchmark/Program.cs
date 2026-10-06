@@ -4,8 +4,10 @@ using StanzaSharp.Constituency;
 using StanzaSharp.Depparse;
 using StanzaSharp.Lemma;
 using StanzaSharp.Mwt;
+using StanzaSharp.Ner;
 using StanzaSharp.Nn;
 using StanzaSharp.Pos;
+using StanzaSharp.Sentiment;
 using StanzaSharp.Tokenize;
 using TorchSharp;
 using static TorchSharp.torch;
@@ -64,11 +66,14 @@ using var pos = PosTagger.Load(Model("pos/combined_charlm"), pretrain, charlmFor
 using var lemma = Lemmatizer.Load(Model("lemma/combined_nocharlm"), device);
 using var depparse = DependencyParser.Load(Model("depparse/combined_charlm"), pretrain, charlmForward, charlmBackward, device);
 using var parser = ConstituencyParser.Load(Model("constituency/ptb3-revised_charlm"), pretrain, charlmForward, charlmBackward, device);
+using var sentiment = SentimentClassifier.Load(Model("sentiment/sstplus_charlm"), pretrain, charlmForward, charlmBackward, device);
+using var ner = NerTagger.Load(Model("ner/ontonotes-ww-multi_charlm"), pretrain, charlmForward, charlmBackward, device);
 if (device.type == DeviceType.CUDA)
     torch.cuda.synchronize();
 double load = clock.Elapsed.TotalSeconds;
 
-string[] stages = ["tokenize", "mwt", "pos", "lemma", "depparse", "constituency"];
+// Stanza's order (Pipeline.AllProcessors).
+string[] stages = ["tokenize", "mwt", "pos", "lemma", "constituency", "depparse", "sentiment", "ner"];
 var times = stages.ToDictionary(s => s, _ => new List<double>());
 var peaks = new Dictionary<string, double> { ["load"] = PeakMB() }; // peak working set after each stage of the warm-up run
 Document doc = null!;
@@ -91,8 +96,10 @@ for (int run = 0; run <= runs; run++)
     timed["mwt"] = Time("mwt", () => mwt.Process(doc));
     timed["pos"] = Time("pos", () => pos.Process(doc, charlms));
     timed["lemma"] = Time("lemma", () => lemma.Process(doc));
-    timed["depparse"] = Time("depparse", () => depparse.Process(doc));
     timed["constituency"] = Time("constituency", () => parser.Process(doc, charlms));
+    timed["depparse"] = Time("depparse", () => depparse.Process(doc));
+    timed["sentiment"] = Time("sentiment", () => sentiment.Process(doc, charlms));
+    timed["ner"] = Time("ner", () => ner.Process(doc, charlms));
     if (run > 0)
         foreach (var s in stages)
             times[s].Add(timed[s]);

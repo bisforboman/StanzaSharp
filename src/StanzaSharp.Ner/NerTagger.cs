@@ -16,7 +16,7 @@ namespace StanzaSharp.Ner;
 /// - <c>fix_singleton_tags</c> on the decoded sequence
 /// NER reads tokens, not words, like Stanza: an MWT such as "don't" is tagged once.
 /// </summary>
-public sealed class NerTagger : IDisposable
+internal sealed class NerTagger : IDisposable
 {
     private const int UnkId = 1, PadId = 0; // vocab.UNK_ID / PAD_ID
     private const int VocabPrefixSize = 4;  // <PAD> <UNK> <EMPTY> <ROOT>

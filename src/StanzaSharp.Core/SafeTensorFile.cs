@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace StanzaSharp;
 
-public sealed record TensorInfo(string Dtype, long[] Shape, long Offset, long Length);
+internal sealed record TensorInfo(string Dtype, long[] Shape, long Offset, long Length);
 
 /// <summary>
 /// Reader for the safetensors format: u64 little-endian header length, a JSON header mapping
@@ -14,7 +14,7 @@ public sealed record TensorInfo(string Dtype, long[] Shape, long Offset, long Le
 /// Only the header is read up front; each tensor is read from the file when asked for, straight into
 /// its destination, so loading never holds the whole file in memory.
 /// </remarks>
-public sealed class SafeTensorFile
+internal sealed class SafeTensorFile
 {
     private readonly byte[]? _bytes; // tensor data already in memory (.pt checkpoints), else read from _path
     private readonly string? _path;

@@ -17,7 +17,7 @@ namespace StanzaSharp.Depparse;
 /// - deep biaffine arc and label scorers, plus the linearization and distance terms
 /// - a maximum spanning tree with one root (Chu-Liu/Edmonds)
 /// </summary>
-public sealed class DependencyParser : IDisposable
+internal sealed class DependencyParser : IDisposable
 {
     private const int RootId = 3, VocabPrefixSize = 4; // vocab.ROOT_ID, VOCAB_PREFIX_SIZE
     private const int SeparateBatchLength = 150;       // depparse_processor.DEFAULT_SEPARATE_BATCH

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -38,7 +38,6 @@
   <ItemGroup>
     <None Include="PACKAGE.md" Pack="true" PackagePath="/" />
     <None Include="..\..\NOTICE" Pack="true" PackagePath="/" />
-    <InternalsVisibleTo Include="StanzaSharp.Tests" />
   </ItemGroup>
 
   <Target Name="IncludeProjectReferences" DependsOnTargets="ResolveReferences">

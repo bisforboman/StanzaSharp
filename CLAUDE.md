@@ -139,6 +139,7 @@ src/StanzaSharp.Sentiment      Sentence sentiment (CNN classifier over biLSTM st
 src/StanzaSharp                Pipeline facade wiring the processors together.
 samples/StanzaSharp.Cli        Console runner for quick experiments.
 samples/StanzaSharp.Benchmark  Per-stage speed/memory benchmark; tools/benchmark.py is the Python twin.
+samples/StanzaSharp.Example    Commented tour of the public API (download, load, every result, CoNLL-U).
 tests/StanzaSharp.Tests        xUnit; golden tests against Python Stanza output.
 tests/golden/                  Golden data generated from Python Stanza (committed, keep it small).
 tools/stanza_convert.py        Checkpoint inspector/converter (.pt -> .safetensors + .json); optional.
@@ -369,6 +370,17 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
 
 ## Packaging and releases
 
+- Public API (user's decision for 0.1.0, 2026-10-06: "pipeline only"). It is:
+  - the facade: `Pipeline`, `PipelineOptions`, `CharlmCacheOptions`, `ModelDownloader`;
+  - Core's results: `Document`, `Sentence`, `Token`, `Word`, `Entity`, `Tree`, `Conllu`.
+
+  Everything else is `internal`.
+  - Directory.Build.props gives every `src/*` assembly `InternalsVisibleTo` for the other StanzaSharp
+    assemblies, the tests and the benchmark. Don't add per-project `InternalsVisibleTo`.
+  - New types default to `internal`. Making one public is an API decision for the user.
+  - `src/*` builds docs with CS1591 as an error, so every public member needs an XML doc.
+  - `CHANGELOG.md` gets an entry per user-visible change under "Unreleased". A release moves it under
+    the version.
 - `Pipeline.Load(dir, PipelineOptions?)` (user's decision, 2026-10-06: an options object rather than more
   optional parameters).
   - `PipelineOptions` holds `Processors`, `Device`, `DisableTf32` and

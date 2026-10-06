@@ -9,7 +9,7 @@ namespace StanzaSharp.Nn;
 /// stanza/models/common/biaffine.py <c>BiaffineScorer</c>: a bilinear layer over both inputs
 /// with a constant 1 appended to each.
 /// </summary>
-public sealed class Biaffine : IDisposable
+internal sealed class Biaffine : IDisposable
 {
     private readonly Bilinear _bilinear;
 

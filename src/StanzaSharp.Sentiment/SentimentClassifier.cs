@@ -16,7 +16,7 @@ namespace StanzaSharp.Sentiment;
 /// - a 2-layer biLSTM, then full-width convolutions and one 2d convolution, each max-pooled over time
 /// - fully connected layers with ReLU, and an argmax over the classes
 /// </summary>
-public sealed class SentimentClassifier : IDisposable
+internal sealed class SentimentClassifier : IDisposable
 {
     // sentiment_processor.py DEFAULT_BATCH_SIZE, counted in tokens.
     internal const int BatchSize = 5000;

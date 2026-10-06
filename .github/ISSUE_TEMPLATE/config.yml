@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Problems with Stanza's models or Python Stanza itself
+    url: https://github.com/stanfordnlp/stanza/issues
+    about: StanzaSharp runs Stanza's models as they are; report model quality issues to Stanza.

@@ -16,7 +16,7 @@ namespace StanzaSharp.Pos;
 /// - UPOS from an MLP
 /// - XPOS and each UFeats key from biaffine scorers on an embedding of the predicted UPOS
 /// </summary>
-public sealed class PosTagger : IDisposable
+internal sealed class PosTagger : IDisposable
 {
     // pos_processor.py: batch_maximum_tokens, which the English model's config does not set.
     private const int MaximumTokens = 5000;

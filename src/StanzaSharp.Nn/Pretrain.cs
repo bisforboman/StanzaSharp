@@ -7,7 +7,7 @@ namespace StanzaSharp.Nn;
 /// Pretrained word vectors (stanza/models/common/pretrain.py). Callers choose the lookup policy:
 /// the tagger lowercases every word, the parser tries the word as written and then lowercased.
 /// </summary>
-public sealed class Pretrain : IDisposable
+internal sealed class Pretrain : IDisposable
 {
     private readonly Dictionary<string, int> _vocab;
 

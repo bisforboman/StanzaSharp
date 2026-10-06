@@ -16,7 +16,7 @@ namespace StanzaSharp.Lemma;
 /// (models/common/seq2seq_model.py) with POS input, soft attention, a copy gate and an edit classifier
 /// (identity / lowercase / use the decoded string), decoded greedily.
 /// </summary>
-public sealed class Lemmatizer : IDisposable
+internal sealed class Lemmatizer : IDisposable
 {
     private const int PadId = 0, UnkId = 1, SosId = 2, EosId = 3; // seq2seq_constant.py
     private const string Unk = "<UNK>";

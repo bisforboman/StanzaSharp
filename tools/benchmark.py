@@ -16,7 +16,7 @@ from pathlib import Path
 import stanza
 import torch
 
-STAGES = ["tokenize", "mwt", "pos", "lemma", "depparse", "constituency"]
+STAGES = ["tokenize", "mwt", "pos", "lemma", "constituency", "depparse", "sentiment", "ner"]  # Stanza's order
 ROOT = Path(__file__).resolve().parent.parent
 
 

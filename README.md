@@ -58,6 +58,8 @@ need only `tokenize`. NER gives named entities: `Token.Ner` holds the BIOES tag 
 Sentiment gives `sentence.Sentiment`: 0 negative, 1 neutral, 2 positive.
 `Conllu.Write(doc)` gives Stanza-style CoNLL-U, with `ner=` in MISC when NER ran.
 
+`samples/StanzaSharp.Example` is a commented tour of the whole API: `dotnet run --project samples/StanzaSharp.Example`.
+
 From the command line, this writes CoNLL-U for a file (or standard input):
 
 ```powershell
@@ -87,8 +89,8 @@ default. On a machine busy with other work, fewer threads (`torch.set_num_thread
 
 ## GPU
 
-`Pipeline.Load(dir, new PipelineOptions { Device = torch.CUDA })` runs every model on an NVIDIA GPU; each
-processor's `Load` takes an optional `device` too. The default is the CPU. Reference a CUDA libtorch package such as
+`Pipeline.Load(dir, new PipelineOptions { Device = torch.CUDA })` runs every model on an NVIDIA GPU. The
+default is the CPU. Reference a CUDA libtorch package such as
 `TorchSharp-cuda-windows` (several GB) instead of `TorchSharp-cpu`, in the same version (0.107.0). StanzaSharp
 itself depends only on the managed `TorchSharp` package either way.
 
@@ -146,6 +148,10 @@ Both upload their `.trx` test results. To reproduce `golden` locally, run `setup
 Push a tag such as `v0.1.0-alpha.1`. `.github/workflows/release.yml` runs all CI checks, packs that version,
 publishes it to nuget.org through NuGet Trusted Publishing and creates a GitHub release (a prerelease
 when the version has a `-`).
+
+## Changes
+
+See [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 

@@ -11,8 +11,5 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <InternalsVisibleTo Include="StanzaSharp.Tests" />
-  </ItemGroup>
 
 </Project>

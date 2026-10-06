@@ -118,6 +118,11 @@ public sealed class Pipeline : IDisposable
         return set;
     }
 
+    /// <summary>
+    /// Runs the loaded processors on <paramref name="text"/>: it is split into sentences and tokens, then
+    /// annotated by each processor in Stanza's order. Blank lines separate paragraphs, which never share a
+    /// sentence. Not designed for concurrent calls: use one pipeline per thread.
+    /// </summary>
     public Document Process(string text)
     {
         var doc = _tokenizer.Process(text);
@@ -135,6 +140,7 @@ public sealed class Pipeline : IDisposable
         return doc;
     }
 
+    /// <summary>Frees the models' memory (CPU or GPU).</summary>
     public void Dispose()
     {
         _parser?.Dispose();

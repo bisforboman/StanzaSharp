@@ -10,7 +10,7 @@ namespace StanzaSharp;
 /// <c>name.safetensors</c>. Non-JSON Python values stay tagged (<c>$tuple</c>, <c>$set</c>, <c>$dict</c>, ...).
 /// An original PyTorch <c>name.pt</c> file loads into the same structure, without Python.
 /// </summary>
-public sealed class Checkpoint
+internal sealed class Checkpoint
 {
     public JsonNode Root { get; }
     public SafeTensorFile Tensors { get; }

@@ -5,7 +5,7 @@ using System.Text;
 namespace StanzaSharp;
 
 /// <summary>Python <c>str</c> semantics where .NET's differ. Stanza's behavior depends on these.</summary>
-public static class PyString
+internal static class PyString
 {
     /// <summary>
     /// <c>str.lower()</c>: per code point, with Python's full mapping of U+0130 (İ → i̇) and the
