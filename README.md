@@ -86,8 +86,8 @@ torch.backends.cuda.matmul.allow_tf32 = false;
 
 These are process-wide torch settings, so StanzaSharp leaves them to you. With TF32 off, the GPU matched
 every golden file exactly on an RTX 3080; with TF32 on, 3 of 845 sentences differed (near-ties). Results
-are deterministic from run to run either way. The pipeline is about 6x faster on an RTX 3080 than on 8 CPU
-threads, mostly in pos and depparse; the constituency parser gains least. Details in
+are deterministic from run to run either way. The pipeline is roughly 4x faster on an RTX 3080 than on 8 CPU
+threads (Ryzen 7 5800X), mostly in pos and depparse; the constituency parser gains least. Details in
 [docs/gpu.md](docs/gpu.md).
 
 In this repository, set `STANZASHARP_CUDA=1` to build the Cli, Benchmark and Tests with
