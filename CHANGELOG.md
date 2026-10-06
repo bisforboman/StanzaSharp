@@ -19,6 +19,12 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 - `ModelDownloader.DownloadAsync(dir, PipelineOptions)` downloads exactly what `Pipeline.Load` reads with the
   same options (package and processors).
 - The CLI's `--package NAME`, for running and for `download`.
+- Bulk processing: `Pipeline.Process(IEnumerable<string>)` returns one `Document` per text, batching all their
+  sentences together, like Stanza's `bulk_process`, and with identical output (which, as in Stanza, can differ
+  slightly from processing each text alone: sentiment labels depend on their batch, and sentence ids continue
+  across the documents). On 2,000 one-sentence texts it is 7.7× faster than one call per text (9× with `default_fast`).
+- Pretokenized input: `Pipeline.Process(IEnumerable<IEnumerable<string>>)` takes sentences of tokens and skips the
+  tokenizer, like Stanza's `tokenize_pretokenized=True`, with identical output.
 
 ### Changed
 - `PipelineOptions.Processors` is now `string?` and null by default, meaning all processors of the package

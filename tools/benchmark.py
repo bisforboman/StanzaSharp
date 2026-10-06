@@ -104,8 +104,7 @@ def main():
 def time_documents(args):
     golden = ROOT / "tests" / "golden"
     sentences = [line[len("# text = "):] for path in sorted(golden.glob("validation*.conllu"))
-                 for line in path.read_text(encoding="utf-8").split("
-") if line.startswith("# text = ")]
+                 for line in path.read_text(encoding="utf-8").split("\n") if line.startswith("# text = ")]
     texts = [sentences[i % len(sentences)] for i in range(args.documents)]
     nlp = stanza.Pipeline("en", dir=args.models, package=args.package, download_method=None, use_gpu=False, logging_level="WARN")
     with torch.no_grad():
