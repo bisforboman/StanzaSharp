@@ -9,7 +9,10 @@ namespace StanzaSharp.Tests;
 public class SentimentTests(ITestOutputHelper output)
 {
     private static readonly string Golden = Path.Combine(Repo.Golden, "sentiment");
-    private const float Tolerance = 1e-4f;
+    // On Arm64 (macOS, Apple Silicon) libtorch computes with Accelerate instead of the x64 kernels; the
+    // classifier's large logits then drift up to ~1.1e-4 (labels still exact), so Arm64 gets 1e-3.
+    private static readonly float Tolerance =
+        System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture == System.Runtime.InteropServices.Architecture.Arm64 ? 1e-3f : 1e-4f;
     // Cached charlm outputs come from the tagger's batches and differ from fresh ones in the last bits.
     // The classifier amplifies that to about 1e-4 on logits of up to ~20 (the smallest top-2 margin is 1.6e-3).
     private const float CachedTolerance = 1e-3f;
