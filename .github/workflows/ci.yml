@@ -114,7 +114,8 @@ jobs:
           name: test-results-golden
           path: TestResults/*.trx
 
-  # Windows and macOS (Apple Silicon): the full suite and the package check against Stanza's .pt files.
+  # Windows (x64 and Arm64) and macOS (Apple Silicon): the full suite and the package check against Stanza's .pt files.
+  # On Windows Arm64, Directory.Build.props adds libtorch-cpu-win-arm64 to the tests (TorchSharp-cpu lacks it).
   # golden stays the reference run; only it converts the models (Python) and compares .pt with converted.
   # A separate job, not a matrix over build-test/golden, so those two keep their check names (required on main).
   # No NuGet cache here: TorchSharp-cpu pulls all three libtorch builds, and the repository's 10 GB cache
@@ -123,7 +124,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2025, macos-15]
+        os: [windows-2025, macos-15, windows-11-arm]
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -170,14 +171,16 @@ jobs:
             exit 1
           fi
 
+      # TorchSharp-cpu has no Windows Arm64 libtorch, so there only the platform package can work.
       - name: Verify the package
+        if: runner.os != 'Windows' || runner.arch != 'ARM64'
         shell: pwsh
         run: ./tools/verify-package.ps1 -ModelDir models/stanza/en
 
-      # The same app with only this OS's platform package (StanzaSharp.Cpu.Windows / .MacOS).
+      # The same app with only this machine's platform package (StanzaSharp.Cpu.Windows / .WindowsArm64 / .MacOS).
       - name: Verify the platform package
         shell: pwsh
-        run: ./tools/verify-package.ps1 -ModelDir models/stanza/en -Platform ${{ runner.os == 'Windows' && 'Windows' || 'MacOS' }}
+        run: ./tools/verify-package.ps1 -ModelDir models/stanza/en -Platform ${{ runner.os == 'macOS' && 'MacOS' || runner.arch == 'ARM64' && 'WindowsArm64' || 'Windows' }}
 
       - uses: actions/upload-artifact@v7
         if: always()

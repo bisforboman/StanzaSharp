@@ -37,7 +37,7 @@ jobs:
       # StanzaSharp, and the platform packages that add one platform's CPU libtorch to it.
       - name: Pack
         run: |
-          for project in StanzaSharp StanzaSharp.Cpu.Linux StanzaSharp.Cpu.Windows StanzaSharp.Cpu.MacOS; do
+          for project in StanzaSharp StanzaSharp.Cpu.Linux StanzaSharp.Cpu.Windows StanzaSharp.Cpu.WindowsArm64 StanzaSharp.Cpu.MacOS; do
             dotnet pack src/$project --configuration Release -p:Version=$VERSION --output artifacts
           done
 
