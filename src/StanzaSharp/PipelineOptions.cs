@@ -34,7 +34,7 @@ public sealed class PipelineOptions
     /// </summary>
     public bool DisableTf32 { get; init; }
 
-    /// <summary>Sharing of character-model outputs between the tagger and the constituency parser.</summary>
+    /// <summary>Sharing of character-model outputs between the tagger, the constituency parser and sentiment.</summary>
     public CharlmCacheOptions CharlmCache { get; init; } = new();
 }
 

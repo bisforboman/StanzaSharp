@@ -9,6 +9,8 @@ PyTorch-based NLP library, running the original pretrained models through TorchS
 - **Processors:** `tokenize` → `mwt` → `pos` → `lemma` → `depparse` → `constituency`. All six are
   `Pipeline.AllProcessors`, the default, in that order, like Stanza's English default (2026-10-06).
   `pipeline.conllu` and `validation*.conllu` are generated with all six (`PROCESSORS` in make_golden.py).
+  `sentiment` is ported too but not in the default; Stanza runs it after the parsers (its order is
+  tokenize, mwt, pos, lemma, constituency, depparse, sentiment, ner).
 - **Inference only.** Training stays in Python; we load Stanza's released weights.
 - **Package:** Stanza's English *default* package, which needs no transformer:
   - tokenize: `combined_nocharlm`
@@ -17,9 +19,10 @@ PyTorch-based NLP library, running the original pretrained models through TorchS
   - lemma: `combined_nocharlm`
   - constituency: `ptb3-revised_charlm`
   - depparse: `combined_charlm`
-- **Shared dependencies:** `pos` and `constituency` both depend on the forward and backward
-  character LMs (charlm) and on the pretrained word-vector file (pretrain). That makes six model
-  files to port, not four. The charlm is shared infrastructure and lives in `StanzaSharp.Nn`.
+  - sentiment: `sstplus_charlm`
+- **Shared dependencies:** `pos`, `constituency`, `depparse` and `sentiment` all depend on the forward and backward
+  character LMs (charlm) and on the pretrained word-vector file (pretrain).
+  The charlm is shared infrastructure and lives in `StanzaSharp.Nn`.
 
 ## Status
 
@@ -81,8 +84,18 @@ All 7 steps of the build order are done:
   LemmaProcessor: dictionary skip, DeltaVocab, `batch_size` 50 batches sorted like `sort_all`, greedy
   decoding, edits, `<UNK>` fallback, and the `Word.lemma` setter turning `_` into null.
 - `Checkpoint.Load` also reads Stanza's original `.pt` files (`Core/TorchCheckpoint.cs` +
-  `Core/Pickle.cs`), so `Pipeline.Load("models/stanza/en")` works without Python. For all eight
+  `Core/Pickle.cs`), so `Pipeline.Load("models/stanza/en")` works without Python. For all nine
   checkpoints the result equals the converter's: identical JSON and byte-identical tensors.
+- `Sentiment.SentimentClassifier` (processor `sentiment`, requires tokenize; runs last, as in Stanza)
+  sets `Sentence.Sentiment` (0 negative, 1 neutral, 2 positive). `Conllu` reads and writes
+  `# sentiment = N` after `# constituency`, Stanza's comment order. `tokenize,mwt,sentiment`
+  reproduces `tests/golden/sentiment/` byte for byte (14 files, 886 sentences), with every label and
+  logit (drift ≤ 2.2e-5, tolerance 1e-4), also as one document in two 5000-token batches (`all.json`).
+  - Batches must match Stanza's: padding runs through the unpacked biLSTM and the convolutions, so a
+    sentence's result depends on its batch (one document vs per file: 173 of 886 labels change in Stanza itself).
+  - `CharlmCache`: the classifier reads token texts, so it reuses the tagger's outputs for sentences
+    without multi-word tokens (641 of 886). Labels stay identical; logits drift up to ~1e-4 (vs
+    Stanza), as the network amplifies the cached charlm's last-bit differences; tested at 1e-3.
 
 Tokenizer notes:
 - `Tokenizer.Predict` batches like Stanza: sort paragraphs by length, batch by 32, pad to max+1,
@@ -106,6 +119,7 @@ src/StanzaSharp.Pos            POS / feature tagger.
 src/StanzaSharp.Lemma          Lemmatizer (dictionary + character seq2seq).
 src/StanzaSharp.Constituency   Constituency parser.
 src/StanzaSharp.Depparse       Dependency parser (biaffine graph parser + Chu-Liu/Edmonds).
+src/StanzaSharp.Sentiment      Sentence sentiment (CNN classifier over biLSTM states).
 src/StanzaSharp                Pipeline facade wiring the processors together.
 samples/StanzaSharp.Cli        Console runner for quick experiments.
 samples/StanzaSharp.Benchmark  Per-stage speed/memory benchmark; tools/benchmark.py is the Python twin.
@@ -169,11 +183,11 @@ Safetensors layout: a u64 little-endian header length, a JSON header (`dtype`, `
 then raw little-endian tensor data. Read it with a small hand-written reader in `StanzaSharp.Core`;
 no package is needed.
 
-All eight checkpoints convert with `torch.load(weights_only=True)`; no unsafe pickling is needed.
+All nine checkpoints convert with `torch.load(weights_only=True)`; no unsafe pickling is needed.
 
 ### Reading .pt files in C#
 
-All eight Stanza checkpoints use torch's legacy format (`_use_new_zipfile_serialization=False`), a
+All nine Stanza checkpoints use torch's legacy format (`_use_new_zipfile_serialization=False`), a
 sequence of protocol-2 pickles: magic number, protocol version (1001), sys_info (little-endian),
 the checkpoint, the list of storage keys; then per key an int64 element count and the raw bytes.
 Tensors are `torch._utils._rebuild_tensor_v2(storage, offset, size, stride, requires_grad, hooks)`
@@ -250,6 +264,20 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - Decoding: log-softmax over heads, then `chuliu_edmonds_one_root` in float64. The log-softmax
     includes the batch's padding columns, so batches must match Stanza's: sorted longest first,
     5000 words (with ROOT) per batch, over 150 alone. `resolve_head_constraints` is false.
+- **sentiment** (`sstplus_charlm`): `models/classifiers/cnn_classifier.py` `CNNClassifier`
+  (`model_type` CNN), in `params` of the checkpoint with `extra_vocab` and `labels` `0,1,2`.
+  - Input: the sentence's **token** texts (`extract_sentences`), not words, with no lowercasing or
+    `simplify_punct`. Each batch is padded at the end to its longest sentence, at least 5 (the widest filter).
+  - Per token 2148 = pretrain 100 + delta embedding 100 summed (`extra_wordvec_method` SUM) + charlm
+    2048. Pretrain lookup (`map_word`): the token, else without a trailing `'`, else lowercased;
+    still unknown gets the learned `unk` vector (padding keeps row 0). The delta vocab (31014) looks
+    the token up as written, else id 1. The charlms run over the tokens like the tagger's.
+  - A 2-layer biLSTM (300 per direction) over the **unpacked** padded batch, then Conv2d filters 3, 4
+    and 5 tokens × 600 (1000 channels each) and one (5, 5) filter with stride (1, 5) (8 channels ×
+    120 = 960), each ReLU then max over all positions (`maxpool_width` 1): 3960 → FC 400 → 100 → 3,
+    ReLU between. Dropout is off at inference.
+  - `label_sentences`: sentences sorted longest first (stable), `split_into_batches` of 5000 tokens
+    (longer alone), argmax.
 
 ## Validation
 
@@ -282,6 +310,9 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - `depparse/` (`make_golden.py --depparse-only`): `tokenize,mwt,pos,lemma,depparse` output for
     `corpus.txt` (as `corpus.conllu`) and each `validation*.txt`; arc/label log-probs for the
     first 3 sentences; `mst.json`, Stanza's trees on tie-heavy integer score matrices.
+  - `sentiment/` (`--sentiment-only`): `tokenize,mwt,sentiment` `<name>.conllu` + `<name>.json`
+    (label and 3 logits per sentence) for corpus.txt, each validation*.txt and `sentiment/reviews.txt`
+    (opinionated sentences); `all.json` for all of them as one document (two batches).
   - `validation*.conllu`: full pipeline output for each hand-written `validation*.txt` (news,
     academic, instructions, social, dialogue/poetry, tech, multilingual, contractions, long,
     whitespace, nonbmp; ~830 sentences). They are read as bytes, so CR/CRLF reach Stanza as-is.
@@ -316,7 +347,7 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     dispose scope. Otherwise it leaves them with the caller. Before this fix the cache disposed
     rejected tensors that the tagger was still using.
 - One NuGet package, `StanzaSharp`, packed from `src/StanzaSharp` (user's decision, 2026-10-06).
-  - It carries all eight assemblies plus their XML docs: the facade's ProjectReferences are
+  - It carries all nine assemblies plus their XML docs: the facade's ProjectReferences are
     `PrivateAssets="all"`, and an `IncludeProjectReferences` target adds them.
   - It depends only on managed `TorchSharp`; users add `TorchSharp-cpu`/`-cuda` themselves.
   - Every other project is `IsPackable=false` (Directory.Build.props, which also holds the shared
@@ -325,7 +356,7 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - `src/StanzaSharp/PACKAGE.md` is the package readme; `NOTICE` ships in the package.
 - Models are downloaded only explicitly (user's decision): `ModelDownloader.DownloadAsync(dir)` or
   `StanzaSharp.Cli download [DIR]`.
-  - It fetches the 8 `.pt` files from `huggingface.co/stanfordnlp/stanza-en/resolve/v1.15.0/models/`
+  - It fetches the `.pt` files from `huggingface.co/stanfordnlp/stanza-en/resolve/v1.15.0/models/`
     and checks each against the MD5 from Stanza 1.15.0's resources.json, kept in
     `ModelDownloader.Files`.
   - It keeps files that already match. `Pipeline.Load` never downloads.

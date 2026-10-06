@@ -9,8 +9,8 @@
   <PropertyGroup>
     <IsPackable>true</IsPackable>
     <PackageId>StanzaSharp</PackageId>
-    <Description>Stanza's English NLP pipeline in .NET: tokenization and sentence splitting, multi-word token expansion, part-of-speech tags and morphological features, lemmas, dependency parsing and constituency parsing. Runs Stanza's own pretrained models through TorchSharp, with output identical to Python Stanza. Add TorchSharp-cpu (or TorchSharp-cuda-*) for the native libtorch.</Description>
-    <PackageTags>nlp;stanza;tokenizer;pos-tagging;lemmatization;dependency-parsing;constituency-parsing;torchsharp</PackageTags>
+    <Description>Stanza's English NLP pipeline in .NET: tokenization and sentence splitting, multi-word token expansion, part-of-speech tags and morphological features, lemmas, dependency parsing, constituency parsing and sentence sentiment. Runs Stanza's own pretrained models through TorchSharp, with output identical to Python Stanza. Add TorchSharp-cpu (or TorchSharp-cuda-*) for the native libtorch.</Description>
+    <PackageTags>nlp;stanza;tokenizer;pos-tagging;lemmatization;dependency-parsing;constituency-parsing;sentiment-analysis;torchsharp</PackageTags>
     <PackageReadmeFile>PACKAGE.md</PackageReadmeFile>
     <!-- The other projects' assemblies go into this package (see IncludeProjectReferences). -->
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);IncludeProjectReferences</TargetsForTfmSpecificBuildOutput>

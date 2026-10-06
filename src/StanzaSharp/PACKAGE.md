@@ -7,6 +7,7 @@
 - lemmas
 - dependency parsing
 - constituency parsing
+- sentence sentiment (negative, neutral, positive)
 
 It runs Stanza's own pretrained models through TorchSharp, with no Python needed. The output is identical
 to Python Stanza 1.15.0 on its golden test data.
@@ -48,7 +49,8 @@ foreach (var sentence in doc.Sentences)
 }
 ```
 
-- `Pipeline.Load(dir, new PipelineOptions { Processors = "tokenize,mwt" })` runs only the listed processors; each needs the ones before it. The default is all six: `tokenize,mwt,pos,lemma,depparse,constituency`.
+- `Pipeline.Load(dir, new PipelineOptions { Processors = "tokenize,mwt" })` runs only the listed processors; each needs the ones before it. The default is six: `tokenize,mwt,pos,lemma,depparse,constituency`.
+- Add `sentiment` to the list for `sentence.Sentiment`: 0 negative, 1 neutral, 2 positive.
 - `Conllu.Write(doc)` gives CoNLL-U in Stanza's format.
 
 ## GPU

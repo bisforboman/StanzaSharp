@@ -1,6 +1,6 @@
 # StanzaSharp
 
-C# port of Stanza's English inference pipeline (tokenize, mwt, pos, lemma, depparse, constituency) on TorchSharp.
+C# port of Stanza's English inference pipeline (tokenize, mwt, pos, lemma, depparse, constituency, sentiment) on TorchSharp.
 It runs Stanza's own pretrained models. On the golden test corpus, the output is byte-identical to
 Python Stanza 1.15.0.
 See CLAUDE.md for scope, layout, decisions and build order.
@@ -46,9 +46,10 @@ foreach (var sentence in doc.Sentences)
 
 `Pipeline.Load(dir, new PipelineOptions { Processors = "tokenize,mwt" })` runs only the listed processors; each
 needs the ones before it. `PipelineOptions` also holds `Device`, `DisableTf32` and `CharlmCache`
-(`IsEnabled`, `MaxWords`: the tagger's character-model outputs reused by the constituency parser, at most
+(`IsEnabled`, `MaxWords`: the tagger's character-model outputs reused by the constituency parser and sentiment, at most
 32,768 words / ~256 MB by default; output is identical either way).
-The default is all six processors: `tokenize,mwt,pos,lemma,depparse,constituency`.
+The default is six processors: `tokenize,mwt,pos,lemma,depparse,constituency`. Add `sentiment` (needs only
+`tokenize`) for `sentence.Sentiment`: 0 negative, 1 neutral, 2 positive.
 `Conllu.Write(doc)` gives Stanza-style CoNLL-U.
 
 From the command line, this writes CoNLL-U for a file (or standard input):
