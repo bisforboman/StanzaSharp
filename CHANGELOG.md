@@ -7,6 +7,10 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 
 ## [Unreleased]
 
+### Changed
+- Verified on Windows and macOS (Apple Silicon) in CI, besides Linux. On macOS, `brew install libomp` is
+  required: TorchSharp-cpu's libtorch links OpenMP from Homebrew's path.
+
 ## [0.2.0] - 2026-10-06
 
 ### Added

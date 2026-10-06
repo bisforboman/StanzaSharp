@@ -10,8 +10,10 @@ param([string]$ModelDir = 'models/converted/en')
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
-$modelDir = Resolve-Path (Join-Path $root $ModelDir) -ErrorAction SilentlyContinue
-if (-not $modelDir) { $modelDir = Resolve-Path $ModelDir }
+# Relative to the repository root, else to the current directory; absolute paths as given.
+# (Not $modelDir: PowerShell variable names ignore case, so that would overwrite the parameter.)
+$models = [IO.Path]::Combine($root, $ModelDir)
+if (-not (Test-Path $models)) { $models = Resolve-Path $ModelDir }
 
 # A version of its own each run, so a package from an earlier run can't come from the NuGet cache.
 $version = "0.0.0-verify.$([DateTime]::UtcNow.ToString('yyyyMMddHHmmss'))"
@@ -57,7 +59,7 @@ foreach (var sentence in doc.Sentences)
     Console.WriteLine(sentence.Constituency);
 Console.Write(Conllu.Write(doc));
 '@
-    $output = dotnet run --project $app -- $modelDir 2>&1 | Out-String
+    $output = dotnet run --project $app -- $models 2>&1 | Out-String
     if ($LASTEXITCODE) { throw "The consumer app failed:`n$output" }
     Write-Host $output
     $expected = '(ROOT (S (NP (NNP Barack) (NNP Obama)) (VP (VBD was) (VP (VBN born) (PP (IN in) (NP (NNP Hawaii))))) (. .)))'

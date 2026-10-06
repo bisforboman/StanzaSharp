@@ -13,7 +13,8 @@ dotnet add package TorchSharp-cpu
 ```
 
 `TorchSharp-cpu` (or a `TorchSharp-cuda-*` package) brings the native libtorch; its version must match the
-`TorchSharp` version StanzaSharp depends on (0.107.0). Requires .NET 10.
+`TorchSharp` version StanzaSharp depends on (0.107.0). Requires .NET 10. Tested on Linux, Windows and macOS.
+On macOS (Apple Silicon), also run `brew install libomp`: TorchSharp-cpu's libtorch loads OpenMP from Homebrew's path.
 
 ## Models
 
@@ -154,7 +155,7 @@ Tests that need models skip when `models/converted/en` (or, for the `.pt` loader
 
 ## CI
 
-`.github/workflows/ci.yml` runs on pushes to `main` and on pull requests (Ubuntu 24.04, .NET 10).
+`.github/workflows/ci.yml` runs on pushes to `main` and on pull requests (.NET 10; Ubuntu 24.04, plus Windows and macOS).
 
 - `build-test` builds the solution and runs the tests without models (the model tests skip).
 - `golden` downloads the English models with `ModelDownloader` (through the CLI), converts them with
@@ -162,8 +163,12 @@ Tests that need models skip when `models/converted/en` (or, for the `.pt` loader
   skipped. Then `tools/verify-package.ps1` packs StanzaSharp and runs a fresh app that references the
   package. The original and converted models are cached, keyed on `ModelDownloader.cs`,
   `tools/requirements.txt` and `tools/stanza_convert.py`.
+- `cross-os (windows-2025)` and `cross-os (macos-15)` (Apple Silicon) run the same full suite, the
+  no-skip check and `tools/verify-package.ps1`, against Stanza's `.pt` files without converting them
+  (no Python). Their models are cached per OS, keyed on `ModelDownloader.cs`.
 
-Both upload their `.trx` test results. To reproduce `golden` locally, run `setup.ps1 -Models`, then
+`build-test` and `golden` stay separate jobs, not a matrix, because branch protection requires checks
+by those exact names. All upload their `.trx` test results. To reproduce `golden` locally, run `setup.ps1 -Models`, then
 `dotnet test --logger trx --results-directory TestResults` and check that nothing was skipped.
 
 ## Releasing

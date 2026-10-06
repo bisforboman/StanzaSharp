@@ -4,3 +4,4 @@
 *.safetensors binary
 # Holds CRLF and lone CR on purpose; must reach the tests byte for byte.
 validation_whitespace.txt -text
+*.pt binary
