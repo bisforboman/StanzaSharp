@@ -317,7 +317,9 @@ public sealed class DependencyParser : IDisposable
             var input2 = AppendOne(F.relu(_w2.forward(x)));
             var intermediate = einsum("NLI,IJO->NLJO", input1, _weight);
             var output = einsum("NLJO,NMJ->NLMO", intermediate, input2);
-            return (output + _bias.expand(output.shape)).MoveToOuterDisposeScope();
+            intermediate.Dispose();
+            // In place: the label scorer's output is [batch, width, width, relations], too large to copy.
+            return output.add_(_bias).MoveToOuterDisposeScope();
         }
 
         private static Tensor AppendOne(Tensor x)
