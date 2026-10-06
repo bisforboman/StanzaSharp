@@ -7,6 +7,10 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 
 ## [Unreleased]
 
+### Changed
+- Verified on Windows and macOS (Apple Silicon) in CI, besides Linux. On macOS, `brew install libomp` is
+  required: TorchSharp-cpu's libtorch links OpenMP from Homebrew's path.
+
 ### Added
 - Stanza's English `default_fast` package: `PipelineOptions.Package = "default_fast"` (default
   `"default"`, also `Pipeline.DefaultPackage`). It runs tokenize, mwt, pos, lemma, depparse, sentiment and

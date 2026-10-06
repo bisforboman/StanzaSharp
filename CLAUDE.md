@@ -402,6 +402,10 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     `libtorch-cpu-osx-arm64`): build, full suite with `STANZASHARP_MODELS` = `models/stanza/en` (the
     `.pt` files, no Python or conversion), the same no-skip check, and `verify-package.ps1`. Models are
     cached per OS on `ModelDownloader.cs` only; no NuGet cache, to stay inside the 10 GB cache budget.
+    - macOS first needs `brew install libomp`. `libtorch_cpu.dylib` from `libtorch-cpu-osx-arm64` 2.10.0
+      links `/opt/homebrew/opt/libomp/lib/libomp.dylib` by absolute path, not the `libomp.dylib` it
+      ships. Without it TorchSharp reports only "doesn't contain a reference to libtorch-cpu-osx-arm64";
+      `otool -L` on the dylib shows the real cause. Users need it too (README, PACKAGE.md).
   - Keep paths forward-slash and file names case-exact (Linux). The root `.gitattributes` keeps sources
     LF; `tests/golden/.gitattributes` pins golden files (`eol=lf`, `binary`, `validation_whitespace.txt`
     `-text`), so Windows checkouts with `core.autocrlf=true` stay byte-exact. Bash steps run under

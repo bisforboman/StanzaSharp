@@ -13,7 +13,8 @@ dotnet add package TorchSharp-cpu
 ```
 
 `TorchSharp-cpu` (or a `TorchSharp-cuda-*` package) brings the native libtorch; its version must match the
-`TorchSharp` version StanzaSharp depends on (0.107.0). Requires .NET 10.
+`TorchSharp` version StanzaSharp depends on (0.107.0). Requires .NET 10. Tested on Linux, Windows and macOS.
+On macOS (Apple Silicon), also run `brew install libomp`: TorchSharp-cpu's libtorch loads OpenMP from Homebrew's path.
 
 ## Models
 
