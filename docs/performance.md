@@ -20,7 +20,8 @@ C# CoNLL-U equals Python's line for line, before and after.
     differently.
   - `tokenize_stress.txt` adds long paragraphs and long run-on sentences.
 - **Runs:** one warm-up run on a single copy, then 3 timed runs. The tables show medians.
-  - Each stage is timed separately: tokenize, mwt, pos, constituency. Words/s is computed over all
+  - Each stage is timed separately: tokenize, mwt, pos, lemma, depparse, constituency (round 1:
+    the first three and constituency). Words/s is computed over all
     26,264 words.
   - Load time covers all six models: C# reads the converted `.safetensors` + `.json` files, Python
     the `.pt` files.
@@ -32,13 +33,74 @@ C# CoNLL-U equals Python's line for line, before and after.
 - **Threads:** results are given for 8 and for 1 torch intra-op threads, set with `--threads` on
   both sides. 8 is torch's default on this machine (physical cores).
 - **Caveats:** other jobs shared the machine overnight.
-  - The final runs below were taken when it was mostly idle (5–10% CPU load before and after).
+  - Round 1's final runs were taken when it was mostly idle (5–10% CPU load before and after);
+    round 2's at 15–50% load, with before and after alternated.
   - Earlier development runs, made under heavy load, were 1.5–3× slower. Compare numbers from the
     same table only.
   - Under load, the default thread count suffers most, because libtorch's OpenMP threads spin
     waiting for each other.
 
-## Results
+## Results, round 2: memory (six processors)
+
+"Before" is `main` at 2627542 (all six processors, GPU support merged). "After" is `agent/perf2`.
+Both run the six-processor default; the benchmarks gained lemma and depparse stages. Times are
+seconds per run on 26,264 words. The machine was shared (15–50% CPU load from other jobs during
+these runs), so differences under about 3% are noise. Every run below wrote the same CoNLL-U as
+Python.
+
+**8 threads** (C# columns: median of two benchmark runs)
+
+| stage                 | C# before | C# after | Python |
+|-----------------------|----------:|---------:|-------:|
+| load                  |      1.19 |     0.86 |   4.17 |
+| tokenize              |      1.63 |     1.66 |   2.24 |
+| mwt                   |      0.01 |     0.02 |   0.37 |
+| pos                   |     17.20 |    17.25 |  23.43 |
+| lemma                 |      0.90 |     0.90 |   1.50 |
+| depparse              |     14.13 |    14.33 |  23.40 |
+| constituency          |     10.77 |    10.41 |  26.33 |
+| **total**             | **44.64** | **44.55**| **77.26** |
+| words/s               |       588 |      590 |    340 |
+| load peak (MB)        |     1,322 |      634 |    906 |
+| **peak memory (MB)**  | **6,081** | **2,690**| **4,253** |
+
+**1 thread**
+
+| stage                 | C# before | C# after | Python |
+|-----------------------|----------:|---------:|-------:|
+| load                  |      1.01 |     0.86 |   3.92 |
+| tokenize              |      1.54 |     1.58 |   2.23 |
+| mwt                   |      0.01 |     0.01 |   0.32 |
+| pos                   |     44.52 |    44.76 |  65.86 |
+| lemma                 |      1.20 |     1.23 |   1.84 |
+| depparse              |     47.04 |    47.77 |  64.30 |
+| constituency          |     23.23 |    23.22 |  61.34 |
+| **total**             |**117.54** |**118.58**|**195.89** |
+| words/s               |       223 |      221 |    134 |
+| **peak memory (MB)**  | **6,182** | **3,054**| **4,196** |
+
+Summary:
+- Peak memory fell from 6.1 GB to 2.7 GB at 8 threads, now 1.6 GB below Python's. The load peak
+  halved, to 0.63 GB (Python: 0.91 GB).
+- Speed is unchanged: 1.7× faster than Python at 8 threads, 1.65× at 1 thread.
+- The two new stages: lemma takes 2% of the time, depparse 32% at 8 threads (40% at 1 thread). Pos
+  is 39%, constituency 23%.
+
+### What changed in round 2
+
+| commit | change | why it keeps output identical |
+|---|---|---|
+| Load models without whole-file copies | `SafeTensorFile` reads only the header, then each tensor from the file on demand. `Weights.ToTensor`/`LoadFrom` read straight into the TorchSharp tensor's memory (`Tensor.bytes`), instead of byte[] of the file → float[] → temporary tensor → copy. `Checkpoint` parses JSON from a stream, and `UnitToId` reads `_unit2id` as JSON text instead of building a `JsonNode` per entry (250k in the pretrain vocabulary). | the same bytes end up in the same tensors |
+| Depparse: chunked biaffine scorers | the label scorer's einsum intermediate is [batch, width, 401, 53] floats: 1.5 GB for 250 sentences padded to 72 words, plus a permuted copy inside einsum. Stanza peaks the same way. `DeepBiaffine` now runs both einsums on a few sentences at a time (≈128 MB of intermediate), writes into a preallocated output, frees each intermediate at once and adds the bias in place. | each sentence's scores read only its own rows; golden depparse files and the benchmark stay byte-identical |
+| POS: cut batches at 5000 words | like Stanza's `LengthLimitedBatchSampler` (`batch_maximum_tokens`). Never triggers on the benchmark text. On a synthetic text of 600 sentences of 10–60 words, which it does split, C# still equals Python. | matches Python's batching |
+| CharlmCache: at most 32k words | the cache held 8 KB per word for the whole document. It now keeps at most `MaxWords` (default 32,768 ≈ 256 MB) and disposes the rest on `Add`; the parser recomputes those, as it already did for sentences the tagger didn't keep. Text under 32k words is unaffected. | as for any sentence missing from the cache (see the note in round 1) |
+| Parser: unbind | `Push`, the open markers and the reduce outputs use one `unbind` per tensor instead of one view op per state per step. | the same views |
+
+Freeing CharlmCache entries as the parser consumes them was not done: the cache is full when the
+tagger finishes, which is before the parser starts, so that would not lower the peak. The word cap
+bounds it instead.
+
+## Results, round 1: speed (four processors)
 
 "Before" is `main` at b4c1464, the merge base of this work. "After" is `agent/perf`. Times are
 seconds per run on 26,264 words.
@@ -74,7 +136,7 @@ Summary:
 - At 1 thread, it went from 2.2× slower to 1.9× faster.
 - Pos and constituency together account for over 90% of the time. Tokenize and mwt are minor.
 
-## Where the time went
+## Where the time went (round 1)
 
 Measured with stopwatch instrumentation on the stages and inside the parser.
 
@@ -101,7 +163,7 @@ Not worth changing:
 - The parser's per-step overhead. After the changes it is about 2.5 s of the 10.5 s parser time
   at 8 threads, and much of that is the constituent-stack LSTM's own compute.
 
-## What changed
+## What changed in round 1
 
 Each change has its own commit, with numbers measured at the time.
 
@@ -124,28 +186,27 @@ Note on charlm reuse: the charlm is **not bitwise batch-invariant**.
 
 ## Remaining ideas
 
-Rough payoff estimates at 8 threads, measured against the current 29 s total.
+Rough payoff estimates at 8 threads, against the current 44.5 s six-processor total.
 
-- **Parser step loop: per-state tensor ops.** Each step, every state does a handful of tiny
-  TorchSharp ops: `WordHx` row views, `select` on the LSTM state, and `stack`.
+- **Parser step loop: per-state tensor ops.** Round 2 replaced the per-state `select`s with
+  `unbind`, but each step still takes one `WordHx` row view per state and stacks per-state tensors.
   - A shared "bank" tensor per stack (state rows addressed by index, `index_select` /
     `index_copy_`) would make the op count per step constant.
-  - Payoff: about 1–1.5 s (≈5%) at 8 threads, little at 1 thread, where the stack LSTM's compute
-    dominates. Moderate refactor; exact, since it is data movement only.
-- **Load-time memory.** Loading peaks at about 1.0 GB, against Python's 0.73 GB. Over 300 MB of it
-  is managed heap from `File.ReadAllBytes` of whole safetensors files and the `JsonNode` tree of
-  the 9.5 MB pretrain vocabulary.
-  - Fixes: stream tensor reads, and read vocabularies with `Utf8JsonReader`.
-  - Payoff: maybe 200–300 MB off the load peak. The overall peak is set during pos, so it falls by
-    less.
-- **CharlmCache memory.** The cache holds 8 KB per word until the parser finishes, about 210 MB
-  for this text. For very large documents, free entries as the parser consumes them, or process
-  the document in parts.
-- **POS batch memory.** Stanza also cuts POS batches at 5,000 words (`batch_maximum_tokens`). The
-  port cuts only at 250 sentences.
-  - On normal text this never triggers. On text with very long sentences, adding the cut would
-    match Python's batching and bound memory.
-  - It only changes floats in the last bits, so check it against golden data the same way.
+  - Payoff: about 0.5–1 s (≈2%) on the CPU. On a GPU, where each op is a kernel launch, likely
+    more; that is where the parser gains least today (docs/gpu.md). Moderate refactor; exact, since
+    it is data movement only.
+- **Remaining depparse memory.** The peak is now set in depparse on the warm-up batch, about 1.1 GB
+  above pos: the [batch, width, width, 53] label scores (275 MB for that batch) plus the charlm and
+  LSTM activations of a 5000-word batch. Scoring labels only for the chosen heads would remove the
+  first, but changes the summation order, so it needs checking against near-ties. Payoff: a few
+  hundred MB.
+- **`.pt` loading.** Loading Stanza's `.pt` files directly still reads each file whole and copies
+  the tensors into one buffer (`TorchCheckpoint.Materialize`). Reading storages from the zip
+  entries on demand would bring it to the converted path's memory. Only matters for users who skip
+  the conversion.
+- **Very large documents.** `CharlmCache` is capped, but the document itself, and depparse's and
+  the parser's per-document lists, still grow with the input. Callers with huge inputs should split
+  them, for example by paragraph, and call `Process` per part.
 - **Thread count.** On a loaded machine, fewer threads were often faster than the default 8,
-  because spinning OpenMP threads compete. A `--threads` option or a recommendation in the
-  README may help users on shared machines.
+  because spinning OpenMP threads compete. The README now says so; `torch.set_num_threads` is the
+  knob.

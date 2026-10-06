@@ -69,6 +69,12 @@ powershell -ExecutionPolicy Bypass -File .\setup.ps1 -Models
 converts them to `models\converted\en`. Use `-Python` for the environment only, or no switch for just the
 .NET solution. Add `-Cuda` for GPU libtorch (see GPU below).
 
+## Performance
+
+On 8 CPU threads the six-processor pipeline is about 1.7x faster than Python Stanza and peaks at 2.7 GB of memory
+(Python: 4.3 GB); see [docs/performance.md](docs/performance.md). Libtorch uses one thread per physical core by
+default. On a machine busy with other work, fewer threads (`torch.set_num_threads(n)`) are often faster.
+
 ## GPU
 
 `Pipeline.Load(dir, device: torch.CUDA)` runs every model on an NVIDIA GPU; each processor's `Load` takes
