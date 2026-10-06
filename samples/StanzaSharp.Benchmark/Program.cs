@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using StanzaSharp;
 using StanzaSharp.Constituency;
+using StanzaSharp.Depparse;
+using StanzaSharp.Lemma;
 using StanzaSharp.Mwt;
 using StanzaSharp.Nn;
 using StanzaSharp.Pos;
@@ -49,10 +51,12 @@ using var pretrain = Pretrain.Load(Model("pretrain/conll17"));
 using var charlmForward = CharLanguageModel.Load(Model("forward_charlm/1billion"));
 using var charlmBackward = CharLanguageModel.Load(Model("backward_charlm/1billion"));
 using var pos = PosTagger.Load(Model("pos/combined_charlm"), pretrain, charlmForward, charlmBackward);
+using var lemma = Lemmatizer.Load(Model("lemma/combined_nocharlm"));
+using var depparse = DependencyParser.Load(Model("depparse/combined_charlm"), pretrain, charlmForward, charlmBackward);
 using var parser = ConstituencyParser.Load(Model("constituency/ptb3-revised_charlm"), pretrain, charlmForward, charlmBackward);
 double load = clock.Elapsed.TotalSeconds;
 
-string[] stages = ["tokenize", "mwt", "pos", "constituency"];
+string[] stages = ["tokenize", "mwt", "pos", "lemma", "depparse", "constituency"];
 var times = stages.ToDictionary(s => s, _ => new List<double>());
 var peaks = new Dictionary<string, double> { ["load"] = PeakMB() }; // peak working set after each stage of the warm-up run
 Document doc = null!;
@@ -74,6 +78,8 @@ for (int run = 0; run <= runs; run++)
     timed["tokenize"] = Time("tokenize", () => doc = tokenizer.Process(input));
     timed["mwt"] = Time("mwt", () => mwt.Process(doc));
     timed["pos"] = Time("pos", () => pos.Process(doc, charlms));
+    timed["lemma"] = Time("lemma", () => lemma.Process(doc));
+    timed["depparse"] = Time("depparse", () => depparse.Process(doc));
     timed["constituency"] = Time("constituency", () => parser.Process(doc, charlms));
     if (run > 0)
         foreach (var s in stages)

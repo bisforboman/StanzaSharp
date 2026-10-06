@@ -16,7 +16,7 @@ from pathlib import Path
 import stanza
 import torch
 
-STAGES = ["tokenize", "mwt", "pos", "constituency"]
+STAGES = ["tokenize", "mwt", "pos", "lemma", "depparse", "constituency"]
 ROOT = Path(__file__).resolve().parent.parent
 
 
