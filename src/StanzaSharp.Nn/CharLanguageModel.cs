@@ -20,6 +20,7 @@ public sealed class CharLanguageModel : IDisposable
     private readonly Tensor _hInit, _cInit;
     private readonly Dictionary<string, int> _vocab;
     private readonly int _unkId, _endId;
+    private readonly Device _device = Weights.Device; // the device the model was loaded on
 
     public bool IsForward { get; }
     public int HiddenDim { get; }
@@ -48,7 +49,8 @@ public sealed class CharLanguageModel : IDisposable
     }
 
     /// <summary>Loads e.g. <c>models/converted/en/forward_charlm/1billion</c>.</summary>
-    public static CharLanguageModel Load(string basePath) => new(Checkpoint.Load(basePath));
+    /// <param name="device">Where the model runs; CPU by default.</param>
+    public static CharLanguageModel Load(string basePath, Device? device = null) => Weights.On(device, () => new CharLanguageModel(Checkpoint.Load(basePath)));
 
     /// <summary>
     /// build_char_representation: for each sentence, a [words, HiddenDim] tensor holding the LSTM state
@@ -89,7 +91,7 @@ public sealed class CharLanguageModel : IDisposable
         for (int i = 0; i < ids.Count; i++)
             ids[i].CopyTo(flat, i * width);
 
-        using var input = torch.tensor(flat, [ids.Count, width]);
+        using var input = torch.tensor(flat, [ids.Count, width], device: _device);
         var h0 = _hInit.expand(_hInit.shape[0], ids.Count, HiddenDim).contiguous();
         var c0 = _cInit.expand(_cInit.shape[0], ids.Count, HiddenDim).contiguous();
         var result = Rnn.RunPackedAt(_lstm, _charEmb.forward(input), ids.Select(c => (long)c.Count).ToArray(), offsets, (h0, c0));

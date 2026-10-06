@@ -27,7 +27,7 @@ public sealed class Biaffine : IDisposable
     {
         var shape = x.shape.ToArray();
         shape[^1] = 1;
-        return cat([x, ones(shape, dtype: x.dtype)], -1);
+        return cat([x, ones(shape, dtype: x.dtype, device: x.device)], -1);
     }
 
     public void Dispose() => _bilinear.Dispose();

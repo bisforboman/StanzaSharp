@@ -22,6 +22,7 @@ public sealed class MwtExpander : IDisposable
     private readonly Embedding? _embedding;
     private readonly LSTM? _encoder;
     private readonly Linear? _hidden, _output;
+    private readonly Device _device = Weights.Device; // the device the model was loaded on
 
     private MwtExpander(Checkpoint ckpt)
     {
@@ -48,7 +49,8 @@ public sealed class MwtExpander : IDisposable
     }
 
     /// <summary>Loads <c>basePath.json</c> + <c>basePath.safetensors</c>, e.g. <c>models/converted/en/mwt/combined</c>.</summary>
-    public static MwtExpander Load(string basePath) => new(Checkpoint.Load(basePath));
+    /// <param name="device">Where the model runs; CPU by default.</param>
+    public static MwtExpander Load(string basePath, Device? device = null) => Weights.On(device, () => new MwtExpander(Checkpoint.Load(basePath)));
 
     /// <summary>Expands marked tokens in place and renumbers each sentence's words.</summary>
     public void Process(Document doc)
@@ -114,10 +116,10 @@ public sealed class MwtExpander : IDisposable
             ids[j * width + chars[j].Length + 1] = _eosId;
         }
 
-        var src = torch.tensor(ids, [tokens.Count, width]);
+        var src = torch.tensor(ids, [tokens.Count, width], device: _device);
         var encoded = Rnn.RunPacked(_encoder!, _embedding!.forward(src), lengths);
         var logits = _output!.forward(nn.functional.relu(_hidden!.forward(encoded)));
-        var cuts = (logits[.., .., 1] > logits[.., .., 0]).data<bool>().ToArray();
+        var cuts = (logits[.., .., 1] > logits[.., .., 0]).ToArray<bool>();
 
         var result = new List<string>(tokens.Count);
         for (int j = 0; j < chars.Count; j++)
