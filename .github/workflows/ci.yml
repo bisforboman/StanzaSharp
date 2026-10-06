@@ -159,6 +159,16 @@ jobs:
             exit 1
           fi
 
+      # Temporary: why libLibTorchSharp.dylib doesn't load on macOS (TorchSharp hides dlopen's error).
+      - name: Diagnose native load (macOS)
+        if: failure() && runner.os == 'macOS'
+        run: |
+          uname -m; sw_vers; dotnet --info | head -20
+          dir=tests/StanzaSharp.Tests/bin/Debug/net10.0/cpu
+          ls -la "$dir"
+          for f in "$dir"/libLibTorchSharp.dylib "$dir"/libtorch_cpu.dylib; do echo "== $f"; file "$f"; otool -L "$f"; otool -l "$f" | grep -A3 -E "LC_RPATH|LC_BUILD_VERSION" | head -20; done
+          python3 -c "import ctypes,sys; ctypes.CDLL(sys.argv[1])" "$dir/libLibTorchSharp.dylib" && echo "python dlopen OK"
+
       - name: Verify the package
         shell: pwsh
         run: ./tools/verify-package.ps1 -ModelDir models/stanza/en
