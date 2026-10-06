@@ -59,7 +59,7 @@ Tests that need models skip when `models/converted/en` (or, for the `.pt` loader
 
 ## CI
 
-`.github/workflows/ci.yml` runs on every push and pull request (Ubuntu, .NET 10).
+`.github/workflows/ci.yml` runs on pushes to `main` and on pull requests (Ubuntu 24.04, .NET 10).
 
 - `build-test` builds the solution and runs the tests without models (the model tests skip).
 - `golden` installs `tools/requirements.txt` with the CPU-only torch wheel, downloads and converts

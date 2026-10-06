@@ -2,6 +2,7 @@ name: CI
 
 on:
   push:
+    branches: [main]
   pull_request:
 
 env:
@@ -11,7 +12,7 @@ env:
 jobs:
   # Build and the tests that need no model files (the model tests skip).
   build-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
 
@@ -38,7 +39,7 @@ jobs:
 
   # The full suite against Stanza's real English models, downloaded and converted with the pinned stanza version.
   golden:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
 
