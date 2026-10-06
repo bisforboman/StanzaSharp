@@ -129,6 +129,32 @@ public static class ModelDownloader
         }
     }
 
+    /// <summary>
+    /// <see cref="PipelineOptions.VerifyChecksums"/>: checks each file <see cref="Pipeline.Load"/> reads for
+    /// <paramref name="models"/> against its MD5. Converted models, which have no published checksum, throw.
+    /// </summary>
+    internal static void Verify(string modelDir, IReadOnlyDictionary<string, string> models)
+    {
+        foreach (var path in models.Select(m => $"{m.Key}/{m.Value}").Concat(Pipeline.SharedModels(models)))
+        {
+            var basePath = Path.Combine(modelDir, path);
+            // Checkpoint.Load reads the converted files whenever the .json exists.
+            if (File.Exists(basePath + ".json"))
+                throw new InvalidOperationException($"VerifyChecksums: {basePath}.json is a converted model, which has no published checksum. " +
+                    "Load Stanza's .pt files (e.g. a ModelDownloader directory) or turn VerifyChecksums off.");
+            var file = basePath + ".pt";
+            if (!File.Exists(file))
+                throw new FileNotFoundException($"Model file not found: {file}", file);
+            var expected = Files.Single(f => f.Path == path + ".pt").Md5;
+            string actual;
+            using (var stream = File.OpenRead(file))
+                actual = Convert.ToHexStringLower(MD5.HashData(stream));
+            if (actual != expected)
+                throw new InvalidDataException($"{file}: checksum {actual} does not match Stanza {StanzaVersion}'s {expected}. " +
+                    "The file is corrupted or from another Stanza version; download it again with ModelDownloader.DownloadAsync.");
+        }
+    }
+
     private static async Task<string> Md5Async(string path, CancellationToken cancellationToken)
     {
         await using var file = File.OpenRead(path);

@@ -82,16 +82,17 @@ internal sealed class Tokenizer : IDisposable
     /// <param name="device">Where the model runs; CPU by default.</param>
     public static Tokenizer Load(string basePath, Device? device = null) => Weights.On(device, () => new Tokenizer(Checkpoint.Load(basePath)));
 
-    public Document Process(string text)
+    /// <param name="splitSentences">False is Stanza's <c>tokenize_no_ssplit</c>: each paragraph is one sentence.</param>
+    public Document Process(string text, bool splitSentences = true, CancellationToken cancellationToken = default)
     {
         var paragraphs = SplitParagraphs(text);
         int[][] preds;
         using (torch.no_grad())
-            preds = Predict(paragraphs);
+            preds = Predict(paragraphs, cancellationToken);
 
         var doc = new Document { Text = text };
         for (int i = 0; i < paragraphs.Count; i++)
-            Decode(paragraphs[i], preds[i], doc);
+            Decode(paragraphs[i], preds[i], doc, splitSentences);
         MarkWhitespace(doc);
         return doc;
     }
@@ -100,7 +101,8 @@ internal sealed class Tokenizer : IDisposable
     /// TokenizeProcessor.bulk_process: tokenizes <paramref name="texts"/> joined by <c>"\n\n"</c> in one call, then
     /// gives each text its own document, with offsets relative to that text.
     /// </summary>
-    public List<Document> Process(IReadOnlyList<string> texts) => Split(Process(string.Join("\n\n", texts)), texts);
+    public List<Document> Process(IReadOnlyList<string> texts, bool splitSentences = true, CancellationToken cancellationToken = default) =>
+        Split(Process(string.Join("\n\n", texts), splitSentences, cancellationToken), texts);
 
     /// <summary>
     /// The second half of bulk_process: deals out <paramref name="combined"/>'s sentences (tokenized from
@@ -289,7 +291,7 @@ internal sealed class Tokenizer : IDisposable
 
     // ----- prediction, batched exactly like utils.predict -----
 
-    private int[][] Predict(List<Paragraph> paragraphs)
+    private int[][] Predict(List<Paragraph> paragraphs, CancellationToken ct)
     {
         // SortedDataset sorts by length, longest first (stable), then batches of batch_size.
         // SortedDataset.collate appends one <PAD> to each row's raw units, and the model packs each
@@ -298,6 +300,7 @@ internal sealed class Tokenizer : IDisposable
         var preds = new int[paragraphs.Count][];
         for (int b = 0; b < order.Length; b += _batchSize)
         {
+            ct.ThrowIfCancellationRequested();
             var rows = order[b..Math.Min(b + _batchSize, order.Length)].Select(i => paragraphs[i]).ToList();
             int maxLen = rows.Max(r => r.Length);
             int[][] rowPreds;
@@ -308,7 +311,7 @@ internal sealed class Tokenizer : IDisposable
             }
             else
             {
-                rowPreds = PredictWindowed(rows);
+                rowPreds = PredictWindowed(rows, ct);
             }
             for (int j = 0; j < rows.Count; j++)
             {
@@ -320,12 +323,13 @@ internal sealed class Tokenizer : IDisposable
     }
 
     /// <summary>Paragraphs over MaxSeqLen run in windows that restart after the last predicted sentence end.</summary>
-    private int[][] PredictWindowed(List<Paragraph> rows)
+    private int[][] PredictWindowed(List<Paragraph> rows, CancellationToken ct)
     {
         var idx = new int[rows.Count];
         var output = rows.Select(_ => new List<int>()).ToArray();
         for (bool first = true; ; first = false)
         {
+            ct.ThrowIfCancellationRequested();
             var ens = rows.Select((r, j) => Math.Min(r.Length - idx[j], MaxSeqLen)).ToArray();
             int width = ens.Max();
             // The first window keeps collate's raw units (own length + 1, cut to the window);
@@ -392,7 +396,7 @@ internal sealed class Tokenizer : IDisposable
 
     // ----- output: utils.decode_predictions -----
 
-    private static void Decode(Paragraph para, int[] pred, Document doc)
+    private static void Decode(Paragraph para, int[] pred, Document doc, bool splitSentences)
     {
         Sentence? sent = null;
         int tokStart = 0;
@@ -420,7 +424,8 @@ internal sealed class Tokenizer : IDisposable
             token.Words.Add(new Word { Id = sent.Tokens.Count + 1, Text = text, StartChar = start, EndChar = end });
             sent.Tokens.Add(token);
 
-            if (label is 2 or 4)
+            // no_ssplit: only the paragraph's end (below) ends the sentence.
+            if (label is 2 or 4 && splitSentences)
             {
                 FinishSentence(sent, doc);
                 sent = null;

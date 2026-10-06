@@ -19,7 +19,11 @@ public sealed class Document
 /// <summary>One sentence: its tokens, and the sentence-level results (parse tree, sentiment, entities).</summary>
 public sealed class Sentence
 {
-    /// <summary>The sentence's text, a slice of <see cref="Document.Text"/> (CoNLL-U's <c># text</c>).</summary>
+    /// <summary>
+    /// The sentence's text, a slice of <see cref="Document.Text"/> (CoNLL-U's <c># text</c>). Every <c>Pipeline.Process</c>
+    /// overload sets it on every sentence, so it is never null there (use <c>sentence.Text!</c>). It is null only for a
+    /// sentence read by <see cref="Conllu.Read"/> without a <c># text</c> comment, or one built by hand.
+    /// </summary>
     public string? Text { get; set; }
 
     /// <summary>The sentence id: its 0-based index in the document, as a string (CoNLL-U's <c># sent_id</c>).</summary>

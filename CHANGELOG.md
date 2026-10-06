@@ -7,7 +7,26 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-06
+
 ### Added
+- `PipelineOptions.Threads`: libtorch's intra-op thread count, set at `Pipeline.Load` (process-wide, like
+  `torch.set_num_threads`). By default it is now capped at `Environment.ProcessorCount`, which .NET limits to a
+  container's CPU quota; before, libtorch used one thread per physical core of the host.
+- Cancellation: `Pipeline.Process(text, cancellationToken)`, and the same for bulk and pretokenized input. The token
+  is checked between processors and between batches inside them; a canceled call throws `OperationCanceledException`,
+  returns no document, and leaves the pipeline usable.
+- `Pipeline.Process` is thread-safe: one pipeline can serve concurrent calls from many threads, with each call's output
+  identical to a sequential call's (verified by a stress test). One loaded pipeline is about 950 MB of private memory
+  (`default`) or 700 MB (`default_fast`), plus each call's working memory; see the README.
+- `PipelineOptions.SplitSentences`: false gives Stanza's `tokenize_no_ssplit`, one sentence per paragraph, with output
+  identical to Stanza's, also in bulk.
+- `Processor` constants (`Processor.Tokenize`, ..., `Processor.Ner`) for the processor list.
+- `PipelineOptions.VerifyChecksums`: checks every model file against Stanza's published MD5 before loading.
+  Only Stanza's `.pt` files have checksums; with converted models it throws.
+- `PipelineOptions.Logger` (`ILogger`): model load times and the thread count at Information, each processor's time
+  per call at Debug. StanzaSharp now depends on `Microsoft.Extensions.Logging.Abstractions` (10.0.0, which brings
+  `Microsoft.Extensions.DependencyInjection.Abstractions`; about 130 KB of assemblies, already in ASP.NET Core).
 - Build warning `STANZA001` when the project resolves TorchSharp, `TorchSharp-cpu`/`TorchSharp-cuda-*` or a
   `libtorch-*` package in another version than StanzaSharp was built with (TorchSharp 0.107.0, libtorch 2.10.0).
 - `<StanzaSharpTrimNative>true</StanzaSharpTrimNative>` leaves libtorch's Python bindings and test/mobile backends,
@@ -15,6 +34,9 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
   sample uses it.
 - The `stanzasharp` .NET tool (package `StanzaSharp.Tool`): `stanzasharp download [DIR] [--package NAME]
   [--processors LIST]` downloads the models without native libraries, e.g. in a Dockerfile.
+
+### Changed
+- `Sentence.Text` documents that every `Process` overload sets it; it is null only for CoNLL-U read without `# text`.
 
 ## [0.3.0] - 2026-10-06
 
@@ -112,7 +134,8 @@ output byte-identical to Python Stanza on the golden test data.
 - `ModelDownloader` fetches the models from Stanza's Hugging Face repository and checks their MD5s.
 - `Conllu.Read` and `Conllu.Write`, in Stanza's CoNLL-U dialect.
 
-[Unreleased]: https://github.com/bisforboman/StanzaSharp/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/bisforboman/StanzaSharp/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/bisforboman/StanzaSharp/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/bisforboman/StanzaSharp/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/bisforboman/StanzaSharp/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/bisforboman/StanzaSharp/compare/v0.1.0-alpha.2...v0.1.0

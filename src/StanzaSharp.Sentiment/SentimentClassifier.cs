@@ -102,10 +102,10 @@ internal sealed class SentimentClassifier : IDisposable
     /// <summary>Sets <see cref="Sentence.Sentiment"/> on every sentence. Reads only the tokens' text.</summary>
     /// <param name="charlms">Charlm representations the tagger kept, if any. They are used for sentences
     /// whose tokens are exactly the tagger's words (no multi-word tokens); the rest are computed.</param>
-    public void Process(Document doc, CharlmCache? charlms = null)
+    public void Process(Document doc, CharlmCache? charlms = null, CancellationToken cancellationToken = default)
     {
         var sentences = doc.Sentences.Select(s => (IReadOnlyList<string>)s.Tokens.Select(t => t.Text).ToList()).ToList();
-        var labels = Classify(sentences, out _, charlms == null ? null : i => Cached(charlms, doc.Sentences[i]));
+        var labels = Classify(sentences, out _, charlms == null ? null : i => Cached(charlms, doc.Sentences[i]), cancellationToken);
         for (int i = 0; i < labels.Length; i++)
             doc.Sentences[i].Sentiment = labels[i];
     }
@@ -119,13 +119,15 @@ internal sealed class SentimentClassifier : IDisposable
     /// (the LSTM and convolutions run over it), so batches must be Stanza's.
     /// </summary>
     /// <param name="cached">Charlm representations to use for sentence i instead of computing them, if any.</param>
-    internal int[] Classify(IReadOnlyList<IReadOnlyList<string>> sentences, out float[][] logits, Func<int, (Tensor, Tensor)?>? cached = null)
+    internal int[] Classify(IReadOnlyList<IReadOnlyList<string>> sentences, out float[][] logits, Func<int, (Tensor, Tensor)?>? cached = null,
+        CancellationToken cancellationToken = default)
     {
         var order = Enumerable.Range(0, sentences.Count).OrderByDescending(i => sentences[i].Count).ToArray();
         var labels = new int[sentences.Count];
         logits = new float[sentences.Count][];
         foreach (var (start, end) in Batches(order.Select(i => sentences[i].Count).ToArray()))
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var batch = order[start..end];
             var scores = Forward(batch.Select(i => sentences[i]).ToList(), cached == null ? null : batch.Select(cached).ToList());
             for (int k = 0; k < batch.Length; k++)

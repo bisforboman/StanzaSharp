@@ -1,0 +1,42 @@
+[
+ {
+  "text": "Hi there.",
+  "conllu": "# text = Hi there.\n# sent_id = 0\n# sentiment = 1\n1\tHi\thi\tINTJ\tUH\t_\t2\tdiscourse\t_\tstart_char=0|end_char=2|ner=O\n2\tthere\tthere\tADV\tRB\tPronType=Dem\t0\troot\t_\tSpaceAfter=No|start_char=3|end_char=8|ner=O\n3\t.\t.\tPUNCT\t.\t_\t2\tpunct\t_\tSpaceAfter=No|start_char=8|end_char=9|ner=O"
+ },
+ {
+  "text": "",
+  "conllu": ""
+ },
+ {
+  "text": "   ",
+  "conllu": ""
+ },
+ {
+  "text": "\n\n",
+  "conllu": ""
+ },
+ {
+  "text": "Short one. Two sentences!",
+  "conllu": "# text = Short one. Two sentences!\n# sent_id = 1\n# sentiment = 1\n1\tShort\tshort\tADJ\tJJ\tDegree=Pos\t2\tamod\t_\tstart_char=0|end_char=5|ner=O\n2\tone\tone\tNUM\tCD\tNumForm=Word|NumType=Card\t0\troot\t_\tSpaceAfter=No|start_char=6|end_char=9|ner=S-CARDINAL\n3\t.\t.\tPUNCT\t.\t_\t2\tpunct\t_\tstart_char=9|end_char=10|ner=O\n4\tTwo\ttwo\tNUM\tCD\tNumForm=Word|NumType=Card\t5\tnummod\t_\tstart_char=11|end_char=14|ner=S-CARDINAL\n5\tsentences\tsentence\tNOUN\tNNS\tNumber=Plur\t2\tparataxis\t_\tSpaceAfter=No|start_char=15|end_char=24|ner=O\n6\t!\t!\tPUNCT\t.\t_\t2\tpunct\t_\tSpaceAfter=No|start_char=24|end_char=25|ner=O"
+ },
+ {
+  "text": " padded text \n",
+  "conllu": "# text = padded text\n# sent_id = 2\n# sentiment = 0\n1\tpadded\tpad\tVERB\tVBN\tTense=Past|VerbForm=Part|Voice=Pass\t2\tamod\t_\tSpacesBefore=\\s|start_char=1|end_char=7|ner=O\n2\ttext\ttext\tNOUN\tNN\tNumber=Sing\t0\troot\t_\tSpacesAfter=\\s\\n|start_char=8|end_char=12|ner=O"
+ },
+ {
+  "text": "ok",
+  "conllu": "# text = ok\n# sent_id = 3\n# sentiment = 1\n1\tok\tok\tINTJ\tUH\t_\t0\troot\t_\tSpaceAfter=No|start_char=0|end_char=2|ner=O"
+ },
+ {
+  "text": "I don't know, can't say.",
+  "conllu": "# text = I don't know, can't say.\n# sent_id = 4\n# sentiment = 1\n1\tI\tI\tPRON\tPRP\tCase=Nom|Number=Sing|Person=1|PronType=Prs\t4\tnsubj\t_\tstart_char=0|end_char=1|ner=O\n2-3\tdon't\t_\t_\t_\t_\t_\t_\t_\tstart_char=2|end_char=7|ner=O\n2\tdo\tdo\tAUX\tVBP\tMood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin\t4\taux\t_\tstart_char=2|end_char=4\n3\tn't\tnot\tPART\tRB\tPolarity=Neg\t4\tadvmod\t_\tstart_char=4|end_char=7\n4\tknow\tknow\tVERB\tVB\tVerbForm=Inf\t0\troot\t_\tSpaceAfter=No|start_char=8|end_char=12|ner=O\n5\t,\t,\tPUNCT\t,\t_\t8\tpunct\t_\tstart_char=12|end_char=13|ner=O\n6-7\tcan't\t_\t_\t_\t_\t_\t_\t_\tstart_char=14|end_char=19|ner=O\n6\tca\tcan\tAUX\tMD\tVerbForm=Fin\t8\taux\t_\tstart_char=14|end_char=16\n7\tn't\tnot\tPART\tRB\tPolarity=Neg\t8\tadvmod\t_\tstart_char=16|end_char=19\n8\tsay\tsay\tVERB\tVB\tVerbForm=Inf\t4\tparataxis\t_\tSpaceAfter=No|start_char=20|end_char=23|ner=O\n9\t.\t.\tPUNCT\t.\t_\t4\tpunct\t_\tSpaceAfter=No|start_char=23|end_char=24|ner=O"
+ },
+ {
+  "text": "Barack Obama was born in Hawaii.\n\nHe was elected in 2008.",
+  "conllu": "# text = Barack Obama was born in Hawaii.\n# sent_id = 5\n# sentiment = 1\n1\tBarack\tBarack\tPROPN\tNNP\tNumber=Sing\t4\tnsubj:pass\t_\tstart_char=0|end_char=6|ner=B-PERSON\n2\tObama\tObama\tPROPN\tNNP\tNumber=Sing\t1\tflat\t_\tstart_char=7|end_char=12|ner=E-PERSON\n3\twas\tbe\tAUX\tVBD\tMood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin\t4\taux:pass\t_\tstart_char=13|end_char=16|ner=O\n4\tborn\tbear\tVERB\tVBN\tTense=Past|VerbForm=Part|Voice=Pass\t0\troot\t_\tstart_char=17|end_char=21|ner=O\n5\tin\tin\tADP\tIN\t_\t6\tcase\t_\tstart_char=22|end_char=24|ner=O\n6\tHawaii\tHawaii\tPROPN\tNNP\tNumber=Sing\t4\tobl\t_\tSpaceAfter=No|start_char=25|end_char=31|ner=S-GPE\n7\t.\t.\tPUNCT\t.\t_\t4\tpunct\t_\tSpacesAfter=\\n\\n|start_char=31|end_char=32|ner=O\n\n# text = He was elected in 2008.\n# sent_id = 6\n# sentiment = 1\n1\tHe\the\tPRON\tPRP\tCase=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs\t3\tnsubj:pass\t_\tstart_char=34|end_char=36|ner=O\n2\twas\tbe\tAUX\tVBD\tMood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin\t3\taux:pass\t_\tstart_char=37|end_char=40|ner=O\n3\telected\telect\tVERB\tVBN\tTense=Past|VerbForm=Part|Voice=Pass\t0\troot\t_\tstart_char=41|end_char=48|ner=O\n4\tin\tin\tADP\tIN\t_\t5\tcase\t_\tstart_char=49|end_char=51|ner=O\n5\t2008\t2008\tNUM\tCD\tNumForm=Digit|NumType=Card\t3\tobl\t_\tSpaceAfter=No|start_char=52|end_char=56|ner=S-DATE\n6\t.\t.\tPUNCT\t.\t_\t3\tpunct\t_\tSpaceAfter=No|start_char=56|end_char=57|ner=O"
+ },
+ {
+  "text": "?",
+  "conllu": "# text = ?\n# sent_id = 7\n# sentiment = 1\n1\t?\t?\tPUNCT\t.\t_\t0\troot\t_\tSpaceAfter=No|start_char=0|end_char=1|ner=O"
+ }
+]

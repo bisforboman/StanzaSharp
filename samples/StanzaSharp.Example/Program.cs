@@ -15,6 +15,10 @@ await ModelDownloader.DownloadAsync(modelDir, new Progress<string>(line => Conso
 
 // 2. Load. The default runs all eight processors, like Stanza's English default. To run fewer, list them:
 //    Pipeline.Load(modelDir, new PipelineOptions { Processors = "tokenize,mwt,pos" });
+//    or with constants, which catch typos at compile time:
+//    Pipeline.Load(modelDir, new PipelineOptions { Processors = $"{Processor.Tokenize},{Processor.Mwt},{Processor.Pos}" });
+//    Other options: Threads (libtorch threads, process-wide), SplitSentences = false (one sentence per paragraph),
+//    VerifyChecksums (check the .pt files' MD5s first) and Logger (an ILogger for load and processing times).
 //    Stanza's faster package (no constituency; download it with the same options first):
 //    var fast = new PipelineOptions { Package = "default_fast" };
 //    await ModelDownloader.DownloadAsync(modelDir, fast);
@@ -23,7 +27,8 @@ await ModelDownloader.DownloadAsync(modelDir, new Progress<string>(line => Conso
 //    Pipeline.Load(modelDir, new PipelineOptions { Device = TorchSharp.torch.CUDA, DisableTf32 = true });
 using var nlp = Pipeline.Load(modelDir);
 
-// 3. Process text. Blank lines separate paragraphs; sentences are found automatically.
+// 3. Process text. Blank lines separate paragraphs; sentences are found automatically. Process is thread-safe, and
+//    every overload also takes a CancellationToken: nlp.Process(text, cancellationToken).
 var doc = nlp.Process("""
     Barack Obama was born in Hawaii. He didn't move to Chicago until 1985.
 

@@ -87,12 +87,13 @@ internal sealed class NerTagger : IDisposable
 
     /// <summary>Sets <see cref="Token.Ner"/> on every token and rebuilds every sentence's <see cref="Sentence.Entities"/>.</summary>
     /// <param name="charlms">The tagger's charlm outputs, reused for sentences whose tokens are exactly its words (no MWT).</param>
-    public void Process(Document doc, CharlmCache? charlms = null)
+    public void Process(Document doc, CharlmCache? charlms = null, CancellationToken cancellationToken = default)
     {
         // ner/data.py: batches of batch_size sentences in document order.
         var sentences = doc.Sentences.Where(s => s.Tokens.Count > 0).ToList();
         foreach (var batch in sentences.Chunk(_batchSize))
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var texts = batch.Select(s => (IReadOnlyList<string>)s.Tokens.Select(t => t.Text).ToList()).ToList();
             var tags = Predict(texts, out _, charlms == null ? null : i =>
                 charlms.TryGet(batch[i], out var reps) && batch[i].Words.Select(w => w.Text).SequenceEqual(texts[i]) ? reps : null);

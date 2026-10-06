@@ -176,6 +176,44 @@ using var fast = Pipeline.Load("models/stanza/en", options);
 An unknown package name throws, and so does listing a processor the package lacks (`constituency` with
 `default_fast`). See [docs/performance.md](docs/performance.md) for the speed of both.
 
+### Threads, concurrency and cancellation
+
+```csharp
+using var nlp = Pipeline.Load("models/stanza/en", new PipelineOptions
+{
+    Processors = $"{Processor.Tokenize},{Processor.Mwt},{Processor.Pos}", // or "tokenize,mwt,pos"
+    Threads = 2,              // libtorch intra-op threads; null: at most Environment.ProcessorCount
+    VerifyChecksums = true,   // check the .pt files against Stanza's MD5s first
+    Logger = loggerFactory.CreateLogger("StanzaSharp"), // load and processing times
+});
+var doc = nlp.Process(text, cancellationToken); // OperationCanceledException within about one batch
+```
+
+- **Threads.** `Threads` is libtorch's `set_num_threads`, which is **process-wide**: the last pipeline loaded sets it
+  for all TorchSharp code. Null (the default) caps libtorch's own default (the host's physical cores) at
+  `Environment.ProcessorCount`, which .NET limits to a container's CPU quota. libtorch applies a new count to the
+  loading thread and to threads that haven't run a tensor operation yet, so load before processing starts. The
+  benchmark (default package, 6,566 words, Ryzen 7 5800X with 8 cores): 1 thread 57.8 s, 2 threads 33.2 s, 8 threads
+  19.1 s, 16 threads 19.7 s.
+- **Concurrency.** `Process` is thread-safe: one pipeline can serve many threads, and each call's output is identical
+  to a sequential call's. The models are only read; everything a call changes is its own. Each concurrent call
+  runs its tensor operations on up to `Threads` threads, so N callers on C cores do best with `Threads` about C / N;
+  throughput is bounded by the CPU, not the number of callers. Sharing one pipeline saves memory: a loaded
+  pipeline takes about 950 MB of private memory (`default`; 700 MB for `default_fast`), and each call in flight
+  adds its own working memory on top (a few hundred MB for a page of text, more for long documents).
+- **Cancellation.** Every `Process` overload takes a `CancellationToken`. It is checked between processors and
+  between batches inside each, so a call stops within about one batch (milliseconds to about 2 seconds for the
+  dependency parser's 5,000-word batches); no document is returned and the pipeline stays usable.
+- **One sentence per paragraph.** `SplitSentences = false` is Stanza's `tokenize_no_ssplit`: the tokenizer still
+  splits tokens, but each paragraph (text between blank lines) is one sentence. Bulk input works the same way;
+  pretokenized input keeps its sentences, as in Stanza.
+- **Checksums.** `VerifyChecksums` reads every model file once more before loading (about 1.3 s for `default`'s 700 MB, 0.8 s for `default_fast`, with the files in the OS cache) and throws an
+  `InvalidDataException` naming a file that doesn't match. Only Stanza's `.pt` files have published checksums, so with
+  converted models it throws instead of skipping the check.
+- **Logging.** `Logger` gets each model's load time and the thread count at Information, and each processor's time
+  per call at Debug. Without a logger nothing is measured.
+- `Sentence.Text` is nullable because CoNLL-U read without `# text` has none, but `Process` always sets it.
+
 `samples/StanzaSharp.Example` is a commented tour of the whole API: `dotnet run --project samples/StanzaSharp.Example`.
 
 From the command line, this writes CoNLL-U for a file (or standard input):

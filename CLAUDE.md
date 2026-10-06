@@ -139,6 +139,30 @@ All 7 steps of the build order are done:
     it, `IsMwtCandidate` false, so mwt changes nothing ("don't" stays one word, as in Stanza). Empty sentences and
     empty/whitespace tokens throw (Stanza fails on the first two; whitespace tokens give broken CoNLL-U there).
     Stanza's string form (whitespace tokens, newline sentences) is not exposed; make_golden asserts it equals the list form.
+- 0.4 API (issue #12, items chosen by the owner, 2026-10-06):
+  - `PipelineOptions.Threads` (int?): `torch.set_num_threads` at Load, process-wide. Null = min(libtorch's current
+    value, `Environment.ProcessorCount`), so a container's CPU quota is respected and a lower count the caller set is
+    kept. Inter-op threads are untouched (eager mode never uses that pool; libtorch allows setting it only once).
+    libtorch's OpenMP gives each calling thread its own team of `Threads` threads (measured: 8 callers × 8 threads
+    = 83 OS threads), and a thread that already ran an op keeps its old count after a later Load.
+    Measured (benchmark, default, 6,566 words): 1 thread 57.8 s, 2: 33.2 s, 8: 19.1 s, 16: 19.7 s. One loaded pipeline
+    ≈ 950 MB private (default), 700 MB (default_fast). VerifyChecksums ≈ +1.3 s / +0.8 s load.
+  - `CancellationToken` overloads of all three `Process` (separate overloads, binary compatible). Checked in
+    `Pipeline.Step` before each processor and at the head of each batch loop (tokenizer batches and windows, pos,
+    lemma, constituency per step, depparse, sentiment, ner; mwt is one batch). Every check sits outside the inner
+    dispose scopes or inside a try/finally that disposes, so nothing leaks (`ConcurrencyTests`).
+  - Thread safety: Process keeps all mutable state per call (the Document, `CharlmCache`, the lemmatizer's
+    DeltaVocab copy, the parser states); the models are read-only after Load; TorchSharp's dispose scopes are
+    thread-static and libtorch's grad mode thread-local. The stress test (8 threads, mixed modes, both packages)
+    needed no code change. Keep it that way: never add mutable fields to a processor.
+  - TorchSharp counts the two undefined index tensors of `pack_padded_sequence(enforce_sorted: true)` (lemmatizer)
+    as live forever (`DisposeScopeManager.Statistics`); they hold no memory. Leak tests leave lemma out.
+  - `SplitSentences = false` = `tokenize_no_ssplit`: `Tokenizer.Decode` ends sentences only at paragraph ends.
+    `tests/golden/no_ssplit/` (`make_golden.py --no-ssplit-only`). Pretokenized input ignores it, as in Stanza.
+  - `Processor` constants; `VerifyChecksums` (MD5 of each `.pt` Load reads, `ModelDownloader.Verify`; throws for
+    converted models, which have no published MD5); `Logger` (`Microsoft.Extensions.Logging.Abstractions` 10.0.0,
+    the package's second dependency): load times at Information, per-processor times at Debug, nothing measured
+    without a logger.
 
 Tokenizer notes:
 - `Tokenizer.Predict` batches like Stanza: sort paragraphs by length, batch by 32, pad to max+1,
@@ -447,7 +471,7 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
 ## Packaging and releases
 
 - Public API (user's decision for 0.1.0, 2026-10-06: "pipeline only"). It is:
-  - the facade: `Pipeline`, `PipelineOptions`, `CharlmCacheOptions`, `ModelDownloader`;
+  - the facade: `Pipeline`, `PipelineOptions`, `CharlmCacheOptions`, `ModelDownloader`, `Processor` (0.4);
   - Core's results: `Document`, `Sentence`, `Token`, `Word`, `Entity`, `Tree`, `Conllu`.
 
   Everything else is `internal`.

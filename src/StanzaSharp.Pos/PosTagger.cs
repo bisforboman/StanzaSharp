@@ -101,13 +101,14 @@ internal sealed class PosTagger : IDisposable
 
     /// <summary>Sets Upos, Xpos and Feats on every word of the document.</summary>
     /// <param name="charlms">If given, receives each sentence's charlm representations for the parser.</param>
-    public void Process(Document doc, CharlmCache? charlms = null)
+    public void Process(Document doc, CharlmCache? charlms = null, CancellationToken cancellationToken = default)
     {
         // Batched like Stanza's LengthLimitedBatchSampler: in document order, at most _batchSize sentences
         // and MaximumTokens words per batch, and a longer sentence alone.
         var sentences = doc.Sentences.Select(s => (Sentence: s, Words: s.Words.ToList())).Where(x => x.Words.Count > 0).ToList();
         for (int b = 0, end; b < sentences.Count; b = end)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             int words = 0;
             for (end = b; end < sentences.Count && end - b < _batchSize && (end == b || words + sentences[end].Words.Count <= MaximumTokens); end++)
                 words += sentences[end].Words.Count;

@@ -107,14 +107,14 @@ internal sealed class ConstituencyParser : IDisposable
 
     /// <summary>Sets <see cref="Sentence.Constituency"/> on every sentence. Needs XPOS (or UPOS) tags from the tagger.</summary>
     /// <param name="charlms">Charlm representations the tagger kept, if any; sentences missing from it are computed.</param>
-    public void Process(Document doc, CharlmCache? charlms = null)
+    public void Process(Document doc, CharlmCache? charlms = null, CancellationToken cancellationToken = default)
     {
         var sentences = doc.Sentences.Where(s => s.Tokens.Count > 0).ToList();
         var tagged = sentences.Select(s => (IReadOnlyList<(string, string)>)s.Words.Select(w =>
             (w.Text, (_usesXpos ? w.Xpos : w.Upos) ?? throw new InvalidOperationException("Run the POS tagger before the parser"))).ToList()).ToList();
         var reps = charlms == null ? null
             : sentences.Select(s => charlms.TryGet(s, out var r) ? r : ((Tensor, Tensor)?)null).ToList();
-        var trees = Parse(tagged, charlmReps: reps);
+        var trees = Parse(tagged, charlmReps: reps, cancellationToken: cancellationToken);
         for (int i = 0; i < sentences.Count; i++)
             sentences[i].Constituency = trees[i];
     }
@@ -130,7 +130,7 @@ internal sealed class ConstituencyParser : IDisposable
     /// independently, so this only decides how much work each step does.
     /// </remarks>
     internal List<Tree?> Parse(IReadOnlyList<IReadOnlyList<(string Word, string Tag)>> sentences, List<List<float[]>>? scores = null,
-        IReadOnlyList<(Tensor Forward, Tensor Backward)?>? charlmReps = null)
+        IReadOnlyList<(Tensor Forward, Tensor Backward)?>? charlmReps = null, CancellationToken cancellationToken = default)
     {
         using var noGrad = torch.no_grad();
         var order = Enumerable.Range(0, sentences.Count).OrderByDescending(i => sentences[i].Count).ToArray();
@@ -143,6 +143,9 @@ internal sealed class ConstituencyParser : IDisposable
         {
             while (true)
             {
+                // Every step: a parse takes about two steps per word, each one forward pass over the batch.
+                // The finally below disposes the states in flight.
+                cancellationToken.ThrowIfCancellationRequested();
                 while (batch.Count < BatchSize)
                 {
                     if (horizon.Count == 0)
