@@ -21,7 +21,7 @@ dotnet add package TorchSharp-cpu
 ```
 
 Add `TorchSharp-cpu` (or a `TorchSharp-cuda-*` package for GPU) for the native libtorch. Its version must
-match the `TorchSharp` version StanzaSharp depends on.
+match the `TorchSharp` version StanzaSharp depends on; otherwise the build warns with `STANZA001`.
 
 On macOS (Apple Silicon), also run `brew install libomp`: TorchSharp-cpu's libtorch loads OpenMP from Homebrew's path.
 On Windows on Arm64, use `StanzaSharp.Cpu.WindowsArm64` instead (below).
@@ -43,6 +43,12 @@ dotnet add package StanzaSharp.Cpu.Linux
 
 Publish with that platform's runtime identifier (`dotnet publish -r linux-x64`) so only its native files are
 copied. Smaller models help too: `Package = "default_fast"` and downloading only the processors you use.
+
+**Leaving out unused libtorch files:** set `<StanzaSharpTrimNative>true</StanzaSharpTrimNative>` in your project to drop
+the libtorch files StanzaSharp never loads from build and publish output: the Python bindings (`libtorch_python`,
+`libshm`) and test and mobile backends (`libtorchbind_test`, `libjitbackend_test`, `libbackend_with_compiler`,
+`libaoti_custom_ops`, `libnnapi_backend`). That is 35 MB less on Linux x64 (a `-r linux-x64` publish goes from 503 to
+468 MB) and 29 MB on macOS; the Windows libtorch packages ship none of them. Nothing TorchSharp loads links to them.
 
 ## Supported platforms
 
@@ -73,6 +79,14 @@ await ModelDownloader.DownloadAsync("models/stanza/en", "tokenize,mwt,pos,lemma"
 
 Each file is checked against its published MD5, and files already present are kept. `Pipeline.Load` itself
 never touches the network.
+
+**Command line:** the `stanzasharp` .NET tool (package `StanzaSharp.Tool`, about 1 MB, no native libraries) downloads
+them too, e.g. in a Dockerfile or CI:
+
+```
+dotnet tool install -g StanzaSharp.Tool
+stanzasharp download models/stanza/en --processors tokenize,mwt,pos,lemma   # --package default_fast for that package
+```
 
 ## Use
 
