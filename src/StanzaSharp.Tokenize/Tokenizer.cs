@@ -109,7 +109,7 @@ public sealed class Tokenizer : IDisposable
         var para = SplitParagraphs(paragraph).Single();
         using var _ = torch.no_grad();
         using var scope = NewDisposeScope();
-        var logits = Run([para], [0], para.Length + 1)[0];
+        var logits = Run([para], [0], para.Length + 1, [para.Length + 1])[0];
         shape = logits.shape;
         return logits.data<float>().ToArray();
     }
@@ -215,8 +215,8 @@ public sealed class Tokenizer : IDisposable
     private int[][] Predict(List<Paragraph> paragraphs)
     {
         // SortedDataset sorts by length, longest first (stable), then batches of batch_size.
-        // Stanza passes the padded length as every row's length, so padding reaches the backward
-        // LSTM and results depend on the batch: reproducing the batching keeps output identical.
+        // SortedDataset.collate appends one <PAD> to each row's raw units, and the model packs each
+        // row at that length (trainer.predict: lengths = len(raw)), so a row's own length + 1.
         var order = Enumerable.Range(0, paragraphs.Count).OrderByDescending(i => paragraphs[i].Length).ToArray();
         var preds = new int[paragraphs.Count][];
         for (int b = 0; b < order.Length; b += _batchSize)
@@ -226,7 +226,7 @@ public sealed class Tokenizer : IDisposable
             int[][] rowPreds;
             if (maxLen + 1 <= MaxSeqLen)
             {
-                var p = Argmax(Run(rows, new int[rows.Count], maxLen + 1));
+                var p = Argmax(Run(rows, new int[rows.Count], maxLen + 1, rows.Select(r => r.Length + 1).ToArray()));
                 rowPreds = rows.Select((r, j) => p[j][..r.Length]).ToArray();
             }
             else
@@ -247,10 +247,15 @@ public sealed class Tokenizer : IDisposable
     {
         var idx = new int[rows.Count];
         var output = rows.Select(_ => new List<int>()).ToArray();
-        while (true)
+        for (bool first = true; ; first = false)
         {
             var ens = rows.Select((r, j) => Math.Min(r.Length - idx[j], MaxSeqLen)).ToArray();
-            var p = Argmax(Run(rows, idx, ens.Max()));
+            int width = ens.Max();
+            // The first window keeps collate's raw units (own length + 1, cut to the window);
+            // advance_old_batch pads every row's raw units to the batch width, so later windows
+            // run every row at full width and padding reaches the backward LSTM.
+            var lengths = rows.Select(r => first ? Math.Min(r.Length + 1, width) : width).ToArray();
+            var p = Argmax(Run(rows, idx, width, lengths));
             for (int j = 0; j < rows.Count; j++)
             {
                 int lastBreak = Array.FindLastIndex(p[j], x => x is 2 or 4);
@@ -263,8 +268,8 @@ public sealed class Tokenizer : IDisposable
         }
     }
 
-    /// <summary>Runs rows[j] from unit offsets[j], padded/truncated to width. Returns [rows, width, 5].</summary>
-    private Tensor Run(List<Paragraph> rows, int[] offsets, int width)
+    /// <summary>Runs rows[j] from unit offsets[j], padded/truncated to width, packed at lengths[j]. Returns [rows, width, 5].</summary>
+    private Tensor Run(List<Paragraph> rows, int[] offsets, int width, int[] lengths)
     {
         var ids = new long[rows.Count * width];
         Array.Fill(ids, _padId);
@@ -277,7 +282,7 @@ public sealed class Tokenizer : IDisposable
         }
         using var units = torch.tensor(ids, [rows.Count, width]);
         using var featTensor = torch.tensor(feats, [rows.Count, width, _featDim]);
-        return _net.Forward(units, featTensor);
+        return _net.Forward(units, featTensor, lengths.Select(l => (long)l).ToArray());
     }
 
     private static int[][] Argmax(Tensor logits)
