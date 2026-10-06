@@ -4,7 +4,8 @@
 - tokenization and sentence splitting
 - multi-word token expansion ("don't" → "do" + "n't")
 - part-of-speech tags and morphological features
-- lemmas (opt-in: add `lemma` to the processor list)
+- lemmas
+- dependency parsing
 - constituency parsing
 
 It runs Stanza's own pretrained models through TorchSharp, with no Python needed. The output is identical
@@ -22,7 +23,7 @@ match the `TorchSharp` version StanzaSharp depends on.
 
 ## Download the models
 
-The models (about 300 MB) come from Stanza's Hugging Face repository. Download them once:
+The models (about 450 MB) come from Stanza's Hugging Face repository. Download them once:
 
 ```csharp
 await ModelDownloader.DownloadAsync("models/stanza/en");
@@ -42,12 +43,12 @@ var doc = nlp.Process("Barack Obama was born in Hawaii. He was elected president
 foreach (var sentence in doc.Sentences)
 {
     foreach (var word in sentence.Words)
-        Console.WriteLine($"{word.Text}\t{word.Upos}\t{word.Xpos}\t{word.Feats}");
+        Console.WriteLine($"{word.Id}\t{word.Text}\t{word.Lemma}\t{word.Upos}\t{word.Feats}\t{word.Head}\t{word.Deprel}");
     Console.WriteLine(sentence.Constituency); // (ROOT (S (NP (NNP Barack) (NNP Obama)) ...))
 }
 ```
 
-- `Pipeline.Load(dir, "tokenize,mwt")` runs only the listed processors; each needs the ones before it. `lemma` (after `pos`) is not in the default list yet.
+- `Pipeline.Load(dir, "tokenize,mwt")` runs only the listed processors; each needs the ones before it. The default is all six: `tokenize,mwt,pos,lemma,depparse,constituency`.
 - `Conllu.Write(doc)` gives CoNLL-U in Stanza's format.
 
 ## License
