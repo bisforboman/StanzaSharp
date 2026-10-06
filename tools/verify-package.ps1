@@ -2,14 +2,14 @@
 Packs StanzaSharp, then builds and runs a fresh console app that references the package the way a user
 would, and checks that it parses a sentence.
 
-  pwsh tools/verify-package.ps1 [-ModelDir models/converted/en] [-Platform Linux|Windows|MacOS]
+  pwsh tools/verify-package.ps1 [-ModelDir models/converted/en] [-Platform Linux|Windows|WindowsArm64|MacOS]
 
 ModelDir is any directory Pipeline.Load accepts (converted models or Stanza's .pt files).
 Without -Platform the app references StanzaSharp + TorchSharp-cpu. With it, the app references only the
 platform package StanzaSharp.Cpu.<Platform> (which brings StanzaSharp and that platform's libtorch), so
 nothing else can supply the native libraries.
 #>
-param([string]$ModelDir = 'models/converted/en', [ValidateSet('', 'Linux', 'Windows', 'MacOS')][string]$Platform = '')
+param([string]$ModelDir = 'models/converted/en', [ValidateSet('', 'Linux', 'Windows', 'WindowsArm64', 'MacOS')][string]$Platform = '')
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent

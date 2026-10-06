@@ -114,7 +114,40 @@ jobs:
           name: test-results-golden
           path: TestResults/*.trx
 
-  # Windows and macOS (Apple Silicon): the full suite and the package check against Stanza's .pt files.
+  # The Docker sample (samples/docker) built from this commit's packages: StanzaSharp.Cpu.Linux published for
+  # linux-x64 into the plain and the chiseled .NET runtime images. In each, the container must turn corpus.txt
+  # into tests/golden/pipeline.conllu byte for byte (all eight processors, models mounted read-only).
+  # The models come from golden's cache (restore only, no new cache entry); on a miss they are downloaded.
+  # No Docker layer cache: it would cost about 700 MB of the 10 GB cache budget to save a minute.
+  docker:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - uses: actions/cache/restore@v6
+        id: models
+        with:
+          path: |
+            models/stanza/en
+            models/converted/en
+          key: models-en-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs', 'tools/requirements.txt', 'tools/stanza_convert.py') }}
+
+      - name: Download the models
+        if: steps.models.outputs.cache-hit != 'true'
+        run: dotnet run --project samples/StanzaSharp.Cli -- download models/stanza/en
+
+      - name: Build and check the images
+        run: >
+          tools/verify-docker.sh models/stanza/en
+          mcr.microsoft.com/dotnet/runtime:10.0
+          mcr.microsoft.com/dotnet/runtime:10.0-noble-chiseled
+
+  # Windows (x64 and Arm64) and macOS (Apple Silicon): the full suite and the package check against Stanza's .pt files.
+  # On Windows Arm64, Directory.Build.props adds libtorch-cpu-win-arm64 to the tests (TorchSharp-cpu lacks it).
   # golden stays the reference run; only it converts the models (Python) and compares .pt with converted.
   # A separate job, not a matrix over build-test/golden, so those two keep their check names (required on main).
   # No NuGet cache here: TorchSharp-cpu pulls all three libtorch builds, and the repository's 10 GB cache
@@ -123,7 +156,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2025, macos-15]
+        os: [windows-2025, macos-15, windows-11-arm]
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -170,14 +203,16 @@ jobs:
             exit 1
           fi
 
+      # TorchSharp-cpu has no Windows Arm64 libtorch, so there only the platform package can work.
       - name: Verify the package
+        if: runner.os != 'Windows' || runner.arch != 'ARM64'
         shell: pwsh
         run: ./tools/verify-package.ps1 -ModelDir models/stanza/en
 
-      # The same app with only this OS's platform package (StanzaSharp.Cpu.Windows / .MacOS).
+      # The same app with only this machine's platform package (StanzaSharp.Cpu.Windows / .WindowsArm64 / .MacOS).
       - name: Verify the platform package
         shell: pwsh
-        run: ./tools/verify-package.ps1 -ModelDir models/stanza/en -Platform ${{ runner.os == 'Windows' && 'Windows' || 'MacOS' }}
+        run: ./tools/verify-package.ps1 -ModelDir models/stanza/en -Platform ${{ runner.os == 'macOS' && 'MacOS' || runner.arch == 'ARM64' && 'WindowsArm64' || 'Windows' }}
 
       - uses: actions/upload-artifact@v7
         if: always()

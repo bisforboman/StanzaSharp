@@ -37,4 +37,9 @@
     <TorchSharpNative>TorchSharp-cpu</TorchSharpNative>
     <TorchSharpNative Condition="'$(STANZASHARP_CUDA)' == '1' Or '$(STANZASHARP_CUDA)' == 'true'">TorchSharp-cuda-windows</TorchSharpNative>
   </PropertyGroup>
+  <!-- TorchSharp-cpu has no Windows Arm64 libtorch (TorchSharp itself has the win-arm64 LibTorchSharp), so on a
+       Windows Arm64 machine the runnable projects (tests/, samples/) also get libtorch-cpu-win-arm64. -->
+  <ItemGroup Condition="'$([System.IO.Path]::GetFileName($([System.IO.Path]::GetDirectoryName($(MSBuildProjectDirectory)))))' != 'src' And '$(TorchSharpNative)' == 'TorchSharp-cpu' And $([MSBuild]::IsOSPlatform('Windows')) And '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)' == 'Arm64'">
+    <PackageReference Include="libtorch-cpu-win-arm64" Version="2.10.0" />
+  </ItemGroup>
 </Project>

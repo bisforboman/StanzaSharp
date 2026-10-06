@@ -1,0 +1,58 @@
+name: Alpine experiment
+
+# Can the glibc-built linux-x64 libtorch run on Alpine (musl) through gcompat? Neither libtorch nor TorchSharp
+# ships a linux-musl build, so this is the only way Alpine could work. Not a required check, and Alpine is
+# documented as unsupported; only a byte-identical golden run here could change that.
+# The Docker sample is built on mcr.microsoft.com/dotnet/runtime:10.0-alpine plus gcompat and libtorch's other
+# dependencies (libstdc++, libgcc), then must reproduce tests/golden/pipeline.conllu (tools/verify-docker.sh).
+
+# Verdict (PR #10): fails. musl lacks glibc-only symbols libtorch needs (the __*_chk fortify functions,
+# backtrace, fcntl64, __res_init, pthread_attr_setaffinity_np), and gcompat doesn't provide them. Manual only.
+on:
+  workflow_dispatch:
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  alpine-gcompat:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - uses: actions/cache/restore@v6
+        id: models
+        with:
+          path: |
+            models/stanza/en
+            models/converted/en
+          key: models-en-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs', 'tools/requirements.txt', 'tools/stanza_convert.py') }}
+
+      - name: Download the models
+        if: steps.models.outputs.cache-hit != 'true'
+        run: dotnet run --project samples/StanzaSharp.Cli -- download models/stanza/en
+
+      - name: Alpine base with gcompat
+        run: |
+          docker build -t alpine-gcompat:local - <<'EOF'
+          FROM mcr.microsoft.com/dotnet/runtime:10.0-alpine
+          RUN apk add --no-cache gcompat libstdc++ libgcc
+          EOF
+
+      - name: Build and check the image
+        run: tools/verify-docker.sh models/stanza/en alpine-gcompat:local
+
+      # Why the natives don't load (TorchSharp hides the loader's error): musl's ldd lists unresolved symbols.
+      - name: Loader errors
+        if: failure()
+        run: |
+          image=stanzasharp-sample:alpine-gcompat-local
+          for lib in libLibTorchSharp.so libtorch_cpu.so libc10.so; do
+            echo "== $lib"
+            docker run --rm --entrypoint sh "$image" -c "ldd /app/$lib 2>&1 | grep -iE 'not found|error|relocat' | head -15" || true
+          done

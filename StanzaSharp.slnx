@@ -9,6 +9,7 @@
     <Project Path="src/StanzaSharp.Cpu.Linux/StanzaSharp.Cpu.Linux.csproj" />
     <Project Path="src/StanzaSharp.Cpu.MacOS/StanzaSharp.Cpu.MacOS.csproj" />
     <Project Path="src/StanzaSharp.Cpu.Windows/StanzaSharp.Cpu.Windows.csproj" />
+    <Project Path="src/StanzaSharp.Cpu.WindowsArm64/StanzaSharp.Cpu.WindowsArm64.csproj" />
     <Project Path="src/StanzaSharp.Core/StanzaSharp.Core.csproj" />
     <Project Path="src/StanzaSharp.Depparse/StanzaSharp.Depparse.csproj" />
     <Project Path="src/StanzaSharp.Lemma/StanzaSharp.Lemma.csproj" />
