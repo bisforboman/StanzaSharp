@@ -33,6 +33,16 @@ public sealed class ModelFactAttribute : FactAttribute
     }
 }
 
+/// <summary>A theory that is skipped when the converted models are missing.</summary>
+public sealed class ModelTheoryAttribute : TheoryAttribute
+{
+    public ModelTheoryAttribute()
+    {
+        if (!Directory.Exists(Repo.Models))
+            Skip = "models/converted/en not found; run setup.ps1 -Models";
+    }
+}
+
 /// <summary>A theory that is skipped unless both the original .pt models and the converted ones are present.</summary>
 public sealed class PtModelTheoryAttribute : TheoryAttribute
 {

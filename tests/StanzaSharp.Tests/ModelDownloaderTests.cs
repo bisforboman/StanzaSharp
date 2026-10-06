@@ -83,7 +83,7 @@ public class ModelDownloaderTests : IDisposable
         [
             "tokenize/combined_nocharlm.pt", "mwt/combined.pt", "pos/combined_charlm.pt", "lemma/combined_nocharlm.pt", "constituency/ptb3-revised_charlm.pt",
             "pretrain/conll17.pt", "forward_charlm/1billion.pt", "backward_charlm/1billion.pt",
-            "depparse/combined_charlm.pt",
+            "depparse/combined_charlm.pt", "ner/ontonotes-ww-multi_charlm.pt",
         ];
         Assert.Equal(expected.Order(), ModelDownloader.Files.Select(f => f.Path).Order());
     }
