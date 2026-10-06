@@ -26,6 +26,18 @@ public class PosTests
         }
     }
 
+    [Theory] // expected values from stanza.models.common.utils.simplify_punct
+    [InlineData("??", "?")]
+    [InlineData("?!?", "?")]
+    [InlineData("!!!!!!", "!")]
+    [InlineData("!?", "!")]
+    [InlineData("？！", "?")]
+    [InlineData("?", "?")]
+    [InlineData("‼", "‼")]
+    [InlineData("a??", "a??")]
+    public void SimplifyPunct_MatchesStanza(string word, string expected) =>
+        Assert.Equal(expected, PosTagger.SimplifyPunct(word));
+
     [ModelFact]
     public void UposLogits_MatchGoldenIntermediates()
     {

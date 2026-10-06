@@ -56,7 +56,8 @@ public sealed class Pipeline : IDisposable
     }
 
     /// <summary>
-    /// Loads the converted English models from <paramref name="modelDir"/> (e.g. <c>models/converted/en</c>).
+    /// Loads the English models from <paramref name="modelDir"/>: either converted ones (e.g. <c>models/converted/en</c>)
+    /// or Stanza's own download with its <c>.pt</c> files (e.g. <c>models/stanza/en</c>), chosen per file.
     /// </summary>
     /// <param name="processors">Comma-separated subset of <see cref="AllProcessors"/>; each needs the ones before it.</param>
     public static Pipeline Load(string modelDir, string processors = AllProcessors)

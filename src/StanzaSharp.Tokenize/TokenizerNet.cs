@@ -49,19 +49,20 @@ internal sealed class TokenizerNet : IDisposable
 
     /// <param name="units">[batch, len] int64 character ids.</param>
     /// <param name="feats">[batch, len, feat_dim] float32 features.</param>
+    /// <param name="lengths">Per-row length both LSTMs are packed at, as model.forward does.</param>
     /// <returns>[batch, len, 5] log-probabilities.</returns>
-    public Tensor Forward(Tensor units, Tensor feats)
+    public Tensor Forward(Tensor units, Tensor feats, long[] lengths)
     {
         using var scope = NewDisposeScope();
         var emb = cat([_embeddings.forward(units), feats], 2);
-        var (inp, _, _) = _rnn.forward(emb);
+        var inp = Rnn.RunPacked(_rnn, emb, lengths);
 
         var tok0 = _tokClf.forward(inp);
         var sent0 = _sentClf.forward(inp);
         var mwt0 = _mwtClf.forward(inp);
 
         var inp2 = inp * (1 - sigmoid(-tok0 * _hierInvTemp));
-        var (hid2, _, _) = _rnn2.forward(inp2);
+        var hid2 = Rnn.RunPacked(_rnn2, inp2, lengths);
         tok0 = tok0 + _tokClf2.forward(hid2);
         sent0 = sent0 + _sentClf2.forward(hid2);
         mwt0 = mwt0 + _mwtClf2.forward(hid2);

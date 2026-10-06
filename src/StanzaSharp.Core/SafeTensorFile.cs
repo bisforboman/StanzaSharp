@@ -54,6 +54,15 @@ public sealed class SafeTensorFile
         Metadata = metadata;
     }
 
+    /// <summary>Wraps tensor data already in memory; <paramref name="tensors"/> offsets index into <paramref name="data"/>.</summary>
+    internal SafeTensorFile(byte[] data, Dictionary<string, TensorInfo> tensors)
+    {
+        _bytes = data;
+        _dataStart = 0;
+        Tensors = tensors;
+        Metadata = new Dictionary<string, string>();
+    }
+
     public static SafeTensorFile Load(string path) => new(File.ReadAllBytes(path));
 
     public TensorInfo this[string key] =>
@@ -66,8 +75,13 @@ public sealed class SafeTensorFile
         var expected = DtypeOf<T>();
         if (info.Dtype != expected)
             throw new InvalidOperationException($"Tensor '{key}' is {info.Dtype}, not {expected}");
-        var span = _bytes.AsSpan(_dataStart + (int)info.Offset, (int)info.Length);
-        return MemoryMarshal.Cast<byte, T>(span).ToArray();
+        return MemoryMarshal.Cast<byte, T>(RawBytes(key)).ToArray();
+    }
+
+    internal ReadOnlySpan<byte> RawBytes(string key)
+    {
+        var info = this[key];
+        return _bytes.AsSpan(_dataStart + (int)info.Offset, (int)info.Length);
     }
 
     private static string DtypeOf<T>() => typeof(T) switch

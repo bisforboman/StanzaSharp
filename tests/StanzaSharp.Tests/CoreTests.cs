@@ -35,6 +35,40 @@ public class CoreTests
     }
 
     [Fact]
+    public void Conllu_TextCommentCollapsesPythonWhitespace()
+    {
+        // Python's str.split() also splits on U+001C..U+001F, which .NET does not treat as whitespace.
+        var doc = new Document();
+        doc.Sentences.Add(new Sentence { Text = "Unit\x1fseparator and \t tab" });
+        Assert.StartsWith("# text = Unit separator and tab\n", Conllu.Write(doc));
+    }
+
+    [Theory] // expected values from Python 3 str.lower()
+    [InlineData("ΟΔΟΣ", "οδος")]          // Final_Sigma
+    [InlineData("ΤΗΣ.", "της.")]          // ... skipping case-ignorable '.'
+    [InlineData("ΟΔΟΣ'S", "οδοσ's")]      // not final: a cased letter follows the apostrophe
+    [InlineData("ΣΟΦΙΑ", "σοφια")]
+    [InlineData("Σ", "σ")]
+    [InlineData("ΑΣ́Β", "ασ́β")]
+    [InlineData("İstanbul", "i̇stanbul")] // full mapping; ToLowerInvariant leaves İ as is
+    [InlineData("DON’T", "don’t")]
+    public void PyString_LowerMatchesPython(string s, string expected) => Assert.Equal(expected, PyString.Lower(s));
+
+    [Fact]
+    public void PyString_CaseAndSpacePredicatesMatchPython()
+    {
+        Assert.True(PyString.IsUpper("𝐀𝐁")); // outside the BMP: per code point, not per UTF-16 unit
+        Assert.True(PyString.IsUpper("A1"));
+        Assert.False(PyString.IsUpper("123"));
+        Assert.False(PyString.IsLower("ǅa"));  // titlecase is neither
+        Assert.True(PyString.IsUpper("ⅫⒶ"));   // Other_Uppercase (category Nl/So)
+        Assert.True(PyString.IsLower("nº"));   // Other_Lowercase
+        Assert.False(PyString.IsUpper("Aª"));
+        Assert.True(PyString.IsSpace(''));
+        Assert.False(PyString.IsSpace('​'));
+    }
+
+    [Fact]
     public void Tree_ParsesAndFormats()
     {
         const string text = "(ROOT (S (NP (PRP He)) (VP (VBD left)) (. .)))";

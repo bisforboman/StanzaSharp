@@ -1,0 +1,163 @@
+{
+ "model": {
+  "weight": {
+   "$tensor": "model.weight",
+   "dtype": "F32",
+   "shape": [
+    4,
+    6
+   ]
+  },
+  "weight_t": {
+   "$tensor": "model.weight_t",
+   "dtype": "F32",
+   "shape": [
+    6,
+    4
+   ]
+  },
+  "rows": {
+   "$tensor": "model.rows",
+   "dtype": "F32",
+   "shape": [
+    2,
+    6
+   ]
+  },
+  "col": {
+   "$tensor": "model.col",
+   "dtype": "F32",
+   "shape": [
+    4
+   ]
+  },
+  "step": {
+   "$tensor": "model.step",
+   "dtype": "F32",
+   "shape": [
+    2,
+    2
+   ]
+  },
+  "ids": {
+   "$tensor": "model.ids",
+   "dtype": "I64",
+   "shape": [
+    3
+   ]
+  },
+  "half": {
+   "$tensor": "model.half",
+   "dtype": "F16",
+   "shape": [
+    2
+   ]
+  },
+  "flag": {
+   "$tensor": "model.flag",
+   "dtype": "BOOL",
+   "shape": [
+    2
+   ]
+  },
+  "scalar": {
+   "$tensor": "model.scalar",
+   "dtype": "F32",
+   "shape": [
+    1
+   ]
+  },
+  "empty": {
+   "$tensor": "model.empty",
+   "dtype": "F32",
+   "shape": [
+    0,
+    3
+   ]
+  }
+ },
+ "config": {
+  "lr": 1e-05,
+  "eps": 0.0001,
+  "big": 1e+16,
+  "whole": 2.0,
+  "third": 0.3333333333333333,
+  "nan": {
+   "$float": "nan"
+  },
+  "ninf": {
+   "$float": "-inf"
+  },
+  "huge": 1180591620717411303424,
+  "neg": -5,
+  "flag": true,
+  "none": null,
+  "name": "naïve ✓",
+  "shape": {
+   "$tuple": [
+    3,
+    {
+     "$tuple": [
+      4,
+      5
+     ]
+    }
+   ]
+  },
+  "list": [
+   1,
+   2.5,
+   "x"
+  ]
+ },
+ "by_id": {
+  "$dict": [
+   [
+    1,
+    "one"
+   ],
+   [
+    2,
+    {
+     "$tensor": "by_id.2",
+     "dtype": "F32",
+     "shape": [
+      2
+     ]
+    }
+   ]
+  ]
+ },
+ "a.b": {
+  "$tensor": "a.b",
+  "dtype": "F32",
+  "shape": [
+   1
+  ]
+ },
+ "a": {
+  "b": {
+   "$tensor": "a.b#2",
+   "dtype": "F32",
+   "shape": [
+    1
+   ]
+  }
+ },
+ "twice": [
+  {
+   "$tensor": "twice.0",
+   "dtype": "F32",
+   "shape": [
+    6
+   ]
+  },
+  {
+   "$tensor": "twice.1",
+   "dtype": "F32",
+   "shape": [
+    6
+   ]
+  }
+ ]
+}

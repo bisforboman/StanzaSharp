@@ -20,7 +20,12 @@ Reads <out>/corpus.txt and writes:
                         tokenizer-only output on text that exercises long-paragraph windowing
                         and multi-batch padding (see write_tokenize_stress)
   mwt.json              MWT expansions of MWT_WORDS, with and without the dictionary
-  validation.conllu     full pipeline output for validation.txt, a varied hand-written corpus
+  validation*.conllu    full pipeline output for each validation*.txt, varied hand-written corpora
+                        (validation_nonbmp has text outside the BMP; C# reports its offsets in
+                        UTF-16 units, so its test ignores start_char/end_char)
+  pt/tiny_{legacy,zip}.pt + their stanza_convert.py output (.json/.safetensors)
+                        small checkpoints in both torch.save formats for the C# .pt loader tests;
+                        `python tools/make_golden.py --pt-only` regenerates just these
 """
 import argparse
 import json
@@ -31,7 +36,7 @@ import stanza
 import torch
 
 sys.path.insert(0, str(Path(__file__).parent))
-from stanza_convert import write_safetensors  # noqa: E402
+from stanza_convert import convert_object, drop_skipped, load_checkpoint, write_safetensors  # noqa: E402
 
 INTERMEDIATE_SENTENCES = 3
 PROCESSORS = "tokenize,mwt,pos,constituency"
@@ -111,12 +116,49 @@ def write_mwt_golden(models, out):
     print(f"mwt.json: {len(result)} words, {sum(r['pipeline'] != r['model'] for r in result)} differ by dictionary")
 
 
+def write_pt_fixtures(out):
+    """
+    pt/: a tiny checkpoint saved in the legacy format (as Stanza's models are) and in the zip format
+    (torch.save's default), each next to what stanza_convert.py makes of it. It covers what the real
+    models don't: non-contiguous views, non-float dtypes, big ints, nan/inf, non-string dict keys and
+    colliding tensor keys.
+    """
+    from collections import OrderedDict
+
+    base = torch.arange(24, dtype=torch.float32).reshape(4, 6)
+    ckpt = {
+        "model": OrderedDict(
+            weight=base, weight_t=base.t(), rows=base[1:3], col=base[:, 2], step=base[::2, 1::3],
+            ids=torch.tensor([3, -1, 2**40]), half=torch.tensor([1.5, -2.0], dtype=torch.float16),
+            flag=torch.tensor([True, False]), scalar=torch.tensor(7.0), empty=torch.zeros(0, 3)),
+        "config": {"lr": 1e-05, "eps": 0.0001, "big": 1e16, "whole": 2.0, "third": 1 / 3,
+                   "nan": float("nan"), "ninf": float("-inf"), "huge": 2**70, "neg": -5, "flag": True,
+                   "none": None, "name": "naïve ✓", "shape": (3, (4, 5)), "list": [1, 2.5, "x"]},
+        "by_id": {1: "one", 2: torch.ones(2)},
+        "a.b": torch.zeros(1),
+        "a": {"b": torch.ones(1)},
+        "twice": [base[0], base[0]],
+        "optimizer": {"state": {}},
+    }
+    (out / "pt").mkdir(exist_ok=True)
+    for name, kwargs in [("tiny_legacy", {"_use_new_zipfile_serialization": False}),
+                         ("tiny_zip", {})]:
+        path = out / "pt" / f"{name}.pt"
+        torch.save(ckpt, path, **kwargs)
+        convert_object(drop_skipped(load_checkpoint(path, False), {"optimizer", "scheduler"}),
+                       out / "pt" / name, source_name=path.name)
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--models", default="models/stanza")
     p.add_argument("--out", default="tests/golden")
+    p.add_argument("--pt-only", action="store_true", help="only regenerate the pt/ loader fixtures")
     args = p.parse_args()
     out = Path(args.out)
+    write_pt_fixtures(out)
+    if args.pt_only:
+        return
 
     torch.manual_seed(0)
     nlp = stanza.Pipeline("en", dir=args.models, processors=PROCESSORS, download_method=None,
@@ -128,11 +170,13 @@ def main():
     (out / "pipeline.conllu").write_text("{:C}\n".format(doc), encoding="utf-8", newline="\n")
     print(f"pipeline.conllu: {len(doc.sentences)} sentences")
 
-    validation = (out / "validation.txt").read_text(encoding="utf-8")
-    with torch.no_grad():
-        vdoc = nlp(validation)
-    (out / "validation.conllu").write_text("{:C}\n".format(vdoc), encoding="utf-8", newline="\n")
-    print(f"validation.conllu: {len(vdoc.sentences)} sentences, {vdoc.num_words} words")
+    # Read as bytes so CR/CRLF reach Stanza unchanged, as File.ReadAllText passes them in C#.
+    for path in sorted(out.glob("validation*.txt")):
+        with torch.no_grad():
+            vdoc = nlp(path.read_bytes().decode("utf-8"))
+        conllu = path.with_suffix(".conllu")
+        conllu.write_text("{:C}\n".format(vdoc), encoding="utf-8", newline="\n")
+        print(f"{conllu.name}: {len(vdoc.sentences)} sentences, {vdoc.num_words} words")
 
     tok_model = nlp.processors["tokenize"].trainer.model
     pos_model = nlp.processors["pos"].trainer.model

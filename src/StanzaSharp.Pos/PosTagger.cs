@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using System.Text.Json.Nodes;
 using StanzaSharp.Nn;
 using TorchSharp;
@@ -101,6 +102,8 @@ public sealed class PosTagger : IDisposable
     internal List<(string Upos, string Xpos, string? Feats)[]> Predict(IReadOnlyList<IReadOnlyList<string>> sentences, out List<float[]> uposLogits,
         Action<int, Tensor, Tensor>? keepCharlm = null)
     {
+        var original = sentences;
+        sentences = sentences.Select(s => (IReadOnlyList<string>)s.Select(SimplifyPunct).ToList()).ToList();
         using var _ = torch.no_grad();
         using var scope = NewDisposeScope();
         int batch = sentences.Count, width = sentences.Max(s => s.Count);
@@ -111,7 +114,7 @@ public sealed class PosTagger : IDisposable
         for (int i = 0; i < batch; i++)
             for (int j = 0; j < sentences[i].Count; j++)
             {
-                var lower = sentences[i][j].ToLowerInvariant();
+                var lower = PyString.Lower(sentences[i][j]);
                 wordIds[i * width + j] = _wordVocab.GetValueOrDefault(lower, _wordUnk);
                 pretrainIds[i * width + j] = _pretrain.UnitToId(lower);
             }
@@ -122,7 +125,8 @@ public sealed class PosTagger : IDisposable
         var repsBackward = _charlmBackward.BuildCharRepresentation(sentences);
         if (keepCharlm != null)
             for (int i = 0; i < batch; i++)
-                keepCharlm(i, scope.Detach(repsForward[i]), scope.Detach(repsBackward[i]));
+                if (sentences[i].SequenceEqual(original[i])) // the parser reads the words before SimplifyPunct
+                    keepCharlm(i, scope.Detach(repsForward[i]), scope.Detach(repsBackward[i]));
         var charsForward = Rnn.PadSequence(repsForward);
         var charsBackward = Rnn.PadSequence(repsBackward);
         var output = _lstm.Forward(cat([words, pretrained, charsForward, charsBackward], 2), lengths);
@@ -183,6 +187,14 @@ public sealed class PosTagger : IDisposable
     }
 
     private static string[] Strings(JsonNode? array) => array!.AsArray().Select(x => x!.GetValue<string>()).ToArray();
+
+    // pos/data.py load_doc → common/utils.py simplify_punct: the tagger sees runs like "?!?" or "!!"
+    // as a single "?" or "!" (QUESTION_RE / EXCLAM_RE, including full-width and small forms).
+    private const string QuestionMarks = "?？︖﹖⁇", AllMarks = QuestionMarks + "!！︕﹗‼";
+    private static readonly Regex Question = new($"^[{QuestionMarks}][{AllMarks}]+$");
+    private static readonly Regex Exclam = new($"^[!！︕﹗‼][{AllMarks}]+$");
+
+    internal static string SimplifyPunct(string word) => Exclam.Replace(Question.Replace(word, "?"), "!");
 
     public void Dispose()
     {

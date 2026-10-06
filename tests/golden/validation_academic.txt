@@ -1,0 +1,61 @@
+See Hartwell v. Dunmore Logistics, LLC, 512 F.3d 1044, 1049 (9th Cir. 2008) (holding that the clause was unenforceable). But cf. In re Pell Grain Co., 77 B.R. 301 (Bankr. D. Kan. 1987).
+
+The statute provides that "no person shall be deprived of a hearing" except as set forth in § 12(b)(3). Section 4(a)(ii) was repealed in 1994. See 42 U.S.C. § 1983 (2018); Fed. R. Civ. P. 12(b)(6).
+
+Plaintiff's motion is GRANTED in part and DENIED in part. The Clerk of Court is directed to close the case. SO ORDERED.
+
+Id. at 1051. The court reasoned that the parties "could not have contemplated" such a result. Ibid.
+
+As noted by Kowalski et al. (2019), the effect disappears at low temperatures. Similar findings were reported elsewhere [3, 7–9]. However, Nguyen and Abara (2021, p. 44) argue otherwise.
+
+Previous work (e.g., Smith, 2003; Lee & Park, 2010) has largely ignored this question. Our results, summarized in Table 2, suggest that the relationship is non-linear (r = 0.42, p < .001).
+
+Participants (N = 128; 71 female, 55 male, 2 non-binary; Mage = 24.6, SD = 3.1) were recruited via an online panel. Each received $8.00 for completing the 20-min survey.
+
+The reaction was carried out at 25 °C and 1 atm for 3 h. The yield was 87% (0.62 g, 2.4 mmol). The product was purified by flash chromatography (hexane/EtOAc 4:1).
+
+The speed of light in vacuum is approximately 3.00 × 10^8 m/s. Avogadro's number is 6.022e23 mol^-1. Planck's constant, h, equals 6.626 × 10⁻³⁴ J·s.
+
+A typical adult human has about 5 L of blood. The sample was diluted to 10 µg/mL and stored at −80 °C. Centrifuge at 3,000 × g for 10 min.
+
+The probe traveled 1.5×10^9 km in 14 yr. Its power source produced 470 W at launch and roughly 240 W by 2015.
+
+Water boils at 100°C (212°F) at sea level. At an altitude of 2,400 m, it boils at about 92 °C.
+
+Fig. 3 shows the distribution of residuals. Eq. (7) can be rewritten as y = ax² + bx + c, where a ≠ 0.
+
+The mean was 4.2 ± 0.3 mm (95% CI: 3.6–4.8). Values below the detection limit (< 0.05 ppm) were excluded.
+
+The resistor is rated at 4.7 kΩ and 0.25 W. Apply 5 V DC and measure the current in mA.
+
+In Section 3.2, we describe the dataset. Section 4 presents the results; Sect. 5 concludes. Appendix A contains proofs of Lemmas 1–3.
+
+Theorem 2.1. Let f: ℝ → ℝ be continuous. Then f attains a maximum on [a, b].
+
+Proof. Suppose not. Then there exists a sequence (x_n) such that f(x_n) → sup f. By compactness, a subsequence converges. QED.
+
+The study was approved by the institutional review board (protocol no. 2021-0457). All participants gave written informed consent.
+
+Correspondence should be addressed to Dr. H. Lindqvist, Dept. of Psychology, Univ. of Northbridge, 14 College Rd., Northbridge NB4 2XY, U.K.
+
+This work was supported by grant R01-GM123456 from the NIH. The authors declare no competing interests.
+
+Smith, J. A., & Jones, B. (2015). On the measurement of things. Journal of Applied Stuff, 12(3), 45–67. https://doi.org/10.1000/jas.2015.012
+
+Okonkwo, C. (2020). A Short History of Long Words (2nd ed.). Oxford: Clarendon Press.
+
+The data are available upon request. Code is available at github.com/example/proj.
+
+cf. the discussion in ch. 4, pp. 112–19, n. 23.
+
+The vote passed 52–48. The bill now goes to the House, where its prospects are uncertain.
+
+Section 2(a) of the Act — sometimes called the "safe harbor" provision — was amended in 2011. Courts have disagreed about its scope ever since.
+
+The patient was given 500 mg of amoxicillin t.i.d. for 10 days. Her temperature dropped from 39.4 °C to 37.1 °C within 48 hrs.
+
+pH 7.4 buffer was used throughout. The solution's molarity was 0.15 M.
+
+The mass of the electron is 9.109 × 10^−31 kg, roughly 1/1836 that of the proton.
+
+The filing deadline was 3/14/2023² and the hotline is 555-012-3456¹. See note³ below.

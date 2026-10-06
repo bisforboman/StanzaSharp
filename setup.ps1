@@ -136,7 +136,7 @@ if ($Models) {
 
     Write-Host 'Converting models' -ForegroundColor Cyan
     & $venvPy (Join-Path $PSScriptRoot 'tools\stanza_convert.py') convert (Join-Path $stanzaDir 'en') --out $convertedDir
-    if ($LASTEXITCODE -ne 0) { throw 'Model conversion failed (see CLAUDE.md: the torch path of the converter is untested).' }
+    if ($LASTEXITCODE -ne 0) { throw 'Model conversion failed. Pipeline.Load can also use the .pt files in models\stanza\en directly.' }
 }
 
 # ---------------------------------------------------------------- git
