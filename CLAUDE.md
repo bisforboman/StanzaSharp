@@ -231,7 +231,7 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   Use it wherever Stanza calls `lower()`, `isupper()`, `isspace()` or `split()`. Regexes ported
   from Python need care too: Python's `\b`/`\w` count No/Nl characters such as `²` as word
   characters and combining marks as non-word (see `Tokenizer.PyRegex`).
-- CI (`.github/workflows/ci.yml`, not yet run on GitHub): `build-test` runs the suite without
+- CI (`.github/workflows/ci.yml`, github.com/bisforboman/StanzaSharp): `build-test` runs the suite without
   models; `golden` downloads and converts the models (CPU torch, cached on `tools/requirements.txt`
   and `tools/stanza_convert.py`) and fails if any test is skipped (`outcome="NotExecuted"` in the
   trx; the trx `notExecuted` counter stays 0 for skips). It runs on Linux: keep paths
