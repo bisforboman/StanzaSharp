@@ -48,7 +48,7 @@ public class SentimentTests(ITestOutputHelper output)
         doc.Sentences.Select(s => (IReadOnlyList<string>)s.Tokens.Select(t => t.Text).ToList()).ToList();
 
     /// <summary>Checks labels exactly and logits within <paramref name="tolerance"/>; returns the largest logit difference.</summary>
-    private static float CompareToJson(string name, int[] labels, float[][] logits, List<string> failures, float tolerance = Tolerance)
+    private static float CompareToJson(string name, int[] labels, float[][] logits, List<string> failures, float? tolerance = null)
     {
         var golden = JsonNode.Parse(File.ReadAllText(Path.Combine(Golden, name + ".json")))!["sentences"]!.AsArray();
         if (golden.Count != labels.Length)
@@ -62,7 +62,7 @@ public class SentimentTests(ITestOutputHelper output)
             var expected = golden[i]!["logits"]!.AsArray().Select(x => x!.GetValue<float>()).ToArray();
             float diff = expected.Zip(logits[i], (a, b) => Math.Abs(a - b)).Max();
             worst = Math.Max(worst, diff);
-            if (golden[i]!["sentiment"]!.GetValue<int>() != labels[i] || diff > tolerance)
+            if (golden[i]!["sentiment"]!.GetValue<int>() != labels[i] || diff > (tolerance ?? Tolerance))
                 failures.Add($"{name}, sentence {i}: label {labels[i]} logits [{string.Join(", ", logits[i])}], expected {golden[i]}");
         }
         return worst;
