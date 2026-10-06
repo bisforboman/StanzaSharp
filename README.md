@@ -69,3 +69,9 @@ on GitHub yet, since the repository has no remote.
 
 Both upload their `.trx` test results. To reproduce `golden` locally, run `setup.ps1 -Models`, then
 `dotnet test --logger trx --results-directory TestResults` and check that nothing was skipped.
+
+## License
+
+Apache License 2.0, the same as Stanza, which this ports. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
+Stanza's pretrained models are not part of this repository; their licenses vary with the training
+data, so check them before redistributing models.

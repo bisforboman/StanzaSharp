@@ -259,5 +259,6 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
 
 ## Licensing
 
-Stanza's code is Apache 2.0. Model licenses vary with the training data, so do not commit or
+StanzaSharp is Apache 2.0 (`LICENSE`), like Stanza, whose code it ports. `NOTICE` credits Stanza;
+keep it in any redistribution. Model licenses vary with the training data, so do not commit or
 redistribute model files. `models/` is gitignored.

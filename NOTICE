@@ -1,0 +1,14 @@
+StanzaSharp
+Copyright 2026 Jakob Boman
+
+This product is a C# port of the inference code of Stanza
+(https://github.com/stanfordnlp/stanza), licensed under the Apache License 2.0:
+
+  Copyright 2019 The Board of Trustees of The Leland Stanford Junior University
+
+The tokenizer, multi-word token expander, part-of-speech tagger, constituency parser
+and shared layers were translated from Stanza's Python source to C# and TorchSharp,
+keeping their behavior.
+
+Stanza's pretrained models are not included. They are distributed by the Stanza
+project under licenses that vary with their training data.
