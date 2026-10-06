@@ -63,18 +63,15 @@ public class GpuTests(ITestOutputHelper output)
         }
     }
 
-    /// <param name="set">"constituency": tests/golden/*.conllu (the default processors); "depparse": tests/golden/depparse (adds lemma and depparse).</param>
+    /// <summary>All six processors on the golden texts.</summary>
     [CudaTheory]
-    [InlineData("constituency", true)]
-    [InlineData("constituency", false)]
-    [InlineData("depparse", true)]
-    [InlineData("depparse", false)]
-    public void Pipeline_MostlyMatchesGoldenConllu(string set, bool tf32)
+    [InlineData(true)]
+    [InlineData(false)]
+    public void Pipeline_MostlyMatchesGoldenConllu(bool tf32)
     {
         using var tf32Scope = Tf32(tf32);
-        var (dir, processors) = set == "depparse" ? (Path.Combine(Repo.Golden, "depparse"), "tokenize,mwt,pos,lemma,depparse") : (Repo.Golden, Pipeline.AllProcessors);
-        using var nlp = Pipeline.Load(Repo.Models, processors, torch.CUDA);
-        var files = Directory.GetFiles(dir, "validation*.conllu").Order().Append(Path.Combine(dir, set == "depparse" ? "corpus.conllu" : "pipeline.conllu")).ToList();
+        using var nlp = Pipeline.Load(Repo.Models, device: torch.CUDA);
+        var files = Directory.GetFiles(Repo.Golden, "validation*.conllu").Order().Append(Path.Combine(Repo.Golden, "pipeline.conllu")).ToList();
         int sentences = 0, same = 0, lines = 0, lineDiffs = 0, treeDiffs = 0;
         output.WriteLine($"{"file",-34}{"sentences",10}{"identical",10}{"lines",8}{"differ",8}{"trees",8}");
         foreach (var conllu in files)
