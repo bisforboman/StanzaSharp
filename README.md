@@ -23,10 +23,12 @@ checked against its published MD5; `Pipeline.Load` itself never touches the netw
 ```csharp
 await ModelDownloader.DownloadAsync("models/stanza/en");                            // all, ~600 MB
 await ModelDownloader.DownloadAsync("models/stanza/en", "tokenize,mwt,pos,lemma");  // only what these need
+await ModelDownloader.DownloadAsync("models/stanza/en", new PipelineOptions { Package = "default_fast" });
 ```
 
 or from the command line: `dotnet run --project samples/StanzaSharp.Cli -- download models/stanza/en`
-(add `--processors LIST` for a subset). A subset includes the models of the processors it requires and
+(add `--processors LIST` for a subset, `--package default_fast` for that package).
+`DownloadAsync(dir, options)` fetches exactly what `Pipeline.Load(dir, options)` reads. A subset includes the models of the processors it requires and
 the shared word vectors and character models when used.
 A directory you already have from Python Stanza (`<processor>/<name>.pt`, e.g. `~/stanza_resources/en`)
 works too.
@@ -58,6 +60,25 @@ need only `tokenize`. NER gives named entities: `Token.Ner` holds the BIOES tag 
 Sentiment gives `sentence.Sentiment`: 0 negative, 1 neutral, 2 positive.
 `Conllu.Write(doc)` gives Stanza-style CoNLL-U, with `ner=` in MISC when NER ran.
 
+### Packages
+
+`PipelineOptions.Package` picks one of Stanza's English packages by its Stanza name:
+
+- `"default"` (the default): all eight processors above.
+- `"default_fast"`: tokenize, mwt, pos, lemma, depparse, sentiment and ner, without constituency. Its pos,
+  depparse and ner models have their own small character LSTMs instead of the large character language
+  models, so they are faster and need less memory, at slightly lower accuracy. Output is byte-identical to
+  Python Stanza's `package='default_fast'`.
+
+```csharp
+var options = new PipelineOptions { Package = "default_fast" };
+await ModelDownloader.DownloadAsync("models/stanza/en", options);
+using var fast = Pipeline.Load("models/stanza/en", options);
+```
+
+An unknown package name throws, and so does listing a processor the package lacks (`constituency` with
+`default_fast`). See [docs/performance.md](docs/performance.md) for the speed of both.
+
 `samples/StanzaSharp.Example` is a commented tour of the whole API: `dotnet run --project samples/StanzaSharp.Example`.
 
 From the command line, this writes CoNLL-U for a file (or standard input):
@@ -65,6 +86,7 @@ From the command line, this writes CoNLL-U for a file (or standard input):
 ```powershell
 dotnet run --project samples/StanzaSharp.Cli -- input.txt
 dotnet run --project samples/StanzaSharp.Cli -- --processors tokenize,mwt,pos input.txt
+dotnet run --project samples/StanzaSharp.Cli -- --package default_fast input.txt
 ```
 
 ## Development setup
@@ -84,7 +106,8 @@ converts them to `models\converted\en`. Use `-Python` for the environment only, 
 ## Performance
 
 On 8 CPU threads the six-processor pipeline is about 1.7x faster than Python Stanza and peaks at 2.7 GB of memory
-(Python: 4.3 GB); see [docs/performance.md](docs/performance.md). Libtorch uses one thread per physical core by
+(Python: 4.3 GB); see [docs/performance.md](docs/performance.md). The `default_fast` package runs its seven
+processors about 2.3x faster than the default's eight, and 1.5x faster than Python's `default_fast`. Libtorch uses one thread per physical core by
 default. On a machine busy with other work, fewer threads (`torch.set_num_threads(n)`) are often faster.
 
 ## GPU
