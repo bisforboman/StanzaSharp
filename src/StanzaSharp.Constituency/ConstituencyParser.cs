@@ -36,6 +36,7 @@ public sealed class ConstituencyParser : IDisposable
     private readonly Tensor _wordStart, _wordEnd;
     private readonly StackNode<Transition?> _initialTransitions;
     private readonly StackNode<Constituent> _initialConstituents;
+    private readonly Device _device = Weights.Device; // the device the model was loaded on
 
     private ConstituencyParser(Checkpoint ckpt, Pretrain pretrain, CharLanguageModel charlmForward, CharLanguageModel charlmBackward)
     {
@@ -100,8 +101,9 @@ public sealed class ConstituencyParser : IDisposable
     /// Loads e.g. <c>models/converted/en/constituency/ptb3-revised_charlm</c>. The pretrain and charlms
     /// are shared with the tagger, so the caller owns them.
     /// </summary>
-    public static ConstituencyParser Load(string basePath, Pretrain pretrain, CharLanguageModel charlmForward, CharLanguageModel charlmBackward) =>
-        new(Checkpoint.Load(basePath), pretrain, charlmForward, charlmBackward);
+    /// <param name="device">Where the model runs; CPU by default. Load the pretrain and charlms on the same device.</param>
+    public static ConstituencyParser Load(string basePath, Pretrain pretrain, CharLanguageModel charlmForward, CharLanguageModel charlmBackward, Device? device = null) =>
+        Weights.On(device, () => new ConstituencyParser(Checkpoint.Load(basePath), pretrain, charlmForward, charlmBackward));
 
     /// <summary>Sets <see cref="Sentence.Constituency"/> on every sentence. Needs XPOS (or UPOS) tags from the tagger.</summary>
     /// <param name="charlms">Charlm representations the tagger kept, if any; sentences missing from it are computed.</param>
@@ -220,9 +222,9 @@ public sealed class ConstituencyParser : IDisposable
             var deltaIds = sentences[i].Select(x => (long)_deltaMap.GetValueOrDefault(x.Word, 1)).ToArray();
             var tagIds = sentences[i].Select(x => (long)_tagMap.GetValueOrDefault(x.Tag, 1)).ToArray();
             var wordInput = cat([
-                _pretrain.Embeddings[torch.tensor(pretrainIds)],
-                _deltaEmbedding.forward(torch.tensor(deltaIds)),
-                _tagEmbedding.forward(torch.tensor(tagIds)),
+                _pretrain.Embeddings[torch.tensor(pretrainIds, device: _device)],
+                _deltaEmbedding.forward(torch.tensor(deltaIds, device: _device)),
+                _tagEmbedding.forward(torch.tensor(tagIds, device: _device)),
                 charsForward[i]!,
                 charsBackward[i]!,
             ], 1);
@@ -255,7 +257,7 @@ public sealed class ConstituencyParser : IDisposable
         var hx = cat([word, transition, constituent], 1);
         foreach (var layer in _outputLayers)
             hx = layer.forward(F.relu(hx)); // nonlinearity before every layer, including the first
-        return hx.data<float>().ToArray();
+        return hx.ToArray<float>();
     }
 
     /// <summary>The best-scoring transition, or the best legal one if that is illegal (LSTMModel.predict).</summary>
@@ -333,7 +335,7 @@ public sealed class ConstituencyParser : IDisposable
 
         if (opens.Count > 0)
         {
-            var hx = _dummyEmbedding.forward(torch.tensor(opens.Select(o => (long)o.OpenIndex).ToArray())).unbind(0);
+            var hx = _dummyEmbedding.forward(torch.tensor(opens.Select(o => (long)o.OpenIndex).ToArray(), device: _device)).unbind(0);
             for (int i = 0; i < opens.Count; i++)
                 newConstituents[opens[i].Slot] = new Constituent(null, opens[i].Label, hx[i]);
         }
@@ -349,7 +351,7 @@ public sealed class ConstituencyParser : IDisposable
             }
         }
 
-        var transitionInput = _transitionEmbedding.forward(torch.tensor(applied.Select(a => (long)a.Transition.Index).ToArray()));
+        var transitionInput = _transitionEmbedding.forward(torch.tensor(applied.Select(a => (long)a.Transition.Index).ToArray(), device: _device));
         var newTransitions = Push(_transitionLstm, applied.Select(a => a.State.Transitions).ToList(),
             applied.Select(a => (Transition?)a.Transition).ToList(), transitionInput);
         var constituentInput = stack(newConstituents.Select(c => c.Hx!).ToArray());

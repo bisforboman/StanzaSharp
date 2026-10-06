@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\StanzaSharp\StanzaSharp.csproj" />
@@ -7,13 +7,13 @@
     <ProjectReference Include="..\..\src\StanzaSharp.Tokenize\StanzaSharp.Tokenize.csproj" />
     <ProjectReference Include="..\..\src\StanzaSharp.Mwt\StanzaSharp.Mwt.csproj" />
     <ProjectReference Include="..\..\src\StanzaSharp.Pos\StanzaSharp.Pos.csproj" />
+    <ProjectReference Include="..\..\src\StanzaSharp.Constituency\StanzaSharp.Constituency.csproj" />
     <ProjectReference Include="..\..\src\StanzaSharp.Lemma\StanzaSharp.Lemma.csproj" />
     <ProjectReference Include="..\..\src\StanzaSharp.Depparse\StanzaSharp.Depparse.csproj" />
-    <ProjectReference Include="..\..\src\StanzaSharp.Constituency\StanzaSharp.Constituency.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="TorchSharp-cpu" Version="0.107.0" />
+    <PackageReference Include="$(TorchSharpNative)" Version="0.107.0" />
   </ItemGroup>
 
   <PropertyGroup>

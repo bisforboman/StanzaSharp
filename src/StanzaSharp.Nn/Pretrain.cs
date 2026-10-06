@@ -28,7 +28,8 @@ public sealed class Pretrain : IDisposable
     }
 
     /// <summary>Loads e.g. <c>models/converted/en/pretrain/conll17</c>.</summary>
-    public static Pretrain Load(string basePath) => new(Checkpoint.Load(basePath));
+    /// <param name="device">Where the embedding matrix lives; CPU by default.</param>
+    public static Pretrain Load(string basePath, Device? device = null) => Weights.On(device, () => new Pretrain(Checkpoint.Load(basePath)));
 
     /// <summary>PretrainedWordVocab.unit2id: spaces inside a word are stored as U+00A0.</summary>
     public int UnitToId(string word) =>

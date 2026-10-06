@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.RegularExpressions;
+using StanzaSharp.Nn;
 using TorchSharp;
 using static TorchSharp.torch;
 
@@ -48,6 +49,7 @@ public sealed class Tokenizer : IDisposable
     private readonly Dictionary<string, int> _vocab;
     private readonly int _unkId, _padId, _batchSize, _featDim;
     private readonly string[] _featFuncs;
+    private readonly Device _device = Weights.Device; // the device the model was loaded on
 
     private Tokenizer(Checkpoint ckpt)
     {
@@ -77,7 +79,8 @@ public sealed class Tokenizer : IDisposable
     }
 
     /// <summary>Loads <c>basePath.json</c> + <c>basePath.safetensors</c>, e.g. <c>models/converted/en/tokenize/combined_nocharlm</c>.</summary>
-    public static Tokenizer Load(string basePath) => new(Checkpoint.Load(basePath));
+    /// <param name="device">Where the model runs; CPU by default.</param>
+    public static Tokenizer Load(string basePath, Device? device = null) => Weights.On(device, () => new Tokenizer(Checkpoint.Load(basePath)));
 
     public Document Process(string text)
     {
@@ -111,7 +114,7 @@ public sealed class Tokenizer : IDisposable
         using var scope = NewDisposeScope();
         var logits = Run([para], [0], para.Length + 1, [para.Length + 1])[0];
         shape = logits.shape;
-        return logits.data<float>().ToArray();
+        return logits.ToArray<float>();
     }
 
     // ----- input: paragraphs of code-point units -----
@@ -280,8 +283,8 @@ public sealed class Tokenizer : IDisposable
             Array.Copy(rows[j].Ids, offsets[j], ids, j * width, count);
             Array.Copy(rows[j].Feats, offsets[j] * _featDim, feats, j * width * _featDim, count * _featDim);
         }
-        using var units = torch.tensor(ids, [rows.Count, width]);
-        using var featTensor = torch.tensor(feats, [rows.Count, width, _featDim]);
+        using var units = torch.tensor(ids, [rows.Count, width], device: _device);
+        using var featTensor = torch.tensor(feats, [rows.Count, width, _featDim], device: _device);
         return _net.Forward(units, featTensor, lengths.Select(l => (long)l).ToArray());
     }
 
@@ -291,7 +294,7 @@ public sealed class Tokenizer : IDisposable
         using (var am = logits.argmax(2))
         {
             int rows = (int)am.shape[0], width = (int)am.shape[1];
-            var flat = am.data<long>().ToArray();
+            var flat = am.ToArray<long>();
             return Enumerable.Range(0, rows).Select(j => flat[(j * width)..((j + 1) * width)].Select(x => (int)x).ToArray()).ToArray();
         }
     }

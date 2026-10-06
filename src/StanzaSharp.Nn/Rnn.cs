@@ -13,6 +13,7 @@ public static class Rnn
     /// <param name="input">[batch, maxLen, dim]</param>
     /// <param name="state">Optional initial (h0, c0), each [layers * directions, batch, hidden].</param>
     /// <returns>[batch, maxLen, hidden * directions], zero past each sequence's length.</returns>
+    /// <remarks>Lengths stay on the CPU, as pack_padded_sequence requires, whatever the input's device.</remarks>
     public static Tensor RunPacked(LSTM lstm, Tensor input, long[] lengths, (Tensor, Tensor)? state = null)
     {
         using var scope = NewDisposeScope();
@@ -36,10 +37,11 @@ public static class Rnn
         var packed = nn.utils.rnn.pack_padded_sequence(input, lens, batch_first: true, enforce_sorted: false);
         var (output, _, _) = lstm.call(packed, state);
 
+        // batch_sizes is always on the CPU; sorted_indices is on the input's device.
         // Packed rows are time-major: step t holds batch_sizes[t] rows, the longest sequences first,
         // so sequence i (rank r in the sorted order) is row start[t] + r at step t.
-        var batchSizes = output.batch_sizes.data<long>().ToArray();
-        var sorted = output.sorted_indices!.data<long>().ToArray();
+        var batchSizes = output.batch_sizes.ToArray<long>();
+        var sorted = output.sorted_indices!.ToArray<long>();
         var rank = new long[sorted.Length];
         for (int r = 0; r < sorted.Length; r++)
             rank[sorted[r]] = r;
@@ -51,7 +53,7 @@ public static class Rnn
         for (int i = 0; i < positions.Count; i++)
         {
             var rows = positions[i].Select(t => start[t] + rank[i]).ToArray();
-            result.Add(output.data.index_select(0, torch.tensor(rows)).MoveToOuterDisposeScope());
+            result.Add(output.data.index_select(0, torch.tensor(rows, device: output.data.device)).MoveToOuterDisposeScope());
         }
         return result;
     }

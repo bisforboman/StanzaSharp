@@ -29,6 +29,7 @@ public sealed class Lemmatizer : IDisposable
     private readonly LSTM _encoder;
     private readonly LSTMCell _decoderCell;
     private readonly Linear _attnIn, _attnOut, _dec2vocab, _editHidden, _editOutput, _copyGate;
+    private readonly Device _device = Weights.Device; // the device the model was loaded on
 
     private Lemmatizer(Checkpoint ckpt)
     {
@@ -81,7 +82,8 @@ public sealed class Lemmatizer : IDisposable
     }
 
     /// <summary>Loads <c>basePath.json</c> + <c>.safetensors</c> (or <c>basePath.pt</c>), e.g. <c>models/converted/en/lemma/combined_nocharlm</c>.</summary>
-    public static Lemmatizer Load(string basePath) => new(Checkpoint.Load(basePath));
+    /// <param name="device">Where the model runs; CPU by default.</param>
+    public static Lemmatizer Load(string basePath, Device? device = null) => Weights.On(device, () => new Lemmatizer(Checkpoint.Load(basePath)));
 
     /// <summary>Sets the lemma of every word in <paramref name="doc"/>; needs UPOS from the tagger.</summary>
     public void Process(Document doc)
@@ -173,10 +175,10 @@ public sealed class Lemmatizer : IDisposable
                 ids[r * width + k] = src[order[r]][k];
         var posIds = order.Select(i => (long)_posToId.GetValueOrDefault(words[i].Upos ?? "_", UnkId)).ToArray();
 
-        var srcT = torch.tensor(ids, [batch, width]);
-        var (decodedIds, editLogits) = Greedy(srcT, torch.tensor(posIds), order.Select(i => (long)src[i].Length + 1).ToArray());
+        var srcT = torch.tensor(ids, [batch, width], device: _device);
+        var (decodedIds, editLogits) = Greedy(srcT, torch.tensor(posIds, device: _device), order.Select(i => (long)src[i].Length + 1).ToArray());
 
-        var editValues = editLogits.data<float>().ToArray();
+        var editValues = editLogits.ToArray<float>();
         var decoded = new string[batch];
         var edits = new int[batch];
         for (int r = 0; r < batch; r++)
@@ -199,7 +201,7 @@ public sealed class Lemmatizer : IDisposable
         // embed: characters past the trained vocabulary embed as <UNK>; the POS embedding goes in front.
         var embedSrc = src.masked_fill(src >= _vocabSize, UnkId);
         var encInputs = cat([_posEmbedding.forward(pos).unsqueeze(1), _embedding.forward(embedSrc)], 1);
-        var srcMask = cat([torch.zeros([batch, 1], ScalarType.Bool), src.eq(PadId)], 1);
+        var srcMask = cat([torch.zeros([batch, 1], ScalarType.Bool, device: _device), src.eq(PadId)], 1);
 
         // encode
         using var lens = torch.tensor(srcLens);
@@ -210,7 +212,7 @@ public sealed class Lemmatizer : IDisposable
         var c = cat([cn[1], cn[0]], 1);
         var editLogits = _editOutput.forward(F.relu(_editHidden.forward(h)));
 
-        var decInputs = _embedding.forward(torch.tensor(new long[] { SosId }));
+        var decInputs = _embedding.forward(torch.tensor(new long[] { SosId }, device: _device));
         decInputs = decInputs.expand(batch, decInputs.shape[0], decInputs.shape[1]);
 
         var output = Enumerable.Range(0, (int)batch).Select(_ => new List<long>()).ToArray();
@@ -224,7 +226,7 @@ public sealed class Lemmatizer : IDisposable
             decInputs = _embedding.forward(preds.masked_fill(preds >= _vocabSize, UnkId)).MoveToOuterDisposeScope();
             h.MoveToOuterDisposeScope();
             c.MoveToOuterDisposeScope();
-            var values = preds.data<long>().ToArray();
+            var values = preds.ToArray<long>();
             for (int i = 0; i < batch; i++)
             {
                 if (done[i])
@@ -268,9 +270,9 @@ public sealed class Lemmatizer : IDisposable
         var logCopyProb = F.logsigmoid(copyLogit) + logAttn;
         var mx = logCopyProb.max(-1, keepdim: true).values;
         var copyProb = torch.exp(logCopyProb - mx);
-        long vocab = Math.Max(_vocabSize, src.max().item<long>() + 1);
+        long vocab = Math.Max(_vocabSize, src.max().ToArray<long>()[0] + 1);
         var scattered = src.unsqueeze(1).expand(src.shape[0], copyProb.shape[1], src.shape[1]);
-        var copied = torch.zeros([batch, steps, vocab]).scatter_add(-1, scattered, copyProb);
+        var copied = torch.zeros([batch, steps, vocab], device: _device).scatter_add(-1, scattered, copyProb);
         var zeroMask = copied.eq(0);
         var logCopied = (torch.log(copied.masked_fill(zeroMask, 1e-12)) + mx).masked_fill(zeroMask, -1e12);
 

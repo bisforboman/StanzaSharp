@@ -17,4 +17,12 @@
     <NoWarn>$(NoWarn);CS1591;CS1573</NoWarn>
     <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
   </PropertyGroup>
+
+  <!-- The native libtorch the runnable projects (Cli, Benchmark, Tests) reference. Libraries use only the
+       managed TorchSharp package. STANZASHARP_CUDA=1 (environment variable or -p:) switches to CUDA for local
+       GPU runs; the default and CI stay on CPU. -->
+  <PropertyGroup>
+    <TorchSharpNative>TorchSharp-cpu</TorchSharpNative>
+    <TorchSharpNative Condition="'$(STANZASHARP_CUDA)' == '1' Or '$(STANZASHARP_CUDA)' == 'true'">TorchSharp-cuda-windows</TorchSharpNative>
+  </PropertyGroup>
 </Project>
