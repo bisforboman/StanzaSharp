@@ -1,0 +1,64 @@
+name: Bug report
+description: Wrong output, a crash, or output that differs from Python Stanza
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! StanzaSharp aims to match Python Stanza exactly, so a difference from Stanza's
+        output on the same text is a bug too.
+  - type: input
+    id: version
+    attributes:
+      label: StanzaSharp version
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: input
+    id: processors
+    attributes:
+      label: Processors
+      description: The `PipelineOptions.Processors` you used, or "default".
+      placeholder: default
+    validations:
+      required: true
+  - type: dropdown
+    id: device
+    attributes:
+      label: Device
+      options:
+        - CPU
+        - GPU (CUDA), DisableTf32 = true
+        - GPU (CUDA), TF32 on (default)
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, .NET version, and the TorchSharp native package (e.g. TorchSharp-cpu 0.107.0).
+      placeholder: Windows 11, .NET 10.0.4, TorchSharp-cpu 0.107.0
+  - type: textarea
+    id: input
+    attributes:
+      label: Input text
+      description: The smallest text that shows the problem. Whitespace and line breaks can matter.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What StanzaSharp produced
+      description: The relevant part of `Conllu.Write(doc)`, or the exception with its stack trace.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+      description: >
+        If Python Stanza 1.15.0 gives a different result, paste its output
+        (`"{:C}".format(nlp(text))` with the same processors).
+      render: text

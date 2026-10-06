@@ -1,0 +1,22 @@
+name: Feature request
+description: A processor, language, option or API you'd like
+labels: [enhancement]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: What do you want to do?
+      description: The task you're trying to accomplish, and what's missing or awkward today.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: How could it look?
+      description: Optional. A sketch of the API, e.g. a few lines of C#.
+      render: csharp
+  - type: input
+    id: stanza
+    attributes:
+      label: Stanza equivalent
+      description: Optional. If Python Stanza already does this, which processor, model or option?

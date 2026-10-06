@@ -13,10 +13,22 @@
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/bisforboman/StanzaSharp</PackageProjectUrl>
     <RepositoryUrl>https://github.com/bisforboman/StanzaSharp</RepositoryUrl>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>$(NoWarn);CS1591;CS1573</NoWarn>
     <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
+    <NoWarn>$(NoWarn);CS1573</NoWarn>
   </PropertyGroup>
+
+  <!-- Library projects (src/*): XML docs, and every public member must have them. The public API is the
+       facade (Pipeline, PipelineOptions, CharlmCacheOptions, ModelDownloader) and Core's document model;
+       everything else is internal, shared across the StanzaSharp assemblies below. -->
+  <PropertyGroup Condition="'$([System.IO.Path]::GetFileName($([System.IO.Path]::GetDirectoryName($(MSBuildProjectDirectory)))))' == 'src'">
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <WarningsAsErrors>$(WarningsAsErrors);CS1591</WarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup Condition="'$([System.IO.Path]::GetFileName($([System.IO.Path]::GetDirectoryName($(MSBuildProjectDirectory)))))' == 'src'">
+    <InternalsVisibleTo Include="StanzaSharp;StanzaSharp.Nn;StanzaSharp.Tokenize;StanzaSharp.Mwt;StanzaSharp.Pos;StanzaSharp.Lemma;StanzaSharp.Constituency;StanzaSharp.Depparse;StanzaSharp.Ner;StanzaSharp.Sentiment"
+                        Exclude="$(AssemblyName)" />
+    <InternalsVisibleTo Include="StanzaSharp.Tests;StanzaSharp.Benchmark" />
+  </ItemGroup>
 
   <!-- The native libtorch the runnable projects (Cli, Benchmark, Tests) reference. Libraries use only the
        managed TorchSharp package. STANZASHARP_CUDA=1 (environment variable or -p:) switches to CUDA for local

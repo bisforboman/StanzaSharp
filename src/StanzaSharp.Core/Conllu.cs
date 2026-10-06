@@ -10,6 +10,11 @@ namespace StanzaSharp;
 /// </summary>
 public static class Conllu
 {
+    /// <summary>
+    /// Parses CoNLL-U text into a document: tokens, multi-word tokens, words with their columns, offsets and
+    /// spacing from MISC, and the <c>text</c>, <c>sent_id</c>, <c>constituency</c> and <c>sentiment</c>
+    /// comments. Entities are rebuilt from <c>ner=</c> tags. <see cref="Document.Text"/> stays null.
+    /// </summary>
     public static Document Read(string text)
     {
         var doc = new Document();
@@ -85,6 +90,9 @@ public static class Conllu
         return doc;
     }
 
+    /// <summary>
+    /// Formats a document as CoNLL-U, byte for byte as Stanza's <c>"{:C}".format(doc)</c> writes it (plus a final newline).
+    /// </summary>
     public static string Write(Document doc)
     {
         var sb = new StringBuilder();

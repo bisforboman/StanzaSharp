@@ -10,7 +10,7 @@ namespace StanzaSharp.Nn;
 /// parser. Port of stanza/models/common/char_model.py <c>CharacterLanguageModel</c> (inference only:
 /// the decoder that predicts the next character is not needed).
 /// </summary>
-public sealed class CharLanguageModel : IDisposable
+internal sealed class CharLanguageModel : IDisposable
 {
     // char_model.py CHARLM_START / CHARLM_END: a sentence starts with "\n", every word ends with " ".
     private const string Start = "\n", End = " ";

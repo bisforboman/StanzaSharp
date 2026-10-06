@@ -13,7 +13,7 @@ namespace StanzaSharp.Mwt;
 /// model: a dictionary first (<c>ensemble_dict</c>), then a character classifier that predicts where
 /// to cut the token (stanza/models/mwt/character_classifier.py, trainer.py).
 /// </summary>
-public sealed class MwtExpander : IDisposable
+internal sealed class MwtExpander : IDisposable
 {
     private readonly Dictionary<string, string> _dict;
     private readonly Dictionary<string, int> _vocab;

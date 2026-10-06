@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- In your own project this is just: <PackageReference Include="StanzaSharp" Version="..." />.
+       Inside this repository the sample references the projects instead (see CLAUDE.md, Packaging). -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\StanzaSharp\StanzaSharp.csproj" />
+    <ProjectReference Include="..\..\src\StanzaSharp.Nn\StanzaSharp.Nn.csproj" />
+    <ProjectReference Include="..\..\src\StanzaSharp.Tokenize\StanzaSharp.Tokenize.csproj" />
+    <ProjectReference Include="..\..\src\StanzaSharp.Mwt\StanzaSharp.Mwt.csproj" />
+    <ProjectReference Include="..\..\src\StanzaSharp.Pos\StanzaSharp.Pos.csproj" />
+    <ProjectReference Include="..\..\src\StanzaSharp.Lemma\StanzaSharp.Lemma.csproj" />
+    <ProjectReference Include="..\..\src\StanzaSharp.Constituency\StanzaSharp.Constituency.csproj" />
+    <ProjectReference Include="..\..\src\StanzaSharp.Depparse\StanzaSharp.Depparse.csproj" />
+    <ProjectReference Include="..\..\src\StanzaSharp.Ner\StanzaSharp.Ner.csproj" />
+    <ProjectReference Include="..\..\src\StanzaSharp.Sentiment\StanzaSharp.Sentiment.csproj" />
+    <ProjectReference Include="..\..\src\StanzaSharp.Core\StanzaSharp.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="$(TorchSharpNative)" Version="0.107.0" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

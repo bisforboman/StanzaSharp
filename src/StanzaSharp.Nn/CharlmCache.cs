@@ -12,7 +12,7 @@ namespace StanzaSharp.Nn;
 /// To bound that on large documents the cache keeps at most <see cref="MaxWords"/> words; sentences
 /// past that are not kept, and consumers compute them again as they do for any missing sentence.
 /// </remarks>
-public sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords) : IDisposable
+internal sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords) : IDisposable
 {
     /// <summary>About 256 MB with the English charlms.</summary>
     public const int DefaultMaxWords = 32_768;

@@ -4,7 +4,7 @@ using static TorchSharp.torch;
 
 namespace StanzaSharp.Nn;
 
-public static class Rnn
+internal static class Rnn
 {
     /// <summary>
     /// Runs a batch-first LSTM over padded sequences of differing lengths, like PyTorch's

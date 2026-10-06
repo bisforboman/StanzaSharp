@@ -10,7 +10,7 @@ namespace StanzaSharp.Nn;
 /// tagger uses it): stacked packed biLSTM layers, each followed by
 /// <c>h + sigmoid(gate(x)) * tanh(highway(x))</c>.
 /// </summary>
-public sealed class HighwayLstm : IDisposable
+internal sealed class HighwayLstm : IDisposable
 {
     private readonly LSTM[] _lstm;
     private readonly Linear[] _highway, _gate;

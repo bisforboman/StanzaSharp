@@ -1,7 +1,8 @@
-<Solution>
+﻿<Solution>
   <Folder Name="/samples/">
     <Project Path="samples/StanzaSharp.Benchmark/StanzaSharp.Benchmark.csproj" />
     <Project Path="samples/StanzaSharp.Cli/StanzaSharp.Cli.csproj" />
+    <Project Path="samples/StanzaSharp.Example/StanzaSharp.Example.csproj" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/StanzaSharp.Constituency/StanzaSharp.Constituency.csproj" />

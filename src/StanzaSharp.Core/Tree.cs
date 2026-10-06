@@ -6,17 +6,27 @@ namespace StanzaSharp;
 /// A constituency tree in PTB bracket form, e.g. <c>(ROOT (S (NP (PRP He)) (VP (VBD left))))</c>.
 /// Labels hold the raw text: a "(" word is "(" in the tree and prints as "-LRB-".
 /// </summary>
+/// <param name="label">A constituent label (<c>NP</c>), a part-of-speech tag (<c>PRP</c>) or a word (<c>He</c>).</param>
+/// <param name="children">The child trees; none for a leaf (a word).</param>
 public sealed class Tree(string label, IReadOnlyList<Tree>? children = null)
 {
+    /// <summary>The constituent label, part-of-speech tag, or word of this node.</summary>
     public string Label { get; } = label;
+
+    /// <summary>The child trees, in order; empty for a leaf.</summary>
     public IReadOnlyList<Tree> Children { get; } = children ?? [];
 
+    /// <summary>Whether this node is a word (no children).</summary>
     public bool IsLeaf => Children.Count == 0;
+
+    /// <summary>Whether this node is a part-of-speech tag over exactly one word, e.g. <c>(PRP He)</c>.</summary>
     public bool IsPreterminal => Children.Count == 1 && Children[0].IsLeaf;
 
+    /// <summary>The words under this node, left to right.</summary>
     public IEnumerable<Tree> Leaves() =>
         IsLeaf ? [this] : Children.SelectMany(c => c.Leaves());
 
+    /// <summary>The tree in one-line PTB bracket form, as Stanza prints it (brackets in words as <c>-LRB-</c>/<c>-RRB-</c>).</summary>
     public override string ToString()
     {
         var sb = new StringBuilder();

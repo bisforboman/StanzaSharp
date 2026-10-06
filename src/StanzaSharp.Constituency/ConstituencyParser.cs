@@ -17,7 +17,7 @@ namespace StanzaSharp.Constituency;
 /// - MAX composition
 /// - charlm, no attention, no transformer
 /// </summary>
-public sealed class ConstituencyParser : IDisposable
+internal sealed class ConstituencyParser : IDisposable
 {
     private const int BatchSize = 50;
 
