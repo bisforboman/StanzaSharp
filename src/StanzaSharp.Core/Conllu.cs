@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace StanzaSharp;
 
@@ -96,8 +97,9 @@ public static class Conllu
 
     private static void WriteSentence(StringBuilder sb, Sentence sent)
     {
-        // Stanza writes ' '.join(text.split()): every whitespace run in the comment becomes one space.
-        if (sent.Text != null) sb.Append("# text = ").AppendJoin(' ', sent.Text.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries)).Append('\n');
+        // Stanza writes ' '.join(text.split()): every run of Python whitespace (which, unlike .NET's,
+        // includes U+001C..U+001F) in the comment becomes one space.
+        if (sent.Text != null) sb.Append("# text = ").AppendJoin(' ', PyWhitespace.Split(sent.Text).Where(w => w.Length > 0)).Append('\n');
         if (sent.SentId != null) sb.Append("# sent_id = ").Append(sent.SentId).Append('\n');
         if (sent.Constituency != null) sb.Append("# constituency = ").Append(sent.Constituency).Append('\n');
 
@@ -121,6 +123,8 @@ public static class Conllu
             }
         }
     }
+
+    private static readonly Regex PyWhitespace = new(@"[\s\x1c-\x1f]+");
 
     private static void ReadComment(Sentence sent, string line)
     {

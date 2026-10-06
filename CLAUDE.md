@@ -38,7 +38,8 @@ All 7 steps of the build order are done:
   lowercased.
 - `Pos.PosTagger` takes the shared `Pretrain` and both charlms, which the caller owns. It matches the
   golden UPOS/XPOS/feats exactly after tokenize → mwt → pos. `Nn` gained `HighwayLstm` and
-  `Biaffine`.
+  `Biaffine`. Like Stanza's `simplify_punct`, the tagger sees runs such as `??` or `!?!` as `?`
+  or `!`. Only the tagger does this, not the parser.
 - `Constituency.ConstituencyParser` also takes the shared `Pretrain` and charlms. It reproduces the
   golden trees and the per-step transition scores. It runs a batch of sentences in lockstep: each
   step is one forward pass plus batched stack pushes. Stack LSTMs are stepped without padding, so
@@ -57,9 +58,11 @@ All 7 steps of the build order are done:
   checkpoints the result equals the converter's: identical JSON and byte-identical tensors.
 
 Tokenizer notes:
-- Stanza passes each row's *padded* length to the LSTM, so padding reaches the backward
-  direction and output depends on batch composition. `Tokenizer.Predict` reproduces it exactly:
-  sort paragraphs by length, batch by 32, pad to max+1, and use 1000-char windows.
+- `Tokenizer.Predict` batches like Stanza: sort paragraphs by length, batch by 32, pad to max+1,
+  and use 1000-char windows. Both LSTMs are packed at the length of each row's raw units. In
+  the normal case that is the row's own length + 1, since collate appends one `<PAD>`. In the
+  first long-paragraph window, the length is cut to the window. After `advance_old_batch`, every
+  row runs at the full window width, so padding then reaches the backward direction.
 - Model units are code points, like Python. Offsets are UTF-16 indices, so they differ from
   Stanza's only after non-BMP characters.
 - MWT-flagged tokens (`Token.IsMwtCandidate`) carry a single word until the MWT stage runs.
@@ -209,6 +212,17 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - `tokenize_stress.txt` + `.conllu`: tokenizer output for a paragraph over 1000 characters and
     for more paragraphs than fit in one batch.
   - `mwt.json`: expansions of a word list, both through the pipeline and classifier-only.
+  - `validation*.conllu`: full pipeline output for each hand-written `validation*.txt` (news,
+    academic, instructions, social, dialogue/poetry, tech, multilingual, contractions, long,
+    whitespace, nonbmp; ~830 sentences). They are read as bytes, so CR/CRLF reach Stanza as-is.
+    `validation_whitespace.txt` is `-text` in `.gitattributes` to keep its CRLF. The test compares
+    each file and reports its first differing sentence. `validation_nonbmp` is compared without
+    `start_char`/`end_char`, because offsets differ by design after non-BMP characters.
+- Python `str` semantics that .NET lacks live in `Core.PyString` (`Lower` with İ and final sigma,
+  `IsUpper`/`IsLower` with Other_Uppercase/Other_Lowercase, and `IsSpace` with U+001C..U+001F).
+  Use it wherever Stanza calls `lower()`, `isupper()`, `isspace()` or `split()`. Regexes ported
+  from Python need care too: Python's `\b`/`\w` count No/Nl characters such as `²` as word
+  characters and combining marks as non-word (see `Tokenizer.PyRegex`).
 - CI (`.github/workflows/ci.yml`, not yet run on GitHub): `build-test` runs the suite without
   models; `golden` downloads and converts the models (CPU torch, cached on `tools/requirements.txt`
   and `tools/stanza_convert.py`) and fails if any test is skipped (`outcome="NotExecuted"` in the

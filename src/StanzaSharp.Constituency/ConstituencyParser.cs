@@ -174,7 +174,7 @@ public sealed class ConstituencyParser : IDisposable
             var pretrainIds = sentences[i].Select(x =>
             {
                 int id = _pretrain.UnitToId(x.Word);
-                return (long)(id != _pretrain.UnkId ? id : _pretrain.UnitToId(x.Word.ToLowerInvariant()));
+                return (long)(id != _pretrain.UnkId ? id : _pretrain.UnitToId(PyString.Lower(x.Word)));
             }).ToArray();
             var deltaIds = sentences[i].Select(x => (long)_deltaMap.GetValueOrDefault(x.Word, 1)).ToArray();
             var tagIds = sentences[i].Select(x => (long)_tagMap.GetValueOrDefault(x.Tag, 1)).ToArray();

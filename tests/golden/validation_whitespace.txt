@@ -1,0 +1,62 @@
+
+
+
+   Leading blank lines and spaces come first. Then a normal sentence.
+
+
+
+
+
+Many blank lines separated this paragraph. It has two sentences.   
+Trailing spaces end the line above.		
+
+Windows line endings follow.
+This line ends with CRLF.
+So does this one.
+
+A new paragraph after a CRLF blank line.
+
+	A paragraph that starts with a tab.	And has tabs	inside	it.
+
+Non-breaking spaces appear here: 10 kg and 5 km. Mr. Smith agreed.
+
+Thin spaces and en spaces and em spaces are rare. The figure space too.
+
+An ideographic　space appears here. A zero​width space hides here.
+
+Soft­hyphen in the middle of a word. Line separator and paragraph separator.
+
+A form feedappears here. A verticaltab appears here.
+
+Nextline character here. Done.
+
+Unitseparator and groupseparator and recordseparator. Done.
+
+A lone carriage returnsplits this line. Odd but possible.
+
+Spaces    and     more      spaces between words. Then  two.
+
+ 
+ 
+	
+Whitespace-only lines preceded this paragraph. Good.
+
+No final punctuation in this paragraph
+
+Hyphen-minus - en dash – em dash — figure dash ‒ minus − and horizontal bar ― all appear.
+
+Ellipsis… three dots... spaced dots . . . and four dots.... end here.
+
+Primes 5′ 11″ and guillemets «bonjour» and ‹hi› and low quotes „ja“ appear.
+
+Fullwidth ＡＢＣ letters and １２３ digits. Ligatures like ﬁne and ﬂow.
+
+Superscripts x² and y³ and subscripts H₂O. The degree sign ° and the micro sign µ.
+
+Roman numerals Ⅰ Ⅱ Ⅲ and circled ① ②. Turkish İstanbul and dotless ı. German ẞ and ß.
+
+Combining accents: café and naïve. Precomposed: café and naïve.
+
+DOTTED İ UPPER AND İSTANBUL'S BRIDGES. THE STRASSE. ΣΟΦΙΑ'S BOOK.
+
+The final paragraph has no newline at the end

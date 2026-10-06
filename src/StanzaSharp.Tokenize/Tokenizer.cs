@@ -26,11 +26,18 @@ public sealed class Tokenizer : IDisposable
     // data.py: STRUCTURAL_FEATURES, in the order features are appended.
     private static readonly (string Name, Regex Re)[] StructuralFeatures =
     [
-        ("labeled_field", new(@"\b[A-Z][a-zA-Z]*(?:\s[A-Z][a-zA-Z]*){0,2}\s*:")),
-        ("phone_id", new(@"\(\d{3}\)\s?\d{3}-\d{4}|\b\d{3}-\d{3}-\d{4}\b|\bx\d{3,5}\b")),
-        ("date_pattern", new(@"\b\d{1,2}/\d{1,2}/\d{2,4}\b|\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+\d{4}\b")),
-        ("currency", new(@"\$\s?\d[\d,]*(?:\.\d+)?")),
+        ("labeled_field", PyRegex(@"\b[A-Z][a-zA-Z]*(?:\s[A-Z][a-zA-Z]*){0,2}\s*:")),
+        ("phone_id", PyRegex(@"\(\d{3}\)\s?\d{3}-\d{4}|\b\d{3}-\d{3}-\d{4}\b|\bx\d{3,5}\b")),
+        ("date_pattern", PyRegex(@"\b\d{1,2}/\d{1,2}/\d{2,4}\b|\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+\d{4}\b")),
+        ("currency", PyRegex(@"\$\s?\d[\d,]*(?:\.\d+)?")),
     ];
+
+    // Python's \b: its word characters are str.isalnum() plus '_', so superscript digits and other
+    // No/Nl characters count (3/14/2023² has no boundary after 2023) and combining marks do not,
+    // unlike .NET's \w (L, Mn, Nd, Pc, and ZWJ/ZWNJ for \b).
+    private const string PyWord = @"[\p{L}\p{N}_]";
+    private static Regex PyRegex(string pattern) =>
+        new(pattern.Replace(@"\b", $"(?:(?<={PyWord})(?!{PyWord})|(?<!{PyWord})(?={PyWord}))"));
 
     // utils.py: EMAIL_RAW_RE and URL_RAW_RE, combined as MASK_RE. Matches are forced into one token.
     private const string EmailRe = """"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(?:2(?:5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(?:2(?:5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])"""";
@@ -102,7 +109,7 @@ public sealed class Tokenizer : IDisposable
         var para = SplitParagraphs(paragraph).Single();
         using var _ = torch.no_grad();
         using var scope = NewDisposeScope();
-        var logits = Run([para], [0], para.Length + 1)[0];
+        var logits = Run([para], [0], para.Length + 1, [para.Length + 1])[0];
         shape = logits.shape;
         return logits.data<float>().ToArray();
     }
@@ -134,7 +141,7 @@ public sealed class Tokenizer : IDisposable
 
     private void AddParagraph(string text, int start, int end, List<Paragraph> result)
     {
-        while (end > start && IsPySpace(text[end - 1]))
+        while (end > start && PyString.IsSpace(text[end - 1]))
             end--;
         if (end == start)
             return;
@@ -146,7 +153,7 @@ public sealed class Tokenizer : IDisposable
         foreach (var rune in text.AsSpan(start, end - start).EnumerateRunes())
         {
             int len = rune.Utf16SequenceLength;
-            bool space = rune.IsBmp && (IsPySpace((char)rune.Value) || rune.Value is >= 0x80 and <= 0x9f);
+            bool space = rune.IsBmp && (PyString.IsSpace((char)rune.Value) || rune.Value is >= 0x80 and <= 0x9f);
             // filter_consecutive_whitespaces: keep the first of a run of spaces.
             if (!(space && units.Count > 0 && units[^1] == " "))
             {
@@ -190,9 +197,7 @@ public sealed class Tokenizer : IDisposable
                 bool on = name switch
                 {
                     "space_before" => units[i] == " ",
-                    // ponytail: Rune.IsUpper is category Lu; Python's isupper() also accepts
-                    // Other_Uppercase (e.g. Roman numeral Ⅰ). Widen if that ever matters.
-                    "capitalized" => Rune.IsUpper(rune),
+                    "capitalized" => PyString.IsUpper(rune),
                     "numeric" => Rune.IsDigit(rune), // NUMERIC_RE on a single code point
                     "end_of_para" => i == n - 1,
                     "start_of_para" => i == 0,
@@ -210,8 +215,8 @@ public sealed class Tokenizer : IDisposable
     private int[][] Predict(List<Paragraph> paragraphs)
     {
         // SortedDataset sorts by length, longest first (stable), then batches of batch_size.
-        // Stanza passes the padded length as every row's length, so padding reaches the backward
-        // LSTM and results depend on the batch: reproducing the batching keeps output identical.
+        // SortedDataset.collate appends one <PAD> to each row's raw units, and the model packs each
+        // row at that length (trainer.predict: lengths = len(raw)), so a row's own length + 1.
         var order = Enumerable.Range(0, paragraphs.Count).OrderByDescending(i => paragraphs[i].Length).ToArray();
         var preds = new int[paragraphs.Count][];
         for (int b = 0; b < order.Length; b += _batchSize)
@@ -221,7 +226,7 @@ public sealed class Tokenizer : IDisposable
             int[][] rowPreds;
             if (maxLen + 1 <= MaxSeqLen)
             {
-                var p = Argmax(Run(rows, new int[rows.Count], maxLen + 1));
+                var p = Argmax(Run(rows, new int[rows.Count], maxLen + 1, rows.Select(r => r.Length + 1).ToArray()));
                 rowPreds = rows.Select((r, j) => p[j][..r.Length]).ToArray();
             }
             else
@@ -242,10 +247,15 @@ public sealed class Tokenizer : IDisposable
     {
         var idx = new int[rows.Count];
         var output = rows.Select(_ => new List<int>()).ToArray();
-        while (true)
+        for (bool first = true; ; first = false)
         {
             var ens = rows.Select((r, j) => Math.Min(r.Length - idx[j], MaxSeqLen)).ToArray();
-            var p = Argmax(Run(rows, idx, ens.Max()));
+            int width = ens.Max();
+            // The first window keeps collate's raw units (own length + 1, cut to the window);
+            // advance_old_batch pads every row's raw units to the batch width, so later windows
+            // run every row at full width and padding reaches the backward LSTM.
+            var lengths = rows.Select(r => first ? Math.Min(r.Length + 1, width) : width).ToArray();
+            var p = Argmax(Run(rows, idx, width, lengths));
             for (int j = 0; j < rows.Count; j++)
             {
                 int lastBreak = Array.FindLastIndex(p[j], x => x is 2 or 4);
@@ -258,8 +268,8 @@ public sealed class Tokenizer : IDisposable
         }
     }
 
-    /// <summary>Runs rows[j] from unit offsets[j], padded/truncated to width. Returns [rows, width, 5].</summary>
-    private Tensor Run(List<Paragraph> rows, int[] offsets, int width)
+    /// <summary>Runs rows[j] from unit offsets[j], padded/truncated to width, packed at lengths[j]. Returns [rows, width, 5].</summary>
+    private Tensor Run(List<Paragraph> rows, int[] offsets, int width, int[] lengths)
     {
         var ids = new long[rows.Count * width];
         Array.Fill(ids, _padId);
@@ -272,7 +282,7 @@ public sealed class Tokenizer : IDisposable
         }
         using var units = torch.tensor(ids, [rows.Count, width]);
         using var featTensor = torch.tensor(feats, [rows.Count, width, _featDim]);
-        return _net.Forward(units, featTensor);
+        return _net.Forward(units, featTensor, lengths.Select(l => (long)l).ToArray());
     }
 
     private static int[][] Argmax(Tensor logits)
@@ -368,9 +378,6 @@ public sealed class Tokenizer : IDisposable
         }
         return (sb.ToString(), unitAt.ToArray());
     }
-
-    /// <summary>Python's str.isspace() for one char.</summary>
-    private static bool IsPySpace(char c) => char.IsWhiteSpace(c) || c is >= '\x1c' and <= '\x1f';
 
     public void Dispose() => _net.Dispose();
 }

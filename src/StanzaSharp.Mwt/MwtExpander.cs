@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using StanzaSharp.Nn;
@@ -86,9 +85,9 @@ public sealed class MwtExpander : IDisposable
     {
         if (_dict.TryGetValue(word, out var expansion))
             return expansion;
-        if (PyIsUpper(word) && _dict.TryGetValue(word.ToLowerInvariant(), out expansion))
+        if (PyString.IsUpper(word) && _dict.TryGetValue(PyString.Lower(word), out expansion))
             return expansion.ToUpperInvariant();
-        if (word.Length > 0 && PyIsUpper(word[..1]) && PyIsLower(word[1..]) && _dict.TryGetValue(word.ToLowerInvariant(), out expansion))
+        if (word.Length > 0 && PyString.IsUpper(word[..1]) && PyString.IsLower(word[1..]) && _dict.TryGetValue(PyString.Lower(word), out expansion))
             return char.ToUpperInvariant(expansion[0]) + expansion[1..];
         return null;
     }
@@ -162,26 +161,6 @@ public sealed class MwtExpander : IDisposable
             var g = match.Groups[i + 1];
             (token.Words[i].StartChar, token.Words[i].EndChar) = (start + g.Index, start + g.Index + g.Length);
         }
-    }
-
-    // Python's str.isupper()/islower(): at least one cased character, and all cased ones in that case.
-    private static bool PyIsUpper(string s) => HasCase(s, UnicodeCategory.UppercaseLetter);
-    private static bool PyIsLower(string s) => HasCase(s, UnicodeCategory.LowercaseLetter);
-
-    private static bool HasCase(string s, UnicodeCategory wanted)
-    {
-        bool any = false;
-        foreach (var c in s)
-        {
-            var cat = CharUnicodeInfo.GetUnicodeCategory(c);
-            if (cat is UnicodeCategory.UppercaseLetter or UnicodeCategory.LowercaseLetter or UnicodeCategory.TitlecaseLetter)
-            {
-                if (cat != wanted)
-                    return false;
-                any = true;
-            }
-        }
-        return any;
     }
 
     public void Dispose()
