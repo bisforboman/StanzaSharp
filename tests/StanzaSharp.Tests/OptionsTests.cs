@@ -57,12 +57,23 @@ public class OptionsTests
         }
     }
 
-    [ModelFact]
+    [Fact]
     public void VerifyChecksums_RefusesConvertedModels()
     {
-        var e = Assert.Throws<InvalidOperationException>(() =>
-            Pipeline.Load(Repo.Models, new PipelineOptions { Processors = Processor.Tokenize, VerifyChecksums = true }));
-        Assert.Contains("combined_nocharlm.json", e.Message);
+        // Only the converted file's presence matters: the check runs before anything is read.
+        var dir = Directory.CreateTempSubdirectory("stanzasharp-converted-").FullName;
+        try
+        {
+            Directory.CreateDirectory(Path.Combine(dir, "tokenize"));
+            File.WriteAllText(Path.Combine(dir, "tokenize", "combined_nocharlm.json"), "{}");
+            var e = Assert.Throws<InvalidOperationException>(() =>
+                Pipeline.Load(dir, new PipelineOptions { Processors = Processor.Tokenize, VerifyChecksums = true }));
+            Assert.Contains("combined_nocharlm.json", e.Message);
+        }
+        finally
+        {
+            Directory.Delete(dir, recursive: true);
+        }
     }
 
     [ModelFact]

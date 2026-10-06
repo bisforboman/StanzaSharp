@@ -95,7 +95,8 @@ public class ConcurrencyTests(Xunit.Abstractions.ITestOutputHelper output)
             timings.OnStep = null;
             output.WriteLine($"{processor} ({ms:F0} ms): canceled after {latency.Elapsed.TotalMilliseconds:F0} ms, " +
                 $"in {e.StackTrace!.Split('\n').Select(l => l.Trim()).FirstOrDefault(l => l.StartsWith("at StanzaSharp.") && !l.Contains("Pipeline.Step"))}");
-            Assert.True(latency.Elapsed < TimeSpan.FromSeconds(5), $"canceled in {processor}, the call returned {latency.Elapsed.TotalMilliseconds:F0} ms later");
+            // Within one batch: depparse checks between 5000-word batches, about 7 s each on a 4-core CI runner.
+            Assert.True(latency.Elapsed < TimeSpan.FromSeconds(15), $"canceled in {processor}, the call returned {latency.Elapsed.TotalMilliseconds:F0} ms later");
             if (countTensors)
                 Assert.Equal(live, stats.ThreadTotalLiveCount);
         }
