@@ -34,8 +34,12 @@ jobs:
       - name: Version from tag
         run: echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
 
+      # StanzaSharp, and the platform packages that add one platform's CPU libtorch to it.
       - name: Pack
-        run: dotnet pack src/StanzaSharp --configuration Release -p:Version=$VERSION --output artifacts
+        run: |
+          for project in StanzaSharp StanzaSharp.Cpu.Linux StanzaSharp.Cpu.Windows StanzaSharp.Cpu.MacOS; do
+            dotnet pack src/$project --configuration Release -p:Version=$VERSION --output artifacts
+          done
 
       # Request the temporary key right before pushing: it is valid for one hour.
       - name: NuGet login

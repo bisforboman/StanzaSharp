@@ -103,6 +103,11 @@ jobs:
         shell: pwsh
         run: ./tools/verify-package.ps1 -ModelDir models/stanza/en
 
+      # The same app with only StanzaSharp.Cpu.Linux: one platform's libtorch, no TorchSharp-cpu.
+      - name: Verify the Linux platform package
+        shell: pwsh
+        run: ./tools/verify-package.ps1 -ModelDir models/stanza/en -Platform Linux
+
       - uses: actions/upload-artifact@v7
         if: always()
         with:
@@ -168,6 +173,11 @@ jobs:
       - name: Verify the package
         shell: pwsh
         run: ./tools/verify-package.ps1 -ModelDir models/stanza/en
+
+      # The same app with only this OS's platform package (StanzaSharp.Cpu.Windows / .MacOS).
+      - name: Verify the platform package
+        shell: pwsh
+        run: ./tools/verify-package.ps1 -ModelDir models/stanza/en -Platform ${{ runner.os == 'Windows' && 'Windows' || 'MacOS' }}
 
       - uses: actions/upload-artifact@v7
         if: always()
