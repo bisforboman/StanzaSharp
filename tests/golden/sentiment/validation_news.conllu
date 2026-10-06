@@ -1,0 +1,1253 @@
+# text = HARBORVIEW, Ore. —
+# sent_id = 0
+# sentiment = 1
+1	HARBORVIEW	_	_	_	_	0	_	_	SpaceAfter=No|start_char=0|end_char=10
+2	,	_	_	_	_	1	_	_	start_char=10|end_char=11
+3	Ore.	_	_	_	_	2	_	_	start_char=12|end_char=16
+4	—	_	_	_	_	3	_	_	start_char=17|end_char=18
+
+# text = The Harborview Port Authority approved a $214 million expansion plan on Wednesday, ending a two-year dispute with local fishing cooperatives.
+# sent_id = 1
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=19|end_char=22
+2	Harborview	_	_	_	_	1	_	_	start_char=23|end_char=33
+3	Port	_	_	_	_	2	_	_	start_char=34|end_char=38
+4	Authority	_	_	_	_	3	_	_	start_char=39|end_char=48
+5	approved	_	_	_	_	4	_	_	start_char=49|end_char=57
+6	a	_	_	_	_	5	_	_	start_char=58|end_char=59
+7	$	_	_	_	_	6	_	_	SpaceAfter=No|start_char=60|end_char=61
+8	214	_	_	_	_	7	_	_	start_char=61|end_char=64
+9	million	_	_	_	_	8	_	_	start_char=65|end_char=72
+10	expansion	_	_	_	_	9	_	_	start_char=73|end_char=82
+11	plan	_	_	_	_	10	_	_	start_char=83|end_char=87
+12	on	_	_	_	_	11	_	_	start_char=88|end_char=90
+13	Wednesday	_	_	_	_	12	_	_	SpaceAfter=No|start_char=91|end_char=100
+14	,	_	_	_	_	13	_	_	start_char=100|end_char=101
+15	ending	_	_	_	_	14	_	_	start_char=102|end_char=108
+16	a	_	_	_	_	15	_	_	start_char=109|end_char=110
+17	two	_	_	_	_	16	_	_	SpaceAfter=No|start_char=111|end_char=114
+18	-	_	_	_	_	17	_	_	SpaceAfter=No|start_char=114|end_char=115
+19	year	_	_	_	_	18	_	_	start_char=115|end_char=119
+20	dispute	_	_	_	_	19	_	_	start_char=120|end_char=127
+21	with	_	_	_	_	20	_	_	start_char=128|end_char=132
+22	local	_	_	_	_	21	_	_	start_char=133|end_char=138
+23	fishing	_	_	_	_	22	_	_	start_char=139|end_char=146
+24	cooperatives	_	_	_	_	23	_	_	SpaceAfter=No|start_char=147|end_char=159
+25	.	_	_	_	_	24	_	_	start_char=159|end_char=160
+
+# text = The vote was 5-2.
+# sent_id = 2
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=161|end_char=164
+2	vote	_	_	_	_	1	_	_	start_char=165|end_char=169
+3	was	_	_	_	_	2	_	_	start_char=170|end_char=173
+4	5	_	_	_	_	3	_	_	SpaceAfter=No|start_char=174|end_char=175
+5	-	_	_	_	_	4	_	_	SpaceAfter=No|start_char=175|end_char=176
+6	2	_	_	_	_	5	_	_	SpaceAfter=No|start_char=176|end_char=177
+7	.	_	_	_	_	6	_	_	start_char=177|end_char=178
+
+# text = Commissioner Dana Whitlock, who cast one of the dissenting votes, called the plan "a gamble with other people's money."
+# sent_id = 3
+# sentiment = 1
+1	Commissioner	_	_	_	_	0	_	_	start_char=179|end_char=191
+2	Dana	_	_	_	_	1	_	_	start_char=192|end_char=196
+3	Whitlock	_	_	_	_	2	_	_	SpaceAfter=No|start_char=197|end_char=205
+4	,	_	_	_	_	3	_	_	start_char=205|end_char=206
+5	who	_	_	_	_	4	_	_	start_char=207|end_char=210
+6	cast	_	_	_	_	5	_	_	start_char=211|end_char=215
+7	one	_	_	_	_	6	_	_	start_char=216|end_char=219
+8	of	_	_	_	_	7	_	_	start_char=220|end_char=222
+9	the	_	_	_	_	8	_	_	start_char=223|end_char=226
+10	dissenting	_	_	_	_	9	_	_	start_char=227|end_char=237
+11	votes	_	_	_	_	10	_	_	SpaceAfter=No|start_char=238|end_char=243
+12	,	_	_	_	_	11	_	_	start_char=243|end_char=244
+13	called	_	_	_	_	12	_	_	start_char=245|end_char=251
+14	the	_	_	_	_	13	_	_	start_char=252|end_char=255
+15	plan	_	_	_	_	14	_	_	start_char=256|end_char=260
+16	"	_	_	_	_	15	_	_	SpaceAfter=No|start_char=261|end_char=262
+17	a	_	_	_	_	16	_	_	start_char=262|end_char=263
+18	gamble	_	_	_	_	17	_	_	start_char=264|end_char=270
+19	with	_	_	_	_	18	_	_	start_char=271|end_char=275
+20	other	_	_	_	_	19	_	_	start_char=276|end_char=281
+21-22	people's	_	_	_	_	_	_	_	start_char=282|end_char=290
+21	people	_	_	_	_	20	_	_	start_char=282|end_char=288
+22	's	_	_	_	_	21	_	_	start_char=288|end_char=290
+23	money	_	_	_	_	22	_	_	SpaceAfter=No|start_char=291|end_char=296
+24	.	_	_	_	_	23	_	_	SpaceAfter=No|start_char=296|end_char=297
+25	"	_	_	_	_	24	_	_	SpacesAfter=\n\n|start_char=297|end_char=298
+
+# text = Under the agreement, the authority will dredge the north channel to a depth of 14 m (about 46 ft.) and build two new berths by Q3 2028.
+# sent_id = 4
+# sentiment = 1
+1	Under	_	_	_	_	0	_	_	start_char=300|end_char=305
+2	the	_	_	_	_	1	_	_	start_char=306|end_char=309
+3	agreement	_	_	_	_	2	_	_	SpaceAfter=No|start_char=310|end_char=319
+4	,	_	_	_	_	3	_	_	start_char=319|end_char=320
+5	the	_	_	_	_	4	_	_	start_char=321|end_char=324
+6	authority	_	_	_	_	5	_	_	start_char=325|end_char=334
+7	will	_	_	_	_	6	_	_	start_char=335|end_char=339
+8	dredge	_	_	_	_	7	_	_	start_char=340|end_char=346
+9	the	_	_	_	_	8	_	_	start_char=347|end_char=350
+10	north	_	_	_	_	9	_	_	start_char=351|end_char=356
+11	channel	_	_	_	_	10	_	_	start_char=357|end_char=364
+12	to	_	_	_	_	11	_	_	start_char=365|end_char=367
+13	a	_	_	_	_	12	_	_	start_char=368|end_char=369
+14	depth	_	_	_	_	13	_	_	start_char=370|end_char=375
+15	of	_	_	_	_	14	_	_	start_char=376|end_char=378
+16	14	_	_	_	_	15	_	_	start_char=379|end_char=381
+17	m	_	_	_	_	16	_	_	start_char=382|end_char=383
+18	(	_	_	_	_	17	_	_	SpaceAfter=No|start_char=384|end_char=385
+19	about	_	_	_	_	18	_	_	start_char=385|end_char=390
+20	46	_	_	_	_	19	_	_	start_char=391|end_char=393
+21	ft.	_	_	_	_	20	_	_	SpaceAfter=No|start_char=394|end_char=397
+22	)	_	_	_	_	21	_	_	start_char=397|end_char=398
+23	and	_	_	_	_	22	_	_	start_char=399|end_char=402
+24	build	_	_	_	_	23	_	_	start_char=403|end_char=408
+25	two	_	_	_	_	24	_	_	start_char=409|end_char=412
+26	new	_	_	_	_	25	_	_	start_char=413|end_char=416
+27	berths	_	_	_	_	26	_	_	start_char=417|end_char=423
+28	by	_	_	_	_	27	_	_	start_char=424|end_char=426
+29	Q3	_	_	_	_	28	_	_	start_char=427|end_char=429
+30	2028	_	_	_	_	29	_	_	SpaceAfter=No|start_char=430|end_char=434
+31	.	_	_	_	_	30	_	_	start_char=434|end_char=435
+
+# text = Construction is expected to create roughly 1,100 temporary jobs.
+# sent_id = 5
+# sentiment = 1
+1	Construction	_	_	_	_	0	_	_	start_char=436|end_char=448
+2	is	_	_	_	_	1	_	_	start_char=449|end_char=451
+3	expected	_	_	_	_	2	_	_	start_char=452|end_char=460
+4	to	_	_	_	_	3	_	_	start_char=461|end_char=463
+5	create	_	_	_	_	4	_	_	start_char=464|end_char=470
+6	roughly	_	_	_	_	5	_	_	start_char=471|end_char=478
+7	1,100	_	_	_	_	6	_	_	start_char=479|end_char=484
+8	temporary	_	_	_	_	7	_	_	start_char=485|end_char=494
+9	jobs	_	_	_	_	8	_	_	SpaceAfter=No|start_char=495|end_char=499
+10	.	_	_	_	_	9	_	_	start_char=499|end_char=500
+
+# text = Critics say that number is inflated.
+# sent_id = 6
+# sentiment = 1
+1	Critics	_	_	_	_	0	_	_	start_char=501|end_char=508
+2	say	_	_	_	_	1	_	_	start_char=509|end_char=512
+3	that	_	_	_	_	2	_	_	start_char=513|end_char=517
+4	number	_	_	_	_	3	_	_	start_char=518|end_char=524
+5	is	_	_	_	_	4	_	_	start_char=525|end_char=527
+6	inflated	_	_	_	_	5	_	_	SpaceAfter=No|start_char=528|end_char=536
+7	.	_	_	_	_	6	_	_	SpacesAfter=\n\n|start_char=536|end_char=537
+
+# text = Stocks slipped on Monday as investors weighed fresh inflation data.
+# sent_id = 7
+# sentiment = 1
+1	Stocks	_	_	_	_	0	_	_	start_char=539|end_char=545
+2	slipped	_	_	_	_	1	_	_	start_char=546|end_char=553
+3	on	_	_	_	_	2	_	_	start_char=554|end_char=556
+4	Monday	_	_	_	_	3	_	_	start_char=557|end_char=563
+5	as	_	_	_	_	4	_	_	start_char=564|end_char=566
+6	investors	_	_	_	_	5	_	_	start_char=567|end_char=576
+7	weighed	_	_	_	_	6	_	_	start_char=577|end_char=584
+8	fresh	_	_	_	_	7	_	_	start_char=585|end_char=590
+9	inflation	_	_	_	_	8	_	_	start_char=591|end_char=600
+10	data	_	_	_	_	9	_	_	SpaceAfter=No|start_char=601|end_char=605
+11	.	_	_	_	_	10	_	_	start_char=605|end_char=606
+
+# text = The S&P 500 fell 0.8%, the Dow Jones Industrial Average lost 212.45 points, or 0.6 percent, and the Nasdaq Composite dropped 1.1%.
+# sent_id = 8
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=607|end_char=610
+2	S&P	_	_	_	_	1	_	_	start_char=611|end_char=614
+3	500	_	_	_	_	2	_	_	start_char=615|end_char=618
+4	fell	_	_	_	_	3	_	_	start_char=619|end_char=623
+5	0.8	_	_	_	_	4	_	_	SpaceAfter=No|start_char=624|end_char=627
+6	%	_	_	_	_	5	_	_	SpaceAfter=No|start_char=627|end_char=628
+7	,	_	_	_	_	6	_	_	start_char=628|end_char=629
+8	the	_	_	_	_	7	_	_	start_char=630|end_char=633
+9	Dow	_	_	_	_	8	_	_	start_char=634|end_char=637
+10	Jones	_	_	_	_	9	_	_	start_char=638|end_char=643
+11	Industrial	_	_	_	_	10	_	_	start_char=644|end_char=654
+12	Average	_	_	_	_	11	_	_	start_char=655|end_char=662
+13	lost	_	_	_	_	12	_	_	start_char=663|end_char=667
+14	212.45	_	_	_	_	13	_	_	start_char=668|end_char=674
+15	points	_	_	_	_	14	_	_	SpaceAfter=No|start_char=675|end_char=681
+16	,	_	_	_	_	15	_	_	start_char=681|end_char=682
+17	or	_	_	_	_	16	_	_	start_char=683|end_char=685
+18	0.6	_	_	_	_	17	_	_	start_char=686|end_char=689
+19	percent	_	_	_	_	18	_	_	SpaceAfter=No|start_char=690|end_char=697
+20	,	_	_	_	_	19	_	_	start_char=697|end_char=698
+21	and	_	_	_	_	20	_	_	start_char=699|end_char=702
+22	the	_	_	_	_	21	_	_	start_char=703|end_char=706
+23	Nasdaq	_	_	_	_	22	_	_	start_char=707|end_char=713
+24	Composite	_	_	_	_	23	_	_	start_char=714|end_char=723
+25	dropped	_	_	_	_	24	_	_	start_char=724|end_char=731
+26	1.1	_	_	_	_	25	_	_	SpaceAfter=No|start_char=732|end_char=735
+27	%	_	_	_	_	26	_	_	SpaceAfter=No|start_char=735|end_char=736
+28	.	_	_	_	_	27	_	_	start_char=736|end_char=737
+
+# text = The 10-year Treasury yield rose to 4.37% from 4.29% late Friday.
+# sent_id = 9
+# sentiment = 2
+1	The	_	_	_	_	0	_	_	start_char=738|end_char=741
+2	10	_	_	_	_	1	_	_	SpaceAfter=No|start_char=742|end_char=744
+3	-	_	_	_	_	2	_	_	SpaceAfter=No|start_char=744|end_char=745
+4	year	_	_	_	_	3	_	_	start_char=745|end_char=749
+5	Treasury	_	_	_	_	4	_	_	start_char=750|end_char=758
+6	yield	_	_	_	_	5	_	_	start_char=759|end_char=764
+7	rose	_	_	_	_	6	_	_	start_char=765|end_char=769
+8	to	_	_	_	_	7	_	_	start_char=770|end_char=772
+9	4.37	_	_	_	_	8	_	_	SpaceAfter=No|start_char=773|end_char=777
+10	%	_	_	_	_	9	_	_	start_char=777|end_char=778
+11	from	_	_	_	_	10	_	_	start_char=779|end_char=783
+12	4.29	_	_	_	_	11	_	_	SpaceAfter=No|start_char=784|end_char=788
+13	%	_	_	_	_	12	_	_	start_char=788|end_char=789
+14	late	_	_	_	_	13	_	_	start_char=790|end_char=794
+15	Friday	_	_	_	_	14	_	_	SpaceAfter=No|start_char=795|end_char=801
+16	.	_	_	_	_	15	_	_	SpacesAfter=\n\n|start_char=801|end_char=802
+
+# text = Brent crude settled at $83.12 a barrel, up 41 cents.
+# sent_id = 10
+# sentiment = 0
+1	Brent	_	_	_	_	0	_	_	start_char=804|end_char=809
+2	crude	_	_	_	_	1	_	_	start_char=810|end_char=815
+3	settled	_	_	_	_	2	_	_	start_char=816|end_char=823
+4	at	_	_	_	_	3	_	_	start_char=824|end_char=826
+5	$	_	_	_	_	4	_	_	SpaceAfter=No|start_char=827|end_char=828
+6	83.12	_	_	_	_	5	_	_	start_char=828|end_char=833
+7	a	_	_	_	_	6	_	_	start_char=834|end_char=835
+8	barrel	_	_	_	_	7	_	_	SpaceAfter=No|start_char=836|end_char=842
+9	,	_	_	_	_	8	_	_	start_char=842|end_char=843
+10	up	_	_	_	_	9	_	_	start_char=844|end_char=846
+11	41	_	_	_	_	10	_	_	start_char=847|end_char=849
+12	cents	_	_	_	_	11	_	_	SpaceAfter=No|start_char=850|end_char=855
+13	.	_	_	_	_	12	_	_	start_char=855|end_char=856
+
+# text = Gold futures were little changed at $2,018.30 an ounce.
+# sent_id = 11
+# sentiment = 0
+1	Gold	_	_	_	_	0	_	_	start_char=857|end_char=861
+2	futures	_	_	_	_	1	_	_	start_char=862|end_char=869
+3	were	_	_	_	_	2	_	_	start_char=870|end_char=874
+4	little	_	_	_	_	3	_	_	start_char=875|end_char=881
+5	changed	_	_	_	_	4	_	_	start_char=882|end_char=889
+6	at	_	_	_	_	5	_	_	start_char=890|end_char=892
+7	$	_	_	_	_	6	_	_	SpaceAfter=No|start_char=893|end_char=894
+8	2,018.30	_	_	_	_	7	_	_	start_char=894|end_char=902
+9	an	_	_	_	_	8	_	_	start_char=903|end_char=905
+10	ounce	_	_	_	_	9	_	_	SpaceAfter=No|start_char=906|end_char=911
+11	.	_	_	_	_	10	_	_	start_char=911|end_char=912
+
+# text = The euro traded at $1.0842, while the yen weakened past ¥151 per dollar for the first time since mid-October.
+# sent_id = 12
+# sentiment = 0
+1	The	_	_	_	_	0	_	_	start_char=913|end_char=916
+2	euro	_	_	_	_	1	_	_	start_char=917|end_char=921
+3	traded	_	_	_	_	2	_	_	start_char=922|end_char=928
+4	at	_	_	_	_	3	_	_	start_char=929|end_char=931
+5	$	_	_	_	_	4	_	_	SpaceAfter=No|start_char=932|end_char=933
+6	1.0842	_	_	_	_	5	_	_	SpaceAfter=No|start_char=933|end_char=939
+7	,	_	_	_	_	6	_	_	start_char=939|end_char=940
+8	while	_	_	_	_	7	_	_	start_char=941|end_char=946
+9	the	_	_	_	_	8	_	_	start_char=947|end_char=950
+10	yen	_	_	_	_	9	_	_	start_char=951|end_char=954
+11	weakened	_	_	_	_	10	_	_	start_char=955|end_char=963
+12	past	_	_	_	_	11	_	_	start_char=964|end_char=968
+13	¥	_	_	_	_	12	_	_	SpaceAfter=No|start_char=969|end_char=970
+14	151	_	_	_	_	13	_	_	start_char=970|end_char=973
+15	per	_	_	_	_	14	_	_	start_char=974|end_char=977
+16	dollar	_	_	_	_	15	_	_	start_char=978|end_char=984
+17	for	_	_	_	_	16	_	_	start_char=985|end_char=988
+18	the	_	_	_	_	17	_	_	start_char=989|end_char=992
+19	first	_	_	_	_	18	_	_	start_char=993|end_char=998
+20	time	_	_	_	_	19	_	_	start_char=999|end_char=1003
+21	since	_	_	_	_	20	_	_	start_char=1004|end_char=1009
+22	mid-October	_	_	_	_	21	_	_	SpaceAfter=No|start_char=1010|end_char=1021
+23	.	_	_	_	_	22	_	_	SpacesAfter=\n\n|start_char=1021|end_char=1022
+
+# text = Mapleford Holdings Inc. (NYSE: MPF) reported second-quarter earnings of $1.42 per share, beating the consensus estimate of $1.35.
+# sent_id = 13
+# sentiment = 1
+1	Mapleford	_	_	_	_	0	_	_	start_char=1024|end_char=1033
+2	Holdings	_	_	_	_	1	_	_	start_char=1034|end_char=1042
+3	Inc.	_	_	_	_	2	_	_	start_char=1043|end_char=1047
+4	(	_	_	_	_	3	_	_	SpaceAfter=No|start_char=1048|end_char=1049
+5	NYSE	_	_	_	_	4	_	_	SpaceAfter=No|start_char=1049|end_char=1053
+6	:	_	_	_	_	5	_	_	start_char=1053|end_char=1054
+7	MPF	_	_	_	_	6	_	_	SpaceAfter=No|start_char=1055|end_char=1058
+8	)	_	_	_	_	7	_	_	start_char=1058|end_char=1059
+9	reported	_	_	_	_	8	_	_	start_char=1060|end_char=1068
+10	second	_	_	_	_	9	_	_	SpaceAfter=No|start_char=1069|end_char=1075
+11	-	_	_	_	_	10	_	_	SpaceAfter=No|start_char=1075|end_char=1076
+12	quarter	_	_	_	_	11	_	_	start_char=1076|end_char=1083
+13	earnings	_	_	_	_	12	_	_	start_char=1084|end_char=1092
+14	of	_	_	_	_	13	_	_	start_char=1093|end_char=1095
+15	$	_	_	_	_	14	_	_	SpaceAfter=No|start_char=1096|end_char=1097
+16	1.42	_	_	_	_	15	_	_	start_char=1097|end_char=1101
+17	per	_	_	_	_	16	_	_	start_char=1102|end_char=1105
+18	share	_	_	_	_	17	_	_	SpaceAfter=No|start_char=1106|end_char=1111
+19	,	_	_	_	_	18	_	_	start_char=1111|end_char=1112
+20	beating	_	_	_	_	19	_	_	start_char=1113|end_char=1120
+21	the	_	_	_	_	20	_	_	start_char=1121|end_char=1124
+22	consensus	_	_	_	_	21	_	_	start_char=1125|end_char=1134
+23	estimate	_	_	_	_	22	_	_	start_char=1135|end_char=1143
+24	of	_	_	_	_	23	_	_	start_char=1144|end_char=1146
+25	$	_	_	_	_	24	_	_	SpaceAfter=No|start_char=1147|end_char=1148
+26	1.35	_	_	_	_	25	_	_	SpaceAfter=No|start_char=1148|end_char=1152
+27	.	_	_	_	_	26	_	_	start_char=1152|end_char=1153
+
+# text = Revenue climbed 9% year over year to $3.8 bn.
+# sent_id = 14
+# sentiment = 1
+1	Revenue	_	_	_	_	0	_	_	start_char=1154|end_char=1161
+2	climbed	_	_	_	_	1	_	_	start_char=1162|end_char=1169
+3	9	_	_	_	_	2	_	_	SpaceAfter=No|start_char=1170|end_char=1171
+4	%	_	_	_	_	3	_	_	start_char=1171|end_char=1172
+5	year	_	_	_	_	4	_	_	start_char=1173|end_char=1177
+6	over	_	_	_	_	5	_	_	start_char=1178|end_char=1182
+7	year	_	_	_	_	6	_	_	start_char=1183|end_char=1187
+8	to	_	_	_	_	7	_	_	start_char=1188|end_char=1190
+9	$	_	_	_	_	8	_	_	SpaceAfter=No|start_char=1191|end_char=1192
+10	3.8	_	_	_	_	9	_	_	start_char=1192|end_char=1195
+11	bn	_	_	_	_	10	_	_	SpaceAfter=No|start_char=1196|end_char=1198
+12	.	_	_	_	_	11	_	_	start_char=1198|end_char=1199
+
+# text = The company raised its full-year guidance and announced a $500M buyback.
+# sent_id = 15
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=1200|end_char=1203
+2	company	_	_	_	_	1	_	_	start_char=1204|end_char=1211
+3	raised	_	_	_	_	2	_	_	start_char=1212|end_char=1218
+4	its	_	_	_	_	3	_	_	start_char=1219|end_char=1222
+5	full	_	_	_	_	4	_	_	SpaceAfter=No|start_char=1223|end_char=1227
+6	-	_	_	_	_	5	_	_	SpaceAfter=No|start_char=1227|end_char=1228
+7	year	_	_	_	_	6	_	_	start_char=1228|end_char=1232
+8	guidance	_	_	_	_	7	_	_	start_char=1233|end_char=1241
+9	and	_	_	_	_	8	_	_	start_char=1242|end_char=1245
+10	announced	_	_	_	_	9	_	_	start_char=1246|end_char=1255
+11	a	_	_	_	_	10	_	_	start_char=1256|end_char=1257
+12	$	_	_	_	_	11	_	_	SpaceAfter=No|start_char=1258|end_char=1259
+13	500	_	_	_	_	12	_	_	SpaceAfter=No|start_char=1259|end_char=1262
+14	M	_	_	_	_	13	_	_	start_char=1262|end_char=1263
+15	buyback	_	_	_	_	14	_	_	SpaceAfter=No|start_char=1264|end_char=1271
+16	.	_	_	_	_	15	_	_	start_char=1271|end_char=1272
+
+# text = Its shares jumped 7.3% in after-hours trading.
+# sent_id = 16
+# sentiment = 0
+1-2	Its	_	_	_	_	_	_	_	start_char=1273|end_char=1276
+1	It	_	_	_	_	0	_	_	start_char=1273|end_char=1275
+2	s	_	_	_	_	1	_	_	start_char=1275|end_char=1276
+3	shares	_	_	_	_	2	_	_	start_char=1277|end_char=1283
+4	jumped	_	_	_	_	3	_	_	start_char=1284|end_char=1290
+5	7.3	_	_	_	_	4	_	_	SpaceAfter=No|start_char=1291|end_char=1294
+6	%	_	_	_	_	5	_	_	start_char=1294|end_char=1295
+7	in	_	_	_	_	6	_	_	start_char=1296|end_char=1298
+8	after	_	_	_	_	7	_	_	SpaceAfter=No|start_char=1299|end_char=1304
+9	-	_	_	_	_	8	_	_	SpaceAfter=No|start_char=1304|end_char=1305
+10	hours	_	_	_	_	9	_	_	start_char=1305|end_char=1310
+11	trading	_	_	_	_	10	_	_	SpaceAfter=No|start_char=1311|end_char=1318
+12	.	_	_	_	_	11	_	_	SpacesAfter=\n\n|start_char=1318|end_char=1319
+
+# text = "We're seeing demand hold up better than anyone expected," Chief Financial Officer Priya Ramaswamy told analysts on a conference call.
+# sent_id = 17
+# sentiment = 0
+1	"	_	_	_	_	0	_	_	SpaceAfter=No|start_char=1321|end_char=1322
+2-3	We're	_	_	_	_	_	_	_	start_char=1322|end_char=1327
+2	We	_	_	_	_	1	_	_	start_char=1322|end_char=1324
+3	're	_	_	_	_	2	_	_	start_char=1324|end_char=1327
+4	seeing	_	_	_	_	3	_	_	start_char=1328|end_char=1334
+5	demand	_	_	_	_	4	_	_	start_char=1335|end_char=1341
+6	hold	_	_	_	_	5	_	_	start_char=1342|end_char=1346
+7	up	_	_	_	_	6	_	_	start_char=1347|end_char=1349
+8	better	_	_	_	_	7	_	_	start_char=1350|end_char=1356
+9	than	_	_	_	_	8	_	_	start_char=1357|end_char=1361
+10	anyone	_	_	_	_	9	_	_	start_char=1362|end_char=1368
+11	expected	_	_	_	_	10	_	_	SpaceAfter=No|start_char=1369|end_char=1377
+12	,	_	_	_	_	11	_	_	SpaceAfter=No|start_char=1377|end_char=1378
+13	"	_	_	_	_	12	_	_	start_char=1378|end_char=1379
+14	Chief	_	_	_	_	13	_	_	start_char=1380|end_char=1385
+15	Financial	_	_	_	_	14	_	_	start_char=1386|end_char=1395
+16	Officer	_	_	_	_	15	_	_	start_char=1396|end_char=1403
+17	Priya	_	_	_	_	16	_	_	start_char=1404|end_char=1409
+18	Ramaswamy	_	_	_	_	17	_	_	start_char=1410|end_char=1419
+19	told	_	_	_	_	18	_	_	start_char=1420|end_char=1424
+20	analysts	_	_	_	_	19	_	_	start_char=1425|end_char=1433
+21	on	_	_	_	_	20	_	_	start_char=1434|end_char=1436
+22	a	_	_	_	_	21	_	_	start_char=1437|end_char=1438
+23	conference	_	_	_	_	22	_	_	start_char=1439|end_char=1449
+24	call	_	_	_	_	23	_	_	SpaceAfter=No|start_char=1450|end_char=1454
+25	.	_	_	_	_	24	_	_	start_char=1454|end_char=1455
+
+# text = "That said, we aren't assuming it'll last forever."
+# sent_id = 18
+# sentiment = 1
+1	"	_	_	_	_	0	_	_	SpaceAfter=No|start_char=1456|end_char=1457
+2	That	_	_	_	_	1	_	_	start_char=1457|end_char=1461
+3	said	_	_	_	_	2	_	_	SpaceAfter=No|start_char=1462|end_char=1466
+4	,	_	_	_	_	3	_	_	start_char=1466|end_char=1467
+5	we	_	_	_	_	4	_	_	start_char=1468|end_char=1470
+6-7	aren't	_	_	_	_	_	_	_	start_char=1471|end_char=1477
+6	are	_	_	_	_	5	_	_	start_char=1471|end_char=1474
+7	n't	_	_	_	_	6	_	_	start_char=1474|end_char=1477
+8	assuming	_	_	_	_	7	_	_	start_char=1478|end_char=1486
+9-10	it'll	_	_	_	_	_	_	_	start_char=1487|end_char=1492
+9	it	_	_	_	_	8	_	_	start_char=1487|end_char=1489
+10	'll	_	_	_	_	9	_	_	start_char=1489|end_char=1492
+11	last	_	_	_	_	10	_	_	start_char=1493|end_char=1497
+12	forever	_	_	_	_	11	_	_	SpaceAfter=No|start_char=1498|end_char=1505
+13	.	_	_	_	_	12	_	_	SpaceAfter=No|start_char=1505|end_char=1506
+14	"	_	_	_	_	13	_	_	SpacesAfter=\n\n|start_char=1506|end_char=1507
+
+# text = The central bank kept its benchmark rate unchanged at 5.25%–5.50% for a third consecutive meeting.
+# sent_id = 19
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=1509|end_char=1512
+2	central	_	_	_	_	1	_	_	start_char=1513|end_char=1520
+3	bank	_	_	_	_	2	_	_	start_char=1521|end_char=1525
+4	kept	_	_	_	_	3	_	_	start_char=1526|end_char=1530
+5	its	_	_	_	_	4	_	_	start_char=1531|end_char=1534
+6	benchmark	_	_	_	_	5	_	_	start_char=1535|end_char=1544
+7	rate	_	_	_	_	6	_	_	start_char=1545|end_char=1549
+8	unchanged	_	_	_	_	7	_	_	start_char=1550|end_char=1559
+9	at	_	_	_	_	8	_	_	start_char=1560|end_char=1562
+10	5.25	_	_	_	_	9	_	_	SpaceAfter=No|start_char=1563|end_char=1567
+11	%	_	_	_	_	10	_	_	SpaceAfter=No|start_char=1567|end_char=1568
+12	–	_	_	_	_	11	_	_	SpaceAfter=No|start_char=1568|end_char=1569
+13	5.50	_	_	_	_	12	_	_	SpaceAfter=No|start_char=1569|end_char=1573
+14	%	_	_	_	_	13	_	_	start_char=1573|end_char=1574
+15	for	_	_	_	_	14	_	_	start_char=1575|end_char=1578
+16	a	_	_	_	_	15	_	_	start_char=1579|end_char=1580
+17	third	_	_	_	_	16	_	_	start_char=1581|end_char=1586
+18	consecutive	_	_	_	_	17	_	_	start_char=1587|end_char=1598
+19	meeting	_	_	_	_	18	_	_	SpaceAfter=No|start_char=1599|end_char=1606
+20	.	_	_	_	_	19	_	_	start_char=1606|end_char=1607
+
+# text = Policymakers signaled that cuts could come later in the year, but only if price pressures continue to ease.
+# sent_id = 20
+# sentiment = 1
+1	Policymakers	_	_	_	_	0	_	_	start_char=1608|end_char=1620
+2	signaled	_	_	_	_	1	_	_	start_char=1621|end_char=1629
+3	that	_	_	_	_	2	_	_	start_char=1630|end_char=1634
+4	cuts	_	_	_	_	3	_	_	start_char=1635|end_char=1639
+5	could	_	_	_	_	4	_	_	start_char=1640|end_char=1645
+6	come	_	_	_	_	5	_	_	start_char=1646|end_char=1650
+7	later	_	_	_	_	6	_	_	start_char=1651|end_char=1656
+8	in	_	_	_	_	7	_	_	start_char=1657|end_char=1659
+9	the	_	_	_	_	8	_	_	start_char=1660|end_char=1663
+10	year	_	_	_	_	9	_	_	SpaceAfter=No|start_char=1664|end_char=1668
+11	,	_	_	_	_	10	_	_	start_char=1668|end_char=1669
+12	but	_	_	_	_	11	_	_	start_char=1670|end_char=1673
+13	only	_	_	_	_	12	_	_	start_char=1674|end_char=1678
+14	if	_	_	_	_	13	_	_	start_char=1679|end_char=1681
+15	price	_	_	_	_	14	_	_	start_char=1682|end_char=1687
+16	pressures	_	_	_	_	15	_	_	start_char=1688|end_char=1697
+17	continue	_	_	_	_	16	_	_	start_char=1698|end_char=1706
+18	to	_	_	_	_	17	_	_	start_char=1707|end_char=1709
+19	ease	_	_	_	_	18	_	_	SpaceAfter=No|start_char=1710|end_char=1714
+20	.	_	_	_	_	19	_	_	start_char=1714|end_char=1715
+
+# text = Two members dissented in favor of a quarter-point reduction.
+# sent_id = 21
+# sentiment = 0
+1	Two	_	_	_	_	0	_	_	start_char=1716|end_char=1719
+2	members	_	_	_	_	1	_	_	start_char=1720|end_char=1727
+3	dissented	_	_	_	_	2	_	_	start_char=1728|end_char=1737
+4	in	_	_	_	_	3	_	_	start_char=1738|end_char=1740
+5	favor	_	_	_	_	4	_	_	start_char=1741|end_char=1746
+6	of	_	_	_	_	5	_	_	start_char=1747|end_char=1749
+7	a	_	_	_	_	6	_	_	start_char=1750|end_char=1751
+8	quarter	_	_	_	_	7	_	_	SpaceAfter=No|start_char=1752|end_char=1759
+9	-	_	_	_	_	8	_	_	SpaceAfter=No|start_char=1759|end_char=1760
+10	point	_	_	_	_	9	_	_	start_char=1760|end_char=1765
+11	reduction	_	_	_	_	10	_	_	SpaceAfter=No|start_char=1766|end_char=1775
+12	.	_	_	_	_	11	_	_	SpacesAfter=\n\n|start_char=1775|end_char=1776
+
+# text = Unemployment fell to 3.7% in March from 3.9% in February, the Labor Department said.
+# sent_id = 22
+# sentiment = 0
+1	Unemployment	_	_	_	_	0	_	_	start_char=1778|end_char=1790
+2	fell	_	_	_	_	1	_	_	start_char=1791|end_char=1795
+3	to	_	_	_	_	2	_	_	start_char=1796|end_char=1798
+4	3.7	_	_	_	_	3	_	_	SpaceAfter=No|start_char=1799|end_char=1802
+5	%	_	_	_	_	4	_	_	start_char=1802|end_char=1803
+6	in	_	_	_	_	5	_	_	start_char=1804|end_char=1806
+7	March	_	_	_	_	6	_	_	start_char=1807|end_char=1812
+8	from	_	_	_	_	7	_	_	start_char=1813|end_char=1817
+9	3.9	_	_	_	_	8	_	_	SpaceAfter=No|start_char=1818|end_char=1821
+10	%	_	_	_	_	9	_	_	start_char=1821|end_char=1822
+11	in	_	_	_	_	10	_	_	start_char=1823|end_char=1825
+12	February	_	_	_	_	11	_	_	SpaceAfter=No|start_char=1826|end_char=1834
+13	,	_	_	_	_	12	_	_	start_char=1834|end_char=1835
+14	the	_	_	_	_	13	_	_	start_char=1836|end_char=1839
+15	Labor	_	_	_	_	14	_	_	start_char=1840|end_char=1845
+16	Department	_	_	_	_	15	_	_	start_char=1846|end_char=1856
+17	said	_	_	_	_	16	_	_	SpaceAfter=No|start_char=1857|end_char=1861
+18	.	_	_	_	_	17	_	_	start_char=1861|end_char=1862
+
+# text = Employers added 236,000 jobs, well above forecasts.
+# sent_id = 23
+# sentiment = 2
+1	Employers	_	_	_	_	0	_	_	start_char=1863|end_char=1872
+2	added	_	_	_	_	1	_	_	start_char=1873|end_char=1878
+3	236,000	_	_	_	_	2	_	_	start_char=1879|end_char=1886
+4	jobs	_	_	_	_	3	_	_	SpaceAfter=No|start_char=1887|end_char=1891
+5	,	_	_	_	_	4	_	_	start_char=1891|end_char=1892
+6	well	_	_	_	_	5	_	_	start_char=1893|end_char=1897
+7	above	_	_	_	_	6	_	_	start_char=1898|end_char=1903
+8	forecasts	_	_	_	_	7	_	_	SpaceAfter=No|start_char=1904|end_char=1913
+9	.	_	_	_	_	8	_	_	start_char=1913|end_char=1914
+
+# text = Average hourly earnings rose 0.3% m/m and 4.2% y/y.
+# sent_id = 24
+# sentiment = 1
+1	Average	_	_	_	_	0	_	_	start_char=1915|end_char=1922
+2	hourly	_	_	_	_	1	_	_	start_char=1923|end_char=1929
+3	earnings	_	_	_	_	2	_	_	start_char=1930|end_char=1938
+4	rose	_	_	_	_	3	_	_	start_char=1939|end_char=1943
+5	0.3	_	_	_	_	4	_	_	SpaceAfter=No|start_char=1944|end_char=1947
+6	%	_	_	_	_	5	_	_	start_char=1947|end_char=1948
+7	m/m	_	_	_	_	6	_	_	start_char=1949|end_char=1952
+8	and	_	_	_	_	7	_	_	start_char=1953|end_char=1956
+9	4.2	_	_	_	_	8	_	_	SpaceAfter=No|start_char=1957|end_char=1960
+10	%	_	_	_	_	9	_	_	start_char=1960|end_char=1961
+11	y	_	_	_	_	10	_	_	SpaceAfter=No|start_char=1962|end_char=1963
+12	/y	_	_	_	_	11	_	_	SpaceAfter=No|start_char=1963|end_char=1965
+13	.	_	_	_	_	12	_	_	SpacesAfter=\n\n|start_char=1965|end_char=1966
+
+# text = In a filing with the SEC, the firm disclosed that its former CEO, Mr. Hal Brandt Jr., received a severance package worth approx.
+# sent_id = 25
+# sentiment = 2
+1	In	_	_	_	_	0	_	_	start_char=1968|end_char=1970
+2	a	_	_	_	_	1	_	_	start_char=1971|end_char=1972
+3	filing	_	_	_	_	2	_	_	start_char=1973|end_char=1979
+4	with	_	_	_	_	3	_	_	start_char=1980|end_char=1984
+5	the	_	_	_	_	4	_	_	start_char=1985|end_char=1988
+6	SEC	_	_	_	_	5	_	_	SpaceAfter=No|start_char=1989|end_char=1992
+7	,	_	_	_	_	6	_	_	start_char=1992|end_char=1993
+8	the	_	_	_	_	7	_	_	start_char=1994|end_char=1997
+9	firm	_	_	_	_	8	_	_	start_char=1998|end_char=2002
+10	disclosed	_	_	_	_	9	_	_	start_char=2003|end_char=2012
+11	that	_	_	_	_	10	_	_	start_char=2013|end_char=2017
+12	its	_	_	_	_	11	_	_	start_char=2018|end_char=2021
+13	former	_	_	_	_	12	_	_	start_char=2022|end_char=2028
+14	CEO	_	_	_	_	13	_	_	SpaceAfter=No|start_char=2029|end_char=2032
+15	,	_	_	_	_	14	_	_	start_char=2032|end_char=2033
+16	Mr.	_	_	_	_	15	_	_	start_char=2034|end_char=2037
+17	Hal	_	_	_	_	16	_	_	start_char=2038|end_char=2041
+18	Brandt	_	_	_	_	17	_	_	start_char=2042|end_char=2048
+19	Jr.	_	_	_	_	18	_	_	SpaceAfter=No|start_char=2049|end_char=2052
+20	,	_	_	_	_	19	_	_	start_char=2052|end_char=2053
+21	received	_	_	_	_	20	_	_	start_char=2054|end_char=2062
+22	a	_	_	_	_	21	_	_	start_char=2063|end_char=2064
+23	severance	_	_	_	_	22	_	_	start_char=2065|end_char=2074
+24	package	_	_	_	_	23	_	_	start_char=2075|end_char=2082
+25	worth	_	_	_	_	24	_	_	start_char=2083|end_char=2088
+26	approx	_	_	_	_	25	_	_	SpaceAfter=No|start_char=2089|end_char=2095
+27	.	_	_	_	_	26	_	_	start_char=2095|end_char=2096
+
+# text = $18.6 million.
+# sent_id = 26
+# sentiment = 1
+1	$	_	_	_	_	0	_	_	SpaceAfter=No|start_char=2097|end_char=2098
+2	18.6	_	_	_	_	1	_	_	start_char=2098|end_char=2102
+3	million	_	_	_	_	2	_	_	SpaceAfter=No|start_char=2103|end_char=2110
+4	.	_	_	_	_	3	_	_	start_char=2110|end_char=2111
+
+# text = Shareholder groups have asked the board to explain the payout before the annual meeting on May 22.
+# sent_id = 27
+# sentiment = 1
+1	Shareholder	_	_	_	_	0	_	_	start_char=2112|end_char=2123
+2	groups	_	_	_	_	1	_	_	start_char=2124|end_char=2130
+3	have	_	_	_	_	2	_	_	start_char=2131|end_char=2135
+4	asked	_	_	_	_	3	_	_	start_char=2136|end_char=2141
+5	the	_	_	_	_	4	_	_	start_char=2142|end_char=2145
+6	board	_	_	_	_	5	_	_	start_char=2146|end_char=2151
+7	to	_	_	_	_	6	_	_	start_char=2152|end_char=2154
+8	explain	_	_	_	_	7	_	_	start_char=2155|end_char=2162
+9	the	_	_	_	_	8	_	_	start_char=2163|end_char=2166
+10	payout	_	_	_	_	9	_	_	start_char=2167|end_char=2173
+11	before	_	_	_	_	10	_	_	start_char=2174|end_char=2180
+12	the	_	_	_	_	11	_	_	start_char=2181|end_char=2184
+13	annual	_	_	_	_	12	_	_	start_char=2185|end_char=2191
+14	meeting	_	_	_	_	13	_	_	start_char=2192|end_char=2199
+15	on	_	_	_	_	14	_	_	start_char=2200|end_char=2202
+16	May	_	_	_	_	15	_	_	start_char=2203|end_char=2206
+17	22	_	_	_	_	16	_	_	SpaceAfter=No|start_char=2207|end_char=2209
+18	.	_	_	_	_	17	_	_	SpacesAfter=\n\n|start_char=2209|end_char=2210
+
+# text = The merger, valued at €4.2 billion including debt, would create the region's third-largest grocer.
+# sent_id = 28
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=2212|end_char=2215
+2	merger	_	_	_	_	1	_	_	SpaceAfter=No|start_char=2216|end_char=2222
+3	,	_	_	_	_	2	_	_	start_char=2222|end_char=2223
+4	valued	_	_	_	_	3	_	_	start_char=2224|end_char=2230
+5	at	_	_	_	_	4	_	_	start_char=2231|end_char=2233
+6	€	_	_	_	_	5	_	_	SpaceAfter=No|start_char=2234|end_char=2235
+7	4.2	_	_	_	_	6	_	_	start_char=2235|end_char=2238
+8	billion	_	_	_	_	7	_	_	start_char=2239|end_char=2246
+9	including	_	_	_	_	8	_	_	start_char=2247|end_char=2256
+10	debt	_	_	_	_	9	_	_	SpaceAfter=No|start_char=2257|end_char=2261
+11	,	_	_	_	_	10	_	_	start_char=2261|end_char=2262
+12	would	_	_	_	_	11	_	_	start_char=2263|end_char=2268
+13	create	_	_	_	_	12	_	_	start_char=2269|end_char=2275
+14	the	_	_	_	_	13	_	_	start_char=2276|end_char=2279
+15-16	region's	_	_	_	_	_	_	_	start_char=2280|end_char=2288
+15	region	_	_	_	_	14	_	_	start_char=2280|end_char=2286
+16	's	_	_	_	_	15	_	_	start_char=2286|end_char=2288
+17	third	_	_	_	_	16	_	_	SpaceAfter=No|start_char=2289|end_char=2294
+18	-	_	_	_	_	17	_	_	SpaceAfter=No|start_char=2294|end_char=2295
+19	largest	_	_	_	_	18	_	_	start_char=2295|end_char=2302
+20	grocer	_	_	_	_	19	_	_	SpaceAfter=No|start_char=2303|end_char=2309
+21	.	_	_	_	_	20	_	_	start_char=2309|end_char=2310
+
+# text = Regulators in Brussels opened an in-depth probe on Thursday.
+# sent_id = 29
+# sentiment = 1
+1	Regulators	_	_	_	_	0	_	_	start_char=2311|end_char=2321
+2	in	_	_	_	_	1	_	_	start_char=2322|end_char=2324
+3	Brussels	_	_	_	_	2	_	_	start_char=2325|end_char=2333
+4	opened	_	_	_	_	3	_	_	start_char=2334|end_char=2340
+5	an	_	_	_	_	4	_	_	start_char=2341|end_char=2343
+6	in	_	_	_	_	5	_	_	SpaceAfter=No|start_char=2344|end_char=2346
+7	-	_	_	_	_	6	_	_	SpaceAfter=No|start_char=2346|end_char=2347
+8	depth	_	_	_	_	7	_	_	start_char=2347|end_char=2352
+9	probe	_	_	_	_	8	_	_	start_char=2353|end_char=2358
+10	on	_	_	_	_	9	_	_	start_char=2359|end_char=2361
+11	Thursday	_	_	_	_	10	_	_	SpaceAfter=No|start_char=2362|end_char=2370
+12	.	_	_	_	_	11	_	_	start_char=2370|end_char=2371
+
+# text = A decision is due by Oct. 9.
+# sent_id = 30
+# sentiment = 1
+1	A	_	_	_	_	0	_	_	start_char=2372|end_char=2373
+2	decision	_	_	_	_	1	_	_	start_char=2374|end_char=2382
+3	is	_	_	_	_	2	_	_	start_char=2383|end_char=2385
+4	due	_	_	_	_	3	_	_	start_char=2386|end_char=2389
+5	by	_	_	_	_	4	_	_	start_char=2390|end_char=2392
+6	Oct.	_	_	_	_	5	_	_	start_char=2393|end_char=2397
+7	9	_	_	_	_	6	_	_	SpaceAfter=No|start_char=2398|end_char=2399
+8	.	_	_	_	_	7	_	_	SpacesAfter=\n\n|start_char=2399|end_char=2400
+
+# text = Meanwhile, the city of Ellsworth said it would refinance $75 million in general obligation bonds.
+# sent_id = 31
+# sentiment = 1
+1	Meanwhile	_	_	_	_	0	_	_	SpaceAfter=No|start_char=2402|end_char=2411
+2	,	_	_	_	_	1	_	_	start_char=2411|end_char=2412
+3	the	_	_	_	_	2	_	_	start_char=2413|end_char=2416
+4	city	_	_	_	_	3	_	_	start_char=2417|end_char=2421
+5	of	_	_	_	_	4	_	_	start_char=2422|end_char=2424
+6	Ellsworth	_	_	_	_	5	_	_	start_char=2425|end_char=2434
+7	said	_	_	_	_	6	_	_	start_char=2435|end_char=2439
+8	it	_	_	_	_	7	_	_	start_char=2440|end_char=2442
+9	would	_	_	_	_	8	_	_	start_char=2443|end_char=2448
+10	refinance	_	_	_	_	9	_	_	start_char=2449|end_char=2458
+11	$	_	_	_	_	10	_	_	SpaceAfter=No|start_char=2459|end_char=2460
+12	75	_	_	_	_	11	_	_	start_char=2460|end_char=2462
+13	million	_	_	_	_	12	_	_	start_char=2463|end_char=2470
+14	in	_	_	_	_	13	_	_	start_char=2471|end_char=2473
+15	general	_	_	_	_	14	_	_	start_char=2474|end_char=2481
+16	obligation	_	_	_	_	15	_	_	start_char=2482|end_char=2492
+17	bonds	_	_	_	_	16	_	_	SpaceAfter=No|start_char=2493|end_char=2498
+18	.	_	_	_	_	17	_	_	start_char=2498|end_char=2499
+
+# text = Moody's affirmed its Aa2 rating.
+# sent_id = 32
+# sentiment = 1
+1-2	Moody's	_	_	_	_	_	_	_	start_char=2500|end_char=2507
+1	Moody	_	_	_	_	0	_	_	start_char=2500|end_char=2505
+2	's	_	_	_	_	1	_	_	start_char=2505|end_char=2507
+3	affirmed	_	_	_	_	2	_	_	start_char=2508|end_char=2516
+4	its	_	_	_	_	3	_	_	start_char=2517|end_char=2520
+5	Aa2	_	_	_	_	4	_	_	start_char=2521|end_char=2524
+6	rating	_	_	_	_	5	_	_	SpaceAfter=No|start_char=2525|end_char=2531
+7	.	_	_	_	_	6	_	_	start_char=2531|end_char=2532
+
+# text = S&P Global Ratings has the city at AA, with a stable outlook.
+# sent_id = 33
+# sentiment = 2
+1	S&P	_	_	_	_	0	_	_	start_char=2533|end_char=2536
+2	Global	_	_	_	_	1	_	_	start_char=2537|end_char=2543
+3	Ratings	_	_	_	_	2	_	_	start_char=2544|end_char=2551
+4	has	_	_	_	_	3	_	_	start_char=2552|end_char=2555
+5	the	_	_	_	_	4	_	_	start_char=2556|end_char=2559
+6	city	_	_	_	_	5	_	_	start_char=2560|end_char=2564
+7	at	_	_	_	_	6	_	_	start_char=2565|end_char=2567
+8	AA	_	_	_	_	7	_	_	SpaceAfter=No|start_char=2568|end_char=2570
+9	,	_	_	_	_	8	_	_	start_char=2570|end_char=2571
+10	with	_	_	_	_	9	_	_	start_char=2572|end_char=2576
+11	a	_	_	_	_	10	_	_	start_char=2577|end_char=2578
+12	stable	_	_	_	_	11	_	_	start_char=2579|end_char=2585
+13	outlook	_	_	_	_	12	_	_	SpaceAfter=No|start_char=2586|end_char=2593
+14	.	_	_	_	_	13	_	_	SpacesAfter=\n\n|start_char=2593|end_char=2594
+
+# text = Residents of the Lower Fenwick neighborhood were told to boil water until further notice after a main broke early Saturday.
+# sent_id = 34
+# sentiment = 0
+1	Residents	_	_	_	_	0	_	_	start_char=2596|end_char=2605
+2	of	_	_	_	_	1	_	_	start_char=2606|end_char=2608
+3	the	_	_	_	_	2	_	_	start_char=2609|end_char=2612
+4	Lower	_	_	_	_	3	_	_	start_char=2613|end_char=2618
+5	Fenwick	_	_	_	_	4	_	_	start_char=2619|end_char=2626
+6	neighborhood	_	_	_	_	5	_	_	start_char=2627|end_char=2639
+7	were	_	_	_	_	6	_	_	start_char=2640|end_char=2644
+8	told	_	_	_	_	7	_	_	start_char=2645|end_char=2649
+9	to	_	_	_	_	8	_	_	start_char=2650|end_char=2652
+10	boil	_	_	_	_	9	_	_	start_char=2653|end_char=2657
+11	water	_	_	_	_	10	_	_	start_char=2658|end_char=2663
+12	until	_	_	_	_	11	_	_	start_char=2664|end_char=2669
+13	further	_	_	_	_	12	_	_	start_char=2670|end_char=2677
+14	notice	_	_	_	_	13	_	_	start_char=2678|end_char=2684
+15	after	_	_	_	_	14	_	_	start_char=2685|end_char=2690
+16	a	_	_	_	_	15	_	_	start_char=2691|end_char=2692
+17	main	_	_	_	_	16	_	_	start_char=2693|end_char=2697
+18	broke	_	_	_	_	17	_	_	start_char=2698|end_char=2703
+19	early	_	_	_	_	18	_	_	start_char=2704|end_char=2709
+20	Saturday	_	_	_	_	19	_	_	SpaceAfter=No|start_char=2710|end_char=2718
+21	.	_	_	_	_	20	_	_	start_char=2718|end_char=2719
+
+# text = Crews worked through the night.
+# sent_id = 35
+# sentiment = 1
+1	Crews	_	_	_	_	0	_	_	start_char=2720|end_char=2725
+2	worked	_	_	_	_	1	_	_	start_char=2726|end_char=2732
+3	through	_	_	_	_	2	_	_	start_char=2733|end_char=2740
+4	the	_	_	_	_	3	_	_	start_char=2741|end_char=2744
+5	night	_	_	_	_	4	_	_	SpaceAfter=No|start_char=2745|end_char=2750
+6	.	_	_	_	_	5	_	_	start_char=2750|end_char=2751
+
+# text = By 6 a.m.
+# sent_id = 36
+# sentiment = 1
+1	By	_	_	_	_	0	_	_	start_char=2752|end_char=2754
+2	6	_	_	_	_	1	_	_	start_char=2755|end_char=2756
+3	a.m.	_	_	_	_	2	_	_	start_char=2757|end_char=2761
+
+# text = Sunday, service had been restored to about two-thirds of the 4,800 affected homes.
+# sent_id = 37
+# sentiment = 0
+1	Sunday	_	_	_	_	0	_	_	SpaceAfter=No|start_char=2762|end_char=2768
+2	,	_	_	_	_	1	_	_	start_char=2768|end_char=2769
+3	service	_	_	_	_	2	_	_	start_char=2770|end_char=2777
+4	had	_	_	_	_	3	_	_	start_char=2778|end_char=2781
+5	been	_	_	_	_	4	_	_	start_char=2782|end_char=2786
+6	restored	_	_	_	_	5	_	_	start_char=2787|end_char=2795
+7	to	_	_	_	_	6	_	_	start_char=2796|end_char=2798
+8	about	_	_	_	_	7	_	_	start_char=2799|end_char=2804
+9	two	_	_	_	_	8	_	_	SpaceAfter=No|start_char=2805|end_char=2808
+10	-	_	_	_	_	9	_	_	SpaceAfter=No|start_char=2808|end_char=2809
+11	thirds	_	_	_	_	10	_	_	start_char=2809|end_char=2815
+12	of	_	_	_	_	11	_	_	start_char=2816|end_char=2818
+13	the	_	_	_	_	12	_	_	start_char=2819|end_char=2822
+14	4,800	_	_	_	_	13	_	_	start_char=2823|end_char=2828
+15	affected	_	_	_	_	14	_	_	start_char=2829|end_char=2837
+16	homes	_	_	_	_	15	_	_	SpaceAfter=No|start_char=2838|end_char=2843
+17	.	_	_	_	_	16	_	_	SpacesAfter=\n\n|start_char=2843|end_char=2844
+
+# text = A spokesperson for the utility, Marisol Ortega, said the pipe was installed in 1931.
+# sent_id = 38
+# sentiment = 1
+1	A	_	_	_	_	0	_	_	start_char=2846|end_char=2847
+2	spokesperson	_	_	_	_	1	_	_	start_char=2848|end_char=2860
+3	for	_	_	_	_	2	_	_	start_char=2861|end_char=2864
+4	the	_	_	_	_	3	_	_	start_char=2865|end_char=2868
+5	utility	_	_	_	_	4	_	_	SpaceAfter=No|start_char=2869|end_char=2876
+6	,	_	_	_	_	5	_	_	start_char=2876|end_char=2877
+7	Marisol	_	_	_	_	6	_	_	start_char=2878|end_char=2885
+8	Ortega	_	_	_	_	7	_	_	SpaceAfter=No|start_char=2886|end_char=2892
+9	,	_	_	_	_	8	_	_	start_char=2892|end_char=2893
+10	said	_	_	_	_	9	_	_	start_char=2894|end_char=2898
+11	the	_	_	_	_	10	_	_	start_char=2899|end_char=2902
+12	pipe	_	_	_	_	11	_	_	start_char=2903|end_char=2907
+13	was	_	_	_	_	12	_	_	start_char=2908|end_char=2911
+14	installed	_	_	_	_	13	_	_	start_char=2912|end_char=2921
+15	in	_	_	_	_	14	_	_	start_char=2922|end_char=2924
+16	1931	_	_	_	_	15	_	_	SpaceAfter=No|start_char=2925|end_char=2929
+17	.	_	_	_	_	16	_	_	start_char=2929|end_char=2930
+
+# text = "Frankly, it's a miracle it lasted this long," she said.
+# sent_id = 39
+# sentiment = 1
+1	"	_	_	_	_	0	_	_	SpaceAfter=No|start_char=2931|end_char=2932
+2	Frankly	_	_	_	_	1	_	_	SpaceAfter=No|start_char=2932|end_char=2939
+3	,	_	_	_	_	2	_	_	start_char=2939|end_char=2940
+4-5	it's	_	_	_	_	_	_	_	start_char=2941|end_char=2945
+4	it	_	_	_	_	3	_	_	start_char=2941|end_char=2943
+5	's	_	_	_	_	4	_	_	start_char=2943|end_char=2945
+6	a	_	_	_	_	5	_	_	start_char=2946|end_char=2947
+7	miracle	_	_	_	_	6	_	_	start_char=2948|end_char=2955
+8	it	_	_	_	_	7	_	_	start_char=2956|end_char=2958
+9	lasted	_	_	_	_	8	_	_	start_char=2959|end_char=2965
+10	this	_	_	_	_	9	_	_	start_char=2966|end_char=2970
+11	long	_	_	_	_	10	_	_	SpaceAfter=No|start_char=2971|end_char=2975
+12	,	_	_	_	_	11	_	_	SpaceAfter=No|start_char=2975|end_char=2976
+13	"	_	_	_	_	12	_	_	start_char=2976|end_char=2977
+14	she	_	_	_	_	13	_	_	start_char=2978|end_char=2981
+15	said	_	_	_	_	14	_	_	SpaceAfter=No|start_char=2982|end_char=2986
+16	.	_	_	_	_	15	_	_	SpacesAfter=\n\n|start_char=2986|end_char=2987
+
+# text = The school board voted to delay the start of classes by one week.
+# sent_id = 40
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=2989|end_char=2992
+2	school	_	_	_	_	1	_	_	start_char=2993|end_char=2999
+3	board	_	_	_	_	2	_	_	start_char=3000|end_char=3005
+4	voted	_	_	_	_	3	_	_	start_char=3006|end_char=3011
+5	to	_	_	_	_	4	_	_	start_char=3012|end_char=3014
+6	delay	_	_	_	_	5	_	_	start_char=3015|end_char=3020
+7	the	_	_	_	_	6	_	_	start_char=3021|end_char=3024
+8	start	_	_	_	_	7	_	_	start_char=3025|end_char=3030
+9	of	_	_	_	_	8	_	_	start_char=3031|end_char=3033
+10	classes	_	_	_	_	9	_	_	start_char=3034|end_char=3041
+11	by	_	_	_	_	10	_	_	start_char=3042|end_char=3044
+12	one	_	_	_	_	11	_	_	start_char=3045|end_char=3048
+13	week	_	_	_	_	12	_	_	SpaceAfter=No|start_char=3049|end_char=3053
+14	.	_	_	_	_	13	_	_	start_char=3053|end_char=3054
+
+# text = Superintendent Dr. Kevin O'Hare cited staffing shortages and unfinished repairs at three buildings.
+# sent_id = 41
+# sentiment = 0
+1	Superintendent	_	_	_	_	0	_	_	start_char=3055|end_char=3069
+2	Dr.	_	_	_	_	1	_	_	start_char=3070|end_char=3073
+3	Kevin	_	_	_	_	2	_	_	start_char=3074|end_char=3079
+4	O'Hare	_	_	_	_	3	_	_	start_char=3080|end_char=3086
+5	cited	_	_	_	_	4	_	_	start_char=3087|end_char=3092
+6	staffing	_	_	_	_	5	_	_	start_char=3093|end_char=3101
+7	shortages	_	_	_	_	6	_	_	start_char=3102|end_char=3111
+8	and	_	_	_	_	7	_	_	start_char=3112|end_char=3115
+9	unfinished	_	_	_	_	8	_	_	start_char=3116|end_char=3126
+10	repairs	_	_	_	_	9	_	_	start_char=3127|end_char=3134
+11	at	_	_	_	_	10	_	_	start_char=3135|end_char=3137
+12	three	_	_	_	_	11	_	_	start_char=3138|end_char=3143
+13	buildings	_	_	_	_	12	_	_	SpaceAfter=No|start_char=3144|end_char=3153
+14	.	_	_	_	_	13	_	_	start_char=3153|end_char=3154
+
+# text = Parents who spoke at the meeting were divided.
+# sent_id = 42
+# sentiment = 1
+1	Parents	_	_	_	_	0	_	_	start_char=3155|end_char=3162
+2	who	_	_	_	_	1	_	_	start_char=3163|end_char=3166
+3	spoke	_	_	_	_	2	_	_	start_char=3167|end_char=3172
+4	at	_	_	_	_	3	_	_	start_char=3173|end_char=3175
+5	the	_	_	_	_	4	_	_	start_char=3176|end_char=3179
+6	meeting	_	_	_	_	5	_	_	start_char=3180|end_char=3187
+7	were	_	_	_	_	6	_	_	start_char=3188|end_char=3192
+8	divided	_	_	_	_	7	_	_	SpaceAfter=No|start_char=3193|end_char=3200
+9	.	_	_	_	_	8	_	_	SpacesAfter=\n\n|start_char=3200|end_char=3201
+
+# text = Shares of regional banks rallied for a second day.
+# sent_id = 43
+# sentiment = 1
+1	Shares	_	_	_	_	0	_	_	start_char=3203|end_char=3209
+2	of	_	_	_	_	1	_	_	start_char=3210|end_char=3212
+3	regional	_	_	_	_	2	_	_	start_char=3213|end_char=3221
+4	banks	_	_	_	_	3	_	_	start_char=3222|end_char=3227
+5	rallied	_	_	_	_	4	_	_	start_char=3228|end_char=3235
+6	for	_	_	_	_	5	_	_	start_char=3236|end_char=3239
+7	a	_	_	_	_	6	_	_	start_char=3240|end_char=3241
+8	second	_	_	_	_	7	_	_	start_char=3242|end_char=3248
+9	day	_	_	_	_	8	_	_	SpaceAfter=No|start_char=3249|end_char=3252
+10	.	_	_	_	_	9	_	_	start_char=3252|end_char=3253
+
+# text = The KBW Nasdaq Bank Index gained 2.4%.
+# sent_id = 44
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=3254|end_char=3257
+2	KBW	_	_	_	_	1	_	_	start_char=3258|end_char=3261
+3	Nasdaq	_	_	_	_	2	_	_	start_char=3262|end_char=3268
+4	Bank	_	_	_	_	3	_	_	start_char=3269|end_char=3273
+5	Index	_	_	_	_	4	_	_	start_char=3274|end_char=3279
+6	gained	_	_	_	_	5	_	_	start_char=3280|end_char=3286
+7	2.4	_	_	_	_	6	_	_	SpaceAfter=No|start_char=3287|end_char=3290
+8	%	_	_	_	_	7	_	_	SpaceAfter=No|start_char=3290|end_char=3291
+9	.	_	_	_	_	8	_	_	start_char=3291|end_char=3292
+
+# text = Ferrisburg Savings, which had fallen 30% earlier in the month, rose 11 percent.
+# sent_id = 45
+# sentiment = 1
+1	Ferrisburg	_	_	_	_	0	_	_	start_char=3293|end_char=3303
+2	Savings	_	_	_	_	1	_	_	SpaceAfter=No|start_char=3304|end_char=3311
+3	,	_	_	_	_	2	_	_	start_char=3311|end_char=3312
+4	which	_	_	_	_	3	_	_	start_char=3313|end_char=3318
+5	had	_	_	_	_	4	_	_	start_char=3319|end_char=3322
+6	fallen	_	_	_	_	5	_	_	start_char=3323|end_char=3329
+7	30	_	_	_	_	6	_	_	SpaceAfter=No|start_char=3330|end_char=3332
+8	%	_	_	_	_	7	_	_	start_char=3332|end_char=3333
+9	earlier	_	_	_	_	8	_	_	start_char=3334|end_char=3341
+10	in	_	_	_	_	9	_	_	start_char=3342|end_char=3344
+11	the	_	_	_	_	10	_	_	start_char=3345|end_char=3348
+12	month	_	_	_	_	11	_	_	SpaceAfter=No|start_char=3349|end_char=3354
+13	,	_	_	_	_	12	_	_	start_char=3354|end_char=3355
+14	rose	_	_	_	_	13	_	_	start_char=3356|end_char=3360
+15	11	_	_	_	_	14	_	_	start_char=3361|end_char=3363
+16	percent	_	_	_	_	15	_	_	SpaceAfter=No|start_char=3364|end_char=3371
+17	.	_	_	_	_	16	_	_	SpacesAfter=\n\n|start_char=3371|end_char=3372
+
+# text = Q: What does the rate decision mean for mortgages?
+# sent_id = 46
+# sentiment = 1
+1	Q	_	_	_	_	0	_	_	SpaceAfter=No|start_char=3374|end_char=3375
+2	:	_	_	_	_	1	_	_	start_char=3375|end_char=3376
+3	What	_	_	_	_	2	_	_	start_char=3377|end_char=3381
+4	does	_	_	_	_	3	_	_	start_char=3382|end_char=3386
+5	the	_	_	_	_	4	_	_	start_char=3387|end_char=3390
+6	rate	_	_	_	_	5	_	_	start_char=3391|end_char=3395
+7	decision	_	_	_	_	6	_	_	start_char=3396|end_char=3404
+8	mean	_	_	_	_	7	_	_	start_char=3405|end_char=3409
+9	for	_	_	_	_	8	_	_	start_char=3410|end_char=3413
+10	mortgages	_	_	_	_	9	_	_	SpaceAfter=No|start_char=3414|end_char=3423
+11	?	_	_	_	_	10	_	_	SpacesAfter=\n|start_char=3423|end_char=3424
+
+# text = A: Not much in the short run.
+# sent_id = 47
+# sentiment = 1
+1	A	_	_	_	_	0	_	_	SpaceAfter=No|start_char=3425|end_char=3426
+2	:	_	_	_	_	1	_	_	start_char=3426|end_char=3427
+3	Not	_	_	_	_	2	_	_	start_char=3428|end_char=3431
+4	much	_	_	_	_	3	_	_	start_char=3432|end_char=3436
+5	in	_	_	_	_	4	_	_	start_char=3437|end_char=3439
+6	the	_	_	_	_	5	_	_	start_char=3440|end_char=3443
+7	short	_	_	_	_	6	_	_	start_char=3444|end_char=3449
+8	run	_	_	_	_	7	_	_	SpaceAfter=No|start_char=3450|end_char=3453
+9	.	_	_	_	_	8	_	_	start_char=3453|end_char=3454
+
+# text = Thirty-year fixed rates averaged 6.94% last week, according to Freddie Mac.
+# sent_id = 48
+# sentiment = 1
+1	Thirty	_	_	_	_	0	_	_	SpaceAfter=No|start_char=3455|end_char=3461
+2	-	_	_	_	_	1	_	_	SpaceAfter=No|start_char=3461|end_char=3462
+3	year	_	_	_	_	2	_	_	start_char=3462|end_char=3466
+4	fixed	_	_	_	_	3	_	_	start_char=3467|end_char=3472
+5	rates	_	_	_	_	4	_	_	start_char=3473|end_char=3478
+6	averaged	_	_	_	_	5	_	_	start_char=3479|end_char=3487
+7	6.94	_	_	_	_	6	_	_	SpaceAfter=No|start_char=3488|end_char=3492
+8	%	_	_	_	_	7	_	_	start_char=3492|end_char=3493
+9	last	_	_	_	_	8	_	_	start_char=3494|end_char=3498
+10	week	_	_	_	_	9	_	_	SpaceAfter=No|start_char=3499|end_char=3503
+11	,	_	_	_	_	10	_	_	start_char=3503|end_char=3504
+12	according	_	_	_	_	11	_	_	start_char=3505|end_char=3514
+13	to	_	_	_	_	12	_	_	start_char=3515|end_char=3517
+14	Freddie	_	_	_	_	13	_	_	start_char=3518|end_char=3525
+15	Mac	_	_	_	_	14	_	_	SpaceAfter=No|start_char=3526|end_char=3529
+16	.	_	_	_	_	15	_	_	SpacesAfter=\n\n|start_char=3529|end_char=3530
+
+# text = Retail sales unexpectedly fell 0.2% in January.
+# sent_id = 49
+# sentiment = 1
+1	Retail	_	_	_	_	0	_	_	start_char=3532|end_char=3538
+2	sales	_	_	_	_	1	_	_	start_char=3539|end_char=3544
+3	unexpectedly	_	_	_	_	2	_	_	start_char=3545|end_char=3557
+4	fell	_	_	_	_	3	_	_	start_char=3558|end_char=3562
+5	0.2	_	_	_	_	4	_	_	SpaceAfter=No|start_char=3563|end_char=3566
+6	%	_	_	_	_	5	_	_	start_char=3566|end_char=3567
+7	in	_	_	_	_	6	_	_	start_char=3568|end_char=3570
+8	January	_	_	_	_	7	_	_	SpaceAfter=No|start_char=3571|end_char=3578
+9	.	_	_	_	_	8	_	_	start_char=3578|end_char=3579
+
+# text = Economists polled by the agency had forecast a 0.1% gain.
+# sent_id = 50
+# sentiment = 2
+1	Economists	_	_	_	_	0	_	_	start_char=3580|end_char=3590
+2	polled	_	_	_	_	1	_	_	start_char=3591|end_char=3597
+3	by	_	_	_	_	2	_	_	start_char=3598|end_char=3600
+4	the	_	_	_	_	3	_	_	start_char=3601|end_char=3604
+5	agency	_	_	_	_	4	_	_	start_char=3605|end_char=3611
+6	had	_	_	_	_	5	_	_	start_char=3612|end_char=3615
+7	forecast	_	_	_	_	6	_	_	start_char=3616|end_char=3624
+8	a	_	_	_	_	7	_	_	start_char=3625|end_char=3626
+9	0.1	_	_	_	_	8	_	_	SpaceAfter=No|start_char=3627|end_char=3630
+10	%	_	_	_	_	9	_	_	start_char=3630|end_char=3631
+11	gain	_	_	_	_	10	_	_	SpaceAfter=No|start_char=3632|end_char=3636
+12	.	_	_	_	_	11	_	_	start_char=3636|end_char=3637
+
+# text = Sales at gas stations slid 3.1%, and receipts at department stores dropped 1.4%.
+# sent_id = 51
+# sentiment = 1
+1	Sales	_	_	_	_	0	_	_	start_char=3638|end_char=3643
+2	at	_	_	_	_	1	_	_	start_char=3644|end_char=3646
+3	gas	_	_	_	_	2	_	_	start_char=3647|end_char=3650
+4	stations	_	_	_	_	3	_	_	start_char=3651|end_char=3659
+5	slid	_	_	_	_	4	_	_	start_char=3660|end_char=3664
+6	3.1	_	_	_	_	5	_	_	SpaceAfter=No|start_char=3665|end_char=3668
+7	%	_	_	_	_	6	_	_	SpaceAfter=No|start_char=3668|end_char=3669
+8	,	_	_	_	_	7	_	_	start_char=3669|end_char=3670
+9	and	_	_	_	_	8	_	_	start_char=3671|end_char=3674
+10	receipts	_	_	_	_	9	_	_	start_char=3675|end_char=3683
+11	at	_	_	_	_	10	_	_	start_char=3684|end_char=3686
+12	department	_	_	_	_	11	_	_	start_char=3687|end_char=3697
+13	stores	_	_	_	_	12	_	_	start_char=3698|end_char=3704
+14	dropped	_	_	_	_	13	_	_	start_char=3705|end_char=3712
+15	1.4	_	_	_	_	14	_	_	SpaceAfter=No|start_char=3713|end_char=3716
+16	%	_	_	_	_	15	_	_	SpaceAfter=No|start_char=3716|end_char=3717
+17	.	_	_	_	_	16	_	_	SpacesAfter=\n\n|start_char=3717|end_char=3718
+
+# text = The company's market capitalization briefly topped $1 trillion, making it only the seventh U.S. firm to do so.
+# sent_id = 52
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=3720|end_char=3723
+2-3	company's	_	_	_	_	_	_	_	start_char=3724|end_char=3733
+2	company	_	_	_	_	1	_	_	start_char=3724|end_char=3731
+3	's	_	_	_	_	2	_	_	start_char=3731|end_char=3733
+4	market	_	_	_	_	3	_	_	start_char=3734|end_char=3740
+5	capitalization	_	_	_	_	4	_	_	start_char=3741|end_char=3755
+6	briefly	_	_	_	_	5	_	_	start_char=3756|end_char=3763
+7	topped	_	_	_	_	6	_	_	start_char=3764|end_char=3770
+8	$	_	_	_	_	7	_	_	SpaceAfter=No|start_char=3771|end_char=3772
+9	1	_	_	_	_	8	_	_	start_char=3772|end_char=3773
+10	trillion	_	_	_	_	9	_	_	SpaceAfter=No|start_char=3774|end_char=3782
+11	,	_	_	_	_	10	_	_	start_char=3782|end_char=3783
+12	making	_	_	_	_	11	_	_	start_char=3784|end_char=3790
+13	it	_	_	_	_	12	_	_	start_char=3791|end_char=3793
+14	only	_	_	_	_	13	_	_	start_char=3794|end_char=3798
+15	the	_	_	_	_	14	_	_	start_char=3799|end_char=3802
+16	seventh	_	_	_	_	15	_	_	start_char=3803|end_char=3810
+17	U.S.	_	_	_	_	16	_	_	start_char=3811|end_char=3815
+18	firm	_	_	_	_	17	_	_	start_char=3816|end_char=3820
+19	to	_	_	_	_	18	_	_	start_char=3821|end_char=3823
+20	do	_	_	_	_	19	_	_	start_char=3824|end_char=3826
+21	so	_	_	_	_	20	_	_	SpaceAfter=No|start_char=3827|end_char=3829
+22	.	_	_	_	_	21	_	_	start_char=3829|end_char=3830
+
+# text = It later gave back some gains and closed at $412.88, up 3.9%.
+# sent_id = 53
+# sentiment = 1
+1	It	_	_	_	_	0	_	_	start_char=3831|end_char=3833
+2	later	_	_	_	_	1	_	_	start_char=3834|end_char=3839
+3	gave	_	_	_	_	2	_	_	start_char=3840|end_char=3844
+4	back	_	_	_	_	3	_	_	start_char=3845|end_char=3849
+5	some	_	_	_	_	4	_	_	start_char=3850|end_char=3854
+6	gains	_	_	_	_	5	_	_	start_char=3855|end_char=3860
+7	and	_	_	_	_	6	_	_	start_char=3861|end_char=3864
+8	closed	_	_	_	_	7	_	_	start_char=3865|end_char=3871
+9	at	_	_	_	_	8	_	_	start_char=3872|end_char=3874
+10	$	_	_	_	_	9	_	_	SpaceAfter=No|start_char=3875|end_char=3876
+11	412.88	_	_	_	_	10	_	_	SpaceAfter=No|start_char=3876|end_char=3882
+12	,	_	_	_	_	11	_	_	start_char=3882|end_char=3883
+13	up	_	_	_	_	12	_	_	start_char=3884|end_char=3886
+14	3.9	_	_	_	_	13	_	_	SpaceAfter=No|start_char=3887|end_char=3890
+15	%	_	_	_	_	14	_	_	SpaceAfter=No|start_char=3890|end_char=3891
+16	.	_	_	_	_	15	_	_	SpacesAfter=\n\n|start_char=3891|end_char=3892
+
+# text = According to the report, global shipments of smartphones declined for the eighth straight quarter.
+# sent_id = 54
+# sentiment = 1
+1	According	_	_	_	_	0	_	_	start_char=3894|end_char=3903
+2	to	_	_	_	_	1	_	_	start_char=3904|end_char=3906
+3	the	_	_	_	_	2	_	_	start_char=3907|end_char=3910
+4	report	_	_	_	_	3	_	_	SpaceAfter=No|start_char=3911|end_char=3917
+5	,	_	_	_	_	4	_	_	start_char=3917|end_char=3918
+6	global	_	_	_	_	5	_	_	start_char=3919|end_char=3925
+7	shipments	_	_	_	_	6	_	_	start_char=3926|end_char=3935
+8	of	_	_	_	_	7	_	_	start_char=3936|end_char=3938
+9	smartphones	_	_	_	_	8	_	_	start_char=3939|end_char=3950
+10	declined	_	_	_	_	9	_	_	start_char=3951|end_char=3959
+11	for	_	_	_	_	10	_	_	start_char=3960|end_char=3963
+12	the	_	_	_	_	11	_	_	start_char=3964|end_char=3967
+13	eighth	_	_	_	_	12	_	_	start_char=3968|end_char=3974
+14	straight	_	_	_	_	13	_	_	start_char=3975|end_char=3983
+15	quarter	_	_	_	_	14	_	_	SpaceAfter=No|start_char=3984|end_char=3991
+16	.	_	_	_	_	15	_	_	start_char=3991|end_char=3992
+
+# text = Vendors shipped 289.4 million units, down 4.7% from a year earlier.
+# sent_id = 55
+# sentiment = 1
+1	Vendors	_	_	_	_	0	_	_	start_char=3993|end_char=4000
+2	shipped	_	_	_	_	1	_	_	start_char=4001|end_char=4008
+3	289.4	_	_	_	_	2	_	_	start_char=4009|end_char=4014
+4	million	_	_	_	_	3	_	_	start_char=4015|end_char=4022
+5	units	_	_	_	_	4	_	_	SpaceAfter=No|start_char=4023|end_char=4028
+6	,	_	_	_	_	5	_	_	start_char=4028|end_char=4029
+7	down	_	_	_	_	6	_	_	start_char=4030|end_char=4034
+8	4.7	_	_	_	_	7	_	_	SpaceAfter=No|start_char=4035|end_char=4038
+9	%	_	_	_	_	8	_	_	start_char=4038|end_char=4039
+10	from	_	_	_	_	9	_	_	start_char=4040|end_char=4044
+11	a	_	_	_	_	10	_	_	start_char=4045|end_char=4046
+12	year	_	_	_	_	11	_	_	start_char=4047|end_char=4051
+13	earlier	_	_	_	_	12	_	_	SpaceAfter=No|start_char=4052|end_char=4059
+14	.	_	_	_	_	13	_	_	start_char=4059|end_char=4060
+
+# text = The top five vendors accounted for roughly 70% of the market.
+# sent_id = 56
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=4061|end_char=4064
+2	top	_	_	_	_	1	_	_	start_char=4065|end_char=4068
+3	five	_	_	_	_	2	_	_	start_char=4069|end_char=4073
+4	vendors	_	_	_	_	3	_	_	start_char=4074|end_char=4081
+5	accounted	_	_	_	_	4	_	_	start_char=4082|end_char=4091
+6	for	_	_	_	_	5	_	_	start_char=4092|end_char=4095
+7	roughly	_	_	_	_	6	_	_	start_char=4096|end_char=4103
+8	70	_	_	_	_	7	_	_	SpaceAfter=No|start_char=4104|end_char=4106
+9	%	_	_	_	_	8	_	_	start_char=4106|end_char=4107
+10	of	_	_	_	_	9	_	_	start_char=4108|end_char=4110
+11	the	_	_	_	_	10	_	_	start_char=4111|end_char=4114
+12	market	_	_	_	_	11	_	_	SpaceAfter=No|start_char=4115|end_char=4121
+13	.	_	_	_	_	12	_	_	SpacesAfter=\n\n|start_char=4121|end_char=4122
+
+# text = The trial is expected to last six weeks.
+# sent_id = 57
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=4124|end_char=4127
+2	trial	_	_	_	_	1	_	_	start_char=4128|end_char=4133
+3	is	_	_	_	_	2	_	_	start_char=4134|end_char=4136
+4	expected	_	_	_	_	3	_	_	start_char=4137|end_char=4145
+5	to	_	_	_	_	4	_	_	start_char=4146|end_char=4148
+6	last	_	_	_	_	5	_	_	start_char=4149|end_char=4153
+7	six	_	_	_	_	6	_	_	start_char=4154|end_char=4157
+8	weeks	_	_	_	_	7	_	_	SpaceAfter=No|start_char=4158|end_char=4163
+9	.	_	_	_	_	8	_	_	start_char=4163|end_char=4164
+
+# text = Jury selection begins Monday at the federal courthouse in Lancaster.
+# sent_id = 58
+# sentiment = 1
+1	Jury	_	_	_	_	0	_	_	start_char=4165|end_char=4169
+2	selection	_	_	_	_	1	_	_	start_char=4170|end_char=4179
+3	begins	_	_	_	_	2	_	_	start_char=4180|end_char=4186
+4	Monday	_	_	_	_	3	_	_	start_char=4187|end_char=4193
+5	at	_	_	_	_	4	_	_	start_char=4194|end_char=4196
+6	the	_	_	_	_	5	_	_	start_char=4197|end_char=4200
+7	federal	_	_	_	_	6	_	_	start_char=4201|end_char=4208
+8	courthouse	_	_	_	_	7	_	_	start_char=4209|end_char=4219
+9	in	_	_	_	_	8	_	_	start_char=4220|end_char=4222
+10	Lancaster	_	_	_	_	9	_	_	SpaceAfter=No|start_char=4223|end_char=4232
+11	.	_	_	_	_	10	_	_	start_char=4232|end_char=4233
+
+# text = The defendant, who has pleaded not guilty to all 14 counts, faces up to 20 years in prison if convicted.
+# sent_id = 59
+# sentiment = 0
+1	The	_	_	_	_	0	_	_	start_char=4234|end_char=4237
+2	defendant	_	_	_	_	1	_	_	SpaceAfter=No|start_char=4238|end_char=4247
+3	,	_	_	_	_	2	_	_	start_char=4247|end_char=4248
+4	who	_	_	_	_	3	_	_	start_char=4249|end_char=4252
+5	has	_	_	_	_	4	_	_	start_char=4253|end_char=4256
+6	pleaded	_	_	_	_	5	_	_	start_char=4257|end_char=4264
+7	not	_	_	_	_	6	_	_	start_char=4265|end_char=4268
+8	guilty	_	_	_	_	7	_	_	start_char=4269|end_char=4275
+9	to	_	_	_	_	8	_	_	start_char=4276|end_char=4278
+10	all	_	_	_	_	9	_	_	start_char=4279|end_char=4282
+11	14	_	_	_	_	10	_	_	start_char=4283|end_char=4285
+12	counts	_	_	_	_	11	_	_	SpaceAfter=No|start_char=4286|end_char=4292
+13	,	_	_	_	_	12	_	_	start_char=4292|end_char=4293
+14	faces	_	_	_	_	13	_	_	start_char=4294|end_char=4299
+15	up	_	_	_	_	14	_	_	start_char=4300|end_char=4302
+16	to	_	_	_	_	15	_	_	start_char=4303|end_char=4305
+17	20	_	_	_	_	16	_	_	start_char=4306|end_char=4308
+18	years	_	_	_	_	17	_	_	start_char=4309|end_char=4314
+19	in	_	_	_	_	18	_	_	start_char=4315|end_char=4317
+20	prison	_	_	_	_	19	_	_	start_char=4318|end_char=4324
+21	if	_	_	_	_	20	_	_	start_char=4325|end_char=4327
+22	convicted	_	_	_	_	21	_	_	SpaceAfter=No|start_char=4328|end_char=4337
+23	.	_	_	_	_	22	_	_	SpacesAfter=\n\n|start_char=4337|end_char=4338
+
+# text = Tickets go on sale Friday at 10 a.m. local time.
+# sent_id = 60
+# sentiment = 1
+1	Tickets	_	_	_	_	0	_	_	start_char=4340|end_char=4347
+2	go	_	_	_	_	1	_	_	start_char=4348|end_char=4350
+3	on	_	_	_	_	2	_	_	start_char=4351|end_char=4353
+4	sale	_	_	_	_	3	_	_	start_char=4354|end_char=4358
+5	Friday	_	_	_	_	4	_	_	start_char=4359|end_char=4365
+6	at	_	_	_	_	5	_	_	start_char=4366|end_char=4368
+7	10	_	_	_	_	6	_	_	start_char=4369|end_char=4371
+8	a.m.	_	_	_	_	7	_	_	start_char=4372|end_char=4376
+9	local	_	_	_	_	8	_	_	start_char=4377|end_char=4382
+10	time	_	_	_	_	9	_	_	SpaceAfter=No|start_char=4383|end_char=4387
+11	.	_	_	_	_	10	_	_	start_char=4387|end_char=4388
+
+# text = Prices range from $35 to $250, plus fees.
+# sent_id = 61
+# sentiment = 0
+1	Prices	_	_	_	_	0	_	_	start_char=4389|end_char=4395
+2	range	_	_	_	_	1	_	_	start_char=4396|end_char=4401
+3	from	_	_	_	_	2	_	_	start_char=4402|end_char=4406
+4	$	_	_	_	_	3	_	_	SpaceAfter=No|start_char=4407|end_char=4408
+5	35	_	_	_	_	4	_	_	start_char=4408|end_char=4410
+6	to	_	_	_	_	5	_	_	start_char=4411|end_char=4413
+7	$	_	_	_	_	6	_	_	SpaceAfter=No|start_char=4414|end_char=4415
+8	250	_	_	_	_	7	_	_	SpaceAfter=No|start_char=4415|end_char=4418
+9	,	_	_	_	_	8	_	_	start_char=4418|end_char=4419
+10	plus	_	_	_	_	9	_	_	start_char=4420|end_char=4424
+11	fees	_	_	_	_	10	_	_	SpaceAfter=No|start_char=4425|end_char=4429
+12	.	_	_	_	_	11	_	_	start_char=4429|end_char=4430
+
+# text = Organizers expect a sellout.
+# sent_id = 62
+# sentiment = 1
+1	Organizers	_	_	_	_	0	_	_	start_char=4431|end_char=4441
+2	expect	_	_	_	_	1	_	_	start_char=4442|end_char=4448
+3	a	_	_	_	_	2	_	_	start_char=4449|end_char=4450
+4	sellout	_	_	_	_	3	_	_	SpaceAfter=No|start_char=4451|end_char=4458
+5	.	_	_	_	_	4	_	_	SpacesAfter=\n\n|start_char=4458|end_char=4459
+
+# text = The wildfire had burned more than 12,000 acres by Tuesday night and was 15% contained.
+# sent_id = 63
+# sentiment = 0
+1	The	_	_	_	_	0	_	_	start_char=4461|end_char=4464
+2	wildfire	_	_	_	_	1	_	_	start_char=4465|end_char=4473
+3	had	_	_	_	_	2	_	_	start_char=4474|end_char=4477
+4	burned	_	_	_	_	3	_	_	start_char=4478|end_char=4484
+5	more	_	_	_	_	4	_	_	start_char=4485|end_char=4489
+6	than	_	_	_	_	5	_	_	start_char=4490|end_char=4494
+7	12,000	_	_	_	_	6	_	_	start_char=4495|end_char=4501
+8	acres	_	_	_	_	7	_	_	start_char=4502|end_char=4507
+9	by	_	_	_	_	8	_	_	start_char=4508|end_char=4510
+10	Tuesday	_	_	_	_	9	_	_	start_char=4511|end_char=4518
+11	night	_	_	_	_	10	_	_	start_char=4519|end_char=4524
+12	and	_	_	_	_	11	_	_	start_char=4525|end_char=4528
+13	was	_	_	_	_	12	_	_	start_char=4529|end_char=4532
+14	15	_	_	_	_	13	_	_	SpaceAfter=No|start_char=4533|end_char=4535
+15	%	_	_	_	_	14	_	_	start_char=4535|end_char=4536
+16	contained	_	_	_	_	15	_	_	SpaceAfter=No|start_char=4537|end_char=4546
+17	.	_	_	_	_	16	_	_	start_char=4546|end_char=4547
+
+# text = Evacuation orders remained in effect for parts of Pine Hollow and Cedar Gap.
+# sent_id = 64
+# sentiment = 1
+1	Evacuation	_	_	_	_	0	_	_	start_char=4548|end_char=4558
+2	orders	_	_	_	_	1	_	_	start_char=4559|end_char=4565
+3	remained	_	_	_	_	2	_	_	start_char=4566|end_char=4574
+4	in	_	_	_	_	3	_	_	start_char=4575|end_char=4577
+5	effect	_	_	_	_	4	_	_	start_char=4578|end_char=4584
+6	for	_	_	_	_	5	_	_	start_char=4585|end_char=4588
+7	parts	_	_	_	_	6	_	_	start_char=4589|end_char=4594
+8	of	_	_	_	_	7	_	_	start_char=4595|end_char=4597
+9	Pine	_	_	_	_	8	_	_	start_char=4598|end_char=4602
+10	Hollow	_	_	_	_	9	_	_	start_char=4603|end_char=4609
+11	and	_	_	_	_	10	_	_	start_char=4610|end_char=4613
+12	Cedar	_	_	_	_	11	_	_	start_char=4614|end_char=4619
+13	Gap	_	_	_	_	12	_	_	SpaceAfter=No|start_char=4620|end_char=4623
+14	.	_	_	_	_	13	_	_	start_char=4623|end_char=4624
+
+# text = No injuries were reported.
+# sent_id = 65
+# sentiment = 1
+1	No	_	_	_	_	0	_	_	start_char=4625|end_char=4627
+2	injuries	_	_	_	_	1	_	_	start_char=4628|end_char=4636
+3	were	_	_	_	_	2	_	_	start_char=4637|end_char=4641
+4	reported	_	_	_	_	3	_	_	SpaceAfter=No|start_char=4642|end_char=4650
+5	.	_	_	_	_	4	_	_	SpacesAfter=\n\n|start_char=4650|end_char=4651
+
+# text = Officials said the blaze may have been sparked by a downed power line.
+# sent_id = 66
+# sentiment = 1
+1	Officials	_	_	_	_	0	_	_	start_char=4653|end_char=4662
+2	said	_	_	_	_	1	_	_	start_char=4663|end_char=4667
+3	the	_	_	_	_	2	_	_	start_char=4668|end_char=4671
+4	blaze	_	_	_	_	3	_	_	start_char=4672|end_char=4677
+5	may	_	_	_	_	4	_	_	start_char=4678|end_char=4681
+6	have	_	_	_	_	5	_	_	start_char=4682|end_char=4686
+7	been	_	_	_	_	6	_	_	start_char=4687|end_char=4691
+8	sparked	_	_	_	_	7	_	_	start_char=4692|end_char=4699
+9	by	_	_	_	_	8	_	_	start_char=4700|end_char=4702
+10	a	_	_	_	_	9	_	_	start_char=4703|end_char=4704
+11	downed	_	_	_	_	10	_	_	start_char=4705|end_char=4711
+12	power	_	_	_	_	11	_	_	start_char=4712|end_char=4717
+13	line	_	_	_	_	12	_	_	SpaceAfter=No|start_char=4718|end_char=4722
+14	.	_	_	_	_	13	_	_	start_char=4722|end_char=4723
+
+# text = An investigation is under way.
+# sent_id = 67
+# sentiment = 1
+1	An	_	_	_	_	0	_	_	start_char=4724|end_char=4726
+2	investigation	_	_	_	_	1	_	_	start_char=4727|end_char=4740
+3	is	_	_	_	_	2	_	_	start_char=4741|end_char=4743
+4	under	_	_	_	_	3	_	_	start_char=4744|end_char=4749
+5	way	_	_	_	_	4	_	_	SpaceAfter=No|start_char=4750|end_char=4753
+6	.	_	_	_	_	5	_	_	SpacesAfter=\n|start_char=4753|end_char=4754

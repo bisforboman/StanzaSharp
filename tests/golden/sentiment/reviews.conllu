@@ -1,0 +1,545 @@
+# text = Wonderful!
+# sent_id = 0
+# sentiment = 1
+1	Wonderful	_	_	_	_	0	_	_	SpaceAfter=No|start_char=0|end_char=9
+2	!	_	_	_	_	1	_	_	start_char=9|end_char=10
+
+# text = Awful.
+# sent_id = 1
+# sentiment = 1
+1	Awful	_	_	_	_	0	_	_	SpaceAfter=No|start_char=11|end_char=16
+2	.	_	_	_	_	1	_	_	start_char=16|end_char=17
+
+# text = Meh.
+# sent_id = 2
+# sentiment = 1
+1	Meh	_	_	_	_	0	_	_	SpaceAfter=No|start_char=18|end_char=21
+2	.	_	_	_	_	1	_	_	start_char=21|end_char=22
+
+# text = Loved it.
+# sent_id = 3
+# sentiment = 1
+1	Loved	_	_	_	_	0	_	_	start_char=23|end_char=28
+2	it	_	_	_	_	1	_	_	SpaceAfter=No|start_char=29|end_char=31
+3	.	_	_	_	_	2	_	_	SpacesAfter=\n\n|start_char=31|end_char=32
+
+# text = This is the best movie I have seen in years, and the soundtrack is gorgeous.
+# sent_id = 4
+# sentiment = 2
+1	This	_	_	_	_	0	_	_	start_char=34|end_char=38
+2	is	_	_	_	_	1	_	_	start_char=39|end_char=41
+3	the	_	_	_	_	2	_	_	start_char=42|end_char=45
+4	best	_	_	_	_	3	_	_	start_char=46|end_char=50
+5	movie	_	_	_	_	4	_	_	start_char=51|end_char=56
+6	I	_	_	_	_	5	_	_	start_char=57|end_char=58
+7	have	_	_	_	_	6	_	_	start_char=59|end_char=63
+8	seen	_	_	_	_	7	_	_	start_char=64|end_char=68
+9	in	_	_	_	_	8	_	_	start_char=69|end_char=71
+10	years	_	_	_	_	9	_	_	SpaceAfter=No|start_char=72|end_char=77
+11	,	_	_	_	_	10	_	_	start_char=77|end_char=78
+12	and	_	_	_	_	11	_	_	start_char=79|end_char=82
+13	the	_	_	_	_	12	_	_	start_char=83|end_char=86
+14	soundtrack	_	_	_	_	13	_	_	start_char=87|end_char=97
+15	is	_	_	_	_	14	_	_	start_char=98|end_char=100
+16	gorgeous	_	_	_	_	15	_	_	SpaceAfter=No|start_char=101|end_char=109
+17	.	_	_	_	_	16	_	_	SpacesAfter=\n|start_char=109|end_char=110
+
+# text = The plot was a complete mess and the acting was TERRIBLE.
+# sent_id = 5
+# sentiment = 0
+1	The	_	_	_	_	0	_	_	start_char=111|end_char=114
+2	plot	_	_	_	_	1	_	_	start_char=115|end_char=119
+3	was	_	_	_	_	2	_	_	start_char=120|end_char=123
+4	a	_	_	_	_	3	_	_	start_char=124|end_char=125
+5	complete	_	_	_	_	4	_	_	start_char=126|end_char=134
+6	mess	_	_	_	_	5	_	_	start_char=135|end_char=139
+7	and	_	_	_	_	6	_	_	start_char=140|end_char=143
+8	the	_	_	_	_	7	_	_	start_char=144|end_char=147
+9	acting	_	_	_	_	8	_	_	start_char=148|end_char=154
+10	was	_	_	_	_	9	_	_	start_char=155|end_char=158
+11	TERRIBLE	_	_	_	_	10	_	_	SpaceAfter=No|start_char=159|end_char=167
+12	.	_	_	_	_	11	_	_	SpacesAfter=\n|start_char=167|end_char=168
+
+# text = I didn't hate it, but I wouldn't watch it again.
+# sent_id = 6
+# sentiment = 0
+1	I	_	_	_	_	0	_	_	start_char=169|end_char=170
+2-3	didn't	_	_	_	_	_	_	_	start_char=171|end_char=177
+2	did	_	_	_	_	1	_	_	start_char=171|end_char=174
+3	n't	_	_	_	_	2	_	_	start_char=174|end_char=177
+4	hate	_	_	_	_	3	_	_	start_char=178|end_char=182
+5	it	_	_	_	_	4	_	_	SpaceAfter=No|start_char=183|end_char=185
+6	,	_	_	_	_	5	_	_	start_char=185|end_char=186
+7	but	_	_	_	_	6	_	_	start_char=187|end_char=190
+8	I	_	_	_	_	7	_	_	start_char=191|end_char=192
+9-10	wouldn't	_	_	_	_	_	_	_	start_char=193|end_char=201
+9	would	_	_	_	_	8	_	_	start_char=193|end_char=198
+10	n't	_	_	_	_	9	_	_	start_char=198|end_char=201
+11	watch	_	_	_	_	10	_	_	start_char=202|end_char=207
+12	it	_	_	_	_	11	_	_	start_char=208|end_char=210
+13	again	_	_	_	_	12	_	_	SpaceAfter=No|start_char=211|end_char=216
+14	.	_	_	_	_	13	_	_	SpacesAfter=\n|start_char=216|end_char=217
+
+# text = The hotel staff were incredibly friendly and the breakfast was delicious.
+# sent_id = 7
+# sentiment = 2
+1	The	_	_	_	_	0	_	_	start_char=218|end_char=221
+2	hotel	_	_	_	_	1	_	_	start_char=222|end_char=227
+3	staff	_	_	_	_	2	_	_	start_char=228|end_char=233
+4	were	_	_	_	_	3	_	_	start_char=234|end_char=238
+5	incredibly	_	_	_	_	4	_	_	start_char=239|end_char=249
+6	friendly	_	_	_	_	5	_	_	start_char=250|end_char=258
+7	and	_	_	_	_	6	_	_	start_char=259|end_char=262
+8	the	_	_	_	_	7	_	_	start_char=263|end_char=266
+9	breakfast	_	_	_	_	8	_	_	start_char=267|end_char=276
+10	was	_	_	_	_	9	_	_	start_char=277|end_char=280
+11	delicious	_	_	_	_	10	_	_	SpaceAfter=No|start_char=281|end_char=290
+12	.	_	_	_	_	11	_	_	SpacesAfter=\n|start_char=290|end_char=291
+
+# text = Worst.
+# sent_id = 8
+# sentiment = 1
+1	Worst	_	_	_	_	0	_	_	SpaceAfter=No|start_char=292|end_char=297
+2	.	_	_	_	_	1	_	_	start_char=297|end_char=298
+
+# text = Customer.
+# sent_id = 9
+# sentiment = 1
+1	Customer	_	_	_	_	0	_	_	SpaceAfter=No|start_char=299|end_char=307
+2	.	_	_	_	_	1	_	_	start_char=307|end_char=308
+
+# text = Service.
+# sent_id = 10
+# sentiment = 1
+1	Service	_	_	_	_	0	_	_	SpaceAfter=No|start_char=309|end_char=316
+2	.	_	_	_	_	1	_	_	start_char=316|end_char=317
+
+# text = Ever.
+# sent_id = 11
+# sentiment = 1
+1	Ever	_	_	_	_	0	_	_	SpaceAfter=No|start_char=318|end_char=322
+2	.	_	_	_	_	1	_	_	SpacesAfter=\n|start_char=322|end_char=323
+
+# text = The battery dies after two hours, which is unacceptable for a phone this expensive.
+# sent_id = 12
+# sentiment = 0
+1	The	_	_	_	_	0	_	_	start_char=324|end_char=327
+2	battery	_	_	_	_	1	_	_	start_char=328|end_char=335
+3	dies	_	_	_	_	2	_	_	start_char=336|end_char=340
+4	after	_	_	_	_	3	_	_	start_char=341|end_char=346
+5	two	_	_	_	_	4	_	_	start_char=347|end_char=350
+6	hours	_	_	_	_	5	_	_	SpaceAfter=No|start_char=351|end_char=356
+7	,	_	_	_	_	6	_	_	start_char=356|end_char=357
+8	which	_	_	_	_	7	_	_	start_char=358|end_char=363
+9	is	_	_	_	_	8	_	_	start_char=364|end_char=366
+10	unacceptable	_	_	_	_	9	_	_	start_char=367|end_char=379
+11	for	_	_	_	_	10	_	_	start_char=380|end_char=383
+12	a	_	_	_	_	11	_	_	start_char=384|end_char=385
+13	phone	_	_	_	_	12	_	_	start_char=386|end_char=391
+14	this	_	_	_	_	13	_	_	start_char=392|end_char=396
+15	expensive	_	_	_	_	14	_	_	SpaceAfter=No|start_char=397|end_char=406
+16	.	_	_	_	_	15	_	_	SpacesAfter=\n|start_char=406|end_char=407
+
+# text = Honestly, the kids' favourite part was the dinosaurs' parade.
+# sent_id = 13
+# sentiment = 1
+1	Honestly	_	_	_	_	0	_	_	SpaceAfter=No|start_char=408|end_char=416
+2	,	_	_	_	_	1	_	_	start_char=416|end_char=417
+3	the	_	_	_	_	2	_	_	start_char=418|end_char=421
+4-5	kids'	_	_	_	_	_	_	_	start_char=422|end_char=427
+4	kids	_	_	_	_	3	_	_	start_char=422|end_char=426
+5	'	_	_	_	_	4	_	_	start_char=426|end_char=427
+6	favourite	_	_	_	_	5	_	_	start_char=428|end_char=437
+7	part	_	_	_	_	6	_	_	start_char=438|end_char=442
+8	was	_	_	_	_	7	_	_	start_char=443|end_char=446
+9	the	_	_	_	_	8	_	_	start_char=447|end_char=450
+10-11	dinosaurs'	_	_	_	_	_	_	_	start_char=451|end_char=461
+10	dinosaurs	_	_	_	_	9	_	_	start_char=451|end_char=460
+11	'	_	_	_	_	10	_	_	start_char=460|end_char=461
+12	parade	_	_	_	_	11	_	_	SpaceAfter=No|start_char=462|end_char=468
+13	.	_	_	_	_	12	_	_	SpacesAfter=\n|start_char=468|end_char=469
+
+# text = It's fine, I guess.
+# sent_id = 14
+# sentiment = 1
+1-2	It's	_	_	_	_	_	_	_	start_char=470|end_char=474
+1	It	_	_	_	_	0	_	_	start_char=470|end_char=472
+2	's	_	_	_	_	1	_	_	start_char=472|end_char=474
+3	fine	_	_	_	_	2	_	_	SpaceAfter=No|start_char=475|end_char=479
+4	,	_	_	_	_	3	_	_	start_char=479|end_char=480
+5	I	_	_	_	_	4	_	_	start_char=481|end_char=482
+6	guess	_	_	_	_	5	_	_	SpaceAfter=No|start_char=483|end_char=488
+7	.	_	_	_	_	6	_	_	SpacesAfter=\n|start_char=488|end_char=489
+
+# text = What a fantastic, heartwarming, beautifully shot film!!!
+# sent_id = 15
+# sentiment = 2
+1	What	_	_	_	_	0	_	_	start_char=490|end_char=494
+2	a	_	_	_	_	1	_	_	start_char=495|end_char=496
+3	fantastic	_	_	_	_	2	_	_	SpaceAfter=No|start_char=497|end_char=506
+4	,	_	_	_	_	3	_	_	start_char=506|end_char=507
+5	heartwarming	_	_	_	_	4	_	_	SpaceAfter=No|start_char=508|end_char=520
+6	,	_	_	_	_	5	_	_	start_char=520|end_char=521
+7	beautifully	_	_	_	_	6	_	_	start_char=522|end_char=533
+8	shot	_	_	_	_	7	_	_	start_char=534|end_char=538
+9	film	_	_	_	_	8	_	_	SpaceAfter=No|start_char=539|end_char=543
+10	!!!	_	_	_	_	9	_	_	SpacesAfter=\n|start_char=543|end_char=546
+
+# text = The food was cold, the waiter was rude, and we waited forty minutes for the bill.
+# sent_id = 16
+# sentiment = 0
+1	The	_	_	_	_	0	_	_	start_char=547|end_char=550
+2	food	_	_	_	_	1	_	_	start_char=551|end_char=555
+3	was	_	_	_	_	2	_	_	start_char=556|end_char=559
+4	cold	_	_	_	_	3	_	_	SpaceAfter=No|start_char=560|end_char=564
+5	,	_	_	_	_	4	_	_	start_char=564|end_char=565
+6	the	_	_	_	_	5	_	_	start_char=566|end_char=569
+7	waiter	_	_	_	_	6	_	_	start_char=570|end_char=576
+8	was	_	_	_	_	7	_	_	start_char=577|end_char=580
+9	rude	_	_	_	_	8	_	_	SpaceAfter=No|start_char=581|end_char=585
+10	,	_	_	_	_	9	_	_	start_char=585|end_char=586
+11	and	_	_	_	_	10	_	_	start_char=587|end_char=590
+12	we	_	_	_	_	11	_	_	start_char=591|end_char=593
+13	waited	_	_	_	_	12	_	_	start_char=594|end_char=600
+14	forty	_	_	_	_	13	_	_	start_char=601|end_char=606
+15	minutes	_	_	_	_	14	_	_	start_char=607|end_char=614
+16	for	_	_	_	_	15	_	_	start_char=615|end_char=618
+17	the	_	_	_	_	16	_	_	start_char=619|end_char=622
+18	bill	_	_	_	_	17	_	_	SpaceAfter=No|start_char=623|end_char=627
+19	.	_	_	_	_	18	_	_	SpacesAfter=\n|start_char=627|end_char=628
+
+# text = I can't recommend this blender enough; it crushes ice in seconds.
+# sent_id = 17
+# sentiment = 2
+1	I	_	_	_	_	0	_	_	start_char=629|end_char=630
+2-3	can't	_	_	_	_	_	_	_	start_char=631|end_char=636
+2	ca	_	_	_	_	1	_	_	start_char=631|end_char=633
+3	n't	_	_	_	_	2	_	_	start_char=633|end_char=636
+4	recommend	_	_	_	_	3	_	_	start_char=637|end_char=646
+5	this	_	_	_	_	4	_	_	start_char=647|end_char=651
+6	blender	_	_	_	_	5	_	_	start_char=652|end_char=659
+7	enough	_	_	_	_	6	_	_	SpaceAfter=No|start_char=660|end_char=666
+8	;	_	_	_	_	7	_	_	start_char=666|end_char=667
+9	it	_	_	_	_	8	_	_	start_char=668|end_char=670
+10	crushes	_	_	_	_	9	_	_	start_char=671|end_char=678
+11	ice	_	_	_	_	10	_	_	start_char=679|end_char=682
+12	in	_	_	_	_	11	_	_	start_char=683|end_char=685
+13	seconds	_	_	_	_	12	_	_	SpaceAfter=No|start_char=686|end_char=693
+14	.	_	_	_	_	13	_	_	SpacesAfter=\n|start_char=693|end_char=694
+
+# text = The sequel is a lazy, cynical cash grab that insults its audience.
+# sent_id = 18
+# sentiment = 0
+1	The	_	_	_	_	0	_	_	start_char=695|end_char=698
+2	sequel	_	_	_	_	1	_	_	start_char=699|end_char=705
+3	is	_	_	_	_	2	_	_	start_char=706|end_char=708
+4	a	_	_	_	_	3	_	_	start_char=709|end_char=710
+5	lazy	_	_	_	_	4	_	_	SpaceAfter=No|start_char=711|end_char=715
+6	,	_	_	_	_	5	_	_	start_char=715|end_char=716
+7	cynical	_	_	_	_	6	_	_	start_char=717|end_char=724
+8	cash	_	_	_	_	7	_	_	start_char=725|end_char=729
+9	grab	_	_	_	_	8	_	_	start_char=730|end_char=734
+10	that	_	_	_	_	9	_	_	start_char=735|end_char=739
+11	insults	_	_	_	_	10	_	_	start_char=740|end_char=747
+12	its	_	_	_	_	11	_	_	start_char=748|end_char=751
+13	audience	_	_	_	_	12	_	_	SpaceAfter=No|start_char=752|end_char=760
+14	.	_	_	_	_	13	_	_	SpacesAfter=\n|start_char=760|end_char=761
+
+# text = Not bad at all.
+# sent_id = 19
+# sentiment = 1
+1	Not	_	_	_	_	0	_	_	start_char=762|end_char=765
+2	bad	_	_	_	_	1	_	_	start_char=766|end_char=769
+3	at	_	_	_	_	2	_	_	start_char=770|end_char=772
+4	all	_	_	_	_	3	_	_	SpaceAfter=No|start_char=773|end_char=776
+5	.	_	_	_	_	4	_	_	SpacesAfter=\n|start_char=776|end_char=777
+
+# text = Not good at all.
+# sent_id = 20
+# sentiment = 0
+1	Not	_	_	_	_	0	_	_	start_char=778|end_char=781
+2	good	_	_	_	_	1	_	_	start_char=782|end_char=786
+3	at	_	_	_	_	2	_	_	start_char=787|end_char=789
+4	all	_	_	_	_	3	_	_	SpaceAfter=No|start_char=790|end_char=793
+5	.	_	_	_	_	4	_	_	SpacesAfter=\n|start_char=793|end_char=794
+
+# text = The museum opens at nine and closes at five.
+# sent_id = 21
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=795|end_char=798
+2	museum	_	_	_	_	1	_	_	start_char=799|end_char=805
+3	opens	_	_	_	_	2	_	_	start_char=806|end_char=811
+4	at	_	_	_	_	3	_	_	start_char=812|end_char=814
+5	nine	_	_	_	_	4	_	_	start_char=815|end_char=819
+6	and	_	_	_	_	5	_	_	start_char=820|end_char=823
+7	closes	_	_	_	_	6	_	_	start_char=824|end_char=830
+8	at	_	_	_	_	7	_	_	start_char=831|end_char=833
+9	five	_	_	_	_	8	_	_	SpaceAfter=No|start_char=834|end_char=838
+10	.	_	_	_	_	9	_	_	SpacesAfter=\n|start_char=838|end_char=839
+
+# text = Absolutely brilliant performance by the whole cast :)
+# sent_id = 22
+# sentiment = 2
+1	Absolutely	_	_	_	_	0	_	_	start_char=840|end_char=850
+2	brilliant	_	_	_	_	1	_	_	start_char=851|end_char=860
+3	performance	_	_	_	_	2	_	_	start_char=861|end_char=872
+4	by	_	_	_	_	3	_	_	start_char=873|end_char=875
+5	the	_	_	_	_	4	_	_	start_char=876|end_char=879
+6	whole	_	_	_	_	5	_	_	start_char=880|end_char=885
+7	cast	_	_	_	_	6	_	_	start_char=886|end_char=890
+8	:)	_	_	_	_	7	_	_	SpacesAfter=\n|start_char=891|end_char=893
+
+# text = Ugh, my flight got cancelled AGAIN.
+# sent_id = 23
+# sentiment = 0
+1	Ugh	_	_	_	_	0	_	_	SpaceAfter=No|start_char=894|end_char=897
+2	,	_	_	_	_	1	_	_	start_char=897|end_char=898
+3	my	_	_	_	_	2	_	_	start_char=899|end_char=901
+4	flight	_	_	_	_	3	_	_	start_char=902|end_char=908
+5	got	_	_	_	_	4	_	_	start_char=909|end_char=912
+6	cancelled	_	_	_	_	5	_	_	start_char=913|end_char=922
+7	AGAIN	_	_	_	_	6	_	_	SpaceAfter=No|start_char=923|end_char=928
+8	.	_	_	_	_	7	_	_	SpacesAfter=\n|start_char=928|end_char=929
+
+# text = The instructions were confusing, but customer support sorted everything out quickly and politely.
+# sent_id = 24
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=930|end_char=933
+2	instructions	_	_	_	_	1	_	_	start_char=934|end_char=946
+3	were	_	_	_	_	2	_	_	start_char=947|end_char=951
+4	confusing	_	_	_	_	3	_	_	SpaceAfter=No|start_char=952|end_char=961
+5	,	_	_	_	_	4	_	_	start_char=961|end_char=962
+6	but	_	_	_	_	5	_	_	start_char=963|end_char=966
+7	customer	_	_	_	_	6	_	_	start_char=967|end_char=975
+8	support	_	_	_	_	7	_	_	start_char=976|end_char=983
+9	sorted	_	_	_	_	8	_	_	start_char=984|end_char=990
+10	everything	_	_	_	_	9	_	_	start_char=991|end_char=1001
+11	out	_	_	_	_	10	_	_	start_char=1002|end_char=1005
+12	quickly	_	_	_	_	11	_	_	start_char=1006|end_char=1013
+13	and	_	_	_	_	12	_	_	start_char=1014|end_char=1017
+14	politely	_	_	_	_	13	_	_	SpaceAfter=No|start_char=1018|end_char=1026
+15	.	_	_	_	_	14	_	_	SpacesAfter=\n|start_char=1026|end_char=1027
+
+# text = This novel is a slow, tedious slog with no likeable characters and an ending that makes no sense whatsoever, which is a shame because the first chapter promised so much.
+# sent_id = 25
+# sentiment = 0
+1	This	_	_	_	_	0	_	_	start_char=1028|end_char=1032
+2	novel	_	_	_	_	1	_	_	start_char=1033|end_char=1038
+3	is	_	_	_	_	2	_	_	start_char=1039|end_char=1041
+4	a	_	_	_	_	3	_	_	start_char=1042|end_char=1043
+5	slow	_	_	_	_	4	_	_	SpaceAfter=No|start_char=1044|end_char=1048
+6	,	_	_	_	_	5	_	_	start_char=1048|end_char=1049
+7	tedious	_	_	_	_	6	_	_	start_char=1050|end_char=1057
+8	slog	_	_	_	_	7	_	_	start_char=1058|end_char=1062
+9	with	_	_	_	_	8	_	_	start_char=1063|end_char=1067
+10	no	_	_	_	_	9	_	_	start_char=1068|end_char=1070
+11	likeable	_	_	_	_	10	_	_	start_char=1071|end_char=1079
+12	characters	_	_	_	_	11	_	_	start_char=1080|end_char=1090
+13	and	_	_	_	_	12	_	_	start_char=1091|end_char=1094
+14	an	_	_	_	_	13	_	_	start_char=1095|end_char=1097
+15	ending	_	_	_	_	14	_	_	start_char=1098|end_char=1104
+16	that	_	_	_	_	15	_	_	start_char=1105|end_char=1109
+17	makes	_	_	_	_	16	_	_	start_char=1110|end_char=1115
+18	no	_	_	_	_	17	_	_	start_char=1116|end_char=1118
+19	sense	_	_	_	_	18	_	_	start_char=1119|end_char=1124
+20	whatsoever	_	_	_	_	19	_	_	SpaceAfter=No|start_char=1125|end_char=1135
+21	,	_	_	_	_	20	_	_	start_char=1135|end_char=1136
+22	which	_	_	_	_	21	_	_	start_char=1137|end_char=1142
+23	is	_	_	_	_	22	_	_	start_char=1143|end_char=1145
+24	a	_	_	_	_	23	_	_	start_char=1146|end_char=1147
+25	shame	_	_	_	_	24	_	_	start_char=1148|end_char=1153
+26	because	_	_	_	_	25	_	_	start_char=1154|end_char=1161
+27	the	_	_	_	_	26	_	_	start_char=1162|end_char=1165
+28	first	_	_	_	_	27	_	_	start_char=1166|end_char=1171
+29	chapter	_	_	_	_	28	_	_	start_char=1172|end_char=1179
+30	promised	_	_	_	_	29	_	_	start_char=1180|end_char=1188
+31	so	_	_	_	_	30	_	_	start_char=1189|end_char=1191
+32	much	_	_	_	_	31	_	_	SpaceAfter=No|start_char=1192|end_char=1196
+33	.	_	_	_	_	32	_	_	SpacesAfter=\n|start_char=1196|end_char=1197
+
+# text = Five stars.
+# sent_id = 26
+# sentiment = 1
+1	Five	_	_	_	_	0	_	_	start_char=1198|end_char=1202
+2	stars	_	_	_	_	1	_	_	SpaceAfter=No|start_char=1203|end_char=1208
+3	.	_	_	_	_	2	_	_	SpacesAfter=\n|start_char=1208|end_char=1209
+
+# text = Zero stars, would not buy again.
+# sent_id = 27
+# sentiment = 0
+1	Zero	_	_	_	_	0	_	_	start_char=1210|end_char=1214
+2	stars	_	_	_	_	1	_	_	SpaceAfter=No|start_char=1215|end_char=1220
+3	,	_	_	_	_	2	_	_	start_char=1220|end_char=1221
+4	would	_	_	_	_	3	_	_	start_char=1222|end_char=1227
+5	not	_	_	_	_	4	_	_	start_char=1228|end_char=1231
+6	buy	_	_	_	_	5	_	_	start_char=1232|end_char=1235
+7	again	_	_	_	_	6	_	_	SpaceAfter=No|start_char=1236|end_char=1241
+8	.	_	_	_	_	7	_	_	SpacesAfter=\n|start_char=1241|end_char=1242
+
+# text = The new update broke my favourite features and made the app painfully slow.
+# sent_id = 28
+# sentiment = 0
+1	The	_	_	_	_	0	_	_	start_char=1243|end_char=1246
+2	new	_	_	_	_	1	_	_	start_char=1247|end_char=1250
+3	update	_	_	_	_	2	_	_	start_char=1251|end_char=1257
+4	broke	_	_	_	_	3	_	_	start_char=1258|end_char=1263
+5	my	_	_	_	_	4	_	_	start_char=1264|end_char=1266
+6	favourite	_	_	_	_	5	_	_	start_char=1267|end_char=1276
+7	features	_	_	_	_	6	_	_	start_char=1277|end_char=1285
+8	and	_	_	_	_	7	_	_	start_char=1286|end_char=1289
+9	made	_	_	_	_	8	_	_	start_char=1290|end_char=1294
+10	the	_	_	_	_	9	_	_	start_char=1295|end_char=1298
+11	app	_	_	_	_	10	_	_	start_char=1299|end_char=1302
+12	painfully	_	_	_	_	11	_	_	start_char=1303|end_char=1312
+13	slow	_	_	_	_	12	_	_	SpaceAfter=No|start_char=1313|end_char=1317
+14	.	_	_	_	_	13	_	_	SpacesAfter=\n|start_char=1317|end_char=1318
+
+# text = Our guide was knowledgeable, funny and genuinely kind.
+# sent_id = 29
+# sentiment = 2
+1	Our	_	_	_	_	0	_	_	start_char=1319|end_char=1322
+2	guide	_	_	_	_	1	_	_	start_char=1323|end_char=1328
+3	was	_	_	_	_	2	_	_	start_char=1329|end_char=1332
+4	knowledgeable	_	_	_	_	3	_	_	SpaceAfter=No|start_char=1333|end_char=1346
+5	,	_	_	_	_	4	_	_	start_char=1346|end_char=1347
+6	funny	_	_	_	_	5	_	_	start_char=1348|end_char=1353
+7	and	_	_	_	_	6	_	_	start_char=1354|end_char=1357
+8	genuinely	_	_	_	_	7	_	_	start_char=1358|end_char=1367
+9	kind	_	_	_	_	8	_	_	SpaceAfter=No|start_char=1368|end_char=1372
+10	.	_	_	_	_	9	_	_	SpacesAfter=\n|start_char=1372|end_char=1373
+
+# text = I'm so disappointed.
+# sent_id = 30
+# sentiment = 1
+1-2	I'm	_	_	_	_	_	_	_	start_char=1374|end_char=1377
+1	I	_	_	_	_	0	_	_	start_char=1374|end_char=1375
+2	'm	_	_	_	_	1	_	_	start_char=1375|end_char=1377
+3	so	_	_	_	_	2	_	_	start_char=1378|end_char=1380
+4	disappointed	_	_	_	_	3	_	_	SpaceAfter=No|start_char=1381|end_char=1393
+5	.	_	_	_	_	4	_	_	SpacesAfter=\n|start_char=1393|end_char=1394
+
+# text = I'm thrilled with how the garden turned out this summer.
+# sent_id = 31
+# sentiment = 2
+1-2	I'm	_	_	_	_	_	_	_	start_char=1395|end_char=1398
+1	I	_	_	_	_	0	_	_	start_char=1395|end_char=1396
+2	'm	_	_	_	_	1	_	_	start_char=1396|end_char=1398
+3	thrilled	_	_	_	_	2	_	_	start_char=1399|end_char=1407
+4	with	_	_	_	_	3	_	_	start_char=1408|end_char=1412
+5	how	_	_	_	_	4	_	_	start_char=1413|end_char=1416
+6	the	_	_	_	_	5	_	_	start_char=1417|end_char=1420
+7	garden	_	_	_	_	6	_	_	start_char=1421|end_char=1427
+8	turned	_	_	_	_	7	_	_	start_char=1428|end_char=1434
+9	out	_	_	_	_	8	_	_	start_char=1435|end_char=1438
+10	this	_	_	_	_	9	_	_	start_char=1439|end_char=1443
+11	summer	_	_	_	_	10	_	_	SpaceAfter=No|start_char=1444|end_char=1450
+12	.	_	_	_	_	11	_	_	SpacesAfter=\n|start_char=1450|end_char=1451
+
+# text = The report contains three tables and two figures.
+# sent_id = 32
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=1452|end_char=1455
+2	report	_	_	_	_	1	_	_	start_char=1456|end_char=1462
+3	contains	_	_	_	_	2	_	_	start_char=1463|end_char=1471
+4	three	_	_	_	_	3	_	_	start_char=1472|end_char=1477
+5	tables	_	_	_	_	4	_	_	start_char=1478|end_char=1484
+6	and	_	_	_	_	5	_	_	start_char=1485|end_char=1488
+7	two	_	_	_	_	6	_	_	start_char=1489|end_char=1492
+8	figures	_	_	_	_	7	_	_	SpaceAfter=No|start_char=1493|end_char=1500
+9	.	_	_	_	_	8	_	_	SpacesAfter=\n|start_char=1500|end_char=1501
+
+# text = Frankly, the critics' praise is baffling; the jokes fall flat and the pacing drags.
+# sent_id = 33
+# sentiment = 0
+1	Frankly	_	_	_	_	0	_	_	SpaceAfter=No|start_char=1502|end_char=1509
+2	,	_	_	_	_	1	_	_	start_char=1509|end_char=1510
+3	the	_	_	_	_	2	_	_	start_char=1511|end_char=1514
+4-5	critics'	_	_	_	_	_	_	_	start_char=1515|end_char=1523
+4	critics	_	_	_	_	3	_	_	start_char=1515|end_char=1522
+5	'	_	_	_	_	4	_	_	start_char=1522|end_char=1523
+6	praise	_	_	_	_	5	_	_	start_char=1524|end_char=1530
+7	is	_	_	_	_	6	_	_	start_char=1531|end_char=1533
+8	baffling	_	_	_	_	7	_	_	SpaceAfter=No|start_char=1534|end_char=1542
+9	;	_	_	_	_	8	_	_	start_char=1542|end_char=1543
+10	the	_	_	_	_	9	_	_	start_char=1544|end_char=1547
+11	jokes	_	_	_	_	10	_	_	start_char=1548|end_char=1553
+12	fall	_	_	_	_	11	_	_	start_char=1554|end_char=1558
+13	flat	_	_	_	_	12	_	_	start_char=1559|end_char=1563
+14	and	_	_	_	_	13	_	_	start_char=1564|end_char=1567
+15	the	_	_	_	_	14	_	_	start_char=1568|end_char=1571
+16	pacing	_	_	_	_	15	_	_	start_char=1572|end_char=1578
+17	drags	_	_	_	_	16	_	_	SpaceAfter=No|start_char=1579|end_char=1584
+18	.	_	_	_	_	17	_	_	SpacesAfter=\n|start_char=1584|end_char=1585
+
+# text = A masterpiece.
+# sent_id = 34
+# sentiment = 1
+1	A	_	_	_	_	0	_	_	start_char=1586|end_char=1587
+2	masterpiece	_	_	_	_	1	_	_	SpaceAfter=No|start_char=1588|end_char=1599
+3	.	_	_	_	_	2	_	_	SpacesAfter=\n|start_char=1599|end_char=1600
+
+# text = Garbage.
+# sent_id = 35
+# sentiment = 1
+1	Garbage	_	_	_	_	0	_	_	SpaceAfter=No|start_char=1601|end_char=1608
+2	.	_	_	_	_	1	_	_	SpacesAfter=\n|start_char=1608|end_char=1609
+
+# text = The concert was loud, sweaty, chaotic and absolutely unforgettable.
+# sent_id = 36
+# sentiment = 2
+1	The	_	_	_	_	0	_	_	start_char=1610|end_char=1613
+2	concert	_	_	_	_	1	_	_	start_char=1614|end_char=1621
+3	was	_	_	_	_	2	_	_	start_char=1622|end_char=1625
+4	loud	_	_	_	_	3	_	_	SpaceAfter=No|start_char=1626|end_char=1630
+5	,	_	_	_	_	4	_	_	start_char=1630|end_char=1631
+6	sweaty	_	_	_	_	5	_	_	SpaceAfter=No|start_char=1632|end_char=1638
+7	,	_	_	_	_	6	_	_	start_char=1638|end_char=1639
+8	chaotic	_	_	_	_	7	_	_	start_char=1640|end_char=1647
+9	and	_	_	_	_	8	_	_	start_char=1648|end_char=1651
+10	absolutely	_	_	_	_	9	_	_	start_char=1652|end_char=1662
+11	unforgettable	_	_	_	_	10	_	_	SpaceAfter=No|start_char=1663|end_char=1676
+12	.	_	_	_	_	11	_	_	SpacesAfter=\n|start_char=1676|end_char=1677
+
+# text = Shipping took a week longer than promised and the box arrived crushed.
+# sent_id = 37
+# sentiment = 0
+1	Shipping	_	_	_	_	0	_	_	start_char=1678|end_char=1686
+2	took	_	_	_	_	1	_	_	start_char=1687|end_char=1691
+3	a	_	_	_	_	2	_	_	start_char=1692|end_char=1693
+4	week	_	_	_	_	3	_	_	start_char=1694|end_char=1698
+5	longer	_	_	_	_	4	_	_	start_char=1699|end_char=1705
+6	than	_	_	_	_	5	_	_	start_char=1706|end_char=1710
+7	promised	_	_	_	_	6	_	_	start_char=1711|end_char=1719
+8	and	_	_	_	_	7	_	_	start_char=1720|end_char=1723
+9	the	_	_	_	_	8	_	_	start_char=1724|end_char=1727
+10	box	_	_	_	_	9	_	_	start_char=1728|end_char=1731
+11	arrived	_	_	_	_	10	_	_	start_char=1732|end_char=1739
+12	crushed	_	_	_	_	11	_	_	SpaceAfter=No|start_char=1740|end_char=1747
+13	.	_	_	_	_	12	_	_	SpacesAfter=\n|start_char=1747|end_char=1748
+
+# text = She smiled.
+# sent_id = 38
+# sentiment = 1
+1	She	_	_	_	_	0	_	_	start_char=1749|end_char=1752
+2	smiled	_	_	_	_	1	_	_	SpaceAfter=No|start_char=1753|end_char=1759
+3	.	_	_	_	_	2	_	_	SpacesAfter=\n|start_char=1759|end_char=1760
+
+# text = He wept.
+# sent_id = 39
+# sentiment = 1
+1	He	_	_	_	_	0	_	_	start_char=1761|end_char=1763
+2	wept	_	_	_	_	1	_	_	SpaceAfter=No|start_char=1764|end_char=1768
+3	.	_	_	_	_	2	_	_	SpacesAfter=\n|start_char=1768|end_char=1769
+
+# text = The flimflammery of the zorbulator was unbelievably splendiferous.
+# sent_id = 40
+# sentiment = 0
+1	The	_	_	_	_	0	_	_	start_char=1770|end_char=1773
+2	flimflammery	_	_	_	_	1	_	_	start_char=1774|end_char=1786
+3	of	_	_	_	_	2	_	_	start_char=1787|end_char=1789
+4	the	_	_	_	_	3	_	_	start_char=1790|end_char=1793
+5	zorbulator	_	_	_	_	4	_	_	start_char=1794|end_char=1804
+6	was	_	_	_	_	5	_	_	start_char=1805|end_char=1808
+7	unbelievably	_	_	_	_	6	_	_	start_char=1809|end_char=1821
+8	splendiferous	_	_	_	_	7	_	_	SpaceAfter=No|start_char=1822|end_char=1835
+9	.	_	_	_	_	8	_	_	SpacesAfter=\n|start_char=1835|end_char=1836

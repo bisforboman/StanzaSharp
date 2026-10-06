@@ -33,6 +33,9 @@ Reads <out>/corpus.txt and writes:
   lemma/<name>.conllu   tokenize,mwt,pos,lemma output for corpus.txt and each validation*.txt
   lemma/words.json      lemmatizer on LEMMA_WORDS: pipeline lemma, raw seq2seq output and edit class
                         (`--lemma-only` regenerates just lemma/)
+  sentiment/<name>.conllu + <name>.json
+                        tokenize,mwt,sentiment output for corpus.txt and each validation*.txt, and per
+                        sentence the label and the 3 class logits (`--sentiment-only`)
   pt/tiny_{legacy,zip}.pt + their stanza_convert.py output (.json/.safetensors)
                         small checkpoints in both torch.save formats for the C# .pt loader tests;
                         `python tools/make_golden.py --pt-only` regenerates just these
@@ -258,6 +261,64 @@ def write_lemma_golden(models, out):
     print(f"lemma/words.json: {len(result)} words")
 
 
+SENTIMENT_PROCESSORS = "tokenize,mwt,sentiment"
+
+
+def write_sentiment_golden(models, out):
+    """
+    sentiment/: tokenize,mwt,sentiment output, kept apart from the files above.
+      <name>.conllu + <name>.json   for corpus.txt, every validation*.txt and sentiment/reviews.txt
+                                    (opinionated sentences): the CoNLL-U, and per sentence the label
+                                    and the 3 class logits as computed in the pipeline's batches
+      all.json                      the same for all of those texts as one document (joined by blank
+                                    lines), which takes several 5000-word batches
+    """
+    from stanza.models.common.utils import sort_with_indices
+
+    sent_out = out / "sentiment"
+    sent_out.mkdir(exist_ok=True)
+    nlp = stanza.Pipeline("en", dir=models, processors=SENTIMENT_PROCESSORS, download_method=None,
+                          use_gpu=False, logging_level="WARN")
+    model = nlp.processors["sentiment"]._model
+    captured = []
+    original = model.forward
+
+    def forward(*a, **k):
+        result = original(*a, **k)
+        captured.append(result)
+        return result
+
+    def run(text, name, conllu):
+        captured.clear()
+        with torch.no_grad():
+            doc = nlp(text)
+        if conllu:
+            (sent_out / f"{name}.conllu").write_text("{:C}\n".format(doc), encoding="utf-8", newline="\n")
+        # label_sentences runs the batches in length-sorted order; put the logits back in document order.
+        _, orig_idx = sort_with_indices(model.extract_sentences(doc), key=len, reverse=True)
+        sorted_logits = torch.cat(captured).tolist()
+        logits = [None] * len(sorted_logits)
+        for k, i in enumerate(orig_idx):
+            logits[i] = sorted_logits[k]
+        result = [{"sentiment": s.sentiment, "logits": l} for s, l in zip(doc.sentences, logits)]
+        with open(sent_out / f"{name}.json", "w", encoding="utf-8", newline="\n") as f:
+            json.dump({"stanza": stanza.__version__, "batches": len(captured), "sentences": result}, f,
+                      indent=None if name == "all" else 1)
+        print(f"sentiment/{name}: {len(doc.sentences)} sentences, {len(captured)} batches, labels "
+              f"{[sum(r['sentiment'] == c for r in result) for c in range(3)]}")
+
+    model.forward = forward
+    try:
+        texts = []
+        for path in [out / "corpus.txt"] + sorted(out.glob("validation*.txt")) + [sent_out / "reviews.txt"]:
+            text = path.read_bytes().decode("utf-8")
+            texts.append(text)
+            run(text, "corpus" if path.name == "corpus.txt" else path.stem, True)
+        run("\n\n".join(texts), "all", False)
+    finally:
+        model.forward = original
+
+
 def write_pt_fixtures(out):
     """
     pt/: a tiny checkpoint saved in the legacy format (as Stanza's models are) and in the zip format
@@ -298,6 +359,7 @@ def main():
     p.add_argument("--pt-only", action="store_true", help="only regenerate the pt/ loader fixtures")
     p.add_argument("--depparse-only", action="store_true", help="only regenerate depparse/")
     p.add_argument("--lemma-only", action="store_true", help="only regenerate the lemma/ golden data")
+    p.add_argument("--sentiment-only", action="store_true", help="only regenerate sentiment/")
     args = p.parse_args()
     out = Path(args.out)
     if args.depparse_only:
@@ -306,6 +368,9 @@ def main():
         return
     if args.lemma_only:
         write_lemma_golden(args.models, out)
+        return
+    if args.sentiment_only:
+        write_sentiment_golden(args.models, out)
         return
     write_pt_fixtures(out)
     if args.pt_only:
@@ -369,6 +434,7 @@ def main():
     write_tokenize_stress(args.models, text, out)
     write_mwt_golden(args.models, out)
     write_lemma_golden(args.models, out)
+    write_sentiment_golden(args.models, out)
 
     write_safetensors(tensors, out / "intermediates.safetensors", {"stanza": stanza.__version__})
     with open(out / "intermediates.json", "w", encoding="utf-8", newline="\n") as f:
