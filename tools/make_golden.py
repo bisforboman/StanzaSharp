@@ -33,6 +33,13 @@ Reads <out>/corpus.txt and writes:
   lemma/<name>.conllu   tokenize,mwt,pos,lemma output for corpus.txt and each validation*.txt
   lemma/words.json      lemmatizer on LEMMA_WORDS: pipeline lemma, raw seq2seq output and edit class
                         (`--lemma-only` regenerates just lemma/)
+  ner/<name>.conllu     tokenize,mwt,pos,lemma,depparse,ner output for corpus.txt (as corpus.conllu) and
+                        each validation*.txt (`ner=` in MISC)
+  ner/<name>.json       doc.ents of the same run: per sentence, text/type/start_char/end_char
+  ner/intermediates.safetensors + .json
+                        for the first INTERMEDIATE_SENTENCES sentences, each tagged alone from its golden
+                        tokens: s{i}.emissions (tag_clfs[0] logits [n_tokens, n_tags]); `--ner-only`
+                        regenerates just ner/
   pt/tiny_{legacy,zip}.pt + their stanza_convert.py output (.json/.safetensors)
                         small checkpoints in both torch.save formats for the C# .pt loader tests;
                         `python tools/make_golden.py --pt-only` regenerates just these
@@ -291,6 +298,48 @@ def write_pt_fixtures(out):
                        out / "pt" / name, source_name=path.name)
 
 
+NER_PROCESSORS = "tokenize,mwt,pos,lemma,depparse,ner"
+
+
+def write_ner_golden(models, out):
+    """ner/: NER golden data, in its own folder (see the module docstring)."""
+    nlp = stanza.Pipeline("en", dir=models, processors=NER_PROCESSORS, download_method=None,
+                          use_gpu=False, logging_level="WARN")
+    ner = out / "ner"
+    ner.mkdir(exist_ok=True)
+    corpus_doc = None
+    for path in [out / "corpus.txt"] + sorted(out.glob("validation*.txt")):
+        with torch.no_grad():
+            doc = nlp(path.read_bytes().decode("utf-8"))
+        name = "corpus" if path.name == "corpus.txt" else path.stem
+        corpus_doc = corpus_doc or doc
+        (ner / f"{name}.conllu").write_text("{:C}\n".format(doc), encoding="utf-8", newline="\n")
+        ents = [[{"text": e.text, "type": e.type, "start_char": e.start_char, "end_char": e.end_char}
+                 for e in s.ents] for s in doc.sentences]
+        with open(ner / f"{name}.json", "w", encoding="utf-8", newline="\n") as f:
+            json.dump(ents, f, indent=1, ensure_ascii=False)
+        print(f"ner/{name}.conllu: {len(doc.sentences)} sentences, {len(doc.ents)} entities")
+
+    # Intermediates: tag each sentence alone, capturing the emission scores of the predicted tag set.
+    processor = nlp.processors["ner"]
+    trainer = processor.trainers[0]
+    tensors, index = {}, []
+    for i, sent in enumerate(corpus_doc.sentences[:INTERMEDIATE_SENTENCES]):
+        tokens = [t.text for t in sent.tokens]
+        single = stanza.Document([[{"id": j + 1, "text": t} for j, t in enumerate(tokens)]])
+        cap, h = capture_module(trainer.model.tag_clfs[trainer.args["predict_tagset"]])
+        with torch.no_grad():
+            processor.process(single)
+        h.remove()
+        tensors[f"s{i}.emissions"] = cap.outputs[0].numpy()
+        index.append({"sentence": i, "tokens": tokens, "ner": [t.ner for t in single.sentences[0].tokens]})
+    write_safetensors(tensors, ner / "intermediates.safetensors", {"stanza": stanza.__version__})
+    with open(ner / "intermediates.json", "w", encoding="utf-8", newline="\n") as f:
+        json.dump({"stanza": stanza.__version__, "sentences": index}, f, indent=1, ensure_ascii=False)
+    for k, v in tensors.items():
+        print(f"  {k}: {list(v.shape)}")
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--models", default="models/stanza")
@@ -298,6 +347,7 @@ def main():
     p.add_argument("--pt-only", action="store_true", help="only regenerate the pt/ loader fixtures")
     p.add_argument("--depparse-only", action="store_true", help="only regenerate depparse/")
     p.add_argument("--lemma-only", action="store_true", help="only regenerate the lemma/ golden data")
+    p.add_argument("--ner-only", action="store_true", help="only regenerate ner/")
     args = p.parse_args()
     out = Path(args.out)
     if args.depparse_only:
@@ -306,6 +356,9 @@ def main():
         return
     if args.lemma_only:
         write_lemma_golden(args.models, out)
+        return
+    if args.ner_only:
+        write_ner_golden(args.models, out)
         return
     write_pt_fixtures(out)
     if args.pt_only:
@@ -369,6 +422,7 @@ def main():
     write_tokenize_stress(args.models, text, out)
     write_mwt_golden(args.models, out)
     write_lemma_golden(args.models, out)
+    write_ner_golden(args.models, out)
 
     write_safetensors(tensors, out / "intermediates.safetensors", {"stanza": stanza.__version__})
     with open(out / "intermediates.json", "w", encoding="utf-8", newline="\n") as f:

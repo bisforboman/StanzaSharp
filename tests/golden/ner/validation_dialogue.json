@@ -1,0 +1,122 @@
+[
+ [
+  {
+   "text": "Ellen",
+   "type": "PERSON",
+   "start_char": 51,
+   "end_char": 56
+  }
+ ],
+ [
+  {
+   "text": "Martin",
+   "type": "PERSON",
+   "start_char": 88,
+   "end_char": 94
+  }
+ ],
+ [],
+ [
+  {
+   "text": "Don't",
+   "type": "PERSON",
+   "start_char": 148,
+   "end_char": 153
+  },
+  {
+   "text": "Rosa",
+   "type": "PERSON",
+   "start_char": 190,
+   "end_char": 194
+  }
+ ],
+ [],
+ [],
+ [
+  {
+   "text": "tomorrow",
+   "type": "DATE",
+   "start_char": 259,
+   "end_char": 267
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "Lily",
+   "type": "PERSON",
+   "start_char": 471,
+   "end_char": 475
+  }
+ ],
+ [
+  {
+   "text": "Jamal",
+   "type": "PERSON",
+   "start_char": 488,
+   "end_char": 493
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "The Lighthouse Keeper's Daughter'",
+   "type": "WORK_OF_ART",
+   "start_char": 1012,
+   "end_char": 1045
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "twelve",
+   "type": "CARDINAL",
+   "start_char": 1569,
+   "end_char": 1575
+  }
+ ],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "Grandpa",
+   "type": "PERSON",
+   "start_char": 1705,
+   "end_char": 1712
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ []
+]

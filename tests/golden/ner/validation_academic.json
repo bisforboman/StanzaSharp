@@ -1,0 +1,854 @@
+[
+ [
+  {
+   "text": "Hartwell v. Dunmore Logistics, LLC",
+   "type": "ORG",
+   "start_char": 4,
+   "end_char": 38
+  },
+  {
+   "text": "512 F.3d 1044",
+   "type": "DATE",
+   "start_char": 40,
+   "end_char": 53
+  },
+  {
+   "text": "1049",
+   "type": "CARDINAL",
+   "start_char": 55,
+   "end_char": 59
+  },
+  {
+   "text": "9th",
+   "type": "ORDINAL",
+   "start_char": 61,
+   "end_char": 64
+  },
+  {
+   "text": "2008",
+   "type": "DATE",
+   "start_char": 70,
+   "end_char": 74
+  }
+ ],
+ [],
+ [
+  {
+   "text": "Pell Grain Co.",
+   "type": "ORG",
+   "start_char": 135,
+   "end_char": 149
+  },
+  {
+   "text": "77 B.R. 301",
+   "type": "DATE",
+   "start_char": 151,
+   "end_char": 162
+  },
+  {
+   "text": "D.",
+   "type": "NORP",
+   "start_char": 171,
+   "end_char": 173
+  },
+  {
+   "text": "1987",
+   "type": "DATE",
+   "start_char": 179,
+   "end_char": 183
+  }
+ ],
+ [
+  {
+   "text": "12",
+   "type": "CARDINAL",
+   "start_char": 281,
+   "end_char": 283
+  },
+  {
+   "text": "3",
+   "type": "CARDINAL",
+   "start_char": 287,
+   "end_char": 288
+  }
+ ],
+ [
+  {
+   "text": "Section 4",
+   "type": "LAW",
+   "start_char": 291,
+   "end_char": 300
+  },
+  {
+   "text": "1994",
+   "type": "DATE",
+   "start_char": 324,
+   "end_char": 328
+  }
+ ],
+ [
+  {
+   "text": "42",
+   "type": "CARDINAL",
+   "start_char": 334,
+   "end_char": 336
+  },
+  {
+   "text": "U.S.C. § 1983",
+   "type": "LAW",
+   "start_char": 337,
+   "end_char": 350
+  },
+  {
+   "text": "2018",
+   "type": "DATE",
+   "start_char": 352,
+   "end_char": 356
+  },
+  {
+   "text": "12",
+   "type": "CARDINAL",
+   "start_char": 375,
+   "end_char": 377
+  },
+  {
+   "text": "6",
+   "type": "CARDINAL",
+   "start_char": 381,
+   "end_char": 382
+  }
+ ],
+ [],
+ [
+  {
+   "text": "The Clerk of Court",
+   "type": "ORG",
+   "start_char": 444,
+   "end_char": 462
+  }
+ ],
+ [],
+ [
+  {
+   "text": "1051",
+   "type": "CARDINAL",
+   "start_char": 514,
+   "end_char": 518
+  }
+ ],
+ [],
+ [
+  {
+   "text": "Ibid",
+   "type": "PERSON",
+   "start_char": 601,
+   "end_char": 605
+  }
+ ],
+ [
+  {
+   "text": "Kowalski et al.",
+   "type": "ORG",
+   "start_char": 620,
+   "end_char": 635
+  },
+  {
+   "text": "2019",
+   "type": "DATE",
+   "start_char": 637,
+   "end_char": 641
+  }
+ ],
+ [
+  {
+   "text": "3",
+   "type": "CARDINAL",
+   "start_char": 729,
+   "end_char": 730
+  },
+  {
+   "text": "7",
+   "type": "CARDINAL",
+   "start_char": 732,
+   "end_char": 733
+  },
+  {
+   "text": "9",
+   "type": "CARDINAL",
+   "start_char": 734,
+   "end_char": 735
+  }
+ ],
+ [
+  {
+   "text": "Nguyen",
+   "type": "PERSON",
+   "start_char": 747,
+   "end_char": 753
+  },
+  {
+   "text": "Abara",
+   "type": "PERSON",
+   "start_char": 758,
+   "end_char": 763
+  },
+  {
+   "text": "2021",
+   "type": "DATE",
+   "start_char": 765,
+   "end_char": 769
+  },
+  {
+   "text": "44",
+   "type": "CARDINAL",
+   "start_char": 774,
+   "end_char": 776
+  }
+ ],
+ [
+  {
+   "text": "Smith",
+   "type": "PERSON",
+   "start_char": 817,
+   "end_char": 822
+  },
+  {
+   "text": "2003",
+   "type": "DATE",
+   "start_char": 824,
+   "end_char": 828
+  },
+  {
+   "text": "Lee & Park",
+   "type": "ORG",
+   "start_char": 830,
+   "end_char": 840
+  },
+  {
+   "text": "2010",
+   "type": "DATE",
+   "start_char": 842,
+   "end_char": 846
+  }
+ ],
+ [
+  {
+   "text": "Table 2",
+   "type": "WORK_OF_ART",
+   "start_char": 910,
+   "end_char": 917
+  }
+ ],
+ [
+  {
+   "text": "71",
+   "type": "CARDINAL",
+   "start_char": 1009,
+   "end_char": 1011
+  },
+  {
+   "text": "55",
+   "type": "CARDINAL",
+   "start_char": 1020,
+   "end_char": 1022
+  },
+  {
+   "text": "2",
+   "type": "CARDINAL",
+   "start_char": 1029,
+   "end_char": 1030
+  },
+  {
+   "text": "24.6",
+   "type": "CARDINAL",
+   "start_char": 1050,
+   "end_char": 1054
+  },
+  {
+   "text": "3.1",
+   "type": "CARDINAL",
+   "start_char": 1061,
+   "end_char": 1064
+  }
+ ],
+ [
+  {
+   "text": "8.00",
+   "type": "MONEY",
+   "start_char": 1117,
+   "end_char": 1121
+  },
+  {
+   "text": "20-min",
+   "type": "QUANTITY",
+   "start_char": 1141,
+   "end_char": 1147
+  }
+ ],
+ [
+  {
+   "text": "25 °C",
+   "type": "QUANTITY",
+   "start_char": 1189,
+   "end_char": 1194
+  }
+ ],
+ [
+  {
+   "text": "87%",
+   "type": "PERCENT",
+   "start_char": 1228,
+   "end_char": 1231
+  },
+  {
+   "text": "0.62 g",
+   "type": "QUANTITY",
+   "start_char": 1233,
+   "end_char": 1239
+  },
+  {
+   "text": "2.4 mmol",
+   "type": "QUANTITY",
+   "start_char": 1241,
+   "end_char": 1249
+  }
+ ],
+ [],
+ [
+  {
+   "text": "approximately 3.00 × 10^8 m",
+   "type": "QUANTITY",
+   "start_char": 1354,
+   "end_char": 1381
+  },
+  {
+   "text": "6.022e23",
+   "type": "CARDINAL",
+   "start_char": 1406,
+   "end_char": 1414
+  }
+ ],
+ [
+  {
+   "text": "6.626",
+   "type": "CARDINAL",
+   "start_char": 1452,
+   "end_char": 1457
+  }
+ ],
+ [
+  {
+   "text": "J·s",
+   "type": "PERSON",
+   "start_char": 1466,
+   "end_char": 1469
+  }
+ ],
+ [
+  {
+   "text": "5",
+   "type": "CARDINAL",
+   "start_char": 1504,
+   "end_char": 1505
+  }
+ ],
+ [
+  {
+   "text": "10 µg/mL",
+   "type": "QUANTITY",
+   "start_char": 1544,
+   "end_char": 1552
+  },
+  {
+   "text": "3,000 × g",
+   "type": "QUANTITY",
+   "start_char": 1589,
+   "end_char": 1598
+  },
+  {
+   "text": "10 min",
+   "type": "QUANTITY",
+   "start_char": 1603,
+   "end_char": 1609
+  }
+ ],
+ [
+  {
+   "text": "1.5×10^9 km",
+   "type": "QUANTITY",
+   "start_char": 1631,
+   "end_char": 1642
+  },
+  {
+   "text": "14 yr",
+   "type": "QUANTITY",
+   "start_char": 1646,
+   "end_char": 1651
+  }
+ ],
+ [
+  {
+   "text": "470 W",
+   "type": "QUANTITY",
+   "start_char": 1679,
+   "end_char": 1684
+  },
+  {
+   "text": "roughly 240 W",
+   "type": "QUANTITY",
+   "start_char": 1699,
+   "end_char": 1712
+  },
+  {
+   "text": "2015",
+   "type": "DATE",
+   "start_char": 1716,
+   "end_char": 1720
+  }
+ ],
+ [
+  {
+   "text": "100°C",
+   "type": "QUANTITY",
+   "start_char": 1738,
+   "end_char": 1743
+  },
+  {
+   "text": "212°F",
+   "type": "QUANTITY",
+   "start_char": 1745,
+   "end_char": 1750
+  }
+ ],
+ [
+  {
+   "text": "2,400 m",
+   "type": "QUANTITY",
+   "start_char": 1784,
+   "end_char": 1791
+  },
+  {
+   "text": "92 °C",
+   "type": "QUANTITY",
+   "start_char": 1811,
+   "end_char": 1816
+  }
+ ],
+ [
+  {
+   "text": "3",
+   "type": "CARDINAL",
+   "start_char": 1824,
+   "end_char": 1825
+  }
+ ],
+ [
+  {
+   "text": "7",
+   "type": "CARDINAL",
+   "start_char": 1868,
+   "end_char": 1869
+  }
+ ],
+ [
+  {
+   "text": "4.2 ± 0.3 mm",
+   "type": "QUANTITY",
+   "start_char": 1936,
+   "end_char": 1948
+  },
+  {
+   "text": "95%",
+   "type": "PERCENT",
+   "start_char": 1950,
+   "end_char": 1953
+  },
+  {
+   "text": "3.6",
+   "type": "CARDINAL",
+   "start_char": 1958,
+   "end_char": 1961
+  },
+  {
+   "text": "4.8",
+   "type": "CARDINAL",
+   "start_char": 1962,
+   "end_char": 1965
+  }
+ ],
+ [
+  {
+   "text": "0.05 ppm",
+   "type": "QUANTITY",
+   "start_char": 2004,
+   "end_char": 2012
+  }
+ ],
+ [
+  {
+   "text": "4.7 kΩ",
+   "type": "QUANTITY",
+   "start_char": 2055,
+   "end_char": 2061
+  },
+  {
+   "text": "5",
+   "type": "CARDINAL",
+   "start_char": 2080,
+   "end_char": 2081
+  }
+ ],
+ [
+  {
+   "text": "3.2",
+   "type": "CARDINAL",
+   "start_char": 2130,
+   "end_char": 2133
+  }
+ ],
+ [
+  {
+   "text": "Section 4",
+   "type": "LAW",
+   "start_char": 2160,
+   "end_char": 2169
+  },
+  {
+   "text": "Sect. 5",
+   "type": "LAW",
+   "start_char": 2192,
+   "end_char": 2199
+  }
+ ],
+ [
+  {
+   "text": "1",
+   "type": "CARDINAL",
+   "start_char": 2248,
+   "end_char": 2249
+  },
+  {
+   "text": "3",
+   "type": "CARDINAL",
+   "start_char": 2250,
+   "end_char": 2251
+  }
+ ],
+ [
+  {
+   "text": "2.1",
+   "type": "CARDINAL",
+   "start_char": 2262,
+   "end_char": 2265
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "2021-0457",
+   "type": "CARDINAL",
+   "start_char": 2531,
+   "end_char": 2540
+  }
+ ],
+ [],
+ [
+  {
+   "text": "H. Lindqvist",
+   "type": "PERSON",
+   "start_char": 2634,
+   "end_char": 2646
+  },
+  {
+   "text": "Northbridge",
+   "type": "GPE",
+   "start_char": 2678,
+   "end_char": 2689
+  },
+  {
+   "text": "14 College Rd.",
+   "type": "ORG",
+   "start_char": 2691,
+   "end_char": 2705
+  },
+  {
+   "text": "Northbridge NB4 2XY",
+   "type": "ORG",
+   "start_char": 2707,
+   "end_char": 2726
+  },
+  {
+   "text": "U.K",
+   "type": "GPE",
+   "start_char": 2728,
+   "end_char": 2731
+  }
+ ],
+ [
+  {
+   "text": "NIH",
+   "type": "ORG",
+   "start_char": 2789,
+   "end_char": 2792
+  }
+ ],
+ [],
+ [
+  {
+   "text": "Smith",
+   "type": "PERSON",
+   "start_char": 2839,
+   "end_char": 2844
+  },
+  {
+   "text": "J. A., & Jones, B.",
+   "type": "ORG",
+   "start_char": 2846,
+   "end_char": 2864
+  },
+  {
+   "text": "2015",
+   "type": "DATE",
+   "start_char": 2866,
+   "end_char": 2870
+  }
+ ],
+ [],
+ [
+  {
+   "text": "Journal of Applied Stuff",
+   "type": "WORK_OF_ART",
+   "start_char": 2903,
+   "end_char": 2927
+  },
+  {
+   "text": "12",
+   "type": "CARDINAL",
+   "start_char": 2929,
+   "end_char": 2931
+  },
+  {
+   "text": "3",
+   "type": "CARDINAL",
+   "start_char": 2932,
+   "end_char": 2933
+  },
+  {
+   "text": "45",
+   "type": "CARDINAL",
+   "start_char": 2936,
+   "end_char": 2938
+  },
+  {
+   "text": "67",
+   "type": "CARDINAL",
+   "start_char": 2939,
+   "end_char": 2941
+  }
+ ],
+ [],
+ [
+  {
+   "text": "Okonkwo",
+   "type": "PERSON",
+   "start_char": 2981,
+   "end_char": 2988
+  },
+  {
+   "text": "C.",
+   "type": "NORP",
+   "start_char": 2990,
+   "end_char": 2992
+  },
+  {
+   "text": "2020",
+   "type": "DATE",
+   "start_char": 2994,
+   "end_char": 2998
+  }
+ ],
+ [
+  {
+   "text": "Short History of Long Words",
+   "type": "WORK_OF_ART",
+   "start_char": 3003,
+   "end_char": 3030
+  },
+  {
+   "text": "2nd",
+   "type": "ORDINAL",
+   "start_char": 3032,
+   "end_char": 3035
+  }
+ ],
+ [
+  {
+   "text": "Oxford",
+   "type": "GPE",
+   "start_char": 3042,
+   "end_char": 3048
+  },
+  {
+   "text": "Clarendon Press",
+   "type": "ORG",
+   "start_char": 3050,
+   "end_char": 3065
+  }
+ ],
+ [],
+ [],
+ [
+  {
+   "text": "4",
+   "type": "CARDINAL",
+   "start_char": 3178,
+   "end_char": 3179
+  },
+  {
+   "text": "112",
+   "type": "CARDINAL",
+   "start_char": 3185,
+   "end_char": 3188
+  },
+  {
+   "text": "19",
+   "type": "CARDINAL",
+   "start_char": 3189,
+   "end_char": 3191
+  },
+  {
+   "text": "23",
+   "type": "CARDINAL",
+   "start_char": 3196,
+   "end_char": 3198
+  }
+ ],
+ [
+  {
+   "text": "52",
+   "type": "CARDINAL",
+   "start_char": 3217,
+   "end_char": 3219
+  },
+  {
+   "text": "48",
+   "type": "CARDINAL",
+   "start_char": 3220,
+   "end_char": 3222
+  }
+ ],
+ [
+  {
+   "text": "House",
+   "type": "ORG",
+   "start_char": 3249,
+   "end_char": 3254
+  }
+ ],
+ [
+  {
+   "text": "Section 2",
+   "type": "LAW",
+   "start_char": 3292,
+   "end_char": 3301
+  },
+  {
+   "text": "Act",
+   "type": "LAW",
+   "start_char": 3312,
+   "end_char": 3315
+  },
+  {
+   "text": "the \"safe harbor\" provision",
+   "type": "LAW",
+   "start_char": 3335,
+   "end_char": 3362
+  },
+  {
+   "text": "2011",
+   "type": "DATE",
+   "start_char": 3380,
+   "end_char": 3384
+  }
+ ],
+ [],
+ [
+  {
+   "text": "500 mg",
+   "type": "QUANTITY",
+   "start_char": 3459,
+   "end_char": 3465
+  },
+  {
+   "text": "10 days",
+   "type": "DATE",
+   "start_char": 3492,
+   "end_char": 3499
+  }
+ ],
+ [
+  {
+   "text": "39.4 °C",
+   "type": "QUANTITY",
+   "start_char": 3530,
+   "end_char": 3537
+  },
+  {
+   "text": "48 hrs",
+   "type": "TIME",
+   "start_char": 3556,
+   "end_char": 3562
+  }
+ ],
+ [
+  {
+   "text": "7.4",
+   "type": "CARDINAL",
+   "start_char": 3568,
+   "end_char": 3571
+  }
+ ],
+ [
+  {
+   "text": "0.15",
+   "type": "CARDINAL",
+   "start_char": 3628,
+   "end_char": 3632
+  }
+ ],
+ [
+  {
+   "text": "9.109 × 10^−31 kg",
+   "type": "QUANTITY",
+   "start_char": 3665,
+   "end_char": 3682
+  },
+  {
+   "text": "1/1836",
+   "type": "CARDINAL",
+   "start_char": 3692,
+   "end_char": 3698
+  }
+ ],
+ [
+  {
+   "text": "3/14/2023",
+   "type": "DATE",
+   "start_char": 3744,
+   "end_char": 3753
+  },
+  {
+   "text": "555-012-3456",
+   "type": "CARDINAL",
+   "start_char": 3774,
+   "end_char": 3786
+  }
+ ],
+ []
+]

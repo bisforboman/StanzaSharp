@@ -1,0 +1,573 @@
+[
+ [
+  {
+   "text": "Søren Kierkegaard",
+   "type": "PERSON",
+   "start_char": 0,
+   "end_char": 17
+  },
+  {
+   "text": "Copenhagen",
+   "type": "GPE",
+   "start_char": 30,
+   "end_char": 40
+  }
+ ],
+ [
+  {
+   "text": "Gabriel García Márquez",
+   "type": "PERSON",
+   "start_char": 42,
+   "end_char": 64
+  },
+  {
+   "text": "Spanish",
+   "type": "LANGUAGE",
+   "start_char": 74,
+   "end_char": 81
+  }
+ ],
+ [
+  {
+   "text": "Antonín Dvořák",
+   "type": "PERSON",
+   "start_char": 83,
+   "end_char": 97
+  },
+  {
+   "text": "the New World Symphony",
+   "type": "ORG",
+   "start_char": 107,
+   "end_char": 129
+  }
+ ],
+ [
+  {
+   "text": "Łukasz Wiśniewski",
+   "type": "PERSON",
+   "start_char": 139,
+   "end_char": 156
+  },
+  {
+   "text": "Ágnes Szabó",
+   "type": "PERSON",
+   "start_char": 161,
+   "end_char": 172
+  },
+  {
+   "text": "Kraków",
+   "type": "GPE",
+   "start_char": 194,
+   "end_char": 200
+  }
+ ],
+ [
+  {
+   "text": "Reykjavík",
+   "type": "GPE",
+   "start_char": 219,
+   "end_char": 228
+  },
+  {
+   "text": "Guðrún Ólafsdóttir",
+   "type": "PERSON",
+   "start_char": 236,
+   "end_char": 254
+  }
+ ],
+ [],
+ [
+  {
+   "text": "a Grüner Veltliner",
+   "type": "ORG",
+   "start_char": 380,
+   "end_char": 398
+  }
+ ],
+ [
+  {
+   "text": "İstanbul",
+   "type": "GPE",
+   "start_char": 401,
+   "end_char": 409
+  },
+  {
+   "text": "Ankara",
+   "type": "GPE",
+   "start_char": 414,
+   "end_char": 420
+  },
+  {
+   "text": "Türkiye",
+   "type": "GPE",
+   "start_char": 433,
+   "end_char": 440
+  }
+ ],
+ [
+  {
+   "text": "Turkish",
+   "type": "NORP",
+   "start_char": 446,
+   "end_char": 453
+  }
+ ],
+ [
+  {
+   "text": "François",
+   "type": "PERSON",
+   "start_char": 492,
+   "end_char": 500
+  },
+  {
+   "text": "Hélène",
+   "type": "PERSON",
+   "start_char": 505,
+   "end_char": 511
+  },
+  {
+   "text": "Montréal",
+   "type": "GPE",
+   "start_char": 521,
+   "end_char": 529
+  },
+  {
+   "text": "2015",
+   "type": "DATE",
+   "start_char": 533,
+   "end_char": 537
+  }
+ ],
+ [
+  {
+   "text": "Noël",
+   "type": "PERSON",
+   "start_char": 550,
+   "end_char": 554
+  },
+  {
+   "text": "École Saint-Exupéry",
+   "type": "FAC",
+   "start_char": 568,
+   "end_char": 587
+  }
+ ],
+ [
+  {
+   "text": "Japanese",
+   "type": "NORP",
+   "start_char": 594,
+   "end_char": 602
+  }
+ ],
+ [
+  {
+   "text": "Chinese",
+   "type": "NORP",
+   "start_char": 639,
+   "end_char": 646
+  },
+  {
+   "text": "Beijing",
+   "type": "GPE",
+   "start_char": 654,
+   "end_char": 661
+  }
+ ],
+ [
+  {
+   "text": "two years",
+   "type": "DATE",
+   "start_char": 704,
+   "end_char": 713
+  },
+  {
+   "text": "Seoul",
+   "type": "GPE",
+   "start_char": 731,
+   "end_char": 736
+  }
+ ],
+ [],
+ [
+  {
+   "text": "Russian",
+   "type": "NORP",
+   "start_char": 770,
+   "end_char": 777
+  }
+ ],
+ [
+  {
+   "text": "Москва",
+   "type": "GPE",
+   "start_char": 803,
+   "end_char": 809
+  },
+  {
+   "text": "second",
+   "type": "ORDINAL",
+   "start_char": 849,
+   "end_char": 855
+  }
+ ],
+ [
+  {
+   "text": "Greek",
+   "type": "NORP",
+   "start_char": 871,
+   "end_char": 876
+  }
+ ],
+ [],
+ [
+  {
+   "text": "Arabic",
+   "type": "NORP",
+   "start_char": 981,
+   "end_char": 987
+  }
+ ],
+ [
+  {
+   "text": "Hebrew",
+   "type": "PERSON",
+   "start_char": 1014,
+   "end_char": 1020
+  }
+ ],
+ [
+  {
+   "text": "Dmitri Shostakovich",
+   "type": "PERSON",
+   "start_char": 1045,
+   "end_char": 1064
+  },
+  {
+   "text": "fifteen",
+   "type": "CARDINAL",
+   "start_char": 1092,
+   "end_char": 1099
+  }
+ ],
+ [
+  {
+   "text": "Nguyễn Thị Minh Khai Street",
+   "type": "FAC",
+   "start_char": 1113,
+   "end_char": 1140
+  },
+  {
+   "text": "Hồ Chí Minh City",
+   "type": "GPE",
+   "start_char": 1147,
+   "end_char": 1163
+  }
+ ],
+ [],
+ [
+  {
+   "text": "Chimamanda Ngozi Adichie",
+   "type": "PERSON",
+   "start_char": 1204,
+   "end_char": 1228
+  },
+  {
+   "text": "Lagos",
+   "type": "GPE",
+   "start_char": 1239,
+   "end_char": 1244
+  }
+ ],
+ [
+  {
+   "text": "Ngũgĩ wa Thiong'o",
+   "type": "PERSON",
+   "start_char": 1246,
+   "end_char": 1263
+  }
+ ],
+ [
+  {
+   "text": "São Paulo's",
+   "type": "GPE",
+   "start_char": 1286,
+   "end_char": 1297
+  },
+  {
+   "text": "12 million",
+   "type": "CARDINAL",
+   "start_char": 1317,
+   "end_char": 1327
+  }
+ ],
+ [
+  {
+   "text": "Portuguese",
+   "type": "LANGUAGE",
+   "start_char": 1350,
+   "end_char": 1360
+  }
+ ],
+ [
+  {
+   "text": "Māori",
+   "type": "NORP",
+   "start_char": 1373,
+   "end_char": 1378
+  },
+  {
+   "text": "New Zealand",
+   "type": "GPE",
+   "start_char": 1388,
+   "end_char": 1399
+  },
+  {
+   "text": "Aotearoa",
+   "type": "GPE",
+   "start_char": 1403,
+   "end_char": 1411
+  }
+ ],
+ [
+  {
+   "text": "Te reo Māori",
+   "type": "ORG",
+   "start_char": 1413,
+   "end_char": 1425
+  }
+ ],
+ [
+  {
+   "text": "Hindi",
+   "type": "LANGUAGE",
+   "start_char": 1452,
+   "end_char": 1457
+  },
+  {
+   "text": "Devanagari",
+   "type": "LANGUAGE",
+   "start_char": 1463,
+   "end_char": 1473
+  }
+ ],
+ [
+  {
+   "text": "Tamil",
+   "type": "NORP",
+   "start_char": 1495,
+   "end_char": 1500
+  }
+ ],
+ [
+  {
+   "text": "Herr Müller",
+   "type": "PERSON",
+   "start_char": 1532,
+   "end_char": 1543
+  },
+  {
+   "text": "Düsseldorf",
+   "type": "GPE",
+   "start_char": 1549,
+   "end_char": 1559
+  },
+  {
+   "text": "Weißbier",
+   "type": "PRODUCT",
+   "start_char": 1570,
+   "end_char": 1578
+  }
+ ],
+ [
+  {
+   "text": "Straße",
+   "type": "PERSON",
+   "start_char": 1580,
+   "end_char": 1586
+  }
+ ],
+ [],
+ [
+  {
+   "text": "The Øresund Bridge",
+   "type": "FAC",
+   "start_char": 1641,
+   "end_char": 1659
+  },
+  {
+   "text": "Denmark",
+   "type": "GPE",
+   "start_char": 1669,
+   "end_char": 1676
+  },
+  {
+   "text": "Sweden",
+   "type": "GPE",
+   "start_char": 1681,
+   "end_char": 1687
+  }
+ ],
+ [
+  {
+   "text": "Cien años de soledad",
+   "type": "WORK_OF_ART",
+   "start_char": 1700,
+   "end_char": 1720
+  },
+  {
+   "text": "One Hundred Years of Solitude",
+   "type": "WORK_OF_ART",
+   "start_char": 1739,
+   "end_char": 1768
+  }
+ ],
+ [
+  {
+   "text": "Señor Peña's niño",
+   "type": "PERSON",
+   "start_char": 1771,
+   "end_char": 1788
+  },
+  {
+   "text": "English",
+   "type": "LANGUAGE",
+   "start_char": 1807,
+   "end_char": 1814
+  }
+ ],
+ [
+  {
+   "text": "Dvořák's",
+   "type": "PERSON",
+   "start_char": 1826,
+   "end_char": 1834
+  },
+  {
+   "text": "Janáček's",
+   "type": "PERSON",
+   "start_char": 1839,
+   "end_char": 1848
+  }
+ ],
+ [
+  {
+   "text": "Château Frontenac",
+   "type": "FAC",
+   "start_char": 1904,
+   "end_char": 1921
+  }
+ ],
+ [
+  {
+   "text": "Thai",
+   "type": "NORP",
+   "start_char": 1928,
+   "end_char": 1932
+  }
+ ],
+ [
+  {
+   "text": "Georgian",
+   "type": "NORP",
+   "start_char": 1960,
+   "end_char": 1968
+  }
+ ],
+ [
+  {
+   "text": "Ødegaard",
+   "type": "PERSON",
+   "start_char": 2005,
+   "end_char": 2013
+  },
+  {
+   "text": "Oslo",
+   "type": "GPE",
+   "start_char": 2024,
+   "end_char": 2028
+  },
+  {
+   "text": "Ålesund",
+   "type": "GPE",
+   "start_char": 2032,
+   "end_char": 2039
+  }
+ ],
+ [
+  {
+   "text": "Köln",
+   "type": "GPE",
+   "start_char": 2070,
+   "end_char": 2074
+  }
+ ],
+ [
+  {
+   "text": "Greek",
+   "type": "NORP",
+   "start_char": 2091,
+   "end_char": 2096
+  },
+  {
+   "text": "Greece",
+   "type": "GPE",
+   "start_char": 2106,
+   "end_char": 2112
+  }
+ ],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "Lūsis",
+   "type": "PERSON",
+   "start_char": 2262,
+   "end_char": 2267
+  },
+  {
+   "text": "Žydrūnas Ilgauskas",
+   "type": "PERSON",
+   "start_char": 2269,
+   "end_char": 2287
+  },
+  {
+   "text": "Baltic",
+   "type": "NORP",
+   "start_char": 2310,
+   "end_char": 2316
+  }
+ ],
+ [
+  {
+   "text": "Jürgen",
+   "type": "PERSON",
+   "start_char": 2344,
+   "end_char": 2350
+  },
+  {
+   "text": "Juergen",
+   "type": "PERSON",
+   "start_char": 2374,
+   "end_char": 2381
+  }
+ ],
+ [
+  {
+   "text": "Kyiv",
+   "type": "GPE",
+   "start_char": 2384,
+   "end_char": 2388
+  },
+  {
+   "text": "Ukraine",
+   "type": "GPE",
+   "start_char": 2414,
+   "end_char": 2421
+  }
+ ],
+ [],
+ [],
+ []
+]

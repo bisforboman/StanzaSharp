@@ -1,0 +1,278 @@
+[
+ [
+  {
+   "text": "eleven days",
+   "type": "DATE",
+   "start_char": 52,
+   "end_char": 63
+  },
+  {
+   "text": "Tromsø",
+   "type": "GPE",
+   "start_char": 166,
+   "end_char": 172
+  },
+  {
+   "text": "first",
+   "type": "ORDINAL",
+   "start_char": 334,
+   "end_char": 339
+  }
+ ],
+ [
+  {
+   "text": "more than four hundred",
+   "type": "CARDINAL",
+   "start_char": 731,
+   "end_char": 753
+  },
+  {
+   "text": "at least three",
+   "type": "CARDINAL",
+   "start_char": 961,
+   "end_char": 975
+  },
+  {
+   "text": "two",
+   "type": "CARDINAL",
+   "start_char": 1015,
+   "end_char": 1018
+  },
+  {
+   "text": "roughly eight minutes",
+   "type": "TIME",
+   "start_char": 1149,
+   "end_char": 1170
+  },
+  {
+   "text": "several thousand",
+   "type": "CARDINAL",
+   "start_char": 1179,
+   "end_char": 1195
+  }
+ ],
+ [
+  {
+   "text": "one",
+   "type": "CARDINAL",
+   "start_char": 1642,
+   "end_char": 1645
+  }
+ ],
+ [],
+ [],
+ [
+  {
+   "text": "Patel",
+   "type": "PERSON",
+   "start_char": 1956,
+   "end_char": 1961
+  },
+  {
+   "text": "U.S.",
+   "type": "GPE",
+   "start_char": 1982,
+   "end_char": 1986
+  }
+ ],
+ [
+  {
+   "text": "Acme Corp",
+   "type": "ORG",
+   "start_char": 2007,
+   "end_char": 2016
+  }
+ ],
+ [
+  {
+   "text": "Globex Inc",
+   "type": "ORG",
+   "start_char": 2032,
+   "end_char": 2042
+  }
+ ],
+ [
+  {
+   "text": "Initech Ltd",
+   "type": "ORG",
+   "start_char": 2070,
+   "end_char": 2081
+  }
+ ],
+ [
+  {
+   "text": "6 a.m",
+   "type": "TIME",
+   "start_char": 2095,
+   "end_char": 2100
+  }
+ ],
+ [
+  {
+   "text": "four hrs",
+   "type": "TIME",
+   "start_char": 2117,
+   "end_char": 2125
+  }
+ ],
+ [
+  {
+   "text": "10 a.m",
+   "type": "TIME",
+   "start_char": 2145,
+   "end_char": 2151
+  }
+ ],
+ [
+  {
+   "text": "U.P.S",
+   "type": "ORG",
+   "start_char": 2182,
+   "end_char": 2187
+  }
+ ],
+ [
+  {
+   "text": "Sat",
+   "type": "PERSON",
+   "start_char": 2217,
+   "end_char": 2220
+  }
+ ],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "Washington, D.C",
+   "type": "GPE",
+   "start_char": 2352,
+   "end_char": 2367
+  }
+ ],
+ [
+  {
+   "text": "St. Louis",
+   "type": "GPE",
+   "start_char": 2390,
+   "end_char": 2399
+  }
+ ],
+ [],
+ [
+  {
+   "text": "Ramos",
+   "type": "PERSON",
+   "start_char": 2430,
+   "end_char": 2435
+  },
+  {
+   "text": "Jr.",
+   "type": "PERSON",
+   "start_char": 2437,
+   "end_char": 2440
+  }
+ ],
+ [
+  {
+   "text": "HQ",
+   "type": "ORG",
+   "start_char": 2496,
+   "end_char": 2498
+  },
+  {
+   "text": "U.K.",
+   "type": "GPE",
+   "start_char": 2506,
+   "end_char": 2510
+  }
+ ],
+ [],
+ [
+  {
+   "text": "Maple Ave",
+   "type": "FAC",
+   "start_char": 2539,
+   "end_char": 2548
+  }
+ ],
+ [
+  {
+   "text": "Oak St",
+   "type": "FAC",
+   "start_char": 2569,
+   "end_char": 2575
+  }
+ ],
+ [],
+ [
+  {
+   "text": "300",
+   "type": "CARDINAL",
+   "start_char": 2606,
+   "end_char": 2609
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "ten years ago",
+   "type": "DATE",
+   "start_char": 3167,
+   "end_char": 3180
+  }
+ ],
+ [
+  {
+   "text": "nearly two hours",
+   "type": "TIME",
+   "start_char": 3766,
+   "end_char": 3782
+  },
+  {
+   "text": "forty-five minutes",
+   "type": "TIME",
+   "start_char": 3921,
+   "end_char": 3939
+  },
+  {
+   "text": "first",
+   "type": "ORDINAL",
+   "start_char": 3984,
+   "end_char": 3989
+  }
+ ],
+ [
+  {
+   "text": "three",
+   "type": "CARDINAL",
+   "start_char": 4044,
+   "end_char": 4049
+  },
+  {
+   "text": "two",
+   "type": "CARDINAL",
+   "start_char": 4079,
+   "end_char": 4082
+  }
+ ]
+]

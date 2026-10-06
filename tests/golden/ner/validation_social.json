@@ -1,0 +1,220 @@
+[
+ [],
+ [],
+ [
+  {
+   "text": "friday",
+   "type": "DATE",
+   "start_char": 132,
+   "end_char": 138
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "45 min",
+   "type": "QUANTITY",
+   "start_char": 330,
+   "end_char": 336
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "3",
+   "type": "CARDINAL",
+   "start_char": 565,
+   "end_char": 566
+  }
+ ],
+ [],
+ [
+  {
+   "text": "503",
+   "type": "CARDINAL",
+   "start_char": 635,
+   "end_char": 638
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "3",
+   "type": "CARDINAL",
+   "start_char": 935,
+   "end_char": 936
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "8",
+   "type": "CARDINAL",
+   "start_char": 1103,
+   "end_char": 1104
+  },
+  {
+   "text": "9:30",
+   "type": "TIME",
+   "start_char": 1123,
+   "end_char": 1127
+  }
+ ],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "10/10",
+   "type": "DATE",
+   "start_char": 1224,
+   "end_char": 1229
+  }
+ ],
+ [],
+ [
+  {
+   "text": "early tonight",
+   "type": "TIME",
+   "start_char": 1319,
+   "end_char": 1332
+  }
+ ],
+ [
+  {
+   "text": "3am",
+   "type": "TIME",
+   "start_char": 1345,
+   "end_char": 1348
+  },
+  {
+   "text": "14",
+   "type": "CARDINAL",
+   "start_char": 1359,
+   "end_char": 1361
+  }
+ ],
+ [],
+ [
+  {
+   "text": "5th & Main",
+   "type": "FAC",
+   "start_char": 1436,
+   "end_char": 1446
+  }
+ ],
+ [],
+ [
+  {
+   "text": "555-0199",
+   "type": "CARDINAL",
+   "start_char": 1482,
+   "end_char": 1490
+  }
+ ],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "10",
+   "type": "CARDINAL",
+   "start_char": 1606,
+   "end_char": 1608
+  }
+ ],
+ [],
+ [],
+ [
+  {
+   "text": "3/5",
+   "type": "CARDINAL",
+   "start_char": 1663,
+   "end_char": 1666
+  }
+ ],
+ [],
+ [
+  {
+   "text": "11",
+   "type": "CARDINAL",
+   "start_char": 1732,
+   "end_char": 1734
+  }
+ ],
+ [],
+ [],
+ [
+  {
+   "text": "tonight",
+   "type": "TIME",
+   "start_char": 1847,
+   "end_char": 1854
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "Prague",
+   "type": "GPE",
+   "start_char": 2071,
+   "end_char": 2077
+  },
+  {
+   "text": "6 hrs",
+   "type": "TIME",
+   "start_char": 2082,
+   "end_char": 2087
+  }
+ ],
+ [],
+ [],
+ [
+  {
+   "text": "4",
+   "type": "CARDINAL",
+   "start_char": 2185,
+   "end_char": 2186
+  }
+ ],
+ [
+  {
+   "text": "3pm",
+   "type": "TIME",
+   "start_char": 2252,
+   "end_char": 2255
+  }
+ ]
+]

@@ -1,6 +1,6 @@
 # StanzaSharp
 
-C# port of Stanza's English inference pipeline (tokenize, mwt, pos, lemma, depparse, constituency) on TorchSharp.
+C# port of Stanza's English inference pipeline (tokenize, mwt, pos, lemma, depparse, ner, constituency) on TorchSharp.
 It runs Stanza's own pretrained models. On the golden test corpus, the output is byte-identical to
 Python Stanza 1.15.0.
 See CLAUDE.md for scope, layout, decisions and build order.
@@ -17,7 +17,7 @@ dotnet add package TorchSharp-cpu
 
 ## Models
 
-Download Stanza's English models (about 450 MB, from Stanza's Hugging Face repository) once. Every file is
+Download Stanza's English models (about 520 MB, from Stanza's Hugging Face repository) once. Every file is
 checked against its published MD5; `Pipeline.Load` itself never touches the network.
 
 ```csharp
@@ -48,8 +48,10 @@ foreach (var sentence in doc.Sentences)
 needs the ones before it. `PipelineOptions` also holds `Device`, `DisableTf32` and `CharlmCache`
 (`IsEnabled`, `MaxWords`: the tagger's character-model outputs reused by the constituency parser, at most
 32,768 words / ~256 MB by default; output is identical either way).
-The default is all six processors: `tokenize,mwt,pos,lemma,depparse,constituency`.
-`Conllu.Write(doc)` gives Stanza-style CoNLL-U.
+The default is six processors: `tokenize,mwt,pos,lemma,depparse,constituency`. Add `ner` (it needs only
+`tokenize`) for named entities: `Token.Ner` holds the BIOES tag (`B-PERSON`, `O`, ...), and `sentence.Entities` /
+`doc.Entities` the spans (`Text`, `Type`, `StartChar`, `EndChar`), from Stanza's OntoNotes model (18 types).
+`Conllu.Write(doc)` gives Stanza-style CoNLL-U, with `ner=` in MISC when NER ran.
 
 From the command line, this writes CoNLL-U for a file (or standard input):
 

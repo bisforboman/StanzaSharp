@@ -2,6 +2,7 @@ using StanzaSharp.Constituency;
 using StanzaSharp.Depparse;
 using StanzaSharp.Lemma;
 using StanzaSharp.Mwt;
+using StanzaSharp.Ner;
 using StanzaSharp.Nn;
 using StanzaSharp.Pos;
 using StanzaSharp.Tokenize;
@@ -10,7 +11,8 @@ using TorchSharp;
 namespace StanzaSharp;
 
 /// <summary>
-/// Runs Stanza's English default pipeline: tokenize → mwt → pos → lemma → depparse → constituency.
+/// Runs Stanza's English pipeline: tokenize → mwt → pos → lemma → depparse → ner → constituency
+/// (all but ner by default).
 /// </summary>
 /// <example>
 /// <code>
@@ -31,6 +33,7 @@ public sealed class Pipeline : IDisposable
         ["pos"] = ["tokenize", "mwt"],
         ["lemma"] = ["tokenize", "mwt", "pos"], // Stanza only requires tokenize, but the model reads UPOS
         ["depparse"] = ["tokenize", "mwt", "pos", "lemma"],
+        ["ner"] = ["tokenize"], // reads only the tokens' text
         ["constituency"] = ["tokenize", "mwt", "pos"],
     };
 
@@ -39,6 +42,7 @@ public sealed class Pipeline : IDisposable
     private readonly PosTagger? _pos;
     private readonly Lemmatizer? _lemma;
     private readonly DependencyParser? _depparse;
+    private readonly NerTagger? _ner;
     private readonly ConstituencyParser? _parser;
     private readonly Pretrain? _pretrain;
     private readonly CharLanguageModel? _charlmForward, _charlmBackward;
@@ -52,7 +56,7 @@ public sealed class Pipeline : IDisposable
         _tokenizer = Tokenizer.Load(Model("tokenize/combined_nocharlm"));
         if (processors.Contains("mwt"))
             _mwt = MwtExpander.Load(Model("mwt/combined"));
-        if (processors.Contains("pos") || processors.Contains("depparse") || processors.Contains("constituency"))
+        if (processors.Contains("pos") || processors.Contains("depparse") || processors.Contains("ner") || processors.Contains("constituency"))
         {
             _pretrain = Pretrain.Load(Model("pretrain/conll17"));
             _charlmForward = CharLanguageModel.Load(Model("forward_charlm/1billion"));
@@ -64,6 +68,8 @@ public sealed class Pipeline : IDisposable
             _lemma = Lemmatizer.Load(Model("lemma/combined_nocharlm"));
         if (processors.Contains("depparse"))
             _depparse = DependencyParser.Load(Model("depparse/combined_charlm"), _pretrain!, _charlmForward!, _charlmBackward!);
+        if (processors.Contains("ner"))
+            _ner = NerTagger.Load(Model("ner/ontonotes-ww-multi_charlm"), _pretrain!, _charlmForward!, _charlmBackward!);
         if (processors.Contains("constituency"))
             _parser = ConstituencyParser.Load(Model("constituency/ptb3-revised_charlm"), _pretrain!, _charlmForward!, _charlmBackward!);
     }
@@ -102,12 +108,13 @@ public sealed class Pipeline : IDisposable
     {
         var doc = _tokenizer.Process(text);
         _mwt?.Process(doc);
-        // The parser reuses the tagger's charlm outputs instead of computing them again.
-        using var charlms = _pos != null && _parser != null && _cacheOptions.IsEnabled ? new CharlmCache(_cacheOptions.MaxWords) : null;
+        // NER and the parser reuse the tagger's charlm outputs instead of computing them again.
+        using var charlms = _pos != null && (_ner != null || _parser != null) && _cacheOptions.IsEnabled ? new CharlmCache(_cacheOptions.MaxWords) : null;
         _pos?.Process(doc, charlms);
         _lemma?.Process(doc);
         // No CharlmCache: depparse runs the charlms with a ROOT word in front, so the tagger's outputs don't apply.
         _depparse?.Process(doc);
+        _ner?.Process(doc, charlms);
         _parser?.Process(doc, charlms);
         return doc;
     }
@@ -116,6 +123,7 @@ public sealed class Pipeline : IDisposable
     {
         _parser?.Dispose();
         _depparse?.Dispose();
+        _ner?.Dispose();
         _pos?.Dispose();
         _lemma?.Dispose();
         _mwt?.Dispose();

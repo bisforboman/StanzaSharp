@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\StanzaSharp.Core\StanzaSharp.Core.csproj" />
+    <ProjectReference Include="..\StanzaSharp.Nn\StanzaSharp.Nn.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="StanzaSharp.Tests" />
+  </ItemGroup>
+
+</Project>
