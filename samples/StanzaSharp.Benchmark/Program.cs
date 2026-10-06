@@ -13,14 +13,14 @@ const string Usage = """
     Usage: StanzaSharp.Benchmark [--models DIR] [--copies N] [--runs N] [--threads N] [--out FILE]
 
       --models DIR    converted models (default: models/converted/en)
-      --copies N      copies of validation.txt + corpus.txt in the input (default: 16, ~20k words)
+      --copies N      copies of the golden texts in the input (default: 8, ~20k words)
       --runs N        timed runs after a warm-up run on one copy; medians are reported (default: 3)
       --threads N     torch intra-op threads (default: torch's default)
       --out FILE      write the last run's CoNLL-U here, to compare with Python's
     """;
 
 string modelDir = Path.Combine("models", "converted", "en");
-int copies = 16, runs = 3, threads = 0;
+int copies = 8, runs = 3, threads = 0;
 string? outFile = null;
 for (int i = 0; i < args.Length; i++)
 {
@@ -93,9 +93,9 @@ return 0;
 
 static string BuildText(int copies)
 {
-    // The same text as tools/benchmark.py: validation.txt + corpus.txt, repeated, separated by blank lines.
+    // The same text as tools/benchmark.py: the golden texts, repeated, separated by blank lines.
     string golden = Path.Combine(FindRepoRoot(), "tests", "golden");
-    string unit = File.ReadAllText(Path.Combine(golden, "validation.txt")) + "\n\n" + File.ReadAllText(Path.Combine(golden, "corpus.txt"));
+    string unit = string.Join("\n\n", new[] { "validation.txt", "corpus.txt", "tokenize_stress.txt" }.Select(f => File.ReadAllText(Path.Combine(golden, f))));
     return string.Join("\n\n", Enumerable.Repeat(unit, copies));
 }
 

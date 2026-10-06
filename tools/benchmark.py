@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
 Python Stanza counterpart of samples/StanzaSharp.Benchmark: times each pipeline stage on the same
-text (validation.txt + corpus.txt from tests/golden, repeated) and prints the same report.
+text (validation.txt, corpus.txt and tokenize_stress.txt from tests/golden, repeated) and prints the same report.
 
-  python tools/benchmark.py [--models models/stanza] [--copies 16] [--runs 3] [--threads N] [--out FILE]
+  python tools/benchmark.py [--models models/stanza] [--copies 8] [--runs 3] [--threads N] [--out FILE]
 """
 import argparse
 import ctypes
@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parent.parent
 
 def build_text(copies):
     golden = ROOT / "tests" / "golden"
-    unit = (golden / "validation.txt").read_text(encoding="utf-8") + "\n\n" + (golden / "corpus.txt").read_text(encoding="utf-8")
+    unit = "\n\n".join((golden / f).read_text(encoding="utf-8") for f in ("validation.txt", "corpus.txt", "tokenize_stress.txt"))
     return "\n\n".join([unit] * copies)
 
 
@@ -49,7 +49,7 @@ def peak_working_set_mb():
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--models", default=str(ROOT / "models" / "stanza"))
-    parser.add_argument("--copies", type=int, default=16)
+    parser.add_argument("--copies", type=int, default=8)
     parser.add_argument("--runs", type=int, default=3)
     parser.add_argument("--threads", type=int, default=0)
     parser.add_argument("--out")
