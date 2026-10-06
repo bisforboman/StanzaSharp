@@ -16,7 +16,7 @@
   <ItemGroup>
     <!-- Becomes a package dependency on StanzaSharp with the same version. -->
     <ProjectReference Include="$(MSBuildThisFileDirectory)StanzaSharp\StanzaSharp.csproj" />
-    <PackageReference Include="$(LibTorchPackage)" Version="2.10.0" />
+    <PackageReference Include="$(LibTorchPackage)" Version="$(LibTorchVersion)" />
     <None Include="$(MSBuildThisFileDirectory)StanzaSharp\PACKAGE.md" Pack="true" PackagePath="/" />
     <None Include="$(MSBuildThisFileDirectory)..\NOTICE" Pack="true" PackagePath="/" />
   </ItemGroup>

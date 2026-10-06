@@ -7,7 +7,8 @@ would, and checks that it parses a sentence.
 ModelDir is any directory Pipeline.Load accepts (converted models or Stanza's .pt files).
 Without -Platform the app references StanzaSharp + TorchSharp-cpu. With it, the app references only the
 platform package StanzaSharp.Cpu.<Platform> (which brings StanzaSharp and that platform's libtorch), so
-nothing else can supply the native libraries.
+nothing else can supply the native libraries, and sets StanzaSharpTrimNative, so the parse also proves that the
+trimmed native files are not needed. Either way the build must give no STANZA warning (STANZA001: TorchSharp versions).
 #>
 param([string]$ModelDir = 'models/converted/en', [ValidateSet('', 'Linux', 'Windows', 'WindowsArm64', 'MacOS')][string]$Platform = '')
 
@@ -52,6 +53,7 @@ try {
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <StanzaSharpTrimNative>$(if ($Platform) { 'true' } else { 'false' })</StanzaSharpTrimNative>
   </PropertyGroup>
   <ItemGroup>
     $references
@@ -69,7 +71,15 @@ foreach (var sentence in doc.Sentences)
     Console.WriteLine(sentence.Constituency);
 Console.Write(Conllu.Write(doc));
 '@
-    $output = dotnet run --project $app -- $models 2>&1 | Out-String
+    $build = dotnet build $app -o (Join-Path $work 'out') --nologo 2>&1 | Out-String
+    if ($LASTEXITCODE) { throw "The consumer app failed to build:`n$build" }
+    if ($build -match 'warning STANZA') { throw "The build gave a STANZA warning:`n$build" }
+    if ($Platform) {
+        # StanzaSharpTrimNative: none of these may reach the output (see buildTransitive/StanzaSharp.targets).
+        $trimmed = Get-ChildItem (Join-Path $work 'out') -Recurse -Include libtorch_python.*, libshm.*, libnnapi_backend.*, libtorchbind_test.*, libjitbackend_test.*, libbackend_with_compiler.*, libaoti_custom_ops.*
+        if ($trimmed) { throw "StanzaSharpTrimNative left $($trimmed.Name -join ', ')" }
+    }
+    $output = dotnet (Join-Path $work 'out/app.dll') $models 2>&1 | Out-String
     if ($LASTEXITCODE) { throw "The consumer app failed:`n$output" }
     Write-Host $output
     $expected = '(ROOT (S (NP (NNP Barack) (NNP Obama)) (VP (VBD was) (VP (VBN born) (PP (IN in) (NP (NNP Hawaii))))) (. .)))'

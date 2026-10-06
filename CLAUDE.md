@@ -165,6 +165,7 @@ src/StanzaSharp.Depparse       Dependency parser (biaffine graph parser + Chu-Li
 src/StanzaSharp.Ner            Named-entity recognizer (biLSTM + CRF Viterbi).
 src/StanzaSharp.Sentiment      Sentence sentiment (CNN classifier over biLSTM states).
 src/StanzaSharp                Pipeline facade wiring the processors together.
+src/StanzaSharp.Tool           The `stanzasharp` .NET tool (model downloads; no native libtorch).
 samples/StanzaSharp.Cli        Console runner for quick experiments.
 samples/StanzaSharp.Benchmark  Per-stage speed/memory benchmark; tools/benchmark.py is the Python twin.
 samples/StanzaSharp.Example    Commented tour of the public API (download, load, every result, CoNLL-U).
@@ -472,7 +473,7 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - TorchSharp loads a single platform package fine; it was checked with `libtorch-cpu-win-x64` alone.
   - `verify-package.ps1 -Platform X` tests each one on its own OS in CI (Linux in `golden`, Windows and
     macOS in `cross-os`).
-  - `release.yml` packs all five packages.
+  - `release.yml` packs all six packages (these five and `StanzaSharp.Tool`).
   - `.WindowsArm64` (`libtorch-cpu-win-arm64`): `TorchSharp-cpu` lacks it, so on a Windows Arm64 machine
     Directory.Build.props also gives the runnable projects (tests/, samples/) `libtorch-cpu-win-arm64`.
   - Supported platforms (README, PACKAGE.md): where TorchSharp 0.107 has `runtimes/<rid>` (linux-x64, win-x64,
@@ -481,6 +482,25 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - The linux-x64 libtorch needs only glibc, libstdc++ and libgcc_s (it bundles libgomp). `samples/docker` is a
     standalone app (its own empty Directory.Build.props) on `mcr.microsoft.com/dotnet/runtime:10.0` (`BASE` arg).
   - Every new package ID needs the nuget.org Trusted Publishing policy to allow it.
+- `buildTransitive` (StanzaSharp package; `src/StanzaSharp/buildTransitive/StanzaSharp.targets` + a `StanzaSharp.props`
+  generated at pack time). `TorchSharpVersion` (0.107.0) and `LibTorchVersion` (2.10.0) are set only in Directory.Build.props.
+  - `STANZA001` (warning): a resolved `TorchSharp`, `TorchSharp-*` or `libtorch-*` package has another version. Versions
+    come from `@(PackageDependencies)` + the assets file's `"<id>/<version>"` keys (copy-local items miss the
+    asset-less `TorchSharp-cpu`; `TorchSharp-cpu` 0.106.0 resolves the same TorchSharp/libtorch as 0.107.0).
+    `<NoWarn>STANZA001</NoWarn>` silences it. `verify-package.ps1` fails on any `STANZA` warning.
+  - `StanzaSharpTrimNative=true` (opt-in) removes from `NativeCopyLocalItems`/`RuntimeTargetsCopyLocalItems` (so also
+    from the .deps.json): libtorch_python, libshm, libnnapi_backend, libtorchbind_test, libjitbackend_test,
+    libbackend_with_compiler, libaoti_custom_ops (.so; .dylib for python/shm). By DT_NEEDED/LC_LOAD_DYLIB nothing that
+    LibTorchSharp → libtorch → libtorch_cpu → libc10/libgomp needs them, and TorchSharp loads only `LibTorchSharp`
+    and `torch_cpu`/`torch_cuda` by name. Windows libtorch has no such files (its only unlinked ones, uv.dll,
+    libiompstubs5md.dll and torch_global_deps.dll, 250 KB, are kept). A marker file in `obj/` is a .deps.json input,
+    so switching the property regenerates it. Proven by `verify-package.ps1 -Platform` (Linux in golden, macOS in
+    cross-os) and the `docker` job (samples/docker sets it; verify-docker.sh checks the files are absent).
+- `StanzaSharp.Tool` (`src/StanzaSharp.Tool`, `PackAsTool`, command `stanzasharp`): `download [DIR] [--package NAME]
+  [--processors LIST]`. `DownloadCommand.cs` is compiled into samples/StanzaSharp.Cli too (one implementation). A target
+  drops all native package assets (LibTorchSharp, SkiaSharp), so the package is 1.2 MB; the downloader never calls
+  into libtorch. `tools/verify-tool.ps1` (golden) packs, `dotnet tool install --tool-path`s it from a local feed,
+  checks for natives and downloads `tokenize,mwt`. release.yml packs it.
 - One NuGet package, `StanzaSharp`, packed from `src/StanzaSharp` (user's decision, 2026-10-06).
   - It carries all nine assemblies plus their XML docs: the facade's ProjectReferences are
     `PrivateAssets="all"`, and an `IncludeProjectReferences` target adds them.

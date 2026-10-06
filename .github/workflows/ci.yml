@@ -108,6 +108,11 @@ jobs:
         shell: pwsh
         run: ./tools/verify-package.ps1 -ModelDir models/stanza/en -Platform Linux
 
+      # The stanzasharp tool (StanzaSharp.Tool): installed from a local feed, no native files, downloads tokenize,mwt.
+      - name: Verify the tool package
+        shell: pwsh
+        run: ./tools/verify-tool.ps1
+
       - uses: actions/upload-artifact@v7
         if: always()
         with:

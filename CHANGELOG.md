@@ -7,6 +7,15 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 
 ## [Unreleased]
 
+### Added
+- Build warning `STANZA001` when the project resolves TorchSharp, `TorchSharp-cpu`/`TorchSharp-cuda-*` or a
+  `libtorch-*` package in another version than StanzaSharp was built with (TorchSharp 0.107.0, libtorch 2.10.0).
+- `<StanzaSharpTrimNative>true</StanzaSharpTrimNative>` leaves libtorch's Python bindings and test/mobile backends,
+  which StanzaSharp never loads, out of build and publish output (CPU libtorch only): 35 MB less on Linux x64, 29 MB on macOS. The Docker
+  sample uses it.
+- The `stanzasharp` .NET tool (package `StanzaSharp.Tool`): `stanzasharp download [DIR] [--package NAME]
+  [--processors LIST]` downloads the models without native libraries, e.g. in a Dockerfile.
+
 ## [0.3.0] - 2026-10-06
 
 ### Added
