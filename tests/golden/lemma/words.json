@@ -1,0 +1,194 @@
+[
+ {
+  "word": "saw",
+  "upos": "VERB",
+  "lemma": "see",
+  "seq2seq": "see",
+  "edit": 0,
+  "model": "see"
+ },
+ {
+  "word": "saw",
+  "upos": "NOUN",
+  "lemma": "saw",
+  "seq2seq": "saw",
+  "edit": 1,
+  "model": "saw"
+ },
+ {
+  "word": "was",
+  "upos": "AUX",
+  "lemma": "be",
+  "seq2seq": "be",
+  "edit": 0,
+  "model": "be"
+ },
+ {
+  "word": "children",
+  "upos": "NOUN",
+  "lemma": "child",
+  "seq2seq": "child",
+  "edit": 0,
+  "model": "child"
+ },
+ {
+  "word": "better",
+  "upos": "ADJ",
+  "lemma": "good",
+  "seq2seq": "good",
+  "edit": 0,
+  "model": "good"
+ },
+ {
+  "word": "Running",
+  "upos": "VERB",
+  "lemma": "run",
+  "seq2seq": "run",
+  "edit": 0,
+  "model": "run"
+ },
+ {
+  "word": "flibbertigibbets",
+  "upos": "NOUN",
+  "lemma": "flibbertigibbet",
+  "seq2seq": "flibbertigibbet",
+  "edit": 0,
+  "model": "flibbertigibbet"
+ },
+ {
+  "word": "unfriended",
+  "upos": "VERB",
+  "lemma": "unfriend",
+  "seq2seq": "unfriend",
+  "edit": 0,
+  "model": "unfriend"
+ },
+ {
+  "word": "GOOGLING",
+  "upos": "VERB",
+  "lemma": "googling",
+  "seq2seq": "googling",
+  "edit": 0,
+  "model": "googling"
+ },
+ {
+  "word": "Zoomers",
+  "upos": "PROPN",
+  "lemma": "Zoomers",
+  "seq2seq": "Zoomers",
+  "edit": 1,
+  "model": "Zoomers"
+ },
+ {
+  "word": "ãntennae",
+  "upos": "NOUN",
+  "lemma": "intenna",
+  "seq2seq": "intenna",
+  "edit": 0,
+  "model": "intenna"
+ },
+ {
+  "word": "Zürichers",
+  "upos": "PROPN",
+  "lemma": "Zürichers",
+  "seq2seq": "Zürichers",
+  "edit": 0,
+  "model": "Zürichers"
+ },
+ {
+  "word": "naïvely",
+  "upos": "ADV",
+  "lemma": "naïvely",
+  "seq2seq": "naïvely",
+  "edit": 1,
+  "model": "naïvely"
+ },
+ {
+  "word": "東京",
+  "upos": "PROPN",
+  "lemma": "東京",
+  "seq2seq": "東京",
+  "edit": 1,
+  "model": "東京"
+ },
+ {
+  "word": "𝒳s",
+  "upos": "NOUN",
+  "lemma": "be",
+  "seq2seq": "be",
+  "edit": 0,
+  "model": "be"
+ },
+ {
+  "word": "😀😀s",
+  "upos": "SYM",
+  "lemma": "😀😀s",
+  "seq2seq": "😀😀s",
+  "edit": 2,
+  "model": "😀😀s"
+ },
+ {
+  "word": "blorptastically",
+  "upos": "ADV",
+  "lemma": "blorptastically",
+  "seq2seq": "blorptastically",
+  "edit": 1,
+  "model": "blorptastically"
+ },
+ {
+  "word": "supercalifragilisticexpialidociousnessesqwertyuiopasdfgh",
+  "upos": "NOUN",
+  "lemma": "supercalifragilisticexpialidociousnessesqwertyuiopasdfgh",
+  "seq2seq": "supercalifragilisticexpialidociousnesqwertyuiopasd",
+  "edit": 1,
+  "model": "supercalifragilisticexpialidociousnessesqwertyuiopasdfgh"
+ },
+ {
+  "word": "_",
+  "upos": "PUNCT",
+  "lemma": "_",
+  "seq2seq": "_",
+  "edit": 1,
+  "model": "_"
+ },
+ {
+  "word": "<UNK>",
+  "upos": "X",
+  "lemma": "<unk>",
+  "seq2seq": "<unde",
+  "edit": 2,
+  "model": "<unk>"
+ },
+ {
+  "word": "quizzeroos",
+  "upos": "NOUN",
+  "lemma": "quizzeroo",
+  "seq2seq": "quizzeroo",
+  "edit": 0,
+  "model": "quizzeroo"
+ },
+ {
+  "word": "Wugs",
+  "upos": "NOUN",
+  "lemma": "wug",
+  "seq2seq": "wug",
+  "edit": 0,
+  "model": "wug"
+ },
+ {
+  "word": "ÉCOLES",
+  "upos": "NOUN",
+  "lemma": "pcole",
+  "seq2seq": "pcole",
+  "edit": 0,
+  "model": "pcole"
+ },
+ {
+  "word": "ﬁnalized",
+  "upos": "VERB",
+  "lemma": "unalize",
+  "seq2seq": "unalize",
+  "edit": 0,
+  "model": "unalize"
+ }
+]

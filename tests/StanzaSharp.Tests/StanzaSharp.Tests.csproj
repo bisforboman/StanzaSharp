@@ -26,7 +26,9 @@
     <ProjectReference Include="..\..\src\StanzaSharp.Tokenize\StanzaSharp.Tokenize.csproj" />
     <ProjectReference Include="..\..\src\StanzaSharp.Mwt\StanzaSharp.Mwt.csproj" />
     <ProjectReference Include="..\..\src\StanzaSharp.Pos\StanzaSharp.Pos.csproj" />
+    <ProjectReference Include="..\..\src\StanzaSharp.Lemma\StanzaSharp.Lemma.csproj" />
     <ProjectReference Include="..\..\src\StanzaSharp.Constituency\StanzaSharp.Constituency.csproj" />
+    <ProjectReference Include="..\..\src\StanzaSharp.Depparse\StanzaSharp.Depparse.csproj" />
   </ItemGroup>
 
 </Project>

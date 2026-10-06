@@ -32,7 +32,7 @@ internal sealed record TorchTensor(TorchStorage Storage, long Offset, long[] Sha
 /// <summary>
 /// A restricted unpickler for PyTorch checkpoints. It reads the opcodes <c>torch.load(weights_only=True)</c>
 /// reads (pickle protocol 2, which torch.save uses) and builds only plain data (None, bool, int, float,
-/// str, list, tuple, dict) plus the few globals in <see cref="Allowed"/>, a subset of torch's own
+/// str, bytes, list, tuple, dict) plus the few globals in <see cref="Allowed"/>, a subset of torch's own
 /// allowlist; any other global or opcode throws. Nothing is ever executed or instantiated by name.
 /// </summary>
 internal sealed class Unpickler
@@ -48,6 +48,7 @@ internal sealed class Unpickler
     {
         Allowed["collections.OrderedDict"] = "collections.OrderedDict";
         Allowed["torch._utils._rebuild_tensor_v2"] = "torch._utils._rebuild_tensor_v2";
+        Allowed["_codecs.encode"] = "_codecs.encode"; // protocol 2 pickles bytes as encode(latin-1 str, 'latin1')
     }
 
     private readonly byte[] _data;
@@ -162,6 +163,8 @@ internal sealed class Unpickler
                     && args[2] is PyTuple size && args[3] is PyTuple stride && size.Items.Length == stride.Items.Length
                     ? new TorchTensor(storage, offset, Longs(size), Longs(stride))
                     : throw Error("malformed _rebuild_tensor_v2 arguments");
+            case "_codecs.encode" when args is [string text, "latin1"]:
+                return text.All(c => c < 256) ? Encoding.Latin1.GetBytes(text) : throw Error("bytes text is not latin-1");
             default:
                 throw Error($"cannot call {callable ?? "None"} with {args.Length} arguments");
         }
