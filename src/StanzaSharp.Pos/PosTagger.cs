@@ -158,14 +158,18 @@ internal sealed class PosTagger : IDisposable
                         keepCharlm(i, repsForward[i], repsBackward[i]);
             chars = [Rnn.PadSequence(repsForward), Rnn.PadSequence(repsBackward)];
         }
-        var output = _lstm.Forward(cat([words, pretrained, .. chars], 2), lengths);
+        var padded = _lstm.Forward(cat([words, pretrained, .. chars], 2), lengths);
+        // The heads see only the real words, as Stanza's run on the packed data: a batch padded to one long
+        // sentence would otherwise score mostly padding (21 biaffine feature scorers).
+        var real = Enumerable.Range(0, batch).SelectMany(i => Enumerable.Range(i * width, sentences[i].Count)).Select(k => (long)k).ToArray();
+        var output = padded.reshape(-1, padded.shape[2]).index_select(0, torch.tensor(real, device: _device));
 
         var uposScores = _uposClf.forward(F.relu(_uposHid.forward(output)));
-        var uposIds = uposScores.argmax(2);
+        var uposIds = uposScores.argmax(1);
         var parent = _uposEmb.forward(uposIds);
-        var xposIds = _xposClf.Forward(F.relu(_xposHid.forward(output)), parent).argmax(2);
+        var xposIds = _xposClf.Forward(F.relu(_xposHid.forward(output)), parent).argmax(1);
         var featsHid = F.relu(_featsHid.forward(output));
-        var featIds = _featsClf.Select(c => c.Forward(featsHid, parent).argmax(2).ToArray<long>()).ToArray();
+        var featIds = _featsClf.Select(c => c.Forward(featsHid, parent).argmax(1).ToArray<long>()).ToArray();
 
         var upos = uposIds.ToArray<long>();
         var xpos = xposIds.ToArray<long>();
@@ -173,16 +177,13 @@ internal sealed class PosTagger : IDisposable
         int nUpos = _upos.Length;
         uposLogits = [];
         var result = new List<(string, string, string?)[]>(batch);
-        for (int i = 0; i < batch; i++)
+        for (int i = 0, k = 0; i < batch; i++)
         {
             var tags = new (string, string, string?)[sentences[i].Count];
-            for (int j = 0; j < tags.Length; j++)
-            {
-                int k = i * width + j;
+            uposLogits.Add(logits[(k * nUpos)..((k + tags.Length) * nUpos)]);
+            for (int j = 0; j < tags.Length; j++, k++)
                 tags[j] = (_upos[upos[k]], _xpos[xpos[k]], FeatsString(featIds, k));
-            }
             result.Add(tags);
-            uposLogits.Add(logits[(i * width * nUpos)..((i * width + sentences[i].Count) * nUpos)]);
         }
         return result;
     }
