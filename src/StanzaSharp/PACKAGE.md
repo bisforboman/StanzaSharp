@@ -56,6 +56,19 @@ foreach (var sentence in doc.Sentences)
 - Add `sentiment` to the list for `sentence.Sentiment`: 0 negative, 1 neutral, 2 positive.
 - `Conllu.Write(doc)` gives CoNLL-U in Stanza's format.
 
+## Faster: the default_fast package
+
+`new PipelineOptions { Package = "default_fast" }` selects Stanza's `default_fast` package: no constituency
+parser, and pos, depparse and ner with their own small character models instead of the large character
+language models. It is faster and smaller, and its output is identical to Python Stanza's
+`package='default_fast'`.
+
+```csharp
+var options = new PipelineOptions { Package = "default_fast" };
+await ModelDownloader.DownloadAsync("models/stanza/en", options); // what Load reads with these options
+using var nlp = Pipeline.Load("models/stanza/en", options);
+```
+
 ## GPU
 
 Reference `TorchSharp-cuda-windows` (or `TorchSharp-cuda-linux`) instead of `TorchSharp-cpu`, then

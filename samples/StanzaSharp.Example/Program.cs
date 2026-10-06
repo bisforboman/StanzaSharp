@@ -15,6 +15,10 @@ await ModelDownloader.DownloadAsync(modelDir, new Progress<string>(line => Conso
 
 // 2. Load. The default runs all eight processors, like Stanza's English default. To run fewer, list them:
 //    Pipeline.Load(modelDir, new PipelineOptions { Processors = "tokenize,mwt,pos" });
+//    Stanza's faster package (no constituency; download it with the same options first):
+//    var fast = new PipelineOptions { Package = "default_fast" };
+//    await ModelDownloader.DownloadAsync(modelDir, fast);
+//    Pipeline.Load(modelDir, fast);
 //    On an NVIDIA GPU (with the TorchSharp-cuda-* package instead of TorchSharp-cpu):
 //    Pipeline.Load(modelDir, new PipelineOptions { Device = TorchSharp.torch.CUDA, DisableTf32 = true });
 using var nlp = Pipeline.Load(modelDir);

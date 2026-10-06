@@ -4,6 +4,7 @@ Python Stanza counterpart of samples/StanzaSharp.Benchmark: times each pipeline 
 text (validation.txt, corpus.txt and tokenize_stress.txt from tests/golden, repeated) and prints the same report.
 
   python tools/benchmark.py [--models models/stanza] [--copies 8] [--runs 3] [--threads N] [--out FILE]
+                            [--package default|default_fast]
 """
 import argparse
 import ctypes
@@ -53,21 +54,24 @@ def main():
     parser.add_argument("--runs", type=int, default=3)
     parser.add_argument("--threads", type=int, default=0)
     parser.add_argument("--out")
+    parser.add_argument("--package", default="default", help="Stanza's English package (default_fast has no constituency)")
     args = parser.parse_args()
     if args.threads > 0:
         torch.set_num_threads(args.threads)
 
     text = build_text(args.copies)
     start = time.perf_counter()
-    nlp = stanza.Pipeline("en", dir=args.models, processors=",".join(STAGES), download_method=None,
+    stages = STAGES if args.package == "default" else [s for s in STAGES if s != "constituency"]
+    nlp = stanza.Pipeline("en", dir=args.models, package=args.package, processors=",".join(stages), download_method=None,
                           use_gpu=False, logging_level="WARN")
     load = time.perf_counter() - start
 
-    times = {s: [] for s in STAGES}
+    assert list(nlp.processors) == stages, list(nlp.processors)
+    times = {s: [] for s in stages}
     peaks = {"load": peak_working_set_mb()}  # peak working set after each stage of the warm-up run
     for run in range(args.runs + 1):
         doc = text if run > 0 else build_text(1)  # run 0 warms up on one copy
-        for s in STAGES:
+        for s in stages:
             start = time.perf_counter()
             doc = nlp.processors[s].process(doc)
             if run > 0:
@@ -78,11 +82,11 @@ def main():
         Path(args.out).write_text("{:C}\n".format(doc), encoding="utf-8", newline="\n")
 
     words = doc.num_words
-    print(f"Python Stanza {stanza.__version__}, torch threads {torch.get_num_threads()}, {args.copies} copies: "
+    print(f"Python Stanza {stanza.__version__} ({args.package}), torch threads {torch.get_num_threads()}, {args.copies} copies: "
           f"{len(text)} chars, {len(doc.sentences)} sentences, {words} words, {args.runs} runs")
     print(f"{'load':<14}{load:9.2f} s {'':16} {peaks['load']:8.0f} MB peak")
     total = 0
-    for s in STAGES:
+    for s in stages:
         median = statistics.median(times[s])
         total += median
         print(f"{s:<14}{median:9.2f} s {words / median:10.0f} words/s {peaks[s]:8.0f} MB peak (warm-up)")

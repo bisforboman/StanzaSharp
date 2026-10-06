@@ -11,7 +11,8 @@ namespace StanzaSharp.Pos;
 /// <summary>
 /// Predicts UPOS, XPOS and UFeats for every word. Port of stanza/models/pos/model.py <c>Tagger</c>
 /// for the English configuration:
-/// - input is word embedding + projected pretrain vector + forward/backward charlm
+/// - input is word embedding + projected pretrain vector + forward/backward charlm (<c>combined_charlm</c>),
+///   or the model's own character LSTM projected by <c>trans_char</c> (<c>combined_nocharlm</c>)
 /// - a highway biLSTM
 /// - UPOS from an MLP
 /// - XPOS and each UFeats key from biaffine scorers on an embedding of the predicted UPOS
@@ -22,7 +23,9 @@ internal sealed class PosTagger : IDisposable
     private const int MaximumTokens = 5000;
 
     private readonly Pretrain _pretrain;
-    private readonly CharLanguageModel _charlmForward, _charlmBackward;
+    private readonly CharLanguageModel? _charlmForward, _charlmBackward;
+    private readonly CharacterModel? _charModel;
+    private readonly Linear? _transChar;
     private readonly Dictionary<string, int> _wordVocab;
     private readonly string[] _upos, _xpos;
     private readonly (string Key, string[] Values)[] _feats;
@@ -36,18 +39,20 @@ internal sealed class PosTagger : IDisposable
     private readonly Biaffine[] _featsClf;
     private readonly Device _device = Weights.Device; // the device the model was loaded on
 
-    private PosTagger(Checkpoint ckpt, Pretrain pretrain, CharLanguageModel charlmForward, CharLanguageModel charlmBackward)
+    private PosTagger(Checkpoint ckpt, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward)
     {
         _pretrain = pretrain;
-        _charlmForward = charlmForward;
-        _charlmBackward = charlmBackward;
-        if (!charlmForward.IsForward || charlmBackward.IsForward)
-            throw new ArgumentException("Pass the forward charlm first, then the backward one");
-
         var config = ckpt.Root["config"]!;
         CheckSupported(config);
         var model = ckpt.Root["model"]!;
         var vocab = ckpt.Root["vocab"]!;
+        if (NeedsCharlm(ckpt))
+        {
+            if (charlmForward == null || charlmBackward == null || !charlmForward.IsForward || charlmBackward.IsForward)
+                throw new ArgumentException("This tagger needs the forward charlm, then the backward one");
+            _charlmForward = charlmForward;
+            _charlmBackward = charlmBackward;
+        }
 
         _wordVocab = Checkpoint.UnitToId(vocab["word"]);
         _wordUnk = _wordVocab["<UNK>"];
@@ -62,7 +67,16 @@ internal sealed class PosTagger : IDisposable
         int tagEmb = config["tag_emb_dim"]!.GetValue<int>();
         int transformed = config["transformed_dim"]!.GetValue<int>();
         int wordEmb = config["word_emb_dim"]!.GetValue<int>();
-        int inputSize = wordEmb + transformed + charlmForward.HiddenDim + charlmBackward.HiddenDim;
+        int inputSize = wordEmb + transformed;
+        if (_charlmForward != null)
+            inputSize += _charlmForward.HiddenDim + _charlmBackward!.HiddenDim;
+        else
+        {
+            _charModel = new CharacterModel(ckpt, model, config, vocab["char"]!, "charmodel.",
+                bidirectional: config["char_bidirectional"]?.GetValue<bool>() == true, attention: true);
+            _transChar = nn.Linear(_charModel.OutputDim, transformed, hasBias: false).LoadFrom(ckpt, model, "trans_char.");
+            inputSize += transformed;
+        }
 
         _wordEmb = nn.Embedding(_wordVocab.Count, wordEmb, padding_idx: 0).LoadFrom(ckpt, model, "word_emb.");
         _uposEmb = nn.Embedding(_upos.Length, tagEmb, padding_idx: 0).LoadFrom(ckpt, model, "upos_emb.");
@@ -79,10 +93,10 @@ internal sealed class PosTagger : IDisposable
 
     /// <summary>
     /// Loads e.g. <c>models/converted/en/pos/combined_charlm</c>. The pretrain and charlms are
-    /// shared with the parser, so the caller owns them.
+    /// shared with the parser, so the caller owns them. A <c>_nocharlm</c> model takes none.
     /// </summary>
     /// <param name="device">Where the model runs; CPU by default. Load the pretrain and charlms on the same device.</param>
-    public static PosTagger Load(string basePath, Pretrain pretrain, CharLanguageModel charlmForward, CharLanguageModel charlmBackward, Device? device = null) =>
+    public static PosTagger Load(string basePath, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward, Device? device = null) =>
         Weights.On(device, () => new PosTagger(Checkpoint.Load(basePath), pretrain, charlmForward, charlmBackward));
 
     /// <summary>Sets Upos, Xpos and Feats on every word of the document.</summary>
@@ -131,22 +145,31 @@ internal sealed class PosTagger : IDisposable
 
         var words = _wordEmb.forward(torch.tensor(wordIds, [batch, width], device: _device));
         var pretrained = _transPretrained.forward(_pretrain.Embeddings[torch.tensor(pretrainIds, [batch, width], device: _device)]);
-        var repsForward = _charlmForward.BuildCharRepresentation(sentences);
-        var repsBackward = _charlmBackward.BuildCharRepresentation(sentences);
-        if (keepCharlm != null)
-            for (int i = 0; i < batch; i++)
-                if (sentences[i].SequenceEqual(original[i])) // the parser reads the words before SimplifyPunct
-                    keepCharlm(i, repsForward[i], repsBackward[i]);
-        var charsForward = Rnn.PadSequence(repsForward);
-        var charsBackward = Rnn.PadSequence(repsBackward);
-        var output = _lstm.Forward(cat([words, pretrained, charsForward, charsBackward], 2), lengths);
+        Tensor[] chars;
+        if (_charModel != null)
+            chars = [_transChar!.forward(_charModel.Forward(sentences.Select(s => (IReadOnlyList<long[]>)s.Select(_charModel.CharIds).ToList()).ToList()))];
+        else
+        {
+            var repsForward = _charlmForward!.BuildCharRepresentation(sentences);
+            var repsBackward = _charlmBackward!.BuildCharRepresentation(sentences);
+            if (keepCharlm != null)
+                for (int i = 0; i < batch; i++)
+                    if (sentences[i].SequenceEqual(original[i])) // the parser reads the words before SimplifyPunct
+                        keepCharlm(i, repsForward[i], repsBackward[i]);
+            chars = [Rnn.PadSequence(repsForward), Rnn.PadSequence(repsBackward)];
+        }
+        var padded = _lstm.Forward(cat([words, pretrained, .. chars], 2), lengths);
+        // The heads see only the real words, as Stanza's run on the packed data: a batch padded to one long
+        // sentence would otherwise score mostly padding (21 biaffine feature scorers).
+        var real = Enumerable.Range(0, batch).SelectMany(i => Enumerable.Range(i * width, sentences[i].Count)).Select(k => (long)k).ToArray();
+        var output = padded.reshape(-1, padded.shape[2]).index_select(0, torch.tensor(real, device: _device));
 
         var uposScores = _uposClf.forward(F.relu(_uposHid.forward(output)));
-        var uposIds = uposScores.argmax(2);
+        var uposIds = uposScores.argmax(1);
         var parent = _uposEmb.forward(uposIds);
-        var xposIds = _xposClf.Forward(F.relu(_xposHid.forward(output)), parent).argmax(2);
+        var xposIds = _xposClf.Forward(F.relu(_xposHid.forward(output)), parent).argmax(1);
         var featsHid = F.relu(_featsHid.forward(output));
-        var featIds = _featsClf.Select(c => c.Forward(featsHid, parent).argmax(2).ToArray<long>()).ToArray();
+        var featIds = _featsClf.Select(c => c.Forward(featsHid, parent).argmax(1).ToArray<long>()).ToArray();
 
         var upos = uposIds.ToArray<long>();
         var xpos = xposIds.ToArray<long>();
@@ -154,16 +177,13 @@ internal sealed class PosTagger : IDisposable
         int nUpos = _upos.Length;
         uposLogits = [];
         var result = new List<(string, string, string?)[]>(batch);
-        for (int i = 0; i < batch; i++)
+        for (int i = 0, k = 0; i < batch; i++)
         {
             var tags = new (string, string, string?)[sentences[i].Count];
-            for (int j = 0; j < tags.Length; j++)
-            {
-                int k = i * width + j;
+            uposLogits.Add(logits[(k * nUpos)..((k + tags.Length) * nUpos)]);
+            for (int j = 0; j < tags.Length; j++, k++)
                 tags[j] = (_upos[upos[k]], _xpos[xpos[k]], FeatsString(featIds, k));
-            }
             result.Add(tags);
-            uposLogits.Add(logits[(i * width * nUpos)..((i * width + sentences[i].Count) * nUpos)]);
         }
         return result;
     }
@@ -185,7 +205,7 @@ internal sealed class PosTagger : IDisposable
         {
             if (!ok) throw new NotSupportedException($"POS checkpoint uses {what}, which is not ported");
         }
-        Require(config["charlm"]?.GetValue<bool>() == true && config["char"]?.GetValue<bool>() == true, "a configuration without charlm");
+        Require(config["char"]?.GetValue<bool>() == true && config["char_emb_dim"]?.GetValue<int>() > 0, "a configuration without character features");
         Require(config["charlm_transform_dim"] == null, "charlm_transform_dim");
         Require(config["pretrain"]?.GetValue<bool>() == true, "a configuration without pretrain");
         Require(config["bert_model"] == null, "a transformer");
@@ -195,6 +215,12 @@ internal sealed class PosTagger : IDisposable
         Require(columns == """[["upos","upos",null,"WORD",true,[]],["xpos","xpos",null,"AUTO",true,["upos"]],["feats","feats",null,"FEATURES",true,["upos"]]]""",
             $"tag columns {columns}");
     }
+
+    /// <summary>Whether a checkpoint reads the shared charlms (<c>_charlm</c>) rather than its own character model (<c>_nocharlm</c>).</summary>
+    /// <summary>Whether this tagger runs the shared charlms, whose outputs it can then hand to a <see cref="CharlmCache"/>.</summary>
+    internal bool UsesCharlm => _charlmForward != null;
+
+    private static bool NeedsCharlm(Checkpoint ckpt) => ckpt.Root["config"]!["charlm"]?.GetValue<bool>() == true;
 
     private static string[] Strings(JsonNode? array) => array!.AsArray().Select(x => x!.GetValue<string>()).ToArray();
 
@@ -211,6 +237,8 @@ internal sealed class PosTagger : IDisposable
         foreach (var m in new nn.Module[] { _wordEmb, _uposEmb, _transPretrained, _uposHid, _uposClf, _xposHid, _featsHid })
             m.Dispose();
         _lstm.Dispose();
+        _charModel?.Dispose();
+        _transChar?.Dispose();
         _xposClf.Dispose();
         foreach (var c in _featsClf)
             c.Dispose();

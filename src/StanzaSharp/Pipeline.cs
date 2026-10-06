@@ -13,7 +13,7 @@ namespace StanzaSharp;
 
 /// <summary>
 /// Runs Stanza's English pipeline in its order: tokenize → mwt → pos → lemma → constituency → depparse → sentiment → ner
-/// (all but sentiment and ner by default).
+/// (by default all those of the selected package).
 /// </summary>
 /// <example>
 /// <code>
@@ -26,6 +26,39 @@ public sealed class Pipeline : IDisposable
 {
     /// <summary>Every processor, in the order Stanza runs them (PIPELINE_NAMES): Stanza's English default.</summary>
     public const string AllProcessors = "tokenize,mwt,pos,lemma,constituency,depparse,sentiment,ner";
+
+    /// <summary>The package <see cref="PipelineOptions.Package"/> selects by default: Stanza's English <c>default</c>.</summary>
+    public const string DefaultPackage = "default";
+
+    // Stanza 1.15.0's English packages (resources.json): each processor's model. Their files need MD5s in ModelDownloader.Files.
+    internal static readonly Dictionary<string, Dictionary<string, string>> Packages = new()
+    {
+        [DefaultPackage] = new()
+        {
+            ["tokenize"] = "combined_nocharlm",
+            ["mwt"] = "combined",
+            ["pos"] = "combined_charlm",
+            ["lemma"] = "combined_nocharlm",
+            ["constituency"] = "ptb3-revised_charlm",
+            ["depparse"] = "combined_charlm",
+            ["sentiment"] = "sstplus_charlm",
+            ["ner"] = "ontonotes-ww-multi_charlm",
+        },
+        // Smaller and faster: pos, depparse and ner have their own character LSTMs instead of the charlms. No constituency.
+        ["default_fast"] = new()
+        {
+            ["tokenize"] = "combined_nocharlm",
+            ["mwt"] = "combined",
+            ["pos"] = "combined_nocharlm",
+            ["lemma"] = "combined_nocharlm",
+            ["depparse"] = "combined_nocharlm",
+            ["sentiment"] = "sstplus_charlm",
+            ["ner"] = "ontonotes-ww-multi_nocharlm",
+        },
+    };
+
+    // Processors whose models (every package's) read the shared pretrained word vectors.
+    private static readonly HashSet<string> UsesPretrain = ["pos", "depparse", "ner", "constituency", "sentiment"];
 
     // Stanza's processor dependencies (REQUIRES_DEFAULT); English pos also needs mwt to have run.
     internal static readonly Dictionary<string, string[]> Requires = new()
@@ -52,57 +85,99 @@ public sealed class Pipeline : IDisposable
     private readonly CharLanguageModel? _charlmForward, _charlmBackward;
     private readonly CharlmCacheOptions _cacheOptions;
 
-    private Pipeline(string modelDir, HashSet<string> processors, CharlmCacheOptions cacheOptions)
+    private Pipeline(string modelDir, Dictionary<string, string> models, CharlmCacheOptions cacheOptions)
     {
         _cacheOptions = cacheOptions;
-        string Model(string relative) => Path.Combine(modelDir, relative);
+        string Model(string processor) => Path.Combine(modelDir, processor, models[processor]);
 
-        _tokenizer = Tokenizer.Load(Model("tokenize/combined_nocharlm"));
-        if (processors.Contains("mwt"))
-            _mwt = MwtExpander.Load(Model("mwt/combined"));
-        if (processors.Contains("pos") || processors.Contains("depparse") || processors.Contains("ner") || processors.Contains("constituency") || processors.Contains("sentiment"))
+        var shared = SharedModels(models);
+        if (shared.Contains(PretrainPath))
+            _pretrain = Pretrain.Load(Path.Combine(modelDir, PretrainPath));
+        if (shared.Contains(ForwardCharlmPath))
         {
-            _pretrain = Pretrain.Load(Model("pretrain/conll17"));
-            _charlmForward = CharLanguageModel.Load(Model("forward_charlm/1billion"));
-            _charlmBackward = CharLanguageModel.Load(Model("backward_charlm/1billion"));
+            _charlmForward = CharLanguageModel.Load(Path.Combine(modelDir, ForwardCharlmPath));
+            _charlmBackward = CharLanguageModel.Load(Path.Combine(modelDir, BackwardCharlmPath));
         }
-        if (processors.Contains("pos"))
-            _pos = PosTagger.Load(Model("pos/combined_charlm"), _pretrain!, _charlmForward!, _charlmBackward!);
-        if (processors.Contains("lemma"))
-            _lemma = Lemmatizer.Load(Model("lemma/combined_nocharlm"));
-        if (processors.Contains("depparse"))
-            _depparse = DependencyParser.Load(Model("depparse/combined_charlm"), _pretrain!, _charlmForward!, _charlmBackward!);
-        if (processors.Contains("ner"))
-            _ner = NerTagger.Load(Model("ner/ontonotes-ww-multi_charlm"), _pretrain!, _charlmForward!, _charlmBackward!);
-        if (processors.Contains("constituency"))
-            _parser = ConstituencyParser.Load(Model("constituency/ptb3-revised_charlm"), _pretrain!, _charlmForward!, _charlmBackward!);
-        if (processors.Contains("sentiment"))
-            _sentiment = SentimentClassifier.Load(Model("sentiment/sstplus_charlm"), _pretrain!, _charlmForward!, _charlmBackward!);
+
+        _tokenizer = Tokenizer.Load(Model("tokenize"));
+        if (models.ContainsKey("mwt"))
+            _mwt = MwtExpander.Load(Model("mwt"));
+        if (models.ContainsKey("pos"))
+            _pos = PosTagger.Load(Model("pos"), _pretrain!, _charlmForward, _charlmBackward);
+        if (models.ContainsKey("lemma"))
+            _lemma = Lemmatizer.Load(Model("lemma"));
+        if (models.ContainsKey("depparse"))
+            _depparse = DependencyParser.Load(Model("depparse"), _pretrain!, _charlmForward, _charlmBackward);
+        if (models.ContainsKey("ner"))
+            _ner = NerTagger.Load(Model("ner"), _pretrain!, _charlmForward, _charlmBackward);
+        if (models.ContainsKey("constituency"))
+            _parser = ConstituencyParser.Load(Model("constituency"), _pretrain!, _charlmForward!, _charlmBackward!);
+        if (models.ContainsKey("sentiment"))
+            _sentiment = SentimentClassifier.Load(Model("sentiment"), _pretrain!, _charlmForward!, _charlmBackward!);
     }
 
     /// <summary>
     /// Loads the English models from <paramref name="modelDir"/>: either converted ones (e.g. <c>models/converted/en</c>)
     /// or Stanza's own download with its <c>.pt</c> files (e.g. <c>models/stanza/en</c>), chosen per file.
     /// </summary>
-    /// <param name="options">Processors, device and cache settings; defaults to all eight processors on the CPU.</param>
+    /// <param name="options">Package, processors, device and cache settings; defaults to all eight processors of the
+    /// <c>default</c> package on the CPU.</param>
+    /// <exception cref="ArgumentException">An unknown package or processor, a processor the package lacks (e.g.
+    /// constituency in <c>default_fast</c>), or a processor without the ones it requires.</exception>
     public static Pipeline Load(string modelDir, PipelineOptions? options = null)
     {
         options ??= new PipelineOptions();
         if (!Directory.Exists(modelDir))
             throw new DirectoryNotFoundException($"Model directory not found: {modelDir} (download them with ModelDownloader.DownloadAsync or \"StanzaSharp.Cli download\")");
-        var set = ParseProcessors(options.Processors, nameof(options));
-        foreach (var p in set)
-        {
-            var missing = Requires[p].Where(n => !set.Contains(n)).ToList();
-            if (missing.Count > 0)
-                throw new ArgumentException($"Processor '{p}' requires {string.Join(", ", missing)}", nameof(options));
-        }
+        var models = SelectModels(options.Package, options.Processors, addRequired: false, nameof(options));
         if (options.CharlmCache.IsEnabled && options.CharlmCache.MaxWords <= 0)
             throw new ArgumentOutOfRangeException(nameof(options), "CharlmCache.MaxWords must be positive; set IsEnabled = false to turn the cache off");
 
         if (options.DisableTf32)
             torch.backends.cuda.matmul.allow_tf32 = torch.backends.cudnn.allow_tf32 = false;
-        return Weights.On(options.Device, () => new Pipeline(modelDir, set, options.CharlmCache));
+        return Weights.On(options.Device, () => new Pipeline(modelDir, models, options.CharlmCache));
+    }
+
+    internal const string PretrainPath = "pretrain/conll17", ForwardCharlmPath = "forward_charlm/1billion", BackwardCharlmPath = "backward_charlm/1billion";
+
+    /// <summary>
+    /// The processors to run and each one's model: <paramref name="processors"/> (null: all of the package's), checked
+    /// against <paramref name="package"/>. With <paramref name="addRequired"/> the processors they require are added
+    /// (what to download); without, a missing one throws (what to load).
+    /// </summary>
+    internal static Dictionary<string, string> SelectModels(string package, string? processors, bool addRequired, string paramName)
+    {
+        if (!Packages.TryGetValue(package ?? "", out var models))
+            throw new ArgumentException($"Unknown package '{package}'. Available: {string.Join(", ", Packages.Keys)}", paramName);
+        var set = processors == null ? models.Keys.ToHashSet() : ParseProcessors(processors, paramName);
+        foreach (var p in set.ToList())
+        {
+            var missing = Requires[p].Where(n => !set.Contains(n)).ToList();
+            if (missing.Count > 0 && !addRequired)
+                throw new ArgumentException($"Processor '{p}' requires {string.Join(", ", missing)}", paramName);
+            set.UnionWith(missing);
+        }
+        foreach (var p in set)
+            if (!models.ContainsKey(p))
+            {
+                var others = Packages.Where(kv => kv.Value.ContainsKey(p)).Select(kv => $"\"{kv.Key}\"");
+                throw new ArgumentException($"Package '{package}' has no {p} model; use Package = {string.Join(" or ", others)} for {p}", paramName);
+            }
+        return set.ToDictionary(p => p, p => models[p]);
+    }
+
+    /// <summary>
+    /// The shared files <paramref name="models"/> read (paths without extension): the pretrained word vectors for pos,
+    /// depparse, ner, constituency and sentiment, and the charlms for every <c>_charlm</c> model (Stanza's naming).
+    /// </summary>
+    internal static List<string> SharedModels(IReadOnlyDictionary<string, string> models)
+    {
+        var shared = new List<string>();
+        if (models.Keys.Any(UsesPretrain.Contains))
+            shared.Add(PretrainPath);
+        if (models.Values.Any(m => m.EndsWith("_charlm", StringComparison.Ordinal)))
+            shared.AddRange([ForwardCharlmPath, BackwardCharlmPath]);
+        return shared;
     }
 
     /// <summary>A comma-separated processor list as a set, checking every name.</summary>
@@ -128,7 +203,8 @@ public sealed class Pipeline : IDisposable
         var doc = _tokenizer.Process(text);
         _mwt?.Process(doc);
         // NER, the parser and the sentiment classifier reuse the tagger's charlm outputs instead of computing them again.
-        using var charlms = _pos != null && (_ner != null || _parser != null || _sentiment != null) && _cacheOptions.IsEnabled ? new CharlmCache(_cacheOptions.MaxWords) : null;
+        // A _nocharlm tagger (default_fast) has no charlm outputs to share.
+        using var charlms = _pos is { UsesCharlm: true } && (_ner != null || _parser != null || _sentiment != null) && _cacheOptions.IsEnabled ? new CharlmCache(_cacheOptions.MaxWords) : null;
         _pos?.Process(doc, charlms);
         _lemma?.Process(doc);
         // Stanza's order (PIPELINE_NAMES). Only the CoNLL-U comment order shows it, and Conllu.Write fixes that.

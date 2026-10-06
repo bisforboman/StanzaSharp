@@ -7,6 +7,25 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 
 ## [Unreleased]
 
+### Added
+- Stanza's English `default_fast` package: `PipelineOptions.Package = "default_fast"` (default
+  `"default"`, also `Pipeline.DefaultPackage`). It runs tokenize, mwt, pos, lemma, depparse, sentiment and
+  ner, with pos, depparse and ner models that have their own small character LSTMs instead of the large
+  character language models. Output is identical to Python Stanza's `package='default_fast'`. On 8 CPU
+  threads it is about 2.3× faster than the default package (whose output it does not match: these are
+  different models).
+  - An unknown package name throws `ArgumentException`, and so does a processor the package lacks, such as
+    `constituency` in `default_fast`.
+- `ModelDownloader.DownloadAsync(dir, PipelineOptions)` downloads exactly what `Pipeline.Load` reads with the
+  same options (package and processors).
+- The CLI's `--package NAME`, for running and for `download`.
+
+### Changed
+- `PipelineOptions.Processors` is now `string?` and null by default, meaning all processors of the package
+  (for `default`, the same eight as before).
+- The POS tagger no longer scores batch padding: pos is about 25% faster with the default package (16.1 →
+  12.1 s on the 26k-word benchmark), with identical output.
+
 ## [0.1.0] - 2026-10-06
 
 First stable release.

@@ -23,9 +23,15 @@ PyTorch-based NLP library, running the original pretrained models through TorchS
   - depparse: `combined_charlm`
   - ner: `ontonotes-ww-multi_charlm`
   - sentiment: `sstplus_charlm`
+- **Package `default_fast`** (user's decision, 2026-10-06: selected by Stanza's package name,
+  `PipelineOptions.Package`): tokenize, mwt and lemma as above; pos `combined_nocharlm`, depparse
+  `combined_nocharlm`, ner `ontonotes-ww-multi_nocharlm`; sentiment `sstplus_charlm`; no constituency.
+  Its default processors are those seven. `Pipeline.Packages` maps package → processor → model.
 - **Shared dependencies:** `pos`, `constituency`, `depparse`, `ner` and `sentiment` all depend on the
-  forward and backward character LMs (charlm) and on the pretrained word-vector file (pretrain).
-  The charlm is shared infrastructure and lives in `StanzaSharp.Nn`.
+  pretrained word-vector file (pretrain). Every `_charlm` model also depends on the forward and backward
+  character LMs (charlm); the `_nocharlm` ones have their own character LSTM (`Nn.CharacterModel`) instead.
+  The charlm is shared infrastructure and lives in `StanzaSharp.Nn`. The pipeline loads only what the
+  selected models read (`Pipeline.SharedModels`): in `default_fast` the charlms only with sentiment.
 
 ## Status
 
@@ -99,7 +105,7 @@ All 7 steps of the build order are done:
   - `CharlmCache`: NER's charlm input (`"\n"`, each token + `" "`, same vocab) equals the tagger's
     when a sentence's tokens are its words (no MWT), so it reuses those; others are computed.
 - `Checkpoint.Load` also reads Stanza's original `.pt` files (`Core/TorchCheckpoint.cs` +
-  `Core/Pickle.cs`), so `Pipeline.Load("models/stanza/en")` works without Python. For all eleven
+  `Core/Pickle.cs`), so `Pipeline.Load("models/stanza/en")` works without Python. For all fourteen
   checkpoints the result equals the converter's: identical JSON and byte-identical tensors.
 - `Sentiment.SentimentClassifier` (processor `sentiment`, requires tokenize; runs last, as in Stanza)
   sets `Sentence.Sentiment` (0 negative, 1 neutral, 2 positive). `Conllu` reads and writes
@@ -111,6 +117,13 @@ All 7 steps of the build order are done:
   - `CharlmCache`: the classifier reads token texts, so it reuses the tagger's outputs for sentences
     without multi-word tokens (641 of 886). Labels stay identical; logits drift up to ~1e-4 (vs
     Stanza), as the network amplifies the cached charlm's last-bit differences; tested at 1e-3.
+- `default_fast` (`PipelineOptions.Package`): `PosTagger`, `DependencyParser` and `NerTagger` switch on the
+  checkpoint's `charlm` flag and take null charlms for `_nocharlm` checkpoints. `tests/golden/fast/` is
+  reproduced byte for byte (13 files, 845 sentences, 8,401 words, all seven processors). Drift: UPOS
+  logits 1.5e-5, arc log-probs 7.6e-6, label log-probs 1.5e-5, NER emissions 1.9e-6 (tolerance 1e-4).
+  - No `CharlmCache` there: the nocharlm tagger has no charlm outputs to share (`PosTagger.UsesCharlm`).
+  - Stanza silently skips a processor its package lacks (`processors='...,constituency'` with
+    `default_fast` loads no parser); we throw instead (user's decision), naming the `default` package.
 
 Tokenizer notes:
 - `Tokenizer.Predict` batches like Stanza: sort paragraphs by length, batch by 32, pad to max+1,
@@ -200,11 +213,11 @@ Safetensors layout: a u64 little-endian header length, a JSON header (`dtype`, `
 then raw little-endian tensor data. Read it with a small hand-written reader in `StanzaSharp.Core`;
 no package is needed.
 
-All eleven checkpoints convert with `torch.load(weights_only=True)`; no unsafe pickling is needed.
+All fourteen checkpoints convert with `torch.load(weights_only=True)`; no unsafe pickling is needed.
 
 ### Reading .pt files in C#
 
-All eleven Stanza checkpoints use torch's legacy format (`_use_new_zipfile_serialization=False`), a
+All fourteen Stanza checkpoints use torch's legacy format (`_use_new_zipfile_serialization=False`), a
 sequence of protocol-2 pickles: magic number, protocol version (1001), sys_info (little-endian),
 the checkpoint, the list of storage keys; then per key an int64 element count and the raw bytes.
 Tensors are `torch._utils._rebuild_tensor_v2(storage, offset, size, stride, requires_grad, hooks)`
@@ -308,6 +321,21 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     ReLU between. Dropout is off at inference.
   - `label_sentences`: sentences sorted longest first (stable), `split_into_batches` of 5000 tokens
     (longer alone), argmax.
+- **The `_nocharlm` models** (`default_fast`). Each config differs from its `_charlm` twin only in
+  `charlm: false`; vocabularies, batching and every other layer are the same. Instead of the charlms they
+  carry `charmodel.*`, a `common/char_model.py` `CharacterModel` (`Nn.CharacterModel`):
+  - Its own char vocab (`vocab.char`, not lowercased, `char_lowercase` false), code points, unknown → UNK 1.
+    Char embedding 100 (padding_idx 0), a 1-layer LSTM with learned `charlstm_h_init`/`c_init`, run over
+    every word of the batch as its own packed sequence (sorted by length), so batching only moves float bits.
+  - **pos** (`combined_nocharlm`): unidirectional (`char_bidirectional` false), hidden 400, attention
+    pooling `sum_t sigmoid(char_attn(h_t)) * h_t`, then `trans_char` (Linear 400→125, no bias). Input
+    325 = word 75 + trans_pretrained 125 + char 125, in that order. Same `simplify_punct`ed words.
+  - **depparse** (`combined_nocharlm`): the same character model (always unidirectional with attention in
+    `GraphParser`) + `trans_char` 400→125. ROOT's characters are the single id `ROOT_ID` (3). Input 500 =
+    trans_pretrained 125 + word 75 + lemma 75 + tags 50 twice + char 125.
+  - **ner** (`ontonotes-ww-multi_nocharlm`): bidirectional, hidden 100, **no** attention: the final forward
+    and backward states (`h[-2:]`), 200. Input 300 = word 100 + char 200 → `input_transform` 300→300.
+    Reads tokens, as the charlm model does.
 
 ## Validation
 
@@ -346,6 +374,9 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - `sentiment/` (`--sentiment-only`): `tokenize,mwt,sentiment` `<name>.conllu` + `<name>.json`
     (label and 3 logits per sentence) for corpus.txt, each validation*.txt and `sentiment/reviews.txt`
     (opinionated sentences); `all.json` for all of them as one document (two batches).
+  - `fast/` (`--fast-only`): `package='default_fast'` output (all seven of its processors) for `corpus.txt`
+    (as `corpus.conllu`) and each `validation*.txt`; for the first 3 sentences, each run alone, UPOS logits,
+    arc/label log-probs (from the run's tags and lemmas) and NER emissions.
   - `validation*.conllu`: full pipeline output for each hand-written `validation*.txt` (news,
     academic, instructions, social, dialogue/poetry, tech, multilingual, contractions, long,
     whitespace, nonbmp; ~830 sentences). They are read as bytes, so CR/CRLF reach Stanza as-is.
@@ -402,10 +433,18 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   `StanzaSharp.Cli download [DIR]`.
   - Selective download (user's decision, 2026-10-06): `DownloadAsync(dir, processors)` / `download
     --processors LIST`.
-  - `FilesFor` expands the list by `Pipeline.Requires` and adds the shared pretrain/charlms when a
-    processor in `UsesShared` needs them.
-  - Keep `ModelDownloader.Models` (each file's processor) and `UsesShared` in step with
-    `Pipeline`'s constructor. `FilesFor_AreEnoughToLoadThePipeline` checks it.
+  - Packages (user's decision, 2026-10-06: Stanza's package names as strings, so more can be added without
+    API changes): `PipelineOptions.Package` (`"default"` or `"default_fast"`; anything else throws) and
+    `DownloadAsync(dir, PipelineOptions)` / `download --package NAME`. The downloader takes the same options
+    object as `Load`, so one object downloads and loads the same files; it ignores the other options.
+    `Processors` is null by default: all the package's processors. A processor the package lacks throws.
+  - `DownloadAsync(dir)` and `DownloadAsync(dir, processors)` (0.1.0 API) mean the `default` package.
+  - `Pipeline.SelectModels` (package + processors → processor → model) and `Pipeline.SharedModels`
+    (pretrain for pos/depparse/ner/constituency/sentiment, charlms for any `_charlm` model) are what both
+    `Pipeline`'s constructor and `ModelDownloader.FilesFor` use, so they cannot drift apart. A new package
+    needs an entry in `Pipeline.Packages` and its files' MD5s in `ModelDownloader.Files`;
+    `FilesFor_AreEnoughToLoadThePipeline` and `FileTableCoversEveryModelThePipelineLoads` check it. CI
+    downloads both packages.
   - It fetches the `.pt` files from `huggingface.co/stanfordnlp/stanza-en/resolve/v1.15.0/models/`
     and checks each against the MD5 from Stanza 1.15.0's resources.json, kept in
     `ModelDownloader.Files`.
@@ -426,6 +465,10 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     - GitHub environment `prerelease`: no reviewers, tag rule `v*-*`.
     - A 401 "No matching trust policy" on push means the nuget.org policy for that environment is
       missing or misnamed.
+- `main` is protected like StyleBro since 2026-10-06 (user's decision): pull requests required (0
+  approvals), required status checks `build-test` and `golden`, enforced for admins, auto-merge allowed,
+  merged branches deleted. Every change goes through a PR. A new required CI job must also be added to the
+  protection's required checks.
 
 ## Design decisions
 

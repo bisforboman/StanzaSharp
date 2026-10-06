@@ -13,6 +13,7 @@ namespace StanzaSharp.Depparse;
 /// <c>GraphParser</c> (Dozat and Manning's biaffine parser) for the English configuration:
 /// - each sentence gets a ROOT word in front
 /// - input is projected pretrain + word + lemma + (UPOS + XPOS) embedding + forward/backward charlm
+///   (<c>combined_charlm</c>), or the model's own character LSTM projected by <c>trans_char</c> (<c>combined_nocharlm</c>)
 /// - a highway biLSTM
 /// - deep biaffine arc and label scorers, plus the linearization and distance terms
 /// - a maximum spanning tree with one root (Chu-Liu/Edmonds)
@@ -23,7 +24,9 @@ internal sealed class DependencyParser : IDisposable
     private const int SeparateBatchLength = 150;       // depparse_processor.DEFAULT_SEPARATE_BATCH
 
     private readonly Pretrain _pretrain;
-    private readonly CharLanguageModel _charlmForward, _charlmBackward;
+    private readonly CharLanguageModel? _charlmForward, _charlmBackward;
+    private readonly CharacterModel? _charModel;
+    private readonly Linear? _transChar;
     private readonly Dictionary<string, int> _wordVocab, _lemmaVocab, _uposVocab, _xposVocab;
     private readonly string[] _deprels;
     private readonly int _batchSize;
@@ -36,18 +39,20 @@ internal sealed class DependencyParser : IDisposable
     private readonly DeepBiaffine? _linearizationScorer, _distanceScorer;
     private readonly Device _device = Weights.Device; // the device the model was loaded on
 
-    private DependencyParser(Checkpoint ckpt, Pretrain pretrain, CharLanguageModel charlmForward, CharLanguageModel charlmBackward)
+    private DependencyParser(Checkpoint ckpt, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward)
     {
         _pretrain = pretrain;
-        _charlmForward = charlmForward;
-        _charlmBackward = charlmBackward;
-        if (!charlmForward.IsForward || charlmBackward.IsForward)
-            throw new ArgumentException("Pass the forward charlm first, then the backward one");
-
         var config = ckpt.Root["config"]!;
         CheckSupported(ckpt.Root, config);
         var model = ckpt.Root["model"]!;
         var vocab = ckpt.Root["vocab"]!;
+        if (NeedsCharlm(ckpt))
+        {
+            if (charlmForward == null || charlmBackward == null || !charlmForward.IsForward || charlmBackward.IsForward)
+                throw new ArgumentException("This parser needs the forward charlm, then the backward one");
+            _charlmForward = charlmForward;
+            _charlmBackward = charlmBackward;
+        }
 
         _wordVocab = Checkpoint.UnitToId(vocab["word"]);
         _lemmaVocab = Checkpoint.UnitToId(vocab["lemma"]);
@@ -65,7 +70,15 @@ internal sealed class DependencyParser : IDisposable
         int transformed = config["transformed_dim"]!.GetValue<int>();
         // Stanza appends the UPOS+XPOS embedding twice where it means to add the UFeats one, so the
         // UFeats embeddings are loaded by Stanza but never used.
-        int inputSize = transformed + 2 * wordEmb + 2 * tagEmb + charlmForward.HiddenDim + charlmBackward.HiddenDim;
+        int inputSize = transformed + 2 * wordEmb + 2 * tagEmb;
+        if (_charlmForward != null)
+            inputSize += _charlmForward.HiddenDim + _charlmBackward!.HiddenDim;
+        else
+        {
+            _charModel = new CharacterModel(ckpt, model, config, vocab["char"]!, "charmodel.", bidirectional: false, attention: true);
+            _transChar = nn.Linear(_charModel.OutputDim, transformed, hasBias: false).LoadFrom(ckpt, model, "trans_char.");
+            inputSize += transformed;
+        }
 
         _wordEmb = nn.Embedding(_wordVocab.Count, wordEmb, padding_idx: 0).LoadFrom(ckpt, model, "word_emb.");
         _lemmaEmb = nn.Embedding(_lemmaVocab.Count, wordEmb, padding_idx: 0).LoadFrom(ckpt, model, "lemma_emb.");
@@ -85,10 +98,10 @@ internal sealed class DependencyParser : IDisposable
 
     /// <summary>
     /// Loads e.g. <c>models/converted/en/depparse/combined_charlm</c>. The pretrain and charlms are
-    /// shared with the tagger and the constituency parser, so the caller owns them.
+    /// shared with the tagger and the constituency parser, so the caller owns them. A <c>_nocharlm</c> model takes none.
     /// </summary>
     /// <param name="device">Where the model runs; CPU by default. Load the pretrain and charlms on the same device.</param>
-    public static DependencyParser Load(string basePath, Pretrain pretrain, CharLanguageModel charlmForward, CharLanguageModel charlmBackward, Device? device = null) =>
+    public static DependencyParser Load(string basePath, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward, Device? device = null) =>
         Weights.On(device, () => new DependencyParser(Checkpoint.Load(basePath), pretrain, charlmForward, charlmBackward));
 
     /// <summary>
@@ -214,16 +227,26 @@ internal sealed class DependencyParser : IDisposable
         Tensor Ids(long[] ids) => torch.tensor(ids, [size, width], device: _device);
 
         var pos = _uposEmb.forward(Ids(upos)) + _xposEmb.forward(Ids(xpos));
-        // "\n" stands in for ROOT in the charlm input.
-        var charlmText = texts.Select(t => (IReadOnlyList<string>)t.Prepend("\n").ToList()).ToList();
+        Tensor[] chars;
+        if (_charModel != null)
+        {
+            // ROOT is a word of the single character id ROOT_ID.
+            long[] root = [CharacterModel.RootId];
+            chars = [_transChar!.forward(_charModel.Forward(texts.Select(t => (IReadOnlyList<long[]>)t.Select(_charModel.CharIds).Prepend(root).ToList()).ToList()))];
+        }
+        else
+        {
+            // "\n" stands in for ROOT in the charlm input.
+            var charlmText = texts.Select(t => (IReadOnlyList<string>)t.Prepend("\n").ToList()).ToList();
+            chars = [Rnn.PadSequence(_charlmForward!.BuildCharRepresentation(charlmText)), Rnn.PadSequence(_charlmBackward!.BuildCharRepresentation(charlmText))];
+        }
         var input = cat([
             _transPretrained.forward(_pretrain.Embeddings[Ids(pretrained)]),
             _wordEmb.forward(Ids(word)),
             _lemmaEmb.forward(Ids(lemma)),
             pos,
             pos,
-            Rnn.PadSequence(_charlmForward.BuildCharRepresentation(charlmText)),
-            Rnn.PadSequence(_charlmBackward.BuildCharRepresentation(charlmText)),
+            .. chars,
         ], 2);
         var output = _lstm.Forward(input, lengths);
         // pad_packed_sequence leaves zeros past each sentence; the scorers see them in the padding columns.
@@ -260,7 +283,7 @@ internal sealed class DependencyParser : IDisposable
         bool Flag(string key, bool absent) => config[key]?.GetValue<bool>() ?? absent;
         Require(root["model_type"]?.GetValue<string>() is null or "graph", "a transition or ensemble parser");
         Require(!Flag("use_arc_embedding", false), "use_arc_embedding");
-        Require(Flag("charlm", false) && Flag("char", false) && config["char_emb_dim"]!.GetValue<int>() > 0, "a configuration without charlm");
+        Require(Flag("char", false) && config["char_emb_dim"]!.GetValue<int>() > 0, "a configuration without character features");
         Require(Flag("pretrain", false), "a configuration without pretrain");
         Require(config["bert_model"] == null, "a transformer");
         Require(config["word_emb_dim"]!.GetValue<int>() > 0 && config["tag_emb_dim"]!.GetValue<int>() > 0, "disabled word or tag embeddings");
@@ -274,6 +297,9 @@ internal sealed class DependencyParser : IDisposable
             Require(!root["vocab"]![key]!["lower"]!.GetValue<bool>(), $"a lowercased {key} vocab");
     }
 
+    /// <summary>Whether a checkpoint reads the shared charlms (<c>_charlm</c>) rather than its own character model (<c>_nocharlm</c>).</summary>
+    private static bool NeedsCharlm(Checkpoint ckpt) => ckpt.Root["config"]!["charlm"]?.GetValue<bool>() == true;
+
     // common/utils.py simplify_punct (as in the tagger): runs like "?!?" or "!!" become "?" or "!".
     private const string QuestionMarks = "?？︖﹖⁇", AllMarks = QuestionMarks + "!！︕﹗‼";
     private static readonly Regex Question = new($"^[{QuestionMarks}][{AllMarks}]+$");
@@ -286,6 +312,8 @@ internal sealed class DependencyParser : IDisposable
         foreach (var m in new nn.Module[] { _wordEmb, _lemmaEmb, _uposEmb, _xposEmb, _transPretrained })
             m.Dispose();
         _lstm.Dispose();
+        _charModel?.Dispose();
+        _transChar?.Dispose();
         _unlabeled.Dispose();
         _deprel.Dispose();
         _linearizationScorer?.Dispose();

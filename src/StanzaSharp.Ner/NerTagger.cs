@@ -11,7 +11,8 @@ namespace StanzaSharp.Ner;
 /// Port of stanza/models/ner/model.py <c>NERTagger</c> and trainer.py <c>predict</c> for the English
 /// configuration:
 /// - input is the pretrain vector plus a fine-tuned delta embedding (both lowercased) and the
-///   forward/backward charlm, through a linear <c>input_transform</c>
+///   forward/backward charlm (<c>_charlm</c>) or the model's own bidirectional character LSTM's final
+///   states (<c>_nocharlm</c>), through a linear <c>input_transform</c>
 /// - a biLSTM, then one linear layer per tag set and CRF Viterbi decoding
 /// - <c>fix_singleton_tags</c> on the decoded sequence
 /// NER reads tokens, not words, like Stanza: an MWT such as "don't" is tagged once.
@@ -22,7 +23,8 @@ internal sealed class NerTagger : IDisposable
     private const int VocabPrefixSize = 4;  // <PAD> <UNK> <EMPTY> <ROOT>
 
     private readonly Pretrain _pretrain;
-    private readonly CharLanguageModel _charlmForward, _charlmBackward;
+    private readonly CharLanguageModel? _charlmForward, _charlmBackward;
+    private readonly CharacterModel? _charModel;
     private readonly Dictionary<string, int> _deltaVocab;
     private readonly string[] _tags;
     private readonly float[] _transitions;
@@ -34,18 +36,22 @@ internal sealed class NerTagger : IDisposable
     private readonly Tensor _hInit, _cInit;
     private readonly Device _device = Weights.Device; // the device the model was loaded on
 
-    private NerTagger(Checkpoint ckpt, Pretrain pretrain, CharLanguageModel charlmForward, CharLanguageModel charlmBackward)
+    private NerTagger(Checkpoint ckpt, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward)
     {
         _pretrain = pretrain;
-        _charlmForward = charlmForward;
-        _charlmBackward = charlmBackward;
-        if (!charlmForward.IsForward || charlmBackward.IsForward)
-            throw new ArgumentException("Pass the forward charlm first, then the backward one");
-
         var config = ckpt.Root["config"]!;
         var vocab = ckpt.Root["vocab"]!;
         var model = ckpt.Root["model"]!;
         CheckSupported(config, vocab, pretrain);
+        if (NeedsCharlm(ckpt))
+        {
+            if (charlmForward == null || charlmBackward == null || !charlmForward.IsForward || charlmBackward.IsForward)
+                throw new ArgumentException("This NER model needs the forward charlm, then the backward one");
+            _charlmForward = charlmForward;
+            _charlmBackward = charlmBackward;
+        }
+        else
+            _charModel = new CharacterModel(ckpt, model, config, vocab["char"]!, "charmodel.", bidirectional: true, attention: false);
 
         _deltaVocab = Checkpoint.UnitToId(vocab["delta"]);
         _batchSize = config["batch_size"]!.GetValue<int>();
@@ -61,7 +67,7 @@ internal sealed class NerTagger : IDisposable
         int wordDim = config["word_emb_dim"]!.GetValue<int>();
         int hidden = config["hidden_dim"]!.GetValue<int>();
         int layers = config["num_layers"]!.GetValue<int>();
-        int inputSize = wordDim + charlmForward.HiddenDim + charlmBackward.HiddenDim;
+        int inputSize = wordDim + (_charModel?.OutputDim ?? _charlmForward!.HiddenDim + _charlmBackward!.HiddenDim);
 
         _deltaEmb = nn.Embedding(_deltaVocab.Count, wordDim, padding_idx: PadId).LoadFrom(ckpt, model, "delta_emb.");
         _inputTransform = nn.Linear(inputSize, inputSize).LoadFrom(ckpt, model, "input_transform.");
@@ -73,10 +79,10 @@ internal sealed class NerTagger : IDisposable
 
     /// <summary>
     /// Loads e.g. <c>models/converted/en/ner/ontonotes-ww-multi_charlm</c>. The pretrain and charlms are
-    /// shared with the other processors, so the caller owns them.
+    /// shared with the other processors, so the caller owns them. A <c>_nocharlm</c> model takes none.
     /// </summary>
     /// <param name="device">Where the model runs; CPU by default. Load the pretrain and charlms on the same device.</param>
-    public static NerTagger Load(string basePath, Pretrain pretrain, CharLanguageModel charlmForward, CharLanguageModel charlmBackward, Device? device = null) =>
+    public static NerTagger Load(string basePath, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward, Device? device = null) =>
         Weights.On(device, () => new NerTagger(Checkpoint.Load(basePath), pretrain, charlmForward, charlmBackward));
 
     /// <summary>Sets <see cref="Token.Ner"/> on every token and rebuilds every sentence's <see cref="Sentence.Entities"/>.</summary>
@@ -125,16 +131,21 @@ internal sealed class NerTagger : IDisposable
         var words = _pretrain.Embeddings[torch.tensor(wordIds, [batch, width], device: _device)]
             + _deltaEmb.forward(torch.tensor(deltaIds, [batch, width], device: _device));
 
-        var cached = Enumerable.Range(0, batch).Select(i => cachedCharlm?.Invoke(i)).ToList();
-        var missing = Enumerable.Range(0, batch).Where(i => cached[i] == null).ToList();
-        var forward = _charlmForward.BuildCharRepresentation(missing.Select(i => sentences[i]).ToList());
-        var backward = _charlmBackward.BuildCharRepresentation(missing.Select(i => sentences[i]).ToList());
-        for (int k = 0; k < missing.Count; k++)
-            cached[missing[k]] = (forward[k], backward[k]);
-        var charsForward = Rnn.PadSequence(cached.Select(c => c!.Value.Forward).ToList());
-        var charsBackward = Rnn.PadSequence(cached.Select(c => c!.Value.Backward).ToList());
+        Tensor[] chars;
+        if (_charModel != null)
+            chars = [_charModel.Forward(sentences.Select(s => (IReadOnlyList<long[]>)s.Select(_charModel.CharIds).ToList()).ToList())];
+        else
+        {
+            var cached = Enumerable.Range(0, batch).Select(i => cachedCharlm?.Invoke(i)).ToList();
+            var missing = Enumerable.Range(0, batch).Where(i => cached[i] == null).ToList();
+            var forward = _charlmForward!.BuildCharRepresentation(missing.Select(i => sentences[i]).ToList());
+            var backward = _charlmBackward!.BuildCharRepresentation(missing.Select(i => sentences[i]).ToList());
+            for (int k = 0; k < missing.Count; k++)
+                cached[missing[k]] = (forward[k], backward[k]);
+            chars = [Rnn.PadSequence(cached.Select(c => c!.Value.Forward).ToList()), Rnn.PadSequence(cached.Select(c => c!.Value.Backward).ToList())];
+        }
 
-        var input = _inputTransform.forward(cat([words, charsForward, charsBackward], 2));
+        var input = _inputTransform.forward(cat([words, .. chars], 2));
         var h0 = _hInit.expand(_hInit.shape[0], batch, _hInit.shape[2]).contiguous();
         var c0 = _cInit.expand(_cInit.shape[0], batch, _cInit.shape[2]).contiguous();
         var output = Rnn.RunPacked(_lstm, input, lengths, (h0, c0));
@@ -231,7 +242,7 @@ internal sealed class NerTagger : IDisposable
             if (!ok) throw new NotSupportedException($"NER checkpoint uses {what}, which is not ported");
         }
         Require(config["bert_model"] == null && config["use_peft"]?.GetValue<bool>() != true, "a transformer");
-        Require(config["char"]?.GetValue<bool>() == true && config["charlm"]?.GetValue<bool>() == true, "a configuration without charlm");
+        Require(config["char"]?.GetValue<bool>() == true && config["char_emb_dim"]?.GetValue<int>() > 0, "a configuration without character features");
         Require(config["char_lowercase"]?.GetValue<bool>() != true, "char_lowercase");
         Require(config["lowercase"]?.GetValue<bool>() != false, "a cased word embedding");
         Require(config["word_emb_dim"]?.GetValue<int>() == pretrain.Dim, "a word embedding not matching the pretrain");
@@ -244,10 +255,14 @@ internal sealed class NerTagger : IDisposable
         Require(vocab["delta"]!["ignore"]?.AsArray().Count is null or 0, "emb_finetune_known_only (a delta vocab with ignored words)");
     }
 
+    /// <summary>Whether a checkpoint reads the shared charlms (<c>_charlm</c>) rather than its own character model (<c>_nocharlm</c>).</summary>
+    private static bool NeedsCharlm(Checkpoint ckpt) => ckpt.Root["config"]!["charlm"]?.GetValue<bool>() == true;
+
     public void Dispose()
     {
         foreach (var m in new nn.Module[] { _deltaEmb, _inputTransform, _lstm, _tagClf })
             m.Dispose();
+        _charModel?.Dispose();
         _hInit.Dispose();
         _cInit.Dispose();
     }

@@ -84,9 +84,21 @@ public class ModelDownloaderTests : IDisposable
             "tokenize/combined_nocharlm.pt", "mwt/combined.pt", "pos/combined_charlm.pt", "lemma/combined_nocharlm.pt", "constituency/ptb3-revised_charlm.pt",
             "pretrain/conll17.pt", "forward_charlm/1billion.pt", "backward_charlm/1billion.pt",
             "depparse/combined_charlm.pt", "ner/ontonotes-ww-multi_charlm.pt", "sentiment/sstplus_charlm.pt",
+            "pos/combined_nocharlm.pt", "depparse/combined_nocharlm.pt", "ner/ontonotes-ww-multi_nocharlm.pt",
         ];
         Assert.Equal(expected.Order(), ModelDownloader.Files.Select(f => f.Path).Order());
+        // Every package's files, together, are the table.
+        Assert.Equal(expected.Order(), Pipeline.Packages.Keys.SelectMany(p => ModelDownloader.FilesFor(null, p)).Select(f => f.Path).Distinct().Order());
     }
+
+    [Theory]
+    // No constituency, nocharlm pos/depparse/ner; sentiment still needs the charlms.
+    [InlineData(null, "tokenize/combined_nocharlm.pt mwt/combined.pt pos/combined_nocharlm.pt lemma/combined_nocharlm.pt depparse/combined_nocharlm.pt ner/ontonotes-ww-multi_nocharlm.pt sentiment/sstplus_charlm.pt pretrain/conll17.pt forward_charlm/1billion.pt backward_charlm/1billion.pt")]
+    // Without sentiment, no charlm at all.
+    [InlineData("depparse,ner", "tokenize/combined_nocharlm.pt mwt/combined.pt pos/combined_nocharlm.pt lemma/combined_nocharlm.pt depparse/combined_nocharlm.pt ner/ontonotes-ww-multi_nocharlm.pt pretrain/conll17.pt")]
+    [InlineData("tokenize,mwt", "tokenize/combined_nocharlm.pt mwt/combined.pt")]
+    public void FilesFor_SelectsTheFastPackagesFiles(string? processors, string expected) =>
+        Assert.Equal(expected.Split(' ').Order(), ModelDownloader.FilesFor(processors, "default_fast").Select(f => f.Path).Order());
 
     [Theory]
     [InlineData("tokenize", "tokenize/combined_nocharlm.pt")]
@@ -100,27 +112,33 @@ public class ModelDownloaderTests : IDisposable
         Assert.Equal(expected.Split(' ').Order(), ModelDownloader.FilesFor(processors).Select(f => f.Path).Order());
 
     [Fact]
-    public void FilesFor_AllProcessorsIsEveryFileAndUnknownNamesThrow()
+    public void FilesFor_AllProcessorsIsTheDefaultPackageAndUnknownNamesThrow()
     {
-        Assert.Equal(ModelDownloader.Files.Order(), ModelDownloader.FilesFor(Pipeline.AllProcessors).Order());
+        var all = ModelDownloader.FilesFor(Pipeline.AllProcessors).Order().ToList();
+        Assert.Equal(11, all.Count);
+        Assert.Equal(all, ModelDownloader.FilesFor(null).Order());
+        Assert.DoesNotContain(all, f => f.Path.Contains("_nocharlm") && !f.Path.StartsWith("tokenize/") && !f.Path.StartsWith("lemma/"));
         Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor("tokenize,coref"));
         Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor(""));
     }
 
     [PtModelTheory]
-    [InlineData("tokenize,mwt")]
-    [InlineData("tokenize,mwt,pos,lemma")]
-    [InlineData("tokenize,sentiment")]
-    public void FilesFor_AreEnoughToLoadThePipeline(string processors)
+    [InlineData("tokenize,mwt", "default")]
+    [InlineData("tokenize,mwt,pos,lemma", "default")]
+    [InlineData("tokenize,sentiment", "default")]
+    [InlineData(null, "default_fast")]
+    [InlineData("tokenize,mwt,pos,lemma,depparse,ner", "default_fast")]
+    public void FilesFor_AreEnoughToLoadThePipeline(string? processors, string package)
     {
         // Only the selected .pt files, copied from the full download: Pipeline.Load must find all it reads.
-        foreach (var (path, _) in ModelDownloader.FilesFor(processors))
+        var options = new PipelineOptions { Processors = processors, Package = package };
+        foreach (var (path, _) in ModelDownloader.FilesFor(options.Processors, options.Package))
         {
             var target = Path.Combine(_dir, path);
             Directory.CreateDirectory(Path.GetDirectoryName(target)!);
             File.Copy(Path.Combine(Repo.StanzaModels, path), target);
         }
-        using var nlp = Pipeline.Load(_dir, new PipelineOptions { Processors = processors });
+        using var nlp = Pipeline.Load(_dir, options);
         Assert.NotEmpty(nlp.Process("It works.").Sentences);
     }
 
