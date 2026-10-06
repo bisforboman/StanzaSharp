@@ -86,21 +86,21 @@ internal sealed class Lemmatizer : IDisposable
     public static Lemmatizer Load(string basePath, Device? device = null) => Weights.On(device, () => new Lemmatizer(Checkpoint.Load(basePath)));
 
     /// <summary>Sets the lemma of every word in <paramref name="doc"/>; needs UPOS from the tagger.</summary>
-    public void Process(Document doc)
+    public void Process(Document doc, CancellationToken cancellationToken = default)
     {
         var words = doc.Sentences.SelectMany(s => s.Words).ToList();
-        var lemmas = Lemmatize(words);
+        var lemmas = Lemmatize(words, cancellationToken);
         for (int i = 0; i < words.Count; i++)
             // Stanza's Word.lemma setter stores "_" as None unless the word itself is "_".
             words[i].Lemma = lemmas[i] == "_" && words[i].Text != "_" ? null : lemmas[i];
     }
 
     /// <summary>LemmaProcessor.process: dictionary hits, else the seq2seq prediction; "_" for an empty lemma.</summary>
-    internal List<string> Lemmatize(IReadOnlyList<Word> words)
+    internal List<string> Lemmatize(IReadOnlyList<Word> words, CancellationToken cancellationToken = default)
     {
         var lemmas = words.Select(w => Lookup(w.Text, w.Upos)).ToList();
         var misses = Enumerable.Range(0, words.Count).Where(i => lemmas[i] == null).ToList();
-        var predicted = Postprocess(misses.Select(i => words[i]).ToList());
+        var predicted = Postprocess(misses.Select(i => words[i]).ToList(), cancellationToken);
         for (int k = 0; k < misses.Count; k++)
             lemmas[misses[k]] = predicted[k];
         return lemmas.Select(l => l!.Length == 0 ? "_" : l).ToList();
@@ -115,9 +115,9 @@ internal sealed class Lemmatizer : IDisposable
     }
 
     /// <summary>trainer.postprocess over the seq2seq output: apply the edit, and fall back to the word on empty or &lt;UNK&gt;.</summary>
-    internal List<string> Postprocess(IReadOnlyList<Word> words)
+    internal List<string> Postprocess(IReadOnlyList<Word> words, CancellationToken cancellationToken = default)
     {
-        var (decoded, edits) = Predict(words);
+        var (decoded, edits) = Predict(words, cancellationToken);
         var result = new List<string>(words.Count);
         for (int i = 0; i < words.Count; i++)
         {
@@ -132,7 +132,7 @@ internal sealed class Lemmatizer : IDisposable
     /// The seq2seq model on the words in batches of <c>batch_size</c>, as Stanza's DataLoader feeds it:
     /// the decoded string (before edits) and the edit class of each word.
     /// </summary>
-    internal (List<string> Decoded, List<int> Edits) Predict(IReadOnlyList<Word> words)
+    internal (List<string> Decoded, List<int> Edits) Predict(IReadOnlyList<Word> words, CancellationToken cancellationToken = default)
     {
         // DeltaVocab: characters the vocabulary lacks get new ids past it, in code point order, so the copy
         // gate can still output them. Stanza builds it over the text, UPOS and current lemma of every word.
@@ -152,6 +152,7 @@ internal sealed class Lemmatizer : IDisposable
         var edits = new List<int>(words.Count);
         for (int start = 0; start < words.Count; start += _batchSize)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var batch = words.Skip(start).Take(_batchSize).ToList();
             var (d, e) = PredictBatch(batch, charToId, idToChar);
             decoded.AddRange(d);

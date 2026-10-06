@@ -113,7 +113,7 @@ internal sealed class DependencyParser : IDisposable
     /// in front, which changes every forward state and the backward ROOT state, so the tagger's
     /// representations don't apply.
     /// </remarks>
-    public void Process(Document doc)
+    public void Process(Document doc, CancellationToken cancellationToken = default)
     {
         var sentences = doc.Sentences.Select(s => s.Words.ToList()).Where(w => w.Count > 0).ToList();
         if (sentences.Any(s => s.Any(w => w.Upos == null && w.Xpos == null)))
@@ -121,6 +121,7 @@ internal sealed class DependencyParser : IDisposable
 
         foreach (var batch in Batches(sentences.Select(s => s.Count + 1).ToList()))
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var parsed = Parse(batch.Select(i => (IReadOnlyList<Word>)sentences[i]).ToList());
             for (int b = 0; b < batch.Count; b++)
                 for (int j = 0; j < sentences[batch[b]].Count; j++)
