@@ -41,9 +41,16 @@ All 7 steps of the build order are done:
   `Biaffine`. Like Stanza's `simplify_punct`, the tagger sees runs such as `??` or `!?!` as `?`
   or `!`. Only the tagger does this, not the parser.
 - `Constituency.ConstituencyParser` also takes the shared `Pretrain` and charlms. It reproduces the
-  golden trees and the per-step transition scores. It runs a batch of sentences in lockstep: each
-  step is one forward pass plus batched stack pushes. Stack LSTMs are stepped without padding, so
-  batching does not change results.
+  golden trees and the per-step transition scores. It schedules like Stanza's `parse_sentences`:
+  sentences sorted longest first, 50 states in flight, each finished state replaced by the next.
+  Each step is one forward pass plus batched stack pushes. Stack LSTMs are stepped without
+  padding, so batching does not change results.
+- `Nn.CharlmCache`: the pipeline passes one to `PosTagger.Process` and `ConstituencyParser.Process`,
+  so the parser reuses the tagger's charlm outputs (the tagger keeps a sentence only if
+  `simplify_punct` left its words unchanged). The charlm is not bitwise batch-invariant, so cached
+  values can differ from a fresh computation in the last bits; outputs are still identical.
+- Performance: `docs/performance.md` has the benchmark (`samples/StanzaSharp.Benchmark`,
+  `tools/benchmark.py`), C# vs Python numbers, what was optimized, and remaining ideas.
 - `Tree.ToString` prints `(`/`)` in labels and words as `-LRB-`/`-RRB-`, like Stanza. The tree
   itself keeps the raw text.
 - Measured float drift vs Python: charlm < 1e-7, tokenizer logits ≈ 4e-6, UPOS logits ≈ 2e-5,
@@ -79,6 +86,7 @@ src/StanzaSharp.Pos            POS / feature tagger.
 src/StanzaSharp.Constituency   Constituency parser.
 src/StanzaSharp                Pipeline facade wiring the processors together.
 samples/StanzaSharp.Cli        Console runner for quick experiments.
+samples/StanzaSharp.Benchmark  Per-stage speed/memory benchmark; tools/benchmark.py is the Python twin.
 tests/StanzaSharp.Tests        xUnit; golden tests against Python Stanza output.
 tests/golden/                  Golden data generated from Python Stanza (committed, keep it small).
 tools/stanza_convert.py        Checkpoint inspector/converter (.pt -> .safetensors + .json); optional.
@@ -88,7 +96,7 @@ models/converted/en/           Converted models (gitignored); C# prefers them ov
 ```
 
 Package policy: library projects reference the managed `TorchSharp` package only. Runnable
-projects (Cli, Tests) reference `TorchSharp-cpu`, or `TorchSharp-cuda-windows` when set up with
+projects (Cli, Benchmark, Tests) reference `TorchSharp-cpu`, or `TorchSharp-cuda-windows` when set up with
 `-Cuda`, which brings the native libtorch. The managed and native TorchSharp versions must match.
 
 ## Reference implementation
