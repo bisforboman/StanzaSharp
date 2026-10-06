@@ -54,7 +54,7 @@ double load = clock.Elapsed.TotalSeconds;
 
 string[] stages = ["tokenize", "mwt", "pos", "constituency"];
 var times = stages.ToDictionary(s => s, _ => new List<double>());
-var peaks = new Dictionary<string, double>(); // peak working set at the end of each stage, first timed run
+var peaks = new Dictionary<string, double> { ["load"] = PeakMB() }; // peak working set after each stage of the warm-up run
 Document doc = null!;
 for (int run = 0; run <= runs; run++)
 {
@@ -65,7 +65,7 @@ for (int run = 0; run <= runs; run++)
         clock.Restart();
         action();
         double seconds = clock.Elapsed.TotalSeconds;
-        if (run == 1)
+        if (run == 0)
             peaks[stage] = PeakMB();
         return seconds;
     }
@@ -85,13 +85,13 @@ if (outFile != null)
 int words = doc.Sentences.Sum(s => s.Words.Count());
 Console.WriteLine($"C# StanzaSharp, torch threads {torch.get_num_threads()}, {copies} copies: " +
                   $"{text.Length} chars, {doc.Sentences.Count} sentences, {words} words, {runs} runs");
-Console.WriteLine($"{"load",-14}{load,9:F2} s");
+Console.WriteLine($"{"load",-14}{load,9:F2} s {"",16} {peaks["load"],8:F0} MB peak");
 double total = 0;
 foreach (var s in stages)
 {
     double median = Median(times[s]);
     total += median;
-    Console.WriteLine($"{s,-14}{median,9:F2} s {words / median,10:F0} words/s {peaks[s],8:F0} MB peak");
+    Console.WriteLine($"{s,-14}{median,9:F2} s {words / median,10:F0} words/s {peaks[s],8:F0} MB peak (warm-up)");
 }
 Console.WriteLine($"{"total",-14}{total,9:F2} s {words / total,10:F0} words/s");
 Console.WriteLine($"{"peak memory",-14}{PeakMB(),9:F0} MB (peak working set)");

@@ -64,7 +64,7 @@ def main():
     load = time.perf_counter() - start
 
     times = {s: [] for s in STAGES}
-    peaks = {}  # peak working set at the end of each stage, first timed run
+    peaks = {"load": peak_working_set_mb()}  # peak working set after each stage of the warm-up run
     for run in range(args.runs + 1):
         doc = text if run > 0 else build_text(1)  # run 0 warms up on one copy
         for s in STAGES:
@@ -72,7 +72,7 @@ def main():
             doc = nlp.processors[s].process(doc)
             if run > 0:
                 times[s].append(time.perf_counter() - start)
-            if run == 1:
+            if run == 0:
                 peaks[s] = peak_working_set_mb()
     if args.out:
         Path(args.out).write_text("{:C}\n".format(doc), encoding="utf-8", newline="\n")
@@ -80,12 +80,12 @@ def main():
     words = doc.num_words
     print(f"Python Stanza {stanza.__version__}, torch threads {torch.get_num_threads()}, {args.copies} copies: "
           f"{len(text)} chars, {len(doc.sentences)} sentences, {words} words, {args.runs} runs")
-    print(f"{'load':<14}{load:9.2f} s")
+    print(f"{'load':<14}{load:9.2f} s {'':16} {peaks['load']:8.0f} MB peak")
     total = 0
     for s in STAGES:
         median = statistics.median(times[s])
         total += median
-        print(f"{s:<14}{median:9.2f} s {words / median:10.0f} words/s {peaks[s]:8.0f} MB peak")
+        print(f"{s:<14}{median:9.2f} s {words / median:10.0f} words/s {peaks[s]:8.0f} MB peak (warm-up)")
     print(f"{'total':<14}{total:9.2f} s {words / total:10.0f} words/s")
     print(f"{'peak memory':<14}{peak_working_set_mb():9.0f} MB (peak working set)")
 

@@ -92,11 +92,8 @@ public sealed class CharLanguageModel : IDisposable
         using var input = torch.tensor(flat, [ids.Count, width]);
         var h0 = _hInit.expand(_hInit.shape[0], ids.Count, HiddenDim).contiguous();
         var c0 = _cInit.expand(_cInit.shape[0], ids.Count, HiddenDim).contiguous();
-        var output = Rnn.RunPacked(_lstm, _charEmb.forward(input), ids.Select(c => (long)c.Count).ToArray(), (h0, c0));
-
-        var result = new List<Tensor>(ids.Count);
-        for (int i = 0; i < ids.Count; i++)
-            result.Add(output[i].index_select(0, torch.tensor(offsets[i])).MoveToOuterDisposeScope());
+        var result = Rnn.RunPackedAt(_lstm, _charEmb.forward(input), ids.Select(c => (long)c.Count).ToArray(), offsets, (h0, c0));
+        scope.MoveToOuter((IEnumerable<IDisposable>)result);
         return result;
     }
 
