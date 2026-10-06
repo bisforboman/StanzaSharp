@@ -6,8 +6,9 @@ PyTorch-based NLP library, running the original pretrained models through TorchS
 ## Scope
 
 - **Language:** English only, to start.
-- **Processors:** `tokenize` → `mwt` → `pos` → `lemma` → `depparse` → `constituency`. `lemma` and
-  `depparse` are loadable by name but not yet in `Pipeline.AllProcessors`.
+- **Processors:** `tokenize` → `mwt` → `pos` → `lemma` → `depparse` → `constituency`. All six are
+  `Pipeline.AllProcessors`, the default, in that order, like Stanza's English default (2026-10-06).
+  `pipeline.conllu` and `validation*.conllu` are generated with all six (`PROCESSORS` in make_golden.py).
 - **Inference only.** Training stays in Python; we load Stanza's released weights.
 - **Package:** Stanza's English *default* package, which needs no transformer:
   - tokenize: `combined_nocharlm`
