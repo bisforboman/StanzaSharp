@@ -8,9 +8,8 @@ and how fast it is.
 ```csharp
 using TorchSharp;
 
-torch.backends.cudnn.allow_tf32 = false;       // for output identical to the CPU; see below
-torch.backends.cuda.matmul.allow_tf32 = false;
-using var nlp = Pipeline.Load("models/stanza/en", device: torch.CUDA);
+// DisableTf32: output identical to the CPU (process-wide setting; see below)
+using var nlp = Pipeline.Load("models/stanza/en", new PipelineOptions { Device = torch.CUDA, DisableTf32 = true });
 ```
 
 The application references a CUDA libtorch package (`TorchSharp-cuda-windows` or `TorchSharp-cuda-linux`,

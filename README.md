@@ -44,7 +44,10 @@ foreach (var sentence in doc.Sentences)
 }
 ```
 
-`Pipeline.Load(dir, "tokenize,mwt")` runs only the listed processors; each needs the ones before it.
+`Pipeline.Load(dir, new PipelineOptions { Processors = "tokenize,mwt" })` runs only the listed processors; each
+needs the ones before it. `PipelineOptions` also holds `Device`, `DisableTf32` and `CharlmCache`
+(`IsEnabled`, `MaxWords`: the tagger's character-model outputs reused by the constituency parser, at most
+32,768 words / ~256 MB by default; output is identical either way).
 The default is all six processors: `tokenize,mwt,pos,lemma,depparse,constituency`.
 `Conllu.Write(doc)` gives Stanza-style CoNLL-U.
 
@@ -77,8 +80,8 @@ default. On a machine busy with other work, fewer threads (`torch.set_num_thread
 
 ## GPU
 
-`Pipeline.Load(dir, device: torch.CUDA)` runs every model on an NVIDIA GPU; each processor's `Load` takes
-the same optional `device`. The default is the CPU. Reference a CUDA libtorch package such as
+`Pipeline.Load(dir, new PipelineOptions { Device = torch.CUDA })` runs every model on an NVIDIA GPU; each
+processor's `Load` takes an optional `device` too. The default is the CPU. Reference a CUDA libtorch package such as
 `TorchSharp-cuda-windows` (several GB) instead of `TorchSharp-cpu`, in the same version (0.107.0). StanzaSharp
 itself depends only on the managed `TorchSharp` package either way.
 
@@ -86,11 +89,11 @@ For output identical to the CPU (and so to Python Stanza), turn off TF32, which 
 default on Ampere and newer GPUs:
 
 ```csharp
-torch.backends.cudnn.allow_tf32 = false;
-torch.backends.cuda.matmul.allow_tf32 = false;
+using var nlp = Pipeline.Load(dir, new PipelineOptions { Device = torch.CUDA, DisableTf32 = true });
 ```
 
-These are process-wide torch settings, so StanzaSharp leaves them to you. With TF32 off, the GPU matched
+`DisableTf32` sets `torch.backends.cuda.matmul.allow_tf32` and `torch.backends.cudnn.allow_tf32` to false. These
+are process-wide torch settings, so it is opt-in and affects all TorchSharp code in the process. With TF32 off, the GPU matched
 every golden file exactly on an RTX 3080; with TF32 on, 3 of 845 sentences differed (near-ties). Results
 are deterministic from run to run either way. The pipeline is roughly 4x faster on an RTX 3080 than on 8 CPU
 threads (Ryzen 7 5800X), mostly in pos and depparse; the constituency parser gains least. Details in

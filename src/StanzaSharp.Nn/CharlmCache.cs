@@ -23,10 +23,12 @@ public sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords) : ID
     public int MaxWords { get; } = maxWords;
 
     /// <summary>
-    /// Stores a sentence's [words, dim] representations; the cache takes ownership, and disposes them
-    /// at once if keeping them would exceed <see cref="MaxWords"/>.
+    /// Keeps a sentence's [words, dim] representations if they fit under <see cref="MaxWords"/>.
+    /// When kept, the cache owns them: it detaches them from their dispose scope and disposes them
+    /// itself. When not kept, nothing happens and they stay with the caller (and its dispose scope).
     /// </summary>
-    public void Add(Sentence sentence, Tensor forward, Tensor backward)
+    /// <returns>Whether the cache kept them.</returns>
+    public bool TryAdd(Sentence sentence, Tensor forward, Tensor backward)
     {
         if (_reps.Remove(sentence, out var old))
         {
@@ -35,13 +37,10 @@ public sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords) : ID
             old.Backward.Dispose();
         }
         if (_words + forward.shape[0] > MaxWords)
-        {
-            forward.Dispose();
-            backward.Dispose();
-            return;
-        }
+            return false;
         _words += forward.shape[0];
-        _reps[sentence] = (forward, backward);
+        _reps[sentence] = (forward.DetachFromDisposeScope(), backward.DetachFromDisposeScope());
+        return true;
     }
 
     public bool TryGet(Sentence sentence, out (Tensor Forward, Tensor Backward) reps) => _reps.TryGetValue(sentence, out reps);

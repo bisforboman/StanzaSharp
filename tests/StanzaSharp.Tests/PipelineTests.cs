@@ -46,7 +46,7 @@ public class PipelineTests
     [ModelFact]
     public void Load_RunsASubsetOfProcessors()
     {
-        using var nlp = Pipeline.Load(Repo.Models, "tokenize,mwt");
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt" });
         var doc = nlp.Process("I don't know.");
         var words = doc.Sentences.Single().Words.ToList();
         Assert.Equal(["I", "do", "n't", "know", "."], words.Select(w => w.Text));
@@ -58,9 +58,23 @@ public class PipelineTests
     public void Load_RejectsUnknownOrIncompleteProcessorLists()
     {
         var dir = Repo.Root; // any existing directory: validation happens before loading
-        Assert.Throws<ArgumentException>(() => Pipeline.Load(dir, "tokenize,lemma"));
-        Assert.Throws<ArgumentException>(() => Pipeline.Load(dir, "tokenize,constituency"));
-        Assert.Throws<ArgumentException>(() => Pipeline.Load(dir, ""));
+        Assert.Throws<ArgumentException>(() => Pipeline.Load(dir, new PipelineOptions { Processors = "tokenize,lemma" }));
+        Assert.Throws<ArgumentException>(() => Pipeline.Load(dir, new PipelineOptions { Processors = "tokenize,constituency" }));
+        Assert.Throws<ArgumentException>(() => Pipeline.Load(dir, new PipelineOptions { Processors = "" }));
         Assert.Throws<DirectoryNotFoundException>(() => Pipeline.Load(Path.Combine(dir, "no-such-dir")));
+        Assert.Throws<ArgumentOutOfRangeException>(() => Pipeline.Load(dir, new PipelineOptions { CharlmCache = new() { MaxWords = 0 } }));
+    }
+
+    [ModelFact]
+    public void CharlmCacheSettings_DoNotChangeOutput()
+    {
+        // Off, and a cap small enough that most sentences are recomputed: same bytes as the default.
+        var text = File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt"));
+        var golden = File.ReadAllText(Path.Combine(Repo.Golden, "pipeline.conllu"));
+        foreach (var cache in new CharlmCacheOptions[] { new() { IsEnabled = false, MaxWords = 0 }, new() { MaxWords = 10 } })
+        {
+            using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { CharlmCache = cache });
+            Assert.Equal(golden, Conllu.Write(nlp.Process(text)));
+        }
     }
 }

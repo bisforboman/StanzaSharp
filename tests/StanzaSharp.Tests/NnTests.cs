@@ -33,14 +33,18 @@ public class NnTests
     {
         using var cache = new CharlmCache(maxWords: 5);
         Sentence a = new(), b = new(), c = new();
-        cache.Add(a, TorchSharp.torch.zeros(3, 2), TorchSharp.torch.zeros(3, 2));
-        cache.Add(b, TorchSharp.torch.zeros(3, 2), TorchSharp.torch.zeros(3, 2)); // 6 words: not kept
-        cache.Add(c, TorchSharp.torch.zeros(2, 2), TorchSharp.torch.zeros(2, 2));
+        Assert.True(cache.TryAdd(a, TorchSharp.torch.zeros(3, 2), TorchSharp.torch.zeros(3, 2)));
+        using (var rejected = TorchSharp.torch.zeros(3, 2))
+        {
+            Assert.False(cache.TryAdd(b, rejected, rejected)); // 6 words: not kept, and still the caller's
+            Assert.Equal(0f, rejected.sum().item<float>()); // not disposed by the cache
+        }
+        Assert.True(cache.TryAdd(c, TorchSharp.torch.zeros(2, 2), TorchSharp.torch.zeros(2, 2)));
         Assert.True(cache.TryGet(a, out _));
         Assert.False(cache.TryGet(b, out _));
         Assert.True(cache.TryGet(c, out _));
-        cache.Add(a, TorchSharp.torch.zeros(1, 2), TorchSharp.torch.zeros(1, 2)); // replacing frees a's words
-        cache.Add(b, TorchSharp.torch.zeros(2, 2), TorchSharp.torch.zeros(2, 2));
+        Assert.True(cache.TryAdd(a, TorchSharp.torch.zeros(1, 2), TorchSharp.torch.zeros(1, 2))); // replacing frees a's words
+        Assert.True(cache.TryAdd(b, TorchSharp.torch.zeros(2, 2), TorchSharp.torch.zeros(2, 2)));
         Assert.True(cache.TryGet(b, out _));
     }
 

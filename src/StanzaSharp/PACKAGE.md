@@ -48,15 +48,15 @@ foreach (var sentence in doc.Sentences)
 }
 ```
 
-- `Pipeline.Load(dir, "tokenize,mwt")` runs only the listed processors; each needs the ones before it. The default is all six: `tokenize,mwt,pos,lemma,depparse,constituency`.
+- `Pipeline.Load(dir, new PipelineOptions { Processors = "tokenize,mwt" })` runs only the listed processors; each needs the ones before it. The default is all six: `tokenize,mwt,pos,lemma,depparse,constituency`.
 - `Conllu.Write(doc)` gives CoNLL-U in Stanza's format.
 
 ## GPU
 
 Reference `TorchSharp-cuda-windows` (or `TorchSharp-cuda-linux`) instead of `TorchSharp-cpu`, then
-`Pipeline.Load(dir, device: torch.CUDA)`. Set `torch.backends.cudnn.allow_tf32 = false` and
-`torch.backends.cuda.matmul.allow_tf32 = false` for output identical to the CPU; with TF32 on (libtorch's
-default), a few near-tie decisions can differ. See the repository's docs/gpu.md for measurements.
+`Pipeline.Load(dir, new PipelineOptions { Device = torch.CUDA, DisableTf32 = true })`. `DisableTf32` gives
+output identical to the CPU by turning TF32 off process-wide; with TF32 on (libtorch's default), a few
+near-tie decisions can differ. See the repository's docs/gpu.md for measurements.
 
 ## License
 

@@ -10,11 +10,11 @@ using TorchSharp;
 namespace StanzaSharp;
 
 /// <summary>
-/// Runs Stanza's English default pipeline: tokenize → mwt → pos → constituency.
+/// Runs Stanza's English default pipeline: tokenize → mwt → pos → lemma → depparse → constituency.
 /// </summary>
 /// <example>
 /// <code>
-/// using var nlp = Pipeline.Load("models/converted/en");
+/// using var nlp = Pipeline.Load("models/stanza/en");
 /// var doc = nlp.Process("Barack Obama was born in Hawaii.");
 /// Console.WriteLine(doc.Sentences[0].Constituency);
 /// </code>
@@ -42,9 +42,11 @@ public sealed class Pipeline : IDisposable
     private readonly ConstituencyParser? _parser;
     private readonly Pretrain? _pretrain;
     private readonly CharLanguageModel? _charlmForward, _charlmBackward;
+    private readonly CharlmCacheOptions _cacheOptions;
 
-    private Pipeline(string modelDir, HashSet<string> processors)
+    private Pipeline(string modelDir, HashSet<string> processors, CharlmCacheOptions cacheOptions)
     {
+        _cacheOptions = cacheOptions;
         string Model(string relative) => Path.Combine(modelDir, relative);
 
         _tokenizer = Tokenizer.Load(Model("tokenize/combined_nocharlm"));
@@ -70,26 +72,30 @@ public sealed class Pipeline : IDisposable
     /// Loads the English models from <paramref name="modelDir"/>: either converted ones (e.g. <c>models/converted/en</c>)
     /// or Stanza's own download with its <c>.pt</c> files (e.g. <c>models/stanza/en</c>), chosen per file.
     /// </summary>
-    /// <param name="processors">Comma-separated subset of <see cref="AllProcessors"/>; each needs the ones before it.</param>
-    /// <param name="device">Where the models run: CPU by default, or e.g. <c>torch.CUDA</c> with a <c>TorchSharp-cuda-*</c> package.
-    /// Only the CPU gives output identical to Python Stanza on CPU; see the README's GPU section.</param>
-    public static Pipeline Load(string modelDir, string processors = AllProcessors, torch.Device? device = null)
+    /// <param name="options">Processors, device and cache settings; defaults to all six processors on the CPU.</param>
+    public static Pipeline Load(string modelDir, PipelineOptions? options = null)
     {
+        options ??= new PipelineOptions();
         if (!Directory.Exists(modelDir))
             throw new DirectoryNotFoundException($"Model directory not found: {modelDir} (download them with ModelDownloader.DownloadAsync or \"StanzaSharp.Cli download\")");
-        var set = processors.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        var set = options.Processors.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .Select(p => p.ToLowerInvariant()).ToHashSet();
         foreach (var p in set)
         {
             if (!Requires.TryGetValue(p, out var needs))
-                throw new ArgumentException($"Unknown processor '{p}'. Available: {string.Join(",", Requires.Keys)}", nameof(processors));
+                throw new ArgumentException($"Unknown processor '{p}'. Available: {string.Join(",", Requires.Keys)}", nameof(options));
             var missing = needs.Where(n => !set.Contains(n)).ToList();
             if (missing.Count > 0)
-                throw new ArgumentException($"Processor '{p}' requires {string.Join(", ", missing)}", nameof(processors));
+                throw new ArgumentException($"Processor '{p}' requires {string.Join(", ", missing)}", nameof(options));
         }
         if (set.Count == 0)
-            throw new ArgumentException("No processors given", nameof(processors));
-        return Weights.On(device, () => new Pipeline(modelDir, set));
+            throw new ArgumentException("No processors given", nameof(options));
+        if (options.CharlmCache.IsEnabled && options.CharlmCache.MaxWords <= 0)
+            throw new ArgumentOutOfRangeException(nameof(options), "CharlmCache.MaxWords must be positive; set IsEnabled = false to turn the cache off");
+
+        if (options.DisableTf32)
+            torch.backends.cuda.matmul.allow_tf32 = torch.backends.cudnn.allow_tf32 = false;
+        return Weights.On(options.Device, () => new Pipeline(modelDir, set, options.CharlmCache));
     }
 
     public Document Process(string text)
@@ -97,7 +103,7 @@ public sealed class Pipeline : IDisposable
         var doc = _tokenizer.Process(text);
         _mwt?.Process(doc);
         // The parser reuses the tagger's charlm outputs instead of computing them again.
-        using var charlms = _pos != null && _parser != null ? new CharlmCache() : null;
+        using var charlms = _pos != null && _parser != null && _cacheOptions.IsEnabled ? new CharlmCache(_cacheOptions.MaxWords) : null;
         _pos?.Process(doc, charlms);
         _lemma?.Process(doc);
         // No CharlmCache: depparse runs the charlms with a ROOT word in front, so the tagger's outputs don't apply.

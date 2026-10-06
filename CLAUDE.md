@@ -122,7 +122,7 @@ projects (Cli, Benchmark, Tests) reference `$(TorchSharpNative)` (Directory.Buil
 or `TorchSharp-cuda-windows` when built with `STANZASHARP_CUDA=1`, which brings the native libtorch. The
 managed and native TorchSharp versions must match. CI and the default build stay on CPU.
 
-GPU: `Pipeline.Load(dir, processors, device)` and every processor's `Load(..., device)`. `Weights.On(device, ...)`
+GPU: `Pipeline.Load(dir, new PipelineOptions { Device, DisableTf32 })` and every processor's `Load(..., device)`. `Weights.On(device, ...)`
 scopes the load; `ToTensor`/`LoadFrom` place weights on `Weights.Device`, and each model keeps
 `_device = Weights.Device` for its input tensors (`torch.tensor(..., device: _device)`). Read tensors with
 `Weights.ToArray<T>()`, not `data<T>()`. pack_padded_sequence lengths stay on the CPU. A new processor
@@ -306,6 +306,15 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
 
 ## Packaging and releases
 
+- `Pipeline.Load(dir, PipelineOptions?)` (user's decision, 2026-10-06: an options object rather than more
+  optional parameters).
+  - `PipelineOptions` holds `Processors`, `Device`, `DisableTf32` and
+    `CharlmCache { IsEnabled = true, MaxWords = 32_768 }`.
+  - `DisableTf32` (name and opt-in are the user's choices) sets both torch TF32 switches to false
+    process-wide and doesn't restore them.
+  - `CharlmCache.TryAdd` keeps a sentence only if it fits, detaching its tensors from the caller's
+    dispose scope. Otherwise it leaves them with the caller. Before this fix the cache disposed
+    rejected tensors that the tagger was still using.
 - One NuGet package, `StanzaSharp`, packed from `src/StanzaSharp` (user's decision, 2026-10-06).
   - It carries all eight assemblies plus their XML docs: the facade's ProjectReferences are
     `PrivateAssets="all"`, and an `IncludeProjectReferences` target adds them.
