@@ -107,7 +107,7 @@ public sealed class PosTagger : IDisposable
         for (int i = 0; i < batch; i++)
             for (int j = 0; j < sentences[i].Count; j++)
             {
-                var lower = sentences[i][j].ToLowerInvariant();
+                var lower = PyString.Lower(sentences[i][j]);
                 wordIds[i * width + j] = _wordVocab.GetValueOrDefault(lower, _wordUnk);
                 pretrainIds[i * width + j] = _pretrain.UnitToId(lower);
             }
