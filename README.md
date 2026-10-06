@@ -16,6 +16,23 @@ dotnet add package TorchSharp-cpu
 `TorchSharp` version StanzaSharp depends on (0.107.0). Requires .NET 10. Tested on Linux, Windows and macOS.
 On macOS (Apple Silicon), also run `brew install libomp`: TorchSharp-cpu's libtorch loads OpenMP from Homebrew's path.
 
+**Deploying to one platform** (e.g. a small Linux service): `TorchSharp-cpu` restores libtorch for Linux,
+Windows and macOS (about 265 MB of downloads). A platform package restores StanzaSharp plus only that
+platform's CPU libtorch instead. It's the only package you need:
+
+| Package | Platform | libtorch download |
+|---|---|---:|
+| `StanzaSharp.Cpu.Linux` | Linux x64 | 128 MB |
+| `StanzaSharp.Cpu.Windows` | Windows x64 | 80 MB |
+| `StanzaSharp.Cpu.MacOS` | macOS on Apple Silicon | 57 MB |
+
+```
+dotnet add package StanzaSharp.Cpu.Linux
+```
+
+Publish with that platform's runtime identifier (`dotnet publish -r linux-x64`) so only its native files are
+copied. Smaller models help too: `Package = "default_fast"` and downloading only the processors you use.
+
 ## Models
 
 Download Stanza's English models (about 600 MB, from Stanza's Hugging Face repository) once. Every file is

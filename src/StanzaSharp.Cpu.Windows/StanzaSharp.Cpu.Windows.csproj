@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>StanzaSharp.Cpu.Windows</PackageId>
+    <Description>StanzaSharp plus the CPU libtorch for Windows x64 only. Use instead of StanzaSharp + TorchSharp-cpu, which restores libtorch for Linux, Windows and macOS (about 265 MB of downloads); this restores one platform's.</Description>
+    <LibTorchPackage>libtorch-cpu-win-x64</LibTorchPackage>
+  </PropertyGroup>
+
+  <Import Project="..\StanzaSharp.Cpu.props" />
+
+</Project>

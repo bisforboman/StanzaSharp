@@ -8,6 +8,9 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 ## [Unreleased]
 
 ### Added
+- Platform packages `StanzaSharp.Cpu.Linux`, `StanzaSharp.Cpu.Windows` and `StanzaSharp.Cpu.MacOS`. Each is
+  StanzaSharp plus one platform's CPU libtorch, for deployments that don't want all three (as `TorchSharp-cpu`
+  restores them). Each is verified in CI on its own OS.
 - Bulk processing: `Pipeline.Process(IEnumerable<string>)` returns one `Document` per text, batching all their
   sentences together, like Stanza's `bulk_process`, and with identical output (which, as in Stanza, can differ
   slightly from processing each text alone: sentiment labels depend on their batch, and sentence ids continue

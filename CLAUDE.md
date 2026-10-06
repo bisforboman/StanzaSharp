@@ -453,6 +453,15 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - `CharlmCache.TryAdd` keeps a sentence only if it fits, detaching its tensors from the caller's
     dispose scope. Otherwise it leaves them with the caller. Before this fix the cache disposed
     rejected tensors that the tagger was still using.
+- Platform packages (user's decision, 2026-10-06): `StanzaSharp.Cpu.Linux` / `.Windows` / `.MacOS`.
+  - Each is a code-free package (`src/StanzaSharp.Cpu.props`, `IncludeBuildOutput=false`) depending on the
+    same-version `StanzaSharp` and one `libtorch-cpu-<rid>` 2.10.0, instead of `TorchSharp-cpu`, which
+    depends on all three.
+  - TorchSharp loads a single platform package fine; it was checked with `libtorch-cpu-win-x64` alone.
+  - `verify-package.ps1 -Platform X` tests each one on its own OS in CI (Linux in `golden`, Windows and
+    macOS in `cross-os`).
+  - `release.yml` packs all four packages.
+  - Every new package ID needs the nuget.org Trusted Publishing policy to allow it.
 - One NuGet package, `StanzaSharp`, packed from `src/StanzaSharp` (user's decision, 2026-10-06).
   - It carries all nine assemblies plus their XML docs: the facade's ProjectReferences are
     `PrivateAssets="all"`, and an `IncludeProjectReferences` target adds them.

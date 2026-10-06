@@ -1,12 +1,15 @@
 <#
-Packs StanzaSharp, then builds and runs a fresh console app that references the package (plus
-TorchSharp-cpu) the way a user would, and checks that it parses a sentence.
+Packs StanzaSharp, then builds and runs a fresh console app that references the package the way a user
+would, and checks that it parses a sentence.
 
-  pwsh tools/verify-package.ps1 [-ModelDir models/converted/en]
+  pwsh tools/verify-package.ps1 [-ModelDir models/converted/en] [-Platform Linux|Windows|MacOS]
 
 ModelDir is any directory Pipeline.Load accepts (converted models or Stanza's .pt files).
+Without -Platform the app references StanzaSharp + TorchSharp-cpu. With it, the app references only the
+platform package StanzaSharp.Cpu.<Platform> (which brings StanzaSharp and that platform's libtorch), so
+nothing else can supply the native libraries.
 #>
-param([string]$ModelDir = 'models/converted/en')
+param([string]$ModelDir = 'models/converted/en', [ValidateSet('', 'Linux', 'Windows', 'MacOS')][string]$Platform = '')
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
@@ -23,8 +26,16 @@ $app = Join-Path $work 'app'
 New-Item -ItemType Directory -Force $feed, $app | Out-Null
 
 try {
-    dotnet pack (Join-Path $root 'src/StanzaSharp') -c Release -p:Version=$version -o $feed --nologo
-    if ($LASTEXITCODE) { throw 'dotnet pack failed' }
+    $projects = @('src/StanzaSharp') + $(if ($Platform) { "src/StanzaSharp.Cpu.$Platform" } else { @() })
+    foreach ($project in $projects) {
+        dotnet pack (Join-Path $root $project) -c Release -p:Version=$version -o $feed --nologo
+        if ($LASTEXITCODE) { throw "dotnet pack $project failed" }
+    }
+    $references = if ($Platform) {
+        "<PackageReference Include=`"StanzaSharp.Cpu.$Platform`" Version=`"$version`" />"
+    } else {
+        "<PackageReference Include=`"StanzaSharp`" Version=`"$version`" />`n    <PackageReference Include=`"TorchSharp-cpu`" Version=`"0.107.0`" />"
+    }
 
     Set-Content (Join-Path $app 'nuget.config') @"
 <configuration>
@@ -43,8 +54,7 @@ try {
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="StanzaSharp" Version="$version" />
-    <PackageReference Include="TorchSharp-cpu" Version="0.107.0" />
+    $references
   </ItemGroup>
 </Project>
 "@
@@ -64,10 +74,12 @@ Console.Write(Conllu.Write(doc));
     Write-Host $output
     $expected = '(ROOT (S (NP (NNP Barack) (NNP Obama)) (VP (VBD was) (VP (VBN born) (PP (IN in) (NP (NNP Hawaii))))) (. .)))'
     if (-not $output.Contains($expected)) { throw "Expected the parse $expected" }
-    Write-Host "Package $version works as a consumer uses it."
+    Write-Host "Package $version$(if ($Platform) { " (StanzaSharp.Cpu.$Platform)" }) works as a consumer uses it."
 }
 finally {
     Remove-Item -Recurse -Force $work -ErrorAction SilentlyContinue
-    $cached = Join-Path ($env:NUGET_PACKAGES ?? (Join-Path $HOME '.nuget/packages')) "stanzasharp/$version"
-    Remove-Item -Recurse -Force $cached -ErrorAction SilentlyContinue
+    $packages = $env:NUGET_PACKAGES ?? (Join-Path $HOME '.nuget/packages')
+    foreach ($id in @('stanzasharp') + $(if ($Platform) { "stanzasharp.cpu.$($Platform.ToLowerInvariant())" } else { @() })) {
+        Remove-Item -Recurse -Force (Join-Path $packages "$id/$version") -ErrorAction SilentlyContinue
+    }
 }

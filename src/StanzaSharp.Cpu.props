@@ -1,0 +1,23 @@
+<!-- Shared by the platform packages StanzaSharp.Cpu.Linux, .Windows and .MacOS. Each is a package with no code:
+     it depends on the same StanzaSharp version and on exactly one platform's CPU libtorch (set
+     $(LibTorchPackage) before importing), instead of TorchSharp-cpu, which pulls all three platforms'. -->
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>true</IsPackable>
+    <!-- Nothing to ship of its own: the package is just its dependencies. -->
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    <PackageReadmeFile>PACKAGE.md</PackageReadmeFile>
+    <PackageTags>nlp;stanza;torchsharp;libtorch</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Becomes a package dependency on StanzaSharp with the same version. -->
+    <ProjectReference Include="$(MSBuildThisFileDirectory)StanzaSharp\StanzaSharp.csproj" />
+    <PackageReference Include="$(LibTorchPackage)" Version="2.10.0" />
+    <None Include="$(MSBuildThisFileDirectory)StanzaSharp\PACKAGE.md" Pack="true" PackagePath="/" />
+    <None Include="$(MSBuildThisFileDirectory)..\NOTICE" Pack="true" PackagePath="/" />
+  </ItemGroup>
+</Project>
