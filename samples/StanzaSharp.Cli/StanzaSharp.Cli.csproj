@@ -15,7 +15,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="$(TorchSharpNative)" Version="0.107.0" />
+    <!-- The download command, shared with the stanzasharp tool. -->
+    <Compile Include="..\..\src\StanzaSharp.Tool\DownloadCommand.cs" Link="DownloadCommand.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="$(TorchSharpNative)" Version="$(TorchSharpVersion)" />
   </ItemGroup>
 
   <PropertyGroup>

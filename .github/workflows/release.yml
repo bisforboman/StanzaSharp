@@ -34,10 +34,10 @@ jobs:
       - name: Version from tag
         run: echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
 
-      # StanzaSharp, and the platform packages that add one platform's CPU libtorch to it.
+      # StanzaSharp, the platform packages that add one platform's CPU libtorch to it, and the stanzasharp tool.
       - name: Pack
         run: |
-          for project in StanzaSharp StanzaSharp.Cpu.Linux StanzaSharp.Cpu.Windows StanzaSharp.Cpu.WindowsArm64 StanzaSharp.Cpu.MacOS; do
+          for project in StanzaSharp StanzaSharp.Cpu.Linux StanzaSharp.Cpu.Windows StanzaSharp.Cpu.WindowsArm64 StanzaSharp.Cpu.MacOS StanzaSharp.Tool; do
             dotnet pack src/$project --configuration Release -p:Version=$VERSION --output artifacts
           done
 

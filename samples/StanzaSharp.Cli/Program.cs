@@ -15,40 +15,10 @@ const string Usage = """
     """;
 
 string convertedDir = Path.Combine("models", "converted", "en");
-string stanzaDir = Path.Combine("models", "stanza", "en");
+string stanzaDir = StanzaSharp.Tool.DownloadCommand.DefaultDir;
 
-if (args is ["download", ..])
-{
-    string? target = null, only = null;
-    string downloadPackage = Pipeline.DefaultPackage;
-    for (int i = 1; i < args.Length; i++)
-    {
-        if (args[i] == "--processors" && i + 1 < args.Length)
-            only = args[++i];
-        else if (args[i] == "--package" && i + 1 < args.Length)
-            downloadPackage = args[++i];
-        else if (!args[i].StartsWith('-') && target == null)
-            target = args[i];
-        else
-        {
-            Console.Error.WriteLine($"Unexpected argument: {args[i]}\n\n{Usage}");
-            return 2;
-        }
-    }
-    target ??= stanzaDir;
-    try
-    {
-        var progress = new Progress<string>(Console.Error.WriteLine);
-        await ModelDownloader.DownloadAsync(target, new PipelineOptions { Package = downloadPackage, Processors = only }, progress);
-        Console.Error.WriteLine($"Models are in {target}");
-        return 0;
-    }
-    catch (Exception e) when (e is IOException or HttpRequestException or InvalidDataException or UnauthorizedAccessException or ArgumentException)
-    {
-        Console.Error.WriteLine(e.Message);
-        return 1;
-    }
-}
+if (args is ["download", .. var downloadArgs])
+    return await StanzaSharp.Tool.DownloadCommand.RunAsync(downloadArgs, Usage);
 
 string modelDir = Directory.Exists(convertedDir) ? convertedDir : stanzaDir;
 string? processors = null;

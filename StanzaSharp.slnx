@@ -19,6 +19,7 @@
     <Project Path="src/StanzaSharp.Pos/StanzaSharp.Pos.csproj" />
     <Project Path="src/StanzaSharp.Sentiment/StanzaSharp.Sentiment.csproj" />
     <Project Path="src/StanzaSharp.Tokenize/StanzaSharp.Tokenize.csproj" />
+    <Project Path="src/StanzaSharp.Tool/StanzaSharp.Tool.csproj" />
     <Project Path="src/StanzaSharp/StanzaSharp.csproj" />
   </Folder>
   <Folder Name="/tests/">
