@@ -335,7 +335,7 @@ public sealed class ConstituencyParser : IDisposable
 
         if (opens.Count > 0)
         {
-            var hx = _dummyEmbedding.forward(torch.tensor(opens.Select(o => (long)o.OpenIndex).ToArray(), device: _device));
+            var hx = _dummyEmbedding.forward(torch.tensor(opens.Select(o => (long)o.OpenIndex).ToArray(), device: _device)).unbind(0);
             for (int i = 0; i < opens.Count; i++)
                 newConstituents[opens[i].Slot] = new Constituent(null, opens[i].Label, hx[i]);
         }
@@ -343,7 +343,7 @@ public sealed class ConstituencyParser : IDisposable
         {
             // MAX composition: elementwise max over the children, then relu(reduce_linear(.)).
             var pooled = stack(closes.Select(c => stack(c.Children.Select(x => x.Hx!).ToArray()).max(0).values).ToArray());
-            var hx = F.relu(_reduceLinear.forward(pooled));
+            var hx = F.relu(_reduceLinear.forward(pooled)).unbind(0);
             for (int i = 0; i < closes.Count; i++)
             {
                 var tree = new Tree(closes[i].Label, closes[i].Children.Select(c => c.Tree!).ToList());
@@ -383,7 +383,9 @@ public sealed class ConstituencyParser : IDisposable
         var hx = torch.stack(stacks.Select(s => s.Hx).ToArray(), 1);
         var cx = torch.stack(stacks.Select(s => s.Cx).ToArray(), 1);
         var (output, hn, cn) = lstm.forward(inputs.unsqueeze(0), (hx, cx));
-        return stacks.Select((s, i) => new StackNode<T>(values[i], s, hn.select(1, i), cn.select(1, i), output[0, i])).ToList();
+        // One unbind per tensor instead of a view op per stack: the per-step op count is the parser's overhead.
+        var (hs, cs, outputs) = (hn.unbind(1), cn.unbind(1), output[0].unbind(0));
+        return stacks.Select((s, i) => new StackNode<T>(values[i], s, hs[i], cs[i], outputs[i])).ToList();
     }
 
     // ----- loading -----

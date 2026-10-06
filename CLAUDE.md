@@ -55,6 +55,9 @@ All 7 steps of the build order are done:
   values can differ from a fresh computation in the last bits; outputs are still identical.
 - Performance: `docs/performance.md` has the benchmark (`samples/StanzaSharp.Benchmark`,
   `tools/benchmark.py`), C# vs Python numbers, what was optimized, and remaining ideas.
+  Round 2 (memory): checkpoints are read tensor by tensor straight into TorchSharp memory (no
+  whole-file buffers), depparse's biaffine scorers run a few sentences at a time, POS batches are
+  cut at 5000 words like Stanza, and `CharlmCache` keeps at most 32k words (`MaxWords`).
 - `Tree.ToString` prints `(`/`)` in labels and words as `-LRB-`/`-RRB-`, like Stanza. The tree
   itself keeps the raw text.
 - Measured float drift vs Python: charlm < 1e-7, tokenizer logits ≈ 4e-6, UPOS logits ≈ 2e-5,

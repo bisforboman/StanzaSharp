@@ -8,21 +8,39 @@ namespace StanzaSharp.Nn;
 /// one of these per document and each sentence goes through the charlms once.
 /// </summary>
 /// <remarks>
-/// ponytail: holds 2 x 1024 floats (8 KB) per word until the document is parsed; for very large
-/// documents, process them in parts or free entries as the parser consumes them.
+/// Each word costs 2 x 1024 floats (8 KB) with the English charlms, held until the cache is disposed.
+/// To bound that on large documents the cache keeps at most <see cref="MaxWords"/> words; sentences
+/// past that are not kept, and consumers compute them again as they do for any missing sentence.
 /// </remarks>
-public sealed class CharlmCache : IDisposable
+public sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords) : IDisposable
 {
-    private readonly Dictionary<Sentence, (Tensor Forward, Tensor Backward)> _reps = [];
+    /// <summary>About 256 MB with the English charlms.</summary>
+    public const int DefaultMaxWords = 32_768;
 
-    /// <summary>Stores a sentence's [words, dim] representations; the cache takes ownership.</summary>
+    private readonly Dictionary<Sentence, (Tensor Forward, Tensor Backward)> _reps = [];
+    private long _words;
+
+    public int MaxWords { get; } = maxWords;
+
+    /// <summary>
+    /// Stores a sentence's [words, dim] representations; the cache takes ownership, and disposes them
+    /// at once if keeping them would exceed <see cref="MaxWords"/>.
+    /// </summary>
     public void Add(Sentence sentence, Tensor forward, Tensor backward)
     {
         if (_reps.Remove(sentence, out var old))
         {
+            _words -= old.Forward.shape[0];
             old.Forward.Dispose();
             old.Backward.Dispose();
         }
+        if (_words + forward.shape[0] > MaxWords)
+        {
+            forward.Dispose();
+            backward.Dispose();
+            return;
+        }
+        _words += forward.shape[0];
         _reps[sentence] = (forward, backward);
     }
 
@@ -36,5 +54,6 @@ public sealed class CharlmCache : IDisposable
             b.Dispose();
         }
         _reps.Clear();
+        _words = 0;
     }
 }

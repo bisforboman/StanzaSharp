@@ -298,6 +298,7 @@ public sealed class DependencyParser : IDisposable
     /// </summary>
     private sealed class DeepBiaffine : IDisposable
     {
+        private const long ChunkFloats = 32 << 20; // 128 MB of intermediate per chunk
         private readonly Linear _w1, _w2;
         private readonly Tensor _weight, _bias;
 
@@ -317,9 +318,21 @@ public sealed class DependencyParser : IDisposable
             using var scope = NewDisposeScope();
             var input1 = AppendOne(F.relu(_w1.forward(x)));
             var input2 = AppendOne(F.relu(_w2.forward(x)));
-            var intermediate = einsum("NLI,IJO->NLJO", input1, _weight);
-            var output = einsum("NLJO,NMJ->NLMO", intermediate, input2);
-            return (output + _bias.expand(output.shape)).MoveToOuterDisposeScope();
+            // The [batch, width, hidden + 1, out] intermediate is the depparse memory peak: 1.5 GB for the
+            // label scorer on 250 sentences padded to 72 words, and einsum makes a permuted copy. Each
+            // sentence's scores depend only on its own rows, so score a few sentences at a time.
+            long batch = x.shape[0], width = x.shape[1];
+            long chunk = Math.Max(1, ChunkFloats / (width * _weight.shape[1] * _weight.shape[2]));
+            var output = empty([batch, width, width, _weight.shape[2]], dtype: x.dtype, device: x.device);
+            for (long n = 0; n < batch; n += chunk)
+            {
+                using var part = NewDisposeScope();
+                long size = Math.Min(chunk, batch - n);
+                var intermediate = einsum("NLI,IJO->NLJO", input1.narrow(0, n, size), _weight);
+                output.narrow(0, n, size).copy_(einsum("NLJO,NMJ->NLMO", intermediate, input2.narrow(0, n, size)));
+            }
+            // In place: the label scorer's output is [batch, width, width, relations], too large to copy.
+            return output.add_(_bias).MoveToOuterDisposeScope();
         }
 
         private static Tensor AppendOne(Tensor x)

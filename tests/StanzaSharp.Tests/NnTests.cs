@@ -28,6 +28,22 @@ public class NnTests
         }
     }
 
+    [Fact]
+    public void CharlmCache_KeepsAtMostMaxWords()
+    {
+        using var cache = new CharlmCache(maxWords: 5);
+        Sentence a = new(), b = new(), c = new();
+        cache.Add(a, TorchSharp.torch.zeros(3, 2), TorchSharp.torch.zeros(3, 2));
+        cache.Add(b, TorchSharp.torch.zeros(3, 2), TorchSharp.torch.zeros(3, 2)); // 6 words: not kept
+        cache.Add(c, TorchSharp.torch.zeros(2, 2), TorchSharp.torch.zeros(2, 2));
+        Assert.True(cache.TryGet(a, out _));
+        Assert.False(cache.TryGet(b, out _));
+        Assert.True(cache.TryGet(c, out _));
+        cache.Add(a, TorchSharp.torch.zeros(1, 2), TorchSharp.torch.zeros(1, 2)); // replacing frees a's words
+        cache.Add(b, TorchSharp.torch.zeros(2, 2), TorchSharp.torch.zeros(2, 2));
+        Assert.True(cache.TryGet(b, out _));
+    }
+
     [ModelFact]
     public void Pretrain_LooksUpWordsAndVectors()
     {

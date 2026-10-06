@@ -18,6 +18,9 @@ namespace StanzaSharp.Pos;
 /// </summary>
 public sealed class PosTagger : IDisposable
 {
+    // pos_processor.py: batch_maximum_tokens, which the English model's config does not set.
+    private const int MaximumTokens = 5000;
+
     private readonly Pretrain _pretrain;
     private readonly CharLanguageModel _charlmForward, _charlmBackward;
     private readonly Dictionary<string, int> _wordVocab;
@@ -86,11 +89,15 @@ public sealed class PosTagger : IDisposable
     /// <param name="charlms">If given, receives each sentence's charlm representations for the parser.</param>
     public void Process(Document doc, CharlmCache? charlms = null)
     {
-        // Sentences are packed by their real length, so batching does not change the results.
+        // Batched like Stanza's LengthLimitedBatchSampler: in document order, at most _batchSize sentences
+        // and MaximumTokens words per batch, and a longer sentence alone.
         var sentences = doc.Sentences.Select(s => (Sentence: s, Words: s.Words.ToList())).Where(x => x.Words.Count > 0).ToList();
-        for (int b = 0; b < sentences.Count; b += _batchSize)
+        for (int b = 0, end; b < sentences.Count; b = end)
         {
-            var batch = sentences.GetRange(b, Math.Min(_batchSize, sentences.Count - b));
+            int words = 0;
+            for (end = b; end < sentences.Count && end - b < _batchSize && (end == b || words + sentences[end].Words.Count <= MaximumTokens); end++)
+                words += sentences[end].Words.Count;
+            var batch = sentences.GetRange(b, end - b);
             var tags = Predict(batch.Select(x => (IReadOnlyList<string>)x.Words.Select(w => w.Text).ToList()).ToList(), out _,
                 charlms == null ? null : (i, forward, backward) => charlms.Add(batch[i].Sentence, forward, backward));
             for (int i = 0; i < batch.Count; i++)

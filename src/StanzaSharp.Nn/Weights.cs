@@ -39,8 +39,20 @@ public static class Weights
     /// <summary>Reads a float32 <c>$tensor</c> node as a TorchSharp tensor on <see cref="Device"/>.</summary>
     public static Tensor ToTensor(this Checkpoint ckpt, JsonNode? node)
     {
-        var t = torch.tensor(ckpt.Tensor<float>(node), ckpt.Shape(node));
+        var t = torch.empty(ckpt.Shape(node), ScalarType.Float32);
+        ckpt.ReadInto(node, t);
         return Device.type == DeviceType.CPU ? t : t.to(Device, disposeAfter: true);
+    }
+
+    /// <summary>Reads a float32 <c>$tensor</c> node straight into the CPU memory of <paramref name="target"/>, with no intermediate copy.</summary>
+    private static void ReadInto(this Checkpoint ckpt, JsonNode? node, Tensor target)
+    {
+        var key = node?["$tensor"]?.GetValue<string>() ?? throw new ArgumentException($"Not a $tensor node: {node?.ToJsonString()}");
+        if (ckpt.Tensors[key].Dtype != "F32")
+            throw new InvalidOperationException($"Tensor '{key}' is {ckpt.Tensors[key].Dtype}, not F32");
+        if (target.dtype != ScalarType.Float32 || target.device_type != DeviceType.CPU || !target.is_contiguous())
+            throw new ArgumentException("Can only read into a contiguous float32 CPU tensor");
+        ckpt.Tensors.ReadInto(key, target.bytes);
     }
 
     /// <summary>
@@ -55,11 +67,11 @@ public static class Weights
             {
                 var key = prefix + name;
                 var node = stateDict[key] ?? throw new KeyNotFoundException($"Checkpoint has no weight '{key}'");
-                using var value = torch.tensor(ckpt.Tensor<float>(node), ckpt.Shape(node));
-                if (!param.shape.SequenceEqual(value.shape))
+                var shape = ckpt.Shape(node);
+                if (!param.shape.SequenceEqual(shape))
                     throw new InvalidOperationException(
-                        $"Weight '{key}' is [{string.Join(", ", value.shape)}], module expects [{string.Join(", ", param.shape)}]");
-                param.copy_(value);
+                        $"Weight '{key}' is [{string.Join(", ", shape)}], module expects [{string.Join(", ", param.shape)}]");
+                ckpt.ReadInto(node, param); // parameters are on the CPU until module.to below
             }
         if (Device.type != DeviceType.CPU)
             module.to(Device);
