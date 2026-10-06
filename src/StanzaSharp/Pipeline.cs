@@ -20,7 +20,7 @@ namespace StanzaSharp;
 /// </example>
 public sealed class Pipeline : IDisposable
 {
-    public const string AllProcessors = "tokenize,mwt,pos,constituency";
+    public const string AllProcessors = "tokenize,mwt,pos,lemma,depparse,constituency";
 
     // Stanza's processor dependencies (REQUIRES_DEFAULT); English pos also needs mwt to have run.
     private static readonly Dictionary<string, string[]> Requires = new()
