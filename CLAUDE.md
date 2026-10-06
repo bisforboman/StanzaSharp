@@ -328,9 +328,14 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   of ci.yml, packs with the tag's version, then pushes via NuGet Trusted Publishing (`NuGet/login@v1`,
   repo variable `NUGET_USER`) and creates a GitHub release (a prerelease if the version has `-`).
   - Environment `prerelease` is for tags with `-`; `release` is for the rest.
-  - One-time setup by the owner, not yet done: a nuget.org Trusted Publishing policy per
-    environment (owner bisforboman, repo StanzaSharp, workflow `release.yml`), the repo variable
-    `NUGET_USER`, and the two GitHub environments.
+  - One-time setup, done 2026-10-06:
+    - nuget.org Trusted Publishing policies for both environments (owner bisforboman, repo
+      StanzaSharp, workflow `release.yml`), added by the owner.
+    - The repo variable `NUGET_USER` = `bisforboman`.
+    - GitHub environment `release`: required reviewer bisforboman, tag rule `v*`.
+    - GitHub environment `prerelease`: no reviewers, tag rule `v*-*`.
+    - A 401 "No matching trust policy" on push means the nuget.org policy for that environment is
+      missing or misnamed.
 
 ## Design decisions
 
