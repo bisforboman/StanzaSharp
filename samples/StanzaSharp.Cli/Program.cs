@@ -2,14 +2,40 @@ using StanzaSharp;
 
 const string Usage = """
     Usage: StanzaSharp.Cli [--models DIR] [--processors LIST] [FILE]
+           StanzaSharp.Cli download [DIR]
 
     Runs the English pipeline on FILE (or standard input) and writes CoNLL-U to standard output.
+    "download" fetches Stanza's English models into DIR (default: models/stanza/en).
 
-      --models DIR        converted models (default: models/converted/en)
+      --models DIR        models (default: models/converted/en if present, else models/stanza/en)
       --processors LIST   comma-separated, from tokenize,mwt,pos,constituency (default: all)
     """;
 
-string modelDir = Path.Combine("models", "converted", "en");
+string convertedDir = Path.Combine("models", "converted", "en");
+string stanzaDir = Path.Combine("models", "stanza", "en");
+
+if (args is ["download", ..])
+{
+    if (args.Length > 2)
+    {
+        Console.Error.WriteLine(Usage);
+        return 2;
+    }
+    var target = args.Length == 2 ? args[1] : stanzaDir;
+    try
+    {
+        await ModelDownloader.DownloadAsync(target, new Progress<string>(Console.Error.WriteLine));
+        Console.Error.WriteLine($"Models are in {target}");
+        return 0;
+    }
+    catch (Exception e) when (e is IOException or HttpRequestException or InvalidDataException or UnauthorizedAccessException)
+    {
+        Console.Error.WriteLine(e.Message);
+        return 1;
+    }
+}
+
+string modelDir = Directory.Exists(convertedDir) ? convertedDir : stanzaDir;
 string processors = Pipeline.AllProcessors;
 string? file = null;
 

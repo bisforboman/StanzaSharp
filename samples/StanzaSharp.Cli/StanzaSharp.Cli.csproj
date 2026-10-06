@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\StanzaSharp\StanzaSharp.csproj" />
+    <ProjectReference Include="..\..\src\StanzaSharp.Core\StanzaSharp.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

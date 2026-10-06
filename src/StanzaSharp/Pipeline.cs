@@ -63,7 +63,7 @@ public sealed class Pipeline : IDisposable
     public static Pipeline Load(string modelDir, string processors = AllProcessors)
     {
         if (!Directory.Exists(modelDir))
-            throw new DirectoryNotFoundException($"Model directory not found: {modelDir} (run setup.ps1 -Models)");
+            throw new DirectoryNotFoundException($"Model directory not found: {modelDir} (download them with ModelDownloader.DownloadAsync or \"StanzaSharp.Cli download\")");
         var set = processors.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .Select(p => p.ToLowerInvariant()).ToHashSet();
         foreach (var p in set)

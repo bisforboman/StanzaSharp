@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_call: # release.yml runs the same checks before publishing
 
 env:
   DOTNET_NOLOGO: true
@@ -52,7 +53,7 @@ jobs:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Build.props') }}
 
-      # The stanza version decides the models; the converter decides their converted form.
+      # ModelDownloader.cs pins the models (and their MD5s); the converter decides their converted form.
       # Both are kept: the .pt loader tests compare models/stanza/en with models/converted/en.
       - uses: actions/cache@v6
         id: models
@@ -60,23 +61,27 @@ jobs:
           path: |
             models/stanza/en
             models/converted/en
-          key: models-en-${{ hashFiles('tools/requirements.txt', 'tools/stanza_convert.py') }}
+          key: models-en-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs', 'tools/requirements.txt', 'tools/stanza_convert.py') }}
+
+      - name: Build
+        run: dotnet build StanzaSharp.slnx
+
+      # The library's own downloader, as users run it; Python is only needed for the converter.
+      - name: Download the models
+        if: steps.models.outputs.cache-hit != 'true'
+        run: dotnet run --project samples/StanzaSharp.Cli --no-build -- download models/stanza/en
 
       - uses: actions/setup-python@v7
         if: steps.models.outputs.cache-hit != 'true'
         with:
           python-version: '3.12'
 
-      - name: Download and convert the models
+      - name: Convert the models
         if: steps.models.outputs.cache-hit != 'true'
         run: |
           # The CPU-only torch wheel; the default Linux wheel pulls in gigabytes of CUDA.
           pip install -r tools/requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
-          python -c "import stanza; stanza.download('en', model_dir='models/stanza', processors='tokenize,mwt,pos,constituency')"
           python tools/stanza_convert.py convert models/stanza/en --out models/converted/en
-
-      - name: Build
-        run: dotnet build StanzaSharp.slnx
 
       - name: Test
         run: dotnet test StanzaSharp.slnx --no-build --logger trx --results-directory TestResults
@@ -90,6 +95,11 @@ jobs:
             echo "::error::Tests were skipped; the models in models/stanza/en or models/converted/en were not found."
             exit 1
           fi
+
+      # Pack, then build and run a fresh app that references the package as a user would.
+      - name: Verify the package
+        shell: pwsh
+        run: ./tools/verify-package.ps1 -ModelDir models/stanza/en
 
       - uses: actions/upload-artifact@v7
         if: always()

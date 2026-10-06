@@ -1,0 +1,60 @@
+name: Release
+
+# Push a tag like v0.1.0-alpha.1 to publish that version to nuget.org.
+# Tags with a '-' are prereleases and use the 'prerelease' environment; others use 'release'.
+# Publishing uses NuGet Trusted Publishing: no stored API key (see the release notes in CLAUDE.md).
+
+on:
+  push:
+    tags: ['v*']
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  # Everything CI checks, including the full suite against the real models and the package check.
+  checks:
+    uses: ./.github/workflows/ci.yml
+
+  release:
+    needs: checks
+    runs-on: ubuntu-24.04
+    environment: ${{ contains(github.ref_name, '-') && 'prerelease' || 'release' }}
+    permissions:
+      contents: write   # create the GitHub release
+      id-token: write   # request the OIDC token that NuGet/login exchanges for a temporary API key
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Version from tag
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
+
+      - name: Pack
+        run: dotnet pack src/StanzaSharp --configuration Release -p:Version=$VERSION --output artifacts
+
+      # Request the temporary key right before pushing: it is valid for one hour.
+      - name: NuGet login
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ vars.NUGET_USER }}
+
+      - name: Push to nuget.org
+        run: >
+          dotnet nuget push artifacts/*.nupkg
+          --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
+          --source https://api.nuget.org/v3/index.json
+          --skip-duplicate
+
+      - name: GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          prerelease=""
+          if [[ "$VERSION" == *-* ]]; then prerelease="--prerelease"; fi
+          gh release create "$GITHUB_REF_NAME" artifacts/*.nupkg --title "StanzaSharp $VERSION" --generate-notes $prerelease

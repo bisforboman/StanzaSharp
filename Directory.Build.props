@@ -3,5 +3,18 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
+
+    <!-- Only src/StanzaSharp is packed: one StanzaSharp package that carries the other assemblies. -->
+    <IsPackable>false</IsPackable>
+    <!-- Releases override this from the git tag (release.yml). -->
+    <Version>0.1.0-dev</Version>
+    <Authors>Jakob Boman</Authors>
+    <Copyright>Copyright 2026 Jakob Boman</Copyright>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/bisforboman/StanzaSharp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/bisforboman/StanzaSharp</RepositoryUrl>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591;CS1573</NoWarn>
+    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
   </PropertyGroup>
 </Project>
