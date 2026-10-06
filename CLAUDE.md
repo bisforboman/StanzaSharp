@@ -6,13 +6,15 @@ PyTorch-based NLP library, running the original pretrained models through TorchS
 ## Scope
 
 - **Language:** English only, to start.
-- **Processors:** `tokenize` → `mwt` → `pos` → `constituency`.
+- **Processors:** `tokenize` → `mwt` → `pos` → `constituency`, plus `depparse` (ported, not yet in
+  `Pipeline`; it needs `lemma`).
 - **Inference only.** Training stays in Python; we load Stanza's released weights.
 - **Package:** Stanza's English *default* package, which needs no transformer:
   - tokenize: `combined_nocharlm`
   - mwt: `combined`
   - pos: `combined_charlm`
   - constituency: `ptb3-revised_charlm`
+  - depparse: `combined_charlm`
 - **Shared dependencies:** `pos` and `constituency` both depend on the forward and backward
   character LMs (charlm) and on the pretrained word-vector file (pretrain). That makes six model
   files to port, not four. The charlm is shared infrastructure and lives in `StanzaSharp.Nn`.
@@ -60,8 +62,18 @@ All 7 steps of the build order are done:
   is byte-identical to `tests/golden/pipeline.conllu`.
   - The `samples/StanzaSharp.Cli` sample writes the same CoNLL-U from a file or stdin.
   - `Conllu.Write` fills a missing HEAD with `id - 1`, like Stanza's writer.
+- `Depparse.DependencyParser` (shared `Pretrain` + charlms) sets `Word.Head`/`Deprel`. Given Stanza's
+  own words, tags and lemmas, it reproduces every `tests/golden/depparse/*.conllu` byte for byte.
+  Arc/label log-prob drift ≈ 2e-5 (tolerance 1e-4). Not in `Pipeline` yet; to wire it in:
+  - order `tokenize,mwt,pos,lemma,depparse` (Stanza requires pos and lemma; constituency is
+    independent). A missing lemma is read as `_`, so without the lemmatizer the parses differ.
+  - `DependencyParser.Load(dir/depparse/combined_charlm, pretrain, forward, backward)` with the
+    pipeline's shared pretrain/charlms, then `Process(doc)`.
+  - No `CharlmCache`: the parser feeds the charlms `"\n"` + the words (a ROOT word), so every forward
+    state and the backward ROOT state differ from the tagger's.
+  - `Conllu.Write` needs no change: with heads set it matches Stanza (DEPS stays `_`).
 - `Checkpoint.Load` also reads Stanza's original `.pt` files (`Core/TorchCheckpoint.cs` +
-  `Core/Pickle.cs`), so `Pipeline.Load("models/stanza/en")` works without Python. For all seven
+  `Core/Pickle.cs`), so `Pipeline.Load("models/stanza/en")` works without Python. For all eight
   checkpoints the result equals the converter's: identical JSON and byte-identical tensors.
 
 Tokenizer notes:
@@ -84,6 +96,7 @@ src/StanzaSharp.Tokenize       Tokenizer + sentence splitting.
 src/StanzaSharp.Mwt            Multi-word token expansion.
 src/StanzaSharp.Pos            POS / feature tagger.
 src/StanzaSharp.Constituency   Constituency parser.
+src/StanzaSharp.Depparse       Dependency parser (biaffine graph parser + Chu-Liu/Edmonds).
 src/StanzaSharp                Pipeline facade wiring the processors together.
 samples/StanzaSharp.Cli        Console runner for quick experiments.
 samples/StanzaSharp.Benchmark  Per-stage speed/memory benchmark; tools/benchmark.py is the Python twin.
@@ -195,6 +208,18 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - The parser consumes **XPOS** tags (`retag_method: xpos`) from the POS stage.
   - Stanza prints bracket words as `-LRB-`/`-RRB-` in trees, so `(` and `)` appear that way in
     golden trees.
+- **depparse** (`combined_charlm`): `models/depparse/model.py` `GraphParser`.
+  - A ROOT word (id 3 in every vocab, `"\n"` for the charlms) is prepended to each sentence.
+  - Input 2423 = trans_pretrained 125 + word 75 + lemma 75 + (UPOS+XPOS) 50 *twice* + charlm 2048.
+    Stanza appends the tag embedding a second time where it computes the UFeats one, so the
+    `ufeats_emb` weights are never used. Words and lemmas are lowercased for their vocabs and
+    `simplify_punct`ed, as in the tagger.
+  - A 3-layer highway biLSTM, hidden 400, learned `h_init`/`c_init` (the tagger's `HighwayLstm`).
+  - Deep biaffine (pairwise) arc and label scorers (hidden 400, 49 labels), plus `linearization`
+    and `distance` terms added to the arc scores. No arc embedding.
+  - Decoding: log-softmax over heads, then `chuliu_edmonds_one_root` in float64. The log-softmax
+    includes the batch's padding columns, so batches must match Stanza's: sorted longest first,
+    5000 words (with ROOT) per batch, over 150 alone. `resolve_head_constraints` is false.
 
 ## Validation
 
@@ -220,6 +245,9 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - `tokenize_stress.txt` + `.conllu`: tokenizer output for a paragraph over 1000 characters and
     for more paragraphs than fit in one batch.
   - `mwt.json`: expansions of a word list, both through the pipeline and classifier-only.
+  - `depparse/` (`make_golden.py --depparse-only`): `tokenize,mwt,pos,lemma,depparse` output for
+    `corpus.txt` (as `corpus.conllu`) and each `validation*.txt`; arc/label log-probs for the
+    first 3 sentences; `mst.json`, Stanza's trees on tie-heavy integer score matrices.
   - `validation*.conllu`: full pipeline output for each hand-written `validation*.txt` (news,
     academic, instructions, social, dialogue/poetry, tech, multilingual, contractions, long,
     whitespace, nonbmp; ~830 sentences). They are read as bytes, so CR/CRLF reach Stanza as-is.
