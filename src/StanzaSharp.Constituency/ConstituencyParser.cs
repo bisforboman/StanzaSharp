@@ -196,17 +196,17 @@ public sealed class ConstituencyParser : IDisposable
     {
         using var scope = NewDisposeScope();
         var sentences = indices.Select(i => all[i]).ToList();
-        List<Tensor> charsForward, charsBackward;
-        if (charlmReps != null && indices.All(i => charlmReps[i] != null))
+        // Charlm outputs the tagger kept, computing only the missing ones.
+        var charsForward = indices.Select(i => charlmReps?[i]?.Forward).ToList();
+        var charsBackward = indices.Select(i => charlmReps?[i]?.Backward).ToList();
+        var missing = Enumerable.Range(0, indices.Length).Where(k => charsForward[k] is null).ToList();
+        if (missing.Count > 0)
         {
-            charsForward = indices.Select(i => charlmReps[i]!.Value.Forward).ToList();
-            charsBackward = indices.Select(i => charlmReps[i]!.Value.Backward).ToList();
-        }
-        else
-        {
-            var words = sentences.Select(s => (IReadOnlyList<string>)s.Select(x => x.Word).ToList()).ToList();
-            charsForward = _charlmForward.BuildCharRepresentation(words);
-            charsBackward = _charlmBackward.BuildCharRepresentation(words);
+            var words = missing.Select(k => (IReadOnlyList<string>)sentences[k].Select(x => x.Word).ToList()).ToList();
+            var forward = _charlmForward.BuildCharRepresentation(words);
+            var backward = _charlmBackward.BuildCharRepresentation(words);
+            for (int m = 0; m < missing.Count; m++)
+                (charsForward[missing[m]], charsBackward[missing[m]]) = (forward[m], backward[m]);
         }
 
         var inputs = new List<Tensor>(sentences.Count);
@@ -223,8 +223,8 @@ public sealed class ConstituencyParser : IDisposable
                 _pretrain.Embeddings[torch.tensor(pretrainIds)],
                 _deltaEmbedding.forward(torch.tensor(deltaIds)),
                 _tagEmbedding.forward(torch.tensor(tagIds)),
-                charsForward[i],
-                charsBackward[i],
+                charsForward[i]!,
+                charsBackward[i]!,
             ], 1);
             inputs.Add(cat([_wordStart.unsqueeze(0), wordInput, _wordEnd.unsqueeze(0)], 0));
         }
