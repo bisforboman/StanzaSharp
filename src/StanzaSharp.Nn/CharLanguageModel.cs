@@ -81,8 +81,8 @@ public sealed class CharLanguageModel : IDisposable
             offsets.Add(ends.ToArray());
         }
 
-        // Padding goes after each sentence and the LSTM is one-directional, so it can't affect the
-        // positions we read: no packing needed.
+        // Packed like Stanza, so the LSTM never runs over padding. (Padding couldn't change the
+        // positions we read anyway, but in a batch of mixed lengths it costs most of the time.)
         int width = ids.Max(c => c.Count);
         var flat = new long[ids.Count * width];
         Array.Fill(flat, _endId);
@@ -92,11 +92,8 @@ public sealed class CharLanguageModel : IDisposable
         using var input = torch.tensor(flat, [ids.Count, width]);
         var h0 = _hInit.expand(_hInit.shape[0], ids.Count, HiddenDim).contiguous();
         var c0 = _cInit.expand(_cInit.shape[0], ids.Count, HiddenDim).contiguous();
-        var (output, _, _) = _lstm.forward(_charEmb.forward(input), (h0, c0));
-
-        var result = new List<Tensor>(ids.Count);
-        for (int i = 0; i < ids.Count; i++)
-            result.Add(output[i].index_select(0, torch.tensor(offsets[i])).MoveToOuterDisposeScope());
+        var result = Rnn.RunPackedAt(_lstm, _charEmb.forward(input), ids.Select(c => (long)c.Count).ToArray(), offsets, (h0, c0));
+        scope.MoveToOuter((IEnumerable<IDisposable>)result);
         return result;
     }
 

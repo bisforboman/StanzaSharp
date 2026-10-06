@@ -39,8 +39,10 @@ internal sealed class Constituent(Tree? tree, string? openLabel, Tensor? hx)
 }
 
 /// <summary>Parsing state for one sentence (stanza/models/constituency/state.py), mutated in place.</summary>
-internal sealed class ParserState
+internal sealed class ParserState : IDisposable
 {
+    /// <summary>The sentence's position in the input.</summary>
+    public required int Index;
     public required int SentenceLength;
     public required Tree[] Preterminals;
     /// <summary>[SentenceLength + 2, hidden]: start sentinel, one row per word, end sentinel.</summary>
@@ -50,6 +52,17 @@ internal sealed class ParserState
     public int WordPosition;
     public int NumOpens;
     public bool Broken;
+
+    /// <summary>Tensors made for this sentence (word vectors, stack nodes), freed when it is done.</summary>
+    public readonly List<Tensor> Owned = [];
+
+    public void Dispose()
+    {
+        WordHx.Dispose();
+        foreach (var t in Owned)
+            t.Dispose();
+        Owned.Clear();
+    }
 
     public bool EmptyWordQueue => WordPosition == SentenceLength;
     public bool EmptyConstituents => Constituents.Parent == null;

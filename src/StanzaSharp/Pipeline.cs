@@ -83,8 +83,10 @@ public sealed class Pipeline : IDisposable
     {
         var doc = _tokenizer.Process(text);
         _mwt?.Process(doc);
-        _pos?.Process(doc);
-        _parser?.Process(doc);
+        // The parser reuses the tagger's charlm outputs instead of computing them again.
+        using var charlms = _pos != null && _parser != null ? new CharlmCache() : null;
+        _pos?.Process(doc, charlms);
+        _parser?.Process(doc, charlms);
         return doc;
     }
 
