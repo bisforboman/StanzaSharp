@@ -49,3 +49,13 @@ jobs:
 
       - name: Build and check the image
         run: tools/verify-docker.sh models/stanza/en alpine-gcompat:local
+
+      # Why the natives don't load (TorchSharp hides the loader's error): musl's ldd lists unresolved symbols.
+      - name: Loader errors
+        if: failure()
+        run: |
+          image=stanzasharp-sample:alpine-gcompat-local
+          for lib in libLibTorchSharp.so libtorch_cpu.so libc10.so; do
+            echo "== $lib"
+            docker run --rm --entrypoint sh "$image" -c "ldd /app/$lib 2>&1 | grep -iE 'not found|error|relocat' | head -15" || true
+          done
