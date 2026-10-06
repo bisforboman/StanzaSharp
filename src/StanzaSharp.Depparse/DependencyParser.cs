@@ -246,7 +246,7 @@ public sealed class DependencyParser : IDisposable
             var target = headOffset.abs();
             unlabeled = unlabeled + (-torch.log((target.to_type(ScalarType.Float32) - predicted).pow(2) / 2 + 1));
         }
-        unlabeled = unlabeled.masked_fill(eye(width, dtype: ScalarType.Bool).unsqueeze(0), float.NegativeInfinity);
+        unlabeled = unlabeled.masked_fill(eye(width, dtype: ScalarType.Bool, device: _device).unsqueeze(0), float.NegativeInfinity);
         var logProbs = F.log_softmax(unlabeled, 2);
         return (logProbs.MoveToOuterDisposeScope(), deprel.MoveToOuterDisposeScope());
     }
