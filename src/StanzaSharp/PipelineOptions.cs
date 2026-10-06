@@ -6,6 +6,7 @@ namespace StanzaSharp;
 /// <summary>Settings for <see cref="Pipeline.Load(string, PipelineOptions?)"/>.</summary>
 /// <example>
 /// <code>
+/// using var fast = Pipeline.Load("models/stanza/en", new PipelineOptions { Package = "default_fast" });
 /// using var nlp = Pipeline.Load("models/stanza/en", new PipelineOptions
 /// {
 ///     Processors = "tokenize,mwt,pos",
@@ -17,8 +18,19 @@ namespace StanzaSharp;
 /// </example>
 public sealed class PipelineOptions
 {
-    /// <summary>Comma-separated subset of <see cref="Pipeline.AllProcessors"/>; each needs the ones before it.</summary>
-    public string Processors { get; init; } = Pipeline.AllProcessors;
+    /// <summary>
+    /// Stanza's name for the set of English models to use: <c>"default"</c> (<see cref="Pipeline.DefaultPackage"/>,
+    /// all eight processors) or <c>"default_fast"</c> (no constituency; pos, depparse and ner use their own small
+    /// character models instead of the large character language models, which makes them faster and smaller).
+    /// Any other name throws.
+    /// </summary>
+    public string Package { get; init; } = Pipeline.DefaultPackage;
+
+    /// <summary>
+    /// Comma-separated subset of <see cref="Pipeline.AllProcessors"/>; each needs the ones before it. Null (the
+    /// default) runs every processor of the <see cref="Package"/>. A processor the package lacks throws.
+    /// </summary>
+    public string? Processors { get; init; }
 
     /// <summary>
     /// Where the models run: the CPU by default, or e.g. <c>torch.CUDA</c> with a <c>TorchSharp-cuda-*</c>

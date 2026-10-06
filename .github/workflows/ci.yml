@@ -69,7 +69,9 @@ jobs:
       # The library's own downloader, as users run it; Python is only needed for the converter.
       - name: Download the models
         if: steps.models.outputs.cache-hit != 'true'
-        run: dotnet run --project samples/StanzaSharp.Cli --no-build -- download models/stanza/en
+        run: |
+          dotnet run --project samples/StanzaSharp.Cli --no-build -- download models/stanza/en
+          dotnet run --project samples/StanzaSharp.Cli --no-build -- download models/stanza/en --package default_fast
 
       - uses: actions/setup-python@v7
         if: steps.models.outputs.cache-hit != 'true'
