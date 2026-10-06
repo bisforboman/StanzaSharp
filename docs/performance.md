@@ -40,6 +40,32 @@ C# CoNLL-U equals Python's line for line, before and after.
   - Under load, the default thread count suffers most, because libtorch's OpenMP threads spin
     waiting for each other.
 
+## Bulk processing: many short texts
+
+`agent/input-modes`: 2,000 one-sentence texts (the `# text` lines of `tests/golden/validation*.conllu`, cycled),
+all processors of each package, 8 torch threads. "One by one" calls `Process(text)` per text (Python `nlp(text)`);
+"bulk" makes one `Process(texts)` call (Python `nlp.bulk_process(texts)`). One timed run each, after a warm-up
+on 50 texts:
+
+```powershell
+dotnet run -c Release --project samples/StanzaSharp.Benchmark -- --models models\converted\en --threads 8 --documents 2000 [--package default_fast]
+tools\.venv\Scripts\python tools\benchmark.py --models models\stanza --threads 8 --documents 2000 [--package default_fast]
+```
+
+| | C# default | Python default | C# default_fast | Python default_fast |
+|---|---:|---:|---:|---:|
+| one by one | 421.96 s (5 docs/s) | 366.33 s (5 docs/s) | 217.10 s (9 docs/s) | 130.06 s (15 docs/s) |
+| bulk | 54.54 s (37 docs/s) | 91.87 s (22 docs/s) | 24.23 s (83 docs/s) | 32.20 s (62 docs/s) |
+| speed-up | 7.7× | 4.0× | 9.0× | 4.0× |
+
+- Bulk is 7.7–9× faster in C#, and 1.3–1.7× faster than Python's bulk.
+- One by one, C# is *slower* than Python (by 15% and 67%): a single short sentence pays a fixed cost per call
+  that bulk spreads over many sentences. Per call on one sentence (default_fast, 8 threads), C# vs Python:
+  sentiment 53 vs 26 ms, tokenize 6.4 vs 2.2 ms, depparse 22.5 vs 20.3 ms, pos 11.7 vs 12.0 ms. Sentiment's
+  per-call cost is the first thing to look at (see "Remaining ideas").
+- The output of bulk differs from one by one only in sentiment labels (and sentence ids), exactly as in Stanza:
+  see `Pipeline.Process(IEnumerable<string>)`.
+
 ## Results, packages: default_fast vs default
 
 `agent/default-fast`: `--package default_fast` on both benchmarks (`tools/benchmark.py --package`), and
@@ -273,6 +299,9 @@ Rough payoff estimates at 8 threads, against the current 44.5 s six-processor to
   highway layers to the padded batch. The tagger batches in document order, so one long sentence pads a
   whole batch; running these layers on the packed rows, as its heads now do, may save part of its
   remaining time. Depparse sorts its batches by length, so it has little padding to gain from.
+- **Per-call cost on short texts.** On one short sentence, C# sentiment takes 53 ms per call against Python's
+  26 ms, and tokenize 6.4 against 2.2 ms (see "Bulk processing"), so `Process` per tweet is slower than Python.
+  Bulk avoids it; profiling a one-sentence `SentimentClassifier.Process` would show the fixed cost.
 - **Sentiment in default_fast.** With nothing to reuse it runs both charlms on every token. Only a faster
   charlm (or Stanza changing the package) would help.
 - **Thread count.** On a loaded machine, fewer threads were often faster than the default 8,

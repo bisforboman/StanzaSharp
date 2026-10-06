@@ -16,7 +16,7 @@ using static TorchSharp.torch;
 // tools/benchmark.py; both build the same text and print the same report. See docs/performance.md.
 const string Usage = """
     Usage: StanzaSharp.Benchmark [--models DIR] [--copies N] [--runs N] [--threads N] [--out FILE]
-                                 [--device cpu|cuda] [--no-tf32] [--package NAME]
+                                 [--device cpu|cuda] [--no-tf32] [--package NAME] [--documents N]
 
       --models DIR    converted models (default: models/converted/en)
       --copies N      copies of the golden texts in the input (default: 8, ~20k words)
@@ -26,10 +26,11 @@ const string Usage = """
       --device D      cpu (default) or cuda; cuda needs a build with STANZASHARP_CUDA=1 (docs/gpu.md)
       --no-tf32       cuda: turn off TF32 in cuDNN and cuBLAS (process-wide torch settings)
       --package NAME  Stanza's English package: default (all eight processors) or default_fast
+      --documents N   instead: N one-sentence texts, Process per text vs one bulk Process call
     """;
 
 string modelDir = Path.Combine("models", "converted", "en");
-int copies = 8, runs = 3, threads = 0;
+int copies = 8, runs = 3, threads = 0, documents = 0;
 string? outFile = null;
 var device = torch.CPU;
 bool noTf32 = false;
@@ -46,6 +47,7 @@ for (int i = 0; i < args.Length; i++)
         case "--device" when i + 1 < args.Length: device = torch.device(args[++i]); break;
         case "--no-tf32": noTf32 = true; break;
         case "--package" when i + 1 < args.Length: package = args[++i]; break;
+        case "--documents" when i + 1 < args.Length: documents = int.Parse(args[++i]); break;
         default:
             Console.Error.WriteLine(Usage);
             return 2;
@@ -55,6 +57,25 @@ if (threads > 0)
     torch.set_num_threads(threads);
 if (noTf32)
     torch.backends.cuda.matmul.allow_tf32 = torch.backends.cudnn.allow_tf32 = false;
+
+if (documents > 0)
+{
+    // Many short texts: one Process call per text vs one bulk call (Pipeline.Process(IEnumerable<string>)).
+    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Device = device });
+    var texts = BuildDocuments(documents);
+    nlp.Process(texts.Take(50)); // warm-up
+    var watch = Stopwatch.StartNew();
+    foreach (var t in texts)
+        nlp.Process(t);
+    double alone = watch.Elapsed.TotalSeconds;
+    watch.Restart();
+    nlp.Process(texts);
+    double bulk = watch.Elapsed.TotalSeconds;
+    Console.WriteLine($"C# StanzaSharp ({package}) on {device}, torch threads {torch.get_num_threads()}, {texts.Count} documents of one sentence");
+    Console.WriteLine($"{"one by one",-14}{alone,9:F2} s {texts.Count / alone,10:F0} docs/s");
+    Console.WriteLine($"{"bulk",-14}{bulk,9:F2} s {texts.Count / bulk,10:F0} docs/s");
+    return 0;
+}
 
 string text = BuildText(copies);
 // The package's models, loaded as Pipeline does: the charlms only if a model reads them.
@@ -135,6 +156,15 @@ static string BuildText(int copies)
     string golden = Path.Combine(FindRepoRoot(), "tests", "golden");
     string unit = string.Join("\n\n", new[] { "validation.txt", "corpus.txt", "tokenize_stress.txt" }.Select(f => File.ReadAllText(Path.Combine(golden, f))));
     return string.Join("\n\n", Enumerable.Repeat(unit, copies));
+}
+
+static List<string> BuildDocuments(int count)
+{
+    // The same texts as tools/benchmark.py --documents: the golden validation sentences ("# text = "), cycled.
+    string golden = Path.Combine(FindRepoRoot(), "tests", "golden");
+    var sentences = Directory.GetFiles(golden, "validation*.conllu").Order(StringComparer.Ordinal)
+        .SelectMany(File.ReadLines).Where(l => l.StartsWith("# text = ")).Select(l => l["# text = ".Length..]).ToList();
+    return Enumerable.Range(0, count).Select(i => sentences[i % sentences.Count]).ToList();
 }
 
 static string FindRepoRoot()

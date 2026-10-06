@@ -50,6 +50,11 @@ Reads <out>/corpus.txt and writes:
                         for the first INTERMEDIATE_SENTENCES sentences, each run alone: s{i}.pos.upos_logits,
                         s{i}.depparse.unlabeled/.deprel (from the run's tags and lemmas) and
                         s{i}.ner.emissions; `--fast-only` regenerates just fast/
+  pretokenized/inputs.json + <name>.conllu + <name>.fast.conllu
+                        tokenize_pretokenized=True on PRETOKENIZED_CASES and corpus.txt's tokens, with both
+                        packages (`--pretokenized-only`; see write_pretokenized_golden)
+  bulk/<package>.json   Pipeline.bulk_process on BULK_TEXTS + corpus.txt + validation*.txt, stored as the
+                        differences from processing each text alone (`--bulk-only`; see write_bulk_golden)
   pt/tiny_{legacy,zip}.pt + their stanza_convert.py output (.json/.safetensors)
                         small checkpoints in both torch.save formats for the C# .pt loader tests;
                         `python tools/make_golden.py --pt-only` regenerates just these
@@ -476,6 +481,86 @@ def write_fast_golden(models, out):
 
 FAST_PROCESSORS = "tokenize,mwt,pos,lemma,depparse,sentiment,ner"  # what package='default_fast' loads
 
+PACKAGES = {"default": "", "default_fast": ".fast"}  # package -> golden file suffix
+
+PRETOKENIZED_CASES = {
+    "simple": [["Hello", "world", "."], ["Bye", "."]],
+    "single": [["Stop"]],
+    "contractions": [["I", "don't", "know", "."], ["We", "ca", "n't", "go", "!"], ["It's", "John's", "book", "."]],
+    "punctuation": [["(", "Hello", ")", "--", '"', "she", "said", "...", '"'], ["Really", "?!"], ["A", ":", "b", ";", "c", "/", "d"]],
+    "spaces": [["New York", "is", "big", "."], ["I", "live", "in", "Los Angeles", "."]],
+    "nonbmp": [["I", "love", "😀", "!"], ["𝒳", "marks", "the", "spot", "."]],
+}
+
+BULK_TEXTS = ["Hi there.", "", "   ", "\n\n", "Short one. Two sentences!", " padded text \n", "ok",
+              "I don't know, can't say.", "Barack Obama was born in Hawaii.\n\nHe was elected in 2008.", "?"]
+
+
+def write_pretokenized_golden(models, out):
+    """
+    pretokenized/: tokenize_pretokenized=True on lists of token lists. inputs.json maps each case name to its
+    sentences; <name>.conllu is the default package's output and <name>.fast.conllu default_fast's. The "corpus"
+    case is corpus.txt as Stanza's own tokenizer splits it.
+    """
+    pre = out / "pretokenized"
+    pre.mkdir(exist_ok=True)
+    tok = stanza.Pipeline("en", dir=models, processors="tokenize", download_method=None, use_gpu=False, logging_level="WARN")
+    cases = dict(PRETOKENIZED_CASES)
+    cases["corpus"] = [[t.text for t in s.tokens] for s in tok((out / "corpus.txt").read_text(encoding="utf-8")).sentences]
+    with open(pre / "inputs.json", "w", encoding="utf-8", newline="\n") as f:
+        json.dump(cases, f, indent=1, ensure_ascii=False)
+    for package, suffix in PACKAGES.items():
+        nlp = stanza.Pipeline("en", dir=models, package=package, tokenize_pretokenized=True, download_method=None,
+                              use_gpu=False, logging_level="WARN")
+        for name, sentences in cases.items():
+            with torch.no_grad():
+                doc = nlp(sentences)
+                # The string form (whitespace-separated tokens, one sentence per line) gives the same document.
+                if all(" " not in t for s in sentences for t in s):
+                    assert "{:C}".format(nlp("\n".join(" ".join(s) for s in sentences))) == "{:C}".format(doc)
+            (pre / f"{name}{suffix}.conllu").write_text("{:C}\n".format(doc), encoding="utf-8", newline="\n")
+            print(f"pretokenized/{name}{suffix}.conllu: {len(doc.sentences)} sentences, {doc.num_words} words")
+
+
+def write_bulk_golden(models, out):
+    """
+    bulk/: Pipeline.bulk_process on one list of texts per package: BULK_TEXTS, then corpus.txt and every
+    validation*.txt. bulk/<package>.json lists the documents; each has either its full CoNLL-U ("conllu", for the
+    BULK_TEXTS, as "{:C}" without the trailing newline the other golden files have) or the name of the golden file with its output when processed alone ("alone": pipeline.conllu or
+    validation*.conllu for default, fast/<name>.conllu for default_fast) plus what bulk changes in it: "sent_id_offset"
+    (sentence ids continue across documents) and "sentences", the CoNLL-U of each sentence that differs once the ids
+    are shifted (sentiment and depparse batch sentences across documents).
+    """
+    bulk = out / "bulk"
+    bulk.mkdir(exist_ok=True)
+    files = [out / "corpus.txt"] + sorted(out.glob("validation*.txt"))
+    texts = BULK_TEXTS + [p.read_bytes().decode("utf-8") for p in files]
+    for package in PACKAGES:
+        nlp = stanza.Pipeline("en", dir=models, package=package, download_method=None, use_gpu=False, logging_level="WARN")
+        with torch.no_grad():
+            docs = nlp.bulk_process(texts)
+        entries, offset, changed = [], 0, 0
+        for i, doc in enumerate(docs):
+            conllu = "{:C}\n".format(doc)
+            if i < len(BULK_TEXTS):
+                # "{:C}" alone: an empty document is "", not "\n".
+                entries.append({"text": texts[i], "conllu": "{:C}".format(doc)})
+            else:
+                path = files[i - len(BULK_TEXTS)]
+                name = "corpus" if path.name == "corpus.txt" else path.stem
+                alone = ("pipeline.conllu" if name == "corpus" else f"{name}.conllu") if package == "default" else f"fast/{name}.conllu"
+                expected = (out / alone).read_text(encoding="utf-8").split("\n\n")
+                got = conllu.split("\n\n")
+                assert len(expected) == len(got), (alone, len(expected), len(got))
+                shifted = [e.replace(f"# sent_id = {j}\n", f"# sent_id = {j + offset}\n", 1) for j, e in enumerate(expected)]
+                diffs = {str(j): g for j, (e, g) in enumerate(zip(shifted, got)) if e != g}
+                changed += len(diffs)
+                entries.append({"file": path.name, "alone": alone, "sent_id_offset": offset, "sentences": diffs})
+            offset += len(doc.sentences)
+        with open(bulk / f"{package}.json", "w", encoding="utf-8", newline="\n") as f:
+            json.dump({"stanza": stanza.__version__, "documents": entries}, f, indent=1, ensure_ascii=False)
+        print(f"bulk/{package}.json: {len(docs)} documents, {offset} sentences, {changed} differ from processing alone")
+
 
 def main():
     p = argparse.ArgumentParser()
@@ -487,8 +572,16 @@ def main():
     p.add_argument("--ner-only", action="store_true", help="only regenerate ner/")
     p.add_argument("--sentiment-only", action="store_true", help="only regenerate sentiment/")
     p.add_argument("--fast-only", action="store_true", help="only regenerate fast/ (package default_fast)")
+    p.add_argument("--pretokenized-only", action="store_true", help="only regenerate pretokenized/")
+    p.add_argument("--bulk-only", action="store_true", help="only regenerate bulk/")
     args = p.parse_args()
     out = Path(args.out)
+    if args.pretokenized_only:
+        write_pretokenized_golden(args.models, out)
+        return
+    if args.bulk_only:
+        write_bulk_golden(args.models, out)
+        return
     if args.fast_only:
         write_fast_golden(args.models, out)
         return
@@ -570,6 +663,8 @@ def main():
     write_ner_golden(args.models, out)
     write_sentiment_golden(args.models, out)
     write_fast_golden(args.models, out)
+    write_pretokenized_golden(args.models, out)
+    write_bulk_golden(args.models, out)
 
     write_safetensors(tensors, out / "intermediates.safetensors", {"stanza": stanza.__version__})
     with open(out / "intermediates.json", "w", encoding="utf-8", newline="\n") as f:

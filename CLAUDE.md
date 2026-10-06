@@ -124,6 +124,21 @@ All 7 steps of the build order are done:
   - No `CharlmCache` there: the nocharlm tagger has no charlm outputs to share (`PosTagger.UsesCharlm`).
   - Stanza silently skips a processor its package lacks (`processors='...,constituency'` with
     `default_fast` loads no parser); we throw instead (user's decision), naming the `default` package.
+- Input modes (2026-10-06, the user's approved examples): `Process(IEnumerable<string>)` (bulk) and
+  `Process(IEnumerable<IEnumerable<string>>)` (pretokenized). Collection expressions pick the right overload;
+  `Process([])` and `Process(null)` are ambiguous (compile errors), never a silent wrong pick.
+  - Bulk = Stanza's `bulk_process`: `Tokenizer.Process(texts)` tokenizes `"\n\n".Join(texts)` and `Tokenizer.Split`
+    deals sentences out like `TokenizeProcessor.bulk_process` (a sentence goes to the current text while its last
+    token ends inside it; offsets shifted; the last token's SpaceAfter and first token's SpacesBefore from the text
+    itself). The other processors run on one combined `Document` (UDProcessor.bulk_process), then entities are
+    rebuilt per document. Sentence ids continue across documents, as in Stanza.
+  - Bulk ≠ one by one, in Stanza too: sentiment batches change labels (172 of 854 in the golden; depparse could too, via
+    its padded log-softmax, but no head changed), and sent_ids continue. Without those two processors the output equals one call per text apart from
+    sent_id (`Bulk_EqualsProcessingAloneExceptBatchedProcessors`).
+  - Pretokenized = `process_pre_tokenized_text` with a list: text = tokens joined by single spaces, offsets into
+    it, `IsMwtCandidate` false, so mwt changes nothing ("don't" stays one word, as in Stanza). Empty sentences and
+    empty/whitespace tokens throw (Stanza fails on the first two; whitespace tokens give broken CoNLL-U there).
+    Stanza's string form (whitespace tokens, newline sentences) is not exposed; make_golden asserts it equals the list form.
 
 Tokenizer notes:
 - `Tokenizer.Predict` batches like Stanza: sort paragraphs by length, batch by 32, pad to max+1,
@@ -377,6 +392,11 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - `fast/` (`--fast-only`): `package='default_fast'` output (all seven of its processors) for `corpus.txt`
     (as `corpus.conllu`) and each `validation*.txt`; for the first 3 sentences, each run alone, UPOS logits,
     arc/label log-probs (from the run's tags and lemmas) and NER emissions.
+  - `pretokenized/` (`--pretokenized-only`): `inputs.json` (cases of token lists, plus `corpus`: corpus.txt's
+    Stanza tokens) and `<name>.conllu` / `<name>.fast.conllu` for both packages.
+  - `bulk/<package>.json` (`--bulk-only`): one `bulk_process` call over `BULK_TEXTS` (tiny, empty and
+    whitespace-only texts; stored whole) + corpus.txt + validation*.txt (stored as the golden file processed alone,
+    a sent_id offset and the sentences bulk changes), so it stays small.
   - `validation*.conllu`: full pipeline output for each hand-written `validation*.txt` (news,
     academic, instructions, social, dialogue/poetry, tech, multilingual, contractions, long,
     whitespace, nonbmp; ~830 sentences). They are read as bytes, so CR/CRLF reach Stanza as-is.

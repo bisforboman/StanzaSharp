@@ -61,6 +61,23 @@ need only `tokenize`. NER gives named entities: `Token.Ner` holds the BIOES tag 
 Sentiment gives `sentence.Sentiment`: 0 negative, 1 neutral, 2 positive.
 `Conllu.Write(doc)` gives Stanza-style CoNLL-U, with `ner=` in MISC when NER ran.
 
+### Many texts, and pretokenized text
+
+```csharp
+// Bulk: one Document per text, in order; sentences of all texts are batched together (Stanza's bulk_process).
+List<Document> docs = nlp.Process(tweets); // any IEnumerable<string>
+
+// Pretokenized: sentences of tokens; the tokenizer model is skipped and the tokens kept as given
+// (Stanza's tokenize_pretokenized=True). doc.Text is the tokens joined by spaces: "Hello world . Bye ."
+var doc = nlp.Process(new[] { new[] { "Hello", "world", "." }, new[] { "Bye", "." } });
+```
+
+Both match Python Stanza byte for byte. Bulk is much faster than one call per text for short texts: 7.7× on
+2,000 one-sentence texts ([docs/performance.md](docs/performance.md#bulk-processing-many-short-texts)). Its output
+can differ slightly from processing each text alone, exactly as in Stanza: the sentiment classifier sees its batch's padding (172 of 854
+golden labels change), and sentence ids continue across the documents. Pretokenized tokens are never split into
+multi-word tokens (`"don't"` stays one word), as in Stanza.
+
 ### Packages
 
 `PipelineOptions.Package` picks one of Stanza's English packages by its Stanza name:

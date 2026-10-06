@@ -57,6 +57,10 @@ foreach (var sentence in doc.Sentences)
 - Add `ner` to the list for named entities: `doc.Entities` (text, type, character offsets) and a BIOES tag per token (`Token.Ner`).
 - Add `sentiment` to the list for `sentence.Sentiment`: 0 negative, 1 neutral, 2 positive.
 - `Conllu.Write(doc)` gives CoNLL-U in Stanza's format.
+- `nlp.Process(texts)` with any `IEnumerable<string>` processes many texts at once, like Stanza's `bulk_process`:
+  one `Document` per text, much faster for short texts.
+- `nlp.Process(new[] { new[] { "Hello", "world", "." } })` takes text that is already split into sentences and
+  tokens, like Stanza's `tokenize_pretokenized=True`.
 
 ## Faster: the default_fast package
 

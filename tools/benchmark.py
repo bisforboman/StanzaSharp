@@ -4,7 +4,10 @@ Python Stanza counterpart of samples/StanzaSharp.Benchmark: times each pipeline 
 text (validation.txt, corpus.txt and tokenize_stress.txt from tests/golden, repeated) and prints the same report.
 
   python tools/benchmark.py [--models models/stanza] [--copies 8] [--runs 3] [--threads N] [--out FILE]
-                            [--package default|default_fast]
+                            [--package default|default_fast] [--documents N]
+
+--documents N times N one-sentence texts instead (the golden validation sentences, cycled): one nlp(text) call
+per text vs one nlp.bulk_process(texts) call, as samples/StanzaSharp.Benchmark --documents does.
 """
 import argparse
 import ctypes
@@ -55,9 +58,13 @@ def main():
     parser.add_argument("--threads", type=int, default=0)
     parser.add_argument("--out")
     parser.add_argument("--package", default="default", help="Stanza's English package (default_fast has no constituency)")
+    parser.add_argument("--documents", type=int, default=0, help="time N one-sentence texts, one by one vs bulk")
     args = parser.parse_args()
     if args.threads > 0:
         torch.set_num_threads(args.threads)
+
+    if args.documents > 0:
+        return time_documents(args)
 
     text = build_text(args.copies)
     start = time.perf_counter()
@@ -92,6 +99,26 @@ def main():
         print(f"{s:<14}{median:9.2f} s {words / median:10.0f} words/s {peaks[s]:8.0f} MB peak (warm-up)")
     print(f"{'total':<14}{total:9.2f} s {words / total:10.0f} words/s")
     print(f"{'peak memory':<14}{peak_working_set_mb():9.0f} MB (peak working set)")
+
+
+def time_documents(args):
+    golden = ROOT / "tests" / "golden"
+    sentences = [line[len("# text = "):] for path in sorted(golden.glob("validation*.conllu"))
+                 for line in path.read_text(encoding="utf-8").split("\n") if line.startswith("# text = ")]
+    texts = [sentences[i % len(sentences)] for i in range(args.documents)]
+    nlp = stanza.Pipeline("en", dir=args.models, package=args.package, download_method=None, use_gpu=False, logging_level="WARN")
+    with torch.no_grad():
+        nlp.bulk_process(texts[:50])  # warm-up
+        start = time.perf_counter()
+        for text in texts:
+            nlp(text)
+        alone = time.perf_counter() - start
+        start = time.perf_counter()
+        nlp.bulk_process(texts)
+        bulk = time.perf_counter() - start
+    print(f"Python Stanza {stanza.__version__} ({args.package}), torch threads {torch.get_num_threads()}, {len(texts)} documents of one sentence")
+    print(f"{'one by one':<14}{alone:9.2f} s {len(texts) / alone:10.0f} docs/s")
+    print(f"{'bulk':<14}{bulk:9.2f} s {len(texts) / bulk:10.0f} docs/s")
 
 
 if __name__ == "__main__":

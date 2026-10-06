@@ -1,0 +1,12 @@
+# text = Hello world .
+# sent_id = 0
+# sentiment = 1
+1	Hello	hello	INTJ	UH	_	0	root	_	start_char=0|end_char=5|ner=O
+2	world	world	NOUN	NN	Number=Sing	1	vocative	_	start_char=6|end_char=11|ner=O
+3	.	.	PUNCT	.	_	1	punct	_	start_char=12|end_char=13|ner=O
+
+# text = Bye .
+# sent_id = 1
+# sentiment = 1
+1	Bye	bye	INTJ	UH	_	0	root	_	start_char=14|end_char=17|ner=O
+2	.	.	PUNCT	.	_	1	punct	_	SpaceAfter=No|start_char=18|end_char=19|ner=O

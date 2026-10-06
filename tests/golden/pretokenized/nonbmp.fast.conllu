@@ -1,0 +1,16 @@
+# text = I love 😀 !
+# sent_id = 0
+# sentiment = 2
+1	I	I	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	2	nsubj	_	start_char=0|end_char=1|ner=O
+2	love	love	VERB	VBP	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2|end_char=6|ner=O
+3	😀	😀	INTJ	UH	_	2	discourse	_	start_char=7|end_char=8|ner=O
+4	!	!	PUNCT	.	_	2	punct	_	start_char=9|end_char=10|ner=O
+
+# text = 𝒳 marks the spot .
+# sent_id = 1
+# sentiment = 2
+1	𝒳	𝒳	PROPN	NNP	Number=Sing	2	nsubj	_	start_char=11|end_char=12|ner=O
+2	marks	mark	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=13|end_char=18|ner=O
+3	the	the	DET	DT	Definite=Def|PronType=Art	4	det	_	start_char=19|end_char=22|ner=O
+4	spot	spot	NOUN	NN	Number=Sing	2	obj	_	start_char=23|end_char=27|ner=O
+5	.	.	PUNCT	.	_	2	punct	_	SpaceAfter=No|start_char=28|end_char=29|ner=O

@@ -1,0 +1,32 @@
+# text = ( Hello ) -- " she said ... "
+# sent_id = 0
+# constituency = (ROOT (S (-LRB- -LRB-) (INTJ (UH Hello)) (-RRB- -RRB-) (: --) ('' ") (NP (PRP she)) (VP (VBD said)) (. ...) ('' ")))
+# sentiment = 1
+1	(	(	PUNCT	-LRB-	_	2	punct	_	start_char=0|end_char=1|ner=O
+2	Hello	hello	INTJ	UH	_	7	ccomp	_	start_char=2|end_char=7|ner=O
+3	)	)	PUNCT	-RRB-	_	2	punct	_	start_char=8|end_char=9|ner=O
+4	--	-	PUNCT	:	_	2	punct	_	start_char=10|end_char=12|ner=O
+5	"	"	PUNCT	''	_	2	punct	_	start_char=13|end_char=14|ner=O
+6	she	she	PRON	PRP	Case=Nom|Gender=Fem|Number=Sing|Person=3|PronType=Prs	7	nsubj	_	start_char=15|end_char=18|ner=O
+7	said	say	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=19|end_char=23|ner=O
+8	...	...	PUNCT	.	_	7	punct	_	start_char=24|end_char=27|ner=O
+9	"	"	PUNCT	''	_	2	punct	_	start_char=28|end_char=29|ner=O
+
+# text = Really ?!
+# sent_id = 1
+# constituency = (ROOT (FRAG (ADVP (RB Really)) (. ?!)))
+# sentiment = 2
+1	Really	really	ADV	RB	_	0	root	_	start_char=30|end_char=36|ner=O
+2	?!	?!	PUNCT	.	_	1	punct	_	start_char=37|end_char=39|ner=O
+
+# text = A : b ; c / d
+# sent_id = 2
+# constituency = (ROOT (LST (DT A) (: :) (NN b) (: ;) (NN c) (, /) (NNP d)))
+# sentiment = 1
+1	A	a	DET	DT	Definite=Ind|PronType=Art	3	det	_	start_char=40|end_char=41|ner=O
+2	:	:	PUNCT	:	_	3	punct	_	start_char=42|end_char=43|ner=O
+3	b	benefit	NOUN	NN	Number=Sing	0	root	_	start_char=44|end_char=45|ner=O
+4	;	;	PUNCT	:	_	5	punct	_	start_char=46|end_char=47|ner=O
+5	c	c	NOUN	NN	Number=Sing	3	appos	_	start_char=48|end_char=49|ner=O
+6	/	/	PUNCT	,	_	7	punct	_	start_char=50|end_char=51|ner=O
+7	d	d	PROPN	NNP	Number=Sing	5	conj	_	SpaceAfter=No|start_char=52|end_char=53|ner=O
