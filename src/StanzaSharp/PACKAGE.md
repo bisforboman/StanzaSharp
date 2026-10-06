@@ -98,6 +98,14 @@ foreach (var sentence in doc.Sentences)
   one `Document` per text, much faster for short texts.
 - `nlp.Process(new[] { new[] { "Hello", "world", "." } })` takes text that is already split into sentences and
   tokens, like Stanza's `tokenize_pretokenized=True`.
+- `Process` is thread-safe: share one pipeline between threads. Every overload takes a `CancellationToken`.
+- `PipelineOptions`:
+  - `Threads`: libtorch's intra-op threads, set process-wide at Load. By default at most `Environment.ProcessorCount`,
+    which respects a container's CPU quota.
+  - `SplitSentences = false`: one sentence per paragraph (Stanza's `tokenize_no_ssplit`).
+  - `VerifyChecksums`: checks the `.pt` model files against Stanza's MD5s before loading.
+  - `Logger`: an `ILogger` for load and processing times.
+- `Processor.Tokenize`, ..., `Processor.Ner` are constants for the processor list.
 
 ## Faster: the default_fast package
 

@@ -10,7 +10,8 @@ namespace StanzaSharp;
 /// using var fast = Pipeline.Load("models/stanza/en", new PipelineOptions { Package = "default_fast" });
 /// using var nlp = Pipeline.Load("models/stanza/en", new PipelineOptions
 /// {
-///     Processors = "tokenize,mwt,pos",
+///     Processors = $"{Processor.Tokenize},{Processor.Mwt},{Processor.Pos}", // or "tokenize,mwt,pos"
+///     Threads = 4,
 ///     Device = torch.CUDA,
 ///     DisableTf32 = true,
 ///     CharlmCache = new() { MaxWords = 100_000 },
@@ -59,7 +60,8 @@ public sealed class PipelineOptions
     /// </summary>
     /// <remarks>
     /// <b>Process-wide:</b> this is <c>torch.set_num_threads</c>, which applies to all TorchSharp code in the process,
-    /// and the last pipeline loaded wins. Each thread that calls <see cref="Pipeline.Process(string)"/> runs its own
+    /// and the last pipeline loaded wins. libtorch applies a new count to the loading thread and to threads that haven't
+    /// run a tensor operation yet; a thread that already has keeps its count, so load before processing starts. Each thread that calls <see cref="Pipeline.Process(string)"/> runs its own
     /// operations on up to this many threads, so with N concurrent calls consider <c>ProcessorCount / N</c>.
     /// libtorch's inter-op thread pool is not used by StanzaSharp and is left alone.
     /// </remarks>
