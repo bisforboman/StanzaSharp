@@ -39,6 +39,13 @@ for base in "$@"; do
   fi
   size=$(docker image inspect "$tag" --format '{{.Size}}' | numfmt --to=si --suffix=B)
   echo "$tag: $size"
+  # StanzaSharpTrimNative (StanzaSharpDocker.csproj): the trimmed libtorch files must not be in the image.
+  container=$(docker create "$tag")
+  trimmed=$(docker export "$container" | tar -t | grep -E '^app/lib(torch_python|shm|nnapi_backend|torchbind_test|jitbackend_test|backend_with_compiler|aoti_custom_ops)\.so$')
+  docker rm "$container" > /dev/null
+  if [ -n "$trimmed" ]; then
+    echo "::error::StanzaSharpTrimNative left $trimmed in the image on $base"; failed=1
+  fi
   out=$(mktemp)
   if ! docker run -i --rm -v "$models:/models:ro" "$tag" < "$root/tests/golden/corpus.txt" > "$out"; then
     echo "::error::The container failed on $base"; failed=1; result="run failed"
