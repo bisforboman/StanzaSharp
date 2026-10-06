@@ -11,6 +11,7 @@ public class TorchCheckpointTests(ITestOutputHelper output)
         "tokenize/combined_nocharlm", "mwt/combined", "pos/combined_charlm", "lemma/combined_nocharlm", "constituency/ptb3-revised_charlm",
         "pretrain/conll17", "forward_charlm/1billion", "backward_charlm/1billion",
         "depparse/combined_charlm", "ner/ontonotes-ww-multi_charlm", "sentiment/sstplus_charlm",
+        "pos/combined_nocharlm", "depparse/combined_nocharlm", "ner/ontonotes-ww-multi_nocharlm", // default_fast
     ];
 
     [Theory]
