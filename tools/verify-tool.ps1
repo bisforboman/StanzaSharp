@@ -38,6 +38,7 @@ try {
     # Bad arguments exit with 2.
     & $command download $models --nonsense 2>$null
     if ($LASTEXITCODE -ne 2) { throw "Expected exit code 2 for a bad argument, got $LASTEXITCODE" }
+    $global:LASTEXITCODE = 0 # the expected 2 would otherwise become the script's exit code
     Write-Host "StanzaSharp.Tool $version installs and downloads models."
 }
 finally {
