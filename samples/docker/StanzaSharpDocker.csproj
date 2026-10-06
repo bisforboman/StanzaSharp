@@ -8,6 +8,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <StanzaSharpVersion Condition="'$(StanzaSharpVersion)' == ''">*</StanzaSharpVersion>
+    <!-- Leaves out libtorch files StanzaSharp never loads (libtorch_python.so and others, about 35 MB). -->
+    <StanzaSharpTrimNative>true</StanzaSharpTrimNative>
   </PropertyGroup>
 
   <ItemGroup>

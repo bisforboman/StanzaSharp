@@ -13,7 +13,7 @@ dotnet add package TorchSharp-cpu
 ```
 
 `TorchSharp-cpu` (or a `TorchSharp-cuda-*` package) brings the native libtorch; its version must match the
-`TorchSharp` version StanzaSharp depends on (0.107.0). Requires .NET 10. Tested on Linux, Windows and macOS.
+`TorchSharp` version StanzaSharp depends on (0.107.0); otherwise the build warns with `STANZA001`. Requires .NET 10. Tested on Linux, Windows and macOS.
 On macOS (Apple Silicon), also run `brew install libomp`: TorchSharp-cpu's libtorch loads OpenMP from Homebrew's path.
 On Windows on Arm64, use `StanzaSharp.Cpu.WindowsArm64` instead (below). See [Supported platforms](#supported-platforms).
 
@@ -34,6 +34,12 @@ dotnet add package StanzaSharp.Cpu.Linux
 
 Publish with that platform's runtime identifier (`dotnet publish -r linux-x64`) so only its native files are
 copied. Smaller models help too: `Package = "default_fast"` and downloading only the processors you use.
+
+**Leaving out unused libtorch files:** set `<StanzaSharpTrimNative>true</StanzaSharpTrimNative>` in your project to drop
+the libtorch files StanzaSharp never loads from build and publish output: the Python bindings (`libtorch_python`,
+`libshm`) and test and mobile backends (`libtorchbind_test`, `libjitbackend_test`, `libbackend_with_compiler`,
+`libaoti_custom_ops`, `libnnapi_backend`). That is 35 MB less on Linux x64 (a `-r linux-x64` publish goes from 503 to
+468 MB) and 29 MB on macOS; the Windows libtorch packages ship none of them. Nothing TorchSharp loads links to them. It applies to the CPU libtorch only; CUDA builds are left whole.
 
 ### Supported platforms
 
@@ -79,7 +85,13 @@ docker run -i --rm -v /path/to/models/stanza/en:/models:ro stanzasharp-sample < 
 Mount the models rather than copying them into the image: they are about 600 MB, and the image is already
 707 MB on `runtime:10.0` and 601 MB on `runtime:10.0-noble-chiseled` (measured in CI), of which the published app is
 500 MB, nearly all of it libtorch. CI builds this image on both base images and checks that its output
-is byte-identical to the golden file.
+is byte-identical to the golden file. The sample sets `StanzaSharpTrimNative` (above), which saves another 35 MB.
+
+To download the models in a Dockerfile (on the SDK image; the tool needs no libtorch):
+
+```dockerfile
+RUN dotnet tool install --tool-path /tools StanzaSharp.Tool && /tools/stanzasharp download /models --processors tokenize,mwt,pos
+```
 
 ## Models
 
@@ -92,8 +104,10 @@ await ModelDownloader.DownloadAsync("models/stanza/en", "tokenize,mwt,pos,lemma"
 await ModelDownloader.DownloadAsync("models/stanza/en", new PipelineOptions { Package = "default_fast" });
 ```
 
-or from the command line: `dotnet run --project samples/StanzaSharp.Cli -- download models/stanza/en`
-(add `--processors LIST` for a subset, `--package default_fast` for that package).
+or from the command line with the `stanzasharp` tool (package `StanzaSharp.Tool`, no native libraries):
+`dotnet tool install -g StanzaSharp.Tool`, then `stanzasharp download models/stanza/en`
+(add `--processors LIST` for a subset, `--package default_fast` for that package). In this repository,
+`dotnet run --project samples/StanzaSharp.Cli -- download models/stanza/en` does the same.
 `DownloadAsync(dir, options)` fetches exactly what `Pipeline.Load(dir, options)` reads. A subset includes the models of the processors it requires and
 the shared word vectors and character models when used.
 A directory you already have from Python Stanza (`<processor>/<name>.pt`, e.g. `~/stanza_resources/en`)
@@ -281,7 +295,8 @@ Tests that need models skip when `models/converted/en` (or, for the `.pt` loader
 - `golden` downloads the English models with `ModelDownloader` (through the CLI), converts them with
   `tools/stanza_convert.py` (CPU-only torch wheel), and runs the full suite. It fails if any test was
   skipped. Then `tools/verify-package.ps1` packs StanzaSharp and runs a fresh app that references the
-  package. The original and converted models are cached, keyed on `ModelDownloader.cs`,
+  package (with no `STANZA` build warning allowed; the platform-package run also sets `StanzaSharpTrimNative`), and
+  `tools/verify-tool.ps1` installs the `stanzasharp` tool from a local feed and downloads `tokenize,mwt` with it. The original and converted models are cached, keyed on `ModelDownloader.cs`,
   `tools/requirements.txt` and `tools/stanza_convert.py`.
 - `docker` runs `tools/verify-docker.sh`: it packs StanzaSharp and `StanzaSharp.Cpu.Linux`, builds
   [samples/docker](samples/docker/Dockerfile) on `mcr.microsoft.com/dotnet/runtime:10.0` and on its chiseled
