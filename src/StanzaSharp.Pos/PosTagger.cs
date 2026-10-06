@@ -80,22 +80,26 @@ public sealed class PosTagger : IDisposable
         new(Checkpoint.Load(basePath), pretrain, charlmForward, charlmBackward);
 
     /// <summary>Sets Upos, Xpos and Feats on every word of the document.</summary>
-    public void Process(Document doc)
+    /// <param name="charlms">If given, receives each sentence's charlm representations for the parser.</param>
+    public void Process(Document doc, CharlmCache? charlms = null)
     {
         // Sentences are packed by their real length, so batching does not change the results.
-        var sentences = doc.Sentences.Select(s => s.Words.ToList()).Where(w => w.Count > 0).ToList();
+        var sentences = doc.Sentences.Select(s => (Sentence: s, Words: s.Words.ToList())).Where(x => x.Words.Count > 0).ToList();
         for (int b = 0; b < sentences.Count; b += _batchSize)
         {
             var batch = sentences.GetRange(b, Math.Min(_batchSize, sentences.Count - b));
-            var tags = Predict(batch.Select(ws => (IReadOnlyList<string>)ws.Select(w => w.Text).ToList()).ToList(), out _);
+            var tags = Predict(batch.Select(x => (IReadOnlyList<string>)x.Words.Select(w => w.Text).ToList()).ToList(), out _,
+                charlms == null ? null : (i, forward, backward) => charlms.Add(batch[i].Sentence, forward, backward));
             for (int i = 0; i < batch.Count; i++)
-                for (int j = 0; j < batch[i].Count; j++)
-                    (batch[i][j].Upos, batch[i][j].Xpos, batch[i][j].Feats) = tags[i][j];
+                for (int j = 0; j < batch[i].Words.Count; j++)
+                    (batch[i].Words[j].Upos, batch[i].Words[j].Xpos, batch[i].Words[j].Feats) = tags[i][j];
         }
     }
 
     /// <summary>Tags for each word, plus the UPOS logits (one [words, upos] array per sentence) for tests.</summary>
-    internal List<(string Upos, string Xpos, string? Feats)[]> Predict(IReadOnlyList<IReadOnlyList<string>> sentences, out List<float[]> uposLogits)
+    /// <param name="keepCharlm">Called with each sentence's charlm representations, which it then owns.</param>
+    internal List<(string Upos, string Xpos, string? Feats)[]> Predict(IReadOnlyList<IReadOnlyList<string>> sentences, out List<float[]> uposLogits,
+        Action<int, Tensor, Tensor>? keepCharlm = null)
     {
         using var _ = torch.no_grad();
         using var scope = NewDisposeScope();
@@ -114,8 +118,13 @@ public sealed class PosTagger : IDisposable
 
         var words = _wordEmb.forward(torch.tensor(wordIds, [batch, width]));
         var pretrained = _transPretrained.forward(_pretrain.Embeddings[torch.tensor(pretrainIds, [batch, width])]);
-        var charsForward = Rnn.PadSequence(_charlmForward.BuildCharRepresentation(sentences));
-        var charsBackward = Rnn.PadSequence(_charlmBackward.BuildCharRepresentation(sentences));
+        var repsForward = _charlmForward.BuildCharRepresentation(sentences);
+        var repsBackward = _charlmBackward.BuildCharRepresentation(sentences);
+        if (keepCharlm != null)
+            for (int i = 0; i < batch; i++)
+                keepCharlm(i, scope.Detach(repsForward[i]), scope.Detach(repsBackward[i]));
+        var charsForward = Rnn.PadSequence(repsForward);
+        var charsBackward = Rnn.PadSequence(repsBackward);
         var output = _lstm.Forward(cat([words, pretrained, charsForward, charsBackward], 2), lengths);
 
         var uposScores = _uposClf.forward(F.relu(_uposHid.forward(output)));

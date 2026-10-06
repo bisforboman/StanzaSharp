@@ -54,21 +54,27 @@ double load = clock.Elapsed.TotalSeconds;
 
 string[] stages = ["tokenize", "mwt", "pos", "constituency"];
 var times = stages.ToDictionary(s => s, _ => new List<double>());
+var peaks = new Dictionary<string, double>(); // peak working set at the end of each stage, first timed run
 Document doc = null!;
 for (int run = 0; run <= runs; run++)
 {
     var input = run == 0 ? BuildText(1) : text; // run 0 warms up
     var timed = new Dictionary<string, double>();
-    double Time(Action action)
+    double Time(string stage, Action action)
     {
         clock.Restart();
         action();
-        return clock.Elapsed.TotalSeconds;
+        double seconds = clock.Elapsed.TotalSeconds;
+        if (run == 1)
+            peaks[stage] = PeakMB();
+        return seconds;
     }
-    timed["tokenize"] = Time(() => doc = tokenizer.Process(input));
-    timed["mwt"] = Time(() => mwt.Process(doc));
-    timed["pos"] = Time(() => pos.Process(doc));
-    timed["constituency"] = Time(() => parser.Process(doc));
+    // The same steps as Pipeline.Process.
+    using var charlms = new CharlmCache();
+    timed["tokenize"] = Time("tokenize", () => doc = tokenizer.Process(input));
+    timed["mwt"] = Time("mwt", () => mwt.Process(doc));
+    timed["pos"] = Time("pos", () => pos.Process(doc, charlms));
+    timed["constituency"] = Time("constituency", () => parser.Process(doc, charlms));
     if (run > 0)
         foreach (var s in stages)
             times[s].Add(timed[s]);
@@ -85,10 +91,10 @@ foreach (var s in stages)
 {
     double median = Median(times[s]);
     total += median;
-    Console.WriteLine($"{s,-14}{median,9:F2} s {words / median,10:F0} words/s");
+    Console.WriteLine($"{s,-14}{median,9:F2} s {words / median,10:F0} words/s {peaks[s],8:F0} MB peak");
 }
 Console.WriteLine($"{"total",-14}{total,9:F2} s {words / total,10:F0} words/s");
-Console.WriteLine($"{"peak memory",-14}{Process.GetCurrentProcess().PeakWorkingSet64 / 1048576.0,9:F0} MB (peak working set)");
+Console.WriteLine($"{"peak memory",-14}{PeakMB(),9:F0} MB (peak working set)");
 return 0;
 
 static string BuildText(int copies)
@@ -107,6 +113,8 @@ static string FindRepoRoot()
                 return dir.FullName;
     throw new DirectoryNotFoundException("Run from inside the repository: StanzaSharp.slnx not found");
 }
+
+static double PeakMB() => Process.GetCurrentProcess().PeakWorkingSet64 / 1048576.0;
 
 static double Median(List<double> xs)
 {

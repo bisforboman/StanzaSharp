@@ -104,69 +104,110 @@ public sealed class ConstituencyParser : IDisposable
         new(Checkpoint.Load(basePath), pretrain, charlmForward, charlmBackward);
 
     /// <summary>Sets <see cref="Sentence.Constituency"/> on every sentence. Needs XPOS (or UPOS) tags from the tagger.</summary>
-    public void Process(Document doc)
+    /// <param name="charlms">Charlm representations the tagger kept, if any; sentences missing from it are computed.</param>
+    public void Process(Document doc, CharlmCache? charlms = null)
     {
         var sentences = doc.Sentences.Where(s => s.Tokens.Count > 0).ToList();
-        for (int b = 0; b < sentences.Count; b += BatchSize)
-        {
-            var batch = sentences.GetRange(b, Math.Min(BatchSize, sentences.Count - b));
-            var tagged = batch.Select(s => (IReadOnlyList<(string, string)>)s.Words.Select(w =>
-                (w.Text, (_usesXpos ? w.Xpos : w.Upos) ?? throw new InvalidOperationException("Run the POS tagger before the parser"))).ToList()).ToList();
-            var trees = Parse(tagged);
-            for (int i = 0; i < batch.Count; i++)
-                batch[i].Constituency = trees[i];
-        }
+        var tagged = sentences.Select(s => (IReadOnlyList<(string, string)>)s.Words.Select(w =>
+            (w.Text, (_usesXpos ? w.Xpos : w.Upos) ?? throw new InvalidOperationException("Run the POS tagger before the parser"))).ToList()).ToList();
+        var reps = charlms == null ? null
+            : sentences.Select(s => charlms.TryGet(s, out var r) ? r : ((Tensor, Tensor)?)null).ToList();
+        var trees = Parse(tagged, charlmReps: reps);
+        for (int i = 0; i < sentences.Count; i++)
+            sentences[i].Constituency = trees[i];
     }
 
     /// <summary>
     /// Parses (word, tag) sentences. A sentence the parser gets stuck on gives null, as Stanza drops it.
     /// <paramref name="scores"/>, if given, receives each sentence's output-layer rows per step (for tests).
     /// </summary>
-    internal List<Tree?> Parse(IReadOnlyList<IReadOnlyList<(string Word, string Tag)>> sentences, List<List<float[]>>? scores = null)
+    /// <remarks>
+    /// Scheduled like Stanza (ConstituencyProcessor + parse_sentences): sentences sorted longest first,
+    /// <see cref="BatchSize"/> states in flight, and each finished state replaced by the next one, whose
+    /// word queues are built <see cref="BatchSize"/> sentences at a time. Every state is computed
+    /// independently, so this only decides how much work each step does.
+    /// </remarks>
+    internal List<Tree?> Parse(IReadOnlyList<IReadOnlyList<(string Word, string Tag)>> sentences, List<List<float[]>>? scores = null,
+        IReadOnlyList<(Tensor Forward, Tensor Backward)?>? charlmReps = null)
     {
         using var noGrad = torch.no_grad();
-        using var scope = NewDisposeScope();
-        var states = InitialStates(sentences);
+        var order = Enumerable.Range(0, sentences.Count).OrderByDescending(i => sentences[i].Count).ToArray();
         scores?.AddRange(sentences.Select(_ => new List<float[]>()));
         var result = new Tree?[sentences.Count];
-        var active = Enumerable.Range(0, states.Count).ToList();
-
-        while (active.Count > 0)
+        var batch = new List<ParserState>();
+        var horizon = new Queue<ParserState>();
+        int built = 0;
+        try
         {
-            var batch = active.Select(i => states[i]).ToList();
-            var logits = Forward(batch);
-            int n = _transitions.Length;
-            var chosen = new Transition?[batch.Count];
-            for (int k = 0; k < batch.Count; k++)
+            while (true)
             {
-                var row = logits[(k * n)..((k + 1) * n)];
-                scores?[active[k]].Add(row);
-                chosen[k] = Choose(batch[k], row);
-            }
-            Apply(batch, chosen);
+                while (batch.Count < BatchSize)
+                {
+                    if (horizon.Count == 0)
+                    {
+                        if (built == order.Length)
+                            break;
+                        var chunk = order[built..Math.Min(built + BatchSize, order.Length)];
+                        built += chunk.Length;
+                        foreach (var s in InitialStates(chunk, sentences, charlmReps))
+                            horizon.Enqueue(s);
+                    }
+                    batch.Add(horizon.Dequeue());
+                }
+                if (batch.Count == 0)
+                    break;
 
-            var next = new List<int>();
-            foreach (var i in active)
-            {
-                if (states[i].Broken)
-                    continue;
-                if (states[i].Finished(_rootLabels))
-                    result[i] = states[i].Constituents.Value.Tree;
-                else
-                    next.Add(i);
+                // Tensors a state keeps are detached from this scope into ParserState.Owned (see Apply).
+                using var step = NewDisposeScope();
+                var logits = Forward(batch);
+                int n = _transitions.Length;
+                var chosen = new Transition?[batch.Count];
+                for (int k = 0; k < batch.Count; k++)
+                {
+                    var row = logits[(k * n)..((k + 1) * n)];
+                    scores?[batch[k].Index].Add(row);
+                    chosen[k] = Choose(batch[k], row);
+                }
+                Apply(batch, chosen, step);
+
+                batch.RemoveAll(s =>
+                {
+                    if (!s.Broken && !s.Finished(_rootLabels))
+                        return false;
+                    if (!s.Broken)
+                        result[s.Index] = s.Constituents.Value.Tree;
+                    s.Dispose();
+                    return true;
+                });
             }
-            active = next;
+        }
+        finally
+        {
+            foreach (var s in batch.Concat(horizon))
+                s.Dispose();
         }
         return result.ToList();
     }
 
     // ----- initial state: the word queue (initial_word_queues) -----
 
-    private List<ParserState> InitialStates(IReadOnlyList<IReadOnlyList<(string Word, string Tag)>> sentences)
+    private List<ParserState> InitialStates(int[] indices, IReadOnlyList<IReadOnlyList<(string Word, string Tag)>> all,
+        IReadOnlyList<(Tensor Forward, Tensor Backward)?>? charlmReps)
     {
-        var words = sentences.Select(s => (IReadOnlyList<string>)s.Select(x => x.Word).ToList()).ToList();
-        var charsForward = _charlmForward.BuildCharRepresentation(words);
-        var charsBackward = _charlmBackward.BuildCharRepresentation(words);
+        using var scope = NewDisposeScope();
+        var sentences = indices.Select(i => all[i]).ToList();
+        List<Tensor> charsForward, charsBackward;
+        if (charlmReps != null && indices.All(i => charlmReps[i] != null))
+        {
+            charsForward = indices.Select(i => charlmReps[i]!.Value.Forward).ToList();
+            charsBackward = indices.Select(i => charlmReps[i]!.Value.Backward).ToList();
+        }
+        else
+        {
+            var words = sentences.Select(s => (IReadOnlyList<string>)s.Select(x => x.Word).ToList()).ToList();
+            charsForward = _charlmForward.BuildCharRepresentation(words);
+            charsBackward = _charlmBackward.BuildCharRepresentation(words);
+        }
 
         var inputs = new List<Tensor>(sentences.Count);
         for (int i = 0; i < sentences.Count; i++)
@@ -194,9 +235,10 @@ public sealed class ConstituencyParser : IDisposable
 
         return sentences.Select((s, i) => new ParserState
         {
+            Index = indices[i],
             SentenceLength = s.Count,
             Preterminals = s.Select(x => new Tree(x.Tag, [new Tree(x.Word)])).ToArray(),
-            WordHx = wordHx[i],
+            WordHx = scope.Detach(wordHx[i]),
             Transitions = _initialTransitions,
             Constituents = _initialConstituents,
         }).ToList();
@@ -231,7 +273,7 @@ public sealed class ConstituencyParser : IDisposable
 
     // ----- applying transitions (bulk_apply) -----
 
-    private void Apply(List<ParserState> states, Transition?[] transitions)
+    private void Apply(List<ParserState> states, Transition?[] transitions, DisposeScope step)
     {
         var applied = new List<(ParserState State, Transition Transition, StackNode<Constituent> Base)>();
         var newConstituents = new List<Constituent>();
@@ -315,8 +357,13 @@ public sealed class ConstituencyParser : IDisposable
 
         for (int i = 0; i < applied.Count; i++)
         {
-            applied[i].State.Transitions = newTransitions[i];
-            applied[i].State.Constituents = newStacks[i];
+            var (t, c) = (newTransitions[i], newStacks[i]);
+            applied[i].State.Transitions = t;
+            applied[i].State.Constituents = c;
+            // Shifted words' vectors are views of WordHx; disposing a view leaves the storage to the others.
+            Tensor[] kept = [t.Hx, t.Cx, t.Output, c.Hx, c.Cx, c.Output, c.Value.Hx!];
+            step.Detach((IEnumerable<IDisposable>)kept);
+            applied[i].State.Owned.AddRange(kept);
         }
     }
 

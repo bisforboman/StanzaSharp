@@ -64,6 +64,7 @@ def main():
     load = time.perf_counter() - start
 
     times = {s: [] for s in STAGES}
+    peaks = {}  # peak working set at the end of each stage, first timed run
     for run in range(args.runs + 1):
         doc = text if run > 0 else build_text(1)  # run 0 warms up on one copy
         for s in STAGES:
@@ -71,6 +72,8 @@ def main():
             doc = nlp.processors[s].process(doc)
             if run > 0:
                 times[s].append(time.perf_counter() - start)
+            if run == 1:
+                peaks[s] = peak_working_set_mb()
     if args.out:
         Path(args.out).write_text("{:C}\n".format(doc), encoding="utf-8", newline="\n")
 
@@ -82,7 +85,7 @@ def main():
     for s in STAGES:
         median = statistics.median(times[s])
         total += median
-        print(f"{s:<14}{median:9.2f} s {words / median:10.0f} words/s")
+        print(f"{s:<14}{median:9.2f} s {words / median:10.0f} words/s {peaks[s]:8.0f} MB peak")
     print(f"{'total':<14}{total:9.2f} s {words / total:10.0f} words/s")
     print(f"{'peak memory':<14}{peak_working_set_mb():9.0f} MB (peak working set)")
 
