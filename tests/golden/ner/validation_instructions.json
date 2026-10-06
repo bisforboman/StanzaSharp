@@ -1,0 +1,417 @@
+[
+ [
+  {
+   "text": "Lemon Ricotta Pancakes\nServes",
+   "type": "PRODUCT",
+   "start_char": 0,
+   "end_char": 29
+  },
+  {
+   "text": "4",
+   "type": "CARDINAL",
+   "start_char": 30,
+   "end_char": 31
+  }
+ ],
+ [
+  {
+   "text": "10 min",
+   "type": "QUANTITY",
+   "start_char": 44,
+   "end_char": 50
+  }
+ ],
+ [
+  {
+   "text": "20 min",
+   "type": "QUANTITY",
+   "start_char": 63,
+   "end_char": 69
+  }
+ ],
+ [
+  {
+   "text": "1 ½ cups",
+   "type": "QUANTITY",
+   "start_char": 87,
+   "end_char": 95
+  },
+  {
+   "text": "2 tbsp",
+   "type": "QUANTITY",
+   "start_char": 116,
+   "end_char": 122
+  },
+  {
+   "text": "1 tsp",
+   "type": "QUANTITY",
+   "start_char": 131,
+   "end_char": 136
+  },
+  {
+   "text": "1 cup",
+   "type": "QUANTITY",
+   "start_char": 186,
+   "end_char": 191
+  },
+  {
+   "text": "2",
+   "type": "CARDINAL",
+   "start_char": 222,
+   "end_char": 223
+  },
+  {
+   "text": "2 tbsp",
+   "type": "QUANTITY",
+   "start_char": 266,
+   "end_char": 272
+  }
+ ],
+ [],
+ [],
+ [
+  {
+   "text": "1",
+   "type": "CARDINAL",
+   "start_char": 324,
+   "end_char": 325
+  }
+ ],
+ [
+  {
+   "text": "2",
+   "type": "CARDINAL",
+   "start_char": 380,
+   "end_char": 381
+  },
+  {
+   "text": "second",
+   "type": "ORDINAL",
+   "start_char": 388,
+   "end_char": 394
+  }
+ ],
+ [
+  {
+   "text": "3",
+   "type": "CARDINAL",
+   "start_char": 469,
+   "end_char": 470
+  },
+  {
+   "text": "about 2–3 minutes",
+   "type": "TIME",
+   "start_char": 516,
+   "end_char": 533
+  }
+ ],
+ [
+  {
+   "text": "4",
+   "type": "CARDINAL",
+   "start_char": 535,
+   "end_char": 536
+  }
+ ],
+ [],
+ [
+  {
+   "text": "5",
+   "type": "CARDINAL",
+   "start_char": 586,
+   "end_char": 587
+  }
+ ],
+ [
+  {
+   "text": "2 min",
+   "type": "QUANTITY",
+   "start_char": 650,
+   "end_char": 655
+  }
+ ],
+ [
+  {
+   "text": "two",
+   "type": "CARDINAL",
+   "start_char": 729,
+   "end_char": 732
+  }
+ ],
+ [
+  {
+   "text": "up to 3 days",
+   "type": "DATE",
+   "start_char": 775,
+   "end_char": 787
+  }
+ ],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "four M6 × 30 mm",
+   "type": "QUANTITY",
+   "start_char": 928,
+   "end_char": 943
+  }
+ ],
+ [],
+ [
+  {
+   "text": "3",
+   "type": "CARDINAL",
+   "start_char": 988,
+   "end_char": 989
+  },
+  {
+   "text": "7",
+   "type": "CARDINAL",
+   "start_char": 994,
+   "end_char": 995
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "1",
+   "type": "CARDINAL",
+   "start_char": 1169,
+   "end_char": 1170
+  }
+ ],
+ [
+  {
+   "text": "2",
+   "type": "CARDINAL",
+   "start_char": 1197,
+   "end_char": 1198
+  },
+  {
+   "text": "30 seconds",
+   "type": "TIME",
+   "start_char": 1206,
+   "end_char": 1216
+  }
+ ],
+ [
+  {
+   "text": "3",
+   "type": "CARDINAL",
+   "start_char": 1223,
+   "end_char": 1224
+  }
+ ],
+ [
+  {
+   "text": "2",
+   "type": "CARDINAL",
+   "start_char": 1352,
+   "end_char": 1353
+  },
+  {
+   "text": "10 mm",
+   "type": "QUANTITY",
+   "start_char": 1359,
+   "end_char": 1364
+  }
+ ],
+ [
+  {
+   "text": "3",
+   "type": "CARDINAL",
+   "start_char": 1447,
+   "end_char": 1448
+  },
+  {
+   "text": "4.99",
+   "type": "MONEY",
+   "start_char": 1452,
+   "end_char": 1456
+  },
+  {
+   "text": "1",
+   "type": "CARDINAL",
+   "start_char": 1470,
+   "end_char": 1471
+  },
+  {
+   "text": "12.50",
+   "type": "MONEY",
+   "start_char": 1475,
+   "end_char": 1480
+  },
+  {
+   "text": "27.47",
+   "type": "MONEY",
+   "start_char": 1498,
+   "end_char": 1503
+  }
+ ],
+ [
+  {
+   "text": "Anna\t34",
+   "type": "PERSON",
+   "start_char": 1521,
+   "end_char": 1528
+  },
+  {
+   "text": "Pune",
+   "type": "GPE",
+   "start_char": 1544,
+   "end_char": 1548
+  },
+  {
+   "text": "Accra",
+   "type": "GPE",
+   "start_char": 1557,
+   "end_char": 1562
+  }
+ ],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "350°F",
+   "type": "QUANTITY",
+   "start_char": 1613,
+   "end_char": 1618
+  }
+ ],
+ [
+  {
+   "text": "9x13-inch",
+   "type": "QUANTITY",
+   "start_char": 1637,
+   "end_char": 1646
+  }
+ ],
+ [
+  {
+   "text": "35",
+   "type": "CARDINAL",
+   "start_char": 1657,
+   "end_char": 1659
+  },
+  {
+   "text": "40 min",
+   "type": "QUANTITY",
+   "start_char": 1660,
+   "end_char": 1666
+  }
+ ],
+ [],
+ [],
+ [
+  {
+   "text": "at least 20 seconds",
+   "type": "TIME",
+   "start_char": 1841,
+   "end_char": 1860
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "3–5 business days",
+   "type": "DATE",
+   "start_char": 1973,
+   "end_char": 1990
+  }
+ ],
+ [],
+ [
+  {
+   "text": "30 days",
+   "type": "DATE",
+   "start_char": 2032,
+   "end_char": 2039
+  }
+ ],
+ [
+  {
+   "text": "Chapter",
+   "type": "LAW",
+   "start_char": 2054,
+   "end_char": 2061
+  },
+  {
+   "text": "1",
+   "type": "CARDINAL",
+   "start_char": 2062,
+   "end_char": 2063
+  }
+ ],
+ [
+  {
+   "text": "First",
+   "type": "ORDINAL",
+   "start_char": 2120,
+   "end_char": 2125
+  }
+ ],
+ [
+  {
+   "text": "2/3",
+   "type": "CARDINAL",
+   "start_char": 2141,
+   "end_char": 2144
+  },
+  {
+   "text": "1/2 cup",
+   "type": "QUANTITY",
+   "start_char": 2156,
+   "end_char": 2163
+  },
+  {
+   "text": "1 Tbsp",
+   "type": "QUANTITY",
+   "start_char": 2176,
+   "end_char": 2182
+  }
+ ],
+ [
+  {
+   "text": "5-7 min",
+   "type": "QUANTITY",
+   "start_char": 2201,
+   "end_char": 2208
+  }
+ ],
+ [],
+ [
+  {
+   "text": "Elm St. Our",
+   "type": "FAC",
+   "start_char": 2285,
+   "end_char": 2296
+  },
+  {
+   "text": "2nd",
+   "type": "ORDINAL",
+   "start_char": 2311,
+   "end_char": 2314
+  },
+  {
+   "text": "48",
+   "type": "CARDINAL",
+   "start_char": 2341,
+   "end_char": 2343
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [],
+ []
+]

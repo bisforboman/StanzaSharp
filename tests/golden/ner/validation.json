@@ -1,0 +1,820 @@
+[
+ [
+  {
+   "text": "Tuesday evening",
+   "type": "TIME",
+   "start_char": 26,
+   "end_char": 41
+  }
+ ],
+ [
+  {
+   "text": "three hours",
+   "type": "TIME",
+   "start_char": 75,
+   "end_char": 86
+  },
+  {
+   "text": "7",
+   "type": "CARDINAL",
+   "start_char": 116,
+   "end_char": 117
+  },
+  {
+   "text": "2",
+   "type": "CARDINAL",
+   "start_char": 118,
+   "end_char": 119
+  }
+ ],
+ [],
+ [
+  {
+   "text": "4.3%",
+   "type": "PERCENT",
+   "start_char": 215,
+   "end_char": 219
+  },
+  {
+   "text": "the third quarter",
+   "type": "DATE",
+   "start_char": 223,
+   "end_char": 240
+  },
+  {
+   "text": "$1.2 billion",
+   "type": "MONEY",
+   "start_char": 245,
+   "end_char": 257
+  },
+  {
+   "text": "roughly 2 percent",
+   "type": "PERCENT",
+   "start_char": 279,
+   "end_char": 296
+  }
+ ],
+ [
+  {
+   "text": "Smith & Co.",
+   "type": "ORG",
+   "start_char": 310,
+   "end_char": 321
+  }
+ ],
+ [
+  {
+   "text": "48.75",
+   "type": "MONEY",
+   "start_char": 384,
+   "end_char": 389
+  },
+  {
+   "text": "Friday",
+   "type": "DATE",
+   "start_char": 393,
+   "end_char": 399
+  },
+  {
+   "text": "45.10",
+   "type": "MONEY",
+   "start_char": 410,
+   "end_char": 415
+  },
+  {
+   "text": "a week earlier",
+   "type": "DATE",
+   "start_char": 416,
+   "end_char": 430
+  }
+ ],
+ [
+  {
+   "text": "Alvarez",
+   "type": "PERSON",
+   "start_char": 437,
+   "end_char": 444
+  },
+  {
+   "text": "St. Mary's Hospital",
+   "type": "ORG",
+   "start_char": 464,
+   "end_char": 483
+  },
+  {
+   "text": "2011",
+   "type": "DATE",
+   "start_char": 490,
+   "end_char": 494
+  }
+ ],
+ [
+  {
+   "text": "J. R. Okafor",
+   "type": "PERSON",
+   "start_char": 553,
+   "end_char": 565
+  },
+  {
+   "text": "Lindqvist",
+   "type": "PERSON",
+   "start_char": 574,
+   "end_char": 583
+  },
+  {
+   "text": "U.K.",
+   "type": "GPE",
+   "start_char": 593,
+   "end_char": 597
+  }
+ ],
+ [
+  {
+   "text": "Jan. 15",
+   "type": "DATE",
+   "start_char": 621,
+   "end_char": 628
+  },
+  {
+   "text": "9 a.m.",
+   "type": "TIME",
+   "start_char": 632,
+   "end_char": 638
+  },
+  {
+   "text": "210",
+   "type": "CARDINAL",
+   "start_char": 655,
+   "end_char": 658
+  }
+ ],
+ [
+  {
+   "text": "Tom",
+   "type": "PERSON",
+   "start_char": 685,
+   "end_char": 688
+  }
+ ],
+ [
+  {
+   "text": "Maria",
+   "type": "PERSON",
+   "start_char": 706,
+   "end_char": 711
+  }
+ ],
+ [
+  {
+   "text": "tonight",
+   "type": "TIME",
+   "start_char": 748,
+   "end_char": 755
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "2 liters",
+   "type": "QUANTITY",
+   "start_char": 938,
+   "end_char": 946
+  }
+ ],
+ [
+  {
+   "text": "1",
+   "type": "CARDINAL",
+   "start_char": 999,
+   "end_char": 1000
+  },
+  {
+   "text": "180°C",
+   "type": "QUANTITY",
+   "start_char": 1022,
+   "end_char": 1027
+  },
+  {
+   "text": "2",
+   "type": "CARDINAL",
+   "start_char": 1029,
+   "end_char": 1030
+  }
+ ],
+ [
+  {
+   "text": "3",
+   "type": "CARDINAL",
+   "start_char": 1073,
+   "end_char": 1074
+  },
+  {
+   "text": "25–30 minutes",
+   "type": "TIME",
+   "start_char": 1085,
+   "end_char": 1098
+  }
+ ],
+ [
+  {
+   "text": "120 km",
+   "type": "QUANTITY",
+   "start_char": 1189,
+   "end_char": 1195
+  }
+ ],
+ [
+  {
+   "text": "8:00 and 17:30",
+   "type": "TIME",
+   "start_char": 1284,
+   "end_char": 1298
+  }
+ ],
+ [],
+ [
+  {
+   "text": "Harris",
+   "type": "PERSON",
+   "start_char": 1411,
+   "end_char": 1417
+  },
+  {
+   "text": "D-Calif.",
+   "type": "GPE",
+   "start_char": 1419,
+   "end_char": 1427
+  },
+  {
+   "text": "3/14/2023",
+   "type": "DATE",
+   "start_char": 1456,
+   "end_char": 1465
+  }
+ ],
+ [
+  {
+   "text": "at least 12",
+   "type": "CARDINAL",
+   "start_char": 1522,
+   "end_char": 1533
+  }
+ ],
+ [
+  {
+   "text": "noon",
+   "type": "TIME",
+   "start_char": 1624,
+   "end_char": 1628
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "two",
+   "type": "CARDINAL",
+   "start_char": 1835,
+   "end_char": 1838
+  },
+  {
+   "text": "one",
+   "type": "CARDINAL",
+   "start_char": 1852,
+   "end_char": 1855
+  }
+ ],
+ [
+  {
+   "text": "Two",
+   "type": "CARDINAL",
+   "start_char": 1863,
+   "end_char": 1866
+  }
+ ],
+ [
+  {
+   "text": "Three",
+   "type": "CARDINAL",
+   "start_char": 1882,
+   "end_char": 1887
+  }
+ ],
+ [
+  {
+   "text": "O'Neill's",
+   "type": "PERSON",
+   "start_char": 1908,
+   "end_char": 1917
+  }
+ ],
+ [
+  {
+   "text": "Joneses'",
+   "type": "NORP",
+   "start_char": 1955,
+   "end_char": 1963
+  },
+  {
+   "text": "Smiths",
+   "type": "ORG",
+   "start_char": 1985,
+   "end_char": 1991
+  }
+ ],
+ [],
+ [
+  {
+   "text": "Rue de Rivoli",
+   "type": "FAC",
+   "start_char": 2042,
+   "end_char": 2055
+  }
+ ],
+ [
+  {
+   "text": "Zoë",
+   "type": "PERSON",
+   "start_char": 2100,
+   "end_char": 2103
+  },
+  {
+   "text": "Björn",
+   "type": "PERSON",
+   "start_char": 2108,
+   "end_char": 2113
+  },
+  {
+   "text": "Zürich",
+   "type": "GPE",
+   "start_char": 2121,
+   "end_char": 2127
+  },
+  {
+   "text": "last spring",
+   "type": "DATE",
+   "start_char": 2128,
+   "end_char": 2139
+  }
+ ],
+ [],
+ [
+  {
+   "text": "1969",
+   "type": "DATE",
+   "start_char": 2180,
+   "end_char": 2184
+  },
+  {
+   "text": "Apollo 11",
+   "type": "WORK_OF_ART",
+   "start_char": 2186,
+   "end_char": 2195
+  },
+  {
+   "text": "Moon",
+   "type": "LOC",
+   "start_char": 2210,
+   "end_char": 2214
+  }
+ ],
+ [
+  {
+   "text": "Neil Armstrong's",
+   "type": "PERSON",
+   "start_char": 2216,
+   "end_char": 2232
+  },
+  {
+   "text": "one",
+   "type": "CARDINAL",
+   "start_char": 2249,
+   "end_char": 2252
+  },
+  {
+   "text": "millions",
+   "type": "CARDINAL",
+   "start_char": 2289,
+   "end_char": 2297
+  }
+ ],
+ [
+  {
+   "text": "8 days",
+   "type": "DATE",
+   "start_char": 2318,
+   "end_char": 2324
+  },
+  {
+   "text": "3 hours",
+   "type": "TIME",
+   "start_char": 2326,
+   "end_char": 2333
+  },
+  {
+   "text": "18 minutes and 35 seconds",
+   "type": "TIME",
+   "start_char": 2335,
+   "end_char": 2360
+  }
+ ],
+ [
+  {
+   "text": "3.14",
+   "type": "CARDINAL",
+   "start_char": 2369,
+   "end_char": 2373
+  },
+  {
+   "text": "3,14",
+   "type": "CARDINAL",
+   "start_char": 2377,
+   "end_char": 2381
+  }
+ ],
+ [
+  {
+   "text": "U.S.",
+   "type": "GPE",
+   "start_char": 2390,
+   "end_char": 2394
+  },
+  {
+   "text": "1,000.50",
+   "type": "CARDINAL",
+   "start_char": 2409,
+   "end_char": 2417
+  },
+  {
+   "text": "Europe",
+   "type": "LOC",
+   "start_char": 2434,
+   "end_char": 2440
+  },
+  {
+   "text": "1.000,50",
+   "type": "CARDINAL",
+   "start_char": 2446,
+   "end_char": 2454
+  }
+ ],
+ [
+  {
+   "text": "4512",
+   "type": "MONEY",
+   "start_char": 2503,
+   "end_char": 2507
+  }
+ ],
+ [],
+ [
+  {
+   "text": "five dozen",
+   "type": "CARDINAL",
+   "start_char": 2572,
+   "end_char": 2582
+  }
+ ],
+ [],
+ [
+  {
+   "text": "last week",
+   "type": "DATE",
+   "start_char": 2677,
+   "end_char": 2686
+  },
+  {
+   "text": "first",
+   "type": "ORDINAL",
+   "start_char": 2769,
+   "end_char": 2774
+  },
+  {
+   "text": "one",
+   "type": "CARDINAL",
+   "start_char": 3013,
+   "end_char": 3016
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "25",
+   "type": "MONEY",
+   "start_char": 3124,
+   "end_char": 3126
+  },
+  {
+   "text": "about £21",
+   "type": "MONEY",
+   "start_char": 3128,
+   "end_char": 3137
+  },
+  {
+   "text": "¥3,500",
+   "type": "MONEY",
+   "start_char": 3141,
+   "end_char": 3147
+  }
+ ],
+ [
+  {
+   "text": "20",
+   "type": "MONEY",
+   "start_char": 3166,
+   "end_char": 3168
+  },
+  {
+   "text": "five $1",
+   "type": "MONEY",
+   "start_char": 3178,
+   "end_char": 3185
+  }
+ ],
+ [
+  {
+   "text": "10-year-old",
+   "type": "DATE",
+   "start_char": 3197,
+   "end_char": 3208
+  }
+ ],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "Section 2(b)",
+   "type": "LAW",
+   "start_char": 3308,
+   "end_char": 3320
+  },
+  {
+   "text": "non-U.S.",
+   "type": "NORP",
+   "start_char": 3359,
+   "end_char": 3367
+  }
+ ],
+ [
+  {
+   "text": "5",
+   "type": "CARDINAL",
+   "start_char": 3391,
+   "end_char": 3392
+  },
+  {
+   "text": "3",
+   "type": "CARDINAL",
+   "start_char": 3400,
+   "end_char": 3401
+  }
+ ],
+ [
+  {
+   "text": "Mt. Everest",
+   "type": "LOC",
+   "start_char": 3418,
+   "end_char": 3429
+  },
+  {
+   "text": "8,849 m",
+   "type": "QUANTITY",
+   "start_char": 3433,
+   "end_char": 3440
+  }
+ ],
+ [
+  {
+   "text": "Nile",
+   "type": "LOC",
+   "start_char": 3451,
+   "end_char": 3455
+  }
+ ],
+ [
+  {
+   "text": "6,650 km",
+   "type": "QUANTITY",
+   "start_char": 3467,
+   "end_char": 3475
+  }
+ ],
+ [
+  {
+   "text": "40 °F",
+   "type": "QUANTITY",
+   "start_char": 3507,
+   "end_char": 3512
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "2024",
+   "type": "DATE",
+   "start_char": 3775,
+   "end_char": 3779
+  },
+  {
+   "text": "14",
+   "type": "CARDINAL",
+   "start_char": 3808,
+   "end_char": 3810
+  }
+ ],
+ [],
+ [
+  {
+   "text": "July 4, 1976",
+   "type": "DATE",
+   "start_char": 3921,
+   "end_char": 3933
+  },
+  {
+   "text": "Philadelphia",
+   "type": "GPE",
+   "start_char": 3938,
+   "end_char": 3950
+  },
+  {
+   "text": "Pa.",
+   "type": "GPE",
+   "start_char": 3952,
+   "end_char": 3955
+  },
+  {
+   "text": "Washington, D.C.",
+   "type": "GPE",
+   "start_char": 3970,
+   "end_char": 3986
+  },
+  {
+   "text": "age 12",
+   "type": "DATE",
+   "start_char": 3991,
+   "end_char": 3997
+  }
+ ],
+ [
+  {
+   "text": "the summer of '99",
+   "type": "DATE",
+   "start_char": 4014,
+   "end_char": 4031
+  }
+ ],
+ [
+  {
+   "text": "1,024",
+   "type": "CARDINAL",
+   "start_char": 4095,
+   "end_char": 4100
+  },
+  {
+   "text": "0.05",
+   "type": "CARDINAL",
+   "start_char": 4106,
+   "end_char": 4110
+  },
+  {
+   "text": "0.31",
+   "type": "CARDINAL",
+   "start_char": 4143,
+   "end_char": 4147
+  }
+ ],
+ [
+  {
+   "text": "2",
+   "type": "CARDINAL",
+   "start_char": 4155,
+   "end_char": 4156
+  },
+  {
+   "text": "3",
+   "type": "CARDINAL",
+   "start_char": 4187,
+   "end_char": 4188
+  }
+ ],
+ [],
+ [
+  {
+   "text": "80s",
+   "type": "DATE",
+   "start_char": 4241,
+   "end_char": 4244
+  }
+ ],
+ [],
+ [
+  {
+   "text": "Japanese",
+   "type": "NORP",
+   "start_char": 4291,
+   "end_char": 4299
+  },
+  {
+   "text": "Japan",
+   "type": "GPE",
+   "start_char": 4309,
+   "end_char": 4314
+  }
+ ],
+ [
+  {
+   "text": "Moscow",
+   "type": "GPE",
+   "start_char": 4340,
+   "end_char": 4346
+  },
+  {
+   "text": "Russian",
+   "type": "LANGUAGE",
+   "start_char": 4350,
+   "end_char": 4357
+  }
+ ],
+ [
+  {
+   "text": "Arabic",
+   "type": "LANGUAGE",
+   "start_char": 4359,
+   "end_char": 4365
+  },
+  {
+   "text": "9",
+   "type": "CARDINAL",
+   "start_char": 4378,
+   "end_char": 4379
+  },
+  {
+   "text": "Europe",
+   "type": "LOC",
+   "start_char": 4389,
+   "end_char": 4395
+  },
+  {
+   "text": "Islamic",
+   "type": "NORP",
+   "start_char": 4404,
+   "end_char": 4411
+  }
+ ],
+ [],
+ [],
+ [
+  {
+   "text": "10:30 a.m. on Mon., Feb. 3",
+   "type": "TIME",
+   "start_char": 4536,
+   "end_char": 4562
+  },
+  {
+   "text": "10:35",
+   "type": "TIME",
+   "start_char": 4648,
+   "end_char": 4653
+  }
+ ],
+ [
+  {
+   "text": "7",
+   "type": "CARDINAL",
+   "start_char": 4690,
+   "end_char": 4691
+  }
+ ],
+ [],
+ [],
+ []
+]

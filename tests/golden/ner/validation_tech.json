@@ -1,0 +1,549 @@
+[
+ [],
+ [],
+ [
+  {
+   "text": "Linux",
+   "type": "ORG",
+   "start_char": 201,
+   "end_char": 206
+  },
+  {
+   "text": "Windows",
+   "type": "ORG",
+   "start_char": 242,
+   "end_char": 249
+  }
+ ],
+ [],
+ [
+  {
+   "text": "42",
+   "type": "CARDINAL",
+   "start_char": 316,
+   "end_char": 318
+  }
+ ],
+ [],
+ [
+  {
+   "text": "1",
+   "type": "CARDINAL",
+   "start_char": 384,
+   "end_char": 385
+  }
+ ],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "217",
+   "type": "CARDINAL",
+   "start_char": 619,
+   "end_char": 622
+  },
+  {
+   "text": "Parser.cs",
+   "type": "ORG",
+   "start_char": 626,
+   "end_char": 635
+  }
+ ],
+ [],
+ [],
+ [
+  {
+   "text": "17",
+   "type": "CARDINAL",
+   "start_char": 752,
+   "end_char": 754
+  }
+ ],
+ [],
+ [
+  {
+   "text": "192.168.0.12",
+   "type": "CARDINAL",
+   "start_char": 853,
+   "end_char": 865
+  }
+ ],
+ [
+  {
+   "text": "3.10.2",
+   "type": "CARDINAL",
+   "start_char": 888,
+   "end_char": 894
+  },
+  {
+   "text": "2023-10-02",
+   "type": "DATE",
+   "start_char": 911,
+   "end_char": 921
+  }
+ ],
+ [
+  {
+   "text": "3.9.",
+   "type": "CARDINAL",
+   "start_char": 937,
+   "end_char": 941
+  },
+  {
+   "text": "2.",
+   "type": "CARDINAL",
+   "start_char": 960,
+   "end_char": 962
+  }
+ ],
+ [],
+ [],
+ [
+  {
+   "text": "18",
+   "type": "CARDINAL",
+   "start_char": 1138,
+   "end_char": 1140
+  }
+ ],
+ [
+  {
+   "text": "10",
+   "type": "CARDINAL",
+   "start_char": 1214,
+   "end_char": 1216
+  }
+ ],
+ [
+  {
+   "text": "9:30 a.m. on Mon., Jan. 8, 2024",
+   "type": "TIME",
+   "start_char": 1271,
+   "end_char": 1302
+  }
+ ],
+ [],
+ [],
+ [
+  {
+   "text": "9am–5pm",
+   "type": "TIME",
+   "start_char": 1384,
+   "end_char": 1391
+  },
+  {
+   "text": "Mon–Fri",
+   "type": "PERSON",
+   "start_char": 1393,
+   "end_char": 1400
+  },
+  {
+   "text": "10:00–14:00 on Saturdays",
+   "type": "TIME",
+   "start_char": 1406,
+   "end_char": 1430
+  }
+ ],
+ [
+  {
+   "text": "Dec 24–26",
+   "type": "DATE",
+   "start_char": 1439,
+   "end_char": 1448
+  }
+ ],
+ [
+  {
+   "text": "1914 to 1918",
+   "type": "DATE",
+   "start_char": 1471,
+   "end_char": 1483
+  }
+ ],
+ [
+  {
+   "text": "The 1990s",
+   "type": "DATE",
+   "start_char": 1485,
+   "end_char": 1494
+  },
+  {
+   "text": "the '80s",
+   "type": "DATE",
+   "start_char": 1513,
+   "end_char": 1521
+  }
+ ],
+ [
+  {
+   "text": "the mid-'60s",
+   "type": "DATE",
+   "start_char": 1547,
+   "end_char": 1559
+  }
+ ],
+ [
+  {
+   "text": "1st",
+   "type": "ORDINAL",
+   "start_char": 1574,
+   "end_char": 1577
+  },
+  {
+   "text": "2nd",
+   "type": "DATE",
+   "start_char": 1591,
+   "end_char": 1594
+  },
+  {
+   "text": "3rd",
+   "type": "DATE",
+   "start_char": 1606,
+   "end_char": 1609
+  }
+ ],
+ [
+  {
+   "text": "The 21st century",
+   "type": "DATE",
+   "start_char": 1611,
+   "end_char": 1627
+  },
+  {
+   "text": "1/1/2001",
+   "type": "DATE",
+   "start_char": 1637,
+   "end_char": 1645
+  },
+  {
+   "text": "1/1/2000",
+   "type": "DATE",
+   "start_char": 1651,
+   "end_char": 1659
+  }
+ ],
+ [
+  {
+   "text": "102nd",
+   "type": "ORDINAL",
+   "start_char": 1672,
+   "end_char": 1677
+  }
+ ],
+ [
+  {
+   "text": "3/8",
+   "type": "CARDINAL",
+   "start_char": 1726,
+   "end_char": 1729
+  }
+ ],
+ [
+  {
+   "text": "About 2/3",
+   "type": "CARDINAL",
+   "start_char": 1731,
+   "end_char": 1740
+  },
+  {
+   "text": "1",
+   "type": "CARDINAL",
+   "start_char": 1764,
+   "end_char": 1765
+  },
+  {
+   "text": "5",
+   "type": "CARDINAL",
+   "start_char": 1769,
+   "end_char": 1770
+  }
+ ],
+ [
+  {
+   "text": "11:59 PM EST",
+   "type": "TIME",
+   "start_char": 1808,
+   "end_char": 1820
+  },
+  {
+   "text": "March 3rd",
+   "type": "DATE",
+   "start_char": 1824,
+   "end_char": 1833
+  }
+ ],
+ [
+  {
+   "text": "10%",
+   "type": "PERCENT",
+   "start_char": 1857,
+   "end_char": 1860
+  }
+ ],
+ [
+  {
+   "text": "1–3 June and 5–7 July",
+   "type": "TIME",
+   "start_char": 1879,
+   "end_char": 1900
+  }
+ ],
+ [
+  {
+   "text": "2 and 4 p.m. weekdays",
+   "type": "TIME",
+   "start_char": 1941,
+   "end_char": 1962
+  }
+ ],
+ [
+  {
+   "text": "1h 23m 45s",
+   "type": "QUANTITY",
+   "start_char": 1973,
+   "end_char": 1983
+  }
+ ],
+ [
+  {
+   "text": "01:19:02.7",
+   "type": "CARDINAL",
+   "start_char": 1999,
+   "end_char": 2009
+  }
+ ],
+ [
+  {
+   "text": "Tues 12/5 @ 3:15pm",
+   "type": "TIME",
+   "start_char": 2034,
+   "end_char": 2052
+  }
+ ],
+ [
+  {
+   "text": "15 min",
+   "type": "QUANTITY",
+   "start_char": 2068,
+   "end_char": 2074
+  }
+ ],
+ [
+  {
+   "text": "Today",
+   "type": "DATE",
+   "start_char": 2083,
+   "end_char": 2088
+  },
+  {
+   "text": "twenty-first of September",
+   "type": "DATE",
+   "start_char": 2096,
+   "end_char": 2121
+  },
+  {
+   "text": "two thousand twenty-three",
+   "type": "DATE",
+   "start_char": 2123,
+   "end_char": 2148
+  }
+ ],
+ [
+  {
+   "text": "FY2022-23",
+   "type": "CARDINAL",
+   "start_char": 2151,
+   "end_char": 2160
+  }
+ ],
+ [
+  {
+   "text": "FY24",
+   "type": "ORG",
+   "start_char": 2179,
+   "end_char": 2183
+  }
+ ],
+ [],
+ [],
+ [
+  {
+   "text": "Python",
+   "type": "PRODUCT",
+   "start_char": 2355,
+   "end_char": 2361
+  },
+  {
+   "text": "JavaScript",
+   "type": "PRODUCT",
+   "start_char": 2379,
+   "end_char": 2389
+  }
+ ],
+ [],
+ [
+  {
+   "text": "4",
+   "type": "CARDINAL",
+   "start_char": 2434,
+   "end_char": 2435
+  }
+ ],
+ [
+  {
+   "text": "16:9",
+   "type": "CARDINAL",
+   "start_char": 2468,
+   "end_char": 2472
+  }
+ ],
+ [
+  {
+   "text": "3",
+   "type": "CARDINAL",
+   "start_char": 2488,
+   "end_char": 2489
+  },
+  {
+   "text": "2",
+   "type": "CARDINAL",
+   "start_char": 2490,
+   "end_char": 2491
+  }
+ ],
+ [
+  {
+   "text": "14C",
+   "type": "CARDINAL",
+   "start_char": 2525,
+   "end_char": 2528
+  }
+ ],
+ [
+  {
+   "text": "2.4",
+   "type": "CARDINAL",
+   "start_char": 2544,
+   "end_char": 2547
+  },
+  {
+   "text": "SHA-256",
+   "type": "PRODUCT",
+   "start_char": 2610,
+   "end_char": 2617
+  }
+ ],
+ [],
+ [],
+ [
+  {
+   "text": "$1.5M",
+   "type": "MONEY",
+   "start_char": 2747,
+   "end_char": 2752
+  },
+  {
+   "text": "2",
+   "type": "CARDINAL",
+   "start_char": 2763,
+   "end_char": 2764
+  },
+  {
+   "text": "1925",
+   "type": "DATE",
+   "start_char": 2782,
+   "end_char": 2786
+  }
+ ],
+ [
+  {
+   "text": "2",
+   "type": "CARDINAL",
+   "start_char": 2809,
+   "end_char": 2810
+  },
+  {
+   "text": "1",
+   "type": "CARDINAL",
+   "start_char": 2814,
+   "end_char": 2815
+  },
+  {
+   "text": "3",
+   "type": "CARDINAL",
+   "start_char": 2821,
+   "end_char": 2822
+  },
+  {
+   "text": "7",
+   "type": "CARDINAL",
+   "start_char": 2826,
+   "end_char": 2827
+  }
+ ],
+ [],
+ [
+  {
+   "text": "5 to +12 degrees",
+   "type": "QUANTITY",
+   "start_char": 2867,
+   "end_char": 2883
+  }
+ ],
+ [
+  {
+   "text": "15-20 mph",
+   "type": "QUANTITY",
+   "start_char": 2898,
+   "end_char": 2907
+  },
+  {
+   "text": "35",
+   "type": "CARDINAL",
+   "start_char": 2920,
+   "end_char": 2922
+  }
+ ],
+ [
+  {
+   "text": "42",
+   "type": "CARDINAL",
+   "start_char": 2950,
+   "end_char": 2952
+  },
+  {
+   "text": "212",
+   "type": "CARDINAL",
+   "start_char": 2960,
+   "end_char": 2963
+  },
+  {
+   "text": "555-0188",
+   "type": "CARDINAL",
+   "start_char": 2965,
+   "end_char": 2973
+  }
+ ],
+ [
+  {
+   "text": "1600",
+   "type": "CARDINAL",
+   "start_char": 2994,
+   "end_char": 2998
+  },
+  {
+   "text": "Washington",
+   "type": "GPE",
+   "start_char": 3016,
+   "end_char": 3026
+  },
+  {
+   "text": "DC",
+   "type": "GPE",
+   "start_char": 3028,
+   "end_char": 3030
+  }
+ ],
+ []
+]
