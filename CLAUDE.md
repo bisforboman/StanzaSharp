@@ -115,8 +115,16 @@ models/converted/en/           Converted models (gitignored); C# prefers them ov
 ```
 
 Package policy: library projects reference the managed `TorchSharp` package only. Runnable
-projects (Cli, Benchmark, Tests) reference `TorchSharp-cpu`, or `TorchSharp-cuda-windows` when set up with
-`-Cuda`, which brings the native libtorch. The managed and native TorchSharp versions must match.
+projects (Cli, Benchmark, Tests) reference `$(TorchSharpNative)` (Directory.Build.props): `TorchSharp-cpu`,
+or `TorchSharp-cuda-windows` when built with `STANZASHARP_CUDA=1`, which brings the native libtorch. The
+managed and native TorchSharp versions must match. CI and the default build stay on CPU.
+
+GPU: `Pipeline.Load(dir, processors, device)` and every processor's `Load(..., device)`. `Weights.On(device, ...)`
+scopes the load; `ToTensor`/`LoadFrom` place weights on `Weights.Device`, and each model keeps
+`_device = Weights.Device` for its input tensors (`torch.tensor(..., device: _device)`). Read tensors with
+`Weights.ToArray<T>()`, not `data<T>()`. pack_padded_sequence lengths stay on the CPU. A new processor
+needs exactly these three things to run on CUDA. GPU tests (`GpuTests.cs`) compile only with
+`STANZASHARP_CUDA=1`. Measurements and exactness: docs/gpu.md.
 
 ## Reference implementation
 

@@ -11,7 +11,8 @@
   into models\converted\en. Implies -Python.
 
 .PARAMETER Cuda
-  Reference TorchSharp-cuda-windows instead of TorchSharp-cpu in the runnable projects.
+  Build the runnable projects with TorchSharp-cuda-windows instead of TorchSharp-cpu (sets STANZASHARP_CUDA=1
+  for this script's build; set it yourself for later dotnet build/test runs). See docs/gpu.md.
 
 .EXAMPLE
   powershell -ExecutionPolicy Bypass -File .\setup.ps1 -Models
@@ -99,7 +100,9 @@ foreach ($name in $created) {
 
 # ---------------------------------------------------------------- packages
 # Libraries reference the managed TorchSharp package only; runnable projects pull in native libtorch.
-$native = if ($Cuda) { 'TorchSharp-cuda-windows' } else { 'TorchSharp-cpu' }
+# The csproj files then use $(TorchSharpNative) (Directory.Build.props), which STANZASHARP_CUDA=1 switches to CUDA.
+$native = 'TorchSharp-cpu'
+if ($Cuda) { $env:STANZASHARP_CUDA = '1' }
 if ($created -contains 'StanzaSharp.Nn') {
     Invoke-Dotnet add (Get-ProjPath 'StanzaSharp.Nn') package TorchSharp
 }

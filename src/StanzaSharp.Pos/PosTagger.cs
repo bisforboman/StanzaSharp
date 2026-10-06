@@ -31,6 +31,7 @@ public sealed class PosTagger : IDisposable
     private readonly Linear _uposHid, _uposClf, _xposHid, _featsHid;
     private readonly Biaffine _xposClf;
     private readonly Biaffine[] _featsClf;
+    private readonly Device _device = Weights.Device; // the device the model was loaded on
 
     private PosTagger(Checkpoint ckpt, Pretrain pretrain, CharLanguageModel charlmForward, CharLanguageModel charlmBackward)
     {
@@ -77,8 +78,9 @@ public sealed class PosTagger : IDisposable
     /// Loads e.g. <c>models/converted/en/pos/combined_charlm</c>. The pretrain and charlms are
     /// shared with the parser, so the caller owns them.
     /// </summary>
-    public static PosTagger Load(string basePath, Pretrain pretrain, CharLanguageModel charlmForward, CharLanguageModel charlmBackward) =>
-        new(Checkpoint.Load(basePath), pretrain, charlmForward, charlmBackward);
+    /// <param name="device">Where the model runs; CPU by default. Load the pretrain and charlms on the same device.</param>
+    public static PosTagger Load(string basePath, Pretrain pretrain, CharLanguageModel charlmForward, CharLanguageModel charlmBackward, Device? device = null) =>
+        Weights.On(device, () => new PosTagger(Checkpoint.Load(basePath), pretrain, charlmForward, charlmBackward));
 
     /// <summary>Sets Upos, Xpos and Feats on every word of the document.</summary>
     /// <param name="charlms">If given, receives each sentence's charlm representations for the parser.</param>
@@ -119,8 +121,8 @@ public sealed class PosTagger : IDisposable
                 pretrainIds[i * width + j] = _pretrain.UnitToId(lower);
             }
 
-        var words = _wordEmb.forward(torch.tensor(wordIds, [batch, width]));
-        var pretrained = _transPretrained.forward(_pretrain.Embeddings[torch.tensor(pretrainIds, [batch, width])]);
+        var words = _wordEmb.forward(torch.tensor(wordIds, [batch, width], device: _device));
+        var pretrained = _transPretrained.forward(_pretrain.Embeddings[torch.tensor(pretrainIds, [batch, width], device: _device)]);
         var repsForward = _charlmForward.BuildCharRepresentation(sentences);
         var repsBackward = _charlmBackward.BuildCharRepresentation(sentences);
         if (keepCharlm != null)
@@ -136,11 +138,11 @@ public sealed class PosTagger : IDisposable
         var parent = _uposEmb.forward(uposIds);
         var xposIds = _xposClf.Forward(F.relu(_xposHid.forward(output)), parent).argmax(2);
         var featsHid = F.relu(_featsHid.forward(output));
-        var featIds = _featsClf.Select(c => c.Forward(featsHid, parent).argmax(2).data<long>().ToArray()).ToArray();
+        var featIds = _featsClf.Select(c => c.Forward(featsHid, parent).argmax(2).ToArray<long>()).ToArray();
 
-        var upos = uposIds.data<long>().ToArray();
-        var xpos = xposIds.data<long>().ToArray();
-        var logits = uposScores.data<float>().ToArray();
+        var upos = uposIds.ToArray<long>();
+        var xpos = xposIds.ToArray<long>();
+        var logits = uposScores.ToArray<float>();
         int nUpos = _upos.Length;
         uposLogits = [];
         var result = new List<(string, string, string?)[]>(batch);

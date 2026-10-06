@@ -5,6 +5,7 @@ using StanzaSharp.Mwt;
 using StanzaSharp.Nn;
 using StanzaSharp.Pos;
 using StanzaSharp.Tokenize;
+using TorchSharp;
 
 namespace StanzaSharp;
 
@@ -69,8 +70,10 @@ public sealed class Pipeline : IDisposable
     /// Loads the English models from <paramref name="modelDir"/>: either converted ones (e.g. <c>models/converted/en</c>)
     /// or Stanza's own download with its <c>.pt</c> files (e.g. <c>models/stanza/en</c>), chosen per file.
     /// </summary>
-    /// <param name="processors">Comma-separated processors: those in <see cref="AllProcessors"/>, plus <c>lemma</c> and <c>depparse</c>; each needs the ones before it.</param>
-    public static Pipeline Load(string modelDir, string processors = AllProcessors)
+    /// <param name="processors">Comma-separated subset of <see cref="AllProcessors"/>; each needs the ones before it.</param>
+    /// <param name="device">Where the models run: CPU by default, or e.g. <c>torch.CUDA</c> with a <c>TorchSharp-cuda-*</c> package.
+    /// Only the CPU gives output identical to Python Stanza on CPU; see the README's GPU section.</param>
+    public static Pipeline Load(string modelDir, string processors = AllProcessors, torch.Device? device = null)
     {
         if (!Directory.Exists(modelDir))
             throw new DirectoryNotFoundException($"Model directory not found: {modelDir} (download them with ModelDownloader.DownloadAsync or \"StanzaSharp.Cli download\")");
@@ -86,7 +89,7 @@ public sealed class Pipeline : IDisposable
         }
         if (set.Count == 0)
             throw new ArgumentException("No processors given", nameof(processors));
-        return new Pipeline(modelDir, set);
+        return Weights.On(device, () => new Pipeline(modelDir, set));
     }
 
     public Document Process(string text)

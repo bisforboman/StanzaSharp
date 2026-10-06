@@ -67,7 +67,39 @@ powershell -ExecutionPolicy Bypass -File .\setup.ps1 -Models
 
 `-Models` creates `tools\.venv` with Stanza, downloads the English models to `models\stanza` and
 converts them to `models\converted\en`. Use `-Python` for the environment only, or no switch for just the
-.NET solution. Add `-Cuda` for GPU libtorch.
+.NET solution. Add `-Cuda` for GPU libtorch (see GPU below).
+
+## GPU
+
+`Pipeline.Load(dir, device: torch.CUDA)` runs every model on an NVIDIA GPU; each processor's `Load` takes
+the same optional `device`. The default is the CPU. Reference a CUDA libtorch package such as
+`TorchSharp-cuda-windows` (several GB) instead of `TorchSharp-cpu`, in the same version (0.107.0). StanzaSharp
+itself depends only on the managed `TorchSharp` package either way.
+
+For output identical to the CPU (and so to Python Stanza), turn off TF32, which libtorch enables for cuDNN by
+default on Ampere and newer GPUs:
+
+```csharp
+torch.backends.cudnn.allow_tf32 = false;
+torch.backends.cuda.matmul.allow_tf32 = false;
+```
+
+These are process-wide torch settings, so StanzaSharp leaves them to you. With TF32 off, the GPU matched
+every golden file exactly on an RTX 3080; with TF32 on, 3 of 845 sentences differed (near-ties). Results
+are deterministic from run to run either way. The pipeline is roughly 4x faster on an RTX 3080 than on 8 CPU
+threads (Ryzen 7 5800X), mostly in pos and depparse; the constituency parser gains least. Details in
+[docs/gpu.md](docs/gpu.md).
+
+In this repository, set `STANZASHARP_CUDA=1` to build the Cli, Benchmark and Tests with
+`TorchSharp-cuda-windows`; that also compiles `GpuTests`, which skip without a CUDA device:
+
+```powershell
+$env:STANZASHARP_CUDA = '1'
+dotnet test tests/StanzaSharp.Tests --filter FullyQualifiedName~GpuTests --logger "console;verbosity=detailed"
+dotnet run -c Release --project samples/StanzaSharp.Benchmark -- --device cuda --no-tf32
+```
+
+Unset it (and let `dotnet` restore again) to go back to the CPU build.
 
 ## Tests
 

@@ -34,6 +34,7 @@ public sealed class DependencyParser : IDisposable
     private readonly HighwayLstm _lstm;
     private readonly DeepBiaffine _unlabeled, _deprel;
     private readonly DeepBiaffine? _linearizationScorer, _distanceScorer;
+    private readonly Device _device = Weights.Device; // the device the model was loaded on
 
     private DependencyParser(Checkpoint ckpt, Pretrain pretrain, CharLanguageModel charlmForward, CharLanguageModel charlmBackward)
     {
@@ -86,8 +87,9 @@ public sealed class DependencyParser : IDisposable
     /// Loads e.g. <c>models/converted/en/depparse/combined_charlm</c>. The pretrain and charlms are
     /// shared with the tagger and the constituency parser, so the caller owns them.
     /// </summary>
-    public static DependencyParser Load(string basePath, Pretrain pretrain, CharLanguageModel charlmForward, CharLanguageModel charlmBackward) =>
-        new(Checkpoint.Load(basePath), pretrain, charlmForward, charlmBackward);
+    /// <param name="device">Where the model runs; CPU by default. Load the pretrain and charlms on the same device.</param>
+    public static DependencyParser Load(string basePath, Pretrain pretrain, CharLanguageModel charlmForward, CharLanguageModel charlmBackward, Device? device = null) =>
+        Weights.On(device, () => new DependencyParser(Checkpoint.Load(basePath), pretrain, charlmForward, charlmBackward));
 
     /// <summary>
     /// Sets Head and Deprel on every word. Needs UPOS/XPOS from the tagger and lemmas from the lemmatizer
@@ -157,8 +159,8 @@ public sealed class DependencyParser : IDisposable
         var (unlabeled, deprel) = Scores(batch);
         var labels = deprel.max(3).indexes;
         int width = (int)unlabeled.shape[1];
-        var arcs = unlabeled.data<float>().ToArray();
-        var labelIds = labels.data<long>().ToArray();
+        var arcs = unlabeled.ToArray<float>();
+        var labelIds = labels.ToArray<long>();
 
         var result = new List<(int, string)[]>(batch.Count);
         for (int b = 0; b < batch.Count; b++)
@@ -209,7 +211,7 @@ public sealed class DependencyParser : IDisposable
                 pretrained[row + j + 1] = _pretrain.UnitToId(lower);
             }
         }
-        Tensor Ids(long[] ids) => torch.tensor(ids, [size, width]);
+        Tensor Ids(long[] ids) => torch.tensor(ids, [size, width], device: _device);
 
         var pos = _uposEmb.forward(Ids(upos)) + _xposEmb.forward(Ids(xpos));
         // "\n" stands in for ROOT in the charlm input.
@@ -225,12 +227,12 @@ public sealed class DependencyParser : IDisposable
         ], 2);
         var output = _lstm.Forward(input, lengths);
         // pad_packed_sequence leaves zeros past each sentence; the scorers see them in the padding columns.
-        var padding = arange(width).unsqueeze(0).ge(torch.tensor(lengths).unsqueeze(1));
+        var padding = arange(width, device: _device).unsqueeze(0).ge(torch.tensor(lengths, device: _device).unsqueeze(1));
         output = output.masked_fill(padding.unsqueeze(2), 0);
 
         var unlabeled = _unlabeled.Forward(output).squeeze(3);
         var deprel = _deprel.Forward(output);
-        var positions = arange(width);
+        var positions = arange(width, device: _device);
         var headOffset = (positions.view(1, 1, -1) - positions.view(1, -1, 1)).expand(size, -1, -1);
         if (_linearizationScorer != null)
         {
@@ -244,7 +246,7 @@ public sealed class DependencyParser : IDisposable
             var target = headOffset.abs();
             unlabeled = unlabeled + (-torch.log((target.to_type(ScalarType.Float32) - predicted).pow(2) / 2 + 1));
         }
-        unlabeled = unlabeled.masked_fill(eye(width, dtype: ScalarType.Bool).unsqueeze(0), float.NegativeInfinity);
+        unlabeled = unlabeled.masked_fill(eye(width, dtype: ScalarType.Bool, device: _device).unsqueeze(0), float.NegativeInfinity);
         var logProbs = F.log_softmax(unlabeled, 2);
         return (logProbs.MoveToOuterDisposeScope(), deprel.MoveToOuterDisposeScope());
     }
@@ -324,7 +326,7 @@ public sealed class DependencyParser : IDisposable
         {
             var shape = x.shape.ToArray();
             shape[^1] = 1;
-            return cat([x, ones(shape, dtype: x.dtype)], -1);
+            return cat([x, ones(shape, dtype: x.dtype, device: x.device)], -1);
         }
 
         public void Dispose()

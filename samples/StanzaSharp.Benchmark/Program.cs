@@ -1,27 +1,35 @@
 using System.Diagnostics;
 using StanzaSharp;
 using StanzaSharp.Constituency;
+using StanzaSharp.Depparse;
+using StanzaSharp.Lemma;
 using StanzaSharp.Mwt;
 using StanzaSharp.Nn;
 using StanzaSharp.Pos;
 using StanzaSharp.Tokenize;
 using TorchSharp;
+using static TorchSharp.torch;
 
 // Times each pipeline stage on a large text built from the golden corpora. The Python counterpart is
 // tools/benchmark.py; both build the same text and print the same report. See docs/performance.md.
 const string Usage = """
     Usage: StanzaSharp.Benchmark [--models DIR] [--copies N] [--runs N] [--threads N] [--out FILE]
+                                 [--device cpu|cuda] [--no-tf32]
 
       --models DIR    converted models (default: models/converted/en)
       --copies N      copies of the golden texts in the input (default: 8, ~20k words)
       --runs N        timed runs after a warm-up run on one copy; medians are reported (default: 3)
       --threads N     torch intra-op threads (default: torch's default)
       --out FILE      write the last run's CoNLL-U here, to compare with Python's
+      --device D      cpu (default) or cuda; cuda needs a build with STANZASHARP_CUDA=1 (docs/gpu.md)
+      --no-tf32       cuda: turn off TF32 in cuDNN and cuBLAS (process-wide torch settings)
     """;
 
 string modelDir = Path.Combine("models", "converted", "en");
 int copies = 8, runs = 3, threads = 0;
 string? outFile = null;
+var device = torch.CPU;
+bool noTf32 = false;
 for (int i = 0; i < args.Length; i++)
 {
     switch (args[i])
@@ -31,6 +39,8 @@ for (int i = 0; i < args.Length; i++)
         case "--runs" when i + 1 < args.Length: runs = int.Parse(args[++i]); break;
         case "--threads" when i + 1 < args.Length: threads = int.Parse(args[++i]); break;
         case "--out" when i + 1 < args.Length: outFile = args[++i]; break;
+        case "--device" when i + 1 < args.Length: device = torch.device(args[++i]); break;
+        case "--no-tf32": noTf32 = true; break;
         default:
             Console.Error.WriteLine(Usage);
             return 2;
@@ -38,21 +48,27 @@ for (int i = 0; i < args.Length; i++)
 }
 if (threads > 0)
     torch.set_num_threads(threads);
+if (noTf32)
+    torch.backends.cuda.matmul.allow_tf32 = torch.backends.cudnn.allow_tf32 = false;
 
 string text = BuildText(copies);
 string Model(string relative) => Path.Combine(modelDir, relative);
 
 var clock = Stopwatch.StartNew();
-using var tokenizer = Tokenizer.Load(Model("tokenize/combined_nocharlm"));
-using var mwt = MwtExpander.Load(Model("mwt/combined"));
-using var pretrain = Pretrain.Load(Model("pretrain/conll17"));
-using var charlmForward = CharLanguageModel.Load(Model("forward_charlm/1billion"));
-using var charlmBackward = CharLanguageModel.Load(Model("backward_charlm/1billion"));
-using var pos = PosTagger.Load(Model("pos/combined_charlm"), pretrain, charlmForward, charlmBackward);
-using var parser = ConstituencyParser.Load(Model("constituency/ptb3-revised_charlm"), pretrain, charlmForward, charlmBackward);
+using var tokenizer = Tokenizer.Load(Model("tokenize/combined_nocharlm"), device);
+using var mwt = MwtExpander.Load(Model("mwt/combined"), device);
+using var pretrain = Pretrain.Load(Model("pretrain/conll17"), device);
+using var charlmForward = CharLanguageModel.Load(Model("forward_charlm/1billion"), device);
+using var charlmBackward = CharLanguageModel.Load(Model("backward_charlm/1billion"), device);
+using var pos = PosTagger.Load(Model("pos/combined_charlm"), pretrain, charlmForward, charlmBackward, device);
+using var lemma = Lemmatizer.Load(Model("lemma/combined_nocharlm"), device);
+using var depparse = DependencyParser.Load(Model("depparse/combined_charlm"), pretrain, charlmForward, charlmBackward, device);
+using var parser = ConstituencyParser.Load(Model("constituency/ptb3-revised_charlm"), pretrain, charlmForward, charlmBackward, device);
+if (device.type == DeviceType.CUDA)
+    torch.cuda.synchronize();
 double load = clock.Elapsed.TotalSeconds;
 
-string[] stages = ["tokenize", "mwt", "pos", "constituency"];
+string[] stages = ["tokenize", "mwt", "pos", "lemma", "depparse", "constituency"];
 var times = stages.ToDictionary(s => s, _ => new List<double>());
 var peaks = new Dictionary<string, double> { ["load"] = PeakMB() }; // peak working set after each stage of the warm-up run
 Document doc = null!;
@@ -74,6 +90,8 @@ for (int run = 0; run <= runs; run++)
     timed["tokenize"] = Time("tokenize", () => doc = tokenizer.Process(input));
     timed["mwt"] = Time("mwt", () => mwt.Process(doc));
     timed["pos"] = Time("pos", () => pos.Process(doc, charlms));
+    timed["lemma"] = Time("lemma", () => lemma.Process(doc));
+    timed["depparse"] = Time("depparse", () => depparse.Process(doc));
     timed["constituency"] = Time("constituency", () => parser.Process(doc, charlms));
     if (run > 0)
         foreach (var s in stages)
@@ -83,7 +101,7 @@ if (outFile != null)
     File.WriteAllText(outFile, Conllu.Write(doc));
 
 int words = doc.Sentences.Sum(s => s.Words.Count());
-Console.WriteLine($"C# StanzaSharp, torch threads {torch.get_num_threads()}, {copies} copies: " +
+Console.WriteLine($"C# StanzaSharp on {device}, torch threads {torch.get_num_threads()}, {copies} copies: " +
                   $"{text.Length} chars, {doc.Sentences.Count} sentences, {words} words, {runs} runs");
 Console.WriteLine($"{"load",-14}{load,9:F2} s {"",16} {peaks["load"],8:F0} MB peak");
 double total = 0;
