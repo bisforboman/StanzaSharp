@@ -1,0 +1,2 @@
+<!-- Stops MSBuild from importing the repository's Directory.Build.props: this sample builds like a user's project. -->
+<Project />
