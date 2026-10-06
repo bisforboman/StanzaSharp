@@ -1,17 +1,49 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <ItemGroup>
-    <ProjectReference Include="..\StanzaSharp.Core\StanzaSharp.Core.csproj" />
-    <ProjectReference Include="..\StanzaSharp.Tokenize\StanzaSharp.Tokenize.csproj" />
-    <ProjectReference Include="..\StanzaSharp.Mwt\StanzaSharp.Mwt.csproj" />
-    <ProjectReference Include="..\StanzaSharp.Pos\StanzaSharp.Pos.csproj" />
-    <ProjectReference Include="..\StanzaSharp.Constituency\StanzaSharp.Constituency.csproj" />
-  </ItemGroup>
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <PackageId>StanzaSharp</PackageId>
+    <Description>Stanza's English NLP pipeline in .NET: tokenization and sentence splitting, multi-word token expansion, part-of-speech tags and morphological features, and constituency parsing. Runs Stanza's own pretrained models through TorchSharp, with output identical to Python Stanza. Add TorchSharp-cpu (or TorchSharp-cuda-*) for the native libtorch.</Description>
+    <PackageTags>nlp;stanza;tokenizer;pos-tagging;constituency-parsing;torchsharp</PackageTags>
+    <PackageReadmeFile>PACKAGE.md</PackageReadmeFile>
+    <!-- The other projects' assemblies go into this package (see IncludeProjectReferences). -->
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);IncludeProjectReferences</TargetsForTfmSpecificBuildOutput>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- PrivateAssets: shipped inside this package rather than as package dependencies of their own. -->
+    <ProjectReference Include="..\StanzaSharp.Core\StanzaSharp.Core.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\StanzaSharp.Nn\StanzaSharp.Nn.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\StanzaSharp.Tokenize\StanzaSharp.Tokenize.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\StanzaSharp.Mwt\StanzaSharp.Mwt.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\StanzaSharp.Pos\StanzaSharp.Pos.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\StanzaSharp.Constituency\StanzaSharp.Constituency.csproj" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The libraries' one external dependency, declared here so the package carries it. -->
+    <PackageReference Include="TorchSharp" Version="0.107.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="PACKAGE.md" Pack="true" PackagePath="/" />
+    <None Include="..\..\NOTICE" Pack="true" PackagePath="/" />
+    <InternalsVisibleTo Include="StanzaSharp.Tests" />
+  </ItemGroup>
+
+  <Target Name="IncludeProjectReferences" DependsOnTargets="ResolveReferences">
+    <ItemGroup>
+      <_ProjectAssembly Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'ProjectReference')->WithMetadataValue('Extension', '.dll'))" />
+      <_ProjectDocs Include="@(_ProjectAssembly->'%(RootDir)%(Directory)%(Filename).xml')" />
+      <BuildOutputInPackage Include="@(_ProjectAssembly)" />
+      <BuildOutputInPackage Include="@(_ProjectDocs)" Condition="Exists('%(FullPath)')" />
+    </ItemGroup>
+  </Target>
 
 </Project>

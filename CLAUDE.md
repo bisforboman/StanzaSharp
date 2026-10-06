@@ -231,11 +231,44 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   Use it wherever Stanza calls `lower()`, `isupper()`, `isspace()` or `split()`. Regexes ported
   from Python need care too: Python's `\b`/`\w` count No/Nl characters such as `²` as word
   characters and combining marks as non-word (see `Tokenizer.PyRegex`).
-- CI (`.github/workflows/ci.yml`, github.com/bisforboman/StanzaSharp): `build-test` runs the suite without
-  models; `golden` downloads and converts the models (CPU torch, cached on `tools/requirements.txt`
-  and `tools/stanza_convert.py`) and fails if any test is skipped (`outcome="NotExecuted"` in the
-  trx; the trx `notExecuted` counter stays 0 for skips). It runs on Linux: keep paths
-  forward-slash and file names case-exact. Root `.gitattributes` keeps sources LF.
+- CI (`.github/workflows/ci.yml`, github.com/bisforboman/StanzaSharp; pushes to `main`, PRs, and
+  `workflow_call` from release.yml; `ubuntu-24.04` pinned).
+  - `build-test` runs the suite without models.
+  - `golden`, on a model-cache miss, downloads the models with the C# `ModelDownloader` (via the
+    CLI) and converts them with CPU torch. The models are cached on `ModelDownloader.cs`,
+    `tools/requirements.txt` and `tools/stanza_convert.py`. It then fails if any test is skipped
+    (`outcome="NotExecuted"` in the trx; the trx `notExecuted` counter stays 0 for skips), and runs
+    `tools/verify-package.ps1` against `models/stanza/en`.
+  - CI runs on Linux: keep paths forward-slash and file names case-exact. The root `.gitattributes`
+    keeps sources LF.
+
+## Packaging and releases
+
+- One NuGet package, `StanzaSharp`, packed from `src/StanzaSharp` (user's decision, 2026-10-06).
+  - It carries all seven assemblies plus their XML docs: the facade's ProjectReferences are
+    `PrivateAssets="all"`, and an `IncludeProjectReferences` target adds them.
+  - It depends only on managed `TorchSharp`; users add `TorchSharp-cpu`/`-cuda` themselves.
+  - Every other project is `IsPackable=false` (Directory.Build.props, which also holds the shared
+    package metadata and a `0.1.0-dev` default version).
+  - Because of `PrivateAssets`, tests and samples reference the library projects they use directly.
+  - `src/StanzaSharp/PACKAGE.md` is the package readme; `NOTICE` ships in the package.
+- Models are downloaded only explicitly (user's decision): `ModelDownloader.DownloadAsync(dir)` or
+  `StanzaSharp.Cli download [DIR]`.
+  - It fetches the 7 `.pt` files from `huggingface.co/stanfordnlp/stanza-en/resolve/v1.15.0/models/`
+    and checks each against the MD5 from Stanza 1.15.0's resources.json, kept in
+    `ModelDownloader.Files`.
+  - It keeps files that already match. `Pipeline.Load` never downloads.
+  - Changing the Stanza version means new MD5s, new golden data and a new cache key.
+- `tools/verify-package.ps1` packs a unique `0.0.0-verify.<time>` version, builds a fresh console app
+  against it plus `TorchSharp-cpu`, runs the README example and checks the parse. It removes that
+  version from the NuGet cache afterwards.
+- Releases mirror StyleBro: pushing a tag `v<semver>` runs `.github/workflows/release.yml`. It runs all
+  of ci.yml, packs with the tag's version, then pushes via NuGet Trusted Publishing (`NuGet/login@v1`,
+  repo variable `NUGET_USER`) and creates a GitHub release (a prerelease if the version has `-`).
+  - Environment `prerelease` is for tags with `-`; `release` is for the rest.
+  - One-time setup by the owner, not yet done: a nuget.org Trusted Publishing policy per
+    environment (owner bisforboman, repo StanzaSharp, workflow `release.yml`), the repo variable
+    `NUGET_USER`, and the two GitHub environments.
 
 ## Design decisions
 

@@ -1,7 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\StanzaSharp\StanzaSharp.csproj" />
+    <ProjectReference Include="..\..\src\StanzaSharp.Core\StanzaSharp.Core.csproj" />
+    <ProjectReference Include="..\..\src\StanzaSharp.Nn\StanzaSharp.Nn.csproj" />
+    <ProjectReference Include="..\..\src\StanzaSharp.Tokenize\StanzaSharp.Tokenize.csproj" />
+    <ProjectReference Include="..\..\src\StanzaSharp.Mwt\StanzaSharp.Mwt.csproj" />
+    <ProjectReference Include="..\..\src\StanzaSharp.Pos\StanzaSharp.Pos.csproj" />
+    <ProjectReference Include="..\..\src\StanzaSharp.Constituency\StanzaSharp.Constituency.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -5,28 +5,35 @@ It runs Stanza's own pretrained models. On the golden test corpus, the output is
 Python Stanza 1.15.0.
 See CLAUDE.md for scope, layout, decisions and build order.
 
-## Setup
+## Install
 
-Requires the .NET 10 SDK. The library reads Stanza's original `.pt` model files directly, so using
-it needs no Python. Python 3 is only needed for the reference environment: downloading models with
-Stanza, the optional converter, and regenerating golden data.
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\setup.ps1 -Models
+```
+dotnet add package StanzaSharp
+dotnet add package TorchSharp-cpu
 ```
 
-`-Models` creates `tools\.venv` with Stanza, downloads the English models to `models\stanza` and
-converts them to `models\converted\en` (safetensors + JSON, slightly faster to load).
-Use `-Python` for the environment only, or no switch for just the .NET solution. Add `-Cuda` for GPU libtorch.
-If you already have Stanza's English models (e.g. `~/stanza_resources/en`), point `Pipeline.Load` at that
-directory instead.
+`TorchSharp-cpu` (or a `TorchSharp-cuda-*` package) brings the native libtorch; its version must match the
+`TorchSharp` version StanzaSharp depends on (0.107.0). Requires .NET 10.
+
+## Models
+
+Download Stanza's English models (about 300 MB, from Stanza's Hugging Face repository) once. Every file is
+checked against its published MD5; `Pipeline.Load` itself never touches the network.
+
+```csharp
+await ModelDownloader.DownloadAsync("models/stanza/en");
+```
+
+or from the command line: `dotnet run --project samples/StanzaSharp.Cli -- download models/stanza/en`.
+A directory you already have from Python Stanza (`<processor>/<name>.pt`, e.g. `~/stanza_resources/en`)
+works too.
 
 ## Usage
 
 ```csharp
 using StanzaSharp;
 
-using var nlp = Pipeline.Load("models/converted/en"); // or Stanza's own "models/stanza/en"
+using var nlp = Pipeline.Load("models/stanza/en");
 var doc = nlp.Process("Barack Obama was born in Hawaii. He was elected president in 2008.");
 
 foreach (var sentence in doc.Sentences)
@@ -47,6 +54,20 @@ dotnet run --project samples/StanzaSharp.Cli -- input.txt
 dotnet run --project samples/StanzaSharp.Cli -- --processors tokenize,mwt,pos input.txt
 ```
 
+## Development setup
+
+The .NET solution needs only the .NET 10 SDK. Python 3 is used for the reference environment: Stanza
+itself (to generate golden data), the optional converter to safetensors + JSON (slightly faster to load
+than `.pt`), and the benchmark's Python side.
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\setup.ps1 -Models
+```
+
+`-Models` creates `tools\.venv` with Stanza, downloads the English models to `models\stanza` and
+converts them to `models\converted\en`. Use `-Python` for the environment only, or no switch for just the
+.NET solution. Add `-Cuda` for GPU libtorch.
+
 ## Tests
 
 ```powershell
@@ -62,12 +83,20 @@ Tests that need models skip when `models/converted/en` (or, for the `.pt` loader
 `.github/workflows/ci.yml` runs on pushes to `main` and on pull requests (Ubuntu 24.04, .NET 10).
 
 - `build-test` builds the solution and runs the tests without models (the model tests skip).
-- `golden` installs `tools/requirements.txt` with the CPU-only torch wheel, downloads and converts
-  the English models, and runs the full suite. It fails if any test was skipped. The original and
-  converted models are cached, keyed on `tools/requirements.txt` and `tools/stanza_convert.py`.
+- `golden` downloads the English models with `ModelDownloader` (through the CLI), converts them with
+  `tools/stanza_convert.py` (CPU-only torch wheel), and runs the full suite. It fails if any test was
+  skipped. Then `tools/verify-package.ps1` packs StanzaSharp and runs a fresh app that references the
+  package. The original and converted models are cached, keyed on `ModelDownloader.cs`,
+  `tools/requirements.txt` and `tools/stanza_convert.py`.
 
 Both upload their `.trx` test results. To reproduce `golden` locally, run `setup.ps1 -Models`, then
 `dotnet test --logger trx --results-directory TestResults` and check that nothing was skipped.
+
+## Releasing
+
+Push a tag such as `v0.1.0-alpha.1`. `.github/workflows/release.yml` runs all CI checks, packs that version,
+publishes it to nuget.org through NuGet Trusted Publishing and creates a GitHub release (a prerelease
+when the version has a `-`).
 
 ## License
 
