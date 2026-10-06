@@ -8,7 +8,7 @@ public class TorchCheckpointTests(ITestOutputHelper output)
 {
     public static readonly TheoryData<string> StanzaCheckpoints =
     [
-        "tokenize/combined_nocharlm", "mwt/combined", "pos/combined_charlm", "constituency/ptb3-revised_charlm",
+        "tokenize/combined_nocharlm", "mwt/combined", "pos/combined_charlm", "lemma/combined_nocharlm", "constituency/ptb3-revised_charlm",
         "pretrain/conll17", "forward_charlm/1billion", "backward_charlm/1billion",
     ];
 
