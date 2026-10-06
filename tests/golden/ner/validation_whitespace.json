@@ -1,0 +1,137 @@
+[
+ [
+  {
+   "text": "first",
+   "type": "ORDINAL",
+   "start_char": 42,
+   "end_char": 47
+  }
+ ],
+ [],
+ [],
+ [
+  {
+   "text": "two",
+   "type": "CARDINAL",
+   "start_char": 128,
+   "end_char": 131
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "10 kg",
+   "type": "QUANTITY",
+   "start_char": 402,
+   "end_char": 407
+  },
+  {
+   "text": "5 km",
+   "type": "QUANTITY",
+   "start_char": 412,
+   "end_char": 416
+  }
+ ],
+ [
+  {
+   "text": "Smith",
+   "type": "PERSON",
+   "start_char": 422,
+   "end_char": 427
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "two",
+   "type": "CARDINAL",
+   "start_char": 924,
+   "end_char": 927
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "three",
+   "type": "CARDINAL",
+   "start_char": 1131,
+   "end_char": 1136
+  },
+  {
+   "text": "four",
+   "type": "CARDINAL",
+   "start_char": 1167,
+   "end_char": 1171
+  }
+ ],
+ [
+  {
+   "text": "5",
+   "type": "CARDINAL",
+   "start_char": 1199,
+   "end_char": 1200
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "Roman",
+   "type": "NORP",
+   "start_char": 1420,
+   "end_char": 1425
+  }
+ ],
+ [
+  {
+   "text": "Turkish",
+   "type": "NORP",
+   "start_char": 1458,
+   "end_char": 1465
+  },
+  {
+   "text": "German",
+   "type": "NORP",
+   "start_char": 1490,
+   "end_char": 1496
+  }
+ ],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "STRASSE",
+   "type": "ORG",
+   "start_char": 1617,
+   "end_char": 1624
+  }
+ ],
+ [],
+ []
+]

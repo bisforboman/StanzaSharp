@@ -77,4 +77,35 @@ public class PipelineTests
             Assert.Equal(golden, Conllu.Write(nlp.Process(text)));
         }
     }
+
+    [ModelFact]
+    public void Process_AllEightProcessorsMatchEachGoldenFolder()
+    {
+        // No golden file has all eight, so each field is checked against its own folder: word lines and
+        // ner= against ner/ (tokenize..depparse,ner), trees against the default pipeline's files, and
+        // sentiment against sentiment/. NER, constituency and sentiment share the tagger's CharlmCache.
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos,lemma,depparse,ner,sentiment,constituency" });
+        foreach (var (name, conllu) in new[] { ("corpus", "pipeline"), ("validation_news", "validation_news"), ("validation_contractions", "validation_contractions") })
+        {
+            var doc = nlp.Process(File.ReadAllText(Path.Combine(Repo.Golden, name + ".txt")));
+            var written = Conllu.Write(doc);
+
+            var withoutComments = string.Join('\n', written.Split('\n').Where(l => !l.StartsWith("# constituency = ") && !l.StartsWith("# sentiment = ")));
+            Assert.Equal(File.ReadAllText(Path.Combine(Repo.Golden, "ner", name + ".conllu")), withoutComments);
+
+            var trees = Conllu.Read(File.ReadAllText(Path.Combine(Repo.Golden, conllu + ".conllu"))).Sentences.Select(s => s.Constituency!.ToString());
+            Assert.Equal(trees, doc.Sentences.Select(s => s.Constituency!.ToString()));
+
+            var sentiment = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(Path.Combine(Repo.Golden, "sentiment", name + ".json")))!["sentences"]!.AsArray();
+            Assert.Equal(sentiment.Select(s => s!["sentiment"]!.GetValue<int>()), doc.Sentences.Select(s => s.Sentiment!.Value));
+
+            var entities = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(Path.Combine(Repo.Golden, "ner", name + ".json")))!.AsArray()
+                .SelectMany(s => s!.AsArray()).Select(e => (e!["text"]!.GetValue<string>(), e["type"]!.GetValue<string>(), e["start_char"]!.GetValue<int>()));
+            Assert.Equal(entities, doc.Sentences.SelectMany(s => s.Entities).Select(e => (e.Text, e.Type, e.StartChar!.Value)));
+
+            // Comments in Stanza's order: sentiment last.
+            Assert.Contains("\n# sentiment = ", written.Split("\n\n")[0]);
+            Assert.True(written.IndexOf("# constituency = ") < written.IndexOf("# sentiment = "));
+        }
+    }
 }

@@ -1,0 +1,115 @@
+[
+ [
+  {
+   "text": "first",
+   "type": "ORDINAL",
+   "start_char": 17,
+   "end_char": 22
+  }
+ ],
+ [],
+ [],
+ [
+  {
+   "text": "today",
+   "type": "DATE",
+   "start_char": 144,
+   "end_char": 149
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "BMP",
+   "type": "ORG",
+   "start_char": 415,
+   "end_char": 418
+  }
+ ],
+ [
+  {
+   "text": "Gothic",
+   "type": "NORP",
+   "start_char": 430,
+   "end_char": 436
+  }
+ ],
+ [
+  {
+   "text": "UTF-16",
+   "type": "WORK_OF_ART",
+   "start_char": 505,
+   "end_char": 511
+  }
+ ],
+ [],
+ [],
+ [
+  {
+   "text": "3",
+   "type": "CARDINAL",
+   "start_char": 579,
+   "end_char": 580
+  },
+  {
+   "text": "1",
+   "type": "CARDINAL",
+   "start_char": 583,
+   "end_char": 584
+  }
+ ],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "Rocket",
+   "type": "PRODUCT",
+   "start_char": 692,
+   "end_char": 698
+  },
+  {
+   "text": "10:30 am",
+   "type": "TIME",
+   "start_char": 711,
+   "end_char": 719
+  }
+ ],
+ [],
+ [
+  {
+   "text": "today",
+   "type": "DATE",
+   "start_char": 764,
+   "end_char": 769
+  }
+ ],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "ABC",
+   "type": "ORG",
+   "start_char": 867,
+   "end_char": 870
+  }
+ ],
+ [],
+ [
+  {
+   "text": "Sunday",
+   "type": "DATE",
+   "start_char": 930,
+   "end_char": 936
+  }
+ ]
+]

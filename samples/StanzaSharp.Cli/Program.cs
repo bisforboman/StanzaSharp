@@ -8,7 +8,8 @@ const string Usage = """
     "download" fetches Stanza's English models into DIR (default: models/stanza/en).
 
       --models DIR        models (default: models/converted/en if present, else models/stanza/en)
-      --processors LIST   comma-separated, from tokenize,mwt,pos,lemma,depparse,constituency,sentiment (default: the first six)
+      --processors LIST   comma-separated, from tokenize,mwt,pos,lemma,depparse,ner,sentiment,constituency
+                          (default: all but ner and sentiment)
     """;
 
 string convertedDir = Path.Combine("models", "converted", "en");

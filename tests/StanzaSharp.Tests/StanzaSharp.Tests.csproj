@@ -34,6 +34,7 @@
     <ProjectReference Include="..\..\src\StanzaSharp.Lemma\StanzaSharp.Lemma.csproj" />
     <ProjectReference Include="..\..\src\StanzaSharp.Constituency\StanzaSharp.Constituency.csproj" />
     <ProjectReference Include="..\..\src\StanzaSharp.Depparse\StanzaSharp.Depparse.csproj" />
+    <ProjectReference Include="..\..\src\StanzaSharp.Ner\StanzaSharp.Ner.csproj" />
     <ProjectReference Include="..\..\src\StanzaSharp.Sentiment\StanzaSharp.Sentiment.csproj" />
   </ItemGroup>
 

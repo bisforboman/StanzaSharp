@@ -1,0 +1,871 @@
+[
+ [
+  {
+   "text": "HARBORVIEW",
+   "type": "GPE",
+   "start_char": 0,
+   "end_char": 10
+  },
+  {
+   "text": "Ore.",
+   "type": "GPE",
+   "start_char": 12,
+   "end_char": 16
+  }
+ ],
+ [
+  {
+   "text": "The Harborview Port Authority",
+   "type": "ORG",
+   "start_char": 19,
+   "end_char": 48
+  },
+  {
+   "text": "$214 million",
+   "type": "MONEY",
+   "start_char": 60,
+   "end_char": 72
+  },
+  {
+   "text": "Wednesday",
+   "type": "DATE",
+   "start_char": 91,
+   "end_char": 100
+  },
+  {
+   "text": "two-year",
+   "type": "DATE",
+   "start_char": 111,
+   "end_char": 119
+  }
+ ],
+ [
+  {
+   "text": "5",
+   "type": "CARDINAL",
+   "start_char": 174,
+   "end_char": 175
+  }
+ ],
+ [
+  {
+   "text": "Dana Whitlock",
+   "type": "PERSON",
+   "start_char": 192,
+   "end_char": 205
+  },
+  {
+   "text": "one",
+   "type": "CARDINAL",
+   "start_char": 216,
+   "end_char": 219
+  }
+ ],
+ [
+  {
+   "text": "14 m (about 46 ft.",
+   "type": "QUANTITY",
+   "start_char": 379,
+   "end_char": 397
+  },
+  {
+   "text": "two",
+   "type": "CARDINAL",
+   "start_char": 409,
+   "end_char": 412
+  },
+  {
+   "text": "Q3 2028",
+   "type": "DATE",
+   "start_char": 427,
+   "end_char": 434
+  }
+ ],
+ [
+  {
+   "text": "roughly 1,100",
+   "type": "CARDINAL",
+   "start_char": 471,
+   "end_char": 484
+  }
+ ],
+ [],
+ [
+  {
+   "text": "Monday",
+   "type": "DATE",
+   "start_char": 557,
+   "end_char": 563
+  }
+ ],
+ [
+  {
+   "text": "500",
+   "type": "CARDINAL",
+   "start_char": 615,
+   "end_char": 618
+  },
+  {
+   "text": "0.8%",
+   "type": "PERCENT",
+   "start_char": 624,
+   "end_char": 628
+  },
+  {
+   "text": "212.45",
+   "type": "CARDINAL",
+   "start_char": 668,
+   "end_char": 674
+  },
+  {
+   "text": "0.6 percent",
+   "type": "PERCENT",
+   "start_char": 686,
+   "end_char": 697
+  },
+  {
+   "text": "1.1%",
+   "type": "PERCENT",
+   "start_char": 732,
+   "end_char": 736
+  }
+ ],
+ [
+  {
+   "text": "10-year",
+   "type": "DATE",
+   "start_char": 742,
+   "end_char": 749
+  },
+  {
+   "text": "Treasury",
+   "type": "ORG",
+   "start_char": 750,
+   "end_char": 758
+  },
+  {
+   "text": "4.37%",
+   "type": "PERCENT",
+   "start_char": 773,
+   "end_char": 778
+  },
+  {
+   "text": "4.29%",
+   "type": "PERCENT",
+   "start_char": 784,
+   "end_char": 789
+  },
+  {
+   "text": "late Friday",
+   "type": "DATE",
+   "start_char": 790,
+   "end_char": 801
+  }
+ ],
+ [
+  {
+   "text": "Brent",
+   "type": "ORG",
+   "start_char": 804,
+   "end_char": 809
+  },
+  {
+   "text": "83.12",
+   "type": "MONEY",
+   "start_char": 828,
+   "end_char": 833
+  },
+  {
+   "text": "41 cents",
+   "type": "MONEY",
+   "start_char": 847,
+   "end_char": 855
+  }
+ ],
+ [
+  {
+   "text": "2,018.30",
+   "type": "MONEY",
+   "start_char": 894,
+   "end_char": 902
+  }
+ ],
+ [
+  {
+   "text": "1.0842",
+   "type": "MONEY",
+   "start_char": 933,
+   "end_char": 939
+  },
+  {
+   "text": "¥151",
+   "type": "MONEY",
+   "start_char": 969,
+   "end_char": 973
+  },
+  {
+   "text": "first",
+   "type": "ORDINAL",
+   "start_char": 993,
+   "end_char": 998
+  },
+  {
+   "text": "mid-October",
+   "type": "DATE",
+   "start_char": 1010,
+   "end_char": 1021
+  }
+ ],
+ [
+  {
+   "text": "Mapleford Holdings Inc.",
+   "type": "ORG",
+   "start_char": 1024,
+   "end_char": 1047
+  },
+  {
+   "text": "NYSE",
+   "type": "ORG",
+   "start_char": 1049,
+   "end_char": 1053
+  },
+  {
+   "text": "MPF",
+   "type": "ORG",
+   "start_char": 1055,
+   "end_char": 1058
+  },
+  {
+   "text": "second-quarter",
+   "type": "DATE",
+   "start_char": 1069,
+   "end_char": 1083
+  },
+  {
+   "text": "1.42",
+   "type": "MONEY",
+   "start_char": 1097,
+   "end_char": 1101
+  },
+  {
+   "text": "1.35",
+   "type": "MONEY",
+   "start_char": 1148,
+   "end_char": 1152
+  }
+ ],
+ [
+  {
+   "text": "9%",
+   "type": "PERCENT",
+   "start_char": 1170,
+   "end_char": 1172
+  },
+  {
+   "text": "$3.8 bn",
+   "type": "MONEY",
+   "start_char": 1191,
+   "end_char": 1198
+  }
+ ],
+ [
+  {
+   "text": "full-year",
+   "type": "DATE",
+   "start_char": 1223,
+   "end_char": 1232
+  },
+  {
+   "text": "$500M",
+   "type": "MONEY",
+   "start_char": 1258,
+   "end_char": 1263
+  }
+ ],
+ [
+  {
+   "text": "7.3%",
+   "type": "PERCENT",
+   "start_char": 1291,
+   "end_char": 1295
+  }
+ ],
+ [
+  {
+   "text": "Priya Ramaswamy",
+   "type": "PERSON",
+   "start_char": 1404,
+   "end_char": 1419
+  }
+ ],
+ [],
+ [
+  {
+   "text": "5.25%",
+   "type": "PERCENT",
+   "start_char": 1563,
+   "end_char": 1568
+  },
+  {
+   "text": "5.50%",
+   "type": "PERCENT",
+   "start_char": 1569,
+   "end_char": 1574
+  },
+  {
+   "text": "third",
+   "type": "ORDINAL",
+   "start_char": 1581,
+   "end_char": 1586
+  }
+ ],
+ [
+  {
+   "text": "the year",
+   "type": "DATE",
+   "start_char": 1660,
+   "end_char": 1668
+  }
+ ],
+ [
+  {
+   "text": "Two",
+   "type": "CARDINAL",
+   "start_char": 1716,
+   "end_char": 1719
+  },
+  {
+   "text": "quarter",
+   "type": "CARDINAL",
+   "start_char": 1752,
+   "end_char": 1759
+  }
+ ],
+ [
+  {
+   "text": "3.7%",
+   "type": "PERCENT",
+   "start_char": 1799,
+   "end_char": 1803
+  },
+  {
+   "text": "March",
+   "type": "DATE",
+   "start_char": 1807,
+   "end_char": 1812
+  },
+  {
+   "text": "3.9%",
+   "type": "PERCENT",
+   "start_char": 1818,
+   "end_char": 1822
+  },
+  {
+   "text": "February",
+   "type": "DATE",
+   "start_char": 1826,
+   "end_char": 1834
+  },
+  {
+   "text": "the Labor Department",
+   "type": "ORG",
+   "start_char": 1836,
+   "end_char": 1856
+  }
+ ],
+ [
+  {
+   "text": "236,000",
+   "type": "CARDINAL",
+   "start_char": 1879,
+   "end_char": 1886
+  }
+ ],
+ [
+  {
+   "text": "0.3%",
+   "type": "PERCENT",
+   "start_char": 1944,
+   "end_char": 1948
+  },
+  {
+   "text": "4.2%",
+   "type": "PERCENT",
+   "start_char": 1957,
+   "end_char": 1961
+  }
+ ],
+ [
+  {
+   "text": "SEC",
+   "type": "ORG",
+   "start_char": 1989,
+   "end_char": 1992
+  },
+  {
+   "text": "Hal Brandt Jr.",
+   "type": "PERSON",
+   "start_char": 2038,
+   "end_char": 2052
+  }
+ ],
+ [
+  {
+   "text": "$18.6 million",
+   "type": "MONEY",
+   "start_char": 2097,
+   "end_char": 2110
+  }
+ ],
+ [
+  {
+   "text": "May 22",
+   "type": "DATE",
+   "start_char": 2203,
+   "end_char": 2209
+  }
+ ],
+ [
+  {
+   "text": "€4.2 billion",
+   "type": "MONEY",
+   "start_char": 2234,
+   "end_char": 2246
+  },
+  {
+   "text": "third",
+   "type": "ORDINAL",
+   "start_char": 2289,
+   "end_char": 2294
+  }
+ ],
+ [
+  {
+   "text": "Brussels",
+   "type": "GPE",
+   "start_char": 2325,
+   "end_char": 2333
+  },
+  {
+   "text": "Thursday",
+   "type": "DATE",
+   "start_char": 2362,
+   "end_char": 2370
+  }
+ ],
+ [
+  {
+   "text": "Oct. 9",
+   "type": "DATE",
+   "start_char": 2393,
+   "end_char": 2399
+  }
+ ],
+ [
+  {
+   "text": "Ellsworth",
+   "type": "GPE",
+   "start_char": 2425,
+   "end_char": 2434
+  },
+  {
+   "text": "$75 million",
+   "type": "MONEY",
+   "start_char": 2459,
+   "end_char": 2470
+  }
+ ],
+ [
+  {
+   "text": "Moody's",
+   "type": "ORG",
+   "start_char": 2500,
+   "end_char": 2507
+  },
+  {
+   "text": "Aa2",
+   "type": "PRODUCT",
+   "start_char": 2521,
+   "end_char": 2524
+  }
+ ],
+ [
+  {
+   "text": "S&P Global Ratings",
+   "type": "ORG",
+   "start_char": 2533,
+   "end_char": 2551
+  },
+  {
+   "text": "AA",
+   "type": "ORG",
+   "start_char": 2568,
+   "end_char": 2570
+  }
+ ],
+ [
+  {
+   "text": "Lower Fenwick",
+   "type": "LOC",
+   "start_char": 2613,
+   "end_char": 2626
+  },
+  {
+   "text": "early Saturday",
+   "type": "DATE",
+   "start_char": 2704,
+   "end_char": 2718
+  }
+ ],
+ [],
+ [
+  {
+   "text": "6 a.m.",
+   "type": "TIME",
+   "start_char": 2755,
+   "end_char": 2761
+  }
+ ],
+ [
+  {
+   "text": "Sunday",
+   "type": "DATE",
+   "start_char": 2762,
+   "end_char": 2768
+  },
+  {
+   "text": "about two-thirds",
+   "type": "CARDINAL",
+   "start_char": 2799,
+   "end_char": 2815
+  },
+  {
+   "text": "4,800",
+   "type": "CARDINAL",
+   "start_char": 2823,
+   "end_char": 2828
+  }
+ ],
+ [
+  {
+   "text": "Marisol Ortega",
+   "type": "PERSON",
+   "start_char": 2878,
+   "end_char": 2892
+  },
+  {
+   "text": "1931",
+   "type": "DATE",
+   "start_char": 2925,
+   "end_char": 2929
+  }
+ ],
+ [],
+ [
+  {
+   "text": "one week",
+   "type": "DATE",
+   "start_char": 3045,
+   "end_char": 3053
+  }
+ ],
+ [
+  {
+   "text": "Kevin O'Hare",
+   "type": "PERSON",
+   "start_char": 3074,
+   "end_char": 3086
+  },
+  {
+   "text": "three",
+   "type": "CARDINAL",
+   "start_char": 3138,
+   "end_char": 3143
+  }
+ ],
+ [],
+ [
+  {
+   "text": "a second day",
+   "type": "DATE",
+   "start_char": 3240,
+   "end_char": 3252
+  }
+ ],
+ [
+  {
+   "text": "KBW",
+   "type": "ORG",
+   "start_char": 3258,
+   "end_char": 3261
+  },
+  {
+   "text": "2.4%",
+   "type": "PERCENT",
+   "start_char": 3287,
+   "end_char": 3291
+  }
+ ],
+ [
+  {
+   "text": "Ferrisburg Savings",
+   "type": "ORG",
+   "start_char": 3293,
+   "end_char": 3311
+  },
+  {
+   "text": "30%",
+   "type": "PERCENT",
+   "start_char": 3330,
+   "end_char": 3333
+  },
+  {
+   "text": "the month",
+   "type": "DATE",
+   "start_char": 3345,
+   "end_char": 3354
+  },
+  {
+   "text": "11 percent",
+   "type": "PERCENT",
+   "start_char": 3361,
+   "end_char": 3371
+  }
+ ],
+ [],
+ [],
+ [
+  {
+   "text": "Thirty-year",
+   "type": "DATE",
+   "start_char": 3455,
+   "end_char": 3466
+  },
+  {
+   "text": "6.94%",
+   "type": "PERCENT",
+   "start_char": 3488,
+   "end_char": 3493
+  },
+  {
+   "text": "last week",
+   "type": "DATE",
+   "start_char": 3494,
+   "end_char": 3503
+  },
+  {
+   "text": "Freddie Mac",
+   "type": "ORG",
+   "start_char": 3518,
+   "end_char": 3529
+  }
+ ],
+ [
+  {
+   "text": "0.2%",
+   "type": "PERCENT",
+   "start_char": 3563,
+   "end_char": 3567
+  },
+  {
+   "text": "January",
+   "type": "DATE",
+   "start_char": 3571,
+   "end_char": 3578
+  }
+ ],
+ [
+  {
+   "text": "0.1%",
+   "type": "PERCENT",
+   "start_char": 3627,
+   "end_char": 3631
+  }
+ ],
+ [
+  {
+   "text": "3.1%",
+   "type": "PERCENT",
+   "start_char": 3665,
+   "end_char": 3669
+  },
+  {
+   "text": "1.4%",
+   "type": "PERCENT",
+   "start_char": 3713,
+   "end_char": 3717
+  }
+ ],
+ [
+  {
+   "text": "$1 trillion",
+   "type": "MONEY",
+   "start_char": 3771,
+   "end_char": 3782
+  },
+  {
+   "text": "seventh",
+   "type": "ORDINAL",
+   "start_char": 3803,
+   "end_char": 3810
+  },
+  {
+   "text": "U.S.",
+   "type": "GPE",
+   "start_char": 3811,
+   "end_char": 3815
+  }
+ ],
+ [
+  {
+   "text": "412.88",
+   "type": "MONEY",
+   "start_char": 3876,
+   "end_char": 3882
+  },
+  {
+   "text": "3.9%",
+   "type": "PERCENT",
+   "start_char": 3887,
+   "end_char": 3891
+  }
+ ],
+ [
+  {
+   "text": "the eighth straight quarter",
+   "type": "DATE",
+   "start_char": 3964,
+   "end_char": 3991
+  }
+ ],
+ [
+  {
+   "text": "289.4 million",
+   "type": "CARDINAL",
+   "start_char": 4009,
+   "end_char": 4022
+  },
+  {
+   "text": "4.7%",
+   "type": "PERCENT",
+   "start_char": 4035,
+   "end_char": 4039
+  },
+  {
+   "text": "a year earlier",
+   "type": "DATE",
+   "start_char": 4045,
+   "end_char": 4059
+  }
+ ],
+ [
+  {
+   "text": "five",
+   "type": "CARDINAL",
+   "start_char": 4069,
+   "end_char": 4073
+  },
+  {
+   "text": "roughly 70%",
+   "type": "PERCENT",
+   "start_char": 4096,
+   "end_char": 4107
+  }
+ ],
+ [
+  {
+   "text": "last six weeks",
+   "type": "DATE",
+   "start_char": 4149,
+   "end_char": 4163
+  }
+ ],
+ [
+  {
+   "text": "Monday",
+   "type": "DATE",
+   "start_char": 4187,
+   "end_char": 4193
+  },
+  {
+   "text": "Lancaster",
+   "type": "GPE",
+   "start_char": 4223,
+   "end_char": 4232
+  }
+ ],
+ [
+  {
+   "text": "14",
+   "type": "CARDINAL",
+   "start_char": 4283,
+   "end_char": 4285
+  },
+  {
+   "text": "up to 20 years",
+   "type": "DATE",
+   "start_char": 4300,
+   "end_char": 4314
+  }
+ ],
+ [
+  {
+   "text": "Friday",
+   "type": "DATE",
+   "start_char": 4359,
+   "end_char": 4365
+  },
+  {
+   "text": "10 a.m.",
+   "type": "TIME",
+   "start_char": 4369,
+   "end_char": 4376
+  }
+ ],
+ [
+  {
+   "text": "$35 to $250",
+   "type": "MONEY",
+   "start_char": 4407,
+   "end_char": 4418
+  }
+ ],
+ [],
+ [
+  {
+   "text": "more than 12,000 acres",
+   "type": "QUANTITY",
+   "start_char": 4485,
+   "end_char": 4507
+  },
+  {
+   "text": "Tuesday night",
+   "type": "TIME",
+   "start_char": 4511,
+   "end_char": 4524
+  },
+  {
+   "text": "15%",
+   "type": "PERCENT",
+   "start_char": 4533,
+   "end_char": 4536
+  }
+ ],
+ [
+  {
+   "text": "Pine Hollow",
+   "type": "LOC",
+   "start_char": 4598,
+   "end_char": 4609
+  },
+  {
+   "text": "Cedar Gap",
+   "type": "GPE",
+   "start_char": 4614,
+   "end_char": 4623
+  }
+ ],
+ [],
+ [],
+ []
+]

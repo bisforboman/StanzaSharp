@@ -9,8 +9,9 @@ PyTorch-based NLP library, running the original pretrained models through TorchS
 - **Processors:** `tokenize` → `mwt` → `pos` → `lemma` → `depparse` → `constituency`. All six are
   `Pipeline.AllProcessors`, the default, in that order, like Stanza's English default (2026-10-06).
   `pipeline.conllu` and `validation*.conllu` are generated with all six (`PROCESSORS` in make_golden.py).
-  `sentiment` is ported too but not in the default; Stanza runs it after the parsers (its order is
-  tokenize, mwt, pos, lemma, constituency, depparse, sentiment, ner).
+  `ner` and `sentiment` are ported but opt-in (not in `AllProcessors`). They run in Stanza's order
+  (`PIPELINE_NAMES`: tokenize, mwt, pos, lemma, constituency, depparse, sentiment, ner); only the
+  CoNLL-U comment order is observable (`# sentiment` after `# constituency`).
 - **Inference only.** Training stays in Python; we load Stanza's released weights.
 - **Package:** Stanza's English *default* package, which needs no transformer:
   - tokenize: `combined_nocharlm`
@@ -19,9 +20,10 @@ PyTorch-based NLP library, running the original pretrained models through TorchS
   - lemma: `combined_nocharlm`
   - constituency: `ptb3-revised_charlm`
   - depparse: `combined_charlm`
+  - ner: `ontonotes-ww-multi_charlm`
   - sentiment: `sstplus_charlm`
-- **Shared dependencies:** `pos`, `constituency`, `depparse` and `sentiment` all depend on the forward and backward
-  character LMs (charlm) and on the pretrained word-vector file (pretrain).
+- **Shared dependencies:** `pos`, `constituency`, `depparse`, `ner` and `sentiment` all depend on the
+  forward and backward character LMs (charlm) and on the pretrained word-vector file (pretrain).
   The charlm is shared infrastructure and lives in `StanzaSharp.Nn`.
 
 ## Status
@@ -71,7 +73,7 @@ All 7 steps of the build order are done:
   - The `samples/StanzaSharp.Cli` sample writes the same CoNLL-U from a file or stdin.
   - `Conllu.Write` fills a missing HEAD with `id - 1`, like Stanza's writer.
 - `Depparse.DependencyParser` (processor `depparse`, requires tokenize, mwt, pos, lemma; runs after
-  lemma, before constituency) sets `Word.Head`/`Deprel` with the pipeline's shared pretrain/charlms.
+  lemma and constituency, as in Stanza) sets `Word.Head`/`Deprel` with the pipeline's shared pretrain/charlms.
   `Pipeline` with `tokenize,mwt,pos,lemma,depparse` reproduces every `tests/golden/depparse/*.conllu`
   byte for byte (13 files, 8401 words), and so does the parser alone on Stanza's own tags and lemmas.
   Arc/label log-prob drift ≈ 2e-5 (tolerance 1e-4).
@@ -83,8 +85,20 @@ All 7 steps of the build order are done:
   byte for byte: 13 files, 8401 words, 868 of them through the seq2seq model. It mirrors
   LemmaProcessor: dictionary skip, DeltaVocab, `batch_size` 50 batches sorted like `sort_all`, greedy
   decoding, edits, `<UNK>` fallback, and the `Word.lemma` setter turning `_` into null.
+- `Ner.NerTagger` (processor `ner`, requires only tokenize: it reads token text, like Stanza) sets
+  `Token.Ner` (BIOES) and `Sentence.Entities` (`Entity`: Text, Type, StartChar, EndChar, Tokens;
+  `Document.Entities` concatenates them). `tests/golden/ner/` is reproduced byte for byte: 13 files,
+  845 sentences, 706 entities, with `tokenize,mwt,pos,lemma,depparse,ner`, with the cache off, and with
+  `tokenize,ner` alone. Emission drift ≈ 2.4e-6 (tolerance 1e-4).
+  - `Entity.Build` is `build_ents`/`decode_from_bioes`; `Conllu.Read` calls it too (text from the
+    tokens, since a read document has no `Text`).
+  - `Conllu` writes/reads `ner=` after `end_char` in MISC, on the MWT range line and on single-word
+    tokens' word lines, never on MWT words. `multi_ner` is not written by Stanza and not ported (with
+    one model it is just `(ner,)`).
+  - `CharlmCache`: NER's charlm input (`"\n"`, each token + `" "`, same vocab) equals the tagger's
+    when a sentence's tokens are its words (no MWT), so it reuses those; others are computed.
 - `Checkpoint.Load` also reads Stanza's original `.pt` files (`Core/TorchCheckpoint.cs` +
-  `Core/Pickle.cs`), so `Pipeline.Load("models/stanza/en")` works without Python. For all nine
+  `Core/Pickle.cs`), so `Pipeline.Load("models/stanza/en")` works without Python. For all eleven
   checkpoints the result equals the converter's: identical JSON and byte-identical tensors.
 - `Sentiment.SentimentClassifier` (processor `sentiment`, requires tokenize; runs last, as in Stanza)
   sets `Sentence.Sentiment` (0 negative, 1 neutral, 2 positive). `Conllu` reads and writes
@@ -119,6 +133,7 @@ src/StanzaSharp.Pos            POS / feature tagger.
 src/StanzaSharp.Lemma          Lemmatizer (dictionary + character seq2seq).
 src/StanzaSharp.Constituency   Constituency parser.
 src/StanzaSharp.Depparse       Dependency parser (biaffine graph parser + Chu-Liu/Edmonds).
+src/StanzaSharp.Ner            Named-entity recognizer (biLSTM + CRF Viterbi).
 src/StanzaSharp.Sentiment      Sentence sentiment (CNN classifier over biLSTM states).
 src/StanzaSharp                Pipeline facade wiring the processors together.
 samples/StanzaSharp.Cli        Console runner for quick experiments.
@@ -183,11 +198,11 @@ Safetensors layout: a u64 little-endian header length, a JSON header (`dtype`, `
 then raw little-endian tensor data. Read it with a small hand-written reader in `StanzaSharp.Core`;
 no package is needed.
 
-All nine checkpoints convert with `torch.load(weights_only=True)`; no unsafe pickling is needed.
+All eleven checkpoints convert with `torch.load(weights_only=True)`; no unsafe pickling is needed.
 
 ### Reading .pt files in C#
 
-All nine Stanza checkpoints use torch's legacy format (`_use_new_zipfile_serialization=False`), a
+All eleven Stanza checkpoints use torch's legacy format (`_use_new_zipfile_serialization=False`), a
 sequence of protocol-2 pickles: magic number, protocol version (1001), sys_info (little-endian),
 the checkpoint, the list of storage keys; then per key an int64 element count and the raw bytes.
 Tensors are `torch._utils._rebuild_tensor_v2(storage, offset, size, stride, requires_grad, hooks)`
@@ -264,6 +279,19 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - Decoding: log-softmax over heads, then `chuliu_edmonds_one_root` in float64. The log-softmax
     includes the batch's padding columns, so batches must match Stanza's: sorted longest first,
     5000 words (with ROOT) per batch, over 150 alone. `resolve_head_constraints` is false.
+- **ner** (`ontonotes-ww-multi_charlm`): `models/ner/model.py` `NERTagger`, `trainer.py` `predict`.
+  - Works on **tokens** (`doc.get(TEXT, from_token=True)`), so an MWT is tagged once.
+  - Input 2148 = word 100 + charlm 2048, through `input_transform` (Linear 2148→2148). The word
+    embedding is the pretrain matrix (the checkpoint's `word` vocab is conll17's) plus a fine-tuned
+    `delta_emb` (48309 words); both look up the lowercased token. A word the pretrain knows but delta
+    doesn't uses delta's PAD row (zeros). The charlm input is built exactly like `build_char_representation`.
+  - A 1-layer biLSTM, hidden 256, `h_init`/`c_init` (zeros).
+  - "multi": two tag sets, each a Linear + CRF: OntoNotes (77 BIOES tags, 18 types) and WorldWide
+    (41 tags). `predict_tagset` is 0, and Stanza unmaps both but keeps only column 0, so only the
+    OntoNotes head is run.
+  - Decoding: numpy `viterbi_decode` in float32 (ties to the lowest id), ids < 4 become `O`, then
+    `fix_singleton_tags`. `merge_tags` is the identity with one model. Batches of 32 sentences in
+    document order; everything is packed, so batching only moves the last float bits.
 - **sentiment** (`sstplus_charlm`): `models/classifiers/cnn_classifier.py` `CNNClassifier`
   (`model_type` CNN), in `params` of the checkpoint with `extra_vocab` and `labels` `0,1,2`.
   - Input: the sentence's **token** texts (`extract_sentences`), not words, with no lowercasing or
@@ -310,6 +338,9 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - `depparse/` (`make_golden.py --depparse-only`): `tokenize,mwt,pos,lemma,depparse` output for
     `corpus.txt` (as `corpus.conllu`) and each `validation*.txt`; arc/label log-probs for the
     first 3 sentences; `mst.json`, Stanza's trees on tie-heavy integer score matrices.
+  - `ner/` (`make_golden.py --ner-only`): `tokenize,mwt,pos,lemma,depparse,ner` output for `corpus.txt`
+    (as `corpus.conllu`) and each `validation*.txt`, `<name>.json` with each sentence's entities, and
+    the emission scores of the first 3 sentences, each tagged alone.
   - `sentiment/` (`--sentiment-only`): `tokenize,mwt,sentiment` `<name>.conllu` + `<name>.json`
     (label and 3 logits per sentence) for corpus.txt, each validation*.txt and `sentiment/reviews.txt`
     (opinionated sentences); `all.json` for all of them as one document (two batches).

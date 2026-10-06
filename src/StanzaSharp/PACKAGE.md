@@ -6,6 +6,7 @@
 - part-of-speech tags and morphological features
 - lemmas
 - dependency parsing
+- named entities (OntoNotes types: PERSON, ORG, GPE, DATE, ...)
 - constituency parsing
 - sentence sentiment (negative, neutral, positive)
 
@@ -24,7 +25,7 @@ match the `TorchSharp` version StanzaSharp depends on.
 
 ## Download the models
 
-The models (about 530 MB) come from Stanza's Hugging Face repository. Download them once:
+The models (about 600 MB) come from Stanza's Hugging Face repository. Download them once:
 
 ```csharp
 await ModelDownloader.DownloadAsync("models/stanza/en");
@@ -49,7 +50,8 @@ foreach (var sentence in doc.Sentences)
 }
 ```
 
-- `Pipeline.Load(dir, new PipelineOptions { Processors = "tokenize,mwt" })` runs only the listed processors; each needs the ones before it. The default is six: `tokenize,mwt,pos,lemma,depparse,constituency`.
+- `Pipeline.Load(dir, new PipelineOptions { Processors = "tokenize,mwt" })` runs only the listed processors; each needs the ones before it. The default is `tokenize,mwt,pos,lemma,depparse,constituency`.
+- Add `ner` to the list for named entities: `doc.Entities` (text, type, character offsets) and a BIOES tag per token (`Token.Ner`).
 - Add `sentiment` to the list for `sentence.Sentiment`: 0 negative, 1 neutral, 2 positive.
 - `Conllu.Write(doc)` gives CoNLL-U in Stanza's format.
 

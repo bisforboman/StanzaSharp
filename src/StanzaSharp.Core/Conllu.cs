@@ -6,7 +6,7 @@ namespace StanzaSharp;
 /// <summary>
 /// CoNLL-U reading and writing in the dialect Stanza produces: token offsets as
 /// <c>start_char</c>/<c>end_char</c> in MISC, whitespace as <c>SpaceAfter=No</c> / <c>SpacesAfter=</c>
-/// on the token line, and the parse as a <c># constituency =</c> comment.
+/// on the token line, NER tags as <c>ner=</c> in MISC, and the parse as a <c># constituency =</c> comment.
 /// </summary>
 public static class Conllu
 {
@@ -80,6 +80,8 @@ public static class Conllu
                 sent.Tokens.Add(token);
             }
         }
+        foreach (var s in doc.Sentences.Where(s => s.Tokens.Any(t => t.Ner != null)))
+            Entity.Build(s, doc.Text);
         return doc;
     }
 
@@ -111,7 +113,7 @@ public static class Conllu
             {
                 sb.Append(token.Words[0].Id).Append('-').Append(token.Words[^1].Id).Append('\t')
                   .Append(token.Text).Append("\t_\t_\t_\t_\t_\t_\t_\t")
-                  .Append(Misc(token.SpaceAfter, token.SpacesBefore, token.StartChar, token.EndChar)).Append('\n');
+                  .Append(Misc(token.SpaceAfter, token.SpacesBefore, token.StartChar, token.EndChar, token.Ner)).Append('\n');
             }
             foreach (var w in token.Words)
             {
@@ -121,7 +123,8 @@ public static class Conllu
                   .Append(w.Xpos ?? "_").Append('\t').Append(SortFeats(w.Feats) ?? "_").Append('\t')
                   // Like Stanza, a word without a head gets the dummy head id - 1 (the UD eval script needs an int).
                   .Append(w.Head ?? w.Id - 1).Append('\t').Append(w.Deprel ?? "_").Append("\t_\t")
-                  .Append(Misc(after, before, w.StartChar, w.EndChar)).Append('\n');
+                  // The NER tag belongs to the token: on the range line of an MWT, on the word otherwise.
+                  .Append(Misc(after, before, w.StartChar, w.EndChar, token.IsMultiWord ? null : token.Ner)).Append('\n');
             }
         }
     }
@@ -150,14 +153,15 @@ public static class Conllu
     private static string? SortFeats(string? feats) =>
         feats == null ? null : string.Join('|', feats.Split('|').OrderBy(p => p.ToLowerInvariant(), StringComparer.Ordinal));
 
-    private readonly record struct MiscFields(string Space, string SpacesBefore, int? Start, int? End);
+    private readonly record struct MiscFields(string Space, string SpacesBefore, int? Start, int? End, string? Ner);
 
     private static MiscFields ParseMisc(string misc)
     {
         string space = " ", before = "";
         int? start = null, end = null;
+        string? ner = null;
         if (misc == "_")
-            return new(space, before, start, end);
+            return new(space, before, start, end, ner);
         foreach (var piece in misc.Split('|'))
         {
             int eq = piece.IndexOf('=');
@@ -171,9 +175,10 @@ public static class Conllu
                 case "SpacesBefore": before = UnescapeSpace(value); break;
                 case "start_char": start = int.Parse(value); break;
                 case "end_char": end = int.Parse(value); break;
+                case "ner": ner = value; break;
             }
         }
-        return new(space, before, start, end);
+        return new(space, before, start, end, ner);
     }
 
     private static void ApplyTokenMisc(Token token, MiscFields misc)
@@ -182,10 +187,11 @@ public static class Conllu
         token.SpacesBefore = misc.SpacesBefore;
         token.StartChar = misc.Start;
         token.EndChar = misc.End;
+        token.Ner = misc.Ner;
     }
 
     // Stanza sorts the space pieces (SpaceAfter/SpacesAfter sort before SpacesBefore), then adds the offsets.
-    private static string Misc(string spaceAfter, string spacesBefore, int? start, int? end)
+    private static string Misc(string spaceAfter, string spacesBefore, int? start, int? end, string? ner)
     {
         var pieces = new List<string>(4);
         if (spaceAfter.Length == 0)
@@ -196,6 +202,7 @@ public static class Conllu
             pieces.Add("SpacesBefore=" + EscapeSpace(spacesBefore));
         if (start != null) pieces.Add($"start_char={start}");
         if (end != null) pieces.Add($"end_char={end}");
+        if (ner != null) pieces.Add("ner=" + ner);
         return pieces.Count == 0 ? "_" : string.Join('|', pieces);
     }
 

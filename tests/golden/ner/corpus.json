@@ -1,0 +1,103 @@
+[
+ [
+  {
+   "text": "Barack Obama",
+   "type": "PERSON",
+   "start_char": 0,
+   "end_char": 12
+  },
+  {
+   "text": "Hawaii",
+   "type": "GPE",
+   "start_char": 25,
+   "end_char": 31
+  }
+ ],
+ [
+  {
+   "text": "2008",
+   "type": "DATE",
+   "start_char": 61,
+   "end_char": 65
+  }
+ ],
+ [
+  {
+   "text": "today",
+   "type": "DATE",
+   "start_char": 101,
+   "end_char": 106
+  }
+ ],
+ [],
+ [
+  {
+   "text": "Smith",
+   "type": "PERSON",
+   "start_char": 155,
+   "end_char": 160
+  },
+  {
+   "text": "U.S.",
+   "type": "GPE",
+   "start_char": 174,
+   "end_char": 178
+  },
+  {
+   "text": "Jan. 1999",
+   "type": "DATE",
+   "start_char": 182,
+   "end_char": 191
+  },
+  {
+   "text": "4.50",
+   "type": "MONEY",
+   "start_char": 202,
+   "end_char": 206
+  },
+  {
+   "text": "7:30 a.m",
+   "type": "TIME",
+   "start_char": 230,
+   "end_char": 238
+  }
+ ],
+ [],
+ [
+  {
+   "text": "23",
+   "type": "CARDINAL",
+   "start_char": 300,
+   "end_char": 302
+  }
+ ],
+ [
+  {
+   "text": "yesterday",
+   "type": "DATE",
+   "start_char": 450,
+   "end_char": 459
+  }
+ ],
+ [
+  {
+   "text": "Mary's",
+   "type": "PERSON",
+   "start_char": 462,
+   "end_char": 468
+  },
+  {
+   "text": "3 p.m.",
+   "type": "TIME",
+   "start_char": 552,
+   "end_char": 558
+  },
+  {
+   "text": "Friday",
+   "type": "DATE",
+   "start_char": 562,
+   "end_char": 568
+  }
+ ],
+ []
+]

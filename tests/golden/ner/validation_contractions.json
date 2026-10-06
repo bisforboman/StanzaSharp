@@ -1,0 +1,437 @@
+[
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "She's",
+   "type": "PERSON",
+   "start_char": 35,
+   "end_char": 40
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "You've",
+   "type": "PERSON",
+   "start_char": 289,
+   "end_char": 295
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "She'll",
+   "type": "PERSON",
+   "start_char": 391,
+   "end_char": 397
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "Doesn't",
+   "type": "PERSON",
+   "start_char": 552,
+   "end_char": 559
+  }
+ ],
+ [],
+ [],
+ [
+  {
+   "text": "Aren't",
+   "type": "PERSON",
+   "start_char": 576,
+   "end_char": 582
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "Hadn't",
+   "type": "PERSON",
+   "start_char": 618,
+   "end_char": 624
+  }
+ ],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "Couldn't",
+   "type": "PERSON",
+   "start_char": 650,
+   "end_char": 658
+  }
+ ],
+ [
+  {
+   "text": "Shouldn't",
+   "type": "PERSON",
+   "start_char": 660,
+   "end_char": 669
+  }
+ ],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "Don’t",
+   "type": "PERSON",
+   "start_char": 700,
+   "end_char": 705
+  }
+ ],
+ [],
+ [],
+ [
+  {
+   "text": "Isn’t",
+   "type": "PERSON",
+   "start_char": 724,
+   "end_char": 729
+  }
+ ],
+ [
+  {
+   "text": "Aren’t",
+   "type": "PERSON",
+   "start_char": 731,
+   "end_char": 737
+  }
+ ],
+ [
+  {
+   "text": "Wasn’t",
+   "type": "PERSON",
+   "start_char": 739,
+   "end_char": 745
+  }
+ ],
+ [
+  {
+   "text": "Weren’t",
+   "type": "PERSON",
+   "start_char": 747,
+   "end_char": 754
+  }
+ ],
+ [],
+ [
+  {
+   "text": "Can’t",
+   "type": "PERSON",
+   "start_char": 763,
+   "end_char": 768
+  }
+ ],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "Bob",
+   "type": "PERSON",
+   "start_char": 816,
+   "end_char": 819
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "Bob",
+   "type": "PERSON",
+   "start_char": 941,
+   "end_char": 944
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "five o'clock",
+   "type": "TIME",
+   "start_char": 1190,
+   "end_char": 1202
+  }
+ ],
+ [],
+ [],
+ [
+  {
+   "text": "James'",
+   "type": "PERSON",
+   "start_char": 1358,
+   "end_char": 1364
+  },
+  {
+   "text": "Chris's",
+   "type": "PERSON",
+   "start_char": 1370,
+   "end_char": 1377
+  }
+ ],
+ [
+  {
+   "text": "Jesus’",
+   "type": "PERSON",
+   "start_char": 1493,
+   "end_char": 1499
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "U.N.'s",
+   "type": "ORG",
+   "start_char": 1596,
+   "end_char": 1602
+  },
+  {
+   "text": "NASA's",
+   "type": "ORG",
+   "start_char": 1611,
+   "end_char": 1617
+  },
+  {
+   "text": "CEO's",
+   "type": "ORG",
+   "start_char": 1629,
+   "end_char": 1634
+  },
+  {
+   "text": "1990s'",
+   "type": "DATE",
+   "start_char": 1645,
+   "end_char": 1651
+  },
+  {
+   "text": "90s",
+   "type": "DATE",
+   "start_char": 1665,
+   "end_char": 1668
+  },
+  {
+   "text": "IBM",
+   "type": "ORG",
+   "start_char": 1681,
+   "end_char": 1684
+  }
+ ],
+ [
+  {
+   "text": "Ain't",
+   "type": "PERSON",
+   "start_char": 1701,
+   "end_char": 1706
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "I'd've",
+   "type": "PERSON",
+   "start_char": 1847,
+   "end_char": 1853
+  },
+  {
+   "text": "I'd",
+   "type": "PERSON",
+   "start_char": 1865,
+   "end_char": 1868
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "O'Brien's",
+   "type": "ORG",
+   "start_char": 2020,
+   "end_char": 2029
+  },
+  {
+   "text": "D'Angelo's",
+   "type": "GPE",
+   "start_char": 2045,
+   "end_char": 2055
+  }
+ ],
+ [
+  {
+   "text": "McDonald's",
+   "type": "ORG",
+   "start_char": 2066,
+   "end_char": 2076
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "Don't",
+   "type": "PERSON",
+   "start_char": 2347,
+   "end_char": 2352
+  }
+ ],
+ [
+  {
+   "text": "Can't",
+   "type": "PERSON",
+   "start_char": 2365,
+   "end_char": 2370
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "10%",
+   "type": "PERCENT",
+   "start_char": 2518,
+   "end_char": 2521
+  }
+ ],
+ [
+  {
+   "text": "3",
+   "type": "CARDINAL",
+   "start_char": 2549,
+   "end_char": 2550
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "60s",
+   "type": "DATE",
+   "start_char": 2891,
+   "end_char": 2894
+  },
+  {
+   "text": "70s",
+   "type": "DATE",
+   "start_char": 2911,
+   "end_char": 2914
+  }
+ ],
+ [
+  {
+   "text": "Rock'n'roll",
+   "type": "PERSON",
+   "start_char": 2924,
+   "end_char": 2935
+  }
+ ],
+ [
+  {
+   "text": "Mom's",
+   "type": "PERSON",
+   "start_char": 2949,
+   "end_char": 2954
+  },
+  {
+   "text": "Dad's",
+   "type": "PERSON",
+   "start_char": 2959,
+   "end_char": 2964
+  }
+ ],
+ []
+]
