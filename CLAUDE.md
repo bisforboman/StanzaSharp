@@ -6,12 +6,13 @@ PyTorch-based NLP library, running the original pretrained models through TorchS
 ## Scope
 
 - **Language:** English only, to start.
-- **Processors:** `tokenize` → `mwt` → `pos` → `lemma` → `depparse` → `constituency`. All six are
-  `Pipeline.AllProcessors`, the default, in that order, like Stanza's English default (2026-10-06).
-  `pipeline.conllu` and `validation*.conllu` are generated with all six (`PROCESSORS` in make_golden.py).
-  `ner` and `sentiment` are ported but opt-in (not in `AllProcessors`). They run in Stanza's order
-  (`PIPELINE_NAMES`: tokenize, mwt, pos, lemma, constituency, depparse, sentiment, ner); only the
-  CoNLL-U comment order is observable (`# sentiment` after `# constituency`).
+- **Processors:** all eight of Stanza's English default, in Stanza's order (`PIPELINE_NAMES`): tokenize,
+  mwt, pos, lemma, constituency, depparse, sentiment, ner. This is `Pipeline.AllProcessors`, the default
+  (user's decision, 2026-10-06: like Stanza; it costs about 36% more time than without ner and sentiment).
+  - `Pipeline.Process` runs them in that order whatever order they are listed in. Only the CoNLL-U
+    comment order is observable (`# sentiment` after `# constituency`).
+  - `pipeline.conllu` and `validation*.conllu` are generated with all eight (`PROCESSORS` in
+    make_golden.py).
 - **Inference only.** Training stays in Python; we load Stanza's released weights.
 - **Package:** Stanza's English *default* package, which needs no transformer:
   - tokenize: `combined_nocharlm`
@@ -387,6 +388,12 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - `src/StanzaSharp/PACKAGE.md` is the package readme; `NOTICE` ships in the package.
 - Models are downloaded only explicitly (user's decision): `ModelDownloader.DownloadAsync(dir)` or
   `StanzaSharp.Cli download [DIR]`.
+  - Selective download (user's decision, 2026-10-06): `DownloadAsync(dir, processors)` / `download
+    --processors LIST`.
+  - `FilesFor` expands the list by `Pipeline.Requires` and adds the shared pretrain/charlms when a
+    processor in `UsesShared` needs them.
+  - Keep `ModelDownloader.Models` (each file's processor) and `UsesShared` in step with
+    `Pipeline`'s constructor. `FilesFor_AreEnoughToLoadThePipeline` checks it.
   - It fetches the `.pt` files from `huggingface.co/stanfordnlp/stanza-en/resolve/v1.15.0/models/`
     and checks each against the MD5 from Stanza 1.15.0's resources.json, kept in
     `ModelDownloader.Files`.

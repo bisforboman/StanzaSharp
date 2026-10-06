@@ -152,9 +152,7 @@ public class NerTests
         Assert.True(failures.Count == 0, string.Join("\n\n", failures));
     }
 
-    // Offsets followed by ner=..., then the rest (MWT words, which carry no NER tag) as PipelineTests does.
-    private static string StripOffsets(string conllu) =>
-        PipelineTests.StripOffsets(Regex.Replace(conllu, @"(?<=[\t|])start_char=\d+\|end_char=\d+\|", ""));
+    private static string StripOffsets(string conllu) => PipelineTests.StripOffsets(conllu);
 
     private static string Describe(string text, string type, int? start, int? end, bool offsets) =>
         offsets ? $"{text} {type} {start}-{end}" : $"{text} {type}";

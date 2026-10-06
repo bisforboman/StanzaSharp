@@ -39,9 +39,13 @@ public class PipelineTests
         Assert.True(failures.Count == 0, string.Join("\n\n", failures));
     }
 
-    internal static string StripOffsets(string conllu) =>
-        Regex.Replace(Regex.Replace(conllu, @"\tstart_char=\d+\|end_char=\d+$", "\t_", RegexOptions.Multiline),
-                      @"\|start_char=\d+\|end_char=\d+", "");
+    /// <summary>Removes start_char/end_char from MISC wherever they sit (alone, first, or after other pieces).</summary>
+    internal static string StripOffsets(string conllu)
+    {
+        conllu = Regex.Replace(conllu, @"\tstart_char=\d+\|end_char=\d+$", "\t_", RegexOptions.Multiline); // alone
+        conllu = Regex.Replace(conllu, @"(?<=\t)start_char=\d+\|end_char=\d+\|", "");                      // first, e.g. before ner=
+        return Regex.Replace(conllu, @"\|start_char=\d+\|end_char=\d+", "");                               // after SpaceAfter= etc.
+    }
 
     [ModelFact]
     public void Load_RunsASubsetOfProcessors()

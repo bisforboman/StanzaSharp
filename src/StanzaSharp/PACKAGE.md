@@ -28,7 +28,8 @@ match the `TorchSharp` version StanzaSharp depends on.
 The models (about 600 MB) come from Stanza's Hugging Face repository. Download them once:
 
 ```csharp
-await ModelDownloader.DownloadAsync("models/stanza/en");
+await ModelDownloader.DownloadAsync("models/stanza/en");                            // all, ~600 MB
+await ModelDownloader.DownloadAsync("models/stanza/en", "tokenize,mwt,pos,lemma");  // only what these need
 ```
 
 Each file is checked against its published MD5, and files already present are kept. `Pipeline.Load` itself
@@ -50,7 +51,7 @@ foreach (var sentence in doc.Sentences)
 }
 ```
 
-- `Pipeline.Load(dir, new PipelineOptions { Processors = "tokenize,mwt" })` runs only the listed processors; each needs the ones before it. The default is `tokenize,mwt,pos,lemma,depparse,constituency`.
+- `Pipeline.Load(dir, new PipelineOptions { Processors = "tokenize,mwt" })` runs only the listed processors; each needs the ones before it. The default is all eight, like Stanza's English default: `tokenize,mwt,pos,lemma,constituency,depparse,sentiment,ner`.
 - Add `ner` to the list for named entities: `doc.Entities` (text, type, character offsets) and a BIOES tag per token (`Token.Ner`).
 - Add `sentiment` to the list for `sentence.Sentiment`: 0 negative, 1 neutral, 2 positive.
 - `Conllu.Write(doc)` gives CoNLL-U in Stanza's format.

@@ -1,734 +1,788 @@
 # text = Søren Kierkegaard was born in Copenhagen.
 # sent_id = 0
 # constituency = (ROOT (S (NP (NNP Søren) (NNP Kierkegaard)) (VP (VBD was) (VP (VBN born) (PP (IN in) (NP (NNP Copenhagen))))) (. .)))
-1	Søren	Søren	PROPN	NNP	Number=Sing	4	nsubj:pass	_	start_char=0|end_char=5
-2	Kierkegaard	Kierkegaard	PROPN	NNP	Number=Sing	1	flat	_	start_char=6|end_char=17
-3	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	4	aux:pass	_	start_char=18|end_char=21
-4	born	bear	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	start_char=22|end_char=26
-5	in	in	ADP	IN	_	6	case	_	start_char=27|end_char=29
-6	Copenhagen	Copenhagen	PROPN	NNP	Number=Sing	4	obl	_	SpaceAfter=No|start_char=30|end_char=40
-7	.	.	PUNCT	.	_	4	punct	_	start_char=40|end_char=41
+# sentiment = 1
+1	Søren	Søren	PROPN	NNP	Number=Sing	4	nsubj:pass	_	start_char=0|end_char=5|ner=B-PERSON
+2	Kierkegaard	Kierkegaard	PROPN	NNP	Number=Sing	1	flat	_	start_char=6|end_char=17|ner=E-PERSON
+3	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	4	aux:pass	_	start_char=18|end_char=21|ner=O
+4	born	bear	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	start_char=22|end_char=26|ner=O
+5	in	in	ADP	IN	_	6	case	_	start_char=27|end_char=29|ner=O
+6	Copenhagen	Copenhagen	PROPN	NNP	Number=Sing	4	obl	_	SpaceAfter=No|start_char=30|end_char=40|ner=S-GPE
+7	.	.	PUNCT	.	_	4	punct	_	start_char=40|end_char=41|ner=O
 
 # text = Gabriel García Márquez wrote in Spanish.
 # sent_id = 1
 # constituency = (ROOT (S (NP (NNP Gabriel) (NNP García) (NNP Márquez)) (VP (VBD wrote) (PP (IN in) (NP (NNP Spanish)))) (. .)))
-1	Gabriel	Gabriel	PROPN	NNP	Number=Sing	4	nsubj	_	start_char=42|end_char=49
-2	García	García	PROPN	NNP	Number=Sing	1	flat	_	start_char=50|end_char=56
-3	Márquez	Márquez	PROPN	NNP	Number=Sing	1	flat	_	start_char=57|end_char=64
-4	wrote	write	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=65|end_char=70
-5	in	in	ADP	IN	_	6	case	_	start_char=71|end_char=73
-6	Spanish	Spanish	PROPN	NNP	Number=Sing	4	obl	_	SpaceAfter=No|start_char=74|end_char=81
-7	.	.	PUNCT	.	_	4	punct	_	start_char=81|end_char=82
+# sentiment = 1
+1	Gabriel	Gabriel	PROPN	NNP	Number=Sing	4	nsubj	_	start_char=42|end_char=49|ner=B-PERSON
+2	García	García	PROPN	NNP	Number=Sing	1	flat	_	start_char=50|end_char=56|ner=I-PERSON
+3	Márquez	Márquez	PROPN	NNP	Number=Sing	1	flat	_	start_char=57|end_char=64|ner=E-PERSON
+4	wrote	write	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=65|end_char=70|ner=O
+5	in	in	ADP	IN	_	6	case	_	start_char=71|end_char=73|ner=O
+6	Spanish	Spanish	PROPN	NNP	Number=Sing	4	obl	_	SpaceAfter=No|start_char=74|end_char=81|ner=S-LANGUAGE
+7	.	.	PUNCT	.	_	4	punct	_	start_char=81|end_char=82|ner=O
 
 # text = Antonín Dvořák composed the New World Symphony.
 # sent_id = 2
 # constituency = (ROOT (S (NP (NNP Antonín) (NNP Dvořák)) (VP (VBD composed) (NP (DT the) (NML (NNP New) (NNP World)) (NNP Symphony))) (. .)))
-1	Antonín	Antonín	PROPN	NNP	Number=Sing	3	nsubj	_	start_char=83|end_char=90
-2	Dvořák	Dvořák	PROPN	NNP	Number=Sing	1	flat	_	start_char=91|end_char=97
-3	composed	compose	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=98|end_char=106
-4	the	the	DET	DT	Definite=Def|PronType=Art	7	det	_	start_char=107|end_char=110
-5	New	New	ADJ	NNP	Degree=Pos	6	amod	_	start_char=111|end_char=114
-6	World	World	PROPN	NNP	Number=Sing	7	compound	_	start_char=115|end_char=120
-7	Symphony	Symphony	PROPN	NNP	Number=Sing	3	obj	_	SpaceAfter=No|start_char=121|end_char=129
-8	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=129|end_char=130
+# sentiment = 1
+1	Antonín	Antonín	PROPN	NNP	Number=Sing	3	nsubj	_	start_char=83|end_char=90|ner=B-PERSON
+2	Dvořák	Dvořák	PROPN	NNP	Number=Sing	1	flat	_	start_char=91|end_char=97|ner=E-PERSON
+3	composed	compose	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=98|end_char=106|ner=O
+4	the	the	DET	DT	Definite=Def|PronType=Art	7	det	_	start_char=107|end_char=110|ner=B-ORG
+5	New	New	ADJ	NNP	Degree=Pos	6	amod	_	start_char=111|end_char=114|ner=I-ORG
+6	World	World	PROPN	NNP	Number=Sing	7	compound	_	start_char=115|end_char=120|ner=I-ORG
+7	Symphony	Symphony	PROPN	NNP	Number=Sing	3	obj	_	SpaceAfter=No|start_char=121|end_char=129|ner=E-ORG
+8	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=129|end_char=130|ner=O
 
 # text = We met Łukasz Wiśniewski and Ágnes Szabó at the conference in Kraków.
 # sent_id = 3
 # constituency = (ROOT (S (NP (PRP We)) (VP (VBD met) (NP (NP (NNP Łukasz) (NNP Wiśniewski)) (CC and) (NP (NNP Ágnes) (NNP Szabó))) (PP (IN at) (NP (NP (DT the) (NN conference)) (PP (IN in) (NP (NNP Kraków)))))) (. .)))
-1	We	we	PRON	PRP	Case=Nom|Number=Plur|Person=1|PronType=Prs	2	nsubj	_	start_char=132|end_char=134
-2	met	meet	VERB	VBD	Mood=Ind|Number=Plur|Person=1|Tense=Past|VerbForm=Fin	0	root	_	start_char=135|end_char=138
-3	Łukasz	Łukasz	PROPN	NNP	Number=Sing	2	obj	_	start_char=139|end_char=145
-4	Wiśniewski	Wiśniewski	PROPN	NNP	Number=Sing	3	flat	_	start_char=146|end_char=156
-5	and	and	CCONJ	CC	_	6	cc	_	start_char=157|end_char=160
-6	Ágnes	Ágne	PROPN	NNP	Number=Sing	3	conj	_	start_char=161|end_char=166
-7	Szabó	Szabó	PROPN	NNP	Number=Sing	6	flat	_	start_char=167|end_char=172
-8	at	at	ADP	IN	_	10	case	_	start_char=173|end_char=175
-9	the	the	DET	DT	Definite=Def|PronType=Art	10	det	_	start_char=176|end_char=179
-10	conference	conference	NOUN	NN	Number=Sing	2	obl	_	start_char=180|end_char=190
-11	in	in	ADP	IN	_	12	case	_	start_char=191|end_char=193
-12	Kraków	Kraków	PROPN	NNP	Number=Sing	10	nmod	_	SpaceAfter=No|start_char=194|end_char=200
-13	.	.	PUNCT	.	_	2	punct	_	start_char=200|end_char=201
+# sentiment = 1
+1	We	we	PRON	PRP	Case=Nom|Number=Plur|Person=1|PronType=Prs	2	nsubj	_	start_char=132|end_char=134|ner=O
+2	met	meet	VERB	VBD	Mood=Ind|Number=Plur|Person=1|Tense=Past|VerbForm=Fin	0	root	_	start_char=135|end_char=138|ner=O
+3	Łukasz	Łukasz	PROPN	NNP	Number=Sing	2	obj	_	start_char=139|end_char=145|ner=B-PERSON
+4	Wiśniewski	Wiśniewski	PROPN	NNP	Number=Sing	3	flat	_	start_char=146|end_char=156|ner=E-PERSON
+5	and	and	CCONJ	CC	_	6	cc	_	start_char=157|end_char=160|ner=O
+6	Ágnes	Ágne	PROPN	NNP	Number=Sing	3	conj	_	start_char=161|end_char=166|ner=B-PERSON
+7	Szabó	Szabó	PROPN	NNP	Number=Sing	6	flat	_	start_char=167|end_char=172|ner=E-PERSON
+8	at	at	ADP	IN	_	10	case	_	start_char=173|end_char=175|ner=O
+9	the	the	DET	DT	Definite=Def|PronType=Art	10	det	_	start_char=176|end_char=179|ner=O
+10	conference	conference	NOUN	NN	Number=Sing	2	obl	_	start_char=180|end_char=190|ner=O
+11	in	in	ADP	IN	_	12	case	_	start_char=191|end_char=193|ner=O
+12	Kraków	Kraków	PROPN	NNP	Number=Sing	10	nmod	_	SpaceAfter=No|start_char=194|end_char=200|ner=S-GPE
+13	.	.	PUNCT	.	_	2	punct	_	start_char=200|end_char=201|ner=O
 
 # text = Later we flew to Reykjavík, where Guðrún Ólafsdóttir showed us around.
 # sent_id = 4
 # constituency = (ROOT (S (ADVP (RBR Later)) (NP (PRP we)) (VP (VBD flew) (PP (IN to) (NP (NP (NNP Reykjavík)) (, ,) (SBAR (WHADVP (WRB where)) (S (NP (NNP Guðrún) (NNP Ólafsdóttir)) (VP (VBD showed) (NP (PRP us)) (PRT (RB around)))))))) (. .)))
-1	Later	late	ADV	RBR	Degree=Cmp	3	advmod	_	start_char=202|end_char=207
-2	we	we	PRON	PRP	Case=Nom|Number=Plur|Person=1|PronType=Prs	3	nsubj	_	start_char=208|end_char=210
-3	flew	fly	VERB	VBD	Mood=Ind|Number=Plur|Person=1|Tense=Past|VerbForm=Fin	0	root	_	start_char=211|end_char=215
-4	to	to	ADP	IN	_	5	case	_	start_char=216|end_char=218
-5	Reykjavík	Reykjavík	PROPN	NNP	Number=Sing	3	obl	_	SpaceAfter=No|start_char=219|end_char=228
-6	,	,	PUNCT	,	_	10	punct	_	start_char=228|end_char=229
-7	where	where	ADV	WRB	PronType=Rel	10	advmod	_	start_char=230|end_char=235
-8	Guðrún	Guðrún	PROPN	NNP	Number=Sing	10	nsubj	_	start_char=236|end_char=242
-9	Ólafsdóttir	Ólafsdóttir	PROPN	NNP	Number=Sing	8	flat	_	start_char=243|end_char=254
-10	showed	show	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	5	acl:relcl	_	start_char=255|end_char=261
-11	us	we	PRON	PRP	Case=Acc|Number=Plur|Person=1|PronType=Prs	10	obj	_	start_char=262|end_char=264
-12	around	around	ADV	RB	_	10	advmod	_	SpaceAfter=No|start_char=265|end_char=271
-13	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=271|end_char=272
+# sentiment = 1
+1	Later	late	ADV	RBR	Degree=Cmp	3	advmod	_	start_char=202|end_char=207|ner=O
+2	we	we	PRON	PRP	Case=Nom|Number=Plur|Person=1|PronType=Prs	3	nsubj	_	start_char=208|end_char=210|ner=O
+3	flew	fly	VERB	VBD	Mood=Ind|Number=Plur|Person=1|Tense=Past|VerbForm=Fin	0	root	_	start_char=211|end_char=215|ner=O
+4	to	to	ADP	IN	_	5	case	_	start_char=216|end_char=218|ner=O
+5	Reykjavík	Reykjavík	PROPN	NNP	Number=Sing	3	obl	_	SpaceAfter=No|start_char=219|end_char=228|ner=S-GPE
+6	,	,	PUNCT	,	_	10	punct	_	start_char=228|end_char=229|ner=O
+7	where	where	ADV	WRB	PronType=Rel	10	advmod	_	start_char=230|end_char=235|ner=O
+8	Guðrún	Guðrún	PROPN	NNP	Number=Sing	10	nsubj	_	start_char=236|end_char=242|ner=B-PERSON
+9	Ólafsdóttir	Ólafsdóttir	PROPN	NNP	Number=Sing	8	flat	_	start_char=243|end_char=254|ner=E-PERSON
+10	showed	show	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	5	acl:relcl	_	start_char=255|end_char=261|ner=O
+11	us	we	PRON	PRP	Case=Acc|Number=Plur|Person=1|PronType=Prs	10	obj	_	start_char=262|end_char=264|ner=O
+12	around	around	ADV	RB	_	10	advmod	_	SpaceAfter=No|start_char=265|end_char=271|ner=O
+13	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=271|end_char=272|ner=O
 
 # text = The menu featured jalapeño poppers, a soupçon of crème fraîche, and smørrebrød.
 # sent_id = 5
 # constituency = (ROOT (S (NP (DT The) (NN menu)) (VP (VBD featured) (NP (NP (NN jalapeño) (NNS poppers)) (, ,) (NP (NP (DT a) (NN soupçon)) (PP (IN of) (NP (NN crème) (NN fraîche)))) (, ,) (CC and) (NP (NN smørrebrød)))) (. .)))
-1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=274|end_char=277
-2	menu	menu	NOUN	NN	Number=Sing	3	nsubj	_	start_char=278|end_char=282
-3	featured	feature	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=283|end_char=291
-4	jalapeño	jalapeño	NOUN	NN	Number=Sing	5	compound	_	start_char=292|end_char=300
-5	poppers	popper	NOUN	NNS	Number=Plur	3	obj	_	SpaceAfter=No|start_char=301|end_char=308
-6	,	,	PUNCT	,	_	8	punct	_	start_char=308|end_char=309
-7	a	a	DET	DT	Definite=Ind|PronType=Art	8	det	_	start_char=310|end_char=311
-8	soupçon	soupçon	NOUN	NN	Number=Sing	5	conj	_	start_char=312|end_char=319
-9	of	of	ADP	IN	_	11	case	_	start_char=320|end_char=322
-10	crème	crème	NOUN	NN	Number=Sing	11	compound	_	start_char=323|end_char=328
-11	fraîche	fraîche	NOUN	NN	Number=Sing	8	nmod	_	SpaceAfter=No|start_char=329|end_char=336
-12	,	,	PUNCT	,	_	14	punct	_	start_char=336|end_char=337
-13	and	and	CCONJ	CC	_	14	cc	_	start_char=338|end_char=341
-14	smørrebrød	smørrebrød	NOUN	NN	Number=Sing	5	conj	_	SpaceAfter=No|start_char=342|end_char=352
-15	.	.	PUNCT	.	_	3	punct	_	start_char=352|end_char=353
+# sentiment = 1
+1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=274|end_char=277|ner=O
+2	menu	menu	NOUN	NN	Number=Sing	3	nsubj	_	start_char=278|end_char=282|ner=O
+3	featured	feature	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=283|end_char=291|ner=O
+4	jalapeño	jalapeño	NOUN	NN	Number=Sing	5	compound	_	start_char=292|end_char=300|ner=O
+5	poppers	popper	NOUN	NNS	Number=Plur	3	obj	_	SpaceAfter=No|start_char=301|end_char=308|ner=O
+6	,	,	PUNCT	,	_	8	punct	_	start_char=308|end_char=309|ner=O
+7	a	a	DET	DT	Definite=Ind|PronType=Art	8	det	_	start_char=310|end_char=311|ner=O
+8	soupçon	soupçon	NOUN	NN	Number=Sing	5	conj	_	start_char=312|end_char=319|ner=O
+9	of	of	ADP	IN	_	11	case	_	start_char=320|end_char=322|ner=O
+10	crème	crème	NOUN	NN	Number=Sing	11	compound	_	start_char=323|end_char=328|ner=O
+11	fraîche	fraîche	NOUN	NN	Number=Sing	8	nmod	_	SpaceAfter=No|start_char=329|end_char=336|ner=O
+12	,	,	PUNCT	,	_	14	punct	_	start_char=336|end_char=337|ner=O
+13	and	and	CCONJ	CC	_	14	cc	_	start_char=338|end_char=341|ner=O
+14	smørrebrød	smørrebrød	NOUN	NN	Number=Sing	5	conj	_	SpaceAfter=No|start_char=342|end_char=352|ner=O
+15	.	.	PUNCT	.	_	3	punct	_	start_char=352|end_char=353|ner=O
 
 # text = The sommelier recommended a Grüner Veltliner.
 # sent_id = 6
 # constituency = (ROOT (S (NP (DT The) (NN sommelier)) (VP (VBD recommended) (NP (DT a) (NNP Grüner) (NNP Veltliner))) (. .)))
-1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=354|end_char=357
-2	sommelier	sommelier	NOUN	NN	Number=Sing	3	nsubj	_	start_char=358|end_char=367
-3	recommended	recommend	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=368|end_char=379
-4	a	a	DET	DT	Definite=Ind|PronType=Art	5	det	_	start_char=380|end_char=381
-5	Grüner	Grüner	PROPN	NNP	Number=Sing	3	obj	_	start_char=382|end_char=388
-6	Veltliner	Veltliner	PROPN	NNP	Number=Sing	5	flat	_	SpaceAfter=No|start_char=389|end_char=398
-7	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=398|end_char=399
+# sentiment = 1
+1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=354|end_char=357|ner=O
+2	sommelier	sommelier	NOUN	NN	Number=Sing	3	nsubj	_	start_char=358|end_char=367|ner=O
+3	recommended	recommend	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=368|end_char=379|ner=O
+4	a	a	DET	DT	Definite=Ind|PronType=Art	5	det	_	start_char=380|end_char=381|ner=B-ORG
+5	Grüner	Grüner	PROPN	NNP	Number=Sing	3	obj	_	start_char=382|end_char=388|ner=I-ORG
+6	Veltliner	Veltliner	PROPN	NNP	Number=Sing	5	flat	_	SpaceAfter=No|start_char=389|end_char=398|ner=E-ORG
+7	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=398|end_char=399|ner=O
 
 # text = İstanbul and Ankara are both in Türkiye.
 # sent_id = 7
 # constituency = (ROOT (S (NP (NNP İstanbul) (CC and) (NNP Ankara)) (VP (VBP are) (PP (RB both) (PP (IN in) (NP (NNP Türkiye))))) (. .)))
-1	İstanbul	İstanbul	PROPN	NNP	Number=Sing	7	nsubj	_	start_char=401|end_char=409
-2	and	and	CCONJ	CC	_	3	cc	_	start_char=410|end_char=413
-3	Ankara	Ankara	PROPN	NNP	Number=Sing	1	conj	_	start_char=414|end_char=420
-4	are	be	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	7	cop	_	start_char=421|end_char=424
-5	both	both	ADV	RB	_	7	advmod	_	start_char=425|end_char=429
-6	in	in	ADP	IN	_	7	case	_	start_char=430|end_char=432
-7	Türkiye	Türkiye	PROPN	NNP	Number=Sing	0	root	_	SpaceAfter=No|start_char=433|end_char=440
-8	.	.	PUNCT	.	_	7	punct	_	start_char=440|end_char=441
+# sentiment = 1
+1	İstanbul	İstanbul	PROPN	NNP	Number=Sing	7	nsubj	_	start_char=401|end_char=409|ner=S-GPE
+2	and	and	CCONJ	CC	_	3	cc	_	start_char=410|end_char=413|ner=O
+3	Ankara	Ankara	PROPN	NNP	Number=Sing	1	conj	_	start_char=414|end_char=420|ner=S-GPE
+4	are	be	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	7	cop	_	start_char=421|end_char=424|ner=O
+5	both	both	ADV	RB	_	7	advmod	_	start_char=425|end_char=429|ner=O
+6	in	in	ADP	IN	_	7	case	_	start_char=430|end_char=432|ner=O
+7	Türkiye	Türkiye	PROPN	NNP	Number=Sing	0	root	_	SpaceAfter=No|start_char=433|end_char=440|ner=S-GPE
+8	.	.	PUNCT	.	_	7	punct	_	start_char=440|end_char=441|ner=O
 
 # text = The Turkish word for "thank you" is teşekkürler.
 # sent_id = 8
 # constituency = (ROOT (S (NP (NP (DT The) (JJ Turkish) (NN word)) (PP (IN for) (NP (`` ") (VBP thank) (NP (PRP you)) ('' ")))) (VP (VBZ is) (NP (NNP teşekkürler))) (. .)))
-1	The	the	DET	DT	Definite=Def|PronType=Art	3	det	_	start_char=442|end_char=445
-2	Turkish	Turkish	ADJ	JJ	Degree=Pos	3	amod	_	start_char=446|end_char=453
-3	word	word	NOUN	NN	Number=Sing	10	nsubj	_	start_char=454|end_char=458
-4	for	for	ADP	IN	_	6	case	_	start_char=459|end_char=462
-5	"	"	PUNCT	``	_	6	punct	_	SpaceAfter=No|start_char=463|end_char=464
-6	thank	thank	VERB	VBP	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	3	appos	_	start_char=464|end_char=469
-7	you	you	PRON	PRP	Case=Acc|Person=2|PronType=Prs	6	obj	_	SpaceAfter=No|start_char=470|end_char=473
-8	"	"	PUNCT	''	_	6	punct	_	start_char=473|end_char=474
-9	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	10	cop	_	start_char=475|end_char=477
-10	teşekkürler	teşekkürler	PROPN	NNP	Number=Sing	0	root	_	SpaceAfter=No|start_char=478|end_char=489
-11	.	.	PUNCT	.	_	10	punct	_	SpacesAfter=\n\n|start_char=489|end_char=490
+# sentiment = 2
+1	The	the	DET	DT	Definite=Def|PronType=Art	3	det	_	start_char=442|end_char=445|ner=O
+2	Turkish	Turkish	ADJ	JJ	Degree=Pos	3	amod	_	start_char=446|end_char=453|ner=S-NORP
+3	word	word	NOUN	NN	Number=Sing	10	nsubj	_	start_char=454|end_char=458|ner=O
+4	for	for	ADP	IN	_	6	case	_	start_char=459|end_char=462|ner=O
+5	"	"	PUNCT	``	_	6	punct	_	SpaceAfter=No|start_char=463|end_char=464|ner=O
+6	thank	thank	VERB	VBP	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	3	appos	_	start_char=464|end_char=469|ner=O
+7	you	you	PRON	PRP	Case=Acc|Person=2|PronType=Prs	6	obj	_	SpaceAfter=No|start_char=470|end_char=473|ner=O
+8	"	"	PUNCT	''	_	6	punct	_	start_char=473|end_char=474|ner=O
+9	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	10	cop	_	start_char=475|end_char=477|ner=O
+10	teşekkürler	teşekkürler	PROPN	NNP	Number=Sing	0	root	_	SpaceAfter=No|start_char=478|end_char=489|ner=O
+11	.	.	PUNCT	.	_	10	punct	_	SpacesAfter=\n\n|start_char=489|end_char=490|ner=O
 
 # text = François and Hélène moved to Montréal in 2015.
 # sent_id = 9
 # constituency = (ROOT (S (NP (NNP François) (CC and) (NNP Hélène)) (VP (VBD moved) (PP (IN to) (NP (NNP Montréal))) (PP (IN in) (NP (CD 2015)))) (. .)))
-1	François	François	PROPN	NNP	Number=Sing	4	nsubj	_	start_char=492|end_char=500
-2	and	and	CCONJ	CC	_	3	cc	_	start_char=501|end_char=504
-3	Hélène	Hélène	PROPN	NNP	Number=Sing	1	conj	_	start_char=505|end_char=511
-4	moved	move	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=512|end_char=517
-5	to	to	ADP	IN	_	6	case	_	start_char=518|end_char=520
-6	Montréal	Montréal	PROPN	NNP	Number=Sing	4	obl	_	start_char=521|end_char=529
-7	in	in	ADP	IN	_	8	case	_	start_char=530|end_char=532
-8	2015	2015	NUM	CD	NumForm=Digit|NumType=Card	4	obl	_	SpaceAfter=No|start_char=533|end_char=537
-9	.	.	PUNCT	.	_	4	punct	_	start_char=537|end_char=538
+# sentiment = 1
+1	François	François	PROPN	NNP	Number=Sing	4	nsubj	_	start_char=492|end_char=500|ner=S-PERSON
+2	and	and	CCONJ	CC	_	3	cc	_	start_char=501|end_char=504|ner=O
+3	Hélène	Hélène	PROPN	NNP	Number=Sing	1	conj	_	start_char=505|end_char=511|ner=S-PERSON
+4	moved	move	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=512|end_char=517|ner=O
+5	to	to	ADP	IN	_	6	case	_	start_char=518|end_char=520|ner=O
+6	Montréal	Montréal	PROPN	NNP	Number=Sing	4	obl	_	start_char=521|end_char=529|ner=S-GPE
+7	in	in	ADP	IN	_	8	case	_	start_char=530|end_char=532|ner=O
+8	2015	2015	NUM	CD	NumForm=Digit|NumType=Card	4	obl	_	SpaceAfter=No|start_char=533|end_char=537|ner=S-DATE
+9	.	.	PUNCT	.	_	4	punct	_	start_char=537|end_char=538|ner=O
 
 # text = Their son, Noël, now attends École Saint-Exupéry.
 # sent_id = 10
 # constituency = (ROOT (S (NP (NP (PRP$ Their) (NN son)) (, ,) (NP (NNP Noël)) (, ,)) (ADVP (RB now)) (VP (VBZ attends) (NP (NNP École) (NNP Saint) (HYPH -) (NNP Exupéry))) (. .)))
-1	Their	their	PRON	PRP$	Case=Gen|Number=Plur|Person=3|Poss=Yes|PronType=Prs	2	nmod:poss	_	start_char=539|end_char=544
-2	son	son	NOUN	NN	Number=Sing	7	nsubj	_	SpaceAfter=No|start_char=545|end_char=548
-3	,	,	PUNCT	,	_	4	punct	_	start_char=548|end_char=549
-4	Noël	Noël	PROPN	NNP	Number=Sing	2	appos	_	SpaceAfter=No|start_char=550|end_char=554
-5	,	,	PUNCT	,	_	2	punct	_	start_char=554|end_char=555
-6	now	now	ADV	RB	PronType=Dem	7	advmod	_	start_char=556|end_char=559
-7	attends	attend	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=560|end_char=567
-8	École	École	PROPN	NNP	Number=Sing	11	compound	_	start_char=568|end_char=573
-9	Saint	Saint	PROPN	NNP	Number=Sing	11	compound	_	SpaceAfter=No|start_char=574|end_char=579
-10	-	-	PUNCT	HYPH	_	9	punct	_	SpaceAfter=No|start_char=579|end_char=580
-11	Exupéry	Exupéry	PROPN	NNP	Number=Sing	7	obj	_	SpaceAfter=No|start_char=580|end_char=587
-12	.	.	PUNCT	.	_	7	punct	_	SpacesAfter=\n\n|start_char=587|end_char=588
+# sentiment = 1
+1	Their	their	PRON	PRP$	Case=Gen|Number=Plur|Person=3|Poss=Yes|PronType=Prs	2	nmod:poss	_	start_char=539|end_char=544|ner=O
+2	son	son	NOUN	NN	Number=Sing	7	nsubj	_	SpaceAfter=No|start_char=545|end_char=548|ner=O
+3	,	,	PUNCT	,	_	4	punct	_	start_char=548|end_char=549|ner=O
+4	Noël	Noël	PROPN	NNP	Number=Sing	2	appos	_	SpaceAfter=No|start_char=550|end_char=554|ner=S-PERSON
+5	,	,	PUNCT	,	_	2	punct	_	start_char=554|end_char=555|ner=O
+6	now	now	ADV	RB	PronType=Dem	7	advmod	_	start_char=556|end_char=559|ner=O
+7	attends	attend	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=560|end_char=567|ner=O
+8	École	École	PROPN	NNP	Number=Sing	11	compound	_	start_char=568|end_char=573|ner=B-FAC
+9	Saint	Saint	PROPN	NNP	Number=Sing	11	compound	_	SpaceAfter=No|start_char=574|end_char=579|ner=I-FAC
+10	-	-	PUNCT	HYPH	_	9	punct	_	SpaceAfter=No|start_char=579|end_char=580|ner=I-FAC
+11	Exupéry	Exupéry	PROPN	NNP	Number=Sing	7	obj	_	SpaceAfter=No|start_char=580|end_char=587|ner=E-FAC
+12	.	.	PUNCT	.	_	7	punct	_	SpacesAfter=\n\n|start_char=587|end_char=588|ner=O
 
 # text = The Japanese word 東京 means "eastern capital."
 # sent_id = 11
 # constituency = (ROOT (S (NP (NP (DT The) (JJ Japanese) (NN word)) (NP (NN 東京))) (VP (VBZ means) (NP (`` ") (JJ eastern) (NN capital))) (. .) ('' ")))
-1	The	the	DET	DT	Definite=Def|PronType=Art	3	det	_	start_char=590|end_char=593
-2	Japanese	Japanese	ADJ	JJ	Degree=Pos	3	amod	_	start_char=594|end_char=602
-3	word	word	NOUN	NN	Number=Sing	5	nsubj	_	start_char=603|end_char=607
-4	東京	東京	NOUN	NN	Number=Sing	3	appos	_	start_char=608|end_char=610
-5	means	mean	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=611|end_char=616
-6	"	"	PUNCT	``	_	8	punct	_	SpaceAfter=No|start_char=617|end_char=618
-7	eastern	eastern	ADJ	JJ	Degree=Pos	8	amod	_	start_char=618|end_char=625
-8	capital	capital	NOUN	NN	Number=Sing	5	obj	_	SpaceAfter=No|start_char=626|end_char=633
-9	.	.	PUNCT	.	_	8	punct	_	SpaceAfter=No|start_char=633|end_char=634
-10	"	"	PUNCT	''	_	8	punct	_	start_char=634|end_char=635
+# sentiment = 1
+1	The	the	DET	DT	Definite=Def|PronType=Art	3	det	_	start_char=590|end_char=593|ner=O
+2	Japanese	Japanese	ADJ	JJ	Degree=Pos	3	amod	_	start_char=594|end_char=602|ner=S-NORP
+3	word	word	NOUN	NN	Number=Sing	5	nsubj	_	start_char=603|end_char=607|ner=O
+4	東京	東京	NOUN	NN	Number=Sing	3	appos	_	start_char=608|end_char=610|ner=O
+5	means	mean	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=611|end_char=616|ner=O
+6	"	"	PUNCT	``	_	8	punct	_	SpaceAfter=No|start_char=617|end_char=618|ner=O
+7	eastern	eastern	ADJ	JJ	Degree=Pos	8	amod	_	start_char=618|end_char=625|ner=O
+8	capital	capital	NOUN	NN	Number=Sing	5	obj	_	SpaceAfter=No|start_char=626|end_char=633|ner=O
+9	.	.	PUNCT	.	_	8	punct	_	SpaceAfter=No|start_char=633|end_char=634|ner=O
+10	"	"	PUNCT	''	_	8	punct	_	start_char=634|end_char=635|ner=O
 
 # text = In Chinese, 北京 is Beijing, and 你好 means hello.
 # sent_id = 12
 # constituency = (ROOT (S (PP (IN In) (NP (NNP Chinese))) (, ,) (S (NP (NNP 北京)) (VP (VBZ is) (NP (NNP Beijing)))) (, ,) (CC and) (S (NP (NNP 你好)) (VP (VBZ means) (ADVP (UH hello)))) (. .)))
-1	In	in	ADP	IN	_	2	case	_	start_char=636|end_char=638
-2	Chinese	Chinese	PROPN	NNP	Number=Sing	6	obl	_	SpaceAfter=No|start_char=639|end_char=646
-3	,	,	PUNCT	,	_	2	punct	_	start_char=646|end_char=647
-4	北京	北京	PROPN	NNP	Number=Sing	6	nsubj	_	start_char=648|end_char=650
-5	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	6	cop	_	start_char=651|end_char=653
-6	Beijing	Beijing	PROPN	NNP	Number=Sing	0	root	_	SpaceAfter=No|start_char=654|end_char=661
-7	,	,	PUNCT	,	_	10	punct	_	start_char=661|end_char=662
-8	and	and	CCONJ	CC	_	10	cc	_	start_char=663|end_char=666
-9	你好	你好	PROPN	NNP	Number=Sing	10	nsubj	_	start_char=667|end_char=669
-10	means	mean	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	6	conj	_	start_char=670|end_char=675
-11	hello	hello	INTJ	UH	_	10	obj	_	SpaceAfter=No|start_char=676|end_char=681
-12	.	.	PUNCT	.	_	6	punct	_	SpacesAfter=\n\n|start_char=681|end_char=682
+# sentiment = 1
+1	In	in	ADP	IN	_	2	case	_	start_char=636|end_char=638|ner=O
+2	Chinese	Chinese	PROPN	NNP	Number=Sing	6	obl	_	SpaceAfter=No|start_char=639|end_char=646|ner=S-NORP
+3	,	,	PUNCT	,	_	2	punct	_	start_char=646|end_char=647|ner=O
+4	北京	北京	PROPN	NNP	Number=Sing	6	nsubj	_	start_char=648|end_char=650|ner=O
+5	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	6	cop	_	start_char=651|end_char=653|ner=O
+6	Beijing	Beijing	PROPN	NNP	Number=Sing	0	root	_	SpaceAfter=No|start_char=654|end_char=661|ner=S-GPE
+7	,	,	PUNCT	,	_	10	punct	_	start_char=661|end_char=662|ner=O
+8	and	and	CCONJ	CC	_	10	cc	_	start_char=663|end_char=666|ner=O
+9	你好	你好	PROPN	NNP	Number=Sing	10	nsubj	_	start_char=667|end_char=669|ner=O
+10	means	mean	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	6	conj	_	start_char=670|end_char=675|ner=O
+11	hello	hello	INTJ	UH	_	10	obj	_	SpaceAfter=No|start_char=676|end_char=681|ner=O
+12	.	.	PUNCT	.	_	6	punct	_	SpacesAfter=\n\n|start_char=681|end_char=682|ner=O
 
 # text = She studied 한국어 for two years before moving to Seoul.
 # sent_id = 13
 # constituency = (ROOT (S (NP (PRP She)) (VP (VBD studied) (NP (NN 한국어)) (PP (IN for) (NP (CD two) (NNS years))) (PP (IN before) (S (VP (VBG moving) (PP (IN to) (NP (NNP Seoul))))))) (. .)))
-1	She	she	PRON	PRP	Case=Nom|Gender=Fem|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=684|end_char=687
-2	studied	study	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=688|end_char=695
-3	한국어	한국어	NOUN	NN	Number=Sing	2	obj	_	start_char=696|end_char=699
-4	for	for	ADP	IN	_	6	case	_	start_char=700|end_char=703
-5	two	two	NUM	CD	NumForm=Word|NumType=Card	6	nummod	_	start_char=704|end_char=707
-6	years	year	NOUN	NNS	Number=Plur	2	obl	_	start_char=708|end_char=713
-7	before	before	SCONJ	IN	_	8	mark	_	start_char=714|end_char=720
-8	moving	move	VERB	VBG	Tense=Pres|VerbForm=Part	2	advcl	_	start_char=721|end_char=727
-9	to	to	ADP	IN	_	10	case	_	start_char=728|end_char=730
-10	Seoul	Seoul	PROPN	NNP	Number=Sing	8	obl	_	SpaceAfter=No|start_char=731|end_char=736
-11	.	.	PUNCT	.	_	2	punct	_	start_char=736|end_char=737
+# sentiment = 2
+1	She	she	PRON	PRP	Case=Nom|Gender=Fem|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=684|end_char=687|ner=O
+2	studied	study	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=688|end_char=695|ner=O
+3	한국어	한국어	NOUN	NN	Number=Sing	2	obj	_	start_char=696|end_char=699|ner=O
+4	for	for	ADP	IN	_	6	case	_	start_char=700|end_char=703|ner=O
+5	two	two	NUM	CD	NumForm=Word|NumType=Card	6	nummod	_	start_char=704|end_char=707|ner=B-DATE
+6	years	year	NOUN	NNS	Number=Plur	2	obl	_	start_char=708|end_char=713|ner=E-DATE
+7	before	before	SCONJ	IN	_	8	mark	_	start_char=714|end_char=720|ner=O
+8	moving	move	VERB	VBG	Tense=Pres|VerbForm=Part	2	advcl	_	start_char=721|end_char=727|ner=O
+9	to	to	ADP	IN	_	10	case	_	start_char=728|end_char=730|ner=O
+10	Seoul	Seoul	PROPN	NNP	Number=Sing	8	obl	_	SpaceAfter=No|start_char=731|end_char=736|ner=S-GPE
+11	.	.	PUNCT	.	_	2	punct	_	start_char=736|end_char=737|ner=O
 
 # text = Her favorite dish is 김치찌개.
 # sent_id = 14
 # constituency = (ROOT (S (NP (PRP$ Her) (JJ favorite) (NN dish)) (VP (VBZ is) (NP (UH 김치찌개))) (. .)))
-1	Her	her	PRON	PRP$	Case=Gen|Gender=Fem|Number=Sing|Person=3|Poss=Yes|PronType=Prs	3	nmod:poss	_	start_char=738|end_char=741
-2	favorite	favorite	ADJ	JJ	Degree=Pos	3	amod	_	start_char=742|end_char=750
-3	dish	dish	NOUN	NN	Number=Sing	5	nsubj	_	start_char=751|end_char=755
-4	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	5	cop	_	start_char=756|end_char=758
-5	김치찌개	김치찌개	INTJ	UH	_	0	root	_	SpaceAfter=No|start_char=759|end_char=763
-6	.	.	PUNCT	.	_	5	punct	_	SpacesAfter=\n\n|start_char=763|end_char=764
+# sentiment = 1
+1	Her	her	PRON	PRP$	Case=Gen|Gender=Fem|Number=Sing|Person=3|Poss=Yes|PronType=Prs	3	nmod:poss	_	start_char=738|end_char=741|ner=O
+2	favorite	favorite	ADJ	JJ	Degree=Pos	3	amod	_	start_char=742|end_char=750|ner=O
+3	dish	dish	NOUN	NN	Number=Sing	5	nsubj	_	start_char=751|end_char=755|ner=O
+4	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	5	cop	_	start_char=756|end_char=758|ner=O
+5	김치찌개	김치찌개	INTJ	UH	_	0	root	_	SpaceAfter=No|start_char=759|end_char=763|ner=O
+6	.	.	PUNCT	.	_	5	punct	_	SpacesAfter=\n\n|start_char=763|end_char=764|ner=O
 
 # text = The Russian word for "peace" is мир.
 # sent_id = 15
 # constituency = (ROOT (S (NP (NP (DT The) (JJ Russian) (NN word)) (PP (IN for) (NP (`` ") (NN peace) ('' ")))) (VP (VBZ is) (ADJP (JJ мир))) (. .)))
-1	The	the	DET	DT	Definite=Def|PronType=Art	3	det	_	start_char=766|end_char=769
-2	Russian	Russian	ADJ	JJ	Degree=Pos	3	amod	_	start_char=770|end_char=777
-3	word	word	NOUN	NN	Number=Sing	9	nsubj	_	start_char=778|end_char=782
-4	for	for	ADP	IN	_	6	case	_	start_char=783|end_char=786
-5	"	"	PUNCT	``	_	6	punct	_	SpaceAfter=No|start_char=787|end_char=788
-6	peace	peace	NOUN	NN	Number=Sing	3	nmod	_	SpaceAfter=No|start_char=788|end_char=793
-7	"	"	PUNCT	''	_	6	punct	_	start_char=793|end_char=794
-8	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	9	cop	_	start_char=795|end_char=797
-9	мир	мир	ADJ	JJ	Degree=Pos	0	root	_	SpaceAfter=No|start_char=798|end_char=801
-10	.	.	PUNCT	.	_	9	punct	_	start_char=801|end_char=802
+# sentiment = 2
+1	The	the	DET	DT	Definite=Def|PronType=Art	3	det	_	start_char=766|end_char=769|ner=O
+2	Russian	Russian	ADJ	JJ	Degree=Pos	3	amod	_	start_char=770|end_char=777|ner=S-NORP
+3	word	word	NOUN	NN	Number=Sing	9	nsubj	_	start_char=778|end_char=782|ner=O
+4	for	for	ADP	IN	_	6	case	_	start_char=783|end_char=786|ner=O
+5	"	"	PUNCT	``	_	6	punct	_	SpaceAfter=No|start_char=787|end_char=788|ner=O
+6	peace	peace	NOUN	NN	Number=Sing	3	nmod	_	SpaceAfter=No|start_char=788|end_char=793|ner=O
+7	"	"	PUNCT	''	_	6	punct	_	start_char=793|end_char=794|ner=O
+8	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	9	cop	_	start_char=795|end_char=797|ner=O
+9	мир	мир	ADJ	JJ	Degree=Pos	0	root	_	SpaceAfter=No|start_char=798|end_char=801|ner=O
+10	.	.	PUNCT	.	_	9	punct	_	start_char=801|end_char=802|ner=O
 
 # text = Москва is the capital; Санкт-Петербург is the second-largest city.
 # sent_id = 16
 # constituency = (ROOT (S (S (NP (NNP Москва)) (VP (VBZ is) (NP (DT the) (NN capital)))) (: ;) (S (NP (NNP Санкт) (HYPH -) (NNP Петербург)) (VP (VBZ is) (NP (DT the) (ADJP (JJ second) (HYPH -) (JJS largest)) (NN city)))) (. .)))
-1	Москва	Москва	PROPN	NNP	Number=Sing	4	nsubj	_	start_char=803|end_char=809
-2	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	cop	_	start_char=810|end_char=812
-3	the	the	DET	DT	Definite=Def|PronType=Art	4	det	_	start_char=813|end_char=816
-4	capital	capital	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=817|end_char=824
-5	;	;	PUNCT	:	_	14	punct	_	start_char=824|end_char=825
-6	Санкт	Сeen	PROPN	NNP	Number=Sing	8	compound	_	SpaceAfter=No|start_char=826|end_char=831
-7	-	-	PUNCT	HYPH	_	6	punct	_	SpaceAfter=No|start_char=831|end_char=832
-8	Петербург	Пeleruene	PROPN	NNP	Number=Sing	14	nsubj	_	start_char=832|end_char=841
-9	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	14	cop	_	start_char=842|end_char=844
-10	the	the	DET	DT	Definite=Def|PronType=Art	14	det	_	start_char=845|end_char=848
-11	second	second	ADJ	JJ	Degree=Pos|NumForm=Word|NumType=Ord	13	amod	_	SpaceAfter=No|start_char=849|end_char=855
-12	-	-	PUNCT	HYPH	_	11	punct	_	SpaceAfter=No|start_char=855|end_char=856
-13	largest	large	ADJ	JJS	Degree=Sup	14	amod	_	start_char=856|end_char=863
-14	city	city	NOUN	NN	Number=Sing	4	parataxis	_	SpaceAfter=No|start_char=864|end_char=868
-15	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=868|end_char=869
+# sentiment = 1
+1	Москва	Москва	PROPN	NNP	Number=Sing	4	nsubj	_	start_char=803|end_char=809|ner=S-GPE
+2	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	cop	_	start_char=810|end_char=812|ner=O
+3	the	the	DET	DT	Definite=Def|PronType=Art	4	det	_	start_char=813|end_char=816|ner=O
+4	capital	capital	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=817|end_char=824|ner=O
+5	;	;	PUNCT	:	_	14	punct	_	start_char=824|end_char=825|ner=O
+6	Санкт	Сeen	PROPN	NNP	Number=Sing	8	compound	_	SpaceAfter=No|start_char=826|end_char=831|ner=O
+7	-	-	PUNCT	HYPH	_	6	punct	_	SpaceAfter=No|start_char=831|end_char=832|ner=O
+8	Петербург	Пeleruene	PROPN	NNP	Number=Sing	14	nsubj	_	start_char=832|end_char=841|ner=O
+9	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	14	cop	_	start_char=842|end_char=844|ner=O
+10	the	the	DET	DT	Definite=Def|PronType=Art	14	det	_	start_char=845|end_char=848|ner=O
+11	second	second	ADJ	JJ	Degree=Pos|NumForm=Word|NumType=Ord	13	amod	_	SpaceAfter=No|start_char=849|end_char=855|ner=S-ORDINAL
+12	-	-	PUNCT	HYPH	_	11	punct	_	SpaceAfter=No|start_char=855|end_char=856|ner=O
+13	largest	large	ADJ	JJS	Degree=Sup	14	amod	_	start_char=856|end_char=863|ner=O
+14	city	city	NOUN	NN	Number=Sing	4	parataxis	_	SpaceAfter=No|start_char=864|end_char=868|ner=O
+15	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=868|end_char=869|ner=O
 
 # text = Greek letters such as α, β, γ and Ω appear in physics formulas.
 # sent_id = 17
 # constituency = (ROOT (S (NP (NP (JJ Greek) (NNS letters)) (PP (JJ such) (IN as) (NP (NN α) (, ,) (NN β) (, ,) (: γ) (CC and) (NN Ω)))) (VP (VBP appear) (PP (IN in) (NP (NN physics) (NNS formulas)))) (. .)))
-1	Greek	Greek	ADJ	JJ	Degree=Pos	2	amod	_	start_char=871|end_char=876
-2	letters	letter	NOUN	NNS	Number=Plur	12	nsubj	_	start_char=877|end_char=884
-3	such	such	ADJ	JJ	ExtPos=ADP	5	case	_	start_char=885|end_char=889
-4	as	as	ADP	IN	_	3	fixed	_	start_char=890|end_char=892
-5	α	α	NOUN	NN	Number=Sing	2	nmod	_	SpaceAfter=No|start_char=893|end_char=894
-6	,	,	PUNCT	,	_	7	punct	_	start_char=894|end_char=895
-7	β	β	NOUN	NN	Number=Sing	5	conj	_	SpaceAfter=No|start_char=896|end_char=897
-8	,	,	PUNCT	,	_	11	punct	_	start_char=897|end_char=898
-9	γ	γ	PUNCT	:	_	11	punct	_	start_char=899|end_char=900
-10	and	and	CCONJ	CC	_	11	cc	_	start_char=901|end_char=904
-11	Ω	Ω	NOUN	NN	Number=Sing	5	conj	_	start_char=905|end_char=906
-12	appear	appear	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=907|end_char=913
-13	in	in	ADP	IN	_	15	case	_	start_char=914|end_char=916
-14	physics	physics	NOUN	NN	Number=Sing	15	compound	_	start_char=917|end_char=924
-15	formulas	formula	NOUN	NNS	Number=Plur	12	obl	_	SpaceAfter=No|start_char=925|end_char=933
-16	.	.	PUNCT	.	_	12	punct	_	start_char=933|end_char=934
+# sentiment = 1
+1	Greek	Greek	ADJ	JJ	Degree=Pos	2	amod	_	start_char=871|end_char=876|ner=S-NORP
+2	letters	letter	NOUN	NNS	Number=Plur	12	nsubj	_	start_char=877|end_char=884|ner=O
+3	such	such	ADJ	JJ	ExtPos=ADP	5	case	_	start_char=885|end_char=889|ner=O
+4	as	as	ADP	IN	_	3	fixed	_	start_char=890|end_char=892|ner=O
+5	α	α	NOUN	NN	Number=Sing	2	nmod	_	SpaceAfter=No|start_char=893|end_char=894|ner=O
+6	,	,	PUNCT	,	_	7	punct	_	start_char=894|end_char=895|ner=O
+7	β	β	NOUN	NN	Number=Sing	5	conj	_	SpaceAfter=No|start_char=896|end_char=897|ner=O
+8	,	,	PUNCT	,	_	11	punct	_	start_char=897|end_char=898|ner=O
+9	γ	γ	PUNCT	:	_	11	punct	_	start_char=899|end_char=900|ner=O
+10	and	and	CCONJ	CC	_	11	cc	_	start_char=901|end_char=904|ner=O
+11	Ω	Ω	NOUN	NN	Number=Sing	5	conj	_	start_char=905|end_char=906|ner=O
+12	appear	appear	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=907|end_char=913|ner=O
+13	in	in	ADP	IN	_	15	case	_	start_char=914|end_char=916|ner=O
+14	physics	physics	NOUN	NN	Number=Sing	15	compound	_	start_char=917|end_char=924|ner=O
+15	formulas	formula	NOUN	NNS	Number=Plur	12	obl	_	SpaceAfter=No|start_char=925|end_char=933|ner=O
+16	.	.	PUNCT	.	_	12	punct	_	start_char=933|end_char=934|ner=O
 
 # text = The word φιλοσοφία means love of wisdom.
 # sent_id = 18
 # constituency = (ROOT (S (NP (NP (DT The) (NN word)) (NP (NN φιλοσοφία))) (VP (VBZ means) (NP (NP (NN love)) (PP (IN of) (NP (NN wisdom))))) (. .)))
-1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=935|end_char=938
-2	word	word	NOUN	NN	Number=Sing	4	nsubj	_	start_char=939|end_char=943
-3	φιλοσοφία	φιλοσοφία	NOUN	NN	Number=Sing	2	appos	_	start_char=944|end_char=953
-4	means	mean	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=954|end_char=959
-5	love	love	NOUN	NN	Number=Sing	4	obj	_	start_char=960|end_char=964
-6	of	of	ADP	IN	_	7	case	_	start_char=965|end_char=967
-7	wisdom	wisdom	NOUN	NN	Number=Sing	5	nmod	_	SpaceAfter=No|start_char=968|end_char=974
-8	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=974|end_char=975
+# sentiment = 2
+1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=935|end_char=938|ner=O
+2	word	word	NOUN	NN	Number=Sing	4	nsubj	_	start_char=939|end_char=943|ner=O
+3	φιλοσοφία	φιλοσοφία	NOUN	NN	Number=Sing	2	appos	_	start_char=944|end_char=953|ner=O
+4	means	mean	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=954|end_char=959|ner=O
+5	love	love	NOUN	NN	Number=Sing	4	obj	_	start_char=960|end_char=964|ner=O
+6	of	of	ADP	IN	_	7	case	_	start_char=965|end_char=967|ner=O
+7	wisdom	wisdom	NOUN	NN	Number=Sing	5	nmod	_	SpaceAfter=No|start_char=968|end_char=974|ner=O
+8	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=974|end_char=975|ner=O
 
 # text = The Arabic greeting مرحبا is common.
 # sent_id = 19
 # constituency = (ROOT (S (NP (DT The) (JJ Arabic) (NN greeting) (NN مرحبا)) (VP (VBZ is) (ADJP (JJ common))) (. .)))
-1	The	the	DET	DT	Definite=Def|PronType=Art	4	det	_	start_char=977|end_char=980
-2	Arabic	Arabic	ADJ	JJ	Degree=Pos	4	amod	_	start_char=981|end_char=987
-3	greeting	greeting	NOUN	NN	Number=Sing	4	compound	_	start_char=988|end_char=996
-4	مرحبا	مرحبا	NOUN	NN	Number=Sing	6	nsubj	_	start_char=997|end_char=1002
-5	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	6	cop	_	start_char=1003|end_char=1005
-6	common	common	ADJ	JJ	Degree=Pos	0	root	_	SpaceAfter=No|start_char=1006|end_char=1012
-7	.	.	PUNCT	.	_	6	punct	_	start_char=1012|end_char=1013
+# sentiment = 1
+1	The	the	DET	DT	Definite=Def|PronType=Art	4	det	_	start_char=977|end_char=980|ner=O
+2	Arabic	Arabic	ADJ	JJ	Degree=Pos	4	amod	_	start_char=981|end_char=987|ner=S-NORP
+3	greeting	greeting	NOUN	NN	Number=Sing	4	compound	_	start_char=988|end_char=996|ner=O
+4	مرحبا	مرحبا	NOUN	NN	Number=Sing	6	nsubj	_	start_char=997|end_char=1002|ner=O
+5	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	6	cop	_	start_char=1003|end_char=1005|ner=O
+6	common	common	ADJ	JJ	Degree=Pos	0	root	_	SpaceAfter=No|start_char=1006|end_char=1012|ner=O
+7	.	.	PUNCT	.	_	6	punct	_	start_char=1012|end_char=1013|ner=O
 
 # text = Hebrew writes שלום for peace.
 # sent_id = 20
 # constituency = (ROOT (S (NP (NNP Hebrew)) (VP (VBZ writes) (PP (`` שלום)) (PP (IN for) (NP (NN peace)))) (. .)))
-1	Hebrew	Hebrew	PROPN	NNP	Number=Sing	2	nsubj	_	start_char=1014|end_char=1020
-2	writes	write	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1021|end_char=1027
-3	שלום	שלום	PUNCT	``	_	5	punct	_	start_char=1028|end_char=1032
-4	for	for	ADP	IN	_	5	case	_	start_char=1033|end_char=1036
-5	peace	peace	NOUN	NN	Number=Sing	2	obl	_	SpaceAfter=No|start_char=1037|end_char=1042
-6	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=1042|end_char=1043
+# sentiment = 1
+1	Hebrew	Hebrew	PROPN	NNP	Number=Sing	2	nsubj	_	start_char=1014|end_char=1020|ner=S-PERSON
+2	writes	write	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1021|end_char=1027|ner=O
+3	שלום	שלום	PUNCT	``	_	5	punct	_	start_char=1028|end_char=1032|ner=O
+4	for	for	ADP	IN	_	5	case	_	start_char=1033|end_char=1036|ner=O
+5	peace	peace	NOUN	NN	Number=Sing	2	obl	_	SpaceAfter=No|start_char=1037|end_char=1042|ner=O
+6	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=1042|end_char=1043|ner=O
 
 # text = Dmitri Shostakovich (Дмитрий Шостакович) wrote fifteen symphonies.
 # sent_id = 21
 # constituency = (ROOT (S (NP (NP (NNP Dmitri) (NNP Shostakovich)) (-LRB- -LRB-) (CC Дмитрий) (NN Шостакович) (-RRB- -RRB-)) (VP (VBD wrote) (NP (CD fifteen) (NNS symphonies))) (. .)))
-1	Dmitri	Dmitri	PROPN	NNP	Number=Sing	7	nsubj	_	start_char=1045|end_char=1051
-2	Shostakovich	Shostakovich	PROPN	NNP	Number=Sing	1	flat	_	start_char=1052|end_char=1064
-3	(	(	PUNCT	-LRB-	_	5	punct	_	SpaceAfter=No|start_char=1065|end_char=1066
-4	Дмитрий	дмитрий	CCONJ	CC	_	5	cc	_	start_char=1066|end_char=1073
-5	Шостакович	шостакович	NOUN	NN	Number=Sing	1	appos	_	SpaceAfter=No|start_char=1074|end_char=1084
-6	)	)	PUNCT	-RRB-	_	5	punct	_	start_char=1084|end_char=1085
-7	wrote	write	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1086|end_char=1091
-8	fifteen	fifteen	NUM	CD	NumForm=Word|NumType=Card	9	nummod	_	start_char=1092|end_char=1099
-9	symphonies	symphony	NOUN	NNS	Number=Plur	7	obj	_	SpaceAfter=No|start_char=1100|end_char=1110
-10	.	.	PUNCT	.	_	7	punct	_	SpacesAfter=\n\n|start_char=1110|end_char=1111
+# sentiment = 1
+1	Dmitri	Dmitri	PROPN	NNP	Number=Sing	7	nsubj	_	start_char=1045|end_char=1051|ner=B-PERSON
+2	Shostakovich	Shostakovich	PROPN	NNP	Number=Sing	1	flat	_	start_char=1052|end_char=1064|ner=E-PERSON
+3	(	(	PUNCT	-LRB-	_	5	punct	_	SpaceAfter=No|start_char=1065|end_char=1066|ner=O
+4	Дмитрий	дмитрий	CCONJ	CC	_	5	cc	_	start_char=1066|end_char=1073|ner=O
+5	Шостакович	шостакович	NOUN	NN	Number=Sing	1	appos	_	SpaceAfter=No|start_char=1074|end_char=1084|ner=O
+6	)	)	PUNCT	-RRB-	_	5	punct	_	start_char=1084|end_char=1085|ner=O
+7	wrote	write	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1086|end_char=1091|ner=O
+8	fifteen	fifteen	NUM	CD	NumForm=Word|NumType=Card	9	nummod	_	start_char=1092|end_char=1099|ner=S-CARDINAL
+9	symphonies	symphony	NOUN	NNS	Number=Plur	7	obj	_	SpaceAfter=No|start_char=1100|end_char=1110|ner=O
+10	.	.	PUNCT	.	_	7	punct	_	SpacesAfter=\n\n|start_char=1110|end_char=1111|ner=O
 
 # text = Nguyễn Thị Minh Khai Street is in Hồ Chí Minh City.
 # sent_id = 22
 # constituency = (ROOT (S (NP (NNP Nguyễn) (NNP Thị) (NNP Minh) (NNP Khai) (NNP Street)) (VP (VBZ is) (PP (IN in) (NP (NNP Hồ) (NNP Chí) (NNP Minh) (NNP City)))) (. .)))
-1	Nguyễn	Nguyễn	PROPN	NNP	Number=Sing	2	compound	_	start_char=1113|end_char=1119
-2	Thị	Thị	PROPN	NNP	Number=Sing	3	compound	_	start_char=1120|end_char=1123
-3	Minh	Minh	PROPN	NNP	Number=Sing	5	compound	_	start_char=1124|end_char=1128
-4	Khai	Khai	PROPN	NNP	Number=Sing	5	compound	_	start_char=1129|end_char=1133
-5	Street	Street	PROPN	NNP	Number=Sing	11	nsubj	_	start_char=1134|end_char=1140
-6	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	11	cop	_	start_char=1141|end_char=1143
-7	in	in	ADP	IN	_	11	case	_	start_char=1144|end_char=1146
-8	Hồ	Hồ	PROPN	NNP	Number=Sing	11	compound	_	start_char=1147|end_char=1149
-9	Chí	Chí	PROPN	NNP	Number=Sing	10	compound	_	start_char=1150|end_char=1153
-10	Minh	Minh	PROPN	NNP	Number=Sing	11	compound	_	start_char=1154|end_char=1158
-11	City	City	PROPN	NNP	Number=Sing	0	root	_	SpaceAfter=No|start_char=1159|end_char=1163
-12	.	.	PUNCT	.	_	11	punct	_	start_char=1163|end_char=1164
+# sentiment = 1
+1	Nguyễn	Nguyễn	PROPN	NNP	Number=Sing	2	compound	_	start_char=1113|end_char=1119|ner=B-FAC
+2	Thị	Thị	PROPN	NNP	Number=Sing	3	compound	_	start_char=1120|end_char=1123|ner=I-FAC
+3	Minh	Minh	PROPN	NNP	Number=Sing	5	compound	_	start_char=1124|end_char=1128|ner=I-FAC
+4	Khai	Khai	PROPN	NNP	Number=Sing	5	compound	_	start_char=1129|end_char=1133|ner=I-FAC
+5	Street	Street	PROPN	NNP	Number=Sing	11	nsubj	_	start_char=1134|end_char=1140|ner=E-FAC
+6	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	11	cop	_	start_char=1141|end_char=1143|ner=O
+7	in	in	ADP	IN	_	11	case	_	start_char=1144|end_char=1146|ner=O
+8	Hồ	Hồ	PROPN	NNP	Number=Sing	11	compound	_	start_char=1147|end_char=1149|ner=B-GPE
+9	Chí	Chí	PROPN	NNP	Number=Sing	10	compound	_	start_char=1150|end_char=1153|ner=I-GPE
+10	Minh	Minh	PROPN	NNP	Number=Sing	11	compound	_	start_char=1154|end_char=1158|ner=I-GPE
+11	City	City	PROPN	NNP	Number=Sing	0	root	_	SpaceAfter=No|start_char=1159|end_char=1163|ner=E-GPE
+12	.	.	PUNCT	.	_	11	punct	_	start_char=1163|end_char=1164|ner=O
 
 # text = Phở is served everywhere.
 # sent_id = 23
 # constituency = (ROOT (S (NP (NN Phở)) (VP (VBZ is) (VP (VBN served) (ADVP (RB everywhere)))) (. .)))
-1	Phở	phở	NOUN	NN	Number=Sing	3	nsubj:pass	_	start_char=1165|end_char=1168
-2	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	aux:pass	_	start_char=1169|end_char=1171
-3	served	serve	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	start_char=1172|end_char=1178
-4	everywhere	everywhere	ADV	RB	PronType=Ind	3	advmod	_	SpaceAfter=No|start_char=1179|end_char=1189
-5	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=1189|end_char=1190
+# sentiment = 1
+1	Phở	phở	NOUN	NN	Number=Sing	3	nsubj:pass	_	start_char=1165|end_char=1168|ner=O
+2	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	aux:pass	_	start_char=1169|end_char=1171|ner=O
+3	served	serve	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	start_char=1172|end_char=1178|ner=O
+4	everywhere	everywhere	ADV	RB	PronType=Ind	3	advmod	_	SpaceAfter=No|start_char=1179|end_char=1189|ner=O
+5	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=1189|end_char=1190|ner=O
 
 # text = The author, Chimamanda Ngozi Adichie, spoke in Lagos.
 # sent_id = 24
 # constituency = (ROOT (S (NP (NP (DT The) (NN author)) (, ,) (NP (NNP Chimamanda) (NNP Ngozi) (NNP Adichie)) (, ,)) (VP (VBD spoke) (PP (IN in) (NP (NNP Lagos)))) (. .)))
-1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=1192|end_char=1195
-2	author	author	NOUN	NN	Number=Sing	8	nsubj	_	SpaceAfter=No|start_char=1196|end_char=1202
-3	,	,	PUNCT	,	_	4	punct	_	start_char=1202|end_char=1203
-4	Chimamanda	Chimamanda	PROPN	NNP	Number=Sing	2	appos	_	start_char=1204|end_char=1214
-5	Ngozi	Ngozi	PROPN	NNP	Number=Sing	4	flat	_	start_char=1215|end_char=1220
-6	Adichie	Adichie	PROPN	NNP	Number=Sing	4	flat	_	SpaceAfter=No|start_char=1221|end_char=1228
-7	,	,	PUNCT	,	_	2	punct	_	start_char=1228|end_char=1229
-8	spoke	speak	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1230|end_char=1235
-9	in	in	ADP	IN	_	10	case	_	start_char=1236|end_char=1238
-10	Lagos	Lago	PROPN	NNP	Number=Sing	8	obl	_	SpaceAfter=No|start_char=1239|end_char=1244
-11	.	.	PUNCT	.	_	8	punct	_	start_char=1244|end_char=1245
+# sentiment = 1
+1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=1192|end_char=1195|ner=O
+2	author	author	NOUN	NN	Number=Sing	8	nsubj	_	SpaceAfter=No|start_char=1196|end_char=1202|ner=O
+3	,	,	PUNCT	,	_	4	punct	_	start_char=1202|end_char=1203|ner=O
+4	Chimamanda	Chimamanda	PROPN	NNP	Number=Sing	2	appos	_	start_char=1204|end_char=1214|ner=B-PERSON
+5	Ngozi	Ngozi	PROPN	NNP	Number=Sing	4	flat	_	start_char=1215|end_char=1220|ner=I-PERSON
+6	Adichie	Adichie	PROPN	NNP	Number=Sing	4	flat	_	SpaceAfter=No|start_char=1221|end_char=1228|ner=E-PERSON
+7	,	,	PUNCT	,	_	2	punct	_	start_char=1228|end_char=1229|ner=O
+8	spoke	speak	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1230|end_char=1235|ner=O
+9	in	in	ADP	IN	_	10	case	_	start_char=1236|end_char=1238|ner=O
+10	Lagos	Lago	PROPN	NNP	Number=Sing	8	obl	_	SpaceAfter=No|start_char=1239|end_char=1244|ner=S-GPE
+11	.	.	PUNCT	.	_	8	punct	_	start_char=1244|end_char=1245|ner=O
 
 # text = Ngũgĩ wa Thiong'o was in the audience.
 # sent_id = 25
 # constituency = (ROOT (S (NP (NNP Ngũgĩ) (NNP wa) (NNP Thiong) (NNP 'o)) (VP (VBD was) (PP (IN in) (NP (DT the) (NN audience)))) (. .)))
-1	Ngũgĩ	Ngũgĩ	PROPN	NNP	Number=Sing	8	nsubj	_	start_char=1246|end_char=1251
-2	wa	wa	PROPN	NNP	Number=Sing	1	flat	_	start_char=1252|end_char=1254
-3-4	Thiong'o	_	_	_	_	_	_	_	start_char=1255|end_char=1263
+# sentiment = 1
+1	Ngũgĩ	Ngũgĩ	PROPN	NNP	Number=Sing	8	nsubj	_	start_char=1246|end_char=1251|ner=B-PERSON
+2	wa	wa	PROPN	NNP	Number=Sing	1	flat	_	start_char=1252|end_char=1254|ner=I-PERSON
+3-4	Thiong'o	_	_	_	_	_	_	_	start_char=1255|end_char=1263|ner=E-PERSON
 3	Thiong	Thiong	PROPN	NNP	Number=Sing	1	flat	_	start_char=1255|end_char=1261
 4	'o	'o	PROPN	NNP	Number=Sing	1	flat	_	start_char=1261|end_char=1263
-5	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	8	cop	_	start_char=1264|end_char=1267
-6	in	in	ADP	IN	_	8	case	_	start_char=1268|end_char=1270
-7	the	the	DET	DT	Definite=Def|PronType=Art	8	det	_	start_char=1271|end_char=1274
-8	audience	audience	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=1275|end_char=1283
-9	.	.	PUNCT	.	_	8	punct	_	SpacesAfter=\n\n|start_char=1283|end_char=1284
+5	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	8	cop	_	start_char=1264|end_char=1267|ner=O
+6	in	in	ADP	IN	_	8	case	_	start_char=1268|end_char=1270|ner=O
+7	the	the	DET	DT	Definite=Def|PronType=Art	8	det	_	start_char=1271|end_char=1274|ner=O
+8	audience	audience	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=1275|end_char=1283|ner=O
+9	.	.	PUNCT	.	_	8	punct	_	SpacesAfter=\n\n|start_char=1283|end_char=1284|ner=O
 
 # text = São Paulo's population exceeds 12 million.
 # sent_id = 26
 # constituency = (ROOT (S (NP (NP (NNP São) (NNP Paulo) (POS 's)) (NN population)) (VP (VBZ exceeds) (NP (QP (CD 12) (CD million)))) (. .)))
-1	São	São	PROPN	NNP	Number=Sing	4	nmod:poss	_	start_char=1286|end_char=1289
-2-3	Paulo's	_	_	_	_	_	_	_	start_char=1290|end_char=1297
+# sentiment = 1
+1	São	São	PROPN	NNP	Number=Sing	4	nmod:poss	_	start_char=1286|end_char=1289|ner=B-GPE
+2-3	Paulo's	_	_	_	_	_	_	_	start_char=1290|end_char=1297|ner=E-GPE
 2	Paulo	Paulo	PROPN	NNP	Number=Sing	1	flat	_	start_char=1290|end_char=1295
 3	's	's	PART	POS	_	1	case	_	start_char=1295|end_char=1297
-4	population	population	NOUN	NN	Number=Sing	5	nsubj	_	start_char=1298|end_char=1308
-5	exceeds	exceed	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1309|end_char=1316
-6	12	12	NUM	CD	NumForm=Digit|NumType=Card	7	compound	_	start_char=1317|end_char=1319
-7	million	million	NUM	CD	NumForm=Word|NumType=Card	5	obj	_	SpaceAfter=No|start_char=1320|end_char=1327
-8	.	.	PUNCT	.	_	5	punct	_	start_char=1327|end_char=1328
+4	population	population	NOUN	NN	Number=Sing	5	nsubj	_	start_char=1298|end_char=1308|ner=O
+5	exceeds	exceed	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1309|end_char=1316|ner=O
+6	12	12	NUM	CD	NumForm=Digit|NumType=Card	7	compound	_	start_char=1317|end_char=1319|ner=B-CARDINAL
+7	million	million	NUM	CD	NumForm=Word|NumType=Card	5	obj	_	SpaceAfter=No|start_char=1320|end_char=1327|ner=E-CARDINAL
+8	.	.	PUNCT	.	_	5	punct	_	start_char=1327|end_char=1328|ner=O
 
 # text = Ação and coração are Portuguese words.
 # sent_id = 27
 # constituency = (ROOT (S (NP (NNP Ação) (CC and) (NNP coração)) (VP (VBP are) (NP (JJ Portuguese) (NNS words))) (. .)))
-1	Ação	Ação	PROPN	NNP	Number=Sing	6	nsubj	_	start_char=1329|end_char=1333
-2	and	and	CCONJ	CC	_	3	cc	_	start_char=1334|end_char=1337
-3	coração	coração	PROPN	NNP	Number=Sing	1	conj	_	start_char=1338|end_char=1345
-4	are	be	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	6	cop	_	start_char=1346|end_char=1349
-5	Portuguese	Portuguese	ADJ	JJ	Degree=Pos	6	amod	_	start_char=1350|end_char=1360
-6	words	word	NOUN	NNS	Number=Plur	0	root	_	SpaceAfter=No|start_char=1361|end_char=1366
-7	.	.	PUNCT	.	_	6	punct	_	SpacesAfter=\n\n|start_char=1366|end_char=1367
+# sentiment = 1
+1	Ação	Ação	PROPN	NNP	Number=Sing	6	nsubj	_	start_char=1329|end_char=1333|ner=O
+2	and	and	CCONJ	CC	_	3	cc	_	start_char=1334|end_char=1337|ner=O
+3	coração	coração	PROPN	NNP	Number=Sing	1	conj	_	start_char=1338|end_char=1345|ner=O
+4	are	be	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	6	cop	_	start_char=1346|end_char=1349|ner=O
+5	Portuguese	Portuguese	ADJ	JJ	Degree=Pos	6	amod	_	start_char=1350|end_char=1360|ner=S-LANGUAGE
+6	words	word	NOUN	NNS	Number=Plur	0	root	_	SpaceAfter=No|start_char=1361|end_char=1366|ner=O
+7	.	.	PUNCT	.	_	6	punct	_	SpacesAfter=\n\n|start_char=1366|end_char=1367|ner=O
 
 # text = The Māori name for New Zealand is Aotearoa.
 # sent_id = 28
 # constituency = (ROOT (S (NP (NP (DT The) (JJ Māori) (NN name)) (PP (IN for) (NP (NNP New) (NNP Zealand)))) (VP (VBZ is) (NP (NNP Aotearoa))) (. .)))
-1	The	the	DET	DT	Definite=Def|PronType=Art	3	det	_	start_char=1369|end_char=1372
-2	Māori	Māori	ADJ	JJ	Degree=Pos	3	amod	_	start_char=1373|end_char=1378
-3	name	name	NOUN	NN	Number=Sing	8	nsubj	_	start_char=1379|end_char=1383
-4	for	for	ADP	IN	_	5	case	_	start_char=1384|end_char=1387
-5	New	New	ADJ	NNP	Degree=Pos	3	nmod	_	start_char=1388|end_char=1391
-6	Zealand	Zealand	PROPN	NNP	Number=Sing	5	flat	_	start_char=1392|end_char=1399
-7	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	8	cop	_	start_char=1400|end_char=1402
-8	Aotearoa	Aotearoa	PROPN	NNP	Number=Sing	0	root	_	SpaceAfter=No|start_char=1403|end_char=1411
-9	.	.	PUNCT	.	_	8	punct	_	start_char=1411|end_char=1412
+# sentiment = 1
+1	The	the	DET	DT	Definite=Def|PronType=Art	3	det	_	start_char=1369|end_char=1372|ner=O
+2	Māori	Māori	ADJ	JJ	Degree=Pos	3	amod	_	start_char=1373|end_char=1378|ner=S-NORP
+3	name	name	NOUN	NN	Number=Sing	8	nsubj	_	start_char=1379|end_char=1383|ner=O
+4	for	for	ADP	IN	_	5	case	_	start_char=1384|end_char=1387|ner=O
+5	New	New	ADJ	NNP	Degree=Pos	3	nmod	_	start_char=1388|end_char=1391|ner=B-GPE
+6	Zealand	Zealand	PROPN	NNP	Number=Sing	5	flat	_	start_char=1392|end_char=1399|ner=E-GPE
+7	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	8	cop	_	start_char=1400|end_char=1402|ner=O
+8	Aotearoa	Aotearoa	PROPN	NNP	Number=Sing	0	root	_	SpaceAfter=No|start_char=1403|end_char=1411|ner=S-GPE
+9	.	.	PUNCT	.	_	8	punct	_	start_char=1411|end_char=1412|ner=O
 
 # text = Te reo Māori is an official language.
 # sent_id = 29
 # constituency = (ROOT (S (NP (NNP Te) (NNP reo) (NNP Māori)) (VP (VBZ is) (NP (DT an) (JJ official) (NN language))) (. .)))
-1	Te	Te	PROPN	NNP	Number=Sing	7	nsubj	_	start_char=1413|end_char=1415
-2	reo	reo	PROPN	NNP	Number=Sing	1	flat	_	start_char=1416|end_char=1419
-3	Māori	Māori	PROPN	NNP	Number=Sing	1	flat	_	start_char=1420|end_char=1425
-4	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	7	cop	_	start_char=1426|end_char=1428
-5	an	a	DET	DT	Definite=Ind|PronType=Art	7	det	_	start_char=1429|end_char=1431
-6	official	official	ADJ	JJ	Degree=Pos	7	amod	_	start_char=1432|end_char=1440
-7	language	language	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=1441|end_char=1449
-8	.	.	PUNCT	.	_	7	punct	_	SpacesAfter=\n\n|start_char=1449|end_char=1450
+# sentiment = 1
+1	Te	Te	PROPN	NNP	Number=Sing	7	nsubj	_	start_char=1413|end_char=1415|ner=B-ORG
+2	reo	reo	PROPN	NNP	Number=Sing	1	flat	_	start_char=1416|end_char=1419|ner=I-ORG
+3	Māori	Māori	PROPN	NNP	Number=Sing	1	flat	_	start_char=1420|end_char=1425|ner=E-ORG
+4	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	7	cop	_	start_char=1426|end_char=1428|ner=O
+5	an	a	DET	DT	Definite=Ind|PronType=Art	7	det	_	start_char=1429|end_char=1431|ner=O
+6	official	official	ADJ	JJ	Degree=Pos	7	amod	_	start_char=1432|end_char=1440|ner=O
+7	language	language	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=1441|end_char=1449|ner=O
+8	.	.	PUNCT	.	_	7	punct	_	SpacesAfter=\n\n|start_char=1449|end_char=1450|ner=O
 
 # text = Hindi uses Devanagari: नमस्ते means hello.
 # sent_id = 30
 # constituency = (ROOT (S (S (NP (NNP Hindi)) (VP (VBZ uses) (NP (NNP Devanagari)))) (: :) (S (NP (`` नमस्ते)) (VP (VBZ means) (INTJ (UH hello)))) (. .)))
-1	Hindi	Hindi	PROPN	NNP	Number=Sing	2	nsubj	_	start_char=1452|end_char=1457
-2	uses	use	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1458|end_char=1462
-3	Devanagari	Devanagari	PROPN	NNP	Number=Sing	2	obj	_	SpaceAfter=No|start_char=1463|end_char=1473
-4	:	:	PUNCT	:	_	6	punct	_	start_char=1473|end_char=1474
-5	नमस्ते	uuulee	PUNCT	``	_	6	punct	_	start_char=1475|end_char=1481
-6	means	mean	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	parataxis	_	start_char=1482|end_char=1487
-7	hello	hello	INTJ	UH	_	6	obj	_	SpaceAfter=No|start_char=1488|end_char=1493
-8	.	.	PUNCT	.	_	2	punct	_	start_char=1493|end_char=1494
+# sentiment = 1
+1	Hindi	Hindi	PROPN	NNP	Number=Sing	2	nsubj	_	start_char=1452|end_char=1457|ner=S-LANGUAGE
+2	uses	use	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1458|end_char=1462|ner=O
+3	Devanagari	Devanagari	PROPN	NNP	Number=Sing	2	obj	_	SpaceAfter=No|start_char=1463|end_char=1473|ner=S-LANGUAGE
+4	:	:	PUNCT	:	_	6	punct	_	start_char=1473|end_char=1474|ner=O
+5	नमस्ते	uuulee	PUNCT	``	_	6	punct	_	start_char=1475|end_char=1481|ner=O
+6	means	mean	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	parataxis	_	start_char=1482|end_char=1487|ner=O
+7	hello	hello	INTJ	UH	_	6	obj	_	SpaceAfter=No|start_char=1488|end_char=1493|ner=O
+8	.	.	PUNCT	.	_	2	punct	_	start_char=1493|end_char=1494|ner=O
 
 # text = Tamil uses its own script: வணக்கம்.
 # sent_id = 31
 # constituency = (ROOT (S (S (NP (NNP Tamil)) (VP (VBZ uses) (NP (PRP$ its) (JJ own) (NN script)))) (: :) (NP (RB வணக்கம்)) (. .)))
-1	Tamil	Tamil	PROPN	NNP	Number=Sing	2	nsubj	_	start_char=1495|end_char=1500
-2	uses	use	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1501|end_char=1505
-3	its	its	PRON	PRP$	Case=Gen|Gender=Neut|Number=Sing|Person=3|Poss=Yes|PronType=Prs	5	nmod:poss	_	start_char=1506|end_char=1509
-4	own	own	ADJ	JJ	Degree=Pos	5	amod	_	start_char=1510|end_char=1513
-5	script	script	NOUN	NN	Number=Sing	2	obj	_	SpaceAfter=No|start_char=1514|end_char=1520
-6	:	:	PUNCT	:	_	7	punct	_	start_char=1520|end_char=1521
-7	வணக்கம்	வணக்கம்	ADV	RB	_	2	advmod	_	SpaceAfter=No|start_char=1522|end_char=1529
-8	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=1529|end_char=1530
+# sentiment = 1
+1	Tamil	Tamil	PROPN	NNP	Number=Sing	2	nsubj	_	start_char=1495|end_char=1500|ner=S-NORP
+2	uses	use	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1501|end_char=1505|ner=O
+3	its	its	PRON	PRP$	Case=Gen|Gender=Neut|Number=Sing|Person=3|Poss=Yes|PronType=Prs	5	nmod:poss	_	start_char=1506|end_char=1509|ner=O
+4	own	own	ADJ	JJ	Degree=Pos	5	amod	_	start_char=1510|end_char=1513|ner=O
+5	script	script	NOUN	NN	Number=Sing	2	obj	_	SpaceAfter=No|start_char=1514|end_char=1520|ner=O
+6	:	:	PUNCT	:	_	7	punct	_	start_char=1520|end_char=1521|ner=O
+7	வணக்கம்	வணக்கம்	ADV	RB	_	2	advmod	_	SpaceAfter=No|start_char=1522|end_char=1529|ner=O
+8	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=1529|end_char=1530|ner=O
 
 # text = Herr Müller from Düsseldorf ordered a Weißbier.
 # sent_id = 32
 # constituency = (ROOT (S (NP (NP (NNP Herr) (NNP Müller)) (PP (IN from) (NP (NNP Düsseldorf)))) (VP (VBD ordered) (NP (DT a) (NNP Weißbier))) (. .)))
-1	Herr	Herr	PROPN	NNP	Number=Sing	5	nsubj	_	start_char=1532|end_char=1536
-2	Müller	Müller	PROPN	NNP	Number=Sing	1	flat	_	start_char=1537|end_char=1543
-3	from	from	ADP	IN	_	4	case	_	start_char=1544|end_char=1548
-4	Düsseldorf	Düsseldorf	PROPN	NNP	Number=Sing	1	nmod	_	start_char=1549|end_char=1559
-5	ordered	order	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1560|end_char=1567
-6	a	a	DET	DT	Definite=Ind|PronType=Art	7	det	_	start_char=1568|end_char=1569
-7	Weißbier	Weißbier	PROPN	NNP	Number=Sing	5	obj	_	SpaceAfter=No|start_char=1570|end_char=1578
-8	.	.	PUNCT	.	_	5	punct	_	start_char=1578|end_char=1579
+# sentiment = 1
+1	Herr	Herr	PROPN	NNP	Number=Sing	5	nsubj	_	start_char=1532|end_char=1536|ner=B-PERSON
+2	Müller	Müller	PROPN	NNP	Number=Sing	1	flat	_	start_char=1537|end_char=1543|ner=E-PERSON
+3	from	from	ADP	IN	_	4	case	_	start_char=1544|end_char=1548|ner=O
+4	Düsseldorf	Düsseldorf	PROPN	NNP	Number=Sing	1	nmod	_	start_char=1549|end_char=1559|ner=S-GPE
+5	ordered	order	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1560|end_char=1567|ner=O
+6	a	a	DET	DT	Definite=Ind|PronType=Art	7	det	_	start_char=1568|end_char=1569|ner=O
+7	Weißbier	Weißbier	PROPN	NNP	Number=Sing	5	obj	_	SpaceAfter=No|start_char=1570|end_char=1578|ner=S-PRODUCT
+8	.	.	PUNCT	.	_	5	punct	_	start_char=1578|end_char=1579|ner=O
 
 # text = Straße means street.
 # sent_id = 33
 # constituency = (ROOT (S (NP (NNP Straße)) (VP (VBZ means) (NP (NN street))) (. .)))
-1	Straße	Straße	PROPN	NNP	Number=Sing	2	nsubj	_	start_char=1580|end_char=1586
-2	means	mean	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1587|end_char=1592
-3	street	street	NOUN	NN	Number=Sing	2	obj	_	SpaceAfter=No|start_char=1593|end_char=1599
-4	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=1599|end_char=1600
+# sentiment = 1
+1	Straße	Straße	PROPN	NNP	Number=Sing	2	nsubj	_	start_char=1580|end_char=1586|ner=S-PERSON
+2	means	mean	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1587|end_char=1592|ner=O
+3	street	street	NOUN	NN	Number=Sing	2	obj	_	SpaceAfter=No|start_char=1593|end_char=1599|ner=O
+4	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=1599|end_char=1600|ner=O
 
 # text = Ångström units measure tiny distances.
 # sent_id = 34
 # constituency = (ROOT (S (NP (NNP Ångström) (NNS units)) (VP (VBP measure) (NP (JJ tiny) (NNS distances))) (. .)))
-1	Ångström	Ångström	PROPN	NNP	Number=Sing	2	compound	_	start_char=1602|end_char=1610
-2	units	unit	NOUN	NNS	Number=Plur	3	nsubj	_	start_char=1611|end_char=1616
-3	measure	measure	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1617|end_char=1624
-4	tiny	tiny	ADJ	JJ	Degree=Pos	5	amod	_	start_char=1625|end_char=1629
-5	distances	distance	NOUN	NNS	Number=Plur	3	obj	_	SpaceAfter=No|start_char=1630|end_char=1639
-6	.	.	PUNCT	.	_	3	punct	_	start_char=1639|end_char=1640
+# sentiment = 1
+1	Ångström	Ångström	PROPN	NNP	Number=Sing	2	compound	_	start_char=1602|end_char=1610|ner=O
+2	units	unit	NOUN	NNS	Number=Plur	3	nsubj	_	start_char=1611|end_char=1616|ner=O
+3	measure	measure	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1617|end_char=1624|ner=O
+4	tiny	tiny	ADJ	JJ	Degree=Pos	5	amod	_	start_char=1625|end_char=1629|ner=O
+5	distances	distance	NOUN	NNS	Number=Plur	3	obj	_	SpaceAfter=No|start_char=1630|end_char=1639|ner=O
+6	.	.	PUNCT	.	_	3	punct	_	start_char=1639|end_char=1640|ner=O
 
 # text = The Øresund Bridge connects Denmark and Sweden.
 # sent_id = 35
 # constituency = (ROOT (S (NP (DT The) (NNP Øresund) (NNP Bridge)) (VP (VBZ connects) (NP (NNP Denmark) (CC and) (NNP Sweden))) (. .)))
-1	The	the	DET	DT	Definite=Def|PronType=Art	3	det	_	start_char=1641|end_char=1644
-2	Øresund	Øresund	PROPN	NNP	Number=Sing	3	compound	_	start_char=1645|end_char=1652
-3	Bridge	Bridge	PROPN	NNP	Number=Sing	4	nsubj	_	start_char=1653|end_char=1659
-4	connects	connect	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1660|end_char=1668
-5	Denmark	Denmark	PROPN	NNP	Number=Sing	4	obj	_	start_char=1669|end_char=1676
-6	and	and	CCONJ	CC	_	7	cc	_	start_char=1677|end_char=1680
-7	Sweden	Sweden	PROPN	NNP	Number=Sing	5	conj	_	SpaceAfter=No|start_char=1681|end_char=1687
-8	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=1687|end_char=1688
+# sentiment = 1
+1	The	the	DET	DT	Definite=Def|PronType=Art	3	det	_	start_char=1641|end_char=1644|ner=B-FAC
+2	Øresund	Øresund	PROPN	NNP	Number=Sing	3	compound	_	start_char=1645|end_char=1652|ner=I-FAC
+3	Bridge	Bridge	PROPN	NNP	Number=Sing	4	nsubj	_	start_char=1653|end_char=1659|ner=E-FAC
+4	connects	connect	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1660|end_char=1668|ner=O
+5	Denmark	Denmark	PROPN	NNP	Number=Sing	4	obj	_	start_char=1669|end_char=1676|ner=S-GPE
+6	and	and	CCONJ	CC	_	7	cc	_	start_char=1677|end_char=1680|ner=O
+7	Sweden	Sweden	PROPN	NNP	Number=Sing	5	conj	_	SpaceAfter=No|start_char=1681|end_char=1687|ner=S-GPE
+8	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=1687|end_char=1688|ner=O
 
 # text = The novel Cien años de soledad was translated as One Hundred Years of Solitude.
 # sent_id = 36
 # constituency = (ROOT (S (NP (DT The) (NN novel) (NP (NNP Cien) (FW años)) (FW de) (NP (NNP soledad))) (VP (VBD was) (VP (VBN translated) (PP (IN as) (NP (NP (CD One) (NNP Hundred) (NNPS Years)) (PP (IN of) (NP (NNP Solitude))))))) (. .)))
-1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=1690|end_char=1693
-2	novel	novel	NOUN	NN	Number=Sing	8	nsubj:pass	_	start_char=1694|end_char=1699
-3	Cien	Cien	PROPN	NNP	Number=Sing	2	appos	_	start_char=1700|end_char=1704
-4	años	año	X	FW	Foreign=Yes	3	flat	_	start_char=1705|end_char=1709
-5	de	de	X	FW	Foreign=Yes	3	flat	_	start_char=1710|end_char=1712
-6	soledad	soledad	PROPN	NNP	Number=Sing	3	flat	_	start_char=1713|end_char=1720
-7	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	8	aux:pass	_	start_char=1721|end_char=1724
-8	translated	translate	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	start_char=1725|end_char=1735
-9	as	as	ADP	IN	_	12	case	_	start_char=1736|end_char=1738
-10	One	one	NUM	CD	NumForm=Word|NumType=Card	12	nummod	_	start_char=1739|end_char=1742
-11	Hundred	hundred	NUM	NNP	NumForm=Word|NumType=Card	12	nummod	_	start_char=1743|end_char=1750
-12	Years	Year	PROPN	NNPS	Number=Plur	8	obl	_	start_char=1751|end_char=1756
-13	of	of	ADP	IN	_	14	case	_	start_char=1757|end_char=1759
-14	Solitude	Solitude	PROPN	NNP	Number=Sing	12	nmod	_	SpaceAfter=No|start_char=1760|end_char=1768
-15	.	.	PUNCT	.	_	8	punct	_	SpacesAfter=\n\n|start_char=1768|end_char=1769
+# sentiment = 1
+1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=1690|end_char=1693|ner=O
+2	novel	novel	NOUN	NN	Number=Sing	8	nsubj:pass	_	start_char=1694|end_char=1699|ner=O
+3	Cien	Cien	PROPN	NNP	Number=Sing	2	appos	_	start_char=1700|end_char=1704|ner=B-WORK_OF_ART
+4	años	año	X	FW	Foreign=Yes	3	flat	_	start_char=1705|end_char=1709|ner=I-WORK_OF_ART
+5	de	de	X	FW	Foreign=Yes	3	flat	_	start_char=1710|end_char=1712|ner=I-WORK_OF_ART
+6	soledad	soledad	PROPN	NNP	Number=Sing	3	flat	_	start_char=1713|end_char=1720|ner=E-WORK_OF_ART
+7	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	8	aux:pass	_	start_char=1721|end_char=1724|ner=O
+8	translated	translate	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	start_char=1725|end_char=1735|ner=O
+9	as	as	ADP	IN	_	12	case	_	start_char=1736|end_char=1738|ner=O
+10	One	one	NUM	CD	NumForm=Word|NumType=Card	12	nummod	_	start_char=1739|end_char=1742|ner=B-WORK_OF_ART
+11	Hundred	hundred	NUM	NNP	NumForm=Word|NumType=Card	12	nummod	_	start_char=1743|end_char=1750|ner=I-WORK_OF_ART
+12	Years	Year	PROPN	NNPS	Number=Plur	8	obl	_	start_char=1751|end_char=1756|ner=I-WORK_OF_ART
+13	of	of	ADP	IN	_	14	case	_	start_char=1757|end_char=1759|ner=I-WORK_OF_ART
+14	Solitude	Solitude	PROPN	NNP	Number=Sing	12	nmod	_	SpaceAfter=No|start_char=1760|end_char=1768|ner=E-WORK_OF_ART
+15	.	.	PUNCT	.	_	8	punct	_	SpacesAfter=\n\n|start_char=1768|end_char=1769|ner=O
 
 # text = Señor Peña's niño spoke español and English fluently.
 # sent_id = 37
 # constituency = (ROOT (S (NP (NP (NNP Señor) (NNP Peña) (POS 's)) (NNP niño)) (VP (VBD spoke) (NP (NNP español) (CC and) (NNP English)) (ADVP (RB fluently))) (. .)))
-1	Señor	Señor	PROPN	NNP	Number=Sing	4	nmod:poss	_	start_char=1771|end_char=1776
-2-3	Peña's	_	_	_	_	_	_	_	start_char=1777|end_char=1783
+# sentiment = 1
+1	Señor	Señor	PROPN	NNP	Number=Sing	4	nmod:poss	_	start_char=1771|end_char=1776|ner=B-PERSON
+2-3	Peña's	_	_	_	_	_	_	_	start_char=1777|end_char=1783|ner=I-PERSON
 2	Peña	Peña	PROPN	NNP	Number=Sing	1	flat	_	start_char=1777|end_char=1781
 3	's	's	PART	POS	_	1	case	_	start_char=1781|end_char=1783
-4	niño	niño	PROPN	NNP	Number=Sing	5	nsubj	_	start_char=1784|end_char=1788
-5	spoke	speak	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1789|end_char=1794
-6	español	español	PROPN	NNP	Number=Sing	5	obj	_	start_char=1795|end_char=1802
-7	and	and	CCONJ	CC	_	8	cc	_	start_char=1803|end_char=1806
-8	English	English	PROPN	NNP	Number=Sing	6	conj	_	start_char=1807|end_char=1814
-9	fluently	fluently	ADV	RB	_	5	advmod	_	SpaceAfter=No|start_char=1815|end_char=1823
-10	.	.	PUNCT	.	_	5	punct	_	SpacesAfter=\n\n|start_char=1823|end_char=1824
+4	niño	niño	PROPN	NNP	Number=Sing	5	nsubj	_	start_char=1784|end_char=1788|ner=E-PERSON
+5	spoke	speak	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1789|end_char=1794|ner=O
+6	español	español	PROPN	NNP	Number=Sing	5	obj	_	start_char=1795|end_char=1802|ner=O
+7	and	and	CCONJ	CC	_	8	cc	_	start_char=1803|end_char=1806|ner=O
+8	English	English	PROPN	NNP	Number=Sing	6	conj	_	start_char=1807|end_char=1814|ner=S-LANGUAGE
+9	fluently	fluently	ADV	RB	_	5	advmod	_	SpaceAfter=No|start_char=1815|end_char=1823|ner=O
+10	.	.	PUNCT	.	_	5	punct	_	SpacesAfter=\n\n|start_char=1823|end_char=1824|ner=O
 
 # text = Dvořák's and Janáček's works are often performed together.
 # sent_id = 38
 # constituency = (ROOT (S (NP (NP (NNP Dvořák) (POS 's)) (CC and) (NP (NP (NNP Janáček) (POS 's)) (NNS works))) (VP (VBP are) (ADVP (RB often)) (VP (VBN performed) (ADVP (RB together)))) (. .)))
-1-2	Dvořák's	_	_	_	_	_	_	_	start_char=1826|end_char=1834
+# sentiment = 2
+1-2	Dvořák's	_	_	_	_	_	_	_	start_char=1826|end_char=1834|ner=S-PERSON
 1	Dvořák	Dvořák	PROPN	NNP	Number=Sing	6	nmod:poss	_	start_char=1826|end_char=1832
 2	's	's	PART	POS	_	1	case	_	start_char=1832|end_char=1834
-3	and	and	CCONJ	CC	_	4	cc	_	start_char=1835|end_char=1838
-4-5	Janáček's	_	_	_	_	_	_	_	start_char=1839|end_char=1848
+3	and	and	CCONJ	CC	_	4	cc	_	start_char=1835|end_char=1838|ner=O
+4-5	Janáček's	_	_	_	_	_	_	_	start_char=1839|end_char=1848|ner=S-PERSON
 4	Janáček	Janáček	PROPN	NNP	Number=Sing	1	conj	_	start_char=1839|end_char=1846
 5	's	's	PART	POS	_	4	case	_	start_char=1846|end_char=1848
-6	works	work	NOUN	NNS	Number=Plur	9	nsubj:pass	_	start_char=1849|end_char=1854
-7	are	be	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	9	aux:pass	_	start_char=1855|end_char=1858
-8	often	often	ADV	RB	_	9	advmod	_	start_char=1859|end_char=1864
-9	performed	perform	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	start_char=1865|end_char=1874
-10	together	together	ADV	RB	_	9	advmod	_	SpaceAfter=No|start_char=1875|end_char=1883
-11	.	.	PUNCT	.	_	9	punct	_	start_char=1883|end_char=1884
+6	works	work	NOUN	NNS	Number=Plur	9	nsubj:pass	_	start_char=1849|end_char=1854|ner=O
+7	are	be	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	9	aux:pass	_	start_char=1855|end_char=1858|ner=O
+8	often	often	ADV	RB	_	9	advmod	_	start_char=1859|end_char=1864|ner=O
+9	performed	perform	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	start_char=1865|end_char=1874|ner=O
+10	together	together	ADV	RB	_	9	advmod	_	SpaceAfter=No|start_char=1875|end_char=1883|ner=O
+11	.	.	PUNCT	.	_	9	punct	_	start_char=1883|end_char=1884|ner=O
 
 # text = Zoë's café is near Château Frontenac.
 # sent_id = 39
 # constituency = (ROOT (S (NP (NP (NNP Zoë) (POS 's)) (NN café)) (VP (VBZ is) (PP (IN near) (NP (NNP Château) (NNP Frontenac)))) (. .)))
-1-2	Zoë's	_	_	_	_	_	_	_	start_char=1885|end_char=1890
+# sentiment = 1
+1-2	Zoë's	_	_	_	_	_	_	_	start_char=1885|end_char=1890|ner=O
 1	Zoë	Zoë	PROPN	NNP	Number=Sing	3	nmod:poss	_	start_char=1885|end_char=1888
 2	's	's	PART	POS	_	1	case	_	start_char=1888|end_char=1890
-3	café	café	NOUN	NN	Number=Sing	6	nsubj	_	start_char=1891|end_char=1895
-4	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	6	cop	_	start_char=1896|end_char=1898
-5	near	near	ADP	IN	_	6	case	_	start_char=1899|end_char=1903
-6	Château	Château	PROPN	NNP	Number=Sing	0	root	_	start_char=1904|end_char=1911
-7	Frontenac	Frontenac	PROPN	NNP	Number=Sing	6	flat	_	SpaceAfter=No|start_char=1912|end_char=1921
-8	.	.	PUNCT	.	_	6	punct	_	SpacesAfter=\n\n|start_char=1921|end_char=1922
+3	café	café	NOUN	NN	Number=Sing	6	nsubj	_	start_char=1891|end_char=1895|ner=O
+4	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	6	cop	_	start_char=1896|end_char=1898|ner=O
+5	near	near	ADP	IN	_	6	case	_	start_char=1899|end_char=1903|ner=O
+6	Château	Château	PROPN	NNP	Number=Sing	0	root	_	start_char=1904|end_char=1911|ner=B-FAC
+7	Frontenac	Frontenac	PROPN	NNP	Number=Sing	6	flat	_	SpaceAfter=No|start_char=1912|end_char=1921|ner=E-FAC
+8	.	.	PUNCT	.	_	6	punct	_	SpacesAfter=\n\n|start_char=1921|end_char=1922|ner=O
 
 # text = The Thai word สวัสดี is a greeting.
 # sent_id = 40
 # constituency = (ROOT (S (NP (DT The) (JJ Thai) (NN word)) (, สวัสดี) (VP (VBZ is) (NP (DT a) (NN greeting))) (. .)))
-1	The	the	DET	DT	Definite=Def|PronType=Art	3	det	_	start_char=1924|end_char=1927
-2	Thai	Thai	ADJ	JJ	Degree=Pos	3	amod	_	start_char=1928|end_char=1932
-3	word	word	NOUN	NN	Number=Sing	7	nsubj	_	start_char=1933|end_char=1937
-4	สวัสดี	uuulee	PUNCT	,	_	3	punct	_	start_char=1938|end_char=1944
-5	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	7	cop	_	start_char=1945|end_char=1947
-6	a	a	DET	DT	Definite=Ind|PronType=Art	7	det	_	start_char=1948|end_char=1949
-7	greeting	greeting	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=1950|end_char=1958
-8	.	.	PUNCT	.	_	7	punct	_	start_char=1958|end_char=1959
+# sentiment = 1
+1	The	the	DET	DT	Definite=Def|PronType=Art	3	det	_	start_char=1924|end_char=1927|ner=O
+2	Thai	Thai	ADJ	JJ	Degree=Pos	3	amod	_	start_char=1928|end_char=1932|ner=S-NORP
+3	word	word	NOUN	NN	Number=Sing	7	nsubj	_	start_char=1933|end_char=1937|ner=O
+4	สวัสดี	uuulee	PUNCT	,	_	3	punct	_	start_char=1938|end_char=1944|ner=O
+5	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	7	cop	_	start_char=1945|end_char=1947|ner=O
+6	a	a	DET	DT	Definite=Ind|PronType=Art	7	det	_	start_char=1948|end_char=1949|ner=O
+7	greeting	greeting	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=1950|end_char=1958|ner=O
+8	.	.	PUNCT	.	_	7	punct	_	start_char=1958|end_char=1959|ner=O
 
 # text = Georgian has its own alphabet: ქართული.
 # sent_id = 41
 # constituency = (ROOT (S (S (NP (NNP Georgian)) (VP (VBZ has) (NP (PRP$ its) (JJ own) (NN alphabet)))) (: :) (ADVP (RB ქართული)) (. .)))
-1	Georgian	Georgian	PROPN	NNP	Number=Sing	2	nsubj	_	start_char=1960|end_char=1968
-2	has	have	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1969|end_char=1972
-3	its	its	PRON	PRP$	Case=Gen|Gender=Neut|Number=Sing|Person=3|Poss=Yes|PronType=Prs	5	nmod:poss	_	start_char=1973|end_char=1976
-4	own	own	ADJ	JJ	Degree=Pos	5	amod	_	start_char=1977|end_char=1980
-5	alphabet	alphabet	NOUN	NN	Number=Sing	2	obj	_	SpaceAfter=No|start_char=1981|end_char=1989
-6	:	:	PUNCT	:	_	7	punct	_	start_char=1989|end_char=1990
-7	ქართული	ქართული	ADV	RB	_	2	advmod	_	SpaceAfter=No|start_char=1991|end_char=1998
-8	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=1998|end_char=1999
+# sentiment = 1
+1	Georgian	Georgian	PROPN	NNP	Number=Sing	2	nsubj	_	start_char=1960|end_char=1968|ner=S-NORP
+2	has	have	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1969|end_char=1972|ner=O
+3	its	its	PRON	PRP$	Case=Gen|Gender=Neut|Number=Sing|Person=3|Poss=Yes|PronType=Prs	5	nmod:poss	_	start_char=1973|end_char=1976|ner=O
+4	own	own	ADJ	JJ	Degree=Pos	5	amod	_	start_char=1977|end_char=1980|ner=O
+5	alphabet	alphabet	NOUN	NN	Number=Sing	2	obj	_	SpaceAfter=No|start_char=1981|end_char=1989|ner=O
+6	:	:	PUNCT	:	_	7	punct	_	start_char=1989|end_char=1990|ner=O
+7	ქართული	ქართული	ADV	RB	_	2	advmod	_	SpaceAfter=No|start_char=1991|end_char=1998|ner=O
+8	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=1998|end_char=1999|ner=O
 
 # text = Mr. Ødegaard flew from Oslo to Ålesund.
 # sent_id = 42
 # constituency = (ROOT (S (NP (NNP Mr.) (NNP Ødegaard)) (VP (VBD flew) (PP (IN from) (NP (NNP Oslo))) (PP (IN to) (NP (NNP Ålesund)))) (. .)))
-1	Mr.	Mr.	PROPN	NNP	Number=Sing	2	nmod:desc	_	start_char=2001|end_char=2004
-2	Ødegaard	Ødegaard	PROPN	NNP	Number=Sing	3	nsubj	_	start_char=2005|end_char=2013
-3	flew	fly	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=2014|end_char=2018
-4	from	from	ADP	IN	_	5	case	_	start_char=2019|end_char=2023
-5	Oslo	Oslo	PROPN	NNP	Number=Sing	3	obl	_	start_char=2024|end_char=2028
-6	to	to	ADP	IN	_	7	case	_	start_char=2029|end_char=2031
-7	Ålesund	Ålesund	PROPN	NNP	Number=Sing	3	obl	_	SpaceAfter=No|start_char=2032|end_char=2039
-8	.	.	PUNCT	.	_	3	punct	_	start_char=2039|end_char=2040
+# sentiment = 1
+1	Mr.	Mr.	PROPN	NNP	Number=Sing	2	nmod:desc	_	start_char=2001|end_char=2004|ner=O
+2	Ødegaard	Ødegaard	PROPN	NNP	Number=Sing	3	nsubj	_	start_char=2005|end_char=2013|ner=S-PERSON
+3	flew	fly	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=2014|end_char=2018|ner=O
+4	from	from	ADP	IN	_	5	case	_	start_char=2019|end_char=2023|ner=O
+5	Oslo	Oslo	PROPN	NNP	Number=Sing	3	obl	_	start_char=2024|end_char=2028|ner=S-GPE
+6	to	to	ADP	IN	_	7	case	_	start_char=2029|end_char=2031|ner=O
+7	Ålesund	Ålesund	PROPN	NNP	Number=Sing	3	obl	_	SpaceAfter=No|start_char=2032|end_char=2039|ner=S-GPE
+8	.	.	PUNCT	.	_	3	punct	_	start_char=2039|end_char=2040|ner=O
 
 # text = Ms. Ünal took the train from Köln.
 # sent_id = 43
 # constituency = (ROOT (S (NP (NNP Ms.) (NNP Ünal)) (VP (VBD took) (NP (DT the) (NN train)) (PP (IN from) (NP (NNP Köln)))) (. .)))
-1	Ms.	Ms.	PROPN	NNP	Number=Sing	2	nmod:desc	_	start_char=2041|end_char=2044
-2	Ünal	Ünal	PROPN	NNP	Number=Sing	3	nsubj	_	start_char=2045|end_char=2049
-3	took	take	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=2050|end_char=2054
-4	the	the	DET	DT	Definite=Def|PronType=Art	5	det	_	start_char=2055|end_char=2058
-5	train	train	NOUN	NN	Number=Sing	3	obj	_	start_char=2059|end_char=2064
-6	from	from	ADP	IN	_	7	case	_	start_char=2065|end_char=2069
-7	Köln	Köln	PROPN	NNP	Number=Sing	3	obl	_	SpaceAfter=No|start_char=2070|end_char=2074
-8	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=2074|end_char=2075
+# sentiment = 1
+1	Ms.	Ms.	PROPN	NNP	Number=Sing	2	nmod:desc	_	start_char=2041|end_char=2044|ner=O
+2	Ünal	Ünal	PROPN	NNP	Number=Sing	3	nsubj	_	start_char=2045|end_char=2049|ner=O
+3	took	take	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=2050|end_char=2054|ner=O
+4	the	the	DET	DT	Definite=Def|PronType=Art	5	det	_	start_char=2055|end_char=2058|ner=O
+5	train	train	NOUN	NN	Number=Sing	3	obj	_	start_char=2059|end_char=2064|ner=O
+6	from	from	ADP	IN	_	7	case	_	start_char=2065|end_char=2069|ner=O
+7	Köln	Köln	PROPN	NNP	Number=Sing	3	obl	_	SpaceAfter=No|start_char=2070|end_char=2074|ner=S-GPE
+8	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=2074|end_char=2075|ner=O
 
 # text = Ελλάδα is the Greek name for Greece.
 # sent_id = 44
 # constituency = (ROOT (S (NP (SYM Ελλάδα)) (VP (VBZ is) (NP (NP (DT the) (JJ Greek) (NN name)) (PP (IN for) (NP (NNP Greece))))) (. .)))
-1	Ελλάδα	ελλάδα	SYM	SYM	_	5	nsubj	_	start_char=2077|end_char=2083
-2	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	5	cop	_	start_char=2084|end_char=2086
-3	the	the	DET	DT	Definite=Def|PronType=Art	5	det	_	start_char=2087|end_char=2090
-4	Greek	Greek	ADJ	JJ	Degree=Pos	5	amod	_	start_char=2091|end_char=2096
-5	name	name	NOUN	NN	Number=Sing	0	root	_	start_char=2097|end_char=2101
-6	for	for	ADP	IN	_	7	case	_	start_char=2102|end_char=2105
-7	Greece	Greece	PROPN	NNP	Number=Sing	5	nmod	_	SpaceAfter=No|start_char=2106|end_char=2112
-8	.	.	PUNCT	.	_	5	punct	_	start_char=2112|end_char=2113
+# sentiment = 1
+1	Ελλάδα	ελλάδα	SYM	SYM	_	5	nsubj	_	start_char=2077|end_char=2083|ner=O
+2	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	5	cop	_	start_char=2084|end_char=2086|ner=O
+3	the	the	DET	DT	Definite=Def|PronType=Art	5	det	_	start_char=2087|end_char=2090|ner=O
+4	Greek	Greek	ADJ	JJ	Degree=Pos	5	amod	_	start_char=2091|end_char=2096|ner=S-NORP
+5	name	name	NOUN	NN	Number=Sing	0	root	_	start_char=2097|end_char=2101|ner=O
+6	for	for	ADP	IN	_	7	case	_	start_char=2102|end_char=2105|ner=O
+7	Greece	Greece	PROPN	NNP	Number=Sing	5	nmod	_	SpaceAfter=No|start_char=2106|end_char=2112|ner=S-GPE
+8	.	.	PUNCT	.	_	5	punct	_	start_char=2112|end_char=2113|ner=O
 
 # text = Αθήνα is its capital.
 # sent_id = 45
 # constituency = (ROOT (S (NP (NNP Αθήνα)) (VP (VBZ is) (NP (PRP$ its) (NN capital))) (. .)))
-1	Αθήνα	Αθήνα	PROPN	NNP	Number=Sing	4	nsubj	_	start_char=2114|end_char=2119
-2	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	cop	_	start_char=2120|end_char=2122
-3	its	its	PRON	PRP$	Case=Gen|Gender=Neut|Number=Sing|Person=3|Poss=Yes|PronType=Prs	4	nmod:poss	_	start_char=2123|end_char=2126
-4	capital	capital	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=2127|end_char=2134
-5	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=2134|end_char=2135
+# sentiment = 1
+1	Αθήνα	Αθήνα	PROPN	NNP	Number=Sing	4	nsubj	_	start_char=2114|end_char=2119|ner=O
+2	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	cop	_	start_char=2120|end_char=2122|ner=O
+3	its	its	PRON	PRP$	Case=Gen|Gender=Neut|Number=Sing|Person=3|Poss=Yes|PronType=Prs	4	nmod:poss	_	start_char=2123|end_char=2126|ner=O
+4	capital	capital	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=2127|end_char=2134|ner=O
+5	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=2134|end_char=2135|ner=O
 
 # text = The sign said ДОБРО ПОЖАЛОВАТЬ, which means "welcome."
 # sent_id = 46
 # constituency = (ROOT (S (NP (DT The) (NN sign)) (VP (VBD said) (S (NP (NP (NNP ДОБРО) (NNP ПОЖАЛОВАТЬ)) (, ,) (SBAR (WHNP (WDT which)) (S (VP (VBZ means) (ADJP (`` ") (UH welcome)))))))) (. .) ('' ")))
-1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=2137|end_char=2140
-2	sign	sign	NOUN	NN	Number=Sing	3	nsubj	_	start_char=2141|end_char=2145
-3	said	say	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=2146|end_char=2150
-4	ДОБРО	Дeen	PROPN	NNP	Number=Sing	3	obj	_	start_char=2151|end_char=2156
-5	ПОЖАЛОВАТЬ	Пeleruenee	PROPN	NNP	Number=Sing	4	flat	_	SpaceAfter=No|start_char=2157|end_char=2167
-6	,	,	PUNCT	,	_	8	punct	_	start_char=2167|end_char=2168
-7	which	which	PRON	WDT	PronType=Rel	8	nsubj	_	start_char=2169|end_char=2174
-8	means	mean	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	acl:relcl	_	start_char=2175|end_char=2180
-9	"	"	PUNCT	``	_	10	punct	_	SpaceAfter=No|start_char=2181|end_char=2182
-10	welcome	welcome	INTJ	UH	_	8	ccomp	_	SpaceAfter=No|start_char=2182|end_char=2189
-11	.	.	PUNCT	.	_	10	punct	_	SpaceAfter=No|start_char=2189|end_char=2190
-12	"	"	PUNCT	''	_	10	punct	_	SpacesAfter=\n\n|start_char=2190|end_char=2191
+# sentiment = 1
+1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=2137|end_char=2140|ner=O
+2	sign	sign	NOUN	NN	Number=Sing	3	nsubj	_	start_char=2141|end_char=2145|ner=O
+3	said	say	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=2146|end_char=2150|ner=O
+4	ДОБРО	Дeen	PROPN	NNP	Number=Sing	3	obj	_	start_char=2151|end_char=2156|ner=O
+5	ПОЖАЛОВАТЬ	Пeleruenee	PROPN	NNP	Number=Sing	4	flat	_	SpaceAfter=No|start_char=2157|end_char=2167|ner=O
+6	,	,	PUNCT	,	_	8	punct	_	start_char=2167|end_char=2168|ner=O
+7	which	which	PRON	WDT	PronType=Rel	8	nsubj	_	start_char=2169|end_char=2174|ner=O
+8	means	mean	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	acl:relcl	_	start_char=2175|end_char=2180|ner=O
+9	"	"	PUNCT	``	_	10	punct	_	SpaceAfter=No|start_char=2181|end_char=2182|ner=O
+10	welcome	welcome	INTJ	UH	_	8	ccomp	_	SpaceAfter=No|start_char=2182|end_char=2189|ner=O
+11	.	.	PUNCT	.	_	10	punct	_	SpaceAfter=No|start_char=2189|end_char=2190|ner=O
+12	"	"	PUNCT	''	_	10	punct	_	SpacesAfter=\n\n|start_char=2190|end_char=2191|ner=O
 
 # text = I ordered pão de queijo, dulce de leche and a café con leche.
 # sent_id = 47
 # constituency = (ROOT (S (NP (PRP I)) (VP (VBD ordered) (NP (NP (NNP pão) (NNP de) (NNP queijo)) (, ,) (NP (FW dulce) (FW de) (NNP leche)) (CC and) (NP (DT a) (NN café) (FW con) (FW leche)))) (. .)))
-1	I	I	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	2	nsubj	_	start_char=2193|end_char=2194
-2	ordered	order	VERB	VBD	Mood=Ind|Number=Sing|Person=1|Tense=Past|VerbForm=Fin	0	root	_	start_char=2195|end_char=2202
-3	pão	pão	PROPN	NNP	Number=Sing	2	obj	_	start_char=2203|end_char=2206
-4	de	de	PROPN	NNP	Number=Sing	3	flat	_	start_char=2207|end_char=2209
-5	queijo	Nueijo	PROPN	NNP	Number=Sing	3	flat	_	SpaceAfter=No|start_char=2210|end_char=2216
-6	,	,	PUNCT	,	_	7	punct	_	start_char=2216|end_char=2217
-7	dulce	dulce	X	FW	Foreign=Yes	3	conj	_	start_char=2218|end_char=2223
-8	de	de	X	FW	Foreign=Yes	7	flat	_	start_char=2224|end_char=2226
-9	leche	leche	PROPN	NNP	Number=Sing	7	flat	_	start_char=2227|end_char=2232
-10	and	and	CCONJ	CC	_	12	cc	_	start_char=2233|end_char=2236
-11	a	a	DET	DT	Definite=Ind|PronType=Art	12	det	_	start_char=2237|end_char=2238
-12	café	café	NOUN	NN	Number=Sing	3	conj	_	start_char=2239|end_char=2243
-13	con	con	X	FW	Foreign=Yes	12	appos	_	start_char=2244|end_char=2247
-14	leche	leche	X	FW	Foreign=Yes	12	appos	_	SpaceAfter=No|start_char=2248|end_char=2253
-15	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=2253|end_char=2254
+# sentiment = 1
+1	I	I	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	2	nsubj	_	start_char=2193|end_char=2194|ner=O
+2	ordered	order	VERB	VBD	Mood=Ind|Number=Sing|Person=1|Tense=Past|VerbForm=Fin	0	root	_	start_char=2195|end_char=2202|ner=O
+3	pão	pão	PROPN	NNP	Number=Sing	2	obj	_	start_char=2203|end_char=2206|ner=O
+4	de	de	PROPN	NNP	Number=Sing	3	flat	_	start_char=2207|end_char=2209|ner=O
+5	queijo	Nueijo	PROPN	NNP	Number=Sing	3	flat	_	SpaceAfter=No|start_char=2210|end_char=2216|ner=O
+6	,	,	PUNCT	,	_	7	punct	_	start_char=2216|end_char=2217|ner=O
+7	dulce	dulce	X	FW	Foreign=Yes	3	conj	_	start_char=2218|end_char=2223|ner=O
+8	de	de	X	FW	Foreign=Yes	7	flat	_	start_char=2224|end_char=2226|ner=O
+9	leche	leche	PROPN	NNP	Number=Sing	7	flat	_	start_char=2227|end_char=2232|ner=O
+10	and	and	CCONJ	CC	_	12	cc	_	start_char=2233|end_char=2236|ner=O
+11	a	a	DET	DT	Definite=Ind|PronType=Art	12	det	_	start_char=2237|end_char=2238|ner=O
+12	café	café	NOUN	NN	Number=Sing	3	conj	_	start_char=2239|end_char=2243|ner=O
+13	con	con	X	FW	Foreign=Yes	12	appos	_	start_char=2244|end_char=2247|ner=O
+14	leche	leche	X	FW	Foreign=Yes	12	appos	_	SpaceAfter=No|start_char=2248|end_char=2253|ner=O
+15	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=2253|end_char=2254|ner=O
 
 # text = Ēriks Lūsis, Žydrūnas Ilgauskas and Ģirts Āboliņš are Baltic names.
 # sent_id = 48
 # constituency = (ROOT (S (NP (NP (NNP Ēriks) (NNP Lūsis)) (, ,) (NP (NNP Žydrūnas) (NNP Ilgauskas)) (CC and) (NP (NNS Ģirts) (NNP Āboliņš))) (VP (VBP are) (NP (JJ Baltic) (NNS names))) (. .)))
-1	Ēriks	Ērik	PROPN	NNP	Number=Sing	11	nsubj	_	start_char=2256|end_char=2261
-2	Lūsis	Lūsis	PROPN	NNP	Number=Sing	1	flat	_	SpaceAfter=No|start_char=2262|end_char=2267
-3	,	,	PUNCT	,	_	4	punct	_	start_char=2267|end_char=2268
-4	Žydrūnas	Žydrūna	PROPN	NNP	Number=Sing	1	conj	_	start_char=2269|end_char=2277
-5	Ilgauskas	Ilgauskas	PROPN	NNP	Number=Sing	1	conj	_	start_char=2278|end_char=2287
-6	and	and	CCONJ	CC	_	7	cc	_	start_char=2288|end_char=2291
-7	Ģirts	uirt	NOUN	NNS	Number=Plur	1	conj	_	start_char=2292|end_char=2297
-8	Āboliņš	Āboliņš	PROPN	NNP	Number=Sing	7	flat	_	start_char=2298|end_char=2305
-9	are	be	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	11	cop	_	start_char=2306|end_char=2309
-10	Baltic	Baltic	ADJ	JJ	Degree=Pos	11	amod	_	start_char=2310|end_char=2316
-11	names	name	NOUN	NNS	Number=Plur	0	root	_	SpaceAfter=No|start_char=2317|end_char=2322
-12	.	.	PUNCT	.	_	11	punct	_	SpacesAfter=\n\n|start_char=2322|end_char=2323
+# sentiment = 1
+1	Ēriks	Ērik	PROPN	NNP	Number=Sing	11	nsubj	_	start_char=2256|end_char=2261|ner=O
+2	Lūsis	Lūsis	PROPN	NNP	Number=Sing	1	flat	_	SpaceAfter=No|start_char=2262|end_char=2267|ner=S-PERSON
+3	,	,	PUNCT	,	_	4	punct	_	start_char=2267|end_char=2268|ner=O
+4	Žydrūnas	Žydrūna	PROPN	NNP	Number=Sing	1	conj	_	start_char=2269|end_char=2277|ner=B-PERSON
+5	Ilgauskas	Ilgauskas	PROPN	NNP	Number=Sing	1	conj	_	start_char=2278|end_char=2287|ner=E-PERSON
+6	and	and	CCONJ	CC	_	7	cc	_	start_char=2288|end_char=2291|ner=O
+7	Ģirts	uirt	NOUN	NNS	Number=Plur	1	conj	_	start_char=2292|end_char=2297|ner=O
+8	Āboliņš	Āboliņš	PROPN	NNP	Number=Sing	7	flat	_	start_char=2298|end_char=2305|ner=O
+9	are	be	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	11	cop	_	start_char=2306|end_char=2309|ner=O
+10	Baltic	Baltic	ADJ	JJ	Degree=Pos	11	amod	_	start_char=2310|end_char=2316|ner=S-NORP
+11	names	name	NOUN	NNS	Number=Plur	0	root	_	SpaceAfter=No|start_char=2317|end_char=2322|ner=O
+12	.	.	PUNCT	.	_	11	punct	_	SpacesAfter=\n\n|start_char=2322|end_char=2323|ner=O
 
 # text = He spells his name Jürgen, but his passport says Juergen.
 # sent_id = 49
 # constituency = (ROOT (S (S (NP (PRP He)) (VP (VBZ spells) (NP (PRP$ his) (NN name) (NNP Jürgen)))) (, ,) (CC but) (S (NP (PRP$ his) (NN passport)) (VP (VBZ says) (NP (NNP Juergen)))) (. .)))
-1	He	he	PRON	PRP	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=2325|end_char=2327
-2	spells	spell	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2328|end_char=2334
-3	his	his	PRON	PRP$	Case=Gen|Gender=Masc|Number=Sing|Person=3|Poss=Yes|PronType=Prs	4	nmod:poss	_	start_char=2335|end_char=2338
-4	name	name	NOUN	NN	Number=Sing	2	obj	_	start_char=2339|end_char=2343
-5	Jürgen	Jürgen	PROPN	NNP	Number=Sing	2	vocative	_	SpaceAfter=No|start_char=2344|end_char=2350
-6	,	,	PUNCT	,	_	10	punct	_	start_char=2350|end_char=2351
-7	but	but	CCONJ	CC	_	10	cc	_	start_char=2352|end_char=2355
-8	his	his	PRON	PRP$	Case=Gen|Gender=Masc|Number=Sing|Person=3|Poss=Yes|PronType=Prs	9	nmod:poss	_	start_char=2356|end_char=2359
-9	passport	passport	NOUN	NN	Number=Sing	10	nsubj	_	start_char=2360|end_char=2368
-10	says	say	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	conj	_	start_char=2369|end_char=2373
-11	Juergen	Juergen	PROPN	NNP	Number=Sing	10	obj	_	SpaceAfter=No|start_char=2374|end_char=2381
-12	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=2381|end_char=2382
+# sentiment = 1
+1	He	he	PRON	PRP	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=2325|end_char=2327|ner=O
+2	spells	spell	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2328|end_char=2334|ner=O
+3	his	his	PRON	PRP$	Case=Gen|Gender=Masc|Number=Sing|Person=3|Poss=Yes|PronType=Prs	4	nmod:poss	_	start_char=2335|end_char=2338|ner=O
+4	name	name	NOUN	NN	Number=Sing	2	obj	_	start_char=2339|end_char=2343|ner=O
+5	Jürgen	Jürgen	PROPN	NNP	Number=Sing	2	vocative	_	SpaceAfter=No|start_char=2344|end_char=2350|ner=S-PERSON
+6	,	,	PUNCT	,	_	10	punct	_	start_char=2350|end_char=2351|ner=O
+7	but	but	CCONJ	CC	_	10	cc	_	start_char=2352|end_char=2355|ner=O
+8	his	his	PRON	PRP$	Case=Gen|Gender=Masc|Number=Sing|Person=3|Poss=Yes|PronType=Prs	9	nmod:poss	_	start_char=2356|end_char=2359|ner=O
+9	passport	passport	NOUN	NN	Number=Sing	10	nsubj	_	start_char=2360|end_char=2368|ner=O
+10	says	say	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	conj	_	start_char=2369|end_char=2373|ner=O
+11	Juergen	Juergen	PROPN	NNP	Number=Sing	10	obj	_	SpaceAfter=No|start_char=2374|end_char=2381|ner=S-PERSON
+12	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=2381|end_char=2382|ner=O
 
 # text = Kyiv (Київ) is the capital of Ukraine.
 # sent_id = 50
 # constituency = (ROOT (S (NP (NP (NNP Kyiv)) (-LRB- -LRB-) (NP (NNP Київ)) (-RRB- -RRB-)) (VP (VBZ is) (NP (NP (DT the) (NN capital)) (PP (IN of) (NP (NNP Ukraine))))) (. .)))
-1	Kyiv	Kyiv	PROPN	NNP	Number=Sing	7	nsubj	_	start_char=2384|end_char=2388
-2	(	(	PUNCT	-LRB-	_	3	punct	_	SpaceAfter=No|start_char=2389|end_char=2390
-3	Київ	Київ	PROPN	NNP	Number=Sing	1	appos	_	SpaceAfter=No|start_char=2390|end_char=2394
-4	)	)	PUNCT	-RRB-	_	3	punct	_	start_char=2394|end_char=2395
-5	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	7	cop	_	start_char=2396|end_char=2398
-6	the	the	DET	DT	Definite=Def|PronType=Art	7	det	_	start_char=2399|end_char=2402
-7	capital	capital	NOUN	NN	Number=Sing	0	root	_	start_char=2403|end_char=2410
-8	of	of	ADP	IN	_	9	case	_	start_char=2411|end_char=2413
-9	Ukraine	Ukraine	PROPN	NNP	Number=Sing	7	nmod	_	SpaceAfter=No|start_char=2414|end_char=2421
-10	.	.	PUNCT	.	_	7	punct	_	SpacesAfter=\n\n|start_char=2421|end_char=2422
+# sentiment = 1
+1	Kyiv	Kyiv	PROPN	NNP	Number=Sing	7	nsubj	_	start_char=2384|end_char=2388|ner=S-GPE
+2	(	(	PUNCT	-LRB-	_	3	punct	_	SpaceAfter=No|start_char=2389|end_char=2390|ner=O
+3	Київ	Київ	PROPN	NNP	Number=Sing	1	appos	_	SpaceAfter=No|start_char=2390|end_char=2394|ner=O
+4	)	)	PUNCT	-RRB-	_	3	punct	_	start_char=2394|end_char=2395|ner=O
+5	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	7	cop	_	start_char=2396|end_char=2398|ner=O
+6	the	the	DET	DT	Definite=Def|PronType=Art	7	det	_	start_char=2399|end_char=2402|ner=O
+7	capital	capital	NOUN	NN	Number=Sing	0	root	_	start_char=2403|end_char=2410|ner=O
+8	of	of	ADP	IN	_	9	case	_	start_char=2411|end_char=2413|ner=O
+9	Ukraine	Ukraine	PROPN	NNP	Number=Sing	7	nmod	_	SpaceAfter=No|start_char=2414|end_char=2421|ner=S-GPE
+10	.	.	PUNCT	.	_	7	punct	_	SpacesAfter=\n\n|start_char=2421|end_char=2422|ner=O
 
 # text = The poet wrote haiku: 古池や 蛙飛び込む 水の音.
 # sent_id = 51
 # constituency = (ROOT (S (NP (DT The) (NN poet)) (VP (VBD wrote) (NP (NP (NN haiku)) (: :) (INTJ (UH 古池や) (, 蛙飛び込む) (UH 水の音)))) (. .)))
-1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=2424|end_char=2427
-2	poet	poet	NOUN	NN	Number=Sing	3	nsubj	_	start_char=2428|end_char=2432
-3	wrote	write	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=2433|end_char=2438
-4	haiku	haiku	NOUN	NN	Number=Sing	3	obj	_	SpaceAfter=No|start_char=2439|end_char=2444
-5	:	:	PUNCT	:	_	6	punct	_	start_char=2444|end_char=2445
-6	古池や	古池や	INTJ	UH	_	3	ccomp	_	start_char=2446|end_char=2449
-7	蛙飛び込む	蛙ule	PUNCT	,	_	8	punct	_	start_char=2450|end_char=2455
-8	水の音	水の音	INTJ	UH	_	6	flat	_	SpaceAfter=No|start_char=2456|end_char=2459
-9	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=2459|end_char=2460
+# sentiment = 1
+1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=2424|end_char=2427|ner=O
+2	poet	poet	NOUN	NN	Number=Sing	3	nsubj	_	start_char=2428|end_char=2432|ner=O
+3	wrote	write	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=2433|end_char=2438|ner=O
+4	haiku	haiku	NOUN	NN	Number=Sing	3	obj	_	SpaceAfter=No|start_char=2439|end_char=2444|ner=O
+5	:	:	PUNCT	:	_	6	punct	_	start_char=2444|end_char=2445|ner=O
+6	古池や	古池や	INTJ	UH	_	3	ccomp	_	start_char=2446|end_char=2449|ner=O
+7	蛙飛び込む	蛙ule	PUNCT	,	_	8	punct	_	start_char=2450|end_char=2455|ner=O
+8	水の音	水の音	INTJ	UH	_	6	flat	_	SpaceAfter=No|start_char=2456|end_char=2459|ner=O
+9	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=2459|end_char=2460|ner=O
 
 # text = The old sign said ΤΗΣ ΠΟΛΕΩΣ in capitals, and the guide read it aloud.
 # sent_id = 52
 # constituency = (ROOT (S (NP (DT The) (JJ old) (NN sign)) (VP (VBD said) (SBAR (S (NP (NP (NP (JJ ΤΗΣ) (NN ΠΟΛΕΩΣ)) (PP (IN in) (NP (NNS capitals)))) (, ,) (CC and) (NP (DT the) (NN guide))) (VP (VBD read) (NP (PRP it)) (ADVP (RB aloud)))))) (. .)))
-1	The	the	DET	DT	Definite=Def|PronType=Art	3	det	_	start_char=2462|end_char=2465
-2	old	old	ADJ	JJ	Degree=Pos	3	amod	_	start_char=2466|end_char=2469
-3	sign	sign	NOUN	NN	Number=Sing	4	nsubj	_	start_char=2470|end_char=2474
-4	said	say	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=2475|end_char=2479
-5	ΤΗΣ	ΤΗΣ	ADJ	JJ	Degree=Pos	6	amod	_	start_char=2480|end_char=2483
-6	ΠΟΛΕΩΣ	πολεως	NOUN	NN	Number=Sing	4	obj	_	start_char=2484|end_char=2490
-7	in	in	ADP	IN	_	8	case	_	start_char=2491|end_char=2493
-8	capitals	capital	NOUN	NNS	Number=Plur	6	nmod	_	SpaceAfter=No|start_char=2494|end_char=2502
-9	,	,	PUNCT	,	_	13	punct	_	start_char=2502|end_char=2503
-10	and	and	CCONJ	CC	_	13	cc	_	start_char=2504|end_char=2507
-11	the	the	DET	DT	Definite=Def|PronType=Art	12	det	_	start_char=2508|end_char=2511
-12	guide	guide	NOUN	NN	Number=Sing	13	nsubj	_	start_char=2512|end_char=2517
-13	read	read	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	4	conj	_	start_char=2518|end_char=2522
-14	it	it	PRON	PRP	Case=Acc|Gender=Neut|Number=Sing|Person=3|PronType=Prs	13	obj	_	start_char=2523|end_char=2525
-15	aloud	aloud	ADV	RB	_	13	advmod	_	SpaceAfter=No|start_char=2526|end_char=2531
-16	.	.	PUNCT	.	_	4	punct	_	start_char=2531|end_char=2532
+# sentiment = 0
+1	The	the	DET	DT	Definite=Def|PronType=Art	3	det	_	start_char=2462|end_char=2465|ner=O
+2	old	old	ADJ	JJ	Degree=Pos	3	amod	_	start_char=2466|end_char=2469|ner=O
+3	sign	sign	NOUN	NN	Number=Sing	4	nsubj	_	start_char=2470|end_char=2474|ner=O
+4	said	say	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=2475|end_char=2479|ner=O
+5	ΤΗΣ	ΤΗΣ	ADJ	JJ	Degree=Pos	6	amod	_	start_char=2480|end_char=2483|ner=O
+6	ΠΟΛΕΩΣ	πολεως	NOUN	NN	Number=Sing	4	obj	_	start_char=2484|end_char=2490|ner=O
+7	in	in	ADP	IN	_	8	case	_	start_char=2491|end_char=2493|ner=O
+8	capitals	capital	NOUN	NNS	Number=Plur	6	nmod	_	SpaceAfter=No|start_char=2494|end_char=2502|ner=O
+9	,	,	PUNCT	,	_	13	punct	_	start_char=2502|end_char=2503|ner=O
+10	and	and	CCONJ	CC	_	13	cc	_	start_char=2504|end_char=2507|ner=O
+11	the	the	DET	DT	Definite=Def|PronType=Art	12	det	_	start_char=2508|end_char=2511|ner=O
+12	guide	guide	NOUN	NN	Number=Sing	13	nsubj	_	start_char=2512|end_char=2517|ner=O
+13	read	read	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	4	conj	_	start_char=2518|end_char=2522|ner=O
+14	it	it	PRON	PRP	Case=Acc|Gender=Neut|Number=Sing|Person=3|PronType=Prs	13	obj	_	start_char=2523|end_char=2525|ner=O
+15	aloud	aloud	ADV	RB	_	13	advmod	_	SpaceAfter=No|start_char=2526|end_char=2531|ner=O
+16	.	.	PUNCT	.	_	4	punct	_	start_char=2531|end_char=2532|ner=O
 
 # text = ΕΙΣ was carved below it.
 # sent_id = 53
 # constituency = (ROOT (S (NP (NNP ΕΙΣ)) (VP (VBD was) (VP (VBN carved) (PP (IN below) (NP (PRP it))))) (. .)))
-1	ΕΙΣ	ΕΙΣ	PROPN	NNP	Number=Sing	3	nsubj:pass	_	start_char=2533|end_char=2536
-2	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	3	aux:pass	_	start_char=2537|end_char=2540
-3	carved	carve	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	start_char=2541|end_char=2547
-4	below	below	ADP	IN	_	5	case	_	start_char=2548|end_char=2553
-5	it	it	PRON	PRP	Case=Acc|Gender=Neut|Number=Sing|Person=3|PronType=Prs	3	obl	_	SpaceAfter=No|start_char=2554|end_char=2556
-6	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n|start_char=2556|end_char=2557
+# sentiment = 0
+1	ΕΙΣ	ΕΙΣ	PROPN	NNP	Number=Sing	3	nsubj:pass	_	start_char=2533|end_char=2536|ner=O
+2	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	3	aux:pass	_	start_char=2537|end_char=2540|ner=O
+3	carved	carve	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	start_char=2541|end_char=2547|ner=O
+4	below	below	ADP	IN	_	5	case	_	start_char=2548|end_char=2553|ner=O
+5	it	it	PRON	PRP	Case=Acc|Gender=Neut|Number=Sing|Person=3|PronType=Prs	3	obl	_	SpaceAfter=No|start_char=2554|end_char=2556|ner=O
+6	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n|start_char=2556|end_char=2557|ner=O

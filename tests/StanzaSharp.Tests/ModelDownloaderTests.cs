@@ -88,6 +88,42 @@ public class ModelDownloaderTests : IDisposable
         Assert.Equal(expected.Order(), ModelDownloader.Files.Select(f => f.Path).Order());
     }
 
+    [Theory]
+    [InlineData("tokenize", "tokenize/combined_nocharlm.pt")]
+    [InlineData("tokenize,mwt", "tokenize/combined_nocharlm.pt mwt/combined.pt")]
+    // pos pulls in what it requires (tokenize, mwt) and the shared pretrain and charlms.
+    [InlineData("pos", "tokenize/combined_nocharlm.pt mwt/combined.pt pos/combined_charlm.pt pretrain/conll17.pt forward_charlm/1billion.pt backward_charlm/1billion.pt")]
+    [InlineData("tokenize,lemma", "tokenize/combined_nocharlm.pt mwt/combined.pt pos/combined_charlm.pt lemma/combined_nocharlm.pt pretrain/conll17.pt forward_charlm/1billion.pt backward_charlm/1billion.pt")]
+    [InlineData("tokenize,sentiment", "tokenize/combined_nocharlm.pt sentiment/sstplus_charlm.pt pretrain/conll17.pt forward_charlm/1billion.pt backward_charlm/1billion.pt")]
+    [InlineData(" NER , tokenize ", "tokenize/combined_nocharlm.pt ner/ontonotes-ww-multi_charlm.pt pretrain/conll17.pt forward_charlm/1billion.pt backward_charlm/1billion.pt")]
+    public void FilesFor_SelectsWhatTheProcessorsNeed(string processors, string expected) =>
+        Assert.Equal(expected.Split(' ').Order(), ModelDownloader.FilesFor(processors).Select(f => f.Path).Order());
+
+    [Fact]
+    public void FilesFor_AllProcessorsIsEveryFileAndUnknownNamesThrow()
+    {
+        Assert.Equal(ModelDownloader.Files.Order(), ModelDownloader.FilesFor(Pipeline.AllProcessors).Order());
+        Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor("tokenize,coref"));
+        Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor(""));
+    }
+
+    [PtModelTheory]
+    [InlineData("tokenize,mwt")]
+    [InlineData("tokenize,mwt,pos,lemma")]
+    [InlineData("tokenize,sentiment")]
+    public void FilesFor_AreEnoughToLoadThePipeline(string processors)
+    {
+        // Only the selected .pt files, copied from the full download: Pipeline.Load must find all it reads.
+        foreach (var (path, _) in ModelDownloader.FilesFor(processors))
+        {
+            var target = Path.Combine(_dir, path);
+            Directory.CreateDirectory(Path.GetDirectoryName(target)!);
+            File.Copy(Path.Combine(Repo.StanzaModels, path), target);
+        }
+        using var nlp = Pipeline.Load(_dir, new PipelineOptions { Processors = processors });
+        Assert.NotEmpty(nlp.Process("It works.").Sentences);
+    }
+
     /// <summary>Progress&lt;T&gt; reports on the thread pool; this one records synchronously.</summary>
     private sealed class SyncProgress(List<string> lines) : IProgress<string>
     {

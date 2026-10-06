@@ -60,7 +60,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from stanza_convert import convert_object, drop_skipped, load_checkpoint, write_safetensors  # noqa: E402
 
 INTERMEDIATE_SENTENCES = 3
-PROCESSORS = "tokenize,mwt,pos,lemma,depparse,constituency"  # the default Pipeline
+PROCESSORS = "tokenize,mwt,pos,lemma,constituency,depparse,sentiment,ner"  # the default Pipeline (Stanza's order)
 
 
 class Capture:

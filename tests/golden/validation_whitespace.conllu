@@ -1,532 +1,579 @@
 # text = Leading blank lines and spaces come first.
 # sent_id = 0
 # constituency = (ROOT (S (S (VP (VBG Leading) (NP (JJ blank) (NNS lines) (CC and) (NNS spaces)))) (VP (VBP come) (ADVP (RB first))) (. .)))
-1	Leading	lead	VERB	VBG	VerbForm=Ger	6	csubj	_	SpacesBefore=\n\n\n\s\s\s|start_char=6|end_char=13
-2	blank	blank	ADJ	JJ	Degree=Pos	3	amod	_	start_char=14|end_char=19
-3	lines	line	NOUN	NNS	Number=Plur	1	obj	_	start_char=20|end_char=25
-4	and	and	CCONJ	CC	_	5	cc	_	start_char=26|end_char=29
-5	spaces	space	NOUN	NNS	Number=Plur	3	conj	_	start_char=30|end_char=36
-6	come	come	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=37|end_char=41
-7	first	first	ADV	RB	Degree=Pos|NumForm=Word|NumType=Ord	6	advmod	_	SpaceAfter=No|start_char=42|end_char=47
-8	.	.	PUNCT	.	_	6	punct	_	start_char=47|end_char=48
+# sentiment = 1
+1	Leading	lead	VERB	VBG	VerbForm=Ger	6	csubj	_	SpacesBefore=\n\n\n\s\s\s|start_char=6|end_char=13|ner=O
+2	blank	blank	ADJ	JJ	Degree=Pos	3	amod	_	start_char=14|end_char=19|ner=O
+3	lines	line	NOUN	NNS	Number=Plur	1	obj	_	start_char=20|end_char=25|ner=O
+4	and	and	CCONJ	CC	_	5	cc	_	start_char=26|end_char=29|ner=O
+5	spaces	space	NOUN	NNS	Number=Plur	3	conj	_	start_char=30|end_char=36|ner=O
+6	come	come	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=37|end_char=41|ner=O
+7	first	first	ADV	RB	Degree=Pos|NumForm=Word|NumType=Ord	6	advmod	_	SpaceAfter=No|start_char=42|end_char=47|ner=S-ORDINAL
+8	.	.	PUNCT	.	_	6	punct	_	start_char=47|end_char=48|ner=O
 
 # text = Then a normal sentence.
 # sent_id = 1
 # constituency = (ROOT (FRAG (ADVP (RB Then)) (NP (DT a) (JJ normal) (NN sentence)) (. .)))
-1	Then	then	ADV	RB	PronType=Dem	4	advmod	_	start_char=49|end_char=53
-2	a	a	DET	DT	Definite=Ind|PronType=Art	4	det	_	start_char=54|end_char=55
-3	normal	normal	ADJ	JJ	Degree=Pos	4	amod	_	start_char=56|end_char=62
-4	sentence	sentence	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=63|end_char=71
-5	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n\n\n\n\n|start_char=71|end_char=72
+# sentiment = 1
+1	Then	then	ADV	RB	PronType=Dem	4	advmod	_	start_char=49|end_char=53|ner=O
+2	a	a	DET	DT	Definite=Ind|PronType=Art	4	det	_	start_char=54|end_char=55|ner=O
+3	normal	normal	ADJ	JJ	Degree=Pos	4	amod	_	start_char=56|end_char=62|ner=O
+4	sentence	sentence	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=63|end_char=71|ner=O
+5	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n\n\n\n\n|start_char=71|end_char=72|ner=O
 
 # text = Many blank lines separated this paragraph.
 # sent_id = 2
 # constituency = (ROOT (S (NP (JJ Many) (JJ blank) (NNS lines)) (VP (VBD separated) (NP (DT this) (NN paragraph))) (. .)))
-1	Many	many	ADJ	JJ	Degree=Pos	3	amod	_	start_char=78|end_char=82
-2	blank	blank	ADJ	JJ	Degree=Pos	3	amod	_	start_char=83|end_char=88
-3	lines	line	NOUN	NNS	Number=Plur	4	nsubj	_	start_char=89|end_char=94
-4	separated	separate	VERB	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=95|end_char=104
-5	this	this	DET	DT	Number=Sing|PronType=Dem	6	det	_	start_char=105|end_char=109
-6	paragraph	paragraph	NOUN	NN	Number=Sing	4	obj	_	SpaceAfter=No|start_char=110|end_char=119
-7	.	.	PUNCT	.	_	4	punct	_	start_char=119|end_char=120
+# sentiment = 0
+1	Many	many	ADJ	JJ	Degree=Pos	3	amod	_	start_char=78|end_char=82|ner=O
+2	blank	blank	ADJ	JJ	Degree=Pos	3	amod	_	start_char=83|end_char=88|ner=O
+3	lines	line	NOUN	NNS	Number=Plur	4	nsubj	_	start_char=89|end_char=94|ner=O
+4	separated	separate	VERB	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=95|end_char=104|ner=O
+5	this	this	DET	DT	Number=Sing|PronType=Dem	6	det	_	start_char=105|end_char=109|ner=O
+6	paragraph	paragraph	NOUN	NN	Number=Sing	4	obj	_	SpaceAfter=No|start_char=110|end_char=119|ner=O
+7	.	.	PUNCT	.	_	4	punct	_	start_char=119|end_char=120|ner=O
 
 # text = It has two sentences.
 # sent_id = 3
 # constituency = (ROOT (S (NP (PRP It)) (VP (VBZ has) (NP (CD two) (NNS sentences))) (. .)))
-1	It	it	PRON	PRP	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=121|end_char=123
-2	has	have	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=124|end_char=127
-3	two	two	NUM	CD	NumForm=Word|NumType=Card	4	nummod	_	start_char=128|end_char=131
-4	sentences	sentence	NOUN	NNS	Number=Plur	2	obj	_	SpaceAfter=No|start_char=132|end_char=141
-5	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\s\s\s\n|start_char=141|end_char=142
+# sentiment = 1
+1	It	it	PRON	PRP	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=121|end_char=123|ner=O
+2	has	have	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=124|end_char=127|ner=O
+3	two	two	NUM	CD	NumForm=Word|NumType=Card	4	nummod	_	start_char=128|end_char=131|ner=S-CARDINAL
+4	sentences	sentence	NOUN	NNS	Number=Plur	2	obj	_	SpaceAfter=No|start_char=132|end_char=141|ner=O
+5	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\s\s\s\n|start_char=141|end_char=142|ner=O
 
 # text = Trailing spaces end the line above.
 # sent_id = 4
 # constituency = (ROOT (S (NP (VBG Trailing) (NNS spaces)) (VP (VBP end) (NP (DT the) (NN line)) (ADVP (RB above))) (. .)))
-1	Trailing	trail	VERB	VBG	VerbForm=Ger	2	amod	_	start_char=146|end_char=154
-2	spaces	space	NOUN	NNS	Number=Plur	3	nsubj	_	start_char=155|end_char=161
-3	end	end	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=162|end_char=165
-4	the	the	DET	DT	Definite=Def|PronType=Art	5	det	_	start_char=166|end_char=169
-5	line	line	NOUN	NN	Number=Sing	3	obj	_	start_char=170|end_char=174
-6	above	above	ADV	RB	_	3	advmod	_	SpaceAfter=No|start_char=175|end_char=180
-7	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\t\t\n\n|start_char=180|end_char=181
+# sentiment = 2
+1	Trailing	trail	VERB	VBG	VerbForm=Ger	2	amod	_	start_char=146|end_char=154|ner=O
+2	spaces	space	NOUN	NNS	Number=Plur	3	nsubj	_	start_char=155|end_char=161|ner=O
+3	end	end	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=162|end_char=165|ner=O
+4	the	the	DET	DT	Definite=Def|PronType=Art	5	det	_	start_char=166|end_char=169|ner=O
+5	line	line	NOUN	NN	Number=Sing	3	obj	_	start_char=170|end_char=174|ner=O
+6	above	above	ADV	RB	_	3	advmod	_	SpaceAfter=No|start_char=175|end_char=180|ner=O
+7	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\t\t\n\n|start_char=180|end_char=181|ner=O
 
 # text = Windows line endings follow.
 # sent_id = 5
 # constituency = (ROOT (S (NP (NML (NNP Windows) (NN line)) (NNS endings)) (VP (VBP follow)) (. .)))
-1	Windows	window	PROPN	NNP	Number=Plur	2	compound	_	start_char=185|end_char=192
-2	line	line	NOUN	NN	Number=Sing	3	compound	_	start_char=193|end_char=197
-3	endings	ending	NOUN	NNS	Number=Plur	4	nsubj	_	start_char=198|end_char=205
-4	follow	follow	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=206|end_char=212
-5	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\r\n|start_char=212|end_char=213
+# sentiment = 1
+1	Windows	window	PROPN	NNP	Number=Plur	2	compound	_	start_char=185|end_char=192|ner=O
+2	line	line	NOUN	NN	Number=Sing	3	compound	_	start_char=193|end_char=197|ner=O
+3	endings	ending	NOUN	NNS	Number=Plur	4	nsubj	_	start_char=198|end_char=205|ner=O
+4	follow	follow	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=206|end_char=212|ner=O
+5	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\r\n|start_char=212|end_char=213|ner=O
 
 # text = This line ends with CRLF.
 # sent_id = 6
 # constituency = (ROOT (S (NP (DT This) (NN line)) (VP (VBZ ends) (PP (IN with) (NP (NNP CRLF)))) (. .)))
-1	This	this	DET	DT	Number=Sing|PronType=Dem	2	det	_	start_char=215|end_char=219
-2	line	line	NOUN	NN	Number=Sing	3	nsubj	_	start_char=220|end_char=224
-3	ends	end	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=225|end_char=229
-4	with	with	ADP	IN	_	5	case	_	start_char=230|end_char=234
-5	CRLF	CRLF	PROPN	NNP	Number=Sing	3	obl	_	SpaceAfter=No|start_char=235|end_char=239
-6	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\r\n|start_char=239|end_char=240
+# sentiment = 1
+1	This	this	DET	DT	Number=Sing|PronType=Dem	2	det	_	start_char=215|end_char=219|ner=O
+2	line	line	NOUN	NN	Number=Sing	3	nsubj	_	start_char=220|end_char=224|ner=O
+3	ends	end	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=225|end_char=229|ner=O
+4	with	with	ADP	IN	_	5	case	_	start_char=230|end_char=234|ner=O
+5	CRLF	CRLF	PROPN	NNP	Number=Sing	3	obl	_	SpaceAfter=No|start_char=235|end_char=239|ner=O
+6	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\r\n|start_char=239|end_char=240|ner=O
 
 # text = So does this one.
 # sent_id = 7
 # constituency = (ROOT (SINV (ADVP (RB So)) (VP (VBZ does)) (NP (DT this) (NN one)) (. .)))
-1	So	so	ADV	RB	_	2	advmod	_	start_char=242|end_char=244
-2	does	do	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=245|end_char=249
-3	this	this	DET	DT	Number=Sing|PronType=Dem	4	det	_	start_char=250|end_char=254
-4	one	one	NOUN	NN	Number=Sing	2	nsubj	_	SpaceAfter=No|start_char=255|end_char=258
-5	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\r\n\r\n|start_char=258|end_char=259
+# sentiment = 1
+1	So	so	ADV	RB	_	2	advmod	_	start_char=242|end_char=244|ner=O
+2	does	do	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=245|end_char=249|ner=O
+3	this	this	DET	DT	Number=Sing|PronType=Dem	4	det	_	start_char=250|end_char=254|ner=O
+4	one	one	NOUN	NN	Number=Sing	2	nsubj	_	SpaceAfter=No|start_char=255|end_char=258|ner=O
+5	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\r\n\r\n|start_char=258|end_char=259|ner=O
 
 # text = A new paragraph after a CRLF blank line.
 # sent_id = 8
 # constituency = (ROOT (NP (NP (DT A) (JJ new) (NN paragraph)) (PP (IN after) (NP (DT a) (NNP CRLF) (JJ blank) (NN line))) (. .)))
-1	A	a	DET	DT	Definite=Ind|PronType=Art	3	det	_	start_char=263|end_char=264
-2	new	new	ADJ	JJ	Degree=Pos	3	amod	_	start_char=265|end_char=268
-3	paragraph	paragraph	NOUN	NN	Number=Sing	0	root	_	start_char=269|end_char=278
-4	after	after	ADP	IN	_	8	case	_	start_char=279|end_char=284
-5	a	a	DET	DT	Definite=Ind|PronType=Art	8	det	_	start_char=285|end_char=286
-6	CRLF	CRLF	PROPN	NNP	Number=Sing	8	compound	_	start_char=287|end_char=291
-7	blank	blank	ADJ	JJ	Degree=Pos	8	amod	_	start_char=292|end_char=297
-8	line	line	NOUN	NN	Number=Sing	3	nmod	_	SpaceAfter=No|start_char=298|end_char=302
-9	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\r\n\r\n\t|start_char=302|end_char=303
+# sentiment = 1
+1	A	a	DET	DT	Definite=Ind|PronType=Art	3	det	_	start_char=263|end_char=264|ner=O
+2	new	new	ADJ	JJ	Degree=Pos	3	amod	_	start_char=265|end_char=268|ner=O
+3	paragraph	paragraph	NOUN	NN	Number=Sing	0	root	_	start_char=269|end_char=278|ner=O
+4	after	after	ADP	IN	_	8	case	_	start_char=279|end_char=284|ner=O
+5	a	a	DET	DT	Definite=Ind|PronType=Art	8	det	_	start_char=285|end_char=286|ner=O
+6	CRLF	CRLF	PROPN	NNP	Number=Sing	8	compound	_	start_char=287|end_char=291|ner=O
+7	blank	blank	ADJ	JJ	Degree=Pos	8	amod	_	start_char=292|end_char=297|ner=O
+8	line	line	NOUN	NN	Number=Sing	3	nmod	_	SpaceAfter=No|start_char=298|end_char=302|ner=O
+9	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\r\n\r\n\t|start_char=302|end_char=303|ner=O
 
 # text = A paragraph that starts with a tab.
 # sent_id = 9
 # constituency = (ROOT (NP (NP (DT A) (NN paragraph)) (SBAR (WHNP (WDT that)) (S (VP (VBZ starts) (PP (IN with) (NP (DT a) (NN tab)))))) (. .)))
-1	A	a	DET	DT	Definite=Ind|PronType=Art	2	det	_	start_char=308|end_char=309
-2	paragraph	paragraph	NOUN	NN	Number=Sing	0	root	_	start_char=310|end_char=319
-3	that	that	PRON	WDT	PronType=Rel	4	nsubj	_	start_char=320|end_char=324
-4	starts	start	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	acl:relcl	_	start_char=325|end_char=331
-5	with	with	ADP	IN	_	7	case	_	start_char=332|end_char=336
-6	a	a	DET	DT	Definite=Ind|PronType=Art	7	det	_	start_char=337|end_char=338
-7	tab	tab	NOUN	NN	Number=Sing	4	obl	_	SpaceAfter=No|start_char=339|end_char=342
-8	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\t|start_char=342|end_char=343
+# sentiment = 1
+1	A	a	DET	DT	Definite=Ind|PronType=Art	2	det	_	start_char=308|end_char=309|ner=O
+2	paragraph	paragraph	NOUN	NN	Number=Sing	0	root	_	start_char=310|end_char=319|ner=O
+3	that	that	PRON	WDT	PronType=Rel	4	nsubj	_	start_char=320|end_char=324|ner=O
+4	starts	start	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	acl:relcl	_	start_char=325|end_char=331|ner=O
+5	with	with	ADP	IN	_	7	case	_	start_char=332|end_char=336|ner=O
+6	a	a	DET	DT	Definite=Ind|PronType=Art	7	det	_	start_char=337|end_char=338|ner=O
+7	tab	tab	NOUN	NN	Number=Sing	4	obl	_	SpaceAfter=No|start_char=339|end_char=342|ner=O
+8	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\t|start_char=342|end_char=343|ner=O
 
 # text = And has tabs inside it.
 # sent_id = 10
 # constituency = (ROOT (SINV (CC And) (VP (VBZ has)) (NP (NP (NNS tabs)) (PP (IN inside) (NP (PRP it)))) (. .)))
-1	And	and	CCONJ	CC	_	2	cc	_	start_char=344|end_char=347
-2	has	have	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=348|end_char=351
-3	tabs	tabs	NOUN	NNS	Number=Plur	2	obj	_	SpacesAfter=\t|start_char=352|end_char=356
-4	inside	inside	ADP	IN	_	5	case	_	SpacesAfter=\t|start_char=357|end_char=363
-5	it	it	PRON	PRP	Case=Acc|Gender=Neut|Number=Sing|Person=3|PronType=Prs	2	obl	_	SpaceAfter=No|start_char=364|end_char=366
-6	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=366|end_char=367
+# sentiment = 1
+1	And	and	CCONJ	CC	_	2	cc	_	start_char=344|end_char=347|ner=O
+2	has	have	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=348|end_char=351|ner=O
+3	tabs	tabs	NOUN	NNS	Number=Plur	2	obj	_	SpacesAfter=\t|start_char=352|end_char=356|ner=O
+4	inside	inside	ADP	IN	_	5	case	_	SpacesAfter=\t|start_char=357|end_char=363|ner=O
+5	it	it	PRON	PRP	Case=Acc|Gender=Neut|Number=Sing|Person=3|PronType=Prs	2	obl	_	SpaceAfter=No|start_char=364|end_char=366|ner=O
+6	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=366|end_char=367|ner=O
 
 # text = Non-breaking spaces appear here: 10 kg and 5 km.
 # sent_id = 11
 # constituency = (ROOT (S (NP (JJ Non-breaking) (NNS spaces)) (VP (VBP appear) (ADVP (RB here)) (: :) (NP (CD 10) (NNS kg) (CC and) (CD 5) (NNS km))) (. .)))
-1	Non-breaking	non-breaking	ADJ	JJ	Degree=Pos	2	amod	_	SpacesAfter=\u00A0|start_char=369|end_char=381
-2	spaces	space	NOUN	NNS	Number=Plur	3	nsubj	_	SpacesAfter=\u00A0|start_char=382|end_char=388
-3	appear	appear	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=389|end_char=395
-4	here	here	ADV	RB	PronType=Dem	3	advmod	_	SpaceAfter=No|start_char=396|end_char=400
-5	:	:	PUNCT	:	_	7	punct	_	start_char=400|end_char=401
-6	10	10	NUM	CD	NumForm=Digit|NumType=Card	7	nummod	_	SpacesAfter=\u00A0|start_char=402|end_char=404
-7	kg	kg	NOUN	NNS	Number=Plur	3	parataxis	_	start_char=405|end_char=407
-8	and	and	CCONJ	CC	_	10	cc	_	start_char=408|end_char=411
-9	5	5	NUM	CD	NumForm=Digit|NumType=Card	10	nummod	_	SpacesAfter=\u00A0|start_char=412|end_char=413
-10	km	kilometer	NOUN	NNS	Number=Plur	7	conj	_	SpaceAfter=No|start_char=414|end_char=416
-11	.	.	PUNCT	.	_	3	punct	_	start_char=416|end_char=417
+# sentiment = 1
+1	Non-breaking	non-breaking	ADJ	JJ	Degree=Pos	2	amod	_	SpacesAfter=\u00A0|start_char=369|end_char=381|ner=O
+2	spaces	space	NOUN	NNS	Number=Plur	3	nsubj	_	SpacesAfter=\u00A0|start_char=382|end_char=388|ner=O
+3	appear	appear	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=389|end_char=395|ner=O
+4	here	here	ADV	RB	PronType=Dem	3	advmod	_	SpaceAfter=No|start_char=396|end_char=400|ner=O
+5	:	:	PUNCT	:	_	7	punct	_	start_char=400|end_char=401|ner=O
+6	10	10	NUM	CD	NumForm=Digit|NumType=Card	7	nummod	_	SpacesAfter=\u00A0|start_char=402|end_char=404|ner=B-QUANTITY
+7	kg	kg	NOUN	NNS	Number=Plur	3	parataxis	_	start_char=405|end_char=407|ner=E-QUANTITY
+8	and	and	CCONJ	CC	_	10	cc	_	start_char=408|end_char=411|ner=O
+9	5	5	NUM	CD	NumForm=Digit|NumType=Card	10	nummod	_	SpacesAfter=\u00A0|start_char=412|end_char=413|ner=B-QUANTITY
+10	km	kilometer	NOUN	NNS	Number=Plur	7	conj	_	SpaceAfter=No|start_char=414|end_char=416|ner=E-QUANTITY
+11	.	.	PUNCT	.	_	3	punct	_	start_char=416|end_char=417|ner=O
 
 # text = Mr. Smith agreed.
 # sent_id = 12
 # constituency = (ROOT (S (NP (NNP Mr.) (NNP Smith)) (VP (VBD agreed)) (. .)))
-1	Mr.	Mr.	PROPN	NNP	Number=Sing	2	nmod:desc	_	SpacesAfter=\u00A0|start_char=418|end_char=421
-2	Smith	Smith	PROPN	NNP	Number=Sing	3	nsubj	_	SpacesAfter=\u00A0|start_char=422|end_char=427
-3	agreed	agree	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=428|end_char=434
-4	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=434|end_char=435
+# sentiment = 1
+1	Mr.	Mr.	PROPN	NNP	Number=Sing	2	nmod:desc	_	SpacesAfter=\u00A0|start_char=418|end_char=421|ner=O
+2	Smith	Smith	PROPN	NNP	Number=Sing	3	nsubj	_	SpacesAfter=\u00A0|start_char=422|end_char=427|ner=S-PERSON
+3	agreed	agree	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=428|end_char=434|ner=O
+4	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=434|end_char=435|ner=O
 
 # text = Thin spaces and en spaces and em spaces are rare.
 # sent_id = 13
 # constituency = (ROOT (S (NP (NP (JJ Thin) (NNS spaces)) (CC and) (NP (FW en) (NNS spaces)) (CC and) (NP (PRP em) (NNS spaces))) (VP (VBP are) (ADJP (JJ rare))) (. .)))
-1	Thin	thin	ADJ	JJ	Degree=Pos	2	amod	_	SpacesAfter= |start_char=437|end_char=441
-2	spaces	space	NOUN	NNS	Number=Plur	10	nsubj	_	start_char=442|end_char=448
-3	and	and	CCONJ	CC	_	5	cc	_	start_char=449|end_char=452
-4	en	en	X	FW	_	5	amod	_	SpacesAfter= |start_char=453|end_char=455
-5	spaces	space	NOUN	NNS	Number=Plur	2	conj	_	start_char=456|end_char=462
-6	and	and	CCONJ	CC	_	8	cc	_	start_char=463|end_char=466
-7	em	they	PRON	PRP	Case=Acc|Number=Plur|Person=3|PronType=Prs|Style=Coll	8	compound	_	SpacesAfter= |start_char=467|end_char=469
-8	spaces	space	NOUN	NNS	Number=Plur	2	conj	_	start_char=470|end_char=476
-9	are	be	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	10	cop	_	start_char=477|end_char=480
-10	rare	rare	ADJ	JJ	Degree=Pos	0	root	_	SpaceAfter=No|start_char=481|end_char=485
-11	.	.	PUNCT	.	_	10	punct	_	start_char=485|end_char=486
+# sentiment = 2
+1	Thin	thin	ADJ	JJ	Degree=Pos	2	amod	_	SpacesAfter= |start_char=437|end_char=441|ner=O
+2	spaces	space	NOUN	NNS	Number=Plur	10	nsubj	_	start_char=442|end_char=448|ner=O
+3	and	and	CCONJ	CC	_	5	cc	_	start_char=449|end_char=452|ner=O
+4	en	en	X	FW	_	5	amod	_	SpacesAfter= |start_char=453|end_char=455|ner=O
+5	spaces	space	NOUN	NNS	Number=Plur	2	conj	_	start_char=456|end_char=462|ner=O
+6	and	and	CCONJ	CC	_	8	cc	_	start_char=463|end_char=466|ner=O
+7	em	they	PRON	PRP	Case=Acc|Number=Plur|Person=3|PronType=Prs|Style=Coll	8	compound	_	SpacesAfter= |start_char=467|end_char=469|ner=O
+8	spaces	space	NOUN	NNS	Number=Plur	2	conj	_	start_char=470|end_char=476|ner=O
+9	are	be	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	10	cop	_	start_char=477|end_char=480|ner=O
+10	rare	rare	ADJ	JJ	Degree=Pos	0	root	_	SpaceAfter=No|start_char=481|end_char=485|ner=O
+11	.	.	PUNCT	.	_	10	punct	_	start_char=485|end_char=486|ner=O
 
 # text = The figure space too.
 # sent_id = 14
 # constituency = (ROOT (FRAG (NP (DT The) (NN figure) (NN space)) (ADVP (RB too)) (. .)))
-1	The	the	DET	DT	Definite=Def|PronType=Art	3	det	_	start_char=487|end_char=490
-2	figure	figure	NOUN	NN	Number=Sing	3	compound	_	SpacesAfter= |start_char=491|end_char=497
-3	space	space	NOUN	NN	Number=Sing	0	root	_	start_char=498|end_char=503
-4	too	too	ADV	RB	_	3	advmod	_	SpaceAfter=No|start_char=504|end_char=507
-5	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=507|end_char=508
+# sentiment = 1
+1	The	the	DET	DT	Definite=Def|PronType=Art	3	det	_	start_char=487|end_char=490|ner=O
+2	figure	figure	NOUN	NN	Number=Sing	3	compound	_	SpacesAfter= |start_char=491|end_char=497|ner=O
+3	space	space	NOUN	NN	Number=Sing	0	root	_	start_char=498|end_char=503|ner=O
+4	too	too	ADV	RB	_	3	advmod	_	SpaceAfter=No|start_char=504|end_char=507|ner=O
+5	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=507|end_char=508|ner=O
 
 # text = An ideographic space appears here.
 # sent_id = 15
 # constituency = (ROOT (S (NP (DT An) (JJ ideographic) (NN space)) (VP (VBZ appears) (ADVP (RB here))) (. .)))
-1	An	a	DET	DT	Definite=Ind|PronType=Art	3	det	_	start_char=510|end_char=512
-2	ideographic	ideographic	ADJ	JJ	Degree=Pos	3	amod	_	SpacesAfter=　|start_char=513|end_char=524
-3	space	space	NOUN	NN	Number=Sing	4	nsubj	_	start_char=525|end_char=530
-4	appears	appear	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=531|end_char=538
-5	here	here	ADV	RB	PronType=Dem	4	advmod	_	SpaceAfter=No|start_char=539|end_char=543
-6	.	.	PUNCT	.	_	4	punct	_	start_char=543|end_char=544
+# sentiment = 1
+1	An	a	DET	DT	Definite=Ind|PronType=Art	3	det	_	start_char=510|end_char=512|ner=O
+2	ideographic	ideographic	ADJ	JJ	Degree=Pos	3	amod	_	SpacesAfter=　|start_char=513|end_char=524|ner=O
+3	space	space	NOUN	NN	Number=Sing	4	nsubj	_	start_char=525|end_char=530|ner=O
+4	appears	appear	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=531|end_char=538|ner=O
+5	here	here	ADV	RB	PronType=Dem	4	advmod	_	SpaceAfter=No|start_char=539|end_char=543|ner=O
+6	.	.	PUNCT	.	_	4	punct	_	start_char=543|end_char=544|ner=O
 
 # text = A zero​width space hides here.
 # sent_id = 16
 # constituency = (ROOT (S (NP (DT A) (JJ zero​width) (NN space)) (VP (VBZ hides) (ADVP (RB here))) (. .)))
-1	A	a	DET	DT	Definite=Ind|PronType=Art	3	det	_	start_char=545|end_char=546
-2	zero​width	uerovwidth	ADJ	JJ	Degree=Pos	3	amod	_	start_char=547|end_char=557
-3	space	space	NOUN	NN	Number=Sing	4	nsubj	_	start_char=558|end_char=563
-4	hides	hide	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=564|end_char=569
-5	here	here	ADV	RB	PronType=Dem	4	advmod	_	SpaceAfter=No|start_char=570|end_char=574
-6	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=574|end_char=575
+# sentiment = 1
+1	A	a	DET	DT	Definite=Ind|PronType=Art	3	det	_	start_char=545|end_char=546|ner=O
+2	zero​width	uerovwidth	ADJ	JJ	Degree=Pos	3	amod	_	start_char=547|end_char=557|ner=O
+3	space	space	NOUN	NN	Number=Sing	4	nsubj	_	start_char=558|end_char=563|ner=O
+4	hides	hide	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=564|end_char=569|ner=O
+5	here	here	ADV	RB	PronType=Dem	4	advmod	_	SpaceAfter=No|start_char=570|end_char=574|ner=O
+6	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=574|end_char=575|ner=O
 
 # text = Soft­hyphen in the middle of a word.
 # sent_id = 17
 # constituency = (ROOT (NP (NP (NNP Soft­hyphen)) (PP (IN in) (NP (NP (DT the) (NN middle)) (PP (IN of) (NP (DT a) (NN word))))) (. .)))
-1	Soft­hyphen	Soft­hyphen	PROPN	NNP	Number=Sing	0	root	_	start_char=577|end_char=588
-2	in	in	ADP	IN	_	4	case	_	start_char=589|end_char=591
-3	the	the	DET	DT	Definite=Def|PronType=Art	4	det	_	start_char=592|end_char=595
-4	middle	middle	NOUN	NN	Number=Sing	1	nmod	_	start_char=596|end_char=602
-5	of	of	ADP	IN	_	7	case	_	start_char=603|end_char=605
-6	a	a	DET	DT	Definite=Ind|PronType=Art	7	det	_	start_char=606|end_char=607
-7	word	word	NOUN	NN	Number=Sing	4	nmod	_	SpaceAfter=No|start_char=608|end_char=612
-8	.	.	PUNCT	.	_	1	punct	_	start_char=612|end_char=613
+# sentiment = 1
+1	Soft­hyphen	Soft­hyphen	PROPN	NNP	Number=Sing	0	root	_	start_char=577|end_char=588|ner=O
+2	in	in	ADP	IN	_	4	case	_	start_char=589|end_char=591|ner=O
+3	the	the	DET	DT	Definite=Def|PronType=Art	4	det	_	start_char=592|end_char=595|ner=O
+4	middle	middle	NOUN	NN	Number=Sing	1	nmod	_	start_char=596|end_char=602|ner=O
+5	of	of	ADP	IN	_	7	case	_	start_char=603|end_char=605|ner=O
+6	a	a	DET	DT	Definite=Ind|PronType=Art	7	det	_	start_char=606|end_char=607|ner=O
+7	word	word	NOUN	NN	Number=Sing	4	nmod	_	SpaceAfter=No|start_char=608|end_char=612|ner=O
+8	.	.	PUNCT	.	_	1	punct	_	start_char=612|end_char=613|ner=O
 
 # text = Line separator and paragraph separator.
 # sent_id = 18
 # constituency = (ROOT (FRAG (NP (NN Line) (NML (NN separator) (CC and) (NN paragraph)) (NN separator)) (. .)))
-1	Line	line	NOUN	NN	Number=Sing	2	compound	_	SpacesAfter= |start_char=614|end_char=618
-2	separator	separator	NOUN	NN	Number=Sing	0	root	_	start_char=619|end_char=628
-3	and	and	CCONJ	CC	_	5	cc	_	start_char=629|end_char=632
-4	paragraph	paragraph	NOUN	NN	Number=Sing	5	compound	_	SpacesAfter= |start_char=633|end_char=642
-5	separator	separator	NOUN	NN	Number=Sing	2	conj	_	SpaceAfter=No|start_char=643|end_char=652
-6	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=652|end_char=653
+# sentiment = 1
+1	Line	line	NOUN	NN	Number=Sing	2	compound	_	SpacesAfter= |start_char=614|end_char=618|ner=O
+2	separator	separator	NOUN	NN	Number=Sing	0	root	_	start_char=619|end_char=628|ner=O
+3	and	and	CCONJ	CC	_	5	cc	_	start_char=629|end_char=632|ner=O
+4	paragraph	paragraph	NOUN	NN	Number=Sing	5	compound	_	SpacesAfter= |start_char=633|end_char=642|ner=O
+5	separator	separator	NOUN	NN	Number=Sing	2	conj	_	SpaceAfter=No|start_char=643|end_char=652|ner=O
+6	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=652|end_char=653|ner=O
 
 # text = A form feed appears here.
 # sent_id = 19
 # constituency = (ROOT (S (NP (DT A) (NN form) (NN feed)) (VP (VBZ appears) (ADVP (RB here))) (. .)))
-1	A	a	DET	DT	Definite=Ind|PronType=Art	3	det	_	start_char=655|end_char=656
-2	form	form	NOUN	NN	Number=Sing	3	compound	_	start_char=657|end_char=661
-3	feed	feed	NOUN	NN	Number=Sing	4	nsubj	_	SpacesAfter=|start_char=662|end_char=666
-4	appears	appear	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=667|end_char=674
-5	here	here	ADV	RB	PronType=Dem	4	advmod	_	SpaceAfter=No|start_char=675|end_char=679
-6	.	.	PUNCT	.	_	4	punct	_	start_char=679|end_char=680
+# sentiment = 1
+1	A	a	DET	DT	Definite=Ind|PronType=Art	3	det	_	start_char=655|end_char=656|ner=O
+2	form	form	NOUN	NN	Number=Sing	3	compound	_	start_char=657|end_char=661|ner=O
+3	feed	feed	NOUN	NN	Number=Sing	4	nsubj	_	SpacesAfter=|start_char=662|end_char=666|ner=O
+4	appears	appear	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=667|end_char=674|ner=O
+5	here	here	ADV	RB	PronType=Dem	4	advmod	_	SpaceAfter=No|start_char=675|end_char=679|ner=O
+6	.	.	PUNCT	.	_	4	punct	_	start_char=679|end_char=680|ner=O
 
 # text = A vertical tab appears here.
 # sent_id = 20
 # constituency = (ROOT (S (NP (DT A) (JJ vertical) (NN tab)) (VP (VBZ appears) (ADVP (RB here))) (. .)))
-1	A	a	DET	DT	Definite=Ind|PronType=Art	3	det	_	start_char=681|end_char=682
-2	vertical	vertical	ADJ	JJ	Degree=Pos	3	amod	_	SpacesAfter=|start_char=683|end_char=691
-3	tab	tab	NOUN	NN	Number=Sing	4	nsubj	_	start_char=692|end_char=695
-4	appears	appear	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=696|end_char=703
-5	here	here	ADV	RB	PronType=Dem	4	advmod	_	SpaceAfter=No|start_char=704|end_char=708
-6	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=708|end_char=709
+# sentiment = 1
+1	A	a	DET	DT	Definite=Ind|PronType=Art	3	det	_	start_char=681|end_char=682|ner=O
+2	vertical	vertical	ADJ	JJ	Degree=Pos	3	amod	_	SpacesAfter=|start_char=683|end_char=691|ner=O
+3	tab	tab	NOUN	NN	Number=Sing	4	nsubj	_	start_char=692|end_char=695|ner=O
+4	appears	appear	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=696|end_char=703|ner=O
+5	here	here	ADV	RB	PronType=Dem	4	advmod	_	SpaceAfter=No|start_char=704|end_char=708|ner=O
+6	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=708|end_char=709|ner=O
 
 # text = Next line character here.
 # sent_id = 21
 # constituency = (ROOT (NP (NP (NML (JJ Next) (NN line)) (NN character)) (ADVP (RB here)) (. .)))
-1	Next	next	ADJ	JJ	Degree=Pos	2	amod	_	SpacesAfter=|start_char=711|end_char=715
-2	line	line	NOUN	NN	Number=Sing	3	compound	_	start_char=716|end_char=720
-3	character	character	NOUN	NN	Number=Sing	0	root	_	start_char=721|end_char=730
-4	here	here	ADV	RB	PronType=Dem	3	advmod	_	SpaceAfter=No|start_char=731|end_char=735
-5	.	.	PUNCT	.	_	3	punct	_	start_char=735|end_char=736
+# sentiment = 1
+1	Next	next	ADJ	JJ	Degree=Pos	2	amod	_	SpacesAfter=|start_char=711|end_char=715|ner=O
+2	line	line	NOUN	NN	Number=Sing	3	compound	_	start_char=716|end_char=720|ner=O
+3	character	character	NOUN	NN	Number=Sing	0	root	_	start_char=721|end_char=730|ner=O
+4	here	here	ADV	RB	PronType=Dem	3	advmod	_	SpaceAfter=No|start_char=731|end_char=735|ner=O
+5	.	.	PUNCT	.	_	3	punct	_	start_char=735|end_char=736|ner=O
 
 # text = Done.
 # sent_id = 22
 # constituency = (ROOT (ADJP (JJ Done) (. .)))
-1	Done	done	ADJ	JJ	Degree=Pos	0	root	_	SpaceAfter=No|start_char=737|end_char=741
-2	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=741|end_char=742
+# sentiment = 1
+1	Done	done	ADJ	JJ	Degree=Pos	0	root	_	SpaceAfter=No|start_char=737|end_char=741|ner=O
+2	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=741|end_char=742|ner=O
 
 # text = Unit separator and group separator and record separator.
 # sent_id = 23
 # constituency = (ROOT (NP (NP (NN Unit) (NN separator)) (CC and) (NP (NN group) (NN separator)) (CC and) (NP (NN record) (NN separator)) (. .)))
-1	Unit	unit	NOUN	NN	Number=Sing	2	compound	_	SpacesAfter=|start_char=744|end_char=748
-2	separator	separator	NOUN	NN	Number=Sing	0	root	_	start_char=749|end_char=758
-3	and	and	CCONJ	CC	_	5	cc	_	start_char=759|end_char=762
-4	group	group	NOUN	NN	Number=Sing	5	compound	_	SpacesAfter=|start_char=763|end_char=768
-5	separator	separator	NOUN	NN	Number=Sing	2	conj	_	start_char=769|end_char=778
-6	and	and	CCONJ	CC	_	8	cc	_	start_char=779|end_char=782
-7	record	record	NOUN	NN	Number=Sing	8	compound	_	SpacesAfter=|start_char=783|end_char=789
-8	separator	separator	NOUN	NN	Number=Sing	2	conj	_	SpaceAfter=No|start_char=790|end_char=799
-9	.	.	PUNCT	.	_	2	punct	_	start_char=799|end_char=800
+# sentiment = 1
+1	Unit	unit	NOUN	NN	Number=Sing	2	compound	_	SpacesAfter=|start_char=744|end_char=748|ner=O
+2	separator	separator	NOUN	NN	Number=Sing	0	root	_	start_char=749|end_char=758|ner=O
+3	and	and	CCONJ	CC	_	5	cc	_	start_char=759|end_char=762|ner=O
+4	group	group	NOUN	NN	Number=Sing	5	compound	_	SpacesAfter=|start_char=763|end_char=768|ner=O
+5	separator	separator	NOUN	NN	Number=Sing	2	conj	_	start_char=769|end_char=778|ner=O
+6	and	and	CCONJ	CC	_	8	cc	_	start_char=779|end_char=782|ner=O
+7	record	record	NOUN	NN	Number=Sing	8	compound	_	SpacesAfter=|start_char=783|end_char=789|ner=O
+8	separator	separator	NOUN	NN	Number=Sing	2	conj	_	SpaceAfter=No|start_char=790|end_char=799|ner=O
+9	.	.	PUNCT	.	_	2	punct	_	start_char=799|end_char=800|ner=O
 
 # text = Done.
 # sent_id = 24
 # constituency = (ROOT (ADJP (JJ Done) (. .)))
-1	Done	done	ADJ	JJ	Degree=Pos	0	root	_	SpaceAfter=No|start_char=801|end_char=805
-2	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=805|end_char=806
+# sentiment = 1
+1	Done	done	ADJ	JJ	Degree=Pos	0	root	_	SpaceAfter=No|start_char=801|end_char=805|ner=O
+2	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=805|end_char=806|ner=O
 
 # text = A lone carriage return splits this line.
 # sent_id = 25
 # constituency = (ROOT (S (NP (DT A) (JJ lone) (NN carriage) (NN return)) (VP (VBZ splits) (NP (DT this) (NN line))) (. .)))
-1	A	a	DET	DT	Definite=Ind|PronType=Art	4	det	_	start_char=808|end_char=809
-2	lone	lone	ADJ	JJ	Degree=Pos	4	amod	_	start_char=810|end_char=814
-3	carriage	carriage	NOUN	NN	Number=Sing	4	compound	_	start_char=815|end_char=823
-4	return	return	NOUN	NN	Number=Sing	5	nsubj	_	SpacesAfter=\r|start_char=824|end_char=830
-5	splits	split	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=831|end_char=837
-6	this	this	DET	DT	Number=Sing|PronType=Dem	7	det	_	start_char=838|end_char=842
-7	line	line	NOUN	NN	Number=Sing	5	obj	_	SpaceAfter=No|start_char=843|end_char=847
-8	.	.	PUNCT	.	_	5	punct	_	start_char=847|end_char=848
+# sentiment = 1
+1	A	a	DET	DT	Definite=Ind|PronType=Art	4	det	_	start_char=808|end_char=809|ner=O
+2	lone	lone	ADJ	JJ	Degree=Pos	4	amod	_	start_char=810|end_char=814|ner=O
+3	carriage	carriage	NOUN	NN	Number=Sing	4	compound	_	start_char=815|end_char=823|ner=O
+4	return	return	NOUN	NN	Number=Sing	5	nsubj	_	SpacesAfter=\r|start_char=824|end_char=830|ner=O
+5	splits	split	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=831|end_char=837|ner=O
+6	this	this	DET	DT	Number=Sing|PronType=Dem	7	det	_	start_char=838|end_char=842|ner=O
+7	line	line	NOUN	NN	Number=Sing	5	obj	_	SpaceAfter=No|start_char=843|end_char=847|ner=O
+8	.	.	PUNCT	.	_	5	punct	_	start_char=847|end_char=848|ner=O
 
 # text = Odd but possible.
 # sent_id = 26
 # constituency = (ROOT (ADJP (JJ Odd) (CC but) (JJ possible) (. .)))
-1	Odd	Odd	ADJ	JJ	Degree=Pos	0	root	_	start_char=849|end_char=852
-2	but	but	CCONJ	CC	_	3	cc	_	start_char=853|end_char=856
-3	possible	possible	ADJ	JJ	Degree=Pos	1	conj	_	SpaceAfter=No|start_char=857|end_char=865
-4	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=865|end_char=866
+# sentiment = 1
+1	Odd	Odd	ADJ	JJ	Degree=Pos	0	root	_	start_char=849|end_char=852|ner=O
+2	but	but	CCONJ	CC	_	3	cc	_	start_char=853|end_char=856|ner=O
+3	possible	possible	ADJ	JJ	Degree=Pos	1	conj	_	SpaceAfter=No|start_char=857|end_char=865|ner=O
+4	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=865|end_char=866|ner=O
 
 # text = Spaces and more spaces between words.
 # sent_id = 27
 # constituency = (ROOT (NP (NP (NNS Spaces)) (CC and) (NP (NP (JJR more) (NNS spaces)) (PP (IN between) (NP (NNS words)))) (. .)))
-1	Spaces	space	NOUN	NNS	Number=Plur	0	root	_	SpacesAfter=\s\s\s\s|start_char=868|end_char=874
-2	and	and	CCONJ	CC	_	4	cc	_	SpacesAfter=\s\s\s\s\s|start_char=878|end_char=881
-3	more	more	ADJ	JJR	Degree=Cmp	4	amod	_	SpacesAfter=\s\s\s\s\s\s|start_char=886|end_char=890
-4	spaces	space	NOUN	NNS	Number=Plur	1	conj	_	start_char=896|end_char=902
-5	between	between	ADP	IN	_	6	case	_	start_char=903|end_char=910
-6	words	word	NOUN	NNS	Number=Plur	1	nmod	_	SpaceAfter=No|start_char=911|end_char=916
-7	.	.	PUNCT	.	_	1	punct	_	start_char=916|end_char=917
+# sentiment = 1
+1	Spaces	space	NOUN	NNS	Number=Plur	0	root	_	SpacesAfter=\s\s\s\s|start_char=868|end_char=874|ner=O
+2	and	and	CCONJ	CC	_	4	cc	_	SpacesAfter=\s\s\s\s\s|start_char=878|end_char=881|ner=O
+3	more	more	ADJ	JJR	Degree=Cmp	4	amod	_	SpacesAfter=\s\s\s\s\s\s|start_char=886|end_char=890|ner=O
+4	spaces	space	NOUN	NNS	Number=Plur	1	conj	_	start_char=896|end_char=902|ner=O
+5	between	between	ADP	IN	_	6	case	_	start_char=903|end_char=910|ner=O
+6	words	word	NOUN	NNS	Number=Plur	1	nmod	_	SpaceAfter=No|start_char=911|end_char=916|ner=O
+7	.	.	PUNCT	.	_	1	punct	_	start_char=916|end_char=917|ner=O
 
 # text = Then two.
 # sent_id = 28
 # constituency = (ROOT (S (ADVP (RB Then)) (NP (CD two)) (. .)))
-1	Then	then	ADV	RB	PronType=Dem	2	advmod	_	SpacesAfter=\s\s|start_char=918|end_char=922
-2	two	two	NUM	CD	NumForm=Word|NumType=Card	0	root	_	SpaceAfter=No|start_char=924|end_char=927
-3	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n\s\n\s\n\t\n|start_char=927|end_char=928
+# sentiment = 1
+1	Then	then	ADV	RB	PronType=Dem	2	advmod	_	SpacesAfter=\s\s|start_char=918|end_char=922|ner=O
+2	two	two	NUM	CD	NumForm=Word|NumType=Card	0	root	_	SpaceAfter=No|start_char=924|end_char=927|ner=S-CARDINAL
+3	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n\s\n\s\n\t\n|start_char=927|end_char=928|ner=O
 
 # text = Whitespace-only lines preceded this paragraph.
 # sent_id = 29
 # constituency = (ROOT (S (NP (NML (NN Whitespace) (HYPH -) (RB only)) (NNS lines)) (VP (VBD preceded) (NP (DT this) (NN paragraph))) (. .)))
-1	Whitespace	whitespace	NOUN	NN	Number=Sing	4	compound	_	SpaceAfter=No|start_char=936|end_char=946
-2	-	-	PUNCT	HYPH	_	1	punct	_	SpaceAfter=No|start_char=946|end_char=947
-3	only	only	ADV	RB	_	4	advmod	_	start_char=947|end_char=951
-4	lines	line	NOUN	NNS	Number=Plur	5	nsubj	_	start_char=952|end_char=957
-5	preceded	precede	VERB	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=958|end_char=966
-6	this	this	DET	DT	Number=Sing|PronType=Dem	7	det	_	start_char=967|end_char=971
-7	paragraph	paragraph	NOUN	NN	Number=Sing	5	obj	_	SpaceAfter=No|start_char=972|end_char=981
-8	.	.	PUNCT	.	_	5	punct	_	start_char=981|end_char=982
+# sentiment = 1
+1	Whitespace	whitespace	NOUN	NN	Number=Sing	4	compound	_	SpaceAfter=No|start_char=936|end_char=946|ner=O
+2	-	-	PUNCT	HYPH	_	1	punct	_	SpaceAfter=No|start_char=946|end_char=947|ner=O
+3	only	only	ADV	RB	_	4	advmod	_	start_char=947|end_char=951|ner=O
+4	lines	line	NOUN	NNS	Number=Plur	5	nsubj	_	start_char=952|end_char=957|ner=O
+5	preceded	precede	VERB	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=958|end_char=966|ner=O
+6	this	this	DET	DT	Number=Sing|PronType=Dem	7	det	_	start_char=967|end_char=971|ner=O
+7	paragraph	paragraph	NOUN	NN	Number=Sing	5	obj	_	SpaceAfter=No|start_char=972|end_char=981|ner=O
+8	.	.	PUNCT	.	_	5	punct	_	start_char=981|end_char=982|ner=O
 
 # text = Good.
 # sent_id = 30
 # constituency = (ROOT (ADJP (JJ Good) (. .)))
-1	Good	good	ADJ	JJ	Degree=Pos	0	root	_	SpaceAfter=No|start_char=983|end_char=987
-2	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=987|end_char=988
+# sentiment = 1
+1	Good	good	ADJ	JJ	Degree=Pos	0	root	_	SpaceAfter=No|start_char=983|end_char=987|ner=O
+2	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=987|end_char=988|ner=O
 
 # text = No final punctuation in this paragraph
 # sent_id = 31
 # constituency = (ROOT (NP (NP (DT No) (JJ final) (NN punctuation)) (PP (IN in) (NP (DT this) (NN paragraph)))))
-1	No	no	DET	DT	PronType=Neg	3	det	_	start_char=990|end_char=992
-2	final	final	ADJ	JJ	Degree=Pos	3	amod	_	start_char=993|end_char=998
-3	punctuation	punctuation	NOUN	NN	Number=Sing	0	root	_	start_char=999|end_char=1010
-4	in	in	ADP	IN	_	6	case	_	start_char=1011|end_char=1013
-5	this	this	DET	DT	Number=Sing|PronType=Dem	6	det	_	start_char=1014|end_char=1018
-6	paragraph	paragraph	NOUN	NN	Number=Sing	3	nmod	_	SpacesAfter=\n\n|start_char=1019|end_char=1028
+# sentiment = 1
+1	No	no	DET	DT	PronType=Neg	3	det	_	start_char=990|end_char=992|ner=O
+2	final	final	ADJ	JJ	Degree=Pos	3	amod	_	start_char=993|end_char=998|ner=O
+3	punctuation	punctuation	NOUN	NN	Number=Sing	0	root	_	start_char=999|end_char=1010|ner=O
+4	in	in	ADP	IN	_	6	case	_	start_char=1011|end_char=1013|ner=O
+5	this	this	DET	DT	Number=Sing|PronType=Dem	6	det	_	start_char=1014|end_char=1018|ner=O
+6	paragraph	paragraph	NOUN	NN	Number=Sing	3	nmod	_	SpacesAfter=\n\n|start_char=1019|end_char=1028|ner=O
 
 # text = Hyphen-minus - en dash – em dash — figure dash ‒ minus − and horizontal bar ― all appear.
 # sent_id = 32
 # constituency = (ROOT (NP (NML (NNP Hyphen) (HYPH -) (FW minus) (HYPH -) (FW en)) (FW dash) (HYPH –) (FW em) (FW dash) (: —) (FW figure) (FW dash) (FW ‒) (FW minus) (FW −) (CC and) (FW horizontal) (FW bar) (FW ―) (FW all) (VP (FW appear)) (. .)))
-1	Hyphen	Hyphen	PROPN	NNP	Number=Sing	21	nsubj	_	SpaceAfter=No|start_char=1030|end_char=1036
-2	-	-	PUNCT	HYPH	_	3	punct	_	SpaceAfter=No|start_char=1036|end_char=1037
-3	minus	minus	X	FW	_	1	flat	_	start_char=1037|end_char=1042
-4	-	-	PUNCT	HYPH	_	5	punct	_	start_char=1043|end_char=1044
-5	en	en	X	FW	Foreign=Yes	1	flat	_	start_char=1045|end_char=1047
-6	dash	dash	X	FW	Foreign=Yes	1	flat	_	start_char=1048|end_char=1052
-7	–	-	PUNCT	HYPH	_	8	punct	_	start_char=1053|end_char=1054
-8	em	they	X	FW	_	1	flat	_	start_char=1055|end_char=1057
-9	dash	dash	X	FW	Foreign=Yes	1	flat	_	start_char=1058|end_char=1062
-10	—	—	PUNCT	:	_	11	punct	_	start_char=1063|end_char=1064
-11	figure	figure	X	FW	Foreign=Yes	1	flat	_	start_char=1065|end_char=1071
-12	dash	dash	X	FW	Foreign=Yes	11	flat	_	start_char=1072|end_char=1076
-13	‒	‒	X	FW	Foreign=Yes	11	flat	_	start_char=1077|end_char=1078
-14	minus	minus	X	FW	Foreign=Yes	11	flat	_	start_char=1079|end_char=1084
-15	−	−	X	FW	Foreign=Yes	1	flat	_	start_char=1085|end_char=1086
-16	and	and	CCONJ	CC	_	17	cc	_	start_char=1087|end_char=1090
-17	horizontal	horizontal	X	FW	Foreign=Yes	1	conj	_	start_char=1091|end_char=1101
-18	bar	bar	X	FW	Foreign=Yes	1	flat	_	start_char=1102|end_char=1105
-19	―	―	X	FW	Foreign=Yes	1	flat	_	start_char=1106|end_char=1107
-20	all	all	X	FW	_	21	advmod	_	start_char=1108|end_char=1111
-21	appear	appear	X	FW	_	0	root	_	SpaceAfter=No|start_char=1112|end_char=1118
-22	.	.	PUNCT	.	_	21	punct	_	SpacesAfter=\n\n|start_char=1118|end_char=1119
+# sentiment = 1
+1	Hyphen	Hyphen	PROPN	NNP	Number=Sing	21	nsubj	_	SpaceAfter=No|start_char=1030|end_char=1036|ner=O
+2	-	-	PUNCT	HYPH	_	3	punct	_	SpaceAfter=No|start_char=1036|end_char=1037|ner=O
+3	minus	minus	X	FW	_	1	flat	_	start_char=1037|end_char=1042|ner=O
+4	-	-	PUNCT	HYPH	_	5	punct	_	start_char=1043|end_char=1044|ner=O
+5	en	en	X	FW	Foreign=Yes	1	flat	_	start_char=1045|end_char=1047|ner=O
+6	dash	dash	X	FW	Foreign=Yes	1	flat	_	start_char=1048|end_char=1052|ner=O
+7	–	-	PUNCT	HYPH	_	8	punct	_	start_char=1053|end_char=1054|ner=O
+8	em	they	X	FW	_	1	flat	_	start_char=1055|end_char=1057|ner=O
+9	dash	dash	X	FW	Foreign=Yes	1	flat	_	start_char=1058|end_char=1062|ner=O
+10	—	—	PUNCT	:	_	11	punct	_	start_char=1063|end_char=1064|ner=O
+11	figure	figure	X	FW	Foreign=Yes	1	flat	_	start_char=1065|end_char=1071|ner=O
+12	dash	dash	X	FW	Foreign=Yes	11	flat	_	start_char=1072|end_char=1076|ner=O
+13	‒	‒	X	FW	Foreign=Yes	11	flat	_	start_char=1077|end_char=1078|ner=O
+14	minus	minus	X	FW	Foreign=Yes	11	flat	_	start_char=1079|end_char=1084|ner=O
+15	−	−	X	FW	Foreign=Yes	1	flat	_	start_char=1085|end_char=1086|ner=O
+16	and	and	CCONJ	CC	_	17	cc	_	start_char=1087|end_char=1090|ner=O
+17	horizontal	horizontal	X	FW	Foreign=Yes	1	conj	_	start_char=1091|end_char=1101|ner=O
+18	bar	bar	X	FW	Foreign=Yes	1	flat	_	start_char=1102|end_char=1105|ner=O
+19	―	―	X	FW	Foreign=Yes	1	flat	_	start_char=1106|end_char=1107|ner=O
+20	all	all	X	FW	_	21	advmod	_	start_char=1108|end_char=1111|ner=O
+21	appear	appear	X	FW	_	0	root	_	SpaceAfter=No|start_char=1112|end_char=1118|ner=O
+22	.	.	PUNCT	.	_	21	punct	_	SpacesAfter=\n\n|start_char=1118|end_char=1119|ner=O
 
 # text = Ellipsis… three dots... spaced dots . . . and four dots.... end here.
 # sent_id = 33
 # constituency = (ROOT (NP (NP (NP (NNP Ellipsis) (: …)) (NP (NP (CD three) (NNS dots)) (, ...) (NP (NP (VBN spaced) (NNS dots) (. .) (. .) (. .)) (CC and) (NP (CD four) (NNS dots))))) (, ....) (VP (VB end) (ADVP (RB here))) (. .)))
-1	Ellipsis	Ellipsis	PROPN	NNP	Number=Sing	15	nsubj	_	SpaceAfter=No|start_char=1121|end_char=1129
-2	…	…	PUNCT	:	_	4	punct	_	start_char=1129|end_char=1130
-3	three	three	NUM	CD	NumForm=Word|NumType=Card	4	nummod	_	start_char=1131|end_char=1136
-4	dots	dot	NOUN	NNS	Number=Plur	1	parataxis	_	SpaceAfter=No|start_char=1137|end_char=1141
-5	...	...	PUNCT	,	_	7	punct	_	start_char=1141|end_char=1144
-6	spaced	space	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	7	amod	_	start_char=1145|end_char=1151
-7	dots	dot	NOUN	NNS	Number=Plur	4	conj	_	start_char=1152|end_char=1156
-8	.	.	PUNCT	.	_	7	punct	_	start_char=1157|end_char=1158
-9	.	.	PUNCT	.	_	4	punct	_	start_char=1159|end_char=1160
-10	.	.	PUNCT	.	_	4	punct	_	start_char=1161|end_char=1162
-11	and	and	CCONJ	CC	_	13	cc	_	start_char=1163|end_char=1166
-12	four	four	NUM	CD	NumForm=Word|NumType=Card	13	nummod	_	start_char=1167|end_char=1171
-13	dots	dot	NOUN	NNS	Number=Plur	4	conj	_	SpaceAfter=No|start_char=1172|end_char=1176
-14	....	....	PUNCT	,	_	13	punct	_	start_char=1176|end_char=1180
-15	end	end	VERB	VB	Mood=Imp|VerbForm=Fin	0	root	_	start_char=1181|end_char=1184
-16	here	here	ADV	RB	PronType=Dem	15	advmod	_	SpaceAfter=No|start_char=1185|end_char=1189
-17	.	.	PUNCT	.	_	15	punct	_	SpacesAfter=\n\n|start_char=1189|end_char=1190
+# sentiment = 1
+1	Ellipsis	Ellipsis	PROPN	NNP	Number=Sing	15	nsubj	_	SpaceAfter=No|start_char=1121|end_char=1129|ner=O
+2	…	…	PUNCT	:	_	4	punct	_	start_char=1129|end_char=1130|ner=O
+3	three	three	NUM	CD	NumForm=Word|NumType=Card	4	nummod	_	start_char=1131|end_char=1136|ner=S-CARDINAL
+4	dots	dot	NOUN	NNS	Number=Plur	1	parataxis	_	SpaceAfter=No|start_char=1137|end_char=1141|ner=O
+5	...	...	PUNCT	,	_	7	punct	_	start_char=1141|end_char=1144|ner=O
+6	spaced	space	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	7	amod	_	start_char=1145|end_char=1151|ner=O
+7	dots	dot	NOUN	NNS	Number=Plur	4	conj	_	start_char=1152|end_char=1156|ner=O
+8	.	.	PUNCT	.	_	7	punct	_	start_char=1157|end_char=1158|ner=O
+9	.	.	PUNCT	.	_	4	punct	_	start_char=1159|end_char=1160|ner=O
+10	.	.	PUNCT	.	_	4	punct	_	start_char=1161|end_char=1162|ner=O
+11	and	and	CCONJ	CC	_	13	cc	_	start_char=1163|end_char=1166|ner=O
+12	four	four	NUM	CD	NumForm=Word|NumType=Card	13	nummod	_	start_char=1167|end_char=1171|ner=S-CARDINAL
+13	dots	dot	NOUN	NNS	Number=Plur	4	conj	_	SpaceAfter=No|start_char=1172|end_char=1176|ner=O
+14	....	....	PUNCT	,	_	13	punct	_	start_char=1176|end_char=1180|ner=O
+15	end	end	VERB	VB	Mood=Imp|VerbForm=Fin	0	root	_	start_char=1181|end_char=1184|ner=O
+16	here	here	ADV	RB	PronType=Dem	15	advmod	_	SpaceAfter=No|start_char=1185|end_char=1189|ner=O
+17	.	.	PUNCT	.	_	15	punct	_	SpacesAfter=\n\n|start_char=1189|end_char=1190|ner=O
 
 # text = Primes 5′ 11″ and guillemets «bonjour» and ‹hi› and low quotes „ja“ appear.
 # sent_id = 34
 # constituency = (ROOT (NP (NP (NNS Primes) (CD 5)) (SYM ′) (CD 11) ('' ″) (CC and) (NNS guillemets) (`` «) (NP (NP (ADJP (FW bonjour) ('' ») (CC and) (JJ ‹hi›) (CC and) (JJ low)) (NNS quotes)) (`` „) (FW ja) ('' “)) (VP (VB appear)) (. .)))
-1	Primes	prime	NOUN	NNS	Number=Plur	0	root	_	start_char=1192|end_char=1198
-2	5	5	NUM	CD	NumForm=Digit|NumType=Card	1	nummod	_	SpaceAfter=No|start_char=1199|end_char=1200
-3	′	′	SYM	SYM	_	4	case	_	start_char=1200|end_char=1201
-4	11	11	NUM	CD	NumForm=Digit|NumType=Card	1	appos	_	SpaceAfter=No|start_char=1202|end_char=1204
-5	″	"	PUNCT	''	_	4	punct	_	start_char=1204|end_char=1205
-6	and	and	CCONJ	CC	_	7	cc	_	start_char=1206|end_char=1209
-7	guillemets	guillemet	NOUN	NNS	Number=Plur	1	conj	_	start_char=1210|end_char=1220
-8	«	"	PUNCT	``	_	9	punct	_	SpaceAfter=No|start_char=1221|end_char=1222
-9	bonjour	bonjour	X	FW	Foreign=Yes	7	appos	_	SpaceAfter=No|start_char=1222|end_char=1229
-10	»	"	PUNCT	''	_	9	punct	_	start_char=1229|end_char=1230
-11	and	and	CCONJ	CC	_	15	cc	_	start_char=1231|end_char=1234
-12	‹hi›	‹hi›	ADJ	JJ	Degree=Pos	15	amod	_	start_char=1235|end_char=1239
-13	and	and	CCONJ	CC	_	14	cc	_	start_char=1240|end_char=1243
-14	low	low	ADJ	JJ	Degree=Pos	12	conj	_	start_char=1244|end_char=1247
-15	quotes	quote	NOUN	NNS	Number=Plur	7	conj	_	start_char=1248|end_char=1254
-16	„	"	PUNCT	``	_	17	punct	_	SpaceAfter=No|start_char=1255|end_char=1256
-17	ja	ja	X	FW	_	15	appos	_	SpaceAfter=No|start_char=1256|end_char=1258
-18	“	"	PUNCT	''	_	17	punct	_	start_char=1258|end_char=1259
-19	appear	appear	VERB	VB	Mood=Imp|VerbForm=Fin	15	acl	_	SpaceAfter=No|start_char=1260|end_char=1266
-20	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=1266|end_char=1267
+# sentiment = 1
+1	Primes	prime	NOUN	NNS	Number=Plur	0	root	_	start_char=1192|end_char=1198|ner=O
+2	5	5	NUM	CD	NumForm=Digit|NumType=Card	1	nummod	_	SpaceAfter=No|start_char=1199|end_char=1200|ner=S-CARDINAL
+3	′	′	SYM	SYM	_	4	case	_	start_char=1200|end_char=1201|ner=O
+4	11	11	NUM	CD	NumForm=Digit|NumType=Card	1	appos	_	SpaceAfter=No|start_char=1202|end_char=1204|ner=O
+5	″	"	PUNCT	''	_	4	punct	_	start_char=1204|end_char=1205|ner=O
+6	and	and	CCONJ	CC	_	7	cc	_	start_char=1206|end_char=1209|ner=O
+7	guillemets	guillemet	NOUN	NNS	Number=Plur	1	conj	_	start_char=1210|end_char=1220|ner=O
+8	«	"	PUNCT	``	_	9	punct	_	SpaceAfter=No|start_char=1221|end_char=1222|ner=O
+9	bonjour	bonjour	X	FW	Foreign=Yes	7	appos	_	SpaceAfter=No|start_char=1222|end_char=1229|ner=O
+10	»	"	PUNCT	''	_	9	punct	_	start_char=1229|end_char=1230|ner=O
+11	and	and	CCONJ	CC	_	15	cc	_	start_char=1231|end_char=1234|ner=O
+12	‹hi›	‹hi›	ADJ	JJ	Degree=Pos	15	amod	_	start_char=1235|end_char=1239|ner=O
+13	and	and	CCONJ	CC	_	14	cc	_	start_char=1240|end_char=1243|ner=O
+14	low	low	ADJ	JJ	Degree=Pos	12	conj	_	start_char=1244|end_char=1247|ner=O
+15	quotes	quote	NOUN	NNS	Number=Plur	7	conj	_	start_char=1248|end_char=1254|ner=O
+16	„	"	PUNCT	``	_	17	punct	_	SpaceAfter=No|start_char=1255|end_char=1256|ner=O
+17	ja	ja	X	FW	_	15	appos	_	SpaceAfter=No|start_char=1256|end_char=1258|ner=O
+18	“	"	PUNCT	''	_	17	punct	_	start_char=1258|end_char=1259|ner=O
+19	appear	appear	VERB	VB	Mood=Imp|VerbForm=Fin	15	acl	_	SpaceAfter=No|start_char=1260|end_char=1266|ner=O
+20	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=1266|end_char=1267|ner=O
 
 # text = Fullwidth ＡＢＣ letters and １２３ digits.
 # sent_id = 35
 # constituency = (ROOT (NP (NP (NN Fullwidth) (, ＡＢＣ) (NNS letters)) (CC and) (NP (CD １２３) (NNS digits)) (. .)))
-1	Fullwidth	fullwidth	NOUN	NN	Number=Sing	0	root	_	start_char=1269|end_char=1278
-2	ＡＢＣ	ａｂｃ	PUNCT	,	_	3	punct	_	start_char=1279|end_char=1282
-3	letters	letter	NOUN	NNS	Number=Plur	1	appos	_	start_char=1283|end_char=1290
-4	and	and	CCONJ	CC	_	6	cc	_	start_char=1291|end_char=1294
-5	１２３	１２３	NUM	CD	NumForm=Digit|NumType=Card	6	nummod	_	start_char=1295|end_char=1298
-6	digits	digit	NOUN	NNS	Number=Plur	3	conj	_	SpaceAfter=No|start_char=1299|end_char=1305
-7	.	.	PUNCT	.	_	1	punct	_	start_char=1305|end_char=1306
+# sentiment = 1
+1	Fullwidth	fullwidth	NOUN	NN	Number=Sing	0	root	_	start_char=1269|end_char=1278|ner=O
+2	ＡＢＣ	ａｂｃ	PUNCT	,	_	3	punct	_	start_char=1279|end_char=1282|ner=O
+3	letters	letter	NOUN	NNS	Number=Plur	1	appos	_	start_char=1283|end_char=1290|ner=O
+4	and	and	CCONJ	CC	_	6	cc	_	start_char=1291|end_char=1294|ner=O
+5	１２３	１２３	NUM	CD	NumForm=Digit|NumType=Card	6	nummod	_	start_char=1295|end_char=1298|ner=O
+6	digits	digit	NOUN	NNS	Number=Plur	3	conj	_	SpaceAfter=No|start_char=1299|end_char=1305|ner=O
+7	.	.	PUNCT	.	_	1	punct	_	start_char=1305|end_char=1306|ner=O
 
 # text = Ligatures like ﬁne and ﬂow.
 # sent_id = 36
 # constituency = (ROOT (NP (NP (NNS Ligatures)) (PP (IN like) (NP (NN ﬁne) (CC and) (JJ ﬂow))) (. .)))
-1	Ligatures	ligature	NOUN	NNS	Number=Plur	0	root	_	start_char=1307|end_char=1316
-2	like	like	ADP	IN	_	3	case	_	start_char=1317|end_char=1321
-3	ﬁne	ﬁne	NOUN	NN	Number=Sing	1	nmod	_	start_char=1322|end_char=1325
-4	and	and	CCONJ	CC	_	5	cc	_	start_char=1326|end_char=1329
-5	ﬂow	ﬂow	ADJ	JJ	Degree=Pos	3	conj	_	SpaceAfter=No|start_char=1330|end_char=1333
-6	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=1333|end_char=1334
+# sentiment = 1
+1	Ligatures	ligature	NOUN	NNS	Number=Plur	0	root	_	start_char=1307|end_char=1316|ner=O
+2	like	like	ADP	IN	_	3	case	_	start_char=1317|end_char=1321|ner=O
+3	ﬁne	ﬁne	NOUN	NN	Number=Sing	1	nmod	_	start_char=1322|end_char=1325|ner=O
+4	and	and	CCONJ	CC	_	5	cc	_	start_char=1326|end_char=1329|ner=O
+5	ﬂow	ﬂow	ADJ	JJ	Degree=Pos	3	conj	_	SpaceAfter=No|start_char=1330|end_char=1333|ner=O
+6	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=1333|end_char=1334|ner=O
 
 # text = Superscripts x² and y³ and subscripts H₂O.
 # sent_id = 37
 # constituency = (ROOT (NP (NP (NNS Superscripts)) (VP (VP (SYM x) (NP (NN ²) (CC and) (UH y³))) (CC and) (VP (VBZ subscripts) (NP (NNP H₂O)))) (. .)))
-1	Superscripts	superscript	NOUN	NNS	Number=Plur	0	root	_	start_char=1336|end_char=1348
-2	x	x	SYM	SYM	_	3	case	_	SpaceAfter=No|start_char=1349|end_char=1350
-3	²	²	NOUN	NN	Number=Sing	1	nmod	_	start_char=1350|end_char=1351
-4	and	and	CCONJ	CC	_	5	cc	_	start_char=1352|end_char=1355
-5	y³	y³	INTJ	UH	_	3	conj	_	start_char=1356|end_char=1358
-6	and	and	CCONJ	CC	_	7	cc	_	start_char=1359|end_char=1362
-7	subscripts	subscript	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	1	conj	_	start_char=1363|end_char=1373
-8	H₂O	H₂O	PROPN	NNP	Number=Sing	7	obj	_	SpaceAfter=No|start_char=1374|end_char=1377
-9	.	.	PUNCT	.	_	1	punct	_	start_char=1377|end_char=1378
+# sentiment = 1
+1	Superscripts	superscript	NOUN	NNS	Number=Plur	0	root	_	start_char=1336|end_char=1348|ner=O
+2	x	x	SYM	SYM	_	3	case	_	SpaceAfter=No|start_char=1349|end_char=1350|ner=O
+3	²	²	NOUN	NN	Number=Sing	1	nmod	_	start_char=1350|end_char=1351|ner=O
+4	and	and	CCONJ	CC	_	5	cc	_	start_char=1352|end_char=1355|ner=O
+5	y³	y³	INTJ	UH	_	3	conj	_	start_char=1356|end_char=1358|ner=O
+6	and	and	CCONJ	CC	_	7	cc	_	start_char=1359|end_char=1362|ner=O
+7	subscripts	subscript	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	1	conj	_	start_char=1363|end_char=1373|ner=O
+8	H₂O	H₂O	PROPN	NNP	Number=Sing	7	obj	_	SpaceAfter=No|start_char=1374|end_char=1377|ner=O
+9	.	.	PUNCT	.	_	1	punct	_	start_char=1377|end_char=1378|ner=O
 
 # text = The degree sign ° and the micro sign µ.
 # sent_id = 38
 # constituency = (ROOT (NP (NP (NP (DT The) (NN degree) (NN sign)) (VP (NNS °))) (CC and) (NP (NP (DT the) (NN micro) (NN sign)) (VP (NN µ))) (. .)))
-1	The	the	DET	DT	Definite=Def|PronType=Art	4	det	_	start_char=1379|end_char=1382
-2	degree	degree	NOUN	NN	Number=Sing	3	compound	_	start_char=1383|end_char=1389
-3	sign	sign	NOUN	NN	Number=Sing	4	compound	_	start_char=1390|end_char=1394
-4	°	°	NOUN	NNS	Number=Plur	0	root	_	start_char=1395|end_char=1396
-5	and	and	CCONJ	CC	_	9	cc	_	start_char=1397|end_char=1400
-6	the	the	DET	DT	Definite=Def|PronType=Art	9	det	_	start_char=1401|end_char=1404
-7	micro	micro	NOUN	NN	Number=Sing	8	compound	_	start_char=1405|end_char=1410
-8	sign	sign	NOUN	NN	Number=Sing	9	compound	_	start_char=1411|end_char=1415
-9	µ	µ	NOUN	NN	Number=Sing	4	conj	_	SpaceAfter=No|start_char=1416|end_char=1417
-10	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=1417|end_char=1418
+# sentiment = 1
+1	The	the	DET	DT	Definite=Def|PronType=Art	4	det	_	start_char=1379|end_char=1382|ner=O
+2	degree	degree	NOUN	NN	Number=Sing	3	compound	_	start_char=1383|end_char=1389|ner=O
+3	sign	sign	NOUN	NN	Number=Sing	4	compound	_	start_char=1390|end_char=1394|ner=O
+4	°	°	NOUN	NNS	Number=Plur	0	root	_	start_char=1395|end_char=1396|ner=O
+5	and	and	CCONJ	CC	_	9	cc	_	start_char=1397|end_char=1400|ner=O
+6	the	the	DET	DT	Definite=Def|PronType=Art	9	det	_	start_char=1401|end_char=1404|ner=O
+7	micro	micro	NOUN	NN	Number=Sing	8	compound	_	start_char=1405|end_char=1410|ner=O
+8	sign	sign	NOUN	NN	Number=Sing	9	compound	_	start_char=1411|end_char=1415|ner=O
+9	µ	µ	NOUN	NN	Number=Sing	4	conj	_	SpaceAfter=No|start_char=1416|end_char=1417|ner=O
+10	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=1417|end_char=1418|ner=O
 
 # text = Roman numerals Ⅰ Ⅱ Ⅲ and circled ① ②.
 # sent_id = 39
 # constituency = (ROOT (NP (NP (JJ Roman) (NNS numerals)) (, Ⅰ) (`` Ⅱ) (: Ⅲ) (CC and) (VBN circled) (. ①) (. ②.)))
-1	Roman	Roman	ADJ	JJ	Degree=Pos	2	amod	_	start_char=1420|end_char=1425
-2	numerals	numeral	NOUN	NNS	Number=Plur	0	root	_	start_char=1426|end_char=1434
-3	Ⅰ	Ⅰ	PUNCT	,	_	7	punct	_	start_char=1435|end_char=1436
-4	Ⅱ	Ⅱ	PUNCT	``	_	7	punct	_	start_char=1437|end_char=1438
-5	Ⅲ	Ⅲ	PUNCT	:	_	7	punct	_	start_char=1439|end_char=1440
-6	and	and	CCONJ	CC	_	7	cc	_	start_char=1441|end_char=1444
-7	circled	circle	VERB	VBN	Tense=Past|VerbForm=Part	2	conj	_	start_char=1445|end_char=1452
-8	①	①	PUNCT	.	_	7	punct	_	start_char=1453|end_char=1454
-9	②.	②.	PUNCT	.	_	2	punct	_	start_char=1455|end_char=1457
+# sentiment = 1
+1	Roman	Roman	ADJ	JJ	Degree=Pos	2	amod	_	start_char=1420|end_char=1425|ner=S-NORP
+2	numerals	numeral	NOUN	NNS	Number=Plur	0	root	_	start_char=1426|end_char=1434|ner=O
+3	Ⅰ	Ⅰ	PUNCT	,	_	7	punct	_	start_char=1435|end_char=1436|ner=O
+4	Ⅱ	Ⅱ	PUNCT	``	_	7	punct	_	start_char=1437|end_char=1438|ner=O
+5	Ⅲ	Ⅲ	PUNCT	:	_	7	punct	_	start_char=1439|end_char=1440|ner=O
+6	and	and	CCONJ	CC	_	7	cc	_	start_char=1441|end_char=1444|ner=O
+7	circled	circle	VERB	VBN	Tense=Past|VerbForm=Part	2	conj	_	start_char=1445|end_char=1452|ner=O
+8	①	①	PUNCT	.	_	7	punct	_	start_char=1453|end_char=1454|ner=O
+9	②.	②.	PUNCT	.	_	2	punct	_	start_char=1455|end_char=1457|ner=O
 
 # text = Turkish İstanbul and dotless ı. German ẞ and ß.
 # sent_id = 40
 # constituency = (ROOT (NP (NP (JJ Turkish) (NN İstanbul)) (CC and) (NP (JJ dotless) (NN ı.) (JJ German) (: ẞ) (CC and) (UH ß)) (. .)))
-1	Turkish	Turkish	ADJ	JJ	Degree=Pos	2	amod	_	start_char=1458|end_char=1465
-2	İstanbul	i̇stanbul	NOUN	NN	Number=Sing	0	root	_	start_char=1466|end_char=1474
-3	and	and	CCONJ	CC	_	6	cc	_	start_char=1475|end_char=1478
-4	dotless	dotless	ADJ	JJ	Degree=Pos	6	amod	_	start_char=1479|end_char=1486
-5	ı.	ı.	NOUN	NN	Number=Sing	6	compound	_	start_char=1487|end_char=1489
-6	German	German	ADJ	JJ	Degree=Pos	2	conj	_	start_char=1490|end_char=1496
-7	ẞ	ẞ	PUNCT	:	_	9	punct	_	start_char=1497|end_char=1498
-8	and	and	CCONJ	CC	_	9	cc	_	start_char=1499|end_char=1502
-9	ß	ß	INTJ	UH	_	2	conj	_	SpaceAfter=No|start_char=1503|end_char=1504
-10	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=1504|end_char=1505
+# sentiment = 1
+1	Turkish	Turkish	ADJ	JJ	Degree=Pos	2	amod	_	start_char=1458|end_char=1465|ner=S-NORP
+2	İstanbul	i̇stanbul	NOUN	NN	Number=Sing	0	root	_	start_char=1466|end_char=1474|ner=O
+3	and	and	CCONJ	CC	_	6	cc	_	start_char=1475|end_char=1478|ner=O
+4	dotless	dotless	ADJ	JJ	Degree=Pos	6	amod	_	start_char=1479|end_char=1486|ner=O
+5	ı.	ı.	NOUN	NN	Number=Sing	6	compound	_	start_char=1487|end_char=1489|ner=O
+6	German	German	ADJ	JJ	Degree=Pos	2	conj	_	start_char=1490|end_char=1496|ner=S-NORP
+7	ẞ	ẞ	PUNCT	:	_	9	punct	_	start_char=1497|end_char=1498|ner=O
+8	and	and	CCONJ	CC	_	9	cc	_	start_char=1499|end_char=1502|ner=O
+9	ß	ß	INTJ	UH	_	2	conj	_	SpaceAfter=No|start_char=1503|end_char=1504|ner=O
+10	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=1504|end_char=1505|ner=O
 
 # text = Combining accents: café and naïve.
 # sent_id = 41
 # constituency = (ROOT (S (VP (VBG Combining) (NP (NP (NNS accents)) (: :) (NP (NN café) (CC and) (NN naïve)))) (. .)))
-1	Combining	combine	VERB	VBG	VerbForm=Ger	0	root	_	start_char=1507|end_char=1516
-2	accents	accent	NOUN	NNS	Number=Plur	1	obj	_	SpaceAfter=No|start_char=1517|end_char=1524
-3	:	:	PUNCT	:	_	4	punct	_	start_char=1524|end_char=1525
-4	café	café	NOUN	NN	Number=Sing	2	appos	_	start_char=1526|end_char=1531
-5	and	and	CCONJ	CC	_	6	cc	_	start_char=1532|end_char=1535
-6	naïve	naïve	NOUN	NN	Number=Sing	4	conj	_	SpaceAfter=No|start_char=1536|end_char=1542
-7	.	.	PUNCT	.	_	1	punct	_	start_char=1542|end_char=1543
+# sentiment = 1
+1	Combining	combine	VERB	VBG	VerbForm=Ger	0	root	_	start_char=1507|end_char=1516|ner=O
+2	accents	accent	NOUN	NNS	Number=Plur	1	obj	_	SpaceAfter=No|start_char=1517|end_char=1524|ner=O
+3	:	:	PUNCT	:	_	4	punct	_	start_char=1524|end_char=1525|ner=O
+4	café	café	NOUN	NN	Number=Sing	2	appos	_	start_char=1526|end_char=1531|ner=O
+5	and	and	CCONJ	CC	_	6	cc	_	start_char=1532|end_char=1535|ner=O
+6	naïve	naïve	NOUN	NN	Number=Sing	4	conj	_	SpaceAfter=No|start_char=1536|end_char=1542|ner=O
+7	.	.	PUNCT	.	_	1	punct	_	start_char=1542|end_char=1543|ner=O
 
 # text = Precomposed: café and naïve.
 # sent_id = 42
 # constituency = (ROOT (FRAG (ADJP (VBN Precomposed)) (: :) (NP (NN café) (CC and) (JJ naïve)) (. .)))
-1	Precomposed	precompose	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	SpaceAfter=No|start_char=1544|end_char=1555
-2	:	:	PUNCT	:	_	3	punct	_	start_char=1555|end_char=1556
-3	café	café	NOUN	NN	Number=Sing	1	parataxis	_	start_char=1557|end_char=1561
-4	and	and	CCONJ	CC	_	5	cc	_	start_char=1562|end_char=1565
-5	naïve	naïve	ADJ	JJ	Degree=Pos	3	conj	_	SpaceAfter=No|start_char=1566|end_char=1571
-6	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=1571|end_char=1572
+# sentiment = 1
+1	Precomposed	precompose	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	SpaceAfter=No|start_char=1544|end_char=1555|ner=O
+2	:	:	PUNCT	:	_	3	punct	_	start_char=1555|end_char=1556|ner=O
+3	café	café	NOUN	NN	Number=Sing	1	parataxis	_	start_char=1557|end_char=1561|ner=O
+4	and	and	CCONJ	CC	_	5	cc	_	start_char=1562|end_char=1565|ner=O
+5	naïve	naïve	ADJ	JJ	Degree=Pos	3	conj	_	SpaceAfter=No|start_char=1566|end_char=1571|ner=O
+6	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=1571|end_char=1572|ner=O
 
 # text = DOTTED İ UPPER AND İSTANBUL'S BRIDGES.
 # sent_id = 43
 # constituency = (ROOT (NP (NP (JJ DOTTED) (NFP İ) (JJ UPPER) (CC AND) (NNP İSTANBUL) (POS 'S)) (NNS BRIDGES) (. .)))
-1	DOTTED	dotted	ADJ	JJ	Degree=Pos	0	root	_	start_char=1574|end_char=1580
-2	İ	İ	PUNCT	NFP	_	7	punct	_	start_char=1581|end_char=1582
-3	UPPER	upper	ADJ	JJ	Degree=Pos	7	amod	_	start_char=1583|end_char=1588
-4	AND	and	CCONJ	CC	_	5	cc	_	start_char=1589|end_char=1592
-5-6	İSTANBUL'S	_	_	_	_	_	_	_	start_char=1593|end_char=1603
+# sentiment = 1
+1	DOTTED	dotted	ADJ	JJ	Degree=Pos	0	root	_	start_char=1574|end_char=1580|ner=O
+2	İ	İ	PUNCT	NFP	_	7	punct	_	start_char=1581|end_char=1582|ner=O
+3	UPPER	upper	ADJ	JJ	Degree=Pos	7	amod	_	start_char=1583|end_char=1588|ner=O
+4	AND	and	CCONJ	CC	_	5	cc	_	start_char=1589|end_char=1592|ner=O
+5-6	İSTANBUL'S	_	_	_	_	_	_	_	start_char=1593|end_char=1603|ner=O
 5	İSTANBUL	İstanbul	PROPN	NNP	Number=Sing	7	nmod:poss	_	start_char=1593|end_char=1601
 6	'S	's	PART	POS	_	5	case	_	start_char=1601|end_char=1603
-7	BRIDGES	bridges	NOUN	NNS	Number=Plur	1	obl	_	SpaceAfter=No|start_char=1604|end_char=1611
-8	.	.	PUNCT	.	_	1	punct	_	start_char=1611|end_char=1612
+7	BRIDGES	bridges	NOUN	NNS	Number=Plur	1	obl	_	SpaceAfter=No|start_char=1604|end_char=1611|ner=O
+8	.	.	PUNCT	.	_	1	punct	_	start_char=1611|end_char=1612|ner=O
 
 # text = THE STRASSE.
 # sent_id = 44
 # constituency = (ROOT (NP (DT THE) (NNP STRASSE) (. .)))
-1	THE	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=1613|end_char=1616
-2	STRASSE	Strasse	PROPN	NNP	Number=Sing	0	root	_	SpaceAfter=No|start_char=1617|end_char=1624
-3	.	.	PUNCT	.	_	2	punct	_	start_char=1624|end_char=1625
+# sentiment = 1
+1	THE	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=1613|end_char=1616|ner=O
+2	STRASSE	Strasse	PROPN	NNP	Number=Sing	0	root	_	SpaceAfter=No|start_char=1617|end_char=1624|ner=S-ORG
+3	.	.	PUNCT	.	_	2	punct	_	start_char=1624|end_char=1625|ner=O
 
 # text = ΣΟΦΙΑ'S BOOK.
 # sent_id = 45
 # constituency = (ROOT (S (LST (NNP ΣΟΦΙΑ)) (VP (POS 'S) (NP (NN BOOK))) (. .)))
-1-2	ΣΟΦΙΑ'S	_	_	_	_	_	_	_	start_char=1626|end_char=1633
+# sentiment = 1
+1-2	ΣΟΦΙΑ'S	_	_	_	_	_	_	_	start_char=1626|end_char=1633|ner=O
 1	ΣΟΦΙΑ	ΣΟΦΙΑ	PROPN	NNP	Number=Sing	3	nmod:poss	_	start_char=1626|end_char=1631
 2	'S	's	PART	POS	_	1	case	_	start_char=1631|end_char=1633
-3	BOOK	book	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=1634|end_char=1638
-4	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=1638|end_char=1639
+3	BOOK	book	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=1634|end_char=1638|ner=O
+4	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=1638|end_char=1639|ner=O
 
 # text = The final paragraph has no newline at the end
 # sent_id = 46
 # constituency = (ROOT (S (NP (DT The) (JJ final) (NN paragraph)) (VP (VBZ has) (NP (DT no) (NN newline)) (PP (IN at) (NP (DT the) (NN end))))))
-1	The	the	DET	DT	Definite=Def|PronType=Art	3	det	_	start_char=1641|end_char=1644
-2	final	final	ADJ	JJ	Degree=Pos	3	amod	_	start_char=1645|end_char=1650
-3	paragraph	paragraph	NOUN	NN	Number=Sing	4	nsubj	_	start_char=1651|end_char=1660
-4	has	have	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1661|end_char=1664
-5	no	no	DET	DT	PronType=Neg	6	det	_	start_char=1665|end_char=1667
-6	newline	newline	NOUN	NN	Number=Sing	4	obj	_	start_char=1668|end_char=1675
-7	at	at	ADP	IN	_	9	case	_	start_char=1676|end_char=1678
-8	the	the	DET	DT	Definite=Def|PronType=Art	9	det	_	start_char=1679|end_char=1682
-9	end	end	NOUN	NN	Number=Sing	4	obl	_	SpaceAfter=No|start_char=1683|end_char=1686
+# sentiment = 0
+1	The	the	DET	DT	Definite=Def|PronType=Art	3	det	_	start_char=1641|end_char=1644|ner=O
+2	final	final	ADJ	JJ	Degree=Pos	3	amod	_	start_char=1645|end_char=1650|ner=O
+3	paragraph	paragraph	NOUN	NN	Number=Sing	4	nsubj	_	start_char=1651|end_char=1660|ner=O
+4	has	have	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1661|end_char=1664|ner=O
+5	no	no	DET	DT	PronType=Neg	6	det	_	start_char=1665|end_char=1667|ner=O
+6	newline	newline	NOUN	NN	Number=Sing	4	obj	_	start_char=1668|end_char=1675|ner=O
+7	at	at	ADP	IN	_	9	case	_	start_char=1676|end_char=1678|ner=O
+8	the	the	DET	DT	Definite=Def|PronType=Art	9	det	_	start_char=1679|end_char=1682|ner=O
+9	end	end	NOUN	NN	Number=Sing	4	obl	_	SpaceAfter=No|start_char=1683|end_char=1686|ner=O

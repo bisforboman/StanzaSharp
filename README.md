@@ -21,10 +21,13 @@ Download Stanza's English models (about 600 MB, from Stanza's Hugging Face repos
 checked against its published MD5; `Pipeline.Load` itself never touches the network.
 
 ```csharp
-await ModelDownloader.DownloadAsync("models/stanza/en");
+await ModelDownloader.DownloadAsync("models/stanza/en");                            // all, ~600 MB
+await ModelDownloader.DownloadAsync("models/stanza/en", "tokenize,mwt,pos,lemma");  // only what these need
 ```
 
-or from the command line: `dotnet run --project samples/StanzaSharp.Cli -- download models/stanza/en`.
+or from the command line: `dotnet run --project samples/StanzaSharp.Cli -- download models/stanza/en`
+(add `--processors LIST` for a subset). A subset includes the models of the processors it requires and
+the shared word vectors and character models when used.
 A directory you already have from Python Stanza (`<processor>/<name>.pt`, e.g. `~/stanza_resources/en`)
 works too.
 
@@ -48,10 +51,11 @@ foreach (var sentence in doc.Sentences)
 needs the ones before it. `PipelineOptions` also holds `Device`, `DisableTf32` and `CharlmCache`
 (`IsEnabled`, `MaxWords`: the tagger's character-model outputs reused by the constituency parser and sentiment, at most
 32,768 words / ~256 MB by default; output is identical either way).
-The default is six processors: `tokenize,mwt,pos,lemma,depparse,constituency`. Add `ner` (it needs only
-`tokenize`) for named entities: `Token.Ner` holds the BIOES tag (`B-PERSON`, `O`, ...), and `sentence.Entities` /
+The default is all eight processors, like Stanza's English default:
+`tokenize,mwt,pos,lemma,constituency,depparse,sentiment,ner`. List fewer to run less; `ner` and `sentiment`
+need only `tokenize`. NER gives named entities: `Token.Ner` holds the BIOES tag (`B-PERSON`, `O`, ...), and `sentence.Entities` /
 `doc.Entities` the spans (`Text`, `Type`, `StartChar`, `EndChar`), from Stanza's OntoNotes model (18 types).
-Add `sentiment` (needs only `tokenize`) for `sentence.Sentiment`: 0 negative, 1 neutral, 2 positive.
+Sentiment gives `sentence.Sentiment`: 0 negative, 1 neutral, 2 positive.
 `Conllu.Write(doc)` gives Stanza-style CoNLL-U, with `ner=` in MISC when NER ran.
 
 From the command line, this writes CoNLL-U for a file (or standard input):

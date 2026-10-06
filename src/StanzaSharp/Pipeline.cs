@@ -24,10 +24,11 @@ namespace StanzaSharp;
 /// </example>
 public sealed class Pipeline : IDisposable
 {
-    public const string AllProcessors = "tokenize,mwt,pos,lemma,depparse,constituency";
+    /// <summary>Every processor, in the order Stanza runs them (PIPELINE_NAMES): Stanza's English default.</summary>
+    public const string AllProcessors = "tokenize,mwt,pos,lemma,constituency,depparse,sentiment,ner";
 
     // Stanza's processor dependencies (REQUIRES_DEFAULT); English pos also needs mwt to have run.
-    private static readonly Dictionary<string, string[]> Requires = new()
+    internal static readonly Dictionary<string, string[]> Requires = new()
     {
         ["tokenize"] = [],
         ["mwt"] = ["tokenize"],
@@ -83,30 +84,38 @@ public sealed class Pipeline : IDisposable
     /// Loads the English models from <paramref name="modelDir"/>: either converted ones (e.g. <c>models/converted/en</c>)
     /// or Stanza's own download with its <c>.pt</c> files (e.g. <c>models/stanza/en</c>), chosen per file.
     /// </summary>
-    /// <param name="options">Processors, device and cache settings; defaults to all six processors on the CPU.</param>
+    /// <param name="options">Processors, device and cache settings; defaults to all eight processors on the CPU.</param>
     public static Pipeline Load(string modelDir, PipelineOptions? options = null)
     {
         options ??= new PipelineOptions();
         if (!Directory.Exists(modelDir))
             throw new DirectoryNotFoundException($"Model directory not found: {modelDir} (download them with ModelDownloader.DownloadAsync or \"StanzaSharp.Cli download\")");
-        var set = options.Processors.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Select(p => p.ToLowerInvariant()).ToHashSet();
+        var set = ParseProcessors(options.Processors, nameof(options));
         foreach (var p in set)
         {
-            if (!Requires.TryGetValue(p, out var needs))
-                throw new ArgumentException($"Unknown processor '{p}'. Available: {string.Join(",", Requires.Keys)}", nameof(options));
-            var missing = needs.Where(n => !set.Contains(n)).ToList();
+            var missing = Requires[p].Where(n => !set.Contains(n)).ToList();
             if (missing.Count > 0)
                 throw new ArgumentException($"Processor '{p}' requires {string.Join(", ", missing)}", nameof(options));
         }
-        if (set.Count == 0)
-            throw new ArgumentException("No processors given", nameof(options));
         if (options.CharlmCache.IsEnabled && options.CharlmCache.MaxWords <= 0)
             throw new ArgumentOutOfRangeException(nameof(options), "CharlmCache.MaxWords must be positive; set IsEnabled = false to turn the cache off");
 
         if (options.DisableTf32)
             torch.backends.cuda.matmul.allow_tf32 = torch.backends.cudnn.allow_tf32 = false;
         return Weights.On(options.Device, () => new Pipeline(modelDir, set, options.CharlmCache));
+    }
+
+    /// <summary>A comma-separated processor list as a set, checking every name.</summary>
+    internal static HashSet<string> ParseProcessors(string processors, string paramName)
+    {
+        var set = processors.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(p => p.ToLowerInvariant()).ToHashSet();
+        foreach (var p in set)
+            if (!Requires.ContainsKey(p))
+                throw new ArgumentException($"Unknown processor '{p}'. Available: {AllProcessors}", paramName);
+        if (set.Count == 0)
+            throw new ArgumentException("No processors given", paramName);
+        return set;
     }
 
     public Document Process(string text)
