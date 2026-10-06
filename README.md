@@ -77,7 +77,8 @@ docker run -i --rm -v /path/to/models/stanza/en:/models:ro stanzasharp-sample < 
 ```
 
 Mount the models rather than copying them into the image: they are about 600 MB, and the image is already
-600 to 700 MB depending on the base, of which the published app is 500 MB, nearly all of it libtorch. CI builds this image on both base images and checks that its output
+707 MB on `runtime:10.0` and 601 MB on `runtime:10.0-noble-chiseled` (measured in CI), of which the published app is
+500 MB, nearly all of it libtorch. CI builds this image on both base images and checks that its output
 is byte-identical to the golden file.
 
 ## Models
