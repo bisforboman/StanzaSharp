@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using System.Text.Json.Nodes;
 using StanzaSharp.Nn;
 using TorchSharp;
@@ -97,6 +98,7 @@ public sealed class PosTagger : IDisposable
     /// <summary>Tags for each word, plus the UPOS logits (one [words, upos] array per sentence) for tests.</summary>
     internal List<(string Upos, string Xpos, string? Feats)[]> Predict(IReadOnlyList<IReadOnlyList<string>> sentences, out List<float[]> uposLogits)
     {
+        sentences = sentences.Select(s => (IReadOnlyList<string>)s.Select(SimplifyPunct).ToList()).ToList();
         using var _ = torch.no_grad();
         using var scope = NewDisposeScope();
         int batch = sentences.Count, width = sentences.Max(s => s.Count);
@@ -174,6 +176,14 @@ public sealed class PosTagger : IDisposable
     }
 
     private static string[] Strings(JsonNode? array) => array!.AsArray().Select(x => x!.GetValue<string>()).ToArray();
+
+    // pos/data.py load_doc → common/utils.py simplify_punct: the tagger sees runs like "?!?" or "!!"
+    // as a single "?" or "!" (QUESTION_RE / EXCLAM_RE, including full-width and small forms).
+    private const string QuestionMarks = "?？︖﹖⁇", AllMarks = QuestionMarks + "!！︕﹗‼";
+    private static readonly Regex Question = new($"^[{QuestionMarks}][{AllMarks}]+$");
+    private static readonly Regex Exclam = new($"^[!！︕﹗‼][{AllMarks}]+$");
+
+    internal static string SimplifyPunct(string word) => Exclam.Replace(Question.Replace(word, "?"), "!");
 
     public void Dispose()
     {
