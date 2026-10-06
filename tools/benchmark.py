@@ -41,6 +41,7 @@ def peak_working_set_mb():
     psapi = ctypes.WinDLL("psapi")
     kernel32 = ctypes.WinDLL("kernel32")
     kernel32.GetCurrentProcess.restype = ctypes.wintypes.HANDLE
+    psapi.GetProcessMemoryInfo.argtypes = [ctypes.wintypes.HANDLE, ctypes.c_void_p, ctypes.wintypes.DWORD]
     psapi.GetProcessMemoryInfo(kernel32.GetCurrentProcess(), ctypes.byref(counters), counters.cb)
     return counters.PeakWorkingSetSize / 1048576
 
