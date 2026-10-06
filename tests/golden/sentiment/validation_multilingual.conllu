@@ -1,0 +1,734 @@
+# text = Søren Kierkegaard was born in Copenhagen.
+# sent_id = 0
+# sentiment = 1
+1	Søren	_	_	_	_	0	_	_	start_char=0|end_char=5
+2	Kierkegaard	_	_	_	_	1	_	_	start_char=6|end_char=17
+3	was	_	_	_	_	2	_	_	start_char=18|end_char=21
+4	born	_	_	_	_	3	_	_	start_char=22|end_char=26
+5	in	_	_	_	_	4	_	_	start_char=27|end_char=29
+6	Copenhagen	_	_	_	_	5	_	_	SpaceAfter=No|start_char=30|end_char=40
+7	.	_	_	_	_	6	_	_	start_char=40|end_char=41
+
+# text = Gabriel García Márquez wrote in Spanish.
+# sent_id = 1
+# sentiment = 1
+1	Gabriel	_	_	_	_	0	_	_	start_char=42|end_char=49
+2	García	_	_	_	_	1	_	_	start_char=50|end_char=56
+3	Márquez	_	_	_	_	2	_	_	start_char=57|end_char=64
+4	wrote	_	_	_	_	3	_	_	start_char=65|end_char=70
+5	in	_	_	_	_	4	_	_	start_char=71|end_char=73
+6	Spanish	_	_	_	_	5	_	_	SpaceAfter=No|start_char=74|end_char=81
+7	.	_	_	_	_	6	_	_	start_char=81|end_char=82
+
+# text = Antonín Dvořák composed the New World Symphony.
+# sent_id = 2
+# sentiment = 1
+1	Antonín	_	_	_	_	0	_	_	start_char=83|end_char=90
+2	Dvořák	_	_	_	_	1	_	_	start_char=91|end_char=97
+3	composed	_	_	_	_	2	_	_	start_char=98|end_char=106
+4	the	_	_	_	_	3	_	_	start_char=107|end_char=110
+5	New	_	_	_	_	4	_	_	start_char=111|end_char=114
+6	World	_	_	_	_	5	_	_	start_char=115|end_char=120
+7	Symphony	_	_	_	_	6	_	_	SpaceAfter=No|start_char=121|end_char=129
+8	.	_	_	_	_	7	_	_	SpacesAfter=\n\n|start_char=129|end_char=130
+
+# text = We met Łukasz Wiśniewski and Ágnes Szabó at the conference in Kraków.
+# sent_id = 3
+# sentiment = 1
+1	We	_	_	_	_	0	_	_	start_char=132|end_char=134
+2	met	_	_	_	_	1	_	_	start_char=135|end_char=138
+3	Łukasz	_	_	_	_	2	_	_	start_char=139|end_char=145
+4	Wiśniewski	_	_	_	_	3	_	_	start_char=146|end_char=156
+5	and	_	_	_	_	4	_	_	start_char=157|end_char=160
+6	Ágnes	_	_	_	_	5	_	_	start_char=161|end_char=166
+7	Szabó	_	_	_	_	6	_	_	start_char=167|end_char=172
+8	at	_	_	_	_	7	_	_	start_char=173|end_char=175
+9	the	_	_	_	_	8	_	_	start_char=176|end_char=179
+10	conference	_	_	_	_	9	_	_	start_char=180|end_char=190
+11	in	_	_	_	_	10	_	_	start_char=191|end_char=193
+12	Kraków	_	_	_	_	11	_	_	SpaceAfter=No|start_char=194|end_char=200
+13	.	_	_	_	_	12	_	_	start_char=200|end_char=201
+
+# text = Later we flew to Reykjavík, where Guðrún Ólafsdóttir showed us around.
+# sent_id = 4
+# sentiment = 1
+1	Later	_	_	_	_	0	_	_	start_char=202|end_char=207
+2	we	_	_	_	_	1	_	_	start_char=208|end_char=210
+3	flew	_	_	_	_	2	_	_	start_char=211|end_char=215
+4	to	_	_	_	_	3	_	_	start_char=216|end_char=218
+5	Reykjavík	_	_	_	_	4	_	_	SpaceAfter=No|start_char=219|end_char=228
+6	,	_	_	_	_	5	_	_	start_char=228|end_char=229
+7	where	_	_	_	_	6	_	_	start_char=230|end_char=235
+8	Guðrún	_	_	_	_	7	_	_	start_char=236|end_char=242
+9	Ólafsdóttir	_	_	_	_	8	_	_	start_char=243|end_char=254
+10	showed	_	_	_	_	9	_	_	start_char=255|end_char=261
+11	us	_	_	_	_	10	_	_	start_char=262|end_char=264
+12	around	_	_	_	_	11	_	_	SpaceAfter=No|start_char=265|end_char=271
+13	.	_	_	_	_	12	_	_	SpacesAfter=\n\n|start_char=271|end_char=272
+
+# text = The menu featured jalapeño poppers, a soupçon of crème fraîche, and smørrebrød.
+# sent_id = 5
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=274|end_char=277
+2	menu	_	_	_	_	1	_	_	start_char=278|end_char=282
+3	featured	_	_	_	_	2	_	_	start_char=283|end_char=291
+4	jalapeño	_	_	_	_	3	_	_	start_char=292|end_char=300
+5	poppers	_	_	_	_	4	_	_	SpaceAfter=No|start_char=301|end_char=308
+6	,	_	_	_	_	5	_	_	start_char=308|end_char=309
+7	a	_	_	_	_	6	_	_	start_char=310|end_char=311
+8	soupçon	_	_	_	_	7	_	_	start_char=312|end_char=319
+9	of	_	_	_	_	8	_	_	start_char=320|end_char=322
+10	crème	_	_	_	_	9	_	_	start_char=323|end_char=328
+11	fraîche	_	_	_	_	10	_	_	SpaceAfter=No|start_char=329|end_char=336
+12	,	_	_	_	_	11	_	_	start_char=336|end_char=337
+13	and	_	_	_	_	12	_	_	start_char=338|end_char=341
+14	smørrebrød	_	_	_	_	13	_	_	SpaceAfter=No|start_char=342|end_char=352
+15	.	_	_	_	_	14	_	_	start_char=352|end_char=353
+
+# text = The sommelier recommended a Grüner Veltliner.
+# sent_id = 6
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=354|end_char=357
+2	sommelier	_	_	_	_	1	_	_	start_char=358|end_char=367
+3	recommended	_	_	_	_	2	_	_	start_char=368|end_char=379
+4	a	_	_	_	_	3	_	_	start_char=380|end_char=381
+5	Grüner	_	_	_	_	4	_	_	start_char=382|end_char=388
+6	Veltliner	_	_	_	_	5	_	_	SpaceAfter=No|start_char=389|end_char=398
+7	.	_	_	_	_	6	_	_	SpacesAfter=\n\n|start_char=398|end_char=399
+
+# text = İstanbul and Ankara are both in Türkiye.
+# sent_id = 7
+# sentiment = 1
+1	İstanbul	_	_	_	_	0	_	_	start_char=401|end_char=409
+2	and	_	_	_	_	1	_	_	start_char=410|end_char=413
+3	Ankara	_	_	_	_	2	_	_	start_char=414|end_char=420
+4	are	_	_	_	_	3	_	_	start_char=421|end_char=424
+5	both	_	_	_	_	4	_	_	start_char=425|end_char=429
+6	in	_	_	_	_	5	_	_	start_char=430|end_char=432
+7	Türkiye	_	_	_	_	6	_	_	SpaceAfter=No|start_char=433|end_char=440
+8	.	_	_	_	_	7	_	_	start_char=440|end_char=441
+
+# text = The Turkish word for "thank you" is teşekkürler.
+# sent_id = 8
+# sentiment = 2
+1	The	_	_	_	_	0	_	_	start_char=442|end_char=445
+2	Turkish	_	_	_	_	1	_	_	start_char=446|end_char=453
+3	word	_	_	_	_	2	_	_	start_char=454|end_char=458
+4	for	_	_	_	_	3	_	_	start_char=459|end_char=462
+5	"	_	_	_	_	4	_	_	SpaceAfter=No|start_char=463|end_char=464
+6	thank	_	_	_	_	5	_	_	start_char=464|end_char=469
+7	you	_	_	_	_	6	_	_	SpaceAfter=No|start_char=470|end_char=473
+8	"	_	_	_	_	7	_	_	start_char=473|end_char=474
+9	is	_	_	_	_	8	_	_	start_char=475|end_char=477
+10	teşekkürler	_	_	_	_	9	_	_	SpaceAfter=No|start_char=478|end_char=489
+11	.	_	_	_	_	10	_	_	SpacesAfter=\n\n|start_char=489|end_char=490
+
+# text = François and Hélène moved to Montréal in 2015.
+# sent_id = 9
+# sentiment = 1
+1	François	_	_	_	_	0	_	_	start_char=492|end_char=500
+2	and	_	_	_	_	1	_	_	start_char=501|end_char=504
+3	Hélène	_	_	_	_	2	_	_	start_char=505|end_char=511
+4	moved	_	_	_	_	3	_	_	start_char=512|end_char=517
+5	to	_	_	_	_	4	_	_	start_char=518|end_char=520
+6	Montréal	_	_	_	_	5	_	_	start_char=521|end_char=529
+7	in	_	_	_	_	6	_	_	start_char=530|end_char=532
+8	2015	_	_	_	_	7	_	_	SpaceAfter=No|start_char=533|end_char=537
+9	.	_	_	_	_	8	_	_	start_char=537|end_char=538
+
+# text = Their son, Noël, now attends École Saint-Exupéry.
+# sent_id = 10
+# sentiment = 1
+1	Their	_	_	_	_	0	_	_	start_char=539|end_char=544
+2	son	_	_	_	_	1	_	_	SpaceAfter=No|start_char=545|end_char=548
+3	,	_	_	_	_	2	_	_	start_char=548|end_char=549
+4	Noël	_	_	_	_	3	_	_	SpaceAfter=No|start_char=550|end_char=554
+5	,	_	_	_	_	4	_	_	start_char=554|end_char=555
+6	now	_	_	_	_	5	_	_	start_char=556|end_char=559
+7	attends	_	_	_	_	6	_	_	start_char=560|end_char=567
+8	École	_	_	_	_	7	_	_	start_char=568|end_char=573
+9	Saint	_	_	_	_	8	_	_	SpaceAfter=No|start_char=574|end_char=579
+10	-	_	_	_	_	9	_	_	SpaceAfter=No|start_char=579|end_char=580
+11	Exupéry	_	_	_	_	10	_	_	SpaceAfter=No|start_char=580|end_char=587
+12	.	_	_	_	_	11	_	_	SpacesAfter=\n\n|start_char=587|end_char=588
+
+# text = The Japanese word 東京 means "eastern capital."
+# sent_id = 11
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=590|end_char=593
+2	Japanese	_	_	_	_	1	_	_	start_char=594|end_char=602
+3	word	_	_	_	_	2	_	_	start_char=603|end_char=607
+4	東京	_	_	_	_	3	_	_	start_char=608|end_char=610
+5	means	_	_	_	_	4	_	_	start_char=611|end_char=616
+6	"	_	_	_	_	5	_	_	SpaceAfter=No|start_char=617|end_char=618
+7	eastern	_	_	_	_	6	_	_	start_char=618|end_char=625
+8	capital	_	_	_	_	7	_	_	SpaceAfter=No|start_char=626|end_char=633
+9	.	_	_	_	_	8	_	_	SpaceAfter=No|start_char=633|end_char=634
+10	"	_	_	_	_	9	_	_	start_char=634|end_char=635
+
+# text = In Chinese, 北京 is Beijing, and 你好 means hello.
+# sent_id = 12
+# sentiment = 1
+1	In	_	_	_	_	0	_	_	start_char=636|end_char=638
+2	Chinese	_	_	_	_	1	_	_	SpaceAfter=No|start_char=639|end_char=646
+3	,	_	_	_	_	2	_	_	start_char=646|end_char=647
+4	北京	_	_	_	_	3	_	_	start_char=648|end_char=650
+5	is	_	_	_	_	4	_	_	start_char=651|end_char=653
+6	Beijing	_	_	_	_	5	_	_	SpaceAfter=No|start_char=654|end_char=661
+7	,	_	_	_	_	6	_	_	start_char=661|end_char=662
+8	and	_	_	_	_	7	_	_	start_char=663|end_char=666
+9	你好	_	_	_	_	8	_	_	start_char=667|end_char=669
+10	means	_	_	_	_	9	_	_	start_char=670|end_char=675
+11	hello	_	_	_	_	10	_	_	SpaceAfter=No|start_char=676|end_char=681
+12	.	_	_	_	_	11	_	_	SpacesAfter=\n\n|start_char=681|end_char=682
+
+# text = She studied 한국어 for two years before moving to Seoul.
+# sent_id = 13
+# sentiment = 2
+1	She	_	_	_	_	0	_	_	start_char=684|end_char=687
+2	studied	_	_	_	_	1	_	_	start_char=688|end_char=695
+3	한국어	_	_	_	_	2	_	_	start_char=696|end_char=699
+4	for	_	_	_	_	3	_	_	start_char=700|end_char=703
+5	two	_	_	_	_	4	_	_	start_char=704|end_char=707
+6	years	_	_	_	_	5	_	_	start_char=708|end_char=713
+7	before	_	_	_	_	6	_	_	start_char=714|end_char=720
+8	moving	_	_	_	_	7	_	_	start_char=721|end_char=727
+9	to	_	_	_	_	8	_	_	start_char=728|end_char=730
+10	Seoul	_	_	_	_	9	_	_	SpaceAfter=No|start_char=731|end_char=736
+11	.	_	_	_	_	10	_	_	start_char=736|end_char=737
+
+# text = Her favorite dish is 김치찌개.
+# sent_id = 14
+# sentiment = 1
+1	Her	_	_	_	_	0	_	_	start_char=738|end_char=741
+2	favorite	_	_	_	_	1	_	_	start_char=742|end_char=750
+3	dish	_	_	_	_	2	_	_	start_char=751|end_char=755
+4	is	_	_	_	_	3	_	_	start_char=756|end_char=758
+5	김치찌개	_	_	_	_	4	_	_	SpaceAfter=No|start_char=759|end_char=763
+6	.	_	_	_	_	5	_	_	SpacesAfter=\n\n|start_char=763|end_char=764
+
+# text = The Russian word for "peace" is мир.
+# sent_id = 15
+# sentiment = 2
+1	The	_	_	_	_	0	_	_	start_char=766|end_char=769
+2	Russian	_	_	_	_	1	_	_	start_char=770|end_char=777
+3	word	_	_	_	_	2	_	_	start_char=778|end_char=782
+4	for	_	_	_	_	3	_	_	start_char=783|end_char=786
+5	"	_	_	_	_	4	_	_	SpaceAfter=No|start_char=787|end_char=788
+6	peace	_	_	_	_	5	_	_	SpaceAfter=No|start_char=788|end_char=793
+7	"	_	_	_	_	6	_	_	start_char=793|end_char=794
+8	is	_	_	_	_	7	_	_	start_char=795|end_char=797
+9	мир	_	_	_	_	8	_	_	SpaceAfter=No|start_char=798|end_char=801
+10	.	_	_	_	_	9	_	_	start_char=801|end_char=802
+
+# text = Москва is the capital; Санкт-Петербург is the second-largest city.
+# sent_id = 16
+# sentiment = 1
+1	Москва	_	_	_	_	0	_	_	start_char=803|end_char=809
+2	is	_	_	_	_	1	_	_	start_char=810|end_char=812
+3	the	_	_	_	_	2	_	_	start_char=813|end_char=816
+4	capital	_	_	_	_	3	_	_	SpaceAfter=No|start_char=817|end_char=824
+5	;	_	_	_	_	4	_	_	start_char=824|end_char=825
+6	Санкт	_	_	_	_	5	_	_	SpaceAfter=No|start_char=826|end_char=831
+7	-	_	_	_	_	6	_	_	SpaceAfter=No|start_char=831|end_char=832
+8	Петербург	_	_	_	_	7	_	_	start_char=832|end_char=841
+9	is	_	_	_	_	8	_	_	start_char=842|end_char=844
+10	the	_	_	_	_	9	_	_	start_char=845|end_char=848
+11	second	_	_	_	_	10	_	_	SpaceAfter=No|start_char=849|end_char=855
+12	-	_	_	_	_	11	_	_	SpaceAfter=No|start_char=855|end_char=856
+13	largest	_	_	_	_	12	_	_	start_char=856|end_char=863
+14	city	_	_	_	_	13	_	_	SpaceAfter=No|start_char=864|end_char=868
+15	.	_	_	_	_	14	_	_	SpacesAfter=\n\n|start_char=868|end_char=869
+
+# text = Greek letters such as α, β, γ and Ω appear in physics formulas.
+# sent_id = 17
+# sentiment = 1
+1	Greek	_	_	_	_	0	_	_	start_char=871|end_char=876
+2	letters	_	_	_	_	1	_	_	start_char=877|end_char=884
+3	such	_	_	_	_	2	_	_	start_char=885|end_char=889
+4	as	_	_	_	_	3	_	_	start_char=890|end_char=892
+5	α	_	_	_	_	4	_	_	SpaceAfter=No|start_char=893|end_char=894
+6	,	_	_	_	_	5	_	_	start_char=894|end_char=895
+7	β	_	_	_	_	6	_	_	SpaceAfter=No|start_char=896|end_char=897
+8	,	_	_	_	_	7	_	_	start_char=897|end_char=898
+9	γ	_	_	_	_	8	_	_	start_char=899|end_char=900
+10	and	_	_	_	_	9	_	_	start_char=901|end_char=904
+11	Ω	_	_	_	_	10	_	_	start_char=905|end_char=906
+12	appear	_	_	_	_	11	_	_	start_char=907|end_char=913
+13	in	_	_	_	_	12	_	_	start_char=914|end_char=916
+14	physics	_	_	_	_	13	_	_	start_char=917|end_char=924
+15	formulas	_	_	_	_	14	_	_	SpaceAfter=No|start_char=925|end_char=933
+16	.	_	_	_	_	15	_	_	start_char=933|end_char=934
+
+# text = The word φιλοσοφία means love of wisdom.
+# sent_id = 18
+# sentiment = 2
+1	The	_	_	_	_	0	_	_	start_char=935|end_char=938
+2	word	_	_	_	_	1	_	_	start_char=939|end_char=943
+3	φιλοσοφία	_	_	_	_	2	_	_	start_char=944|end_char=953
+4	means	_	_	_	_	3	_	_	start_char=954|end_char=959
+5	love	_	_	_	_	4	_	_	start_char=960|end_char=964
+6	of	_	_	_	_	5	_	_	start_char=965|end_char=967
+7	wisdom	_	_	_	_	6	_	_	SpaceAfter=No|start_char=968|end_char=974
+8	.	_	_	_	_	7	_	_	SpacesAfter=\n\n|start_char=974|end_char=975
+
+# text = The Arabic greeting مرحبا is common.
+# sent_id = 19
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=977|end_char=980
+2	Arabic	_	_	_	_	1	_	_	start_char=981|end_char=987
+3	greeting	_	_	_	_	2	_	_	start_char=988|end_char=996
+4	مرحبا	_	_	_	_	3	_	_	start_char=997|end_char=1002
+5	is	_	_	_	_	4	_	_	start_char=1003|end_char=1005
+6	common	_	_	_	_	5	_	_	SpaceAfter=No|start_char=1006|end_char=1012
+7	.	_	_	_	_	6	_	_	start_char=1012|end_char=1013
+
+# text = Hebrew writes שלום for peace.
+# sent_id = 20
+# sentiment = 1
+1	Hebrew	_	_	_	_	0	_	_	start_char=1014|end_char=1020
+2	writes	_	_	_	_	1	_	_	start_char=1021|end_char=1027
+3	שלום	_	_	_	_	2	_	_	start_char=1028|end_char=1032
+4	for	_	_	_	_	3	_	_	start_char=1033|end_char=1036
+5	peace	_	_	_	_	4	_	_	SpaceAfter=No|start_char=1037|end_char=1042
+6	.	_	_	_	_	5	_	_	SpacesAfter=\n\n|start_char=1042|end_char=1043
+
+# text = Dmitri Shostakovich (Дмитрий Шостакович) wrote fifteen symphonies.
+# sent_id = 21
+# sentiment = 1
+1	Dmitri	_	_	_	_	0	_	_	start_char=1045|end_char=1051
+2	Shostakovich	_	_	_	_	1	_	_	start_char=1052|end_char=1064
+3	(	_	_	_	_	2	_	_	SpaceAfter=No|start_char=1065|end_char=1066
+4	Дмитрий	_	_	_	_	3	_	_	start_char=1066|end_char=1073
+5	Шостакович	_	_	_	_	4	_	_	SpaceAfter=No|start_char=1074|end_char=1084
+6	)	_	_	_	_	5	_	_	start_char=1084|end_char=1085
+7	wrote	_	_	_	_	6	_	_	start_char=1086|end_char=1091
+8	fifteen	_	_	_	_	7	_	_	start_char=1092|end_char=1099
+9	symphonies	_	_	_	_	8	_	_	SpaceAfter=No|start_char=1100|end_char=1110
+10	.	_	_	_	_	9	_	_	SpacesAfter=\n\n|start_char=1110|end_char=1111
+
+# text = Nguyễn Thị Minh Khai Street is in Hồ Chí Minh City.
+# sent_id = 22
+# sentiment = 1
+1	Nguyễn	_	_	_	_	0	_	_	start_char=1113|end_char=1119
+2	Thị	_	_	_	_	1	_	_	start_char=1120|end_char=1123
+3	Minh	_	_	_	_	2	_	_	start_char=1124|end_char=1128
+4	Khai	_	_	_	_	3	_	_	start_char=1129|end_char=1133
+5	Street	_	_	_	_	4	_	_	start_char=1134|end_char=1140
+6	is	_	_	_	_	5	_	_	start_char=1141|end_char=1143
+7	in	_	_	_	_	6	_	_	start_char=1144|end_char=1146
+8	Hồ	_	_	_	_	7	_	_	start_char=1147|end_char=1149
+9	Chí	_	_	_	_	8	_	_	start_char=1150|end_char=1153
+10	Minh	_	_	_	_	9	_	_	start_char=1154|end_char=1158
+11	City	_	_	_	_	10	_	_	SpaceAfter=No|start_char=1159|end_char=1163
+12	.	_	_	_	_	11	_	_	start_char=1163|end_char=1164
+
+# text = Phở is served everywhere.
+# sent_id = 23
+# sentiment = 1
+1	Phở	_	_	_	_	0	_	_	start_char=1165|end_char=1168
+2	is	_	_	_	_	1	_	_	start_char=1169|end_char=1171
+3	served	_	_	_	_	2	_	_	start_char=1172|end_char=1178
+4	everywhere	_	_	_	_	3	_	_	SpaceAfter=No|start_char=1179|end_char=1189
+5	.	_	_	_	_	4	_	_	SpacesAfter=\n\n|start_char=1189|end_char=1190
+
+# text = The author, Chimamanda Ngozi Adichie, spoke in Lagos.
+# sent_id = 24
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=1192|end_char=1195
+2	author	_	_	_	_	1	_	_	SpaceAfter=No|start_char=1196|end_char=1202
+3	,	_	_	_	_	2	_	_	start_char=1202|end_char=1203
+4	Chimamanda	_	_	_	_	3	_	_	start_char=1204|end_char=1214
+5	Ngozi	_	_	_	_	4	_	_	start_char=1215|end_char=1220
+6	Adichie	_	_	_	_	5	_	_	SpaceAfter=No|start_char=1221|end_char=1228
+7	,	_	_	_	_	6	_	_	start_char=1228|end_char=1229
+8	spoke	_	_	_	_	7	_	_	start_char=1230|end_char=1235
+9	in	_	_	_	_	8	_	_	start_char=1236|end_char=1238
+10	Lagos	_	_	_	_	9	_	_	SpaceAfter=No|start_char=1239|end_char=1244
+11	.	_	_	_	_	10	_	_	start_char=1244|end_char=1245
+
+# text = Ngũgĩ wa Thiong'o was in the audience.
+# sent_id = 25
+# sentiment = 1
+1	Ngũgĩ	_	_	_	_	0	_	_	start_char=1246|end_char=1251
+2	wa	_	_	_	_	1	_	_	start_char=1252|end_char=1254
+3-4	Thiong'o	_	_	_	_	_	_	_	start_char=1255|end_char=1263
+3	Thiong	_	_	_	_	2	_	_	start_char=1255|end_char=1261
+4	'o	_	_	_	_	3	_	_	start_char=1261|end_char=1263
+5	was	_	_	_	_	4	_	_	start_char=1264|end_char=1267
+6	in	_	_	_	_	5	_	_	start_char=1268|end_char=1270
+7	the	_	_	_	_	6	_	_	start_char=1271|end_char=1274
+8	audience	_	_	_	_	7	_	_	SpaceAfter=No|start_char=1275|end_char=1283
+9	.	_	_	_	_	8	_	_	SpacesAfter=\n\n|start_char=1283|end_char=1284
+
+# text = São Paulo's population exceeds 12 million.
+# sent_id = 26
+# sentiment = 1
+1	São	_	_	_	_	0	_	_	start_char=1286|end_char=1289
+2-3	Paulo's	_	_	_	_	_	_	_	start_char=1290|end_char=1297
+2	Paulo	_	_	_	_	1	_	_	start_char=1290|end_char=1295
+3	's	_	_	_	_	2	_	_	start_char=1295|end_char=1297
+4	population	_	_	_	_	3	_	_	start_char=1298|end_char=1308
+5	exceeds	_	_	_	_	4	_	_	start_char=1309|end_char=1316
+6	12	_	_	_	_	5	_	_	start_char=1317|end_char=1319
+7	million	_	_	_	_	6	_	_	SpaceAfter=No|start_char=1320|end_char=1327
+8	.	_	_	_	_	7	_	_	start_char=1327|end_char=1328
+
+# text = Ação and coração are Portuguese words.
+# sent_id = 27
+# sentiment = 1
+1	Ação	_	_	_	_	0	_	_	start_char=1329|end_char=1333
+2	and	_	_	_	_	1	_	_	start_char=1334|end_char=1337
+3	coração	_	_	_	_	2	_	_	start_char=1338|end_char=1345
+4	are	_	_	_	_	3	_	_	start_char=1346|end_char=1349
+5	Portuguese	_	_	_	_	4	_	_	start_char=1350|end_char=1360
+6	words	_	_	_	_	5	_	_	SpaceAfter=No|start_char=1361|end_char=1366
+7	.	_	_	_	_	6	_	_	SpacesAfter=\n\n|start_char=1366|end_char=1367
+
+# text = The Māori name for New Zealand is Aotearoa.
+# sent_id = 28
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=1369|end_char=1372
+2	Māori	_	_	_	_	1	_	_	start_char=1373|end_char=1378
+3	name	_	_	_	_	2	_	_	start_char=1379|end_char=1383
+4	for	_	_	_	_	3	_	_	start_char=1384|end_char=1387
+5	New	_	_	_	_	4	_	_	start_char=1388|end_char=1391
+6	Zealand	_	_	_	_	5	_	_	start_char=1392|end_char=1399
+7	is	_	_	_	_	6	_	_	start_char=1400|end_char=1402
+8	Aotearoa	_	_	_	_	7	_	_	SpaceAfter=No|start_char=1403|end_char=1411
+9	.	_	_	_	_	8	_	_	start_char=1411|end_char=1412
+
+# text = Te reo Māori is an official language.
+# sent_id = 29
+# sentiment = 1
+1	Te	_	_	_	_	0	_	_	start_char=1413|end_char=1415
+2	reo	_	_	_	_	1	_	_	start_char=1416|end_char=1419
+3	Māori	_	_	_	_	2	_	_	start_char=1420|end_char=1425
+4	is	_	_	_	_	3	_	_	start_char=1426|end_char=1428
+5	an	_	_	_	_	4	_	_	start_char=1429|end_char=1431
+6	official	_	_	_	_	5	_	_	start_char=1432|end_char=1440
+7	language	_	_	_	_	6	_	_	SpaceAfter=No|start_char=1441|end_char=1449
+8	.	_	_	_	_	7	_	_	SpacesAfter=\n\n|start_char=1449|end_char=1450
+
+# text = Hindi uses Devanagari: नमस्ते means hello.
+# sent_id = 30
+# sentiment = 1
+1	Hindi	_	_	_	_	0	_	_	start_char=1452|end_char=1457
+2	uses	_	_	_	_	1	_	_	start_char=1458|end_char=1462
+3	Devanagari	_	_	_	_	2	_	_	SpaceAfter=No|start_char=1463|end_char=1473
+4	:	_	_	_	_	3	_	_	start_char=1473|end_char=1474
+5	नमस्ते	_	_	_	_	4	_	_	start_char=1475|end_char=1481
+6	means	_	_	_	_	5	_	_	start_char=1482|end_char=1487
+7	hello	_	_	_	_	6	_	_	SpaceAfter=No|start_char=1488|end_char=1493
+8	.	_	_	_	_	7	_	_	start_char=1493|end_char=1494
+
+# text = Tamil uses its own script: வணக்கம்.
+# sent_id = 31
+# sentiment = 1
+1	Tamil	_	_	_	_	0	_	_	start_char=1495|end_char=1500
+2	uses	_	_	_	_	1	_	_	start_char=1501|end_char=1505
+3	its	_	_	_	_	2	_	_	start_char=1506|end_char=1509
+4	own	_	_	_	_	3	_	_	start_char=1510|end_char=1513
+5	script	_	_	_	_	4	_	_	SpaceAfter=No|start_char=1514|end_char=1520
+6	:	_	_	_	_	5	_	_	start_char=1520|end_char=1521
+7	வணக்கம்	_	_	_	_	6	_	_	SpaceAfter=No|start_char=1522|end_char=1529
+8	.	_	_	_	_	7	_	_	SpacesAfter=\n\n|start_char=1529|end_char=1530
+
+# text = Herr Müller from Düsseldorf ordered a Weißbier.
+# sent_id = 32
+# sentiment = 1
+1	Herr	_	_	_	_	0	_	_	start_char=1532|end_char=1536
+2	Müller	_	_	_	_	1	_	_	start_char=1537|end_char=1543
+3	from	_	_	_	_	2	_	_	start_char=1544|end_char=1548
+4	Düsseldorf	_	_	_	_	3	_	_	start_char=1549|end_char=1559
+5	ordered	_	_	_	_	4	_	_	start_char=1560|end_char=1567
+6	a	_	_	_	_	5	_	_	start_char=1568|end_char=1569
+7	Weißbier	_	_	_	_	6	_	_	SpaceAfter=No|start_char=1570|end_char=1578
+8	.	_	_	_	_	7	_	_	start_char=1578|end_char=1579
+
+# text = Straße means street.
+# sent_id = 33
+# sentiment = 1
+1	Straße	_	_	_	_	0	_	_	start_char=1580|end_char=1586
+2	means	_	_	_	_	1	_	_	start_char=1587|end_char=1592
+3	street	_	_	_	_	2	_	_	SpaceAfter=No|start_char=1593|end_char=1599
+4	.	_	_	_	_	3	_	_	SpacesAfter=\n\n|start_char=1599|end_char=1600
+
+# text = Ångström units measure tiny distances.
+# sent_id = 34
+# sentiment = 1
+1	Ångström	_	_	_	_	0	_	_	start_char=1602|end_char=1610
+2	units	_	_	_	_	1	_	_	start_char=1611|end_char=1616
+3	measure	_	_	_	_	2	_	_	start_char=1617|end_char=1624
+4	tiny	_	_	_	_	3	_	_	start_char=1625|end_char=1629
+5	distances	_	_	_	_	4	_	_	SpaceAfter=No|start_char=1630|end_char=1639
+6	.	_	_	_	_	5	_	_	start_char=1639|end_char=1640
+
+# text = The Øresund Bridge connects Denmark and Sweden.
+# sent_id = 35
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=1641|end_char=1644
+2	Øresund	_	_	_	_	1	_	_	start_char=1645|end_char=1652
+3	Bridge	_	_	_	_	2	_	_	start_char=1653|end_char=1659
+4	connects	_	_	_	_	3	_	_	start_char=1660|end_char=1668
+5	Denmark	_	_	_	_	4	_	_	start_char=1669|end_char=1676
+6	and	_	_	_	_	5	_	_	start_char=1677|end_char=1680
+7	Sweden	_	_	_	_	6	_	_	SpaceAfter=No|start_char=1681|end_char=1687
+8	.	_	_	_	_	7	_	_	SpacesAfter=\n\n|start_char=1687|end_char=1688
+
+# text = The novel Cien años de soledad was translated as One Hundred Years of Solitude.
+# sent_id = 36
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=1690|end_char=1693
+2	novel	_	_	_	_	1	_	_	start_char=1694|end_char=1699
+3	Cien	_	_	_	_	2	_	_	start_char=1700|end_char=1704
+4	años	_	_	_	_	3	_	_	start_char=1705|end_char=1709
+5	de	_	_	_	_	4	_	_	start_char=1710|end_char=1712
+6	soledad	_	_	_	_	5	_	_	start_char=1713|end_char=1720
+7	was	_	_	_	_	6	_	_	start_char=1721|end_char=1724
+8	translated	_	_	_	_	7	_	_	start_char=1725|end_char=1735
+9	as	_	_	_	_	8	_	_	start_char=1736|end_char=1738
+10	One	_	_	_	_	9	_	_	start_char=1739|end_char=1742
+11	Hundred	_	_	_	_	10	_	_	start_char=1743|end_char=1750
+12	Years	_	_	_	_	11	_	_	start_char=1751|end_char=1756
+13	of	_	_	_	_	12	_	_	start_char=1757|end_char=1759
+14	Solitude	_	_	_	_	13	_	_	SpaceAfter=No|start_char=1760|end_char=1768
+15	.	_	_	_	_	14	_	_	SpacesAfter=\n\n|start_char=1768|end_char=1769
+
+# text = Señor Peña's niño spoke español and English fluently.
+# sent_id = 37
+# sentiment = 1
+1	Señor	_	_	_	_	0	_	_	start_char=1771|end_char=1776
+2-3	Peña's	_	_	_	_	_	_	_	start_char=1777|end_char=1783
+2	Peña	_	_	_	_	1	_	_	start_char=1777|end_char=1781
+3	's	_	_	_	_	2	_	_	start_char=1781|end_char=1783
+4	niño	_	_	_	_	3	_	_	start_char=1784|end_char=1788
+5	spoke	_	_	_	_	4	_	_	start_char=1789|end_char=1794
+6	español	_	_	_	_	5	_	_	start_char=1795|end_char=1802
+7	and	_	_	_	_	6	_	_	start_char=1803|end_char=1806
+8	English	_	_	_	_	7	_	_	start_char=1807|end_char=1814
+9	fluently	_	_	_	_	8	_	_	SpaceAfter=No|start_char=1815|end_char=1823
+10	.	_	_	_	_	9	_	_	SpacesAfter=\n\n|start_char=1823|end_char=1824
+
+# text = Dvořák's and Janáček's works are often performed together.
+# sent_id = 38
+# sentiment = 2
+1-2	Dvořák's	_	_	_	_	_	_	_	start_char=1826|end_char=1834
+1	Dvořák	_	_	_	_	0	_	_	start_char=1826|end_char=1832
+2	's	_	_	_	_	1	_	_	start_char=1832|end_char=1834
+3	and	_	_	_	_	2	_	_	start_char=1835|end_char=1838
+4-5	Janáček's	_	_	_	_	_	_	_	start_char=1839|end_char=1848
+4	Janáček	_	_	_	_	3	_	_	start_char=1839|end_char=1846
+5	's	_	_	_	_	4	_	_	start_char=1846|end_char=1848
+6	works	_	_	_	_	5	_	_	start_char=1849|end_char=1854
+7	are	_	_	_	_	6	_	_	start_char=1855|end_char=1858
+8	often	_	_	_	_	7	_	_	start_char=1859|end_char=1864
+9	performed	_	_	_	_	8	_	_	start_char=1865|end_char=1874
+10	together	_	_	_	_	9	_	_	SpaceAfter=No|start_char=1875|end_char=1883
+11	.	_	_	_	_	10	_	_	start_char=1883|end_char=1884
+
+# text = Zoë's café is near Château Frontenac.
+# sent_id = 39
+# sentiment = 1
+1-2	Zoë's	_	_	_	_	_	_	_	start_char=1885|end_char=1890
+1	Zoë	_	_	_	_	0	_	_	start_char=1885|end_char=1888
+2	's	_	_	_	_	1	_	_	start_char=1888|end_char=1890
+3	café	_	_	_	_	2	_	_	start_char=1891|end_char=1895
+4	is	_	_	_	_	3	_	_	start_char=1896|end_char=1898
+5	near	_	_	_	_	4	_	_	start_char=1899|end_char=1903
+6	Château	_	_	_	_	5	_	_	start_char=1904|end_char=1911
+7	Frontenac	_	_	_	_	6	_	_	SpaceAfter=No|start_char=1912|end_char=1921
+8	.	_	_	_	_	7	_	_	SpacesAfter=\n\n|start_char=1921|end_char=1922
+
+# text = The Thai word สวัสดี is a greeting.
+# sent_id = 40
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=1924|end_char=1927
+2	Thai	_	_	_	_	1	_	_	start_char=1928|end_char=1932
+3	word	_	_	_	_	2	_	_	start_char=1933|end_char=1937
+4	สวัสดี	_	_	_	_	3	_	_	start_char=1938|end_char=1944
+5	is	_	_	_	_	4	_	_	start_char=1945|end_char=1947
+6	a	_	_	_	_	5	_	_	start_char=1948|end_char=1949
+7	greeting	_	_	_	_	6	_	_	SpaceAfter=No|start_char=1950|end_char=1958
+8	.	_	_	_	_	7	_	_	start_char=1958|end_char=1959
+
+# text = Georgian has its own alphabet: ქართული.
+# sent_id = 41
+# sentiment = 1
+1	Georgian	_	_	_	_	0	_	_	start_char=1960|end_char=1968
+2	has	_	_	_	_	1	_	_	start_char=1969|end_char=1972
+3	its	_	_	_	_	2	_	_	start_char=1973|end_char=1976
+4	own	_	_	_	_	3	_	_	start_char=1977|end_char=1980
+5	alphabet	_	_	_	_	4	_	_	SpaceAfter=No|start_char=1981|end_char=1989
+6	:	_	_	_	_	5	_	_	start_char=1989|end_char=1990
+7	ქართული	_	_	_	_	6	_	_	SpaceAfter=No|start_char=1991|end_char=1998
+8	.	_	_	_	_	7	_	_	SpacesAfter=\n\n|start_char=1998|end_char=1999
+
+# text = Mr. Ødegaard flew from Oslo to Ålesund.
+# sent_id = 42
+# sentiment = 1
+1	Mr.	_	_	_	_	0	_	_	start_char=2001|end_char=2004
+2	Ødegaard	_	_	_	_	1	_	_	start_char=2005|end_char=2013
+3	flew	_	_	_	_	2	_	_	start_char=2014|end_char=2018
+4	from	_	_	_	_	3	_	_	start_char=2019|end_char=2023
+5	Oslo	_	_	_	_	4	_	_	start_char=2024|end_char=2028
+6	to	_	_	_	_	5	_	_	start_char=2029|end_char=2031
+7	Ålesund	_	_	_	_	6	_	_	SpaceAfter=No|start_char=2032|end_char=2039
+8	.	_	_	_	_	7	_	_	start_char=2039|end_char=2040
+
+# text = Ms. Ünal took the train from Köln.
+# sent_id = 43
+# sentiment = 1
+1	Ms.	_	_	_	_	0	_	_	start_char=2041|end_char=2044
+2	Ünal	_	_	_	_	1	_	_	start_char=2045|end_char=2049
+3	took	_	_	_	_	2	_	_	start_char=2050|end_char=2054
+4	the	_	_	_	_	3	_	_	start_char=2055|end_char=2058
+5	train	_	_	_	_	4	_	_	start_char=2059|end_char=2064
+6	from	_	_	_	_	5	_	_	start_char=2065|end_char=2069
+7	Köln	_	_	_	_	6	_	_	SpaceAfter=No|start_char=2070|end_char=2074
+8	.	_	_	_	_	7	_	_	SpacesAfter=\n\n|start_char=2074|end_char=2075
+
+# text = Ελλάδα is the Greek name for Greece.
+# sent_id = 44
+# sentiment = 1
+1	Ελλάδα	_	_	_	_	0	_	_	start_char=2077|end_char=2083
+2	is	_	_	_	_	1	_	_	start_char=2084|end_char=2086
+3	the	_	_	_	_	2	_	_	start_char=2087|end_char=2090
+4	Greek	_	_	_	_	3	_	_	start_char=2091|end_char=2096
+5	name	_	_	_	_	4	_	_	start_char=2097|end_char=2101
+6	for	_	_	_	_	5	_	_	start_char=2102|end_char=2105
+7	Greece	_	_	_	_	6	_	_	SpaceAfter=No|start_char=2106|end_char=2112
+8	.	_	_	_	_	7	_	_	start_char=2112|end_char=2113
+
+# text = Αθήνα is its capital.
+# sent_id = 45
+# sentiment = 1
+1	Αθήνα	_	_	_	_	0	_	_	start_char=2114|end_char=2119
+2	is	_	_	_	_	1	_	_	start_char=2120|end_char=2122
+3	its	_	_	_	_	2	_	_	start_char=2123|end_char=2126
+4	capital	_	_	_	_	3	_	_	SpaceAfter=No|start_char=2127|end_char=2134
+5	.	_	_	_	_	4	_	_	SpacesAfter=\n\n|start_char=2134|end_char=2135
+
+# text = The sign said ДОБРО ПОЖАЛОВАТЬ, which means "welcome."
+# sent_id = 46
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=2137|end_char=2140
+2	sign	_	_	_	_	1	_	_	start_char=2141|end_char=2145
+3	said	_	_	_	_	2	_	_	start_char=2146|end_char=2150
+4	ДОБРО	_	_	_	_	3	_	_	start_char=2151|end_char=2156
+5	ПОЖАЛОВАТЬ	_	_	_	_	4	_	_	SpaceAfter=No|start_char=2157|end_char=2167
+6	,	_	_	_	_	5	_	_	start_char=2167|end_char=2168
+7	which	_	_	_	_	6	_	_	start_char=2169|end_char=2174
+8	means	_	_	_	_	7	_	_	start_char=2175|end_char=2180
+9	"	_	_	_	_	8	_	_	SpaceAfter=No|start_char=2181|end_char=2182
+10	welcome	_	_	_	_	9	_	_	SpaceAfter=No|start_char=2182|end_char=2189
+11	.	_	_	_	_	10	_	_	SpaceAfter=No|start_char=2189|end_char=2190
+12	"	_	_	_	_	11	_	_	SpacesAfter=\n\n|start_char=2190|end_char=2191
+
+# text = I ordered pão de queijo, dulce de leche and a café con leche.
+# sent_id = 47
+# sentiment = 1
+1	I	_	_	_	_	0	_	_	start_char=2193|end_char=2194
+2	ordered	_	_	_	_	1	_	_	start_char=2195|end_char=2202
+3	pão	_	_	_	_	2	_	_	start_char=2203|end_char=2206
+4	de	_	_	_	_	3	_	_	start_char=2207|end_char=2209
+5	queijo	_	_	_	_	4	_	_	SpaceAfter=No|start_char=2210|end_char=2216
+6	,	_	_	_	_	5	_	_	start_char=2216|end_char=2217
+7	dulce	_	_	_	_	6	_	_	start_char=2218|end_char=2223
+8	de	_	_	_	_	7	_	_	start_char=2224|end_char=2226
+9	leche	_	_	_	_	8	_	_	start_char=2227|end_char=2232
+10	and	_	_	_	_	9	_	_	start_char=2233|end_char=2236
+11	a	_	_	_	_	10	_	_	start_char=2237|end_char=2238
+12	café	_	_	_	_	11	_	_	start_char=2239|end_char=2243
+13	con	_	_	_	_	12	_	_	start_char=2244|end_char=2247
+14	leche	_	_	_	_	13	_	_	SpaceAfter=No|start_char=2248|end_char=2253
+15	.	_	_	_	_	14	_	_	SpacesAfter=\n\n|start_char=2253|end_char=2254
+
+# text = Ēriks Lūsis, Žydrūnas Ilgauskas and Ģirts Āboliņš are Baltic names.
+# sent_id = 48
+# sentiment = 1
+1	Ēriks	_	_	_	_	0	_	_	start_char=2256|end_char=2261
+2	Lūsis	_	_	_	_	1	_	_	SpaceAfter=No|start_char=2262|end_char=2267
+3	,	_	_	_	_	2	_	_	start_char=2267|end_char=2268
+4	Žydrūnas	_	_	_	_	3	_	_	start_char=2269|end_char=2277
+5	Ilgauskas	_	_	_	_	4	_	_	start_char=2278|end_char=2287
+6	and	_	_	_	_	5	_	_	start_char=2288|end_char=2291
+7	Ģirts	_	_	_	_	6	_	_	start_char=2292|end_char=2297
+8	Āboliņš	_	_	_	_	7	_	_	start_char=2298|end_char=2305
+9	are	_	_	_	_	8	_	_	start_char=2306|end_char=2309
+10	Baltic	_	_	_	_	9	_	_	start_char=2310|end_char=2316
+11	names	_	_	_	_	10	_	_	SpaceAfter=No|start_char=2317|end_char=2322
+12	.	_	_	_	_	11	_	_	SpacesAfter=\n\n|start_char=2322|end_char=2323
+
+# text = He spells his name Jürgen, but his passport says Juergen.
+# sent_id = 49
+# sentiment = 1
+1	He	_	_	_	_	0	_	_	start_char=2325|end_char=2327
+2	spells	_	_	_	_	1	_	_	start_char=2328|end_char=2334
+3	his	_	_	_	_	2	_	_	start_char=2335|end_char=2338
+4	name	_	_	_	_	3	_	_	start_char=2339|end_char=2343
+5	Jürgen	_	_	_	_	4	_	_	SpaceAfter=No|start_char=2344|end_char=2350
+6	,	_	_	_	_	5	_	_	start_char=2350|end_char=2351
+7	but	_	_	_	_	6	_	_	start_char=2352|end_char=2355
+8	his	_	_	_	_	7	_	_	start_char=2356|end_char=2359
+9	passport	_	_	_	_	8	_	_	start_char=2360|end_char=2368
+10	says	_	_	_	_	9	_	_	start_char=2369|end_char=2373
+11	Juergen	_	_	_	_	10	_	_	SpaceAfter=No|start_char=2374|end_char=2381
+12	.	_	_	_	_	11	_	_	SpacesAfter=\n\n|start_char=2381|end_char=2382
+
+# text = Kyiv (Київ) is the capital of Ukraine.
+# sent_id = 50
+# sentiment = 1
+1	Kyiv	_	_	_	_	0	_	_	start_char=2384|end_char=2388
+2	(	_	_	_	_	1	_	_	SpaceAfter=No|start_char=2389|end_char=2390
+3	Київ	_	_	_	_	2	_	_	SpaceAfter=No|start_char=2390|end_char=2394
+4	)	_	_	_	_	3	_	_	start_char=2394|end_char=2395
+5	is	_	_	_	_	4	_	_	start_char=2396|end_char=2398
+6	the	_	_	_	_	5	_	_	start_char=2399|end_char=2402
+7	capital	_	_	_	_	6	_	_	start_char=2403|end_char=2410
+8	of	_	_	_	_	7	_	_	start_char=2411|end_char=2413
+9	Ukraine	_	_	_	_	8	_	_	SpaceAfter=No|start_char=2414|end_char=2421
+10	.	_	_	_	_	9	_	_	SpacesAfter=\n\n|start_char=2421|end_char=2422
+
+# text = The poet wrote haiku: 古池や 蛙飛び込む 水の音.
+# sent_id = 51
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=2424|end_char=2427
+2	poet	_	_	_	_	1	_	_	start_char=2428|end_char=2432
+3	wrote	_	_	_	_	2	_	_	start_char=2433|end_char=2438
+4	haiku	_	_	_	_	3	_	_	SpaceAfter=No|start_char=2439|end_char=2444
+5	:	_	_	_	_	4	_	_	start_char=2444|end_char=2445
+6	古池や	_	_	_	_	5	_	_	start_char=2446|end_char=2449
+7	蛙飛び込む	_	_	_	_	6	_	_	start_char=2450|end_char=2455
+8	水の音	_	_	_	_	7	_	_	SpaceAfter=No|start_char=2456|end_char=2459
+9	.	_	_	_	_	8	_	_	SpacesAfter=\n\n|start_char=2459|end_char=2460
+
+# text = The old sign said ΤΗΣ ΠΟΛΕΩΣ in capitals, and the guide read it aloud.
+# sent_id = 52
+# sentiment = 0
+1	The	_	_	_	_	0	_	_	start_char=2462|end_char=2465
+2	old	_	_	_	_	1	_	_	start_char=2466|end_char=2469
+3	sign	_	_	_	_	2	_	_	start_char=2470|end_char=2474
+4	said	_	_	_	_	3	_	_	start_char=2475|end_char=2479
+5	ΤΗΣ	_	_	_	_	4	_	_	start_char=2480|end_char=2483
+6	ΠΟΛΕΩΣ	_	_	_	_	5	_	_	start_char=2484|end_char=2490
+7	in	_	_	_	_	6	_	_	start_char=2491|end_char=2493
+8	capitals	_	_	_	_	7	_	_	SpaceAfter=No|start_char=2494|end_char=2502
+9	,	_	_	_	_	8	_	_	start_char=2502|end_char=2503
+10	and	_	_	_	_	9	_	_	start_char=2504|end_char=2507
+11	the	_	_	_	_	10	_	_	start_char=2508|end_char=2511
+12	guide	_	_	_	_	11	_	_	start_char=2512|end_char=2517
+13	read	_	_	_	_	12	_	_	start_char=2518|end_char=2522
+14	it	_	_	_	_	13	_	_	start_char=2523|end_char=2525
+15	aloud	_	_	_	_	14	_	_	SpaceAfter=No|start_char=2526|end_char=2531
+16	.	_	_	_	_	15	_	_	start_char=2531|end_char=2532
+
+# text = ΕΙΣ was carved below it.
+# sent_id = 53
+# sentiment = 0
+1	ΕΙΣ	_	_	_	_	0	_	_	start_char=2533|end_char=2536
+2	was	_	_	_	_	1	_	_	start_char=2537|end_char=2540
+3	carved	_	_	_	_	2	_	_	start_char=2541|end_char=2547
+4	below	_	_	_	_	3	_	_	start_char=2548|end_char=2553
+5	it	_	_	_	_	4	_	_	SpaceAfter=No|start_char=2554|end_char=2556
+6	.	_	_	_	_	5	_	_	SpacesAfter=\n|start_char=2556|end_char=2557

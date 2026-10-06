@@ -17,6 +17,9 @@ public sealed class Sentence
     public List<Token> Tokens { get; } = [];
     public Tree? Constituency { get; set; }
 
+    /// <summary>Stanza's sentiment label: 0 negative, 1 neutral, 2 positive.</summary>
+    public int? Sentiment { get; set; }
+
     /// <summary>Named entities built from the tokens' <see cref="Token.Ner"/> tags (Stanza's <c>sentence.ents</c>).</summary>
     public List<Entity> Entities { get; } = [];
 

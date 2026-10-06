@@ -1,0 +1,764 @@
+# text = “Did she really say ‘I’ll never come back’?” asked Ellen.
+# sent_id = 0
+# sentiment = 1
+1	“	_	_	_	_	0	_	_	SpaceAfter=No|start_char=0|end_char=1
+2	Did	_	_	_	_	1	_	_	start_char=1|end_char=4
+3	she	_	_	_	_	2	_	_	start_char=5|end_char=8
+4	really	_	_	_	_	3	_	_	start_char=9|end_char=15
+5	say	_	_	_	_	4	_	_	start_char=16|end_char=19
+6	‘	_	_	_	_	5	_	_	SpaceAfter=No|start_char=20|end_char=21
+7-8	I’ll	_	_	_	_	_	_	_	start_char=21|end_char=25
+7	I	_	_	_	_	6	_	_	start_char=21|end_char=22
+8	’ll	_	_	_	_	7	_	_	start_char=22|end_char=25
+9	never	_	_	_	_	8	_	_	start_char=26|end_char=31
+10	come	_	_	_	_	9	_	_	start_char=32|end_char=36
+11	back	_	_	_	_	10	_	_	SpaceAfter=No|start_char=37|end_char=41
+12	’	_	_	_	_	11	_	_	SpaceAfter=No|start_char=41|end_char=42
+13	?	_	_	_	_	12	_	_	SpaceAfter=No|start_char=42|end_char=43
+14	”	_	_	_	_	13	_	_	start_char=43|end_char=44
+15	asked	_	_	_	_	14	_	_	start_char=45|end_char=50
+16	Ellen	_	_	_	_	15	_	_	SpaceAfter=No|start_char=51|end_char=56
+17	.	_	_	_	_	16	_	_	SpacesAfter=\n|start_char=56|end_char=57
+
+# text = “Those were her exact words,” Martin replied.
+# sent_id = 1
+# sentiment = 1
+1	“	_	_	_	_	0	_	_	SpaceAfter=No|start_char=58|end_char=59
+2	Those	_	_	_	_	1	_	_	start_char=59|end_char=64
+3	were	_	_	_	_	2	_	_	start_char=65|end_char=69
+4	her	_	_	_	_	3	_	_	start_char=70|end_char=73
+5	exact	_	_	_	_	4	_	_	start_char=74|end_char=79
+6	words	_	_	_	_	5	_	_	SpaceAfter=No|start_char=80|end_char=85
+7	,	_	_	_	_	6	_	_	SpaceAfter=No|start_char=85|end_char=86
+8	”	_	_	_	_	7	_	_	start_char=86|end_char=87
+9	Martin	_	_	_	_	8	_	_	start_char=88|end_char=94
+10	replied	_	_	_	_	9	_	_	SpaceAfter=No|start_char=95|end_char=102
+11	.	_	_	_	_	10	_	_	start_char=102|end_char=103
+
+# text = “Then she slammed the door.”
+# sent_id = 2
+# sentiment = 1
+1	“	_	_	_	_	0	_	_	SpaceAfter=No|start_char=104|end_char=105
+2	Then	_	_	_	_	1	_	_	start_char=105|end_char=109
+3	she	_	_	_	_	2	_	_	start_char=110|end_char=113
+4	slammed	_	_	_	_	3	_	_	start_char=114|end_char=121
+5	the	_	_	_	_	4	_	_	start_char=122|end_char=125
+6	door	_	_	_	_	5	_	_	SpaceAfter=No|start_char=126|end_char=130
+7	.	_	_	_	_	6	_	_	SpaceAfter=No|start_char=130|end_char=131
+8	”	_	_	_	_	7	_	_	SpacesAfter=\n\n|start_char=131|end_char=132
+
+# text = "He told me, 'Don't bother calling,' and hung up," said Rosa.
+# sent_id = 3
+# sentiment = 1
+1	"	_	_	_	_	0	_	_	SpaceAfter=No|start_char=134|end_char=135
+2	He	_	_	_	_	1	_	_	start_char=135|end_char=137
+3	told	_	_	_	_	2	_	_	start_char=138|end_char=142
+4	me	_	_	_	_	3	_	_	SpaceAfter=No|start_char=143|end_char=145
+5	,	_	_	_	_	4	_	_	start_char=145|end_char=146
+6	'	_	_	_	_	5	_	_	SpaceAfter=No|start_char=147|end_char=148
+7-8	Don't	_	_	_	_	_	_	_	start_char=148|end_char=153
+7	Do	_	_	_	_	6	_	_	start_char=148|end_char=150
+8	n't	_	_	_	_	7	_	_	start_char=150|end_char=153
+9	bother	_	_	_	_	8	_	_	start_char=154|end_char=160
+10	calling	_	_	_	_	9	_	_	SpaceAfter=No|start_char=161|end_char=168
+11	,	_	_	_	_	10	_	_	SpaceAfter=No|start_char=168|end_char=169
+12	'	_	_	_	_	11	_	_	start_char=169|end_char=170
+13	and	_	_	_	_	12	_	_	start_char=171|end_char=174
+14	hung	_	_	_	_	13	_	_	start_char=175|end_char=179
+15	up	_	_	_	_	14	_	_	SpaceAfter=No|start_char=180|end_char=182
+16	,	_	_	_	_	15	_	_	SpaceAfter=No|start_char=182|end_char=183
+17	"	_	_	_	_	16	_	_	start_char=183|end_char=184
+18	said	_	_	_	_	17	_	_	start_char=185|end_char=189
+19	Rosa	_	_	_	_	18	_	_	SpaceAfter=No|start_char=190|end_char=194
+20	.	_	_	_	_	19	_	_	start_char=194|end_char=195
+
+# text = "Can you believe that?"
+# sent_id = 4
+# sentiment = 1
+1	"	_	_	_	_	0	_	_	SpaceAfter=No|start_char=196|end_char=197
+2	Can	_	_	_	_	1	_	_	start_char=197|end_char=200
+3	you	_	_	_	_	2	_	_	start_char=201|end_char=204
+4	believe	_	_	_	_	3	_	_	start_char=205|end_char=212
+5	that	_	_	_	_	4	_	_	SpaceAfter=No|start_char=213|end_char=217
+6	?	_	_	_	_	5	_	_	SpaceAfter=No|start_char=217|end_char=218
+7	"	_	_	_	_	6	_	_	SpacesAfter=\n\n|start_char=218|end_char=219
+
+# text = 'I'm not sure,' she whispered.
+# sent_id = 5
+# sentiment = 1
+1	'	_	_	_	_	0	_	_	SpaceAfter=No|start_char=221|end_char=222
+2-3	I'm	_	_	_	_	_	_	_	start_char=222|end_char=225
+2	I	_	_	_	_	1	_	_	start_char=222|end_char=223
+3	'm	_	_	_	_	2	_	_	start_char=223|end_char=225
+4	not	_	_	_	_	3	_	_	start_char=226|end_char=229
+5	sure	_	_	_	_	4	_	_	SpaceAfter=No|start_char=230|end_char=234
+6	,	_	_	_	_	5	_	_	SpaceAfter=No|start_char=234|end_char=235
+7	'	_	_	_	_	6	_	_	start_char=235|end_char=236
+8	she	_	_	_	_	7	_	_	start_char=237|end_char=240
+9	whispered	_	_	_	_	8	_	_	SpaceAfter=No|start_char=241|end_char=250
+10	.	_	_	_	_	9	_	_	start_char=250|end_char=251
+
+# text = 'Maybe tomorrow.'
+# sent_id = 6
+# sentiment = 1
+1	'	_	_	_	_	0	_	_	SpaceAfter=No|start_char=252|end_char=253
+2	Maybe	_	_	_	_	1	_	_	start_char=253|end_char=258
+3	tomorrow	_	_	_	_	2	_	_	SpaceAfter=No|start_char=259|end_char=267
+4	.	_	_	_	_	3	_	_	SpaceAfter=No|start_char=267|end_char=268
+5	'	_	_	_	_	4	_	_	SpacesAfter=\n\n|start_char=268|end_char=269
+
+# text = “Well,” said the old man, “when I was your age, we didn’t have any of this.”
+# sent_id = 7
+# sentiment = 1
+1	“	_	_	_	_	0	_	_	SpaceAfter=No|start_char=271|end_char=272
+2	Well	_	_	_	_	1	_	_	SpaceAfter=No|start_char=272|end_char=276
+3	,	_	_	_	_	2	_	_	SpaceAfter=No|start_char=276|end_char=277
+4	”	_	_	_	_	3	_	_	start_char=277|end_char=278
+5	said	_	_	_	_	4	_	_	start_char=279|end_char=283
+6	the	_	_	_	_	5	_	_	start_char=284|end_char=287
+7	old	_	_	_	_	6	_	_	start_char=288|end_char=291
+8	man	_	_	_	_	7	_	_	SpaceAfter=No|start_char=292|end_char=295
+9	,	_	_	_	_	8	_	_	start_char=295|end_char=296
+10	“	_	_	_	_	9	_	_	SpaceAfter=No|start_char=297|end_char=298
+11	when	_	_	_	_	10	_	_	start_char=298|end_char=302
+12	I	_	_	_	_	11	_	_	start_char=303|end_char=304
+13	was	_	_	_	_	12	_	_	start_char=305|end_char=308
+14	your	_	_	_	_	13	_	_	start_char=309|end_char=313
+15	age	_	_	_	_	14	_	_	SpaceAfter=No|start_char=314|end_char=317
+16	,	_	_	_	_	15	_	_	start_char=317|end_char=318
+17	we	_	_	_	_	16	_	_	start_char=319|end_char=321
+18-19	didn’t	_	_	_	_	_	_	_	start_char=322|end_char=328
+18	did	_	_	_	_	17	_	_	start_char=322|end_char=325
+19	n’t	_	_	_	_	18	_	_	start_char=325|end_char=328
+20	have	_	_	_	_	19	_	_	start_char=329|end_char=333
+21	any	_	_	_	_	20	_	_	start_char=334|end_char=337
+22	of	_	_	_	_	21	_	_	start_char=338|end_char=340
+23	this	_	_	_	_	22	_	_	SpaceAfter=No|start_char=341|end_char=345
+24	.	_	_	_	_	23	_	_	SpaceAfter=No|start_char=345|end_char=346
+25	”	_	_	_	_	24	_	_	start_char=346|end_char=347
+
+# text = He waved a hand at the screens.
+# sent_id = 8
+# sentiment = 1
+1	He	_	_	_	_	0	_	_	start_char=348|end_char=350
+2	waved	_	_	_	_	1	_	_	start_char=351|end_char=356
+3	a	_	_	_	_	2	_	_	start_char=357|end_char=358
+4	hand	_	_	_	_	3	_	_	start_char=359|end_char=363
+5	at	_	_	_	_	4	_	_	start_char=364|end_char=366
+6	the	_	_	_	_	5	_	_	start_char=367|end_char=370
+7	screens	_	_	_	_	6	_	_	SpaceAfter=No|start_char=371|end_char=378
+8	.	_	_	_	_	7	_	_	start_char=378|end_char=379
+
+# text = “We had books.
+# sent_id = 9
+# sentiment = 1
+1	“	_	_	_	_	0	_	_	SpaceAfter=No|start_char=380|end_char=381
+2	We	_	_	_	_	1	_	_	start_char=381|end_char=383
+3	had	_	_	_	_	2	_	_	start_char=384|end_char=387
+4	books	_	_	_	_	3	_	_	SpaceAfter=No|start_char=388|end_char=393
+5	.	_	_	_	_	4	_	_	start_char=393|end_char=394
+
+# text = Real ones.”
+# sent_id = 10
+# sentiment = 1
+1	Real	_	_	_	_	0	_	_	start_char=395|end_char=399
+2	ones	_	_	_	_	1	_	_	SpaceAfter=No|start_char=400|end_char=404
+3	.	_	_	_	_	2	_	_	SpaceAfter=No|start_char=404|end_char=405
+4	”	_	_	_	_	3	_	_	SpacesAfter=\n\n|start_char=405|end_char=406
+
+# text = “Mom says, ‘If your brother tells you “it’s fine,” it isn’t,’” Lily explained.
+# sent_id = 11
+# sentiment = 1
+1	“	_	_	_	_	0	_	_	SpaceAfter=No|start_char=408|end_char=409
+2	Mom	_	_	_	_	1	_	_	start_char=409|end_char=412
+3	says	_	_	_	_	2	_	_	SpaceAfter=No|start_char=413|end_char=417
+4	,	_	_	_	_	3	_	_	start_char=417|end_char=418
+5	‘	_	_	_	_	4	_	_	SpaceAfter=No|start_char=419|end_char=420
+6	If	_	_	_	_	5	_	_	start_char=420|end_char=422
+7	your	_	_	_	_	6	_	_	start_char=423|end_char=427
+8	brother	_	_	_	_	7	_	_	start_char=428|end_char=435
+9	tells	_	_	_	_	8	_	_	start_char=436|end_char=441
+10	you	_	_	_	_	9	_	_	start_char=442|end_char=445
+11	“	_	_	_	_	10	_	_	SpaceAfter=No|start_char=446|end_char=447
+12-13	it’s	_	_	_	_	_	_	_	start_char=447|end_char=451
+12	it	_	_	_	_	11	_	_	start_char=447|end_char=449
+13	’s	_	_	_	_	12	_	_	start_char=449|end_char=451
+14	fine	_	_	_	_	13	_	_	SpaceAfter=No|start_char=452|end_char=456
+15	,	_	_	_	_	14	_	_	SpaceAfter=No|start_char=456|end_char=457
+16	”	_	_	_	_	15	_	_	start_char=457|end_char=458
+17	it	_	_	_	_	16	_	_	start_char=459|end_char=461
+18-19	isn’t	_	_	_	_	_	_	_	SpaceAfter=No|start_char=462|end_char=467
+18	is	_	_	_	_	17	_	_	start_char=462|end_char=464
+19	n’t	_	_	_	_	18	_	_	start_char=464|end_char=467
+20	,	_	_	_	_	19	_	_	SpaceAfter=No|start_char=467|end_char=468
+21	’	_	_	_	_	20	_	_	SpaceAfter=No|start_char=468|end_char=469
+22	”	_	_	_	_	21	_	_	start_char=469|end_char=470
+23	Lily	_	_	_	_	22	_	_	start_char=471|end_char=475
+24	explained	_	_	_	_	23	_	_	SpaceAfter=No|start_char=476|end_char=485
+25	.	_	_	_	_	24	_	_	SpacesAfter=\n\n|start_char=485|end_char=486
+
+# text = Jamal paused.
+# sent_id = 12
+# sentiment = 1
+1	Jamal	_	_	_	_	0	_	_	start_char=488|end_char=493
+2	paused	_	_	_	_	1	_	_	SpaceAfter=No|start_char=494|end_char=500
+3	.	_	_	_	_	2	_	_	start_char=500|end_char=501
+
+# text = “You know what my grandfather used to say?
+# sent_id = 13
+# sentiment = 1
+1	“	_	_	_	_	0	_	_	SpaceAfter=No|start_char=502|end_char=503
+2	You	_	_	_	_	1	_	_	start_char=503|end_char=506
+3	know	_	_	_	_	2	_	_	start_char=507|end_char=511
+4	what	_	_	_	_	3	_	_	start_char=512|end_char=516
+5	my	_	_	_	_	4	_	_	start_char=517|end_char=519
+6	grandfather	_	_	_	_	5	_	_	start_char=520|end_char=531
+7	used	_	_	_	_	6	_	_	start_char=532|end_char=536
+8	to	_	_	_	_	7	_	_	start_char=537|end_char=539
+9	say	_	_	_	_	8	_	_	SpaceAfter=No|start_char=540|end_char=543
+10	?	_	_	_	_	9	_	_	start_char=543|end_char=544
+
+# text = ‘Measure twice, cut once.’
+# sent_id = 14
+# sentiment = 1
+1	‘	_	_	_	_	0	_	_	SpaceAfter=No|start_char=545|end_char=546
+2	Measure	_	_	_	_	1	_	_	start_char=546|end_char=553
+3	twice	_	_	_	_	2	_	_	SpaceAfter=No|start_char=554|end_char=559
+4	,	_	_	_	_	3	_	_	start_char=559|end_char=560
+5	cut	_	_	_	_	4	_	_	start_char=561|end_char=564
+6	once	_	_	_	_	5	_	_	SpaceAfter=No|start_char=565|end_char=569
+7	.	_	_	_	_	6	_	_	SpaceAfter=No|start_char=569|end_char=570
+8	’	_	_	_	_	7	_	_	start_char=570|end_char=571
+
+# text = I never understood it until now.”
+# sent_id = 15
+# sentiment = 1
+1	I	_	_	_	_	0	_	_	start_char=572|end_char=573
+2	never	_	_	_	_	1	_	_	start_char=574|end_char=579
+3	understood	_	_	_	_	2	_	_	start_char=580|end_char=590
+4	it	_	_	_	_	3	_	_	start_char=591|end_char=593
+5	until	_	_	_	_	4	_	_	start_char=594|end_char=599
+6	now	_	_	_	_	5	_	_	SpaceAfter=No|start_char=600|end_char=603
+7	.	_	_	_	_	6	_	_	SpaceAfter=No|start_char=603|end_char=604
+8	”	_	_	_	_	7	_	_	SpacesAfter=\n\n|start_char=604|end_char=605
+
+# text = “Wait—what?”
+# sent_id = 16
+# sentiment = 1
+1	“	_	_	_	_	0	_	_	SpaceAfter=No|start_char=607|end_char=608
+2	Wait	_	_	_	_	1	_	_	SpaceAfter=No|start_char=608|end_char=612
+3	—	_	_	_	_	2	_	_	SpaceAfter=No|start_char=612|end_char=613
+4	what	_	_	_	_	3	_	_	SpaceAfter=No|start_char=613|end_char=617
+5	?	_	_	_	_	4	_	_	SpaceAfter=No|start_char=617|end_char=618
+6	”	_	_	_	_	5	_	_	start_char=618|end_char=619
+
+# text = “You heard me.” “But—” “No buts.”
+# sent_id = 17
+# sentiment = 1
+1	“	_	_	_	_	0	_	_	SpaceAfter=No|start_char=620|end_char=621
+2	You	_	_	_	_	1	_	_	start_char=621|end_char=624
+3	heard	_	_	_	_	2	_	_	start_char=625|end_char=630
+4	me	_	_	_	_	3	_	_	SpaceAfter=No|start_char=631|end_char=633
+5	.	_	_	_	_	4	_	_	SpaceAfter=No|start_char=633|end_char=634
+6	”	_	_	_	_	5	_	_	start_char=634|end_char=635
+7	“	_	_	_	_	6	_	_	SpaceAfter=No|start_char=636|end_char=637
+8	But	_	_	_	_	7	_	_	SpaceAfter=No|start_char=637|end_char=640
+9	—	_	_	_	_	8	_	_	SpaceAfter=No|start_char=640|end_char=641
+10	”	_	_	_	_	9	_	_	start_char=641|end_char=642
+11	“	_	_	_	_	10	_	_	SpaceAfter=No|start_char=643|end_char=644
+12	No	_	_	_	_	11	_	_	start_char=644|end_char=646
+13	buts	_	_	_	_	12	_	_	SpaceAfter=No|start_char=647|end_char=651
+14	.	_	_	_	_	13	_	_	SpaceAfter=No|start_char=651|end_char=652
+15	”	_	_	_	_	14	_	_	SpacesAfter=\n\n|start_char=652|end_char=653
+
+# text = —Where are you going?
+# sent_id = 18
+# sentiment = 1
+1	—	_	_	_	_	0	_	_	SpaceAfter=No|start_char=655|end_char=656
+2	Where	_	_	_	_	1	_	_	start_char=656|end_char=661
+3	are	_	_	_	_	2	_	_	start_char=662|end_char=665
+4	you	_	_	_	_	3	_	_	start_char=666|end_char=669
+5	going	_	_	_	_	4	_	_	SpaceAfter=No|start_char=670|end_char=675
+6	?	_	_	_	_	5	_	_	SpacesAfter=\n|start_char=675|end_char=676
+
+# text = —Out.
+# sent_id = 19
+# sentiment = 1
+1	—	_	_	_	_	0	_	_	SpaceAfter=No|start_char=677|end_char=678
+2	Out	_	_	_	_	1	_	_	SpaceAfter=No|start_char=678|end_char=681
+3	.	_	_	_	_	2	_	_	SpacesAfter=\n|start_char=681|end_char=682
+
+# text = —Out where?
+# sent_id = 20
+# sentiment = 1
+1	—	_	_	_	_	0	_	_	SpaceAfter=No|start_char=683|end_char=684
+2	Out	_	_	_	_	1	_	_	start_char=684|end_char=687
+3	where	_	_	_	_	2	_	_	SpaceAfter=No|start_char=688|end_char=693
+4	?	_	_	_	_	3	_	_	SpacesAfter=\n|start_char=693|end_char=694
+
+# text = —Just out.
+# sent_id = 21
+# sentiment = 0
+1	—	_	_	_	_	0	_	_	SpaceAfter=No|start_char=695|end_char=696
+2	Just	_	_	_	_	1	_	_	start_char=696|end_char=700
+3	out	_	_	_	_	2	_	_	SpaceAfter=No|start_char=701|end_char=704
+4	.	_	_	_	_	3	_	_	SpacesAfter=\n\n|start_char=704|end_char=705
+
+# text = "Stop!" "Why?"
+# sent_id = 22
+# sentiment = 0
+1	"	_	_	_	_	0	_	_	SpaceAfter=No|start_char=707|end_char=708
+2	Stop	_	_	_	_	1	_	_	SpaceAfter=No|start_char=708|end_char=712
+3	!	_	_	_	_	2	_	_	SpaceAfter=No|start_char=712|end_char=713
+4	"	_	_	_	_	3	_	_	start_char=713|end_char=714
+5	"	_	_	_	_	4	_	_	SpaceAfter=No|start_char=715|end_char=716
+6	Why	_	_	_	_	5	_	_	SpaceAfter=No|start_char=716|end_char=719
+7	?	_	_	_	_	6	_	_	SpaceAfter=No|start_char=719|end_char=720
+8	"	_	_	_	_	7	_	_	start_char=720|end_char=721
+
+# text = "Because I said so!"
+# sent_id = 23
+# sentiment = 0
+1	"	_	_	_	_	0	_	_	SpaceAfter=No|start_char=722|end_char=723
+2	Because	_	_	_	_	1	_	_	start_char=723|end_char=730
+3	I	_	_	_	_	2	_	_	start_char=731|end_char=732
+4	said	_	_	_	_	3	_	_	start_char=733|end_char=737
+5	so	_	_	_	_	4	_	_	SpaceAfter=No|start_char=738|end_char=740
+6	!	_	_	_	_	5	_	_	SpaceAfter=No|start_char=740|end_char=741
+7	"	_	_	_	_	6	_	_	SpacesAfter=\n\n|start_char=741|end_char=742
+
+# text = The sign read “NO ENTRY — AUTHORIZED PERSONNEL ONLY.”
+# sent_id = 24
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=744|end_char=747
+2	sign	_	_	_	_	1	_	_	start_char=748|end_char=752
+3	read	_	_	_	_	2	_	_	start_char=753|end_char=757
+4	“	_	_	_	_	3	_	_	SpaceAfter=No|start_char=758|end_char=759
+5	NO	_	_	_	_	4	_	_	start_char=759|end_char=761
+6	ENTRY	_	_	_	_	5	_	_	start_char=762|end_char=767
+7	—	_	_	_	_	6	_	_	start_char=768|end_char=769
+8	AUTHORIZED	_	_	_	_	7	_	_	start_char=770|end_char=780
+9	PERSONNEL	_	_	_	_	8	_	_	start_char=781|end_char=790
+10	ONLY	_	_	_	_	9	_	_	SpaceAfter=No|start_char=791|end_char=795
+11	.	_	_	_	_	10	_	_	SpaceAfter=No|start_char=795|end_char=796
+12	”	_	_	_	_	11	_	_	start_char=796|end_char=797
+
+# text = We entered anyway.
+# sent_id = 25
+# sentiment = 1
+1	We	_	_	_	_	0	_	_	start_char=798|end_char=800
+2	entered	_	_	_	_	1	_	_	start_char=801|end_char=808
+3	anyway	_	_	_	_	2	_	_	SpaceAfter=No|start_char=809|end_char=815
+4	.	_	_	_	_	3	_	_	SpacesAfter=\n\n|start_char=815|end_char=816
+
+# text = He muttered something like “whatever…” and walked off.
+# sent_id = 26
+# sentiment = 1
+1	He	_	_	_	_	0	_	_	start_char=818|end_char=820
+2	muttered	_	_	_	_	1	_	_	start_char=821|end_char=829
+3	something	_	_	_	_	2	_	_	start_char=830|end_char=839
+4	like	_	_	_	_	3	_	_	start_char=840|end_char=844
+5	“	_	_	_	_	4	_	_	SpaceAfter=No|start_char=845|end_char=846
+6	whatever	_	_	_	_	5	_	_	SpaceAfter=No|start_char=846|end_char=854
+7	…	_	_	_	_	6	_	_	SpaceAfter=No|start_char=854|end_char=855
+8	”	_	_	_	_	7	_	_	start_char=855|end_char=856
+9	and	_	_	_	_	8	_	_	start_char=857|end_char=860
+10	walked	_	_	_	_	9	_	_	start_char=861|end_char=867
+11	off	_	_	_	_	10	_	_	SpaceAfter=No|start_char=868|end_char=871
+12	.	_	_	_	_	11	_	_	SpacesAfter=\n\n|start_char=871|end_char=872
+
+# text = “I… I don’t know what to say,” she stammered.
+# sent_id = 27
+# sentiment = 0
+1	“	_	_	_	_	0	_	_	SpaceAfter=No|start_char=874|end_char=875
+2	I	_	_	_	_	1	_	_	SpaceAfter=No|start_char=875|end_char=876
+3	…	_	_	_	_	2	_	_	start_char=876|end_char=877
+4	I	_	_	_	_	3	_	_	start_char=878|end_char=879
+5-6	don’t	_	_	_	_	_	_	_	start_char=880|end_char=885
+5	do	_	_	_	_	4	_	_	start_char=880|end_char=882
+6	n’t	_	_	_	_	5	_	_	start_char=882|end_char=885
+7	know	_	_	_	_	6	_	_	start_char=886|end_char=890
+8	what	_	_	_	_	7	_	_	start_char=891|end_char=895
+9	to	_	_	_	_	8	_	_	start_char=896|end_char=898
+10	say	_	_	_	_	9	_	_	SpaceAfter=No|start_char=899|end_char=902
+11	,	_	_	_	_	10	_	_	SpaceAfter=No|start_char=902|end_char=903
+12	”	_	_	_	_	11	_	_	start_char=903|end_char=904
+13	she	_	_	_	_	12	_	_	start_char=905|end_char=908
+14	stammered	_	_	_	_	13	_	_	SpaceAfter=No|start_char=909|end_char=918
+15	.	_	_	_	_	14	_	_	SpacesAfter=\n\n|start_char=918|end_char=919
+
+# text = “It’s ‘affect,’ not ‘effect,’” the editor wrote in the margin.
+# sent_id = 28
+# sentiment = 1
+1	“	_	_	_	_	0	_	_	SpaceAfter=No|start_char=921|end_char=922
+2-3	It’s	_	_	_	_	_	_	_	start_char=922|end_char=926
+2	It	_	_	_	_	1	_	_	start_char=922|end_char=924
+3	’s	_	_	_	_	2	_	_	start_char=924|end_char=926
+4	‘	_	_	_	_	3	_	_	SpaceAfter=No|start_char=927|end_char=928
+5	affect	_	_	_	_	4	_	_	SpaceAfter=No|start_char=928|end_char=934
+6	,	_	_	_	_	5	_	_	SpaceAfter=No|start_char=934|end_char=935
+7	’	_	_	_	_	6	_	_	start_char=935|end_char=936
+8	not	_	_	_	_	7	_	_	start_char=937|end_char=940
+9	‘	_	_	_	_	8	_	_	SpaceAfter=No|start_char=941|end_char=942
+10	effect	_	_	_	_	9	_	_	SpaceAfter=No|start_char=942|end_char=948
+11	,	_	_	_	_	10	_	_	SpaceAfter=No|start_char=948|end_char=949
+12	’	_	_	_	_	11	_	_	SpaceAfter=No|start_char=949|end_char=950
+13	”	_	_	_	_	12	_	_	start_char=950|end_char=951
+14	the	_	_	_	_	13	_	_	start_char=952|end_char=955
+15	editor	_	_	_	_	14	_	_	start_char=956|end_char=962
+16	wrote	_	_	_	_	15	_	_	start_char=963|end_char=968
+17	in	_	_	_	_	16	_	_	start_char=969|end_char=971
+18	the	_	_	_	_	17	_	_	start_char=972|end_char=975
+19	margin	_	_	_	_	18	_	_	SpaceAfter=No|start_char=976|end_char=982
+20	.	_	_	_	_	19	_	_	SpacesAfter=\n\n|start_char=982|end_char=983
+
+# text = She asked, "Have you read 'The Lighthouse Keeper's Daughter'?"
+# sent_id = 29
+# sentiment = 1
+1	She	_	_	_	_	0	_	_	start_char=985|end_char=988
+2	asked	_	_	_	_	1	_	_	SpaceAfter=No|start_char=989|end_char=994
+3	,	_	_	_	_	2	_	_	start_char=994|end_char=995
+4	"	_	_	_	_	3	_	_	SpaceAfter=No|start_char=996|end_char=997
+5	Have	_	_	_	_	4	_	_	start_char=997|end_char=1001
+6	you	_	_	_	_	5	_	_	start_char=1002|end_char=1005
+7	read	_	_	_	_	6	_	_	start_char=1006|end_char=1010
+8	'	_	_	_	_	7	_	_	SpaceAfter=No|start_char=1011|end_char=1012
+9	The	_	_	_	_	8	_	_	start_char=1012|end_char=1015
+10	Lighthouse	_	_	_	_	9	_	_	start_char=1016|end_char=1026
+11-12	Keeper's	_	_	_	_	_	_	_	start_char=1027|end_char=1035
+11	Keeper	_	_	_	_	10	_	_	start_char=1027|end_char=1033
+12	's	_	_	_	_	11	_	_	start_char=1033|end_char=1035
+13	Daughter	_	_	_	_	12	_	_	SpaceAfter=No|start_char=1036|end_char=1044
+14	'	_	_	_	_	13	_	_	SpaceAfter=No|start_char=1044|end_char=1045
+15	?	_	_	_	_	14	_	_	SpaceAfter=No|start_char=1045|end_char=1046
+16	"	_	_	_	_	15	_	_	start_char=1046|end_char=1047
+
+# text = I hadn't.
+# sent_id = 30
+# sentiment = 1
+1	I	_	_	_	_	0	_	_	start_char=1048|end_char=1049
+2-3	hadn't	_	_	_	_	_	_	_	SpaceAfter=No|start_char=1050|end_char=1056
+2	had	_	_	_	_	1	_	_	start_char=1050|end_char=1053
+3	n't	_	_	_	_	2	_	_	start_char=1053|end_char=1056
+4	.	_	_	_	_	3	_	_	SpacesAfter=\n\n|start_char=1056|end_char=1057
+
+# text = The leaves come down in amber rain, and every road leads home again; the kettle hums, the window fogs, and somewhere far, a farmer's dogs
+# sent_id = 31
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=1059|end_char=1062
+2	leaves	_	_	_	_	1	_	_	start_char=1063|end_char=1069
+3	come	_	_	_	_	2	_	_	start_char=1070|end_char=1074
+4	down	_	_	_	_	3	_	_	start_char=1075|end_char=1079
+5	in	_	_	_	_	4	_	_	start_char=1080|end_char=1082
+6	amber	_	_	_	_	5	_	_	start_char=1083|end_char=1088
+7	rain	_	_	_	_	6	_	_	SpaceAfter=No|start_char=1089|end_char=1093
+8	,	_	_	_	_	7	_	_	SpacesAfter=\n|start_char=1093|end_char=1094
+9	and	_	_	_	_	8	_	_	start_char=1095|end_char=1098
+10	every	_	_	_	_	9	_	_	start_char=1099|end_char=1104
+11	road	_	_	_	_	10	_	_	start_char=1105|end_char=1109
+12	leads	_	_	_	_	11	_	_	start_char=1110|end_char=1115
+13	home	_	_	_	_	12	_	_	start_char=1116|end_char=1120
+14	again	_	_	_	_	13	_	_	SpaceAfter=No|start_char=1121|end_char=1126
+15	;	_	_	_	_	14	_	_	SpacesAfter=\n|start_char=1126|end_char=1127
+16	the	_	_	_	_	15	_	_	start_char=1128|end_char=1131
+17	kettle	_	_	_	_	16	_	_	start_char=1132|end_char=1138
+18	hums	_	_	_	_	17	_	_	SpaceAfter=No|start_char=1139|end_char=1143
+19	,	_	_	_	_	18	_	_	start_char=1143|end_char=1144
+20	the	_	_	_	_	19	_	_	start_char=1145|end_char=1148
+21	window	_	_	_	_	20	_	_	start_char=1149|end_char=1155
+22	fogs	_	_	_	_	21	_	_	SpaceAfter=No|start_char=1156|end_char=1160
+23	,	_	_	_	_	22	_	_	SpacesAfter=\n|start_char=1160|end_char=1161
+24	and	_	_	_	_	23	_	_	start_char=1162|end_char=1165
+25	somewhere	_	_	_	_	24	_	_	start_char=1166|end_char=1175
+26	far	_	_	_	_	25	_	_	SpaceAfter=No|start_char=1176|end_char=1179
+27	,	_	_	_	_	26	_	_	start_char=1179|end_char=1180
+28	a	_	_	_	_	27	_	_	start_char=1181|end_char=1182
+29-30	farmer's	_	_	_	_	_	_	_	start_char=1183|end_char=1191
+29	farmer	_	_	_	_	28	_	_	start_char=1183|end_char=1189
+30	's	_	_	_	_	29	_	_	start_char=1189|end_char=1191
+31	dogs	_	_	_	_	30	_	_	SpacesAfter=\n\n|start_char=1192|end_char=1196
+
+# text = bark once, then twice, then not at all.
+# sent_id = 32
+# sentiment = 1
+1	bark	_	_	_	_	0	_	_	start_char=1198|end_char=1202
+2	once	_	_	_	_	1	_	_	SpaceAfter=No|start_char=1203|end_char=1207
+3	,	_	_	_	_	2	_	_	start_char=1207|end_char=1208
+4	then	_	_	_	_	3	_	_	start_char=1209|end_char=1213
+5	twice	_	_	_	_	4	_	_	SpaceAfter=No|start_char=1214|end_char=1219
+6	,	_	_	_	_	5	_	_	start_char=1219|end_char=1220
+7	then	_	_	_	_	6	_	_	start_char=1221|end_char=1225
+8	not	_	_	_	_	7	_	_	start_char=1226|end_char=1229
+9	at	_	_	_	_	8	_	_	start_char=1230|end_char=1232
+10	all	_	_	_	_	9	_	_	SpaceAfter=No|start_char=1233|end_char=1236
+11	.	_	_	_	_	10	_	_	SpacesAfter=\n|start_char=1236|end_char=1237
+
+# text = The evening settles on the wall.
+# sent_id = 33
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=1238|end_char=1241
+2	evening	_	_	_	_	1	_	_	start_char=1242|end_char=1249
+3	settles	_	_	_	_	2	_	_	start_char=1250|end_char=1257
+4	on	_	_	_	_	3	_	_	start_char=1258|end_char=1260
+5	the	_	_	_	_	4	_	_	start_char=1261|end_char=1264
+6	wall	_	_	_	_	5	_	_	SpaceAfter=No|start_char=1265|end_char=1269
+7	.	_	_	_	_	6	_	_	SpacesAfter=\n\n|start_char=1269|end_char=1270
+
+# text = I wandered where the river bends beneath a sky that never ends and counted stones and counted bones of summers I had called my friends
+# sent_id = 34
+# sentiment = 1
+1	I	_	_	_	_	0	_	_	start_char=1272|end_char=1273
+2	wandered	_	_	_	_	1	_	_	start_char=1274|end_char=1282
+3	where	_	_	_	_	2	_	_	start_char=1283|end_char=1288
+4	the	_	_	_	_	3	_	_	start_char=1289|end_char=1292
+5	river	_	_	_	_	4	_	_	start_char=1293|end_char=1298
+6	bends	_	_	_	_	5	_	_	SpacesAfter=\n|start_char=1299|end_char=1304
+7	beneath	_	_	_	_	6	_	_	start_char=1305|end_char=1312
+8	a	_	_	_	_	7	_	_	start_char=1313|end_char=1314
+9	sky	_	_	_	_	8	_	_	start_char=1315|end_char=1318
+10	that	_	_	_	_	9	_	_	start_char=1319|end_char=1323
+11	never	_	_	_	_	10	_	_	start_char=1324|end_char=1329
+12	ends	_	_	_	_	11	_	_	SpacesAfter=\n|start_char=1330|end_char=1334
+13	and	_	_	_	_	12	_	_	start_char=1335|end_char=1338
+14	counted	_	_	_	_	13	_	_	start_char=1339|end_char=1346
+15	stones	_	_	_	_	14	_	_	SpacesAfter=\n|start_char=1347|end_char=1353
+16	and	_	_	_	_	15	_	_	start_char=1354|end_char=1357
+17	counted	_	_	_	_	16	_	_	start_char=1358|end_char=1365
+18	bones	_	_	_	_	17	_	_	SpacesAfter=\n|start_char=1366|end_char=1371
+19	of	_	_	_	_	18	_	_	start_char=1372|end_char=1374
+20	summers	_	_	_	_	19	_	_	start_char=1375|end_char=1382
+21	I	_	_	_	_	20	_	_	start_char=1383|end_char=1384
+22	had	_	_	_	_	21	_	_	start_char=1385|end_char=1388
+23	called	_	_	_	_	22	_	_	start_char=1389|end_char=1395
+24	my	_	_	_	_	23	_	_	start_char=1396|end_char=1398
+25	friends	_	_	_	_	24	_	_	SpacesAfter=\n\n|start_char=1399|end_char=1406
+
+# text = so much depends upon a borrowed pen left out in the rain beside the gate
+# sent_id = 35
+# sentiment = 1
+1	so	_	_	_	_	0	_	_	start_char=1408|end_char=1410
+2	much	_	_	_	_	1	_	_	start_char=1411|end_char=1415
+3	depends	_	_	_	_	2	_	_	SpacesAfter=\n|start_char=1416|end_char=1423
+4	upon	_	_	_	_	3	_	_	SpacesAfter=\n|start_char=1424|end_char=1428
+5	a	_	_	_	_	4	_	_	start_char=1429|end_char=1430
+6	borrowed	_	_	_	_	5	_	_	start_char=1431|end_char=1439
+7	pen	_	_	_	_	6	_	_	SpacesAfter=\n|start_char=1440|end_char=1443
+8	left	_	_	_	_	7	_	_	start_char=1444|end_char=1448
+9	out	_	_	_	_	8	_	_	start_char=1449|end_char=1452
+10	in	_	_	_	_	9	_	_	start_char=1453|end_char=1455
+11	the	_	_	_	_	10	_	_	start_char=1456|end_char=1459
+12	rain	_	_	_	_	11	_	_	SpacesAfter=\n|start_char=1460|end_char=1464
+13	beside	_	_	_	_	12	_	_	start_char=1465|end_char=1471
+14	the	_	_	_	_	13	_	_	start_char=1472|end_char=1475
+15	gate	_	_	_	_	14	_	_	SpacesAfter=\n\n|start_char=1476|end_char=1480
+
+# text = Roses are red, violets are blue, this poem is short, and so are you.
+# sent_id = 36
+# sentiment = 1
+1	Roses	_	_	_	_	0	_	_	start_char=1482|end_char=1487
+2	are	_	_	_	_	1	_	_	start_char=1488|end_char=1491
+3	red	_	_	_	_	2	_	_	SpaceAfter=No|start_char=1492|end_char=1495
+4	,	_	_	_	_	3	_	_	SpacesAfter=\n|start_char=1495|end_char=1496
+5	violets	_	_	_	_	4	_	_	start_char=1497|end_char=1504
+6	are	_	_	_	_	5	_	_	start_char=1505|end_char=1508
+7	blue	_	_	_	_	6	_	_	SpaceAfter=No|start_char=1509|end_char=1513
+8	,	_	_	_	_	7	_	_	SpacesAfter=\n|start_char=1513|end_char=1514
+9	this	_	_	_	_	8	_	_	start_char=1515|end_char=1519
+10	poem	_	_	_	_	9	_	_	start_char=1520|end_char=1524
+11	is	_	_	_	_	10	_	_	start_char=1525|end_char=1527
+12	short	_	_	_	_	11	_	_	SpaceAfter=No|start_char=1528|end_char=1533
+13	,	_	_	_	_	12	_	_	SpacesAfter=\n|start_char=1533|end_char=1534
+14	and	_	_	_	_	13	_	_	start_char=1535|end_char=1538
+15	so	_	_	_	_	14	_	_	start_char=1539|end_char=1541
+16	are	_	_	_	_	15	_	_	start_char=1542|end_char=1545
+17	you	_	_	_	_	16	_	_	SpaceAfter=No|start_char=1546|end_char=1549
+18	.	_	_	_	_	17	_	_	SpacesAfter=\n\n|start_char=1549|end_char=1550
+
+# text = The clock struck twelve.
+# sent_id = 37
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=1552|end_char=1555
+2	clock	_	_	_	_	1	_	_	start_char=1556|end_char=1561
+3	struck	_	_	_	_	2	_	_	start_char=1562|end_char=1568
+4	twelve	_	_	_	_	3	_	_	SpaceAfter=No|start_char=1569|end_char=1575
+5	.	_	_	_	_	4	_	_	start_char=1575|end_char=1576
+
+# text = Nobody moved.
+# sent_id = 38
+# sentiment = 1
+1	Nobody	_	_	_	_	0	_	_	start_char=1577|end_char=1583
+2	moved	_	_	_	_	1	_	_	SpaceAfter=No|start_char=1584|end_char=1589
+3	.	_	_	_	_	2	_	_	start_char=1589|end_char=1590
+
+# text = Then, slowly, the door creaked open… and in walked the cat.
+# sent_id = 39
+# sentiment = 1
+1	Then	_	_	_	_	0	_	_	SpaceAfter=No|start_char=1591|end_char=1595
+2	,	_	_	_	_	1	_	_	start_char=1595|end_char=1596
+3	slowly	_	_	_	_	2	_	_	SpaceAfter=No|start_char=1597|end_char=1603
+4	,	_	_	_	_	3	_	_	start_char=1603|end_char=1604
+5	the	_	_	_	_	4	_	_	start_char=1605|end_char=1608
+6	door	_	_	_	_	5	_	_	start_char=1609|end_char=1613
+7	creaked	_	_	_	_	6	_	_	start_char=1614|end_char=1621
+8	open	_	_	_	_	7	_	_	SpaceAfter=No|start_char=1622|end_char=1626
+9	…	_	_	_	_	8	_	_	start_char=1626|end_char=1627
+10	and	_	_	_	_	9	_	_	start_char=1628|end_char=1631
+11	in	_	_	_	_	10	_	_	start_char=1632|end_char=1634
+12	walked	_	_	_	_	11	_	_	start_char=1635|end_char=1641
+13	the	_	_	_	_	12	_	_	start_char=1642|end_char=1645
+14	cat	_	_	_	_	13	_	_	SpaceAfter=No|start_char=1646|end_char=1649
+15	.	_	_	_	_	14	_	_	SpacesAfter=\n\n|start_char=1649|end_char=1650
+
+# text = He said—and I quote—“absolutely not.”
+# sent_id = 40
+# sentiment = 1
+1	He	_	_	_	_	0	_	_	start_char=1652|end_char=1654
+2	said	_	_	_	_	1	_	_	SpaceAfter=No|start_char=1655|end_char=1659
+3	—	_	_	_	_	2	_	_	SpaceAfter=No|start_char=1659|end_char=1660
+4	and	_	_	_	_	3	_	_	start_char=1660|end_char=1663
+5	I	_	_	_	_	4	_	_	start_char=1664|end_char=1665
+6	quote	_	_	_	_	5	_	_	SpaceAfter=No|start_char=1666|end_char=1671
+7	—	_	_	_	_	6	_	_	SpaceAfter=No|start_char=1671|end_char=1672
+8	“	_	_	_	_	7	_	_	SpaceAfter=No|start_char=1672|end_char=1673
+9	absolutely	_	_	_	_	8	_	_	start_char=1673|end_char=1683
+10	not	_	_	_	_	9	_	_	SpaceAfter=No|start_char=1684|end_char=1687
+11	.	_	_	_	_	10	_	_	SpaceAfter=No|start_char=1687|end_char=1688
+12	”	_	_	_	_	11	_	_	SpacesAfter=\n\n|start_char=1688|end_char=1689
+
+# text = “Is that you, Grandpa?”
+# sent_id = 41
+# sentiment = 1
+1	“	_	_	_	_	0	_	_	SpaceAfter=No|start_char=1691|end_char=1692
+2	Is	_	_	_	_	1	_	_	start_char=1692|end_char=1694
+3	that	_	_	_	_	2	_	_	start_char=1695|end_char=1699
+4	you	_	_	_	_	3	_	_	SpaceAfter=No|start_char=1700|end_char=1703
+5	,	_	_	_	_	4	_	_	start_char=1703|end_char=1704
+6	Grandpa	_	_	_	_	5	_	_	SpaceAfter=No|start_char=1705|end_char=1712
+7	?	_	_	_	_	6	_	_	SpaceAfter=No|start_char=1712|end_char=1713
+8	”	_	_	_	_	7	_	_	start_char=1713|end_char=1714
+
+# text = “Who else would it be?” “Sorry.
+# sent_id = 42
+# sentiment = 1
+1	“	_	_	_	_	0	_	_	SpaceAfter=No|start_char=1715|end_char=1716
+2	Who	_	_	_	_	1	_	_	start_char=1716|end_char=1719
+3	else	_	_	_	_	2	_	_	start_char=1720|end_char=1724
+4	would	_	_	_	_	3	_	_	start_char=1725|end_char=1730
+5	it	_	_	_	_	4	_	_	start_char=1731|end_char=1733
+6	be	_	_	_	_	5	_	_	SpaceAfter=No|start_char=1734|end_char=1736
+7	?	_	_	_	_	6	_	_	SpaceAfter=No|start_char=1736|end_char=1737
+8	”	_	_	_	_	7	_	_	start_char=1737|end_char=1738
+9	“	_	_	_	_	8	_	_	SpaceAfter=No|start_char=1739|end_char=1740
+10	Sorry	_	_	_	_	9	_	_	SpaceAfter=No|start_char=1740|end_char=1745
+11	.	_	_	_	_	10	_	_	start_char=1745|end_char=1746
+
+# text = It’s dark.”
+# sent_id = 43
+# sentiment = 1
+1-2	It’s	_	_	_	_	_	_	_	start_char=1747|end_char=1751
+1	It	_	_	_	_	0	_	_	start_char=1747|end_char=1749
+2	’s	_	_	_	_	1	_	_	start_char=1749|end_char=1751
+3	dark	_	_	_	_	2	_	_	SpaceAfter=No|start_char=1752|end_char=1756
+4	.	_	_	_	_	3	_	_	SpaceAfter=No|start_char=1756|end_char=1757
+5	”	_	_	_	_	4	_	_	SpacesAfter=\n\n|start_char=1757|end_char=1758
+
+# text = As my teacher liked to put it: “There are no stupid questions — only stupid answers.”
+# sent_id = 44
+# sentiment = 1
+1	As	_	_	_	_	0	_	_	start_char=1760|end_char=1762
+2	my	_	_	_	_	1	_	_	start_char=1763|end_char=1765
+3	teacher	_	_	_	_	2	_	_	start_char=1766|end_char=1773
+4	liked	_	_	_	_	3	_	_	start_char=1774|end_char=1779
+5	to	_	_	_	_	4	_	_	start_char=1780|end_char=1782
+6	put	_	_	_	_	5	_	_	start_char=1783|end_char=1786
+7	it	_	_	_	_	6	_	_	SpaceAfter=No|start_char=1787|end_char=1789
+8	:	_	_	_	_	7	_	_	start_char=1789|end_char=1790
+9	“	_	_	_	_	8	_	_	SpaceAfter=No|start_char=1791|end_char=1792
+10	There	_	_	_	_	9	_	_	start_char=1792|end_char=1797
+11	are	_	_	_	_	10	_	_	start_char=1798|end_char=1801
+12	no	_	_	_	_	11	_	_	start_char=1802|end_char=1804
+13	stupid	_	_	_	_	12	_	_	start_char=1805|end_char=1811
+14	questions	_	_	_	_	13	_	_	start_char=1812|end_char=1821
+15	—	_	_	_	_	14	_	_	start_char=1822|end_char=1823
+16	only	_	_	_	_	15	_	_	start_char=1824|end_char=1828
+17	stupid	_	_	_	_	16	_	_	start_char=1829|end_char=1835
+18	answers	_	_	_	_	17	_	_	SpaceAfter=No|start_char=1836|end_char=1843
+19	.	_	_	_	_	18	_	_	SpaceAfter=No|start_char=1843|end_char=1844
+20	”	_	_	_	_	19	_	_	SpacesAfter=\n\n|start_char=1844|end_char=1845
+
+# text = ‘Twas the night before the deadline, and all through the lab, not a printer was working.
+# sent_id = 45
+# sentiment = 0
+1	‘	_	_	_	_	0	_	_	SpaceAfter=No|start_char=1847|end_char=1848
+2	Twas	_	_	_	_	1	_	_	start_char=1848|end_char=1852
+3	the	_	_	_	_	2	_	_	start_char=1853|end_char=1856
+4	night	_	_	_	_	3	_	_	start_char=1857|end_char=1862
+5	before	_	_	_	_	4	_	_	start_char=1863|end_char=1869
+6	the	_	_	_	_	5	_	_	start_char=1870|end_char=1873
+7	deadline	_	_	_	_	6	_	_	SpaceAfter=No|start_char=1874|end_char=1882
+8	,	_	_	_	_	7	_	_	start_char=1882|end_char=1883
+9	and	_	_	_	_	8	_	_	start_char=1884|end_char=1887
+10	all	_	_	_	_	9	_	_	start_char=1888|end_char=1891
+11	through	_	_	_	_	10	_	_	start_char=1892|end_char=1899
+12	the	_	_	_	_	11	_	_	start_char=1900|end_char=1903
+13	lab	_	_	_	_	12	_	_	SpaceAfter=No|start_char=1904|end_char=1907
+14	,	_	_	_	_	13	_	_	start_char=1907|end_char=1908
+15	not	_	_	_	_	14	_	_	start_char=1909|end_char=1912
+16	a	_	_	_	_	15	_	_	start_char=1913|end_char=1914
+17	printer	_	_	_	_	16	_	_	start_char=1915|end_char=1922
+18	was	_	_	_	_	17	_	_	start_char=1923|end_char=1926
+19	working	_	_	_	_	18	_	_	SpaceAfter=No|start_char=1927|end_char=1934
+20	.	_	_	_	_	19	_	_	SpacesAfter=\n\n|start_char=1934|end_char=1935
+
+# text = “Hello?” she called.
+# sent_id = 46
+# sentiment = 1
+1	“	_	_	_	_	0	_	_	SpaceAfter=No|start_char=1937|end_char=1938
+2	Hello	_	_	_	_	1	_	_	SpaceAfter=No|start_char=1938|end_char=1943
+3	?	_	_	_	_	2	_	_	SpaceAfter=No|start_char=1943|end_char=1944
+4	”	_	_	_	_	3	_	_	start_char=1944|end_char=1945
+5	she	_	_	_	_	4	_	_	start_char=1946|end_char=1949
+6	called	_	_	_	_	5	_	_	SpaceAfter=No|start_char=1950|end_char=1956
+7	.	_	_	_	_	6	_	_	start_char=1956|end_char=1957
+
+# text = “Hello??” Silence.
+# sent_id = 47
+# sentiment = 1
+1	“	_	_	_	_	0	_	_	SpaceAfter=No|start_char=1958|end_char=1959
+2	Hello	_	_	_	_	1	_	_	SpaceAfter=No|start_char=1959|end_char=1964
+3	?	_	_	_	_	2	_	_	SpaceAfter=No|start_char=1964|end_char=1965
+4	?	_	_	_	_	3	_	_	SpaceAfter=No|start_char=1965|end_char=1966
+5	”	_	_	_	_	4	_	_	start_char=1966|end_char=1967
+6	Silence	_	_	_	_	5	_	_	SpaceAfter=No|start_char=1968|end_char=1975
+7	.	_	_	_	_	6	_	_	SpacesAfter=\n\n|start_char=1975|end_char=1976
+
+# text = I said "no."
+# sent_id = 48
+# sentiment = 0
+1	I	_	_	_	_	0	_	_	start_char=1978|end_char=1979
+2	said	_	_	_	_	1	_	_	start_char=1980|end_char=1984
+3	"	_	_	_	_	2	_	_	SpaceAfter=No|start_char=1985|end_char=1986
+4	no	_	_	_	_	3	_	_	SpaceAfter=No|start_char=1986|end_char=1988
+5	.	_	_	_	_	4	_	_	SpaceAfter=No|start_char=1988|end_char=1989
+6	"	_	_	_	_	5	_	_	start_char=1989|end_char=1990
+
+# text = She said "yes."
+# sent_id = 49
+# sentiment = 1
+1	She	_	_	_	_	0	_	_	start_char=1991|end_char=1994
+2	said	_	_	_	_	1	_	_	start_char=1995|end_char=1999
+3	"	_	_	_	_	2	_	_	SpaceAfter=No|start_char=2000|end_char=2001
+4	yes	_	_	_	_	3	_	_	SpaceAfter=No|start_char=2001|end_char=2004
+5	.	_	_	_	_	4	_	_	SpaceAfter=No|start_char=2004|end_char=2005
+6	"	_	_	_	_	5	_	_	start_char=2005|end_char=2006
+
+# text = We compromised on "maybe."
+# sent_id = 50
+# sentiment = 1
+1	We	_	_	_	_	0	_	_	start_char=2007|end_char=2009
+2	compromised	_	_	_	_	1	_	_	start_char=2010|end_char=2021
+3	on	_	_	_	_	2	_	_	start_char=2022|end_char=2024
+4	"	_	_	_	_	3	_	_	SpaceAfter=No|start_char=2025|end_char=2026
+5	maybe	_	_	_	_	4	_	_	SpaceAfter=No|start_char=2026|end_char=2031
+6	.	_	_	_	_	5	_	_	SpaceAfter=No|start_char=2031|end_char=2032
+7	"	_	_	_	_	6	_	_	SpacesAfter=\n|start_char=2032|end_char=2033

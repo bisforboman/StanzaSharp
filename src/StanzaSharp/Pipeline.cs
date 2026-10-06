@@ -5,14 +5,15 @@ using StanzaSharp.Mwt;
 using StanzaSharp.Ner;
 using StanzaSharp.Nn;
 using StanzaSharp.Pos;
+using StanzaSharp.Sentiment;
 using StanzaSharp.Tokenize;
 using TorchSharp;
 
 namespace StanzaSharp;
 
 /// <summary>
-/// Runs Stanza's English pipeline: tokenize → mwt → pos → lemma → depparse → ner → constituency
-/// (all but ner by default).
+/// Runs Stanza's English pipeline in its order: tokenize → mwt → pos → lemma → constituency → depparse → sentiment → ner
+/// (all but sentiment and ner by default).
 /// </summary>
 /// <example>
 /// <code>
@@ -35,6 +36,7 @@ public sealed class Pipeline : IDisposable
         ["depparse"] = ["tokenize", "mwt", "pos", "lemma"],
         ["ner"] = ["tokenize"], // reads only the tokens' text
         ["constituency"] = ["tokenize", "mwt", "pos"],
+        ["sentiment"] = ["tokenize"], // the model reads only the tokens' text
     };
 
     private readonly Tokenizer _tokenizer;
@@ -44,6 +46,7 @@ public sealed class Pipeline : IDisposable
     private readonly DependencyParser? _depparse;
     private readonly NerTagger? _ner;
     private readonly ConstituencyParser? _parser;
+    private readonly SentimentClassifier? _sentiment;
     private readonly Pretrain? _pretrain;
     private readonly CharLanguageModel? _charlmForward, _charlmBackward;
     private readonly CharlmCacheOptions _cacheOptions;
@@ -56,7 +59,7 @@ public sealed class Pipeline : IDisposable
         _tokenizer = Tokenizer.Load(Model("tokenize/combined_nocharlm"));
         if (processors.Contains("mwt"))
             _mwt = MwtExpander.Load(Model("mwt/combined"));
-        if (processors.Contains("pos") || processors.Contains("depparse") || processors.Contains("ner") || processors.Contains("constituency"))
+        if (processors.Contains("pos") || processors.Contains("depparse") || processors.Contains("ner") || processors.Contains("constituency") || processors.Contains("sentiment"))
         {
             _pretrain = Pretrain.Load(Model("pretrain/conll17"));
             _charlmForward = CharLanguageModel.Load(Model("forward_charlm/1billion"));
@@ -72,6 +75,8 @@ public sealed class Pipeline : IDisposable
             _ner = NerTagger.Load(Model("ner/ontonotes-ww-multi_charlm"), _pretrain!, _charlmForward!, _charlmBackward!);
         if (processors.Contains("constituency"))
             _parser = ConstituencyParser.Load(Model("constituency/ptb3-revised_charlm"), _pretrain!, _charlmForward!, _charlmBackward!);
+        if (processors.Contains("sentiment"))
+            _sentiment = SentimentClassifier.Load(Model("sentiment/sstplus_charlm"), _pretrain!, _charlmForward!, _charlmBackward!);
     }
 
     /// <summary>
@@ -108,20 +113,23 @@ public sealed class Pipeline : IDisposable
     {
         var doc = _tokenizer.Process(text);
         _mwt?.Process(doc);
-        // NER and the parser reuse the tagger's charlm outputs instead of computing them again.
-        using var charlms = _pos != null && (_ner != null || _parser != null) && _cacheOptions.IsEnabled ? new CharlmCache(_cacheOptions.MaxWords) : null;
+        // NER, the parser and the sentiment classifier reuse the tagger's charlm outputs instead of computing them again.
+        using var charlms = _pos != null && (_ner != null || _parser != null || _sentiment != null) && _cacheOptions.IsEnabled ? new CharlmCache(_cacheOptions.MaxWords) : null;
         _pos?.Process(doc, charlms);
         _lemma?.Process(doc);
+        // Stanza's order (PIPELINE_NAMES). Only the CoNLL-U comment order shows it, and Conllu.Write fixes that.
+        _parser?.Process(doc, charlms);
         // No CharlmCache: depparse runs the charlms with a ROOT word in front, so the tagger's outputs don't apply.
         _depparse?.Process(doc);
+        _sentiment?.Process(doc, charlms);
         _ner?.Process(doc, charlms);
-        _parser?.Process(doc, charlms);
         return doc;
     }
 
     public void Dispose()
     {
         _parser?.Dispose();
+        _sentiment?.Dispose();
         _depparse?.Dispose();
         _ner?.Dispose();
         _pos?.Dispose();

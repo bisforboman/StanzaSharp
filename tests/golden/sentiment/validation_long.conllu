@@ -1,0 +1,1091 @@
+# text = When the expedition finally reached the ridge after eleven days of slow progress through snow that was sometimes waist-deep, the leader, a soft-spoken geologist from Tromsø who had spent most of her career studying glaciers that no longer existed, sat down on a flat rock, unwrapped a chocolate bar that she had been saving since the first night, and announced, to nobody in particular and to everybody at once, that this was the most beautiful view she had ever seen, which, given everything she had seen, was saying quite a lot, though several members of the team later admitted that they had been too exhausted to notice anything other than the fact that, for once, the ground was not sloping upward.
+# sent_id = 0
+# sentiment = 0
+1	When	_	_	_	_	0	_	_	start_char=0|end_char=4
+2	the	_	_	_	_	1	_	_	start_char=5|end_char=8
+3	expedition	_	_	_	_	2	_	_	start_char=9|end_char=19
+4	finally	_	_	_	_	3	_	_	start_char=20|end_char=27
+5	reached	_	_	_	_	4	_	_	start_char=28|end_char=35
+6	the	_	_	_	_	5	_	_	start_char=36|end_char=39
+7	ridge	_	_	_	_	6	_	_	start_char=40|end_char=45
+8	after	_	_	_	_	7	_	_	start_char=46|end_char=51
+9	eleven	_	_	_	_	8	_	_	start_char=52|end_char=58
+10	days	_	_	_	_	9	_	_	start_char=59|end_char=63
+11	of	_	_	_	_	10	_	_	start_char=64|end_char=66
+12	slow	_	_	_	_	11	_	_	start_char=67|end_char=71
+13	progress	_	_	_	_	12	_	_	start_char=72|end_char=80
+14	through	_	_	_	_	13	_	_	start_char=81|end_char=88
+15	snow	_	_	_	_	14	_	_	start_char=89|end_char=93
+16	that	_	_	_	_	15	_	_	start_char=94|end_char=98
+17	was	_	_	_	_	16	_	_	start_char=99|end_char=102
+18	sometimes	_	_	_	_	17	_	_	start_char=103|end_char=112
+19	waist	_	_	_	_	18	_	_	SpaceAfter=No|start_char=113|end_char=118
+20	-	_	_	_	_	19	_	_	SpaceAfter=No|start_char=118|end_char=119
+21	deep	_	_	_	_	20	_	_	SpaceAfter=No|start_char=119|end_char=123
+22	,	_	_	_	_	21	_	_	start_char=123|end_char=124
+23	the	_	_	_	_	22	_	_	start_char=125|end_char=128
+24	leader	_	_	_	_	23	_	_	SpaceAfter=No|start_char=129|end_char=135
+25	,	_	_	_	_	24	_	_	start_char=135|end_char=136
+26	a	_	_	_	_	25	_	_	start_char=137|end_char=138
+27	soft	_	_	_	_	26	_	_	SpaceAfter=No|start_char=139|end_char=143
+28	-	_	_	_	_	27	_	_	SpaceAfter=No|start_char=143|end_char=144
+29	spoken	_	_	_	_	28	_	_	start_char=144|end_char=150
+30	geologist	_	_	_	_	29	_	_	start_char=151|end_char=160
+31	from	_	_	_	_	30	_	_	start_char=161|end_char=165
+32	Tromsø	_	_	_	_	31	_	_	start_char=166|end_char=172
+33	who	_	_	_	_	32	_	_	start_char=173|end_char=176
+34	had	_	_	_	_	33	_	_	start_char=177|end_char=180
+35	spent	_	_	_	_	34	_	_	start_char=181|end_char=186
+36	most	_	_	_	_	35	_	_	start_char=187|end_char=191
+37	of	_	_	_	_	36	_	_	start_char=192|end_char=194
+38	her	_	_	_	_	37	_	_	start_char=195|end_char=198
+39	career	_	_	_	_	38	_	_	start_char=199|end_char=205
+40	studying	_	_	_	_	39	_	_	start_char=206|end_char=214
+41	glaciers	_	_	_	_	40	_	_	start_char=215|end_char=223
+42	that	_	_	_	_	41	_	_	start_char=224|end_char=228
+43	no	_	_	_	_	42	_	_	start_char=229|end_char=231
+44	longer	_	_	_	_	43	_	_	start_char=232|end_char=238
+45	existed	_	_	_	_	44	_	_	SpaceAfter=No|start_char=239|end_char=246
+46	,	_	_	_	_	45	_	_	start_char=246|end_char=247
+47	sat	_	_	_	_	46	_	_	start_char=248|end_char=251
+48	down	_	_	_	_	47	_	_	start_char=252|end_char=256
+49	on	_	_	_	_	48	_	_	start_char=257|end_char=259
+50	a	_	_	_	_	49	_	_	start_char=260|end_char=261
+51	flat	_	_	_	_	50	_	_	start_char=262|end_char=266
+52	rock	_	_	_	_	51	_	_	SpaceAfter=No|start_char=267|end_char=271
+53	,	_	_	_	_	52	_	_	start_char=271|end_char=272
+54	unwrapped	_	_	_	_	53	_	_	start_char=273|end_char=282
+55	a	_	_	_	_	54	_	_	start_char=283|end_char=284
+56	chocolate	_	_	_	_	55	_	_	start_char=285|end_char=294
+57	bar	_	_	_	_	56	_	_	start_char=295|end_char=298
+58	that	_	_	_	_	57	_	_	start_char=299|end_char=303
+59	she	_	_	_	_	58	_	_	start_char=304|end_char=307
+60	had	_	_	_	_	59	_	_	start_char=308|end_char=311
+61	been	_	_	_	_	60	_	_	start_char=312|end_char=316
+62	saving	_	_	_	_	61	_	_	start_char=317|end_char=323
+63	since	_	_	_	_	62	_	_	start_char=324|end_char=329
+64	the	_	_	_	_	63	_	_	start_char=330|end_char=333
+65	first	_	_	_	_	64	_	_	start_char=334|end_char=339
+66	night	_	_	_	_	65	_	_	SpaceAfter=No|start_char=340|end_char=345
+67	,	_	_	_	_	66	_	_	start_char=345|end_char=346
+68	and	_	_	_	_	67	_	_	start_char=347|end_char=350
+69	announced	_	_	_	_	68	_	_	SpaceAfter=No|start_char=351|end_char=360
+70	,	_	_	_	_	69	_	_	start_char=360|end_char=361
+71	to	_	_	_	_	70	_	_	start_char=362|end_char=364
+72	nobody	_	_	_	_	71	_	_	start_char=365|end_char=371
+73	in	_	_	_	_	72	_	_	start_char=372|end_char=374
+74	particular	_	_	_	_	73	_	_	start_char=375|end_char=385
+75	and	_	_	_	_	74	_	_	start_char=386|end_char=389
+76	to	_	_	_	_	75	_	_	start_char=390|end_char=392
+77	everybody	_	_	_	_	76	_	_	start_char=393|end_char=402
+78	at	_	_	_	_	77	_	_	start_char=403|end_char=405
+79	once	_	_	_	_	78	_	_	SpaceAfter=No|start_char=406|end_char=410
+80	,	_	_	_	_	79	_	_	start_char=410|end_char=411
+81	that	_	_	_	_	80	_	_	start_char=412|end_char=416
+82	this	_	_	_	_	81	_	_	start_char=417|end_char=421
+83	was	_	_	_	_	82	_	_	start_char=422|end_char=425
+84	the	_	_	_	_	83	_	_	start_char=426|end_char=429
+85	most	_	_	_	_	84	_	_	start_char=430|end_char=434
+86	beautiful	_	_	_	_	85	_	_	start_char=435|end_char=444
+87	view	_	_	_	_	86	_	_	start_char=445|end_char=449
+88	she	_	_	_	_	87	_	_	start_char=450|end_char=453
+89	had	_	_	_	_	88	_	_	start_char=454|end_char=457
+90	ever	_	_	_	_	89	_	_	start_char=458|end_char=462
+91	seen	_	_	_	_	90	_	_	SpaceAfter=No|start_char=463|end_char=467
+92	,	_	_	_	_	91	_	_	start_char=467|end_char=468
+93	which	_	_	_	_	92	_	_	SpaceAfter=No|start_char=469|end_char=474
+94	,	_	_	_	_	93	_	_	start_char=474|end_char=475
+95	given	_	_	_	_	94	_	_	start_char=476|end_char=481
+96	everything	_	_	_	_	95	_	_	start_char=482|end_char=492
+97	she	_	_	_	_	96	_	_	start_char=493|end_char=496
+98	had	_	_	_	_	97	_	_	start_char=497|end_char=500
+99	seen	_	_	_	_	98	_	_	SpaceAfter=No|start_char=501|end_char=505
+100	,	_	_	_	_	99	_	_	start_char=505|end_char=506
+101	was	_	_	_	_	100	_	_	start_char=507|end_char=510
+102	saying	_	_	_	_	101	_	_	start_char=511|end_char=517
+103	quite	_	_	_	_	102	_	_	start_char=518|end_char=523
+104	a	_	_	_	_	103	_	_	start_char=524|end_char=525
+105	lot	_	_	_	_	104	_	_	SpaceAfter=No|start_char=526|end_char=529
+106	,	_	_	_	_	105	_	_	start_char=529|end_char=530
+107	though	_	_	_	_	106	_	_	start_char=531|end_char=537
+108	several	_	_	_	_	107	_	_	start_char=538|end_char=545
+109	members	_	_	_	_	108	_	_	start_char=546|end_char=553
+110	of	_	_	_	_	109	_	_	start_char=554|end_char=556
+111	the	_	_	_	_	110	_	_	start_char=557|end_char=560
+112	team	_	_	_	_	111	_	_	start_char=561|end_char=565
+113	later	_	_	_	_	112	_	_	start_char=566|end_char=571
+114	admitted	_	_	_	_	113	_	_	start_char=572|end_char=580
+115	that	_	_	_	_	114	_	_	start_char=581|end_char=585
+116	they	_	_	_	_	115	_	_	start_char=586|end_char=590
+117	had	_	_	_	_	116	_	_	start_char=591|end_char=594
+118	been	_	_	_	_	117	_	_	start_char=595|end_char=599
+119	too	_	_	_	_	118	_	_	start_char=600|end_char=603
+120	exhausted	_	_	_	_	119	_	_	start_char=604|end_char=613
+121	to	_	_	_	_	120	_	_	start_char=614|end_char=616
+122	notice	_	_	_	_	121	_	_	start_char=617|end_char=623
+123	anything	_	_	_	_	122	_	_	start_char=624|end_char=632
+124	other	_	_	_	_	123	_	_	start_char=633|end_char=638
+125	than	_	_	_	_	124	_	_	start_char=639|end_char=643
+126	the	_	_	_	_	125	_	_	start_char=644|end_char=647
+127	fact	_	_	_	_	126	_	_	start_char=648|end_char=652
+128	that	_	_	_	_	127	_	_	SpaceAfter=No|start_char=653|end_char=657
+129	,	_	_	_	_	128	_	_	start_char=657|end_char=658
+130	for	_	_	_	_	129	_	_	start_char=659|end_char=662
+131	once	_	_	_	_	130	_	_	SpaceAfter=No|start_char=663|end_char=667
+132	,	_	_	_	_	131	_	_	start_char=667|end_char=668
+133	the	_	_	_	_	132	_	_	start_char=669|end_char=672
+134	ground	_	_	_	_	133	_	_	start_char=673|end_char=679
+135	was	_	_	_	_	134	_	_	start_char=680|end_char=683
+136	not	_	_	_	_	135	_	_	start_char=684|end_char=687
+137	sloping	_	_	_	_	136	_	_	start_char=688|end_char=695
+138	upward	_	_	_	_	137	_	_	SpaceAfter=No|start_char=696|end_char=702
+139	.	_	_	_	_	138	_	_	SpacesAfter=\n\n|start_char=702|end_char=703
+
+# text = The report, which runs to more than four hundred pages and includes appendices on everything from soil chemistry to the migratory habits of local birds, concludes that the proposed highway would increase traffic on surrounding roads, reduce air quality in at least three neighborhoods, fragment the habitat of two protected species, and cost considerably more than the original estimate, but that it would also shorten average commute times by roughly eight minutes, create several thousand jobs during construction, and, according to the authors, provide long-term economic benefits that might or might not outweigh those costs depending on assumptions about fuel prices, population growth, and the future of remote work.
+# sent_id = 1
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=705|end_char=708
+2	report	_	_	_	_	1	_	_	SpaceAfter=No|start_char=709|end_char=715
+3	,	_	_	_	_	2	_	_	start_char=715|end_char=716
+4	which	_	_	_	_	3	_	_	start_char=717|end_char=722
+5	runs	_	_	_	_	4	_	_	start_char=723|end_char=727
+6	to	_	_	_	_	5	_	_	start_char=728|end_char=730
+7	more	_	_	_	_	6	_	_	start_char=731|end_char=735
+8	than	_	_	_	_	7	_	_	start_char=736|end_char=740
+9	four	_	_	_	_	8	_	_	start_char=741|end_char=745
+10	hundred	_	_	_	_	9	_	_	start_char=746|end_char=753
+11	pages	_	_	_	_	10	_	_	start_char=754|end_char=759
+12	and	_	_	_	_	11	_	_	start_char=760|end_char=763
+13	includes	_	_	_	_	12	_	_	start_char=764|end_char=772
+14	appendices	_	_	_	_	13	_	_	start_char=773|end_char=783
+15	on	_	_	_	_	14	_	_	start_char=784|end_char=786
+16	everything	_	_	_	_	15	_	_	start_char=787|end_char=797
+17	from	_	_	_	_	16	_	_	start_char=798|end_char=802
+18	soil	_	_	_	_	17	_	_	start_char=803|end_char=807
+19	chemistry	_	_	_	_	18	_	_	start_char=808|end_char=817
+20	to	_	_	_	_	19	_	_	start_char=818|end_char=820
+21	the	_	_	_	_	20	_	_	start_char=821|end_char=824
+22	migratory	_	_	_	_	21	_	_	start_char=825|end_char=834
+23	habits	_	_	_	_	22	_	_	start_char=835|end_char=841
+24	of	_	_	_	_	23	_	_	start_char=842|end_char=844
+25	local	_	_	_	_	24	_	_	start_char=845|end_char=850
+26	birds	_	_	_	_	25	_	_	SpaceAfter=No|start_char=851|end_char=856
+27	,	_	_	_	_	26	_	_	start_char=856|end_char=857
+28	concludes	_	_	_	_	27	_	_	start_char=858|end_char=867
+29	that	_	_	_	_	28	_	_	start_char=868|end_char=872
+30	the	_	_	_	_	29	_	_	start_char=873|end_char=876
+31	proposed	_	_	_	_	30	_	_	start_char=877|end_char=885
+32	highway	_	_	_	_	31	_	_	start_char=886|end_char=893
+33	would	_	_	_	_	32	_	_	start_char=894|end_char=899
+34	increase	_	_	_	_	33	_	_	start_char=900|end_char=908
+35	traffic	_	_	_	_	34	_	_	start_char=909|end_char=916
+36	on	_	_	_	_	35	_	_	start_char=917|end_char=919
+37	surrounding	_	_	_	_	36	_	_	start_char=920|end_char=931
+38	roads	_	_	_	_	37	_	_	SpaceAfter=No|start_char=932|end_char=937
+39	,	_	_	_	_	38	_	_	start_char=937|end_char=938
+40	reduce	_	_	_	_	39	_	_	start_char=939|end_char=945
+41	air	_	_	_	_	40	_	_	start_char=946|end_char=949
+42	quality	_	_	_	_	41	_	_	start_char=950|end_char=957
+43	in	_	_	_	_	42	_	_	start_char=958|end_char=960
+44	at	_	_	_	_	43	_	_	start_char=961|end_char=963
+45	least	_	_	_	_	44	_	_	start_char=964|end_char=969
+46	three	_	_	_	_	45	_	_	start_char=970|end_char=975
+47	neighborhoods	_	_	_	_	46	_	_	SpaceAfter=No|start_char=976|end_char=989
+48	,	_	_	_	_	47	_	_	start_char=989|end_char=990
+49	fragment	_	_	_	_	48	_	_	start_char=991|end_char=999
+50	the	_	_	_	_	49	_	_	start_char=1000|end_char=1003
+51	habitat	_	_	_	_	50	_	_	start_char=1004|end_char=1011
+52	of	_	_	_	_	51	_	_	start_char=1012|end_char=1014
+53	two	_	_	_	_	52	_	_	start_char=1015|end_char=1018
+54	protected	_	_	_	_	53	_	_	start_char=1019|end_char=1028
+55	species	_	_	_	_	54	_	_	SpaceAfter=No|start_char=1029|end_char=1036
+56	,	_	_	_	_	55	_	_	start_char=1036|end_char=1037
+57	and	_	_	_	_	56	_	_	start_char=1038|end_char=1041
+58	cost	_	_	_	_	57	_	_	start_char=1042|end_char=1046
+59	considerably	_	_	_	_	58	_	_	start_char=1047|end_char=1059
+60	more	_	_	_	_	59	_	_	start_char=1060|end_char=1064
+61	than	_	_	_	_	60	_	_	start_char=1065|end_char=1069
+62	the	_	_	_	_	61	_	_	start_char=1070|end_char=1073
+63	original	_	_	_	_	62	_	_	start_char=1074|end_char=1082
+64	estimate	_	_	_	_	63	_	_	SpaceAfter=No|start_char=1083|end_char=1091
+65	,	_	_	_	_	64	_	_	start_char=1091|end_char=1092
+66	but	_	_	_	_	65	_	_	start_char=1093|end_char=1096
+67	that	_	_	_	_	66	_	_	start_char=1097|end_char=1101
+68	it	_	_	_	_	67	_	_	start_char=1102|end_char=1104
+69	would	_	_	_	_	68	_	_	start_char=1105|end_char=1110
+70	also	_	_	_	_	69	_	_	start_char=1111|end_char=1115
+71	shorten	_	_	_	_	70	_	_	start_char=1116|end_char=1123
+72	average	_	_	_	_	71	_	_	start_char=1124|end_char=1131
+73	commute	_	_	_	_	72	_	_	start_char=1132|end_char=1139
+74	times	_	_	_	_	73	_	_	start_char=1140|end_char=1145
+75	by	_	_	_	_	74	_	_	start_char=1146|end_char=1148
+76	roughly	_	_	_	_	75	_	_	start_char=1149|end_char=1156
+77	eight	_	_	_	_	76	_	_	start_char=1157|end_char=1162
+78	minutes	_	_	_	_	77	_	_	SpaceAfter=No|start_char=1163|end_char=1170
+79	,	_	_	_	_	78	_	_	start_char=1170|end_char=1171
+80	create	_	_	_	_	79	_	_	start_char=1172|end_char=1178
+81	several	_	_	_	_	80	_	_	start_char=1179|end_char=1186
+82	thousand	_	_	_	_	81	_	_	start_char=1187|end_char=1195
+83	jobs	_	_	_	_	82	_	_	start_char=1196|end_char=1200
+84	during	_	_	_	_	83	_	_	start_char=1201|end_char=1207
+85	construction	_	_	_	_	84	_	_	SpaceAfter=No|start_char=1208|end_char=1220
+86	,	_	_	_	_	85	_	_	start_char=1220|end_char=1221
+87	and	_	_	_	_	86	_	_	SpaceAfter=No|start_char=1222|end_char=1225
+88	,	_	_	_	_	87	_	_	start_char=1225|end_char=1226
+89	according	_	_	_	_	88	_	_	start_char=1227|end_char=1236
+90	to	_	_	_	_	89	_	_	start_char=1237|end_char=1239
+91	the	_	_	_	_	90	_	_	start_char=1240|end_char=1243
+92	authors	_	_	_	_	91	_	_	SpaceAfter=No|start_char=1244|end_char=1251
+93	,	_	_	_	_	92	_	_	start_char=1251|end_char=1252
+94	provide	_	_	_	_	93	_	_	start_char=1253|end_char=1260
+95	long	_	_	_	_	94	_	_	SpaceAfter=No|start_char=1261|end_char=1265
+96	-	_	_	_	_	95	_	_	SpaceAfter=No|start_char=1265|end_char=1266
+97	term	_	_	_	_	96	_	_	start_char=1266|end_char=1270
+98	economic	_	_	_	_	97	_	_	start_char=1271|end_char=1279
+99	benefits	_	_	_	_	98	_	_	start_char=1280|end_char=1288
+100	that	_	_	_	_	99	_	_	start_char=1289|end_char=1293
+101	might	_	_	_	_	100	_	_	start_char=1294|end_char=1299
+102	or	_	_	_	_	101	_	_	start_char=1300|end_char=1302
+103	might	_	_	_	_	102	_	_	start_char=1303|end_char=1308
+104	not	_	_	_	_	103	_	_	start_char=1309|end_char=1312
+105	outweigh	_	_	_	_	104	_	_	start_char=1313|end_char=1321
+106	those	_	_	_	_	105	_	_	start_char=1322|end_char=1327
+107	costs	_	_	_	_	106	_	_	start_char=1328|end_char=1333
+108	depending	_	_	_	_	107	_	_	start_char=1334|end_char=1343
+109	on	_	_	_	_	108	_	_	start_char=1344|end_char=1346
+110	assumptions	_	_	_	_	109	_	_	start_char=1347|end_char=1358
+111	about	_	_	_	_	110	_	_	start_char=1359|end_char=1364
+112	fuel	_	_	_	_	111	_	_	start_char=1365|end_char=1369
+113	prices	_	_	_	_	112	_	_	SpaceAfter=No|start_char=1370|end_char=1376
+114	,	_	_	_	_	113	_	_	start_char=1376|end_char=1377
+115	population	_	_	_	_	114	_	_	start_char=1378|end_char=1388
+116	growth	_	_	_	_	115	_	_	SpaceAfter=No|start_char=1389|end_char=1395
+117	,	_	_	_	_	116	_	_	start_char=1395|end_char=1396
+118	and	_	_	_	_	117	_	_	start_char=1397|end_char=1400
+119	the	_	_	_	_	118	_	_	start_char=1401|end_char=1404
+120	future	_	_	_	_	119	_	_	start_char=1405|end_char=1411
+121	of	_	_	_	_	120	_	_	start_char=1412|end_char=1414
+122	remote	_	_	_	_	121	_	_	start_char=1415|end_char=1421
+123	work	_	_	_	_	122	_	_	SpaceAfter=No|start_char=1422|end_char=1426
+124	.	_	_	_	_	123	_	_	SpacesAfter=\n\n|start_char=1426|end_char=1427
+
+# text = Ask anyone who grew up in the valley and they will tell you about the summer the river flooded, the summer the mill closed, the summer the fair came back, or the summer the old bridge finally collapsed, and every one of them will tell it differently, with different heroes and different villains and different weather, until you start to suspect that the past is less a place than a conversation that never quite ends.
+# sent_id = 2
+# sentiment = 0
+1	Ask	_	_	_	_	0	_	_	start_char=1429|end_char=1432
+2	anyone	_	_	_	_	1	_	_	start_char=1433|end_char=1439
+3	who	_	_	_	_	2	_	_	start_char=1440|end_char=1443
+4	grew	_	_	_	_	3	_	_	start_char=1444|end_char=1448
+5	up	_	_	_	_	4	_	_	start_char=1449|end_char=1451
+6	in	_	_	_	_	5	_	_	start_char=1452|end_char=1454
+7	the	_	_	_	_	6	_	_	start_char=1455|end_char=1458
+8	valley	_	_	_	_	7	_	_	start_char=1459|end_char=1465
+9	and	_	_	_	_	8	_	_	start_char=1466|end_char=1469
+10	they	_	_	_	_	9	_	_	start_char=1470|end_char=1474
+11	will	_	_	_	_	10	_	_	start_char=1475|end_char=1479
+12	tell	_	_	_	_	11	_	_	start_char=1480|end_char=1484
+13	you	_	_	_	_	12	_	_	start_char=1485|end_char=1488
+14	about	_	_	_	_	13	_	_	start_char=1489|end_char=1494
+15	the	_	_	_	_	14	_	_	start_char=1495|end_char=1498
+16	summer	_	_	_	_	15	_	_	start_char=1499|end_char=1505
+17	the	_	_	_	_	16	_	_	start_char=1506|end_char=1509
+18	river	_	_	_	_	17	_	_	start_char=1510|end_char=1515
+19	flooded	_	_	_	_	18	_	_	SpaceAfter=No|start_char=1516|end_char=1523
+20	,	_	_	_	_	19	_	_	start_char=1523|end_char=1524
+21	the	_	_	_	_	20	_	_	start_char=1525|end_char=1528
+22	summer	_	_	_	_	21	_	_	start_char=1529|end_char=1535
+23	the	_	_	_	_	22	_	_	start_char=1536|end_char=1539
+24	mill	_	_	_	_	23	_	_	start_char=1540|end_char=1544
+25	closed	_	_	_	_	24	_	_	SpaceAfter=No|start_char=1545|end_char=1551
+26	,	_	_	_	_	25	_	_	start_char=1551|end_char=1552
+27	the	_	_	_	_	26	_	_	start_char=1553|end_char=1556
+28	summer	_	_	_	_	27	_	_	start_char=1557|end_char=1563
+29	the	_	_	_	_	28	_	_	start_char=1564|end_char=1567
+30	fair	_	_	_	_	29	_	_	start_char=1568|end_char=1572
+31	came	_	_	_	_	30	_	_	start_char=1573|end_char=1577
+32	back	_	_	_	_	31	_	_	SpaceAfter=No|start_char=1578|end_char=1582
+33	,	_	_	_	_	32	_	_	start_char=1582|end_char=1583
+34	or	_	_	_	_	33	_	_	start_char=1584|end_char=1586
+35	the	_	_	_	_	34	_	_	start_char=1587|end_char=1590
+36	summer	_	_	_	_	35	_	_	start_char=1591|end_char=1597
+37	the	_	_	_	_	36	_	_	start_char=1598|end_char=1601
+38	old	_	_	_	_	37	_	_	start_char=1602|end_char=1605
+39	bridge	_	_	_	_	38	_	_	start_char=1606|end_char=1612
+40	finally	_	_	_	_	39	_	_	start_char=1613|end_char=1620
+41	collapsed	_	_	_	_	40	_	_	SpaceAfter=No|start_char=1621|end_char=1630
+42	,	_	_	_	_	41	_	_	start_char=1630|end_char=1631
+43	and	_	_	_	_	42	_	_	start_char=1632|end_char=1635
+44	every	_	_	_	_	43	_	_	start_char=1636|end_char=1641
+45	one	_	_	_	_	44	_	_	start_char=1642|end_char=1645
+46	of	_	_	_	_	45	_	_	start_char=1646|end_char=1648
+47	them	_	_	_	_	46	_	_	start_char=1649|end_char=1653
+48	will	_	_	_	_	47	_	_	start_char=1654|end_char=1658
+49	tell	_	_	_	_	48	_	_	start_char=1659|end_char=1663
+50	it	_	_	_	_	49	_	_	start_char=1664|end_char=1666
+51	differently	_	_	_	_	50	_	_	SpaceAfter=No|start_char=1667|end_char=1678
+52	,	_	_	_	_	51	_	_	start_char=1678|end_char=1679
+53	with	_	_	_	_	52	_	_	start_char=1680|end_char=1684
+54	different	_	_	_	_	53	_	_	start_char=1685|end_char=1694
+55	heroes	_	_	_	_	54	_	_	start_char=1695|end_char=1701
+56	and	_	_	_	_	55	_	_	start_char=1702|end_char=1705
+57	different	_	_	_	_	56	_	_	start_char=1706|end_char=1715
+58	villains	_	_	_	_	57	_	_	start_char=1716|end_char=1724
+59	and	_	_	_	_	58	_	_	start_char=1725|end_char=1728
+60	different	_	_	_	_	59	_	_	start_char=1729|end_char=1738
+61	weather	_	_	_	_	60	_	_	SpaceAfter=No|start_char=1739|end_char=1746
+62	,	_	_	_	_	61	_	_	start_char=1746|end_char=1747
+63	until	_	_	_	_	62	_	_	start_char=1748|end_char=1753
+64	you	_	_	_	_	63	_	_	start_char=1754|end_char=1757
+65	start	_	_	_	_	64	_	_	start_char=1758|end_char=1763
+66	to	_	_	_	_	65	_	_	start_char=1764|end_char=1766
+67	suspect	_	_	_	_	66	_	_	start_char=1767|end_char=1774
+68	that	_	_	_	_	67	_	_	start_char=1775|end_char=1779
+69	the	_	_	_	_	68	_	_	start_char=1780|end_char=1783
+70	past	_	_	_	_	69	_	_	start_char=1784|end_char=1788
+71	is	_	_	_	_	70	_	_	start_char=1789|end_char=1791
+72	less	_	_	_	_	71	_	_	start_char=1792|end_char=1796
+73	a	_	_	_	_	72	_	_	start_char=1797|end_char=1798
+74	place	_	_	_	_	73	_	_	start_char=1799|end_char=1804
+75	than	_	_	_	_	74	_	_	start_char=1805|end_char=1809
+76	a	_	_	_	_	75	_	_	start_char=1810|end_char=1811
+77	conversation	_	_	_	_	76	_	_	start_char=1812|end_char=1824
+78	that	_	_	_	_	77	_	_	start_char=1825|end_char=1829
+79	never	_	_	_	_	78	_	_	start_char=1830|end_char=1835
+80	quite	_	_	_	_	79	_	_	start_char=1836|end_char=1841
+81	ends	_	_	_	_	80	_	_	SpaceAfter=No|start_char=1842|end_char=1846
+82	.	_	_	_	_	81	_	_	SpacesAfter=\n\n|start_char=1846|end_char=1847
+
+# text = I went to the store to buy eggs and came home with a lamp.
+# sent_id = 3
+# sentiment = 0
+1	I	_	_	_	_	0	_	_	start_char=1849|end_char=1850
+2	went	_	_	_	_	1	_	_	start_char=1851|end_char=1855
+3	to	_	_	_	_	2	_	_	start_char=1856|end_char=1858
+4	the	_	_	_	_	3	_	_	start_char=1859|end_char=1862
+5	store	_	_	_	_	4	_	_	start_char=1863|end_char=1868
+6	to	_	_	_	_	5	_	_	start_char=1869|end_char=1871
+7	buy	_	_	_	_	6	_	_	start_char=1872|end_char=1875
+8	eggs	_	_	_	_	7	_	_	start_char=1876|end_char=1880
+9	and	_	_	_	_	8	_	_	start_char=1881|end_char=1884
+10	came	_	_	_	_	9	_	_	start_char=1885|end_char=1889
+11	home	_	_	_	_	10	_	_	start_char=1890|end_char=1894
+12	with	_	_	_	_	11	_	_	start_char=1895|end_char=1899
+13	a	_	_	_	_	12	_	_	start_char=1900|end_char=1901
+14	lamp	_	_	_	_	13	_	_	SpaceAfter=No|start_char=1902|end_char=1906
+15	.	_	_	_	_	14	_	_	SpacesAfter=\n\n|start_char=1906|end_char=1907
+
+# text = The meeting is moved to Thurs.
+# sent_id = 4
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=1909|end_char=1912
+2	meeting	_	_	_	_	1	_	_	start_char=1913|end_char=1920
+3	is	_	_	_	_	2	_	_	start_char=1921|end_char=1923
+4	moved	_	_	_	_	3	_	_	start_char=1924|end_char=1929
+5	to	_	_	_	_	4	_	_	start_char=1930|end_char=1932
+6	Thurs	_	_	_	_	5	_	_	SpaceAfter=No|start_char=1933|end_char=1938
+7	.	_	_	_	_	6	_	_	start_char=1938|end_char=1939
+
+# text = Please tell Dr. Patel and the rest of the U.S. team.
+# sent_id = 5
+# sentiment = 0
+1	Please	_	_	_	_	0	_	_	start_char=1940|end_char=1946
+2	tell	_	_	_	_	1	_	_	start_char=1947|end_char=1951
+3	Dr.	_	_	_	_	2	_	_	start_char=1952|end_char=1955
+4	Patel	_	_	_	_	3	_	_	start_char=1956|end_char=1961
+5	and	_	_	_	_	4	_	_	start_char=1962|end_char=1965
+6	the	_	_	_	_	5	_	_	start_char=1966|end_char=1969
+7	rest	_	_	_	_	6	_	_	start_char=1970|end_char=1974
+8	of	_	_	_	_	7	_	_	start_char=1975|end_char=1977
+9	the	_	_	_	_	8	_	_	start_char=1978|end_char=1981
+10	U.S.	_	_	_	_	9	_	_	start_char=1982|end_char=1986
+11	team	_	_	_	_	10	_	_	SpaceAfter=No|start_char=1987|end_char=1991
+12	.	_	_	_	_	11	_	_	SpacesAfter=\n\n|start_char=1991|end_char=1992
+
+# text = He works for Acme Corp.
+# sent_id = 6
+# sentiment = 1
+1	He	_	_	_	_	0	_	_	start_char=1994|end_char=1996
+2	works	_	_	_	_	1	_	_	start_char=1997|end_char=2002
+3	for	_	_	_	_	2	_	_	start_char=2003|end_char=2006
+4	Acme	_	_	_	_	3	_	_	start_char=2007|end_char=2011
+5	Corp	_	_	_	_	4	_	_	SpaceAfter=No|start_char=2012|end_char=2016
+6	.	_	_	_	_	5	_	_	start_char=2016|end_char=2017
+
+# text = She works for Globex Inc.
+# sent_id = 7
+# sentiment = 1
+1	She	_	_	_	_	0	_	_	start_char=2018|end_char=2021
+2	works	_	_	_	_	1	_	_	start_char=2022|end_char=2027
+3	for	_	_	_	_	2	_	_	start_char=2028|end_char=2031
+4	Globex	_	_	_	_	3	_	_	start_char=2032|end_char=2038
+5	Inc	_	_	_	_	4	_	_	SpaceAfter=No|start_char=2039|end_char=2042
+6	.	_	_	_	_	5	_	_	start_char=2042|end_char=2043
+
+# text = They both used to work at Initech Ltd.
+# sent_id = 8
+# sentiment = 1
+1	They	_	_	_	_	0	_	_	start_char=2044|end_char=2048
+2	both	_	_	_	_	1	_	_	start_char=2049|end_char=2053
+3	used	_	_	_	_	2	_	_	start_char=2054|end_char=2058
+4	to	_	_	_	_	3	_	_	start_char=2059|end_char=2061
+5	work	_	_	_	_	4	_	_	start_char=2062|end_char=2066
+6	at	_	_	_	_	5	_	_	start_char=2067|end_char=2069
+7	Initech	_	_	_	_	6	_	_	start_char=2070|end_char=2077
+8	Ltd	_	_	_	_	7	_	_	SpaceAfter=No|start_char=2078|end_char=2081
+9	.	_	_	_	_	8	_	_	SpacesAfter=\n\n|start_char=2081|end_char=2082
+
+# text = We left at 6 a.m.
+# sent_id = 9
+# sentiment = 1
+1	We	_	_	_	_	0	_	_	start_char=2084|end_char=2086
+2	left	_	_	_	_	1	_	_	start_char=2087|end_char=2091
+3	at	_	_	_	_	2	_	_	start_char=2092|end_char=2094
+4	6	_	_	_	_	3	_	_	start_char=2095|end_char=2096
+5	a.m	_	_	_	_	4	_	_	SpaceAfter=No|start_char=2097|end_char=2100
+6	.	_	_	_	_	5	_	_	start_char=2100|end_char=2101
+
+# text = The drive took four hrs.
+# sent_id = 10
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=2102|end_char=2105
+2	drive	_	_	_	_	1	_	_	start_char=2106|end_char=2111
+3	took	_	_	_	_	2	_	_	start_char=2112|end_char=2116
+4	four	_	_	_	_	3	_	_	start_char=2117|end_char=2121
+5	hrs	_	_	_	_	4	_	_	SpaceAfter=No|start_char=2122|end_char=2125
+6	.	_	_	_	_	5	_	_	start_char=2125|end_char=2126
+
+# text = We arrived around 10 a.m.
+# sent_id = 11
+# sentiment = 1
+1	We	_	_	_	_	0	_	_	start_char=2127|end_char=2129
+2	arrived	_	_	_	_	1	_	_	start_char=2130|end_char=2137
+3	around	_	_	_	_	2	_	_	start_char=2138|end_char=2144
+4	10	_	_	_	_	3	_	_	start_char=2145|end_char=2147
+5	a.m	_	_	_	_	4	_	_	SpaceAfter=No|start_char=2148|end_char=2151
+6	.	_	_	_	_	5	_	_	SpacesAfter=\n\n|start_char=2151|end_char=2152
+
+# text = The package was shipped via U.P.S.
+# sent_id = 12
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=2154|end_char=2157
+2	package	_	_	_	_	1	_	_	start_char=2158|end_char=2165
+3	was	_	_	_	_	2	_	_	start_char=2166|end_char=2169
+4	shipped	_	_	_	_	3	_	_	start_char=2170|end_char=2177
+5	via	_	_	_	_	4	_	_	start_char=2178|end_char=2181
+6	U.P.S	_	_	_	_	5	_	_	SpaceAfter=No|start_char=2182|end_char=2187
+7	.	_	_	_	_	6	_	_	start_char=2187|end_char=2188
+
+# text = It should arrive by Fri. or Sat.
+# sent_id = 13
+# sentiment = 0
+1	It	_	_	_	_	0	_	_	start_char=2189|end_char=2191
+2	should	_	_	_	_	1	_	_	start_char=2192|end_char=2198
+3	arrive	_	_	_	_	2	_	_	start_char=2199|end_char=2205
+4	by	_	_	_	_	3	_	_	start_char=2206|end_char=2208
+5	Fri.	_	_	_	_	4	_	_	start_char=2209|end_char=2213
+6	or	_	_	_	_	5	_	_	start_char=2214|end_char=2216
+7	Sat	_	_	_	_	6	_	_	SpaceAfter=No|start_char=2217|end_char=2220
+8	.	_	_	_	_	7	_	_	SpacesAfter=\n\n|start_char=2220|end_char=2221
+
+# text = She has a Ph.D. He has an M.B.A. Neither has a job.
+# sent_id = 14
+# sentiment = 0
+1	She	_	_	_	_	0	_	_	start_char=2223|end_char=2226
+2	has	_	_	_	_	1	_	_	start_char=2227|end_char=2230
+3	a	_	_	_	_	2	_	_	start_char=2231|end_char=2232
+4	Ph.D	_	_	_	_	3	_	_	SpaceAfter=No|start_char=2233|end_char=2237
+5	.	_	_	_	_	4	_	_	start_char=2237|end_char=2238
+6	He	_	_	_	_	5	_	_	start_char=2239|end_char=2241
+7	has	_	_	_	_	6	_	_	start_char=2242|end_char=2245
+8	an	_	_	_	_	7	_	_	start_char=2246|end_char=2248
+9	M.B.A.	_	_	_	_	8	_	_	start_char=2249|end_char=2255
+10	Neither	_	_	_	_	9	_	_	start_char=2256|end_char=2263
+11	has	_	_	_	_	10	_	_	start_char=2264|end_char=2267
+12	a	_	_	_	_	11	_	_	start_char=2268|end_char=2269
+13	job	_	_	_	_	12	_	_	SpaceAfter=No|start_char=2270|end_char=2273
+14	.	_	_	_	_	13	_	_	SpacesAfter=\n\n|start_char=2273|end_char=2274
+
+# text = Bring snacks, drinks, napkins, etc.
+# sent_id = 15
+# sentiment = 0
+1	Bring	_	_	_	_	0	_	_	start_char=2276|end_char=2281
+2	snacks	_	_	_	_	1	_	_	SpaceAfter=No|start_char=2282|end_char=2288
+3	,	_	_	_	_	2	_	_	start_char=2288|end_char=2289
+4	drinks	_	_	_	_	3	_	_	SpaceAfter=No|start_char=2290|end_char=2296
+5	,	_	_	_	_	4	_	_	start_char=2296|end_char=2297
+6	napkins	_	_	_	_	5	_	_	SpaceAfter=No|start_char=2298|end_char=2305
+7	,	_	_	_	_	6	_	_	start_char=2305|end_char=2306
+8	etc	_	_	_	_	7	_	_	SpaceAfter=No|start_char=2307|end_char=2310
+9	.	_	_	_	_	8	_	_	start_char=2310|end_char=2311
+
+# text = Don't forget the ice.
+# sent_id = 16
+# sentiment = 0
+1-2	Don't	_	_	_	_	_	_	_	start_char=2312|end_char=2317
+1	Do	_	_	_	_	0	_	_	start_char=2312|end_char=2314
+2	n't	_	_	_	_	1	_	_	start_char=2314|end_char=2317
+3	forget	_	_	_	_	2	_	_	start_char=2318|end_char=2324
+4	the	_	_	_	_	3	_	_	start_char=2325|end_char=2328
+5	ice	_	_	_	_	4	_	_	SpaceAfter=No|start_char=2329|end_char=2332
+6	.	_	_	_	_	5	_	_	SpacesAfter=\n\n|start_char=2332|end_char=2333
+
+# text = Our next stop is Washington, D.C.
+# sent_id = 17
+# sentiment = 0
+1	Our	_	_	_	_	0	_	_	start_char=2335|end_char=2338
+2	next	_	_	_	_	1	_	_	start_char=2339|end_char=2343
+3	stop	_	_	_	_	2	_	_	start_char=2344|end_char=2348
+4	is	_	_	_	_	3	_	_	start_char=2349|end_char=2351
+5	Washington	_	_	_	_	4	_	_	SpaceAfter=No|start_char=2352|end_char=2362
+6	,	_	_	_	_	5	_	_	start_char=2362|end_char=2363
+7	D.C	_	_	_	_	6	_	_	SpaceAfter=No|start_char=2364|end_char=2367
+8	.	_	_	_	_	7	_	_	start_char=2367|end_char=2368
+
+# text = After that, we go to St. Louis.
+# sent_id = 18
+# sentiment = 0
+1	After	_	_	_	_	0	_	_	start_char=2369|end_char=2374
+2	that	_	_	_	_	1	_	_	SpaceAfter=No|start_char=2375|end_char=2379
+3	,	_	_	_	_	2	_	_	start_char=2379|end_char=2380
+4	we	_	_	_	_	3	_	_	start_char=2381|end_char=2383
+5	go	_	_	_	_	4	_	_	start_char=2384|end_char=2386
+6	to	_	_	_	_	5	_	_	start_char=2387|end_char=2389
+7	St.	_	_	_	_	6	_	_	start_char=2390|end_char=2393
+8	Louis	_	_	_	_	7	_	_	SpaceAfter=No|start_char=2394|end_char=2399
+9	.	_	_	_	_	8	_	_	SpacesAfter=\n\n|start_char=2399|end_char=2400
+
+# text = The talk was given by Prof.
+# sent_id = 19
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=2402|end_char=2405
+2	talk	_	_	_	_	1	_	_	start_char=2406|end_char=2410
+3	was	_	_	_	_	2	_	_	start_char=2411|end_char=2414
+4	given	_	_	_	_	3	_	_	start_char=2415|end_char=2420
+5	by	_	_	_	_	4	_	_	start_char=2421|end_char=2423
+6	Prof	_	_	_	_	5	_	_	SpaceAfter=No|start_char=2424|end_char=2428
+7	.	_	_	_	_	6	_	_	start_char=2428|end_char=2429
+
+# text = Ramos, Jr. Questions were taken afterward.
+# sent_id = 20
+# sentiment = 1
+1	Ramos	_	_	_	_	0	_	_	SpaceAfter=No|start_char=2430|end_char=2435
+2	,	_	_	_	_	1	_	_	start_char=2435|end_char=2436
+3	Jr.	_	_	_	_	2	_	_	start_char=2437|end_char=2440
+4	Questions	_	_	_	_	3	_	_	start_char=2441|end_char=2450
+5	were	_	_	_	_	4	_	_	start_char=2451|end_char=2455
+6	taken	_	_	_	_	5	_	_	start_char=2456|end_char=2461
+7	afterward	_	_	_	_	6	_	_	SpaceAfter=No|start_char=2462|end_char=2471
+8	.	_	_	_	_	7	_	_	SpacesAfter=\n\n|start_char=2471|end_char=2472
+
+# text = The company moved its HQ to the U.K.
+# sent_id = 21
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=2474|end_char=2477
+2	company	_	_	_	_	1	_	_	start_char=2478|end_char=2485
+3	moved	_	_	_	_	2	_	_	start_char=2486|end_char=2491
+4	its	_	_	_	_	3	_	_	start_char=2492|end_char=2495
+5	HQ	_	_	_	_	4	_	_	start_char=2496|end_char=2498
+6	to	_	_	_	_	5	_	_	start_char=2499|end_char=2501
+7	the	_	_	_	_	6	_	_	start_char=2502|end_char=2505
+8	U.K.	_	_	_	_	7	_	_	start_char=2506|end_char=2510
+
+# text = Its CEO did not.
+# sent_id = 22
+# sentiment = 1
+1-2	Its	_	_	_	_	_	_	_	start_char=2511|end_char=2514
+1	It	_	_	_	_	0	_	_	start_char=2511|end_char=2513
+2	s	_	_	_	_	1	_	_	start_char=2513|end_char=2514
+3	CEO	_	_	_	_	2	_	_	start_char=2515|end_char=2518
+4	did	_	_	_	_	3	_	_	start_char=2519|end_char=2522
+5	not	_	_	_	_	4	_	_	SpaceAfter=No|start_char=2523|end_char=2526
+6	.	_	_	_	_	5	_	_	SpacesAfter=\n\n|start_char=2526|end_char=2527
+
+# text = I live on Maple Ave.
+# sent_id = 23
+# sentiment = 1
+1	I	_	_	_	_	0	_	_	start_char=2529|end_char=2530
+2	live	_	_	_	_	1	_	_	start_char=2531|end_char=2535
+3	on	_	_	_	_	2	_	_	start_char=2536|end_char=2538
+4	Maple	_	_	_	_	3	_	_	start_char=2539|end_char=2544
+5	Ave	_	_	_	_	4	_	_	SpaceAfter=No|start_char=2545|end_char=2548
+6	.	_	_	_	_	5	_	_	start_char=2548|end_char=2549
+
+# text = My sister lives on Oak St.
+# sent_id = 24
+# sentiment = 1
+1	My	_	_	_	_	0	_	_	start_char=2550|end_char=2552
+2	sister	_	_	_	_	1	_	_	start_char=2553|end_char=2559
+3	lives	_	_	_	_	2	_	_	start_char=2560|end_char=2565
+4	on	_	_	_	_	3	_	_	start_char=2566|end_char=2568
+5	Oak	_	_	_	_	4	_	_	start_char=2569|end_char=2572
+6	St	_	_	_	_	5	_	_	SpaceAfter=No|start_char=2573|end_char=2575
+7	.	_	_	_	_	6	_	_	SpacesAfter=\n\n|start_char=2575|end_char=2576
+
+# text = The sample size was approx.
+# sent_id = 25
+# sentiment = 1
+1	The	_	_	_	_	0	_	_	start_char=2578|end_char=2581
+2	sample	_	_	_	_	1	_	_	start_char=2582|end_char=2588
+3	size	_	_	_	_	2	_	_	start_char=2589|end_char=2593
+4	was	_	_	_	_	3	_	_	start_char=2594|end_char=2597
+5	approx	_	_	_	_	4	_	_	SpaceAfter=No|start_char=2598|end_char=2604
+6	.	_	_	_	_	5	_	_	start_char=2604|end_char=2605
+
+# text = 300.
+# sent_id = 26
+# sentiment = 1
+1	300	_	_	_	_	0	_	_	SpaceAfter=No|start_char=2606|end_char=2609
+2	.	_	_	_	_	1	_	_	start_char=2609|end_char=2610
+
+# text = It was small, i.e. underpowered.
+# sent_id = 27
+# sentiment = 1
+1	It	_	_	_	_	0	_	_	start_char=2611|end_char=2613
+2	was	_	_	_	_	1	_	_	start_char=2614|end_char=2617
+3	small	_	_	_	_	2	_	_	SpaceAfter=No|start_char=2618|end_char=2623
+4	,	_	_	_	_	3	_	_	start_char=2623|end_char=2624
+5	i.e.	_	_	_	_	4	_	_	start_char=2625|end_char=2629
+6	underpowered	_	_	_	_	5	_	_	SpaceAfter=No|start_char=2630|end_char=2642
+7	.	_	_	_	_	6	_	_	SpacesAfter=\n\n|start_char=2642|end_char=2643
+
+# text = Yes.
+# sent_id = 28
+# sentiment = 1
+1	Yes	_	_	_	_	0	_	_	SpaceAfter=No|start_char=2645|end_char=2648
+2	.	_	_	_	_	1	_	_	SpacesAfter=\n\n|start_char=2648|end_char=2649
+
+# text = No!
+# sent_id = 29
+# sentiment = 1
+1	No	_	_	_	_	0	_	_	SpaceAfter=No|start_char=2651|end_char=2653
+2	!	_	_	_	_	1	_	_	SpacesAfter=\n\n|start_char=2653|end_char=2654
+
+# text = Why?
+# sent_id = 30
+# sentiment = 1
+1	Why	_	_	_	_	0	_	_	SpaceAfter=No|start_char=2656|end_char=2659
+2	?	_	_	_	_	1	_	_	SpacesAfter=\n\n|start_char=2659|end_char=2660
+
+# text = Absolutely.
+# sent_id = 31
+# sentiment = 1
+1	Absolutely	_	_	_	_	0	_	_	SpaceAfter=No|start_char=2662|end_char=2672
+2	.	_	_	_	_	1	_	_	SpacesAfter=\n\n|start_char=2672|end_char=2673
+
+# text = Hmm.
+# sent_id = 32
+# sentiment = 1
+1	Hmm	_	_	_	_	0	_	_	SpaceAfter=No|start_char=2675|end_char=2678
+2	.	_	_	_	_	1	_	_	SpacesAfter=\n\n|start_char=2678|end_char=2679
+
+# text = Okay...
+# sent_id = 33
+# sentiment = 1
+1	Okay	_	_	_	_	0	_	_	SpaceAfter=No|start_char=2681|end_char=2685
+2	...	_	_	_	_	1	_	_	SpacesAfter=\n\n|start_char=2685|end_char=2688
+
+# text = Wow!
+# sent_id = 34
+# sentiment = 1
+1	Wow	_	_	_	_	0	_	_	SpaceAfter=No|start_char=2690|end_char=2693
+2	!	_	_	_	_	1	_	_	SpacesAfter=\n\n|start_char=2693|end_char=2694
+
+# text = Fine.
+# sent_id = 35
+# sentiment = 1
+1	Fine	_	_	_	_	0	_	_	SpaceAfter=No|start_char=2696|end_char=2700
+2	.	_	_	_	_	1	_	_	SpacesAfter=\n\n|start_char=2700|end_char=2701
+
+# text = Seriously?
+# sent_id = 36
+# sentiment = 0
+1	Seriously	_	_	_	_	0	_	_	SpaceAfter=No|start_char=2703|end_char=2712
+2	?	_	_	_	_	1	_	_	SpacesAfter=\n\n|start_char=2712|end_char=2713
+
+# text = Later.
+# sent_id = 37
+# sentiment = 1
+1	Later	_	_	_	_	0	_	_	SpaceAfter=No|start_char=2715|end_char=2720
+2	.	_	_	_	_	1	_	_	SpacesAfter=\n\n|start_char=2720|end_char=2721
+
+# text = Thanks.
+# sent_id = 38
+# sentiment = 1
+1	Thanks	_	_	_	_	0	_	_	SpaceAfter=No|start_char=2723|end_char=2729
+2	.	_	_	_	_	1	_	_	SpacesAfter=\n\n|start_char=2729|end_char=2730
+
+# text = Exactly!
+# sent_id = 39
+# sentiment = 1
+1	Exactly	_	_	_	_	0	_	_	SpaceAfter=No|start_char=2732|end_char=2739
+2	!	_	_	_	_	1	_	_	SpacesAfter=\n\n|start_char=2739|end_char=2740
+
+# text = Never.
+# sent_id = 40
+# sentiment = 1
+1	Never	_	_	_	_	0	_	_	SpaceAfter=No|start_char=2742|end_char=2747
+2	.	_	_	_	_	1	_	_	SpacesAfter=\n\n|start_char=2747|end_char=2748
+
+# text = Goodnight.
+# sent_id = 41
+# sentiment = 1
+1	Goodnight	_	_	_	_	0	_	_	SpaceAfter=No|start_char=2750|end_char=2759
+2	.	_	_	_	_	1	_	_	SpacesAfter=\n\n|start_char=2759|end_char=2760
+
+# text = The rain had stopped and the street was quiet and nobody came
+# sent_id = 42
+# sentiment = 0
+1	The	_	_	_	_	0	_	_	start_char=2762|end_char=2765
+2	rain	_	_	_	_	1	_	_	start_char=2766|end_char=2770
+3	had	_	_	_	_	2	_	_	start_char=2771|end_char=2774
+4	stopped	_	_	_	_	3	_	_	start_char=2775|end_char=2782
+5	and	_	_	_	_	4	_	_	start_char=2783|end_char=2786
+6	the	_	_	_	_	5	_	_	start_char=2787|end_char=2790
+7	street	_	_	_	_	6	_	_	start_char=2791|end_char=2797
+8	was	_	_	_	_	7	_	_	start_char=2798|end_char=2801
+9	quiet	_	_	_	_	8	_	_	start_char=2802|end_char=2807
+10	and	_	_	_	_	9	_	_	start_char=2808|end_char=2811
+11	nobody	_	_	_	_	10	_	_	start_char=2812|end_char=2818
+12	came	_	_	_	_	11	_	_	SpacesAfter=\n\n|start_char=2819|end_char=2823
+
+# text = She opened the door and looked outside and there was nothing there and she closed it again and went back to bed
+# sent_id = 43
+# sentiment = 0
+1	She	_	_	_	_	0	_	_	start_char=2825|end_char=2828
+2	opened	_	_	_	_	1	_	_	start_char=2829|end_char=2835
+3	the	_	_	_	_	2	_	_	start_char=2836|end_char=2839
+4	door	_	_	_	_	3	_	_	start_char=2840|end_char=2844
+5	and	_	_	_	_	4	_	_	start_char=2845|end_char=2848
+6	looked	_	_	_	_	5	_	_	start_char=2849|end_char=2855
+7	outside	_	_	_	_	6	_	_	start_char=2856|end_char=2863
+8	and	_	_	_	_	7	_	_	start_char=2864|end_char=2867
+9	there	_	_	_	_	8	_	_	start_char=2868|end_char=2873
+10	was	_	_	_	_	9	_	_	start_char=2874|end_char=2877
+11	nothing	_	_	_	_	10	_	_	start_char=2878|end_char=2885
+12	there	_	_	_	_	11	_	_	start_char=2886|end_char=2891
+13	and	_	_	_	_	12	_	_	start_char=2892|end_char=2895
+14	she	_	_	_	_	13	_	_	start_char=2896|end_char=2899
+15	closed	_	_	_	_	14	_	_	start_char=2900|end_char=2906
+16	it	_	_	_	_	15	_	_	start_char=2907|end_char=2909
+17	again	_	_	_	_	16	_	_	start_char=2910|end_char=2915
+18	and	_	_	_	_	17	_	_	start_char=2916|end_char=2919
+19	went	_	_	_	_	18	_	_	start_char=2920|end_char=2924
+20	back	_	_	_	_	19	_	_	start_char=2925|end_char=2929
+21	to	_	_	_	_	20	_	_	start_char=2930|end_char=2932
+22	bed	_	_	_	_	21	_	_	SpacesAfter=\n\n|start_char=2933|end_char=2936
+
+# text = it was late and the lights were off
+# sent_id = 44
+# sentiment = 0
+1	it	_	_	_	_	0	_	_	start_char=2938|end_char=2940
+2	was	_	_	_	_	1	_	_	start_char=2941|end_char=2944
+3	late	_	_	_	_	2	_	_	start_char=2945|end_char=2949
+4	and	_	_	_	_	3	_	_	start_char=2950|end_char=2953
+5	the	_	_	_	_	4	_	_	start_char=2954|end_char=2957
+6	lights	_	_	_	_	5	_	_	start_char=2958|end_char=2964
+7	were	_	_	_	_	6	_	_	start_char=2965|end_char=2969
+8	off	_	_	_	_	7	_	_	SpacesAfter=\n\n|start_char=2970|end_char=2973
+
+# text = The quick brown fox jumps over the lazy dog
+# sent_id = 45
+# sentiment = 0
+1	The	_	_	_	_	0	_	_	start_char=2975|end_char=2978
+2	quick	_	_	_	_	1	_	_	start_char=2979|end_char=2984
+3	brown	_	_	_	_	2	_	_	start_char=2985|end_char=2990
+4	fox	_	_	_	_	3	_	_	start_char=2991|end_char=2994
+5	jumps	_	_	_	_	4	_	_	start_char=2995|end_char=3000
+6	over	_	_	_	_	5	_	_	start_char=3001|end_char=3005
+7	the	_	_	_	_	6	_	_	start_char=3006|end_char=3009
+8	lazy	_	_	_	_	7	_	_	start_char=3010|end_char=3014
+9	dog	_	_	_	_	8	_	_	SpacesAfter=\n\n|start_char=3015|end_char=3018
+
+# text = Section headings without punctuation Lines that end abruptly and continue on the next line without any capital letters at all
+# sent_id = 46
+# sentiment = 0
+1	Section	_	_	_	_	0	_	_	start_char=3020|end_char=3027
+2	headings	_	_	_	_	1	_	_	start_char=3028|end_char=3036
+3	without	_	_	_	_	2	_	_	start_char=3037|end_char=3044
+4	punctuation	_	_	_	_	3	_	_	SpacesAfter=\n|start_char=3045|end_char=3056
+5	Lines	_	_	_	_	4	_	_	start_char=3057|end_char=3062
+6	that	_	_	_	_	5	_	_	start_char=3063|end_char=3067
+7	end	_	_	_	_	6	_	_	start_char=3068|end_char=3071
+8	abruptly	_	_	_	_	7	_	_	start_char=3072|end_char=3080
+9	and	_	_	_	_	8	_	_	start_char=3081|end_char=3084
+10	continue	_	_	_	_	9	_	_	start_char=3085|end_char=3093
+11	on	_	_	_	_	10	_	_	start_char=3094|end_char=3096
+12	the	_	_	_	_	11	_	_	start_char=3097|end_char=3100
+13	next	_	_	_	_	12	_	_	start_char=3101|end_char=3105
+14	line	_	_	_	_	13	_	_	SpacesAfter=\n|start_char=3106|end_char=3110
+15	without	_	_	_	_	14	_	_	start_char=3111|end_char=3118
+16	any	_	_	_	_	15	_	_	start_char=3119|end_char=3122
+17	capital	_	_	_	_	16	_	_	start_char=3123|end_char=3130
+18	letters	_	_	_	_	17	_	_	start_char=3131|end_char=3138
+19	at	_	_	_	_	18	_	_	start_char=3139|end_char=3141
+20	all	_	_	_	_	19	_	_	SpacesAfter=\n\n|start_char=3142|end_char=3145
+
+# text = If you had asked me ten years ago whether I would ever live in a city, own a car, work in an office, wear a tie, drink black coffee, or enjoy opera, I would have laughed at every single one of those suggestions — and yet here I am, in a city, driving a car to an office, in a tie, with black coffee in my cup and an opera ticket in my pocket, wondering when exactly all of that happened and whether the person I was then would recognize, let alone approve of, the person I am now.
+# sent_id = 47
+# sentiment = 0
+1	If	_	_	_	_	0	_	_	start_char=3147|end_char=3149
+2	you	_	_	_	_	1	_	_	start_char=3150|end_char=3153
+3	had	_	_	_	_	2	_	_	start_char=3154|end_char=3157
+4	asked	_	_	_	_	3	_	_	start_char=3158|end_char=3163
+5	me	_	_	_	_	4	_	_	start_char=3164|end_char=3166
+6	ten	_	_	_	_	5	_	_	start_char=3167|end_char=3170
+7	years	_	_	_	_	6	_	_	start_char=3171|end_char=3176
+8	ago	_	_	_	_	7	_	_	start_char=3177|end_char=3180
+9	whether	_	_	_	_	8	_	_	start_char=3181|end_char=3188
+10	I	_	_	_	_	9	_	_	start_char=3189|end_char=3190
+11	would	_	_	_	_	10	_	_	start_char=3191|end_char=3196
+12	ever	_	_	_	_	11	_	_	start_char=3197|end_char=3201
+13	live	_	_	_	_	12	_	_	start_char=3202|end_char=3206
+14	in	_	_	_	_	13	_	_	start_char=3207|end_char=3209
+15	a	_	_	_	_	14	_	_	start_char=3210|end_char=3211
+16	city	_	_	_	_	15	_	_	SpaceAfter=No|start_char=3212|end_char=3216
+17	,	_	_	_	_	16	_	_	start_char=3216|end_char=3217
+18	own	_	_	_	_	17	_	_	start_char=3218|end_char=3221
+19	a	_	_	_	_	18	_	_	start_char=3222|end_char=3223
+20	car	_	_	_	_	19	_	_	SpaceAfter=No|start_char=3224|end_char=3227
+21	,	_	_	_	_	20	_	_	start_char=3227|end_char=3228
+22	work	_	_	_	_	21	_	_	start_char=3229|end_char=3233
+23	in	_	_	_	_	22	_	_	start_char=3234|end_char=3236
+24	an	_	_	_	_	23	_	_	start_char=3237|end_char=3239
+25	office	_	_	_	_	24	_	_	SpaceAfter=No|start_char=3240|end_char=3246
+26	,	_	_	_	_	25	_	_	start_char=3246|end_char=3247
+27	wear	_	_	_	_	26	_	_	start_char=3248|end_char=3252
+28	a	_	_	_	_	27	_	_	start_char=3253|end_char=3254
+29	tie	_	_	_	_	28	_	_	SpaceAfter=No|start_char=3255|end_char=3258
+30	,	_	_	_	_	29	_	_	start_char=3258|end_char=3259
+31	drink	_	_	_	_	30	_	_	start_char=3260|end_char=3265
+32	black	_	_	_	_	31	_	_	start_char=3266|end_char=3271
+33	coffee	_	_	_	_	32	_	_	SpaceAfter=No|start_char=3272|end_char=3278
+34	,	_	_	_	_	33	_	_	start_char=3278|end_char=3279
+35	or	_	_	_	_	34	_	_	start_char=3280|end_char=3282
+36	enjoy	_	_	_	_	35	_	_	start_char=3283|end_char=3288
+37	opera	_	_	_	_	36	_	_	SpaceAfter=No|start_char=3289|end_char=3294
+38	,	_	_	_	_	37	_	_	start_char=3294|end_char=3295
+39	I	_	_	_	_	38	_	_	start_char=3296|end_char=3297
+40	would	_	_	_	_	39	_	_	start_char=3298|end_char=3303
+41	have	_	_	_	_	40	_	_	start_char=3304|end_char=3308
+42	laughed	_	_	_	_	41	_	_	start_char=3309|end_char=3316
+43	at	_	_	_	_	42	_	_	start_char=3317|end_char=3319
+44	every	_	_	_	_	43	_	_	start_char=3320|end_char=3325
+45	single	_	_	_	_	44	_	_	start_char=3326|end_char=3332
+46	one	_	_	_	_	45	_	_	start_char=3333|end_char=3336
+47	of	_	_	_	_	46	_	_	start_char=3337|end_char=3339
+48	those	_	_	_	_	47	_	_	start_char=3340|end_char=3345
+49	suggestions	_	_	_	_	48	_	_	start_char=3346|end_char=3357
+50	—	_	_	_	_	49	_	_	start_char=3358|end_char=3359
+51	and	_	_	_	_	50	_	_	start_char=3360|end_char=3363
+52	yet	_	_	_	_	51	_	_	start_char=3364|end_char=3367
+53	here	_	_	_	_	52	_	_	start_char=3368|end_char=3372
+54	I	_	_	_	_	53	_	_	start_char=3373|end_char=3374
+55	am	_	_	_	_	54	_	_	SpaceAfter=No|start_char=3375|end_char=3377
+56	,	_	_	_	_	55	_	_	start_char=3377|end_char=3378
+57	in	_	_	_	_	56	_	_	start_char=3379|end_char=3381
+58	a	_	_	_	_	57	_	_	start_char=3382|end_char=3383
+59	city	_	_	_	_	58	_	_	SpaceAfter=No|start_char=3384|end_char=3388
+60	,	_	_	_	_	59	_	_	start_char=3388|end_char=3389
+61	driving	_	_	_	_	60	_	_	start_char=3390|end_char=3397
+62	a	_	_	_	_	61	_	_	start_char=3398|end_char=3399
+63	car	_	_	_	_	62	_	_	start_char=3400|end_char=3403
+64	to	_	_	_	_	63	_	_	start_char=3404|end_char=3406
+65	an	_	_	_	_	64	_	_	start_char=3407|end_char=3409
+66	office	_	_	_	_	65	_	_	SpaceAfter=No|start_char=3410|end_char=3416
+67	,	_	_	_	_	66	_	_	start_char=3416|end_char=3417
+68	in	_	_	_	_	67	_	_	start_char=3418|end_char=3420
+69	a	_	_	_	_	68	_	_	start_char=3421|end_char=3422
+70	tie	_	_	_	_	69	_	_	SpaceAfter=No|start_char=3423|end_char=3426
+71	,	_	_	_	_	70	_	_	start_char=3426|end_char=3427
+72	with	_	_	_	_	71	_	_	start_char=3428|end_char=3432
+73	black	_	_	_	_	72	_	_	start_char=3433|end_char=3438
+74	coffee	_	_	_	_	73	_	_	start_char=3439|end_char=3445
+75	in	_	_	_	_	74	_	_	start_char=3446|end_char=3448
+76	my	_	_	_	_	75	_	_	start_char=3449|end_char=3451
+77	cup	_	_	_	_	76	_	_	start_char=3452|end_char=3455
+78	and	_	_	_	_	77	_	_	start_char=3456|end_char=3459
+79	an	_	_	_	_	78	_	_	start_char=3460|end_char=3462
+80	opera	_	_	_	_	79	_	_	start_char=3463|end_char=3468
+81	ticket	_	_	_	_	80	_	_	start_char=3469|end_char=3475
+82	in	_	_	_	_	81	_	_	start_char=3476|end_char=3478
+83	my	_	_	_	_	82	_	_	start_char=3479|end_char=3481
+84	pocket	_	_	_	_	83	_	_	SpaceAfter=No|start_char=3482|end_char=3488
+85	,	_	_	_	_	84	_	_	start_char=3488|end_char=3489
+86	wondering	_	_	_	_	85	_	_	start_char=3490|end_char=3499
+87	when	_	_	_	_	86	_	_	start_char=3500|end_char=3504
+88	exactly	_	_	_	_	87	_	_	start_char=3505|end_char=3512
+89	all	_	_	_	_	88	_	_	start_char=3513|end_char=3516
+90	of	_	_	_	_	89	_	_	start_char=3517|end_char=3519
+91	that	_	_	_	_	90	_	_	start_char=3520|end_char=3524
+92	happened	_	_	_	_	91	_	_	start_char=3525|end_char=3533
+93	and	_	_	_	_	92	_	_	start_char=3534|end_char=3537
+94	whether	_	_	_	_	93	_	_	start_char=3538|end_char=3545
+95	the	_	_	_	_	94	_	_	start_char=3546|end_char=3549
+96	person	_	_	_	_	95	_	_	start_char=3550|end_char=3556
+97	I	_	_	_	_	96	_	_	start_char=3557|end_char=3558
+98	was	_	_	_	_	97	_	_	start_char=3559|end_char=3562
+99	then	_	_	_	_	98	_	_	start_char=3563|end_char=3567
+100	would	_	_	_	_	99	_	_	start_char=3568|end_char=3573
+101	recognize	_	_	_	_	100	_	_	SpaceAfter=No|start_char=3574|end_char=3583
+102	,	_	_	_	_	101	_	_	start_char=3583|end_char=3584
+103	let	_	_	_	_	102	_	_	start_char=3585|end_char=3588
+104	alone	_	_	_	_	103	_	_	start_char=3589|end_char=3594
+105	approve	_	_	_	_	104	_	_	start_char=3595|end_char=3602
+106	of	_	_	_	_	105	_	_	SpaceAfter=No|start_char=3603|end_char=3605
+107	,	_	_	_	_	106	_	_	start_char=3605|end_char=3606
+108	the	_	_	_	_	107	_	_	start_char=3607|end_char=3610
+109	person	_	_	_	_	108	_	_	start_char=3611|end_char=3617
+110	I	_	_	_	_	109	_	_	start_char=3618|end_char=3619
+111	am	_	_	_	_	110	_	_	start_char=3620|end_char=3622
+112	now	_	_	_	_	111	_	_	SpaceAfter=No|start_char=3623|end_char=3626
+113	.	_	_	_	_	112	_	_	SpacesAfter=\n\n|start_char=3626|end_char=3627
+
+# text = Because the trains were delayed, because the buses were full, because the taxis were too expensive, and because walking would have taken nearly two hours, we did what any reasonable group of adults would do in that situation: we went back inside, ordered another round of tea, and argued for forty-five minutes about whose idea it had been to come in the first place.
+# sent_id = 48
+# sentiment = 0
+1	Because	_	_	_	_	0	_	_	start_char=3629|end_char=3636
+2	the	_	_	_	_	1	_	_	start_char=3637|end_char=3640
+3	trains	_	_	_	_	2	_	_	start_char=3641|end_char=3647
+4	were	_	_	_	_	3	_	_	start_char=3648|end_char=3652
+5	delayed	_	_	_	_	4	_	_	SpaceAfter=No|start_char=3653|end_char=3660
+6	,	_	_	_	_	5	_	_	start_char=3660|end_char=3661
+7	because	_	_	_	_	6	_	_	start_char=3662|end_char=3669
+8	the	_	_	_	_	7	_	_	start_char=3670|end_char=3673
+9	buses	_	_	_	_	8	_	_	start_char=3674|end_char=3679
+10	were	_	_	_	_	9	_	_	start_char=3680|end_char=3684
+11	full	_	_	_	_	10	_	_	SpaceAfter=No|start_char=3685|end_char=3689
+12	,	_	_	_	_	11	_	_	start_char=3689|end_char=3690
+13	because	_	_	_	_	12	_	_	start_char=3691|end_char=3698
+14	the	_	_	_	_	13	_	_	start_char=3699|end_char=3702
+15	taxis	_	_	_	_	14	_	_	start_char=3703|end_char=3708
+16	were	_	_	_	_	15	_	_	start_char=3709|end_char=3713
+17	too	_	_	_	_	16	_	_	start_char=3714|end_char=3717
+18	expensive	_	_	_	_	17	_	_	SpaceAfter=No|start_char=3718|end_char=3727
+19	,	_	_	_	_	18	_	_	start_char=3727|end_char=3728
+20	and	_	_	_	_	19	_	_	start_char=3729|end_char=3732
+21	because	_	_	_	_	20	_	_	start_char=3733|end_char=3740
+22	walking	_	_	_	_	21	_	_	start_char=3741|end_char=3748
+23	would	_	_	_	_	22	_	_	start_char=3749|end_char=3754
+24	have	_	_	_	_	23	_	_	start_char=3755|end_char=3759
+25	taken	_	_	_	_	24	_	_	start_char=3760|end_char=3765
+26	nearly	_	_	_	_	25	_	_	start_char=3766|end_char=3772
+27	two	_	_	_	_	26	_	_	start_char=3773|end_char=3776
+28	hours	_	_	_	_	27	_	_	SpaceAfter=No|start_char=3777|end_char=3782
+29	,	_	_	_	_	28	_	_	start_char=3782|end_char=3783
+30	we	_	_	_	_	29	_	_	start_char=3784|end_char=3786
+31	did	_	_	_	_	30	_	_	start_char=3787|end_char=3790
+32	what	_	_	_	_	31	_	_	start_char=3791|end_char=3795
+33	any	_	_	_	_	32	_	_	start_char=3796|end_char=3799
+34	reasonable	_	_	_	_	33	_	_	start_char=3800|end_char=3810
+35	group	_	_	_	_	34	_	_	start_char=3811|end_char=3816
+36	of	_	_	_	_	35	_	_	start_char=3817|end_char=3819
+37	adults	_	_	_	_	36	_	_	start_char=3820|end_char=3826
+38	would	_	_	_	_	37	_	_	start_char=3827|end_char=3832
+39	do	_	_	_	_	38	_	_	start_char=3833|end_char=3835
+40	in	_	_	_	_	39	_	_	start_char=3836|end_char=3838
+41	that	_	_	_	_	40	_	_	start_char=3839|end_char=3843
+42	situation	_	_	_	_	41	_	_	SpaceAfter=No|start_char=3844|end_char=3853
+43	:	_	_	_	_	42	_	_	start_char=3853|end_char=3854
+44	we	_	_	_	_	43	_	_	start_char=3855|end_char=3857
+45	went	_	_	_	_	44	_	_	start_char=3858|end_char=3862
+46	back	_	_	_	_	45	_	_	start_char=3863|end_char=3867
+47	inside	_	_	_	_	46	_	_	SpaceAfter=No|start_char=3868|end_char=3874
+48	,	_	_	_	_	47	_	_	start_char=3874|end_char=3875
+49	ordered	_	_	_	_	48	_	_	start_char=3876|end_char=3883
+50	another	_	_	_	_	49	_	_	start_char=3884|end_char=3891
+51	round	_	_	_	_	50	_	_	start_char=3892|end_char=3897
+52	of	_	_	_	_	51	_	_	start_char=3898|end_char=3900
+53	tea	_	_	_	_	52	_	_	SpaceAfter=No|start_char=3901|end_char=3904
+54	,	_	_	_	_	53	_	_	start_char=3904|end_char=3905
+55	and	_	_	_	_	54	_	_	start_char=3906|end_char=3909
+56	argued	_	_	_	_	55	_	_	start_char=3910|end_char=3916
+57	for	_	_	_	_	56	_	_	start_char=3917|end_char=3920
+58	forty	_	_	_	_	57	_	_	SpaceAfter=No|start_char=3921|end_char=3926
+59	-	_	_	_	_	58	_	_	SpaceAfter=No|start_char=3926|end_char=3927
+60	five	_	_	_	_	59	_	_	start_char=3927|end_char=3931
+61	minutes	_	_	_	_	60	_	_	start_char=3932|end_char=3939
+62	about	_	_	_	_	61	_	_	start_char=3940|end_char=3945
+63	whose	_	_	_	_	62	_	_	start_char=3946|end_char=3951
+64	idea	_	_	_	_	63	_	_	start_char=3952|end_char=3956
+65	it	_	_	_	_	64	_	_	start_char=3957|end_char=3959
+66	had	_	_	_	_	65	_	_	start_char=3960|end_char=3963
+67	been	_	_	_	_	66	_	_	start_char=3964|end_char=3968
+68	to	_	_	_	_	67	_	_	start_char=3969|end_char=3971
+69	come	_	_	_	_	68	_	_	start_char=3972|end_char=3976
+70	in	_	_	_	_	69	_	_	start_char=3977|end_char=3979
+71	the	_	_	_	_	70	_	_	start_char=3980|end_char=3983
+72	first	_	_	_	_	71	_	_	start_char=3984|end_char=3989
+73	place	_	_	_	_	72	_	_	SpaceAfter=No|start_char=3990|end_char=3995
+74	.	_	_	_	_	73	_	_	SpacesAfter=\n\n|start_char=3995|end_char=3996
+
+# text = Among the items recovered from the site were: three bronze coins, a broken comb, two clay lamps, a bone needle, several iron nails of varying sizes, a fragment of painted plaster showing what may be a bird or possibly a leaf, and a small glass bead, blue with white swirls, that the excavators nicknamed "the marble."
+# sent_id = 49
+# sentiment = 1
+1	Among	_	_	_	_	0	_	_	start_char=3998|end_char=4003
+2	the	_	_	_	_	1	_	_	start_char=4004|end_char=4007
+3	items	_	_	_	_	2	_	_	start_char=4008|end_char=4013
+4	recovered	_	_	_	_	3	_	_	start_char=4014|end_char=4023
+5	from	_	_	_	_	4	_	_	start_char=4024|end_char=4028
+6	the	_	_	_	_	5	_	_	start_char=4029|end_char=4032
+7	site	_	_	_	_	6	_	_	start_char=4033|end_char=4037
+8	were	_	_	_	_	7	_	_	SpaceAfter=No|start_char=4038|end_char=4042
+9	:	_	_	_	_	8	_	_	start_char=4042|end_char=4043
+10	three	_	_	_	_	9	_	_	start_char=4044|end_char=4049
+11	bronze	_	_	_	_	10	_	_	start_char=4050|end_char=4056
+12	coins	_	_	_	_	11	_	_	SpaceAfter=No|start_char=4057|end_char=4062
+13	,	_	_	_	_	12	_	_	start_char=4062|end_char=4063
+14	a	_	_	_	_	13	_	_	start_char=4064|end_char=4065
+15	broken	_	_	_	_	14	_	_	start_char=4066|end_char=4072
+16	comb	_	_	_	_	15	_	_	SpaceAfter=No|start_char=4073|end_char=4077
+17	,	_	_	_	_	16	_	_	start_char=4077|end_char=4078
+18	two	_	_	_	_	17	_	_	start_char=4079|end_char=4082
+19	clay	_	_	_	_	18	_	_	start_char=4083|end_char=4087
+20	lamps	_	_	_	_	19	_	_	SpaceAfter=No|start_char=4088|end_char=4093
+21	,	_	_	_	_	20	_	_	start_char=4093|end_char=4094
+22	a	_	_	_	_	21	_	_	start_char=4095|end_char=4096
+23	bone	_	_	_	_	22	_	_	start_char=4097|end_char=4101
+24	needle	_	_	_	_	23	_	_	SpaceAfter=No|start_char=4102|end_char=4108
+25	,	_	_	_	_	24	_	_	start_char=4108|end_char=4109
+26	several	_	_	_	_	25	_	_	start_char=4110|end_char=4117
+27	iron	_	_	_	_	26	_	_	start_char=4118|end_char=4122
+28	nails	_	_	_	_	27	_	_	start_char=4123|end_char=4128
+29	of	_	_	_	_	28	_	_	start_char=4129|end_char=4131
+30	varying	_	_	_	_	29	_	_	start_char=4132|end_char=4139
+31	sizes	_	_	_	_	30	_	_	SpaceAfter=No|start_char=4140|end_char=4145
+32	,	_	_	_	_	31	_	_	start_char=4145|end_char=4146
+33	a	_	_	_	_	32	_	_	start_char=4147|end_char=4148
+34	fragment	_	_	_	_	33	_	_	start_char=4149|end_char=4157
+35	of	_	_	_	_	34	_	_	start_char=4158|end_char=4160
+36	painted	_	_	_	_	35	_	_	start_char=4161|end_char=4168
+37	plaster	_	_	_	_	36	_	_	start_char=4169|end_char=4176
+38	showing	_	_	_	_	37	_	_	start_char=4177|end_char=4184
+39	what	_	_	_	_	38	_	_	start_char=4185|end_char=4189
+40	may	_	_	_	_	39	_	_	start_char=4190|end_char=4193
+41	be	_	_	_	_	40	_	_	start_char=4194|end_char=4196
+42	a	_	_	_	_	41	_	_	start_char=4197|end_char=4198
+43	bird	_	_	_	_	42	_	_	start_char=4199|end_char=4203
+44	or	_	_	_	_	43	_	_	start_char=4204|end_char=4206
+45	possibly	_	_	_	_	44	_	_	start_char=4207|end_char=4215
+46	a	_	_	_	_	45	_	_	start_char=4216|end_char=4217
+47	leaf	_	_	_	_	46	_	_	SpaceAfter=No|start_char=4218|end_char=4222
+48	,	_	_	_	_	47	_	_	start_char=4222|end_char=4223
+49	and	_	_	_	_	48	_	_	start_char=4224|end_char=4227
+50	a	_	_	_	_	49	_	_	start_char=4228|end_char=4229
+51	small	_	_	_	_	50	_	_	start_char=4230|end_char=4235
+52	glass	_	_	_	_	51	_	_	start_char=4236|end_char=4241
+53	bead	_	_	_	_	52	_	_	SpaceAfter=No|start_char=4242|end_char=4246
+54	,	_	_	_	_	53	_	_	start_char=4246|end_char=4247
+55	blue	_	_	_	_	54	_	_	start_char=4248|end_char=4252
+56	with	_	_	_	_	55	_	_	start_char=4253|end_char=4257
+57	white	_	_	_	_	56	_	_	start_char=4258|end_char=4263
+58	swirls	_	_	_	_	57	_	_	SpaceAfter=No|start_char=4264|end_char=4270
+59	,	_	_	_	_	58	_	_	start_char=4270|end_char=4271
+60	that	_	_	_	_	59	_	_	start_char=4272|end_char=4276
+61	the	_	_	_	_	60	_	_	start_char=4277|end_char=4280
+62	excavators	_	_	_	_	61	_	_	start_char=4281|end_char=4291
+63	nicknamed	_	_	_	_	62	_	_	start_char=4292|end_char=4301
+64	"	_	_	_	_	63	_	_	SpaceAfter=No|start_char=4302|end_char=4303
+65	the	_	_	_	_	64	_	_	start_char=4303|end_char=4306
+66	marble	_	_	_	_	65	_	_	SpaceAfter=No|start_char=4307|end_char=4313
+67	.	_	_	_	_	66	_	_	SpaceAfter=No|start_char=4313|end_char=4314
+68	"	_	_	_	_	67	_	_	SpacesAfter=\n|start_char=4314|end_char=4315
