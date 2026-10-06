@@ -3,9 +3,9 @@
 <Project>
 
   <!-- STANZA001: TorchSharp, its native packages (TorchSharp-cpu, TorchSharp-cuda-*) and libtorch-* must be the versions
-       StanzaSharp was built against; others can fail to load or crash. Set StanzaSharpCheckTorchVersions to false to skip. -->
+       StanzaSharp was built against; others can fail to load or crash. Silence it with NoWarn STANZA001. -->
   <Target Name="_StanzaSharpCheckTorchVersions" AfterTargets="ResolvePackageAssets"
-          Condition="'$(StanzaSharpCheckTorchVersions)' != 'false' And '$(_StanzaSharpTorchSharpVersion)' != ''">
+          Condition="'$(_StanzaSharpTorchSharpVersion)' != '' And Exists('$(ProjectAssetsFile)')">
     <!-- The resolved packages are @(PackageDependencies) (ids only); their versions are the "<id>/<version>" keys of the assets file. -->
     <PropertyGroup>
       <_StanzaSharpAssets>$([System.IO.File]::ReadAllText('$(ProjectAssetsFile)'))</_StanzaSharpAssets>

@@ -487,7 +487,7 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - `STANZA001` (warning): a resolved `TorchSharp`, `TorchSharp-*` or `libtorch-*` package has another version. Versions
     come from `@(PackageDependencies)` + the assets file's `"<id>/<version>"` keys (copy-local items miss the
     asset-less `TorchSharp-cpu`; `TorchSharp-cpu` 0.106.0 resolves the same TorchSharp/libtorch as 0.107.0).
-    `StanzaSharpCheckTorchVersions=false` skips it. `verify-package.ps1` fails on any `STANZA` warning.
+    `<NoWarn>STANZA001</NoWarn>` silences it. `verify-package.ps1` fails on any `STANZA` warning.
   - `StanzaSharpTrimNative=true` (opt-in) removes from `NativeCopyLocalItems`/`RuntimeTargetsCopyLocalItems` (so also
     from the .deps.json): libtorch_python, libshm, libnnapi_backend, libtorchbind_test, libjitbackend_test,
     libbackend_with_compiler, libaoti_custom_ops (.so; .dylib for python/shm). By DT_NEEDED/LC_LOAD_DYLIB nothing that
