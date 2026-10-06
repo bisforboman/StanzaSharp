@@ -14,6 +14,9 @@ public sealed class Sentence
     public List<Token> Tokens { get; } = [];
     public Tree? Constituency { get; set; }
 
+    /// <summary>Stanza's sentiment label: 0 negative, 1 neutral, 2 positive.</summary>
+    public int? Sentiment { get; set; }
+
     /// <summary>Syntactic words (after MWT expansion), which POS and the parser operate on.</summary>
     public IEnumerable<Word> Words => Tokens.SelectMany(t => t.Words);
 }

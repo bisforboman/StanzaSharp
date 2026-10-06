@@ -102,6 +102,8 @@ public static class Conllu
         if (sent.Text != null) sb.Append("# text = ").AppendJoin(' ', PyWhitespace.Split(sent.Text).Where(w => w.Length > 0)).Append('\n');
         if (sent.SentId != null) sb.Append("# sent_id = ").Append(sent.SentId).Append('\n');
         if (sent.Constituency != null) sb.Append("# constituency = ").Append(sent.Constituency).Append('\n');
+        // Stanza runs sentiment after constituency, and its comments keep the order they were set in.
+        if (sent.Sentiment != null) sb.Append("# sentiment = ").Append(sent.Sentiment.Value).Append('\n');
 
         foreach (var token in sent.Tokens)
         {
@@ -138,6 +140,7 @@ public static class Conllu
             case "text": sent.Text = value; break;
             case "sent_id": sent.SentId = value; break;
             case "constituency": sent.Constituency = Tree.Parse(value); break;
+            case "sentiment": sent.Sentiment = int.Parse(value); break;
         }
     }
 
