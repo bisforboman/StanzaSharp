@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="$(TorchSharpNative)" Version="0.107.0" />
+    <PackageReference Include="$(TorchSharpNative)" Version="$(TorchSharpVersion)" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -1,0 +1,51 @@
+<!-- Imported into every project that references StanzaSharp, directly or through a StanzaSharp.Cpu.* package.
+     StanzaSharp.props (generated when the package is packed) sets the TorchSharp and libtorch versions it was built with. -->
+<Project>
+
+  <!-- STANZA001: TorchSharp, its native packages (TorchSharp-cpu, TorchSharp-cuda-*) and libtorch-* must be the versions
+       StanzaSharp was built against; others can fail to load or crash. Set StanzaSharpCheckTorchVersions to false to skip. -->
+  <Target Name="_StanzaSharpCheckTorchVersions" AfterTargets="ResolvePackageAssets"
+          Condition="'$(StanzaSharpCheckTorchVersions)' != 'false' And '$(_StanzaSharpTorchSharpVersion)' != ''">
+    <!-- The resolved packages are @(PackageDependencies) (ids only); their versions are the "<id>/<version>" keys of the assets file. -->
+    <PropertyGroup>
+      <_StanzaSharpAssets>$([System.IO.File]::ReadAllText('$(ProjectAssetsFile)'))</_StanzaSharpAssets>
+    </PropertyGroup>
+    <ItemGroup>
+      <_StanzaSharpTorchPackage Include="@(PackageDependencies)" Expected="$(_StanzaSharpTorchSharpVersion)"
+          Condition="'$([System.String]::Copy(`%(Identity)`).ToLowerInvariant())' == 'torchsharp' Or $([System.String]::Copy(`%(Identity)`).ToLowerInvariant().StartsWith(`torchsharp-`))" />
+      <_StanzaSharpTorchPackage Include="@(PackageDependencies)" Expected="$(_StanzaSharpLibTorchVersion)"
+          Condition="$([System.String]::Copy(`%(Identity)`).ToLowerInvariant().StartsWith(`libtorch-`))" />
+      <_StanzaSharpTorchPackage>
+        <Version>$([System.Text.RegularExpressions.Regex]::Match($(_StanzaSharpAssets), `(?i)(?&lt;=\x22%(Identity)/)[^\x22]+`).Value)</Version>
+      </_StanzaSharpTorchPackage>
+      <_StanzaSharpTorchMismatch Include="@(_StanzaSharpTorchPackage->'%(Identity) %(Version)')" Condition="'%(Version)' != '%(Expected)'" />
+    </ItemGroup>
+    <Warning Code="STANZA001" Condition="'@(_StanzaSharpTorchMismatch)' != ''"
+             Text="StanzaSharp $(_StanzaSharpVersion) is built for TorchSharp $(_StanzaSharpTorchSharpVersion) and libtorch $(_StanzaSharpLibTorchVersion), but this project resolves @(_StanzaSharpTorchMismatch, ', '). Reference TorchSharp-cpu $(_StanzaSharpTorchSharpVersion), TorchSharp-cuda-* $(_StanzaSharpTorchSharpVersion) or a StanzaSharp.Cpu.* package: other versions can fail to load or crash at run time." />
+    <PropertyGroup>
+      <_StanzaSharpAssets />
+    </PropertyGroup>
+    <ItemGroup>
+      <_StanzaSharpTorchPackage Remove="@(_StanzaSharpTorchPackage)" />
+      <_StanzaSharpTorchMismatch Remove="@(_StanzaSharpTorchMismatch)" />
+    </ItemGroup>
+  </Target>
+
+  <!-- StanzaSharpTrimNative=true: leaves out the libtorch files StanzaSharp never loads (Python bindings, test and
+       mobile backends; nothing that TorchSharp's LibTorchSharp, libtorch_cpu or their dependencies link to).
+       Removed from build and publish output and from the .deps.json. Windows libtorch ships none of them. -->
+  <PropertyGroup>
+    <_StanzaSharpUnusedNative>;libtorch_python.so;libshm.so;libnnapi_backend.so;libtorchbind_test.so;libjitbackend_test.so;libbackend_with_compiler.so;libaoti_custom_ops.so;libtorch_python.dylib;libshm.dylib;</_StanzaSharpUnusedNative>
+    <!-- Changes when StanzaSharpTrimNative does; an input of the .deps.json, so switching it regenerates that file. -->
+    <_StanzaSharpTrimMarker>$(MSBuildProjectExtensionsPath)StanzaSharpTrimNative.txt</_StanzaSharpTrimMarker>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(_StanzaSharpTrimMarker)</MSBuildAllProjects>
+  </PropertyGroup>
+  <Target Name="_StanzaSharpTrimNative" AfterTargets="ResolvePackageAssets">
+    <WriteLinesToFile File="$(_StanzaSharpTrimMarker)" Lines="StanzaSharpTrimNative=$(StanzaSharpTrimNative)" Overwrite="true" WriteOnlyWhenDifferent="true" />
+    <ItemGroup Condition="'$(StanzaSharpTrimNative)' == 'true'">
+      <NativeCopyLocalItems Remove="@(NativeCopyLocalItems)" Condition="$(_StanzaSharpUnusedNative.Contains(';%(Filename)%(Extension);'))" />
+      <RuntimeTargetsCopyLocalItems Remove="@(RuntimeTargetsCopyLocalItems)" Condition="$(_StanzaSharpUnusedNative.Contains(';%(Filename)%(Extension);'))" />
+    </ItemGroup>
+  </Target>
+
+</Project>

@@ -32,13 +32,26 @@
 
   <ItemGroup>
     <!-- The libraries' one external dependency, declared here so the package carries it. -->
-    <PackageReference Include="TorchSharp" Version="0.107.0" />
+    <PackageReference Include="TorchSharp" Version="$(TorchSharpVersion)" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="PACKAGE.md" Pack="true" PackagePath="/" />
     <None Include="..\..\NOTICE" Pack="true" PackagePath="/" />
+    <!-- The version check (STANZA001) and StanzaSharpTrimNative, for every project that gets StanzaSharp. -->
+    <None Include="buildTransitive\StanzaSharp.targets" Pack="true" PackagePath="buildTransitive/" />
   </ItemGroup>
+
+  <!-- buildTransitive/StanzaSharp.props: the versions this package is built with, for StanzaSharp.targets. -->
+  <Target Name="GenerateVersionProps" BeforeTargets="_GetPackageFiles">
+    <PropertyGroup>
+      <_VersionProps>$(IntermediateOutputPath)StanzaSharp.props</_VersionProps>
+    </PropertyGroup>
+    <WriteLinesToFile File="$(_VersionProps)" Overwrite="true" WriteOnlyWhenDifferent="true" Lines="&lt;Project&gt;;  &lt;PropertyGroup&gt;;    &lt;_StanzaSharpVersion&gt;$(Version)&lt;/_StanzaSharpVersion&gt;;    &lt;_StanzaSharpTorchSharpVersion&gt;$(TorchSharpVersion)&lt;/_StanzaSharpTorchSharpVersion&gt;;    &lt;_StanzaSharpLibTorchVersion&gt;$(LibTorchVersion)&lt;/_StanzaSharpLibTorchVersion&gt;;  &lt;/PropertyGroup&gt;;&lt;/Project&gt;" />
+    <ItemGroup>
+      <None Include="$(_VersionProps)" Pack="true" PackagePath="buildTransitive/" />
+    </ItemGroup>
+  </Target>
 
   <Target Name="IncludeProjectReferences" DependsOnTargets="ResolveReferences">
     <ItemGroup>

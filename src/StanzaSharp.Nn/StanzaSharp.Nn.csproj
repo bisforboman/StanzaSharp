@@ -5,7 +5,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="TorchSharp" Version="0.107.0" />
+    <PackageReference Include="TorchSharp" Version="$(TorchSharpVersion)" />
   </ItemGroup>
 
   <PropertyGroup>
