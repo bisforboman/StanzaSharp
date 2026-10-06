@@ -33,7 +33,8 @@
 
   <!-- StanzaSharpTrimNative=true: leaves out the libtorch files StanzaSharp never loads (Python bindings, test and
        mobile backends; nothing that TorchSharp's LibTorchSharp, libtorch_cpu or their dependencies link to).
-       Removed from build and publish output and from the .deps.json. Windows libtorch ships none of them. -->
+       Removed from build and publish output and from the .deps.json. Windows libtorch ships none of them.
+       Only files of the CPU libtorch packages (libtorch-cpu-*): CUDA builds are left whole, as trimming them is untested. -->
   <PropertyGroup>
     <_StanzaSharpUnusedNative>;libtorch_python.so;libshm.so;libnnapi_backend.so;libtorchbind_test.so;libjitbackend_test.so;libbackend_with_compiler.so;libaoti_custom_ops.so;libtorch_python.dylib;libshm.dylib;</_StanzaSharpUnusedNative>
     <!-- Changes when StanzaSharpTrimNative does; an input of the .deps.json, so switching it regenerates that file. -->
@@ -43,8 +44,8 @@
   <Target Name="_StanzaSharpTrimNative" AfterTargets="ResolvePackageAssets">
     <WriteLinesToFile File="$(_StanzaSharpTrimMarker)" Lines="StanzaSharpTrimNative=$(StanzaSharpTrimNative)" Overwrite="true" WriteOnlyWhenDifferent="true" />
     <ItemGroup Condition="'$(StanzaSharpTrimNative)' == 'true'">
-      <NativeCopyLocalItems Remove="@(NativeCopyLocalItems)" Condition="$(_StanzaSharpUnusedNative.Contains(';%(Filename)%(Extension);'))" />
-      <RuntimeTargetsCopyLocalItems Remove="@(RuntimeTargetsCopyLocalItems)" Condition="$(_StanzaSharpUnusedNative.Contains(';%(Filename)%(Extension);'))" />
+      <NativeCopyLocalItems Remove="@(NativeCopyLocalItems)" Condition="$(_StanzaSharpUnusedNative.Contains(';%(Filename)%(Extension);')) And $([System.String]::Copy('%(NuGetPackageId)').ToLowerInvariant().StartsWith('libtorch-cpu-'))" />
+      <RuntimeTargetsCopyLocalItems Remove="@(RuntimeTargetsCopyLocalItems)" Condition="$(_StanzaSharpUnusedNative.Contains(';%(Filename)%(Extension);')) And $([System.String]::Copy('%(NuGetPackageId)').ToLowerInvariant().StartsWith('libtorch-cpu-'))" />
     </ItemGroup>
   </Target>
 

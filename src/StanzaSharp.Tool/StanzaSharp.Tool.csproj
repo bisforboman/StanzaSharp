@@ -11,11 +11,13 @@
     <Description>The stanzasharp command: downloads Stanza's English models for StanzaSharp, checked against their MD5s, e.g. in a Dockerfile or CI. "stanzasharp download DIR [--package default_fast] [--processors tokenize,mwt,pos]". Needs no native libtorch.</Description>
     <PackageTags>nlp;stanza;models;download;dotnet-tool</PackageTags>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\StanzaSharp\StanzaSharp.csproj" />
     <None Include="..\..\NOTICE" Pack="true" PackagePath="/" />
+    <None Include="README.md" Pack="true" PackagePath="/" />
   </ItemGroup>
 
   <!-- No native files (TorchSharp's LibTorchSharp, SkiaSharp's): the downloader never calls into them. -->

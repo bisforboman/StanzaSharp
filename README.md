@@ -39,7 +39,7 @@ copied. Smaller models help too: `Package = "default_fast"` and downloading only
 the libtorch files StanzaSharp never loads from build and publish output: the Python bindings (`libtorch_python`,
 `libshm`) and test and mobile backends (`libtorchbind_test`, `libjitbackend_test`, `libbackend_with_compiler`,
 `libaoti_custom_ops`, `libnnapi_backend`). That is 35 MB less on Linux x64 (a `-r linux-x64` publish goes from 503 to
-468 MB) and 29 MB on macOS; the Windows libtorch packages ship none of them. Nothing TorchSharp loads links to them.
+468 MB) and 29 MB on macOS; the Windows libtorch packages ship none of them. Nothing TorchSharp loads links to them. It applies to the CPU libtorch only; CUDA builds are left whole.
 
 ### Supported platforms
 
