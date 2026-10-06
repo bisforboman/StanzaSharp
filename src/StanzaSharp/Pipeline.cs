@@ -4,6 +4,7 @@ using StanzaSharp.Lemma;
 using StanzaSharp.Mwt;
 using StanzaSharp.Nn;
 using StanzaSharp.Pos;
+using StanzaSharp.Sentiment;
 using StanzaSharp.Tokenize;
 using TorchSharp;
 
@@ -32,6 +33,7 @@ public sealed class Pipeline : IDisposable
         ["lemma"] = ["tokenize", "mwt", "pos"], // Stanza only requires tokenize, but the model reads UPOS
         ["depparse"] = ["tokenize", "mwt", "pos", "lemma"],
         ["constituency"] = ["tokenize", "mwt", "pos"],
+        ["sentiment"] = ["tokenize"], // the model reads only the tokens' text
     };
 
     private readonly Tokenizer _tokenizer;
@@ -40,6 +42,7 @@ public sealed class Pipeline : IDisposable
     private readonly Lemmatizer? _lemma;
     private readonly DependencyParser? _depparse;
     private readonly ConstituencyParser? _parser;
+    private readonly SentimentClassifier? _sentiment;
     private readonly Pretrain? _pretrain;
     private readonly CharLanguageModel? _charlmForward, _charlmBackward;
     private readonly CharlmCacheOptions _cacheOptions;
@@ -52,7 +55,7 @@ public sealed class Pipeline : IDisposable
         _tokenizer = Tokenizer.Load(Model("tokenize/combined_nocharlm"));
         if (processors.Contains("mwt"))
             _mwt = MwtExpander.Load(Model("mwt/combined"));
-        if (processors.Contains("pos") || processors.Contains("depparse") || processors.Contains("constituency"))
+        if (processors.Contains("pos") || processors.Contains("depparse") || processors.Contains("constituency") || processors.Contains("sentiment"))
         {
             _pretrain = Pretrain.Load(Model("pretrain/conll17"));
             _charlmForward = CharLanguageModel.Load(Model("forward_charlm/1billion"));
@@ -66,6 +69,8 @@ public sealed class Pipeline : IDisposable
             _depparse = DependencyParser.Load(Model("depparse/combined_charlm"), _pretrain!, _charlmForward!, _charlmBackward!);
         if (processors.Contains("constituency"))
             _parser = ConstituencyParser.Load(Model("constituency/ptb3-revised_charlm"), _pretrain!, _charlmForward!, _charlmBackward!);
+        if (processors.Contains("sentiment"))
+            _sentiment = SentimentClassifier.Load(Model("sentiment/sstplus_charlm"), _pretrain!, _charlmForward!, _charlmBackward!);
     }
 
     /// <summary>
@@ -102,19 +107,22 @@ public sealed class Pipeline : IDisposable
     {
         var doc = _tokenizer.Process(text);
         _mwt?.Process(doc);
-        // The parser reuses the tagger's charlm outputs instead of computing them again.
-        using var charlms = _pos != null && _parser != null && _cacheOptions.IsEnabled ? new CharlmCache(_cacheOptions.MaxWords) : null;
+        // The parser and the sentiment classifier reuse the tagger's charlm outputs instead of computing them again.
+        using var charlms = _pos != null && (_parser != null || _sentiment != null) && _cacheOptions.IsEnabled ? new CharlmCache(_cacheOptions.MaxWords) : null;
         _pos?.Process(doc, charlms);
         _lemma?.Process(doc);
         // No CharlmCache: depparse runs the charlms with a ROOT word in front, so the tagger's outputs don't apply.
         _depparse?.Process(doc);
         _parser?.Process(doc, charlms);
+        // Stanza's order: sentiment runs after the parsers.
+        _sentiment?.Process(doc, charlms);
         return doc;
     }
 
     public void Dispose()
     {
         _parser?.Dispose();
+        _sentiment?.Dispose();
         _depparse?.Dispose();
         _pos?.Dispose();
         _lemma?.Dispose();

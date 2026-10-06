@@ -23,7 +23,7 @@ match the `TorchSharp` version StanzaSharp depends on.
 
 ## Download the models
 
-The models (about 450 MB) come from Stanza's Hugging Face repository. Download them once:
+The models (about 530 MB) come from Stanza's Hugging Face repository. Download them once:
 
 ```csharp
 await ModelDownloader.DownloadAsync("models/stanza/en");

@@ -134,7 +134,7 @@ if ($Models) {
     New-Item -ItemType Directory -Force -Path $stanzaDir | Out-Null
 
     Write-Host 'Downloading English models' -ForegroundColor Cyan
-    & $venvPy -c "import stanza; stanza.download('en', model_dir=r'$stanzaDir', processors='tokenize,mwt,pos,constituency')"
+    & $venvPy -c "import stanza; stanza.download('en', model_dir=r'$stanzaDir', processors='tokenize,mwt,pos,constituency,sentiment')"
     if ($LASTEXITCODE -ne 0) { throw 'Model download failed.' }
 
     Write-Host 'Converting models' -ForegroundColor Cyan

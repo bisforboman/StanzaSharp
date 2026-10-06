@@ -11,6 +11,7 @@
     <Project Path="src/StanzaSharp.Mwt/StanzaSharp.Mwt.csproj" />
     <Project Path="src/StanzaSharp.Nn/StanzaSharp.Nn.csproj" />
     <Project Path="src/StanzaSharp.Pos/StanzaSharp.Pos.csproj" />
+    <Project Path="src/StanzaSharp.Sentiment/StanzaSharp.Sentiment.csproj" />
     <Project Path="src/StanzaSharp.Tokenize/StanzaSharp.Tokenize.csproj" />
     <Project Path="src/StanzaSharp/StanzaSharp.csproj" />
   </Folder>

@@ -17,7 +17,7 @@ dotnet add package TorchSharp-cpu
 
 ## Models
 
-Download Stanza's English models (about 450 MB, from Stanza's Hugging Face repository) once. Every file is
+Download Stanza's English models (about 530 MB, from Stanza's Hugging Face repository) once. Every file is
 checked against its published MD5; `Pipeline.Load` itself never touches the network.
 
 ```csharp
