@@ -409,15 +409,27 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   from Python need care too: Python's `\b`/`\w` count No/Nl characters such as `²` as word
   characters and combining marks as non-word (see `Tokenizer.PyRegex`).
 - CI (`.github/workflows/ci.yml`, github.com/bisforboman/StanzaSharp; pushes to `main`, PRs, and
-  `workflow_call` from release.yml; `ubuntu-24.04` pinned).
+  `workflow_call` from release.yml; `ubuntu-24.04`, `windows-2025`, `macos-15` pinned).
+  - Branch protection on `main` requires the check names `build-test` and `golden`, so they stay
+    plain jobs; a matrix would rename them (`build-test (ubuntu-24.04)`) and block every PR.
   - `build-test` runs the suite without models.
   - `golden`, on a model-cache miss, downloads the models with the C# `ModelDownloader` (via the
     CLI) and converts them with CPU torch. The models are cached on `ModelDownloader.cs`,
     `tools/requirements.txt` and `tools/stanza_convert.py`. It then fails if any test is skipped
     (`outcome="NotExecuted"` in the trx; the trx `notExecuted` counter stays 0 for skips), and runs
     `tools/verify-package.ps1` against `models/stanza/en`.
-  - CI runs on Linux: keep paths forward-slash and file names case-exact. The root `.gitattributes`
-    keeps sources LF.
+  - `cross-os (windows-2025)` / `cross-os (macos-15)` (Apple Silicon; `TorchSharp-cpu` brings
+    `libtorch-cpu-osx-arm64`): build, full suite with `STANZASHARP_MODELS` = `models/stanza/en` (the
+    `.pt` files, no Python or conversion), the same no-skip check, and `verify-package.ps1`. Models are
+    cached per OS on `ModelDownloader.cs` only; no NuGet cache, to stay inside the 10 GB cache budget.
+    - macOS first needs `brew install libomp`. `libtorch_cpu.dylib` from `libtorch-cpu-osx-arm64` 2.10.0
+      links `/opt/homebrew/opt/libomp/lib/libomp.dylib` by absolute path, not the `libomp.dylib` it
+      ships. Without it TorchSharp reports only "doesn't contain a reference to libtorch-cpu-osx-arm64";
+      `otool -L` on the dylib shows the real cause. Users need it too (README, PACKAGE.md).
+  - Keep paths forward-slash and file names case-exact (Linux). The root `.gitattributes` keeps sources
+    LF; `tests/golden/.gitattributes` pins golden files (`eol=lf`, `binary`, `validation_whitespace.txt`
+    `-text`), so Windows checkouts with `core.autocrlf=true` stay byte-exact. Bash steps run under
+    `shell: bash` on every OS (Git Bash on Windows).
 
 ## Packaging and releases
 

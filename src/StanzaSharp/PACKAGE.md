@@ -23,6 +23,8 @@ dotnet add package TorchSharp-cpu
 Add `TorchSharp-cpu` (or a `TorchSharp-cuda-*` package for GPU) for the native libtorch. Its version must
 match the `TorchSharp` version StanzaSharp depends on.
 
+On macOS (Apple Silicon), also run `brew install libomp`: TorchSharp-cpu's libtorch loads OpenMP from Homebrew's path.
+
 ## Download the models
 
 The models (about 600 MB) come from Stanza's Hugging Face repository. Download them once:

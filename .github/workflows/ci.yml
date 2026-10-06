@@ -108,3 +108,69 @@ jobs:
         with:
           name: test-results-golden
           path: TestResults/*.trx
+
+  # Windows and macOS (Apple Silicon): the full suite and the package check against Stanza's .pt files.
+  # golden stays the reference run; only it converts the models (Python) and compares .pt with converted.
+  # A separate job, not a matrix over build-test/golden, so those two keep their check names (required on main).
+  # No NuGet cache here: TorchSharp-cpu pulls all three libtorch builds, and the repository's 10 GB cache
+  # budget goes to the models.
+  cross-os:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2025, macos-15]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    env:
+      # Pipeline.Load and every test accept the .pt download directly.
+      STANZASHARP_MODELS: ${{ github.workspace }}/models/stanza/en
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - uses: actions/cache@v6
+        id: models
+        with:
+          path: models/stanza/en
+          key: models-pt-${{ runner.os }}-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs') }}
+
+      # libtorch-cpu-osx-arm64's libtorch_cpu.dylib links OpenMP by Homebrew's absolute path
+      # (/opt/homebrew/opt/libomp/lib/libomp.dylib), not the libomp.dylib it ships; macOS users need it too.
+      - name: Install libomp (macOS)
+        if: runner.os == 'macOS'
+        run: brew install libomp
+
+      - name: Build
+        run: dotnet build StanzaSharp.slnx
+
+      - name: Download the models
+        if: steps.models.outputs.cache-hit != 'true'
+        run: |
+          dotnet run --project samples/StanzaSharp.Cli --no-build -- download models/stanza/en
+          dotnet run --project samples/StanzaSharp.Cli --no-build -- download models/stanza/en --package default_fast
+
+      - name: Test
+        run: dotnet test StanzaSharp.slnx --no-build --logger trx --results-directory TestResults
+
+      - name: Check that no test was skipped
+        run: |
+          ls TestResults/*.trx
+          if grep -q 'outcome="NotExecuted"' TestResults/*.trx; then
+            echo "::error::Tests were skipped; the models in models/stanza/en were not found."
+            exit 1
+          fi
+
+      - name: Verify the package
+        shell: pwsh
+        run: ./tools/verify-package.ps1 -ModelDir models/stanza/en
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: test-results-${{ matrix.os }}
+          path: TestResults/*.trx
