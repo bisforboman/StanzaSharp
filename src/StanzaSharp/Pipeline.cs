@@ -200,7 +200,84 @@ public sealed class Pipeline : IDisposable
     /// </summary>
     public Document Process(string text)
     {
-        var doc = _tokenizer.Process(text);
+        ArgumentNullException.ThrowIfNull(text);
+        return Annotate(_tokenizer.Process(text));
+    }
+
+    /// <summary>
+    /// Runs the loaded processors on text that is already split into sentences and tokens, like Stanza's
+    /// <c>tokenize_pretokenized=True</c> with a list of token lists: the tokenizer model is skipped and the tokens are
+    /// kept exactly as given. No token is expanded into several words (Stanza's MWT stage only expands what the
+    /// tokenizer model marks), so <c>"don't"</c> stays one word. <see cref="Document.Text"/> is all the tokens joined by
+    /// single spaces, and the offsets point into it.
+    /// </summary>
+    /// <param name="sentences">One list of tokens per sentence.</param>
+    /// <exception cref="ArgumentException">A sentence without tokens, or an empty or whitespace-only token
+    /// (Stanza fails on both).</exception>
+    /// <example>
+    /// <code>
+    /// var doc = nlp.Process(new[] { new[] { "Hello", "world", "." }, new[] { "Bye", "." } });
+    /// // doc.Text == "Hello world . Bye ."
+    /// </code>
+    /// </example>
+    public Document Process(IEnumerable<IEnumerable<string>> sentences)
+    {
+        ArgumentNullException.ThrowIfNull(sentences);
+        var list = sentences.Select(s => (IReadOnlyList<string>)(s ?? throw new ArgumentNullException(nameof(sentences), "A sentence is null")).ToList()).ToList();
+        foreach (var tokens in list)
+        {
+            if (tokens.Count == 0)
+                throw new ArgumentException("A sentence has no tokens", nameof(sentences));
+            if (tokens.Any(string.IsNullOrWhiteSpace))
+                throw new ArgumentException("Tokens must not be null, empty or whitespace", nameof(sentences));
+        }
+        return Annotate(Tokenizer.Pretokenized(list));
+    }
+
+    /// <summary>
+    /// Runs the loaded processors on many texts at once, like Stanza's <c>Pipeline.bulk_process</c>: one
+    /// <see cref="Document"/> per text, in order, each with offsets relative to its own text. Sentences from all texts
+    /// are batched together, which is much faster than one <see cref="Process(string)"/> call per text when the texts
+    /// are short.
+    /// </summary>
+    /// <remarks>
+    /// The output equals Stanza's <c>bulk_process</c> for the same texts. It can differ slightly from processing each
+    /// text alone, as it does in Stanza: the sentiment classifier sees the padding of its batches, so a sentence's
+    /// label can depend on the other sentences batched with it (on the golden validation texts, 172 of 854 labels
+    /// change). The dependency parser's scores depend on its batches too, though no parse changed there. Everything
+    /// else is the same as processing each text alone, except that sentence ids (<see cref="Sentence.SentId"/>)
+    /// continue across the documents, as in Stanza.
+    /// </remarks>
+    /// <param name="texts">The texts; an empty text gives an empty document.</param>
+    /// <example>
+    /// <code>
+    /// List&lt;Document&gt; docs = nlp.Process(new[] { "First text.", "Second one." });
+    /// </code>
+    /// </example>
+    public List<Document> Process(IEnumerable<string> texts)
+    {
+        ArgumentNullException.ThrowIfNull(texts);
+        var list = texts.ToList();
+        if (list.Contains(null!))
+            throw new ArgumentNullException(nameof(texts), "A text is null");
+        if (list.Count == 0)
+            return [];
+        var docs = _tokenizer.Process(list);
+        // The other processors run on all sentences as one document (UDProcessor.bulk_process).
+        var combined = new Document();
+        combined.Sentences.AddRange(docs.SelectMany(d => d.Sentences));
+        Annotate(combined);
+        // NERProcessor.bulk_process: entities again, with each document's own text.
+        if (_ner != null)
+            foreach (var doc in docs)
+                foreach (var sentence in doc.Sentences)
+                    Entity.Build(sentence, doc.Text);
+        return docs;
+    }
+
+    /// <summary>Everything after the tokenizer, in Stanza's order.</summary>
+    private Document Annotate(Document doc)
+    {
         _mwt?.Process(doc);
         // NER, the parser and the sentiment classifier reuse the tagger's charlm outputs instead of computing them again.
         // A _nocharlm tagger (default_fast) has no charlm outputs to share.

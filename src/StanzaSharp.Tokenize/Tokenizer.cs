@@ -92,8 +92,83 @@ internal sealed class Tokenizer : IDisposable
         var doc = new Document { Text = text };
         for (int i = 0; i < paragraphs.Count; i++)
             Decode(paragraphs[i], preds[i], doc);
+        MarkWhitespace(doc);
+        return doc;
+    }
 
-        // Document.mark_whitespace: the text between tokens, from the original string.
+    /// <summary>
+    /// TokenizeProcessor.bulk_process: tokenizes <paramref name="texts"/> joined by <c>"\n\n"</c> in one call, then
+    /// gives each text its own document, with offsets relative to that text.
+    /// </summary>
+    public List<Document> Process(IReadOnlyList<string> texts) => Split(Process(string.Join("\n\n", texts)), texts);
+
+    /// <summary>
+    /// The second half of bulk_process: deals out <paramref name="combined"/>'s sentences (tokenized from
+    /// <paramref name="texts"/> joined by <c>"\n\n"</c>) to one document per text, as Stanza does: a sentence goes to the
+    /// current text while its last token ends inside it. Sentence ids continue across documents, as in Stanza.
+    /// </summary>
+    internal static List<Document> Split(Document combined, IReadOnlyList<string> texts)
+    {
+        var docs = new List<Document>(texts.Count);
+        int offset = 0, next = 0;
+        foreach (var text in texts)
+        {
+            var doc = new Document { Text = text };
+            while (next < combined.Sentences.Count && combined.Sentences[next].Tokens[^1].EndChar - offset <= text.Length)
+                doc.Sentences.Add(combined.Sentences[next++]);
+            foreach (var token in doc.Sentences.SelectMany(s => s.Tokens))
+            {
+                token.StartChar -= offset;
+                token.EndChar -= offset;
+                foreach (var word in token.Words)
+                {
+                    word.StartChar -= offset;
+                    word.EndChar -= offset;
+                }
+            }
+            // The joining "\n\n" is not part of either text.
+            if (doc.Sentences.Count > 0)
+            {
+                var last = doc.Sentences[^1].Tokens[^1];
+                last.SpaceAfter = text[last.EndChar!.Value..];
+                var first = doc.Sentences[0].Tokens[0];
+                first.SpacesBefore = text[..first.StartChar!.Value];
+            }
+            docs.Add(doc);
+            offset += text.Length + 2;
+        }
+        return docs;
+    }
+
+    /// <summary>
+    /// TokenizeProcessor.process_pre_tokenized_text: one sentence per list, the tokens kept as given. The document's
+    /// text is every token joined by single spaces, and the offsets point into it. Nothing is marked for MWT expansion.
+    /// </summary>
+    public static Document Pretokenized(IReadOnlyList<IReadOnlyList<string>> sentences)
+    {
+        var doc = new Document { Text = string.Join(" ", sentences.Select(s => string.Join(" ", s))) };
+        int start = 0;
+        foreach (var tokens in sentences)
+        {
+            var sent = NewSentence(doc);
+            foreach (var text in tokens)
+            {
+                int end = start + text.Length;
+                var token = new Token { Text = text, StartChar = start, EndChar = end };
+                token.Words.Add(new Word { Id = sent.Tokens.Count + 1, Text = text, StartChar = start, EndChar = end });
+                sent.Tokens.Add(token);
+                start = end + 1;
+            }
+            FinishSentence(sent, doc);
+        }
+        MarkWhitespace(doc);
+        return doc;
+    }
+
+    /// <summary>Document.mark_whitespace: the text between tokens, from the original string.</summary>
+    private static void MarkWhitespace(Document doc)
+    {
+        var text = doc.Text!;
         var tokens = doc.Sentences.SelectMany(s => s.Tokens).ToList();
         for (int i = 0; i < tokens.Count; i++)
         {
@@ -103,7 +178,6 @@ internal sealed class Tokenizer : IDisposable
         }
         if (tokens.Count > 0)
             tokens[0].SpacesBefore = text[..tokens[0].StartChar!.Value];
-        return doc;
     }
 
     /// <summary>Log-probabilities [len + 1, 5] for one paragraph run alone, as Stanza pads it. For tests.</summary>

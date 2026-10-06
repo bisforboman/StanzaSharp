@@ -1,0 +1,27 @@
+# text = I don't know .
+# sent_id = 0
+# constituency = (ROOT (S (NP (PRP I)) (ADVP (RB don't)) (VP (VBP know)) (. .)))
+# sentiment = 1
+1	I	I	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	3	nsubj	_	start_char=0|end_char=1|ner=O
+2	don't	don't	ADV	RB	_	3	advmod	_	start_char=2|end_char=7|ner=O
+3	know	know	VERB	VBP	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	0	root	_	start_char=8|end_char=12|ner=O
+4	.	.	PUNCT	.	_	3	punct	_	start_char=13|end_char=14|ner=O
+
+# text = We ca n't go !
+# sent_id = 1
+# constituency = (ROOT (S (NP (PRP We)) (VP (MD ca) (RB n't) (VP (VB go))) (. !)))
+# sentiment = 0
+1	We	we	PRON	PRP	Case=Nom|Number=Plur|Person=1|PronType=Prs	4	nsubj	_	start_char=15|end_char=17|ner=O
+2	ca	can	AUX	MD	VerbForm=Fin	4	aux	_	start_char=18|end_char=20|ner=O
+3	n't	not	PART	RB	Polarity=Neg	4	advmod	_	start_char=21|end_char=24|ner=O
+4	go	go	VERB	VB	VerbForm=Inf	0	root	_	start_char=25|end_char=27|ner=O
+5	!	!	PUNCT	.	_	4	punct	_	start_char=28|end_char=29|ner=O
+
+# text = It's John's book .
+# sent_id = 2
+# constituency = (ROOT (FRAG (LST (PRP$ It's) (NNP John's)) (NP (NN book)) (. .)))
+# sentiment = 1
+1	It's	its	PRON	PRP$	Case=Gen|Gender=Neut|Number=Sing|Person=3|Poss=Yes|PronType=Prs	3	nmod:poss	_	start_char=30|end_char=34|ner=O
+2	John's	John's	PROPN	NNP	Number=Sing	3	compound	_	start_char=35|end_char=41|ner=S-PERSON
+3	book	book	NOUN	NN	Number=Sing	0	root	_	start_char=42|end_char=46|ner=O
+4	.	.	PUNCT	.	_	3	punct	_	SpaceAfter=No|start_char=47|end_char=48|ner=O
