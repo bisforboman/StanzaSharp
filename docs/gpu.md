@@ -117,9 +117,8 @@ Seconds per run (lower is better). GPU runs use `--no-tf32` unless noted.
   reads its scores back to the CPU to choose the next transitions. Kernel launches and that
   synchronization dominate there, not arithmetic.
 - lemma decodes one character per step with a read-back each step, so it runs at the same speed on both.
-- Load time is about the same; on the GPU it includes copying the weights over once. The first CUDA
-  call in a process also initializes the CUDA context (a second or so), which the first benchmark
-  run counted (3.0 s load) and later runs, with warm driver caches, mostly did not.
+- Load time is about the same; on the GPU it also includes creating the CUDA context and copying the
+  weights over once.
 - TF32 on or off made no measurable difference (11.9 s vs 11.9 s at 8 threads; earlier pairs differed by
   less than run-to-run noise).
 - The peak working set (host memory) drops on the GPU because the large activations live in GPU memory.
