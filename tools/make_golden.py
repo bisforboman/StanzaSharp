@@ -55,6 +55,9 @@ Reads <out>/corpus.txt and writes:
                         packages (`--pretokenized-only`; see write_pretokenized_golden)
   bulk/<package>.json   Pipeline.bulk_process on BULK_TEXTS + corpus.txt + validation*.txt, stored as the
                         differences from processing each text alone (`--bulk-only`; see write_bulk_golden)
+  no_ssplit/<name>.conllu + <name>.fast.conllu + bulk<suffix>.json
+                        tokenize_no_ssplit=True (one sentence per paragraph) on NO_SSPLIT_FILES and, in bulk,
+                        BULK_TEXTS, with both packages (`--no-ssplit-only`; see write_no_ssplit_golden)
   pt/tiny_{legacy,zip}.pt + their stanza_convert.py output (.json/.safetensors)
                         small checkpoints in both torch.save formats for the C# .pt loader tests;
                         `python tools/make_golden.py --pt-only` regenerates just these
@@ -562,6 +565,42 @@ def write_bulk_golden(models, out):
         print(f"bulk/{package}.json: {len(docs)} documents, {offset} sentences, {changed} differ from processing alone")
 
 
+NO_SSPLIT_FILES = ["corpus.txt", "validation.txt", "validation_contractions.txt", "validation_dialogue.txt",
+                   "validation_long.txt", "validation_nonbmp.txt", "validation_whitespace.txt"]
+
+
+def write_no_ssplit_golden(models, out):
+    """
+    no_ssplit/: tokenize_no_ssplit=True, where each paragraph (blank-line separated) is one sentence. <name>.conllu is
+    the default package's output for NO_SSPLIT_FILES (corpus.txt as corpus.conllu), <name>.fast.conllu default_fast's.
+    bulk<suffix>.json: bulk_process on BULK_TEXTS with no_ssplit, each document's "{:C}". Pretokenized input ignores
+    no_ssplit in Stanza (asserted here), so it needs no golden data of its own.
+    """
+    d = out / "no_ssplit"
+    d.mkdir(exist_ok=True)
+    for package, suffix in PACKAGES.items():
+        nlp = stanza.Pipeline("en", dir=models, package=package, tokenize_no_ssplit=True, download_method=None,
+                              use_gpu=False, logging_level="WARN")
+        for file in NO_SSPLIT_FILES:
+            name = "corpus" if file == "corpus.txt" else Path(file).stem
+            with torch.no_grad():
+                doc = nlp((out / file).read_bytes().decode("utf-8"))
+            (d / f"{name}{suffix}.conllu").write_text("{:C}\n".format(doc), encoding="utf-8", newline="\n")
+            print(f"no_ssplit/{name}{suffix}.conllu: {len(doc.sentences)} sentences, {doc.num_words} words")
+        with torch.no_grad():
+            docs = nlp.bulk_process(BULK_TEXTS)
+        with open(d / f"bulk{suffix}.json", "w", encoding="utf-8", newline="\n") as f:
+            json.dump([{"text": t, "conllu": "{:C}".format(doc)} for t, doc in zip(BULK_TEXTS, docs)], f, indent=1, ensure_ascii=False)
+        print(f"no_ssplit/bulk{suffix}.json: {len(docs)} documents")
+        pre = stanza.Pipeline("en", dir=models, package=package, tokenize_pretokenized=True, download_method=None,
+                              use_gpu=False, logging_level="WARN")
+        pre_no_ssplit = stanza.Pipeline("en", dir=models, package=package, tokenize_pretokenized=True,
+                                        tokenize_no_ssplit=True, download_method=None, use_gpu=False, logging_level="WARN")
+        with torch.no_grad():
+            for sentences in PRETOKENIZED_CASES.values():
+                assert "{:C}".format(pre(sentences)) == "{:C}".format(pre_no_ssplit(sentences))
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--models", default="models/stanza")
@@ -574,6 +613,7 @@ def main():
     p.add_argument("--fast-only", action="store_true", help="only regenerate fast/ (package default_fast)")
     p.add_argument("--pretokenized-only", action="store_true", help="only regenerate pretokenized/")
     p.add_argument("--bulk-only", action="store_true", help="only regenerate bulk/")
+    p.add_argument("--no-ssplit-only", action="store_true", help="only regenerate no_ssplit/ (tokenize_no_ssplit)")
     args = p.parse_args()
     out = Path(args.out)
     if args.pretokenized_only:
@@ -581,6 +621,9 @@ def main():
         return
     if args.bulk_only:
         write_bulk_golden(args.models, out)
+        return
+    if args.no_ssplit_only:
+        write_no_ssplit_golden(args.models, out)
         return
     if args.fast_only:
         write_fast_golden(args.models, out)

@@ -1,0 +1,168 @@
+# text = Barack Obama was born in Hawaii. He was elected president in 2008.
+# sent_id = 0
+# constituency = (ROOT (S (NP (NNP Barack) (NNP Obama)) (VP (VBD was) (VP (VBN born) (PP (IN in) (NP (NNP Hawaii) (. .))) (SBAR (S (NP (PRP He)) (VP (VBD was) (VP (VBN elected) (S (NP (NN president))) (PP (IN in) (NP (CD 2008))))))))) (. .)))
+# sentiment = 1
+1	Barack	Barack	PROPN	NNP	Number=Sing	4	nsubj:pass	_	start_char=0|end_char=6|ner=B-PERSON
+2	Obama	Obama	PROPN	NNP	Number=Sing	1	flat	_	start_char=7|end_char=12|ner=E-PERSON
+3	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	4	aux:pass	_	start_char=13|end_char=16|ner=O
+4	born	bear	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	start_char=17|end_char=21|ner=O
+5	in	in	ADP	IN	_	6	case	_	start_char=22|end_char=24|ner=O
+6	Hawaii	Hawaii	PROPN	NNP	Number=Sing	4	obl	_	SpaceAfter=No|start_char=25|end_char=31|ner=S-GPE
+7	.	.	PUNCT	.	_	4	punct	_	start_char=31|end_char=32|ner=O
+8	He	he	PRON	PRP	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	10	nsubj:pass	_	start_char=33|end_char=35|ner=O
+9	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	10	aux:pass	_	start_char=36|end_char=39|ner=O
+10	elected	elect	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	4	parataxis	_	start_char=40|end_char=47|ner=O
+11	president	president	NOUN	NN	Number=Sing	10	xcomp	_	start_char=48|end_char=57|ner=O
+12	in	in	ADP	IN	_	13	case	_	start_char=58|end_char=60|ner=O
+13	2008	2008	NUM	CD	NumForm=Digit|NumType=Card	10	obl	_	SpaceAfter=No|start_char=61|end_char=65|ner=S-DATE
+14	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=65|end_char=66|ner=O
+
+# text = I don't think it's going to rain today, but we'll see. Can't you hear the thunder? Dr. Smith moved to the U.S. in Jan. 1999 and paid $4.50 for a cup of coffee at 7:30 a.m.
+# sent_id = 1
+# constituency = (ROOT (S (S (NP (PRP I)) (VP (VBP do) (RB n't) (VP (VB think) (SBAR (S (NP (PRP it)) (VP (VBZ 's) (VP (VBG going) (S (VP (TO to) (VP (VB rain) (NP (NN today)))))))))))) (, ,) (CC but) (S (NP (PRP we)) (VP (MD 'll) (VP (VB see)))) (. .) (SQ (MD Ca) (RB n't) (NP (PRP you)) (VP (VB hear) (NP (DT the) (NN thunder)))) (. ?) (S (NP (NNP Dr.) (NNP Smith)) (VP (VP (VBD moved) (PP (IN to) (NP (DT the) (NNP U.S.))) (PP (IN in) (NP (NNP Jan.) (CD 1999)))) (CC and) (VP (VBD paid) (NP ($ $) (CD 4.50)) (PP (IN for) (NP (NP (DT a) (NN cup)) (PP (IN of) (NP (NN coffee))))) (PP (IN at) (NP (CD 7:30) (NN a.m)))))) (. .)))
+# sentiment = 1
+1	I	I	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	4	nsubj	_	start_char=68|end_char=69|ner=O
+2-3	don't	_	_	_	_	_	_	_	start_char=70|end_char=75|ner=O
+2	do	do	AUX	VBP	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	4	aux	_	start_char=70|end_char=72
+3	n't	not	PART	RB	Polarity=Neg	4	advmod	_	start_char=72|end_char=75
+4	think	think	VERB	VB	VerbForm=Inf	0	root	_	start_char=76|end_char=81|ner=O
+5-6	it's	_	_	_	_	_	_	_	start_char=82|end_char=86|ner=O
+5	it	it	PRON	PRP	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	7	nsubj	_	start_char=82|end_char=84
+6	's	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	7	aux	_	start_char=84|end_char=86
+7	going	go	VERB	VBG	Tense=Pres|VerbForm=Part	4	ccomp	_	start_char=87|end_char=92|ner=O
+8	to	to	PART	TO	_	9	mark	_	start_char=93|end_char=95|ner=O
+9	rain	rain	VERB	VB	VerbForm=Inf	7	xcomp	_	start_char=96|end_char=100|ner=O
+10	today	today	NOUN	NN	Number=Sing	9	obl:unmarked	_	SpaceAfter=No|start_char=101|end_char=106|ner=S-DATE
+11	,	,	PUNCT	,	_	15	punct	_	start_char=106|end_char=107|ner=O
+12	but	but	CCONJ	CC	_	15	cc	_	start_char=108|end_char=111|ner=O
+13-14	we'll	_	_	_	_	_	_	_	start_char=112|end_char=117|ner=O
+13	we	we	PRON	PRP	Case=Nom|Number=Plur|Person=1|PronType=Prs	15	nsubj	_	start_char=112|end_char=114
+14	'll	will	AUX	MD	VerbForm=Fin	15	aux	_	start_char=114|end_char=117
+15	see	see	VERB	VB	VerbForm=Inf	4	conj	_	SpaceAfter=No|start_char=118|end_char=121|ner=O
+16	.	.	PUNCT	.	_	20	punct	_	start_char=121|end_char=122|ner=O
+17-18	Can't	_	_	_	_	_	_	_	start_char=123|end_char=128|ner=O
+17	Ca	can	AUX	MD	VerbForm=Fin	20	aux	_	start_char=123|end_char=125
+18	n't	not	PART	RB	Polarity=Neg	20	advmod	_	start_char=125|end_char=128
+19	you	you	PRON	PRP	Case=Nom|Person=2|PronType=Prs	20	nsubj	_	start_char=129|end_char=132|ner=O
+20	hear	hear	VERB	VB	VerbForm=Inf	4	parataxis	_	start_char=133|end_char=137|ner=O
+21	the	the	DET	DT	Definite=Def|PronType=Art	22	det	_	start_char=138|end_char=141|ner=O
+22	thunder	thunder	NOUN	NN	Number=Sing	20	obj	_	SpaceAfter=No|start_char=142|end_char=149|ner=O
+23	?	?	PUNCT	.	_	4	punct	_	SpacesAfter=\n|start_char=149|end_char=150|ner=O
+24	Dr.	Dr.	PROPN	NNP	Number=Sing	25	nmod:desc	_	start_char=151|end_char=154|ner=O
+25	Smith	Smith	PROPN	NNP	Number=Sing	26	nsubj	_	start_char=155|end_char=160|ner=S-PERSON
+26	moved	move	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	4	parataxis	_	start_char=161|end_char=166|ner=O
+27	to	to	ADP	IN	_	29	case	_	start_char=167|end_char=169|ner=O
+28	the	the	DET	DT	Definite=Def|PronType=Art	29	det	_	start_char=170|end_char=173|ner=O
+29	U.S.	U.S.	PROPN	NNP	Abbr=Yes|Number=Sing	26	obl	_	start_char=174|end_char=178|ner=S-GPE
+30	in	in	ADP	IN	_	31	case	_	start_char=179|end_char=181|ner=O
+31	Jan.	January	PROPN	NNP	Abbr=Yes|Number=Sing	26	obl	_	start_char=182|end_char=186|ner=B-DATE
+32	1999	1999	NUM	CD	NumForm=Digit|NumType=Card	31	nmod:unmarked	_	start_char=187|end_char=191|ner=E-DATE
+33	and	and	CCONJ	CC	_	34	cc	_	start_char=192|end_char=195|ner=O
+34	paid	pay	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	26	conj	_	start_char=196|end_char=200|ner=O
+35	$	$	SYM	$	_	34	obj	_	SpaceAfter=No|start_char=201|end_char=202|ner=O
+36	4.50	4.50	NUM	CD	NumForm=Digit|NumType=Frac	35	nummod	_	start_char=202|end_char=206|ner=S-MONEY
+37	for	for	ADP	IN	_	39	case	_	start_char=207|end_char=210|ner=O
+38	a	a	DET	DT	Definite=Ind|PronType=Art	39	det	_	start_char=211|end_char=212|ner=O
+39	cup	cup	NOUN	NN	Number=Sing	34	obl	_	start_char=213|end_char=216|ner=O
+40	of	of	ADP	IN	_	41	case	_	start_char=217|end_char=219|ner=O
+41	coffee	coffee	NOUN	NN	Number=Sing	39	nmod	_	start_char=220|end_char=226|ner=O
+42	at	at	ADP	IN	_	43	case	_	start_char=227|end_char=229|ner=O
+43	7:30	7:30	NUM	CD	NumForm=Digit|NumType=Card	34	obl	_	start_char=230|end_char=234|ner=B-TIME
+44	a.m	a.m.	NOUN	NN	Number=Sing	43	nmod:unmarked	_	SpaceAfter=No|start_char=235|end_char=238|ner=E-TIME
+45	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=238|end_char=239|ner=O
+
+# text = "Where are you going?" she asked. The children's toys (all 23 of them) were scattered across the room! The well-known author, who had written e-mails to info@example.com, visited https://www.example.org/about yesterday.
+# sent_id = 2
+# constituency = (ROOT (S (SBARQ (`` ") (WHADVP (WRB Where)) (SQ (SQ (VBP are) (NP (PRP you)) (VP (VBG going)))) (. ?) ('' ") (S (NP (PRP she)) (VP (VBD asked))) (. .) (S (NP (NP (NP (DT The) (NNS children) (POS 's)) (NNS toys)) (-LRB- -LRB-) (NP (NP (DT all) (CD 23)) (PP (IN of) (NP (PRP them)))) (-RRB- -RRB-)) (VP (VBD were) (VP (VBN scattered) (PP (IN across) (NP (DT the) (NN room)))))) (. !)) (NP (NP (DT The) (ADJP (RB well) (HYPH -) (VBN known)) (NN author)) (, ,) (SBAR (WHNP (WP who)) (S (VP (VBD had) (VP (VBN written) (NP (NNS e-mails)) (PP (IN to) (NP (ADD info@example.com))))))) (, ,)) (VP (VBD visited) (NP (ADD https://www.example.org/about)) (NP (NN yesterday))) (. .)))
+# sentiment = 0
+1	"	"	PUNCT	``	_	5	punct	_	SpaceAfter=No|start_char=241|end_char=242|ner=O
+2	Where	where	ADV	WRB	PronType=Int	5	advmod	_	start_char=242|end_char=247|ner=O
+3	are	be	AUX	VBP	Mood=Ind|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin	5	aux	_	start_char=248|end_char=251|ner=O
+4	you	you	PRON	PRP	Case=Nom|Person=2|PronType=Prs	5	nsubj	_	start_char=252|end_char=255|ner=O
+5	going	go	VERB	VBG	Tense=Pres|VerbForm=Part	9	ccomp	_	SpaceAfter=No|start_char=256|end_char=261|ner=O
+6	?	?	PUNCT	.	_	5	punct	_	SpaceAfter=No|start_char=261|end_char=262|ner=O
+7	"	"	PUNCT	''	_	5	punct	_	start_char=262|end_char=263|ner=O
+8	she	she	PRON	PRP	Case=Nom|Gender=Fem|Number=Sing|Person=3|PronType=Prs	9	nsubj	_	start_char=264|end_char=267|ner=O
+9	asked	ask	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=268|end_char=273|ner=O
+10	.	.	PUNCT	.	_	22	punct	_	start_char=273|end_char=274|ner=O
+11	The	the	DET	DT	Definite=Def|PronType=Art	12	det	_	start_char=275|end_char=278|ner=O
+12-13	children's	_	_	_	_	_	_	_	start_char=279|end_char=289|ner=O
+12	children	child	NOUN	NNS	Number=Plur	14	nmod:poss	_	start_char=279|end_char=287
+13	's	's	PART	POS	_	12	case	_	start_char=287|end_char=289
+14	toys	toy	NOUN	NNS	Number=Plur	22	nsubj:pass	_	start_char=290|end_char=294|ner=O
+15	(	(	PUNCT	-LRB-	_	17	punct	_	SpaceAfter=No|start_char=295|end_char=296|ner=O
+16	all	all	DET	DT	PronType=Tot	17	det	_	start_char=296|end_char=299|ner=O
+17	23	23	NUM	CD	NumForm=Digit|NumType=Card	14	appos	_	start_char=300|end_char=302|ner=S-CARDINAL
+18	of	of	ADP	IN	_	19	case	_	start_char=303|end_char=305|ner=O
+19	them	they	PRON	PRP	Case=Acc|Number=Plur|Person=3|PronType=Prs	17	nmod	_	SpaceAfter=No|start_char=306|end_char=310|ner=O
+20	)	)	PUNCT	-RRB-	_	17	punct	_	start_char=310|end_char=311|ner=O
+21	were	be	AUX	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	22	aux:pass	_	start_char=312|end_char=316|ner=O
+22	scattered	scatter	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	9	ccomp	_	start_char=317|end_char=326|ner=O
+23	across	across	ADP	IN	_	25	case	_	start_char=327|end_char=333|ner=O
+24	the	the	DET	DT	Definite=Def|PronType=Art	25	det	_	start_char=334|end_char=337|ner=O
+25	room	room	NOUN	NN	Number=Sing	22	obl	_	SpaceAfter=No|start_char=338|end_char=342|ner=O
+26	!	!	PUNCT	.	_	40	punct	_	SpacesAfter=\n|start_char=342|end_char=343|ner=O
+27	The	the	DET	DT	Definite=Def|PronType=Art	31	det	_	start_char=344|end_char=347|ner=O
+28	well	well	ADV	RB	Degree=Pos	30	advmod	_	SpaceAfter=No|start_char=348|end_char=352|ner=O
+29	-	-	PUNCT	HYPH	_	28	punct	_	SpaceAfter=No|start_char=352|end_char=353|ner=O
+30	known	know	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	31	amod	_	start_char=353|end_char=358|ner=O
+31	author	author	NOUN	NN	Number=Sing	40	nsubj	_	SpaceAfter=No|start_char=359|end_char=365|ner=O
+32	,	,	PUNCT	,	_	35	punct	_	start_char=365|end_char=366|ner=O
+33	who	who	PRON	WP	Case=Nom|PronType=Rel	35	nsubj	_	start_char=367|end_char=370|ner=O
+34	had	have	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	35	aux	_	start_char=371|end_char=374|ner=O
+35	written	write	VERB	VBN	Tense=Past|VerbForm=Part	31	acl:relcl	_	start_char=375|end_char=382|ner=O
+36	e-mails	e-mail	NOUN	NNS	Number=Plur	35	obj	_	start_char=383|end_char=390|ner=O
+37	to	to	ADP	IN	_	38	case	_	start_char=391|end_char=393|ner=O
+38	info@example.com	info@example.com	PROPN	ADD	Number=Sing	35	obl	_	SpaceAfter=No|start_char=394|end_char=410|ner=O
+39	,	,	PUNCT	,	_	31	punct	_	start_char=410|end_char=411|ner=O
+40	visited	visit	VERB	VBD	Tense=Past|VerbForm=Fin	9	ccomp	_	start_char=412|end_char=419|ner=O
+41	https://www.example.org/about	https://www.example.org/about	PROPN	ADD	Number=Sing	40	obj	_	start_char=420|end_char=449|ner=O
+42	yesterday	yesterday	NOUN	NN	Number=Sing	40	obl:unmarked	_	SpaceAfter=No|start_char=450|end_char=459|ner=S-DATE
+43	.	.	PUNCT	.	_	9	punct	_	SpacesAfter=\n\n|start_char=459|end_char=460|ner=O
+
+# text = Mary's sister wouldn't have gone if she'd known that the meeting, which was scheduled for 3 p.m. on Friday, had been cancelled; nobody told her. Wow... that's amazing!!
+# sent_id = 3
+# constituency = (ROOT (S (S (NP (NP (NNP Mary) (POS 's)) (NN sister)) (VP (MD would) (RB n't) (VP (VB have) (VP (VBN gone) (SBAR (IN if) (S (NP (PRP she)) (VP (VBD 'd) (VP (VBN known) (SBAR (IN that) (S (NP (NP (DT the) (NN meeting)) (, ,) (SBAR (WHNP (WDT which)) (S (VP (VBD was) (VP (VBN scheduled) (PP (IN for) (NP (NP (CD 3) (NN p.m.)) (PP (IN on) (NP (NNP Friday))))))))) (, ,)) (VP (VBD had) (VP (VBN been) (VP (VBN cancelled)))))))))))))) (: ;) (S (NP (NN nobody)) (VP (VBD told) (NP (PRP her) (. .) (UH Wow)) (, ...) (S (NP (DT that)) (VP (VBZ 's) (ADJP (JJ amazing)))))) (. !!)))
+# sentiment = 2
+1-2	Mary's	_	_	_	_	_	_	_	start_char=462|end_char=468|ner=S-PERSON
+1	Mary	Mary	PROPN	NNP	Number=Sing	3	nmod:poss	_	start_char=462|end_char=466
+2	's	's	PART	POS	_	1	case	_	start_char=466|end_char=468
+3	sister	sister	NOUN	NN	Number=Sing	7	nsubj	_	start_char=469|end_char=475|ner=O
+4-5	wouldn't	_	_	_	_	_	_	_	start_char=476|end_char=484|ner=O
+4	would	would	AUX	MD	VerbForm=Fin	7	aux	_	start_char=476|end_char=481
+5	n't	not	PART	RB	Polarity=Neg	7	advmod	_	start_char=481|end_char=484
+6	have	have	AUX	VB	VerbForm=Inf	7	aux	_	start_char=485|end_char=489|ner=O
+7	gone	go	VERB	VBN	Tense=Past|VerbForm=Part	0	root	_	start_char=490|end_char=494|ner=O
+8	if	if	SCONJ	IN	_	11	mark	_	start_char=495|end_char=497|ner=O
+9-10	she'd	_	_	_	_	_	_	_	start_char=498|end_char=503|ner=O
+9	she	she	PRON	PRP	Case=Nom|Gender=Fem|Number=Sing|Person=3|PronType=Prs	11	nsubj	_	start_char=498|end_char=501
+10	'd	would	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	11	aux	_	start_char=501|end_char=503
+11	known	know	VERB	VBN	Tense=Past|VerbForm=Part	7	advcl	_	start_char=504|end_char=509|ner=O
+12	that	that	SCONJ	IN	_	27	mark	_	start_char=510|end_char=514|ner=O
+13	the	the	DET	DT	Definite=Def|PronType=Art	14	det	_	start_char=515|end_char=518|ner=O
+14	meeting	meeting	NOUN	NN	Number=Sing	27	nsubj:pass	_	SpaceAfter=No|start_char=519|end_char=526|ner=O
+15	,	,	PUNCT	,	_	18	punct	_	start_char=526|end_char=527|ner=O
+16	which	which	PRON	WDT	PronType=Rel	18	nsubj:pass	_	start_char=528|end_char=533|ner=O
+17	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	18	aux:pass	_	start_char=534|end_char=537|ner=O
+18	scheduled	schedule	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	14	acl:relcl	_	start_char=538|end_char=547|ner=O
+19	for	for	ADP	IN	_	20	case	_	start_char=548|end_char=551|ner=O
+20	3	3	NUM	CD	NumForm=Digit|NumType=Card	18	obl	_	start_char=552|end_char=553|ner=B-TIME
+21	p.m.	p.m.	NOUN	NN	Number=Sing	20	nmod:unmarked	_	start_char=554|end_char=558|ner=E-TIME
+22	on	on	ADP	IN	_	23	case	_	start_char=559|end_char=561|ner=O
+23	Friday	Friday	PROPN	NNP	Number=Sing	18	obl	_	SpaceAfter=No|start_char=562|end_char=568|ner=S-DATE
+24	,	,	PUNCT	,	_	14	punct	_	start_char=568|end_char=569|ner=O
+25	had	have	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	27	aux	_	start_char=570|end_char=573|ner=O
+26	been	be	AUX	VBN	Tense=Past|VerbForm=Part	27	aux:pass	_	start_char=574|end_char=578|ner=O
+27	cancelled	cancel	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	11	ccomp	_	SpaceAfter=No|start_char=579|end_char=588|ner=O
+28	;	;	PUNCT	:	_	30	punct	_	start_char=588|end_char=589|ner=O
+29	nobody	nobody	PRON	NN	Number=Sing|PronType=Neg	30	nsubj	_	start_char=590|end_char=596|ner=O
+30	told	tell	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	7	parataxis	_	start_char=597|end_char=601|ner=O
+31	her	her	PRON	PRP	Case=Acc|Gender=Fem|Number=Sing|Person=3|PronType=Prs	30	iobj	_	SpaceAfter=No|start_char=602|end_char=605|ner=O
+32	.	.	PUNCT	.	_	30	punct	_	SpacesAfter=\n|start_char=605|end_char=606|ner=O
+33	Wow	wow	INTJ	UH	_	37	discourse	_	SpaceAfter=No|start_char=607|end_char=610|ner=O
+34	...	...	PUNCT	,	_	33	punct	_	start_char=610|end_char=613|ner=O
+35-36	that's	_	_	_	_	_	_	_	start_char=614|end_char=620|ner=O
+35	that	that	PRON	DT	Number=Sing|PronType=Dem	37	nsubj	_	start_char=614|end_char=618
+36	's	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	37	cop	_	start_char=618|end_char=620
+37	amazing	amazing	ADJ	JJ	Degree=Pos	7	parataxis	_	SpaceAfter=No|start_char=621|end_char=628|ner=O
+38	!!	!!	PUNCT	.	_	7	punct	_	SpacesAfter=\n|start_char=628|end_char=630|ner=O

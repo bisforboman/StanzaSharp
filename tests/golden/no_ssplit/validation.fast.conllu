@@ -1,0 +1,1317 @@
+# text = The city council met on Tuesday evening to discuss the new budget. After three hours of debate, the members voted 7–2 to approve it. The mayor said she was "cautiously optimistic" about the outcome.
+# sent_id = 0
+# sentiment = 1
+1	The	the	DET	DT	Definite=Def|PronType=Art	3	det	_	SpacesBefore=\s\s|start_char=2|end_char=5|ner=O
+2	city	city	NOUN	NN	Number=Sing	3	compound	_	start_char=6|end_char=10|ner=O
+3	council	council	NOUN	NN	Number=Sing	4	nsubj	_	start_char=11|end_char=18|ner=O
+4	met	meet	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=19|end_char=22|ner=O
+5	on	on	ADP	IN	_	7	case	_	start_char=23|end_char=25|ner=O
+6	Tuesday	Tuesday	PROPN	NNP	Number=Sing	7	compound	_	start_char=26|end_char=33|ner=S-DATE
+7	evening	evening	NOUN	NN	Number=Sing	4	obl	_	start_char=34|end_char=41|ner=S-TIME
+8	to	to	PART	TO	_	9	mark	_	start_char=42|end_char=44|ner=O
+9	discuss	discuss	VERB	VB	VerbForm=Inf	4	advcl	_	start_char=45|end_char=52|ner=O
+10	the	the	DET	DT	Definite=Def|PronType=Art	12	det	_	start_char=53|end_char=56|ner=O
+11	new	new	ADJ	JJ	Degree=Pos	12	amod	_	start_char=57|end_char=60|ner=O
+12	budget	budget	NOUN	NN	Number=Sing	9	obj	_	SpaceAfter=No|start_char=61|end_char=67|ner=O
+13	.	.	PUNCT	.	_	22	punct	_	start_char=67|end_char=68|ner=O
+14	After	after	ADP	IN	_	16	case	_	start_char=69|end_char=74|ner=O
+15	three	three	NUM	CD	NumForm=Word|NumType=Card	16	nummod	_	start_char=75|end_char=80|ner=B-TIME
+16	hours	hour	NOUN	NNS	Number=Plur	22	obl	_	start_char=81|end_char=86|ner=E-TIME
+17	of	of	ADP	IN	_	18	case	_	start_char=87|end_char=89|ner=O
+18	debate	debate	NOUN	NN	Number=Sing	16	nmod	_	SpaceAfter=No|start_char=90|end_char=96|ner=O
+19	,	,	PUNCT	,	_	16	punct	_	start_char=96|end_char=97|ner=O
+20	the	the	DET	DT	Definite=Def|PronType=Art	21	det	_	start_char=98|end_char=101|ner=O
+21	members	member	NOUN	NNS	Number=Plur	22	nsubj	_	start_char=102|end_char=109|ner=O
+22	voted	vote	VERB	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	4	parataxis	_	start_char=110|end_char=115|ner=O
+23	7	7	NUM	CD	NumForm=Digit|NumType=Card	22	obj	_	SpaceAfter=No|start_char=116|end_char=117|ner=S-CARDINAL
+24	–	-	SYM	SYM	ExtPos=ADP	25	case	_	SpaceAfter=No|start_char=117|end_char=118|ner=O
+25	2	2	NUM	CD	NumForm=Digit|NumType=Card	23	nmod	_	start_char=118|end_char=119|ner=S-CARDINAL
+26	to	to	PART	TO	_	27	mark	_	start_char=120|end_char=122|ner=O
+27	approve	approve	VERB	VB	VerbForm=Inf	22	advcl	_	start_char=123|end_char=130|ner=O
+28	it	it	PRON	PRP	Case=Acc|Gender=Neut|Number=Sing|Person=3|PronType=Prs	27	obj	_	SpaceAfter=No|start_char=131|end_char=133|ner=O
+29	.	.	PUNCT	.	_	22	punct	_	start_char=133|end_char=134|ner=O
+30	The	the	DET	DT	Definite=Def|PronType=Art	31	det	_	start_char=135|end_char=138|ner=O
+31	mayor	mayor	NOUN	NN	Number=Sing	32	nsubj	_	start_char=139|end_char=144|ner=O
+32	said	say	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	4	parataxis	_	start_char=145|end_char=149|ner=O
+33	she	she	PRON	PRP	Case=Nom|Gender=Fem|Number=Sing|Person=3|PronType=Prs	37	nsubj	_	start_char=150|end_char=153|ner=O
+34	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	37	cop	_	start_char=154|end_char=157|ner=O
+35	"	"	PUNCT	``	_	37	punct	_	SpaceAfter=No|start_char=158|end_char=159|ner=O
+36	cautiously	cautiously	ADV	RB	_	37	advmod	_	start_char=159|end_char=169|ner=O
+37	optimistic	optimistic	ADJ	JJ	Degree=Pos	32	ccomp	_	SpaceAfter=No|start_char=170|end_char=180|ner=O
+38	"	"	PUNCT	''	_	37	punct	_	start_char=180|end_char=181|ner=O
+39	about	about	ADP	IN	_	41	case	_	start_char=182|end_char=187|ner=O
+40	the	the	DET	DT	Definite=Def|PronType=Art	41	det	_	start_char=188|end_char=191|ner=O
+41	outcome	outcome	NOUN	NN	Number=Sing	37	obl	_	SpaceAfter=No|start_char=192|end_char=199|ner=O
+42	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=199|end_char=200|ner=O
+
+# text = Revenue rose 4.3% in the third quarter, to $1.2 billion, while costs fell by roughly 2 percent. Analysts at Smith & Co. had expected a smaller gain. Shares of the company closed at $48.75 on Friday, up from $45.10 a week earlier.
+# sent_id = 1
+# sentiment = 1
+1	Revenue	revenue	NOUN	NN	Number=Sing	2	nsubj	_	start_char=202|end_char=209|ner=O
+2	rose	rise	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=210|end_char=214|ner=O
+3	4.3	4.3	NUM	CD	NumForm=Digit|NumType=Frac	4	nummod	_	SpaceAfter=No|start_char=215|end_char=218|ner=B-PERCENT
+4	%	%	SYM	NN	Number=Sing	2	obj	_	start_char=218|end_char=219|ner=E-PERCENT
+5	in	in	ADP	IN	_	8	case	_	start_char=220|end_char=222|ner=O
+6	the	the	DET	DT	Definite=Def|PronType=Art	8	det	_	start_char=223|end_char=226|ner=B-DATE
+7	third	third	ADJ	JJ	Degree=Pos|NumForm=Word|NumType=Ord	8	amod	_	start_char=227|end_char=232|ner=I-DATE
+8	quarter	quarter	NOUN	NN	Number=Sing|NumForm=Word|NumType=Frac	2	obl	_	SpaceAfter=No|start_char=233|end_char=240|ner=E-DATE
+9	,	,	PUNCT	,	_	11	punct	_	start_char=240|end_char=241|ner=O
+10	to	to	ADP	IN	_	11	case	_	start_char=242|end_char=244|ner=O
+11	$	$	SYM	$	_	2	obl	_	SpaceAfter=No|start_char=245|end_char=246|ner=B-MONEY
+12	1.2	1.2	NUM	CD	NumForm=Digit|NumType=Frac	13	compound	_	start_char=246|end_char=249|ner=I-MONEY
+13	billion	billion	NUM	CD	NumForm=Word|NumType=Card	11	nummod	_	SpaceAfter=No|start_char=250|end_char=257|ner=E-MONEY
+14	,	,	PUNCT	,	_	17	punct	_	start_char=257|end_char=258|ner=O
+15	while	while	SCONJ	IN	_	17	mark	_	start_char=259|end_char=264|ner=O
+16	costs	cost	NOUN	NNS	Number=Plur	17	nsubj	_	start_char=265|end_char=270|ner=O
+17	fell	fall	VERB	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	2	advcl	_	start_char=271|end_char=275|ner=O
+18	by	by	ADP	IN	_	21	case	_	start_char=276|end_char=278|ner=O
+19	roughly	roughly	ADV	RB	_	20	advmod	_	start_char=279|end_char=286|ner=B-PERCENT
+20	2	2	NUM	CD	NumForm=Digit|NumType=Card	21	nummod	_	start_char=287|end_char=288|ner=I-PERCENT
+21	percent	percent	NOUN	NN	Number=Sing	17	obl	_	SpaceAfter=No|start_char=289|end_char=296|ner=E-PERCENT
+22	.	.	PUNCT	.	_	29	punct	_	start_char=296|end_char=297|ner=O
+23	Analysts	analyst	NOUN	NNS	Number=Plur	29	nsubj	_	start_char=298|end_char=306|ner=O
+24	at	at	ADP	IN	_	25	case	_	start_char=307|end_char=309|ner=O
+25	Smith	Smith	PROPN	NNP	Number=Sing	23	nmod	_	start_char=310|end_char=315|ner=B-ORG
+26	&	&	CCONJ	CC	_	27	cc	_	start_char=316|end_char=317|ner=I-ORG
+27	Co.	Co.	PROPN	NNP	Number=Sing	25	conj	_	start_char=318|end_char=321|ner=E-ORG
+28	had	have	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	29	aux	_	start_char=322|end_char=325|ner=O
+29	expected	expect	VERB	VBN	Tense=Past|VerbForm=Part	2	conj	_	start_char=326|end_char=334|ner=O
+30	a	a	DET	DT	Definite=Ind|PronType=Art	32	det	_	start_char=335|end_char=336|ner=O
+31	smaller	small	ADJ	JJR	Degree=Cmp	32	amod	_	start_char=337|end_char=344|ner=O
+32	gain	gain	NOUN	NN	Number=Sing	29	obj	_	SpaceAfter=No|start_char=345|end_char=349|ner=O
+33	.	.	PUNCT	.	_	29	punct	_	start_char=349|end_char=350|ner=O
+34	Shares	share	NOUN	NNS	Number=Plur	29	nsubj	_	start_char=351|end_char=357|ner=O
+35	of	of	ADP	IN	_	37	case	_	start_char=358|end_char=360|ner=O
+36	the	the	DET	DT	Definite=Def|PronType=Art	37	det	_	start_char=361|end_char=364|ner=O
+37	company	company	NOUN	NN	Number=Sing	34	nmod	_	start_char=365|end_char=372|ner=O
+38	closed	close	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	37	acl	_	start_char=373|end_char=379|ner=O
+39	at	at	ADP	IN	_	40	case	_	start_char=380|end_char=382|ner=O
+40	$	$	SYM	$	_	38	obl	_	SpaceAfter=No|start_char=383|end_char=384|ner=O
+41	48.75	48.75	NUM	CD	NumForm=Digit|NumType=Frac	40	nummod	_	start_char=384|end_char=389|ner=S-MONEY
+42	on	on	ADP	IN	_	43	case	_	start_char=390|end_char=392|ner=O
+43	Friday	Friday	PROPN	NNP	Number=Sing	40	nmod	_	SpaceAfter=No|start_char=393|end_char=399|ner=S-DATE
+44	,	,	PUNCT	,	_	47	punct	_	start_char=399|end_char=400|ner=O
+45	up	up	ADP	RP	_	38	advmod	_	start_char=401|end_char=403|ner=O
+46	from	from	ADP	IN	_	47	case	_	start_char=404|end_char=408|ner=O
+47	$	$	SYM	$	_	38	obl	_	SpaceAfter=No|start_char=409|end_char=410|ner=O
+48	45.10	45.10	NUM	CD	NumForm=Digit|NumType=Frac	47	nummod	_	start_char=410|end_char=415|ner=S-MONEY
+49	a	a	DET	DT	Definite=Ind|PronType=Art	50	det	_	start_char=416|end_char=417|ner=B-DATE
+50	week	week	NOUN	NN	Number=Sing	51	obl:unmarked	_	start_char=418|end_char=422|ner=I-DATE
+51	earlier	early	ADV	RBR	Degree=Cmp	47	advmod	_	SpaceAfter=No|start_char=423|end_char=430|ner=E-DATE
+52	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=430|end_char=431|ner=O
+
+# text = Dr. Alvarez, who has worked at St. Mary's Hospital since 2011, will lead the new research unit. Her team includes Prof. J. R. Okafor and Mr. Lindqvist from the U.K. office. The unit opens Jan. 15 at 9 a.m. in Bldg. 4, Rm. 210.
+# sent_id = 2
+# sentiment = 1
+1	Dr.	Dr.	PROPN	NNP	Number=Sing	2	nmod:desc	_	start_char=433|end_char=436|ner=O
+2	Alvarez	Alvarez	PROPN	NNP	Number=Sing	16	nsubj	_	SpaceAfter=No|start_char=437|end_char=444|ner=S-PERSON
+3	,	,	PUNCT	,	_	6	punct	_	start_char=444|end_char=445|ner=O
+4	who	who	PRON	WP	Case=Nom|PronType=Rel	6	nsubj	_	start_char=446|end_char=449|ner=O
+5	has	have	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	6	aux	_	start_char=450|end_char=453|ner=O
+6	worked	work	VERB	VBN	Tense=Past|VerbForm=Part	2	acl:relcl	_	start_char=454|end_char=460|ner=O
+7	at	at	ADP	IN	_	11	case	_	start_char=461|end_char=463|ner=O
+8	St.	St.	PROPN	NNP	Number=Sing	9	nmod:desc	_	start_char=464|end_char=467|ner=B-FAC
+9-10	Mary's	_	_	_	_	_	_	_	start_char=468|end_char=474|ner=I-FAC
+9	Mary	Mary	PROPN	NNP	Number=Sing	11	nmod:poss	_	start_char=468|end_char=472
+10	's	's	PART	POS	_	9	case	_	start_char=472|end_char=474
+11	Hospital	Hospital	PROPN	NNP	Number=Sing	6	obl	_	start_char=475|end_char=483|ner=E-FAC
+12	since	since	ADP	IN	_	13	case	_	start_char=484|end_char=489|ner=O
+13	2011	2011	NUM	CD	NumForm=Digit|NumType=Card	6	obl	_	SpaceAfter=No|start_char=490|end_char=494|ner=S-DATE
+14	,	,	PUNCT	,	_	2	punct	_	start_char=494|end_char=495|ner=O
+15	will	will	AUX	MD	VerbForm=Fin	16	aux	_	start_char=496|end_char=500|ner=O
+16	lead	lead	VERB	VB	VerbForm=Inf	0	root	_	start_char=501|end_char=505|ner=O
+17	the	the	DET	DT	Definite=Def|PronType=Art	20	det	_	start_char=506|end_char=509|ner=O
+18	new	new	ADJ	JJ	Degree=Pos	20	amod	_	start_char=510|end_char=513|ner=O
+19	research	research	NOUN	NN	Number=Sing	20	compound	_	start_char=514|end_char=522|ner=O
+20	unit	unit	NOUN	NN	Number=Sing	16	obj	_	SpaceAfter=No|start_char=523|end_char=527|ner=O
+21	.	.	PUNCT	.	_	24	punct	_	start_char=527|end_char=528|ner=O
+22	Her	her	PRON	PRP$	Case=Gen|Gender=Fem|Number=Sing|Person=3|Poss=Yes|PronType=Prs	23	nmod:poss	_	start_char=529|end_char=532|ner=O
+23	team	team	NOUN	NN	Number=Sing	24	nsubj	_	start_char=533|end_char=537|ner=O
+24	includes	include	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	16	parataxis	_	start_char=538|end_char=546|ner=O
+25	Prof.	Prof.	PROPN	NNP	Number=Sing	24	obj	_	start_char=547|end_char=552|ner=O
+26	J.	J.	PROPN	NNP	Number=Sing	25	flat	_	start_char=553|end_char=555|ner=B-PERSON
+27	R.	R.	PROPN	NNP	Number=Sing	26	flat	_	start_char=556|end_char=558|ner=I-PERSON
+28	Okafor	Okafor	PROPN	NNP	Number=Sing	26	flat	_	start_char=559|end_char=565|ner=E-PERSON
+29	and	and	CCONJ	CC	_	31	cc	_	start_char=566|end_char=569|ner=O
+30	Mr.	Mr.	PROPN	NNP	Number=Sing	31	nmod:desc	_	start_char=570|end_char=573|ner=O
+31	Lindqvist	Lindqvist	PROPN	NNP	Number=Sing	26	conj	_	start_char=574|end_char=583|ner=S-PERSON
+32	from	from	ADP	IN	_	35	case	_	start_char=584|end_char=588|ner=O
+33	the	the	DET	DT	Definite=Def|PronType=Art	35	det	_	start_char=589|end_char=592|ner=O
+34	U.K.	U.K.	PROPN	NNP	Number=Sing	35	compound	_	start_char=593|end_char=597|ner=S-GPE
+35	office	office	NOUN	NN	Number=Sing	24	obl	_	SpaceAfter=No|start_char=598|end_char=604|ner=O
+36	.	.	PUNCT	.	_	24	punct	_	start_char=604|end_char=605|ner=O
+37	The	the	DET	DT	Definite=Def|PronType=Art	38	det	_	start_char=606|end_char=609|ner=O
+38	unit	unit	NOUN	NN	Number=Sing	39	nsubj	_	start_char=610|end_char=614|ner=O
+39	opens	open	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	16	parataxis	_	start_char=615|end_char=620|ner=O
+40	Jan.	January	PROPN	NNP	Abbr=Yes|Number=Sing	41	nmod:unmarked	_	start_char=621|end_char=625|ner=B-DATE
+41	15	15	NUM	CD	NumForm=Digit|NumType=Card	39	obl:unmarked	_	start_char=626|end_char=628|ner=E-DATE
+42	at	at	ADP	IN	_	43	case	_	start_char=629|end_char=631|ner=O
+43	9	9	NUM	CD	NumForm=Digit|NumType=Card	39	obl	_	start_char=632|end_char=633|ner=B-TIME
+44	a.m.	a.m.	NOUN	NN	Number=Sing	43	nmod:unmarked	_	start_char=634|end_char=638|ner=E-TIME
+45	in	in	ADP	IN	_	47	case	_	start_char=639|end_char=641|ner=O
+46	Bldg.	Bldg.	PROPN	NNP	Abbr=Yes|Number=Sing	39	obl	_	start_char=642|end_char=647|ner=B-FAC
+47	4	4	NUM	CD	NumForm=Digit|NumType=Card	46	flat	_	SpaceAfter=No|start_char=648|end_char=649|ner=I-FAC
+48	,	,	PUNCT	,	_	49	punct	_	start_char=649|end_char=650|ner=I-FAC
+49	Rm.	Rm.	PROPN	NNP	Number=Sing	47	nmod:unmarked	_	start_char=651|end_char=654|ner=I-FAC
+50	210	210	NUM	CD	NumForm=Digit|NumType=Card	49	flat	_	SpaceAfter=No|start_char=655|end_char=658|ner=E-FAC
+51	.	.	PUNCT	.	_	16	punct	_	SpacesAfter=\n\n|start_char=658|end_char=659|ner=O
+
+# text = "Are you coming?" asked Tom. "I can't," said Maria. "I've got to finish this report by tonight, or my boss'll kill me." "Fine. We'll save you a seat."
+# sent_id = 3
+# sentiment = 0
+1	"	"	PUNCT	``	_	4	punct	_	SpaceAfter=No|start_char=661|end_char=662|ner=O
+2	Are	be	AUX	VBP	Mood=Ind|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin	4	aux	_	start_char=662|end_char=665|ner=O
+3	you	you	PRON	PRP	Case=Nom|Person=2|PronType=Prs	4	nsubj	_	start_char=666|end_char=669|ner=O
+4	coming	come	VERB	VBG	Tense=Pres|VerbForm=Part	7	ccomp	_	SpaceAfter=No|start_char=670|end_char=676|ner=O
+5	?	?	PUNCT	.	_	4	punct	_	SpaceAfter=No|start_char=676|end_char=677|ner=O
+6	"	"	PUNCT	''	_	4	punct	_	start_char=677|end_char=678|ner=O
+7	asked	ask	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	16	nsubj	_	start_char=679|end_char=684|ner=O
+8	Tom	Tom	PROPN	NNP	Number=Sing	7	nsubj	_	SpaceAfter=No|start_char=685|end_char=688|ner=S-PERSON
+9	.	.	PUNCT	.	_	7	punct	_	SpacesAfter=\n|start_char=688|end_char=689|ner=O
+10	"	"	PUNCT	``	_	12	punct	_	SpaceAfter=No|start_char=690|end_char=691|ner=O
+11	I	I	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	12	nsubj	_	start_char=691|end_char=692|ner=O
+12-13	can't	_	_	_	_	_	_	_	SpaceAfter=No|start_char=693|end_char=698|ner=O
+12	ca	can	AUX	MD	VerbForm=Fin	7	ccomp	_	start_char=693|end_char=695
+13	n't	not	PART	RB	Polarity=Neg	12	advmod	_	start_char=695|end_char=698
+14	,	,	PUNCT	,	_	12	punct	_	SpaceAfter=No|start_char=698|end_char=699|ner=O
+15	"	"	PUNCT	''	_	12	punct	_	start_char=699|end_char=700|ner=O
+16	said	say	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=701|end_char=705|ner=O
+17	Maria	Maria	PROPN	NNP	Number=Sing	16	nsubj	_	SpaceAfter=No|start_char=706|end_char=711|ner=S-PERSON
+18	.	.	PUNCT	.	_	16	punct	_	start_char=711|end_char=712|ner=O
+19	"	"	PUNCT	``	_	22	punct	_	SpaceAfter=No|start_char=713|end_char=714|ner=O
+20-21	I've	_	_	_	_	_	_	_	start_char=714|end_char=718|ner=O
+20	I	I	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	22	nsubj	_	start_char=714|end_char=715
+21	've	have	AUX	VBP	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	22	aux	_	start_char=715|end_char=718
+22	got	get	VERB	VBN	Tense=Past|VerbForm=Part	16	ccomp	_	start_char=719|end_char=722|ner=O
+23	to	to	PART	TO	_	24	mark	_	start_char=723|end_char=725|ner=O
+24	finish	finish	VERB	VB	VerbForm=Inf	22	xcomp	_	start_char=726|end_char=732|ner=O
+25	this	this	DET	DT	Number=Sing|PronType=Dem	26	det	_	start_char=733|end_char=737|ner=O
+26	report	report	NOUN	NN	Number=Sing	24	obj	_	start_char=738|end_char=744|ner=O
+27	by	by	ADP	IN	_	28	case	_	start_char=745|end_char=747|ner=O
+28	tonight	tonight	NOUN	NN	Number=Sing	24	obl	_	SpaceAfter=No|start_char=748|end_char=755|ner=S-TIME
+29	,	,	PUNCT	,	_	34	punct	_	start_char=755|end_char=756|ner=O
+30	or	or	CCONJ	CC	_	34	cc	_	start_char=757|end_char=759|ner=O
+31	my	my	PRON	PRP$	Case=Gen|Number=Sing|Person=1|Poss=Yes|PronType=Prs	32	nmod:poss	_	start_char=760|end_char=762|ner=O
+32-33	boss'll	_	_	_	_	_	_	_	start_char=763|end_char=770|ner=O
+32	boss	boss	NOUN	NN	Number=Sing	34	nsubj	_	start_char=763|end_char=767
+33	'll	will	AUX	MD	VerbForm=Fin	34	aux	_	start_char=767|end_char=770
+34	kill	kill	VERB	VB	VerbForm=Inf	22	conj	_	start_char=771|end_char=775|ner=O
+35	me	I	PRON	PRP	Case=Acc|Number=Sing|Person=1|PronType=Prs	34	obj	_	SpaceAfter=No|start_char=776|end_char=778|ner=O
+36	.	.	PUNCT	.	_	22	punct	_	SpaceAfter=No|start_char=778|end_char=779|ner=O
+37	"	"	PUNCT	''	_	22	punct	_	SpacesAfter=\n|start_char=779|end_char=780|ner=O
+38	"	"	PUNCT	``	_	39	punct	_	SpaceAfter=No|start_char=781|end_char=782|ner=O
+39	Fine	Fine	ADJ	JJ	Degree=Pos	7	ccomp	_	SpaceAfter=No|start_char=782|end_char=786|ner=O
+40	.	.	PUNCT	.	_	39	punct	_	start_char=786|end_char=787|ner=O
+41-42	We'll	_	_	_	_	_	_	_	start_char=788|end_char=793|ner=O
+41	We	we	PRON	PRP	Case=Nom|Number=Plur|Person=1|PronType=Prs	43	nsubj	_	start_char=788|end_char=790
+42	'll	will	AUX	MD	VerbForm=Fin	43	aux	_	start_char=790|end_char=793
+43	save	save	VERB	VB	VerbForm=Inf	39	parataxis	_	start_char=794|end_char=798|ner=O
+44	you	you	PRON	PRP	Case=Acc|Person=2|PronType=Prs	43	iobj	_	start_char=799|end_char=802|ner=O
+45	a	a	DET	DT	Definite=Ind|PronType=Art	46	det	_	start_char=803|end_char=804|ner=O
+46	seat	seat	NOUN	NN	Number=Sing	43	obj	_	SpaceAfter=No|start_char=805|end_char=809|ner=O
+47	.	.	PUNCT	.	_	22	punct	_	SpaceAfter=No|start_char=809|end_char=810|ner=O
+48	"	"	PUNCT	''	_	22	punct	_	SpacesAfter=\n\n|start_char=810|end_char=811|ner=O
+
+# text = Wait — did you really mean that? I thought you'd said the opposite... Anyway, it doesn't matter now.
+# sent_id = 4
+# sentiment = 1
+1	Wait	wait	VERB	VB	Mood=Imp|VerbForm=Fin	10	reparandum	_	start_char=813|end_char=817|ner=O
+2	—	—	PUNCT	:	_	1	punct	_	start_char=818|end_char=819|ner=O
+3	did	do	AUX	VBD	Mood=Ind|Number=Sing|Person=2|Tense=Past|VerbForm=Fin	6	aux	_	start_char=820|end_char=823|ner=O
+4	you	you	PRON	PRP	Case=Nom|Person=2|PronType=Prs	6	nsubj	_	start_char=824|end_char=827|ner=O
+5	really	really	ADV	RB	_	6	advmod	_	start_char=828|end_char=834|ner=O
+6	mean	mean	VERB	VB	VerbForm=Inf	10	reparandum	_	start_char=835|end_char=839|ner=O
+7	that	that	PRON	DT	Number=Sing|PronType=Dem	6	obj	_	SpaceAfter=No|start_char=840|end_char=844|ner=O
+8	?	?	PUNCT	.	_	6	punct	_	start_char=844|end_char=845|ner=O
+9	I	I	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	10	nsubj	_	start_char=846|end_char=847|ner=O
+10	thought	think	VERB	VBD	Mood=Ind|Number=Sing|Person=1|Tense=Past|VerbForm=Fin	0	root	_	start_char=848|end_char=855|ner=O
+11-12	you'd	_	_	_	_	_	_	_	start_char=856|end_char=861|ner=O
+11	you	you	PRON	PRP	Case=Nom|Person=2|PronType=Prs	13	nsubj	_	start_char=856|end_char=859
+12	'd	would	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	13	aux	_	start_char=859|end_char=861
+13	said	say	VERB	VBN	Tense=Past|VerbForm=Part	10	ccomp	_	start_char=862|end_char=866|ner=O
+14	the	the	DET	DT	Definite=Def|PronType=Art	15	det	_	start_char=867|end_char=870|ner=O
+15	opposite	opposite	NOUN	NN	Number=Sing	13	obj	_	SpaceAfter=No|start_char=871|end_char=879|ner=O
+16	...	...	PUNCT	,	_	22	punct	_	start_char=879|end_char=882|ner=O
+17	Anyway	anyway	INTJ	UH	_	22	discourse	_	SpaceAfter=No|start_char=883|end_char=889|ner=O
+18	,	,	PUNCT	,	_	17	punct	_	start_char=889|end_char=890|ner=O
+19	it	it	PRON	PRP	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	22	nsubj	_	start_char=891|end_char=893|ner=O
+20-21	doesn't	_	_	_	_	_	_	_	start_char=894|end_char=901|ner=O
+20	does	do	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	22	aux	_	start_char=894|end_char=898
+21	n't	not	PART	RB	Polarity=Neg	22	advmod	_	start_char=898|end_char=901
+22	matter	matter	VERB	VB	VerbForm=Inf	10	parataxis	_	start_char=902|end_char=908|ner=O
+23	now	now	ADV	RB	PronType=Dem	22	advmod	_	SpaceAfter=No|start_char=909|end_char=912|ner=O
+24	.	.	PUNCT	.	_	10	punct	_	SpacesAfter=\n\n|start_char=912|end_char=913|ner=O
+
+# text = Things to buy: - milk (2 liters) - eggs, bread, and butter - something for dinner?
+# sent_id = 5
+# sentiment = 1
+1	Things	thing	NOUN	NNS	Number=Plur	0	root	_	start_char=915|end_char=921|ner=O
+2	to	to	PART	TO	_	3	mark	_	start_char=922|end_char=924|ner=O
+3	buy	buy	VERB	VB	VerbForm=Inf	1	acl	_	SpaceAfter=No|start_char=925|end_char=928|ner=O
+4	:	:	PUNCT	:	_	6	punct	_	SpacesAfter=\n|start_char=928|end_char=929|ner=O
+5	-	-	PUNCT	HYPH	_	6	punct	_	start_char=930|end_char=931|ner=O
+6	milk	milk	NOUN	NN	Number=Sing	3	obj	_	start_char=932|end_char=936|ner=O
+7	(	(	PUNCT	-LRB-	_	9	punct	_	SpaceAfter=No|start_char=937|end_char=938|ner=O
+8	2	2	NUM	CD	NumForm=Digit|NumType=Card	9	nummod	_	start_char=938|end_char=939|ner=B-QUANTITY
+9	liters	liter	NOUN	NNS	Number=Plur	6	appos	_	SpaceAfter=No|start_char=940|end_char=946|ner=E-QUANTITY
+10	)	)	PUNCT	-RRB-	_	9	punct	_	SpacesAfter=\n|start_char=946|end_char=947|ner=O
+11	-	-	PUNCT	HYPH	_	9	punct	_	start_char=948|end_char=949|ner=O
+12	eggs	egg	NOUN	NNS	Number=Plur	6	conj	_	SpaceAfter=No|start_char=950|end_char=954|ner=O
+13	,	,	PUNCT	,	_	14	punct	_	start_char=954|end_char=955|ner=O
+14	bread	bread	NOUN	NN	Number=Sing	12	conj	_	SpaceAfter=No|start_char=956|end_char=961|ner=O
+15	,	,	PUNCT	,	_	19	punct	_	start_char=961|end_char=962|ner=O
+16	and	and	CCONJ	CC	_	19	cc	_	start_char=963|end_char=966|ner=O
+17	butter	butter	NOUN	NN	Number=Sing	19	compound	_	SpacesAfter=\n|start_char=967|end_char=973|ner=O
+18	-	-	PUNCT	HYPH	_	17	punct	_	start_char=974|end_char=975|ner=O
+19	something	something	PRON	NN	Number=Sing|PronType=Ind	12	conj	_	start_char=976|end_char=985|ner=O
+20	for	for	ADP	IN	_	21	case	_	start_char=986|end_char=989|ner=O
+21	dinner	dinner	NOUN	NN	Number=Sing	19	nmod	_	SpaceAfter=No|start_char=990|end_char=996|ner=O
+22	?	?	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=996|end_char=997|ner=O
+
+# text = 1. Preheat the oven to 180°C. 2. Mix the flour and sugar in a large bowl. 3. Bake for 25–30 minutes, or until golden.
+# sent_id = 6
+# sentiment = 1
+1	1	1	NUM	LS	NumForm=Digit|NumType=Card	3	discourse	_	SpaceAfter=No|start_char=999|end_char=1000|ner=S-CARDINAL
+2	.	.	PUNCT	.	_	1	punct	_	start_char=1000|end_char=1001|ner=O
+3	Preheat	preheat	VERB	VB	Mood=Imp|VerbForm=Fin	0	root	_	start_char=1002|end_char=1009|ner=O
+4	the	the	DET	DT	Definite=Def|PronType=Art	5	det	_	start_char=1010|end_char=1013|ner=O
+5	oven	oven	NOUN	NN	Number=Sing	3	obj	_	start_char=1014|end_char=1018|ner=O
+6	to	to	ADP	IN	_	8	case	_	start_char=1019|end_char=1021|ner=O
+7	180	180	NUM	CD	NumForm=Digit|NumType=Card	8	nummod	_	SpaceAfter=No|start_char=1022|end_char=1025|ner=S-CARDINAL
+8	°	°	NOUN	NNS	Number=Plur	3	obl	_	SpaceAfter=No|start_char=1025|end_char=1026|ner=O
+9	C	C	PROPN	NNP	Number=Sing	8	nmod:unmarked	_	SpaceAfter=No|start_char=1026|end_char=1027|ner=O
+10	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n|start_char=1027|end_char=1028|ner=O
+11	2	2	NUM	LS	NumForm=Digit|NumType=Card	13	discourse	_	SpaceAfter=No|start_char=1029|end_char=1030|ner=S-CARDINAL
+12	.	.	PUNCT	.	_	11	punct	_	start_char=1030|end_char=1031|ner=O
+13	Mix	mix	VERB	VB	Mood=Imp|Number=Sing|Person=2|VerbForm=Fin	3	parataxis	_	start_char=1032|end_char=1035|ner=O
+14	the	the	DET	DT	Definite=Def|PronType=Art	15	det	_	start_char=1036|end_char=1039|ner=O
+15	flour	flour	NOUN	NN	Number=Sing	13	obj	_	start_char=1040|end_char=1045|ner=O
+16	and	and	CCONJ	CC	_	17	cc	_	start_char=1046|end_char=1049|ner=O
+17	sugar	sugar	NOUN	NN	Number=Sing	15	conj	_	start_char=1050|end_char=1055|ner=O
+18	in	in	ADP	IN	_	21	case	_	start_char=1056|end_char=1058|ner=O
+19	a	a	DET	DT	Definite=Ind|PronType=Art	21	det	_	start_char=1059|end_char=1060|ner=O
+20	large	large	ADJ	JJ	Degree=Pos	21	amod	_	start_char=1061|end_char=1066|ner=O
+21	bowl	bowl	NOUN	NN	Number=Sing	13	obl	_	SpaceAfter=No|start_char=1067|end_char=1071|ner=O
+22	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n|start_char=1071|end_char=1072|ner=O
+23	3	3	NUM	LS	NumForm=Digit|NumType=Card	25	discourse	_	SpaceAfter=No|start_char=1073|end_char=1074|ner=S-CARDINAL
+24	.	.	PUNCT	.	_	23	punct	_	start_char=1074|end_char=1075|ner=O
+25	Bake	bake	VERB	VB	Mood=Imp|VerbForm=Fin	3	parataxis	_	start_char=1076|end_char=1080|ner=O
+26	for	for	ADP	IN	_	30	case	_	start_char=1081|end_char=1084|ner=O
+27	25	25	NUM	CD	NumForm=Digit|NumType=Card	30	nummod	_	SpaceAfter=No|start_char=1085|end_char=1087|ner=B-TIME
+28	–	-	SYM	SYM	ExtPos=ADP	29	case	_	SpaceAfter=No|start_char=1087|end_char=1088|ner=I-TIME
+29	30	30	NUM	CD	NumForm=Digit|NumType=Card	27	nmod	_	start_char=1088|end_char=1090|ner=I-TIME
+30	minutes	minute	NOUN	NNS	Number=Plur	25	obl	_	SpaceAfter=No|start_char=1091|end_char=1098|ner=E-TIME
+31	,	,	PUNCT	,	_	34	punct	_	start_char=1098|end_char=1099|ner=O
+32	or	or	CCONJ	CC	_	34	cc	_	start_char=1100|end_char=1102|ner=O
+33	until	until	ADP	IN	_	34	case	_	start_char=1103|end_char=1108|ner=O
+34	golden	golden	ADJ	JJ	Degree=Pos	30	conj	_	SpaceAfter=No|start_char=1109|end_char=1115|ner=O
+35	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=1115|end_char=1116|ner=O
+
+# text = BREAKING NEWS: Storm Hits Coast Thousands without power as winds reach 120 km/h
+# sent_id = 7
+# sentiment = 1
+1	BREAKING	break	VERB	VBG	VerbForm=Part	2	amod	_	start_char=1118|end_char=1126|ner=O
+2	NEWS	news	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=1127|end_char=1131|ner=O
+3	:	:	PUNCT	:	_	12	punct	_	start_char=1131|end_char=1132|ner=O
+4	Storm	Storm	PROPN	NNP	Number=Sing	5	compound	_	start_char=1133|end_char=1138|ner=O
+5	Hits	Hit	PROPN	NNPS	Number=Plur	6	compound	_	start_char=1139|end_char=1143|ner=O
+6	Coast	Coast	PROPN	NNP	Number=Sing	7	compound	_	SpacesAfter=\n|start_char=1144|end_char=1149|ner=O
+7	Thousands	thousand	NOUN	NNS	Number=Plur	12	nsubj	_	start_char=1150|end_char=1159|ner=S-CARDINAL
+8	without	without	ADP	IN	_	9	case	_	start_char=1160|end_char=1167|ner=O
+9	power	power	NOUN	NN	Number=Sing	7	nmod	_	start_char=1168|end_char=1173|ner=O
+10	as	as	ADP	IN	_	11	case	_	start_char=1174|end_char=1176|ner=O
+11	winds	wind	NOUN	NNS	Number=Plur	9	nmod	_	start_char=1177|end_char=1182|ner=O
+12	reach	reach	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	2	appos	_	start_char=1183|end_char=1188|ner=O
+13	120	120	NUM	CD	NumForm=Digit|NumType=Card	14	nummod	_	start_char=1189|end_char=1192|ner=B-QUANTITY
+14	km	kilometer	NOUN	NNS	Number=Plur	12	obj	_	SpaceAfter=No|start_char=1193|end_char=1195|ner=E-QUANTITY
+15	/	/	SYM	SYM	_	16	cc	_	SpaceAfter=No|start_char=1195|end_char=1196|ner=O
+16	h	h	NOUN	NN	Number=Sing	14	conj	_	SpacesAfter=\n\n|start_char=1196|end_char=1197|ner=O
+
+# text = For more information, e-mail support@example.co.uk or call +1 (555) 012-3456 between 8:00 and 17:30. You can also visit http://example.com/help?topic=billing&lang=en for answers.
+# sent_id = 8
+# sentiment = 1
+1	For	for	ADP	IN	_	3	case	_	start_char=1199|end_char=1202|ner=O
+2	more	more	ADJ	JJR	Degree=Cmp	3	amod	_	start_char=1203|end_char=1207|ner=O
+3	information	information	NOUN	NN	Number=Sing	22	obl	_	SpaceAfter=No|start_char=1208|end_char=1219|ner=O
+4	,	,	PUNCT	,	_	3	punct	_	start_char=1219|end_char=1220|ner=O
+5	e-mail	e-mail	NOUN	NN	Number=Sing	6	compound	_	start_char=1221|end_char=1227|ner=O
+6	support@example.co.uk	support@example.co.uk	PROPN	ADD	Number=Sing	3	conj	_	start_char=1228|end_char=1249|ner=O
+7	or	or	CCONJ	CC	_	8	cc	_	start_char=1250|end_char=1252|ner=O
+8	call	call	VERB	VB	Mood=Imp|VerbForm=Fin	6	conj	_	start_char=1253|end_char=1257|ner=O
+9	+1	+1	NUM	CD	NumForm=Digit|NumType=Card	8	obj	_	start_char=1258|end_char=1260|ner=S-CARDINAL
+10	(	(	PUNCT	-LRB-	_	11	punct	_	SpaceAfter=No|start_char=1261|end_char=1262|ner=O
+11	555	555	NUM	CD	NumForm=Digit|NumType=Card	9	flat	_	SpaceAfter=No|start_char=1262|end_char=1265|ner=S-CARDINAL
+12	)	)	PUNCT	-RRB-	_	11	punct	_	start_char=1265|end_char=1266|ner=O
+13	012-3456	012-3456	NUM	CD	NumForm=Digit|NumType=Card	9	flat	_	start_char=1267|end_char=1275|ner=S-CARDINAL
+14	between	between	ADP	IN	_	15	case	_	start_char=1276|end_char=1283|ner=O
+15	8:00	8:00	NUM	CD	NumForm=Digit|NumType=Card	8	obl	_	start_char=1284|end_char=1288|ner=B-TIME
+16	and	and	CCONJ	CC	_	17	cc	_	start_char=1289|end_char=1292|ner=I-TIME
+17	17:30	17:30	NUM	CD	NumForm=Digit|NumType=Card	15	conj	_	SpaceAfter=No|start_char=1293|end_char=1298|ner=E-TIME
+18	.	.	PUNCT	.	_	3	punct	_	start_char=1298|end_char=1299|ner=O
+19	You	you	PRON	PRP	Case=Nom|Person=2|PronType=Prs	22	nsubj	_	start_char=1300|end_char=1303|ner=O
+20	can	can	AUX	MD	VerbForm=Fin	22	aux	_	start_char=1304|end_char=1307|ner=O
+21	also	also	ADV	RB	_	22	advmod	_	start_char=1308|end_char=1312|ner=O
+22	visit	visit	VERB	VB	VerbForm=Inf	0	root	_	start_char=1313|end_char=1318|ner=O
+23	http://example.com/help?topic=billing&lang=en	http://example.com/help?topic=billing&lang=en	PROPN	ADD	Number=Sing	22	obj	_	start_char=1319|end_char=1364|ner=O
+24	for	for	ADP	IN	_	25	case	_	start_char=1365|end_char=1368|ner=O
+25	answers	answer	NOUN	NNS	Number=Plur	22	obl	_	SpaceAfter=No|start_char=1369|end_char=1376|ner=O
+26	.	.	PUNCT	.	_	22	punct	_	SpacesAfter=\n\n|start_char=1376|end_char=1377|ner=O
+
+# text = The committee — chaired by Sen. Harris (D-Calif.) — released its findings on 3/14/2023. According to the report, the agency "failed to act" on at least 12 warnings; officials disputed that figure.
+# sent_id = 9
+# sentiment = 0
+1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=1379|end_char=1382|ner=O
+2	committee	committee	NOUN	NN	Number=Sing	15	nsubj	_	start_char=1383|end_char=1392|ner=O
+3	—	—	PUNCT	:	_	4	punct	_	start_char=1393|end_char=1394|ner=O
+4	chaired	chair	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	2	acl	_	start_char=1395|end_char=1402|ner=O
+5	by	by	ADP	IN	_	7	case	_	start_char=1403|end_char=1405|ner=O
+6	Sen.	Sen.	PROPN	NNP	Number=Sing	7	nmod:desc	_	start_char=1406|end_char=1410|ner=O
+7	Harris	Harris	PROPN	NNP	Number=Sing	4	obl:agent	_	start_char=1411|end_char=1417|ner=S-PERSON
+8	(	(	PUNCT	-LRB-	_	9	punct	_	SpaceAfter=No|start_char=1418|end_char=1419|ner=O
+9	D	D	PROPN	NNP	Number=Sing	7	appos	_	SpaceAfter=No|start_char=1419|end_char=1420|ner=B-ORG
+10	-	-	PUNCT	HYPH	_	11	punct	_	SpaceAfter=No|start_char=1420|end_char=1421|ner=I-ORG
+11	Calif	Calif	PROPN	NNP	Number=Sing	9	flat	_	SpaceAfter=No|start_char=1421|end_char=1426|ner=I-ORG
+12	.	.	PUNCT	.	_	9	punct	_	SpaceAfter=No|start_char=1426|end_char=1427|ner=E-ORG
+13	)	)	PUNCT	-RRB-	_	9	punct	_	start_char=1427|end_char=1428|ner=O
+14	—	—	PUNCT	:	_	2	punct	_	start_char=1429|end_char=1430|ner=O
+15	released	release	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1431|end_char=1439|ner=O
+16	its	its	PRON	PRP$	Case=Gen|Gender=Neut|Number=Sing|Person=3|Poss=Yes|PronType=Prs	17	nmod:poss	_	start_char=1440|end_char=1443|ner=O
+17	findings	finding	NOUN	NNS	Number=Plur	15	obj	_	start_char=1444|end_char=1452|ner=O
+18	on	on	ADP	IN	_	19	case	_	start_char=1453|end_char=1455|ner=O
+19	3/14/2023	3/14/2023	NUM	CD	NumForm=Digit|NumType=Card	15	obl	_	SpaceAfter=No|start_char=1456|end_char=1465|ner=S-CARDINAL
+20	.	.	PUNCT	.	_	29	punct	_	start_char=1465|end_char=1466|ner=O
+21	According	accord	VERB	VBG	ExtPos=ADP|Tense=Pres|VerbForm=Part	24	case	_	start_char=1467|end_char=1476|ner=O
+22	to	to	ADP	IN	_	21	fixed	_	start_char=1477|end_char=1479|ner=O
+23	the	the	DET	DT	Definite=Def|PronType=Art	24	det	_	start_char=1480|end_char=1483|ner=O
+24	report	report	NOUN	NN	Number=Sing	15	obl	_	SpaceAfter=No|start_char=1484|end_char=1490|ner=O
+25	,	,	PUNCT	,	_	24	punct	_	start_char=1490|end_char=1491|ner=O
+26	the	the	DET	DT	Definite=Def|PronType=Art	27	det	_	start_char=1492|end_char=1495|ner=O
+27	agency	agency	NOUN	NN	Number=Sing	29	nsubj	_	start_char=1496|end_char=1502|ner=O
+28	"	"	PUNCT	''	_	27	punct	_	SpaceAfter=No|start_char=1503|end_char=1504|ner=O
+29	failed	fail	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	15	parataxis	_	start_char=1504|end_char=1510|ner=O
+30	to	to	PART	TO	_	31	mark	_	start_char=1511|end_char=1513|ner=O
+31	act	act	VERB	VB	VerbForm=Inf	29	xcomp	_	SpaceAfter=No|start_char=1514|end_char=1517|ner=O
+32	"	"	PUNCT	``	_	37	punct	_	start_char=1517|end_char=1518|ner=O
+33	on	on	ADP	IN	_	37	case	_	start_char=1519|end_char=1521|ner=O
+34	at	at	ADP	IN	_	35	case	_	start_char=1522|end_char=1524|ner=B-CARDINAL
+35	least	least	ADJ	JJS	Degree=Sup	36	nmod	_	start_char=1525|end_char=1530|ner=I-CARDINAL
+36	12	12	NUM	CD	NumForm=Digit|NumType=Card	37	nummod	_	start_char=1531|end_char=1533|ner=E-CARDINAL
+37	warnings	warning	NOUN	NNS	Number=Plur	31	obl	_	SpaceAfter=No|start_char=1534|end_char=1542|ner=O
+38	;	;	PUNCT	:	_	40	punct	_	start_char=1542|end_char=1543|ner=O
+39	officials	official	NOUN	NNS	Number=Plur	40	nsubj	_	start_char=1544|end_char=1553|ner=O
+40	disputed	dispute	VERB	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	29	parataxis	_	start_char=1554|end_char=1562|ner=O
+41	that	that	DET	DT	Number=Sing|PronType=Dem	42	det	_	start_char=1563|end_char=1567|ner=O
+42	figure	figure	NOUN	NN	Number=Sing	40	obj	_	SpaceAfter=No|start_char=1568|end_char=1574|ner=O
+43	.	.	PUNCT	.	_	29	punct	_	SpacesAfter=\n\n|start_char=1574|end_char=1575|ner=O
+
+# text = She doesn't know whether they'll arrive before noon. We'd've left earlier if we'd known. Y'all shouldn't worry; it ain't that bad. They're gonna need a bigger boat, aren't they?
+# sent_id = 10
+# sentiment = 0
+1	She	she	PRON	PRP	Case=Nom|Gender=Fem|Number=Sing|Person=3|PronType=Prs	4	nsubj	_	start_char=1577|end_char=1580|ner=O
+2-3	doesn't	_	_	_	_	_	_	_	start_char=1581|end_char=1588|ner=O
+2	does	do	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	aux	_	start_char=1581|end_char=1585
+3	n't	not	PART	RB	Polarity=Neg	4	advmod	_	start_char=1585|end_char=1588
+4	know	know	VERB	VB	VerbForm=Inf	0	root	_	start_char=1589|end_char=1593|ner=O
+5	whether	whether	SCONJ	IN	_	8	mark	_	start_char=1594|end_char=1601|ner=O
+6-7	they'll	_	_	_	_	_	_	_	start_char=1602|end_char=1609|ner=O
+6	they	they	PRON	PRP	Case=Nom|Number=Plur|Person=3|PronType=Prs	8	nsubj	_	start_char=1602|end_char=1606
+7	'll	will	AUX	MD	VerbForm=Fin	8	aux	_	start_char=1606|end_char=1609
+8	arrive	arrive	VERB	VB	VerbForm=Inf	4	ccomp	_	start_char=1610|end_char=1616|ner=O
+9	before	before	ADP	IN	_	10	case	_	start_char=1617|end_char=1623|ner=O
+10	noon	noon	NOUN	NN	Number=Sing	8	obl	_	SpaceAfter=No|start_char=1624|end_char=1628|ner=S-TIME
+11	.	.	PUNCT	.	_	14	punct	_	start_char=1628|end_char=1629|ner=O
+12-13	We'd've	_	_	_	_	_	_	_	start_char=1630|end_char=1637|ner=S-PERSON
+12	We'd	we'd	PRON	PRP	Case=Nom|Number=Sing|Person=2|PronType=Prs	14	nsubj	_	start_char=1630|end_char=1634
+13	've	have	AUX	VBP	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	14	aux	_	start_char=1634|end_char=1637
+14	left	leave	VERB	VBN	Tense=Past|VerbForm=Part	4	parataxis	_	start_char=1638|end_char=1642|ner=O
+15	earlier	early	ADV	RBR	Degree=Cmp	14	advmod	_	start_char=1643|end_char=1650|ner=O
+16	if	if	SCONJ	IN	_	19	mark	_	start_char=1651|end_char=1653|ner=O
+17-18	we'd	_	_	_	_	_	_	_	start_char=1654|end_char=1658|ner=O
+17	we	we	PRON	PRP	Case=Nom|Number=Plur|Person=1|PronType=Prs	19	nsubj	_	start_char=1654|end_char=1656
+18	'd	would	AUX	VBD	Mood=Ind|Number=Plur|Person=1|Tense=Past|VerbForm=Fin	19	aux	_	start_char=1656|end_char=1658
+19	known	know	VERB	VBN	Tense=Past|VerbForm=Part	14	advcl	_	SpaceAfter=No|start_char=1659|end_char=1664|ner=O
+20	.	.	PUNCT	.	_	24	punct	_	start_char=1664|end_char=1665|ner=O
+21	Y'all	y'all	PRON	PRP	Case=Nom|Number=Sing|Person=2|PronType=Prs	24	nsubj	_	start_char=1666|end_char=1671|ner=O
+22-23	shouldn't	_	_	_	_	_	_	_	start_char=1672|end_char=1681|ner=O
+22	should	should	AUX	MD	VerbForm=Fin	24	aux	_	start_char=1672|end_char=1678
+23	n't	not	PART	RB	Polarity=Neg	24	advmod	_	start_char=1678|end_char=1681
+24	worry	worry	VERB	VB	VerbForm=Inf	4	parataxis	_	SpaceAfter=No|start_char=1682|end_char=1687|ner=O
+25	;	;	PUNCT	:	_	30	punct	_	start_char=1687|end_char=1688|ner=O
+26	it	it	PRON	PRP	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	30	nsubj	_	start_char=1689|end_char=1691|ner=O
+27-28	ain't	_	_	_	_	_	_	_	start_char=1692|end_char=1697|ner=O
+27	ai	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	30	cop	_	start_char=1692|end_char=1694
+28	n't	not	PART	RB	Polarity=Neg	30	advmod	_	start_char=1694|end_char=1697
+29	that	that	ADV	RB	_	30	advmod	_	start_char=1698|end_char=1702|ner=O
+30	bad	bad	ADJ	JJ	Degree=Pos	24	parataxis	_	SpaceAfter=No|start_char=1703|end_char=1706|ner=O
+31	.	.	PUNCT	.	_	34	punct	_	start_char=1706|end_char=1707|ner=O
+32-33	They're	_	_	_	_	_	_	_	start_char=1708|end_char=1715|ner=O
+32	They	they	PRON	PRP	Case=Nom|Number=Plur|Person=3|PronType=Prs	34	nsubj	_	start_char=1708|end_char=1712
+33	're	be	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	34	aux	_	start_char=1712|end_char=1715
+34-35	gonna	_	_	_	_	_	_	_	start_char=1716|end_char=1721|ner=O
+34	gon	go	VERB	VBG	Style=Vrnc|Tense=Pres|VerbForm=Part	30	parataxis	_	start_char=1716|end_char=1719
+35	na	to	PART	TO	_	36	mark	_	start_char=1719|end_char=1721
+36	need	need	VERB	VB	VerbForm=Inf	34	xcomp	_	start_char=1722|end_char=1726|ner=O
+37	a	a	DET	DT	Definite=Ind|PronType=Art	39	det	_	start_char=1727|end_char=1728|ner=O
+38	bigger	big	ADJ	JJR	Degree=Cmp	39	amod	_	start_char=1729|end_char=1735|ner=O
+39	boat	boat	NOUN	NN	Number=Sing	36	obj	_	SpaceAfter=No|start_char=1736|end_char=1740|ner=O
+40	,	,	PUNCT	,	_	41	punct	_	start_char=1740|end_char=1741|ner=O
+41-42	aren't	_	_	_	_	_	_	_	start_char=1742|end_char=1748|ner=O
+41	are	be	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	34	parataxis	_	start_char=1742|end_char=1745
+42	n't	not	PART	RB	Polarity=Neg	41	advmod	_	start_char=1745|end_char=1748
+43	they	they	PRON	PRP	Case=Nom|Number=Plur|Person=3|PronType=Prs	41	nsubj	_	SpaceAfter=No|start_char=1749|end_char=1753|ner=O
+44	?	?	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=1753|end_char=1754|ner=O
+
+# text = I bought apples, oranges, and pears. Then I went home. The tab above separates two sentences on one line. Two spaces here. Three spaces there.
+# sent_id = 11
+# sentiment = 1
+1	I	I	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	2	nsubj	_	start_char=1756|end_char=1757|ner=O
+2	bought	buy	VERB	VBD	Mood=Ind|Number=Sing|Person=1|Tense=Past|VerbForm=Fin	0	root	_	start_char=1758|end_char=1764|ner=O
+3	apples	apple	NOUN	NNS	Number=Plur	2	obj	_	SpaceAfter=No|start_char=1765|end_char=1771|ner=O
+4	,	,	PUNCT	,	_	5	punct	_	start_char=1771|end_char=1772|ner=O
+5	oranges	orange	NOUN	NNS	Number=Plur	3	conj	_	SpaceAfter=No|start_char=1773|end_char=1780|ner=O
+6	,	,	PUNCT	,	_	8	punct	_	start_char=1780|end_char=1781|ner=O
+7	and	and	CCONJ	CC	_	8	cc	_	start_char=1782|end_char=1785|ner=O
+8	pears	pear	NOUN	NNS	Number=Plur	3	conj	_	SpaceAfter=No|start_char=1786|end_char=1791|ner=O
+9	.	.	PUNCT	.	_	12	punct	_	SpacesAfter=\t|start_char=1791|end_char=1792|ner=O
+10	Then	then	ADV	RB	PronType=Dem	12	advmod	_	start_char=1793|end_char=1797|ner=O
+11	I	I	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	12	nsubj	_	start_char=1798|end_char=1799|ner=O
+12	went	go	VERB	VBD	Mood=Ind|Number=Sing|Person=1|Tense=Past|VerbForm=Fin	2	parataxis	_	start_char=1800|end_char=1804|ner=O
+13	home	home	ADV	RB	_	12	advmod	_	SpaceAfter=No|start_char=1805|end_char=1809|ner=O
+14	.	.	PUNCT	.	_	12	punct	_	SpacesAfter=\n|start_char=1809|end_char=1810|ner=O
+15	The	the	DET	DT	Definite=Def|PronType=Art	16	det	_	start_char=1811|end_char=1814|ner=O
+16	tab	tab	NOUN	NN	Number=Sing	18	nsubj	_	start_char=1815|end_char=1818|ner=O
+17	above	above	ADV	RB	_	18	advmod	_	start_char=1819|end_char=1824|ner=O
+18	separates	separate	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	parataxis	_	start_char=1825|end_char=1834|ner=O
+19	two	two	NUM	CD	NumForm=Word|NumType=Card	20	nummod	_	start_char=1835|end_char=1838|ner=S-CARDINAL
+20	sentences	sentence	NOUN	NNS	Number=Plur	18	obj	_	start_char=1839|end_char=1848|ner=O
+21	on	on	ADP	IN	_	23	case	_	start_char=1849|end_char=1851|ner=O
+22	one	one	NUM	CD	NumForm=Word|NumType=Card	23	nummod	_	start_char=1852|end_char=1855|ner=S-CARDINAL
+23	line	line	NOUN	NN	Number=Sing	18	obl	_	SpaceAfter=No|start_char=1856|end_char=1860|ner=O
+24	.	.	PUNCT	.	_	18	punct	_	SpacesAfter=\s\s|start_char=1860|end_char=1861|ner=O
+25	Two	two	NUM	CD	NumForm=Word|NumType=Card	26	nummod	_	start_char=1863|end_char=1866|ner=S-CARDINAL
+26	spaces	space	NOUN	NNS	Number=Plur	18	parataxis	_	start_char=1867|end_char=1873|ner=O
+27	here	here	ADV	RB	PronType=Dem	26	advmod	_	SpaceAfter=No|start_char=1874|end_char=1878|ner=O
+28	.	.	PUNCT	.	_	30	punct	_	SpacesAfter=\s\s\s|start_char=1878|end_char=1879|ner=O
+29	Three	three	NUM	CD	NumForm=Word|NumType=Card	30	nummod	_	start_char=1882|end_char=1887|ner=S-CARDINAL
+30	spaces	space	NOUN	NNS	Number=Plur	2	parataxis	_	start_char=1888|end_char=1894|ner=O
+31	there	there	ADV	RB	PronType=Dem	30	advmod	_	SpaceAfter=No|start_char=1895|end_char=1900|ner=O
+32	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=1900|end_char=1901|ner=O
+
+# text = Mrs. O'Neill's dog barked at the mailman's van. The Joneses' house is next to the Smiths'. It's the children's favorite park.
+# sent_id = 12
+# sentiment = 1
+1	Mrs.	Mrs.	PROPN	NNP	Number=Sing	2	nmod:desc	_	start_char=1903|end_char=1907|ner=O
+2-3	O'Neill's	_	_	_	_	_	_	_	start_char=1908|end_char=1917|ner=S-PERSON
+2	O'Neill	O'Neill	PROPN	NNP	Number=Sing	4	nmod:poss	_	start_char=1908|end_char=1915
+3	's	's	PART	POS	_	2	case	_	start_char=1915|end_char=1917
+4	dog	dog	NOUN	NN	Number=Sing	5	nsubj	_	start_char=1918|end_char=1921|ner=O
+5	barked	bark	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1922|end_char=1928|ner=O
+6	at	at	ADP	IN	_	10	case	_	start_char=1929|end_char=1931|ner=O
+7	the	the	DET	DT	Definite=Def|PronType=Art	8	det	_	start_char=1932|end_char=1935|ner=O
+8-9	mailman's	_	_	_	_	_	_	_	start_char=1936|end_char=1945|ner=O
+8	mailman	mailman	NOUN	NN	Number=Sing	10	nmod:poss	_	start_char=1936|end_char=1943
+9	's	's	PART	POS	_	8	case	_	start_char=1943|end_char=1945
+10	van	van	NOUN	NN	Number=Sing	5	obl	_	SpaceAfter=No|start_char=1946|end_char=1949|ner=O
+11	.	.	PUNCT	.	_	17	punct	_	start_char=1949|end_char=1950|ner=O
+12	The	the	DET	DT	Definite=Def|PronType=Art	13	det	_	start_char=1951|end_char=1954|ner=O
+13-14	Joneses'	_	_	_	_	_	_	_	start_char=1955|end_char=1963|ner=O
+13	Joneses	Joneses	PROPN	NNPS	Number=Plur	15	nmod:poss	_	start_char=1955|end_char=1962
+14	'	's	PART	POS	_	13	case	_	start_char=1962|end_char=1963
+15	house	house	NOUN	NN	Number=Sing	17	nsubj	_	start_char=1964|end_char=1969|ner=O
+16	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	17	cop	_	start_char=1970|end_char=1972|ner=O
+17	next	next	ADJ	JJ	Degree=Pos	5	parataxis	_	start_char=1973|end_char=1977|ner=O
+18	to	to	ADP	IN	_	20	case	_	start_char=1978|end_char=1980|ner=O
+19	the	the	DET	DT	Definite=Def|PronType=Art	20	det	_	start_char=1981|end_char=1984|ner=O
+20	Smiths	Smith	PROPN	NNPS	Number=Plur	17	obl	_	SpaceAfter=No|start_char=1985|end_char=1991|ner=S-ORG
+21	'	'	PUNCT	''	_	17	punct	_	SpaceAfter=No|start_char=1991|end_char=1992|ner=O
+22	.	.	PUNCT	.	_	29	punct	_	start_char=1992|end_char=1993|ner=O
+23-24	It's	_	_	_	_	_	_	_	start_char=1994|end_char=1998|ner=O
+23	It	it	PRON	PRP	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	29	nsubj	_	start_char=1994|end_char=1996
+24	's	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	29	cop	_	start_char=1996|end_char=1998
+25	the	the	DET	DT	Definite=Def|PronType=Art	26	det	_	start_char=1999|end_char=2002|ner=O
+26-27	children's	_	_	_	_	_	_	_	start_char=2003|end_char=2013|ner=O
+26	children	child	NOUN	NNS	Number=Plur	29	nmod:poss	_	start_char=2003|end_char=2011
+27	's	's	PART	POS	_	26	case	_	start_char=2011|end_char=2013
+28	favorite	favorite	ADJ	JJ	Degree=Pos	29	amod	_	start_char=2014|end_char=2022|ner=O
+29	park	park	NOUN	NN	Number=Sing	5	parataxis	_	SpaceAfter=No|start_char=2023|end_char=2027|ner=O
+30	.	.	PUNCT	.	_	5	punct	_	SpacesAfter=\n\n|start_char=2027|end_char=2028|ner=O
+
+# text = The café on Rue de Rivoli serves crêpes, croissants and café au lait. Zoë and Björn met in Zürich last spring. The naïve résumé impressed nobody.
+# sent_id = 13
+# sentiment = 0
+1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=2030|end_char=2033|ner=O
+2	café	café	NOUN	NN	Number=Sing	7	nsubj	_	start_char=2034|end_char=2038|ner=O
+3	on	on	ADP	IN	_	6	case	_	start_char=2039|end_char=2041|ner=O
+4	Rue	Rue	PROPN	NNP	Number=Sing	2	nmod	_	start_char=2042|end_char=2045|ner=B-FAC
+5	de	de	PROPN	NNP	Number=Sing	4	flat	_	start_char=2046|end_char=2048|ner=I-FAC
+6	Rivoli	Rivoli	PROPN	NNP	Number=Sing	4	flat	_	start_char=2049|end_char=2055|ner=E-FAC
+7	serves	serve	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2056|end_char=2062|ner=O
+8	crêpes	crêpe	NOUN	NNS	Number=Plur	7	obj	_	SpaceAfter=No|start_char=2063|end_char=2069|ner=O
+9	,	,	PUNCT	,	_	10	punct	_	start_char=2069|end_char=2070|ner=O
+10	croissants	croissant	NOUN	NNS	Number=Plur	8	conj	_	start_char=2071|end_char=2081|ner=O
+11	and	and	CCONJ	CC	_	14	cc	_	start_char=2082|end_char=2085|ner=O
+12	café	café	NOUN	NN	Number=Sing	13	compound	_	start_char=2086|end_char=2090|ner=O
+13	au	au	NOUN	NN	Number=Sing	14	compound	_	start_char=2091|end_char=2093|ner=O
+14	lait	lait	NOUN	NN	Number=Sing	8	conj	_	SpaceAfter=No|start_char=2094|end_char=2098|ner=O
+15	.	.	PUNCT	.	_	19	punct	_	start_char=2098|end_char=2099|ner=O
+16	Zoë	Zoë	PROPN	NNP	Number=Sing	19	nsubj	_	start_char=2100|end_char=2103|ner=S-PERSON
+17	and	and	CCONJ	CC	_	18	cc	_	start_char=2104|end_char=2107|ner=O
+18	Björn	Björn	PROPN	NNP	Number=Sing	16	conj	_	start_char=2108|end_char=2113|ner=S-PERSON
+19	met	meet	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	7	conj	_	start_char=2114|end_char=2117|ner=O
+20	in	in	ADP	IN	_	21	case	_	start_char=2118|end_char=2120|ner=O
+21	Zürich	Zürich	PROPN	NNP	Number=Sing	19	obl	_	start_char=2121|end_char=2127|ner=S-GPE
+22	last	last	ADJ	JJ	Degree=Pos	23	amod	_	start_char=2128|end_char=2132|ner=B-DATE
+23	spring	spring	NOUN	NN	Number=Sing	19	obl:unmarked	_	SpaceAfter=No|start_char=2133|end_char=2139|ner=E-DATE
+24	.	.	PUNCT	.	_	19	punct	_	start_char=2139|end_char=2140|ner=O
+25	The	the	DET	DT	Definite=Def|PronType=Art	27	det	_	start_char=2141|end_char=2144|ner=O
+26	naïve	naïve	ADJ	JJ	Degree=Pos	27	amod	_	start_char=2145|end_char=2150|ner=O
+27	résumé	résumé	NOUN	NN	Number=Sing	28	nsubj	_	start_char=2151|end_char=2157|ner=O
+28	impressed	impress	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	7	parataxis	_	start_char=2158|end_char=2167|ner=O
+29	nobody	nobody	PRON	NN	Number=Sing|PronType=Neg	28	obj	_	SpaceAfter=No|start_char=2168|end_char=2174|ner=O
+30	.	.	PUNCT	.	_	7	punct	_	SpacesAfter=\n\n|start_char=2174|end_char=2175|ner=O
+
+# text = In 1969, Apollo 11 landed on the Moon. Neil Armstrong's words — "That's one small step for man" — were heard by millions. The mission lasted 8 days, 3 hours, 18 minutes and 35 seconds.
+# sent_id = 14
+# sentiment = 0
+1	In	in	ADP	IN	_	2	case	_	start_char=2177|end_char=2179|ner=O
+2	1969	1969	NUM	CD	NumForm=Digit|NumType=Card	6	obl	_	SpaceAfter=No|start_char=2180|end_char=2184|ner=S-DATE
+3	,	,	PUNCT	,	_	2	punct	_	start_char=2184|end_char=2185|ner=O
+4	Apollo	Apollo	PROPN	NNP	Number=Sing	6	nsubj	_	start_char=2186|end_char=2192|ner=B-WORK_OF_ART
+5	11	11	NUM	CD	NumForm=Digit|NumType=Card	4	flat	_	start_char=2193|end_char=2195|ner=E-WORK_OF_ART
+6	landed	land	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=2196|end_char=2202|ner=O
+7	on	on	ADP	IN	_	9	case	_	start_char=2203|end_char=2205|ner=O
+8	the	the	DET	DT	Definite=Def|PronType=Art	9	det	_	start_char=2206|end_char=2209|ner=B-WORK_OF_ART
+9	Moon	Moon	PROPN	NNP	Number=Sing	6	obl	_	SpaceAfter=No|start_char=2210|end_char=2214|ner=I-WORK_OF_ART
+10	.	.	PUNCT	.	_	6	punct	_	start_char=2214|end_char=2215|ner=I-WORK_OF_ART
+11	Neil	Neil	PROPN	NNP	Number=Sing	14	nmod:poss	_	start_char=2216|end_char=2220|ner=I-WORK_OF_ART
+12-13	Armstrong's	_	_	_	_	_	_	_	start_char=2221|end_char=2232|ner=I-WORK_OF_ART
+12	Armstrong	Armstrong	PROPN	NNP	Number=Sing	11	flat	_	start_char=2221|end_char=2230
+13	's	's	PART	POS	_	11	case	_	start_char=2230|end_char=2232
+14	words	word	NOUN	NNS	Number=Plur	6	obl	_	start_char=2233|end_char=2238|ner=I-WORK_OF_ART
+15	—	—	PUNCT	:	_	21	punct	_	start_char=2239|end_char=2240|ner=I-WORK_OF_ART
+16	"	"	PUNCT	``	_	21	punct	_	SpaceAfter=No|start_char=2241|end_char=2242|ner=I-WORK_OF_ART
+17-18	That's	_	_	_	_	_	_	_	start_char=2242|end_char=2248|ner=I-WORK_OF_ART
+17	That	that	PRON	DT	Number=Sing|PronType=Dem	21	nsubj	_	start_char=2242|end_char=2246
+18	's	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	21	cop	_	start_char=2246|end_char=2248
+19	one	one	NUM	CD	NumForm=Word|NumType=Card	21	nummod	_	start_char=2249|end_char=2252|ner=I-WORK_OF_ART
+20	small	small	ADJ	JJ	Degree=Pos	21	amod	_	start_char=2253|end_char=2258|ner=I-WORK_OF_ART
+21	step	step	NOUN	NN	Number=Sing	14	appos	_	start_char=2259|end_char=2263|ner=I-WORK_OF_ART
+22	for	for	ADP	IN	_	23	case	_	start_char=2264|end_char=2267|ner=I-WORK_OF_ART
+23	man	man	NOUN	NN	Number=Sing	21	nmod	_	SpaceAfter=No|start_char=2268|end_char=2271|ner=I-WORK_OF_ART
+24	"	"	PUNCT	''	_	21	punct	_	start_char=2271|end_char=2272|ner=E-WORK_OF_ART
+25	—	—	PUNCT	:	_	27	punct	_	start_char=2273|end_char=2274|ner=O
+26	were	be	AUX	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	27	aux:pass	_	start_char=2275|end_char=2279|ner=O
+27	heard	hear	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	21	parataxis	_	start_char=2280|end_char=2285|ner=O
+28	by	by	ADP	IN	_	29	case	_	start_char=2286|end_char=2288|ner=O
+29	millions	million	NOUN	NNS	Number=Plur	27	obl:agent	_	SpaceAfter=No|start_char=2289|end_char=2297|ner=S-CARDINAL
+30	.	.	PUNCT	.	_	33	punct	_	start_char=2297|end_char=2298|ner=O
+31	The	the	DET	DT	Definite=Def|PronType=Art	32	det	_	start_char=2299|end_char=2302|ner=O
+32	mission	mission	NOUN	NN	Number=Sing	33	nsubj	_	start_char=2303|end_char=2310|ner=O
+33	lasted	last	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	6	parataxis	_	start_char=2311|end_char=2317|ner=O
+34	8	8	NUM	CD	NumForm=Digit|NumType=Card	35	nummod	_	start_char=2318|end_char=2319|ner=B-DATE
+35	days	day	NOUN	NNS	Number=Plur	33	obl:unmarked	_	SpaceAfter=No|start_char=2320|end_char=2324|ner=E-DATE
+36	,	,	PUNCT	,	_	38	punct	_	start_char=2324|end_char=2325|ner=O
+37	3	3	NUM	CD	NumForm=Digit|NumType=Card	38	nummod	_	start_char=2326|end_char=2327|ner=B-TIME
+38	hours	hour	NOUN	NNS	Number=Plur	35	conj	_	SpaceAfter=No|start_char=2328|end_char=2333|ner=E-TIME
+39	,	,	PUNCT	,	_	41	punct	_	start_char=2333|end_char=2334|ner=O
+40	18	18	NUM	CD	NumForm=Digit|NumType=Card	41	nummod	_	start_char=2335|end_char=2337|ner=B-TIME
+41	minutes	minute	NOUN	NNS	Number=Plur	35	conj	_	start_char=2338|end_char=2345|ner=I-TIME
+42	and	and	CCONJ	CC	_	44	cc	_	start_char=2346|end_char=2349|ner=I-TIME
+43	35	35	NUM	CD	NumForm=Digit|NumType=Card	44	nummod	_	start_char=2350|end_char=2352|ner=I-TIME
+44	seconds	second	NOUN	NNS	Number=Plur	35	conj	_	SpaceAfter=No|start_char=2353|end_char=2360|ner=E-TIME
+45	.	.	PUNCT	.	_	6	punct	_	SpacesAfter=\n\n|start_char=2360|end_char=2361|ner=O
+
+# text = Is it 3.14 or 3,14? In the U.S., people write 1,000.50, but in much of Europe it's 1.000,50. Version 2.0.1 fixed the bug reported in issue #4512.
+# sent_id = 15
+# sentiment = 1
+1	Is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	cop	_	start_char=2363|end_char=2365|ner=O
+2	it	it	PRON	PRP	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	3	nsubj	_	start_char=2366|end_char=2368|ner=O
+3	3.14	3.14	NUM	CD	NumForm=Digit|NumType=Frac	0	root	_	start_char=2369|end_char=2373|ner=S-CARDINAL
+4	or	or	CCONJ	CC	_	5	cc	_	start_char=2374|end_char=2376|ner=O
+5	3,14	3,14	NUM	CD	NumForm=Digit|NumType=Card	3	conj	_	SpaceAfter=No|start_char=2377|end_char=2381|ner=S-CARDINAL
+6	?	?	PUNCT	.	_	3	punct	_	start_char=2381|end_char=2382|ner=O
+7	In	in	ADP	IN	_	9	case	_	start_char=2383|end_char=2385|ner=O
+8	the	the	DET	DT	Definite=Def|PronType=Art	9	det	_	start_char=2386|end_char=2389|ner=O
+9	U.S.	U.S.	PROPN	NNP	Abbr=Yes|Number=Sing	3	nmod	_	SpaceAfter=No|start_char=2390|end_char=2394|ner=S-GPE
+10	,	,	PUNCT	,	_	12	punct	_	start_char=2394|end_char=2395|ner=O
+11	people	person	NOUN	NNS	Number=Plur	12	nsubj	_	start_char=2396|end_char=2402|ner=O
+12	write	write	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	3	parataxis	_	start_char=2403|end_char=2408|ner=O
+13	1,000.50	1000.50	NUM	CD	NumForm=Digit|NumType=Frac	12	obj	_	SpaceAfter=No|start_char=2409|end_char=2417|ner=S-CARDINAL
+14	,	,	PUNCT	,	_	22	punct	_	start_char=2417|end_char=2418|ner=O
+15	but	but	CCONJ	CC	_	22	cc	_	start_char=2419|end_char=2422|ner=O
+16	in	in	ADP	IN	_	17	case	_	start_char=2423|end_char=2425|ner=O
+17	much	much	ADJ	JJ	Degree=Pos	22	obl	_	start_char=2426|end_char=2430|ner=O
+18	of	of	ADP	IN	_	19	case	_	start_char=2431|end_char=2433|ner=O
+19	Europe	Europe	PROPN	NNP	Number=Sing	17	nmod	_	start_char=2434|end_char=2440|ner=S-LOC
+20-21	it's	_	_	_	_	_	_	_	start_char=2441|end_char=2445|ner=O
+20	it	it	PRON	PRP	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	22	nsubj	_	start_char=2441|end_char=2443
+21	's	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	22	cop	_	start_char=2443|end_char=2445
+22	1.000,50	1.0050	NUM	CD	NumForm=Digit|NumType=Frac	12	conj	_	SpaceAfter=No|start_char=2446|end_char=2454|ner=S-CARDINAL
+23	.	.	PUNCT	.	_	22	punct	_	start_char=2454|end_char=2455|ner=O
+24	Version	version	NOUN	NN	Number=Sing	26	nsubj	_	start_char=2456|end_char=2463|ner=O
+25	2.0.1	2.0.1	NUM	CD	NumForm=Digit|NumType=Frac	24	flat	_	start_char=2464|end_char=2469|ner=O
+26	fixed	fix	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	12	conj	_	start_char=2470|end_char=2475|ner=O
+27	the	the	DET	DT	Definite=Def|PronType=Art	28	det	_	start_char=2476|end_char=2479|ner=O
+28	bug	bug	NOUN	NN	Number=Sing	26	obj	_	start_char=2480|end_char=2483|ner=O
+29	reported	report	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	28	acl	_	start_char=2484|end_char=2492|ner=O
+30	in	in	ADP	IN	_	32	case	_	start_char=2493|end_char=2495|ner=O
+31	issue	issue	NOUN	NN	Number=Sing	29	obl	_	start_char=2496|end_char=2501|ner=O
+32	#	#	SYM	NN	Number=Sing	29	obl	_	SpaceAfter=No|start_char=2502|end_char=2503|ner=O
+33	4512	4512	NUM	CD	NumForm=Digit|NumType=Card	32	flat	_	SpaceAfter=No|start_char=2503|end_char=2507|ner=S-MONEY
+34	.	.	PUNCT	.	_	12	punct	_	SpacesAfter=\n\n|start_char=2507|end_char=2508|ner=O
+
+# text = The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs! How vexingly quick daft zebras jump?
+# sent_id = 16
+# sentiment = 1
+1	The	the	DET	DT	Definite=Def|PronType=Art	4	det	_	start_char=2510|end_char=2513|ner=O
+2	quick	quick	ADJ	JJ	Degree=Pos	4	amod	_	start_char=2514|end_char=2519|ner=O
+3	brown	brown	ADJ	JJ	Degree=Pos	4	amod	_	start_char=2520|end_char=2525|ner=O
+4	fox	fox	NOUN	NN	Number=Sing	5	nsubj	_	start_char=2526|end_char=2529|ner=O
+5	jumps	jump	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2530|end_char=2535|ner=O
+6	over	over	ADP	IN	_	9	case	_	start_char=2536|end_char=2540|ner=O
+7	the	the	DET	DT	Definite=Def|PronType=Art	9	det	_	start_char=2541|end_char=2544|ner=O
+8	lazy	lazy	ADJ	JJ	Degree=Pos	9	amod	_	start_char=2545|end_char=2549|ner=O
+9	dog	dog	NOUN	NN	Number=Sing	5	obl	_	SpaceAfter=No|start_char=2550|end_char=2553|ner=O
+10	.	.	PUNCT	.	_	11	punct	_	start_char=2553|end_char=2554|ner=O
+11	Pack	pack	VERB	VB	Mood=Imp|VerbForm=Fin	5	parataxis	_	start_char=2555|end_char=2559|ner=O
+12	my	my	PRON	PRP$	Case=Gen|Number=Sing|Person=1|Poss=Yes|PronType=Prs	13	nmod:poss	_	start_char=2560|end_char=2562|ner=O
+13	box	box	NOUN	NN	Number=Sing	11	obj	_	start_char=2563|end_char=2566|ner=O
+14	with	with	ADP	IN	_	18	case	_	start_char=2567|end_char=2571|ner=O
+15	five	five	NUM	CD	NumForm=Word|NumType=Card	18	nummod	_	start_char=2572|end_char=2576|ner=B-CARDINAL
+16	dozen	dozen	NUM	CD	NumForm=Word|NumType=Card	18	nummod	_	start_char=2577|end_char=2582|ner=E-CARDINAL
+17	liquor	liquor	NOUN	NN	Number=Sing	18	compound	_	start_char=2583|end_char=2589|ner=O
+18	jugs	jug	NOUN	NNS	Number=Plur	11	obl	_	SpaceAfter=No|start_char=2590|end_char=2594|ner=O
+19	!	!	PUNCT	.	_	25	punct	_	start_char=2594|end_char=2595|ner=O
+20	How	how	ADV	WRB	PronType=Int	22	advmod	_	start_char=2596|end_char=2599|ner=O
+21	vexingly	vexingly	ADV	RB	_	22	advmod	_	start_char=2600|end_char=2608|ner=O
+22	quick	quick	ADJ	JJ	Degree=Pos	24	amod	_	start_char=2609|end_char=2614|ner=O
+23	daft	daft	NOUN	NN	Number=Sing	24	compound	_	start_char=2615|end_char=2619|ner=O
+24	zebras	zebras	NOUN	NNS	Number=Plur	25	nsubj	_	start_char=2620|end_char=2626|ner=O
+25	jump	jump	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	5	parataxis	_	SpaceAfter=No|start_char=2627|end_char=2631|ner=O
+26	?	?	PUNCT	.	_	5	punct	_	SpacesAfter=\n\n|start_char=2631|end_char=2632|ner=O
+
+# text = Although the results, which were published last week in a journal that most of the researchers had never heard of, seemed promising at first glance, several independent groups that tried to replicate the experiment under slightly different conditions reported that they could not reproduce the effect, and the original authors have since acknowledged that a calibration error in one of their instruments may explain the discrepancy.
+# sent_id = 17
+# sentiment = 1
+1	Although	although	SCONJ	IN	_	23	mark	_	start_char=2634|end_char=2642|ner=O
+2	the	the	DET	DT	Definite=Def|PronType=Art	3	det	_	start_char=2643|end_char=2646|ner=O
+3	results	result	NOUN	NNS	Number=Plur	23	nsubj	_	SpaceAfter=No|start_char=2647|end_char=2654|ner=O
+4	,	,	PUNCT	,	_	7	punct	_	start_char=2654|end_char=2655|ner=O
+5	which	which	PRON	WDT	PronType=Rel	7	nsubj:pass	_	start_char=2656|end_char=2661|ner=O
+6	were	be	AUX	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	7	aux:pass	_	start_char=2662|end_char=2666|ner=O
+7	published	publish	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	3	acl:relcl	_	start_char=2667|end_char=2676|ner=O
+8	last	last	ADJ	JJ	Degree=Pos	9	amod	_	start_char=2677|end_char=2681|ner=B-DATE
+9	week	week	NOUN	NN	Number=Sing	7	obl:unmarked	_	start_char=2682|end_char=2686|ner=E-DATE
+10	in	in	ADP	IN	_	12	case	_	start_char=2687|end_char=2689|ner=O
+11	a	a	DET	DT	Definite=Ind|PronType=Art	12	det	_	start_char=2690|end_char=2691|ner=O
+12	journal	journal	NOUN	NN	Number=Sing	7	obl	_	start_char=2692|end_char=2699|ner=O
+13	that	that	PRON	WDT	PronType=Rel	20	obj	_	start_char=2700|end_char=2704|ner=O
+14	most	most	ADJ	JJS	Degree=Sup	20	nsubj	_	start_char=2705|end_char=2709|ner=O
+15	of	of	ADP	IN	_	17	case	_	start_char=2710|end_char=2712|ner=O
+16	the	the	DET	DT	Definite=Def|PronType=Art	17	det	_	start_char=2713|end_char=2716|ner=O
+17	researchers	researcher	NOUN	NNS	Number=Plur	14	nmod	_	start_char=2717|end_char=2728|ner=O
+18	had	have	AUX	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	20	aux	_	start_char=2729|end_char=2732|ner=O
+19	never	never	ADV	RB	PronType=Neg	20	advmod	_	start_char=2733|end_char=2738|ner=O
+20	heard	hear	VERB	VBN	Tense=Past|VerbForm=Part	12	acl:relcl	_	start_char=2739|end_char=2744|ner=O
+21	of	of	ADP	IN	_	13	case	_	SpaceAfter=No|start_char=2745|end_char=2747|ner=O
+22	,	,	PUNCT	,	_	3	punct	_	start_char=2747|end_char=2748|ner=O
+23	seemed	seem	VERB	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=2749|end_char=2755|ner=O
+24	promising	promising	ADJ	JJ	Degree=Pos	23	xcomp	_	start_char=2756|end_char=2765|ner=O
+25	at	at	ADP	IN	_	27	case	_	start_char=2766|end_char=2768|ner=O
+26	first	first	ADJ	JJ	Degree=Pos|NumForm=Word|NumType=Ord	27	amod	_	start_char=2769|end_char=2774|ner=S-ORDINAL
+27	glance	glance	NOUN	NN	Number=Sing	24	obl	_	SpaceAfter=No|start_char=2775|end_char=2781|ner=O
+28	,	,	PUNCT	,	_	31	punct	_	start_char=2781|end_char=2782|ner=O
+29	several	several	ADJ	JJ	Degree=Pos	31	amod	_	start_char=2783|end_char=2790|ner=O
+30	independent	independent	ADJ	JJ	Degree=Pos	31	amod	_	start_char=2791|end_char=2802|ner=O
+31	groups	group	NOUN	NNS	Number=Plur	23	nsubj	_	start_char=2803|end_char=2809|ner=O
+32	that	that	PRON	WDT	PronType=Rel	33	nsubj	_	start_char=2810|end_char=2814|ner=O
+33	tried	try	VERB	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	31	acl:relcl	_	start_char=2815|end_char=2820|ner=O
+34	to	to	PART	TO	_	35	mark	_	start_char=2821|end_char=2823|ner=O
+35	replicate	replicate	VERB	VB	VerbForm=Inf	33	xcomp	_	start_char=2824|end_char=2833|ner=O
+36	the	the	DET	DT	Definite=Def|PronType=Art	37	det	_	start_char=2834|end_char=2837|ner=O
+37	experiment	experiment	NOUN	NN	Number=Sing	35	obj	_	start_char=2838|end_char=2848|ner=O
+38	under	under	ADP	IN	_	41	case	_	start_char=2849|end_char=2854|ner=O
+39	slightly	slightly	ADV	RB	_	40	advmod	_	start_char=2855|end_char=2863|ner=O
+40	different	different	ADJ	JJ	Degree=Pos	41	amod	_	start_char=2864|end_char=2873|ner=O
+41	conditions	condition	NOUN	NNS	Number=Plur	35	obl	_	start_char=2874|end_char=2884|ner=O
+42	reported	report	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	41	acl	_	start_char=2885|end_char=2893|ner=O
+43	that	that	SCONJ	IN	_	47	mark	_	start_char=2894|end_char=2898|ner=O
+44	they	they	PRON	PRP	Case=Nom|Number=Plur|Person=3|PronType=Prs	47	nsubj	_	start_char=2899|end_char=2903|ner=O
+45	could	could	AUX	MD	VerbForm=Fin	47	aux	_	start_char=2904|end_char=2909|ner=O
+46	not	not	PART	RB	Polarity=Neg	47	advmod	_	start_char=2910|end_char=2913|ner=O
+47	reproduce	reproduce	VERB	VB	VerbForm=Inf	42	ccomp	_	start_char=2914|end_char=2923|ner=O
+48	the	the	DET	DT	Definite=Def|PronType=Art	49	det	_	start_char=2924|end_char=2927|ner=O
+49	effect	effect	NOUN	NN	Number=Sing	47	obj	_	SpaceAfter=No|start_char=2928|end_char=2934|ner=O
+50	,	,	PUNCT	,	_	57	punct	_	start_char=2934|end_char=2935|ner=O
+51	and	and	CCONJ	CC	_	57	cc	_	start_char=2936|end_char=2939|ner=O
+52	the	the	DET	DT	Definite=Def|PronType=Art	54	det	_	start_char=2940|end_char=2943|ner=O
+53	original	original	ADJ	JJ	Degree=Pos	54	amod	_	start_char=2944|end_char=2952|ner=O
+54	authors	author	NOUN	NNS	Number=Plur	57	nsubj	_	start_char=2953|end_char=2960|ner=O
+55	have	have	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	57	aux	_	start_char=2961|end_char=2965|ner=O
+56	since	since	ADV	RB	_	57	advmod	_	start_char=2966|end_char=2971|ner=O
+57	acknowledged	acknowledge	VERB	VBN	Tense=Past|VerbForm=Part	23	conj	_	start_char=2972|end_char=2984|ner=O
+58	that	that	SCONJ	IN	_	68	mark	_	start_char=2985|end_char=2989|ner=O
+59	a	a	DET	DT	Definite=Ind|PronType=Art	61	det	_	start_char=2990|end_char=2991|ner=O
+60	calibration	calibration	NOUN	NN	Number=Sing	61	compound	_	start_char=2992|end_char=3003|ner=O
+61	error	error	NOUN	NN	Number=Sing	68	nsubj	_	start_char=3004|end_char=3009|ner=O
+62	in	in	ADP	IN	_	63	case	_	start_char=3010|end_char=3012|ner=O
+63	one	one	NUM	CD	NumForm=Word|NumType=Card	61	nmod	_	start_char=3013|end_char=3016|ner=S-CARDINAL
+64	of	of	ADP	IN	_	66	case	_	start_char=3017|end_char=3019|ner=O
+65	their	their	PRON	PRP$	Case=Gen|Number=Plur|Person=3|Poss=Yes|PronType=Prs	66	nmod:poss	_	start_char=3020|end_char=3025|ner=O
+66	instruments	instrument	NOUN	NNS	Number=Plur	63	nmod	_	start_char=3026|end_char=3037|ner=O
+67	may	may	AUX	MD	VerbForm=Fin	68	aux	_	start_char=3038|end_char=3041|ner=O
+68	explain	explain	VERB	VB	VerbForm=Inf	57	ccomp	_	start_char=3042|end_char=3049|ner=O
+69	the	the	DET	DT	Definite=Def|PronType=Art	70	det	_	start_char=3050|end_char=3053|ner=O
+70	discrepancy	discrepancy	NOUN	NN	Number=Sing	68	obj	_	SpaceAfter=No|start_char=3054|end_char=3065|ner=O
+71	.	.	PUNCT	.	_	23	punct	_	SpacesAfter=\n\n|start_char=3065|end_char=3066|ner=O
+
+# text = OK. Thanks! Bye. Hmm, no. Yes? Maybe...
+# sent_id = 18
+# sentiment = 1
+1	OK	ok	INTJ	UH	_	3	discourse	_	SpaceAfter=No|start_char=3068|end_char=3070|ner=O
+2	.	.	PUNCT	.	_	1	punct	_	start_char=3070|end_char=3071|ner=O
+3	Thanks	thanks	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=3072|end_char=3078|ner=O
+4	!	!	PUNCT	.	_	3	punct	_	start_char=3078|end_char=3079|ner=O
+5	Bye	bye	INTJ	UH	_	3	discourse	_	SpaceAfter=No|start_char=3080|end_char=3083|ner=O
+6	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n|start_char=3083|end_char=3084|ner=O
+7	Hmm	hmm	INTJ	UH	_	3	discourse	_	SpaceAfter=No|start_char=3085|end_char=3088|ner=O
+8	,	,	PUNCT	,	_	9	punct	_	start_char=3088|end_char=3089|ner=O
+9	no	no	INTJ	UH	Polarity=Neg	3	conj	_	SpaceAfter=No|start_char=3090|end_char=3092|ner=O
+10	.	.	PUNCT	.	_	11	punct	_	start_char=3092|end_char=3093|ner=O
+11	Yes	yes	INTJ	UH	Polarity=Pos	3	discourse	_	SpaceAfter=No|start_char=3094|end_char=3097|ner=O
+12	?	?	PUNCT	.	_	3	punct	_	start_char=3097|end_char=3098|ner=O
+13	Maybe	maybe	ADV	RB	_	3	parataxis	_	SpaceAfter=No|start_char=3099|end_char=3104|ner=O
+14	...	...	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=3104|end_char=3107|ner=O
+
+# text = The price was €25 (about £21 or ¥3,500). He paid with a $20 bill and five $1 coins. The 10-year-old boy wore a size-8 shoe.
+# sent_id = 19
+# sentiment = 1
+1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=3109|end_char=3112|ner=O
+2	price	price	NOUN	NN	Number=Sing	4	nsubj	_	start_char=3113|end_char=3118|ner=O
+3	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	4	cop	_	start_char=3119|end_char=3122|ner=O
+4	€	€	SYM	$	_	0	root	_	SpaceAfter=No|start_char=3123|end_char=3124|ner=O
+5	25	25	NUM	CD	NumForm=Digit|NumType=Card	4	nummod	_	start_char=3124|end_char=3126|ner=S-CARDINAL
+6	(	(	PUNCT	-LRB-	_	8	punct	_	SpaceAfter=No|start_char=3127|end_char=3128|ner=O
+7	about	about	ADV	RB	_	8	advmod	_	start_char=3128|end_char=3133|ner=B-MONEY
+8	£	£	SYM	$	_	4	appos	_	SpaceAfter=No|start_char=3134|end_char=3135|ner=I-MONEY
+9	21	21	NUM	CD	NumForm=Digit|NumType=Card	8	nummod	_	start_char=3135|end_char=3137|ner=I-MONEY
+10	or	or	CCONJ	CC	_	11	cc	_	start_char=3138|end_char=3140|ner=I-MONEY
+11	¥	¥	SYM	$	_	8	conj	_	SpaceAfter=No|start_char=3141|end_char=3142|ner=I-MONEY
+12	3,500	3500	NUM	CD	NumForm=Digit|NumType=Card	11	nummod	_	SpaceAfter=No|start_char=3142|end_char=3147|ner=E-MONEY
+13	)	)	PUNCT	-RRB-	_	8	punct	_	SpaceAfter=No|start_char=3147|end_char=3148|ner=O
+14	.	.	PUNCT	.	_	16	punct	_	start_char=3148|end_char=3149|ner=O
+15	He	he	PRON	PRP	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	16	nsubj	_	start_char=3150|end_char=3152|ner=O
+16	paid	pay	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	4	parataxis	_	start_char=3153|end_char=3157|ner=O
+17	with	with	ADP	IN	_	21	case	_	start_char=3158|end_char=3162|ner=O
+18	a	a	DET	DT	Definite=Ind|PronType=Art	21	det	_	start_char=3163|end_char=3164|ner=O
+19	$	$	SYM	$	_	21	compound	_	SpaceAfter=No|start_char=3165|end_char=3166|ner=O
+20	20	20	NUM	CD	NumForm=Digit|NumType=Card	19	nummod	_	start_char=3166|end_char=3168|ner=S-MONEY
+21	bill	bill	NOUN	NN	Number=Sing	16	obl	_	start_char=3169|end_char=3173|ner=O
+22	and	and	CCONJ	CC	_	26	cc	_	start_char=3174|end_char=3177|ner=O
+23	five	five	NUM	CD	NumForm=Word|NumType=Card	26	nummod	_	start_char=3178|end_char=3182|ner=B-MONEY
+24	$	$	SYM	$	_	26	compound	_	SpaceAfter=No|start_char=3183|end_char=3184|ner=I-MONEY
+25	1	1	NUM	CD	NumForm=Digit|NumType=Card	24	nummod	_	start_char=3184|end_char=3185|ner=E-MONEY
+26	coins	coin	NOUN	NNS	Number=Plur	21	conj	_	SpaceAfter=No|start_char=3186|end_char=3191|ner=O
+27	.	.	PUNCT	.	_	16	punct	_	start_char=3191|end_char=3192|ner=O
+28	The	the	DET	DT	Definite=Def|PronType=Art	34	det	_	start_char=3193|end_char=3196|ner=O
+29	10	10	NUM	CD	NumForm=Digit|NumType=Card	31	nummod	_	SpaceAfter=No|start_char=3197|end_char=3199|ner=B-DATE
+30	-	-	PUNCT	HYPH	_	29	punct	_	SpaceAfter=No|start_char=3199|end_char=3200|ner=I-DATE
+31	year	year	NOUN	NN	Number=Sing	33	obl:unmarked	_	SpaceAfter=No|start_char=3200|end_char=3204|ner=I-DATE
+32	-	-	PUNCT	HYPH	_	31	punct	_	SpaceAfter=No|start_char=3204|end_char=3205|ner=I-DATE
+33	old	old	ADJ	JJ	Degree=Pos	34	amod	_	start_char=3205|end_char=3208|ner=E-DATE
+34	boy	boy	NOUN	NN	Number=Sing	35	nsubj	_	start_char=3209|end_char=3212|ner=O
+35	wore	wear	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	16	conj	_	start_char=3213|end_char=3217|ner=O
+36	a	a	DET	DT	Definite=Ind|PronType=Art	40	det	_	start_char=3218|end_char=3219|ner=O
+37	size	size	NOUN	NN	Number=Sing	39	compound	_	SpaceAfter=No|start_char=3220|end_char=3224|ner=O
+38	-	-	PUNCT	HYPH	_	37	punct	_	SpaceAfter=No|start_char=3224|end_char=3225|ner=O
+39	8	8	NUM	CD	NumForm=Digit|NumType=Card	40	compound	_	start_char=3225|end_char=3226|ner=S-CARDINAL
+40	shoe	shoe	NOUN	NN	Number=Sing	35	obj	_	SpaceAfter=No|start_char=3227|end_char=3231|ner=O
+41	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=3231|end_char=3232|ner=O
+
+# text = She said, ‘I’m not sure.’ He replied, “Neither am I.” They both laughed.
+# sent_id = 20
+# sentiment = 1
+1	She	she	PRON	PRP	Case=Nom|Gender=Fem|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=3234|end_char=3237|ner=O
+2	said	say	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=3238|end_char=3242|ner=O
+3	,	,	PUNCT	,	_	8	punct	_	start_char=3242|end_char=3243|ner=O
+4	‘	'	PUNCT	``	_	8	punct	_	SpaceAfter=No|start_char=3244|end_char=3245|ner=O
+5-6	I’m	_	_	_	_	_	_	_	start_char=3245|end_char=3248|ner=O
+5	I	I	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	8	nsubj	_	start_char=3245|end_char=3246
+6	’m	be	AUX	VBP	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	8	cop	_	start_char=3246|end_char=3248
+7	not	not	PART	RB	Polarity=Neg	8	advmod	_	start_char=3249|end_char=3252|ner=O
+8	sure	sure	ADJ	JJ	Degree=Pos	2	ccomp	_	SpaceAfter=No|start_char=3253|end_char=3257|ner=O
+9	.	.	PUNCT	.	_	8	punct	_	SpaceAfter=No|start_char=3257|end_char=3258|ner=O
+10	’	'	PUNCT	''	_	8	punct	_	start_char=3258|end_char=3259|ner=O
+11	He	he	PRON	PRP	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	12	nsubj	_	start_char=3260|end_char=3262|ner=O
+12	replied	reply	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	2	parataxis	_	SpaceAfter=No|start_char=3263|end_char=3270|ner=O
+13	,	,	PUNCT	,	_	16	punct	_	start_char=3270|end_char=3271|ner=O
+14	“	"	PUNCT	``	_	16	punct	_	SpaceAfter=No|start_char=3272|end_char=3273|ner=O
+15	Neither	neither	CCONJ	CC	Polarity=Neg	16	discourse	_	start_char=3273|end_char=3280|ner=O
+16	am	be	AUX	VBP	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	12	ccomp	_	start_char=3281|end_char=3283|ner=O
+17	I	I	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	16	nsubj	_	SpaceAfter=No|start_char=3284|end_char=3285|ner=O
+18	.	.	PUNCT	.	_	16	punct	_	SpaceAfter=No|start_char=3285|end_char=3286|ner=O
+19	”	"	PUNCT	''	_	16	punct	_	start_char=3286|end_char=3287|ner=O
+20	They	they	PRON	PRP	Case=Nom|Number=Plur|Person=3|PronType=Prs	22	nsubj	_	start_char=3288|end_char=3292|ner=O
+21	both	both	DET	DT	PronType=Tot	22	advmod	_	start_char=3293|end_char=3297|ner=O
+22	laughed	laugh	VERB	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	2	parataxis	_	SpaceAfter=No|start_char=3298|end_char=3305|ner=O
+23	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=3305|end_char=3306|ner=O
+
+# text = Section 2(b)(iii) of the agreement applies only to non-U.S. persons. See also Art. 5, para. 3, and Annex IV.
+# sent_id = 21
+# sentiment = 1
+1	Section	section	NOUN	NN	Number=Sing	12	nsubj	_	start_char=3308|end_char=3315|ner=O
+2	2	2	NUM	CD	NumForm=Digit|NumType=Card	1	flat	_	SpaceAfter=No|start_char=3316|end_char=3317|ner=S-CARDINAL
+3	(	(	PUNCT	-LRB-	_	4	punct	_	SpaceAfter=No|start_char=3317|end_char=3318|ner=O
+4	b	benefit	NOUN	NN	Number=Sing	1	appos	_	SpaceAfter=No|start_char=3318|end_char=3319|ner=O
+5	)	)	PUNCT	-RRB-	_	4	punct	_	SpaceAfter=No|start_char=3319|end_char=3320|ner=O
+6	(	(	PUNCT	-LRB-	_	7	punct	_	SpaceAfter=No|start_char=3320|end_char=3321|ner=O
+7	iii	iii	NUM	LS	NumForm=Digit|NumType=Card	12	discourse	_	SpaceAfter=No|start_char=3321|end_char=3324|ner=O
+8	)	)	PUNCT	-RRB-	_	7	punct	_	start_char=3324|end_char=3325|ner=O
+9	of	of	ADP	IN	_	11	case	_	start_char=3326|end_char=3328|ner=O
+10	the	the	DET	DT	Definite=Def|PronType=Art	11	det	_	start_char=3329|end_char=3332|ner=O
+11	agreement	agreement	NOUN	NN	Number=Sing	1	nmod	_	start_char=3333|end_char=3342|ner=O
+12	applies	apply	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=3343|end_char=3350|ner=O
+13	only	only	ADV	RB	_	16	advmod	_	start_char=3351|end_char=3355|ner=O
+14	to	to	ADP	IN	_	16	case	_	start_char=3356|end_char=3358|ner=O
+15	non-U.S.	non-U.S.	PROPN	NNP	Number=Sing	16	compound	_	start_char=3359|end_char=3367|ner=O
+16	persons	person	NOUN	NNS	Number=Plur	12	obl	_	SpaceAfter=No|start_char=3368|end_char=3375|ner=O
+17	.	.	PUNCT	.	_	18	punct	_	start_char=3375|end_char=3376|ner=O
+18	See	see	VERB	VB	Mood=Imp|VerbForm=Fin	12	parataxis	_	start_char=3377|end_char=3380|ner=O
+19	also	also	ADV	RB	_	20	advmod	_	start_char=3381|end_char=3385|ner=O
+20	Art.	art	PROPN	NNP	Abbr=Yes|Number=Sing	18	obj	_	start_char=3386|end_char=3390|ner=O
+21	5	5	NUM	CD	NumForm=Digit|NumType=Card	20	flat	_	SpaceAfter=No|start_char=3391|end_char=3392|ner=S-CARDINAL
+22	,	,	PUNCT	,	_	23	punct	_	start_char=3392|end_char=3393|ner=O
+23	para	para	PROPN	NNP	Number=Sing	20	conj	_	SpaceAfter=No|start_char=3394|end_char=3398|ner=O
+24	.	.	PUNCT	.	_	25	punct	_	start_char=3398|end_char=3399|ner=O
+25	3	3	NUM	CD	NumForm=Digit|NumType=Card	20	parataxis	_	SpaceAfter=No|start_char=3400|end_char=3401|ner=S-CARDINAL
+26	,	,	PUNCT	,	_	28	punct	_	start_char=3401|end_char=3402|ner=O
+27	and	and	CCONJ	CC	_	28	cc	_	start_char=3403|end_char=3406|ner=O
+28	Annex	annex	PROPN	NNP	Number=Sing	20	conj	_	start_char=3407|end_char=3412|ner=O
+29	IV	IV	NUM	CD	NumForm=Digit|NumType=Card	28	flat	_	SpaceAfter=No|start_char=3413|end_char=3415|ner=O
+30	.	.	PUNCT	.	_	12	punct	_	SpacesAfter=\n\n|start_char=3415|end_char=3416|ner=O
+
+# text = Mt. Everest is 8,849 m tall. The Nile is approx. 6,650 km long. Temperatures dropped to −40 °F overnight.
+# sent_id = 22
+# sentiment = 1
+1	Mt.	Mt.	PROPN	NNP	Number=Sing	2	compound	_	start_char=3418|end_char=3421|ner=B-LOC
+2	Everest	Everest	PROPN	NNP	Number=Sing	6	nsubj	_	start_char=3422|end_char=3429|ner=E-LOC
+3	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	6	cop	_	start_char=3430|end_char=3432|ner=O
+4	8,849	8849	NUM	CD	NumForm=Digit|NumType=Card	5	nummod	_	start_char=3433|end_char=3438|ner=B-QUANTITY
+5	m	M	NOUN	NNS	Number=Plur	6	obl:unmarked	_	start_char=3439|end_char=3440|ner=I-QUANTITY
+6	tall	tall	ADJ	JJ	Degree=Pos	0	root	_	SpaceAfter=No|start_char=3441|end_char=3445|ner=E-QUANTITY
+7	.	.	PUNCT	.	_	6	punct	_	start_char=3445|end_char=3446|ner=O
+8	The	the	DET	DT	Definite=Def|PronType=Art	9	det	_	start_char=3447|end_char=3450|ner=O
+9	Nile	Nile	PROPN	NNP	Number=Sing	11	nsubj	_	start_char=3451|end_char=3455|ner=S-LOC
+10	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	11	cop	_	start_char=3456|end_char=3458|ner=O
+11	approx	approx	NOUN	NN	Number=Sing	6	parataxis	_	SpaceAfter=No|start_char=3459|end_char=3465|ner=O
+12	.	.	PUNCT	.	_	11	punct	_	start_char=3465|end_char=3466|ner=O
+13	6,650	6650	NUM	CD	NumForm=Digit|NumType=Card	14	nummod	_	start_char=3467|end_char=3472|ner=B-QUANTITY
+14	km	kilometer	NOUN	NNS	Number=Plur	15	obl:unmarked	_	start_char=3473|end_char=3475|ner=E-QUANTITY
+15	long	long	ADV	RB	Degree=Pos	11	advmod	_	SpaceAfter=No|start_char=3476|end_char=3480|ner=O
+16	.	.	PUNCT	.	_	18	punct	_	start_char=3480|end_char=3481|ner=O
+17	Temperatures	temperature	NOUN	NNS	Number=Plur	18	nsubj:pass	_	start_char=3482|end_char=3494|ner=O
+18	dropped	drop	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	6	parataxis	_	start_char=3495|end_char=3502|ner=O
+19	to	to	ADP	IN	_	22	case	_	start_char=3503|end_char=3505|ner=O
+20	−	−	SYM	SYM	_	21	advmod	_	SpaceAfter=No|start_char=3506|end_char=3507|ner=O
+21	40	40	NUM	CD	NumForm=Digit|NumType=Card	22	nummod	_	start_char=3507|end_char=3509|ner=B-TIME
+22	°	°	NOUN	NNS	Number=Plur	18	obl	_	SpaceAfter=No|start_char=3510|end_char=3511|ner=I-TIME
+23	F	F	PROPN	NNP	Number=Sing	22	nmod:unmarked	_	start_char=3511|end_char=3512|ner=I-TIME
+24	overnight	overnight	ADV	RB	_	18	advmod	_	SpaceAfter=No|start_char=3513|end_char=3522|ner=E-TIME
+25	.	.	PUNCT	.	_	6	punct	_	SpacesAfter=\n\n|start_char=3522|end_char=3523|ner=O
+
+# text = I'm here. You're there. He's gone. It'll rain. We've won. They'd lost. Who's next? What's that? Where'd you go? How'd it happen?
+# sent_id = 23
+# sentiment = 1
+1-2	I'm	_	_	_	_	_	_	_	start_char=3525|end_char=3528|ner=O
+1	I	I	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	3	nsubj	_	start_char=3525|end_char=3526
+2	'm	be	AUX	VBP	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	3	cop	_	start_char=3526|end_char=3528
+3	here	here	ADV	RB	PronType=Dem	0	root	_	SpaceAfter=No|start_char=3529|end_char=3533|ner=O
+4	.	.	PUNCT	.	_	7	punct	_	start_char=3533|end_char=3534|ner=O
+5-6	You're	_	_	_	_	_	_	_	start_char=3535|end_char=3541|ner=O
+5	You	you	PRON	PRP	Case=Nom|Person=2|PronType=Prs	7	nsubj	_	start_char=3535|end_char=3538
+6	're	be	AUX	VBP	Mood=Ind|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin	7	cop	_	start_char=3538|end_char=3541
+7	there	there	ADV	RB	PronType=Dem	3	parataxis	_	SpaceAfter=No|start_char=3542|end_char=3547|ner=O
+8	.	.	PUNCT	.	_	7	punct	_	start_char=3547|end_char=3548|ner=O
+9-10	He's	_	_	_	_	_	_	_	start_char=3549|end_char=3553|ner=O
+9	He	he	PRON	PRP	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	11	nsubj	_	start_char=3549|end_char=3551
+10	's	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	11	aux	_	start_char=3551|end_char=3553
+11	gone	go	VERB	VBN	Tense=Past|VerbForm=Part	3	parataxis	_	SpaceAfter=No|start_char=3554|end_char=3558|ner=O
+12	.	.	PUNCT	.	_	11	punct	_	start_char=3558|end_char=3559|ner=O
+13-14	It'll	_	_	_	_	_	_	_	start_char=3560|end_char=3565|ner=O
+13	It	it	PRON	PRP	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	15	nsubj	_	start_char=3560|end_char=3562
+14	'll	will	AUX	MD	VerbForm=Fin	15	aux	_	start_char=3562|end_char=3565
+15	rain	rain	VERB	VB	VerbForm=Inf	11	parataxis	_	SpaceAfter=No|start_char=3566|end_char=3570|ner=O
+16	.	.	PUNCT	.	_	15	punct	_	start_char=3570|end_char=3571|ner=O
+17-18	We've	_	_	_	_	_	_	_	start_char=3572|end_char=3577|ner=O
+17	We	we	PRON	PRP	Case=Nom|Number=Plur|Person=1|PronType=Prs	19	nsubj	_	start_char=3572|end_char=3574
+18	've	have	AUX	VBP	Mood=Ind|Number=Plur|Person=1|Tense=Pres|VerbForm=Fin	19	aux	_	start_char=3574|end_char=3577
+19	won	win	VERB	VBN	Tense=Past|VerbForm=Part	15	parataxis	_	SpaceAfter=No|start_char=3578|end_char=3581|ner=O
+20	.	.	PUNCT	.	_	19	punct	_	start_char=3581|end_char=3582|ner=O
+21-22	They'd	_	_	_	_	_	_	_	start_char=3583|end_char=3589|ner=O
+21	They	they	PRON	PRP	Case=Nom|Number=Plur|Person=3|PronType=Prs	23	nsubj	_	start_char=3583|end_char=3587
+22	'd	would	AUX	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	23	aux	_	start_char=3587|end_char=3589
+23	lost	lose	VERB	VBN	Tense=Past|VerbForm=Part	3	parataxis	_	SpaceAfter=No|start_char=3590|end_char=3594|ner=O
+24	.	.	PUNCT	.	_	23	punct	_	start_char=3594|end_char=3595|ner=O
+25-26	Who's	_	_	_	_	_	_	_	start_char=3596|end_char=3601|ner=O
+25	Who	who	PRON	WP	Case=Nom|PronType=Rel	27	nsubj	_	start_char=3596|end_char=3599
+26	's	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	27	cop	_	start_char=3599|end_char=3601
+27	next	next	ADJ	JJ	Degree=Pos	23	parataxis	_	SpaceAfter=No|start_char=3602|end_char=3606|ner=O
+28	?	?	PUNCT	.	_	27	punct	_	start_char=3606|end_char=3607|ner=O
+29-30	What's	_	_	_	_	_	_	_	start_char=3608|end_char=3614|ner=O
+29	What	what	PRON	WP	PronType=Int	27	parataxis	_	start_char=3608|end_char=3612
+30	's	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	31	cop	_	start_char=3612|end_char=3614
+31	that	that	PRON	DT	Number=Sing|PronType=Dem	29	nsubj	_	SpaceAfter=No|start_char=3615|end_char=3619|ner=O
+32	?	?	PUNCT	.	_	31	punct	_	start_char=3619|end_char=3620|ner=O
+33-34	Where'd	_	_	_	_	_	_	_	start_char=3621|end_char=3628|ner=O
+33	Where	where	ADV	WRB	PronType=Int	36	advmod	_	start_char=3621|end_char=3626
+34	'd	would	AUX	MD	VerbForm=Fin	36	aux	_	start_char=3626|end_char=3628
+35	you	you	PRON	PRP	Case=Nom|Person=2|PronType=Prs	36	nsubj	_	start_char=3629|end_char=3632|ner=O
+36	go	go	VERB	VB	VerbForm=Inf	3	parataxis	_	SpaceAfter=No|start_char=3633|end_char=3635|ner=O
+37	?	?	PUNCT	.	_	36	punct	_	start_char=3635|end_char=3636|ner=O
+38-39	How'd	_	_	_	_	_	_	_	start_char=3637|end_char=3642|ner=O
+38	How	how	ADV	WRB	PronType=Int	41	advmod	_	start_char=3637|end_char=3640
+39	'd	would	AUX	MD	VerbForm=Fin	41	aux	_	start_char=3640|end_char=3642
+40	it	it	PRON	PRP	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	41	nsubj	_	start_char=3643|end_char=3645|ner=O
+41	happen	happen	VERB	VB	VerbForm=Inf	36	parataxis	_	SpaceAfter=No|start_char=3646|end_char=3652|ner=O
+42	?	?	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=3652|end_char=3653|ner=O
+
+# text = Let's go! Don't stop. Won't you stay? Couldn't be better. Wouldn't you agree? Mustn't forget. Needn't worry.
+# sent_id = 24
+# sentiment = 1
+1-2	Let's	_	_	_	_	_	_	_	start_char=3655|end_char=3660|ner=O
+1	Let	let	VERB	VB	Mood=Imp|VerbForm=Fin	0	root	_	start_char=3655|end_char=3658
+2	's	we	PRON	PRP	Case=Acc|Number=Plur|Person=1|PronType=Prs	1	obj	_	start_char=3658|end_char=3660
+3	go	go	VERB	VB	VerbForm=Inf	1	xcomp	_	SpaceAfter=No|start_char=3661|end_char=3663|ner=O
+4	!	!	PUNCT	.	_	7	punct	_	start_char=3663|end_char=3664|ner=O
+5-6	Don't	_	_	_	_	_	_	_	start_char=3665|end_char=3670|ner=O
+5	Do	do	AUX	VB	Mood=Imp|VerbForm=Fin	7	aux	_	start_char=3665|end_char=3667
+6	n't	not	PART	RB	Polarity=Neg	7	advmod	_	start_char=3667|end_char=3670
+7	stop	stop	VERB	VB	VerbForm=Inf	1	parataxis	_	SpaceAfter=No|start_char=3671|end_char=3675|ner=O
+8	.	.	PUNCT	.	_	7	punct	_	start_char=3675|end_char=3676|ner=O
+9-10	Won't	_	_	_	_	_	_	_	start_char=3677|end_char=3682|ner=O
+9	Wo	will	AUX	MD	VerbForm=Fin	12	aux	_	start_char=3677|end_char=3679
+10	n't	not	PART	RB	Polarity=Neg	12	advmod	_	start_char=3679|end_char=3682
+11	you	you	PRON	PRP	Case=Nom|Person=2|PronType=Prs	12	nsubj	_	start_char=3683|end_char=3686|ner=O
+12	stay	stay	VERB	VB	VerbForm=Inf	7	parataxis	_	SpaceAfter=No|start_char=3687|end_char=3691|ner=O
+13	?	?	PUNCT	.	_	12	punct	_	start_char=3691|end_char=3692|ner=O
+14-15	Couldn't	_	_	_	_	_	_	_	start_char=3693|end_char=3701|ner=O
+14	Could	could	AUX	MD	VerbForm=Fin	17	aux	_	start_char=3693|end_char=3698
+15	n't	not	PART	RB	Polarity=Neg	17	advmod	_	start_char=3698|end_char=3701
+16	be	be	AUX	VB	VerbForm=Inf	17	cop	_	start_char=3702|end_char=3704|ner=O
+17	better	good	ADJ	JJR	Degree=Cmp	1	parataxis	_	SpaceAfter=No|start_char=3705|end_char=3711|ner=O
+18	.	.	PUNCT	.	_	22	punct	_	start_char=3711|end_char=3712|ner=O
+19-20	Wouldn't	_	_	_	_	_	_	_	start_char=3713|end_char=3721|ner=O
+19	Would	would	AUX	MD	VerbForm=Fin	22	aux	_	start_char=3713|end_char=3718
+20	n't	not	PART	RB	Polarity=Neg	22	advmod	_	start_char=3718|end_char=3721
+21	you	you	PRON	PRP	Case=Nom|Person=2|PronType=Prs	22	nsubj	_	start_char=3722|end_char=3725|ner=O
+22	agree	agree	VERB	VB	VerbForm=Inf	17	parataxis	_	SpaceAfter=No|start_char=3726|end_char=3731|ner=O
+23	?	?	PUNCT	.	_	22	punct	_	start_char=3731|end_char=3732|ner=O
+24-25	Mustn't	_	_	_	_	_	_	_	start_char=3733|end_char=3740|ner=O
+24	Must	must	AUX	MD	VerbForm=Fin	26	aux	_	start_char=3733|end_char=3737
+25	n't	not	PART	RB	Polarity=Neg	26	advmod	_	start_char=3737|end_char=3740
+26	forget	forget	VERB	VB	VerbForm=Inf	17	parataxis	_	SpaceAfter=No|start_char=3741|end_char=3747|ner=O
+27	.	.	PUNCT	.	_	17	punct	_	start_char=3747|end_char=3748|ner=O
+28-29	Needn't	_	_	_	_	_	_	_	start_char=3749|end_char=3756|ner=O
+28	Need	need	AUX	VBP	Mood=Ind|Number=Sing|Tense=Pres|VerbForm=Fin	30	aux	_	start_char=3749|end_char=3753
+29	n't	not	PART	RB	Polarity=Neg	30	advmod	_	start_char=3753|end_char=3756
+30	worry	worry	VERB	VB	VerbForm=Inf	26	conj	_	SpaceAfter=No|start_char=3757|end_char=3762|ner=O
+31	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=3762|end_char=3763|ner=O
+
+# text = The CEO's 2024 letter to shareholders (all 14 pages of it) said little about AI. Critics called it "vague," "evasive," and "disappointing."
+# sent_id = 25
+# sentiment = 0
+1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=3765|end_char=3768|ner=O
+2-3	CEO's	_	_	_	_	_	_	_	start_char=3769|end_char=3774|ner=O
+2	CEO	ceo	NOUN	NN	Number=Sing	5	nmod:poss	_	start_char=3769|end_char=3772
+3	's	's	PART	POS	_	2	case	_	start_char=3772|end_char=3774
+4	2024	2024	NUM	CD	NumForm=Digit|NumType=Card	5	compound	_	start_char=3775|end_char=3779|ner=S-DATE
+5	letter	letter	NOUN	NN	Number=Sing	15	nsubj	_	start_char=3780|end_char=3786|ner=O
+6	to	to	ADP	IN	_	7	case	_	start_char=3787|end_char=3789|ner=O
+7	shareholders	shareholder	NOUN	NNS	Number=Plur	5	nmod	_	start_char=3790|end_char=3802|ner=O
+8	(	(	PUNCT	-LRB-	_	11	punct	_	SpaceAfter=No|start_char=3803|end_char=3804|ner=O
+9	all	all	DET	DT	PronType=Tot	11	det	_	start_char=3804|end_char=3807|ner=O
+10	14	14	NUM	CD	NumForm=Digit|NumType=Card	11	nummod	_	start_char=3808|end_char=3810|ner=S-CARDINAL
+11	pages	page	NOUN	NNS	Number=Plur	5	appos	_	start_char=3811|end_char=3816|ner=O
+12	of	of	ADP	IN	_	13	case	_	start_char=3817|end_char=3819|ner=O
+13	it	it	PRON	PRP	Case=Acc|Gender=Neut|Number=Sing|Person=3|PronType=Prs	11	nmod	_	SpaceAfter=No|start_char=3820|end_char=3822|ner=O
+14	)	)	PUNCT	-RRB-	_	11	punct	_	start_char=3822|end_char=3823|ner=O
+15	said	say	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=3824|end_char=3828|ner=O
+16	little	little	ADJ	JJ	Degree=Pos	15	obj	_	start_char=3829|end_char=3835|ner=O
+17	about	about	ADP	IN	_	18	case	_	start_char=3836|end_char=3841|ner=O
+18	AI	AI	NOUN	NN	Number=Sing	16	obl	_	SpaceAfter=No|start_char=3842|end_char=3844|ner=O
+19	.	.	PUNCT	.	_	21	punct	_	start_char=3844|end_char=3845|ner=O
+20	Critics	Critic	PROPN	NNPS	Number=Plur	21	nsubj	_	start_char=3846|end_char=3853|ner=O
+21	called	call	VERB	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	15	parataxis	_	start_char=3854|end_char=3860|ner=O
+22	it	it	PRON	PRP	Case=Acc|Gender=Neut|Number=Sing|Person=3|PronType=Prs	21	obj	_	start_char=3861|end_char=3863|ner=O
+23	"	"	PUNCT	``	_	24	punct	_	SpaceAfter=No|start_char=3864|end_char=3865|ner=O
+24	vague	vague	ADJ	JJ	Degree=Pos	21	xcomp	_	SpaceAfter=No|start_char=3865|end_char=3870|ner=O
+25	,	,	PUNCT	,	_	24	punct	_	SpaceAfter=No|start_char=3870|end_char=3871|ner=O
+26	"	"	PUNCT	''	_	24	punct	_	start_char=3871|end_char=3872|ner=O
+27	"	"	PUNCT	``	_	28	punct	_	SpaceAfter=No|start_char=3873|end_char=3874|ner=O
+28	evasive	evasive	ADJ	JJ	Degree=Pos	24	conj	_	SpaceAfter=No|start_char=3874|end_char=3881|ner=O
+29	,	,	PUNCT	,	_	28	punct	_	SpaceAfter=No|start_char=3881|end_char=3882|ner=O
+30	"	"	PUNCT	''	_	28	punct	_	start_char=3882|end_char=3883|ner=O
+31	and	and	CCONJ	CC	_	33	cc	_	start_char=3884|end_char=3887|ner=O
+32	"	"	PUNCT	``	_	33	punct	_	SpaceAfter=No|start_char=3888|end_char=3889|ner=O
+33	disappointing	disappointing	ADJ	JJ	Degree=Pos	28	conj	_	SpaceAfter=No|start_char=3889|end_char=3902|ner=O
+34	.	.	PUNCT	.	_	33	punct	_	SpaceAfter=No|start_char=3902|end_char=3903|ner=O
+35	"	"	PUNCT	''	_	33	punct	_	SpacesAfter=\n\n|start_char=3903|end_char=3904|ner=O
+
+# text = He was born on July 4, 1976, in Philadelphia, Pa., and moved to Washington, D.C., at age 12.
+# sent_id = 26
+# sentiment = 1
+1	He	he	PRON	PRP	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	3	nsubj:pass	_	start_char=3906|end_char=3908|ner=O
+2	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	3	aux:pass	_	start_char=3909|end_char=3912|ner=O
+3	born	bear	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	start_char=3913|end_char=3917|ner=O
+4	on	on	ADP	IN	_	6	case	_	start_char=3918|end_char=3920|ner=O
+5	July	July	PROPN	NNP	Number=Sing	6	compound	_	start_char=3921|end_char=3925|ner=B-DATE
+6	4	4	NUM	CD	NumForm=Digit|NumType=Card	3	obl	_	SpaceAfter=No|start_char=3926|end_char=3927|ner=I-DATE
+7	,	,	PUNCT	,	_	8	punct	_	start_char=3927|end_char=3928|ner=I-DATE
+8	1976	1976	NUM	CD	NumForm=Digit|NumType=Card	6	nmod:unmarked	_	SpaceAfter=No|start_char=3929|end_char=3933|ner=E-DATE
+9	,	,	PUNCT	,	_	11	punct	_	start_char=3933|end_char=3934|ner=O
+10	in	in	ADP	IN	_	11	case	_	start_char=3935|end_char=3937|ner=O
+11	Philadelphia	Philadelphia	PROPN	NNP	Number=Sing	3	obl	_	SpaceAfter=No|start_char=3938|end_char=3950|ner=S-GPE
+12	,	,	PUNCT	,	_	13	punct	_	start_char=3950|end_char=3951|ner=O
+13	Pa.	Pa.	PROPN	NNP	Abbr=Yes|Number=Sing	11	nmod:unmarked	_	SpaceAfter=No|start_char=3952|end_char=3955|ner=S-GPE
+14	,	,	PUNCT	,	_	16	punct	_	start_char=3955|end_char=3956|ner=O
+15	and	and	CCONJ	CC	_	16	cc	_	start_char=3957|end_char=3960|ner=O
+16	moved	move	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	3	conj	_	start_char=3961|end_char=3966|ner=O
+17	to	to	ADP	IN	_	18	case	_	start_char=3967|end_char=3969|ner=O
+18	Washington	Washington	PROPN	NNP	Number=Sing	16	obl	_	SpaceAfter=No|start_char=3970|end_char=3980|ner=S-GPE
+19	,	,	PUNCT	,	_	20	punct	_	start_char=3980|end_char=3981|ner=O
+20	D.C.	D.C.	PROPN	NNP	Abbr=Yes|Number=Sing	18	nmod:unmarked	_	SpaceAfter=No|start_char=3982|end_char=3986|ner=S-GPE
+21	,	,	PUNCT	,	_	23	punct	_	start_char=3986|end_char=3987|ner=O
+22	at	at	ADP	IN	_	23	case	_	start_char=3988|end_char=3990|ner=O
+23	age	age	NOUN	NN	Number=Sing	16	obl	_	start_char=3991|end_char=3994|ner=B-DATE
+24	12	12	NUM	CD	NumForm=Digit|NumType=Card	23	flat	_	SpaceAfter=No|start_char=3995|end_char=3997|ner=E-DATE
+25	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=3997|end_char=3998|ner=O
+
+# text = #throwback to the summer of '99 :) good times lol idk what ur talking about tbh
+# sent_id = 27
+# sentiment = 1
+1	#throwback	#throwback	PROPN	NNP	Number=Sing	0	root	_	start_char=4000|end_char=4010|ner=O
+2	to	to	ADP	IN	_	4	case	_	start_char=4011|end_char=4013|ner=O
+3	the	the	DET	DT	Definite=Def|PronType=Art	4	det	_	start_char=4014|end_char=4017|ner=B-DATE
+4	summer	summer	NOUN	NN	Number=Sing	1	nmod	_	start_char=4018|end_char=4024|ner=I-DATE
+5	of	of	ADP	IN	_	10	case	_	start_char=4025|end_char=4027|ner=I-DATE
+6	'	'	PUNCT	``	_	7	punct	_	SpaceAfter=No|start_char=4028|end_char=4029|ner=I-DATE
+7	99	99	NUM	CD	NumForm=Digit|NumType=Card	4	nmod	_	start_char=4029|end_char=4031|ner=E-DATE
+8	:)	:)	SYM	SYM	_	7	nmod:unmarked	_	start_char=4032|end_char=4034|ner=O
+9	good	good	ADJ	JJ	Degree=Pos	7	conj	_	start_char=4035|end_char=4039|ner=O
+10	times	time	NOUN	NNS	Number=Plur	4	nmod	_	SpacesAfter=\n|start_char=4040|end_char=4045|ner=O
+11	lol	lol	INTJ	UH	_	13	discourse	_	start_char=4046|end_char=4049|ner=O
+12	idk	idk	INTJ	UH	_	13	discourse	_	start_char=4050|end_char=4053|ner=O
+13	what	what	PRON	WP	PronType=Rel	1	parataxis	_	start_char=4054|end_char=4058|ner=O
+14	ur	your	PRON	PRP$	Case=Gen|Number=Sing|Person=2|PronType=Prs	15	nsubj	_	start_char=4059|end_char=4061|ner=O
+15	talking	talk	VERB	VBG	Tense=Pres|VerbForm=Part	13	acl:relcl	_	start_char=4062|end_char=4069|ner=O
+16	about	about	ADP	IN	_	17	case	_	start_char=4070|end_char=4075|ner=O
+17	tbh	tbh	ADV	RB	_	15	advmod	_	SpacesAfter=\n\n|start_char=4076|end_char=4079|ner=O
+
+# text = The data (n = 1,024; p < 0.05) suggest a moderate effect (r = 0.31). Fig. 2 shows the distribution; Table 3 lists the outliers.
+# sent_id = 28
+# sentiment = 1
+1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=4081|end_char=4084|ner=O
+2	data	data	NOUN	NN	Number=Sing	12	nsubj	_	start_char=4085|end_char=4089|ner=O
+3	(	(	PUNCT	-LRB-	_	5	punct	_	SpaceAfter=No|start_char=4090|end_char=4091|ner=O
+4	n	n	NOUN	NN	Number=Sing	5	nsubj	_	start_char=4091|end_char=4092|ner=O
+5	=	=	SYM	SYM	_	12	parataxis	_	start_char=4093|end_char=4094|ner=O
+6	1,024	1024	NUM	CD	NumForm=Digit|NumType=Card	5	obj	_	SpaceAfter=No|start_char=4095|end_char=4100|ner=S-CARDINAL
+7	;	;	PUNCT	:	_	8	punct	_	start_char=4100|end_char=4101|ner=O
+8	p	p	NOUN	NN	Number=Sing	2	appos	_	start_char=4102|end_char=4103|ner=O
+9	<	<	PUNCT	-LRB-	_	10	punct	_	start_char=4104|end_char=4105|ner=O
+10	0.05	0.05	NUM	CD	NumForm=Digit|NumType=Frac	8	flat	_	SpaceAfter=No|start_char=4106|end_char=4110|ner=S-CARDINAL
+11	)	)	PUNCT	-RRB-	_	10	punct	_	start_char=4110|end_char=4111|ner=O
+12	suggest	suggest	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=4112|end_char=4119|ner=O
+13	a	a	DET	DT	Definite=Ind|PronType=Art	15	det	_	start_char=4120|end_char=4121|ner=O
+14	moderate	moderate	ADJ	JJ	Degree=Pos	15	amod	_	start_char=4122|end_char=4130|ner=O
+15	effect	effect	NOUN	NN	Number=Sing	12	obj	_	start_char=4131|end_char=4137|ner=O
+16	(	(	PUNCT	-LRB-	_	18	punct	_	SpaceAfter=No|start_char=4138|end_char=4139|ner=O
+17	r	be	NOUN	NN	Number=Sing	18	nsubj	_	start_char=4139|end_char=4140|ner=O
+18	=	=	SYM	SYM	_	15	parataxis	_	start_char=4141|end_char=4142|ner=O
+19	0.31	0.31	NUM	CD	NumForm=Digit|NumType=Frac	18	obj	_	SpaceAfter=No|start_char=4143|end_char=4147|ner=S-CARDINAL
+20	)	)	PUNCT	-RRB-	_	18	punct	_	SpaceAfter=No|start_char=4147|end_char=4148|ner=O
+21	.	.	PUNCT	.	_	24	punct	_	start_char=4148|end_char=4149|ner=O
+22	Fig.	fig.	NOUN	NN	Number=Sing	24	nsubj	_	start_char=4150|end_char=4154|ner=O
+23	2	2	NUM	CD	NumForm=Digit|NumType=Card	22	flat	_	start_char=4155|end_char=4156|ner=S-CARDINAL
+24	shows	show	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	12	parataxis	_	start_char=4157|end_char=4162|ner=O
+25	the	the	DET	DT	Definite=Def|PronType=Art	26	det	_	start_char=4163|end_char=4166|ner=O
+26	distribution	distribution	NOUN	NN	Number=Sing	24	obj	_	SpaceAfter=No|start_char=4167|end_char=4179|ner=O
+27	;	;	PUNCT	:	_	30	punct	_	start_char=4179|end_char=4180|ner=O
+28	Table	table	NOUN	NN	Number=Sing	30	compound	_	start_char=4181|end_char=4186|ner=O
+29	3	3	NUM	CD	NumForm=Digit|NumType=Card	28	flat	_	start_char=4187|end_char=4188|ner=S-CARDINAL
+30	lists	list	NOUN	NNS	Number=Plur	26	appos	_	start_char=4189|end_char=4194|ner=O
+31	the	the	DET	DT	Definite=Def|PronType=Art	32	det	_	start_char=4195|end_char=4198|ner=O
+32	outliers	outlier	NOUN	NNS	Number=Plur	30	appos	_	SpaceAfter=No|start_char=4199|end_char=4207|ner=O
+33	.	.	PUNCT	.	_	12	punct	_	SpacesAfter=\n\n|start_char=4207|end_char=4208|ner=O
+
+# text = Rock 'n' roll never dies. The '80s were wild. Fish 'n' chips, anyone?
+# sent_id = 29
+# sentiment = 0
+1	Rock	rock	NOUN	NN	Number=Sing	5	nmod:poss	_	start_char=4210|end_char=4214|ner=O
+2	'	'	PUNCT	``	_	7	punct	_	SpaceAfter=No|start_char=4215|end_char=4216|ner=O
+3	n	n	NOUN	NN	Number=Sing	5	nmod:poss	_	SpaceAfter=No|start_char=4216|end_char=4217|ner=O
+4	'	's	PART	POS	_	3	case	_	start_char=4217|end_char=4218|ner=O
+5	roll	roll	NOUN	NN	Number=Sing	7	nsubj	_	start_char=4219|end_char=4223|ner=O
+6	never	never	ADV	RB	PronType=Neg	7	advmod	_	start_char=4224|end_char=4229|ner=O
+7	dies	die	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=4230|end_char=4234|ner=O
+8	.	.	PUNCT	.	_	7	punct	_	start_char=4234|end_char=4235|ner=O
+9	The	the	DET	DT	Definite=Def|PronType=Art	19	det	_	start_char=4236|end_char=4239|ner=O
+10	'	'	PUNCT	``	_	13	punct	_	SpaceAfter=No|start_char=4240|end_char=4241|ner=O
+11	80s	80s	NOUN	NNS	Number=Ptan|NumForm=Combi|NumType=Card	13	nsubj	_	start_char=4241|end_char=4244|ner=S-DATE
+12	were	be	AUX	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	13	cop	_	start_char=4245|end_char=4249|ner=O
+13	wild	wild	ADJ	JJ	Degree=Pos	19	amod	_	SpaceAfter=No|start_char=4250|end_char=4254|ner=O
+14	.	.	PUNCT	.	_	13	punct	_	start_char=4254|end_char=4255|ner=O
+15	Fish	Fish	NOUN	NN	Number=Sing	17	compound	_	start_char=4256|end_char=4260|ner=O
+16	'	'	PUNCT	''	_	15	punct	_	SpaceAfter=No|start_char=4261|end_char=4262|ner=O
+17	n	n	NOUN	NN	Number=Sing	19	compound	_	SpaceAfter=No|start_char=4262|end_char=4263|ner=O
+18	'	'	PUNCT	''	_	17	punct	_	start_char=4263|end_char=4264|ner=O
+19	chips	chip	NOUN	NNS	Number=Plur	7	obj	_	SpaceAfter=No|start_char=4265|end_char=4270|ner=O
+20	,	,	PUNCT	,	_	21	punct	_	start_char=4270|end_char=4271|ner=O
+21	anyone	anyone	PRON	NN	Number=Sing|PronType=Ind	19	appos	_	SpaceAfter=No|start_char=4272|end_char=4278|ner=O
+22	?	?	PUNCT	.	_	7	punct	_	SpacesAfter=\n\n|start_char=4278|end_char=4279|ner=O
+
+# text = 日本 is the Japanese name for Japan. The word "Москва" means Moscow in Russian. Arabic numerals (0–9) came to Europe via the Islamic world.
+# sent_id = 30
+# sentiment = 1
+1	日本	日本	PROPN	NNP	Number=Sing	5	nsubj	_	start_char=4281|end_char=4283|ner=O
+2	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	5	cop	_	start_char=4284|end_char=4286|ner=O
+3	the	the	DET	DT	Definite=Def|PronType=Art	5	det	_	start_char=4287|end_char=4290|ner=O
+4	Japanese	Japanese	ADJ	JJ	Degree=Pos	5	amod	_	start_char=4291|end_char=4299|ner=S-NORP
+5	name	name	NOUN	NN	Number=Sing	0	root	_	start_char=4300|end_char=4304|ner=O
+6	for	for	ADP	IN	_	7	case	_	start_char=4305|end_char=4308|ner=O
+7	Japan	Japan	PROPN	NNP	Number=Sing	5	nmod	_	SpaceAfter=No|start_char=4309|end_char=4314|ner=S-GPE
+8	.	.	PUNCT	.	_	14	punct	_	start_char=4314|end_char=4315|ner=O
+9	The	the	DET	DT	Definite=Def|PronType=Art	10	det	_	start_char=4316|end_char=4319|ner=O
+10	word	word	NOUN	NN	Number=Sing	14	nsubj	_	start_char=4320|end_char=4324|ner=O
+11	"	"	PUNCT	``	_	12	punct	_	SpaceAfter=No|start_char=4325|end_char=4326|ner=O
+12	Москва	Москва	PROPN	NNP	Number=Sing	10	appos	_	SpaceAfter=No|start_char=4326|end_char=4332|ner=S-GPE
+13	"	"	PUNCT	''	_	12	punct	_	start_char=4332|end_char=4333|ner=O
+14	means	mean	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	5	parataxis	_	start_char=4334|end_char=4339|ner=O
+15	Moscow	Moscow	PROPN	NNP	Number=Sing	14	obj	_	start_char=4340|end_char=4346|ner=S-GPE
+16	in	in	ADP	IN	_	17	case	_	start_char=4347|end_char=4349|ner=O
+17	Russian	Russian	ADJ	JJ	Degree=Pos	14	obl	_	SpaceAfter=No|start_char=4350|end_char=4357|ner=S-LANGUAGE
+18	.	.	PUNCT	.	_	14	punct	_	start_char=4357|end_char=4358|ner=O
+19	Arabic	Arabic	ADJ	JJ	Degree=Pos	20	amod	_	start_char=4359|end_char=4365|ner=S-LANGUAGE
+20	numerals	numeral	NOUN	NNS	Number=Plur	26	nsubj	_	start_char=4366|end_char=4374|ner=O
+21	(	(	PUNCT	-LRB-	_	22	punct	_	SpaceAfter=No|start_char=4375|end_char=4376|ner=O
+22	0	0	NUM	CD	NumForm=Digit|NumType=Card	20	parataxis	_	SpaceAfter=No|start_char=4376|end_char=4377|ner=S-CARDINAL
+23	–	-	SYM	SYM	ExtPos=ADP	24	case	_	SpaceAfter=No|start_char=4377|end_char=4378|ner=O
+24	9	9	NUM	CD	NumForm=Digit|NumType=Card	22	nmod	_	SpaceAfter=No|start_char=4378|end_char=4379|ner=S-CARDINAL
+25	)	)	PUNCT	-RRB-	_	22	punct	_	start_char=4379|end_char=4380|ner=O
+26	came	come	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	14	ccomp	_	start_char=4381|end_char=4385|ner=O
+27	to	to	ADP	IN	_	28	case	_	start_char=4386|end_char=4388|ner=O
+28	Europe	Europe	PROPN	NNP	Number=Sing	26	obl	_	start_char=4389|end_char=4395|ner=S-LOC
+29	via	via	ADP	IN	_	32	case	_	start_char=4396|end_char=4399|ner=O
+30	the	the	DET	DT	Definite=Def|PronType=Art	32	det	_	start_char=4400|end_char=4403|ner=O
+31	Islamic	Islamic	ADJ	NNP	Degree=Pos	32	amod	_	start_char=4404|end_char=4411|ner=S-NORP
+32	world	world	NOUN	NN	Number=Sing	26	obl	_	SpaceAfter=No|start_char=4412|end_char=4417|ner=O
+33	.	.	PUNCT	.	_	5	punct	_	SpacesAfter=\n\n|start_char=4417|end_char=4418|ner=O
+
+# text = He paused. Then, slowly, he turned around, looked her straight in the eye, and whispered: "Run."
+# sent_id = 31
+# sentiment = 1
+1	He	he	PRON	PRP	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=4420|end_char=4422|ner=O
+2	paused	pause	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=4423|end_char=4429|ner=O
+3	.	.	PUNCT	.	_	2	punct	_	start_char=4429|end_char=4430|ner=O
+4	Then	then	ADV	RB	PronType=Dem	2	advmod	_	SpaceAfter=No|start_char=4431|end_char=4435|ner=O
+5	,	,	PUNCT	,	_	4	punct	_	start_char=4435|end_char=4436|ner=O
+6	slowly	slowly	ADV	RB	_	9	advmod	_	SpaceAfter=No|start_char=4437|end_char=4443|ner=O
+7	,	,	PUNCT	,	_	6	punct	_	start_char=4443|end_char=4444|ner=O
+8	he	he	PRON	PRP	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	9	nsubj	_	start_char=4445|end_char=4447|ner=O
+9	turned	turn	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	2	parataxis	_	start_char=4448|end_char=4454|ner=O
+10	around	around	ADV	RB	_	9	advmod	_	SpaceAfter=No|start_char=4455|end_char=4461|ner=O
+11	,	,	PUNCT	,	_	12	punct	_	start_char=4461|end_char=4462|ner=O
+12	looked	look	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	9	conj	_	start_char=4463|end_char=4469|ner=O
+13	her	her	PRON	PRP	Case=Acc|Gender=Fem|Number=Sing|Person=3|PronType=Prs	12	obj	_	start_char=4470|end_char=4473|ner=O
+14	straight	straight	ADV	RB	_	17	advmod	_	start_char=4474|end_char=4482|ner=O
+15	in	in	ADP	IN	_	17	case	_	start_char=4483|end_char=4485|ner=O
+16	the	the	DET	DT	Definite=Def|PronType=Art	17	det	_	start_char=4486|end_char=4489|ner=O
+17	eye	eye	NOUN	NN	Number=Sing	12	obl	_	SpaceAfter=No|start_char=4490|end_char=4493|ner=O
+18	,	,	PUNCT	,	_	20	punct	_	start_char=4493|end_char=4494|ner=O
+19	and	and	CCONJ	CC	_	20	cc	_	start_char=4495|end_char=4498|ner=O
+20	whispered	whisper	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	9	conj	_	SpaceAfter=No|start_char=4499|end_char=4508|ner=O
+21	:	:	PUNCT	:	_	23	punct	_	start_char=4508|end_char=4509|ner=O
+22	"	"	PUNCT	``	_	23	punct	_	SpaceAfter=No|start_char=4510|end_char=4511|ner=O
+23	Run	run	VERB	VB	Mood=Imp|VerbForm=Fin	20	ccomp	_	SpaceAfter=No|start_char=4511|end_char=4514|ner=O
+24	.	.	PUNCT	.	_	23	punct	_	SpaceAfter=No|start_char=4514|end_char=4515|ner=O
+25	"	"	PUNCT	''	_	23	punct	_	SpacesAfter=\n\n|start_char=4515|end_char=4516|ner=O
+
+# text = The meeting is at 10:30 a.m. on Mon., Feb. 3. Please R.S.V.P. by Fri. Late arrivals will not be admitted, i.e. the doors close at 10:35 sharp, e.g. no exceptions.
+# sent_id = 32
+# sentiment = 1
+1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=4518|end_char=4521|ner=O
+2	meeting	meeting	NOUN	NN	Number=Sing	5	nsubj	_	start_char=4522|end_char=4529|ner=O
+3	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	5	cop	_	start_char=4530|end_char=4532|ner=O
+4	at	at	ADP	IN	_	5	case	_	start_char=4533|end_char=4535|ner=O
+5	10:30	10:30	NUM	CD	NumForm=Digit|NumType=Card	0	root	_	start_char=4536|end_char=4541|ner=B-TIME
+6	a.m.	a.m.	NOUN	NN	Number=Sing	5	nmod:unmarked	_	start_char=4542|end_char=4546|ner=I-TIME
+7	on	on	ADP	IN	_	8	case	_	start_char=4547|end_char=4549|ner=I-TIME
+8	Mon.	Monday	PROPN	NNP	Abbr=Yes|Number=Sing	5	nmod	_	SpaceAfter=No|start_char=4550|end_char=4554|ner=I-TIME
+9	,	,	PUNCT	,	_	10	punct	_	start_char=4554|end_char=4555|ner=I-TIME
+10	Feb	February	PROPN	NNP	Abbr=Yes|Number=Sing	8	nmod:unmarked	_	SpaceAfter=No|start_char=4556|end_char=4559|ner=I-TIME
+11	.	.	PUNCT	.	_	12	punct	_	start_char=4559|end_char=4560|ner=I-TIME
+12	3	3	NUM	CD	NumForm=Digit|NumType=Card	5	parataxis	_	SpaceAfter=No|start_char=4561|end_char=4562|ner=E-TIME
+13	.	.	PUNCT	.	_	5	punct	_	start_char=4562|end_char=4563|ner=O
+14	Please	please	INTJ	UH	_	15	discourse	_	start_char=4564|end_char=4570|ner=O
+15	R.S.V.P.	r.s.v.p.	NOUN	NN	Number=Sing	5	parataxis	_	start_char=4571|end_char=4579|ner=O
+16	by	by	ADP	IN	_	17	case	_	start_char=4580|end_char=4582|ner=O
+17	Fri.	Friday	PROPN	NNP	Abbr=Yes|Number=Sing	19	compound	_	start_char=4583|end_char=4587|ner=B-DATE
+18	Late	late	ADJ	JJ	Degree=Pos	19	amod	_	start_char=4588|end_char=4592|ner=E-DATE
+19	arrivals	arrival	NOUN	NNS	Number=Plur	23	nsubj:pass	_	start_char=4593|end_char=4601|ner=O
+20	will	will	AUX	MD	VerbForm=Fin	23	aux	_	start_char=4602|end_char=4606|ner=O
+21	not	not	PART	RB	Polarity=Neg	23	advmod	_	start_char=4607|end_char=4610|ner=O
+22	be	be	AUX	VB	VerbForm=Inf	23	aux:pass	_	start_char=4611|end_char=4613|ner=O
+23	admitted	admit	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	5	parataxis	_	SpaceAfter=No|start_char=4614|end_char=4622|ner=O
+24	,	,	PUNCT	,	_	28	punct	_	start_char=4622|end_char=4623|ner=O
+25	i.e.	i.e.	ADV	FW	Abbr=Yes	28	advmod	_	start_char=4624|end_char=4628|ner=O
+26	the	the	DET	DT	Definite=Def|PronType=Art	27	det	_	start_char=4629|end_char=4632|ner=O
+27	doors	door	NOUN	NNS	Number=Plur	28	nsubj	_	start_char=4633|end_char=4638|ner=O
+28	close	close	ADV	RB	_	23	parataxis	_	start_char=4639|end_char=4644|ner=O
+29	at	at	ADP	IN	_	30	case	_	start_char=4645|end_char=4647|ner=O
+30	10:35	10:35	NUM	CD	NumForm=Digit|NumType=Card	28	obl	_	start_char=4648|end_char=4653|ner=S-CARDINAL
+31	sharp	sharp	ADJ	JJ	Degree=Pos	28	obl	_	SpaceAfter=No|start_char=4654|end_char=4659|ner=O
+32	,	,	PUNCT	,	_	35	punct	_	start_char=4659|end_char=4660|ner=O
+33	e.g.	e.g.	ADV	FW	Abbr=Yes	35	advmod	_	start_char=4661|end_char=4665|ner=O
+34	no	no	DET	DT	PronType=Neg	35	det	_	start_char=4666|end_char=4668|ner=O
+35	exceptions	exception	NOUN	NNS	Number=Plur	28	parataxis	_	SpaceAfter=No|start_char=4669|end_char=4679|ner=O
+36	.	.	PUNCT	.	_	5	punct	_	SpacesAfter=\n\n|start_char=4679|end_char=4680|ner=O
+
+# text = Chapter 7 The Long Road Home
+# sent_id = 33
+# sentiment = 1
+1	Chapter	Chapter	PROPN	NNP	Number=Sing	0	root	_	start_char=4682|end_char=4689|ner=O
+2	7	7	NUM	CD	NumForm=Digit|NumType=Card	1	flat	_	SpacesAfter=\n|start_char=4690|end_char=4691|ner=S-CARDINAL
+3	The	the	DET	DT	Definite=Def|PronType=Art	6	det	_	start_char=4692|end_char=4695|ner=O
+4	Long	long	ADJ	NNP	Degree=Pos	5	amod	_	start_char=4696|end_char=4700|ner=O
+5	Road	Road	PROPN	NNP	Number=Sing	6	compound	_	start_char=4701|end_char=4705|ner=O
+6	Home	Home	PROPN	NNP	Number=Sing	1	appos	_	SpacesAfter=\n\n|start_char=4706|end_char=4710|ner=O
+
+# text = It was raining when they reached the border. Nobody spoke. The guard glanced at their papers, shrugged, and waved them through.
+# sent_id = 34
+# sentiment = 0
+1	It	it	PRON	PRP	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	3	nsubj	_	start_char=4712|end_char=4714|ner=O
+2	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	3	aux	_	start_char=4715|end_char=4718|ner=O
+3	raining	rain	VERB	VBG	Tense=Pres|VerbForm=Part	0	root	_	start_char=4719|end_char=4726|ner=O
+4	when	when	ADV	WRB	PronType=Int	6	advmod	_	start_char=4727|end_char=4731|ner=O
+5	they	they	PRON	PRP	Case=Nom|Number=Plur|Person=3|PronType=Prs	6	nsubj	_	start_char=4732|end_char=4736|ner=O
+6	reached	reach	VERB	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	3	advcl	_	start_char=4737|end_char=4744|ner=O
+7	the	the	DET	DT	Definite=Def|PronType=Art	8	det	_	start_char=4745|end_char=4748|ner=O
+8	border	border	NOUN	NN	Number=Sing	6	obj	_	SpaceAfter=No|start_char=4749|end_char=4755|ner=O
+9	.	.	PUNCT	.	_	11	punct	_	start_char=4755|end_char=4756|ner=O
+10	Nobody	nobody	PRON	NN	Number=Sing|PronType=Neg	11	nsubj	_	start_char=4757|end_char=4763|ner=O
+11	spoke	speak	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	3	parataxis	_	SpaceAfter=No|start_char=4764|end_char=4769|ner=O
+12	.	.	PUNCT	.	_	11	punct	_	start_char=4769|end_char=4770|ner=O
+13	The	the	DET	DT	Definite=Def|PronType=Art	14	det	_	start_char=4771|end_char=4774|ner=O
+14	guard	guard	NOUN	NN	Number=Sing	15	nsubj	_	start_char=4775|end_char=4780|ner=O
+15	glanced	glance	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	3	parataxis	_	start_char=4781|end_char=4788|ner=O
+16	at	at	ADP	IN	_	18	case	_	start_char=4789|end_char=4791|ner=O
+17	their	their	PRON	PRP$	Case=Gen|Number=Plur|Person=3|Poss=Yes|PronType=Prs	18	nmod:poss	_	start_char=4792|end_char=4797|ner=O
+18	papers	paper	NOUN	NNS	Number=Plur	15	obl	_	SpaceAfter=No|start_char=4798|end_char=4804|ner=O
+19	,	,	PUNCT	,	_	20	punct	_	start_char=4804|end_char=4805|ner=O
+20	shrugged	shrug	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	15	conj	_	SpaceAfter=No|start_char=4806|end_char=4814|ner=O
+21	,	,	PUNCT	,	_	23	punct	_	start_char=4814|end_char=4815|ner=O
+22	and	and	CCONJ	CC	_	23	cc	_	start_char=4816|end_char=4819|ner=O
+23	waved	wave	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	15	conj	_	start_char=4820|end_char=4825|ner=O
+24	them	they	PRON	PRP	Case=Acc|Number=Plur|Person=3|PronType=Prs	23	obj	_	start_char=4826|end_char=4830|ner=O
+25	through	through	ADP	RP	_	23	compound:prt	_	SpaceAfter=No|start_char=4831|end_char=4838|ner=O
+26	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n|start_char=4838|end_char=4839|ner=O
