@@ -134,21 +134,37 @@ internal sealed class PosTagger : IDisposable
         int batch = sentences.Count, width = sentences.Max(s => s.Count);
         var lengths = sentences.Select(s => (long)s.Count).ToArray();
 
-        var wordIds = new long[batch * width];
-        var pretrainIds = new long[batch * width];
-        for (int i = 0; i < batch; i++)
-            for (int j = 0; j < sentences[i].Count; j++)
-            {
-                var lower = PyString.Lower(sentences[i][j]);
-                wordIds[i * width + j] = _wordVocab.GetValueOrDefault(lower, _wordUnk);
-                pretrainIds[i * width + j] = _pretrain.UnitToId(lower);
-            }
+        // Nothing is padded: the input is built straight in the packed order of Stanza's pack_padded_sequence, so a
+        // long sentence in a batch of 250 costs only its own rows. Word k of the batch (sentences in order) is
+        // packed row packedRow[k], and packed row p holds word wordOf[p].
+        var offsets = new int[batch];
+        for (int i = 1; i < batch; i++)
+            offsets[i] = offsets[i - 1] + sentences[i - 1].Count;
+        var wordOf = Rnn.PackedOrder(lengths).Select(x => (long)offsets[x / width] + x % width).ToArray();
+        var packedRow = new long[wordOf.Length];
+        for (int p = 0; p < wordOf.Length; p++)
+            packedRow[wordOf[p]] = p;
+        var flat = sentences.SelectMany(s => s).ToArray();
+        var wordIds = new long[flat.Length];
+        var pretrainIds = new long[flat.Length];
+        for (int p = 0; p < flat.Length; p++)
+        {
+            var lower = PyString.Lower(flat[wordOf[p]]);
+            wordIds[p] = _wordVocab.GetValueOrDefault(lower, _wordUnk);
+            pretrainIds[p] = _pretrain.UnitToId(lower);
+        }
+        var toPacked = torch.tensor(wordOf, device: _device);
+        Tensor Packed(Tensor t)
+        {
+            using (t)
+                return t.index_select(0, toPacked);
+        }
 
-        var words = _wordEmb.forward(torch.tensor(wordIds, [batch, width], device: _device));
-        var pretrained = _transPretrained.forward(_pretrain.Embeddings[torch.tensor(pretrainIds, [batch, width], device: _device)]);
+        var words = _wordEmb.forward(torch.tensor(wordIds, device: _device));
+        var pretrained = _transPretrained.forward(_pretrain.Embeddings[torch.tensor(pretrainIds, device: _device)]);
         Tensor[] chars;
         if (_charModel != null)
-            chars = [_transChar!.forward(_charModel.Forward(sentences.Select(s => (IReadOnlyList<long[]>)s.Select(_charModel.CharIds).ToList()).ToList()))];
+            chars = [_transChar!.forward(Packed(_charModel.ForwardWords(sentences.Select(s => (IReadOnlyList<long[]>)s.Select(_charModel.CharIds).ToList()).ToList())))];
         else
         {
             var repsForward = _charlmForward!.BuildCharRepresentation(sentences);
@@ -157,17 +173,15 @@ internal sealed class PosTagger : IDisposable
                 for (int i = 0; i < batch; i++)
                     if (sentences[i].SequenceEqual(original[i])) // the parser reads the words before SimplifyPunct
                         keepCharlm(i, repsForward[i], repsBackward[i]);
-            chars = [Rnn.PadSequence(repsForward), Rnn.PadSequence(repsBackward)];
+            chars = [Packed(cat(repsForward, 0)), Packed(cat(repsBackward, 0))];
         }
-        // Free the padded inputs as soon as they are concatenated: with a long sentence in the batch they are large.
-        var input = cat([words, pretrained, .. chars], 2);
+        var input = cat([words, pretrained, .. chars], 1);
         foreach (var t in (Tensor[])[words, pretrained, .. chars])
             t.Dispose();
-        var padded = _lstm.Forward(input, lengths, disposeInput: true);
-        // The heads see only the real words, as Stanza's run on the packed data: a batch padded to one long
-        // sentence would otherwise score mostly padding (21 biaffine feature scorers).
-        var real = Enumerable.Range(0, batch).SelectMany(i => Enumerable.Range(i * width, sentences[i].Count)).Select(k => (long)k).ToArray();
-        var output = padded.reshape(-1, padded.shape[2]).index_select(0, torch.tensor(real, device: _device));
+        var packed = Rnn.Pack(input, lengths);
+        input.Dispose();
+        // The heads see the words in sentence order.
+        var output = _lstm.Forward(packed, disposeInput: true).data.index_select(0, torch.tensor(packedRow, device: _device));
 
         var uposScores = _uposClf.forward(F.relu(_uposHid.forward(output)));
         var uposIds = uposScores.argmax(1);

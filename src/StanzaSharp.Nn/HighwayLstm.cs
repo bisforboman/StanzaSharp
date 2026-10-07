@@ -37,28 +37,44 @@ internal sealed class HighwayLstm : IDisposable
     }
 
     /// <param name="input">[batch, maxLen, inputSize]</param>
-    /// <param name="disposeInput">Dispose <paramref name="input"/> once the first layer is done with it.</param>
-    /// <returns>[batch, maxLen, 2 * hidden]; positions past a sentence's length are meaningless.</returns>
-    /// <remarks>
-    /// The batch is padded, so each layer's tensors can be large (hundreds of MB for a batch padded to one long
-    /// sentence): every layer frees its intermediates and its input as soon as it is done, and the elementwise
-    /// steps run in place.
-    /// </remarks>
+    /// <param name="disposeInput">Dispose <paramref name="input"/> once it is packed.</param>
+    /// <returns>[batch, maxLen, 2 * hidden], zero past each sentence's length.</returns>
     public Tensor Forward(Tensor input, long[] lengths, bool disposeInput = false)
     {
-        long batch = input.shape[0];
+        using var scope = NewDisposeScope();
+        long width = input.shape[1];
+        using var lens = torch.tensor(lengths);
+        var packed = nn.utils.rnn.pack_padded_sequence(input, lens, batch_first: true, enforce_sorted: false);
+        if (disposeInput)
+            input.Dispose();
+        var (padded, _) = nn.utils.rnn.pad_packed_sequence(Forward(packed, disposeInput: true), batch_first: true, total_length: width);
+        return padded.MoveToOuterDisposeScope();
+    }
+
+    /// <param name="input">A packed batch, data [words, inputSize] (pack_padded_sequence or <see cref="Rnn.Pack"/>).</param>
+    /// <param name="disposeInput">Dispose <paramref name="input"/> once the first layer is done with it.</param>
+    /// <returns>The last layer's output, packed like <paramref name="input"/>: data [words, 2 * hidden].</returns>
+    /// <remarks>
+    /// The gate and highway layers run on the packed rows, so padding costs nothing here (a batch padded to one
+    /// long sentence used to make each layer's tensors hundreds of MB). Every layer frees its intermediates and
+    /// its input as soon as it is done, and the elementwise steps run in place on the LSTM's output.
+    /// </remarks>
+    public nn.utils.rnn.PackedSequence Forward(nn.utils.rnn.PackedSequence input, bool disposeInput = false)
+    {
+        long batch = input.batch_sizes[0].item<long>();
         var x = input;
         for (int l = 0; l < _lstm.Length; l++)
         {
-            Tensor next;
+            nn.utils.rnn.PackedSequence next;
             using (NewDisposeScope())
             {
                 var h0 = _hInit.narrow(0, 2 * l, 2).expand(2, batch, _hidden).contiguous();
                 var c0 = _cInit.narrow(0, 2 * l, 2).expand(2, batch, _hidden).contiguous();
-                var h = Rnn.RunPacked(_lstm[l], x, lengths, (h0, c0));
-                var gate = _gate[l].forward(x).sigmoid_();
-                gate.mul_(_highway[l].forward(x).tanh_());
-                next = h.add_(gate, Scalars.One).MoveToOuterDisposeScope();
+                (next, _, _) = _lstm[l].call(x, (h0, c0));
+                var gate = _gate[l].forward(x.data).sigmoid_();
+                gate.mul_(_highway[l].forward(x.data).tanh_());
+                next.data.add_(gate, Scalars.One);
+                next.MoveToOuterDisposeScope();
             }
             if (l > 0 || disposeInput)
                 x.Dispose();
