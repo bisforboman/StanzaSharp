@@ -3,103 +3,24 @@ using System.Runtime.Intrinsics;
 
 namespace StanzaSharp.Nn.Managed;
 
-// Spike for issue #29 (Phase 0): a pure managed float32 backend. Nothing in the pipeline uses this code;
+// Issue #29: a pure managed float32 backend. Nothing in the pipeline uses this code yet;
 // docs/managed-backend-spike.md has the method and the numbers.
 
-/// <summary>Thread count of the managed kernels (the managed twin of <c>torch.set_num_threads</c>).</summary>
-/// <remarks>
-/// A persistent team of threads meeting at a <see cref="Barrier"/> (which spins briefly before blocking): an LSTM
-/// runs one parallel region per time step, thousands per call, so the per-region cost matters.
-/// ponytail: one process-wide team behind a lock, so concurrent callers take turns; a real backend needs per-caller
-/// teams or work stealing.
-/// </remarks>
-internal static class ManagedThreads
+/// <summary>The SIMD flavor of the managed kernels. All three compute the same thing; tests run each of them.</summary>
+internal enum KernelPath
 {
-    private static readonly Lock Gate = new();
-    private static int _count = Environment.ProcessorCount;
-    private static Team? _team;
-
-    public static int Count
-    {
-        get => _count;
-        set => _count = Math.Max(1, value);
-    }
-
-    /// <summary>Runs <paramref name="body"/>(i) for i in [0, n) on up to <see cref="Count"/> threads.</summary>
-    public static void For(int n, Action<int> body)
-    {
-        if (n == 1 || Count == 1)
-        {
-            for (int i = 0; i < n; i++)
-                body(i);
-            return;
-        }
-        lock (Gate)
-        {
-            if (_team?.Size != Count)
-            {
-                _team?.Dispose();
-                _team = new Team(Count);
-            }
-            _team.Run(n, body);
-        }
-    }
-
-    private sealed class Team : IDisposable
-    {
-        private readonly Barrier _barrier;
-        private Action<int>? _body;
-        private int _n, _next;
-        private bool _stop;
-
-        public int Size { get; }
-
-        public Team(int size)
-        {
-            Size = size;
-            _barrier = new Barrier(size);
-            for (int i = 1; i < size; i++)
-                new Thread(Work) { IsBackground = true, Name = $"managed-kernel-{i}" }.Start();
-        }
-
-        public void Run(int n, Action<int> body)
-        {
-            (_body, _n, _next) = (body, n, 0);
-            _barrier.SignalAndWait();
-            Drain();
-            _barrier.SignalAndWait();
-            _body = null;
-        }
-
-        private void Drain()
-        {
-            for (int i; (i = Interlocked.Increment(ref _next) - 1) < _n;)
-                _body!(i);
-        }
-
-        private void Work()
-        {
-            while (true)
-            {
-                _barrier.SignalAndWait();
-                if (_stop)
-                    return;
-                Drain();
-                _barrier.SignalAndWait();
-            }
-        }
-
-        public void Dispose()
-        {
-            _stop = true;
-            _barrier.SignalAndWait();
-        }
-    }
+    /// <summary>AVX2 + FMA (x64): 6×16 micro-kernel in 12 registers.</summary>
+    Vector256,
+    /// <summary>NEON on Arm64 (6×16 in 24 of its 32 registers), or SSE on x64 without AVX2.</summary>
+    Vector128,
+    /// <summary>Plain scalar code, for platforms without hardware SIMD.</summary>
+    Scalar,
 }
 
 /// <summary>
 /// A weight matrix W [N, K] (PyTorch's Linear/LSTM layout, rows are outputs) packed once for <see cref="Gemm"/>:
-/// panels of <see cref="NR"/> output columns, each stored as [K][NR], N padded with zero rows.
+/// panels of <see cref="NR"/> output columns, each stored as [K][NR], N padded with zero rows. Every
+/// <see cref="KernelPath"/> reads the same layout.
 /// </summary>
 internal sealed unsafe class PackedMatrix
 {
@@ -135,11 +56,19 @@ internal sealed unsafe class PackedMatrix
     }
 }
 
-/// <summary>Blocked, SIMD (AVX2 + FMA) float32 GEMM: C = A·Wᵀ + init, with a 6×16 register-blocked micro-kernel.</summary>
+/// <summary>Blocked SIMD float32 GEMM: C = A·Wᵀ + init, with a 6×16 register-blocked micro-kernel per <see cref="KernelPath"/>.</summary>
 internal static unsafe class Gemm
 {
     public const int MR = 6;
     private const int KC = 256, MC = 96, NC = 8; // NC panels (128 columns) per task
+
+    /// <summary>The kernels' SIMD flavor, detected at startup. Settable so tests can run every path on one machine.</summary>
+    public static KernelPath Path { get; set; } = Detect();
+
+    public static KernelPath Detect() =>
+        Vector256.IsHardwareAccelerated ? KernelPath.Vector256
+        : Vector128.IsHardwareAccelerated ? KernelPath.Vector128
+        : KernelPath.Scalar;
 
     /// <summary>A [m, K] row-major → C [m, PaddedN] = A·Wᵀ + bias (bias null or PaddedN floats).</summary>
     public static float[] Run(float[] a, int m, PackedMatrix w, float[]? bias)
@@ -152,9 +81,10 @@ internal static unsafe class Gemm
 
     /// <summary>
     /// C[m, :] = A[m, :]·Wᵀ + bias for m in [0, M). C must have room for <see cref="PackedMatrix.PaddedN"/> columns
-    /// per row (ldc ≥ PaddedN); bias (null for none) must have PaddedN floats.
+    /// per row (ldc ≥ PaddedN); bias (null for none) must have PaddedN floats. <paramref name="ct"/> is checked
+    /// before each block of 96 rows × 128 columns.
     /// </summary>
-    public static void Run(float* a, int m, int lda, PackedMatrix w, float* bias, float* c, int ldc)
+    public static void Run(float* a, int m, int lda, PackedMatrix w, float* bias, float* c, int ldc, CancellationToken ct = default)
     {
         if (m == 0)
             return;
@@ -164,6 +94,7 @@ internal static unsafe class Gemm
         nint pa = (nint)a, pb = (nint)bias, pc = (nint)c;
         ManagedThreads.For(mBlocks * nBlocks, task =>
         {
+            ct.ThrowIfCancellationRequested();
             var a_ = (float*)pa;
             var bias_ = (float*)pb;
             var c_ = (float*)pc;
@@ -201,11 +132,41 @@ internal static unsafe class Gemm
     }
 
     /// <summary>
-    /// out[r][0..16) = init[r][0..16) + Σ_k a[r][k]·panel[k][0..16) for six rows r. Rows the caller doesn't need
-    /// may repeat another row's pointers and write to a scratch buffer.
+    /// out[r][0..16) = init[r][0..16) + Σ_k a[r][k]·panel[k][0..16) for the first mr ≤ 6 rows, on <see cref="Path"/>.
+    /// Smaller kernels serve 1 to 3 rows (a padded 6-row block wastes up to 6× the work). Rows past mr must repeat
+    /// another row's inputs; the SIMD kernels write them too, so their outputs must be scratch.
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void Kernel(int mr, float** a, float* b, int k, float** init, float** output)
+    {
+        switch (Path)
+        {
+            case KernelPath.Vector256:
+                if (mr == 1)
+                    Kernel1x256(a[0], b, k, init[0], output[0]);
+                else if (mr <= 3)
+                    Kernel3x256(a, b, k, init, output);
+                else
+                    Kernel6x256(a, b, k, init, output);
+                break;
+            case KernelPath.Vector128:
+                if (mr == 1)
+                    Kernel1x128(a[0], b, k, init[0], output[0]);
+                else if (mr <= 3)
+                    Kernel3x128(a, b, k, init, output);
+                else
+                    Kernel6x128(a, b, k, init, output);
+                break;
+            default:
+                KernelScalar(mr, a, b, k, init, output);
+                break;
+        }
+    }
+
+    // Fma is MultiplyAddEstimate: one fused instruction where the CPU has one (x64 FMA3, every Arm64), else a·b + c.
+
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-    public static void Kernel(float** a, float* b, int k, float** init, float** output)
+    private static void Kernel6x256(float** a, float* b, int k, float** init, float** output)
     {
         float* a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4 = a[4], a5 = a[5];
         var c00 = Vector256.Load(init[0]); var c01 = Vector256.Load(init[0] + 8);
@@ -233,20 +194,8 @@ internal static unsafe class Gemm
         c50.Store(output[5]); c51.Store(output[5] + 8);
     }
 
-    /// <summary><see cref="Kernel"/> for mr rows, with smaller kernels for 1 to 3 rows (a padded 6-row block wastes up to 6× the work).</summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Kernel(int mr, float** a, float* b, int k, float** init, float** output)
-    {
-        if (mr == 1)
-            Kernel1(a[0], b, k, init[0], output[0]);
-        else if (mr <= 3)
-            Kernel3(a, b, k, init, output);
-        else
-            Kernel(a, b, k, init, output);
-    }
-
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-    private static void Kernel3(float** a, float* b, int k, float** init, float** output)
+    private static void Kernel3x256(float** a, float* b, int k, float** init, float** output)
     {
         float* a0 = a[0], a1 = a[1], a2 = a[2];
         var c00 = Vector256.Load(init[0]); var c01 = Vector256.Load(init[0] + 8);
@@ -267,7 +216,7 @@ internal static unsafe class Gemm
 
     /// <summary>One row (a GEMV panel): four independent accumulator pairs over k, to hide the FMA latency.</summary>
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-    private static void Kernel1(float* a, float* b, int k, float* init, float* output)
+    private static void Kernel1x256(float* a, float* b, int k, float* init, float* output)
     {
         var c0 = Vector256.Load(init); var c1 = Vector256.Load(init + 8);
         Vector256<float> d0 = default, d1 = default, e0 = default, e1 = default, f0 = default, f1 = default;
@@ -287,13 +236,109 @@ internal static unsafe class Gemm
         ((c1 + d1) + (e1 + f1)).Store(output + 8);
     }
 
+    /// <summary>6×16 in 24 accumulators + 4 panel registers + 1 broadcast: fits Arm64's 32 vector registers.</summary>
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private static void Kernel6x128(float** a, float* b, int k, float** init, float** output)
+    {
+        float* a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4 = a[4], a5 = a[5];
+        float* i0 = init[0], i1 = init[1], i2 = init[2], i3 = init[3], i4 = init[4], i5 = init[5];
+        var c00 = Vector128.Load(i0); var c01 = Vector128.Load(i0 + 4); var c02 = Vector128.Load(i0 + 8); var c03 = Vector128.Load(i0 + 12);
+        var c10 = Vector128.Load(i1); var c11 = Vector128.Load(i1 + 4); var c12 = Vector128.Load(i1 + 8); var c13 = Vector128.Load(i1 + 12);
+        var c20 = Vector128.Load(i2); var c21 = Vector128.Load(i2 + 4); var c22 = Vector128.Load(i2 + 8); var c23 = Vector128.Load(i2 + 12);
+        var c30 = Vector128.Load(i3); var c31 = Vector128.Load(i3 + 4); var c32 = Vector128.Load(i3 + 8); var c33 = Vector128.Load(i3 + 12);
+        var c40 = Vector128.Load(i4); var c41 = Vector128.Load(i4 + 4); var c42 = Vector128.Load(i4 + 8); var c43 = Vector128.Load(i4 + 12);
+        var c50 = Vector128.Load(i5); var c51 = Vector128.Load(i5 + 4); var c52 = Vector128.Load(i5 + 8); var c53 = Vector128.Load(i5 + 12);
+        for (int p = 0; p < k; p++, b += PackedMatrix.NR)
+        {
+            var b0 = Vector128.Load(b); var b1 = Vector128.Load(b + 4); var b2 = Vector128.Load(b + 8); var b3 = Vector128.Load(b + 12);
+            var x = Vector128.Create(a0[p]); c00 = Fma(x, b0, c00); c01 = Fma(x, b1, c01); c02 = Fma(x, b2, c02); c03 = Fma(x, b3, c03);
+            x = Vector128.Create(a1[p]); c10 = Fma(x, b0, c10); c11 = Fma(x, b1, c11); c12 = Fma(x, b2, c12); c13 = Fma(x, b3, c13);
+            x = Vector128.Create(a2[p]); c20 = Fma(x, b0, c20); c21 = Fma(x, b1, c21); c22 = Fma(x, b2, c22); c23 = Fma(x, b3, c23);
+            x = Vector128.Create(a3[p]); c30 = Fma(x, b0, c30); c31 = Fma(x, b1, c31); c32 = Fma(x, b2, c32); c33 = Fma(x, b3, c33);
+            x = Vector128.Create(a4[p]); c40 = Fma(x, b0, c40); c41 = Fma(x, b1, c41); c42 = Fma(x, b2, c42); c43 = Fma(x, b3, c43);
+            x = Vector128.Create(a5[p]); c50 = Fma(x, b0, c50); c51 = Fma(x, b1, c51); c52 = Fma(x, b2, c52); c53 = Fma(x, b3, c53);
+        }
+        float* o = output[0]; c00.Store(o); c01.Store(o + 4); c02.Store(o + 8); c03.Store(o + 12);
+        o = output[1]; c10.Store(o); c11.Store(o + 4); c12.Store(o + 8); c13.Store(o + 12);
+        o = output[2]; c20.Store(o); c21.Store(o + 4); c22.Store(o + 8); c23.Store(o + 12);
+        o = output[3]; c30.Store(o); c31.Store(o + 4); c32.Store(o + 8); c33.Store(o + 12);
+        o = output[4]; c40.Store(o); c41.Store(o + 4); c42.Store(o + 8); c43.Store(o + 12);
+        o = output[5]; c50.Store(o); c51.Store(o + 4); c52.Store(o + 8); c53.Store(o + 12);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private static void Kernel3x128(float** a, float* b, int k, float** init, float** output)
+    {
+        float* a0 = a[0], a1 = a[1], a2 = a[2];
+        float* i0 = init[0], i1 = init[1], i2 = init[2];
+        var c00 = Vector128.Load(i0); var c01 = Vector128.Load(i0 + 4); var c02 = Vector128.Load(i0 + 8); var c03 = Vector128.Load(i0 + 12);
+        var c10 = Vector128.Load(i1); var c11 = Vector128.Load(i1 + 4); var c12 = Vector128.Load(i1 + 8); var c13 = Vector128.Load(i1 + 12);
+        var c20 = Vector128.Load(i2); var c21 = Vector128.Load(i2 + 4); var c22 = Vector128.Load(i2 + 8); var c23 = Vector128.Load(i2 + 12);
+        for (int p = 0; p < k; p++, b += PackedMatrix.NR)
+        {
+            var b0 = Vector128.Load(b); var b1 = Vector128.Load(b + 4); var b2 = Vector128.Load(b + 8); var b3 = Vector128.Load(b + 12);
+            var x = Vector128.Create(a0[p]); c00 = Fma(x, b0, c00); c01 = Fma(x, b1, c01); c02 = Fma(x, b2, c02); c03 = Fma(x, b3, c03);
+            x = Vector128.Create(a1[p]); c10 = Fma(x, b0, c10); c11 = Fma(x, b1, c11); c12 = Fma(x, b2, c12); c13 = Fma(x, b3, c13);
+            x = Vector128.Create(a2[p]); c20 = Fma(x, b0, c20); c21 = Fma(x, b1, c21); c22 = Fma(x, b2, c22); c23 = Fma(x, b3, c23);
+        }
+        float* o = output[0]; c00.Store(o); c01.Store(o + 4); c02.Store(o + 8); c03.Store(o + 12);
+        o = output[1]; c10.Store(o); c11.Store(o + 4); c12.Store(o + 8); c13.Store(o + 12);
+        o = output[2]; c20.Store(o); c21.Store(o + 4); c22.Store(o + 8); c23.Store(o + 12);
+    }
+
+    /// <summary>One row: two independent accumulator sets over k (8 registers), to hide the FMA latency.</summary>
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private static void Kernel1x128(float* a, float* b, int k, float* init, float* output)
+    {
+        var c0 = Vector128.Load(init); var c1 = Vector128.Load(init + 4); var c2 = Vector128.Load(init + 8); var c3 = Vector128.Load(init + 12);
+        Vector128<float> d0 = default, d1 = default, d2 = default, d3 = default;
+        int p = 0;
+        for (; p <= k - 2; p += 2, b += 2 * PackedMatrix.NR)
+        {
+            var x = Vector128.Create(a[p]);
+            c0 = Fma(x, Vector128.Load(b), c0); c1 = Fma(x, Vector128.Load(b + 4), c1);
+            c2 = Fma(x, Vector128.Load(b + 8), c2); c3 = Fma(x, Vector128.Load(b + 12), c3);
+            x = Vector128.Create(a[p + 1]);
+            d0 = Fma(x, Vector128.Load(b + 16), d0); d1 = Fma(x, Vector128.Load(b + 20), d1);
+            d2 = Fma(x, Vector128.Load(b + 24), d2); d3 = Fma(x, Vector128.Load(b + 28), d3);
+        }
+        for (; p < k; p++, b += PackedMatrix.NR)
+        {
+            var x = Vector128.Create(a[p]);
+            c0 = Fma(x, Vector128.Load(b), c0); c1 = Fma(x, Vector128.Load(b + 4), c1);
+            c2 = Fma(x, Vector128.Load(b + 8), c2); c3 = Fma(x, Vector128.Load(b + 12), c3);
+        }
+        (c0 + d0).Store(output); (c1 + d1).Store(output + 4); (c2 + d2).Store(output + 8); (c3 + d3).Store(output + 12);
+    }
+
+    /// <summary>Any mr ≤ 6 rows without SIMD. Writes only the first mr outputs.</summary>
+    private static void KernelScalar(int mr, float** a, float* b, int k, float** init, float** output)
+    {
+        const int nr = PackedMatrix.NR;
+        var acc = stackalloc float[MR * nr];
+        for (int r = 0; r < mr; r++)
+            new Span<float>(init[r], nr).CopyTo(new Span<float>(acc + r * nr, nr));
+        for (int p = 0; p < k; p++, b += nr)
+            for (int r = 0; r < mr; r++)
+            {
+                float x = a[r][p];
+                float* row = acc + r * nr;
+                for (int j = 0; j < nr; j++)
+                    row[j] += x * b[j];
+            }
+        for (int r = 0; r < mr; r++)
+            new Span<float>(acc + r * nr, nr).CopyTo(new Span<float>(output[r], nr));
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static Vector256<float> Fma(Vector256<float> a, Vector256<float> b, Vector256<float> c) =>
-        System.Runtime.Intrinsics.X86.Fma.IsSupported ? System.Runtime.Intrinsics.X86.Fma.MultiplyAdd(a, b, c) : a * b + c;
+    private static Vector256<float> Fma(Vector256<float> a, Vector256<float> b, Vector256<float> c) => Vector256.MultiplyAddEstimate(a, b, c);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static Vector128<float> Fma(Vector128<float> a, Vector128<float> b, Vector128<float> c) => Vector128.MultiplyAddEstimate(a, b, c);
 }
 
-/// <summary>Vectorized activations (PyTorch semantics; values agree to a few ulp).</summary>
-internal static class Act
+/// <summary>Activations and the fused element-wise steps, per <see cref="Gemm.Path"/> (PyTorch semantics; values agree to a few ulp).</summary>
+internal static unsafe class Act
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector256<float> Sigmoid(Vector256<float> x) => Vector256<float>.One / (Vector256<float>.One + Vector256.Exp(-x));
@@ -301,10 +346,63 @@ internal static class Act
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector128<float> Sigmoid(Vector128<float> x) => Vector128<float>.One / (Vector128<float>.One + Vector128.Exp(-x));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float Sigmoid(float x) => 1f / (1f + MathF.Exp(-x));
+
     /// <summary>tanh(x) = 2σ(2x) − 1 (absolute error ≈ 1e-7 near 0).</summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector128<float> Tanh(Vector128<float> x) => Sigmoid(x + x) * Vector128.Create(2f) - Vector128<float>.One;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector256<float> Tanh(Vector256<float> x) => Sigmoid(x + x) * Vector256.Create(2f) - Vector256<float>.One;
+
+    /// <summary>
+    /// LSTM cell for four units whose gates are [i×4, f×4, g×4, o×4] (<see cref="PackedLstm.GateOrder"/>):
+    /// c = σ(f)·c + σ(i)·tanh(g); h = σ(o)·tanh(c).
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void LstmCell(float* gates, float* c, float* h)
+    {
+        switch (Gemm.Path)
+        {
+            case KernelPath.Vector256:
+            {
+                var ifg = Sigmoid(Vector256.Load(gates));
+                var go = Vector256.Load(gates + 8);
+                var cNew = ifg.GetUpper() * Vector128.Load(c) + ifg.GetLower() * Tanh(go.GetLower());
+                cNew.Store(c);
+                (Sigmoid(go.GetUpper()) * Tanh(cNew)).Store(h);
+                break;
+            }
+            case KernelPath.Vector128:
+            {
+                var cNew = Sigmoid(Vector128.Load(gates + 4)) * Vector128.Load(c) + Sigmoid(Vector128.Load(gates)) * Tanh(Vector128.Load(gates + 8));
+                cNew.Store(c);
+                (Sigmoid(Vector128.Load(gates + 12)) * Tanh(cNew)).Store(h);
+                break;
+            }
+            default:
+                for (int u = 0; u < 4; u++)
+                {
+                    float cNew = Sigmoid(gates[4 + u]) * c[u] + Sigmoid(gates[u]) * MathF.Tanh(gates[8 + u]);
+                    c[u] = cNew;
+                    h[u] = Sigmoid(gates[12 + u]) * MathF.Tanh(cNew);
+                }
+                break;
+        }
+    }
+
+    /// <summary>The highway step o[j] += σ(gate[j])·tanh(highway[j]) for j in [0, n).</summary>
+    public static void AddGatedTanh(float* o, float* gate, float* highway, int n)
+    {
+        int j = 0;
+        if (Gemm.Path == KernelPath.Vector256)
+            for (; j <= n - 8; j += 8)
+                (Vector256.Load(o + j) + Sigmoid(Vector256.Load(gate + j)) * Tanh(Vector256.Load(highway + j))).Store(o + j);
+        if (Gemm.Path != KernelPath.Scalar)
+            for (; j <= n - 4; j += 4)
+                (Vector128.Load(o + j) + Sigmoid(Vector128.Load(gate + j)) * Tanh(Vector128.Load(highway + j))).Store(o + j);
+        for (; j < n; j++)
+            o[j] += Sigmoid(gate[j]) * MathF.Tanh(highway[j]);
+    }
 }

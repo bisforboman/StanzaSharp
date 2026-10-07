@@ -1,5 +1,5 @@
 using System.Runtime.CompilerServices;
-using System.Runtime.Intrinsics;
+using System.Buffers;
 
 namespace StanzaSharp.Nn.Managed;
 
@@ -44,7 +44,13 @@ internal sealed unsafe class PackedLstm
         Hidden = hidden;
         var order = GateOrder(hidden);
         _whh = whh.Select(w => new PackedMatrix(w, 4 * hidden, hidden, order)).ToArray();
-        _h0 = h0;
+        // Pinned (POH): HPrev points into it.
+        _h0 = h0.Select(x =>
+        {
+            var pinned = GC.AllocateArray<float>(hidden, pinned: true);
+            x.CopyTo(pinned, 0);
+            return pinned;
+        }).ToArray();
         _c0 = c0;
     }
 
@@ -92,12 +98,12 @@ internal sealed unsafe class PackedLstm
     }
 
     /// <summary>Array form of <see cref="Recur(float*, int, int[], float*, int)"/>: returns [rows, Directions·H].</summary>
-    public float[] Recur(float[] p, int ldp, int[] batchSizes)
+    public float[] Recur(float[] p, int ldp, int[] batchSizes, CancellationToken ct = default)
     {
         int ldo = Directions * Hidden;
         var output = new float[batchSizes.Sum() * ldo];
         fixed (float* pp = p, po = output)
-            Recur(pp, ldp, batchSizes, po, ldo);
+            Recur(pp, ldp, batchSizes, po, ldo, ct);
         return output;
     }
 
@@ -106,61 +112,67 @@ internal sealed unsafe class PackedLstm
     /// </summary>
     /// <param name="p">Input projections, row n at p + n·ldp; direction d's gates start at column d·4H.</param>
     /// <param name="output">Row n gets direction d's h at column d·H (ldo ≥ Directions·H).</param>
-    public void Recur(float* p, int ldp, int[] batchSizes, float* output, int ldo)
+    /// <param name="ct">Checked before each time step.</param>
+    public void Recur(float* p, int ldp, int[] batchSizes, float* output, int ldo, CancellationToken ct = default)
     {
-        int steps = batchSizes.Length, batch = batchSizes[0], h = Hidden;
+        int steps = batchSizes.Length, batch = batchSizes[0], h = Hidden, dirs = Directions;
         var start = new int[steps];
         for (int t = 1; t < steps; t++)
             start[t] = start[t - 1] + batchSizes[t - 1];
 
-        int dirs = Directions;
-        var pointers = GC.AllocateArray<nint>(dirs * 4 * batch, pinned: true);
-        var cells = GC.AllocateArray<float>(dirs * batch * h, pinned: true);
-        var h0 = _h0.Select(x => GC.AllocateArray<float>(h, pinned: true)).ToArray();
-        for (int d = 0; d < dirs; d++)
-            _h0[d].CopyTo(h0[d], 0);
-        var works = new StepRows[dirs];
-        float** basePtr = (float**)Unsafe.AsPointer(ref pointers[0]);
-        float* cBase = (float*)Unsafe.AsPointer(ref cells[0]);
-        for (int d = 0; d < dirs; d++)
-            works[d] = new StepRows
-            {
-                Whh = _whh[d],
-                HPrev = basePtr + (d * 4 + 0) * batch,
-                Init = basePtr + (d * 4 + 1) * batch,
-                C = basePtr + (d * 4 + 2) * batch,
-                HOut = basePtr + (d * 4 + 3) * batch,
-            };
-
-        for (int s = 0; s < steps; s++)
+        var pointers = ArrayPool<nint>.Shared.Rent(dirs * 4 * batch);
+        var cells = ArrayPool<float>.Shared.Rent(dirs * batch * h);
+        try
         {
-            for (int d = 0; d < dirs; d++)
+            fixed (nint* pointerBase = pointers)
+            fixed (float* cBase = cells)
             {
-                ref var w = ref works[d];
-                bool forward = d == 0;
-                int t = forward ? s : steps - 1 - s;
-                w.M = batchSizes[t];
-                float* h0d = (float*)Unsafe.AsPointer(ref h0[d][0]);
-                for (int r = 0; r < w.M; r++)
+                var basePtr = (float**)pointerBase;
+                var works = new StepRows[dirs];
+                for (int d = 0; d < dirs; d++)
+                    works[d] = new StepRows
+                    {
+                        Whh = _whh[d],
+                        HPrev = basePtr + (d * 4 + 0) * batch,
+                        Init = basePtr + (d * 4 + 1) * batch,
+                        C = basePtr + (d * 4 + 2) * batch,
+                        HOut = basePtr + (d * 4 + 3) * batch,
+                    };
+
+                for (int s = 0; s < steps; s++)
                 {
-                    float* cRow = cBase + ((long)d * batch + r) * h;
-                    // Forward: every row continues from the previous step's row r (or h0 at t = 0). Backward: a
-                    // sequence starts at its own last element, i.e. where row r wasn't present at step t + 1.
-                    bool fresh = forward ? t == 0 : t == steps - 1 || r >= batchSizes[t + 1];
-                    int prev = forward ? t - 1 : t + 1;
-                    w.HPrev[r] = fresh ? h0d : output + (long)(start[prev] + r) * ldo + d * h;
-                    if (fresh)
-                        _c0[d].CopyTo(new Span<float>(cRow, h));
-                    w.C[r] = cRow;
-                    w.Init[r] = p + (long)(start[t] + r) * ldp + d * 4 * h;
-                    w.HOut[r] = output + (long)(start[t] + r) * ldo + d * h;
+                    ct.ThrowIfCancellationRequested();
+                    for (int d = 0; d < dirs; d++)
+                    {
+                        ref var w = ref works[d];
+                        bool forward = d == 0;
+                        int t = forward ? s : steps - 1 - s;
+                        w.M = batchSizes[t];
+                        float* h0d = (float*)Unsafe.AsPointer(ref _h0[d][0]);
+                        for (int r = 0; r < w.M; r++)
+                        {
+                            float* cRow = cBase + ((long)d * batch + r) * h;
+                            // Forward: every row continues from the previous step's row r (or h0 at t = 0). Backward: a
+                            // sequence starts at its own last element, i.e. where row r wasn't present at step t + 1.
+                            bool fresh = forward ? t == 0 : t == steps - 1 || r >= batchSizes[t + 1];
+                            int prev = forward ? t - 1 : t + 1;
+                            w.HPrev[r] = fresh ? h0d : output + (long)(start[prev] + r) * ldo + d * h;
+                            if (fresh)
+                                _c0[d].CopyTo(new Span<float>(cRow, h));
+                            w.C[r] = cRow;
+                            w.Init[r] = p + (long)(start[t] + r) * ldp + d * 4 * h;
+                            w.HOut[r] = output + (long)(start[t] + r) * ldo + d * h;
+                        }
+                    }
+                    Step(works);
                 }
             }
-            Step(works);
         }
-        GC.KeepAlive(pointers);
-        GC.KeepAlive(cells);
-        GC.KeepAlive(h0);
+        finally
+        {
+            ArrayPool<nint>.Shared.Return(pointers);
+            ArrayPool<float>.Shared.Return(cells);
+        }
     }
 
     /// <summary>One time step for every direction in <paramref name="works"/>, split across threads by panel.</summary>
@@ -198,21 +210,10 @@ internal sealed unsafe class PackedLstm
                         }
                         Gemm.Kernel(mr, aRows, panel, w.Whh.K, init, outRows);
                         for (int r = 0; r < mr; r++)
-                            Cell(scratch + r * PackedMatrix.NR, w.C[r0 + r] + p * 4, w.HOut[r0 + r] + p * 4);
+                            Act.LstmCell(scratch + r * PackedMatrix.NR, w.C[r0 + r] + p * 4, w.HOut[r0 + r] + p * 4);
                     }
                 }
             }
         });
-    }
-
-    /// <summary>c = σ(f)·c + σ(i)·tanh(g); h = σ(o)·tanh(c), for four units whose gates are [i×4, f×4, g×4, o×4].</summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void Cell(float* gates, float* c, float* h)
-    {
-        var ifg = Act.Sigmoid(Vector256.Load(gates));
-        var go = Vector256.Load(gates + 8);
-        var cNew = ifg.GetUpper() * Vector128.Load(c) + ifg.GetLower() * Act.Tanh(go.GetLower());
-        cNew.Store(c);
-        (Act.Sigmoid(go.GetUpper()) * Act.Tanh(cNew)).Store(h);
     }
 }

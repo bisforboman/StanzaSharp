@@ -12,7 +12,8 @@ using static TorchSharp.torch;
 /// tagger's batches. docs/managed-backend-spike.md has the results.
 /// <code>
 /// StanzaSharp.Benchmark managed-spike check [--models DIR]
-/// StanzaSharp.Benchmark managed-spike speed [--models DIR] [--threads N] [--runs N] [--copies N] [--impl both|torch|managed]
+/// StanzaSharp.Benchmark managed-spike speed [--models DIR] [--threads N] [--runs N] [--copies N] [--impl both|torch|managed] [--path vector256|vector128|scalar]
+/// StanzaSharp.Benchmark managed-spike concurrent [--callers N] (other options as speed)
 /// </code>
 /// </summary>
 internal static class ManagedSpike
@@ -22,7 +23,7 @@ internal static class ManagedSpike
     public static int Run(string[] args, string repoRoot, Func<int, string> buildText)
     {
         string mode = args.FirstOrDefault() ?? "speed", modelDir = Path.Combine("models", "converted", "en"), impl = "both";
-        int threads = Environment.ProcessorCount, runs = 3, copies = 8;
+        int threads = Environment.ProcessorCount, runs = 3, copies = 8, callers = 4;
         for (int i = 1; i < args.Length; i++)
             switch (args[i])
             {
@@ -31,20 +32,28 @@ internal static class ManagedSpike
                 case "--runs": runs = int.Parse(args[++i]); break;
                 case "--copies": copies = int.Parse(args[++i]); break;
                 case "--impl": impl = args[++i]; break;
+                case "--callers": callers = int.Parse(args[++i]); break;
+                case "--path": Gemm.Path = Enum.Parse<KernelPath>(args[++i], ignoreCase: true); break;
                 default: Console.Error.WriteLine($"Unknown option {args[i]}"); return 2;
             }
         torch.set_num_threads(threads);
         ManagedThreads.Count = threads;
         using var _ = torch.no_grad();
-        Console.WriteLine($"threads {threads}, AVX2 {System.Runtime.Intrinsics.X86.Avx2.IsSupported}, FMA {System.Runtime.Intrinsics.X86.Fma.IsSupported}, " +
-                          $"Vector512 {System.Runtime.Intrinsics.Vector512.IsHardwareAccelerated}");
+        Console.WriteLine($"threads {threads}, kernel path {Gemm.Path} (detected {Gemm.Detect()}), {System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture}, " +
+                          $"AVX2 {System.Runtime.Intrinsics.X86.Avx2.IsSupported}, FMA {System.Runtime.Intrinsics.X86.Fma.IsSupported}, " +
+                          $"AdvSimd {System.Runtime.Intrinsics.Arm.AdvSimd.IsSupported}, Vector512 {System.Runtime.Intrinsics.Vector512.IsHardwareAccelerated}");
 
         if (mode == "gemm")
             return GemmSpeed();
 
         using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Processors = "tokenize,mwt" });
         var m = new Models(modelDir);
-        return mode == "check" ? Check(m, nlp, repoRoot) : Speed(m, nlp, buildText(copies), runs, impl);
+        return mode switch
+        {
+            "check" => Check(m, nlp, repoRoot),
+            "concurrent" => Concurrent(m, nlp, buildText(copies), callers, impl),
+            _ => Speed(m, nlp, buildText(copies), runs, impl),
+        };
     }
 
     /// <summary>The models of both implementations, plus the tagger's input layers and heads (TorchSharp).</summary>
@@ -294,6 +303,84 @@ internal static class ManagedSpike
         return 0;
     }
 
+    /// <summary>Both managed charlms over every batch, into one pooled output buffer (as a caller would use them).</summary>
+    private static void ManagedCharlmOver(Models m, List<Batch> batches, CancellationToken ct = default)
+    {
+        foreach (var b in batches)
+        {
+            int words = b.WordOf.Length, h = m.ManagedForward.HiddenDim;
+            var buffer = System.Buffers.ArrayPool<float>.Shared.Rent(words * 2 * h);
+            try
+            {
+                m.ManagedForward.BuildCharRepresentation(b.Words, buffer.AsSpan(0, words * 2 * h), 2 * h, ct);
+                m.ManagedBackward.BuildCharRepresentation(b.Words, buffer.AsSpan(h, words * 2 * h - h), 2 * h, ct);
+            }
+            finally
+            {
+                System.Buffers.ArrayPool<float>.Shared.Return(buffer);
+            }
+        }
+    }
+
+    private static void ManagedHighwayOver(Models m, List<Batch> batches, List<float[]> inputs, CancellationToken ct = default)
+    {
+        for (int i = 0; i < batches.Count; i++)
+        {
+            int size = batches[i].WordOf.Length * m.ManagedHighway.OutputSize;
+            var output = System.Buffers.ArrayPool<float>.Shared.Rent(size);
+            m.ManagedHighway.Forward(inputs[i], batches[i].Lengths, output.AsSpan(0, size), ct);
+            System.Buffers.ArrayPool<float>.Shared.Return(output);
+        }
+    }
+
+    /// <summary>
+    /// N callers at once, each running the charlms and the highway over all batches (TorchSharp: each caller gets its
+    /// own libtorch team; managed: the shared pool). Reports the wall time and the mean time per call.
+    /// </summary>
+    private static int Concurrent(Models m, Pipeline nlp, string text, int callers, string impl)
+    {
+        var batches = Batches(nlp, text);
+        var inputs = batches.Select(b => Input(m, b, Flatten(m.Forward.BuildCharRepresentation(b.Words)), Flatten(m.Backward.BuildCharRepresentation(b.Words)))).ToList();
+        void Torch()
+        {
+            using var _ = torch.no_grad();
+            foreach (var b in batches)
+                foreach (var lm in new[] { m.Forward, m.Backward })
+                    foreach (var t in lm.BuildCharRepresentation(b.Words))
+                        t.Dispose();
+            for (int i = 0; i < batches.Count; i++)
+                using (NewDisposeScope())
+                    m.Highway.Forward(Rnn.Pack(torch.tensor(inputs[i], [batches[i].WordOf.Length, 2248]), batches[i].Lengths), disposeInput: true);
+        }
+        void Managed()
+        {
+            ManagedCharlmOver(m, batches);
+            ManagedHighwayOver(m, batches, inputs);
+        }
+        foreach (var which in new[] { "torch", "managed" }.Where(w => impl == "both" || impl == w))
+        {
+            Action call = which == "torch" ? Torch : Managed;
+            call(); // warm-up, on this thread
+            var perCall = new double[callers];
+            using var start = new Barrier(callers + 1);
+            var threads = Enumerable.Range(0, callers).Select(c => new Thread(() =>
+            {
+                start.SignalAndWait();
+                var sw = Stopwatch.StartNew();
+                call();
+                perCall[c] = sw.Elapsed.TotalSeconds;
+            })).ToList();
+            threads.ForEach(t => t.Start());
+            start.SignalAndWait();
+            var wall = Stopwatch.StartNew();
+            threads.ForEach(t => t.Join());
+            Console.WriteLine($"{which,-8} callers {callers}: wall {wall.Elapsed.TotalSeconds,7:F2} s, per call mean {perCall.Average(),7:F2} s " +
+                              $"(min {perCall.Min():F2}, max {perCall.Max():F2}), throughput {callers / wall.Elapsed.TotalSeconds:F3} calls/s, " +
+                              $"OS threads {Process.GetCurrentProcess().Threads.Count}");
+        }
+        return 0;
+    }
+
     private static int Speed(Models m, Pipeline nlp, string text, int runs, string impl)
     {
         var batches = Batches(nlp, text);
@@ -304,9 +391,12 @@ internal static class ManagedSpike
         double Time(Action a)
         {
             GC.Collect();
+            long allocated = GC.GetTotalAllocatedBytes(precise: true);
             var sw = Stopwatch.StartNew();
             a();
-            return sw.Elapsed.TotalSeconds;
+            double s = sw.Elapsed.TotalSeconds;
+            Console.WriteLine($"    (managed heap allocations {(GC.GetTotalAllocatedBytes(precise: true) - allocated) / 1048576.0:F1} MB)");
+            return s;
         }
         void TorchCharlm()
         {
@@ -315,25 +405,14 @@ internal static class ManagedSpike
                     foreach (var t in lm.BuildCharRepresentation(b.Words))
                         t.Dispose();
         }
-        void ManagedCharlm()
-        {
-            foreach (var b in batches)
-            {
-                m.ManagedForward.BuildCharRepresentation(b.Words);
-                m.ManagedBackward.BuildCharRepresentation(b.Words);
-            }
-        }
         void TorchHighway()
         {
             for (int i = 0; i < batches.Count; i++)
                 using (NewDisposeScope())
                     m.Highway.Forward(Rnn.Pack(torch.tensor(inputs[i], [batches[i].WordOf.Length, 2248]), batches[i].Lengths), disposeInput: true);
         }
-        void ManagedHighway()
-        {
-            for (int i = 0; i < batches.Count; i++)
-                m.ManagedHighway.Forward(inputs[i], batches[i].Lengths);
-        }
+        void ManagedCharlm() => ManagedCharlmOver(m, batches);
+        void ManagedHighway() => ManagedHighwayOver(m, batches, inputs);
 
         var results = new Dictionary<string, List<double>>();
         void Add(string key, double s)
