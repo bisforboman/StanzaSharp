@@ -16,7 +16,7 @@ internal sealed record TensorInfo(string Dtype, long[] Shape, long Offset, long 
 /// </remarks>
 internal sealed class SafeTensorFile
 {
-    private readonly byte[]? _bytes; // tensor data already in memory (.pt checkpoints), else read from _path
+    private readonly Action<string, Span<byte>>? _read; // reads a tensor's bytes (.pt checkpoints), else they come from _path
     private readonly string? _path;
     private readonly long _dataStart;
 
@@ -52,10 +52,10 @@ internal sealed class SafeTensorFile
         Metadata = metadata;
     }
 
-    /// <summary>Wraps tensor data already in memory; <paramref name="tensors"/> offsets index into <paramref name="data"/>.</summary>
-    internal SafeTensorFile(byte[] data, Dictionary<string, TensorInfo> tensors)
+    /// <summary>Tensors whose bytes <paramref name="read"/> copies into a destination of their size, given their key.</summary>
+    internal SafeTensorFile(Dictionary<string, TensorInfo> tensors, Action<string, Span<byte>> read)
     {
-        _bytes = data;
+        _read = read;
         _dataStart = 0;
         Tensors = tensors;
         Metadata = new Dictionary<string, string>();
@@ -100,9 +100,9 @@ internal sealed class SafeTensorFile
         var info = this[key];
         if (destination.Length != info.Length)
             throw new ArgumentException($"Tensor '{key}' has {info.Length} bytes, the destination {destination.Length}");
-        if (_bytes != null)
+        if (_read != null)
         {
-            _bytes.AsSpan((int)(_dataStart + info.Offset), (int)info.Length).CopyTo(destination);
+            _read(key, destination);
             return;
         }
         using var file = File.OpenHandle(_path!);
@@ -116,13 +116,13 @@ internal sealed class SafeTensorFile
         return bytes;
     }
 
-    private static void ReadExactly(Microsoft.Win32.SafeHandles.SafeFileHandle file, Span<byte> buffer, long offset)
+    internal static void ReadExactly(Microsoft.Win32.SafeHandles.SafeFileHandle file, Span<byte> buffer, long offset)
     {
         while (buffer.Length > 0)
         {
             int n = RandomAccess.Read(file, buffer, offset);
             if (n == 0)
-                throw new EndOfStreamException("safetensors file ends inside a tensor");
+                throw new EndOfStreamException("The file ends inside a tensor");
             buffer = buffer[n..];
             offset += n;
         }

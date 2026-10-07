@@ -22,11 +22,14 @@ internal static class TorchCheckpoint
     private static readonly BigInteger LegacyMagic = BigInteger.Parse("1950a86a20f9469cfc6c", NumberStyles.HexNumber);
     private const long LegacyProtocol = 1001;
 
+    /// <summary>Reads <c>destination.Length</c> bytes of the root storage <paramref name="key"/>, from <paramref name="offset"/> bytes into it.</summary>
+    private delegate void StorageReader(string key, long offset, Span<byte> destination);
+
     public static (JsonNode Root, SafeTensorFile Tensors) Load(string path)
     {
         if (!BitConverter.IsLittleEndian)
             throw new PlatformNotSupportedException("Tensor data is read as little-endian");
-        var (obj, storages) = IsZip(path) ? ReadZip(path) : ReadLegacy(path);
+        var (obj, stored, read) = IsZip(path) ? ReadZip(path) : ReadLegacy(path);
         if (obj is PyDict top)
             foreach (var key in Skip)
                 top.Remove(key);
@@ -36,7 +39,7 @@ internal static class TorchCheckpoint
         splitter.Walk(obj);
         splitter.Writer.Flush();
         var root = JsonNode.Parse(buffer.WrittenSpan) ?? throw new InvalidDataException($"{path}: checkpoint is None");
-        return (root, Materialize(splitter.Tensors, storages));
+        return (root, Index(splitter.Tensors, stored, read));
     }
 
     private static bool IsZip(string path)
@@ -49,23 +52,23 @@ internal static class TorchCheckpoint
     /// <summary>
     /// The legacy format (<c>_use_new_zipfile_serialization=False</c>), a sequence of pickles: magic number,
     /// protocol version, sys_info, the checkpoint itself, the list of storage keys; then for each of those
-    /// keys an int64 element count followed by the storage's raw bytes.
+    /// keys an int64 element count followed by the storage's raw bytes. Only the storages' positions are
+    /// noted here; their bytes are read from the file when a tensor is.
     /// </summary>
-    private static (object?, Dictionary<string, ArraySegment<byte>>) ReadLegacy(string path)
+    private static (object?, ICollection<string>, StorageReader) ReadLegacy(string path)
     {
-        var bytes = File.ReadAllBytes(path);
-        int pos = 0;
-        if (Unpickler.Load(bytes, ref pos) is not BigInteger magic || magic != LegacyMagic)
+        using var file = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 1 << 16);
+        if (Unpickler.Load(file) is not BigInteger magic || magic != LegacyMagic)
             throw new InvalidDataException($"{path}: not a PyTorch checkpoint (bad magic number)");
-        if (Unpickler.Load(bytes, ref pos) is not LegacyProtocol)
+        if (Unpickler.Load(file) is not LegacyProtocol)
             throw new InvalidDataException($"{path}: unsupported legacy protocol version");
-        if (Unpickler.Load(bytes, ref pos) is not PyDict sysInfo || !sysInfo.TryGetValue("little_endian", out var le) || le is not true)
+        if (Unpickler.Load(file) is not PyDict sysInfo || !sysInfo.TryGetValue("little_endian", out var le) || le is not true)
             throw new NotSupportedException($"{path}: big-endian checkpoints are not supported");
 
         var roots = new Dictionary<string, TorchStorage>();
         // Persistent id: ("storage", storage_type, root_key, location, root_numel, view_metadata),
         // where view_metadata is None or (view_key, offset, numel) for a slice of the root storage.
-        var obj = Unpickler.Load(bytes, ref pos, pid =>
+        var obj = Unpickler.Load(file, pid =>
         {
             if (pid is not PyTuple { Items: ["storage", TorchStorageType type, string key, string, long numel, var view] })
                 throw new InvalidDataException($"{path}: unsupported persistent id {pid}");
@@ -79,55 +82,75 @@ internal static class TorchCheckpoint
             };
         });
 
-        if (Unpickler.Load(bytes, ref pos) is not List<object?> keys)
+        if (Unpickler.Load(file) is not List<object?> keys)
             throw new InvalidDataException($"{path}: missing storage key list");
-        var storages = new Dictionary<string, ArraySegment<byte>>();
+        var starts = new Dictionary<string, long>();
+        Span<byte> count = stackalloc byte[8];
         foreach (var k in keys)
         {
             if (k is not string key || !roots.TryGetValue(key, out var root))
                 throw new InvalidDataException($"{path}: storage key {k} is not used by the checkpoint");
-            if (pos > bytes.Length - 8 || BinaryPrimitives.ReadInt64LittleEndian(bytes.AsSpan(pos)) != root.Numel)
+            if (file.ReadAtLeast(count, 8, throwOnEndOfStream: false) != 8 || BinaryPrimitives.ReadInt64LittleEndian(count) != root.Numel)
                 throw new InvalidDataException($"{path}: storage {key} has the wrong size");
-            pos += 8;
             long n = root.Numel * root.Type.ElementSize;
-            if (n > bytes.Length - pos)
+            if (n > file.Length - file.Position)
                 throw new InvalidDataException($"{path}: storage {key} runs past the end of the file");
-            storages[key] = new ArraySegment<byte>(bytes, pos, (int)n);
-            pos += (int)n;
+            starts[key] = file.Position;
+            file.Seek(n, SeekOrigin.Current);
         }
-        return (obj, storages);
+        return (obj, starts.Keys, (key, offset, destination) =>
+        {
+            using var handle = File.OpenHandle(path);
+            SafeTensorFile.ReadExactly(handle, destination, starts[key] + offset);
+        });
     }
 
     /// <summary>
     /// The zip format (torch.save's default): <c>&lt;archive&gt;/data.pkl</c> holds the checkpoint, each
     /// storage is the entry <c>&lt;archive&gt;/data/&lt;key&gt;</c>, and <c>&lt;archive&gt;/byteorder</c> (if present) its byte order.
+    /// The storages are read from their entries when a tensor is.
     /// </summary>
-    private static (object?, Dictionary<string, ArraySegment<byte>>) ReadZip(string path)
+    private static (object?, ICollection<string>, StorageReader) ReadZip(string path)
     {
-        using var zip = ZipFile.OpenRead(path);
-        var pkl = zip.Entries.FirstOrDefault(e => e.FullName.EndsWith("/data.pkl"))
-            ?? throw new InvalidDataException($"{path}: zip archive has no data.pkl");
-        var prefix = pkl.FullName[..^"data.pkl".Length];
-        if (zip.GetEntry(prefix + "byteorder") is { } order && Encoding.ASCII.GetString(ReadEntry(order)) != "little")
-            throw new NotSupportedException($"{path}: big-endian checkpoints are not supported");
-
-        // Persistent id: ("storage", storage_type, key, location, numel).
+        string prefix;
         var roots = new Dictionary<string, TorchStorage>();
-        var obj = Unpickler.Load(ReadEntry(pkl), pid =>
-            pid is PyTuple { Items: ["storage", TorchStorageType type, string key, string, long numel] }
-                ? Root(roots, new TorchStorage(type, key, numel, 0), path)
-                : throw new InvalidDataException($"{path}: unsupported persistent id {pid}"));
-
-        var storages = new Dictionary<string, ArraySegment<byte>>();
-        foreach (var (key, root) in roots)
+        object? obj;
+        using (var zip = ZipFile.OpenRead(path))
         {
-            var entry = zip.GetEntry(prefix + "data/" + key) ?? throw new InvalidDataException($"{path}: storage {key} is missing");
-            var data = ReadEntry(entry);
-            if (data.Length != root.Numel * root.Type.ElementSize)
-                throw new InvalidDataException($"{path}: storage {key} has the wrong size");
-            storages[key] = data;
+            var pkl = zip.Entries.FirstOrDefault(e => e.FullName.EndsWith("/data.pkl"))
+                ?? throw new InvalidDataException($"{path}: zip archive has no data.pkl");
+            prefix = pkl.FullName[..^"data.pkl".Length];
+            if (zip.GetEntry(prefix + "byteorder") is { } order && Encoding.ASCII.GetString(ReadEntry(order)) != "little")
+                throw new NotSupportedException($"{path}: big-endian checkpoints are not supported");
+
+            // Persistent id: ("storage", storage_type, key, location, numel).
+            obj = Unpickler.Load(ReadEntry(pkl), pid =>
+                pid is PyTuple { Items: ["storage", TorchStorageType type, string key, string, long numel] }
+                    ? Root(roots, new TorchStorage(type, key, numel, 0), path)
+                    : throw new InvalidDataException($"{path}: unsupported persistent id {pid}"));
+
+            foreach (var (key, root) in roots)
+            {
+                var entry = zip.GetEntry(prefix + "data/" + key) ?? throw new InvalidDataException($"{path}: storage {key} is missing");
+                if (entry.Length != root.Numel * root.Type.ElementSize)
+                    throw new InvalidDataException($"{path}: storage {key} has the wrong size");
+            }
         }
-        return (obj, storages);
+        return (obj, roots.Keys, (key, offset, destination) =>
+        {
+            using var zip = ZipFile.OpenRead(path);
+            using var data = zip.GetEntry(prefix + "data/" + key)!.Open();
+            if (data.CanSeek)
+                data.Seek(offset, SeekOrigin.Begin);
+            else
+            {
+                var skip = new byte[Math.Min(offset, 1 << 16)];
+                for (int n; offset > 0; offset -= n)
+                    if ((n = data.Read(skip, 0, (int)Math.Min(offset, skip.Length))) == 0)
+                        throw new EndOfStreamException($"{path}: storage {key} ends early");
+            }
+            data.ReadExactly(destination);
+        });
     }
 
     private static TorchStorage Root(Dictionary<string, TorchStorage> roots, TorchStorage storage, string path)
@@ -147,32 +170,32 @@ internal static class TorchCheckpoint
         return data;
     }
 
-    /// <summary>Copies every tensor, in walk order, into one contiguous buffer (np.ascontiguousarray).</summary>
-    private static SafeTensorFile Materialize(List<(string Key, TorchTensor Tensor)> tensors, Dictionary<string, ArraySegment<byte>> storages)
+    /// <summary>
+    /// Lays the tensors out, in walk order, as the converter's contiguous data (np.ascontiguousarray). Each
+    /// tensor's bytes are read from its storage when asked for, so no copy of the file is held in memory.
+    /// </summary>
+    private static SafeTensorFile Index(List<(string Key, TorchTensor Tensor)> tensors, ICollection<string> stored, StorageReader read)
     {
         var infos = new Dictionary<string, TensorInfo>();
+        var views = new Dictionary<string, TorchTensor>();
         long total = 0;
         foreach (var (key, t) in tensors)
         {
+            if (!stored.Contains(t.Storage.Key))
+                throw new InvalidDataException($"Tensor {key}: storage {t.Storage.Key} is missing");
             long length = checked(Numel(t.Shape) * t.Storage.Type.ElementSize);
+            if (length > 0)
+                Extent(t, key); // checks the view before anything is read
             infos[key] = new TensorInfo(t.Storage.Type.Dtype, t.Shape, total, length);
+            views[key] = t;
             total += length;
         }
-        if (total > Array.MaxLength)
-            throw new NotSupportedException($"Checkpoint tensors total {total} bytes, more than one array can hold");
-
-        var data = new byte[total];
-        foreach (var (key, t) in tensors)
-            CopyContiguous(t, storages[t.Storage.Key], data.AsSpan((int)infos[key].Offset, (int)infos[key].Length), key);
-        return new SafeTensorFile(data, infos);
+        return new SafeTensorFile(infos, (key, destination) => CopyContiguous(views[key], read, destination, key));
     }
 
-    private static void CopyContiguous(TorchTensor t, ReadOnlySpan<byte> root, Span<byte> dst, string key)
+    /// <summary>A view's first and last element in its root storage, and whether it is contiguous.</summary>
+    private static (long First, long Last, bool Contiguous) Extent(TorchTensor t, string key)
     {
-        long numel = Numel(t.Shape);
-        if (numel == 0)
-            return;
-        int size = t.Storage.Type.ElementSize;
         long first = t.Storage.Offset + t.Offset, last = first;
         bool contiguous = true;
         long expected = 1;
@@ -186,20 +209,31 @@ internal static class TorchCheckpoint
         }
         if (t.Offset < 0 || last >= t.Storage.Offset + t.Storage.Numel)
             throw new InvalidDataException($"Tensor {key} reaches outside its storage");
+        return (first, last, contiguous);
+    }
 
+    private static void CopyContiguous(TorchTensor t, StorageReader read, Span<byte> dst, string key)
+    {
+        if (dst.Length == 0)
+            return;
+        int size = t.Storage.Type.ElementSize;
+        var (first, last, contiguous) = Extent(t, key);
         if (contiguous)
         {
-            root.Slice((int)(first * size), dst.Length).CopyTo(dst);
+            read(t.Storage.Key, first * size, dst);
             return;
         }
-        // Strided view: walk the indices in row-major order like an odometer.
+        // Strided view: read the elements it spans, then walk its indices in row-major order like an odometer.
+        var root = new byte[(last - first + 1) * size];
+        read(t.Storage.Key, first * size, root);
         var index = new long[t.Shape.Length];
+        long numel = dst.Length / size;
         for (long n = 0; n < numel; n++)
         {
-            long src = first;
+            long src = 0;
             for (int d = 0; d < index.Length; d++)
                 src += index[d] * t.Stride[d];
-            root.Slice((int)(src * size), size).CopyTo(dst.Slice((int)(n * size), size));
+            root.AsSpan((int)(src * size), size).CopyTo(dst.Slice((int)(n * size), size));
             for (int d = index.Length - 1; d >= 0 && ++index[d] == t.Shape[d]; d--)
                 index[d] = 0;
         }
