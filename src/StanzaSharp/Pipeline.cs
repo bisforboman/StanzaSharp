@@ -6,6 +6,7 @@ using StanzaSharp.Lemma;
 using StanzaSharp.Mwt;
 using StanzaSharp.Ner;
 using StanzaSharp.Nn;
+using StanzaSharp.Nn.Managed;
 using StanzaSharp.Pos;
 using StanzaSharp.Sentiment;
 using StanzaSharp.Tokenize;
@@ -116,7 +117,7 @@ public sealed class Pipeline : IDisposable
             _charlmBackward = Timed(BackwardCharlmPath, () => CharLanguageModel.Load(Path.Combine(modelDir, BackwardCharlmPath)));
         }
 
-        _tokenizer = Timed(Name("tokenize"), () => Tokenizer.Load(Model("tokenize")));
+        _tokenizer = Timed(Name("tokenize"), () => Tokenizer.Load(Model("tokenize"), backend: options.Backend));
         if (models.ContainsKey("mwt"))
             _mwt = Timed(Name("mwt"), () => MwtExpander.Load(Model("mwt")));
         if (models.ContainsKey("pos"))
@@ -170,6 +171,12 @@ public sealed class Pipeline : IDisposable
         if (threads != torch.get_num_threads())
             torch.set_num_threads(threads);
         logger?.LogInformation("Using {Threads} torch intra-op threads (Environment.ProcessorCount is {ProcessorCount})", threads, Environment.ProcessorCount);
+        if (options.Backend == Backend.Managed)
+        {
+            // The same semantics for the managed pool: null caps its current count (ProcessorCount unless set lower).
+            ManagedThreads.Count = options.Threads ?? Math.Min(ManagedThreads.Count, Environment.ProcessorCount);
+            logger?.LogInformation("Using {Threads} managed threads", ManagedThreads.Count);
+        }
 
         if (options.DisableTf32)
             torch.backends.cuda.matmul.allow_tf32 = torch.backends.cudnn.allow_tf32 = false;

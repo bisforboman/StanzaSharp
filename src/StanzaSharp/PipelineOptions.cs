@@ -101,6 +101,12 @@ public sealed class PipelineOptions
     /// in the noise); internal so the benchmark can measure without it.
     /// </summary>
     internal bool TrimNativeHeap { get; init; } = true;
+
+    /// <summary>
+    /// Which implementation runs the ported processors' networks (issue #29, Phase 1: tokenize and mwt; the rest stay
+    /// on TorchSharp). Internal until the owner decides the public form (docs/backends.md).
+    /// </summary>
+    internal Backend Backend { get; init; } = Backend.TorchSharp;
 }
 
 /// <summary>

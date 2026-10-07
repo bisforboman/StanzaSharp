@@ -97,7 +97,7 @@ internal sealed unsafe class PackedLstm
         return sizes;
     }
 
-    /// <summary>Array form of <see cref="Recur(float*, int, int[], float*, int)"/>: returns [rows, Directions·H].</summary>
+    /// <summary>Array form of <see cref="Recur(float*, int, int[], float*, int, CancellationToken)"/>: returns [rows, Directions·H].</summary>
     public float[] Recur(float[] p, int ldp, int[] batchSizes, CancellationToken ct = default)
     {
         int ldo = Directions * Hidden;

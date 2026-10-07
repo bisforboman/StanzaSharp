@@ -1,7 +1,6 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using StanzaSharp.Nn;
-using TorchSharp;
 using static TorchSharp.torch;
 
 namespace StanzaSharp.Tokenize;
@@ -45,15 +44,14 @@ internal sealed class Tokenizer : IDisposable
     private const string UrlRe = """"(?:https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s"]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s"]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s"]{2,}|www\.[a-zA-Z0-9]+\.[^\s"]{2,})|[a-zA-Z0-9]+\.(?:gov|org|edu|net|com|co)(?:\.[^\s"]{2,})"""";
     private static readonly Regex MaskRe = new($"(?:{EmailRe}|{UrlRe})");
 
-    private readonly TokenizerNet _net;
+    private readonly ITokenizerNet _net;
     private readonly Dictionary<string, int> _vocab;
     private readonly int _unkId, _padId, _batchSize, _featDim;
     private readonly string[] _featFuncs;
-    private readonly Device _device = Weights.Device; // the device the model was loaded on
 
-    private Tokenizer(Checkpoint ckpt)
+    private Tokenizer(Checkpoint ckpt, Backend backend)
     {
-        _net = new TokenizerNet(ckpt);
+        _net = backend == Backend.Managed ? new ManagedTokenizerNet(ckpt) : new TokenizerNet(ckpt);
         var config = ckpt.Root["config"]!;
         _vocab = Checkpoint.UnitToId(ckpt.Root["vocab"]);
         _unkId = _vocab["<UNK>"];
@@ -79,16 +77,15 @@ internal sealed class Tokenizer : IDisposable
     }
 
     /// <summary>Loads <c>basePath.json</c> + <c>basePath.safetensors</c>, e.g. <c>models/converted/en/tokenize/combined_nocharlm</c>.</summary>
-    /// <param name="device">Where the model runs; CPU by default.</param>
-    public static Tokenizer Load(string basePath, Device? device = null) => Weights.On(device, () => new Tokenizer(Checkpoint.Load(basePath)));
+    /// <param name="device">Where the model runs; CPU by default (TorchSharp only).</param>
+    public static Tokenizer Load(string basePath, Device? device = null, Backend backend = Backend.TorchSharp) =>
+        Weights.On(device, () => new Tokenizer(Checkpoint.Load(basePath), backend));
 
     /// <param name="splitSentences">False is Stanza's <c>tokenize_no_ssplit</c>: each paragraph is one sentence.</param>
     public Document Process(string text, bool splitSentences = true, CancellationToken cancellationToken = default)
     {
         var paragraphs = SplitParagraphs(text);
-        int[][] preds;
-        using (torch.no_grad())
-            preds = Predict(paragraphs, cancellationToken);
+        var preds = Predict(paragraphs, cancellationToken);
 
         var doc = new Document { Text = text };
         for (int i = 0; i < paragraphs.Count; i++)
@@ -186,11 +183,8 @@ internal sealed class Tokenizer : IDisposable
     internal float[] ParagraphLogits(string paragraph, out long[] shape)
     {
         var para = SplitParagraphs(paragraph).Single();
-        using var _ = torch.no_grad();
-        using var scope = NewDisposeScope();
-        var logits = Run([para], [0], para.Length + 1, [para.Length + 1])[0];
-        shape = logits.shape;
-        return logits.ToArray<float>();
+        shape = [para.Length + 1, Classes];
+        return Run([para], [0], para.Length + 1, [para.Length + 1], default);
     }
 
     // ----- input: paragraphs of code-point units -----
@@ -306,7 +300,7 @@ internal sealed class Tokenizer : IDisposable
             int[][] rowPreds;
             if (maxLen + 1 <= MaxSeqLen)
             {
-                var p = Argmax(Run(rows, new int[rows.Count], maxLen + 1, rows.Select(r => r.Length + 1).ToArray()));
+                var p = Argmax(Run(rows, new int[rows.Count], maxLen + 1, rows.Select(r => r.Length + 1).ToArray(), ct), rows.Count);
                 rowPreds = rows.Select((r, j) => p[j][..r.Length]).ToArray();
             }
             else
@@ -336,7 +330,7 @@ internal sealed class Tokenizer : IDisposable
             // advance_old_batch pads every row's raw units to the batch width, so later windows
             // run every row at full width and padding reaches the backward LSTM.
             var lengths = rows.Select(r => first ? Math.Min(r.Length + 1, width) : width).ToArray();
-            var p = Argmax(Run(rows, idx, width, lengths));
+            var p = Argmax(Run(rows, idx, width, lengths, ct), rows.Count);
             for (int j = 0; j < rows.Count; j++)
             {
                 int lastBreak = Array.FindLastIndex(p[j], x => x is 2 or 4);
@@ -350,7 +344,7 @@ internal sealed class Tokenizer : IDisposable
     }
 
     /// <summary>Runs rows[j] from unit offsets[j], padded/truncated to width, packed at lengths[j]. Returns [rows, width, 5].</summary>
-    private Tensor Run(List<Paragraph> rows, int[] offsets, int width, int[] lengths)
+    private float[] Run(List<Paragraph> rows, int[] offsets, int width, int[] lengths, CancellationToken ct)
     {
         var ids = new long[rows.Count * width];
         Array.Fill(ids, _padId);
@@ -361,20 +355,30 @@ internal sealed class Tokenizer : IDisposable
             Array.Copy(rows[j].Ids, offsets[j], ids, j * width, count);
             Array.Copy(rows[j].Feats, offsets[j] * _featDim, feats, j * width * _featDim, count * _featDim);
         }
-        using var units = torch.tensor(ids, [rows.Count, width], device: _device);
-        using var featTensor = torch.tensor(feats, [rows.Count, width, _featDim], device: _device);
-        return _net.Forward(units, featTensor, lengths.Select(l => (long)l).ToArray());
+        return _net.Forward(ids, feats, rows.Count, width, lengths.Select(l => (long)l).ToArray(), ct);
     }
 
-    private static int[][] Argmax(Tensor logits)
+    private const int Classes = 5;
+
+    /// <summary>Per row and position, the class with the highest log-probability (the first on a tie, like torch.argmax).</summary>
+    private static int[][] Argmax(float[] logits, int rows)
     {
-        using (logits)
-        using (var am = logits.argmax(2))
+        int width = logits.Length / (rows * Classes);
+        var result = new int[rows][];
+        for (int j = 0; j < rows; j++)
         {
-            int rows = (int)am.shape[0], width = (int)am.shape[1];
-            var flat = am.ToArray<long>();
-            return Enumerable.Range(0, rows).Select(j => flat[(j * width)..((j + 1) * width)].Select(x => (int)x).ToArray()).ToArray();
+            result[j] = new int[width];
+            for (int i = 0; i < width; i++)
+            {
+                var v = logits.AsSpan((j * width + i) * Classes, Classes);
+                int best = 0;
+                for (int c = 1; c < Classes; c++)
+                    if (v[c] > v[best])
+                        best = c;
+                result[j][i] = best;
+            }
         }
+        return result;
     }
 
     /// <summary>The paragraph always ends a sentence; e-mail addresses and URLs are kept whole.</summary>

@@ -1,16 +1,22 @@
+using Xunit.Abstractions;
 using System.Text.Json.Nodes;
+using StanzaSharp.Nn;
 using StanzaSharp.Tokenize;
 
 namespace StanzaSharp.Tests;
 
-public class TokenizerTests
+public class TokenizerTests(ITestOutputHelper output)
 {
-    private static Tokenizer Load() => Tokenizer.Load(Repo.Model("tokenize/combined_nocharlm"));
+    // managed: Backend.Managed (issue #29), else TorchSharp. Every golden test runs on both.
+    private static Tokenizer Load(bool managed) =>
+        Tokenizer.Load(Repo.Model("tokenize/combined_nocharlm"), backend: managed ? Backend.Managed : Backend.TorchSharp);
 
-    [ModelFact]
-    public void Logits_MatchGoldenIntermediates()
+    [ModelTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Logits_MatchGoldenIntermediates(bool managed)
     {
-        using var tokenizer = Load();
+        using var tokenizer = Load(managed);
         var golden = SafeTensorFile.Load(Path.Combine(Repo.Golden, "intermediates.safetensors"));
         var index = JsonNode.Parse(File.ReadAllText(Path.Combine(Repo.Golden, "intermediates.json")))!;
 
@@ -20,14 +26,16 @@ public class TokenizerTests
             var expected = golden.Read<float>($"s{i}.tokenize.pred");
             var actual = tokenizer.ParagraphLogits(entry["text"]!.GetValue<string>(), out var shape);
             Assert.Equal(golden[$"s{i}.tokenize.pred"].Shape, shape);
-            AssertClose(expected, actual, 1e-4f, $"sentence {i}");
+            output.WriteLine($"sentence {i}: max |diff| {AssertClose(expected, actual, 1e-4f, $"sentence {i}"):E2}");
         }
     }
 
-    [ModelFact]
-    public void Process_MatchesGoldenTokensAndSentences()
+    [ModelTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Process_MatchesGoldenTokensAndSentences(bool managed)
     {
-        using var tokenizer = Load();
+        using var tokenizer = Load(managed);
         var text = File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt"));
         var golden = Conllu.Read(File.ReadAllText(Path.Combine(Repo.Golden, "pipeline.conllu")));
 
@@ -39,19 +47,23 @@ public class TokenizerTests
                 Assert.True(a.IsMwtCandidate, $"'{a.Text}' at {a.StartChar} should be marked as a multi-word token");
     }
 
-    [ModelFact]
-    public void Process_MatchesGoldenOnLongParagraphsAndManyBatches()
+    [ModelTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Process_MatchesGoldenOnLongParagraphsAndManyBatches(bool managed)
     {
-        using var tokenizer = Load();
+        using var tokenizer = Load(managed);
         var text = File.ReadAllText(Path.Combine(Repo.Golden, "tokenize_stress.txt"));
         var golden = Conllu.Read(File.ReadAllText(Path.Combine(Repo.Golden, "tokenize_stress.conllu")));
         Assert.Equal(Describe(golden), Describe(tokenizer.Process(text)));
     }
 
-    [ModelFact]
-    public void Process_HandlesEmptyAndWhitespaceText()
+    [ModelTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Process_HandlesEmptyAndWhitespaceText(bool managed)
     {
-        using var tokenizer = Load();
+        using var tokenizer = Load(managed);
         Assert.Empty(tokenizer.Process("").Sentences);
         Assert.Empty(tokenizer.Process(" \n\n \t").Sentences);
     }
@@ -63,7 +75,8 @@ public class TokenizerTests
 
     private static string Escape(string space) => space == " " ? "" : "<" + space.Replace("\n", "\\n") + ">";
 
-    internal static void AssertClose(float[] expected, float[] actual, float tolerance, string what)
+    /// <returns>The largest difference.</returns>
+    internal static float AssertClose(float[] expected, float[] actual, float tolerance, string what)
     {
         Assert.Equal(expected.Length, actual.Length);
         int worst = 0;
@@ -72,5 +85,6 @@ public class TokenizerTests
                 worst = i;
         float diff = Math.Abs(expected[worst] - actual[worst]);
         Assert.True(diff <= tolerance, $"{what}: max |diff| {diff} at {worst} (expected {expected[worst]}, got {actual[worst]})");
+        return diff;
     }
 }

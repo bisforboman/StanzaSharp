@@ -7,17 +7,28 @@ using F = TorchSharp.torch.nn.functional;
 
 namespace StanzaSharp.Tokenize;
 
+/// <summary>The tokenizer's network, per <see cref="Backend"/>: <see cref="TokenizerNet"/> or <see cref="ManagedTokenizerNet"/>.</summary>
+internal interface ITokenizerNet : IDisposable
+{
+    /// <param name="ids">[rows, width] character ids.</param>
+    /// <param name="feats">[rows, width, feat_dim] features.</param>
+    /// <param name="lengths">Per-row length both LSTMs are packed at, as model.forward does.</param>
+    /// <returns>[rows, width, 5] log-probabilities, row-major.</returns>
+    float[] Forward(long[] ids, float[] feats, int rows, int width, long[] lengths, CancellationToken ct);
+}
+
 /// <summary>
 /// Port of stanza/models/tokenization/model.py <c>Tokenizer</c> for the options the English model
 /// uses: char embedding + features, a biLSTM, and the hierarchical second biLSTM with MWT heads.
 /// Output per character: log-probabilities of [continue, token end, sentence end, MWT end, MWT+sentence end].
 /// </summary>
-internal sealed class TokenizerNet : IDisposable
+internal sealed class TokenizerNet : ITokenizerNet
 {
     private readonly Embedding _embeddings;
     private readonly LSTM _rnn, _rnn2;
     private readonly Linear _tokClf, _sentClf, _mwtClf, _tokClf2, _sentClf2, _mwtClf2;
     private readonly double _hierInvTemp;
+    private readonly Device _device = Weights.Device; // the device the model was loaded on
 
     public TokenizerNet(Checkpoint ckpt)
     {
@@ -45,6 +56,15 @@ internal sealed class TokenizerNet : IDisposable
         _tokClf2 = nn.Linear(hidden * 2, 1, hasBias: false).LoadFrom(ckpt, model, "tok_clf2.");
         _sentClf2 = nn.Linear(hidden * 2, 1, hasBias: false).LoadFrom(ckpt, model, "sent_clf2.");
         _mwtClf2 = nn.Linear(hidden * 2, 1, hasBias: false).LoadFrom(ckpt, model, "mwt_clf2.");
+    }
+
+    public float[] Forward(long[] ids, float[] feats, int rows, int width, long[] lengths, CancellationToken ct)
+    {
+        using var _ = torch.no_grad();
+        using var units = torch.tensor(ids, [rows, width], device: _device);
+        using var featTensor = torch.tensor(feats, [rows, width, feats.Length / (rows * width)], device: _device);
+        using var pred = Forward(units, featTensor, lengths);
+        return pred.ToArray<float>();
     }
 
     /// <param name="units">[batch, len] int64 character ids.</param>
