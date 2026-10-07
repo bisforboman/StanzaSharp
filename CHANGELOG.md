@@ -8,6 +8,12 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 ## [Unreleased]
 
 ### Changed
+- On Linux (glibc), a `Process` call of at least 1,000 words now returns the memory it freed to the OS
+  (`malloc_trim`). glibc kept it for reuse, so a long-running process stayed near its peak: with
+  `tokenize,mwt,pos,constituency` the RSS after a 6,761-word call falls from 930 to 650 MB (after loading: 590 MB;
+  Python Stanza: 890 MB). The trim takes 25–40 ms after such a call; output is unchanged. Other platforms are
+  unchanged; on Windows, the environment variable `MIMALLOC_PURGE_DELAY=0` has the same effect for about 20% more
+  time (see the README).
 - The POS tagger no longer pads its batches: its input and its highway LSTM layers work on the real words only, so
   one long sentence in a batch of 250 no longer makes every sentence as long. With `tokenize,mwt,pos,constituency`
   the peak on 5,000 words falls from 1.57 to 1.02 GB (15,000 words: 1.66 to 1.25 GB), and pos is about 20% faster

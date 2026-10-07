@@ -210,6 +210,15 @@ var doc = nlp.Process(text, cancellationToken); // OperationCanceledException wi
   peaks at 0.6 GB but is 5× slower. Bulk `Process(texts)` batches all texts together, so it peaks like one call.
   `CharlmCache` changes the peak by less than 50 MB up to its 32k-word cap (turning it off costs 30–40% more time),
   and neither the GC mode nor converting the models changes it much. Measurements: [docs/performance.md](docs/performance.md#results-round-3-memory-of-a-short-lived-process).
+- **Memory between calls** (long-running services). On Linux (glibc) a call of 1,000 words or more gives the
+  memory it freed back to the OS (`malloc_trim`, 25–40 ms), so with `tokenize,mwt,pos,constituency` the RSS drops
+  back to about 650 MB after each call (590 MB after loading; Python Stanza: 850–950 MB). No `MALLOC_*` setting is
+  needed in a container, and `MALLOC_ARENA_MAX` does not help. On Windows libtorch's built-in allocator (mimalloc)
+  keeps freed memory committed, so the working set stays near the peak (1.4–1.6 GB). The environment variable
+  `MIMALLOC_PURGE_DELAY=0` makes it give memory back as it is freed (about 580 MB after a call, and a 370 MB lower
+  peak) for about 20% more time. It must be set before libtorch loads: in the environment, or with
+  `Environment.SetEnvironmentVariable` before the first TorchSharp call. The .NET GC heap is 100–180 MB, so GC
+  settings matter little. Measurements: [docs/performance.md](docs/performance.md#results-round-4-memory-after-process-returns-linux-and-windows).
 - **Cancellation.** Every `Process` overload takes a `CancellationToken`. It is checked between processors and
   between batches inside each (inside the dependency parser's 5,000-word batches too, between its stages), so a call
   stops within milliseconds to about a second on an 8-core machine, at most one POS batch; no document is returned and

@@ -72,6 +72,9 @@ All 7 steps of the build order are done:
   cut at 5000 words like Stanza, and `CharlmCache` keeps at most 32k words (`MaxWords`).
   Round 3 (issue #19, `--memory`): `.pt` files are read tensor by tensor too (the unpickler reads a stream; storages
   are read from the file on demand), and `HighwayLstm` frees each layer's padded tensors as soon as they are used.
+  After a Process call of 1,000+ words, `NativeHeap.Trim` calls glibc's `malloc_trim(0)` on Linux (user's decision,
+  2026-10-07: always on, no public API; `PipelineOptions.TrimNativeHeap` is internal, for the benchmark). On Windows
+  libtorch's built-in mimalloc keeps freed pages; only `MIMALLOC_PURGE_DELAY=0` releases them (documented, not set).
 - `Tree.ToString` prints `(`/`)` in labels and words as `-LRB-`/`-RRB-`, like Stanza. The tree
   itself keeps the raw text.
 - Measured float drift vs Python: charlm < 1e-7, tokenizer logits ≈ 4e-6, UPOS logits ≈ 2e-5,
