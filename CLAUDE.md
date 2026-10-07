@@ -608,12 +608,23 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     ~15% slower at 1 thread.
   - 0.5: managed backend the default, TorchSharp still selectable. 1.0: TorchSharp leaves the main package (not the
     project).
-- **Status:** Phase 0 (spike) is done; its kernels are production-ready (Arm64/portable paths, pooled buffers, a shared
-  thread pool, cancellation), still `internal` and unused by `Pipeline`. Next: Phase 1, the seam.
+- **Status:** Phase 0 (kernels) and Phase 1 (seam; tokenize and mwt ported) are done; `docs/backends.md` has the design,
+  the Cuda split plan, the public API proposal (not decided), exactness and speed. Next: Phase 2, the other processors
+  (suggested order there: ner, pos, depparse, sentiment, lemma, constituency; `CharlmCache` must become backend-neutral).
+- **Seam** (all internal): per processor network, arrays in and out: `ITokenizerNet` (`TokenizerNet` / `ManagedTokenizerNet`),
+  `IMwtNet` (`MwtNet` / `ManagedMwtNet`). Batching, windows, argmax and decoding stay in the processor, shared, so both
+  backends see the same batches. `Nn.Backend` { TorchSharp (default), Managed }; internal `PipelineOptions.Backend` →
+  each ported processor's `Load(basePath, device, backend)`; unported ones ignore it. With Managed, `Load` also sets
+  `ManagedThreads.Count` = `Threads ?? min(Count, ProcessorCount)`. Benchmark: `--backend managed --processors ...`.
+  - A new port: an `I…Net` with array I/O; the TorchSharp side wraps today's module code unchanged (default path stays
+    byte-identical); the managed side composes `Nn.Managed` blocks. Its golden tests become theories over `bool managed`
+    (`Repo.Backend(managed)`), and `ManagedBackendTests` gets a net-vs-net test per kernel path.
+  - Discrete outputs on the managed backend must be byte-identical with the golden data; never loosen a test for it.
 - **Code:** `src/StanzaSharp.Nn/Managed/` (`Gemm.cs`: `KernelPath`, `PackedMatrix`, `Gemm`, `Act`;
-  `ManagedThreads.cs`; `PackedLstm.cs`; `ManagedModels.cs`: charlm and highway biLSTM). Tests:
+  `ManagedThreads.cs`; `PackedLstm.cs`; `ManagedModels.cs`: charlm, highway biLSTM, `ManagedLstm` = `nn.LSTM` over a
+  padded batch like `Rnn.RunPacked`, hidden padded to a multiple of 4 with zero units). Tests:
   `ManagedBackendTests` (every path the machine runs natively). Harness: `StanzaSharp.Benchmark managed-spike
-  check|speed|concurrent|gemm`. Numbers and method: `docs/managed-backend-spike.md`.
+  check|speed|concurrent|gemm`. Numbers and method: `docs/managed-backend-spike.md`, `docs/backends.md`.
 - **Rules for the managed code:**
   - `Gemm.Path` is detected at startup (Vector256 = AVX2/FMA, Vector128 = NEON on Arm64, Scalar); every path reads the
     same packed weights. A new kernel or element-wise step needs a version per path and a test per path.
@@ -623,7 +634,8 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - Per-call buffers come from `ArrayPool<T>.Shared` and go back in `finally`; no buffer is shared between calls, and
     no mutable state lives on a model. Rented arrays hold stale data: write before reading.
   - Check the `CancellationToken` per time step and per GEMM block.
-  - `Gemm.Path` and `ManagedThreads.Count` are process-wide; only `ManagedBackendTests` may set them.
+  - `Gemm.Path` and `ManagedThreads.Count` are process-wide. Only `Pipeline.Load` (managed backend: the count) and tests
+    in `ManagedKernelsCollection` (parallelization off, so other classes never see a switched path) may set them.
 
 ## Design decisions
 

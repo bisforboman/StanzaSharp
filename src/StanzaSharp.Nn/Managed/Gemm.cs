@@ -3,8 +3,8 @@ using System.Runtime.Intrinsics;
 
 namespace StanzaSharp.Nn.Managed;
 
-// Issue #29: a pure managed float32 backend. Nothing in the pipeline uses this code yet;
-// docs/managed-backend-spike.md has the method and the numbers.
+// Issue #29: a pure managed float32 backend, used by the processors ported so far when the backend is
+// Backend.Managed. docs/managed-backend-spike.md (kernels) and docs/backends.md (the seam) have the numbers.
 
 /// <summary>The SIMD flavor of the managed kernels. All three compute the same thing; tests run each of them.</summary>
 internal enum KernelPath

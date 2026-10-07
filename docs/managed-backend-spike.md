@@ -355,6 +355,8 @@ pressure). Pool buckets are powers of two, so a 48 MB highway buffer occupies 64
 
 ### Left before Phase 1
 
+Phase 1 (the seam, tokenize and mwt) is in [backends.md](backends.md), which also remeasures the small-batch item below.
+
 - Arm64 tuning once CI numbers exist (e.g. `FusedMultiplyAddBySelectedScalar` with 4 A values per load, or an 8×12
   kernel), and an AVX-512 kernel (no AVX-512 machine here).
 - Small batches: the highway at 320 words is 1.9× TorchSharp; per-step regions there are a few microseconds of work.
