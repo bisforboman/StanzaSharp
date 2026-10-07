@@ -35,7 +35,7 @@ const string Usage = """
     """;
 
 string modelDir = Path.Combine("models", "converted", "en");
-int copies = 8, runs = 3, threads = 0, documents = 0, memoryWords = 0, chunkWords = 0;
+int copies = 8, runs = 3, threads = 0, documents = 0, memoryWords = 0, chunkWords = 0, cacheWords = CharlmCache.DefaultMaxWords;
 string? outFile = null, processors = null;
 bool bulkCall = false, verbose = false;
 var device = torch.CPU;
@@ -58,6 +58,7 @@ for (int i = 0; i < args.Length; i++)
         case "--processors" when i + 1 < args.Length: processors = args[++i]; break;
         case "--chunk-words" when i + 1 < args.Length: chunkWords = int.Parse(args[++i]); break;
         case "--bulk": bulkCall = true; break;
+        case "--charlm-cache" when i + 1 < args.Length: cacheWords = int.Parse(args[++i]); break;
         case "--verbose": verbose = true; break;
         default:
             Console.Error.WriteLine(Usage);
@@ -93,7 +94,8 @@ if (memoryWords > 0)
     // What a short-lived process pays (issue #19): load, one Process call (or one per part), exit.
     var paragraphs = BuildParagraphs(memoryWords);
     var clockLoad = Stopwatch.StartNew();
-    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Processors = processors, Threads = threads > 0 ? threads : null, Logger = verbose ? new MemoryLogger() : null });
+    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Processors = processors, Threads = threads > 0 ? threads : null, Logger = verbose ? new MemoryLogger() : null,
+        CharlmCache = new CharlmCacheOptions { IsEnabled = cacheWords > 0, MaxWords = Math.Max(cacheWords, 1) } });
     double loadSeconds = clockLoad.Elapsed.TotalSeconds;
     double loadPeak = PeakMB(), afterLoad = WorkingSetMB();
     var gcAfterLoad = GC.GetGCMemoryInfo();
