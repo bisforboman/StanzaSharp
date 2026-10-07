@@ -7,6 +7,12 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 
 ## [Unreleased]
 
+### Changed
+- Cancellation inside the dependency parser is about 8x faster: the token is now also checked inside each 5,000-word
+  batch (after each charlm pass, between the LSTM layers, between the scorers' chunks and between the sentences' tree
+  decodes), so a call stops within about an eighth of a batch (one charlm pass or LSTM layer) instead of up to a
+  whole batch (1.7 s on an 8-core machine, 6-7 s on CI runners). Output is unchanged.
+
 ## [0.4.1] - 2026-10-07
 
 ### Changed

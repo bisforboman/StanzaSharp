@@ -122,7 +122,7 @@ internal sealed class DependencyParser : IDisposable
         foreach (var batch in Batches(sentences.Select(s => s.Count + 1).ToList()))
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var parsed = Parse(batch.Select(i => (IReadOnlyList<Word>)sentences[i]).ToList());
+            var parsed = Parse(batch.Select(i => (IReadOnlyList<Word>)sentences[i]).ToList(), cancellationToken);
             for (int b = 0; b < batch.Count; b++)
                 for (int j = 0; j < sentences[batch[b]].Count; j++)
                     (sentences[batch[b]][j].Head, sentences[batch[b]][j].Deprel) = parsed[b][j];
@@ -166,11 +166,15 @@ internal sealed class DependencyParser : IDisposable
     }
 
     /// <summary>Parses one batch: (head, deprel) for each word of each sentence.</summary>
-    internal List<(int Head, string Deprel)[]> Parse(IReadOnlyList<IReadOnlyList<Word>> batch)
+    /// <remarks>
+    /// A batch is up to 5000 words (seconds on a slow CPU), so <paramref name="cancellationToken"/> is also checked inside
+    /// it: in <see cref="Scores"/> and between the sentences' tree decodes.
+    /// </remarks>
+    internal List<(int Head, string Deprel)[]> Parse(IReadOnlyList<IReadOnlyList<Word>> batch, CancellationToken cancellationToken = default)
     {
         using var _ = torch.no_grad();
         using var scope = NewDisposeScope();
-        var (unlabeled, deprel) = Scores(batch);
+        var (unlabeled, deprel) = Scores(batch, cancellationToken);
         var labels = deprel.max(3).indexes;
         int width = (int)unlabeled.shape[1];
         var arcs = unlabeled.ToArray<float>();
@@ -179,6 +183,7 @@ internal sealed class DependencyParser : IDisposable
         var result = new List<(int, string)[]>(batch.Count);
         for (int b = 0; b < batch.Count; b++)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             int n = batch[b].Count + 1;
             var scores = new double[n, n];
             for (int i = 0; i < n; i++)
@@ -195,8 +200,10 @@ internal sealed class DependencyParser : IDisposable
     /// GraphParser.forward_scores, then the log-softmax over heads that predict applies:
     /// arc log-probs [batch, width, width] (dependent, head) and label scores [batch, width, width, relations].
     /// Row and column 0 are ROOT; padding columns count in the log-softmax, as in Stanza.
+    /// <paramref name="cancellationToken"/> is checked after the character model, between LSTM layers and between the
+    /// scorers' chunks; the dispose scope frees everything on the way out.
     /// </summary>
-    internal (Tensor Unlabeled, Tensor Deprel) Scores(IReadOnlyList<IReadOnlyList<Word>> batch)
+    internal (Tensor Unlabeled, Tensor Deprel) Scores(IReadOnlyList<IReadOnlyList<Word>> batch, CancellationToken cancellationToken = default)
     {
         using var _ = torch.no_grad();
         using var scope = NewDisposeScope();
@@ -239,7 +246,9 @@ internal sealed class DependencyParser : IDisposable
         {
             // "\n" stands in for ROOT in the charlm input.
             var charlmText = texts.Select(t => (IReadOnlyList<string>)t.Prepend("\n").ToList()).ToList();
-            chars = [Rnn.PadSequence(_charlmForward!.BuildCharRepresentation(charlmText)), Rnn.PadSequence(_charlmBackward!.BuildCharRepresentation(charlmText))];
+            var forward = Rnn.PadSequence(_charlmForward!.BuildCharRepresentation(charlmText));
+            cancellationToken.ThrowIfCancellationRequested();
+            chars = [forward, Rnn.PadSequence(_charlmBackward!.BuildCharRepresentation(charlmText))];
         }
         var input = cat([
             _transPretrained.forward(_pretrain.Embeddings[Ids(pretrained)]),
@@ -251,24 +260,25 @@ internal sealed class DependencyParser : IDisposable
         ], 2);
         foreach (var t in chars)
             t.Dispose();
-        var output = _lstm.Forward(input, lengths, disposeInput: true);
+        cancellationToken.ThrowIfCancellationRequested();
+        var output = _lstm.Forward(input, lengths, disposeInput: true, cancellationToken);
         // pad_packed_sequence leaves zeros past each sentence; the scorers see them in the padding columns.
         using var widthScalar = width.ToScalar();
         var positions = arange(Scalars.Zero, widthScalar, Scalars.One, device: _device);
         var padding = positions.unsqueeze(0).ge(torch.tensor(lengths, device: _device).unsqueeze(1));
         output = output.masked_fill(padding.unsqueeze(2), Scalars.Zero);
 
-        var unlabeled = _unlabeled.Forward(output).squeeze(3);
-        var deprel = _deprel.Forward(output);
+        var unlabeled = _unlabeled.Forward(output, cancellationToken).squeeze(3);
+        var deprel = _deprel.Forward(output, cancellationToken);
         var headOffset = (positions.view(1, 1, -1) - positions.view(1, -1, 1)).expand(size, -1, -1);
         if (_linearizationScorer != null)
         {
-            var lin = _linearizationScorer.Forward(output).squeeze(3);
+            var lin = _linearizationScorer.Forward(output, cancellationToken).squeeze(3);
             unlabeled = unlabeled.add(F.logsigmoid(lin * headOffset.sign().to_type(ScalarType.Float32)), Scalars.One);
         }
         if (_distanceScorer != null)
         {
-            var dist = _distanceScorer.Forward(output).squeeze(3);
+            var dist = _distanceScorer.Forward(output, cancellationToken).squeeze(3);
             var predicted = Scalars.Softplus(dist).add(Scalars.One, Scalars.One); // 1 + softplus(dist)
             var target = headOffset.abs();
             // -log((target - predicted)^2 / 2 + 1)
@@ -347,7 +357,8 @@ internal sealed class DependencyParser : IDisposable
         }
 
         /// <returns>[batch, width, width, output]: [b, i, j] scores word i against word j.</returns>
-        public Tensor Forward(Tensor x)
+        /// <remarks><paramref name="ct"/> is checked before each chunk.</remarks>
+        public Tensor Forward(Tensor x, CancellationToken ct)
         {
             using var scope = NewDisposeScope();
             var input1 = AppendOne(F.relu(_w1.forward(x)));
@@ -360,6 +371,7 @@ internal sealed class DependencyParser : IDisposable
             var output = empty([batch, width, width, _weight.shape[2]], dtype: x.dtype, device: x.device);
             for (long n = 0; n < batch; n += chunk)
             {
+                ct.ThrowIfCancellationRequested();
                 using var part = NewDisposeScope();
                 long size = Math.Min(chunk, batch - n);
                 var intermediate = einsum("NLI,IJO->NLJO", input1.narrow(0, n, size), _weight);
