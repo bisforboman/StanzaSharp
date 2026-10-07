@@ -33,12 +33,13 @@ const string Usage = """
       --chunk-words K --memory: split the text at paragraphs into parts of about K words and call Process
                       on each part in turn (--bulk: one Process(IEnumerable<string>) call on the parts)
       --calls N       --memory: repeat the Process call(s) N times, reporting the memory after each (default: 1)
+      --no-trim       on Linux (glibc), keep the free native heap after each Process call (no malloc_trim)
     """;
 
 string modelDir = Path.Combine("models", "converted", "en");
 int copies = 8, runs = 3, threads = 0, documents = 0, memoryWords = 0, chunkWords = 0, calls = 1, cacheWords = CharlmCache.DefaultMaxWords;
 string? outFile = null, processors = null;
-bool bulkCall = false, verbose = false;
+bool bulkCall = false, verbose = false, noTrim = false;
 var device = torch.CPU;
 bool noTf32 = false;
 string package = Pipeline.DefaultPackage;
@@ -62,6 +63,7 @@ for (int i = 0; i < args.Length; i++)
         case "--charlm-cache" when i + 1 < args.Length: cacheWords = int.Parse(args[++i]); break;
         case "--verbose": verbose = true; break;
         case "--calls" when i + 1 < args.Length: calls = int.Parse(args[++i]); break;
+        case "--no-trim": noTrim = true; break;
         default:
             Console.Error.WriteLine(Usage);
             return 2;
@@ -75,7 +77,7 @@ if (noTf32)
 if (documents > 0)
 {
     // Many short texts: one Process call per text vs one bulk call (Pipeline.Process(IEnumerable<string>)).
-    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Device = device });
+    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Device = device, TrimNativeHeap = !noTrim });
     var texts = BuildDocuments(documents);
     nlp.Process(texts.Take(50)); // warm-up
     var watch = Stopwatch.StartNew();
@@ -96,7 +98,7 @@ if (memoryWords > 0)
     // What a short-lived process pays (issue #19): load, one Process call (or one per part), exit.
     var paragraphs = BuildParagraphs(memoryWords);
     var clockLoad = Stopwatch.StartNew();
-    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Processors = processors, Threads = threads > 0 ? threads : null, Logger = verbose ? new MemoryLogger() : null,
+    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Processors = processors, Threads = threads > 0 ? threads : null, Logger = verbose ? new MemoryLogger() : null, TrimNativeHeap = !noTrim,
         CharlmCache = new CharlmCacheOptions { IsEnabled = cacheWords > 0, MaxWords = Math.Max(cacheWords, 1) } });
     double loadSeconds = clockLoad.Elapsed.TotalSeconds;
     double loadPeak = PeakMB(), afterLoad = WorkingSetMB();
@@ -327,7 +329,7 @@ static class HeapStats
     {
         var gc = GC.GetGCMemoryInfo();
         string text = $"GC heap {gc.HeapSizeBytes / 1048576.0:F0} MB, committed {gc.TotalCommittedBytes / 1048576.0:F0} MB";
-        if (!OperatingSystem.IsLinux()) // glibc
+        if (!NativeHeap.CanTrim) // glibc
             return text;
         var m = MallInfo();
         double mb(nuint x) => x / 1048576.0;

@@ -86,13 +86,14 @@ public sealed class Pipeline : IDisposable
     private readonly Pretrain? _pretrain;
     private readonly CharLanguageModel? _charlmForward, _charlmBackward;
     private readonly CharlmCacheOptions _cacheOptions;
-    private readonly bool _splitSentences;
+    private readonly bool _splitSentences, _trimNativeHeap;
     private readonly ILogger? _logger;
 
     private Pipeline(string modelDir, Dictionary<string, string> models, PipelineOptions options)
     {
         _cacheOptions = options.CharlmCache;
         _splitSentences = options.SplitSentences;
+        _trimNativeHeap = options.TrimNativeHeap && NativeHeap.CanTrim;
         _logger = options.Logger;
         string Model(string processor) => Path.Combine(modelDir, processor, models[processor]);
         string Name(string processor) => $"{processor}/{models[processor]}";
@@ -348,6 +349,25 @@ public sealed class Pipeline : IDisposable
     /// the models are only read, which is what makes Process thread-safe.
     /// </summary>
     private Document Annotate(Document doc, CancellationToken ct)
+    {
+        try
+        {
+            return AnnotateWithModels(doc, ct);
+        }
+        finally
+        {
+            // Linux/glibc: give the call's freed tensor memory back to the OS, or it stays in the RSS (NativeHeap).
+            // Smaller calls free little (about 15 MB at 700 words) and the next call reuses it; trimming costs 2–12 ms.
+            if (_trimNativeHeap && doc.Sentences.Sum(s => s.Words.Count()) >= NativeHeap.TrimMinWords)
+            {
+                long start = Stopwatch.GetTimestamp();
+                NativeHeap.Trim();
+                _logger?.LogDebug("malloc_trim took {Milliseconds:F1} ms", Stopwatch.GetElapsedTime(start).TotalMilliseconds);
+            }
+        }
+    }
+
+    private Document AnnotateWithModels(Document doc, CancellationToken ct)
     {
         if (_mwt != null)
             Step("mwt", () => _mwt.Process(doc), ct); // one batch, and only for the words the dictionary lacks

@@ -7,6 +7,13 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 
 ## [Unreleased]
 
+### Changed
+- On Linux (glibc), a `Process` call of at least 1,000 words now returns the memory it freed to the OS
+  (`malloc_trim`). glibc kept it for reuse, so a long-running process stayed near its peak: with
+  `tokenize,mwt,pos,constituency` the RSS after a 5,000-word call falls from 930 to 650 MB (after loading: 580 MB;
+  Python Stanza: 890 MB). The trim takes 40–150 ms after such a call; output is unchanged. Other platforms are
+  unchanged; on Windows, the environment variable `MIMALLOC_PURGE_DELAY=0` has the same effect (see the README).
+
 ## [0.4.1] - 2026-10-07
 
 ### Changed

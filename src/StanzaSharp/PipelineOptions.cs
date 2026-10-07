@@ -94,6 +94,12 @@ public sealed class PipelineOptions
     /// default) logs nothing and costs nothing.
     /// </summary>
     public ILogger? Logger { get; init; }
+
+    /// <summary>
+    /// Linux with glibc: return the native heap's free memory to the OS at the end of each Process call
+    /// (<c>malloc_trim(0)</c>, see <see cref="NativeHeap"/>). Internal until its public API is decided.
+    /// </summary>
+    internal bool TrimNativeHeap { get; init; } = true;
 }
 
 /// <summary>
