@@ -114,7 +114,7 @@ internal sealed class PosTagger : IDisposable
                 words += sentences[end].Words.Count;
             var batch = sentences.GetRange(b, end - b);
             var tags = Predict(batch.Select(x => (IReadOnlyList<string>)x.Words.Select(w => w.Text).ToList()).ToList(), out _,
-                charlms == null ? null : (i, forward, backward) => charlms.TryAdd(batch[i].Sentence, forward, backward));
+                charlms == null ? null : (i, forward, backward) => charlms.TryAdd(batch[i].Sentence, forward, backward), cancellationToken);
             for (int i = 0; i < batch.Count; i++)
                 for (int j = 0; j < batch[i].Words.Count; j++)
                     (batch[i].Words[j].Upos, batch[i].Words[j].Xpos, batch[i].Words[j].Feats) = tags[i][j];
@@ -124,8 +124,11 @@ internal sealed class PosTagger : IDisposable
     /// <summary>Tags for each word, plus the UPOS logits (one [words, upos] array per sentence) for tests.</summary>
     /// <param name="keepCharlm">Called with each sentence's charlm representations; it may keep them by
     /// detaching them from the current dispose scope (as <see cref="CharlmCache.TryAdd"/> does).</param>
+    /// <param name="cancellationToken">A batch is up to 5000 words (seconds on a slow CPU), so this is checked after each
+    /// charlm pass (or the character model), between LSTM layers and between the heads; the dispose scope frees
+    /// everything on the way out.</param>
     internal List<(string Upos, string Xpos, string? Feats)[]> Predict(IReadOnlyList<IReadOnlyList<string>> sentences, out List<float[]> uposLogits,
-        Action<int, Tensor, Tensor>? keepCharlm = null)
+        Action<int, Tensor, Tensor>? keepCharlm = null, CancellationToken cancellationToken = default)
     {
         var original = sentences;
         sentences = sentences.Select(s => (IReadOnlyList<string>)s.Select(SimplifyPunct).ToList()).ToList();
@@ -168,6 +171,7 @@ internal sealed class PosTagger : IDisposable
         else
         {
             var repsForward = _charlmForward!.BuildCharRepresentation(sentences);
+            cancellationToken.ThrowIfCancellationRequested();
             var repsBackward = _charlmBackward!.BuildCharRepresentation(sentences);
             if (keepCharlm != null)
                 for (int i = 0; i < batch; i++)
@@ -175,18 +179,21 @@ internal sealed class PosTagger : IDisposable
                         keepCharlm(i, repsForward[i], repsBackward[i]);
             chars = [Packed(cat(repsForward, 0)), Packed(cat(repsBackward, 0))];
         }
+        cancellationToken.ThrowIfCancellationRequested();
         var input = cat([words, pretrained, .. chars], 1);
         foreach (var t in (Tensor[])[words, pretrained, .. chars])
             t.Dispose();
         var packed = Rnn.Pack(input, lengths);
         input.Dispose();
         // The heads see the words in sentence order.
-        var output = _lstm.Forward(packed, disposeInput: true).data.index_select(0, torch.tensor(packedRow, device: _device));
+        var output = _lstm.Forward(packed, disposeInput: true, cancellationToken).data.index_select(0, torch.tensor(packedRow, device: _device));
 
+        cancellationToken.ThrowIfCancellationRequested();
         var uposScores = _uposClf.forward(F.relu(_uposHid.forward(output)));
         var uposIds = uposScores.argmax(1);
         var parent = _uposEmb.forward(uposIds);
         var xposIds = _xposClf.Forward(F.relu(_xposHid.forward(output)), parent).argmax(1);
+        cancellationToken.ThrowIfCancellationRequested();
         var featsHid = F.relu(_featsHid.forward(output));
         var featIds = _featsClf.Select(c => c.Forward(featsHid, parent).argmax(1).ToArray<long>()).ToArray();
 

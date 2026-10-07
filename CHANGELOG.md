@@ -7,6 +7,13 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 
 ## [Unreleased]
 
+### Changed
+- Cancellation inside the POS tagger and the sentiment classifier is faster: the token is now also checked inside
+  each batch (the tagger: after each charlm pass or the character model, between the LSTM layers and between the
+  heads; sentiment: after each charlm pass, after the LSTM and between the convolutions), so a call stops within one
+  such step instead of up to a whole batch (0.8 s for POS, 1.2 s for sentiment on an 8-core machine). Any call now
+  stops within about half a second there. Output is unchanged.
+
 ## [0.4.2] - 2026-10-07
 
 ### Changed
