@@ -25,7 +25,7 @@ internal static class Scalars
     // overload, so call TorchSharp's private Scalar version with kept ones. Should a later TorchSharp drop
     // it, fall back to F.softplus rather than fail.
     private static readonly Scalar SoftplusBeta = 1.0, SoftplusThreshold = 20.0;
-    private static readonly Func<Tensor, Scalar, Scalar, Tensor>? SoftplusWithScalars =
+    internal static readonly Func<Tensor, Scalar, Scalar, Tensor>? SoftplusWithScalars =
         typeof(Tensor).GetMethod("softplus1", BindingFlags.NonPublic | BindingFlags.Instance, [typeof(Scalar), typeof(Scalar)])
             ?.CreateDelegate<Func<Tensor, Scalar, Scalar, Tensor>>();
 
