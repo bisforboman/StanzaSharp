@@ -6,6 +6,7 @@ using StanzaSharp.Lemma;
 using StanzaSharp.Mwt;
 using StanzaSharp.Ner;
 using StanzaSharp.Nn;
+using StanzaSharp.Nn.Managed;
 using StanzaSharp.Pos;
 using StanzaSharp.Sentiment;
 using StanzaSharp.Tokenize;
@@ -29,7 +30,8 @@ const string Usage = """
       --documents N   instead: N one-sentence texts, Process per text vs one bulk Process call
       --memory N      instead: Pipeline.Load, then one Process call on a text of about N words, reporting
                       the load peak and the peak memory; run it in a fresh process each time
-      --processors P  --memory: the processors to load (default: all of the package's)
+      --processors P  the stages to time (default: all of the package's); --memory: the processors to load
+      --backend B     torch (default) or managed: the backend of the ported processors (tokenize, mwt; issue #29)
       --chunk-words K --memory: split the text at paragraphs into parts of about K words and call Process
                       on each part in turn (--bulk: one Process(IEnumerable<string>) call on the parts)
       --calls N       --memory: repeat the Process call(s) N times, reporting the memory after each (default: 1)
@@ -46,6 +48,7 @@ bool bulkCall = false, verbose = false, noTrim = false;
 var device = torch.CPU;
 bool noTf32 = false;
 string package = Pipeline.DefaultPackage;
+var backend = Backend.TorchSharp;
 for (int i = 0; i < args.Length; i++)
 {
     switch (args[i])
@@ -61,6 +64,7 @@ for (int i = 0; i < args.Length; i++)
         case "--documents" when i + 1 < args.Length: documents = int.Parse(args[++i]); break;
         case "--memory" when i + 1 < args.Length: memoryWords = int.Parse(args[++i]); break;
         case "--processors" when i + 1 < args.Length: processors = args[++i]; break;
+        case "--backend" when i + 1 < args.Length: backend = args[++i] == "managed" ? Backend.Managed : Backend.TorchSharp; break;
         case "--chunk-words" when i + 1 < args.Length: chunkWords = int.Parse(args[++i]); break;
         case "--bulk": bulkCall = true; break;
         case "--charlm-cache" when i + 1 < args.Length: cacheWords = int.Parse(args[++i]); break;
@@ -74,6 +78,8 @@ for (int i = 0; i < args.Length; i++)
 }
 if (threads > 0)
     torch.set_num_threads(threads);
+if (threads > 0 && backend == Backend.Managed)
+    ManagedThreads.Count = threads;
 if (noTf32)
     torch.backends.cuda.matmul.allow_tf32 = torch.backends.cudnn.allow_tf32 = false;
 
@@ -160,7 +166,7 @@ var shared = Pipeline.SharedModels(models);
 string Model(string processor) => Path.Combine(modelDir, processor, models[processor]);
 
 var clock = Stopwatch.StartNew();
-using var tokenizer = Tokenizer.Load(Model("tokenize"), device);
+using var tokenizer = Tokenizer.Load(Model("tokenize"), device, backend);
 using var mwt = MwtExpander.Load(Model("mwt"), device);
 using var pretrain = Pretrain.Load(Path.Combine(modelDir, Pipeline.PretrainPath), device);
 using var charlmForward = shared.Contains(Pipeline.ForwardCharlmPath) ? CharLanguageModel.Load(Path.Combine(modelDir, Pipeline.ForwardCharlmPath), device) : null;
@@ -176,7 +182,7 @@ if (device.type == DeviceType.CUDA)
 double load = clock.Elapsed.TotalSeconds;
 
 // Stanza's order (Pipeline.AllProcessors), without the stages the package lacks.
-string[] stages = Pipeline.AllProcessors.Split(',').Where(models.ContainsKey).ToArray();
+string[] stages = Pipeline.AllProcessors.Split(',').Where(models.ContainsKey).Where(p => processors == null || processors.Split(',').Contains(p)).ToArray();
 var times = stages.ToDictionary(s => s, _ => new List<double>());
 var peaks = new Dictionary<string, double> { ["load"] = PeakMB() }; // peak working set after each stage of the warm-up run
 Document doc = null!;
@@ -195,15 +201,21 @@ for (int run = 0; run <= runs; run++)
     }
     // The same steps as Pipeline.Process.
     using var charlms = pos.UsesCharlm ? new CharlmCache() : null;
-    timed["tokenize"] = Time("tokenize", () => doc = tokenizer.Process(input));
-    timed["mwt"] = Time("mwt", () => mwt.Process(doc));
-    timed["pos"] = Time("pos", () => pos.Process(doc, charlms));
-    timed["lemma"] = Time("lemma", () => lemma.Process(doc));
+    // Stages left out with --processors are skipped; each stage needs only those before it (tokenize, mwt, pos, lemma).
+    void Stage(string stage, Action action)
+    {
+        if (stages.Contains(stage))
+            timed[stage] = Time(stage, action);
+    }
+    Stage("tokenize", () => doc = tokenizer.Process(input));
+    Stage("mwt", () => mwt.Process(doc));
+    Stage("pos", () => pos.Process(doc, charlms));
+    Stage("lemma", () => lemma.Process(doc));
     if (parser != null)
-        timed["constituency"] = Time("constituency", () => parser.Process(doc, charlms));
-    timed["depparse"] = Time("depparse", () => depparse.Process(doc));
-    timed["sentiment"] = Time("sentiment", () => sentiment.Process(doc, charlms));
-    timed["ner"] = Time("ner", () => ner.Process(doc, charlms));
+        Stage("constituency", () => parser.Process(doc, charlms));
+    Stage("depparse", () => depparse.Process(doc));
+    Stage("sentiment", () => sentiment.Process(doc, charlms));
+    Stage("ner", () => ner.Process(doc, charlms));
     if (run > 0)
         foreach (var s in stages)
             times[s].Add(timed[s]);
@@ -212,7 +224,8 @@ if (outFile != null)
     File.WriteAllText(outFile, Conllu.Write(doc));
 
 int words = doc.Sentences.Sum(s => s.Words.Count());
-Console.WriteLine($"C# StanzaSharp ({package}) on {device}, torch threads {torch.get_num_threads()}, {copies} copies: " +
+Console.WriteLine($"C# StanzaSharp ({package}, {backend} backend) on {device}, torch threads {torch.get_num_threads()}" +
+                  (backend == Backend.Managed ? $", managed threads {ManagedThreads.Count}" : "") + $", {copies} copies: " +
                   $"{text.Length} chars, {doc.Sentences.Count} sentences, {words} words, {runs} runs");
 Console.WriteLine($"{"load",-14}{load,9:F2} s {"",16} {peaks["load"],8:F0} MB peak");
 double total = 0;
