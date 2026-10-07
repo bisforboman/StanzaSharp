@@ -588,6 +588,8 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   (`t * 2`, `1 + t`, `masked_fill(m, 0)`, `eq(0)`, `pow(2)`, `arange(n)`): use `Scalars.*`, a `static readonly Scalar`,
   or a `using var s = value.ToScalar()` local. `F.softplus` goes through `Scalars.Softplus`. Tensor `-` tensor is
   fine (no alpha). Check a new TorchSharp function's source for internal conversions before using it.
+  Reported upstream as dotnet/TorchSharp#1583 (open PRs #1434/#1496 would fix it); when upgrading TorchSharp, check
+  whether it is fixed and, if so, drop the workaround, including `Scalars.Softplus`'s private `softplus1` call.
 
 ## Build order
 
