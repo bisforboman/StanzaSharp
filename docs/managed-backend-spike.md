@@ -138,6 +138,20 @@ lazily. Pooled buffers (`ArrayPool`) would remove most of it. Not done.
 
 Returns flattened after the small-row kernels, which is where the spike stopped.
 
+### Rerun on an idle machine (2026-10-07)
+
+The numbers above were taken under 70–100% load from other work. Rerun with nothing else running (same command,
+`--runs 3`, medians; Ryzen 7 5800X, 8 cores / 16 threads, AVX2):
+
+| threads | charlm TorchSharp → managed | ratio | highway TorchSharp → managed | ratio | peak working set |
+|---:|---|---:|---|---:|---:|
+| 1 | 25.81 → 19.72 s | 0.76 | 3.42 → 3.62 s | 1.06 | 1,947 MB |
+| 8 | 9.16 → 4.94 s | 0.54 | 1.17 → 0.87 s | 0.74 | 2,031 MB |
+| 16 | 8.23 → 4.49 s | 0.55 | 1.03 → 0.71 s | 0.69 | 2,030 MB |
+
+The loaded run overstated the 8-thread advantage, as expected (charlm 0.43 → 0.54, highway 0.58 → 0.74), but managed
+still wins everywhere except the highway layer at 1 thread (6% slower). The conclusion stands.
+
 ## Extrapolation to the full pipeline
 
 - **Base:** the 8-processor benchmark on this branch under the same load, 8 threads: load 1.83, tokenize 4.45,
@@ -207,6 +221,13 @@ What is left is engineering, plus these risks:
      same places as today.
 7. **Memory.** Allocate per call from pools (see the peak above). The charlm tables add 31 MB of weights.
 8. **GPU** goes away unless TorchSharp stays as an optional backend.
+
+## Owner's decisions (2026-10-07)
+
+- GPU: dropped. `Device`/`DisableTf32` go away with TorchSharp.
+- Accepted: score tolerances 1e-4 → 1e-3 (discrete outputs stay byte-identical); a slower Arm64 path at first;
+  up to ~15% slower at 1 thread.
+- Versions: 0.5 makes the managed backend the default with TorchSharp still selectable; 1.0 removes TorchSharp.
 
 ## Questions for the owner (issue #29, 1–3), with these numbers
 
