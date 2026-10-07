@@ -48,7 +48,7 @@ internal sealed class HighwayLstm : IDisposable
             var h0 = _hInit.narrow(0, 2 * l, 2).expand(2, batch, _hidden).contiguous();
             var c0 = _cInit.narrow(0, 2 * l, 2).expand(2, batch, _hidden).contiguous();
             var h = Rnn.RunPacked(_lstm[l], x, lengths, (h0, c0));
-            x = h + sigmoid(_gate[l].forward(x)) * tanh(_highway[l].forward(x));
+            x = h.add(sigmoid(_gate[l].forward(x)) * tanh(_highway[l].forward(x)), Scalars.One);
         }
         return x.MoveToOuterDisposeScope();
     }

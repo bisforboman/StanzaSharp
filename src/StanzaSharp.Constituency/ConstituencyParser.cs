@@ -78,7 +78,7 @@ internal sealed class ConstituencyParser : IDisposable
         _wordStart = ckpt.ToTensor(model["word_start_embedding"]);
         _wordEnd = ckpt.ToTensor(model["word_end_embedding"]);
 
-        _transitionLstm = nn.LSTM(_transitionEmbedding.weight!.shape[1], transitionHidden, numLayers: layers).LoadFrom(ckpt, model, "transition_stack.lstm.");
+        _transitionLstm = nn.LSTM(ckpt.Shape(model["transition_embedding.weight"])[1], transitionHidden, numLayers: layers).LoadFrom(ckpt, model, "transition_stack.lstm.");
         _constituentLstm = nn.LSTM(hidden, hidden, numLayers: layers).LoadFrom(ckpt, model, "constituent_stack.lstm.");
         _reduceLinear = nn.Linear(hidden, hidden).LoadFrom(ckpt, model, "reduce_linear.");
 
@@ -90,10 +90,14 @@ internal sealed class ConstituencyParser : IDisposable
         }
         _outputLayers = outputs.ToArray();
 
+        // In a dispose scope, so no temporary tensor is left to a finalizer, which could free it during a native call.
         using (torch.no_grad())
+        using (var scope = NewDisposeScope())
         {
             _initialTransitions = InitialStack<Transition?>(_transitionLstm, ckpt.ToTensor(model["transition_stack.start_embedding"]), null);
             _initialConstituents = InitialStack(_constituentLstm, ckpt.ToTensor(model["constituent_stack.start_embedding"]), new Constituent(null, null, null));
+            scope.Detach((IEnumerable<IDisposable>)[_initialTransitions.Hx, _initialTransitions.Cx, _initialTransitions.Output,
+                _initialConstituents.Hx, _initialConstituents.Cx, _initialConstituents.Output]);
         }
     }
 

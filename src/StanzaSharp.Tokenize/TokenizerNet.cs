@@ -61,18 +61,21 @@ internal sealed class TokenizerNet : IDisposable
         var sent0 = _sentClf.forward(inp);
         var mwt0 = _mwtClf.forward(inp);
 
-        var inp2 = inp * (1 - sigmoid(-tok0 * _hierInvTemp));
+        // inp * (1 - sigmoid(-tok0 * hier_invtemp)), with 1 - x computed as TorchSharp's operator does: -x + 1.
+        using var invTemp = _hierInvTemp.ToScalar();
+        var inp2 = inp * sigmoid((-tok0).mul(invTemp)).neg().add(Scalars.One, Scalars.One);
         var hid2 = Rnn.RunPacked(_rnn2, inp2, lengths);
-        tok0 = tok0 + _tokClf2.forward(hid2);
-        sent0 = sent0 + _sentClf2.forward(hid2);
-        mwt0 = mwt0 + _mwtClf2.forward(hid2);
+        tok0 = tok0.add(_tokClf2.forward(hid2), Scalars.One);
+        sent0 = sent0.add(_sentClf2.forward(hid2), Scalars.One);
+        mwt0 = mwt0.add(_mwtClf2.forward(hid2), Scalars.One);
 
         var tok = F.logsigmoid(tok0);
         var sent = F.logsigmoid(sent0);
         var nonsent = F.logsigmoid(-sent0);
         var mwt = F.logsigmoid(mwt0);
         var nonmwt = F.logsigmoid(-mwt0);
-        var pred = cat([F.logsigmoid(-tok0), tok + nonsent + nonmwt, tok + sent + nonmwt, tok + nonsent + mwt, tok + sent + mwt], 2);
+        Tensor Sum(Tensor a, Tensor b, Tensor c) => a.add(b, Scalars.One).add(c, Scalars.One);
+        var pred = cat([F.logsigmoid(-tok0), Sum(tok, nonsent, nonmwt), Sum(tok, sent, nonmwt), Sum(tok, nonsent, mwt), Sum(tok, sent, mwt)], 2);
         return pred.MoveToOuterDisposeScope();
     }
 

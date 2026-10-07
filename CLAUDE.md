@@ -581,7 +581,13 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   split even before MWT is implemented.
 - Batch inference per sentence from the start.
 - Run inference under no-grad / eval mode, and dispose tensors deterministically (TorchSharp
-  `DisposeScope`).
+  `DisposeScope`). A temporary tensor, at load time too, belongs to a scope (or a `using` variable): left to its
+  finalizer, it can be freed by a GC during the native call that reads it.
+- Never pass TorchSharp a temporary `Scalar` (`Nn.Scalars` explains the finalizer race). No tensor `+` or
+  `add(Tensor)` (hidden `alpha = 1`): write `a.add(b, Scalars.One)`. No numbers where a Scalar is expected
+  (`t * 2`, `1 + t`, `masked_fill(m, 0)`, `eq(0)`, `pow(2)`, `arange(n)`): use `Scalars.*`, a `static readonly Scalar`,
+  or a `using var s = value.ToScalar()` local. `F.softplus` goes through `Scalars.Softplus`. Tensor `-` tensor is
+  fine (no alpha). Check a new TorchSharp function's source for internal conversions before using it.
 
 ## Build order
 

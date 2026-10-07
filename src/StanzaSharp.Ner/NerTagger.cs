@@ -130,7 +130,7 @@ internal sealed class NerTagger : IDisposable
                 deltaIds[i * width + j] = delta == UnkId && word != _pretrain.UnkId ? PadId : delta;
             }
         var words = _pretrain.Embeddings[torch.tensor(wordIds, [batch, width], device: _device)]
-            + _deltaEmb.forward(torch.tensor(deltaIds, [batch, width], device: _device));
+            .add(_deltaEmb.forward(torch.tensor(deltaIds, [batch, width], device: _device)), Scalars.One);
 
         Tensor[] chars;
         if (_charModel != null)

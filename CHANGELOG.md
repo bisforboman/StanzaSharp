@@ -38,6 +38,11 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 ### Changed
 - `Sentence.Text` documents that every `Process` overload sets it; it is null only for CoNLL-U read without `# text`.
 
+### Fixed
+- A possible crash or wrong result when a garbage collection ran during a model call, more likely with concurrent
+  calls and on Arm64: TorchSharp frees temporary Scalars (such as the hidden `alpha = 1` of a tensor addition) in a
+  finalizer, which could run while libtorch was still reading them. StanzaSharp now keeps every Scalar it passes alive.
+
 ## [0.3.0] - 2026-10-06
 
 ### Added

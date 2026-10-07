@@ -20,6 +20,8 @@ internal sealed class Lemmatizer : IDisposable
 {
     private const int PadId = 0, UnkId = 1, SosId = 2, EosId = 3; // seq2seq_constant.py
     private const string Unk = "<UNK>";
+    // Scalars kept alive for TorchSharp (see Nn.Scalars): ids, and the masking values the seq2seq model uses.
+    private static readonly Scalar PadScalar = PadId, UnkScalar = UnkId, MaskedScore = -1e12, Epsilon = 1e-12;
 
     private readonly Dictionary<string, Dictionary<string, string?>> _posDict;
     private readonly Dictionary<string, int> _charToId, _posToId;
@@ -198,11 +200,12 @@ internal sealed class Lemmatizer : IDisposable
     private (List<long>[] Decoded, Tensor EditLogits) Greedy(Tensor src, Tensor pos, long[] srcLens)
     {
         long batch = src.shape[0];
+        using var vocabSize = _vocabSize.ToScalar();
 
         // embed: characters past the trained vocabulary embed as <UNK>; the POS embedding goes in front.
-        var embedSrc = src.masked_fill(src >= _vocabSize, UnkId);
+        var embedSrc = src.masked_fill(src.ge(vocabSize), UnkScalar);
         var encInputs = cat([_posEmbedding.forward(pos).unsqueeze(1), _embedding.forward(embedSrc)], 1);
-        var srcMask = cat([torch.zeros([batch, 1], ScalarType.Bool, device: _device), src.eq(PadId)], 1);
+        var srcMask = cat([torch.zeros([batch, 1], ScalarType.Bool, device: _device), src.eq(PadScalar)], 1);
 
         // encode
         using var lens = torch.tensor(srcLens);
@@ -224,7 +227,7 @@ internal sealed class Lemmatizer : IDisposable
             using var stepScope = NewDisposeScope();
             var logProbs = Decode(decInputs, ref h, ref c, ctx, srcMask, src);
             var preds = logProbs.squeeze(1).max(1, keepdim: true).indexes;
-            decInputs = _embedding.forward(preds.masked_fill(preds >= _vocabSize, UnkId)).MoveToOuterDisposeScope();
+            decInputs = _embedding.forward(preds.masked_fill(preds.ge(vocabSize), UnkScalar)).MoveToOuterDisposeScope();
             h.MoveToOuterDisposeScope();
             c.MoveToOuterDisposeScope();
             var values = preds.ToArray<long>();
@@ -253,7 +256,7 @@ internal sealed class Lemmatizer : IDisposable
         // LSTMAttention.forward (batch_first) over a single step.
         var input = decInputs.transpose(0, 1);
         (h, c) = _decoderCell.forward(input[0], (h, c));
-        var attn = torch.bmm(ctx, _attnIn.forward(h).unsqueeze(2)).squeeze(2).masked_fill(ctxMask, -1e12);
+        var attn = torch.bmm(ctx, _attnIn.forward(h).unsqueeze(2)).squeeze(2).masked_fill(ctxMask, MaskedScore);
         attn = F.log_softmax(attn, 1);
         var attnW = torch.exp(attn);
         var weighted = torch.bmm(attnW.view(attnW.shape[0], 1, attnW.shape[1]), ctx).squeeze(1);
@@ -268,19 +271,19 @@ internal sealed class Lemmatizer : IDisposable
         // Copy: renormalize attention without the POS position, then scatter it onto the source character ids.
         var copyLogit = _copyGate.forward(hOut);
         logAttn = F.log_softmax(logAttn[.., .., 1..], -1);
-        var logCopyProb = F.logsigmoid(copyLogit) + logAttn;
+        var logCopyProb = F.logsigmoid(copyLogit).add(logAttn, Scalars.One);
         var mx = logCopyProb.max(-1, keepdim: true).values;
         var copyProb = torch.exp(logCopyProb - mx);
         long vocab = Math.Max(_vocabSize, src.max().ToArray<long>()[0] + 1);
         var scattered = src.unsqueeze(1).expand(src.shape[0], copyProb.shape[1], src.shape[1]);
         var copied = torch.zeros([batch, steps, vocab], device: _device).scatter_add(-1, scattered, copyProb);
-        var zeroMask = copied.eq(0);
-        var logCopied = (torch.log(copied.masked_fill(zeroMask, 1e-12)) + mx).masked_fill(zeroMask, -1e12);
+        var zeroMask = copied.eq(Scalars.Zero);
+        var logCopied = torch.log(copied.masked_fill(zeroMask, Epsilon)).add(mx, Scalars.One).masked_fill(zeroMask, MaskedScore);
 
-        var logNoCopy = -torch.log(torch.exp(copyLogit).add(1));
+        var logNoCopy = -torch.log(torch.exp(copyLogit).add(Scalars.One, Scalars.One));
         if (vocab > _vocabSize) // characters new to the vocabulary reuse the <UNK> score
             logProbs = cat([logProbs, logProbs[.., .., UnkId].unsqueeze(2).expand(batch, steps, vocab - _vocabSize)], 2);
-        logProbs = logProbs + logNoCopy;
+        logProbs = logProbs.add(logNoCopy, Scalars.One);
         return torch.logsumexp(stack([logCopied, logProbs]), 0);
     }
 
