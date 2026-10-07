@@ -159,7 +159,11 @@ internal sealed class PosTagger : IDisposable
                         keepCharlm(i, repsForward[i], repsBackward[i]);
             chars = [Rnn.PadSequence(repsForward), Rnn.PadSequence(repsBackward)];
         }
-        var padded = _lstm.Forward(cat([words, pretrained, .. chars], 2), lengths);
+        // Free the padded inputs as soon as they are concatenated: with a long sentence in the batch they are large.
+        var input = cat([words, pretrained, .. chars], 2);
+        foreach (var t in (Tensor[])[words, pretrained, .. chars])
+            t.Dispose();
+        var padded = _lstm.Forward(input, lengths, disposeInput: true);
         // The heads see only the real words, as Stanza's run on the packed data: a batch padded to one long
         // sentence would otherwise score mostly padding (21 biaffine feature scorers).
         var real = Enumerable.Range(0, batch).SelectMany(i => Enumerable.Range(i * width, sentences[i].Count)).Select(k => (long)k).ToArray();

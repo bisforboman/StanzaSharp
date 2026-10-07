@@ -249,7 +249,9 @@ internal sealed class DependencyParser : IDisposable
             pos,
             .. chars,
         ], 2);
-        var output = _lstm.Forward(input, lengths);
+        foreach (var t in chars)
+            t.Dispose();
+        var output = _lstm.Forward(input, lengths, disposeInput: true);
         // pad_packed_sequence leaves zeros past each sentence; the scorers see them in the padding columns.
         using var widthScalar = width.ToScalar();
         var positions = arange(Scalars.Zero, widthScalar, Scalars.One, device: _device);
