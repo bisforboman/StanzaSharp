@@ -51,35 +51,29 @@ internal sealed class Unpickler
         Allowed["_codecs.encode"] = "_codecs.encode"; // protocol 2 pickles bytes as encode(latin-1 str, 'latin1')
     }
 
-    private readonly byte[] _data;
+    private readonly Stream _data;
     private readonly Func<object?, object?>? _persistentLoad;
     private readonly List<object?> _stack = [];
     private readonly Stack<List<object?>> _marks = new();
     private readonly Dictionary<long, object?> _memo = [];
-    private int _pos;
+    private byte[] _buffer = new byte[256];
+    private long _pos;
 
-    private Unpickler(byte[] data, int pos, Func<object?, object?>? persistentLoad)
+    private Unpickler(Stream data, Func<object?, object?>? persistentLoad)
     {
         _data = data;
-        _pos = pos;
+        _pos = data.CanSeek ? data.Position : 0;
         _persistentLoad = persistentLoad;
     }
 
-    /// <summary>Unpickles one object from <paramref name="data"/> starting at <paramref name="pos"/>, advancing it past STOP.</summary>
+    /// <summary>
+    /// Unpickles one object from <paramref name="data"/>, reading it up to and including STOP, so a following
+    /// pickle or raw data can be read from the same stream.
+    /// </summary>
     /// <param name="persistentLoad">Resolves persistent ids (BINPERSID); without it they are rejected.</param>
-    public static object? Load(byte[] data, ref int pos, Func<object?, object?>? persistentLoad = null)
-    {
-        var u = new Unpickler(data, pos, persistentLoad);
-        var result = u.Run();
-        pos = u._pos;
-        return result;
-    }
+    public static object? Load(Stream data, Func<object?, object?>? persistentLoad = null) => new Unpickler(data, persistentLoad).Run();
 
-    public static object? Load(byte[] data, Func<object?, object?>? persistentLoad = null)
-    {
-        int pos = 0;
-        return Load(data, ref pos, persistentLoad);
-    }
+    public static object? Load(byte[] data, Func<object?, object?>? persistentLoad = null) => Load(new MemoryStream(data, writable: false), persistentLoad);
 
     private object? Run()
     {
@@ -203,24 +197,30 @@ internal sealed class Unpickler
 
     private object? MemoGet(long i) => _memo.TryGetValue(i, out var v) ? v : throw Error($"memo key {i} not found");
 
+    /// <summary>The next <paramref name="n"/> bytes, valid until the next read.</summary>
     private ReadOnlySpan<byte> Bytes(int n)
     {
-        if (n < 0 || _pos > _data.Length - n)
+        if (n < 0 || _data.CanSeek && n > _data.Length - _data.Position)
+            throw Error("unexpected end of data");
+        if (n > _buffer.Length)
+            _buffer = new byte[Math.Max(n, 2 * _buffer.Length)];
+        var span = _buffer.AsSpan(0, n);
+        if (_data.ReadAtLeast(span, n, throwOnEndOfStream: false) < n)
             throw Error("unexpected end of data");
         _pos += n;
-        return _data.AsSpan(_pos - n, n);
+        return span;
     }
 
     private string Utf8(uint n) => n <= int.MaxValue ? Encoding.UTF8.GetString(Bytes((int)n)) : throw Error($"string length {n} too large");
 
     private string Line()
     {
-        int end = Array.IndexOf(_data, (byte)'\n', _pos);
-        if (end < 0)
-            throw Error("unterminated GLOBAL");
-        var s = Encoding.UTF8.GetString(_data, _pos, end - _pos);
-        _pos = end + 1;
-        return s;
+        var line = new List<byte>();
+        for (int b; (b = _data.ReadByte()) != '\n'; line.Add((byte)b))
+            if (b < 0)
+                throw Error("unterminated GLOBAL");
+        _pos += line.Count + 1;
+        return Encoding.UTF8.GetString(line.ToArray());
     }
 
     private InvalidDataException Error(string message) => new($"Invalid pickle at byte {_pos}: {message}");

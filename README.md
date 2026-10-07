@@ -201,6 +201,15 @@ var doc = nlp.Process(text, cancellationToken); // OperationCanceledException wi
   throughput is bounded by the CPU, not the number of callers. Sharing one pipeline saves memory: a loaded
   pipeline takes about 950 MB of private memory (`default`; 700 MB for `default_fast`), and each call in flight
   adds its own working memory on top (a few hundred MB for a page of text, more for long documents).
+- **Memory.** A call's peak is set by its largest batch more than by the length of the text: the tagger pads up to
+  250 sentences to the longest one among them. With `tokenize,mwt,pos,constituency` (8 threads) loading peaks at about
+  0.5 GB, and one call on 500, 5,000 and 15,000 words peaks at 0.65, 1.6 and 1.7 GB (Python Stanza: 0.75, 2.4 and
+  2.5 GB). To bound it in a memory-limited container, call `Process` on parts of about 1,000 words, split at blank
+  lines: on 15,000 words that peaks at 1.2 GB instead of 1.7 GB and takes about 15% longer. The annotations are the
+  same; only sentence ids, offsets (each part's own) and the whitespace at the cuts differ. One call per paragraph
+  peaks at 0.6 GB but is 5× slower. Bulk `Process(texts)` batches all texts together, so it peaks like one call.
+  `CharlmCache` changes the peak by less than 50 MB up to its 32k-word cap (turning it off costs 30–40% more time),
+  and neither the GC mode nor converting the models changes it much. Measurements: [docs/performance.md](docs/performance.md#results-round-3-memory-of-a-short-lived-process).
 - **Cancellation.** Every `Process` overload takes a `CancellationToken`. It is checked between processors and
   between batches inside each, so a call stops within about one batch (milliseconds to about 2 seconds for the
   dependency parser's 5,000-word batches); no document is returned and the pipeline stays usable.

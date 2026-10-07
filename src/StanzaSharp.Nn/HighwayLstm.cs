@@ -37,20 +37,34 @@ internal sealed class HighwayLstm : IDisposable
     }
 
     /// <param name="input">[batch, maxLen, inputSize]</param>
+    /// <param name="disposeInput">Dispose <paramref name="input"/> once the first layer is done with it.</param>
     /// <returns>[batch, maxLen, 2 * hidden]; positions past a sentence's length are meaningless.</returns>
-    public Tensor Forward(Tensor input, long[] lengths)
+    /// <remarks>
+    /// The batch is padded, so each layer's tensors can be large (hundreds of MB for a batch padded to one long
+    /// sentence): every layer frees its intermediates and its input as soon as it is done, and the elementwise
+    /// steps run in place.
+    /// </remarks>
+    public Tensor Forward(Tensor input, long[] lengths, bool disposeInput = false)
     {
-        using var scope = NewDisposeScope();
         long batch = input.shape[0];
         var x = input;
         for (int l = 0; l < _lstm.Length; l++)
         {
-            var h0 = _hInit.narrow(0, 2 * l, 2).expand(2, batch, _hidden).contiguous();
-            var c0 = _cInit.narrow(0, 2 * l, 2).expand(2, batch, _hidden).contiguous();
-            var h = Rnn.RunPacked(_lstm[l], x, lengths, (h0, c0));
-            x = h.add(sigmoid(_gate[l].forward(x)) * tanh(_highway[l].forward(x)), Scalars.One);
+            Tensor next;
+            using (NewDisposeScope())
+            {
+                var h0 = _hInit.narrow(0, 2 * l, 2).expand(2, batch, _hidden).contiguous();
+                var c0 = _cInit.narrow(0, 2 * l, 2).expand(2, batch, _hidden).contiguous();
+                var h = Rnn.RunPacked(_lstm[l], x, lengths, (h0, c0));
+                var gate = _gate[l].forward(x).sigmoid_();
+                gate.mul_(_highway[l].forward(x).tanh_());
+                next = h.add_(gate, Scalars.One).MoveToOuterDisposeScope();
+            }
+            if (l > 0 || disposeInput)
+                x.Dispose();
+            x = next;
         }
-        return x.MoveToOuterDisposeScope();
+        return x;
     }
 
     public void Dispose()
