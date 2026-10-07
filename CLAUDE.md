@@ -448,8 +448,10 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - Docs-only pull requests (`docs/`, `*.md`, `LICENSE`, `NOTICE`): the `changes` job makes `golden`, `docker` and
     `cross-os` run with their steps skipped, so the required checks pass in about a minute. No job is skipped
     outright: a skipped job would count as passed. Pushes to main and
-    release tags always run everything; if `changes` fails, everything runs.
-  - `concurrency`: a newer push to the same PR or to main cancels the older run; tag runs are never cancelled.
+    release runs always run everything; if `changes` fails, everything runs.
+  - `concurrency` (`${{ github.workflow }}-${{ github.ref }}`): a newer push to the same PR or to main cancels the older
+    CI run. release.yml's call gets the group `Release-refs/heads/main` (`github.workflow` is the caller's name), so it
+    and main's own CI run don't cancel each other, and it is never cancelled.
   - `golden`, on a model-cache miss, downloads the models with the C# `ModelDownloader` (via the
     CLI) and converts them with CPU torch. The models are cached on `ModelDownloader.cs`,
     `tools/requirements.txt` and `tools/stanza_convert.py`. It then fails if any test is skipped
@@ -569,16 +571,22 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
 - `tools/verify-package.ps1` packs a unique `0.0.0-verify.<time>` version, builds a fresh console app
   against it plus `TorchSharp-cpu`, runs the README example and checks the parse. It removes that
   version from the NuGet cache afterwards.
-- Releases mirror StyleBro: pushing a tag `v<semver>` runs `.github/workflows/release.yml`. It runs all
-  of ci.yml, packs with the tag's version, then pushes via NuGet Trusted Publishing (`NuGet/login@v1`,
-  repo variable `NUGET_USER`) and creates a GitHub release (a prerelease if the version has `-`).
-  - Environment `prerelease` is for tags with `-`; `release` is for the rest.
+- Releases start from the CHANGELOG (user's decision, 2026-10-07; before, a pushed tag started them, and hand-made
+  tags twice landed wrong). Merging a PR "CHANGELOG: x.y.z" (Unreleased moved under `## [x.y.z] - date`) runs
+  `.github/workflows/release.yml` (push to main touching CHANGELOG.md): its `version` job reads the first version
+  heading and stops if tag `vx.y.z` exists; otherwise it runs all of ci.yml, packs that version, pushes via NuGet
+  Trusted Publishing (`NuGet/login@v1`, repo variable `NUGET_USER`), and only then creates the tag on that commit
+  and the GitHub release (`gh release create --target`; a prerelease if the version has `-`). Never push release
+  tags by hand. A failed publish is retried by re-running the run; `--skip-duplicate` keeps already-pushed packages.
+  - Environment `prerelease` is for versions with `-`; `release` (approval required) for the rest. Both allow
+    deployments from branch `main`.
   - One-time setup, done 2026-10-06:
     - nuget.org Trusted Publishing policies for both environments (owner bisforboman, repo
       StanzaSharp, workflow `release.yml`), added by the owner.
     - The repo variable `NUGET_USER` = `bisforboman`.
-    - GitHub environment `release`: required reviewer bisforboman, tag rule `v*`.
-    - GitHub environment `prerelease`: no reviewers, tag rule `v*-*`.
+    - GitHub environment `release`: required reviewer bisforboman; deployments from branch `main` (and the old
+      tag rule `v*`).
+    - GitHub environment `prerelease`: no reviewers; branch `main` (and tag rule `v*-*`).
     - A 401 "No matching trust policy" on push means the nuget.org policy for that environment is
       missing or misnamed.
 - `main` is protected like StyleBro since 2026-10-06 (user's decision): pull requests required (0

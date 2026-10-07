@@ -7,11 +7,12 @@ on:
   workflow_call: # release.yml runs the same checks before publishing
 
 # A newer push to the same pull request or to main cancels the run still going (GitHub-hosted runners allow 20
-# concurrent jobs, 5 on macOS, and back-to-back merges each start the full suite). Tag runs (release.yml) are never
-# cancelled: each tag is its own group.
+# concurrent jobs, 5 on macOS, and back-to-back merges each start the full suite). release.yml's call has its own
+# group (github.workflow is the caller's name there), so it and main's own run never cancel each other, and a release
+# check is never cancelled.
 concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: ${{ github.ref_type != 'tag' }}
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.workflow == 'CI' }}
 
 env:
   DOTNET_NOLOGO: true
@@ -19,7 +20,7 @@ env:
 
 jobs:
   # Whether the heavy jobs have anything to check: false only for a pull request that changes nothing but
-  # documentation. Pushes to main and release.yml's tag runs always check everything. On false, the required jobs
+  # documentation. Pushes to main and release.yml's runs always check everything. On false, the required jobs
   # still run, with their steps skipped: they report real runs rather than relying on a skipped job counting as
   # passed. Anything but a clear false, including this job failing, runs everything.
   changes:

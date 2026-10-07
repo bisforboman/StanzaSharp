@@ -333,9 +333,10 @@ by those exact names. All upload their `.trx` test results. To reproduce `golden
 
 ## Releasing
 
-Push a tag such as `v0.1.0-alpha.1`. `.github/workflows/release.yml` runs all CI checks, packs that version,
-publishes it to nuget.org through NuGet Trusted Publishing and creates a GitHub release (a prerelease
-when the version has a `-`).
+Merge a pull request that moves the "Unreleased" entries in CHANGELOG.md under a new version heading, such as
+`## [0.5.0] - 2026-10-08`. `.github/workflows/release.yml` sees a version without a tag, runs all CI checks, waits
+for approval, packs that version and publishes it to nuget.org through NuGet Trusted Publishing. Only then does it
+create the tag (`v0.5.0`) and a GitHub release (a prerelease when the version has a `-`).
 
 ## Changes
 

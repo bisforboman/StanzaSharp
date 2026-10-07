@@ -1,28 +1,59 @@
 name: Release
 
-# Push a tag like v0.1.0-alpha.1 to publish that version to nuget.org.
-# Tags with a '-' are prereleases and use the 'prerelease' environment; others use 'release'.
+# Merging a pull request that adds a version heading to CHANGELOG.md (e.g. "## [0.4.2] - 2026-10-07") publishes that
+# version: the newest version in CHANGELOG.md without a tag yet. Versions with a '-' are prereleases and use the
+# 'prerelease' environment; others use 'release' (approval required). The tag and the GitHub release are created only
+# after the packages are on nuget.org, so a tag always marks a published version.
 # Publishing uses NuGet Trusted Publishing: no stored API key (see the release notes in CLAUDE.md).
 
 on:
   push:
-    tags: ['v*']
+    branches: [main]
+    paths: [CHANGELOG.md]
 
 env:
   DOTNET_NOLOGO: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
 
 jobs:
+  # The newest version heading in CHANGELOG.md ("Unreleased" doesn't match); nothing to do if its tag exists.
+  version:
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      new: ${{ steps.version.outputs.new }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - id: version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(sed -n 's/^## \[\([0-9][^]]*\)\].*/\1/p' CHANGELOG.md | head -1)
+          if [ -z "$version" ]; then echo "::error::No version heading in CHANGELOG.md"; exit 1; fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if gh api "repos/${{ github.repository }}/git/ref/tags/v$version" --silent 2>/dev/null; then
+            echo "v$version is already released."
+            echo "new=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Releasing $version."
+            echo "new=true" >> "$GITHUB_OUTPUT"
+          fi
+
   # Everything CI checks, including the full suite against the real models and the package check.
   checks:
+    needs: version
+    if: needs.version.outputs.new == 'true'
     uses: ./.github/workflows/ci.yml
 
   release:
-    needs: checks
+    needs: [version, checks]
     runs-on: ubuntu-24.04
-    environment: ${{ contains(github.ref_name, '-') && 'prerelease' || 'release' }}
+    environment: ${{ contains(needs.version.outputs.version, '-') && 'prerelease' || 'release' }}
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
     permissions:
-      contents: write   # create the GitHub release
+      contents: write   # create the tag and the GitHub release
       id-token: write   # request the OIDC token that NuGet/login exchanges for a temporary API key
     steps:
       - uses: actions/checkout@v7
@@ -30,9 +61,6 @@ jobs:
       - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 10.0.x
-
-      - name: Version from tag
-        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
 
       # StanzaSharp, the platform packages that add one platform's CPU libtorch to it, and the stanzasharp tool.
       - name: Pack
@@ -55,10 +83,11 @@ jobs:
           --source https://api.nuget.org/v3/index.json
           --skip-duplicate
 
-      - name: GitHub release
+      # Creates the tag v$VERSION on this commit, now that the packages are published.
+      - name: Tag and GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           prerelease=""
           if [[ "$VERSION" == *-* ]]; then prerelease="--prerelease"; fi
-          gh release create "$GITHUB_REF_NAME" artifacts/*.nupkg --title "StanzaSharp $VERSION" --generate-notes $prerelease
+          gh release create "v$VERSION" artifacts/*.nupkg --target "$GITHUB_SHA" --title "StanzaSharp $VERSION" --generate-notes $prerelease
