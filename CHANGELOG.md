@@ -7,6 +7,8 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 
 ## [Unreleased]
 
+## [0.4.2] - 2026-10-07
+
 ### Changed
 - On Linux (glibc), a `Process` call of at least 1,000 words now returns the memory it freed to the OS
   (`malloc_trim`). glibc kept it for reuse, so a long-running process stayed near its peak: with
@@ -167,7 +169,8 @@ output byte-identical to Python Stanza on the golden test data.
 - `ModelDownloader` fetches the models from Stanza's Hugging Face repository and checks their MD5s.
 - `Conllu.Read` and `Conllu.Write`, in Stanza's CoNLL-U dialect.
 
-[Unreleased]: https://github.com/bisforboman/StanzaSharp/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/bisforboman/StanzaSharp/compare/v0.4.2...HEAD
+[0.4.2]: https://github.com/bisforboman/StanzaSharp/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/bisforboman/StanzaSharp/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/bisforboman/StanzaSharp/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/bisforboman/StanzaSharp/compare/v0.2.0...v0.3.0
