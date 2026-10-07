@@ -59,6 +59,40 @@ internal static class Rnn
     }
 
     /// <summary>
+    /// The row order of pack_padded_sequence(input, lengths, batch_first: true, enforce_sorted: false): for each
+    /// packed row, the index of the input row it holds in the flattened [batch * maxLen] input.
+    /// </summary>
+    public static long[] PackedOrder(long[] lengths)
+    {
+        long width = lengths.Max();
+        using var lens = torch.tensor(lengths);
+        using var index = torch.arange(lengths.Length * width).view(lengths.Length, width, 1);
+        using var packed = nn.utils.rnn.pack_padded_sequence(index, lens, batch_first: true, enforce_sorted: false);
+        return packed.data.ToArray<long>();
+    }
+
+    /// <summary>
+    /// pack_padded_sequence(input, lengths, batch_first: true, enforce_sorted: false) for an input given as its
+    /// packed rows (<paramref name="data"/>, rows in <see cref="PackedOrder"/>), without ever making the padded
+    /// [batch, maxLen, dim] input.
+    /// </summary>
+    /// <remarks>
+    /// TorchSharp can't make a PackedSequence from data, so this packs a one-wide zero input, then points the
+    /// result's data at <paramref name="data"/>'s storage in place (<c>set_</c>; the PackedSequence holds the same
+    /// tensor, so nothing is copied). The caller may dispose <paramref name="data"/>; its memory lives on in the
+    /// result. (Packing an expanded zero input with enforce_sorted: true would avoid the probe, but TorchSharp
+    /// counts the two undefined index tensors of such a PackedSequence as live forever.)
+    /// </remarks>
+    public static nn.utils.rnn.PackedSequence Pack(Tensor data, long[] lengths)
+    {
+        using var lens = torch.tensor(lengths);
+        using var probe = torch.zeros(lengths.Length, lengths.Max(), 1, dtype: data.dtype, device: data.device);
+        var packed = nn.utils.rnn.pack_padded_sequence(probe, lens, batch_first: true, enforce_sorted: false);
+        packed.data.set_(data);
+        return packed;
+    }
+
+    /// <summary>
     /// Stacks per-sentence [len_i, dim] tensors into [batch, maxLen, dim], zero-padded
     /// (torch.nn.utils.rnn.pad_sequence).
     /// </summary>

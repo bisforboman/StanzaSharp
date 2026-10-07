@@ -15,7 +15,7 @@ internal static class NativeHeap
 
     private static readonly MallocTrimFunction? MallocTrim = Find();
 
-    /// <summary>Pipeline trims after calls of at least this many words (docs/performance.md, round 4).</summary>
+    /// <summary>Pipeline trims after calls of at least this many words (docs/performance.md, round 5).</summary>
     internal const int TrimMinWords = 1000;
 
     /// <summary>Whether <see cref="Trim"/> does anything here: Linux with glibc's <c>malloc_trim</c>.</summary>

@@ -29,6 +29,19 @@ public class NnTests
     }
 
     [Fact]
+    public void Pack_EqualsPackPaddedSequence()
+    {
+        using var scope = TorchSharp.torch.NewDisposeScope();
+        long[] lengths = [3, 5, 1, 5, 3, 2]; // ties: the order must be pack_padded_sequence's
+        var padded = TorchSharp.torch.randn(lengths.Length, 5, 4);
+        var expected = TorchSharp.torch.nn.utils.rnn.pack_padded_sequence(padded, TorchSharp.torch.tensor(lengths), batch_first: true, enforce_sorted: false);
+        var rows = Rnn.PackedOrder(lengths);
+        var packed = Rnn.Pack(padded.reshape(-1, 4).index_select(0, TorchSharp.torch.tensor(rows)), lengths);
+        Assert.Equal(expected.batch_sizes.ToArray<long>(), packed.batch_sizes.ToArray<long>());
+        Assert.Equal(expected.data.data<float>().ToArray(), packed.data.data<float>().ToArray());
+    }
+
+    [Fact]
     public void CharlmCache_KeepsAtMostMaxWords()
     {
         using var cache = new CharlmCache(maxWords: 5);
