@@ -7,6 +7,8 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-10-07
+
 ### Changed
 - Loading Stanza's `.pt` files no longer reads each file whole and copies its tensors into a second buffer: tensors
   are read from the file as the models load, as for converted models. With `tokenize,mwt,pos,constituency` the load
@@ -149,7 +151,8 @@ output byte-identical to Python Stanza on the golden test data.
 - `ModelDownloader` fetches the models from Stanza's Hugging Face repository and checks their MD5s.
 - `Conllu.Read` and `Conllu.Write`, in Stanza's CoNLL-U dialect.
 
-[Unreleased]: https://github.com/bisforboman/StanzaSharp/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/bisforboman/StanzaSharp/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/bisforboman/StanzaSharp/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/bisforboman/StanzaSharp/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/bisforboman/StanzaSharp/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/bisforboman/StanzaSharp/compare/v0.1.0...v0.2.0
