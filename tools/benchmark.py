@@ -187,7 +187,7 @@ def measure_memory(args):
             docs = nlp.bulk_process(parts) if args.bulk else [nlp(p) for p in parts]
     seconds = time.perf_counter() - start
     if args.out:
-        Path(args.out).write_text("".join("{:C}\n\n".format(d) for d in docs), encoding="utf-8", newline="\n")
+        Path(args.out).write_text("".join("{:C}\n".format(d) for d in docs), encoding="utf-8", newline="\n")
     words = sum(d.num_words for d in docs)
     mode = "one call" if args.chunk_words <= 0 else f"{len(docs)} parts of ~{args.chunk_words} words, " + ("one bulk call" if args.bulk else "one call each")
     print(f"Python Stanza {stanza.__version__} ({args.package}: {args.processors or 'all'}), torch threads {torch.get_num_threads()}: {words} words, {mode}")
