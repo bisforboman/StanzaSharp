@@ -227,7 +227,7 @@ internal sealed class DependencyParser : IDisposable
         }
         Tensor Ids(long[] ids) => torch.tensor(ids, [size, width], device: _device);
 
-        var pos = _uposEmb.forward(Ids(upos)) + _xposEmb.forward(Ids(xpos));
+        var pos = _uposEmb.forward(Ids(upos)).add(_xposEmb.forward(Ids(xpos)), Scalars.One);
         Tensor[] chars;
         if (_charModel != null)
         {
@@ -251,26 +251,29 @@ internal sealed class DependencyParser : IDisposable
         ], 2);
         var output = _lstm.Forward(input, lengths);
         // pad_packed_sequence leaves zeros past each sentence; the scorers see them in the padding columns.
-        var padding = arange(width, device: _device).unsqueeze(0).ge(torch.tensor(lengths, device: _device).unsqueeze(1));
-        output = output.masked_fill(padding.unsqueeze(2), 0);
+        using var widthScalar = width.ToScalar();
+        var positions = arange(Scalars.Zero, widthScalar, Scalars.One, device: _device);
+        var padding = positions.unsqueeze(0).ge(torch.tensor(lengths, device: _device).unsqueeze(1));
+        output = output.masked_fill(padding.unsqueeze(2), Scalars.Zero);
 
         var unlabeled = _unlabeled.Forward(output).squeeze(3);
         var deprel = _deprel.Forward(output);
-        var positions = arange(width, device: _device);
         var headOffset = (positions.view(1, 1, -1) - positions.view(1, -1, 1)).expand(size, -1, -1);
         if (_linearizationScorer != null)
         {
             var lin = _linearizationScorer.Forward(output).squeeze(3);
-            unlabeled = unlabeled + F.logsigmoid(lin * headOffset.sign().to_type(ScalarType.Float32));
+            unlabeled = unlabeled.add(F.logsigmoid(lin * headOffset.sign().to_type(ScalarType.Float32)), Scalars.One);
         }
         if (_distanceScorer != null)
         {
             var dist = _distanceScorer.Forward(output).squeeze(3);
-            var predicted = 1 + F.softplus(dist);
+            var predicted = Scalars.Softplus(dist).add(Scalars.One, Scalars.One); // 1 + softplus(dist)
             var target = headOffset.abs();
-            unlabeled = unlabeled + (-torch.log((target.to_type(ScalarType.Float32) - predicted).pow(2) / 2 + 1));
+            // -log((target - predicted)^2 / 2 + 1)
+            var penalty = -torch.log((target.to_type(ScalarType.Float32) - predicted).pow(Scalars.Two).div(Scalars.Two).add(Scalars.One, Scalars.One));
+            unlabeled = unlabeled.add(penalty, Scalars.One);
         }
-        unlabeled = unlabeled.masked_fill(eye(width, dtype: ScalarType.Bool, device: _device).unsqueeze(0), float.NegativeInfinity);
+        unlabeled = unlabeled.masked_fill(eye(width, dtype: ScalarType.Bool, device: _device).unsqueeze(0), Scalars.NegativeInfinity);
         var logProbs = F.log_softmax(unlabeled, 2);
         return (logProbs.MoveToOuterDisposeScope(), deprel.MoveToOuterDisposeScope());
     }
@@ -361,7 +364,7 @@ internal sealed class DependencyParser : IDisposable
                 output.narrow(0, n, size).copy_(einsum("NLJO,NMJ->NLMO", intermediate, input2.narrow(0, n, size)));
             }
             // In place: the label scorer's output is [batch, width, width, relations], too large to copy.
-            return output.add_(_bias).MoveToOuterDisposeScope();
+            return output.add_(_bias, Scalars.One).MoveToOuterDisposeScope();
         }
 
         private static Tensor AppendOne(Tensor x)

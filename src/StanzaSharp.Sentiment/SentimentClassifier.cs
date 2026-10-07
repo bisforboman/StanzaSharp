@@ -205,7 +205,7 @@ internal sealed class SentimentClassifier : IDisposable
         // Unknown words get the learned unk vector instead of the pretrain's; then the delta embedding is added (SUM).
         var pretrained = _pretrain.Embeddings[torch.tensor(ids, [n, width], device: _device)];
         var mask = torch.tensor(unknown, [n, width, 1], device: _device);
-        var words = torch.where(mask, _unk, pretrained) + _extraEmb.forward(torch.tensor(extraIds, [n, width], device: _device));
+        var words = torch.where(mask, _unk, pretrained).add(_extraEmb.forward(torch.tensor(extraIds, [n, width], device: _device)), Scalars.One);
 
         var input = cat([words, CharReps(_charlmForward, batch, width, cached?.Select(c => c?.Forward).ToList()),
             CharReps(_charlmBackward, batch, width, cached?.Select(c => c?.Backward).ToList())], 2);

@@ -81,7 +81,7 @@ internal sealed class CharacterModel : IDisposable
         else
         {
             // h[-2:]: the forward direction's last state is at each word's last character, the backward one's at its first.
-            var last = torch.tensor(lengths, device: _device).sub(1).view(n, 1, 1).expand(n, 1, OutputDim);
+            var last = torch.tensor(lengths, device: _device).sub(Scalars.One).view(n, 1, 1).expand(n, 1, OutputDim);
             reps = output.gather(1, last).squeeze(1);
             if (_directions == 2)
                 reps = cat([reps.narrow(1, 0, _hidden), output.select(1, 0).narrow(1, _hidden, _hidden)], 1);
