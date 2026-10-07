@@ -129,7 +129,7 @@ internal sealed class SentimentClassifier : IDisposable
         {
             cancellationToken.ThrowIfCancellationRequested();
             var batch = order[start..end];
-            var scores = Forward(batch.Select(i => sentences[i]).ToList(), cached == null ? null : batch.Select(cached).ToList());
+            var scores = Forward(batch.Select(i => sentences[i]).ToList(), cached == null ? null : batch.Select(cached).ToList(), cancellationToken);
             for (int k = 0; k < batch.Length; k++)
             {
                 logits[batch[k]] = scores[k];
@@ -182,8 +182,11 @@ internal sealed class SentimentClassifier : IDisposable
     }
 
     /// <summary>CNNClassifier.forward in eval mode: one batch, padded at the end to its longest sentence (at least the widest filter).</summary>
+    /// <param name="cancellationToken">A batch is up to 5000 tokens, so this is checked after each charlm pass, after the
+    /// LSTM and between the convolutions; the dispose scope frees everything on the way out.</param>
     /// <returns>The class logits of each sentence.</returns>
-    internal float[][] Forward(IReadOnlyList<IReadOnlyList<string>> batch, IReadOnlyList<(Tensor Forward, Tensor Backward)?>? cached = null)
+    internal float[][] Forward(IReadOnlyList<IReadOnlyList<string>> batch, IReadOnlyList<(Tensor Forward, Tensor Backward)?>? cached = null,
+        CancellationToken cancellationToken = default)
     {
         using var noGrad = torch.no_grad();
         using var scope = NewDisposeScope();
@@ -207,14 +210,18 @@ internal sealed class SentimentClassifier : IDisposable
         var mask = torch.tensor(unknown, [n, width, 1], device: _device);
         var words = torch.where(mask, _unk, pretrained).add(_extraEmb.forward(torch.tensor(extraIds, [n, width], device: _device)), Scalars.One);
 
-        var input = cat([words, CharReps(_charlmForward, batch, width, cached?.Select(c => c?.Forward).ToList()),
-            CharReps(_charlmBackward, batch, width, cached?.Select(c => c?.Backward).ToList())], 2);
+        var forward = CharReps(_charlmForward, batch, width, cached?.Select(c => c?.Forward).ToList());
+        cancellationToken.ThrowIfCancellationRequested();
+        var backward = CharReps(_charlmBackward, batch, width, cached?.Select(c => c?.Backward).ToList());
+        cancellationToken.ThrowIfCancellationRequested();
+        var input = cat([words, forward, backward], 2);
         var (output, _, _) = _bilstm.call(input); // not packed: like Stanza, the padding reaches the LSTM
         var x = output.unsqueeze(1);
 
         var pooled = new List<Tensor>(_convs.Length);
         foreach (var (conv, fullWidth) in _convs)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var c = conv.forward(x);
             c = fullWidth ? c.squeeze(3) : c.transpose(2, 3).flatten(1, 2);
             pooled.Add(F.relu(c).amax([2])); // max_pool2d over the whole length
