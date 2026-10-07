@@ -11,6 +11,25 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
 
 jobs:
+  # Whether the heavy jobs have anything to check: false only for a pull request that changes nothing but
+  # documentation. Pushes to main and release.yml's tag runs always check everything. On false, the required jobs
+  # still run, with their steps skipped: they report real runs rather than relying on a skipped job counting as
+  # passed. Anything but a clear false, including this job failing, runs everything.
+  changes:
+    runs-on: ubuntu-24.04
+    outputs:
+      code: ${{ steps.files.outputs.code }}
+    steps:
+      - id: files
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ github.event_name }}" != pull_request ]; then echo code=true >> "$GITHUB_OUTPUT"; exit 0; fi
+          gh api --paginate "repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" --jq '.[].filename' > files.txt
+          cat files.txt
+          # Documentation: docs/, any Markdown file (README, CHANGELOG, CLAUDE.md, PACKAGE.md), LICENSE, NOTICE.
+          if [ ! -s files.txt ] || grep -qvE '^docs/|\.md$|^LICENSE$|^NOTICE$' files.txt; then echo code=true; else echo code=false; fi >> "$GITHUB_OUTPUT"
+
   # Build and the tests that need no model files (the model tests skip).
   build-test:
     runs-on: ubuntu-24.04
@@ -40,15 +59,20 @@ jobs:
 
   # The full suite against Stanza's real English models, downloaded and converted with the pinned stanza version.
   golden:
+    needs: changes
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
+        if: needs.changes.outputs.code != 'false'
 
       - uses: actions/setup-dotnet@v6
+        if: needs.changes.outputs.code != 'false'
         with:
           dotnet-version: 10.0.x
 
       - uses: actions/cache@v6
+        if: needs.changes.outputs.code != 'false'
         with:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Build.props') }}
@@ -56,6 +80,7 @@ jobs:
       # ModelDownloader.cs pins the models (and their MD5s); the converter decides their converted form.
       # Both are kept: the .pt loader tests compare models/stanza/en with models/converted/en.
       - uses: actions/cache@v6
+        if: needs.changes.outputs.code != 'false'
         id: models
         with:
           path: |
@@ -64,32 +89,35 @@ jobs:
           key: models-en-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs', 'tools/requirements.txt', 'tools/stanza_convert.py') }}
 
       - name: Build
+        if: needs.changes.outputs.code != 'false'
         run: dotnet build StanzaSharp.slnx
 
       # The library's own downloader, as users run it; Python is only needed for the converter.
       - name: Download the models
-        if: steps.models.outputs.cache-hit != 'true'
+        if: needs.changes.outputs.code != 'false' && (steps.models.outputs.cache-hit != 'true')
         run: |
           dotnet run --project samples/StanzaSharp.Cli --no-build -- download models/stanza/en
           dotnet run --project samples/StanzaSharp.Cli --no-build -- download models/stanza/en --package default_fast
 
       - uses: actions/setup-python@v7
-        if: steps.models.outputs.cache-hit != 'true'
+        if: needs.changes.outputs.code != 'false' && (steps.models.outputs.cache-hit != 'true')
         with:
           python-version: '3.12'
 
       - name: Convert the models
-        if: steps.models.outputs.cache-hit != 'true'
+        if: needs.changes.outputs.code != 'false' && (steps.models.outputs.cache-hit != 'true')
         run: |
           # The CPU-only torch wheel; the default Linux wheel pulls in gigabytes of CUDA.
           pip install -r tools/requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
           python tools/stanza_convert.py convert models/stanza/en --out models/converted/en
 
       - name: Test
+        if: needs.changes.outputs.code != 'false'
         run: dotnet test StanzaSharp.slnx --no-build --logger trx --results-directory TestResults
 
       # A skipped test here means the models were not found.
       - name: Check that no test was skipped
+        if: needs.changes.outputs.code != 'false'
         run: |
           ls TestResults/*.trx
           # Skipped tests are outcome="NotExecuted" (the Counters' notExecuted stays 0 for them).
@@ -100,21 +128,24 @@ jobs:
 
       # Pack, then build and run a fresh app that references the package as a user would.
       - name: Verify the package
+        if: needs.changes.outputs.code != 'false'
         shell: pwsh
         run: ./tools/verify-package.ps1 -ModelDir models/stanza/en
 
       # The same app with only StanzaSharp.Cpu.Linux: one platform's libtorch, no TorchSharp-cpu.
       - name: Verify the Linux platform package
+        if: needs.changes.outputs.code != 'false'
         shell: pwsh
         run: ./tools/verify-package.ps1 -ModelDir models/stanza/en -Platform Linux
 
       # The stanzasharp tool (StanzaSharp.Tool): installed from a local feed, no native files, downloads tokenize,mwt.
       - name: Verify the tool package
+        if: needs.changes.outputs.code != 'false'
         shell: pwsh
         run: ./tools/verify-tool.ps1
 
       - uses: actions/upload-artifact@v7
-        if: always()
+        if: always() && needs.changes.outputs.code != 'false'
         with:
           name: test-results-golden
           path: TestResults/*.trx
@@ -125,15 +156,20 @@ jobs:
   # The models come from golden's cache (restore only, no new cache entry); on a miss they are downloaded.
   # No Docker layer cache: it would cost about 700 MB of the 10 GB cache budget to save a minute.
   docker:
+    needs: changes
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
+        if: needs.changes.outputs.code != 'false'
 
       - uses: actions/setup-dotnet@v6
+        if: needs.changes.outputs.code != 'false'
         with:
           dotnet-version: 10.0.x
 
       - uses: actions/cache/restore@v6
+        if: needs.changes.outputs.code != 'false'
         id: models
         with:
           path: |
@@ -142,10 +178,11 @@ jobs:
           key: models-en-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs', 'tools/requirements.txt', 'tools/stanza_convert.py') }}
 
       - name: Download the models
-        if: steps.models.outputs.cache-hit != 'true'
+        if: needs.changes.outputs.code != 'false' && (steps.models.outputs.cache-hit != 'true')
         run: dotnet run --project samples/StanzaSharp.Cli -- download models/stanza/en
 
       - name: Build and check the images
+        if: needs.changes.outputs.code != 'false'
         run: >
           tools/verify-docker.sh models/stanza/en
           mcr.microsoft.com/dotnet/runtime:10.0
@@ -158,6 +195,8 @@ jobs:
   # No NuGet cache here: TorchSharp-cpu pulls all three libtorch builds, and the repository's 10 GB cache
   # budget goes to the models.
   cross-os:
+    needs: changes
+    if: ${{ !cancelled() }}
     strategy:
       fail-fast: false
       matrix:
@@ -171,12 +210,15 @@ jobs:
       STANZASHARP_MODELS: ${{ github.workspace }}/models/stanza/en
     steps:
       - uses: actions/checkout@v7
+        if: needs.changes.outputs.code != 'false'
 
       - uses: actions/setup-dotnet@v6
+        if: needs.changes.outputs.code != 'false'
         with:
           dotnet-version: 10.0.x
 
       - uses: actions/cache@v6
+        if: needs.changes.outputs.code != 'false'
         id: models
         with:
           path: models/stanza/en
@@ -185,22 +227,25 @@ jobs:
       # libtorch-cpu-osx-arm64's libtorch_cpu.dylib links OpenMP by Homebrew's absolute path
       # (/opt/homebrew/opt/libomp/lib/libomp.dylib), not the libomp.dylib it ships; macOS users need it too.
       - name: Install libomp (macOS)
-        if: runner.os == 'macOS'
+        if: needs.changes.outputs.code != 'false' && (runner.os == 'macOS')
         run: brew install libomp
 
       - name: Build
+        if: needs.changes.outputs.code != 'false'
         run: dotnet build StanzaSharp.slnx
 
       - name: Download the models
-        if: steps.models.outputs.cache-hit != 'true'
+        if: needs.changes.outputs.code != 'false' && (steps.models.outputs.cache-hit != 'true')
         run: |
           dotnet run --project samples/StanzaSharp.Cli --no-build -- download models/stanza/en
           dotnet run --project samples/StanzaSharp.Cli --no-build -- download models/stanza/en --package default_fast
 
       - name: Test
+        if: needs.changes.outputs.code != 'false'
         run: dotnet test StanzaSharp.slnx --no-build --logger trx --results-directory TestResults
 
       - name: Check that no test was skipped
+        if: needs.changes.outputs.code != 'false'
         run: |
           ls TestResults/*.trx
           if grep -q 'outcome="NotExecuted"' TestResults/*.trx; then
@@ -210,17 +255,18 @@ jobs:
 
       # TorchSharp-cpu has no Windows Arm64 libtorch, so there only the platform package can work.
       - name: Verify the package
-        if: runner.os != 'Windows' || runner.arch != 'ARM64'
+        if: needs.changes.outputs.code != 'false' && (runner.os != 'Windows' || runner.arch != 'ARM64')
         shell: pwsh
         run: ./tools/verify-package.ps1 -ModelDir models/stanza/en
 
       # The same app with only this machine's platform package (StanzaSharp.Cpu.Windows / .WindowsArm64 / .MacOS).
       - name: Verify the platform package
+        if: needs.changes.outputs.code != 'false'
         shell: pwsh
         run: ./tools/verify-package.ps1 -ModelDir models/stanza/en -Platform ${{ runner.os == 'macOS' && 'MacOS' || runner.arch == 'ARM64' && 'WindowsArm64' || 'Windows' }}
 
       - uses: actions/upload-artifact@v7
-        if: always()
+        if: always() && needs.changes.outputs.code != 'false'
         with:
           name: test-results-${{ matrix.os }}
           path: TestResults/*.trx
