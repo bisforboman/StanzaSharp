@@ -128,13 +128,13 @@ public class ConcurrencyTests(Xunit.Abstractions.ITestOutputHelper output)
     }
 
     /// <summary>
-    /// The longest gap between two checks is now one POS batch: up to 1.4 s on an 8-core desktop, 8 s with the desktop
-    /// 5x overloaded. Depparse's longest is one charlm pass or highway LSTM layer (about an eighth of its 5000-word batch,
-    /// which alone set the old 15 s bound: up to 1.7 s locally, 6-7 s on 4-core CI runners). CI runners are 3-4x slower
-    /// than the desktop, so the tagger needs about 6 s there; the bound stays at 15 s until the tagger checks inside its
-    /// batches too.
+    /// Every batched processor that takes seconds per batch (pos, depparse, sentiment) also checks inside its batches, so the
+    /// longest gap between two checks is one charlm pass, LSTM layer or scorer over a 5000-word batch. On an 8-core desktop
+    /// the worst latency measured (3 runs of both cases) was 0.56 s, 0.82 s with the machine 2x loaded; before, a whole
+    /// POS or sentiment batch took up to 0.8 and 1.2 s. CI runners are 3-4x slower than the desktop (macOS and Windows
+    /// Arm64 the slowest), so about 3 s there under load; 5 s leaves room for a noisy runner.
     /// </summary>
-    private static readonly TimeSpan MaxLatency = TimeSpan.FromSeconds(15);
+    private static readonly TimeSpan MaxLatency = TimeSpan.FromSeconds(5);
 
     /// <summary>Collects the pipeline's "{processor} took {ms} ms" debug messages.</summary>
     private sealed class TimingLogger : Microsoft.Extensions.Logging.ILogger

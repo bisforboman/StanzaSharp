@@ -156,7 +156,10 @@ All 7 steps of the build order are done:
     `Pipeline.Step` before each processor and at the head of each batch loop (tokenizer batches and windows, pos,
     lemma, constituency per step, depparse, sentiment, ner; mwt is one batch). Depparse also checks inside a batch:
     after each charlm pass, between `HighwayLstm` layers (its optional token), before each `DeepBiaffine` chunk and
-    per Chu-Liu/Edmonds decode; the longest gap is one charlm pass or LSTM layer (~1/8 of a batch). Every check sits outside the inner
+    per Chu-Liu/Edmonds decode; the longest gap is one charlm pass or LSTM layer (~1/8 of a batch). Pos does the same
+    (after each charlm pass or the char model, between `HighwayLstm` layers, between the heads), and so does sentiment
+    (after each charlm pass, after the LSTM, between the convolutions). Worst measured latency ≈ 0.6 s on the desktop;
+    `ConcurrencyTests.MaxLatency` is 5 s for CI. Every check sits outside the inner
     dispose scopes or inside a try/finally that disposes, so nothing leaks (`ConcurrencyTests`).
   - Thread safety: Process keeps all mutable state per call (the Document, `CharlmCache`, the lemmatizer's
     DeltaVocab copy, the parser states); the models are read-only after Load; TorchSharp's dispose scopes are
