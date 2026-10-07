@@ -7,6 +7,16 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 
 ## [Unreleased]
 
+### Changed
+- Loading Stanza's `.pt` files no longer reads each file whole and copies its tensors into a second buffer: tensors
+  are read from the file as the models load, as for converted models. With `tokenize,mwt,pos,constituency` the load
+  peak falls from 970 MB to 540 MB (1,090 to 510 MB with Server GC), and the memory no longer waits for a GC
+  (issue #19).
+- The POS tagger and the dependency parser free their padded batch tensors as soon as they are used. A batch padded
+  to one long sentence peaked much higher: on 5,000 words of the validation texts the peak falls from 2.36 to
+  1.57 GB (Python Stanza: 2.36 GB). Output is unchanged.
+- The README describes what sets the memory peak and how to bound it (parts of about 1,000 words per call).
+
 ## [0.4.0] - 2026-10-06
 
 ### Added
