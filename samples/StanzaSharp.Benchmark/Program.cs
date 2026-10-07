@@ -36,6 +36,9 @@ const string Usage = """
       --no-trim       on Linux (glibc), keep the free native heap after each Process call (no malloc_trim)
     """;
 
+if (args is ["managed-spike", ..])
+    return ManagedSpike.Run(args[1..], FindRepoRoot(), BuildText); // issue #29: docs/managed-backend-spike.md
+
 string modelDir = Path.Combine("models", "converted", "en");
 int copies = 8, runs = 3, threads = 0, documents = 0, memoryWords = 0, chunkWords = 0, calls = 1, cacheWords = CharlmCache.DefaultMaxWords;
 string? outFile = null, processors = null;
