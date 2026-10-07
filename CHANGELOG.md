@@ -8,6 +8,10 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 ## [Unreleased]
 
 ### Changed
+- The POS tagger no longer pads its batches: its input and its highway LSTM layers work on the real words only, so
+  one long sentence in a batch of 250 no longer makes every sentence as long. With `tokenize,mwt,pos,constituency`
+  the peak on 5,000 words falls from 1.57 to 1.02 GB (15,000 words: 1.66 to 1.25 GB), and pos is about 20% faster
+  on such text. Tags, lemmas and parses are unchanged; logits move by at most 5e-5 (docs/performance.md, round 4).
 - Cancellation inside the dependency parser is about 8x faster: the token is now also checked inside each 5,000-word
   batch (after each charlm pass, between the LSTM layers, between the scorers' chunks and between the sentences' tree
   decodes), so a call stops within about an eighth of a batch (one charlm pass or LSTM layer) instead of up to a

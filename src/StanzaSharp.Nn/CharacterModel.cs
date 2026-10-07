@@ -63,6 +63,14 @@ internal sealed class CharacterModel : IDisposable
     public Tensor Forward(IReadOnlyList<IReadOnlyList<long[]>> sentences)
     {
         using var scope = NewDisposeScope();
+        var perSentence = ForwardWords(sentences).split(sentences.Select(s => (long)s.Count).ToArray());
+        return Rnn.PadSequence(perSentence).MoveToOuterDisposeScope();
+    }
+
+    /// <summary>Like <see cref="Forward"/>, unpadded: [words, <see cref="OutputDim"/>], the sentences' words in order.</summary>
+    public Tensor ForwardWords(IReadOnlyList<IReadOnlyList<long[]>> sentences)
+    {
+        using var scope = NewDisposeScope();
         var words = sentences.SelectMany(s => s).ToList();
         int n = words.Count, longest = words.Max(w => w.Length);
         var ids = new long[n * longest];
@@ -86,8 +94,7 @@ internal sealed class CharacterModel : IDisposable
             if (_directions == 2)
                 reps = cat([reps.narrow(1, 0, _hidden), output.select(1, 0).narrow(1, _hidden, _hidden)], 1);
         }
-        var perSentence = reps.split(sentences.Select(s => (long)s.Count).ToArray());
-        return Rnn.PadSequence(perSentence).MoveToOuterDisposeScope();
+        return reps.MoveToOuterDisposeScope();
     }
 
     public void Dispose()
