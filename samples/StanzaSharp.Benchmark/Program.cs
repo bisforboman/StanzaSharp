@@ -27,11 +27,17 @@ const string Usage = """
       --no-tf32       cuda: turn off TF32 in cuDNN and cuBLAS (process-wide torch settings)
       --package NAME  Stanza's English package: default (all eight processors) or default_fast
       --documents N   instead: N one-sentence texts, Process per text vs one bulk Process call
+      --memory N      instead: Pipeline.Load, then one Process call on a text of about N words, reporting
+                      the load peak and the peak memory; run it in a fresh process each time
+      --processors P  --memory: the processors to load (default: all of the package's)
+      --chunk-words K --memory: split the text at paragraphs into parts of about K words and call Process
+                      on each part in turn (--bulk: one Process(IEnumerable<string>) call on the parts)
     """;
 
 string modelDir = Path.Combine("models", "converted", "en");
-int copies = 8, runs = 3, threads = 0, documents = 0;
-string? outFile = null;
+int copies = 8, runs = 3, threads = 0, documents = 0, memoryWords = 0, chunkWords = 0;
+string? outFile = null, processors = null;
+bool bulkCall = false, verbose = false;
 var device = torch.CPU;
 bool noTf32 = false;
 string package = Pipeline.DefaultPackage;
@@ -48,6 +54,11 @@ for (int i = 0; i < args.Length; i++)
         case "--no-tf32": noTf32 = true; break;
         case "--package" when i + 1 < args.Length: package = args[++i]; break;
         case "--documents" when i + 1 < args.Length: documents = int.Parse(args[++i]); break;
+        case "--memory" when i + 1 < args.Length: memoryWords = int.Parse(args[++i]); break;
+        case "--processors" when i + 1 < args.Length: processors = args[++i]; break;
+        case "--chunk-words" when i + 1 < args.Length: chunkWords = int.Parse(args[++i]); break;
+        case "--bulk": bulkCall = true; break;
+        case "--verbose": verbose = true; break;
         default:
             Console.Error.WriteLine(Usage);
             return 2;
@@ -74,6 +85,46 @@ if (documents > 0)
     Console.WriteLine($"C# StanzaSharp ({package}) on {device}, torch threads {torch.get_num_threads()}, {texts.Count} documents of one sentence");
     Console.WriteLine($"{"one by one",-14}{alone,9:F2} s {texts.Count / alone,10:F0} docs/s");
     Console.WriteLine($"{"bulk",-14}{bulk,9:F2} s {texts.Count / bulk,10:F0} docs/s");
+    return 0;
+}
+
+if (memoryWords > 0)
+{
+    // What a short-lived process pays (issue #19): load, one Process call (or one per part), exit.
+    var paragraphs = BuildParagraphs(memoryWords);
+    var clockLoad = Stopwatch.StartNew();
+    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Processors = processors, Threads = threads > 0 ? threads : null, Logger = verbose ? new MemoryLogger() : null });
+    double loadSeconds = clockLoad.Elapsed.TotalSeconds;
+    double loadPeak = PeakMB(), afterLoad = WorkingSetMB();
+    var gcAfterLoad = GC.GetGCMemoryInfo();
+    clockLoad.Restart();
+    List<Document> docs;
+    if (chunkWords <= 0)
+        docs = [nlp.Process(string.Join("\n\n", paragraphs))];
+    else
+    {
+        var parts = Chunk(paragraphs, chunkWords);
+        docs = bulkCall ? nlp.Process((IEnumerable<string>)parts) : parts.Select(nlp.Process).ToList();
+    }
+    double processSeconds = clockLoad.Elapsed.TotalSeconds;
+    var gc = GC.GetGCMemoryInfo();
+    if (outFile != null)
+        File.WriteAllText(outFile, string.Concat(docs.Select(Conllu.Write)));
+    int wordCount = docs.Sum(d => d.Sentences.Sum(s => s.Words.Count()));
+    string mode = chunkWords <= 0 ? "one Process call" : $"{docs.Count} parts of ~{chunkWords} words, " + (bulkCall ? "one bulk call" : "one call each");
+    Console.WriteLine($"C# StanzaSharp ({package}: {processors ?? "all"}) from {modelDir}, {(System.Runtime.GCSettings.IsServerGC ? "Server" : "workstation")} GC, " +
+                      $"torch threads {torch.get_num_threads()}: {wordCount} words, {mode}");
+    Console.WriteLine($"load          {loadSeconds,7:F2} s  load peak {loadPeak,6:F0} MB  after load {afterLoad,6:F0} MB  " +
+                      $"(GC heap {gcAfterLoad.HeapSizeBytes / 1048576.0:F0} MB, committed {gcAfterLoad.TotalCommittedBytes / 1048576.0:F0} MB)");
+    Console.WriteLine($"process       {processSeconds,7:F2} s  peak      {PeakMB(),6:F0} MB  at the end {WorkingSetMB(),6:F0} MB  " +
+                      $"(GC heap {gc.HeapSizeBytes / 1048576.0:F0} MB, committed {gc.TotalCommittedBytes / 1048576.0:F0} MB, {GC.CollectionCount(2)} gen2 GCs)");
+    if (verbose)
+    {
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+        Console.WriteLine($"after a full GC and finalizers: working set {WorkingSetMB(),6:F0} MB");
+    }
     return 0;
 }
 
@@ -176,11 +227,69 @@ static string FindRepoRoot()
     throw new DirectoryNotFoundException("Run from inside the repository: StanzaSharp.slnx not found");
 }
 
+static List<string> BuildParagraphs(int words)
+{
+    // The same text as tools/benchmark.py --memory: corpus.txt and validation*.txt, repeated, cut after the paragraph
+    // (blank-line separated) that reaches the word count. Words are counted by whitespace, before tokenizing.
+    string golden = Path.Combine(FindRepoRoot(), "tests", "golden");
+    var files = new[] { "corpus.txt" }.Concat(Directory.GetFiles(golden, "validation*.txt").Select(Path.GetFileName).Order(StringComparer.Ordinal));
+    var unit = files.SelectMany(f => File.ReadAllText(Path.Combine(golden, f!)).Split("\n\n"))
+        .Select(p => p.Trim('\n')).Where(p => p.Trim().Length > 0).ToList();
+    var result = new List<string>();
+    for (int count = 0; count < words; )
+        foreach (var p in unit)
+        {
+            if (count >= words)
+                break;
+            result.Add(p);
+            count += WordCount(p);
+        }
+    return result;
+}
+
+static int WordCount(string s) => s.Split([' ', '\t', '\r', '\n'], StringSplitOptions.RemoveEmptyEntries).Length;
+
+static List<string> Chunk(List<string> paragraphs, int words)
+{
+    var parts = new List<string>();
+    var current = new List<string>();
+    int count = 0;
+    foreach (var p in paragraphs)
+    {
+        current.Add(p);
+        count += WordCount(p);
+        if (count >= words)
+        {
+            parts.Add(string.Join("\n\n", current));
+            current.Clear();
+            count = 0;
+        }
+    }
+    if (current.Count > 0)
+        parts.Add(string.Join("\n\n", current));
+    return parts;
+}
+
 static double PeakMB() => Process.GetCurrentProcess().PeakWorkingSet64 / 1048576.0;
+
+static double WorkingSetMB() => Process.GetCurrentProcess().WorkingSet64 / 1048576.0;
 
 static double Median(List<double> xs)
 {
     var sorted = xs.Order().ToList();
     int n = sorted.Count;
     return n % 2 == 1 ? sorted[n / 2] : (sorted[n / 2 - 1] + sorted[n / 2]) / 2;
+}
+
+
+/// <summary>Prints the pipeline's log messages (each model load, each processor) with the working set and its peak.</summary>
+sealed class MemoryLogger : Microsoft.Extensions.Logging.ILogger
+{
+    public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+    public bool IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel) => true;
+    public void Log<TState>(Microsoft.Extensions.Logging.LogLevel logLevel, Microsoft.Extensions.Logging.EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+    {
+        using var p = Process.GetCurrentProcess();
+        Console.WriteLine($"  {formatter(state, exception),-70} working set {p.WorkingSet64 / 1048576.0,6:F0} MB  peak {p.PeakWorkingSet64 / 1048576.0,6:F0} MB  GC heap {GC.GetGCMemoryInfo().HeapSizeBytes / 1048576.0,5:F0} MB  {TorchSharp.DisposeScopeManager.Statistics.TensorStatistics.ThreadTotalLiveCount} live tensors, {TorchSharp.DisposeScopeManager.Statistics.TensorStatistics.CreatedOutsideScopeCount - TorchSharp.DisposeScopeManager.Statistics.TensorStatistics.DisposedOutsideScopeCount} outside scopes");
+    }
 }

@@ -34,7 +34,16 @@ def peak_working_set_mb():
     if sys.platform != "win32":
         import resource
         return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024  # KB on Linux
+    return memory_counters().PeakWorkingSetSize / 1048576
 
+
+def working_set_mb():
+    if sys.platform != "win32":
+        return int(Path("/proc/self/statm").read_text().split()[1]) * 4096 / 1048576
+    return memory_counters().WorkingSetSize / 1048576
+
+
+def memory_counters():
     class Counters(ctypes.Structure):
         _fields_ = [("cb", ctypes.wintypes.DWORD), ("PageFaultCount", ctypes.wintypes.DWORD)] + \
                    [(name, ctypes.c_size_t) for name in ("PeakWorkingSetSize", "WorkingSetSize", "QuotaPeakPagedPoolUsage",
@@ -47,7 +56,7 @@ def peak_working_set_mb():
     kernel32.GetCurrentProcess.restype = ctypes.wintypes.HANDLE
     psapi.GetProcessMemoryInfo.argtypes = [ctypes.wintypes.HANDLE, ctypes.c_void_p, ctypes.wintypes.DWORD]
     psapi.GetProcessMemoryInfo(kernel32.GetCurrentProcess(), ctypes.byref(counters), counters.cb)
-    return counters.PeakWorkingSetSize / 1048576
+    return counters
 
 
 def main():
@@ -59,12 +68,18 @@ def main():
     parser.add_argument("--out")
     parser.add_argument("--package", default="default", help="Stanza's English package (default_fast has no constituency)")
     parser.add_argument("--documents", type=int, default=0, help="time N one-sentence texts, one by one vs bulk")
+    parser.add_argument("--memory", type=int, default=0, help="load, then one nlp(text) call on about N words; report the peaks")
+    parser.add_argument("--processors", help="--memory: the processors to load (default: all of the package's)")
+    parser.add_argument("--chunk-words", type=int, default=0, help="--memory: one call per part of about K words")
+    parser.add_argument("--bulk", action="store_true", help="--memory with --chunk-words: one bulk_process call on the parts")
     args = parser.parse_args()
     if args.threads > 0:
         torch.set_num_threads(args.threads)
 
     if args.documents > 0:
         return time_documents(args)
+    if args.memory > 0:
+        return measure_memory(args)
 
     text = build_text(args.copies)
     start = time.perf_counter()
@@ -119,6 +134,65 @@ def time_documents(args):
     print(f"Python Stanza {stanza.__version__} ({args.package}), torch threads {torch.get_num_threads()}, {len(texts)} documents of one sentence")
     print(f"{'one by one':<14}{alone:9.2f} s {len(texts) / alone:10.0f} docs/s")
     print(f"{'bulk':<14}{bulk:9.2f} s {len(texts) / bulk:10.0f} docs/s")
+
+
+def word_count(s):
+    return len([w for w in s.replace("\t", " ").replace("\r", " ").replace("\n", " ").split(" ") if w])
+
+
+def build_paragraphs(words):
+    """The same text as samples/StanzaSharp.Benchmark --memory: corpus.txt and validation*.txt, repeated, cut after
+    the paragraph that reaches the word count."""
+    golden = ROOT / "tests" / "golden"
+    files = ["corpus.txt"] + sorted(p.name for p in golden.glob("validation*.txt"))
+    unit = [p.strip("\n") for f in files for p in (golden / f).read_bytes().decode("utf-8").split("\n\n")]
+    unit = [p for p in unit if p.strip()]
+    result, count = [], 0
+    while count < words:
+        for p in unit:
+            if count >= words:
+                break
+            result.append(p)
+            count += word_count(p)
+    return result
+
+
+def chunk(paragraphs, words):
+    parts, current, count = [], [], 0
+    for p in paragraphs:
+        current.append(p)
+        count += word_count(p)
+        if count >= words:
+            parts.append("\n\n".join(current))
+            current, count = [], 0
+    if current:
+        parts.append("\n\n".join(current))
+    return parts
+
+
+
+def measure_memory(args):
+    paragraphs = build_paragraphs(args.memory)
+    start = time.perf_counter()
+    nlp = stanza.Pipeline("en", dir=args.models, package=args.package, processors=args.processors, download_method=None,
+                          use_gpu=False, logging_level="WARN")
+    load = time.perf_counter() - start
+    load_peak, after_load = peak_working_set_mb(), working_set_mb()
+    start = time.perf_counter()
+    with torch.no_grad():
+        if args.chunk_words <= 0:
+            docs = [nlp("\n\n".join(paragraphs))]
+        else:
+            parts = chunk(paragraphs, args.chunk_words)
+            docs = nlp.bulk_process(parts) if args.bulk else [nlp(p) for p in parts]
+    seconds = time.perf_counter() - start
+    if args.out:
+        Path(args.out).write_text("".join("{:C}\n\n".format(d) for d in docs), encoding="utf-8", newline="\n")
+    words = sum(d.num_words for d in docs)
+    mode = "one call" if args.chunk_words <= 0 else f"{len(docs)} parts of ~{args.chunk_words} words, " + ("one bulk call" if args.bulk else "one call each")
+    print(f"Python Stanza {stanza.__version__} ({args.package}: {args.processors or 'all'}), torch threads {torch.get_num_threads()}: {words} words, {mode}")
+    print(f"load          {load:7.2f} s  load peak {load_peak:6.0f} MB  after load {after_load:6.0f} MB")
+    print(f"process       {seconds:7.2f} s  peak      {peak_working_set_mb():6.0f} MB  at the end {working_set_mb():6.0f} MB")
 
 
 if __name__ == "__main__":
