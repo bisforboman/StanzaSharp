@@ -12,7 +12,8 @@ namespace StanzaSharp.Nn;
 /// DisposeScope. TorchSharp passes <c>scalar.Handle</c> to native code without keeping the Scalar alive, so a
 /// temporary one (an implicit conversion such as <c>t + 1</c> or <c>masked_fill(m, 0)</c>, or the hidden
 /// <c>alpha = 1</c> of <c>a + b</c> and <c>add(b)</c>) can be finalized by a garbage collection that starts
-/// during the call, while libtorch still reads it. That crashed concurrent Process calls on Arm64. So:
+/// during the call, while libtorch still reads it. That crashed concurrent Process calls on Arm64
+/// (reported as https://github.com/dotnet/TorchSharp/issues/1583; once a TorchSharp release fixes it, this can go). So:
 /// no tensor <c>+</c>, no <c>add(Tensor)</c>, no numbers where TorchSharp expects a Scalar. Use these
 /// (at::Scalar is immutable, so sharing them across threads is fine), or a <c>using var</c> local for a
 /// value known only at run time.
