@@ -444,6 +444,7 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     `cross-os` run with their steps skipped, so the required checks pass in about a minute. No job is skipped
     outright: a skipped job would count as passed. Pushes to main and
     release tags always run everything; if `changes` fails, everything runs.
+  - `concurrency`: a newer push to the same PR or to main cancels the older run; tag runs are never cancelled.
   - `golden`, on a model-cache miss, downloads the models with the C# `ModelDownloader` (via the
     CLI) and converts them with CPU torch. The models are cached on `ModelDownloader.cs`,
     `tools/requirements.txt` and `tools/stanza_convert.py`. It then fails if any test is skipped
