@@ -72,6 +72,9 @@ All 7 steps of the build order are done:
   cut at 5000 words like Stanza, and `CharlmCache` keeps at most 32k words (`MaxWords`).
   Round 3 (issue #19, `--memory`): `.pt` files are read tensor by tensor too (the unpickler reads a stream; storages
   are read from the file on demand), and `HighwayLstm` frees each layer's padded tensors as soon as they are used.
+  After a Process call of 1,000+ words, `NativeHeap.Trim` calls glibc's `malloc_trim(0)` on Linux (user's decision,
+  2026-10-07: always on, no public API; `PipelineOptions.TrimNativeHeap` is internal, for the benchmark). On Windows
+  libtorch's built-in mimalloc keeps freed pages; only `MIMALLOC_PURGE_DELAY=0` releases them (documented, not set).
 - `Tree.ToString` prints `(`/`)` in labels and words as `-LRB-`/`-RRB-`, like Stanza. The tree
   itself keeps the raw text.
 - Measured float drift vs Python: charlm < 1e-7, tokenizer logits ≈ 4e-6, UPOS logits ≈ 2e-5,
@@ -151,7 +154,9 @@ All 7 steps of the build order are done:
     ≈ 950 MB private (default), 700 MB (default_fast). VerifyChecksums ≈ +1.3 s / +0.8 s load.
   - `CancellationToken` overloads of all three `Process` (separate overloads, binary compatible). Checked in
     `Pipeline.Step` before each processor and at the head of each batch loop (tokenizer batches and windows, pos,
-    lemma, constituency per step, depparse, sentiment, ner; mwt is one batch). Every check sits outside the inner
+    lemma, constituency per step, depparse, sentiment, ner; mwt is one batch). Depparse also checks inside a batch:
+    after each charlm pass, between `HighwayLstm` layers (its optional token), before each `DeepBiaffine` chunk and
+    per Chu-Liu/Edmonds decode; the longest gap is one charlm pass or LSTM layer (~1/8 of a batch). Every check sits outside the inner
     dispose scopes or inside a try/finally that disposes, so nothing leaks (`ConcurrencyTests`).
   - Thread safety: Process keeps all mutable state per call (the Document, `CharlmCache`, the lemmatizer's
     DeltaVocab copy, the parser states); the models are read-only after Load; TorchSharp's dispose scopes are

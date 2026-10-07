@@ -50,20 +50,24 @@ public class ConcurrencyTests(Xunit.Abstractions.ITestOutputHelper output)
 
     /// <summary>
     /// Cancels a long text in the middle of each processor in turn (timed from an uncanceled run), so the checks inside
-    /// every processor's batch loop are reached. With <paramref name="countTensors"/>, TorchSharp's live tensor count on
-    /// this thread must be unchanged afterwards. The lemmatizer is left out of that count: TorchSharp counts the two
-    /// undefined index tensors of every <c>pack_padded_sequence(enforce_sorted: true)</c> as live forever (they hold no
-    /// memory), which the lemmatizer's encoder uses like Stanza's.
+    /// every processor's batch loop are reached. TorchSharp's live tensor count on this thread must not grow by more than
+    /// an uncanceled call's: TorchSharp counts the two undefined index tensors of every
+    /// <c>pack_padded_sequence(enforce_sorted: true)</c> as live forever (they hold no memory), which the lemmatizer's
+    /// encoder uses like Stanza's. So a call stopped before the lemmatizer must leave the count unchanged, one stopped
+    /// after it must add exactly what an uncanceled call adds, and one stopped inside it is not counted.
     /// </summary>
     [ModelTheory]
-    [InlineData(null, false)]
-    [InlineData("tokenize,mwt,pos,constituency,sentiment,ner", true)]
-    public void Canceled_InsideEachProcessor_ThrowsPromptly_AndThePipelineStillWorks(string? processors, bool countTensors)
+    [InlineData(null)]
+    [InlineData("tokenize,mwt,pos,constituency,sentiment,ner")]
+    public void Canceled_InsideEachProcessor_ThrowsPromptly_AndThePipelineStillWorks(string? processors)
     {
         var timings = new TimingLogger();
         using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = processors, Logger = timings });
         var corpus = File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt"));
+        var stats = DisposeScopeManager.Statistics; // per thread, and Process runs on this one
+        long live = stats.ThreadTotalLiveCount;
         var before = Conllu.Write(nlp.Process(corpus));
+        long corpusLeak = stats.ThreadTotalLiveCount - live; // 0 without the lemmatizer, as is lemmaLeak below
         if (processors == null)
             Assert.Equal(File.ReadAllText(Path.Combine(Repo.Golden, "pipeline.conllu")), before);
 
@@ -73,12 +77,12 @@ public class ConcurrencyTests(Xunit.Abstractions.ITestOutputHelper output)
         Assert.Throws<OperationCanceledException>(() => nlp.Process([["A", "."]], new CancellationToken(true)));
 
         var big = string.Join("\n\n", Enumerable.Repeat(string.Join("\n\n", Texts), 2));
+        live = stats.ThreadTotalLiveCount;
         timings.Steps.Clear();
         nlp.Process(big);
         var steps = timings.Steps.ToList();
-
-        var stats = DisposeScopeManager.Statistics; // per thread, and Process runs on this one
-        long live = stats.ThreadTotalLiveCount;
+        long lemmaLeak = stats.ThreadTotalLiveCount - live;
+        live = stats.ThreadTotalLiveCount;
         for (int i = 0; i < steps.Count; i++)
         {
             var (processor, ms) = steps[i];
@@ -91,19 +95,31 @@ public class ConcurrencyTests(Xunit.Abstractions.ITestOutputHelper output)
                 cts.CancelAfter(delay);
             else
                 timings.OnStep = p => { if (p == steps[i - 1].Processor) cts.CancelAfter(delay); };
+            timings.Steps.Clear();
             var e = Assert.ThrowsAny<OperationCanceledException>(() => nlp.Process(big, cts.Token));
             timings.OnStep = null;
             output.WriteLine($"{processor} ({ms:F0} ms): canceled after {latency.Elapsed.TotalMilliseconds:F0} ms, " +
                 $"in {e.StackTrace!.Split('\n').Select(l => l.Trim()).FirstOrDefault(l => l.StartsWith("at StanzaSharp.") && !l.Contains("Pipeline.Step"))}");
-            // Within one batch: depparse checks between 5000-word batches, about 7 s each on a 4-core CI runner.
-            Assert.True(latency.Elapsed < TimeSpan.FromSeconds(15), $"canceled in {processor}, the call returned {latency.Elapsed.TotalMilliseconds:F0} ms later");
-            if (countTensors)
-                Assert.Equal(live, stats.ThreadTotalLiveCount);
+            Assert.True(latency.Elapsed < MaxLatency, $"canceled in {processor}, the call returned {latency.Elapsed.TotalMilliseconds:F0} ms later");
+            // Where the call stopped decides the count (a loaded machine can move it to the next processor).
+            if (timings.Steps.Any(s => s.Processor == "lemma"))
+                Assert.Equal(lemmaLeak, stats.ThreadTotalLiveCount - live);
+            else if (!e.StackTrace!.Contains("StanzaSharp.Lemma."))
+                Assert.Equal(0, stats.ThreadTotalLiveCount - live);
+            live = stats.ThreadTotalLiveCount;
         }
         Assert.Equal(before, Conllu.Write(nlp.Process(corpus, CancellationToken.None)));
-        if (countTensors)
-            Assert.Equal(live, stats.ThreadTotalLiveCount);
+        Assert.Equal(corpusLeak, stats.ThreadTotalLiveCount - live);
     }
+
+    /// <summary>
+    /// The longest gap between two checks is now one POS batch: up to 1.4 s on an 8-core desktop, 8 s with the desktop
+    /// 5x overloaded. Depparse's longest is one charlm pass or highway LSTM layer (about an eighth of its 5000-word batch,
+    /// which alone set the old 15 s bound: up to 1.7 s locally, 6-7 s on 4-core CI runners). CI runners are 3-4x slower
+    /// than the desktop, so the tagger needs about 6 s there; the bound stays at 15 s until the tagger checks inside its
+    /// batches too.
+    /// </summary>
+    private static readonly TimeSpan MaxLatency = TimeSpan.FromSeconds(15);
 
     /// <summary>Collects the pipeline's "{processor} took {ms} ms" debug messages.</summary>
     private sealed class TimingLogger : Microsoft.Extensions.Logging.ILogger

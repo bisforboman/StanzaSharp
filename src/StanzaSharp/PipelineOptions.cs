@@ -97,7 +97,8 @@ public sealed class PipelineOptions
 
     /// <summary>
     /// Linux with glibc: return the native heap's free memory to the OS at the end of each Process call
-    /// (<c>malloc_trim(0)</c>, see <see cref="NativeHeap"/>). Internal until its public API is decided.
+    /// (<c>malloc_trim(0)</c>, see <see cref="NativeHeap"/>). Always on for users (decided: no public API, its cost is
+    /// in the noise); internal so the benchmark can measure without it.
     /// </summary>
     internal bool TrimNativeHeap { get; init; } = true;
 }
