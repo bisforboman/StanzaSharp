@@ -167,7 +167,7 @@ string Model(string processor) => Path.Combine(modelDir, processor, models[proce
 
 var clock = Stopwatch.StartNew();
 using var tokenizer = Tokenizer.Load(Model("tokenize"), device, backend);
-using var mwt = MwtExpander.Load(Model("mwt"), device);
+using var mwt = MwtExpander.Load(Model("mwt"), device, backend);
 using var pretrain = Pretrain.Load(Path.Combine(modelDir, Pipeline.PretrainPath), device);
 using var charlmForward = shared.Contains(Pipeline.ForwardCharlmPath) ? CharLanguageModel.Load(Path.Combine(modelDir, Pipeline.ForwardCharlmPath), device) : null;
 using var charlmBackward = shared.Contains(Pipeline.BackwardCharlmPath) ? CharLanguageModel.Load(Path.Combine(modelDir, Pipeline.BackwardCharlmPath), device) : null;

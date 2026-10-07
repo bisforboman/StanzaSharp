@@ -1,8 +1,6 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using StanzaSharp.Nn;
-using TorchSharp;
-using TorchSharp.Modules;
 using static TorchSharp.torch;
 
 namespace StanzaSharp.Mwt;
@@ -19,12 +17,9 @@ internal sealed class MwtExpander : IDisposable
     private readonly Dictionary<string, int> _vocab;
     private readonly bool _useDict, _useModel;
     private readonly int _padId, _unkId, _sosId, _eosId;
-    private readonly Embedding? _embedding;
-    private readonly LSTM? _encoder;
-    private readonly Linear? _hidden, _output;
-    private readonly Device _device = Weights.Device; // the device the model was loaded on
+    private readonly IMwtNet? _net;
 
-    private MwtExpander(Checkpoint ckpt)
+    private MwtExpander(Checkpoint ckpt, Backend backend)
     {
         var config = ckpt.Root["config"]!;
         bool dictOnly = config["dict_only"]!.GetValue<bool>();
@@ -38,19 +33,13 @@ internal sealed class MwtExpander : IDisposable
         if (config["force_exact_pieces"]?.GetValue<bool>() != true)
             throw new NotSupportedException("MWT seq2seq models (force_exact_pieces = false) are not ported");
 
-        var model = ckpt.Root["model"]!;
-        int emb = config["emb_dim"]!.GetValue<int>();
-        int hidden = config["hidden_dim"]!.GetValue<int>();
-        int layers = config["num_layers"]!.GetValue<int>();
-        _embedding = nn.Embedding(config["vocab_size"]!.GetValue<int>(), emb, padding_idx: _padId).LoadFrom(ckpt, model, "embedding.");
-        _encoder = nn.LSTM(emb, hidden / 2, numLayers: layers, batchFirst: true, bidirectional: true).LoadFrom(ckpt, model, "encoder.");
-        _hidden = nn.Linear(hidden, hidden).LoadFrom(ckpt, model, "output_layer.0.");
-        _output = nn.Linear(hidden, 2).LoadFrom(ckpt, model, "output_layer.2.");
+        _net = backend == Backend.Managed ? new ManagedMwtNet(ckpt, config) : new MwtNet(ckpt, config, _padId);
     }
 
     /// <summary>Loads <c>basePath.json</c> + <c>basePath.safetensors</c>, e.g. <c>models/converted/en/mwt/combined</c>.</summary>
-    /// <param name="device">Where the model runs; CPU by default.</param>
-    public static MwtExpander Load(string basePath, Device? device = null) => Weights.On(device, () => new MwtExpander(Checkpoint.Load(basePath)));
+    /// <param name="device">Where the model runs; CPU by default (TorchSharp only).</param>
+    public static MwtExpander Load(string basePath, Device? device = null, Backend backend = Backend.TorchSharp) =>
+        Weights.On(device, () => new MwtExpander(Checkpoint.Load(basePath), backend));
 
     /// <summary>Expands marked tokens in place and renumbers each sentence's words.</summary>
     public void Process(Document doc)
@@ -99,8 +88,6 @@ internal sealed class MwtExpander : IDisposable
     {
         if (tokens.Count == 0)
             return [];
-        using var _ = torch.no_grad();
-        using var scope = NewDisposeScope();
 
         // <SOS> chars <EOS>, one unit per code point; characters outside the vocabulary embed as <UNK>.
         var chars = tokens.Select(t => t.EnumerateRunes().Select(r => r.ToString()).ToArray()).ToList();
@@ -116,10 +103,7 @@ internal sealed class MwtExpander : IDisposable
             ids[j * width + chars[j].Length + 1] = _eosId;
         }
 
-        var src = torch.tensor(ids, [tokens.Count, width], device: _device);
-        var encoded = Rnn.RunPacked(_encoder!, _embedding!.forward(src), lengths);
-        var logits = _output!.forward(nn.functional.relu(_hidden!.forward(encoded)));
-        var cuts = (logits[.., .., 1] > logits[.., .., 0]).ToArray<bool>();
+        var logits = _net!.Forward(ids, tokens.Count, width, lengths);
 
         var result = new List<string>(tokens.Count);
         for (int j = 0; j < chars.Count; j++)
@@ -127,7 +111,8 @@ internal sealed class MwtExpander : IDisposable
             var sb = new StringBuilder();
             for (int k = 0; k < chars[j].Length; k++)
             {
-                if (cuts[j * width + k + 1])
+                int at = (j * width + k + 1) * 2;
+                if (logits[at + 1] > logits[at])
                     sb.Append(' ');
                 sb.Append(chars[j][k]);
             }
@@ -165,11 +150,5 @@ internal sealed class MwtExpander : IDisposable
         }
     }
 
-    public void Dispose()
-    {
-        _embedding?.Dispose();
-        _encoder?.Dispose();
-        _hidden?.Dispose();
-        _output?.Dispose();
-    }
+    public void Dispose() => _net?.Dispose();
 }

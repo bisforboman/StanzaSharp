@@ -119,7 +119,7 @@ public sealed class Pipeline : IDisposable
 
         _tokenizer = Timed(Name("tokenize"), () => Tokenizer.Load(Model("tokenize"), backend: options.Backend));
         if (models.ContainsKey("mwt"))
-            _mwt = Timed(Name("mwt"), () => MwtExpander.Load(Model("mwt")));
+            _mwt = Timed(Name("mwt"), () => MwtExpander.Load(Model("mwt"), backend: options.Backend));
         if (models.ContainsKey("pos"))
             _pos = Timed(Name("pos"), () => PosTagger.Load(Model("pos"), _pretrain!, _charlmForward, _charlmBackward));
         if (models.ContainsKey("lemma"))

@@ -6,6 +6,7 @@ using StanzaSharp.Nn;
 using StanzaSharp.Nn.Managed;
 using TorchSharp;
 using Xunit.Abstractions;
+using StanzaSharp.Mwt;
 using StanzaSharp.Tokenize;
 using static TorchSharp.torch;
 
@@ -263,6 +264,24 @@ public class ManagedBackendTests(ITestOutputHelper output)
         var feats = Enumerable.Range(0, lengths.Length * width * 9).Select(_ => rng.Next(4) == 0 ? 1f : 0f).ToArray();
         var expected = reference.Forward(ids, feats, lengths.Length, width, lengths, default);
         var actual = With(path, 4, () => managed.Forward(ids, feats, lengths.Length, width, lengths, default));
+        output.WriteLine($"{path}: max |diff| {TokenizerTests.AssertClose(expected, actual, 1e-4f, path):E2}");
+    }
+
+    /// <summary>MWT's classifier network, both backends on the same batch of ragged rows.</summary>
+    [ModelTheory]
+    [MemberData(nameof(Paths))]
+    public void MwtNet_ManagedMatchesTorchSharp(string path)
+    {
+        var ckpt = Checkpoint.Load(Repo.Model("mwt/combined"));
+        var config = ckpt.Root["config"]!;
+        using var reference = new MwtNet(ckpt, config, 0);
+        var managed = new ManagedMwtNet(ckpt, config);
+        long[] lengths = [14, 3, 9, 14, 6];
+        int width = 14, vocab = config["vocab_size"]!.GetValue<int>();
+        var rng = new Random(8);
+        var ids = Enumerable.Range(0, lengths.Length * width).Select(_ => (long)rng.Next(vocab)).ToArray();
+        var expected = reference.Forward(ids, lengths.Length, width, lengths);
+        var actual = With(path, 4, () => managed.Forward(ids, lengths.Length, width, lengths));
         output.WriteLine($"{path}: max |diff| {TokenizerTests.AssertClose(expected, actual, 1e-4f, path):E2}");
     }
 
