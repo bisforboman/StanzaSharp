@@ -32,10 +32,11 @@ const string Usage = """
       --processors P  --memory: the processors to load (default: all of the package's)
       --chunk-words K --memory: split the text at paragraphs into parts of about K words and call Process
                       on each part in turn (--bulk: one Process(IEnumerable<string>) call on the parts)
+      --calls N       --memory: repeat the Process call(s) N times, reporting the memory after each (default: 1)
     """;
 
 string modelDir = Path.Combine("models", "converted", "en");
-int copies = 8, runs = 3, threads = 0, documents = 0, memoryWords = 0, chunkWords = 0, cacheWords = CharlmCache.DefaultMaxWords;
+int copies = 8, runs = 3, threads = 0, documents = 0, memoryWords = 0, chunkWords = 0, calls = 1, cacheWords = CharlmCache.DefaultMaxWords;
 string? outFile = null, processors = null;
 bool bulkCall = false, verbose = false;
 var device = torch.CPU;
@@ -60,6 +61,7 @@ for (int i = 0; i < args.Length; i++)
         case "--bulk": bulkCall = true; break;
         case "--charlm-cache" when i + 1 < args.Length: cacheWords = int.Parse(args[++i]); break;
         case "--verbose": verbose = true; break;
+        case "--calls" when i + 1 < args.Length: calls = int.Parse(args[++i]); break;
         default:
             Console.Error.WriteLine(Usage);
             return 2;
@@ -99,17 +101,30 @@ if (memoryWords > 0)
     double loadSeconds = clockLoad.Elapsed.TotalSeconds;
     double loadPeak = PeakMB(), afterLoad = WorkingSetMB();
     var gcAfterLoad = GC.GetGCMemoryInfo();
-    clockLoad.Restart();
-    List<Document> docs;
-    if (chunkWords <= 0)
-        docs = [nlp.Process(string.Join("\n\n", paragraphs))];
-    else
+    var after = new List<string>();
+    List<Document> docs = null!;
+    double processSeconds = 0;
+    GCMemoryInfo gc = default;
+    for (int call = 1; call <= calls; call++)
     {
-        var parts = Chunk(paragraphs, chunkWords);
-        docs = bulkCall ? nlp.Process((IEnumerable<string>)parts) : parts.Select(nlp.Process).ToList();
+        clockLoad.Restart();
+        if (chunkWords <= 0)
+            docs = [nlp.Process(string.Join("\n\n", paragraphs))];
+        else
+        {
+            var parts = Chunk(paragraphs, chunkWords);
+            docs = bulkCall ? nlp.Process((IEnumerable<string>)parts) : parts.Select(nlp.Process).ToList();
+        }
+        double seconds = clockLoad.Elapsed.TotalSeconds;
+        if (call == 1)
+        {
+            processSeconds = seconds;
+            gc = GC.GetGCMemoryInfo();
+        }
+        after.Add($"after call {call}  {seconds,7:F2} s  peak {PeakMB(),6:F0} MB  working set {WorkingSetMB(),6:F0} MB");
+        if (verbose)
+            after.Add("  " + HeapStats.Describe());
     }
-    double processSeconds = clockLoad.Elapsed.TotalSeconds;
-    var gc = GC.GetGCMemoryInfo();
     if (outFile != null)
         File.WriteAllText(outFile, string.Concat(docs.Select(Conllu.Write)));
     int wordCount = docs.Sum(d => d.Sentences.Sum(s => s.Words.Count()));
@@ -120,12 +135,15 @@ if (memoryWords > 0)
                       $"(GC heap {gcAfterLoad.HeapSizeBytes / 1048576.0:F0} MB, committed {gcAfterLoad.TotalCommittedBytes / 1048576.0:F0} MB)");
     Console.WriteLine($"process       {processSeconds,7:F2} s  peak      {PeakMB(),6:F0} MB  at the end {WorkingSetMB(),6:F0} MB  " +
                       $"(GC heap {gc.HeapSizeBytes / 1048576.0:F0} MB, committed {gc.TotalCommittedBytes / 1048576.0:F0} MB, {GC.CollectionCount(2)} gen2 GCs)");
+    foreach (var line in after)
+        Console.WriteLine(line);
     if (verbose)
     {
         GC.Collect();
         GC.WaitForPendingFinalizers();
         GC.Collect();
         Console.WriteLine($"after a full GC and finalizers: working set {WorkingSetMB(),6:F0} MB");
+        Console.WriteLine("  " + HeapStats.Describe());
     }
     return 0;
 }
@@ -293,5 +311,28 @@ sealed class MemoryLogger : Microsoft.Extensions.Logging.ILogger
     {
         using var p = Process.GetCurrentProcess();
         Console.WriteLine($"  {formatter(state, exception),-70} working set {p.WorkingSet64 / 1048576.0,6:F0} MB  peak {p.PeakWorkingSet64 / 1048576.0,6:F0} MB  GC heap {GC.GetGCMemoryInfo().HeapSizeBytes / 1048576.0,5:F0} MB  {TorchSharp.DisposeScopeManager.Statistics.TensorStatistics.ThreadTotalLiveCount} live tensors, {TorchSharp.DisposeScopeManager.Statistics.TensorStatistics.CreatedOutsideScopeCount - TorchSharp.DisposeScopeManager.Statistics.TensorStatistics.DisposedOutsideScopeCount} outside scopes");
+    }
+}
+
+/// <summary>Diagnostics of the native heap on Linux (glibc): mallinfo2 and /proc/self/smaps_rollup.</summary>
+static class HeapStats
+{
+    [System.Runtime.InteropServices.DllImport("libc.so.6", EntryPoint = "mallinfo2")]
+    static extern MallInfo2 MallInfo();
+
+    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+    struct MallInfo2 { public nuint Arena, Ordblks, Smblks, Hblks, Hblkhd, Usmblks, Fsmblks, Uordblks, Fordblks, Keepcost; }
+
+    public static string Describe()
+    {
+        var gc = GC.GetGCMemoryInfo();
+        string text = $"GC heap {gc.HeapSizeBytes / 1048576.0:F0} MB, committed {gc.TotalCommittedBytes / 1048576.0:F0} MB";
+        if (!OperatingSystem.IsLinux()) // glibc
+            return text;
+        var m = MallInfo();
+        double mb(nuint x) => x / 1048576.0;
+        text += $"; glibc: arenas {mb(m.Arena):F0} MB (in use {mb(m.Uordblks):F0}, free {mb(m.Fordblks):F0}, trimmable top {mb(m.Keepcost):F0}), mmapped {mb(m.Hblkhd):F0} MB in {m.Hblks}";
+        var rollup = File.ReadAllLines("/proc/self/smaps_rollup").Where(l => l.StartsWith("Rss:") || l.StartsWith("Anonymous:") || l.StartsWith("Private_Dirty:"));
+        return text + "; smaps_rollup " + string.Join(", ", rollup.Select(l => System.Text.RegularExpressions.Regex.Replace(l, @"\s+", " ")));
     }
 }

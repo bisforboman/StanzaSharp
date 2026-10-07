@@ -72,6 +72,7 @@ def main():
     parser.add_argument("--processors", help="--memory: the processors to load (default: all of the package's)")
     parser.add_argument("--chunk-words", type=int, default=0, help="--memory: one call per part of about K words")
     parser.add_argument("--bulk", action="store_true", help="--memory with --chunk-words: one bulk_process call on the parts")
+    parser.add_argument("--calls", type=int, default=1, help="--memory: repeat the call(s) N times, reporting the memory after each")
     args = parser.parse_args()
     if args.threads > 0:
         torch.set_num_threads(args.threads)
@@ -178,14 +179,19 @@ def measure_memory(args):
                           use_gpu=False, logging_level="WARN")
     load = time.perf_counter() - start
     load_peak, after_load = peak_working_set_mb(), working_set_mb()
-    start = time.perf_counter()
-    with torch.no_grad():
-        if args.chunk_words <= 0:
-            docs = [nlp("\n\n".join(paragraphs))]
-        else:
-            parts = chunk(paragraphs, args.chunk_words)
-            docs = nlp.bulk_process(parts) if args.bulk else [nlp(p) for p in parts]
-    seconds = time.perf_counter() - start
+    after = []
+    for call in range(1, args.calls + 1):
+        start = time.perf_counter()
+        with torch.no_grad():
+            if args.chunk_words <= 0:
+                docs = [nlp("\n\n".join(paragraphs))]
+            else:
+                parts = chunk(paragraphs, args.chunk_words)
+                docs = nlp.bulk_process(parts) if args.bulk else [nlp(p) for p in parts]
+        elapsed = time.perf_counter() - start
+        if call == 1:
+            seconds = elapsed
+        after.append(f"after call {call}  {elapsed:7.2f} s  peak {peak_working_set_mb():6.0f} MB  working set {working_set_mb():6.0f} MB")
     if args.out:
         Path(args.out).write_text("".join("{:C}\n".format(d) for d in docs), encoding="utf-8", newline="\n")
     words = sum(d.num_words for d in docs)
@@ -193,6 +199,7 @@ def measure_memory(args):
     print(f"Python Stanza {stanza.__version__} ({args.package}: {args.processors or 'all'}), torch threads {torch.get_num_threads()}: {words} words, {mode}")
     print(f"load          {load:7.2f} s  load peak {load_peak:6.0f} MB  after load {after_load:6.0f} MB")
     print(f"process       {seconds:7.2f} s  peak      {peak_working_set_mb():6.0f} MB  at the end {working_set_mb():6.0f} MB")
+    print("\n".join(after))
 
 
 if __name__ == "__main__":
