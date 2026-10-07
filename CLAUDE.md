@@ -597,6 +597,34 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   merged branches deleted. Every change goes through a PR. A new required CI job must also be added to the
   protection's required checks.
 
+## Managed backend (#29)
+
+- **Goal:** the main `StanzaSharp` package runs on a pure managed backend (C# SIMD kernels, no native dependencies).
+- **Owner's decisions** (2026-10-07; GPU revised 2026-10-08):
+  - GPU stays, as a separate opt-in package `StanzaSharp.Cuda` carrying the TorchSharp backend (and
+    `Device`/`DisableTf32`). So the backend seam (Phase 1) is permanent with two implementations, managed and
+    TorchSharp; the TorchSharp one is also the CPU test reference.
+  - Accepted: score tolerances 1e-4 → 1e-3 with discrete outputs byte-identical; a slower Arm64 path at first; up to
+    ~15% slower at 1 thread.
+  - 0.5: managed backend the default, TorchSharp still selectable. 1.0: TorchSharp leaves the main package (not the
+    project).
+- **Status:** Phase 0 (spike) is done; its kernels are production-ready (Arm64/portable paths, pooled buffers, a shared
+  thread pool, cancellation), still `internal` and unused by `Pipeline`. Next: Phase 1, the seam.
+- **Code:** `src/StanzaSharp.Nn/Managed/` (`Gemm.cs`: `KernelPath`, `PackedMatrix`, `Gemm`, `Act`;
+  `ManagedThreads.cs`; `PackedLstm.cs`; `ManagedModels.cs`: charlm and highway biLSTM). Tests:
+  `ManagedBackendTests` (every path the machine runs natively). Harness: `StanzaSharp.Benchmark managed-spike
+  check|speed|concurrent|gemm`. Numbers and method: `docs/managed-backend-spike.md`.
+- **Rules for the managed code:**
+  - `Gemm.Path` is detected at startup (Vector256 = AVX2/FMA, Vector128 = NEON on Arm64, Scalar); every path reads the
+    same packed weights. A new kernel or element-wise step needs a version per path and a test per path.
+  - `ManagedThreads`: one process-wide pool of `Count` − 1 workers; each caller works its own region and idle workers
+    help. Not per-caller teams: those oversubscribe (measured: 8 callers fall to TorchSharp's throughput). A region's
+    split must not depend on how many threads help, so results stay bitwise identical under concurrency.
+  - Per-call buffers come from `ArrayPool<T>.Shared` and go back in `finally`; no buffer is shared between calls, and
+    no mutable state lives on a model. Rented arrays hold stale data: write before reading.
+  - Check the `CancellationToken` per time step and per GEMM block.
+  - `Gemm.Path` and `ManagedThreads.Count` are process-wide; only `ManagedBackendTests` may set them.
+
 ## Design decisions
 
 - Model the document as Document → Sentence → Token → Word from the start. Tokens come from the
