@@ -222,12 +222,16 @@ What is left is engineering, plus these risks:
 7. **Memory.** Allocate per call from pools (see the peak above). The charlm tables add 31 MB of weights.
 8. **GPU** goes away unless TorchSharp stays as an optional backend.
 
-## Owner's decisions (2026-10-07)
+## Owner's decisions (2026-10-07, GPU revised 2026-10-08)
 
-- GPU: dropped. `Device`/`DisableTf32` go away with TorchSharp.
+- GPU: kept as a separate opt-in package, `StanzaSharp.Cuda`, which carries the TorchSharp backend (and
+  `Device`/`DisableTf32`). The main `StanzaSharp` package becomes fully managed, with no native dependencies. So the
+  backend seam (Phase 1) is permanent, with two implementations, and the TorchSharp one is also the CPU test
+  reference. (On 2026-10-07 GPU was to be dropped.)
 - Accepted: score tolerances 1e-4 → 1e-3 (discrete outputs stay byte-identical); a slower Arm64 path at first;
   up to ~15% slower at 1 thread.
-- Versions: 0.5 makes the managed backend the default with TorchSharp still selectable; 1.0 removes TorchSharp.
+- Versions: 0.5 makes the managed backend the default with TorchSharp still selectable; 1.0 removes TorchSharp
+  from the main package (it stays in `StanzaSharp.Cuda`).
 
 ## Questions for the owner (issue #29, 1–3), with these numbers
 
@@ -241,3 +245,120 @@ What is left is engineering, plus these risks:
    With per-processor migration (Phase 2) behind an internal seam, the break happens only in Phase 3, so 0.5
    could ship the managed backend as default with TorchSharp optional, and 1.0 could remove it. Which does the
    owner want?
+
+## Production-ready kernels (2026-10-08, before Phase 1)
+
+The spike's open items 1, 6 and 7 (other architectures, threading, memory). The code is still internal and unused by
+`Pipeline`.
+
+### What changed
+
+- **Kernel paths** (`KernelPath`, `Gemm.Path`, detected at startup by `Gemm.Detect`):
+  - `Vector256`: the spike's AVX2/FMA kernels (when `Vector256.IsHardwareAccelerated`).
+  - `Vector128`: a 6×16 kernel in 24 accumulators + 4 panel registers + 1 broadcast, which fits Arm64's 32 NEON
+    registers; plus 3-row and 1-row kernels. Chosen on Arm64 (and on x64 without AVX2).
+  - `Scalar`: plain loops, for platforms without SIMD.
+  - All three read the same packed panels ([K][16]), so the weights are packed once whatever the path. FMA goes through
+    `MultiplyAddEstimate` (one instruction on FMA3 and every Arm64). The LSTM cell and the highway step have a version
+    per path (`Act.LstmCell`, `Act.AddGatedTanh`).
+  - `Gemm.Path` is settable, so the tests and `managed-spike --path` run every path on one machine.
+- **Buffers** come from `ArrayPool<float>.Shared`: the highway layer's [rows, 2400] projection and the layer outputs,
+  the LSTM cells and row pointers, the charlm's h/c buffers. Each call rents its own, so concurrent calls share
+  nothing; a call reuses what an earlier one returned. Outputs go to caller-provided spans (the charlm writes rows at a
+  stride, so a caller can place them straight into a wider input row). Managed allocations per benchmark run: highway
+  0.2 MB (spike: ≈ 900 MB), charlm 21 MB (character ids and strings).
+- **Threading** (`ManagedThreads`): a process-wide pool of `Count` − 1 workers plus each calling thread. A caller
+  always works its own region; idle workers help whichever regions are open (scanning from a per-worker offset), spin
+  ≈ 1 ms, then block on a semaphore. N concurrent callers therefore use at most `Count` − 1 + N threads. Items are
+  claimed one at a time, and a region's split never depends on how many threads help, so results are bitwise the same
+  with any thread count and under concurrency (tested). A worker's exception is rethrown on the caller.
+- **Cancellation**: `CancellationToken` is checked before every LSTM/charlm time step and every GEMM block (96 rows ×
+  128 columns). The 30 ms cancel in the test returned after 38 ms.
+
+### Values (`managed-spike check`, 845 sentences, 8,401 words), per path
+
+| | Vector256 | Vector128 | Scalar |
+|---|---:|---:|---:|
+| charlm forward vs TorchSharp | 1.05e-5 | 1.05e-5 | 8.4e-6 |
+| charlm backward vs TorchSharp | 1.43e-5 | 1.43e-5 | 1.38e-5 |
+| highway, same input | 2.0e-6 | 2.4e-6 | 2.1e-6 |
+| UPOS logits vs `PosTagger.Predict` | 1.41e-4 | 1.41e-4 | 1.53e-4 |
+| words whose UPOS/XPOS/feats differ | **0** | **0** | **0** |
+
+### Speed (idle machine: load 1% before the runs; Ryzen 7 5800X, Vector256 path; 8 copies, 3 runs, medians)
+
+| threads | charlm TorchSharp → managed | ratio | highway TorchSharp → managed | ratio |
+|---:|---|---:|---|---:|
+| 1 | 30.65 → 21.70 s | 0.71 | 4.04 → 3.89 s | 0.96 |
+| 8 | 9.32 → 4.68 s | 0.50 | 1.20 → 0.77 s | 0.64 |
+| 16 | 8.19 → 4.91 s | 0.60 | 1.05 → 0.61 s | 0.58 |
+
+- No regression from the pool against the spike's `Barrier` team (spike idle: 0.76/1.06, 0.54/0.74, 0.55/0.69).
+- 1-thread runs vary ±10% between runs (TorchSharp 29.2–32.0 s, managed 19.4–23.5 s). A first 16-thread run gave
+  0.61/0.68 with one 7.9 s outlier; the table has the rerun. 16 threads share 8 cores (SMT), so 8 is the useful count.
+
+Other paths on this x64 machine (8 threads, 1 run, managed only):
+
+| path | charlm | highway |
+|---|---:|---:|
+| Vector256 | 4.68 s | 0.77 s |
+| Vector128 | 16.22 s | 2.65 s |
+| Scalar | 85.98 s | 14.75 s |
+
+On x64, Vector128 is 3.5× slower, not 2×: SSE/AVX have 16 vector registers, so the 6×16 kernel's 29 live
+registers spill. That number says nothing about Arm64, where the same code fits the 32 NEON registers. CI's
+`macos-15` and `windows-11-arm` jobs log `Speed_IsReported` (see below) with the real Arm64 numbers.
+
+### Memory (peak working set, one implementation per process, 8 threads, 2 runs; both load both sets of models)
+
+| | TorchSharp | managed |
+|---|---:|---:|
+| spike | 1,695 MB | 1,960 MB |
+| now | 1,694 MB | **1,669 MB** |
+
+The pooled buffers stay in `ArrayPool.Shared` after a call (trimmed by the runtime on gen-2 GCs under memory
+pressure). Pool buckets are powers of two, so a 48 MB highway buffer occupies 64 MB.
+
+### Concurrent callers (`managed-spike concurrent`, Threads 8, 2 copies; each call = both charlms + highway over all batches)
+
+| callers | TorchSharp per call / throughput | managed, shared pool | managed, per-caller teams (experiment) |
+|---:|---|---|---|
+| 1 | 2.59 s / 0.39 calls/s | 1.40 s / 0.72 | 1.37 s / 0.73 |
+| 4 | 9.41 s / 0.42 | 3.62 s / **1.10** | 5.11 s / 0.76 |
+| 8 | 14.65 s / 0.54 | 6.24 s / **1.24** | 14.41 s / 0.54 |
+
+- Per-caller teams (libtorch's model, also tried for the managed kernels and then removed) oversubscribe: 8 callers ×
+  8 threads on 16 hardware threads spin against each other, and throughput falls back to TorchSharp's.
+- The shared pool keeps throughput rising with callers, and each caller's time grows about as the cores are shared
+  (8 callers: 6.2 s ≈ 4.5 × the single call, with 8× the work). This is what Phase 1 will use.
+- OS threads at 8 callers: TorchSharp 101, managed 87 (the callers plus 7 workers; the rest is the runtime and
+  libtorch's own pool from building the inputs).
+
+### Tests (`ManagedBackendTests`, every path that is hardware on the machine; Vector256 is left out on Arm64)
+
+- GEMM vs `linear` (3 shapes), packed biLSTM vs `nn.LSTM`, charlm vs golden, highway vs `HighwayLstm`: each per path.
+- `ConcurrentCalls_EqualSequentialOutput`: 8 callers × 40 LSTM runs (batches of 1–8 rows, all kernel sizes), bitwise
+  equal to the sequential results, per path.
+- `Cancellation_StopsBetweenSteps_AndThePoolStaysUsable`, `ParallelFor_RethrowsAWorkersException`.
+- `Speed_IsReported`: times TorchSharp and each path on 16 sentences / 320 words and writes them to the test output
+  and the console. It never fails on speed. On this machine (with other tests idle): TorchSharp charlm 289 ms,
+  highway 18 ms; Vector256 0.44×/1.91×, Vector128 0.95×/1.77×, Scalar 4.7×/9.2×. The highway is slower here because
+  320 words in 20 steps leave each step too small to split well across 8 threads; at the tagger's batch size it
+  wins (table above).
+
+### What CI should confirm on Arm64 (`macos-15`, `windows-11-arm`)
+
+- `Gemm.Detect()` gives `Vector128` (the `Speed_IsReported` line names it), and every `ManagedBackendTests` case
+  passes on `Vector128` and `Scalar`.
+- The Vector128/TorchSharp ratios in that line: the first Arm64 numbers. Small-input numbers; a `managed-spike speed`
+  run on an Arm64 machine would give tagger-batch numbers.
+
+### Left before Phase 1
+
+- Arm64 tuning once CI numbers exist (e.g. `FusedMultiplyAddBySelectedScalar` with 4 A values per load, or an 8×12
+  kernel), and an AVX-512 kernel (no AVX-512 machine here).
+- Small batches: the highway at 320 words is 1.9× TorchSharp; per-step regions there are a few microseconds of work.
+  Splitting by rows as well as panels, or running small steps on fewer threads, is the fix.
+- `ManagedThreads.Count` is process-wide like `torch.set_num_threads`; Phase 1 maps `PipelineOptions.Threads` to it.
+- The seam itself (Phase 1), then per-processor ports (lemma's decoder and the constituency parser's stacks are the
+  most exposed to near-ties).
