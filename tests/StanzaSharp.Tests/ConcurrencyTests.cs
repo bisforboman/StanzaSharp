@@ -86,18 +86,33 @@ public class ConcurrencyTests(Xunit.Abstractions.ITestOutputHelper output)
         for (int i = 0; i < steps.Count; i++)
         {
             var (processor, ms) = steps[i];
-            using var cts = new CancellationTokenSource();
-            var latency = new Stopwatch();
-            cts.Token.Register(latency.Start);
-            // Halfway through the processor: timed from the end of the one before it (its log message).
-            var delay = TimeSpan.FromMilliseconds(ms / 2);
-            if (i == 0)
-                cts.CancelAfter(delay);
-            else
-                timings.OnStep = p => { if (p == steps[i - 1].Processor) cts.CancelAfter(delay); };
-            timings.Steps.Clear();
-            var e = Assert.ThrowsAny<OperationCanceledException>(() => nlp.Process(big, cts.Token));
-            timings.OnStep = null;
+            OperationCanceledException? e = null;
+            Stopwatch latency = new();
+            // Halfway through the processor: timed from the end of the one before it (its log message). A faster run
+            // can finish before the cancel arrives (CI runners vary a lot); then try again, cancelling sooner.
+            for (int attempt = 0; e == null; attempt++)
+            {
+                Assert.True(attempt < 4, $"{processor}: every call finished before it was canceled");
+                using var cts = new CancellationTokenSource();
+                latency = new Stopwatch();
+                cts.Token.Register(latency.Start);
+                var delay = TimeSpan.FromMilliseconds(ms / (2 << attempt));
+                if (i == 0)
+                    cts.CancelAfter(delay);
+                else
+                    timings.OnStep = p => { if (p == steps[i - 1].Processor) cts.CancelAfter(delay); };
+                timings.Steps.Clear();
+                try
+                {
+                    nlp.Process(big, cts.Token);
+                    live = stats.ThreadTotalLiveCount; // a finished call leaves the lemmatizer's tensors, like any call
+                }
+                catch (OperationCanceledException canceled)
+                {
+                    e = canceled;
+                }
+                timings.OnStep = null;
+            }
             output.WriteLine($"{processor} ({ms:F0} ms): canceled after {latency.Elapsed.TotalMilliseconds:F0} ms, " +
                 $"in {e.StackTrace!.Split('\n').Select(l => l.Trim()).FirstOrDefault(l => l.StartsWith("at StanzaSharp.") && !l.Contains("Pipeline.Step"))}");
             Assert.True(latency.Elapsed < MaxLatency, $"canceled in {processor}, the call returned {latency.Elapsed.TotalMilliseconds:F0} ms later");
