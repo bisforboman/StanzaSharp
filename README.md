@@ -211,8 +211,9 @@ var doc = nlp.Process(text, cancellationToken); // OperationCanceledException wi
   `CharlmCache` changes the peak by less than 50 MB up to its 32k-word cap (turning it off costs 30–40% more time),
   and neither the GC mode nor converting the models changes it much. Measurements: [docs/performance.md](docs/performance.md#results-round-3-memory-of-a-short-lived-process).
 - **Cancellation.** Every `Process` overload takes a `CancellationToken`. It is checked between processors and
-  between batches inside each, so a call stops within about one batch (milliseconds to about 2 seconds for the
-  dependency parser's 5,000-word batches); no document is returned and the pipeline stays usable.
+  between batches inside each (inside the dependency parser's 5,000-word batches too, between its stages), so a call
+  stops within milliseconds to about a second on an 8-core machine, at most one POS batch; no document is returned and
+  the pipeline stays usable.
 - **One sentence per paragraph.** `SplitSentences = false` is Stanza's `tokenize_no_ssplit`: the tokenizer still
   splits tokens, but each paragraph (text between blank lines) is one sentence. Bulk input works the same way;
   pretokenized input keeps its sentences, as in Stanza.
