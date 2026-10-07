@@ -6,6 +6,13 @@ on:
   pull_request:
   workflow_call: # release.yml runs the same checks before publishing
 
+# A newer push to the same pull request or to main cancels the run still going (GitHub-hosted runners allow 20
+# concurrent jobs, 5 on macOS, and back-to-back merges each start the full suite). Tag runs (release.yml) are never
+# cancelled: each tag is its own group.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref_type != 'tag' }}
+
 env:
   DOTNET_NOLOGO: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
