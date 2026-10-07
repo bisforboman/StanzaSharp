@@ -438,8 +438,9 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - Branch protection on `main` requires the check names `build-test` and `golden`, so they stay
     plain jobs; a matrix would rename them (`build-test (ubuntu-24.04)`) and block every PR.
   - `build-test` runs the suite without models.
-  - Docs-only pull requests (`docs/`, `*.md`, `LICENSE`, `NOTICE`): the `changes` job skips `golden` and `docker` and
-    runs `cross-os` with its steps skipped, so the required checks pass in about a minute. Pushes to main and
+  - Docs-only pull requests (`docs/`, `*.md`, `LICENSE`, `NOTICE`): the `changes` job makes `golden`, `docker` and
+    `cross-os` run with their steps skipped, so the required checks pass in about a minute. No job is skipped
+    outright: a skipped job would count as passed. Pushes to main and
     release tags always run everything; if `changes` fails, everything runs.
   - `golden`, on a model-cache miss, downloads the models with the C# `ModelDownloader` (via the
     CLI) and converts them with CPU torch. The models are cached on `ModelDownloader.cs`,
