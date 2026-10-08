@@ -11,7 +11,7 @@ The owner's plan: 0.5 makes the managed backend the default, with TorchSharp sti
 the main package for an opt-in `StanzaSharp.Cuda` package. Both implementations stay.
 
 Phase 1 added the seam and ported **tokenize** and **mwt**. Phase 2 ports the other processors one at a time; so far
-**ner**, **pos** and **depparse**, plus a backend-neutral `CharlmCache` (see [Phase 2](#phase-2-progress)). Everything is `internal`;
+**ner**, **pos**, **depparse** and **sentiment**, plus a backend-neutral `CharlmCache` (see [Phase 2](#phase-2-progress)). Everything is `internal`;
 nothing public changed.
 
 ## The seam
@@ -190,7 +190,8 @@ size would need it; none is ported.
 | **pos** (`_nocharlm`, default_fast) | yes | byte-identical; UPOS logits 3.1e-5 from Python | | |
 | **depparse** (`_charlm`) | yes | byte-identical heads and deprels; arc / label log-probs 2.3e-5 / 3.4e-5 from Python (TorchSharp 1.1e-5 / 1.5e-5; Scalar path 2.3e-5 / 3.8e-5) | depparse stage **13.27 → 7.94 s (0.60)** | **42.52 → 36.99 s (0.87)** |
 | **depparse** (`_nocharlm`, default_fast) | yes | byte-identical; arc / label log-probs 1.1e-5 / 2.7e-5 from Python (every path ≤ 1.5e-5 / 3.1e-5) | **6.47 → 3.68 s (0.57)** | **19.85 → 17.33 s (0.87)** |
-| sentiment, lemma, constituency | no | | | |
+| **sentiment** (`sstplus_charlm`, both packages) | yes | byte-identical labels; logits ≤ 9e-5 from Python except **one sentence at 1.38e-4 (tolerance 1e-4: open, see [sentiment](#sentiment))** (TorchSharp 2.1e-5) | sentiment stage **9.82 → 5.98 s (0.61)** | **33.65 → 26.29 s (0.78)** |
+| lemma, constituency | no | | | |
 
 Speed: `StanzaSharp.Benchmark --processors tokenize,ner --backend torch|managed --threads N --runs 3` (so NER computes every
 charlm itself; no tagger, no cache), 8 copies (24,840 words), medians, Ryzen 7 5800X, idle machine. In the full
@@ -274,6 +275,57 @@ reads the tagger's cached charlm outputs for sentences without MWTs.
   over TorchSharp is the pos/ner one described there). `--memory 6000` (one Process call, two rounds): TorchSharp
   4,367 / 3,748 MB, managed 3,833 / 3,837 MB (pos and ner managed only: 4,131 / 4,136 MB), 24.0 → 14.4 s.
 
+### sentiment
+
+- **Seam:** `ISentimentNet.Forward(batch, ids, extraIds, width, charlms, cacheKeys, ct)` → [batch, classes] logits.
+  `SentimentClassifier` keeps map_word, the delta vocab, `label_sentences` (sorted longest first, stable), the
+  5000-token batches, the padded width (the longest sentence, at least the widest filter), the cache keys (sentences
+  without multi-word tokens) and the argmax, so both backends see the same batches. `Load` builds `SentimentNet` (today's
+  code, moved unchanged); `LoadManaged` builds `ManagedSentimentNet` with the managed charlms.
+- **Managed net:**
+  - Input rows time-major ([width, batch, 2148]): pretrain (or the learned `unk`; padding reads the PAD rows) + delta,
+    then the charlm columns (from the cache, else computed; zeros on padding).
+  - The **unpacked** 2-layer biLSTM is `ManagedLstm.ForwardPacked` with every batch size = n: every row runs the full
+    padded width, as `nn.LSTM` does without packing. No new LSTM code.
+  - The output is copied batch-major once; each full-width convolution (3, 4, 5 tokens × 600) is then **one GEMM whose A
+    rows overlap**: row r starts at token r with lda = 600 and K = Height·600, so window t of sentence i is row
+    i·width + t and nothing is copied (windows crossing into the next sentence are computed and ignored, (Height − 1)/width
+    of the work). ReLU + max over each sentence's windows = max(0, max).
+  - The (5, 5) filter with stride (1, 5) (8 channels × 120 columns, 25 products each) runs as scalar loops, parallel per
+    sentence; it is ~2% of the convolutions' multiply-adds.
+  - FC 3960 → 400 → 100 → 3 through `Gemm` with ReLU between.
+- **Exactness:** labels byte-identical everywhere (14 golden files, `all.json`'s two batches, pipeline, validation,
+  fast, bulk, pretokenized, concurrency). Logits vs Python (`SentimentTests`, tolerance 1e-4):
+
+  | | TorchSharp | managed |
+  |---|---:|---:|
+  | 14 files, per-file batches | 2.1e-5 | **1.38e-4** (one sentence); every other ≤ 8.2e-5 |
+  | `all.json` (one document, two batches) | 3.8e-6 | 8.2e-5 |
+  | with the tagger's cache (tolerance 1e-3) | 9.3e-5 | 1.4e-4 |
+  | managed vs TorchSharp net, 6 sentences, every path | – | 7.6e-6 to 9.5e-6 |
+
+  - **The one miss is Stanza's rounding, not the port's.** validation.txt sentence 41 ("Neil Armstrong's words — "That's
+    one small step for man" — were heard by millions.", 22 tokens in a 71-wide batch). Running Stanza itself in float64
+    (`model.double()`, same batches) gives the exact logits: Stanza's float32 result is **1.49e-4** from them, the managed
+    one **1.2e-5**. Over all 14 files: |Stanza f32 − f64| ≤ 1.49e-4 (TorchSharp the same), |managed − f64| ≤ 9.1e-5.
+    The network is ill-conditioned there: the TorchSharp classifier itself moves 9.3e-5 when only the charlm's last
+    bits change (the cache test).
+  - Cheap fixes tried, none brings it under 1e-4 of Stanza (they move the result toward the exact value, not toward
+    Stanza's float32 error): FC layers in double 1.38e-4; convolutions in double 1.41e-4; the LSTM input projection in
+    double 2.0e-4; Scalar / Vector128 paths 1.66e-4 / 1.38e-4. Matching Stanza closer would mean reproducing MKL's
+    summation order.
+  - **Open (owner):** the test `SentimentTests.Pipeline_ReproducesGoldenFilesLabelsAndLogits(managed: True)` fails on that
+    sentence; no tolerance was changed.
+- **Cache:** managed sentiment reads array entries as they are and TorchSharp tensor entries as copies
+  (`TryGetArrays`); `SentimentNet_ManagedMatchesTorchSharp` checks a cache holding both forms (2.9e-6 against no cache).
+- **Speed** (`--processors tokenize,mwt,sentiment`, no cache, 8 copies, 26,264 words, medians of 3, Ryzen 7 5800X):
+  sentiment stage 9.82 → 5.98 s at 8 threads, 33.65 → 26.29 s at 1 thread. Full 8-processor run at 8 threads (sentiment
+  reads the tagger's cache): 53.27 → 30.18 s (sentiment 5.99 → 3.42 s; pos 10.65 → 5.37, depparse 13.10 → 7.94, ner
+  12.29 → 3.02; tokenize 1.37 → 0.32; lemma and constituency unchanged).
+- **Memory:** sentiment stage peak (warm-up, `tokenize,mwt,sentiment`) 1,988 → 1,621 MB. Full 8-processor run: peak
+  working set 2,538 → 2,759 MB (both charlm forms, since constituency still reads TorchSharp's). `--memory 6000` (one
+  Process call): 4,299 → 2,839 MB, 22.7 → 11.8 s.
+
 ### ner
 
 - **Seam:** `INerNet.Forward(sentences, wordIds, deltaIds, width, charlms, cacheKeys, ct)` → [batch, width, tags]
@@ -318,11 +370,9 @@ by one, producer and readers can sit on different backends.
 
 ## Phase 2: what next
 
-1. **sentiment**: an unpacked padded biLSTM (a `ManagedLstm` mode with lengths = width), Conv2d as GEMMs over
-   overlapping rows, max-pool, MLP. Risk: near-ties (173 of 886 labels already flip with batching in Stanza).
-2. **lemma**: LSTMCell decoder, dot attention, copy gate, greedy argmax over tiny batches. Risk: near-ties per
+1. **lemma**: LSTMCell decoder, dot attention, copy gate, greedy argmax over tiny batches. Risk: near-ties per
    character.
-3. **constituency**: the most code; per-step stack LSTMs (50 states in flight) and a transition argmax over thousands
+2. **constituency**: the most code; per-step stack LSTMs (50 states in flight) and a transition argmax over thousands
    of steps. The highest near-tie risk.
 
 Cross-cutting:
@@ -338,6 +388,6 @@ Cross-cutting:
   memory-bound on the 16 MB recurrent weights. Running the charlms over bigger groups would be faster but changes the
   last float bits; left as is.
 - **CI time:** the both-backend theories rerun the full pipeline on the golden files; the full local suite takes
-  29–34 minutes on 8 cores (246 tests, none skipped, Release build; with managed depparse 32.2 min on the converted models, 28.9 min on the `.pt` files).
+  29–34 minutes on 8 cores (246 tests, none skipped, Release build; with managed depparse 32.2 min on the converted models, 28.9 min on the `.pt` files; with managed sentiment, 253 tests, 27.2 / 31.2 min).
   `ConcurrencyTests` now runs alone after the parallel collections: beside the heavier both-backend theories its
   cancellation test failed every full run (the timed run was slower than the canceled ones).

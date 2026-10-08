@@ -31,7 +31,7 @@ const string Usage = """
       --memory N      instead: Pipeline.Load, then one Process call on a text of about N words, reporting
                       the load peak and the peak memory; run it in a fresh process each time
       --processors P  the stages to time (default: all of the package's); --memory: the processors to load
-      --backend B     torch (default) or managed: the backend of the ported processors (tokenize, mwt, ner; issue #29)
+      --backend B     torch (default) or managed: the backend of the ported processors (Pipeline.ManagedProcessors; issue #29)
       --chunk-words K --memory: split the text at paragraphs into parts of about K words and call Process
                       on each part in turn (--bulk: one Process(IEnumerable<string>) call on the parts)
       --calls N       --memory: repeat the Process call(s) N times, reporting the memory after each (default: 1)

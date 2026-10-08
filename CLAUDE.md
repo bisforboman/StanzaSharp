@@ -621,9 +621,9 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
       other torch function) unless TorchSharp is used.
     - 1.0: `Device`, `DisableTf32` and `PipelineBackend.TorchSharp` leave the main package.
     - Not implemented yet (it ships with 0.5); until then the internal `PipelineOptions.Backend` (`Nn.Backend`) switch stays.
-- **Status:** Phase 0 (kernels) and Phase 1 (seam; tokenize and mwt ported) are done; Phase 2 has ported ner, pos and
-  depparse and made `CharlmCache` backend-neutral. `docs/backends.md` has the design, the Cuda split plan, exactness, speed and the
-  Phase 2 progress table. Next: sentiment, lemma, constituency (in that order).
+- **Status:** Phase 0 (kernels) and Phase 1 (seam; tokenize and mwt ported) are done; Phase 2 has ported ner, pos,
+  depparse and sentiment and made `CharlmCache` backend-neutral. `docs/backends.md` has the design, the Cuda split plan, exactness, speed and the
+  Phase 2 progress table. Next: lemma, constituency (in that order).
 - **Seam** (all internal): per processor network, arrays in and out: `ITokenizerNet` (`TokenizerNet` / `ManagedTokenizerNet`),
   `IMwtNet` (`MwtNet` / `ManagedMwtNet`). Batching, windows, argmax and decoding stay in the processor, shared, so both
   backends see the same batches. `Nn.Backend` { TorchSharp (default), Managed }; internal `PipelineOptions.Backend` →
@@ -647,14 +647,21 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     the deprel strings. The managed net scores no padding rows; padding columns all get in2 = ReLU(W2's bias) (LSTM
     output 0 there), so the log-softmax sees TorchSharp's exact width. Arcs (pair sums, terms, log-softmax) in double;
     labels per dependent through `Gemm.Kernel` on a repacked T row, real pairs only, T in ≤ 32 MB chunks.
-  - `Pipeline.ManagedProcessors` (tokenize, mwt, pos, depparse, ner) lists what `Backend.Managed` runs managed. The pipeline loads each
+  - `ISentimentNet` (`SentimentNet` / `ManagedSentimentNet`) → [batch, classes] logits. `SentimentClassifier` keeps map_word,
+    the delta vocab, `label_sentences` sorting, 5000-token batches, the padded width (≥ widest filter), cache keys (no MWT)
+    and the argmax. Managed: input rows time-major, `ManagedLstm.ForwardPacked` with every batch size = n (the unpacked
+    LSTM: padding runs through it), full-width convolutions as one GEMM whose A rows overlap (lda = 600, K = Height·600),
+    the (5,5)/(1,5) filter as scalar loops, FC layers through `Gemm`. Labels byte-identical; logits ≤ 9e-5 from Stanza
+    except validation.txt sentence 41: 1.38e-4, where Stanza's own float32 result is 1.49e-4 from its float64 one and
+    managed is 1.2e-5 from it. Double sums (FC, convolutions, LSTM input) didn't help; owner decision pending.
+  - `Pipeline.ManagedProcessors` (tokenize, mwt, pos, depparse, ner, sentiment) lists what `Backend.Managed` runs managed. The pipeline loads each
     backend's charlms only if a `_charlm` processor on that backend reads them (`ManagedCharLanguageModel`: +31 MB of
     input tables). Managed processors read the shared `Pretrain` through `CpuVectors()` (the CPU tensor's own memory).
   - `CharlmCache` is backend-neutral: an entry holds its producer's form (tensors, or `[words, dim]` float arrays via the
     float `TryAdd`). `TryGet` gives tensors (a float entry is converted once, on the cache's device, and kept);
     `TryGetArrays` gives arrays (a tensor entry is copied per read). Same-backend pipelines never convert, so the default
-    path is unchanged. With pos managed, the tagger adds arrays (only when `HasRoom`), managed NER reads them as they are
-    and constituency/sentiment (TorchSharp) as converted tensors; such an entry then holds both forms.
+    path is unchanged. With pos managed, the tagger adds arrays (only when `HasRoom`), managed NER and sentiment read them as they are
+    and constituency (TorchSharp) as converted tensors; such an entry then holds both forms.
 - **Code:** `src/StanzaSharp.Nn/Managed/` (`Gemm.cs`: `KernelPath`, `PackedMatrix`, `Gemm`, `Act`;
   `ManagedThreads.cs`; `PackedLstm.cs`; `ManagedModels.cs`: charlm, highway biLSTM, `ManagedLstm` = `nn.LSTM` over a
   padded batch like `Rnn.RunPacked` (`ForwardPadded`) or over packed rows (`ForwardPacked`), optional `h_init`/`c_init`,
