@@ -529,6 +529,6 @@ Cross-cutting:
   memory-bound on the 16 MB recurrent weights. Running the charlms over bigger groups would be faster but changes the
   last float bits; left as is.
 - **CI time:** the both-backend theories rerun the full pipeline on the golden files; the full local suite takes
-  29–34 minutes on 8 cores (246 tests, none skipped, Release build; with managed depparse 32.2 min on the converted models, 28.9 min on the `.pt` files; with managed sentiment, 253 tests, 27.2 / 31.2 min; with managed lemma, 258 tests, 31.4 / 26.5 min).
+  29–34 minutes on 8 cores (246 tests, none skipped, Release build; with managed depparse 32.2 min on the converted models, 28.9 min on the `.pt` files; with managed sentiment, 253 tests, 27.2 / 31.2 min; with managed lemma, 258 tests, 31.4 / 26.5 min; with managed constituency, 265 tests, 40 min on the converted models while another suite loaded the machine, 25.2 min on the `.pt` files).
   `ConcurrencyTests` now runs alone after the parallel collections: beside the heavier both-backend theories its
   cancellation test failed every full run (the timed run was slower than the canceled ones).
