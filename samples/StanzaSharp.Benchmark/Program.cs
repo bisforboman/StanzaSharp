@@ -176,9 +176,11 @@ bool torchCharlms = models.Any(kv => kv.Value.EndsWith("_charlm") && !Managed(kv
 using var charlmForward = torchCharlms ? CharLanguageModel.Load(Path.Combine(modelDir, Pipeline.ForwardCharlmPath), device) : null;
 using var charlmBackward = torchCharlms ? CharLanguageModel.Load(Path.Combine(modelDir, Pipeline.BackwardCharlmPath), device) : null;
 using var lemma = Lemmatizer.Load(Model("lemma"), device, backend);
-using var parser = models.ContainsKey("constituency") ? ConstituencyParser.Load(Model("constituency"), pretrain, charlmForward!, charlmBackward!, device) : null;
-var managedForward = ManagedCharlm("pos") || ManagedCharlm("depparse") || ManagedCharlm("ner") || ManagedCharlm("sentiment") ? ManagedCharLanguageModel.Load(Path.Combine(modelDir, Pipeline.ForwardCharlmPath)) : null;
+var managedForward = models.Keys.Any(ManagedCharlm) ? ManagedCharLanguageModel.Load(Path.Combine(modelDir, Pipeline.ForwardCharlmPath)) : null;
 var managedBackward = managedForward != null ? ManagedCharLanguageModel.Load(Path.Combine(modelDir, Pipeline.BackwardCharlmPath)) : null;
+using var parser = !models.ContainsKey("constituency") ? null : Managed("constituency")
+    ? ConstituencyParser.LoadManaged(Model("constituency"), pretrain, managedForward!, managedBackward!)
+    : ConstituencyParser.Load(Model("constituency"), pretrain, charlmForward!, charlmBackward!, device);
 using var pos = Managed("pos")
     ? PosTagger.LoadManaged(Model("pos"), pretrain, ManagedCharlm("pos") ? managedForward : null, ManagedCharlm("pos") ? managedBackward : null)
     : PosTagger.Load(Model("pos"), pretrain, charlmForward, charlmBackward, device);
