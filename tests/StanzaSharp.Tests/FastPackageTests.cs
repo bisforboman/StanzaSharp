@@ -1,3 +1,4 @@
+using Xunit.Abstractions;
 using System.Text.Json.Nodes;
 using StanzaSharp.Depparse;
 using StanzaSharp.Ner;
@@ -8,15 +9,16 @@ using TorchSharp;
 namespace StanzaSharp.Tests;
 
 /// <summary>Stanza's English <c>default_fast</c> package against tests/golden/fast (make_golden.py --fast-only).</summary>
-public class FastPackageTests
+public class FastPackageTests(ITestOutputHelper output)
 {
     private static readonly string Golden = Path.Combine(Repo.Golden, "fast");
-    private static readonly PipelineOptions Fast = new() { Package = "default_fast" };
 
-    [ModelFact]
-    public void Process_MatchesEveryGoldenFile()
+    [ModelTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Process_MatchesEveryGoldenFile(bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models, Fast);
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = "default_fast", Backend = Repo.Backend(managed) });
         var failures = new List<string>();
         var files = new[] { Path.Combine(Repo.Golden, "corpus.txt") }.Concat(Directory.GetFiles(Repo.Golden, "validation*.txt").Order()).ToList();
         foreach (var txt in files)
@@ -77,6 +79,22 @@ public class FastPackageTests
                 TokenizerTests.AssertClose(golden.Read<float>($"s{i}.depparse.deprel"), labelLogProbs.data<float>().ToArray(), 1e-4f, $"s{i}.deprel");
             }
             Assert.Equal(index[i]!["heads"]!.AsArray().Select(h => h!.GetValue<int>()), parser.Parse([sentence])[0].Select(p => p.Head));
+        }
+    }
+
+    [ModelFact]
+    public void ManagedNerEmissions_MatchGolden()
+    {
+        using var pretrain = Pretrain.Load(Repo.Model("pretrain/conll17"));
+        using var ner = NerTagger.LoadManaged(Repo.Model("ner/ontonotes-ww-multi_nocharlm"), pretrain, null, null);
+        var golden = SafeTensorFile.Load(Path.Combine(Golden, "intermediates.safetensors"));
+        var index = JsonNode.Parse(File.ReadAllText(Path.Combine(Golden, "intermediates.json")))!["sentences"]!.AsArray();
+        var tokens = index.Select(e => (IReadOnlyList<string>)Strings(e!["tokens"])).ToList();
+        var nerTags = ner.Predict(tokens, out var emissions);
+        for (int i = 0; i < index.Count; i++)
+        {
+            output.WriteLine($"s{i}: max |diff| {TokenizerTests.AssertClose(golden.Read<float>($"s{i}.ner.emissions"), emissions[i], 1e-4f, $"s{i}.ner"):E2}");
+            Assert.Equal(Strings(index[i]!["ner"]), nerTags[i]);
         }
     }
 

@@ -1,11 +1,13 @@
+using Xunit.Abstractions;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using StanzaSharp.Ner;
 using StanzaSharp.Nn;
+using StanzaSharp.Nn.Managed;
 
 namespace StanzaSharp.Tests;
 
-public class NerTests
+public class NerTests(ITestOutputHelper output)
 {
     private static readonly string Golden = Path.Combine(Repo.Golden, "ner");
 
@@ -75,13 +77,18 @@ public class NerTests
         Assert.Contains(doc.Sentences.SelectMany(s => s.Tokens), t => t.IsMultiWord && t.Ner != null);
     }
 
-    [ModelFact]
-    public void Emissions_MatchGoldenIntermediates()
+    [ModelTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Emissions_MatchGoldenIntermediates(bool managed)
     {
         using var pretrain = Pretrain.Load(Repo.Model("pretrain/conll17"));
         using var forward = CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
         using var backward = CharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
-        using var ner = NerTagger.Load(Repo.Model("ner/ontonotes-ww-multi_charlm"), pretrain, forward, backward);
+        string model = Repo.Model("ner/ontonotes-ww-multi_charlm");
+        using var ner = managed
+            ? NerTagger.LoadManaged(model, pretrain, ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion")), ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion")))
+            : NerTagger.Load(model, pretrain, forward, backward);
         var golden = SafeTensorFile.Load(Path.Combine(Golden, "intermediates.safetensors"));
         var index = JsonNode.Parse(File.ReadAllText(Path.Combine(Golden, "intermediates.json")))!["sentences"]!.AsArray();
         var sentences = index.Select(e => (IReadOnlyList<string>)Strings(e!["tokens"])).ToList();
@@ -90,23 +97,27 @@ public class NerTests
         var tags = ner.Predict(sentences, out var emissions);
         for (int i = 0; i < sentences.Count; i++)
         {
-            TokenizerTests.AssertClose(golden.Read<float>($"s{i}.emissions"), emissions[i], 1e-4f, $"s{i}");
+            output.WriteLine($"s{i}: max |diff| {TokenizerTests.AssertClose(golden.Read<float>($"s{i}.emissions"), emissions[i], 1e-4f, $"s{i}"):E2}");
             Assert.Equal(Strings(index[i]!["ner"]), tags[i]);
         }
     }
 
-    public static readonly TheoryData<string, bool> Configurations = new()
+    public static readonly TheoryData<string, bool, bool> Configurations = new()
     {
-        { "tokenize,mwt,pos,lemma,depparse,ner", true },
-        { "tokenize,mwt,pos,lemma,depparse,ner", false }, // no CharlmCache: NER runs its own charlms
-        { "tokenize,ner", true }, // NER reads only the tokens, so it needs nothing else
+        { "tokenize,mwt,pos,lemma,depparse,ner", true, false },
+        { "tokenize,mwt,pos,lemma,depparse,ner", false, false }, // no CharlmCache: NER runs its own charlms
+        { "tokenize,ner", true, false }, // NER reads only the tokens, so it needs nothing else
+        // Managed NER: reading the TorchSharp tagger's cached charlm outputs, computing its own, and alone.
+        { "tokenize,mwt,pos,lemma,depparse,ner", true, true },
+        { "tokenize,mwt,pos,lemma,depparse,ner", false, true },
+        { "tokenize,ner", true, true },
     };
 
     [ModelTheory]
     [MemberData(nameof(Configurations))]
-    public void Pipeline_ReproducesGoldenTagsAndEntities(string processors, bool cache)
+    public void Pipeline_ReproducesGoldenTagsAndEntities(string processors, bool cache, bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = processors, CharlmCache = new() { IsEnabled = cache } });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = processors, CharlmCache = new() { IsEnabled = cache }, Backend = Repo.Backend(managed) });
         bool full = processors.Contains("depparse");
         var failures = new List<string>();
         var files = Directory.GetFiles(Golden, "*.conllu").Order().ToList();

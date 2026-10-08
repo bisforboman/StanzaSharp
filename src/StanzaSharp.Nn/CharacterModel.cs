@@ -33,13 +33,7 @@ internal sealed class CharacterModel : IDisposable
     /// <param name="prefix">The module in the state dict, e.g. <c>charmodel.</c>.</param>
     public CharacterModel(Checkpoint ckpt, JsonNode stateDict, JsonNode config, JsonNode charVocab, string prefix, bool bidirectional, bool attention)
     {
-        if (config["char_num_layers"]!.GetValue<int>() != 1)
-            throw new NotSupportedException("A character model with more than one layer is not ported");
-        if (config["char_rec_dropout"]?.GetValue<double>() is double rec && rec != 0)
-            throw new NotSupportedException("A character model with recurrent dropout is not ported");
-        if (config["char_lowercase"]?.GetValue<bool>() == true || charVocab["lower"]?.GetValue<bool>() == true)
-            throw new NotSupportedException("A lowercasing character model is not ported");
-
+        CheckSupported(config, charVocab);
         _vocab = Checkpoint.UnitToId(charVocab);
         _hidden = config["char_hidden_dim"]!.GetValue<int>();
         _directions = bidirectional ? 2 : 1;
@@ -50,6 +44,17 @@ internal sealed class CharacterModel : IDisposable
             _attn = nn.Linear(OutputDim, 1, hasBias: false).LoadFrom(ckpt, stateDict, prefix + "char_attn.");
         _hInit = ckpt.ToTensor(stateDict[prefix + "charlstm_h_init"]);
         _cInit = ckpt.ToTensor(stateDict[prefix + "charlstm_c_init"]);
+    }
+
+    /// <summary>Throws for the options neither backend ports.</summary>
+    internal static void CheckSupported(JsonNode config, JsonNode charVocab)
+    {
+        if (config["char_num_layers"]!.GetValue<int>() != 1)
+            throw new NotSupportedException("A character model with more than one layer is not ported");
+        if (config["char_rec_dropout"]?.GetValue<double>() is double rec && rec != 0)
+            throw new NotSupportedException("A character model with recurrent dropout is not ported");
+        if (config["char_lowercase"]?.GetValue<bool>() == true || charVocab["lower"]?.GetValue<bool>() == true)
+            throw new NotSupportedException("A lowercasing character model is not ported");
     }
 
     /// <summary>The vocab ids of a word's characters (code points, as in Python; unknown ones are UNK).</summary>

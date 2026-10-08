@@ -1,4 +1,4 @@
-# Backends (issue #29, Phase 1)
+# Backends (issue #29)
 
 StanzaSharp runs each processor's network on one of two backends:
 
@@ -10,7 +10,7 @@ StanzaSharp runs each processor's network on one of two backends:
 The owner's plan: 0.5 makes the managed backend the default, with TorchSharp still selectable. At 1.0 TorchSharp leaves
 the main package for an opt-in `StanzaSharp.Cuda` package. Both implementations stay.
 
-Phase 1 adds the seam and ports **tokenize** and **mwt**. Everything is `internal`; nothing public changed.
+Phase 1 added the seam and ported **tokenize** and **mwt**. Phase 2 ports the other processors one at a time; so far\n**ner**, plus a backend-neutral `CharlmCache` (see [Phase 2](#phase-2-progress)). Everything is `internal`; nothing\npublic changed.
 
 ## The seam
 
@@ -20,6 +20,7 @@ The seam sits at each processor's **network**: one small interface per processor
 |---|---|---|---|
 | tokenize | `ITokenizerNet.Forward(ids, feats, rows, width, lengths, ct)` → [rows, width, 5] log-probs | `TokenizerNet` | `ManagedTokenizerNet` |
 | mwt | `IMwtNet.Forward(ids, rows, width, lengths)` → [rows, width, 2] logits | `MwtNet` | `ManagedMwtNet` |
+| ner | `INerNet.Forward(sentences, wordIds, deltaIds, width, charlms, cacheKeys, ct)` → [batch, width, tags] emissions | `NerNet` | `ManagedNerNet` |
 
 - **Shared:** everything around the network stays in the processor and serves both backends. That covers paragraph
   splitting, features, sorting, batching, the 1000-character windows, padding, the argmax, `FixLabels`, decoding,
@@ -81,14 +82,17 @@ The split needs no change to the processors' logic; it only moves where the Torc
    - 0.5: both backends in the main package (TorchSharp still a dependency), managed the default.
    - 1.0: the move above, once every processor is ported.
 
-### Proposed public API (for the owner to decide; not implemented)
+### Public API (decided 2026-10-08: A; ships with 0.5, not implemented yet)
 
-- **A (recommended):** `PipelineOptions.Backend` of a small public type with only internal members:
+- **A (chosen):** `PipelineOptions.Backend` of a sealed public `PipelineBackend` class with only internal members:
   - `PipelineBackend.Managed` (default from 0.5) and `PipelineBackend.TorchSharp` in the main package.
   - From 1.0, `CudaBackend.Create(int deviceIndex = 0, bool disableTf32 = false)` in `StanzaSharp.Cuda`.
   - `PipelineOptions.Device`/`DisableTf32` become `[Obsolete]` forwards in 0.5 and are removed in 1.0.
   - It survives the package split without a breaking change to the option itself.
-- **B:** an enum `PipelineBackend { Managed, TorchSharp }` next to today's `Device`/`DisableTf32`. It is simpler
+  - A pipeline on the managed backend must load with no native libtorch package: from 0.5, `Load` calls no torch
+    function (not even `torch.set_num_threads`) unless TorchSharp is used. `PipelineBackend.TorchSharp` leaves the main
+    package at 1.0.
+- **B (not chosen):** an enum `PipelineBackend { Managed, TorchSharp }` next to today's `Device`/`DisableTf32`. It is simpler
   for 0.5. But at 1.0 the main package would have to find the Cuda implementation by reflection, and `Device` (a
   TorchSharp type) would still be on the main package's options, so it breaks then.
 - Either way `Threads` keeps its meaning: threads per operation for the backend in use.

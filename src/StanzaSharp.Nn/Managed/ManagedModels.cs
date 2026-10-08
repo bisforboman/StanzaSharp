@@ -284,11 +284,22 @@ internal sealed unsafe class ManagedLstm
     public int OutputSize => _dirs * _hidden;
 
     /// <param name="prefix">The LSTM's key prefix in <paramref name="stateDict"/>, e.g. <c>"rnn."</c>.</param>
-    public ManagedLstm(Checkpoint ckpt, JsonNode stateDict, string prefix, int inputSize, int hidden, int layers, bool bidirectional)
+    /// <param name="h0">Optional initial h, the same for every sequence: [layers · directions, hidden] in PyTorch's order
+    /// (a <c>*_h_init</c> parameter); zeros if null.</param>
+    /// <param name="c0">Optional initial c, like <paramref name="h0"/>.</param>
+    public ManagedLstm(Checkpoint ckpt, JsonNode stateDict, string prefix, int inputSize, int hidden, int layers, bool bidirectional,
+        float[]? h0 = null, float[]? c0 = null)
     {
         (InputSize, _hidden, _dirs) = (inputSize, hidden, bidirectional ? 2 : 1);
         int h = hidden, hp = _padded = (hidden + 3) / 4 * 4;
         string[] suffixes = bidirectional ? ["", "_reverse"] : [""];
+        // Each direction's initial state, padded with zero units.
+        float[] Init(float[]? all, int l, int d)
+        {
+            var x = new float[hp];
+            all?.AsSpan((l * _dirs + d) * h, h).CopyTo(x);
+            return x;
+        }
         _layers = new (PackedMatrix, float[], PackedLstm)[layers];
         for (int l = 0; l < layers; l++)
         {
@@ -302,8 +313,10 @@ internal sealed unsafe class ManagedLstm
             var bhh = suffixes.Select(s => PadGates(T("bias_hh", s), h, hp, 1, 1, c => c)).ToArray();
             var whh = suffixes.Select(s => PadGates(T("weight_hh", s), h, hp, h, hp, c => c)).ToArray();
             var (w, bias) = PackedLstm.PackInput(hp, kp, wih, bih, bhh);
-            var zeros = suffixes.Select(_ => new float[hp]).ToArray();
-            _layers[l] = (w, bias, new PackedLstm(hp, whh, zeros, zeros));
+            int layer = l;
+            var hInit = suffixes.Select((_, d) => Init(h0, layer, d)).ToArray();
+            var cInit = suffixes.Select((_, d) => Init(c0, layer, d)).ToArray();
+            _layers[l] = (w, bias, new PackedLstm(hp, whh, hInit, cInit));
         }
     }
 
@@ -331,43 +344,174 @@ internal sealed unsafe class ManagedLstm
         // pack_padded_sequence: rows sorted longest first; step t holds the batchSizes[t] rows longer than t.
         var order = Enumerable.Range(0, batch).OrderByDescending(i => lengths[i]).ToArray();
         var batchSizes = PackedLstm.BatchSizes(lengths);
-        int rows = batchSizes.Sum(), ldo = _dirs * _padded, ldp = _layers.Max(l => l.W.PaddedN);
-        var x = ArrayPool<float>.Shared.Rent(rows * Math.Max(InputSize, ldo));
-        var y = ArrayPool<float>.Shared.Rent(rows * ldo);
-        var p = ArrayPool<float>.Shared.Rent(rows * ldp);
+        int rows = batchSizes.Sum();
+        var x = ArrayPool<float>.Shared.Rent(rows * InputSize);
+        var y = ArrayPool<float>.Shared.Rent(rows * OutputSize);
         try
         {
             for (int t = 0, n = 0; t < batchSizes.Length; t++)
                 for (int r = 0; r < batchSizes[t]; r++, n++)
                     input.Slice((order[r] * width + t) * InputSize, InputSize).CopyTo(x.AsSpan(n * InputSize));
-            fixed (float* px = x, py = y, pp = p)
-            {
-                float* src = px, dst = py;
-                int inSize = InputSize;
-                foreach (var (w, bias, lstm) in _layers)
-                {
-                    fixed (float* pb = bias)
-                        Gemm.Run(src, rows, inSize, w, pb, pp, ldp, ct);
-                    lstm.Recur(pp, ldp, batchSizes, dst, ldo, ct);
-                    var swap = src;
-                    src = dst;
-                    dst = swap;
-                    inSize = ldo;
-                }
-                // src holds the last layer's packed output.
-                output[..(batch * width * OutputSize)].Clear();
-                for (int t = 0, n = 0; t < batchSizes.Length; t++)
-                    for (int r = 0; r < batchSizes[t]; r++, n++)
-                        for (int d = 0; d < _dirs; d++)
-                            new ReadOnlySpan<float>(src + (long)n * ldo + d * _padded, _hidden)
-                                .CopyTo(output.Slice((order[r] * width + t) * OutputSize + d * _hidden, _hidden));
-            }
+            ForwardPacked(x, InputSize, batchSizes, y, ct);
+            output[..(batch * width * OutputSize)].Clear();
+            for (int t = 0, n = 0; t < batchSizes.Length; t++)
+                for (int r = 0; r < batchSizes[t]; r++, n++)
+                    y.AsSpan(n * OutputSize, OutputSize).CopyTo(output.Slice((order[r] * width + t) * OutputSize));
         }
         finally
         {
             ArrayPool<float>.Shared.Return(x);
             ArrayPool<float>.Shared.Return(y);
+        }
+    }
+
+    /// <summary>The LSTM over a packed batch (rows time-major, longest sequences first, as pack_padded_sequence lays them out).</summary>
+    /// <param name="input">Row n at n·<paramref name="lda"/>: InputSize floats.</param>
+    /// <param name="batchSizes">At step t, the number of sequences longer than t (<see cref="PackedLstm.BatchSizes"/>).</param>
+    /// <param name="output">Gets [rows, OutputSize].</param>
+    /// <param name="ct">Checked per GEMM block and before each time step.</param>
+    public void ForwardPacked(ReadOnlySpan<float> input, int lda, int[] batchSizes, Span<float> output, CancellationToken ct = default)
+    {
+        int rows = batchSizes.Sum(), ldo = _dirs * _padded, ldp = _layers.Max(l => l.W.PaddedN);
+        if (lda < InputSize || input.Length < (rows - 1) * lda + InputSize || output.Length < rows * OutputSize)
+            throw new ArgumentException("input or output is too small");
+        // Layer outputs ping-pong between two buffers.
+        var y0 = ArrayPool<float>.Shared.Rent(rows * ldo);
+        var y1 = _layers.Length > 1 ? ArrayPool<float>.Shared.Rent(rows * ldo) : null;
+        var p = ArrayPool<float>.Shared.Rent(rows * ldp);
+        try
+        {
+            fixed (float* px = input, p0 = y0, p1 = y1, pp = p)
+            {
+                float* src = px;
+                int stride = lda;
+                for (int l = 0; l < _layers.Length; l++)
+                {
+                    var (w, bias, lstm) = _layers[l];
+                    float* dst = l % 2 == 0 ? p0 : p1;
+                    fixed (float* pb = bias)
+                        Gemm.Run(src, rows, stride, w, pb, pp, ldp, ct);
+                    lstm.Recur(pp, ldp, batchSizes, dst, ldo, ct);
+                    src = dst;
+                    stride = ldo;
+                }
+                // src holds the last layer's packed output; drop the padding units.
+                for (int n = 0; n < rows; n++)
+                    for (int d = 0; d < _dirs; d++)
+                        new ReadOnlySpan<float>(src + (long)n * ldo + d * _padded, _hidden).CopyTo(output.Slice(n * OutputSize + d * _hidden, _hidden));
+            }
+        }
+        finally
+        {
+            ArrayPool<float>.Shared.Return(y0);
+            if (y1 != null)
+                ArrayPool<float>.Shared.Return(y1);
             ArrayPool<float>.Shared.Return(p);
+        }
+    }
+}
+
+/// <summary>
+/// Managed twin of <see cref="CharacterModel"/>: a model's own character LSTM, one vector per word. With attention
+/// (tagger, parser; unidirectional) <c>sum_t sigmoid(attn(h_t)) * h_t</c>; without (NER; bidirectional) the final
+/// forward and backward states. Every word is its own packed sequence.
+/// </summary>
+internal sealed unsafe class ManagedCharacterModel
+{
+    private const int UnkId = 1;
+
+    private readonly Dictionary<string, int> _vocab;
+    private readonly float[] _charEmb; // [vocab, emb]
+    private readonly int _emb, _hidden, _directions;
+    private readonly ManagedLstm _lstm;
+    private readonly PackedMatrix? _attn; // [1, OutputDim], no bias
+
+    /// <summary>The size of each word's vector: hidden × directions.</summary>
+    public int OutputDim => _hidden * _directions;
+
+    /// <inheritdoc cref="CharacterModel(Checkpoint, JsonNode, JsonNode, JsonNode, string, bool, bool)"/>
+    public ManagedCharacterModel(Checkpoint ckpt, JsonNode stateDict, JsonNode config, JsonNode charVocab, string prefix, bool bidirectional, bool attention)
+    {
+        CharacterModel.CheckSupported(config, charVocab);
+        float[] T(string key) => ckpt.Tensor<float>(stateDict[prefix + key] ?? throw new KeyNotFoundException($"Checkpoint has no weight '{prefix + key}'"));
+        _vocab = Checkpoint.UnitToId(charVocab);
+        _hidden = config["char_hidden_dim"]!.GetValue<int>();
+        _directions = bidirectional ? 2 : 1;
+        _emb = config["char_emb_dim"]!.GetValue<int>();
+        _charEmb = T("char_emb.weight");
+        _lstm = new ManagedLstm(ckpt, stateDict, prefix + "charlstm.lstm.", _emb, _hidden, 1, bidirectional, T("charlstm_h_init"), T("charlstm_c_init"));
+        if (attention)
+            _attn = new PackedMatrix(T("char_attn.weight"), 1, OutputDim);
+    }
+
+    /// <summary>The vocab ids of a word's characters (code points, as in Python; unknown ones are UNK).</summary>
+    public int[] CharIds(string word) => word.EnumerateRunes().Select(r => _vocab.GetValueOrDefault(r.ToString(), UnkId)).ToArray();
+
+    /// <summary>Array form of <see cref="Forward(IReadOnlyList{int[]}, float*, int, CancellationToken)"/>: [words, OutputDim].</summary>
+    public float[] Forward(IReadOnlyList<int[]> words, CancellationToken ct = default)
+    {
+        var output = new float[words.Count * OutputDim];
+        fixed (float* o = output)
+            Forward(words, o, OutputDim, ct);
+        return output;
+    }
+
+    /// <summary>Each word's vector (words as <see cref="CharIds"/>; none empty), row n at <paramref name="output"/> + n·<paramref name="ldo"/>.</summary>
+    public void Forward(IReadOnlyList<int[]> words, float* output, int ldo, CancellationToken ct = default)
+    {
+        int n = words.Count;
+        if (n == 0)
+            return;
+        var lengths = words.Select(w => (long)w.Length).ToArray();
+        var order = Enumerable.Range(0, n).OrderByDescending(i => lengths[i]).ToArray();
+        var batchSizes = PackedLstm.BatchSizes(lengths);
+        int rows = batchSizes.Sum(), dim = OutputDim;
+        var start = new int[batchSizes.Length];
+        for (int t = 1; t < start.Length; t++)
+            start[t] = start[t - 1] + batchSizes[t - 1];
+        var x = ArrayPool<float>.Shared.Rent(rows * _emb);
+        var y = ArrayPool<float>.Shared.Rent(rows * dim);
+        var scores = _attn == null ? null : ArrayPool<float>.Shared.Rent(rows * _attn.PaddedN);
+        try
+        {
+            for (int t = 0, row = 0; t < batchSizes.Length; t++)
+                for (int r = 0; r < batchSizes[t]; r++, row++)
+                    _charEmb.AsSpan(words[order[r]][t] * _emb, _emb).CopyTo(x.AsSpan(row * _emb));
+            _lstm.ForwardPacked(x, _emb, batchSizes, y, ct);
+            if (_attn != null)
+            {
+                fixed (float* py = y, ps = scores)
+                    Gemm.Run(py, rows, dim, _attn, null, ps, _attn.PaddedN, ct);
+                for (int r = 0; r < n; r++)
+                {
+                    var o = new Span<float>(output + (long)order[r] * ldo, dim);
+                    o.Clear();
+                    for (int t = 0; t < lengths[order[r]]; t++)
+                    {
+                        int row = start[t] + r;
+                        float g = Act.Sigmoid(scores![row * _attn.PaddedN]);
+                        var h = y.AsSpan(row * dim, dim);
+                        for (int j = 0; j < dim; j++)
+                            o[j] += h[j] * g;
+                    }
+                }
+            }
+            else
+                for (int r = 0; r < n; r++)
+                {
+                    // h[-2:]: the forward direction's last state is at the word's last character, the backward one's at its first.
+                    var o = new Span<float>(output + (long)order[r] * ldo, dim);
+                    y.AsSpan((start[(int)lengths[order[r]] - 1] + r) * dim, _hidden).CopyTo(o);
+                    if (_directions == 2)
+                        y.AsSpan(r * dim + _hidden, _hidden).CopyTo(o[_hidden..]);
+                }
+        }
+        finally
+        {
+            ArrayPool<float>.Shared.Return(x);
+            ArrayPool<float>.Shared.Return(y);
+            if (scores != null)
+                ArrayPool<float>.Shared.Return(scores);
         }
     }
 }

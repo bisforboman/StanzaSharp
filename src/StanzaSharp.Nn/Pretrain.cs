@@ -1,4 +1,5 @@
 using StanzaSharp;
+using TorchSharp;
 using static TorchSharp.torch;
 
 namespace StanzaSharp.Nn;
@@ -17,6 +18,16 @@ internal sealed class Pretrain : IDisposable
     public Tensor Embeddings { get; }
 
     public int Dim => (int)Embeddings.shape[1];
+
+    /// <summary>
+    /// The embedding matrix's floats for the managed backend: the CPU tensor's own memory, not a copy (valid while this
+    /// object is). On another device, a copy made on first use.
+    /// </summary>
+    public ReadOnlySpan<float> CpuVectors() => Embeddings.device_type == DeviceType.CPU
+        ? System.Runtime.InteropServices.MemoryMarshal.Cast<byte, float>(Embeddings.bytes)
+        : _cpuCopy ??= Embeddings.ToArray<float>(); // a race only makes the same copy twice
+
+    private float[]? _cpuCopy;
 
     private Pretrain(Checkpoint ckpt)
     {

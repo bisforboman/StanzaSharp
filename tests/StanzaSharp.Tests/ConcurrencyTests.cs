@@ -23,6 +23,7 @@ public class ConcurrencyTests(Xunit.Abstractions.ITestOutputHelper output)
     [InlineData("default", false)]
     [InlineData("default_fast", false)]
     [InlineData("default", true)]
+    [InlineData("default_fast", true)]
     public void ConcurrentCalls_EqualSequentialOutput(string package, bool managed)
     {
         using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, Backend = Repo.Backend(managed) });

@@ -286,6 +286,58 @@ public class ManagedBackendTests(ITestOutputHelper output)
     }
 
     /// <summary>
+    /// The character model, both variants: NER's (bidirectional, final states) and the tagger's (unidirectional,
+    /// attention pooling), with words of 1 to 20 characters including unknown ones.
+    /// </summary>
+    [ModelTheory]
+    [MemberData(nameof(Paths))]
+    public void CharacterModel_ManagedMatchesTorchSharp(string path)
+    {
+        using var _ = torch.no_grad();
+        using var scope = NewDisposeScope();
+        var words = "a The NER-tagger's charmodel reads every character: 𝔘nicode, ü, and supercalifragilistic !".Split(' ');
+        foreach (var (name, bidirectional, attention) in new[] { ("ner/ontonotes-ww-multi_nocharlm", true, false), ("pos/combined_nocharlm", false, true) })
+        {
+            var ckpt = Checkpoint.Load(Repo.Model(name));
+            var (model, config, vocab) = (ckpt.Root["model"]!, ckpt.Root["config"]!, ckpt.Root["vocab"]!["char"]!);
+            using var reference = new CharacterModel(ckpt, model, config, vocab, "charmodel.", bidirectional, attention);
+            var managed = new ManagedCharacterModel(ckpt, model, config, vocab, "charmodel.", bidirectional, attention);
+            var expected = reference.ForwardWords([words.Select(reference.CharIds).ToList()]).data<float>().ToArray();
+            var actual = With(path, 4, () => managed.Forward(words.Select(managed.CharIds).ToList()));
+            output.WriteLine($"{path} {name}: max |diff| {TokenizerTests.AssertClose(expected, actual, 1e-5f, $"{path} {name}"):E2}");
+        }
+    }
+
+    /// <summary>NER's network, both backends and both checkpoints, on one padded batch of real sentences (one alone at full width).</summary>
+    [ModelTheory]
+    [MemberData(nameof(Paths))]
+    public void NerNet_ManagedMatchesTorchSharp(string path)
+    {
+        using var pretrain = Pretrain.Load(Repo.Model("pretrain/conll17"));
+        using var forward = CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
+        using var backward = CharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
+        var managedForward = ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
+        var managedBackward = ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
+        var text = File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt")).Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
+        var sentences = new[] { 12, 3, 30, 1, 17 }.Select((n, i) => (IReadOnlyList<string>)Enumerable.Range(i * 31, n).Select(k => text[k % text.Length]).ToList()).ToList();
+        foreach (var name in new[] { "ner/ontonotes-ww-multi_charlm", "ner/ontonotes-ww-multi_nocharlm" })
+        {
+            bool charlm = name.EndsWith("_charlm");
+            using var reference = Ner.NerTagger.Load(Repo.Model(name), pretrain, charlm ? forward : null, charlm ? backward : null);
+            using var managed = Ner.NerTagger.LoadManaged(Repo.Model(name), pretrain, charlm ? managedForward : null, charlm ? managedBackward : null);
+            var expectedTags = reference.Predict(sentences, out var expected);
+            var actualTags = With(path, 4, () => managed.Predict(sentences, out var e) is var t ? (t, e) : default);
+            float diff = 0;
+            for (int i = 0; i < sentences.Count; i++)
+            {
+                diff = Math.Max(diff, TokenizerTests.AssertClose(expected[i], actualTags.e[i], 1e-4f, $"{path} {name} s{i}"));
+                Assert.Equal(expectedTags[i], actualTags.t[i]);
+            }
+            output.WriteLine($"{path} {name}: max |diff| {diff:E2}");
+        }
+    }
+
+    /// <summary>
     /// Times managed vs TorchSharp for both charlms and the tagger's highway biLSTM on a modest input, on every path
     /// this machine runs natively, so CI logs show each OS and architecture (Arm64 included). Never fails on speed.
     /// </summary>

@@ -60,6 +60,9 @@ public sealed class Pipeline : IDisposable
         },
     };
 
+    // Processors with a managed network (issue #29, docs/backends.md); the others run on TorchSharp on either backend.
+    internal static readonly HashSet<string> ManagedProcessors = ["tokenize", "mwt", "ner"];
+
     // Processors whose models (every package's) read the shared pretrained word vectors.
     private static readonly HashSet<string> UsesPretrain = ["pos", "depparse", "ner", "constituency", "sentiment"];
 
@@ -86,13 +89,17 @@ public sealed class Pipeline : IDisposable
     private readonly SentimentClassifier? _sentiment;
     private readonly Pretrain? _pretrain;
     private readonly CharLanguageModel? _charlmForward, _charlmBackward;
+    private readonly ManagedCharLanguageModel? _managedCharlmForward, _managedCharlmBackward;
     private readonly CharlmCacheOptions _cacheOptions;
+    private readonly TorchSharp.torch.Device? _device;
     private readonly bool _splitSentences, _trimNativeHeap;
     private readonly ILogger? _logger;
 
     private Pipeline(string modelDir, Dictionary<string, string> models, PipelineOptions options)
     {
         _cacheOptions = options.CharlmCache;
+        _device = options.Device;
+        bool Managed(string processor) => options.Backend == Backend.Managed && ManagedProcessors.Contains(processor);
         _splitSentences = options.SplitSentences;
         _trimNativeHeap = options.TrimNativeHeap && NativeHeap.CanTrim;
         _logger = options.Logger;
@@ -113,8 +120,18 @@ public sealed class Pipeline : IDisposable
             _pretrain = Timed(PretrainPath, () => Pretrain.Load(Path.Combine(modelDir, PretrainPath)));
         if (shared.Contains(ForwardCharlmPath))
         {
-            _charlmForward = Timed(ForwardCharlmPath, () => CharLanguageModel.Load(Path.Combine(modelDir, ForwardCharlmPath)));
-            _charlmBackward = Timed(BackwardCharlmPath, () => CharLanguageModel.Load(Path.Combine(modelDir, BackwardCharlmPath)));
+            // Each backend's charlms, if a processor on it reads them.
+            var users = models.Where(kv => kv.Value.EndsWith("_charlm", StringComparison.Ordinal)).Select(kv => kv.Key).ToList();
+            if (users.Any(p => !Managed(p)))
+            {
+                _charlmForward = Timed(ForwardCharlmPath, () => CharLanguageModel.Load(Path.Combine(modelDir, ForwardCharlmPath)));
+                _charlmBackward = Timed(BackwardCharlmPath, () => CharLanguageModel.Load(Path.Combine(modelDir, BackwardCharlmPath)));
+            }
+            if (users.Any(Managed))
+            {
+                _managedCharlmForward = Timed(ForwardCharlmPath + " (managed)", () => ManagedCharLanguageModel.Load(Path.Combine(modelDir, ForwardCharlmPath)));
+                _managedCharlmBackward = Timed(BackwardCharlmPath + " (managed)", () => ManagedCharLanguageModel.Load(Path.Combine(modelDir, BackwardCharlmPath)));
+            }
         }
 
         _tokenizer = Timed(Name("tokenize"), () => Tokenizer.Load(Model("tokenize"), backend: options.Backend));
@@ -127,7 +144,9 @@ public sealed class Pipeline : IDisposable
         if (models.ContainsKey("depparse"))
             _depparse = Timed(Name("depparse"), () => DependencyParser.Load(Model("depparse"), _pretrain!, _charlmForward, _charlmBackward));
         if (models.ContainsKey("ner"))
-            _ner = Timed(Name("ner"), () => NerTagger.Load(Model("ner"), _pretrain!, _charlmForward, _charlmBackward));
+            _ner = Timed(Name("ner"), () => Managed("ner")
+                ? NerTagger.LoadManaged(Model("ner"), _pretrain!, _managedCharlmForward, _managedCharlmBackward)
+                : NerTagger.Load(Model("ner"), _pretrain!, _charlmForward, _charlmBackward));
         if (models.ContainsKey("constituency"))
             _parser = Timed(Name("constituency"), () => ConstituencyParser.Load(Model("constituency"), _pretrain!, _charlmForward!, _charlmBackward!));
         if (models.ContainsKey("sentiment"))
@@ -380,7 +399,7 @@ public sealed class Pipeline : IDisposable
             Step("mwt", () => _mwt.Process(doc), ct); // one batch, and only for the words the dictionary lacks
         // NER, the parser and the sentiment classifier reuse the tagger's charlm outputs instead of computing them again.
         // A _nocharlm tagger (default_fast) has no charlm outputs to share.
-        using var charlms = _pos is { UsesCharlm: true } && (_ner != null || _parser != null || _sentiment != null) && _cacheOptions.IsEnabled ? new CharlmCache(_cacheOptions.MaxWords) : null;
+        using var charlms = _pos is { UsesCharlm: true } && (_ner != null || _parser != null || _sentiment != null) && _cacheOptions.IsEnabled ? new CharlmCache(_cacheOptions.MaxWords, _device) : null;
         if (_pos != null)
             Step("pos", () => _pos.Process(doc, charlms, ct), ct);
         if (_lemma != null)
