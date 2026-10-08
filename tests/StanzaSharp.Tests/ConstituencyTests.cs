@@ -1,36 +1,47 @@
 using System.Text.Json.Nodes;
 using StanzaSharp.Constituency;
-using StanzaSharp.Mwt;
 using StanzaSharp.Nn;
-using StanzaSharp.Pos;
-using StanzaSharp.Tokenize;
+using StanzaSharp.Nn.Managed;
+using Xunit.Abstractions;
 
 namespace StanzaSharp.Tests;
 
-public class ConstituencyTests
+public class ConstituencyTests(ITestOutputHelper output)
 {
     private sealed class Models : IDisposable
     {
         public readonly Pretrain Pretrain = Pretrain.Load(Repo.Model("pretrain/conll17"));
-        public readonly CharLanguageModel Forward = CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
-        public readonly CharLanguageModel Backward = CharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
+        public readonly CharLanguageModel? Forward, Backward;
         public readonly ConstituencyParser Parser;
 
-        public Models() => Parser = ConstituencyParser.Load(Repo.Model("constituency/ptb3-revised_charlm"), Pretrain, Forward, Backward);
+        public Models(bool managed = false)
+        {
+            if (managed)
+            {
+                Parser = ConstituencyParser.LoadManaged(Repo.Model("constituency/ptb3-revised_charlm"), Pretrain,
+                    ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion")), ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion")));
+                return;
+            }
+            Forward = CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
+            Backward = CharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
+            Parser = ConstituencyParser.Load(Repo.Model("constituency/ptb3-revised_charlm"), Pretrain, Forward, Backward);
+        }
 
         public void Dispose()
         {
             Parser.Dispose();
-            Forward.Dispose();
-            Backward.Dispose();
+            Forward?.Dispose();
+            Backward?.Dispose();
             Pretrain.Dispose();
         }
     }
 
-    [ModelFact]
-    public void TransitionScores_MatchGoldenIntermediates()
+    [ModelTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void TransitionScores_MatchGoldenIntermediates(bool managed)
     {
-        using var models = new Models();
+        using var models = new Models(managed);
         var golden = SafeTensorFile.Load(Path.Combine(Repo.Golden, "intermediates.safetensors"));
         var index = JsonNode.Parse(File.ReadAllText(Path.Combine(Repo.Golden, "intermediates.json")))!["sentences"]!.AsArray();
         var sentences = index.Select(e =>
@@ -47,22 +58,104 @@ public class ConstituencyTests
         {
             Assert.Equal(index[i]!["tree"]!.GetValue<string>(), trees[i]?.ToString());
             Assert.Equal(golden[$"s{i}.constituency.scores"].Shape[0], scores[i].Count);
-            TokenizerTests.AssertClose(golden.Read<float>($"s{i}.constituency.scores"), scores[i].SelectMany(r => r).ToArray(), 1e-3f, $"s{i}");
+            float diff = TokenizerTests.AssertClose(golden.Read<float>($"s{i}.constituency.scores"), scores[i].SelectMany(r => r).ToArray(), 1e-3f, $"s{i}");
+            output.WriteLine($"s{i}: {scores[i].Count} steps, transition scores max |diff| {diff:E2}");
         }
     }
 
+    /// <summary>
+    /// Near-ties: both backends parse every golden file (pipeline.conllu and validation*.conllu, Stanza's words and XPOS,
+    /// charlms computed) with identical decisions at every step. Reports the per-step score drift between the backends and,
+    /// per backend, how close each decision was: the margin between the best legal transition and the next legal one
+    /// (steps with one legal transition decide nothing), plus the raw top-2 margin of the whole row, and the closest calls.
+    /// </summary>
     [ModelFact]
-    public void Pipeline_MatchesGoldenTrees()
+    public void NearTies_AreReported()
     {
-        using var models = new Models();
-        using var tokenizer = Tokenizer.Load(Repo.Model("tokenize/combined_nocharlm"));
-        using var mwt = MwtExpander.Load(Repo.Model("mwt/combined"));
-        using var tagger = PosTagger.Load(Repo.Model("pos/combined_charlm"), models.Pretrain, models.Forward, models.Backward);
+        var files = new[] { "pipeline.conllu" }.Concat(Directory.GetFiles(Repo.Golden, "validation*.conllu").Select(Path.GetFileName).Order()).ToList();
+        var sentences = new List<(string File, int Index, IReadOnlyList<(string, string)> Words)>();
+        foreach (var file in files)
+        {
+            var doc = Conllu.Read(File.ReadAllText(Path.Combine(Repo.Golden, file!)));
+            for (int i = 0; i < doc.Sentences.Count; i++)
+                sentences.Add((file!, i, doc.Sentences[i].Words.Select(w => (w.Text, w.Xpos!)).ToList()));
+        }
 
-        var doc = tokenizer.Process(File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt")));
-        mwt.Process(doc);
-        tagger.Process(doc);
-        models.Parser.Process(doc);
+        var steps = new[] { new List<List<(float[] Row, bool[] Legal)>>(), new List<List<(float[] Row, bool[] Legal)>>() };
+        var trees = new List<Tree?>[2];
+        IReadOnlyList<Transition> transitions = [];
+        foreach (bool managed in new[] { false, true })
+        {
+            using var models = new Models(managed);
+            transitions = models.Parser.Transitions;
+            var mine = steps[managed ? 1 : 0];
+            mine.AddRange(sentences.Select(_ => new List<(float[] Row, bool[] Legal)>()));
+            trees[managed ? 1 : 0] = models.Parser.Parse(sentences.Select(s => s.Words).ToList(), onStep: (i, row, legal) => mine[i].Add((row, legal)));
+        }
+        Assert.Equal(trees[0].Select(t => t?.ToString()), trees[1].Select(t => t?.ToString()));
+
+        static (int Best, int Second, float Margin) Decision(float[] row, bool[]? legal)
+        {
+            int best = -1, second = -1;
+            for (int j = 0; j < row.Length; j++)
+            {
+                if (legal != null && !legal[j])
+                    continue;
+                if (best < 0 || row[j] > row[best])
+                    (best, second) = (j, best);
+                else if (second < 0 || row[j] > row[second])
+                    second = j;
+            }
+            return (best, second, second < 0 ? float.PositiveInfinity : row[best] - row[second]);
+        }
+        string Name(int j) => transitions[j].Kind == TransitionKind.Open ? $"Open({transitions[j].Label})" : transitions[j].Kind.ToString();
+
+        float drift = 0;
+        int total = 0, decisions = 0;
+        var margins = new[] { new List<float>(), new List<float>() };
+        var raw = new[] { new List<float>(), new List<float>() };
+        var calls = new List<(float Min, string What)>();
+        for (int i = 0; i < sentences.Count; i++)
+        {
+            Assert.Equal(steps[0][i].Count, steps[1][i].Count);
+            for (int k = 0; k < steps[0][i].Count; k++)
+            {
+                var (t, m) = (steps[0][i][k], steps[1][i][k]);
+                Assert.Equal(t.Legal, m.Legal);
+                total++;
+                for (int j = 0; j < t.Row.Length; j++)
+                    drift = Math.Max(drift, Math.Abs(t.Row[j] - m.Row[j]));
+                var (dt, dm) = (Decision(t.Row, t.Legal), Decision(m.Row, m.Legal));
+                Assert.Equal(dt.Best, dm.Best);
+                raw[0].Add(Decision(t.Row, null).Margin);
+                raw[1].Add(Decision(m.Row, null).Margin);
+                if (dt.Second < 0)
+                    continue;
+                decisions++;
+                margins[0].Add(dt.Margin);
+                margins[1].Add(dm.Margin);
+                calls.Add((Math.Min(dt.Margin, dm.Margin), $"{sentences[i].File} sentence {sentences[i].Index} step {k}: {Name(dt.Best)} over {Name(dt.Second)}, " +
+                    $"margin TorchSharp {dt.Margin:E2}, managed {dm.Margin:E2}" + (dt.Second != dm.Second ? $" (managed's runner-up {Name(dm.Second)})" : "")));
+            }
+        }
+        output.WriteLine($"{sentences.Count} sentences, {total} steps, {decisions} with two or more legal transitions; scores max |diff| between backends {drift:E2}");
+        string Counts(List<float> m) => $"< 1e-2: {m.Count(x => x < 1e-2f)}, < 1e-3: {m.Count(x => x < 1e-3f)}, < 1e-4: {m.Count(x => x < 1e-4f)}, min {m.Min():E2}";
+        output.WriteLine($"decision margins TorchSharp {Counts(margins[0])}");
+        output.WriteLine($"decision margins managed    {Counts(margins[1])}");
+        output.WriteLine($"raw top-2 margins TorchSharp {Counts(raw[0])}");
+        output.WriteLine($"raw top-2 margins managed    {Counts(raw[1])}");
+        foreach (var (_, what) in calls.OrderBy(c => c.Min).Take(10))
+            output.WriteLine(what);
+    }
+
+    [ModelTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Pipeline_MatchesGoldenTrees(bool managed)
+    {
+        // The tagger's charlm cache feeds the parser here; the test above computes the charlms itself.
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos,constituency", Backend = Repo.Backend(managed) });
+        var doc = nlp.Process(File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt")));
         var golden = Conllu.Read(File.ReadAllText(Path.Combine(Repo.Golden, "pipeline.conllu")));
 
         Assert.Equal(golden.Sentences.Select(s => s.Constituency?.ToString()), doc.Sentences.Select(s => s.Constituency?.ToString()));
