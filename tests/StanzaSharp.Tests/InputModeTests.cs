@@ -10,11 +10,13 @@ public class InputModeTests
     private static readonly Dictionary<string, string> Suffix = new() { ["default"] = "", ["default_fast"] = ".fast" };
 
     [ModelTheory]
-    [InlineData("default")]
-    [InlineData("default_fast")]
-    public void Pretokenized_MatchesGolden(string package)
+    [InlineData("default", false)]
+    [InlineData("default_fast", false)]
+    [InlineData("default", true)]
+    [InlineData("default_fast", true)]
+    public void Pretokenized_MatchesGolden(string package, bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, Backend = Repo.Backend(managed) });
         var dir = Path.Combine(Repo.Golden, "pretokenized");
         var cases = JsonNode.Parse(File.ReadAllText(Path.Combine(dir, "inputs.json")))!.AsObject();
         Assert.Equal(7, cases.Count);

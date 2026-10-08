@@ -63,6 +63,9 @@ internal sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords, De
         return true;
     }
 
+    /// <summary>Whether a new sentence of <paramref name="words"/> words would fit, so a producer can skip making copies that won't be kept.</summary>
+    public bool HasRoom(int words) => _words + words <= MaxWords;
+
     /// <summary>Drops any old entry for <paramref name="sentence"/>, then whether <paramref name="words"/> more fit.</summary>
     private bool Reserve(Sentence sentence, int words)
     {

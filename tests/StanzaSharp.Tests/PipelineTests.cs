@@ -73,26 +73,32 @@ public class PipelineTests
         Assert.Throws<ArgumentOutOfRangeException>(() => Pipeline.Load(dir, new PipelineOptions { CharlmCache = new() { MaxWords = 0 } }));
     }
 
-    [ModelFact]
-    public void CharlmCacheSettings_DoNotChangeOutput()
+    /// <remarks>With <paramref name="managed"/>, the managed tagger fills the cache with arrays, which managed NER reads as
+    /// they are and the TorchSharp constituency parser and sentiment classifier as tensors.</remarks>
+    [ModelTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void CharlmCacheSettings_DoNotChangeOutput(bool managed)
     {
         // Off, and a cap small enough that most sentences are recomputed: same bytes as the default.
         var text = File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt"));
         var golden = File.ReadAllText(Path.Combine(Repo.Golden, "pipeline.conllu"));
         foreach (var cache in new CharlmCacheOptions[] { new() { IsEnabled = false, MaxWords = 0 }, new() { MaxWords = 10 } })
         {
-            using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { CharlmCache = cache });
+            using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { CharlmCache = cache, Backend = Repo.Backend(managed) });
             Assert.Equal(golden, Conllu.Write(nlp.Process(text)));
         }
     }
 
-    [ModelFact]
-    public void Process_AllEightProcessorsMatchEachGoldenFolder()
+    [ModelTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Process_AllEightProcessorsMatchEachGoldenFolder(bool managed)
     {
         // No golden file has all eight, so each field is checked against its own folder: word lines and
         // ner= against ner/ (tokenize..depparse,ner), trees against the default pipeline's files, and
         // sentiment against sentiment/. NER, constituency and sentiment share the tagger's CharlmCache.
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos,lemma,depparse,ner,sentiment,constituency" });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos,lemma,depparse,ner,sentiment,constituency", Backend = Repo.Backend(managed) });
         foreach (var (name, conllu) in new[] { ("corpus", "pipeline"), ("validation_news", "validation_news"), ("validation_contractions", "validation_contractions") })
         {
             var doc = nlp.Process(File.ReadAllText(Path.Combine(Repo.Golden, name + ".txt")));

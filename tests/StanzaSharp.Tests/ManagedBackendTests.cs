@@ -338,6 +338,74 @@ public class ManagedBackendTests(ITestOutputHelper output)
     }
 
     /// <summary>
+    /// The tagger's network, both backends and both checkpoints, on one batch of real sentences (one with a word
+    /// simplify_punct changes). With the charlms, the managed tagger's cache entries (arrays) match the TorchSharp one's.
+    /// </summary>
+    [ModelTheory]
+    [MemberData(nameof(Paths))]
+    public void PosNet_ManagedMatchesTorchSharp(string path)
+    {
+        using var pretrain = Pretrain.Load(Repo.Model("pretrain/conll17"));
+        using var forward = CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
+        using var backward = CharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
+        var managedForward = ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
+        var managedBackward = ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
+        var text = File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt")).Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
+        var sentences = new[] { 12, 3, 30, 1, 17 }.Select((n, i) => (IReadOnlyList<string>)Enumerable.Range(i * 31, n).Select(k => text[k % text.Length]).ToList()).ToList();
+        sentences.Add(["Really", "?!"]);
+        var keys = sentences.Select(_ => (Sentence?)new Sentence()).ToList();
+        foreach (var name in new[] { "pos/combined_charlm", "pos/combined_nocharlm" })
+        {
+            bool charlm = name.EndsWith("_charlm");
+            using var reference = Pos.PosTagger.Load(Repo.Model(name), pretrain, charlm ? forward : null, charlm ? backward : null);
+            using var managed = Pos.PosTagger.LoadManaged(Repo.Model(name), pretrain, charlm ? managedForward : null, charlm ? managedBackward : null);
+            using var referenceCache = new CharlmCache();
+            using var managedCache = new CharlmCache();
+            var expectedTags = reference.Predict(sentences, out var expected, referenceCache, keys);
+            var actualTags = With(path, 4, () => managed.Predict(sentences, out var e, managedCache, keys) is var t ? (t, e) : default);
+            float diff = 0, cacheDiff = 0;
+            for (int i = 0; i < sentences.Count; i++)
+            {
+                diff = Math.Max(diff, TokenizerTests.AssertClose(expected[i], actualTags.e[i], 1e-4f, $"{path} {name} s{i}"));
+                Assert.Equal(expectedTags[i], actualTags.t[i]);
+                bool kept = referenceCache.TryGetArrays(keys[i]!, out var r);
+                Assert.Equal(kept, managedCache.TryGetArrays(keys[i]!, out var m));
+                Assert.Equal(charlm && i < sentences.Count - 1, kept); // not the one simplify_punct changed
+                if (kept)
+                    cacheDiff = Math.Max(cacheDiff, Math.Max(TokenizerTests.AssertClose(r.Forward, m.Forward, 1e-4f, $"{path} s{i} forward"),
+                        TokenizerTests.AssertClose(r.Backward, m.Backward, 1e-4f, $"{path} s{i} backward")));
+            }
+            output.WriteLine($"{path} {name}: UPOS scores max |diff| {diff:E2}, cached charlm max |diff| {cacheDiff:E2}");
+        }
+    }
+
+    /// <summary>The managed tagger's UPOS logits against Python Stanza's (both packages' golden intermediates) on every path, at TorchSharp's 1e-4.</summary>
+    [ModelTheory]
+    [MemberData(nameof(Paths))]
+    public void PosUposLogits_MatchGoldenOnEveryPath(string path)
+    {
+        using var pretrain = Pretrain.Load(Repo.Model("pretrain/conll17"));
+        var managedForward = ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
+        var managedBackward = ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
+        foreach (var (name, golden) in new[] { ("pos/combined_charlm", Repo.Golden), ("pos/combined_nocharlm", Path.Combine(Repo.Golden, "fast")) })
+        {
+            bool charlm = name.EndsWith("_charlm");
+            using var tagger = Pos.PosTagger.LoadManaged(Repo.Model(name), pretrain, charlm ? managedForward : null, charlm ? managedBackward : null);
+            var tensors = SafeTensorFile.Load(Path.Combine(golden, "intermediates.safetensors"));
+            var index = JsonNode.Parse(File.ReadAllText(Path.Combine(golden, "intermediates.json")))!["sentences"]!.AsArray();
+            var sentences = index.Select(e => (IReadOnlyList<string>)e!["words"]!.AsArray().Select(w => w!.GetValue<string>()).ToList()).ToList();
+            var (tags, logits) = With(path, 4, () => (tagger.Predict(sentences, out var l), l));
+            float diff = 0;
+            for (int i = 0; i < sentences.Count; i++)
+            {
+                diff = Math.Max(diff, TokenizerTests.AssertClose(tensors.Read<float>($"s{i}.pos.upos_logits"), logits[i], 1e-4f, $"{path} {name} s{i}"));
+                Assert.Equal(index[i]!["xpos"]!.AsArray().Select(x => x!.GetValue<string>()), tags[i].Select(t => t.Xpos));
+            }
+            output.WriteLine($"{path} {name}: UPOS logits max |diff| vs Python {diff:E2}");
+        }
+    }
+
+    /// <summary>
     /// Times managed vs TorchSharp for both charlms and the tagger's highway biLSTM on a modest input, on every path
     /// this machine runs natively, so CI logs show each OS and architecture (Arm64 included). Never fails on speed.
     /// </summary>
