@@ -15,6 +15,21 @@ public class PipelineTests
         Assert.Equal(golden, Conllu.Write(doc));
     }
 
+    /// <summary>Every processor runs managed, so a managed pipeline of either package holds only the managed charlms.</summary>
+    [ModelFact]
+    public void ManagedBackend_LoadsNoTorchSharpCharlms()
+    {
+        Assert.True(Pipeline.Packages.All(p => p.Value.Keys.All(Pipeline.ManagedProcessors.Contains)));
+        foreach (var package in Pipeline.Packages.Keys)
+        {
+            using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, Backend = Nn.Backend.Managed });
+            object? Field(string name) => typeof(Pipeline).GetField(name, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!.GetValue(nlp);
+            Assert.Null(Field("_charlmForward"));
+            Assert.Null(Field("_charlmBackward"));
+            Assert.NotNull(Field("_managedCharlmForward"));
+        }
+    }
+
     [ModelTheory]
     [InlineData(false)]
     [InlineData(true)]
@@ -73,8 +88,8 @@ public class PipelineTests
         Assert.Throws<ArgumentOutOfRangeException>(() => Pipeline.Load(dir, new PipelineOptions { CharlmCache = new() { MaxWords = 0 } }));
     }
 
-    /// <remarks>With <paramref name="managed"/>, the managed tagger fills the cache with arrays, which managed NER reads as
-    /// they are and the TorchSharp constituency parser and sentiment classifier as tensors.</remarks>
+    /// <remarks>With <paramref name="managed"/>, the managed tagger fills the cache with arrays, which managed constituency,
+    /// sentiment and NER read as they are.</remarks>
     [ModelTheory]
     [InlineData(false)]
     [InlineData(true)]

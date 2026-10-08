@@ -592,6 +592,73 @@ public class ManagedBackendTests(ITestOutputHelper output)
 
 
     /// <summary>
+    /// The constituency parser, both backends: the golden transition scores (Python, 3 sentences) at the parser's 1e-3, then
+    /// every pipeline.conllu sentence (Stanza's words and XPOS) with identical trees and step scores at 1e-3. Then the managed
+    /// net's per-state arithmetic: a stack push, a composition and a score of 7 states equal, bitwise, those of each state alone.
+    /// </summary>
+    [ModelTheory]
+    [MemberData(nameof(Paths))]
+    public void ConstituencyParser_ManagedMatchesTorchSharpAndGolden(string path)
+    {
+        using var pretrain = Pretrain.Load(Repo.Model("pretrain/conll17"));
+        using var forward = CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
+        using var backward = CharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
+        var managedForward = ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
+        var managedBackward = ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
+        var model = Repo.Model("constituency/ptb3-revised_charlm");
+        using var reference = Constituency.ConstituencyParser.Load(model, pretrain, forward, backward);
+        using var managed = Constituency.ConstituencyParser.LoadManaged(model, pretrain, managedForward, managedBackward);
+
+        var tensors = SafeTensorFile.Load(Path.Combine(Repo.Golden, "intermediates.safetensors"));
+        var index = JsonNode.Parse(File.ReadAllText(Path.Combine(Repo.Golden, "intermediates.json")))!["sentences"]!.AsArray();
+        var golden = index.Select(e => (IReadOnlyList<(string, string)>)e!["words"]!.AsArray().Select(w => w!.GetValue<string>())
+            .Zip(e["xpos"]!.AsArray().Select(t => t!.GetValue<string>())).ToList()).ToList();
+        var goldenScores = new List<List<float[]>>();
+        With(path, 4, () => managed.Parse(golden, goldenScores));
+        float goldenDiff = 0;
+        for (int i = 0; i < golden.Count; i++)
+            goldenDiff = Math.Max(goldenDiff, TokenizerTests.AssertClose(tensors.Read<float>($"s{i}.constituency.scores"),
+                goldenScores[i].SelectMany(r => r).ToArray(), 1e-3f, $"{path} s{i}"));
+
+        var sentences = Conllu.Read(File.ReadAllText(Path.Combine(Repo.Golden, "pipeline.conllu"))).Sentences
+            .Select(s => (IReadOnlyList<(string, string)>)s.Words.Select(w => (w.Text, w.Xpos!)).ToList()).ToList();
+        var (expectedScores, actualScores) = (new List<List<float[]>>(), new List<List<float[]>>());
+        var expected = reference.Parse(sentences, expectedScores);
+        var actual = With(path, 4, () => managed.Parse(sentences, actualScores));
+        Assert.Equal(expected.Select(t => t?.ToString()), actual.Select(t => t?.ToString()));
+        float diff = 0;
+        for (int i = 0; i < sentences.Count; i++)
+            diff = Math.Max(diff, TokenizerTests.AssertClose(expectedScores[i].SelectMany(r => r).ToArray(), actualScores[i].SelectMany(r => r).ToArray(), 1e-3f, $"{path} s{i}"));
+        output.WriteLine($"{path}: transition scores max |diff| vs Python {goldenDiff:E2}; {sentences.Count} sentences, " +
+            $"{expectedScores.Sum(s => s.Count)} steps vs TorchSharp {diff:E2}");
+
+        // Per-state arithmetic: 7 states (rows 0..5 a full 6-row block, row 6 alone in the next) against each state alone.
+        var net = new Constituency.ManagedConstituencyNet(Checkpoint.Load(model), pretrain, managedForward, managedBackward);
+        var words = (float[][])net.EncodeWords([new([.. sentences[0].Select(x => x.Item1)], [.. sentences[0].Select(_ => 5L)],
+            [.. sentences[0].Select(_ => 2L)], [.. sentences[0].Select(_ => 2L)], null)], null, default)[0];
+        var inputs = Enumerable.Range(0, 7).Select(i => (object)Random(words[0].Length, 40 + i)).ToList();
+        var starts = Enumerable.Repeat(net.ConstituentStart, 7).ToList();
+        With(path, 4, () =>
+        {
+            var parents = net.PushConstituents(starts, inputs, default); // 7 different states
+            var transitions = net.PushTransitions(Enumerable.Repeat(net.TransitionStart, 7).ToList(), [.. Enumerable.Range(0, 7)], default);
+            var together = net.PushConstituents(parents, inputs, default);
+            var composed = net.Compose([.. inputs.Select((x, i) => (IReadOnlyList<object>)[x, inputs[(i + 1) % 7]])], default);
+            var scores = net.Score([.. Enumerable.Range(0, 7).Select(i => ((object)words, i % words.Length, transitions[i], parents[i]))], default);
+            float[] Field(object state, string name) => (float[])state.GetType().GetField(name)!.GetValue(state)!;
+            for (int i = 0; i < 7; i++)
+            {
+                var alone = net.PushConstituents([parents[i]], [inputs[i]], default)[0];
+                Assert.Equal(Field(together[i], "H"), Field(alone, "H"));
+                Assert.Equal(Field(together[i], "C"), Field(alone, "C"));
+                Assert.Equal((float[])composed[i], (float[])net.Compose([[inputs[i], inputs[(i + 1) % 7]]], default)[0]);
+                Assert.Equal(scores.AsSpan(i * 29, 29).ToArray(), net.Score([((object)words, i % words.Length, transitions[i], parents[i])], default));
+            }
+            return 0;
+        });
+    }
+
+    /// <summary>
     /// Times managed vs TorchSharp for both charlms and the tagger's highway biLSTM on a modest input, on every path
     /// this machine runs natively, so CI logs show each OS and architecture (Arm64 included). Never fails on speed.
     /// </summary>

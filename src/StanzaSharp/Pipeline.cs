@@ -61,7 +61,7 @@ public sealed class Pipeline : IDisposable
     };
 
     // Processors with a managed network (issue #29, docs/backends.md); the others run on TorchSharp on either backend.
-    internal static readonly HashSet<string> ManagedProcessors = ["tokenize", "mwt", "pos", "lemma", "depparse", "ner", "sentiment"];
+    internal static readonly HashSet<string> ManagedProcessors = ["tokenize", "mwt", "pos", "lemma", "constituency", "depparse", "ner", "sentiment"];
 
     // Processors whose models (every package's) read the shared pretrained word vectors.
     private static readonly HashSet<string> UsesPretrain = ["pos", "depparse", "ner", "constituency", "sentiment"];
@@ -152,7 +152,9 @@ public sealed class Pipeline : IDisposable
                 ? NerTagger.LoadManaged(Model("ner"), _pretrain!, _managedCharlmForward, _managedCharlmBackward)
                 : NerTagger.Load(Model("ner"), _pretrain!, _charlmForward, _charlmBackward));
         if (models.ContainsKey("constituency"))
-            _parser = Timed(Name("constituency"), () => ConstituencyParser.Load(Model("constituency"), _pretrain!, _charlmForward!, _charlmBackward!));
+            _parser = Timed(Name("constituency"), () => Managed("constituency")
+                ? ConstituencyParser.LoadManaged(Model("constituency"), _pretrain!, _managedCharlmForward!, _managedCharlmBackward!)
+                : ConstituencyParser.Load(Model("constituency"), _pretrain!, _charlmForward!, _charlmBackward!));
         if (models.ContainsKey("sentiment"))
             _sentiment = Timed(Name("sentiment"), () => Managed("sentiment")
                 ? SentimentClassifier.LoadManaged(Model("sentiment"), _pretrain!, _managedCharlmForward!, _managedCharlmBackward!)

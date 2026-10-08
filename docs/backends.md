@@ -10,9 +10,10 @@ StanzaSharp runs each processor's network on one of two backends:
 The owner's plan: 0.5 makes the managed backend the default, with TorchSharp still selectable. At 1.0 TorchSharp leaves
 the main package for an opt-in `StanzaSharp.Cuda` package. Both implementations stay.
 
-Phase 1 added the seam and ported **tokenize** and **mwt**. Phase 2 ports the other processors one at a time; so far
-**ner**, **pos**, **depparse**, **sentiment** and **lemma**, plus a backend-neutral `CharlmCache` (see [Phase 2](#phase-2-progress)). Everything is `internal`;
-nothing public changed.
+Phase 1 added the seam and ported **tokenize** and **mwt**. Phase 2 ported the other six one at a time: **ner**, **pos**,
+**depparse**, **sentiment**, **lemma** and **constituency**, plus a backend-neutral `CharlmCache` (see
+[Phase 2](#phase-2-progress)). Every processor of both packages now runs on either backend, and a managed pipeline loads no
+TorchSharp charlms. Everything is `internal`; nothing public changed.
 
 ## The seam
 
@@ -27,6 +28,7 @@ The seam sits at each processor's **network**: one small interface per processor
 | depparse | `IDepparseNet.Forward(DepparseBatch, labelScores, ct)` → `DepparseScores` (arc log-probs, label argmax, optional label scores) | `DepparseNet` | `ManagedDepparseNet` |
 | sentiment | `ISentimentNet.Forward(batch, ids, extraIds, width, charlms, cacheKeys, ct)` → [batch, classes] logits | `SentimentNet` | `ManagedSentimentNet` |
 | lemma | `ILemmaNet.Encode(ids, batch, width, posIds, lengths, ct)` → `ILemmaDecoder` (edit logits; `Step(previous, ct)` → [batch, columns] log-probs) | `LemmaNet` | `ManagedLemmaNet` |
+| constituency | `IConstituencyNet`: `EncodeWords`, `Word`, `Score` → [states, transitions] scores, `Open`, `Compose`, `PushTransitions`, `PushConstituents` over opaque handles | `ConstituencyNet` | `ManagedConstituencyNet` |
 
 - **Shared:** everything around the network stays in the processor and serves both backends. That covers paragraph
   splitting, features, sorting, batching, the 1000-character windows, padding, the argmax, `FixLabels`, decoding,
@@ -194,7 +196,7 @@ size would need it; none is ported.
 | **depparse** (`_nocharlm`, default_fast) | yes | byte-identical; arc / label log-probs 1.1e-5 / 2.7e-5 from Python (every path ≤ 1.5e-5 / 3.1e-5) | **6.47 → 3.68 s (0.57)** | **19.85 → 17.33 s (0.87)** |
 | **sentiment** (`sstplus_charlm`, both packages) | yes | byte-identical labels; logits within 1e-4 of Python's float32 or float64 logits (8.2e-5; 1.38e-4 from float32 on one ill-conditioned sentence, see [sentiment](#sentiment)) (TorchSharp 2.1e-5) | sentiment stage **9.82 → 5.98 s (0.61)** | **33.65 → 26.29 s (0.78)** |
 | **lemma** (`combined_nocharlm`, both packages) | yes | byte-identical lemmas, decoding and edits; smallest top-2 margin 5.6e-3; log-probs 4.8e-4 from TorchSharp, reported, not asserted (owner's decision, 2026-10-08; see [lemma](#lemma)) | lemma stage **0.89 → 0.32 s (0.36)** | **1.18 → 0.72 s (0.61)** |
-| constituency | no | | | |
+| **constituency** (`ptb3-revised_charlm`, default package) | yes | byte-identical trees; transition scores 3.4e-5 from Python (TorchSharp 3.1e-5; every path ≤ 4.6e-5; tolerance 1e-3 as before); smallest decision margin 3.6e-4 over 22,569 steps (see [constituency](#constituency)) | constituency stage **10.02 → 4.77 s (0.48)** | **21.73 → 17.82 s (0.82)** |
 
 Speed: `StanzaSharp.Benchmark --processors tokenize,ner --backend torch|managed --threads N --runs 3` (so NER computes every
 charlm itself; no tagger, no cache), 8 copies (24,840 words), medians, Ryzen 7 5800X, idle machine. In the full
@@ -333,6 +335,82 @@ reads the tagger's cached charlm outputs for sentences without MWTs.
   working set 2,538 → 2,759 MB (both charlm forms, since constituency still reads TorchSharp's). `--memory 6000` (one
   Process call): 4,299 → 2,839 MB, 22.7 → 11.8 s.
 
+### constituency
+
+- **Seam:** `IConstituencyNet` works on opaque handles the net makes and only it reads: a sentence's word vectors, a
+  constituent's vector, a stack node's LSTM state. `ConstituencyParser` keeps the transition system (IN_ORDER, legality,
+  `unary_limit` 4, the 20 × (length + 2) transition cap), the vocab lookups (pretrain with the lowercase fallback, delta and
+  tag ids), the schedule (sentences longest first, word queues built 50 at a time, 50 states in flight, each finished state
+  replaced), the stacks themselves, the trees and their `-LRB-`/`-RRB-` printing. Per step it calls `Score`, then `Open`
+  (dummy embedding rows), `Compose` (MAX + `reduce_linear` + ReLU, per close), `PushTransitions` and `PushConstituents`, each
+  over the batch. `ParserState` owns the handles that are `IDisposable` (TorchSharp's tensors, freed when its sentence ends);
+  the managed ones are plain float arrays. `ConstituencyNet` is the TorchSharp code, moved unchanged (no_grad and a dispose
+  scope per call instead of per step); `LoadManaged` builds `ManagedConstituencyNet`. `Parse` takes an optional `onStep`
+  hook (row and legality per state and step) for the near-tie report.
+- **Managed net:**
+  - Word encoder: rows `[word_start | pretrain 100, delta 100, tag 20, charlms 2048 | word_end]` (charlm columns from the
+    cache as arrays, the rest computed in one batch), `ManagedLstm.ForwardPadded` (2 layers, 2 × 512), then
+    `word_to_constituent` as one GEMM and ReLU; each sentence keeps its rows as [hidden] arrays.
+  - Stack LSTMs: each layer is one GEMM over `[x | h]` (K = 40 for the transition stack, 1024 for the constituent stack;
+    gate rows in `PackedLstm.GateOrder`, b_ih + b_hh folded) and `Act.LstmCell`, with every row read from and written to its
+    own state; a node holds its [layers, hidden] h and c (8 KB for the constituent stack). The start states are pushed from
+    zeros at load, like `nn.LSTM` without hx.
+  - Scores: `[word | transition top | constituent top]` (1044), ReLU before each of the two output layers, through `Gemm`.
+  - **Per-state arithmetic:** every per-step GEMM uses `Gemm.Run(..., rowInvariant: true)`. `Gemm` serves a lone row of a
+    6-row block with a 1-row kernel that splits the k sum into four accumulators; the flag sends it through the 3-row
+    kernel, whose per-row arithmetic is the 6-row one's. So a state's scores, compositions and pushes are bitwise the same
+    whatever else is in the batch (tested on 7 states vs each alone, on every path; without the flag the test fails on the
+    SIMD paths). The word encoder stays batched per 50 sentences, as on TorchSharp and in Stanza.
+- **Exactness** (all float, no double sums needed):
+
+  | | TorchSharp | managed |
+  |---|---:|---:|
+  | transition scores vs Python, 3 golden sentences (100 steps; tolerance 1e-3, unchanged) | 3.1e-5 | 3.4e-5 (Vector128 4.2e-5, Scalar 4.6e-5) |
+  | step scores managed vs TorchSharp, pipeline.conllu (10 sentences, 410 steps), every path | – | 5.0e-5 to 6.1e-5 |
+  | step scores managed vs TorchSharp, all 845 golden sentences (22,569 steps) | – | 7.3e-5 |
+
+  Trees are byte-identical: `pipeline.conllu` and every `validation*.conllu` through the full pipeline, the all-eight,
+  cache-settings, bulk, pretokenized, no_ssplit and concurrency theories, `ConstituencyTests` (both backends) and the
+  cancellation theory (the parser stops within one step).
+- **Near-ties** (`ConstituencyTests.NearTies_AreReported`: both backends parse all 845 golden sentences from Stanza's words
+  and XPOS, charlms computed; every step's decision is the same on both). The decision margin is the best legal
+  transition's score minus the next legal one's; 20,833 of the 22,569 steps have at least two legal transitions. The raw
+  top-2 margin of the whole row gives the same counts (an illegal top never came close).
+
+  | decision margin | TorchSharp | managed |
+  |---|---:|---:|
+  | < 1e-2 | 16 | 16 |
+  | < 1e-3 | 2 | 2 |
+  | < 1e-4 | 0 | 0 |
+  | smallest | 3.63e-4 | 3.61e-4 |
+
+  The closest calls (margin TorchSharp / managed):
+
+  | sentence | step | chosen over | margins |
+  |---|---:|---|---|
+  | validation_social 43 | 6 | Shift over Open(ADJP) | 3.63e-4 / 3.61e-4 |
+  | validation_instructions 53 | 12 | Shift over Open(PP) | 8.63e-4 / 8.65e-4 |
+  | validation_academic 15 | 9 | Shift over Open(NP) | 2.92e-3 / 2.92e-3 |
+  | validation_tech 64 | 12 | Shift over Open(PP) | 3.21e-3 / 3.21e-3 |
+  | validation_dialogue 14 | 2 | Shift over Close | 4.41e-3 / 4.41e-3 |
+
+  The smallest margin is 5× the largest score difference between the backends (7.3e-5) and 10× the drift from Python
+  (3.4e-5); the two backends' margins differ by at most 2e-6 there.
+- **Speed** (`--processors tokenize,mwt,pos,constituency`, 8 copies, 26,264 words, medians of 3, Ryzen 7 5800X, load ~14%;
+  the parser reads the tagger's cache): constituency stage **10.02 → 4.77 s** at 8 threads, **21.73 → 17.82 s** at 1 thread.
+  Per step the managed net reads ~19 MB of weights (two constituent LSTM layers 16 MB, output layer 2 MB, reduce 1 MB) for up
+  to 50 rows.
+- **Fully managed pipeline** (all eight processors, 8 threads, same text): **56.44 → 25.93 s** (tokenize 1.43 → 0.34, pos
+  11.19 → 5.50, lemma 0.89 → 0.36, constituency 9.97 → 4.70, depparse 13.68 → 8.28, sentiment 6.12 → 3.61, ner 13.15 →
+  3.14).
+- **Memory:** no processor reads the TorchSharp charlms any more, so a managed pipeline doesn't load them
+  (`PipelineTests.ManagedBackend_LoadsNoTorchSharpCharlms`, both packages), and cache entries are never converted to
+  tensors. Full 8-processor benchmark: peak working set **2,530 MB (TorchSharp) → 2,306 MB (managed)**, against 2,692 MB with
+  constituency still on TorchSharp (both charlm forms). `--memory 6000` (load, one Process call of 8,071 words, two fresh
+  processes each): TorchSharp 4,294 / 3,750 MB in 23.8 / 24.0 s, managed **2,533 / 2,531 MB** in **11.5 / 11.6 s** (with
+  constituency still on TorchSharp, as measured for sentiment: 2,839 MB). The managed load peak is higher (1,166 vs 819 MB: the packed weights live on the GC
+  heap, 800 MB, next to the TorchSharp pretrain) and the run does 9 gen2 GCs (TorchSharp 4).
+
 ### lemma
 
 - **Seam:** `ILemmaNet.Encode(ids, batch, width, posIds, lengths, ct)` → an `ILemmaDecoder` (the batch's state, disposed
@@ -428,9 +506,15 @@ by one, producer and readers can sit on different backends.
 
 ## Phase 2: what next
 
-1. ~~lemma~~: done ([lemma](#lemma)); open: a tolerance for its log-probs.
-2. **constituency**: the most code; per-step stack LSTMs (50 states in flight) and a transition argmax over thousands
-   of steps. The highest near-tie risk.
+1. ~~lemma~~: done ([lemma](#lemma)).
+2. ~~constituency~~: done ([constituency](#constituency)). Phase 2 is complete.
+
+For 0.5:
+
+- `Pretrain` as a plain array, and a managed `Load` that touches no libtorch (no `torch.set_num_threads`, no tensors), so a
+  managed pipeline loads without a native libtorch package.
+- The public `PipelineBackend` option (decided: A), and managed as the default; `Device`/`DisableTf32` become `[Obsolete]`.
+- Later (1.0): the `StanzaSharp.Cuda` split.
 
 Cross-cutting:
 
@@ -445,6 +529,6 @@ Cross-cutting:
   memory-bound on the 16 MB recurrent weights. Running the charlms over bigger groups would be faster but changes the
   last float bits; left as is.
 - **CI time:** the both-backend theories rerun the full pipeline on the golden files; the full local suite takes
-  29–34 minutes on 8 cores (246 tests, none skipped, Release build; with managed depparse 32.2 min on the converted models, 28.9 min on the `.pt` files; with managed sentiment, 253 tests, 27.2 / 31.2 min; with managed lemma, 258 tests, 31.4 / 26.5 min).
+  29–34 minutes on 8 cores (246 tests, none skipped, Release build; with managed depparse 32.2 min on the converted models, 28.9 min on the `.pt` files; with managed sentiment, 253 tests, 27.2 / 31.2 min; with managed lemma, 258 tests, 31.4 / 26.5 min; with managed constituency, 265 tests, 40 min on the converted models while another suite loaded the machine, 25.2 min on the `.pt` files).
   `ConcurrencyTests` now runs alone after the parallel collections: beside the heavier both-backend theories its
   cancellation test failed every full run (the timed run was slower than the canceled ones).

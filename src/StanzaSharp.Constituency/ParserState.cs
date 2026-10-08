@@ -1,5 +1,3 @@
-using static TorchSharp.torch;
-
 namespace StanzaSharp.Constituency;
 
 internal enum TransitionKind { Shift, Close, Open }
@@ -12,30 +10,25 @@ internal sealed record Transition(int Index, TransitionKind Kind, string? Label 
 /// A persistent stack whose nodes also carry an LSTM state, like Stanza's TreeStack of
 /// lstm_tree_stack.Node: pushing runs the LSTM one step from the parent's state.
 /// </summary>
-internal sealed class StackNode<T>(T value, StackNode<T>? parent, Tensor hx, Tensor cx, Tensor output)
+/// <param name="state">The LSTM state after this node, made by the <see cref="IConstituencyNet"/>.</param>
+internal sealed class StackNode<T>(T value, StackNode<T>? parent, object state)
 {
     public T Value { get; } = value;
     public StackNode<T>? Parent { get; } = parent;
     public int Length { get; } = (parent?.Length ?? 0) + 1;
-
-    /// <summary>[layers, hidden]</summary>
-    public Tensor Hx { get; } = hx;
-    public Tensor Cx { get; } = cx;
-
-    /// <summary>[hidden]: the last layer's output.</summary>
-    public Tensor Output { get; } = output;
+    public object State { get; } = state;
 }
 
 /// <summary>
 /// An item on the constituent stack: a finished subtree, or the marker left by an Open
-/// transition (Stanza's Dummy). <see cref="Hx"/> is its [hidden] vector.
+/// transition (Stanza's Dummy). <see cref="Hx"/> is its [hidden] vector, made by the <see cref="IConstituencyNet"/>.
 /// </summary>
-internal sealed class Constituent(Tree? tree, string? openLabel, Tensor? hx)
+internal sealed class Constituent(Tree? tree, string? openLabel, object? hx)
 {
     public Tree? Tree { get; } = tree;
     public string? OpenLabel { get; } = openLabel;
     public bool IsOpenMarker => OpenLabel != null;
-    public Tensor? Hx { get; } = hx;
+    public object? Hx { get; } = hx;
 }
 
 /// <summary>Parsing state for one sentence (stanza/models/constituency/state.py), mutated in place.</summary>
@@ -45,23 +38,30 @@ internal sealed class ParserState : IDisposable
     public required int Index;
     public required int SentenceLength;
     public required Tree[] Preterminals;
-    /// <summary>[SentenceLength + 2, hidden]: start sentinel, one row per word, end sentinel.</summary>
-    public required Tensor WordHx;
+    /// <summary>The net's word vectors: start sentinel, one per word, end sentinel (<see cref="IConstituencyNet.EncodeWords"/>).</summary>
+    public required object WordHx;
     public required StackNode<Transition?> Transitions;
     public required StackNode<Constituent> Constituents;
     public int WordPosition;
     public int NumOpens;
     public bool Broken;
 
-    /// <summary>Tensors made for this sentence (word vectors, stack nodes), freed when it is done.</summary>
-    public readonly List<Tensor> Owned = [];
+    /// <summary>What the net made for this sentence (word vectors, stack states) and needs freeing when it is done.</summary>
+    public readonly List<IDisposable> Owned = [];
 
     public void Dispose()
     {
-        WordHx.Dispose();
+        (WordHx as IDisposable)?.Dispose();
         foreach (var t in Owned)
             t.Dispose();
         Owned.Clear();
+    }
+
+    /// <summary>Keeps <paramref name="made"/> for <see cref="Dispose"/> if it needs disposing (TorchSharp's tensors do).</summary>
+    public void Own(object? made)
+    {
+        if (made is IDisposable d)
+            Owned.Add(d);
     }
 
     public bool EmptyWordQueue => WordPosition == SentenceLength;

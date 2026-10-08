@@ -84,7 +84,10 @@ internal static unsafe class Gemm
     /// per row (ldc ≥ PaddedN); bias (null for none) must have PaddedN floats. <paramref name="ct"/> is checked
     /// before each block of 96 rows × 128 columns.
     /// </summary>
-    public static void Run(float* a, int m, int lda, PackedMatrix w, float* bias, float* c, int ldc, CancellationToken ct = default)
+    /// <param name="rowInvariant">Compute every row with the same arithmetic whatever <paramref name="m"/> is (no
+    /// single-row kernel), so a row's result doesn't depend on the other rows in the call.</param>
+    public static void Run(float* a, int m, int lda, PackedMatrix w, float* bias, float* c, int ldc, CancellationToken ct = default,
+        bool rowInvariant = false)
     {
         if (m == 0)
             return;
@@ -124,7 +127,7 @@ internal static unsafe class Gemm
                             init[r] = k0 > 0 ? cRow : bias_ != null ? bias_ + p * PackedMatrix.NR : zero;
                             cRows[r] = r < mr ? cRow : dummy;
                         }
-                        Kernel(mr, aRows, panel, kc, init, cRows);
+                        Kernel(mr, aRows, panel, kc, init, cRows, rowInvariant);
                     }
                 }
             }
@@ -134,15 +137,17 @@ internal static unsafe class Gemm
     /// <summary>
     /// out[r][0..16) = init[r][0..16) + Σ_k a[r][k]·panel[k][0..16) for the first mr ≤ 6 rows, on <see cref="Path"/>.
     /// Smaller kernels serve 1 to 3 rows (a padded 6-row block wastes up to 6× the work). Rows past mr must repeat
-    /// another row's inputs; the SIMD kernels write them too, so their outputs must be scratch.
+    /// another row's inputs; the SIMD kernels write them too, so their outputs must be scratch. With
+    /// <paramref name="rowInvariant"/>, one row also goes through the 3-row kernel, whose per-row arithmetic is the
+    /// 6-row kernel's (the 1-row kernel splits the sum over k into four).
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Kernel(int mr, float** a, float* b, int k, float** init, float** output)
+    public static void Kernel(int mr, float** a, float* b, int k, float** init, float** output, bool rowInvariant = false)
     {
         switch (Path)
         {
             case KernelPath.Vector256:
-                if (mr == 1)
+                if (mr == 1 && !rowInvariant)
                     Kernel1x256(a[0], b, k, init[0], output[0]);
                 else if (mr <= 3)
                     Kernel3x256(a, b, k, init, output);
@@ -150,7 +155,7 @@ internal static unsafe class Gemm
                     Kernel6x256(a, b, k, init, output);
                 break;
             case KernelPath.Vector128:
-                if (mr == 1)
+                if (mr == 1 && !rowInvariant)
                     Kernel1x128(a[0], b, k, init[0], output[0]);
                 else if (mr <= 3)
                     Kernel3x128(a, b, k, init, output);
