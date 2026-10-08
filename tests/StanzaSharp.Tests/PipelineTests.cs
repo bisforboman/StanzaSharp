@@ -4,19 +4,23 @@ namespace StanzaSharp.Tests;
 
 public class PipelineTests
 {
-    [ModelFact]
-    public void Process_ReproducesGoldenConlluExactly()
+    [ModelTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Process_ReproducesGoldenConlluExactly(bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models);
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Backend = Repo.Backend(managed) });
         var doc = nlp.Process(File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt")));
         var golden = File.ReadAllText(Path.Combine(Repo.Golden, "pipeline.conllu"));
         Assert.Equal(golden, Conllu.Write(doc));
     }
 
-    [ModelFact]
-    public void Process_MatchesGoldenOnValidationCorpus()
+    [ModelTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Process_MatchesGoldenOnValidationCorpus(bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models);
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Backend = Repo.Backend(managed) });
         var failures = new List<string>();
         var files = Directory.GetFiles(Repo.Golden, "validation*.txt").Order().ToList();
         Assert.NotEmpty(files);

@@ -1,3 +1,5 @@
+using StanzaSharp.Nn;
+
 namespace StanzaSharp.Tests;
 
 /// <summary>Paths into the repository, found by walking up from the test binaries to StanzaSharp.slnx.</summary>
@@ -13,6 +15,9 @@ public static class Repo
     public static readonly string StanzaModels = Path.GetFullPath(Path.Combine(Models, "..", "..", "stanza", "en"));
 
     public static string Model(string relativeBase) => Path.Combine(Models, relativeBase);
+
+    /// <summary>The backend golden tests run on (issue #29): <see cref="Backend.Managed"/> or TorchSharp.</summary>
+    internal static Backend Backend(bool managed) => managed ? Nn.Backend.Managed : Nn.Backend.TorchSharp;
 
     private static string FindRoot()
     {

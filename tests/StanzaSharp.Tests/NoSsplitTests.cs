@@ -9,11 +9,12 @@ public class NoSsplitTests
     private static readonly string Dir = Path.Combine(Repo.Golden, "no_ssplit");
 
     [ModelTheory]
-    [InlineData("default")]
-    [InlineData("default_fast")]
-    public void NoSsplit_MatchesGolden(string package)
+    [InlineData("default", false)]
+    [InlineData("default_fast", false)]
+    [InlineData("default", true)]
+    public void NoSsplit_MatchesGolden(string package, bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, SplitSentences = false });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, SplitSentences = false, Backend = Repo.Backend(managed) });
         var names = Directory.GetFiles(Dir, "*.conllu").Select(Path.GetFileName).Where(f => !f!.EndsWith(".fast.conllu")).ToList();
         Assert.Equal(7, names.Count);
         var failures = new List<string>();
@@ -35,12 +36,13 @@ public class NoSsplitTests
     }
 
     [ModelTheory]
-    [InlineData("default")]
-    [InlineData("default_fast")]
-    public void NoSsplit_Bulk_MatchesStanzasBulkProcess(string package)
+    [InlineData("default", false)]
+    [InlineData("default_fast", false)]
+    [InlineData("default", true)]
+    public void NoSsplit_Bulk_MatchesStanzasBulkProcess(string package, bool managed)
     {
         var cases = JsonNode.Parse(File.ReadAllText(Path.Combine(Dir, "bulk" + Suffix[package] + ".json")))!.AsArray();
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, SplitSentences = false });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, SplitSentences = false, Backend = Repo.Backend(managed) });
         var docs = nlp.Process(cases.Select(c => c!["text"]!.GetValue<string>()).ToList());
         for (int i = 0; i < cases.Count; i++)
         {

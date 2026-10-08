@@ -1,0 +1,199 @@
+# Backends (issue #29, Phase 1)
+
+StanzaSharp runs each processor's network on one of two backends:
+
+- **TorchSharp** (libtorch): today's code. It is the default, it runs on the GPU, and it is the reference the
+  managed code is tested against.
+- **Managed**: C# SIMD kernels with no native dependencies (`src/StanzaSharp.Nn/Managed/`, see
+  [managed-backend-spike.md](managed-backend-spike.md)). It is CPU only.
+
+The owner's plan: 0.5 makes the managed backend the default, with TorchSharp still selectable. At 1.0 TorchSharp leaves
+the main package for an opt-in `StanzaSharp.Cuda` package. Both implementations stay.
+
+Phase 1 adds the seam and ports **tokenize** and **mwt**. Everything is `internal`; nothing public changed.
+
+## The seam
+
+The seam sits at each processor's **network**: one small interface per processor, with arrays in and arrays out.
+
+| processor | interface | TorchSharp | managed |
+|---|---|---|---|
+| tokenize | `ITokenizerNet.Forward(ids, feats, rows, width, lengths, ct)` → [rows, width, 5] log-probs | `TokenizerNet` | `ManagedTokenizerNet` |
+| mwt | `IMwtNet.Forward(ids, rows, width, lengths)` → [rows, width, 2] logits | `MwtNet` | `ManagedMwtNet` |
+
+- **Shared:** everything around the network stays in the processor and serves both backends. That covers paragraph
+  splitting, features, sorting, batching, the 1000-character windows, padding, the argmax, `FixLabels`, decoding,
+  the MWT dictionary and the cut decision. Both backends therefore see exactly the same batches. That matters for
+  the processors whose output depends on the batch: sentiment, and depparse's padded log-softmax.
+- **TorchSharp side:** today's module code, unchanged. Its array method makes the input tensors on its device, runs
+  the old `Forward`, and copies the result back. Before, `Tokenizer`/`MwtExpander` did exactly those steps
+  themselves, so the default path is byte-identical by construction.
+- **Managed side:** composed from shared building blocks in `Nn.Managed`:
+  - `PackedMatrix` + `Gemm.Run`: every Linear (a layer's heads packed into one matrix, e.g. the tokenizer's tok/sent/mwt).
+  - `PackedLstm`: the recurrence of a packed (bi)LSTM, cell fused into the GEMM.
+  - `ManagedLstm` (new): a PyTorch `nn.LSTM(batch_first)` with any layers and directions, from its state-dict
+    prefix. It takes a padded batch with lengths and returns the padded output, zero past each length, exactly
+    like `Rnn.RunPacked`. Hidden sizes that aren't a multiple of 4 (MWT's 50) are padded with zero units, which stay
+    exactly 0, so the real units are unchanged.
+  - `ManagedHighwayLstm` and `ManagedCharLanguageModel` (Phase 0) are ready for pos and depparse.
+- **Why not a finer seam** (per layer or per op)? A per-layer TorchSharp implementation would copy between host
+  and device at every layer, which defeats the GPU. A per-op seam is a tensor library. At network level each
+  implementation stays simple: the TorchSharp one is today's code, and the managed one is plain loops over arrays and
+  a few blocks.
+
+### Choosing the backend
+
+- `Nn.Backend` (`TorchSharp`, `Managed`) and an internal `PipelineOptions.Backend` (default `TorchSharp`).
+- `Pipeline` passes the backend to each ported processor's `Load(basePath, device, backend)`. Processors not
+  ported yet ignore it and run on TorchSharp. So `Backend.Managed` today means "managed where ported".
+- **Threads:** with `Backend.Managed`, `Load` also sets `ManagedThreads.Count`, with the documented semantics: an
+  explicit `Threads`, or null for `min(current count, Environment.ProcessorCount)`. The count is ProcessorCount unless
+  something set it lower, and `ProcessorCount` respects a container's CPU quota. It is process-wide, like
+  `torch.set_num_threads`. TorchSharp's threads are still set as before, for the processors that aren't ported.
+- Benchmark: `StanzaSharp.Benchmark --backend managed [--processors tokenize,mwt]`.
+
+### Plan for the `StanzaSharp.Cuda` split (proposal, not done)
+
+The split needs no change to the processors' logic; it only moves where the TorchSharp networks are built.
+
+1. **Assemblies:**
+   - Each processor assembly keeps its network interface (`ITokenizerNet`, …) and its managed network.
+   - The TorchSharp networks move into a new `StanzaSharp.TorchSharp` assembly: `TokenizerNet`, `MwtNet`, and the
+     torch layers in `Nn` (`CharLanguageModel`, `HighwayLstm`, `Biaffine`, `Rnn`, `Weights`, `Scalars`, the tensor
+     half of `Pretrain`/`CharlmCache`). That assembly is the only one referencing TorchSharp.
+   - Directory.Build.props already gives every StanzaSharp assembly `InternalsVisibleTo` the others, so the new
+     assembly can implement the internal interfaces.
+2. **Plugging in:**
+   - Processors receive their network instead of choosing it: `Tokenizer.Load(basePath, ITokenizerNet net)`.
+   - The facade (which references every processor) defines an internal factory, roughly
+     `INetFactory { ITokenizerNet Tokenizer(Checkpoint); IMwtNet Mwt(Checkpoint); … ICharlm Charlm(Checkpoint); }`.
+     It also covers the shared pretrain and charlms, which several processors take.
+   - `ManagedNets : INetFactory` lives in the main package; `TorchSharpNets : INetFactory` (device, TF32) lives in
+     `StanzaSharp.TorchSharp`.
+   - The public option carries a factory, so the main assembly never references the Cuda one (see the API proposal).
+3. **Packages:**
+   - `StanzaSharp` (managed): Core, Nn without torch, the processors, and the facade, with no native dependency.
+   - `StanzaSharp.Cuda`: `StanzaSharp.TorchSharp.dll`, depending on `StanzaSharp` and managed `TorchSharp`. Users
+     add `TorchSharp-cuda-*` themselves, as today.
+   - The `StanzaSharp.Cpu.*` platform packages and the `buildTransitive` version check move with it, or are dropped,
+     since CPU users no longer need libtorch.
+4. **Order:**
+   - 0.5: both backends in the main package (TorchSharp still a dependency), managed the default.
+   - 1.0: the move above, once every processor is ported.
+
+### Proposed public API (for the owner to decide; not implemented)
+
+- **A (recommended):** `PipelineOptions.Backend` of a small public type with only internal members:
+  - `PipelineBackend.Managed` (default from 0.5) and `PipelineBackend.TorchSharp` in the main package.
+  - From 1.0, `CudaBackend.Create(int deviceIndex = 0, bool disableTf32 = false)` in `StanzaSharp.Cuda`.
+  - `PipelineOptions.Device`/`DisableTf32` become `[Obsolete]` forwards in 0.5 and are removed in 1.0.
+  - It survives the package split without a breaking change to the option itself.
+- **B:** an enum `PipelineBackend { Managed, TorchSharp }` next to today's `Device`/`DisableTf32`. It is simpler
+  for 0.5. But at 1.0 the main package would have to find the Cuda implementation by reflection, and `Device` (a
+  TorchSharp type) would still be on the main package's options, so it breaks then.
+- Either way `Threads` keeps its meaning: threads per operation for the backend in use.
+
+## Exactness
+
+All golden tests that exercise tokenize and mwt run on both backends (xUnit theories with `managed: true/false`).
+On the managed backend, every one of them is **byte-identical** to the golden data, with no tolerance changed:
+
+- `TokenizerTests`: corpus tokens, sentences, offsets and MWT flags; `tokenize_stress` (a paragraph over 1000
+  characters and more paragraphs than one batch); empty and whitespace-only input.
+- `MwtTests`: dictionary and classifier-only expansions (`mwt.json`); tokenize → mwt words and offsets.
+- `PipelineTests`: `pipeline.conllu` and all 12 `validation*.conllu` through the full 8-processor pipeline.
+- `InputModeTests.Bulk_MatchesStanzasBulkProcess`, and `NoSsplitTests` (no_ssplit golden, plain and bulk).
+- `ConcurrencyTests.ConcurrentCalls_EqualSequentialOutput`: 8 threads, mixed input modes.
+
+Logit drift (max |diff|):
+
+| | TorchSharp | managed |
+|---|---:|---:|
+| tokenizer log-probs vs golden (Python), 3 sentences | 3.8e-6 | 1.1e-5 (5.7e-6, 7.6e-6, 1.1e-5) |
+| tokenizer net, managed vs TorchSharp (random batch, all 3 kernel paths) | – | 1.5e-5 (Vector256, Vector128), 1.1e-5 (Scalar) |
+| MWT logits, managed vs TorchSharp (random batch, all 3 paths) | – | 1.4e-6 |
+| `ManagedLstm` vs `Rnn.RunPacked` (tokenizer's rnn; MWT's 2-layer encoder) | – | < 1e-5 (tested at 1e-5) |
+
+The 1e-4 tolerance of the tokenizer's golden logits test holds for the managed backend too.
+
+Seam tests (`ManagedBackendTests`, per kernel path) compare the two implementations block by block and network by
+network: `ManagedLstm_MatchesRunPacked`, `TokenizerNet_ManagedMatchesTorchSharp` and `MwtNet_ManagedMatchesTorchSharp`.
+They join the Phase 0 tests of GEMM, the LSTM, the charlm and the highway layer.
+
+That class sets the process-wide `Gemm.Path` and `ManagedThreads.Count`. It now runs in its own collection with
+parallelization off (`ManagedKernelsCollection`), so the managed golden tests in other classes never run on a path
+it switched to.
+
+## Speed
+
+`StanzaSharp.Benchmark --processors tokenize,mwt --backend torch|managed --threads N --runs 5`, 8 copies (116,286
+characters, 1,992 sentences, 26,264 words). Ryzen 7 5800X (8 cores, AVX2, Vector256 path), Windows 11, machine
+nearly idle (8–16% load). Medians in seconds, two rounds each:
+
+| threads | tokenize TorchSharp | tokenize managed | ratio | mwt TorchSharp | mwt managed |
+|---:|---:|---:|---:|---:|---:|
+| 8 | 1.62 / 1.65 | 0.33 / 0.33 | **0.20** | 0.01 | 0.01 |
+| 1 | 1.73 / 1.58 | 1.01 / 0.98 | **0.60** | 0.01 | 0.01 |
+
+- The tokenizer's LSTMs are small (hidden 64, up to 32 rows, up to 1000 steps per window). libtorch spends most of
+  each step on per-op overhead and gets nothing from 8 threads. The managed recurrence is one fused region per step.
+- The stage times include the non-neural work: features, regexes and decoding.
+- mwt is mostly dictionary lookups; the classifier sees a handful of tokens per document, so the stage is too short to
+  compare.
+- **Load:** all models load in 1.1–1.3 s on either backend; the tokenizer and MWT weights are small, and packing them
+  doesn't show.
+
+### Small batches (the kernels report's open item)
+
+The kernels report had the highway biLSTM at 1.9× TorchSharp on 320 words (16 sentences × 20 words), from
+`Speed_IsReported`. Remeasured in isolation, with medians of 7 after a warm-up:
+
+| 320 words | TorchSharp | managed | of which GEMMs | recurrence (both layers) |
+|---|---:|---:|---:|---:|
+| 8 threads | 17.2–18.0 ms | 12.6–14.5 ms | 6.9–7.6 ms | 2.9–3.1 ms |
+| 1 thread | 41.1–41.3 ms | 39.9–40.0 ms | 33 ms | 13–15 ms |
+
+`Speed_IsReported` itself gave 1.02× on a quiet machine. The 1.9× was most likely load from other processes: that
+test takes medians of only 3 runs, and it ran while other work was using the CPU.
+
+Fewer threads for small steps was also tried: a minimum amount of work per task in `PackedLstm.Step`. On the
+tokenizer, the smallest steps in the pipeline (32 rows × K 64 × 32 panels), it was slower:
+
+| minimum work per task (panels × rows × K) | tokenize, 8 threads |
+|---|---:|
+| none (every step on all threads) | 0.40–0.42 s |
+| 4,096 | 0.41–0.43 s |
+| 16,384 | 0.46–0.57 s |
+| 65,536 (one task) | 0.75–0.83 s |
+
+So no change was made. Splitting by rows as well isn't needed yet: every recurrent step ported so far has at least
+26 panels to share out (MWT: 2 directions × 13), more than the 8 threads. A unidirectional layer with a small hidden
+size would need it; none is ported.
+
+## Phase 2: what next
+
+Suggested order (each processor gets its own `I…Net`, a managed twin, and both-backend golden tests):
+
+1. **ner**: charlm (ready), Linear, 1-layer biLSTM 256 (`ManagedLstm`), Linear. Viterbi is already plain C#. The
+   `_nocharlm` variant needs a managed `CharacterModel` (bidirectional, no attention).
+2. **pos**: charlm and highway (ready), plus the UPOS MLP and the XPOS/feats `Biaffine` heads. The nocharlm variant
+   needs `CharacterModel` with attention.
+3. **depparse**: the same blocks plus `DeepBiaffine` and the distance/linearization terms. Chu-Liu/Edmonds is already
+   plain C#. Risk: the padded log-softmax makes heads depend on the batch, so batches must stay identical (they do,
+   since batching is shared).
+4. **sentiment**: an unpacked padded biLSTM (a `ManagedLstm` mode with lengths = width), Conv2d as GEMMs over
+   overlapping rows, max-pool, MLP. Risk: near-ties (173 of 886 labels already flip with batching in Stanza).
+5. **lemma**: LSTMCell decoder, dot attention, copy gate, greedy argmax over tiny batches. Risk: near-ties per
+   character.
+6. **constituency**: the most code; per-step stack LSTMs (50 states in flight) and a transition argmax over thousands
+   of steps. The highest near-tie risk.
+
+Cross-cutting work before step 2:
+
+- **`CharlmCache`** holds TorchSharp tensors today. With a managed tagger it must hold float arrays, or there must be
+  one cache per backend. In a mixed pipeline (managed pos, TorchSharp constituency) the cached values cross backends.
+- **Shared models:** `Pretrain` and the charlms are loaded once and handed to several processors. The factory has to
+  build them per backend. While pipelines are mixed, the managed charlm's input tables add 31 MB.
+- **Tolerances:** the owner accepted 1e-3 for scores. pos's UPOS logits will need it (1.4e-4 in the spike).
+- **CI time:** the both-backend theories rerun the full pipeline on the golden files: about 2 extra minutes now, and
+  more as processors are added.

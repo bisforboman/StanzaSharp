@@ -6,6 +6,8 @@ using StanzaSharp.Nn;
 using StanzaSharp.Nn.Managed;
 using TorchSharp;
 using Xunit.Abstractions;
+using StanzaSharp.Mwt;
+using StanzaSharp.Tokenize;
 using static TorchSharp.torch;
 
 namespace StanzaSharp.Tests;
@@ -13,8 +15,10 @@ namespace StanzaSharp.Tests;
 /// <summary>
 /// The managed backend's kernels (issue #29, docs/managed-backend-spike.md) against TorchSharp and the golden data, on
 /// every <see cref="KernelPath"/> this machine runs natively. <see cref="Gemm.Path"/> and <see cref="ManagedThreads.Count"/>
-/// are process-wide, and only this class sets them; xUnit runs a class's tests one at a time.
+/// are process-wide, and only this class sets them; xUnit runs a class's tests one at a time, and the collection runs
+/// alone, so tests of the managed backend elsewhere never see another path.
 /// </summary>
+[Collection(ManagedKernelsCollection.Name)]
 public class ManagedBackendTests(ITestOutputHelper output)
 {
     /// <summary>The paths to test: Vector256 only where it is hardware (on Arm64 it would be emulated, never chosen).</summary>
@@ -219,6 +223,69 @@ public class ManagedBackendTests(ITestOutputHelper output)
     }
 
     /// <summary>
+    /// The seam's LSTM block against nn.LSTM through <see cref="Rnn.RunPacked"/>, on real checkpoints: the tokenizer's
+    /// (hidden 64) and MWT's 2-layer encoder (hidden 50, padded to 52 units inside), with ragged lengths and a row at
+    /// full width.
+    /// </summary>
+    [ModelTheory]
+    [MemberData(nameof(Paths))]
+    public void ManagedLstm_MatchesRunPacked(string path)
+    {
+        using var _ = torch.no_grad();
+        using var scope = NewDisposeScope();
+        foreach (var (model, prefix, input, hidden, layers) in new[] { ("tokenize/combined_nocharlm", "rnn.", 41, 64, 1), ("mwt/combined", "encoder.", 50, 50, 2) })
+        {
+            var ckpt = Checkpoint.Load(Repo.Model(model));
+            var state = ckpt.Root["model"]!;
+            using var reference = nn.LSTM(input, hidden, numLayers: layers, batchFirst: true, bidirectional: true).LoadFrom(ckpt, state, prefix);
+            var managed = new ManagedLstm(ckpt, state, prefix, input, hidden, layers, bidirectional: true);
+            long[] lengths = [9, 3, 17, 1, 17, 6, 11];
+            int width = 17;
+            var x = Random(lengths.Length * width * input, 21);
+            var expected = Rnn.RunPacked(reference, torch.tensor(x, [lengths.Length, width, input]), lengths).data<float>().ToArray();
+            var actual = new float[expected.Length];
+            With(path, 4, () => { managed.ForwardPadded(x, lengths.Length, width, lengths, actual); return 0; });
+            TokenizerTests.AssertClose(expected, actual, 1e-5f, $"{path} {model}");
+        }
+    }
+
+    /// <summary>The tokenizer's network, both backends on the same batch (one row at full width, as later windows run).</summary>
+    [ModelTheory]
+    [MemberData(nameof(Paths))]
+    public void TokenizerNet_ManagedMatchesTorchSharp(string path)
+    {
+        var ckpt = Checkpoint.Load(Repo.Model("tokenize/combined_nocharlm"));
+        using var reference = new TokenizerNet(ckpt);
+        var managed = new ManagedTokenizerNet(ckpt);
+        long[] lengths = [40, 12, 1, 25];
+        int width = 40, vocab = (int)ckpt.Shape(ckpt.Root["model"]!["embeddings.weight"])[0];
+        var rng = new Random(5);
+        var ids = Enumerable.Range(0, lengths.Length * width).Select(_ => (long)rng.Next(vocab)).ToArray();
+        var feats = Enumerable.Range(0, lengths.Length * width * 9).Select(_ => rng.Next(4) == 0 ? 1f : 0f).ToArray();
+        var expected = reference.Forward(ids, feats, lengths.Length, width, lengths, default);
+        var actual = With(path, 4, () => managed.Forward(ids, feats, lengths.Length, width, lengths, default));
+        output.WriteLine($"{path}: max |diff| {TokenizerTests.AssertClose(expected, actual, 1e-4f, path):E2}");
+    }
+
+    /// <summary>MWT's classifier network, both backends on the same batch of ragged rows.</summary>
+    [ModelTheory]
+    [MemberData(nameof(Paths))]
+    public void MwtNet_ManagedMatchesTorchSharp(string path)
+    {
+        var ckpt = Checkpoint.Load(Repo.Model("mwt/combined"));
+        var config = ckpt.Root["config"]!;
+        using var reference = new MwtNet(ckpt, config, 0);
+        var managed = new ManagedMwtNet(ckpt, config);
+        long[] lengths = [14, 3, 9, 14, 6];
+        int width = 14, vocab = config["vocab_size"]!.GetValue<int>();
+        var rng = new Random(8);
+        var ids = Enumerable.Range(0, lengths.Length * width).Select(_ => (long)rng.Next(vocab)).ToArray();
+        var expected = reference.Forward(ids, lengths.Length, width, lengths);
+        var actual = With(path, 4, () => managed.Forward(ids, lengths.Length, width, lengths));
+        output.WriteLine($"{path}: max |diff| {TokenizerTests.AssertClose(expected, actual, 1e-4f, path):E2}");
+    }
+
+    /// <summary>
     /// Times managed vs TorchSharp for both charlms and the tagger's highway biLSTM on a modest input, on every path
     /// this machine runs natively, so CI logs show each OS and architecture (Arm64 included). Never fails on speed.
     /// </summary>
@@ -285,4 +352,14 @@ public class ManagedBackendTests(ITestOutputHelper output)
             Report($"  {path,-10}: charlm {charlm,8:F1} ms ({charlm / torchCharlm:F2}x), highway {hw,8:F1} ms ({hw / torchHighway:F2}x)");
         }
     }
+}
+
+/// <summary>
+/// Tests that set <see cref="Gemm.Path"/> or <see cref="ManagedThreads.Count"/> run here, alone (after the parallel
+/// collections), so the managed backend's golden tests elsewhere always run on the detected path.
+/// </summary>
+[CollectionDefinition(Name, DisableParallelization = true)]
+public sealed class ManagedKernelsCollection
+{
+    public const string Name = "Managed kernels";
 }

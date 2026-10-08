@@ -20,11 +20,12 @@ public class ConcurrencyTests(Xunit.Abstractions.ITestOutputHelper output)
     };
 
     [ModelTheory]
-    [InlineData("default")]
-    [InlineData("default_fast")]
-    public void ConcurrentCalls_EqualSequentialOutput(string package)
+    [InlineData("default", false)]
+    [InlineData("default_fast", false)]
+    [InlineData("default", true)]
+    public void ConcurrentCalls_EqualSequentialOutput(string package, bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, Backend = Repo.Backend(managed) });
         int jobs = Texts.Length * 2;
         var expected = Enumerable.Range(0, jobs).Select(i => Run(nlp, i)).ToArray();
 

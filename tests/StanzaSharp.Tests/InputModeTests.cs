@@ -31,14 +31,15 @@ public class InputModeTests
     }
 
     [ModelTheory]
-    [InlineData("default")]
-    [InlineData("default_fast")]
-    public void Bulk_MatchesStanzasBulkProcess(string package)
+    [InlineData("default", false)]
+    [InlineData("default_fast", false)]
+    [InlineData("default", true)]
+    public void Bulk_MatchesStanzasBulkProcess(string package, bool managed)
     {
         // bulk/<package>.json stores each document either whole or as its output alone plus what bulk changes.
         var docs = JsonNode.Parse(File.ReadAllText(Path.Combine(Repo.Golden, "bulk", package + ".json")))!["documents"]!.AsArray();
         var texts = docs.Select(d => d!["text"]?.GetValue<string>() ?? File.ReadAllText(Path.Combine(Repo.Golden, d["file"]!.GetValue<string>()))).ToList();
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, Backend = Repo.Backend(managed) });
         var results = nlp.Process(texts);
         Assert.Equal(texts.Count, results.Count);
 
