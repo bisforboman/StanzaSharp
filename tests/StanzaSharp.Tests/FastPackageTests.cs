@@ -103,8 +103,6 @@ public class FastPackageTests(ITestOutputHelper output)
         }
     }
 
-    private static float Finite(float x) => float.IsNegativeInfinity(x) ? 0 : x;
-
     private static List<string> Strings(JsonNode? array) => array!.AsArray().Select(x => x!.GetValue<string>()).ToList();
 
     [Fact]
