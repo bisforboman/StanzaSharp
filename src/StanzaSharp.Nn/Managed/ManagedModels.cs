@@ -370,7 +370,9 @@ internal sealed unsafe class ManagedLstm
     /// <param name="batchSizes">At step t, the number of sequences longer than t (<see cref="PackedLstm.BatchSizes"/>).</param>
     /// <param name="output">Gets [rows, OutputSize].</param>
     /// <param name="ct">Checked per GEMM block and before each time step.</param>
-    public void ForwardPacked(ReadOnlySpan<float> input, int lda, int[] batchSizes, Span<float> output, CancellationToken ct = default)
+    /// <param name="finalC">Optional: gets the last layer's final cell states, [directions, batch, hidden] (rows in packed order).</param>
+    public void ForwardPacked(ReadOnlySpan<float> input, int lda, int[] batchSizes, Span<float> output, CancellationToken ct = default,
+        Span<float> finalC = default)
     {
         int rows = batchSizes.Sum(), ldo = _dirs * _padded, ldp = _layers.Max(l => l.W.PaddedN);
         if (lda < InputSize || input.Length < (rows - 1) * lda + InputSize || output.Length < rows * OutputSize)
@@ -379,9 +381,11 @@ internal sealed unsafe class ManagedLstm
         var y0 = ArrayPool<float>.Shared.Rent(rows * ldo);
         var y1 = _layers.Length > 1 ? ArrayPool<float>.Shared.Rent(rows * ldo) : null;
         var p = ArrayPool<float>.Shared.Rent(rows * ldp);
+        int batch = batchSizes[0];
+        var cells = finalC.IsEmpty ? null : ArrayPool<float>.Shared.Rent(_dirs * batch * _padded);
         try
         {
-            fixed (float* px = input, p0 = y0, p1 = y1, pp = p)
+            fixed (float* px = input, p0 = y0, p1 = y1, pp = p, pc = cells)
             {
                 float* src = px;
                 int stride = lda;
@@ -391,7 +395,7 @@ internal sealed unsafe class ManagedLstm
                     float* dst = l % 2 == 0 ? p0 : p1;
                     fixed (float* pb = bias)
                         Gemm.Run(src, rows, stride, w, pb, pp, ldp, ct);
-                    lstm.Recur(pp, ldp, batchSizes, dst, ldo, ct);
+                    lstm.Recur(pp, ldp, batchSizes, dst, ldo, ct, l == _layers.Length - 1 ? pc : null);
                     src = dst;
                     stride = ldo;
                 }
@@ -399,10 +403,15 @@ internal sealed unsafe class ManagedLstm
                 for (int n = 0; n < rows; n++)
                     for (int d = 0; d < _dirs; d++)
                         new ReadOnlySpan<float>(src + (long)n * ldo + d * _padded, _hidden).CopyTo(output.Slice(n * OutputSize + d * _hidden, _hidden));
+                if (cells != null)
+                    for (int r = 0; r < _dirs * batch; r++)
+                        cells.AsSpan(r * _padded, _hidden).CopyTo(finalC.Slice(r * _hidden, _hidden));
             }
         }
         finally
         {
+            if (cells != null)
+                ArrayPool<float>.Shared.Return(cells);
             ArrayPool<float>.Shared.Return(y0);
             if (y1 != null)
                 ArrayPool<float>.Shared.Return(y1);

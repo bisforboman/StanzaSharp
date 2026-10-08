@@ -175,7 +175,7 @@ bool ManagedCharlm(string processor) => Managed(processor) && models[processor].
 bool torchCharlms = models.Any(kv => kv.Value.EndsWith("_charlm") && !Managed(kv.Key));
 using var charlmForward = torchCharlms ? CharLanguageModel.Load(Path.Combine(modelDir, Pipeline.ForwardCharlmPath), device) : null;
 using var charlmBackward = torchCharlms ? CharLanguageModel.Load(Path.Combine(modelDir, Pipeline.BackwardCharlmPath), device) : null;
-using var lemma = Lemmatizer.Load(Model("lemma"), device);
+using var lemma = Lemmatizer.Load(Model("lemma"), device, backend);
 using var parser = models.ContainsKey("constituency") ? ConstituencyParser.Load(Model("constituency"), pretrain, charlmForward!, charlmBackward!, device) : null;
 var managedForward = ManagedCharlm("pos") || ManagedCharlm("depparse") || ManagedCharlm("ner") || ManagedCharlm("sentiment") ? ManagedCharLanguageModel.Load(Path.Combine(modelDir, Pipeline.ForwardCharlmPath)) : null;
 var managedBackward = managedForward != null ? ManagedCharLanguageModel.Load(Path.Combine(modelDir, Pipeline.BackwardCharlmPath)) : null;

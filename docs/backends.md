@@ -11,7 +11,7 @@ The owner's plan: 0.5 makes the managed backend the default, with TorchSharp sti
 the main package for an opt-in `StanzaSharp.Cuda` package. Both implementations stay.
 
 Phase 1 added the seam and ported **tokenize** and **mwt**. Phase 2 ports the other processors one at a time; so far
-**ner**, **pos**, **depparse** and **sentiment**, plus a backend-neutral `CharlmCache` (see [Phase 2](#phase-2-progress)). Everything is `internal`;
+**ner**, **pos**, **depparse**, **sentiment** and **lemma**, plus a backend-neutral `CharlmCache` (see [Phase 2](#phase-2-progress)). Everything is `internal`;
 nothing public changed.
 
 ## The seam
@@ -25,6 +25,8 @@ The seam sits at each processor's **network**: one small interface per processor
 | ner | `INerNet.Forward(sentences, wordIds, deltaIds, width, charlms, cacheKeys, ct)` → [batch, width, tags] emissions | `NerNet` | `ManagedNerNet` |
 | pos | `IPosNet.Forward(sentences, wordIds, pretrainIds, charlms, cacheKeys, ct)` → `PosOutput` (UPOS scores, UPOS/XPOS/feats ids) | `PosNet` | `ManagedPosNet` |
 | depparse | `IDepparseNet.Forward(DepparseBatch, labelScores, ct)` → `DepparseScores` (arc log-probs, label argmax, optional label scores) | `DepparseNet` | `ManagedDepparseNet` |
+| sentiment | `ISentimentNet.Forward(batch, ids, extraIds, width, charlms, cacheKeys, ct)` → [batch, classes] logits | `SentimentNet` | `ManagedSentimentNet` |
+| lemma | `ILemmaNet.Encode(ids, batch, width, posIds, lengths, ct)` → `ILemmaDecoder` (edit logits; `Step(previous, ct)` → [batch, columns] log-probs) | `LemmaNet` | `ManagedLemmaNet` |
 
 - **Shared:** everything around the network stays in the processor and serves both backends. That covers paragraph
   splitting, features, sorting, batching, the 1000-character windows, padding, the argmax, `FixLabels`, decoding,
@@ -191,7 +193,8 @@ size would need it; none is ported.
 | **depparse** (`_charlm`) | yes | byte-identical heads and deprels; arc / label log-probs 2.3e-5 / 3.4e-5 from Python (TorchSharp 1.1e-5 / 1.5e-5; Scalar path 2.3e-5 / 3.8e-5) | depparse stage **13.27 → 7.94 s (0.60)** | **42.52 → 36.99 s (0.87)** |
 | **depparse** (`_nocharlm`, default_fast) | yes | byte-identical; arc / label log-probs 1.1e-5 / 2.7e-5 from Python (every path ≤ 1.5e-5 / 3.1e-5) | **6.47 → 3.68 s (0.57)** | **19.85 → 17.33 s (0.87)** |
 | **sentiment** (`sstplus_charlm`, both packages) | yes | byte-identical labels; logits within 1e-4 of Python's float32 or float64 logits (8.2e-5; 1.38e-4 from float32 on one ill-conditioned sentence, see [sentiment](#sentiment)) (TorchSharp 2.1e-5) | sentiment stage **9.82 → 5.98 s (0.61)** | **33.65 → 26.29 s (0.78)** |
-| lemma, constituency | no | | | |
+| **lemma** (`combined_nocharlm`, both packages) | yes | byte-identical lemmas, decoding and edits; smallest top-2 margin 5.6e-3; log-probs 4.8e-4 from TorchSharp, reported, not asserted (owner's decision, 2026-10-08; see [lemma](#lemma)) | lemma stage **0.89 → 0.32 s (0.36)** | **1.18 → 0.72 s (0.61)** |
+| constituency | no | | | |
 
 Speed: `StanzaSharp.Benchmark --processors tokenize,ner --backend torch|managed --threads N --runs 3` (so NER computes every
 charlm itself; no tagger, no cache), 8 copies (24,840 words), medians, Ryzen 7 5800X, idle machine. In the full
@@ -330,6 +333,57 @@ reads the tagger's cached charlm outputs for sentences without MWTs.
   working set 2,538 → 2,759 MB (both charlm forms, since constituency still reads TorchSharp's). `--memory 6000` (one
   Process call): 4,299 → 2,839 MB, 22.7 → 11.8 s.
 
+### lemma
+
+- **Seam:** `ILemmaNet.Encode(ids, batch, width, posIds, lengths, ct)` → an `ILemmaDecoder` (the batch's state, disposed
+  after the batch) with `EditLogits` and `Step(previous, ct)` → [batch, Columns] log-probs, Columns = the vocabulary
+  widened to the batch's largest DeltaVocab id + 1, as torch sizes the copy scatter. `Lemmatizer` keeps the dictionary
+  skip, DeltaVocab, the `batch_size` 50 batches sorted like `sort_all`, the greedy loop (argmax per row: the first maximum,
+  as torch's `max`; `max_dec_len`; done rows), the edits and the `<UNK>`/empty fallback; it now also checks cancellation
+  per decoder step. `LemmaNet` is today's TorchSharp code, moved unchanged (the TorchSharp decoder keeps the batch's tensors
+  in one dispose scope); `Lemmatizer.Load(..., backend)` picks the net.
+- **Managed net:**
+  - Encoder: the packed rows (UPOS embedding, then the characters; ids past the vocabulary embed as `<UNK>`) through
+    `ManagedLstm.ForwardPacked`, which now also returns the last layer's final cell states (`PackedLstm.Recur`'s
+    `finalC`), for the decoder's `(h0, c0) = (cat(hn[-1], hn[-2]), …)`. Edit classifier in double.
+  - Each decoder step, over the batch: one GEMM for the LSTMCell (`[x | h]` against `[W_ih | W_hh]`, K = 250, gate rows in
+    `PackedLstm.GateOrder`, then `Act.LstmCell`), one for `linear_in`, one for `linear_out` (+ tanh), one for `dec2vocab`
+    with the copy gate as an extra output column. Per row, in double: the attention scores over the row's real positions,
+    softmax and weighted context; log_softmax of the vocabulary; the copy mix. Masked positions and columns nothing is
+    copied to are skipped: torch's −1e12 entries contribute exactly 0 there, so the result is the same.
+- **Exactness:** byte-identical everywhere: the 13 `lemma/` files, `words.json` (pipeline lemma, raw seq2seq output, edit
+  class; unknown and non-BMP characters, a word past `max_dec_len`), the depparse, ner, pipeline/validation (all eight),
+  fast, bulk, pretokenized and concurrency theories. `LemmaNet_ManagedMatchesTorchSharp` runs both nets on the 868 golden
+  seq2seq words (each file's misses as one call) plus `words.json`: 892 words, 504 decoder steps, identical steps,
+  decoding and edits on every path.
+  - **Near-ties:** the smallest top-2 margin of a row still decoding is **5.6e-3** (either backend), about 12× the largest
+    log-prob difference between the backends.
+  - **Log-probs (owner's decision, 2026-10-08: exact lemmas, decoding and edits plus the reported margin; no score tolerance):** managed vs TorchSharp max |diff| 4.8e-4 (Vector256/Vector128; Scalar 4.3e-4),
+    2.7e-4 among entries within 10 of the row's maximum. The test reports them without asserting a tolerance: none
+    exists (TorchSharp's lemmatizer is tested on discrete output only), and 1e-4 is out of reach for TorchSharp too.
+    Measured on `words.json` (one batch, 50 steps) against Stanza run in float64 (`model.double()`, same batch):
+
+    | per-step log-probs vs Stanza float64 | all entries | within 10 of the top |
+    |---|---:|---:|
+    | Stanza float32 | 2.9e-4 | 1.6e-4 |
+    | TorchSharp | 2.7e-4 | 1.4e-4 |
+    | managed | 3.8e-4 | 1.3e-4 |
+    | managed, LSTMCell gates in double | 1.8e-4 | 9.3e-5 |
+
+    TorchSharp is 1.7e-4 from Stanza's float32; even the sentiment rule (within 1e-4 of float32 **or** float64) fails for
+    TorchSharp (1.2e-4). The source is the decoder recurrence amplifying float noise in low-probability entries; in the
+    managed net the LSTMCell gate sums dominate (double attention, `linear_out` or `dec2vocab` change nothing). Gates in
+    double (scalar) cost 0.32 → 1.23 s for the lemma stage, so they are not used.
+- **Speed** (`--processors tokenize,mwt,pos,lemma`, 8 copies, 26,264 words, medians of 3, idle Ryzen 7 5800X): lemma stage
+  **0.89 → 0.32 s** at 8 threads, **1.18 → 0.72 s** at 1 thread. TorchSharp runs ~40 small ops per decoder step; the managed
+  step is four small GEMMs and per-row loops. Full 8-processor run at 8 threads: 53.89 → **29.71 s** (lemma 0.84 → 0.34;
+  pos 10.64 → 5.37, depparse 13.41 → 7.96, sentiment 6.09 → 3.41, ner 12.32 → 2.99, tokenize 1.44 → 0.37; constituency
+  9.13 → 9.26, still TorchSharp).
+- **Memory:** per-batch buffers are pooled (about 1 MB for a 50-word batch); the managed lemmatizer holds the
+  weights once as packed matrices (~1.5 MB). Lemma stage peak (warm-up, `tokenize,mwt,pos,lemma`) 1,339 → 1,128 MB;
+  peak working set 1,675 → 1,445 MB. Full 8-processor run: 2,535 → 2,692 MB (both charlm forms, since constituency still
+  reads TorchSharp's).
+
 ### ner
 
 - **Seam:** `INerNet.Forward(sentences, wordIds, deltaIds, width, charlms, cacheKeys, ct)` → [batch, width, tags]
@@ -374,8 +428,7 @@ by one, producer and readers can sit on different backends.
 
 ## Phase 2: what next
 
-1. **lemma**: LSTMCell decoder, dot attention, copy gate, greedy argmax over tiny batches. Risk: near-ties per
-   character.
+1. ~~lemma~~: done ([lemma](#lemma)); open: a tolerance for its log-probs.
 2. **constituency**: the most code; per-step stack LSTMs (50 states in flight) and a transition argmax over thousands
    of steps. The highest near-tie risk.
 
@@ -392,6 +445,6 @@ Cross-cutting:
   memory-bound on the 16 MB recurrent weights. Running the charlms over bigger groups would be faster but changes the
   last float bits; left as is.
 - **CI time:** the both-backend theories rerun the full pipeline on the golden files; the full local suite takes
-  29–34 minutes on 8 cores (246 tests, none skipped, Release build; with managed depparse 32.2 min on the converted models, 28.9 min on the `.pt` files; with managed sentiment, 253 tests, 27.2 / 31.2 min).
+  29–34 minutes on 8 cores (246 tests, none skipped, Release build; with managed depparse 32.2 min on the converted models, 28.9 min on the `.pt` files; with managed sentiment, 253 tests, 27.2 / 31.2 min; with managed lemma, 258 tests, 31.4 / 26.5 min).
   `ConcurrencyTests` now runs alone after the parallel collections: beside the heavier both-backend theories its
   cancellation test failed every full run (the timed run was slower than the canceled ones).

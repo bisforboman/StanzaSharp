@@ -61,7 +61,7 @@ public sealed class Pipeline : IDisposable
     };
 
     // Processors with a managed network (issue #29, docs/backends.md); the others run on TorchSharp on either backend.
-    internal static readonly HashSet<string> ManagedProcessors = ["tokenize", "mwt", "pos", "depparse", "ner", "sentiment"];
+    internal static readonly HashSet<string> ManagedProcessors = ["tokenize", "mwt", "pos", "lemma", "depparse", "ner", "sentiment"];
 
     // Processors whose models (every package's) read the shared pretrained word vectors.
     private static readonly HashSet<string> UsesPretrain = ["pos", "depparse", "ner", "constituency", "sentiment"];
@@ -142,7 +142,7 @@ public sealed class Pipeline : IDisposable
                 ? PosTagger.LoadManaged(Model("pos"), _pretrain!, _managedCharlmForward, _managedCharlmBackward)
                 : PosTagger.Load(Model("pos"), _pretrain!, _charlmForward, _charlmBackward));
         if (models.ContainsKey("lemma"))
-            _lemma = Timed(Name("lemma"), () => Lemmatizer.Load(Model("lemma")));
+            _lemma = Timed(Name("lemma"), () => Lemmatizer.Load(Model("lemma"), backend: options.Backend));
         if (models.ContainsKey("depparse"))
             _depparse = Timed(Name("depparse"), () => Managed("depparse")
                 ? DependencyParser.LoadManaged(Model("depparse"), _pretrain!, _managedCharlmForward, _managedCharlmBackward)
