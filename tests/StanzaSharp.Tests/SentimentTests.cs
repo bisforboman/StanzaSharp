@@ -1,5 +1,6 @@
 using System.Text.Json.Nodes;
 using StanzaSharp.Nn;
+using StanzaSharp.Nn.Managed;
 using StanzaSharp.Pos;
 using StanzaSharp.Sentiment;
 using Xunit.Abstractions;
@@ -17,20 +18,39 @@ public class SentimentTests(ITestOutputHelper output)
     // The classifier amplifies that to about 1e-4 on logits of up to ~20 (the smallest top-2 margin is 1.6e-3).
     private const float CachedTolerance = 1e-3f;
 
+    /// <summary>The classifier and the tagger (for the cache) on one backend, with that backend's charlms.</summary>
     private sealed class Models : IDisposable
     {
         public readonly Pretrain Pretrain = Pretrain.Load(Repo.Model("pretrain/conll17"));
-        public readonly CharLanguageModel Forward = CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
-        public readonly CharLanguageModel Backward = CharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
+        private readonly CharLanguageModel? _forward, _backward;
+        private readonly ManagedCharLanguageModel? _managedForward, _managedBackward;
         public readonly SentimentClassifier Classifier;
 
-        public Models() => Classifier = SentimentClassifier.Load(Repo.Model("sentiment/sstplus_charlm"), Pretrain, Forward, Backward);
+        public Models(bool managed = false)
+        {
+            if (managed)
+            {
+                _managedForward = ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
+                _managedBackward = ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
+                Classifier = SentimentClassifier.LoadManaged(Repo.Model("sentiment/sstplus_charlm"), Pretrain, _managedForward, _managedBackward);
+            }
+            else
+            {
+                _forward = CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
+                _backward = CharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
+                Classifier = SentimentClassifier.Load(Repo.Model("sentiment/sstplus_charlm"), Pretrain, _forward, _backward);
+            }
+        }
+
+        public PosTagger Tagger() => _managedForward != null
+            ? PosTagger.LoadManaged(Repo.Model("pos/combined_charlm"), Pretrain, _managedForward, _managedBackward)
+            : PosTagger.Load(Repo.Model("pos/combined_charlm"), Pretrain, _forward, _backward);
 
         public void Dispose()
         {
             Classifier.Dispose();
-            Forward.Dispose();
-            Backward.Dispose();
+            _forward?.Dispose();
+            _backward?.Dispose();
             Pretrain.Dispose();
         }
     }
@@ -68,11 +88,13 @@ public class SentimentTests(ITestOutputHelper output)
         return worst;
     }
 
-    [ModelFact]
-    public void Pipeline_ReproducesGoldenFilesLabelsAndLogits()
+    [ModelTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Pipeline_ReproducesGoldenFilesLabelsAndLogits(bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,sentiment" });
-        using var models = new Models();
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,sentiment", Backend = Repo.Backend(managed) });
+        using var models = new Models(managed);
         var failures = new List<string>();
         var sources = Sources();
         Assert.Equal(14, sources.Count);
@@ -101,13 +123,15 @@ public class SentimentTests(ITestOutputHelper output)
         Assert.True(failures.Count == 0, string.Join("\n\n", failures));
     }
 
-    [ModelFact]
-    public void Classify_MatchesStanzaAcrossSeveralBatches()
+    [ModelTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Classify_MatchesStanzaAcrossSeveralBatches(bool managed)
     {
         // Every text as one document: Stanza sorts its sentences by length and cuts them into 5000-token
         // batches, and each sentence's result depends on the padding of its batch.
         using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt" });
-        using var models = new Models();
+        using var models = new Models(managed);
         var doc = nlp.Process(string.Join("\n\n", Sources().Select(s => s.Text)));
         var tokens = Tokens(doc);
         var batches = SentimentClassifier.Batches(tokens.Select(t => t.Count).OrderDescending().ToArray());
@@ -121,12 +145,14 @@ public class SentimentTests(ITestOutputHelper output)
         Assert.True(failures.Count == 0, string.Join("\n\n", failures));
     }
 
-    [ModelFact]
-    public void CharlmCache_FromTheTaggerGivesTheSameResults()
+    [ModelTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void CharlmCache_FromTheTaggerGivesTheSameResults(bool managed)
     {
         using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt" });
-        using var models = new Models();
-        using var tagger = PosTagger.Load(Repo.Model("pos/combined_charlm"), models.Pretrain, models.Forward, models.Backward);
+        using var models = new Models(managed);
+        using var tagger = models.Tagger();
         var failures = new List<string>();
         int reused = 0, total = 0;
         float worst = 0;
@@ -141,14 +167,9 @@ public class SentimentTests(ITestOutputHelper output)
             Assert.Equal(plain, doc.Sentences.Select(s => s.Sentiment!.Value));
 
             // The same with the logits, which must still match Stanza's.
-            var withCache = models.Classifier.Classify(tokens, out var cachedLogits, i =>
-            {
-                var s = doc.Sentences[i];
-                if (!s.Tokens.All(t => t.Words.Count == 1 && t.Words[0].Text == t.Text) || !cache.TryGet(s, out var r))
-                    return null;
-                reused++;
-                return r;
-            });
+            var keys = doc.Sentences.Select(SentimentClassifier.CacheKey).ToList();
+            reused += keys.Count(k => k != null && cache.TryGetArrays(k, out _));
+            var withCache = models.Classifier.Classify(tokens, out var cachedLogits, cache, keys);
             total += tokens.Count;
             Assert.Equal(plain, withCache);
             worst = Math.Max(worst, CompareToJson(name, withCache, cachedLogits, failures, CachedTolerance));
@@ -158,10 +179,12 @@ public class SentimentTests(ITestOutputHelper output)
         Assert.True(failures.Count == 0, string.Join("\n\n", failures));
     }
 
-    [ModelFact]
-    public void Pipeline_WithTaggerAndParser_WritesSentimentAfterConstituency()
+    [ModelTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Pipeline_WithTaggerAndParser_WritesSentimentAfterConstituency(bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos,constituency,sentiment" });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos,constituency,sentiment", Backend = Repo.Backend(managed) });
         var conllu = Conllu.Write(nlp.Process("I love it. I don't like this movie at all."));
         // Python Stanza 1.15.0 with processors="tokenize,mwt,pos,constituency,sentiment".
         Assert.StartsWith("""

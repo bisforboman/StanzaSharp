@@ -477,6 +477,46 @@ public class ManagedBackendTests(ITestOutputHelper output)
     }
 
     /// <summary>
+    /// The sentiment classifier's network, both backends, on one padded batch of real words (lengths 1 to 30, so the
+    /// LSTM and convolutions run over padding): logits at 1e-4, identical labels. Then the managed one with a cache
+    /// holding both entry forms (TorchSharp tensors and managed arrays), against itself without the cache.
+    /// </summary>
+    [ModelTheory]
+    [MemberData(nameof(Paths))]
+    public void SentimentNet_ManagedMatchesTorchSharp(string path)
+    {
+        using var pretrain = Pretrain.Load(Repo.Model("pretrain/conll17"));
+        using var forward = CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
+        using var backward = CharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
+        var managedForward = ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
+        var managedBackward = ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
+        var text = File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt")).Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
+        var sentences = new[] { 12, 3, 30, 1, 17, 8 }.Select((n, i) => (IReadOnlyList<string>)Enumerable.Range(i * 31, n).Select(k => text[k % text.Length]).ToList()).ToList();
+        using var reference = Sentiment.SentimentClassifier.Load(Repo.Model("sentiment/sstplus_charlm"), pretrain, forward, backward);
+        using var managed = Sentiment.SentimentClassifier.LoadManaged(Repo.Model("sentiment/sstplus_charlm"), pretrain, managedForward, managedBackward);
+        var expectedLabels = reference.Classify(sentences, out var expected);
+        var (labels, logits) = With(path, 4, () => (managed.Classify(sentences, out var l), l));
+        Assert.Equal(expectedLabels, labels);
+        float diff = 0;
+        for (int i = 0; i < sentences.Count; i++)
+            diff = Math.Max(diff, TokenizerTests.AssertClose(expected[i], logits[i], 1e-4f, $"{path} s{i}"));
+
+        using var cache = new CharlmCache();
+        var keys = sentences.Select(_ => (Sentence?)new Sentence()).ToList();
+        var torchReps = (forward.BuildCharRepresentation(sentences), backward.BuildCharRepresentation(sentences));
+        var managedReps = (managedForward.BuildCharRepresentation(sentences), managedBackward.BuildCharRepresentation(sentences));
+        for (int i = 0; i < sentences.Count; i++)
+            Assert.True(i % 2 == 0 ? cache.TryAdd(keys[i]!, torchReps.Item1[i], torchReps.Item2[i])
+                : cache.TryAdd(keys[i]!, managedReps.Item1[i], managedReps.Item2[i], sentences[i].Count));
+        var (cachedLabels, cachedLogits) = With(path, 4, () => (managed.Classify(sentences, out var l, cache, keys), l));
+        Assert.Equal(labels, cachedLabels);
+        float cacheDiff = 0;
+        for (int i = 0; i < sentences.Count; i++)
+            cacheDiff = Math.Max(cacheDiff, TokenizerTests.AssertClose(logits[i], cachedLogits[i], 1e-4f, $"{path} cached s{i}"));
+        output.WriteLine($"{path}: logits max |diff| {diff:E2}; with cached tensors and arrays {cacheDiff:E2}");
+    }
+
+    /// <summary>
     /// Times managed vs TorchSharp for both charlms and the tagger's highway biLSTM on a modest input, on every path
     /// this machine runs natively, so CI logs show each OS and architecture (Arm64 included). Never fails on speed.
     /// </summary>
