@@ -517,6 +517,81 @@ public class ManagedBackendTests(ITestOutputHelper output)
     }
 
     /// <summary>
+    /// The lemmatizer's seq2seq network, both backends, on every word the golden lemma files send to the model (868, each
+    /// file's misses as one Predict call, as the pipeline batches them) plus words.json: the same number of decoder steps,
+    /// identical decoding and edits. Reports each step's log-prob drift (all entries, and those within 10 of the row's
+    /// maximum) and the smallest top-2 margin of a row still decoding, on either backend: the room the greedy argmax has.
+    /// </summary>
+    /// <remarks>
+    /// The log-probs are reported, not asserted: no tolerance exists for them yet (TorchSharp's lemmatizer is tested on
+    /// its discrete output only), and 1e-4 is out of reach for both backends. On words.json, against Stanza run in float64,
+    /// Stanza's own float32 is 2.9e-4 off, TorchSharp 2.7e-4 and the managed net 3.8e-4 (near the top: 1.6e-4, 1.4e-4,
+    /// 1.3e-4); the decoder recurrence amplifies float noise. The owner decides (docs/backends.md, lemma).
+    /// </remarks>
+    [ModelTheory]
+    [MemberData(nameof(Paths))]
+    public void LemmaNet_ManagedMatchesTorchSharp(string path)
+    {
+        using var reference = Lemma.Lemmatizer.Load(Repo.Model("lemma/combined_nocharlm"));
+        using var managed = Lemma.Lemmatizer.Load(Repo.Model("lemma/combined_nocharlm"), backend: Backend.Managed);
+        var calls = Directory.GetFiles(Path.Combine(Repo.Golden, "lemma"), "*.conllu").Order().Select(file =>
+            Conllu.Read(File.ReadAllText(file)).Sentences.SelectMany(s => s.Words)
+                .Where(w => reference.Lookup(w.Text, w.Upos) == null)
+                .Select(w => new Word { Text = w.Text, Upos = w.Upos }).ToList()).ToList();
+        calls.Add(JsonNode.Parse(File.ReadAllText(Path.Combine(Repo.Golden, "lemma", "words.json")))!.AsArray()
+            .Select(g => new Word { Text = (string)g!["word"]!, Upos = (string)g["upos"]! }).ToList());
+        Assert.Equal(868, calls.SkipLast(1).Sum(c => c.Count));
+
+        double diff = 0, nearTop = 0, margin = double.PositiveInfinity;
+        int steps = 0;
+        static double Margin(ReadOnlySpan<float> row)
+        {
+            float first = float.NegativeInfinity, second = float.NegativeInfinity;
+            foreach (var x in row)
+                if (x > first)
+                    (first, second) = (x, first);
+                else if (x > second)
+                    second = x;
+            return first - second;
+        }
+        foreach (var words in calls)
+        {
+            var expectedSteps = new List<(float[] LogProbs, int Columns)>();
+            var expected = reference.Predict(words, onStep: (l, c, _) => expectedSteps.Add(((float[])l.Clone(), c)));
+            int k = 0;
+            var actual = With(path, 4, () => managed.Predict(words, onStep: (l, c, done) =>
+            {
+                var (e, columns) = expectedSteps[k++];
+                Assert.Equal(columns, c);
+                for (int r = 0; r < done.Length; r++)
+                {
+                    var er = e.AsSpan(r * c, c);
+                    var ar = l.AsSpan(r * c, c);
+                    float top = float.NegativeInfinity;
+                    foreach (var x in er)
+                        top = Math.Max(top, x);
+                    for (int v = 0; v < c; v++)
+                    {
+                        double d = Math.Abs(er[v] - ar[v]);
+                        diff = Math.Max(diff, d);
+                        if (er[v] > top - 10)
+                            nearTop = Math.Max(nearTop, d);
+                    }
+                    if (!done[r])
+                        margin = Math.Min(margin, Math.Min(Margin(er), Margin(ar)));
+                }
+            }));
+            Assert.Equal(expectedSteps.Count, k);
+            steps += k;
+            Assert.Equal(expected.Decoded, actual.Decoded);
+            Assert.Equal(expected.Edits, actual.Edits);
+        }
+        output.WriteLine($"{path}: {calls.Sum(c => c.Count)} words, {steps} decoder steps: log-probs max |diff| {diff:E2} " +
+            $"(within 10 of the top {nearTop:E2}), smallest top-2 margin {margin:E2}");
+    }
+
+
+    /// <summary>
     /// Times managed vs TorchSharp for both charlms and the tagger's highway biLSTM on a modest input, on every path
     /// this machine runs natively, so CI logs show each OS and architecture (Arm64 included). Never fails on speed.
     /// </summary>

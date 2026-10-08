@@ -97,7 +97,7 @@ internal sealed unsafe class PackedLstm
         return sizes;
     }
 
-    /// <summary>Array form of <see cref="Recur(float*, int, int[], float*, int, CancellationToken)"/>: returns [rows, Directions·H].</summary>
+    /// <summary>Array form of <see cref="Recur(float*, int, int[], float*, int, CancellationToken, float*)"/>: returns [rows, Directions·H].</summary>
     public float[] Recur(float[] p, int ldp, int[] batchSizes, CancellationToken ct = default)
     {
         int ldo = Directions * Hidden;
@@ -113,7 +113,8 @@ internal sealed unsafe class PackedLstm
     /// <param name="p">Input projections, row n at p + n·ldp; direction d's gates start at column d·4H.</param>
     /// <param name="output">Row n gets direction d's h at column d·H (ldo ≥ Directions·H).</param>
     /// <param name="ct">Checked before each time step.</param>
-    public void Recur(float* p, int ldp, int[] batchSizes, float* output, int ldo, CancellationToken ct = default)
+    /// <param name="finalC">Optional: gets each sequence's final cell state, [Directions, batch, H] (rows in packed order), like nn.LSTM's c_n.</param>
+    public void Recur(float* p, int ldp, int[] batchSizes, float* output, int ldo, CancellationToken ct = default, float* finalC = null)
     {
         int steps = batchSizes.Length, batch = batchSizes[0], h = Hidden, dirs = Directions;
         var start = new int[steps];
@@ -166,6 +167,9 @@ internal sealed unsafe class PackedLstm
                     }
                     Step(works);
                 }
+                // A forward row's slot was last written at its own last step; every backward row ends at t = 0.
+                if (finalC != null)
+                    new ReadOnlySpan<float>(cBase, dirs * batch * h).CopyTo(new Span<float>(finalC, dirs * batch * h));
             }
         }
         finally

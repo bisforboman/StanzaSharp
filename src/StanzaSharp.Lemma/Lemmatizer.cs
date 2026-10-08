@@ -2,10 +2,7 @@ using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
 using StanzaSharp.Nn;
-using TorchSharp;
-using TorchSharp.Modules;
 using static TorchSharp.torch;
-using F = TorchSharp.torch.nn.functional;
 
 namespace StanzaSharp.Lemma;
 
@@ -15,25 +12,21 @@ namespace StanzaSharp.Lemma;
 /// a dictionary by (UPOS, word), then by word alone; words it misses go through a character seq2seq model
 /// (models/common/seq2seq_model.py) with POS input, soft attention, a copy gate and an edit classifier
 /// (identity / lowercase / use the decoded string), decoded greedily.
+/// The network is an <see cref="ILemmaNet"/> (per <see cref="Backend"/>); the dictionary, DeltaVocab, batching, the greedy
+/// loop and the edits are here.
 /// </summary>
 internal sealed class Lemmatizer : IDisposable
 {
-    private const int PadId = 0, UnkId = 1, SosId = 2, EosId = 3; // seq2seq_constant.py
+    private const int UnkId = LemmaConfig.UnkId, SosId = LemmaConfig.SosId, EosId = LemmaConfig.EosId;
     private const string Unk = "<UNK>";
-    // Scalars kept alive for TorchSharp (see Nn.Scalars): ids, and the masking values the seq2seq model uses.
-    private static readonly Scalar PadScalar = PadId, UnkScalar = UnkId, MaskedScore = -1e12, Epsilon = 1e-12;
 
     private readonly Dictionary<string, Dictionary<string, string?>> _posDict;
     private readonly Dictionary<string, int> _charToId, _posToId;
     private readonly string[] _idToChar;
-    private readonly int _vocabSize, _batchSize, _maxDecLen;
-    private readonly Embedding _embedding, _posEmbedding;
-    private readonly LSTM _encoder;
-    private readonly LSTMCell _decoderCell;
-    private readonly Linear _attnIn, _attnOut, _dec2vocab, _editHidden, _editOutput, _copyGate;
-    private readonly Device _device = Weights.Device; // the device the model was loaded on
+    private readonly int _batchSize, _maxDecLen;
+    private readonly ILemmaNet _net;
 
-    private Lemmatizer(Checkpoint ckpt)
+    private Lemmatizer(Checkpoint ckpt, Backend backend)
     {
         var root = ckpt.Root;
         var config = root["config"]!;
@@ -63,29 +56,17 @@ internal sealed class Lemmatizer : IDisposable
         _charToId = Checkpoint.UnitToId(vocab["char"]);
         _posToId = Checkpoint.UnitToId(vocab["pos"]);
         _idToChar = vocab["char"]!["_id2unit"]!.AsArray().Select(n => n!.GetValue<string>()).ToArray();
-        _vocabSize = config["vocab_size"]!.GetValue<int>();
         _batchSize = config["batch_size"]!.GetValue<int>();
         _maxDecLen = config["max_dec_len"]!.GetValue<int>();
-
-        var model = root["model"]!;
-        int emb = config["emb_dim"]!.GetValue<int>();
-        int hidden = config["hidden_dim"]!.GetValue<int>();
-        _embedding = nn.Embedding(_vocabSize, emb, padding_idx: PadId).LoadFrom(ckpt, model, "embedding.");
-        _posEmbedding = nn.Embedding(config["pos_vocab_size"]!.GetValue<int>(), config["pos_dim"]!.GetValue<int>(), padding_idx: PadId)
-            .LoadFrom(ckpt, model, "pos_embedding.");
-        _encoder = nn.LSTM(emb, hidden / 2, numLayers: 1, batchFirst: true, bidirectional: true).LoadFrom(ckpt, model, "encoder.");
-        _decoderCell = nn.LSTMCell(emb, hidden).LoadFrom(ckpt, model, "decoder.lstm_cell.");
-        _attnIn = nn.Linear(hidden, hidden, hasBias: false).LoadFrom(ckpt, model, "decoder.attention_layer.linear_in.");
-        _attnOut = nn.Linear(hidden * 2, hidden, hasBias: false).LoadFrom(ckpt, model, "decoder.attention_layer.linear_out.");
-        _dec2vocab = nn.Linear(hidden, _vocabSize).LoadFrom(ckpt, model, "dec2vocab.");
-        _editHidden = nn.Linear(hidden, hidden / 2).LoadFrom(ckpt, model, "edit_clf.0.");
-        _editOutput = nn.Linear(hidden / 2, 3).LoadFrom(ckpt, model, "edit_clf.2.");
-        _copyGate = nn.Linear(hidden, 1).LoadFrom(ckpt, model, "copy_gate.");
+        var sizes = LemmaConfig.From(config);
+        _net = backend == Backend.Managed ? new ManagedLemmaNet(ckpt, sizes) : new LemmaNet(ckpt, sizes);
     }
 
     /// <summary>Loads <c>basePath.json</c> + <c>.safetensors</c> (or <c>basePath.pt</c>), e.g. <c>models/converted/en/lemma/combined_nocharlm</c>.</summary>
-    /// <param name="device">Where the model runs; CPU by default.</param>
-    public static Lemmatizer Load(string basePath, Device? device = null) => Weights.On(device, () => new Lemmatizer(Checkpoint.Load(basePath)));
+    /// <param name="device">Where the model runs on TorchSharp; CPU by default.</param>
+    /// <param name="backend">The network's backend; the managed one ignores <paramref name="device"/>.</param>
+    public static Lemmatizer Load(string basePath, Device? device = null, Backend backend = Backend.TorchSharp) =>
+        Weights.On(device, () => new Lemmatizer(Checkpoint.Load(basePath), backend));
 
     /// <summary>Sets the lemma of every word in <paramref name="doc"/>; needs UPOS from the tagger.</summary>
     public void Process(Document doc, CancellationToken cancellationToken = default)
@@ -134,7 +115,9 @@ internal sealed class Lemmatizer : IDisposable
     /// The seq2seq model on the words in batches of <c>batch_size</c>, as Stanza's DataLoader feeds it:
     /// the decoded string (before edits) and the edit class of each word.
     /// </summary>
-    internal (List<string> Decoded, List<int> Edits) Predict(IReadOnlyList<Word> words, CancellationToken cancellationToken = default)
+    /// <param name="onStep">For tests: called after each decoder step with its log-probs, the row width and which rows were done before it.</param>
+    internal (List<string> Decoded, List<int> Edits) Predict(IReadOnlyList<Word> words, CancellationToken cancellationToken = default,
+        Action<float[], int, bool[]>? onStep = null)
     {
         // DeltaVocab: characters the vocabulary lacks get new ids past it, in code point order, so the copy
         // gate can still output them. Stanza builds it over the text, UPOS and current lemma of every word.
@@ -156,18 +139,16 @@ internal sealed class Lemmatizer : IDisposable
         {
             cancellationToken.ThrowIfCancellationRequested();
             var batch = words.Skip(start).Take(_batchSize).ToList();
-            var (d, e) = PredictBatch(batch, charToId, idToChar);
+            var (d, e) = PredictBatch(batch, charToId, idToChar, cancellationToken, onStep);
             decoded.AddRange(d);
             edits.AddRange(e);
         }
         return (decoded, edits);
     }
 
-    private (string[] Decoded, int[] Edits) PredictBatch(List<Word> words, Dictionary<string, int> charToId, string[] idToChar)
+    private (string[] Decoded, int[] Edits) PredictBatch(List<Word> words, Dictionary<string, int> charToId, string[] idToChar, CancellationToken ct,
+        Action<float[], int, bool[]>? onStep)
     {
-        using var _ = torch.no_grad();
-        using var scope = NewDisposeScope();
-
         // <SOS> chars <EOS>, one unit per code point; sorted like data.sort_all: longest first, ties by later index first.
         var src = words.Select(w => w.Text.EnumerateRunes().Select(r => charToId[r.ToString()]).Prepend(SosId).Append(EosId).ToArray()).ToList();
         var order = Enumerable.Range(0, words.Count).OrderByDescending(i => src[i].Length).ThenByDescending(i => i).ToArray();
@@ -178,15 +159,44 @@ internal sealed class Lemmatizer : IDisposable
                 ids[r * width + k] = src[order[r]][k];
         var posIds = order.Select(i => (long)_posToId.GetValueOrDefault(words[i].Upos ?? "_", UnkId)).ToArray();
 
-        var srcT = torch.tensor(ids, [batch, width], device: _device);
-        var (decodedIds, editLogits) = Greedy(srcT, torch.tensor(posIds, device: _device), order.Select(i => (long)src[i].Length + 1).ToArray());
+        // Seq2SeqModel.predict_greedy: one character per step for the whole batch, the argmax fed back (torch's max: the first maximum).
+        using var decoder = _net.Encode(ids, batch, width, posIds, order.Select(i => (long)src[i].Length + 1).ToArray(), ct);
+        var output = Enumerable.Range(0, batch).Select(_ => new List<int>()).ToArray();
+        var previous = new long[batch];
+        Array.Fill(previous, SosId);
+        var done = new bool[batch];
+        int totalDone = 0, columns = decoder.Columns;
+        for (int step = 0; totalDone < batch && step < _maxDecLen; step++)
+        {
+            ct.ThrowIfCancellationRequested();
+            var logProbs = decoder.Step(previous, ct);
+            onStep?.Invoke(logProbs, columns, done);
+            for (int i = 0; i < batch; i++)
+            {
+                var row = logProbs.AsSpan(i * columns, columns);
+                int best = 0;
+                for (int v = 1; v < columns; v++)
+                    if (row[v] > row[best])
+                        best = v;
+                previous[i] = best;
+                if (done[i])
+                    continue;
+                if (best == EosId)
+                {
+                    done[i] = true;
+                    totalDone++;
+                }
+                else
+                    output[i].Add(best);
+            }
+        }
 
-        var editValues = editLogits.ToArray<float>();
+        var editValues = decoder.EditLogits;
         var decoded = new string[batch];
         var edits = new int[batch];
         for (int r = 0; r < batch; r++)
         {
-            decoded[order[r]] = string.Concat(decodedIds[r].Select(id => idToChar[id]));
+            decoded[order[r]] = string.Concat(output[r].Select(id => idToChar[id]));
             int best = 0; // numpy argmax: the first maximum
             for (int k = 1; k < 3; k++)
                 if (editValues[r * 3 + k] > editValues[r * 3 + best])
@@ -196,108 +206,5 @@ internal sealed class Lemmatizer : IDisposable
         return (decoded, edits);
     }
 
-    /// <summary>Seq2SeqModel.predict_greedy (embed, encode, then decode one character per step for the whole batch).</summary>
-    private (List<long>[] Decoded, Tensor EditLogits) Greedy(Tensor src, Tensor pos, long[] srcLens)
-    {
-        long batch = src.shape[0];
-        using var vocabSize = _vocabSize.ToScalar();
-
-        // embed: characters past the trained vocabulary embed as <UNK>; the POS embedding goes in front.
-        var embedSrc = src.masked_fill(src.ge(vocabSize), UnkScalar);
-        var encInputs = cat([_posEmbedding.forward(pos).unsqueeze(1), _embedding.forward(embedSrc)], 1);
-        var srcMask = cat([torch.zeros([batch, 1], ScalarType.Bool, device: _device), src.eq(PadScalar)], 1);
-
-        // encode
-        using var lens = torch.tensor(srcLens);
-        var packed = nn.utils.rnn.pack_padded_sequence(encInputs, lens, batch_first: true, enforce_sorted: true);
-        var (packedOut, hn, cn) = _encoder.call(packed, null);
-        var (ctx, _) = nn.utils.rnn.pad_packed_sequence(packedOut, batch_first: true);
-        var h = cat([hn[1], hn[0]], 1);
-        var c = cat([cn[1], cn[0]], 1);
-        var editLogits = _editOutput.forward(F.relu(_editHidden.forward(h)));
-
-        var decInputs = _embedding.forward(torch.tensor(new long[] { SosId }, device: _device));
-        decInputs = decInputs.expand(batch, decInputs.shape[0], decInputs.shape[1]);
-
-        var output = Enumerable.Range(0, (int)batch).Select(_ => new List<long>()).ToArray();
-        var done = new bool[batch];
-        int totalDone = 0;
-        for (int step = 0; totalDone < batch && step < _maxDecLen; step++)
-        {
-            using var stepScope = NewDisposeScope();
-            var logProbs = Decode(decInputs, ref h, ref c, ctx, srcMask, src);
-            var preds = logProbs.squeeze(1).max(1, keepdim: true).indexes;
-            decInputs = _embedding.forward(preds.masked_fill(preds.ge(vocabSize), UnkScalar)).MoveToOuterDisposeScope();
-            h.MoveToOuterDisposeScope();
-            c.MoveToOuterDisposeScope();
-            var values = preds.ToArray<long>();
-            for (int i = 0; i < batch; i++)
-            {
-                if (done[i])
-                    continue;
-                if (values[i] == EosId)
-                {
-                    done[i] = true;
-                    totalDone++;
-                }
-                else
-                    output[i].Add(values[i]);
-            }
-        }
-        return (output, editLogits);
-    }
-
-    /// <summary>
-    /// Seq2SeqModel.decode for one step: LSTMAttention with SoftDotAttention, then the vocabulary
-    /// distribution mixed with the copy distribution over the source characters.
-    /// </summary>
-    private Tensor Decode(Tensor decInputs, ref Tensor h, ref Tensor c, Tensor ctx, Tensor ctxMask, Tensor src)
-    {
-        // LSTMAttention.forward (batch_first) over a single step.
-        var input = decInputs.transpose(0, 1);
-        (h, c) = _decoderCell.forward(input[0], (h, c));
-        var attn = torch.bmm(ctx, _attnIn.forward(h).unsqueeze(2)).squeeze(2).masked_fill(ctxMask, MaskedScore);
-        attn = F.log_softmax(attn, 1);
-        var attnW = torch.exp(attn);
-        var weighted = torch.bmm(attnW.view(attnW.shape[0], 1, attnW.shape[1]), ctx).squeeze(1);
-        var hTilde = torch.tanh(_attnOut.forward(cat([weighted, h], 1)));
-        var hOut = cat([hTilde], 0).view(1, hTilde.shape[0], hTilde.shape[1]).transpose(0, 1);
-        var logAttn = stack([attn], 0).transpose(0, 1);
-
-        long batch = hOut.shape[0], steps = hOut.shape[1];
-        var logits = _dec2vocab.forward(hOut.contiguous().view(batch * steps, -1)).view(batch, steps, -1);
-        var logProbs = F.log_softmax(logits.view(-1, _vocabSize), 1).view(batch, steps, _vocabSize);
-
-        // Copy: renormalize attention without the POS position, then scatter it onto the source character ids.
-        var copyLogit = _copyGate.forward(hOut);
-        logAttn = F.log_softmax(logAttn[.., .., 1..], -1);
-        var logCopyProb = F.logsigmoid(copyLogit).add(logAttn, Scalars.One);
-        var mx = logCopyProb.max(-1, keepdim: true).values;
-        var copyProb = torch.exp(logCopyProb - mx);
-        long vocab = Math.Max(_vocabSize, src.max().ToArray<long>()[0] + 1);
-        var scattered = src.unsqueeze(1).expand(src.shape[0], copyProb.shape[1], src.shape[1]);
-        var copied = torch.zeros([batch, steps, vocab], device: _device).scatter_add(-1, scattered, copyProb);
-        var zeroMask = copied.eq(Scalars.Zero);
-        var logCopied = torch.log(copied.masked_fill(zeroMask, Epsilon)).add(mx, Scalars.One).masked_fill(zeroMask, MaskedScore);
-
-        var logNoCopy = -torch.log(torch.exp(copyLogit).add(Scalars.One, Scalars.One));
-        if (vocab > _vocabSize) // characters new to the vocabulary reuse the <UNK> score
-            logProbs = cat([logProbs, logProbs[.., .., UnkId].unsqueeze(2).expand(batch, steps, vocab - _vocabSize)], 2);
-        logProbs = logProbs.add(logNoCopy, Scalars.One);
-        return torch.logsumexp(stack([logCopied, logProbs]), 0);
-    }
-
-    public void Dispose()
-    {
-        _embedding.Dispose();
-        _posEmbedding.Dispose();
-        _encoder.Dispose();
-        _decoderCell.Dispose();
-        _attnIn.Dispose();
-        _attnOut.Dispose();
-        _dec2vocab.Dispose();
-        _editHidden.Dispose();
-        _editOutput.Dispose();
-        _copyGate.Dispose();
-    }
+    public void Dispose() => _net.Dispose();
 }

@@ -14,10 +14,12 @@ public class LemmaTests
         return (words, golden);
     }
 
-    [ModelFact]
-    public void Lemmatize_MatchesGoldenWords()
+    [ModelTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Lemmatize_MatchesGoldenWords(bool managed)
     {
-        using var lemma = Lemmatizer.Load(Repo.Model("lemma/combined_nocharlm"));
+        using var lemma = Lemmatizer.Load(Repo.Model("lemma/combined_nocharlm"), backend: Repo.Backend(managed));
         var (words, golden) = GoldenWords();
         var doc = new Document();
         var sentence = new Sentence();
@@ -28,10 +30,12 @@ public class LemmaTests
         Assert.Equal(golden.Select(g => (string?)g!["lemma"]), words.Select(w => w.Lemma));
     }
 
-    [ModelFact]
-    public void Seq2SeqAlone_MatchesGoldenDecodingAndEdits()
+    [ModelTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Seq2SeqAlone_MatchesGoldenDecodingAndEdits(bool managed)
     {
-        using var lemma = Lemmatizer.Load(Repo.Model("lemma/combined_nocharlm"));
+        using var lemma = Lemmatizer.Load(Repo.Model("lemma/combined_nocharlm"), backend: Repo.Backend(managed));
         var (words, golden) = GoldenWords();
         var (decoded, edits) = lemma.Predict(words);
         Assert.Equal(golden.Select(g => (string)g!["seq2seq"]!), decoded);
