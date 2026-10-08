@@ -303,4 +303,6 @@ Cross-cutting:
   memory-bound on the 16 MB recurrent weights. Running the charlms over bigger groups would be faster but changes the
   last float bits; left as is.
 - **CI time:** the both-backend theories rerun the full pipeline on the golden files; the full local suite takes
-  32–36 minutes on 8 cores (223 tests with the converted models or the `.pt` files, none skipped).
+  29–34 minutes on 8 cores (238 tests with the converted models or the `.pt` files, none skipped; Release build).
+  `ConcurrencyTests` now runs alone after the parallel collections: beside the heavier both-backend theories its
+  cancellation test failed every full run (the timed run was slower than the canceled ones).
