@@ -190,7 +190,7 @@ size would need it; none is ported.
 | **pos** (`_nocharlm`, default_fast) | yes | byte-identical; UPOS logits 3.1e-5 from Python | | |
 | **depparse** (`_charlm`) | yes | byte-identical heads and deprels; arc / label log-probs 2.3e-5 / 3.4e-5 from Python (TorchSharp 1.1e-5 / 1.5e-5; Scalar path 2.3e-5 / 3.8e-5) | depparse stage **13.27 → 7.94 s (0.60)** | **42.52 → 36.99 s (0.87)** |
 | **depparse** (`_nocharlm`, default_fast) | yes | byte-identical; arc / label log-probs 1.1e-5 / 2.7e-5 from Python (every path ≤ 1.5e-5 / 3.1e-5) | **6.47 → 3.68 s (0.57)** | **19.85 → 17.33 s (0.87)** |
-| **sentiment** (`sstplus_charlm`, both packages) | yes | byte-identical labels; logits ≤ 9e-5 from Python except **one sentence at 1.38e-4 (tolerance 1e-4: open, see [sentiment](#sentiment))** (TorchSharp 2.1e-5) | sentiment stage **9.82 → 5.98 s (0.61)** | **33.65 → 26.29 s (0.78)** |
+| **sentiment** (`sstplus_charlm`, both packages) | yes | byte-identical labels; logits within 1e-4 of Python's float32 or float64 logits (8.2e-5; 1.38e-4 from float32 on one ill-conditioned sentence, see [sentiment](#sentiment)) (TorchSharp 2.1e-5) | sentiment stage **9.82 → 5.98 s (0.61)** | **33.65 → 26.29 s (0.78)** |
 | lemma, constituency | no | | | |
 
 Speed: `StanzaSharp.Benchmark --processors tokenize,ner --backend torch|managed --threads N --runs 3` (so NER computes every
@@ -295,7 +295,8 @@ reads the tagger's cached charlm outputs for sentences without MWTs.
     sentence; it is ~2% of the convolutions' multiply-adds.
   - FC 3960 → 400 → 100 → 3 through `Gemm` with ReLU between.
 - **Exactness:** labels byte-identical everywhere (14 golden files, `all.json`'s two batches, pipeline, validation,
-  fast, bulk, pretokenized, concurrency). Logits vs Python (`SentimentTests`, tolerance 1e-4):
+  fast, bulk, pretokenized, concurrency). Logits vs Python's float32 logits (`SentimentTests`, tolerance 1e-4; how the
+  test accepts the one miss: below):
 
   | | TorchSharp | managed |
   |---|---:|---:|
@@ -314,8 +315,11 @@ reads the tagger's cached charlm outputs for sentences without MWTs.
     Stanza's float32 error): FC layers in double 1.38e-4; convolutions in double 1.41e-4; the LSTM input projection in
     double 2.0e-4; Scalar / Vector128 paths 1.66e-4 / 1.38e-4. Matching Stanza closer would mean reproducing MKL's
     summation order.
-  - **Open (owner):** the test `SentimentTests.Pipeline_ReproducesGoldenFilesLabelsAndLogits(managed: True)` fails on that
-    sentence; no tolerance was changed.
+  - **Rule (owner, 2026-10-08):** `make_golden.py --sentiment-only` also stores each sentence's float64 logits
+    (`logits64`, Stanza's model in float64 on the same batches) next to the float32 ones, which stayed byte-identical.
+    In `SentimentTests` a logit passes within the unchanged tolerance (1e-4; 1e-3 with the cache) of the float32 **or**
+    the float64 value, on both backends; labels stay exact. Accepted drift, nearer reference per logit: TorchSharp
+    9.6e-6, managed 8.2e-5 (with the cache 5.6e-5 / 8.2e-5).
 - **Cache:** managed sentiment reads array entries as they are and TorchSharp tensor entries as copies
   (`TryGetArrays`); `SentimentNet_ManagedMatchesTorchSharp` checks a cache holding both forms (2.9e-6 against no cache).
 - **Speed** (`--processors tokenize,mwt,sentiment`, no cache, 8 copies, 26,264 words, medians of 3, Ryzen 7 5800X):

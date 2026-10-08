@@ -422,7 +422,9 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     (as `corpus.conllu`) and each `validation*.txt`, `<name>.json` with each sentence's entities, and
     the emission scores of the first 3 sentences, each tagged alone.
   - `sentiment/` (`--sentiment-only`): `tokenize,mwt,sentiment` `<name>.conllu` + `<name>.json`
-    (label and 3 logits per sentence) for corpus.txt, each validation*.txt and `sentiment/reviews.txt`
+    (label and 3 logits per sentence, plus `logits64`: the same batches run in float64, because the classifier is
+    ill-conditioned and Stanza's own float32 error can exceed 1e-4; `SentimentTests` accepts a logit within tolerance of
+    either) for corpus.txt, each validation*.txt and `sentiment/reviews.txt`
     (opinionated sentences); `all.json` for all of them as one document (two batches).
   - `fast/` (`--fast-only`): `package='default_fast'` output (all seven of its processors) for `corpus.txt`
     (as `corpus.conllu`) and each `validation*.txt`; for the first 3 sentences, each run alone, UPOS logits,
@@ -651,9 +653,11 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     the delta vocab, `label_sentences` sorting, 5000-token batches, the padded width (≥ widest filter), cache keys (no MWT)
     and the argmax. Managed: input rows time-major, `ManagedLstm.ForwardPacked` with every batch size = n (the unpacked
     LSTM: padding runs through it), full-width convolutions as one GEMM whose A rows overlap (lda = 600, K = Height·600),
-    the (5,5)/(1,5) filter as scalar loops, FC layers through `Gemm`. Labels byte-identical; logits ≤ 9e-5 from Stanza
-    except validation.txt sentence 41: 1.38e-4, where Stanza's own float32 result is 1.49e-4 from its float64 one and
-    managed is 1.2e-5 from it. Double sums (FC, convolutions, LSTM input) didn't help; owner decision pending.
+    the (5,5)/(1,5) filter as scalar loops, FC layers through `Gemm`. Labels byte-identical. Logits: the sentiment
+    golden also holds Stanza's float64 logits (owner's decision, 2026-10-08), and a logit passes within the usual
+    tolerance of the float32 **or** the float64 value, on both backends. The classifier is ill-conditioned: on
+    validation.txt sentence 41 Stanza's float32 logits are 1.49e-4 from float64 and the managed ones 1.2e-5 (1.38e-4
+    from Stanza's). Double sums (FC, convolutions, LSTM input) only moved managed toward float64.
   - `Pipeline.ManagedProcessors` (tokenize, mwt, pos, depparse, ner, sentiment) lists what `Backend.Managed` runs managed. The pipeline loads each
     backend's charlms only if a `_charlm` processor on that backend reads them (`ManagedCharLanguageModel`: +31 MB of
     input tables). Managed processors read the shared `Pretrain` through `CpuVectors()` (the CPU tensor's own memory).

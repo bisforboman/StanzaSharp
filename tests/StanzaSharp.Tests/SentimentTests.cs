@@ -67,26 +67,36 @@ public class SentimentTests(ITestOutputHelper output)
     private static List<IReadOnlyList<string>> Tokens(Document doc) =>
         doc.Sentences.Select(s => (IReadOnlyList<string>)s.Tokens.Select(t => t.Text).ToList()).ToList();
 
-    /// <summary>Checks labels exactly and logits within <paramref name="tolerance"/>; returns the largest logit difference.</summary>
-    private static float CompareToJson(string name, int[] labels, float[][] logits, List<string> failures, float? tolerance = null)
+    /// <summary>
+    /// Checks labels exactly and each logit within <paramref name="tolerance"/> of Stanza's float32 value ("logits") or of
+    /// the float64 one ("logits64", the same batches run in float64). The classifier is ill-conditioned on some sentences:
+    /// on validation.txt sentence 41 Stanza's float32 logits are 1.49e-4 from the float64 ones, the managed backend's 1.2e-5.
+    /// </summary>
+    /// <returns>The largest difference from the float32 logits, and the largest accepted one (the nearer reference per logit).</returns>
+    private static (float Float32, float Accepted) CompareToJson(string name, int[] labels, float[][] logits, List<string> failures, float? tolerance = null)
     {
         var golden = JsonNode.Parse(File.ReadAllText(Path.Combine(Golden, name + ".json")))!["sentences"]!.AsArray();
         if (golden.Count != labels.Length)
         {
             failures.Add($"{name}: {labels.Length} sentences, expected {golden.Count}");
-            return float.NaN;
+            return (float.NaN, float.NaN);
         }
-        float worst = 0;
+        float worst32 = 0, worst = 0;
         for (int i = 0; i < labels.Length; i++)
         {
-            var expected = golden[i]!["logits"]!.AsArray().Select(x => x!.GetValue<float>()).ToArray();
-            float diff = expected.Zip(logits[i], (a, b) => Math.Abs(a - b)).Max();
+            var expected = golden[i]!["logits"]!.AsArray().Select(x => x!.GetValue<double>()).ToArray();
+            var exact = golden[i]!["logits64"]!.AsArray().Select(x => x!.GetValue<double>()).ToArray();
+            var diff32 = expected.Select((e, k) => (float)Math.Abs(e - logits[i][k])).ToArray();
+            float diff = diff32.Select((d, k) => Math.Min(d, (float)Math.Abs(exact[k] - logits[i][k]))).Max();
+            worst32 = Math.Max(worst32, diff32.Max());
             worst = Math.Max(worst, diff);
             if (golden[i]!["sentiment"]!.GetValue<int>() != labels[i] || diff > (tolerance ?? Tolerance))
                 failures.Add($"{name}, sentence {i}: label {labels[i]} logits [{string.Join(", ", logits[i])}], expected {golden[i]}");
         }
-        return worst;
+        return (worst32, worst);
     }
+
+    private static (float, float) Max((float A, float B) x, (float A, float B) y) => (Math.Max(x.A, y.A), Math.Max(x.B, y.B));
 
     [ModelTheory]
     [InlineData(false)]
@@ -99,7 +109,7 @@ public class SentimentTests(ITestOutputHelper output)
         var sources = Sources();
         Assert.Equal(14, sources.Count);
         Assert.Equal(14, Directory.GetFiles(Golden, "*.conllu").Length);
-        float worst = 0;
+        (float Float32, float Accepted) worst = (0, 0);
         foreach (var (name, text) in sources)
         {
             var doc = nlp.Process(text);
@@ -117,9 +127,9 @@ public class SentimentTests(ITestOutputHelper output)
 
             var labels = models.Classifier.Classify(Tokens(doc), out var logits);
             Assert.Equal(doc.Sentences.Select(s => s.Sentiment!.Value), labels);
-            worst = Math.Max(worst, CompareToJson(name, labels, logits, failures));
+            worst = Max(worst, CompareToJson(name, labels, logits, failures));
         }
-        output.WriteLine($"max |logit diff| {worst}");
+        output.WriteLine($"max |logit diff| vs float32 {worst.Float32}, accepted (nearer of float32 and float64) {worst.Accepted}");
         Assert.True(failures.Count == 0, string.Join("\n\n", failures));
     }
 
@@ -141,7 +151,7 @@ public class SentimentTests(ITestOutputHelper output)
 
         var labels = models.Classifier.Classify(tokens, out var logits);
         var failures = new List<string>();
-        output.WriteLine($"{tokens.Count} sentences, {batches.Count} batches, max |logit diff| {CompareToJson("all", labels, logits, failures)}");
+        output.WriteLine($"{tokens.Count} sentences, {batches.Count} batches, max |logit diff| (vs float32, accepted) {CompareToJson("all", labels, logits, failures)}");
         Assert.True(failures.Count == 0, string.Join("\n\n", failures));
     }
 
@@ -155,7 +165,7 @@ public class SentimentTests(ITestOutputHelper output)
         using var tagger = models.Tagger();
         var failures = new List<string>();
         int reused = 0, total = 0;
-        float worst = 0;
+        (float Float32, float Accepted) worst = (0, 0);
         foreach (var (name, text) in Sources())
         {
             var doc = nlp.Process(text);
@@ -172,9 +182,9 @@ public class SentimentTests(ITestOutputHelper output)
             var withCache = models.Classifier.Classify(tokens, out var cachedLogits, cache, keys);
             total += tokens.Count;
             Assert.Equal(plain, withCache);
-            worst = Math.Max(worst, CompareToJson(name, withCache, cachedLogits, failures, CachedTolerance));
+            worst = Max(worst, CompareToJson(name, withCache, cachedLogits, failures, CachedTolerance));
         }
-        output.WriteLine($"{reused}/{total} sentences reused the tagger's charlm outputs; max |logit diff| vs Stanza {worst}");
+        output.WriteLine($"{reused}/{total} sentences reused the tagger's charlm outputs; max |logit diff| vs float32 {worst.Float32}, accepted {worst.Accepted}");
         Assert.True(reused > total / 2);
         Assert.True(failures.Count == 0, string.Join("\n\n", failures));
     }
