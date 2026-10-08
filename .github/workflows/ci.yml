@@ -19,6 +19,8 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
 
 jobs:
+  # Everything builds and tests in Release: the managed backend's kernels are many times slower in Debug, which once
+  # made the cross-os test steps run for hours. --blame-hang-timeout names a test that hangs; timeout-minutes caps a job.
   # Whether the heavy jobs have anything to check: false only for a pull request that changes nothing but
   # documentation. Pushes to main and release.yml's runs always check everything. On false, the required jobs
   # still run, with their steps skipped: they report real runs rather than relying on a skipped job counting as
@@ -40,6 +42,7 @@ jobs:
 
   # Build and the tests that need no model files (the model tests skip).
   build-test:
+    timeout-minutes: 90
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
@@ -54,10 +57,10 @@ jobs:
           key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Build.props') }}
 
       - name: Build
-        run: dotnet build StanzaSharp.slnx
+        run: dotnet build StanzaSharp.slnx -c Release
 
       - name: Test
-        run: dotnet test StanzaSharp.slnx --no-build --logger trx --results-directory TestResults
+        run: dotnet test StanzaSharp.slnx -c Release --no-build --blame-hang-timeout 30m --blame-hang-dump-type none --logger trx --results-directory TestResults
 
       - uses: actions/upload-artifact@v7
         if: always()
@@ -69,6 +72,7 @@ jobs:
   golden:
     needs: changes
     if: ${{ !cancelled() }}
+    timeout-minutes: 90
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
@@ -98,14 +102,14 @@ jobs:
 
       - name: Build
         if: needs.changes.outputs.code != 'false'
-        run: dotnet build StanzaSharp.slnx
+        run: dotnet build StanzaSharp.slnx -c Release
 
       # The library's own downloader, as users run it; Python is only needed for the converter.
       - name: Download the models
         if: needs.changes.outputs.code != 'false' && (steps.models.outputs.cache-hit != 'true')
         run: |
-          dotnet run --project samples/StanzaSharp.Cli --no-build -- download models/stanza/en
-          dotnet run --project samples/StanzaSharp.Cli --no-build -- download models/stanza/en --package default_fast
+          dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/en
+          dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/en --package default_fast
 
       - uses: actions/setup-python@v7
         if: needs.changes.outputs.code != 'false' && (steps.models.outputs.cache-hit != 'true')
@@ -121,7 +125,7 @@ jobs:
 
       - name: Test
         if: needs.changes.outputs.code != 'false'
-        run: dotnet test StanzaSharp.slnx --no-build --logger trx --results-directory TestResults
+        run: dotnet test StanzaSharp.slnx -c Release --no-build --blame-hang-timeout 30m --blame-hang-dump-type none --logger trx --results-directory TestResults
 
       # A skipped test here means the models were not found.
       - name: Check that no test was skipped
@@ -166,6 +170,7 @@ jobs:
   docker:
     needs: changes
     if: ${{ !cancelled() }}
+    timeout-minutes: 90
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
@@ -209,6 +214,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-2025, macos-15, windows-11-arm]
+    timeout-minutes: 90
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -240,17 +246,17 @@ jobs:
 
       - name: Build
         if: needs.changes.outputs.code != 'false'
-        run: dotnet build StanzaSharp.slnx
+        run: dotnet build StanzaSharp.slnx -c Release
 
       - name: Download the models
         if: needs.changes.outputs.code != 'false' && (steps.models.outputs.cache-hit != 'true')
         run: |
-          dotnet run --project samples/StanzaSharp.Cli --no-build -- download models/stanza/en
-          dotnet run --project samples/StanzaSharp.Cli --no-build -- download models/stanza/en --package default_fast
+          dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/en
+          dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/en --package default_fast
 
       - name: Test
         if: needs.changes.outputs.code != 'false'
-        run: dotnet test StanzaSharp.slnx --no-build --logger trx --results-directory TestResults
+        run: dotnet test StanzaSharp.slnx -c Release --no-build --blame-hang-timeout 30m --blame-hang-dump-type none --logger trx --results-directory TestResults
 
       - name: Check that no test was skipped
         if: needs.changes.outputs.code != 'false'
