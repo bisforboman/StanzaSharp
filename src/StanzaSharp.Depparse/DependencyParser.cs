@@ -1,10 +1,8 @@
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using StanzaSharp.Nn;
-using TorchSharp;
-using TorchSharp.Modules;
+using StanzaSharp.Nn.Managed;
 using static TorchSharp.torch;
-using F = TorchSharp.torch.nn.functional;
 
 namespace StanzaSharp.Depparse;
 
@@ -17,92 +15,66 @@ namespace StanzaSharp.Depparse;
 /// - a highway biLSTM
 /// - deep biaffine arc and label scorers, plus the linearization and distance terms
 /// - a maximum spanning tree with one root (Chu-Liu/Edmonds)
+/// The network is an <see cref="IDepparseNet"/> per backend; vocab lookups, batching and decoding are here.
 /// </summary>
 internal sealed class DependencyParser : IDisposable
 {
-    private const int RootId = 3, VocabPrefixSize = 4; // vocab.ROOT_ID, VOCAB_PREFIX_SIZE
+    internal const int RootId = 3, VocabPrefixSize = 4; // vocab.ROOT_ID, VOCAB_PREFIX_SIZE
     private const int SeparateBatchLength = 150;       // depparse_processor.DEFAULT_SEPARATE_BATCH
 
     private readonly Pretrain _pretrain;
-    private readonly CharLanguageModel? _charlmForward, _charlmBackward;
-    private readonly CharacterModel? _charModel;
-    private readonly Linear? _transChar;
     private readonly Dictionary<string, int> _wordVocab, _lemmaVocab, _uposVocab, _xposVocab;
     private readonly string[] _deprels;
     private readonly int _batchSize;
-    private readonly bool _linearization, _distance;
+    private readonly IDepparseNet _net;
 
-    private readonly Embedding _wordEmb, _lemmaEmb, _uposEmb, _xposEmb;
-    private readonly Linear _transPretrained;
-    private readonly HighwayLstm _lstm;
-    private readonly DeepBiaffine _unlabeled, _deprel;
-    private readonly DeepBiaffine? _linearizationScorer, _distanceScorer;
-    private readonly Device _device = Weights.Device; // the device the model was loaded on
-
-    private DependencyParser(Checkpoint ckpt, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward)
+    private DependencyParser(Checkpoint ckpt, Pretrain pretrain, Func<bool, IDepparseNet> net)
     {
         _pretrain = pretrain;
         var config = ckpt.Root["config"]!;
         CheckSupported(ckpt.Root, config);
-        var model = ckpt.Root["model"]!;
         var vocab = ckpt.Root["vocab"]!;
-        if (NeedsCharlm(ckpt))
-        {
-            if (charlmForward == null || charlmBackward == null || !charlmForward.IsForward || charlmBackward.IsForward)
-                throw new ArgumentException("This parser needs the forward charlm, then the backward one");
-            _charlmForward = charlmForward;
-            _charlmBackward = charlmBackward;
-        }
-
         _wordVocab = Checkpoint.UnitToId(vocab["word"]);
         _lemmaVocab = Checkpoint.UnitToId(vocab["lemma"]);
         _uposVocab = Checkpoint.UnitToId(vocab["upos"]);
         _xposVocab = Checkpoint.UnitToId(vocab["xpos"]);
         _deprels = vocab["deprel"]!["_id2unit"]!.AsArray().Select(x => x!.GetValue<string>()).ToArray();
         _batchSize = config["batch_size"]!.GetValue<int>();
-        _linearization = config["linearization"]!.GetValue<bool>();
-        _distance = config["distance"]!.GetValue<bool>();
-
-        int hidden = config["hidden_dim"]!.GetValue<int>();
-        int biaff = config["deep_biaff_hidden_dim"]!.GetValue<int>();
-        int wordEmb = config["word_emb_dim"]!.GetValue<int>();
-        int tagEmb = config["tag_emb_dim"]!.GetValue<int>();
-        int transformed = config["transformed_dim"]!.GetValue<int>();
-        // Stanza appends the UPOS+XPOS embedding twice where it means to add the UFeats one, so the
-        // UFeats embeddings are loaded by Stanza but never used.
-        int inputSize = transformed + 2 * wordEmb + 2 * tagEmb;
-        if (_charlmForward != null)
-            inputSize += _charlmForward.HiddenDim + _charlmBackward!.HiddenDim;
-        else
-        {
-            _charModel = new CharacterModel(ckpt, model, config, vocab["char"]!, "charmodel.", bidirectional: false, attention: true);
-            _transChar = nn.Linear(_charModel.OutputDim, transformed, hasBias: false).LoadFrom(ckpt, model, "trans_char.");
-            inputSize += transformed;
-        }
-
-        _wordEmb = nn.Embedding(_wordVocab.Count, wordEmb, padding_idx: 0).LoadFrom(ckpt, model, "word_emb.");
-        _lemmaEmb = nn.Embedding(_lemmaVocab.Count, wordEmb, padding_idx: 0).LoadFrom(ckpt, model, "lemma_emb.");
-        _uposEmb = nn.Embedding(_uposVocab.Count, tagEmb, padding_idx: 0).LoadFrom(ckpt, model, "upos_emb.");
-        _xposEmb = nn.Embedding(_xposVocab.Count, tagEmb, padding_idx: 0).LoadFrom(ckpt, model, "xpos_emb.");
-        _transPretrained = nn.Linear(pretrain.Dim, transformed, hasBias: false).LoadFrom(ckpt, model, "trans_pretrained.");
-        _lstm = new HighwayLstm(ckpt, model, "parserlstm", inputSize, hidden, config["num_layers"]!.GetValue<int>());
-
-        int relations = _deprels.Length - VocabPrefixSize;
-        _unlabeled = new DeepBiaffine(ckpt, model, "unlabeled.", 2 * hidden, biaff, 1);
-        _deprel = new DeepBiaffine(ckpt, model, "deprel.", 2 * hidden, biaff, relations);
-        if (_linearization)
-            _linearizationScorer = new DeepBiaffine(ckpt, model, "linearization.", 2 * hidden, biaff, 1);
-        if (_distance)
-            _distanceScorer = new DeepBiaffine(ckpt, model, "distance.", 2 * hidden, biaff, 1);
+        _net = net(config["charlm"]?.GetValue<bool>() == true);
     }
 
     /// <summary>
-    /// Loads e.g. <c>models/converted/en/depparse/combined_charlm</c>. The pretrain and charlms are
+    /// Loads e.g. <c>models/converted/en/depparse/combined_charlm</c> on TorchSharp. The pretrain and charlms are
     /// shared with the tagger and the constituency parser, so the caller owns them. A <c>_nocharlm</c> model takes none.
     /// </summary>
     /// <param name="device">Where the model runs; CPU by default. Load the pretrain and charlms on the same device.</param>
     public static DependencyParser Load(string basePath, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward, Device? device = null) =>
-        Weights.On(device, () => new DependencyParser(Checkpoint.Load(basePath), pretrain, charlmForward, charlmBackward));
+        Weights.On(device, () =>
+        {
+            var ckpt = Checkpoint.Load(basePath);
+            return new DependencyParser(ckpt, pretrain, charlm =>
+            {
+                CheckCharlms(charlm, charlmForward?.IsForward, charlmBackward?.IsForward);
+                return new DepparseNet(ckpt, pretrain, charlm ? charlmForward : null, charlm ? charlmBackward : null);
+            });
+        });
+
+    /// <summary><see cref="Load"/> on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
+    public static DependencyParser LoadManaged(string basePath, Pretrain pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward)
+    {
+        var ckpt = Checkpoint.Load(basePath);
+        return new DependencyParser(ckpt, pretrain, charlm =>
+        {
+            CheckCharlms(charlm, charlmForward?.IsForward, charlmBackward?.IsForward);
+            return new ManagedDepparseNet(ckpt, pretrain, charlm ? charlmForward : null, charlm ? charlmBackward : null);
+        });
+    }
+
+    private static void CheckCharlms(bool charlm, bool? forward, bool? backward)
+    {
+        if (charlm && (forward != true || backward != false))
+            throw new ArgumentException("This parser needs the forward charlm, then the backward one");
+    }
 
     /// <summary>
     /// Sets Head and Deprel on every word. Needs UPOS/XPOS from the tagger and lemmas from the lemmatizer
@@ -168,18 +140,12 @@ internal sealed class DependencyParser : IDisposable
     /// <summary>Parses one batch: (head, deprel) for each word of each sentence.</summary>
     /// <remarks>
     /// A batch is up to 5000 words (seconds on a slow CPU), so <paramref name="cancellationToken"/> is also checked inside
-    /// it: in <see cref="Scores"/> and between the sentences' tree decodes.
+    /// it: in the network and between the sentences' tree decodes.
     /// </remarks>
     internal List<(int Head, string Deprel)[]> Parse(IReadOnlyList<IReadOnlyList<Word>> batch, CancellationToken cancellationToken = default)
     {
-        using var _ = torch.no_grad();
-        using var scope = NewDisposeScope();
-        var (unlabeled, deprel) = Scores(batch, cancellationToken);
-        var labels = deprel.max(3).indexes;
-        int width = (int)unlabeled.shape[1];
-        var arcs = unlabeled.ToArray<float>();
-        var labelIds = labels.ToArray<long>();
-
+        var output = Scores(batch, labelScores: false, cancellationToken);
+        int width = output.Width;
         var result = new List<(int, string)[]>(batch.Count);
         for (int b = 0; b < batch.Count; b++)
         {
@@ -188,106 +154,39 @@ internal sealed class DependencyParser : IDisposable
             var scores = new double[n, n];
             for (int i = 0; i < n; i++)
                 for (int j = 0; j < n; j++)
-                    scores[i, j] = arcs[(b * width + i) * width + j];
+                    scores[i, j] = output.ArcLogProbs[(b * width + i) * width + j];
             var tree = ChuLiuEdmonds.OneRoot(scores);
             result.Add(Enumerable.Range(1, n - 1)
-                .Select(i => (tree[i], _deprels[labelIds[(b * width + i) * width + tree[i]] + VocabPrefixSize])).ToArray());
+                .Select(i => (tree[i], _deprels[output.Labels[(b * width + i) * width + tree[i]] + VocabPrefixSize])).ToArray());
         }
         return result;
     }
 
-    /// <summary>
-    /// GraphParser.forward_scores, then the log-softmax over heads that predict applies:
-    /// arc log-probs [batch, width, width] (dependent, head) and label scores [batch, width, width, relations].
-    /// Row and column 0 are ROOT; padding columns count in the log-softmax, as in Stanza.
-    /// <paramref name="cancellationToken"/> is checked after the character model, between LSTM layers and between the
-    /// scorers' chunks; the dispose scope frees everything on the way out.
-    /// </summary>
-    internal (Tensor Unlabeled, Tensor Deprel) Scores(IReadOnlyList<IReadOnlyList<Word>> batch, CancellationToken cancellationToken = default)
+    /// <summary>The network's scores for one batch (see <see cref="DepparseScores"/>).</summary>
+    /// <param name="labelScores">Also return the label scores of every word pair (tests).</param>
+    internal DepparseScores Scores(IReadOnlyList<IReadOnlyList<Word>> batch, bool labelScores = false, CancellationToken cancellationToken = default)
     {
-        using var _ = torch.no_grad();
-        using var scope = NewDisposeScope();
         // data.py load_doc: simplify_punct changes the words the parser sees (vocab and charlm alike).
-        var texts = batch.Select(s => s.Select(w => SimplifyPunct(w.Text)).ToList()).ToList();
+        var texts = batch.Select(s => (IReadOnlyList<string>)s.Select(w => SimplifyPunct(w.Text)).ToList()).ToList();
         int size = batch.Count, width = batch.Max(s => s.Count) + 1;
-        var lengths = batch.Select(s => (long)s.Count + 1).ToArray();
-
-        var word = new long[size * width];
-        var lemma = new long[size * width];
-        var upos = new long[size * width];
-        var xpos = new long[size * width];
-        var pretrained = new long[size * width];
+        var input = new DepparseBatch(texts, width, batch.Select(s => (long)s.Count + 1).ToArray(),
+            new long[size * width], new long[size * width], new long[size * width], new long[size * width], new long[size * width]);
         for (int b = 0; b < size; b++)
         {
             int row = b * width;
-            word[row] = lemma[row] = upos[row] = xpos[row] = pretrained[row] = RootId;
+            input.Word[row] = input.Lemma[row] = input.Upos[row] = input.Xpos[row] = input.Pretrained[row] = RootId;
             for (int j = 0; j < batch[b].Count; j++)
             {
                 var w = batch[b][j];
                 var lower = PyString.Lower(texts[b][j]);
-                word[row + j + 1] = _wordVocab.GetValueOrDefault(lower, 1);
-                lemma[row + j + 1] = _lemmaVocab.GetValueOrDefault(PyString.Lower(w.Lemma ?? "_"), 1);
-                upos[row + j + 1] = _uposVocab.GetValueOrDefault(w.Upos ?? "_", 1);
-                xpos[row + j + 1] = _xposVocab.GetValueOrDefault(w.Xpos ?? "_", 1);
-                pretrained[row + j + 1] = _pretrain.UnitToId(lower);
+                input.Word[row + j + 1] = _wordVocab.GetValueOrDefault(lower, 1);
+                input.Lemma[row + j + 1] = _lemmaVocab.GetValueOrDefault(PyString.Lower(w.Lemma ?? "_"), 1);
+                input.Upos[row + j + 1] = _uposVocab.GetValueOrDefault(w.Upos ?? "_", 1);
+                input.Xpos[row + j + 1] = _xposVocab.GetValueOrDefault(w.Xpos ?? "_", 1);
+                input.Pretrained[row + j + 1] = _pretrain.UnitToId(lower);
             }
         }
-        Tensor Ids(long[] ids) => torch.tensor(ids, [size, width], device: _device);
-
-        var pos = _uposEmb.forward(Ids(upos)).add(_xposEmb.forward(Ids(xpos)), Scalars.One);
-        Tensor[] chars;
-        if (_charModel != null)
-        {
-            // ROOT is a word of the single character id ROOT_ID.
-            long[] root = [CharacterModel.RootId];
-            chars = [_transChar!.forward(_charModel.Forward(texts.Select(t => (IReadOnlyList<long[]>)t.Select(_charModel.CharIds).Prepend(root).ToList()).ToList()))];
-        }
-        else
-        {
-            // "\n" stands in for ROOT in the charlm input.
-            var charlmText = texts.Select(t => (IReadOnlyList<string>)t.Prepend("\n").ToList()).ToList();
-            var forward = Rnn.PadSequence(_charlmForward!.BuildCharRepresentation(charlmText));
-            cancellationToken.ThrowIfCancellationRequested();
-            chars = [forward, Rnn.PadSequence(_charlmBackward!.BuildCharRepresentation(charlmText))];
-        }
-        var input = cat([
-            _transPretrained.forward(_pretrain.Embeddings[Ids(pretrained)]),
-            _wordEmb.forward(Ids(word)),
-            _lemmaEmb.forward(Ids(lemma)),
-            pos,
-            pos,
-            .. chars,
-        ], 2);
-        foreach (var t in chars)
-            t.Dispose();
-        cancellationToken.ThrowIfCancellationRequested();
-        var output = _lstm.Forward(input, lengths, disposeInput: true, cancellationToken);
-        // pad_packed_sequence leaves zeros past each sentence; the scorers see them in the padding columns.
-        using var widthScalar = width.ToScalar();
-        var positions = arange(Scalars.Zero, widthScalar, Scalars.One, device: _device);
-        var padding = positions.unsqueeze(0).ge(torch.tensor(lengths, device: _device).unsqueeze(1));
-        output = output.masked_fill(padding.unsqueeze(2), Scalars.Zero);
-
-        var unlabeled = _unlabeled.Forward(output, cancellationToken).squeeze(3);
-        var deprel = _deprel.Forward(output, cancellationToken);
-        var headOffset = (positions.view(1, 1, -1) - positions.view(1, -1, 1)).expand(size, -1, -1);
-        if (_linearizationScorer != null)
-        {
-            var lin = _linearizationScorer.Forward(output, cancellationToken).squeeze(3);
-            unlabeled = unlabeled.add(F.logsigmoid(lin * headOffset.sign().to_type(ScalarType.Float32)), Scalars.One);
-        }
-        if (_distanceScorer != null)
-        {
-            var dist = _distanceScorer.Forward(output, cancellationToken).squeeze(3);
-            var predicted = Scalars.Softplus(dist).add(Scalars.One, Scalars.One); // 1 + softplus(dist)
-            var target = headOffset.abs();
-            // -log((target - predicted)^2 / 2 + 1)
-            var penalty = -torch.log((target.to_type(ScalarType.Float32) - predicted).pow(Scalars.Two).div(Scalars.Two).add(Scalars.One, Scalars.One));
-            unlabeled = unlabeled.add(penalty, Scalars.One);
-        }
-        unlabeled = unlabeled.masked_fill(eye(width, dtype: ScalarType.Bool, device: _device).unsqueeze(0), Scalars.NegativeInfinity);
-        var logProbs = F.log_softmax(unlabeled, 2);
-        return (logProbs.MoveToOuterDisposeScope(), deprel.MoveToOuterDisposeScope());
+        return _net.Forward(input, labelScores, cancellationToken);
     }
 
     private static void CheckSupported(JsonNode root, JsonNode config)
@@ -313,9 +212,6 @@ internal sealed class DependencyParser : IDisposable
             Require(!root["vocab"]![key]!["lower"]!.GetValue<bool>(), $"a lowercased {key} vocab");
     }
 
-    /// <summary>Whether a checkpoint reads the shared charlms (<c>_charlm</c>) rather than its own character model (<c>_nocharlm</c>).</summary>
-    private static bool NeedsCharlm(Checkpoint ckpt) => ckpt.Root["config"]!["charlm"]?.GetValue<bool>() == true;
-
     // common/utils.py simplify_punct (as in the tagger): runs like "?!?" or "!!" become "?" or "!".
     private const string QuestionMarks = "?？︖﹖⁇", AllMarks = QuestionMarks + "!！︕﹗‼";
     private static readonly Regex Question = new($"^[{QuestionMarks}][{AllMarks}]+$");
@@ -323,77 +219,5 @@ internal sealed class DependencyParser : IDisposable
 
     private static string SimplifyPunct(string word) => Exclam.Replace(Question.Replace(word, "?"), "!");
 
-    public void Dispose()
-    {
-        foreach (var m in new nn.Module[] { _wordEmb, _lemmaEmb, _uposEmb, _xposEmb, _transPretrained })
-            m.Dispose();
-        _lstm.Dispose();
-        _charModel?.Dispose();
-        _transChar?.Dispose();
-        _unlabeled.Dispose();
-        _deprel.Dispose();
-        _linearizationScorer?.Dispose();
-        _distanceScorer?.Dispose();
-    }
-
-    /// <summary>
-    /// common/biaffine.py DeepBiaffineScorer with pairwise=True, scoring every word against every word:
-    /// ReLU(W1 x) and ReLU(W2 x), each with a 1 appended, through a PairwiseBilinear.
-    /// </summary>
-    private sealed class DeepBiaffine : IDisposable
-    {
-        private const long ChunkFloats = 32 << 20; // 128 MB of intermediate per chunk
-        private readonly Linear _w1, _w2;
-        private readonly Tensor _weight, _bias;
-
-        public DeepBiaffine(Checkpoint ckpt, JsonNode model, string prefix, int input, int hidden, int output)
-        {
-            _w1 = nn.Linear(input, hidden).LoadFrom(ckpt, model, prefix + "W1.");
-            _w2 = nn.Linear(input, hidden).LoadFrom(ckpt, model, prefix + "W2.");
-            _weight = ckpt.ToTensor(model[prefix + "scorer.W_bilin.weight"]); // [hidden + 1, hidden + 1, output]
-            _bias = ckpt.ToTensor(model[prefix + "scorer.W_bilin.bias"]);
-            if (!_weight.shape.SequenceEqual([hidden + 1, hidden + 1, output]))
-                throw new InvalidOperationException($"{prefix}scorer.W_bilin.weight has shape [{string.Join(", ", _weight.shape)}]");
-        }
-
-        /// <returns>[batch, width, width, output]: [b, i, j] scores word i against word j.</returns>
-        /// <remarks><paramref name="ct"/> is checked before each chunk.</remarks>
-        public Tensor Forward(Tensor x, CancellationToken ct)
-        {
-            using var scope = NewDisposeScope();
-            var input1 = AppendOne(F.relu(_w1.forward(x)));
-            var input2 = AppendOne(F.relu(_w2.forward(x)));
-            // The [batch, width, hidden + 1, out] intermediate is the depparse memory peak: 1.5 GB for the
-            // label scorer on 250 sentences padded to 72 words, and einsum makes a permuted copy. Each
-            // sentence's scores depend only on its own rows, so score a few sentences at a time.
-            long batch = x.shape[0], width = x.shape[1];
-            long chunk = Math.Max(1, ChunkFloats / (width * _weight.shape[1] * _weight.shape[2]));
-            var output = empty([batch, width, width, _weight.shape[2]], dtype: x.dtype, device: x.device);
-            for (long n = 0; n < batch; n += chunk)
-            {
-                ct.ThrowIfCancellationRequested();
-                using var part = NewDisposeScope();
-                long size = Math.Min(chunk, batch - n);
-                var intermediate = einsum("NLI,IJO->NLJO", input1.narrow(0, n, size), _weight);
-                output.narrow(0, n, size).copy_(einsum("NLJO,NMJ->NLMO", intermediate, input2.narrow(0, n, size)));
-            }
-            // In place: the label scorer's output is [batch, width, width, relations], too large to copy.
-            return output.add_(_bias, Scalars.One).MoveToOuterDisposeScope();
-        }
-
-        private static Tensor AppendOne(Tensor x)
-        {
-            var shape = x.shape.ToArray();
-            shape[^1] = 1;
-            return cat([x, ones(shape, dtype: x.dtype, device: x.device)], -1);
-        }
-
-        public void Dispose()
-        {
-            _w1.Dispose();
-            _w2.Dispose();
-            _weight.Dispose();
-            _bias.Dispose();
-        }
-    }
+    public void Dispose() => _net.Dispose();
 }

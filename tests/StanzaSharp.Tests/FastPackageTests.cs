@@ -67,17 +67,8 @@ public class FastPackageTests(ITestOutputHelper output)
 
             var sentence = doc.Sentences[i].Words.ToList();
             Assert.Equal(words[i], sentence.Select(w => w.Text));
-            var (unlabeled, deprel) = parser.Scores([sentence]);
-            using (unlabeled)
-            using (deprel)
-            using (var labelLogProbs = torch.nn.functional.log_softmax(deprel, 3))
-            {
-                var arcs = unlabeled.data<float>().ToArray();
-                var expected = golden.Read<float>($"s{i}.depparse.unlabeled");
-                Assert.Equal(expected.Select(float.IsNegativeInfinity), arcs.Select(float.IsNegativeInfinity));
-                TokenizerTests.AssertClose(expected.Select(Finite).ToArray(), arcs.Select(Finite).ToArray(), 1e-4f, $"s{i}.unlabeled");
-                TokenizerTests.AssertClose(golden.Read<float>($"s{i}.depparse.deprel"), labelLogProbs.data<float>().ToArray(), 1e-4f, $"s{i}.deprel");
-            }
+            DepparseTests.AssertScoresMatch(parser.Scores([sentence], labelScores: true),
+                golden.Read<float>($"s{i}.depparse.unlabeled"), golden.Read<float>($"s{i}.depparse.deprel"), $"s{i}");
             Assert.Equal(index[i]!["heads"]!.AsArray().Select(h => h!.GetValue<int>()), parser.Parse([sentence])[0].Select(p => p.Head));
         }
     }
@@ -88,6 +79,8 @@ public class FastPackageTests(ITestOutputHelper output)
         using var pretrain = Pretrain.Load(Repo.Model("pretrain/conll17"));
         using var tagger = PosTagger.LoadManaged(Repo.Model("pos/combined_nocharlm"), pretrain, null, null);
         using var ner = NerTagger.LoadManaged(Repo.Model("ner/ontonotes-ww-multi_nocharlm"), pretrain, null, null);
+        using var parser = DependencyParser.LoadManaged(Repo.Model("depparse/combined_nocharlm"), pretrain, null, null);
+        var doc = Conllu.Read(File.ReadAllText(Path.Combine(Golden, "corpus.conllu")));
         var golden = SafeTensorFile.Load(Path.Combine(Golden, "intermediates.safetensors"));
         var index = JsonNode.Parse(File.ReadAllText(Path.Combine(Golden, "intermediates.json")))!["sentences"]!.AsArray();
         var words = index.Select(e => (IReadOnlyList<string>)Strings(e!["words"])).ToList();
@@ -100,6 +93,13 @@ public class FastPackageTests(ITestOutputHelper output)
             Assert.Equal(Strings(index[i]!["xpos"]), tags[i].Select(t => t.Xpos));
             output.WriteLine($"s{i}: max |diff| {TokenizerTests.AssertClose(golden.Read<float>($"s{i}.ner.emissions"), emissions[i], 1e-4f, $"s{i}.ner"):E2}");
             Assert.Equal(Strings(index[i]!["ner"]), nerTags[i]);
+
+            var sentence = doc.Sentences[i].Words.ToList();
+            Assert.Equal(words[i], sentence.Select(w => w.Text));
+            var (arcs, labels) = DepparseTests.AssertScoresMatch(parser.Scores([sentence], labelScores: true),
+                golden.Read<float>($"s{i}.depparse.unlabeled"), golden.Read<float>($"s{i}.depparse.deprel"), $"s{i}");
+            output.WriteLine($"s{i}: arc log-probs max |diff| {arcs:E2}, label log-probs {labels:E2}");
+            Assert.Equal(index[i]!["heads"]!.AsArray().Select(h => h!.GetValue<int>()), parser.Parse([sentence])[0].Select(p => p.Head));
         }
     }
 
