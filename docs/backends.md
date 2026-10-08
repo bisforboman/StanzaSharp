@@ -174,30 +174,86 @@ So no change was made. Splitting by rows as well isn't needed yet: every recurre
 26 panels to share out (MWT: 2 directions × 13), more than the 8 threads. A unidirectional layer with a small hidden
 size would need it; none is ported.
 
+## Phase 2 progress
+
+| processor | ported | exactness on the managed backend | ner stage, 8 threads (TorchSharp → managed) | 1 thread |
+|---|---|---|---|---|
+| tokenize | Phase 1 | byte-identical | 1.62 → 0.44 s | 1.82 → 1.06 s |
+| mwt | Phase 1 | byte-identical | too short to compare | |
+| **ner** (`_charlm`) | yes | byte-identical tags and entities; emissions 1.1e-5 from Python (TorchSharp 3.7e-6) | **24.01 → 6.46 s (0.27)** | **55.40 → 26.39 s (0.48)** |
+| **ner** (`_nocharlm`, default_fast) | yes | byte-identical; emissions 1.05e-5 from Python | **1.70 → 0.56 s (0.33)** | **2.42 → 1.43 s (0.59)** |
+| pos, depparse, sentiment, lemma, constituency | no | | | |
+
+Speed: `StanzaSharp.Benchmark --processors tokenize,ner --backend torch|managed --threads N --runs 3` (so NER computes every
+charlm itself; no tagger, no cache), 8 copies (24,840 words), medians, Ryzen 7 5800X, idle machine. In the full
+8-processor pipeline (8 threads) the ner stage goes from 14.3 to 3.7 s and the run from 58.7 to 46.7 s; there NER
+reads the tagger's cached charlm outputs for sentences without MWTs.
+
+### ner
+
+- **Seam:** `INerNet.Forward(sentences, wordIds, deltaIds, width, charlms, cacheKeys, ct)` → [batch, width, tags]
+  emissions. `NerTagger` keeps the vocab lookups (lowercasing, the delta PAD rule), batching (32 sentences in document
+  order), Viterbi, `fix_singleton_tags` and the entities. `NerTagger.Load` builds `NerNet` (today's TorchSharp code);
+  `NerTagger.LoadManaged` builds `ManagedNerNet` with the managed charlms (or none for `_nocharlm`).
+- **Managed net:** each token's input row (pretrain + delta embedding, then the charlm or character-model columns) is
+  built at its packed position (sentences longest first, as pack_padded_sequence orders them), so input_transform,
+  the biLSTM (`ManagedLstm.ForwardPacked`, with `taggerlstm_h_init`/`c_init`) and the OntoNotes head never compute
+  padding. TorchSharp runs input_transform on the padded batch.
+- **`ManagedCharacterModel`** (in `Nn.Managed`) has both variants, NER's (bidirectional, final states) and the
+  tagger/parser's (unidirectional, attention pooling), so pos and depparse's `_nocharlm` models can use it as is.
+  Against `CharacterModel`: 3.4e-7 (NER), 3.4e-7 (pos), on every kernel path.
+- **Shared models:** `Pipeline.ManagedProcessors` (tokenize, mwt, ner) says what `Backend.Managed` runs managed. Each
+  backend's charlms load only if a `_charlm` processor on that backend reads them, so a managed pipeline with pos holds
+  both (the managed ones add 31 MB of input tables). Managed NER reads the shared `Pretrain` through `CpuVectors()`:
+  the CPU tensor's own memory, no copy.
+- **Tests:** `NerTests` (emissions vs golden, the 13 golden files with and without the cache, `tokenize,ner` alone) and
+  `FastPackageTests` (all 13 default_fast files, the nocharlm emissions) run on both backends; `PipelineTests`,
+  `InputModeTests`, `NoSsplitTests` and `ConcurrencyTests` (now also default_fast) cover managed NER through the
+  pipeline. `ManagedBackendTests.NerNet_ManagedMatchesTorchSharp` (both checkpoints, 9.5e-6, identical tags) and
+  `CharacterModel_ManagedMatchesTorchSharp` run on every kernel path. Every discrete output is byte-identical; no
+  tolerance changed (emissions stay at 1e-4).
+
+### Backend-neutral `CharlmCache`
+
+The tagger produces the cache; constituency, sentiment and ner read it. Once processors move to the managed backend one
+by one, producer and readers can sit on different backends.
+
+- **Design:** one cache, entries in their producer's form. `TryAdd(sentence, Tensor, Tensor)` (TorchSharp producer,
+  unchanged) or `TryAdd(sentence, float[], float[], words)` (managed producer, for pos next). Readers ask for their
+  form: `TryGet` → tensors, `TryGetArrays` → `[words, dim]` arrays.
+  - A tensor entry read as arrays is copied per read (8 KB per word; the caller owns the copy).
+  - An array entry read as tensors is converted once, on the cache's device (the pipeline's), and kept with the entry,
+    so the TorchSharp readers' contract (tensors owned by the cache, never disposed by them) holds.
+  - `MaxWords` counts words the same for both forms; `IsEnabled`, `MaxWords` and the dispose rules are unchanged.
+- **Cost:** a pipeline whose producer and readers share a backend never converts, so the default path runs exactly the
+  old code. Measured (8-processor benchmark, 8 threads, two rounds, origin/main → this branch): 58.41 / 58.64 →
+  58.74 / 58.70 s; peak working set 2,981 / 2,985 → 3,015 / 3,004 MB; `--memory 6000` peak 4,328 / 3,742 →
+  4,243 / 3,738 MB. The differences are within run-to-run noise (load peak +8 MB from more code). The golden files
+  are byte-identical on the TorchSharp path.
+
 ## Phase 2: what next
 
-Suggested order (each processor gets its own `I…Net`, a managed twin, and both-backend golden tests):
-
-1. **ner**: charlm (ready), Linear, 1-layer biLSTM 256 (`ManagedLstm`), Linear. Viterbi is already plain C#. The
-   `_nocharlm` variant needs a managed `CharacterModel` (bidirectional, no attention).
-2. **pos**: charlm and highway (ready), plus the UPOS MLP and the XPOS/feats `Biaffine` heads. The nocharlm variant
-   needs `CharacterModel` with attention.
-3. **depparse**: the same blocks plus `DeepBiaffine` and the distance/linearization terms. Chu-Liu/Edmonds is already
+1. **pos**: charlm, highway and `ManagedCharacterModel` with attention (ready), plus the UPOS MLP and the XPOS/feats
+   `Biaffine` heads. It becomes the cache's first managed producer (`TryAdd` with arrays), so constituency and
+   sentiment then read converted entries until they are ported. UPOS logits will need the accepted 1e-3 tolerance
+   (1.4e-4 in the spike).
+2. **depparse**: the same blocks plus `DeepBiaffine` and the distance/linearization terms. Chu-Liu/Edmonds is already
    plain C#. Risk: the padded log-softmax makes heads depend on the batch, so batches must stay identical (they do,
    since batching is shared).
-4. **sentiment**: an unpacked padded biLSTM (a `ManagedLstm` mode with lengths = width), Conv2d as GEMMs over
+3. **sentiment**: an unpacked padded biLSTM (a `ManagedLstm` mode with lengths = width), Conv2d as GEMMs over
    overlapping rows, max-pool, MLP. Risk: near-ties (173 of 886 labels already flip with batching in Stanza).
-5. **lemma**: LSTMCell decoder, dot attention, copy gate, greedy argmax over tiny batches. Risk: near-ties per
+4. **lemma**: LSTMCell decoder, dot attention, copy gate, greedy argmax over tiny batches. Risk: near-ties per
    character.
-6. **constituency**: the most code; per-step stack LSTMs (50 states in flight) and a transition argmax over thousands
+5. **constituency**: the most code; per-step stack LSTMs (50 states in flight) and a transition argmax over thousands
    of steps. The highest near-tie risk.
 
-Cross-cutting work before step 2:
+Cross-cutting:
 
-- **`CharlmCache`** holds TorchSharp tensors today. With a managed tagger it must hold float arrays, or there must be
-  one cache per backend. In a mixed pipeline (managed pos, TorchSharp constituency) the cached values cross backends.
-- **Shared models:** `Pretrain` and the charlms are loaded once and handed to several processors. The factory has to
-  build them per backend. While pipelines are mixed, the managed charlm's input tables add 31 MB.
-- **Tolerances:** the owner accepted 1e-3 for scores. pos's UPOS logits will need it (1.4e-4 in the spike).
-- **CI time:** the both-backend theories rerun the full pipeline on the golden files: about 2 extra minutes now, and
-  more as processors are added.
+- **Shared models:** the factory of the Cuda split has to build `Pretrain` and the charlms per backend. `Pretrain` is
+  still a TorchSharp tensor that managed processors read in place; a libtorch-free managed pipeline (0.5) needs it
+  as a plain array.
+- **NER batches:** NER runs the charlms 32 sentences at a time (Stanza's batches), where both backends are
+  memory-bound on the 16 MB recurrent weights. Running the charlms over bigger groups would be faster but changes the
+  last float bits; left as is.
+- **CI time:** the both-backend theories rerun the full pipeline on the golden files; the full local suite takes
+  32–36 minutes on 8 cores (223 tests with the converted models or the `.pt` files, none skipped).
