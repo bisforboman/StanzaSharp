@@ -228,8 +228,9 @@ What is left is engineering, plus these risks:
   `Device`/`DisableTf32`). The main `StanzaSharp` package becomes fully managed, with no native dependencies. So the
   backend seam (Phase 1) is permanent, with two implementations, and the TorchSharp one is also the CPU test
   reference. (On 2026-10-07 GPU was to be dropped.)
-- Accepted: score tolerances 1e-4 → 1e-3 (discrete outputs stay byte-identical); a slower Arm64 path at first;
-  up to ~15% slower at 1 thread.
+- Accepted: a slower Arm64 path at first; up to ~15% slower at 1 thread. (Score tolerances 1e-4 → 1e-3 were accepted
+  on 2026-10-07 and withdrawn on 2026-10-08: the managed backend uses TorchSharp's tolerances, with discrete outputs
+  byte-identical.)
 - Versions: 0.5 makes the managed backend the default with TorchSharp still selectable; 1.0 removes TorchSharp
   from the main package (it stays in `StanzaSharp.Cuda`).
 

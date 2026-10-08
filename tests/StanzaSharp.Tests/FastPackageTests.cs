@@ -83,16 +83,21 @@ public class FastPackageTests(ITestOutputHelper output)
     }
 
     [ModelFact]
-    public void ManagedNerEmissions_MatchGolden()
+    public void ManagedIntermediates_MatchGolden()
     {
         using var pretrain = Pretrain.Load(Repo.Model("pretrain/conll17"));
+        using var tagger = PosTagger.LoadManaged(Repo.Model("pos/combined_nocharlm"), pretrain, null, null);
         using var ner = NerTagger.LoadManaged(Repo.Model("ner/ontonotes-ww-multi_nocharlm"), pretrain, null, null);
         var golden = SafeTensorFile.Load(Path.Combine(Golden, "intermediates.safetensors"));
         var index = JsonNode.Parse(File.ReadAllText(Path.Combine(Golden, "intermediates.json")))!["sentences"]!.AsArray();
+        var words = index.Select(e => (IReadOnlyList<string>)Strings(e!["words"])).ToList();
+        var tags = tagger.Predict(words, out var uposLogits);
         var tokens = index.Select(e => (IReadOnlyList<string>)Strings(e!["tokens"])).ToList();
         var nerTags = ner.Predict(tokens, out var emissions);
         for (int i = 0; i < index.Count; i++)
         {
+            output.WriteLine($"s{i}: UPOS max |diff| {TokenizerTests.AssertClose(golden.Read<float>($"s{i}.pos.upos_logits"), uposLogits[i], 1e-4f, $"s{i}.pos"):E2}");
+            Assert.Equal(Strings(index[i]!["xpos"]), tags[i].Select(t => t.Xpos));
             output.WriteLine($"s{i}: max |diff| {TokenizerTests.AssertClose(golden.Read<float>($"s{i}.ner.emissions"), emissions[i], 1e-4f, $"s{i}.ner"):E2}");
             Assert.Equal(Strings(index[i]!["ner"]), nerTags[i]);
         }

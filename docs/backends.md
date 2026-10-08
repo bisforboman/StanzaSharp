@@ -10,7 +10,9 @@ StanzaSharp runs each processor's network on one of two backends:
 The owner's plan: 0.5 makes the managed backend the default, with TorchSharp still selectable. At 1.0 TorchSharp leaves
 the main package for an opt-in `StanzaSharp.Cuda` package. Both implementations stay.
 
-Phase 1 added the seam and ported **tokenize** and **mwt**. Phase 2 ports the other processors one at a time; so far\n**ner**, plus a backend-neutral `CharlmCache` (see [Phase 2](#phase-2-progress)). Everything is `internal`; nothing\npublic changed.
+Phase 1 added the seam and ported **tokenize** and **mwt**. Phase 2 ports the other processors one at a time; so far
+**ner** and **pos**, plus a backend-neutral `CharlmCache` (see [Phase 2](#phase-2-progress)). Everything is `internal`;
+nothing public changed.
 
 ## The seam
 
@@ -21,6 +23,7 @@ The seam sits at each processor's **network**: one small interface per processor
 | tokenize | `ITokenizerNet.Forward(ids, feats, rows, width, lengths, ct)` → [rows, width, 5] log-probs | `TokenizerNet` | `ManagedTokenizerNet` |
 | mwt | `IMwtNet.Forward(ids, rows, width, lengths)` → [rows, width, 2] logits | `MwtNet` | `ManagedMwtNet` |
 | ner | `INerNet.Forward(sentences, wordIds, deltaIds, width, charlms, cacheKeys, ct)` → [batch, width, tags] emissions | `NerNet` | `ManagedNerNet` |
+| pos | `IPosNet.Forward(sentences, wordIds, pretrainIds, charlms, cacheKeys, ct)` → `PosOutput` (UPOS scores, UPOS/XPOS/feats ids) | `PosNet` | `ManagedPosNet` |
 
 - **Shared:** everything around the network stays in the processor and serves both backends. That covers paragraph
   splitting, features, sorting, batching, the 1000-character windows, padding, the argmax, `FixLabels`, decoding,
@@ -182,12 +185,55 @@ size would need it; none is ported.
 | mwt | Phase 1 | byte-identical | too short to compare | |
 | **ner** (`_charlm`) | yes | byte-identical tags and entities; emissions 1.1e-5 from Python (TorchSharp 3.7e-6) | **24.01 → 6.46 s (0.27)** | **55.40 → 26.39 s (0.48)** |
 | **ner** (`_nocharlm`, default_fast) | yes | byte-identical; emissions 1.05e-5 from Python | **1.70 → 0.56 s (0.33)** | **2.42 → 1.43 s (0.59)** |
-| pos, depparse, sentiment, lemma, constituency | no | | | |
+| **pos** (`_charlm`) | yes | byte-identical; UPOS logits 6.1e-5 from Python (TorchSharp 5.3e-5; Scalar path 6.9e-5) | pos stage **11.51 → 5.72 s (0.50)** | **32.07 → 23.83 s (0.74)** |
+| **pos** (`_nocharlm`, default_fast) | yes | byte-identical; UPOS logits 3.1e-5 from Python | | |
+| depparse, sentiment, lemma, constituency | no | | | |
 
 Speed: `StanzaSharp.Benchmark --processors tokenize,ner --backend torch|managed --threads N --runs 3` (so NER computes every
 charlm itself; no tagger, no cache), 8 copies (24,840 words), medians, Ryzen 7 5800X, idle machine. In the full
 8-processor pipeline (8 threads) the ner stage goes from 14.3 to 3.7 s and the run from 58.7 to 46.7 s; there NER
 reads the tagger's cached charlm outputs for sentences without MWTs.
+
+### pos
+
+- **Seam:** `IPosNet.Forward(sentences, wordIds, pretrainIds, charlms, cacheKeys, ct)` → `PosOutput`: per word (sentences in
+  order) the UPOS scores and the UPOS, XPOS and each feat's ids. The heads' argmaxes are in the net (XPOS and feats
+  read the argmax UPOS's embedding); `PosTagger` keeps simplify_punct, the vocab lookups, batching (250 sentences /
+  5000 words), the cache keys (only sentences simplify_punct left unchanged) and the id → string decoding.
+  `PosTagger.Load` builds `PosNet` (today's code); `PosTagger.LoadManaged` builds `ManagedPosNet`.
+- **Managed net:** input rows built at their packed positions (word embedding, `trans_pretrained` GEMM over the pretrain
+  vectors, the charlm columns or `ManagedCharacterModel` + `trans_char`), `ManagedHighwayLstm`, then one GEMM for
+  `upos_hid`, `tag_hid.xpos` and `tag_hid.feats` (they all read the LSTM output).
+  - **Biaffine heads per UPOS:** `Bilinear(x, upos_emb[u])` is linear in x for each of the 21 UPOS values, so at load
+    each scorer is contracted (in double) with every UPOS embedding: XPOS becomes one [21·53, 400] linear layer and the
+    21 feats one [21·149, 100] layer. A row reads the block of its argmax UPOS. That is 0.45M + 0.31M multiply-adds per
+    word against TorchSharp's 1.08M + 0.77M bilinear ones.
+  - **`upos_clf` in double:** the UPOS logits reach |150|, and the GEMM's 400-term float sums put them up to 1.07e-4
+    from Stanza's on the Scalar path (9.2e-5 on the SIMD paths), over the 1e-4 tolerance. Measured: computing the whole
+    UPOS MLP in double gives the same result as only `upos_clf` in double (21 outputs per word), so only that runs in
+    double: 3.1e-5 to 6.9e-5 from Stanza's. Its cost is below the run-to-run noise (pos stage 24.86 / 5.63 s in float
+    vs 23.83 / 5.72 s at 1 / 8 threads).
+- **Cache producer:** with the charlms, the managed tagger hands the cache `[words, 1024]` float arrays
+  (`TryAdd(sentence, float[], float[], words)`), copied out of its pooled buffers only if the cache has room
+  (`CharlmCache.HasRoom`). Managed NER reads them as they are; constituency and sentiment (TorchSharp) read them as
+  tensors, converted once per entry. Measured against the TorchSharp tagger's entries: 6.0e-6 (charlm drift).
+- **Mixed pipelines are byte-identical:** the default pipeline on `Backend.Managed` (tokenize, mwt, pos, ner managed;
+  lemma, constituency, depparse, sentiment TorchSharp) reproduces `pipeline.conllu` and every validation file, also with
+  the cache off and capped at 10 words (`CharlmCacheSettings_DoNotChangeOutput`), and the all-eight check against each
+  golden folder (`Process_AllEightProcessorsMatchEachGoldenFolder`).
+- **Tests on both backends:** `PosTests` (UPOS logits at 1e-4, golden tags), `LemmaTests` and `DepparseTests` pipelines
+  (their inputs are the tags), `InputModeTests.Pretokenized_MatchesGolden` (both packages), the cache settings and
+  all-eight tests above, and a managed case of `Canceled_InsideEachProcessor_ThrowsPromptly…`.
+  `FastPackageTests.ManagedIntermediates_MatchGolden` covers the nocharlm logits. `ManagedBackendTests`:
+  `PosNet_ManagedMatchesTorchSharp` (both checkpoints, a simplify_punct sentence, the cache entries) and
+  `PosUposLogits_MatchGoldenOnEveryPath` (both checkpoints at 1e-4 on every kernel path).
+- **Cancellation:** as before: after each charlm pass (or the character model), inside the highway LSTM (per GEMM
+  block and time step) and before the heads (and between XPOS and feats).
+- **Speed** (`--processors tokenize,mwt,pos`, 8 copies, 26,264 words, medians of 3, idle Ryzen 7 5800X): pos stage
+  11.51 → 5.72 s at 8 threads, 32.07 → 23.83 s at 1 thread. Full 8-processor run at 8 threads: 59.88 → 40.88 s (pos
+  11.79 → 5.71, ner 14.43 → 3.35; the rest unchanged); peak working set 3,021 → 3,144 MB (the managed charlms' input
+  tables, and cache entries that hold both forms once converted). `--memory 6000` (one Process call): peak 4,327 →
+  4,082 MB, 25.1 → 21.5 s.
 
 ### ner
 
@@ -233,21 +279,22 @@ by one, producer and readers can sit on different backends.
 
 ## Phase 2: what next
 
-1. **pos**: charlm, highway and `ManagedCharacterModel` with attention (ready), plus the UPOS MLP and the XPOS/feats
-   `Biaffine` heads. It becomes the cache's first managed producer (`TryAdd` with arrays), so constituency and
-   sentiment then read converted entries until they are ported. UPOS logits will need the accepted 1e-3 tolerance
-   (1.4e-4 in the spike).
-2. **depparse**: the same blocks plus `DeepBiaffine` and the distance/linearization terms. Chu-Liu/Edmonds is already
+1. **depparse**: the same blocks plus `DeepBiaffine` and the distance/linearization terms. Chu-Liu/Edmonds is already
    plain C#. Risk: the padded log-softmax makes heads depend on the batch, so batches must stay identical (they do,
-   since batching is shared).
-3. **sentiment**: an unpacked padded biLSTM (a `ManagedLstm` mode with lengths = width), Conv2d as GEMMs over
+   since batching is shared). The arc/label log-probs are tested at 1e-4 on both backends; like `upos_clf`, the
+   last scorers may need double sums to stay inside it.
+2. **sentiment**: an unpacked padded biLSTM (a `ManagedLstm` mode with lengths = width), Conv2d as GEMMs over
    overlapping rows, max-pool, MLP. Risk: near-ties (173 of 886 labels already flip with batching in Stanza).
-4. **lemma**: LSTMCell decoder, dot attention, copy gate, greedy argmax over tiny batches. Risk: near-ties per
+3. **lemma**: LSTMCell decoder, dot attention, copy gate, greedy argmax over tiny batches. Risk: near-ties per
    character.
-5. **constituency**: the most code; per-step stack LSTMs (50 states in flight) and a transition argmax over thousands
+4. **constituency**: the most code; per-step stack LSTMs (50 states in flight) and a transition argmax over thousands
    of steps. The highest near-tie risk.
 
 Cross-cutting:
+
+- **Tolerances** (owner, 2026-10-08): the managed backend uses TorchSharp's score tolerances (1e-4 where TorchSharp
+  has 1e-4), not 1e-3. Where it misses, the drift's source gets a cheap fix (e.g. double sums, as in `upos_clf`) or
+  goes to the owner with measured options.
 
 - **Shared models:** the factory of the Cuda split has to build `Pretrain` and the charlms per backend. `Pretrain` is
   still a TorchSharp tensor that managed processors read in place; a libtorch-free managed pipeline (0.5) needs it
@@ -256,4 +303,6 @@ Cross-cutting:
   memory-bound on the 16 MB recurrent weights. Running the charlms over bigger groups would be faster but changes the
   last float bits; left as is.
 - **CI time:** the both-backend theories rerun the full pipeline on the golden files; the full local suite takes
-  32–36 minutes on 8 cores (223 tests with the converted models or the `.pt` files, none skipped).
+  29–34 minutes on 8 cores (238 tests with the converted models or the `.pt` files, none skipped; Release build).
+  `ConcurrencyTests` now runs alone after the parallel collections: beside the heavier both-backend theories its
+  cancellation test failed every full run (the timed run was slower than the canceled ones).

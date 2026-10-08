@@ -4,8 +4,17 @@ using TorchSharp;
 namespace StanzaSharp.Tests;
 
 /// <summary>Concurrent <see cref="Pipeline.Process(string)"/> calls on one pipeline, and cancellation.</summary>
+/// <remarks>
+/// Runs alone (after the parallel collections): the cancellation test times each processor once and then cancels at
+/// half that time, so heavy tests running beside it (the both-backend golden theories) made the timed run several
+/// times slower than the canceled ones, and every attempt finished before its cancel ("lemma: every call finished
+/// before it was canceled", in 3 of 3 full runs).
+/// </remarks>
+[Collection(Name)]
 public class ConcurrencyTests(Xunit.Abstractions.ITestOutputHelper output)
 {
+    public const string Name = "Concurrency and cancellation";
+
     private static readonly string[] Texts =
         [.. new[] { "corpus.txt" }.Concat(Directory.GetFiles(Repo.Golden, "validation*.txt").Select(Path.GetFileName).Order())
             .Select(f => File.ReadAllText(Path.Combine(Repo.Golden, f!)))];
@@ -59,12 +68,13 @@ public class ConcurrencyTests(Xunit.Abstractions.ITestOutputHelper output)
     /// after it must add exactly what an uncanceled call adds, and one stopped inside it is not counted.
     /// </summary>
     [ModelTheory]
-    [InlineData(null)]
-    [InlineData("tokenize,mwt,pos,constituency,sentiment,ner")]
-    public void Canceled_InsideEachProcessor_ThrowsPromptly_AndThePipelineStillWorks(string? processors)
+    [InlineData(null, false)]
+    [InlineData("tokenize,mwt,pos,constituency,sentiment,ner", false)]
+    [InlineData(null, true)]
+    public void Canceled_InsideEachProcessor_ThrowsPromptly_AndThePipelineStillWorks(string? processors, bool managed)
     {
         var timings = new TimingLogger();
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = processors, Logger = timings });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = processors, Logger = timings, Backend = Repo.Backend(managed) });
         var corpus = File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt"));
         var stats = DisposeScopeManager.Statistics; // per thread, and Process runs on this one
         long live = stats.ThreadTotalLiveCount;
@@ -157,3 +167,7 @@ public class ConcurrencyTests(Xunit.Abstractions.ITestOutputHelper output)
         }
     }
 }
+
+/// <summary><see cref="ConcurrencyTests"/> runs alone; see its remarks.</summary>
+[CollectionDefinition(ConcurrencyTests.Name, DisableParallelization = true)]
+public sealed class ConcurrencyCollection;

@@ -141,10 +141,12 @@ public class DepparseTests
         Assert.True(failures.Count == 0, string.Join("\n\n", failures));
     }
 
-    [ModelFact]
-    public void Pipeline_ReproducesGoldenFilesFromText()
+    [ModelTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Pipeline_ReproducesGoldenFilesFromText(bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos,lemma,depparse" });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos,lemma,depparse", Backend = Repo.Backend(managed) });
         var failures = new List<string>();
         var files = Directory.GetFiles(Golden, "*.conllu").Order().ToList();
         Assert.Equal(13, files.Count);
