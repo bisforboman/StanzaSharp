@@ -526,7 +526,7 @@ public class ManagedBackendTests(ITestOutputHelper output)
     /// The log-probs are reported, not asserted: no tolerance exists for them yet (TorchSharp's lemmatizer is tested on
     /// its discrete output only), and 1e-4 is out of reach for both backends. On words.json, against Stanza run in float64,
     /// Stanza's own float32 is 2.9e-4 off, TorchSharp 2.7e-4 and the managed net 3.8e-4 (near the top: 1.6e-4, 1.4e-4,
-    /// 1.3e-4); the decoder recurrence amplifies float noise. The owner decides (docs/backends.md, lemma).
+    /// 1.3e-4); the decoder recurrence amplifies float noise. Owner's decision (2026-10-08): exact output plus the reported margin.
     /// </remarks>
     [ModelTheory]
     [MemberData(nameof(Paths))]

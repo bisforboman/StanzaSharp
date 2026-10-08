@@ -664,7 +664,8 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     `finalC`), per step four GEMMs (cell `[x | h]` K = 250, linear_in, linear_out, dec2vocab + copy gate column), attention
     and copy mix per row in double. Lemmas byte-identical; smallest top-2 margin 5.6e-3. Its log-probs are 4.8e-4 from
     TorchSharp, which is itself 2.7e-4 from Stanza in float64 (Stanza f32: 2.9e-4): `LemmaNet_ManagedMatchesTorchSharp`
-    reports them without a tolerance until the owner decides (docs/backends.md, lemma).
+    reports them without a tolerance (owner's decision, 2026-10-08: lemma is tested on exact lemmas, decoding and edits, as
+    TorchSharp always was; no backend reaches 1e-4 on these log-probs, Stanza's float32 included).
   - `Pipeline.ManagedProcessors` (tokenize, mwt, pos, lemma, depparse, ner, sentiment) lists what `Backend.Managed` runs managed. The pipeline loads each
     backend's charlms only if a `_charlm` processor on that backend reads them (`ManagedCharLanguageModel`: +31 MB of
     input tables). Managed processors read the shared `Pretrain` through `CpuVectors()` (the CPU tensor's own memory).

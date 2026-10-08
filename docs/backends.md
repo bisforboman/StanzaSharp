@@ -193,7 +193,7 @@ size would need it; none is ported.
 | **depparse** (`_charlm`) | yes | byte-identical heads and deprels; arc / label log-probs 2.3e-5 / 3.4e-5 from Python (TorchSharp 1.1e-5 / 1.5e-5; Scalar path 2.3e-5 / 3.8e-5) | depparse stage **13.27 → 7.94 s (0.60)** | **42.52 → 36.99 s (0.87)** |
 | **depparse** (`_nocharlm`, default_fast) | yes | byte-identical; arc / label log-probs 1.1e-5 / 2.7e-5 from Python (every path ≤ 1.5e-5 / 3.1e-5) | **6.47 → 3.68 s (0.57)** | **19.85 → 17.33 s (0.87)** |
 | **sentiment** (`sstplus_charlm`, both packages) | yes | byte-identical labels; logits within 1e-4 of Python's float32 or float64 logits (8.2e-5; 1.38e-4 from float32 on one ill-conditioned sentence, see [sentiment](#sentiment)) (TorchSharp 2.1e-5) | sentiment stage **9.82 → 5.98 s (0.61)** | **33.65 → 26.29 s (0.78)** |
-| **lemma** (`combined_nocharlm`, both packages) | yes | byte-identical lemmas, decoding and edits; smallest top-2 margin 5.6e-3; log-probs 4.8e-4 from TorchSharp, reported, not asserted (owner decision, see [lemma](#lemma)) | lemma stage **0.89 → 0.32 s (0.36)** | **1.18 → 0.72 s (0.61)** |
+| **lemma** (`combined_nocharlm`, both packages) | yes | byte-identical lemmas, decoding and edits; smallest top-2 margin 5.6e-3; log-probs 4.8e-4 from TorchSharp, reported, not asserted (owner's decision, 2026-10-08; see [lemma](#lemma)) | lemma stage **0.89 → 0.32 s (0.36)** | **1.18 → 0.72 s (0.61)** |
 | constituency | no | | | |
 
 Speed: `StanzaSharp.Benchmark --processors tokenize,ner --backend torch|managed --threads N --runs 3` (so NER computes every
@@ -358,7 +358,7 @@ reads the tagger's cached charlm outputs for sentences without MWTs.
   decoding and edits on every path.
   - **Near-ties:** the smallest top-2 margin of a row still decoding is **5.6e-3** (either backend), about 12× the largest
     log-prob difference between the backends.
-  - **Log-probs (owner decision needed):** managed vs TorchSharp max |diff| 4.8e-4 (Vector256/Vector128; Scalar 4.3e-4),
+  - **Log-probs (owner's decision, 2026-10-08: exact lemmas, decoding and edits plus the reported margin; no score tolerance):** managed vs TorchSharp max |diff| 4.8e-4 (Vector256/Vector128; Scalar 4.3e-4),
     2.7e-4 among entries within 10 of the row's maximum. The test reports them without asserting a tolerance: none
     exists (TorchSharp's lemmatizer is tested on discrete output only), and 1e-4 is out of reach for TorchSharp too.
     Measured on `words.json` (one batch, 50 steps) against Stanza run in float64 (`model.double()`, same batch):
