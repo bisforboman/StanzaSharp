@@ -374,6 +374,25 @@ reads the tagger's cached charlm outputs for sentences without MWTs.
     TorchSharp (1.2e-4). The source is the decoder recurrence amplifying float noise in low-probability entries; in the
     managed net the LSTMCell gate sums dominate (double attention, `linear_out` or `dec2vocab` change nothing). Gates in
     double (scalar) cost 0.32 → 1.23 s for the lemma stage, so they are not used.
+  - **Measured on UD English EWT** (2026-10-08; `tools/lemma_divergence.py` + `StanzaSharp.Benchmark lemma-divergence`;
+    the corpus is CC BY-SA and not in the repository). EWT's train/dev/test `# text` lines, 1,174 documents (one Process
+    call each), 254,589 words, `tokenize,mwt,pos,lemma`, 8 threads, four runs: Stanza 1.15.0 (each batch also in float64),
+    TorchSharp, managed, managed with the LSTMCell gate sums in double (`ManagedLemmaNet.DoubleGates`, study only).
+    - Tokens and tags are identical in all four except 2 documents (127 words, excluded): Stanza replaces tokens longer
+      than the tokenizer's `max_seqlen` (200 in its config) with `<UNK>`, our tokenizer only those over 1000, so two
+      long URLs stay whole here and their tags differ. A tokenizer difference, not a lemma one.
+    - The dictionary covers EWT well (it is in the lemmatizer's training data): only 3,659 words (32,198 decoder steps) go
+      through the seq2seq model. So a second pass sends **every** word through it (`--no-dict`): 254,462 words, 1,248,359
+      decoder steps.
+    - **No lemma differs** between any two of the five (the four runs and Stanza float64), in either pass, nor in
+      `default_fast` (whose tags differ, so its lemmas are another test). Decoded strings and edit classes are identical too.
+    - Top-2 margins over all 1.25M steps: 21 below 1e-2, 13 below 5e-3, 1 below 1e-3 (`gant`, 9.06e-4), none below 5e-4;
+      the same counts on every backend. Edit classes: 2 below 1e-3 (min 7.6e-4, `Scientific`). A decision's margin moves
+      by at most (vs Stanza float64): Stanza float32 1.5e-4, TorchSharp 4.9e-4, managed 1.2e-4, double gates 9.2e-5;
+      the closest call is about 7× the managed net's largest error.
+    - Cost of double gates, parallel over gate rows (the scalar loop above costs 16×): lemma stage 1.13 → 2.78 s on all
+      of EWT (77 s for `tokenize,mwt,pos,lemma`), 36 → 114 s with every word through the model. Not worth it: it moves
+      the managed margins from 1.2e-4 to 9.2e-5 of float64 and changes no output.
 - **Speed** (`--processors tokenize,mwt,pos,lemma`, 8 copies, 26,264 words, medians of 3, idle Ryzen 7 5800X): lemma stage
   **0.89 → 0.32 s** at 8 threads, **1.18 → 0.72 s** at 1 thread. TorchSharp runs ~40 small ops per decoder step; the managed
   step is four small GEMMs and per-row loops. Full 8-processor run at 8 threads: 53.89 → **29.71 s** (lemma 0.84 → 0.34;
