@@ -604,8 +604,12 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - GPU stays, as a separate opt-in package `StanzaSharp.Cuda` carrying the TorchSharp backend (and
     `Device`/`DisableTf32`). So the backend seam (Phase 1) is permanent with two implementations, managed and
     TorchSharp; the TorchSharp one is also the CPU test reference.
-  - Accepted: score tolerances 1e-4 → 1e-3 with discrete outputs byte-identical; a slower Arm64 path at first; up to
-    ~15% slower at 1 thread.
+  - Tolerances (revised 2026-10-08): the managed backend uses the **same score tolerances as TorchSharp** (1e-4 where
+    tests use 1e-4; 1e-3 only where TorchSharp already has it, e.g. sentiment with the cache), and discrete outputs are
+    byte-identical. A managed comparison that misses 1e-4: find the drift's source, try cheap fixes (higher-precision
+    accumulation, reduction order) and measure their cost; if none is cheap, report the drift, source and options with
+    costs to the owner. Never a managed-only tolerance, never a skipped test.
+  - Accepted: a slower Arm64 path at first; up to ~15% slower at 1 thread.
   - 0.5: managed backend the default, TorchSharp still selectable. 1.0: TorchSharp leaves the main package (not the
     project).
   - Public backend option (2026-10-08): **A**. `PipelineOptions.Backend` takes a sealed public `PipelineBackend` class whose
@@ -617,9 +621,9 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
       other torch function) unless TorchSharp is used.
     - 1.0: `Device`, `DisableTf32` and `PipelineBackend.TorchSharp` leave the main package.
     - Not implemented yet (it ships with 0.5); until then the internal `PipelineOptions.Backend` (`Nn.Backend`) switch stays.
-- **Status:** Phase 0 (kernels) and Phase 1 (seam; tokenize and mwt ported) are done; Phase 2 has ported ner and made
-  `CharlmCache` backend-neutral. `docs/backends.md` has the design, the Cuda split plan, exactness, speed and the Phase 2
-  progress table. Next: pos, depparse, sentiment, lemma, constituency (in that order).
+- **Status:** Phase 0 (kernels) and Phase 1 (seam; tokenize and mwt ported) are done; Phase 2 has ported ner and pos and
+  made `CharlmCache` backend-neutral. `docs/backends.md` has the design, the Cuda split plan, exactness, speed and the
+  Phase 2 progress table. Next: depparse, sentiment, lemma, constituency (in that order).
 - **Seam** (all internal): per processor network, arrays in and out: `ITokenizerNet` (`TokenizerNet` / `ManagedTokenizerNet`),
   `IMwtNet` (`MwtNet` / `ManagedMwtNet`). Batching, windows, argmax and decoding stay in the processor, shared, so both
   backends see the same batches. `Nn.Backend` { TorchSharp (default), Managed }; internal `PipelineOptions.Backend` →
@@ -632,13 +636,20 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - `INerNet` (`NerNet` / `ManagedNerNet`): ids, Viterbi, `fix_singleton_tags` and entities stay in `NerTagger`.
     `NerTagger.Load` (TorchSharp) / `LoadManaged` (managed charlms, or none for `_nocharlm`). The managed net builds each
     token's input row at its packed position, so input_transform, the biLSTM and the tag layer never see padding.
-  - `Pipeline.ManagedProcessors` (tokenize, mwt, ner) lists what `Backend.Managed` runs managed. The pipeline loads each
+  - `IPosNet` (`PosNet` / `ManagedPosNet`) → `PosOutput` (UPOS scores; UPOS, XPOS, feats ids; the argmaxes are in the net
+    since XPOS/feats read the argmax UPOS). simplify_punct, vocab lookups, batching, cache keys and decoding stay in
+    `PosTagger`; `Load` / `LoadManaged`. The managed XPOS/feats biaffines are contracted with each of the 21 UPOS
+    embeddings at load (one linear layer per scorer, all UPOS stacked). `upos_clf` sums in double: in float its
+    400-term sums of logits up to |150| drifted 1.07e-4 from Stanza (Scalar path); in double ≤ 6.9e-5, at no
+    measurable cost. Large-magnitude scores in later ports (depparse) may need the same.
+  - `Pipeline.ManagedProcessors` (tokenize, mwt, pos, ner) lists what `Backend.Managed` runs managed. The pipeline loads each
     backend's charlms only if a `_charlm` processor on that backend reads them (`ManagedCharLanguageModel`: +31 MB of
     input tables). Managed processors read the shared `Pretrain` through `CpuVectors()` (the CPU tensor's own memory).
   - `CharlmCache` is backend-neutral: an entry holds its producer's form (tensors, or `[words, dim]` float arrays via the
     float `TryAdd`). `TryGet` gives tensors (a float entry is converted once, on the cache's device, and kept);
     `TryGetArrays` gives arrays (a tensor entry is copied per read). Same-backend pipelines never convert, so the default
-    path is unchanged.
+    path is unchanged. With pos managed, the tagger adds arrays (only when `HasRoom`), managed NER reads them as they are
+    and constituency/sentiment (TorchSharp) as converted tensors; such an entry then holds both forms.
 - **Code:** `src/StanzaSharp.Nn/Managed/` (`Gemm.cs`: `KernelPath`, `PackedMatrix`, `Gemm`, `Act`;
   `ManagedThreads.cs`; `PackedLstm.cs`; `ManagedModels.cs`: charlm, highway biLSTM, `ManagedLstm` = `nn.LSTM` over a
   padded batch like `Rnn.RunPacked` (`ForwardPadded`) or over packed rows (`ForwardPacked`), optional `h_init`/`c_init`,
