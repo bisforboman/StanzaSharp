@@ -406,6 +406,77 @@ public class ManagedBackendTests(ITestOutputHelper output)
     }
 
     /// <summary>
+    /// The parser's network, both backends and both checkpoints, on one padded batch of golden sentences (Stanza's tags and
+    /// lemmas; lengths 4 to 40, plus one with a word simplify_punct changes): arc log-probs of every real row against
+    /// every column (padding included) and label scores of every real pair at 1e-4, identical parses.
+    /// </summary>
+    [ModelTheory]
+    [MemberData(nameof(Paths))]
+    public void DepparseNet_ManagedMatchesTorchSharp(string path)
+    {
+        using var pretrain = Pretrain.Load(Repo.Model("pretrain/conll17"));
+        using var forward = CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
+        using var backward = CharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
+        var managedForward = ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
+        var managedBackward = ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
+        var doc = Conllu.Read(File.ReadAllText(Path.Combine(Repo.Golden, "depparse", "corpus.conllu")));
+        var batch = doc.Sentences.Select(s => (IReadOnlyList<Word>)s.Words.ToList()).Where(s => s.Count <= 40)
+            .DistinctBy(s => s.Count / 4).OrderByDescending(s => s.Count).ToList();
+        batch.Add([new Word { Text = "Really", Upos = "ADV", Xpos = "RB", Lemma = "really" }, new Word { Text = "?!", Upos = "PUNCT", Xpos = ".", Lemma = "?!" }]);
+        foreach (var name in new[] { "depparse/combined_charlm", "depparse/combined_nocharlm" })
+        {
+            bool charlm = name.EndsWith("_charlm");
+            using var reference = Depparse.DependencyParser.Load(Repo.Model(name), pretrain, charlm ? forward : null, charlm ? backward : null);
+            using var managed = Depparse.DependencyParser.LoadManaged(Repo.Model(name), pretrain, charlm ? managedForward : null, charlm ? managedBackward : null);
+            var expected = reference.Scores(batch, labelScores: true);
+            var (actual, parses) = With(path, 4, () => (managed.Scores(batch, labelScores: true), managed.Parse(batch)));
+            int width = expected.Width, relations = expected.Relations;
+            Assert.Equal(width, actual.Width);
+            float arcs = 0, labels = 0;
+            for (int b = 0; b < batch.Count; b++)
+            {
+                int n = batch[b].Count + 1;
+                var rows = Enumerable.Range((b * width) * width, n * width).ToArray();
+                Assert.Equal(rows.Select(k => float.IsNegativeInfinity(expected.ArcLogProbs[k])), rows.Select(k => float.IsNegativeInfinity(actual.ArcLogProbs[k])));
+                float[] Finite(float[] a) => rows.Select(k => float.IsNegativeInfinity(a[k]) ? 0 : a[k]).ToArray();
+                arcs = Math.Max(arcs, TokenizerTests.AssertClose(Finite(expected.ArcLogProbs), Finite(actual.ArcLogProbs), 1e-4f, $"{path} {name} s{b} arcs"));
+                var pairs = Enumerable.Range(0, n).SelectMany(i => Enumerable.Range(((b * width + i) * width) * relations, n * relations)).ToArray();
+                labels = Math.Max(labels, TokenizerTests.AssertClose(pairs.Select(k => expected.LabelScores![k]).ToArray(),
+                    pairs.Select(k => actual.LabelScores![k]).ToArray(), 1e-4f, $"{path} {name} s{b} labels"));
+            }
+            var expectedParses = reference.Parse(batch);
+            for (int b = 0; b < batch.Count; b++)
+                Assert.Equal(expectedParses[b], parses[b]);
+            output.WriteLine($"{path} {name}: {batch.Count} sentences, width {width}: arc log-probs max |diff| {arcs:E2}, label scores {labels:E2}");
+        }
+    }
+
+    /// <summary>The managed parser's arc and label log-probs against Python Stanza's (both packages' golden intermediates) on every path, at TorchSharp's 1e-4.</summary>
+    [ModelTheory]
+    [MemberData(nameof(Paths))]
+    public void DepparseScores_MatchGoldenOnEveryPath(string path)
+    {
+        using var pretrain = Pretrain.Load(Repo.Model("pretrain/conll17"));
+        var managedForward = ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
+        var managedBackward = ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
+        foreach (var (name, golden, prefix) in new[] { ("depparse/combined_charlm", Path.Combine(Repo.Golden, "depparse"), ""), ("depparse/combined_nocharlm", Path.Combine(Repo.Golden, "fast"), "depparse.") })
+        {
+            bool charlm = name.EndsWith("_charlm");
+            using var parser = Depparse.DependencyParser.LoadManaged(Repo.Model(name), pretrain, charlm ? managedForward : null, charlm ? managedBackward : null);
+            var tensors = SafeTensorFile.Load(Path.Combine(golden, "intermediates.safetensors"));
+            var doc = Conllu.Read(File.ReadAllText(Path.Combine(golden, "corpus.conllu")));
+            float arcs = 0, labels = 0;
+            for (int i = 0; i < 3; i++)
+            {
+                var scores = With(path, 4, () => parser.Scores([doc.Sentences[i].Words.ToList()], labelScores: true));
+                var (a, l) = DepparseTests.AssertScoresMatch(scores, tensors.Read<float>($"s{i}.{prefix}unlabeled"), tensors.Read<float>($"s{i}.{prefix}deprel"), $"{path} {name} s{i}");
+                (arcs, labels) = (Math.Max(arcs, a), Math.Max(labels, l));
+            }
+            output.WriteLine($"{path} {name}: arc log-probs max |diff| vs Python {arcs:E2}, label log-probs {labels:E2}");
+        }
+    }
+
+    /// <summary>
     /// Times managed vs TorchSharp for both charlms and the tagger's highway biLSTM on a modest input, on every path
     /// this machine runs natively, so CI logs show each OS and architecture (Arm64 included). Never fails on speed.
     /// </summary>
