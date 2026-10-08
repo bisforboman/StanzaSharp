@@ -1,0 +1,70 @@
+# text = The study cited https://example.com/abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghij as its source.
+# sent_id = 0
+# sentiment = 1
+1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=0|end_char=3|ner=O
+2	study	study	NOUN	NN	Number=Sing	3	nsubj	_	start_char=4|end_char=9|ner=O
+3	cited	cite	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=10|end_char=15|ner=O
+4	<UNK>	<unk>	NOUN	NN	Number=Sing	3	obj	_	start_char=16|end_char=316|ner=S-ORG
+5	as	as	ADP	IN	_	7	case	_	start_char=317|end_char=319|ner=O
+6	its	its	PRON	PRP$	Case=Gen|Gender=Neut|Number=Sing|Person=3|Poss=Yes|PronType=Prs	7	nmod:poss	_	start_char=320|end_char=323|ner=O
+7	source	source	NOUN	NN	Number=Sing	3	obl	_	SpaceAfter=No|start_char=324|end_char=330|ner=O
+8	.	.	PUNCT	.	_	3	punct	_	start_char=330|end_char=331|ner=O
+
+# text = It was later removed.
+# sent_id = 1
+# sentiment = 1
+1	It	it	PRON	PRP	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	4	nsubj:pass	_	start_char=332|end_char=334|ner=O
+2	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	4	aux:pass	_	start_char=335|end_char=338|ner=O
+3	later	late	ADV	RBR	Degree=Cmp	4	advmod	_	start_char=339|end_char=344|ner=O
+4	removed	remove	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	SpaceAfter=No|start_char=345|end_char=352|ner=O
+5	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=352|end_char=353|ner=O
+
+# text = Exactly https://example.com/abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghi and https://example.com/abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghij and https://example.com/abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghija were tested.
+# sent_id = 2
+# sentiment = 1
+1	Exactly	exactly	ADV	RB	_	2	advmod	_	start_char=355|end_char=362|ner=O
+2	https://example.com/abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghi	https://example.com/abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghi	PROPN	NNP	Number=Sing	0	root	_	start_char=363|end_char=562|ner=O
+3	and	and	CCONJ	CC	_	4	cc	_	start_char=563|end_char=566|ner=O
+4	https://example.com/abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghij	https://example.com/abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghij	PROPN	NNP	Number=Sing	2	conj	_	start_char=567|end_char=767|ner=O
+5	and	and	CCONJ	CC	_	8	cc	_	start_char=768|end_char=771|ner=O
+6	<UNK>	<UNK>	PROPN	NNP	Number=Sing	8	nsubj:pass	_	start_char=772|end_char=973|ner=O
+7	were	be	AUX	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	8	aux:pass	_	start_char=974|end_char=978|ner=O
+8	tested	test	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	2	conj	_	SpaceAfter=No|start_char=979|end_char=985|ner=O
+9	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=985|end_char=986|ner=O
+
+# text = A long word: pneumonopneumonopneumonopneumonopneumonopneumonopneumonopneumonopneumonopneumonopneumonopneumonopneumonopneumonopneumonopneumonopneumonopneumonopneumonopneumonopneumonopneumonopneumonopneumonopneumonopneumonopneumonopneumonopneumonopneumono is not a URL.
+# sent_id = 3
+# sentiment = 0
+1	A	a	DET	DT	Definite=Ind|PronType=Art	3	det	_	start_char=988|end_char=989|ner=O
+2	long	long	ADJ	JJ	Degree=Pos	3	amod	_	start_char=990|end_char=994|ner=O
+3	word	word	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=995|end_char=999|ner=O
+4	:	:	PUNCT	:	_	9	punct	_	start_char=999|end_char=1000|ner=O
+5	<UNK>	<unk>	NOUN	NN	Number=Sing	9	nsubj	_	start_char=1001|end_char=1241|ner=O
+6	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	9	cop	_	start_char=1242|end_char=1244|ner=O
+7	not	not	PART	RB	Polarity=Neg	9	advmod	_	start_char=1245|end_char=1248|ner=O
+8	a	a	DET	DT	Definite=Ind|PronType=Art	9	det	_	start_char=1249|end_char=1250|ner=O
+9	URL	url	NOUN	NN	Number=Sing	3	appos	_	SpaceAfter=No|start_char=1251|end_char=1254|ner=O
+10	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=1254|end_char=1255|ner=O
+
+# text = The longest one, https://example.com/abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghij , ends here.
+# sent_id = 4
+# sentiment = 1
+1	The	the	DET	DT	Definite=Def|PronType=Art	3	det	_	start_char=1257|end_char=1260|ner=O
+2	longest	long	ADJ	JJS	Degree=Sup	3	amod	_	start_char=1261|end_char=1268|ner=O
+3	one	one	NOUN	NN	Number=Sing	7	nsubj	_	SpaceAfter=No|start_char=1269|end_char=1272|ner=O
+4	,	,	PUNCT	,	_	3	punct	_	start_char=1272|end_char=1273|ner=O
+5	<UNK>	<unk>	INTJ	UH	_	7	discourse	_	start_char=1274|end_char=2474|ner=O
+6	,	,	PUNCT	,	_	5	punct	_	start_char=2475|end_char=2476|ner=O
+7	ends	end	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2477|end_char=2481|ner=O
+8	here	here	ADV	RB	PronType=Dem	7	advmod	_	SpaceAfter=No|start_char=2482|end_char=2486|ner=O
+9	.	.	PUNCT	.	_	7	punct	_	SpacesAfter=\n\n|start_char=2486|end_char=2487|ner=O
+
+# text = Short sentence after them all.
+# sent_id = 5
+# sentiment = 1
+1	Short	short	ADJ	JJ	Degree=Pos	2	amod	_	start_char=2489|end_char=2494|ner=O
+2	sentence	sentence	NOUN	NN	Number=Sing	0	root	_	start_char=2495|end_char=2503|ner=O
+3	after	after	ADP	IN	_	4	case	_	start_char=2504|end_char=2509|ner=O
+4	them	they	PRON	PRP	Case=Acc|Number=Plur|Person=3|PronType=Prs	2	nmod	_	start_char=2510|end_char=2514|ner=O
+5	all	all	DET	DT	PronType=Tot	4	nmod:unmarked	_	SpaceAfter=No|start_char=2515|end_char=2518|ner=O
+6	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n|start_char=2518|end_char=2519|ner=O
