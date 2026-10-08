@@ -172,17 +172,19 @@ using var pretrain = Pretrain.Load(Path.Combine(modelDir, Pipeline.PretrainPath)
 using var charlmForward = shared.Contains(Pipeline.ForwardCharlmPath) ? CharLanguageModel.Load(Path.Combine(modelDir, Pipeline.ForwardCharlmPath), device) : null;
 using var charlmBackward = shared.Contains(Pipeline.BackwardCharlmPath) ? CharLanguageModel.Load(Path.Combine(modelDir, Pipeline.BackwardCharlmPath), device) : null;
 using var lemma = Lemmatizer.Load(Model("lemma"), device);
-using var depparse = DependencyParser.Load(Model("depparse"), pretrain, charlmForward, charlmBackward, device);
 using var parser = models.ContainsKey("constituency") ? ConstituencyParser.Load(Model("constituency"), pretrain, charlmForward!, charlmBackward!, device) : null;
 using var sentiment = SentimentClassifier.Load(Model("sentiment"), pretrain, charlmForward!, charlmBackward!, device);
 // As Pipeline does: managed processors get the managed charlms (their _nocharlm models none).
 bool Managed(string processor) => backend == Backend.Managed && Pipeline.ManagedProcessors.Contains(processor);
 bool ManagedCharlm(string processor) => Managed(processor) && models[processor].EndsWith("_charlm");
-var managedForward = ManagedCharlm("pos") || ManagedCharlm("ner") ? ManagedCharLanguageModel.Load(Path.Combine(modelDir, Pipeline.ForwardCharlmPath)) : null;
+var managedForward = ManagedCharlm("pos") || ManagedCharlm("depparse") || ManagedCharlm("ner") ? ManagedCharLanguageModel.Load(Path.Combine(modelDir, Pipeline.ForwardCharlmPath)) : null;
 var managedBackward = managedForward != null ? ManagedCharLanguageModel.Load(Path.Combine(modelDir, Pipeline.BackwardCharlmPath)) : null;
 using var pos = Managed("pos")
     ? PosTagger.LoadManaged(Model("pos"), pretrain, ManagedCharlm("pos") ? managedForward : null, ManagedCharlm("pos") ? managedBackward : null)
     : PosTagger.Load(Model("pos"), pretrain, charlmForward, charlmBackward, device);
+using var depparse = Managed("depparse")
+    ? DependencyParser.LoadManaged(Model("depparse"), pretrain, ManagedCharlm("depparse") ? managedForward : null, ManagedCharlm("depparse") ? managedBackward : null)
+    : DependencyParser.Load(Model("depparse"), pretrain, charlmForward, charlmBackward, device);
 using var ner = Managed("ner")
     ? NerTagger.LoadManaged(Model("ner"), pretrain, ManagedCharlm("ner") ? managedForward : null, ManagedCharlm("ner") ? managedBackward : null)
     : NerTagger.Load(Model("ner"), pretrain, charlmForward, charlmBackward, device);

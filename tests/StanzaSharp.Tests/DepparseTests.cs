@@ -1,30 +1,70 @@
 using System.Text.Json.Nodes;
 using StanzaSharp.Depparse;
 using StanzaSharp.Nn;
-using static TorchSharp.torch;
+using StanzaSharp.Nn.Managed;
+using Xunit.Abstractions;
 
 namespace StanzaSharp.Tests;
 
-public class DepparseTests
+public class DepparseTests(ITestOutputHelper output)
 {
     private static readonly string Golden = Path.Combine(Repo.Golden, "depparse");
 
     private sealed class Models : IDisposable
     {
         public readonly Pretrain Pretrain = Pretrain.Load(Repo.Model("pretrain/conll17"));
-        public readonly CharLanguageModel Forward = CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
-        public readonly CharLanguageModel Backward = CharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
+        public readonly CharLanguageModel? Forward, Backward;
         public readonly DependencyParser Parser;
 
-        public Models() => Parser = DependencyParser.Load(Repo.Model("depparse/combined_charlm"), Pretrain, Forward, Backward);
+        public Models(bool managed = false)
+        {
+            if (managed)
+            {
+                Parser = DependencyParser.LoadManaged(Repo.Model("depparse/combined_charlm"), Pretrain,
+                    ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion")), ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion")));
+                return;
+            }
+            Forward = CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
+            Backward = CharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
+            Parser = DependencyParser.Load(Repo.Model("depparse/combined_charlm"), Pretrain, Forward, Backward);
+        }
 
         public void Dispose()
         {
             Parser.Dispose();
-            Forward.Dispose();
-            Backward.Dispose();
+            Forward?.Dispose();
+            Backward?.Dispose();
             Pretrain.Dispose();
         }
+    }
+
+    /// <summary>
+    /// One sentence's scores against the golden intermediates at 1e-4 (arc log-probs, -inf where Stanza has it, and label
+    /// log-probs); returns the largest differences.
+    /// </summary>
+    internal static (float Arcs, float Labels) AssertScoresMatch(DepparseScores scores, float[] arcs, float[] labelLogProbs, string name)
+    {
+        Assert.Equal(arcs.Select(float.IsNegativeInfinity), scores.ArcLogProbs.Select(float.IsNegativeInfinity));
+        float arcDiff = TokenizerTests.AssertClose(arcs.Select(Finite).ToArray(), scores.ArcLogProbs.Select(Finite).ToArray(), 1e-4f, $"{name}.unlabeled");
+        return (arcDiff, TokenizerTests.AssertClose(labelLogProbs, LogSoftmax(scores.LabelScores!, scores.Relations), 1e-4f, $"{name}.deprel"));
+    }
+
+    /// <summary>log_softmax over each run of <paramref name="n"/> scores, in double.</summary>
+    private static float[] LogSoftmax(float[] scores, int n)
+    {
+        var result = new float[scores.Length];
+        for (int at = 0; at < scores.Length; at += n)
+        {
+            var row = scores.AsSpan(at, n);
+            double max = double.NegativeInfinity, sum = 0;
+            foreach (var x in row)
+                max = Math.Max(max, x);
+            foreach (var x in row)
+                sum += Math.Exp(x - max);
+            for (int i = 0; i < n; i++)
+                result[at + i] = (float)(row[i] - max - Math.Log(sum));
+        }
+        return result;
     }
 
     /// <summary>tools/make_golden.py mst_scores.</summary>
@@ -90,10 +130,12 @@ public class DepparseTests
         Assert.Equal([4, 5, 2, 0, 3], batches[2]);
     }
 
-    [ModelFact]
-    public void Scores_MatchGoldenIntermediates()
+    [ModelTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Scores_MatchGoldenIntermediates(bool managed)
     {
-        using var models = new Models();
+        using var models = new Models(managed);
         var golden = SafeTensorFile.Load(Path.Combine(Golden, "intermediates.safetensors"));
         var index = JsonNode.Parse(File.ReadAllText(Path.Combine(Golden, "intermediates.json")))!["sentences"]!.AsArray();
         var doc = Conllu.Read(File.ReadAllText(Path.Combine(Golden, "corpus.conllu")));
@@ -102,17 +144,9 @@ public class DepparseTests
         {
             var words = doc.Sentences[i].Words.ToList();
             Assert.Equal(index[i]!["words"]!.AsArray().Select(w => w!.GetValue<string>()), words.Select(w => w.Text));
-            var (unlabeled, deprel) = models.Parser.Scores([words]);
-            using (unlabeled)
-            using (deprel)
-            using (var labelLogProbs = nn.functional.log_softmax(deprel, 3))
-            {
-                var arcs = unlabeled.data<float>().ToArray();
-                var expected = golden.Read<float>($"s{i}.unlabeled");
-                Assert.Equal(expected.Select(float.IsNegativeInfinity), arcs.Select(float.IsNegativeInfinity));
-                TokenizerTests.AssertClose(expected.Select(Finite).ToArray(), arcs.Select(Finite).ToArray(), 1e-4f, $"s{i}.unlabeled");
-                TokenizerTests.AssertClose(golden.Read<float>($"s{i}.deprel"), labelLogProbs.data<float>().ToArray(), 1e-4f, $"s{i}.deprel");
-            }
+            var (arcs, labels) = AssertScoresMatch(models.Parser.Scores([words], labelScores: true),
+                golden.Read<float>($"s{i}.unlabeled"), golden.Read<float>($"s{i}.deprel"), $"s{i}");
+            output.WriteLine($"s{i}: arc log-probs max |diff| {arcs:E2}, label log-probs {labels:E2}");
             var parsed = models.Parser.Parse([words])[0];
             Assert.Equal(index[i]!["heads"]!.AsArray().Select(h => h!.GetValue<int>()), parsed.Select(p => p.Head));
             Assert.Equal(index[i]!["deprels"]!.AsArray().Select(d => d!.GetValue<string>()), parsed.Select(p => p.Deprel));
@@ -121,10 +155,12 @@ public class DepparseTests
 
     private static float Finite(float x) => float.IsNegativeInfinity(x) ? 0 : x;
 
-    [ModelFact]
-    public void Process_ReproducesGoldenHeadsAndDeprels()
+    [ModelTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Process_ReproducesGoldenHeadsAndDeprels(bool managed)
     {
-        using var models = new Models();
+        using var models = new Models(managed);
         var files = Directory.GetFiles(Golden, "*.conllu").Order().ToList();
         Assert.Equal(13, files.Count); // corpus + 12 validation files
         var failures = new List<string>();
