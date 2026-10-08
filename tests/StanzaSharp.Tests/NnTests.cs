@@ -61,6 +61,27 @@ public class NnTests
         Assert.True(cache.TryGet(b, out _));
     }
 
+    [Fact]
+    public void CharlmCache_ReadsEitherBackendsEntries()
+    {
+        using var cache = new CharlmCache(maxWords: 5);
+        Sentence torchMade = new(), managedMade = new();
+        float[] f = [1, 2, 3, 4, 5, 6], b = [6, 5, 4, 3, 2, 1];
+        Assert.True(cache.TryAdd(torchMade, TorchSharp.torch.tensor(f, [3, 2]), TorchSharp.torch.tensor(b, [3, 2])));
+        Assert.True(cache.TryGetArrays(torchMade, out var arrays)); // a copy for the managed backend
+        Assert.Equal(f, arrays.Forward);
+        Assert.Equal(b, arrays.Backward);
+        Assert.False(cache.TryAdd(managedMade, f, b, 3)); // 6 words: managed entries count the same
+        Assert.True(cache.TryAdd(managedMade, f[..4], b[..4], 2));
+        Assert.True(cache.TryGetArrays(managedMade, out arrays));
+        Assert.Same(arrays.Forward, cache.TryGetArrays(managedMade, out var again) ? again.Forward : null);
+        Assert.True(cache.TryGet(managedMade, out var tensors)); // converted once, kept with the entry
+        Assert.Equal([2L, 2L], tensors.Forward.shape);
+        Assert.Equal(b[..4], tensors.Backward.data<float>().ToArray());
+        Assert.True(cache.TryGet(managedMade, out var same));
+        Assert.Same(tensors.Forward, same.Forward);
+    }
+
     [ModelFact]
     public void Pretrain_LooksUpWordsAndVectors()
     {

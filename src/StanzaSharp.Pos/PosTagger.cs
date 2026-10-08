@@ -123,7 +123,7 @@ internal sealed class PosTagger : IDisposable
 
     /// <summary>Tags for each word, plus the UPOS logits (one [words, upos] array per sentence) for tests.</summary>
     /// <param name="keepCharlm">Called with each sentence's charlm representations; it may keep them by
-    /// detaching them from the current dispose scope (as <see cref="CharlmCache.TryAdd"/> does).</param>
+    /// detaching them from the current dispose scope (as <see cref="CharlmCache.TryAdd(Sentence, Tensor, Tensor)"/> does).</param>
     /// <param name="cancellationToken">A batch is up to 5000 words (seconds on a slow CPU), so this is checked after each
     /// charlm pass (or the character model), between LSTM layers and between the heads; the dispose scope frees
     /// everything on the way out.</param>

@@ -608,9 +608,18 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     ~15% slower at 1 thread.
   - 0.5: managed backend the default, TorchSharp still selectable. 1.0: TorchSharp leaves the main package (not the
     project).
-- **Status:** Phase 0 (kernels) and Phase 1 (seam; tokenize and mwt ported) are done; `docs/backends.md` has the design,
-  the Cuda split plan, the public API proposal (not decided), exactness and speed. Next: Phase 2, the other processors
-  (suggested order there: ner, pos, depparse, sentiment, lemma, constituency; `CharlmCache` must become backend-neutral).
+  - Public backend option (2026-10-08): **A**. `PipelineOptions.Backend` takes a sealed public `PipelineBackend` class whose
+    constructor and members are internal: `PipelineBackend.Managed`, `PipelineBackend.TorchSharp`; later
+    `CudaBackend.Create(device, disableTf32)` in `StanzaSharp.Cuda`, created through internals (the main package never
+    references it; device and TF32 travel inside the backend). No enum.
+    - 0.5: Managed is the default; `Device`/`DisableTf32` become `[Obsolete]` and mean "TorchSharp on that device". A
+      managed pipeline must load with no native libtorch package: `Load` must not call `torch.set_num_threads` (or any
+      other torch function) unless TorchSharp is used.
+    - 1.0: `Device`, `DisableTf32` and `PipelineBackend.TorchSharp` leave the main package.
+    - Not implemented yet (it ships with 0.5); until then the internal `PipelineOptions.Backend` (`Nn.Backend`) switch stays.
+- **Status:** Phase 0 (kernels) and Phase 1 (seam; tokenize and mwt ported) are done; Phase 2 has ported ner and made
+  `CharlmCache` backend-neutral. `docs/backends.md` has the design, the Cuda split plan, exactness, speed and the Phase 2
+  progress table. Next: pos, depparse, sentiment, lemma, constituency (in that order).
 - **Seam** (all internal): per processor network, arrays in and out: `ITokenizerNet` (`TokenizerNet` / `ManagedTokenizerNet`),
   `IMwtNet` (`MwtNet` / `ManagedMwtNet`). Batching, windows, argmax and decoding stay in the processor, shared, so both
   backends see the same batches. `Nn.Backend` { TorchSharp (default), Managed }; internal `PipelineOptions.Backend` →
@@ -620,9 +629,21 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     byte-identical); the managed side composes `Nn.Managed` blocks. Its golden tests become theories over `bool managed`
     (`Repo.Backend(managed)`), and `ManagedBackendTests` gets a net-vs-net test per kernel path.
   - Discrete outputs on the managed backend must be byte-identical with the golden data; never loosen a test for it.
+  - `INerNet` (`NerNet` / `ManagedNerNet`): ids, Viterbi, `fix_singleton_tags` and entities stay in `NerTagger`.
+    `NerTagger.Load` (TorchSharp) / `LoadManaged` (managed charlms, or none for `_nocharlm`). The managed net builds each
+    token's input row at its packed position, so input_transform, the biLSTM and the tag layer never see padding.
+  - `Pipeline.ManagedProcessors` (tokenize, mwt, ner) lists what `Backend.Managed` runs managed. The pipeline loads each
+    backend's charlms only if a `_charlm` processor on that backend reads them (`ManagedCharLanguageModel`: +31 MB of
+    input tables). Managed processors read the shared `Pretrain` through `CpuVectors()` (the CPU tensor's own memory).
+  - `CharlmCache` is backend-neutral: an entry holds its producer's form (tensors, or `[words, dim]` float arrays via the
+    float `TryAdd`). `TryGet` gives tensors (a float entry is converted once, on the cache's device, and kept);
+    `TryGetArrays` gives arrays (a tensor entry is copied per read). Same-backend pipelines never convert, so the default
+    path is unchanged.
 - **Code:** `src/StanzaSharp.Nn/Managed/` (`Gemm.cs`: `KernelPath`, `PackedMatrix`, `Gemm`, `Act`;
   `ManagedThreads.cs`; `PackedLstm.cs`; `ManagedModels.cs`: charlm, highway biLSTM, `ManagedLstm` = `nn.LSTM` over a
-  padded batch like `Rnn.RunPacked`, hidden padded to a multiple of 4 with zero units). Tests:
+  padded batch like `Rnn.RunPacked` (`ForwardPadded`) or over packed rows (`ForwardPacked`), optional `h_init`/`c_init`,
+  hidden padded to a multiple of 4 with zero units; `ManagedCharacterModel`, both variants: NER's bidirectional final
+  states and the tagger/parser's unidirectional attention pooling, tested against `CharacterModel`). Tests:
   `ManagedBackendTests` (every path the machine runs natively). Harness: `StanzaSharp.Benchmark managed-spike
   check|speed|concurrent|gemm`. Numbers and method: `docs/managed-backend-spike.md`, `docs/backends.md`.
 - **Rules for the managed code:**
