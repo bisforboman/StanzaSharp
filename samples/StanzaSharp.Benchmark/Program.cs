@@ -31,7 +31,7 @@ const string Usage = """
       --memory N      instead: Pipeline.Load, then one Process call on a text of about N words, reporting
                       the load peak and the peak memory; run it in a fresh process each time
       --processors P  the stages to time (default: all of the package's); --memory: the processors to load
-      --backend B     torch (default) or managed: the backend of the ported processors (tokenize, mwt, ner; issue #29)
+      --backend B     torch (default) or managed: the backend of the ported processors (Pipeline.ManagedProcessors; issue #29)
       --chunk-words K --memory: split the text at paragraphs into parts of about K words and call Process
                       on each part in turn (--bulk: one Process(IEnumerable<string>) call on the parts)
       --calls N       --memory: repeat the Process call(s) N times, reporting the memory after each (default: 1)
@@ -162,22 +162,22 @@ if (memoryWords > 0)
 string text = BuildText(copies);
 // The package's models, loaded as Pipeline does: the charlms only if a model reads them.
 var models = Pipeline.SelectModels(package, null, addRequired: false, "--package");
-var shared = Pipeline.SharedModels(models);
 string Model(string processor) => Path.Combine(modelDir, processor, models[processor]);
 
 var clock = Stopwatch.StartNew();
 using var tokenizer = Tokenizer.Load(Model("tokenize"), device, backend);
 using var mwt = MwtExpander.Load(Model("mwt"), device, backend);
 using var pretrain = Pretrain.Load(Path.Combine(modelDir, Pipeline.PretrainPath), device);
-using var charlmForward = shared.Contains(Pipeline.ForwardCharlmPath) ? CharLanguageModel.Load(Path.Combine(modelDir, Pipeline.ForwardCharlmPath), device) : null;
-using var charlmBackward = shared.Contains(Pipeline.BackwardCharlmPath) ? CharLanguageModel.Load(Path.Combine(modelDir, Pipeline.BackwardCharlmPath), device) : null;
-using var lemma = Lemmatizer.Load(Model("lemma"), device);
-using var parser = models.ContainsKey("constituency") ? ConstituencyParser.Load(Model("constituency"), pretrain, charlmForward!, charlmBackward!, device) : null;
-using var sentiment = SentimentClassifier.Load(Model("sentiment"), pretrain, charlmForward!, charlmBackward!, device);
-// As Pipeline does: managed processors get the managed charlms (their _nocharlm models none).
+// As Pipeline does: managed processors get the managed charlms (their _nocharlm models none); each backend's charlms
+// are loaded only if a processor on it reads them.
 bool Managed(string processor) => backend == Backend.Managed && Pipeline.ManagedProcessors.Contains(processor);
 bool ManagedCharlm(string processor) => Managed(processor) && models[processor].EndsWith("_charlm");
-var managedForward = ManagedCharlm("pos") || ManagedCharlm("depparse") || ManagedCharlm("ner") ? ManagedCharLanguageModel.Load(Path.Combine(modelDir, Pipeline.ForwardCharlmPath)) : null;
+bool torchCharlms = models.Any(kv => kv.Value.EndsWith("_charlm") && !Managed(kv.Key));
+using var charlmForward = torchCharlms ? CharLanguageModel.Load(Path.Combine(modelDir, Pipeline.ForwardCharlmPath), device) : null;
+using var charlmBackward = torchCharlms ? CharLanguageModel.Load(Path.Combine(modelDir, Pipeline.BackwardCharlmPath), device) : null;
+using var lemma = Lemmatizer.Load(Model("lemma"), device);
+using var parser = models.ContainsKey("constituency") ? ConstituencyParser.Load(Model("constituency"), pretrain, charlmForward!, charlmBackward!, device) : null;
+var managedForward = ManagedCharlm("pos") || ManagedCharlm("depparse") || ManagedCharlm("ner") || ManagedCharlm("sentiment") ? ManagedCharLanguageModel.Load(Path.Combine(modelDir, Pipeline.ForwardCharlmPath)) : null;
 var managedBackward = managedForward != null ? ManagedCharLanguageModel.Load(Path.Combine(modelDir, Pipeline.BackwardCharlmPath)) : null;
 using var pos = Managed("pos")
     ? PosTagger.LoadManaged(Model("pos"), pretrain, ManagedCharlm("pos") ? managedForward : null, ManagedCharlm("pos") ? managedBackward : null)
@@ -188,6 +188,9 @@ using var depparse = Managed("depparse")
 using var ner = Managed("ner")
     ? NerTagger.LoadManaged(Model("ner"), pretrain, ManagedCharlm("ner") ? managedForward : null, ManagedCharlm("ner") ? managedBackward : null)
     : NerTagger.Load(Model("ner"), pretrain, charlmForward, charlmBackward, device);
+using var sentiment = Managed("sentiment")
+    ? SentimentClassifier.LoadManaged(Model("sentiment"), pretrain, managedForward!, managedBackward!)
+    : SentimentClassifier.Load(Model("sentiment"), pretrain, charlmForward!, charlmBackward!, device);
 if (device.type == DeviceType.CUDA)
     torch.cuda.synchronize();
 double load = clock.Elapsed.TotalSeconds;

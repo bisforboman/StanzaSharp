@@ -422,7 +422,9 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     (as `corpus.conllu`) and each `validation*.txt`, `<name>.json` with each sentence's entities, and
     the emission scores of the first 3 sentences, each tagged alone.
   - `sentiment/` (`--sentiment-only`): `tokenize,mwt,sentiment` `<name>.conllu` + `<name>.json`
-    (label and 3 logits per sentence) for corpus.txt, each validation*.txt and `sentiment/reviews.txt`
+    (label and 3 logits per sentence, plus `logits64`: the same batches run in float64, because the classifier is
+    ill-conditioned and Stanza's own float32 error can exceed 1e-4; `SentimentTests` accepts a logit within tolerance of
+    either) for corpus.txt, each validation*.txt and `sentiment/reviews.txt`
     (opinionated sentences); `all.json` for all of them as one document (two batches).
   - `fast/` (`--fast-only`): `package='default_fast'` output (all seven of its processors) for `corpus.txt`
     (as `corpus.conllu`) and each `validation*.txt`; for the first 3 sentences, each run alone, UPOS logits,
@@ -621,9 +623,9 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
       other torch function) unless TorchSharp is used.
     - 1.0: `Device`, `DisableTf32` and `PipelineBackend.TorchSharp` leave the main package.
     - Not implemented yet (it ships with 0.5); until then the internal `PipelineOptions.Backend` (`Nn.Backend`) switch stays.
-- **Status:** Phase 0 (kernels) and Phase 1 (seam; tokenize and mwt ported) are done; Phase 2 has ported ner, pos and
-  depparse and made `CharlmCache` backend-neutral. `docs/backends.md` has the design, the Cuda split plan, exactness, speed and the
-  Phase 2 progress table. Next: sentiment, lemma, constituency (in that order).
+- **Status:** Phase 0 (kernels) and Phase 1 (seam; tokenize and mwt ported) are done; Phase 2 has ported ner, pos,
+  depparse and sentiment and made `CharlmCache` backend-neutral. `docs/backends.md` has the design, the Cuda split plan, exactness, speed and the
+  Phase 2 progress table. Next: lemma, constituency (in that order).
 - **Seam** (all internal): per processor network, arrays in and out: `ITokenizerNet` (`TokenizerNet` / `ManagedTokenizerNet`),
   `IMwtNet` (`MwtNet` / `ManagedMwtNet`). Batching, windows, argmax and decoding stay in the processor, shared, so both
   backends see the same batches. `Nn.Backend` { TorchSharp (default), Managed }; internal `PipelineOptions.Backend` →
@@ -647,14 +649,23 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     the deprel strings. The managed net scores no padding rows; padding columns all get in2 = ReLU(W2's bias) (LSTM
     output 0 there), so the log-softmax sees TorchSharp's exact width. Arcs (pair sums, terms, log-softmax) in double;
     labels per dependent through `Gemm.Kernel` on a repacked T row, real pairs only, T in ≤ 32 MB chunks.
-  - `Pipeline.ManagedProcessors` (tokenize, mwt, pos, depparse, ner) lists what `Backend.Managed` runs managed. The pipeline loads each
+  - `ISentimentNet` (`SentimentNet` / `ManagedSentimentNet`) → [batch, classes] logits. `SentimentClassifier` keeps map_word,
+    the delta vocab, `label_sentences` sorting, 5000-token batches, the padded width (≥ widest filter), cache keys (no MWT)
+    and the argmax. Managed: input rows time-major, `ManagedLstm.ForwardPacked` with every batch size = n (the unpacked
+    LSTM: padding runs through it), full-width convolutions as one GEMM whose A rows overlap (lda = 600, K = Height·600),
+    the (5,5)/(1,5) filter as scalar loops, FC layers through `Gemm`. Labels byte-identical. Logits: the sentiment
+    golden also holds Stanza's float64 logits (owner's decision, 2026-10-08), and a logit passes within the usual
+    tolerance of the float32 **or** the float64 value, on both backends. The classifier is ill-conditioned: on
+    validation.txt sentence 41 Stanza's float32 logits are 1.49e-4 from float64 and the managed ones 1.2e-5 (1.38e-4
+    from Stanza's). Double sums (FC, convolutions, LSTM input) only moved managed toward float64.
+  - `Pipeline.ManagedProcessors` (tokenize, mwt, pos, depparse, ner, sentiment) lists what `Backend.Managed` runs managed. The pipeline loads each
     backend's charlms only if a `_charlm` processor on that backend reads them (`ManagedCharLanguageModel`: +31 MB of
     input tables). Managed processors read the shared `Pretrain` through `CpuVectors()` (the CPU tensor's own memory).
   - `CharlmCache` is backend-neutral: an entry holds its producer's form (tensors, or `[words, dim]` float arrays via the
     float `TryAdd`). `TryGet` gives tensors (a float entry is converted once, on the cache's device, and kept);
     `TryGetArrays` gives arrays (a tensor entry is copied per read). Same-backend pipelines never convert, so the default
-    path is unchanged. With pos managed, the tagger adds arrays (only when `HasRoom`), managed NER reads them as they are
-    and constituency/sentiment (TorchSharp) as converted tensors; such an entry then holds both forms.
+    path is unchanged. With pos managed, the tagger adds arrays (only when `HasRoom`), managed NER and sentiment read them as they are
+    and constituency (TorchSharp) as converted tensors; such an entry then holds both forms.
 - **Code:** `src/StanzaSharp.Nn/Managed/` (`Gemm.cs`: `KernelPath`, `PackedMatrix`, `Gemm`, `Act`;
   `ManagedThreads.cs`; `PackedLstm.cs`; `ManagedModels.cs`: charlm, highway biLSTM, `ManagedLstm` = `nn.LSTM` over a
   padded batch like `Rnn.RunPacked` (`ForwardPadded`) or over packed rows (`ForwardPacked`), optional `h_init`/`c_init`,

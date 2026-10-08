@@ -1,9 +1,7 @@
 using System.Text.Json.Nodes;
 using StanzaSharp.Nn;
-using TorchSharp;
-using TorchSharp.Modules;
+using StanzaSharp.Nn.Managed;
 using static TorchSharp.torch;
-using F = TorchSharp.torch.nn.functional;
 
 namespace StanzaSharp.Sentiment;
 
@@ -15,89 +13,65 @@ namespace StanzaSharp.Sentiment;
 ///   then the forward and backward charlm
 /// - a 2-layer biLSTM, then full-width convolutions and one 2d convolution, each max-pooled over time
 /// - fully connected layers with ReLU, and an argmax over the classes
+/// The network is an <see cref="ISentimentNet"/> (per <see cref="Backend"/>); vocab lookups, batching and the argmax are here.
 /// </summary>
 internal sealed class SentimentClassifier : IDisposable
 {
     // sentiment_processor.py DEFAULT_BATCH_SIZE, counted in tokens.
     internal const int BatchSize = 5000;
-    private const int PadId = 0, UnkId = 1; // vocab.PAD_ID / UNK_ID
+    private const int UnkId = 1; // vocab.UNK_ID; padding is PAD_ID 0 in both vocabs
 
     private readonly Pretrain _pretrain;
-    private readonly CharLanguageModel _charlmForward, _charlmBackward;
     private readonly Dictionary<string, int> _extraVocab = [];
-    private readonly Tensor _unk;
-    private readonly Embedding _extraEmb;
-    private readonly LSTM _bilstm;
-    private readonly (Conv2d Conv, bool FullWidth)[] _convs;
-    private readonly Linear[] _fc;
     private readonly int _maxWindow;
-    private readonly Device _device = Weights.Device; // the device the model was loaded on
+    private readonly ISentimentNet _net;
 
-    private SentimentClassifier(Checkpoint ckpt, Pretrain pretrain, CharLanguageModel charlmForward, CharLanguageModel charlmBackward)
+    private SentimentClassifier(Checkpoint ckpt, Pretrain pretrain, Func<Filter[], ISentimentNet> net)
     {
         _pretrain = pretrain;
-        _charlmForward = charlmForward;
-        _charlmBackward = charlmBackward;
-        if (!charlmForward.IsForward || charlmBackward.IsForward)
-            throw new ArgumentException("Pass the forward charlm first, then the backward one");
-
         var p = ckpt.Root["params"]!;
         var config = p["config"]!;
         CheckSupported(config);
-        var model = p["model"]!;
 
         // { word: i for i, word in enumerate(extra_vocab) }: a repeated word keeps its last index.
         var extra = p["extra_vocab"]!.AsArray();
         for (int i = 0; i < extra.Count; i++)
             _extraVocab[extra[i]!.GetValue<string>()] = i;
-
-        _unk = ckpt.ToTensor(model["unk"]);
-        var extraShape = ckpt.Shape(model["extra_embedding.weight"]);
-        _extraEmb = nn.Embedding(extraShape[0], extraShape[1]).LoadFrom(ckpt, model, "extra_embedding.");
-        if (extraShape[1] != pretrain.Dim)
+        if (ckpt.Shape(p["model"]!["extra_embedding.weight"])[1] != pretrain.Dim)
             throw new NotSupportedException("SUM needs the extra embedding to match the pretrain's dimension");
 
-        int inputSize = pretrain.Dim + charlmForward.HiddenDim + charlmBackward.HiddenDim;
-        int hidden = config["bilstm_hidden_dim"]!.GetValue<int>();
-        _bilstm = nn.LSTM(inputSize, hidden, numLayers: 2, bidirectional: true, batchFirst: true).LoadFrom(ckpt, model, "bilstm.");
-
-        int convInput = hidden * 2, channels = config["filter_channels"]!.GetValue<int>();
-        var convs = new List<(Conv2d, bool)>();
-        foreach (var (size, i) in config["filter_sizes"]!["$tuple"]!.AsArray().Select((s, i) => (s!, i)))
-        {
-            var prefix = $"conv_layers.{i}.";
-            if (size is JsonValue)
-            {
-                int height = size.GetValue<int>();
-                _maxWindow = Math.Max(_maxWindow, height);
-                convs.Add((nn.Conv2d(1, channels, (height, convInput)).LoadFrom(ckpt, model, prefix), true));
-            }
-            else
-            {
-                var hw = size["$tuple"]!.AsArray().Select(x => x!.GetValue<int>()).ToArray();
-                _maxWindow = Math.Max(_maxWindow, hw[1]);
-                int ch = Math.Max(1, channels / (convInput / hw[1]));
-                convs.Add((nn.Conv2d(1, ch, (hw[0], hw[1]), stride: (1, hw[1])).LoadFrom(ckpt, model, prefix), false));
-            }
-        }
-        _convs = [.. convs];
-
-        var fc = new List<Linear>();
-        for (int i = 0; model[$"fc_layers.{i}.weight"] is { } w; i++)
-        {
-            var shape = ckpt.Shape(w);
-            fc.Add(nn.Linear(shape[1], shape[0]).LoadFrom(ckpt, model, $"fc_layers.{i}."));
-        }
-        _fc = [.. fc];
+        var filters = config["filter_sizes"]!["$tuple"]!.AsArray().Select(size => size is JsonValue
+            ? new Filter(size.GetValue<int>(), 0)
+            : new Filter(size!["$tuple"]![0]!.GetValue<int>(), size["$tuple"]![1]!.GetValue<int>())).ToArray();
+        _maxWindow = filters.Max(f => f.Width == 0 ? f.Height : f.Width);
+        _net = net(filters);
     }
 
+    /// <summary>A convolution's filter: <see cref="Height"/> tokens × the biLSTM's full width (Width 0), or Height × Width with stride (1, Width).</summary>
+    internal readonly record struct Filter(int Height, int Width);
+
     /// <summary>
-    /// Loads e.g. <c>models/converted/en/sentiment/sstplus_charlm</c>. The pretrain and charlms are
+    /// Loads e.g. <c>models/converted/en/sentiment/sstplus_charlm</c> on TorchSharp. The pretrain and charlms are
     /// shared with the tagger and parsers, so the caller owns them.
     /// </summary>
     /// <param name="device">Where the model runs; CPU by default. Load the pretrain and charlms on the same device.</param>
     public static SentimentClassifier Load(string basePath, Pretrain pretrain, CharLanguageModel charlmForward, CharLanguageModel charlmBackward, Device? device = null) =>
-        Weights.On(device, () => new SentimentClassifier(Checkpoint.Load(basePath), pretrain, charlmForward, charlmBackward));
+        Weights.On(device, () =>
+        {
+            if (!charlmForward.IsForward || charlmBackward.IsForward)
+                throw new ArgumentException("Pass the forward charlm first, then the backward one");
+            var ckpt = Checkpoint.Load(basePath);
+            return new SentimentClassifier(ckpt, pretrain, filters => new SentimentNet(ckpt, filters, pretrain, charlmForward, charlmBackward));
+        });
+
+    /// <summary><see cref="Load"/> on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
+    public static SentimentClassifier LoadManaged(string basePath, Pretrain pretrain, ManagedCharLanguageModel charlmForward, ManagedCharLanguageModel charlmBackward)
+    {
+        if (!charlmForward.IsForward || charlmBackward.IsForward)
+            throw new ArgumentException("Pass the forward charlm first, then the backward one");
+        var ckpt = Checkpoint.Load(basePath);
+        return new SentimentClassifier(ckpt, pretrain, filters => new ManagedSentimentNet(ckpt, filters, pretrain, charlmForward, charlmBackward));
+    }
 
     /// <summary>Sets <see cref="Sentence.Sentiment"/> on every sentence. Reads only the tokens' text.</summary>
     /// <param name="charlms">Charlm representations the tagger kept, if any. They are used for sentences
@@ -105,22 +79,25 @@ internal sealed class SentimentClassifier : IDisposable
     public void Process(Document doc, CharlmCache? charlms = null, CancellationToken cancellationToken = default)
     {
         var sentences = doc.Sentences.Select(s => (IReadOnlyList<string>)s.Tokens.Select(t => t.Text).ToList()).ToList();
-        var labels = Classify(sentences, out _, charlms == null ? null : i => Cached(charlms, doc.Sentences[i]), cancellationToken);
+        var keys = charlms == null ? null : doc.Sentences.Select(CacheKey).ToList();
+        var labels = Classify(sentences, out _, charlms, keys, cancellationToken);
         for (int i = 0; i < labels.Length; i++)
             doc.Sentences[i].Sentiment = labels[i];
     }
 
-    private static (Tensor, Tensor)? Cached(CharlmCache charlms, Sentence sentence) =>
-        sentence.Tokens.All(t => t.Words.Count == 1 && t.Words[0].Text == t.Text) && charlms.TryGet(sentence, out var reps) ? reps : null;
+    /// <summary>The sentence if its tokens are exactly the tagger's words (no multi-word tokens), so the tagger's cached charlm outputs apply; else null.</summary>
+    internal static Sentence? CacheKey(Sentence sentence) =>
+        sentence.Tokens.All(t => t.Words.Count == 1 && t.Words[0].Text == t.Text) ? sentence : null;
 
     /// <summary>
     /// BaseClassifier.label_sentences: sentences sorted longest first (stably), cut into batches of at most
     /// <see cref="BatchSize"/> tokens, each padded to its longest sentence. Padding changes the results
     /// (the LSTM and convolutions run over it), so batches must be Stanza's.
     /// </summary>
-    /// <param name="cached">Charlm representations to use for sentence i instead of computing them, if any.</param>
-    internal int[] Classify(IReadOnlyList<IReadOnlyList<string>> sentences, out float[][] logits, Func<int, (Tensor, Tensor)?>? cached = null,
-        CancellationToken cancellationToken = default)
+    /// <param name="charlms">With <paramref name="cacheKeys"/>: charlm outputs already computed; sentence i's are looked up
+    /// under its key if not null.</param>
+    internal int[] Classify(IReadOnlyList<IReadOnlyList<string>> sentences, out float[][] logits, CharlmCache? charlms = null,
+        IReadOnlyList<Sentence?>? cacheKeys = null, CancellationToken cancellationToken = default)
     {
         var order = Enumerable.Range(0, sentences.Count).OrderByDescending(i => sentences[i].Count).ToArray();
         var labels = new int[sentences.Count];
@@ -129,7 +106,7 @@ internal sealed class SentimentClassifier : IDisposable
         {
             cancellationToken.ThrowIfCancellationRequested();
             var batch = order[start..end];
-            var scores = Forward(batch.Select(i => sentences[i]).ToList(), cached == null ? null : batch.Select(cached).ToList(), cancellationToken);
+            var scores = Forward(batch.Select(i => sentences[i]).ToList(), charlms, cacheKeys == null ? null : batch.Select(i => cacheKeys[i]).ToList(), cancellationToken);
             for (int k = 0; k < batch.Length; k++)
             {
                 logits[batch[k]] = scores[k];
@@ -182,72 +159,23 @@ internal sealed class SentimentClassifier : IDisposable
     }
 
     /// <summary>CNNClassifier.forward in eval mode: one batch, padded at the end to its longest sentence (at least the widest filter).</summary>
-    /// <param name="cancellationToken">A batch is up to 5000 tokens, so this is checked after each charlm pass, after the
-    /// LSTM and between the convolutions; the dispose scope frees everything on the way out.</param>
     /// <returns>The class logits of each sentence.</returns>
-    internal float[][] Forward(IReadOnlyList<IReadOnlyList<string>> batch, IReadOnlyList<(Tensor Forward, Tensor Backward)?>? cached = null,
+    internal float[][] Forward(IReadOnlyList<IReadOnlyList<string>> batch, CharlmCache? charlms = null, IReadOnlyList<Sentence?>? cacheKeys = null,
         CancellationToken cancellationToken = default)
     {
-        using var noGrad = torch.no_grad();
-        using var scope = NewDisposeScope();
         int n = batch.Count, width = Math.Max(_maxWindow, batch.Max(s => s.Count));
-
-        var ids = new long[n * width];
+        var ids = new long[n * width]; // padding: PAD (0) in both vocabs
         var extraIds = new long[n * width];
-        var unknown = new bool[n * width];
         for (int i = 0; i < n; i++)
             for (int j = 0; j < batch[i].Count; j++)
             {
                 var word = batch[i][j];
-                int k = i * width + j, id = MapWord(word);
-                ids[k] = id;
-                unknown[k] = id == _pretrain.UnkId;
-                extraIds[k] = _extraVocab.TryGetValue(word, out var e) ? e : UnkId;
+                ids[i * width + j] = MapWord(word);
+                extraIds[i * width + j] = _extraVocab.TryGetValue(word, out var e) ? e : UnkId;
             }
-
-        // Unknown words get the learned unk vector instead of the pretrain's; then the delta embedding is added (SUM).
-        var pretrained = _pretrain.Embeddings[torch.tensor(ids, [n, width], device: _device)];
-        var mask = torch.tensor(unknown, [n, width, 1], device: _device);
-        var words = torch.where(mask, _unk, pretrained).add(_extraEmb.forward(torch.tensor(extraIds, [n, width], device: _device)), Scalars.One);
-
-        var forward = CharReps(_charlmForward, batch, width, cached?.Select(c => c?.Forward).ToList());
-        cancellationToken.ThrowIfCancellationRequested();
-        var backward = CharReps(_charlmBackward, batch, width, cached?.Select(c => c?.Backward).ToList());
-        cancellationToken.ThrowIfCancellationRequested();
-        var input = cat([words, forward, backward], 2);
-        var (output, _, _) = _bilstm.call(input); // not packed: like Stanza, the padding reaches the LSTM
-        var x = output.unsqueeze(1);
-
-        var pooled = new List<Tensor>(_convs.Length);
-        foreach (var (conv, fullWidth) in _convs)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            var c = conv.forward(x);
-            c = fullWidth ? c.squeeze(3) : c.transpose(2, 3).flatten(1, 2);
-            pooled.Add(F.relu(c).amax([2])); // max_pool2d over the whole length
-        }
-        var hiddenLayer = cat(pooled, 1);
-        for (int i = 0; i < _fc.Length - 1; i++)
-            hiddenLayer = F.relu(_fc[i].forward(hiddenLayer));
-        var scores = _fc[^1].forward(hiddenLayer).ToArray<float>();
+        var scores = _net.Forward(batch, ids, extraIds, width, charlms, cacheKeys, cancellationToken);
         int classes = scores.Length / n;
         return Enumerable.Range(0, n).Select(i => scores[(i * classes)..((i + 1) * classes)]).ToArray();
-    }
-
-    /// <summary>build_char_reps: [batch, width, dim], each sentence's representations at its start, zeros after.</summary>
-    private Tensor CharReps(CharLanguageModel charlm, IReadOnlyList<IReadOnlyList<string>> batch, int width, List<Tensor?>? cached)
-    {
-        var missing = Enumerable.Range(0, batch.Count).Where(i => cached?[i] is null).ToList();
-        var computed = charlm.BuildCharRepresentation(missing.Select(i => batch[i]).ToList());
-        var reps = cached?.ToArray() ?? new Tensor?[batch.Count];
-        for (int k = 0; k < missing.Count; k++)
-            reps[missing[k]] = computed[k];
-
-        var result = torch.zeros([batch.Count, width, charlm.HiddenDim], device: _device);
-        for (int i = 0; i < batch.Count; i++)
-            if (batch[i].Count > 0)
-                result[i].narrow(0, 0, batch[i].Count).copy_(reps[i]!);
-        return result;
     }
 
     private static void CheckSupported(JsonNode config)
@@ -268,11 +196,5 @@ internal sealed class SentimentClassifier : IDisposable
         Require(config["filter_channels"] is JsonValue, "per-filter channel counts");
     }
 
-    public void Dispose()
-    {
-        nn.Module[] modules = [_extraEmb, _bilstm, .. _convs.Select(c => c.Conv), .. _fc];
-        foreach (var m in modules)
-            m.Dispose();
-        _unk.Dispose();
-    }
+    public void Dispose() => _net.Dispose();
 }

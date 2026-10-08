@@ -42,7 +42,7 @@ Reads <out>/corpus.txt and writes:
                         regenerates just ner/
   sentiment/<name>.conllu + <name>.json
                         tokenize,mwt,sentiment output for corpus.txt and each validation*.txt, and per
-                        sentence the label and the 3 class logits (`--sentiment-only`)
+                        sentence the label and the 3 class logits, float32 and float64 (`--sentiment-only`)
   fast/<name>.conllu    Stanza's package='default_fast' (tokenize,mwt,pos,lemma,depparse,sentiment,ner with
                         the nocharlm pos/depparse/ner) for corpus.txt (as corpus.conllu) and each
                         validation*.txt
@@ -292,6 +292,7 @@ def write_sentiment_golden(models, out):
       <name>.conllu + <name>.json   for corpus.txt, every validation*.txt and sentiment/reviews.txt
                                     (opinionated sentences): the CoNLL-U, and per sentence the label
                                     and the 3 class logits as computed in the pipeline's batches
+                                    ("logits"), and the same batches run in float64 ("logits64")
       all.json                      the same for all of those texts as one document (joined by blank
                                     lines), which takes several 5000-word batches
     """
@@ -311,6 +312,7 @@ def write_sentiment_golden(models, out):
         return result
 
     def run(text, name, conllu):
+        """The document, each sentence's logits in document order, and the number of batches; writes the CoNLL-U if asked."""
         captured.clear()
         with torch.no_grad():
             doc = nlp(text)
@@ -322,23 +324,38 @@ def write_sentiment_golden(models, out):
         logits = [None] * len(sorted_logits)
         for k, i in enumerate(orig_idx):
             logits[i] = sorted_logits[k]
-        result = [{"sentiment": s.sentiment, "logits": l} for s, l in zip(doc.sentences, logits)]
-        with open(sent_out / f"{name}.json", "w", encoding="utf-8", newline="\n") as f:
-            json.dump({"stanza": stanza.__version__, "batches": len(captured), "sentences": result}, f,
-                      indent=None if name == "all" else 1)
-        print(f"sentiment/{name}: {len(doc.sentences)} sentences, {len(captured)} batches, labels "
-              f"{[sum(r['sentiment'] == c for r in result) for c in range(3)]}")
+        return doc, logits, len(captured)
 
     model.forward = forward
     try:
         texts = []
         for path in [out / "corpus.txt"] + sorted(out.glob("validation*.txt")) + [sent_out / "reviews.txt"]:
-            text = path.read_bytes().decode("utf-8")
-            texts.append(text)
-            run(text, "corpus" if path.name == "corpus.txt" else path.stem, True)
-        run("\n\n".join(texts), "all", False)
+            texts.append(("corpus" if path.name == "corpus.txt" else path.stem, path.read_bytes().decode("utf-8")))
+        texts.append(("all", "\n\n".join(t for _, t in texts)))
+        results = {name: run(text, name, name != "all") for name, text in texts}
+
+        # The same batches in float64: the exact logits. The classifier is ill-conditioned on some sentences, where
+        # Stanza's own float32 result is over 1e-4 from them (validation.txt sentence 41: 1.49e-4), so the tests accept
+        # a logit within tolerance of either.
+        torch.set_default_dtype(torch.float64)  # build_char_reps' torch.zeros
+        model.double()
+        for m in model.modules():  # tensors held as plain attributes, not parameters or buffers
+            for k, v in list(vars(m).items()):
+                if isinstance(v, torch.Tensor) and v.is_floating_point():
+                    setattr(m, k, v.double())
+        exact = {name: run(text, name, False)[1] for name, text in texts}
     finally:
+        torch.set_default_dtype(torch.float32)
         model.forward = original
+
+    for name, (doc, logits, batches) in results.items():
+        result = [{"sentiment": s.sentiment, "logits": l, "logits64": e} for s, l, e in zip(doc.sentences, logits, exact[name])]
+        with open(sent_out / f"{name}.json", "w", encoding="utf-8", newline="\n") as f:
+            json.dump({"stanza": stanza.__version__, "batches": batches, "sentences": result}, f,
+                      indent=None if name == "all" else 1)
+        worst = max(abs(x - y) for r in result for x, y in zip(r["logits"], r["logits64"]))
+        print(f"sentiment/{name}: {len(doc.sentences)} sentences, {batches} batches, labels "
+              f"{[sum(r['sentiment'] == c for r in result) for c in range(3)]}, float32 vs float64 {worst:.2e}")
 
 
 def write_pt_fixtures(out):
