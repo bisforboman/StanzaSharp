@@ -183,6 +183,10 @@ Tokenizer notes:
 - Model units are code points, like Python. Offsets are UTF-16 indices, so they differ from
   Stanza's only after non-BMP characters.
 - MWT-flagged tokens (`Token.IsMwtCandidate`) carry a single word until the MWT stage runs.
+- Two lengths from the config: windows are `max(1000, max_seqlen)` units (output_predictions), and tokens longer
+  than `max_seqlen` (200 for English; default 1000) in code points become `<UNK>` (TokenizeProcessor.process: text
+  and word text only, offsets and MWT flag kept; bulk too, never pretokenized). `tests/golden/long_token*`
+  (`make_golden.py --long-token-only`), both packages.
 
 ## Layout
 
