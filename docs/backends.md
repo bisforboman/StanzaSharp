@@ -11,7 +11,7 @@ The owner's plan: 0.5 makes the managed backend the default, with TorchSharp sti
 the main package for an opt-in `StanzaSharp.Cuda` package. Both implementations stay.
 
 Phase 1 added the seam and ported **tokenize** and **mwt**. Phase 2 ports the other processors one at a time; so far
-**ner** and **pos**, plus a backend-neutral `CharlmCache` (see [Phase 2](#phase-2-progress)). Everything is `internal`;
+**ner**, **pos** and **depparse**, plus a backend-neutral `CharlmCache` (see [Phase 2](#phase-2-progress)). Everything is `internal`;
 nothing public changed.
 
 ## The seam
@@ -24,6 +24,7 @@ The seam sits at each processor's **network**: one small interface per processor
 | mwt | `IMwtNet.Forward(ids, rows, width, lengths)` → [rows, width, 2] logits | `MwtNet` | `ManagedMwtNet` |
 | ner | `INerNet.Forward(sentences, wordIds, deltaIds, width, charlms, cacheKeys, ct)` → [batch, width, tags] emissions | `NerNet` | `ManagedNerNet` |
 | pos | `IPosNet.Forward(sentences, wordIds, pretrainIds, charlms, cacheKeys, ct)` → `PosOutput` (UPOS scores, UPOS/XPOS/feats ids) | `PosNet` | `ManagedPosNet` |
+| depparse | `IDepparseNet.Forward(DepparseBatch, labelScores, ct)` → `DepparseScores` (arc log-probs, label argmax, optional label scores) | `DepparseNet` | `ManagedDepparseNet` |
 
 - **Shared:** everything around the network stays in the processor and serves both backends. That covers paragraph
   splitting, features, sorting, batching, the 1000-character windows, padding, the argmax, `FixLabels`, decoding,
@@ -187,7 +188,9 @@ size would need it; none is ported.
 | **ner** (`_nocharlm`, default_fast) | yes | byte-identical; emissions 1.05e-5 from Python | **1.70 → 0.56 s (0.33)** | **2.42 → 1.43 s (0.59)** |
 | **pos** (`_charlm`) | yes | byte-identical; UPOS logits 6.1e-5 from Python (TorchSharp 5.3e-5; Scalar path 6.9e-5) | pos stage **11.51 → 5.72 s (0.50)** | **32.07 → 23.83 s (0.74)** |
 | **pos** (`_nocharlm`, default_fast) | yes | byte-identical; UPOS logits 3.1e-5 from Python | | |
-| depparse, sentiment, lemma, constituency | no | | | |
+| **depparse** (`_charlm`) | yes | byte-identical heads and deprels; arc / label log-probs 2.3e-5 / 3.4e-5 from Python (TorchSharp 1.1e-5 / 1.5e-5; Scalar path 2.3e-5 / 3.8e-5) | depparse stage **13.27 → 7.94 s (0.60)** | **42.52 → 36.99 s (0.87)** |
+| **depparse** (`_nocharlm`, default_fast) | yes | byte-identical; arc / label log-probs 1.1e-5 / 2.7e-5 from Python (every path ≤ 1.5e-5 / 3.1e-5) | **6.47 → 3.68 s (0.57)** | **19.85 → 17.33 s (0.87)** |
+| sentiment, lemma, constituency | no | | | |
 
 Speed: `StanzaSharp.Benchmark --processors tokenize,ner --backend torch|managed --threads N --runs 3` (so NER computes every
 charlm itself; no tagger, no cache), 8 copies (24,840 words), medians, Ryzen 7 5800X, idle machine. In the full
@@ -235,6 +238,42 @@ reads the tagger's cached charlm outputs for sentences without MWTs.
   tables, and cache entries that hold both forms once converted). `--memory 6000` (one Process call): peak 4,327 →
   4,082 MB, 25.1 → 21.5 s.
 
+### depparse
+
+- **Seam:** `IDepparseNet.Forward(DepparseBatch, labelScores, ct)` → `DepparseScores`. `DependencyParser` keeps
+  simplify_punct, the lowercased vocab lookups, the ROOT word (id 3), the batches (longest first, 5000 words with ROOT,
+  over 150 alone), Chu-Liu/Edmonds in float64 and the deprel strings; the net returns the arc log-probs [batch, width,
+  width] (log-softmax over the padded width, as in Stanza), each pair's label argmax and, for tests, the label scores.
+  `DependencyParser.Load` builds `DepparseNet` (today's code, moved unchanged); `LoadManaged` builds `ManagedDepparseNet`.
+- **Managed net:** the input rows (trans_pretrained GEMM, word, lemma, UPOS+XPOS twice, then the charlms over "\n" +
+  the words, or `ManagedCharacterModel` with ROOT = char id 3 + `trans_char`) are built at their packed positions and go
+  through `ManagedHighwayLstm`; nothing is padded. The W1/W2 layers of all four deep biaffine scorers are one GEMM.
+  - **Biaffine scorers in two steps:** T = in1·W_bilin per dependent (a GEMM, with in1's appended 1 folded into the
+    bias), then T·in2 per word pair. Padding columns all see the same in2, ReLU(W2's bias), because the LSTM output there
+    is 0; so the arc log-softmax runs over exactly TorchSharp's padded width without scoring padding rows, which nothing reads.
+  - **Arcs** (unlabeled, linearization, distance; one output each): the pair sums, logsigmoid, softplus (torch's beta 1,
+    threshold 20), the distance penalty and the log-softmax are in double. Cheap: 3 × 400 multiply-adds per pair.
+  - **Labels** (49 relations): only real word pairs. Each dependent's T row is repacked as a [400, 49 → 64] weight panel
+    and every head's in2 goes through the GEMM micro-kernel (`Gemm.Kernel`, every path), then the argmax. T is computed
+    a chunk of whole sentences at a time, at most 32 MB (TorchSharp: 128 MB chunks plus einsum's permuted copy and the
+    full [batch, width, width, 49] output).
+  - In float, the label scores stay within 3.8e-5 of Stanza's on every path (two 400-term sums), so no double was needed.
+- **Tests:** `DepparseTests` (golden intermediates, the 13 golden files from Stanza's tags and lemmas, the
+  tokenize..depparse pipeline) on both backends; `FastPackageTests.ManagedIntermediates_MatchGolden` (nocharlm scores);
+  `ManagedBackendTests.DepparseNet_ManagedMatchesTorchSharp` (both checkpoints, a padded batch of 6 sentences, every
+  path: arcs 1.9e-5 to 3.4e-5, label scores 2.7e-5 to 3.4e-5, identical parses) and `DepparseScores_MatchGoldenOnEveryPath`
+  (both checkpoints at 1e-4). The ner, fast, pretokenized, bulk, all-eight, cancellation and concurrency tests cover it
+  through the pipeline. No tolerance changed.
+- **Speed** (`--processors tokenize,mwt,pos,lemma,depparse`, 8 copies, 26,264 words, medians of 3, Ryzen 7 5800X, load
+  ~15%): depparse stage 13.27 → 7.94 s at 8 threads, 42.52 → 36.99 s at 1 thread. Of the managed 7.9 s, about 4.5 s are
+  the two charlm passes, 2.1 s the input and highway LSTM, 0.3 s the W1/W2 GEMM, 0.25 s the arcs and 0.9 s the label
+  scorer. default_fast: 6.47 → 3.68 s and 19.85 → 17.33 s. Full 8-processor run at 8 threads: 59.76 → 34.06 s (depparse
+  13.69 → 8.26).
+- **Memory:** depparse stage peak (warm-up, 5-processor run) 1,825 → 1,291 MB. Full 8-processor run: peak working set
+  2,533 MB (TorchSharp) → 2,978 MB (managed), against 3,132 MB with only tokenize, mwt, pos and ner managed (the extra
+  over TorchSharp is the pos/ner one described there). `--memory 6000` (one Process call, two rounds): TorchSharp
+  4,367 / 3,748 MB, managed 3,833 / 3,837 MB (pos and ner managed only: 4,131 / 4,136 MB), 24.0 → 14.4 s.
+
 ### ner
 
 - **Seam:** `INerNet.Forward(sentences, wordIds, deltaIds, width, charlms, cacheKeys, ct)` → [batch, width, tags]
@@ -279,15 +318,11 @@ by one, producer and readers can sit on different backends.
 
 ## Phase 2: what next
 
-1. **depparse**: the same blocks plus `DeepBiaffine` and the distance/linearization terms. Chu-Liu/Edmonds is already
-   plain C#. Risk: the padded log-softmax makes heads depend on the batch, so batches must stay identical (they do,
-   since batching is shared). The arc/label log-probs are tested at 1e-4 on both backends; like `upos_clf`, the
-   last scorers may need double sums to stay inside it.
-2. **sentiment**: an unpacked padded biLSTM (a `ManagedLstm` mode with lengths = width), Conv2d as GEMMs over
+1. **sentiment**: an unpacked padded biLSTM (a `ManagedLstm` mode with lengths = width), Conv2d as GEMMs over
    overlapping rows, max-pool, MLP. Risk: near-ties (173 of 886 labels already flip with batching in Stanza).
-3. **lemma**: LSTMCell decoder, dot attention, copy gate, greedy argmax over tiny batches. Risk: near-ties per
+2. **lemma**: LSTMCell decoder, dot attention, copy gate, greedy argmax over tiny batches. Risk: near-ties per
    character.
-4. **constituency**: the most code; per-step stack LSTMs (50 states in flight) and a transition argmax over thousands
+3. **constituency**: the most code; per-step stack LSTMs (50 states in flight) and a transition argmax over thousands
    of steps. The highest near-tie risk.
 
 Cross-cutting:
