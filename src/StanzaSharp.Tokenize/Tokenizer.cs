@@ -16,8 +16,9 @@ namespace StanzaSharp.Tokenize;
 /// </remarks>
 internal sealed class Tokenizer : IDisposable
 {
-    // TokenizeProcessor.MAX_SEQ_LENGTH_DEFAULT; output_predictions uses max(1000, max_seqlen).
-    private const int MaxSeqLen = 1000;
+    // TokenizeProcessor.MAX_SEQ_LENGTH_DEFAULT, used when the config has no max_seqlen. output_predictions windows
+    // paragraphs at max(1000, max_seqlen); TokenizeProcessor.process then replaces tokens longer than max_seqlen.
+    private const int MaxSeqLenDefault = 1000;
     private const string LongTokenReplacement = "<UNK>";
 
     // data.py: NEWLINE_WHITESPACE_RE, WHITESPACE_RE. Python's \s also matches \x1c-\x1f; .NET's doesn't.
@@ -46,7 +47,7 @@ internal sealed class Tokenizer : IDisposable
 
     private readonly ITokenizerNet _net;
     private readonly Dictionary<string, int> _vocab;
-    private readonly int _unkId, _padId, _batchSize, _featDim;
+    private readonly int _unkId, _padId, _batchSize, _featDim, _maxSeqLen, _window;
     private readonly string[] _featFuncs;
 
     private Tokenizer(Checkpoint ckpt, Backend backend)
@@ -58,6 +59,8 @@ internal sealed class Tokenizer : IDisposable
         _padId = _vocab["<PAD>"];
         _batchSize = config["batch_size"]!.GetValue<int>();
         _featDim = config["feat_dim"]!.GetValue<int>();
+        _maxSeqLen = config["max_seqlen"]?.GetValue<int>() ?? MaxSeqLenDefault;
+        _window = Math.Max(MaxSeqLenDefault, _maxSeqLen);
 
         // data.py para_to_sentences: per-character features in config order, then the
         // position features, then the structural features in STRUCTURAL_FEATURES order.
@@ -298,7 +301,7 @@ internal sealed class Tokenizer : IDisposable
             var rows = order[b..Math.Min(b + _batchSize, order.Length)].Select(i => paragraphs[i]).ToList();
             int maxLen = rows.Max(r => r.Length);
             int[][] rowPreds;
-            if (maxLen + 1 <= MaxSeqLen)
+            if (maxLen + 1 <= _window)
             {
                 var p = Argmax(Run(rows, new int[rows.Count], maxLen + 1, rows.Select(r => r.Length + 1).ToArray(), ct), rows.Count);
                 rowPreds = rows.Select((r, j) => p[j][..r.Length]).ToArray();
@@ -316,7 +319,7 @@ internal sealed class Tokenizer : IDisposable
         return preds;
     }
 
-    /// <summary>Paragraphs over MaxSeqLen run in windows that restart after the last predicted sentence end.</summary>
+    /// <summary>Paragraphs over the window length run in windows that restart after the last predicted sentence end.</summary>
     private int[][] PredictWindowed(List<Paragraph> rows, CancellationToken ct)
     {
         var idx = new int[rows.Count];
@@ -324,7 +327,7 @@ internal sealed class Tokenizer : IDisposable
         for (bool first = true; ; first = false)
         {
             ct.ThrowIfCancellationRequested();
-            var ens = rows.Select((r, j) => Math.Min(r.Length - idx[j], MaxSeqLen)).ToArray();
+            var ens = rows.Select((r, j) => Math.Min(r.Length - idx[j], _window)).ToArray();
             int width = ens.Max();
             // The first window keeps collate's raw units (own length + 1, cut to the window);
             // advance_old_batch pads every row's raw units to the batch width, so later windows
@@ -334,7 +337,7 @@ internal sealed class Tokenizer : IDisposable
             for (int j = 0; j < rows.Count; j++)
             {
                 int lastBreak = Array.FindLastIndex(p[j], x => x is 2 or 4);
-                int advance = lastBreak < 0 || idx[j] >= rows[j].Length - MaxSeqLen ? ens[j] : lastBreak + 1;
+                int advance = lastBreak < 0 || idx[j] >= rows[j].Length - _window ? ens[j] : lastBreak + 1;
                 output[j].AddRange(p[j][..advance]);
                 idx[j] += advance;
             }
@@ -400,7 +403,7 @@ internal sealed class Tokenizer : IDisposable
 
     // ----- output: utils.decode_predictions -----
 
-    private static void Decode(Paragraph para, int[] pred, Document doc, bool splitSentences)
+    private void Decode(Paragraph para, int[] pred, Document doc, bool splitSentences)
     {
         Sentence? sent = null;
         int tokStart = 0;
@@ -419,7 +422,9 @@ internal sealed class Tokenizer : IDisposable
                 continue;
 
             var text = string.Concat(para.Units[first..(i + 1)]);
-            if (text.Length > MaxSeqLen)
+            // TokenizeProcessor.process: len(token['text']) > max_seqlen, in code points (one per unit). Only the
+            // text changes; offsets and the MWT flag stay.
+            if (i + 1 - first > _maxSeqLen)
                 text = LongTokenReplacement;
             int start = para.Starts[first], end = para.Ends[i];
 

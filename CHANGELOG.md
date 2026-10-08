@@ -14,6 +14,12 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
   such step instead of up to a whole batch (0.8 s for POS, 1.2 s for sentiment on an 8-core machine). Any call now
   stops within about half a second there. Output is unchanged.
 
+### Fixed
+- Tokens longer than the tokenizer's `max_seqlen` (200 characters for English, read from the model's config) now
+  become `<UNK>`, as in Stanza; before, only tokens over 1,000 characters did, so tokens of 201–1,000 characters
+  (long URLs) kept their text and could get different tags, lemmas, parses and entities than in Stanza. Only the text
+  changes (offsets stay), in bulk input too; pretokenized input keeps its tokens, as in Stanza.
+
 ## [0.4.2] - 2026-10-07
 
 ### Changed

@@ -61,6 +61,34 @@ public class TokenizerTests(ITestOutputHelper output)
     [ModelTheory]
     [InlineData(false)]
     [InlineData(true)]
+    public void Process_ReplacesTokensLongerThanMaxSeqlen(bool managed)
+    {
+        using var tokenizer = Load(managed);
+        var text = File.ReadAllText(Path.Combine(Repo.Golden, "long_token.txt"));
+        var golden = Conllu.Read(File.ReadAllText(Path.Combine(Repo.Golden, "long_token.conllu")));
+        Assert.Equal(Describe(golden), Describe(tokenizer.Process(text)));
+    }
+
+    /// <summary>All processors see <c>&lt;UNK&gt;</c> (tests/golden/long_token*.conllu), in bulk too; pretokenized tokens stay, as in Stanza.</summary>
+    [ModelTheory]
+    [InlineData("default", false)]
+    [InlineData("default_fast", false)]
+    [InlineData("default", true)]
+    [InlineData("default_fast", true)]
+    public void Pipeline_LongTokens_MatchGolden(string package, bool managed)
+    {
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, Backend = Repo.Backend(managed) });
+        var text = File.ReadAllText(Path.Combine(Repo.Golden, "long_token.txt"));
+        var golden = File.ReadAllText(Path.Combine(Repo.Golden, package == "default" ? "long_token.conllu" : "long_token.fast.conllu"));
+        Assert.Equal(golden, Conllu.Write(nlp.Process(text)));
+        Assert.Equal(golden, Conllu.Write(nlp.Process([text])[0]));
+        var url = new string('x', 300);
+        Assert.Equal(url, nlp.Process([["see", url]]).Sentences[0].Tokens[1].Text);
+    }
+
+    [ModelTheory]
+    [InlineData(false)]
+    [InlineData(true)]
     public void Process_HandlesEmptyAndWhitespaceText(bool managed)
     {
         using var tokenizer = Load(managed);
