@@ -41,6 +41,8 @@ const string Usage = """
 
 if (args is ["lemma-divergence", ..])
     return LemmaDivergence.Run(args[1..]); // tools/lemma_divergence.py; docs/backends.md, "lemma"
+if (args is ["constituency-divergence", ..])
+    return ConstituencyDivergence.Run(args[1..]); // tools/constituency_divergence.py; docs/backends.md, "constituency"
 if (args is ["managed-spike", ..])
     return ManagedSpike.Run(args[1..], FindRepoRoot(), BuildText); // issue #29: docs/managed-backend-spike.md
 
