@@ -183,6 +183,10 @@ Tokenizer notes:
 - Model units are code points, like Python. Offsets are UTF-16 indices, so they differ from
   Stanza's only after non-BMP characters.
 - MWT-flagged tokens (`Token.IsMwtCandidate`) carry a single word until the MWT stage runs.
+- Two lengths from the config: windows are `max(1000, max_seqlen)` units (output_predictions), and tokens longer
+  than `max_seqlen` (200 for English; default 1000) in code points become `<UNK>` (TokenizeProcessor.process: text
+  and word text only, offsets and MWT flag kept; bulk too, never pretokenized). `tests/golden/long_token*`
+  (`make_golden.py --long-token-only`), both packages.
 
 ## Layout
 
@@ -204,6 +208,7 @@ samples/StanzaSharp.Cli        Console runner for quick experiments.
 samples/StanzaSharp.Benchmark  Per-stage speed/memory benchmark; tools/benchmark.py is the Python twin.
 samples/StanzaSharp.Example    Commented tour of the public API (download, load, every result, CoNLL-U).
 tests/StanzaSharp.Tests        xUnit; golden tests against Python Stanza output.
+tests/StanzaSharp.ManagedCheck Console app without libtorch: proves the managed backend loads none (ManagedCheckTests).
 tests/golden/                  Golden data generated from Python Stanza (committed, keep it small).
 tools/stanza_convert.py        Checkpoint inspector/converter (.pt -> .safetensors + .json); optional.
 tools/.venv/                   Python env with stanza installed (gitignored).
@@ -461,7 +466,7 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     CLI) and converts them with CPU torch. The models are cached on `ModelDownloader.cs`,
     `tools/requirements.txt` and `tools/stanza_convert.py`. It then fails if any test is skipped
     (`outcome="NotExecuted"` in the trx; the trx `notExecuted` counter stays 0 for skips), and runs
-    `tools/verify-package.ps1` against `models/stanza/en`.
+    `tools/verify-package.ps1` against `models/stanza/en` (also `-Platform Linux` and `-Managed`: only StanzaSharp, no libtorch).
   - `cross-os (windows-2025)` / `cross-os (macos-15)` (Apple Silicon; `TorchSharp-cpu` brings
     `libtorch-cpu-osx-arm64`): build, full suite with `STANZASHARP_MODELS` = `models/stanza/en` (the
     `.pt` files, no Python or conversion), the same no-skip check, and `verify-package.ps1`. Models are
@@ -623,9 +628,22 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
       other torch function) unless TorchSharp is used.
     - 1.0: `Device`, `DisableTf32` and `PipelineBackend.TorchSharp` leave the main package.
     - Not implemented yet (it ships with 0.5); until then the internal `PipelineOptions.Backend` (`Nn.Backend`) switch stays.
-- **Status:** Phase 0 (kernels) and Phase 1 (seam; tokenize and mwt ported) are done; Phase 2 has ported ner, pos,
-  depparse, sentiment and lemma and made `CharlmCache` backend-neutral. `docs/backends.md` has the design, the Cuda split plan, exactness, speed and the
-  Phase 2 progress table. Next: constituency.
+- **Status:** Phase 0 (kernels), Phase 1 (seam; tokenize and mwt ported) and Phase 2 (ner, pos, depparse, sentiment,
+  lemma, constituency; `CharlmCache` backend-neutral) are done: every processor of both packages runs managed, and a
+  managed pipeline loads no TorchSharp charlms. `docs/backends.md` has the design, the Cuda split plan, exactness, speed and
+  the Phase 2 progress table. A managed pipeline needs no native libtorch (below). Next (0.5): the public
+  `PipelineBackend` option, managed as the default.
+- **No libtorch on the managed backend** (0.5 requirement, done): TorchSharp's `torch` static constructor loads libtorch, so
+  the managed path calls no `torch.*` member at all (not even `torch.CPU`) and makes no TorchSharp object; the
+  `TorchSharp.dll` assembly itself still loads. Managed `Pipeline.Load` sets only `ManagedThreads.Count`; libtorch's
+  threads, TF32 and `Weights.On(Device)` are in `Pipeline.LoadTorchSharp` (unchanged). `Pretrain.LoadManaged` keeps the
+  vectors as a `float[]` (`Load`: a tensor; `CpuVectors()` reads either; `Embeddings` throws on a managed one), used when
+  every pretrain reader is managed. After each managed model `Pipeline` runs `GC.Collect()` (weights are read into an
+  array, then packed: load peak 1,035 → ~850 MB, +0.05 s). Proof: `tests/StanzaSharp.ManagedCheck` (no TorchSharp-cpu /
+  libtorch-cpu-*, `StanzaSharpNoLibTorch`), run by `ManagedCheckTests` with an empty `NUGET_PACKAGES` (TorchSharp's
+  fallback otherwise copies libtorch from the NuGet cache into `cpu/` next to the app), both packages byte-identical and
+  no native torch module loaded; `verify-package.ps1 -Managed` compiles the same Program.cs against the packed package
+  alone (golden job). A new managed code path must keep this: no `torch.*`, `Scalars`, `Weights.Device`, tensors.
 - **Seam** (all internal): per processor network, arrays in and out: `ITokenizerNet` (`TokenizerNet` / `ManagedTokenizerNet`),
   `IMwtNet` (`MwtNet` / `ManagedMwtNet`). Batching, windows, argmax and decoding stay in the processor, shared, so both
   backends see the same batches. `Nn.Backend` { TorchSharp (default), Managed }; internal `PipelineOptions.Backend` →
@@ -668,16 +686,25 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     TorchSharp always was; no backend reaches 1e-4 on these log-probs, Stanza's float32 included).
     On UD EWT (`tools/lemma_divergence.py` + benchmark `lemma-divergence`; corpus not in the repo) no lemma differs among
     Stanza f32/f64, TorchSharp, managed and managed with double gates, also with every word through the seq2seq (1.25M
-    steps, min margin 9.1e-4). Found there: our tokenizer replaces tokens with `<UNK>` over 1000 chars, Stanza over the
-    config's `max_seqlen` (200).
-  - `Pipeline.ManagedProcessors` (tokenize, mwt, pos, lemma, depparse, ner, sentiment) lists what `Backend.Managed` runs managed. The pipeline loads each
+    steps, min margin 9.1e-4). It also found the tokenizer's `<UNK>` limit bug (1000 vs the config's `max_seqlen` 200), fixed in #41.
+  - `IConstituencyNet` (`ConstituencyNet` / `ManagedConstituencyNet`): the net makes opaque handles (word vectors,
+    constituent vectors, stack LSTM states; TorchSharp's are `IDisposable` and owned by the `ParserState`), and offers
+    `EncodeWords`, `Word`, `Score`, `Open`, `Compose`, `PushTransitions`, `PushConstituents`. `ConstituencyParser` keeps the
+    transition system, legality, unary_limit, the vocab lookups, the schedule (longest first, 50 in flight) and the trees.
+    Managed: the word encoder is `ManagedLstm.ForwardPadded`; each stack LSTM layer is one GEMM over `[x | h]` (like the
+    lemma's cell); scores, compositions and pushes run `Gemm.Run(..., rowInvariant: true)` (no 1-row kernel, whose split sum
+    differs from the 6-row one), so a state's arithmetic is bitwise the same in any batch (tested). All float: scores 3.4e-5
+    from Python (TorchSharp 3.1e-5; every path ≤ 4.6e-5, tolerance 1e-3 as before); trees byte-identical. Near-ties over
+    845 golden sentences (22,569 steps): smallest decision margin 3.6e-4 (both backends), backends 7.3e-5 apart
+    (`ConstituencyTests.NearTies_AreReported`).
+  - `Pipeline.ManagedProcessors` (all eight) lists what `Backend.Managed` runs managed. The pipeline loads each
     backend's charlms only if a `_charlm` processor on that backend reads them (`ManagedCharLanguageModel`: +31 MB of
-    input tables). Managed processors read the shared `Pretrain` through `CpuVectors()` (the CPU tensor's own memory).
+    input tables). Managed processors read the shared `Pretrain` through `CpuVectors()` (its array, or a CPU tensor's own memory).
   - `CharlmCache` is backend-neutral: an entry holds its producer's form (tensors, or `[words, dim]` float arrays via the
     float `TryAdd`). `TryGet` gives tensors (a float entry is converted once, on the cache's device, and kept);
     `TryGetArrays` gives arrays (a tensor entry is copied per read). Same-backend pipelines never convert, so the default
-    path is unchanged. With pos managed, the tagger adds arrays (only when `HasRoom`), managed NER and sentiment read them as they are
-    and constituency (TorchSharp) as converted tensors; such an entry then holds both forms.
+    path is unchanged. With pos managed, the tagger adds arrays (only when `HasRoom`), the managed readers (constituency,
+    sentiment, NER) read them as they are; a TorchSharp reader in a mixed pipeline would convert them to tensors once.
 - **Code:** `src/StanzaSharp.Nn/Managed/` (`Gemm.cs`: `KernelPath`, `PackedMatrix`, `Gemm`, `Act`;
   `ManagedThreads.cs`; `PackedLstm.cs`; `ManagedModels.cs`: charlm, highway biLSTM, `ManagedLstm` = `nn.LSTM` over a
   padded batch like `Rnn.RunPacked` (`ForwardPadded`) or over packed rows (`ForwardPacked`), optional `h_init`/`c_init`,

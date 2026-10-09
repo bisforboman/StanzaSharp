@@ -23,6 +23,7 @@
     <Project Path="src/StanzaSharp/StanzaSharp.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/StanzaSharp.ManagedCheck/StanzaSharp.ManagedCheck.csproj" />
     <Project Path="tests/StanzaSharp.Tests/StanzaSharp.Tests.csproj" />
   </Folder>
 </Solution>

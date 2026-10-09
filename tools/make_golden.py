@@ -58,6 +58,9 @@ Reads <out>/corpus.txt and writes:
   no_ssplit/<name>.conllu + <name>.fast.conllu + bulk<suffix>.json
                         tokenize_no_ssplit=True (one sentence per paragraph) on NO_SSPLIT_FILES and, in bulk,
                         BULK_TEXTS, with both packages (`--no-ssplit-only`; see write_no_ssplit_golden)
+  long_token.txt + long_token.conllu + long_token.fast.conllu
+                        both packages on tokens around max_seqlen (200), which Stanza replaces with <UNK>
+                        (`--long-token-only`; see write_long_token_golden)
   pt/tiny_{legacy,zip}.pt + their stanza_convert.py output (.json/.safetensors)
                         small checkpoints in both torch.save formats for the C# .pt loader tests;
                         `python tools/make_golden.py --pt-only` regenerates just these
@@ -618,6 +621,42 @@ def write_no_ssplit_golden(models, out):
                 assert "{:C}".format(pre(sentences)) == "{:C}".format(pre_no_ssplit(sentences))
 
 
+def long_url(n):
+    """A URL of exactly n characters; URL_RAW_RE forces it into one token."""
+    return ("https://example.com/" + "abcdefghij" * 200)[:n]
+
+
+# Tokens around the tokenizer config's max_seqlen (200), one far over the 1000-unit window, and a long non-URL word.
+LONG_TOKEN_TEXT = "\n\n".join([
+    f"The study cited {long_url(300)} as its source. It was later removed.",
+    f"Exactly {long_url(199)} and {long_url(200)} and {long_url(201)} were tested.",
+    f"A long word: {'pneumono' * 30} is not a URL.",
+    f"The longest one, {long_url(1200)} , ends here.",
+    "Short sentence after them all.",
+]) + "\n"
+
+
+def write_long_token_golden(models, out):
+    """
+    long_token.txt + long_token.conllu (default package, PROCESSORS) + long_token.fast.conllu (default_fast):
+    TokenizeProcessor.process replaces tokens longer than the tokenizer config's max_seqlen with "<UNK>" (text only;
+    offsets stay). Pretokenized input skips that code, so long tokens stay (asserted here).
+    """
+    (out / "long_token.txt").write_text(LONG_TOKEN_TEXT, encoding="utf-8", newline="\n")
+    for package, suffix in PACKAGES.items():
+        nlp = stanza.Pipeline("en", dir=models, package=package, download_method=None, use_gpu=False,
+                              logging_level="WARN")
+        assert nlp.processors["tokenize"].config["max_seqlen"] == 200
+        with torch.no_grad():
+            doc = nlp(LONG_TOKEN_TEXT)
+        (out / f"long_token{suffix}.conllu").write_text("{:C}\n".format(doc), encoding="utf-8", newline="\n")
+        print(f"long_token{suffix}.conllu: {len(doc.sentences)} sentences, "
+              f"{sum(t.text == '<UNK>' for s in doc.sentences for t in s.tokens)} <UNK> tokens")
+    pre = stanza.Pipeline("en", dir=models, processors="tokenize", tokenize_pretokenized=True, download_method=None,
+                          use_gpu=False, logging_level="WARN")
+    assert pre([["see", long_url(300)]]).sentences[0].tokens[1].text == long_url(300)
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--models", default="models/stanza")
@@ -631,8 +670,12 @@ def main():
     p.add_argument("--pretokenized-only", action="store_true", help="only regenerate pretokenized/")
     p.add_argument("--bulk-only", action="store_true", help="only regenerate bulk/")
     p.add_argument("--no-ssplit-only", action="store_true", help="only regenerate no_ssplit/ (tokenize_no_ssplit)")
+    p.add_argument("--long-token-only", action="store_true", help="only regenerate long_token.*")
     args = p.parse_args()
     out = Path(args.out)
+    if args.long_token_only:
+        write_long_token_golden(args.models, out)
+        return
     if args.pretokenized_only:
         write_pretokenized_golden(args.models, out)
         return
@@ -725,6 +768,7 @@ def main():
     write_fast_golden(args.models, out)
     write_pretokenized_golden(args.models, out)
     write_bulk_golden(args.models, out)
+    write_long_token_golden(args.models, out)
 
     write_safetensors(tensors, out / "intermediates.safetensors", {"stanza": stanza.__version__})
     with open(out / "intermediates.json", "w", encoding="utf-8", newline="\n") as f:

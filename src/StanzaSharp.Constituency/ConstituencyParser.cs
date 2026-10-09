@@ -1,10 +1,8 @@
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using StanzaSharp.Nn;
-using TorchSharp;
-using TorchSharp.Modules;
+using StanzaSharp.Nn.Managed;
 using static TorchSharp.torch;
-using F = TorchSharp.torch.nn.functional;
 
 namespace StanzaSharp.Constituency;
 
@@ -16,39 +14,31 @@ namespace StanzaSharp.Constituency;
 /// - LSTM transition and constituent stacks
 /// - MAX composition
 /// - charlm, no attention, no transformer
+/// The network is an <see cref="IConstituencyNet"/> (per <see cref="Backend"/>); the transition system, the parser
+/// states, the vocab lookups and the scheduling are here.
 /// </summary>
 internal sealed class ConstituencyParser : IDisposable
 {
     private const int BatchSize = 50;
 
+    /// <summary>The model's transitions, in score column order.</summary>
+    internal IReadOnlyList<Transition> Transitions => _transitions;
+
     private readonly Pretrain _pretrain;
-    private readonly CharLanguageModel _charlmForward, _charlmBackward;
     private readonly Dictionary<string, int> _deltaMap, _tagMap;
     private readonly Transition[] _transitions;
     private readonly HashSet<string> _rootLabels;
     private readonly int _unaryLimit;
     private readonly bool _usesXpos;
-
-    private readonly Embedding _deltaEmbedding, _tagEmbedding, _transitionEmbedding, _dummyEmbedding;
-    private readonly LSTM _wordLstm, _transitionLstm, _constituentLstm;
-    private readonly Linear _wordToConstituent, _reduceLinear;
-    private readonly Linear[] _outputLayers;
-    private readonly Tensor _wordStart, _wordEnd;
+    private readonly IConstituencyNet _net;
     private readonly StackNode<Transition?> _initialTransitions;
     private readonly StackNode<Constituent> _initialConstituents;
-    private readonly Device _device = Weights.Device; // the device the model was loaded on
 
-    private ConstituencyParser(Checkpoint ckpt, Pretrain pretrain, CharLanguageModel charlmForward, CharLanguageModel charlmBackward)
+    private ConstituencyParser(Checkpoint ckpt, Pretrain pretrain, Func<IConstituencyNet> net)
     {
         _pretrain = pretrain;
-        _charlmForward = charlmForward;
-        _charlmBackward = charlmBackward;
-        if (!charlmForward.IsForward || charlmBackward.IsForward)
-            throw new ArgumentException("Pass the forward charlm first, then the backward one");
-
         var p = ckpt.Root["params"]!;
         var config = p["config"]!;
-        var model = p["model"]!;
         CheckSupported(p, config);
 
         // LSTMModel maps words and tags to i + 2 (0 = PAD, 1 = UNK) over sorted lists; the saved lists are sorted.
@@ -60,54 +50,33 @@ internal sealed class ConstituencyParser : IDisposable
         var opens = p["constituent_opens"]!.AsArray().Select(OpenLabel).ToList();
         _transitions = Strings(p["transitions"]).Select((t, i) => ParseTransition(t, i, opens)).ToArray();
 
-        int hidden = config["hidden_size"]!.GetValue<int>();
-        int layers = config["num_lstm_layers"]!.GetValue<int>();
-        int transitionHidden = config["transition_hidden_size"]!.GetValue<int>();
-
-        Embedding Emb(string name) =>
-            nn.Embedding(ckpt.Shape(model[name + ".weight"])[0], ckpt.Shape(model[name + ".weight"])[1]).LoadFrom(ckpt, model, name + ".");
-
-        _deltaEmbedding = Emb("delta_embedding");
-        _tagEmbedding = Emb("tag_embedding");
-        _transitionEmbedding = Emb("transition_embedding");
-        _dummyEmbedding = Emb("dummy_embedding"); // same weights as constituent_open_embedding (combined_dummy_embedding)
-
-        long wordInput = ckpt.Shape(model["word_lstm.weight_ih_l0"])[1];
-        _wordLstm = nn.LSTM(wordInput, hidden, numLayers: layers, batchFirst: true, bidirectional: true).LoadFrom(ckpt, model, "word_lstm.");
-        _wordToConstituent = nn.Linear(hidden * 2, hidden).LoadFrom(ckpt, model, "word_to_constituent.");
-        _wordStart = ckpt.ToTensor(model["word_start_embedding"]);
-        _wordEnd = ckpt.ToTensor(model["word_end_embedding"]);
-
-        _transitionLstm = nn.LSTM(ckpt.Shape(model["transition_embedding.weight"])[1], transitionHidden, numLayers: layers).LoadFrom(ckpt, model, "transition_stack.lstm.");
-        _constituentLstm = nn.LSTM(hidden, hidden, numLayers: layers).LoadFrom(ckpt, model, "constituent_stack.lstm.");
-        _reduceLinear = nn.Linear(hidden, hidden).LoadFrom(ckpt, model, "reduce_linear.");
-
-        var outputs = new List<Linear>();
-        for (int i = 0; model[$"output_layers.{i}.weight"] is { } w; i++)
-        {
-            var shape = ckpt.Shape(w);
-            outputs.Add(nn.Linear(shape[1], shape[0]).LoadFrom(ckpt, model, $"output_layers.{i}."));
-        }
-        _outputLayers = outputs.ToArray();
-
-        // In a dispose scope, so no temporary tensor is left to a finalizer, which could free it during a native call.
-        using (torch.no_grad())
-        using (var scope = NewDisposeScope())
-        {
-            _initialTransitions = InitialStack<Transition?>(_transitionLstm, ckpt.ToTensor(model["transition_stack.start_embedding"]), null);
-            _initialConstituents = InitialStack(_constituentLstm, ckpt.ToTensor(model["constituent_stack.start_embedding"]), new Constituent(null, null, null));
-            scope.Detach((IEnumerable<IDisposable>)[_initialTransitions.Hx, _initialTransitions.Cx, _initialTransitions.Output,
-                _initialConstituents.Hx, _initialConstituents.Cx, _initialConstituents.Output]);
-        }
+        _net = net();
+        _initialTransitions = new StackNode<Transition?>(null, null, _net.TransitionStart);
+        _initialConstituents = new StackNode<Constituent>(new Constituent(null, null, null), null, _net.ConstituentStart);
     }
 
     /// <summary>
-    /// Loads e.g. <c>models/converted/en/constituency/ptb3-revised_charlm</c>. The pretrain and charlms
+    /// Loads e.g. <c>models/converted/en/constituency/ptb3-revised_charlm</c> on TorchSharp. The pretrain and charlms
     /// are shared with the tagger, so the caller owns them.
     /// </summary>
     /// <param name="device">Where the model runs; CPU by default. Load the pretrain and charlms on the same device.</param>
     public static ConstituencyParser Load(string basePath, Pretrain pretrain, CharLanguageModel charlmForward, CharLanguageModel charlmBackward, Device? device = null) =>
-        Weights.On(device, () => new ConstituencyParser(Checkpoint.Load(basePath), pretrain, charlmForward, charlmBackward));
+        Weights.On(device, () =>
+        {
+            if (!charlmForward.IsForward || charlmBackward.IsForward)
+                throw new ArgumentException("Pass the forward charlm first, then the backward one");
+            var ckpt = Checkpoint.Load(basePath);
+            return new ConstituencyParser(ckpt, pretrain, () => new ConstituencyNet(ckpt, pretrain, charlmForward, charlmBackward));
+        });
+
+    /// <summary><see cref="Load"/> on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
+    public static ConstituencyParser LoadManaged(string basePath, Pretrain pretrain, ManagedCharLanguageModel charlmForward, ManagedCharLanguageModel charlmBackward)
+    {
+        if (!charlmForward.IsForward || charlmBackward.IsForward)
+            throw new ArgumentException("Pass the forward charlm first, then the backward one");
+        var ckpt = Checkpoint.Load(basePath);
+        return new ConstituencyParser(ckpt, pretrain, () => new ManagedConstituencyNet(ckpt, pretrain, charlmForward, charlmBackward));
+    }
 
     /// <summary>Sets <see cref="Sentence.Constituency"/> on every sentence. Needs XPOS (or UPOS) tags from the tagger.</summary>
     /// <param name="charlms">Charlm representations the tagger kept, if any; sentences missing from it are computed.</param>
@@ -116,17 +85,18 @@ internal sealed class ConstituencyParser : IDisposable
         var sentences = doc.Sentences.Where(s => s.Tokens.Count > 0).ToList();
         var tagged = sentences.Select(s => (IReadOnlyList<(string, string)>)s.Words.Select(w =>
             (w.Text, (_usesXpos ? w.Xpos : w.Upos) ?? throw new InvalidOperationException("Run the POS tagger before the parser"))).ToList()).ToList();
-        var reps = charlms == null ? null
-            : sentences.Select(s => charlms.TryGet(s, out var r) ? r : ((Tensor, Tensor)?)null).ToList();
-        var trees = Parse(tagged, charlmReps: reps, cancellationToken: cancellationToken);
+        var trees = Parse(tagged, charlms: charlms, cacheKeys: charlms == null ? null : sentences, cancellationToken: cancellationToken);
         for (int i = 0; i < sentences.Count; i++)
             sentences[i].Constituency = trees[i];
     }
 
     /// <summary>
     /// Parses (word, tag) sentences. A sentence the parser gets stuck on gives null, as Stanza drops it.
-    /// <paramref name="scores"/>, if given, receives each sentence's output-layer rows per step (for tests).
+    /// <paramref name="scores"/>, if given, receives each sentence's output-layer rows per step (for tests), and
+    /// <paramref name="onStep"/> each step's sentence index, row, and which transitions were legal.
     /// </summary>
+    /// <param name="charlms">With <paramref name="cacheKeys"/>: charlm outputs already computed; sentence i's are looked up
+    /// under its key.</param>
     /// <remarks>
     /// Scheduled like Stanza (ConstituencyProcessor + parse_sentences): sentences sorted longest first,
     /// <see cref="BatchSize"/> states in flight, and each finished state replaced by the next one, whose
@@ -134,9 +104,9 @@ internal sealed class ConstituencyParser : IDisposable
     /// independently, so this only decides how much work each step does.
     /// </remarks>
     internal List<Tree?> Parse(IReadOnlyList<IReadOnlyList<(string Word, string Tag)>> sentences, List<List<float[]>>? scores = null,
-        IReadOnlyList<(Tensor Forward, Tensor Backward)?>? charlmReps = null, CancellationToken cancellationToken = default)
+        CharlmCache? charlms = null, IReadOnlyList<Sentence>? cacheKeys = null, CancellationToken cancellationToken = default,
+        Action<int, float[], bool[]>? onStep = null)
     {
-        using var noGrad = torch.no_grad();
         var order = Enumerable.Range(0, sentences.Count).OrderByDescending(i => sentences[i].Count).ToArray();
         scores?.AddRange(sentences.Select(_ => new List<float[]>()));
         var result = new Tree?[sentences.Count];
@@ -158,7 +128,7 @@ internal sealed class ConstituencyParser : IDisposable
                             break;
                         var chunk = order[built..Math.Min(built + BatchSize, order.Length)];
                         built += chunk.Length;
-                        foreach (var s in InitialStates(chunk, sentences, charlmReps))
+                        foreach (var s in InitialStates(chunk, sentences, charlms, cacheKeys, cancellationToken))
                             horizon.Enqueue(s);
                     }
                     batch.Add(horizon.Dequeue());
@@ -166,18 +136,18 @@ internal sealed class ConstituencyParser : IDisposable
                 if (batch.Count == 0)
                     break;
 
-                // Tensors a state keeps are detached from this scope into ParserState.Owned (see Apply).
-                using var step = NewDisposeScope();
-                var logits = Forward(batch);
+                var logits = _net.Score(batch.Select(s => (s.WordHx, s.WordPosition + 1, s.Transitions.State, s.Constituents.State)).ToList(),
+                    cancellationToken);
                 int n = _transitions.Length;
                 var chosen = new Transition?[batch.Count];
                 for (int k = 0; k < batch.Count; k++)
                 {
                     var row = logits[(k * n)..((k + 1) * n)];
                     scores?[batch[k].Index].Add(row);
+                    onStep?.Invoke(batch[k].Index, row, _transitions.Select(t => batch[k].IsLegal(t, _rootLabels, _unaryLimit)).ToArray());
                     chosen[k] = Choose(batch[k], row);
                 }
-                Apply(batch, chosen, step);
+                Apply(batch, chosen, cancellationToken);
 
                 batch.RemoveAll(s =>
                 {
@@ -201,71 +171,33 @@ internal sealed class ConstituencyParser : IDisposable
     // ----- initial state: the word queue (initial_word_queues) -----
 
     private List<ParserState> InitialStates(int[] indices, IReadOnlyList<IReadOnlyList<(string Word, string Tag)>> all,
-        IReadOnlyList<(Tensor Forward, Tensor Backward)?>? charlmReps)
+        CharlmCache? charlms, IReadOnlyList<Sentence>? cacheKeys, CancellationToken ct)
     {
-        using var scope = NewDisposeScope();
         var sentences = indices.Select(i => all[i]).ToList();
-        // Charlm outputs the tagger kept, computing only the missing ones.
-        var charsForward = indices.Select(i => charlmReps?[i]?.Forward).ToList();
-        var charsBackward = indices.Select(i => charlmReps?[i]?.Backward).ToList();
-        var missing = Enumerable.Range(0, indices.Length).Where(k => charsForward[k] is null).ToList();
-        if (missing.Count > 0)
-        {
-            var words = missing.Select(k => (IReadOnlyList<string>)sentences[k].Select(x => x.Word).ToList()).ToList();
-            var forward = _charlmForward.BuildCharRepresentation(words);
-            var backward = _charlmBackward.BuildCharRepresentation(words);
-            for (int m = 0; m < missing.Count; m++)
-                (charsForward[missing[m]], charsBackward[missing[m]]) = (forward[m], backward[m]);
-        }
-
-        var inputs = new List<Tensor>(sentences.Count);
-        for (int i = 0; i < sentences.Count; i++)
-        {
-            var pretrainIds = sentences[i].Select(x =>
+        var inputs = sentences.Select((s, k) => new WordInput(
+            s.Select(x => x.Word).ToList(),
+            s.Select(x =>
             {
                 int id = _pretrain.UnitToId(x.Word);
                 return (long)(id != _pretrain.UnkId ? id : _pretrain.UnitToId(PyString.Lower(x.Word)));
-            }).ToArray();
-            var deltaIds = sentences[i].Select(x => (long)_deltaMap.GetValueOrDefault(x.Word, 1)).ToArray();
-            var tagIds = sentences[i].Select(x => (long)_tagMap.GetValueOrDefault(x.Tag, 1)).ToArray();
-            var wordInput = cat([
-                _pretrain.Embeddings[torch.tensor(pretrainIds, device: _device)],
-                _deltaEmbedding.forward(torch.tensor(deltaIds, device: _device)),
-                _tagEmbedding.forward(torch.tensor(tagIds, device: _device)),
-                charsForward[i]!,
-                charsBackward[i]!,
-            ], 1);
-            inputs.Add(cat([_wordStart.unsqueeze(0), wordInput, _wordEnd.unsqueeze(0)], 0));
-        }
-
-        var lengths = sentences.Select(s => (long)s.Count + 2).ToArray();
-        var output = Rnn.RunPacked(_wordLstm, Rnn.PadSequence(inputs), lengths);
-        var wordHx = F.relu(_wordToConstituent.forward(output));
+            }).ToArray(),
+            s.Select(x => (long)_deltaMap.GetValueOrDefault(x.Word, 1)).ToArray(),
+            s.Select(x => (long)_tagMap.GetValueOrDefault(x.Tag, 1)).ToArray(),
+            cacheKeys?[indices[k]])).ToList();
+        var words = _net.EncodeWords(inputs, charlms, ct);
 
         return sentences.Select((s, i) => new ParserState
         {
             Index = indices[i],
             SentenceLength = s.Count,
             Preterminals = s.Select(x => new Tree(x.Tag, [new Tree(x.Word)])).ToArray(),
-            WordHx = scope.Detach(wordHx[i]),
+            WordHx = words[i],
             Transitions = _initialTransitions,
             Constituents = _initialConstituents,
         }).ToList();
     }
 
-    // ----- scoring and choosing a transition -----
-
-    /// <summary>LSTMModel.forward: [batch * transitions] scores from the next word, transition and constituent stacks.</summary>
-    private float[] Forward(List<ParserState> states)
-    {
-        var word = stack(states.Select(s => s.WordHx[s.WordPosition + 1]).ToArray());
-        var transition = stack(states.Select(s => s.Transitions.Output).ToArray());
-        var constituent = stack(states.Select(s => s.Constituents.Output).ToArray());
-        var hx = cat([word, transition, constituent], 1);
-        foreach (var layer in _outputLayers)
-            hx = layer.forward(F.relu(hx)); // nonlinearity before every layer, including the first
-        return hx.ToArray<float>();
-    }
+    // ----- choosing a transition -----
 
     /// <summary>The best-scoring transition, or the best legal one if that is illegal (LSTMModel.predict).</summary>
     private Transition? Choose(ParserState state, float[] row)
@@ -282,7 +214,7 @@ internal sealed class ConstituencyParser : IDisposable
 
     // ----- applying transitions (bulk_apply) -----
 
-    private void Apply(List<ParserState> states, Transition?[] transitions, DisposeScope step)
+    private void Apply(List<ParserState> states, Transition?[] transitions, CancellationToken ct)
     {
         var applied = new List<(ParserState State, Transition Transition, StackNode<Constituent> Base)>();
         var newConstituents = new List<Constituent>();
@@ -304,7 +236,7 @@ internal sealed class ConstituencyParser : IDisposable
             switch (t.Kind)
             {
                 case TransitionKind.Shift:
-                    newConstituents.Add(new Constituent(s.Preterminals[s.WordPosition], null, s.WordHx[s.WordPosition + 1]));
+                    newConstituents.Add(new Constituent(s.Preterminals[s.WordPosition], null, _net.Word(s.WordHx, s.WordPosition + 1)));
                     applied.Add((s, t, s.Constituents));
                     s.WordPosition++;
                     break;
@@ -342,15 +274,14 @@ internal sealed class ConstituencyParser : IDisposable
 
         if (opens.Count > 0)
         {
-            var hx = _dummyEmbedding.forward(torch.tensor(opens.Select(o => (long)o.OpenIndex).ToArray(), device: _device)).unbind(0);
+            var hx = _net.Open(opens.Select(o => o.OpenIndex).ToArray());
             for (int i = 0; i < opens.Count; i++)
                 newConstituents[opens[i].Slot] = new Constituent(null, opens[i].Label, hx[i]);
         }
         if (closes.Count > 0)
         {
             // MAX composition: elementwise max over the children, then relu(reduce_linear(.)).
-            var pooled = stack(closes.Select(c => stack(c.Children.Select(x => x.Hx!).ToArray()).max(0).values).ToArray());
-            var hx = F.relu(_reduceLinear.forward(pooled)).unbind(0);
+            var hx = _net.Compose(closes.Select(c => (IReadOnlyList<object>)c.Children.Select(x => x.Hx!).ToList()).ToList(), ct);
             for (int i = 0; i < closes.Count; i++)
             {
                 var tree = new Tree(closes[i].Label, closes[i].Children.Select(c => c.Tree!).ToList());
@@ -358,41 +289,19 @@ internal sealed class ConstituencyParser : IDisposable
             }
         }
 
-        var transitionInput = _transitionEmbedding.forward(torch.tensor(applied.Select(a => (long)a.Transition.Index).ToArray(), device: _device));
-        var newTransitions = Push(_transitionLstm, applied.Select(a => a.State.Transitions).ToList(),
-            applied.Select(a => (Transition?)a.Transition).ToList(), transitionInput);
-        var constituentInput = stack(newConstituents.Select(c => c.Hx!).ToArray());
-        var newStacks = Push(_constituentLstm, applied.Select(a => a.Base).ToList(), newConstituents, constituentInput);
+        var newTransitions = _net.PushTransitions(applied.Select(a => a.State.Transitions.State).ToList(),
+            applied.Select(a => a.Transition.Index).ToArray(), ct);
+        var newStacks = _net.PushConstituents(applied.Select(a => a.Base.State).ToList(), newConstituents.Select(c => c.Hx!).ToList(), ct);
 
         for (int i = 0; i < applied.Count; i++)
         {
-            var (t, c) = (newTransitions[i], newStacks[i]);
-            applied[i].State.Transitions = t;
-            applied[i].State.Constituents = c;
-            // Shifted words' vectors are views of WordHx; disposing a view leaves the storage to the others.
-            Tensor[] kept = [t.Hx, t.Cx, t.Output, c.Hx, c.Cx, c.Output, c.Value.Hx!];
-            step.Detach((IEnumerable<IDisposable>)kept);
-            applied[i].State.Owned.AddRange(kept);
+            var (s, t, below) = applied[i];
+            s.Transitions = new StackNode<Transition?>(t, s.Transitions, newTransitions[i]);
+            s.Constituents = new StackNode<Constituent>(newConstituents[i], below, newStacks[i]);
+            s.Own(newTransitions[i]);
+            s.Own(newStacks[i]);
+            s.Own(newConstituents[i].Hx);
         }
-    }
-
-    // ----- LSTM stacks (lstm_tree_stack.py) -----
-
-    private static StackNode<T> InitialStack<T>(LSTM lstm, Tensor startEmbedding, T value)
-    {
-        var (output, hx, cx) = lstm.forward(startEmbedding.view(1, 1, -1));
-        return new StackNode<T>(value, null, hx.squeeze(1), cx.squeeze(1), output[0, 0]);
-    }
-
-    /// <summary>Runs the LSTM one step for each stack from its own state and pushes the results.</summary>
-    private static List<StackNode<T>> Push<T>(LSTM lstm, List<StackNode<T>> stacks, List<T> values, Tensor inputs)
-    {
-        var hx = torch.stack(stacks.Select(s => s.Hx).ToArray(), 1);
-        var cx = torch.stack(stacks.Select(s => s.Cx).ToArray(), 1);
-        var (output, hn, cn) = lstm.forward(inputs.unsqueeze(0), (hx, cx));
-        // One unbind per tensor instead of a view op per stack: the per-step op count is the parser's overhead.
-        var (hs, cs, outputs) = (hn.unbind(1), cn.unbind(1), output[0].unbind(0));
-        return stacks.Select((s, i) => new StackNode<T>(values[i], s, hs[i], cs[i], outputs[i])).ToList();
     }
 
     // ----- loading -----
@@ -452,15 +361,5 @@ internal sealed class ConstituencyParser : IDisposable
 
     private static List<string> Strings(JsonNode? array) => array!.AsArray().Select(x => x!.GetValue<string>()).ToList();
 
-    public void Dispose()
-    {
-        foreach (var m in new nn.Module[] { _deltaEmbedding, _tagEmbedding, _transitionEmbedding, _dummyEmbedding,
-                     _wordLstm, _transitionLstm, _constituentLstm, _wordToConstituent, _reduceLinear })
-            m.Dispose();
-        foreach (var l in _outputLayers)
-            l.Dispose();
-        foreach (var t in new[] { _wordStart, _wordEnd, _initialTransitions.Hx, _initialTransitions.Cx, _initialTransitions.Output,
-                     _initialConstituents.Hx, _initialConstituents.Cx, _initialConstituents.Output })
-            t.Dispose();
-    }
+    public void Dispose() => _net.Dispose();
 }

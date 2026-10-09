@@ -10,9 +10,10 @@ StanzaSharp runs each processor's network on one of two backends:
 The owner's plan: 0.5 makes the managed backend the default, with TorchSharp still selectable. At 1.0 TorchSharp leaves
 the main package for an opt-in `StanzaSharp.Cuda` package. Both implementations stay.
 
-Phase 1 added the seam and ported **tokenize** and **mwt**. Phase 2 ports the other processors one at a time; so far
-**ner**, **pos**, **depparse**, **sentiment** and **lemma**, plus a backend-neutral `CharlmCache` (see [Phase 2](#phase-2-progress)). Everything is `internal`;
-nothing public changed.
+Phase 1 added the seam and ported **tokenize** and **mwt**. Phase 2 ported the other six one at a time: **ner**, **pos**,
+**depparse**, **sentiment**, **lemma** and **constituency**, plus a backend-neutral `CharlmCache` (see
+[Phase 2](#phase-2-progress)). Every processor of both packages now runs on either backend, and a managed pipeline loads no
+TorchSharp charlms. Everything is `internal`; nothing public changed.
 
 ## The seam
 
@@ -27,6 +28,7 @@ The seam sits at each processor's **network**: one small interface per processor
 | depparse | `IDepparseNet.Forward(DepparseBatch, labelScores, ct)` → `DepparseScores` (arc log-probs, label argmax, optional label scores) | `DepparseNet` | `ManagedDepparseNet` |
 | sentiment | `ISentimentNet.Forward(batch, ids, extraIds, width, charlms, cacheKeys, ct)` → [batch, classes] logits | `SentimentNet` | `ManagedSentimentNet` |
 | lemma | `ILemmaNet.Encode(ids, batch, width, posIds, lengths, ct)` → `ILemmaDecoder` (edit logits; `Step(previous, ct)` → [batch, columns] log-probs) | `LemmaNet` | `ManagedLemmaNet` |
+| constituency | `IConstituencyNet`: `EncodeWords`, `Word`, `Score` → [states, transitions] scores, `Open`, `Compose`, `PushTransitions`, `PushConstituents` over opaque handles | `ConstituencyNet` | `ManagedConstituencyNet` |
 
 - **Shared:** everything around the network stays in the processor and serves both backends. That covers paragraph
   splitting, features, sorting, batching, the 1000-character windows, padding, the argmax, `FixLabels`, decoding,
@@ -56,8 +58,69 @@ The seam sits at each processor's **network**: one small interface per processor
 - **Threads:** with `Backend.Managed`, `Load` also sets `ManagedThreads.Count`, with the documented semantics: an
   explicit `Threads`, or null for `min(current count, Environment.ProcessorCount)`. The count is ProcessorCount unless
   something set it lower, and `ProcessorCount` respects a container's CPU quota. It is process-wide, like
-  `torch.set_num_threads`. TorchSharp's threads are still set as before, for the processors that aren't ported.
+  `torch.set_num_threads`. With `Backend.Managed`, libtorch's threads are left alone (see below); on TorchSharp they are
+  set as before.
 - Benchmark: `StanzaSharp.Benchmark --backend managed [--processors tokenize,mwt]`.
+
+### No libtorch on the managed backend (0.5 requirement)
+
+A pipeline on `Backend.Managed` loads and runs with no native libtorch anywhere, and makes no TorchSharp object. The
+managed `TorchSharp.dll` assembly is still referenced and loaded (types in signatures and fields), but nothing calls
+into it. TorchSharp's `torch` class loads libtorch in its static constructor, so *any* `torch.*` member (even
+`torch.CPU`) would load it.
+
+Touchpoints found and how they were removed:
+
+| Touchpoint | Fix |
+|---|---|
+| `Pipeline.Load`: `torch.get_num_threads`/`set_num_threads` (the first one ran `torch`'s static constructor, which loaded `LibTorchSharp`, `torch_cpu` and `c10`) | Managed `Load` sets only `ManagedThreads.Count`; the torch threads, TF32 and `Weights.On(Device)` moved into `Pipeline.LoadTorchSharp`, the TorchSharp path, unchanged |
+| `Pretrain`: the embedding matrix was a tensor (`ckpt.ToTensor`), read by managed nets through `CpuVectors()` | `Pretrain.LoadManaged`: a plain `float[]` read straight from the safetensors / `.pt` storage (`Checkpoint.Tensor<float>`); `Pipeline` uses it when every processor reading the pretrain is managed. `Count`/`Dim` no longer read the tensor's shape. `Embeddings` throws on a managed pretrain |
+| `TorchSharp.torch.Device`/`DisableTf32` | only read on the TorchSharp path |
+
+Checked and already clean: every processor's `LoadManaged`/managed net reads its weights through `Checkpoint.Tensor<float>`
+(Core: `SafeTensorFile`, `TorchCheckpoint`) into arrays; the shared processor code (batching, decoding) has no torch
+call; `CharlmCache` makes tensors only in `TryGet` (TorchSharp readers) and disposes only tensors it holds; `Weights.On`
+(tokenizer, mwt, lemma `Load`) only sets an `AsyncLocal` when no device is given; `Scalars`' static fields are never
+touched on the managed path; `ModelDownloader`/`VerifyChecksums` (MD5), `Conllu`, the `Logger`, cancellation and
+`NativeHeap` (glibc `malloc_trim`) don't use TorchSharp.
+
+**Proof:**
+
+- `tests/StanzaSharp.ManagedCheck`: a console app referencing the library projects but no `TorchSharp-cpu` /
+  `libtorch-cpu-*` (`StanzaSharpNoLibTorch` in its csproj keeps Directory.Build.props from adding the Windows Arm64
+  libtorch), so libtorch is not on disk next to it (only TorchSharp's own `LibTorchSharp`, which the managed package
+  carries). For `default` and `default_fast` it loads a managed pipeline (with `Threads`, a `Logger`, and
+  `VerifyChecksums` for `.pt` models), checks that a canceled `Process` throws, compares `corpus.txt` with
+  `pipeline.conllu` / `fast/corpus.conllu` byte for byte, runs bulk, pretokenized and no-ssplit input, and fails if a
+  native torch module is loaded (`Process.Modules`: `LibTorchSharp`, `torch_cpu`, `c10`; on Linux .NET reads
+  `/proc/self/maps`). Public API only, plus reflection for the internal `PipelineOptions.Backend`.
+- `ManagedCheckTests` runs it in its own process with `NUGET_PACKAGES` set to an empty folder: TorchSharp's fallback
+  otherwise copies libtorch from the NuGet cache into a `cpu/` folder next to the app and loads it from there (that is
+  how the first run, before the fixes, loaded `torch_cpu`/`c10` although none was in the output). With the fallback
+  blocked, any torch call throws (`TypeInitializationException` from `torch..cctor`, which is how the touchpoints above
+  were found). It also asserts no libtorch file is in the app's output.
+- `tools/verify-package.ps1 -Managed` (CI: golden job, Linux, `.pt` models): packs StanzaSharp, builds a fresh app that
+  references **only** `StanzaSharp` (no `TorchSharp-cpu`, no platform package), compiles the same `Program.cs` against
+  it, checks no libtorch reached the output, and runs it with an empty `NUGET_PACKAGES`.
+
+**Load memory** (`--memory`, fresh process, default package, converted models, Ryzen 7 5800X; the benchmark used to
+load libtorch at startup through `torch.CPU`, which inflated earlier managed numbers):
+
+| | load | load peak | after load |
+|---|---:|---:|---:|
+| TorchSharp | 1.25 s | 818–820 MB | 818 MB |
+| managed, before (libtorch loaded, tensor pretrain) | 1.21 s | 1,127 MB | 1,127 MB |
+| managed, no libtorch, array pretrain, no GC between models | 1.08 s | 1,035 MB | 1,024 MB |
+| managed, now | 1.10–1.15 s | **837–870 MB** | 826 MB |
+
+`default_fast`: TorchSharp 623 MB, managed 749 → **658 MB**. The managed load allocated 1,639 MB on the GC heap for
+679 MB kept: each weight is read into an array, then packed into another. `PackedLstm.PackInput` copied every input
+row, then concatenated them through a growing buffer; it now copies once into the final array (1,390 MB allocated,
+627 MB kept, load ~0.1 s faster). `Pipeline` then runs `GC.Collect()` after each managed model, so the next one reuses
+that memory (−200 MB peak, about +0.05 s; the `--memory` run's gen2 count includes those 11 collections). What is left
+above TorchSharp is the packed form (padding to 16-column panels, charlm input tables, contracted biaffines: 627 MB of
+arrays for 551 MB of checkpoint) and the runtime. Processing peaks are unchanged (`--memory 6000`: managed 2,299–2,304 MB
+in 12.5 s, TorchSharp 3,771–4,302 MB in 23–27 s).
 
 ### Plan for the `StanzaSharp.Cuda` split (proposal, not done)
 
@@ -194,7 +257,7 @@ size would need it; none is ported.
 | **depparse** (`_nocharlm`, default_fast) | yes | byte-identical; arc / label log-probs 1.1e-5 / 2.7e-5 from Python (every path ≤ 1.5e-5 / 3.1e-5) | **6.47 → 3.68 s (0.57)** | **19.85 → 17.33 s (0.87)** |
 | **sentiment** (`sstplus_charlm`, both packages) | yes | byte-identical labels; logits within 1e-4 of Python's float32 or float64 logits (8.2e-5; 1.38e-4 from float32 on one ill-conditioned sentence, see [sentiment](#sentiment)) (TorchSharp 2.1e-5) | sentiment stage **9.82 → 5.98 s (0.61)** | **33.65 → 26.29 s (0.78)** |
 | **lemma** (`combined_nocharlm`, both packages) | yes | byte-identical lemmas, decoding and edits; smallest top-2 margin 5.6e-3; log-probs 4.8e-4 from TorchSharp, reported, not asserted (owner's decision, 2026-10-08; see [lemma](#lemma)) | lemma stage **0.89 → 0.32 s (0.36)** | **1.18 → 0.72 s (0.61)** |
-| constituency | no | | | |
+| **constituency** (`ptb3-revised_charlm`, default package) | yes | byte-identical trees; transition scores 3.4e-5 from Python (TorchSharp 3.1e-5; every path ≤ 4.6e-5; tolerance 1e-3 as before); smallest decision margin 3.6e-4 over 22,569 steps (see [constituency](#constituency)) | constituency stage **10.02 → 4.77 s (0.48)** | **21.73 → 17.82 s (0.82)** |
 
 Speed: `StanzaSharp.Benchmark --processors tokenize,ner --backend torch|managed --threads N --runs 3` (so NER computes every
 charlm itself; no tagger, no cache), 8 copies (24,840 words), medians, Ryzen 7 5800X, idle machine. In the full
@@ -333,6 +396,82 @@ reads the tagger's cached charlm outputs for sentences without MWTs.
   working set 2,538 → 2,759 MB (both charlm forms, since constituency still reads TorchSharp's). `--memory 6000` (one
   Process call): 4,299 → 2,839 MB, 22.7 → 11.8 s.
 
+### constituency
+
+- **Seam:** `IConstituencyNet` works on opaque handles the net makes and only it reads: a sentence's word vectors, a
+  constituent's vector, a stack node's LSTM state. `ConstituencyParser` keeps the transition system (IN_ORDER, legality,
+  `unary_limit` 4, the 20 × (length + 2) transition cap), the vocab lookups (pretrain with the lowercase fallback, delta and
+  tag ids), the schedule (sentences longest first, word queues built 50 at a time, 50 states in flight, each finished state
+  replaced), the stacks themselves, the trees and their `-LRB-`/`-RRB-` printing. Per step it calls `Score`, then `Open`
+  (dummy embedding rows), `Compose` (MAX + `reduce_linear` + ReLU, per close), `PushTransitions` and `PushConstituents`, each
+  over the batch. `ParserState` owns the handles that are `IDisposable` (TorchSharp's tensors, freed when its sentence ends);
+  the managed ones are plain float arrays. `ConstituencyNet` is the TorchSharp code, moved unchanged (no_grad and a dispose
+  scope per call instead of per step); `LoadManaged` builds `ManagedConstituencyNet`. `Parse` takes an optional `onStep`
+  hook (row and legality per state and step) for the near-tie report.
+- **Managed net:**
+  - Word encoder: rows `[word_start | pretrain 100, delta 100, tag 20, charlms 2048 | word_end]` (charlm columns from the
+    cache as arrays, the rest computed in one batch), `ManagedLstm.ForwardPadded` (2 layers, 2 × 512), then
+    `word_to_constituent` as one GEMM and ReLU; each sentence keeps its rows as [hidden] arrays.
+  - Stack LSTMs: each layer is one GEMM over `[x | h]` (K = 40 for the transition stack, 1024 for the constituent stack;
+    gate rows in `PackedLstm.GateOrder`, b_ih + b_hh folded) and `Act.LstmCell`, with every row read from and written to its
+    own state; a node holds its [layers, hidden] h and c (8 KB for the constituent stack). The start states are pushed from
+    zeros at load, like `nn.LSTM` without hx.
+  - Scores: `[word | transition top | constituent top]` (1044), ReLU before each of the two output layers, through `Gemm`.
+  - **Per-state arithmetic:** every per-step GEMM uses `Gemm.Run(..., rowInvariant: true)`. `Gemm` serves a lone row of a
+    6-row block with a 1-row kernel that splits the k sum into four accumulators; the flag sends it through the 3-row
+    kernel, whose per-row arithmetic is the 6-row one's. So a state's scores, compositions and pushes are bitwise the same
+    whatever else is in the batch (tested on 7 states vs each alone, on every path; without the flag the test fails on the
+    SIMD paths). The word encoder stays batched per 50 sentences, as on TorchSharp and in Stanza.
+- **Exactness** (all float, no double sums needed):
+
+  | | TorchSharp | managed |
+  |---|---:|---:|
+  | transition scores vs Python, 3 golden sentences (100 steps; tolerance 1e-3, unchanged) | 3.1e-5 | 3.4e-5 (Vector128 4.2e-5, Scalar 4.6e-5) |
+  | step scores managed vs TorchSharp, pipeline.conllu (10 sentences, 410 steps), every path | – | 5.0e-5 to 6.1e-5 |
+  | step scores managed vs TorchSharp, all 845 golden sentences (22,569 steps) | – | 7.3e-5 |
+
+  Trees are byte-identical: `pipeline.conllu` and every `validation*.conllu` through the full pipeline, the all-eight,
+  cache-settings, bulk, pretokenized, no_ssplit and concurrency theories, `ConstituencyTests` (both backends) and the
+  cancellation theory (the parser stops within one step).
+- **Near-ties** (`ConstituencyTests.NearTies_AreReported`: both backends parse all 845 golden sentences from Stanza's words
+  and XPOS, charlms computed; every step's decision is the same on both). The decision margin is the best legal
+  transition's score minus the next legal one's; 20,833 of the 22,569 steps have at least two legal transitions. The raw
+  top-2 margin of the whole row gives the same counts (an illegal top never came close).
+
+  | decision margin | TorchSharp | managed |
+  |---|---:|---:|
+  | < 1e-2 | 16 | 16 |
+  | < 1e-3 | 2 | 2 |
+  | < 1e-4 | 0 | 0 |
+  | smallest | 3.63e-4 | 3.61e-4 |
+
+  The closest calls (margin TorchSharp / managed):
+
+  | sentence | step | chosen over | margins |
+  |---|---:|---|---|
+  | validation_social 43 | 6 | Shift over Open(ADJP) | 3.63e-4 / 3.61e-4 |
+  | validation_instructions 53 | 12 | Shift over Open(PP) | 8.63e-4 / 8.65e-4 |
+  | validation_academic 15 | 9 | Shift over Open(NP) | 2.92e-3 / 2.92e-3 |
+  | validation_tech 64 | 12 | Shift over Open(PP) | 3.21e-3 / 3.21e-3 |
+  | validation_dialogue 14 | 2 | Shift over Close | 4.41e-3 / 4.41e-3 |
+
+  The smallest margin is 5× the largest score difference between the backends (7.3e-5) and 10× the drift from Python
+  (3.4e-5); the two backends' margins differ by at most 2e-6 there.
+- **Speed** (`--processors tokenize,mwt,pos,constituency`, 8 copies, 26,264 words, medians of 3, Ryzen 7 5800X, load ~14%;
+  the parser reads the tagger's cache): constituency stage **10.02 → 4.77 s** at 8 threads, **21.73 → 17.82 s** at 1 thread.
+  Per step the managed net reads ~19 MB of weights (two constituent LSTM layers 16 MB, output layer 2 MB, reduce 1 MB) for up
+  to 50 rows.
+- **Fully managed pipeline** (all eight processors, 8 threads, same text): **56.44 → 25.93 s** (tokenize 1.43 → 0.34, pos
+  11.19 → 5.50, lemma 0.89 → 0.36, constituency 9.97 → 4.70, depparse 13.68 → 8.28, sentiment 6.12 → 3.61, ner 13.15 →
+  3.14).
+- **Memory:** no processor reads the TorchSharp charlms any more, so a managed pipeline doesn't load them
+  (`PipelineTests.ManagedBackend_LoadsNoTorchSharpCharlms`, both packages), and cache entries are never converted to
+  tensors. Full 8-processor benchmark: peak working set **2,530 MB (TorchSharp) → 2,306 MB (managed)**, against 2,692 MB with
+  constituency still on TorchSharp (both charlm forms). `--memory 6000` (load, one Process call of 8,071 words, two fresh
+  processes each): TorchSharp 4,294 / 3,750 MB in 23.8 / 24.0 s, managed **2,533 / 2,531 MB** in **11.5 / 11.6 s** (with
+  constituency still on TorchSharp, as measured for sentiment: 2,839 MB). The managed load peak is higher (1,166 vs 819 MB: the packed weights live on the GC
+  heap, 800 MB, next to the TorchSharp pretrain) and the run does 9 gen2 GCs (TorchSharp 4).
+
 ### lemma
 
 - **Seam:** `ILemmaNet.Encode(ids, batch, width, posIds, lengths, ct)` → an `ILemmaDecoder` (the batch's state, disposed
@@ -447,9 +586,15 @@ by one, producer and readers can sit on different backends.
 
 ## Phase 2: what next
 
-1. ~~lemma~~: done ([lemma](#lemma)); open: a tolerance for its log-probs.
-2. **constituency**: the most code; per-step stack LSTMs (50 states in flight) and a transition argmax over thousands
-   of steps. The highest near-tie risk.
+1. ~~lemma~~: done ([lemma](#lemma)).
+2. ~~constituency~~: done ([constituency](#constituency)). Phase 2 is complete.
+
+For 0.5:
+
+- ~~`Pretrain` as a plain array, and a managed `Load` that touches no libtorch~~: done ([No libtorch on the managed
+  backend](#no-libtorch-on-the-managed-backend-05-requirement)).
+- The public `PipelineBackend` option (decided: A), and managed as the default; `Device`/`DisableTf32` become `[Obsolete]`.
+- Later (1.0): the `StanzaSharp.Cuda` split.
 
 Cross-cutting:
 
@@ -457,13 +602,12 @@ Cross-cutting:
   has 1e-4), not 1e-3. Where it misses, the drift's source gets a cheap fix (e.g. double sums, as in `upos_clf`) or
   goes to the owner with measured options.
 
-- **Shared models:** the factory of the Cuda split has to build `Pretrain` and the charlms per backend. `Pretrain` is
-  still a TorchSharp tensor that managed processors read in place; a libtorch-free managed pipeline (0.5) needs it
-  as a plain array.
+- **Shared models:** the factory of the Cuda split has to build `Pretrain` and the charlms per backend. `Pretrain`
+  already has both forms (`Load`: tensor, `LoadManaged`: array); the tensor half moves with the split.
 - **NER batches:** NER runs the charlms 32 sentences at a time (Stanza's batches), where both backends are
   memory-bound on the 16 MB recurrent weights. Running the charlms over bigger groups would be faster but changes the
   last float bits; left as is.
 - **CI time:** the both-backend theories rerun the full pipeline on the golden files; the full local suite takes
-  29–34 minutes on 8 cores (246 tests, none skipped, Release build; with managed depparse 32.2 min on the converted models, 28.9 min on the `.pt` files; with managed sentiment, 253 tests, 27.2 / 31.2 min; with managed lemma, 258 tests, 31.4 / 26.5 min).
+  29–34 minutes on 8 cores (246 tests, none skipped, Release build; with managed depparse 32.2 min on the converted models, 28.9 min on the `.pt` files; with managed sentiment, 253 tests, 27.2 / 31.2 min; with managed lemma, 258 tests, 31.4 / 26.5 min; with managed constituency, 265 tests, 40 min on the converted models while another suite loaded the machine, 25.2 min on the `.pt` files).
   `ConcurrencyTests` now runs alone after the parallel collections: beside the heavier both-backend theories its
   cancellation test failed every full run (the timed run was slower than the canceled ones).

@@ -61,7 +61,7 @@ public sealed class Pipeline : IDisposable
     };
 
     // Processors with a managed network (issue #29, docs/backends.md); the others run on TorchSharp on either backend.
-    internal static readonly HashSet<string> ManagedProcessors = ["tokenize", "mwt", "pos", "lemma", "depparse", "ner", "sentiment"];
+    internal static readonly HashSet<string> ManagedProcessors = ["tokenize", "mwt", "pos", "lemma", "constituency", "depparse", "ner", "sentiment"];
 
     // Processors whose models (every package's) read the shared pretrained word vectors.
     private static readonly HashSet<string> UsesPretrain = ["pos", "depparse", "ner", "constituency", "sentiment"];
@@ -108,16 +108,28 @@ public sealed class Pipeline : IDisposable
         T Timed<T>(string name, Func<T> load)
         {
             if (_logger?.IsEnabled(LogLevel.Information) != true)
-                return load();
+                return Collected(load());
             long start = Stopwatch.GetTimestamp();
-            var model = load();
+            var model = Collected(load());
             _logger.LogInformation("Loaded {Model} in {Milliseconds:F0} ms", name, Stopwatch.GetElapsedTime(start).TotalMilliseconds);
+            return model;
+        }
+        // The managed models read each weight into an array, then pack it into another: about 1.4 GB allocated for
+        // 630 MB kept (default package). Collecting after each model lets the next one reuse that memory: load peak
+        // 1,035 → ~850 MB for about 0.05 s (docs/backends.md). TorchSharp models allocate little on the GC heap.
+        T Collected<T>(T model)
+        {
+            if (options.Backend == Backend.Managed)
+                GC.Collect();
             return model;
         }
 
         var shared = SharedModels(models);
         if (shared.Contains(PretrainPath))
-            _pretrain = Timed(PretrainPath, () => Pretrain.Load(Path.Combine(modelDir, PretrainPath)));
+            // A plain array when only managed processors read it (no tensor, so no libtorch), else a tensor.
+            _pretrain = Timed(PretrainPath, () => models.Keys.Where(UsesPretrain.Contains).All(Managed)
+                ? Pretrain.LoadManaged(Path.Combine(modelDir, PretrainPath))
+                : Pretrain.Load(Path.Combine(modelDir, PretrainPath)));
         if (shared.Contains(ForwardCharlmPath))
         {
             // Each backend's charlms, if a processor on it reads them.
@@ -152,7 +164,9 @@ public sealed class Pipeline : IDisposable
                 ? NerTagger.LoadManaged(Model("ner"), _pretrain!, _managedCharlmForward, _managedCharlmBackward)
                 : NerTagger.Load(Model("ner"), _pretrain!, _charlmForward, _charlmBackward));
         if (models.ContainsKey("constituency"))
-            _parser = Timed(Name("constituency"), () => ConstituencyParser.Load(Model("constituency"), _pretrain!, _charlmForward!, _charlmBackward!));
+            _parser = Timed(Name("constituency"), () => Managed("constituency")
+                ? ConstituencyParser.LoadManaged(Model("constituency"), _pretrain!, _managedCharlmForward!, _managedCharlmBackward!)
+                : ConstituencyParser.Load(Model("constituency"), _pretrain!, _charlmForward!, _charlmBackward!));
         if (models.ContainsKey("sentiment"))
             _sentiment = Timed(Name("sentiment"), () => Managed("sentiment")
                 ? SentimentClassifier.LoadManaged(Model("sentiment"), _pretrain!, _managedCharlmForward!, _managedCharlmBackward!)
@@ -191,24 +205,34 @@ public sealed class Pipeline : IDisposable
             ModelDownloader.Verify(modelDir, models);
             logger?.LogInformation("Verified the model checksums in {Milliseconds:F0} ms", Stopwatch.GetElapsedTime(start).TotalMilliseconds);
         }
+        Pipeline pipeline;
+        if (options.Backend == Backend.Managed)
+        {
+            // Every processor runs managed, so nothing here may touch TorchSharp: its first call loads native libtorch
+            // (the managed backend needs none; ManagedCheckTests). The same semantics as libtorch's threads (LoadTorchSharp): null
+            // caps the pool's current count (ProcessorCount unless set lower).
+            ManagedThreads.Count = options.Threads ?? Math.Min(ManagedThreads.Count, Environment.ProcessorCount);
+            logger?.LogInformation("Using {Threads} managed threads", ManagedThreads.Count);
+            pipeline = new Pipeline(modelDir, models, options);
+        }
+        else
+            pipeline = LoadTorchSharp(modelDir, models, options);
+        logger?.LogInformation("Loaded the {Package} pipeline ({Processors}) in {Milliseconds:F0} ms", options.Package,
+            string.Join(",", AllProcessors.Split(',').Where(models.ContainsKey)), Stopwatch.GetElapsedTime(start).TotalMilliseconds);
+        return pipeline;
+    }
+
+    /// <summary>The TorchSharp backend's Load: libtorch's thread count, TF32, and the models on <see cref="PipelineOptions.Device"/>.</summary>
+    private static Pipeline LoadTorchSharp(string modelDir, Dictionary<string, string> models, PipelineOptions options)
+    {
         // libtorch defaults to the host's physical cores; ProcessorCount respects a container's CPU quota.
         int threads = options.Threads ?? Math.Min(torch.get_num_threads(), Environment.ProcessorCount);
         if (threads != torch.get_num_threads())
             torch.set_num_threads(threads);
-        logger?.LogInformation("Using {Threads} torch intra-op threads (Environment.ProcessorCount is {ProcessorCount})", threads, Environment.ProcessorCount);
-        if (options.Backend == Backend.Managed)
-        {
-            // The same semantics for the managed pool: null caps its current count (ProcessorCount unless set lower).
-            ManagedThreads.Count = options.Threads ?? Math.Min(ManagedThreads.Count, Environment.ProcessorCount);
-            logger?.LogInformation("Using {Threads} managed threads", ManagedThreads.Count);
-        }
-
+        options.Logger?.LogInformation("Using {Threads} torch intra-op threads (Environment.ProcessorCount is {ProcessorCount})", threads, Environment.ProcessorCount);
         if (options.DisableTf32)
             torch.backends.cuda.matmul.allow_tf32 = torch.backends.cudnn.allow_tf32 = false;
-        var pipeline = Weights.On(options.Device, () => new Pipeline(modelDir, models, options));
-        logger?.LogInformation("Loaded the {Package} pipeline ({Processors}) in {Milliseconds:F0} ms", options.Package,
-            string.Join(",", AllProcessors.Split(',').Where(models.ContainsKey)), Stopwatch.GetElapsedTime(start).TotalMilliseconds);
-        return pipeline;
+        return Weights.On(options.Device, () => new Pipeline(modelDir, models, options));
     }
 
     internal const string PretrainPath = "pretrain/conll17", ForwardCharlmPath = "forward_charlm/1billion", BackwardCharlmPath = "backward_charlm/1billion";

@@ -1,28 +1,15 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
+  <!-- Runs the managed backend with no native libtorch anywhere: unlike the other runnable projects it references no
+       TorchSharp-cpu or libtorch-cpu-* package (StanzaSharpNoLibTorch, see Directory.Build.props). Run by
+       ManagedCheckTests, and by tools/verify-package.ps1 -Managed against the packed StanzaSharp package. -->
   <PropertyGroup>
+    <OutputType>Exe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <IsPackable>false</IsPackable>
+    <StanzaSharpNoLibTorch>true</StanzaSharpNoLibTorch>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="coverlet.collector" Version="6.0.4" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-    <PackageReference Include="$(TorchSharpNative)" Version="$(TorchSharpVersion)" />
-    <PackageReference Include="xunit" Version="2.9.3" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Using Include="Xunit" />
-  </ItemGroup>
-
-  <!-- GPU tests exist only in CUDA builds (STANZASHARP_CUDA=1), so a CPU run has nothing to skip. -->
-  <ItemGroup Condition="'$(TorchSharpNative)' != 'TorchSharp-cuda-windows'">
-    <Compile Remove="GpuTests.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\StanzaSharp\StanzaSharp.csproj" />
@@ -36,8 +23,6 @@
     <ProjectReference Include="..\..\src\StanzaSharp.Depparse\StanzaSharp.Depparse.csproj" />
     <ProjectReference Include="..\..\src\StanzaSharp.Ner\StanzaSharp.Ner.csproj" />
     <ProjectReference Include="..\..\src\StanzaSharp.Sentiment\StanzaSharp.Sentiment.csproj" />
-    <!-- Built first, run by ManagedCheckTests in a process of its own (no libtorch); not referenced as an assembly. -->
-    <ProjectReference Include="..\StanzaSharp.ManagedCheck\StanzaSharp.ManagedCheck.csproj" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>

@@ -47,7 +47,7 @@ string modelDir = Path.Combine("models", "converted", "en");
 int copies = 8, runs = 3, threads = 0, documents = 0, memoryWords = 0, chunkWords = 0, calls = 1, cacheWords = CharlmCache.DefaultMaxWords;
 string? outFile = null, processors = null;
 bool bulkCall = false, verbose = false, noTrim = false;
-var device = torch.CPU;
+torch.Device? device = null; // CPU; not torch.CPU, which would load libtorch in a managed run
 bool noTf32 = false;
 string package = Pipeline.DefaultPackage;
 var backend = Backend.TorchSharp;
@@ -98,7 +98,7 @@ if (documents > 0)
     watch.Restart();
     nlp.Process(texts);
     double bulk = watch.Elapsed.TotalSeconds;
-    Console.WriteLine($"C# StanzaSharp ({package}) on {device}, torch threads {torch.get_num_threads()}, {texts.Count} documents of one sentence");
+    Console.WriteLine($"C# StanzaSharp ({package}) on {device?.ToString() ?? "cpu"}, torch threads {torch.get_num_threads()}, {texts.Count} documents of one sentence");
     Console.WriteLine($"{"one by one",-14}{alone,9:F2} s {texts.Count / alone,10:F0} docs/s");
     Console.WriteLine($"{"bulk",-14}{bulk,9:F2} s {texts.Count / bulk,10:F0} docs/s");
     return 0;
@@ -143,7 +143,9 @@ if (memoryWords > 0)
     int wordCount = docs.Sum(d => d.Sentences.Sum(s => s.Words.Count()));
     string mode = chunkWords <= 0 ? "one Process call" : $"{docs.Count} parts of ~{chunkWords} words, " + (bulkCall ? "one bulk call" : "one call each");
     Console.WriteLine($"C# StanzaSharp ({package}: {processors ?? "all"}) from {modelDir}, {(System.Runtime.GCSettings.IsServerGC ? "Server" : "workstation")} GC, " +
-                      $"torch threads {torch.get_num_threads()}: {wordCount} words, {mode}");
+                      // A managed pipeline never loads libtorch, so don't ask it.
+                      (backend == Backend.Managed ? $"managed threads {ManagedThreads.Count}" : $"torch threads {torch.get_num_threads()}") +
+                      $": {wordCount} words, {mode}, {(NativeTorchLoaded() ? "native libtorch loaded" : "no native libtorch")}");
     Console.WriteLine($"load          {loadSeconds,7:F2} s  load peak {loadPeak,6:F0} MB  after load {afterLoad,6:F0} MB  " +
                       $"(GC heap {gcAfterLoad.HeapSizeBytes / 1048576.0:F0} MB, committed {gcAfterLoad.TotalCommittedBytes / 1048576.0:F0} MB)");
     Console.WriteLine($"process       {processSeconds,7:F2} s  peak      {PeakMB(),6:F0} MB  at the end {WorkingSetMB(),6:F0} MB  " +
@@ -169,7 +171,9 @@ string Model(string processor) => Path.Combine(modelDir, processor, models[proce
 var clock = Stopwatch.StartNew();
 using var tokenizer = Tokenizer.Load(Model("tokenize"), device, backend);
 using var mwt = MwtExpander.Load(Model("mwt"), device, backend);
-using var pretrain = Pretrain.Load(Path.Combine(modelDir, Pipeline.PretrainPath), device);
+using var pretrain = backend == Backend.Managed // every processor is managed then (Pipeline.ManagedProcessors)
+    ? Pretrain.LoadManaged(Path.Combine(modelDir, Pipeline.PretrainPath))
+    : Pretrain.Load(Path.Combine(modelDir, Pipeline.PretrainPath), device);
 // As Pipeline does: managed processors get the managed charlms (their _nocharlm models none); each backend's charlms
 // are loaded only if a processor on it reads them.
 bool Managed(string processor) => backend == Backend.Managed && Pipeline.ManagedProcessors.Contains(processor);
@@ -178,9 +182,11 @@ bool torchCharlms = models.Any(kv => kv.Value.EndsWith("_charlm") && !Managed(kv
 using var charlmForward = torchCharlms ? CharLanguageModel.Load(Path.Combine(modelDir, Pipeline.ForwardCharlmPath), device) : null;
 using var charlmBackward = torchCharlms ? CharLanguageModel.Load(Path.Combine(modelDir, Pipeline.BackwardCharlmPath), device) : null;
 using var lemma = Lemmatizer.Load(Model("lemma"), device, backend);
-using var parser = models.ContainsKey("constituency") ? ConstituencyParser.Load(Model("constituency"), pretrain, charlmForward!, charlmBackward!, device) : null;
-var managedForward = ManagedCharlm("pos") || ManagedCharlm("depparse") || ManagedCharlm("ner") || ManagedCharlm("sentiment") ? ManagedCharLanguageModel.Load(Path.Combine(modelDir, Pipeline.ForwardCharlmPath)) : null;
+var managedForward = models.Keys.Any(ManagedCharlm) ? ManagedCharLanguageModel.Load(Path.Combine(modelDir, Pipeline.ForwardCharlmPath)) : null;
 var managedBackward = managedForward != null ? ManagedCharLanguageModel.Load(Path.Combine(modelDir, Pipeline.BackwardCharlmPath)) : null;
+using var parser = !models.ContainsKey("constituency") ? null : Managed("constituency")
+    ? ConstituencyParser.LoadManaged(Model("constituency"), pretrain, managedForward!, managedBackward!)
+    : ConstituencyParser.Load(Model("constituency"), pretrain, charlmForward!, charlmBackward!, device);
 using var pos = Managed("pos")
     ? PosTagger.LoadManaged(Model("pos"), pretrain, ManagedCharlm("pos") ? managedForward : null, ManagedCharlm("pos") ? managedBackward : null)
     : PosTagger.Load(Model("pos"), pretrain, charlmForward, charlmBackward, device);
@@ -193,7 +199,7 @@ using var ner = Managed("ner")
 using var sentiment = Managed("sentiment")
     ? SentimentClassifier.LoadManaged(Model("sentiment"), pretrain, managedForward!, managedBackward!)
     : SentimentClassifier.Load(Model("sentiment"), pretrain, charlmForward!, charlmBackward!, device);
-if (device.type == DeviceType.CUDA)
+if (device?.type == DeviceType.CUDA)
     torch.cuda.synchronize();
 double load = clock.Elapsed.TotalSeconds;
 
@@ -240,8 +246,8 @@ if (outFile != null)
     File.WriteAllText(outFile, Conllu.Write(doc));
 
 int words = doc.Sentences.Sum(s => s.Words.Count());
-Console.WriteLine($"C# StanzaSharp ({package}, {backend} backend) on {device}, torch threads {torch.get_num_threads()}" +
-                  (backend == Backend.Managed ? $", managed threads {ManagedThreads.Count}" : "") + $", {copies} copies: " +
+Console.WriteLine($"C# StanzaSharp ({package}, {backend} backend) on {device?.ToString() ?? "cpu"}, " +
+                  (backend == Backend.Managed ? $"managed threads {ManagedThreads.Count}" : $"torch threads {torch.get_num_threads()}") + $", {copies} copies: " +
                   $"{text.Length} chars, {doc.Sentences.Count} sentences, {words} words, {runs} runs");
 Console.WriteLine($"{"load",-14}{load,9:F2} s {"",16} {peaks["load"],8:F0} MB peak");
 double total = 0;
@@ -324,7 +330,9 @@ static List<string> Chunk(List<string> paragraphs, int words)
     return parts;
 }
 
-static double PeakMB() => Process.GetCurrentProcess().PeakWorkingSet64 / 1048576.0;
+static bool NativeTorchLoaded() => Process.GetCurrentProcess().Modules.Cast<ProcessModule>().Any(m => m.ModuleName.StartsWith("torch_cpu", StringComparison.OrdinalIgnoreCase) || m.ModuleName.StartsWith("libtorch_cpu", StringComparison.OrdinalIgnoreCase));
+
+static double PeakMB() =>Process.GetCurrentProcess().PeakWorkingSet64 / 1048576.0;
 
 static double WorkingSetMB() => Process.GetCurrentProcess().WorkingSet64 / 1048576.0;
 
