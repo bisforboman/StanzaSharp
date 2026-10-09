@@ -191,7 +191,7 @@ What is left is engineering, plus these risks:
 
 1. **Other architectures.**
    - `Vector256` is not accelerated on Arm64. linux-arm64 / Apple Silicon (a main gain of #29) need a
-     `Vector128`/NEON kernel (e.g. 8×8 with 32 registers). Its speed is unmeasured.
+     `Vector128`/NEON kernel (e.g. 8×8 with 32 registers). Measured later: about 60% of NEON peak (see "Arm64" below).
    - AVX-512 machines would want a `Vector512` kernel. It is untested here (no AVX-512).
    - One portable `Vector<T>` kernel plus tuned x64/Arm64 variants is the likely shape.
 2. **Near-tie exactness.**
@@ -354,12 +354,58 @@ pressure). Pool buckets are powers of two, so a 48 MB highway buffer occupies 64
 - The Vector128/TorchSharp ratios in that line: the first Arm64 numbers. Small-input numbers; a `managed-spike speed`
   run on an Arm64 machine would give tagger-batch numbers.
 
+### Arm64 (2026-10-10, GitHub runners, a throwaway workflow)
+
+`managed-spike gemm` (2 runs each) and `managed-spike speed --copies 2 --runs 2` (medians) on `windows-11-arm`
+(Azure Cobalt 100 = Neoverse N2, 4 cores, 3.4 GHz; libtorch-cpu-win-arm64) and `macos-15` (Apple M1, virtual, 3
+cores). Both detect `Vector128`. NEON FMA peak per core: N2 has 2 × 128-bit FMA pipes, 16 FLOP/cycle = **54 GFLOP/s**;
+M1's Firestorm has 4, 32 FLOP/cycle ≈ **102 GFLOP/s**.
+
+GEMM, GFLOP/s at 1 thread, managed / torch:
+
+| shape [M,K]×[K,N] | Cobalt 100 | % of peak (managed / torch) | M1 |
+|---|---:|---:|---:|
+| 250×1024×4096 | 31.3–31.4 / 49.8–50.0 | 58% / 92% | 52–66 / 174–190 |
+| 32×1024×4096 | 29.0–29.1 / 43.2–43.5 | 54% / 80% | 54–57 / 76–124 |
+| 1×1024×4096 (memory-bound) | 15.3–15.8 / 16.8–16.9 | | 12 / 11–16 |
+| 3000×2248×2400 | 32.5–32.8 / 51.0–51.4 | 60% / 94% | 61 / 163–229 |
+| 250×200×800 | 32.1–32.2 / 47.8–47.9 | 59% / 88% | 52–54 / 114–125 |
+
+- The 6×16 kernel reaches 54–60% of NEON peak, the same share as the AVX2 kernel on x64 (55–65%). On N2, libtorch
+  reaches 88–94%, so ~1.6× is left on the table at 1 thread.
+- On the M1, torch's 163–229 GFLOP/s is above the NEON peak: libtorch on macOS calls Accelerate, which runs on Apple's
+  AMX units. No managed kernel can reach those, so the M1's torch column is not a target. Managed is 50–64% of NEON peak.
+- At 4 threads on Cobalt 100 managed reaches 62–130 GFLOP/s (29–60% of 218), while torch stays at its 1-thread rate:
+  libtorch-cpu-win-arm64 does not parallelize these GEMMs. The M1 runs at `--threads 4` oversubscribe its 3 cores
+  (managed small shapes fall to 3–47 GFLOP/s), so they are left out.
+
+Tagger batches (6,566 words, 2 batches), seconds, managed / torch:
+
+| | charlm, 1 thread | highway, 1 thread | charlm, 4 threads | highway, 4 threads |
+|---|---:|---:|---:|---:|
+| Cobalt 100 | 16.73 / 15.59 (**1.07**) | 2.89 / 2.23 (**1.30**) | 4.29 / 13.78 (0.31) | 0.82 / 2.06 (0.40) |
+| M1 | 9.16 / 6.25 (1.47) | 1.54 / 0.80 (1.9) | | |
+
+- On N2 at 1 thread the charlm (LSTM structure, input tables) hides most of the kernel gap; the highway, which is
+  mostly the [words, 2248]×2400 GEMM, is 30% slower: above the ~15% the owner accepted at 1 thread. With threads,
+  managed scales 3.9× on 4 cores and torch barely does, so the default configuration is 2.5–3× faster than TorchSharp.
+- On the M1 the gap is AMX, not the kernel.
+
+**Recommendation: tune, once, cheaply.** Per k step the kernel issues 24 FMAs plus 6 broadcasts of an A value. If
+the JIT emits those as `ldr s` + `dup` rather than `ld1r`, the `dup`s compete with the FMAs for N2's two vector pipes
+(24 of 30 slots: an 80% ceiling before any other loss). `AdvSimd.Arm64.FusedMultiplyAddBySelectedScalar` (`fmla
+v.4s, v.4s, v.s[i]`) with one `Vector128.Load` of 4 consecutive k values per A row (A is row-major, so they are
+contiguous) removes the broadcasts entirely: per 4 k steps 6 A loads + 16 panel loads + 96 FMAs, the standard NEON
+shape (OpenBLAS, ACL). Same 6×16 tile, same packed panels, same summation order per output if each k is still added
+in order (so results stay bitwise those of the current kernel; checkable with the existing per-path tests). Target:
+≥ 80% of peak, highway ≤ 1.15× torch at 1 thread. An 8×12 tile is the next step only if that falls short. A
+`DOTNET_JitDisasm` dump of the kernel on an Arm64 runner would confirm the `dup` hypothesis first.
+
 ### Left before Phase 1
 
 Phase 1 (the seam, tokenize and mwt) is in [backends.md](backends.md), which also remeasures the small-batch item below.
 
-- Arm64 tuning once CI numbers exist (e.g. `FusedMultiplyAddBySelectedScalar` with 4 A values per load, or an 8×12
-  kernel), and an AVX-512 kernel (no AVX-512 machine here).
+- Arm64 tuning (see "Arm64" below: `FusedMultiplyAddBySelectedScalar` with 4 A values per load), and an AVX-512 kernel (no AVX-512 machine here).
 - Small batches: the highway at 320 words is 1.9× TorchSharp; per-step regions there are a few microseconds of work.
   Splitting by rows as well as panels, or running small steps on fewer threads, is the fix.
 - `ManagedThreads.Count` is process-wide like `torch.set_num_threads`; Phase 1 maps `PipelineOptions.Threads` to it.
