@@ -93,6 +93,37 @@ internal sealed unsafe class ManagedCharLanguageModel
         float* finalC = null) => Run(sentences, null, null, output, ldo, ct, finalC);
 
     /// <summary>
+    /// Both charlms over <paramref name="sentences"/> into <paramref name="forward"/> and <paramref name="backward"/>
+    /// ([words, HiddenDim] each, rows as in <see cref="BuildCharRepresentation(IReadOnlyList{IReadOnlyList{string}}, float*, int, CancellationToken, float*)"/>).
+    /// A single sentence goes through <paramref name="cache"/>'s single-sentence entries (<see cref="CharlmCache.TryGetAlone"/>):
+    /// copied if an earlier call ran the same texts alone, else computed and kept for the next one.
+    /// </summary>
+    public static void BuildBoth(ManagedCharLanguageModel forwardLm, ManagedCharLanguageModel backwardLm, IReadOnlyList<IReadOnlyList<string>> sentences,
+        float[] forward, float[] backward, CharlmCache? cache, CancellationToken ct)
+    {
+        int dim = forwardLm.HiddenDim;
+        if (cache == null || sentences.Count != 1)
+        {
+            forwardLm.BuildCharRepresentation(sentences, forward, dim, ct);
+            ct.ThrowIfCancellationRequested();
+            backwardLm.BuildCharRepresentation(sentences, backward, dim, ct);
+            return;
+        }
+        if (!cache.TryGetAlone(sentences[0], out var alone))
+        {
+            int n = sentences[0].Count * dim;
+            alone = new(new float[n], new float[n], new float[dim]);
+            forwardLm.BuildCharRepresentation(sentences, alone.Forward, dim, ct);
+            ct.ThrowIfCancellationRequested();
+            fixed (float* pb = alone.Backward, pc = alone.BackwardFinalC)
+                backwardLm.BuildCharRepresentation(sentences, pb, dim, ct, pc);
+            cache.AddAlone(sentences[0], alone);
+        }
+        alone.Forward.CopyTo(forward, 0);
+        alone.Backward.CopyTo(backward, 0);
+    }
+
+    /// <summary>
     /// Runs one sequence on from the state (<paramref name="h"/>, <paramref name="c"/>) that a single-sentence
     /// <see cref="BuildCharRepresentation(IReadOnlyList{IReadOnlyList{string}}, float*, int, CancellationToken, float*)"/>
     /// ended in (its last word's row and its final cell state), over more <paramref name="words"/>, as if they had followed

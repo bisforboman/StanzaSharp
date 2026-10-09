@@ -222,12 +222,12 @@ public class DepparseTests(ITestOutputHelper output)
             doc.Sentences.Add(sentence);
             using var cache = new CharlmCache();
             tagger.Process(doc, cache);
-            if (!cache.TryGetBackwardState(sentence, out _))
+            var words = sentence.Words.ToList();
+            if (!cache.TryGetAlone(words.Select(w => w.Text).ToList(), out _))
                 continue; // simplify_punct changed a word: the tagger keeps nothing
             reused++;
-            var words = sentence.Words.ToList();
             var alone = models.Parser.Scores([words], labelScores: true);
-            var continued = models.Parser.Scores([words], labelScores: true, charlms: cache, keys: [sentence]);
+            var continued = models.Parser.Scores([words], labelScores: true, charlms: cache);
             Assert.Equal(alone.ArcLogProbs, continued.ArcLogProbs);
             Assert.Equal(alone.LabelScores, continued.LabelScores);
         }

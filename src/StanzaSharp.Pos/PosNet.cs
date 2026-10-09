@@ -333,13 +333,8 @@ internal sealed unsafe class ManagedPosNet : IPosNet
         var backward = ArrayPool<float>.Shared.Rent(words * dim);
         try
         {
-            _charlmForward.BuildCharRepresentation(sentences, forward, dim, ct);
-            ct.ThrowIfCancellationRequested();
-            // A sentence run alone (a one-sentence document) also keeps the backward pass's final state, so the dependency
-            // parser can run on from it over its ROOT word instead of running the sentence again (CharlmCache.TryGetBackwardState).
-            float[]? finalC = sentences.Count == 1 && cacheKeys?[0] != null && charlms!.HasRoom(words) ? new float[dim] : null;
-            fixed (float* pb = backward, pc = finalC)
-                _charlmBackward!.BuildCharRepresentation(sentences, pb, dim, ct, pc);
+            // A sentence alone (a one-sentence document) is also kept for the dependency parser (DependencyParser.Process).
+            ManagedCharLanguageModel.BuildBoth(_charlmForward, _charlmBackward!, sentences, forward, backward, charlms, ct);
             for (int k = 0; k < words; k++)
             {
                 int r = packedRow[k] * _inputSize + col;
@@ -351,7 +346,7 @@ internal sealed unsafe class ManagedPosNet : IPosNet
                 {
                     int n = sentences[i].Count;
                     if (cacheKeys[i] is { } key && charlms!.HasRoom(n))
-                        charlms.TryAdd(key, forward.AsSpan(k * dim, n * dim).ToArray(), backward.AsSpan(k * dim, n * dim).ToArray(), n, finalC);
+                        charlms.TryAdd(key, forward.AsSpan(k * dim, n * dim).ToArray(), backward.AsSpan(k * dim, n * dim).ToArray(), n);
                 }
         }
         finally

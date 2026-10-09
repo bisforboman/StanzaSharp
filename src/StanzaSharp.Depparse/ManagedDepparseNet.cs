@@ -240,9 +240,8 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
         // A sentence alone here that the tagger also ran alone: backward, the words come first ("\n" + words reversed is
         // the tagger's sequence, then ROOT), so run on from the tagger's final state over ROOT only. One row per step in
         // both runs: the same bits as running it all again.
-        (float[] Backward, float[] FinalC) tagger = default;
-        bool reuse = batch.Texts.Count == 1 && batch.Keys != null && batch.Charlms!.TryGetBackwardState(batch.Keys[0], out tagger)
-            && tagger.Backward.Length == batch.Texts[0].Count * dim;
+        CharlmCache.Alone? tagger = null;
+        bool reuse = batch.Texts.Count == 1 && batch.Charlms != null && batch.Charlms.TryGetAlone(batch.Texts[0], out tagger);
         try
         {
             foreach (var (charlm, at) in new[] { (_charlmForward, col), (_charlmBackward!, col + dim) })
@@ -252,7 +251,7 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
                     fixed (float* pr = reps)
                     {
                         // Rows are words in order: ROOT, then the sentence's words (the first word's row is the final h).
-                        _charlmBackward.Continue(tagger.Backward.AsSpan(0, dim).ToArray(), tagger.FinalC, ["\n"], pr, dim, ct);
+                        _charlmBackward.Continue(tagger!.Backward.AsSpan(0, dim).ToArray(), tagger.BackwardFinalC, ["\n"], pr, dim, ct);
                         tagger.Backward.CopyTo(reps.AsSpan(dim));
                     }
                 else

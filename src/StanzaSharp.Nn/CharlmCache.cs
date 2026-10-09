@@ -30,7 +30,6 @@ internal sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords, De
         public int Words;
         public Tensor? Forward, Backward;         // TorchSharp producer, or converted for a TorchSharp consumer
         public float[]? ForwardData, BackwardData; // managed producer: [words, dim] row-major
-        public float[]? BackwardFinalC;            // managed producer that ran the sentence alone: see TryGetBackwardState
     }
 
     private readonly Dictionary<Sentence, Entry> _reps = [];
@@ -56,27 +55,41 @@ internal sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords, De
     /// <see cref="TryAdd(Sentence, Tensor, Tensor)"/> for a managed producer: [<paramref name="words"/>, dim] arrays,
     /// which the cache keeps (the caller must not change them afterwards).
     /// </summary>
-    /// <param name="backwardFinalC">Only when the backward charlm ran this sentence alone (a batch of one): its cell
-    /// state after the last character (see <see cref="TryGetBackwardState"/>).</param>
-    public bool TryAdd(Sentence sentence, float[] forward, float[] backward, int words, float[]? backwardFinalC = null)
+    public bool TryAdd(Sentence sentence, float[] forward, float[] backward, int words)
     {
         if (!Reserve(sentence, words))
             return false;
-        _reps[sentence] = new Entry { Words = words, ForwardData = forward, BackwardData = backward, BackwardFinalC = backwardFinalC };
+        _reps[sentence] = new Entry { Words = words, ForwardData = forward, BackwardData = backward };
         return true;
     }
 
     /// <summary>
-    /// The backward charlm's state at the end of a sentence that a managed producer ran alone: the representations
-    /// (row 0, the first word's, is the final h) and the final cell state. The dependency parser continues from it over its
-    /// ROOT word, which comes last backward, instead of running the whole sentence again; run alone too, it gets the
-    /// same bits (<see cref="Managed.ManagedCharLanguageModel.Continue"/>).
+    /// What a managed charlm call on one sentence alone computed: [words, dim] arrays and the backward pass's final cell
+    /// state (see <see cref="Managed.ManagedCharLanguageModel.Continue"/>).
     /// </summary>
-    public bool TryGetBackwardState(Sentence sentence, out (float[] Backward, float[] FinalC) state)
+    internal sealed record Alone(float[] Forward, float[] Backward, float[] BackwardFinalC);
+
+    // By the sentence's texts. Run alone, each step of the charlms runs one row through the same kernel, so the outputs
+    // depend on the texts only: any other single-sentence call on the same texts would compute the same bits. (In a batch
+    // a row's kernel depends on the other rows, which is why the entries above are not exact.)
+    private readonly Dictionary<string, Alone> _alone = [];
+
+    /// <summary>Keeps a single-sentence call's outputs (<see cref="TryGetAlone"/>) if they fit under <see cref="MaxWords"/>.</summary>
+    public void AddAlone(IReadOnlyList<string> texts, Alone outputs)
     {
-        state = _reps.TryGetValue(sentence, out var e) && e.BackwardFinalC != null ? (e.BackwardData!, e.BackwardFinalC) : default;
-        return state.Backward != null;
+        if (!HasRoom(texts.Count) || !_alone.TryAdd(AloneKey(texts), outputs))
+            return;
+        _words += texts.Count;
     }
+
+    /// <summary>
+    /// The outputs of an earlier single-sentence charlm call on exactly these texts: exactly what a single-sentence call
+    /// would compute now.
+    /// </summary>
+    public bool TryGetAlone(IReadOnlyList<string> texts, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)] out Alone outputs) =>
+        _alone.TryGetValue(AloneKey(texts), out outputs);
+
+    private static string AloneKey(IReadOnlyList<string> texts) => string.Concat(texts.Select(t => $"{t.Length}:{t}"));
 
     /// <summary>Whether a new sentence of <paramref name="words"/> words would fit, so a producer can skip making copies that won't be kept.</summary>
     public bool HasRoom(int words) => _words + words <= MaxWords;
@@ -140,6 +153,7 @@ internal sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords, De
         foreach (var e in _reps.Values)
             Dispose(e);
         _reps.Clear();
+        _alone.Clear();
         _words = 0;
     }
 }

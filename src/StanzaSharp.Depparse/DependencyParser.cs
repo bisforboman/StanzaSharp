@@ -85,20 +85,18 @@ internal sealed class DependencyParser : IDisposable
     /// the backward ROOT state, so in general the tagger's representations don't apply. One case does: a sentence that
     /// both ran alone (a one-sentence document, the usual per-call case). Its backward pass is the tagger's, then two
     /// more characters for ROOT, so the managed parser continues from the tagger's final state in
-    /// <paramref name="charlms"/> (<see cref="CharlmCache.TryGetBackwardState"/>), with the same bits.
+    /// <paramref name="charlms"/> (<see cref="CharlmCache.TryGetAlone"/>), with the same bits.
     /// </remarks>
     public void Process(Document doc, CharlmCache? charlms = null, CancellationToken cancellationToken = default)
     {
-        var withWords = doc.Sentences.Where(s => s.Words.Any()).ToList();
-        var sentences = withWords.Select(s => s.Words.ToList()).ToList();
+        var sentences = doc.Sentences.Select(s => s.Words.ToList()).Where(w => w.Count > 0).ToList();
         if (sentences.Any(s => s.Any(w => w.Upos == null && w.Xpos == null)))
             throw new InvalidOperationException("Run the POS tagger before the dependency parser");
 
         foreach (var batch in Batches(sentences.Select(s => s.Count + 1).ToList()))
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var parsed = Parse(batch.Select(i => (IReadOnlyList<Word>)sentences[i]).ToList(), cancellationToken,
-                charlms, charlms == null ? null : batch.Select(i => withWords[i]).ToList());
+            var parsed = Parse(batch.Select(i => (IReadOnlyList<Word>)sentences[i]).ToList(), cancellationToken, charlms);
             for (int b = 0; b < batch.Count; b++)
                 for (int j = 0; j < sentences[batch[b]].Count; j++)
                     (sentences[batch[b]][j].Head, sentences[batch[b]][j].Deprel) = parsed[b][j];
@@ -147,9 +145,9 @@ internal sealed class DependencyParser : IDisposable
     /// it: in the network and between the sentences' tree decodes.
     /// </remarks>
     internal List<(int Head, string Deprel)[]> Parse(IReadOnlyList<IReadOnlyList<Word>> batch, CancellationToken cancellationToken = default,
-        CharlmCache? charlms = null, IReadOnlyList<Sentence>? keys = null)
+        CharlmCache? charlms = null)
     {
-        var output = Scores(batch, labelScores: false, cancellationToken, charlms, keys);
+        var output = Scores(batch, labelScores: false, cancellationToken, charlms);
         int width = output.Width;
         var result = new List<(int, string)[]>(batch.Count);
         for (int b = 0; b < batch.Count; b++)
@@ -169,15 +167,15 @@ internal sealed class DependencyParser : IDisposable
 
     /// <summary>The network's scores for one batch (see <see cref="DepparseScores"/>).</summary>
     /// <param name="labelScores">Also return the label scores of every word pair (tests).</param>
-    /// <param name="charlms">With <paramref name="keys"/> (batch[b]'s sentence): the tagger's charlm outputs (see <see cref="Process"/>).</param>
+    /// <param name="charlms">The tagger's charlm outputs (see <see cref="Process"/>).</param>
     internal DepparseScores Scores(IReadOnlyList<IReadOnlyList<Word>> batch, bool labelScores = false, CancellationToken cancellationToken = default,
-        CharlmCache? charlms = null, IReadOnlyList<Sentence>? keys = null)
+        CharlmCache? charlms = null)
     {
         // data.py load_doc: simplify_punct changes the words the parser sees (vocab and charlm alike).
         var texts = batch.Select(s => (IReadOnlyList<string>)s.Select(w => SimplifyPunct(w.Text)).ToList()).ToList();
         int size = batch.Count, width = batch.Max(s => s.Count) + 1;
         var input = new DepparseBatch(texts, width, batch.Select(s => (long)s.Count + 1).ToArray(),
-            new long[size * width], new long[size * width], new long[size * width], new long[size * width], new long[size * width], charlms, keys);
+            new long[size * width], new long[size * width], new long[size * width], new long[size * width], new long[size * width], charlms);
         for (int b = 0; b < size; b++)
         {
             int row = b * width;

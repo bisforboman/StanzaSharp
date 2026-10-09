@@ -97,10 +97,13 @@ All 7 steps of the build order are done:
   - The parser feeds the charlms `"\n"` + the words (a ROOT word), so every forward state and the backward ROOT
     state differ from the tagger's. One exception (managed only): a sentence that the tagger and the parser both run
     alone (a one-sentence document) has the tagger's backward pass as its prefix, one row per step in both, so the
-    parser continues from the tagger's final (h, c) (`CharlmCache.TryGetBackwardState`,
-    `ManagedCharLanguageModel.Continue`) over ROOT only: bit for bit (`OneSentenceDocument_ContinuesTheTaggers...`),
-    and a quarter of the charlm work of a per-call `Process` saved. Batched sentences can't: a row's kernel (1-row vs
-    3/6-row) depends on its batch.
+    parser continues from the tagger's final (h, c) (`CharlmCache.TryGetAlone`, `ManagedCharLanguageModel.Continue`)
+    over ROOT only: bit for bit (`OneSentenceDocument_ContinuesTheTaggers...`), and a quarter of the charlm work of a
+    per-call `Process` saved. Batched sentences can't: a row's kernel (1-row vs 3/6-row) depends on its batch.
+  - `CharlmCache`'s single-sentence table (`AddAlone`/`TryGetAlone`, keyed by the texts): a managed charlm call on one
+    sentence depends on its texts only, so `ManagedCharLanguageModel.BuildBoth` (pos, sentiment, ner) reuses any earlier
+    one on the same texts exactly. Besides depparse, NER takes a multi-word-token sentence's token charlms from sentiment.
+    `PipelineTests.OneSentenceDocuments_EqualTheUncachedPipeline` checks the whole pipeline against the cache turned off.
   - A missing lemma is read as `_`, as in Stanza, so without the lemmatizer the parses differ.
   - `Conllu.Write` needs no change: with heads set it matches Stanza (DEPS stays `_`).
 - `Lemma.Lemmatizer` (processor `lemma`, requires tokenize, mwt, pos) reproduces `tests/golden/lemma/`
