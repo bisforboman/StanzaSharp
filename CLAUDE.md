@@ -76,6 +76,10 @@ All 7 steps of the build order are done:
   After a Process call of 1,000+ words, `NativeHeap.Trim` calls glibc's `malloc_trim(0)` on Linux (user's decision,
   2026-10-07: always on, no public API; `PipelineOptions.TrimNativeHeap` is internal, for the benchmark). On Windows
   libtorch's built-in mimalloc keeps freed pages; only `MIMALLOC_PURGE_DELAY=0` releases them (documented, not set).
+  Round 6 (managed backend, docs/performance.md): no native heap (malloc_trim returns nothing there); after a call the
+  GC heap holds the models plus `ArrayPool<T>.Shared`'s scratch buffers (all eight, 6,761 words: 2.4 GB working set),
+  released only by a gen2 GC a minute later; the README tells services to run an aggressive GC when idle. The library
+  runs no GC.
 - `Tree.ToString` prints `(`/`)` in labels and words as `-LRB-`/`-RRB-`, like Stanza. The tree
   itself keeps the raw text.
 - Measured float drift vs Python: charlm < 1e-7, tokenizer logits ≈ 4e-6, UPOS logits ≈ 2e-5,
