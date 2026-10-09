@@ -164,7 +164,7 @@ Python 40 calls each), calls/s:
   TorchSharp backend ("Bulk processing"). Its output can differ slightly from one call per text (sentiment's batch
   padding, as in Stanza), so use it where that is acceptable.
 - **One text per request** (a service): about 28 ms per short sentence on 8 threads (`default`), 14 ms with
-  `default_fast`. Keep about two requests in flight per pipeline (a `SemaphoreSlim(2)` around `Process`), or batch
+  `default_fast`. Keep about two requests in flight per pipeline (`PipelineOptions.MaxConcurrentCalls = 2`), or batch
   requests that arrive together into one bulk call; many more concurrent calls lower the throughput.
 
 ## Results, round 6: memory after `Process` on the managed backend

@@ -103,7 +103,8 @@ foreach (var sentence in doc.Sentences)
   tokens, like Stanza's `tokenize_pretokenized=True`.
 - `Process` is thread-safe: share one pipeline between threads. Every overload takes a `CancellationToken`.
   One call on a short sentence takes about 28 ms on 8 threads (`default_fast`: 14 ms). On short texts, about two calls
-  in flight per pipeline give the most throughput; more evict each other's weights from the CPU cache.
+  in flight per pipeline give the most throughput; more evict each other's weights from the CPU cache. Set
+  `MaxConcurrentCalls = 2` in `PipelineOptions` to make extra callers wait their turn.
 - Memory: a call's peak is set by its largest batch (the tagger pads up to 250 sentences to the longest), so to
   bound it, call `Process` on parts of about 1,000 words split at blank lines. The annotations stay the same; with
   `tokenize,mwt,pos,constituency` on 15,000 words the peak drops from 1.7 to 1.2 GB for about 15% more time.

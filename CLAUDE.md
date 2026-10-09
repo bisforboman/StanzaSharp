@@ -185,6 +185,9 @@ All 7 steps of the build order are done:
     as live forever (`DisposeScopeManager.Statistics`); they hold no memory. Leak tests leave lemma out.
   - `SplitSentences = false` = `tokenize_no_ssplit`: `Tokenizer.Decode` ends sentences only at paragraph ends.
     `tests/golden/no_ssplit/` (`make_golden.py --no-ssplit-only`). Pretokenized input ignores it, as in Stanza.
+  - `MaxConcurrentCalls` (int?, owner's decision 2026-10-09: opt-in, null = no limit): a `SemaphoreSlim` in `Pipeline`
+    around each Process overload's work (`Gated`); the wait honours the call's token. Managed throughput peaks at ~2 calls
+    in flight (cache eviction of the charlm weights; docs/performance.md round 7).
   - `Processor` constants; `VerifyChecksums` (MD5 of each `.pt` Load reads, `ModelDownloader.Verify`; throws for
     converted models, which have no published MD5); `Logger` (`Microsoft.Extensions.Logging.Abstractions` 10.0.0,
     the package's second dependency): load times at Information, per-processor times at Debug, nothing measured

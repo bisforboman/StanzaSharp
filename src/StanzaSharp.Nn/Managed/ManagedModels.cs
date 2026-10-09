@@ -72,7 +72,7 @@ internal sealed unsafe class ManagedCharLanguageModel
         return result;
     }
 
-    /// <inheritdoc cref="BuildCharRepresentation(IReadOnlyList{IReadOnlyList{string}}, float*, int, CancellationToken)"/>
+    /// <inheritdoc cref="BuildCharRepresentation(IReadOnlyList{IReadOnlyList{string}}, CancellationToken)"/>
     public void BuildCharRepresentation(IReadOnlyList<IReadOnlyList<string>> sentences, Span<float> output, int ldo, CancellationToken ct = default)
     {
         int words = sentences.Sum(s => s.Count);

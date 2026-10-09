@@ -94,6 +94,7 @@ public sealed class Pipeline : IDisposable
     private readonly TorchSharp.torch.Device? _device;
     private readonly bool _splitSentences, _trimNativeHeap, _depparseReadsCache;
     private readonly ILogger? _logger;
+    private readonly SemaphoreSlim? _gate;
 
     private Pipeline(string modelDir, Dictionary<string, string> models, PipelineOptions options, Backend kind, TorchSharp.torch.Device? device)
     {
@@ -104,6 +105,7 @@ public sealed class Pipeline : IDisposable
         _depparseReadsCache = Managed("depparse"); // CharlmCache.TryGetBackwardState: only the managed tagger and parser
         _trimNativeHeap = options.TrimNativeHeap && NativeHeap.CanTrim;
         _logger = options.Logger;
+        _gate = options.MaxConcurrentCalls is int max ? new SemaphoreSlim(max, max) : null;
         string Model(string processor) => Path.Combine(modelDir, processor, models[processor]);
         string Name(string processor) => $"{processor}/{models[processor]}";
         T Timed<T>(string name, Func<T> load)
@@ -200,6 +202,8 @@ public sealed class Pipeline : IDisposable
             throw new ArgumentOutOfRangeException(nameof(options), "CharlmCache.MaxWords must be positive; set IsEnabled = false to turn the cache off");
         if (options.Threads < 1)
             throw new ArgumentOutOfRangeException(nameof(options), "Threads must be at least 1, or null for at most Environment.ProcessorCount");
+        if (options.MaxConcurrentCalls < 1)
+            throw new ArgumentOutOfRangeException(nameof(options), "MaxConcurrentCalls must be at least 1, or null for no limit");
         var backend = options.Backend;
         if (backend.Kind == Backend.Managed && options.UsesTorchSharpDevice)
             throw new ArgumentException("Device and DisableTf32 apply only to the TorchSharp backend, but Backend is PipelineBackend.Managed. "
@@ -325,8 +329,11 @@ public sealed class Pipeline : IDisposable
     public Document Process(string text, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(text);
-        var doc = Step("tokenize", () => _tokenizer.Process(text, _splitSentences, cancellationToken), cancellationToken);
-        return Annotate(doc, cancellationToken);
+        return Gated(() =>
+        {
+            var doc = Step("tokenize", () => _tokenizer.Process(text, _splitSentences, cancellationToken), cancellationToken);
+            return Annotate(doc, cancellationToken);
+        }, cancellationToken);
     }
 
     /// <summary>
@@ -363,7 +370,7 @@ public sealed class Pipeline : IDisposable
             if (tokens.Any(string.IsNullOrWhiteSpace))
                 throw new ArgumentException("Tokens must not be null, empty or whitespace", nameof(sentences));
         }
-        return Annotate(Tokenizer.Pretokenized(list), cancellationToken);
+        return Gated(() => Annotate(Tokenizer.Pretokenized(list), cancellationToken), cancellationToken);
     }
 
     /// <summary>
@@ -400,17 +407,40 @@ public sealed class Pipeline : IDisposable
             throw new ArgumentNullException(nameof(texts), "A text is null");
         if (list.Count == 0)
             return [];
-        var docs = Step("tokenize", () => _tokenizer.Process(list, _splitSentences, cancellationToken), cancellationToken);
-        // The other processors run on all sentences as one document (UDProcessor.bulk_process).
-        var combined = new Document();
-        combined.Sentences.AddRange(docs.SelectMany(d => d.Sentences));
-        Annotate(combined, cancellationToken);
+        var docs = Gated(() =>
+        {
+            var docs = Step("tokenize", () => _tokenizer.Process(list, _splitSentences, cancellationToken), cancellationToken);
+            // The other processors run on all sentences as one document (UDProcessor.bulk_process).
+            var combined = new Document();
+            combined.Sentences.AddRange(docs.SelectMany(d => d.Sentences));
+            Annotate(combined, cancellationToken);
+            return docs;
+        }, cancellationToken);
         // NERProcessor.bulk_process: entities again, with each document's own text.
         if (_ner != null)
             foreach (var doc in docs)
                 foreach (var sentence in doc.Sentences)
                     Entity.Build(sentence, doc.Text);
         return docs;
+    }
+
+    /// <summary>
+    /// Runs <paramref name="run"/>, waiting first while <see cref="PipelineOptions.MaxConcurrentCalls"/> other calls are
+    /// running (no wait without a limit). The wait honours <paramref name="ct"/>.
+    /// </summary>
+    private T Gated<T>(Func<T> run, CancellationToken ct)
+    {
+        if (_gate == null)
+            return run();
+        _gate.Wait(ct);
+        try
+        {
+            return run();
+        }
+        finally
+        {
+            _gate.Release();
+        }
     }
 
     /// <summary>
@@ -490,5 +520,6 @@ public sealed class Pipeline : IDisposable
         _charlmForward?.Dispose();
         _charlmBackward?.Dispose();
         _pretrain?.Dispose();
+        _gate?.Dispose();
     }
 }

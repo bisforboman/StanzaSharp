@@ -206,7 +206,8 @@ var doc = nlp.Process(text, cancellationToken); // OperationCanceledException wi
   callers on C cores do best with `Threads` about C / N. Throughput is bounded by the CPU, not the number of callers.
   On the managed backend it even drops past about two callers in flight on short texts (8 callers: 24 calls/s, 2: 36),
   as concurrent calls evict each other's weights from the CPU cache: limit a service to about two concurrent
-  `Process` calls per pipeline (a `SemaphoreSlim(2)`), or batch texts that arrive together into one bulk call.
+  `Process` calls per pipeline (`new PipelineOptions { MaxConcurrentCalls = 2 }`: extra calls wait their turn), or batch
+  texts that arrive together into one bulk call.
   Sharing one pipeline saves memory: a loaded pipeline takes about 0.8–1 GB (`default`; about 0.7 GB
 for `default_fast`), and each call in flight adds
   its own working memory on top (a few hundred MB for a page of text, more for long documents).

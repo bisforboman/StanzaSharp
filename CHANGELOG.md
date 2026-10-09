@@ -7,6 +7,13 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 
 ## [Unreleased]
 
+### Added
+- `PipelineOptions.MaxConcurrentCalls` (opt-in; null, the default, means no limit): at most this many `Process` calls
+  run on the pipeline at once, and further callers wait their turn (the wait honours the call's cancellation token).
+  On the managed backend concurrent calls on short texts evict each other's model weights from the CPU cache, so with
+  many callers 2 gives the most throughput (8 callers, one sentence each: 23.6 calls/s unlimited, 36.4 with one at a
+  time). Output never depends on it.
+
 ### Changed
 - Faster `Process` on a single sentence, the usual call of a service, on the managed backend (`default` package): the
   processors now share more of the character language models' work for a one-sentence text (the dependency parser
