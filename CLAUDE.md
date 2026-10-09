@@ -73,6 +73,9 @@ All 7 steps of the build order are done:
   cut at 5000 words like Stanza, and `CharlmCache` keeps at most 32k words (`MaxWords`).
   Round 3 (issue #19, `--memory`): `.pt` files are read tensor by tensor too (the unpickler reads a stream; storages
   are read from the file on demand), and `HighwayLstm` frees each layer's padded tensors as soon as they are used.
+  Round 7 (per call, `--per-call N`, `--concurrent T`): one short sentence takes 28 ms managed (Python 189); the rest is
+  memory bandwidth (weights streamed per call), not setup. Past ~2 concurrent callers managed throughput drops
+  (L3 evictions); a gate in `Pipeline` is an open owner decision.
   After a Process call of 1,000+ words, `NativeHeap.Trim` calls glibc's `malloc_trim(0)` on Linux (user's decision,
   2026-10-07: always on, no public API; `PipelineOptions.TrimNativeHeap` is internal, for the benchmark). On Windows
   libtorch's built-in mimalloc keeps freed pages; only `MIMALLOC_PURGE_DELAY=0` releases them (documented, not set).
