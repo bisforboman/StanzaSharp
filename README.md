@@ -1,69 +1,70 @@
 # StanzaSharp
 
-C# port of Stanza's English inference pipeline (tokenize, mwt, pos, lemma, depparse, ner, sentiment, constituency) on TorchSharp.
-It runs Stanza's own pretrained models. On the golden test corpus, the output is byte-identical to
-Python Stanza 1.15.0.
+C# port of Stanza's English inference pipeline (tokenize, mwt, pos, lemma, depparse, ner, sentiment, constituency).
+It runs Stanza's own pretrained models in plain .NET code, with no native dependencies. On the golden test corpus, the
+output is byte-identical to Python Stanza 1.15.0.
 See CLAUDE.md for scope, layout, decisions and build order.
 
 ## Install
 
 ```
 dotnet add package StanzaSharp
+```
+
+That is the whole install. Requires .NET 10. The models run on StanzaSharp's **managed backend**: C# kernels using the
+CPU's SIMD instructions (AVX2 or Arm64 NEON where present), with no libtorch or other native library. On the full
+pipeline it is about twice as fast as the TorchSharp backend on 8 threads and peaks lower in memory (see
+[Performance](#performance)), and its output is the same, byte for byte.
+
+**The TorchSharp backend** (libtorch) is still there in 0.5 for those who want it; it is the way to a GPU (see
+[GPU](#gpu)) and leaves the main package in 1.0. Select it and add the native libtorch yourself:
+
+```
 dotnet add package TorchSharp-cpu
 ```
 
-`TorchSharp-cpu` (or a `TorchSharp-cuda-*` package) brings the native libtorch; its version must match the
-`TorchSharp` version StanzaSharp depends on (0.107.0); otherwise the build warns with `STANZA001`. Requires .NET 10. Tested on Linux, Windows and macOS.
-On macOS (Apple Silicon), also run `brew install libomp`: TorchSharp-cpu's libtorch loads OpenMP from Homebrew's path.
-On Windows on Arm64, use `StanzaSharp.Cpu.WindowsArm64` instead (below). See [Supported platforms](#supported-platforms).
-
-**Deploying to one platform** (e.g. a small Linux service): `TorchSharp-cpu` restores libtorch for Linux,
-Windows and macOS (about 265 MB of downloads). A platform package restores StanzaSharp plus only that
-platform's CPU libtorch instead. It's the only package you need:
-
-| Package | Platform | libtorch download |
-|---|---|---:|
-| `StanzaSharp.Cpu.Linux` | Linux x64 | 128 MB |
-| `StanzaSharp.Cpu.Windows` | Windows x64 | 80 MB |
-| `StanzaSharp.Cpu.WindowsArm64` | Windows on Arm64 | 42 MB |
-| `StanzaSharp.Cpu.MacOS` | macOS on Apple Silicon | 57 MB |
-
-```
-dotnet add package StanzaSharp.Cpu.Linux
+```csharp
+using var nlp = Pipeline.Load(dir, new PipelineOptions { Backend = PipelineBackend.TorchSharp });
 ```
 
-Publish with that platform's runtime identifier (`dotnet publish -r linux-x64`) so only its native files are
-copied. Smaller models help too: `Package = "default_fast"` and downloading only the processors you use.
+- `TorchSharp-cpu`'s version must match the `TorchSharp` version StanzaSharp depends on (0.107.0); otherwise the build
+  warns with `STANZA001`. Silence it with `<NoWarn>STANZA001</NoWarn>`.
+- `TorchSharp-cpu` restores libtorch for Linux x64, Windows x64 and macOS (about 265 MB of downloads). To restore one
+  platform's only, reference the matching `libtorch-cpu-<rid>` 2.10.0 package (`libtorch-cpu-linux-x64`,
+  `-win-x64`, `-win-arm64`, `-osx-arm64`) instead; on Windows on Arm64 that is the only way, since `TorchSharp-cpu` has
+  no Arm64 libtorch. (The `StanzaSharp.Cpu.*` platform packages did this up to 0.4 and are no longer published.)
+- On macOS (Apple Silicon), also run `brew install libomp`: libtorch loads OpenMP from Homebrew's path.
+- `<StanzaSharpTrimNative>true</StanzaSharpTrimNative>` in your project drops the libtorch files StanzaSharp never
+  loads from build and publish output: the Python bindings (`libtorch_python`, `libshm`) and test and mobile backends
+  (`libtorchbind_test`, `libjitbackend_test`, `libbackend_with_compiler`, `libaoti_custom_ops`, `libnnapi_backend`).
+  That is 35 MB less on Linux x64 (a `-r linux-x64` publish goes from 503 to 468 MB) and 29 MB on macOS; the Windows
+  libtorch packages ship none of them. Nothing TorchSharp loads links to them. It applies to the CPU libtorch only;
+  CUDA builds are left whole.
 
-**Leaving out unused libtorch files:** set `<StanzaSharpTrimNative>true</StanzaSharpTrimNative>` in your project to drop
-the libtorch files StanzaSharp never loads from build and publish output: the Python bindings (`libtorch_python`,
-`libshm`) and test and mobile backends (`libtorchbind_test`, `libjitbackend_test`, `libbackend_with_compiler`,
-`libaoti_custom_ops`, `libnnapi_backend`). That is 35 MB less on Linux x64 (a `-r linux-x64` publish goes from 503 to
-468 MB) and 29 MB on macOS; the Windows libtorch packages ship none of them. Nothing TorchSharp loads links to them. It applies to the CPU libtorch only; CUDA builds are left whole.
+Smaller models help either way: `Package = "default_fast"` and downloading only the processors you use.
 
 ### Supported platforms
 
-StanzaSharp runs wherever TorchSharp 0.107 has its native layer (`LibTorchSharp`) and a CPU libtorch 2.10.0
-package exists. Each supported platform runs the full test suite in CI.
+The managed backend runs wherever .NET 10 runs. These run it in CI, against the golden data:
 
-| Platform | Supported | Package |
+| Platform | Managed backend (default) | TorchSharp backend |
 |---|---|---|
-| Linux x64 (glibc: Ubuntu, Debian, RHEL, ...) | Yes | `StanzaSharp.Cpu.Linux`, or `StanzaSharp` + `TorchSharp-cpu` |
-| Windows x64 | Yes | `StanzaSharp.Cpu.Windows`, or `StanzaSharp` + `TorchSharp-cpu` |
-| Windows on Arm64 | Yes | `StanzaSharp.Cpu.WindowsArm64` only: `TorchSharp-cpu` has no Arm64 libtorch |
-| macOS on Apple Silicon | Yes, after `brew install libomp` | `StanzaSharp.Cpu.MacOS`, or `StanzaSharp` + `TorchSharp-cpu` |
-| Alpine and other musl Linux | No | None: libtorch and TorchSharp are built for glibc only, with no `linux-musl` build. Not even with `gcompat`: libtorch needs glibc-only symbols (`__memcpy_chk`, `backtrace`, `fcntl64`, …) it doesn't provide (tested in CI) |
-| Linux Arm64 | No | None: no `libtorch-cpu-linux-arm64` package, and TorchSharp has no `linux-arm64` native layer |
-| macOS on Intel (x64) | No | None: TorchSharp has no `osx-x64` native layer, and `libtorch-cpu-osx-x64` stops at 2.2 |
+| Linux x64 (glibc: Ubuntu, Debian, RHEL, ...) | Yes, full suite in CI | Yes: `TorchSharp-cpu` or `libtorch-cpu-linux-x64` |
+| Windows x64 | Yes, full suite in CI | Yes: `TorchSharp-cpu` or `libtorch-cpu-win-x64` |
+| Windows on Arm64 | Yes, full suite in CI | Yes: `libtorch-cpu-win-arm64` only (`TorchSharp-cpu` has no Arm64 libtorch) |
+| macOS on Apple Silicon | Yes, full suite in CI | Yes, after `brew install libomp`: `TorchSharp-cpu` or `libtorch-cpu-osx-arm64` |
+| Linux Arm64 (glibc) | Verified in CI: the managed tests and the package | No: no `libtorch-cpu-linux-arm64` package, and TorchSharp has no `linux-arm64` native layer |
+| Alpine and other musl Linux | Verified in CI: the Docker check on `runtime:10.0-alpine` | No: libtorch and TorchSharp are built for glibc only. Not even with `gcompat`: libtorch needs glibc-only symbols (`__memcpy_chk`, `backtrace`, `fcntl64`, …) it doesn't provide |
+| macOS on Intel (x64) | Not tested | No: TorchSharp has no `osx-x64` native layer, and `libtorch-cpu-osx-x64` stops at 2.2 |
 
-GPU: see [GPU](#gpu) (CUDA on Windows and Linux x64).
+GPU: see [GPU](#gpu) (CUDA on Windows and Linux x64, TorchSharp backend).
 
 ### Docker
 
-Use a glibc-based image, such as `mcr.microsoft.com/dotnet/runtime:10.0` (Ubuntu). libtorch needs only glibc,
-libstdc++ and libgcc_s, and ships its own OpenMP, so the chiseled `mcr.microsoft.com/dotnet/runtime:10.0-noble-chiseled`
-works too. Not Alpine (see above). [samples/docker](samples/docker/Dockerfile) is a small app that reads text
-on stdin and writes CoNLL-U:
+Any .NET 10 runtime image works: the image needs nothing but the .NET runtime, so `mcr.microsoft.com/dotnet/runtime:10.0`
+(Ubuntu), the chiseled `runtime:10.0-noble-chiseled` and Alpine's `runtime:10.0-alpine` (publish with
+`-r linux-musl-x64` there) all do. [samples/docker](samples/docker/Dockerfile) is a small app that reads text on stdin
+and writes CoNLL-U:
 
 ```dockerfile
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
@@ -82,12 +83,13 @@ docker build -t stanzasharp-sample samples/docker
 docker run -i --rm -v /path/to/models/stanza/en:/models:ro stanzasharp-sample < input.txt
 ```
 
-Mount the models rather than copying them into the image: they are about 600 MB, and the image is already
-707 MB on `runtime:10.0` and 601 MB on `runtime:10.0-noble-chiseled` (measured in CI), of which the published app is
-500 MB, nearly all of it libtorch. CI builds this image on both base images and checks that its output
-is byte-identical to the golden file. The sample sets `StanzaSharpTrimNative` (above), which saves another 35 MB.
+Mount the models rather than copying them into the image: they are about 600 MB, several times the image itself
+(209 MB on `runtime:10.0`, 103 MB on `runtime:10.0-noble-chiseled`, 100 MB on `runtime:10.0-alpine`; with
+libtorch, up to 0.4, they were 707 and 601 MB). CI builds this image on the plain, chiseled and Alpine base images, checks that no libtorch is in it,
+and that its output is byte-identical to the golden file. (TorchSharp's 2 MB `LibTorchSharp` interop library is in
+the publish output, as StanzaSharp still references TorchSharp; the managed backend never loads it.)
 
-To download the models in a Dockerfile (on the SDK image; the tool needs no libtorch):
+To download the models in a Dockerfile (on the SDK image):
 
 ```dockerfile
 RUN dotnet tool install --tool-path /tools StanzaSharp.Tool && /tools/stanzasharp download /models --processors tokenize,mwt,pos
@@ -130,7 +132,8 @@ foreach (var sentence in doc.Sentences)
 ```
 
 `Pipeline.Load(dir, new PipelineOptions { Processors = "tokenize,mwt" })` runs only the listed processors; each
-needs the ones before it. `PipelineOptions` also holds `Device`, `DisableTf32` and `CharlmCache`
+needs the ones before it. `PipelineOptions` also holds `Backend` (`PipelineBackend.Managed`, the default, or
+`PipelineBackend.TorchSharp`; see [Install](#install)) and `CharlmCache`
 (`IsEnabled`, `MaxWords`: the tagger's character-model outputs reused by the constituency parser and sentiment, at most
 32,768 words / ~256 MB by default; output is identical either way).
 The default is all eight processors, like Stanza's English default:
@@ -182,26 +185,28 @@ An unknown package name throws, and so does listing a processor the package lack
 using var nlp = Pipeline.Load("models/stanza/en", new PipelineOptions
 {
     Processors = $"{Processor.Tokenize},{Processor.Mwt},{Processor.Pos}", // or "tokenize,mwt,pos"
-    Threads = 2,              // libtorch intra-op threads; null: at most Environment.ProcessorCount
+    Threads = 2,              // threads per operation; null: at most Environment.ProcessorCount
     VerifyChecksums = true,   // check the .pt files against Stanza's MD5s first
     Logger = loggerFactory.CreateLogger("StanzaSharp"), // load and processing times
 });
 var doc = nlp.Process(text, cancellationToken); // OperationCanceledException within about one batch
 ```
 
-- **Threads.** `Threads` is libtorch's `set_num_threads`, which is **process-wide**: the last pipeline loaded sets it
-  for all TorchSharp code. Null (the default) caps libtorch's own default (the host's physical cores) at
-  `Environment.ProcessorCount`, which .NET limits to a container's CPU quota. libtorch applies a new count to the
-  loading thread and to threads that haven't run a tensor operation yet, so load before processing starts. The
-  benchmark (default package, 6,566 words, Ryzen 7 5800X with 8 cores): 1 thread 57.8 s, 2 threads 33.2 s, 8 threads
-  19.1 s, 16 threads 19.7 s.
+- **Threads.** On the managed backend `Threads` is the size of StanzaSharp's thread pool; on the TorchSharp backend it
+  is libtorch's `set_num_threads`. Both are **process-wide**: the last pipeline loaded sets it. Null (the default)
+  caps the current count at `Environment.ProcessorCount`, which .NET limits to a container's CPU quota, and keeps a
+  lower count set earlier. (libtorch applies a new count to the loading thread and to threads that haven't run a
+  tensor operation yet, so with TorchSharp load before processing starts.)
 - **Concurrency.** `Process` is thread-safe: one pipeline can serve many threads, and each call's output is identical
-  to a sequential call's. The models are only read; everything a call changes is its own. Each concurrent call
-  runs its tensor operations on up to `Threads` threads, so N callers on C cores do best with `Threads` about C / N;
-  throughput is bounded by the CPU, not the number of callers. Sharing one pipeline saves memory: a loaded
-  pipeline takes about 950 MB of private memory (`default`; 700 MB for `default_fast`), and each call in flight
-  adds its own working memory on top (a few hundred MB for a page of text, more for long documents).
-- **Memory.** A call's peak is set by its largest batch more than by the length of the text: the tagger pads up to
+  to a sequential call's. The models are only read; everything a call changes is its own. On the managed backend
+  concurrent calls share the one pool: each call works its own part and idle threads help, so N callers don't start
+  N teams. On the TorchSharp backend each call runs its operations on up to `Threads` threads of its own, so N
+  callers on C cores do best with `Threads` about C / N. Throughput is bounded by the CPU, not the number of callers.
+  Sharing one pipeline saves memory: a loaded pipeline takes about 0.8–1 GB (`default`; about 0.7 GB
+for `default_fast`), and each call in flight adds
+  its own working memory on top (a few hundred MB for a page of text, more for long documents).
+- **Memory.** The numbers below were measured on the TorchSharp backend; the managed backend peaks lower (one call
+  on 8,000 words: 2.5 GB against 3.8–4.3 GB, [docs/backends.md](docs/backends.md#constituency)). A call's peak is set by its largest batch more than by the length of the text: the tagger pads up to
   250 sentences to the longest one among them. With `tokenize,mwt,pos,constituency` (8 threads) loading peaks at about
   0.5 GB, and one call on 500, 5,000 and 15,000 words peaks at 0.65, 1.6 and 1.7 GB (Python Stanza: 0.75, 2.4 and
   2.5 GB). To bound it in a memory-limited container, call `Process` on parts of about 1,000 words, split at blank
@@ -210,7 +215,8 @@ var doc = nlp.Process(text, cancellationToken); // OperationCanceledException wi
   peaks at 0.6 GB but is 5× slower. Bulk `Process(texts)` batches all texts together, so it peaks like one call.
   `CharlmCache` changes the peak by less than 50 MB up to its 32k-word cap (turning it off costs 30–40% more time),
   and neither the GC mode nor converting the models changes it much. Measurements: [docs/performance.md](docs/performance.md#results-round-3-memory-of-a-short-lived-process).
-- **Memory between calls** (long-running services). On Linux (glibc) a call of 1,000 words or more gives the
+- **Memory between calls** (long-running services; measured on the TorchSharp backend, whose native allocator this
+  is about: the managed backend's buffers live on the .NET heap). On Linux (glibc) a call of 1,000 words or more gives the
   memory it freed back to the OS (`malloc_trim`, 25–40 ms), so with `tokenize,mwt,pos,constituency` the RSS drops
   back to about 650 MB after each call (590 MB after loading; Python Stanza: 850–950 MB). No `MALLOC_*` setting is
   needed in a container, and `MALLOC_ARENA_MAX` does not help. On Windows libtorch's built-in allocator (mimalloc)
@@ -241,6 +247,7 @@ From the command line, this writes CoNLL-U for a file (or standard input):
 dotnet run --project samples/StanzaSharp.Cli -- input.txt
 dotnet run --project samples/StanzaSharp.Cli -- --processors tokenize,mwt,pos input.txt
 dotnet run --project samples/StanzaSharp.Cli -- --package default_fast input.txt
+dotnet run --project samples/StanzaSharp.Cli -- --backend torch input.txt
 ```
 
 ## Development setup
@@ -259,23 +266,31 @@ converts them to `models\converted\en`. Use `-Python` for the environment only, 
 
 ## Performance
 
-On 8 CPU threads the six-processor pipeline is about 1.7x faster than Python Stanza and peaks at 2.7 GB of memory
-(Python: 4.3 GB); see [docs/performance.md](docs/performance.md). The `default_fast` package runs its seven
-processors about 2.3x faster than the default's eight, and 1.5x faster than Python's `default_fast`. Libtorch uses one thread per physical core by
-default. On a machine busy with other work, fewer threads (`torch.set_num_threads(n)`) are often faster.
+The managed backend runs all eight processors about 2.2x faster than the TorchSharp backend on 8 threads (26,264
+words on a Ryzen 7 5800X: 25.9 s against 56.4 s) and peaks lower (2.3 GB against 2.5 GB; one `Process` call on 8,000
+words: 2.5 GB in 11.5 s against 3.8–4.3 GB in 24 s), with byte-identical output. On 1 thread every processor is
+faster too, by 13–52%. Loading takes about as long (1.1 s) and peaks at about 850 MB (TorchSharp: 820 MB). Details per
+processor: [docs/backends.md](docs/backends.md#phase-2-progress).
+
+On the TorchSharp backend, on 8 CPU threads the six-processor pipeline is about 1.7x faster than Python Stanza and peaks
+at 2.7 GB of memory (Python: 4.3 GB); see [docs/performance.md](docs/performance.md). The `default_fast` package runs
+its seven processors about 2.3x faster than the default's eight, and 1.5x faster than Python's `default_fast`. On a
+machine busy with other work, fewer threads (`Threads`) are often faster.
 
 ## GPU
 
-`Pipeline.Load(dir, new PipelineOptions { Device = torch.CUDA })` runs every model on an NVIDIA GPU. The
-default is the CPU. Reference a CUDA libtorch package such as
-`TorchSharp-cuda-windows` (several GB) instead of `TorchSharp-cpu`, in the same version (0.107.0). StanzaSharp
-itself depends only on the managed `TorchSharp` package either way.
+The GPU runs on the TorchSharp backend. `Pipeline.Load(dir, new PipelineOptions { Backend = PipelineBackend.TorchSharp,
+Device = torch.CUDA })` runs every model on an NVIDIA GPU. Reference a CUDA libtorch package such as
+`TorchSharp-cuda-windows` (several GB), in the same version as StanzaSharp's `TorchSharp` (0.107.0).
+`Device` and `DisableTf32` are obsolete from 0.5: GPU support moves to a separate `StanzaSharp.Cuda` package
+(`Backend = CudaBackend.Create(...)`), and both leave the main package in 1.0. Until then they keep working; setting
+either selects the TorchSharp backend, and setting them with `Backend = PipelineBackend.Managed` throws.
 
 For output identical to the CPU (and so to Python Stanza), turn off TF32, which libtorch enables for cuDNN by
 default on Ampere and newer GPUs:
 
 ```csharp
-using var nlp = Pipeline.Load(dir, new PipelineOptions { Device = torch.CUDA, DisableTf32 = true });
+using var nlp = Pipeline.Load(dir, new PipelineOptions { Backend = PipelineBackend.TorchSharp, Device = torch.CUDA, DisableTf32 = true });
 ```
 
 `DisableTf32` sets `torch.backends.cuda.matmul.allow_tf32` and `torch.backends.cudnn.allow_tf32` to false. These
@@ -308,27 +323,32 @@ Tests that need models skip when `models/converted/en` (or, for the `.pt` loader
 
 ## CI
 
-`.github/workflows/ci.yml` runs on pushes to `main` and on pull requests (.NET 10; Ubuntu 24.04, plus Windows and macOS).
+`.github/workflows/ci.yml` runs on pushes to `main` and on pull requests (.NET 10; Ubuntu 24.04 x64 and Arm64,
+Windows x64 and Arm64, macOS).
 
 - `build-test` builds the solution and runs the tests without models (the model tests skip).
 - `golden` downloads the English models with `ModelDownloader` (through the CLI), converts them with
-  `tools/stanza_convert.py` (CPU-only torch wheel), and runs the full suite. It fails if any test was
-  skipped. Then `tools/verify-package.ps1` packs StanzaSharp and runs a fresh app that references the
-  package (with no `STANZA` build warning allowed; the platform-package run also sets `StanzaSharpTrimNative`), and
-  `tools/verify-tool.ps1` installs the `stanzasharp` tool from a local feed and downloads `tokenize,mwt` with it. The original and converted models are cached, keyed on `ModelDownloader.cs`,
-  `tools/requirements.txt` and `tools/stanza_convert.py`.
-- `docker` runs `tools/verify-docker.sh`: it packs StanzaSharp and `StanzaSharp.Cpu.Linux`, builds
-  [samples/docker](samples/docker/Dockerfile) on `mcr.microsoft.com/dotnet/runtime:10.0` and on its chiseled
-  variant, and checks that each container turns `corpus.txt` into `pipeline.conllu` byte for byte. It reports
-  the image sizes in the job summary.
+  `tools/stanza_convert.py` (CPU-only torch wheel), and runs the full suite (both backends). It fails if any test was
+  skipped. Then `tools/verify-package.ps1` packs StanzaSharp and runs two fresh apps that reference the package: one
+  with only StanzaSharp (the default install; it must reproduce the golden CoNLL-U with no libtorch loaded), one with
+  `TorchSharp-cpu` on the TorchSharp backend (no `STANZA` build warning allowed, with `StanzaSharpTrimNative`). Then
+  `tools/verify-tool.ps1` installs the `stanzasharp` tool from a local feed and downloads `tokenize,mwt` with it. The
+  original and converted models are cached, keyed on `ModelDownloader.cs`, `tools/requirements.txt` and
+  `tools/stanza_convert.py`.
+- `docker` runs `tools/verify-docker.sh`: it packs StanzaSharp, builds [samples/docker](samples/docker/Dockerfile) on
+  `mcr.microsoft.com/dotnet/runtime:10.0` and on its chiseled variant, and checks that no libtorch is in the image and
+  that each container turns `corpus.txt` into `pipeline.conllu` byte for byte. It reports the image sizes in the job
+  summary. `alpine` does the same on `runtime:10.0-alpine` (musl).
 - `cross-os (windows-2025)`, `cross-os (macos-15)` (Apple Silicon) and `cross-os (windows-11-arm)` run the same
-  full suite, the no-skip check and `tools/verify-package.ps1` (each with its platform package), against Stanza's
-  `.pt` files without converting them (no Python). Their models are cached per OS, keyed on `ModelDownloader.cs`.
-- `.github/workflows/alpine-experiment.yml` (manual only; not required) runs the same Docker check on Alpine with
-  `gcompat` and prints the loader's unresolved symbols. It fails today, which is why Alpine is unsupported.
+  full suite, the no-skip check and both `tools/verify-package.ps1` runs (on Windows Arm64 only the managed one:
+  `TorchSharp-cpu` has no Arm64 libtorch), against Stanza's `.pt` files without converting them (no Python). Their
+  models are cached per OS, keyed on `ModelDownloader.cs`.
+- `linux-arm64` (`ubuntu-24.04-arm`): no libtorch exists for it, so the tests build without one and it runs those
+  that need none (the managed cases of the both-backend theories, and the tests marked
+  `[Trait("Backend", "Managed")]`), the no-skip check and the managed `verify-package.ps1`.
 
 `build-test` and `golden` stay separate jobs, not a matrix, because branch protection requires checks
-by those exact names. All upload their `.trx` test results. To reproduce `golden` locally, run `setup.ps1 -Models`, then
+by those exact names (the others are not required). All upload their `.trx` test results. To reproduce `golden` locally, run `setup.ps1 -Models`, then
 `dotnet test --logger trx --results-directory TestResults` and check that nothing was skipped.
 
 ## Releasing

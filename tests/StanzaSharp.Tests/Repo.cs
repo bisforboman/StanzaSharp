@@ -19,6 +19,14 @@ public static class Repo
     /// <summary>The backend golden tests run on (issue #29): <see cref="Backend.Managed"/> or TorchSharp.</summary>
     internal static Backend Backend(bool managed) => managed ? Nn.Backend.Managed : Nn.Backend.TorchSharp;
 
+    /// <summary>The shared word vectors in the backend's form: a plain array when managed, so no libtorch is needed
+    /// (the linux-arm64 CI job runs the managed cases without one).</summary>
+    internal static Pretrain LoadPretrain(bool managed) =>
+        managed ? Pretrain.LoadManaged(Model("pretrain/conll17")) : Pretrain.Load(Model("pretrain/conll17"));
+
+    /// <summary>The same as a pipeline option.</summary>
+    internal static PipelineBackend PipelineBackendFor(bool managed) => managed ? PipelineBackend.Managed : PipelineBackend.TorchSharp;
+
     private static string FindRoot()
     {
         for (var dir = new DirectoryInfo(AppContext.BaseDirectory); dir != null; dir = dir.Parent)

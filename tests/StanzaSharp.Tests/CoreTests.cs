@@ -1,5 +1,6 @@
 namespace StanzaSharp.Tests;
 
+[Trait("Backend", "Managed")]
 public class CoreTests
 {
     private static string GoldenConllu => File.ReadAllText(Path.Combine(Repo.Golden, "pipeline.conllu"));

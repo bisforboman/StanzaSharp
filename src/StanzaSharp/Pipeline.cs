@@ -95,11 +95,11 @@ public sealed class Pipeline : IDisposable
     private readonly bool _splitSentences, _trimNativeHeap;
     private readonly ILogger? _logger;
 
-    private Pipeline(string modelDir, Dictionary<string, string> models, PipelineOptions options)
+    private Pipeline(string modelDir, Dictionary<string, string> models, PipelineOptions options, Backend kind, TorchSharp.torch.Device? device)
     {
         _cacheOptions = options.CharlmCache;
-        _device = options.Device;
-        bool Managed(string processor) => options.Backend == Backend.Managed && ManagedProcessors.Contains(processor);
+        _device = device;
+        bool Managed(string processor) => kind == Backend.Managed && ManagedProcessors.Contains(processor);
         _splitSentences = options.SplitSentences;
         _trimNativeHeap = options.TrimNativeHeap && NativeHeap.CanTrim;
         _logger = options.Logger;
@@ -119,7 +119,7 @@ public sealed class Pipeline : IDisposable
         // 1,035 → ~850 MB for about 0.05 s (docs/backends.md). TorchSharp models allocate little on the GC heap.
         T Collected<T>(T model)
         {
-            if (options.Backend == Backend.Managed)
+            if (kind == Backend.Managed)
                 GC.Collect();
             return model;
         }
@@ -146,15 +146,15 @@ public sealed class Pipeline : IDisposable
             }
         }
 
-        _tokenizer = Timed(Name("tokenize"), () => Tokenizer.Load(Model("tokenize"), backend: options.Backend));
+        _tokenizer = Timed(Name("tokenize"), () => Tokenizer.Load(Model("tokenize"), backend: kind));
         if (models.ContainsKey("mwt"))
-            _mwt = Timed(Name("mwt"), () => MwtExpander.Load(Model("mwt"), backend: options.Backend));
+            _mwt = Timed(Name("mwt"), () => MwtExpander.Load(Model("mwt"), backend: kind));
         if (models.ContainsKey("pos"))
             _pos = Timed(Name("pos"), () => Managed("pos")
                 ? PosTagger.LoadManaged(Model("pos"), _pretrain!, _managedCharlmForward, _managedCharlmBackward)
                 : PosTagger.Load(Model("pos"), _pretrain!, _charlmForward, _charlmBackward));
         if (models.ContainsKey("lemma"))
-            _lemma = Timed(Name("lemma"), () => Lemmatizer.Load(Model("lemma"), backend: options.Backend));
+            _lemma = Timed(Name("lemma"), () => Lemmatizer.Load(Model("lemma"), backend: kind));
         if (models.ContainsKey("depparse"))
             _depparse = Timed(Name("depparse"), () => Managed("depparse")
                 ? DependencyParser.LoadManaged(Model("depparse"), _pretrain!, _managedCharlmForward, _managedCharlmBackward)
@@ -177,10 +177,12 @@ public sealed class Pipeline : IDisposable
     /// Loads the English models from <paramref name="modelDir"/>: either converted ones (e.g. <c>models/converted/en</c>)
     /// or Stanza's own download with its <c>.pt</c> files (e.g. <c>models/stanza/en</c>), chosen per file.
     /// </summary>
-    /// <param name="options">Package, processors, device, threads and cache settings; defaults to all eight processors
-    /// of the <c>default</c> package on the CPU.</param>
+    /// <param name="options">Package, processors, backend, threads and cache settings; defaults to all eight processors
+    /// of the <c>default</c> package on <see cref="PipelineBackend.Managed"/>.</param>
     /// <exception cref="ArgumentException">An unknown package or processor, a processor the package lacks (e.g.
-    /// constituency in <c>default_fast</c>), or a processor without the ones it requires.</exception>
+    /// constituency in <c>default_fast</c>), a processor without the ones it requires, or the obsolete
+    /// <see cref="PipelineOptions.Device"/> or <see cref="PipelineOptions.DisableTf32"/> with
+    /// <see cref="PipelineOptions.Backend"/> set to <see cref="PipelineBackend.Managed"/>.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><see cref="PipelineOptions.Threads"/> below 1, or a
     /// non-positive <see cref="CharlmCacheOptions.MaxWords"/>.</exception>
     /// <exception cref="InvalidDataException">With <see cref="PipelineOptions.VerifyChecksums"/>: a model file whose
@@ -197,6 +199,10 @@ public sealed class Pipeline : IDisposable
             throw new ArgumentOutOfRangeException(nameof(options), "CharlmCache.MaxWords must be positive; set IsEnabled = false to turn the cache off");
         if (options.Threads < 1)
             throw new ArgumentOutOfRangeException(nameof(options), "Threads must be at least 1, or null for at most Environment.ProcessorCount");
+        var backend = options.Backend;
+        if (backend.Kind == Backend.Managed && options.UsesTorchSharpDevice)
+            throw new ArgumentException("Device and DisableTf32 apply only to the TorchSharp backend, but Backend is PipelineBackend.Managed. "
+                + "Set Backend = PipelineBackend.TorchSharp, or leave Device and DisableTf32 unset to run managed.", nameof(options));
 
         var logger = options.Logger;
         long start = Stopwatch.GetTimestamp();
@@ -206,33 +212,38 @@ public sealed class Pipeline : IDisposable
             logger?.LogInformation("Verified the model checksums in {Milliseconds:F0} ms", Stopwatch.GetElapsedTime(start).TotalMilliseconds);
         }
         Pipeline pipeline;
-        if (options.Backend == Backend.Managed)
+        if (backend.Kind == Backend.Managed)
         {
             // Every processor runs managed, so nothing here may touch TorchSharp: its first call loads native libtorch
             // (the managed backend needs none; ManagedCheckTests). The same semantics as libtorch's threads (LoadTorchSharp): null
             // caps the pool's current count (ProcessorCount unless set lower).
             ManagedThreads.Count = options.Threads ?? Math.Min(ManagedThreads.Count, Environment.ProcessorCount);
             logger?.LogInformation("Using {Threads} managed threads", ManagedThreads.Count);
-            pipeline = new Pipeline(modelDir, models, options);
+            pipeline = new Pipeline(modelDir, models, options, Backend.Managed, device: null);
         }
         else
-            pipeline = LoadTorchSharp(modelDir, models, options);
+            pipeline = LoadTorchSharp(modelDir, models, options, backend);
         logger?.LogInformation("Loaded the {Package} pipeline ({Processors}) in {Milliseconds:F0} ms", options.Package,
             string.Join(",", AllProcessors.Split(',').Where(models.ContainsKey)), Stopwatch.GetElapsedTime(start).TotalMilliseconds);
         return pipeline;
     }
 
-    /// <summary>The TorchSharp backend's Load: libtorch's thread count, TF32, and the models on <see cref="PipelineOptions.Device"/>.</summary>
-    private static Pipeline LoadTorchSharp(string modelDir, Dictionary<string, string> models, PipelineOptions options)
+    /// <summary>The TorchSharp backend's Load: libtorch's thread count, TF32, and the models on the backend's device or the
+    /// obsolete <see cref="PipelineOptions.Device"/>.</summary>
+    private static Pipeline LoadTorchSharp(string modelDir, Dictionary<string, string> models, PipelineOptions options, PipelineBackend backend)
     {
+#pragma warning disable CS0618 // the obsolete options still select the device and TF32
+        var device = options.Device ?? backend.Device;
+        bool disableTf32 = options.DisableTf32 || backend.DisableTf32;
+#pragma warning restore CS0618
         // libtorch defaults to the host's physical cores; ProcessorCount respects a container's CPU quota.
         int threads = options.Threads ?? Math.Min(torch.get_num_threads(), Environment.ProcessorCount);
         if (threads != torch.get_num_threads())
             torch.set_num_threads(threads);
         options.Logger?.LogInformation("Using {Threads} torch intra-op threads (Environment.ProcessorCount is {ProcessorCount})", threads, Environment.ProcessorCount);
-        if (options.DisableTf32)
+        if (disableTf32)
             torch.backends.cuda.matmul.allow_tf32 = torch.backends.cudnn.allow_tf32 = false;
-        return Weights.On(options.Device, () => new Pipeline(modelDir, models, options));
+        return Weights.On(device, () => new Pipeline(modelDir, models, options, Backend.TorchSharp, device));
     }
 
     internal const string PretrainPath = "pretrain/conll17", ForwardCharlmPath = "forward_charlm/1billion", BackwardCharlmPath = "backward_charlm/1billion";
@@ -297,9 +308,10 @@ public sealed class Pipeline : IDisposable
     /// </summary>
     /// <remarks>
     /// Thread-safe: one pipeline can serve concurrent calls from many threads, sharing its models, and each call's
-    /// output is the same as it would be alone. Every call runs libtorch's operations on up to
-    /// <see cref="PipelineOptions.Threads"/> threads of its own, so concurrent calls compete for the same cores:
-    /// throughput is bounded by the CPU, not by the number of callers.
+    /// output is the same as it would be alone. Throughput is bounded by the CPU, not by the number of callers: on
+    /// <see cref="PipelineBackend.Managed"/> concurrent calls share one pool of <see cref="PipelineOptions.Threads"/>
+    /// threads; on <see cref="PipelineBackend.TorchSharp"/> every call runs libtorch's operations on up to that many
+    /// threads of its own, so the calls compete for the same cores.
     /// </remarks>
     public Document Process(string text) => Process(text, CancellationToken.None);
 

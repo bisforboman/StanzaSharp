@@ -2,10 +2,10 @@
 
 StanzaSharp runs each processor's network on one of two backends:
 
-- **TorchSharp** (libtorch): today's code. It is the default, it runs on the GPU, and it is the reference the
-  managed code is tested against.
-- **Managed**: C# SIMD kernels with no native dependencies (`src/StanzaSharp.Nn/Managed/`, see
-  [managed-backend-spike.md](managed-backend-spike.md)). It is CPU only.
+- **Managed** (`PipelineBackend.Managed`, the default from 0.5): C# SIMD kernels with no native dependencies
+  (`src/StanzaSharp.Nn/Managed/`, see [managed-backend-spike.md](managed-backend-spike.md)). It is CPU only.
+- **TorchSharp** (`PipelineBackend.TorchSharp`, libtorch): the original code. It runs on the GPU, and it is the
+  reference the managed code is tested against.
 
 The owner's plan: 0.5 makes the managed backend the default, with TorchSharp still selectable. At 1.0 TorchSharp leaves
 the main package for an opt-in `StanzaSharp.Cuda` package. Both implementations stay.
@@ -13,7 +13,8 @@ the main package for an opt-in `StanzaSharp.Cuda` package. Both implementations 
 Phase 1 added the seam and ported **tokenize** and **mwt**. Phase 2 ported the other six one at a time: **ner**, **pos**,
 **depparse**, **sentiment**, **lemma** and **constituency**, plus a backend-neutral `CharlmCache` (see
 [Phase 2](#phase-2-progress)). Every processor of both packages now runs on either backend, and a managed pipeline loads no
-TorchSharp charlms. Everything is `internal`; nothing public changed.
+TorchSharp charlms. 0.5 makes the managed backend the default through the public `PipelineOptions.Backend` (see
+[Public API](#public-api-decided-2026-10-08-a-shipped-in-05)).
 
 ## The seam
 
@@ -52,15 +53,16 @@ The seam sits at each processor's **network**: one small interface per processor
 
 ### Choosing the backend
 
-- `Nn.Backend` (`TorchSharp`, `Managed`) and an internal `PipelineOptions.Backend` (default `TorchSharp`).
-- `Pipeline` passes the backend to each ported processor's `Load(basePath, device, backend)`. Processors not
-  ported yet ignore it and run on TorchSharp. So `Backend.Managed` today means "managed where ported".
+- Public: `PipelineOptions.Backend` (`PipelineBackend.Managed`, the default, or `PipelineBackend.TorchSharp`).
+  Internally `PipelineBackend.Kind` is an `Nn.Backend` (`TorchSharp`, `Managed`).
+- `Pipeline` passes the backend to each processor's `Load(basePath, device, backend)` (or calls its `LoadManaged`).
 - **Threads:** with `Backend.Managed`, `Load` also sets `ManagedThreads.Count`, with the documented semantics: an
   explicit `Threads`, or null for `min(current count, Environment.ProcessorCount)`. The count is ProcessorCount unless
   something set it lower, and `ProcessorCount` respects a container's CPU quota. It is process-wide, like
   `torch.set_num_threads`. With `Backend.Managed`, libtorch's threads are left alone (see below); on TorchSharp they are
   set as before.
-- Benchmark: `StanzaSharp.Benchmark --backend managed [--processors tokenize,mwt]`.
+- Benchmark: `StanzaSharp.Benchmark --backend managed|torch [--processors tokenize,mwt]` (managed by default;
+  `--device` selects torch).
 
 ### No libtorch on the managed backend (0.5 requirement)
 
@@ -89,18 +91,18 @@ touched on the managed path; `ModelDownloader`/`VerifyChecksums` (MD5), `Conllu`
 - `tests/StanzaSharp.ManagedCheck`: a console app referencing the library projects but no `TorchSharp-cpu` /
   `libtorch-cpu-*` (`StanzaSharpNoLibTorch` in its csproj keeps Directory.Build.props from adding the Windows Arm64
   libtorch), so libtorch is not on disk next to it (only TorchSharp's own `LibTorchSharp`, which the managed package
-  carries). For `default` and `default_fast` it loads a managed pipeline (with `Threads`, a `Logger`, and
+  carries). For `default` and `default_fast` it loads a pipeline on the default backend (with `Threads`, a `Logger`, and
   `VerifyChecksums` for `.pt` models), checks that a canceled `Process` throws, compares `corpus.txt` with
   `pipeline.conllu` / `fast/corpus.conllu` byte for byte, runs bulk, pretokenized and no-ssplit input, and fails if a
   native torch module is loaded (`Process.Modules`: `LibTorchSharp`, `torch_cpu`, `c10`; on Linux .NET reads
-  `/proc/self/maps`). Public API only, plus reflection for the internal `PipelineOptions.Backend`.
+  `/proc/self/maps`). Public API only (since 0.5 the default backend needs no option at all).
 - `ManagedCheckTests` runs it in its own process with `NUGET_PACKAGES` set to an empty folder: TorchSharp's fallback
   otherwise copies libtorch from the NuGet cache into a `cpu/` folder next to the app and loads it from there (that is
   how the first run, before the fixes, loaded `torch_cpu`/`c10` although none was in the output). With the fallback
   blocked, any torch call throws (`TypeInitializationException` from `torch..cctor`, which is how the touchpoints above
   were found). It also asserts no libtorch file is in the app's output.
-- `tools/verify-package.ps1 -Managed` (CI: golden job, Linux, `.pt` models): packs StanzaSharp, builds a fresh app that
-  references **only** `StanzaSharp` (no `TorchSharp-cpu`, no platform package), compiles the same `Program.cs` against
+- `tools/verify-package.ps1 -Managed` (CI: golden, cross-os and linux-arm64, `.pt` models): packs StanzaSharp, builds a fresh app that
+  references **only** `StanzaSharp` (no `TorchSharp-cpu`), compiles the same `Program.cs` against
   it, checks no libtorch reached the output, and runs it with an empty `NUGET_PACKAGES`.
 
 **Load memory** (`--memory`, fresh process, default package, converted models, Ryzen 7 5800X; the benchmark used to
@@ -145,18 +147,22 @@ The split needs no change to the processors' logic; it only moves where the Torc
    - `StanzaSharp` (managed): Core, Nn without torch, the processors, and the facade, with no native dependency.
    - `StanzaSharp.Cuda`: `StanzaSharp.TorchSharp.dll`, depending on `StanzaSharp` and managed `TorchSharp`. Users
      add `TorchSharp-cuda-*` themselves, as today.
-   - The `StanzaSharp.Cpu.*` platform packages and the `buildTransitive` version check move with it, or are dropped,
-     since CPU users no longer need libtorch.
+   - The `buildTransitive` version check moves with it. (The `StanzaSharp.Cpu.*` platform packages were already
+     discontinued in 0.5: CPU users no longer need libtorch.)
 4. **Order:**
    - 0.5: both backends in the main package (TorchSharp still a dependency), managed the default.
    - 1.0: the move above, once every processor is ported.
 
-### Public API (decided 2026-10-08: A; ships with 0.5, not implemented yet)
+### Public API (decided 2026-10-08: A; shipped in 0.5)
 
 - **A (chosen):** `PipelineOptions.Backend` of a sealed public `PipelineBackend` class with only internal members:
   - `PipelineBackend.Managed` (default from 0.5) and `PipelineBackend.TorchSharp` in the main package.
   - From 1.0, `CudaBackend.Create(int deviceIndex = 0, bool disableTf32 = false)` in `StanzaSharp.Cuda`.
-  - `PipelineOptions.Device`/`DisableTf32` become `[Obsolete]` forwards in 0.5 and are removed in 1.0.
+  - `PipelineOptions.Device`/`DisableTf32` become `[Obsolete]` forwards in 0.5 and are removed in 1.0. Implemented:
+    with `Backend` unset, setting either selects TorchSharp (`Backend` reads `TorchSharp`); with `Backend =
+    PipelineBackend.Managed` set explicitly, `Load` throws an `ArgumentException`. `PipelineBackend` carries an
+    internal device and TF32 flag for `CudaBackend.Create` (`StanzaSharp.Cuda` will need adding to
+    Directory.Build.props' `InternalsVisibleTo` list).
   - It survives the package split without a breaking change to the option itself.
   - A pipeline on the managed backend must load with no native libtorch package: from 0.5, `Load` calls no torch
     function (not even `torch.set_num_threads`) unless TorchSharp is used. `PipelineBackend.TorchSharp` leaves the main
@@ -593,7 +599,9 @@ For 0.5:
 
 - ~~`Pretrain` as a plain array, and a managed `Load` that touches no libtorch~~: done ([No libtorch on the managed
   backend](#no-libtorch-on-the-managed-backend-05-requirement)).
-- The public `PipelineBackend` option (decided: A), and managed as the default; `Device`/`DisableTf32` become `[Obsolete]`.
+- ~~The public `PipelineBackend` option (decided: A), and managed as the default; `Device`/`DisableTf32` become
+  `[Obsolete]`~~: done. The `StanzaSharp.Cpu.*` platform packages are no longer published, and the Docker sample runs
+  managed with no libtorch.
 - Later (1.0): the `StanzaSharp.Cuda` split.
 
 Cross-cutting:

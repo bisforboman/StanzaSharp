@@ -12,6 +12,7 @@ public class NerTests(ITestOutputHelper output)
     private static readonly string Golden = Path.Combine(Repo.Golden, "ner");
 
     [Fact]
+    [Trait("Backend", "Managed")]
     public void Viterbi_BreaksTiesTowardTheLowestTagLikeNumpy()
     {
         // Paths 0,0 and 1,1 both score 1; np.argmax picks the first maximum at every step.
@@ -22,6 +23,7 @@ public class NerTests(ITestOutputHelper output)
     }
 
     [Fact]
+    [Trait("Backend", "Managed")]
     public void Viterbi_FindsTheBestPathByBruteForce()
     {
         var random = new Random(7);
@@ -53,10 +55,12 @@ public class NerTests(ITestOutputHelper output)
     [InlineData("E-ORG I-ORG B-ORG", "S-ORG S-ORG S-ORG")]
     [InlineData("I-A I-B E-B B-A", "S-A B-B E-B S-A")]
     [InlineData("O B-X I-X E-X S-Y", "O B-X I-X E-X S-Y")]
+    [Trait("Backend", "Managed")]
     public void FixSingletonTags_MatchesStanza(string tags, string expected) =>
         Assert.Equal(expected.Split(' '), NerTagger.FixSingletonTags(tags.Split(' ')));
 
     [Fact]
+    [Trait("Backend", "Managed")]
     public void BuildEntities_DecodesLikeStanza()
     {
         // decode_from_bioes: an I-/E- without B- still makes an entity, typed by its last tag.
@@ -68,6 +72,7 @@ public class NerTests(ITestOutputHelper output)
     }
 
     [Fact]
+    [Trait("Backend", "Managed")]
     public void Conllu_RoundTripsNerTags()
     {
         var conllu = File.ReadAllText(Path.Combine(Golden, "validation_contractions.conllu"));
@@ -82,9 +87,9 @@ public class NerTests(ITestOutputHelper output)
     [InlineData(true)]
     public void Emissions_MatchGoldenIntermediates(bool managed)
     {
-        using var pretrain = Pretrain.Load(Repo.Model("pretrain/conll17"));
-        using var forward = CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
-        using var backward = CharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
+        using var pretrain = Repo.LoadPretrain(managed);
+        using var forward = managed ? null : CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
+        using var backward = managed ? null : CharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
         string model = Repo.Model("ner/ontonotes-ww-multi_charlm");
         using var ner = managed
             ? NerTagger.LoadManaged(model, pretrain, ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion")), ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion")))
@@ -117,7 +122,7 @@ public class NerTests(ITestOutputHelper output)
     [MemberData(nameof(Configurations))]
     public void Pipeline_ReproducesGoldenTagsAndEntities(string processors, bool cache, bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = processors, CharlmCache = new() { IsEnabled = cache }, Backend = Repo.Backend(managed) });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = processors, CharlmCache = new() { IsEnabled = cache }, Backend = Repo.PipelineBackendFor(managed) });
         bool full = processors.Contains("depparse");
         var failures = new List<string>();
         var files = Directory.GetFiles(Golden, "*.conllu").Order().ToList();

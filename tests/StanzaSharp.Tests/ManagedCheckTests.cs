@@ -14,6 +14,7 @@ namespace StanzaSharp.Tests;
 public class ManagedCheckTests(ITestOutputHelper output)
 {
     [ModelFact]
+    [Trait("Backend", "Managed")]
     public void ManagedPipeline_RunsWithoutNativeLibtorch()
     {
         // tests/StanzaSharp.Tests/bin/<Configuration>/<tfm>/ → tests/StanzaSharp.ManagedCheck/bin/<Configuration>/<tfm>/

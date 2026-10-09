@@ -35,7 +35,7 @@ public class ConcurrencyTests(Xunit.Abstractions.ITestOutputHelper output)
     [InlineData("default_fast", true)]
     public void ConcurrentCalls_EqualSequentialOutput(string package, bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, Backend = Repo.Backend(managed) });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, Backend = Repo.PipelineBackendFor(managed) });
         int jobs = Texts.Length * 2;
         var expected = Enumerable.Range(0, jobs).Select(i => Run(nlp, i)).ToArray();
 
@@ -74,7 +74,7 @@ public class ConcurrencyTests(Xunit.Abstractions.ITestOutputHelper output)
     public void Canceled_InsideEachProcessor_ThrowsPromptly_AndThePipelineStillWorks(string? processors, bool managed)
     {
         var timings = new TimingLogger();
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = processors, Logger = timings, Backend = Repo.Backend(managed) });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = processors, Logger = timings, Backend = Repo.PipelineBackendFor(managed) });
         var corpus = File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt"));
         var stats = DisposeScopeManager.Statistics; // per thread, and Process runs on this one
         long live = stats.ThreadTotalLiveCount;

@@ -18,7 +18,7 @@ public class FastPackageTests(ITestOutputHelper output)
     [InlineData(true)]
     public void Process_MatchesEveryGoldenFile(bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = "default_fast", Backend = Repo.Backend(managed) });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = "default_fast", Backend = Repo.PipelineBackendFor(managed) });
         var failures = new List<string>();
         var files = new[] { Path.Combine(Repo.Golden, "corpus.txt") }.Concat(Directory.GetFiles(Repo.Golden, "validation*.txt").Order()).ToList();
         foreach (var txt in files)
@@ -106,6 +106,7 @@ public class FastPackageTests(ITestOutputHelper output)
     private static List<string> Strings(JsonNode? array) => array!.AsArray().Select(x => x!.GetValue<string>()).ToList();
 
     [Fact]
+    [Trait("Backend", "Managed")]
     public void SelectModels_UsesThePackagesModelsAndProcessors()
     {
         var fast = Pipeline.SelectModels("default_fast", null, addRequired: false, "options");
@@ -121,6 +122,7 @@ public class FastPackageTests(ITestOutputHelper output)
     }
 
     [Fact]
+    [Trait("Backend", "Managed")]
     public void Load_RejectsConstituencyInTheFastPackageAndUnknownPackages()
     {
         var dir = Repo.Root; // validation happens before loading

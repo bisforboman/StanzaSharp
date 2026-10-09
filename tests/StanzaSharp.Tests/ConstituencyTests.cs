@@ -10,12 +10,13 @@ public class ConstituencyTests(ITestOutputHelper output)
 {
     private sealed class Models : IDisposable
     {
-        public readonly Pretrain Pretrain = Pretrain.Load(Repo.Model("pretrain/conll17"));
+        public readonly Pretrain Pretrain;
         public readonly CharLanguageModel? Forward, Backward;
         public readonly ConstituencyParser Parser;
 
         public Models(bool managed = false)
         {
+            Pretrain = Repo.LoadPretrain(managed);
             if (managed)
             {
                 Parser = ConstituencyParser.LoadManaged(Repo.Model("constituency/ptb3-revised_charlm"), Pretrain,
@@ -154,7 +155,7 @@ public class ConstituencyTests(ITestOutputHelper output)
     public void Pipeline_MatchesGoldenTrees(bool managed)
     {
         // The tagger's charlm cache feeds the parser here; the test above computes the charlms itself.
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos,constituency", Backend = Repo.Backend(managed) });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos,constituency", Backend = Repo.PipelineBackendFor(managed) });
         var doc = nlp.Process(File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt")));
         var golden = Conllu.Read(File.ReadAllText(Path.Combine(Repo.Golden, "pipeline.conllu")));
 

@@ -13,21 +13,29 @@ public class PosTests(ITestOutputHelper output)
     // managed: Backend.Managed (issue #29), else TorchSharp. Every golden test runs on both.
     private sealed class Models : IDisposable
     {
-        public readonly Pretrain Pretrain = Pretrain.Load(Repo.Model("pretrain/conll17"));
-        public readonly CharLanguageModel Forward = CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
-        public readonly CharLanguageModel Backward = CharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
+        public readonly Pretrain Pretrain;
+        public readonly CharLanguageModel? Forward, Backward;
         public readonly PosTagger Tagger;
 
-        public Models(bool managed = false) => Tagger = managed
-            ? PosTagger.LoadManaged(Repo.Model("pos/combined_charlm"), Pretrain,
-                ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion")), ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion")))
-            : PosTagger.Load(Repo.Model("pos/combined_charlm"), Pretrain, Forward, Backward);
+        public Models(bool managed = false)
+        {
+            Pretrain = Repo.LoadPretrain(managed);
+            if (managed)
+            {
+                Tagger = PosTagger.LoadManaged(Repo.Model("pos/combined_charlm"), Pretrain,
+                    ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion")), ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion")));
+                return;
+            }
+            Forward = CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
+            Backward = CharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
+            Tagger = PosTagger.Load(Repo.Model("pos/combined_charlm"), Pretrain, Forward, Backward);
+        }
 
         public void Dispose()
         {
             Tagger.Dispose();
-            Forward.Dispose();
-            Backward.Dispose();
+            Forward?.Dispose();
+            Backward?.Dispose();
             Pretrain.Dispose();
         }
     }
@@ -41,6 +49,7 @@ public class PosTests(ITestOutputHelper output)
     [InlineData("?", "?")]
     [InlineData("‼", "‼")]
     [InlineData("a??", "a??")]
+    [Trait("Backend", "Managed")]
     public void SimplifyPunct_MatchesStanza(string word, string expected) =>
         Assert.Equal(expected, PosTagger.SimplifyPunct(word));
 

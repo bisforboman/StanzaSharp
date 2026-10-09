@@ -56,7 +56,7 @@ internal static class LemmaDivergence
         ManagedLemmaNet.DoubleGates = doubleGates;
         using var nlp = Pipeline.Load(modelDir, new PipelineOptions
         {
-            Package = package, Processors = "tokenize,mwt,pos", Backend = backend, Threads = threads > 0 ? threads : null,
+            Package = package, Processors = "tokenize,mwt,pos", Backend = backend == Backend.Managed ? PipelineBackend.Managed : PipelineBackend.TorchSharp, Threads = threads > 0 ? threads : null,
         });
         var lemmaModel = Pipeline.SelectModels(package, null, addRequired: false, "--package")["lemma"];
         using var lemmatizer = Lemmatizer.Load(Path.Combine(modelDir, "lemma", lemmaModel), null, backend);

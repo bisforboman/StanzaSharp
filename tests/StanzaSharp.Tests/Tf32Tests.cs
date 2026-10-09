@@ -1,3 +1,4 @@
+#pragma warning disable CS0618 // DisableTf32 is obsolete (TorchSharp backend only) but still supported
 using TorchSharp;
 
 namespace StanzaSharp.Tests;

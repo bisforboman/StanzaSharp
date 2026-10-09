@@ -182,6 +182,7 @@ public class ManagedBackendTests(ITestOutputHelper output)
     }
 
     [Fact]
+    [Trait("Backend", "Managed")]
     public void ParallelFor_RethrowsAWorkersException()
     {
         var error = With(Gemm.Path, 4, () => Assert.Throws<InvalidOperationException>(() =>
@@ -191,6 +192,7 @@ public class ManagedBackendTests(ITestOutputHelper output)
 
     [ModelTheory]
     [MemberData(nameof(Paths))]
+    [Trait("Backend", "Managed")]
     public void CharLanguageModels_MatchGoldenRepresentations(string path)
     {
         var golden = SafeTensorFile.Load(Path.Combine(Repo.Golden, "intermediates.safetensors"));

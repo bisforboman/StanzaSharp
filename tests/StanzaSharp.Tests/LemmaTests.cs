@@ -58,7 +58,7 @@ public class LemmaTests
     [InlineData(true)]
     public void Pipeline_ReproducesEveryGoldenFile(bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos,lemma", Backend = Repo.Backend(managed) });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos,lemma", Backend = Repo.PipelineBackendFor(managed) });
         var failures = new List<string>();
         var names = Directory.GetFiles(GoldenDir, "*.conllu").Select(Path.GetFileNameWithoutExtension).Order().ToList();
         Assert.Equal(13, names.Count); // corpus + 12 validation files

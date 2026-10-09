@@ -12,12 +12,13 @@ public class DepparseTests(ITestOutputHelper output)
 
     private sealed class Models : IDisposable
     {
-        public readonly Pretrain Pretrain = Pretrain.Load(Repo.Model("pretrain/conll17"));
+        public readonly Pretrain Pretrain;
         public readonly CharLanguageModel? Forward, Backward;
         public readonly DependencyParser Parser;
 
         public Models(bool managed = false)
         {
+            Pretrain = Repo.LoadPretrain(managed);
             if (managed)
             {
                 Parser = DependencyParser.LoadManaged(Repo.Model("depparse/combined_charlm"), Pretrain,
@@ -78,6 +79,7 @@ public class DepparseTests(ITestOutputHelper output)
     }
 
     [Fact]
+    [Trait("Backend", "Managed")]
     public void ChuLiuEdmonds_MatchesStanzaOnTiedScores()
     {
         var cases = JsonNode.Parse(File.ReadAllText(Path.Combine(Golden, "mst.json")))!.AsArray();
@@ -94,6 +96,7 @@ public class DepparseTests(ITestOutputHelper output)
     }
 
     [Fact]
+    [Trait("Backend", "Managed")]
     public void ChuLiuEdmonds_BreaksACycle()
     {
         // Words 1 and 2 prefer each other; the cycle is broken by its cheapest entry from the root.
@@ -105,6 +108,7 @@ public class DepparseTests(ITestOutputHelper output)
     }
 
     [Fact]
+    [Trait("Backend", "Managed")]
     public void PairwiseSum_MatchesNumpyBlocking()
     {
         // np.sum adds in 8 interleaved accumulators from 8 elements on, so it differs from a plain loop.
@@ -182,7 +186,7 @@ public class DepparseTests(ITestOutputHelper output)
     [InlineData(true)]
     public void Pipeline_ReproducesGoldenFilesFromText(bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos,lemma,depparse", Backend = Repo.Backend(managed) });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos,lemma,depparse", Backend = Repo.PipelineBackendFor(managed) });
         var failures = new List<string>();
         var files = Directory.GetFiles(Golden, "*.conllu").Order().ToList();
         Assert.Equal(13, files.Count);
