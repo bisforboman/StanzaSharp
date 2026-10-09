@@ -7,6 +7,8 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-10-09
+
 ### Fixed
 - Loading Stanza's `.pt` files from a slow filesystem, such as a Docker Desktop bind mount of a Windows folder, took
   minutes instead of seconds (issue #48), on both backends. The checkpoint reader asked the file for its length once
@@ -226,7 +228,8 @@ output byte-identical to Python Stanza on the golden test data.
 - `ModelDownloader` fetches the models from Stanza's Hugging Face repository and checks their MD5s.
 - `Conllu.Read` and `Conllu.Write`, in Stanza's CoNLL-U dialect.
 
-[Unreleased]: https://github.com/bisforboman/StanzaSharp/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/bisforboman/StanzaSharp/compare/v0.5.1...HEAD
+[0.5.1]: https://github.com/bisforboman/StanzaSharp/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/bisforboman/StanzaSharp/compare/v0.4.2...v0.5.0
 [0.4.2]: https://github.com/bisforboman/StanzaSharp/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/bisforboman/StanzaSharp/compare/v0.4.0...v0.4.1
