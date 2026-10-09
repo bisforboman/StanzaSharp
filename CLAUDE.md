@@ -684,6 +684,9 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     TorchSharp, which is itself 2.7e-4 from Stanza in float64 (Stanza f32: 2.9e-4): `LemmaNet_ManagedMatchesTorchSharp`
     reports them without a tolerance (owner's decision, 2026-10-08: lemma is tested on exact lemmas, decoding and edits, as
     TorchSharp always was; no backend reaches 1e-4 on these log-probs, Stanza's float32 included).
+    On UD EWT (`tools/lemma_divergence.py` + benchmark `lemma-divergence`; corpus not in the repo) no lemma differs among
+    Stanza f32/f64, TorchSharp, managed and managed with double gates, also with every word through the seq2seq (1.25M
+    steps, min margin 9.1e-4). It also found the tokenizer's `<UNK>` limit bug (1000 vs the config's `max_seqlen` 200), fixed in #41.
   - `IConstituencyNet` (`ConstituencyNet` / `ManagedConstituencyNet`): the net makes opaque handles (word vectors,
     constituent vectors, stack LSTM states; TorchSharp's are `IDisposable` and owned by the `ParserState`), and offers
     `EncodeWords`, `Word`, `Score`, `Open`, `Compose`, `PushTransitions`, `PushConstituents`. `ConstituencyParser` keeps the

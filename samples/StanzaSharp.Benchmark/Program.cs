@@ -38,6 +38,8 @@ const string Usage = """
       --no-trim       on Linux (glibc), keep the free native heap after each Process call (no malloc_trim)
     """;
 
+if (args is ["lemma-divergence", ..])
+    return LemmaDivergence.Run(args[1..]); // tools/lemma_divergence.py; docs/backends.md, "lemma"
 if (args is ["managed-spike", ..])
     return ManagedSpike.Run(args[1..], FindRepoRoot(), BuildText); // issue #29: docs/managed-backend-spike.md
 

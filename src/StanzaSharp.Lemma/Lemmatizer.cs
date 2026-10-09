@@ -116,8 +116,9 @@ internal sealed class Lemmatizer : IDisposable
     /// the decoded string (before edits) and the edit class of each word.
     /// </summary>
     /// <param name="onStep">For tests: called after each decoder step with its log-probs, the row width and which rows were done before it.</param>
+    /// <param name="onEdit">For tests: called at the end of each batch with its [batch, 3] edit logits (rows sorted like the steps').</param>
     internal (List<string> Decoded, List<int> Edits) Predict(IReadOnlyList<Word> words, CancellationToken cancellationToken = default,
-        Action<float[], int, bool[]>? onStep = null)
+        Action<float[], int, bool[]>? onStep = null, Action<float[]>? onEdit = null)
     {
         // DeltaVocab: characters the vocabulary lacks get new ids past it, in code point order, so the copy
         // gate can still output them. Stanza builds it over the text, UPOS and current lemma of every word.
@@ -139,7 +140,7 @@ internal sealed class Lemmatizer : IDisposable
         {
             cancellationToken.ThrowIfCancellationRequested();
             var batch = words.Skip(start).Take(_batchSize).ToList();
-            var (d, e) = PredictBatch(batch, charToId, idToChar, cancellationToken, onStep);
+            var (d, e) = PredictBatch(batch, charToId, idToChar, cancellationToken, onStep, onEdit);
             decoded.AddRange(d);
             edits.AddRange(e);
         }
@@ -147,7 +148,7 @@ internal sealed class Lemmatizer : IDisposable
     }
 
     private (string[] Decoded, int[] Edits) PredictBatch(List<Word> words, Dictionary<string, int> charToId, string[] idToChar, CancellationToken ct,
-        Action<float[], int, bool[]>? onStep)
+        Action<float[], int, bool[]>? onStep, Action<float[]>? onEdit)
     {
         // <SOS> chars <EOS>, one unit per code point; sorted like data.sort_all: longest first, ties by later index first.
         var src = words.Select(w => w.Text.EnumerateRunes().Select(r => charToId[r.ToString()]).Prepend(SosId).Append(EosId).ToArray()).ToList();
@@ -192,6 +193,7 @@ internal sealed class Lemmatizer : IDisposable
         }
 
         var editValues = decoder.EditLogits;
+        onEdit?.Invoke(editValues);
         var decoded = new string[batch];
         var edits = new int[batch];
         for (int r = 0; r < batch; r++)
