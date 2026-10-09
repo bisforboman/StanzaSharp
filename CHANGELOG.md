@@ -7,12 +7,46 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 
 ## [Unreleased]
 
+### Added
+- `PipelineOptions.Backend` and `PipelineBackend`: the implementation that runs the models.
+  `PipelineBackend.Managed` (the new default) or `PipelineBackend.TorchSharp` (libtorch, as up to 0.4). Both give the
+  same tags, lemmas, parses, entities and sentiment.
+- Alpine (musl) and Linux on Arm64 run StanzaSharp now, on the managed backend, and CI checks both: the Docker sample
+  on `runtime:10.0-alpine` reproduces the golden CoNLL-U byte for byte, and Linux Arm64 runs the managed tests and the
+  package check.
+
 ### Changed
+- **The models run on a managed backend by default**: C# kernels using the CPU's SIMD instructions (AVX2/FMA on x64,
+  NEON on Arm64), with no libtorch or other native library. `dotnet add package StanzaSharp` is the whole install;
+  `TorchSharp-cpu` is needed only for `PipelineBackend.TorchSharp`. The output is byte-identical to the TorchSharp
+  backend and to Python Stanza on all the golden data (both packages). On a Ryzen 7 5800X with 8 threads all eight
+  processors run about 2.2x faster (26,264 words: 25.9 s against 56.4 s); on 1 thread every processor is faster too,
+  by 13–52%. Memory: one `Process` call on 8,000 words peaks at 2.5 GB instead of 3.8–4.3 GB; loading peaks at about
+  850 MB (TorchSharp: 820 MB). Details in docs/backends.md.
+- `Threads` sets the managed backend's thread pool (process-wide, shared by concurrent `Process` calls) or, on
+  TorchSharp, libtorch's intra-op threads as before. A managed pipeline never calls into libtorch, so `Load` no longer
+  changes libtorch's thread count unless TorchSharp is selected.
+- The Docker sample references only `StanzaSharp`: no libtorch in the image, which now works on any .NET 10 runtime
+  image, including chiseled and Alpine.
 - Cancellation inside the POS tagger and the sentiment classifier is faster: the token is now also checked inside
   each batch (the tagger: after each charlm pass or the character model, between the LSTM layers and between the
   heads; sentiment: after each charlm pass, after the LSTM and between the convolutions), so a call stops within one
   such step instead of up to a whole batch (0.8 s for POS, 1.2 s for sentiment on an 8-core machine). Any call now
   stops within about half a second there. Output is unchanged.
+
+### Deprecated
+- `PipelineOptions.Device` and `PipelineOptions.DisableTf32` are `[Obsolete]`; GPU support moves to a separate
+  `StanzaSharp.Cuda` package, and both options leave the main package in 1.0, with `PipelineBackend.TorchSharp`. They
+  keep working: with `Backend` unset, setting either selects the TorchSharp backend, so existing GPU code runs as
+  before (with a warning). Setting them together with `Backend = PipelineBackend.Managed` throws an
+  `ArgumentException`.
+
+### Removed
+- The platform packages `StanzaSharp.Cpu.Linux`, `.Windows`, `.WindowsArm64` and `.MacOS` are no longer published
+  (0.4.2 is their last version): the default backend needs no libtorch. For the TorchSharp backend, reference
+  `TorchSharp-cpu`, or one platform's `libtorch-cpu-<rid>` package in version 2.10.0 (`libtorch-cpu-linux-x64`,
+  `-win-x64`, `-win-arm64`, `-osx-arm64`), next to `StanzaSharp`, and set `Backend = PipelineBackend.TorchSharp`.
+  `STANZA001` and `StanzaSharpTrimNative` still apply to those packages.
 
 ### Fixed
 - Tokens longer than the tokenizer's `max_seqlen` (200 characters for English, read from the model's config) now

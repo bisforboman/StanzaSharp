@@ -1,6 +1,8 @@
 # Performance
 
 How fast StanzaSharp runs compared with Python Stanza, what was optimized, and what is left.
+The measurements here are of the TorchSharp backend (add `--backend torch` to the benchmark commands; since 0.5 the
+default is the managed backend, measured in [backends.md](backends.md)).
 Every change kept the output byte-identical: all golden tests pass, and on the benchmark text the
 C# CoNLL-U equals Python's line for line, before and after.
 

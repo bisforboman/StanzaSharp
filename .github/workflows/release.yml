@@ -62,10 +62,10 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
-      # StanzaSharp, the platform packages that add one platform's CPU libtorch to it, and the stanzasharp tool.
+      # StanzaSharp and the stanzasharp tool. (The StanzaSharp.Cpu.* platform packages ended with 0.4.)
       - name: Pack
         run: |
-          for project in StanzaSharp StanzaSharp.Cpu.Linux StanzaSharp.Cpu.Windows StanzaSharp.Cpu.WindowsArm64 StanzaSharp.Cpu.MacOS StanzaSharp.Tool; do
+          for project in StanzaSharp StanzaSharp.Tool; do
             dotnet pack src/$project --configuration Release -p:Version=$VERSION --output artifacts
           done
 
