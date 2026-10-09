@@ -205,6 +205,14 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
     private readonly float[] _cellBias, _outBias;
     private readonly float[] _edit0, _edit0Bias, _edit2, _edit2Bias;
 
+    /// <summary>
+    /// Study only (tools/lemma_divergence.py, the benchmark's <c>lemma-divergence --double-gates</c>): the decoder's
+    /// LSTMCell gate sums in double (plain loops over the pool) instead of the GEMM. Read when a net is constructed. Off: the shipped path.
+    /// </summary>
+    internal static bool DoubleGates;
+    private readonly float[]? _cellRows;  // with DoubleGates: [4·hidden, emb + hidden], rows in GateOrder
+    private readonly double[]? _cellBias64;
+
     public ManagedLemmaNet(Checkpoint ckpt, LemmaConfig c)
     {
         _c = c;
@@ -233,6 +241,16 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
         _cellBias = new float[_cell.PaddedN];
         for (int j = 0; j < order.Length; j++)
             _cellBias[j] = bih[order[j]] + bhh[order[j]];
+        if (DoubleGates)
+        {
+            _cellRows = new float[order.Length * k];
+            _cellBias64 = new double[order.Length];
+            for (int j = 0; j < order.Length; j++)
+            {
+                w.AsSpan(order[j] * k, k).CopyTo(_cellRows.AsSpan(j * k));
+                _cellBias64[j] = (double)bih[order[j]] + bhh[order[j]];
+            }
+        }
 
         _attnIn = new PackedMatrix(T("decoder.attention_layer.linear_in.weight"), h, h);
         _attnOut = new PackedMatrix(T("decoder.attention_layer.linear_out.weight"), h, 2 * h);
@@ -371,7 +389,31 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
             {
                 // LSTMCell: one GEMM, then the cell update per four units (a 16-column panel).
                 int ldg = n._cell.PaddedN;
-                Gemm.Run(xh, b, ldxh, n._cell, cellBias, gates, ldg, ct);
+                if (n._cellRows is { } rows)
+                {
+                    // Gate rows in chunks of 16 across the pool; each sum in double, 4 rows of x at a time.
+                    nint pXhIn = (nint)xh, pGates = (nint)gates;
+                    var bias = n._cellBias64!;
+                    ManagedThreads.For(bias.Length / 16, chunk =>
+                    {
+                        var x = (float*)pXhIn;
+                        var g = (float*)pGates;
+                        for (int j = chunk * 16; j < chunk * 16 + 16; j++)
+                        {
+                            var wj = rows.AsSpan(j * ldxh, ldxh);
+                            for (int r = 0; r < b; r++)
+                            {
+                                double s = bias[j];
+                                var xr = x + r * ldxh;
+                                for (int i = 0; i < ldxh; i++)
+                                    s += (double)wj[i] * xr[i];
+                                g[r * ldg + j] = (float)s;
+                            }
+                        }
+                    });
+                }
+                else
+                    Gemm.Run(xh, b, ldxh, n._cell, cellBias, gates, ldg, ct);
                 for (int r = 0; r < b; r++)
                     for (int p = 0; p < h / 4; p++)
                         Act.LstmCell(gates + r * ldg + p * 16, cell + r * h + p * 4, xh + r * ldxh + emb + p * 4);
