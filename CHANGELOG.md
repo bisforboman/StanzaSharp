@@ -7,6 +7,14 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 
 ## [Unreleased]
 
+### Changed
+- Faster `Process` on a single sentence, the usual call of a service, on the managed backend (`default` package): the
+  processors now share more of the character language models' work for a one-sentence text (the dependency parser
+  continues the tagger's backward pass; NER reuses sentiment's on multi-word tokens). The output is the same bit for
+  bit. One call on a 5–25-word sentence takes 27.9 ms instead of 30.0 (p90 44.6 instead of 50.7) on 8 threads, and
+  83 ms instead of 94 (p90 141 instead of 170) on 1 thread, on a Ryzen 7 5800X; Python Stanza takes 189 and 319 ms.
+  Details, and guidance on bulk processing and concurrent callers, in docs/performance.md (round 7).
+
 ## [0.5.0] - 2026-10-09
 
 ### Added
