@@ -139,18 +139,21 @@ public class ConcurrencyTests(Xunit.Abstractions.ITestOutputHelper output)
                 live = stats.ThreadTotalLiveCount;
                 if (latency.Elapsed < MaxLatency)
                     break;
-                // Too slow: was the machine loaded? Time the processor again, uncanceled, and allow MaxLatency times its
-                // slowdown. That keeps what the bound proves: a missing check leaves the call running for about half the
-                // processor's own time, which grows with the load just as the bound does.
+                // Too slow: a loaded machine, or a missing check? Time the processor the call stopped in (a loaded run can
+                // carry the cancel past the one aimed at) again, uncanceled, now. Its checks are a small part of its time
+                // apart (a batch, a step, a charlm pass or LSTM layer), while one that never checked would run on for about
+                // half of it, however loaded the machine is; a quarter of its time lies between. (mwt, one batch without
+                // checks, takes well under MaxLatency.)
+                string stopped = steps[Math.Min(timings.Steps.Count, steps.Count - 1)].Processor;
                 timings.Steps.Clear();
                 nlp.Process(big);
                 live = stats.ThreadTotalLiveCount;
-                double slowdown = Math.Max(1, timings.Steps.First(s => s.Processor == processor).Milliseconds / ms);
-                output.WriteLine($"  {processor} now takes {slowdown:F1}x as long as at first");
-                if (latency.Elapsed < MaxLatency * slowdown)
+                var bound = TimeSpan.FromMilliseconds(timings.Steps.First(s => s.Processor == stopped).Milliseconds / 4);
+                output.WriteLine($"  stopped in {stopped}, which now takes {bound.TotalMilliseconds * 4:F0} ms");
+                if (latency.Elapsed < bound)
                     break;
-                Assert.True(++slow < 3, $"canceled in {processor}, the call returned {latency.Elapsed.TotalMilliseconds:F0} ms later " +
-                    $"(the processor alone {slowdown:F1}x slower than at first), in 3 attempts");
+                Assert.True(++slow < 3, $"canceled in {processor}, the call returned {latency.Elapsed.TotalMilliseconds:F0} ms later, " +
+                    $"over 5 s and a quarter of {stopped}'s time ({bound.TotalMilliseconds * 4:F0} ms), in 3 attempts");
             }
         }
         Assert.Equal(before, Conllu.Write(nlp.Process(corpus, CancellationToken.None)));
@@ -163,8 +166,9 @@ public class ConcurrencyTests(Xunit.Abstractions.ITestOutputHelper output)
     /// the worst latency measured (3 runs of both cases) was 0.56 s, 0.82 s with the machine 2x loaded; before, a whole
     /// POS or sentiment batch took up to 0.8 and 1.2 s. CI runners are 3-4x slower than the desktop (macOS and Windows
     /// Arm64 the slowest), so about 3 s there under load; 5 s leaves room for a noisy runner. A machine at 100% CPU from
-    /// other work slowed single calls far more (the tokenizer's latency passed 5 s beside a full test run), so a slower
-    /// attempt is judged against MaxLatency times the processor's measured slowdown (see the test).
+    /// other work slows calls far more, and libtorch's OpenMP threads waiting for each other stretch single steps further
+    /// (the tokenizer took 110 s instead of 5, and a POS step 30 s, beside two full test runs), so a slower attempt is
+    /// judged against the processor's own time, measured again (see the test).
     /// </summary>
     private static readonly TimeSpan MaxLatency = TimeSpan.FromSeconds(5);
 
