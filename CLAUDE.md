@@ -724,8 +724,14 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     lemma's cell); scores, compositions and pushes run `Gemm.Run(..., rowInvariant: true)` (no 1-row kernel, whose split sum
     differs from the 6-row one), so a state's arithmetic is bitwise the same in any batch (tested). All float: scores 3.4e-5
     from Python (TorchSharp 3.1e-5; every path ≤ 4.6e-5, tolerance 1e-3 as before); trees byte-identical. Near-ties over
-    845 golden sentences (22,569 steps): smallest decision margin 3.6e-4 (both backends), backends 7.3e-5 apart
-    (`ConstituencyTests.NearTies_AreReported`).
+    845 golden sentences (22,569 steps): smallest decision margin 3.6e-4 (both backends), backends 7.3e-5 apart;
+    `ConstituencyTests.NearTies_StayClearOfBackendDrift` fails if decisions differ or the margin drops under 3× that drift.
+    On UD EWT (`tools/constituency_divergence.py` + benchmark `constituency-divergence`; 254,589 words, 684,407 decisions)
+    no tree differs among Stanza f32, TorchSharp and managed (nor Stanza f64 on a 38k-word subset); smallest margin
+    4.7e-5, but backend margins differ by 4.4e-6 median / 5.3e-5 at the 99.99th percentile (smallest margin/difference
+    ratio 15). The gap is the float32 charlm (managed's summation order), amplified by the word encoder; per-step layers
+    in double (`ManagedConstituencyNet.Double`, study only) change nothing, so no precision change. Run torch-based
+    shards with `--threads 1`: parallel 8-thread libtorch processes crawl.
   - `Pipeline.ManagedProcessors` (all eight) lists what `Backend.Managed` runs managed. The pipeline loads each
     backend's charlms only if a `_charlm` processor on that backend reads them (`ManagedCharLanguageModel`: +31 MB of
     input tables). Managed processors read the shared `Pretrain` through `CpuVectors()` (its array, or a CPU tensor's own memory).

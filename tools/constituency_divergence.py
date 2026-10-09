@@ -12,7 +12,10 @@ UD English EWT (CC BY-SA 4.0) is not ours to redistribute: download it outside t
 Process call of tokenize,mwt,pos,constituency. Every run writes, per document, each sentence's words and XPOS, its tree,
 and per parser step the decision: [best legal transition, its score, second-best legal transition, its score] (second
 -1 when only one transition is legal). The Stanza run also parses each document's tagged words with a float64 copy of
-the parser (charlms included), from its own float64 states (the *64 fields).
+the parser (charlms included), from its own float64 states (the *64 fields); --no-f64 skips it.
+
+All of EWT is slow on libtorch: split DOCS.json into shards, run each with --threads 1 (several 8-thread libtorch processes
+spin-wait each other to a crawl) and concatenate the shards' "docs" before comparing.
 """
 import argparse
 import copy

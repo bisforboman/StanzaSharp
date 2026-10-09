@@ -439,7 +439,7 @@ reads the tagger's cached charlm outputs for sentences without MWTs.
   Trees are byte-identical: `pipeline.conllu` and every `validation*.conllu` through the full pipeline, the all-eight,
   cache-settings, bulk, pretokenized, no_ssplit and concurrency theories, `ConstituencyTests` (both backends) and the
   cancellation theory (the parser stops within one step).
-- **Near-ties** (`ConstituencyTests.NearTies_AreReported`: both backends parse all 845 golden sentences from Stanza's words
+- **Near-ties** (`ConstituencyTests.NearTies_StayClearOfBackendDrift`: both backends parse all 845 golden sentences from Stanza's words
   and XPOS, charlms computed; every step's decision is the same on both). The decision margin is the best legal
   transition's score minus the next legal one's; 20,833 of the 22,569 steps have at least two legal transitions. The raw
   top-2 margin of the whole row gives the same counts (an illegal top never came close).
@@ -463,6 +463,61 @@ reads the tagger's cached charlm outputs for sentences without MWTs.
 
   The smallest margin is 5× the largest score difference between the backends (7.3e-5) and 10× the drift from Python
   (3.4e-5); the two backends' margins differ by at most 2e-6 there.
+  - **Guard** (`NearTies_StayClearOfBackendDrift`, ~3 min): besides identical decisions and trees, the smallest margin
+    must stay ≥ 3 × the score drift between the backends. A decision can only flip when its margin is below the margin
+    difference, which is at most twice the drift, so k = 3 keeps 50% over that bound; with today's 4.9 the test fails once
+    a kernel or model change grows the drift by 60% or brings the closest call 40% closer.
+- **Measured on UD EWT** (2026-10-09; `tools/constituency_divergence.py` + `StanzaSharp.Benchmark constituency-divergence`;
+  the corpus is CC BY-SA and not in the repository). EWT's train/dev/test `# text` lines as 1,174 documents (the lemma
+  study's `DOCS.json`), 15,901 sentences, 254,589 words, `tokenize,mwt,pos,constituency`; per step the best and second
+  legal transition and their scores. Runs: Stanza 1.15.0 float32, C# TorchSharp, C# managed; on the 40 documents holding
+  managed's 40 closest calls (38,225 words, 102,518 decisions) also Stanza's parser in float64 (charlms included, from its
+  own float64 states) and managed variants.
+  - Tokens and tags: identical in all runs. **Trees: no sentence differs** between any two runs (nor float64, on the
+    subset); every decision of every step is the same.
+  - 717,229 steps, 684,407 decisions:
+
+    | decision margin | Stanza | TorchSharp | managed |
+    |---|---:|---:|---:|
+    | < 1e-2 | 227 | 227 | 227 |
+    | < 1e-3 | 18 | 18 | 18 |
+    | < 1e-4 | 1 | 1 | 1 |
+    | < 1e-5 | 0 | 0 | 0 |
+    | smallest | 4.72e-5 | 4.75e-5 | 5.01e-5 |
+
+  - The closest calls (Stanza / TorchSharp / managed / Stanza float64; float64 only on the subset):
+
+    | EWT document, sentence | step | chosen over | margins |
+    |---|---:|---|---|
+    | 14, 35 ("After the sentencing one of Robinson 's tearful supporters …") | 50 | Close over Open(NP) | 4.72e-5 / 4.75e-5 / 5.01e-5 / 4.59e-5 |
+    | 553, 10 ("The Neocons in the CPA have all sorts of …") | 106 | Open(PP) over Open(ADVP) | 1.74e-4 / 1.74e-4 / 1.63e-4 / 1.75e-4 |
+    | 482, 2 ("I 've read some of the reviews below …") | 133 | Close over Shift | 1.73e-4 / 1.72e-4 / 1.76e-4 / 1.74e-4 |
+    | 447, 4 ("We have attended A Ward Dance Centre …") | 55 | Open(NP) over Open(S) | 1.75e-4 / 1.76e-4 / 1.73e-4 / 1.74e-4 |
+    | 521, 5 ("Essentially , I told him I did n't trust him …") | 68 | Shift over Close | 3.83e-4 / 3.84e-4 / 3.87e-4 / 3.87e-4 |
+
+  - **How far the margins move.** Per decision, |margin difference| managed vs TorchSharp: median 4.4e-6, 99th percentile
+    2.4e-5, 99.99th 5.3e-5 (Stanza vs TorchSharp: 4.8e-7, 4.1e-6, 1.5e-5). The smallest ratio of margin to that difference
+    anywhere is 15 (managed vs TorchSharp; Stanza vs TorchSharp 147): no decision on EWT comes near flipping. On the
+    closest call the backends differ by 3e-6. The tail: 13 sentences differ by more than 1e-4 (managed vs TorchSharp),
+    12 of them lines of repeated `*` or `_` (e.g. "****…NOTICE****", one NFP token): the charlm over up to 75 identical
+    characters drifts, scores differ by up to 4.7e-2, margins by 2.0e-2, but those sentences' margins are all above 0.79. Over the whole corpus a smallest margin of 4.7e-5 means the golden set's
+    3.6e-4 is not a bound for real text; what keeps decisions identical is that the backends' margins differ by ~1e-5.
+  - **Where the gap comes from** (the subset, largest |margin − Stanza float64 margin|): Stanza float32 1.09e-4,
+    TorchSharp 1.09e-4, managed 1.68e-4. Float64 pieces in Stanza's float32 parser: word biLSTM 1.07e-4, **charlms
+    2.13e-5**, both 1.35e-5. Managed with per-step layers in double (`ManagedConstituencyNet.Double`, study only): output
+    layers 1.70e-4, last output layer 1.69e-4, stack LSTMs 1.69e-4, reduce 1.68e-4, all three 1.71e-4, i.e. no change
+    (each moves margins ≤ 2e-5). Managed reading TorchSharp's charlm outputs (`--torch-charlm`): 9.65e-5 from float64 and
+    5.0e-5 from TorchSharp (managed alone 1.1e-4; top-2 scores 4.0e-5 vs 3.5e-4). So the float32 charlm over the
+    sentence's characters dominates, and most of the managed-vs-TorchSharp gap is the managed charlm's (~6e-6 per value,
+    its summation order) amplified by the word encoder. An exact per-lane tanh in `Act` (instead of 2σ(2x) − 1) moved
+    managed to 1.28e-4 from float64 but 1.30e-4 from TorchSharp: not a fix either. Double sums in the per-step layers cost
+    1.7–3.3× the constituency stage (on a loaded machine) for nothing, so no precision change is kept; the charlm in double
+    is the only lever and would multiply the cost of the most expensive layer of five processors.
+  - Rerun: `python tools/lemma_divergence.py text UD_EWT_DIR docs.json`, split it into shards and run each shard with
+    `--threads 1` (several libtorch processes at 8 threads each spin-wait each other to a crawl), Stanza with `--no-f64`
+    (float64 doubles the time; use it on a subset), merge the shards' `docs`, then
+    `python tools/constituency_divergence.py compare stanza.json torch.json managed.json`. One thread: Stanza 2.2 h, TorchSharp
+    1.2 h of CPU for all of EWT; managed at 8 threads 7.6 min.
 - **Speed** (`--processors tokenize,mwt,pos,constituency`, 8 copies, 26,264 words, medians of 3, Ryzen 7 5800X, load ~14%;
   the parser reads the tagger's cache): constituency stage **10.02 → 4.77 s** at 8 threads, **21.73 → 17.82 s** at 1 thread.
   Per step the managed net reads ~19 MB of weights (two constituent LSTM layers 16 MB, output layer 2 MB, reduce 1 MB) for up
