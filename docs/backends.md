@@ -519,7 +519,7 @@ reads the tagger's cached charlm outputs for sentences without MWTs.
     TorchSharp, managed, managed with the LSTMCell gate sums in double (`ManagedLemmaNet.DoubleGates`, study only).
     - Tokens and tags are identical in all four except 2 documents (127 words, excluded): Stanza replaces tokens longer
       than the tokenizer's `max_seqlen` (200 in its config) with `<UNK>`, our tokenizer only those over 1000, so two
-      long URLs stay whole here and their tags differ. A tokenizer difference, not a lemma one.
+      long URLs stayed whole here and their tags differed. A tokenizer difference, not a lemma one; fixed since in #41.
     - The dictionary covers EWT well (it is in the lemmatizer's training data): only 3,659 words (32,198 decoder steps) go
       through the seq2seq model. So a second pass sends **every** word through it (`--no-dict`): 254,462 words, 1,248,359
       decoder steps.
