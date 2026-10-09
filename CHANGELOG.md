@@ -7,6 +7,13 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 
 ## [Unreleased]
 
+### Fixed
+- Loading Stanza's `.pt` files from a slow filesystem, such as a Docker Desktop bind mount of a Windows folder, took
+  minutes instead of seconds (issue #48), on both backends. The checkpoint reader asked the file for its length once
+  per pickle opcode, millions of `fstat` calls for the pretrain's vocabulary, each about 0.3 ms on such a mount. It
+  now reads the length once per pickle. Loading `tokenize,mwt,pos,constituency` from a bind mount takes about as long
+  as from the container's own disk (7 s here, against over 10 minutes).
+
 ## [0.5.0] - 2026-10-09
 
 ### Added

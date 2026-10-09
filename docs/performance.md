@@ -58,7 +58,8 @@ tools\.venv\Scripts\python tools\benchmark.py --memory 5000 --calls 2 --processo
 - **Linux:** Docker Desktop (WSL 2) on the same machine. The benchmark is published for `linux-x64` and run on
   `mcr.microsoft.com/dotnet/aspnet:10.0` (Ubuntu 24.04, glibc 2.39); Python on `python:3.12-slim` with
   `tools/requirements.txt` (CPU torch 2.14.1). The `.pt` models are copied into a Docker volume: read through a
-  Windows bind mount, loading took minutes. Memory is the RSS (`VmRSS`), peaks are `VmHWM`.
+  Windows bind mount, loading took minutes (issue #48: one `fstat` per pickle opcode, fixed since). Memory is the
+  RSS (`VmRSS`), peaks are `VmHWM`.
 - **Windows:** as in round 3 (`.pt` models, workstation GC).
 - **0.4.0** is the tag `v0.4.0` with this benchmark; "now" is this branch. `--memory 500`, `5000` and `15000` are
   680, 6,761 and 20,513 words after tokenizing.
