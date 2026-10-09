@@ -105,6 +105,8 @@ So yes, the managed backend keeps memory too, at about its peak, on both systems
   as it also compacts what loading left). That is the guidance in the README: a service that wants the memory back when
   idle calls `GC.Collect(2, GCCollectionMode.Aggressive, blocking: true, compacting: true)` itself, a minute or more
   after its last call. The library does not: a GC is process-wide, and its cost grows with the application's own heap.
+  On the TorchSharp backend it does nothing (all eight, 6,761 words: 4,824 MB after call 2, 4,547 MB after both GCs;
+  the GC heap is 40 MB): there the memory is mimalloc's, as round 5 found.
 - Splitting the text into ~1,000-word calls does not shrink what stays (all eight, 20,513 words in 15 parts: 1.4–1.8 GB
   after, 0.67 GB after the idle aggressive GC): the parts' batches have different sizes, and the pool keeps arrays of
   every size it was asked for.
