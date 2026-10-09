@@ -215,16 +215,26 @@ for `default_fast`), and each call in flight adds
   peaks at 0.6 GB but is 5× slower. Bulk `Process(texts)` batches all texts together, so it peaks like one call.
   `CharlmCache` changes the peak by less than 50 MB up to its 32k-word cap (turning it off costs 30–40% more time),
   and neither the GC mode nor converting the models changes it much. Measurements: [docs/performance.md](docs/performance.md#results-round-3-memory-of-a-short-lived-process).
-- **Memory between calls** (long-running services; measured on the TorchSharp backend, whose native allocator this
-  is about: the managed backend's buffers live on the .NET heap). On Linux (glibc) a call of 1,000 words or more gives the
-  memory it freed back to the OS (`malloc_trim`, 25–40 ms), so with `tokenize,mwt,pos,constituency` the RSS drops
-  back to about 650 MB after each call (590 MB after loading; Python Stanza: 850–950 MB). No `MALLOC_*` setting is
-  needed in a container, and `MALLOC_ARENA_MAX` does not help. On Windows libtorch's built-in allocator (mimalloc)
-  keeps freed memory committed, so the working set stays near the peak (1.4–1.6 GB). The environment variable
-  `MIMALLOC_PURGE_DELAY=0` makes it give memory back as it is freed (about 580 MB after a call, and a 370 MB lower
-  peak) for about 20% more time. It must be set before libtorch loads: in the environment, or with
-  `Environment.SetEnvironmentVariable` before the first TorchSharp call. The .NET GC heap is 100–180 MB, so GC
-  settings matter little. Measurements: [docs/performance.md](docs/performance.md#results-round-4-memory-after-process-returns-linux-and-windows).
+- **Memory between calls** (long-running services). On the managed backend (the default) everything lives on the
+  .NET GC heap: the models (about 370 MB for `tokenize,mwt,pos,constituency`, 660 MB for all eight) and the scratch
+  buffers of the call's largest batches, which `ArrayPool<T>.Shared` keeps for the next call. So the working set
+  stays near the call's peak (Windows, 6,761 words: 0.7 GB with those four processors, 2.4 GB with all eight; the same
+  on Linux), and later calls reuse it. .NET gives pooled arrays back only at a gen2 GC at least a minute after their
+  last use, and keeps freed memory committed until an aggressive GC, so to return it when a service goes idle, call
+  `GC.Collect(2, GCCollectionMode.Aggressive, blocking: true, compacting: true)` a minute or more after the last call
+  (50–250 ms): the working set drops to about the size after loading (0.4 GB and 0.7–0.8 GB). Right after a call it
+  frees little, since the pool still holds the buffers. `malloc_trim` and
+  `MIMALLOC_PURGE_DELAY` play no part on this backend.
+  On the TorchSharp backend tensors live in libtorch's native heap instead. On Linux (glibc) a call of 1,000 words or
+  more gives the memory it freed back to the OS (`malloc_trim`, 25–40 ms), so with `tokenize,mwt,pos,constituency` the
+  RSS drops back to about 650 MB after each call (590 MB after loading; Python Stanza: 850–950 MB). No `MALLOC_*`
+  setting is needed in a container, and `MALLOC_ARENA_MAX` does not help. On Windows libtorch's built-in allocator
+  (mimalloc) keeps freed memory committed, so the working set stays near the peak (1.4–1.6 GB). The environment
+  variable `MIMALLOC_PURGE_DELAY=0` makes it give memory back as it is freed (about 580 MB after a call, and a 370 MB
+  lower peak) for about 20% more time. It must be set before libtorch loads: in the environment, or with
+  `Environment.SetEnvironmentVariable` before the first TorchSharp call. Measurements:
+  [docs/performance.md](docs/performance.md#results-round-6-memory-after-process-on-the-managed-backend) (managed) and
+  [round 5](docs/performance.md#results-round-5-memory-after-process-returns-linux-and-windows) (TorchSharp).
 - **Cancellation.** Every `Process` overload takes a `CancellationToken`. It is checked between processors and
   between batches inside each (inside the tagger's, dependency parser's and sentiment classifier's 5,000-word batches
   too, between their stages), so a call stops within about half a second on an 8-core machine; no document is returned and

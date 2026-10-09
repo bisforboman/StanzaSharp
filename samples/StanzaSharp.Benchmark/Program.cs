@@ -36,6 +36,7 @@ const string Usage = """
                       on each part in turn (--bulk: one Process(IEnumerable<string>) call on the parts)
       --calls N       --memory: repeat the Process call(s) N times, reporting the memory after each (default: 1)
       --no-trim       on Linux (glibc), keep the free native heap after each Process call (no malloc_trim)
+      --idle-gc       --memory: then an aggressive GC at once, and another after 61 s idle, reporting the memory
     """;
 
 if (args is ["lemma-divergence", ..])
@@ -48,7 +49,7 @@ if (args is ["managed-spike", ..])
 string modelDir = Path.Combine("models", "converted", "en");
 int copies = 8, runs = 3, threads = 0, documents = 0, memoryWords = 0, chunkWords = 0, calls = 1, cacheWords = CharlmCache.DefaultMaxWords;
 string? outFile = null, processors = null;
-bool bulkCall = false, verbose = false, noTrim = false;
+bool bulkCall = false, verbose = false, noTrim = false, idleGc = false;
 torch.Device? device = null; // CPU; not torch.CPU, which would load libtorch in a managed run
 bool noTf32 = false;
 string package = Pipeline.DefaultPackage;
@@ -74,6 +75,7 @@ for (int i = 0; i < args.Length; i++)
         case "--bulk": bulkCall = true; break;
         case "--charlm-cache" when i + 1 < args.Length: cacheWords = int.Parse(args[++i]); break;
         case "--verbose": verbose = true; break;
+        case "--idle-gc": idleGc = true; break;
         case "--calls" when i + 1 < args.Length: calls = int.Parse(args[++i]); break;
         case "--no-trim": noTrim = true; break;
         default:
@@ -174,6 +176,28 @@ if (memoryWords > 0)
         GC.Collect();
         Console.WriteLine($"after a full GC and finalizers: working set {WorkingSetMB(),6:F0} MB");
         Console.WriteLine("  " + HeapStats.Describe());
+    }
+    if (idleGc)
+    {
+        // What a service can do to get the memory back (docs/performance.md, round 6): an aggressive GC decommits the
+        // GC's free memory, but ArrayPool<T>.Shared (the managed backend's scratch buffers) gives an array up only at a
+        // gen2 GC at least a minute after its last use.
+        void Report(string what)
+        {
+            var info = GC.GetGCMemoryInfo();
+            Console.WriteLine($"{what,-36} working set {WorkingSetMB(),6:F0} MB  (GC heap {info.HeapSizeBytes / 1048576.0:F0} MB, committed {info.TotalCommittedBytes / 1048576.0:F0} MB)");
+        }
+        void AggressiveGc(string when)
+        {
+            var clock = Stopwatch.StartNew();
+            GC.Collect(2, GCCollectionMode.Aggressive, blocking: true, compacting: true);
+            Report($"{when}: aggressive GC, {clock.Elapsed.TotalMilliseconds:F0} ms");
+        }
+        AggressiveGc("at once");
+        Thread.Sleep(61_000);
+        GC.Collect();
+        Report("61 s later, a full GC");
+        AggressiveGc("then");
     }
     return 0;
 }
