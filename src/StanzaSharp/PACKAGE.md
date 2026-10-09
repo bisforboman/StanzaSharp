@@ -105,10 +105,13 @@ foreach (var sentence in doc.Sentences)
 - Memory: a call's peak is set by its largest batch (the tagger pads up to 250 sentences to the longest), so to
   bound it, call `Process` on parts of about 1,000 words split at blank lines. The annotations stay the same; with
   `tokenize,mwt,pos,constituency` on 15,000 words the peak drops from 1.7 to 1.2 GB for about 15% more time.
-- Memory between calls (TorchSharp backend): on Linux (glibc) a call of 1,000 words or more returns the memory it
-  freed to the OS (`malloc_trim`), so a long-running process drops back near its size after loading. On Windows
-  libtorch's allocator keeps it; the environment variable `MIMALLOC_PURGE_DELAY=0`, set before libtorch loads,
-  returns it for about 20% more time.
+- Memory between calls: on the managed backend (the default) the models and the scratch buffers of a call's largest
+  batches stay on the .NET GC heap for the next call, so the working set stays near the call's peak. To give it back
+  when a service goes idle, call `GC.Collect(2, GCCollectionMode.Aggressive, blocking: true, compacting: true)` a
+  minute or more after the last call (pooled buffers are released only then); the process drops to about its size
+  after loading. On the TorchSharp backend, on Linux (glibc), a call of 1,000 words or more returns the memory it
+  freed to the OS (`malloc_trim`); on Windows libtorch's allocator keeps it, and the environment variable
+  `MIMALLOC_PURGE_DELAY=0`, set before libtorch loads, returns it for about 20% more time.
 - `PipelineOptions`:
   - `Backend`: `PipelineBackend.Managed` (the default) or `PipelineBackend.TorchSharp`.
   - `Threads`: threads per operation, set process-wide at Load: the managed backend's one thread pool (shared by
