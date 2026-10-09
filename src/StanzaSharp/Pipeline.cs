@@ -92,7 +92,7 @@ public sealed class Pipeline : IDisposable
     private readonly ManagedCharLanguageModel? _managedCharlmForward, _managedCharlmBackward;
     private readonly CharlmCacheOptions _cacheOptions;
     private readonly TorchSharp.torch.Device? _device;
-    private readonly bool _splitSentences, _trimNativeHeap;
+    private readonly bool _splitSentences, _trimNativeHeap, _depparseReadsCache;
     private readonly ILogger? _logger;
 
     private Pipeline(string modelDir, Dictionary<string, string> models, PipelineOptions options, Backend kind, TorchSharp.torch.Device? device)
@@ -101,6 +101,7 @@ public sealed class Pipeline : IDisposable
         _device = device;
         bool Managed(string processor) => kind == Backend.Managed && ManagedProcessors.Contains(processor);
         _splitSentences = options.SplitSentences;
+        _depparseReadsCache = Managed("depparse"); // CharlmCache.TryGetBackwardState: only the managed tagger and parser
         _trimNativeHeap = options.TrimNativeHeap && NativeHeap.CanTrim;
         _logger = options.Logger;
         string Model(string processor) => Path.Combine(modelDir, processor, models[processor]);
@@ -441,7 +442,8 @@ public sealed class Pipeline : IDisposable
             Step("mwt", () => _mwt.Process(doc), ct); // one batch, and only for the words the dictionary lacks
         // NER, the parser and the sentiment classifier reuse the tagger's charlm outputs instead of computing them again.
         // A _nocharlm tagger (default_fast) has no charlm outputs to share.
-        using var charlms = _pos is { UsesCharlm: true } && (_ner != null || _parser != null || _sentiment != null) && _cacheOptions.IsEnabled ? new CharlmCache(_cacheOptions.MaxWords, _device) : null;
+        using var charlms = _pos is { UsesCharlm: true } && (_ner != null || _parser != null || _sentiment != null || _depparse != null && _depparseReadsCache)
+            && _cacheOptions.IsEnabled ? new CharlmCache(_cacheOptions.MaxWords, _device) : null;
         if (_pos != null)
             Step("pos", () => _pos.Process(doc, charlms, ct), ct);
         if (_lemma != null)
@@ -449,9 +451,10 @@ public sealed class Pipeline : IDisposable
         // Stanza's order (PIPELINE_NAMES). Only the CoNLL-U comment order shows it, and Conllu.Write fixes that.
         if (_parser != null)
             Step("constituency", () => _parser.Process(doc, charlms, ct), ct);
-        // No CharlmCache: depparse runs the charlms with a ROOT word in front, so the tagger's outputs don't apply.
+        // Depparse runs the charlms with a ROOT word in front, so the tagger's outputs apply only to a sentence both ran
+        // alone, backward (a one-sentence document; DependencyParser.Process).
         if (_depparse != null)
-            Step("depparse", () => _depparse.Process(doc, ct), ct);
+            Step("depparse", () => _depparse.Process(doc, charlms, ct), ct);
         if (_sentiment != null)
             Step("sentiment", () => _sentiment.Process(doc, charlms, ct), ct);
         if (_ner != null)

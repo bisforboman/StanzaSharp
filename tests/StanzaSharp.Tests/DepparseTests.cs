@@ -203,6 +203,37 @@ public class DepparseTests(ITestOutputHelper output)
         Assert.True(failures.Count == 0, string.Join("\n\n", failures));
     }
 
+    /// <summary>
+    /// A one-sentence document (a service's per-call case): the managed parser runs its backward charlm on from the
+    /// tagger's final state (only ROOT left) instead of over the whole sentence. Every score must stay bit for bit.
+    /// </summary>
+    [ModelFact]
+    [Trait("Backend", "Managed")]
+    public void OneSentenceDocument_ContinuesTheTaggersBackwardCharlm_BitForBit()
+    {
+        using var models = new Models(managed: true);
+        var (forward, backward) = (ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion")), ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion")));
+        using var tagger = Pos.PosTagger.LoadManaged(Repo.Model("pos/combined_charlm"), models.Pretrain, forward, backward);
+        var sentences = Directory.GetFiles(Golden, "*.conllu").Order().SelectMany(f => Conllu.Read(File.ReadAllText(f)).Sentences.Take(10)).ToList();
+        int reused = 0;
+        foreach (var sentence in sentences)
+        {
+            var doc = new Document();
+            doc.Sentences.Add(sentence);
+            using var cache = new CharlmCache();
+            tagger.Process(doc, cache);
+            if (!cache.TryGetBackwardState(sentence, out _))
+                continue; // simplify_punct changed a word: the tagger keeps nothing
+            reused++;
+            var words = sentence.Words.ToList();
+            var alone = models.Parser.Scores([words], labelScores: true);
+            var continued = models.Parser.Scores([words], labelScores: true, charlms: cache, keys: [sentence]);
+            Assert.Equal(alone.ArcLogProbs, continued.ArcLogProbs);
+            Assert.Equal(alone.LabelScores, continued.LabelScores);
+        }
+        Assert.True(reused > sentences.Count * 3 / 4, $"only {reused} of {sentences.Count} sentences reused the tagger's state");
+    }
+
     /// <summary>Records the first sentence where <paramref name="actual"/> differs from <paramref name="golden"/>.</summary>
     private static void Compare(string name, string golden, string actual, List<string> failures)
     {

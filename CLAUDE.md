@@ -94,8 +94,13 @@ All 7 steps of the build order are done:
   `Pipeline` with `tokenize,mwt,pos,lemma,depparse` reproduces every `tests/golden/depparse/*.conllu`
   byte for byte (13 files, 8401 words), and so does the parser alone on Stanza's own tags and lemmas.
   Arc/label log-prob drift ≈ 2e-5 (tolerance 1e-4).
-  - No `CharlmCache`: the parser feeds the charlms `"\n"` + the words (a ROOT word), so every forward
-    state and the backward ROOT state differ from the tagger's.
+  - The parser feeds the charlms `"\n"` + the words (a ROOT word), so every forward state and the backward ROOT
+    state differ from the tagger's. One exception (managed only): a sentence that the tagger and the parser both run
+    alone (a one-sentence document) has the tagger's backward pass as its prefix, one row per step in both, so the
+    parser continues from the tagger's final (h, c) (`CharlmCache.TryGetBackwardState`,
+    `ManagedCharLanguageModel.Continue`) over ROOT only: bit for bit (`OneSentenceDocument_ContinuesTheTaggers...`),
+    and a quarter of the charlm work of a per-call `Process` saved. Batched sentences can't: a row's kernel (1-row vs
+    3/6-row) depends on its batch.
   - A missing lemma is read as `_`, as in Stanza, so without the lemmatizer the parses differ.
   - `Conllu.Write` needs no change: with heads set it matches Stanza (DEPS stays `_`).
 - `Lemma.Lemmatizer` (processor `lemma`, requires tokenize, mwt, pos) reproduces `tests/golden/lemma/`

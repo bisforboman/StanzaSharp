@@ -30,6 +30,7 @@ internal sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords, De
         public int Words;
         public Tensor? Forward, Backward;         // TorchSharp producer, or converted for a TorchSharp consumer
         public float[]? ForwardData, BackwardData; // managed producer: [words, dim] row-major
+        public float[]? BackwardFinalC;            // managed producer that ran the sentence alone: see TryGetBackwardState
     }
 
     private readonly Dictionary<Sentence, Entry> _reps = [];
@@ -55,12 +56,26 @@ internal sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords, De
     /// <see cref="TryAdd(Sentence, Tensor, Tensor)"/> for a managed producer: [<paramref name="words"/>, dim] arrays,
     /// which the cache keeps (the caller must not change them afterwards).
     /// </summary>
-    public bool TryAdd(Sentence sentence, float[] forward, float[] backward, int words)
+    /// <param name="backwardFinalC">Only when the backward charlm ran this sentence alone (a batch of one): its cell
+    /// state after the last character (see <see cref="TryGetBackwardState"/>).</param>
+    public bool TryAdd(Sentence sentence, float[] forward, float[] backward, int words, float[]? backwardFinalC = null)
     {
         if (!Reserve(sentence, words))
             return false;
-        _reps[sentence] = new Entry { Words = words, ForwardData = forward, BackwardData = backward };
+        _reps[sentence] = new Entry { Words = words, ForwardData = forward, BackwardData = backward, BackwardFinalC = backwardFinalC };
         return true;
+    }
+
+    /// <summary>
+    /// The backward charlm's state at the end of a sentence that a managed producer ran alone: the representations
+    /// (row 0, the first word's, is the final h) and the final cell state. The dependency parser continues from it over its
+    /// ROOT word, which comes last backward, instead of running the whole sentence again; run alone too, it gets the
+    /// same bits (<see cref="Managed.ManagedCharLanguageModel.Continue"/>).
+    /// </summary>
+    public bool TryGetBackwardState(Sentence sentence, out (float[] Backward, float[] FinalC) state)
+    {
+        state = _reps.TryGetValue(sentence, out var e) && e.BackwardFinalC != null ? (e.BackwardData!, e.BackwardFinalC) : default;
+        return state.Backward != null;
     }
 
     /// <summary>Whether a new sentence of <paramref name="words"/> words would fit, so a producer can skip making copies that won't be kept.</summary>
