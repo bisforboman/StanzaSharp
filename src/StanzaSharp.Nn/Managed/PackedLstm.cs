@@ -67,21 +67,23 @@ internal sealed unsafe class PackedLstm
         params (float[] W, float[] B)[] extra)
     {
         var order = GateOrder(hidden);
-        var rows = new List<float[]>();
+        // The rows in their final order, copied once (load memory: no per-row copies).
+        int n = wih.Length * order.Length + extra.Sum(e => e.B.Length), row = 0;
+        var all = new float[(long)n * inputSize];
         var bias = new List<float>();
         for (int d = 0; d < wih.Length; d++)
             foreach (int j in order)
             {
-                rows.Add(wih[d].AsSpan(j * inputSize, inputSize).ToArray());
+                wih[d].AsSpan(j * inputSize, inputSize).CopyTo(all.AsSpan(row++ * inputSize));
                 bias.Add(bih[d][j] + bhh[d][j]);
             }
         foreach (var (w, b) in extra)
         {
-            for (int j = 0; j < b.Length; j++)
-                rows.Add(w.AsSpan(j * inputSize, inputSize).ToArray());
+            w.AsSpan(0, b.Length * inputSize).CopyTo(all.AsSpan(row * inputSize));
+            row += b.Length;
             bias.AddRange(b);
         }
-        var packed = new PackedMatrix(rows.SelectMany(r => r).ToArray(), rows.Count, inputSize);
+        var packed = new PackedMatrix(all, n, inputSize);
         var paddedBias = new float[packed.PaddedN];
         bias.CopyTo(paddedBias);
         return (packed, paddedBias);
