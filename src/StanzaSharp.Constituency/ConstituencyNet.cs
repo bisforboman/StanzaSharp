@@ -270,6 +270,28 @@ internal sealed class ConstituencyNet : IConstituencyNet
 /// </summary>
 internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
 {
+    /// <summary>Study only (tools/constituency_divergence.py): per-step layers whose sums run in double. Set before loading.</summary>
+    [Flags]
+    internal enum DoubleSums { None = 0, Output = 1, LastOutput = 2, Stacks = 4, Reduce = 8 }
+
+    internal static DoubleSums Double;
+
+    /// <summary>Row r of <paramref name="y"/> (stride <paramref name="ldy"/>): bias + w·x_r, summed in double. w is
+    /// [n, k] row-major, column j of the result reading w's row <paramref name="order"/>[j] (row j when null).</summary>
+    private static void DoubleLinear(float[] w, int n, int k, float[] bias, float* x, int ldx, int rows, float* y, int ldy, int[]? order = null)
+    {
+        ManagedThreads.For(rows * n, rj =>
+        {
+            int r = rj / n, j = rj % n, src = order?[j] ?? j;
+            double s = bias[j];
+            var wr = w.AsSpan(src * k, k);
+            float* xr = x + (long)r * ldx;
+            for (int q = 0; q < k; q++)
+                s += (double)wr[q] * xr[q];
+            y[(long)r * ldy + j] = (float)s;
+        });
+    }
+
     /// <summary>A stack node's LSTM state: [layers, hidden] h and c. The node's output is the last layer's h.</summary>
     private sealed class StackState(float[] h, float[] c)
     {
@@ -280,6 +302,8 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
     private sealed class StackLstm
     {
         private readonly (PackedMatrix W, float[] Bias)[] _layers; // [W_ih | W_hh], gate rows in PackedLstm.GateOrder
+        private readonly float[][]? _raw; // Double.Stacks: [W_ih | W_hh] rows in the checkpoint's order
+        private readonly int[] _order;
         private readonly int _input;
 
         public int Hidden { get; }
@@ -290,8 +314,10 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
             if (hidden % 4 != 0)
                 throw new NotSupportedException("The managed parser needs LSTM hidden sizes that are a multiple of 4");
             (_input, Hidden) = (input, hidden);
-            var order = PackedLstm.GateOrder(hidden);
+            var order = _order = PackedLstm.GateOrder(hidden);
             _layers = new (PackedMatrix, float[])[layers];
+            if ((Double & DoubleSums.Stacks) != 0)
+                _raw = new float[layers][];
             for (int l = 0; l < layers; l++)
             {
                 int inl = l == 0 ? input : hidden, k = inl + hidden;
@@ -303,6 +329,8 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
                     wih.AsSpan(j * inl, inl).CopyTo(w.AsSpan(j * k));
                     whh.AsSpan(j * hidden, hidden).CopyTo(w.AsSpan(j * k + inl));
                 }
+                if (_raw != null)
+                    _raw[l] = w;
                 var packed = new PackedMatrix(w, 4 * hidden, k, order);
                 var bias = new float[packed.PaddedN];
                 for (int j = 0; j < order.Length; j++)
@@ -336,7 +364,10 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
                     var (w, bias) = _layers[l];
                     fixed (float* pxh = xh, pg = gates, pb = bias)
                     {
-                        Gemm.Run(pxh, n, k, w, pb, pg, ldg, ct, rowInvariant: true);
+                        if (_raw != null)
+                            DoubleLinear(_raw[l], 4 * h, k, bias, pxh, k, n, pg, ldg, _order);
+                        else
+                            Gemm.Run(pxh, n, k, w, pb, pg, ldg, ct, rowInvariant: true);
                         for (int r = 0; r < n; r++)
                             fixed (float* c = result[r].C, hOut = result[r].H)
                                 for (int p = 0; p < h / 4; p++)
@@ -362,6 +393,8 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
     private readonly PackedMatrix _wordToConstituent, _reduce;
     private readonly float[] _wordToConstituentBias, _reduceBias;
     private readonly (PackedMatrix W, float[] Bias)[] _outputLayers;
+    private readonly float[]?[] _outputRaw; // Double.Output / LastOutput: the layer's [n, k] weights
+    private readonly float[]? _reduceRaw;
     private readonly StackLstm _transitionLstm, _constituentLstm;
     private readonly StackState _transitionStart, _constituentStart;
 
@@ -395,6 +428,8 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
         _wordEnd = T("word_end_embedding");
         (_wordToConstituent, _wordToConstituentBias) = Linear(T, "word_to_constituent.", hidden, 2 * hidden);
         (_reduce, _reduceBias) = Linear(T, "reduce_linear.", hidden, hidden);
+        if ((Double & DoubleSums.Reduce) != 0)
+            _reduceRaw = T("reduce_linear.weight");
         var outputs = new List<(PackedMatrix, float[])>();
         for (int i = 0; model[$"output_layers.{i}.weight"] is { } w; i++)
         {
@@ -402,6 +437,10 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
             outputs.Add(Linear(T, $"output_layers.{i}.", (int)shape[0], (int)shape[1]));
         }
         _outputLayers = [.. outputs];
+        _outputRaw = new float[]?[_outputLayers.Length];
+        for (int i = 0; i < _outputRaw.Length; i++)
+            if ((Double & DoubleSums.Output) != 0 || (Double & DoubleSums.LastOutput) != 0 && i == _outputRaw.Length - 1)
+                _outputRaw[i] = T($"output_layers.{i}.weight");
 
         _transitionLstm = new StackLstm(T, "transition_stack.lstm.", _transitionDim, transitionHidden, layers);
         _constituentLstm = new StackLstm(T, "constituent_stack.lstm.", hidden, hidden, layers);
@@ -531,12 +570,16 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
                 ((StackState)constituent).H.AsSpan((_constituentLstm.Layers - 1) * ch, ch).CopyTo(row[(_hidden + th)..]);
             }
             int k = k0;
-            foreach (var (w, bias) in _outputLayers)
+            for (int i = 0; i < _outputLayers.Length; i++)
             {
+                var (w, bias) = _outputLayers[i];
                 for (int r = 0; r < n; r++)
                     Relu(a.AsSpan(r * ld, k)); // nonlinearity before every layer, including the first
                 fixed (float* pa = a, pb = b, pBias = bias)
-                    Gemm.Run(pa, n, ld, w, pBias, pb, ld, ct, rowInvariant: true);
+                    if (_outputRaw[i] is { } raw)
+                        DoubleLinear(raw, w.N, k, bias, pa, ld, n, pb, ld);
+                    else
+                        Gemm.Run(pa, n, ld, w, pBias, pb, ld, ct, rowInvariant: true);
                 (a, b) = (b, a);
                 k = w.N;
             }
@@ -573,7 +616,10 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
                 }
             }
             fixed (float* pp = pooled, po = output, pb = _reduceBias)
-                Gemm.Run(pp, n, h, _reduce, pb, po, ld, ct, rowInvariant: true);
+                if (_reduceRaw != null)
+                    DoubleLinear(_reduceRaw, h, h, _reduceBias, pp, h, n, po, ld);
+                else
+                    Gemm.Run(pp, n, h, _reduce, pb, po, ld, ct, rowInvariant: true);
             var result = new object[n];
             for (int r = 0; r < n; r++)
             {
