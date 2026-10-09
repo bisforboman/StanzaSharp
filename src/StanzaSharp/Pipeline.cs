@@ -86,6 +86,9 @@ public sealed class Pipeline : IDisposable
     private readonly DependencyParser? _depparse;
     private readonly NerTagger? _ner;
     private readonly ConstituencyParser? _parser;
+
+    /// <summary>The loaded parser, for studies (samples/StanzaSharp.Benchmark constituency-divergence).</summary>
+    internal ConstituencyParser? Parser => _parser;
     private readonly SentimentClassifier? _sentiment;
     private readonly Pretrain? _pretrain;
     private readonly CharLanguageModel? _charlmForward, _charlmBackward;

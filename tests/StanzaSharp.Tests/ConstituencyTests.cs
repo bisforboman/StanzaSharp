@@ -69,9 +69,10 @@ public class ConstituencyTests(ITestOutputHelper output)
     /// charlms computed) with identical decisions at every step. Reports the per-step score drift between the backends and,
     /// per backend, how close each decision was: the margin between the best legal transition and the next legal one
     /// (steps with one legal transition decide nothing), plus the raw top-2 margin of the whole row, and the closest calls.
+    /// Guards that the smallest margin stays at least 3 × the score drift between the backends.
     /// </summary>
     [ModelFact]
-    public void NearTies_AreReported()
+    public void NearTies_StayClearOfBackendDrift()
     {
         var files = new[] { "pipeline.conllu" }.Concat(Directory.GetFiles(Repo.Golden, "validation*.conllu").Select(Path.GetFileName).Order()).ToList();
         var sentences = new List<(string File, int Index, IReadOnlyList<(string, string)> Words)>();
@@ -147,6 +148,13 @@ public class ConstituencyTests(ITestOutputHelper output)
         output.WriteLine($"raw top-2 margins managed    {Counts(raw[1])}");
         foreach (var (_, what) in calls.OrderBy(c => c.Min).Take(10))
             output.WriteLine(what);
+
+        // The guard: a decision flips only if its margin is below the margin difference, at most twice the score drift.
+        // Measured: smallest margin 3.6e-4 = 4.9 × the drift (7.3e-5). k = 3 keeps 50% over that bound and fails once a
+        // kernel change grows the drift by 60% or a change moves the closest call 40% closer (docs/backends.md, "constituency").
+        const float K = 3;
+        float smallest = Math.Min(margins[0].Min(), margins[1].Min());
+        Assert.True(smallest >= K * drift, $"smallest decision margin {smallest:E2} is under {K} × the backends' score drift {drift:E2}");
     }
 
     [ModelTheory]

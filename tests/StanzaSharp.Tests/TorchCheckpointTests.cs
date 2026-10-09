@@ -82,6 +82,29 @@ public class TorchCheckpointTests(ITestOutputHelper output)
         Assert.Equal("b", dict["c"]);
     }
 
+    /// <summary>Counts <see cref="Length"/> calls: on a file, each is an fstat, which takes ~0.3 ms on a Docker bind mount.</summary>
+    private sealed class LengthCountingStream(byte[] data) : MemoryStream(data, writable: false)
+    {
+        public int LengthCalls { get; private set; }
+        public override long Length { get { LengthCalls++; return base.Length; } }
+    }
+
+    [Fact]
+    public void Unpickler_ReadsTheStreamLengthOnce()
+    {
+        // Issue #48: the length was read once per opcode, millions of fstats for the pretrain's vocabulary.
+        // A pickle that starts 3 bytes into the stream: [1, 2, 3, 4].
+        using var stream = new LengthCountingStream(Pickle("xyz", 0x80, 2, "](K", 1, "K", 2, "K", 3, "K", 4, "e."));
+        stream.Position = 3;
+        Assert.Equal([1L, 2L, 3L, 4L], Assert.IsType<List<object?>>(Unpickler.Load(stream)));
+        Assert.Equal(1, stream.LengthCalls);
+
+        // The bounds check still holds: a string longer than what is left of the stream.
+        using var truncated = new LengthCountingStream(Pickle("xyz", 0x80, 2, "X", 9, 0, 0, 0, "abc."));
+        truncated.Position = 3;
+        Assert.Contains("unexpected end of data", Assert.Throws<InvalidDataException>(() => Unpickler.Load(truncated)).Message);
+    }
+
     [Fact]
     public void Unpickler_RebuildsTensorsFromPersistentStorages()
     {

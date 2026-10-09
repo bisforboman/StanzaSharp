@@ -58,11 +58,13 @@ internal sealed class Unpickler
     private readonly Dictionary<long, object?> _memo = [];
     private byte[] _buffer = new byte[256];
     private long _pos;
+    private readonly long _end; // the stream's length, read once: on some filesystems (Docker bind mounts) each Length is a slow fstat
 
     private Unpickler(Stream data, Func<object?, object?>? persistentLoad)
     {
         _data = data;
         _pos = data.CanSeek ? data.Position : 0;
+        _end = data.CanSeek ? data.Length : long.MaxValue;
         _persistentLoad = persistentLoad;
     }
 
@@ -200,7 +202,7 @@ internal sealed class Unpickler
     /// <summary>The next <paramref name="n"/> bytes, valid until the next read.</summary>
     private ReadOnlySpan<byte> Bytes(int n)
     {
-        if (n < 0 || _data.CanSeek && n > _data.Length - _data.Position)
+        if (n < 0 || n > _end - _pos)
             throw Error("unexpected end of data");
         if (n > _buffer.Length)
             _buffer = new byte[Math.Max(n, 2 * _buffer.Length)];
