@@ -98,15 +98,13 @@ public class ConcurrencyTests(Xunit.Abstractions.ITestOutputHelper output)
         for (int i = 0; i < steps.Count; i++)
         {
             var (processor, ms) = steps[i];
-            OperationCanceledException? e = null;
-            Stopwatch latency = new();
             // Halfway through the processor: timed from the end of the one before it (its log message). A faster run
             // can finish before the cancel arrives (CI runners vary a lot); then try again, cancelling sooner.
-            for (int attempt = 0; e == null; attempt++)
+            for (int attempt = 0, slow = 0; ;)
             {
                 Assert.True(attempt < 4, $"{processor}: every call finished before it was canceled");
                 using var cts = new CancellationTokenSource();
-                latency = new Stopwatch();
+                var latency = new Stopwatch();
                 cts.Token.Register(latency.Start);
                 var delay = TimeSpan.FromMilliseconds(ms / (2 << attempt));
                 if (i == 0)
@@ -114,6 +112,7 @@ public class ConcurrencyTests(Xunit.Abstractions.ITestOutputHelper output)
                 else
                     timings.OnStep = p => { if (p == steps[i - 1].Processor) cts.CancelAfter(delay); };
                 timings.Steps.Clear();
+                OperationCanceledException? e = null;
                 try
                 {
                     nlp.Process(big, cts.Token);
@@ -123,17 +122,36 @@ public class ConcurrencyTests(Xunit.Abstractions.ITestOutputHelper output)
                 {
                     e = canceled;
                 }
+                latency.Stop();
                 timings.OnStep = null;
+                if (e == null)
+                {
+                    attempt++;
+                    continue;
+                }
+                output.WriteLine($"{processor} ({ms:F0} ms): canceled after {latency.Elapsed.TotalMilliseconds:F0} ms, " +
+                    $"in {e.StackTrace!.Split('\n').Select(l => l.Trim()).FirstOrDefault(l => l.StartsWith("at StanzaSharp.") && !l.Contains("Pipeline.Step"))}");
+                // Where the call stopped decides the count (a loaded machine can move it to the next processor).
+                if (timings.Steps.Any(s => s.Processor == "lemma"))
+                    Assert.Equal(lemmaLeak, stats.ThreadTotalLiveCount - live);
+                else if (!e.StackTrace!.Contains("StanzaSharp.Lemma."))
+                    Assert.Equal(0, stats.ThreadTotalLiveCount - live);
+                live = stats.ThreadTotalLiveCount;
+                if (latency.Elapsed < MaxLatency)
+                    break;
+                // Too slow: was the machine loaded? Time the processor again, uncanceled, and allow MaxLatency times its
+                // slowdown. That keeps what the bound proves: a missing check leaves the call running for about half the
+                // processor's own time, which grows with the load just as the bound does.
+                timings.Steps.Clear();
+                nlp.Process(big);
+                live = stats.ThreadTotalLiveCount;
+                double slowdown = Math.Max(1, timings.Steps.First(s => s.Processor == processor).Milliseconds / ms);
+                output.WriteLine($"  {processor} now takes {slowdown:F1}x as long as at first");
+                if (latency.Elapsed < MaxLatency * slowdown)
+                    break;
+                Assert.True(++slow < 3, $"canceled in {processor}, the call returned {latency.Elapsed.TotalMilliseconds:F0} ms later " +
+                    $"(the processor alone {slowdown:F1}x slower than at first), in 3 attempts");
             }
-            output.WriteLine($"{processor} ({ms:F0} ms): canceled after {latency.Elapsed.TotalMilliseconds:F0} ms, " +
-                $"in {e.StackTrace!.Split('\n').Select(l => l.Trim()).FirstOrDefault(l => l.StartsWith("at StanzaSharp.") && !l.Contains("Pipeline.Step"))}");
-            Assert.True(latency.Elapsed < MaxLatency, $"canceled in {processor}, the call returned {latency.Elapsed.TotalMilliseconds:F0} ms later");
-            // Where the call stopped decides the count (a loaded machine can move it to the next processor).
-            if (timings.Steps.Any(s => s.Processor == "lemma"))
-                Assert.Equal(lemmaLeak, stats.ThreadTotalLiveCount - live);
-            else if (!e.StackTrace!.Contains("StanzaSharp.Lemma."))
-                Assert.Equal(0, stats.ThreadTotalLiveCount - live);
-            live = stats.ThreadTotalLiveCount;
         }
         Assert.Equal(before, Conllu.Write(nlp.Process(corpus, CancellationToken.None)));
         Assert.Equal(corpusLeak, stats.ThreadTotalLiveCount - live);
@@ -144,7 +162,9 @@ public class ConcurrencyTests(Xunit.Abstractions.ITestOutputHelper output)
     /// longest gap between two checks is one charlm pass, LSTM layer or scorer over a 5000-word batch. On an 8-core desktop
     /// the worst latency measured (3 runs of both cases) was 0.56 s, 0.82 s with the machine 2x loaded; before, a whole
     /// POS or sentiment batch took up to 0.8 and 1.2 s. CI runners are 3-4x slower than the desktop (macOS and Windows
-    /// Arm64 the slowest), so about 3 s there under load; 5 s leaves room for a noisy runner.
+    /// Arm64 the slowest), so about 3 s there under load; 5 s leaves room for a noisy runner. A machine at 100% CPU from
+    /// other work slowed single calls far more (the tokenizer's latency passed 5 s beside a full test run), so a slower
+    /// attempt is judged against MaxLatency times the processor's measured slowdown (see the test).
     /// </summary>
     private static readonly TimeSpan MaxLatency = TimeSpan.FromSeconds(5);
 
