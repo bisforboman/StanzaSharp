@@ -9,7 +9,7 @@ public class PipelineTests
     [InlineData(true)]
     public void Process_ReproducesGoldenConlluExactly(bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Backend = Repo.Backend(managed) });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Backend = Repo.PipelineBackendFor(managed) });
         var doc = nlp.Process(File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt")));
         var golden = File.ReadAllText(Path.Combine(Repo.Golden, "pipeline.conllu"));
         Assert.Equal(golden, Conllu.Write(doc));
@@ -22,7 +22,7 @@ public class PipelineTests
         Assert.True(Pipeline.Packages.All(p => p.Value.Keys.All(Pipeline.ManagedProcessors.Contains)));
         foreach (var package in Pipeline.Packages.Keys)
         {
-            using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, Backend = Nn.Backend.Managed });
+            using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, Backend = PipelineBackend.Managed });
             object? Field(string name) => typeof(Pipeline).GetField(name, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!.GetValue(nlp);
             Assert.Null(Field("_charlmForward"));
             Assert.Null(Field("_charlmBackward"));
@@ -35,7 +35,7 @@ public class PipelineTests
     [InlineData(true)]
     public void Process_MatchesGoldenOnValidationCorpus(bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Backend = Repo.Backend(managed) });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Backend = Repo.PipelineBackendFor(managed) });
         var failures = new List<string>();
         var files = Directory.GetFiles(Repo.Golden, "validation*.txt").Order().ToList();
         Assert.NotEmpty(files);
@@ -100,7 +100,7 @@ public class PipelineTests
         var golden = File.ReadAllText(Path.Combine(Repo.Golden, "pipeline.conllu"));
         foreach (var cache in new CharlmCacheOptions[] { new() { IsEnabled = false, MaxWords = 0 }, new() { MaxWords = 10 } })
         {
-            using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { CharlmCache = cache, Backend = Repo.Backend(managed) });
+            using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { CharlmCache = cache, Backend = Repo.PipelineBackendFor(managed) });
             Assert.Equal(golden, Conllu.Write(nlp.Process(text)));
         }
     }
@@ -113,7 +113,7 @@ public class PipelineTests
         // No golden file has all eight, so each field is checked against its own folder: word lines and
         // ner= against ner/ (tokenize..depparse,ner), trees against the default pipeline's files, and
         // sentiment against sentiment/. NER, constituency and sentiment share the tagger's CharlmCache.
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos,lemma,depparse,ner,sentiment,constituency", Backend = Repo.Backend(managed) });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos,lemma,depparse,ner,sentiment,constituency", Backend = Repo.PipelineBackendFor(managed) });
         foreach (var (name, conllu) in new[] { ("corpus", "pipeline"), ("validation_news", "validation_news"), ("validation_contractions", "validation_contractions") })
         {
             var doc = nlp.Process(File.ReadAllText(Path.Combine(Repo.Golden, name + ".txt")));

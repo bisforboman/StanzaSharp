@@ -17,14 +17,15 @@ await ModelDownloader.DownloadAsync(modelDir, new Progress<string>(line => Conso
 //    Pipeline.Load(modelDir, new PipelineOptions { Processors = "tokenize,mwt,pos" });
 //    or with constants, which catch typos at compile time:
 //    Pipeline.Load(modelDir, new PipelineOptions { Processors = $"{Processor.Tokenize},{Processor.Mwt},{Processor.Pos}" });
-//    Other options: Threads (libtorch threads, process-wide), SplitSentences = false (one sentence per paragraph),
-//    VerifyChecksums (check the .pt files' MD5s first) and Logger (an ILogger for load and processing times).
+//    Other options: Threads (the size of the process-wide thread pool), SplitSentences = false (one sentence per
+//    paragraph), VerifyChecksums (check the .pt files' MD5s first) and Logger (an ILogger for load and processing times).
 //    Stanza's faster package (no constituency; download it with the same options first):
 //    var fast = new PipelineOptions { Package = "default_fast" };
 //    await ModelDownloader.DownloadAsync(modelDir, fast);
 //    Pipeline.Load(modelDir, fast);
-//    On an NVIDIA GPU (with the TorchSharp-cuda-* package instead of TorchSharp-cpu):
-//    Pipeline.Load(modelDir, new PipelineOptions { Device = TorchSharp.torch.CUDA, DisableTf32 = true });
+//    The models run on the managed backend (plain C#, no native libraries). The TorchSharp backend gives the same
+//    output; it needs the TorchSharp-cpu package (or TorchSharp-cuda-* for a GPU, see docs/gpu.md):
+//    Pipeline.Load(modelDir, new PipelineOptions { Backend = PipelineBackend.TorchSharp });
 using var nlp = Pipeline.Load(modelDir);
 
 // 3. Process text. Blank lines separate paragraphs; sentences are found automatically. Process is thread-safe, and

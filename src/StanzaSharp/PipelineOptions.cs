@@ -12,8 +12,7 @@ namespace StanzaSharp;
 /// {
 ///     Processors = $"{Processor.Tokenize},{Processor.Mwt},{Processor.Pos}", // or "tokenize,mwt,pos"
 ///     Threads = 4,
-///     Device = torch.CUDA,
-///     DisableTf32 = true,
+///     Backend = PipelineBackend.TorchSharp, // needs TorchSharp-cpu; the default is PipelineBackend.Managed
 ///     CharlmCache = new() { MaxWords = 100_000 },
 /// });
 /// </code>
@@ -35,35 +34,73 @@ public sealed class PipelineOptions
     public string? Processors { get; init; }
 
     /// <summary>
-    /// Where the models run: the CPU by default, or e.g. <c>torch.CUDA</c> with a <c>TorchSharp-cuda-*</c>
-    /// package. Output identical to Python Stanza on CPU needs the CPU, or a GPU with <see cref="DisableTf32"/>.
+    /// The implementation that runs the models: <see cref="PipelineBackend.Managed"/> (the default; no native
+    /// dependencies) or <see cref="PipelineBackend.TorchSharp"/> (needs a native libtorch package such as
+    /// <c>TorchSharp-cpu</c>). Output is the same on both. Left unset while the obsolete <see cref="Device"/> or
+    /// <see cref="DisableTf32"/> is set, it is <see cref="PipelineBackend.TorchSharp"/>.
     /// </summary>
+    /// <exception cref="ArgumentNullException">Set to null.</exception>
+    public PipelineBackend Backend
+    {
+        get => _backend ?? (UsesTorchSharpDevice ? PipelineBackend.TorchSharp : PipelineBackend.Managed);
+        init => _backend = value ?? throw new ArgumentNullException(nameof(value));
+    }
+
+    private readonly PipelineBackend? _backend;
+
+    /// <summary>Whether <see cref="Backend"/> was set rather than defaulted.</summary>
+    internal bool BackendIsSet => _backend is not null;
+
+#pragma warning disable CS0618 // the obsolete options are read here and in Pipeline.Load only
+    /// <summary>Whether the obsolete <see cref="Device"/> or <see cref="DisableTf32"/> is set.</summary>
+    internal bool UsesTorchSharpDevice => Device is not null || DisableTf32;
+#pragma warning restore CS0618
+
+    /// <summary>
+    /// Runs the models on TorchSharp on this device, e.g. <c>torch.CUDA</c> with a <c>TorchSharp-cuda-*</c> package.
+    /// Setting it selects <see cref="PipelineBackend.TorchSharp"/>; with <see cref="Backend"/> set to
+    /// <see cref="PipelineBackend.Managed"/>, <see cref="Pipeline.Load"/> throws an <see cref="ArgumentException"/>.
+    /// Output identical to Python Stanza needs the CPU, or a GPU with <see cref="DisableTf32"/>.
+    /// </summary>
+    [Obsolete(TorchSharpOnly)]
     public torch.Device? Device { get; init; }
 
     /// <summary>
-    /// Turns off TF32 for matrix multiplications and cuDNN, so GPU output matches the CPU. Off by default.
+    /// Turns off TF32 for matrix multiplications and cuDNN, so GPU output matches the CPU. Off by default. Setting it
+    /// selects <see cref="PipelineBackend.TorchSharp"/>, like <see cref="Device"/>.
     /// <b>Process-wide:</b> it sets <c>torch.backends.cuda.matmul.allow_tf32</c> and
     /// <c>torch.backends.cudnn.allow_tf32</c> to false for all TorchSharp code in the process, and does
     /// not restore them.
     /// </summary>
+    [Obsolete(TorchSharpOnly)]
     public bool DisableTf32 { get; init; }
+
+    private const string TorchSharpOnly = "Device and DisableTf32 apply only to the TorchSharp backend, and setting either "
+        + "selects it: use Backend = PipelineBackend.TorchSharp. GPU support moves to the StanzaSharp.Cuda package; "
+        + "both options leave the main package in 1.0.";
 
     /// <summary>Sharing of character-model outputs between the tagger, the constituency parser and sentiment.</summary>
     public CharlmCacheOptions CharlmCache { get; init; } = new();
 
     /// <summary>
-    /// The number of threads libtorch uses inside each operation (intra-op threads), set by <see cref="Pipeline.Load"/>.
-    /// Null (the default) caps libtorch's current setting at <see cref="Environment.ProcessorCount"/>, which .NET limits
-    /// to a container's CPU quota. libtorch's own default is the host's physical core count, so in a container limited
-    /// to 2 CPUs on a 32-core node it would start 32 threads per operation. Outside containers the default leaves
-    /// libtorch's setting alone, and a lower count set earlier with <c>torch.set_num_threads</c> is kept.
+    /// The number of threads each operation runs on, set by <see cref="Pipeline.Load"/>. On
+    /// <see cref="PipelineBackend.Managed"/> it is the size of StanzaSharp's own thread pool; on
+    /// <see cref="PipelineBackend.TorchSharp"/> it is libtorch's intra-op thread count (<c>torch.set_num_threads</c>).
+    /// Null (the default) caps the current count at <see cref="Environment.ProcessorCount"/>, which .NET limits to a
+    /// container's CPU quota, and keeps a lower count set earlier.
     /// </summary>
     /// <remarks>
-    /// <b>Process-wide:</b> this is <c>torch.set_num_threads</c>, which applies to all TorchSharp code in the process,
-    /// and the last pipeline loaded wins. libtorch applies a new count to the loading thread and to threads that haven't
-    /// run a tensor operation yet; a thread that already has keeps its count, so load before processing starts. Each thread that calls <see cref="Pipeline.Process(string)"/> runs its own
-    /// operations on up to this many threads, so with N concurrent calls consider <c>ProcessorCount / N</c>.
-    /// libtorch's inter-op thread pool is not used by StanzaSharp and is left alone.
+    /// <b>Process-wide</b> on both backends, and the last pipeline loaded wins.
+    /// <list type="bullet">
+    /// <item><b>Managed:</b> one pool for the whole process. Concurrent <see cref="Pipeline.Process(string)"/> calls share
+    /// it: each works its own part and idle threads help, so N callers don't start N teams.</item>
+    /// <item><b>TorchSharp:</b> libtorch's own default is the host's physical core count, so in a container limited to 2
+    /// CPUs on a 32-core node it would start 32 threads per operation. libtorch applies a new count to the loading
+    /// thread and to threads that haven't run a tensor operation yet; a thread that already has keeps its count, so
+    /// load before processing starts. Each thread that calls Process runs its own operations on up to this many
+    /// threads, so with N concurrent calls consider <c>ProcessorCount / N</c>. libtorch's inter-op thread pool is not
+    /// used by StanzaSharp and is left alone.</item>
+    /// </list>
     /// </remarks>
     /// <exception cref="ArgumentOutOfRangeException">Thrown by <see cref="Pipeline.Load"/> for a value below 1.</exception>
     public int? Threads { get; init; }
@@ -101,12 +138,6 @@ public sealed class PipelineOptions
     /// in the noise); internal so the benchmark can measure without it.
     /// </summary>
     internal bool TrimNativeHeap { get; init; } = true;
-
-    /// <summary>
-    /// Which implementation runs the ported processors' networks (issue #29, Phase 1: tokenize and mwt; the rest stay
-    /// on TorchSharp). Internal until the owner decides the public form (docs/backends.md).
-    /// </summary>
-    internal Backend Backend { get; init; } = Backend.TorchSharp;
 }
 
 /// <summary>

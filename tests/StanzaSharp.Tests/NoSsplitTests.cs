@@ -14,7 +14,7 @@ public class NoSsplitTests
     [InlineData("default", true)]
     public void NoSsplit_MatchesGolden(string package, bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, SplitSentences = false, Backend = Repo.Backend(managed) });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, SplitSentences = false, Backend = Repo.PipelineBackendFor(managed) });
         var names = Directory.GetFiles(Dir, "*.conllu").Select(Path.GetFileName).Where(f => !f!.EndsWith(".fast.conllu")).ToList();
         Assert.Equal(7, names.Count);
         var failures = new List<string>();
@@ -42,7 +42,7 @@ public class NoSsplitTests
     public void NoSsplit_Bulk_MatchesStanzasBulkProcess(string package, bool managed)
     {
         var cases = JsonNode.Parse(File.ReadAllText(Path.Combine(Dir, "bulk" + Suffix[package] + ".json")))!.AsArray();
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, SplitSentences = false, Backend = Repo.Backend(managed) });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, SplitSentences = false, Backend = Repo.PipelineBackendFor(managed) });
         var docs = nlp.Process(cases.Select(c => c!["text"]!.GetValue<string>()).ToList());
         for (int i = 0; i < cases.Count; i++)
         {

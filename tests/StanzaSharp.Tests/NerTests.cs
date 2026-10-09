@@ -117,7 +117,7 @@ public class NerTests(ITestOutputHelper output)
     [MemberData(nameof(Configurations))]
     public void Pipeline_ReproducesGoldenTagsAndEntities(string processors, bool cache, bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = processors, CharlmCache = new() { IsEnabled = cache }, Backend = Repo.Backend(managed) });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = processors, CharlmCache = new() { IsEnabled = cache }, Backend = Repo.PipelineBackendFor(managed) });
         bool full = processors.Contains("depparse");
         var failures = new List<string>();
         var files = Directory.GetFiles(Golden, "*.conllu").Order().ToList();

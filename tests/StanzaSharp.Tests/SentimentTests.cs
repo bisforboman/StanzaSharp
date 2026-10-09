@@ -103,7 +103,7 @@ public class SentimentTests(ITestOutputHelper output)
     [InlineData(true)]
     public void Pipeline_ReproducesGoldenFilesLabelsAndLogits(bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,sentiment", Backend = Repo.Backend(managed) });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,sentiment", Backend = Repo.PipelineBackendFor(managed) });
         using var models = new Models(managed);
         var failures = new List<string>();
         var sources = Sources();
@@ -194,7 +194,7 @@ public class SentimentTests(ITestOutputHelper output)
     [InlineData(true)]
     public void Pipeline_WithTaggerAndParser_WritesSentimentAfterConstituency(bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos,constituency,sentiment", Backend = Repo.Backend(managed) });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos,constituency,sentiment", Backend = Repo.PipelineBackendFor(managed) });
         var conllu = Conllu.Write(nlp.Process("I love it. I don't like this movie at all."));
         // Python Stanza 1.15.0 with processors="tokenize,mwt,pos,constituency,sentiment".
         Assert.StartsWith("""

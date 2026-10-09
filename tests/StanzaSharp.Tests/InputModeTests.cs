@@ -16,7 +16,7 @@ public class InputModeTests
     [InlineData("default_fast", true)]
     public void Pretokenized_MatchesGolden(string package, bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, Backend = Repo.Backend(managed) });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, Backend = Repo.PipelineBackendFor(managed) });
         var dir = Path.Combine(Repo.Golden, "pretokenized");
         var cases = JsonNode.Parse(File.ReadAllText(Path.Combine(dir, "inputs.json")))!.AsObject();
         Assert.Equal(7, cases.Count);
@@ -41,7 +41,7 @@ public class InputModeTests
         // bulk/<package>.json stores each document either whole or as its output alone plus what bulk changes.
         var docs = JsonNode.Parse(File.ReadAllText(Path.Combine(Repo.Golden, "bulk", package + ".json")))!["documents"]!.AsArray();
         var texts = docs.Select(d => d!["text"]?.GetValue<string>() ?? File.ReadAllText(Path.Combine(Repo.Golden, d["file"]!.GetValue<string>()))).ToList();
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, Backend = Repo.Backend(managed) });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, Backend = Repo.PipelineBackendFor(managed) });
         var results = nlp.Process(texts);
         Assert.Equal(texts.Count, results.Count);
 

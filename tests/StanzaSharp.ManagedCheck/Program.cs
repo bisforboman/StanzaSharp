@@ -1,12 +1,10 @@
 // Proves that a managed pipeline needs no native libtorch: run it in a process of its own, with no libtorch on disk.
 //   StanzaSharp.ManagedCheck MODEL_DIR GOLDEN_DIR
-// For each package it loads a managed pipeline (with Threads, a Logger, VerifyChecksums for .pt models), checks that a
-// canceled Process throws, compares corpus.txt's CoNLL-U with the golden file byte for byte, and at the end fails if
-// any native torch module (LibTorchSharp, torch_cpu, c10, ...) is loaded. Public API only, plus reflection for the
-// internal backend switch (PipelineOptions.Backend, until the public PipelineBackend option), so that
+// For each package it loads a pipeline on the default backend (managed; with Threads, a Logger, VerifyChecksums for .pt
+// models), checks that a canceled Process throws, compares corpus.txt's CoNLL-U with the golden file byte for byte, and
+// at the end fails if any native torch module (LibTorchSharp, torch_cpu, c10, ...) is loaded. Public API only, so that
 // tools/verify-package.ps1 -Managed compiles this same file against the packed package.
 using System.Diagnostics;
-using System.Reflection;
 using Microsoft.Extensions.Logging;
 using StanzaSharp;
 
@@ -19,7 +17,8 @@ int failures = 0;
 foreach (var (package, expected) in new[] { ("default", "pipeline.conllu"), ("default_fast", Path.Combine("fast", "corpus.conllu")) })
 {
     var logger = new CountingLogger();
-    var options = Managed(new PipelineOptions { Package = package, Threads = 2, Logger = logger, VerifyChecksums = pt });
+    // The default backend: what `dotnet add package StanzaSharp` alone must run.
+    var options = new PipelineOptions { Package = package, Threads = 2, Logger = logger, VerifyChecksums = pt };
     var start = Stopwatch.GetTimestamp();
     using var nlp = Pipeline.Load(models, options);
     Console.WriteLine($"{package}: loaded in {Stopwatch.GetElapsedTime(start).TotalSeconds:F1} s ({logger.Messages} log messages, checksums {(pt ? "verified" : "not verified")})");
@@ -38,7 +37,7 @@ foreach (var (package, expected) in new[] { ("default", "pipeline.conllu"), ("de
     // The other input modes and no_ssplit run too (their output is tested in StanzaSharp.Tests).
     nlp.Process([corpus, "A second text."]);
     nlp.Process([["Hello", "world", "."], ["Bye", "."]]);
-    using (var noSsplit = Pipeline.Load(models, Managed(new PipelineOptions { Package = package, Processors = "tokenize,mwt", SplitSentences = false })))
+    using (var noSsplit = Pipeline.Load(models, new PipelineOptions { Package = package, Processors = "tokenize,mwt", SplitSentences = false, Backend = PipelineBackend.Managed }))
         noSsplit.Process(corpus);
 }
 
@@ -58,15 +57,6 @@ if (natives.Count > 0)
 Console.WriteLine($"TorchSharp assembly loaded: {AppDomain.CurrentDomain.GetAssemblies().Any(a => a.GetName().Name == "TorchSharp")}");
 Console.WriteLine(failures == 0 ? "OK" : $"{failures} failure(s)");
 return failures == 0 ? 0 : 1;
-
-// The internal PipelineOptions.Backend = Backend.Managed (an init-only property, settable by reflection).
-static PipelineOptions Managed(PipelineOptions options)
-{
-    var backend = typeof(PipelineOptions).GetProperty("Backend", BindingFlags.NonPublic | BindingFlags.Instance)
-        ?? throw new MissingMemberException("PipelineOptions.Backend not found");
-    backend.SetValue(options, Enum.Parse(backend.PropertyType, "Managed"));
-    return options;
-}
 
 static IEnumerable<ProcessModule> Modules()
 {

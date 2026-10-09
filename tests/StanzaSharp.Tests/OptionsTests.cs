@@ -13,15 +13,15 @@ public class OptionsTests
         int old = torch.get_num_threads();
         try
         {
-            using (Pipeline.Load(Repo.Models, new PipelineOptions { Processors = Processor.Tokenize, Threads = 2 }))
+            using (Pipeline.Load(Repo.Models, new PipelineOptions { Processors = Processor.Tokenize, Threads = 2, Backend = PipelineBackend.TorchSharp }))
                 Assert.Equal(2, torch.get_num_threads());
             // Null keeps a lower count set by the caller.
-            using (Pipeline.Load(Repo.Models, new PipelineOptions { Processors = Processor.Tokenize }))
+            using (Pipeline.Load(Repo.Models, new PipelineOptions { Processors = Processor.Tokenize, Backend = PipelineBackend.TorchSharp }))
                 Assert.Equal(2, torch.get_num_threads());
             torch.set_num_threads(Environment.ProcessorCount + 4);
-            using (Pipeline.Load(Repo.Models, new PipelineOptions { Processors = Processor.Tokenize }))
+            using (Pipeline.Load(Repo.Models, new PipelineOptions { Processors = Processor.Tokenize, Backend = PipelineBackend.TorchSharp }))
                 Assert.Equal(Environment.ProcessorCount, torch.get_num_threads());
-            Assert.Throws<ArgumentOutOfRangeException>(() => Pipeline.Load(Repo.Models, new PipelineOptions { Threads = 0 }));
+            Assert.Throws<ArgumentOutOfRangeException>(() => Pipeline.Load(Repo.Models, new PipelineOptions { Threads = 0, Backend = PipelineBackend.TorchSharp }));
         }
         finally
         {
@@ -85,10 +85,31 @@ public class OptionsTests
         var lines = logger.Lines;
         Assert.Contains(lines, l => l.StartsWith("Information: Loaded tokenize/combined_nocharlm in "));
         Assert.Contains(lines, l => l.StartsWith("Information: Loaded pretrain/conll17 in "));
-        Assert.Contains(lines, l => l.StartsWith("Information: Using ") && l.Contains("torch intra-op threads"));
+        Assert.Contains(lines, l => l.StartsWith("Information: Using ") && l.Contains("managed threads"));
         Assert.Contains(lines, l => l.StartsWith("Information: Loaded the default pipeline (tokenize,mwt,pos) in "));
         foreach (var p in new[] { "tokenize", "mwt", "pos" })
             Assert.Contains(lines, l => l.StartsWith($"Debug: {p} took "));
+    }
+
+    [Fact]
+    public void Backend_DefaultsToManaged_AndTheObsoleteOptionsSelectTorchSharp()
+    {
+        Assert.Same(PipelineBackend.Managed, new PipelineOptions().Backend);
+        Assert.Equal("Managed", PipelineBackend.Managed.ToString());
+        Assert.Equal("TorchSharp", PipelineBackend.TorchSharp.ToString());
+        Assert.Throws<ArgumentNullException>(() => new PipelineOptions { Backend = null! });
+#pragma warning disable CS0618 // the obsolete options are what this tests
+        Assert.Same(PipelineBackend.TorchSharp, new PipelineOptions { DisableTf32 = true }.Backend);
+        Assert.Same(PipelineBackend.TorchSharp, new PipelineOptions { Device = torch.CPU }.Backend);
+        Assert.Same(PipelineBackend.TorchSharp, new PipelineOptions { Backend = PipelineBackend.TorchSharp, Device = torch.CPU }.Backend);
+
+        // An explicit Managed with a TorchSharp option is a contradiction: Load says so before reading anything.
+        var conflict = new PipelineOptions { Backend = PipelineBackend.Managed, Device = torch.CPU };
+        Assert.Same(PipelineBackend.Managed, conflict.Backend);
+        var e = Assert.Throws<ArgumentException>(() => Pipeline.Load(Repo.Golden, conflict));
+        Assert.Contains("PipelineBackend.TorchSharp", e.Message);
+        Assert.Throws<ArgumentException>(() => Pipeline.Load(Repo.Golden, new PipelineOptions { DisableTf32 = true, Backend = PipelineBackend.Managed }));
+#pragma warning restore CS0618
     }
 
     [Fact]
@@ -107,6 +128,32 @@ public class OptionsTests
         {
             lock (Lines)
                 Lines.Add($"{logLevel}: {formatter(state, exception)}");
+        }
+    }
+}
+
+/// <summary>PipelineOptions.Threads on the managed backend sizes the process-wide pool, so it runs with the kernel tests, alone.</summary>
+[Collection(ManagedKernelsCollection.Name)]
+public class ManagedThreadsOptionTests
+{
+    [ModelFact]
+    public void Threads_SetsThePoolSize_AndNullCapsItAtProcessorCount()
+    {
+        int old = Nn.Managed.ManagedThreads.Count;
+        try
+        {
+            using (Pipeline.Load(Repo.Models, new PipelineOptions { Processors = Processor.Tokenize, Threads = 2 }))
+                Assert.Equal(2, Nn.Managed.ManagedThreads.Count);
+            // Null keeps a lower count.
+            using (Pipeline.Load(Repo.Models, new PipelineOptions { Processors = Processor.Tokenize }))
+                Assert.Equal(2, Nn.Managed.ManagedThreads.Count);
+            Nn.Managed.ManagedThreads.Count = Environment.ProcessorCount + 4;
+            using (Pipeline.Load(Repo.Models, new PipelineOptions { Processors = Processor.Tokenize }))
+                Assert.Equal(Environment.ProcessorCount, Nn.Managed.ManagedThreads.Count);
+        }
+        finally
+        {
+            Nn.Managed.ManagedThreads.Count = old;
         }
     }
 }

@@ -22,16 +22,16 @@ const string Usage = """
       --models DIR    converted models (default: models/converted/en)
       --copies N      copies of the golden texts in the input (default: 8, ~20k words)
       --runs N        timed runs after a warm-up run on one copy; medians are reported (default: 3)
-      --threads N     torch intra-op threads (default: torch's default)
+      --threads N     threads: the managed pool's size, or torch's intra-op threads (default: all cores)
       --out FILE      write the last run's CoNLL-U here, to compare with Python's
-      --device D      cpu (default) or cuda; cuda needs a build with STANZASHARP_CUDA=1 (docs/gpu.md)
+      --device D      torch backend: cpu (default) or cuda; cuda needs a build with STANZASHARP_CUDA=1 (docs/gpu.md)
       --no-tf32       cuda: turn off TF32 in cuDNN and cuBLAS (process-wide torch settings)
       --package NAME  Stanza's English package: default (all eight processors) or default_fast
       --documents N   instead: N one-sentence texts, Process per text vs one bulk Process call
       --memory N      instead: Pipeline.Load, then one Process call on a text of about N words, reporting
                       the load peak and the peak memory; run it in a fresh process each time
       --processors P  the stages to time (default: all of the package's); --memory: the processors to load
-      --backend B     torch (default) or managed: the backend of the ported processors (Pipeline.ManagedProcessors; issue #29)
+      --backend B     managed (default) or torch; --device and --no-tf32 select torch
       --chunk-words K --memory: split the text at paragraphs into parts of about K words and call Process
                       on each part in turn (--bulk: one Process(IEnumerable<string>) call on the parts)
       --calls N       --memory: repeat the Process call(s) N times, reporting the memory after each (default: 1)
@@ -48,7 +48,7 @@ bool bulkCall = false, verbose = false, noTrim = false;
 torch.Device? device = null; // CPU; not torch.CPU, which would load libtorch in a managed run
 bool noTf32 = false;
 string package = Pipeline.DefaultPackage;
-var backend = Backend.TorchSharp;
+Backend? backendArg = null;
 for (int i = 0; i < args.Length; i++)
 {
     switch (args[i])
@@ -64,7 +64,8 @@ for (int i = 0; i < args.Length; i++)
         case "--documents" when i + 1 < args.Length: documents = int.Parse(args[++i]); break;
         case "--memory" when i + 1 < args.Length: memoryWords = int.Parse(args[++i]); break;
         case "--processors" when i + 1 < args.Length: processors = args[++i]; break;
-        case "--backend" when i + 1 < args.Length: backend = args[++i] == "managed" ? Backend.Managed : Backend.TorchSharp; break;
+        case "--backend" when i + 1 < args.Length && args[i + 1] is "managed" or "torch":
+            backendArg = args[++i] == "managed" ? Backend.Managed : Backend.TorchSharp; break;
         case "--chunk-words" when i + 1 < args.Length: chunkWords = int.Parse(args[++i]); break;
         case "--bulk": bulkCall = true; break;
         case "--charlm-cache" when i + 1 < args.Length: cacheWords = int.Parse(args[++i]); break;
@@ -76,7 +77,15 @@ for (int i = 0; i < args.Length; i++)
             return 2;
     }
 }
-if (threads > 0)
+// Like PipelineOptions: a device or --no-tf32 means the torch backend.
+var backend = backendArg ?? (device != null || noTf32 ? Backend.TorchSharp : Backend.Managed);
+if (backend == Backend.Managed && (device != null || noTf32))
+{
+    Console.Error.WriteLine("--device and --no-tf32 need --backend torch");
+    return 2;
+}
+var pipelineBackend = backend == Backend.Managed ? PipelineBackend.Managed : PipelineBackend.TorchSharp;
+if (threads > 0 && backend == Backend.TorchSharp)
     torch.set_num_threads(threads);
 if (threads > 0 && backend == Backend.Managed)
     ManagedThreads.Count = threads;
@@ -86,7 +95,9 @@ if (noTf32)
 if (documents > 0)
 {
     // Many short texts: one Process call per text vs one bulk call (Pipeline.Process(IEnumerable<string>)).
-    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Device = device, TrimNativeHeap = !noTrim });
+#pragma warning disable CS0618 // Device: the TorchSharp backend's device until StanzaSharp.Cuda
+    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Backend = pipelineBackend, Device = device, TrimNativeHeap = !noTrim });
+#pragma warning restore CS0618
     var texts = BuildDocuments(documents);
     nlp.Process(texts.Take(50)); // warm-up
     var watch = Stopwatch.StartNew();
@@ -96,7 +107,9 @@ if (documents > 0)
     watch.Restart();
     nlp.Process(texts);
     double bulk = watch.Elapsed.TotalSeconds;
-    Console.WriteLine($"C# StanzaSharp ({package}) on {device?.ToString() ?? "cpu"}, torch threads {torch.get_num_threads()}, {texts.Count} documents of one sentence");
+    Console.WriteLine($"C# StanzaSharp ({package}, {backend} backend) on {device?.ToString() ?? "cpu"}, " +
+                      (backend == Backend.Managed ? $"managed threads {ManagedThreads.Count}" : $"torch threads {torch.get_num_threads()}") +
+                      $", {texts.Count} documents of one sentence");
     Console.WriteLine($"{"one by one",-14}{alone,9:F2} s {texts.Count / alone,10:F0} docs/s");
     Console.WriteLine($"{"bulk",-14}{bulk,9:F2} s {texts.Count / bulk,10:F0} docs/s");
     return 0;
@@ -107,7 +120,7 @@ if (memoryWords > 0)
     // What a short-lived process pays (issue #19): load, one Process call (or one per part), exit.
     var paragraphs = BuildParagraphs(memoryWords);
     var clockLoad = Stopwatch.StartNew();
-    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Processors = processors, Backend = backend, Threads = threads > 0 ? threads : null, Logger = verbose ? new MemoryLogger() : null, TrimNativeHeap = !noTrim,
+    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Processors = processors, Backend = pipelineBackend, Threads = threads > 0 ? threads : null, Logger = verbose ? new MemoryLogger() : null, TrimNativeHeap = !noTrim,
         CharlmCache = new CharlmCacheOptions { IsEnabled = cacheWords > 0, MaxWords = Math.Max(cacheWords, 1) } });
     double loadSeconds = clockLoad.Elapsed.TotalSeconds;
     double loadPeak = PeakMB(), afterLoad = WorkingSetMB();

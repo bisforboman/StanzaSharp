@@ -182,7 +182,7 @@ public class DepparseTests(ITestOutputHelper output)
     [InlineData(true)]
     public void Pipeline_ReproducesGoldenFilesFromText(bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos,lemma,depparse", Backend = Repo.Backend(managed) });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos,lemma,depparse", Backend = Repo.PipelineBackendFor(managed) });
         var failures = new List<string>();
         var files = Directory.GetFiles(Golden, "*.conllu").Order().ToList();
         Assert.Equal(13, files.Count);

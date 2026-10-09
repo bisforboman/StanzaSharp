@@ -12,6 +12,7 @@ const string Usage = """
       --package NAME      Stanza's English package: default, or default_fast (faster, no constituency)
       --processors LIST   comma-separated, from tokenize,mwt,pos,lemma,constituency,depparse,sentiment,ner
                           (default: all of the package's)
+      --backend NAME      managed (default; no native code) or torch (TorchSharp, with this sample's TorchSharp-cpu)
     """;
 
 string convertedDir = Path.Combine("models", "converted", "en");
@@ -24,6 +25,7 @@ string modelDir = Directory.Exists(convertedDir) ? convertedDir : stanzaDir;
 string? processors = null;
 string package = Pipeline.DefaultPackage;
 string? file = null;
+var backend = PipelineBackend.Managed;
 
 for (int i = 0; i < args.Length; i++)
 {
@@ -37,6 +39,9 @@ for (int i = 0; i < args.Length; i++)
             break;
         case "--package" when i + 1 < args.Length:
             package = args[++i];
+            break;
+        case "--backend" when i + 1 < args.Length && args[i + 1] is "managed" or "torch":
+            backend = args[++i] == "managed" ? PipelineBackend.Managed : PipelineBackend.TorchSharp;
             break;
         case "-h" or "--help":
             Console.WriteLine(Usage);
@@ -55,7 +60,7 @@ for (int i = 0; i < args.Length; i++)
 try
 {
     var text = file != null ? File.ReadAllText(file) : Console.In.ReadToEnd();
-    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Processors = processors });
+    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Processors = processors, Backend = backend });
     var doc = nlp.Process(text);
     Console.Out.Write(Conllu.Write(doc));
     return 0;

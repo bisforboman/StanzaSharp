@@ -15,7 +15,7 @@ public class GcPressureTests
     [InlineData("default_fast")]
     public void Process_UnderConstantCollections_GivesTheSameOutput(string package)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, Backend = PipelineBackend.TorchSharp });
         var corpus = File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt"));
         var expected = Conllu.Write(nlp.Process(corpus));
         using var stop = new CancellationTokenSource();

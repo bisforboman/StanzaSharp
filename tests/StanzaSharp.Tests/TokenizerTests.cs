@@ -77,7 +77,7 @@ public class TokenizerTests(ITestOutputHelper output)
     [InlineData("default_fast", true)]
     public void Pipeline_LongTokens_MatchGolden(string package, bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, Backend = Repo.Backend(managed) });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, Backend = Repo.PipelineBackendFor(managed) });
         var text = File.ReadAllText(Path.Combine(Repo.Golden, "long_token.txt"));
         var golden = File.ReadAllText(Path.Combine(Repo.Golden, package == "default" ? "long_token.conllu" : "long_token.fast.conllu"));
         Assert.Equal(golden, Conllu.Write(nlp.Process(text)));

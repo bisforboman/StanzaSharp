@@ -19,6 +19,9 @@ public static class Repo
     /// <summary>The backend golden tests run on (issue #29): <see cref="Backend.Managed"/> or TorchSharp.</summary>
     internal static Backend Backend(bool managed) => managed ? Nn.Backend.Managed : Nn.Backend.TorchSharp;
 
+    /// <summary>The same as a pipeline option.</summary>
+    internal static PipelineBackend PipelineBackendFor(bool managed) => managed ? PipelineBackend.Managed : PipelineBackend.TorchSharp;
+
     private static string FindRoot()
     {
         for (var dir = new DirectoryInfo(AppContext.BaseDirectory); dir != null; dir = dir.Parent)

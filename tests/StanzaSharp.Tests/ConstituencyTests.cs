@@ -154,7 +154,7 @@ public class ConstituencyTests(ITestOutputHelper output)
     public void Pipeline_MatchesGoldenTrees(bool managed)
     {
         // The tagger's charlm cache feeds the parser here; the test above computes the charlms itself.
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos,constituency", Backend = Repo.Backend(managed) });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos,constituency", Backend = Repo.PipelineBackendFor(managed) });
         var doc = nlp.Process(File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt")));
         var golden = Conllu.Read(File.ReadAllText(Path.Combine(Repo.Golden, "pipeline.conllu")));
 
