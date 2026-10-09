@@ -208,6 +208,7 @@ samples/StanzaSharp.Cli        Console runner for quick experiments.
 samples/StanzaSharp.Benchmark  Per-stage speed/memory benchmark; tools/benchmark.py is the Python twin.
 samples/StanzaSharp.Example    Commented tour of the public API (download, load, every result, CoNLL-U).
 tests/StanzaSharp.Tests        xUnit; golden tests against Python Stanza output.
+tests/StanzaSharp.ManagedCheck Console app without libtorch: proves the managed backend loads none (ManagedCheckTests).
 tests/golden/                  Golden data generated from Python Stanza (committed, keep it small).
 tools/stanza_convert.py        Checkpoint inspector/converter (.pt -> .safetensors + .json); optional.
 tools/.venv/                   Python env with stanza installed (gitignored).
@@ -465,7 +466,7 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     CLI) and converts them with CPU torch. The models are cached on `ModelDownloader.cs`,
     `tools/requirements.txt` and `tools/stanza_convert.py`. It then fails if any test is skipped
     (`outcome="NotExecuted"` in the trx; the trx `notExecuted` counter stays 0 for skips), and runs
-    `tools/verify-package.ps1` against `models/stanza/en`.
+    `tools/verify-package.ps1` against `models/stanza/en` (also `-Platform Linux` and `-Managed`: only StanzaSharp, no libtorch).
   - `cross-os (windows-2025)` / `cross-os (macos-15)` (Apple Silicon; `TorchSharp-cpu` brings
     `libtorch-cpu-osx-arm64`): build, full suite with `STANZASHARP_MODELS` = `models/stanza/en` (the
     `.pt` files, no Python or conversion), the same no-skip check, and `verify-package.ps1`. Models are
@@ -630,8 +631,19 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
 - **Status:** Phase 0 (kernels), Phase 1 (seam; tokenize and mwt ported) and Phase 2 (ner, pos, depparse, sentiment,
   lemma, constituency; `CharlmCache` backend-neutral) are done: every processor of both packages runs managed, and a
   managed pipeline loads no TorchSharp charlms. `docs/backends.md` has the design, the Cuda split plan, exactness, speed and
-  the Phase 2 progress table. Next (0.5): `Pretrain` as a plain array and a managed `Load` that touches no libtorch, the
-  public `PipelineBackend` option, managed as the default.
+  the Phase 2 progress table. A managed pipeline needs no native libtorch (below). Next (0.5): the public
+  `PipelineBackend` option, managed as the default.
+- **No libtorch on the managed backend** (0.5 requirement, done): TorchSharp's `torch` static constructor loads libtorch, so
+  the managed path calls no `torch.*` member at all (not even `torch.CPU`) and makes no TorchSharp object; the
+  `TorchSharp.dll` assembly itself still loads. Managed `Pipeline.Load` sets only `ManagedThreads.Count`; libtorch's
+  threads, TF32 and `Weights.On(Device)` are in `Pipeline.LoadTorchSharp` (unchanged). `Pretrain.LoadManaged` keeps the
+  vectors as a `float[]` (`Load`: a tensor; `CpuVectors()` reads either; `Embeddings` throws on a managed one), used when
+  every pretrain reader is managed. After each managed model `Pipeline` runs `GC.Collect()` (weights are read into an
+  array, then packed: load peak 1,035 → ~850 MB, +0.05 s). Proof: `tests/StanzaSharp.ManagedCheck` (no TorchSharp-cpu /
+  libtorch-cpu-*, `StanzaSharpNoLibTorch`), run by `ManagedCheckTests` with an empty `NUGET_PACKAGES` (TorchSharp's
+  fallback otherwise copies libtorch from the NuGet cache into `cpu/` next to the app), both packages byte-identical and
+  no native torch module loaded; `verify-package.ps1 -Managed` compiles the same Program.cs against the packed package
+  alone (golden job). A new managed code path must keep this: no `torch.*`, `Scalars`, `Weights.Device`, tensors.
 - **Seam** (all internal): per processor network, arrays in and out: `ITokenizerNet` (`TokenizerNet` / `ManagedTokenizerNet`),
   `IMwtNet` (`MwtNet` / `ManagedMwtNet`). Batching, windows, argmax and decoding stay in the processor, shared, so both
   backends see the same batches. `Nn.Backend` { TorchSharp (default), Managed }; internal `PipelineOptions.Backend` →
@@ -684,7 +696,7 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     (`ConstituencyTests.NearTies_AreReported`).
   - `Pipeline.ManagedProcessors` (all eight) lists what `Backend.Managed` runs managed. The pipeline loads each
     backend's charlms only if a `_charlm` processor on that backend reads them (`ManagedCharLanguageModel`: +31 MB of
-    input tables). Managed processors read the shared `Pretrain` through `CpuVectors()` (the CPU tensor's own memory).
+    input tables). Managed processors read the shared `Pretrain` through `CpuVectors()` (its array, or a CPU tensor's own memory).
   - `CharlmCache` is backend-neutral: an entry holds its producer's form (tensors, or `[words, dim]` float arrays via the
     float `TryAdd`). `TryGet` gives tensors (a float entry is converted once, on the cache's device, and kept);
     `TryGetArrays` gives arrays (a tensor entry is copied per read). Same-backend pipelines never convert, so the default

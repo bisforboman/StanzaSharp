@@ -150,6 +150,12 @@ jobs:
         shell: pwsh
         run: ./tools/verify-package.ps1 -ModelDir models/stanza/en -Platform Linux
 
+      # Only StanzaSharp, no libtorch at all: the managed backend must load and run without it (issue #29).
+      - name: Verify the package without libtorch (managed backend)
+        if: needs.changes.outputs.code != 'false'
+        shell: pwsh
+        run: ./tools/verify-package.ps1 -ModelDir models/stanza/en -Managed
+
       # The stanzasharp tool (StanzaSharp.Tool): installed from a local feed, no native files, downloads tokenize,mwt.
       - name: Verify the tool package
         if: needs.changes.outputs.code != 'false'

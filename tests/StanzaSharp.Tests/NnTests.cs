@@ -100,4 +100,16 @@ public class NnTests
         Assert.Equal(-0.1453009992837906f, row[0].item<float>());
         Assert.Equal(-0.11859499663114548f, row[99].item<float>());
     }
+
+    /// <summary>The managed backend's pretrain: the same vocabulary and vectors as a plain array, no tensor.</summary>
+    [ModelFact]
+    public void Pretrain_LoadManaged_EqualsTheTensor()
+    {
+        using var tensor = Pretrain.Load(Repo.Model("pretrain/conll17"));
+        using var managed = Pretrain.LoadManaged(Repo.Model("pretrain/conll17"));
+        Assert.Equal((250000, 100), (managed.Count, managed.Dim));
+        Assert.Equal(5445, managed.UnitToId("stanford"));
+        Assert.True(tensor.CpuVectors().SequenceEqual(managed.CpuVectors()));
+        Assert.Throws<InvalidOperationException>(() => managed.Embeddings);
+    }
 }

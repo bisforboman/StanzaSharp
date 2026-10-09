@@ -58,8 +58,69 @@ The seam sits at each processor's **network**: one small interface per processor
 - **Threads:** with `Backend.Managed`, `Load` also sets `ManagedThreads.Count`, with the documented semantics: an
   explicit `Threads`, or null for `min(current count, Environment.ProcessorCount)`. The count is ProcessorCount unless
   something set it lower, and `ProcessorCount` respects a container's CPU quota. It is process-wide, like
-  `torch.set_num_threads`. TorchSharp's threads are still set as before, for the processors that aren't ported.
+  `torch.set_num_threads`. With `Backend.Managed`, libtorch's threads are left alone (see below); on TorchSharp they are
+  set as before.
 - Benchmark: `StanzaSharp.Benchmark --backend managed [--processors tokenize,mwt]`.
+
+### No libtorch on the managed backend (0.5 requirement)
+
+A pipeline on `Backend.Managed` loads and runs with no native libtorch anywhere, and makes no TorchSharp object. The
+managed `TorchSharp.dll` assembly is still referenced and loaded (types in signatures and fields), but nothing calls
+into it. TorchSharp's `torch` class loads libtorch in its static constructor, so *any* `torch.*` member (even
+`torch.CPU`) would load it.
+
+Touchpoints found and how they were removed:
+
+| Touchpoint | Fix |
+|---|---|
+| `Pipeline.Load`: `torch.get_num_threads`/`set_num_threads` (the first one ran `torch`'s static constructor, which loaded `LibTorchSharp`, `torch_cpu` and `c10`) | Managed `Load` sets only `ManagedThreads.Count`; the torch threads, TF32 and `Weights.On(Device)` moved into `Pipeline.LoadTorchSharp`, the TorchSharp path, unchanged |
+| `Pretrain`: the embedding matrix was a tensor (`ckpt.ToTensor`), read by managed nets through `CpuVectors()` | `Pretrain.LoadManaged`: a plain `float[]` read straight from the safetensors / `.pt` storage (`Checkpoint.Tensor<float>`); `Pipeline` uses it when every processor reading the pretrain is managed. `Count`/`Dim` no longer read the tensor's shape. `Embeddings` throws on a managed pretrain |
+| `TorchSharp.torch.Device`/`DisableTf32` | only read on the TorchSharp path |
+
+Checked and already clean: every processor's `LoadManaged`/managed net reads its weights through `Checkpoint.Tensor<float>`
+(Core: `SafeTensorFile`, `TorchCheckpoint`) into arrays; the shared processor code (batching, decoding) has no torch
+call; `CharlmCache` makes tensors only in `TryGet` (TorchSharp readers) and disposes only tensors it holds; `Weights.On`
+(tokenizer, mwt, lemma `Load`) only sets an `AsyncLocal` when no device is given; `Scalars`' static fields are never
+touched on the managed path; `ModelDownloader`/`VerifyChecksums` (MD5), `Conllu`, the `Logger`, cancellation and
+`NativeHeap` (glibc `malloc_trim`) don't use TorchSharp.
+
+**Proof:**
+
+- `tests/StanzaSharp.ManagedCheck`: a console app referencing the library projects but no `TorchSharp-cpu` /
+  `libtorch-cpu-*` (`StanzaSharpNoLibTorch` in its csproj keeps Directory.Build.props from adding the Windows Arm64
+  libtorch), so libtorch is not on disk next to it (only TorchSharp's own `LibTorchSharp`, which the managed package
+  carries). For `default` and `default_fast` it loads a managed pipeline (with `Threads`, a `Logger`, and
+  `VerifyChecksums` for `.pt` models), checks that a canceled `Process` throws, compares `corpus.txt` with
+  `pipeline.conllu` / `fast/corpus.conllu` byte for byte, runs bulk, pretokenized and no-ssplit input, and fails if a
+  native torch module is loaded (`Process.Modules`: `LibTorchSharp`, `torch_cpu`, `c10`; on Linux .NET reads
+  `/proc/self/maps`). Public API only, plus reflection for the internal `PipelineOptions.Backend`.
+- `ManagedCheckTests` runs it in its own process with `NUGET_PACKAGES` set to an empty folder: TorchSharp's fallback
+  otherwise copies libtorch from the NuGet cache into a `cpu/` folder next to the app and loads it from there (that is
+  how the first run, before the fixes, loaded `torch_cpu`/`c10` although none was in the output). With the fallback
+  blocked, any torch call throws (`TypeInitializationException` from `torch..cctor`, which is how the touchpoints above
+  were found). It also asserts no libtorch file is in the app's output.
+- `tools/verify-package.ps1 -Managed` (CI: golden job, Linux, `.pt` models): packs StanzaSharp, builds a fresh app that
+  references **only** `StanzaSharp` (no `TorchSharp-cpu`, no platform package), compiles the same `Program.cs` against
+  it, checks no libtorch reached the output, and runs it with an empty `NUGET_PACKAGES`.
+
+**Load memory** (`--memory`, fresh process, default package, converted models, Ryzen 7 5800X; the benchmark used to
+load libtorch at startup through `torch.CPU`, which inflated earlier managed numbers):
+
+| | load | load peak | after load |
+|---|---:|---:|---:|
+| TorchSharp | 1.25 s | 818–820 MB | 818 MB |
+| managed, before (libtorch loaded, tensor pretrain) | 1.21 s | 1,127 MB | 1,127 MB |
+| managed, no libtorch, array pretrain, no GC between models | 1.08 s | 1,035 MB | 1,024 MB |
+| managed, now | 1.10–1.15 s | **837–870 MB** | 826 MB |
+
+`default_fast`: TorchSharp 623 MB, managed 749 → **658 MB**. The managed load allocated 1,639 MB on the GC heap for
+679 MB kept: each weight is read into an array, then packed into another. `PackedLstm.PackInput` copied every input
+row, then concatenated them through a growing buffer; it now copies once into the final array (1,390 MB allocated,
+627 MB kept, load ~0.1 s faster). `Pipeline` then runs `GC.Collect()` after each managed model, so the next one reuses
+that memory (−200 MB peak, about +0.05 s; the `--memory` run's gen2 count includes those 11 collections). What is left
+above TorchSharp is the packed form (padding to 16-column panels, charlm input tables, contracted biaffines: 627 MB of
+arrays for 551 MB of checkpoint) and the runtime. Processing peaks are unchanged (`--memory 6000`: managed 2,299–2,304 MB
+in 12.5 s, TorchSharp 3,771–4,302 MB in 23–27 s).
 
 ### Plan for the `StanzaSharp.Cuda` split (proposal, not done)
 
@@ -511,8 +572,8 @@ by one, producer and readers can sit on different backends.
 
 For 0.5:
 
-- `Pretrain` as a plain array, and a managed `Load` that touches no libtorch (no `torch.set_num_threads`, no tensors), so a
-  managed pipeline loads without a native libtorch package.
+- ~~`Pretrain` as a plain array, and a managed `Load` that touches no libtorch~~: done ([No libtorch on the managed
+  backend](#no-libtorch-on-the-managed-backend-05-requirement)).
 - The public `PipelineBackend` option (decided: A), and managed as the default; `Device`/`DisableTf32` become `[Obsolete]`.
 - Later (1.0): the `StanzaSharp.Cuda` split.
 
@@ -522,9 +583,8 @@ Cross-cutting:
   has 1e-4), not 1e-3. Where it misses, the drift's source gets a cheap fix (e.g. double sums, as in `upos_clf`) or
   goes to the owner with measured options.
 
-- **Shared models:** the factory of the Cuda split has to build `Pretrain` and the charlms per backend. `Pretrain` is
-  still a TorchSharp tensor that managed processors read in place; a libtorch-free managed pipeline (0.5) needs it
-  as a plain array.
+- **Shared models:** the factory of the Cuda split has to build `Pretrain` and the charlms per backend. `Pretrain`
+  already has both forms (`Load`: tensor, `LoadManaged`: array); the tensor half moves with the split.
 - **NER batches:** NER runs the charlms 32 sentences at a time (Stanza's batches), where both backends are
   memory-bound on the 16 MB recurrent weights. Running the charlms over bigger groups would be faster but changes the
   last float bits; left as is.
