@@ -464,6 +464,11 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     `alpine`, `linux-arm64` and `cross-os` run with their steps skipped, so the required checks pass in about a minute. No job is skipped
     outright: a skipped job would count as passed. Pushes to main and
     release runs always run everything; if `changes` fails, everything runs.
+  - Runner budget (user's decision, 2026-10-09): **draft** PRs skip every heavy step like docs-only ones (drafts can't
+    merge; `ready_for_review` starts the real run), so agents open stacked PRs as drafts and mark them ready once their
+    base merges. **Ready** PRs run level `light`: Linux (`golden`, `docker`, `alpine`) runs everything; `cross-os` and
+    `linux-arm64` run only `PipelineTests`, `ManagedBackendTests` and `ManagedCheckTests` (70 tests, ~2.5 min locally)
+    and no package checks. The **merge queue** (`merge_group`), pushes to main and release runs are level `full`.
   - `concurrency` (`${{ github.workflow }}-${{ github.ref }}`): a newer push to the same PR or to main cancels the older
     CI run. release.yml's call gets the group `Release-refs/heads/main` (`github.workflow` is the caller's name), so it
     and main's own CI run don't cancel each other, and it is never cancelled.
