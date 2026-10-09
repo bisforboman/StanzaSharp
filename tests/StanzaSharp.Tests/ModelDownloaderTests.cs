@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 
 namespace StanzaSharp.Tests;
 
+[Trait("Backend", "Managed")]
 public class ModelDownloaderTests : IDisposable
 {
     private readonly string _dir = Path.Combine(Path.GetTempPath(), "stanzasharp-dl-" + Guid.NewGuid().ToString("N"));

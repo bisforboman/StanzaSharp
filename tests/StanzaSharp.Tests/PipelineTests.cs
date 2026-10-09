@@ -17,6 +17,7 @@ public class PipelineTests
 
     /// <summary>Every processor runs managed, so a managed pipeline of either package holds only the managed charlms.</summary>
     [ModelFact]
+    [Trait("Backend", "Managed")]
     public void ManagedBackend_LoadsNoTorchSharpCharlms()
     {
         Assert.True(Pipeline.Packages.All(p => p.Value.Keys.All(Pipeline.ManagedProcessors.Contains)));
@@ -67,6 +68,7 @@ public class PipelineTests
     }
 
     [ModelFact]
+    [Trait("Backend", "Managed")]
     public void Load_RunsASubsetOfProcessors()
     {
         using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt" });
@@ -78,6 +80,7 @@ public class PipelineTests
     }
 
     [Fact]
+    [Trait("Backend", "Managed")]
     public void Load_RejectsUnknownOrIncompleteProcessorLists()
     {
         var dir = Repo.Root; // any existing directory: validation happens before loading

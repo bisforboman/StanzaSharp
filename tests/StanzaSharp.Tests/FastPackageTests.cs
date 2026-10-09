@@ -106,6 +106,7 @@ public class FastPackageTests(ITestOutputHelper output)
     private static List<string> Strings(JsonNode? array) => array!.AsArray().Select(x => x!.GetValue<string>()).ToList();
 
     [Fact]
+    [Trait("Backend", "Managed")]
     public void SelectModels_UsesThePackagesModelsAndProcessors()
     {
         var fast = Pipeline.SelectModels("default_fast", null, addRequired: false, "options");
@@ -121,6 +122,7 @@ public class FastPackageTests(ITestOutputHelper output)
     }
 
     [Fact]
+    [Trait("Backend", "Managed")]
     public void Load_RejectsConstituencyInTheFastPackageAndUnknownPackages()
     {
         var dir = Repo.Root; // validation happens before loading

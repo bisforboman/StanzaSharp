@@ -84,7 +84,8 @@ docker run -i --rm -v /path/to/models/stanza/en:/models:ro stanzasharp-sample < 
 ```
 
 Mount the models rather than copying them into the image: they are about 600 MB, several times the image itself
-(DOCKER_SIZES). CI builds this image on the plain, chiseled and Alpine base images, checks that no libtorch is in it,
+(209 MB on `runtime:10.0`, 103 MB on `runtime:10.0-noble-chiseled`, 100 MB on `runtime:10.0-alpine`; with
+libtorch, up to 0.4, they were 707 and 601 MB). CI builds this image on the plain, chiseled and Alpine base images, checks that no libtorch is in it,
 and that its output is byte-identical to the golden file. (TorchSharp's 2 MB `LibTorchSharp` interop library is in
 the publish output, as StanzaSharp still references TorchSharp; the managed backend never loads it.)
 

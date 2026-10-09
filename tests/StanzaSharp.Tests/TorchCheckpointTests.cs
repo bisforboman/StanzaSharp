@@ -4,6 +4,7 @@ using Xunit.Abstractions;
 
 namespace StanzaSharp.Tests;
 
+[Trait("Backend", "Managed")]
 public class TorchCheckpointTests(ITestOutputHelper output)
 {
     public static readonly TheoryData<string> StanzaCheckpoints =

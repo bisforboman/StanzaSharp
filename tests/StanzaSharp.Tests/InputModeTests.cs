@@ -87,6 +87,7 @@ public class InputModeTests
     }
 
     [ModelFact]
+    [Trait("Backend", "Managed")]
     public void Bulk_EqualsProcessingAloneExceptBatchedProcessors()
     {
         // Without sentiment and depparse, which batch sentences across documents, bulk output equals one call per
@@ -107,6 +108,7 @@ public class InputModeTests
     }
 
     [ModelFact]
+    [Trait("Backend", "Managed")]
     public void InputModes_ValidateArguments()
     {
         using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt" });
@@ -130,6 +132,7 @@ public class InputModeTests
     }
 
     [Fact]
+    [Trait("Backend", "Managed")]
     public void Pretokenized_JoinsTokensWithSpacesLikeStanza()
     {
         var doc = Tokenizer.Pretokenized([["Hello", "world", "."], ["New York", "😀"]]);
@@ -144,6 +147,7 @@ public class InputModeTests
     }
 
     [Fact]
+    [Trait("Backend", "Managed")]
     public void Split_GivesEachTextItsSentencesAndOffsets()
     {
         // What the tokenizer makes of "A b.\n\n\n\n  \n\n C." (texts "A b.", "", "  ", " C."): two sentences.

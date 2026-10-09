@@ -53,6 +53,7 @@ public class NoSsplitTests
     }
 
     [ModelFact]
+    [Trait("Backend", "Managed")]
     public void NoSsplit_OnePerParagraph_AndPretokenizedKeepsItsSentences()
     {
         using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt", SplitSentences = false });

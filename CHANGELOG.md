@@ -27,7 +27,8 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
   TorchSharp, libtorch's intra-op threads as before. A managed pipeline never calls into libtorch, so `Load` no longer
   changes libtorch's thread count unless TorchSharp is selected.
 - The Docker sample references only `StanzaSharp`: no libtorch in the image, which now works on any .NET 10 runtime
-  image, including chiseled and Alpine.
+  image, including chiseled and Alpine. The image is 209 MB on `runtime:10.0` (was 707 MB) and 103 MB on
+  `runtime:10.0-noble-chiseled` (was 601 MB); 100 MB on `runtime:10.0-alpine`.
 - Cancellation inside the POS tagger and the sentiment classifier is faster: the token is now also checked inside
   each batch (the tagger: after each charlm pass or the character model, between the LSTM layers and between the
   heads; sentiment: after each charlm pass, after the LSTM and between the convolutions), so a call stops within one

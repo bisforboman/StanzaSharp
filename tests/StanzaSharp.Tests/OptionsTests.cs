@@ -30,6 +30,7 @@ public class OptionsTests
     }
 
     [PtModelFact]
+    [Trait("Backend", "Managed")]
     public void VerifyChecksums_AcceptsStanzasFiles_AndNamesACorruptedOne()
     {
         var options = new PipelineOptions { Processors = "tokenize,mwt", VerifyChecksums = true };
@@ -58,6 +59,7 @@ public class OptionsTests
     }
 
     [Fact]
+    [Trait("Backend", "Managed")]
     public void VerifyChecksums_RefusesConvertedModels()
     {
         // Only the converted file's presence matters: the check runs before anything is read.
@@ -77,6 +79,7 @@ public class OptionsTests
     }
 
     [ModelFact]
+    [Trait("Backend", "Managed")]
     public void Logger_ReceivesLoadAndProcessTimings()
     {
         var logger = new ListLogger();
@@ -113,6 +116,7 @@ public class OptionsTests
     }
 
     [Fact]
+    [Trait("Backend", "Managed")]
     public void ProcessorConstants_SpellAllProcessors()
     {
         Assert.Equal(Pipeline.AllProcessors, string.Join(",",
@@ -137,6 +141,7 @@ public class OptionsTests
 public class ManagedThreadsOptionTests
 {
     [ModelFact]
+    [Trait("Backend", "Managed")]
     public void Threads_SetsThePoolSize_AndNullCapsItAtProcessorCount()
     {
         int old = Nn.Managed.ManagedThreads.Count;

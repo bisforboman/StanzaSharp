@@ -10,12 +10,13 @@ public class ConstituencyTests(ITestOutputHelper output)
 {
     private sealed class Models : IDisposable
     {
-        public readonly Pretrain Pretrain = Pretrain.Load(Repo.Model("pretrain/conll17"));
+        public readonly Pretrain Pretrain;
         public readonly CharLanguageModel? Forward, Backward;
         public readonly ConstituencyParser Parser;
 
         public Models(bool managed = false)
         {
+            Pretrain = Repo.LoadPretrain(managed);
             if (managed)
             {
                 Parser = ConstituencyParser.LoadManaged(Repo.Model("constituency/ptb3-revised_charlm"), Pretrain,

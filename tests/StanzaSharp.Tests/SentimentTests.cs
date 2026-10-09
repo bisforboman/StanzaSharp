@@ -21,13 +21,14 @@ public class SentimentTests(ITestOutputHelper output)
     /// <summary>The classifier and the tagger (for the cache) on one backend, with that backend's charlms.</summary>
     private sealed class Models : IDisposable
     {
-        public readonly Pretrain Pretrain = Pretrain.Load(Repo.Model("pretrain/conll17"));
+        public readonly Pretrain Pretrain;
         private readonly CharLanguageModel? _forward, _backward;
         private readonly ManagedCharLanguageModel? _managedForward, _managedBackward;
         public readonly SentimentClassifier Classifier;
 
         public Models(bool managed = false)
         {
+            Pretrain = Repo.LoadPretrain(managed);
             if (managed)
             {
                 _managedForward = ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
@@ -222,6 +223,7 @@ public class SentimentTests(ITestOutputHelper output)
     }
 
     [Fact]
+    [Trait("Backend", "Managed")]
     public void Batches_FollowSplitIntoBatches()
     {
         // Lengths sorted longest first; one over 5000 goes alone, the rest fill up to 5000 tokens.
@@ -232,6 +234,7 @@ public class SentimentTests(ITestOutputHelper output)
     }
 
     [Fact]
+    [Trait("Backend", "Managed")]
     public void Conllu_ReadsAndWritesTheSentimentComment()
     {
         const string text = "# text = Fine.\n# sent_id = 0\n# sentiment = 1\n1\tFine\t_\t_\t_\t_\t0\t_\t_\tSpaceAfter=No\n2\t.\t_\t_\t_\t_\t1\t_\t_\tSpaceAfter=No\n";
