@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  merge_group: # the merge queue: the full suite runs here, once per group, before anything reaches main
   workflow_call: # release.yml runs the same checks before publishing
 
 # A newer push to the same pull request or to main cancels the run still going (GitHub-hosted runners allow 20
@@ -21,20 +23,27 @@ env:
 jobs:
   # Everything builds and tests in Release: the managed backend's kernels are many times slower in Debug, which once
   # made the cross-os test steps run for hours. --blame-hang-timeout names a test that hangs; timeout-minutes caps a job.
-  # Whether the heavy jobs have anything to check: false only for a pull request that changes nothing but
-  # documentation. Pushes to main and release.yml's runs always check everything. On false, the required jobs
-  # still run, with their steps skipped: they report real runs rather than relying on a skipped job counting as
-  # passed. Anything but a clear false, including this job failing, runs everything.
+  # How much each run checks (owner's decision, 2026-10-09: save runners):
+  # - code=false (steps skipped): a draft pull request, or one that changes nothing but documentation. Drafts can't be
+  #   merged; marking one ready for review (ready_for_review) starts its real run.
+  # - level=light: a ready pull request. Linux (golden, docker, alpine) runs everything; cross-os and linux-arm64 run
+  #   a subset (pipeline golden files on both backends, the managed kernels, the no-libtorch check) and no package checks.
+  # - level=full: the merge queue (merge_group), pushes to main and release.yml's runs: everything everywhere.
+  # Required jobs still run with their steps skipped rather than being skipped (a skipped job would count as passed).
+  # Anything but a clear false, including this job failing, runs everything; anything but a clear light runs full.
   changes:
     runs-on: ubuntu-24.04
     outputs:
       code: ${{ steps.files.outputs.code }}
+      level: ${{ steps.files.outputs.level }}
     steps:
       - id: files
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if [ "${{ github.event_name }}" != pull_request ]; then echo code=true >> "$GITHUB_OUTPUT"; exit 0; fi
+          if [ "${{ github.event_name }}" != pull_request ]; then echo code=true >> "$GITHUB_OUTPUT"; echo level=full >> "$GITHUB_OUTPUT"; exit 0; fi
+          echo level=light >> "$GITHUB_OUTPUT"
+          if [ "${{ github.event.pull_request.draft }}" = true ]; then echo "Draft: nothing to check until it is ready."; echo code=false >> "$GITHUB_OUTPUT"; exit 0; fi
           gh api --paginate "repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" --jq '.[].filename' > files.txt
           cat files.txt
           # Documentation: docs/, any Markdown file (README, CHANGELOG, CLAUDE.md, PACKAGE.md), LICENSE, NOTICE.
@@ -278,7 +287,8 @@ jobs:
         if: needs.changes.outputs.code != 'false'
         run: >
           dotnet test tests/StanzaSharp.Tests -c Release --no-build --blame-hang-timeout 30m --blame-hang-dump-type none
-          --filter "DisplayName~managed: True|Backend=Managed" --logger trx --results-directory TestResults
+          --logger trx --results-directory TestResults
+          --filter "${{ needs.changes.outputs.level == 'light' && '(DisplayName~managed: True|Backend=Managed)&(FullyQualifiedName~PipelineTests|FullyQualifiedName~ManagedBackendTests|FullyQualifiedName~ManagedCheckTests)' || 'DisplayName~managed: True|Backend=Managed' }}"
 
       - name: Check that no test was skipped
         if: needs.changes.outputs.code != 'false'
@@ -290,7 +300,7 @@ jobs:
           fi
 
       - name: Verify the package without libtorch (managed backend)
-        if: needs.changes.outputs.code != 'false'
+        if: needs.changes.outputs.code != 'false' && needs.changes.outputs.level != 'light'
         shell: pwsh
         run: ./tools/verify-package.ps1 -ModelDir models/stanza/en -Managed
 
@@ -354,9 +364,13 @@ jobs:
           dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/en
           dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/en --package default_fast
 
+      # A ready pull request runs the subset (level light); the merge queue, main and releases run everything.
       - name: Test
         if: needs.changes.outputs.code != 'false'
-        run: dotnet test StanzaSharp.slnx -c Release --no-build --blame-hang-timeout 30m --blame-hang-dump-type none --logger trx --results-directory TestResults
+        run: >
+          dotnet test StanzaSharp.slnx -c Release --no-build --blame-hang-timeout 30m --blame-hang-dump-type none
+          --logger trx --results-directory TestResults
+          ${{ needs.changes.outputs.level == 'light' && '--filter "FullyQualifiedName~PipelineTests|FullyQualifiedName~ManagedBackendTests|FullyQualifiedName~ManagedCheckTests"' || '' }}
 
       - name: Check that no test was skipped
         if: needs.changes.outputs.code != 'false'
@@ -370,13 +384,13 @@ jobs:
       # The TorchSharp backend as its users install it (StanzaSharp + TorchSharp-cpu). TorchSharp-cpu has no Windows Arm64
       # libtorch, so not there.
       - name: Verify the package
-        if: needs.changes.outputs.code != 'false' && (runner.os != 'Windows' || runner.arch != 'ARM64')
+        if: needs.changes.outputs.code != 'false' && needs.changes.outputs.level != 'light' && (runner.os != 'Windows' || runner.arch != 'ARM64')
         shell: pwsh
         run: ./tools/verify-package.ps1 -ModelDir models/stanza/en
 
       # The default install: only StanzaSharp, no libtorch; the default (managed) backend must run without it.
       - name: Verify the package without libtorch (managed backend)
-        if: needs.changes.outputs.code != 'false'
+        if: needs.changes.outputs.code != 'false' && needs.changes.outputs.level != 'light'
         shell: pwsh
         run: ./tools/verify-package.ps1 -ModelDir models/stanza/en -Managed
 
