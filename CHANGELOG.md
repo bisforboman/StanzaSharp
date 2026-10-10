@@ -7,6 +7,8 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-10-10
+
 ### Added
 - `PipelineOptions.MaxConcurrentCalls` (opt-in; null, the default, means no limit): at most this many `Process` calls
   run on the pipeline at once, and further callers wait their turn (the wait honours the call's cancellation token).
@@ -248,7 +250,8 @@ output byte-identical to Python Stanza on the golden test data.
 - `ModelDownloader` fetches the models from Stanza's Hugging Face repository and checks their MD5s.
 - `Conllu.Read` and `Conllu.Write`, in Stanza's CoNLL-U dialect.
 
-[Unreleased]: https://github.com/bisforboman/StanzaSharp/compare/v0.5.1...HEAD
+[Unreleased]: https://github.com/bisforboman/StanzaSharp/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/bisforboman/StanzaSharp/compare/v0.5.1...v0.6.0
 [0.5.1]: https://github.com/bisforboman/StanzaSharp/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/bisforboman/StanzaSharp/compare/v0.4.2...v0.5.0
 [0.4.2]: https://github.com/bisforboman/StanzaSharp/compare/v0.4.1...v0.4.2
