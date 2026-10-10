@@ -56,4 +56,23 @@ Different: 1 of 68 sentences differ. The first difference, line 384 of the CoNLL
 - Exit code: 0 identical, 1 different, 2 a usage or setup problem (no Python or Stanza, another Stanza version,
   missing models).
 
+## Benchmark it on your machine
+
+`stanzasharp benchmark` times StanzaSharp on a built-in English text (our own test texts, about 1,500 words) and, if
+Python Stanza 1.15.0 is available, Stanza on the same text with the same models, alternating their runs (a warm-up run
+each, then the median of 3). It reports load time, each processor, words/s, single-sentence calls (median and p90) and
+peak memory, and prints a Markdown block with the CPU, cores, RAM, OS, .NET version, SIMD path and StanzaSharp version,
+ready to paste into an issue. With Python it takes about two minutes on 4 cores.
+
+```
+stanzasharp benchmark [--package NAME] [--processors LIST] [--models DIR] [--threads N] [--words N] [--python PATH] [--quick] [--json FILE]
+```
+
+- `--threads N`: the same thread count on both sides. By default each side uses its own default (StanzaSharp all
+  logical processors, torch the physical cores); the block shows both.
+- `--words N`: a longer or shorter text. `--quick`: 300 words, one run and 10 calls, a smoke test.
+- Without Python Stanza (or with converted models, which Stanza can't read), only StanzaSharp's column is shown, with
+  the reason. With it, the block also says whether both sides' CoNLL-U was identical.
+- `--json FILE`: the results as JSON too.
+
 Source, issues and docs: https://github.com/bisforboman/StanzaSharp
