@@ -2,7 +2,6 @@ using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using StanzaSharp.Nn;
 using StanzaSharp.Nn.Managed;
-using static TorchSharp.torch;
 
 namespace StanzaSharp.Depparse;
 
@@ -28,7 +27,7 @@ internal sealed class DependencyParser : IDisposable
     private readonly int _batchSize;
     private readonly IDepparseNet _net;
 
-    private DependencyParser(Checkpoint ckpt, Pretrain pretrain, Func<bool, IDepparseNet> net)
+    internal DependencyParser(Checkpoint ckpt, Pretrain pretrain, Func<bool, IDepparseNet> net)
     {
         _pretrain = pretrain;
         var config = ckpt.Root["config"]!;
@@ -43,23 +42,7 @@ internal sealed class DependencyParser : IDisposable
         _net = net(config["charlm"]?.GetValue<bool>() == true);
     }
 
-    /// <summary>
-    /// Loads e.g. <c>models/converted/en/depparse/combined_charlm</c> on TorchSharp. The pretrain and charlms are
-    /// shared with the tagger and the constituency parser, so the caller owns them. A <c>_nocharlm</c> model takes none.
-    /// </summary>
-    /// <param name="device">Where the model runs; CPU by default. Load the pretrain and charlms on the same device.</param>
-    public static DependencyParser Load(string basePath, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward, Device? device = null) =>
-        Weights.On(device, () =>
-        {
-            var ckpt = Checkpoint.Load(basePath);
-            return new DependencyParser(ckpt, pretrain, charlm =>
-            {
-                CheckCharlms(charlm, charlmForward?.IsForward, charlmBackward?.IsForward);
-                return new DepparseNet(ckpt, pretrain, charlm ? charlmForward : null, charlm ? charlmBackward : null);
-            });
-        });
-
-    /// <summary><see cref="Load"/> on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
+    /// <summary><c>Load</c> (StanzaSharp.TorchSharp) on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
     public static DependencyParser LoadManaged(string basePath, Pretrain pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward)
     {
         var ckpt = Checkpoint.Load(basePath);
@@ -70,7 +53,7 @@ internal sealed class DependencyParser : IDisposable
         });
     }
 
-    private static void CheckCharlms(bool charlm, bool? forward, bool? backward)
+    internal static void CheckCharlms(bool charlm, bool? forward, bool? backward)
     {
         if (charlm && (forward != true || backward != false))
             throw new ArgumentException("This parser needs the forward charlm, then the backward one");

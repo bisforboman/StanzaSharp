@@ -8,6 +8,12 @@ using TorchSharp;
 using Xunit.Abstractions;
 using StanzaSharp.Mwt;
 using StanzaSharp.Tokenize;
+using StanzaSharp.Pos;
+using StanzaSharp.Lemma;
+using StanzaSharp.Constituency;
+using StanzaSharp.Depparse;
+using StanzaSharp.Ner;
+using StanzaSharp.Sentiment;
 using static TorchSharp.torch;
 
 namespace StanzaSharp.Tests;

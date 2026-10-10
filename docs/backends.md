@@ -124,7 +124,14 @@ above TorchSharp is the packed form (padding to 16-column panels, charlm input t
 arrays for 551 MB of checkpoint) and the runtime. Processing peaks are unchanged (`--memory 6000`: managed 2,299–2,304 MB
 in 12.5 s, TorchSharp 3,771–4,302 MB in 23–27 s).
 
-### Plan for the `StanzaSharp.Cuda` split (proposal, not done)
+### Plan for the `StanzaSharp.Cuda` split (step 1 done)
+
+Owner's decisions (2026-10-09): two PRs. Step 1 (done) moves every TorchSharp class into `StanzaSharp.TorchSharp`, still
+packed into `StanzaSharp` with no API change; Core, Nn and the processors no longer reference TorchSharp. Step 2 (1.0)
+splits the packages, removes `Device`, `DisableTf32` and `PipelineBackend.TorchSharp`, and gives `StanzaSharp.Cuda`
+`CudaBackend.Create(device)` plus a public TorchSharp-on-CPU option. In step 1 the processors take a net factory and
+the facade still calls the TorchSharp loaders directly; the factory interface (item 2) comes with step 2, when the
+facade can no longer reference the TorchSharp assembly.
 
 The split needs no change to the processors' logic; it only moves where the TorchSharp networks are built.
 

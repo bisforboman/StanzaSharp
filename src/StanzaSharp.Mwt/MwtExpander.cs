@@ -1,7 +1,6 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using StanzaSharp.Nn;
-using static TorchSharp.torch;
 
 namespace StanzaSharp.Mwt;
 
@@ -19,7 +18,8 @@ internal sealed class MwtExpander : IDisposable
     private readonly int _padId, _unkId, _sosId, _eosId;
     private readonly IMwtNet? _net;
 
-    private MwtExpander(Checkpoint ckpt, Backend backend)
+    /// <param name="net">Builds the network from the checkpoint, its config and the PAD id (a backend's).</param>
+    internal MwtExpander(Checkpoint ckpt, Func<Checkpoint, System.Text.Json.Nodes.JsonNode, int, IMwtNet> net)
     {
         var config = ckpt.Root["config"]!;
         bool dictOnly = config["dict_only"]!.GetValue<bool>();
@@ -33,13 +33,11 @@ internal sealed class MwtExpander : IDisposable
         if (config["force_exact_pieces"]?.GetValue<bool>() != true)
             throw new NotSupportedException("MWT seq2seq models (force_exact_pieces = false) are not ported");
 
-        _net = backend == Backend.Managed ? new ManagedMwtNet(ckpt, config) : new MwtNet(ckpt, config, _padId);
+        _net = net(ckpt, config, _padId);
     }
 
-    /// <summary>Loads <c>basePath.json</c> + <c>basePath.safetensors</c>, e.g. <c>models/converted/en/mwt/combined</c>.</summary>
-    /// <param name="device">Where the model runs; CPU by default (TorchSharp only).</param>
-    public static MwtExpander Load(string basePath, Device? device = null, Backend backend = Backend.TorchSharp) =>
-        Weights.On(device, () => new MwtExpander(Checkpoint.Load(basePath), backend));
+    /// <summary>Loads <c>basePath.json</c> + <c>basePath.safetensors</c> (or <c>basePath.pt</c>), e.g. <c>models/converted/en/mwt/combined</c>, on the managed backend.</summary>
+    public static MwtExpander LoadManaged(string basePath) => new(Checkpoint.Load(basePath), (ckpt, config, _) => new ManagedMwtNet(ckpt, config));
 
     /// <summary>Expands marked tokens in place and renumbers each sentence's words.</summary>
     public void Process(Document doc)

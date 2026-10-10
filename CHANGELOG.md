@@ -7,6 +7,10 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 
 ## [Unreleased]
 
+### Changed
+- The TorchSharp backend's code moved into its own assembly, `StanzaSharp.TorchSharp.dll`, which the `StanzaSharp`
+  package carries next to the others. Nothing else changes; this prepares the opt-in `StanzaSharp.Cuda` package of 1.0.
+
 ## [0.5.1] - 2026-10-09
 
 ### Fixed

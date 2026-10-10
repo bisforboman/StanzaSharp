@@ -5,7 +5,7 @@ using StanzaSharp.Nn.Managed;
 namespace StanzaSharp.Tokenize;
 
 /// <summary>
-/// Managed twin of <see cref="TokenizerNet"/> (<see cref="Backend.Managed"/>): the same layers on
+/// Managed twin of <c>TokenizerNet</c> (<see cref="Backend.Managed"/>): the same layers on
 /// <see cref="ManagedLstm"/> and <see cref="Gemm"/>, with the three heads of each level in one small GEMM.
 /// </summary>
 internal sealed class ManagedTokenizerNet : ITokenizerNet
