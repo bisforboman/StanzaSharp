@@ -17,6 +17,10 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
     (`deviceIndex` picks another GPU).
   - `PipelineOptions.Device` and `PipelineOptions.DisableTf32` (obsolete since 0.5) are removed.
   - The `STANZA001` version check and `StanzaSharpTrimNative` come with `StanzaSharp.Cuda` now.
+- Managed backend: each LSTM step now sums its recurrent matrix product in blocks of 128 terms, then adds the input
+  projection, instead of one long chain. This halves the charlm's rounding error (now as close to float64 as TorchSharp)
+  and the worst-case score gap between the backends on the golden parses (constituency margins: 7.3e-5 → 4.0e-5), at
+  about 3–4% of the managed charlm's time. Outputs are unchanged.
 
 ## [0.6.0] - 2026-10-10
 

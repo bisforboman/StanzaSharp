@@ -404,6 +404,215 @@ internal static unsafe class Gemm
             new Span<float>(acc + r * nr, nr).CopyTo(new Span<float>(output[r], nr));
     }
 
+    /// <summary>
+    /// out[r][0..16) = (Σ over blocks of <paramref name="kb"/> k's, each summed from zero) + init[r][0..16), for the
+    /// first mr ≤ 6 rows, on <see cref="Path"/>. Shorter chains than <see cref="Kernel"/>'s one sum from init: the LSTM
+    /// recurrence uses it, where K is up to 1024 (the charlm), for about half the rounding error (docs/backends.md).
+    /// Rows past mr as in <see cref="Kernel"/>; every row gets the same arithmetic whatever mr is.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void KernelBlocked(int mr, float** a, float* b, int k, int kb, float** init, float** output)
+    {
+        switch (Path)
+        {
+            case KernelPath.Vector256:
+                if (mr <= 3)
+                    Kernel3x256Blocked(a, b, k, kb, init, output);
+                else
+                    Kernel6x256Blocked(a, b, k, kb, init, output);
+                break;
+            case KernelPath.Vector128:
+                if (mr <= 3)
+                    Kernel3x128Blocked(a, b, k, kb, init, output);
+                else
+                    Kernel6x128Blocked(a, b, k, kb, init, output);
+                break;
+            default:
+                KernelScalarBlocked(mr, a, b, k, kb, init, output);
+                break;
+        }
+    }
+
+    // The blocked kernels: per block the accumulators start at zero; after it they are added to the output (the sum of
+    // the earlier blocks), and after the last block init is added.
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private static void Kernel6x256Blocked(float** a, float* b, int k, int kb, float** init, float** output)
+    {
+        float* a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4 = a[4], a5 = a[5];
+        float* o0 = output[0], o1 = output[1], o2 = output[2], o3 = output[3], o4 = output[4], o5 = output[5];
+        for (int k0 = 0; k0 < k; k0 += kb)
+        {
+            Vector256<float> c00 = default, c01 = default, c10 = default, c11 = default, c20 = default, c21 = default,
+                c30 = default, c31 = default, c40 = default, c41 = default, c50 = default, c51 = default;
+            int end = Math.Min(k, k0 + kb);
+            for (int p = k0; p < end; p++, b += PackedMatrix.NR)
+            {
+                var b0 = Vector256.Load(b);
+                var b1 = Vector256.Load(b + 8);
+                var x = Vector256.Create(a0[p]); c00 = Fma(x, b0, c00); c01 = Fma(x, b1, c01);
+                x = Vector256.Create(a1[p]); c10 = Fma(x, b0, c10); c11 = Fma(x, b1, c11);
+                x = Vector256.Create(a2[p]); c20 = Fma(x, b0, c20); c21 = Fma(x, b1, c21);
+                x = Vector256.Create(a3[p]); c30 = Fma(x, b0, c30); c31 = Fma(x, b1, c31);
+                x = Vector256.Create(a4[p]); c40 = Fma(x, b0, c40); c41 = Fma(x, b1, c41);
+                x = Vector256.Create(a5[p]); c50 = Fma(x, b0, c50); c51 = Fma(x, b1, c51);
+            }
+            if (k0 > 0)
+            {
+                c00 = Vector256.Load(o0) + c00; c01 = Vector256.Load(o0 + 8) + c01;
+                c10 = Vector256.Load(o1) + c10; c11 = Vector256.Load(o1 + 8) + c11;
+                c20 = Vector256.Load(o2) + c20; c21 = Vector256.Load(o2 + 8) + c21;
+                c30 = Vector256.Load(o3) + c30; c31 = Vector256.Load(o3 + 8) + c31;
+                c40 = Vector256.Load(o4) + c40; c41 = Vector256.Load(o4 + 8) + c41;
+                c50 = Vector256.Load(o5) + c50; c51 = Vector256.Load(o5 + 8) + c51;
+            }
+            if (end == k)
+            {
+                c00 += Vector256.Load(init[0]); c01 += Vector256.Load(init[0] + 8);
+                c10 += Vector256.Load(init[1]); c11 += Vector256.Load(init[1] + 8);
+                c20 += Vector256.Load(init[2]); c21 += Vector256.Load(init[2] + 8);
+                c30 += Vector256.Load(init[3]); c31 += Vector256.Load(init[3] + 8);
+                c40 += Vector256.Load(init[4]); c41 += Vector256.Load(init[4] + 8);
+                c50 += Vector256.Load(init[5]); c51 += Vector256.Load(init[5] + 8);
+            }
+            c00.Store(o0); c01.Store(o0 + 8);
+            c10.Store(o1); c11.Store(o1 + 8);
+            c20.Store(o2); c21.Store(o2 + 8);
+            c30.Store(o3); c31.Store(o3 + 8);
+            c40.Store(o4); c41.Store(o4 + 8);
+            c50.Store(o5); c51.Store(o5 + 8);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private static void Kernel3x256Blocked(float** a, float* b, int k, int kb, float** init, float** output)
+    {
+        float* a0 = a[0], a1 = a[1], a2 = a[2];
+        float* o0 = output[0], o1 = output[1], o2 = output[2];
+        for (int k0 = 0; k0 < k; k0 += kb)
+        {
+            Vector256<float> c00 = default, c01 = default, c10 = default, c11 = default, c20 = default, c21 = default;
+            int end = Math.Min(k, k0 + kb);
+            for (int p = k0; p < end; p++, b += PackedMatrix.NR)
+            {
+                var b0 = Vector256.Load(b);
+                var b1 = Vector256.Load(b + 8);
+                var x = Vector256.Create(a0[p]); c00 = Fma(x, b0, c00); c01 = Fma(x, b1, c01);
+                x = Vector256.Create(a1[p]); c10 = Fma(x, b0, c10); c11 = Fma(x, b1, c11);
+                x = Vector256.Create(a2[p]); c20 = Fma(x, b0, c20); c21 = Fma(x, b1, c21);
+            }
+            if (k0 > 0)
+            {
+                c00 = Vector256.Load(o0) + c00; c01 = Vector256.Load(o0 + 8) + c01;
+                c10 = Vector256.Load(o1) + c10; c11 = Vector256.Load(o1 + 8) + c11;
+                c20 = Vector256.Load(o2) + c20; c21 = Vector256.Load(o2 + 8) + c21;
+            }
+            if (end == k)
+            {
+                c00 += Vector256.Load(init[0]); c01 += Vector256.Load(init[0] + 8);
+                c10 += Vector256.Load(init[1]); c11 += Vector256.Load(init[1] + 8);
+                c20 += Vector256.Load(init[2]); c21 += Vector256.Load(init[2] + 8);
+            }
+            c00.Store(o0); c01.Store(o0 + 8);
+            c10.Store(o1); c11.Store(o1 + 8);
+            c20.Store(o2); c21.Store(o2 + 8);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private static void Kernel6x128Blocked(float** a, float* b, int k, int kb, float** init, float** output)
+    {
+        float* a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4 = a[4], a5 = a[5];
+        for (int k0 = 0; k0 < k; k0 += kb)
+        {
+            Vector128<float> c00 = default, c01 = default, c02 = default, c03 = default, c10 = default, c11 = default, c12 = default, c13 = default,
+                c20 = default, c21 = default, c22 = default, c23 = default, c30 = default, c31 = default, c32 = default, c33 = default,
+                c40 = default, c41 = default, c42 = default, c43 = default, c50 = default, c51 = default, c52 = default, c53 = default;
+            int end = Math.Min(k, k0 + kb);
+            for (int p = k0; p < end; p++, b += PackedMatrix.NR)
+            {
+                var b0 = Vector128.Load(b); var b1 = Vector128.Load(b + 4); var b2 = Vector128.Load(b + 8); var b3 = Vector128.Load(b + 12);
+                var x = Vector128.Create(a0[p]); c00 = Fma(x, b0, c00); c01 = Fma(x, b1, c01); c02 = Fma(x, b2, c02); c03 = Fma(x, b3, c03);
+                x = Vector128.Create(a1[p]); c10 = Fma(x, b0, c10); c11 = Fma(x, b1, c11); c12 = Fma(x, b2, c12); c13 = Fma(x, b3, c13);
+                x = Vector128.Create(a2[p]); c20 = Fma(x, b0, c20); c21 = Fma(x, b1, c21); c22 = Fma(x, b2, c22); c23 = Fma(x, b3, c23);
+                x = Vector128.Create(a3[p]); c30 = Fma(x, b0, c30); c31 = Fma(x, b1, c31); c32 = Fma(x, b2, c32); c33 = Fma(x, b3, c33);
+                x = Vector128.Create(a4[p]); c40 = Fma(x, b0, c40); c41 = Fma(x, b1, c41); c42 = Fma(x, b2, c42); c43 = Fma(x, b3, c43);
+                x = Vector128.Create(a5[p]); c50 = Fma(x, b0, c50); c51 = Fma(x, b1, c51); c52 = Fma(x, b2, c52); c53 = Fma(x, b3, c53);
+            }
+            bool first = k0 == 0, last = end == k;
+            Flush128(output[0], init[0], first, last, c00, c01, c02, c03);
+            Flush128(output[1], init[1], first, last, c10, c11, c12, c13);
+            Flush128(output[2], init[2], first, last, c20, c21, c22, c23);
+            Flush128(output[3], init[3], first, last, c30, c31, c32, c33);
+            Flush128(output[4], init[4], first, last, c40, c41, c42, c43);
+            Flush128(output[5], init[5], first, last, c50, c51, c52, c53);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private static void Kernel3x128Blocked(float** a, float* b, int k, int kb, float** init, float** output)
+    {
+        float* a0 = a[0], a1 = a[1], a2 = a[2];
+        for (int k0 = 0; k0 < k; k0 += kb)
+        {
+            Vector128<float> c00 = default, c01 = default, c02 = default, c03 = default, c10 = default, c11 = default, c12 = default, c13 = default,
+                c20 = default, c21 = default, c22 = default, c23 = default;
+            int end = Math.Min(k, k0 + kb);
+            for (int p = k0; p < end; p++, b += PackedMatrix.NR)
+            {
+                var b0 = Vector128.Load(b); var b1 = Vector128.Load(b + 4); var b2 = Vector128.Load(b + 8); var b3 = Vector128.Load(b + 12);
+                var x = Vector128.Create(a0[p]); c00 = Fma(x, b0, c00); c01 = Fma(x, b1, c01); c02 = Fma(x, b2, c02); c03 = Fma(x, b3, c03);
+                x = Vector128.Create(a1[p]); c10 = Fma(x, b0, c10); c11 = Fma(x, b1, c11); c12 = Fma(x, b2, c12); c13 = Fma(x, b3, c13);
+                x = Vector128.Create(a2[p]); c20 = Fma(x, b0, c20); c21 = Fma(x, b1, c21); c22 = Fma(x, b2, c22); c23 = Fma(x, b3, c23);
+            }
+            bool first = k0 == 0, last = end == k;
+            Flush128(output[0], init[0], first, last, c00, c01, c02, c03);
+            Flush128(output[1], init[1], first, last, c10, c11, c12, c13);
+            Flush128(output[2], init[2], first, last, c20, c21, c22, c23);
+        }
+    }
+
+    /// <summary>A blocked kernel's row after a block: o = (first ? 0 : o) + block sum, then + init after the last block.</summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void Flush128(float* o, float* init, bool first, bool last, Vector128<float> c0, Vector128<float> c1, Vector128<float> c2, Vector128<float> c3)
+    {
+        if (!first)
+        {
+            c0 = Vector128.Load(o) + c0; c1 = Vector128.Load(o + 4) + c1; c2 = Vector128.Load(o + 8) + c2; c3 = Vector128.Load(o + 12) + c3;
+        }
+        if (last)
+        {
+            c0 += Vector128.Load(init); c1 += Vector128.Load(init + 4); c2 += Vector128.Load(init + 8); c3 += Vector128.Load(init + 12);
+        }
+        c0.Store(o); c1.Store(o + 4); c2.Store(o + 8); c3.Store(o + 12);
+    }
+
+    /// <summary>Any mr ≤ 6 rows without SIMD, blocked. Writes only the first mr outputs.</summary>
+    private static void KernelScalarBlocked(int mr, float** a, float* b, int k, int kb, float** init, float** output)
+    {
+        const int nr = PackedMatrix.NR;
+        var acc = stackalloc float[MR * nr];
+        for (int k0 = 0; k0 < k; k0 += kb)
+        {
+            new Span<float>(acc, mr * nr).Clear();
+            int end = Math.Min(k, k0 + kb);
+            for (int p = k0; p < end; p++, b += nr)
+                for (int r = 0; r < mr; r++)
+                {
+                    float x = a[r][p];
+                    float* row = acc + r * nr;
+                    for (int j = 0; j < nr; j++)
+                        row[j] += x * b[j];
+                }
+            for (int r = 0; r < mr; r++)
+                for (int j = 0; j < nr; j++)
+                {
+                    float sum = k0 > 0 ? output[r][j] + acc[r * nr + j] : acc[r * nr + j];
+                    output[r][j] = end == k ? sum + init[r][j] : sum;
+                }
+        }
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static Vector256<float> Fma(Vector256<float> a, Vector256<float> b, Vector256<float> c) => Vector256.MultiplyAddEstimate(a, b, c);
 
