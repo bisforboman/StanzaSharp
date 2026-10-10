@@ -7,6 +7,11 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-10
+
+1.0: the `StanzaSharp` package is fully managed, with no native or TorchSharp dependency; GPU and TorchSharp users add
+`StanzaSharp.Cuda`. From here on the public API follows Semantic Versioning: breaking changes only in a new major version.
+
 ### Changed
 - **The TorchSharp backend moved to its own package, `StanzaSharp.Cuda`.** `StanzaSharp` no longer depends on
   TorchSharp at all: the default install has no native code and no TorchSharp assemblies. For a GPU, or libtorch on the
@@ -265,7 +270,8 @@ output byte-identical to Python Stanza on the golden test data.
 - `ModelDownloader` fetches the models from Stanza's Hugging Face repository and checks their MD5s.
 - `Conllu.Read` and `Conllu.Write`, in Stanza's CoNLL-U dialect.
 
-[Unreleased]: https://github.com/bisforboman/StanzaSharp/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/bisforboman/StanzaSharp/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/bisforboman/StanzaSharp/compare/v0.6.0...v1.0.0
 [0.6.0]: https://github.com/bisforboman/StanzaSharp/compare/v0.5.1...v0.6.0
 [0.5.1]: https://github.com/bisforboman/StanzaSharp/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/bisforboman/StanzaSharp/compare/v0.4.2...v0.5.0
