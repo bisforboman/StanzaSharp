@@ -42,7 +42,7 @@ internal sealed class DependencyParser : IDisposable
         _net = net(config["charlm"]?.GetValue<bool>() == true);
     }
 
-    /// <summary><c>Load</c> (StanzaSharp.TorchSharp) on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
+    /// <summary><c>Load</c> (StanzaSharp.Cuda) on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
     public static DependencyParser LoadManaged(string basePath, Pretrain pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward)
     {
         var ckpt = Checkpoint.Load(basePath);

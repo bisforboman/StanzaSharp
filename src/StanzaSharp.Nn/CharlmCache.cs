@@ -14,7 +14,7 @@ namespace StanzaSharp.Nn;
 /// consumer reads the form its backend uses. Tensors read as arrays are copied per read (the caller owns the copy);
 /// arrays read as tensors are converted once, on the reader's device, and kept with the entry. A pipeline whose
 /// producer and consumers share a backend never converts. The tensor half (<c>TryAdd</c> and <c>TryGet</c> with
-/// tensors) is in StanzaSharp.TorchSharp; it stores an <see cref="ICharlmReps"/>.
+/// tensors) is in StanzaSharp.Cuda; it stores an <see cref="ICharlmReps"/>.
 /// </para>
 /// </remarks>
 internal sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords) : IDisposable
@@ -131,7 +131,7 @@ internal sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords) : 
     }
 }
 
-/// <summary>A backend's own form of a sentence's charlm representations (StanzaSharp.TorchSharp: two tensors).</summary>
+/// <summary>A backend's own form of a sentence's charlm representations (StanzaSharp.Cuda: two tensors).</summary>
 internal interface ICharlmReps : IDisposable
 {
     /// <summary>Copies of the [words, dim] representations, row-major.</summary>

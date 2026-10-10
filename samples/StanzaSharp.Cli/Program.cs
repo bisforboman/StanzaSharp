@@ -41,7 +41,7 @@ for (int i = 0; i < args.Length; i++)
             package = args[++i];
             break;
         case "--backend" when i + 1 < args.Length && args[i + 1] is "managed" or "torch":
-            backend = args[++i] == "managed" ? PipelineBackend.Managed : PipelineBackend.TorchSharp;
+            backend = args[++i] == "managed" ? PipelineBackend.Managed : CudaBackend.Cpu;
             break;
         case "-h" or "--help":
             Console.WriteLine(Usage);

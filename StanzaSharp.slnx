@@ -12,7 +12,7 @@
     <Project Path="src/StanzaSharp.Mwt/StanzaSharp.Mwt.csproj" />
     <Project Path="src/StanzaSharp.Ner/StanzaSharp.Ner.csproj" />
     <Project Path="src/StanzaSharp.Nn/StanzaSharp.Nn.csproj" />
-    <Project Path="src/StanzaSharp.TorchSharp/StanzaSharp.TorchSharp.csproj" />
+    <Project Path="src/StanzaSharp.Cuda/StanzaSharp.Cuda.csproj" />
     <Project Path="src/StanzaSharp.Pos/StanzaSharp.Pos.csproj" />
     <Project Path="src/StanzaSharp.Sentiment/StanzaSharp.Sentiment.csproj" />
     <Project Path="src/StanzaSharp.Tokenize/StanzaSharp.Tokenize.csproj" />

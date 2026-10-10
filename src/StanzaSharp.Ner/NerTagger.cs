@@ -45,7 +45,7 @@ internal sealed class NerTagger : IDisposable
         _net = net(_tags.Length, tagset, NeedsCharlm(ckpt));
     }
 
-    /// <summary><c>Load</c> (StanzaSharp.TorchSharp) on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
+    /// <summary><c>Load</c> (StanzaSharp.Cuda) on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
     public static NerTagger LoadManaged(string basePath, Pretrain pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward)
     {
         var ckpt = Checkpoint.Load(basePath);

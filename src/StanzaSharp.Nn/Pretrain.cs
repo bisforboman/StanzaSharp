@@ -9,7 +9,7 @@ namespace StanzaSharp.Nn;
 /// <remarks>
 /// Two forms: for the managed backend a plain float array (<see cref="LoadManaged"/>), which touches no TorchSharp type
 /// and so loads no native libtorch; or a TorchSharp tensor (<c>Pretrain.Load</c> and <c>Embeddings</c>, extensions in
-/// StanzaSharp.TorchSharp), held in <see cref="Native"/>.
+/// StanzaSharp.Cuda), held in <see cref="Native"/>.
 /// </remarks>
 internal sealed class Pretrain : IDisposable
 {
@@ -58,7 +58,7 @@ internal sealed class Pretrain : IDisposable
     public void Dispose() => Native?.Dispose();
 }
 
-/// <summary>A backend's own form of the pretrain vectors (StanzaSharp.TorchSharp: a tensor).</summary>
+/// <summary>A backend's own form of the pretrain vectors (StanzaSharp.Cuda: a tensor).</summary>
 internal interface IPretrainVectors : IDisposable
 {
     /// <summary>The [count, dim] floats, row-major, on the CPU (valid while this object is).</summary>

@@ -54,7 +54,7 @@ internal sealed class ConstituencyParser : IDisposable
         _initialConstituents = new StackNode<Constituent>(new Constituent(null, null, null), null, _net.ConstituentStart);
     }
 
-    /// <summary><c>Load</c> (StanzaSharp.TorchSharp) on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
+    /// <summary><c>Load</c> (StanzaSharp.Cuda) on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
     public static ConstituencyParser LoadManaged(string basePath, Pretrain pretrain, ManagedCharLanguageModel charlmForward, ManagedCharLanguageModel charlmBackward)
     {
         if (!charlmForward.IsForward || charlmBackward.IsForward)

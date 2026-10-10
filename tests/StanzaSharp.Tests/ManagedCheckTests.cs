@@ -24,7 +24,7 @@ public class ManagedCheckTests(ITestOutputHelper output)
         Assert.True(File.Exists(app), $"{app} not found; build StanzaSharp.slnx");
 
         // Left by a run of the app with libtorch in the NuGet cache (TorchSharp's fallback): remove it, then nothing
-        // of libtorch may be on disk (only TorchSharp's own LibTorchSharp, which the managed TorchSharp package carries).
+        // of libtorch may be on disk.
         if (Directory.Exists(Path.Combine(bin, "cpu")))
             Directory.Delete(Path.Combine(bin, "cpu"), recursive: true);
         string[] prefixes = ["torch_cpu", "torch.", "libtorch_cpu", "libtorch.", "c10.", "libc10."];
@@ -51,7 +51,7 @@ public class ManagedCheckTests(ITestOutputHelper output)
             output.WriteLine(stdout);
             output.WriteLine(stderr.Result);
             Assert.True(process.ExitCode == 0, $"exit code {process.ExitCode}\n{stdout}\n{stderr.Result}");
-            Assert.Contains("Native torch modules loaded: none", stdout);
+            Assert.Contains("Torch modules loaded: none", stdout);
             Assert.Contains("default: processed", stdout);
             Assert.Contains("default_fast: processed", stdout);
             Assert.False(Directory.Exists(Path.Combine(bin, "cpu")), "TorchSharp tried to consolidate libtorch next to the app");

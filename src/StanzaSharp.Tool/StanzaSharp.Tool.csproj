@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <!-- The stanzasharp .NET tool: model downloads (ModelDownloader) without native libtorch. -->
   <PropertyGroup>
@@ -19,13 +19,4 @@
     <None Include="..\..\NOTICE" Pack="true" PackagePath="/" />
     <None Include="README.md" Pack="true" PackagePath="/" />
   </ItemGroup>
-
-  <!-- No native files (TorchSharp's LibTorchSharp, SkiaSharp's): the downloader never calls into them. -->
-  <Target Name="RemoveNativeAssets" AfterTargets="ResolvePackageAssets">
-    <ItemGroup>
-      <NativeCopyLocalItems Remove="@(NativeCopyLocalItems)" />
-      <RuntimeTargetsCopyLocalItems Remove="@(RuntimeTargetsCopyLocalItems)" />
-    </ItemGroup>
-  </Target>
-
 </Project>

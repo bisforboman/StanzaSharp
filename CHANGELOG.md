@@ -7,6 +7,17 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 
 ## [Unreleased]
 
+### Changed
+- **The TorchSharp backend moved to its own package, `StanzaSharp.Cuda`.** `StanzaSharp` no longer depends on
+  TorchSharp at all: the default install has no native code and no TorchSharp assemblies. For a GPU, or libtorch on the
+  CPU, add `StanzaSharp.Cuda` and the native libtorch (`TorchSharp-cuda-windows`, `TorchSharp-cuda-linux` or
+  `TorchSharp-cpu`):
+  - `PipelineBackend.TorchSharp` → `CudaBackend.Cpu`.
+  - `PipelineOptions { Device = torch.CUDA, DisableTf32 = true }` → `PipelineOptions { Backend = CudaBackend.Create(disableTf32: true) }`
+    (`deviceIndex` picks another GPU).
+  - `PipelineOptions.Device` and `PipelineOptions.DisableTf32` (obsolete since 0.5) are removed.
+  - The `STANZA001` version check and `StanzaSharpTrimNative` come with `StanzaSharp.Cuda` now.
+
 ## [0.6.0] - 2026-10-10
 
 ### Added

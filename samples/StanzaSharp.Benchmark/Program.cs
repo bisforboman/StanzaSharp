@@ -97,7 +97,7 @@ if (backend == Backend.Managed && (device != null || noTf32))
     Console.Error.WriteLine("--device and --no-tf32 need --backend torch");
     return 2;
 }
-var pipelineBackend = backend == Backend.Managed ? PipelineBackend.Managed : PipelineBackend.TorchSharp;
+var pipelineBackend = backend == Backend.Managed ? PipelineBackend.Managed : new PipelineBackend("TorchSharp", () => new TorchSharpModels(device, noTf32));
 if (threads > 0 && backend == Backend.TorchSharp)
     torch.set_num_threads(threads);
 if (threads > 0 && backend == Backend.Managed)
@@ -109,9 +109,7 @@ if (perCall > 0)
 {
     // A service calling Process once per short text: the fixed cost per call (docs/performance.md, "Per-call cost").
     var stageLog = new StageLogger();
-#pragma warning disable CS0618 // Device: the TorchSharp backend's device until StanzaSharp.Cuda
-    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Processors = processors, Backend = pipelineBackend, Device = device, TrimNativeHeap = !noTrim, Logger = concurrent > 0 ? null : stageLog });
-#pragma warning restore CS0618
+    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Processors = processors, Backend = pipelineBackend, TrimNativeHeap = !noTrim, Logger = concurrent > 0 ? null : stageLog });
     var texts = perCallText != null ? [perCallText] : BuildShortSentences();
     string header = $"C# StanzaSharp ({package}, {backend} backend), " +
                     (backend == Backend.Managed ? $"managed threads {ManagedThreads.Count}" : $"torch threads {torch.get_num_threads()}");
@@ -160,9 +158,7 @@ if (perCall > 0)
 if (documents > 0)
 {
     // Many short texts: one Process call per text vs one bulk call (Pipeline.Process(IEnumerable<string>)).
-#pragma warning disable CS0618 // Device: the TorchSharp backend's device until StanzaSharp.Cuda
-    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Backend = pipelineBackend, Device = device, TrimNativeHeap = !noTrim });
-#pragma warning restore CS0618
+    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Backend = pipelineBackend, TrimNativeHeap = !noTrim });
     var texts = BuildDocuments(documents);
     nlp.Process(texts.Take(50)); // warm-up
     var watch = Stopwatch.StartNew();
@@ -269,12 +265,12 @@ string Model(string processor) => Path.Combine(modelDir, processor, models[proce
 var clock = Stopwatch.StartNew();
 using var tokenizer = Tokenizer.Load(Model("tokenize"), device, backend);
 using var mwt = MwtExpander.Load(Model("mwt"), device, backend);
-using var pretrain = backend == Backend.Managed // every processor is managed then (Pipeline.ManagedProcessors)
+using var pretrain = backend == Backend.Managed
     ? Pretrain.LoadManaged(Path.Combine(modelDir, Pipeline.PretrainPath))
     : Pretrain.Load(Path.Combine(modelDir, Pipeline.PretrainPath), device);
 // As Pipeline does: managed processors get the managed charlms (their _nocharlm models none); each backend's charlms
 // are loaded only if a processor on it reads them.
-bool Managed(string processor) => backend == Backend.Managed && Pipeline.ManagedProcessors.Contains(processor);
+bool Managed(string processor) => backend == Backend.Managed;
 bool ManagedCharlm(string processor) => Managed(processor) && models[processor].EndsWith("_charlm");
 bool torchCharlms = models.Any(kv => kv.Value.EndsWith("_charlm") && !Managed(kv.Key));
 using var charlmForward = torchCharlms ? CharLanguageModel.Load(Path.Combine(modelDir, Pipeline.ForwardCharlmPath), device) : null;

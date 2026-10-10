@@ -24,8 +24,8 @@ await ModelDownloader.DownloadAsync(modelDir, new Progress<string>(line => Conso
 //    await ModelDownloader.DownloadAsync(modelDir, fast);
 //    Pipeline.Load(modelDir, fast);
 //    The models run on the managed backend (plain C#, no native libraries). The TorchSharp backend gives the same
-//    output; it needs the TorchSharp-cpu package (or TorchSharp-cuda-* for a GPU, see docs/gpu.md):
-//    Pipeline.Load(modelDir, new PipelineOptions { Backend = PipelineBackend.TorchSharp });
+//    output; it needs the StanzaSharp.Cuda and TorchSharp-cpu packages (TorchSharp-cuda-* for a GPU, see docs/gpu.md):
+//    Pipeline.Load(modelDir, new PipelineOptions { Backend = CudaBackend.Cpu });
 using var nlp = Pipeline.Load(modelDir);
 
 // 3. Process text. Blank lines separate paragraphs; sentences are found automatically. Process is thread-safe, and

@@ -2,7 +2,7 @@
 //   StanzaSharp.ManagedCheck MODEL_DIR GOLDEN_DIR
 // For each package it loads a pipeline on the default backend (managed; with Threads, a Logger, VerifyChecksums for .pt
 // models), checks that a canceled Process throws, compares corpus.txt's CoNLL-U with the golden file byte for byte, and
-// at the end fails if any native torch module (LibTorchSharp, torch_cpu, c10, ...) is loaded. Public API only, so that
+// at the end fails if any torch module (TorchSharp, LibTorchSharp, torch_cpu, c10, ...) is loaded. Public API only, so that
 // tools/verify-package.ps1 -Managed compiles this same file against the packed package.
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
@@ -41,22 +41,20 @@ foreach (var (package, expected) in new[] { ("default", "pipeline.conllu"), ("de
         noSsplit.Process(corpus);
 }
 
-// Every loaded module but the managed TorchSharp and StanzaSharp.TorchSharp assemblies (mapped like modules on Windows and
-// Linux).
-// Every check above already proves it where libtorch is absent (TorchSharp throws when it can't load it); the module
-// list also catches a native load where it is present.
+// Since 1.0 the StanzaSharp package has no TorchSharp at all (it is in StanzaSharp.Cuda), so no torch module of any kind,
+// managed or native, may be loaded. Every check above already proves it where libtorch is absent (TorchSharp throws when
+// it can't load it); the module list also catches a load where it is present.
 var natives = Modules()
-    .Where(m => !m.ModuleName.Equals("TorchSharp.dll", StringComparison.OrdinalIgnoreCase)
-        && !m.ModuleName.Equals("StanzaSharp.TorchSharp.dll", StringComparison.OrdinalIgnoreCase)
-        && (m.ModuleName.Contains("torch", StringComparison.OrdinalIgnoreCase) || m.ModuleName.StartsWith("c10", StringComparison.OrdinalIgnoreCase)
-            || m.ModuleName.StartsWith("libc10", StringComparison.OrdinalIgnoreCase)))
+    .Where(m => m.ModuleName.Contains("torch", StringComparison.OrdinalIgnoreCase) || m.ModuleName.StartsWith("c10", StringComparison.OrdinalIgnoreCase)
+        || m.ModuleName.StartsWith("libc10", StringComparison.OrdinalIgnoreCase))
     .Select(m => m.FileName)
     .Distinct(StringComparer.OrdinalIgnoreCase)
     .ToList();
-Console.WriteLine($"Native torch modules loaded: {(natives.Count == 0 ? "none" : string.Join(", ", natives))}");
+Console.WriteLine($"Torch modules loaded: {(natives.Count == 0 ? "none" : string.Join(", ", natives))}");
 if (natives.Count > 0)
-    failures += Fail("native torch code was loaded");
-Console.WriteLine($"TorchSharp assembly loaded: {AppDomain.CurrentDomain.GetAssemblies().Any(a => a.GetName().Name == "TorchSharp")}");
+    failures += Fail("torch code was loaded");
+if (AppDomain.CurrentDomain.GetAssemblies().Any(a => a.GetName().Name is "TorchSharp" or "StanzaSharp.Cuda"))
+    failures += Fail("a TorchSharp assembly was loaded");
 Console.WriteLine(failures == 0 ? "OK" : $"{failures} failure(s)");
 return failures == 0 ? 0 : 1;
 
