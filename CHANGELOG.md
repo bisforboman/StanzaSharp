@@ -30,6 +30,9 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
   bit. One call on a 5–25-word sentence takes 27.9 ms instead of 30.0 (p90 44.6 instead of 50.7) on 8 threads, and
   83 ms instead of 94 (p90 141 instead of 170) on 1 thread, on a Ryzen 7 5800X; Python Stanza takes 189 and 319 ms.
   Details, and guidance on bulk processing and concurrent callers, in docs/performance.md (round 7).
+- The managed backend is about 30% faster on Arm64 (Windows on Arm, Linux Arm64, Apple Silicon): its matrix kernel
+  now multiplies by vector element instead of broadcasting each value first, reaching 86–89% of the NEON peak instead
+  of 58–60% on a Neoverse N2. Results are bitwise unchanged.
 
 ## [0.5.1] - 2026-10-09
 
