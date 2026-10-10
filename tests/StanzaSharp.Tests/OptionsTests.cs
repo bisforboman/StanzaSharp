@@ -161,4 +161,27 @@ public class ManagedThreadsOptionTests
             Nn.Managed.ManagedThreads.Count = old;
         }
     }
+
+    [ModelFact]
+    public void MaxConcurrentCalls_QueuesExtraCalls_AndTheWaitCanBeCanceled()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            Pipeline.Load(Repo.Models, new PipelineOptions { Processors = Processor.Tokenize, MaxConcurrentCalls = 0 }));
+
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos", MaxConcurrentCalls = 1 });
+        var corpus = File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt"));
+        var big = string.Join("\n\n", Enumerable.Repeat(corpus, 20));
+        var expected = Conllu.Write(nlp.Process("Hi there."));
+
+        // A long call holds the only slot; a short call then waits for it, so its token cancels the wait.
+        // (Without the limit the short call would finish in milliseconds.)
+        var holder = Task.Run(() => nlp.Process(big));
+        Thread.Sleep(300);
+        Assert.False(holder.IsCompleted, "the long call should still be running");
+        using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(200));
+        Assert.Throws<OperationCanceledException>(() => nlp.Process("Hi there.", cts.Token));
+
+        holder.Wait();
+        Assert.Equal(expected, Conllu.Write(nlp.Process("Hi there.")));
+    }
 }

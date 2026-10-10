@@ -165,8 +165,8 @@ internal sealed unsafe class ManagedNerNet : INerNet
         var backwardReps = ArrayPool<float>.Shared.Rent(words * dim);
         try
         {
-            _charlmForward.BuildCharRepresentation(texts, forwardReps, dim, ct);
-            _charlmBackward!.BuildCharRepresentation(texts, backwardReps, dim, ct);
+            // A single sentence the sentiment classifier ran alone (multi-word tokens) is taken from there.
+            ManagedCharLanguageModel.BuildBoth(_charlmForward, _charlmBackward!, texts, forwardReps, backwardReps, charlms, ct);
             int offset = 0;
             foreach (int i in missing)
             {

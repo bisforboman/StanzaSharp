@@ -215,7 +215,7 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
                     c.AsSpan(r * ldc, _transformed).CopyTo(x.AsSpan(r * inSize + charCol));
             }
             else
-                CharlmFeatures(batch.Texts, packedRow, x, charCol, ct);
+                CharlmFeatures(batch, packedRow, x, charCol, ct);
             ct.ThrowIfCancellationRequested();
 
             _lstm.Forward(x.AsSpan(0, rows * inSize), batch.Lengths, a.AsSpan(0, rows * _lstm.OutputSize), ct);
@@ -232,17 +232,30 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
     }
 
     /// <summary>Both charlms over "\n" (ROOT) + each sentence's words, into each word's input row.</summary>
-    private void CharlmFeatures(IReadOnlyList<IReadOnlyList<string>> texts, int[] packedRow, float[] x, int col, CancellationToken ct)
+    private void CharlmFeatures(DepparseBatch batch, int[] packedRow, float[] x, int col, CancellationToken ct)
     {
         int dim = _charlmForward!.HiddenDim, rows = packedRow.Length;
-        var sentences = texts.Select(t => (IReadOnlyList<string>)t.Prepend("\n").ToList()).ToList();
+        var sentences = batch.Texts.Select(t => (IReadOnlyList<string>)t.Prepend("\n").ToList()).ToList();
         var reps = ArrayPool<float>.Shared.Rent(rows * dim);
+        // A sentence alone here that the tagger also ran alone: backward, the words come first ("\n" + words reversed is
+        // the tagger's sequence, then ROOT), so run on from the tagger's final state over ROOT only. One row per step in
+        // both runs: the same bits as running it all again.
+        CharlmCache.Alone? tagger = null;
+        bool reuse = batch.Texts.Count == 1 && batch.Charlms != null && batch.Charlms.TryGetAlone(batch.Texts[0], out tagger);
         try
         {
             foreach (var (charlm, at) in new[] { (_charlmForward, col), (_charlmBackward!, col + dim) })
             {
                 ct.ThrowIfCancellationRequested();
-                charlm.BuildCharRepresentation(sentences, reps, dim, ct);
+                if (reuse && charlm == _charlmBackward)
+                    fixed (float* pr = reps)
+                    {
+                        // Rows are words in order: ROOT, then the sentence's words (the first word's row is the final h).
+                        _charlmBackward.Continue(tagger!.Backward.AsSpan(0, dim).ToArray(), tagger.BackwardFinalC, ["\n"], pr, dim, ct);
+                        tagger.Backward.CopyTo(reps.AsSpan(dim));
+                    }
+                else
+                    charlm.BuildCharRepresentation(sentences, reps, dim, ct);
                 for (int k = 0; k < rows; k++)
                     reps.AsSpan(k * dim, dim).CopyTo(x.AsSpan(packedRow[k] * _inputSize + at));
             }

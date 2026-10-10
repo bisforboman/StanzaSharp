@@ -6,10 +6,11 @@ namespace StanzaSharp.Depparse;
 
 /// <summary>
 /// One parser batch: row b of each [size, width] id array is ROOT (id 3) then sentence b's words, 0 past its length.
-/// <see cref="Texts"/> are the words after simplify_punct, without ROOT.
+/// <see cref="Texts"/> are the words after simplify_punct, without ROOT. <see cref="Charlms"/> (optional): the tagger's charlm
+/// outputs (see <see cref="DependencyParser.Process"/>).
 /// </summary>
 internal sealed record DepparseBatch(IReadOnlyList<IReadOnlyList<string>> Texts, int Width, long[] Lengths,
-    long[] Word, long[] Lemma, long[] Upos, long[] Xpos, long[] Pretrained);
+    long[] Word, long[] Lemma, long[] Upos, long[] Xpos, long[] Pretrained, CharlmCache? Charlms = null);
 
 /// <summary>
 /// A batch's scores, [size, width, width] with [b, i, j] = dependent i, head j (0 is ROOT):
