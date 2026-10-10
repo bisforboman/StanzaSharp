@@ -174,7 +174,8 @@ internal sealed class Tokenizer : IDisposable
         {
             int end = tokens[i].EndChar!.Value;
             int next = i + 1 < tokens.Count ? tokens[i + 1].StartChar!.Value : text.Length;
-            tokens[i].SpaceAfter = text[end..next];
+            // One shared " " for the usual case, not a new string per token (24 bytes each on large documents).
+            tokens[i].SpaceAfter = text.AsSpan(end, next - end) is " " ? " " : text[end..next];
         }
         if (tokens.Count > 0)
             tokens[0].SpacesBefore = text[..tokens[0].StartChar!.Value];

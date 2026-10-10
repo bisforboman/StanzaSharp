@@ -64,7 +64,7 @@ public sealed class Token
     public string SpacesBefore { get; set; } = "";
 
     /// <summary>The syntactic words: one for most tokens, several for a multi-word token ("do", "n't").</summary>
-    public List<Word> Words { get; } = [];
+    public List<Word> Words { get; } = new(1); // most tokens are one word: 32 bytes instead of an empty list growing to 4
 
     /// <summary>Whether the token expands to more than one word.</summary>
     public bool IsMultiWord => Words.Count > 1;

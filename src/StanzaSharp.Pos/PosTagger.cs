@@ -68,6 +68,7 @@ internal sealed class PosTagger : IDisposable
         // Batched like Stanza's LengthLimitedBatchSampler: in document order, at most _batchSize sentences
         // and MaximumTokens words per batch, and a longer sentence alone.
         var sentences = doc.Sentences.Select(s => (Sentence: s, Words: s.Words.ToList())).Where(x => x.Words.Count > 0).ToList();
+        var featStrings = new Dictionary<string, string>(); // one string per distinct feats value, not one per word
         for (int b = 0, end; b < sentences.Count; b = end)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -76,7 +77,7 @@ internal sealed class PosTagger : IDisposable
                 words += sentences[end].Words.Count;
             var batch = sentences.GetRange(b, end - b);
             var tags = Predict(batch.Select(x => (IReadOnlyList<string>)x.Words.Select(w => w.Text).ToList()).ToList(), out _,
-                charlms, charlms == null ? null : batch.Select(x => (Sentence?)x.Sentence).ToList(), cancellationToken);
+                charlms, charlms == null ? null : batch.Select(x => (Sentence?)x.Sentence).ToList(), cancellationToken, featStrings);
             for (int i = 0; i < batch.Count; i++)
                 for (int j = 0; j < batch[i].Words.Count; j++)
                     (batch[i].Words[j].Upos, batch[i].Words[j].Xpos, batch[i].Words[j].Feats) = tags[i][j];
@@ -88,8 +89,10 @@ internal sealed class PosTagger : IDisposable
     /// (if not null), when simplify_punct left its words unchanged (the readers see the words as written).</param>
     /// <param name="cancellationToken">A batch is up to 5000 words (seconds on a slow CPU), so this is checked after each
     /// charlm pass (or the character model), between LSTM layers and between the heads.</param>
+    /// <param name="featStrings">If given, equal feats strings are shared through it (memory on large documents).</param>
     internal List<(string Upos, string Xpos, string? Feats)[]> Predict(IReadOnlyList<IReadOnlyList<string>> sentences, out List<float[]> uposLogits,
-        CharlmCache? charlms = null, IReadOnlyList<Sentence?>? cacheKeys = null, CancellationToken cancellationToken = default)
+        CharlmCache? charlms = null, IReadOnlyList<Sentence?>? cacheKeys = null, CancellationToken cancellationToken = default,
+        Dictionary<string, string>? featStrings = null)
     {
         var original = sentences;
         sentences = sentences.Select(s => (IReadOnlyList<string>)s.Select(SimplifyPunct).ToList()).ToList();
@@ -116,7 +119,12 @@ internal sealed class PosTagger : IDisposable
             var tags = new (string, string, string?)[sentences[i].Count];
             uposLogits.Add(output.UposScores[(k * nUpos)..((k + tags.Length) * nUpos)]);
             for (int j = 0; j < tags.Length; j++, k++)
-                tags[j] = (_upos[output.Upos[k]], _xpos[output.Xpos[k]], FeatsString(output.Feats, k));
+            {
+                var feats = FeatsString(output.Feats, k);
+                if (feats != null && featStrings != null)
+                    feats = featStrings.TryAdd(feats, feats) ? feats : featStrings[feats];
+                tags[j] = (_upos[output.Upos[k]], _xpos[output.Xpos[k]], feats);
+            }
             result.Add(tags);
         }
         return result;
