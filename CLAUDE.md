@@ -316,6 +316,26 @@ Python's float `repr` in the JSON, key collisions (`key#2`) and numpy turning 0-
 shape `[1]`. `tests/golden/pt/` holds tiny fixtures in both formats with their converter output
 (`make_golden.py --pt-only` regenerates them).
 
+Failure contract (model files may come from anywhere): `Checkpoint.Load` and every later tensor lookup or read
+either succeed or throw `InvalidDataException` for a malformed, truncated or hostile file; `NotSupportedException`
+only for a well-formed big-endian `.pt`; OS errors (missing file) stay `IOException`s. Time, memory and stack are
+bounded by the file's size. The limits that make it so:
+- Unpickler: MARK records a stack height (O(1)); items below an open MARK can't be popped; dict keys are scalars only
+  (str/int/bool/float; a nested-tuple key was hashed recursively); a length is checked against the stream before
+  anything is allocated.
+- Splitter: JSON depth ≤ 60 (`JsonNode.Parse` reads 64; also stops cyclic lists) and JSON size ≤ 16 × the file + 1 MB
+  (the memo lets one object be referenced many times, and the JSON copies it each time).
+- Storages and views: sizes compared by division, never `numel * size` (overflow); a storage key listed once; a tensor
+  no larger than its storage (bounds stride-0 broadcasts) with non-negative sizes/strides/offset, its extent checked
+  step by step before it can overflow. Zip entries must be stored uncompressed (as torch.save writes them) and fit in
+  the file, so no claimed size is allocated.
+- safetensors: header ≤ 100 MB (the library's limit), known dtype, `numel × size == end - begin`, and the tensors tile
+  the data section exactly (no gaps, overlaps or trailing bytes), as the safetensors library checks.
+- `CheckpointFuzzTests`: seeded mutations (bit flips, truncations, extreme ints, inserted/deleted spans) of the fixtures
+  and three small Stanza checkpoints in CI (~10 s), plus crafted inputs for each bug. Longer runs:
+  `STANZASHARP_FUZZ_ITERATIONS`, `STANZASHARP_FUZZ_SEED`, `STANZASHARP_FUZZ_MODELS=all`, `STANZASHARP_FUZZ_REPORT=FILE`.
+  It does not validate the model code's reading of the JSON (a missing config key there is still a model-specific error).
+
 ## Checkpoint findings
 
 What the English checkpoints actually use (Stanza 1.15.0). Port only these paths.
