@@ -142,7 +142,8 @@ jobs:
         run: |
           ls TestResults/*.trx
           # Skipped tests are outcome="NotExecuted" (the Counters' notExecuted stays 0 for them).
-          if grep -q 'outcome="NotExecuted"' TestResults/*.trx; then
+          # Run_PythonStanza_* needs tools/.venv, which CI doesn't have (`stanzasharp compare` against Python Stanza).
+          if grep -h 'outcome="NotExecuted"' TestResults/*.trx | grep -qv 'Run_PythonStanza_'; then
             echo "::error::Tests were skipped; the models in models/stanza/en or models/converted/en were not found."
             exit 1
           fi
@@ -294,7 +295,8 @@ jobs:
         if: needs.changes.outputs.code != 'false'
         run: |
           ls TestResults/*.trx
-          if grep -q 'outcome="NotExecuted"' TestResults/*.trx; then
+          # Run_PythonStanza_* needs tools/.venv, which CI doesn't have (`stanzasharp compare` against Python Stanza).
+          if grep -h 'outcome="NotExecuted"' TestResults/*.trx | grep -qv 'Run_PythonStanza_'; then
             echo "::error::Tests were skipped; the models in models/stanza/en were not found."
             exit 1
           fi
@@ -376,7 +378,8 @@ jobs:
         if: needs.changes.outputs.code != 'false'
         run: |
           ls TestResults/*.trx
-          if grep -q 'outcome="NotExecuted"' TestResults/*.trx; then
+          # Run_PythonStanza_* needs tools/.venv, which CI doesn't have (`stanzasharp compare` against Python Stanza).
+          if grep -h 'outcome="NotExecuted"' TestResults/*.trx | grep -qv 'Run_PythonStanza_'; then
             echo "::error::Tests were skipped; the models in models/stanza/en were not found."
             exit 1
           fi

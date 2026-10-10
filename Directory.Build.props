@@ -25,7 +25,7 @@
     <WarningsAsErrors>$(WarningsAsErrors);CS1591</WarningsAsErrors>
   </PropertyGroup>
   <ItemGroup Condition="'$([System.IO.Path]::GetFileName($([System.IO.Path]::GetDirectoryName($(MSBuildProjectDirectory)))))' == 'src'">
-    <InternalsVisibleTo Include="StanzaSharp;StanzaSharp.Cuda;StanzaSharp.Nn;StanzaSharp.Tokenize;StanzaSharp.Mwt;StanzaSharp.Pos;StanzaSharp.Lemma;StanzaSharp.Constituency;StanzaSharp.Depparse;StanzaSharp.Ner;StanzaSharp.Sentiment"
+    <InternalsVisibleTo Include="StanzaSharp;StanzaSharp.Cuda;StanzaSharp.Nn;StanzaSharp.Tokenize;StanzaSharp.Mwt;StanzaSharp.Pos;StanzaSharp.Lemma;StanzaSharp.Constituency;StanzaSharp.Depparse;StanzaSharp.Ner;StanzaSharp.Sentiment;StanzaSharp.Tool"
                         Exclude="$(AssemblyName)" />
     <InternalsVisibleTo Include="StanzaSharp.Tests;StanzaSharp.Benchmark" />
   </ItemGroup>

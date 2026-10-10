@@ -115,6 +115,32 @@ the shared word vectors and character models when used.
 A directory you already have from Python Stanza (`<processor>/<name>.pt`, e.g. `~/stanza_resources/en`)
 works too.
 
+### Check it yourself
+
+`stanzasharp compare FILE` runs Python Stanza 1.15.0 and StanzaSharp on your own text, with the same model files
+(MD5-checked), and tells you whether the CoNLL-U output is identical or shows the first difference. It needs Python
+with `pip install stanza==1.15.0`:
+
+```
+stanzasharp download models/stanza/en
+stanzasharp compare my-text.txt                   # --package, --processors, --models DIR, --python PATH
+```
+```
+Stanza 1.15.0 (Python) and StanzaSharp on my-text.txt
+  package:     default (tokenize,mwt,pos,lemma,constituency,depparse,sentiment,ner)
+  models:      /home/me/models/stanza/en: the same 11 files on both sides, MD5s match Stanza 1.15.0's
+  text:        10 sentences, 140 words
+  Stanza:      loaded in 10.4 s, processed in 25.3 s
+  StanzaSharp: loaded in 5.8 s, processed in 14.4 s
+
+Identical: the CoNLL-U output is the same, byte for byte.
+```
+
+Exit code 0 means identical, 1 different, 2 a usage or setup problem (no Python, wrong Stanza version, missing models).
+After characters outside the BMP (emoji, for example), StanzaSharp's `start_char`/`end_char` count UTF-16 code units
+and Stanza's count code points. `compare` converts StanzaSharp's offsets to code points before comparing and says
+that it did.
+
 ## Usage
 
 ```csharp
@@ -347,7 +373,8 @@ Windows x64 and Arm64, macOS).
   skipped. Then `tools/verify-package.ps1` packs StanzaSharp and StanzaSharp.Cuda and runs two fresh apps that
   reference them: one with only StanzaSharp (the default install; it must reproduce the golden CoNLL-U with nothing of
   TorchSharp in it), one with StanzaSharp.Cuda and `TorchSharp-cpu` on `CudaBackend.Cpu` (no `STANZA` build warning allowed, with `StanzaSharpTrimNative`). Then
-  `tools/verify-tool.ps1` installs the `stanzasharp` tool from a local feed and downloads `tokenize,mwt` with it. The
+  `tools/verify-tool.ps1` installs the `stanzasharp` tool from a local feed, downloads `tokenize,mwt` with it and
+  checks `compare`'s setup errors (CI has no Python Stanza, so the no-skip checks allow `Run_PythonStanza_*`). The
   original and converted models are cached, keyed on `ModelDownloader.cs`, `tools/requirements.txt` and
   `tools/stanza_convert.py`.
 - `docker` runs `tools/verify-docker.sh`: it packs StanzaSharp, builds [samples/docker](samples/docker/Dockerfile) on

@@ -1,6 +1,7 @@
 <#
 Packs the StanzaSharp.Tool package, installs it from that local feed into a fresh tool path the way a user would
-(dotnet tool install), checks that it carries no native files, and downloads a small set of models with it.
+(dotnet tool install), checks that it carries no native files, downloads a small set of models with it, and checks that
+compare reports a missing Python as a setup error (CI has no Python Stanza; CompareCommandTests runs it locally).
 
   pwsh tools/verify-tool.ps1 [-Processors tokenize,mwt]
 #>
@@ -13,7 +14,7 @@ $version = "0.0.0-verify.$([DateTime]::UtcNow.ToString('yyyyMMddHHmmss'))"
 $work = Join-Path ([IO.Path]::GetTempPath()) "stanzasharp-tool-$version"
 $feed = Join-Path $work 'feed'
 $toolPath = Join-Path $work 'tools'
-$models = Join-Path $work 'models'
+$models = Join-Path $work 'models/en' # compare needs a folder named en, like Stanza
 
 try {
     dotnet pack (Join-Path $root 'src/StanzaSharp.Tool') -c Release -p:Version=$version -o $feed --nologo
@@ -38,6 +39,10 @@ try {
     # Bad arguments exit with 2.
     & $command download $models --nonsense 2>$null
     if ($LASTEXITCODE -ne 2) { throw "Expected exit code 2 for a bad argument, got $LASTEXITCODE" }
+
+    # compare: the embedded Python script is written out and a missing Python is a setup error (2), not a crash.
+    & $command compare (Join-Path $root 'tests/golden/corpus.txt') --models $models --processors $Processors --python no-such-python 2>$null
+    if ($LASTEXITCODE -ne 2) { throw "Expected exit code 2 for compare without Python, got $LASTEXITCODE" }
     $global:LASTEXITCODE = 0 # the expected 2 would otherwise become the script's exit code
     Write-Host "StanzaSharp.Tool $version installs and downloads models."
 }

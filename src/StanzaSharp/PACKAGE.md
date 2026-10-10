@@ -77,6 +77,10 @@ dotnet tool install -g StanzaSharp.Tool
 stanzasharp download models/stanza/en --processors tokenize,mwt,pos,lemma   # --package default_fast for that package
 ```
 
+**Check it yourself:** `stanzasharp compare my-text.txt` runs Python Stanza 1.15.0 (`pip install stanza==1.15.0`) and
+StanzaSharp on your text with the same model files and reports whether the CoNLL-U output is identical, or shows the
+first difference, with both sides' timings.
+
 ## Use
 
 ```csharp

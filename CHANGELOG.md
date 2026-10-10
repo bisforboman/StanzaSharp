@@ -7,6 +7,13 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 
 ## [Unreleased]
 
+### Added
+- `stanzasharp compare FILE [--package NAME] [--processors LIST] [--models DIR] [--python PATH]` (`StanzaSharp.Tool`):
+  runs Python Stanza 1.15.0 and StanzaSharp on your own text with the same, MD5-checked model files and reports
+  whether the CoNLL-U output is identical, or the first difference (sentence, both lines), with sentence and word
+  counts and both sides' load and processing times. Offsets after characters outside the BMP are converted to code
+  points (Stanza's) before comparing. Exit code 0 identical, 1 different, 2 usage or setup error.
+
 ## [1.0.0] - 2026-10-10
 
 1.0: the `StanzaSharp` package is fully managed, with no native or TorchSharp dependency; GPU and TorchSharp users add
