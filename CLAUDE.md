@@ -637,6 +637,15 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   [--processors LIST]`. `DownloadCommand.cs` is compiled into samples/StanzaSharp.Cli too (one implementation). Since
   1.0 StanzaSharp has no TorchSharp, so the tool has no native files at all (0.45 MB). `tools/verify-tool.ps1` (golden) packs, `dotnet tool install --tool-path`s it from a local feed,
   checks for natives and downloads `tokenize,mwt`. release.yml packs it.
+  - `compare FILE [--package] [--processors] [--models DIR] [--python PATH]` (`CompareCommand.cs`, owner's "proof for
+    new users"): runs the embedded `compare.py` (make_golden's bytes→str and `"{:C}\n"`) with
+    `stanza.Pipeline('en', dir=<parent of DIR>, resources_filepath=<embedded stanza_resources_en.json>,
+    download_method=None)`, so no network and no resources.json in the model folder; DIR must be named `en`. Both sides
+    get the full processor list (requirements added); Stanza's loaded `.pt` set must equal `ModelDownloader.FilesFor`,
+    and C# loads with `VerifyChecksums`. C# offsets are converted to code points when the text has non-BMP characters
+    (`ConlluDiff.ToCodePointOffsets`). Exit 0/1/2. `stanza_resources_en.json` is Stanza 1.15.0's `resources.json["en"]`:
+    regenerate it with a Stanza version change. `CompareCommandTests.Run_PythonStanza_*` needs tools/.venv (or
+    `STANZASHARP_PYTHON`) and models/stanza/en; CI has no Python Stanza, so its no-skip checks exempt that test.
 - The `StanzaSharp` package, packed from `src/StanzaSharp` (user's decision, 2026-10-06).
   - It carries all nine assemblies (facade, Core, Nn, the processors) plus their XML docs: the facade's
     ProjectReferences are `PrivateAssets="all"`, and an `IncludeProjectReferences` target adds them.
