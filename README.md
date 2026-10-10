@@ -242,11 +242,24 @@ for `default_fast`), and each call in flight adds
   250 sentences to the longest one among them. With `tokenize,mwt,pos,constituency` (8 threads) loading peaks at about
   0.5 GB, and one call on 500, 5,000 and 15,000 words peaks at 0.65, 1.6 and 1.7 GB (Python Stanza: 0.75, 2.4 and
   2.5 GB). To bound it in a memory-limited container, call `Process` on parts of about 1,000 words, split at blank
-  lines: on 15,000 words that peaks at 1.2 GB instead of 1.7 GB and takes about 15% longer. The annotations are the
-  same; only sentence ids, offsets (each part's own) and the whitespace at the cuts differ. One call per paragraph
+  lines: on 15,000 words that peaks at 1.2 GB instead of 1.7 GB and takes about 15% longer. With these processors the
+  annotations are the same; only sentence ids, offsets (each part's own) and the whitespace at the cuts differ. With
+  `sentiment` the labels can change too (see "Very long texts" below). One call per paragraph
   peaks at 0.6 GB but is 5× slower. Bulk `Process(texts)` batches all texts together, so it peaks like one call.
   `CharlmCache` changes the peak by less than 50 MB up to its 32k-word cap (turning it off costs 30–40% more time),
   and neither the GC mode nor converting the models changes it much. Measurements: [docs/performance.md](docs/performance.md#results-round-3-memory-of-a-short-lived-process).
+- **Very long texts** (a book in one call). The peak grows slowly with the length of the text: all eight processors on
+  the managed backend peak at about 2.0 GB for 20,000 words, 2.3 GB for 200,000 and 3.0 GB for 670,000 (8 threads,
+  Windows). Most of it does not depend on the length (the models, and the scratch buffers of the largest batches,
+  which are at most 5,000 words); what grows is the returned `Document` itself, about 0.5 KB per word (310 MB for
+  670,000 words), plus garbage the .NET GC lets build up on a larger heap. That garbage is not needed: with the GC heap
+  capped (`DOTNET_GCHeapHardLimit`, or a container's memory limit, of which the GC takes 75%) 670,000 words ran in a
+  2.3 GB heap and peaked at 2.2 GB. Splitting the text at blank lines into parts of about 1,000 words and calling
+  `Process` per part saves about 0.2 GB more, plus the `Document`s you drop, but changes some output: the sentiment
+  classifier's batches depend on all of a call's sentences, as in Stanza, so about a quarter of the sentiment labels
+  change (508 of 2,091 sentences on 20,000 words); sentence ids restart and offsets are each part's own. Every other
+  annotation was the same. Bulk `Process(texts)` batches like one call.
+  Measurements: [docs/performance.md](docs/performance.md#results-round-8-one-call-on-a-very-long-text).
 - **Memory between calls** (long-running services). On the managed backend (the default) everything lives on the
   .NET GC heap: the models (about 370 MB for `tokenize,mwt,pos,constituency`, 660 MB for all eight) and the scratch
   buffers of the call's largest batches, which `ArrayPool<T>.Shared` keeps for the next call. So the working set
