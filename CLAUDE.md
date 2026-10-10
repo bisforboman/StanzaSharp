@@ -735,7 +735,9 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     4.7e-5, but backend margins differ by 4.4e-6 median / 5.3e-5 at the 99.99th percentile (smallest margin/difference
     ratio 15). The gap is the float32 charlm (managed's summation order), amplified by the word encoder; per-step layers
     in double (`ManagedConstituencyNet.Double`, study only) change nothing, so no precision change. Run torch-based
-    shards with `--threads 1`: parallel 8-thread libtorch processes crawl.
+    shards with `--threads 1`: parallel 8-thread libtorch processes crawl. Since then (2026-10-10) every managed LSTM
+    step sums h·W_hhᵀ in blocks of 128 (`Gemm.KernelBlocked`): charlm error vs float64 halved (TorchSharp's level), golden
+    max margin gap 7.3e-5 → 4.0e-5, median unchanged, +4% charlm time at 1 thread, +3% at 8 (docs/backends.md).
   - `Pipeline.ManagedProcessors` (all eight) lists what `Backend.Managed` runs managed. The pipeline loads each
     backend's charlms only if a `_charlm` processor on that backend reads them (`ManagedCharLanguageModel`: +31 MB of
     input tables). Managed processors read the shared `Pretrain` through `CpuVectors()` (its array, or a CPU tensor's own memory).

@@ -81,6 +81,59 @@ public class ManagedBackendTests(ITestOutputHelper output)
         TokenizerTests.AssertClose(expected.data<float>().ToArray(), actual, 1e-4f, "gemm");
     }
 
+    /// <summary>
+    /// The LSTM step's blocked kernel against a scalar reference with the same order (each block of kb terms from zero,
+    /// the blocks added up, init last), bit for bit: fused multiply-adds on the SIMD paths, a·b + c on Scalar.
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(Paths))]
+    public unsafe void KernelBlocked_SumsInBlocksThenAddsInit(string path)
+    {
+        const int nr = PackedMatrix.NR, k = 300, kb = 128;
+        bool fused = path != nameof(KernelPath.Scalar) && (System.Runtime.Intrinsics.X86.Fma.IsSupported || System.Runtime.Intrinsics.Arm.AdvSimd.IsSupported);
+        var a = Random(Gemm.MR * k, 11);
+        var b = Random(k * nr, 12);
+        var init = Random(Gemm.MR * nr, 13);
+        for (int mr = 1; mr <= Gemm.MR; mr++)
+        {
+            var expected = new float[mr * nr];
+            for (int r = 0; r < mr; r++)
+                for (int j = 0; j < nr; j++)
+                {
+                    float sum = 0;
+                    for (int k0 = 0; k0 < k; k0 += kb)
+                    {
+                        float block = 0;
+                        for (int p = k0; p < Math.Min(k, k0 + kb); p++)
+                            block = fused ? MathF.FusedMultiplyAdd(a[r * k + p], b[p * nr + j], block) : block + a[r * k + p] * b[p * nr + j];
+                        sum = k0 == 0 ? block : sum + block;
+                    }
+                    expected[r * nr + j] = sum + init[r * nr + j];
+                }
+            var actual = new float[Gemm.MR * nr];
+            fixed (float* pa = a, pb = b, pi = init, po = actual)
+            {
+                var aRows = stackalloc float*[Gemm.MR];
+                var initRows = stackalloc float*[Gemm.MR];
+                var outRows = stackalloc float*[Gemm.MR];
+                for (int r = 0; r < Gemm.MR; r++)
+                {
+                    int row = Math.Min(r, mr - 1); // rows past mr repeat the last one, as the callers do
+                    aRows[r] = pa + row * k;
+                    initRows[r] = pi + row * nr;
+                    outRows[r] = po + r * nr;
+                }
+                var (rows, panel, inits, outs) = ((nint)aRows, (nint)pb, (nint)initRows, (nint)outRows);
+                With(path, 1, () =>
+                {
+                    Gemm.KernelBlocked(mr, (float**)rows, (float*)panel, k, kb, (float**)inits, (float**)outs);
+                    return 0;
+                });
+            }
+            Assert.Equal(expected, actual[..(mr * nr)]);
+        }
+    }
+
     /// <summary>A random bidirectional LSTM with its packed input, both as nn.LSTM and as <see cref="PackedLstm"/>.</summary>
     private sealed class RandomLstm
     {

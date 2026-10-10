@@ -513,6 +513,18 @@ reads the tagger's cached charlm outputs for sentences without MWTs.
     managed to 1.28e-4 from float64 but 1.30e-4 from TorchSharp: not a fix either. Double sums in the per-step layers cost
     1.7–3.3× the constituency stage (on a loaded machine) for nothing, so no precision change is kept; the charlm in double
     is the only lever and would multiply the cost of the most expensive layer of five processors.
+  - **Recurrent summation order** (2026-10-10, kept). Each LSTM step summed h·W_hhᵀ (the charlm's K = 1024) as one FMA
+    chain starting from the input projection. libtorch's order can't be matched (its LSTM runs through oneDNN/MKL, whose
+    blocking is unpublished and CPU-dependent), but a BLAS-like one can: `Gemm.KernelBlocked` sums blocks of 128 terms,
+    each from zero, adds the blocks up, then the input projection (`PackedLstm.Step`, so every managed LSTM's recurrence).
+    Against a float64 charlm (24 corpus sentences, both directions, the `****NOTICE****` line left out as chaotic), mean /
+    max per value: TorchSharp 2.0e-8 / 2.8e-6, managed before 6.4e-8 / 9.0e-6, blocked 3.1e-8 / 3.6e-6, sums in double
+    2.7e-8 / 4.3e-6; blocks of 64 or 256 are about the same, one chain from zero with the projection added last is not.
+    Managed vs TorchSharp per value fell from 6.6e-8 to 3.4e-8, the floor (double sums: 3.2e-8; the rest is both
+    backends' own float32 rounding). Golden near-ties (22,569 steps): max score difference between backends 7.25e-5 →
+    6.10e-5, |margin difference| median / p99 / max 3.8e-6 / 2.4e-5 / 7.3e-5 → 3.8e-6 / 1.9e-5 / 4.0e-5: the tail halves,
+    the typical gap stays. Cost (managed-spike speed, medians of 5 alternating rounds, quiet machine): charlm 4.30 → 4.49 s
+    at 1 thread (+4%), 1.13 → 1.16 s at 8 (+3%). Blocking outside the kernel (a call and a vector add per block) cost +8%.
   - Rerun: `python tools/lemma_divergence.py text UD_EWT_DIR docs.json`, split it into shards and run each shard with
     `--threads 1` (several libtorch processes at 8 threads each spin-wait each other to a crawl), Stanza with `--no-f64`
     (float64 doubles the time; use it on a subset), merge the shards' `docs`, then
