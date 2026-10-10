@@ -34,7 +34,25 @@ internal sealed unsafe class PackedMatrix
     public int Panels { get; }
     /// <summary>N rounded up to a whole panel: the width a GEMM output must have.</summary>
     public int PaddedN => Panels * NR;
-    public float* Data => (float*)Unsafe.AsPointer(ref _data[0]);
+    public float* Data => (float*)Unsafe.AsPointer(ref _data[_offset]);
+
+    private readonly int _offset;
+
+    /// <summary>
+    /// A view of <paramref name="panels"/> of <paramref name="source"/>'s panels from <paramref name="firstPanel"/> on
+    /// (output columns [16·firstPanel, 16·(firstPanel + panels)), sharing its data). A GEMM column depends only on its
+    /// panel, so those columns come out with the same bits as from the whole matrix.
+    /// </summary>
+    public PackedMatrix(PackedMatrix source, int firstPanel, int panels)
+    {
+        if (firstPanel < 0 || panels <= 0 || firstPanel + panels > source.Panels)
+            throw new ArgumentOutOfRangeException(nameof(panels));
+        _data = source._data;
+        _offset = source._offset + firstPanel * NR * source.K;
+        K = source.K;
+        Panels = panels;
+        N = Math.Min(source.N - firstPanel * NR, panels * NR);
+    }
 
     /// <param name="w">[n, k] row-major.</param>
     /// <param name="rows">Optional: output column j is source row rows[j] (length n).</param>
