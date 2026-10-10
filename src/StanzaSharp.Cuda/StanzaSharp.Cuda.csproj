@@ -9,7 +9,6 @@
 
   <PropertyGroup>
     <IsPackable>true</IsPackable>
-    <PackageId>StanzaSharp.Cuda</PackageId>
     <Description>The TorchSharp (libtorch) backend for StanzaSharp: runs Stanza's English pipeline on an NVIDIA GPU (CudaBackend.Create()) or on libtorch's CPU kernels (CudaBackend.Cpu). Add TorchSharp-cuda-windows or TorchSharp-cuda-linux (TorchSharp-cpu for the CPU) for the native libtorch.</Description>
     <PackageTags>nlp;stanza;cuda;gpu;torchsharp</PackageTags>
     <PackageReadmeFile>PACKAGE.md</PackageReadmeFile>

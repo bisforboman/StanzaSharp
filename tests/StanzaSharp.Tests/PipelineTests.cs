@@ -23,10 +23,11 @@ public class PipelineTests
         foreach (var package in Pipeline.Packages.Keys)
         {
             using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, Backend = PipelineBackend.Managed });
-            object? Field(string name) => typeof(Pipeline).GetField(name, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!.GetValue(nlp);
-            Assert.Null(Field("_charlmForward"));
-            Assert.Null(Field("_charlmBackward"));
-            Assert.NotNull(Field("_managedCharlmForward"));
+            const System.Reflection.BindingFlags Private = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+            // The charlms belong to the backend's models (BackendModels); a managed pipeline's are managed by construction.
+            var models = Assert.IsType<ManagedModels>(typeof(Pipeline).GetField("_models", Private)!.GetValue(nlp));
+            Assert.NotNull(typeof(ManagedModels).GetField("_forward", Private)!.GetValue(models));
+            Assert.NotNull(typeof(ManagedModels).GetField("_backward", Private)!.GetValue(models));
         }
     }
 

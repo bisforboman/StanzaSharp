@@ -53,7 +53,7 @@ var natives = Modules()
 Console.WriteLine($"Torch modules loaded: {(natives.Count == 0 ? "none" : string.Join(", ", natives))}");
 if (natives.Count > 0)
     failures += Fail("torch code was loaded");
-if (AppDomain.CurrentDomain.GetAssemblies().Any(a => a.GetName().Name is "TorchSharp" or "StanzaSharp.TorchSharp"))
+if (AppDomain.CurrentDomain.GetAssemblies().Any(a => a.GetName().Name is "TorchSharp" or "StanzaSharp.Cuda"))
     failures += Fail("a TorchSharp assembly was loaded");
 Console.WriteLine(failures == 0 ? "OK" : $"{failures} failure(s)");
 return failures == 0 ? 0 : 1;

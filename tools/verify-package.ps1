@@ -37,7 +37,7 @@ New-Item -ItemType Directory -Force $feed, $app | Out-Null
 
 try {
     # StanzaSharp.Cuda's pack builds StanzaSharp too, but packs only itself.
-    foreach ($project in 'src/StanzaSharp', 'src/StanzaSharp.TorchSharp') {
+    foreach ($project in 'src/StanzaSharp', 'src/StanzaSharp.Cuda') {
         dotnet pack (Join-Path $root $project) -c Release -p:Version=$version -o $feed --nologo
         if ($LASTEXITCODE) { throw "dotnet pack $project failed" }
     }
@@ -89,7 +89,7 @@ Console.Write(Conllu.Write(doc));
     if ($LASTEXITCODE) { throw "The consumer app failed to build:`n$build" }
     if ($build -match 'warning STANZA') { throw "The build gave a STANZA warning:`n$build" }
     if ($Managed) {
-        $torch = Get-ChildItem (Join-Path $work 'out') -Recurse -Include *torch*, c10.*, libc10.*
+        $torch = Get-ChildItem (Join-Path $work 'out') -Recurse -Include *torch*, c10.*, libc10.*, StanzaSharp.Cuda.*
         if ($torch) { throw "TorchSharp or libtorch reached the output: $($torch.Name -join ', ')" }
         $emptyNuget = Join-Path $work 'empty-nuget'
         New-Item -ItemType Directory -Force $emptyNuget | Out-Null

@@ -62,11 +62,11 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
-      # StanzaSharp, StanzaSharp.Cuda (packed from src/StanzaSharp.TorchSharp) and the stanzasharp tool. (The StanzaSharp.Cpu.*
+      # StanzaSharp, StanzaSharp.Cuda (packed from src/StanzaSharp.Cuda) and the stanzasharp tool. (The StanzaSharp.Cpu.*
       # platform packages ended with 0.4.)
       - name: Pack
         run: |
-          for project in StanzaSharp StanzaSharp.TorchSharp StanzaSharp.Tool; do
+          for project in StanzaSharp StanzaSharp.Cuda StanzaSharp.Tool; do
             dotnet pack src/$project --configuration Release -p:Version=$VERSION --output artifacts
           done
 

@@ -49,7 +49,7 @@ internal sealed class SentimentClassifier : IDisposable
     /// <summary>A convolution's filter: <see cref="Height"/> tokens × the biLSTM's full width (Width 0), or Height × Width with stride (1, Width).</summary>
     internal readonly record struct Filter(int Height, int Width);
 
-    /// <summary><c>Load</c> (StanzaSharp.TorchSharp) on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
+    /// <summary><c>Load</c> (StanzaSharp.Cuda) on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
     public static SentimentClassifier LoadManaged(string basePath, Pretrain pretrain, ManagedCharLanguageModel charlmForward, ManagedCharLanguageModel charlmBackward)
     {
         if (!charlmForward.IsForward || charlmBackward.IsForward)

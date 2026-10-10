@@ -55,7 +55,7 @@ The seam sits at each processor's **network**: one small interface per processor
 
 - Public: `PipelineOptions.Backend` (`PipelineBackend.Managed`, the default, or StanzaSharp.Cuda's `CudaBackend`).
 - Internally a `PipelineBackend` makes a `BackendModels` per load: `ManagedModels` (facade) calls each processor's
-  `LoadManaged`, `TorchSharpModels` (StanzaSharp.TorchSharp) its TorchSharp `Load` on the backend's device.
+  `LoadManaged`, `TorchSharpModels` (StanzaSharp.Cuda) its TorchSharp `Load` on the backend's device.
 - **Threads:** with `Backend.Managed`, `Load` also sets `ManagedThreads.Count`, with the documented semantics: an
   explicit `Threads`, or null for `min(current count, Environment.ProcessorCount)`. The count is ProcessorCount unless
   something set it lower, and `ProcessorCount` respects a container's CPU quota. It is process-wide, like
@@ -126,7 +126,7 @@ in 12.5 s, TorchSharp 3,771–4,302 MB in 23–27 s).
 
 ### The `StanzaSharp.Cuda` split (done in 1.0)
 
-Owner's decisions (2026-10-09): two PRs. Step 1 (done) moves every TorchSharp class into `StanzaSharp.TorchSharp`, still
+Owner's decisions (2026-10-09): two PRs. Step 1 (done) moves every TorchSharp class into `StanzaSharp.Cuda`, still
 packed into `StanzaSharp` with no API change; Core, Nn and the processors no longer reference TorchSharp. Step 2 (1.0)
 splits the packages, removes `Device`, `DisableTf32` and `PipelineBackend.TorchSharp`, and gives `StanzaSharp.Cuda`
 `CudaBackend.Create(device)` plus a public TorchSharp-on-CPU option (`CudaBackend.Cpu`). Step 2 is done too. Item 2
@@ -138,7 +138,7 @@ The split needs no change to the processors' logic; it only moves where the Torc
 
 1. **Assemblies:**
    - Each processor assembly keeps its network interface (`ITokenizerNet`, …) and its managed network.
-   - The TorchSharp networks move into a new `StanzaSharp.TorchSharp` assembly: `TokenizerNet`, `MwtNet`, and the
+   - The TorchSharp networks move into a new `StanzaSharp.Cuda` assembly: `TokenizerNet`, `MwtNet`, and the
      torch layers in `Nn` (`CharLanguageModel`, `HighwayLstm`, `Biaffine`, `Rnn`, `Weights`, `Scalars`, the tensor
      half of `Pretrain`/`CharlmCache`). That assembly is the only one referencing TorchSharp.
    - Directory.Build.props already gives every StanzaSharp assembly `InternalsVisibleTo` the others, so the new
@@ -149,11 +149,11 @@ The split needs no change to the processors' logic; it only moves where the Torc
      `INetFactory { ITokenizerNet Tokenizer(Checkpoint); IMwtNet Mwt(Checkpoint); … ICharlm Charlm(Checkpoint); }`.
      It also covers the shared pretrain and charlms, which several processors take.
    - `ManagedNets : INetFactory` lives in the main package; `TorchSharpNets : INetFactory` (device, TF32) lives in
-     `StanzaSharp.TorchSharp`.
+     `StanzaSharp.Cuda`.
    - The public option carries a factory, so the main assembly never references the Cuda one (see the API proposal).
 3. **Packages:**
    - `StanzaSharp` (managed): Core, Nn without torch, the processors, and the facade, with no native dependency.
-   - `StanzaSharp.Cuda`: `StanzaSharp.TorchSharp.dll`, depending on `StanzaSharp` and managed `TorchSharp`. Users
+   - `StanzaSharp.Cuda`: `StanzaSharp.Cuda.dll`, depending on `StanzaSharp` and managed `TorchSharp`. Users
      add `TorchSharp-cuda-*` themselves, as today.
    - The `buildTransitive` version check moves with it. (The `StanzaSharp.Cpu.*` platform packages were already
      discontinued in 0.5: CPU users no longer need libtorch.)

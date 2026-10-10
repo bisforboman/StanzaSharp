@@ -15,7 +15,7 @@ namespace StanzaSharp;
 /// <summary>
 /// One pipeline's models on one backend (docs/backends.md, the StanzaSharp.Cuda split): the backend's settings, the
 /// shared pretrain and charlms, and each processor. <see cref="PipelineBackend"/> makes one per <see cref="Pipeline.Load"/>;
-/// the TorchSharp one lives in StanzaSharp.TorchSharp (the StanzaSharp.Cuda package), which this package never references.
+/// the TorchSharp one lives in StanzaSharp.Cuda (the StanzaSharp.Cuda package), which this package never references.
 /// </summary>
 internal abstract class BackendModels : IDisposable
 {
