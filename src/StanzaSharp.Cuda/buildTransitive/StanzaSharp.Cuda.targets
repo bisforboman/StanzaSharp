@@ -1,10 +1,10 @@
-<!-- Imported into every project that references StanzaSharp. Both checks matter only for the TorchSharp backend
-     (PipelineBackend.TorchSharp): the default managed backend loads no native libtorch. StanzaSharp.props (generated
-     when the package is packed) sets the TorchSharp and libtorch versions it was built with. -->
+<!-- Imported into every project that references StanzaSharp.Cuda, the TorchSharp backend (CudaBackend).
+     StanzaSharp.Cuda.props (generated when the package is packed) sets the TorchSharp and libtorch versions it was
+     built with. -->
 <Project>
 
   <!-- STANZA001: TorchSharp, its native packages (TorchSharp-cpu, TorchSharp-cuda-*) and libtorch-* must be the versions
-       StanzaSharp was built against; others can fail to load or crash. Silence it with NoWarn STANZA001. -->
+       StanzaSharp.Cuda was built against; others can fail to load or crash. Silence it with NoWarn STANZA001. -->
   <Target Name="_StanzaSharpCheckTorchVersions" AfterTargets="ResolvePackageAssets"
           Condition="'$(_StanzaSharpTorchSharpVersion)' != '' And Exists('$(ProjectAssetsFile)')">
     <!-- The resolved packages are @(PackageDependencies) (ids only); their versions are the "<id>/<version>" keys of the assets file. -->
@@ -22,7 +22,7 @@
       <_StanzaSharpTorchMismatch Include="@(_StanzaSharpTorchPackage->'%(Identity) %(Version)')" Condition="'%(Version)' != '%(Expected)'" />
     </ItemGroup>
     <Warning Code="STANZA001" Condition="'@(_StanzaSharpTorchMismatch)' != ''"
-             Text="StanzaSharp $(_StanzaSharpVersion) is built for TorchSharp $(_StanzaSharpTorchSharpVersion) and libtorch $(_StanzaSharpLibTorchVersion), but this project resolves @(_StanzaSharpTorchMismatch, ', '). Reference TorchSharp-cpu $(_StanzaSharpTorchSharpVersion), TorchSharp-cuda-* $(_StanzaSharpTorchSharpVersion) or libtorch-cpu-* $(_StanzaSharpLibTorchVersion) for the TorchSharp backend (the default managed backend needs none): other versions can fail to load or crash at run time." />
+             Text="StanzaSharp.Cuda $(_StanzaSharpVersion) is built for TorchSharp $(_StanzaSharpTorchSharpVersion) and libtorch $(_StanzaSharpLibTorchVersion), but this project resolves @(_StanzaSharpTorchMismatch, ', '). Reference TorchSharp-cpu $(_StanzaSharpTorchSharpVersion), TorchSharp-cuda-* $(_StanzaSharpTorchSharpVersion) or libtorch-cpu-* $(_StanzaSharpLibTorchVersion) for the TorchSharp backend: other versions can fail to load or crash at run time." />
     <PropertyGroup>
       <_StanzaSharpAssets />
     </PropertyGroup>

@@ -8,7 +8,7 @@ namespace StanzaSharp.Nn;
 /// </summary>
 internal enum Backend
 {
-    /// <summary>TorchSharp/libtorch, on <see cref="Weights.Device"/>: the test reference. Processor <c>Load</c>s default to it.</summary>
+    /// <summary>TorchSharp/libtorch (StanzaSharp.Cuda), on <c>Weights.Device</c>: the test reference. Processor <c>Load</c>s default to it.</summary>
     TorchSharp,
 
     /// <summary>The managed kernels (<c>Nn.Managed</c>), CPU only, on <c>ManagedThreads.Count</c> threads: the

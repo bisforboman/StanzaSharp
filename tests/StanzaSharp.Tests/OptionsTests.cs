@@ -13,15 +13,15 @@ public class OptionsTests
         int old = torch.get_num_threads();
         try
         {
-            using (Pipeline.Load(Repo.Models, new PipelineOptions { Processors = Processor.Tokenize, Threads = 2, Backend = PipelineBackend.TorchSharp }))
+            using (Pipeline.Load(Repo.Models, new PipelineOptions { Processors = Processor.Tokenize, Threads = 2, Backend = CudaBackend.Cpu }))
                 Assert.Equal(2, torch.get_num_threads());
             // Null keeps a lower count set by the caller.
-            using (Pipeline.Load(Repo.Models, new PipelineOptions { Processors = Processor.Tokenize, Backend = PipelineBackend.TorchSharp }))
+            using (Pipeline.Load(Repo.Models, new PipelineOptions { Processors = Processor.Tokenize, Backend = CudaBackend.Cpu }))
                 Assert.Equal(2, torch.get_num_threads());
             torch.set_num_threads(Environment.ProcessorCount + 4);
-            using (Pipeline.Load(Repo.Models, new PipelineOptions { Processors = Processor.Tokenize, Backend = PipelineBackend.TorchSharp }))
+            using (Pipeline.Load(Repo.Models, new PipelineOptions { Processors = Processor.Tokenize, Backend = CudaBackend.Cpu }))
                 Assert.Equal(Environment.ProcessorCount, torch.get_num_threads());
-            Assert.Throws<ArgumentOutOfRangeException>(() => Pipeline.Load(Repo.Models, new PipelineOptions { Threads = 0, Backend = PipelineBackend.TorchSharp }));
+            Assert.Throws<ArgumentOutOfRangeException>(() => Pipeline.Load(Repo.Models, new PipelineOptions { Threads = 0, Backend = CudaBackend.Cpu }));
         }
         finally
         {
@@ -95,24 +95,14 @@ public class OptionsTests
     }
 
     [Fact]
-    public void Backend_DefaultsToManaged_AndTheObsoleteOptionsSelectTorchSharp()
+    public void Backend_DefaultsToManaged()
     {
         Assert.Same(PipelineBackend.Managed, new PipelineOptions().Backend);
         Assert.Equal("Managed", PipelineBackend.Managed.ToString());
-        Assert.Equal("TorchSharp", PipelineBackend.TorchSharp.ToString());
+        Assert.Equal("TorchSharp", CudaBackend.Cpu.ToString());
+        Assert.Equal("Cuda:1", CudaBackend.Create(1).ToString()); // no device is made (nor libtorch loaded) before Load
+        Assert.Throws<ArgumentOutOfRangeException>(() => CudaBackend.Create(-1));
         Assert.Throws<ArgumentNullException>(() => new PipelineOptions { Backend = null! });
-#pragma warning disable CS0618 // the obsolete options are what this tests
-        Assert.Same(PipelineBackend.TorchSharp, new PipelineOptions { DisableTf32 = true }.Backend);
-        Assert.Same(PipelineBackend.TorchSharp, new PipelineOptions { Device = torch.CPU }.Backend);
-        Assert.Same(PipelineBackend.TorchSharp, new PipelineOptions { Backend = PipelineBackend.TorchSharp, Device = torch.CPU }.Backend);
-
-        // An explicit Managed with a TorchSharp option is a contradiction: Load says so before reading anything.
-        var conflict = new PipelineOptions { Backend = PipelineBackend.Managed, Device = torch.CPU };
-        Assert.Same(PipelineBackend.Managed, conflict.Backend);
-        var e = Assert.Throws<ArgumentException>(() => Pipeline.Load(Repo.Golden, conflict));
-        Assert.Contains("PipelineBackend.TorchSharp", e.Message);
-        Assert.Throws<ArgumentException>(() => Pipeline.Load(Repo.Golden, new PipelineOptions { DisableTf32 = true, Backend = PipelineBackend.Managed }));
-#pragma warning restore CS0618
     }
 
     [Fact]
@@ -160,5 +150,28 @@ public class ManagedThreadsOptionTests
         {
             Nn.Managed.ManagedThreads.Count = old;
         }
+    }
+
+    [ModelFact]
+    public void MaxConcurrentCalls_QueuesExtraCalls_AndTheWaitCanBeCanceled()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            Pipeline.Load(Repo.Models, new PipelineOptions { Processors = Processor.Tokenize, MaxConcurrentCalls = 0 }));
+
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos", MaxConcurrentCalls = 1 });
+        var corpus = File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt"));
+        var big = string.Join("\n\n", Enumerable.Repeat(corpus, 20));
+        var expected = Conllu.Write(nlp.Process("Hi there."));
+
+        // A long call holds the only slot; a short call then waits for it, so its token cancels the wait.
+        // (Without the limit the short call would finish in milliseconds.)
+        var holder = Task.Run(() => nlp.Process(big));
+        Thread.Sleep(300);
+        Assert.False(holder.IsCompleted, "the long call should still be running");
+        using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(200));
+        Assert.Throws<OperationCanceledException>(() => nlp.Process("Hi there.", cts.Token));
+
+        holder.Wait();
+        Assert.Equal(expected, Conllu.Write(nlp.Process("Hi there.")));
     }
 }

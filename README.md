@@ -16,18 +16,19 @@ CPU's SIMD instructions (AVX2 or Arm64 NEON where present), with no libtorch or 
 pipeline it is about twice as fast as the TorchSharp backend on 8 threads and peaks lower in memory (see
 [Performance](#performance)), and its output is the same, byte for byte.
 
-**The TorchSharp backend** (libtorch) is still there in 0.5 for those who want it; it is the way to a GPU (see
-[GPU](#gpu)) and leaves the main package in 1.0. Select it and add the native libtorch yourself:
+**The TorchSharp backend** (libtorch) is in its own package, `StanzaSharp.Cuda`, since 1.0: it is the way to a GPU
+(see [GPU](#gpu)) and also runs on libtorch's CPU kernels. Add it and the native libtorch yourself:
 
 ```
+dotnet add package StanzaSharp.Cuda
 dotnet add package TorchSharp-cpu
 ```
 
 ```csharp
-using var nlp = Pipeline.Load(dir, new PipelineOptions { Backend = PipelineBackend.TorchSharp });
+using var nlp = Pipeline.Load(dir, new PipelineOptions { Backend = CudaBackend.Cpu });
 ```
 
-- `TorchSharp-cpu`'s version must match the `TorchSharp` version StanzaSharp depends on (0.107.0); otherwise the build
+- `TorchSharp-cpu`'s version must match the `TorchSharp` version StanzaSharp.Cuda depends on (0.107.0); otherwise the build
   warns with `STANZA001`. Silence it with `<NoWarn>STANZA001</NoWarn>`.
 - `TorchSharp-cpu` restores libtorch for Linux x64, Windows x64 and macOS (about 265 MB of downloads). To restore one
   platform's only, reference the matching `libtorch-cpu-<rid>` 2.10.0 package (`libtorch-cpu-linux-x64`,
@@ -86,8 +87,7 @@ docker run -i --rm -v /path/to/models/stanza/en:/models:ro stanzasharp-sample < 
 Mount the models rather than copying them into the image: they are about 600 MB, several times the image itself
 (209 MB on `runtime:10.0`, 103 MB on `runtime:10.0-noble-chiseled`, 100 MB on `runtime:10.0-alpine`; with
 libtorch, up to 0.4, they were 707 and 601 MB). CI builds this image on the plain, chiseled and Alpine base images, checks that no libtorch is in it,
-and that its output is byte-identical to the golden file. (TorchSharp's 2 MB `LibTorchSharp` interop library is in
-the publish output, as StanzaSharp still references TorchSharp; the managed backend never loads it.)
+and that its output is byte-identical to the golden file. Since 1.0 nothing of TorchSharp is in it at all.
 
 To download the models in a Dockerfile (on the SDK image):
 
@@ -133,7 +133,7 @@ foreach (var sentence in doc.Sentences)
 
 `Pipeline.Load(dir, new PipelineOptions { Processors = "tokenize,mwt" })` runs only the listed processors; each
 needs the ones before it. `PipelineOptions` also holds `Backend` (`PipelineBackend.Managed`, the default, or
-`PipelineBackend.TorchSharp`; see [Install](#install)) and `CharlmCache`
+`CudaBackend.Create()` / `CudaBackend.Cpu` from `StanzaSharp.Cuda`; see [Install](#install)) and `CharlmCache`
 (`IsEnabled`, `MaxWords`: the tagger's character-model outputs reused by the constituency parser and sentiment, at most
 32,768 words / ~256 MB by default; output is identical either way).
 The default is all eight processors, like Stanza's English default:
@@ -155,7 +155,9 @@ var doc = nlp.Process(new[] { new[] { "Hello", "world", "." }, new[] { "Bye", ".
 ```
 
 Both match Python Stanza byte for byte. Bulk is much faster than one call per text for short texts: 7.7× on
-2,000 one-sentence texts ([docs/performance.md](docs/performance.md#bulk-processing-many-short-texts)). Its output
+2,000 one-sentence texts ([docs/performance.md](docs/performance.md#bulk-processing-many-short-texts)). One call per
+text costs about 28 ms for a short sentence on 8 threads (`default_fast`: 14 ms; Python Stanza: 189 and 73 ms), mostly
+reading the models' weights from memory ([round 7](docs/performance.md#results-round-7-one-process-call-per-short-text)). Bulk output
 can differ slightly from processing each text alone, exactly as in Stanza: the sentiment classifier sees its batch's padding (172 of 854
 golden labels change), and sentence ids continue across the documents. Pretokenized tokens are never split into
 multi-word tokens (`"don't"` stays one word), as in Stanza.
@@ -202,6 +204,10 @@ var doc = nlp.Process(text, cancellationToken); // OperationCanceledException wi
   concurrent calls share the one pool: each call works its own part and idle threads help, so N callers don't start
   N teams. On the TorchSharp backend each call runs its operations on up to `Threads` threads of its own, so N
   callers on C cores do best with `Threads` about C / N. Throughput is bounded by the CPU, not the number of callers.
+  On the managed backend it even drops past about two callers in flight on short texts (8 callers: 24 calls/s, 2: 36),
+  as concurrent calls evict each other's weights from the CPU cache: limit a service to about two concurrent
+  `Process` calls per pipeline (`new PipelineOptions { MaxConcurrentCalls = 2 }`: extra calls wait their turn), or batch
+  texts that arrive together into one bulk call.
   Sharing one pipeline saves memory: a loaded pipeline takes about 0.8–1 GB (`default`; about 0.7 GB
 for `default_fast`), and each call in flight adds
   its own working memory on top (a few hundred MB for a page of text, more for long documents).
@@ -289,21 +295,20 @@ machine busy with other work, fewer threads (`Threads`) are often faster.
 
 ## GPU
 
-The GPU runs on the TorchSharp backend. `Pipeline.Load(dir, new PipelineOptions { Backend = PipelineBackend.TorchSharp,
-Device = torch.CUDA })` runs every model on an NVIDIA GPU. Reference a CUDA libtorch package such as
-`TorchSharp-cuda-windows` (several GB), in the same version as StanzaSharp's `TorchSharp` (0.107.0).
-`Device` and `DisableTf32` are obsolete from 0.5: GPU support moves to a separate `StanzaSharp.Cuda` package
-(`Backend = CudaBackend.Create(...)`), and both leave the main package in 1.0. Until then they keep working; setting
-either selects the TorchSharp backend, and setting them with `Backend = PipelineBackend.Managed` throws.
+The GPU runs on the TorchSharp backend, in the `StanzaSharp.Cuda` package:
+`Pipeline.Load(dir, new PipelineOptions { Backend = CudaBackend.Create() })` runs every model on an NVIDIA GPU
+(`CudaBackend.Create(deviceIndex: 1)` for the second one). Reference a CUDA libtorch package such as
+`TorchSharp-cuda-windows` (several GB), in the same version as StanzaSharp.Cuda's `TorchSharp` (0.107.0). Up to 0.5
+this was `PipelineOptions.Device` and `DisableTf32`, which 1.0 removed.
 
 For output identical to the CPU (and so to Python Stanza), turn off TF32, which libtorch enables for cuDNN by
 default on Ampere and newer GPUs:
 
 ```csharp
-using var nlp = Pipeline.Load(dir, new PipelineOptions { Backend = PipelineBackend.TorchSharp, Device = torch.CUDA, DisableTf32 = true });
+using var nlp = Pipeline.Load(dir, new PipelineOptions { Backend = CudaBackend.Create(disableTf32: true) });
 ```
 
-`DisableTf32` sets `torch.backends.cuda.matmul.allow_tf32` and `torch.backends.cudnn.allow_tf32` to false. These
+`disableTf32` sets `torch.backends.cuda.matmul.allow_tf32` and `torch.backends.cudnn.allow_tf32` to false. These
 are process-wide torch settings, so it is opt-in and affects all TorchSharp code in the process. With TF32 off, the GPU matched
 every golden file exactly on an RTX 3080; with TF32 on, 3 of 845 sentences differed (near-ties). Results
 are deterministic from run to run either way. The pipeline is roughly 4x faster on an RTX 3080 than on 8 CPU
@@ -339,9 +344,9 @@ Windows x64 and Arm64, macOS).
 - `build-test` builds the solution and runs the tests without models (the model tests skip).
 - `golden` downloads the English models with `ModelDownloader` (through the CLI), converts them with
   `tools/stanza_convert.py` (CPU-only torch wheel), and runs the full suite (both backends). It fails if any test was
-  skipped. Then `tools/verify-package.ps1` packs StanzaSharp and runs two fresh apps that reference the package: one
-  with only StanzaSharp (the default install; it must reproduce the golden CoNLL-U with no libtorch loaded), one with
-  `TorchSharp-cpu` on the TorchSharp backend (no `STANZA` build warning allowed, with `StanzaSharpTrimNative`). Then
+  skipped. Then `tools/verify-package.ps1` packs StanzaSharp and StanzaSharp.Cuda and runs two fresh apps that
+  reference them: one with only StanzaSharp (the default install; it must reproduce the golden CoNLL-U with nothing of
+  TorchSharp in it), one with StanzaSharp.Cuda and `TorchSharp-cpu` on `CudaBackend.Cpu` (no `STANZA` build warning allowed, with `StanzaSharpTrimNative`). Then
   `tools/verify-tool.ps1` installs the `stanzasharp` tool from a local feed and downloads `tokenize,mwt` with it. The
   original and converted models are cached, keyed on `ModelDownloader.cs`, `tools/requirements.txt` and
   `tools/stanza_convert.py`.

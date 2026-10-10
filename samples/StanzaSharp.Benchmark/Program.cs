@@ -37,6 +37,10 @@ const string Usage = """
       --calls N       --memory: repeat the Process call(s) N times, reporting the memory after each (default: 1)
       --no-trim       on Linux (glibc), keep the free native heap after each Process call (no malloc_trim)
       --idle-gc       --memory: then an aggressive GC at once, and another after 61 s idle, reporting the memory
+      --per-call N    instead: N Process calls on one short sentence each (5-25 words) after a warm-up, reporting the
+                      median and p90 ms per call and per stage
+      --concurrent T  --per-call: T threads each make N calls on one shared pipeline; reports calls/s
+      --text T        --per-call: every call on this text instead (e.g. "Hi." for the cost of a minimal call)
     """;
 
 if (args is ["lemma-divergence", ..])
@@ -47,8 +51,8 @@ if (args is ["managed-spike", ..])
     return ManagedSpike.Run(args[1..], FindRepoRoot(), BuildText); // issue #29: docs/managed-backend-spike.md
 
 string modelDir = Path.Combine("models", "converted", "en");
-int copies = 8, runs = 3, threads = 0, documents = 0, memoryWords = 0, chunkWords = 0, calls = 1, cacheWords = CharlmCache.DefaultMaxWords;
-string? outFile = null, processors = null;
+int copies = 8, runs = 3, threads = 0, documents = 0, perCall = 0, concurrent = 0, memoryWords = 0, chunkWords = 0, calls = 1, cacheWords = CharlmCache.DefaultMaxWords;
+string? outFile = null, processors = null, perCallText = null;
 bool bulkCall = false, verbose = false, noTrim = false, idleGc = false;
 torch.Device? device = null; // CPU; not torch.CPU, which would load libtorch in a managed run
 bool noTf32 = false;
@@ -78,6 +82,9 @@ for (int i = 0; i < args.Length; i++)
         case "--idle-gc": idleGc = true; break;
         case "--calls" when i + 1 < args.Length: calls = int.Parse(args[++i]); break;
         case "--no-trim": noTrim = true; break;
+        case "--per-call" when i + 1 < args.Length: perCall = int.Parse(args[++i]); break;
+        case "--concurrent" when i + 1 < args.Length: concurrent = int.Parse(args[++i]); break;
+        case "--text" when i + 1 < args.Length: perCallText = args[++i]; break;
         default:
             Console.Error.WriteLine(Usage);
             return 2;
@@ -90,7 +97,7 @@ if (backend == Backend.Managed && (device != null || noTf32))
     Console.Error.WriteLine("--device and --no-tf32 need --backend torch");
     return 2;
 }
-var pipelineBackend = backend == Backend.Managed ? PipelineBackend.Managed : PipelineBackend.TorchSharp;
+var pipelineBackend = backend == Backend.Managed ? PipelineBackend.Managed : new PipelineBackend("TorchSharp", () => new TorchSharpModels(device, noTf32));
 if (threads > 0 && backend == Backend.TorchSharp)
     torch.set_num_threads(threads);
 if (threads > 0 && backend == Backend.Managed)
@@ -98,12 +105,60 @@ if (threads > 0 && backend == Backend.Managed)
 if (noTf32)
     torch.backends.cuda.matmul.allow_tf32 = torch.backends.cudnn.allow_tf32 = false;
 
+if (perCall > 0)
+{
+    // A service calling Process once per short text: the fixed cost per call (docs/performance.md, "Per-call cost").
+    var stageLog = new StageLogger();
+    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Processors = processors, Backend = pipelineBackend, TrimNativeHeap = !noTrim, Logger = concurrent > 0 ? null : stageLog });
+    var texts = perCallText != null ? [perCallText] : BuildShortSentences();
+    string header = $"C# StanzaSharp ({package}, {backend} backend), " +
+                    (backend == Backend.Managed ? $"managed threads {ManagedThreads.Count}" : $"torch threads {torch.get_num_threads()}");
+    for (int i = 0; i < 20; i++) // warm-up
+        nlp.Process(texts[i % texts.Count]);
+    if (concurrent > 0)
+    {
+        var latencies = new List<double>[concurrent];
+        var watch = Stopwatch.StartNew();
+        var workers = Enumerable.Range(0, concurrent).Select(t => new Thread(() =>
+        {
+            var mine = latencies[t] = [];
+            for (int i = 0; i < perCall; i++)
+            {
+                long start = Stopwatch.GetTimestamp();
+                nlp.Process(texts[(t * perCall + i) % texts.Count]);
+                mine.Add(Stopwatch.GetElapsedTime(start).TotalMilliseconds);
+            }
+        })).ToList();
+        workers.ForEach(w => w.Start());
+        workers.ForEach(w => w.Join());
+        double seconds = watch.Elapsed.TotalSeconds;
+        var all = latencies.SelectMany(l => l).ToList();
+        Console.WriteLine($"{header}, {concurrent} callers x {perCall} calls on one sentence each");
+        Console.WriteLine($"{"throughput",-14}{concurrent * perCall / seconds,9:F1} calls/s   per call median {Median(all),8:F2} ms  p90 {Percentile(all, 0.9),8:F2} ms");
+        return 0;
+    }
+    stageLog.Times.Clear();
+    long allocated = GC.GetTotalAllocatedBytes(true);
+    var totals = new List<double>();
+    for (int i = 0; i < perCall; i++)
+    {
+        long start = Stopwatch.GetTimestamp();
+        nlp.Process(texts[i % texts.Count]);
+        totals.Add(Stopwatch.GetElapsedTime(start).TotalMilliseconds);
+    }
+    Console.WriteLine($"{header}, {perCall} calls on " + (perCallText != null ? $"\"{perCallText}\"" : $"one sentence each ({texts.Count} sentences of 5-25 words, cycled)"));
+    Console.WriteLine($"{"",-14}{"median",9} {"p90",9}  ms per call");
+    foreach (var (stage, ms) in stageLog.Times)
+        Console.WriteLine($"{stage,-14}{Median(ms),9:F2} {Percentile(ms, 0.9),9:F2}");
+    Console.WriteLine($"{"total",-14}{Median(totals),9:F2} {Percentile(totals, 0.9),9:F2}");
+    Console.WriteLine($"{"allocated",-14}{(GC.GetTotalAllocatedBytes(true) - allocated) / 1048576.0 / perCall,9:F2} MB per call (GC heap)");
+    return 0;
+}
+
 if (documents > 0)
 {
     // Many short texts: one Process call per text vs one bulk call (Pipeline.Process(IEnumerable<string>)).
-#pragma warning disable CS0618 // Device: the TorchSharp backend's device until StanzaSharp.Cuda
-    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Backend = pipelineBackend, Device = device, TrimNativeHeap = !noTrim });
-#pragma warning restore CS0618
+    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Backend = pipelineBackend, TrimNativeHeap = !noTrim });
     var texts = BuildDocuments(documents);
     nlp.Process(texts.Take(50)); // warm-up
     var watch = Stopwatch.StartNew();
@@ -210,12 +265,12 @@ string Model(string processor) => Path.Combine(modelDir, processor, models[proce
 var clock = Stopwatch.StartNew();
 using var tokenizer = Tokenizer.Load(Model("tokenize"), device, backend);
 using var mwt = MwtExpander.Load(Model("mwt"), device, backend);
-using var pretrain = backend == Backend.Managed // every processor is managed then (Pipeline.ManagedProcessors)
+using var pretrain = backend == Backend.Managed
     ? Pretrain.LoadManaged(Path.Combine(modelDir, Pipeline.PretrainPath))
     : Pretrain.Load(Path.Combine(modelDir, Pipeline.PretrainPath), device);
 // As Pipeline does: managed processors get the managed charlms (their _nocharlm models none); each backend's charlms
 // are loaded only if a processor on it reads them.
-bool Managed(string processor) => backend == Backend.Managed && Pipeline.ManagedProcessors.Contains(processor);
+bool Managed(string processor) => backend == Backend.Managed;
 bool ManagedCharlm(string processor) => Managed(processor) && models[processor].EndsWith("_charlm");
 bool torchCharlms = models.Any(kv => kv.Value.EndsWith("_charlm") && !Managed(kv.Key));
 using var charlmForward = torchCharlms ? CharLanguageModel.Load(Path.Combine(modelDir, Pipeline.ForwardCharlmPath), device) : null;
@@ -308,13 +363,19 @@ static string BuildText(int copies)
     return string.Join("\n\n", Enumerable.Repeat(unit, copies));
 }
 
-static List<string> BuildDocuments(int count)
+static List<string> BuildDocuments(int count, bool all = false)
 {
     // The same texts as tools/benchmark.py --documents: the golden validation sentences ("# text = "), cycled.
     string golden = Path.Combine(FindRepoRoot(), "tests", "golden");
     var sentences = Directory.GetFiles(golden, "validation*.conllu").Order(StringComparer.Ordinal)
         .SelectMany(File.ReadLines).Where(l => l.StartsWith("# text = ")).Select(l => l["# text = ".Length..]).ToList();
-    return Enumerable.Range(0, count).Select(i => sentences[i % sentences.Count]).ToList();
+    return all ? sentences : Enumerable.Range(0, count).Select(i => sentences[i % sentences.Count]).ToList();
+}
+
+static List<string> BuildShortSentences()
+{
+    // The same texts as tools/benchmark.py --per-call: the golden validation sentences ("# text = ") of 5-25 words.
+    return BuildDocuments(0, all: true).Where(t => WordCount(t) is >= 5 and <= 25).ToList();
 }
 
 static string FindRepoRoot()
@@ -382,6 +443,25 @@ static double Median(List<double> xs)
     return n % 2 == 1 ? sorted[n / 2] : (sorted[n / 2 - 1] + sorted[n / 2]) / 2;
 }
 
+static double Percentile(List<double> xs, double p) => xs.Order().ElementAt((int)Math.Ceiling(p * xs.Count) - 1);
+
+/// <summary>Collects the pipeline's per-processor times ("{Processor} took {Milliseconds} ms", logged at Debug).</summary>
+sealed class StageLogger : Microsoft.Extensions.Logging.ILogger
+{
+    public readonly Dictionary<string, List<double>> Times = [];
+    public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+    public bool IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel) => true;
+    public void Log<TState>(Microsoft.Extensions.Logging.LogLevel logLevel, Microsoft.Extensions.Logging.EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+    {
+        if (state is IReadOnlyList<KeyValuePair<string, object?>> values && values.Count == 3 && values[0].Key == "Processor")
+        {
+            string stage = (string)values[0].Value!;
+            if (!Times.TryGetValue(stage, out var list))
+                Times[stage] = list = [];
+            list.Add((double)values[1].Value!);
+        }
+    }
+}
 
 /// <summary>Prints the pipeline's log messages (each model load, each processor) with the working set and its peak.</summary>
 sealed class MemoryLogger : Microsoft.Extensions.Logging.ILogger

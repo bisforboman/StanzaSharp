@@ -9,8 +9,8 @@
   <PropertyGroup>
     <IsPackable>true</IsPackable>
     <PackageId>StanzaSharp</PackageId>
-    <Description>Stanza's English NLP pipeline in .NET: tokenization and sentence splitting, multi-word token expansion, part-of-speech tags and morphological features, lemmas, dependency parsing, named entities, constituency parsing and sentence sentiment. Runs Stanza's own pretrained models through TorchSharp, with output identical to Python Stanza. Add TorchSharp-cpu (or TorchSharp-cuda-*) for the native libtorch.</Description>
-    <PackageTags>nlp;stanza;tokenizer;pos-tagging;lemmatization;dependency-parsing;ner;named-entity-recognition;constituency-parsing;sentiment-analysis;torchsharp</PackageTags>
+    <Description>Stanza's English NLP pipeline in .NET: tokenization and sentence splitting, multi-word token expansion, part-of-speech tags and morphological features, lemmas, dependency parsing, named entities, constituency parsing and sentence sentiment. Runs Stanza's own pretrained models in managed C# (SIMD kernels, no native dependencies), with output identical to Python Stanza. For NVIDIA GPUs add StanzaSharp.Cuda.</Description>
+    <PackageTags>nlp;stanza;tokenizer;pos-tagging;lemmatization;dependency-parsing;ner;named-entity-recognition;constituency-parsing;sentiment-analysis</PackageTags>
     <PackageReadmeFile>PACKAGE.md</PackageReadmeFile>
     <!-- The other projects' assemblies go into this package (see IncludeProjectReferences). -->
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);IncludeProjectReferences</TargetsForTfmSpecificBuildOutput>
@@ -31,8 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- The libraries' one external dependency, declared here so the package carries it. -->
-    <PackageReference Include="TorchSharp" Version="$(TorchSharpVersion)" />
     <!-- PipelineOptions.Logger. The lowest .NET 10 version, so apps on any later 10.0.x don't get a forced upgrade. -->
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
   </ItemGroup>
@@ -40,20 +38,7 @@
   <ItemGroup>
     <None Include="PACKAGE.md" Pack="true" PackagePath="/" />
     <None Include="..\..\NOTICE" Pack="true" PackagePath="/" />
-    <!-- The version check (STANZA001) and StanzaSharpTrimNative, for every project that gets StanzaSharp. -->
-    <None Include="buildTransitive\StanzaSharp.targets" Pack="true" PackagePath="buildTransitive/" />
   </ItemGroup>
-
-  <!-- buildTransitive/StanzaSharp.props: the versions this package is built with, for StanzaSharp.targets. -->
-  <Target Name="GenerateVersionProps" BeforeTargets="_GetPackageFiles">
-    <PropertyGroup>
-      <_VersionProps>$(IntermediateOutputPath)StanzaSharp.props</_VersionProps>
-    </PropertyGroup>
-    <WriteLinesToFile File="$(_VersionProps)" Overwrite="true" WriteOnlyWhenDifferent="true" Lines="&lt;Project&gt;;  &lt;PropertyGroup&gt;;    &lt;_StanzaSharpVersion&gt;$(Version)&lt;/_StanzaSharpVersion&gt;;    &lt;_StanzaSharpTorchSharpVersion&gt;$(TorchSharpVersion)&lt;/_StanzaSharpTorchSharpVersion&gt;;    &lt;_StanzaSharpLibTorchVersion&gt;$(LibTorchVersion)&lt;/_StanzaSharpLibTorchVersion&gt;;  &lt;/PropertyGroup&gt;;&lt;/Project&gt;" />
-    <ItemGroup>
-      <None Include="$(_VersionProps)" Pack="true" PackagePath="buildTransitive/" />
-    </ItemGroup>
-  </Target>
 
   <Target Name="IncludeProjectReferences" DependsOnTargets="ResolveReferences">
     <ItemGroup>

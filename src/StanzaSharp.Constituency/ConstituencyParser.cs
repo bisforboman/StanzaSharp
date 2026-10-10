@@ -2,7 +2,6 @@ using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using StanzaSharp.Nn;
 using StanzaSharp.Nn.Managed;
-using static TorchSharp.torch;
 
 namespace StanzaSharp.Constituency;
 
@@ -34,7 +33,7 @@ internal sealed class ConstituencyParser : IDisposable
     private readonly StackNode<Transition?> _initialTransitions;
     private readonly StackNode<Constituent> _initialConstituents;
 
-    private ConstituencyParser(Checkpoint ckpt, Pretrain pretrain, Func<IConstituencyNet> net)
+    internal ConstituencyParser(Checkpoint ckpt, Pretrain pretrain, Func<IConstituencyNet> net)
     {
         _pretrain = pretrain;
         var p = ckpt.Root["params"]!;
@@ -55,21 +54,7 @@ internal sealed class ConstituencyParser : IDisposable
         _initialConstituents = new StackNode<Constituent>(new Constituent(null, null, null), null, _net.ConstituentStart);
     }
 
-    /// <summary>
-    /// Loads e.g. <c>models/converted/en/constituency/ptb3-revised_charlm</c> on TorchSharp. The pretrain and charlms
-    /// are shared with the tagger, so the caller owns them.
-    /// </summary>
-    /// <param name="device">Where the model runs; CPU by default. Load the pretrain and charlms on the same device.</param>
-    public static ConstituencyParser Load(string basePath, Pretrain pretrain, CharLanguageModel charlmForward, CharLanguageModel charlmBackward, Device? device = null) =>
-        Weights.On(device, () =>
-        {
-            if (!charlmForward.IsForward || charlmBackward.IsForward)
-                throw new ArgumentException("Pass the forward charlm first, then the backward one");
-            var ckpt = Checkpoint.Load(basePath);
-            return new ConstituencyParser(ckpt, pretrain, () => new ConstituencyNet(ckpt, pretrain, charlmForward, charlmBackward));
-        });
-
-    /// <summary><see cref="Load"/> on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
+    /// <summary><c>Load</c> (StanzaSharp.Cuda) on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
     public static ConstituencyParser LoadManaged(string basePath, Pretrain pretrain, ManagedCharLanguageModel charlmForward, ManagedCharLanguageModel charlmBackward)
     {
         if (!charlmForward.IsForward || charlmBackward.IsForward)

@@ -20,15 +20,38 @@ public class PipelineTests
     [Trait("Backend", "Managed")]
     public void ManagedBackend_LoadsNoTorchSharpCharlms()
     {
-        Assert.True(Pipeline.Packages.All(p => p.Value.Keys.All(Pipeline.ManagedProcessors.Contains)));
         foreach (var package in Pipeline.Packages.Keys)
         {
             using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, Backend = PipelineBackend.Managed });
-            object? Field(string name) => typeof(Pipeline).GetField(name, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!.GetValue(nlp);
-            Assert.Null(Field("_charlmForward"));
-            Assert.Null(Field("_charlmBackward"));
-            Assert.NotNull(Field("_managedCharlmForward"));
+            const System.Reflection.BindingFlags Private = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+            // The charlms belong to the backend's models (BackendModels); a managed pipeline's are managed by construction.
+            var models = Assert.IsType<ManagedModels>(typeof(Pipeline).GetField("_models", Private)!.GetValue(nlp));
+            Assert.NotNull(typeof(ManagedModels).GetField("_forward", Private)!.GetValue(models));
+            Assert.NotNull(typeof(ManagedModels).GetField("_backward", Private)!.GetValue(models));
         }
+    }
+
+    /// <summary>
+    /// One sentence per call: the managed processors share every single-sentence charlm output they can
+    /// (CharlmCache.TryGetAlone: the parser's backward pass, NER after sentiment on multi-word tokens). Computed alone,
+    /// those are the same bits as computing them again, so the output equals the uncached pipeline's exactly.
+    /// </summary>
+    [ModelFact]
+    [Trait("Backend", "Managed")]
+    public void OneSentenceDocuments_EqualTheUncachedPipeline()
+    {
+        using var cached = Pipeline.Load(Repo.Models);
+        using var uncached = Pipeline.Load(Repo.Models, new PipelineOptions { CharlmCache = new CharlmCacheOptions { IsEnabled = false } });
+        var texts = Directory.GetFiles(Repo.Golden, "validation*.conllu").Order().SelectMany(f => File.ReadLines(f).Where(l => l.StartsWith("# text = ")).Take(8))
+            .Select(l => l["# text = ".Length..]).ToList();
+        int mwt = 0;
+        foreach (var text in texts)
+        {
+            var doc = cached.Process(text);
+            mwt += doc.Sentences.Count(s => s.Tokens.Any(t => t.Words.Count > 1));
+            Assert.Equal(Conllu.Write(uncached.Process(text)), Conllu.Write(doc));
+        }
+        Assert.True(mwt >= 5, $"only {mwt} of {texts.Count} texts have multi-word tokens");
     }
 
     [ModelTheory]

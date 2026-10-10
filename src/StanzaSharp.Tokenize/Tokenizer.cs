@@ -1,7 +1,6 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using StanzaSharp.Nn;
-using static TorchSharp.torch;
 
 namespace StanzaSharp.Tokenize;
 
@@ -50,9 +49,10 @@ internal sealed class Tokenizer : IDisposable
     private readonly int _unkId, _padId, _batchSize, _featDim, _maxSeqLen, _window;
     private readonly string[] _featFuncs;
 
-    private Tokenizer(Checkpoint ckpt, Backend backend)
+    /// <param name="net">Builds the network from the checkpoint (a backend's, e.g. <see cref="ManagedTokenizerNet"/>).</param>
+    internal Tokenizer(Checkpoint ckpt, Func<Checkpoint, ITokenizerNet> net)
     {
-        _net = backend == Backend.Managed ? new ManagedTokenizerNet(ckpt) : new TokenizerNet(ckpt);
+        _net = net(ckpt);
         var config = ckpt.Root["config"]!;
         _vocab = Checkpoint.UnitToId(ckpt.Root["vocab"]);
         _unkId = _vocab["<UNK>"];
@@ -79,10 +79,8 @@ internal sealed class Tokenizer : IDisposable
             throw new InvalidOperationException($"feat_dim is {_featDim} but {_featFuncs.Length} features are configured");
     }
 
-    /// <summary>Loads <c>basePath.json</c> + <c>basePath.safetensors</c>, e.g. <c>models/converted/en/tokenize/combined_nocharlm</c>.</summary>
-    /// <param name="device">Where the model runs; CPU by default (TorchSharp only).</param>
-    public static Tokenizer Load(string basePath, Device? device = null, Backend backend = Backend.TorchSharp) =>
-        Weights.On(device, () => new Tokenizer(Checkpoint.Load(basePath), backend));
+    /// <summary>Loads <c>basePath.json</c> + <c>basePath.safetensors</c> (or <c>basePath.pt</c>), e.g. <c>models/converted/en/tokenize/combined_nocharlm</c>, on the managed backend.</summary>
+    public static Tokenizer LoadManaged(string basePath) => new(Checkpoint.Load(basePath), ckpt => new ManagedTokenizerNet(ckpt));
 
     /// <param name="splitSentences">False is Stanza's <c>tokenize_no_ssplit</c>: each paragraph is one sentence.</param>
     public Document Process(string text, bool splitSentences = true, CancellationToken cancellationToken = default)

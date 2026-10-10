@@ -8,10 +8,41 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 ## [Unreleased]
 
 ### Changed
+- **The TorchSharp backend moved to its own package, `StanzaSharp.Cuda`.** `StanzaSharp` no longer depends on
+  TorchSharp at all: the default install has no native code and no TorchSharp assemblies. For a GPU, or libtorch on the
+  CPU, add `StanzaSharp.Cuda` and the native libtorch (`TorchSharp-cuda-windows`, `TorchSharp-cuda-linux` or
+  `TorchSharp-cpu`):
+  - `PipelineBackend.TorchSharp` → `CudaBackend.Cpu`.
+  - `PipelineOptions { Device = torch.CUDA, DisableTf32 = true }` → `PipelineOptions { Backend = CudaBackend.Create(disableTf32: true) }`
+    (`deviceIndex` picks another GPU).
+  - `PipelineOptions.Device` and `PipelineOptions.DisableTf32` (obsolete since 0.5) are removed.
+  - The `STANZA001` version check and `StanzaSharpTrimNative` come with `StanzaSharp.Cuda` now.
 - Managed backend: each LSTM step now sums its recurrent matrix product in blocks of 128 terms, then adds the input
   projection, instead of one long chain. This halves the charlm's rounding error (now as close to float64 as TorchSharp)
   and the worst-case score gap between the backends on the golden parses (constituency margins: 7.3e-5 → 4.0e-5), at
   about 3–4% of the managed charlm's time. Outputs are unchanged.
+
+## [0.6.0] - 2026-10-10
+
+### Added
+- `PipelineOptions.MaxConcurrentCalls` (opt-in; null, the default, means no limit): at most this many `Process` calls
+  run on the pipeline at once, and further callers wait their turn (the wait honours the call's cancellation token).
+  On the managed backend concurrent calls on short texts evict each other's model weights from the CPU cache, so with
+  many callers 2 gives the most throughput (8 callers, one sentence each: 23.6 calls/s unlimited, 36.4 with one at a
+  time). Output never depends on it.
+
+### Changed
+- Faster `Process` on a single sentence, the usual call of a service, on the managed backend (`default` package): the
+  processors now share more of the character language models' work for a one-sentence text (the dependency parser
+  continues the tagger's backward pass; NER reuses sentiment's on multi-word tokens). The output is the same bit for
+  bit. One call on a 5–25-word sentence takes 27.9 ms instead of 30.0 (p90 44.6 instead of 50.7) on 8 threads, and
+  83 ms instead of 94 (p90 141 instead of 170) on 1 thread, on a Ryzen 7 5800X; Python Stanza takes 189 and 319 ms.
+  Details, and guidance on bulk processing and concurrent callers, in docs/performance.md (round 7).
+- The TorchSharp backend's code moved into its own assembly, `StanzaSharp.TorchSharp.dll`, which the `StanzaSharp`
+  package carries next to the others. Nothing else changes; this prepares the opt-in `StanzaSharp.Cuda` package of 1.0.
+- The managed backend is about 30% faster on Arm64 (Windows on Arm, Linux Arm64, Apple Silicon): its matrix kernel
+  now multiplies by vector element instead of broadcasting each value first, reaching 86–89% of the NEON peak instead
+  of 58–60% on a Neoverse N2. Results are bitwise unchanged.
 
 ## [0.5.1] - 2026-10-09
 
@@ -234,7 +265,8 @@ output byte-identical to Python Stanza on the golden test data.
 - `ModelDownloader` fetches the models from Stanza's Hugging Face repository and checks their MD5s.
 - `Conllu.Read` and `Conllu.Write`, in Stanza's CoNLL-U dialect.
 
-[Unreleased]: https://github.com/bisforboman/StanzaSharp/compare/v0.5.1...HEAD
+[Unreleased]: https://github.com/bisforboman/StanzaSharp/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/bisforboman/StanzaSharp/compare/v0.5.1...v0.6.0
 [0.5.1]: https://github.com/bisforboman/StanzaSharp/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/bisforboman/StanzaSharp/compare/v0.4.2...v0.5.0
 [0.4.2]: https://github.com/bisforboman/StanzaSharp/compare/v0.4.1...v0.4.2

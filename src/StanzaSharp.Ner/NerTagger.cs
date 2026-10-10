@@ -1,7 +1,6 @@
 using System.Text.Json.Nodes;
 using StanzaSharp.Nn;
 using StanzaSharp.Nn.Managed;
-using static TorchSharp.torch;
 
 namespace StanzaSharp.Ner;
 
@@ -28,7 +27,7 @@ internal sealed class NerTagger : IDisposable
     private readonly int _batchSize;
     private readonly INerNet _net;
 
-    private NerTagger(Checkpoint ckpt, Pretrain pretrain, Func<int, int, bool, INerNet> net)
+    internal NerTagger(Checkpoint ckpt, Pretrain pretrain, Func<int, int, bool, INerNet> net)
     {
         _pretrain = pretrain;
         var config = ckpt.Root["config"]!;
@@ -46,25 +45,7 @@ internal sealed class NerTagger : IDisposable
         _net = net(_tags.Length, tagset, NeedsCharlm(ckpt));
     }
 
-    /// <summary>
-    /// Loads e.g. <c>models/converted/en/ner/ontonotes-ww-multi_charlm</c> on TorchSharp. The pretrain and charlms are
-    /// shared with the other processors, so the caller owns them. A <c>_nocharlm</c> model takes none.
-    /// </summary>
-    /// <param name="device">Where the model runs; CPU by default. Load the pretrain and charlms on the same device.</param>
-    public static NerTagger Load(string basePath, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward, Device? device = null) =>
-        Weights.On(device, () =>
-        {
-            var ckpt = Checkpoint.Load(basePath);
-            return new NerTagger(ckpt, pretrain, (tags, tagset, charlm) =>
-            {
-                if (charlm && (charlmForward == null || charlmBackward == null || !charlmForward.IsForward || charlmBackward.IsForward))
-                    throw new ArgumentException("This NER model needs the forward charlm, then the backward one");
-                return charlm ? new NerNet(ckpt, DeltaCount(ckpt), tags, tagset, pretrain, charlmForward, charlmBackward)
-                    : new NerNet(ckpt, DeltaCount(ckpt), tags, tagset, pretrain, null, null);
-            });
-        });
-
-    /// <summary><see cref="Load"/> on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
+    /// <summary><c>Load</c> (StanzaSharp.Cuda) on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
     public static NerTagger LoadManaged(string basePath, Pretrain pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward)
     {
         var ckpt = Checkpoint.Load(basePath);
@@ -77,7 +58,7 @@ internal sealed class NerTagger : IDisposable
         });
     }
 
-    private static int DeltaCount(Checkpoint ckpt) => Checkpoint.UnitToId(ckpt.Root["vocab"]!["delta"]).Count;
+    internal static int DeltaCount(Checkpoint ckpt) => Checkpoint.UnitToId(ckpt.Root["vocab"]!["delta"]).Count;
 
     /// <summary>Sets <see cref="Token.Ner"/> on every token and rebuilds every sentence's <see cref="Sentence.Entities"/>.</summary>
     /// <param name="charlms">The tagger's charlm outputs, reused for sentences whose tokens are exactly its words (no MWT).</param>

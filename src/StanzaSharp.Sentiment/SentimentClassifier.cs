@@ -1,7 +1,6 @@
 using System.Text.Json.Nodes;
 using StanzaSharp.Nn;
 using StanzaSharp.Nn.Managed;
-using static TorchSharp.torch;
 
 namespace StanzaSharp.Sentiment;
 
@@ -26,7 +25,7 @@ internal sealed class SentimentClassifier : IDisposable
     private readonly int _maxWindow;
     private readonly ISentimentNet _net;
 
-    private SentimentClassifier(Checkpoint ckpt, Pretrain pretrain, Func<Filter[], ISentimentNet> net)
+    internal SentimentClassifier(Checkpoint ckpt, Pretrain pretrain, Func<Filter[], ISentimentNet> net)
     {
         _pretrain = pretrain;
         var p = ckpt.Root["params"]!;
@@ -50,21 +49,7 @@ internal sealed class SentimentClassifier : IDisposable
     /// <summary>A convolution's filter: <see cref="Height"/> tokens × the biLSTM's full width (Width 0), or Height × Width with stride (1, Width).</summary>
     internal readonly record struct Filter(int Height, int Width);
 
-    /// <summary>
-    /// Loads e.g. <c>models/converted/en/sentiment/sstplus_charlm</c> on TorchSharp. The pretrain and charlms are
-    /// shared with the tagger and parsers, so the caller owns them.
-    /// </summary>
-    /// <param name="device">Where the model runs; CPU by default. Load the pretrain and charlms on the same device.</param>
-    public static SentimentClassifier Load(string basePath, Pretrain pretrain, CharLanguageModel charlmForward, CharLanguageModel charlmBackward, Device? device = null) =>
-        Weights.On(device, () =>
-        {
-            if (!charlmForward.IsForward || charlmBackward.IsForward)
-                throw new ArgumentException("Pass the forward charlm first, then the backward one");
-            var ckpt = Checkpoint.Load(basePath);
-            return new SentimentClassifier(ckpt, pretrain, filters => new SentimentNet(ckpt, filters, pretrain, charlmForward, charlmBackward));
-        });
-
-    /// <summary><see cref="Load"/> on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
+    /// <summary><c>Load</c> (StanzaSharp.Cuda) on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
     public static SentimentClassifier LoadManaged(string basePath, Pretrain pretrain, ManagedCharLanguageModel charlmForward, ManagedCharLanguageModel charlmBackward)
     {
         if (!charlmForward.IsForward || charlmBackward.IsForward)

@@ -62,7 +62,7 @@ internal static class ConstituencyDivergence
         ManagedConstituencyNet.Double = sums;
         using var nlp = Pipeline.Load(modelDir, new PipelineOptions
         {
-            Processors = "tokenize,mwt,pos,constituency", Backend = managed ? PipelineBackend.Managed : PipelineBackend.TorchSharp,
+            Processors = "tokenize,mwt,pos,constituency", Backend = managed ? PipelineBackend.Managed : CudaBackend.Cpu,
             Threads = threads > 0 ? threads : null,
         });
         var parser = nlp.Parser!;

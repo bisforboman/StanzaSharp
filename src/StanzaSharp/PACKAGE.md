@@ -23,15 +23,15 @@ That is all: the models run on StanzaSharp's managed backend, C# kernels using t
 the full pipeline it is about twice as fast as the TorchSharp backend on 8 threads and needs less memory, with the
 same output.
 
-**TorchSharp backend.** Still selectable in 0.5 (and the way to a GPU, below); it leaves the main package in 1.0.
-Add the native libtorch yourself, `TorchSharp-cpu` (or one platform's `libtorch-cpu-<rid>` 2.10.0 package; on
-Windows on Arm64 `libtorch-cpu-win-arm64`, since `TorchSharp-cpu` has none), and select it:
+**TorchSharp backend.** In its own package since 1.0, `StanzaSharp.Cuda` (also the way to a GPU, below). Add it and
+the native libtorch yourself, `TorchSharp-cpu` (or one platform's `libtorch-cpu-<rid>` 2.10.0 package; on Windows on
+Arm64 `libtorch-cpu-win-arm64`, since `TorchSharp-cpu` has none), and select it:
 
 ```csharp
-using var nlp = Pipeline.Load(dir, new PipelineOptions { Backend = PipelineBackend.TorchSharp });
+using var nlp = Pipeline.Load(dir, new PipelineOptions { Backend = CudaBackend.Cpu });
 ```
 
-- Its version must match the `TorchSharp` version StanzaSharp depends on; otherwise the build warns with `STANZA001`.
+- Its version must match the `TorchSharp` version StanzaSharp.Cuda depends on; otherwise the build warns with `STANZA001`.
 - On macOS (Apple Silicon), also run `brew install libomp`: libtorch loads OpenMP from Homebrew's path.
 - `<StanzaSharpTrimNative>true</StanzaSharpTrimNative>` leaves out the libtorch files StanzaSharp never loads (35 MB
   on Linux x64, 29 MB on macOS).
@@ -102,6 +102,9 @@ foreach (var sentence in doc.Sentences)
 - `nlp.Process(new[] { new[] { "Hello", "world", "." } })` takes text that is already split into sentences and
   tokens, like Stanza's `tokenize_pretokenized=True`.
 - `Process` is thread-safe: share one pipeline between threads. Every overload takes a `CancellationToken`.
+  One call on a short sentence takes about 28 ms on 8 threads (`default_fast`: 14 ms). On short texts, about two calls
+  in flight per pipeline give the most throughput; more evict each other's weights from the CPU cache. Set
+  `MaxConcurrentCalls = 2` in `PipelineOptions` to make extra callers wait their turn.
 - Memory: a call's peak is set by its largest batch (the tagger pads up to 250 sentences to the longest), so to
   bound it, call `Process` on parts of about 1,000 words split at blank lines. The annotations stay the same; with
   `tokenize,mwt,pos,constituency` on 15,000 words the peak drops from 1.7 to 1.2 GB for about 15% more time.
@@ -113,7 +116,8 @@ foreach (var sentence in doc.Sentences)
   freed to the OS (`malloc_trim`); on Windows libtorch's allocator keeps it, and the environment variable
   `MIMALLOC_PURGE_DELAY=0`, set before libtorch loads, returns it for about 20% more time.
 - `PipelineOptions`:
-  - `Backend`: `PipelineBackend.Managed` (the default) or `PipelineBackend.TorchSharp`.
+  - `Backend`: `PipelineBackend.Managed` (the default), or `CudaBackend.Create()` / `CudaBackend.Cpu` from
+    `StanzaSharp.Cuda`.
   - `Threads`: threads per operation, set process-wide at Load: the managed backend's one thread pool (shared by
     concurrent calls), or libtorch's intra-op threads. By default at most `Environment.ProcessorCount`, which
     respects a container's CPU quota.
@@ -137,11 +141,10 @@ using var nlp = Pipeline.Load("models/stanza/en", options);
 
 ## GPU
 
-On the TorchSharp backend: reference `TorchSharp-cuda-windows` (or `TorchSharp-cuda-linux`), then
-`Pipeline.Load(dir, new PipelineOptions { Backend = PipelineBackend.TorchSharp, Device = torch.CUDA, DisableTf32 = true })`.
-`DisableTf32` gives output identical to the CPU by turning TF32 off process-wide; with TF32 on (libtorch's
-default), a few near-tie decisions can differ. `Device` and `DisableTf32` are obsolete: GPU support moves to a
-separate `StanzaSharp.Cuda` package, and both leave this package in 1.0. See the repository's docs/gpu.md.
+Reference `StanzaSharp.Cuda` and `TorchSharp-cuda-windows` (or `TorchSharp-cuda-linux`), then
+`Pipeline.Load(dir, new PipelineOptions { Backend = CudaBackend.Create(disableTf32: true) })`.
+`disableTf32` gives output identical to the CPU by turning TF32 off process-wide; with TF32 on (libtorch's
+default), a few near-tie decisions can differ. See the repository's docs/gpu.md.
 
 ## License
 

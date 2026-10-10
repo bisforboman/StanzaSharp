@@ -8,6 +8,12 @@ using TorchSharp;
 using Xunit.Abstractions;
 using StanzaSharp.Mwt;
 using StanzaSharp.Tokenize;
+using StanzaSharp.Pos;
+using StanzaSharp.Lemma;
+using StanzaSharp.Constituency;
+using StanzaSharp.Depparse;
+using StanzaSharp.Ner;
+using StanzaSharp.Sentiment;
 using static TorchSharp.torch;
 
 namespace StanzaSharp.Tests;
@@ -87,6 +93,7 @@ public class ManagedBackendTests(ITestOutputHelper output)
     /// </summary>
     [Theory]
     [MemberData(nameof(Paths))]
+    [Trait("Backend", "Managed")]
     public unsafe void KernelBlocked_SumsInBlocksThenAddsInit(string path)
     {
         const int nr = PackedMatrix.NR, k = 300, kb = 128;
