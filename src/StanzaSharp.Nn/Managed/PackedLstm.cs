@@ -181,6 +181,9 @@ internal sealed unsafe class PackedLstm
         }
     }
 
+    /// <summary>h_{t-1}·W_hhᵀ is summed in blocks of this many terms (<see cref="Gemm.KernelBlocked"/>).</summary>
+    private const int KB = 128;
+
     /// <summary>One time step for every direction in <paramref name="works"/>, split across threads by panel.</summary>
     public static void Step(StepRows[] works)
     {
@@ -214,7 +217,7 @@ internal sealed unsafe class PackedLstm
                             aRows[r] = w.HPrev[row];
                             init[r] = w.Init[row] + p * PackedMatrix.NR;
                         }
-                        Gemm.Kernel(mr, aRows, panel, w.Whh.K, init, outRows);
+                        Gemm.KernelBlocked(mr, aRows, panel, w.Whh.K, KB, init, outRows);
                         for (int r = 0; r < mr; r++)
                             Act.LstmCell(scratch + r * PackedMatrix.NR, w.C[r0 + r] + p * 4, w.HOut[r0 + r] + p * 4);
                     }
