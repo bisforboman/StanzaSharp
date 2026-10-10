@@ -61,7 +61,7 @@ internal sealed class NerTagger : IDisposable
     internal static int DeltaCount(Checkpoint ckpt) => Checkpoint.UnitToId(ckpt.Root["vocab"]!["delta"]).Count;
 
     /// <summary>Sets <see cref="Token.Ner"/> on every token and rebuilds every sentence's <see cref="Sentence.Entities"/>.</summary>
-    /// <param name="charlms">The tagger's charlm outputs, reused for sentences whose tokens are exactly its words (no MWT).</param>
+    /// <param name="charlms">The tagger's charlm outputs, reused for sentences whose tokens are exactly its words (no MWT); each batch's entries are released after use, as NER is the last reader.</param>
     public void Process(Document doc, CharlmCache? charlms = null, CancellationToken cancellationToken = default)
     {
         // ner/data.py: batches of batch_size sentences in document order.
@@ -73,6 +73,10 @@ internal sealed class NerTagger : IDisposable
             var keys = charlms == null ? null
                 : batch.Select((s, i) => s.Words.Select(w => w.Text).SequenceEqual(texts[i]) ? s : null).ToList();
             var tags = Predict(texts, out _, charlms, keys, cancellationToken);
+            // NER runs last, so nothing reads these sentences' cached charlm outputs again.
+            if (charlms != null)
+                foreach (var s in batch)
+                    charlms.Release(s);
             for (int i = 0; i < batch.Length; i++)
             {
                 for (int j = 0; j < tags[i].Length; j++)

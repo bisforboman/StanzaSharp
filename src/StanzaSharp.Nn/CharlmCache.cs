@@ -119,6 +119,16 @@ internal sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords) : 
         return true;
     }
 
+    /// <summary>
+    /// Drops <paramref name="sentence"/>'s entry once its last reader is done with it (NER, the pipeline's last
+    /// processor), so a large document doesn't hold all of it to the end of the call. It doesn't make room for new ones.
+    /// </summary>
+    public void Release(Sentence sentence)
+    {
+        if (_reps.Remove(sentence, out var e))
+            Dispose(e);
+    }
+
     private static void Dispose(Entry e) => e.Native?.Dispose();
 
     public void Dispose()
