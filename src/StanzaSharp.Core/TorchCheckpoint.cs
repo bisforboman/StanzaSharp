@@ -29,13 +29,16 @@ internal static class TorchCheckpoint
     {
         if (!BitConverter.IsLittleEndian)
             throw new PlatformNotSupportedException("Tensor data is read as little-endian");
-        var (obj, stored, read) = IsZip(path) ? ReadZip(path) : ReadLegacy(path);
+        long fileLength = new FileInfo(path).Length;
+        var (obj, stored, read) = IsZip(path) ? ReadZip(path, fileLength) : ReadLegacy(path);
         if (obj is PyDict top)
             foreach (var key in Skip)
                 top.Remove(key);
 
         var buffer = new ArrayBufferWriter<byte>();
-        var splitter = new Splitter(new Utf8JsonWriter(buffer));
+        // The memo lets a pickle reference one object many times, and the JSON copies it each time: cap the JSON
+        // at 16 times the file (real checkpoints stay far below; tensors are mostly data).
+        var splitter = new Splitter(new Utf8JsonWriter(buffer), maxBytes: 16 * fileLength + (1 << 20), path);
         splitter.Walk(obj);
         splitter.Writer.Flush();
         var root = JsonNode.Parse(buffer.WrittenSpan) ?? throw new InvalidDataException($"{path}: checkpoint is None");
@@ -76,7 +79,7 @@ internal static class TorchCheckpoint
             return view switch
             {
                 null => root,
-                PyTuple { Items: [string, long offset, long size] } when offset >= 0 && size >= 0 && offset + size <= numel =>
+                PyTuple { Items: [string, long offset, long size] } when offset >= 0 && size >= 0 && size <= numel - offset =>
                     root with { Numel = size, Offset = offset },
                 _ => throw new InvalidDataException($"{path}: unsupported storage view {view}"),
             };
@@ -92,10 +95,11 @@ internal static class TorchCheckpoint
                 throw new InvalidDataException($"{path}: storage key {k} is not used by the checkpoint");
             if (file.ReadAtLeast(count, 8, throwOnEndOfStream: false) != 8 || BinaryPrimitives.ReadInt64LittleEndian(count) != root.Numel)
                 throw new InvalidDataException($"{path}: storage {key} has the wrong size");
-            long n = root.Numel * root.Type.ElementSize;
-            if (n > file.Length - file.Position)
+            if (root.Numel > (file.Length - file.Position) / root.Type.ElementSize) // not numel * size, which can overflow
                 throw new InvalidDataException($"{path}: storage {key} runs past the end of the file");
-            starts[key] = file.Position;
+            long n = root.Numel * root.Type.ElementSize;
+            if (!starts.TryAdd(key, file.Position))
+                throw new InvalidDataException($"{path}: storage {key} is listed twice");
             file.Seek(n, SeekOrigin.Current);
         }
         return (obj, starts.Keys, (key, offset, destination) =>
@@ -110,7 +114,7 @@ internal static class TorchCheckpoint
     /// storage is the entry <c>&lt;archive&gt;/data/&lt;key&gt;</c>, and <c>&lt;archive&gt;/byteorder</c> (if present) its byte order.
     /// The storages are read from their entries when a tensor is.
     /// </summary>
-    private static (object?, ICollection<string>, StorageReader) ReadZip(string path)
+    private static (object?, ICollection<string>, StorageReader) ReadZip(string path, long fileLength)
     {
         string prefix;
         var roots = new Dictionary<string, TorchStorage>();
@@ -120,11 +124,11 @@ internal static class TorchCheckpoint
             var pkl = zip.Entries.FirstOrDefault(e => e.FullName.EndsWith("/data.pkl"))
                 ?? throw new InvalidDataException($"{path}: zip archive has no data.pkl");
             prefix = pkl.FullName[..^"data.pkl".Length];
-            if (zip.GetEntry(prefix + "byteorder") is { } order && Encoding.ASCII.GetString(ReadEntry(order)) != "little")
+            if (zip.GetEntry(prefix + "byteorder") is { } order && Encoding.ASCII.GetString(ReadEntry(order, fileLength, path)) != "little")
                 throw new NotSupportedException($"{path}: big-endian checkpoints are not supported");
 
             // Persistent id: ("storage", storage_type, key, location, numel).
-            obj = Unpickler.Load(ReadEntry(pkl), pid =>
+            obj = Unpickler.Load(ReadEntry(pkl, fileLength, path), pid =>
                 pid is PyTuple { Items: ["storage", TorchStorageType type, string key, string, long numel] }
                     ? Root(roots, new TorchStorage(type, key, numel, 0), path)
                     : throw new InvalidDataException($"{path}: unsupported persistent id {pid}"));
@@ -132,7 +136,8 @@ internal static class TorchCheckpoint
             foreach (var (key, root) in roots)
             {
                 var entry = zip.GetEntry(prefix + "data/" + key) ?? throw new InvalidDataException($"{path}: storage {key} is missing");
-                if (entry.Length != root.Numel * root.Type.ElementSize)
+                Stored(entry, fileLength, path);
+                if (root.Numel > entry.Length / root.Type.ElementSize || entry.Length != root.Numel * root.Type.ElementSize)
                     throw new InvalidDataException($"{path}: storage {key} has the wrong size");
             }
         }
@@ -147,10 +152,21 @@ internal static class TorchCheckpoint
                 var skip = new byte[Math.Min(offset, 1 << 16)];
                 for (int n; offset > 0; offset -= n)
                     if ((n = data.Read(skip, 0, (int)Math.Min(offset, skip.Length))) == 0)
-                        throw new EndOfStreamException($"{path}: storage {key} ends early");
+                        throw new InvalidDataException($"{path}: storage {key} ends early");
             }
-            data.ReadExactly(destination);
+            if (data.ReadAtLeast(destination, destination.Length, throwOnEndOfStream: false) != destination.Length)
+                throw new InvalidDataException($"{path}: storage {key} ends early");
         });
+    }
+
+    /// <summary>
+    /// torch.save stores entries uncompressed. Requiring that bounds each entry by the file's size, so a header
+    /// claiming gigabytes (or a zip bomb) is rejected before anything is allocated.
+    /// </summary>
+    private static void Stored(ZipArchiveEntry entry, long fileLength, string path)
+    {
+        if (entry.CompressedLength != entry.Length || entry.Length > fileLength)
+            throw new InvalidDataException($"{path}: zip entry {entry.FullName} is compressed or larger than the file");
     }
 
     private static TorchStorage Root(Dictionary<string, TorchStorage> roots, TorchStorage storage, string path)
@@ -162,11 +178,13 @@ internal static class TorchCheckpoint
         return storage;
     }
 
-    private static byte[] ReadEntry(ZipArchiveEntry entry)
+    private static byte[] ReadEntry(ZipArchiveEntry entry, long fileLength, string path)
     {
+        Stored(entry, fileLength, path);
         using var s = entry.Open();
         var data = new byte[entry.Length];
-        s.ReadExactly(data);
+        if (s.ReadAtLeast(data, data.Length, throwOnEndOfStream: false) != data.Length)
+            throw new InvalidDataException($"{path}: zip entry {entry.FullName} ends early");
         return data;
     }
 
@@ -183,7 +201,13 @@ internal static class TorchCheckpoint
         {
             if (!stored.Contains(t.Storage.Key))
                 throw new InvalidDataException($"Tensor {key}: storage {t.Storage.Key} is missing");
-            long length = checked(Numel(t.Shape) * t.Storage.Type.ElementSize);
+            if (t.Shape.Any(d => d < 0) || t.Stride.Any(s => s < 0))
+                throw new InvalidDataException($"Tensor {key} has a negative size or stride");
+            // No bigger than its storage: real views never are, and this bounds a stride-0 broadcast (or a size overflow).
+            long numel = t.Shape.Contains(0) ? 0 : t.Shape.Aggregate(1L, (a, d) => a > t.Storage.Numel / d ? long.MaxValue : a * d);
+            if (numel > t.Storage.Numel)
+                throw new InvalidDataException($"Tensor {key} is larger than its storage");
+            long length = numel * t.Storage.Type.ElementSize;
             if (length > 0)
                 Extent(t, key); // checks the view before anything is read
             infos[key] = new TensorInfo(t.Storage.Type.Dtype, t.Shape, total, length);
@@ -196,19 +220,23 @@ internal static class TorchCheckpoint
     /// <summary>A view's first and last element in its root storage, and whether it is contiguous.</summary>
     private static (long First, long Last, bool Contiguous) Extent(TorchTensor t, string key)
     {
+        // Every term is non-negative (checked by Index) and the storage lies inside the file, so a sum that goes past
+        // the storage's end is caught before it can overflow: each step adds at most (size - 1) * stride, compared first.
+        long end = t.Storage.Offset + t.Storage.Numel; // the storage view's end in its root, at most the root's numel
+        if (t.Offset < 0 || t.Offset >= t.Storage.Numel)
+            throw new InvalidDataException($"Tensor {key} reaches outside its storage");
         long first = t.Storage.Offset + t.Offset, last = first;
         bool contiguous = true;
         long expected = 1;
         for (int d = t.Shape.Length - 1; d >= 0; d--)
         {
-            if (t.Shape[d] < 0 || t.Stride[d] < 0)
-                throw new InvalidDataException($"Tensor {key} has a negative size or stride");
-            last += (t.Shape[d] - 1) * t.Stride[d];
-            contiguous &= t.Shape[d] == 1 || t.Stride[d] == expected;
-            expected *= t.Shape[d];
+            long size = t.Shape[d] - 1, stride = t.Stride[d];
+            if (size > 0 && stride > (end - 1 - last) / size)
+                throw new InvalidDataException($"Tensor {key} reaches outside its storage");
+            last += size * stride;
+            contiguous &= t.Shape[d] == 1 || stride == expected;
+            expected *= t.Shape[d]; // at most the tensor's numel, checked by Index
         }
-        if (t.Offset < 0 || last >= t.Storage.Offset + t.Storage.Numel)
-            throw new InvalidDataException($"Tensor {key} reaches outside its storage");
         return (first, last, contiguous);
     }
 
@@ -239,11 +267,16 @@ internal static class TorchCheckpoint
         }
     }
 
-    private static long Numel(long[] shape) => shape.Aggregate(1L, (a, b) => checked(a * b));
-
-    /// <summary>The converter's Splitter: writes the JSON mirror and names each tensor by its path.</summary>
-    internal sealed class Splitter(Utf8JsonWriter writer)
+    /// <summary>
+    /// The converter's Splitter: writes the JSON mirror and names each tensor by its path. It refuses JSON deeper than
+    /// <see cref="MaxDepth"/> (what <see cref="JsonNode.Parse(ReadOnlySpan{byte}, JsonNodeOptions?, JsonDocumentOptions)"/>
+    /// reads; also a cyclic list) or longer than <paramref name="maxBytes"/>, so walking a pickle's object graph takes
+    /// bounded stack, time and memory.
+    /// </summary>
+    internal sealed class Splitter(Utf8JsonWriter writer, long maxBytes, string path)
     {
+        private const int MaxDepth = 60; // JsonNode.Parse's default limit is 64; a tensor adds 2 levels
+
         public Utf8JsonWriter Writer { get; } = writer;
         public List<(string Key, TorchTensor Tensor)> Tensors { get; } = [];
         private readonly HashSet<string> _keys = [];
@@ -252,6 +285,10 @@ internal static class TorchCheckpoint
         public void Walk(object? obj)
         {
             var w = Writer;
+            if (w.CurrentDepth > MaxDepth)
+                throw new InvalidDataException($"{path}: checkpoint nested more than {MaxDepth} levels deep");
+            if (w.BytesCommitted + w.BytesPending > maxBytes)
+                throw new InvalidDataException($"{path}: checkpoint expands to more than {maxBytes:N0} bytes of JSON");
             switch (obj)
             {
                 case TorchTensor t:
@@ -302,8 +339,8 @@ internal static class TorchCheckpoint
                     break;
                 case List<object?> list: Items(list); break;
                 case PyTuple tuple: Tagged("$tuple", () => Items(tuple.Items)); break;
-                default:
-                    throw new NotSupportedException($"Cannot convert {obj.GetType().Name} at '{string.Join(".", _path)}'");
+                default: // a bare storage or global: not something torch.save writes
+                    throw new InvalidDataException($"{path}: cannot convert {obj.GetType().Name} at '{string.Join(".", _path)}'");
             }
         }
 
@@ -345,7 +382,7 @@ internal static class TorchCheckpoint
             long or BigInteger => Convert.ToString(key, CultureInfo.InvariantCulture)!,
             bool b => b ? "True" : "False",
             double d => PythonRepr(d),
-            _ => throw new NotSupportedException($"Cannot name a dict key of type {key.GetType().Name}"),
+            _ => throw new InvalidDataException($"Cannot name a dict key of type {key.GetType().Name}"), // Unpickler.Key allows no others
         };
     }
 
