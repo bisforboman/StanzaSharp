@@ -363,9 +363,8 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
         var backwardReps = ArrayPool<float>.Shared.Rent(words * dim);
         try
         {
-            _charlmForward.BuildCharRepresentation(texts, forwardReps, dim, ct);
-            ct.ThrowIfCancellationRequested();
-            _charlmBackward.BuildCharRepresentation(texts, backwardReps, dim, ct);
+            // A single sentence (with multi-word tokens, say) is kept for NER, which reads the same tokens.
+            ManagedCharLanguageModel.BuildBoth(_charlmForward, _charlmBackward, texts, forwardReps, backwardReps, charlms, ct);
             ct.ThrowIfCancellationRequested();
             int offset = 0;
             foreach (int i in missing)

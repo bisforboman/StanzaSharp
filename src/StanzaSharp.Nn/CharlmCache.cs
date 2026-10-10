@@ -63,6 +63,34 @@ internal sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords, De
         return true;
     }
 
+    /// <summary>
+    /// What a managed charlm call on one sentence alone computed: [words, dim] arrays and the backward pass's final cell
+    /// state (see <see cref="Managed.ManagedCharLanguageModel.Continue"/>).
+    /// </summary>
+    internal sealed record Alone(float[] Forward, float[] Backward, float[] BackwardFinalC);
+
+    // By the sentence's texts. Run alone, each step of the charlms runs one row through the same kernel, so the outputs
+    // depend on the texts only: any other single-sentence call on the same texts would compute the same bits. (In a batch
+    // a row's kernel depends on the other rows, which is why the entries above are not exact.)
+    private readonly Dictionary<string, Alone> _alone = [];
+
+    /// <summary>Keeps a single-sentence call's outputs (<see cref="TryGetAlone"/>) if they fit under <see cref="MaxWords"/>.</summary>
+    public void AddAlone(IReadOnlyList<string> texts, Alone outputs)
+    {
+        if (!HasRoom(texts.Count) || !_alone.TryAdd(AloneKey(texts), outputs))
+            return;
+        _words += texts.Count;
+    }
+
+    /// <summary>
+    /// The outputs of an earlier single-sentence charlm call on exactly these texts: exactly what a single-sentence call
+    /// would compute now.
+    /// </summary>
+    public bool TryGetAlone(IReadOnlyList<string> texts, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)] out Alone outputs) =>
+        _alone.TryGetValue(AloneKey(texts), out outputs);
+
+    private static string AloneKey(IReadOnlyList<string> texts) => string.Concat(texts.Select(t => $"{t.Length}:{t}"));
+
     /// <summary>Whether a new sentence of <paramref name="words"/> words would fit, so a producer can skip making copies that won't be kept.</summary>
     public bool HasRoom(int words) => _words + words <= MaxWords;
 
@@ -125,6 +153,7 @@ internal sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords, De
         foreach (var e in _reps.Values)
             Dispose(e);
         _reps.Clear();
+        _alone.Clear();
         _words = 0;
     }
 }

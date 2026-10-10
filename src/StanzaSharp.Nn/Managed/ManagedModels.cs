@@ -72,7 +72,7 @@ internal sealed unsafe class ManagedCharLanguageModel
         return result;
     }
 
-    /// <inheritdoc cref="BuildCharRepresentation(IReadOnlyList{IReadOnlyList{string}}, float*, int, CancellationToken)"/>
+    /// <inheritdoc cref="BuildCharRepresentation(IReadOnlyList{IReadOnlyList{string}}, CancellationToken)"/>
     public void BuildCharRepresentation(IReadOnlyList<IReadOnlyList<string>> sentences, Span<float> output, int ldo, CancellationToken ct = default)
     {
         int words = sentences.Sum(s => s.Count);
@@ -87,15 +87,70 @@ internal sealed unsafe class ManagedCharLanguageModel
     /// <paramref name="ldo"/> ≥ HiddenDim) is the n-th word counting through the sentences in order.
     /// <paramref name="ct"/> is checked before each character step.
     /// </summary>
-    public void BuildCharRepresentation(IReadOnlyList<IReadOnlyList<string>> sentences, float* output, int ldo, CancellationToken ct = default)
+    /// <param name="finalC">Optional: gets each sentence's cell state after its last character, [sentences, HiddenDim],
+    /// so that <see cref="Continue"/> can carry on from there.</param>
+    public void BuildCharRepresentation(IReadOnlyList<IReadOnlyList<string>> sentences, float* output, int ldo, CancellationToken ct = default,
+        float* finalC = null) => Run(sentences, null, null, output, ldo, ct, finalC);
+
+    /// <summary>
+    /// Both charlms over <paramref name="sentences"/> into <paramref name="forward"/> and <paramref name="backward"/>
+    /// ([words, HiddenDim] each, rows as in <see cref="BuildCharRepresentation(IReadOnlyList{IReadOnlyList{string}}, float*, int, CancellationToken, float*)"/>).
+    /// A single sentence goes through <paramref name="cache"/>'s single-sentence entries (<see cref="CharlmCache.TryGetAlone"/>):
+    /// copied if an earlier call ran the same texts alone, else computed and kept for the next one.
+    /// </summary>
+    public static void BuildBoth(ManagedCharLanguageModel forwardLm, ManagedCharLanguageModel backwardLm, IReadOnlyList<IReadOnlyList<string>> sentences,
+        float[] forward, float[] backward, CharlmCache? cache, CancellationToken ct)
+    {
+        int dim = forwardLm.HiddenDim;
+        if (cache == null || sentences.Count != 1)
+        {
+            forwardLm.BuildCharRepresentation(sentences, forward, dim, ct);
+            ct.ThrowIfCancellationRequested();
+            backwardLm.BuildCharRepresentation(sentences, backward, dim, ct);
+            return;
+        }
+        if (!cache.TryGetAlone(sentences[0], out var alone))
+        {
+            int n = sentences[0].Count * dim;
+            alone = new(new float[n], new float[n], new float[dim]);
+            forwardLm.BuildCharRepresentation(sentences, alone.Forward, dim, ct);
+            ct.ThrowIfCancellationRequested();
+            fixed (float* pb = alone.Backward, pc = alone.BackwardFinalC)
+                backwardLm.BuildCharRepresentation(sentences, pb, dim, ct, pc);
+            cache.AddAlone(sentences[0], alone);
+        }
+        alone.Forward.CopyTo(forward, 0);
+        alone.Backward.CopyTo(backward, 0);
+    }
+
+    /// <summary>
+    /// Runs one sequence on from the state (<paramref name="h"/>, <paramref name="c"/>) that a single-sentence
+    /// <see cref="BuildCharRepresentation(IReadOnlyList{IReadOnlyList{string}}, float*, int, CancellationToken, float*)"/>
+    /// ended in (its last word's row and its final cell state), over more <paramref name="words"/>, as if they had followed
+    /// in that call; row n of <paramref name="output"/> is the n-th of them in order. Each step runs one row, as that call
+    /// did, so the result is the same bit for bit.
+    /// </summary>
+    public void Continue(float[] h, float[] c, IReadOnlyList<string> words, float* output, int ldo, CancellationToken ct = default)
+    {
+        fixed (float* ph = h, pc = c)
+            Run([words], ph, pc, output, ldo, ct, null);
+    }
+
+    /// <summary>
+    /// The packed recurrence. With a start state (one sentence only) there is no start character: the sequence runs on
+    /// from (<paramref name="startH"/>, <paramref name="startC"/>) instead of (h_init, c_init).
+    /// </summary>
+    private void Run(IReadOnlyList<IReadOnlyList<string>> sentences, float* startH, float* startC, float* output, int ldo, CancellationToken ct, float* finalC)
     {
         int n = sentences.Count, h = HiddenDim;
+        if (startH != null && n != 1)
+            throw new ArgumentException("A start state is for one sentence");
         var ids = new int[n][];
         var rowAt = new int[n][]; // position → output row, or -1
         for (int i = 0, firstRow = 0; i < n; i++)
         {
             var words = sentences[i];
-            var chars = new List<int> { Id(Start) };
+            var chars = startH == null ? new List<int> { Id(Start) } : [];
             var ends = new List<int>();
             foreach (var word in IsForward ? words : words.Reverse())
             {
@@ -126,11 +181,12 @@ internal sealed unsafe class ManagedCharLanguageModel
             {
                 float** ptr = (float**)pointerBase;
                 float* hA = bufferBase, hB = hA + n * h, c = hB + n * h;
-                float* h0 = (float*)Unsafe.AsPointer(ref _h0[0]);
+                float* h0 = startH != null ? startH : (float*)Unsafe.AsPointer(ref _h0[0]);
+                float* cInit = startC != null ? startC : c0;
                 var works = new[] { new StepRows { Whh = _whh, HPrev = ptr, Init = ptr + n, C = ptr + 2 * n, HOut = ptr + 3 * n } };
                 ref var work = ref works[0];
                 for (int r = 0; r < n; r++)
-                    new Span<float>(c0, h).CopyTo(new Span<float>(c + (long)r * h, h));
+                    new Span<float>(cInit, h).CopyTo(new Span<float>(c + (long)r * h, h));
                 int m = n;
                 for (int t = 0; m > 0; t++)
                 {
@@ -158,6 +214,10 @@ internal sealed unsafe class ManagedCharLanguageModel
                     hA = hB;
                     hB = swap;
                 }
+                // A row's cell state was last updated at its own last step.
+                if (finalC != null)
+                    for (int r = 0; r < n; r++)
+                        new Span<float>(c + (long)r * h, h).CopyTo(new Span<float>(finalC + (long)order[r] * h, h));
             }
         }
         finally
