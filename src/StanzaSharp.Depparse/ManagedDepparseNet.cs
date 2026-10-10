@@ -5,7 +5,7 @@ using StanzaSharp.Nn.Managed;
 namespace StanzaSharp.Depparse;
 
 /// <summary>
-/// Managed twin of <see cref="DepparseNet"/> (<see cref="Backend.Managed"/>). The input and the highway biLSTM work on
+/// Managed twin of <c>DepparseNet</c> (<see cref="Backend.Managed"/>). The input and the highway biLSTM work on
 /// the packed rows only. Each deep biaffine scorer runs in two steps: its <c>W1</c>/<c>W2</c> layers (all scorers in
 /// one GEMM), then T = in1·W_bilin per dependent (a GEMM) and T·in2 per word pair. Padding columns, which count in the
 /// arc log-softmax, all see the same in2 (the LSTM output there is 0, so in2 = ReLU(W2's bias)); padding rows are not
@@ -204,7 +204,7 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
                 var words = new int[rows][];
                 for (int b = 0; b < size; b++)
                     for (int t = 0, k = offset[b]; k < offset[b + 1]; t++, k++)
-                        words[packedRow[k]] = t == 0 ? [CharacterModel.RootId] : _charModel.CharIds(batch.Texts[b][t - 1]);
+                        words[packedRow[k]] = t == 0 ? [ManagedCharacterModel.RootId] : _charModel.CharIds(batch.Texts[b][t - 1]);
                 int ldc = _transChar!.PaddedN;
                 fixed (float* pa = a, pc = c)
                 {

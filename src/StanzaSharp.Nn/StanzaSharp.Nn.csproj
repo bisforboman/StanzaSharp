@@ -4,9 +4,6 @@
     <ProjectReference Include="..\StanzaSharp.Core\StanzaSharp.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="TorchSharp" Version="$(TorchSharpVersion)" />
-  </ItemGroup>
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>

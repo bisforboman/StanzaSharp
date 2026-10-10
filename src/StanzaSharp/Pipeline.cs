@@ -94,15 +94,13 @@ public sealed class Pipeline : IDisposable
     private readonly CharLanguageModel? _charlmForward, _charlmBackward;
     private readonly ManagedCharLanguageModel? _managedCharlmForward, _managedCharlmBackward;
     private readonly CharlmCacheOptions _cacheOptions;
-    private readonly TorchSharp.torch.Device? _device;
     private readonly bool _splitSentences, _trimNativeHeap, _depparseReadsCache;
     private readonly ILogger? _logger;
     private readonly SemaphoreSlim? _gate;
 
-    private Pipeline(string modelDir, Dictionary<string, string> models, PipelineOptions options, Backend kind, TorchSharp.torch.Device? device)
+    private Pipeline(string modelDir, Dictionary<string, string> models, PipelineOptions options, Backend kind)
     {
         _cacheOptions = options.CharlmCache;
-        _device = device;
         bool Managed(string processor) => kind == Backend.Managed && ManagedProcessors.Contains(processor);
         _splitSentences = options.SplitSentences;
         _depparseReadsCache = Managed("depparse"); // CharlmCache.TryGetBackwardState: only the managed tagger and parser
@@ -227,7 +225,7 @@ public sealed class Pipeline : IDisposable
             // caps the pool's current count (ProcessorCount unless set lower).
             ManagedThreads.Count = options.Threads ?? Math.Min(ManagedThreads.Count, Environment.ProcessorCount);
             logger?.LogInformation("Using {Threads} managed threads", ManagedThreads.Count);
-            pipeline = new Pipeline(modelDir, models, options, Backend.Managed, device: null);
+            pipeline = new Pipeline(modelDir, models, options, Backend.Managed);
         }
         else
             pipeline = LoadTorchSharp(modelDir, models, options, backend);
@@ -251,7 +249,7 @@ public sealed class Pipeline : IDisposable
         options.Logger?.LogInformation("Using {Threads} torch intra-op threads (Environment.ProcessorCount is {ProcessorCount})", threads, Environment.ProcessorCount);
         if (disableTf32)
             torch.backends.cuda.matmul.allow_tf32 = torch.backends.cudnn.allow_tf32 = false;
-        return Weights.On(device, () => new Pipeline(modelDir, models, options, Backend.TorchSharp, device));
+        return Weights.On(device, () => new Pipeline(modelDir, models, options, Backend.TorchSharp));
     }
 
     internal const string PretrainPath = "pretrain/conll17", ForwardCharlmPath = "forward_charlm/1billion", BackwardCharlmPath = "backward_charlm/1billion";
@@ -476,7 +474,7 @@ public sealed class Pipeline : IDisposable
         // NER, the parser and the sentiment classifier reuse the tagger's charlm outputs instead of computing them again.
         // A _nocharlm tagger (default_fast) has no charlm outputs to share.
         using var charlms = _pos is { UsesCharlm: true } && (_ner != null || _parser != null || _sentiment != null || _depparse != null && _depparseReadsCache)
-            && _cacheOptions.IsEnabled ? new CharlmCache(_cacheOptions.MaxWords, _device) : null;
+            && _cacheOptions.IsEnabled ? new CharlmCache(_cacheOptions.MaxWords) : null;
         if (_pos != null)
             Step("pos", () => _pos.Process(doc, charlms, ct), ct);
         if (_lemma != null)

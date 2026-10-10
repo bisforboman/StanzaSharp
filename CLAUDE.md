@@ -212,7 +212,9 @@ Tokenizer notes:
 ```
 src/StanzaSharp.Core           Document model, CoNLL-U I/O, constituency Tree, safetensors reader,
                                checkpoint loading (converted JSON or .pt). No TorchSharp dependency.
-src/StanzaSharp.Nn             TorchSharp: charlm, pretrain embeddings, shared layers, weight loading.
+src/StanzaSharp.Nn             Pretrain vocab/vectors, CharlmCache, the managed kernels and layers (Managed/). No TorchSharp.
+src/StanzaSharp.TorchSharp     The TorchSharp backend: every processor's torch net, the torch layers (charlm, highway
+                               LSTM, Weights, ...), the tensor halves of Pretrain/CharlmCache, processors' `Load`.
 src/StanzaSharp.Tokenize       Tokenizer + sentence splitting.
 src/StanzaSharp.Mwt            Multi-word token expansion.
 src/StanzaSharp.Pos            POS / feature tagger.
@@ -235,7 +237,8 @@ models/stanza/                 Original downloaded models (gitignored).
 models/converted/en/           Converted models (gitignored); C# prefers them over the .pt files.
 ```
 
-Package policy: library projects reference the managed `TorchSharp` package only. Runnable
+Package policy: only `StanzaSharp.TorchSharp` uses TorchSharp (the facade also declares the package, for packing);
+Core, Nn and the processors must build without it. Library projects reference the managed `TorchSharp` package only. Runnable
 projects (Cli, Benchmark, Tests) reference `$(TorchSharpNative)` (Directory.Build.props): `TorchSharp-cpu`,
 or `TorchSharp-cuda-windows` when built with `STANZASHARP_CUDA=1`, which brings the native libtorch, for the
 TorchSharp backend. The Example and ManagedCheck set `StanzaSharpNoLibTorch` (no libtorch: the default backend needs
@@ -585,7 +588,7 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   into libtorch. `tools/verify-tool.ps1` (golden) packs, `dotnet tool install --tool-path`s it from a local feed,
   checks for natives and downloads `tokenize,mwt`. release.yml packs it.
 - One NuGet package, `StanzaSharp`, packed from `src/StanzaSharp` (user's decision, 2026-10-06).
-  - It carries all nine assemblies plus their XML docs: the facade's ProjectReferences are
+  - It carries all ten assemblies plus their XML docs: the facade's ProjectReferences are
     `PrivateAssets="all"`, and an `IncludeProjectReferences` target adds them.
   - It depends only on managed `TorchSharp` (kept in 0.5 since TorchSharp stays selectable; it leaves at 1.0 with the
     `StanzaSharp.Cuda` split). TorchSharp-backend users add `TorchSharp-cpu`/`-cuda` themselves.
@@ -675,7 +678,14 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   managed pipeline loads no TorchSharp charlms. `docs/backends.md` has the design, the Cuda split plan, exactness, speed and
   the Phase 2 progress table. A managed pipeline needs no native libtorch (below). 0.5: the public `PipelineBackend`
   option, managed the default, platform packages discontinued, Docker sample managed, `alpine` and `linux-arm64` CI jobs.
-  Next (1.0): the `StanzaSharp.Cuda` split.
+  The `StanzaSharp.Cuda` split, step 1 (owner's decisions, 2026-10-09: two PRs; at 1.0 `Device`/`DisableTf32`/
+  `PipelineBackend.TorchSharp` are removed and `StanzaSharp.Cuda` offers `CudaBackend.Create(device)` plus a public
+  TorchSharp-on-CPU option): all torch code is in `StanzaSharp.TorchSharp`, still packed into `StanzaSharp`, no API
+  change. Processors take a net factory in an internal constructor and have `LoadManaged`; their TorchSharp `Load`
+  is a C# 14 static extension in `StanzaSharp.TorchSharp` (`PosTaggerLoad` etc., in the processor's namespace), so
+  `PosTagger.Load(...)` call sites are unchanged. `Pretrain.Native` (`IPretrainVectors`) and `CharlmCache` entries'
+  `ICharlmReps` hold the tensor forms; `Embeddings`, `Pretrain.Load` and the tensor `TryAdd`/`TryGet` are extensions.
+  Next (1.0): the package split (docs/backends.md).
 - **No libtorch on the managed backend** (0.5 requirement, done): TorchSharp's `torch` static constructor loads libtorch, so
   the managed path calls no `torch.*` member at all (not even `torch.CPU`) and makes no TorchSharp object; the
   `TorchSharp.dll` assembly itself still loads. Managed `Pipeline.Load` sets only `ManagedThreads.Count`; libtorch's

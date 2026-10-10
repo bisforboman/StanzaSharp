@@ -9,7 +9,7 @@ namespace StanzaSharp.Nn.Managed;
 // share one. Rented arrays hold stale data; every buffer below is written before it is read.
 
 /// <summary>
-/// Managed twin of <see cref="CharLanguageModel.BuildCharRepresentation"/>: the same character ids, packed batch
+/// Managed twin of <c>CharLanguageModel.BuildCharRepresentation</c>: the same character ids, packed batch
 /// and outputs, as float arrays. The input projection is a table: the input is an embedding, so
 /// emb·W_ihᵀ + b_ih + b_hh is computed once per character of the vocabulary at load.
 /// </summary>
@@ -231,7 +231,7 @@ internal sealed unsafe class ManagedCharLanguageModel
 }
 
 /// <summary>
-/// Managed twin of <see cref="HighwayLstm"/>'s packed path: per layer, one GEMM computes both LSTM directions'
+/// Managed twin of <c>HighwayLstm</c>'s packed path: per layer, one GEMM computes both LSTM directions'
 /// input projections and the gate and highway layers (they all read the same input), then the recurrence, then
 /// h + σ(gate)·tanh(highway).
 /// </summary>
@@ -276,7 +276,7 @@ internal sealed unsafe class ManagedHighwayLstm
         return output;
     }
 
-    /// <param name="input">Packed rows [words, inputSize] (time-major, as <see cref="Rnn.Pack"/> takes them).</param>
+    /// <param name="input">Packed rows [words, inputSize] (time-major, as <c>Rnn.Pack</c> takes them).</param>
     /// <param name="output">Gets the last layer's packed rows [words, 2·hidden].</param>
     /// <param name="ct">Checked per GEMM block and before each time step.</param>
     public void Forward(ReadOnlySpan<float> input, long[] lengths, Span<float> output, CancellationToken ct = default)
@@ -328,7 +328,7 @@ internal sealed unsafe class ManagedHighwayLstm
 
 /// <summary>
 /// Managed twin of a PyTorch <c>nn.LSTM(batch_first: true)</c> (any layers, uni- or bidirectional, zero initial state)
-/// run through <see cref="Rnn.RunPacked"/>: padded input in, padded output out, zero past each row's length.
+/// run through <c>Rnn.RunPacked</c>: padded input in, padded output out, zero past each row's length.
 /// </summary>
 /// <remarks>
 /// A hidden size that isn't a multiple of 4 (<see cref="PackedLstm"/>'s panel) is padded with zero units: zero weights
@@ -481,12 +481,13 @@ internal sealed unsafe class ManagedLstm
 }
 
 /// <summary>
-/// Managed twin of <see cref="CharacterModel"/>: a model's own character LSTM, one vector per word. With attention
+/// Managed twin of <c>CharacterModel</c>: a model's own character LSTM, one vector per word. With attention
 /// (tagger, parser; unidirectional) <c>sum_t sigmoid(attn(h_t)) * h_t</c>; without (NER; bidirectional) the final
 /// forward and backward states. Every word is its own packed sequence.
 /// </summary>
 internal sealed unsafe class ManagedCharacterModel
 {
+    public const int RootId = 3; // vocab.ROOT_ID: depparse's ROOT word is the single character id 3
     private const int UnkId = 1;
 
     private readonly Dictionary<string, int> _vocab;
@@ -498,10 +499,12 @@ internal sealed unsafe class ManagedCharacterModel
     /// <summary>The size of each word's vector: hidden × directions.</summary>
     public int OutputDim => _hidden * _directions;
 
-    /// <inheritdoc cref="CharacterModel(Checkpoint, JsonNode, JsonNode, JsonNode, string, bool, bool)"/>
+    /// <param name="config">The checkpoint's config (<c>char_*</c> settings).</param>
+    /// <param name="charVocab">The checkpoint's <c>vocab.char</c>.</param>
+    /// <param name="prefix">The module in the state dict, e.g. <c>charmodel.</c>.</param>
     public ManagedCharacterModel(Checkpoint ckpt, JsonNode stateDict, JsonNode config, JsonNode charVocab, string prefix, bool bidirectional, bool attention)
     {
-        CharacterModel.CheckSupported(config, charVocab);
+        CheckSupported(config, charVocab);
         float[] T(string key) => ckpt.Tensor<float>(stateDict[prefix + key] ?? throw new KeyNotFoundException($"Checkpoint has no weight '{prefix + key}'"));
         _vocab = Checkpoint.UnitToId(charVocab);
         _hidden = config["char_hidden_dim"]!.GetValue<int>();
@@ -582,5 +585,16 @@ internal sealed unsafe class ManagedCharacterModel
             if (scores != null)
                 ArrayPool<float>.Shared.Return(scores);
         }
+    }
+
+    /// <summary>Throws for the options neither backend ports.</summary>
+    internal static void CheckSupported(JsonNode config, JsonNode charVocab)
+    {
+        if (config["char_num_layers"]!.GetValue<int>() != 1)
+            throw new NotSupportedException("A character model with more than one layer is not ported");
+        if (config["char_rec_dropout"]?.GetValue<double>() is double rec && rec != 0)
+            throw new NotSupportedException("A character model with recurrent dropout is not ported");
+        if (config["char_lowercase"]?.GetValue<bool>() == true || charVocab["lower"]?.GetValue<bool>() == true)
+            throw new NotSupportedException("A lowercasing character model is not ported");
     }
 }

@@ -21,6 +21,8 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
   bit. One call on a 5–25-word sentence takes 27.9 ms instead of 30.0 (p90 44.6 instead of 50.7) on 8 threads, and
   83 ms instead of 94 (p90 141 instead of 170) on 1 thread, on a Ryzen 7 5800X; Python Stanza takes 189 and 319 ms.
   Details, and guidance on bulk processing and concurrent callers, in docs/performance.md (round 7).
+- The TorchSharp backend's code moved into its own assembly, `StanzaSharp.TorchSharp.dll`, which the `StanzaSharp`
+  package carries next to the others. Nothing else changes; this prepares the opt-in `StanzaSharp.Cuda` package of 1.0.
 
 ## [0.5.1] - 2026-10-09
 

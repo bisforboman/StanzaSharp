@@ -2,7 +2,6 @@ using System.Text.RegularExpressions;
 using System.Text.Json.Nodes;
 using StanzaSharp.Nn;
 using StanzaSharp.Nn.Managed;
-using static TorchSharp.torch;
 
 namespace StanzaSharp.Pos;
 
@@ -27,7 +26,7 @@ internal sealed class PosTagger : IDisposable
     private readonly int _wordUnk, _batchSize;
     private readonly IPosNet _net;
 
-    private PosTagger(Checkpoint ckpt, Pretrain pretrain, Func<bool, int[], IPosNet> net)
+    internal PosTagger(Checkpoint ckpt, Pretrain pretrain, Func<bool, int[], IPosNet> net)
     {
         _pretrain = pretrain;
         var config = ckpt.Root["config"]!;
@@ -43,25 +42,7 @@ internal sealed class PosTagger : IDisposable
         _net = net(UsesCharlm, _feats.Select(f => f.Values.Length).ToArray());
     }
 
-    /// <summary>
-    /// Loads e.g. <c>models/converted/en/pos/combined_charlm</c> on TorchSharp. The pretrain and charlms are
-    /// shared with the parser, so the caller owns them. A <c>_nocharlm</c> model takes none.
-    /// </summary>
-    /// <param name="device">Where the model runs; CPU by default. Load the pretrain and charlms on the same device.</param>
-    public static PosTagger Load(string basePath, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward, Device? device = null) =>
-        Weights.On(device, () =>
-        {
-            var ckpt = Checkpoint.Load(basePath);
-            return new PosTagger(ckpt, pretrain, (charlm, feats) =>
-            {
-                if (charlm && (charlmForward == null || charlmBackward == null || !charlmForward.IsForward || charlmBackward.IsForward))
-                    throw new ArgumentException("This tagger needs the forward charlm, then the backward one");
-                var (words, upos, xpos) = Counts(ckpt);
-                return new PosNet(ckpt, words, upos, xpos, feats, pretrain, charlm ? charlmForward : null, charlm ? charlmBackward : null);
-            });
-        });
-
-    /// <summary><see cref="Load"/> on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
+    /// <summary><c>Load</c> (StanzaSharp.TorchSharp) on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
     public static PosTagger LoadManaged(string basePath, Pretrain pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward)
     {
         var ckpt = Checkpoint.Load(basePath);
@@ -74,7 +55,7 @@ internal sealed class PosTagger : IDisposable
         });
     }
 
-    private static (int Words, int Upos, int Xpos) Counts(Checkpoint ckpt)
+    internal static (int Words, int Upos, int Xpos) Counts(Checkpoint ckpt)
     {
         var vocab = ckpt.Root["vocab"]!;
         return (Checkpoint.UnitToId(vocab["word"]).Count, vocab["upos"]!["_id2unit"]!.AsArray().Count, vocab["xpos"]!["_id2unit"]!.AsArray().Count);
