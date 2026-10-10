@@ -5,6 +5,7 @@ namespace StanzaSharp.Tests;
 public class PipelineTests
 {
     [ModelTheory]
+    [Trait("Smoke", "TorchSharp")] // all eight processors on TorchSharp in a ready pull request's light golden run (ci.yml)
     [InlineData(false)]
     [InlineData(true)]
     public void Process_ReproducesGoldenConlluExactly(bool managed)

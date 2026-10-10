@@ -26,28 +26,36 @@ jobs:
   # How much each run checks (owner's decision, 2026-10-09: save runners):
   # - code=false (steps skipped): a draft pull request, or one that changes nothing but documentation. Drafts can't be
   #   merged; marking one ready for review (ready_for_review) starts its real run.
-  # - level=light: a ready pull request. Linux (golden, docker, alpine) runs everything; cross-os and linux-arm64 run
+  # - level=light: a ready pull request. docker and alpine run everything, golden too apart from torch=smoke (below);
+  #   cross-os and linux-arm64 run
   #   a subset (pipeline golden files on both backends, the managed kernels, the no-libtorch check) and no package checks.
   # - level=full: the merge queue (merge_group), pushes to main and release.yml's runs: everything everywhere.
+  # - torch=smoke (owner's decision, 2026-10-10): a ready pull request that touches none of the TorchSharp backend's
+  #   files (below). golden then runs every managed test but, of the TorchSharp-backend cases ("managed: False" and
+  #   [Trait("Backend", "TorchSharp")]), only those marked [Trait("Smoke", "TorchSharp")]. Otherwise torch=full.
   # Required jobs still run with their steps skipped rather than being skipped (a skipped job would count as passed).
-  # Anything but a clear false, including this job failing, runs everything; anything but a clear light runs full.
+  # Anything but a clear false, including this job failing, runs everything; anything but a clear light/smoke runs full.
   changes:
     runs-on: ubuntu-24.04
     outputs:
       code: ${{ steps.files.outputs.code }}
       level: ${{ steps.files.outputs.level }}
+      torch: ${{ steps.files.outputs.torch }}
     steps:
       - id: files
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if [ "${{ github.event_name }}" != pull_request ]; then echo code=true >> "$GITHUB_OUTPUT"; echo level=full >> "$GITHUB_OUTPUT"; exit 0; fi
+          if [ "${{ github.event_name }}" != pull_request ]; then echo code=true >> "$GITHUB_OUTPUT"; echo level=full >> "$GITHUB_OUTPUT"; echo torch=full >> "$GITHUB_OUTPUT"; exit 0; fi
           echo level=light >> "$GITHUB_OUTPUT"
           if [ "${{ github.event.pull_request.draft }}" = true ]; then echo "Draft: nothing to check until it is ready."; echo code=false >> "$GITHUB_OUTPUT"; exit 0; fi
           gh api --paginate "repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" --jq '.[].filename' > files.txt
           cat files.txt
           # Documentation: docs/, any Markdown file (README, CHANGELOG, CLAUDE.md, PACKAGE.md), LICENSE, NOTICE.
           if [ ! -s files.txt ] || grep -qvE '^docs/|\.md$|^LICENSE$|^NOTICE$' files.txt; then echo code=true; else echo code=false; fi >> "$GITHUB_OUTPUT"
+          # The TorchSharp backend (StanzaSharp.Cuda), the seam both backends share (Nn: Backend, CharlmCache, Pretrain;
+          # BackendModels, PipelineBackend), the TorchSharp/libtorch versions (Directory.Build.props) and CI itself.
+          if [ -s files.txt ] && ! grep -qE '^src/StanzaSharp\.Cuda/|^src/StanzaSharp\.Nn/|^src/StanzaSharp/(BackendModels|PipelineBackend)\.cs$|^Directory\.Build\.props$|^\.github/workflows/' files.txt; then echo torch=smoke; else echo torch=full; fi >> "$GITHUB_OUTPUT"
 
   # Build and the tests that need no model files (the model tests skip).
   build-test:
@@ -78,9 +86,19 @@ jobs:
           path: TestResults/*.trx
 
   # The full suite against Stanza's real English models, downloaded and converted with the pinned stanza version.
-  golden:
+  # Split into three jobs by test class (owner's decision, 2026-10-10), balanced by the golden trx's class times (full
+  # run, minutes summed over tests): 1 = ConcurrencyTests' cancellation cases (10.6, one at a time) and every class not
+  # named below (~15 in all); 2 = ConcurrencyTests' concurrent calls (11.5, one at a time) + FastPackage, GcPressure,
+  # ManagedBackend, Tokenizer (~18); 3 = Pipeline, Ner, Sentiment, InputMode, Depparse, NoSsplit (~45, in parallel).
+  # Shard 1's filter is the complement of the other two, so together they run every test exactly once, new classes too.
+  # With torch=smoke, each shard leaves out the TorchSharp-backend cases not marked [Trait("Smoke", "TorchSharp")].
+  golden-shard:
     needs: changes
     if: ${{ !cancelled() }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
     timeout-minutes: 90
     runs-on: ubuntu-24.04
     steps:
@@ -100,9 +118,19 @@ jobs:
 
       # ModelDownloader.cs pins the models (and their MD5s); the converter decides their converted form.
       # Both are kept: the .pt loader tests compare models/stanza/en with models/converted/en.
+      # Shard 1 writes the cache; the others, docker and alpine only restore it. On a miss each shard makes its own.
       - uses: actions/cache@v6
-        if: needs.changes.outputs.code != 'false'
-        id: models
+        if: needs.changes.outputs.code != 'false' && matrix.shard == 1
+        id: models-save
+        with:
+          path: |
+            models/stanza/en
+            models/converted/en
+          key: models-en-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs', 'tools/requirements.txt', 'tools/stanza_convert.py') }}
+
+      - uses: actions/cache/restore@v6
+        if: needs.changes.outputs.code != 'false' && matrix.shard != 1
+        id: models-restore
         with:
           path: |
             models/stanza/en
@@ -115,18 +143,18 @@ jobs:
 
       # The library's own downloader, as users run it; Python is only needed for the converter.
       - name: Download the models
-        if: needs.changes.outputs.code != 'false' && (steps.models.outputs.cache-hit != 'true')
+        if: needs.changes.outputs.code != 'false' && (steps.models-save.outputs.cache-hit || steps.models-restore.outputs.cache-hit) != 'true'
         run: |
           dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/en
           dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/en --package default_fast
 
       - uses: actions/setup-python@v7
-        if: needs.changes.outputs.code != 'false' && (steps.models.outputs.cache-hit != 'true')
+        if: needs.changes.outputs.code != 'false' && (steps.models-save.outputs.cache-hit || steps.models-restore.outputs.cache-hit) != 'true'
         with:
           python-version: '3.12'
 
       - name: Convert the models
-        if: needs.changes.outputs.code != 'false' && (steps.models.outputs.cache-hit != 'true')
+        if: needs.changes.outputs.code != 'false' && (steps.models-save.outputs.cache-hit || steps.models-restore.outputs.cache-hit) != 'true'
         run: |
           # The CPU-only torch wheel; the default Linux wheel pulls in gigabytes of CUDA.
           pip install -r tools/requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
@@ -134,9 +162,19 @@ jobs:
 
       - name: Test
         if: needs.changes.outputs.code != 'false'
-        run: dotnet test StanzaSharp.slnx -c Release --no-build --blame-hang-timeout 30m --blame-hang-dump-type none --logger trx --results-directory TestResults
+        run: |
+          two='.ConcurrencyTests.ConcurrentCalls_ .FastPackageTests. .GcPressureTests. .ManagedBackendTests. .TokenizerTests.'
+          three='.PipelineTests. .NerTests. .SentimentTests. .InputModeTests. .DepparseTests. .NoSsplitTests.'
+          any() { printf 'FullyQualifiedName~%s|' $1 | sed 's/|$//'; }
+          none() { printf 'FullyQualifiedName!~%s&' $1 | sed 's/&$//'; }
+          case ${{ matrix.shard }} in 1) filter=$(none "$two $three");; 2) filter=$(any "$two");; 3) filter=$(any "$three");; esac
+          if [ "${{ needs.changes.outputs.torch }}" = smoke ]; then
+            filter="($filter)&((DisplayName!~managed: False&Backend!=TorchSharp)|Smoke=TorchSharp)"
+          fi
+          echo "$filter"
+          dotnet test StanzaSharp.slnx -c Release --no-build --blame-hang-timeout 30m --blame-hang-dump-type none --logger trx --results-directory TestResults --filter "$filter"
 
-      # A skipped test here means the models were not found.
+      # A skipped test here means the models were not found; no test at all, a broken filter.
       - name: Check that no test was skipped
         if: needs.changes.outputs.code != 'false'
         run: |
@@ -146,37 +184,50 @@ jobs:
             echo "::error::Tests were skipped; the models in models/stanza/en or models/converted/en were not found."
             exit 1
           fi
+          if ! grep -q '<UnitTestResult ' TestResults/*.trx; then echo "::error::No test ran."; exit 1; fi
 
+      # The package checks take about a minute together, so they run in one shard, the shortest.
       # Pack, then build and run a fresh app that references the package as a user of the TorchSharp backend would
-      # (StanzaSharp + TorchSharp-cpu, with StanzaSharpTrimNative).
+      # (StanzaSharp + TorchSharp-cpu, with StanzaSharpTrimNative). Part of the TorchSharp smoke check, so always run.
       - name: Verify the package
-        if: needs.changes.outputs.code != 'false'
+        if: needs.changes.outputs.code != 'false' && matrix.shard == 1
         shell: pwsh
         run: ./tools/verify-package.ps1 -ModelDir models/stanza/en
 
       # The default install: only StanzaSharp, no libtorch at all; the default (managed) backend must run without it.
       - name: Verify the package without libtorch (managed backend)
-        if: needs.changes.outputs.code != 'false'
+        if: needs.changes.outputs.code != 'false' && matrix.shard == 1
         shell: pwsh
         run: ./tools/verify-package.ps1 -ModelDir models/stanza/en -Managed
 
       # The stanzasharp tool (StanzaSharp.Tool): installed from a local feed, no native files, downloads tokenize,mwt.
       - name: Verify the tool package
-        if: needs.changes.outputs.code != 'false'
+        if: needs.changes.outputs.code != 'false' && matrix.shard == 1
         shell: pwsh
         run: ./tools/verify-tool.ps1
 
       - uses: actions/upload-artifact@v7
         if: always() && needs.changes.outputs.code != 'false'
         with:
-          name: test-results-golden
+          name: test-results-golden-${{ matrix.shard }}
           path: TestResults/*.trx
+
+  # The check branch protection requires: passes only if every golden shard passed (a skipped, failed or cancelled
+  # shard fails it). Its own name stays golden, so the protection rule needs no change.
+  golden:
+    needs: golden-shard
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-24.04
+    steps:
+      - run: |
+          echo "golden-shard: ${{ needs.golden-shard.result }}"
+          test "${{ needs.golden-shard.result }}" = success
 
   # The Docker sample (samples/docker) built from this commit's StanzaSharp package, published for linux-x64 into the
   # plain and the chiseled .NET runtime images, on the default managed backend: no libtorch may be in the image. In
   # each, the container must turn corpus.txt into tests/golden/pipeline.conllu byte for byte (all eight processors,
   # models mounted read-only).
-  # The models come from golden's cache (restore only, no new cache entry); on a miss they are downloaded.
+  # The models come from golden's cache, written by golden-shard 1 (restore only, no new cache entry); on a miss they are downloaded.
   # No Docker layer cache: it would cost about 700 MB of the 10 GB cache budget to save a minute.
   docker:
     needs: changes
