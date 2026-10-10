@@ -566,7 +566,9 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - `samples/docker` is a standalone app (its own empty Directory.Build.props) referencing only `StanzaSharp` (nothing
     of TorchSharp in the image since 1.0), on
     `mcr.microsoft.com/dotnet/runtime:10.0` (`BASE` arg; `RID` arg, linux-musl-x64 for Alpine).
-  - Every new package ID needs the nuget.org Trusted Publishing policy to allow it.
+  - New package IDs need no policy change: a nuget.org Trusted Publishing policy applies to all packages of its owner
+    (optionally narrowed by a glob scope). StanzaSharp.Cpu.*, StanzaSharp.Tool and StanzaSharp.Cuda all published with
+    the existing policy.
 - `buildTransitive` (StanzaSharp.Cuda package since 1.0; `src/StanzaSharp.Cuda/buildTransitive/StanzaSharp.Cuda.targets`
   + a `StanzaSharp.Cuda.props` generated at pack time). Both checks below matter only for TorchSharp-backend users (owner, 2026-10-09: they stay). `TorchSharpVersion` (0.107.0) and `LibTorchVersion` (2.10.0) are set only in Directory.Build.props.
   - `STANZA001` (warning): a resolved `TorchSharp`, `TorchSharp-*` or `libtorch-*` package has another version. Versions
