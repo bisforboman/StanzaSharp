@@ -23,6 +23,9 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
   Details, and guidance on bulk processing and concurrent callers, in docs/performance.md (round 7).
 - The TorchSharp backend's code moved into its own assembly, `StanzaSharp.TorchSharp.dll`, which the `StanzaSharp`
   package carries next to the others. Nothing else changes; this prepares the opt-in `StanzaSharp.Cuda` package of 1.0.
+- The managed backend is about 30% faster on Arm64 (Windows on Arm, Linux Arm64, Apple Silicon): its matrix kernel
+  now multiplies by vector element instead of broadcasting each value first, reaching 86–89% of the NEON peak instead
+  of 58–60% on a Neoverse N2. Results are bitwise unchanged.
 
 ## [0.5.1] - 2026-10-09
 
