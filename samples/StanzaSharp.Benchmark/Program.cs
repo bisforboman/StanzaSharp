@@ -476,13 +476,17 @@ sealed class StageLogger : Microsoft.Extensions.Logging.ILogger
 /// <summary>Prints the pipeline's log messages (each model load, each processor) with the working set and its peak.</summary>
 sealed class MemoryLogger(bool live) : Microsoft.Extensions.Logging.ILogger
 {
+    private long _allocated = GC.GetTotalAllocatedBytes(true);
+
     public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
     public bool IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel) => true;
     public void Log<TState>(Microsoft.Extensions.Logging.LogLevel logLevel, Microsoft.Extensions.Logging.EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
         using var p = Process.GetCurrentProcess();
+        long allocated = GC.GetTotalAllocatedBytes(true);
         string liveHeap = live ? $"  live {GC.GetTotalMemory(true) / 1048576.0,5:F0} MB" : "";
-        Console.WriteLine($"  {formatter(state, exception),-70}{liveHeap} working set {p.WorkingSet64 / 1048576.0,6:F0} MB  peak {p.PeakWorkingSet64 / 1048576.0,6:F0} MB  GC heap {GC.GetGCMemoryInfo().HeapSizeBytes / 1048576.0,5:F0} MB  {TorchSharp.DisposeScopeManager.Statistics.TensorStatistics.ThreadTotalLiveCount} live tensors, {TorchSharp.DisposeScopeManager.Statistics.TensorStatistics.CreatedOutsideScopeCount - TorchSharp.DisposeScopeManager.Statistics.TensorStatistics.DisposedOutsideScopeCount} outside scopes");
+        Console.WriteLine($"  {formatter(state, exception),-70}{liveHeap}  allocated {(allocated - _allocated) / 1048576.0,6:F0} MB working set {p.WorkingSet64 / 1048576.0,6:F0} MB  peak {p.PeakWorkingSet64 / 1048576.0,6:F0} MB  GC heap {GC.GetGCMemoryInfo().HeapSizeBytes / 1048576.0,5:F0} MB  {TorchSharp.DisposeScopeManager.Statistics.TensorStatistics.ThreadTotalLiveCount} live tensors, {TorchSharp.DisposeScopeManager.Statistics.TensorStatistics.CreatedOutsideScopeCount - TorchSharp.DisposeScopeManager.Statistics.TensorStatistics.DisposedOutsideScopeCount} outside scopes");
+        _allocated = allocated;
     }
 }
 
