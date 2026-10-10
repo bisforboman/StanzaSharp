@@ -20,7 +20,6 @@ public class PipelineTests
     [Trait("Backend", "Managed")]
     public void ManagedBackend_LoadsNoTorchSharpCharlms()
     {
-        Assert.True(Pipeline.Packages.All(p => p.Value.Keys.All(Pipeline.ManagedProcessors.Contains)));
         foreach (var package in Pipeline.Packages.Keys)
         {
             using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, Backend = PipelineBackend.Managed });

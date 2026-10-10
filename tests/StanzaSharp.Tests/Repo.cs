@@ -25,7 +25,7 @@ public static class Repo
         managed ? Pretrain.LoadManaged(Model("pretrain/conll17")) : Pretrain.Load(Model("pretrain/conll17"));
 
     /// <summary>The same as a pipeline option.</summary>
-    internal static PipelineBackend PipelineBackendFor(bool managed) => managed ? PipelineBackend.Managed : PipelineBackend.TorchSharp;
+    internal static PipelineBackend PipelineBackendFor(bool managed) => managed ? PipelineBackend.Managed : CudaBackend.Cpu;
 
     private static string FindRoot()
     {

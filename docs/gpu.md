@@ -6,28 +6,15 @@ and how fast it is.
 ## Using it
 
 ```csharp
-using TorchSharp;
-
-// DisableTf32: output identical to the CPU (process-wide setting; see below)
-#pragma warning disable CS0618 // Device and DisableTf32 are obsolete from 0.5 (see below)
-using var nlp = Pipeline.Load("models/stanza/en", new PipelineOptions
-{
-    Backend = PipelineBackend.TorchSharp,
-    Device = torch.CUDA,
-    DisableTf32 = true,
-});
+// disableTf32: output identical to the CPU (process-wide setting; see below)
+using var nlp = Pipeline.Load("models/stanza/en", new PipelineOptions { Backend = CudaBackend.Create(disableTf32: true) });
 ```
 
-The GPU runs on the TorchSharp backend; the default managed backend is CPU only. The application references a CUDA
-libtorch package (`TorchSharp-cuda-windows` or `TorchSharp-cuda-linux`, 0.107.0). The `StanzaSharp` package itself
-only depends on the managed `TorchSharp` package; the GPU support is a few lines of code, not a dependency.
-
-**From 0.5**, `Device` and `DisableTf32` are `[Obsolete]`: GPU support moves to a separate `StanzaSharp.Cuda` package
-(`Backend = CudaBackend.Create(device, disableTf32)`, issue #29), and both options leave the main package in 1.0, with
-`PipelineBackend.TorchSharp`. Until then they keep working. Setting either one selects the TorchSharp backend
-(`PipelineOptions.Backend` then reads `TorchSharp`), so `Backend = PipelineBackend.TorchSharp` above is optional; setting
-them together with `Backend = PipelineBackend.Managed` makes `Pipeline.Load` throw an `ArgumentException`. The
-benchmark's `--device cuda` likewise selects its torch backend.
+The GPU runs on the TorchSharp backend, in the `StanzaSharp.Cuda` package (since 1.0; up to 0.5 it was
+`PipelineOptions.Device` and `DisableTf32` in the main package); the default managed backend is CPU only. The
+application references `StanzaSharp.Cuda` and a CUDA libtorch package (`TorchSharp-cuda-windows` or
+`TorchSharp-cuda-linux`, 0.107.0). `CudaBackend.Create(deviceIndex, disableTf32)` picks the GPU; `CudaBackend.Cpu` is
+the same backend on libtorch's CPU kernels. The benchmark's `--device cuda` selects its torch backend.
 
 ### How it works
 

@@ -1,4 +1,3 @@
-#pragma warning disable CS0618 // Device is obsolete (TorchSharp backend only; StanzaSharp.Cuda later) but still supported
 using System.Text.Json.Nodes;
 using StanzaSharp.Constituency;
 using StanzaSharp.Nn;
@@ -72,7 +71,7 @@ public class GpuTests(ITestOutputHelper output)
     public void Pipeline_MostlyMatchesGoldenConllu(bool tf32)
     {
         using var tf32Scope = Tf32(tf32);
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Backend = PipelineBackend.TorchSharp, Device = torch.CUDA });
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Backend = CudaBackend.Create() });
         var files = Directory.GetFiles(Repo.Golden, "validation*.conllu").Order().Append(Path.Combine(Repo.Golden, "pipeline.conllu")).ToList();
         int sentences = 0, same = 0, lines = 0, lineDiffs = 0, treeDiffs = 0;
         output.WriteLine($"{"file",-34}{"sentences",10}{"identical",10}{"lines",8}{"differ",8}{"trees",8}");

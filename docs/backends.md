@@ -4,8 +4,8 @@ StanzaSharp runs each processor's network on one of two backends:
 
 - **Managed** (`PipelineBackend.Managed`, the default from 0.5): C# SIMD kernels with no native dependencies
   (`src/StanzaSharp.Nn/Managed/`, see [managed-backend-spike.md](managed-backend-spike.md)). It is CPU only.
-- **TorchSharp** (`PipelineBackend.TorchSharp`, libtorch): the original code. It runs on the GPU, and it is the
-  reference the managed code is tested against.
+- **TorchSharp** (libtorch; since 1.0 in the `StanzaSharp.Cuda` package: `CudaBackend.Create()`, `CudaBackend.Cpu`): the
+  original code. It runs on the GPU, and it is the reference the managed code is tested against.
 
 The owner's plan: 0.5 makes the managed backend the default, with TorchSharp still selectable. At 1.0 TorchSharp leaves
 the main package for an opt-in `StanzaSharp.Cuda` package. Both implementations stay.
@@ -53,9 +53,9 @@ The seam sits at each processor's **network**: one small interface per processor
 
 ### Choosing the backend
 
-- Public: `PipelineOptions.Backend` (`PipelineBackend.Managed`, the default, or `PipelineBackend.TorchSharp`).
-  Internally `PipelineBackend.Kind` is an `Nn.Backend` (`TorchSharp`, `Managed`).
-- `Pipeline` passes the backend to each processor's `Load(basePath, device, backend)` (or calls its `LoadManaged`).
+- Public: `PipelineOptions.Backend` (`PipelineBackend.Managed`, the default, or StanzaSharp.Cuda's `CudaBackend`).
+- Internally a `PipelineBackend` makes a `BackendModels` per load: `ManagedModels` (facade) calls each processor's
+  `LoadManaged`, `TorchSharpModels` (StanzaSharp.TorchSharp) its TorchSharp `Load` on the backend's device.
 - **Threads:** with `Backend.Managed`, `Load` also sets `ManagedThreads.Count`, with the documented semantics: an
   explicit `Threads`, or null for `min(current count, Environment.ProcessorCount)`. The count is ProcessorCount unless
   something set it lower, and `ProcessorCount` respects a container's CPU quota. It is process-wide, like
@@ -124,14 +124,15 @@ above TorchSharp is the packed form (padding to 16-column panels, charlm input t
 arrays for 551 MB of checkpoint) and the runtime. Processing peaks are unchanged (`--memory 6000`: managed 2,299–2,304 MB
 in 12.5 s, TorchSharp 3,771–4,302 MB in 23–27 s).
 
-### Plan for the `StanzaSharp.Cuda` split (step 1 done)
+### The `StanzaSharp.Cuda` split (done in 1.0)
 
 Owner's decisions (2026-10-09): two PRs. Step 1 (done) moves every TorchSharp class into `StanzaSharp.TorchSharp`, still
 packed into `StanzaSharp` with no API change; Core, Nn and the processors no longer reference TorchSharp. Step 2 (1.0)
 splits the packages, removes `Device`, `DisableTf32` and `PipelineBackend.TorchSharp`, and gives `StanzaSharp.Cuda`
-`CudaBackend.Create(device)` plus a public TorchSharp-on-CPU option. In step 1 the processors take a net factory and
-the facade still calls the TorchSharp loaders directly; the factory interface (item 2) comes with step 2, when the
-facade can no longer reference the TorchSharp assembly.
+`CudaBackend.Create(device)` plus a public TorchSharp-on-CPU option (`CudaBackend.Cpu`). Step 2 is done too. Item 2
+below became one internal abstract class instead of a per-net factory: `BackendModels` loads the backend's pretrain,
+charlms and whole processors (the processors' own `Load`/`LoadManaged` pick the nets), applies the backend's threads and
+TF32 (`Configure`) and wraps the load (`Load`: `Weights.On(device)`). The plan as written before:
 
 The split needs no change to the processors' logic; it only moves where the TorchSharp networks are built.
 
@@ -664,7 +665,7 @@ For 0.5:
 - ~~The public `PipelineBackend` option (decided: A), and managed as the default; `Device`/`DisableTf32` become
   `[Obsolete]`~~: done. The `StanzaSharp.Cpu.*` platform packages are no longer published, and the Docker sample runs
   managed with no libtorch.
-- Later (1.0): the `StanzaSharp.Cuda` split.
+- ~~Later (1.0): the `StanzaSharp.Cuda` split~~: done (`StanzaSharp.Cuda`, `CudaBackend`).
 
 Cross-cutting:
 

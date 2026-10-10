@@ -237,16 +237,16 @@ models/stanza/                 Original downloaded models (gitignored).
 models/converted/en/           Converted models (gitignored); C# prefers them over the .pt files.
 ```
 
-Package policy: only `StanzaSharp.TorchSharp` uses TorchSharp (the facade also declares the package, for packing);
-Core, Nn and the processors must build without it. Library projects reference the managed `TorchSharp` package only. Runnable
+Package policy: only `StanzaSharp.TorchSharp` (the StanzaSharp.Cuda package) uses TorchSharp; the facade, Core, Nn and
+the processors must build without it. Library projects reference the managed `TorchSharp` package only. Runnable
 projects (Cli, Benchmark, Tests) reference `$(TorchSharpNative)` (Directory.Build.props): `TorchSharp-cpu`,
 or `TorchSharp-cuda-windows` when built with `STANZASHARP_CUDA=1`, which brings the native libtorch, for the
 TorchSharp backend. The Example and ManagedCheck set `StanzaSharpNoLibTorch` (no libtorch: the default backend needs
 none); the Tests do too when built with `-p:StanzaSharpNoLibTorch=true` (the linux-arm64 job). The
 managed and native TorchSharp versions must match. CI and the default build stay on CPU.
 
-GPU (TorchSharp backend only): `Pipeline.Load(dir, new PipelineOptions { Backend = PipelineBackend.TorchSharp, Device,
-DisableTf32 })` (the last two `[Obsolete]` since 0.5, later `StanzaSharp.Cuda`) and every processor's `Load(..., device)`. `Weights.On(device, ...)`
+GPU (TorchSharp backend only, the `StanzaSharp.Cuda` package): `Pipeline.Load(dir, new PipelineOptions { Backend =
+CudaBackend.Create(deviceIndex, disableTf32) })` and every processor's `Load(..., device)`. `Weights.On(device, ...)`
 scopes the load; `ToTensor`/`LoadFrom` place weights on `Weights.Device`, and each model keeps
 `_device = Weights.Device` for its input tensors (`torch.tensor(..., device: _device)`). Read tensors with
 `Weights.ToArray<T>()`, not `data<T>()`. pack_padded_sequence lengths stay on the CPU. A new processor
@@ -544,10 +544,9 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     the version.
 - `Pipeline.Load(dir, PipelineOptions?)` (user's decision, 2026-10-06: an options object rather than more
   optional parameters).
-  - `PipelineOptions` holds `Processors`, `Backend`, `Device`, `DisableTf32` and
-    `CharlmCache { IsEnabled = true, MaxWords = 32_768 }`.
-  - `DisableTf32` (name and opt-in are the user's choices) sets both torch TF32 switches to false
-    process-wide and doesn't restore them. `Device` and `DisableTf32` are `[Obsolete]` since 0.5 (see Managed backend).
+  - `PipelineOptions` holds `Processors`, `Backend` and `CharlmCache { IsEnabled = true, MaxWords = 32_768 }`, among others.
+  - `CudaBackend.Create(disableTf32: true)` (was `PipelineOptions.DisableTf32` up to 0.5; name and opt-in are the user's
+    choices) sets both torch TF32 switches to false process-wide at Load and doesn't restore them.
   - `CharlmCache.TryAdd` keeps a sentence only if it fits, detaching its tensors from the caller's
     dispose scope. Otherwise it leaves them with the caller. Before this fix the cache disposed
     rejected tensors that the tagger was still using.
@@ -557,19 +556,19 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     longer published from 0.5; their projects and `src/StanzaSharp.Cpu.props` are gone. TorchSharp-backend users add
     `TorchSharp-cpu` or one `libtorch-cpu-<rid>` 2.10.0 themselves (TorchSharp loads a single one fine; checked with
     `libtorch-cpu-win-x64` alone). Deprecating them on nuget.org is the owner's manual step.
-  - `release.yml` packs `StanzaSharp` and `StanzaSharp.Tool`.
+  - `release.yml` packs `StanzaSharp`, `StanzaSharp.Cuda` (from `src/StanzaSharp.TorchSharp`) and `StanzaSharp.Tool`.
   - On a Windows Arm64 machine Directory.Build.props gives the runnable projects (tests/, samples/)
     `libtorch-cpu-win-arm64` (`TorchSharp-cpu` lacks it), except those setting `StanzaSharpNoLibTorch`.
   - Supported platforms (README, PACKAGE.md): managed backend wherever .NET 10 runs; CI covers linux-x64, win-x64,
     win-arm64, osx-arm64 (full suite), linux-arm64 (managed tests) and Alpine (Docker). macOS Intel is not claimed.
     TorchSharp backend: where TorchSharp 0.107 has `runtimes/<rid>` and a `libtorch-cpu-<rid>` 2.10.0 exists
     (linux-x64, win-x64, win-arm64, osx-arm64); not musl, linux-arm64 or osx-x64.
-  - `samples/docker` is a standalone app (its own empty Directory.Build.props) referencing only `StanzaSharp` (no
-    libtorch in the image; TorchSharp's 2 MB LibTorchSharp shim is published but never loaded), on
+  - `samples/docker` is a standalone app (its own empty Directory.Build.props) referencing only `StanzaSharp` (nothing
+    of TorchSharp in the image since 1.0), on
     `mcr.microsoft.com/dotnet/runtime:10.0` (`BASE` arg; `RID` arg, linux-musl-x64 for Alpine).
   - Every new package ID needs the nuget.org Trusted Publishing policy to allow it.
-- `buildTransitive` (StanzaSharp package; `src/StanzaSharp/buildTransitive/StanzaSharp.targets` + a `StanzaSharp.props`
-  generated at pack time). Both checks below matter only for TorchSharp-backend users (owner, 2026-10-09: they stay). `TorchSharpVersion` (0.107.0) and `LibTorchVersion` (2.10.0) are set only in Directory.Build.props.
+- `buildTransitive` (StanzaSharp.Cuda package since 1.0; `src/StanzaSharp.TorchSharp/buildTransitive/StanzaSharp.Cuda.targets`
+  + a `StanzaSharp.Cuda.props` generated at pack time). Both checks below matter only for TorchSharp-backend users (owner, 2026-10-09: they stay). `TorchSharpVersion` (0.107.0) and `LibTorchVersion` (2.10.0) are set only in Directory.Build.props.
   - `STANZA001` (warning): a resolved `TorchSharp`, `TorchSharp-*` or `libtorch-*` package has another version. Versions
     come from `@(PackageDependencies)` + the assets file's `"<id>/<version>"` keys (copy-local items miss the
     asset-less `TorchSharp-cpu`; `TorchSharp-cpu` 0.106.0 resolves the same TorchSharp/libtorch as 0.107.0).
@@ -583,15 +582,18 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     so switching the property regenerates it. Proven by the plain `verify-package.ps1` (it sets the property and
     checks the files are absent; Linux in golden, macOS in cross-os).
 - `StanzaSharp.Tool` (`src/StanzaSharp.Tool`, `PackAsTool`, command `stanzasharp`): `download [DIR] [--package NAME]
-  [--processors LIST]`. `DownloadCommand.cs` is compiled into samples/StanzaSharp.Cli too (one implementation). A target
-  drops all native package assets (LibTorchSharp, SkiaSharp), so the package is 1.2 MB; the downloader never calls
-  into libtorch. `tools/verify-tool.ps1` (golden) packs, `dotnet tool install --tool-path`s it from a local feed,
+  [--processors LIST]`. `DownloadCommand.cs` is compiled into samples/StanzaSharp.Cli too (one implementation). Since
+  1.0 StanzaSharp has no TorchSharp, so the tool has no native files at all (0.45 MB). `tools/verify-tool.ps1` (golden) packs, `dotnet tool install --tool-path`s it from a local feed,
   checks for natives and downloads `tokenize,mwt`. release.yml packs it.
-- One NuGet package, `StanzaSharp`, packed from `src/StanzaSharp` (user's decision, 2026-10-06).
-  - It carries all ten assemblies plus their XML docs: the facade's ProjectReferences are
-    `PrivateAssets="all"`, and an `IncludeProjectReferences` target adds them.
-  - It depends only on managed `TorchSharp` (kept in 0.5 since TorchSharp stays selectable; it leaves at 1.0 with the
-    `StanzaSharp.Cuda` split). TorchSharp-backend users add `TorchSharp-cpu`/`-cuda` themselves.
+- The `StanzaSharp` package, packed from `src/StanzaSharp` (user's decision, 2026-10-06).
+  - It carries all nine assemblies (facade, Core, Nn, the processors) plus their XML docs: the facade's
+    ProjectReferences are `PrivateAssets="all"`, and an `IncludeProjectReferences` target adds them.
+  - Its only dependency is `Microsoft.Extensions.Logging.Abstractions`; no TorchSharp since 1.0.
+- `StanzaSharp.Cuda` (1.0), packed from `src/StanzaSharp.TorchSharp` (assembly `StanzaSharp.TorchSharp.dll`): depends on
+  `StanzaSharp` (same version) and managed `TorchSharp`; its other ProjectReferences are `PrivateAssets="all"` (their
+  assemblies come with StanzaSharp). Users add `TorchSharp-cpu`/`-cuda-*` themselves. Readme: its `PACKAGE.md`. Its
+  public API is `CudaBackend` (`Create(deviceIndex = 0, disableTf32 = false)`, `Cpu`). Publishing it needs the
+  nuget.org Trusted Publishing policy to allow the ID (owner's step).
   - Every other project is `IsPackable=false` (Directory.Build.props, which also holds the shared
     package metadata and a `0.1.0-dev` default version).
   - Because of `PrivateAssets`, tests and samples reference the library projects they use directly.
@@ -618,9 +620,9 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - It keeps files that already match. `Pipeline.Load` never downloads.
   - Changing the Stanza version means new MD5s, new golden data and a new cache key.
 - `tools/verify-package.ps1` packs a unique `0.0.0-verify.<time>` version and builds a fresh console app against it:
-  plain, plus `TorchSharp-cpu` and `StanzaSharpTrimNative`, running the README example with `Backend =
-  PipelineBackend.TorchSharp` and checking the parse; `-Managed`, only StanzaSharp, running ManagedCheck's
-  Program.cs. It removes that version from the NuGet cache afterwards.
+  plain, StanzaSharp.Cuda + `TorchSharp-cpu` and `StanzaSharpTrimNative`, running the README example with `Backend =
+  CudaBackend.Cpu` and checking the parse; `-Managed`, only StanzaSharp, running ManagedCheck's Program.cs and failing
+  if anything of TorchSharp or libtorch is in the output. It removes that version from the NuGet cache afterwards.
 - Releases start from the CHANGELOG (user's decision, 2026-10-07; before, a pushed tag started them, and hand-made
   tags twice landed wrong). Merging a PR "CHANGELOG: x.y.z" (Unreleased moved under `## [x.y.z] - date`) runs
   `.github/workflows/release.yml` (push to main touching CHANGELOG.md): its `version` job reads the first version
@@ -648,9 +650,9 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
 
 - **Goal:** the main `StanzaSharp` package runs on a pure managed backend (C# SIMD kernels, no native dependencies).
 - **Owner's decisions** (2026-10-07; GPU revised 2026-10-08):
-  - GPU stays, as a separate opt-in package `StanzaSharp.Cuda` carrying the TorchSharp backend (and
-    `Device`/`DisableTf32`). So the backend seam (Phase 1) is permanent with two implementations, managed and
-    TorchSharp; the TorchSharp one is also the CPU test reference.
+  - GPU stays, as a separate opt-in package `StanzaSharp.Cuda` carrying the TorchSharp backend. So the backend seam
+    (Phase 1) is permanent with two implementations, managed and TorchSharp; the TorchSharp one is also the CPU test
+    reference.
   - Tolerances (revised 2026-10-08): the managed backend uses the **same score tolerances as TorchSharp** (1e-4 where
     tests use 1e-4; 1e-3 only where TorchSharp already has it, e.g. sentiment with the cache), and discrete outputs are
     byte-identical. A managed comparison that misses 1e-4: find the drift's source, try cheap fixes (higher-precision
@@ -666,30 +668,28 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     - 0.5: Managed is the default; `Device`/`DisableTf32` become `[Obsolete]` and mean "TorchSharp on that device". A
       managed pipeline must load with no native libtorch package: `Load` must not call `torch.set_num_threads` (or any
       other torch function) unless TorchSharp is used.
-    - 1.0: `Device`, `DisableTf32` and `PipelineBackend.TorchSharp` leave the main package.
-    - Implemented (0.5): `src/StanzaSharp/PipelineBackend.cs` (internal `Kind` = `Nn.Backend`, `Device`, `DisableTf32`,
-      internal constructor; `ToString` = the name). `PipelineOptions.Backend`'s getter is `_backend ?? (Device or
-      DisableTf32 set ? TorchSharp : Managed)`; null throws. `Load` throws an `ArgumentException` when the backend is
-      Managed and `Device`/`DisableTf32` is set (only possible with an explicit `Backend = Managed`). On TorchSharp the
-      device is `options.Device ?? backend.Device` and TF32 `options.DisableTf32 || backend.DisableTf32`. For
-      `StanzaSharp.Cuda`, add it to Directory.Build.props' `InternalsVisibleTo` list. Tests: `Repo.PipelineBackendFor`.
+    - 1.0 (done): `Device`, `DisableTf32` and `PipelineBackend.TorchSharp` are gone. `PipelineBackend` (internal
+      constructor: a name and a `Func<BackendModels>`; `ToString` = the name) has only `Managed` in the main package;
+      `CudaBackend.Create(deviceIndex, disableTf32)` ("Cuda:N") and `CudaBackend.Cpu` ("TorchSharp") are in
+      StanzaSharp.Cuda (owner, 2026-10-09: the CPU option stays public). Tests: `Repo.PipelineBackendFor`.
 - **Status:** Phase 0 (kernels), Phase 1 (seam; tokenize and mwt ported) and Phase 2 (ner, pos, depparse, sentiment,
   lemma, constituency; `CharlmCache` backend-neutral) are done: every processor of both packages runs managed, and a
   managed pipeline loads no TorchSharp charlms. `docs/backends.md` has the design, the Cuda split plan, exactness, speed and
   the Phase 2 progress table. A managed pipeline needs no native libtorch (below). 0.5: the public `PipelineBackend`
   option, managed the default, platform packages discontinued, Docker sample managed, `alpine` and `linux-arm64` CI jobs.
-  The `StanzaSharp.Cuda` split, step 1 (owner's decisions, 2026-10-09: two PRs; at 1.0 `Device`/`DisableTf32`/
-  `PipelineBackend.TorchSharp` are removed and `StanzaSharp.Cuda` offers `CudaBackend.Create(device)` plus a public
-  TorchSharp-on-CPU option): all torch code is in `StanzaSharp.TorchSharp`, still packed into `StanzaSharp`, no API
-  change. Processors take a net factory in an internal constructor and have `LoadManaged`; their TorchSharp `Load`
-  is a C# 14 static extension in `StanzaSharp.TorchSharp` (`PosTaggerLoad` etc., in the processor's namespace), so
-  `PosTagger.Load(...)` call sites are unchanged. `Pretrain.Native` (`IPretrainVectors`) and `CharlmCache` entries'
-  `ICharlmReps` hold the tensor forms; `Embeddings`, `Pretrain.Load` and the tensor `TryAdd`/`TryGet` are extensions.
-  Next (1.0): the package split (docs/backends.md).
+  The `StanzaSharp.Cuda` split (owner's decisions, 2026-10-09: two PRs) is done. Step 1 (#55): all torch code is in
+  `StanzaSharp.TorchSharp`. Processors take a net factory in an internal constructor and have `LoadManaged`; their
+  TorchSharp `Load` is a C# 14 static extension in `StanzaSharp.TorchSharp` (`PosTaggerLoad` etc., in the processor's
+  namespace), so `PosTagger.Load(...)` call sites are unchanged. `Pretrain.Native` (`IPretrainVectors`) and
+  `CharlmCache` entries' `ICharlmReps` hold the tensor forms; `Embeddings`, `Pretrain.Load` and the tensor
+  `TryAdd`/`TryGet` are extensions. Step 2 (1.0): the facade references no TorchSharp; `Pipeline` loads through an
+  internal `BackendModels` (`Configure` threads/TF32, `Load` wrapper for the device, pretrain, charlms, each processor;
+  `ManagedModels` in the facade, `TorchSharpModels` in StanzaSharp.TorchSharp), made by `PipelineBackend.Models`.
 - **No libtorch on the managed backend** (0.5 requirement, done): TorchSharp's `torch` static constructor loads libtorch, so
-  the managed path calls no `torch.*` member at all (not even `torch.CPU`) and makes no TorchSharp object; the
-  `TorchSharp.dll` assembly itself still loads. Managed `Pipeline.Load` sets only `ManagedThreads.Count`; libtorch's
-  threads, TF32 and `Weights.On(Device)` are in `Pipeline.LoadTorchSharp` (unchanged). `Pretrain.LoadManaged` keeps the
+  the managed path calls no `torch.*` member at all (not even `torch.CPU`) and makes no TorchSharp object. Since 1.0
+  the main package has no TorchSharp at all, and ManagedCheck fails if a TorchSharp assembly loads. Managed
+  `Pipeline.Load` sets only `ManagedThreads.Count` (`ManagedModels.Configure`); libtorch's threads, TF32 and
+  `Weights.On(Device)` are in `TorchSharpModels`. `Pretrain.LoadManaged` keeps the
   vectors as a `float[]` (`Load`: a tensor; `CpuVectors()` reads either; `Embeddings` throws on a managed one), used when
   every pretrain reader is managed. After each managed model `Pipeline` runs `GC.Collect()` (weights are read into an
   array, then packed: load peak 1,035 → ~850 MB, +0.05 s). Proof: `tests/StanzaSharp.ManagedCheck` (no TorchSharp-cpu /
@@ -700,12 +700,12 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   this: no `torch.*`, `Scalars`, `Weights.Device`, tensors.
 - **Seam** (all internal): per processor network, arrays in and out: `ITokenizerNet` (`TokenizerNet` / `ManagedTokenizerNet`),
   `IMwtNet` (`MwtNet` / `ManagedMwtNet`). Batching, windows, argmax and decoding stay in the processor, shared, so both
-  backends see the same batches. `Nn.Backend` { TorchSharp (processor `Load`s' default), Managed (the pipeline's
-  default) }; `PipelineOptions.Backend.Kind` → each processor's `Load(basePath, device, backend)` / `LoadManaged`. With
+  backends see the same batches. `Nn.Backend` { TorchSharp, Managed } is what tests and the benchmark pass to the
+  processors' TorchSharp-side `Load(basePath, device, backend)`; the pipeline goes through `BackendModels`. With
   Managed, `Load` also sets `ManagedThreads.Count` = `Threads ?? min(Count, ProcessorCount)`. Benchmark:
   `--backend managed|torch --processors ...` (managed by default; `--device`/`--no-tf32` select torch).
   - Tests that only make sense on TorchSharp (libtorch threads, the Scalar GC race, TF32) set
-    `Backend = PipelineBackend.TorchSharp`; `ManagedThreadsOptionTests` (in `ManagedKernelsCollection`) covers the managed `Threads`.
+    `Backend = CudaBackend.Cpu`; `ManagedThreadsOptionTests` (in `ManagedKernelsCollection`) covers the managed `Threads`.
   - A new port: an `I…Net` with array I/O; the TorchSharp side wraps today's module code unchanged (default path stays
     byte-identical); the managed side composes `Nn.Managed` blocks. Its golden tests become theories over `bool managed`
     (`Repo.Backend(managed)`), and `ManagedBackendTests` gets a net-vs-net test per kernel path.
@@ -760,11 +760,10 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     ratio 15). The gap is the float32 charlm (managed's summation order), amplified by the word encoder; per-step layers
     in double (`ManagedConstituencyNet.Double`, study only) change nothing, so no precision change. Run torch-based
     shards with `--threads 1`: parallel 8-thread libtorch processes crawl.
-  - `Pipeline.ManagedProcessors` (all eight) lists what `Backend.Managed` runs managed. The pipeline loads each
-    backend's charlms only if a `_charlm` processor on that backend reads them (`ManagedCharLanguageModel`: +31 MB of
-    input tables). Managed processors read the shared `Pretrain` through `CpuVectors()` (its array, or a CPU tensor's own memory).
+  - A pipeline runs every processor on one backend (`BackendModels`); it loads the charlms only if a `_charlm`
+    processor reads them (`ManagedCharLanguageModel`: +31 MB of input tables). Managed processors read the shared `Pretrain` through `CpuVectors()` (its array, or a CPU tensor's own memory).
   - `CharlmCache` is backend-neutral: an entry holds its producer's form (tensors, or `[words, dim]` float arrays via the
-    float `TryAdd`). `TryGet` gives tensors (a float entry is converted once, on the cache's device, and kept);
+    float `TryAdd`). `TryGet` gives tensors (a float entry is converted once, on the reader's device, and kept);
     `TryGetArrays` gives arrays (a tensor entry is copied per read). Same-backend pipelines never convert, so the default
     path is unchanged. With pos managed, the tagger adds arrays (only when `HasRoom`), the managed readers (constituency,
     sentiment, NER) read them as they are; a TorchSharp reader in a mixed pipeline would convert them to tensors once.

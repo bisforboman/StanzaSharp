@@ -1,28 +1,27 @@
-using StanzaSharp.Nn;
-using TorchSharp;
-
 namespace StanzaSharp;
 
 /// <summary>
-/// The implementation that runs the models' networks, chosen with <see cref="PipelineOptions.Backend"/>. Both give
-/// the same tags, lemmas, parses, entities and sentiment.
+/// The implementation that runs the models' networks, chosen with <see cref="PipelineOptions.Backend"/>. All of them
+/// give the same tags, lemmas, parses, entities and sentiment.
 /// </summary>
+/// <remarks>
+/// This package has <see cref="Managed"/>. The <c>StanzaSharp.Cuda</c> package adds TorchSharp (libtorch) on a GPU,
+/// <c>CudaBackend.Create()</c>, or on the CPU, <c>CudaBackend.Cpu</c>.
+/// </remarks>
 /// <example>
 /// <code>
 /// using var nlp = Pipeline.Load("models/stanza/en"); // PipelineBackend.Managed
-/// using var torch = Pipeline.Load("models/stanza/en", new PipelineOptions { Backend = PipelineBackend.TorchSharp });
+/// using var gpu = Pipeline.Load("models/stanza/en", new PipelineOptions { Backend = CudaBackend.Create() }); // StanzaSharp.Cuda
 /// </code>
 /// </example>
 public sealed class PipelineBackend
 {
-    // Device and TF32 travel inside the backend, so a GPU backend (the planned StanzaSharp.Cuda package, through
-    // InternalsVisibleTo) needs no TorchSharp type in this package's public API.
-    internal PipelineBackend(Backend kind, string name, torch.Device? device = null, bool disableTf32 = false)
+    // Other packages (StanzaSharp.Cuda) make their backends through InternalsVisibleTo, so this package's public API has
+    // no TorchSharp type and this package references none of theirs.
+    internal PipelineBackend(string name, Func<BackendModels> models)
     {
-        Kind = kind;
         _name = name;
-        Device = device;
-        DisableTf32 = disableTf32;
+        Models = models;
     }
 
     private readonly string _name;
@@ -31,21 +30,11 @@ public sealed class PipelineBackend
     /// The default: C# kernels on the CPU (SIMD where the CPU has it), with no native dependencies, so it runs wherever
     /// .NET runs. It uses <see cref="PipelineOptions.Threads"/> threads of one process-wide pool.
     /// </summary>
-    public static PipelineBackend Managed { get; } = new(Backend.Managed, nameof(Managed));
+    public static PipelineBackend Managed { get; } = new(nameof(Managed), () => new ManagedModels());
 
-    /// <summary>
-    /// TorchSharp (libtorch) on the CPU. It needs a native libtorch package next to StanzaSharp, e.g. <c>TorchSharp-cpu</c>
-    /// with the same versions StanzaSharp was built with. It will leave the main package in 1.0.
-    /// </summary>
-    public static PipelineBackend TorchSharp { get; } = new(Backend.TorchSharp, nameof(TorchSharp));
+    /// <summary>Makes the models' loader for one <see cref="Pipeline.Load"/>.</summary>
+    internal Func<BackendModels> Models { get; }
 
-    internal Backend Kind { get; }
-
-    /// <summary>The TorchSharp device; null is the CPU.</summary>
-    internal torch.Device? Device { get; }
-
-    internal bool DisableTf32 { get; }
-
-    /// <summary>The backend's name: <c>Managed</c> or <c>TorchSharp</c>.</summary>
+    /// <summary>The backend's name, e.g. <c>Managed</c>.</summary>
     public override string ToString() => _name;
 }

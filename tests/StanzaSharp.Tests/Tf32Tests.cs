@@ -1,4 +1,3 @@
-#pragma warning disable CS0618 // DisableTf32 is obsolete (TorchSharp backend only) but still supported
 using TorchSharp;
 
 namespace StanzaSharp.Tests;
@@ -17,13 +16,13 @@ public sealed class TorchSettingsCollection
 public class Tf32Tests
 {
     [ModelFact]
-    public void DisableTf32_TurnsOffBothSwitches()
+    public void DisableTf32_TurnsOffBothSwitches() // CudaBackend.Create(disableTf32: true), on the CPU
     {
         var old = (torch.backends.cuda.matmul.allow_tf32, torch.backends.cudnn.allow_tf32);
         try
         {
             torch.backends.cuda.matmul.allow_tf32 = torch.backends.cudnn.allow_tf32 = true;
-            using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize", DisableTf32 = true });
+            using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize", Backend = new("TorchSharp", () => new TorchSharpModels(device: null, disableTf32: true)) });
             Assert.False(torch.backends.cuda.matmul.allow_tf32);
             Assert.False(torch.backends.cudnn.allow_tf32);
         }

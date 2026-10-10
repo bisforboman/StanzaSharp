@@ -1,24 +1,55 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <!-- The TorchSharp backend: every processor's TorchSharp network and the torch layers they share. The only assembly
-       that references TorchSharp (docs/backends.md, "Plan for the StanzaSharp.Cuda split"). -->
-  <ItemGroup>
-    <ProjectReference Include="..\StanzaSharp.Core\StanzaSharp.Core.csproj" />
-    <ProjectReference Include="..\StanzaSharp.Nn\StanzaSharp.Nn.csproj" />
-    <ProjectReference Include="..\StanzaSharp.Tokenize\StanzaSharp.Tokenize.csproj" />
-    <ProjectReference Include="..\StanzaSharp.Mwt\StanzaSharp.Mwt.csproj" />
-    <ProjectReference Include="..\StanzaSharp.Pos\StanzaSharp.Pos.csproj" />
-    <ProjectReference Include="..\StanzaSharp.Lemma\StanzaSharp.Lemma.csproj" />
-    <ProjectReference Include="..\StanzaSharp.Constituency\StanzaSharp.Constituency.csproj" />
-    <ProjectReference Include="..\StanzaSharp.Depparse\StanzaSharp.Depparse.csproj" />
-    <ProjectReference Include="..\StanzaSharp.Ner\StanzaSharp.Ner.csproj" />
-    <ProjectReference Include="..\StanzaSharp.Sentiment\StanzaSharp.Sentiment.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="TorchSharp" Version="$(TorchSharpVersion)" />
-  </ItemGroup>
+  <!-- The TorchSharp backend (CudaBackend): every processor's TorchSharp network and the torch layers they share. The
+       only assembly that references TorchSharp. Packed as StanzaSharp.Cuda, which depends on StanzaSharp. -->
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <PackageId>StanzaSharp.Cuda</PackageId>
+    <Description>The TorchSharp (libtorch) backend for StanzaSharp: runs Stanza's English pipeline on an NVIDIA GPU (CudaBackend.Create()) or on libtorch's CPU kernels (CudaBackend.Cpu). Add TorchSharp-cuda-windows or TorchSharp-cuda-linux (TorchSharp-cpu for the CPU) for the native libtorch.</Description>
+    <PackageTags>nlp;stanza;cuda;gpu;torchsharp</PackageTags>
+    <PackageReadmeFile>PACKAGE.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The package dependency: StanzaSharp carries the other assemblies. -->
+    <ProjectReference Include="..\StanzaSharp\StanzaSharp.csproj" />
+    <!-- Compile-time only (the facade's references are private): their assemblies come with the StanzaSharp package. -->
+    <ProjectReference Include="..\StanzaSharp.Core\StanzaSharp.Core.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\StanzaSharp.Nn\StanzaSharp.Nn.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\StanzaSharp.Tokenize\StanzaSharp.Tokenize.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\StanzaSharp.Mwt\StanzaSharp.Mwt.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\StanzaSharp.Pos\StanzaSharp.Pos.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\StanzaSharp.Lemma\StanzaSharp.Lemma.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\StanzaSharp.Constituency\StanzaSharp.Constituency.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\StanzaSharp.Depparse\StanzaSharp.Depparse.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\StanzaSharp.Ner\StanzaSharp.Ner.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\StanzaSharp.Sentiment\StanzaSharp.Sentiment.csproj" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="TorchSharp" Version="$(TorchSharpVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="PACKAGE.md" Pack="true" PackagePath="/" />
+    <None Include="..\..\NOTICE" Pack="true" PackagePath="/" />
+    <!-- The version check (STANZA001) and StanzaSharpTrimNative, for every project that gets StanzaSharp.Cuda. -->
+    <None Include="buildTransitive\StanzaSharp.Cuda.targets" Pack="true" PackagePath="buildTransitive/" />
+  </ItemGroup>
+
+  <!-- buildTransitive/StanzaSharp.Cuda.props: the versions this package is built with, for StanzaSharp.Cuda.targets. -->
+  <Target Name="GenerateVersionProps" BeforeTargets="_GetPackageFiles">
+    <PropertyGroup>
+      <_VersionProps>$(IntermediateOutputPath)StanzaSharp.Cuda.props</_VersionProps>
+    </PropertyGroup>
+    <WriteLinesToFile File="$(_VersionProps)" Overwrite="true" WriteOnlyWhenDifferent="true" Lines="&lt;Project&gt;;  &lt;PropertyGroup&gt;;    &lt;_StanzaSharpVersion&gt;$(Version)&lt;/_StanzaSharpVersion&gt;;    &lt;_StanzaSharpTorchSharpVersion&gt;$(TorchSharpVersion)&lt;/_StanzaSharpTorchSharpVersion&gt;;    &lt;_StanzaSharpLibTorchVersion&gt;$(LibTorchVersion)&lt;/_StanzaSharpLibTorchVersion&gt;;  &lt;/PropertyGroup&gt;;&lt;/Project&gt;" />
+    <ItemGroup>
+      <None Include="$(_VersionProps)" Pack="true" PackagePath="buildTransitive/" />
+    </ItemGroup>
+  </Target>
 </Project>

@@ -27,17 +27,18 @@ body:
     attributes:
       label: Device
       options:
-        - CPU
-        - GPU (CUDA), DisableTf32 = true
-        - GPU (CUDA), TF32 on (default)
+        - CPU, managed backend (default)
+        - CPU, TorchSharp (CudaBackend.Cpu)
+        - GPU, CudaBackend.Create(disableTf32 = true)
+        - GPU, CudaBackend.Create() with TF32 on (default)
     validations:
       required: true
   - type: input
     id: environment
     attributes:
       label: Environment
-      description: OS, .NET version, and the TorchSharp native package (e.g. TorchSharp-cpu 0.107.0).
-      placeholder: Windows 11, .NET 10.0.4, TorchSharp-cpu 0.107.0
+      description: OS, .NET version, and with StanzaSharp.Cuda the TorchSharp native package (e.g. TorchSharp-cuda-windows 0.107.0).
+      placeholder: Windows 11, .NET 10.0.4
   - type: textarea
     id: input
     attributes:
