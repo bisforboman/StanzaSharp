@@ -73,6 +73,9 @@ All 7 steps of the build order are done:
   cut at 5000 words like Stanza, and `CharlmCache` keeps at most 32k words (`MaxWords`).
   Round 3 (issue #19, `--memory`): `.pt` files are read tensor by tensor too (the unpickler reads a stream; storages
   are read from the file on demand), and `HighwayLstm` frees each layer's padded tensors as soon as they are used.
+  Round 7 (per call, `--per-call N`, `--concurrent T`): one short sentence takes 28 ms managed (Python 189); the rest is
+  memory bandwidth (weights streamed per call), not setup. Past ~2 concurrent callers managed throughput drops
+  (L3 evictions); a gate in `Pipeline` is an open owner decision.
   After a Process call of 1,000+ words, `NativeHeap.Trim` calls glibc's `malloc_trim(0)` on Linux (user's decision,
   2026-10-07: always on, no public API; `PipelineOptions.TrimNativeHeap` is internal, for the benchmark). On Windows
   libtorch's built-in mimalloc keeps freed pages; only `MIMALLOC_PURGE_DELAY=0` releases them (documented, not set).
@@ -94,8 +97,16 @@ All 7 steps of the build order are done:
   `Pipeline` with `tokenize,mwt,pos,lemma,depparse` reproduces every `tests/golden/depparse/*.conllu`
   byte for byte (13 files, 8401 words), and so does the parser alone on Stanza's own tags and lemmas.
   Arc/label log-prob drift ≈ 2e-5 (tolerance 1e-4).
-  - No `CharlmCache`: the parser feeds the charlms `"\n"` + the words (a ROOT word), so every forward
-    state and the backward ROOT state differ from the tagger's.
+  - The parser feeds the charlms `"\n"` + the words (a ROOT word), so every forward state and the backward ROOT
+    state differ from the tagger's. One exception (managed only): a sentence that the tagger and the parser both run
+    alone (a one-sentence document) has the tagger's backward pass as its prefix, one row per step in both, so the
+    parser continues from the tagger's final (h, c) (`CharlmCache.TryGetAlone`, `ManagedCharLanguageModel.Continue`)
+    over ROOT only: bit for bit (`OneSentenceDocument_ContinuesTheTaggers...`), and a quarter of the charlm work of a
+    per-call `Process` saved. Batched sentences can't: a row's kernel (1-row vs 3/6-row) depends on its batch.
+  - `CharlmCache`'s single-sentence table (`AddAlone`/`TryGetAlone`, keyed by the texts): a managed charlm call on one
+    sentence depends on its texts only, so `ManagedCharLanguageModel.BuildBoth` (pos, sentiment, ner) reuses any earlier
+    one on the same texts exactly. Besides depparse, NER takes a multi-word-token sentence's token charlms from sentiment.
+    `PipelineTests.OneSentenceDocuments_EqualTheUncachedPipeline` checks the whole pipeline against the cache turned off.
   - A missing lemma is read as `_`, as in Stanza, so without the lemmatizer the parses differ.
   - `Conllu.Write` needs no change: with heads set it matches Stanza (DEPS stays `_`).
 - `Lemma.Lemmatizer` (processor `lemma`, requires tokenize, mwt, pos) reproduces `tests/golden/lemma/`
@@ -174,6 +185,9 @@ All 7 steps of the build order are done:
     as live forever (`DisposeScopeManager.Statistics`); they hold no memory. Leak tests leave lemma out.
   - `SplitSentences = false` = `tokenize_no_ssplit`: `Tokenizer.Decode` ends sentences only at paragraph ends.
     `tests/golden/no_ssplit/` (`make_golden.py --no-ssplit-only`). Pretokenized input ignores it, as in Stanza.
+  - `MaxConcurrentCalls` (int?, owner's decision 2026-10-09: opt-in, null = no limit): a `SemaphoreSlim` in `Pipeline`
+    around each Process overload's work (`Gated`); the wait honours the call's token. Managed throughput peaks at ~2 calls
+    in flight (cache eviction of the charlm weights; docs/performance.md round 7).
   - `Processor` constants; `VerifyChecksums` (MD5 of each `.pt` Load reads, `ModelDownloader.Verify`; throws for
     converted models, which have no published MD5); `Logger` (`Microsoft.Extensions.Logging.Abstractions` 10.0.0,
     the package's second dependency): load times at Information, per-processor times at Debug, nothing measured
@@ -198,7 +212,9 @@ Tokenizer notes:
 ```
 src/StanzaSharp.Core           Document model, CoNLL-U I/O, constituency Tree, safetensors reader,
                                checkpoint loading (converted JSON or .pt). No TorchSharp dependency.
-src/StanzaSharp.Nn             TorchSharp: charlm, pretrain embeddings, shared layers, weight loading.
+src/StanzaSharp.Nn             Pretrain vocab/vectors, CharlmCache, the managed kernels and layers (Managed/). No TorchSharp.
+src/StanzaSharp.TorchSharp     The TorchSharp backend: every processor's torch net, the torch layers (charlm, highway
+                               LSTM, Weights, ...), the tensor halves of Pretrain/CharlmCache, processors' `Load`.
 src/StanzaSharp.Tokenize       Tokenizer + sentence splitting.
 src/StanzaSharp.Mwt            Multi-word token expansion.
 src/StanzaSharp.Pos            POS / feature tagger.
@@ -221,7 +237,8 @@ models/stanza/                 Original downloaded models (gitignored).
 models/converted/en/           Converted models (gitignored); C# prefers them over the .pt files.
 ```
 
-Package policy: library projects reference the managed `TorchSharp` package only. Runnable
+Package policy: only `StanzaSharp.TorchSharp` uses TorchSharp (the facade also declares the package, for packing);
+Core, Nn and the processors must build without it. Library projects reference the managed `TorchSharp` package only. Runnable
 projects (Cli, Benchmark, Tests) reference `$(TorchSharpNative)` (Directory.Build.props): `TorchSharp-cpu`,
 or `TorchSharp-cuda-windows` when built with `STANZASHARP_CUDA=1`, which brings the native libtorch, for the
 TorchSharp backend. The Example and ManagedCheck set `StanzaSharpNoLibTorch` (no libtorch: the default backend needs
@@ -571,7 +588,7 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   into libtorch. `tools/verify-tool.ps1` (golden) packs, `dotnet tool install --tool-path`s it from a local feed,
   checks for natives and downloads `tokenize,mwt`. release.yml packs it.
 - One NuGet package, `StanzaSharp`, packed from `src/StanzaSharp` (user's decision, 2026-10-06).
-  - It carries all nine assemblies plus their XML docs: the facade's ProjectReferences are
+  - It carries all ten assemblies plus their XML docs: the facade's ProjectReferences are
     `PrivateAssets="all"`, and an `IncludeProjectReferences` target adds them.
   - It depends only on managed `TorchSharp` (kept in 0.5 since TorchSharp stays selectable; it leaves at 1.0 with the
     `StanzaSharp.Cuda` split). TorchSharp-backend users add `TorchSharp-cpu`/`-cuda` themselves.
@@ -661,7 +678,14 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   managed pipeline loads no TorchSharp charlms. `docs/backends.md` has the design, the Cuda split plan, exactness, speed and
   the Phase 2 progress table. A managed pipeline needs no native libtorch (below). 0.5: the public `PipelineBackend`
   option, managed the default, platform packages discontinued, Docker sample managed, `alpine` and `linux-arm64` CI jobs.
-  Next (1.0): the `StanzaSharp.Cuda` split.
+  The `StanzaSharp.Cuda` split, step 1 (owner's decisions, 2026-10-09: two PRs; at 1.0 `Device`/`DisableTf32`/
+  `PipelineBackend.TorchSharp` are removed and `StanzaSharp.Cuda` offers `CudaBackend.Create(device)` plus a public
+  TorchSharp-on-CPU option): all torch code is in `StanzaSharp.TorchSharp`, still packed into `StanzaSharp`, no API
+  change. Processors take a net factory in an internal constructor and have `LoadManaged`; their TorchSharp `Load`
+  is a C# 14 static extension in `StanzaSharp.TorchSharp` (`PosTaggerLoad` etc., in the processor's namespace), so
+  `PosTagger.Load(...)` call sites are unchanged. `Pretrain.Native` (`IPretrainVectors`) and `CharlmCache` entries'
+  `ICharlmReps` hold the tensor forms; `Embeddings`, `Pretrain.Load` and the tensor `TryAdd`/`TryGet` are extensions.
+  Next (1.0): the package split (docs/backends.md).
 - **No libtorch on the managed backend** (0.5 requirement, done): TorchSharp's `torch` static constructor loads libtorch, so
   the managed path calls no `torch.*` member at all (not even `torch.CPU`) and makes no TorchSharp object; the
   `TorchSharp.dll` assembly itself still loads. Managed `Pipeline.Load` sets only `ManagedThreads.Count`; libtorch's

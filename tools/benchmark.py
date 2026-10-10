@@ -8,6 +8,8 @@ text (validation.txt, corpus.txt and tokenize_stress.txt from tests/golden, repe
 
 --documents N times N one-sentence texts instead (the golden validation sentences, cycled): one nlp(text) call
 per text vs one nlp.bulk_process(texts) call, as samples/StanzaSharp.Benchmark --documents does.
+--per-call N times N calls on one short sentence each (5-25 words) after a warm-up: median and p90 ms per call and
+per stage, as samples/StanzaSharp.Benchmark --per-call does (--concurrent T: T threads share the pipeline).
 """
 import argparse
 import ctypes
@@ -68,6 +70,8 @@ def main():
     parser.add_argument("--out")
     parser.add_argument("--package", default="default", help="Stanza's English package (default_fast has no constituency)")
     parser.add_argument("--documents", type=int, default=0, help="time N one-sentence texts, one by one vs bulk")
+    parser.add_argument("--per-call", type=int, default=0, help="time N calls on one short sentence each")
+    parser.add_argument("--concurrent", type=int, default=0, help="--per-call: T threads each make N calls")
     parser.add_argument("--memory", type=int, default=0, help="load, then one nlp(text) call on about N words; report the peaks")
     parser.add_argument("--processors", help="--memory: the processors to load (default: all of the package's)")
     parser.add_argument("--chunk-words", type=int, default=0, help="--memory: one call per part of about K words")
@@ -79,6 +83,8 @@ def main():
 
     if args.documents > 0:
         return time_documents(args)
+    if args.per_call > 0:
+        return time_per_call(args)
     if args.memory > 0:
         return measure_memory(args)
 
@@ -135,6 +141,61 @@ def time_documents(args):
     print(f"Python Stanza {stanza.__version__} ({args.package}), torch threads {torch.get_num_threads()}, {len(texts)} documents of one sentence")
     print(f"{'one by one':<14}{alone:9.2f} s {len(texts) / alone:10.0f} docs/s")
     print(f"{'bulk':<14}{bulk:9.2f} s {len(texts) / bulk:10.0f} docs/s")
+
+
+def time_per_call(args):
+    golden = ROOT / "tests" / "golden"
+    texts = [line[len("# text = "):] for path in sorted(golden.glob("validation*.conllu"))
+             for line in path.read_text(encoding="utf-8").split("\n") if line.startswith("# text = ")]
+    texts = [t for t in texts if 5 <= word_count(t) <= 25]
+    nlp = stanza.Pipeline("en", dir=args.models, package=args.package, download_method=None, use_gpu=False, logging_level="WARN")
+    stages = list(nlp.processors)
+    header = f"Python Stanza {stanza.__version__} ({args.package}), torch threads {torch.get_num_threads()}"
+    with torch.no_grad():
+        for i in range(20):  # warm-up
+            nlp(texts[i % len(texts)])
+    if args.concurrent > 0:
+        import threading
+        latencies = []
+
+        def work(t):
+            with torch.no_grad():
+                for i in range(args.per_call):
+                    start = time.perf_counter()
+                    nlp(texts[(t * args.per_call + i) % len(texts)])
+                    latencies.append((time.perf_counter() - start) * 1000)
+        threads = [threading.Thread(target=work, args=(t,)) for t in range(args.concurrent)]
+        start = time.perf_counter()
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
+        seconds = time.perf_counter() - start
+        print(f"{header}, {args.concurrent} callers x {args.per_call} calls on one sentence each")
+        print(f"{'throughput':<14}{args.concurrent * args.per_call / seconds:9.1f} calls/s   per call median "
+              f"{statistics.median(latencies):8.2f} ms  p90 {percentile(latencies, 0.9):8.2f} ms")
+        return
+    times = {s: [] for s in stages}
+    totals = []
+    with torch.no_grad():
+        for i in range(args.per_call):
+            total = time.perf_counter()
+            doc = texts[i % len(texts)]
+            for s in stages:  # what nlp(text) does, timed per stage
+                start = time.perf_counter()
+                doc = nlp.processors[s].process(doc)
+                times[s].append((time.perf_counter() - start) * 1000)
+            totals.append((time.perf_counter() - total) * 1000)
+    print(f"{header}, {args.per_call} calls on one sentence each ({len(texts)} sentences of 5-25 words, cycled)")
+    print(f"{'':<14}{'median':>9} {'p90':>9}  ms per call")
+    for s in stages:
+        print(f"{s:<14}{statistics.median(times[s]):9.2f} {percentile(times[s], 0.9):9.2f}")
+    print(f"{'total':<14}{statistics.median(totals):9.2f} {percentile(totals, 0.9):9.2f}")
+
+
+def percentile(xs, p):
+    import math
+    return sorted(xs)[math.ceil(p * len(xs)) - 1]
 
 
 def word_count(s):

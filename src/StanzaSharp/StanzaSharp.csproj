@@ -20,6 +20,7 @@
     <!-- PrivateAssets: shipped inside this package rather than as package dependencies of their own. -->
     <ProjectReference Include="..\StanzaSharp.Core\StanzaSharp.Core.csproj" PrivateAssets="all" />
     <ProjectReference Include="..\StanzaSharp.Nn\StanzaSharp.Nn.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\StanzaSharp.TorchSharp\StanzaSharp.TorchSharp.csproj" PrivateAssets="all" />
     <ProjectReference Include="..\StanzaSharp.Tokenize\StanzaSharp.Tokenize.csproj" PrivateAssets="all" />
     <ProjectReference Include="..\StanzaSharp.Mwt\StanzaSharp.Mwt.csproj" PrivateAssets="all" />
     <ProjectReference Include="..\StanzaSharp.Pos\StanzaSharp.Pos.csproj" PrivateAssets="all" />

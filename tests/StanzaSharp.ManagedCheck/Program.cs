@@ -41,11 +41,13 @@ foreach (var (package, expected) in new[] { ("default", "pipeline.conllu"), ("de
         noSsplit.Process(corpus);
 }
 
-// Every loaded module but the managed TorchSharp assembly (mapped like a module on Windows and Linux).
+// Every loaded module but the managed TorchSharp and StanzaSharp.TorchSharp assemblies (mapped like modules on Windows and
+// Linux).
 // Every check above already proves it where libtorch is absent (TorchSharp throws when it can't load it); the module
 // list also catches a native load where it is present.
 var natives = Modules()
     .Where(m => !m.ModuleName.Equals("TorchSharp.dll", StringComparison.OrdinalIgnoreCase)
+        && !m.ModuleName.Equals("StanzaSharp.TorchSharp.dll", StringComparison.OrdinalIgnoreCase)
         && (m.ModuleName.Contains("torch", StringComparison.OrdinalIgnoreCase) || m.ModuleName.StartsWith("c10", StringComparison.OrdinalIgnoreCase)
             || m.ModuleName.StartsWith("libc10", StringComparison.OrdinalIgnoreCase)))
     .Select(m => m.FileName)

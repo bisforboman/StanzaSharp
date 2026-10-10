@@ -106,6 +106,20 @@ public sealed class PipelineOptions
     public int? Threads { get; init; }
 
     /// <summary>
+    /// At most this many <see cref="Pipeline.Process(string)"/> calls run on this pipeline at once; more callers wait
+    /// for a turn (cancellable through the call's token). Null, the default, means no limit.
+    /// </summary>
+    /// <remarks>
+    /// Output never depends on it. On <see cref="PipelineBackend.Managed"/> concurrent calls evict each other's model
+    /// weights from the CPU cache, so beyond about two calls in flight throughput falls (default package, Ryzen 7 5800X,
+    /// one sentence per call: 1 caller 29.6 calls/s, 2 callers 36.0, 8 callers 23.6; 8 callers limited to one call at a
+    /// time 36.4). A service with many concurrent requests on one pipeline can set 2. Bulk input
+    /// (<see cref="Pipeline.Process(IEnumerable{string})"/>) is faster still when requests can be grouped.
+    /// </remarks>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown by <see cref="Pipeline.Load"/> for a value below 1.</exception>
+    public int? MaxConcurrentCalls { get; init; }
+
+    /// <summary>
     /// Whether the tokenizer splits paragraphs into sentences (true, the default, as Stanza does). False is Stanza's
     /// <c>tokenize_no_ssplit</c>: each paragraph, i.e. text between blank lines, becomes one sentence, for input that
     /// already has one sentence per paragraph. Tokens and multi-word tokens are the same either way. Pretokenized input

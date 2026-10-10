@@ -155,7 +155,9 @@ var doc = nlp.Process(new[] { new[] { "Hello", "world", "." }, new[] { "Bye", ".
 ```
 
 Both match Python Stanza byte for byte. Bulk is much faster than one call per text for short texts: 7.7× on
-2,000 one-sentence texts ([docs/performance.md](docs/performance.md#bulk-processing-many-short-texts)). Its output
+2,000 one-sentence texts ([docs/performance.md](docs/performance.md#bulk-processing-many-short-texts)). One call per
+text costs about 28 ms for a short sentence on 8 threads (`default_fast`: 14 ms; Python Stanza: 189 and 73 ms), mostly
+reading the models' weights from memory ([round 7](docs/performance.md#results-round-7-one-process-call-per-short-text)). Bulk output
 can differ slightly from processing each text alone, exactly as in Stanza: the sentiment classifier sees its batch's padding (172 of 854
 golden labels change), and sentence ids continue across the documents. Pretokenized tokens are never split into
 multi-word tokens (`"don't"` stays one word), as in Stanza.
@@ -202,6 +204,10 @@ var doc = nlp.Process(text, cancellationToken); // OperationCanceledException wi
   concurrent calls share the one pool: each call works its own part and idle threads help, so N callers don't start
   N teams. On the TorchSharp backend each call runs its operations on up to `Threads` threads of its own, so N
   callers on C cores do best with `Threads` about C / N. Throughput is bounded by the CPU, not the number of callers.
+  On the managed backend it even drops past about two callers in flight on short texts (8 callers: 24 calls/s, 2: 36),
+  as concurrent calls evict each other's weights from the CPU cache: limit a service to about two concurrent
+  `Process` calls per pipeline (`new PipelineOptions { MaxConcurrentCalls = 2 }`: extra calls wait their turn), or batch
+  texts that arrive together into one bulk call.
   Sharing one pipeline saves memory: a loaded pipeline takes about 0.8–1 GB (`default`; about 0.7 GB
 for `default_fast`), and each call in flight adds
   its own working memory on top (a few hundred MB for a page of text, more for long documents).

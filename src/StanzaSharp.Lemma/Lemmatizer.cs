@@ -2,7 +2,6 @@ using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
 using StanzaSharp.Nn;
-using static TorchSharp.torch;
 
 namespace StanzaSharp.Lemma;
 
@@ -12,7 +11,7 @@ namespace StanzaSharp.Lemma;
 /// a dictionary by (UPOS, word), then by word alone; words it misses go through a character seq2seq model
 /// (models/common/seq2seq_model.py) with POS input, soft attention, a copy gate and an edit classifier
 /// (identity / lowercase / use the decoded string), decoded greedily.
-/// The network is an <see cref="ILemmaNet"/> (per <see cref="Backend"/>); the dictionary, DeltaVocab, batching, the greedy
+/// The network is an <see cref="ILemmaNet"/> (per backend); the dictionary, DeltaVocab, batching, the greedy
 /// loop and the edits are here.
 /// </summary>
 internal sealed class Lemmatizer : IDisposable
@@ -26,7 +25,8 @@ internal sealed class Lemmatizer : IDisposable
     private readonly int _batchSize, _maxDecLen;
     private readonly ILemmaNet _net;
 
-    private Lemmatizer(Checkpoint ckpt, Backend backend)
+    /// <param name="net">Builds the network from the checkpoint and its sizes (a backend's).</param>
+    internal Lemmatizer(Checkpoint ckpt, Func<Checkpoint, LemmaConfig, ILemmaNet> net)
     {
         var root = ckpt.Root;
         var config = root["config"]!;
@@ -59,14 +59,11 @@ internal sealed class Lemmatizer : IDisposable
         _batchSize = config["batch_size"]!.GetValue<int>();
         _maxDecLen = config["max_dec_len"]!.GetValue<int>();
         var sizes = LemmaConfig.From(config);
-        _net = backend == Backend.Managed ? new ManagedLemmaNet(ckpt, sizes) : new LemmaNet(ckpt, sizes);
+        _net = net(ckpt, sizes);
     }
 
-    /// <summary>Loads <c>basePath.json</c> + <c>.safetensors</c> (or <c>basePath.pt</c>), e.g. <c>models/converted/en/lemma/combined_nocharlm</c>.</summary>
-    /// <param name="device">Where the model runs on TorchSharp; CPU by default.</param>
-    /// <param name="backend">The network's backend; the managed one ignores <paramref name="device"/>.</param>
-    public static Lemmatizer Load(string basePath, Device? device = null, Backend backend = Backend.TorchSharp) =>
-        Weights.On(device, () => new Lemmatizer(Checkpoint.Load(basePath), backend));
+    /// <summary>Loads <c>basePath.json</c> + <c>.safetensors</c> (or <c>basePath.pt</c>), e.g. <c>models/converted/en/lemma/combined_nocharlm</c>, on the managed backend.</summary>
+    public static Lemmatizer LoadManaged(string basePath) => new(Checkpoint.Load(basePath), (ckpt, sizes) => new ManagedLemmaNet(ckpt, sizes));
 
     /// <summary>Sets the lemma of every word in <paramref name="doc"/>; needs UPOS from the tagger.</summary>
     public void Process(Document doc, CancellationToken cancellationToken = default)
