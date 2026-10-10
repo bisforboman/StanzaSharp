@@ -7,6 +7,11 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 
 ## [Unreleased]
 
+### Changed
+- The managed backend is about 30% faster on Arm64 (Windows on Arm, Linux Arm64, Apple Silicon): its matrix kernel
+  now multiplies by vector element instead of broadcasting each value first, reaching 86–89% of the NEON peak instead
+  of 58–60% on a Neoverse N2. Results are bitwise unchanged.
+
 ## [0.5.1] - 2026-10-09
 
 ### Fixed
