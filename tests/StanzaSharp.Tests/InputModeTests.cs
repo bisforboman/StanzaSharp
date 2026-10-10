@@ -10,6 +10,7 @@ public class InputModeTests
     private static readonly Dictionary<string, string> Suffix = new() { ["default"] = "", ["default_fast"] = ".fast" };
 
     [ModelTheory]
+    [Trait("Smoke", "TorchSharp")] // both packages on TorchSharp in a ready pull request's light golden run (ci.yml)
     [InlineData("default", false)]
     [InlineData("default_fast", false)]
     [InlineData("default", true)]

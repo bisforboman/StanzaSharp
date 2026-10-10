@@ -7,6 +7,18 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 
 ## [Unreleased]
 
+### Changed
+- Less memory on long texts: the returned `Document` takes about 19% less (482 instead of 594 bytes per word with all
+  eight processors: tokens hold room for one word, `SpaceAfter` and equal feats strings are shared, tree children are
+  arrays), and NER frees the charlm outputs the tagger kept for it (up to 256 MB) as it goes. One call on 670,000
+  words peaked at 3.0 GB instead of 3.6 GB. Outputs are unchanged. `Tree.Children` of a parsed tree is now an array
+  (still an `IReadOnlyList<Tree>`).
+- README: guidance for very long texts, including what splitting a text into parts changes (sentiment labels).
+
+### Fixed
+- `.pt` loading: an integer pickled as LONG1 that fits in 64 bits (such as a storage of 2^31 elements or more) was kept
+  as a big integer, so such a checkpoint failed to load.
+
 ### Security
 - Loading a malformed or hostile model file now always fails with `InvalidDataException` (`NotSupportedException` for
   a big-endian `.pt`), in time and memory bounded by the file's size. Found by a new fuzz test of the `.pt` and
@@ -25,10 +37,6 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
   - safetensors headers were not validated: an unknown dtype, a shape that disagrees with the byte size, overlapping
     or missing data, or a malformed header threw `FormatException`, `KeyNotFoundException`, `JsonException` or
     `InvalidOperationException`, or loaded.
-
-### Fixed
-- `.pt` loading: an integer pickled as LONG1 that fits in 64 bits (such as a storage of 2^31 elements or more) was kept
-  as a big integer, so such a checkpoint failed to load.
 
 ## [1.0.0] - 2026-10-10
 
