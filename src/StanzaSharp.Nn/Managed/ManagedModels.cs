@@ -486,6 +486,97 @@ internal sealed unsafe class ManagedLstm
             ArrayPool<float>.Shared.Return(p);
         }
     }
+
+    /// <summary>Writes time-major input rows [r0, r1) (row t·n + i is sequence i's step t) to dst, InputSize floats apart.</summary>
+    public delegate void RowFiller(int r0, int r1, float* dst);
+
+    /// <summary>
+    /// The LSTM over an unpacked batch (nn.LSTM without packing: n sequences, each all <paramref name="width"/> steps)
+    /// with the bits <see cref="ForwardPacked"/> gives the time-major rows with batch sizes all n, in far less memory:
+    /// <paramref name="fill"/> makes the input rows a chunk at a time, and each direction's input projection is computed
+    /// a chunk of steps at a time (<see cref="Gemm.RunRows"/>, a panel view per direction) just before those steps run.
+    /// Only the layers' outputs are kept whole.
+    /// </summary>
+    /// <param name="output">Gets [n, width, OutputSize], batch-major (row i·width + t).</param>
+    /// <param name="ct">Checked per chunk and before each time step.</param>
+    /// <param name="chunkRows">About how many rows a chunk has (at least one step's n).</param>
+    public void ForwardUnpacked(int n, int width, RowFiller fill, Span<float> output, CancellationToken ct = default, int chunkRows = 2048)
+    {
+        // ponytail: padded hidden units would need the last layer in a separate buffer; no caller has them.
+        if (_padded != _hidden)
+            throw new NotSupportedException("ForwardUnpacked needs a hidden size that is a multiple of 4");
+        int rows = n * width, ldo = OutputSize, h = _hidden, gates = 4 * h, steps = Math.Clamp(chunkRows / n, 1, width);
+        if (output.Length < rows * ldo)
+            throw new ArgumentException("output is too small");
+        var x = ArrayPool<float>.Shared.Rent(steps * n * InputSize);
+        var p = ArrayPool<float>.Shared.Rent(steps * n * gates);
+        var cells = ArrayPool<float>.Shared.Rent(n * h);
+        var pointers = ArrayPool<nint>.Shared.Rent(4 * n);
+        // Every layer but the last writes time-major rows, ping-ponging between two buffers.
+        var mid = Enumerable.Range(0, Math.Min(_layers.Length - 1, 2)).Select(_ => ArrayPool<float>.Shared.Rent(rows * ldo)).ToArray();
+        try
+        {
+            fixed (float* px = x, pp = p, pc = cells, po = output, pm0 = mid.ElementAtOrDefault(0), pm1 = mid.ElementAtOrDefault(1))
+            fixed (nint* pointerBase = pointers)
+            {
+                var ptr = (float**)pointerBase;
+                var works = new StepRows[1];
+                for (int l = 0; l < _layers.Length; l++)
+                {
+                    var (w, bias, lstm) = _layers[l];
+                    float* src = l == 0 ? null : (l - 1) % 2 == 0 ? pm0 : pm1;
+                    bool last = l == _layers.Length - 1;
+                    float* dst = last ? po : l % 2 == 0 ? pm0 : pm1;
+                    for (int d = 0; d < _dirs; d++)
+                    {
+                        var (whh, h0, c0) = lstm.Direction(d);
+                        var wd = new PackedMatrix(w, d * gates / PackedMatrix.NR, gates / PackedMatrix.NR);
+                        works[0] = new StepRows { Whh = whh, M = n, HPrev = ptr, Init = ptr + n, C = ptr + 2 * n, HOut = ptr + 3 * n };
+                        for (int i = 0; i < n; i++)
+                            c0.CopyTo(new Span<float>(pc + (long)i * h, h));
+                        bool forward = d == 0;
+                        int chunks = (width + steps - 1) / steps;
+                        fixed (float* pb = bias, ph0 = h0)
+                        {
+                            for (int k = 0; k < chunks; k++)
+                            {
+                                ct.ThrowIfCancellationRequested();
+                                int t0 = (forward ? k : chunks - 1 - k) * steps, t1 = Math.Min(width, t0 + steps);
+                                if (src == null)
+                                    fill(t0 * n, t1 * n, px);
+                                Gemm.RunRows(src == null ? px : src + (long)t0 * n * ldo, t0 * n, t1 * n, rows, src == null ? InputSize : ldo,
+                                    wd, pb + d * gates, pp, gates, ct);
+                                for (int s = 0; s < t1 - t0; s++)
+                                {
+                                    ct.ThrowIfCancellationRequested();
+                                    int t = forward ? t0 + s : t1 - 1 - s, prev = forward ? t - 1 : t + 1;
+                                    bool fresh = forward ? t == 0 : t == width - 1;
+                                    for (int i = 0; i < n; i++)
+                                    {
+                                        long at = last ? (long)i * width + t : (long)t * n + i, before = last ? (long)i * width + prev : (long)prev * n + i;
+                                        ptr[i] = fresh ? ph0 : dst + before * ldo + d * h;
+                                        ptr[n + i] = pp + ((long)(t - t0) * n + i) * gates;
+                                        ptr[2 * n + i] = pc + (long)i * h;
+                                        ptr[3 * n + i] = dst + at * ldo + d * h;
+                                    }
+                                    PackedLstm.Step(works);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        finally
+        {
+            ArrayPool<float>.Shared.Return(x);
+            ArrayPool<float>.Shared.Return(p);
+            ArrayPool<float>.Shared.Return(cells);
+            ArrayPool<nint>.Shared.Return(pointers);
+            foreach (var m in mid)
+                ArrayPool<float>.Shared.Return(m);
+        }
+    }
 }
 
 /// <summary>

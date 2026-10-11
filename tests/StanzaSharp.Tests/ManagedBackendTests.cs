@@ -146,6 +146,36 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
     }
 
     /// <summary>
+    /// <see cref="Gemm.RunRows"/> gives rows the bits the whole GEMM gives them, in chunks of every remainder mod MR,
+    /// with m % MR == 1 (the whole GEMM's last row through the single-row kernel) and not.
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(Paths))]
+    public unsafe void Gemm_RowRangesGiveTheWholeGemmsBits(string path)
+    {
+        const int k = 300, n = 3 * PackedMatrix.NR;
+        var w = new PackedMatrix(Random(n * k, 32), n, k);
+        var bias = Random(n, 33);
+        foreach (int m in new[] { 97, 100, 1 })
+        {
+            var a = Random(m * k, 31);
+            var expected = With(path, 4, () => Gemm.Run(a, m, w, bias));
+            foreach (int chunk in new[] { 1, 5, 7, 13, 96 })
+            {
+                var actual = new float[m * n];
+                With(path, 4, () =>
+                {
+                    fixed (float* pa = a, pb = bias, pc = actual)
+                        for (int r0 = 0; r0 < m; r0 += chunk)
+                            Gemm.RunRows(pa + r0 * k, r0, Math.Min(m, r0 + chunk), m, k, w, pb, pc + r0 * n, n);
+                    return 0;
+                });
+                Assert.Equal(expected.Select(BitConverter.SingleToInt32Bits), actual.Select(BitConverter.SingleToInt32Bits));
+            }
+        }
+    }
+
+    /// <summary>
     /// The LSTM step's blocked kernel against a scalar reference with the same order (each block of kb terms from zero,
     /// the blocks added up, init last), bit for bit: fused multiply-adds on the SIMD paths, a·b + c on Scalar.
     /// </summary>
@@ -366,6 +396,36 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
             var actual = new float[expected.Length];
             With(path, 4, () => { managed.ForwardPadded(x, lengths.Length, width, lengths, actual); return 0; });
             TokenizerTests.AssertClose(expected, actual, 1e-5f, $"{path} {model}");
+        }
+    }
+
+    /// <summary>
+    /// <see cref="ManagedLstm.ForwardUnpacked"/> (sentiment's biLSTM) gives the bits of <see cref="ManagedLstm.ForwardPacked"/>
+    /// on the same time-major rows, in chunks of several steps, of one step, and with n·width % MR == 1.
+    /// </summary>
+    [ModelTheory]
+    [MemberData(nameof(Paths))]
+    public unsafe void ManagedLstm_UnpackedGivesThePackedBits(string path)
+    {
+        var ckpt = Checkpoint.Load(Repo.Model("sentiment/sstplus_charlm"));
+        var lstm = new ManagedLstm(ckpt, ckpt.Root["params"]!["model"]!, "bilstm.", 2148, 300, 2, bidirectional: true);
+        foreach (var (n, width, chunkRows) in new[] { (5, 13, 20), (7, 7, 1), (3, 9, 2048) })
+        {
+            var x = Random(n * width * 2148, n);
+            var packed = new float[n * width * 600];
+            var batchSizes = Enumerable.Repeat(n, width).ToArray();
+            With(path, 4, () => { lstm.ForwardPacked(x, 2148, batchSizes, packed); return 0; });
+            var unpacked = new float[n * width * 600];
+            With(path, 4, () =>
+            {
+                lstm.ForwardUnpacked(n, width, (r0, r1, dst) => x.AsSpan(r0 * 2148, (r1 - r0) * 2148).CopyTo(new Span<float>(dst, (r1 - r0) * 2148)),
+                    unpacked, chunkRows: chunkRows);
+                return 0;
+            });
+            for (int i = 0; i < n; i++)
+                for (int t = 0; t < width; t++)
+                    Assert.Equal(packed.AsSpan((t * n + i) * 600, 600).ToArray().Select(BitConverter.SingleToInt32Bits),
+                        unpacked.AsSpan((i * width + t) * 600, 600).ToArray().Select(BitConverter.SingleToInt32Bits));
         }
     }
 

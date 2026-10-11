@@ -35,6 +35,9 @@ internal sealed unsafe class PackedLstm
     public int Hidden { get; }
     public int Directions => _whh.Length;
 
+    /// <summary>Direction d's W_hh, initial h (pinned) and initial c, for callers that drive <see cref="Step"/> themselves.</summary>
+    public (PackedMatrix Whh, float[] H0, float[] C0) Direction(int d) => (_whh[d], _h0[d], _c0[d]);
+
     /// <param name="whh">Per direction, W_hh [4·hidden, hidden].</param>
     /// <param name="h0">Per direction, the initial h [hidden] (the same for every sequence).</param>
     public PackedLstm(int hidden, float[][] whh, float[][] h0, float[][] c0)
