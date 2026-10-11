@@ -9,7 +9,7 @@ using TorchSharp;
 namespace StanzaSharp.Tests;
 
 /// <summary>Stanza's English <c>default_fast</c> package against tests/golden/fast (make_golden.py --fast-only).</summary>
-public class FastPackageTests(ITestOutputHelper output)
+public class FastPackageTests(ITestOutputHelper output, SharedPipelines pipelines) : IClassFixture<SharedPipelines>
 {
     private static readonly string Golden = Path.Combine(Repo.Golden, "fast");
 
@@ -18,7 +18,7 @@ public class FastPackageTests(ITestOutputHelper output)
     [InlineData(true)]
     public void Process_MatchesEveryGoldenFile(bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = "default_fast", Backend = Repo.PipelineBackendFor(managed) });
+        var nlp = pipelines.Get("default_fast", managed);
         var failures = new List<string>();
         var files = new[] { Path.Combine(Repo.Golden, "corpus.txt") }.Concat(Directory.GetFiles(Repo.Golden, "validation*.txt").Order()).ToList();
         foreach (var txt in files)

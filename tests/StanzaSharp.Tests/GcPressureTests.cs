@@ -9,14 +9,14 @@ namespace StanzaSharp.Tests;
 /// can then free it mid-call. This runs Process while another thread collects and finalizes nonstop.
 /// </summary>
 [Trait("Backend", "TorchSharp")] // TorchSharp-only: not in a ready pull request's light golden run (ci.yml)
-public class GcPressureTests
+public class GcPressureTests(SharedPipelines pipelines) : IClassFixture<SharedPipelines>
 {
     [ModelTheory]
     [InlineData("default")]
     [InlineData("default_fast")]
     public void Process_UnderConstantCollections_GivesTheSameOutput(string package)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, Backend = CudaBackend.Cpu });
+        var nlp = pipelines.Get(package, managed: false);
         var corpus = File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt"));
         var expected = Conllu.Write(nlp.Process(corpus));
         using var stop = new CancellationTokenSource();

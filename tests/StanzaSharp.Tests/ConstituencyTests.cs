@@ -6,15 +6,29 @@ using Xunit.Abstractions;
 
 namespace StanzaSharp.Tests;
 
-public class ConstituencyTests(ITestOutputHelper output)
+public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixture fixture) : IClassFixture<ConstituencyTests.Fixture>
 {
-    private sealed class Models : IDisposable
+    /// <summary>Each backend's <see cref="Models"/>, loaded on first use and shared by the class's tests (read-only).</summary>
+    public sealed class Fixture : IDisposable
+    {
+        private readonly Lazy<Models> _torch = new(() => new Models(managed: false)), _managed = new(() => new Models(managed: true));
+        internal Models Get(bool managed = false) => (managed ? _managed : _torch).Value;
+
+        public void Dispose()
+        {
+            foreach (var models in new[] { _torch, _managed })
+                if (models.IsValueCreated)
+                    models.Value.Dispose();
+        }
+    }
+
+    internal sealed class Models : IDisposable
     {
         public readonly Pretrain Pretrain;
         public readonly CharLanguageModel? Forward, Backward;
         public readonly ConstituencyParser Parser;
 
-        public Models(bool managed = false)
+        public Models(bool managed)
         {
             Pretrain = Repo.LoadPretrain(managed);
             if (managed)
@@ -42,7 +56,7 @@ public class ConstituencyTests(ITestOutputHelper output)
     [InlineData(true)]
     public void TransitionScores_MatchGoldenIntermediates(bool managed)
     {
-        using var models = new Models(managed);
+        var models = fixture.Get(managed);
         var golden = SafeTensorFile.Load(Path.Combine(Repo.Golden, "intermediates.safetensors"));
         var index = JsonNode.Parse(File.ReadAllText(Path.Combine(Repo.Golden, "intermediates.json")))!["sentences"]!.AsArray();
         var sentences = index.Select(e =>
@@ -88,7 +102,7 @@ public class ConstituencyTests(ITestOutputHelper output)
         IReadOnlyList<Transition> transitions = [];
         foreach (bool managed in new[] { false, true })
         {
-            using var models = new Models(managed);
+            var models = fixture.Get(managed);
             transitions = models.Parser.Transitions;
             var mine = steps[managed ? 1 : 0];
             mine.AddRange(sentences.Select(_ => new List<(float[] Row, bool[] Legal)>()));

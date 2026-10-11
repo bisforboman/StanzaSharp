@@ -6,17 +6,31 @@ using Xunit.Abstractions;
 
 namespace StanzaSharp.Tests;
 
-public class DepparseTests(ITestOutputHelper output)
+public class DepparseTests(ITestOutputHelper output, DepparseTests.Fixture fixture) : IClassFixture<DepparseTests.Fixture>
 {
     private static readonly string Golden = Path.Combine(Repo.Golden, "depparse");
 
-    private sealed class Models : IDisposable
+    /// <summary>Each backend's <see cref="Models"/>, loaded on first use and shared by the class's tests (read-only).</summary>
+    public sealed class Fixture : IDisposable
+    {
+        private readonly Lazy<Models> _torch = new(() => new Models(managed: false)), _managed = new(() => new Models(managed: true));
+        internal Models Get(bool managed = false) => (managed ? _managed : _torch).Value;
+
+        public void Dispose()
+        {
+            foreach (var models in new[] { _torch, _managed })
+                if (models.IsValueCreated)
+                    models.Value.Dispose();
+        }
+    }
+
+    internal sealed class Models : IDisposable
     {
         public readonly Pretrain Pretrain;
         public readonly CharLanguageModel? Forward, Backward;
         public readonly DependencyParser Parser;
 
-        public Models(bool managed = false)
+        public Models(bool managed)
         {
             Pretrain = Repo.LoadPretrain(managed);
             if (managed)
@@ -123,7 +137,7 @@ public class DepparseTests(ITestOutputHelper output)
     [ModelFact]
     public void Batches_FollowStanzasSortingAndLimits()
     {
-        using var models = new Models();
+        var models = fixture.Get();
         // Lengths include ROOT. Over 150 goes alone; otherwise up to 5000 words per batch.
         int[] lengths = [3, 151, 5, 3, .. Enumerable.Repeat(130, 40)];
         var batches = models.Parser.Batches(lengths);
@@ -139,7 +153,7 @@ public class DepparseTests(ITestOutputHelper output)
     [InlineData(true)]
     public void Scores_MatchGoldenIntermediates(bool managed)
     {
-        using var models = new Models(managed);
+        var models = fixture.Get(managed);
         var golden = SafeTensorFile.Load(Path.Combine(Golden, "intermediates.safetensors"));
         var index = JsonNode.Parse(File.ReadAllText(Path.Combine(Golden, "intermediates.json")))!["sentences"]!.AsArray();
         var doc = Conllu.Read(File.ReadAllText(Path.Combine(Golden, "corpus.conllu")));
@@ -164,7 +178,7 @@ public class DepparseTests(ITestOutputHelper output)
     [InlineData(true)]
     public void Process_ReproducesGoldenHeadsAndDeprels(bool managed)
     {
-        using var models = new Models(managed);
+        var models = fixture.Get(managed);
         var files = Directory.GetFiles(Golden, "*.conllu").Order().ToList();
         Assert.Equal(13, files.Count); // corpus + 12 validation files
         var failures = new List<string>();
@@ -211,7 +225,7 @@ public class DepparseTests(ITestOutputHelper output)
     [Trait("Backend", "Managed")]
     public void OneSentenceDocument_ContinuesTheTaggersBackwardCharlm_BitForBit()
     {
-        using var models = new Models(managed: true);
+        var models = fixture.Get(managed: true);
         var (forward, backward) = (ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion")), ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion")));
         using var tagger = Pos.PosTagger.LoadManaged(Repo.Model("pos/combined_charlm"), models.Pretrain, forward, backward);
         var sentences = Directory.GetFiles(Golden, "*.conllu").Order().SelectMany(f => Conllu.Read(File.ReadAllText(f)).Sentences.Take(10)).ToList();

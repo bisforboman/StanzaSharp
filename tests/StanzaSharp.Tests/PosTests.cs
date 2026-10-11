@@ -8,16 +8,30 @@ using StanzaSharp.Tokenize;
 
 namespace StanzaSharp.Tests;
 
-public class PosTests(ITestOutputHelper output)
+public class PosTests(ITestOutputHelper output, PosTests.Fixture fixture) : IClassFixture<PosTests.Fixture>
 {
     // managed: Backend.Managed (issue #29), else TorchSharp. Every golden test runs on both.
-    private sealed class Models : IDisposable
+    /// <summary>Each backend's <see cref="Models"/>, loaded on first use and shared by the class's tests (read-only).</summary>
+    public sealed class Fixture : IDisposable
+    {
+        private readonly Lazy<Models> _torch = new(() => new Models(managed: false)), _managed = new(() => new Models(managed: true));
+        internal Models Get(bool managed = false) => (managed ? _managed : _torch).Value;
+
+        public void Dispose()
+        {
+            foreach (var models in new[] { _torch, _managed })
+                if (models.IsValueCreated)
+                    models.Value.Dispose();
+        }
+    }
+
+    internal sealed class Models : IDisposable
     {
         public readonly Pretrain Pretrain;
         public readonly CharLanguageModel? Forward, Backward;
         public readonly PosTagger Tagger;
 
-        public Models(bool managed = false)
+        public Models(bool managed)
         {
             Pretrain = Repo.LoadPretrain(managed);
             if (managed)
@@ -58,7 +72,7 @@ public class PosTests(ITestOutputHelper output)
     [InlineData(true)]
     public void UposLogits_MatchGoldenIntermediates(bool managed)
     {
-        using var models = new Models(managed);
+        var models = fixture.Get(managed);
         var golden = SafeTensorFile.Load(Path.Combine(Repo.Golden, "intermediates.safetensors"));
         var index = JsonNode.Parse(File.ReadAllText(Path.Combine(Repo.Golden, "intermediates.json")))!["sentences"]!.AsArray();
         var sentences = index.Select(e => (IReadOnlyList<string>)e!["words"]!.AsArray().Select(w => w!.GetValue<string>()).ToList()).ToList();
@@ -78,7 +92,7 @@ public class PosTests(ITestOutputHelper output)
     [InlineData(true)]
     public void Pipeline_MatchesGoldenTags(bool managed)
     {
-        using var models = new Models(managed);
+        var models = fixture.Get(managed);
         using var tokenizer = Tokenizer.Load(Repo.Model("tokenize/combined_nocharlm"), backend: Repo.Backend(managed));
         using var mwt = MwtExpander.Load(Repo.Model("mwt/combined"), backend: Repo.Backend(managed));
         var doc = tokenizer.Process(File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt")));

@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 
 namespace StanzaSharp.Tests;
 
-public class SentimentTests(ITestOutputHelper output)
+public class SentimentTests(ITestOutputHelper output, SharedPipelines pipelines, SentimentTests.Fixture fixture) : IClassFixture<SharedPipelines>, IClassFixture<SentimentTests.Fixture>
 {
     private static readonly string Golden = Path.Combine(Repo.Golden, "sentiment");
     // On Arm64 (macOS, Apple Silicon) libtorch computes with Accelerate instead of the x64 kernels; the
@@ -19,14 +19,28 @@ public class SentimentTests(ITestOutputHelper output)
     private const float CachedTolerance = 1e-3f;
 
     /// <summary>The classifier and the tagger (for the cache) on one backend, with that backend's charlms.</summary>
-    private sealed class Models : IDisposable
+    /// <summary>Each backend's <see cref="Models"/>, loaded on first use and shared by the class's tests (read-only).</summary>
+    public sealed class Fixture : IDisposable
+    {
+        private readonly Lazy<Models> _torch = new(() => new Models(managed: false)), _managed = new(() => new Models(managed: true));
+        internal Models Get(bool managed = false) => (managed ? _managed : _torch).Value;
+
+        public void Dispose()
+        {
+            foreach (var models in new[] { _torch, _managed })
+                if (models.IsValueCreated)
+                    models.Value.Dispose();
+        }
+    }
+
+    internal sealed class Models : IDisposable
     {
         public readonly Pretrain Pretrain;
         private readonly CharLanguageModel? _forward, _backward;
         private readonly ManagedCharLanguageModel? _managedForward, _managedBackward;
         public readonly SentimentClassifier Classifier;
 
-        public Models(bool managed = false)
+        public Models(bool managed)
         {
             Pretrain = Repo.LoadPretrain(managed);
             if (managed)
@@ -105,7 +119,7 @@ public class SentimentTests(ITestOutputHelper output)
     public void Pipeline_ReproducesGoldenFilesLabelsAndLogits(bool managed)
     {
         using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,sentiment", Backend = Repo.PipelineBackendFor(managed) });
-        using var models = new Models(managed);
+        var models = fixture.Get(managed);
         var failures = new List<string>();
         var sources = Sources();
         Assert.Equal(14, sources.Count);
@@ -141,8 +155,8 @@ public class SentimentTests(ITestOutputHelper output)
     {
         // Every text as one document: Stanza sorts its sentences by length and cuts them into 5000-token
         // batches, and each sentence's result depends on the padding of its batch.
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt" });
-        using var models = new Models(managed);
+        var nlp = pipelines.Get(processors: "tokenize,mwt");
+        var models = fixture.Get(managed);
         var doc = nlp.Process(string.Join("\n\n", Sources().Select(s => s.Text)));
         var tokens = Tokens(doc);
         var batches = SentimentClassifier.Batches(tokens.Select(t => t.Count).OrderDescending().ToArray());
@@ -161,8 +175,8 @@ public class SentimentTests(ITestOutputHelper output)
     [InlineData(true)]
     public void CharlmCache_FromTheTaggerGivesTheSameResults(bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt" });
-        using var models = new Models(managed);
+        var nlp = pipelines.Get(processors: "tokenize,mwt");
+        var models = fixture.Get(managed);
         using var tagger = models.Tagger();
         var failures = new List<string>();
         int reused = 0, total = 0;
@@ -211,7 +225,7 @@ public class SentimentTests(ITestOutputHelper output)
     [ModelFact]
     public void MapWord_TriesTheWordThenWithoutApostropheThenLowercased()
     {
-        using var models = new Models();
+        var models = fixture.Get();
         // CNNClassifier.map_word in Python on the conll17 pretrain. Without the apostrophe, the word is not
         // lowercased, so "DINOSAURS'" is unknown; "'" and "o'" are in the vocabulary as they are.
         (string Word, int Id)[] expected =
