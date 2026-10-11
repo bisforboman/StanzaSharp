@@ -231,13 +231,17 @@ internal sealed unsafe class ManagedCharLanguageModel
 }
 
 /// <summary>
-/// Managed twin of <c>HighwayLstm</c>'s packed path: per layer, one GEMM computes both LSTM directions'
-/// input projections and the gate and highway layers (they all read the same input), then the recurrence, then
-/// h + σ(gate)·tanh(highway).
+/// Managed twin of <c>HighwayLstm</c>'s packed path: per layer, a GEMM computes both LSTM directions' input
+/// projections, then the recurrence, then a second GEMM over the same input the gate and highway layers, into the same
+/// buffer, then h + σ(gate)·tanh(highway).
 /// </summary>
+/// <remarks>
+/// The two GEMMs are views of one packed matrix (the 8·hidden gate columns are whole panels when hidden is even), so
+/// their columns are the bits one GEMM gave; the buffer is 8·hidden wide per row instead of 12·hidden.
+/// </remarks>
 internal sealed unsafe class ManagedHighwayLstm
 {
-    private readonly (PackedMatrix W, float[] Bias, PackedLstm Lstm)[] _layers;
+    private readonly (PackedMatrix Gates, PackedMatrix Extra, float[] Bias, PackedLstm Lstm)[] _layers;
     private readonly int _hidden;
 
     public ManagedHighwayLstm(Checkpoint ckpt, JsonNode stateDict, string name, int inputSize, int hidden, int layers)
@@ -247,7 +251,9 @@ internal sealed unsafe class ManagedHighwayLstm
         var hInit = T($"{name}_h_init");
         var cInit = T($"{name}_c_init");
         float[] Init(float[] all, int i) => all.AsSpan(i * hidden, hidden).ToArray();
-        _layers = new (PackedMatrix, float[], PackedLstm)[layers];
+        if (hidden % 2 != 0)
+            throw new NotSupportedException("A highway LSTM with an odd hidden size");
+        _layers = new (PackedMatrix, PackedMatrix, float[], PackedLstm)[layers];
         int inSize = inputSize;
         for (int l = 0; l < layers; l++)
         {
@@ -260,7 +266,8 @@ internal sealed unsafe class ManagedHighwayLstm
                 (T($"{name}.highway.{l}.weight"), T($"{name}.highway.{l}.bias")));
             var recurrent = new PackedLstm(hidden, [T(lstm + "weight_hh_l0"), T(lstm + "weight_hh_l0_reverse")],
                 [Init(hInit, 2 * l), Init(hInit, 2 * l + 1)], [Init(cInit, 2 * l), Init(cInit, 2 * l + 1)]);
-            _layers[l] = (w, bias, recurrent);
+            int gatePanels = 8 * hidden / PackedMatrix.NR;
+            _layers[l] = (new PackedMatrix(w, 0, gatePanels), new PackedMatrix(w, gatePanels, w.Panels - gatePanels), bias, recurrent);
             inSize = 2 * hidden;
         }
     }
@@ -282,7 +289,7 @@ internal sealed unsafe class ManagedHighwayLstm
     public void Forward(ReadOnlySpan<float> input, long[] lengths, Span<float> output, CancellationToken ct = default)
     {
         var batchSizes = PackedLstm.BatchSizes(lengths);
-        int rows = batchSizes.Sum(), h2 = OutputSize, ldp = _layers.Max(l => l.W.PaddedN);
+        int rows = batchSizes.Sum(), h2 = OutputSize, ldp = 8 * _hidden, lde = _layers[0].Extra.PaddedN;
         if (output.Length < rows * h2)
             throw new ArgumentException("output is too small");
         var p = ArrayPool<float>.Shared.Rent(rows * ldp);
@@ -294,22 +301,23 @@ internal sealed unsafe class ManagedHighwayLstm
             {
                 for (int l = 0; l < _layers.Length; l++)
                 {
-                    var (w, bias, lstm) = _layers[l];
+                    var (gates, extra, bias, lstm) = _layers[l];
                     var src = l == 0 ? input : temps[(l - 1) % 2].AsSpan(0, rows * h2);
                     var dst = l == _layers.Length - 1 ? output : temps[l % 2].AsSpan(0, rows * h2);
                     int inSize = src.Length / rows;
                     fixed (float* px = src, pb = bias, po = dst)
                     {
-                        Gemm.Run(px, rows, inSize, w, pb, pp, ldp, ct);
+                        Gemm.Run(px, rows, inSize, gates, pb, pp, ldp, ct);
                         lstm.Recur(pp, ldp, batchSizes, po, h2, ct);
-                        // h += σ(gate)·tanh(highway); gate and highway follow the two directions' 8H gate columns.
+                        // h += σ(gate)·tanh(highway): the gate and highway columns, now in p (row stride lde).
+                        Gemm.Run(px, rows, inSize, extra, pb + ldp, pp, lde, ct);
                         nint ip = (nint)pp, io = (nint)po;
-                        int gate = 4 * h2, chunk = 64;
+                        int chunk = 64;
                         ManagedThreads.For((rows + chunk - 1) / chunk, task =>
                         {
                             for (int n = task * chunk, end = Math.Min(rows, n + chunk); n < end; n++)
                             {
-                                float* g = (float*)ip + (long)n * ldp + gate;
+                                float* g = (float*)ip + (long)n * lde;
                                 Act.AddGatedTanh((float*)io + (long)n * h2, g, g + h2, h2);
                             }
                         });
