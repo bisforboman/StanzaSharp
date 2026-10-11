@@ -1,10 +1,10 @@
-using Xunit.Abstractions;
 using System.Text.Json.Nodes;
 using StanzaSharp.Depparse;
 using StanzaSharp.Ner;
 using StanzaSharp.Nn;
 using StanzaSharp.Pos;
 using TorchSharp;
+using Xunit.Abstractions;
 
 namespace StanzaSharp.Tests;
 
@@ -26,6 +26,7 @@ public class FastPackageTests(ITestOutputHelper output, SharedPipelines pipeline
             var name = Path.GetFileName(txt) == "corpus.txt" ? "corpus" : Path.GetFileNameWithoutExtension(txt);
             var actual = Conllu.Write(nlp.Process(File.ReadAllText(txt)));
             var golden = File.ReadAllText(Path.Combine(Golden, name + ".conllu"));
+
             // Outside the BMP, C# offsets are UTF-16 indices and Stanza's are code points.
             if (name == "validation_nonbmp")
                 (actual, golden) = (PipelineTests.StripOffsets(actual), PipelineTests.StripOffsets(golden));
@@ -36,6 +37,7 @@ public class FastPackageTests(ITestOutputHelper output, SharedPipelines pipeline
             if (i < expected.Length || i < got.Length)
                 failures.Add($"{name}, sentence {i}:\n--- expected\n{expected.ElementAtOrDefault(i)}\n--- actual\n{got.ElementAtOrDefault(i)}");
         }
+
         Assert.Equal(13, files.Count);
         Assert.True(failures.Count == 0, string.Join("\n\n", failures));
     }
@@ -114,6 +116,7 @@ public class FastPackageTests(ITestOutputHelper output, SharedPipelines pipeline
         Assert.Equal("combined_nocharlm", fast["pos"]);
         Assert.Equal("combined_nocharlm", fast["depparse"]);
         Assert.Equal("ontonotes-ww-multi_nocharlm", fast["ner"]);
+
         // Only sentiment reads the charlms.
         Assert.Equal(["pretrain/conll17", "forward_charlm/1billion", "backward_charlm/1billion"], Pipeline.SharedModels(fast));
         fast.Remove("sentiment");

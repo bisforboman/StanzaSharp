@@ -55,6 +55,7 @@ foreach (var sentence in doc.Sentences)
         var head = word.Head is > 0 ? words[word.Head.Value - 1].Text : "ROOT";
         Console.WriteLine($"  {word.Id,2} {word.Text,-10} lemma={word.Lemma,-8} {word.Upos,-6} {word.Xpos,-4} {word.Deprel,-11} -> {head}");
     }
+
     Console.WriteLine();
 }
 

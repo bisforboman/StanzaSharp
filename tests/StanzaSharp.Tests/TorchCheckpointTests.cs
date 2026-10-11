@@ -86,7 +86,11 @@ public class TorchCheckpointTests(ITestOutputHelper output)
     private sealed class LengthCountingStream(byte[] data) : MemoryStream(data, writable: false)
     {
         public int LengthCalls { get; private set; }
-        public override long Length { get { LengthCalls++; return base.Length; } }
+
+        public override long Length
+        {
+            get { LengthCalls++; return base.Length; }
+        }
     }
 
     [Fact]
@@ -114,7 +118,8 @@ public class TorchCheckpointTests(ITestOutputHelper output)
             "K", 1, "K", 2, "K", 2, 0x86, "K", 1, "K", 2, 0x86, 0x89, "ccollections\nOrderedDict\n)Rt", "R.");
         var tensor = Assert.IsType<TorchTensor>(Unpickler.Load(bytes, pid =>
             pid is PyTuple { Items: ["storage", TorchStorageType type, string key, "cpu", long numel, null] }
-                ? new TorchStorage(type, key, numel, 0) : throw new InvalidDataException()));
+                ? new TorchStorage(type, key, numel, 0)
+                : throw new InvalidDataException()));
 
         Assert.Equal(("F32", 4, "0", 6L), (tensor.Storage.Type.Dtype, tensor.Storage.Type.ElementSize, tensor.Storage.Key, tensor.Storage.Numel));
         Assert.Equal(1L, tensor.Offset);
@@ -133,6 +138,7 @@ public class TorchCheckpointTests(ITestOutputHelper output)
             Unpickler.Load(Pickle(0x80, 2, "cos\nsystem\nX", 2, 0, 0, 0, "ls", 0x85, "R.")));
         Assert.Contains("'os.system' is not allowed", e.Message);
         Assert.Throws<InvalidDataException>(() => Unpickler.Load(Pickle(0x80, 2, "cbuiltins\nset\n)R.")));
+
         // An allowed global can still only be called the way torch uses it.
         Assert.Throws<InvalidDataException>(() => Unpickler.Load(Pickle(0x80, 2, "ctorch\nFloatStorage\n)R.")));
     }

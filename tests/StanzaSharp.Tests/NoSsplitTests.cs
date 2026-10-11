@@ -32,6 +32,7 @@ public class NoSsplitTests(SharedPipelines pipelines) : IClassFixture<SharedPipe
             if (i < e.Length || i < g.Length)
                 failures.Add($"{stem}, sentence {i}:\n--- expected\n{e.ElementAtOrDefault(i)}\n--- actual\n{g.ElementAtOrDefault(i)}");
         }
+
         Assert.True(failures.Count == 0, string.Join("\n\n", failures));
     }
 
@@ -59,6 +60,7 @@ public class NoSsplitTests(SharedPipelines pipelines) : IClassFixture<SharedPipe
         using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt", SplitSentences = false });
         var doc = nlp.Process("First one. Second one!\nStill the first paragraph.\n\nNew paragraph. Two sentences.");
         Assert.Equal(["First one. Second one!\nStill the first paragraph.", "New paragraph. Two sentences."], doc.Sentences.Select(s => s.Text));
+
         // As in Stanza, pretokenized input ignores the option (make_golden asserts it).
         Assert.Equal(2, nlp.Process([["A", "."], ["B", "."]]).Sentences.Count);
     }

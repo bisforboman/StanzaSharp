@@ -38,8 +38,10 @@ internal static class ManagedThreads
                 body(i);
             return;
         }
+
         var pool = _pool;
         if (pool?.Size != Count)
+        {
             lock (Gate)
             {
                 if (_pool?.Size != Count)
@@ -47,8 +49,11 @@ internal static class ManagedThreads
                     _pool?.Stop();
                     _pool = new Pool(Count);
                 }
+
                 pool = _pool;
             }
+        }
+
         pool.Run(n, body);
     }
 
@@ -74,8 +79,10 @@ internal static class ManagedThreads
                 {
                     Interlocked.CompareExchange(ref Error, e, null);
                 }
+
                 Interlocked.Increment(ref Done);
             }
+
             return any;
         }
     }
@@ -105,8 +112,11 @@ internal static class ManagedThreads
             var region = new Region(n, body);
             int slot = -1;
             for (int s = 0; s < Slots && slot < 0; s++)
+            {
                 if (Interlocked.CompareExchange(ref _open[s], region, null) == null)
                     slot = s;
+            }
+
             // ponytail: with more than 64 regions open at once the extra callers run alone; raise Slots if that happens.
             int sleepers = Math.Min(Volatile.Read(ref _sleepers), n - 1);
             if (slot >= 0 && sleepers > 0)
@@ -114,7 +124,7 @@ internal static class ManagedThreads
             region.Drain();
             if (slot >= 0)
                 Volatile.Write(ref _open[slot], null);
-            var spin = new SpinWait();
+            var spin = default(SpinWait);
             while (Volatile.Read(ref region.Done) < n)
                 spin.SpinOnce(-1);
             if (region.Error != null)
@@ -131,8 +141,11 @@ internal static class ManagedThreads
         private bool Help(int id)
         {
             for (int s = 0; s < Slots; s++)
+            {
                 if (Volatile.Read(ref _open[(s + id) % Slots]) is { } r && Volatile.Read(ref r.Next) < r.N)
                     return r.Drain();
+            }
+
             return false;
         }
 
@@ -142,10 +155,14 @@ internal static class ManagedThreads
             {
                 bool found = false;
                 for (int i = 0; i < SpinRounds && !found && !_stopped; i++)
+                {
                     if (!(found = Help(id)))
                         Thread.SpinWait(20);
+                }
+
                 if (found)
                     continue;
+
                 // Announce the sleep before the last look: a caller that opens a region after that look sees us.
                 Interlocked.Increment(ref _sleepers);
                 if (!Help(id) && !_stopped)

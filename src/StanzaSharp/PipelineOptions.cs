@@ -55,6 +55,7 @@ public sealed class PipelineOptions
     /// Null (the default) caps the current count at <see cref="Environment.ProcessorCount"/>, which .NET limits to a
     /// container's CPU quota, and keeps a lower count set earlier.
     /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown by <see cref="Pipeline.Load"/> for a value below 1.</exception>
     /// <remarks>
     /// <b>Process-wide</b> on both backends, and the last pipeline loaded wins.
     /// <list type="bullet">
@@ -68,13 +69,13 @@ public sealed class PipelineOptions
     /// used by StanzaSharp and is left alone.</item>
     /// </list>
     /// </remarks>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown by <see cref="Pipeline.Load"/> for a value below 1.</exception>
     public int? Threads { get; init; }
 
     /// <summary>
     /// At most this many <see cref="Pipeline.Process(string)"/> calls run on this pipeline at once; more callers wait
     /// for a turn (cancellable through the call's token). Null, the default, means no limit.
     /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown by <see cref="Pipeline.Load"/> for a value below 1.</exception>
     /// <remarks>
     /// Output never depends on it. On <see cref="PipelineBackend.Managed"/> concurrent calls evict each other's model
     /// weights from the CPU cache, so beyond about two calls in flight throughput falls (default package, Ryzen 7 5800X,
@@ -82,7 +83,6 @@ public sealed class PipelineOptions
     /// time 36.4). A service with many concurrent requests on one pipeline can set 2. Bulk input
     /// (<see cref="Pipeline.Process(IEnumerable{string})"/>) is faster still when requests can be grouped.
     /// </remarks>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown by <see cref="Pipeline.Load"/> for a value below 1.</exception>
     public int? MaxConcurrentCalls { get; init; }
 
     /// <summary>
@@ -97,7 +97,7 @@ public sealed class PipelineOptions
     /// Checks every model file <see cref="Pipeline.Load"/> reads against the MD5 that Stanza publishes for it (the
     /// checksums <see cref="ModelDownloader"/> verifies downloads with) before loading, which catches corrupted files
     /// or files from another Stanza version. It reads every file once more, which takes a second or two for the
-    /// <c>default</c> package. Off by default.
+    /// <see langword="default"/> package. Off by default.
     /// </summary>
     /// <remarks>
     /// Only Stanza's <c>.pt</c> files have published checksums. If a model would be read from converted

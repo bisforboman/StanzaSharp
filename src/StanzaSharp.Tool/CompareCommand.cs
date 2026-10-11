@@ -31,6 +31,7 @@ internal static class CompareCommand
             else
                 return Fail($"Unexpected argument: {args[i]}\n\n{usage}");
         }
+
         if (file == null)
             return Fail($"No input file given\n\n{usage}");
         if (!File.Exists(file))
@@ -44,6 +45,7 @@ internal static class CompareCommand
         {
             return Fail(e.Message);
         }
+
         if (StanzaModelsProblem(ref models, package, list) is { } problem)
             return Fail(problem);
         var expectedFiles = ModelDownloader.FilesFor(list, package).Select(f => f.Path).ToHashSet();
@@ -54,8 +56,10 @@ internal static class CompareCommand
         if (stanza == null)
             return 2;
         if (!stanza.Files.ToHashSet().SetEquals(expectedFiles) || string.Join(",", stanza.Processors) != list)
+        {
             return Fail($"Stanza and StanzaSharp would not run the same models.\n  Stanza:      {string.Join(",", stanza.Processors)}; " +
                 $"{string.Join(", ", stanza.Files.Order())}\n  StanzaSharp: {list}; {string.Join(", ", expectedFiles.Order())}");
+        }
 
         Document doc;
         string conllu;
@@ -63,6 +67,7 @@ internal static class CompareCommand
         try
         {
             var watch = Stopwatch.StartNew();
+
             // VerifyChecksums: every file is Stanza's published one, so both sides read the same, unmodified models.
             using var nlp = Pipeline.Load(models, new PipelineOptions { Package = package, Processors = list, VerifyChecksums = true });
             load = watch.Elapsed.TotalSeconds;
@@ -88,14 +93,18 @@ internal static class CompareCommand
         output.WriteLine($"  Stanza:      loaded in {stanza.Load:F1} s, processed in {stanza.Process:F1} s");
         output.WriteLine($"  StanzaSharp: loaded in {load:F1} s, processed in {process:F1} s");
         if (nonBmp > 0)
+        {
             output.WriteLine($"  note:        the text has {nonBmp:N0} characters outside the BMP (e.g. emoji). StanzaSharp's start_char/end_char " +
                 "count UTF-16 code units like .NET strings, Stanza's count code points like Python; StanzaSharp's were converted to code points before comparing.");
+        }
+
         output.WriteLine();
         if (difference == null)
         {
             output.WriteLine("Identical: the CoNLL-U output is the same, byte for byte" + (nonBmp > 0 ? " (with offsets in code points)." : "."));
             return 0;
         }
+
         output.WriteLine($"Different: {difference.DifferentSentences:N0} of {difference.Sentences:N0} sentences differ. The first difference, line {difference.Line:N0} of the CoNLL-U:");
         if (difference.SentId != null)
             output.WriteLine($"  # sent_id = {difference.SentId}");
@@ -142,6 +151,7 @@ internal static class CompareCommand
                     $"(pip install stanza=={ModelDownloader.StanzaVersion}), or pass its path with --python.");
                 return null;
             }
+
             using (process)
             {
                 process.WaitForExit();
@@ -152,6 +162,7 @@ internal static class CompareCommand
                     return null;
                 }
             }
+
             using var json = JsonDocument.Parse(File.ReadAllBytes(result));
             var root = json.RootElement;
             return new StanzaResult(root.GetProperty("conllu").GetString()!,
@@ -183,14 +194,19 @@ internal static class CompareCommand
     {
         if (!Directory.Exists(models))
             return $"Model directory not found: {models}. Download the models with: stanzasharp download {models} --package {package}";
+
         // Stanza looks for <dir>/en/<processor>/<name>.pt, so the folder holding the processors must be named en.
         models = Path.GetFullPath(models).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
         if (Path.GetFileName(models) != "en")
+        {
             return $"Python Stanza reads English models from a folder named en, not {models}. " +
                 "Download them into one, e.g. stanzasharp download models/stanza/en";
+        }
+
         var dir = models;
         var missing = ModelDownloader.FilesFor(list, package).Select(f => f.Path).Where(f => !File.Exists(Path.Combine(dir, f))).Order().ToList();
-        return missing.Count == 0 ? null
+        return missing.Count == 0
+            ? null
             : $"Missing in {models}: {string.Join(", ", missing)}. Python Stanza needs Stanza's .pt files; download them with: " +
               $"stanzasharp download {models} --package {package}";
     }
@@ -275,6 +291,7 @@ internal static class ConlluDiff
                     : field));
             lines[l] = string.Join('\t', columns);
         }
+
         return string.Join('\n', lines);
     }
 }

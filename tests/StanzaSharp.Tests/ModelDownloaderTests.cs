@@ -88,13 +88,16 @@ public class ModelDownloaderTests : IDisposable
             "pos/combined_nocharlm.pt", "depparse/combined_nocharlm.pt", "ner/ontonotes-ww-multi_nocharlm.pt",
         ];
         Assert.Equal(expected.Order(), ModelDownloader.Files.Select(f => f.Path).Order());
+
         // Every package's files, together, are the table.
         Assert.Equal(expected.Order(), Pipeline.Packages.Keys.SelectMany(p => ModelDownloader.FilesFor(null, p)).Select(f => f.Path).Distinct().Order());
     }
 
     [Theory]
+
     // No constituency, nocharlm pos/depparse/ner; sentiment still needs the charlms.
     [InlineData(null, "tokenize/combined_nocharlm.pt mwt/combined.pt pos/combined_nocharlm.pt lemma/combined_nocharlm.pt depparse/combined_nocharlm.pt ner/ontonotes-ww-multi_nocharlm.pt sentiment/sstplus_charlm.pt pretrain/conll17.pt forward_charlm/1billion.pt backward_charlm/1billion.pt")]
+
     // Without sentiment, no charlm at all.
     [InlineData("depparse,ner", "tokenize/combined_nocharlm.pt mwt/combined.pt pos/combined_nocharlm.pt lemma/combined_nocharlm.pt depparse/combined_nocharlm.pt ner/ontonotes-ww-multi_nocharlm.pt pretrain/conll17.pt")]
     [InlineData("tokenize,mwt", "tokenize/combined_nocharlm.pt mwt/combined.pt")]
@@ -104,6 +107,7 @@ public class ModelDownloaderTests : IDisposable
     [Theory]
     [InlineData("tokenize", "tokenize/combined_nocharlm.pt")]
     [InlineData("tokenize,mwt", "tokenize/combined_nocharlm.pt mwt/combined.pt")]
+
     // pos pulls in what it requires (tokenize, mwt) and the shared pretrain and charlms.
     [InlineData("pos", "tokenize/combined_nocharlm.pt mwt/combined.pt pos/combined_charlm.pt pretrain/conll17.pt forward_charlm/1billion.pt backward_charlm/1billion.pt")]
     [InlineData("tokenize,lemma", "tokenize/combined_nocharlm.pt mwt/combined.pt pos/combined_charlm.pt lemma/combined_nocharlm.pt pretrain/conll17.pt forward_charlm/1billion.pt backward_charlm/1billion.pt")]
@@ -139,6 +143,7 @@ public class ModelDownloaderTests : IDisposable
             Directory.CreateDirectory(Path.GetDirectoryName(target)!);
             File.Copy(Path.Combine(Repo.StanzaModels, path), target);
         }
+
         using var nlp = Pipeline.Load(_dir, options);
         Assert.NotEmpty(nlp.Process("It works.").Sentences);
     }

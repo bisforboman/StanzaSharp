@@ -32,11 +32,12 @@ internal sealed class HighwayLstm : IDisposable
             _gate[l] = nn.Linear(inSize, hidden * 2).LoadFrom(ckpt, stateDict, $"{name}.gate.{l}.");
             inSize = hidden * 2;
         }
+
         _hInit = ckpt.ToTensor(stateDict[$"{name}_h_init"]);
         _cInit = ckpt.ToTensor(stateDict[$"{name}_c_init"]);
     }
 
-    /// <param name="input">[batch, maxLen, inputSize]</param>
+    /// <param name="input">[batch, maxLen, inputSize].</param>
     /// <param name="disposeInput">Dispose <paramref name="input"/> once it is packed.</param>
     /// <param name="cancellationToken">Checked between layers.</param>
     /// <returns>[batch, maxLen, 2 * hidden], zero past each sentence's length.</returns>
@@ -81,10 +82,12 @@ internal sealed class HighwayLstm : IDisposable
                 next.data.add_(gate, Scalars.One);
                 next.MoveToOuterDisposeScope();
             }
+
             if (l > 0 || disposeInput)
                 x.Dispose();
             x = next;
         }
+
         return x;
     }
 

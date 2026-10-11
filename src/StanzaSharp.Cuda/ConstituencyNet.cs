@@ -71,6 +71,7 @@ internal sealed class ConstituencyNet : IConstituencyNet
             var shape = ckpt.Shape(w);
             outputs.Add(nn.Linear(shape[1], shape[0]).LoadFrom(ckpt, model, $"output_layers.{i}."));
         }
+
         _outputLayers = outputs.ToArray();
 
         // In a dispose scope, so no temporary tensor is left to a finalizer, which could free it during a native call.
@@ -88,6 +89,7 @@ internal sealed class ConstituencyNet : IConstituencyNet
     {
         using var noGrad = torch.no_grad();
         using var scope = NewDisposeScope();
+
         // Charlm outputs the tagger kept, computing only the missing ones.
         var charsForward = new List<Tensor?>();
         var charsBackward = new List<Tensor?>();
@@ -98,6 +100,7 @@ internal sealed class ConstituencyNet : IConstituencyNet
             charsForward.Add(cached ? r.Forward : null);
             charsBackward.Add(cached ? r.Backward : null);
         }
+
         var missing = Enumerable.Range(0, sentences.Count).Where(k => charsForward[k] is null).ToList();
         if (missing.Count > 0)
         {
@@ -179,7 +182,6 @@ internal sealed class ConstituencyNet : IConstituencyNet
     }
 
     // ----- LSTM stacks (lstm_tree_stack.py) -----
-
     private static StackState InitialStack(LSTM lstm, Tensor startEmbedding)
     {
         var (output, hx, cx) = lstm.forward(startEmbedding.view(1, 1, -1));
@@ -193,6 +195,7 @@ internal sealed class ConstituencyNet : IConstituencyNet
         var hx = torch.stack(stacks.Select(s => s.Hx).ToArray(), 1);
         var cx = torch.stack(stacks.Select(s => s.Cx).ToArray(), 1);
         var (output, hn, cn) = lstm.forward(inputs.unsqueeze(0), (hx, cx));
+
         // One unbind per tensor instead of a view op per stack: the per-step op count is the parser's overhead.
         var (hs, cs, outputs) = (hn.unbind(1), cn.unbind(1), output[0].unbind(0));
         var result = new object[stacks.Count];
@@ -202,14 +205,18 @@ internal sealed class ConstituencyNet : IConstituencyNet
             scope.Detach((IEnumerable<IDisposable>)[hs[i], cs[i], outputs[i]]);
             result[i] = new StackState(hs[i], cs[i], outputs[i]);
         }
+
         return result;
     }
 
     public void Dispose()
     {
         foreach (var m in new nn.Module[] { _deltaEmbedding, _tagEmbedding, _transitionEmbedding, _dummyEmbedding,
-                     _wordLstm, _transitionLstm, _constituentLstm, _wordToConstituent, _reduceLinear })
+                     _wordLstm, _transitionLstm, _constituentLstm, _wordToConstituent, _reduceLinear, })
+        {
             m.Dispose();
+        }
+
         foreach (var l in _outputLayers)
             l.Dispose();
         _wordStart.Dispose();

@@ -25,7 +25,7 @@ public static class Processor
     /// <summary>Lemmas. Needs tokenize, mwt and pos.</summary>
     public const string Lemma = "lemma";
 
-    /// <summary>Constituency trees (<c>default</c> package only). Needs tokenize, mwt and pos.</summary>
+    /// <summary>Constituency trees (<see langword="default"/> package only). Needs tokenize, mwt and pos.</summary>
     public const string Constituency = "constituency";
 
     /// <summary>Dependency parses (each word's head and relation). Needs tokenize, mwt, pos and lemma.</summary>

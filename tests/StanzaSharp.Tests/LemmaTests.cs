@@ -75,6 +75,7 @@ public class LemmaTests
             if (i < expected.Length || i < got.Length)
                 failures.Add($"{name}, sentence {i}:\n--- expected\n{expected.ElementAtOrDefault(i)}\n--- actual\n{got.ElementAtOrDefault(i)}");
         }
+
         Assert.True(failures.Count == 0, string.Join("\n\n", failures));
     }
 }

@@ -12,8 +12,10 @@ internal enum KernelPath
 {
     /// <summary>AVX2 + FMA (x64): 6×16 micro-kernel in 12 registers.</summary>
     Vector256,
+
     /// <summary>NEON on Arm64 (6×16 in 24 of its 32 registers), or SSE on x64 without AVX2.</summary>
     Vector128,
+
     /// <summary>Plain scalar code, for platforms without hardware SIMD.</summary>
     Scalar,
 }
@@ -32,14 +34,16 @@ internal sealed unsafe class PackedMatrix
     public int N { get; }
     public int K { get; }
     public int Panels { get; }
+
     /// <summary>N rounded up to a whole panel: the width a GEMM output must have.</summary>
     public int PaddedN => Panels * NR;
+
     public float* Data => (float*)Unsafe.AsPointer(ref _data[_offset]);
 
     private readonly int _offset;
 
     /// <summary>
-    /// A view of <paramref name="panels"/> of <paramref name="source"/>'s panels from <paramref name="firstPanel"/> on
+    /// Initializes a new instance of the <see cref="PackedMatrix"/> class. A view of <paramref name="panels"/> of <paramref name="source"/>'s panels from <paramref name="firstPanel"/> on
     /// (output columns [16·firstPanel, 16·(firstPanel + panels)), sharing its data). A GEMM column depends only on its
     /// panel, so those columns come out with the same bits as from the whole matrix.
     /// </summary>
@@ -89,8 +93,10 @@ internal static unsafe class Gemm
         : Vector128.IsHardwareAccelerated ? KernelPath.Vector128
         : KernelPath.Scalar;
 
-    /// <summary>A [m, K] row-major → C [m, PaddedN] = A·Wᵀ + bias (bias null or PaddedN floats), into <paramref name="c"/>
-    /// if given (at least m·PaddedN floats; a rented array is fine, every element of those rows is written).</summary>
+    /// <summary>
+    /// A [m, K] row-major → C [m, PaddedN] = A·Wᵀ + bias (bias null or PaddedN floats), into <paramref name="c"/>
+    /// if given (at least m·PaddedN floats; a rented array is fine, every element of those rows is written).
+    /// </summary>
     public static float[] Run(float[] a, int m, PackedMatrix w, float[]? bias, float[]? c = null)
     {
         c ??= new float[m * w.PaddedN];
@@ -149,6 +155,7 @@ internal static unsafe class Gemm
                             init[r] = k0 > 0 ? cRow : bias_ != null ? bias_ + p * PackedMatrix.NR : zero;
                             cRows[r] = r < mr ? cRow : dummy;
                         }
+
                         Kernel(mr, aRows, panel, kc, init, cRows, rowInvariant);
                     }
                 }
@@ -193,15 +200,22 @@ internal static unsafe class Gemm
                 break;
             case KernelPath.Vector128:
                 if (mr == 1 && !rowInvariant)
+                {
                     Kernel1x128(a[0], b, k, init[0], output[0]);
+                }
                 else if (mr <= 3)
                 {
                     if (AdvSimd.Arm64.IsSupported) Kernel3x128Neon(a, b, k, init, output); else Kernel3x128(a, b, k, init, output);
                 }
                 else if (AdvSimd.Arm64.IsSupported)
+                {
                     Kernel6x128Neon(a, b, k, init, output);
+                }
                 else
+                {
                     Kernel6x128(a, b, k, init, output);
+                }
+
                 break;
             default:
                 KernelScalar(mr, a, b, k, init, output);
@@ -210,7 +224,6 @@ internal static unsafe class Gemm
     }
 
     // Fma is MultiplyAddEstimate: one fused instruction where the CPU has one (x64 FMA3, every Arm64), else a·b + c.
-
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private static void Kernel6x256(float** a, float* b, int k, float** init, float** output)
     {
@@ -232,6 +245,7 @@ internal static unsafe class Gemm
             x = Vector256.Create(a4[p]); c40 = Fma(x, b0, c40); c41 = Fma(x, b1, c41);
             x = Vector256.Create(a5[p]); c50 = Fma(x, b0, c50); c51 = Fma(x, b1, c51);
         }
+
         c00.Store(output[0]); c01.Store(output[0] + 8);
         c10.Store(output[1]); c11.Store(output[1] + 8);
         c20.Store(output[2]); c21.Store(output[2] + 8);
@@ -255,6 +269,7 @@ internal static unsafe class Gemm
             x = Vector256.Create(a1[p]); c10 = Fma(x, b0, c10); c11 = Fma(x, b1, c11);
             x = Vector256.Create(a2[p]); c20 = Fma(x, b0, c20); c21 = Fma(x, b1, c21);
         }
+
         c00.Store(output[0]); c01.Store(output[0] + 8);
         c10.Store(output[1]); c11.Store(output[1] + 8);
         c20.Store(output[2]); c21.Store(output[2] + 8);
@@ -274,10 +289,12 @@ internal static unsafe class Gemm
             x = Vector256.Create(a[p + 2]); e0 = Fma(x, Vector256.Load(b + 32), e0); e1 = Fma(x, Vector256.Load(b + 40), e1);
             x = Vector256.Create(a[p + 3]); f0 = Fma(x, Vector256.Load(b + 48), f0); f1 = Fma(x, Vector256.Load(b + 56), f1);
         }
+
         for (; p < k; p++, b += PackedMatrix.NR)
         {
             var x = Vector256.Create(a[p]); c0 = Fma(x, Vector256.Load(b), c0); c1 = Fma(x, Vector256.Load(b + 8), c1);
         }
+
         ((c0 + d0) + (e0 + f0)).Store(output);
         ((c1 + d1) + (e1 + f1)).Store(output + 8);
     }
@@ -304,6 +321,7 @@ internal static unsafe class Gemm
             x = Vector128.Create(a4[p]); c40 = Fma(x, b0, c40); c41 = Fma(x, b1, c41); c42 = Fma(x, b2, c42); c43 = Fma(x, b3, c43);
             x = Vector128.Create(a5[p]); c50 = Fma(x, b0, c50); c51 = Fma(x, b1, c51); c52 = Fma(x, b2, c52); c53 = Fma(x, b3, c53);
         }
+
         float* o = output[0]; c00.Store(o); c01.Store(o + 4); c02.Store(o + 8); c03.Store(o + 12);
         o = output[1]; c10.Store(o); c11.Store(o + 4); c12.Store(o + 8); c13.Store(o + 12);
         o = output[2]; c20.Store(o); c21.Store(o + 4); c22.Store(o + 8); c23.Store(o + 12);
@@ -327,6 +345,7 @@ internal static unsafe class Gemm
             x = Vector128.Create(a1[p]); c10 = Fma(x, b0, c10); c11 = Fma(x, b1, c11); c12 = Fma(x, b2, c12); c13 = Fma(x, b3, c13);
             x = Vector128.Create(a2[p]); c20 = Fma(x, b0, c20); c21 = Fma(x, b1, c21); c22 = Fma(x, b2, c22); c23 = Fma(x, b3, c23);
         }
+
         float* o = output[0]; c00.Store(o); c01.Store(o + 4); c02.Store(o + 8); c03.Store(o + 12);
         o = output[1]; c10.Store(o); c11.Store(o + 4); c12.Store(o + 8); c13.Store(o + 12);
         o = output[2]; c20.Store(o); c21.Store(o + 4); c22.Store(o + 8); c23.Store(o + 12);
@@ -364,6 +383,7 @@ internal static unsafe class Gemm
             var x5 = Vector128.CreateScalarUnsafe(a5[p]);
             c50 = FmaLane0(x5, b0, c50); c51 = FmaLane0(x5, b1, c51); c52 = FmaLane0(x5, b2, c52); c53 = FmaLane0(x5, b3, c53);
         }
+
         float* o = output[0]; c00.Store(o); c01.Store(o + 4); c02.Store(o + 8); c03.Store(o + 12);
         o = output[1]; c10.Store(o); c11.Store(o + 4); c12.Store(o + 8); c13.Store(o + 12);
         o = output[2]; c20.Store(o); c21.Store(o + 4); c22.Store(o + 8); c23.Store(o + 12);
@@ -391,6 +411,7 @@ internal static unsafe class Gemm
             var x2 = Vector128.CreateScalarUnsafe(a2[p]);
             c20 = FmaLane0(x2, b0, c20); c21 = FmaLane0(x2, b1, c21); c22 = FmaLane0(x2, b2, c22); c23 = FmaLane0(x2, b3, c23);
         }
+
         float* o = output[0]; c00.Store(o); c01.Store(o + 4); c02.Store(o + 8); c03.Store(o + 12);
         o = output[1]; c10.Store(o); c11.Store(o + 4); c12.Store(o + 8); c13.Store(o + 12);
         o = output[2]; c20.Store(o); c21.Store(o + 4); c22.Store(o + 8); c23.Store(o + 12);
@@ -412,12 +433,14 @@ internal static unsafe class Gemm
             d0 = Fma(x, Vector128.Load(b + 16), d0); d1 = Fma(x, Vector128.Load(b + 20), d1);
             d2 = Fma(x, Vector128.Load(b + 24), d2); d3 = Fma(x, Vector128.Load(b + 28), d3);
         }
+
         for (; p < k; p++, b += PackedMatrix.NR)
         {
             var x = Vector128.Create(a[p]);
             c0 = Fma(x, Vector128.Load(b), c0); c1 = Fma(x, Vector128.Load(b + 4), c1);
             c2 = Fma(x, Vector128.Load(b + 8), c2); c3 = Fma(x, Vector128.Load(b + 12), c3);
         }
+
         (c0 + d0).Store(output); (c1 + d1).Store(output + 4); (c2 + d2).Store(output + 8); (c3 + d3).Store(output + 12);
     }
 
@@ -429,6 +452,7 @@ internal static unsafe class Gemm
         for (int r = 0; r < mr; r++)
             new Span<float>(init[r], nr).CopyTo(new Span<float>(acc + r * nr, nr));
         for (int p = 0; p < k; p++, b += nr)
+        {
             for (int r = 0; r < mr; r++)
             {
                 float x = a[r][p];
@@ -436,6 +460,8 @@ internal static unsafe class Gemm
                 for (int j = 0; j < nr; j++)
                     row[j] += x * b[j];
             }
+        }
+
         for (int r = 0; r < mr; r++)
             new Span<float>(acc + r * nr, nr).CopyTo(new Span<float>(output[r], nr));
     }
@@ -471,7 +497,6 @@ internal static unsafe class Gemm
 
     // The blocked kernels: per block the accumulators start at zero; after it they are added to the output (the sum of
     // the earlier blocks), and after the last block init is added.
-
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private static void Kernel6x256Blocked(float** a, float* b, int k, int kb, float** init, float** output)
     {
@@ -493,6 +518,7 @@ internal static unsafe class Gemm
                 x = Vector256.Create(a4[p]); c40 = Fma(x, b0, c40); c41 = Fma(x, b1, c41);
                 x = Vector256.Create(a5[p]); c50 = Fma(x, b0, c50); c51 = Fma(x, b1, c51);
             }
+
             if (k0 > 0)
             {
                 c00 = Vector256.Load(o0) + c00; c01 = Vector256.Load(o0 + 8) + c01;
@@ -502,6 +528,7 @@ internal static unsafe class Gemm
                 c40 = Vector256.Load(o4) + c40; c41 = Vector256.Load(o4 + 8) + c41;
                 c50 = Vector256.Load(o5) + c50; c51 = Vector256.Load(o5 + 8) + c51;
             }
+
             if (end == k)
             {
                 c00 += Vector256.Load(init[0]); c01 += Vector256.Load(init[0] + 8);
@@ -511,6 +538,7 @@ internal static unsafe class Gemm
                 c40 += Vector256.Load(init[4]); c41 += Vector256.Load(init[4] + 8);
                 c50 += Vector256.Load(init[5]); c51 += Vector256.Load(init[5] + 8);
             }
+
             c00.Store(o0); c01.Store(o0 + 8);
             c10.Store(o1); c11.Store(o1 + 8);
             c20.Store(o2); c21.Store(o2 + 8);
@@ -537,18 +565,21 @@ internal static unsafe class Gemm
                 x = Vector256.Create(a1[p]); c10 = Fma(x, b0, c10); c11 = Fma(x, b1, c11);
                 x = Vector256.Create(a2[p]); c20 = Fma(x, b0, c20); c21 = Fma(x, b1, c21);
             }
+
             if (k0 > 0)
             {
                 c00 = Vector256.Load(o0) + c00; c01 = Vector256.Load(o0 + 8) + c01;
                 c10 = Vector256.Load(o1) + c10; c11 = Vector256.Load(o1 + 8) + c11;
                 c20 = Vector256.Load(o2) + c20; c21 = Vector256.Load(o2 + 8) + c21;
             }
+
             if (end == k)
             {
                 c00 += Vector256.Load(init[0]); c01 += Vector256.Load(init[0] + 8);
                 c10 += Vector256.Load(init[1]); c11 += Vector256.Load(init[1] + 8);
                 c20 += Vector256.Load(init[2]); c21 += Vector256.Load(init[2] + 8);
             }
+
             c00.Store(o0); c01.Store(o0 + 8);
             c10.Store(o1); c11.Store(o1 + 8);
             c20.Store(o2); c21.Store(o2 + 8);
@@ -575,6 +606,7 @@ internal static unsafe class Gemm
                 x = Vector128.Create(a4[p]); c40 = Fma(x, b0, c40); c41 = Fma(x, b1, c41); c42 = Fma(x, b2, c42); c43 = Fma(x, b3, c43);
                 x = Vector128.Create(a5[p]); c50 = Fma(x, b0, c50); c51 = Fma(x, b1, c51); c52 = Fma(x, b2, c52); c53 = Fma(x, b3, c53);
             }
+
             bool first = k0 == 0, last = end == k;
             Flush128(output[0], init[0], first, last, c00, c01, c02, c03);
             Flush128(output[1], init[1], first, last, c10, c11, c12, c13);
@@ -601,6 +633,7 @@ internal static unsafe class Gemm
                 x = Vector128.Create(a1[p]); c10 = Fma(x, b0, c10); c11 = Fma(x, b1, c11); c12 = Fma(x, b2, c12); c13 = Fma(x, b3, c13);
                 x = Vector128.Create(a2[p]); c20 = Fma(x, b0, c20); c21 = Fma(x, b1, c21); c22 = Fma(x, b2, c22); c23 = Fma(x, b3, c23);
             }
+
             bool first = k0 == 0, last = end == k;
             Flush128(output[0], init[0], first, last, c00, c01, c02, c03);
             Flush128(output[1], init[1], first, last, c10, c11, c12, c13);
@@ -616,10 +649,12 @@ internal static unsafe class Gemm
         {
             c0 = Vector128.Load(o) + c0; c1 = Vector128.Load(o + 4) + c1; c2 = Vector128.Load(o + 8) + c2; c3 = Vector128.Load(o + 12) + c3;
         }
+
         if (last)
         {
             c0 += Vector128.Load(init); c1 += Vector128.Load(init + 4); c2 += Vector128.Load(init + 8); c3 += Vector128.Load(init + 12);
         }
+
         c0.Store(o); c1.Store(o + 4); c2.Store(o + 8); c3.Store(o + 12);
     }
 
@@ -633,6 +668,7 @@ internal static unsafe class Gemm
             new Span<float>(acc, mr * nr).Clear();
             int end = Math.Min(k, k0 + kb);
             for (int p = k0; p < end; p++, b += nr)
+            {
                 for (int r = 0; r < mr; r++)
                 {
                     float x = a[r][p];
@@ -640,12 +676,16 @@ internal static unsafe class Gemm
                     for (int j = 0; j < nr; j++)
                         row[j] += x * b[j];
                 }
+            }
+
             for (int r = 0; r < mr; r++)
+            {
                 for (int j = 0; j < nr; j++)
                 {
                     float sum = k0 > 0 ? output[r][j] + acc[r * nr + j] : acc[r * nr + j];
                     output[r][j] = end == k ? sum + init[r][j] : sum;
                 }
+            }
         }
     }
 
@@ -689,21 +729,23 @@ internal static unsafe class Act
         switch (Gemm.Path)
         {
             case KernelPath.Vector256:
-            {
-                var ifg = Sigmoid(Vector256.Load(gates));
-                var go = Vector256.Load(gates + 8);
-                var cNew = ifg.GetUpper() * Vector128.Load(c) + ifg.GetLower() * Tanh(go.GetLower());
-                cNew.Store(c);
-                (Sigmoid(go.GetUpper()) * Tanh(cNew)).Store(h);
-                break;
-            }
+                {
+                    var ifg = Sigmoid(Vector256.Load(gates));
+                    var go = Vector256.Load(gates + 8);
+                    var cNew = ifg.GetUpper() * Vector128.Load(c) + ifg.GetLower() * Tanh(go.GetLower());
+                    cNew.Store(c);
+                    (Sigmoid(go.GetUpper()) * Tanh(cNew)).Store(h);
+                    break;
+                }
+
             case KernelPath.Vector128:
-            {
-                var cNew = Sigmoid(Vector128.Load(gates + 4)) * Vector128.Load(c) + Sigmoid(Vector128.Load(gates)) * Tanh(Vector128.Load(gates + 8));
-                cNew.Store(c);
-                (Sigmoid(Vector128.Load(gates + 12)) * Tanh(cNew)).Store(h);
-                break;
-            }
+                {
+                    var cNew = Sigmoid(Vector128.Load(gates + 4)) * Vector128.Load(c) + Sigmoid(Vector128.Load(gates)) * Tanh(Vector128.Load(gates + 8));
+                    cNew.Store(c);
+                    (Sigmoid(Vector128.Load(gates + 12)) * Tanh(cNew)).Store(h);
+                    break;
+                }
+
             default:
                 for (int u = 0; u < 4; u++)
                 {
@@ -711,6 +753,7 @@ internal static unsafe class Act
                     c[u] = cNew;
                     h[u] = Sigmoid(gates[12 + u]) * MathF.Tanh(cNew);
                 }
+
                 break;
         }
     }
@@ -720,11 +763,17 @@ internal static unsafe class Act
     {
         int j = 0;
         if (Gemm.Path == KernelPath.Vector256)
+        {
             for (; j <= n - 8; j += 8)
                 (Vector256.Load(o + j) + Sigmoid(Vector256.Load(gate + j)) * Tanh(Vector256.Load(highway + j))).Store(o + j);
+        }
+
         if (Gemm.Path != KernelPath.Scalar)
+        {
             for (; j <= n - 4; j += 4)
                 (Vector128.Load(o + j) + Sigmoid(Vector128.Load(gate + j)) * Tanh(Vector128.Load(highway + j))).Store(o + j);
+        }
+
         for (; j < n; j++)
             o[j] += Sigmoid(gate[j]) * MathF.Tanh(highway[j]);
     }

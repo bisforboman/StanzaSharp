@@ -116,8 +116,10 @@ internal sealed class ConstituencyParser : IDisposable
                         foreach (var s in InitialStates(chunk, sentences, charlms, cacheKeys, cancellationToken))
                             horizon.Enqueue(s);
                     }
+
                     batch.Add(horizon.Dequeue());
                 }
+
                 if (batch.Count == 0)
                     break;
 
@@ -132,6 +134,7 @@ internal sealed class ConstituencyParser : IDisposable
                     onStep?.Invoke(batch[k].Index, row.ToArray(), _transitions.Select(t => batch[k].IsLegal(t, _rootLabels, _unaryLimit)).ToArray());
                     chosen[k] = Choose(batch[k], row);
                 }
+
                 Apply(batch, chosen, cancellationToken);
 
                 batch.RemoveAll(s =>
@@ -150,11 +153,11 @@ internal sealed class ConstituencyParser : IDisposable
             foreach (var s in batch.Concat(horizon))
                 s.Dispose();
         }
+
         return result.ToList();
     }
 
     // ----- initial state: the word queue (initial_word_queues) -----
-
     private List<ParserState> InitialStates(int[] indices, IReadOnlyList<IReadOnlyList<(string Word, string Tag)>> all,
         CharlmCache? charlms, IReadOnlyList<Sentence>? cacheKeys, CancellationToken ct)
     {
@@ -189,17 +192,20 @@ internal sealed class ConstituencyParser : IDisposable
     {
         int best = 0;
         for (int j = 1; j < scores.Length; j++)
+        {
             if (scores[j] > scores[best])
                 best = j;
+        }
+
         if (state.IsLegal(_transitions[best], _rootLabels, _unaryLimit))
             return _transitions[best];
         var row = scores.ToArray();
         return Enumerable.Range(0, row.Length).OrderByDescending(j => row[j])
-            .Select(j => _transitions[j]).FirstOrDefault(t => state.IsLegal(t, _rootLabels, _unaryLimit));
+            .Select(j => _transitions[j])
+            .FirstOrDefault(t => state.IsLegal(t, _rootLabels, _unaryLimit));
     }
 
     // ----- applying transitions (bulk_apply) -----
-
     private void Apply(List<ParserState> states, Transition?[] transitions, CancellationToken ct)
     {
         var applied = new List<(ParserState State, Transition Transition, StackNode<Constituent> Base)>();
@@ -211,6 +217,7 @@ internal sealed class ConstituencyParser : IDisposable
         {
             var s = states[k];
             var t = transitions[k];
+
             // bulk_apply: no legal transition, or far too many transitions, breaks the state.
             if (t == null || s.NumTransitions >= (s.SentenceLength + 2) * 20)
             {
@@ -226,14 +233,12 @@ internal sealed class ConstituencyParser : IDisposable
                     applied.Add((s, t, s.Constituents));
                     s.WordPosition++;
                     break;
-
                 case TransitionKind.Open:
                     newConstituents.Add(null!);
                     opens.Add((slot, t.Label!, t.OpenIndex));
                     applied.Add((s, t, s.Constituents));
                     s.NumOpens++;
                     break;
-
                 case TransitionKind.Close:
                     // In-order: children above the open marker, the marker, then the first child below it.
                     var children = new List<Constituent>();
@@ -243,6 +248,7 @@ internal sealed class ConstituencyParser : IDisposable
                         children.Add(node.Value);
                         node = node.Parent!;
                     }
+
                     var label = node.Value.OpenLabel!;
                     node = node.Parent!;
                     children.Add(node.Value);
@@ -255,6 +261,7 @@ internal sealed class ConstituencyParser : IDisposable
                     break;
             }
         }
+
         if (applied.Count == 0)
             return;
 
@@ -264,6 +271,7 @@ internal sealed class ConstituencyParser : IDisposable
             for (int i = 0; i < opens.Count; i++)
                 newConstituents[opens[i].Slot] = new Constituent(null, opens[i].Label, hx[i]);
         }
+
         if (closes.Count > 0)
         {
             // MAX composition: elementwise max over the children, then relu(reduce_linear(.)).
@@ -291,7 +299,6 @@ internal sealed class ConstituencyParser : IDisposable
     }
 
     // ----- loading -----
-
     private static readonly Regex OpenRepr = new(@"^OpenConstituent\(\('([^']*)',\)\)$");
 
     private static Transition ParseTransition(string repr, int index, List<string> opens)
@@ -323,6 +330,7 @@ internal sealed class ConstituencyParser : IDisposable
             if (actual != expected)
                 throw new NotSupportedException($"Parser checkpoint has {key} = {actual ?? "null"}; only {expected} is ported");
         }
+
         if (p["model_type"]?.GetValue<string>() != "LSTM")
             throw new NotSupportedException("Only LSTM parser models are ported");
         Require("transition_scheme", "IN_ORDER");

@@ -95,11 +95,12 @@ internal sealed class Unpickler
                 case (byte)'K': Push((long)Bytes(1)[0]); break; // BININT1
                 case (byte)'M': Push((long)BinaryPrimitives.ReadUInt16LittleEndian(Bytes(2))); break; // BININT2
                 case 0x8a: // LONG1: little-endian two's complement
-                {
-                    var n = new BigInteger(Bytes(Bytes(1)[0]), isUnsigned: false, isBigEndian: false);
-                    Push(n >= long.MinValue && n <= long.MaxValue ? (object)(long)n : n); // without (object) the ternary is a BigInteger
-                    break;
-                }
+                    {
+                        var n = new BigInteger(Bytes(Bytes(1)[0]), isUnsigned: false, isBigEndian: false);
+                        Push(n >= long.MinValue && n <= long.MaxValue ? (object)(long)n : n); // without (object) the ternary is a BigInteger
+                        break;
+                    }
+
                 case (byte)'G': Push(BinaryPrimitives.ReadDoubleBigEndian(Bytes(8))); break; // BINFLOAT
                 case (byte)'X': Push(Utf8(BinaryPrimitives.ReadUInt32LittleEndian(Bytes(4)))); break; // BINUNICODE
                 case (byte)'U': Push(Utf8(Bytes(1)[0])); break; // SHORT_BINSTRING (Python 2 str; torch.load decodes it as UTF-8)
@@ -114,15 +115,16 @@ internal sealed class Unpickler
                 case (byte)'}': Push(new PyDict()); break; // EMPTY_DICT
                 case (byte)'s': { var v = Pop(); var k = Pop(); Peek<PyDict>()[Key(k)] = v; break; } // SETITEM
                 case (byte)'u': // SETITEMS
-                {
-                    var items = PopMark();
-                    if (items.Count % 2 != 0)
-                        throw Error("SETITEMS with an odd number of items");
-                    var dict = Peek<PyDict>();
-                    for (int i = 0; i < items.Count; i += 2)
-                        dict[Key(items[i])] = items[i + 1];
-                    break;
-                }
+                    {
+                        var items = PopMark();
+                        if (items.Count % 2 != 0)
+                            throw Error("SETITEMS with an odd number of items");
+                        var dict = Peek<PyDict>();
+                        for (int i = 0; i < items.Count; i += 2)
+                            dict[Key(items[i])] = items[i + 1];
+                        break;
+                    }
+
                 case (byte)'h': Push(MemoGet(Bytes(1)[0])); break; // BINGET
                 case (byte)'j': Push(MemoGet(BinaryPrimitives.ReadUInt32LittleEndian(Bytes(4)))); break; // LONG_BINGET
                 case (byte)'q': _memo[Bytes(1)[0]] = Top(); break; // BINPUT
@@ -143,7 +145,8 @@ internal sealed class Unpickler
     }
 
     private static object Global(string? module, string? name) =>
-        Allowed.TryGetValue($"{module}.{name}", out var g) ? g
+        Allowed.TryGetValue($"{module}.{name}", out var g)
+            ? g
             : throw new InvalidDataException(
                 $"Pickle global '{module}.{name}' is not allowed: only plain data, OrderedDict and tensors are loaded");
 
@@ -170,7 +173,8 @@ internal sealed class Unpickler
         t.Items.Select(x => x as long? ?? throw Error("tensor size/stride is not an int")).ToArray();
 
     // Only scalar keys: the converter names them with str(), and a nested tuple key would be hashed recursively.
-    private object Key(object? key) => key is string or long or BigInteger or bool or double ? key
+    private object Key(object? key) => key is string or long or BigInteger or bool or double
+        ? key
         : throw Error($"dict key of type {key?.GetType().Name ?? "None"} is not supported");
 
     private void Push(object? v) => _stack.Add(v);
@@ -223,8 +227,11 @@ internal sealed class Unpickler
     {
         var line = new List<byte>();
         for (int b; (b = _data.ReadByte()) != '\n'; line.Add((byte)b))
+        {
             if (b < 0)
                 throw Error("unterminated GLOBAL");
+        }
+
         _pos += line.Count + 1;
         return Encoding.UTF8.GetString(line.ToArray());
     }

@@ -82,8 +82,10 @@ internal sealed class DependencyParser : IDisposable
             cancellationToken.ThrowIfCancellationRequested();
             var parsed = Parse(batch.Select(i => (IReadOnlyList<Word>)sentences[i]).ToList(), cancellationToken, charlms);
             for (int b = 0; b < batch.Count; b++)
+            {
                 for (int j = 0; j < sentences[batch[b]].Count; j++)
                     (sentences[batch[b]][j].Head, sentences[batch[b]][j].Deprel) = parsed[b][j];
+            }
         }
     }
 
@@ -109,18 +111,22 @@ internal sealed class DependencyParser : IDisposable
                 batches.Add([i]);
                 continue;
             }
+
             if (lengths[i] + currentLen > _batchSize && currentLen > 0)
             {
                 batches.Add(current);
                 (current, currentLen) = ([], 0);
             }
+
             current.Add(i);
             currentLen += lengths[i];
         }
+
         if (currentLen > 0)
             batches.Add(current);
         return batches.Select(b => Enumerable.Range(0, b.Count).OrderByDescending(p => lengths[b[p]]).ThenByDescending(p => p)
-            .Select(p => b[p]).ToList()).ToList();
+            .Select(p => b[p])
+            .ToList()).ToList();
     }
 
     /// <summary>Parses one batch: (head, deprel) for each word of each sentence.</summary>
@@ -142,11 +148,15 @@ internal sealed class DependencyParser : IDisposable
                 cancellationToken.ThrowIfCancellationRequested();
                 int n = batch[b].Count + 1;
                 for (int i = 0; i < n; i++)
+                {
                     for (int j = 0; j < n; j++)
                         scores[i * n + j] = output.ArcLogProbs[(b * width + i) * width + j];
+                }
+
                 var tree = ChuLiuEdmonds.OneRoot(scores, n);
                 result.Add(Enumerable.Range(1, n - 1)
-                    .Select(i => (tree[i], _deprels[output.Labels[(b * width + i) * width + tree[i]] + VocabPrefixSize])).ToArray());
+                    .Select(i => (tree[i], _deprels[output.Labels[(b * width + i) * width + tree[i]] + VocabPrefixSize]))
+                    .ToArray());
             }
         }
         finally
@@ -158,6 +168,7 @@ internal sealed class DependencyParser : IDisposable
                 ArrayPool<int>.Shared.Return(output.Labels);
             }
         }
+
         return result;
     }
 
@@ -188,6 +199,7 @@ internal sealed class DependencyParser : IDisposable
                 input.Pretrained[row + j + 1] = _pretrain.UnitToId(lower);
             }
         }
+
         return _net.Forward(input, labelScores, cancellationToken);
     }
 
@@ -197,6 +209,7 @@ internal sealed class DependencyParser : IDisposable
         {
             if (!ok) throw new NotSupportedException($"Depparse checkpoint uses {what}, which is not ported");
         }
+
         bool Flag(string key, bool absent) => config[key]?.GetValue<bool>() ?? absent;
         Require(root["model_type"]?.GetValue<string>() is null or "graph", "a transition or ensemble parser");
         Require(!Flag("use_arc_embedding", false), "use_arc_embedding");

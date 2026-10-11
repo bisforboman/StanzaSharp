@@ -23,6 +23,7 @@ internal sealed class ManagedTokenizerNet : ITokenizerNet
     {
         var config = ckpt.Root["config"]!;
         var model = ckpt.Root["model"]!;
+
         // TokenizerNet checks the options; this twin is only built for checkpoints it accepts.
         int hidden = config["hidden_dim"]!.GetValue<int>();
         _emb = config["emb_dim"]!.GetValue<int>();
@@ -57,6 +58,7 @@ internal sealed class ManagedTokenizerNet : ITokenizerNet
                 _embeddings.AsSpan((int)ids[i] * _emb, _emb).CopyTo(x.AsSpan(i * inDim));
                 feats.AsSpan(i * featDim, featDim).CopyTo(x.AsSpan(i * inDim + _emb));
             }
+
             _rnn.ForwardPadded(x, rows, width, lengths, inp, ct);
             Gemm.Run(inp, n, _clf, _clfBias, level1);
 
@@ -67,6 +69,7 @@ internal sealed class ManagedTokenizerNet : ITokenizerNet
                 for (int j = 0; j < h2; j++)
                     inp2[i * h2 + j] = inp[i * h2 + j] * keep;
             }
+
             _rnn2.ForwardPadded(inp2, rows, width, lengths, hid2, ct);
             Gemm.Run(hid2, n, _clf2, null, level2);
 
@@ -84,6 +87,7 @@ internal sealed class ManagedTokenizerNet : ITokenizerNet
                 o[3] = tok + nonsent + mwt;
                 o[4] = tok + sent + mwt;
             }
+
             return pred;
         }
         finally

@@ -38,8 +38,10 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
     private readonly Conv[] _convs;
     private readonly (PackedMatrix W, float[] Bias)[] _fc;
 
-    /// <summary>One convolution. Full width (Width 0): <see cref="Packed"/> [channels, Height·lstm width]. Otherwise
-    /// <see cref="Weights"/> [channels, Height, Width] with stride (1, Width), giving <see cref="Columns"/> outputs per channel.</summary>
+    /// <summary>
+    /// One convolution. Full width (Width 0): <see cref="Packed"/> [channels, Height·lstm width]. Otherwise
+    /// <see cref="Weights"/> [channels, Height, Width] with stride (1, Width), giving <see cref="Columns"/> outputs per channel.
+    /// </summary>
     private sealed record Conv(int Height, int Width, int Channels, int Columns, int Offset, PackedMatrix? Packed, float[] Weights, float[] Bias);
 
     public ManagedSentimentNet(Checkpoint ckpt, Filter[] filters, Pretrain pretrain, ManagedCharLanguageModel charlmForward, ManagedCharLanguageModel charlmBackward)
@@ -79,6 +81,7 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
                 _convs[i] = new Conv(height, width, ch, columns, offset, null, w, b);
                 offset += ch * columns;
             }
+
             _pooledSize = offset;
         }
 
@@ -91,6 +94,7 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
             T($"fc_layers.{i}.bias").CopyTo(bias, 0);
             fc.Add((packed, bias));
         }
+
         _fc = [.. fc];
     }
 
@@ -126,7 +130,9 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
                         backward.AsSpan((offset + t) * dim, dim).CopyTo(dst[(_dim + dim)..]);
                     }
                     else
+                    {
                         dst[_dim..].Clear();
+                    }
                 }
             }
 
@@ -153,10 +159,14 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
                 fixed (float* a = hidden, pb = bias, c = next)
                     Gemm.Run(a, n, ld, w, pb, c, w.PaddedN, ct);
                 if (l < _fc.Length - 1)
+                {
                     for (int k = 0; k < n * w.PaddedN; k++)
                         next[k] = Math.Max(next[k], 0);
+                }
+
                 (hidden, ld) = (next, w.PaddedN);
             }
+
             int classes = _fc[^1].W.N;
             var logits = new float[n * classes];
             for (int i = 0; i < n; i++)
@@ -220,6 +230,7 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
             var o = pooled.AsSpan(i * _pooledSize + conv.Offset, conv.Channels * conv.Columns);
             o.Clear();
             for (int t = 0; t < windows; t++)
+            {
                 for (int ch = 0; ch < conv.Channels; ch++)
                 {
                     var wc = conv.Weights.AsSpan(ch * area, area);
@@ -233,10 +244,12 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
                             for (int b = 0; b < src.Length; b++)
                                 s += wr[b] * src[b];
                         }
+
                         ref float m = ref o[ch * conv.Columns + col];
                         m = Math.Max(m, s);
                     }
                 }
+            }
         });
     }
 
@@ -251,10 +264,13 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
         var reps = new (float[], float[], int)[batch.Count];
         var missing = new List<int>();
         for (int i = 0; i < batch.Count; i++)
+        {
             if (cacheKeys?[i] is { } key && charlms!.TryGetArrays(key, out var cached))
                 reps[i] = (cached.Forward, cached.Backward, 0);
             else
                 missing.Add(i);
+        }
+
         if (missing.Count == 0)
             return reps;
 
@@ -264,6 +280,7 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
         rented.Add(forwardReps);
         var backwardReps = ArrayPool<float>.Shared.Rent(words * dim);
         rented.Add(backwardReps);
+
         // A single sentence (with multi-word tokens, say) is kept for NER, which reads the same tokens.
         ManagedCharLanguageModel.BuildBoth(_charlmForward, _charlmBackward, texts, forwardReps, backwardReps, charlms, ct);
         ct.ThrowIfCancellationRequested();
@@ -273,6 +290,7 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
             reps[i] = (forwardReps, backwardReps, offset);
             offset += batch[i].Count;
         }
+
         return reps;
     }
 

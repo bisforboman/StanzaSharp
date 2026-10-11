@@ -31,4 +31,3 @@ internal interface IDepparseNet : IDisposable
     /// <param name="ct">Checked after each charlm pass (or the character model), inside the LSTM and between the scorers' chunks.</param>
     DepparseScores Forward(DepparseBatch batch, bool labelScores, CancellationToken ct);
 }
-

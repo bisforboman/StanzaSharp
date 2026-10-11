@@ -52,6 +52,7 @@ public class NnTests
             Assert.False(cache.TryAdd(b, rejected, rejected)); // 6 words: not kept, and still the caller's
             Assert.Equal(0f, rejected.sum().item<float>()); // not disposed by the cache
         }
+
         Assert.True(cache.TryAdd(c, TorchSharp.torch.zeros(2, 2), TorchSharp.torch.zeros(2, 2)));
         Assert.True(cache.TryGet(a, out _));
         Assert.False(cache.TryGet(b, out _));

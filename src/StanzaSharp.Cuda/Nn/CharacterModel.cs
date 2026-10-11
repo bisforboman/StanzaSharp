@@ -46,9 +46,7 @@ internal sealed class CharacterModel : IDisposable
     /// <summary>The vocab ids of a word's characters (code points, as in Python; unknown ones are UNK).</summary>
     public long[] CharIds(string word) => word.EnumerateRunes().Select(r => (long)_vocab.GetValueOrDefault(r.ToString(), UnkId)).ToArray();
 
-    /// <summary>
-    /// CharacterModel.forward over every word of a batch at once, as Stanza runs it.
-    /// </summary>
+    /// <summary>CharacterModel.forward over every word of a batch at once, as Stanza runs it.</summary>
     /// <param name="sentences">Each sentence's words as character ids (see <see cref="CharIds"/>).</param>
     /// <returns>[sentences, longest, <see cref="OutputDim"/>], zero past each sentence's end.</returns>
     public Tensor Forward(IReadOnlyList<IReadOnlyList<long[]>> sentences)
@@ -76,7 +74,9 @@ internal sealed class CharacterModel : IDisposable
 
         Tensor reps;
         if (_attn != null)
+        {
             reps = (output * torch.sigmoid(_attn.forward(output))).sum(1); // padding rows are zero
+        }
         else
         {
             // h[-2:]: the forward direction's last state is at each word's last character, the backward one's at its first.
@@ -85,6 +85,7 @@ internal sealed class CharacterModel : IDisposable
             if (_directions == 2)
                 reps = cat([reps.narrow(1, 0, _hidden), output.select(1, 0).narrow(1, _hidden, _hidden)], 1);
         }
+
         return reps.MoveToOuterDisposeScope();
     }
 

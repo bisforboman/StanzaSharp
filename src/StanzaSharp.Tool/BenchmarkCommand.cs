@@ -60,6 +60,7 @@ internal static class BenchmarkCommand
             else
                 return Fail($"Unexpected argument: {args[i]}\n\n{usage}");
         }
+
         if (quick)
             (words, runs, calls) = (Math.Min(words, 300), 1, 10);
 
@@ -72,6 +73,7 @@ internal static class BenchmarkCommand
         {
             return Fail(e.Message);
         }
+
         if (!Directory.Exists(models))
             return Fail($"Model directory not found: {models}. Download the models with: stanzasharp download {models} --package {package}");
 
@@ -101,6 +103,7 @@ internal static class BenchmarkCommand
             var pyRuns = new List<Dictionary<string, double>>();
             Document doc = null!;
             string? pyConllu = null;
+
             // A warm-up run each, then the timed runs, alternating: both sides see the same machine state.
             for (int run = 0; run <= runs; run++)
             {
@@ -120,6 +123,7 @@ internal static class BenchmarkCommand
                     pyConllu = reply.GetProperty("conllu").GetString();
                     Console.Error.Write($", Stanza {stages.Values.Sum():F1} s");
                 }
+
                 Console.Error.WriteLine();
             }
 
@@ -203,8 +207,10 @@ internal static class BenchmarkCommand
                 double ratio = higherIsBetter ? a / v : v / a;
                 s.Append($" {Value(v)} | {(double.IsFinite(ratio) && ratio > 0 ? ratio.ToString("F2", CultureInfo.InvariantCulture) + "x" : "-")} |");
             }
+
             s.AppendLine();
         }
+
         Row("load", cs.Load, py?.Load, " s", "F2");
         foreach (var stage in cs.Stages.Keys)
             Row(stage, cs.Stages[stage], py?.Stages.GetValueOrDefault(stage), " s", "F2");
@@ -216,8 +222,10 @@ internal static class BenchmarkCommand
         return s.ToString();
     }
 
-    /// <summary>The benchmark's text: the golden texts, as samples/StanzaSharp.Benchmark builds it, repeated or cut after
-    /// the paragraph that reaches <paramref name="words"/> (counted by whitespace, before tokenizing).</summary>
+    /// <summary>
+    /// The benchmark's text: the golden texts, as samples/StanzaSharp.Benchmark builds it, repeated or cut after
+    /// the paragraph that reaches <paramref name="words"/> (counted by whitespace, before tokenizing).
+    /// </summary>
     internal static List<string> Paragraphs(int words)
     {
         var unit = new[] { "validation.txt", "corpus.txt", "tokenize_stress.txt" }
@@ -226,13 +234,16 @@ internal static class BenchmarkCommand
                 using var reader = new StreamReader(typeof(BenchmarkCommand).Assembly.GetManifestResourceStream("benchmark/" + name)!);
                 return reader.ReadToEnd().Split("\n\n");
             })
-            .Select(p => p.Trim('\n')).Where(p => p.Trim().Length > 0).ToList();
+            .Select(p => p.Trim('\n'))
+            .Where(p => p.Trim().Length > 0)
+            .ToList();
         var result = new List<string>();
         for (int count = 0, i = 0; count < words; i++)
         {
             result.Add(unit[i % unit.Count]);
             count += WordCount(result[^1]);
         }
+
         return result;
     }
 
@@ -257,7 +268,6 @@ internal static class BenchmarkCommand
     }
 
     // ---- The machine ----
-
     internal static Machine DescribeMachine()
     {
         var (cpu, cores) = OperatingSystem.IsWindows() ? (WindowsCpuName(), WindowsCores())
@@ -275,13 +285,17 @@ internal static class BenchmarkCommand
     internal static (string? Cpu, int? Cores) ParseLscpu(string lscpu)
     {
         var fields = lscpu.Split('\n').Select(l => l.Split(':', 2)).Where(f => f.Length == 2)
-            .Select(f => (Key: f[0].Trim(), Value: f[1].Trim())).ToList();
+            .Select(f => (Key: f[0].Trim(), Value: f[1].Trim()))
+            .ToList();
         string? First(string key) => fields.FirstOrDefault(f => f.Key == key).Value;
+
         // Hybrid CPUs list a model per core type.
         var names = fields.Where(f => f.Key == "Model name" && f.Value != "-").Select(f => f.Value).Distinct().ToList();
+
         // ponytail: the first block's cores × sockets; a hybrid CPU's other core types aren't added.
         int? cores = int.TryParse(First("Core(s) per socket") ?? First("Core(s) per cluster"), out var perSocket)
-            ? perSocket * (int.TryParse(First("Socket(s)") ?? First("Cluster(s)"), out var sockets) ? sockets : 1) : null;
+            ? perSocket * (int.TryParse(First("Socket(s)") ?? First("Cluster(s)"), out var sockets) ? sockets : 1)
+            : null;
         return (names.Count > 0 ? string.Join(" + ", names) : null, cores);
     }
 
@@ -350,8 +364,11 @@ internal static class BenchmarkCommand
     private sealed class StageLog : ILogger
     {
         public readonly Dictionary<string, double> Stages = [];
+
         public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+
         public bool IsEnabled(LogLevel logLevel) => logLevel == LogLevel.Debug;
+
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
             if (state is IReadOnlyList<KeyValuePair<string, object?>> values && values.Count == 3 && values[0].Key == "Processor")
@@ -364,6 +381,7 @@ internal static class BenchmarkCommand
     {
         private readonly Process _process;
         private readonly DirectoryInfo _dir;
+
         public double Load { get; private set; }
         public string Versions { get; private set; } = "";
         public int Threads { get; private set; }
@@ -378,6 +396,7 @@ internal static class BenchmarkCommand
                 Console.Error.WriteLine($"Python Stanza: {note}");
                 return null;
             }
+
             var dir = Directory.CreateTempSubdirectory("stanzasharp-benchmark-");
             CompareCommand.WriteResources(dir.FullName, "benchmark.py", "stanza_resources_en.json");
             var start = new ProcessStartInfo(python) { RedirectStandardInput = true, RedirectStandardOutput = true, StandardInputEncoding = new UTF8Encoding(false) };
@@ -426,6 +445,7 @@ internal static class BenchmarkCommand
                 _process.WaitForExit();
                 throw new InvalidDataException(_process.ExitCode == 3 ? "see the message above" : $"Python exited with code {_process.ExitCode}; its error is above");
             }
+
             return JsonDocument.Parse(line).RootElement;
         }
 
@@ -440,6 +460,7 @@ internal static class BenchmarkCommand
             catch (InvalidOperationException)
             {
             }
+
             _process.Dispose();
             _dir.Delete(recursive: true);
         }

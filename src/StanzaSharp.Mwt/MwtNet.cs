@@ -57,8 +57,11 @@ internal sealed class ManagedMwtNet : IMwtNet
             int k = _hidden.N;
             var relu = new float[n * k];
             for (int i = 0; i < n; i++)
+            {
                 for (int j = 0; j < k; j++)
                     relu[i * k + j] = Math.Max(hidden[i * _hidden.PaddedN + j], 0f);
+            }
+
             var output = Gemm.Run(relu, n, _output, _outputBias);
             var logits = new float[n * 2];
             for (int i = 0; i < n; i++)

@@ -1,6 +1,11 @@
 namespace StanzaSharp.Constituency;
 
-internal enum TransitionKind { Shift, Close, Open }
+internal enum TransitionKind
+{
+    Shift,
+    Close,
+    Open,
+}
 
 /// <param name="Index">Position in the model's transition list (the output layer's columns).</param>
 /// <param name="OpenIndex">For Open: index into constituent_opens (the open/dummy embedding row).</param>
@@ -38,6 +43,7 @@ internal sealed class ParserState : IDisposable
     public required int Index;
     public required int SentenceLength;
     public required Tree[] Preterminals;
+
     /// <summary>The net's word vectors: start sentinel, one per word, end sentinel (<see cref="IConstituencyNet.EncodeWords"/>).</summary>
     public required object WordHx;
     public required StackNode<Transition?> Transitions;
@@ -82,21 +88,18 @@ internal sealed class ParserState : IDisposable
                 if (EmptyWordQueue)
                     return false;
                 return NumOpens != 0 || EmptyConstituents;
-
             case TransitionKind.Open:
                 if (NumOpens > SentenceLength + 10 || EmptyConstituents || TopTransition?.Kind == TransitionKind.Open)
                     return false;
                 if (rootLabels.Contains(t.Label!))
                     return NumOpens == 0 && EmptyWordQueue;
                 return !((NumOpens > 0 || EmptyWordQueue) && TooManyUnaryNodes(Constituents.Value.Tree, unaryLimit));
-
             case TransitionKind.Close:
                 if (NumOpens <= 0)
                     return false;
                 if (TopTransition?.Kind != TransitionKind.Open || NumOpens > 1 || EmptyWordQueue)
                     return true;
                 return !TooManyUnaryNodes(Constituents.Parent!.Value.Tree, unaryLimit);
-
             default:
                 throw new ArgumentOutOfRangeException(nameof(t));
         }
@@ -113,6 +116,7 @@ internal sealed class ParserState : IDisposable
                 return false;
             tree = tree.Children[0];
         }
+
         return true;
     }
 }

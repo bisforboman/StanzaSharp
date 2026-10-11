@@ -75,7 +75,8 @@ public class CompareCommandTests
 /// </summary>
 public sealed class PythonStanzaFactAttribute : FactAttribute
 {
-    internal static readonly string Python = Environment.GetEnvironmentVariable("STANZASHARP_PYTHON") is { Length: > 0 } python ? python
+    internal static readonly string Python = Environment.GetEnvironmentVariable("STANZASHARP_PYTHON") is { Length: > 0 } python
+        ? python
         : Path.Combine(Repo.Root, "tools", ".venv", OperatingSystem.IsWindows() ? "Scripts/python.exe" : "bin/python");
 
     public PythonStanzaFactAttribute()

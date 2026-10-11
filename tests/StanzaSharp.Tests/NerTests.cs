@@ -1,8 +1,8 @@
-using Xunit.Abstractions;
 using System.Text.Json.Nodes;
 using StanzaSharp.Ner;
 using StanzaSharp.Nn;
 using StanzaSharp.Nn.Managed;
+using Xunit.Abstractions;
 
 namespace StanzaSharp.Tests;
 
@@ -16,6 +16,7 @@ public class NerTests(ITestOutputHelper output)
     {
         // Paths 0,0 and 1,1 both score 1; np.argmax picks the first maximum at every step.
         Assert.Equal([0, 0], NerTagger.Viterbi([1, 0, 0, 1], [0, -5, -5, 0], 2));
+
         // 1,0 has the best emissions (3), but the transition 1 -> 0 costs 100, so 0,0 (2) wins.
         Assert.Equal([0, 0], NerTagger.Viterbi([0, 1, 2, 0], [0, 0, -100, 0], 2));
         Assert.Equal([1, 0], NerTagger.Viterbi([0, 1, 2, 0], [0, 0, 0, 0], 2));
@@ -40,11 +41,13 @@ public class NerTests(ITestOutputHelper output)
                 if (s > bestScore)
                     (best, bestScore) = (path, s);
             }
+
             Assert.Equal(best, NerTagger.Viterbi(scores, trans, k));
         }
     }
 
     [Theory]
+
     // Expected values from stanza.models.ner.trainer.fix_singleton_tags.
     [InlineData("I-PER", "S-PER")]
     [InlineData("B-ORG I-ORG", "B-ORG E-ORG")]
@@ -111,6 +114,7 @@ public class NerTests(ITestOutputHelper output)
         { "tokenize,mwt,pos,lemma,depparse,ner", true, false },
         { "tokenize,mwt,pos,lemma,depparse,ner", false, false }, // no CharlmCache: NER runs its own charlms
         { "tokenize,ner", true, false }, // NER reads only the tokens, so it needs nothing else
+
         // Managed NER: reading the TorchSharp tagger's cached charlm outputs, computing its own, and alone.
         { "tokenize,mwt,pos,lemma,depparse,ner", true, true },
         { "tokenize,mwt,pos,lemma,depparse,ner", false, true },
@@ -131,6 +135,7 @@ public class NerTests(ITestOutputHelper output)
             var name = Path.GetFileNameWithoutExtension(conllu);
             var txt = Path.Combine(Repo.Golden, name == "corpus" ? "corpus.txt" : name + ".txt");
             var doc = nlp.Process(File.ReadAllText(txt));
+
             // Outside the BMP, C# offsets are UTF-16 indices and Stanza's are code points.
             bool offsets = name != "validation_nonbmp";
 
@@ -161,9 +166,12 @@ public class NerTests(ITestOutputHelper output)
             var gotEnts = doc.Sentences.Select(s => s.Entities.Select(e => Describe(e.Text, e.Type, e.StartChar, e.EndChar, offsets)).ToList()).ToList();
             Assert.Equal(expectedEnts.Count, gotEnts.Count);
             for (int i = 0; i < expectedEnts.Count; i++)
+            {
                 if (!expectedEnts[i].SequenceEqual(gotEnts[i]))
                     failures.Add($"{name}, sentence {i} entities:\n--- expected\n{string.Join("\n", expectedEnts[i])}\n--- actual\n{string.Join("\n", gotEnts[i])}");
+            }
         }
+
         Assert.True(failures.Count == 0, string.Join("\n\n", failures));
     }
 

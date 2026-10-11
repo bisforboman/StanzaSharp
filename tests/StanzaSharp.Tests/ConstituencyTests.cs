@@ -12,13 +12,16 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
     public sealed class Fixture : IDisposable
     {
         private readonly Lazy<Models> _torch = new(() => new Models(managed: false)), _managed = new(() => new Models(managed: true));
+
         internal Models Get(bool managed = false) => (managed ? _managed : _torch).Value;
 
         public void Dispose()
         {
             foreach (var models in new[] { _torch, _managed })
+            {
                 if (models.IsValueCreated)
                     models.Value.Dispose();
+            }
         }
     }
 
@@ -37,6 +40,7 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
                     ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion")), ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion")));
                 return;
             }
+
             Forward = CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
             Backward = CharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
             Parser = ConstituencyParser.Load(Repo.Model("constituency/ptb3-revised_charlm"), Pretrain, Forward, Backward);
@@ -108,6 +112,7 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
             mine.AddRange(sentences.Select(_ => new List<(float[] Row, bool[] Legal)>()));
             trees[managed ? 1 : 0] = models.Parser.Parse(sentences.Select(s => s.Words).ToList(), onStep: (i, row, legal) => mine[i].Add((row, legal)));
         }
+
         Assert.Equal(trees[0].Select(t => t?.ToString()), trees[1].Select(t => t?.ToString()));
 
         static (int Best, int Second, float Margin) Decision(float[] row, bool[]? legal)
@@ -122,8 +127,10 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
                 else if (second < 0 || row[j] > row[second])
                     second = j;
             }
+
             return (best, second, second < 0 ? float.PositiveInfinity : row[best] - row[second]);
         }
+
         string Name(int j) => transitions[j].Kind == TransitionKind.Open ? $"Open({transitions[j].Label})" : transitions[j].Kind.ToString();
 
         float drift = 0;
@@ -154,6 +161,7 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
                     $"margin TorchSharp {dt.Margin:E2}, managed {dm.Margin:E2}" + (dt.Second != dm.Second ? $" (managed's runner-up {Name(dm.Second)})" : "")));
             }
         }
+
         output.WriteLine($"{sentences.Count} sentences, {total} steps, {decisions} with two or more legal transitions; scores max |diff| between backends {drift:E2}");
         string Counts(List<float> m) => $"< 1e-2: {m.Count(x => x < 1e-2f)}, < 1e-3: {m.Count(x => x < 1e-3f)}, < 1e-4: {m.Count(x => x < 1e-4f)}, min {m.Min():E2}";
         output.WriteLine($"decision margins TorchSharp {Counts(margins[0])}");

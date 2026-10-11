@@ -76,6 +76,7 @@ internal sealed class CharLanguageModel : IDisposable
                 chars.Add(_endId);
                 ends.Add(chars.Count - 1);
             }
+
             if (!IsForward)
                 ends.Reverse();
             ids.Add(chars);

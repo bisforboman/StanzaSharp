@@ -65,6 +65,7 @@ internal sealed class MwtExpander : IDisposable
             for (int k = 0; k < misses.Count; k++)
                 result[misses[k]] = predicted[k];
         }
+
         return result.Select((r, i) => r ?? tokens[i]).ToList();
     }
 
@@ -113,8 +114,10 @@ internal sealed class MwtExpander : IDisposable
                     sb.Append(' ');
                 sb.Append(chars[j][k]);
             }
+
             result.Add(sb.ToString().Trim());
         }
+
         return result;
     }
 
@@ -135,6 +138,7 @@ internal sealed class MwtExpander : IDisposable
             (token.Words[0].StartChar, token.Words[0].EndChar) = (token.StartChar, token.EndChar);
             return;
         }
+
         if (token.StartChar is not int start)
             return;
         var match = Regex.Match(token.Text, "^" + string.Join(@"\s*", words.Select(w => $"({Regex.Escape(w)})")) + "$");

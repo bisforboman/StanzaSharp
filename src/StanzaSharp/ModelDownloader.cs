@@ -36,6 +36,7 @@ public static class ModelDownloader
         ("depparse/combined_charlm.pt", "993a0eb712cefb881c684df8d9934f15"),
         ("ner/ontonotes-ww-multi_charlm.pt", "3cd5e98549640f448846389169a36812"),
         ("sentiment/sstplus_charlm.pt", "cf7e8e8f2a76c1dc236329dbc0e61cb4"),
+
         // default_fast's own models
         ("pos/combined_nocharlm.pt", "005fab042873317838e692c650e8e5e9"),
         ("depparse/combined_nocharlm.pt", "d155cf16050ba5fb640dc38424924346"),
@@ -60,7 +61,7 @@ public static class ModelDownloader
     private static readonly HttpClient Http = new() { DefaultRequestHeaders = { { "User-Agent", "StanzaSharp" } } };
 
     /// <summary>
-    /// Downloads the English <c>default</c> package's models (about 600 MB) into <paramref name="modelDir"/>, laid
+    /// Downloads the English <see langword="default"/> package's models (about 600 MB) into <paramref name="modelDir"/>, laid
     /// out as <c>&lt;processor&gt;/&lt;name&gt;.pt</c>. Files already there with the right checksum are kept;
     /// every new file is checked against its MD5 before it is put in place.
     /// </summary>
@@ -69,7 +70,7 @@ public static class ModelDownloader
         DownloadAsync(modelDir, FilesFor(null), Http, progress, cancellationToken);
 
     /// <summary>
-    /// Downloads only the models <paramref name="processors"/> need in the <c>default</c> package, e.g.
+    /// Downloads only the models <paramref name="processors"/> need in the <see langword="default"/> package, e.g.
     /// <c>"tokenize,mwt,pos,lemma"</c>: their own, those of the processors they require, and the shared pretrain
     /// and charlms when used. Otherwise like <see cref="DownloadAsync(string, IProgress{string}?, CancellationToken)"/>.
     /// </summary>
@@ -83,6 +84,7 @@ public static class ModelDownloader
     /// package's when null) and the processors they require. The other options are ignored. Otherwise like
     /// <see cref="DownloadAsync(string, IProgress{string}?, CancellationToken)"/>.
     /// </summary>
+    /// <exception cref="ArgumentException">An unknown package or processor, or a processor the package lacks.</exception>
     /// <example>
     /// <code>
     /// var options = new PipelineOptions { Package = "default_fast" };
@@ -90,7 +92,6 @@ public static class ModelDownloader
     /// using var nlp = Pipeline.Load("models/stanza/en", options);
     /// </code>
     /// </example>
-    /// <exception cref="ArgumentException">An unknown package or processor, or a processor the package lacks.</exception>
     public static Task DownloadAsync(string modelDir, PipelineOptions options, IProgress<string>? progress = null, CancellationToken cancellationToken = default) =>
         DownloadAsync(modelDir, FilesFor(options.Processors, options.Package, nameof(options)), Http, progress, cancellationToken);
 
@@ -117,6 +118,7 @@ public static class ModelDownloader
                     await using var file = File.Create(partial);
                     await response.Content.CopyToAsync(file, cancellationToken);
                 }
+
                 var actual = await Md5Async(partial, cancellationToken);
                 if (actual != md5)
                     throw new InvalidDataException($"{path}: checksum {actual} does not match the expected {md5}");
@@ -138,10 +140,14 @@ public static class ModelDownloader
         foreach (var path in models.Select(m => $"{m.Key}/{m.Value}").Concat(Pipeline.SharedModels(models)))
         {
             var basePath = Path.Combine(modelDir, path);
+
             // Checkpoint.Load reads the converted files whenever the .json exists.
             if (File.Exists(basePath + ".json"))
+            {
                 throw new InvalidOperationException($"VerifyChecksums: {basePath}.json is a converted model, which has no published checksum. " +
                     "Load Stanza's .pt files (e.g. a ModelDownloader directory) or turn VerifyChecksums off.");
+            }
+
             var file = basePath + ".pt";
             if (!File.Exists(file))
                 throw new FileNotFoundException($"Model file not found: {file}", file);
@@ -150,8 +156,10 @@ public static class ModelDownloader
             using (var stream = File.OpenRead(file))
                 actual = Convert.ToHexStringLower(MD5.HashData(stream));
             if (actual != expected)
+            {
                 throw new InvalidDataException($"{file}: checksum {actual} does not match Stanza {StanzaVersion}'s {expected}. " +
                     "The file is corrupted or from another Stanza version; download it again with ModelDownloader.DownloadAsync.");
+            }
         }
     }
 

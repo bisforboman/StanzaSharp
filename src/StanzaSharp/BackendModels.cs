@@ -37,12 +37,19 @@ internal abstract class BackendModels : IDisposable
     public abstract void Charlm(string basePath, bool forward);
 
     public abstract Tokenizer Tokenizer(string basePath);
+
     public abstract MwtExpander Mwt(string basePath);
+
     public abstract Lemmatizer Lemma(string basePath);
+
     public abstract PosTagger Pos(string basePath, Pretrain pretrain);
+
     public abstract DependencyParser Depparse(string basePath, Pretrain pretrain);
+
     public abstract NerTagger Ner(string basePath, Pretrain pretrain);
+
     public abstract ConstituencyParser Constituency(string basePath, Pretrain pretrain);
+
     public abstract SentimentClassifier Sentiment(string basePath, Pretrain pretrain);
 
     /// <summary>Frees the charlms.</summary>
@@ -85,11 +92,18 @@ internal sealed class ManagedModels : BackendModels
     }
 
     public override Tokenizer Tokenizer(string basePath) => Tokenize.Tokenizer.LoadManaged(basePath);
+
     public override MwtExpander Mwt(string basePath) => MwtExpander.LoadManaged(basePath);
+
     public override Lemmatizer Lemma(string basePath) => Lemmatizer.LoadManaged(basePath);
+
     public override PosTagger Pos(string basePath, Pretrain pretrain) => PosTagger.LoadManaged(basePath, pretrain, _forward, _backward);
+
     public override DependencyParser Depparse(string basePath, Pretrain pretrain) => DependencyParser.LoadManaged(basePath, pretrain, _forward, _backward);
+
     public override NerTagger Ner(string basePath, Pretrain pretrain) => NerTagger.LoadManaged(basePath, pretrain, _forward, _backward);
+
     public override ConstituencyParser Constituency(string basePath, Pretrain pretrain) => ConstituencyParser.LoadManaged(basePath, pretrain, _forward!, _backward!);
+
     public override SentimentClassifier Sentiment(string basePath, Pretrain pretrain) => SentimentClassifier.LoadManaged(basePath, pretrain, _forward!, _backward!);
 }

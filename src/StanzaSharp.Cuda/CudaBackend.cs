@@ -27,6 +27,7 @@ public static class CudaBackend
     public static PipelineBackend Create(int deviceIndex = 0, bool disableTf32 = false)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(deviceIndex);
+
         // The device is made at Load: torch.device would load libtorch here already.
         return new PipelineBackend($"Cuda:{deviceIndex}", () => new TorchSharpModels(torch.device(DeviceType.CUDA, deviceIndex), disableTf32));
     }

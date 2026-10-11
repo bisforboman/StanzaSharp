@@ -34,11 +34,14 @@ internal sealed class DepparseNet : IDepparseNet
         int wordEmb = config["word_emb_dim"]!.GetValue<int>();
         int tagEmb = config["tag_emb_dim"]!.GetValue<int>();
         int transformed = config["transformed_dim"]!.GetValue<int>();
+
         // Stanza appends the UPOS+XPOS embedding twice where it means to add the UFeats one, so the
         // UFeats embeddings are loaded by Stanza but never used.
         int inputSize = transformed + 2 * wordEmb + 2 * tagEmb;
         if (_charlmForward != null)
+        {
             inputSize += _charlmForward.HiddenDim + _charlmBackward!.HiddenDim;
+        }
         else
         {
             _charModel = new CharacterModel(ckpt, model, config, vocab["char"]!, "charmodel.", bidirectional: false, attention: true);
@@ -101,6 +104,7 @@ internal sealed class DepparseNet : IDepparseNet
             cancellationToken.ThrowIfCancellationRequested();
             chars = [forward, Rnn.PadSequence(_charlmBackward!.BuildCharRepresentation(charlmText))];
         }
+
         var input = cat([
             _transPretrained.forward(_pretrain.Embeddings[Ids(batch.Pretrained)]),
             _wordEmb.forward(Ids(batch.Word)),
@@ -113,6 +117,7 @@ internal sealed class DepparseNet : IDepparseNet
             t.Dispose();
         cancellationToken.ThrowIfCancellationRequested();
         var output = _lstm.Forward(input, lengths, disposeInput: true, cancellationToken);
+
         // pad_packed_sequence leaves zeros past each sentence; the scorers see them in the padding columns.
         using var widthScalar = width.ToScalar();
         var positions = arange(Scalars.Zero, widthScalar, Scalars.One, device: _device);
@@ -127,15 +132,18 @@ internal sealed class DepparseNet : IDepparseNet
             var lin = _linearizationScorer.Forward(output, cancellationToken).squeeze(3);
             unlabeled = unlabeled.add(F.logsigmoid(lin * headOffset.sign().to_type(ScalarType.Float32)), Scalars.One);
         }
+
         if (_distanceScorer != null)
         {
             var dist = _distanceScorer.Forward(output, cancellationToken).squeeze(3);
             var predicted = Scalars.Softplus(dist).add(Scalars.One, Scalars.One); // 1 + softplus(dist)
             var target = headOffset.abs();
+
             // -log((target - predicted)^2 / 2 + 1)
             var penalty = -torch.log((target.to_type(ScalarType.Float32) - predicted).pow(Scalars.Two).div(Scalars.Two).add(Scalars.One, Scalars.One));
             unlabeled = unlabeled.add(penalty, Scalars.One);
         }
+
         unlabeled = unlabeled.masked_fill(eye(width, dtype: ScalarType.Bool, device: _device).unsqueeze(0), Scalars.NegativeInfinity);
         return (F.log_softmax(unlabeled, 2), deprel);
     }
@@ -180,6 +188,7 @@ internal sealed class DepparseNet : IDepparseNet
             using var scope = NewDisposeScope();
             var input1 = AppendOne(F.relu(_w1.forward(x)));
             var input2 = AppendOne(F.relu(_w2.forward(x)));
+
             // The [batch, width, hidden + 1, out] intermediate is the depparse memory peak: 1.5 GB for the
             // label scorer on 250 sentences padded to 72 words, and einsum makes a permuted copy. Each
             // sentence's scores depend only on its own rows, so score a few sentences at a time.
@@ -194,6 +203,7 @@ internal sealed class DepparseNet : IDepparseNet
                 var intermediate = einsum("NLI,IJO->NLJO", input1.narrow(0, n, size), _weight);
                 output.narrow(0, n, size).copy_(einsum("NLJO,NMJ->NLMO", intermediate, input2.narrow(0, n, size)));
             }
+
             // In place: the label scorer's output is [batch, width, width, relations], too large to copy.
             return output.add_(_bias, Scalars.One).MoveToOuterDisposeScope();
         }

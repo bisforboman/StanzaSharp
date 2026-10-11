@@ -114,7 +114,9 @@ public sealed record Entity(string Text, string Type, int? StartChar, int? EndCh
             var tag = tokens[i].Ner ?? "O";
             var prefix = tag.Length >= 2 ? tag[..2] : "";
             if (tag == "O")
+            {
                 Flush();
+            }
             else if (prefix is "B-" or "S-")
             {
                 Flush();
@@ -132,6 +134,7 @@ public sealed record Entity(string Text, string Type, int? StartChar, int? EndCh
                     Flush();
             }
         }
+
         Flush();
     }
 }

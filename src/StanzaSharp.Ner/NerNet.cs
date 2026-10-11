@@ -7,9 +7,7 @@ namespace StanzaSharp.Ner;
 /// <summary>NER's network, per <see cref="Backend"/>: <c>NerNet</c> or <see cref="ManagedNerNet"/>.</summary>
 internal interface INerNet : IDisposable
 {
-    /// <summary>
-    /// Embeddings (pretrain + delta), character features, input_transform, biLSTM and the tag set's linear layer.
-    /// </summary>
+    /// <summary>Embeddings (pretrain + delta), character features, input_transform, biLSTM and the tag set's linear layer.</summary>
     /// <param name="sentences">The batch's token texts.</param>
     /// <param name="wordIds">[batch, width] pretrain ids (lowercased tokens), padded.</param>
     /// <param name="deltaIds">[batch, width] delta ids, padded.</param>
@@ -68,6 +66,7 @@ internal sealed unsafe class ManagedNerNet : INerNet
     {
         int batch = sentences.Count, inSize = _inputSize, ldt = _inputTransform.PaddedN, ldc = _tagClf.PaddedN;
         var lengths = sentences.Select(s => (long)s.Count).ToArray();
+
         // pack_padded_sequence: sentences longest first; token (i, j) is packed row start[j] + rank[i].
         var order = Enumerable.Range(0, batch).OrderByDescending(i => lengths[i]).ToArray();
         var rank = new int[batch];
@@ -89,6 +88,7 @@ internal sealed unsafe class ManagedNerNet : INerNet
             // Word embeddings: pretrain + delta.
             var vectors = _pretrain.CpuVectors();
             for (int i = 0; i < batch; i++)
+            {
                 for (int j = 0; j < lengths[i]; j++)
                 {
                     var dst = x.AsSpan(Row(i, j) * inSize, _wordDim);
@@ -97,6 +97,7 @@ internal sealed unsafe class ManagedNerNet : INerNet
                     for (int k = 0; k < _wordDim; k++)
                         dst[k] = pre[k] + delta[k];
                 }
+            }
 
             fixed (float* px = x)
             {
@@ -105,24 +106,33 @@ internal sealed unsafe class ManagedNerNet : INerNet
                     // Words listed in packed row order, so each vector lands in its row.
                     var words = new int[rows][];
                     for (int i = 0; i < batch; i++)
+                    {
                         for (int j = 0; j < lengths[i]; j++)
                             words[Row(i, j)] = _charModel.CharIds(sentences[i][j]);
+                    }
+
                     _charModel.Forward(words, px + _wordDim, inSize, ct);
                 }
                 else
+                {
                     CharlmFeatures(sentences, charlms, cacheKeys, x, Row, ct);
+                }
 
                 fixed (float* pt = transformed, pib = _inputBias)
                     Gemm.Run(px, rows, inSize, _inputTransform, pib, pt, ldt, ct);
             }
+
             _lstm.ForwardPacked(transformed, ldt, batchSizes, hidden, ct);
             fixed (float* ph = hidden, ps = scores, ptb = _tagBias)
                 Gemm.Run(ph, rows, _lstm.OutputSize, _tagClf, ptb, ps, ldc, ct);
 
             var logits = new float[batch * width * _tags];
             for (int i = 0; i < batch; i++)
+            {
                 for (int j = 0; j < lengths[i]; j++)
                     scores.AsSpan(Row(i, j) * ldc, _tags).CopyTo(logits.AsSpan((i * width + j) * _tags));
+            }
+
             return logits;
         }
         finally
@@ -151,10 +161,13 @@ internal sealed unsafe class ManagedNerNet : INerNet
 
         var missing = new List<int>();
         for (int i = 0; i < sentences.Count; i++)
+        {
             if (cacheKeys?[i] is { } key && charlms!.TryGetArrays(key, out var reps))
                 Put(i, reps.Forward, reps.Backward);
             else
                 missing.Add(i);
+        }
+
         if (missing.Count == 0)
             return;
 

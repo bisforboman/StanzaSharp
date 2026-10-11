@@ -24,6 +24,7 @@ public class CheckpointFuzzTests(ITestOutputHelper output)
 
     private static readonly int Iterations =
         int.TryParse(Environment.GetEnvironmentVariable("STANZASHARP_FUZZ_ITERATIONS"), out var n) ? n : 300;
+
     private static readonly int Seed =
         int.TryParse(Environment.GetEnvironmentVariable("STANZASHARP_FUZZ_SEED"), out var s) ? s : 20261010;
 
@@ -52,6 +53,7 @@ public class CheckpointFuzzTests(ITestOutputHelper output)
                         problem = $"tensor {key} claims {info.Length:N0} bytes, more than the file";
                         break;
                     }
+
                     // Callers allocate by shape and read Length bytes into it.
                     long size = info.Dtype switch { "F64" or "I64" or "U64" => 8, "F32" or "I32" or "U32" => 4, "F16" or "BF16" or "I16" or "U16" => 2, _ => 1 };
                     if (info.Shape.Any(d => d < 0) || info.Shape.Aggregate(size, (a, d) => a * d) != info.Length)
@@ -59,6 +61,7 @@ public class CheckpointFuzzTests(ITestOutputHelper output)
                         problem = $"tensor {key}: shape [{string.Join(", ", info.Shape)}] {info.Dtype} disagrees with its {info.Length} bytes";
                         break;
                     }
+
                     ckpt.Tensors.RawBytes(key);
                 }
             }
@@ -170,6 +173,7 @@ public class CheckpointFuzzTests(ITestOutputHelper output)
 
             Run(original, "unmutated");
             if (everyTruncation)
+
                 // Every length within 512 bytes of either end (headers, central directory), every 8th in between.
                 for (int keep = 0; keep < original.Length; keep += keep < 512 || keep >= original.Length - 512 ? 1 : 8)
                     Run(original[..keep], $"truncated to {keep}");
@@ -180,6 +184,7 @@ public class CheckpointFuzzTests(ITestOutputHelper output)
                 var what = string.Join(", ", Enumerable.Range(0, 1 + rng.Next(3)).Select(_ => Mutate(rng, ref data)));
                 Run(data, $"#{i} ({what})");
             }
+
             return failures;
         }
         finally
@@ -209,6 +214,7 @@ public class CheckpointFuzzTests(ITestOutputHelper output)
             failures.AddRange(Fuzz(basePath + ".safetensors", Iterations, Seed, everyTruncation: true, basePath + ".json"));
             failures.AddRange(Fuzz(basePath + ".json", Iterations, Seed, everyTruncation: false, basePath + ".safetensors"));
         }
+
         AssertNoFailures(failures, timer);
     }
 
@@ -239,9 +245,23 @@ public class CheckpointFuzzTests(ITestOutputHelper output)
         }).ToArray();
 
     private static byte[] Str(string s) => P("X", Le32(Encoding.UTF8.GetByteCount(s)), Encoding.UTF8.GetBytes(s));
-    private static byte[] Le32(int v) { var b = new byte[4]; BinaryPrimitives.WriteInt32LittleEndian(b, v); return b; }
-    private static byte[] Le64(long v) { var b = new byte[8]; BinaryPrimitives.WriteInt64LittleEndian(b, v); return b; }
+
+    private static byte[] Le32(int v)
+    {
+        var b = new byte[4];
+        BinaryPrimitives.WriteInt32LittleEndian(b, v);
+        return b;
+    }
+
+    private static byte[] Le64(long v)
+    {
+        var b = new byte[8];
+        BinaryPrimitives.WriteInt64LittleEndian(b, v);
+        return b;
+    }
+
     private static byte[] Int(long v) => P(0x8a, 8, Le64(v)); // LONG1
+
     private static byte[] Tuple(params long[] items) => P("(", items.Select(Int).SelectMany(b => b).ToArray(), "t");
 
     /// <summary><c>_rebuild_tensor_v2</c> over a FloatStorage <paramref name="key"/> of <paramref name="numel"/> elements.</summary>
@@ -343,6 +363,7 @@ public class CheckpointFuzzTests(ITestOutputHelper output)
         // 100,000 nested lists: the unpickler is iterative, the JSON writer recursive.
         int depth = 100_000;
         LoadFails(Legacy(P(Enumerable.Repeat((byte)']', depth).ToArray(), Enumerable.Repeat((byte)'a', depth - 1).ToArray())));
+
         // Nested tuples (TUPLE1), which also nest the JSON twice as deep ($tuple objects).
         LoadFails(Legacy(P("N", Enumerable.Repeat((byte)0x85, depth).ToArray())));
     }
@@ -377,6 +398,7 @@ public class CheckpointFuzzTests(ITestOutputHelper output)
         var tuple = Assert.IsType<PyTuple>(Unpickler.Load(bytes));
         Assert.Equal(400_000, tuple.Items.Length);
         Assert.True(timer.Elapsed < TimeSpan.FromSeconds(5), $"took {timer.Elapsed}");
+
         // Items below a MARK cannot be popped before the MARK is closed.
         Assert.Throws<InvalidDataException>(() => Unpickler.Load(P(0x80, 2, "N(", 0x85, "t.")));
     }
@@ -426,16 +448,18 @@ public class CheckpointFuzzTests(ITestOutputHelper output)
     }
 
     // ---------------------------------------------------------------- zip
-
     private static byte[] Zip(params (string Name, byte[] Data)[] entries)
     {
         using var ms = new MemoryStream();
         using (var zip = new ZipArchive(ms, ZipArchiveMode.Create, leaveOpen: true))
+        {
             foreach (var (name, data) in entries)
             {
                 using var s = zip.CreateEntry(name, CompressionLevel.NoCompression).Open();
                 s.Write(data);
             }
+        }
+
         return ms.ToArray();
     }
 
@@ -448,9 +472,12 @@ public class CheckpointFuzzTests(ITestOutputHelper output)
             uint sig = BinaryPrimitives.ReadUInt32LittleEndian(z.AsSpan(i));
             int[] fields = sig == 0x04034b50 ? [18, 22] : sig == 0x02014b50 ? [20, 24] : [];
             foreach (var f in fields)
+            {
                 if (BinaryPrimitives.ReadUInt32LittleEndian(z.AsSpan(i + f)) == from)
                     BinaryPrimitives.WriteUInt32LittleEndian(z.AsSpan(i + f), to);
+            }
         }
+
         return z;
     }
 
@@ -478,11 +505,14 @@ public class CheckpointFuzzTests(ITestOutputHelper output)
     public void Crafted_ZipEntrySizes()
     {
         var zip = Zip(("archive/data.pkl", ZipPickle), ("archive/data/0", new byte[16]));
+
         // data.pkl claiming 2 GB: it was allocated before anything was read.
         LoadFails(PatchSizes(zip, (uint)ZipPickle.Length, int.MaxValue));
+
         // A storage entry claiming more or less than its numel.
-        LoadFails(PatchSizes(zip, 16, 1u << 31));
+        LoadFails(PatchSizes(zip, 16, 1U << 31));
         LoadFails(PatchSizes(zip, 16, 8));
+
         // A missing storage, and a compressed one (torch.save stores them uncompressed).
         LoadFails(Zip(("archive/data.pkl", ZipPickle)));
         using var ms = new MemoryStream();
@@ -493,11 +523,11 @@ public class CheckpointFuzzTests(ITestOutputHelper output)
             using (var s = z.CreateEntry("archive/data/0", CompressionLevel.Optimal).Open())
                 s.Write(new byte[16]);
         }
+
         LoadFails(ms.ToArray());
     }
 
     // ---------------------------------------------------------------- safetensors
-
     private static byte[] SafeTensors(string header, int dataBytes)
     {
         var h = Encoding.UTF8.GetBytes(header);
@@ -542,7 +572,7 @@ public class CheckpointFuzzTests(ITestOutputHelper output)
     [InlineData("""{"a":{"dtype":"F32","shape":[2],"data_offsets":[0,8.5]}}""", 8)]
     [InlineData("""{"a":{"dtype":7,"shape":[2],"data_offsets":[0,8]}}""", 8)]
     [InlineData("""{"a":[1,2]}""", 0)]
-    [InlineData("""[1,2]""", 0)]
+    [InlineData("[1,2]", 0)]
     [InlineData("""{"__metadata__":{"format":7}}""", 0)]
     [InlineData("""{"a":""", 0)] // truncated JSON
     public void Crafted_SafeTensorsHeaders(string header, int dataBytes) => SafeTensorsFails(header, dataBytes);
@@ -568,11 +598,13 @@ public class CheckpointFuzzTests(ITestOutputHelper output)
                 File.WriteAllText(basePath + ".json", json);
                 Assert.Throws<InvalidDataException>(() => Checkpoint.Load(basePath));
             }
+
             // A $tensor node naming a tensor the safetensors file lacks.
             File.WriteAllText(basePath + ".json", """{"w":{"$tensor":"w","dtype":"F32","shape":[1]}}""");
             var ckpt = Checkpoint.Load(basePath);
             Assert.Throws<InvalidDataException>(() => ckpt.Tensor<float>(ckpt.Root["w"]));
             Assert.Throws<InvalidDataException>(() => ckpt.Shape(ckpt.Root["w"]));
+
             // A vocabulary whose ids are not integers.
             Assert.Throws<InvalidDataException>(() => Checkpoint.UnitToId(System.Text.Json.Nodes.JsonNode.Parse("""{"_unit2id":{"a":"x"}}""")));
             Assert.Throws<InvalidDataException>(() => Checkpoint.UnitToId(System.Text.Json.Nodes.JsonNode.Parse("""{"_unit2id":[1]}""")));

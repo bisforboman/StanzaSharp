@@ -4,9 +4,7 @@ using static TorchSharp.torch;
 
 namespace StanzaSharp.Nn;
 
-/// <summary>
-/// Scalars that live as long as the process, for every TorchSharp call that takes one.
-/// </summary>
+/// <summary>Scalars that live as long as the process, for every TorchSharp call that takes one.</summary>
 /// <remarks>
 /// A TorchSharp <see cref="Scalar"/> frees its native value in a finalizer and is not tracked by any
 /// DisposeScope. TorchSharp passes <c>scalar.Handle</c> to native code without keeping the Scalar alive, so a

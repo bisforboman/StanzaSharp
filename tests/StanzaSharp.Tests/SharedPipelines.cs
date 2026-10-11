@@ -21,21 +21,29 @@ public sealed class SharedPipelines : IDisposable
         lock (Loaded)
         {
             if (!Loaded.TryGetValue(key, out var entry))
+            {
                 entry = (new Lazy<Pipeline>(() => Pipeline.Load(Repo.Models, new PipelineOptions
                 {
-                    Package = package, Processors = processors, SplitSentences = splitSentences, Backend = Repo.PipelineBackendFor(managed),
+                    Package = package,
+                    Processors = processors,
+                    SplitSentences = splitSentences,
+                    Backend = Repo.PipelineBackendFor(managed),
                 })), 0);
+            }
+
             if (_used.Add(key))
                 entry.Users++;
             Loaded[key] = entry;
             pipeline = entry.Pipeline;
         }
+
         return pipeline.Value; // loaded outside the lock, once (Lazy), so classes needing other pipelines don't wait
     }
 
     public void Dispose()
     {
         lock (Loaded)
+        {
             foreach (var key in _used)
             {
                 var (pipeline, users) = Loaded[key];
@@ -44,9 +52,11 @@ public sealed class SharedPipelines : IDisposable
                     Loaded[key] = (pipeline, users - 1);
                     continue;
                 }
+
                 Loaded.Remove(key);
                 if (pipeline.IsValueCreated)
                     pipeline.Value.Dispose();
             }
+        }
     }
 }

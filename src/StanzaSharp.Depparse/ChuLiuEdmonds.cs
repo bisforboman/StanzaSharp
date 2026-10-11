@@ -21,8 +21,11 @@ internal static class ChuLiuEdmonds
         try
         {
             for (int i = 0; i < n; i++)
+            {
                 for (int j = 0; j < n; j++)
                     s[i * n + j] = scores[i, j];
+            }
+
             return OneRoot(s, n);
         }
         finally
@@ -36,8 +39,11 @@ internal static class ChuLiuEdmonds
     {
         double min = double.PositiveInfinity;
         for (int k = 0; k < n * n; k++)
+        {
             if (double.IsFinite(scores[k]) && scores[k] < min)
                 min = scores[k];
+        }
+
         double shift = min * n;
         for (int i = 0; i < n; i++)
             scores[i * n] += shift;
@@ -72,11 +78,13 @@ internal static class ChuLiuEdmonds
                 tree = ArgmaxRows(scores, n);
                 cycles = Tarjan(tree);
             }
+
             while (contractions.Count > 0)
             {
                 var (outer, cycleLocs, noncycleLocs, heads, deps) = contractions.Pop();
                 tree = Expand(outer, tree, cycleLocs, noncycleLocs, heads, deps);
             }
+
             return tree;
         }
         finally
@@ -93,6 +101,7 @@ internal static class ChuLiuEdmonds
             scores[i * n + i] = double.NegativeInfinity;
             scores[i] = double.NegativeInfinity;
         }
+
         scores[0] = 0;
     }
 
@@ -100,9 +109,14 @@ internal static class ChuLiuEdmonds
     {
         var result = new int[n];
         for (int i = 0; i < n; i++)
+        {
             for (int j = 1; j < n; j++)
+            {
                 if (scores[i * n + j] > scores[i * n + result[i]])
                     result[i] = j;
+            }
+        }
+
         return result;
     }
 
@@ -117,6 +131,7 @@ internal static class ChuLiuEdmonds
         var onStack = new bool[n];
         var stack = new List<int>();
         var cycles = new List<bool[]>();
+
         // Each node's dependents in ascending order: children[first[i]..first[i + 1]).
         var first = new int[n + 1];
         foreach (int head in tree)
@@ -145,7 +160,9 @@ internal static class ChuLiuEdmonds
                     onStack[i] = true;
                 }
                 else
+                {
                     lowlinks[i] = Math.Min(lowlinks[i], lowlinks[j]);
+                }
 
                 bool descended = false;
                 while (pos < first[i + 1] - first[i])
@@ -158,11 +175,14 @@ internal static class ChuLiuEdmonds
                         descended = true;
                         break;
                     }
+
                     if (onStack[d])
                         lowlinks[i] = Math.Min(lowlinks[i], indices[d]);
                 }
+
                 if (descended || lowlinks[i] != indices[i])
                     continue;
+
                 // The root of a strongly connected component: pop it.
                 var cycle = new bool[n];
                 int size = 0;
@@ -174,6 +194,7 @@ internal static class ChuLiuEdmonds
                     cycle[k] = true;
                     size++;
                 }
+
                 stack.RemoveAt(stack.Count - 1);
                 onStack[i] = false;
                 cycle[i] = true;
@@ -181,11 +202,14 @@ internal static class ChuLiuEdmonds
                     cycles.Add(cycle);
             }
         }
+
         return cycles;
     }
 
-    /// <summary>process_cycle: writes the scores of the graph with the cycle contracted into one last node to <paramref name="sub"/>
-    /// ((noncycle nodes + 1)² row-major).</summary>
+    /// <summary>
+    /// process_cycle: writes the scores of the graph with the cycle contracted into one last node to <paramref name="sub"/>
+    /// ((noncycle nodes + 1)² row-major).
+    /// </summary>
     private static (int[] CycleLocs, int[] NoncycleLocs, int[] MetanodeHeads, int[] MetanodeDeps) ProcessCycle(
         int[] tree, bool[] cycle, double[] scores, double[] sub)
     {
@@ -193,10 +217,13 @@ internal static class ChuLiuEdmonds
         var cycleLocs = new int[c];
         var noncycleLocs = new int[n];
         for (int i = 0, a = 0, b = 0; i < size; i++)
+        {
             if (cycle[i])
                 cycleLocs[a++] = i;
             else
                 noncycleLocs[b++] = i;
+        }
+
         var cycleScores = new double[c];
         for (int k = 0; k < c; k++)
             cycleScores[k] = scores[cycleLocs[k] * size + tree[cycleLocs[k]]];
@@ -206,15 +233,24 @@ internal static class ChuLiuEdmonds
         double HeadScore(int k, int h) => scores[cycleLocs[k] * size + noncycleLocs[h]] - cycleScores[k] + cycleScore;
         var metanodeHeads = new int[n];
         for (int h = 0; h < n; h++)
+        {
             for (int k = 1; k < c; k++)
+            {
                 if (HeadScore(k, h) > HeadScore(metanodeHeads[h], h))
                     metanodeHeads[h] = k;
+            }
+        }
+
         // metanode_dep_scores (n x c): noncycle node d taking cycle node k as its head.
         var metanodeDeps = new int[n];
         for (int d = 0; d < n; d++)
+        {
             for (int k = 1; k < c; k++)
+            {
                 if (scores[noncycleLocs[d] * size + cycleLocs[k]] > scores[noncycleLocs[d] * size + cycleLocs[metanodeDeps[d]]])
                     metanodeDeps[d] = k;
+            }
+        }
 
         int m = n + 1;
         for (int i = 0; i < n; i++)
@@ -224,9 +260,11 @@ internal static class ChuLiuEdmonds
             sub[n * m + i] = HeadScore(metanodeHeads[i], i);
             sub[i * m + n] = scores[noncycleLocs[i] * size + cycleLocs[metanodeDeps[i]]];
         }
+
         sub[n * m + n] = 0; // new double[,] left it 0; Prepare sets it to -inf anyway
         return (cycleLocs, noncycleLocs, metanodeHeads, metanodeDeps);
     }
+
     /// <summary>expand_contracted_tree: puts the solved contracted graph back around the cycle.</summary>
     private static int[] Expand(int[] tree, int[] contracted, int[] cycleLocs, int[] noncycleLocs, int[] metanodeHeads, int[] metanodeDeps)
     {
@@ -251,19 +289,24 @@ internal static class ChuLiuEdmonds
                 res += a[start + i];
             return res;
         }
+
         if (n <= 128)
         {
             var r = new double[8];
             Array.Copy(a, start, r, 0, 8);
             int i = 8;
             for (; i < n - n % 8; i += 8)
+            {
                 for (int k = 0; k < 8; k++)
                     r[k] += a[start + i + k];
+            }
+
             double res = ((r[0] + r[1]) + (r[2] + r[3])) + ((r[4] + r[5]) + (r[6] + r[7]));
             for (; i < n; i++)
                 res += a[start + i];
             return res;
         }
+
         int half = n / 2;
         half -= half % 8;
         return PairwiseSum(a, start, half) + PairwiseSum(a, start + half, n - half);

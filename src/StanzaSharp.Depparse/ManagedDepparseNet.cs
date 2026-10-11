@@ -60,16 +60,20 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
         _wordDim = config["word_emb_dim"]!.GetValue<int>();
         _tagDim = config["tag_emb_dim"]!.GetValue<int>();
         _transformed = config["transformed_dim"]!.GetValue<int>();
+
         // trans_pretrained, word, lemma, then the UPOS+XPOS embedding twice (see DepparseNet), then the characters.
         _inputSize = _transformed + 2 * _wordDim + 2 * _tagDim;
         if (_charlmForward != null)
+        {
             _inputSize += _charlmForward.HiddenDim + _charlmBackward!.HiddenDim;
+        }
         else
         {
             _charModel = new ManagedCharacterModel(ckpt, model, config, ckpt.Root["vocab"]!["char"]!, "charmodel.", bidirectional: false, attention: true);
             _transChar = new PackedMatrix(T("trans_char.weight"), _transformed, _charModel.OutputDim);
             _inputSize += _transformed;
         }
+
         (_wordEmb, _lemmaEmb, _uposEmb, _xposEmb) = (T("word_emb.weight"), T("lemma_emb.weight"), T("upos_emb.weight"), T("xpos_emb.weight"));
         _transPretrained = new PackedMatrix(T("trans_pretrained.weight"), _transformed, pretrain.Dim);
         _lstm = new ManagedHighwayLstm(ckpt, model, "parserlstm", _inputSize, hidden, config["num_layers"]!.GetValue<int>());
@@ -101,7 +105,9 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
         var w = new float[b1 * outs * b];
         var wBias = new float[(b1 * outs + PackedMatrix.NR - 1) / PackedMatrix.NR * PackedMatrix.NR];
         for (int p = 0; p < b1; p++)
+        {
             for (int q = 0; q < b1; q++)
+            {
                 for (int o = 0; o < outs; o++)
                 {
                     float v = wb[(p * b1 + q) * outs + o];
@@ -110,6 +116,9 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
                     else
                         wBias[q * outs + o] = v;
                 }
+            }
+        }
+
         return new Scorer
         {
             Out = outs,
@@ -126,11 +135,13 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
     {
         int size = batch.Texts.Count, width = batch.Width;
         var lengths = batch.Lengths;
+
         // Rows in sentence order: word t of sentence b (0 is ROOT) is row offset[b] + t.
         var offset = new int[size + 1];
         for (int b = 0; b < size; b++)
             offset[b + 1] = offset[b] + (int)lengths[b];
         int rows = offset[size];
+
         // pack_padded_sequence: sentences longest first; row k is packed row packedRow[k].
         var order = Enumerable.Range(0, size).OrderByDescending(b => lengths[b]).ToArray();
         var rank = new int[size];
@@ -142,8 +153,10 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
             start[t] = start[t - 1] + batchSizes[t - 1];
         var packedRow = new int[rows];
         for (int b = 0; b < size; b++)
+        {
             for (int t = 0; t < lengths[b]; t++)
                 packedRow[offset[b] + t] = start[t] + rank[b];
+        }
 
         var h = ArrayPool<float>.Shared.Rent(rows * _lstm.OutputSize);
         try
@@ -186,6 +199,7 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
             // Embeddings at each word's packed row; the pretrain vectors (packed order) go through trans_pretrained.
             var vectors = _pretrain.CpuVectors();
             for (int b = 0; b < size; b++)
+            {
                 for (int t = 0, k = offset[b]; k < offset[b + 1]; t++, k++)
                 {
                     int id = b * width + t, r = packedRow[k];
@@ -198,6 +212,8 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
                         row[posCol + e] = row[posCol + _tagDim + e] = upos[e] + xpos[e];
                     vectors.Slice((int)batch.Pretrained[id] * dim, dim).CopyTo(a.AsSpan(r * dim));
                 }
+            }
+
             fixed (float* pa = a, pc = c)
                 Gemm.Run(pa, rows, dim, _transPretrained, null, pc, ldt, ct);
             for (int r = 0; r < rows; r++)
@@ -208,19 +224,26 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
                 // ROOT is a word of the single character id ROOT_ID.
                 var words = new int[rows][];
                 for (int b = 0; b < size; b++)
+                {
                     for (int t = 0, k = offset[b]; k < offset[b + 1]; t++, k++)
                         words[packedRow[k]] = t == 0 ? [ManagedCharacterModel.RootId] : _charModel.CharIds(batch.Texts[b][t - 1]);
+                }
+
                 int ldc = _transChar!.PaddedN;
                 fixed (float* pa = a, pc = c)
                 {
                     _charModel.Forward(words, pa, charDim, ct);
                     Gemm.Run(pa, rows, charDim, _transChar, null, pc, ldc, ct);
                 }
+
                 for (int r = 0; r < rows; r++)
                     c.AsSpan(r * ldc, _transformed).CopyTo(x.AsSpan(r * inSize + charCol));
             }
             else
+            {
                 CharlmFeatures(batch, packedRow, x, charCol, ct);
+            }
+
             ct.ThrowIfCancellationRequested();
 
             _lstm.Forward(x.AsSpan(0, rows * inSize), batch.Lengths, a.AsSpan(0, rows * _lstm.OutputSize), ct);
@@ -242,6 +265,7 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
         int dim = _charlmForward!.HiddenDim, rows = packedRow.Length;
         var sentences = batch.Texts.Select(t => (IReadOnlyList<string>)t.Prepend("\n").ToList()).ToList();
         var reps = ArrayPool<float>.Shared.Rent(rows * dim);
+
         // A sentence alone here that the tagger also ran alone: backward, the words come first ("\n" + words reversed is
         // the tagger's sequence, then ROOT), so run on from the tagger's final state over ROOT only. One row per step in
         // both runs: the same bits as running it all again.
@@ -253,14 +277,19 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
             {
                 ct.ThrowIfCancellationRequested();
                 if (reuse && charlm == _charlmBackward)
+                {
                     fixed (float* pr = reps)
                     {
                         // Rows are words in order: ROOT, then the sentence's words (the first word's row is the final h).
                         _charlmBackward.Continue(tagger!.Backward.AsSpan(0, dim).ToArray(), tagger.BackwardFinalC, ["\n"], pr, dim, ct);
                         tagger.Backward.CopyTo(reps.AsSpan(dim));
                     }
+                }
                 else
+                {
                     charlm.BuildCharRepresentation(sentences, reps, dim, ct);
+                }
+
                 for (int k = 0; k < rows; k++)
                     reps.AsSpan(k * dim, dim).CopyTo(x.AsSpan(packedRow[k] * _inputSize + at));
             }
@@ -279,6 +308,7 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
     private float[] Arcs(float[] h, int size, int width, long[] lengths, int[] offset, bool rent, CancellationToken ct)
     {
         int rows = offset[size], b = _biaff;
+
         // Rented: rows past a sentence's length stay stale.
         var result = rent ? ArrayPool<float>.Shared.Rent(size * width * width) : new float[size * width * width];
         var sentenceOf = new int[rows];
@@ -328,6 +358,7 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
                     ArrayPool<float>.Shared.Return(t);
                 }
             }
+
             ManagedThreads.For(rows, k =>
             {
                 int sent = sentenceOf[k], i = k - offset[sent];
@@ -348,6 +379,7 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
         {
             ArrayPool<double>.Shared.Return(v);
         }
+
         return result;
     }
 
@@ -363,6 +395,7 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
             s2 += (double)a[q + 2] * b[q + 2];
             s3 += (double)a[q + 3] * b[q + 3];
         }
+
         for (; q < b.Length; q++)
             s0 += (double)a[q] * b[q];
         return (s0 + s1) + (s2 + s3);
@@ -402,6 +435,7 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
                     for (s1 = s0 + 1; s1 < size && offset[s1 + 1] - offset[s0] <= maxRows; s1++)
                     {
                     }
+
                     int k0 = offset[s0], chunkRows = offset[s1] - k0, first = s0;
                     Gemm.Run(pd + (long)k0 * ldH, chunkRows, ldH, scorer.W, pb, pt, ldT, ct);
                     ManagedThreads.For(chunkRows, task =>
@@ -420,12 +454,17 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
                                 // Panel layout as PackedMatrix: [panel][q][lane], relation o = panel·16 + lane.
                                 float* init = pp + padded * b, outRows = init + padded;
                                 for (int p = 0; p < panels; p++)
+                                {
                                     for (int q = 0; q < b; q++)
+                                    {
                                         for (int lane = 0; lane < PackedMatrix.NR; lane++)
                                         {
                                             int o = p * PackedMatrix.NR + lane;
                                             pp[((long)p * b + q) * PackedMatrix.NR + lane] = o < outs ? tRow[q * outs + o] : 0;
                                         }
+                                    }
+                                }
+
                                 for (int o = 0; o < padded; o++)
                                     init[o] = o < outs ? tRow[b * outs + o] + scorer.Bias[o] : 0;
                                 var aRows = stackalloc float*[Gemm.MR];
@@ -443,8 +482,10 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
                                             inits[r] = init + p * PackedMatrix.NR;
                                             outs_[r] = outRows + r * padded + p * PackedMatrix.NR;
                                         }
+
                                         Gemm.Kernel(mr, aRows, pp + (long)p * b * PackedMatrix.NR, b, inits, outs_);
                                     }
+
                                     for (int r = 0; r < mr; r++)
                                     {
                                         var row = new ReadOnlySpan<float>(outRows + r * padded, outs);
@@ -469,6 +510,7 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
             ArrayPool<float>.Shared.Return(hid);
             ArrayPool<float>.Shared.Return(t);
         }
+
         return (labels, scores);
     }
 
@@ -477,8 +519,11 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
     {
         int best = 0;
         for (int i = 1; i < s.Length; i++)
+        {
             if (s[i] > s[best])
                 best = i;
+        }
+
         return best;
     }
 

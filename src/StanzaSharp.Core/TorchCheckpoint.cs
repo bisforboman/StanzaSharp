@@ -32,10 +32,13 @@ internal static class TorchCheckpoint
         long fileLength = new FileInfo(path).Length;
         var (obj, stored, read) = IsZip(path) ? ReadZip(path, fileLength) : ReadLegacy(path);
         if (obj is PyDict top)
+        {
             foreach (var key in Skip)
                 top.Remove(key);
+        }
 
         var buffer = new ArrayBufferWriter<byte>();
+
         // The memo lets a pickle reference one object many times, and the JSON copies it each time: cap the JSON
         // at 16 times the file (real checkpoints stay far below; tensors are mostly data).
         var splitter = new Splitter(new Utf8JsonWriter(buffer), maxBytes: 16 * fileLength + (1 << 20), path);
@@ -69,6 +72,7 @@ internal static class TorchCheckpoint
             throw new NotSupportedException($"{path}: big-endian checkpoints are not supported");
 
         var roots = new Dictionary<string, TorchStorage>();
+
         // Persistent id: ("storage", storage_type, root_key, location, root_numel, view_metadata),
         // where view_metadata is None or (view_key, offset, numel) for a slice of the root storage.
         var obj = Unpickler.Load(file, pid =>
@@ -102,11 +106,13 @@ internal static class TorchCheckpoint
                 throw new InvalidDataException($"{path}: storage {key} is listed twice");
             file.Seek(n, SeekOrigin.Current);
         }
+
         return (obj, starts.Keys, (key, offset, destination) =>
         {
             using var handle = File.OpenHandle(path);
             SafeTensorFile.ReadExactly(handle, destination, starts[key] + offset);
-        });
+        }
+        );
     }
 
     /// <summary>
@@ -141,22 +147,29 @@ internal static class TorchCheckpoint
                     throw new InvalidDataException($"{path}: storage {key} has the wrong size");
             }
         }
+
         return (obj, roots.Keys, (key, offset, destination) =>
         {
             using var zip = ZipFile.OpenRead(path);
             using var data = zip.GetEntry(prefix + "data/" + key)!.Open();
             if (data.CanSeek)
+            {
                 data.Seek(offset, SeekOrigin.Begin);
+            }
             else
             {
                 var skip = new byte[Math.Min(offset, 1 << 16)];
                 for (int n; offset > 0; offset -= n)
+                {
                     if ((n = data.Read(skip, 0, (int)Math.Min(offset, skip.Length))) == 0)
                         throw new InvalidDataException($"{path}: storage {key} ends early");
+                }
             }
+
             if (data.ReadAtLeast(destination, destination.Length, throwOnEndOfStream: false) != destination.Length)
                 throw new InvalidDataException($"{path}: storage {key} ends early");
-        });
+        }
+        );
     }
 
     /// <summary>
@@ -203,6 +216,7 @@ internal static class TorchCheckpoint
                 throw new InvalidDataException($"Tensor {key}: storage {t.Storage.Key} is missing");
             if (t.Shape.Any(d => d < 0) || t.Stride.Any(s => s < 0))
                 throw new InvalidDataException($"Tensor {key} has a negative size or stride");
+
             // No bigger than its storage: real views never are, and this bounds a stride-0 broadcast (or a size overflow).
             long numel = t.Shape.Contains(0) ? 0 : t.Shape.Aggregate(1L, (a, d) => a > t.Storage.Numel / d ? long.MaxValue : a * d);
             if (numel > t.Storage.Numel)
@@ -214,6 +228,7 @@ internal static class TorchCheckpoint
             views[key] = t;
             total += length;
         }
+
         return new SafeTensorFile(infos, (key, destination) => CopyContiguous(views[key], read, destination, key));
     }
 
@@ -237,6 +252,7 @@ internal static class TorchCheckpoint
             contiguous &= t.Shape[d] == 1 || stride == expected;
             expected *= t.Shape[d]; // at most the tensor's numel, checked by Index
         }
+
         return (first, last, contiguous);
     }
 
@@ -251,6 +267,7 @@ internal static class TorchCheckpoint
             read(t.Storage.Key, first * size, dst);
             return;
         }
+
         // Strided view: read the elements it spans, then walk its indices in row-major order like an odometer.
         var root = new byte[(last - first + 1) * size];
         read(t.Storage.Key, first * size, root);
@@ -279,6 +296,7 @@ internal static class TorchCheckpoint
 
         public Utf8JsonWriter Writer { get; } = writer;
         public List<(string Key, TorchTensor Tensor)> Tensors { get; } = [];
+
         private readonly HashSet<string> _keys = [];
         private readonly List<string> _path = [];
 
@@ -320,6 +338,7 @@ internal static class TorchCheckpoint
                         w.WritePropertyName((string)k);
                         Child((string)k, v);
                     }
+
                     w.WriteEndObject();
                     break;
                 case PyDict dict:
@@ -334,6 +353,7 @@ internal static class TorchCheckpoint
                             Child(PythonStr(k), v);
                             w.WriteEndArray();
                         }
+
                         w.WriteEndArray();
                     });
                     break;
@@ -394,6 +414,7 @@ internal static class TorchCheckpoint
     {
         if (value == 0)
             return double.IsNegative(value) ? "-0.0" : "0.0";
+
         // .NET's "R" gives the same shortest digits, e.g. "1.5E-05" or "123.25"; take them apart.
         var r = Math.Abs(value).ToString("R", CultureInfo.InvariantCulture);
         int e = r.IndexOf('E');
@@ -414,11 +435,18 @@ internal static class TorchCheckpoint
             text += (exp < 0 ? "e-" : "e+") + Math.Abs(exp).ToString("00", CultureInfo.InvariantCulture);
         }
         else if (point <= 0)
+        {
             text = "0." + new string('0', -point) + digits;
+        }
         else if (point >= digits.Length)
+        {
             text = digits + new string('0', point - digits.Length) + ".0";
+        }
         else
+        {
             text = digits[..point] + "." + digits[point..];
+        }
+
         return value < 0 ? "-" + text : text;
     }
 }

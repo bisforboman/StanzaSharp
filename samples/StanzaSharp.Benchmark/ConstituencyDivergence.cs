@@ -50,9 +50,10 @@ internal static class ConstituencyDivergence
                     return 2;
             }
         }
+
         if (torchCharlm)
             variant = (variant == null ? "" : variant + ", ") + "torch charlm";
-        if (docsFile == null || outFile == null || (sums != 0 || torchCharlm) && !managed)
+        if (docsFile == null || outFile == null || ((sums != 0 || torchCharlm) && !managed))
         {
             Console.Error.WriteLine(Usage);
             return 2;
@@ -62,7 +63,8 @@ internal static class ConstituencyDivergence
         ManagedConstituencyNet.Double = sums;
         using var nlp = Pipeline.Load(modelDir, new PipelineOptions
         {
-            Processors = "tokenize,mwt,pos,constituency", Backend = managed ? PipelineBackend.Managed : CudaBackend.Cpu,
+            Processors = "tokenize,mwt,pos,constituency",
+            Backend = managed ? PipelineBackend.Managed : CudaBackend.Cpu,
             Threads = threads > 0 ? threads : null,
         });
         var parser = nlp.Parser!;
@@ -88,6 +90,7 @@ internal static class ConstituencyDivergence
                 onStep: (i, row, legal) => steps[i].Add(Decision(row, legal)));
             parseSeconds += clock.Elapsed.TotalSeconds;
             var strings = trees.Select(t => t?.ToString()).ToList();
+
             // The pipeline's parser read the tagger's charlm cache; its trees should be the same.
             cacheMismatches += sentences.Where((s, i) => s.Constituency?.ToString() != strings[i]).Count();
             docs.Add(new
@@ -102,8 +105,12 @@ internal static class ConstituencyDivergence
 
         var meta = new
         {
-            backend = managed ? "managed" : "torch", variant, threads = managed ? ManagedThreads.Count : torch.get_num_threads(),
-            seconds, constituency_seconds = parseSeconds, cache_mismatches = cacheMismatches,
+            backend = managed ? "managed" : "torch",
+            variant,
+            threads = managed ? ManagedThreads.Count : torch.get_num_threads(),
+            seconds,
+            constituency_seconds = parseSeconds,
+            cache_mismatches = cacheMismatches,
         };
         File.WriteAllText(outFile, JsonSerializer.Serialize(new { meta, docs }, new JsonSerializerOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping }));
         Console.WriteLine(JsonSerializer.Serialize(meta));
@@ -122,8 +129,10 @@ internal static class ConstituencyDivergence
         return cache;
     }
 
-    /// <summary>[best, score, second, score] over the legal transitions, best first (ties: the lower index, like the Python
-    /// side's stable argsort); second -1 when only one is legal.</summary>
+    /// <summary>
+    /// [best, score, second, score] over the legal transitions, best first (ties: the lower index, like the Python
+    /// side's stable argsort); second -1 when only one is legal.
+    /// </summary>
     private static double[] Decision(float[] row, bool[] legal)
     {
         int best = -1, second = -1;
@@ -136,6 +145,7 @@ internal static class ConstituencyDivergence
             else if (second < 0 || row[j] > row[second])
                 second = j;
         }
+
         return [best, best < 0 ? 0 : row[best], second, second < 0 ? 0 : row[second]];
     }
 }

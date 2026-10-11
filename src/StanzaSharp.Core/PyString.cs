@@ -1,5 +1,5 @@
-using System.Globalization;
 using System.Buffers;
+using System.Globalization;
 using System.Text;
 
 namespace StanzaSharp;
@@ -25,6 +25,7 @@ internal static class PyString
                 sb.Append(Rune.ToLowerInvariant(rune).ToString());
             i += rune.Utf16SequenceLength;
         }
+
         return sb.ToString();
     }
 
@@ -47,6 +48,7 @@ internal static class PyString
             else if (IsCased(rune))
                 return false;
         }
+
         return any;
     }
 
@@ -54,15 +56,15 @@ internal static class PyString
     // which .NET does not expose (ranges from Python 3.10's Unicode 13 database). E.g. Ⅰ, Ⓐ; ª, ʰ, ⅰ.
     private static bool IsUpperRune(Rune r) =>
         Rune.GetUnicodeCategory(r) == UnicodeCategory.UppercaseLetter
-        || r.Value is >= 0x2160 and <= 0x216F or >= 0x24B6 and <= 0x24CF or >= 0x1F130 and <= 0x1F149
-            or >= 0x1F150 and <= 0x1F169 or >= 0x1F170 and <= 0x1F189;
+        || r.Value is (>= 0x2160 and <= 0x216F) or (>= 0x24B6 and <= 0x24CF) or (>= 0x1F130 and <= 0x1F149)
+            or (>= 0x1F150 and <= 0x1F169) or (>= 0x1F170 and <= 0x1F189);
 
     private static bool IsLowerRune(Rune r) =>
         Rune.GetUnicodeCategory(r) == UnicodeCategory.LowercaseLetter
-        || r.Value is 0xAA or 0xBA or >= 0x2B0 and <= 0x2B8 or 0x2C0 or 0x2C1 or >= 0x2E0 and <= 0x2E4
-            or 0x345 or 0x37A or >= 0x1D2C and <= 0x1D6A or 0x1D78 or >= 0x1D9B and <= 0x1DBF or 0x2071
-            or 0x207F or >= 0x2090 and <= 0x209C or >= 0x2170 and <= 0x217F or >= 0x24D0 and <= 0x24E9
-            or 0x2C7C or 0x2C7D or 0xA69C or 0xA69D or 0xA770 or 0xA7F8 or 0xA7F9 or >= 0xAB5C and <= 0xAB5F;
+        || r.Value is 0xAA or 0xBA or (>= 0x2B0 and <= 0x2B8) or 0x2C0 or 0x2C1 or (>= 0x2E0 and <= 0x2E4)
+            or 0x345 or 0x37A or (>= 0x1D2C and <= 0x1D6A) or 0x1D78 or (>= 0x1D9B and <= 0x1DBF) or 0x2071
+            or 0x207F or (>= 0x2090 and <= 0x209C) or (>= 0x2170 and <= 0x217F) or (>= 0x24D0 and <= 0x24E9)
+            or 0x2C7C or 0x2C7D or 0xA69C or 0xA69D or 0xA770 or 0xA7F8 or 0xA7F9 or (>= 0xAB5C and <= 0xAB5F);
 
     /// <summary>Python's <c>Py_UNICODE_ISUPPER</c> for one code point (the tokenizer's "capitalized" feature).</summary>
     public static bool IsUpper(Rune r) => IsUpperRune(r);
@@ -80,8 +82,13 @@ internal static class PyString
         while (j > 0 && Rune.DecodeLastFromUtf16(s.AsSpan(0, j), out r, out int n) == OperationStatus.Done)
         {
             j -= n;
-            if (!IsCaseIgnorable(r)) { found = true; break; }
+            if (!IsCaseIgnorable(r))
+            {
+                found = true;
+                break;
+            }
         }
+
         if (!found || !IsCased(r))
             return false;
         for (j = at + 1; j < s.Length;)
@@ -91,6 +98,7 @@ internal static class PyString
             if (!IsCaseIgnorable(r))
                 return !IsCased(r);
         }
+
         return true;
     }
 
