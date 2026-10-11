@@ -77,6 +77,10 @@ dotnet tool install -g StanzaSharp.Tool
 stanzasharp download models/stanza/en --processors tokenize,mwt,pos,lemma   # --package default_fast for that package
 ```
 
+**Check it yourself:** `stanzasharp compare my-text.txt` runs Python Stanza 1.15.0 (`pip install stanza==1.15.0`) and
+StanzaSharp on your text with the same model files and reports whether the CoNLL-U output is identical, or shows the
+first difference, with both sides' timings.
+
 ## Use
 
 ```csharp
@@ -105,9 +109,12 @@ foreach (var sentence in doc.Sentences)
   One call on a short sentence takes about 28 ms on 8 threads (`default_fast`: 14 ms). On short texts, about two calls
   in flight per pipeline give the most throughput; more evict each other's weights from the CPU cache. Set
   `MaxConcurrentCalls = 2` in `PipelineOptions` to make extra callers wait their turn.
-- Memory: a call's peak is set by its largest batch (the tagger pads up to 250 sentences to the longest), so to
-  bound it, call `Process` on parts of about 1,000 words split at blank lines. The annotations stay the same; with
-  `tokenize,mwt,pos,constituency` on 15,000 words the peak drops from 1.7 to 1.2 GB for about 15% more time.
+- Memory: a call's peak is set mostly by its largest batches, not by the length of the text: all eight processors peak
+  at about 2.0 GB for 20,000 words and 3.0 GB for 670,000 (a book in one call is fine). What grows is the returned
+  `Document`, about 0.5 KB per word, and garbage the GC collects when memory runs short (a container's memory limit
+  caps it). To bound memory further, call `Process` on parts split at blank lines and drop each part's `Document`
+  after use: sentence ids restart, offsets are each part's own, and sentiment labels can change (the classifier's
+  batches span the whole call, as in Stanza: 24% of them with 1,000-word parts); everything else stays the same.
 - Memory between calls: on the managed backend (the default) the models and the scratch buffers of a call's largest
   batches stay on the .NET GC heap for the next call, so the working set stays near the call's peak. To give it back
   when a service goes idle, call `GC.Collect(2, GCCollectionMode.Aggressive, blocking: true, compacting: true)` a

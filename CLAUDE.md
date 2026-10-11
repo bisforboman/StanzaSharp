@@ -316,6 +316,26 @@ Python's float `repr` in the JSON, key collisions (`key#2`) and numpy turning 0-
 shape `[1]`. `tests/golden/pt/` holds tiny fixtures in both formats with their converter output
 (`make_golden.py --pt-only` regenerates them).
 
+Failure contract (model files may come from anywhere): `Checkpoint.Load` and every later tensor lookup or read
+either succeed or throw `InvalidDataException` for a malformed, truncated or hostile file; `NotSupportedException`
+only for a well-formed big-endian `.pt`; OS errors (missing file) stay `IOException`s. Time, memory and stack are
+bounded by the file's size. The limits that make it so:
+- Unpickler: MARK records a stack height (O(1)); items below an open MARK can't be popped; dict keys are scalars only
+  (str/int/bool/float; a nested-tuple key was hashed recursively); a length is checked against the stream before
+  anything is allocated.
+- Splitter: JSON depth ≤ 60 (`JsonNode.Parse` reads 64; also stops cyclic lists) and JSON size ≤ 16 × the file + 1 MB
+  (the memo lets one object be referenced many times, and the JSON copies it each time).
+- Storages and views: sizes compared by division, never `numel * size` (overflow); a storage key listed once; a tensor
+  no larger than its storage (bounds stride-0 broadcasts) with non-negative sizes/strides/offset, its extent checked
+  step by step before it can overflow. Zip entries must be stored uncompressed (as torch.save writes them) and fit in
+  the file, so no claimed size is allocated.
+- safetensors: header ≤ 100 MB (the library's limit), known dtype, `numel × size == end - begin`, and the tensors tile
+  the data section exactly (no gaps, overlaps or trailing bytes), as the safetensors library checks.
+- `CheckpointFuzzTests`: seeded mutations (bit flips, truncations, extreme ints, inserted/deleted spans) of the fixtures
+  and three small Stanza checkpoints in CI (~10 s), plus crafted inputs for each bug. Longer runs:
+  `STANZASHARP_FUZZ_ITERATIONS`, `STANZASHARP_FUZZ_SEED`, `STANZASHARP_FUZZ_MODELS=all`, `STANZASHARP_FUZZ_REPORT=FILE`.
+  It does not validate the model code's reading of the JSON (a missing config key there is still a model-specific error).
+
 ## Checkpoint findings
 
 What the English checkpoints actually use (Stanza 1.15.0). Port only these paths.
@@ -487,18 +507,48 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     release runs always run everything; if `changes` fails, everything runs.
   - Runner budget (user's decision, 2026-10-09): **draft** PRs skip every heavy step like docs-only ones (drafts can't
     merge; `ready_for_review` starts the real run), so agents open stacked PRs as drafts and mark them ready once their
-    base merges. **Ready** PRs run level `light`: Linux (`golden`, `docker`, `alpine`) runs everything; `cross-os` and
+    base merges. **Ready** PRs run level `light`: `docker` and `alpine` run everything; `cross-os` and
     `linux-arm64` run only `PipelineTests`, `ManagedBackendTests` and `ManagedCheckTests` (70 tests, ~2.5 min locally)
     and no package checks. The **merge queue** (`merge_group`), pushes to main and release runs are level `full`.
+  - TorchSharp smoke (owner's decision, 2026-10-10): `changes` also outputs `torch`. A ready PR whose files miss
+    `src/StanzaSharp.Cuda/`, `src/StanzaSharp.Nn/`, `src/StanzaSharp/{BackendModels,PipelineBackend}.cs`,
+    `Directory.Build.props` and `.github/workflows/` gets `torch=smoke`: golden runs every test except the
+    TorchSharp-backend cases (DisplayName `managed: False`, `[Trait("Backend", "TorchSharp")]`), keeping those marked
+    `[Trait("Smoke", "TorchSharp")]` (`PipelineTests.Process_ReproducesGoldenConlluExactly`,
+    `InputModeTests.Pretokenized_MatchesGolden`: all processors of both packages) and verify-package's plain mode.
+    So ConcurrencyTests runs only its managed cases there. Filter
+    `(DisplayName!~managed: False&Backend!=TorchSharp)|Smoke=TorchSharp`: 238 of 282 tests, ~31 of 78 min summed.
+    Everything else (drafts/docs-only aside) is `torch=full`. A new expensive TorchSharp-only test without a
+    `managed` parameter needs `[Trait("Backend", "TorchSharp")]` to stay out of light runs.
+
+    | event | code | level | torch | golden runs |
+    |---|---|---|---|---|
+    | draft PR | false | light | – | steps skipped, passes in ~1 min |
+    | docs-only ready PR | false | light | smoke | steps skipped, passes in ~1 min |
+    | ready PR, only `src/StanzaSharp.Pos/**` | true | light | smoke | managed + smoke, 3 shards |
+    | ready PR touching `src/StanzaSharp.Cuda/**` | true | light | full | everything, 3 shards |
+    | merge queue, push to main, release (`workflow_call`) | true | full | full | everything, 3 shards |
+    | `changes` failed | (empty) | (empty) | (empty) | everything (anything not clearly false/smoke) |
   - `concurrency` (`${{ github.workflow }}-${{ github.ref }}`): a newer push to the same PR or to main cancels the older
     CI run. release.yml's call gets the group `Release-refs/heads/main` (`github.workflow` is the caller's name), so it
     and main's own CI run don't cancel each other, and it is never cancelled.
-  - `golden`, on a model-cache miss, downloads the models with the C# `ModelDownloader` (via the
+  - `golden` (owner's decision, 2026-10-10) is an aggregate: it `needs` the matrix job `golden-shard` (1, 2, 3), runs
+    `if: !cancelled()` and fails unless `needs.golden-shard.result` is `success` (a skipped or failed shard fails it),
+    so the required check keeps its name. The shards split the test project by class, balanced on the golden trx
+    (full run, minutes summed; xunit runs a class's tests one at a time and ConcurrencyTests after everything else):
+    - 2: `ConcurrencyTests.ConcurrentCalls_*` + FastPackage, GcPressure, ManagedBackend, Tokenizer: 87 tests, 17.9 min.
+    - 3: Pipeline, Ner, Sentiment, InputMode, Depparse, NoSsplit: 72 tests, 45.5 min (parallel; Pipeline 10.3 alone).
+    - 1: the complement of 2 and 3 (ConcurrencyTests' cancellation cases and every other class, new ones too):
+      123 tests, 14.6 min. So the union is always the whole suite, each test once (checked with `--list-tests`).
+    - Expected wall per shard on full: ~12–15 min (was 38–44 for one job); light: ~4–6 min.
+    Each shard, on a model-cache miss, downloads the models with the C# `ModelDownloader` (via the
     CLI) and converts them with CPU torch. The models are cached on `ModelDownloader.cs`,
-    `tools/requirements.txt` and `tools/stanza_convert.py`. It then fails if any test is skipped
-    (`outcome="NotExecuted"` in the trx; the trx `notExecuted` counter stays 0 for skips), and runs
+    `tools/requirements.txt` and `tools/stanza_convert.py`; shard 1 writes the cache, shards 2–3 (like docker and
+    alpine) only restore it. Each shard fails if any test is skipped
+    (`outcome="NotExecuted"` in the trx; the trx `notExecuted` counter stays 0 for skips) or none ran. Shard 1 runs
     `tools/verify-package.ps1` against `models/stanza/en` twice: plain (StanzaSharp + TorchSharp-cpu, TorchSharp
-    backend, `StanzaSharpTrimNative`) and `-Managed` (only StanzaSharp, the default backend, no libtorch).
+    backend, `StanzaSharpTrimNative`; also on torch=smoke) and `-Managed` (only StanzaSharp, the default backend, no
+    libtorch), and `verify-tool.ps1`. Artifacts: `test-results-golden-<shard>`.
   - `cross-os (windows-2025)` / `cross-os (macos-15)` (Apple Silicon; `TorchSharp-cpu` brings
     `libtorch-cpu-osx-arm64`): build, full suite with `STANZASHARP_MODELS` = `models/stanza/en` (the
     `.pt` files, no Python or conversion), the same no-skip check, and both `verify-package.ps1` runs. Models are
@@ -587,6 +637,15 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   [--processors LIST]`. `DownloadCommand.cs` is compiled into samples/StanzaSharp.Cli too (one implementation). Since
   1.0 StanzaSharp has no TorchSharp, so the tool has no native files at all (0.45 MB). `tools/verify-tool.ps1` (golden) packs, `dotnet tool install --tool-path`s it from a local feed,
   checks for natives and downloads `tokenize,mwt`. release.yml packs it.
+  - `compare FILE [--package] [--processors] [--models DIR] [--python PATH]` (`CompareCommand.cs`, owner's "proof for
+    new users"): runs the embedded `compare.py` (make_golden's bytes→str and `"{:C}\n"`) with
+    `stanza.Pipeline('en', dir=<parent of DIR>, resources_filepath=<embedded stanza_resources_en.json>,
+    download_method=None)`, so no network and no resources.json in the model folder; DIR must be named `en`. Both sides
+    get the full processor list (requirements added); Stanza's loaded `.pt` set must equal `ModelDownloader.FilesFor`,
+    and C# loads with `VerifyChecksums`. C# offsets are converted to code points when the text has non-BMP characters
+    (`ConlluDiff.ToCodePointOffsets`). Exit 0/1/2. `stanza_resources_en.json` is Stanza 1.15.0's `resources.json["en"]`:
+    regenerate it with a Stanza version change. `CompareCommandTests.Run_PythonStanza_*` needs tools/.venv (or
+    `STANZASHARP_PYTHON`) and models/stanza/en; CI has no Python Stanza, so its no-skip checks exempt that test.
 - The `StanzaSharp` package, packed from `src/StanzaSharp` (user's decision, 2026-10-06).
   - It carries all nine assemblies (facade, Core, Nn, the processors) plus their XML docs: the facade's
     ProjectReferences are `PrivateAssets="all"`, and an `IncludeProjectReferences` target adds them.
@@ -785,9 +844,9 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     help. Not per-caller teams: those oversubscribe (measured: 8 callers fall to TorchSharp's throughput). A region's
     split must not depend on how many threads help, so results stay bitwise identical under concurrency.
   - Per-call buffers come from `ArrayPool<T>.Shared` and go back in `finally`; no buffer is shared between calls, and
-    no mutable state lives on a model. Rented arrays hold stale data: write before reading. Measured (round 8): exact-size
+    no mutable state lives on a model. Rented arrays hold stale data: write before reading. Measured (round 9): exact-size
     arrays instead raise the peak (+150 MB in depparse); the pool's power-of-two rounding costs no working set. Processors
-    share the pool's buckets, so resizing one buffer can raise another processor's peak (sentiment's, round 8): measure
+    share the pool's buckets, so resizing one buffer can raise another processor's peak (sentiment's, round 9): measure
     the all-eight `--memory` peak too.
   - A GEMM column depends only on its 16-column panel: a GEMM split by whole panels (`new PackedMatrix(source, firstPanel,
     panels)`, or rows packed separately at a panel boundary) gives the same bits. Splitting by rows does not in general

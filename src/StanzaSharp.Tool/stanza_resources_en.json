@@ -1,0 +1,1628 @@
+{
+ "en": {
+  "backward_charlm": {
+   "1billion": {
+    "md5": "1405948b125b4264fd17509d1b6175ca"
+   },
+   "mimic": {
+    "md5": "19a16ba4b8526e54ef8ab21ca33cc423"
+   },
+   "pubmed": {
+    "md5": "f2c42f6b2f7205d2b254d6ab0fb13303"
+   }
+  },
+  "constituency": {
+   "ptb3-revised_charlm": {
+    "md5": "74dadb9e65bc7b88889550889d0a1d16",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "ptb3-revised_electra-large": {
+    "md5": "d17d7ebf61a9e6eff02b9db53a5dd293",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "ptb3_charlm": {
+    "md5": "45d737c2172a5f8cb9324cc25af335f6",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "ptb3_electra-large": {
+    "md5": "caaf016de94948f50fcab2c6ff21d838",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   }
+  },
+  "coref": {
+   "gum-nospeakers_roberta-large-lora": {
+    "md5": "2188b1afa7c803a13cbefc3e0f95d536"
+   },
+   "gum-speakers_roberta-large-lora": {
+    "md5": "3c1974d127191519136e2de0fb501c29"
+   },
+   "ontonotes-singletons_roberta-large-lora": {
+    "md5": "69c669ecfe8dbccb7ba36692a1dbd720"
+   },
+   "udcoref_xlm-roberta-lora": {
+    "md5": "952f55dad09d2350249ed1e2a15a34f8"
+   }
+  },
+  "depparse": {
+   "atis_charlm": {
+    "md5": "1c29d854041a1ec9c31acf5e2ff4c359",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "atis_electra-large": {
+    "md5": "c7017abfab893cfdefd7861df30981a8",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "atis_nocharlm": {
+    "md5": "4ba5d940f287f5e6b8bdd551e8e2835b",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   },
+   "childes_charlm": {
+    "md5": "e6021bb09de4c6719599f2ba16b03fd5",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "childes_electra-large": {
+    "md5": "a1929248e10381541514be1f5a59063e",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "childes_nocharlm": {
+    "md5": "6e5ab2e8409d58bf9ff3b8d32e69c4eb",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   },
+   "combined_charlm": {
+    "md5": "993a0eb712cefb881c684df8d9934f15",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "combined_electra-large": {
+    "md5": "fffeab3811c9503ee6c0db06b3cf6b45",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "combined_nocharlm": {
+    "md5": "d155cf16050ba5fb640dc38424924346",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   },
+   "craft_nocharlm": {
+    "md5": "a7f21d3415745f5fe4debad7bc233eb5",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "biomed"
+     }
+    ]
+   },
+   "eslspok_charlm": {
+    "md5": "74f0bf70725a90cdf0e7b40bbdc9b1c7",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "eslspok_electra-large": {
+    "md5": "34610290258e888dc505ec6e16b2c750",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "eslspok_nocharlm": {
+    "md5": "afcdcdadfbeb1fb9511a9f9a1ed2127a",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   },
+   "ewt_charlm": {
+    "md5": "168e503d6687ecadc1609c5f429c95ae",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "ewt_electra-large": {
+    "md5": "42b1c423ed31df8f7dccde0ecaaab7f7",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "ewt_nocharlm": {
+    "md5": "d4de2f2bfb1df4b508a66e036118aa5b",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   },
+   "genia_nocharlm": {
+    "md5": "4c5328dae9e34f042230cf87194c1022",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "biomed"
+     }
+    ]
+   },
+   "gum_charlm": {
+    "md5": "6691010e4e6501da6fa6a2728e8bc3c5",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "gum_electra-large": {
+    "md5": "b9a9dcdb27c97a4820578e51cb20e23d",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "gum_nocharlm": {
+    "md5": "6d105ef7f3d65d00b4ff80139eab2807",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   },
+   "lines_charlm": {
+    "md5": "b9d90427dac74a14eea084588031908b",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "lines_electra-large": {
+    "md5": "80173fea7dc173f7862ef3c9345a8981",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "lines_nocharlm": {
+    "md5": "2489849db172a3cc705fd4a902171767",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   },
+   "mimic_charlm": {
+    "md5": "7b254811da5f794bc60f82b73f6e7638",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "mimic"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "mimic"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "mimic"
+     }
+    ]
+   },
+   "mimic_nocharlm": {
+    "md5": "0fbc82facddcfcf4395a5bebf6c6ccf0",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "mimic"
+     }
+    ]
+   },
+   "partut_charlm": {
+    "md5": "53996edc3bcf682262a71326b2ac73b8",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "partut_electra-large": {
+    "md5": "8a3f001477df5362d7daa8b0ca812145",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "partut_nocharlm": {
+    "md5": "0a159f9eba80c3b15ea1a7a834d0940f",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   }
+  },
+  "forward_charlm": {
+   "1billion": {
+    "md5": "468b3377455fa0311565d46865f55afb"
+   },
+   "mimic": {
+    "md5": "3d3863e27afd67bf356354a728b0fb76"
+   },
+   "pubmed": {
+    "md5": "3f734806be2c2f62c82fbb01421f78ec"
+   }
+  },
+  "lemma": {
+   "atis_charlm": {
+    "md5": "836ced25ae428cb8ea19a015f64cfb2e",
+    "dependencies": [
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "atis_nocharlm": {
+    "md5": "28fba07e6dd33806510eada307054ee7"
+   },
+   "childes_charlm": {
+    "md5": "e7a6891511f8cd9b444a3ce31b6eb37e",
+    "dependencies": [
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "childes_nocharlm": {
+    "md5": "cfce17057c0053dd595fb5bb8010b244"
+   },
+   "combined_charlm": {
+    "md5": "a3efc57724b629fabf427ce59d410f7e",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "combined_nocharlm": {
+    "md5": "8d3742b3f507e78a9e605afd72b34c92"
+   },
+   "craft_nocharlm": {
+    "md5": "62758246109e9ed243f158ce9e4294c3"
+   },
+   "ewt_charlm": {
+    "md5": "fb22142bdc178161966291ca017c7f34",
+    "dependencies": [
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "ewt_nocharlm": {
+    "md5": "6e05dfc22768b87fca86b95895d4deef"
+   },
+   "genia_nocharlm": {
+    "md5": "5922b24bda427f0a8578f1732964e06b"
+   },
+   "gum_charlm": {
+    "md5": "c2c3eac4e7d2bd494cc03cfaea144a66",
+    "dependencies": [
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "gum_nocharlm": {
+    "md5": "b15b09576a8807c2b6e3d85fa9ab0c17"
+   },
+   "lines_charlm": {
+    "md5": "ef652b9b807a80467e0260684069e9ef",
+    "dependencies": [
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "lines_nocharlm": {
+    "md5": "7bb3141bec928e73020132f366a6a64c"
+   },
+   "mimic_nocharlm": {
+    "md5": "8a75bbe7d73e4148abf980d7d5233745"
+   },
+   "partut_charlm": {
+    "md5": "4d1b20ef133b0ac643cdca2f44f9dc95",
+    "dependencies": [
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "partut_nocharlm": {
+    "md5": "e1f14329648a2883ed4948e2416c3684"
+   }
+  },
+  "mwt": {
+   "atis": {
+    "md5": "7723a36e7ef135ada202951e7cfca0af"
+   },
+   "childes": {
+    "md5": "0b6a21bfa6b8da3e90fbdf903e3948de"
+   },
+   "combined": {
+    "md5": "dc569dbb26cc72b71847f9d0b8775d43"
+   },
+   "ewt": {
+    "md5": "4315978c5d7002e179df725aee751ec5"
+   },
+   "gum": {
+    "md5": "85857cef3a7031b5d83b3e123ded0f27"
+   },
+   "lines": {
+    "md5": "45b262202b7142820e1e7b12e58c8398"
+   },
+   "partut": {
+    "md5": "50aa57ff5fe536c3534488e50f541051"
+   }
+  },
+  "ner": {
+   "anatem": {
+    "md5": "8b4b13670ba8cccde5645d9378071c19",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "biomed"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "pubmed"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "pubmed"
+     }
+    ]
+   },
+   "bc4chemd": {
+    "md5": "5cc779906b9e6fa1078b423c428b362c",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "biomed"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "pubmed"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "pubmed"
+     }
+    ]
+   },
+   "bc5cdr": {
+    "md5": "b0744897baf9d40165aca02f25e3f68d",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "biomed"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "pubmed"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "pubmed"
+     }
+    ]
+   },
+   "bionlp13cg": {
+    "md5": "980327713d51b2a161e26520be148413",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "biomed"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "pubmed"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "pubmed"
+     }
+    ]
+   },
+   "combined_charlm": {
+    "md5": "3f1017a2f0151b2556a105ddee17db49",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "conll03_charlm": {
+    "md5": "adc994f36ee4f8fcc5e5bceb3597f02e",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "glove"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "conll03_electra-large": {
+    "md5": "892891610a5d66635904081fd6376178",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "glove"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "i2b2": {
+    "md5": "d860eeb99b2fd96e5e26fc1bb821eda5",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "mimic"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "mimic"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "mimic"
+     }
+    ]
+   },
+   "jnlpba": {
+    "md5": "95cb87ec78ef4f9f98697e3fc6ff6144",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "biomed"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "pubmed"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "pubmed"
+     }
+    ]
+   },
+   "linnaeus": {
+    "md5": "a172a0814335da3c59093d3ce67c8bea",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "biomed"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "pubmed"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "pubmed"
+     }
+    ]
+   },
+   "ncbi_disease": {
+    "md5": "f426680a5069aad5b7ca8145448d25da",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "biomed"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "pubmed"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "pubmed"
+     }
+    ]
+   },
+   "ontonotes-ww-multi_charlm": {
+    "md5": "3cd5e98549640f448846389169a36812",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "ontonotes-ww-multi_electra-large": {
+    "md5": "5a6cd3ea92ff6cf0683de9c0914346b8",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "ontonotes-ww-multi_nocharlm": {
+    "md5": "e927ed0ce0960638a158c8838b1e7265",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   },
+   "ontonotes_charlm": {
+    "md5": "313fa9ec8b3b76c388c71eb456c355e7",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttextcrawl"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "ontonotes_electra-large": {
+    "md5": "5b59497b9e76cb646690825bc4fed43f",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttextcrawl"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "ontonotes_nocharlm": {
+    "md5": "96a6cb9857d6f71a8d6f1cd041d0edbd",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttextcrawl"
+     }
+    ]
+   },
+   "radiology": {
+    "md5": "043dd91c838e272dbde3d28f7bcc9ed2",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "mimic"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "mimic"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "mimic"
+     }
+    ]
+   },
+   "s800": {
+    "md5": "1f8d6dc302e9237c8d5db17be22de5d5",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "biomed"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "pubmed"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "pubmed"
+     }
+    ]
+   }
+  },
+  "pos": {
+   "atis_charlm": {
+    "md5": "be48972ce60043971db6f91b4fbc2e60",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "atis_electra-large": {
+    "md5": "6acfc31faf575154ecd970859226b0d9",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "atis_nocharlm": {
+    "md5": "3fe8ffa1de12518ffd09cf5e0a32a379",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   },
+   "childes_charlm": {
+    "md5": "3aa0b518745acbab56f5597aa4585488",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "childes_electra-large": {
+    "md5": "cd15fc9b748182e077c2d8685e5b63f8",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "childes_nocharlm": {
+    "md5": "787a65690865ccbf29b177f6eedcee54",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   },
+   "combined_charlm": {
+    "md5": "a31dbf7269152bc85c3c79c5318ae848",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "combined_electra-large": {
+    "md5": "f7e65d440e6653ff3f5b4ae15655c154",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "combined_nocharlm": {
+    "md5": "005fab042873317838e692c650e8e5e9",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   },
+   "craft_nocharlm": {
+    "md5": "0bcb9b9712e81beb38a2ed4d7649b437",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "biomed"
+     }
+    ]
+   },
+   "eslspok_charlm": {
+    "md5": "ca420543b5be33e904cb098cebe7de80",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "eslspok_electra-large": {
+    "md5": "11b6e2b1104e1f9a6d6466b599278e92",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "eslspok_nocharlm": {
+    "md5": "1f91bc08dfc0fd69e2d7a35009be52bd",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   },
+   "ewt_charlm": {
+    "md5": "d6991b157942d44dff468e2cd00bfe82",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "ewt_electra-large": {
+    "md5": "a54dfc8c06fb522904a3ec8e1cb71291",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "ewt_nocharlm": {
+    "md5": "31da311072360b086165291e99b1358a",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   },
+   "genia_nocharlm": {
+    "md5": "65a2bf877185e1b92747fd0a46aabe84",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "biomed"
+     }
+    ]
+   },
+   "gum_charlm": {
+    "md5": "b02c70afabd16c21cd46e38db455eb31",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "gum_electra-large": {
+    "md5": "0948fed2803e536ab5b0ec655776fcd4",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "gum_nocharlm": {
+    "md5": "7126837c00e6093fc28f84beb96fd92e",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   },
+   "lines_charlm": {
+    "md5": "727f46b076c76c5d87433be90d613f21",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "lines_electra-large": {
+    "md5": "fb6aa2a20a131cabf8d34681a021540f",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "lines_nocharlm": {
+    "md5": "2d67edd3ed6d0ec3f9224c5ba0d95b46",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   },
+   "mimic_charlm": {
+    "md5": "8208c89c2e4ff1abd7d06d45973091ce",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "mimic"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "mimic"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "mimic"
+     }
+    ]
+   },
+   "partut_charlm": {
+    "md5": "83b413d52e521e91e58009ddfd2d47d0",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "partut_electra-large": {
+    "md5": "2bd7bd52eb70f4397736e6732024a81d",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "partut_nocharlm": {
+    "md5": "1c445ee0609cd017458a9c88b0e3359b",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   }
+  },
+  "pretrain": {
+   "biomed": {
+    "md5": "9e038ff1a932086483da05102558a37c"
+   },
+   "conll17": {
+    "md5": "c339580492002fb1f759537dfbc57fb2"
+   },
+   "fasttextcrawl": {
+    "md5": "32e21612fdf3ea9b404ddbf663e9e438"
+   },
+   "glove": {
+    "md5": "a44c27b595dd17c718d56b2c250f477a"
+   },
+   "mimic": {
+    "md5": "4fe1487ea48eb27af23a2a482610d0bd"
+   }
+  },
+  "sentiment": {
+   "sstplus_charlm": {
+    "md5": "cf7e8e8f2a76c1dc236329dbc0e61cb4",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "sstplus_electra-large": {
+    "md5": "1b16d4998d0e804fabbcc56ce5f29d8b",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "1billion"
+     }
+    ]
+   }
+  },
+  "tokenize": {
+   "atis_charlm": {
+    "md5": "5a54394b7800d08cd0708ca11d5b9f60",
+    "dependencies": [
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "atis_nocharlm": {
+    "md5": "404c52b35c297ad8b31bafd991864b51"
+   },
+   "childes_charlm": {
+    "md5": "a964dbbbfe7107a6d866ff5f610e73e9",
+    "dependencies": [
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "childes_nocharlm": {
+    "md5": "cd0831ca6fe7c736e99423b10721335f"
+   },
+   "combined_charlm": {
+    "md5": "1e2acd7f1340961385442a106c94950d",
+    "dependencies": [
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "combined_nocharlm": {
+    "md5": "764639a5f65cc42d84b294566ffa6215"
+   },
+   "craft_nocharlm": {
+    "md5": "fc95d998b9ad6c94e4d683a2e22f4b83"
+   },
+   "eslspok_charlm": {
+    "md5": "41f8fa611e1aeaf0ec7fdec4b968c878",
+    "dependencies": [
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "eslspok_nocharlm": {
+    "md5": "41daea96fefb4138103090d4ee42d236"
+   },
+   "ewt_charlm": {
+    "md5": "08e17410ba853cf519019d4ea17ec313",
+    "dependencies": [
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "ewt_nocharlm": {
+    "md5": "d0145aa1ac58887bd51fc56c017278fe"
+   },
+   "genia_nocharlm": {
+    "md5": "1f9e66486fc7e38917c817e65fa05501"
+   },
+   "gum_charlm": {
+    "md5": "5e797c73ecd132555f9769dddb694458",
+    "dependencies": [
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "gum_nocharlm": {
+    "md5": "967be4681e0f9bd464a156869cc4d3df"
+   },
+   "lines_charlm": {
+    "md5": "8720268c9682bb80a282f560d64e0e8c",
+    "dependencies": [
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "lines_nocharlm": {
+    "md5": "5f3b845efdfe7c44a70e71dcdf66d38d"
+   },
+   "mimic_nocharlm": {
+    "md5": "2ff39c4010bd9b96ecd03835206e4589"
+   },
+   "partut_charlm": {
+    "md5": "eccecee9b79a7c02038e9cbff44602bf",
+    "dependencies": [
+     {
+      "model": "forward_charlm",
+      "package": "1billion"
+     }
+    ]
+   },
+   "partut_nocharlm": {
+    "md5": "c66aa091d1be5148187de8ccbb79e1af"
+   }
+  },
+  "default_processors": {
+   "tokenize": "combined_nocharlm",
+   "mwt": "combined",
+   "lemma": "combined_nocharlm",
+   "pos": "combined_charlm",
+   "depparse": "combined_charlm",
+   "ner": "ontonotes-ww-multi_charlm",
+   "sentiment": "sstplus_charlm",
+   "constituency": "ptb3-revised_charlm",
+   "optional": {
+    "coref": "udcoref_xlm-roberta-lora"
+   }
+  },
+  "packages": {
+   "default": {
+    "tokenize": "combined_nocharlm",
+    "mwt": "combined",
+    "lemma": "combined_nocharlm",
+    "pos": "combined_charlm",
+    "depparse": "combined_charlm",
+    "ner": "ontonotes-ww-multi_charlm",
+    "sentiment": "sstplus_charlm",
+    "constituency": "ptb3-revised_charlm",
+    "optional": {
+     "coref": "udcoref_xlm-roberta-lora"
+    }
+   },
+   "default_fast": {
+    "tokenize": "combined_nocharlm",
+    "mwt": "combined",
+    "lemma": "combined_nocharlm",
+    "pos": "combined_nocharlm",
+    "depparse": "combined_nocharlm",
+    "ner": "ontonotes-ww-multi_nocharlm",
+    "sentiment": "sstplus_charlm",
+    "optional": {
+     "coref": "udcoref_xlm-roberta-lora"
+    }
+   },
+   "default_accurate": {
+    "tokenize": "combined_charlm",
+    "mwt": "combined",
+    "lemma": "combined_charlm",
+    "pos": "combined_electra-large",
+    "depparse": "combined_electra-large",
+    "ner": "ontonotes-ww-multi_electra-large",
+    "sentiment": "sstplus_electra-large",
+    "constituency": "ptb3-revised_electra-large",
+    "optional": {
+     "coref": "udcoref_xlm-roberta-lora"
+    }
+   },
+   "atis": {
+    "tokenize": "atis_nocharlm",
+    "mwt": "atis",
+    "pos": "atis_charlm",
+    "lemma": "atis_nocharlm",
+    "depparse": "atis_charlm"
+   },
+   "childes": {
+    "tokenize": "childes_nocharlm",
+    "mwt": "childes",
+    "pos": "childes_charlm",
+    "lemma": "childes_nocharlm",
+    "depparse": "childes_charlm"
+   },
+   "combined": {
+    "tokenize": "combined_nocharlm",
+    "mwt": "combined",
+    "pos": "combined_charlm",
+    "lemma": "combined_nocharlm",
+    "depparse": "combined_charlm"
+   },
+   "craft": {
+    "tokenize": "craft_nocharlm",
+    "pos": "craft_nocharlm",
+    "lemma": "craft_nocharlm",
+    "depparse": "craft_nocharlm"
+   },
+   "eslspok": {
+    "tokenize": "eslspok_nocharlm",
+    "pos": "eslspok_charlm",
+    "lemma": "identity",
+    "depparse": "eslspok_charlm"
+   },
+   "ewt": {
+    "tokenize": "ewt_nocharlm",
+    "mwt": "ewt",
+    "pos": "ewt_charlm",
+    "lemma": "ewt_nocharlm",
+    "depparse": "ewt_charlm"
+   },
+   "genia": {
+    "tokenize": "genia_nocharlm",
+    "pos": "genia_nocharlm",
+    "lemma": "genia_nocharlm",
+    "depparse": "genia_nocharlm"
+   },
+   "gum": {
+    "tokenize": "gum_nocharlm",
+    "mwt": "gum",
+    "pos": "gum_charlm",
+    "lemma": "gum_nocharlm",
+    "depparse": "gum_charlm"
+   },
+   "lines": {
+    "tokenize": "lines_nocharlm",
+    "mwt": "lines",
+    "pos": "lines_charlm",
+    "lemma": "lines_nocharlm",
+    "depparse": "lines_charlm"
+   },
+   "mimic": {
+    "tokenize": "mimic_nocharlm",
+    "pos": "mimic_charlm",
+    "lemma": "mimic_nocharlm",
+    "depparse": "mimic_charlm"
+   },
+   "partut": {
+    "tokenize": "partut_nocharlm",
+    "mwt": "partut",
+    "pos": "partut_charlm",
+    "lemma": "partut_nocharlm",
+    "depparse": "partut_charlm"
+   }
+  },
+  "default_md5": "d67a8cc6a4ac3131c2145cc5d8cd928b",
+  "lang_name": "English"
+ }
+}

@@ -8,7 +8,7 @@
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>stanzasharp</ToolCommandName>
     <PackageId>StanzaSharp.Tool</PackageId>
-    <Description>The stanzasharp command: downloads Stanza's English models for StanzaSharp, checked against their MD5s, e.g. in a Dockerfile or CI. "stanzasharp download DIR [--package default_fast] [--processors tokenize,mwt,pos]". Needs no native libtorch.</Description>
+    <Description>The stanzasharp command: downloads Stanza's English models for StanzaSharp, checked against their MD5s, e.g. in a Dockerfile or CI. "stanzasharp download DIR [--package default_fast] [--processors tokenize,mwt,pos]". "stanzasharp compare FILE" runs Python Stanza and StanzaSharp on your own text and shows whether their output is identical. Needs no native libtorch.</Description>
     <PackageTags>nlp;stanza;models;download;dotnet-tool</PackageTags>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -16,7 +16,21 @@
 
   <ItemGroup>
     <ProjectReference Include="..\StanzaSharp\StanzaSharp.csproj" />
+    <!-- The facade's references are PrivateAssets; compare runs the pipeline, so the tool needs them all. -->
+    <ProjectReference Include="..\StanzaSharp.Core\StanzaSharp.Core.csproj" />
+    <ProjectReference Include="..\StanzaSharp.Nn\StanzaSharp.Nn.csproj" />
+    <ProjectReference Include="..\StanzaSharp.Tokenize\StanzaSharp.Tokenize.csproj" />
+    <ProjectReference Include="..\StanzaSharp.Mwt\StanzaSharp.Mwt.csproj" />
+    <ProjectReference Include="..\StanzaSharp.Pos\StanzaSharp.Pos.csproj" />
+    <ProjectReference Include="..\StanzaSharp.Lemma\StanzaSharp.Lemma.csproj" />
+    <ProjectReference Include="..\StanzaSharp.Constituency\StanzaSharp.Constituency.csproj" />
+    <ProjectReference Include="..\StanzaSharp.Depparse\StanzaSharp.Depparse.csproj" />
+    <ProjectReference Include="..\StanzaSharp.Ner\StanzaSharp.Ner.csproj" />
+    <ProjectReference Include="..\StanzaSharp.Sentiment\StanzaSharp.Sentiment.csproj" />
     <None Include="..\..\NOTICE" Pack="true" PackagePath="/" />
     <None Include="README.md" Pack="true" PackagePath="/" />
+    <!-- compare: its Python half, and the English entry of Stanza 1.15.0's resources.json (Apache 2.0, see NOTICE). -->
+    <EmbeddedResource Include="compare.py" LogicalName="compare.py" />
+    <EmbeddedResource Include="stanza_resources_en.json" LogicalName="stanza_resources_en.json" />
   </ItemGroup>
 </Project>

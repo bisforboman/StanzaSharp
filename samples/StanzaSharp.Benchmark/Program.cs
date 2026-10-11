@@ -36,6 +36,7 @@ const string Usage = """
                       on each part in turn (--bulk: one Process(IEnumerable<string>) call on the parts)
       --calls N       --memory: repeat the Process call(s) N times, reporting the memory after each (default: 1)
       --no-trim       on Linux (glibc), keep the free native heap after each Process call (no malloc_trim)
+      --live          --memory --verbose: after each processor, also a full GC and the live GC heap (slower)
       --idle-gc       --memory: then an aggressive GC at once, and another after 61 s idle, reporting the memory
       --per-call N    instead: N Process calls on one short sentence each (5-25 words) after a warm-up, reporting the
                       median and p90 ms per call and per stage
@@ -53,7 +54,7 @@ if (args is ["managed-spike", ..])
 string modelDir = Path.Combine("models", "converted", "en");
 int copies = 8, runs = 3, threads = 0, documents = 0, perCall = 0, concurrent = 0, memoryWords = 0, chunkWords = 0, calls = 1, cacheWords = CharlmCache.DefaultMaxWords;
 string? outFile = null, processors = null, perCallText = null;
-bool bulkCall = false, verbose = false, noTrim = false, idleGc = false;
+bool bulkCall = false, verbose = false, noTrim = false, idleGc = false, live = false;
 torch.Device? device = null; // CPU; not torch.CPU, which would load libtorch in a managed run
 bool noTf32 = false;
 string package = Pipeline.DefaultPackage;
@@ -80,6 +81,7 @@ for (int i = 0; i < args.Length; i++)
         case "--charlm-cache" when i + 1 < args.Length: cacheWords = int.Parse(args[++i]); break;
         case "--verbose": verbose = true; break;
         case "--idle-gc": idleGc = true; break;
+        case "--live": live = true; break;
         case "--calls" when i + 1 < args.Length: calls = int.Parse(args[++i]); break;
         case "--no-trim": noTrim = true; break;
         case "--per-call" when i + 1 < args.Length: perCall = int.Parse(args[++i]); break;
@@ -181,17 +183,18 @@ if (memoryWords > 0)
     // What a short-lived process pays (issue #19): load, one Process call (or one per part), exit.
     var paragraphs = BuildParagraphs(memoryWords);
     var clockLoad = Stopwatch.StartNew();
-    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Processors = processors, Backend = pipelineBackend, Threads = threads > 0 ? threads : null, Logger = verbose ? new MemoryLogger() : null, TrimNativeHeap = !noTrim,
+    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Processors = processors, Backend = pipelineBackend, Threads = threads > 0 ? threads : null, Logger = verbose ? new MemoryLogger(live) : null, TrimNativeHeap = !noTrim,
         CharlmCache = new CharlmCacheOptions { IsEnabled = cacheWords > 0, MaxWords = Math.Max(cacheWords, 1) } });
     double loadSeconds = clockLoad.Elapsed.TotalSeconds;
     double loadPeak = PeakMB(), afterLoad = WorkingSetMB();
     var gcAfterLoad = GC.GetGCMemoryInfo();
     var after = new List<string>();
     List<Document> docs = null!;
-    double processSeconds = 0;
+    double processSeconds = 0, allocatedMB = 0;
     GCMemoryInfo gc = default;
     for (int call = 1; call <= calls; call++)
     {
+        long allocatedBefore = GC.GetTotalAllocatedBytes(true);
         clockLoad.Restart();
         if (chunkWords <= 0)
             docs = [nlp.Process(string.Join("\n\n", paragraphs))];
@@ -204,6 +207,7 @@ if (memoryWords > 0)
         if (call == 1)
         {
             processSeconds = seconds;
+            allocatedMB = (GC.GetTotalAllocatedBytes(true) - allocatedBefore) / 1048576.0;
             gc = GC.GetGCMemoryInfo();
         }
         after.Add($"after call {call}  {seconds,7:F2} s  peak {PeakMB(),6:F0} MB  working set {WorkingSetMB(),6:F0} MB");
@@ -221,7 +225,7 @@ if (memoryWords > 0)
     Console.WriteLine($"load          {loadSeconds,7:F2} s  load peak {loadPeak,6:F0} MB  after load {afterLoad,6:F0} MB  " +
                       $"(GC heap {gcAfterLoad.HeapSizeBytes / 1048576.0:F0} MB, committed {gcAfterLoad.TotalCommittedBytes / 1048576.0:F0} MB)");
     Console.WriteLine($"process       {processSeconds,7:F2} s  peak      {PeakMB(),6:F0} MB  at the end {WorkingSetMB(),6:F0} MB  " +
-                      $"(GC heap {gc.HeapSizeBytes / 1048576.0:F0} MB, committed {gc.TotalCommittedBytes / 1048576.0:F0} MB, {GC.CollectionCount(2)} gen2 GCs)");
+                      $"(GC heap {gc.HeapSizeBytes / 1048576.0:F0} MB, committed {gc.TotalCommittedBytes / 1048576.0:F0} MB, {GC.CollectionCount(2)} gen2 GCs, {allocatedMB:F0} MB allocated)");
     foreach (var line in after)
         Console.WriteLine(line);
     if (verbose)
@@ -231,6 +235,12 @@ if (memoryWords > 0)
         GC.Collect();
         Console.WriteLine($"after a full GC and finalizers: working set {WorkingSetMB(),6:F0} MB");
         Console.WriteLine("  " + HeapStats.Describe());
+        // The output's own size: the GC heap with the documents, minus without them.
+        long withDocs = GC.GetTotalMemory(true);
+        GC.KeepAlive(docs);
+        docs.Clear(); // not docs = null: the JIT can keep the list in a temporary
+        long withoutDocs = GC.GetTotalMemory(true);
+        Console.WriteLine($"the documents: {(withDocs - withoutDocs) / 1048576.0:F0} MB on the GC heap, {(double)(withDocs - withoutDocs) / wordCount:F0} bytes per word");
     }
     if (idleGc)
     {
@@ -464,14 +474,19 @@ sealed class StageLogger : Microsoft.Extensions.Logging.ILogger
 }
 
 /// <summary>Prints the pipeline's log messages (each model load, each processor) with the working set and its peak.</summary>
-sealed class MemoryLogger : Microsoft.Extensions.Logging.ILogger
+sealed class MemoryLogger(bool live) : Microsoft.Extensions.Logging.ILogger
 {
+    private long _allocated = GC.GetTotalAllocatedBytes(true);
+
     public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
     public bool IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel) => true;
     public void Log<TState>(Microsoft.Extensions.Logging.LogLevel logLevel, Microsoft.Extensions.Logging.EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
         using var p = Process.GetCurrentProcess();
-        Console.WriteLine($"  {formatter(state, exception),-70} working set {p.WorkingSet64 / 1048576.0,6:F0} MB  peak {p.PeakWorkingSet64 / 1048576.0,6:F0} MB  GC heap {GC.GetGCMemoryInfo().HeapSizeBytes / 1048576.0,5:F0} MB  {TorchSharp.DisposeScopeManager.Statistics.TensorStatistics.ThreadTotalLiveCount} live tensors, {TorchSharp.DisposeScopeManager.Statistics.TensorStatistics.CreatedOutsideScopeCount - TorchSharp.DisposeScopeManager.Statistics.TensorStatistics.DisposedOutsideScopeCount} outside scopes");
+        long allocated = GC.GetTotalAllocatedBytes(true);
+        string liveHeap = live ? $"  live {GC.GetTotalMemory(true) / 1048576.0,5:F0} MB" : "";
+        Console.WriteLine($"  {formatter(state, exception),-70}{liveHeap}  allocated {(allocated - _allocated) / 1048576.0,6:F0} MB working set {p.WorkingSet64 / 1048576.0,6:F0} MB  peak {p.PeakWorkingSet64 / 1048576.0,6:F0} MB  GC heap {GC.GetGCMemoryInfo().HeapSizeBytes / 1048576.0,5:F0} MB  {TorchSharp.DisposeScopeManager.Statistics.TensorStatistics.ThreadTotalLiveCount} live tensors, {TorchSharp.DisposeScopeManager.Statistics.TensorStatistics.CreatedOutsideScopeCount - TorchSharp.DisposeScopeManager.Statistics.TensorStatistics.DisposedOutsideScopeCount} outside scopes");
+        _allocated = allocated;
     }
 }
 

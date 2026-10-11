@@ -54,7 +54,7 @@ internal sealed class Unpickler
     private readonly Stream _data;
     private readonly Func<object?, object?>? _persistentLoad;
     private readonly List<object?> _stack = [];
-    private readonly Stack<List<object?>> _marks = new();
+    private readonly Stack<int> _marks = new(); // the stack's height at each open MARK: O(1), not a copy of the stack
     private readonly Dictionary<long, object?> _memo = [];
     private byte[] _buffer = new byte[256];
     private long _pos;
@@ -87,7 +87,7 @@ internal sealed class Unpickler
                 case 0x80: Bytes(1); break; // PROTO
                 case (byte)'.': // STOP
                     return Pop();
-                case (byte)'(': _marks.Push(new List<object?>(_stack)); _stack.Clear(); break; // MARK
+                case (byte)'(': _marks.Push(_stack.Count); break; // MARK
                 case (byte)'N': Push(null); break;
                 case 0x88: Push(true); break; // NEWTRUE
                 case 0x89: Push(false); break; // NEWFALSE
@@ -97,7 +97,7 @@ internal sealed class Unpickler
                 case 0x8a: // LONG1: little-endian two's complement
                 {
                     var n = new BigInteger(Bytes(Bytes(1)[0]), isUnsigned: false, isBigEndian: false);
-                    Push(n >= long.MinValue && n <= long.MaxValue ? (long)n : n);
+                    Push(n >= long.MinValue && n <= long.MaxValue ? (object)(long)n : n); // without (object) the ternary is a BigInteger
                     break;
                 }
                 case (byte)'G': Push(BinaryPrimitives.ReadDoubleBigEndian(Bytes(8))); break; // BINFLOAT
@@ -169,31 +169,35 @@ internal sealed class Unpickler
     private long[] Longs(PyTuple t) =>
         t.Items.Select(x => x as long? ?? throw Error("tensor size/stride is not an int")).ToArray();
 
-    private object Key(object? key) => key ?? throw Error("dict key None is not supported");
+    // Only scalar keys: the converter names them with str(), and a nested tuple key would be hashed recursively.
+    private object Key(object? key) => key is string or long or BigInteger or bool or double ? key
+        : throw Error($"dict key of type {key?.GetType().Name ?? "None"} is not supported");
 
     private void Push(object? v) => _stack.Add(v);
 
+    /// <summary>Items above the innermost open MARK: those below it cannot be popped until it is closed, as in Python.</summary>
+    private int Available => _stack.Count - (_marks.Count > 0 ? _marks.Peek() : 0);
+
     private object? Pop()
     {
-        if (_stack.Count == 0)
+        if (Available == 0)
             throw Error("stack underflow");
         var v = _stack[^1];
         _stack.RemoveAt(_stack.Count - 1);
         return v;
     }
 
-    private object? Top() => _stack.Count > 0 ? _stack[^1] : throw Error("stack underflow");
+    private object? Top() => Available > 0 ? _stack[^1] : throw Error("stack underflow");
 
     private T Peek<T>() where T : class =>
-        _stack.Count > 0 && _stack[^1] is T t ? t : throw Error($"expected a {typeof(T).Name} on the stack");
+        Available > 0 && _stack[^1] is T t ? t : throw Error($"expected a {typeof(T).Name} on the stack");
 
     private List<object?> PopMark()
     {
-        if (!_marks.TryPop(out var outer))
+        if (!_marks.TryPop(out var start))
             throw Error("no MARK on the stack");
-        var items = new List<object?>(_stack);
-        _stack.Clear();
-        _stack.AddRange(outer);
+        var items = _stack.GetRange(start, _stack.Count - start);
+        _stack.RemoveRange(start, _stack.Count - start);
         return items;
     }
 

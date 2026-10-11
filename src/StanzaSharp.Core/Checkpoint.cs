@@ -25,6 +25,12 @@ internal sealed class Checkpoint
     /// Loads <c>basePath.json</c> and <c>basePath.safetensors</c> if they exist, else the original
     /// <c>basePath.pt</c>. A path ending in <c>.pt</c> loads that file.
     /// </summary>
+    /// <exception cref="InvalidDataException">
+    /// The file is malformed, truncated or hostile (also thrown by later tensor reads and lookups). Loading takes time,
+    /// memory and stack bounded by the file's size; nothing is instantiated by name.
+    /// </exception>
+    /// <exception cref="NotSupportedException">A well-formed big-endian .pt file.</exception>
+    /// <exception cref="IOException">The operating system's errors (a missing or unreadable file) pass through.</exception>
     public static Checkpoint Load(string basePath)
     {
         var pt = basePath.EndsWith(".pt", StringComparison.OrdinalIgnoreCase) ? basePath : basePath + ".pt";
@@ -33,9 +39,18 @@ internal sealed class Checkpoint
             var (root, tensors) = TorchCheckpoint.Load(pt);
             return new Checkpoint(root, tensors);
         }
-        using var stream = File.OpenRead(basePath + ".json");
-        var json = JsonNode.Parse(stream)
-            ?? throw new FormatException($"{basePath}.json is empty");
+        JsonNode json;
+        using (var stream = File.OpenRead(basePath + ".json"))
+        {
+            try
+            {
+                json = JsonNode.Parse(stream) ?? throw new InvalidDataException($"{basePath}.json is null");
+            }
+            catch (JsonException e)
+            {
+                throw new InvalidDataException($"{basePath}.json: {e.Message}", e);
+            }
+        }
         return new Checkpoint(json, SafeTensorFile.Load(basePath + ".safetensors"));
     }
 
@@ -51,23 +66,25 @@ internal sealed class Checkpoint
     /// </remarks>
     public static Dictionary<string, int> UnitToId(JsonNode? vocab)
     {
-        var map = vocab?["_unit2id"] ?? throw new ArgumentException("Not a vocab node: no _unit2id");
+        var map = (vocab as JsonObject)?["_unit2id"] ?? throw new InvalidDataException("Not a vocab node: no _unit2id");
         var buffer = new ArrayBufferWriter<byte>();
         using (var writer = new Utf8JsonWriter(buffer))
             map.WriteTo(writer);
         var reader = new Utf8JsonReader(buffer.WrittenSpan);
         if (!reader.Read() || reader.TokenType != JsonTokenType.StartObject)
-            throw new ArgumentException("_unit2id is not an object");
+            throw new InvalidDataException("_unit2id is not an object");
         var result = new Dictionary<string, int>();
         while (reader.Read() && reader.TokenType == JsonTokenType.PropertyName)
         {
             var key = reader.GetString()!;
             reader.Read();
-            result[key] = reader.GetInt32();
+            result[key] = reader.TokenType == JsonTokenType.Number && reader.TryGetInt32(out int id) ? id
+                : throw new InvalidDataException($"_unit2id['{key}'] is not an int");
         }
         return result;
     }
 
     private static string TensorKey(JsonNode? node) =>
-        node?["$tensor"]?.GetValue<string>() ?? throw new ArgumentException($"Not a $tensor node: {node?.ToJsonString()}");
+        node is JsonObject o && o["$tensor"] is JsonValue key && key.TryGetValue(out string? s) ? s
+            : throw new InvalidDataException($"Not a $tensor node: {node?.ToJsonString()}");
 }

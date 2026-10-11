@@ -8,6 +8,7 @@ namespace StanzaSharp.Tests;
 /// alive during the native call that reads it. Collections started by other threads while Process is inside libtorch
 /// can then free it mid-call. This runs Process while another thread collects and finalizes nonstop.
 /// </summary>
+[Trait("Backend", "TorchSharp")] // TorchSharp-only: not in a ready pull request's light golden run (ci.yml)
 public class GcPressureTests
 {
     [ModelTheory]
