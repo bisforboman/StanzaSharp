@@ -891,6 +891,23 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - `Gemm.Path` and `ManagedThreads.Count` are process-wide. Only `Pipeline.Load` (managed backend: the count) and tests
     in `ManagedKernelsCollection` (parallelization off, so other classes never see a switched path) may set them.
 
+## Code style
+
+StyleBro is on (user's decision, 2026-10-11): `StyleBro.Analyzers` 0.5.0-alpha.1 in Directory.Build.props (PrivateAssets,
+no package dependency), `EnforceCodeStyleInBuild`, and `GenerateDocumentationFile` in every project (IDE0005 needs it;
+outside src/ CS1591 is off). Fix findings with `stylebro-migrate format StanzaSharp.slnx` (`dotnet tool install
+--global StyleBro.Migrate --version 0.5.0-alpha.1`), not plain `dotnet format`, which also applies every other
+analyzer's fixes. CI's `build-test` builds with warnings as errors and runs `format --verify-no-changes`.
+- `.editorconfig`: `stylebro-migrate init`'s block (between its markers; `init --write` rewrites it), then our own
+  section, where each turned-off rule says why: BRO1001 (members stay in reading order), BRO1114/BRO1142 (grouped
+  declarations like `int rows, cols`), BRO1108 (lists wrap at 120 columns), BRO1601 (no `<inheritdoc/>` on internal
+  implementations), BRO1604 (property summaries are noun phrases). It also sets `end_of_line = lf` (0.5.0-alpha.1's init
+  doesn't; without it format writes CRLF on Windows), keeps one-line statements, and turns on IDE0005/IDE0051/IDE0052
+  so unused usings and private members fail the build.
+- The reformat commit is in `.git-blame-ignore-revs` (`git config blame.ignoreRevsFile .git-blame-ignore-revs`).
+- The SDK formatter puts the `)` of a tuple ending in a block lambda on its own line (`}` newline `);`, in
+  TorchCheckpoint); that is IDE0055, not StyleBro.
+
 ## Design decisions
 
 - Model the document as Document → Sentence → Token → Word from the start. Tokens come from the
