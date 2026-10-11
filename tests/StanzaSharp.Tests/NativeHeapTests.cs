@@ -1,5 +1,3 @@
-using Xunit;
-
 namespace StanzaSharp.Tests;
 
 [Trait("Backend", "Managed")]

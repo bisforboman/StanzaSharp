@@ -62,7 +62,7 @@ internal sealed class PosTagger : IDisposable
     }
 
     /// <summary>Sets Upos, Xpos and Feats on every word of the document.</summary>
-    /// <param name="charlms">If given, receives each sentence's charlm representations for the parser.</param>
+    /// <param name="charlms">If given, receives each sentence's charlm representations for the processors after the tagger.</param>
     public void Process(Document doc, CharlmCache? charlms = null, CancellationToken cancellationToken = default)
     {
         // Batched like Stanza's LengthLimitedBatchSampler: in document order, at most _batchSize sentences

@@ -1,9 +1,9 @@
 namespace StanzaSharp.Nn;
 
 /// <summary>
-/// Per-sentence charlm representations, kept by the tagger for the parser. Both run the same words
-/// through the same forward and backward charlms, which is most of their work, so the pipeline keeps
-/// one of these per document and each sentence goes through the charlms once.
+/// Per-sentence charlm representations, kept by the tagger for the processors after it (constituency, sentiment, NER,
+/// and depparse on the managed backend). They run the same words through the same forward and backward charlms, which
+/// is most of their work, so the pipeline keeps one of these per document and each sentence goes through the charlms once.
 /// </summary>
 /// <remarks>
 /// Each word costs 2 x 1024 floats (8 KB) with the English charlms, held until the cache is disposed.
@@ -14,7 +14,7 @@ namespace StanzaSharp.Nn;
 /// consumer reads the form its backend uses. Tensors read as arrays are copied per read (the caller owns the copy);
 /// arrays read as tensors are converted once, on the reader's device, and kept with the entry. A pipeline whose
 /// producer and consumers share a backend never converts. The tensor half (<c>TryAdd</c> and <c>TryGet</c> with
-/// tensors) is in StanzaSharp.Cuda; it stores an <see cref="ICharlmReps"/>.
+/// tensors) is in StanzaSharp.Cuda (Nn/TensorForms.cs); it stores an <see cref="ICharlmReps"/>.
 /// </para>
 /// </remarks>
 internal sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords) : IDisposable

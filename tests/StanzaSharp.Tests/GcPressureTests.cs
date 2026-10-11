@@ -1,6 +1,3 @@
-using StanzaSharp;
-using Xunit;
-
 namespace StanzaSharp.Tests;
 
 /// <summary>

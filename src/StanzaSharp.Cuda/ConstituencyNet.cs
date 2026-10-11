@@ -1,6 +1,5 @@
 using System.Buffers;
 using StanzaSharp.Nn;
-using StanzaSharp.Nn.Managed;
 using TorchSharp;
 using TorchSharp.Modules;
 using static TorchSharp.torch;
@@ -8,7 +7,7 @@ using F = TorchSharp.torch.nn.functional;
 
 namespace StanzaSharp.Constituency;
 
-/// <summary>The parser's network on TorchSharp (the code from before the seam).</summary>
+/// <summary>The parser's network on TorchSharp.</summary>
 internal sealed class ConstituencyNet : IConstituencyNet
 {
     /// <summary>A stack node's LSTM state: [layers, hidden] h and c, and the last layer's output [hidden] (views).</summary>

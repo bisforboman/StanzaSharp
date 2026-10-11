@@ -1,7 +1,5 @@
 using System.Buffers;
-using System.Text.Json.Nodes;
 using StanzaSharp.Nn;
-using StanzaSharp.Nn.Managed;
 using TorchSharp;
 using TorchSharp.Modules;
 using static TorchSharp.torch;
@@ -9,7 +7,7 @@ using F = TorchSharp.torch.nn.functional;
 
 namespace StanzaSharp.Lemma;
 
-/// <summary>seq2seq_model.py <c>Seq2SeqModel</c> (encode, decode) on TorchSharp (today's code).</summary>
+/// <summary>seq2seq_model.py <c>Seq2SeqModel</c> (encode, decode) on TorchSharp.</summary>
 internal sealed class LemmaNet : ILemmaNet
 {
     // Scalars kept alive for TorchSharp (see Nn.Scalars): ids, and the masking values the seq2seq model uses.
