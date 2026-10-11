@@ -99,10 +99,11 @@ public class ConcurrencyTests(Xunit.Abstractions.ITestOutputHelper output)
         {
             var (processor, ms) = steps[i];
             // Halfway through the processor: timed from the end of the one before it (its log message). A faster run
-            // can finish before the cancel arrives (CI runners vary a lot); then try again, cancelling sooner.
+            // can finish before the cancel arrives (CI runners vary a lot, and a load spike can inflate the one timed run);
+            // then try again, cancelling sooner and aiming at the fastest time seen for the processor.
             for (int attempt = 0, slow = 0; ;)
             {
-                Assert.True(attempt < 4, $"{processor}: every call finished before it was canceled");
+                Assert.True(attempt < 6, $"{processor}: every call finished before it was canceled");
                 using var cts = new CancellationTokenSource();
                 var latency = new Stopwatch();
                 cts.Token.Register(latency.Start);
@@ -126,6 +127,7 @@ public class ConcurrencyTests(Xunit.Abstractions.ITestOutputHelper output)
                 timings.OnStep = null;
                 if (e == null)
                 {
+                    ms = Math.Min(ms, timings.Steps.First(s => s.Processor == processor).Milliseconds);
                     attempt++;
                     continue;
                 }
