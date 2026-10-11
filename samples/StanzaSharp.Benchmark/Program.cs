@@ -11,7 +11,6 @@ using StanzaSharp.Pos;
 using StanzaSharp.Sentiment;
 using StanzaSharp.Tokenize;
 using TorchSharp;
-using static TorchSharp.torch;
 
 // Times each pipeline stage on a large text built from the golden corpora. The Python counterpart is
 // tools/benchmark.py; both build the same text and print the same report. See docs/performance.md.
