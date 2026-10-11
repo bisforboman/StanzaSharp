@@ -626,7 +626,6 @@ internal sealed unsafe class ManagedLstm
 /// </summary>
 internal sealed unsafe class ManagedCharacterModel
 {
-    public const int RootId = 3; // vocab.ROOT_ID: depparse's ROOT word is the single character id 3
     private const int UnkId = 1;
 
     private readonly Dictionary<string, int> _vocab;

@@ -1,6 +1,5 @@
 using System.Text.Json.Nodes;
 using StanzaSharp.Nn;
-using StanzaSharp.Nn.Managed;
 using TorchSharp;
 using TorchSharp.Modules;
 using static TorchSharp.torch;
@@ -93,7 +92,7 @@ internal sealed class DepparseNet : IDepparseNet
         if (_charModel != null)
         {
             // ROOT is a word of the single character id ROOT_ID.
-            long[] root = [ManagedCharacterModel.RootId];
+            long[] root = [DependencyParser.RootId];
             chars = [_transChar!.forward(_charModel.Forward(texts.Select(t => (IReadOnlyList<long[]>)t.Select(_charModel.CharIds).Prepend(root).ToList()).ToList()))];
         }
         else

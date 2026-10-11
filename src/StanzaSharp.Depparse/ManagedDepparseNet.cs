@@ -226,7 +226,7 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
                 for (int b = 0; b < size; b++)
                 {
                     for (int t = 0, k = offset[b]; k < offset[b + 1]; t++, k++)
-                        words[packedRow[k]] = t == 0 ? [ManagedCharacterModel.RootId] : _charModel.CharIds(batch.Texts[b][t - 1]);
+                        words[packedRow[k]] = t == 0 ? [DependencyParser.RootId] : _charModel.CharIds(batch.Texts[b][t - 1]);
                 }
 
                 int ldc = _transChar!.PaddedN;

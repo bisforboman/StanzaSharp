@@ -18,7 +18,7 @@ namespace StanzaSharp.Depparse;
 /// </summary>
 internal sealed class DependencyParser : IDisposable
 {
-    internal const int RootId = 3, VocabPrefixSize = 4; // vocab.ROOT_ID, VOCAB_PREFIX_SIZE
+    internal const int RootId = 3, VocabPrefixSize = 4; // vocab.ROOT_ID (in every vocab, the character model's too), VOCAB_PREFIX_SIZE
     private const int SeparateBatchLength = 150;       // depparse_processor.DEFAULT_SEPARATE_BATCH
 
     private readonly Pretrain _pretrain;
