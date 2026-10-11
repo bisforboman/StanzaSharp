@@ -1,5 +1,4 @@
 using StanzaSharp.Nn;
-using Xunit;
 
 namespace StanzaSharp.Tests;
 

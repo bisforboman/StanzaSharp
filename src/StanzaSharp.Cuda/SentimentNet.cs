@@ -1,6 +1,5 @@
 using System.Buffers;
 using StanzaSharp.Nn;
-using StanzaSharp.Nn.Managed;
 using TorchSharp;
 using TorchSharp.Modules;
 using static TorchSharp.torch;
@@ -9,7 +8,7 @@ using Filter = StanzaSharp.Sentiment.SentimentClassifier.Filter;
 
 namespace StanzaSharp.Sentiment;
 
-/// <summary>cnn_classifier.py <c>CNNClassifier.forward</c> on TorchSharp (today's code).</summary>
+/// <summary>cnn_classifier.py <c>CNNClassifier.forward</c> on TorchSharp.</summary>
 internal sealed class SentimentNet : ISentimentNet
 {
     private readonly Pretrain _pretrain;

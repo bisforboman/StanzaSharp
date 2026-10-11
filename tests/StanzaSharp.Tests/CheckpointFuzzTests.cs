@@ -137,8 +137,6 @@ public class CheckpointFuzzTests(ITestOutputHelper output)
         }
     }
 
-    private sealed record Target(string Name, string Source, string[] Companions);
-
     /// <summary>
     /// Fuzzes <paramref name="source"/> (a .pt, .json or .safetensors file): writes each mutant next to its unmutated
     /// <paramref name="companions"/> in a temp directory and loads it there.

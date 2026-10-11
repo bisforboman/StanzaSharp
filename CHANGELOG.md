@@ -32,6 +32,7 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 - README: guidance for very long texts, including what splitting a text into parts changes (sentiment labels).
 
 ### Fixed
+- `Pipeline.Load`'s error for a missing model directory now suggests `stanzasharp download` (the .NET tool) instead of the sample CLI.
 - `.pt` loading: an integer pickled as LONG1 that fits in 64 bits (such as a storage of 2^31 elements or more) was kept
   as a big integer, so such a checkpoint failed to load.
 

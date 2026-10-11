@@ -163,7 +163,7 @@ public sealed class Pipeline : IDisposable
     {
         options ??= new PipelineOptions();
         if (!Directory.Exists(modelDir))
-            throw new DirectoryNotFoundException($"Model directory not found: {modelDir} (download them with ModelDownloader.DownloadAsync or \"StanzaSharp.Cli download\")");
+            throw new DirectoryNotFoundException($"Model directory not found: {modelDir} (download them with ModelDownloader.DownloadAsync or \"stanzasharp download\")");
         var models = SelectModels(options.Package, options.Processors, addRequired: false, nameof(options));
         if (options.CharlmCache.IsEnabled && options.CharlmCache.MaxWords <= 0)
             throw new ArgumentOutOfRangeException(nameof(options), "CharlmCache.MaxWords must be positive; set IsEnabled = false to turn the cache off");
