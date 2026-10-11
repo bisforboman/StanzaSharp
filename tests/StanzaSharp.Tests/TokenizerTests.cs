@@ -9,7 +9,7 @@ public class TokenizerTests(ITestOutputHelper output, SharedPipelines pipelines)
 {
     // managed: Backend.Managed (issue #29), else TorchSharp. Every golden test runs on both.
     private static Tokenizer Load(bool managed) =>
-        Tokenizer.Load(Repo.Model("tokenize/combined_nocharlm"), backend: managed ? Backend.Managed : Backend.TorchSharp);
+        Tokenizer.Load(Repo.Model("tokenize/combined_nocharlm"), backend: Repo.Backend(managed));
 
     [ModelTheory]
     [InlineData(false)]
