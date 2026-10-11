@@ -6,8 +6,8 @@ namespace StanzaSharp.Depparse;
 
 /// <summary>
 /// Managed twin of <c>DepparseNet</c> (<see cref="Backend.Managed"/>). The input and the highway biLSTM work on
-/// the packed rows only. Each deep biaffine scorer runs in two steps: its <c>W1</c>/<c>W2</c> layers (all scorers in
-/// one GEMM), then T = in1·W_bilin per dependent (a GEMM) and T·in2 per word pair. Padding columns, which count in the
+/// the packed rows only. Each deep biaffine scorer runs in two steps: its <c>W1</c>/<c>W2</c> layers (one GEMM per
+/// scorer, one scorer's buffers at a time), then T = in1·W_bilin per dependent (a GEMM) and T·in2 per word pair. Padding columns, which count in the
 /// arc log-softmax, all see the same in2 (the LSTM output there is 0, so in2 = ReLU(W2's bias)); padding rows are not
 /// scored, since nothing reads them.
 /// </summary>
@@ -23,19 +23,25 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
     private readonly PackedMatrix? _transChar;
     private readonly float[] _wordEmb, _lemmaEmb, _uposEmb, _xposEmb;
     private readonly int _wordDim, _tagDim, _transformed, _inputSize, _biaff;
-    private readonly PackedMatrix _transPretrained, _hid;
-    private readonly float[] _hidBias;
+    private readonly PackedMatrix _transPretrained;
     private readonly ManagedHighwayLstm _lstm;
     private readonly Scorer _unlabeled, _deprel;
     private readonly Scorer? _linearization, _distance;
 
     /// <summary>
-    /// A DeepBiaffineScorer: T[i, q·Out + o] = Σ_p in1[i, p]·W[p, q, o] + W[hidden, q, o] (in1's appended 1), so that
-    /// score[i, j, o] = Σ_q T[i, q·Out + o]·in2[j, q] + T[i, hidden·Out + o] + Bias[o].
+    /// A DeepBiaffineScorer: in1 = ReLU(W1·h) and in2 = ReLU(W2·h) are one GEMM (<see cref="Hid"/>, in1 at columns
+    /// [0, hidden), in2 at [hidden, 2·hidden)); T[i, q·Out + o] = Σ_p in1[i, p]·W[p, q, o] + W[hidden, q, o] (in1's
+    /// appended 1), so that score[i, j, o] = Σ_q T[i, q·Out + o]·in2[j, q] + T[i, hidden·Out + o] + Bias[o].
     /// </summary>
+    /// <remarks>
+    /// Until 1.0.0 all scorers' W1/W2 were one GEMM [rows, 3200]; each scorer's 800 columns were whole 16-column panels
+    /// of it, and a GEMM column depends only on its panel, so per scorer the bits are the same at a quarter of the buffer.
+    /// </remarks>
     private sealed class Scorer
     {
-        public required int Out, Col1, Col2; // relations; in1's and in2's columns in the W1/W2 GEMM output
+        public required int Out;             // relations
+        public required PackedMatrix Hid;    // [2·hidden, LSTM output]: W1 then W2
+        public required float[] HidBias;     // [Hid.PaddedN]
         public required PackedMatrix W;      // [(hidden + 1)·Out, hidden]
         public required float[] WBias;       // [W.PaddedN]
         public required float[] Bias;        // [Out]
@@ -73,19 +79,20 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
             names.Add("linearization");
         if (config["distance"]!.GetValue<bool>())
             names.Add("distance");
-        // Every scorer's W1 and W2 read the LSTM output: one GEMM, scorer s at columns [2s·biaff, (2s + 2)·biaff).
-        _hid = new PackedMatrix(names.SelectMany(n => (float[])[.. T(n + ".W1.weight"), .. T(n + ".W2.weight")]).ToArray(), 2 * names.Count * _biaff, 2 * hidden);
-        _hidBias = new float[_hid.PaddedN];
-        names.SelectMany(n => (float[])[.. T(n + ".W1.bias"), .. T(n + ".W2.bias")]).ToArray().CopyTo(_hidBias, 0);
-        var scorers = names.Select((n, s) => NewScorer(ckpt, model, n, s)).ToArray();
+        var scorers = names.Select(n => NewScorer(ckpt, model, n, 2 * hidden)).ToArray();
         (_unlabeled, _deprel) = (scorers[0], scorers[1]);
         _linearization = names.IndexOf("linearization") is > 0 and var l ? scorers[l] : null;
         _distance = names.IndexOf("distance") is > 0 and var d ? scorers[d] : null;
     }
 
-    private Scorer NewScorer(Checkpoint ckpt, System.Text.Json.Nodes.JsonNode model, string name, int index)
+    private Scorer NewScorer(Checkpoint ckpt, System.Text.Json.Nodes.JsonNode model, string name, int input)
     {
         int b = _biaff, b1 = b + 1;
+        float[] T(string key) => ckpt.Tensor<float>(model[name + key]);
+        var hid = new PackedMatrix([.. T(".W1.weight"), .. T(".W2.weight")], 2 * b, input);
+        var hidBias = new float[hid.PaddedN];
+        T(".W1.bias").CopyTo(hidBias, 0);
+        T(".W2.bias").CopyTo(hidBias, b);
         var shape = ckpt.Shape(model[name + ".scorer.W_bilin.weight"]);
         if (!shape.SequenceEqual([b1, b1, shape[2]]))
             throw new InvalidOperationException($"{name}.scorer.W_bilin.weight has shape [{string.Join(", ", shape)}]");
@@ -103,16 +110,15 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
                     else
                         wBias[q * outs + o] = v;
                 }
-        int col1 = 2 * index * b;
         return new Scorer
         {
             Out = outs,
-            Col1 = col1,
-            Col2 = col1 + b,
+            Hid = hid,
+            HidBias = hidBias,
             W = new PackedMatrix(w, b1 * outs, b),
             WBias = wBias,
             Bias = ckpt.Tensor<float>(model[name + ".scorer.W_bilin.bias"]),
-            Pad2 = _hidBias.AsSpan(col1 + b, b).ToArray().Select(x => Math.Max(x, 0f)).ToArray(),
+            Pad2 = hidBias.AsSpan(b, b).ToArray().Select(x => Math.Max(x, 0f)).ToArray(),
         };
     }
 
@@ -139,32 +145,31 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
             for (int t = 0; t < lengths[b]; t++)
                 packedRow[offset[b] + t] = start[t] + rank[b];
 
-        int h2 = _lstm.OutputSize, ldH = _hid.PaddedN;
-        float[]? h = ArrayPool<float>.Shared.Rent(rows * h2);
-        float[]? hid = null;
+        var h = ArrayPool<float>.Shared.Rent(rows * _lstm.OutputSize);
         try
         {
             Encode(batch, offset, packedRow, h, ct);
             ct.ThrowIfCancellationRequested();
-            hid = ArrayPool<float>.Shared.Rent(rows * ldH);
-            fixed (float* ph = h, pd = hid, pb = _hidBias)
-                Gemm.Run(ph, rows, h2, _hid, pb, pd, ldH, ct);
-            ArrayPool<float>.Shared.Return(h);
-            h = null;
-            for (long n = 0, end = (long)rows * ldH; n < end; n++)
-                hid[n] = Math.Max(hid[n], 0f);
-
-            var arcs = Arcs(hid, size, width, lengths, offset, ct);
-            var (labels, scores) = Labels(hid, size, width, lengths, offset, labelScores, ct);
+            var arcs = Arcs(h, size, width, lengths, offset, ct);
+            var (labels, scores) = Labels(h, size, width, lengths, offset, labelScores, ct);
             return new(width, _deprel.Out, arcs, labels, scores);
         }
         finally
         {
-            if (h != null)
-                ArrayPool<float>.Shared.Return(h);
-            if (hid != null)
-                ArrayPool<float>.Shared.Return(hid);
+            ArrayPool<float>.Shared.Return(h);
         }
+    }
+
+    /// <summary>A scorer's in1/in2 for every row: ReLU(h·[W1; W2]ᵀ + b), [rows, Hid.PaddedN], rented.</summary>
+    private float[] Hidden(Scorer scorer, float[] h, int rows, CancellationToken ct)
+    {
+        int ld = scorer.Hid.PaddedN;
+        var hid = ArrayPool<float>.Shared.Rent(rows * ld);
+        fixed (float* ph = h, pd = hid, pb = scorer.HidBias)
+            Gemm.Run(ph, rows, _lstm.OutputSize, scorer.Hid, pb, pd, ld, ct);
+        for (long n = 0, end = (long)rows * ld; n < end; n++)
+            hid[n] = Math.Max(hid[n], 0f);
+        return hid;
     }
 
     /// <summary>The input rows and the highway biLSTM: <paramref name="output"/> gets [rows, 2·hidden] in sentence order.</summary>
@@ -269,67 +274,78 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
     /// <summary>
     /// The unlabeled, linearization and distance scores of each real row against every column, combined as in
     /// GraphParser.forward_scores, then the log-softmax over the padded width. Pair sums and the combination are in double.
+    /// One scorer at a time (its in1/in2 and T, then its term of every pair), so only one scorer's buffers are live.
     /// </summary>
-    private float[] Arcs(float[] hid, int size, int width, long[] lengths, int[] offset, CancellationToken ct)
+    private float[] Arcs(float[] h, int size, int width, long[] lengths, int[] offset, CancellationToken ct)
     {
-        int rows = offset[size], ldH = _hid.PaddedN, b = _biaff;
-        var scorers = new[] { _unlabeled, _linearization, _distance };
-        var t = scorers.Select(s => s == null ? null : ArrayPool<float>.Shared.Rent(rows * s.W.PaddedN)).ToArray();
+        int rows = offset[size], b = _biaff;
         var result = new float[size * width * width];
         var sentenceOf = new int[rows];
         for (int s = 0; s < size; s++)
             Array.Fill(sentenceOf, s, offset[s], offset[s + 1] - offset[s]);
+        var v = ArrayPool<double>.Shared.Rent(rows * width);
         try
         {
-            fixed (float* pd = hid)
+            foreach (var (scorer, term) in new[] { (_unlabeled, 0), (_linearization, 1), (_distance, 2) })
             {
-                for (int s = 0; s < scorers.Length; s++)
-                    if (scorers[s] is { } scorer)
-                        fixed (float* pt = t[s], pb = scorer.WBias)
-                            Gemm.Run(pd + scorer.Col1, rows, ldH, scorer.W, pb, pt, scorer.W.PaddedN, ct);
-                nint hidBase = (nint)pd;
-                ManagedThreads.For(rows, k =>
+                if (scorer == null)
+                    continue;
+                int ldH = scorer.Hid.PaddedN, ldT = scorer.W.PaddedN;
+                var hid = Hidden(scorer, h, rows, ct);
+                var t = ArrayPool<float>.Shared.Rent(rows * ldT);
+                try
                 {
-                    ct.ThrowIfCancellationRequested();
-                    int sent = sentenceOf[k], i = k - offset[sent], n = (int)lengths[sent];
-                    Span<double> v = width <= 512 ? stackalloc double[width] : new double[width];
-                    for (int s = 0; s < scorers.Length; s++)
+                    fixed (float* pd = hid, pt = t, pb = scorer.WBias)
                     {
-                        if (scorers[s] is not { } scorer)
-                            continue;
-                        var tRow = t[s].AsSpan(k * scorer.W.PaddedN, b + 1);
-                        double constant = tRow[b] + (double)scorer.Bias[0];
-                        for (int j = 0; j < width; j++)
+                        Gemm.Run(pd, rows, ldH, scorer.W, pb, pt, ldT, ct);
+                        nint hidBase = (nint)pd, tBase = (nint)pt;
+                        ManagedThreads.For(rows, k =>
                         {
-                            var in2 = j < n ? new ReadOnlySpan<float>((float*)hidBase + (long)(offset[sent] + j) * ldH + scorer.Col2, b) : scorer.Pad2;
-                            double score = Dot(tRow, in2) + constant;
-                            int offsetJ = j - i;
-                            v[j] = s switch
+                            ct.ThrowIfCancellationRequested();
+                            int sent = sentenceOf[k], i = k - offset[sent], n = (int)lengths[sent];
+                            var tRow = new ReadOnlySpan<float>((float*)tBase + (long)k * ldT, b + 1);
+                            var vRow = v.AsSpan(k * width, width);
+                            double constant = tRow[b] + (double)scorer.Bias[0];
+                            for (int j = 0; j < width; j++)
                             {
-                                0 => score,
-                                1 => v[j] + LogSigmoid(score * Math.Sign(offsetJ)), // linearization
-                                _ => v[j] - Math.Log(Square(Math.Abs(offsetJ) - (1 + Softplus(score))) / 2 + 1), // distance
-                            };
-                        }
+                                var in2 = j < n ? new ReadOnlySpan<float>((float*)hidBase + (long)(offset[sent] + j) * ldH + b, b) : scorer.Pad2;
+                                double score = Dot(tRow, in2) + constant;
+                                int offsetJ = j - i;
+                                vRow[j] = term switch
+                                {
+                                    0 => score,
+                                    1 => vRow[j] + LogSigmoid(score * Math.Sign(offsetJ)), // linearization
+                                    _ => vRow[j] - Math.Log(Square(Math.Abs(offsetJ) - (1 + Softplus(score))) / 2 + 1), // distance
+                                };
+                            }
+                        });
                     }
-                    v[i] = double.NegativeInfinity;
-                    double max = double.NegativeInfinity, sum = 0;
-                    foreach (var x in v)
-                        max = Math.Max(max, x);
-                    foreach (var x in v)
-                        sum += Math.Exp(x - max);
-                    double logSum = max + Math.Log(sum);
-                    var o = result.AsSpan((sent * width + i) * width, width);
-                    for (int j = 0; j < width; j++)
-                        o[j] = (float)(v[j] - logSum);
-                });
+                }
+                finally
+                {
+                    ArrayPool<float>.Shared.Return(hid);
+                    ArrayPool<float>.Shared.Return(t);
+                }
             }
+            ManagedThreads.For(rows, k =>
+            {
+                int sent = sentenceOf[k], i = k - offset[sent];
+                var vRow = v.AsSpan(k * width, width);
+                vRow[i] = double.NegativeInfinity;
+                double max = double.NegativeInfinity, sum = 0;
+                foreach (var x in vRow)
+                    max = Math.Max(max, x);
+                foreach (var x in vRow)
+                    sum += Math.Exp(x - max);
+                double logSum = max + Math.Log(sum);
+                var o = result.AsSpan((sent * width + i) * width, width);
+                for (int j = 0; j < width; j++)
+                    o[j] = (float)(vRow[j] - logSum);
+            });
         }
         finally
         {
-            foreach (var a in t)
-                if (a != null)
-                    ArrayPool<float>.Shared.Return(a);
+            ArrayPool<double>.Shared.Return(v);
         }
         return result;
     }
@@ -363,14 +379,15 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
     /// dependent i, its T row repacked as a [hidden, relations] weight panel and every head j's in2 through the GEMM
     /// micro-kernel. Returns the argmax relations and, if asked for, the scores.
     /// </summary>
-    private (int[] Labels, float[]? Scores) Labels(float[] hid, int size, int width, long[] lengths, int[] offset, bool keepScores, CancellationToken ct)
+    private (int[] Labels, float[]? Scores) Labels(float[] h, int size, int width, long[] lengths, int[] offset, bool keepScores, CancellationToken ct)
     {
         var scorer = _deprel;
-        int outs = scorer.Out, b = _biaff, ldT = scorer.W.PaddedN, ldH = _hid.PaddedN;
+        int outs = scorer.Out, b = _biaff, ldT = scorer.W.PaddedN, ldH = scorer.Hid.PaddedN;
         int panels = (outs + PackedMatrix.NR - 1) / PackedMatrix.NR, padded = panels * PackedMatrix.NR;
         var labels = new int[size * width * width];
         var scores = keepScores ? new float[size * width * width * outs] : null;
         int maxRows = Math.Max(ChunkFloats / ldT, (int)lengths.Max());
+        var hid = Hidden(scorer, h, offset[size], ct);
         var t = ArrayPool<float>.Shared.Rent(Math.Min(maxRows, offset[size]) * ldT);
         try
         {
@@ -384,7 +401,7 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
                     {
                     }
                     int k0 = offset[s0], chunkRows = offset[s1] - k0, first = s0;
-                    Gemm.Run(pd + (long)k0 * ldH + scorer.Col1, chunkRows, ldH, scorer.W, pb, pt, ldT, ct);
+                    Gemm.Run(pd + (long)k0 * ldH, chunkRows, ldH, scorer.W, pb, pt, ldT, ct);
                     ManagedThreads.For(chunkRows, task =>
                     {
                         ct.ThrowIfCancellationRequested();
@@ -416,7 +433,7 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
                                 {
                                     int mr = Math.Min(Gemm.MR, n - j0);
                                     for (int r = 0; r < Gemm.MR; r++)
-                                        aRows[r] = (float*)hidBase + (long)(offset[sent] + j0 + Math.Min(r, mr - 1)) * ldH + scorer.Col2;
+                                        aRows[r] = (float*)hidBase + (long)(offset[sent] + j0 + Math.Min(r, mr - 1)) * ldH + b;
                                     for (int p = 0; p < panels; p++)
                                     {
                                         for (int r = 0; r < Gemm.MR; r++)
@@ -447,6 +464,7 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
         }
         finally
         {
+            ArrayPool<float>.Shared.Return(hid);
             ArrayPool<float>.Shared.Return(t);
         }
         return (labels, scores);

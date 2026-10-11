@@ -113,15 +113,18 @@ public class OptionsTests
             Processor.Tokenize, Processor.Mwt, Processor.Pos, Processor.Lemma, Processor.Constituency, Processor.Depparse, Processor.Sentiment, Processor.Ner));
     }
 
-    private sealed class ListLogger : ILogger
+    internal sealed class ListLogger : ILogger
     {
         public List<string> Lines { get; } = [];
+        public Action<string>? OnLine { get; init; }
         public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
         public bool IsEnabled(LogLevel logLevel) => true;
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
+            var line = $"{logLevel}: {formatter(state, exception)}";
             lock (Lines)
-                Lines.Add($"{logLevel}: {formatter(state, exception)}");
+                Lines.Add(line);
+            OnLine?.Invoke(line);
         }
     }
 }
@@ -158,18 +161,28 @@ public class ManagedThreadsOptionTests
         Assert.Throws<ArgumentOutOfRangeException>(() =>
             Pipeline.Load(Repo.Models, new PipelineOptions { Processors = Processor.Tokenize, MaxConcurrentCalls = 0 }));
 
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos", MaxConcurrentCalls = 1 });
-        var corpus = File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt"));
-        var big = string.Join("\n\n", Enumerable.Repeat(corpus, 20));
+        // The holder's call stops in its first log message (inside the call, so it holds the only slot) until released.
+        using var holding = new ManualResetEventSlim();
+        using var release = new ManualResetEventSlim();
+        int armed = 0;
+        var logger = new OptionsTests.ListLogger { OnLine = _ => { if (Interlocked.Exchange(ref armed, 0) == 1) { holding.Set(); release.Wait(); } } };
+        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt", MaxConcurrentCalls = 1, Logger = logger });
         var expected = Conllu.Write(nlp.Process("Hi there."));
 
-        // A long call holds the only slot; a short call then waits for it, so its token cancels the wait.
-        // (Without the limit the short call would finish in milliseconds.)
-        var holder = Task.Run(() => nlp.Process(big));
-        Thread.Sleep(300);
-        Assert.False(holder.IsCompleted, "the long call should still be running");
-        using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(200));
-        Assert.Throws<OperationCanceledException>(() => nlp.Process("Hi there.", cts.Token));
+        // A call holds the only slot; a short call then waits for it, so its token cancels the wait.
+        // (Without the limit the short call would finish.)
+        armed = 1;
+        var holder = Task.Run(() => nlp.Process("Hold on."));
+        try
+        {
+            Assert.True(holding.Wait(TimeSpan.FromMinutes(1)), "the holding call never logged");
+            using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(200));
+            Assert.Throws<OperationCanceledException>(() => nlp.Process("Hi there.", cts.Token));
+        }
+        finally
+        {
+            release.Set();
+        }
 
         holder.Wait();
         Assert.Equal(expected, Conllu.Write(nlp.Process("Hi there.")));

@@ -328,7 +328,10 @@ reads the tagger's cached charlm outputs for sentences without MWTs.
   `DependencyParser.Load` builds `DepparseNet` (today's code, moved unchanged); `LoadManaged` builds `ManagedDepparseNet`.
 - **Managed net:** the input rows (trans_pretrained GEMM, word, lemma, UPOS+XPOS twice, then the charlms over "\n" +
   the words, or `ManagedCharacterModel` with ROOT = char id 3 + `trans_char`) are built at their packed positions and go
-  through `ManagedHighwayLstm`; nothing is padded. The W1/W2 layers of all four deep biaffine scorers are one GEMM.
+  through `ManagedHighwayLstm`; nothing is padded. Each deep biaffine scorer's W1/W2 is one GEMM [rows, 800], computed
+  just before the scorer runs; the arc scorers run one after another, so one scorer's buffers are live at a time (until
+  1.0.0 all four were one [rows, 3200] GEMM; the same bits, since each scorer's columns were whole panels; see
+  performance.md, round 9).
   - **Biaffine scorers in two steps:** T = in1·W_bilin per dependent (a GEMM, with in1's appended 1 folded into the
     bias), then T·in2 per word pair. Padding columns all see the same in2, ReLU(W2's bias), because the LSTM output there
     is 0; so the arc log-softmax runs over exactly TorchSharp's padded width without scoring padding rows, which nothing reads.
@@ -354,6 +357,7 @@ reads the tagger's cached charlm outputs for sentences without MWTs.
   2,533 MB (TorchSharp) → 2,978 MB (managed), against 3,132 MB with only tokenize, mwt, pos and ner managed (the extra
   over TorchSharp is the pos/ner one described there). `--memory 6000` (one Process call, two rounds): TorchSharp
   4,367 / 3,748 MB, managed 3,833 / 3,837 MB (pos and ner managed only: 4,131 / 4,136 MB), 24.0 → 14.4 s.
+  Round 9 (performance.md) cut the 5-processor `--memory` peak by another 60–70 MB.
 
 ### sentiment
 

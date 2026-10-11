@@ -8,7 +8,7 @@
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>stanzasharp</ToolCommandName>
     <PackageId>StanzaSharp.Tool</PackageId>
-    <Description>The stanzasharp command: downloads Stanza's English models for StanzaSharp, checked against their MD5s, e.g. in a Dockerfile or CI. "stanzasharp download DIR [--package default_fast] [--processors tokenize,mwt,pos]". "stanzasharp compare FILE" runs Python Stanza and StanzaSharp on your own text and shows whether their output is identical. Needs no native libtorch.</Description>
+    <Description>The stanzasharp command: downloads Stanza's English models for StanzaSharp, checked against their MD5s, e.g. in a Dockerfile or CI. "stanzasharp download DIR [--package default_fast] [--processors tokenize,mwt,pos]". "stanzasharp compare FILE" runs Python Stanza and StanzaSharp on your own text and shows whether their output is identical; "stanzasharp benchmark" measures both on your machine. Needs no native libtorch.</Description>
     <PackageTags>nlp;stanza;models;download;dotnet-tool</PackageTags>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -32,5 +32,8 @@
     <!-- compare: its Python half, and the English entry of Stanza 1.15.0's resources.json (Apache 2.0, see NOTICE). -->
     <EmbeddedResource Include="compare.py" LogicalName="compare.py" />
     <EmbeddedResource Include="stanza_resources_en.json" LogicalName="stanza_resources_en.json" />
+    <!-- benchmark: its Python half and its text, the golden texts samples/StanzaSharp.Benchmark uses (our own, ~15 KB). -->
+    <EmbeddedResource Include="benchmark.py" LogicalName="benchmark.py" />
+    <EmbeddedResource Include="..\..\tests\golden\validation.txt;..\..\tests\golden\corpus.txt;..\..\tests\golden\tokenize_stress.txt" LogicalName="benchmark/%(Filename)%(Extension)" />
   </ItemGroup>
 </Project>

@@ -35,31 +35,18 @@ internal static class CompareCommand
             return Fail($"No input file given\n\n{usage}");
         if (!File.Exists(file))
             return Fail($"Input file not found: {file}");
-        if (!Directory.Exists(models))
-            return Fail($"Model directory not found: {models}. Download the models with: stanzasharp download {models} --package {package}");
-        // Stanza looks for <dir>/en/<processor>/<name>.pt, so the folder holding the processors must be named en.
-        models = Path.GetFullPath(models).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-        if (Path.GetFileName(models) != "en")
-            return Fail($"Python Stanza reads English models from a folder named en, not {models}. " +
-                "Download them into one, e.g. stanzasharp download models/stanza/en");
-
         string list;
-        HashSet<string> expectedFiles;
         try
         {
-            // Both sides get the full list, with the processors the requested ones require (Stanza adds them itself).
-            var selected = Pipeline.SelectModels(package, processors, addRequired: true, "--processors");
-            list = string.Join(",", Pipeline.AllProcessors.Split(',').Where(selected.ContainsKey));
-            expectedFiles = ModelDownloader.FilesFor(list, package).Select(f => f.Path).ToHashSet();
+            list = ProcessorList(package, processors);
         }
         catch (ArgumentException e)
         {
             return Fail(e.Message);
         }
-        var missing = expectedFiles.Where(f => !File.Exists(Path.Combine(models, f))).Order().ToList();
-        if (missing.Count > 0)
-            return Fail($"Missing in {models}: {string.Join(", ", missing)}. Python Stanza needs Stanza's .pt files; download them with: " +
-                $"stanzasharp download {models} --package {package}");
+        if (StanzaModelsProblem(ref models, package, list) is { } problem)
+            return Fail(problem);
+        var expectedFiles = ModelDownloader.FilesFor(list, package).Select(f => f.Path).ToHashSet();
 
         // Both sides get this string: StanzaSharp directly, Stanza as UTF-8 bytes it decodes again.
         var text = File.ReadAllText(file);
@@ -134,12 +121,7 @@ internal static class CompareCommand
         var dir = Directory.CreateTempSubdirectory("stanzasharp-compare-");
         try
         {
-            foreach (var name in new[] { "compare.py", "stanza_resources_en.json" })
-            {
-                using var resource = typeof(CompareCommand).Assembly.GetManifestResourceStream(name)!;
-                using var target = File.Create(Path.Combine(dir.FullName, name));
-                resource.CopyTo(target);
-            }
+            WriteResources(dir.FullName, "compare.py", "stanza_resources_en.json");
             var input = Path.Combine(dir.FullName, "input.txt");
             var result = Path.Combine(dir.FullName, "result.json");
             File.WriteAllText(input, text, new UTF8Encoding(false));
@@ -180,6 +162,47 @@ internal static class CompareCommand
         finally
         {
             dir.Delete(recursive: true);
+        }
+    }
+
+    /// <summary>
+    /// The processors both sides run, in Stanza's order: the requested ones (default: the package's) plus those they
+    /// require, as Stanza adds them itself. Throws <see cref="ArgumentException"/> for an unknown package or processor.
+    /// </summary>
+    internal static string ProcessorList(string package, string? processors)
+    {
+        var selected = Pipeline.SelectModels(package, processors, addRequired: true, "--processors");
+        return string.Join(",", Pipeline.AllProcessors.Split(',').Where(selected.ContainsKey));
+    }
+
+    /// <summary>
+    /// Why Python Stanza can't load <paramref name="list"/> from <paramref name="models"/> (made a full path), or null:
+    /// it needs Stanza's .pt files in a folder named en.
+    /// </summary>
+    internal static string? StanzaModelsProblem(ref string models, string package, string list)
+    {
+        if (!Directory.Exists(models))
+            return $"Model directory not found: {models}. Download the models with: stanzasharp download {models} --package {package}";
+        // Stanza looks for <dir>/en/<processor>/<name>.pt, so the folder holding the processors must be named en.
+        models = Path.GetFullPath(models).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        if (Path.GetFileName(models) != "en")
+            return $"Python Stanza reads English models from a folder named en, not {models}. " +
+                "Download them into one, e.g. stanzasharp download models/stanza/en";
+        var dir = models;
+        var missing = ModelDownloader.FilesFor(list, package).Select(f => f.Path).Where(f => !File.Exists(Path.Combine(dir, f))).Order().ToList();
+        return missing.Count == 0 ? null
+            : $"Missing in {models}: {string.Join(", ", missing)}. Python Stanza needs Stanza's .pt files; download them with: " +
+              $"stanzasharp download {models} --package {package}";
+    }
+
+    /// <summary>Writes the tool's embedded files <paramref name="names"/> into <paramref name="dir"/>.</summary>
+    internal static void WriteResources(string dir, params string[] names)
+    {
+        foreach (var name in names)
+        {
+            using var resource = typeof(CompareCommand).Assembly.GetManifestResourceStream(name)!;
+            using var target = File.Create(Path.Combine(dir, name));
+            resource.CopyTo(target);
         }
     }
 
