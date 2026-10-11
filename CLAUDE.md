@@ -610,8 +610,10 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     assemblies, the tests and the benchmark. Don't add per-project `InternalsVisibleTo`.
   - New types default to `internal`. Making one public is an API decision for the user.
   - `src/*` builds docs with CS1591 as an error, so every public member needs an XML doc.
-  - `CHANGELOG.md` gets an entry per user-visible change under "Unreleased". A release moves it under
-    the version.
+  - Each user-visible change adds one file, `changes/<section>/<slug>.md` (section: added, changed, deprecated, removed,
+    fixed, security), holding its CHANGELOG bullet (user's decision, 2026-10-11: CHANGELOG.md's "Unreleased" list
+    conflicted between parallel PRs). Never edit CHANGELOG.md for an unreleased change. `changes/README.md` has the format;
+    `python tools/changelog.py preview` shows the next section.
 - `Pipeline.Load(dir, PipelineOptions?)` (user's decision, 2026-10-06: an options object rather than more
   optional parameters).
   - `PipelineOptions` holds `Processors`, `Backend` and `CharlmCache { IsEnabled = true, MaxWords = 32_768 }`, among others.
@@ -716,7 +718,8 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   CudaBackend.Cpu` and checking the parse; `-Managed`, only StanzaSharp, running ManagedCheck's Program.cs and failing
   if anything of TorchSharp or libtorch is in the output. It removes that version from the NuGet cache afterwards.
 - Releases start from the CHANGELOG (user's decision, 2026-10-07; before, a pushed tag started them, and hand-made
-  tags twice landed wrong). Merging a PR "CHANGELOG: x.y.z" (Unreleased moved under `## [x.y.z] - date`) runs
+  tags twice landed wrong). Merging a PR "CHANGELOG: x.y.z" (made by `python tools/changelog.py release x.y.z`, which writes
+  `## [x.y.z] - date` from `changes/` and deletes those files) runs
   `.github/workflows/release.yml` (push to main touching CHANGELOG.md): its `version` job reads the first version
   heading and stops if tag `vx.y.z` exists; otherwise it runs all of ci.yml, packs that version, pushes via NuGet
   Trusted Publishing (`NuGet/login@v1`, repo variable `NUGET_USER`), and only then creates the tag on that commit

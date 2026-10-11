@@ -1,0 +1,1 @@
+- `Pipeline.Load`'s error for a missing model directory now suggests `stanzasharp download` (the .NET tool) instead of the sample CLI.
