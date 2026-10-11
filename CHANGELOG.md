@@ -26,6 +26,9 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
   arrays), and NER frees the charlm outputs the tagger kept for it (up to 256 MB) as it goes. One call on 670,000
   words peaked at 3.0 GB instead of 3.6 GB. Outputs are unchanged. `Tree.Children` of a parsed tree is now an array
   (still an `IReadOnlyList<Tree>`).
+- Less memory with sentiment (managed backend): its LSTM and convolutions no longer hold whole-batch buffers for the
+  padded rows, so one call on 6,761 words peaks at 1.3 GB instead of 2.3 GB with all eight processors (1.1 GB instead of
+  2.0 GB with `default_fast`). Outputs are unchanged, bit for bit.
 - README: guidance for very long texts, including what splitting a text into parts changes (sentiment labels).
 
 ### Fixed

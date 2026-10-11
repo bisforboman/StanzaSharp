@@ -154,6 +154,21 @@ internal static unsafe class Gemm
     }
 
     /// <summary>
+    /// Rows [<paramref name="r0"/>, <paramref name="r1"/>) of <c>Run(a, m, ...)</c>, with the bits that call gives them, so
+    /// a big GEMM can be computed a few rows at a time. Every kernel but the single-row one gives a row the same
+    /// arithmetic, and <c>Run</c> uses that one only for row m - 1 when m % <see cref="MR"/> is 1 (MC is a multiple of MR).
+    /// </summary>
+    /// <param name="a">Row r0 of A.</param>
+    /// <param name="c">Row r0 of C.</param>
+    public static void RunRows(float* a, int r0, int r1, int m, int lda, PackedMatrix w, float* bias, float* c, int ldc, CancellationToken ct = default)
+    {
+        int end = r1 == m && m % MR == 1 ? r1 - 1 : r1;
+        Run(a, end - r0, lda, w, bias, c, ldc, ct, rowInvariant: true);
+        if (end < r1)
+            Run(a + (long)(end - r0) * lda, 1, lda, w, bias, c + (long)(end - r0) * ldc, ldc, ct);
+    }
+
+    /// <summary>
     /// out[r][0..16) = init[r][0..16) + Σ_k a[r][k]·panel[k][0..16) for the first mr ≤ 6 rows, on <see cref="Path"/>.
     /// Smaller kernels serve 1 to 3 rows (a padded 6-row block wastes up to 6× the work). Rows past mr must repeat
     /// another row's inputs; the SIMD kernels write them too, so their outputs must be scratch. With

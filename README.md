@@ -255,8 +255,8 @@ for `default_fast`), and each call in flight adds
   `CharlmCache` changes the peak by less than 50 MB up to its 32k-word cap (turning it off costs 30–40% more time),
   and neither the GC mode nor converting the models changes it much. Measurements: [docs/performance.md](docs/performance.md#results-round-3-memory-of-a-short-lived-process).
 - **Very long texts** (a book in one call). The peak grows slowly with the length of the text: all eight processors on
-  the managed backend peak at about 2.0 GB for 20,000 words, 2.3 GB for 200,000 and 3.0 GB for 670,000 (8 threads,
-  Windows). Most of it does not depend on the length (the models, and the scratch buffers of the largest batches,
+  the managed backend peak at about 1.4 GB for 20,000 words (8 threads, Windows; before sentiment's buffers shrank,
+  docs/performance.md round 10, they peaked at 2.0 GB for 20,000, 2.3 GB for 200,000 and 3.0 GB for 670,000). Most of it does not depend on the length (the models, and the scratch buffers of the largest batches,
   which are at most 5,000 words); what grows is the returned `Document` itself, about 0.5 KB per word (310 MB for
   670,000 words), plus garbage the .NET GC lets build up on a larger heap. That garbage is not needed: with the GC heap
   capped (`DOTNET_GCHeapHardLimit`, or a container's memory limit, of which the GC takes 75%) 670,000 words ran in a
@@ -269,7 +269,7 @@ for `default_fast`), and each call in flight adds
 - **Memory between calls** (long-running services). On the managed backend (the default) everything lives on the
   .NET GC heap: the models (about 370 MB for `tokenize,mwt,pos,constituency`, 660 MB for all eight) and the scratch
   buffers of the call's largest batches, which `ArrayPool<T>.Shared` keeps for the next call. So the working set
-  stays near the call's peak (Windows, 6,761 words: 0.7 GB with those four processors, 2.4 GB with all eight; the same
+  stays near the call's peak (Windows, 6,761 words: 0.7 GB with those four processors, 1.3 GB with all eight; the same
   on Linux), and later calls reuse it. .NET gives pooled arrays back only at a gen2 GC at least a minute after their
   last use, and keeps freed memory committed until an aggressive GC, so to return it when a service goes idle, call
   `GC.Collect(2, GCCollectionMode.Aggressive, blocking: true, compacting: true)` a minute or more after the last call

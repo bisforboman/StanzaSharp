@@ -97,36 +97,41 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
     public float[] Forward(IReadOnlyList<IReadOnlyList<string>> batch, long[] ids, long[] extraIds, int width,
         CharlmCache? charlms, IReadOnlyList<Sentence?>? cacheKeys, CancellationToken ct)
     {
-        int n = batch.Count, rows = n * width, h2 = _lstm.OutputSize, inSize = _inSize;
-        var x = ArrayPool<float>.Shared.Rent(rows * inSize); // time-major: token (i, t) is row t·n + i
-        var y = ArrayPool<float>.Shared.Rent(rows * h2);
-        var z = ArrayPool<float>.Shared.Rent(rows * h2);     // the same, batch-major: row i·width + t
+        int n = batch.Count, rows = n * width, h2 = _lstm.OutputSize, inSize = _inSize, dim = _charlmForward.HiddenDim;
+        var z = ArrayPool<float>.Shared.Rent(rows * h2); // the LSTM output, batch-major: row i·width + t
         var pooled = new float[n * _pooledSize];
+        var rented = new List<float[]>();
         try
         {
-            // Words: the pretrain vector (unk's for unknown words; PAD's row for padding) + the delta embedding.
-            var vectors = _pretrain.CpuVectors();
-            for (int i = 0; i < n; i++)
-                for (int t = 0; t < width; t++)
+            var reps = CharlmFeatures(batch, charlms, cacheKeys, rented, ct);
+
+            // The input rows (time-major: token (i, t) is row t·n + i), a chunk at a time: the pretrain vector (unk's
+            // for unknown words; PAD's row for padding) + the delta embedding, then the charlms (zeros for padding, as
+            // build_char_reps pads).
+            void Fill(int r0, int r1, float* x)
+            {
+                var vectors = _pretrain.CpuVectors();
+                for (int r = r0; r < r1; r++)
                 {
-                    int k = i * width + t;
-                    var dst = x.AsSpan((t * n + i) * inSize, inSize);
+                    int i = r % n, t = r / n, k = i * width + t;
+                    var dst = new Span<float>(x + (long)(r - r0) * inSize, inSize);
                     ReadOnlySpan<float> pre = ids[k] == _pretrain.UnkId ? _unk : vectors.Slice((int)ids[k] * _dim, _dim);
                     var delta = _extraEmb.AsSpan((int)extraIds[k] * _dim, _dim);
                     for (int d = 0; d < _dim; d++)
                         dst[d] = pre[d] + delta[d];
-                    if (t >= batch[i].Count)
-                        dst[_dim..].Clear(); // build_char_reps pads with zeros
+                    if (t < batch[i].Count)
+                    {
+                        var (forward, backward, offset) = reps[i];
+                        forward.AsSpan((offset + t) * dim, dim).CopyTo(dst[_dim..]);
+                        backward.AsSpan((offset + t) * dim, dim).CopyTo(dst[(_dim + dim)..]);
+                    }
+                    else
+                        dst[_dim..].Clear();
                 }
-            CharlmFeatures(batch, charlms, cacheKeys, x, n, ct);
+            }
 
             // The unpacked LSTM: every row runs the full width.
-            var batchSizes = new int[width];
-            Array.Fill(batchSizes, n);
-            _lstm.ForwardPacked(x, inSize, batchSizes, y, ct);
-            for (int t = 0; t < width; t++)
-                for (int i = 0; i < n; i++)
-                    y.AsSpan((t * n + i) * h2, h2).CopyTo(z.AsSpan((i * width + t) * h2));
+            _lstm.ForwardUnpacked(n, width, Fill, z, ct);
 
             foreach (var conv in _convs)
             {
@@ -139,9 +144,9 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
         }
         finally
         {
-            ArrayPool<float>.Shared.Return(x);
-            ArrayPool<float>.Shared.Return(y);
             ArrayPool<float>.Shared.Return(z);
+            foreach (var r in rented)
+                ArrayPool<float>.Shared.Return(r);
         }
 
         // Fully connected layers, ReLU between.
@@ -165,23 +170,32 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
         return logits;
     }
 
-    /// <summary>A Height × full-width convolution as one GEMM over overlapping windows, then ReLU and the max over each sentence's windows.</summary>
+    /// <summary>
+    /// A Height × full-width convolution as one GEMM over overlapping windows, a chunk of rows at a time
+    /// (<see cref="Gemm.RunRows"/>), then ReLU and the max over each sentence's windows.
+    /// </summary>
     private void FullWidth(Conv conv, float[] z, int n, int width, float[] pooled, CancellationToken ct)
     {
+        const int ChunkRows = 2048;
         var w = conv.Packed!;
         int h2 = _lstm.OutputSize, ldc = w.PaddedN, windows = width - conv.Height + 1, m = n * width - conv.Height + 1;
-        var c = ArrayPool<float>.Shared.Rent(m * ldc);
+        var c = ArrayPool<float>.Shared.Rent(Math.Min(m, ChunkRows) * ldc);
+        for (int i = 0; i < n; i++)
+            pooled.AsSpan(i * _pooledSize + conv.Offset, conv.Channels).Clear(); // ReLU then max = max(0, max over windows)
         try
         {
-            fixed (float* pz = z, pb = conv.Bias, pc = c)
-                Gemm.Run(pz, m, h2, w, pb, pc, ldc, ct); // row r reads z[r·h2, r·h2 + Height·h2)
-            for (int i = 0; i < n; i++)
+            for (int r0 = 0; r0 < m; r0 += ChunkRows)
             {
-                var o = pooled.AsSpan(i * _pooledSize + conv.Offset, conv.Channels);
-                o.Clear(); // ReLU then max = max(0, max over windows)
-                for (int t = 0; t < windows; t++)
+                int r1 = Math.Min(m, r0 + ChunkRows);
+                fixed (float* pz = z, pb = conv.Bias, pc = c)
+                    Gemm.RunRows(pz + (long)r0 * h2, r0, r1, m, h2, w, pb, pc, ldc, ct); // row r reads z[r·h2, r·h2 + Height·h2)
+                for (int r = r0; r < r1; r++)
                 {
-                    var row = c.AsSpan((i * width + t) * ldc, conv.Channels);
+                    int i = r / width, t = r % width;
+                    if (t >= windows)
+                        continue;
+                    var o = pooled.AsSpan(i * _pooledSize + conv.Offset, conv.Channels);
+                    var row = c.AsSpan((r - r0) * ldc, conv.Channels);
                     for (int ch = 0; ch < row.Length; ch++)
                         o[ch] = Math.Max(o[ch], row[ch]);
                 }
@@ -226,52 +240,40 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
         });
     }
 
-    /// <summary>The forward and backward charlm columns of each real token's row: from the cache where it has them, else computed.</summary>
-    private void CharlmFeatures(IReadOnlyList<IReadOnlyList<string>> batch, CharlmCache? charlms, IReadOnlyList<Sentence?>? cacheKeys,
-        float[] x, int n, CancellationToken ct)
+    /// <summary>
+    /// Each sentence's forward and backward charlm rows (token t at row offset + t of the arrays): from the cache where
+    /// it has them, else computed into arrays rented here and added to <paramref name="rented"/>.
+    /// </summary>
+    private (float[] Forward, float[] Backward, int Offset)[] CharlmFeatures(IReadOnlyList<IReadOnlyList<string>> batch, CharlmCache? charlms,
+        IReadOnlyList<Sentence?>? cacheKeys, List<float[]> rented, CancellationToken ct)
     {
-        int dim = _charlmForward.HiddenDim, forwardCol = _dim, backwardCol = _dim + dim;
-        void Put(int i, ReadOnlySpan<float> forward, ReadOnlySpan<float> backward)
-        {
-            for (int t = 0; t < batch[i].Count; t++)
-            {
-                int r = (t * n + i) * _inSize;
-                forward.Slice(t * dim, dim).CopyTo(x.AsSpan(r + forwardCol, dim));
-                backward.Slice(t * dim, dim).CopyTo(x.AsSpan(r + backwardCol, dim));
-            }
-        }
-
+        int dim = _charlmForward.HiddenDim;
+        var reps = new (float[], float[], int)[batch.Count];
         var missing = new List<int>();
         for (int i = 0; i < batch.Count; i++)
-            if (cacheKeys?[i] is { } key && charlms!.TryGetArrays(key, out var reps))
-                Put(i, reps.Forward, reps.Backward);
+            if (cacheKeys?[i] is { } key && charlms!.TryGetArrays(key, out var cached))
+                reps[i] = (cached.Forward, cached.Backward, 0);
             else
                 missing.Add(i);
         if (missing.Count == 0)
-            return;
+            return reps;
 
         var texts = missing.Select(i => batch[i]).ToList();
         int words = texts.Sum(s => s.Count);
         var forwardReps = ArrayPool<float>.Shared.Rent(words * dim);
+        rented.Add(forwardReps);
         var backwardReps = ArrayPool<float>.Shared.Rent(words * dim);
-        try
+        rented.Add(backwardReps);
+        // A single sentence (with multi-word tokens, say) is kept for NER, which reads the same tokens.
+        ManagedCharLanguageModel.BuildBoth(_charlmForward, _charlmBackward, texts, forwardReps, backwardReps, charlms, ct);
+        ct.ThrowIfCancellationRequested();
+        int offset = 0;
+        foreach (int i in missing)
         {
-            // A single sentence (with multi-word tokens, say) is kept for NER, which reads the same tokens.
-            ManagedCharLanguageModel.BuildBoth(_charlmForward, _charlmBackward, texts, forwardReps, backwardReps, charlms, ct);
-            ct.ThrowIfCancellationRequested();
-            int offset = 0;
-            foreach (int i in missing)
-            {
-                int len = batch[i].Count * dim;
-                Put(i, forwardReps.AsSpan(offset, len), backwardReps.AsSpan(offset, len));
-                offset += len;
-            }
+            reps[i] = (forwardReps, backwardReps, offset);
+            offset += batch[i].Count;
         }
-        finally
-        {
-            ArrayPool<float>.Shared.Return(forwardReps);
-            ArrayPool<float>.Shared.Return(backwardReps);
-        }
+        return reps;
     }
 
     public void Dispose()
