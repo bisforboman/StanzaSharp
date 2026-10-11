@@ -40,6 +40,13 @@ jobs:
       run:
         shell: bash
     steps:
+      # A fresh macOS runner indexes with Spotlight for its first minutes, and again after pip writes torch's files:
+      # mds/mdworker then take about half of the 3 vCPUs, and one-sentence calls took 717-845 ms instead of 94
+      # (docs/performance.md, round 12).
+      - name: Turn off Spotlight indexing
+        if: runner.os == 'macOS'
+        run: sudo mdutil -a -i off
+
       - uses: actions/checkout@v7
 
       - uses: actions/setup-dotnet@v6

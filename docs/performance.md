@@ -3,7 +3,7 @@
 How fast StanzaSharp runs compared with Python Stanza, what was optimized, and what is left.
 The measurements here are of the TorchSharp backend (add `--backend torch` to the benchmark commands; since 0.5 the
 default is the managed backend, measured in [backends.md](backends.md)), except rounds 6 and 7, which compare both,
-and rounds 8 to 11, which measure the managed backend only.
+and rounds 8 to 12, which measure the managed backend only.
 Every change kept the output byte-identical: all golden tests pass, and on the benchmark text the
 C# CoNLL-U equals Python's line for line, before and after.
 
@@ -34,6 +34,12 @@ runs it with Python Stanza on ubuntu-24.04, ubuntu-24.04-arm, windows-2025, wind
 runners only). Each job puts its block in its summary and the artifact `benchmark-<runner>`; the last job combines them
 into one table (summary and artifact `benchmarks`, `benchmarks.md`, made by `tools/benchmark_table.py`). Hosted runners
 are shared virtual machines (the macOS one is virtualized Apple Silicon), so compare numbers within one run.
+
+On a fresh macOS runner Spotlight indexes the disk for its first minutes, and again after pip installs torch:
+`mds`, `mds_stores` and several `mdworker_shared` take about half of the 3 vCPUs. One-sentence calls then took 717-845 ms
+instead of 94 (Python Stanza was hardly affected: 496-586 ms in those runs, 383-716 in the others; see round 12), so the workflow turns
+indexing off first (`sudo mdutil -a -i off`). On your own machine, measure while it is otherwise idle: StanzaSharp's
+per-call times are more sensitive to other busy processes than its throughput is.
 
 ## Method
 
@@ -70,6 +76,98 @@ are shared virtual machines (the macOS one is virtualized Apple Silicon), so com
     same table only.
   - Under load, the default thread count suffers most, because libtorch's OpenMP threads spin
     waiting for each other.
+
+## Results, round 12: concurrent calls and the managed thread pool
+
+How `ManagedThreads`, the managed backend's pool (used by every GEMM and LSTM step), behaves when several `Process` calls
+run at once on one pipeline, and why one-sentence calls were slow on the macOS runner.
+
+**Method.** `--per-call 60 --concurrent T` (T threads, 60 one-sentence calls each, on one shared pipeline; default
+package); new: the slowest and fastest caller's median, and `--with-long`, where one more thread processes one copy of
+the golden texts (14,534 characters, 3,283 words; alone 4.5 s on 8 threads, 19.2 s on 1) in a loop meanwhile. Ryzen 7
+5800X (8 cores, 16 logical processors), Windows, converted models. Other sessions' test runs loaded the machine
+throughout (20-100% CPU), so single numbers moved by up to 2× between runs: compare within a table, where before and
+after were alternated.
+
+**Callers and threads, before this round** (two sweeps, calls/s, then median / max ms per call):
+
+| callers | 8 threads | 1 thread |
+|---:|---|---|
+| 1 | 22.9, 23.8; 42 / 101 | 8.2, 6.9; 115 / 298 |
+| 2 | 26.3, 27.6; 71 / 182 | 12.8, 10.4; 142 / 415 |
+| 4 | 21.8, 21.3; 155 / 562 | 18.9, 15.4; 176 / 649 |
+| 8 | 18.9, 18.9; 319 / 2,442 | 18.7, 19.2; 350 / 1,355 |
+
+- **Serialize or oversubscribe?** Neither, while `Threads` is at most the number of logical processors minus the
+  callers: each caller works its own regions, the pool's 7 workers help whichever region has work, so 8 callers use
+  15 threads. Latency grows with the callers because throughput stays flat, not because calls queue.
+- **Is N callers' throughput at least one caller's?** Up to 2 callers yes (+15%), beyond that no (8 callers −20%).
+  The pool isn't the cause: on 1 thread, with no pool at all, 8 callers reach the same ~19 calls/s. That is the
+  memory bandwidth and L3 limit of round 7, and `MaxConcurrentCalls = 2` remains the advice.
+- **Does a long call starve short ones?** No, they share the pool. One short caller next to the long call (8 threads)
+  took 103-117 ms per call instead of ~40, and the long call 6.9-11.7 s instead of 4.5. Among 8 short callers the
+  long call slowed most (6-25 s); the short callers' medians spread 1.8-2.2× (1.3-1.4× without it), and no caller
+  stopped making progress.
+- **But `Threads` = all logical processors (the default) oversubscribed.** 15 workers + N callers exceed 16 logical
+  processors, and every waiting thread spins. A region ends with its slowest item, so a worker descheduled while it
+  holds one stalls its caller for a scheduler quantum: with 8 callers on 16 threads throughput fell to 3.4-10 calls/s,
+  single calls took up to 19.6 s, and the slowest caller's median was 2-10× the fastest's.
+
+**What changed** (`ManagedThreads.Pool`): workers no longer wake or keep spinning while the busy threads (callers
+inside a region plus awake workers) already number the logical processors (or `Threads`, if larger). One caller still
+gets its full team; N callers still use at most `Threads` − 1 + N threads, but now also no more than the logical
+processors (or N, when there are more callers). Items are still claimed one at a time from the same split, so results can't change. Before / after, alternated,
+three runs each (calls/s; p90 / max ms):
+
+| threads, callers | before | after |
+|---|---|---|
+| 16, 2 | 8.4, 7.7, 8.4; 455-570 / 1,041-1,707 | 11.2, 6.7, 13.0; 271-599 / 483-1,182 |
+| 16, 8 | 10.1, 9.2, 10.2; 1,660-1,917 / 5,221-6,111 | **16.6, 13.1, 14.7**; 808-875 / 1,927-4,940 |
+| 16, 4 + a long call | 10.2, 6.3, 8.3; 704-1,399 / 2,731-3,804 | **14.4, 8.9, 13.4**; 439-659 / 973-1,502 |
+| 8, 1 | 21.2, 13.0, 18.0 | 23.5, 20.9, 18.1 |
+| 8, 8 | 16.9, 15.3, 13.7 | 17.9, 17.0, 14.7 |
+
+(16 threads, 1 caller: unchanged within noise.) With 8 callers on 16 threads the slowest and fastest callers' medians
+are now 1.2-1.4× apart instead of 2-3×; the median call rose (164-204 → 349-449 ms) because no caller runs ahead of
+the others any more. The long call took 7-16 s instead of 13-21 s.
+
+Tried and not kept:
+- **Threads as one budget across calls** (workers stay out while callers + workers exceed `Threads`): on 16 threads
+  as good as the change above, but with 8 threads and 4-8 callers 10-15% less throughput, since callers then leave
+  the other 8 logical processors idle.
+- **Blocking instead of spinning** while the caller waits for a region's last items (an event after 50 spins): no
+  better on the macOS runner (below), within noise.
+
+Exactness: `Pipeline` CoNLL-U for one copy of the golden texts, both packages, on 1, 3, 8 and 16 threads after the
+change and on 16 threads before, SHA-256 identical (default `8B626630…`, default_fast `F3311B8E…`); ConcurrencyTests,
+ManagedBackendTests, OptionsTests and PipelineTests pass.
+
+**macOS runner, one-sentence calls** (run 38150941695: 766 ms median, p90 1,197, against 69-86 ms on the other runners
+and 338 for Python Stanza on the same Mac). Reproduced on macos-15 (Apple M1 virtual, 3 vCPUs), `--per-call`, per-call
+median ms:
+
+| | total | pos | constituency | depparse |
+|---|---:|---:|---:|---:|
+| benchmark command right after `pip install` (Spotlight indexing torch's files) | 845 | 264 | 215 | 187 |
+| the same, Spotlight on, at the indexing peak | 717 | | | |
+| the same, Spotlight on, between peaks | 117-152 | 55 | 27 | 40 |
+| the same, Spotlight off (`mdutil -a -i off`), two runs | 94, 95 | | | |
+| no Python process, after the first minutes | 104 | 38 | 19 | 25 |
+| `--threads 1` (with Python; without) | 266; 207 | 92; 69 | 58; 48 | 81; 57 |
+
+- The cause is the runner, not the pool's dispatch: `top` showed `mds`, `mds_stores` and six `mdworker_shared` at
+  15-30% each (load average 16-33 on 3 vCPUs). Every processor slowed alike; with Spotlight off the median was 94 ms.
+- Why StanzaSharp suffers more than Python: a call opens about 850 parallel regions (one per LSTM step), each ending
+  with its slowest item, so a helper the host preempts holds up the whole call; torch runs far fewer, larger
+  operations. Pool variants, alternated four times in one job (the caller blocking instead of spinning, workers
+  spinning 10× shorter before they sleep; in another job 100× longer or not at all, which was slower), moved the median by less than the run-to-run noise
+  (136-234 ms on 3 threads; 192-217 on 1, 181-273 on 2).
+- `benchmark.yml` now turns Spotlight off on macOS first; "Run it yourself" says so.
+
+**Open (owner's decision):** on this machine one caller on 16 threads (the default, all logical processors) took
+98-180 ms per call against 42-65 on 8 (the physical cores) in the same alternated runs, while other processes used
+the CPU. libtorch defaults to the physical cores; a managed default of physical cores (or `ProcessorCount / 2` where
+SMT is on) would avoid the hyperthread siblings' contention. Not measured on an idle machine.
 
 ## Results, round 11: garbage on long texts (managed backend)
 
