@@ -875,8 +875,13 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     share the pool's buckets, so resizing one buffer can raise another processor's peak (sentiment's, round 9): measure
     the all-eight `--memory` peak too.
   - A GEMM column depends only on its 16-column panel: a GEMM split by whole panels (`new PackedMatrix(source, firstPanel,
-    panels)`, or rows packed separately at a panel boundary) gives the same bits. Splitting by rows does not in general
-    (`Gemm.Kernel`'s single-row kernel sums differently).
+    panels)`, or rows packed separately at a panel boundary) gives the same bits. Rows too, through `Gemm.RunRows`: every
+    kernel but the single-row one gives a row the same arithmetic, and `Gemm.Run` uses that one only for row m − 1 when
+    m % 6 == 1, so `RunRows` runs its chunk row-invariant and that row alone (round 10). Splitting a batch's sequences
+    (fewer rows per LSTM or charlm step) moved the last bits in round 9; time steps and directions can be split.
+  - Memory: a buffer per padded row multiplies (sentiment's 5000-token batch is 35,723 rows on the benchmark text). Build
+    a GEMM's input and output a chunk of rows at a time (`ManagedLstm.ForwardUnpacked`, sentiment's convolutions) and
+    keep only what a later stage reads whole; round 10 cut sentiment's +1.1 GB to +0.18 GB that way.
   - Check the `CancellationToken` per time step and per GEMM block.
   - `Gemm.Path` and `ManagedThreads.Count` are process-wide. Only `Pipeline.Load` (managed backend: the count) and tests
     in `ManagedKernelsCollection` (parallelization off, so other classes never see a switched path) may set them.

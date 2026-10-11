@@ -367,14 +367,17 @@ reads the tagger's cached charlm outputs for sentences without MWTs.
   without multi-word tokens) and the argmax, so both backends see the same batches. `Load` builds `SentimentNet` (today's
   code, moved unchanged); `LoadManaged` builds `ManagedSentimentNet` with the managed charlms.
 - **Managed net:**
-  - Input rows time-major ([width, batch, 2148]): pretrain (or the learned `unk`; padding reads the PAD rows) + delta,
-    then the charlm columns (from the cache, else computed; zeros on padding).
-  - The **unpacked** 2-layer biLSTM is `ManagedLstm.ForwardPacked` with every batch size = n: every row runs the full
-    padded width, as `nn.LSTM` does without packing. No new LSTM code.
-  - The output is copied batch-major once; each full-width convolution (3, 4, 5 tokens × 600) is then **one GEMM whose A
-    rows overlap**: row r starts at token r with lda = 600 and K = Height·600, so window t of sentence i is row
-    i·width + t and nothing is copied (windows crossing into the next sentence are computed and ignored, (Height − 1)/width
-    of the work). ReLU + max over each sentence's windows = max(0, max).
+  - Input rows time-major (token (i, t) is row t·n + i, 2148 wide): pretrain (or the learned `unk`; padding reads the PAD
+    rows) + delta, then the charlm columns (from the cache, else computed; zeros on padding). They are built a chunk at
+    a time, never for the whole padded batch (round 10, [performance.md](performance.md)).
+  - The **unpacked** 2-layer biLSTM is `ManagedLstm.ForwardUnpacked`: every row runs the full padded width, as `nn.LSTM`
+    does without packing, with the bits `ForwardPacked` gives with every batch size = n. Per layer and direction, the
+    input projection is computed for ~2048 rows (a few steps) just before those steps run (`Gemm.RunRows`, a panel view
+    per direction); only the layer outputs are whole, and the last layer writes batch-major.
+  - Each full-width convolution (3, 4, 5 tokens × 600) is a GEMM whose A rows overlap: row r starts at token r with
+    lda = 600 and K = Height·600, so window t of sentence i is row i·width + t and nothing is copied (windows crossing
+    into the next sentence are computed and ignored, (Height − 1)/width of the work). It runs 2048 rows at a time
+    (`Gemm.RunRows`), each chunk pooled as it comes: ReLU + max over each sentence's windows = max(0, max).
   - The (5, 5) filter with stride (1, 5) (8 channels × 120 columns, 25 products each) runs as scalar loops, parallel per
     sentence; it is ~2% of the convolutions' multiply-adds.
   - FC 3960 → 400 → 100 → 3 through `Gemm` with ReLU between.
