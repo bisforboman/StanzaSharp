@@ -814,9 +814,10 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
 
         // Per-state arithmetic: 7 states (rows 0..5 a full 6-row block, row 6 alone in the next) against each state alone.
         var net = new Constituency.ManagedConstituencyNet(Checkpoint.Load(model), pretrain, managedForward, managedBackward);
-        var words = (float[][])net.EncodeWords([new([.. sentences[0].Select(x => x.Item1)], [.. sentences[0].Select(_ => 5L)],
+        var words = net.EncodeWords([new([.. sentences[0].Select(x => x.Item1)], [.. sentences[0].Select(_ => 5L)],
             [.. sentences[0].Select(_ => 2L)], [.. sentences[0].Select(_ => 2L)], null)], null, default)[0];
-        var inputs = Enumerable.Range(0, 7).Select(i => (object)Random(words[0].Length, 40 + i)).ToList();
+        int rows = sentences[0].Count + 2;
+        var inputs = Enumerable.Range(0, 7).Select(i => (object)Random(((float[])net.Word(words, 0)).Length, 40 + i)).ToList();
         var starts = Enumerable.Repeat(net.ConstituentStart, 7).ToList();
         With(path, 4, () =>
         {
@@ -824,15 +825,16 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
             var transitions = net.PushTransitions(Enumerable.Repeat(net.TransitionStart, 7).ToList(), [.. Enumerable.Range(0, 7)], default);
             var together = net.PushConstituents(parents, inputs, default);
             var composed = net.Compose([.. inputs.Select((x, i) => (IReadOnlyList<object>)[x, inputs[(i + 1) % 7]])], default);
-            var scores = net.Score([.. Enumerable.Range(0, 7).Select(i => ((object)words, i % words.Length, transitions[i], parents[i]))], default);
+            var scores = net.Score([.. Enumerable.Range(0, 7).Select(i => (words, i % rows, transitions[i], parents[i]))], default);
             float[] Field(object state, string name) => (float[])state.GetType().GetField(name)!.GetValue(state)!;
             for (int i = 0; i < 7; i++)
             {
                 var alone = net.PushConstituents([parents[i]], [inputs[i]], default)[0];
                 Assert.Equal(Field(together[i], "H"), Field(alone, "H"));
                 Assert.Equal(Field(together[i], "C"), Field(alone, "C"));
-                Assert.Equal((float[])composed[i], (float[])net.Compose([[inputs[i], inputs[(i + 1) % 7]]], default)[0]);
-                Assert.Equal(scores.AsSpan(i * 29, 29).ToArray(), net.Score([((object)words, i % words.Length, transitions[i], parents[i])], default));
+                Assert.Equal(Constituency.ManagedConstituencyNet.Vector(composed[i]),
+                    Constituency.ManagedConstituencyNet.Vector(net.Compose([[inputs[i], inputs[(i + 1) % 7]]], default)[0]));
+                Assert.Equal(scores.AsSpan(i * 29, 29).ToArray(), net.Score([(words, i % rows, transitions[i], parents[i])], default));
             }
             return 0;
         });

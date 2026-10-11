@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.Text.Json.Nodes;
 using StanzaSharp.Nn;
 using StanzaSharp.Nn.Managed;
@@ -72,7 +73,7 @@ internal sealed class NerTagger : IDisposable
             var texts = batch.Select(s => (IReadOnlyList<string>)s.Tokens.Select(t => t.Text).ToList()).ToList();
             var keys = charlms == null ? null
                 : batch.Select((s, i) => s.Words.Select(w => w.Text).SequenceEqual(texts[i]) ? s : null).ToList();
-            var tags = Predict(texts, out _, charlms, keys, cancellationToken);
+            var tags = Predict(texts, out _, charlms, keys, cancellationToken, keepEmissions: false);
             // NER runs last, so nothing reads these sentences' cached charlm outputs again.
             if (charlms != null)
                 foreach (var s in batch)
@@ -89,8 +90,10 @@ internal sealed class NerTagger : IDisposable
     /// <summary>BIOES tags for each token, plus the emission scores (one [tokens, tags] array per sentence) for tests.</summary>
     /// <param name="charlms">With <paramref name="cacheKeys"/>: charlm outputs already computed; sentence i's are looked up
     /// under its key if not null.</param>
+    /// <param name="keepEmissions">Fill <paramref name="emissions"/> (else it stays empty).</param>
     internal List<string[]> Predict(IReadOnlyList<IReadOnlyList<string>> sentences, out List<float[]> emissions,
-        CharlmCache? charlms = null, IReadOnlyList<Sentence?>? cacheKeys = null, CancellationToken cancellationToken = default)
+        CharlmCache? charlms = null, IReadOnlyList<Sentence?>? cacheKeys = null, CancellationToken cancellationToken = default,
+        bool keepEmissions = true)
     {
         int batch = sentences.Count, width = sentences.Max(s => s.Count);
 
@@ -114,8 +117,9 @@ internal sealed class NerTagger : IDisposable
         var result = new List<string[]>(batch);
         for (int i = 0; i < batch; i++)
         {
-            var scores = logits[(i * width * nTags)..((i * width + sentences[i].Count) * nTags)];
-            emissions.Add(scores);
+            var scores = logits.AsSpan(i * width * nTags, sentences[i].Count * nTags);
+            if (keepEmissions)
+                emissions.Add(scores.ToArray());
             // The model can predict a tag below "O" (a vocab prefix); Stanza turns those into "O".
             var tags = Viterbi(scores, _transitions, nTags).Select(id => _tags[Math.Max(id, VocabPrefixSize)]).ToArray();
             result.Add(FixSingletonTags(tags));
@@ -128,12 +132,26 @@ internal sealed class NerTagger : IDisposable
     /// <paramref name="scores"/> [n, tags] under <paramref name="transitions"/> [from, to]. Ties go to the
     /// lowest tag id, as with np.argmax.
     /// </summary>
-    internal static int[] Viterbi(float[] scores, float[] transitions, int tags)
+    internal static int[] Viterbi(ReadOnlySpan<float> scores, float[] transitions, int tags)
     {
         int n = scores.Length / tags;
-        var trellis = new float[scores.Length];
-        var backpointers = new int[scores.Length];
-        Array.Copy(scores, trellis, tags);
+        // Rented: row 0 of the trellis is copied, every later row of both is written before it is read.
+        var trellis = ArrayPool<float>.Shared.Rent(scores.Length);
+        var backpointers = ArrayPool<int>.Shared.Rent(scores.Length);
+        try
+        {
+            return Viterbi(scores, transitions, tags, n, trellis, backpointers);
+        }
+        finally
+        {
+            ArrayPool<float>.Shared.Return(trellis);
+            ArrayPool<int>.Shared.Return(backpointers);
+        }
+    }
+
+    private static int[] Viterbi(ReadOnlySpan<float> scores, float[] transitions, int tags, int n, float[] trellis, int[] backpointers)
+    {
+        scores[..tags].CopyTo(trellis);
         for (int t = 1; t < n; t++)
             for (int j = 0; j < tags; j++)
             {

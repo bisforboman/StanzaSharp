@@ -77,9 +77,92 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
     }
 
     /// <summary>A stack node's LSTM state: [layers, hidden] h and c. The node's output is the last layer's h.</summary>
-    private sealed class StackState(float[] h, float[] c)
+    /// <remarks>The parser disposes a state when its sentence is done, which gives its arrays back to the
+    /// <see cref="Recycler"/> they came from (none for the start states).</remarks>
+    private sealed class StackState(float[] h, float[] c, Recycler? pool = null) : IDisposable
     {
         public readonly float[] H = h, C = c;
+        private Recycler? _pool = pool;
+
+        public void Dispose()
+        {
+            if (_pool is { } pool)
+            {
+                _pool = null;
+                pool.Return(H);
+                pool.Return(C);
+            }
+        }
+    }
+
+    /// <summary>A sentence's word vectors (<see cref="EncodeWords"/>' handle), from the <see cref="Recycler"/>; the parser
+    /// disposes it when the sentence is done.</summary>
+    private sealed class Words(float[][] rows, Recycler pool) : IDisposable
+    {
+        public readonly float[][] Rows = rows;
+        private Recycler? _pool = pool;
+
+        public void Dispose()
+        {
+            if (_pool is { } pool)
+            {
+                _pool = null;
+                foreach (var row in Rows)
+                    pool.Return(row);
+            }
+        }
+    }
+
+    /// <summary>A <see cref="Compose"/> output, from the <see cref="Recycler"/>; the parser disposes it when the sentence is done.</summary>
+    private sealed class Composed(float[] vector, Recycler pool) : IDisposable
+    {
+        public readonly float[] Vector = vector;
+        private Recycler? _pool = pool;
+
+        public void Dispose()
+        {
+            if (_pool is { } pool)
+            {
+                _pool = null;
+                pool.Return(Vector);
+            }
+        }
+    }
+
+    /// <summary>A constituent vector handle's floats: a word row or Open marker (float[]) or a <see cref="Compose"/> output.</summary>
+    internal static float[] Vector(object handle) => handle as float[] ?? ((Composed)handle).Vector;
+
+    /// <summary>
+    /// Free lists of the stack states' and vectors' arrays, per thread: <c>Parse</c> runs on its caller's thread, so this is per
+    /// <c>Process</c> call, and no other call shares it. A parse allocates about 9 KB per transition for the states, which
+    /// live until their sentence is done (long enough to reach gen2); with this, a call allocates only the states of the
+    /// sentences in flight and reuses them. When every array is back (the parse is over), the lists are dropped, so
+    /// nothing is kept after the call. Arrays come back with stale data; Push writes every element before reading it.
+    /// </summary>
+    private sealed class Recycler
+    {
+        [ThreadStatic]
+        private static Recycler? t_current;
+
+        public static Recycler Current => t_current ??= new();
+
+        private readonly Dictionary<int, Stack<float[]>> _free = [];
+        private int _out;
+
+        public float[] Take(int length)
+        {
+            _out++;
+            return _free.TryGetValue(length, out var free) && free.TryPop(out var a) ? a : GC.AllocateUninitializedArray<float>(length);
+        }
+
+        public void Return(float[] a)
+        {
+            if (!_free.TryGetValue(a.Length, out var free))
+                _free[a.Length] = free = new();
+            free.Push(a);
+            if (--_out == 0)
+                _free.Clear();
+        }
     }
 
     /// <summary>A multi-layer nn.LSTM stepped once per call, each row from its own state.</summary>
@@ -125,13 +208,19 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
 
         public StackState Zero => new(new float[_layers.Length * Hidden], new float[_layers.Length * Hidden]);
 
-        /// <summary>Row r: one step from <paramref name="parents"/>[r] with input <paramref name="inputs"/>[r] ([input] floats).</summary>
-        public StackState[] Push(IReadOnlyList<StackState> parents, IReadOnlyList<float[]> inputs, CancellationToken ct)
+        /// <summary>Row r: one step from <paramref name="parents"/>[r] with input <paramref name="inputs"/>(r) ([input] floats).</summary>
+        /// <param name="pool">Where the new states' arrays come from (and go back to when disposed), or null for new arrays.</param>
+        public StackState[] Push(IReadOnlyList<StackState> parents, Func<int, ReadOnlyMemory<float>> inputs, Recycler? pool, CancellationToken ct)
         {
-            int n = parents.Count, h = Hidden, kMax = Math.Max(_input, h) + h, ldg = _layers[0].W.PaddedN;
+            int n = parents.Count, h = Hidden, kMax = Math.Max(_input, h) + h, ldg = _layers[0].W.PaddedN, size = _layers.Length * h;
             var result = new StackState[n];
             for (int r = 0; r < n; r++)
-                result[r] = new StackState(new float[_layers.Length * h], (float[])parents[r].C.Clone());
+            {
+                // Every element of H is written below before it is read; C starts as the parent's.
+                var (hNew, c) = pool == null ? (new float[size], new float[size]) : (pool.Take(size), pool.Take(size));
+                parents[r].C.CopyTo(c, 0);
+                result[r] = new StackState(hNew, c, pool);
+            }
             var xh = ArrayPool<float>.Shared.Rent(n * kMax);
             var gates = ArrayPool<float>.Shared.Rent(n * ldg);
             try
@@ -141,7 +230,7 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
                     int inl = l == 0 ? _input : h, k = inl + h;
                     for (int r = 0; r < n; r++)
                     {
-                        var x = l == 0 ? inputs[r].AsSpan(0, inl) : result[r].H.AsSpan((l - 1) * h, h);
+                        var x = l == 0 ? inputs(r).Span[..inl] : result[r].H.AsSpan((l - 1) * h, h);
                         x.CopyTo(xh.AsSpan(r * k));
                         parents[r].H.AsSpan(l * h, h).CopyTo(xh.AsSpan(r * k + inl));
                     }
@@ -228,8 +317,10 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
 
         _transitionLstm = new StackLstm(T, "transition_stack.lstm.", _transitionDim, transitionHidden, layers);
         _constituentLstm = new StackLstm(T, "constituent_stack.lstm.", hidden, hidden, layers);
-        _transitionStart = _transitionLstm.Push([_transitionLstm.Zero], [T("transition_stack.start_embedding")], default)[0];
-        _constituentStart = _constituentLstm.Push([_constituentLstm.Zero], [T("constituent_stack.start_embedding")], default)[0];
+        var transitionStart = T("transition_stack.start_embedding");
+        var constituentStart = T("constituent_stack.start_embedding");
+        _transitionStart = _transitionLstm.Push([_transitionLstm.Zero], _ => transitionStart, null, default)[0];
+        _constituentStart = _constituentLstm.Push([_constituentLstm.Zero], _ => constituentStart, null, default)[0];
     }
 
     private static (PackedMatrix W, float[] Bias) Linear(Func<string, float[]> weights, string prefix, int n, int k)
@@ -314,15 +405,17 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
                 Gemm.Run(py, n * width, h2, _wordToConstituent, pb, pz, ldz, ct);
 
             var result = new object[n];
+            var pool = Recycler.Current;
             for (int i = 0; i < n; i++)
             {
                 var rows = new float[lengths[i]][];
                 for (int t = 0; t < rows.Length; t++)
                 {
-                    var row = rows[t] = z.AsSpan((i * width + t) * ldz, _hidden).ToArray();
+                    var row = rows[t] = pool.Take(_hidden);
+                    z.AsSpan((i * width + t) * ldz, _hidden).CopyTo(row);
                     Relu(row);
                 }
-                result[i] = rows;
+                result[i] = new Words(rows, pool);
             }
             return result;
         }
@@ -334,7 +427,7 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
         }
     }
 
-    public object Word(object words, int position) => ((float[][])words)[position];
+    public object Word(object words, int position) => ((Words)words).Rows[position];
 
     public float[] Score(IReadOnlyList<(object Words, int Position, object Transition, object Constituent)> states, CancellationToken ct)
     {
@@ -349,7 +442,7 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
             {
                 var (words, position, transition, constituent) = states[r];
                 var row = a.AsSpan(r * ld, k0);
-                ((float[][])words)[position].CopyTo(row);
+                ((Words)words).Rows[position].CopyTo(row);
                 ((StackState)transition).H.AsSpan((_transitionLstm.Layers - 1) * th, th).CopyTo(row[_hidden..]);
                 ((StackState)constituent).H.AsSpan((_constituentLstm.Layers - 1) * ch, ch).CopyTo(row[(_hidden + th)..]);
             }
@@ -391,10 +484,10 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
             for (int r = 0; r < n; r++)
             {
                 var row = pooled.AsSpan(r * h, h);
-                ((float[])children[r][0]).CopyTo(row);
+                Vector(children[r][0]).CopyTo(row);
                 for (int c = 1; c < children[r].Count; c++)
                 {
-                    var x = (float[])children[r][c];
+                    var x = Vector(children[r][c]);
                     for (int j = 0; j < h; j++)
                         row[j] = Math.Max(row[j], x[j]);
                 }
@@ -405,11 +498,13 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
                 else
                     Gemm.Run(pp, n, h, _reduce, pb, po, ld, ct, rowInvariant: true);
             var result = new object[n];
+            var pool = Recycler.Current;
             for (int r = 0; r < n; r++)
             {
-                var v = output.AsSpan(r * ld, h).ToArray();
+                var v = pool.Take(h);
+                output.AsSpan(r * ld, h).CopyTo(v);
                 Relu(v);
-                result[r] = v;
+                result[r] = new Composed(v, pool);
             }
             return result;
         }
@@ -420,14 +515,12 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
         }
     }
 
-    public object[] PushTransitions(IReadOnlyList<object> parents, int[] transitions, CancellationToken ct)
-    {
-        var inputs = transitions.Select(t => _transitionEmb.AsSpan(t * _transitionDim, _transitionDim).ToArray()).ToList();
-        return _transitionLstm.Push(parents.Cast<StackState>().ToList(), inputs, ct);
-    }
+    public object[] PushTransitions(IReadOnlyList<object> parents, int[] transitions, CancellationToken ct) =>
+        _transitionLstm.Push(parents.Cast<StackState>().ToList(), r => _transitionEmb.AsMemory(transitions[r] * _transitionDim, _transitionDim),
+            Recycler.Current, ct);
 
     public object[] PushConstituents(IReadOnlyList<object> parents, IReadOnlyList<object> inputs, CancellationToken ct) =>
-        _constituentLstm.Push(parents.Cast<StackState>().ToList(), inputs.Cast<float[]>().ToList(), ct);
+        _constituentLstm.Push(parents.Cast<StackState>().ToList(), r => Vector(inputs[r]), Recycler.Current, ct);
 
     private static void Relu(Span<float> x)
     {

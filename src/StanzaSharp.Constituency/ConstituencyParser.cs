@@ -127,9 +127,9 @@ internal sealed class ConstituencyParser : IDisposable
                 var chosen = new Transition?[batch.Count];
                 for (int k = 0; k < batch.Count; k++)
                 {
-                    var row = logits[(k * n)..((k + 1) * n)];
-                    scores?[batch[k].Index].Add(row);
-                    onStep?.Invoke(batch[k].Index, row, _transitions.Select(t => batch[k].IsLegal(t, _rootLabels, _unaryLimit)).ToArray());
+                    var row = logits.AsSpan(k * n, n);
+                    scores?[batch[k].Index].Add(row.ToArray());
+                    onStep?.Invoke(batch[k].Index, row.ToArray(), _transitions.Select(t => batch[k].IsLegal(t, _rootLabels, _unaryLimit)).ToArray());
                     chosen[k] = Choose(batch[k], row);
                 }
                 Apply(batch, chosen, cancellationToken);
@@ -185,14 +185,15 @@ internal sealed class ConstituencyParser : IDisposable
     // ----- choosing a transition -----
 
     /// <summary>The best-scoring transition, or the best legal one if that is illegal (LSTMModel.predict).</summary>
-    private Transition? Choose(ParserState state, float[] row)
+    private Transition? Choose(ParserState state, ReadOnlySpan<float> scores)
     {
         int best = 0;
-        for (int j = 1; j < row.Length; j++)
-            if (row[j] > row[best])
+        for (int j = 1; j < scores.Length; j++)
+            if (scores[j] > scores[best])
                 best = j;
         if (state.IsLegal(_transitions[best], _rootLabels, _unaryLimit))
             return _transitions[best];
+        var row = scores.ToArray();
         return Enumerable.Range(0, row.Length).OrderByDescending(j => row[j])
             .Select(j => _transitions[j]).FirstOrDefault(t => state.IsLegal(t, _rootLabels, _unaryLimit));
     }

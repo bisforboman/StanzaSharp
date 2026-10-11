@@ -99,8 +99,8 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
     {
         int n = batch.Count, rows = n * width, h2 = _lstm.OutputSize, inSize = _inSize, dim = _charlmForward.HiddenDim;
         var z = ArrayPool<float>.Shared.Rent(rows * h2); // the LSTM output, batch-major: row i·width + t
-        var pooled = new float[n * _pooledSize];
-        var rented = new List<float[]>();
+        var pooled = ArrayPool<float>.Shared.Rent(n * _pooledSize); // every element written: the convolutions tile it
+        var rented = new List<float[]> { z, pooled };
         try
         {
             var reps = CharlmFeatures(batch, charlms, cacheKeys, rented, ct);
@@ -141,33 +141,33 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
                 else
                     Strided(conv, z, n, width, pooled);
             }
+
+            // Fully connected layers, ReLU between.
+            var hidden = pooled;
+            int ld = _pooledSize;
+            for (int l = 0; l < _fc.Length; l++)
+            {
+                var (w, bias) = _fc[l];
+                var next = ArrayPool<float>.Shared.Rent(n * w.PaddedN);
+                rented.Add(next);
+                fixed (float* a = hidden, pb = bias, c = next)
+                    Gemm.Run(a, n, ld, w, pb, c, w.PaddedN, ct);
+                if (l < _fc.Length - 1)
+                    for (int k = 0; k < n * w.PaddedN; k++)
+                        next[k] = Math.Max(next[k], 0);
+                (hidden, ld) = (next, w.PaddedN);
+            }
+            int classes = _fc[^1].W.N;
+            var logits = new float[n * classes];
+            for (int i = 0; i < n; i++)
+                hidden.AsSpan(i * ld, classes).CopyTo(logits.AsSpan(i * classes));
+            return logits;
         }
         finally
         {
-            ArrayPool<float>.Shared.Return(z);
             foreach (var r in rented)
                 ArrayPool<float>.Shared.Return(r);
         }
-
-        // Fully connected layers, ReLU between.
-        var hidden = pooled;
-        int ld = _pooledSize;
-        for (int l = 0; l < _fc.Length; l++)
-        {
-            var (w, bias) = _fc[l];
-            var next = new float[n * w.PaddedN];
-            fixed (float* a = hidden, pb = bias, c = next)
-                Gemm.Run(a, n, ld, w, pb, c, w.PaddedN, ct);
-            if (l < _fc.Length - 1)
-                for (int k = 0; k < next.Length; k++)
-                    next[k] = Math.Max(next[k], 0);
-            (hidden, ld) = (next, w.PaddedN);
-        }
-        int classes = _fc[^1].W.N;
-        var logits = new float[n * classes];
-        for (int i = 0; i < n; i++)
-            hidden.AsSpan(i * ld, classes).CopyTo(logits.AsSpan(i * classes));
-        return logits;
     }
 
     /// <summary>

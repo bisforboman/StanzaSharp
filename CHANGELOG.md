@@ -21,6 +21,10 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
   GitHub-hosted runner and combines the results into one table.
 
 ### Changed
+- Less memory on long texts (managed backend): the parsers and classifiers reuse their per-batch arrays instead of
+  leaving them to the garbage collector (constituency recycles its parser states, the dependency parser decodes in
+  rented buffers), so a call allocates about 18 KB per word instead of 54, and one call on 201,313 words with all eight
+  processors peaks at about 1.9 GB instead of 2.2–2.3 GB. Outputs are unchanged.
 - Less memory on long texts: the returned `Document` takes about 19% less (482 instead of 594 bytes per word with all
   eight processors: tokens hold room for one word, `SpaceAfter` and equal feats strings are shared, tree children are
   arrays), and NER frees the charlm outputs the tagger kept for it (up to 256 MB) as it goes. One call on 670,000

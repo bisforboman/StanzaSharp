@@ -79,6 +79,11 @@ All 7 steps of the build order are done:
   After a Process call of 1,000+ words, `NativeHeap.Trim` calls glibc's `malloc_trim(0)` on Linux (user's decision,
   2026-10-07: always on, no public API; `PipelineOptions.TrimNativeHeap` is internal, for the benchmark). On Windows
   libtorch's built-in mimalloc keeps freed pages; only `MIMALLOC_PURGE_DELAY=0` releases them (documented, not set).
+  Round 11 (garbage on long texts, managed): constituency's stack states, word vectors and Compose outputs come from a
+  thread-static `Recycler` (per call, since Parse is synchronous; emptied when every array is back) and go back when
+  `ParserState.Dispose` disposes them; Chu-Liu/Edmonds works on flat rented n × n buffers; `DepparseBatch.RentScores`
+  lets the managed net rent the arc/label outputs, which `DependencyParser.Parse` returns. Rent an output only where its
+  one caller gives it back; the Cuda nets keep plain arrays. A call now allocates ~18 KB/word instead of ~54 (docs/performance.md round 11).
   Round 6 (managed backend, docs/performance.md): no native heap (malloc_trim returns nothing there); after a call the
   GC heap holds the models plus `ArrayPool<T>.Shared`'s scratch buffers (all eight, 6,761 words: 2.4 GB working set),
   released only by a gen2 GC a minute later; the README tells services to run an aggressive GC when idle. The library
