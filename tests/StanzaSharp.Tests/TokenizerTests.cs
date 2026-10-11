@@ -5,7 +5,7 @@ using StanzaSharp.Tokenize;
 
 namespace StanzaSharp.Tests;
 
-public class TokenizerTests(ITestOutputHelper output)
+public class TokenizerTests(ITestOutputHelper output, SharedPipelines pipelines) : IClassFixture<SharedPipelines>
 {
     // managed: Backend.Managed (issue #29), else TorchSharp. Every golden test runs on both.
     private static Tokenizer Load(bool managed) =>
@@ -77,7 +77,7 @@ public class TokenizerTests(ITestOutputHelper output)
     [InlineData("default_fast", true)]
     public void Pipeline_LongTokens_MatchGolden(string package, bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, Backend = Repo.PipelineBackendFor(managed) });
+        var nlp = pipelines.Get(package, managed);
         var text = File.ReadAllText(Path.Combine(Repo.Golden, "long_token.txt"));
         var golden = File.ReadAllText(Path.Combine(Repo.Golden, package == "default" ? "long_token.conllu" : "long_token.fast.conllu"));
         Assert.Equal(golden, Conllu.Write(nlp.Process(text)));

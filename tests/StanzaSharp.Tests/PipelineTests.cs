@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 
 namespace StanzaSharp.Tests;
 
-public class PipelineTests
+public class PipelineTests(SharedPipelines pipelines) : IClassFixture<SharedPipelines>
 {
     [ModelTheory]
     [Trait("Smoke", "TorchSharp")] // all eight processors on TorchSharp in a ready pull request's light golden run (ci.yml)
@@ -10,7 +10,7 @@ public class PipelineTests
     [InlineData(true)]
     public void Process_ReproducesGoldenConlluExactly(bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Backend = Repo.PipelineBackendFor(managed) });
+        var nlp = pipelines.Get(managed: managed);
         var doc = nlp.Process(File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt")));
         var golden = File.ReadAllText(Path.Combine(Repo.Golden, "pipeline.conllu"));
         Assert.Equal(golden, Conllu.Write(doc));
@@ -23,7 +23,7 @@ public class PipelineTests
     {
         foreach (var package in Pipeline.Packages.Keys)
         {
-            using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, Backend = PipelineBackend.Managed });
+            var nlp = pipelines.Get(package);
             const System.Reflection.BindingFlags Private = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
             // The charlms belong to the backend's models (BackendModels); a managed pipeline's are managed by construction.
             var models = Assert.IsType<ManagedModels>(typeof(Pipeline).GetField("_models", Private)!.GetValue(nlp));
@@ -41,7 +41,7 @@ public class PipelineTests
     [Trait("Backend", "Managed")]
     public void OneSentenceDocuments_EqualTheUncachedPipeline()
     {
-        using var cached = Pipeline.Load(Repo.Models);
+        var cached = pipelines.Get();
         using var uncached = Pipeline.Load(Repo.Models, new PipelineOptions { CharlmCache = new CharlmCacheOptions { IsEnabled = false } });
         var texts = Directory.GetFiles(Repo.Golden, "validation*.conllu").Order().SelectMany(f => File.ReadLines(f).Where(l => l.StartsWith("# text = ")).Take(8))
             .Select(l => l["# text = ".Length..]).ToList();
@@ -60,7 +60,7 @@ public class PipelineTests
     [InlineData(true)]
     public void Process_MatchesGoldenOnValidationCorpus(bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Backend = Repo.PipelineBackendFor(managed) });
+        var nlp = pipelines.Get(managed: managed);
         var failures = new List<string>();
         var files = Directory.GetFiles(Repo.Golden, "validation*.txt").Order().ToList();
         Assert.NotEmpty(files);
@@ -140,7 +140,7 @@ public class PipelineTests
         // No golden file has all eight, so each field is checked against its own folder: word lines and
         // ner= against ner/ (tokenize..depparse,ner), trees against the default pipeline's files, and
         // sentiment against sentiment/. NER, constituency and sentiment share the tagger's CharlmCache.
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos,lemma,depparse,ner,sentiment,constituency", Backend = Repo.PipelineBackendFor(managed) });
+        var nlp = pipelines.Get(managed: managed, processors: "tokenize,mwt,pos,lemma,depparse,ner,sentiment,constituency");
         foreach (var (name, conllu) in new[] { ("corpus", "pipeline"), ("validation_news", "validation_news"), ("validation_contractions", "validation_contractions") })
         {
             var doc = nlp.Process(File.ReadAllText(Path.Combine(Repo.Golden, name + ".txt")));

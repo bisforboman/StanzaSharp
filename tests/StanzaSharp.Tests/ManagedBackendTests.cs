@@ -25,8 +25,33 @@ namespace StanzaSharp.Tests;
 /// alone, so tests of the managed backend elsewhere never see another path.
 /// </summary>
 [Collection(ManagedKernelsCollection.Name)]
-public class ManagedBackendTests(ITestOutputHelper output)
+public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.Fixture fixture) : IClassFixture<ManagedBackendTests.Fixture>
 {
+    /// <summary>The word vectors and both backends' charlms, loaded on first use and shared by the class's tests (read-only).</summary>
+    public sealed class Fixture : IDisposable
+    {
+        private readonly Lazy<Pretrain> _pretrain = new(() => Pretrain.Load(Repo.Model("pretrain/conll17")));
+        private readonly Lazy<CharLanguageModel> _forward = new(() => CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"))),
+            _backward = new(() => CharLanguageModel.Load(Repo.Model("backward_charlm/1billion")));
+        private readonly Lazy<ManagedCharLanguageModel> _managedForward = new(() => ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion"))),
+            _managedBackward = new(() => ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion")));
+        internal Pretrain Pretrain => _pretrain.Value;
+        internal CharLanguageModel Forward => _forward.Value;
+        internal CharLanguageModel Backward => _backward.Value;
+        internal ManagedCharLanguageModel ManagedForward => _managedForward.Value;
+        internal ManagedCharLanguageModel ManagedBackward => _managedBackward.Value;
+
+        public void Dispose()
+        {
+            if (_forward.IsValueCreated)
+                _forward.Value.Dispose();
+            if (_backward.IsValueCreated)
+                _backward.Value.Dispose();
+            if (_pretrain.IsValueCreated)
+                _pretrain.Value.Dispose();
+        }
+    }
+
     /// <summary>The paths to test: Vector256 only where it is hardware (on Arm64 it would be emulated, never chosen).</summary>
     private static readonly KernelPath[] NativePaths =
         [.. Enum.GetValues<KernelPath>().Where(p => p != KernelPath.Vector256 || Vector256.IsHardwareAccelerated)];
@@ -293,7 +318,7 @@ public class ManagedBackendTests(ITestOutputHelper output)
         var sentences = index.Select(e => (IReadOnlyList<string>)e!["words"]!.AsArray().Select(w => w!.GetValue<string>()).ToList()).ToList();
         foreach (var direction in new[] { "forward", "backward" })
         {
-            var charlm = ManagedCharLanguageModel.Load(Repo.Model($"{direction}_charlm/1billion"));
+            var charlm = direction == "forward" ? fixture.ManagedForward : fixture.ManagedBackward;
             var reps = With(path, Environment.ProcessorCount, () => charlm.BuildCharRepresentation(sentences));
             for (int i = 0; i < sentences.Count; i++)
                 TokenizerTests.AssertClose(golden.Read<float>($"s{i}.charlm_{direction}"), reps[i], 1e-4f, $"{path} {direction} s{i}");
@@ -408,11 +433,11 @@ public class ManagedBackendTests(ITestOutputHelper output)
     [MemberData(nameof(Paths))]
     public void NerNet_ManagedMatchesTorchSharp(string path)
     {
-        using var pretrain = Pretrain.Load(Repo.Model("pretrain/conll17"));
-        using var forward = CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
-        using var backward = CharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
-        var managedForward = ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
-        var managedBackward = ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
+        var pretrain = fixture.Pretrain;
+        var forward = fixture.Forward;
+        var backward = fixture.Backward;
+        var managedForward = fixture.ManagedForward;
+        var managedBackward = fixture.ManagedBackward;
         var text = File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt")).Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
         var sentences = new[] { 12, 3, 30, 1, 17 }.Select((n, i) => (IReadOnlyList<string>)Enumerable.Range(i * 31, n).Select(k => text[k % text.Length]).ToList()).ToList();
         foreach (var name in new[] { "ner/ontonotes-ww-multi_charlm", "ner/ontonotes-ww-multi_nocharlm" })
@@ -440,11 +465,11 @@ public class ManagedBackendTests(ITestOutputHelper output)
     [MemberData(nameof(Paths))]
     public void PosNet_ManagedMatchesTorchSharp(string path)
     {
-        using var pretrain = Pretrain.Load(Repo.Model("pretrain/conll17"));
-        using var forward = CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
-        using var backward = CharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
-        var managedForward = ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
-        var managedBackward = ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
+        var pretrain = fixture.Pretrain;
+        var forward = fixture.Forward;
+        var backward = fixture.Backward;
+        var managedForward = fixture.ManagedForward;
+        var managedBackward = fixture.ManagedBackward;
         var text = File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt")).Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
         var sentences = new[] { 12, 3, 30, 1, 17 }.Select((n, i) => (IReadOnlyList<string>)Enumerable.Range(i * 31, n).Select(k => text[k % text.Length]).ToList()).ToList();
         sentences.Add(["Really", "?!"]);
@@ -479,9 +504,9 @@ public class ManagedBackendTests(ITestOutputHelper output)
     [MemberData(nameof(Paths))]
     public void PosUposLogits_MatchGoldenOnEveryPath(string path)
     {
-        using var pretrain = Pretrain.Load(Repo.Model("pretrain/conll17"));
-        var managedForward = ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
-        var managedBackward = ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
+        var pretrain = fixture.Pretrain;
+        var managedForward = fixture.ManagedForward;
+        var managedBackward = fixture.ManagedBackward;
         foreach (var (name, golden) in new[] { ("pos/combined_charlm", Repo.Golden), ("pos/combined_nocharlm", Path.Combine(Repo.Golden, "fast")) })
         {
             bool charlm = name.EndsWith("_charlm");
@@ -509,11 +534,11 @@ public class ManagedBackendTests(ITestOutputHelper output)
     [MemberData(nameof(Paths))]
     public void DepparseNet_ManagedMatchesTorchSharp(string path)
     {
-        using var pretrain = Pretrain.Load(Repo.Model("pretrain/conll17"));
-        using var forward = CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
-        using var backward = CharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
-        var managedForward = ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
-        var managedBackward = ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
+        var pretrain = fixture.Pretrain;
+        var forward = fixture.Forward;
+        var backward = fixture.Backward;
+        var managedForward = fixture.ManagedForward;
+        var managedBackward = fixture.ManagedBackward;
         var doc = Conllu.Read(File.ReadAllText(Path.Combine(Repo.Golden, "depparse", "corpus.conllu")));
         var batch = doc.Sentences.Select(s => (IReadOnlyList<Word>)s.Words.ToList()).Where(s => s.Count <= 40)
             .DistinctBy(s => s.Count / 4).OrderByDescending(s => s.Count).ToList();
@@ -551,9 +576,9 @@ public class ManagedBackendTests(ITestOutputHelper output)
     [MemberData(nameof(Paths))]
     public void DepparseScores_MatchGoldenOnEveryPath(string path)
     {
-        using var pretrain = Pretrain.Load(Repo.Model("pretrain/conll17"));
-        var managedForward = ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
-        var managedBackward = ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
+        var pretrain = fixture.Pretrain;
+        var managedForward = fixture.ManagedForward;
+        var managedBackward = fixture.ManagedBackward;
         foreach (var (name, golden, prefix) in new[] { ("depparse/combined_charlm", Path.Combine(Repo.Golden, "depparse"), ""), ("depparse/combined_nocharlm", Path.Combine(Repo.Golden, "fast"), "depparse.") })
         {
             bool charlm = name.EndsWith("_charlm");
@@ -580,11 +605,11 @@ public class ManagedBackendTests(ITestOutputHelper output)
     [MemberData(nameof(Paths))]
     public void SentimentNet_ManagedMatchesTorchSharp(string path)
     {
-        using var pretrain = Pretrain.Load(Repo.Model("pretrain/conll17"));
-        using var forward = CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
-        using var backward = CharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
-        var managedForward = ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
-        var managedBackward = ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
+        var pretrain = fixture.Pretrain;
+        var forward = fixture.Forward;
+        var backward = fixture.Backward;
+        var managedForward = fixture.ManagedForward;
+        var managedBackward = fixture.ManagedBackward;
         var text = File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt")).Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
         var sentences = new[] { 12, 3, 30, 1, 17, 8 }.Select((n, i) => (IReadOnlyList<string>)Enumerable.Range(i * 31, n).Select(k => text[k % text.Length]).ToList()).ToList();
         using var reference = Sentiment.SentimentClassifier.Load(Repo.Model("sentiment/sstplus_charlm"), pretrain, forward, backward);
@@ -695,11 +720,11 @@ public class ManagedBackendTests(ITestOutputHelper output)
     [MemberData(nameof(Paths))]
     public void ConstituencyParser_ManagedMatchesTorchSharpAndGolden(string path)
     {
-        using var pretrain = Pretrain.Load(Repo.Model("pretrain/conll17"));
-        using var forward = CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
-        using var backward = CharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
-        var managedForward = ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
-        var managedBackward = ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
+        var pretrain = fixture.Pretrain;
+        var forward = fixture.Forward;
+        var backward = fixture.Backward;
+        var managedForward = fixture.ManagedForward;
+        var managedBackward = fixture.ManagedBackward;
         var model = Repo.Model("constituency/ptb3-revised_charlm");
         using var reference = Constituency.ConstituencyParser.Load(model, pretrain, forward, backward);
         using var managed = Constituency.ConstituencyParser.LoadManaged(model, pretrain, managedForward, managedBackward);

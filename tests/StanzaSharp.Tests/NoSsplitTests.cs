@@ -3,7 +3,7 @@ using System.Text.Json.Nodes;
 namespace StanzaSharp.Tests;
 
 /// <summary><see cref="PipelineOptions.SplitSentences"/> = false against Stanza's tokenize_no_ssplit (tests/golden/no_ssplit).</summary>
-public class NoSsplitTests
+public class NoSsplitTests(SharedPipelines pipelines) : IClassFixture<SharedPipelines>
 {
     private static readonly Dictionary<string, string> Suffix = new() { ["default"] = "", ["default_fast"] = ".fast" };
     private static readonly string Dir = Path.Combine(Repo.Golden, "no_ssplit");
@@ -14,7 +14,7 @@ public class NoSsplitTests
     [InlineData("default", true)]
     public void NoSsplit_MatchesGolden(string package, bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, SplitSentences = false, Backend = Repo.PipelineBackendFor(managed) });
+        var nlp = pipelines.Get(package, managed, splitSentences: false);
         var names = Directory.GetFiles(Dir, "*.conllu").Select(Path.GetFileName).Where(f => !f!.EndsWith(".fast.conllu")).ToList();
         Assert.Equal(7, names.Count);
         var failures = new List<string>();
@@ -42,7 +42,7 @@ public class NoSsplitTests
     public void NoSsplit_Bulk_MatchesStanzasBulkProcess(string package, bool managed)
     {
         var cases = JsonNode.Parse(File.ReadAllText(Path.Combine(Dir, "bulk" + Suffix[package] + ".json")))!.AsArray();
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Package = package, SplitSentences = false, Backend = Repo.PipelineBackendFor(managed) });
+        var nlp = pipelines.Get(package, managed, splitSentences: false);
         var docs = nlp.Process(cases.Select(c => c!["text"]!.GetValue<string>()).ToList());
         for (int i = 0; i < cases.Count; i++)
         {

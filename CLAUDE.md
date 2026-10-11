@@ -449,6 +449,15 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   hidden states and tagger logits for a few sentences. Compare floats with a tolerance and
   discrete outputs exactly.
 - Tests that need model files must skip, not fail, when `models/converted/en` is missing.
+- Loaded models are shared between tests (2026-10-11): a pipeline is read-only after Load, so sharing is safe.
+  - `SharedPipelines` (class fixture): `pipelines.Get(package, managed, processors, splitSentences)`. Each pipeline loads on
+    first use and is disposed when the last class using it ends, so classes running in parallel share it without being
+    serialized, and only what running classes need stays in memory. Use it for an options set more than one test uses.
+  - Per-class `Fixture`s (Pos, Constituency, Depparse, Sentiment: one `Models` per backend; ManagedBackend: pretrain and
+    both backends' charlms) hold models that several tests of the class read. Fixtures load lazily, so no-model runs
+    still only skip.
+  - Still loading their own: tests of Load itself, options (threads, logger, checksums, cache settings, max calls),
+    `ConcurrencyTests` (it runs alone), and one-off options sets (sharing those would only keep them alive longer).
 - Versions are pinned in `tools/requirements.txt`; golden data depends on them.
 - `tools/make_golden.py` regenerates golden data from `tests/golden/corpus.txt`:
   - `pipeline.conllu`: the full pipeline output, including offsets, MWT ranges, tags, and
