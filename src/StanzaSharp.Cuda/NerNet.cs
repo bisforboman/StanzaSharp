@@ -6,7 +6,7 @@ using static TorchSharp.torch;
 
 namespace StanzaSharp.Ner;
 
-/// <summary>stanza/models/ner/model.py <c>NERTagger.forward</c> on TorchSharp (today's code).</summary>
+/// <summary>stanza/models/ner/model.py <c>NERTagger.forward</c> on TorchSharp.</summary>
 internal sealed class NerNet : INerNet
 {
     private readonly Pretrain _pretrain;

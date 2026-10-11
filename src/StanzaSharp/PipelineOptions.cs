@@ -10,7 +10,7 @@ namespace StanzaSharp;
 /// {
 ///     Processors = $"{Processor.Tokenize},{Processor.Mwt},{Processor.Pos}", // or "tokenize,mwt,pos"
 ///     Threads = 4,
-/// ///     CharlmCache = new() { MaxWords = 100_000 },
+///     CharlmCache = new() { MaxWords = 100_000 },
 /// });
 /// </code>
 /// </example>
@@ -45,7 +45,7 @@ public sealed class PipelineOptions
 
     private readonly PipelineBackend _backend = PipelineBackend.Managed;
 
-    /// <summary>Sharing of character-model outputs between the tagger, the constituency parser and sentiment.</summary>
+    /// <summary>Sharing of character-model outputs between the tagger and the processors after it.</summary>
     public CharlmCacheOptions CharlmCache { get; init; } = new();
 
     /// <summary>
@@ -121,16 +121,17 @@ public sealed class PipelineOptions
 }
 
 /// <summary>
-/// The tagger keeps its character-model outputs (about 8 KB per word) for the constituency parser,
-/// which needs the same ones. Output is identical either way; the cache trades memory for speed.
+/// The tagger keeps its character-model outputs (about 8 KB per word) for the processors after it that need the same
+/// ones: the constituency parser, sentiment and NER (and, on <see cref="PipelineBackend.Managed"/>, the dependency
+/// parser for one-sentence documents). Output is identical either way; the cache trades memory for speed.
 /// </summary>
 public sealed class CharlmCacheOptions
 {
-    /// <summary>Whether the parser reuses the tagger's outputs (true) or computes its own.</summary>
+    /// <summary>Whether those processors reuse the tagger's outputs (true) or compute their own.</summary>
     public bool IsEnabled { get; init; } = true;
 
     /// <summary>
-    /// The most words kept per document. Sentences past it are recomputed by the parser. The default,
+    /// The most words kept per document. Sentences past it are recomputed by the processors that read them. The default,
     /// 32,768 words, is about 256 MB.
     /// </summary>
     public int MaxWords { get; init; } = Nn.CharlmCache.DefaultMaxWords;

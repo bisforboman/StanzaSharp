@@ -18,8 +18,9 @@
   </PropertyGroup>
 
   <!-- Library projects (src/*): XML docs, and every public member must have them. The public API is the
-       facade (Pipeline, PipelineOptions, CharlmCacheOptions, ModelDownloader) and Core's document model;
-       everything else is internal, shared across the StanzaSharp assemblies below. -->
+       facade (Pipeline, PipelineOptions, PipelineBackend, CharlmCacheOptions, ModelDownloader, Processor;
+       StanzaSharp.Cuda's CudaBackend) and Core's document model; everything else is internal, shared across the
+       StanzaSharp assemblies below. -->
   <PropertyGroup Condition="'$([System.IO.Path]::GetFileName($([System.IO.Path]::GetDirectoryName($(MSBuildProjectDirectory)))))' == 'src'">
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <WarningsAsErrors>$(WarningsAsErrors);CS1591</WarningsAsErrors>
@@ -30,9 +31,9 @@
     <InternalsVisibleTo Include="StanzaSharp.Tests;StanzaSharp.Benchmark" />
   </ItemGroup>
 
-  <!-- The native libtorch the runnable projects (Cli, Benchmark, Tests) reference. Libraries use only the
-       managed TorchSharp package. STANZASHARP_CUDA=1 (environment variable or -p:) switches to CUDA for local
-       GPU runs; the default and CI stay on CPU. -->
+  <!-- The native libtorch the runnable projects (Cli, Benchmark, Tests) reference. Of the libraries only
+       StanzaSharp.Cuda references TorchSharp, the managed package. STANZASHARP_CUDA=1 (environment variable or -p:)
+       switches to CUDA for local GPU runs; the default and CI stay on CPU. -->
   <PropertyGroup>
     <!-- The one place these versions are set. The StanzaSharp package bakes them into its build check (STANZA001). -->
     <TorchSharpVersion>0.107.0</TorchSharpVersion>

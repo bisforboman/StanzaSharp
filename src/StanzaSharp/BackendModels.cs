@@ -28,7 +28,7 @@ internal abstract class BackendModels : IDisposable
     /// <summary>Whether to run a GC after each model: the managed models allocate far more while loading than they keep.</summary>
     public virtual bool CollectAfterEachModel => false;
 
-    /// <summary>Whether the dependency parser reads the tagger's charlm outputs (CharlmCache.TryGetBackwardState).</summary>
+    /// <summary>Whether the dependency parser reads the tagger's charlm outputs (CharlmCache.TryGetAlone).</summary>
     public virtual bool DepparseReadsCache => false;
 
     public abstract Pretrain Pretrain(string basePath);

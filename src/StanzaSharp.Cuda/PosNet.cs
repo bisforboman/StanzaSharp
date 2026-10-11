@@ -7,7 +7,7 @@ using F = TorchSharp.torch.nn.functional;
 
 namespace StanzaSharp.Pos;
 
-/// <summary>stanza/models/pos/model.py <c>Tagger.forward</c> on TorchSharp (today's code).</summary>
+/// <summary>stanza/models/pos/model.py <c>Tagger.forward</c> on TorchSharp.</summary>
 internal sealed class PosNet : IPosNet
 {
     private readonly Pretrain _pretrain;
@@ -139,7 +139,7 @@ internal static class PosTaggerLoad
     {
         /// <summary>
         /// Loads e.g. <c>models/converted/en/pos/combined_charlm</c> on TorchSharp. The pretrain and charlms are
-        /// shared with the parser, so the caller owns them. A <c>_nocharlm</c> model takes none.
+        /// shared with the other processors, so the caller owns them. A <c>_nocharlm</c> model takes none.
         /// </summary>
         /// <param name="device">Where the model runs; CPU by default. Load the pretrain and charlms on the same device.</param>
         public static PosTagger Load(string basePath, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward, Device? device = null) =>

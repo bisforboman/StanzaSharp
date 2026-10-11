@@ -5,8 +5,8 @@ using static TorchSharp.torch;
 namespace StanzaSharp.Nn;
 
 /// <summary>
-/// A forward or backward character language model used as a word feature by the POS tagger and the
-/// parser. Port of stanza/models/common/char_model.py <c>CharacterLanguageModel</c> (inference only:
+/// A forward or backward character language model used as a word feature by the tagger, both parsers, NER and
+/// sentiment. Port of stanza/models/common/char_model.py <c>CharacterLanguageModel</c> (inference only:
 /// the decoder that predicts the next character is not needed).
 /// </summary>
 internal sealed class CharLanguageModel : IDisposable

@@ -8,7 +8,7 @@ using F = TorchSharp.torch.nn.functional;
 
 namespace StanzaSharp.Depparse;
 
-/// <summary>stanza/models/depparse/model.py <c>GraphParser</c> on TorchSharp (today's code).</summary>
+/// <summary>stanza/models/depparse/model.py <c>GraphParser</c> on TorchSharp.</summary>
 internal sealed class DepparseNet : IDepparseNet
 {
     private readonly Pretrain _pretrain;
