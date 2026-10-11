@@ -13,6 +13,10 @@ namespace StanzaSharp.Nn.Managed;
 /// all open regions, so N callers use at most <see cref="Count"/> − 1 + N threads (libtorch gives each caller its own
 /// team of <c>Threads</c>, N × Threads in all). With one caller this is a team of <see cref="Count"/>; with as many
 /// callers as cores each call runs on about one core and none is starved.</para>
+/// <para>Workers never make the busy threads (callers in a region plus awake workers) outnumber the logical
+/// processors, or <see cref="Count"/> if that is larger: a region waits for its slowest item, so a worker preempted
+/// while it holds one stalls its caller for a scheduler quantum. With more spinning threads than cores (8 callers on
+/// 16 threads and 16 logical processors) single calls stalled for seconds (docs/performance.md, round 12).</para>
 /// <para>A region's items are claimed one at a time, so how they are split never depends on how many threads help:
 /// results don't change with the thread count or with concurrent calls.</para>
 /// </remarks>
@@ -92,14 +96,19 @@ internal static class ManagedThreads
         private const int Slots = 64, SpinRounds = 2000;
         private readonly Region?[] _open = new Region?[Slots];
         private readonly SemaphoreSlim _wake = new(0);
-        private int _sleepers;
+        private readonly int _limit;
         private volatile bool _stopped;
+
+        // Callers inside Run plus workers not asleep; workers stay out (asleep) while this exceeds _limit.
+        private int _sleepers, _busy;
 
         public int Size { get; }
 
         public Pool(int size)
         {
             Size = size;
+            _limit = Math.Max(size, Environment.ProcessorCount);
+            _busy = size - 1;
             for (int i = 1; i < size; i++)
             {
                 int id = i;
@@ -118,7 +127,8 @@ internal static class ManagedThreads
             }
 
             // ponytail: with more than 64 regions open at once the extra callers run alone; raise Slots if that happens.
-            int sleepers = Math.Min(Volatile.Read(ref _sleepers), n - 1);
+            int idleCores = _limit - Interlocked.Increment(ref _busy);
+            int sleepers = Math.Min(Math.Min(Volatile.Read(ref _sleepers), n - 1), idleCores);
             if (slot >= 0 && sleepers > 0)
                 _wake.Release(sleepers);
             region.Drain();
@@ -127,6 +137,7 @@ internal static class ManagedThreads
             var spin = default(SpinWait);
             while (Volatile.Read(ref region.Done) < n)
                 spin.SpinOnce(-1);
+            Interlocked.Decrement(ref _busy);
             if (region.Error != null)
                 ExceptionDispatchInfo.Throw(region.Error);
         }
@@ -154,7 +165,7 @@ internal static class ManagedThreads
             while (!_stopped)
             {
                 bool found = false;
-                for (int i = 0; i < SpinRounds && !found && !_stopped; i++)
+                for (int i = 0; i < SpinRounds && !found && !_stopped && Volatile.Read(ref _busy) <= _limit; i++)
                 {
                     if (!(found = Help(id)))
                         Thread.SpinWait(20);
@@ -165,8 +176,10 @@ internal static class ManagedThreads
 
                 // Announce the sleep before the last look: a caller that opens a region after that look sees us.
                 Interlocked.Increment(ref _sleepers);
-                if (!Help(id) && !_stopped)
+                Interlocked.Decrement(ref _busy);
+                if (!_stopped && (Volatile.Read(ref _busy) >= _limit || !Help(id)))
                     _wake.Wait();
+                Interlocked.Increment(ref _busy);
                 Interlocked.Decrement(ref _sleepers);
             }
         }
