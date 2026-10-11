@@ -269,7 +269,7 @@ internal sealed class ConstituencyParser : IDisposable
             var hx = _net.Compose(closes.Select(c => (IReadOnlyList<object>)c.Children.Select(x => x.Hx!).ToList()).ToList(), ct);
             for (int i = 0; i < closes.Count; i++)
             {
-                var tree = new Tree(closes[i].Label, closes[i].Children.Select(c => c.Tree!).ToList());
+                var tree = new Tree(closes[i].Label, closes[i].Children.Select(c => c.Tree!).ToArray()); // an array: no List object per node
                 newConstituents[closes[i].Slot] = new Constituent(tree, null, hx[i]);
             }
         }
