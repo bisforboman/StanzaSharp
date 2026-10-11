@@ -36,7 +36,7 @@ jobs:
   # Required jobs still run with their steps skipped rather than being skipped (a skipped job would count as passed).
   # Anything but a clear false, including this job failing, runs everything; anything but a clear light/smoke runs full.
   changes:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     outputs:
       code: ${{ steps.files.outputs.code }}
       level: ${{ steps.files.outputs.level }}
@@ -60,7 +60,7 @@ jobs:
   # Build and the tests that need no model files (the model tests skip).
   build-test:
     timeout-minutes: 90
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
 
@@ -108,7 +108,7 @@ jobs:
       matrix:
         shard: [1, 2, 3]
     timeout-minutes: 90
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
         if: needs.changes.outputs.code != 'false'
@@ -226,7 +226,7 @@ jobs:
   golden:
     needs: golden-shard
     if: ${{ !cancelled() }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - run: |
           echo "golden-shard: ${{ needs.golden-shard.result }}"
@@ -242,7 +242,7 @@ jobs:
     needs: changes
     if: ${{ !cancelled() }}
     timeout-minutes: 90
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
         if: needs.changes.outputs.code != 'false'
@@ -278,7 +278,7 @@ jobs:
     needs: changes
     if: ${{ !cancelled() }}
     timeout-minutes: 90
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
         if: needs.changes.outputs.code != 'false'
@@ -305,7 +305,7 @@ jobs:
         if: needs.changes.outputs.code != 'false'
         run: tools/verify-docker.sh models/stanza/en mcr.microsoft.com/dotnet/runtime:10.0-alpine
 
-  # Linux on Arm64 (GitHub's ubuntu-24.04-arm runner): neither libtorch nor TorchSharp has a linux-arm64 build, so only
+  # Linux on Arm64 (GitHub's ubuntu-26.04-arm runner): neither libtorch nor TorchSharp has a linux-arm64 build, so only
   # the managed backend runs. The tests build without libtorch (StanzaSharpNoLibTorch) and run every test that needs
   # none: the managed cases of the both-backend theories (DisplayName "managed: True") and the tests marked
   # [Trait("Backend", "Managed")]. Then the same no-skip check and the default install (verify-package.ps1 -Managed).
@@ -314,7 +314,7 @@ jobs:
     needs: changes
     if: ${{ !cancelled() }}
     timeout-minutes: 90
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-26.04-arm
     env:
       STANZASHARP_MODELS: ${{ github.workspace }}/models/stanza/en
     steps:
@@ -383,7 +383,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2025, macos-15, windows-11-arm]
+        os: [windows-2025, macos-26, windows-11-arm]
     timeout-minutes: 90
     runs-on: ${{ matrix.os }}
     defaults:

@@ -19,7 +19,7 @@ env:
 jobs:
   # The newest version heading in CHANGELOG.md ("Unreleased" doesn't match); nothing to do if its tag exists.
   version:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     outputs:
       version: ${{ steps.version.outputs.version }}
       new: ${{ steps.version.outputs.new }}
@@ -49,7 +49,7 @@ jobs:
 
   release:
     needs: [version, checks]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     environment: ${{ contains(needs.version.outputs.version, '-') && 'prerelease' || 'release' }}
     env:
       VERSION: ${{ needs.version.outputs.version }}
