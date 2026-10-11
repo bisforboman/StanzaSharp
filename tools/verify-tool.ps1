@@ -1,7 +1,8 @@
 <#
 Packs the StanzaSharp.Tool package, installs it from that local feed into a fresh tool path the way a user would
 (dotnet tool install), checks that it carries no native files, downloads a small set of models with it, and checks that
-compare reports a missing Python as a setup error (CI has no Python Stanza; CompareCommandTests runs it locally).
+compare reports a missing Python as a setup error (CI has no Python Stanza; CompareCommandTests runs it locally), and that
+benchmark --quick runs on those models.
 
   pwsh tools/verify-tool.ps1 [-Processors tokenize,mwt]
 #>
@@ -44,6 +45,12 @@ try {
     & $command compare (Join-Path $root 'tests/golden/corpus.txt') --models $models --processors $Processors --python no-such-python 2>$null
     if ($LASTEXITCODE -ne 2) { throw "Expected exit code 2 for compare without Python, got $LASTEXITCODE" }
     $global:LASTEXITCODE = 0 # the expected 2 would otherwise become the script's exit code
+
+    # benchmark: the smoke run on the downloaded models, StanzaSharp's column only (no Python).
+    $report = & $command benchmark --quick --models $models --processors $Processors --python no-such-python 2>$null
+    if ($LASTEXITCODE) { throw "stanzasharp benchmark --quick failed ($LASTEXITCODE)" }
+    if (-not ($report -match '^\| \*\*total\*\* \|')) { throw "stanzasharp benchmark printed no total:`n$($report -join "`n")" }
+    $report | Write-Host
     Write-Host "StanzaSharp.Tool $version installs and downloads models."
 }
 finally {

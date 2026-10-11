@@ -141,6 +141,12 @@ After characters outside the BMP (emoji, for example), StanzaSharp's `start_char
 and Stanza's count code points. `compare` converts StanzaSharp's offsets to code points before comparing and says
 that it did.
 
+`stanzasharp benchmark` measures speed on your machine: load time, each processor, words/s, one-sentence calls (median
+and p90) and peak memory on a built-in English text, and, if Python Stanza 1.15.0 is installed, Stanza on the same text
+with the same models, so you see the ratio on your own hardware. It prints a Markdown block with the CPU, cores, RAM,
+OS, .NET and SIMD path, ready to paste into an issue. About two minutes with Python on 4 cores; `--quick` for a smoke
+test. See [docs/performance.md](docs/performance.md#run-it-yourself).
+
 ## Usage
 
 ```csharp
@@ -401,6 +407,9 @@ Windows x64 and Arm64, macOS).
 - `linux-arm64` (`ubuntu-24.04-arm`): no libtorch exists for it, so the tests build without one and it runs those
   that need none (the managed cases of the both-backend theories, and the tests marked
   `[Trait("Backend", "Managed")]`), the no-skip check and the managed `verify-package.ps1`.
+
+`.github/workflows/benchmark.yml` runs only by hand (Actions > Benchmark > Run workflow): `stanzasharp benchmark`
+with Python Stanza on each free hosted runner, combined into one table (job summary and artifact `benchmarks`).
 
 `build-test` and `golden` stay separate jobs, not a matrix, because branch protection requires checks
 by those exact names (the others are not required). All upload their `.trx` test results. To reproduce `golden` locally, run `setup.ps1 -Models`, then

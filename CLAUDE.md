@@ -224,7 +224,7 @@ src/StanzaSharp.Depparse       Dependency parser (biaffine graph parser + Chu-Li
 src/StanzaSharp.Ner            Named-entity recognizer (biLSTM + CRF Viterbi).
 src/StanzaSharp.Sentiment      Sentence sentiment (CNN classifier over biLSTM states).
 src/StanzaSharp                Pipeline facade wiring the processors together.
-src/StanzaSharp.Tool           The `stanzasharp` .NET tool (model downloads; no native libtorch).
+src/StanzaSharp.Tool           The `stanzasharp` .NET tool: download, compare, benchmark (no native libtorch).
 samples/StanzaSharp.Cli        Console runner for quick experiments.
 samples/StanzaSharp.Benchmark  Per-stage speed/memory benchmark; tools/benchmark.py is the Python twin.
 samples/StanzaSharp.Example    Commented tour of the public API (download, load, every result, CoNLL-U).
@@ -573,6 +573,12 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     the managed cases of the both-backend theories plus tests marked `[Trait("Backend", "Managed")]` (they must need
     no libtorch: check with that build and an empty `NUGET_PACKAGES` locally). Then the no-skip check and
     `verify-package.ps1 -Managed`. Models cached like cross-os (`models-pt-Linux-…`).
+  - `benchmark.yml` (owner's decision 2026-10-10): `workflow_dispatch` only (inputs `package`, `quick`), never on
+    pushes/PRs, never required; free standard runners only (ubuntu-24.04, ubuntu-24.04-arm, windows-2025,
+    windows-11-arm, macos-15). Each job builds the tool, restores the `models-pt-<os>` cache (restore only; downloads on
+    a miss), installs Python 3.12 + `tools/requirements.txt` from the CPU wheel index (continue-on-error: without it the
+    block has StanzaSharp only), runs `stanzasharp benchmark --json`, writes the block to its summary and artifact
+    `benchmark-<os>`. `summary` combines them with `tools/benchmark_table.py` into `benchmarks.md` (summary + artifact).
   - Keep paths forward-slash and file names case-exact (Linux). The root `.gitattributes` keeps sources
     LF; `tests/golden/.gitattributes` pins golden files (`eol=lf`, `binary`, `validation_whitespace.txt`
     `-text`), so Windows checkouts with `core.autocrlf=true` stay byte-exact. Bash steps run under
@@ -646,6 +652,17 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     (`ConlluDiff.ToCodePointOffsets`). Exit 0/1/2. `stanza_resources_en.json` is Stanza 1.15.0's `resources.json["en"]`:
     regenerate it with a Stanza version change. `CompareCommandTests.Run_PythonStanza_*` needs tools/.venv (or
     `STANZASHARP_PYTHON`) and models/stanza/en; CI has no Python Stanza, so its no-skip checks exempt that test.
+  - `benchmark [--package] [--processors] [--models DIR] [--threads N] [--words N] [--python PATH] [--quick] [--json FILE]`
+    (`BenchmarkCommand.cs`, owner's decision 2026-10-10): managed backend vs the embedded `benchmark.py`, one Python process
+    that loads Stanza once and answers JSON-line commands (`run`, `calls`) so runs alternate (warm-up, 3 timed runs,
+    medians; 50 one-sentence calls, median/p90; peak working set, macOS `ru_maxrss`). Text: the benchmark sample's golden
+    texts (validation, corpus, tokenize_stress), embedded under `benchmark/`, cut at 1,500 whitespace words (`--quick`:
+    300, 1 run, 10 calls). Threads default to each side's own (unless `--threads`). Python is optional: any failure
+    (no Python/Stanza, models not `.pt` in an `en` folder) gives StanzaSharp's column only, with the reason. With
+    Python, the CoNLL-U of the last run is compared (`ConlluDiff`). Machine: CPU from the registry / `lscpu` (LC_ALL=C,
+    else /proc/cpuinfo) / `sysctl`, cores from GetLogicalProcessorInformation / lscpu / `hw.physicalcpu`, SIMD
+    `Gemm.Detect()`. Report formatting is invariant-culture ASCII (`x` for ratios). `BenchmarkCommandTests`
+    (`Run_PythonStanza_Quick` is exempt from CI's no-skip checks by name); `verify-tool.ps1` runs `benchmark --quick`.
 - The `StanzaSharp` package, packed from `src/StanzaSharp` (user's decision, 2026-10-06).
   - It carries all nine assemblies (facade, Core, Nn, the processors) plus their XML docs: the facade's
     ProjectReferences are `PrivateAssets="all"`, and an `IncludeProjectReferences` target adds them.

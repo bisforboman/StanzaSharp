@@ -7,6 +7,34 @@ and rounds 8 and 9, which measure the managed backend only.
 Every change kept the output byte-identical: all golden tests pass, and on the benchmark text the
 C# CoNLL-U equals Python's line for line, before and after.
 
+## Run it yourself
+
+The numbers below are from one machine. To measure yours, install the tool and run its benchmark:
+
+```
+dotnet tool install -g StanzaSharp.Tool
+stanzasharp download models/stanza/en
+pip install stanza==1.15.0            # optional: without it only StanzaSharp is measured
+stanzasharp benchmark                 # --package default_fast, --threads N, --words N, --quick, --python PATH
+```
+
+It follows the method below on a smaller text: the golden texts (validation.txt, corpus.txt, tokenize_stress.txt,
+shipped with the tool) cut at about 1,500 words (`--words`); the managed backend; a warm-up run on each side, then 3
+timed runs with StanzaSharp and Stanza alternating (Stanza runs in one Python process that stays loaded); medians per
+processor; then 50 `Process` calls on one sentence each (the text's sentences of 5-25 words; median and p90, after 5
+warm-up calls); the peak working set of each process (macOS: `ru_maxrss`). Both sides read the same `.pt` files, and
+the block says whether their CoNLL-U was identical. Threads: each side's default unless `--threads` sets both
+(StanzaSharp: all logical processors; torch: the physical cores). It prints a Markdown block with the CPU model, cores
+and logical processors, RAM, OS, .NET version, SIMD path (Vector256, Vector128 or Scalar) and StanzaSharp version,
+ready to paste into an issue. About two minutes with Python on 4 cores; `--quick` (300 words, one run, 10 calls) is a
+smoke test.
+
+On GitHub's hosted runners: **Actions > Benchmark > Run workflow** (or `gh workflow run benchmark.yml -f package=default`)
+runs it with Python Stanza on ubuntu-24.04, ubuntu-24.04-arm, windows-2025, windows-11-arm and macos-15 (free standard
+runners only). Each job puts its block in its summary and the artifact `benchmark-<runner>`; the last job combines them
+into one table (summary and artifact `benchmarks`, `benchmarks.md`, made by `tools/benchmark_table.py`). Hosted runners
+are shared virtual machines (the macOS one is virtualized Apple Silicon), so compare numbers within one run.
+
 ## Method
 
 - **Benchmark:** `samples/StanzaSharp.Benchmark` (C#) and `tools/benchmark.py` (Python) build the

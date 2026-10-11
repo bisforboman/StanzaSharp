@@ -1,0 +1,121 @@
+name: Benchmark
+
+# StanzaSharp vs Python Stanza on every free GitHub-hosted runner: `stanzasharp benchmark` (built from the checked-out
+# commit) with Python Stanza 1.15.0 next to it. Manual only (Actions > Benchmark > Run workflow, or
+# `gh workflow run benchmark.yml`); never on pushes or pull requests, and never a required check.
+# Free standard runners only (owner's rule): no larger or paid runners.
+# Each job writes its Markdown block to the job summary and the artifact benchmark-<runner> (benchmark.md + .json);
+# the last job puts them into one table (its summary and the artifact benchmarks, benchmarks.md).
+# The runners are shared virtual machines (macOS: virtualized Apple Silicon), so compare numbers from one run only.
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: Stanza's English package
+        type: choice
+        options: [default, default_fast]
+        default: default
+      quick:
+        description: Smoke run (300 words, one run, 10 calls)
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  benchmark:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm, windows-2025, windows-11-arm, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      # Stanza's .pt files, which both sides read: the cache ci.yml's cross-os and linux-arm64 jobs write (restore only,
+      # no new entry). On a miss the tool downloads them.
+      - uses: actions/cache/restore@v6
+        id: models
+        with:
+          path: models/stanza/en
+          key: models-pt-${{ runner.os }}-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs') }}
+
+      - name: Build the tool
+        run: dotnet build src/StanzaSharp.Tool -c Release
+
+      - name: Download the models
+        if: steps.models.outputs.cache-hit != 'true'
+        run: dotnet src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll download models/stanza/en --package ${{ inputs.package }}
+
+      # Python Stanza as golden installs it (the CPU-only torch wheel). If a runner has no wheel for it, the benchmark
+      # still runs, with StanzaSharp's column only and the reason in the block.
+      - uses: actions/setup-python@v7
+        id: python
+        continue-on-error: true
+        with:
+          python-version: '3.12'
+
+      - name: Install Python Stanza
+        id: stanza
+        if: steps.python.outcome == 'success'
+        continue-on-error: true
+        timeout-minutes: 20
+        run: python -m pip install -r tools/requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
+
+      - name: Benchmark
+        run: |
+          python=python
+          if [ "${{ steps.stanza.outcome }}" != success ]; then
+            python=python-stanza-not-installed
+            echo "::warning::Python Stanza could not be installed on ${{ matrix.os }}; StanzaSharp only."
+          fi
+          dotnet src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll benchmark --package ${{ inputs.package }} \
+            --models models/stanza/en --python "$python" --json benchmark.json ${{ inputs.quick && '--quick' || '' }} > benchmark.md
+          { echo "## ${{ matrix.os }}"; echo; cat benchmark.md; } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: benchmark-${{ matrix.os }}
+          path: |
+            benchmark.md
+            benchmark.json
+
+  # One table over every runner that finished, then each runner's block.
+  summary:
+    needs: benchmark
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: tools/benchmark_table.py
+          sparse-checkout-cone-mode: false
+
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: benchmark-*
+          path: results
+
+      - name: Combine
+        run: |
+          python3 tools/benchmark_table.py results > benchmarks.md
+          cat benchmarks.md >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: benchmarks
+          path: benchmarks.md
