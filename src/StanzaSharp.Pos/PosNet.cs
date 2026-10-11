@@ -285,14 +285,14 @@ internal sealed unsafe class ManagedPosNet : IPosNet
                             s[c] = (float)sum;
                         }
 
-                        upos[k] = ArgMax(s);
+                        upos[k] = Act.ArgMax(s);
                     }
                 });
 
                 int ldx = _xposClf.PaddedN;
                 Gemm.Run(pd + _biaff, rows, ldHid, _xposClf, pxb, ps, ldx, ct);
                 for (int k = 0; k < rows; k++)
-                    xpos[k] = ArgMax(scratch.AsSpan(packedRow[k] * ldx + (int)upos[k] * _xpos, _xpos));
+                    xpos[k] = Act.ArgMax(scratch.AsSpan(packedRow[k] * ldx + (int)upos[k] * _xpos, _xpos));
                 ct.ThrowIfCancellationRequested();
 
                 int ldf = _featsClf.PaddedN, total = _feats.Sum();
@@ -300,7 +300,7 @@ internal sealed unsafe class ManagedPosNet : IPosNet
                 for (int k = 0; k < rows; k++)
                 {
                     for (int f = 0; f < _feats.Length; f++)
-                        feats[f][k] = ArgMax(scratch.AsSpan(packedRow[k] * ldf + (int)upos[k] * total + _featOffsets[f], _feats[f]));
+                        feats[f][k] = Act.ArgMax(scratch.AsSpan(packedRow[k] * ldf + (int)upos[k] * total + _featOffsets[f], _feats[f]));
                 }
             }
 
@@ -310,19 +310,6 @@ internal sealed unsafe class ManagedPosNet : IPosNet
         {
             ArrayPool<float>.Shared.Return(hid);
         }
-    }
-
-    /// <summary>torch.argmax: the first index of the maximum.</summary>
-    private static int ArgMax(ReadOnlySpan<float> s)
-    {
-        int best = 0;
-        for (int i = 1; i < s.Length; i++)
-        {
-            if (s[i] > s[best])
-                best = i;
-        }
-
-        return best;
     }
 
     public void Dispose()

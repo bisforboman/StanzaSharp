@@ -490,7 +490,7 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
                                     {
                                         var row = new ReadOnlySpan<float>(outRows + r * padded, outs);
                                         long at = ((long)sent * width + i) * width + j0 + r;
-                                        labels[at] = ArgMax(row);
+                                        labels[at] = Act.ArgMax(row);
                                         if (scores != null)
                                             row.CopyTo(scores.AsSpan((int)(at * outs), outs));
                                     }
@@ -512,19 +512,6 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
         }
 
         return (labels, scores);
-    }
-
-    /// <summary>torch.argmax: the first index of the maximum.</summary>
-    private static int ArgMax(ReadOnlySpan<float> s)
-    {
-        int best = 0;
-        for (int i = 1; i < s.Length; i++)
-        {
-            if (s[i] > s[best])
-                best = i;
-        }
-
-        return best;
     }
 
     public void Dispose()

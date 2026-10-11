@@ -65,7 +65,7 @@ internal sealed class ManagedTokenizerNet : ITokenizerNet
             // inp * (1 - sigmoid(-tok0 * hier_invtemp)), in TokenizerNet's order of operations.
             for (int i = 0; i < n; i++)
             {
-                float keep = 1f - Sigmoid(-level1[i * ldl] * _hierInvTemp);
+                float keep = 1f - Act.Sigmoid(-level1[i * ldl] * _hierInvTemp);
                 for (int j = 0; j < h2; j++)
                     inp2[i * h2 + j] = inp[i * h2 + j] * keep;
             }
@@ -100,8 +100,6 @@ internal sealed class ManagedTokenizerNet : ITokenizerNet
             ArrayPool<float>.Shared.Return(level2);
         }
     }
-
-    private static float Sigmoid(float x) => 1f / (1f + MathF.Exp(-x));
 
     /// <summary>log σ(x) = min(x, 0) − log1p(e^−|x|), stable for large |x| (as torch's log_sigmoid).</summary>
     private static float LogSigmoid(float x) => (float)(Math.Min(x, 0) - Math.Log(1 + Math.Exp(-Math.Abs(x))));

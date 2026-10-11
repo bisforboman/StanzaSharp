@@ -712,6 +712,19 @@ internal static unsafe class Act
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Sigmoid(float x) => 1f / (1f + MathF.Exp(-x));
 
+    /// <summary>torch.argmax: the first index of the maximum.</summary>
+    public static int ArgMax(ReadOnlySpan<float> s)
+    {
+        int best = 0;
+        for (int i = 1; i < s.Length; i++)
+        {
+            if (s[i] > s[best])
+                best = i;
+        }
+
+        return best;
+    }
+
     /// <summary>tanh(x) = 2σ(2x) − 1 (absolute error ≈ 1e-7 near 0).</summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector128<float> Tanh(Vector128<float> x) => Sigmoid(x + x) * Vector128.Create(2f) - Vector128<float>.One;
