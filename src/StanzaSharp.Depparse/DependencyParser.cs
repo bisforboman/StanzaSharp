@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using StanzaSharp.Nn;
@@ -130,20 +131,32 @@ internal sealed class DependencyParser : IDisposable
     internal List<(int Head, string Deprel)[]> Parse(IReadOnlyList<IReadOnlyList<Word>> batch, CancellationToken cancellationToken = default,
         CharlmCache? charlms = null)
     {
-        var output = Scores(batch, labelScores: false, cancellationToken, charlms);
+        var output = Scores(batch, labelScores: false, cancellationToken, charlms, rentScores: true);
         int width = output.Width;
         var result = new List<(int, string)[]>(batch.Count);
-        for (int b = 0; b < batch.Count; b++)
+        var scores = ArrayPool<double>.Shared.Rent(width * width); // each sentence's n × n block, written before it is read
+        try
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            int n = batch[b].Count + 1;
-            var scores = new double[n, n];
-            for (int i = 0; i < n; i++)
-                for (int j = 0; j < n; j++)
-                    scores[i, j] = output.ArcLogProbs[(b * width + i) * width + j];
-            var tree = ChuLiuEdmonds.OneRoot(scores);
-            result.Add(Enumerable.Range(1, n - 1)
-                .Select(i => (tree[i], _deprels[output.Labels[(b * width + i) * width + tree[i]] + VocabPrefixSize])).ToArray());
+            for (int b = 0; b < batch.Count; b++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                int n = batch[b].Count + 1;
+                for (int i = 0; i < n; i++)
+                    for (int j = 0; j < n; j++)
+                        scores[i * n + j] = output.ArcLogProbs[(b * width + i) * width + j];
+                var tree = ChuLiuEdmonds.OneRoot(scores, n);
+                result.Add(Enumerable.Range(1, n - 1)
+                    .Select(i => (tree[i], _deprels[output.Labels[(b * width + i) * width + tree[i]] + VocabPrefixSize])).ToArray());
+            }
+        }
+        finally
+        {
+            ArrayPool<double>.Shared.Return(scores);
+            if (output.Rented)
+            {
+                ArrayPool<float>.Shared.Return(output.ArcLogProbs);
+                ArrayPool<int>.Shared.Return(output.Labels);
+            }
         }
         return result;
     }
@@ -151,14 +164,15 @@ internal sealed class DependencyParser : IDisposable
     /// <summary>The network's scores for one batch (see <see cref="DepparseScores"/>).</summary>
     /// <param name="labelScores">Also return the label scores of every word pair (tests).</param>
     /// <param name="charlms">The tagger's charlm outputs (see <see cref="Process"/>).</param>
+    /// <param name="rentScores">Let the net return <see cref="DepparseScores.Rented"/> scores, which the caller gives back.</param>
     internal DepparseScores Scores(IReadOnlyList<IReadOnlyList<Word>> batch, bool labelScores = false, CancellationToken cancellationToken = default,
-        CharlmCache? charlms = null)
+        CharlmCache? charlms = null, bool rentScores = false)
     {
         // data.py load_doc: simplify_punct changes the words the parser sees (vocab and charlm alike).
         var texts = batch.Select(s => (IReadOnlyList<string>)s.Select(w => SimplifyPunct(w.Text)).ToList()).ToList();
         int size = batch.Count, width = batch.Max(s => s.Count) + 1;
         var input = new DepparseBatch(texts, width, batch.Select(s => (long)s.Count + 1).ToArray(),
-            new long[size * width], new long[size * width], new long[size * width], new long[size * width], new long[size * width], charlms);
+            new long[size * width], new long[size * width], new long[size * width], new long[size * width], new long[size * width], charlms, rentScores);
         for (int b = 0; b < size; b++)
         {
             int row = b * width;

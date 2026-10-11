@@ -89,10 +89,13 @@ internal static unsafe class Gemm
         : Vector128.IsHardwareAccelerated ? KernelPath.Vector128
         : KernelPath.Scalar;
 
-    /// <summary>A [m, K] row-major → C [m, PaddedN] = A·Wᵀ + bias (bias null or PaddedN floats).</summary>
-    public static float[] Run(float[] a, int m, PackedMatrix w, float[]? bias)
+    /// <summary>A [m, K] row-major → C [m, PaddedN] = A·Wᵀ + bias (bias null or PaddedN floats), into <paramref name="c"/>
+    /// if given (at least m·PaddedN floats; a rented array is fine, every element of those rows is written).</summary>
+    public static float[] Run(float[] a, int m, PackedMatrix w, float[]? bias, float[]? c = null)
     {
-        var c = new float[m * w.PaddedN];
+        c ??= new float[m * w.PaddedN];
+        if (c.Length < m * w.PaddedN)
+            throw new ArgumentException("c is too small");
         fixed (float* pa = a, pb = bias, pc = c)
             Run(pa, m, w.K, w, pb, pc, w.PaddedN);
         return c;

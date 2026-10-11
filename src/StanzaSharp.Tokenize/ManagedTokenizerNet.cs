@@ -47,6 +47,9 @@ internal sealed class ManagedTokenizerNet : ITokenizerNet
         var inp = ArrayPool<float>.Shared.Rent(n * h2);
         var inp2 = ArrayPool<float>.Shared.Rent(n * h2);
         var hid2 = ArrayPool<float>.Shared.Rent(n * h2);
+        int ldl = _clf.PaddedN; // [n, 16] each: tok0, sent0, mwt0
+        var level1 = ArrayPool<float>.Shared.Rent(n * ldl);
+        var level2 = ArrayPool<float>.Shared.Rent(n * ldl);
         try
         {
             for (int i = 0; i < n; i++)
@@ -55,22 +58,22 @@ internal sealed class ManagedTokenizerNet : ITokenizerNet
                 feats.AsSpan(i * featDim, featDim).CopyTo(x.AsSpan(i * inDim + _emb));
             }
             _rnn.ForwardPadded(x, rows, width, lengths, inp, ct);
-            var level1 = Gemm.Run(inp, n, _clf, _clfBias); // [n, 16]: tok0, sent0, mwt0
+            Gemm.Run(inp, n, _clf, _clfBias, level1);
 
             // inp * (1 - sigmoid(-tok0 * hier_invtemp)), in TokenizerNet's order of operations.
             for (int i = 0; i < n; i++)
             {
-                float keep = 1f - Sigmoid(-level1[i * _clf.PaddedN] * _hierInvTemp);
+                float keep = 1f - Sigmoid(-level1[i * ldl] * _hierInvTemp);
                 for (int j = 0; j < h2; j++)
                     inp2[i * h2 + j] = inp[i * h2 + j] * keep;
             }
             _rnn2.ForwardPadded(inp2, rows, width, lengths, hid2, ct);
-            var level2 = Gemm.Run(hid2, n, _clf2, null);
+            Gemm.Run(hid2, n, _clf2, null, level2);
 
             var pred = new float[n * Classes];
             for (int i = 0; i < n; i++)
             {
-                int a = i * _clf.PaddedN;
+                int a = i * ldl;
                 float tok0 = level1[a] + level2[a], sent0 = level1[a + 1] + level2[a + 1], mwt0 = level1[a + 2] + level2[a + 2];
                 float tok = LogSigmoid(tok0), sent = LogSigmoid(sent0), nonsent = LogSigmoid(-sent0);
                 float mwt = LogSigmoid(mwt0), nonmwt = LogSigmoid(-mwt0);
@@ -89,6 +92,8 @@ internal sealed class ManagedTokenizerNet : ITokenizerNet
             ArrayPool<float>.Shared.Return(inp);
             ArrayPool<float>.Shared.Return(inp2);
             ArrayPool<float>.Shared.Return(hid2);
+            ArrayPool<float>.Shared.Return(level1);
+            ArrayPool<float>.Shared.Return(level2);
         }
     }
 

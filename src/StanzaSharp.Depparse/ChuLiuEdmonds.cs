@@ -1,3 +1,5 @@
+using System.Buffers;
+
 namespace StanzaSharp.Depparse;
 
 /// <summary>
@@ -15,64 +17,91 @@ internal static class ChuLiuEdmonds
     public static int[] OneRoot(double[,] scores)
     {
         int n = scores.GetLength(0);
-        var s = (double[,])scores.Clone();
+        var s = ArrayPool<double>.Shared.Rent(n * n);
+        try
+        {
+            for (int i = 0; i < n; i++)
+                for (int j = 0; j < n; j++)
+                    s[i * n + j] = scores[i, j];
+            return OneRoot(s, n);
+        }
+        finally
+        {
+            ArrayPool<double>.Shared.Return(s);
+        }
+    }
+
+    /// <summary><see cref="OneRoot(double[,])"/> on an n × n row-major matrix in <paramref name="scores"/>, which it overwrites.</summary>
+    internal static int[] OneRoot(double[] scores, int n)
+    {
         double min = double.PositiveInfinity;
-        foreach (var x in s)
-            if (double.IsFinite(x) && x < min)
-                min = x;
+        for (int k = 0; k < n * n; k++)
+            if (double.IsFinite(scores[k]) && scores[k] < min)
+                min = scores[k];
         double shift = min * n;
         for (int i = 0; i < n; i++)
-            s[i, 0] += shift;
-        var tree = Solve(s);
+            scores[i * n] += shift;
+        var tree = Solve(scores, n);
         if (tree.Skip(1).Count(h => h == 0) != 1)
             throw new InvalidOperationException("Rescaling by the lowest score should have prevented using multiple root edges");
         return tree;
     }
 
-    /// <summary>chuliu_edmonds: contracts cycles one at a time (the last one Tarjan finds first), then expands.</summary>
-    internal static int[] Solve(double[,] scores)
+    /// <summary>
+    /// chuliu_edmonds: contracts cycles one at a time (the last one Tarjan finds first), then expands. Each contracted
+    /// graph is smaller than the one before, so it goes into a second n × n buffer, and the two take turns.
+    /// </summary>
+    internal static int[] Solve(double[] scores, int n)
     {
         var contractions = new Stack<(int[] Tree, int[] CycleLocs, int[] NoncycleLocs, int[] MetanodeHeads, int[] MetanodeDeps)>();
-        Prepare(scores);
-        var tree = ArgmaxRows(scores);
-        var cycles = Tarjan(tree);
-        while (cycles.Count > 0)
+        var rented = ArrayPool<double>.Shared.Rent(n * n);
+        var other = rented;
+        try
         {
-            var cycle = cycles[^1];
-            var (sub, cycleLocs, noncycleLocs, heads, deps) = ProcessCycle(tree, cycle, scores);
-            contractions.Push((tree, cycleLocs, noncycleLocs, heads, deps));
-            scores = sub;
-            Prepare(scores);
-            tree = ArgmaxRows(scores);
-            cycles = Tarjan(tree);
+            Prepare(scores, n);
+            var tree = ArgmaxRows(scores, n);
+            var cycles = Tarjan(tree);
+            while (cycles.Count > 0)
+            {
+                var cycle = cycles[^1];
+                var (cycleLocs, noncycleLocs, heads, deps) = ProcessCycle(tree, cycle, scores, other);
+                contractions.Push((tree, cycleLocs, noncycleLocs, heads, deps));
+                (scores, other) = (other, scores);
+                n = noncycleLocs.Length + 1;
+                Prepare(scores, n);
+                tree = ArgmaxRows(scores, n);
+                cycles = Tarjan(tree);
+            }
+            while (contractions.Count > 0)
+            {
+                var (outer, cycleLocs, noncycleLocs, heads, deps) = contractions.Pop();
+                tree = Expand(outer, tree, cycleLocs, noncycleLocs, heads, deps);
+            }
+            return tree;
         }
-        while (contractions.Count > 0)
+        finally
         {
-            var (outer, cycleLocs, noncycleLocs, heads, deps) = contractions.Pop();
-            tree = Expand(outer, tree, cycleLocs, noncycleLocs, heads, deps);
+            ArrayPool<double>.Shared.Return(rented);
         }
-        return tree;
     }
 
     /// <summary>prepare_scores: no self-loops, and the root's own row allows only itself.</summary>
-    private static void Prepare(double[,] scores)
+    private static void Prepare(double[] scores, int n)
     {
-        int n = scores.GetLength(0);
         for (int i = 0; i < n; i++)
         {
-            scores[i, i] = double.NegativeInfinity;
-            scores[0, i] = double.NegativeInfinity;
+            scores[i * n + i] = double.NegativeInfinity;
+            scores[i] = double.NegativeInfinity;
         }
-        scores[0, 0] = 0;
+        scores[0] = 0;
     }
 
-    private static int[] ArgmaxRows(double[,] scores)
+    private static int[] ArgmaxRows(double[] scores, int n)
     {
-        int n = scores.GetLength(0), m = scores.GetLength(1);
         var result = new int[n];
         for (int i = 0; i < n; i++)
-            for (int j = 1; j < m; j++)
-                if (scores[i, j] > scores[i, result[i]])
+            for (int j = 1; j < n; j++)
+                if (scores[i * n + j] > scores[i * n + result[i]])
                     result[i] = j;
         return result;
     }
@@ -81,110 +110,123 @@ internal static class ChuLiuEdmonds
     internal static List<bool[]> Tarjan(int[] tree)
     {
         int n = tree.Length, next = 0;
-        var indices = Enumerable.Repeat(-1, n).ToArray();
-        var lowlinks = Enumerable.Repeat(-1, n).ToArray();
+        var indices = new int[n];
+        var lowlinks = new int[n];
+        Array.Fill(indices, -1);
+        Array.Fill(lowlinks, -1);
         var onStack = new bool[n];
         var stack = new List<int>();
         var cycles = new List<bool[]>();
+        // Each node's dependents in ascending order: children[first[i]..first[i + 1]).
+        var first = new int[n + 1];
+        foreach (int head in tree)
+            first[head + 1]++;
+        for (int i = 0; i < n; i++)
+            first[i + 1] += first[i];
+        var children = new int[n];
+        var fill = (int[])first.Clone();
+        for (int d = 0; d < n; d++)
+            children[fill[tree[d]]++] = d;
 
-        void MaybePopCycle(int i)
-        {
-            if (lowlinks[i] != indices[i])
-                return;
-            var cycle = new bool[n];
-            while (stack[^1] != i)
-            {
-                int j = stack[^1];
-                stack.RemoveAt(stack.Count - 1);
-                onStack[j] = false;
-                cycle[j] = true;
-            }
-            stack.RemoveAt(stack.Count - 1);
-            onStack[i] = false;
-            cycle[i] = true;
-            if (cycle.Count(c => c) > 1)
-                cycles.Add(cycle);
-        }
-
-        // Stanza's explicit call stack: (node, its dependents, how many were visited, the one being visited).
-        var calls = new Stack<(int I, int[]? Deps, int Pos, int J)>();
+        // Stanza's explicit call stack: (node, whether it was entered, how many dependents were visited, the one being visited).
+        var calls = new Stack<(int I, bool Entered, int Pos, int J)>();
         for (int root = 0; root < n; root++)
         {
             if (indices[root] != -1)
                 continue;
-            calls.Push((root, null, 0, -1));
+            calls.Push((root, false, 0, -1));
             while (calls.Count > 0)
             {
-                var (i, deps, pos, j) = calls.Pop();
-                if (deps == null)
+                var (i, entered, pos, j) = calls.Pop();
+                if (!entered)
                 {
                     indices[i] = lowlinks[i] = next++;
                     stack.Add(i);
                     onStack[i] = true;
-                    deps = Enumerable.Range(0, n).Where(d => tree[d] == i).ToArray();
                 }
                 else
                     lowlinks[i] = Math.Min(lowlinks[i], lowlinks[j]);
 
                 bool descended = false;
-                while (pos < deps.Length)
+                while (pos < first[i + 1] - first[i])
                 {
-                    int d = deps[pos++];
+                    int d = children[first[i] + pos++];
                     if (indices[d] == -1)
                     {
-                        calls.Push((i, deps, pos, d));
-                        calls.Push((d, null, 0, -1));
+                        calls.Push((i, true, pos, d));
+                        calls.Push((d, false, 0, -1));
                         descended = true;
                         break;
                     }
                     if (onStack[d])
                         lowlinks[i] = Math.Min(lowlinks[i], indices[d]);
                 }
-                if (!descended)
-                    MaybePopCycle(i);
+                if (descended || lowlinks[i] != indices[i])
+                    continue;
+                // The root of a strongly connected component: pop it.
+                var cycle = new bool[n];
+                int size = 0;
+                while (stack[^1] != i)
+                {
+                    int k = stack[^1];
+                    stack.RemoveAt(stack.Count - 1);
+                    onStack[k] = false;
+                    cycle[k] = true;
+                    size++;
+                }
+                stack.RemoveAt(stack.Count - 1);
+                onStack[i] = false;
+                cycle[i] = true;
+                if (size > 0)
+                    cycles.Add(cycle);
             }
         }
         return cycles;
     }
 
-    /// <summary>process_cycle: the scores of the graph with the cycle contracted into one last node.</summary>
-    private static (double[,] Sub, int[] CycleLocs, int[] NoncycleLocs, int[] MetanodeHeads, int[] MetanodeDeps) ProcessCycle(
-        int[] tree, bool[] cycle, double[,] scores)
+    /// <summary>process_cycle: writes the scores of the graph with the cycle contracted into one last node to <paramref name="sub"/>
+    /// ((noncycle nodes + 1)² row-major).</summary>
+    private static (int[] CycleLocs, int[] NoncycleLocs, int[] MetanodeHeads, int[] MetanodeDeps) ProcessCycle(
+        int[] tree, bool[] cycle, double[] scores, double[] sub)
     {
-        var cycleLocs = Enumerable.Range(0, tree.Length).Where(i => cycle[i]).ToArray();
-        var noncycleLocs = Enumerable.Range(0, tree.Length).Where(i => !cycle[i]).ToArray();
-        int c = cycleLocs.Length, n = noncycleLocs.Length;
-        var cycleScores = cycleLocs.Select(i => scores[i, tree[i]]).ToArray();
+        int size = tree.Length, c = cycle.Count(x => x), n = size - c;
+        var cycleLocs = new int[c];
+        var noncycleLocs = new int[n];
+        for (int i = 0, a = 0, b = 0; i < size; i++)
+            if (cycle[i])
+                cycleLocs[a++] = i;
+            else
+                noncycleLocs[b++] = i;
+        var cycleScores = new double[c];
+        for (int k = 0; k < c; k++)
+            cycleScores[k] = scores[cycleLocs[k] * size + tree[cycleLocs[k]]];
         double cycleScore = PairwiseSum(cycleScores, 0, c);
 
         // metanode_head_scores (c x n): the cycle node k taking noncycle head h instead of its cycle head.
-        var headScores = new double[c, n];
-        for (int k = 0; k < c; k++)
-            for (int h = 0; h < n; h++)
-                headScores[k, h] = scores[cycleLocs[k], noncycleLocs[h]] - cycleScores[k] + cycleScore;
+        double HeadScore(int k, int h) => scores[cycleLocs[k] * size + noncycleLocs[h]] - cycleScores[k] + cycleScore;
         var metanodeHeads = new int[n];
         for (int h = 0; h < n; h++)
             for (int k = 1; k < c; k++)
-                if (headScores[k, h] > headScores[metanodeHeads[h], h])
+                if (HeadScore(k, h) > HeadScore(metanodeHeads[h], h))
                     metanodeHeads[h] = k;
         // metanode_dep_scores (n x c): noncycle node d taking cycle node k as its head.
         var metanodeDeps = new int[n];
         for (int d = 0; d < n; d++)
             for (int k = 1; k < c; k++)
-                if (scores[noncycleLocs[d], cycleLocs[k]] > scores[noncycleLocs[d], cycleLocs[metanodeDeps[d]]])
+                if (scores[noncycleLocs[d] * size + cycleLocs[k]] > scores[noncycleLocs[d] * size + cycleLocs[metanodeDeps[d]]])
                     metanodeDeps[d] = k;
 
-        var sub = new double[n + 1, n + 1];
+        int m = n + 1;
         for (int i = 0; i < n; i++)
         {
             for (int j = 0; j < n; j++)
-                sub[i, j] = scores[noncycleLocs[i], noncycleLocs[j]];
-            sub[n, i] = headScores[metanodeHeads[i], i];
-            sub[i, n] = scores[noncycleLocs[i], cycleLocs[metanodeDeps[i]]];
+                sub[i * m + j] = scores[noncycleLocs[i] * size + noncycleLocs[j]];
+            sub[n * m + i] = HeadScore(metanodeHeads[i], i);
+            sub[i * m + n] = scores[noncycleLocs[i] * size + cycleLocs[metanodeDeps[i]]];
         }
-        return (sub, cycleLocs, noncycleLocs, metanodeHeads, metanodeDeps);
+        sub[n * m + n] = 0; // new double[,] left it 0; Prepare sets it to -inf anyway
+        return (cycleLocs, noncycleLocs, metanodeHeads, metanodeDeps);
     }
-
     /// <summary>expand_contracted_tree: puts the solved contracted graph back around the cycle.</summary>
     private static int[] Expand(int[] tree, int[] contracted, int[] cycleLocs, int[] noncycleLocs, int[] metanodeHeads, int[] metanodeDeps)
     {

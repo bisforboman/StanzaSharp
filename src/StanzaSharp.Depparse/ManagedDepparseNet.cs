@@ -150,9 +150,9 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
         {
             Encode(batch, offset, packedRow, h, ct);
             ct.ThrowIfCancellationRequested();
-            var arcs = Arcs(h, size, width, lengths, offset, ct);
-            var (labels, scores) = Labels(h, size, width, lengths, offset, labelScores, ct);
-            return new(width, _deprel.Out, arcs, labels, scores);
+            var arcs = Arcs(h, size, width, lengths, offset, batch.RentScores, ct);
+            var (labels, scores) = Labels(h, size, width, lengths, offset, labelScores, batch.RentScores, ct);
+            return new(width, _deprel.Out, arcs, labels, scores, batch.RentScores);
         }
         finally
         {
@@ -276,10 +276,11 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
     /// GraphParser.forward_scores, then the log-softmax over the padded width. Pair sums and the combination are in double.
     /// One scorer at a time (its in1/in2 and T, then its term of every pair), so only one scorer's buffers are live.
     /// </summary>
-    private float[] Arcs(float[] h, int size, int width, long[] lengths, int[] offset, CancellationToken ct)
+    private float[] Arcs(float[] h, int size, int width, long[] lengths, int[] offset, bool rent, CancellationToken ct)
     {
         int rows = offset[size], b = _biaff;
-        var result = new float[size * width * width];
+        // Rented: rows past a sentence's length stay stale.
+        var result = rent ? ArrayPool<float>.Shared.Rent(size * width * width) : new float[size * width * width];
         var sentenceOf = new int[rows];
         for (int s = 0; s < size; s++)
             Array.Fill(sentenceOf, s, offset[s], offset[s + 1] - offset[s]);
@@ -379,12 +380,13 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
     /// dependent i, its T row repacked as a [hidden, relations] weight panel and every head j's in2 through the GEMM
     /// micro-kernel. Returns the argmax relations and, if asked for, the scores.
     /// </summary>
-    private (int[] Labels, float[]? Scores) Labels(float[] h, int size, int width, long[] lengths, int[] offset, bool keepScores, CancellationToken ct)
+    private (int[] Labels, float[]? Scores) Labels(float[] h, int size, int width, long[] lengths, int[] offset, bool keepScores, bool rent,
+        CancellationToken ct)
     {
         var scorer = _deprel;
         int outs = scorer.Out, b = _biaff, ldT = scorer.W.PaddedN, ldH = scorer.Hid.PaddedN;
         int panels = (outs + PackedMatrix.NR - 1) / PackedMatrix.NR, padded = panels * PackedMatrix.NR;
-        var labels = new int[size * width * width];
+        var labels = rent ? ArrayPool<int>.Shared.Rent(size * width * width) : new int[size * width * width]; // rented: stale past the real pairs
         var scores = keepScores ? new float[size * width * width * outs] : null;
         int maxRows = Math.Max(ChunkFloats / ldT, (int)lengths.Max());
         var hid = Hidden(scorer, h, offset[size], ct);
