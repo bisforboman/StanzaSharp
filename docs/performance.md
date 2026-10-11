@@ -168,10 +168,25 @@ median ms:
   first while `mds_stores` used 57% of a vCPU), 132 and 133 ms with it off; Python Stanza 303-704 ms. The `mdutil` step
   stays, as it costs nothing and removes a source of noise.
 
-**Open (owner's decision):** on this machine one caller on 16 threads (the default, all logical processors) took
-98-180 ms per call against 42-65 on 8 (the physical cores) in the same alternated runs, while other processes used
-the CPU. libtorch defaults to the physical cores; a managed default of physical cores (or `ProcessorCount / 2` where
-SMT is on) would avoid the hyperthread siblings' contention. Not measured on an idle machine.
+**Default thread count: physical cores or logical processors?** Loaded, one caller on 16 threads (the default, all
+logical processors) took 98-180 ms per call against 42-65 on 8 (the physical cores). Measured again on an idle machine
+(under 5% CPU before each run) and on the free runners, alternated, three rounds each (macos-26 and the Arm runners
+have no SMT, so physical = logical there):
+
+| | Ryzen 7 5800X, idle: 8 / 16 threads | ubuntu-26.04 (EPYC, 2 / 4) | windows-2025 (EPYC, 2 / 4) |
+|---|---|---|---|
+| default, words/s | 1,085, 1,068, 1,078 / 1,076, 1,137, 1,124 | 227, 231, 226 / 240, 233, 241 | 174, 214, 213 / 119, 120, 147 |
+| default, per call median ms | 42.6, 45.9, 45.3 / 52.5, 57.7, 58.7 | 80.6, 86.5, 84.8 / 73.9, 76.0, 72.2 | 85.6, 92.5, 91.4 / 77.9, 72.7, 78.3 |
+| default_fast, words/s | 2,379, 2,395, 2,403 / 2,452, 2,574, 2,603 | 378, 375, 366 / 402, 394, 395 | 352, 349, 355 / 382, 389, 391 |
+| default_fast, per call median ms | 22.8, 23.4, 22.6 / 27.9, 29.9, 31.0 | 40.1, 41.0, 40.8 / 40.0, 50.3, 39.2 | 43.0, 44.0, 43.6 / 39.5, 41.2, 41.8 |
+| 2 callers, calls/s | 22.6, 22.4, 21.2 / 19.1, 19.5, 15.3 | 9.7, 9.3, 9.4 / 10.3, 10.5, 10.4 | 10.6, 10.4, 9.9 / 12.1, 11.5, 11.5 |
+
+(Ryzen: the big call is the benchmark text, 26,264 words, one run; runners: `stanzasharp benchmark --python none`, about
+2,000 words and 50 one-sentence calls; 2 callers: `--per-call 60 --concurrent 2`.) Neither wins everywhere. On the
+idle Ryzen the physical cores give 18-27% shorter calls and 15-39% more calls/s with 2 callers, but up to 8% fewer
+words/s on the big text. On the 2-core runners the logical processors give 3-8% more words/s (except below), 7-17% more
+calls/s with 2 callers and 8-21% shorter `default` calls (`default_fast` calls: even on ubuntu, 3-10% shorter on
+windows), and lose only windows-2025's big `default` text (31-44% fewer words/s). So the default stays all logical processors.
 
 ## Results, round 11: garbage on long texts (managed backend)
 
