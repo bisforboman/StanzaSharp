@@ -1,6 +1,7 @@
 name: Release
 
-# Merging a pull request that adds a version heading to CHANGELOG.md (e.g. "## [0.4.2] - 2026-10-07") publishes that
+# Merging a pull request that adds a version heading to CHANGELOG.md (e.g. "## [0.4.2] - 2026-10-07"; made by
+# `python tools/changelog.py release X.Y.Z` from the entries in changes/) publishes that
 # version: the newest version in CHANGELOG.md without a tag yet. Versions with a '-' are prereleases and use the
 # 'prerelease' environment; others use 'release' (approval required). The tag and the GitHub release are created only
 # after the packages are on nuget.org, so a tag always marks a published version.

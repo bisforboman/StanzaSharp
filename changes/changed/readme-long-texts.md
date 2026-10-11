@@ -1,0 +1,1 @@
+- README: guidance for very long texts, including what splitting a text into parts changes (sentiment labels).
