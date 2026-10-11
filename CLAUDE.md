@@ -84,6 +84,10 @@ All 7 steps of the build order are done:
   `ParserState.Dispose` disposes them; Chu-Liu/Edmonds works on flat rented n × n buffers; `DepparseBatch.RentScores`
   lets the managed net rent the arc/label outputs, which `DependencyParser.Parse` returns. Rent an output only where its
   one caller gives it back; the Cuda nets keep plain arrays. A call now allocates ~18 KB/word instead of ~54 (docs/performance.md round 11).
+  Round 12 (concurrent calls, `--with-long`): `ManagedThreads.Pool` keeps workers asleep while callers in a region plus
+  awake workers number max(ProcessorCount, Count) (`_busy`/`_limit`); with Threads = ProcessorCount and 8 callers, spinning
+  oversubscription had stalled calls for seconds. Calls don't serialize or starve; >2 callers cost throughput (L3/DRAM,
+  same on 1 thread). macOS runner one-sentence slowness was Spotlight indexing (benchmark.yml turns it off).
   Round 6 (managed backend, docs/performance.md): no native heap (malloc_trim returns nothing there); after a call the
   GC heap holds the models plus `ArrayPool<T>.Shared`'s scratch buffers (all eight, 6,761 words: 2.4 GB working set),
   released only by a gen2 GC a minute later; the README tells services to run an aggressive GC when idle. The library

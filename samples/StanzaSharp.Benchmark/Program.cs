@@ -41,6 +41,8 @@ const string Usage = """
                       median and p90 ms per call and per stage
       --concurrent T  --per-call: T threads each make N calls on one shared pipeline; reports calls/s
       --text T        --per-call: every call on this text instead (e.g. "Hi." for the cost of a minimal call)
+      --with-long     --concurrent: one more thread processes one copy of the golden texts in a loop meanwhile, to
+                      see whether a long call slows the short ones down
     """;
 
 if (args is ["lemma-divergence", ..])
@@ -53,7 +55,7 @@ if (args is ["managed-spike", ..])
 string modelDir = Path.Combine("models", "converted", "en");
 int copies = 8, runs = 3, threads = 0, documents = 0, perCall = 0, concurrent = 0, memoryWords = 0, chunkWords = 0, calls = 1, cacheWords = CharlmCache.DefaultMaxWords;
 string? outFile = null, processors = null, perCallText = null;
-bool bulkCall = false, verbose = false, noTrim = false, idleGc = false, live = false;
+bool withLong = false, bulkCall = false, verbose = false, noTrim = false, idleGc = false, live = false;
 torch.Device? device = null; // CPU; not torch.CPU, which would load libtorch in a managed run
 bool noTf32 = false;
 string package = Pipeline.DefaultPackage;
@@ -86,6 +88,7 @@ for (int i = 0; i < args.Length; i++)
         case "--per-call" when i + 1 < args.Length: perCall = int.Parse(args[++i]); break;
         case "--concurrent" when i + 1 < args.Length: concurrent = int.Parse(args[++i]); break;
         case "--text" when i + 1 < args.Length: perCallText = args[++i]; break;
+        case "--with-long": withLong = true; break;
         default:
             Console.Error.WriteLine(Usage);
             return 2;
@@ -120,6 +123,20 @@ if (perCall > 0)
     if (concurrent > 0)
     {
         var latencies = new List<double>[concurrent];
+        var longCalls = new List<double>();
+        using var stopLong = new CancellationTokenSource();
+        var longText = BuildText(1);
+        var longWorker = new Thread(() =>
+        {
+            while (!stopLong.IsCancellationRequested)
+            {
+                long start = Stopwatch.GetTimestamp();
+                nlp.Process(longText);
+                longCalls.Add(Stopwatch.GetElapsedTime(start).TotalSeconds);
+            }
+        });
+        if (withLong)
+            longWorker.Start();
         var watch = Stopwatch.StartNew();
         var workers = Enumerable.Range(0, concurrent).Select(t => new Thread(() =>
         {
@@ -134,9 +151,16 @@ if (perCall > 0)
         workers.ForEach(w => w.Start());
         workers.ForEach(w => w.Join());
         double seconds = watch.Elapsed.TotalSeconds;
+        stopLong.Cancel();
+        if (withLong)
+            longWorker.Join();
         var all = latencies.SelectMany(l => l).ToList();
         Console.WriteLine($"{header}, {concurrent} callers x {perCall} calls on one sentence each");
-        Console.WriteLine($"{"throughput",-14}{concurrent * perCall / seconds,9:F1} calls/s   per call median {Median(all),8:F2} ms  p90 {Percentile(all, 0.9),8:F2} ms");
+        Console.WriteLine($"{"throughput",-14}{concurrent * perCall / seconds,9:F1} calls/s   per call median {Median(all),8:F2} ms  p90 {Percentile(all, 0.9),8:F2} ms  max {all.Max(),8:F2} ms");
+        var callerMedians = latencies.Select(Median).Order().ToList();
+        Console.WriteLine($"{"per caller",-14}median of the fastest caller {callerMedians[0],8:F2} ms, of the slowest {callerMedians[^1],8:F2} ms");
+        if (withLong)
+            Console.WriteLine($"{"long calls",-14}{longCalls.Count,9} of {longText.Length:N0} chars, {string.Join(" ", longCalls.Select(s => s.ToString("F1")))} s");
         return 0;
     }
 
