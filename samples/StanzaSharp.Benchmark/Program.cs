@@ -91,6 +91,7 @@ for (int i = 0; i < args.Length; i++)
             return 2;
     }
 }
+
 // Like PipelineOptions: a device or --no-tf32 means the torch backend.
 var backend = backendArg ?? (device != null || noTf32 ? Backend.TorchSharp : Backend.Managed);
 if (backend == Backend.Managed && (device != null || noTf32))
@@ -138,6 +139,7 @@ if (perCall > 0)
         Console.WriteLine($"{"throughput",-14}{concurrent * perCall / seconds,9:F1} calls/s   per call median {Median(all),8:F2} ms  p90 {Percentile(all, 0.9),8:F2} ms");
         return 0;
     }
+
     stageLog.Times.Clear();
     long allocated = GC.GetTotalAllocatedBytes(true);
     var totals = new List<double>();
@@ -147,6 +149,7 @@ if (perCall > 0)
         nlp.Process(texts[i % texts.Count]);
         totals.Add(Stopwatch.GetElapsedTime(start).TotalMilliseconds);
     }
+
     Console.WriteLine($"{header}, {perCall} calls on " + (perCallText != null ? $"\"{perCallText}\"" : $"one sentence each ({texts.Count} sentences of 5-25 words, cycled)"));
     Console.WriteLine($"{"",-14}{"median",9} {"p90",9}  ms per call");
     foreach (var (stage, ms) in stageLog.Times)
@@ -182,8 +185,16 @@ if (memoryWords > 0)
     // What a short-lived process pays (issue #19): load, one Process call (or one per part), exit.
     var paragraphs = BuildParagraphs(memoryWords);
     var clockLoad = Stopwatch.StartNew();
-    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Processors = processors, Backend = pipelineBackend, Threads = threads > 0 ? threads : null, Logger = verbose ? new MemoryLogger(live) : null, TrimNativeHeap = !noTrim,
-        CharlmCache = new CharlmCacheOptions { IsEnabled = cacheWords > 0, MaxWords = Math.Max(cacheWords, 1) } });
+    using var nlp = Pipeline.Load(modelDir, new PipelineOptions
+    {
+        Package = package,
+        Processors = processors,
+        Backend = pipelineBackend,
+        Threads = threads > 0 ? threads : null,
+        Logger = verbose ? new MemoryLogger(live) : null,
+        TrimNativeHeap = !noTrim,
+        CharlmCache = new CharlmCacheOptions { IsEnabled = cacheWords > 0, MaxWords = Math.Max(cacheWords, 1) },
+    });
     double loadSeconds = clockLoad.Elapsed.TotalSeconds;
     double loadPeak = PeakMB(), afterLoad = WorkingSetMB();
     var gcAfterLoad = GC.GetGCMemoryInfo();
@@ -196,12 +207,15 @@ if (memoryWords > 0)
         long allocatedBefore = GC.GetTotalAllocatedBytes(true);
         clockLoad.Restart();
         if (chunkWords <= 0)
+        {
             docs = [nlp.Process(string.Join("\n\n", paragraphs))];
+        }
         else
         {
             var parts = Chunk(paragraphs, chunkWords);
             docs = bulkCall ? nlp.Process((IEnumerable<string>)parts) : parts.Select(nlp.Process).ToList();
         }
+
         double seconds = clockLoad.Elapsed.TotalSeconds;
         if (call == 1)
         {
@@ -209,15 +223,18 @@ if (memoryWords > 0)
             allocatedMB = (GC.GetTotalAllocatedBytes(true) - allocatedBefore) / 1048576.0;
             gc = GC.GetGCMemoryInfo();
         }
+
         after.Add($"after call {call}  {seconds,7:F2} s  peak {PeakMB(),6:F0} MB  working set {WorkingSetMB(),6:F0} MB");
         if (verbose)
             after.Add("  " + HeapStats.Describe());
     }
+
     if (outFile != null)
         File.WriteAllText(outFile, string.Concat(docs.Select(Conllu.Write)));
     int wordCount = docs.Sum(d => d.Sentences.Sum(s => s.Words.Count()));
     string mode = chunkWords <= 0 ? "one Process call" : $"{docs.Count} parts of ~{chunkWords} words, " + (bulkCall ? "one bulk call" : "one call each");
     Console.WriteLine($"C# StanzaSharp ({package}: {processors ?? "all"}) from {modelDir}, {(System.Runtime.GCSettings.IsServerGC ? "Server" : "workstation")} GC, " +
+
                       // A managed pipeline never loads libtorch, so don't ask it.
                       (backend == Backend.Managed ? $"managed threads {ManagedThreads.Count}" : $"torch threads {torch.get_num_threads()}") +
                       $": {wordCount} words, {mode}, {(NativeTorchLoaded() ? "native libtorch loaded" : "no native libtorch")}");
@@ -234,6 +251,7 @@ if (memoryWords > 0)
         GC.Collect();
         Console.WriteLine($"after a full GC and finalizers: working set {WorkingSetMB(),6:F0} MB");
         Console.WriteLine("  " + HeapStats.Describe());
+
         // The output's own size: the GC heap with the documents, minus without them.
         long withDocs = GC.GetTotalMemory(true);
         GC.KeepAlive(docs);
@@ -241,6 +259,7 @@ if (memoryWords > 0)
         long withoutDocs = GC.GetTotalMemory(true);
         Console.WriteLine($"the documents: {(withDocs - withoutDocs) / 1048576.0:F0} MB on the GC heap, {(double)(withDocs - withoutDocs) / wordCount:F0} bytes per word");
     }
+
     if (idleGc)
     {
         // What a service can do to get the memory back (docs/performance.md, round 6): an aggressive GC decommits the
@@ -251,22 +270,26 @@ if (memoryWords > 0)
             var info = GC.GetGCMemoryInfo();
             Console.WriteLine($"{what,-36} working set {WorkingSetMB(),6:F0} MB  (GC heap {info.HeapSizeBytes / 1048576.0:F0} MB, committed {info.TotalCommittedBytes / 1048576.0:F0} MB)");
         }
+
         void AggressiveGc(string when)
         {
             var clock = Stopwatch.StartNew();
             GC.Collect(2, GCCollectionMode.Aggressive, blocking: true, compacting: true);
             Report($"{when}: aggressive GC, {clock.Elapsed.TotalMilliseconds:F0} ms");
         }
+
         AggressiveGc("at once");
         Thread.Sleep(61_000);
         GC.Collect();
         Report("61 s later, a full GC");
         AggressiveGc("then");
     }
+
     return 0;
 }
 
 string text = BuildText(copies);
+
 // The package's models, loaded as Pipeline does: the charlms only if a model reads them.
 var models = Pipeline.SelectModels(package, null, addRequired: false, "--package");
 string Model(string processor) => Path.Combine(modelDir, processor, models[processor]);
@@ -277,6 +300,7 @@ using var mwt = MwtExpander.Load(Model("mwt"), device, backend);
 using var pretrain = backend == Backend.Managed
     ? Pretrain.LoadManaged(Path.Combine(modelDir, Pipeline.PretrainPath))
     : Pretrain.Load(Path.Combine(modelDir, Pipeline.PretrainPath), device);
+
 // As Pipeline does: managed processors get the managed charlms (their _nocharlm models none); each backend's charlms
 // are loaded only if a processor on it reads them.
 bool Managed(string processor) => backend == Backend.Managed;
@@ -324,14 +348,17 @@ for (int run = 0; run <= runs; run++)
             peaks[stage] = PeakMB();
         return seconds;
     }
+
     // The same steps as Pipeline.Process.
     using var charlms = pos.UsesCharlm ? new CharlmCache() : null;
+
     // Stages left out with --processors are skipped; each stage needs only those before it (tokenize, mwt, pos, lemma).
     void Stage(string stage, Action action)
     {
         if (stages.Contains(stage))
             timed[stage] = Time(stage, action);
     }
+
     Stage("tokenize", () => doc = tokenizer.Process(input));
     Stage("mwt", () => mwt.Process(doc));
     Stage("pos", () => pos.Process(doc, charlms));
@@ -342,8 +369,10 @@ for (int run = 0; run <= runs; run++)
     Stage("sentiment", () => sentiment.Process(doc, charlms));
     Stage("ner", () => ner.Process(doc, charlms));
     if (run > 0)
+    {
         foreach (var s in stages)
             times[s].Add(timed[s]);
+    }
 }
 if (outFile != null)
     File.WriteAllText(outFile, Conllu.Write(doc));
@@ -377,7 +406,10 @@ static List<string> BuildDocuments(int count, bool all = false)
     // The same texts as tools/benchmark.py --documents: the golden validation sentences ("# text = "), cycled.
     string golden = Path.Combine(FindRepoRoot(), "tests", "golden");
     var sentences = Directory.GetFiles(golden, "validation*.conllu").Order(StringComparer.Ordinal)
-        .SelectMany(File.ReadLines).Where(l => l.StartsWith("# text = ")).Select(l => l["# text = ".Length..]).ToList();
+        .SelectMany(File.ReadLines)
+        .Where(l => l.StartsWith("# text = "))
+        .Select(l => l["# text = ".Length..])
+        .ToList();
     return all ? sentences : Enumerable.Range(0, count).Select(i => sentences[i % sentences.Count]).ToList();
 }
 
@@ -390,9 +422,14 @@ static List<string> BuildShortSentences()
 static string FindRepoRoot()
 {
     foreach (var start in new[] { Environment.CurrentDirectory, AppContext.BaseDirectory })
+    {
         for (var dir = new DirectoryInfo(start); dir != null; dir = dir.Parent)
+        {
             if (File.Exists(Path.Combine(dir.FullName, "StanzaSharp.slnx")))
                 return dir.FullName;
+        }
+    }
+
     throw new DirectoryNotFoundException("Run from inside the repository: StanzaSharp.slnx not found");
 }
 
@@ -403,9 +440,12 @@ static List<string> BuildParagraphs(int words)
     string golden = Path.Combine(FindRepoRoot(), "tests", "golden");
     var files = new[] { "corpus.txt" }.Concat(Directory.GetFiles(golden, "validation*.txt").Select(Path.GetFileName).Order(StringComparer.Ordinal));
     var unit = files.SelectMany(f => File.ReadAllText(Path.Combine(golden, f!)).Split("\n\n"))
-        .Select(p => p.Trim('\n')).Where(p => p.Trim().Length > 0).ToList();
+        .Select(p => p.Trim('\n'))
+        .Where(p => p.Trim().Length > 0)
+        .ToList();
     var result = new List<string>();
-    for (int count = 0; count < words; )
+    for (int count = 0; count < words;)
+    {
         foreach (var p in unit)
         {
             if (count >= words)
@@ -413,6 +453,8 @@ static List<string> BuildParagraphs(int words)
             result.Add(p);
             count += WordCount(p);
         }
+    }
+
     return result;
 }
 
@@ -434,6 +476,7 @@ static List<string> Chunk(List<string> paragraphs, int words)
             count = 0;
         }
     }
+
     if (current.Count > 0)
         parts.Add(string.Join("\n\n", current));
     return parts;
@@ -441,7 +484,7 @@ static List<string> Chunk(List<string> paragraphs, int words)
 
 static bool NativeTorchLoaded() => Process.GetCurrentProcess().Modules.Cast<ProcessModule>().Any(m => m.ModuleName.StartsWith("torch_cpu", StringComparison.OrdinalIgnoreCase) || m.ModuleName.StartsWith("libtorch_cpu", StringComparison.OrdinalIgnoreCase));
 
-static double PeakMB() =>Process.GetCurrentProcess().PeakWorkingSet64 / 1048576.0;
+static double PeakMB() => Process.GetCurrentProcess().PeakWorkingSet64 / 1048576.0;
 
 static double WorkingSetMB() => Process.GetCurrentProcess().WorkingSet64 / 1048576.0;
 
@@ -455,11 +498,14 @@ static double Median(List<double> xs)
 static double Percentile(List<double> xs, double p) => xs.Order().ElementAt((int)Math.Ceiling(p * xs.Count) - 1);
 
 /// <summary>Collects the pipeline's per-processor times ("{Processor} took {Milliseconds} ms", logged at Debug).</summary>
-sealed class StageLogger : Microsoft.Extensions.Logging.ILogger
+internal sealed class StageLogger : Microsoft.Extensions.Logging.ILogger
 {
     public readonly Dictionary<string, List<double>> Times = [];
+
     public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+
     public bool IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel) => true;
+
     public void Log<TState>(Microsoft.Extensions.Logging.LogLevel logLevel, Microsoft.Extensions.Logging.EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
         if (state is IReadOnlyList<KeyValuePair<string, object?>> values && values.Count == 3 && values[0].Key == "Processor")
@@ -473,12 +519,14 @@ sealed class StageLogger : Microsoft.Extensions.Logging.ILogger
 }
 
 /// <summary>Prints the pipeline's log messages (each model load, each processor) with the working set and its peak.</summary>
-sealed class MemoryLogger(bool live) : Microsoft.Extensions.Logging.ILogger
+internal sealed class MemoryLogger(bool live) : Microsoft.Extensions.Logging.ILogger
 {
     private long _allocated = GC.GetTotalAllocatedBytes(true);
 
     public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+
     public bool IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel) => true;
+
     public void Log<TState>(Microsoft.Extensions.Logging.LogLevel logLevel, Microsoft.Extensions.Logging.EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
         using var p = Process.GetCurrentProcess();
@@ -490,13 +538,16 @@ sealed class MemoryLogger(bool live) : Microsoft.Extensions.Logging.ILogger
 }
 
 /// <summary>Diagnostics of the native heap on Linux (glibc): mallinfo2 and /proc/self/smaps_rollup.</summary>
-static class HeapStats
+internal static class HeapStats
 {
     [System.Runtime.InteropServices.DllImport("libc.so.6", EntryPoint = "mallinfo2")]
-    static extern MallInfo2 MallInfo();
+    private static extern MallInfo2 MallInfo();
 
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
-    struct MallInfo2 { public nuint Arena, Ordblks, Smblks, Hblks, Hblkhd, Usmblks, Fsmblks, Uordblks, Fordblks, Keepcost; }
+    private struct MallInfo2
+    {
+        public nuint Arena, Ordblks, Smblks, Hblks, Hblkhd, Usmblks, Fsmblks, Uordblks, Fordblks, Keepcost;
+    }
 
     public static string Describe()
     {
@@ -505,8 +556,8 @@ static class HeapStats
         if (!NativeHeap.CanTrim) // glibc
             return text;
         var m = MallInfo();
-        double mb(nuint x) => x / 1048576.0;
-        text += $"; glibc: arenas {mb(m.Arena):F0} MB (in use {mb(m.Uordblks):F0}, free {mb(m.Fordblks):F0}, trimmable top {mb(m.Keepcost):F0}), mmapped {mb(m.Hblkhd):F0} MB in {m.Hblks}";
+        double Mb(nuint x) => x / 1048576.0;
+        text += $"; glibc: arenas {Mb(m.Arena):F0} MB (in use {Mb(m.Uordblks):F0}, free {Mb(m.Fordblks):F0}, trimmable top {Mb(m.Keepcost):F0}), mmapped {Mb(m.Hblkhd):F0} MB in {m.Hblks}";
         var rollup = File.ReadAllLines("/proc/self/smaps_rollup").Where(l => l.StartsWith("Rss:") || l.StartsWith("Anonymous:") || l.StartsWith("Private_Dirty:"));
         return text + "; smaps_rollup " + string.Join(", ", rollup.Select(l => System.Text.RegularExpressions.Regex.Replace(l, @"\s+", " ")));
     }

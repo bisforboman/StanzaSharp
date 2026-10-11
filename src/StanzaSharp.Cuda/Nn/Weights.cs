@@ -63,16 +63,22 @@ internal static class Weights
     public static T LoadFrom<T>(this T module, Checkpoint ckpt, JsonNode stateDict, string prefix) where T : nn.Module
     {
         using (torch.no_grad())
+        {
             foreach (var (name, param) in module.named_parameters())
             {
                 var key = prefix + name;
                 var node = stateDict[key] ?? throw new KeyNotFoundException($"Checkpoint has no weight '{key}'");
                 var shape = ckpt.Shape(node);
                 if (!param.shape.SequenceEqual(shape))
+                {
                     throw new InvalidOperationException(
                         $"Weight '{key}' is [{string.Join(", ", shape)}], module expects [{string.Join(", ", param.shape)}]");
+                }
+
                 ckpt.ReadInto(node, param); // parameters are on the CPU until module.to below
             }
+        }
+
         if (Device.type != DeviceType.CPU)
             module.to(Device);
         module.eval();

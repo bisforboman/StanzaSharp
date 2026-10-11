@@ -34,6 +34,7 @@ internal sealed class Lemmatizer : IDisposable
             if (!ok)
                 throw new NotSupportedException($"Lemmatizer checkpoints with {what} are not ported");
         }
+
         Require(!Flag("dict_only") && Flag("ensemble_dict"), "dict_only or without ensemble_dict");
         Require(config["beam_size"]?.GetValue<int>() == 1, "beam search (beam_size > 1)");
         Require(config["attn_type"]?.GetValue<string>() == "soft", $"attn_type {config["attn_type"]}");
@@ -69,6 +70,7 @@ internal sealed class Lemmatizer : IDisposable
         var words = doc.Sentences.SelectMany(s => s.Words).ToList();
         var lemmas = Lemmatize(words, cancellationToken);
         for (int i = 0; i < words.Count; i++)
+
             // Stanza's Word.lemma setter stores "_" as None unless the word itself is "_".
             words[i].Lemma = lemmas[i] == "_" && words[i].Text != "_" ? null : lemmas[i];
     }
@@ -103,6 +105,7 @@ internal sealed class Lemmatizer : IDisposable
             var lemma = edits[i] switch { 1 => word, 2 => PyString.Lower(word), _ => decoded[i] };
             result.Add(lemma.Length == 0 || lemma.Contains(Unk, StringComparison.Ordinal) ? word : lemma);
         }
+
         return result;
     }
 
@@ -120,7 +123,11 @@ internal sealed class Lemmatizer : IDisposable
         var charToId = _charToId;
         var idToChar = _idToChar;
         var unknown = words.SelectMany(w => (w.Text + (w.Upos ?? "_") + (w.Lemma ?? "_")).EnumerateRunes())
-            .Where(r => !_charToId.ContainsKey(r.ToString())).Distinct().Order().Select(r => r.ToString()).ToList();
+            .Where(r => !_charToId.ContainsKey(r.ToString()))
+            .Distinct()
+            .Order()
+            .Select(r => r.ToString())
+            .ToList();
         if (unknown.Count > 0)
         {
             charToId = new Dictionary<string, int>(_charToId);
@@ -139,6 +146,7 @@ internal sealed class Lemmatizer : IDisposable
             decoded.AddRange(d);
             edits.AddRange(e);
         }
+
         return (decoded, edits);
     }
 
@@ -151,8 +159,11 @@ internal sealed class Lemmatizer : IDisposable
         int batch = words.Count, width = src[order[0]].Length;
         var ids = new long[batch * width];
         for (int r = 0; r < batch; r++)
+        {
             for (int k = 0; k < src[order[r]].Length; k++)
                 ids[r * width + k] = src[order[r]][k];
+        }
+
         var posIds = order.Select(i => (long)_posToId.GetValueOrDefault(words[i].Upos ?? "_", UnkId)).ToArray();
 
         // Seq2SeqModel.predict_greedy: one character per step for the whole batch, the argmax fed back (torch's max: the first maximum).
@@ -172,8 +183,11 @@ internal sealed class Lemmatizer : IDisposable
                 var row = logProbs.AsSpan(i * columns, columns);
                 int best = 0;
                 for (int v = 1; v < columns; v++)
+                {
                     if (row[v] > row[best])
                         best = v;
+                }
+
                 previous[i] = best;
                 if (done[i])
                     continue;
@@ -183,7 +197,9 @@ internal sealed class Lemmatizer : IDisposable
                     totalDone++;
                 }
                 else
+                {
                     output[i].Add(best);
+                }
             }
         }
 
@@ -196,10 +212,14 @@ internal sealed class Lemmatizer : IDisposable
             decoded[order[r]] = string.Concat(output[r].Select(id => idToChar[id]));
             int best = 0; // numpy argmax: the first maximum
             for (int k = 1; k < 3; k++)
+            {
                 if (editValues[r * 3 + k] > editValues[r * 3 + best])
                     best = k;
+            }
+
             edits[order[r]] = best;
         }
+
         return (decoded, edits);
     }
 

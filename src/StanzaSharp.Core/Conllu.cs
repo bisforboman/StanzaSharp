@@ -30,11 +30,13 @@ public static class Conllu
                 sent = null;
                 continue;
             }
+
             if (sent == null)
             {
                 sent = new Sentence();
                 doc.Sentences.Add(sent);
             }
+
             if (line.StartsWith('#'))
             {
                 ReadComment(sent, line);
@@ -55,6 +57,7 @@ public static class Conllu
                 sent.Tokens.Add(mwt);
                 continue;
             }
+
             if (cols[0].Contains('.'))
                 continue; // empty nodes (enhanced UD) are not produced by our pipeline
 
@@ -85,14 +88,13 @@ public static class Conllu
                 sent.Tokens.Add(token);
             }
         }
+
         foreach (var s in doc.Sentences.Where(s => s.Tokens.Any(t => t.Ner != null)))
             Entity.Build(s, doc.Text);
         return doc;
     }
 
-    /// <summary>
-    /// Formats a document as CoNLL-U, byte for byte as Stanza's <c>"{:C}".format(doc)</c> writes it (plus a final newline).
-    /// </summary>
+    /// <summary>Formats a document as CoNLL-U, byte for byte as Stanza's <c>"{:C}".format(doc)</c> writes it (plus a final newline).</summary>
     public static string Write(Document doc)
     {
         var sb = new StringBuilder();
@@ -102,6 +104,7 @@ public static class Conllu
                 sb.Append('\n');
             WriteSentence(sb, doc.Sentences[i]);
         }
+
         return sb.ToString();
     }
 
@@ -112,6 +115,7 @@ public static class Conllu
         if (sent.Text != null) sb.Append("# text = ").AppendJoin(' ', PyWhitespace.Split(sent.Text).Where(w => w.Length > 0)).Append('\n');
         if (sent.SentId != null) sb.Append("# sent_id = ").Append(sent.SentId).Append('\n');
         if (sent.Constituency != null) sb.Append("# constituency = ").Append(sent.Constituency).Append('\n');
+
         // Stanza runs sentiment after constituency, and its comments keep the order they were set in.
         if (sent.Sentiment != null) sb.Append("# sentiment = ").Append(sent.Sentiment.Value).Append('\n');
 
@@ -120,19 +124,34 @@ public static class Conllu
             if (token.IsMultiWord)
             {
                 sb.Append(token.Words[0].Id).Append('-').Append(token.Words[^1].Id).Append('\t')
-                  .Append(token.Text).Append("\t_\t_\t_\t_\t_\t_\t_\t")
-                  .Append(Misc(token.SpaceAfter, token.SpacesBefore, token.StartChar, token.EndChar, token.Ner)).Append('\n');
+                  .Append(token.Text)
+                  .Append("\t_\t_\t_\t_\t_\t_\t_\t")
+                  .Append(Misc(token.SpaceAfter, token.SpacesBefore, token.StartChar, token.EndChar, token.Ner))
+                  .Append('\n');
             }
+
             foreach (var w in token.Words)
             {
                 var (after, before) = token.IsMultiWord ? (" ", "") : (token.SpaceAfter, token.SpacesBefore);
                 sb.Append(w.Id).Append('\t').Append(w.Text).Append('\t')
-                  .Append(w.Lemma ?? "_").Append('\t').Append(w.Upos ?? "_").Append('\t')
-                  .Append(w.Xpos ?? "_").Append('\t').Append(SortFeats(w.Feats) ?? "_").Append('\t')
+                  .Append(w.Lemma ?? "_")
+                  .Append('\t')
+                  .Append(w.Upos ?? "_")
+                  .Append('\t')
+                  .Append(w.Xpos ?? "_")
+                  .Append('\t')
+                  .Append(SortFeats(w.Feats) ?? "_")
+                  .Append('\t')
+
                   // Like Stanza, a word without a head gets the dummy head id - 1 (the UD eval script needs an int).
-                  .Append(w.Head ?? w.Id - 1).Append('\t').Append(w.Deprel ?? "_").Append("\t_\t")
+                  .Append(w.Head ?? w.Id - 1)
+                  .Append('\t')
+                  .Append(w.Deprel ?? "_")
+                  .Append("\t_\t")
+
                   // The NER tag belongs to the token: on the range line of an MWT, on the word otherwise.
-                  .Append(Misc(after, before, w.StartChar, w.EndChar, token.IsMultiWord ? null : token.Ner)).Append('\n');
+                  .Append(Misc(after, before, w.StartChar, w.EndChar, token.IsMultiWord ? null : token.Ner))
+                  .Append('\n');
             }
         }
     }
@@ -186,6 +205,7 @@ public static class Conllu
                 case "ner": ner = value; break;
             }
         }
+
         return new(space, before, start, end, ner);
     }
 
@@ -232,6 +252,7 @@ public static class Conllu
                 _ => c.ToString(),
             });
         }
+
         return sb.ToString();
     }
 
@@ -242,15 +263,34 @@ public static class Conllu
         {
             if (escaped[i] == '\\' && i + 1 < escaped.Length)
             {
-                if (escaped.AsSpan(i).StartsWith("\\u00A0")) { sb.Append(' '); i += 5; continue; }
+                if (escaped.AsSpan(i).StartsWith("\\u00A0"))
+                {
+                    sb.Append(' ');
+                    i += 5;
+                    continue;
+                }
+
                 char? c = escaped[i + 1] switch
                 {
-                    's' => ' ', 't' => '\t', 'r' => '\r', 'n' => '\n', 'p' => '|', '\\' => '\\', _ => null,
+                    's' => ' ',
+                    't' => '\t',
+                    'r' => '\r',
+                    'n' => '\n',
+                    'p' => '|',
+                    '\\' => '\\',
+                    _ => null,
                 };
-                if (c != null) { sb.Append(c.Value); i++; continue; }
+                if (c != null)
+                {
+                    sb.Append(c.Value);
+                    i++;
+                    continue;
+                }
             }
+
             sb.Append(escaped[i]);
         }
+
         return sb.ToString();
     }
 }

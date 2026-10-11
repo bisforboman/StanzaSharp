@@ -15,6 +15,7 @@ public class OptionsTests
         {
             using (Pipeline.Load(Repo.Models, new PipelineOptions { Processors = Processor.Tokenize, Threads = 2, Backend = CudaBackend.Cpu }))
                 Assert.Equal(2, torch.get_num_threads());
+
             // Null keeps a lower count set by the caller.
             using (Pipeline.Load(Repo.Models, new PipelineOptions { Processors = Processor.Tokenize, Backend = CudaBackend.Cpu }))
                 Assert.Equal(2, torch.get_num_threads());
@@ -34,7 +35,9 @@ public class OptionsTests
     public void VerifyChecksums_AcceptsStanzasFiles_AndNamesACorruptedOne()
     {
         var options = new PipelineOptions { Processors = "tokenize,mwt", VerifyChecksums = true };
-        using (Pipeline.Load(Repo.StanzaModels, options)) { }
+        using (Pipeline.Load(Repo.StanzaModels, options))
+        {
+        }
 
         // A copy of the two files with one byte of mwt changed.
         var dir = Directory.CreateTempSubdirectory("stanzasharp-md5-").FullName;
@@ -45,6 +48,7 @@ public class OptionsTests
                 Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(dir, file))!);
                 File.Copy(Path.Combine(Repo.StanzaModels, file), Path.Combine(dir, file));
             }
+
             var bytes = File.ReadAllBytes(Path.Combine(dir, "mwt/combined.pt"));
             bytes[^1] ^= 1;
             File.WriteAllBytes(Path.Combine(dir, "mwt/combined.pt"), bytes);
@@ -117,8 +121,11 @@ public class OptionsTests
     {
         public List<string> Lines { get; } = [];
         public Action<string>? OnLine { get; init; }
+
         public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+
         public bool IsEnabled(LogLevel logLevel) => true;
+
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
             var line = $"{logLevel}: {formatter(state, exception)}";
@@ -142,6 +149,7 @@ public class ManagedThreadsOptionTests
         {
             using (Pipeline.Load(Repo.Models, new PipelineOptions { Processors = Processor.Tokenize, Threads = 2 }))
                 Assert.Equal(2, Nn.Managed.ManagedThreads.Count);
+
             // Null keeps a lower count.
             using (Pipeline.Load(Repo.Models, new PipelineOptions { Processors = Processor.Tokenize }))
                 Assert.Equal(2, Nn.Managed.ManagedThreads.Count);

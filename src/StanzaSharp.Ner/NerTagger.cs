@@ -54,7 +54,8 @@ internal sealed class NerTagger : IDisposable
         {
             if (charlm && (charlmForward == null || charlmBackward == null || !charlmForward.IsForward || charlmBackward.IsForward))
                 throw new ArgumentException("This NER model needs the forward charlm, then the backward one");
-            return charlm ? new ManagedNerNet(ckpt, tags, tagset, pretrain, charlmForward, charlmBackward)
+            return charlm
+                ? new ManagedNerNet(ckpt, tags, tagset, pretrain, charlmForward, charlmBackward)
                 : new ManagedNerNet(ckpt, tags, tagset, pretrain, null, null);
         });
     }
@@ -71,13 +72,18 @@ internal sealed class NerTagger : IDisposable
         {
             cancellationToken.ThrowIfCancellationRequested();
             var texts = batch.Select(s => (IReadOnlyList<string>)s.Tokens.Select(t => t.Text).ToList()).ToList();
-            var keys = charlms == null ? null
+            var keys = charlms == null
+                ? null
                 : batch.Select((s, i) => s.Words.Select(w => w.Text).SequenceEqual(texts[i]) ? s : null).ToList();
             var tags = Predict(texts, out _, charlms, keys, cancellationToken, keepEmissions: false);
+
             // NER runs last, so nothing reads these sentences' cached charlm outputs again.
             if (charlms != null)
+            {
                 foreach (var s in batch)
                     charlms.Release(s);
+            }
+
             for (int i = 0; i < batch.Length; i++)
             {
                 for (int j = 0; j < tags[i].Length; j++)
@@ -102,6 +108,7 @@ internal sealed class NerTagger : IDisposable
         var wordIds = new long[batch * width];
         var deltaIds = new long[batch * width];
         for (int i = 0; i < batch; i++)
+        {
             for (int j = 0; j < sentences[i].Count; j++)
             {
                 var lower = PyString.Lower(sentences[i][j]);
@@ -110,6 +117,8 @@ internal sealed class NerTagger : IDisposable
                 wordIds[i * width + j] = word;
                 deltaIds[i * width + j] = delta == UnkId && word != _pretrain.UnkId ? PadId : delta;
             }
+        }
+
         var logits = _net.Forward(sentences, wordIds, deltaIds, width, charlms, cacheKeys, cancellationToken);
 
         int nTags = _tags.Length;
@@ -120,10 +129,12 @@ internal sealed class NerTagger : IDisposable
             var scores = logits.AsSpan(i * width * nTags, sentences[i].Count * nTags);
             if (keepEmissions)
                 emissions.Add(scores.ToArray());
+
             // The model can predict a tag below "O" (a vocab prefix); Stanza turns those into "O".
             var tags = Viterbi(scores, _transitions, nTags).Select(id => _tags[Math.Max(id, VocabPrefixSize)]).ToArray();
             result.Add(FixSingletonTags(tags));
         }
+
         return result;
     }
 
@@ -135,6 +146,7 @@ internal sealed class NerTagger : IDisposable
     internal static int[] Viterbi(ReadOnlySpan<float> scores, float[] transitions, int tags)
     {
         int n = scores.Length / tags;
+
         // Rented: row 0 of the trellis is copied, every later row of both is written before it is read.
         var trellis = ArrayPool<float>.Shared.Rent(scores.Length);
         var backpointers = ArrayPool<int>.Shared.Rent(scores.Length);
@@ -153,6 +165,7 @@ internal sealed class NerTagger : IDisposable
     {
         scores[..tags].CopyTo(trellis);
         for (int t = 1; t < n; t++)
+        {
             for (int j = 0; j < tags; j++)
             {
                 int best = 0;
@@ -163,15 +176,20 @@ internal sealed class NerTagger : IDisposable
                     if (v > max)
                         (max, best) = (v, i);
                 }
+
                 trellis[t * tags + j] = scores[t * tags + j] + max;
                 backpointers[t * tags + j] = best;
             }
+        }
 
         var path = new int[n];
         int last = (n - 1) * tags;
         for (int j = 1; j < tags; j++)
+        {
             if (trellis[last + j] > trellis[last + path[n - 1]])
                 path[n - 1] = j;
+        }
+
         for (int t = n - 1; t > 0; t--)
             path[t - 1] = backpointers[t * tags + path[t]];
         return path;
@@ -197,17 +215,24 @@ internal sealed class NerTagger : IDisposable
             if (i == 0 || (fixedTags[i - 1] != "B-" + type && fixedTags[i - 1] != "I-" + type))
                 fixedTags[i] = "B-" + type;
         }
+
         for (int i = 0; i < n; i++)
         {
             var tag = fixedTags[i];
             var type = tag.Length >= 2 ? tag[2..] : "";
             if (tag.StartsWith("B-", StringComparison.Ordinal) &&
                 (i == n - 1 || (fixedTags[i + 1] != "I-" + type && fixedTags[i + 1] != "E-" + type)))
+            {
                 fixedTags[i] = "S-" + type;
+            }
+
             if (tag.StartsWith("E-", StringComparison.Ordinal) &&
                 (i == 0 || (fixedTags[i - 1] != "B-" + type && fixedTags[i - 1] != "I-" + type)))
+            {
                 fixedTags[i] = "S-" + type;
+            }
         }
+
         return fixedTags;
     }
 
@@ -217,6 +242,7 @@ internal sealed class NerTagger : IDisposable
         {
             if (!ok) throw new NotSupportedException($"NER checkpoint uses {what}, which is not ported");
         }
+
         Require(config["bert_model"] == null && config["use_peft"]?.GetValue<bool>() != true, "a transformer");
         Require(config["char"]?.GetValue<bool>() == true && config["char_emb_dim"]?.GetValue<int>() > 0, "a configuration without character features");
         Require(config["char_lowercase"]?.GetValue<bool>() != true, "char_lowercase");
@@ -225,6 +251,7 @@ internal sealed class NerTagger : IDisposable
         Require(config["input_transform"]?.GetValue<bool>() == true, "a configuration without input_transform");
         Require(config["connect_output_layers"]?.GetValue<bool>() != true, "connect_output_layers");
         Require(vocab["word"] != null && vocab["delta"] != null, "a vocab without word and delta embeddings");
+
         // The word embedding is the pretrain's matrix (not saved in the checkpoint), indexed by this vocab.
         Require(vocab["word"]!["_id2unit"]?.AsArray().Count == pretrain.Count, "a word vocab other than the pretrain's");
         Require(vocab["delta"]!["lower"]?.GetValue<bool>() == true, "a cased delta vocab");
@@ -235,5 +262,4 @@ internal sealed class NerTagger : IDisposable
     private static bool NeedsCharlm(Checkpoint ckpt) => ckpt.Root["config"]!["charlm"]?.GetValue<bool>() == true;
 
     public void Dispose() => _net.Dispose();
-
 }

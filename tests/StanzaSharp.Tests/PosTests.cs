@@ -2,9 +2,9 @@ using System.Text.Json.Nodes;
 using StanzaSharp.Mwt;
 using StanzaSharp.Nn;
 using StanzaSharp.Nn.Managed;
-using Xunit.Abstractions;
 using StanzaSharp.Pos;
 using StanzaSharp.Tokenize;
+using Xunit.Abstractions;
 
 namespace StanzaSharp.Tests;
 
@@ -15,13 +15,16 @@ public class PosTests(ITestOutputHelper output, PosTests.Fixture fixture) : ICla
     public sealed class Fixture : IDisposable
     {
         private readonly Lazy<Models> _torch = new(() => new Models(managed: false)), _managed = new(() => new Models(managed: true));
+
         internal Models Get(bool managed = false) => (managed ? _managed : _torch).Value;
 
         public void Dispose()
         {
             foreach (var models in new[] { _torch, _managed })
+            {
                 if (models.IsValueCreated)
                     models.Value.Dispose();
+            }
         }
     }
 
@@ -40,6 +43,7 @@ public class PosTests(ITestOutputHelper output, PosTests.Fixture fixture) : ICla
                     ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion")), ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion")));
                 return;
             }
+
             Forward = CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
             Backward = CharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
             Tagger = PosTagger.Load(Repo.Model("pos/combined_charlm"), Pretrain, Forward, Backward);
@@ -65,7 +69,7 @@ public class PosTests(ITestOutputHelper output, PosTests.Fixture fixture) : ICla
     [InlineData("a??", "a??")]
     [Trait("Backend", "Managed")]
     public void SimplifyPunct_MatchesStanza(string word, string expected) =>
-        Assert.Equal(expected, PosTagger.SimplifyPunct(word));
+        Assert.Equal(expected, Punct.Simplify(word));
 
     [ModelTheory]
     [InlineData(false)]

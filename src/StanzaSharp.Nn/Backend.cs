@@ -11,7 +11,9 @@ internal enum Backend
     /// <summary>TorchSharp/libtorch (StanzaSharp.Cuda), on <c>Weights.Device</c>: the test reference. Processor <c>Load</c>s default to it.</summary>
     TorchSharp,
 
-    /// <summary>The managed kernels (<c>Nn.Managed</c>), CPU only, on <c>ManagedThreads.Count</c> threads: the
-    /// pipeline's default.</summary>
+    /// <summary>
+    /// The managed kernels (<c>Nn.Managed</c>), CPU only, on <c>ManagedThreads.Count</c> threads: the
+    /// pipeline's default.
+    /// </summary>
     Managed,
 }

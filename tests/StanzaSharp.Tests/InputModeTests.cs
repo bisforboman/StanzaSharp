@@ -26,6 +26,7 @@ public class InputModeTests(SharedPipelines pipelines) : IClassFixture<SharedPip
             var input = sentences!.AsArray().Select(s => s!.AsArray().Select(t => t!.GetValue<string>()).ToList()).ToList();
             var actual = Conllu.Write(nlp.Process(input));
             var golden = File.ReadAllText(Path.Combine(dir, name + Suffix[package] + ".conllu"));
+
             // Outside the BMP, C# offsets are UTF-16 indices and Stanza's are code points.
             if (name == "nonbmp")
                 (actual, golden) = (PipelineTests.StripOffsets(actual), PipelineTests.StripOffsets(golden));
@@ -72,8 +73,10 @@ public class InputModeTests(SharedPipelines pipelines) : IClassFixture<SharedPip
                     sentences[int.Parse(j)] = sentence!.GetValue<string>();
                     changed++;
                 }
+
                 expected = string.Join("\n\n", sentences);
             }
+
             if (d["file"]?.GetValue<string>() == "validation_nonbmp.txt")
                 (actual, expected) = (PipelineTests.StripOffsets(actual), PipelineTests.StripOffsets(expected));
             var e = expected.Split("\n\n");
@@ -83,6 +86,7 @@ public class InputModeTests(SharedPipelines pipelines) : IClassFixture<SharedPip
             if (k < e.Length || k < g.Length)
                 failures.Add($"document {i}, sentence {k}:\n--- expected\n{e.ElementAtOrDefault(k)}\n--- actual\n{g.ElementAtOrDefault(k)}");
         }
+
         Assert.True(failures.Count == 0, string.Join("\n\n", failures));
         Assert.True(changed > 0, "bulk is expected to change some sentences, as it does in Stanza");
     }

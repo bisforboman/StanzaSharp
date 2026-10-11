@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using System.Text.Json.Nodes;
 using StanzaSharp.Nn;
 using StanzaSharp.Nn.Managed;
@@ -12,7 +11,7 @@ namespace StanzaSharp.Pos;
 ///   or the model's own character LSTM projected by <c>trans_char</c> (<c>combined_nocharlm</c>)
 /// - a highway biLSTM
 /// - UPOS from an MLP
-/// - XPOS and each UFeats key from biaffine scorers on an embedding of the predicted UPOS
+/// - XPOS and each UFeats key from biaffine scorers on an embedding of the predicted UPOS.
 /// </summary>
 internal sealed class PosTagger : IDisposable
 {
@@ -79,8 +78,10 @@ internal sealed class PosTagger : IDisposable
             var tags = Predict(batch.Select(x => (IReadOnlyList<string>)x.Words.Select(w => w.Text).ToList()).ToList(), out _,
                 charlms, charlms == null ? null : batch.Select(x => (Sentence?)x.Sentence).ToList(), cancellationToken, featStrings);
             for (int i = 0; i < batch.Count; i++)
+            {
                 for (int j = 0; j < batch[i].Words.Count; j++)
                     (batch[i].Words[j].Upos, batch[i].Words[j].Xpos, batch[i].Words[j].Feats) = tags[i][j];
+            }
         }
     }
 
@@ -95,9 +96,10 @@ internal sealed class PosTagger : IDisposable
         Dictionary<string, string>? featStrings = null)
     {
         var original = sentences;
-        sentences = sentences.Select(s => (IReadOnlyList<string>)s.Select(SimplifyPunct).ToList()).ToList();
+        sentences = sentences.Select(s => (IReadOnlyList<string>)s.Select(Punct.Simplify).ToList()).ToList();
         int batch = sentences.Count;
-        var keys = charlms == null || cacheKeys == null || !UsesCharlm ? null
+        var keys = charlms == null || cacheKeys == null || !UsesCharlm
+            ? null
             : Enumerable.Range(0, batch).Select(i => sentences[i].SequenceEqual(original[i]) ? cacheKeys[i] : null).ToList();
 
         var flat = sentences.SelectMany(s => s).ToArray();
@@ -109,6 +111,7 @@ internal sealed class PosTagger : IDisposable
             wordIds[k] = _wordVocab.GetValueOrDefault(lower, _wordUnk);
             pretrainIds[k] = _pretrain.UnitToId(lower);
         }
+
         var output = _net.Forward(sentences, wordIds, pretrainIds, keys == null ? null : charlms, keys, cancellationToken);
 
         int nUpos = _upos.Length;
@@ -125,8 +128,10 @@ internal sealed class PosTagger : IDisposable
                     feats = featStrings.TryAdd(feats, feats) ? feats : featStrings[feats];
                 tags[j] = (_upos[output.Upos[k]], _xpos[output.Xpos[k]], feats);
             }
+
             result.Add(tags);
         }
+
         return result;
     }
 
@@ -136,8 +141,11 @@ internal sealed class PosTagger : IDisposable
         const int EmptyId = 2; // vocab.EMPTY_ID
         var parts = new List<string>();
         for (int f = 0; f < _feats.Length; f++)
+        {
             if (featIds[f][k] != EmptyId)
                 parts.Add($"{_feats[f].Key}={_feats[f].Values[featIds[f][k]]}");
+        }
+
         return parts.Count == 0 ? null : string.Join('|', parts);
     }
 
@@ -147,6 +155,7 @@ internal sealed class PosTagger : IDisposable
         {
             if (!ok) throw new NotSupportedException($"POS checkpoint uses {what}, which is not ported");
         }
+
         Require(config["char"]?.GetValue<bool>() == true && config["char_emb_dim"]?.GetValue<int>() > 0, "a configuration without character features");
         Require(config["charlm_transform_dim"] == null, "charlm_transform_dim");
         Require(config["pretrain"]?.GetValue<bool>() == true, "a configuration without pretrain");
@@ -162,14 +171,6 @@ internal sealed class PosTagger : IDisposable
     internal bool UsesCharlm { get; }
 
     private static string[] Strings(JsonNode? array) => array!.AsArray().Select(x => x!.GetValue<string>()).ToArray();
-
-    // pos/data.py load_doc → common/utils.py simplify_punct: the tagger sees runs like "?!?" or "!!"
-    // as a single "?" or "!" (QUESTION_RE / EXCLAM_RE, including full-width and small forms).
-    private const string QuestionMarks = "?？︖﹖⁇", AllMarks = QuestionMarks + "!！︕﹗‼";
-    private static readonly Regex Question = new($"^[{QuestionMarks}][{AllMarks}]+$");
-    private static readonly Regex Exclam = new($"^[!！︕﹗‼][{AllMarks}]+$");
-
-    internal static string SimplifyPunct(string word) => Exclam.Replace(Question.Replace(word, "?"), "!");
 
     public void Dispose() => _net.Dispose();
 }

@@ -98,6 +98,7 @@ public class ConcurrencyTests(Xunit.Abstractions.ITestOutputHelper output)
         for (int i = 0; i < steps.Count; i++)
         {
             var (processor, ms) = steps[i];
+
             // Halfway through the processor: timed from the end of the one before it (its log message). A faster run
             // can finish before the cancel arrives (CI runners vary a lot, and a load spike can inflate the one timed run);
             // then try again, cancelling sooner and aiming at the fastest time seen for the processor.
@@ -123,6 +124,7 @@ public class ConcurrencyTests(Xunit.Abstractions.ITestOutputHelper output)
                 {
                     e = canceled;
                 }
+
                 latency.Stop();
                 timings.OnStep = null;
                 if (e == null)
@@ -131,8 +133,10 @@ public class ConcurrencyTests(Xunit.Abstractions.ITestOutputHelper output)
                     attempt++;
                     continue;
                 }
+
                 output.WriteLine($"{processor} ({ms:F0} ms): canceled after {latency.Elapsed.TotalMilliseconds:F0} ms, " +
                     $"in {e.StackTrace!.Split('\n').Select(l => l.Trim()).FirstOrDefault(l => l.StartsWith("at StanzaSharp.") && !l.Contains("Pipeline.Step"))}");
+
                 // Where the call stopped decides the count (a loaded machine can move it to the next processor).
                 if (timings.Steps.Any(s => s.Processor == "lemma"))
                     Assert.Equal(lemmaLeak, stats.ThreadTotalLiveCount - live);
@@ -141,6 +145,7 @@ public class ConcurrencyTests(Xunit.Abstractions.ITestOutputHelper output)
                 live = stats.ThreadTotalLiveCount;
                 if (latency.Elapsed < MaxLatency)
                     break;
+
                 // Too slow: a loaded machine, or a missing check? Time the processor the call stopped in (a loaded run can
                 // carry the cancel past the one aimed at) again, uncanceled, now. Its checks are a small part of its time
                 // apart (a batch, a step, a charlm pass or LSTM layer), while one that never checked would run on for about
@@ -158,6 +163,7 @@ public class ConcurrencyTests(Xunit.Abstractions.ITestOutputHelper output)
                     $"over 5 s and a quarter of {stopped}'s time ({bound.TotalMilliseconds * 4:F0} ms), in 3 attempts");
             }
         }
+
         Assert.Equal(before, Conllu.Write(nlp.Process(corpus, CancellationToken.None)));
         Assert.Equal(corpusLeak, stats.ThreadTotalLiveCount - live);
     }
@@ -179,8 +185,11 @@ public class ConcurrencyTests(Xunit.Abstractions.ITestOutputHelper output)
     {
         public List<(string Processor, double Milliseconds)> Steps { get; } = [];
         public Action<string>? OnStep { get; set; }
+
         public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+
         public bool IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel) => true;
+
         public void Log<TState>(Microsoft.Extensions.Logging.LogLevel logLevel, Microsoft.Extensions.Logging.EventId eventId, TState state,
             Exception? exception, Func<TState, Exception?, string> formatter)
         {

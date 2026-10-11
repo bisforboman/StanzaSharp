@@ -73,15 +73,18 @@ internal static class TensorForms
                 reps = default;
                 return false;
             }
-            if (e.Native is null)
+
+            if (e.Native == null)
             {
                 Tensor Convert(float[] data)
                 {
                     using var cpu = torch.tensor(data, [e.Words, data.Length / e.Words]);
                     return (device == null || device.type == DeviceType.CPU ? cpu.clone() : cpu.to(device)).DetachFromDisposeScope();
                 }
+
                 e.Native = new CharlmTensors(Convert(e.ForwardData!), Convert(e.BackwardData!));
             }
+
             var t = (CharlmTensors)e.Native;
             reps = (t.Forward, t.Backward);
             return true;

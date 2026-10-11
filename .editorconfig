@@ -1,0 +1,83 @@
+root = true
+
+# BEGIN stylebro-migrate (stylebro-migrate init: built-in .NET rules for StyleBro's preset; edits inside are replaced)
+[*.cs]
+# Built-in .NET rules that cover StyleCop rules, at the preset's severities. Their options (brace placement, modifier
+# order, ...) come from StyleBro's preset. The severities have to be here: 'dotnet format' ignores rule severities in a
+# package's global config. Add <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild> to report them on build too.
+
+# Braces (SA1503, SA1519, SA1520) are StyleBro's BRO1514-BRO1516: IDE0011's fix breaks multi-targeted projects
+dotnet_diagnostic.IDE0011.severity = none
+# Formatting: spacing, indentation, line breaks (SA1000-SA1028, SA1107, SA1134, SA1137, SA1500)
+dotnet_diagnostic.IDE0055.severity = warning
+# Access modifiers (SA1400, SA1205) are StyleBro's BRO1404/BRO1007: IDE0040's fix breaks multi-targeted projects
+dotnet_diagnostic.IDE0040.severity = none
+# Modifier order: access modifier first, then static (SA1206, SA1207)
+dotnet_diagnostic.IDE0036.severity = warning
+# 'int' instead of 'Int32' (SA1121)
+dotnet_diagnostic.IDE0049.severity = warning
+# Unnecessary parentheses (SA1119) are StyleBro's BRO1405: IDE0047's fix breaks multi-targeted projects
+dotnet_diagnostic.IDE0047.severity = none
+# Parentheses that show precedence (SA1407, SA1408) are StyleBro's BRO1406/BRO1407: IDE0048's fix breaks multi-targeted projects
+dotnet_diagnostic.IDE0048.severity = none
+# Using placement (SA1200) is StyleBro's BRO1008: IDE0065's fix can change what names bind to (CS0104, CS0118)
+dotnet_diagnostic.IDE0065.severity = none
+# Blank lines (SA1507, SA1508, SA1513) are StyleBro's BRO1517-BRO1519: the SDK's fixes break multi-targeted projects
+dotnet_diagnostic.IDE2000.severity = none
+dotnet_diagnostic.IDE2002.severity = none
+dotnet_diagnostic.IDE2003.severity = none
+# 'this.' qualification isn't required (SA1101 is off in the preset)
+dotnet_diagnostic.IDE0009.severity = none
+
+# Conventions in this repository's code (stylebro-migrate init counted them)
+# init: private fields: named '_field' in 440 of 440 places in your code
+stylebro_private_field_naming = _camelCase
+# init: one-line if/else/loop/using/lock bodies: without braces in 794 of 795 places in your code
+csharp_prefer_braces = when_multiline
+# init: operators where a line wraps: your code mixes both forms (65 at the start of the line, 35 at the end of the line), so BRO1520 is off. To choose one: set dotnet_style_operator_placement_when_wrapping and remove the next line.
+dotnet_diagnostic.BRO1520.severity = none
+# init: empty strings: "" in 52 of 52 places in your code
+stylebro_empty_string_style = literal
+# init: null checks: '== null' in 170 of 173 places in your code
+stylebro_null_check_style = equality_operator
+# init: one-line <summary> texts: on one line in 364 of 370 places in your code
+stylebro_summary_layout = single_line_when_fits
+# init: default values: 'default' in 132 of 132 places in your code
+csharp_prefer_simple_default_expression = true
+# init: split lists: first item after '(' in 30 of 31 places in your code
+stylebro_split_list_first_item = same_line
+# init: 'where' constraints: on the declaration's line in 11 of 11 places in your code
+stylebro_constraint_placement = same_line
+# init: switch sections: without a blank line in 122 of 127 places in your code
+stylebro_blank_line_between_switch_sections = omit
+# init: mixed arithmetic ('a + b * c'): without parentheses in 303 of 304 places in your code
+dotnet_style_parentheses_in_arithmetic_binary_operators = never_if_unnecessary
+# END stylebro-migrate
+
+# StanzaSharp's own settings. Outside the stylebro-migrate block, so a later 'stylebro-migrate init --write' keeps them.
+[*.cs]
+# .gitattributes keeps sources LF on every OS; without this, dotnet format writes CRLF into the lines it rewrites on Windows.
+end_of_line = lf
+# One-line statements (`if (x) list.Add(y);`, the opcode cases in Pickle) are a deliberate compact form here.
+csharp_preserve_single_line_statements = true
+csharp_preserve_single_line_blocks = true
+
+# Rules that fight deliberate conventions of this repository:
+# Members are in reading order (a helper next to its only caller, a nested type next to its use), not by kind and access.
+dotnet_diagnostic.BRO1001.severity = none
+# Numeric code declares related sizes and buffers together (`int rows, cols;`, `_charlmForward, _charlmBackward`).
+dotnet_diagnostic.BRO1114.severity = none
+dotnet_diagnostic.BRO1142.severity = none
+# Long parameter and argument lists are wrapped by filling lines to the 120-column limit, not one item per line.
+dotnet_diagnostic.BRO1108.severity = none
+# Internal implementations and overrides carry no doc comment; adding <inheritdoc/> to ~90 internal members is noise.
+dotnet_diagnostic.BRO1601.severity = none
+# Property summaries are noun phrases ("The sentences, in text order."); prefixing "Gets"/"Gets or sets" also misreads
+# summaries that are clauses ("Gets or sets the tokenizer predicted ...").
+dotnet_diagnostic.BRO1604.severity = none
+
+# Unused code (the 2026-10 sweep removed it; these keep it from coming back). IDE0005 needs GenerateDocumentationFile
+# (Directory.Build.props sets it for every project).
+dotnet_diagnostic.IDE0005.severity = warning
+dotnet_diagnostic.IDE0051.severity = warning
+dotnet_diagnostic.IDE0052.severity = warning

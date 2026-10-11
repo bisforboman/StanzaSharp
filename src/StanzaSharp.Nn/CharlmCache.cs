@@ -98,6 +98,7 @@ internal sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords) : 
             _words -= old.Words;
             Dispose(old);
         }
+
         if (_words + words > MaxWords)
             return false;
         _words += words;
@@ -115,6 +116,7 @@ internal sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords) : 
             reps = default;
             return false;
         }
+
         reps = e.ForwardData != null ? (e.ForwardData, e.BackwardData!) : e.Native!.ToArrays();
         return true;
     }

@@ -52,7 +52,9 @@ internal sealed class NerNet : INerNet
 
         Tensor[] chars;
         if (_charModel != null)
+        {
             chars = [_charModel.Forward(sentences.Select(s => (IReadOnlyList<long[]>)s.Select(_charModel.CharIds).ToList()).ToList())];
+        }
         else
         {
             var cached = Enumerable.Range(0, batch).Select(i =>
@@ -100,7 +102,8 @@ internal static class NerTaggerLoad
                 {
                     if (charlm && (charlmForward == null || charlmBackward == null || !charlmForward.IsForward || charlmBackward.IsForward))
                         throw new ArgumentException("This NER model needs the forward charlm, then the backward one");
-                    return charlm ? new NerNet(ckpt, NerTagger.DeltaCount(ckpt), tags, tagset, pretrain, charlmForward, charlmBackward)
+                    return charlm
+                        ? new NerNet(ckpt, NerTagger.DeltaCount(ckpt), tags, tagset, pretrain, charlmForward, charlmBackward)
                         : new NerNet(ckpt, NerTagger.DeltaCount(ckpt), tags, tagset, pretrain, null, null);
                 });
             });

@@ -23,6 +23,7 @@ internal sealed class ManagedTokenizerNet : ITokenizerNet
     {
         var config = ckpt.Root["config"]!;
         var model = ckpt.Root["model"]!;
+
         // TokenizerNet checks the options; this twin is only built for checkpoints it accepts.
         int hidden = config["hidden_dim"]!.GetValue<int>();
         _emb = config["emb_dim"]!.GetValue<int>();
@@ -57,16 +58,18 @@ internal sealed class ManagedTokenizerNet : ITokenizerNet
                 _embeddings.AsSpan((int)ids[i] * _emb, _emb).CopyTo(x.AsSpan(i * inDim));
                 feats.AsSpan(i * featDim, featDim).CopyTo(x.AsSpan(i * inDim + _emb));
             }
+
             _rnn.ForwardPadded(x, rows, width, lengths, inp, ct);
             Gemm.Run(inp, n, _clf, _clfBias, level1);
 
             // inp * (1 - sigmoid(-tok0 * hier_invtemp)), in TokenizerNet's order of operations.
             for (int i = 0; i < n; i++)
             {
-                float keep = 1f - Sigmoid(-level1[i * ldl] * _hierInvTemp);
+                float keep = 1f - Act.Sigmoid(-level1[i * ldl] * _hierInvTemp);
                 for (int j = 0; j < h2; j++)
                     inp2[i * h2 + j] = inp[i * h2 + j] * keep;
             }
+
             _rnn2.ForwardPadded(inp2, rows, width, lengths, hid2, ct);
             Gemm.Run(hid2, n, _clf2, null, level2);
 
@@ -84,6 +87,7 @@ internal sealed class ManagedTokenizerNet : ITokenizerNet
                 o[3] = tok + nonsent + mwt;
                 o[4] = tok + sent + mwt;
             }
+
             return pred;
         }
         finally
@@ -96,8 +100,6 @@ internal sealed class ManagedTokenizerNet : ITokenizerNet
             ArrayPool<float>.Shared.Return(level2);
         }
     }
-
-    private static float Sigmoid(float x) => 1f / (1f + MathF.Exp(-x));
 
     /// <summary>log σ(x) = min(x, 0) − log1p(e^−|x|), stable for large |x| (as torch's log_sigmoid).</summary>
     private static float LogSigmoid(float x) => (float)(Math.Min(x, 0) - Math.Log(1 + Math.Exp(-Math.Abs(x))));

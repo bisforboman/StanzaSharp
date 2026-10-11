@@ -2,18 +2,18 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
 using System.Text.Json.Nodes;
-using StanzaSharp.Nn;
-using StanzaSharp.Nn.Managed;
-using TorchSharp;
-using Xunit.Abstractions;
-using StanzaSharp.Mwt;
-using StanzaSharp.Tokenize;
-using StanzaSharp.Pos;
-using StanzaSharp.Lemma;
 using StanzaSharp.Constituency;
 using StanzaSharp.Depparse;
+using StanzaSharp.Lemma;
+using StanzaSharp.Mwt;
 using StanzaSharp.Ner;
+using StanzaSharp.Nn;
+using StanzaSharp.Nn.Managed;
+using StanzaSharp.Pos;
 using StanzaSharp.Sentiment;
+using StanzaSharp.Tokenize;
+using TorchSharp;
+using Xunit.Abstractions;
 using static TorchSharp.torch;
 
 namespace StanzaSharp.Tests;
@@ -33,8 +33,10 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
         private readonly Lazy<Pretrain> _pretrain = new(() => Pretrain.Load(Repo.Model("pretrain/conll17")));
         private readonly Lazy<CharLanguageModel> _forward = new(() => CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"))),
             _backward = new(() => CharLanguageModel.Load(Repo.Model("backward_charlm/1billion")));
+
         private readonly Lazy<ManagedCharLanguageModel> _managedForward = new(() => ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion"))),
             _managedBackward = new(() => ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion")));
+
         internal Pretrain Pretrain => _pretrain.Value;
         internal CharLanguageModel Forward => _forward.Value;
         internal CharLanguageModel Backward => _backward.Value;
@@ -68,6 +70,7 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
             data.Add(path, 37, 300, 125, 4); // ragged M, K over one K block, N not a whole panel
             data.Add(path, 200, 1024, 256, 8);
         }
+
         return data;
     }
 
@@ -139,9 +142,13 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
         {
             var actual = With(path, 4, () => Gemm.Run(a, m, part, bias[first..]));
             for (int r = 0; r < m; r++)
+            {
                 for (int j = 0; j < part.N; j++)
+                {
                     Assert.Equal(BitConverter.SingleToInt32Bits(expected[r * whole.PaddedN + first + j]),
                         BitConverter.SingleToInt32Bits(actual[r * part.PaddedN + j]));
+                }
+            }
         }
     }
 
@@ -166,8 +173,11 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
                 With(path, 4, () =>
                 {
                     fixed (float* pa = a, pb = bias, pc = actual)
+                    {
                         for (int r0 = 0; r0 < m; r0 += chunk)
                             Gemm.RunRows(pa + r0 * k, r0, Math.Min(m, r0 + chunk), m, k, w, pb, pc + r0 * n, n);
+                    }
+
                     return 0;
                 });
                 Assert.Equal(expected.Select(BitConverter.SingleToInt32Bits), actual.Select(BitConverter.SingleToInt32Bits));
@@ -189,10 +199,14 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
         var a = Random(Gemm.MR * k, 11);
         var b = Random(k * nr, 12);
         var init = Random(Gemm.MR * nr, 13);
+        var aRows = stackalloc float*[Gemm.MR];
+        var initRows = stackalloc float*[Gemm.MR];
+        var outRows = stackalloc float*[Gemm.MR];
         for (int mr = 1; mr <= Gemm.MR; mr++)
         {
             var expected = new float[mr * nr];
             for (int r = 0; r < mr; r++)
+            {
                 for (int j = 0; j < nr; j++)
                 {
                     float sum = 0;
@@ -203,14 +217,14 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
                             block = fused ? MathF.FusedMultiplyAdd(a[r * k + p], b[p * nr + j], block) : block + a[r * k + p] * b[p * nr + j];
                         sum = k0 == 0 ? block : sum + block;
                     }
+
                     expected[r * nr + j] = sum + init[r * nr + j];
                 }
+            }
+
             var actual = new float[Gemm.MR * nr];
             fixed (float* pa = a, pb = b, pi = init, po = actual)
             {
-                var aRows = stackalloc float*[Gemm.MR];
-                var initRows = stackalloc float*[Gemm.MR];
-                var outRows = stackalloc float*[Gemm.MR];
                 for (int r = 0; r < Gemm.MR; r++)
                 {
                     int row = Math.Min(r, mr - 1); // rows past mr repeat the last one, as the callers do
@@ -218,6 +232,7 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
                     initRows[r] = pi + row * nr;
                     outRows[r] = po + r * nr;
                 }
+
                 var (rows, panel, inits, outs) = ((nint)aRows, (nint)pb, (nint)initRows, (nint)outRows);
                 With(path, 1, () =>
                 {
@@ -225,6 +240,7 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
                     return 0;
                 });
             }
+
             Assert.Equal(expected, actual[..(mr * nr)]);
         }
     }
@@ -283,11 +299,13 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
         var lstms = Enumerable.Range(0, 8).Select(i => new RandomLstm(48, 64,
             Enumerable.Range(0, i + 1).Select(j => (long)(5 + (i * 7 + j * 13) % 40)).ToArray(), 100 + i)).ToArray();
         foreach (var path in NativePaths)
+        {
             With(path, 4, () =>
             {
                 var sequential = lstms.Select(l => l.Run()).ToArray();
                 for (int i = 0; i < lstms.Length; i++)
                     TokenizerTests.AssertClose(lstms[i].Expected, sequential[i], 1e-5f, $"{path} lstm {i}");
+
                 // 8 callers start together, each running every LSTM several times from its own offset.
                 const int callers = 8, rounds = 5;
                 var mismatches = 0;
@@ -307,6 +325,7 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
                 Assert.True(mismatches == 0, $"{path}: {mismatches} concurrent results differ from the sequential ones");
                 return 0;
             });
+        }
     }
 
     [Fact]
@@ -320,6 +339,7 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
                 canceled.Cancel();
                 Assert.ThrowsAny<OperationCanceledException>(() => lstm.Run(canceled.Token));
             }
+
             var watch = Stopwatch.StartNew();
             using (var later = new CancellationTokenSource(TimeSpan.FromMilliseconds(30)))
                 Assert.ThrowsAny<OperationCanceledException>(() => lstm.Run(later.Token));
@@ -423,9 +443,13 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
                 return 0;
             });
             for (int i = 0; i < n; i++)
+            {
                 for (int t = 0; t < width; t++)
+                {
                     Assert.Equal(packed.AsSpan((t * n + i) * 600, 600).ToArray().Select(BitConverter.SingleToInt32Bits),
                         unpacked.AsSpan((i * width + t) * 600, 600).ToArray().Select(BitConverter.SingleToInt32Bits));
+                }
+            }
         }
     }
 
@@ -513,6 +537,7 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
                 diff = Math.Max(diff, TokenizerTests.AssertClose(expected[i], actualTags.e[i], 1e-4f, $"{path} {name} s{i}"));
                 Assert.Equal(expectedTags[i], actualTags.t[i]);
             }
+
             output.WriteLine($"{path} {name}: max |diff| {diff:E2}");
         }
     }
@@ -552,9 +577,12 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
                 Assert.Equal(kept, managedCache.TryGetArrays(keys[i]!, out var m));
                 Assert.Equal(charlm && i < sentences.Count - 1, kept); // not the one simplify_punct changed
                 if (kept)
+                {
                     cacheDiff = Math.Max(cacheDiff, Math.Max(TokenizerTests.AssertClose(r.Forward, m.Forward, 1e-4f, $"{path} s{i} forward"),
                         TokenizerTests.AssertClose(r.Backward, m.Backward, 1e-4f, $"{path} s{i} backward")));
+                }
             }
+
             output.WriteLine($"{path} {name}: UPOS scores max |diff| {diff:E2}, cached charlm max |diff| {cacheDiff:E2}");
         }
     }
@@ -581,6 +609,7 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
                 diff = Math.Max(diff, TokenizerTests.AssertClose(tensors.Read<float>($"s{i}.pos.upos_logits"), logits[i], 1e-4f, $"{path} {name} s{i}"));
                 Assert.Equal(index[i]!["xpos"]!.AsArray().Select(x => x!.GetValue<string>()), tags[i].Select(t => t.Xpos));
             }
+
             output.WriteLine($"{path} {name}: UPOS logits max |diff| vs Python {diff:E2}");
         }
     }
@@ -601,7 +630,9 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
         var managedBackward = fixture.ManagedBackward;
         var doc = Conllu.Read(File.ReadAllText(Path.Combine(Repo.Golden, "depparse", "corpus.conllu")));
         var batch = doc.Sentences.Select(s => (IReadOnlyList<Word>)s.Words.ToList()).Where(s => s.Count <= 40)
-            .DistinctBy(s => s.Count / 4).OrderByDescending(s => s.Count).ToList();
+            .DistinctBy(s => s.Count / 4)
+            .OrderByDescending(s => s.Count)
+            .ToList();
         batch.Add([new Word { Text = "Really", Upos = "ADV", Xpos = "RB", Lemma = "really" }, new Word { Text = "?!", Upos = "PUNCT", Xpos = ".", Lemma = "?!" }]);
         foreach (var name in new[] { "depparse/combined_charlm", "depparse/combined_nocharlm" })
         {
@@ -624,6 +655,7 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
                 labels = Math.Max(labels, TokenizerTests.AssertClose(pairs.Select(k => expected.LabelScores![k]).ToArray(),
                     pairs.Select(k => actual.LabelScores![k]).ToArray(), 1e-4f, $"{path} {name} s{b} labels"));
             }
+
             var expectedParses = reference.Parse(batch);
             for (int b = 0; b < batch.Count; b++)
                 Assert.Equal(expectedParses[b], parses[b]);
@@ -652,6 +684,7 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
                 var (a, l) = DepparseTests.AssertScoresMatch(scores, tensors.Read<float>($"s{i}.{prefix}unlabeled"), tensors.Read<float>($"s{i}.{prefix}deprel"), $"{path} {name} s{i}");
                 (arcs, labels) = (Math.Max(arcs, a), Math.Max(labels, l));
             }
+
             output.WriteLine($"{path} {name}: arc log-probs max |diff| vs Python {arcs:E2}, label log-probs {labels:E2}");
         }
     }
@@ -686,8 +719,12 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
         var torchReps = (forward.BuildCharRepresentation(sentences), backward.BuildCharRepresentation(sentences));
         var managedReps = (managedForward.BuildCharRepresentation(sentences), managedBackward.BuildCharRepresentation(sentences));
         for (int i = 0; i < sentences.Count; i++)
-            Assert.True(i % 2 == 0 ? cache.TryAdd(keys[i]!, torchReps.Item1[i], torchReps.Item2[i])
+        {
+            Assert.True(i % 2 == 0
+                ? cache.TryAdd(keys[i]!, torchReps.Item1[i], torchReps.Item2[i])
                 : cache.TryAdd(keys[i]!, managedReps.Item1[i], managedReps.Item2[i], sentences[i].Count));
+        }
+
         var (cachedLabels, cachedLogits) = With(path, 4, () => (managed.Classify(sentences, out var l, cache, keys), l));
         Assert.Equal(labels, cachedLabels);
         float cacheDiff = 0;
@@ -717,9 +754,11 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
         var calls = Directory.GetFiles(Path.Combine(Repo.Golden, "lemma"), "*.conllu").Order().Select(file =>
             Conllu.Read(File.ReadAllText(file)).Sentences.SelectMany(s => s.Words)
                 .Where(w => reference.Lookup(w.Text, w.Upos) == null)
-                .Select(w => new Word { Text = w.Text, Upos = w.Upos }).ToList()).ToList();
+                .Select(w => new Word { Text = w.Text, Upos = w.Upos })
+                .ToList()).ToList();
         calls.Add(JsonNode.Parse(File.ReadAllText(Path.Combine(Repo.Golden, "lemma", "words.json")))!.AsArray()
-            .Select(g => new Word { Text = (string)g!["word"]!, Upos = (string)g["upos"]! }).ToList());
+            .Select(g => new Word { Text = (string)g!["word"]!, Upos = (string)g["upos"]! })
+            .ToList());
         Assert.Equal(868, calls.SkipLast(1).Sum(c => c.Count));
 
         double diff = 0, nearTop = 0, margin = double.PositiveInfinity;
@@ -728,12 +767,16 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
         {
             float first = float.NegativeInfinity, second = float.NegativeInfinity;
             foreach (var x in row)
+            {
                 if (x > first)
                     (first, second) = (x, first);
                 else if (x > second)
                     second = x;
+            }
+
             return first - second;
         }
+
         foreach (var words in calls)
         {
             var expectedSteps = new List<(float[] LogProbs, int Columns)>();
@@ -757,6 +800,7 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
                         if (er[v] > top - 10)
                             nearTop = Math.Max(nearTop, d);
                     }
+
                     if (!done[r])
                         margin = Math.Min(margin, Math.Min(Margin(er), Margin(ar)));
                 }
@@ -766,10 +810,10 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
             Assert.Equal(expected.Decoded, actual.Decoded);
             Assert.Equal(expected.Edits, actual.Edits);
         }
+
         output.WriteLine($"{path}: {calls.Sum(c => c.Count)} words, {steps} decoder steps: log-probs max |diff| {diff:E2} " +
             $"(within 10 of the top {nearTop:E2}), smallest top-2 margin {margin:E2}");
     }
-
 
     /// <summary>
     /// The constituency parser, both backends: the golden transition scores (Python, 3 sentences) at the parser's 1e-3, then
@@ -792,16 +836,20 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
         var tensors = SafeTensorFile.Load(Path.Combine(Repo.Golden, "intermediates.safetensors"));
         var index = JsonNode.Parse(File.ReadAllText(Path.Combine(Repo.Golden, "intermediates.json")))!["sentences"]!.AsArray();
         var golden = index.Select(e => (IReadOnlyList<(string, string)>)e!["words"]!.AsArray().Select(w => w!.GetValue<string>())
-            .Zip(e["xpos"]!.AsArray().Select(t => t!.GetValue<string>())).ToList()).ToList();
+            .Zip(e["xpos"]!.AsArray().Select(t => t!.GetValue<string>()))
+            .ToList()).ToList();
         var goldenScores = new List<List<float[]>>();
         With(path, 4, () => managed.Parse(golden, goldenScores));
         float goldenDiff = 0;
         for (int i = 0; i < golden.Count; i++)
+        {
             goldenDiff = Math.Max(goldenDiff, TokenizerTests.AssertClose(tensors.Read<float>($"s{i}.constituency.scores"),
                 goldenScores[i].SelectMany(r => r).ToArray(), 1e-3f, $"{path} s{i}"));
+        }
 
         var sentences = Conllu.Read(File.ReadAllText(Path.Combine(Repo.Golden, "pipeline.conllu"))).Sentences
-            .Select(s => (IReadOnlyList<(string, string)>)s.Words.Select(w => (w.Text, w.Xpos!)).ToList()).ToList();
+            .Select(s => (IReadOnlyList<(string, string)>)s.Words.Select(w => (w.Text, w.Xpos!)).ToList())
+            .ToList();
         var (expectedScores, actualScores) = (new List<List<float[]>>(), new List<List<float[]>>());
         var expected = reference.Parse(sentences, expectedScores);
         var actual = With(path, 4, () => managed.Parse(sentences, actualScores));
@@ -836,6 +884,7 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
                     Constituency.ManagedConstituencyNet.Vector(net.Compose([[inputs[i], inputs[(i + 1) % 7]]], default)[0]));
                 Assert.Equal(scores.AsSpan(i * 29, 29).ToArray(), net.Score([(words, i % rows, transitions[i], parents[i])], default));
             }
+
             return 0;
         });
     }
@@ -849,15 +898,18 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
     {
         using var _ = torch.no_grad();
         int threads = torch.get_num_threads();
+
         // 16 pseudo-sentences of 20 words from corpus.txt (no tokenizer needed).
         var words = File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt")).Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
         var sentences = Enumerable.Range(0, 16)
-            .Select(i => (IReadOnlyList<string>)Enumerable.Range(i * 20, 20).Select(j => words[j % words.Length]).ToList()).ToList();
+            .Select(i => (IReadOnlyList<string>)Enumerable.Range(i * 20, 20).Select(j => words[j % words.Length]).ToList())
+            .ToList();
         long[] lengths = [.. sentences.Select(s => (long)s.Count)];
         var input = Random((int)lengths.Sum() * 2248, 5);
 
         var lms = new[] { "forward", "backward" }.Select(d => Repo.Model($"{d}_charlm/1billion"))
-            .Select(p => (Torch: CharLanguageModel.Load(p), Managed: ManagedCharLanguageModel.Load(p))).ToArray();
+            .Select(p => (Torch: CharLanguageModel.Load(p), Managed: ManagedCharLanguageModel.Load(p)))
+            .ToArray();
         var ckpt = Checkpoint.Load(Repo.Model("pos/combined_charlm"));
         using var highway = new HighwayLstm(ckpt, ckpt.Root["model"]!, "taggerlstm", 2248, 200, 2);
         var managedHighway = new ManagedHighwayLstm(ckpt, ckpt.Root["model"]!, "taggerlstm", 2248, 200, 2);
@@ -872,8 +924,10 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
                 run();
                 times.Add(watch.Elapsed.TotalMilliseconds);
             }
+
             return times.Order().ElementAt(1);
         }
+
         void Report(string line)
         {
             output.WriteLine(line);
@@ -883,8 +937,10 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
         double torchCharlm = Median(() =>
         {
             foreach (var (lm, _) in lms)
+            {
                 foreach (var t in lm.BuildCharRepresentation(sentences))
                     t.Dispose();
+            }
         });
         double torchHighway = Median(() =>
         {

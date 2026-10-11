@@ -7,6 +7,7 @@ public static class Repo
 {
     public static readonly string Root = FindRoot();
     public static readonly string Golden = Path.Combine(Root, "tests", "golden");
+
     // STANZASHARP_MODELS overrides the location, e.g. for a git worktree without its own models/.
     public static readonly string Models =
         Environment.GetEnvironmentVariable("STANZASHARP_MODELS") is { Length: > 0 } dir ? dir : Path.Combine(Root, "models", "converted", "en");
@@ -19,8 +20,10 @@ public static class Repo
     /// <summary>The backend golden tests run on (issue #29): <see cref="Backend.Managed"/> or TorchSharp.</summary>
     internal static Backend Backend(bool managed) => managed ? Nn.Backend.Managed : Nn.Backend.TorchSharp;
 
-    /// <summary>The shared word vectors in the backend's form: a plain array when managed, so no libtorch is needed
-    /// (the linux-arm64 CI job runs the managed cases without one).</summary>
+    /// <summary>
+    /// The shared word vectors in the backend's form: a plain array when managed, so no libtorch is needed
+    /// (the linux-arm64 CI job runs the managed cases without one).
+    /// </summary>
     internal static Pretrain LoadPretrain(bool managed) =>
         managed ? Pretrain.LoadManaged(Model("pretrain/conll17")) : Pretrain.Load(Model("pretrain/conll17"));
 
@@ -30,8 +33,11 @@ public static class Repo
     private static string FindRoot()
     {
         for (var dir = new DirectoryInfo(AppContext.BaseDirectory); dir != null; dir = dir.Parent)
+        {
             if (File.Exists(Path.Combine(dir.FullName, "StanzaSharp.slnx")))
                 return dir.FullName;
+        }
+
         throw new InvalidOperationException("StanzaSharp.slnx not found above " + AppContext.BaseDirectory);
     }
 }

@@ -22,15 +22,19 @@ internal interface IConstituencyNet : IDisposable
     /// <summary>The constituent stack's state after its start embedding (owned by the net).</summary>
     object ConstituentStart { get; }
 
-    /// <summary>initial_word_queues: per sentence a handle to its word vectors, row 0 the start sentinel, then one per word,
-    /// then the end sentinel (word_lstm, then relu(word_to_constituent)).</summary>
+    /// <summary>
+    /// initial_word_queues: per sentence a handle to its word vectors, row 0 the start sentinel, then one per word,
+    /// then the end sentinel (word_lstm, then relu(word_to_constituent)).
+    /// </summary>
     object[] EncodeWords(IReadOnlyList<WordInput> sentences, CharlmCache? charlms, CancellationToken ct);
 
     /// <summary>Row <paramref name="position"/> of a sentence's word vectors, as a constituent vector (a Shift's).</summary>
     object Word(object words, int position);
 
-    /// <summary>LSTMModel.forward: [states, transitions] scores from each state's word vector at its position and the tops of
-    /// its transition and constituent stacks; ReLU before every output layer, including the first.</summary>
+    /// <summary>
+    /// LSTMModel.forward: [states, transitions] scores from each state's word vector at its position and the tops of
+    /// its transition and constituent stacks; ReLU before every output layer, including the first.
+    /// </summary>
     float[] Score(IReadOnlyList<(object Words, int Position, object Transition, object Constituent)> states, CancellationToken ct);
 
     /// <summary>The Open markers' vectors: rows of the dummy (constituent open) embedding.</summary>
@@ -56,12 +60,21 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
 {
     /// <summary>Study only (tools/constituency_divergence.py): per-step layers whose sums run in double. Set before loading.</summary>
     [Flags]
-    internal enum DoubleSums { None = 0, Output = 1, LastOutput = 2, Stacks = 4, Reduce = 8 }
+    internal enum DoubleSums
+    {
+        None = 0,
+        Output = 1,
+        LastOutput = 2,
+        Stacks = 4,
+        Reduce = 8,
+    }
 
     internal static DoubleSums Double;
 
-    /// <summary>Row r of <paramref name="y"/> (stride <paramref name="ldy"/>): bias + w·x_r, summed in double. w is
-    /// [n, k] row-major, column j of the result reading w's row <paramref name="order"/>[j] (row j when null).</summary>
+    /// <summary>
+    /// Row r of <paramref name="y"/> (stride <paramref name="ldy"/>): bias + w·x_r, summed in double. w is
+    /// [n, k] row-major, column j of the result reading w's row <paramref name="order"/>[j] (row j when null).
+    /// </summary>
     private static void DoubleLinear(float[] w, int n, int k, float[] bias, float* x, int ldx, int rows, float* y, int ldy, int[]? order = null)
     {
         ManagedThreads.For(rows * n, rj =>
@@ -95,8 +108,10 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
         }
     }
 
-    /// <summary>A sentence's word vectors (<see cref="EncodeWords"/>' handle), from the <see cref="Recycler"/>; the parser
-    /// disposes it when the sentence is done.</summary>
+    /// <summary>
+    /// A sentence's word vectors (<see cref="EncodeWords"/>' handle), from the <see cref="Recycler"/>; the parser
+    /// disposes it when the sentence is done.
+    /// </summary>
     private sealed class Words(float[][] rows, Recycler pool) : IDisposable
     {
         public readonly float[][] Rows = rows;
@@ -196,6 +211,7 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
                     wih.AsSpan(j * inl, inl).CopyTo(w.AsSpan(j * k));
                     whh.AsSpan(j * hidden, hidden).CopyTo(w.AsSpan(j * k + inl));
                 }
+
                 if (_raw != null)
                     _raw[l] = w;
                 var packed = new PackedMatrix(w, 4 * hidden, k, order);
@@ -221,6 +237,7 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
                 parents[r].C.CopyTo(c, 0);
                 result[r] = new StackState(hNew, c, pool);
             }
+
             var xh = ArrayPool<float>.Shared.Rent(n * kMax);
             var gates = ArrayPool<float>.Shared.Rent(n * ldg);
             try
@@ -234,6 +251,7 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
                         x.CopyTo(xh.AsSpan(r * k));
                         parents[r].H.AsSpan(l * h, h).CopyTo(xh.AsSpan(r * k + inl));
                     }
+
                     var (w, bias) = _layers[l];
                     fixed (float* pxh = xh, pg = gates, pb = bias)
                     {
@@ -242,9 +260,13 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
                         else
                             Gemm.Run(pxh, n, k, w, pb, pg, ldg, ct, rowInvariant: true);
                         for (int r = 0; r < n; r++)
+                        {
                             fixed (float* c = result[r].C, hOut = result[r].H)
+                            {
                                 for (int p = 0; p < h / 4; p++)
                                     Act.LstmCell(pg + r * ldg + p * 16, c + l * h + p * 4, hOut + l * h + p * 4);
+                            }
+                        }
                     }
                 }
             }
@@ -253,6 +275,7 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
                 ArrayPool<float>.Shared.Return(xh);
                 ArrayPool<float>.Shared.Return(gates);
             }
+
             return result;
         }
     }
@@ -309,11 +332,14 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
             var shape = ckpt.Shape(w);
             outputs.Add(Linear(T, $"output_layers.{i}.", (int)shape[0], (int)shape[1]));
         }
+
         _outputLayers = [.. outputs];
         _outputRaw = new float[]?[_outputLayers.Length];
         for (int i = 0; i < _outputRaw.Length; i++)
-            if ((Double & DoubleSums.Output) != 0 || (Double & DoubleSums.LastOutput) != 0 && i == _outputRaw.Length - 1)
+        {
+            if ((Double & DoubleSums.Output) != 0 || ((Double & DoubleSums.LastOutput) != 0 && i == _outputRaw.Length - 1))
                 _outputRaw[i] = T($"output_layers.{i}.weight");
+        }
 
         _transitionLstm = new StackLstm(T, "transition_stack.lstm.", _transitionDim, transitionHidden, layers);
         _constituentLstm = new StackLstm(T, "constituent_stack.lstm.", hidden, hidden, layers);
@@ -368,12 +394,16 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
                     backward.Slice(t * charDim, charDim).CopyTo(x.AsSpan(r + backwardCol, charDim));
                 }
             }
+
             var missing = new List<int>();
             for (int i = 0; i < n; i++)
+            {
                 if (sentences[i].CacheKey is { } key && charlms!.TryGetArrays(key, out var reps))
                     Put(i, reps.Forward, reps.Backward);
                 else
                     missing.Add(i);
+            }
+
             if (missing.Count > 0)
             {
                 var texts = missing.Select(i => sentences[i].Words).ToList();
@@ -415,8 +445,10 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
                     z.AsSpan((i * width + t) * ldz, _hidden).CopyTo(row);
                     Relu(row);
                 }
+
                 result[i] = new Words(rows, pool);
             }
+
             return result;
         }
         finally
@@ -446,6 +478,7 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
                 ((StackState)transition).H.AsSpan((_transitionLstm.Layers - 1) * th, th).CopyTo(row[_hidden..]);
                 ((StackState)constituent).H.AsSpan((_constituentLstm.Layers - 1) * ch, ch).CopyTo(row[(_hidden + th)..]);
             }
+
             int k = k0;
             for (int i = 0; i < _outputLayers.Length; i++)
             {
@@ -453,13 +486,17 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
                 for (int r = 0; r < n; r++)
                     Relu(a.AsSpan(r * ld, k)); // nonlinearity before every layer, including the first
                 fixed (float* pa = a, pb = b, pBias = bias)
+                {
                     if (_outputRaw[i] is { } raw)
                         DoubleLinear(raw, w.N, k, bias, pa, ld, n, pb, ld);
                     else
                         Gemm.Run(pa, n, ld, w, pBias, pb, ld, ct, rowInvariant: true);
+                }
+
                 (a, b) = (b, a);
                 k = w.N;
             }
+
             var result = new float[n * k];
             for (int r = 0; r < n; r++)
                 a.AsSpan(r * ld, k).CopyTo(result.AsSpan(r * k));
@@ -492,11 +529,15 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
                         row[j] = Math.Max(row[j], x[j]);
                 }
             }
+
             fixed (float* pp = pooled, po = output, pb = _reduceBias)
+            {
                 if (_reduceRaw != null)
                     DoubleLinear(_reduceRaw, h, h, _reduceBias, pp, h, n, po, ld);
                 else
                     Gemm.Run(pp, n, h, _reduce, pb, po, ld, ct, rowInvariant: true);
+            }
+
             var result = new object[n];
             var pool = Recycler.Current;
             for (int r = 0; r < n; r++)
@@ -506,6 +547,7 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
                 Relu(v);
                 result[r] = new Composed(v, pool);
             }
+
             return result;
         }
         finally

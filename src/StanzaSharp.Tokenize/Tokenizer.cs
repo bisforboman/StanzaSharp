@@ -35,6 +35,7 @@ internal sealed class Tokenizer : IDisposable
     // No/Nl characters count (3/14/2023² has no boundary after 2023) and combining marks do not,
     // unlike .NET's \w (L, Mn, Nd, Pc, and ZWJ/ZWNJ for \b).
     private const string PyWord = @"[\p{L}\p{N}_]";
+
     private static Regex PyRegex(string pattern) =>
         new(pattern.Replace(@"\b", $"(?:(?<={PyWord})(?!{PyWord})|(?<!{PyWord})(?={PyWord}))"));
 
@@ -125,6 +126,7 @@ internal sealed class Tokenizer : IDisposable
                     word.EndChar -= offset;
                 }
             }
+
             // The joining "\n\n" is not part of either text.
             if (doc.Sentences.Count > 0)
             {
@@ -133,9 +135,11 @@ internal sealed class Tokenizer : IDisposable
                 var first = doc.Sentences[0].Tokens[0];
                 first.SpacesBefore = text[..first.StartChar!.Value];
             }
+
             docs.Add(doc);
             offset += text.Length + 2;
         }
+
         return docs;
     }
 
@@ -158,8 +162,10 @@ internal sealed class Tokenizer : IDisposable
                 sent.Tokens.Add(token);
                 start = end + 1;
             }
+
             FinishSentence(sent, doc);
         }
+
         MarkWhitespace(doc);
         return doc;
     }
@@ -173,9 +179,11 @@ internal sealed class Tokenizer : IDisposable
         {
             int end = tokens[i].EndChar!.Value;
             int next = i + 1 < tokens.Count ? tokens[i + 1].StartChar!.Value : text.Length;
+
             // One shared " " for the usual case, not a new string per token (24 bytes each on large documents).
             tokens[i].SpaceAfter = text.AsSpan(end, next - end) is " " ? " " : text[end..next];
         }
+
         if (tokens.Count > 0)
             tokens[0].SpacesBefore = text[..tokens[0].StartChar!.Value];
     }
@@ -189,7 +197,6 @@ internal sealed class Tokenizer : IDisposable
     }
 
     // ----- input: paragraphs of code-point units -----
-
     private sealed class Paragraph
     {
         public required string[] Units;   // one code point each, whitespace normalized to " "
@@ -197,6 +204,7 @@ internal sealed class Tokenizer : IDisposable
         public required int[] Ends;
         public required long[] Ids;
         public required float[] Feats;    // [Length * featDim]
+
         public int Length => Units.Length;
     }
 
@@ -209,6 +217,7 @@ internal sealed class Tokenizer : IDisposable
             AddParagraph(text, pos, m.Index, result);
             pos = m.Index + m.Length;
         }
+
         AddParagraph(text, pos, text.Length, result);
         return result;
     }
@@ -228,6 +237,7 @@ internal sealed class Tokenizer : IDisposable
         {
             int len = rune.Utf16SequenceLength;
             bool space = rune.IsBmp && (PyString.IsSpace((char)rune.Value) || rune.Value is >= 0x80 and <= 0x9f);
+
             // filter_consecutive_whitespaces: keep the first of a run of spaces.
             if (!(space && units.Count > 0 && units[^1] == " "))
             {
@@ -235,6 +245,7 @@ internal sealed class Tokenizer : IDisposable
                 starts.Add(pos);
                 ends.Add(pos + len);
             }
+
             pos += len;
         }
 
@@ -261,10 +272,14 @@ internal sealed class Tokenizer : IDisposable
             if (structural != null)
             {
                 foreach (Match m in structural.Matches(joined))
+                {
                     for (int p = m.Index; p < m.Index + m.Length; p++)
                         feats[unitAt[p] * _featDim + k] = 1;
+                }
+
                 continue;
             }
+
             for (int i = 0; i < n; i++)
             {
                 var rune = Rune.GetRuneAt(units[i], 0);
@@ -281,11 +296,11 @@ internal sealed class Tokenizer : IDisposable
                     feats[i * _featDim + k] = 1;
             }
         }
+
         return feats;
     }
 
     // ----- prediction, batched exactly like utils.predict -----
-
     private int[][] Predict(List<Paragraph> paragraphs, CancellationToken ct)
     {
         // SortedDataset sorts by length, longest first (stable), then batches of batch_size.
@@ -308,12 +323,14 @@ internal sealed class Tokenizer : IDisposable
             {
                 rowPreds = PredictWindowed(rows, ct);
             }
+
             for (int j = 0; j < rows.Count; j++)
             {
                 FixLabels(rows[j], rowPreds[j]);
                 preds[order[b + j]] = rowPreds[j];
             }
         }
+
         return preds;
     }
 
@@ -327,6 +344,7 @@ internal sealed class Tokenizer : IDisposable
             ct.ThrowIfCancellationRequested();
             var ens = rows.Select((r, j) => Math.Min(r.Length - idx[j], _window)).ToArray();
             int width = ens.Max();
+
             // The first window keeps collate's raw units (own length + 1, cut to the window);
             // advance_old_batch pads every row's raw units to the batch width, so later windows
             // run every row at full width and padding reaches the backward LSTM.
@@ -339,6 +357,7 @@ internal sealed class Tokenizer : IDisposable
                 output[j].AddRange(p[j][..advance]);
                 idx[j] += advance;
             }
+
             if (rows.Select((r, j) => idx[j] >= r.Length).All(x => x))
                 return output.Select(o => o.ToArray()).ToArray();
         }
@@ -356,6 +375,7 @@ internal sealed class Tokenizer : IDisposable
             Array.Copy(rows[j].Ids, offsets[j], ids, j * width, count);
             Array.Copy(rows[j].Feats, offsets[j] * _featDim, feats, j * width * _featDim, count * _featDim);
         }
+
         return _net.Forward(ids, feats, rows.Count, width, lengths.Select(l => (long)l).ToArray(), ct);
     }
 
@@ -374,11 +394,15 @@ internal sealed class Tokenizer : IDisposable
                 var v = logits.AsSpan((j * width + i) * Classes, Classes);
                 int best = 0;
                 for (int c = 1; c < Classes; c++)
+                {
                     if (v[c] > v[best])
                         best = c;
+                }
+
                 result[j][i] = best;
             }
         }
+
         return result;
     }
 
@@ -400,7 +424,6 @@ internal sealed class Tokenizer : IDisposable
     }
 
     // ----- output: utils.decode_predictions -----
-
     private void Decode(Paragraph para, int[] pred, Document doc, bool splitSentences)
     {
         Sentence? sent = null;
@@ -420,6 +443,7 @@ internal sealed class Tokenizer : IDisposable
                 continue;
 
             var text = string.Concat(para.Units[first..(i + 1)]);
+
             // TokenizeProcessor.process: len(token['text']) > max_seqlen, in code points (one per unit). Only the
             // text changes; offsets and the MWT flag stay.
             if (i + 1 - first > _maxSeqLen)
@@ -438,6 +462,7 @@ internal sealed class Tokenizer : IDisposable
                 sent = null;
             }
         }
+
         if (sent != null)
             FinishSentence(sent, doc);
     }
@@ -465,6 +490,7 @@ internal sealed class Tokenizer : IDisposable
             for (int k = 0; k < units[i].Length; k++)
                 unitAt.Add(i);
         }
+
         return (sb.ToString(), unitAt.ToArray());
     }
 

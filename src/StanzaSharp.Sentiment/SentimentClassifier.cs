@@ -98,6 +98,7 @@ internal sealed class SentimentClassifier : IDisposable
                 labels[batch[k]] = Array.IndexOf(scores[k], scores[k].Max()); // torch.argmax: first maximum
             }
         }
+
         return labels;
     }
 
@@ -121,8 +122,11 @@ internal sealed class SentimentClassifier : IDisposable
                 (start, size) = (i, lengths[i]);
             }
             else
+            {
                 size += lengths[i];
+            }
         }
+
         if (size > 0)
             intervals.Add((start, lengths.Length));
         return intervals;
@@ -140,6 +144,7 @@ internal sealed class SentimentClassifier : IDisposable
             if (id != _pretrain.UnkId)
                 return id;
         }
+
         return _pretrain.UnitToId(PyString.Lower(word));
     }
 
@@ -152,12 +157,15 @@ internal sealed class SentimentClassifier : IDisposable
         var ids = new long[n * width]; // padding: PAD (0) in both vocabs
         var extraIds = new long[n * width];
         for (int i = 0; i < n; i++)
+        {
             for (int j = 0; j < batch[i].Count; j++)
             {
                 var word = batch[i][j];
                 ids[i * width + j] = MapWord(word);
                 extraIds[i * width + j] = _extraVocab.TryGetValue(word, out var e) ? e : UnkId;
             }
+        }
+
         var scores = _net.Forward(batch, ids, extraIds, width, charlms, cacheKeys, cancellationToken);
         int classes = scores.Length / n;
         return Enumerable.Range(0, n).Select(i => scores[(i * classes)..((i + 1) * classes)]).ToArray();
@@ -169,6 +177,7 @@ internal sealed class SentimentClassifier : IDisposable
         {
             if (!ok) throw new NotSupportedException($"Sentiment checkpoint uses {what}, which is not ported");
         }
+
         Require(config["model_type"]?.GetValue<string>() == "CNN", $"model type {config["model_type"]}");
         Require(config["extra_wordvec_method"]?.GetValue<string>() == "SUM", $"extra_wordvec_method {config["extra_wordvec_method"]}");
         Require(config["extra_wordvec_max_norm"] == null, "extra_wordvec_max_norm");

@@ -47,6 +47,7 @@ internal sealed class SentimentNet : ISentimentNet
             var shape = ckpt.Shape(w);
             fc.Add(nn.Linear(shape[1], shape[0]).LoadFrom(ckpt, model, $"fc_layers.{i}."));
         }
+
         _fc = [.. fc];
     }
 
@@ -80,6 +81,7 @@ internal sealed class SentimentNet : ISentimentNet
             c = fullWidth ? c.squeeze(3) : c.transpose(2, 3).flatten(1, 2);
             pooled.Add(F.relu(c).amax([2])); // max_pool2d over the whole length
         }
+
         var hiddenLayer = cat(pooled, 1);
         for (int i = 0; i < _fc.Length - 1; i++)
             hiddenLayer = F.relu(_fc[i].forward(hiddenLayer));
@@ -97,8 +99,11 @@ internal sealed class SentimentNet : ISentimentNet
 
         var result = torch.zeros([batch.Count, width, charlm.HiddenDim], device: _device);
         for (int i = 0; i < batch.Count; i++)
+        {
             if (batch[i].Count > 0)
                 result[i].narrow(0, 0, batch[i].Count).copy_(reps[i]!);
+        }
+
         return result;
     }
 

@@ -44,6 +44,7 @@ public sealed class Tree(string label, IReadOnlyList<Tree>? children = null)
             sb.Append(Escape(Label));
             return;
         }
+
         sb.Append('(').Append(Escape(Label));
         foreach (var child in Children)
             child.Write(sb.Append(' '));
@@ -83,6 +84,7 @@ public sealed class Tree(string label, IReadOnlyList<Tree>? children = null)
                 pos++;
                 return new Tree(label, children);
             }
+
             children.Add(ParseNode(text, ref pos));
         }
     }

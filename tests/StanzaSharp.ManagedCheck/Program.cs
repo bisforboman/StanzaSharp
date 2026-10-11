@@ -10,6 +10,7 @@ using StanzaSharp;
 
 var (models, golden) = (args[0], args[1]);
 var corpus = File.ReadAllText(Path.Combine(golden, "corpus.txt"));
+
 // Only Stanza's .pt files have published checksums.
 bool pt = File.Exists(Path.Combine(models, "pretrain", "conll17.pt")) && !File.Exists(Path.Combine(models, "pretrain", "conll17.json"));
 int failures = 0;
@@ -17,6 +18,7 @@ int failures = 0;
 foreach (var (package, expected) in new[] { ("default", "pipeline.conllu"), ("default_fast", Path.Combine("fast", "corpus.conllu")) })
 {
     var logger = new CountingLogger();
+
     // The default backend: what `dotnet add package StanzaSharp` alone must run.
     var options = new PipelineOptions { Package = package, Threads = 2, Logger = logger, VerifyChecksums = pt };
     var start = Stopwatch.GetTimestamp();
@@ -27,13 +29,17 @@ foreach (var (package, expected) in new[] { ("default", "pipeline.conllu"), ("de
         nlp.Process(corpus, new CancellationToken(canceled: true));
         failures += Fail($"{package}: a canceled Process did not throw");
     }
-    catch (OperationCanceledException) { }
+    catch (OperationCanceledException)
+    {
+    }
+
     start = Stopwatch.GetTimestamp();
     var conllu = Conllu.Write(nlp.Process(corpus));
     bool same = conllu == File.ReadAllText(Path.Combine(golden, expected));
     Console.WriteLine($"{package}: processed in {Stopwatch.GetElapsedTime(start).TotalSeconds:F1} s, {(same ? "identical to" : "DIFFERENT from")} {expected}");
     if (!same)
         failures += Fail($"{package}: the output differs from {expected}");
+
     // The other input modes and no_ssplit run too (their output is tested in StanzaSharp.Tests).
     nlp.Process([corpus, "A second text."]);
     nlp.Process([["Hello", "world", "."], ["Bye", "."]]);
@@ -77,11 +83,14 @@ static int Fail(string message)
     return 1;
 }
 
-sealed class CountingLogger : ILogger
+internal sealed class CountingLogger : ILogger
 {
     public int Messages;
+
     public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+
     public bool IsEnabled(LogLevel logLevel) => true;
+
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
         formatter(state, exception);

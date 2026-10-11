@@ -28,7 +28,7 @@ public sealed class Pipeline : IDisposable
     /// <summary>Every processor, in the order Stanza runs them (PIPELINE_NAMES): Stanza's English default.</summary>
     public const string AllProcessors = $"{Processor.Tokenize},{Processor.Mwt},{Processor.Pos},{Processor.Lemma},{Processor.Constituency},{Processor.Depparse},{Processor.Sentiment},{Processor.Ner}";
 
-    /// <summary>The package <see cref="PipelineOptions.Package"/> selects by default: Stanza's English <c>default</c>.</summary>
+    /// <summary>The package <see cref="PipelineOptions.Package"/> selects by default: Stanza's English <see langword="default"/>.</summary>
     public const string DefaultPackage = "default";
 
     // Stanza 1.15.0's English packages (resources.json): each processor's model. Their files need MD5s in ModelDownloader.Files.
@@ -45,6 +45,7 @@ public sealed class Pipeline : IDisposable
             ["sentiment"] = "sstplus_charlm",
             ["ner"] = "ontonotes-ww-multi_charlm",
         },
+
         // Smaller and faster: pos, depparse and ner have their own character LSTMs instead of the charlms. No constituency.
         ["default_fast"] = new()
         {
@@ -84,6 +85,7 @@ public sealed class Pipeline : IDisposable
 
     /// <summary>The loaded parser, for studies (samples/StanzaSharp.Benchmark constituency-divergence).</summary>
     internal ConstituencyParser? Parser => _parser;
+
     private readonly SentimentClassifier? _sentiment;
     private readonly Pretrain? _pretrain;
     private readonly BackendModels _models;
@@ -112,6 +114,7 @@ public sealed class Pipeline : IDisposable
             _logger.LogInformation("Loaded {Model} in {Milliseconds:F0} ms", name, Stopwatch.GetElapsedTime(start).TotalMilliseconds);
             return model;
         }
+
         T Collected<T>(T model)
         {
             if (backend.CollectAfterEachModel)
@@ -150,7 +153,7 @@ public sealed class Pipeline : IDisposable
     /// or Stanza's own download with its <c>.pt</c> files (e.g. <c>models/stanza/en</c>), chosen per file.
     /// </summary>
     /// <param name="options">Package, processors, backend, threads and cache settings; defaults to all eight processors
-    /// of the <c>default</c> package on <see cref="PipelineBackend.Managed"/>.</param>
+    /// of the <see langword="default"/> package on <see cref="PipelineBackend.Managed"/>.</param>
     /// <exception cref="ArgumentException">An unknown package or processor, a processor the package lacks (e.g.
     /// constituency in <c>default_fast</c>), or a processor without the ones it requires.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><see cref="PipelineOptions.Threads"/> below 1, or a
@@ -178,6 +181,7 @@ public sealed class Pipeline : IDisposable
             ModelDownloader.Verify(modelDir, models);
             logger?.LogInformation("Verified the model checksums in {Milliseconds:F0} ms", Stopwatch.GetElapsedTime(start).TotalMilliseconds);
         }
+
         var backend = options.Backend.Models();
         Pipeline pipeline;
         try
@@ -190,6 +194,7 @@ public sealed class Pipeline : IDisposable
             backend.Dispose();
             throw;
         }
+
         logger?.LogInformation("Loaded the {Package} pipeline ({Processors}) in {Milliseconds:F0} ms", options.Package,
             string.Join(",", AllProcessors.Split(',').Where(models.ContainsKey)), Stopwatch.GetElapsedTime(start).TotalMilliseconds);
         return pipeline;
@@ -214,12 +219,16 @@ public sealed class Pipeline : IDisposable
                 throw new ArgumentException($"Processor '{p}' requires {string.Join(", ", missing)}", paramName);
             set.UnionWith(missing);
         }
+
         foreach (var p in set)
+        {
             if (!models.ContainsKey(p))
             {
                 var others = Packages.Where(kv => kv.Value.ContainsKey(p)).Select(kv => $"\"{kv.Key}\"");
                 throw new ArgumentException($"Package '{package}' has no {p} model; use Package = {string.Join(" or ", others)} for {p}", paramName);
             }
+        }
+
         return set.ToDictionary(p => p, p => models[p]);
     }
 
@@ -241,10 +250,14 @@ public sealed class Pipeline : IDisposable
     internal static HashSet<string> ParseProcessors(string processors, string paramName)
     {
         var set = processors.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Select(p => p.ToLowerInvariant()).ToHashSet();
+            .Select(p => p.ToLowerInvariant())
+            .ToHashSet();
         foreach (var p in set)
+        {
             if (!Requires.ContainsKey(p))
                 throw new ArgumentException($"Unknown processor '{p}'. Available: {AllProcessors}", paramName);
+        }
+
         if (set.Count == 0)
             throw new ArgumentException("No processors given", paramName);
         return set;
@@ -314,6 +327,7 @@ public sealed class Pipeline : IDisposable
             if (tokens.Any(string.IsNullOrWhiteSpace))
                 throw new ArgumentException("Tokens must not be null, empty or whitespace", nameof(sentences));
         }
+
         return Gated(() => Annotate(Tokenizer.Pretokenized(list), cancellationToken), cancellationToken);
     }
 
@@ -323,6 +337,7 @@ public sealed class Pipeline : IDisposable
     /// are batched together, which is much faster than one <see cref="Process(string)"/> call per text when the texts
     /// are short.
     /// </summary>
+    /// <param name="texts">The texts; an empty text gives an empty document.</param>
     /// <remarks>
     /// The output equals Stanza's <c>bulk_process</c> for the same texts. It can differ slightly from processing each
     /// text alone, as it does in Stanza: the sentiment classifier sees the padding of its batches, so a sentence's
@@ -331,7 +346,6 @@ public sealed class Pipeline : IDisposable
     /// else is the same as processing each text alone, except that sentence ids (<see cref="Sentence.SentId"/>)
     /// continue across the documents, as in Stanza.
     /// </remarks>
-    /// <param name="texts">The texts; an empty text gives an empty document.</param>
     /// <example>
     /// <code>
     /// List&lt;Document&gt; docs = nlp.Process(new[] { "First text.", "Second one." });
@@ -339,9 +353,7 @@ public sealed class Pipeline : IDisposable
     /// </example>
     public List<Document> Process(IEnumerable<string> texts) => Process(texts, CancellationToken.None);
 
-    /// <summary>
-    /// <see cref="Process(IEnumerable{string})"/> that can be canceled, like <see cref="Process(string, CancellationToken)"/>.
-    /// </summary>
+    /// <summary><see cref="Process(IEnumerable{string})"/> that can be canceled, like <see cref="Process(string, CancellationToken)"/>.</summary>
     /// <exception cref="OperationCanceledException">The token was canceled; no documents are returned.</exception>
     public List<Document> Process(IEnumerable<string> texts, CancellationToken cancellationToken)
     {
@@ -354,17 +366,24 @@ public sealed class Pipeline : IDisposable
         var docs = Gated(() =>
         {
             var docs = Step("tokenize", () => _tokenizer.Process(list, _splitSentences, cancellationToken), cancellationToken);
+
             // The other processors run on all sentences as one document (UDProcessor.bulk_process).
             var combined = new Document();
             combined.Sentences.AddRange(docs.SelectMany(d => d.Sentences));
             Annotate(combined, cancellationToken);
             return docs;
         }, cancellationToken);
+
         // NERProcessor.bulk_process: entities again, with each document's own text.
         if (_ner != null)
+        {
             foreach (var doc in docs)
+            {
                 foreach (var sentence in doc.Sentences)
                     Entity.Build(sentence, doc.Text);
+            }
+        }
+
         return docs;
     }
 
@@ -414,17 +433,20 @@ public sealed class Pipeline : IDisposable
     {
         if (_mwt != null)
             Step("mwt", () => _mwt.Process(doc), ct); // one batch, and only for the words the dictionary lacks
+
         // NER, the parser and the sentiment classifier reuse the tagger's charlm outputs instead of computing them again.
         // A _nocharlm tagger (default_fast) has no charlm outputs to share.
-        using var charlms = _pos is { UsesCharlm: true } && (_ner != null || _parser != null || _sentiment != null || _depparse != null && _depparseReadsCache)
+        using var charlms = _pos is { UsesCharlm: true } && (_ner != null || _parser != null || _sentiment != null || (_depparse != null && _depparseReadsCache))
             && _cacheOptions.IsEnabled ? new CharlmCache(_cacheOptions.MaxWords) : null;
         if (_pos != null)
             Step("pos", () => _pos.Process(doc, charlms, ct), ct);
         if (_lemma != null)
             Step("lemma", () => _lemma.Process(doc, ct), ct);
+
         // Stanza's order (PIPELINE_NAMES). Only the CoNLL-U comment order shows it, and Conllu.Write fixes that.
         if (_parser != null)
             Step("constituency", () => _parser.Process(doc, charlms, ct), ct);
+
         // Depparse runs the charlms with a ROOT word in front, so the tagger's outputs apply only to a sentence both ran
         // alone, backward (a one-sentence document; DependencyParser.Process).
         if (_depparse != null)

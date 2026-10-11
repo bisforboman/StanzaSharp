@@ -43,12 +43,19 @@ internal sealed class TorchSharpModels(torch.Device? device, bool disableTf32) :
     }
 
     public override Tokenizer Tokenizer(string basePath) => Tokenize.Tokenizer.Load(basePath);
+
     public override MwtExpander Mwt(string basePath) => MwtExpander.Load(basePath);
+
     public override Lemmatizer Lemma(string basePath) => Lemmatizer.Load(basePath);
+
     public override PosTagger Pos(string basePath, Pretrain pretrain) => PosTagger.Load(basePath, pretrain, _forward, _backward);
+
     public override DependencyParser Depparse(string basePath, Pretrain pretrain) => DependencyParser.Load(basePath, pretrain, _forward, _backward);
+
     public override NerTagger Ner(string basePath, Pretrain pretrain) => NerTagger.Load(basePath, pretrain, _forward, _backward);
+
     public override ConstituencyParser Constituency(string basePath, Pretrain pretrain) => ConstituencyParser.Load(basePath, pretrain, _forward!, _backward!);
+
     public override SentimentClassifier Sentiment(string basePath, Pretrain pretrain) => SentimentClassifier.Load(basePath, pretrain, _forward!, _backward!);
 
     public override void Dispose()

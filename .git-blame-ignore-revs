@@ -1,0 +1,3 @@
+# Formatting-only commits: 'git blame' skips them with 'git config blame.ignoreRevsFile .git-blame-ignore-revs' (GitHub does by default).
+# Reformat with stylebro-migrate format
+47bdf1bdf90cf2f2f8677a6aecd81c30aac4ce7d

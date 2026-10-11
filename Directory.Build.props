@@ -15,7 +15,20 @@
     <RepositoryUrl>https://github.com/bisforboman/StanzaSharp</RepositoryUrl>
     <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
     <NoWarn>$(NoWarn);CS1573</NoWarn>
+    <!-- Report the built-in .NET rules .editorconfig turns on (IDE0055, IDE0005, ...) on build too, not only in
+         dotnet format. -->
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <!-- IDE0005 (unused usings) only runs on build when the compiler parses doc comments. src/* needs the XML docs
+         anyway (below); tests and samples generate them only for this, without requiring docs. -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn Condition="'$([System.IO.Path]::GetFileName($([System.IO.Path]::GetDirectoryName($(MSBuildProjectDirectory)))))' != 'src'">$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
+
+  <!-- StyleBro: analyzers whose findings `stylebro-migrate format` fixes (CLAUDE.md, "Code style"). A build-time
+       dependency only: PrivateAssets keeps it out of the packages' dependencies. -->
+  <ItemGroup>
+    <PackageReference Include="StyleBro.Analyzers" Version="0.5.0-alpha.1" PrivateAssets="all" />
+  </ItemGroup>
 
   <!-- Library projects (src/*): XML docs, and every public member must have them. The public API is the
        facade (Pipeline, PipelineOptions, PipelineBackend, CharlmCacheOptions, ModelDownloader, Processor;

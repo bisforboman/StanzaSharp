@@ -10,7 +10,7 @@ internal static class Rnn
     /// Runs a batch-first LSTM over padded sequences of differing lengths, like PyTorch's
     /// pack_padded_sequence → lstm → pad_packed_sequence, so padding never reaches either direction.
     /// </summary>
-    /// <param name="input">[batch, maxLen, dim]</param>
+    /// <param name="input">[batch, maxLen, dim].</param>
     /// <param name="state">Optional initial (h0, c0), each [layers * directions, batch, hidden].</param>
     /// <returns>[batch, maxLen, hidden * directions], zero past each sequence's length.</returns>
     /// <remarks>Lengths stay on the CPU, as pack_padded_sequence requires, whatever the input's device.</remarks>
@@ -55,6 +55,7 @@ internal static class Rnn
             var rows = positions[i].Select(t => start[t] + rank[i]).ToArray();
             result.Add(output.data.index_select(0, torch.tensor(rows, device: output.data.device)).MoveToOuterDisposeScope());
         }
+
         return result;
     }
 

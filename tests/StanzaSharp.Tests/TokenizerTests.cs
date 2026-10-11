@@ -1,7 +1,7 @@
-using Xunit.Abstractions;
 using System.Text.Json.Nodes;
 using StanzaSharp.Nn;
 using StanzaSharp.Tokenize;
+using Xunit.Abstractions;
 
 namespace StanzaSharp.Tests;
 
@@ -43,8 +43,10 @@ public class TokenizerTests(ITestOutputHelper output, SharedPipelines pipelines)
 
         Assert.Equal(Describe(golden), Describe(doc));
         foreach (var (g, a) in golden.Sentences.SelectMany(s => s.Tokens).Zip(doc.Sentences.SelectMany(s => s.Tokens)))
+        {
             if (g.IsMultiWord)
                 Assert.True(a.IsMwtCandidate, $"'{a.Text}' at {a.StartChar} should be marked as a multi-word token");
+        }
     }
 
     [ModelTheory]
@@ -109,8 +111,11 @@ public class TokenizerTests(ITestOutputHelper output, SharedPipelines pipelines)
         Assert.Equal(expected.Length, actual.Length);
         int worst = 0;
         for (int i = 1; i < expected.Length; i++)
+        {
             if (Math.Abs(expected[i] - actual[i]) > Math.Abs(expected[worst] - actual[worst]))
                 worst = i;
+        }
+
         float diff = Math.Abs(expected[worst] - actual[worst]);
         Assert.True(diff <= tolerance, $"{what}: max |diff| {diff} at {worst} (expected {expected[worst]}, got {actual[worst]})");
         return diff;

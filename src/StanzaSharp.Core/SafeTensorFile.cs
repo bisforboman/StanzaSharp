@@ -42,6 +42,7 @@ internal sealed class SafeTensorFile
                         metadata[m.Name] = m.Value.GetString() ?? "";
                     continue;
                 }
+
                 var v = prop.Value;
                 var offsets = v.GetProperty("data_offsets");
                 long begin = offsets[0].GetInt64(), end = offsets[1].GetInt64();
@@ -53,6 +54,7 @@ internal sealed class SafeTensorFile
                     throw Invalid($"Tensor '{prop.Name}' has a negative size");
                 if (begin < 0 || end < begin || end > fileLength - dataStart)
                     throw Invalid($"Tensor '{prop.Name}' has data_offsets outside the file");
+
                 // numel * size == end - begin, without overflowing: the product is compared one factor at a time.
                 long bytes = shape.Contains(0) ? 0 : shape.Aggregate((long)size, (a, d) => a > (end - begin) / d ? long.MaxValue : a * d);
                 if (bytes != end - begin)
@@ -65,6 +67,7 @@ internal sealed class SafeTensorFile
         {
             throw Invalid($"Malformed header: {e.Message}", e);
         }
+
         // Like the safetensors library: the tensors tile the data section, with no gaps, overlaps or trailing bytes.
         long next = 0;
         foreach (var (key, info) in tensors.OrderBy(t => t.Value.Offset).ThenBy(t => t.Value.Length))
@@ -73,6 +76,7 @@ internal sealed class SafeTensorFile
                 throw Invalid($"Tensor '{key}' starts at {info.Offset}, not {next}: tensors overlap or leave a gap");
             next += info.Length;
         }
+
         if (next != fileLength - dataStart)
             throw Invalid($"The data section has {fileLength - dataStart} bytes, the tensors {next}");
         Tensors = tensors;
@@ -83,11 +87,22 @@ internal sealed class SafeTensorFile
 
     private static readonly Dictionary<string, int> ElementSizes = new()
     {
-        ["F64"] = 8, ["F32"] = 4, ["F16"] = 2, ["BF16"] = 2, ["I64"] = 8, ["I32"] = 4, ["I16"] = 2, ["I8"] = 1,
-        ["U64"] = 8, ["U32"] = 4, ["U16"] = 2, ["U8"] = 1, ["BOOL"] = 1,
+        ["F64"] = 8,
+        ["F32"] = 4,
+        ["F16"] = 2,
+        ["BF16"] = 2,
+        ["I64"] = 8,
+        ["I32"] = 4,
+        ["I16"] = 2,
+        ["I8"] = 1,
+        ["U64"] = 8,
+        ["U32"] = 4,
+        ["U16"] = 2,
+        ["U8"] = 1,
+        ["BOOL"] = 1,
     };
 
-    /// <summary>Tensors whose bytes <paramref name="read"/> copies into a destination of their size, given their key.</summary>
+    /// <summary>Initializes a new instance of the <see cref="SafeTensorFile"/> class. Tensors whose bytes <paramref name="read"/> copies into a destination of their size, given their key.</summary>
     internal SafeTensorFile(Dictionary<string, TensorInfo> tensors, Action<string, Span<byte>> read)
     {
         _read = read;
@@ -142,6 +157,7 @@ internal sealed class SafeTensorFile
             _read(key, destination);
             return;
         }
+
         using var file = File.OpenHandle(_path!);
         ReadExactly(file, destination, _dataStart + info.Offset);
     }

@@ -25,6 +25,7 @@ public class PipelineTests(SharedPipelines pipelines) : IClassFixture<SharedPipe
         {
             var nlp = pipelines.Get(package);
             const System.Reflection.BindingFlags Private = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+
             // The charlms belong to the backend's models (BackendModels); a managed pipeline's are managed by construction.
             var models = Assert.IsType<ManagedModels>(typeof(Pipeline).GetField("_models", Private)!.GetValue(nlp));
             Assert.NotNull(typeof(ManagedModels).GetField("_forward", Private)!.GetValue(models));
@@ -44,7 +45,8 @@ public class PipelineTests(SharedPipelines pipelines) : IClassFixture<SharedPipe
         var cached = pipelines.Get();
         using var uncached = Pipeline.Load(Repo.Models, new PipelineOptions { CharlmCache = new CharlmCacheOptions { IsEnabled = false } });
         var texts = Directory.GetFiles(Repo.Golden, "validation*.conllu").Order().SelectMany(f => File.ReadLines(f).Where(l => l.StartsWith("# text = ")).Take(8))
-            .Select(l => l["# text = ".Length..]).ToList();
+            .Select(l => l["# text = ".Length..])
+            .ToList();
         int mwt = 0;
         foreach (var text in texts)
         {
@@ -52,6 +54,7 @@ public class PipelineTests(SharedPipelines pipelines) : IClassFixture<SharedPipe
             mwt += doc.Sentences.Count(s => s.Tokens.Any(t => t.Words.Count > 1));
             Assert.Equal(Conllu.Write(uncached.Process(text)), Conllu.Write(doc));
         }
+
         Assert.True(mwt >= 5, $"only {mwt} of {texts.Count} texts have multi-word tokens");
     }
 
@@ -68,6 +71,7 @@ public class PipelineTests(SharedPipelines pipelines) : IClassFixture<SharedPipe
         {
             var actual = Conllu.Write(nlp.Process(File.ReadAllText(txt)));
             var golden = File.ReadAllText(Path.ChangeExtension(txt, ".conllu"));
+
             // Outside the BMP, C# offsets are UTF-16 indices and Stanza's are code points.
             if (Path.GetFileName(txt) == "validation_nonbmp.txt")
                 (actual, golden) = (StripOffsets(actual), StripOffsets(golden));
@@ -80,6 +84,7 @@ public class PipelineTests(SharedPipelines pipelines) : IClassFixture<SharedPipe
             if (i < expected.Length || i < got.Length)
                 failures.Add($"{Path.GetFileName(txt)}, sentence {i}:\n--- expected\n{expected.ElementAtOrDefault(i)}\n--- actual\n{got.ElementAtOrDefault(i)}");
         }
+
         Assert.True(failures.Count == 0, string.Join("\n\n", failures));
     }
 
@@ -156,7 +161,8 @@ public class PipelineTests(SharedPipelines pipelines) : IClassFixture<SharedPipe
             Assert.Equal(sentiment.Select(s => s!["sentiment"]!.GetValue<int>()), doc.Sentences.Select(s => s.Sentiment!.Value));
 
             var entities = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(Path.Combine(Repo.Golden, "ner", name + ".json")))!.AsArray()
-                .SelectMany(s => s!.AsArray()).Select(e => (e!["text"]!.GetValue<string>(), e["type"]!.GetValue<string>(), e["start_char"]!.GetValue<int>()));
+                .SelectMany(s => s!.AsArray())
+                .Select(e => (e!["text"]!.GetValue<string>(), e["type"]!.GetValue<string>(), e["start_char"]!.GetValue<int>()));
             Assert.Equal(entities, doc.Sentences.SelectMany(s => s.Entities).Select(e => (e.Text, e.Type, e.StartChar!.Value)));
 
             // Comments in Stanza's order: sentiment last.

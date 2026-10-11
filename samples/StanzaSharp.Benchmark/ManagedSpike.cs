@@ -25,6 +25,7 @@ internal static class ManagedSpike
         string mode = args.FirstOrDefault() ?? "speed", modelDir = Path.Combine("models", "converted", "en"), impl = "both";
         int threads = Environment.ProcessorCount, runs = 3, copies = 8, callers = 4;
         for (int i = 1; i < args.Length; i++)
+        {
             switch (args[i])
             {
                 case "--models": modelDir = args[++i]; break;
@@ -36,6 +37,8 @@ internal static class ManagedSpike
                 case "--path": Gemm.Path = Enum.Parse<KernelPath>(args[++i], ignoreCase: true); break;
                 default: Console.Error.WriteLine($"Unknown option {args[i]}"); return 2;
             }
+        }
+
         torch.set_num_threads(threads);
         ManagedThreads.Count = threads;
         using var _ = torch.no_grad();
@@ -127,7 +130,7 @@ internal static class ManagedSpike
             for (end = b; end < sentences.Count && end - b < BatchSize && (end == b || words + sentences[end].Count <= MaximumTokens); end++)
                 words += sentences[end].Count;
             var original = sentences.GetRange(b, end - b);
-            var simplified = original.Select(s => (IReadOnlyList<string>)s.Select(PosTagger.SimplifyPunct).ToList()).ToList();
+            var simplified = original.Select(s => (IReadOnlyList<string>)s.Select(Punct.Simplify).ToList()).ToList();
             var lengths = simplified.Select(s => (long)s.Count).ToArray();
             int width = (int)lengths.Max();
             var offsets = new long[lengths.Length];
@@ -139,6 +142,7 @@ internal static class ManagedSpike
                 packedRow[wordOf[p]] = p;
             batches.Add(new Batch(original, simplified, lengths, wordOf, packedRow));
         }
+
         return batches;
     }
 
@@ -171,6 +175,7 @@ internal static class ManagedSpike
                     s += pre[q] * w[q];
                 row[wd + j] = s;
             }
+
             forward.AsSpan(k * ch, ch).CopyTo(row[(wd + tr)..]);
             backward.AsSpan(k * ch, ch).CopyTo(row[(wd + tr + ch)..]);
         });
@@ -195,6 +200,7 @@ internal static class ManagedSpike
             var parts = Enumerable.Range(0, feats.Length).Where(f => feats[f][k] != 2).Select(f => $"{m.Feats[f].Key}={m.Feats[f].Values[feats[f][k]]}").ToList();
             tags[k] = (m.Upos[upos[k]], m.Xpos[xpos[k]], parts.Count == 0 ? null : string.Join('|', parts));
         }
+
         return (tags, uposScores.data<float>().ToArray());
     }
 
@@ -211,6 +217,7 @@ internal static class ManagedSpike
     private static int Check(Models m, Pipeline nlp, string repoRoot)
     {
         var golden = Path.Combine(repoRoot, "tests", "golden");
+
         // The golden charlm tensors (Python Stanza, 3 sentences, each alone).
         var tensors = SafeTensorFile.Load(Path.Combine(golden, "intermediates.safetensors"));
         var index = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(Path.Combine(golden, "intermediates.json")))!["sentences"]!.AsArray();
@@ -224,8 +231,10 @@ internal static class ManagedSpike
                 dm = Math.Max(dm, MaxDiff(expected, lm.BuildCharRepresentation([sentence])[0]));
                 dt = Math.Max(dt, MaxDiff(expected, Flatten(tlm.BuildCharRepresentation([sentence]))));
             }
+
             Console.WriteLine($"golden charlm {name}: max |diff| managed {dm:E2}, TorchSharp {dt:E2}");
         }
+
         var files = new[] { "corpus.txt" }.Concat(Directory.GetFiles(golden, "validation*.txt").Select(Path.GetFileName).Order(StringComparer.Ordinal)!).ToList();
         float baseline = 0, charF = 0, charB = 0, highway = 0, highwayFull = 0, logits = 0;
         int words = 0, sentences = 0, tagDiffs = 0, tagDiffsReplica = 0;
@@ -234,12 +243,14 @@ internal static class ManagedSpike
             foreach (var batch in Batches(nlp, File.ReadAllText(Path.Combine(golden, file!))))
             {
                 sentences += batch.Words.Count;
+
                 // Charlm: TorchSharp vs managed, on the tagger's batch.
                 var tf = Flatten(m.Forward.BuildCharRepresentation(batch.Words));
                 var tb = Flatten(m.Backward.BuildCharRepresentation(batch.Words));
                 var mf = m.ManagedForward.BuildCharRepresentation(batch.Words).SelectMany(x => x).ToArray();
                 var mb = m.ManagedBackward.BuildCharRepresentation(batch.Words).SelectMany(x => x).ToArray();
                 charF = Math.Max(charF, MaxDiff(tf, mf));
+
                 // Baseline: TorchSharp itself, one sentence at a time vs batched (the charlm is not batch-invariant).
                 var alone = batch.Words.SelectMany(s => Flatten(m.Forward.BuildCharRepresentation([s]))).ToArray();
                 baseline = Math.Max(baseline, MaxDiff(tf, alone));
@@ -264,6 +275,7 @@ internal static class ManagedSpike
                 _ = replicaLogits;
             }
         }
+
         Console.WriteLine($"{files.Count} files, {sentences} sentences, {words} words");
         Console.WriteLine($"charlm forward  max |managed - TorchSharp| {charF:E2}");
         Console.WriteLine($"charlm forward  max |TorchSharp alone - TorchSharp batched| {baseline:E2} (baseline)");
@@ -296,10 +308,12 @@ internal static class ManagedSpike
                     f();
                 return flops * reps / sw.Elapsed.TotalSeconds / 1e9;
             }
+
             var managed = Gflops(() => Gemm.Run(a, m, packed, null));
             var torchRate = Gflops(() => nn.functional.linear(ta, tw).Dispose());
             Console.WriteLine($"[{m}, {k}] x [{k}, {n}]: managed {managed,6:F1} GFLOP/s, torch {torchRate,6:F1} GFLOP/s");
         }
+
         return 0;
     }
 
@@ -345,18 +359,27 @@ internal static class ManagedSpike
         {
             using var _ = torch.no_grad();
             foreach (var b in batches)
+            {
                 foreach (var lm in new[] { m.Forward, m.Backward })
+                {
                     foreach (var t in lm.BuildCharRepresentation(b.Words))
                         t.Dispose();
+                }
+            }
+
             for (int i = 0; i < batches.Count; i++)
+            {
                 using (NewDisposeScope())
                     m.Highway.Forward(Rnn.Pack(torch.tensor(inputs[i], [batches[i].WordOf.Length, 2248]), batches[i].Lengths), disposeInput: true);
+            }
         }
+
         void Managed()
         {
             ManagedCharlmOver(m, batches);
             ManagedHighwayOver(m, batches, inputs);
         }
+
         foreach (var which in new[] { "torch", "managed" }.Where(w => impl == "both" || impl == w))
         {
             Action call = which == "torch" ? Torch : Managed;
@@ -378,6 +401,7 @@ internal static class ManagedSpike
                               $"(min {perCall.Min():F2}, max {perCall.Max():F2}), throughput {callers / wall.Elapsed.TotalSeconds:F3} calls/s, " +
                               $"OS threads {Process.GetCurrentProcess().Threads.Count}");
         }
+
         return 0;
     }
 
@@ -398,19 +422,28 @@ internal static class ManagedSpike
             Console.WriteLine($"    (managed heap allocations {(GC.GetTotalAllocatedBytes(precise: true) - allocated) / 1048576.0:F1} MB)");
             return s;
         }
+
         void TorchCharlm()
         {
             foreach (var b in batches)
+            {
                 foreach (var lm in new[] { m.Forward, m.Backward })
+                {
                     foreach (var t in lm.BuildCharRepresentation(b.Words))
                         t.Dispose();
+                }
+            }
         }
+
         void TorchHighway()
         {
             for (int i = 0; i < batches.Count; i++)
+            {
                 using (NewDisposeScope())
                     m.Highway.Forward(Rnn.Pack(torch.tensor(inputs[i], [batches[i].WordOf.Length, 2248]), batches[i].Lengths), disposeInput: true);
+            }
         }
+
         void ManagedCharlm() => ManagedCharlmOver(m, batches);
         void ManagedHighway() => ManagedHighwayOver(m, batches, inputs);
 
@@ -420,8 +453,10 @@ internal static class ManagedSpike
             (results.TryGetValue(key, out var l) ? l : results[key] = []).Add(s);
             Console.WriteLine($"  {key,-18} {s,8:F2} s");
         }
-        for (int run = 0; run <= runs; run++) // run 0 is the warm-up
+
+        for (int run = 0; run <= runs; run++)
         {
+            // run 0 is the warm-up
             Console.WriteLine(run == 0 ? "warm-up" : $"run {run}");
             var order = run % 2 == 0 ? new[] { "torch", "managed" } : ["managed", "torch"];
             foreach (var which in order.Where(w => impl == "both" || impl == w))
@@ -435,6 +470,7 @@ internal static class ManagedSpike
                 }
             }
         }
+
         Console.WriteLine("medians:");
         foreach (var (key, list) in results.OrderBy(kv => kv.Key))
             Console.WriteLine($"  {key,-18} {list.Order().ElementAt(list.Count / 2),8:F2} s   ({string.Join(", ", list.Select(x => x.ToString("F2")))})");

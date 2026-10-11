@@ -52,6 +52,7 @@ for (int i = 0; i < args.Length; i++)
                 Console.Error.WriteLine($"Unexpected argument: {args[i]}\n\n{Usage}");
                 return 2;
             }
+
             file = args[i];
             break;
     }

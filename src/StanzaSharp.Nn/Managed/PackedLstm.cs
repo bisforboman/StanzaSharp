@@ -1,5 +1,5 @@
-using System.Runtime.CompilerServices;
 using System.Buffers;
+using System.Runtime.CompilerServices;
 
 namespace StanzaSharp.Nn.Managed;
 
@@ -8,10 +8,13 @@ internal unsafe struct StepRows
 {
     public PackedMatrix Whh;
     public int M;
+
     /// <summary>h_{t-1} rows (K = hidden floats each).</summary>
     public float** HPrev;
+
     /// <summary>x_t·W_ihᵀ + b_ih + b_hh rows, columns in <see cref="PackedLstm.GateOrder"/> (4·hidden floats each).</summary>
     public float** Init;
+
     /// <summary>Cell state rows, updated in place.</summary>
     public float** C;
     public float** HOut;
@@ -47,6 +50,7 @@ internal sealed unsafe class PackedLstm
         Hidden = hidden;
         var order = GateOrder(hidden);
         _whh = whh.Select(w => new PackedMatrix(w, 4 * hidden, hidden, order)).ToArray();
+
         // Pinned (POH): HPrev points into it.
         _h0 = h0.Select(x =>
         {
@@ -70,22 +74,27 @@ internal sealed unsafe class PackedLstm
         params (float[] W, float[] B)[] extra)
     {
         var order = GateOrder(hidden);
+
         // The rows in their final order, copied once (load memory: no per-row copies).
         int n = wih.Length * order.Length + extra.Sum(e => e.B.Length), row = 0;
         var all = new float[(long)n * inputSize];
         var bias = new List<float>();
         for (int d = 0; d < wih.Length; d++)
+        {
             foreach (int j in order)
             {
                 wih[d].AsSpan(j * inputSize, inputSize).CopyTo(all.AsSpan(row++ * inputSize));
                 bias.Add(bih[d][j] + bhh[d][j]);
             }
+        }
+
         foreach (var (w, b) in extra)
         {
             w.AsSpan(0, b.Length * inputSize).CopyTo(all.AsSpan(row * inputSize));
             row += b.Length;
             bias.AddRange(b);
         }
+
         var packed = new PackedMatrix(all, n, inputSize);
         var paddedBias = new float[packed.PaddedN];
         bias.CopyTo(paddedBias);
@@ -97,8 +106,11 @@ internal sealed unsafe class PackedLstm
     {
         var sizes = new int[lengths.Max()];
         foreach (var len in lengths)
+        {
             for (int t = 0; t < len; t++)
                 sizes[t]++;
+        }
+
         return sizes;
     }
 
@@ -112,9 +124,7 @@ internal sealed unsafe class PackedLstm
         return output;
     }
 
-    /// <summary>
-    /// Runs the recurrence over a packed batch (rows time-major, as pack_padded_sequence lays them out).
-    /// </summary>
+    /// <summary>Runs the recurrence over a packed batch (rows time-major, as pack_padded_sequence lays them out).</summary>
     /// <param name="p">Input projections, row n at p + n·ldp; direction d's gates start at column d·4H.</param>
     /// <param name="output">Row n gets direction d's h at column d·H (ldo ≥ Directions·H).</param>
     /// <param name="ct">Checked before each time step.</param>
@@ -131,50 +141,57 @@ internal sealed unsafe class PackedLstm
         try
         {
             fixed (nint* pointerBase = pointers)
-            fixed (float* cBase = cells)
             {
-                var basePtr = (float**)pointerBase;
-                var works = new StepRows[dirs];
-                for (int d = 0; d < dirs; d++)
-                    works[d] = new StepRows
-                    {
-                        Whh = _whh[d],
-                        HPrev = basePtr + (d * 4 + 0) * batch,
-                        Init = basePtr + (d * 4 + 1) * batch,
-                        C = basePtr + (d * 4 + 2) * batch,
-                        HOut = basePtr + (d * 4 + 3) * batch,
-                    };
-
-                for (int s = 0; s < steps; s++)
+                fixed (float* cBase = cells)
                 {
-                    ct.ThrowIfCancellationRequested();
+                    var basePtr = (float**)pointerBase;
+                    var works = new StepRows[dirs];
                     for (int d = 0; d < dirs; d++)
                     {
-                        ref var w = ref works[d];
-                        bool forward = d == 0;
-                        int t = forward ? s : steps - 1 - s;
-                        w.M = batchSizes[t];
-                        float* h0d = (float*)Unsafe.AsPointer(ref _h0[d][0]);
-                        for (int r = 0; r < w.M; r++)
+                        works[d] = new StepRows
                         {
-                            float* cRow = cBase + ((long)d * batch + r) * h;
-                            // Forward: every row continues from the previous step's row r (or h0 at t = 0). Backward: a
-                            // sequence starts at its own last element, i.e. where row r wasn't present at step t + 1.
-                            bool fresh = forward ? t == 0 : t == steps - 1 || r >= batchSizes[t + 1];
-                            int prev = forward ? t - 1 : t + 1;
-                            w.HPrev[r] = fresh ? h0d : output + (long)(start[prev] + r) * ldo + d * h;
-                            if (fresh)
-                                _c0[d].CopyTo(new Span<float>(cRow, h));
-                            w.C[r] = cRow;
-                            w.Init[r] = p + (long)(start[t] + r) * ldp + d * 4 * h;
-                            w.HOut[r] = output + (long)(start[t] + r) * ldo + d * h;
-                        }
+                            Whh = _whh[d],
+                            HPrev = basePtr + (d * 4 + 0) * batch,
+                            Init = basePtr + (d * 4 + 1) * batch,
+                            C = basePtr + (d * 4 + 2) * batch,
+                            HOut = basePtr + (d * 4 + 3) * batch,
+                        };
                     }
-                    Step(works);
+
+                    for (int s = 0; s < steps; s++)
+                    {
+                        ct.ThrowIfCancellationRequested();
+                        for (int d = 0; d < dirs; d++)
+                        {
+                            ref var w = ref works[d];
+                            bool forward = d == 0;
+                            int t = forward ? s : steps - 1 - s;
+                            w.M = batchSizes[t];
+                            float* h0d = (float*)Unsafe.AsPointer(ref _h0[d][0]);
+                            for (int r = 0; r < w.M; r++)
+                            {
+                                float* cRow = cBase + ((long)d * batch + r) * h;
+
+                                // Forward: every row continues from the previous step's row r (or h0 at t = 0). Backward: a
+                                // sequence starts at its own last element, i.e. where row r wasn't present at step t + 1.
+                                bool fresh = forward ? t == 0 : t == steps - 1 || r >= batchSizes[t + 1];
+                                int prev = forward ? t - 1 : t + 1;
+                                w.HPrev[r] = fresh ? h0d : output + (long)(start[prev] + r) * ldo + d * h;
+                                if (fresh)
+                                    _c0[d].CopyTo(new Span<float>(cRow, h));
+                                w.C[r] = cRow;
+                                w.Init[r] = p + (long)(start[t] + r) * ldp + d * 4 * h;
+                                w.HOut[r] = output + (long)(start[t] + r) * ldo + d * h;
+                            }
+                        }
+
+                        Step(works);
+                    }
+
+                    // A forward row's slot was last written at its own last step; every backward row ends at t = 0.
+                    if (finalC != null)
+                        new ReadOnlySpan<float>(cBase, dirs * batch * h).CopyTo(new Span<float>(finalC, dirs * batch * h));
                 }
-                // A forward row's slot was last written at its own last step; every backward row ends at t = 0.
-                if (finalC != null)
-                    new ReadOnlySpan<float>(cBase, dirs * batch * h).CopyTo(new Span<float>(finalC, dirs * batch * h));
             }
         }
         finally
@@ -220,6 +237,7 @@ internal sealed unsafe class PackedLstm
                             aRows[r] = w.HPrev[row];
                             init[r] = w.Init[row] + p * PackedMatrix.NR;
                         }
+
                         Gemm.KernelBlocked(mr, aRows, panel, w.Whh.K, KB, init, outRows);
                         for (int r = 0; r < mr; r++)
                             Act.LstmCell(scratch + r * PackedMatrix.NR, w.C[r0 + r] + p * 4, w.HOut[r0 + r] + p * 4);

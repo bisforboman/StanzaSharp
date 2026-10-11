@@ -1,6 +1,4 @@
-using System.Text.Json.Nodes;
 using StanzaSharp.Nn;
-using StanzaSharp.Nn.Managed;
 
 namespace StanzaSharp.Depparse;
 
@@ -31,4 +29,3 @@ internal interface IDepparseNet : IDisposable
     /// <param name="ct">Checked after each charlm pass (or the character model), inside the LSTM and between the scorers' chunks.</param>
     DepparseScores Forward(DepparseBatch batch, bool labelScores, CancellationToken ct);
 }
-

@@ -14,13 +14,16 @@ public class DepparseTests(ITestOutputHelper output, DepparseTests.Fixture fixtu
     public sealed class Fixture : IDisposable
     {
         private readonly Lazy<Models> _torch = new(() => new Models(managed: false)), _managed = new(() => new Models(managed: true));
+
         internal Models Get(bool managed = false) => (managed ? _managed : _torch).Value;
 
         public void Dispose()
         {
             foreach (var models in new[] { _torch, _managed })
+            {
                 if (models.IsValueCreated)
                     models.Value.Dispose();
+            }
         }
     }
 
@@ -39,6 +42,7 @@ public class DepparseTests(ITestOutputHelper output, DepparseTests.Fixture fixtu
                     ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion")), ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion")));
                 return;
             }
+
             Forward = CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
             Backward = CharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
             Parser = DependencyParser.Load(Repo.Model("depparse/combined_charlm"), Pretrain, Forward, Backward);
@@ -79,6 +83,7 @@ public class DepparseTests(ITestOutputHelper output, DepparseTests.Fixture fixtu
             for (int i = 0; i < n; i++)
                 result[at + i] = (float)(row[i] - max - Math.Log(sum));
         }
+
         return result;
     }
 
@@ -87,8 +92,11 @@ public class DepparseTests(ITestOutputHelper output, DepparseTests.Fixture fixtu
     {
         var s = new double[n, n];
         for (int i = 0; i < n; i++)
+        {
             for (int j = 0; j < n; j++)
                 s[i, j] = ((i * 31 + j * 17 + seed * 7) * (i + 2 * j + seed + 1)) % 23 - 11;
+        }
+
         return s;
     }
 
@@ -138,11 +146,13 @@ public class DepparseTests(ITestOutputHelper output, DepparseTests.Fixture fixtu
     public void Batches_FollowStanzasSortingAndLimits()
     {
         var models = fixture.Get();
+
         // Lengths include ROOT. Over 150 goes alone; otherwise up to 5000 words per batch.
         int[] lengths = [3, 151, 5, 3, .. Enumerable.Repeat(130, 40)];
         var batches = models.Parser.Batches(lengths);
         Assert.Equal(3, batches.Count);
         Assert.Equal([1], batches[0]);
+
         // Sorted longest first with ties last-first, 38 x 130 fit; collate then flips the ties again.
         Assert.Equal(Enumerable.Range(6, 38), batches[1]);
         Assert.Equal([4, 5, 2, 0, 3], batches[2]);
@@ -192,6 +202,7 @@ public class DepparseTests(ITestOutputHelper output, DepparseTests.Fixture fixtu
             models.Parser.Process(doc);
             Compare(Path.GetFileName(file), golden, Conllu.Write(doc), failures);
         }
+
         Assert.True(failures.Count == 0, string.Join("\n\n", failures));
     }
 
@@ -209,11 +220,13 @@ public class DepparseTests(ITestOutputHelper output, DepparseTests.Fixture fixtu
             var txt = Path.Combine(Repo.Golden, Path.GetFileNameWithoutExtension(file) + ".txt");
             var actual = Conllu.Write(nlp.Process(File.ReadAllText(txt)));
             var golden = File.ReadAllText(file);
+
             // Outside the BMP, C# offsets are UTF-16 indices and Stanza's are code points.
             if (Path.GetFileName(txt) == "validation_nonbmp.txt")
                 (actual, golden) = (PipelineTests.StripOffsets(actual), PipelineTests.StripOffsets(golden));
             Compare(Path.GetFileName(file), golden, actual, failures);
         }
+
         Assert.True(failures.Count == 0, string.Join("\n\n", failures));
     }
 
@@ -245,6 +258,7 @@ public class DepparseTests(ITestOutputHelper output, DepparseTests.Fixture fixtu
             Assert.Equal(alone.ArcLogProbs, continued.ArcLogProbs);
             Assert.Equal(alone.LabelScores, continued.LabelScores);
         }
+
         Assert.True(reused > sentences.Count * 3 / 4, $"only {reused} of {sentences.Count} sentences reused the tagger's state");
     }
 

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <!-- The stanzasharp .NET tool: model downloads (ModelDownloader) without native libtorch. -->
   <PropertyGroup>
@@ -10,7 +10,10 @@
     <PackageId>StanzaSharp.Tool</PackageId>
     <Description>The stanzasharp command: downloads Stanza's English models for StanzaSharp, checked against their MD5s, e.g. in a Dockerfile or CI. "stanzasharp download DIR [--package default_fast] [--processors tokenize,mwt,pos]". "stanzasharp compare FILE" runs Python Stanza and StanzaSharp on your own text and shows whether their output is identical; "stanzasharp benchmark" measures both on your machine. Needs no native libtorch.</Description>
     <PackageTags>nlp;stanza;models;download;dotnet-tool</PackageTags>
-    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <!-- Doc comments are parsed only so IDE0005 (unused usings) runs on build; the tool needs no XML docs, so none is
+         required (CS1591) or shipped. -->
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <PublishDocumentationFile>false</PublishDocumentationFile>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 

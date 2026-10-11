@@ -34,11 +34,12 @@ internal sealed class Checkpoint
     public static Checkpoint Load(string basePath)
     {
         var pt = basePath.EndsWith(".pt", StringComparison.OrdinalIgnoreCase) ? basePath : basePath + ".pt";
-        if (pt == basePath || !File.Exists(basePath + ".json") && File.Exists(pt))
+        if (pt == basePath || (!File.Exists(basePath + ".json") && File.Exists(pt)))
         {
             var (root, tensors) = TorchCheckpoint.Load(pt);
             return new Checkpoint(root, tensors);
         }
+
         JsonNode json;
         using (var stream = File.OpenRead(basePath + ".json"))
         {
@@ -51,6 +52,7 @@ internal sealed class Checkpoint
                 throw new InvalidDataException($"{basePath}.json: {e.Message}", e);
             }
         }
+
         return new Checkpoint(json, SafeTensorFile.Load(basePath + ".safetensors"));
     }
 
@@ -78,13 +80,16 @@ internal sealed class Checkpoint
         {
             var key = reader.GetString()!;
             reader.Read();
-            result[key] = reader.TokenType == JsonTokenType.Number && reader.TryGetInt32(out int id) ? id
+            result[key] = reader.TokenType == JsonTokenType.Number && reader.TryGetInt32(out int id)
+                ? id
                 : throw new InvalidDataException($"_unit2id['{key}'] is not an int");
         }
+
         return result;
     }
 
     private static string TensorKey(JsonNode? node) =>
-        node is JsonObject o && o["$tensor"] is JsonValue key && key.TryGetValue(out string? s) ? s
+        node is JsonObject o && o["$tensor"] is JsonValue key && key.TryGetValue(out string? s)
+            ? s
             : throw new InvalidDataException($"Not a $tensor node: {node?.ToJsonString()}");
 }

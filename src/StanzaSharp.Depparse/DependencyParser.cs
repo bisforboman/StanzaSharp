@@ -1,6 +1,5 @@
 using System.Buffers;
 using System.Text.Json.Nodes;
-using System.Text.RegularExpressions;
 using StanzaSharp.Nn;
 using StanzaSharp.Nn.Managed;
 
@@ -19,7 +18,7 @@ namespace StanzaSharp.Depparse;
 /// </summary>
 internal sealed class DependencyParser : IDisposable
 {
-    internal const int RootId = 3, VocabPrefixSize = 4; // vocab.ROOT_ID, VOCAB_PREFIX_SIZE
+    internal const int RootId = 3, VocabPrefixSize = 4; // vocab.ROOT_ID (in every vocab, the character model's too), VOCAB_PREFIX_SIZE
     private const int SeparateBatchLength = 150;       // depparse_processor.DEFAULT_SEPARATE_BATCH
 
     private readonly Pretrain _pretrain;
@@ -82,8 +81,10 @@ internal sealed class DependencyParser : IDisposable
             cancellationToken.ThrowIfCancellationRequested();
             var parsed = Parse(batch.Select(i => (IReadOnlyList<Word>)sentences[i]).ToList(), cancellationToken, charlms);
             for (int b = 0; b < batch.Count; b++)
+            {
                 for (int j = 0; j < sentences[batch[b]].Count; j++)
                     (sentences[batch[b]][j].Head, sentences[batch[b]][j].Deprel) = parsed[b][j];
+            }
         }
     }
 
@@ -109,18 +110,22 @@ internal sealed class DependencyParser : IDisposable
                 batches.Add([i]);
                 continue;
             }
+
             if (lengths[i] + currentLen > _batchSize && currentLen > 0)
             {
                 batches.Add(current);
                 (current, currentLen) = ([], 0);
             }
+
             current.Add(i);
             currentLen += lengths[i];
         }
+
         if (currentLen > 0)
             batches.Add(current);
         return batches.Select(b => Enumerable.Range(0, b.Count).OrderByDescending(p => lengths[b[p]]).ThenByDescending(p => p)
-            .Select(p => b[p]).ToList()).ToList();
+            .Select(p => b[p])
+            .ToList()).ToList();
     }
 
     /// <summary>Parses one batch: (head, deprel) for each word of each sentence.</summary>
@@ -142,11 +147,15 @@ internal sealed class DependencyParser : IDisposable
                 cancellationToken.ThrowIfCancellationRequested();
                 int n = batch[b].Count + 1;
                 for (int i = 0; i < n; i++)
+                {
                     for (int j = 0; j < n; j++)
                         scores[i * n + j] = output.ArcLogProbs[(b * width + i) * width + j];
+                }
+
                 var tree = ChuLiuEdmonds.OneRoot(scores, n);
                 result.Add(Enumerable.Range(1, n - 1)
-                    .Select(i => (tree[i], _deprels[output.Labels[(b * width + i) * width + tree[i]] + VocabPrefixSize])).ToArray());
+                    .Select(i => (tree[i], _deprels[output.Labels[(b * width + i) * width + tree[i]] + VocabPrefixSize]))
+                    .ToArray());
             }
         }
         finally
@@ -158,6 +167,7 @@ internal sealed class DependencyParser : IDisposable
                 ArrayPool<int>.Shared.Return(output.Labels);
             }
         }
+
         return result;
     }
 
@@ -169,7 +179,7 @@ internal sealed class DependencyParser : IDisposable
         CharlmCache? charlms = null, bool rentScores = false)
     {
         // data.py load_doc: simplify_punct changes the words the parser sees (vocab and charlm alike).
-        var texts = batch.Select(s => (IReadOnlyList<string>)s.Select(w => SimplifyPunct(w.Text)).ToList()).ToList();
+        var texts = batch.Select(s => (IReadOnlyList<string>)s.Select(w => Punct.Simplify(w.Text)).ToList()).ToList();
         int size = batch.Count, width = batch.Max(s => s.Count) + 1;
         var input = new DepparseBatch(texts, width, batch.Select(s => (long)s.Count + 1).ToArray(),
             new long[size * width], new long[size * width], new long[size * width], new long[size * width], new long[size * width], charlms, rentScores);
@@ -188,6 +198,7 @@ internal sealed class DependencyParser : IDisposable
                 input.Pretrained[row + j + 1] = _pretrain.UnitToId(lower);
             }
         }
+
         return _net.Forward(input, labelScores, cancellationToken);
     }
 
@@ -197,6 +208,7 @@ internal sealed class DependencyParser : IDisposable
         {
             if (!ok) throw new NotSupportedException($"Depparse checkpoint uses {what}, which is not ported");
         }
+
         bool Flag(string key, bool absent) => config[key]?.GetValue<bool>() ?? absent;
         Require(root["model_type"]?.GetValue<string>() is null or "graph", "a transition or ensemble parser");
         Require(!Flag("use_arc_embedding", false), "use_arc_embedding");
@@ -213,13 +225,6 @@ internal sealed class DependencyParser : IDisposable
         foreach (var key in new[] { "upos", "xpos" })
             Require(!root["vocab"]![key]!["lower"]!.GetValue<bool>(), $"a lowercased {key} vocab");
     }
-
-    // common/utils.py simplify_punct (as in the tagger): runs like "?!?" or "!!" become "?" or "!".
-    private const string QuestionMarks = "?？︖﹖⁇", AllMarks = QuestionMarks + "!！︕﹗‼";
-    private static readonly Regex Question = new($"^[{QuestionMarks}][{AllMarks}]+$");
-    private static readonly Regex Exclam = new($"^[!！︕﹗‼][{AllMarks}]+$");
-
-    private static string SimplifyPunct(string word) => Exclam.Replace(Question.Replace(word, "?"), "!");
 
     public void Dispose() => _net.Dispose();
 }

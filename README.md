@@ -381,12 +381,19 @@ Tests that need models skip when `models/converted/en` (or, for the `.pt` loader
 `models/stanza/en`) is missing. To regenerate the golden data, run
 `tools\.venv\Scripts\python tools\make_golden.py`.
 
+## Code style
+
+[StyleBro](https://github.com/bisforboman/stylebro) and the .NET code-style rules in `.editorconfig` run on every
+build; `dotnet tool install --global StyleBro.Migrate --version 0.5.0-alpha.1`, then `stylebro-migrate format
+StanzaSharp.slnx` fixes what they report.
+
 ## CI
 
 `.github/workflows/ci.yml` runs on pushes to `main` and on pull requests (.NET 10; Ubuntu 24.04 x64 and Arm64,
 Windows x64 and Arm64, macOS).
 
-- `build-test` builds the solution and runs the tests without models (the model tests skip).
+- `build-test` builds the solution with warnings as errors, checks the code style (`stylebro-migrate format
+  --verify-no-changes`, see below) and runs the tests without models (the model tests skip).
 - `golden` downloads the English models with `ModelDownloader` (through the CLI), converts them with
   `tools/stanza_convert.py` (CPU-only torch wheel), and runs the full suite (both backends). It fails if any test was
   skipped. Then `tools/verify-package.ps1` packs StanzaSharp and StanzaSharp.Cuda and runs two fresh apps that

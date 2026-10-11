@@ -46,7 +46,8 @@ internal static class LemmaDivergence
                     return 2;
             }
         }
-        if (docsFile == null || outFile == null || doubleGates && backend != Backend.Managed)
+
+        if (docsFile == null || outFile == null || (doubleGates && backend != Backend.Managed))
         {
             Console.Error.WriteLine(Usage);
             return 2;
@@ -56,7 +57,10 @@ internal static class LemmaDivergence
         ManagedLemmaNet.DoubleGates = doubleGates;
         using var nlp = Pipeline.Load(modelDir, new PipelineOptions
         {
-            Package = package, Processors = "tokenize,mwt,pos", Backend = backend == Backend.Managed ? PipelineBackend.Managed : CudaBackend.Cpu, Threads = threads > 0 ? threads : null,
+            Package = package,
+            Processors = "tokenize,mwt,pos",
+            Backend = backend == Backend.Managed ? PipelineBackend.Managed : CudaBackend.Cpu,
+            Threads = threads > 0 ? threads : null,
         });
         var lemmaModel = Pipeline.SelectModels(package, null, addRequired: false, "--package")["lemma"];
         using var lemmatizer = Lemmatizer.Load(Path.Combine(modelDir, "lemma", lemmaModel), null, backend);
@@ -82,8 +86,13 @@ internal static class LemmaDivergence
 
         var meta = new
         {
-            backend = backend == Backend.Managed ? "managed" : "torch", double_gates = doubleGates, package, no_dict = noDict,
-            threads = backend == Backend.Managed ? ManagedThreads.Count : torch.get_num_threads(), seconds, lemma_seconds = lemmaSeconds,
+            backend = backend == Backend.Managed ? "managed" : "torch",
+            double_gates = doubleGates,
+            package,
+            no_dict = noDict,
+            threads = backend == Backend.Managed ? ManagedThreads.Count : torch.get_num_threads(),
+            seconds,
+            lemma_seconds = lemmaSeconds,
         };
         File.WriteAllText(outFile, JsonSerializer.Serialize(new { meta, docs }, new JsonSerializerOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping }));
         Console.WriteLine(JsonSerializer.Serialize(meta));
@@ -108,6 +117,7 @@ internal static class LemmaDivergence
             lemmatizer.Predict(missWords);
             noDictSeconds = watch.Elapsed.TotalSeconds;
         }
+
         var records = new List<(int I, int K, double[] El, double[][] Steps)>();
         var steps = new List<double[][]>(); // per step, per sorted row: top-1 id, log-prob, top-2 id, log-prob (null once done)
         int batchStart = 0;
@@ -121,14 +131,21 @@ internal static class LemmaDivergence
                 var row = logProbs.AsSpan(r * columns, columns);
                 int a = 0;
                 for (int v = 1; v < columns; v++)
+                {
                     if (row[v] > row[a])
                         a = v;
+                }
+
                 int b = a == 0 ? 1 : 0;
                 for (int v = 0; v < columns; v++)
+                {
                     if (v != a && row[v] > row[b])
                         b = v;
+                }
+
                 rows[r] = [a, row[a], b, row[b]];
             }
+
             steps.Add(rows);
         }, onEdit: editLogits =>
         {
@@ -137,15 +154,19 @@ internal static class LemmaDivergence
             var lengths = Enumerable.Range(0, size).Select(i => missWords[batchStart + i].Text.EnumerateRunes().Count()).ToArray();
             var order = Enumerable.Range(0, size).OrderByDescending(i => lengths[i]).ThenByDescending(i => i).ToArray();
             for (int r = 0; r < size; r++)
+            {
                 records.Add((misses[batchStart + order[r]], batchStart + order[r],
                     editLogits.Skip(r * 3).Take(3).Select(x => (double)x).ToArray(),
                     steps.TakeWhile(s => s[r] != null).Select(s => s[r]).ToArray()));
+            }
+
             steps.Clear();
             batchStart += size;
         });
 
         for (int i = 0; i < words.Count; i++)
             words[i].Lemma = saved[i];
+
         // Add each word's decoded string, edit and lemma (Lemmatizer.Postprocess, then Process's "_" → null).
         return records.OrderBy(r => r.I).Select(r =>
         {

@@ -89,6 +89,7 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
             wih.AsSpan(j * c.Emb, c.Emb).CopyTo(w.AsSpan(j * k));
             whh.AsSpan(j * h, h).CopyTo(w.AsSpan(j * k + c.Emb));
         }
+
         var order = PackedLstm.GateOrder(h);
         _cell = new PackedMatrix(w, 4 * h, k, order);
         _cellBias = new float[_cell.PaddedN];
@@ -107,6 +108,7 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
 
         _attnIn = new PackedMatrix(T("decoder.attention_layer.linear_in.weight"), h, h);
         _attnOut = new PackedMatrix(T("decoder.attention_layer.linear_out.weight"), h, 2 * h);
+
         // dec2vocab and the copy gate read the same h_tilde: one GEMM, the gate is column Vocab.
         _out = new PackedMatrix([.. T("dec2vocab.weight"), .. T("copy_gate.weight")], c.Vocab + 1, h);
         _outBias = new float[_out.PaddedN];
@@ -168,6 +170,7 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
             try
             {
                 for (int t = 0; t < batchSizes.Length; t++)
+                {
                     for (int r = 0; r < batchSizes[t]; r++)
                     {
                         long id = t == 0 ? posIds[r] : ids[r * width + t - 1];
@@ -176,11 +179,14 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
                             id = LemmaConfig.UnkId;
                         table.AsSpan((int)id * emb, emb).CopyTo(x.AsSpan((start[t] + r) * emb));
                     }
+                }
+
                 net._encoder.ForwardPacked(x, emb, batchSizes, y, ct, finalC);
                 for (int r = 0; r < batch; r++)
                 {
                     for (int t = 0; t < lengths[r]; t++)
                         y.AsSpan((start[t] + r) * h, h).CopyTo(_ctx.AsSpan((r * steps + t) * h));
+
                     // h0 = cat(hn[-1], hn[-2]): the backward state (at t = 0), then the forward one (at the last step).
                     var h0 = _xh.AsSpan(r * (emb + h) + emb, h);
                     y.AsSpan(start[0] * h + r * h + half, half).CopyTo(h0);
@@ -217,6 +223,7 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
                     s += (double)w[i] * h0[i];
                 hidden[j] = Math.Max(s, 0);
             }
+
             for (int k = 0; k < logits.Length; k++)
             {
                 double s = n._edit2Bias[k];
@@ -237,6 +244,7 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
                 long id = previous[r] >= c.Vocab ? LemmaConfig.UnkId : previous[r];
                 n._emb.AsSpan((int)id * emb, emb).CopyTo(_xh.AsSpan(r * ldxh));
             }
+
             fixed (float* xh = _xh, gates = _gates, cell = _cell, cellBias = n._cellBias, target = _target, wh = _wh,
                 logits = _logits, outBias = n._outBias)
             {
@@ -266,10 +274,16 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
                     });
                 }
                 else
+                {
                     Gemm.Run(xh, b, ldxh, n._cell, cellBias, gates, ldg, ct);
+                }
+
                 for (int r = 0; r < b; r++)
+                {
                     for (int p = 0; p < h / 4; p++)
                         Act.LstmCell(gates + r * ldg + p * 16, cell + r * h + p * 4, xh + r * ldxh + emb + p * 4);
+                }
+
                 Gemm.Run(xh + emb, b, ldxh, n._attnIn, null, target, _ldTarget, ct);
 
                 // SoftDotAttention per row: scores over the real positions, softmax, the weighted context next to h.
@@ -280,8 +294,11 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
                     ManagedThreads.For(b, r => Attend(r, (float*)pTarget, (float*)pWh, (float*)pXh, attn));
                     Gemm.Run(wh, b, 2 * h, n._attnOut, null, target, _ldTarget, ct);
                     for (int r = 0; r < b; r++)
+                    {
                         for (int j = 0; j < h; j++)
                             target[r * _ldTarget + j] = MathF.Tanh(target[r * _ldTarget + j]);
+                    }
+
                     Gemm.Run(target, b, _ldTarget, n._out, outBias, logits, _ldOut, ct);
                     nint pLogits = (nint)logits;
                     ManagedThreads.For(b, r => Mix(r, (float*)pLogits, attn));
@@ -291,6 +308,7 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
                     ArrayPool<double>.Shared.Return(attn);
                 }
             }
+
             return _result;
         }
 
@@ -310,6 +328,7 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
                 la[t] = s;
                 max = Math.Max(max, s);
             }
+
             double sum = 0;
             for (int t = 0; t < len; t++)
                 sum += Math.Exp(la[t] - max);
@@ -325,6 +344,7 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
                 for (int i = 0; i < h; i++)
                     acc[i] += wt * k[i];
             }
+
             for (int i = 0; i < h; i++)
                 weighted[i] = (float)acc[i];
             new ReadOnlySpan<float>(xh + r * (_net._c.Emb + h) + _net._c.Emb, h).CopyTo(new Span<float>(wh + r * 2 * h + h, h));
@@ -363,6 +383,7 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
             for (int t = 1; t < len; t++)
                 asum += Math.Exp(la[t] - amax);
             double alse = amax + Math.Log(asum);
+
             // copied[id] = Σ_t exp(log_copy_prob_t − mx), mx = the largest log_copy_prob (logCopy + amax − alse).
             var copied = ArrayPool<double>.Shared.Rent(cols);
             try
@@ -372,12 +393,14 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
                     copied[_ids[r * _width + t - 1]] += Math.Exp(la[t] - amax);
                 double mx = logCopy + amax - alse;
                 for (int v = 0; v < cols; v++)
+                {
                     if (copied[v] > 0)
                     {
                         double a = Math.Log(copied[v]) + mx, b = output[v];
                         double m = Math.Max(a, b);
                         output[v] = (float)(m + Math.Log(Math.Exp(a - m) + Math.Exp(b - m)));
                     }
+                }
             }
             finally
             {

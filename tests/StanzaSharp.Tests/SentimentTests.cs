@@ -10,10 +10,12 @@ namespace StanzaSharp.Tests;
 public class SentimentTests(ITestOutputHelper output, SharedPipelines pipelines, SentimentTests.Fixture fixture) : IClassFixture<SharedPipelines>, IClassFixture<SentimentTests.Fixture>
 {
     private static readonly string Golden = Path.Combine(Repo.Golden, "sentiment");
+
     // On Arm64 (macOS, Apple Silicon) libtorch computes with Accelerate instead of the x64 kernels; the
     // classifier's large logits then drift up to ~1.1e-4 (labels still exact), so Arm64 gets 1e-3.
     private static readonly float Tolerance =
         System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture == System.Runtime.InteropServices.Architecture.Arm64 ? 1e-3f : 1e-4f;
+
     // Cached charlm outputs come from the tagger's batches and differ from fresh ones in the last bits.
     // The classifier amplifies that to about 1e-4 on logits of up to ~20 (the smallest top-2 margin is 1.6e-3).
     private const float CachedTolerance = 1e-3f;
@@ -23,13 +25,16 @@ public class SentimentTests(ITestOutputHelper output, SharedPipelines pipelines,
     public sealed class Fixture : IDisposable
     {
         private readonly Lazy<Models> _torch = new(() => new Models(managed: false)), _managed = new(() => new Models(managed: true));
+
         internal Models Get(bool managed = false) => (managed ? _managed : _torch).Value;
 
         public void Dispose()
         {
             foreach (var models in new[] { _torch, _managed })
+            {
                 if (models.IsValueCreated)
                     models.Value.Dispose();
+            }
         }
     }
 
@@ -96,6 +101,7 @@ public class SentimentTests(ITestOutputHelper output, SharedPipelines pipelines,
             failures.Add($"{name}: {labels.Length} sentences, expected {golden.Count}");
             return (float.NaN, float.NaN);
         }
+
         float worst32 = 0, worst = 0;
         for (int i = 0; i < labels.Length; i++)
         {
@@ -108,6 +114,7 @@ public class SentimentTests(ITestOutputHelper output, SharedPipelines pipelines,
             if (golden[i]!["sentiment"]!.GetValue<int>() != labels[i] || diff > (tolerance ?? Tolerance))
                 failures.Add($"{name}, sentence {i}: label {labels[i]} logits [{string.Join(", ", logits[i])}], expected {golden[i]}");
         }
+
         return (worst32, worst);
     }
 
@@ -130,6 +137,7 @@ public class SentimentTests(ITestOutputHelper output, SharedPipelines pipelines,
             var doc = nlp.Process(text);
             var actual = Conllu.Write(doc);
             var golden = File.ReadAllText(Path.Combine(Golden, name + ".conllu"));
+
             // Outside the BMP, C# offsets are UTF-16 indices and Stanza's are code points.
             if (name == "validation_nonbmp")
                 (actual, golden) = (PipelineTests.StripOffsets(actual), PipelineTests.StripOffsets(golden));
@@ -144,6 +152,7 @@ public class SentimentTests(ITestOutputHelper output, SharedPipelines pipelines,
             Assert.Equal(doc.Sentences.Select(s => s.Sentiment!.Value), labels);
             worst = Max(worst, CompareToJson(name, labels, logits, failures));
         }
+
         output.WriteLine($"max |logit diff| vs float32 {worst.Float32}, accepted (nearer of float32 and float64) {worst.Accepted}");
         Assert.True(failures.Count == 0, string.Join("\n\n", failures));
     }
@@ -199,6 +208,7 @@ public class SentimentTests(ITestOutputHelper output, SharedPipelines pipelines,
             Assert.Equal(plain, withCache);
             worst = Max(worst, CompareToJson(name, withCache, cachedLogits, failures, CachedTolerance));
         }
+
         output.WriteLine($"{reused}/{total} sentences reused the tagger's charlm outputs; max |logit diff| vs float32 {worst.Float32}, accepted {worst.Accepted}");
         Assert.True(reused > total / 2);
         Assert.True(failures.Count == 0, string.Join("\n\n", failures));
@@ -211,6 +221,7 @@ public class SentimentTests(ITestOutputHelper output, SharedPipelines pipelines,
     {
         using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos,constituency,sentiment", Backend = Repo.PipelineBackendFor(managed) });
         var conllu = Conllu.Write(nlp.Process("I love it. I don't like this movie at all."));
+
         // Python Stanza 1.15.0 with processors="tokenize,mwt,pos,constituency,sentiment".
         Assert.StartsWith("""
             # text = I love it.
@@ -226,6 +237,7 @@ public class SentimentTests(ITestOutputHelper output, SharedPipelines pipelines,
     public void MapWord_TriesTheWordThenWithoutApostropheThenLowercased()
     {
         var models = fixture.Get();
+
         // CNNClassifier.map_word in Python on the conll17 pretrain. Without the apostrophe, the word is not
         // lowercased, so "DINOSAURS'" is unknown; "'" and "o'" are in the vocabulary as they are.
         (string Word, int Id)[] expected =

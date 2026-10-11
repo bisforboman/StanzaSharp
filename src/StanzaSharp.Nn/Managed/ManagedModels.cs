@@ -69,6 +69,7 @@ internal sealed unsafe class ManagedCharLanguageModel
             result.Add(flat.AsSpan(offset, s.Count * h).ToArray());
             offset += s.Count * h;
         }
+
         return result;
     }
 
@@ -109,6 +110,7 @@ internal sealed unsafe class ManagedCharLanguageModel
             backwardLm.BuildCharRepresentation(sentences, backward, dim, ct);
             return;
         }
+
         if (!cache.TryGetAlone(sentences[0], out var alone))
         {
             int n = sentences[0].Count * dim;
@@ -119,6 +121,7 @@ internal sealed unsafe class ManagedCharLanguageModel
                 backwardLm.BuildCharRepresentation(sentences, pb, dim, ct, pc);
             cache.AddAlone(sentences[0], alone);
         }
+
         alone.Forward.CopyTo(forward, 0);
         alone.Backward.CopyTo(backward, 0);
     }
@@ -160,6 +163,7 @@ internal sealed unsafe class ManagedCharLanguageModel
                 chars.Add(_endId);
                 ends.Add(chars.Count - 1);
             }
+
             ids[i] = chars.ToArray();
             rowAt[i] = new int[chars.Count];
             Array.Fill(rowAt[i], -1);
@@ -167,6 +171,7 @@ internal sealed unsafe class ManagedCharLanguageModel
                 rowAt[i][ends[w]] = firstRow + (IsForward ? w : ends.Count - 1 - w);
             firstRow += words.Count;
         }
+
         if (n == 0)
             return;
 
@@ -177,47 +182,54 @@ internal sealed unsafe class ManagedCharLanguageModel
         try
         {
             fixed (nint* pointerBase = pointers)
-            fixed (float* bufferBase = buffers, table = _table, c0 = _c0)
             {
-                float** ptr = (float**)pointerBase;
-                float* hA = bufferBase, hB = hA + n * h, c = hB + n * h;
-                float* h0 = startH != null ? startH : (float*)Unsafe.AsPointer(ref _h0[0]);
-                float* cInit = startC != null ? startC : c0;
-                var works = new[] { new StepRows { Whh = _whh, HPrev = ptr, Init = ptr + n, C = ptr + 2 * n, HOut = ptr + 3 * n } };
-                ref var work = ref works[0];
-                for (int r = 0; r < n; r++)
-                    new Span<float>(cInit, h).CopyTo(new Span<float>(c + (long)r * h, h));
-                int m = n;
-                for (int t = 0; m > 0; t++)
+                fixed (float* bufferBase = buffers, table = _table, c0 = _c0)
                 {
-                    while (m > 0 && ids[order[m - 1]].Length <= t)
-                        m--;
-                    if (m == 0)
-                        break;
-                    ct.ThrowIfCancellationRequested();
-                    for (int r = 0; r < m; r++)
-                    {
-                        work.HPrev[r] = t == 0 ? h0 : hA + (long)r * h;
-                        work.Init[r] = table + (long)ids[order[r]][t] * 4 * h;
-                        work.C[r] = c + (long)r * h;
-                        work.HOut[r] = hB + (long)r * h;
-                    }
-                    work.M = m;
-                    PackedLstm.Step(works);
-                    for (int r = 0; r < m; r++)
-                    {
-                        int row = rowAt[order[r]][t];
-                        if (row >= 0)
-                            new Span<float>(hB + (long)r * h, h).CopyTo(new Span<float>(output + (long)row * ldo, h));
-                    }
-                    var swap = hA;
-                    hA = hB;
-                    hB = swap;
-                }
-                // A row's cell state was last updated at its own last step.
-                if (finalC != null)
+                    float** ptr = (float**)pointerBase;
+                    float* hA = bufferBase, hB = hA + n * h, c = hB + n * h;
+                    float* h0 = startH != null ? startH : (float*)Unsafe.AsPointer(ref _h0[0]);
+                    float* cInit = startC != null ? startC : c0;
+                    var works = new[] { new StepRows { Whh = _whh, HPrev = ptr, Init = ptr + n, C = ptr + 2 * n, HOut = ptr + 3 * n } };
+                    ref var work = ref works[0];
                     for (int r = 0; r < n; r++)
-                        new Span<float>(c + (long)r * h, h).CopyTo(new Span<float>(finalC + (long)order[r] * h, h));
+                        new Span<float>(cInit, h).CopyTo(new Span<float>(c + (long)r * h, h));
+                    int m = n;
+                    for (int t = 0; m > 0; t++)
+                    {
+                        while (m > 0 && ids[order[m - 1]].Length <= t)
+                            m--;
+                        if (m == 0)
+                            break;
+                        ct.ThrowIfCancellationRequested();
+                        for (int r = 0; r < m; r++)
+                        {
+                            work.HPrev[r] = t == 0 ? h0 : hA + (long)r * h;
+                            work.Init[r] = table + (long)ids[order[r]][t] * 4 * h;
+                            work.C[r] = c + (long)r * h;
+                            work.HOut[r] = hB + (long)r * h;
+                        }
+
+                        work.M = m;
+                        PackedLstm.Step(works);
+                        for (int r = 0; r < m; r++)
+                        {
+                            int row = rowAt[order[r]][t];
+                            if (row >= 0)
+                                new Span<float>(hB + (long)r * h, h).CopyTo(new Span<float>(output + (long)row * ldo, h));
+                        }
+
+                        var swap = hA;
+                        hA = hB;
+                        hB = swap;
+                    }
+
+                    // A row's cell state was last updated at its own last step.
+                    if (finalC != null)
+                    {
+                        for (int r = 0; r < n; r++)
+                            new Span<float>(c + (long)r * h, h).CopyTo(new Span<float>(finalC + (long)order[r] * h, h));
+                    }
+                }
             }
         }
         finally
@@ -293,6 +305,7 @@ internal sealed unsafe class ManagedHighwayLstm
         if (output.Length < rows * h2)
             throw new ArgumentException("output is too small");
         var p = ArrayPool<float>.Shared.Rent(rows * ldp);
+
         // Layer outputs ping-pong between two temporaries; the last layer writes to output.
         var temps = Enumerable.Range(0, Math.Min(_layers.Length - 1, 2)).Select(_ => ArrayPool<float>.Shared.Rent(rows * h2)).ToArray();
         try
@@ -309,6 +322,7 @@ internal sealed unsafe class ManagedHighwayLstm
                     {
                         Gemm.Run(px, rows, inSize, gates, pb, pp, ldp, ct);
                         lstm.Recur(pp, ldp, batchSizes, po, h2, ct);
+
                         // h += σ(gate)·tanh(highway): the gate and highway columns, now in p (row stride lde).
                         Gemm.Run(px, rows, inSize, extra, pb + ldp, pp, lde, ct);
                         nint ip = (nint)pp, io = (nint)po;
@@ -348,6 +362,7 @@ internal sealed unsafe class ManagedLstm
     private readonly int _hidden, _padded, _dirs;
 
     public int InputSize { get; }
+
     /// <summary>Width of an output row: every direction's h.</summary>
     public int OutputSize => _dirs * _hidden;
 
@@ -361,6 +376,7 @@ internal sealed unsafe class ManagedLstm
         (InputSize, _hidden, _dirs) = (inputSize, hidden, bidirectional ? 2 : 1);
         int h = hidden, hp = _padded = (hidden + 3) / 4 * 4;
         string[] suffixes = bidirectional ? ["", "_reverse"] : [""];
+
         // Each direction's initial state, padded with zero units.
         float[] Init(float[]? all, int l, int d)
         {
@@ -368,11 +384,13 @@ internal sealed unsafe class ManagedLstm
             all?.AsSpan((l * _dirs + d) * h, h).CopyTo(x);
             return x;
         }
+
         _layers = new (PackedMatrix, float[], PackedLstm)[layers];
         for (int l = 0; l < layers; l++)
         {
             float[] T(string name, string suffix) => ckpt.Tensor<float>(stateDict[$"{prefix}{name}_l{l}{suffix}"]
                 ?? throw new KeyNotFoundException($"Checkpoint has no weight '{prefix}{name}_l{l}{suffix}'"));
+
             // Layer > 0 reads the previous layer's padded output: direction d's unit u is column d·hp + u.
             int k = l == 0 ? inputSize : _dirs * h, kp = l == 0 ? inputSize : _dirs * hp;
             Func<int, int> col = l == 0 ? c => c : c => c / h * hp + c % h;
@@ -395,9 +413,14 @@ internal sealed unsafe class ManagedLstm
             return w;
         var result = new float[4 * hp * kp];
         for (int g = 0; g < 4; g++)
+        {
             for (int u = 0; u < h; u++)
+            {
                 for (int c = 0; c < k; c++)
                     result[(g * hp + u) * kp + col(c)] = w[(g * h + u) * k + c];
+            }
+        }
+
         return result;
     }
 
@@ -409,6 +432,7 @@ internal sealed unsafe class ManagedLstm
     {
         if (input.Length < batch * width * InputSize || output.Length < batch * width * OutputSize)
             throw new ArgumentException("input or output is too small");
+
         // pack_padded_sequence: rows sorted longest first; step t holds the batchSizes[t] rows longer than t.
         var order = Enumerable.Range(0, batch).OrderByDescending(i => lengths[i]).ToArray();
         var batchSizes = PackedLstm.BatchSizes(lengths);
@@ -418,13 +442,18 @@ internal sealed unsafe class ManagedLstm
         try
         {
             for (int t = 0, n = 0; t < batchSizes.Length; t++)
+            {
                 for (int r = 0; r < batchSizes[t]; r++, n++)
                     input.Slice((order[r] * width + t) * InputSize, InputSize).CopyTo(x.AsSpan(n * InputSize));
+            }
+
             ForwardPacked(x, InputSize, batchSizes, y, ct);
             output[..(batch * width * OutputSize)].Clear();
             for (int t = 0, n = 0; t < batchSizes.Length; t++)
+            {
                 for (int r = 0; r < batchSizes[t]; r++, n++)
                     y.AsSpan(n * OutputSize, OutputSize).CopyTo(output.Slice((order[r] * width + t) * OutputSize));
+            }
         }
         finally
         {
@@ -445,6 +474,7 @@ internal sealed unsafe class ManagedLstm
         int rows = batchSizes.Sum(), ldo = _dirs * _padded, ldp = _layers.Max(l => l.W.PaddedN);
         if (lda < InputSize || input.Length < (rows - 1) * lda + InputSize || output.Length < rows * OutputSize)
             throw new ArgumentException("input or output is too small");
+
         // Layer outputs ping-pong between two buffers.
         var y0 = ArrayPool<float>.Shared.Rent(rows * ldo);
         var y1 = _layers.Length > 1 ? ArrayPool<float>.Shared.Rent(rows * ldo) : null;
@@ -467,13 +497,19 @@ internal sealed unsafe class ManagedLstm
                     src = dst;
                     stride = ldo;
                 }
+
                 // src holds the last layer's packed output; drop the padding units.
                 for (int n = 0; n < rows; n++)
+                {
                     for (int d = 0; d < _dirs; d++)
                         new ReadOnlySpan<float>(src + (long)n * ldo + d * _padded, _hidden).CopyTo(output.Slice(n * OutputSize + d * _hidden, _hidden));
+                }
+
                 if (cells != null)
+                {
                     for (int r = 0; r < _dirs * batch; r++)
                         cells.AsSpan(r * _padded, _hidden).CopyTo(finalC.Slice(r * _hidden, _hidden));
+                }
             }
         }
         finally
@@ -512,54 +548,58 @@ internal sealed unsafe class ManagedLstm
         var p = ArrayPool<float>.Shared.Rent(steps * n * gates);
         var cells = ArrayPool<float>.Shared.Rent(n * h);
         var pointers = ArrayPool<nint>.Shared.Rent(4 * n);
+
         // Every layer but the last writes time-major rows, ping-ponging between two buffers.
         var mid = Enumerable.Range(0, Math.Min(_layers.Length - 1, 2)).Select(_ => ArrayPool<float>.Shared.Rent(rows * ldo)).ToArray();
         try
         {
             fixed (float* px = x, pp = p, pc = cells, po = output, pm0 = mid.ElementAtOrDefault(0), pm1 = mid.ElementAtOrDefault(1))
-            fixed (nint* pointerBase = pointers)
             {
-                var ptr = (float**)pointerBase;
-                var works = new StepRows[1];
-                for (int l = 0; l < _layers.Length; l++)
+                fixed (nint* pointerBase = pointers)
                 {
-                    var (w, bias, lstm) = _layers[l];
-                    float* src = l == 0 ? null : (l - 1) % 2 == 0 ? pm0 : pm1;
-                    bool last = l == _layers.Length - 1;
-                    float* dst = last ? po : l % 2 == 0 ? pm0 : pm1;
-                    for (int d = 0; d < _dirs; d++)
+                    var ptr = (float**)pointerBase;
+                    var works = new StepRows[1];
+                    for (int l = 0; l < _layers.Length; l++)
                     {
-                        var (whh, h0, c0) = lstm.Direction(d);
-                        var wd = new PackedMatrix(w, d * gates / PackedMatrix.NR, gates / PackedMatrix.NR);
-                        works[0] = new StepRows { Whh = whh, M = n, HPrev = ptr, Init = ptr + n, C = ptr + 2 * n, HOut = ptr + 3 * n };
-                        for (int i = 0; i < n; i++)
-                            c0.CopyTo(new Span<float>(pc + (long)i * h, h));
-                        bool forward = d == 0;
-                        int chunks = (width + steps - 1) / steps;
-                        fixed (float* pb = bias, ph0 = h0)
+                        var (w, bias, lstm) = _layers[l];
+                        float* src = l == 0 ? null : (l - 1) % 2 == 0 ? pm0 : pm1;
+                        bool last = l == _layers.Length - 1;
+                        float* dst = last ? po : l % 2 == 0 ? pm0 : pm1;
+                        for (int d = 0; d < _dirs; d++)
                         {
-                            for (int k = 0; k < chunks; k++)
+                            var (whh, h0, c0) = lstm.Direction(d);
+                            var wd = new PackedMatrix(w, d * gates / PackedMatrix.NR, gates / PackedMatrix.NR);
+                            works[0] = new StepRows { Whh = whh, M = n, HPrev = ptr, Init = ptr + n, C = ptr + 2 * n, HOut = ptr + 3 * n };
+                            for (int i = 0; i < n; i++)
+                                c0.CopyTo(new Span<float>(pc + (long)i * h, h));
+                            bool forward = d == 0;
+                            int chunks = (width + steps - 1) / steps;
+                            fixed (float* pb = bias, ph0 = h0)
                             {
-                                ct.ThrowIfCancellationRequested();
-                                int t0 = (forward ? k : chunks - 1 - k) * steps, t1 = Math.Min(width, t0 + steps);
-                                if (src == null)
-                                    fill(t0 * n, t1 * n, px);
-                                Gemm.RunRows(src == null ? px : src + (long)t0 * n * ldo, t0 * n, t1 * n, rows, src == null ? InputSize : ldo,
-                                    wd, pb + d * gates, pp, gates, ct);
-                                for (int s = 0; s < t1 - t0; s++)
+                                for (int k = 0; k < chunks; k++)
                                 {
                                     ct.ThrowIfCancellationRequested();
-                                    int t = forward ? t0 + s : t1 - 1 - s, prev = forward ? t - 1 : t + 1;
-                                    bool fresh = forward ? t == 0 : t == width - 1;
-                                    for (int i = 0; i < n; i++)
+                                    int t0 = (forward ? k : chunks - 1 - k) * steps, t1 = Math.Min(width, t0 + steps);
+                                    if (src == null)
+                                        fill(t0 * n, t1 * n, px);
+                                    Gemm.RunRows(src == null ? px : src + (long)t0 * n * ldo, t0 * n, t1 * n, rows, src == null ? InputSize : ldo,
+                                        wd, pb + d * gates, pp, gates, ct);
+                                    for (int s = 0; s < t1 - t0; s++)
                                     {
-                                        long at = last ? (long)i * width + t : (long)t * n + i, before = last ? (long)i * width + prev : (long)prev * n + i;
-                                        ptr[i] = fresh ? ph0 : dst + before * ldo + d * h;
-                                        ptr[n + i] = pp + ((long)(t - t0) * n + i) * gates;
-                                        ptr[2 * n + i] = pc + (long)i * h;
-                                        ptr[3 * n + i] = dst + at * ldo + d * h;
+                                        ct.ThrowIfCancellationRequested();
+                                        int t = forward ? t0 + s : t1 - 1 - s, prev = forward ? t - 1 : t + 1;
+                                        bool fresh = forward ? t == 0 : t == width - 1;
+                                        for (int i = 0; i < n; i++)
+                                        {
+                                            long at = last ? (long)i * width + t : (long)t * n + i, before = last ? (long)i * width + prev : (long)prev * n + i;
+                                            ptr[i] = fresh ? ph0 : dst + before * ldo + d * h;
+                                            ptr[n + i] = pp + ((long)(t - t0) * n + i) * gates;
+                                            ptr[2 * n + i] = pc + (long)i * h;
+                                            ptr[3 * n + i] = dst + at * ldo + d * h;
+                                        }
+
+                                        PackedLstm.Step(works);
                                     }
-                                    PackedLstm.Step(works);
                                 }
                             }
                         }
@@ -586,7 +626,6 @@ internal sealed unsafe class ManagedLstm
 /// </summary>
 internal sealed unsafe class ManagedCharacterModel
 {
-    public const int RootId = 3; // vocab.ROOT_ID: depparse's ROOT word is the single character id 3
     private const int UnkId = 1;
 
     private readonly Dictionary<string, int> _vocab;
@@ -646,8 +685,11 @@ internal sealed unsafe class ManagedCharacterModel
         try
         {
             for (int t = 0, row = 0; t < batchSizes.Length; t++)
+            {
                 for (int r = 0; r < batchSizes[t]; r++, row++)
                     _charEmb.AsSpan(words[order[r]][t] * _emb, _emb).CopyTo(x.AsSpan(row * _emb));
+            }
+
             _lstm.ForwardPacked(x, _emb, batchSizes, y, ct);
             if (_attn != null)
             {
@@ -668,6 +710,7 @@ internal sealed unsafe class ManagedCharacterModel
                 }
             }
             else
+            {
                 for (int r = 0; r < n; r++)
                 {
                     // h[-2:]: the forward direction's last state is at the word's last character, the backward one's at its first.
@@ -676,6 +719,7 @@ internal sealed unsafe class ManagedCharacterModel
                     if (_directions == 2)
                         y.AsSpan(r * dim + _hidden, _hidden).CopyTo(o[_hidden..]);
                 }
+            }
         }
         finally
         {

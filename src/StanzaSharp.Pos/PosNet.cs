@@ -58,7 +58,9 @@ internal sealed unsafe class ManagedPosNet : IPosNet
         _wordDim = config["word_emb_dim"]!.GetValue<int>();
         _inputSize = _wordDim + _transformed;
         if (_charlmForward != null)
+        {
             _inputSize += _charlmForward.HiddenDim + _charlmBackward!.HiddenDim;
+        }
         else
         {
             _charModel = new ManagedCharacterModel(ckpt, model, config, ckpt.Root["vocab"]!["char"]!, "charmodel.",
@@ -99,7 +101,9 @@ internal sealed unsafe class ManagedPosNet : IPosNet
         var w = new float[upos * total * in1];
         var bias = new float[upos * total];
         for (int u = 0; u < upos; u++)
+        {
             for (int h = 0, offset = 0; h < heads.Length; offset += outs[h], h++)
+            {
                 for (int k = 0; k < outs[h]; k++)
                 {
                     int row = u * total + offset + k;
@@ -116,6 +120,9 @@ internal sealed unsafe class ManagedPosNet : IPosNet
                             bias[row] = (float)(s + heads[h].B[k]);
                     }
                 }
+            }
+        }
+
         return Linear(w, bias, upos * total, in1);
     }
 
@@ -124,6 +131,7 @@ internal sealed unsafe class ManagedPosNet : IPosNet
     {
         int batch = sentences.Count, inSize = _inputSize;
         var lengths = sentences.Select(s => (long)s.Count).ToArray();
+
         // pack_padded_sequence: sentences longest first; word (i, j) is packed row start[j] + rank[i], and word k of the
         // batch (sentences in order) is row packedRow[k].
         var order = Enumerable.Range(0, batch).OrderByDescending(i => lengths[i]).ToArray();
@@ -137,12 +145,15 @@ internal sealed unsafe class ManagedPosNet : IPosNet
         int rows = batchSizes.Sum();
         var packedRow = new int[rows];
         for (int i = 0, k = 0; i < batch; i++)
+        {
             for (int j = 0; j < lengths[i]; j++, k++)
                 packedRow[k] = start[j] + rank[i];
+        }
 
         int ldHid = _hid.PaddedN, ldx = _xposClf.PaddedN, ldf = _featsClf.PaddedN;
         var x = ArrayPool<float>.Shared.Rent(rows * inSize);
         var scratch = ArrayPool<float>.Shared.Rent(rows * Math.Max(Math.Max(ldHid, ldx), ldf));
+
         // The LSTM output; before that, scratch for the pretrain vectors and the character model's output.
         var hidden = ArrayPool<float>.Shared.Rent(rows * Math.Max(_lstm.OutputSize, Math.Max(_pretrain.Dim, _charModel?.OutputDim ?? 0)));
         try
@@ -156,6 +167,7 @@ internal sealed unsafe class ManagedPosNet : IPosNet
                 _wordEmb.AsSpan((int)wordIds[k] * _wordDim, _wordDim).CopyTo(x.AsSpan(r * inSize));
                 vectors.Slice((int)pretrainIds[k] * dim, dim).CopyTo(hidden.AsSpan(r * dim)); // hidden as scratch
             }
+
             fixed (float* ph = hidden, ps = scratch)
                 Gemm.Run(ph, rows, dim, _transPretrained, null, ps, ldt, ct);
             for (int r = 0; r < rows; r++)
@@ -167,19 +179,26 @@ internal sealed unsafe class ManagedPosNet : IPosNet
                 // The character model's vector per word (packed row order), then trans_char.
                 var words = new int[rows][];
                 for (int i = 0, k = 0; i < batch; i++)
+                {
                     for (int j = 0; j < lengths[i]; j++, k++)
                         words[packedRow[k]] = _charModel.CharIds(sentences[i][j]);
+                }
+
                 int ldc = _transChar!.PaddedN;
                 fixed (float* ph = hidden, ps = scratch)
                 {
                     _charModel.Forward(words, ph, _charModel.OutputDim, ct);
                     Gemm.Run(ph, rows, _charModel.OutputDim, _transChar, null, ps, ldc, ct);
                 }
+
                 for (int r = 0; r < rows; r++)
                     scratch.AsSpan(r * ldc, _transformed).CopyTo(x.AsSpan(r * inSize + charCol));
             }
             else
+            {
                 CharlmFeatures(sentences, packedRow, x, charCol, charlms, cacheKeys, ct);
+            }
+
             ct.ThrowIfCancellationRequested();
 
             _lstm.Forward(x.AsSpan(0, rows * inSize), lengths, hidden.AsSpan(0, rows * _lstm.OutputSize), ct);
@@ -211,13 +230,16 @@ internal sealed unsafe class ManagedPosNet : IPosNet
                 forward.AsSpan(k * dim, dim).CopyTo(x.AsSpan(r));
                 backward.AsSpan(k * dim, dim).CopyTo(x.AsSpan(r + dim));
             }
+
             if (cacheKeys != null)
+            {
                 for (int i = 0, k = 0; i < sentences.Count; k += sentences[i].Count, i++)
                 {
                     int n = sentences[i].Count;
                     if (cacheKeys[i] is { } key && charlms!.HasRoom(n))
                         charlms.TryAdd(key, forward.AsSpan(k * dim, n * dim).ToArray(), backward.AsSpan(k * dim, n * dim).ToArray(), n);
                 }
+            }
         }
         finally
         {
@@ -262,38 +284,32 @@ internal sealed unsafe class ManagedPosNet : IPosNet
                                 sum += (double)w[a] * x[a];
                             s[c] = (float)sum;
                         }
-                        upos[k] = ArgMax(s);
+
+                        upos[k] = Act.ArgMax(s);
                     }
                 });
 
                 int ldx = _xposClf.PaddedN;
                 Gemm.Run(pd + _biaff, rows, ldHid, _xposClf, pxb, ps, ldx, ct);
                 for (int k = 0; k < rows; k++)
-                    xpos[k] = ArgMax(scratch.AsSpan(packedRow[k] * ldx + (int)upos[k] * _xpos, _xpos));
+                    xpos[k] = Act.ArgMax(scratch.AsSpan(packedRow[k] * ldx + (int)upos[k] * _xpos, _xpos));
                 ct.ThrowIfCancellationRequested();
 
                 int ldf = _featsClf.PaddedN, total = _feats.Sum();
                 Gemm.Run(pd + 2 * _biaff, rows, ldHid, _featsClf, pfb, ps, ldf, ct);
                 for (int k = 0; k < rows; k++)
+                {
                     for (int f = 0; f < _feats.Length; f++)
-                        feats[f][k] = ArgMax(scratch.AsSpan(packedRow[k] * ldf + (int)upos[k] * total + _featOffsets[f], _feats[f]));
+                        feats[f][k] = Act.ArgMax(scratch.AsSpan(packedRow[k] * ldf + (int)upos[k] * total + _featOffsets[f], _feats[f]));
+                }
             }
+
             return new(uposScores, upos, xpos, feats);
         }
         finally
         {
             ArrayPool<float>.Shared.Return(hid);
         }
-    }
-
-    /// <summary>torch.argmax: the first index of the maximum.</summary>
-    private static int ArgMax(ReadOnlySpan<float> s)
-    {
-        int best = 0;
-        for (int i = 1; i < s.Length; i++)
-            if (s[i] > s[best])
-                best = i;
-        return best;
     }
 
     public void Dispose()

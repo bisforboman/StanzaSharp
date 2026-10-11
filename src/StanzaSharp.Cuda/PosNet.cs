@@ -36,7 +36,9 @@ internal sealed class PosNet : IPosNet
         int wordEmb = config["word_emb_dim"]!.GetValue<int>();
         int inputSize = wordEmb + transformed;
         if (_charlmForward != null)
+        {
             inputSize += _charlmForward.HiddenDim + _charlmBackward!.HiddenDim;
+        }
         else
         {
             _charModel = new CharacterModel(ckpt, model, config, ckpt.Root["vocab"]!["char"]!, "charmodel.",
@@ -87,24 +89,33 @@ internal sealed class PosNet : IPosNet
         var pretrained = _transPretrained.forward(_pretrain.Embeddings[torch.tensor(wordOf.Select(k => pretrainIds[k]).ToArray(), device: _device)]);
         Tensor[] chars;
         if (_charModel != null)
+        {
             chars = [_transChar!.forward(Packed(_charModel.ForwardWords(sentences.Select(s => (IReadOnlyList<long[]>)s.Select(_charModel.CharIds).ToList()).ToList())))];
+        }
         else
         {
             var repsForward = _charlmForward!.BuildCharRepresentation(sentences);
             ct.ThrowIfCancellationRequested();
             var repsBackward = _charlmBackward!.BuildCharRepresentation(sentences);
             if (cacheKeys != null)
+            {
                 for (int i = 0; i < batch; i++)
+                {
                     if (cacheKeys[i] is { } key)
                         charlms!.TryAdd(key, repsForward[i], repsBackward[i]);
+                }
+            }
+
             chars = [Packed(cat(repsForward, 0)), Packed(cat(repsBackward, 0))];
         }
+
         ct.ThrowIfCancellationRequested();
         var input = cat([words, pretrained, .. chars], 1);
         foreach (var t in (Tensor[])[words, pretrained, .. chars])
             t.Dispose();
         var packed = Rnn.Pack(input, lengths);
         input.Dispose();
+
         // The heads see the words in sentence order.
         var output = _lstm.Forward(packed, disposeInput: true, ct).data.index_select(0, torch.tensor(packedRow, device: _device));
 

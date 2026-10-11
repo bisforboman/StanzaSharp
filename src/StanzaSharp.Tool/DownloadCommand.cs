@@ -16,17 +16,24 @@ internal static class DownloadCommand
         for (int i = 0; i < args.Length; i++)
         {
             if (args[i] == "--processors" && i + 1 < args.Length)
+            {
                 only = args[++i];
+            }
             else if (args[i] == "--package" && i + 1 < args.Length)
+            {
                 package = args[++i];
+            }
             else if (!args[i].StartsWith('-') && target == null)
+            {
                 target = args[i];
+            }
             else
             {
                 Console.Error.WriteLine($"Unexpected argument: {args[i]}\n\n{usage}");
                 return 2;
             }
         }
+
         target ??= DefaultDir;
         try
         {

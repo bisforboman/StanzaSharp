@@ -11,4 +11,3 @@ internal interface ITokenizerNet : IDisposable
     /// <returns>[rows, width, 5] log-probabilities, row-major.</returns>
     float[] Forward(long[] ids, float[] feats, int rows, int width, long[] lengths, CancellationToken ct);
 }
-
