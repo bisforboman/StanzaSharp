@@ -163,6 +163,10 @@ median ms:
   spinning 10× shorter before they sleep; in another job 100× longer or not at all, which was slower), moved the median by less than the run-to-run noise
   (136-234 ms on 3 threads; 192-217 on 1, 181-273 on 2).
 - `benchmark.yml` now turns Spotlight off on macOS first; "Run it yourself" says so.
+- On **macos-26** (the runner CI moves to; macOS 26.6.2, the same Apple M1 virtual with 3 vCPUs) the slow calls don't
+  show: the same benchmark command right after `pip install`, two runs each, 149 and 104 ms with Spotlight on (the
+  first while `mds_stores` used 57% of a vCPU), 132 and 133 ms with it off; Python Stanza 303-704 ms. The `mdutil` step
+  stays, as it costs nothing and removes a source of noise.
 
 **Open (owner's decision):** on this machine one caller on 16 threads (the default, all logical processors) took
 98-180 ms per call against 42-65 on 8 (the physical cores) in the same alternated runs, while other processes used
