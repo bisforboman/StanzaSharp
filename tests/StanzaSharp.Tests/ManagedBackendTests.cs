@@ -199,6 +199,9 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
         var a = Random(Gemm.MR * k, 11);
         var b = Random(k * nr, 12);
         var init = Random(Gemm.MR * nr, 13);
+        var aRows = stackalloc float*[Gemm.MR];
+        var initRows = stackalloc float*[Gemm.MR];
+        var outRows = stackalloc float*[Gemm.MR];
         for (int mr = 1; mr <= Gemm.MR; mr++)
         {
             var expected = new float[mr * nr];
@@ -222,9 +225,6 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
             var actual = new float[Gemm.MR * nr];
             fixed (float* pa = a, pb = b, pi = init, po = actual)
             {
-                var aRows = stackalloc float*[Gemm.MR];
-                var initRows = stackalloc float*[Gemm.MR];
-                var outRows = stackalloc float*[Gemm.MR];
                 for (int r = 0; r < Gemm.MR; r++)
                 {
                     int row = Math.Min(r, mr - 1); // rows past mr repeat the last one, as the callers do
