@@ -130,7 +130,7 @@ internal static class ManagedSpike
             for (end = b; end < sentences.Count && end - b < BatchSize && (end == b || words + sentences[end].Count <= MaximumTokens); end++)
                 words += sentences[end].Count;
             var original = sentences.GetRange(b, end - b);
-            var simplified = original.Select(s => (IReadOnlyList<string>)s.Select(PosTagger.SimplifyPunct).ToList()).ToList();
+            var simplified = original.Select(s => (IReadOnlyList<string>)s.Select(Punct.Simplify).ToList()).ToList();
             var lengths = simplified.Select(s => (long)s.Count).ToArray();
             int width = (int)lengths.Max();
             var offsets = new long[lengths.Length];

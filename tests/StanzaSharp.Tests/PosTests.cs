@@ -69,7 +69,7 @@ public class PosTests(ITestOutputHelper output, PosTests.Fixture fixture) : ICla
     [InlineData("a??", "a??")]
     [Trait("Backend", "Managed")]
     public void SimplifyPunct_MatchesStanza(string word, string expected) =>
-        Assert.Equal(expected, PosTagger.SimplifyPunct(word));
+        Assert.Equal(expected, Punct.Simplify(word));
 
     [ModelTheory]
     [InlineData(false)]

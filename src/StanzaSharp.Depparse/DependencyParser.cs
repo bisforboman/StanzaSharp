@@ -1,6 +1,5 @@
 using System.Buffers;
 using System.Text.Json.Nodes;
-using System.Text.RegularExpressions;
 using StanzaSharp.Nn;
 using StanzaSharp.Nn.Managed;
 
@@ -180,7 +179,7 @@ internal sealed class DependencyParser : IDisposable
         CharlmCache? charlms = null, bool rentScores = false)
     {
         // data.py load_doc: simplify_punct changes the words the parser sees (vocab and charlm alike).
-        var texts = batch.Select(s => (IReadOnlyList<string>)s.Select(w => SimplifyPunct(w.Text)).ToList()).ToList();
+        var texts = batch.Select(s => (IReadOnlyList<string>)s.Select(w => Punct.Simplify(w.Text)).ToList()).ToList();
         int size = batch.Count, width = batch.Max(s => s.Count) + 1;
         var input = new DepparseBatch(texts, width, batch.Select(s => (long)s.Count + 1).ToArray(),
             new long[size * width], new long[size * width], new long[size * width], new long[size * width], new long[size * width], charlms, rentScores);
@@ -226,13 +225,6 @@ internal sealed class DependencyParser : IDisposable
         foreach (var key in new[] { "upos", "xpos" })
             Require(!root["vocab"]![key]!["lower"]!.GetValue<bool>(), $"a lowercased {key} vocab");
     }
-
-    // common/utils.py simplify_punct (as in the tagger): runs like "?!?" or "!!" become "?" or "!".
-    private const string QuestionMarks = "?？︖﹖⁇", AllMarks = QuestionMarks + "!！︕﹗‼";
-    private static readonly Regex Question = new($"^[{QuestionMarks}][{AllMarks}]+$");
-    private static readonly Regex Exclam = new($"^[!！︕﹗‼][{AllMarks}]+$");
-
-    private static string SimplifyPunct(string word) => Exclam.Replace(Question.Replace(word, "?"), "!");
 
     public void Dispose() => _net.Dispose();
 }

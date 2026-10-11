@@ -1,5 +1,4 @@
 using System.Text.Json.Nodes;
-using System.Text.RegularExpressions;
 using StanzaSharp.Nn;
 using StanzaSharp.Nn.Managed;
 
@@ -97,7 +96,7 @@ internal sealed class PosTagger : IDisposable
         Dictionary<string, string>? featStrings = null)
     {
         var original = sentences;
-        sentences = sentences.Select(s => (IReadOnlyList<string>)s.Select(SimplifyPunct).ToList()).ToList();
+        sentences = sentences.Select(s => (IReadOnlyList<string>)s.Select(Punct.Simplify).ToList()).ToList();
         int batch = sentences.Count;
         var keys = charlms == null || cacheKeys == null || !UsesCharlm
             ? null
@@ -172,14 +171,6 @@ internal sealed class PosTagger : IDisposable
     internal bool UsesCharlm { get; }
 
     private static string[] Strings(JsonNode? array) => array!.AsArray().Select(x => x!.GetValue<string>()).ToArray();
-
-    // pos/data.py load_doc → common/utils.py simplify_punct: the tagger sees runs like "?!?" or "!!"
-    // as a single "?" or "!" (QUESTION_RE / EXCLAM_RE, including full-width and small forms).
-    private const string QuestionMarks = "?？︖﹖⁇", AllMarks = QuestionMarks + "!！︕﹗‼";
-    private static readonly Regex Question = new($"^[{QuestionMarks}][{AllMarks}]+$");
-    private static readonly Regex Exclam = new($"^[!！︕﹗‼][{AllMarks}]+$");
-
-    internal static string SimplifyPunct(string word) => Exclam.Replace(Question.Replace(word, "?"), "!");
 
     public void Dispose() => _net.Dispose();
 }
