@@ -88,6 +88,39 @@ public class ManagedBackendTests(ITestOutputHelper output)
     }
 
     /// <summary>
+    /// A GEMM column depends only on its 16-column panel: a panel view of a packed matrix (the highway LSTM's gate and
+    /// gate/highway GEMMs) and a matrix packed from a panel-aligned row subset (depparse's per-scorer W1/W2) give the
+    /// whole GEMM's columns bit for bit, ragged M and K over one K block included.
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(Paths))]
+    [Trait("Backend", "Managed")]
+    public void Gemm_ColumnPanelsAreIndependent(string path)
+    {
+        const int m = 37, k = 300, n = 7 * PackedMatrix.NR + 5, split = 3; // panels [0, 3) and [3, 8)
+        var a = Random(m * k, 21);
+        var w = Random(n * k, 22);
+        var bias = Random(8 * PackedMatrix.NR, 23);
+        var whole = new PackedMatrix(w, n, k);
+        int cut = split * PackedMatrix.NR;
+        var parts = new[]
+        {
+            (new PackedMatrix(whole, 0, split), 0),
+            (new PackedMatrix(whole, split, whole.Panels - split), cut),
+            (new PackedMatrix(w.AsSpan(cut * k), n - cut, k), cut),
+        };
+        var expected = With(path, 4, () => Gemm.Run(a, m, whole, bias));
+        foreach (var (part, first) in parts)
+        {
+            var actual = With(path, 4, () => Gemm.Run(a, m, part, bias[first..]));
+            for (int r = 0; r < m; r++)
+                for (int j = 0; j < part.N; j++)
+                    Assert.Equal(BitConverter.SingleToInt32Bits(expected[r * whole.PaddedN + first + j]),
+                        BitConverter.SingleToInt32Bits(actual[r * part.PaddedN + j]));
+        }
+    }
+
+    /// <summary>
     /// The LSTM step's blocked kernel against a scalar reference with the same order (each block of kb terms from zero,
     /// the blocks added up, init last), bit for bit: fused multiply-adds on the SIMD paths, a·b + c on Scalar.
     /// </summary>

@@ -844,7 +844,13 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     help. Not per-caller teams: those oversubscribe (measured: 8 callers fall to TorchSharp's throughput). A region's
     split must not depend on how many threads help, so results stay bitwise identical under concurrency.
   - Per-call buffers come from `ArrayPool<T>.Shared` and go back in `finally`; no buffer is shared between calls, and
-    no mutable state lives on a model. Rented arrays hold stale data: write before reading.
+    no mutable state lives on a model. Rented arrays hold stale data: write before reading. Measured (round 9): exact-size
+    arrays instead raise the peak (+150 MB in depparse); the pool's power-of-two rounding costs no working set. Processors
+    share the pool's buckets, so resizing one buffer can raise another processor's peak (sentiment's, round 9): measure
+    the all-eight `--memory` peak too.
+  - A GEMM column depends only on its 16-column panel: a GEMM split by whole panels (`new PackedMatrix(source, firstPanel,
+    panels)`, or rows packed separately at a panel boundary) gives the same bits. Splitting by rows does not in general
+    (`Gemm.Kernel`'s single-row kernel sums differently).
   - Check the `CancellationToken` per time step and per GEMM block.
   - `Gemm.Path` and `ManagedThreads.Count` are process-wide. Only `Pipeline.Load` (managed backend: the count) and tests
     in `ManagedKernelsCollection` (parallelization off, so other classes never see a switched path) may set them.
