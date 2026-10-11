@@ -104,12 +104,12 @@ each full-width convolution's output ([rows, 1008]): ~7,950 floats = 32 KB per r
 
 **Measured** (`--memory N`, converted models, Windows; before = 475211d (PR #65's branch), after = this round,
 alternated, two rounds; peaks first, sentiment stage time in brackets. Up to three other agents' test suites kept the CPU
-at 100% throughout, so the times are noise and only the peaks count):
+at 100% throughout, so these times are noise and only the peaks count; idle-machine times are below the table):
 
 | | 8 threads | 1 thread |
 |---|---:|---:|
 | all eight, 6,761 words | 2,306 / 2,304 → **1,314 / 1,311 MB** (71 / 68 → 115 / 86 s) | 2,308 / 2,291 → **1,318 / 1,336 MB** (95 / 77 → 85 / 75 s) |
-| all eight, 20,513 words | 1,859 / 1,873 → **1,379 / 1,372 MB** (147 / 76 → 63 / 175 s) | 1,864 / 1,880 → **1,378 / PENDING MB** (135 / 100 → 24 / PENDING s) |
+| all eight, 20,513 words | 1,859 / 1,873 → **1,379 / 1,372 MB** (147 / 76 → 63 / 175 s) | 1,864 / 1,880 → **1,378 / 1,412 MB** (135 / 100 → 24 / 22 s) |
 | `default_fast`, 6,761 words | 2,002 / 2,001 → **1,058 / 1,056 MB** (203 / 97 → 241 / 110 s) | 2,015 / 2,011 → **1,060 / 1,062 MB** (135 / 135 → 135 / 115 s) |
 | `default_fast`, 20,513 words | 1,476 / 1,478 → **1,071 / 1,073 MB** (272 / 180 → 113 / 109 s) | 1,463 / 1,483 → **1,075 / 1,076 MB** (261 / 96 → 260 / 80 s) |
 
@@ -117,8 +117,9 @@ at 100% throughout, so the times are noise and only the peaks count):
   has half the rows); sentiment now adds ~0.18 GB on 6,761 words (1,126 → 1,303 MB in the per-stage report), which is the
   two [rows, 600] layer outputs (171 MB on 35,723 rows). `default_fast` drops ~0.95 GB (−47%) and ~0.4 GB (−27%).
 - Speed: the same multiply-adds; the input rows are built twice (once per direction of layer 0), a copy of 2148 floats
-  per row against 2148 · 1200 multiply-adds. At 1 thread, where the load distorts least, the sentiment stage took
-  95 / 77 → 85 / 75 s (6,761 words, all eight) and 135 / 135 → 135 / 115 s (`default_fast`).
+  per row against 2148 · 1200 multiply-adds. On the idle machine afterwards (one run each, all eight): the sentiment
+  stage took 3.51 → 3.50 s (6,761 words, 8 threads), 14.6 → 13.7 s (1 thread), 4.26 → 4.10 s (20,513 words, 8 threads),
+  20.4 → 20.1 s (1 thread), with the same peaks as in the table (2,286 → 1,329 MB; 1,908 → 1,409 MB).
 
 **What is left:** layer 0's time-major output and the final batch-major output (1,200 floats per padded row). Layer 1's
 backward direction frees layer 0's rows as it goes while the output fills, so a shared layout could hold ~900 floats
