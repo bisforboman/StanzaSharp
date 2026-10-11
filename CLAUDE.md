@@ -510,7 +510,7 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   from Python need care too: Python's `\b`/`\w` count No/Nl characters such as `²` as word
   characters and combining marks as non-word (see `Tokenizer.PyRegex`).
 - CI (`.github/workflows/ci.yml`, github.com/bisforboman/StanzaSharp; pushes to `main`, PRs, and
-  `workflow_call` from release.yml; `ubuntu-26.04`, `ubuntu-26.04-arm`, `windows-2025`, `macos-15`, `windows-11-arm` pinned).
+  `workflow_call` from release.yml; `ubuntu-26.04`, `ubuntu-26.04-arm`, `windows-2025`, `macos-26`, `windows-11-arm` pinned).
   - Branch protection on `main` requires the check names `build-test` and `golden`, so they stay
     plain jobs; a matrix would rename them (`build-test (ubuntu-26.04)`) and block every PR. `alpine` and
     `linux-arm64` (0.5) are not required; whether they become required is the owner's decision.
@@ -563,7 +563,7 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     `tools/verify-package.ps1` against `models/stanza/en` twice: plain (StanzaSharp + TorchSharp-cpu, TorchSharp
     backend, `StanzaSharpTrimNative`; also on torch=smoke) and `-Managed` (only StanzaSharp, the default backend, no
     libtorch), and `verify-tool.ps1`. Artifacts: `test-results-golden-<shard>`.
-  - `cross-os (windows-2025)` / `cross-os (macos-15)` (Apple Silicon; `TorchSharp-cpu` brings
+  - `cross-os (windows-2025)` / `cross-os (macos-26)` (Apple Silicon; `TorchSharp-cpu` brings
     `libtorch-cpu-osx-arm64`): build, full suite with `STANZASHARP_MODELS` = `models/stanza/en` (the
     `.pt` files, no Python or conversion), the same no-skip check, and both `verify-package.ps1` runs. Models are
     cached per OS on `ModelDownloader.cs` only; no NuGet cache, to stay inside the 10 GB cache budget.
@@ -589,7 +589,7 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     `verify-package.ps1 -Managed`. Models cached like cross-os (`models-pt-Linux-…`).
   - `benchmark.yml` (owner's decision 2026-10-10): `workflow_dispatch` only (inputs `package`, `quick`), never on
     pushes/PRs, never required; free standard runners only (ubuntu-26.04, ubuntu-26.04-arm, windows-2025,
-    windows-11-arm, macos-15). Each job builds the tool, restores the `models-pt-<os>` cache (restore only; downloads on
+    windows-11-arm, macos-26). Each job builds the tool, restores the `models-pt-<os>` cache (restore only; downloads on
     a miss), installs Python 3.12 + `tools/requirements.txt` from the CPU wheel index (continue-on-error: without it the
     block has StanzaSharp only), runs `stanzasharp benchmark --json`, writes the block to its summary and artifact
     `benchmark-<os>`. `summary` combines them with `tools/benchmark_table.py` into `benchmarks.md` (summary + artifact).

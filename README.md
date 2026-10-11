@@ -407,7 +407,7 @@ Windows x64 and Arm64, macOS).
   `mcr.microsoft.com/dotnet/runtime:10.0` and on its chiseled variant, and checks that no libtorch is in the image and
   that each container turns `corpus.txt` into `pipeline.conllu` byte for byte. It reports the image sizes in the job
   summary. `alpine` does the same on `runtime:10.0-alpine` (musl).
-- `cross-os (windows-2025)`, `cross-os (macos-15)` (Apple Silicon) and `cross-os (windows-11-arm)` run the same
+- `cross-os (windows-2025)`, `cross-os (macos-26)` (Apple Silicon) and `cross-os (windows-11-arm)` run the same
   full suite, the no-skip check and both `tools/verify-package.ps1` runs (on Windows Arm64 only the managed one:
   `TorchSharp-cpu` has no Arm64 libtorch), against Stanza's `.pt` files without converting them (no Python). Their
   models are cached per OS, keyed on `ModelDownloader.cs`.

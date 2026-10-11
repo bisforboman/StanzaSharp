@@ -30,7 +30,7 @@ ready to paste into an issue. About two minutes with Python on 4 cores; `--quick
 smoke test.
 
 On GitHub's hosted runners: **Actions > Benchmark > Run workflow** (or `gh workflow run benchmark.yml -f package=default`)
-runs it with Python Stanza on ubuntu-26.04, ubuntu-26.04-arm, windows-2025, windows-11-arm and macos-15 (free standard
+runs it with Python Stanza on ubuntu-26.04, ubuntu-26.04-arm, windows-2025, windows-11-arm and macos-26 (free standard
 runners only). Each job puts its block in its summary and the artifact `benchmark-<runner>`; the last job combines them
 into one table (summary and artifact `benchmarks`, `benchmarks.md`, made by `tools/benchmark_table.py`). Hosted runners
 are shared virtual machines (the macOS one is virtualized Apple Silicon), so compare numbers within one run.

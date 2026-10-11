@@ -383,7 +383,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2025, macos-15, windows-11-arm]
+        os: [windows-2025, macos-26, windows-11-arm]
     timeout-minutes: 90
     runs-on: ${{ matrix.os }}
     defaults:
