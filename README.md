@@ -389,7 +389,7 @@ StanzaSharp.slnx` fixes what they report.
 
 ## CI
 
-`.github/workflows/ci.yml` runs on pushes to `main` and on pull requests (.NET 10; Ubuntu 24.04 x64 and Arm64,
+`.github/workflows/ci.yml` runs on pushes to `main` and on pull requests (.NET 10; Ubuntu 26.04 x64 and Arm64,
 Windows x64 and Arm64, macOS).
 
 - `build-test` builds the solution with warnings as errors, checks the code style (`stylebro-migrate format
@@ -411,7 +411,7 @@ Windows x64 and Arm64, macOS).
   full suite, the no-skip check and both `tools/verify-package.ps1` runs (on Windows Arm64 only the managed one:
   `TorchSharp-cpu` has no Arm64 libtorch), against Stanza's `.pt` files without converting them (no Python). Their
   models are cached per OS, keyed on `ModelDownloader.cs`.
-- `linux-arm64` (`ubuntu-24.04-arm`): no libtorch exists for it, so the tests build without one and it runs those
+- `linux-arm64` (`ubuntu-26.04-arm`): no libtorch exists for it, so the tests build without one and it runs those
   that need none (the managed cases of the both-backend theories, and the tests marked
   `[Trait("Backend", "Managed")]`), the no-skip check and the managed `verify-package.ps1`.
 

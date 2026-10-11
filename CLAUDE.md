@@ -510,9 +510,9 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   from Python need care too: Python's `\b`/`\w` count No/Nl characters such as `²` as word
   characters and combining marks as non-word (see `Tokenizer.PyRegex`).
 - CI (`.github/workflows/ci.yml`, github.com/bisforboman/StanzaSharp; pushes to `main`, PRs, and
-  `workflow_call` from release.yml; `ubuntu-24.04`, `ubuntu-24.04-arm`, `windows-2025`, `macos-15`, `windows-11-arm` pinned).
+  `workflow_call` from release.yml; `ubuntu-26.04`, `ubuntu-26.04-arm`, `windows-2025`, `macos-15`, `windows-11-arm` pinned).
   - Branch protection on `main` requires the check names `build-test` and `golden`, so they stay
-    plain jobs; a matrix would rename them (`build-test (ubuntu-24.04)`) and block every PR. `alpine` and
+    plain jobs; a matrix would rename them (`build-test (ubuntu-26.04)`) and block every PR. `alpine` and
     `linux-arm64` (0.5) are not required; whether they become required is the owner's decision.
   - `build-test` runs the suite without models.
   - Docs-only pull requests (`docs/`, `*.md`, `LICENSE`, `NOTICE`): the `changes` job makes `golden`, `docker`,
@@ -582,13 +582,13 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     `fcntl64`, `__res_init`, `pthread_attr_setaffinity_np`), so Alpine is managed-only.
   - `cross-os (windows-11-arm)`: Windows on Arm64 (GA runner label for public repos). It skips the plain
     `verify-package.ps1` (TorchSharp-cpu has no Arm64 libtorch) and runs `-Managed`.
-  - `linux-arm64` (`ubuntu-24.04-arm`): no libtorch or LibTorchSharp exists for linux-arm64, so it builds with
+  - `linux-arm64` (`ubuntu-26.04-arm`): no libtorch or LibTorchSharp exists for linux-arm64, so it builds with
     `-p:StanzaSharpNoLibTorch=true` (the Tests drop TorchSharp-cpu) and runs `--filter "DisplayName~managed: True|Backend=Managed"`:
     the managed cases of the both-backend theories plus tests marked `[Trait("Backend", "Managed")]` (they must need
     no libtorch: check with that build and an empty `NUGET_PACKAGES` locally). Then the no-skip check and
     `verify-package.ps1 -Managed`. Models cached like cross-os (`models-pt-Linux-…`).
   - `benchmark.yml` (owner's decision 2026-10-10): `workflow_dispatch` only (inputs `package`, `quick`), never on
-    pushes/PRs, never required; free standard runners only (ubuntu-24.04, ubuntu-24.04-arm, windows-2025,
+    pushes/PRs, never required; free standard runners only (ubuntu-26.04, ubuntu-26.04-arm, windows-2025,
     windows-11-arm, macos-15). Each job builds the tool, restores the `models-pt-<os>` cache (restore only; downloads on
     a miss), installs Python 3.12 + `tools/requirements.txt` from the CPU wheel index (continue-on-error: without it the
     block has StanzaSharp only), runs `stanzasharp benchmark --json`, writes the block to its summary and artifact
