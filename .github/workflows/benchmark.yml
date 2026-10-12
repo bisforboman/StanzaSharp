@@ -125,16 +125,22 @@ jobs:
             benchmark.json
 
   # The Vector512 (AVX-512) kernels against Vector256 (AVX2) on one machine: ubuntu-26.04 is sometimes an Intel Xeon
-  # Platinum 8573C (AVX-512), sometimes an AMD EPYC 7763 (none), so six jobs try. A job without AVX-512 says so and
+  # Platinum 8573C (AVX-512), sometimes an AMD EPYC 7763 (none), so six jobs try; windows-2025, which drew the Xeon
+  # once, gets three (Git Bash's /proc/cpuinfo has the flags too). A job without AVX-512 says so and
   # stops (success). One with it runs the managed kernel and pipeline tests (Vector512 is then the detected path) and
   # `stanzasharp benchmark` without Python, alternating DOTNET_PreferredVectorBitWidth=256 (Vector256) and the default
-  # (Vector512), at the default threads and at 1. Its blocks go to the summary and the artifact avx512-<attempt>.
+  # (Vector512), at the default threads and at 1. Its blocks go to the summary and the artifact avx512-<os>-<attempt>.
   avx512:
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-26.04]
         attempt: [1, 2, 3, 4, 5, 6]
-    runs-on: ubuntu-26.04
+        include:
+          - { os: windows-2025, attempt: 1 }
+          - { os: windows-2025, attempt: 2 }
+          - { os: windows-2025, attempt: 3 }
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     defaults:
       run:
@@ -218,7 +224,7 @@ jobs:
       - uses: actions/upload-artifact@v7
         if: always() && steps.cpu.outputs.avx512 == 'yes'
         with:
-          name: avx512-${{ matrix.attempt }}
+          name: avx512-${{ matrix.os }}-${{ matrix.attempt }}
           path: |
             avx512/
             TestResults/*.trx
