@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.RegularExpressions;
+using StanzaSharp.Nn.Managed;
 
 namespace StanzaSharp.Tokenize;
 
@@ -12,7 +13,7 @@ namespace StanzaSharp.Tokenize;
 /// (<c>StartChar</c>/<c>EndChar</c>) are UTF-16 indices into the input string, so they differ from
 /// Stanza's code-point offsets only after characters outside the BMP (e.g. emoji).
 /// </remarks>
-internal sealed class Tokenizer : IDisposable
+internal sealed partial class Tokenizer : IDisposable
 {
     // TokenizeProcessor.MAX_SEQ_LENGTH_DEFAULT, used when the config has no max_seqlen. output_predictions windows
     // paragraphs at max(1000, max_seqlen); TokenizeProcessor.process then replaces tokens longer than max_seqlen.
@@ -20,29 +21,44 @@ internal sealed class Tokenizer : IDisposable
     private const string LongTokenReplacement = "<UNK>";
 
     // data.py: NEWLINE_WHITESPACE_RE, WHITESPACE_RE. Python's \s also matches \x1c-\x1f; .NET's doesn't.
-    private static readonly Regex ParagraphBreak = new(@"\n[\s\x1c-\x1f\u0080-\u009f]*\n");
-
-    // data.py: STRUCTURAL_FEATURES, in the order features are appended.
-    private static readonly (string Name, Regex Re)[] StructuralFeatures =
-    [
-        ("labeled_field", PyRegex(@"\b[A-Z][a-zA-Z]*(?:\s[A-Z][a-zA-Z]*){0,2}\s*:")),
-        ("phone_id", PyRegex(@"\(\d{3}\)\s?\d{3}-\d{4}|\b\d{3}-\d{3}-\d{4}\b|\bx\d{3,5}\b")),
-        ("date_pattern", PyRegex(@"\b\d{1,2}/\d{1,2}/\d{2,4}\b|\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+\d{4}\b")),
-        ("currency", PyRegex(@"\$\s?\d[\d,]*(?:\.\d+)?")),
-    ];
+    [GeneratedRegex(@"\n[\s\x1c-\x1f\u0080-\u009f]*\n")]
+    private static partial Regex ParagraphBreak();
 
     // Python's \b: its word characters are str.isalnum() plus '_', so superscript digits and other
     // No/Nl characters count (3/14/2023² has no boundary after 2023) and combining marks do not,
-    // unlike .NET's \w (L, Mn, Nd, Pc, and ZWJ/ZWNJ for \b).
+    // unlike .NET's \w (L, Mn, Nd, Pc, and ZWJ/ZWNJ for \b). B stands for Python's \b in the patterns below.
     private const string PyWord = @"[\p{L}\p{N}_]";
+    private const string B = "(?:(?<=" + PyWord + ")(?!" + PyWord + ")|(?<!" + PyWord + ")(?=" + PyWord + "))";
 
-    private static Regex PyRegex(string pattern) =>
-        new(pattern.Replace(@"\b", $"(?:(?<={PyWord})(?!{PyWord})|(?<!{PyWord})(?={PyWord}))"));
+    // data.py: STRUCTURAL_FEATURES, in the order features are appended. Source-generated: the interpreter took ~5% of
+    // the tokenizer's time (docs/performance.md, round 14).
+    [GeneratedRegex(B + @"[A-Z][a-zA-Z]*(?:\s[A-Z][a-zA-Z]*){0,2}\s*:")]
+    private static partial Regex LabeledField();
+
+    [GeneratedRegex(@"\(\d{3}\)\s?\d{3}-\d{4}|" + B + @"\d{3}-\d{3}-\d{4}" + B + "|" + B + @"x\d{3,5}" + B)]
+    private static partial Regex PhoneId();
+
+    [GeneratedRegex(B + @"\d{1,2}/\d{1,2}/\d{2,4}" + B + "|" + B
+        + @"(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+\d{4}" + B)]
+    private static partial Regex DatePattern();
+
+    [GeneratedRegex(@"\$\s?\d[\d,]*(?:\.\d+)?")]
+    private static partial Regex Currency();
+
+    private static readonly (string Name, Regex Re)[] StructuralFeatures =
+    [
+        ("labeled_field", LabeledField()),
+        ("phone_id", PhoneId()),
+        ("date_pattern", DatePattern()),
+        ("currency", Currency()),
+    ];
 
     // utils.py: EMAIL_RAW_RE and URL_RAW_RE, combined as MASK_RE. Matches are forced into one token.
     private const string EmailRe = """"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(?:2(?:5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(?:2(?:5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])"""";
     private const string UrlRe = """"(?:https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s"]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s"]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s"]{2,}|www\.[a-zA-Z0-9]+\.[^\s"]{2,})|[a-zA-Z0-9]+\.(?:gov|org|edu|net|com|co)(?:\.[^\s"]{2,})"""";
-    private static readonly Regex MaskRe = new($"(?:{EmailRe}|{UrlRe})");
+
+    [GeneratedRegex("(?:" + EmailRe + "|" + UrlRe + ")")]
+    private static partial Regex MaskRe();
 
     private readonly ITokenizerNet _net;
     private readonly Dictionary<string, int> _vocab;
@@ -212,7 +228,7 @@ internal sealed class Tokenizer : IDisposable
     {
         var result = new List<Paragraph>();
         int pos = 0;
-        foreach (Match m in ParagraphBreak.Matches(text))
+        foreach (Match m in ParagraphBreak().Matches(text))
         {
             AddParagraph(text, pos, m.Index, result);
             pos = m.Index + m.Length;
@@ -349,9 +365,15 @@ internal sealed class Tokenizer : IDisposable
             // advance_old_batch pads every row's raw units to the batch width, so later windows
             // run every row at full width and padding reaches the backward LSTM.
             var lengths = rows.Select(r => first ? Math.Min(r.Length + 1, width) : width).ToArray();
-            var p = Argmax(Run(rows, idx, width, lengths, ct), rows.Count);
+            var run = first ? [.. Enumerable.Range(0, rows.Count)] : LiveRows(rows, idx, width);
+            var runPreds = Argmax(Run([.. run.Select(j => rows[j])], [.. run.Select(j => idx[j])], width, [.. run.Select(j => lengths[j])], ct), run.Length);
+            var p = new int[rows.Count][];
+            for (int i = 0; i < run.Length; i++)
+                p[run[i]] = runPreds[i];
             for (int j = 0; j < rows.Count; j++)
             {
+                if (idx[j] >= rows[j].Length)
+                    continue;
                 int lastBreak = Array.FindLastIndex(p[j], x => x is 2 or 4);
                 int advance = lastBreak < 0 || idx[j] >= rows[j].Length - _window ? ens[j] : lastBreak + 1;
                 output[j].AddRange(p[j][..advance]);
@@ -361,6 +383,24 @@ internal sealed class Tokenizer : IDisposable
             if (rows.Select((r, j) => idx[j] >= r.Length).All(x => x))
                 return output.Select(o => o.ToArray()).ToArray();
         }
+    }
+
+    /// <summary>
+    /// The rows a window after the first runs: those not finished (a finished row is all padding and its output is
+    /// unused), plus as few finished ones as keep every live row's bits. Every row runs at the full width, so only the
+    /// last row of the call can differ: Gemm.Run gives row m − 1 its single-row kernel when m % MR is 1
+    /// (m = rows × width, in the LSTMs' input GEMMs and the heads). That row must use it exactly when it did with all
+    /// rows: if it is the batch's last row and the batch's m % MR was 1. Finished rows go before it to make it so.
+    /// </summary>
+    private static int[] LiveRows(List<Paragraph> rows, int[] idx, int width)
+    {
+        var live = Enumerable.Range(0, rows.Count).Where(j => idx[j] < rows[j].Length).ToList();
+        var finished = Enumerable.Range(0, rows.Count).Where(j => idx[j] >= rows[j].Length);
+        bool singleRow = live[^1] == rows.Count - 1 && rows.Count * width % Gemm.MR == 1;
+        int count = live.Count;
+        while (count * width % Gemm.MR == 1 != singleRow)
+            count++;
+        return [.. live[..^1], .. finished.Take(count - live.Count), live[^1]];
     }
 
     /// <summary>Runs rows[j] from unit offsets[j], padded/truncated to width, packed at lengths[j]. Returns [rows, width, 5].</summary>
@@ -413,7 +453,7 @@ internal sealed class Tokenizer : IDisposable
         pred[last] = pred[last] < 2 ? 2 : pred[last] > 2 ? 4 : 2;
 
         var (joined, unitAt) = Join(para.Units);
-        foreach (Match m in MaskRe.Matches(joined))
+        foreach (Match m in MaskRe().Matches(joined))
         {
             int first = unitAt[m.Index], end = unitAt[m.Index + m.Length - 1];
             for (int i = first; i < end; i++)
