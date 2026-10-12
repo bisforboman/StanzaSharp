@@ -97,7 +97,8 @@ jobs:
   # Split into three jobs by test class (owner's decision, 2026-10-10), balanced by the golden trx's class times (full
   # run, minutes summed over tests): 1 = ConcurrencyTests' cancellation cases (10.6, one at a time) and every class not
   # named below (~15 in all); 2 = ConcurrencyTests' concurrent calls (11.5, one at a time) + FastPackage, GcPressure,
-  # ManagedBackend, Tokenizer (~18); 3 = Pipeline, Ner, Sentiment, InputMode, Depparse, NoSsplit (~45, in parallel).
+  # ManagedBackend, Tokenizer, and CompareCommand + BenchmarkCommand with Python Stanza (~20; the shard that finished
+  # first); 3 = Pipeline, Ner, Sentiment, InputMode, Depparse, NoSsplit (~45, in parallel).
   # Shard 1's filter is the complement of the other two, so together they run every test exactly once, new classes too.
   # With torch=smoke, each shard leaves out the TorchSharp-backend cases not marked [Trait("Smoke", "TorchSharp")].
   golden-shard:
@@ -156,22 +157,30 @@ jobs:
           dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/en
           dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/en --package default_fast
 
+      # Python Stanza: the converter on a model-cache miss, and in shard 2 the Run_PythonStanza_* tests (stanzasharp
+      # compare and benchmark against Python Stanza; about 40 s to install, 1 min to run).
       - uses: actions/setup-python@v7
-        if: needs.changes.outputs.code != 'false' && (steps.models-save.outputs.cache-hit || steps.models-restore.outputs.cache-hit) != 'true'
+        id: python
+        if: needs.changes.outputs.code != 'false' && (matrix.shard == 2 || (steps.models-save.outputs.cache-hit || steps.models-restore.outputs.cache-hit) != 'true')
         with:
           python-version: '3.12'
 
+      - name: Install Python Stanza
+        if: needs.changes.outputs.code != 'false' && (matrix.shard == 2 || (steps.models-save.outputs.cache-hit || steps.models-restore.outputs.cache-hit) != 'true')
+        # The CPU-only torch wheel; the default Linux wheel pulls in gigabytes of CUDA.
+        run: pip install -r tools/requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
+
       - name: Convert the models
         if: needs.changes.outputs.code != 'false' && (steps.models-save.outputs.cache-hit || steps.models-restore.outputs.cache-hit) != 'true'
-        run: |
-          # The CPU-only torch wheel; the default Linux wheel pulls in gigabytes of CUDA.
-          pip install -r tools/requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
-          python tools/stanza_convert.py convert models/stanza/en --out models/converted/en
+        run: python tools/stanza_convert.py convert models/stanza/en --out models/converted/en
 
       - name: Test
         if: needs.changes.outputs.code != 'false'
+        env:
+          STANZASHARP_PYTHON: ${{ matrix.shard == 2 && steps.python.outputs.python-path || '' }}
         run: |
-          two='.ConcurrencyTests.ConcurrentCalls_ .FastPackageTests. .GcPressureTests. .ManagedBackendTests. .TokenizerTests.'
+          two='.ConcurrencyTests.ConcurrentCalls_ .FastPackageTests. .GcPressureTests. .ManagedBackendTests. .TokenizerTests.
+            .CompareCommandTests. .BenchmarkCommandTests.'
           three='.PipelineTests. .NerTests. .SentimentTests. .InputModeTests. .DepparseTests. .NoSsplitTests.'
           any() { printf 'FullyQualifiedName~%s|' $1 | sed 's/|$//'; }
           none() { printf 'FullyQualifiedName!~%s&' $1 | sed 's/&$//'; }
@@ -182,15 +191,15 @@ jobs:
           echo "$filter"
           dotnet test StanzaSharp.slnx -c Release --no-build --blame-hang-timeout 30m --blame-hang-dump-type none --logger trx --results-directory TestResults --filter "$filter"
 
-      # A skipped test here means the models were not found; no test at all, a broken filter.
+      # A skipped test here means the models (or, for Run_PythonStanza_*, Python Stanza) were not found; no test at all,
+      # a broken filter.
       - name: Check that no test was skipped
         if: needs.changes.outputs.code != 'false'
         run: |
           ls TestResults/*.trx
           # Skipped tests are outcome="NotExecuted" (the Counters' notExecuted stays 0 for them).
-          # Run_PythonStanza_* needs tools/.venv, which CI doesn't have (`stanzasharp compare` against Python Stanza).
-          if grep -h 'outcome="NotExecuted"' TestResults/*.trx | grep -qv 'Run_PythonStanza_'; then
-            echo "::error::Tests were skipped; the models in models/stanza/en or models/converted/en were not found."
+          if grep -q 'outcome="NotExecuted"' TestResults/*.trx; then
+            echo "::error::Tests were skipped; the models in models/stanza/en or models/converted/en, or Python Stanza, were not found."
             exit 1
           fi
           if ! grep -q '<UnitTestResult ' TestResults/*.trx; then echo "::error::No test ran."; exit 1; fi
@@ -354,7 +363,7 @@ jobs:
         if: needs.changes.outputs.code != 'false'
         run: |
           ls TestResults/*.trx
-          # Run_PythonStanza_* needs tools/.venv, which CI doesn't have (`stanzasharp compare` against Python Stanza).
+          # Run_PythonStanza_* needs Python Stanza, which this job doesn't install (golden-shard 2 runs them).
           if grep -h 'outcome="NotExecuted"' TestResults/*.trx | grep -qv 'Run_PythonStanza_'; then
             echo "::error::Tests were skipped; the models in models/stanza/en were not found."
             exit 1
@@ -437,7 +446,7 @@ jobs:
         if: needs.changes.outputs.code != 'false'
         run: |
           ls TestResults/*.trx
-          # Run_PythonStanza_* needs tools/.venv, which CI doesn't have (`stanzasharp compare` against Python Stanza).
+          # Run_PythonStanza_* needs Python Stanza, which this job doesn't install (golden-shard 2 runs them).
           if grep -h 'outcome="NotExecuted"' TestResults/*.trx | grep -qv 'Run_PythonStanza_'; then
             echo "::error::Tests were skipped; the models in models/stanza/en were not found."
             exit 1

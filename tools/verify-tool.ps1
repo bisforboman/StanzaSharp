@@ -1,7 +1,7 @@
 <#
 Packs the StanzaSharp.Tool package, installs it from that local feed into a fresh tool path the way a user would
 (dotnet tool install), checks that it carries no native files, downloads a small set of models with it, and checks that
-compare reports a missing Python as a setup error (CI has no Python Stanza; CompareCommandTests runs it locally), and that
+compare reports a missing Python as a setup error (CompareCommandTests runs it with Python Stanza), and that
 benchmark --quick runs on those models.
 
   pwsh tools/verify-tool.ps1 [-Processors tokenize,mwt]
@@ -15,7 +15,7 @@ $version = "0.0.0-verify.$([DateTime]::UtcNow.ToString('yyyyMMddHHmmss'))"
 $work = Join-Path ([IO.Path]::GetTempPath()) "stanzasharp-tool-$version"
 $feed = Join-Path $work 'feed'
 $toolPath = Join-Path $work 'tools'
-$models = Join-Path $work 'models/en' # compare needs a folder named en, like Stanza
+$models = Join-Path $work 'models'
 
 try {
     dotnet pack (Join-Path $root 'src/StanzaSharp.Tool') -c Release -p:Version=$version -o $feed --nologo

@@ -1,4 +1,5 @@
 {
+ "stanza_version": "1.15.0",
  "en": {
   "backward_charlm": {
    "1billion": {

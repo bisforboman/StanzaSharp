@@ -563,7 +563,9 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     `if: !cancelled()` and fails unless `needs.golden-shard.result` is `success` (a skipped or failed shard fails it),
     so the required check keeps its name. The shards split the test project by class, balanced on the golden trx
     (full run, minutes summed; xunit runs a class's tests one at a time and ConcurrencyTests after everything else):
-    - 2: `ConcurrencyTests.ConcurrentCalls_*` + FastPackage, GcPressure, ManagedBackend, Tokenizer: 87 tests, 17.9 min.
+    - 2: `ConcurrencyTests.ConcurrentCalls_*` + FastPackage, GcPressure, ManagedBackend, Tokenizer: 87 tests, 17.9 min;
+      plus CompareCommand and BenchmarkCommand (2026-10-12: the shard that finished first), with Python Stanza
+      (`STANZASHARP_PYTHON` from setup-python; installing tools/requirements.txt adds ~40 s, the Python runs ~1 min).
     - 3: Pipeline, Ner, Sentiment, InputMode, Depparse, NoSsplit: 72 tests, 45.5 min (parallel; Pipeline 10.3 alone).
     - 1: the complement of 2 and 3 (ConcurrencyTests' cancellation cases and every other class, new ones too):
       123 tests, 14.6 min. So the union is always the whole suite, each test once (checked with `--list-tests`).
@@ -678,23 +680,31 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - `compare FILE [--package] [--processors] [--models DIR] [--python PATH]` (`CompareCommand.cs`, owner's "proof for
     new users"): runs the embedded `compare.py` (make_golden's bytes→str and `"{:C}\n"`) with
     `stanza.Pipeline('en', dir=<parent of DIR>, resources_filepath=<embedded stanza_resources_en.json>,
-    download_method=None)`, so no network and no resources.json in the model folder; DIR must be named `en`. Both sides
+    download_method=None)`, so no network and no resources.json in the model folder. DIR may have any name: if it isn't
+    `en`, compare.py's `load_stanza` (benchmark.py imports it) links it as `en` in its temp folder (a junction on
+    Windows, which needs no privilege; a symlink elsewhere) while Stanza loads, then unlinks it itself (.NET's
+    `Directory.Delete(recursive)` throws UnauthorizedAccessException on such a junction). Both sides
     get the full processor list (requirements added); Stanza's loaded `.pt` set must equal `ModelDownloader.FilesFor`,
     and C# loads with `VerifyChecksums`. C# offsets are converted to code points when the text has non-BMP characters
-    (`ConlluDiff.ToCodePointOffsets`). Exit 0/1/2. `stanza_resources_en.json` is Stanza 1.15.0's `resources.json["en"]`:
-    regenerate it with a Stanza version change. `CompareCommandTests.Run_PythonStanza_*` needs tools/.venv (or
-    `STANZASHARP_PYTHON`) and models/stanza/en; CI has no Python Stanza, so its no-skip checks exempt that test.
+    (`ConlluDiff.ToCodePointOffsets`). Exit 0/1/2. `stanza_resources_en.json` is `{"stanza_version", "en": resources.json["en"]}`
+    of Stanza 1.15.0; `CompareCommandTests.EmbeddedResources_MatchModelDownloader` fails when its version or an MD5 of
+    `ModelDownloader.Files` disagrees. Regenerate it after a Stanza version change (Stanza's own downloader, run from
+    the repo root; `stanza.__version__` is the new version):
+    `tools/.venv/Scripts/python -c "import json, stanza; from stanza.resources.common import download_resources_json as d; d('models/stanza'); r = json.load(open('models/stanza/resources.json', encoding='utf-8')); open('src/StanzaSharp.Tool/stanza_resources_en.json', 'w', encoding='utf-8', newline='\n').write(json.dumps({'stanza_version': stanza.__version__, 'en': r['en']}, indent=1, ensure_ascii=False) + '\n')"`.
+    `Run_PythonStanza_*` (CompareCommandTests, BenchmarkCommandTests) need tools/.venv (or `STANZASHARP_PYTHON`) and
+    models/stanza/en; CI runs them in golden-shard 2, the only job with Python Stanza; the other jobs' no-skip checks
+    exempt them by name.
   - `benchmark [--package] [--processors] [--models DIR] [--threads N] [--words N] [--python PATH] [--quick] [--json FILE]`
     (`BenchmarkCommand.cs`, owner's decision 2026-10-10): managed backend vs the embedded `benchmark.py`, one Python process
     that loads Stanza once and answers JSON-line commands (`run`, `calls`) so runs alternate (warm-up, 3 timed runs,
     medians; 50 one-sentence calls, median/p90; peak working set, macOS `ru_maxrss`). Text: the benchmark sample's golden
     texts (validation, corpus, tokenize_stress), embedded under `benchmark/`, cut after the paragraph that reaches 1,500
     whitespace words (`--quick`: 300, 1 run, 10 calls); the block reports words after tokenizing and MWT (2,009 by default). Threads default to each side's own (unless `--threads`). Python is optional: any failure
-    (no Python/Stanza, models not `.pt` in an `en` folder) gives StanzaSharp's column only, with the reason. With
+    (no Python/Stanza, models not `.pt`) gives StanzaSharp's column only, with the reason. With
     Python, the CoNLL-U of the last run is compared (`ConlluDiff`). Machine: CPU from the registry / `lscpu` (LC_ALL=C,
     else /proc/cpuinfo) / `sysctl`, cores from GetLogicalProcessorInformation / lscpu / `hw.physicalcpu`, SIMD
     `Gemm.Detect()`. Report formatting is invariant-culture ASCII (`x` for ratios). `BenchmarkCommandTests`
-    (`Run_PythonStanza_Quick` is exempt from CI's no-skip checks by name); `verify-tool.ps1` runs `benchmark --quick`.
+    (`Run_PythonStanza_Quick` runs in golden-shard 2); `verify-tool.ps1` runs `benchmark --quick`.
 - The `StanzaSharp` package, packed from `src/StanzaSharp` (user's decision, 2026-10-06).
   - It carries all nine assemblies (facade, Core, Nn, the processors) plus their XML docs: the facade's
     ProjectReferences are `PrivateAssets="all"`, and an `IncludeProjectReferences` target adds them.

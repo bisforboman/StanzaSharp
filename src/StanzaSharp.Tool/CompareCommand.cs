@@ -188,21 +188,13 @@ internal static class CompareCommand
 
     /// <summary>
     /// Why Python Stanza can't load <paramref name="list"/> from <paramref name="models"/> (made a full path), or null:
-    /// it needs Stanza's .pt files in a folder named en.
+    /// it needs Stanza's .pt files, in a folder of any name (compare.py links it as the en folder Stanza reads).
     /// </summary>
     internal static string? StanzaModelsProblem(ref string models, string package, string list)
     {
         if (!Directory.Exists(models))
             return $"Model directory not found: {models}. Download the models with: stanzasharp download {models} --package {package}";
-
-        // Stanza looks for <dir>/en/<processor>/<name>.pt, so the folder holding the processors must be named en.
         models = Path.GetFullPath(models).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-        if (Path.GetFileName(models) != "en")
-        {
-            return $"Python Stanza reads English models from a folder named en, not {models}. " +
-                "Download them into one, e.g. stanzasharp download models/stanza/en";
-        }
-
         var dir = models;
         var missing = ModelDownloader.FilesFor(list, package).Select(f => f.Path).Where(f => !File.Exists(Path.Combine(dir, f))).Order().ToList();
         return missing.Count == 0
