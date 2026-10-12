@@ -929,6 +929,12 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - `PackedLstm.Step` runs 4 tasks per thread (`TasksPerThread`; round 16): a late thread then holds a quarter of its
     share. Tried and dropped: fewer tasks for small steps (a work threshold, or timing each size class: biased by
     asleep workers, 25–50% slower on the Arm runners). A panel's arithmetic doesn't depend on its task.
+  - Startup (round 17): code that runs per time step or per element (the pool's `For`/`Run`/`Drain`, `PackedLstm.Step`,
+    `Act.LstmCell`/`AddGatedTanh`, the GEMM kernels) is `[MethodImpl(AggressiveOptimization)]`, so a fresh process's
+    first calls don't run it at JIT tier 0; `Act.Sigmoid` uses `VectorExp` (the runtime's `VectorN.Exp`, copied op for
+    op, inlined), since the runtime's own stays at tier 0 inside optimized callers. A new hot per-step method gets the
+    attribute too. The managed `Pipeline.Load` loads two models at a time (`LoadLanes`; all at once: +95-152 MB load
+    peak). Measure startup with `StanzaSharp.Benchmark startup` / `tools/startup.py` / benchmark.yml's `startup_only`.
   - Per-call buffers come from `ArrayPool<T>.Shared` and go back in `finally`; no buffer is shared between calls, and
     no mutable state lives on a model. Rented arrays hold stale data: write before reading. Measured (round 9): exact-size
     arrays instead raise the peak (+150 MB in depparse); the pool's power-of-two rounding costs no working set. Processors

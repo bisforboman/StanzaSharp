@@ -108,7 +108,7 @@ public sealed class Pipeline : IDisposable
         string Name(string processor) => $"{processor}/{models[processor]}";
 
         // Managed: two models load at a time, on the thread pool (round 17: the load took 23-40% less time on the
-        // runners, its peak 22-72 MB more; all at once took 27-48% less, but 95-215 MB more). The pretrain and the
+        // runners, its peak 22-72 MB more; all at once took 28-46% less, but 95-152 MB more). The pretrain and the
         // charlms go first; their readers start once they are loaded. TorchSharp: one after another on this thread, in
         // this order (its device and dispose scopes are per thread).
         bool parallel = backend.LoadInParallel;
