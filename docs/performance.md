@@ -38,6 +38,24 @@ are shared virtual machines (the macOS one is virtualized Apple Silicon), so com
 names the StanzaSharp version as `git describe` gives it (`1.0.0-67-g97089bb`: 67 commits after v1.0.0), since the
 workflow builds from source.
 
+Latest run ([38203172080](https://github.com/bisforboman/StanzaSharp/actions/runs/38203172080), 2026-10-12, commit d2e93b4, after round 12 and the move to ubuntu-26.04 and
+macos-26; same text and settings). The CoNLL-U was identical on every runner with Python:
+
+| runner | CPU, cores/logical | threads | words/s | speed-up | per call, median ms | peak memory MB |
+|---|---|---|---:|---:|---:|---:|
+| ubuntu-26.04 | Intel Xeon Platinum 8573C, 2/4 | 4 / 2 | 217 / 105 | 2.06x | 131.1 / 284.5 | 1,140 / 3,557 |
+| ubuntu-26.04-arm | Neoverse-N2, 4/4 | 4 / 4 | 219 / 80 | 2.73x | 91.0 / 639.9 | 1,145 / 3,708 |
+| windows-2025 | AMD EPYC 7763, 2/4 | 4 / 2 | 238 / 63 | 3.77x | 73.2 / 323.1 | 1,065 / 3,594 |
+| windows-11-arm | Cobalt 100, 4/4 | 4 | 219 / - | - | 91.3 / - | 1,023 / - |
+| macos-26 | Apple M1 (virtual), 3/3 | 3 / 3 | 203 / 62 | 3.25x | 117.8 / 397.3 | 865 / 2,226 |
+
+- ubuntu-26.04 got an Intel Xeon (Emerald Rapids) this time instead of the AMD EPYC, and Python Stanza ran about 40%
+  faster there than in the first run (likely torch's AVX-512 kernels; StanzaSharp's stop at AVX2, Vector256), so the
+  gap narrows to 2.1x. Not measured on the same machine.
+- Per stage StanzaSharp led everywhere except tokenize on macos-26 (0.70x) and ubuntu-26.04 (0.97x); ner 3.2–7.5x,
+  constituency 1.6–4.7x, depparse 2.0–6.1x. Load took 1.8–3.3 s against 4.2–7.6 s.
+- The workflow's Python Stanza install still fails on windows-11-arm.
+
 First run ([38150941695](https://github.com/bisforboman/StanzaSharp/actions/runs/38150941695), 2026-10-11, commit
 6a08cf6, before round 12's pool change and CI's move to ubuntu-26.04 and macos-26; `default` package, 2,009 words, each
 side's default threads; pairs are StanzaSharp / Python Stanza). The CoNLL-U was identical on every runner with Python:

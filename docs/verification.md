@@ -102,20 +102,19 @@ Exit code 0 means identical. More: [the tool's README](../src/StanzaSharp.Tool/R
 ## Speed on the free runners
 
 `stanzasharp benchmark` times StanzaSharp and Python Stanza on the same text with the same models, on your machine. The
-manual [Benchmark workflow](../.github/workflows/benchmark.yml) runs it on every free GitHub-hosted runner. Its first
-run ([38150941695](https://github.com/bisforboman/StanzaSharp/actions/runs/38150941695), 2026-10-11, all eight
-processors on 2,009 words, each side's default threads) gave identical CoNLL-U on every runner with Python Stanza, and:
+manual [Benchmark workflow](../.github/workflows/benchmark.yml) runs it on every free GitHub-hosted runner. Run
+[38203172080](https://github.com/bisforboman/StanzaSharp/actions/runs/38203172080) (2026-10-12, all eight processors on 2,009 words, each side's default threads) gave
+identical CoNLL-U on every runner with Python Stanza, and:
 
 | Runner | StanzaSharp words/s | Python Stanza words/s | Speed-up | Per call (one sentence), median | Peak memory |
 |---|---:|---:|---:|---:|---:|
-| ubuntu-24.04 (x64, 2 cores) | 246 | 75 | 3.3× | 69 / 249 ms | 1,143 / 3,471 MB |
-| ubuntu-24.04-arm (4 cores) | 228 | 81 | 2.8× | 81 / 678 ms | 1,166 / 3,643 MB |
-| windows-2025 (x64, 2 cores) | 238 | 63 | 3.8× | 74 / 327 ms | 1,120 / 3,600 MB |
-| windows-11-arm (4 cores) | 221 | (install failed) | | 86 ms | 1,016 MB |
-| macos-15 (Apple M1, 3 vCPUs) | 183 | 60 | 3.0× | 766 / 339 ms | 877 / 2,454 MB |
+| ubuntu-26.04 (Intel Xeon, 2 cores) | 217 | 105 | 2.1× | 131 / 285 ms | 1,140 / 3,557 MB |
+| ubuntu-26.04-arm (4 cores) | 219 | 80 | 2.7× | 91 / 640 ms | 1,145 / 3,708 MB |
+| windows-2025 (AMD EPYC, 2 cores) | 238 | 63 | 3.8× | 73 / 323 ms | 1,065 / 3,594 MB |
+| windows-11-arm (4 cores) | 219 | (no Python Stanza) | | 91 ms | 1,023 MB |
+| macos-26 (Apple M1, 3 vCPUs) | 203 | 62 | 3.3× | 118 / 397 ms | 865 / 2,226 MB |
 
-The macOS per-call time was the runner's Spotlight indexing, not StanzaSharp: with indexing off it is 94 ms
-([performance.md, round 12](performance.md#results-round-12-concurrent-calls-and-the-managed-thread-pool)), and the
-workflow now turns it off. That run predates CI's move to ubuntu-26.04 and macos-26. The runners are shared virtual
-machines, so compare numbers within one run. More, including how to run it yourself:
+The workflow's Python Stanza install fails on windows-11-arm, so that row is StanzaSharp only. The runners are
+shared virtual machines whose CPU model can change between runs (ubuntu-26.04 was an AMD EPYC in an earlier run), so
+compare numbers within one run. More, including how to run it yourself:
 [performance.md](performance.md#run-it-yourself).
