@@ -239,8 +239,8 @@ var doc = nlp.Process(text, cancellationToken); // OperationCanceledException wi
 
 - **Threads.** On the managed backend `Threads` is the size of StanzaSharp's thread pool; on the TorchSharp backend it
   is libtorch's `set_num_threads`. Both are **process-wide**: the last pipeline loaded sets it. Null (the default)
-  means, on the managed backend, the physical cores on machines with at least 4 of them (shorter calls and more calls/s
-  than all logical processors, up to 8% slower on long texts) and all logical processors on smaller ones; on
+  means, on the managed backend, the physical cores on machines with at least 4 of them (fewer slow calls and more calls/s
+  with concurrent callers than all logical processors, up to 9% slower on long texts) and all logical processors on smaller ones; on
   TorchSharp, libtorch's own default (the physical cores). Either way at most `Environment.ProcessorCount`, which .NET
   limits to a container's CPU quota, and a lower count set earlier is kept. (libtorch applies a new count to the loading thread and to threads that haven't run a
   tensor operation yet, so with TorchSharp load before processing starts.)

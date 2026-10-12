@@ -61,8 +61,8 @@ public sealed class PipelineOptions
     /// <remarks>
     /// <b>Process-wide</b> on both backends, and the last pipeline loaded wins.
     /// <list type="bullet">
-    /// <item><b>Managed:</b> one pool for the whole process. On 4 or more cores with SMT, the physical cores give shorter
-    /// calls and more calls/s than all logical processors, and up to 8% fewer words/s on long texts; with 2 cores and
+    /// <item><b>Managed:</b> one pool for the whole process. On 4 or more cores with SMT, the physical cores give fewer slow
+    /// calls and more calls/s than all logical processors, and up to 9% fewer words/s on long texts; with 2 cores and
     /// SMT, all 4 logical processors are faster. Concurrent <see cref="Pipeline.Process(string)"/> calls share
     /// it: each works its own part and idle threads help, so N callers don't start N teams.</item>
     /// <item><b>TorchSharp:</b> libtorch's own default is the host's physical core count, so in a container limited to 2

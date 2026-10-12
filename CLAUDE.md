@@ -89,9 +89,10 @@ since 1.0, and every processor also has a managed net (see "Managed backend"), t
   Round 12 (concurrent calls, `--with-long`): `ManagedThreads.Pool` keeps workers asleep while callers in a region plus
   awake workers number max(ProcessorCount, Count) (`_busy`/`_limit`); with Threads = ProcessorCount and 8 callers, spinning
   oversubscription had stalled calls for seconds. Calls don't serialize or starve; >2 callers cost throughput (L3/DRAM,
-  same on 1 thread). macOS runner one-sentence slowness was Spotlight indexing (benchmark.yml turns it off). The
-  default stays all logical processors (measured against physical cores on the Ryzen and the 2-core runners: neither
-  wins everywhere).
+  same on 1 thread). macOS runner one-sentence slowness was Spotlight indexing (benchmark.yml turns it off). Neither
+  physical cores nor all logical processors won everywhere (Ryzen vs the 2-core runners). Round 13: the default is the
+  physical cores from 4 up, else all logical processors (Ryzen 8 vs 16: big texts -9%/-6%, one-sentence p90 -16%/-36%,
+  2 callers +11% calls/s; runners unchanged at 4/4/4/4/3).
   Round 6 (managed backend, docs/performance.md): no native heap (malloc_trim returns nothing there); after a call the
   GC heap holds the models plus `ArrayPool<T>.Shared`'s scratch buffers (all eight, 6,761 words: 2.4 GB working set
   then, 1.3 GB since round 10 shrank sentiment's buffers), released only by a gen2 GC a minute later; the README tells services to run an aggressive GC when idle. The library
