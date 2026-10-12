@@ -1250,7 +1250,6 @@ A short backlog. Items marked *TorchSharp only* concern the `StanzaSharp.Cuda` b
 default) doesn't have them.
 
 **In progress** (other branches; each adds its own round):
-- AVX-512 kernels (`Vector512`) for the managed GEMM and LSTM steps; they stop at AVX2 today.
 - A faster tokenizer.
 
 **Open:**
@@ -1270,6 +1269,7 @@ default) doesn't have them.
 - **Per-call cost** (*TorchSharp only*): 192 ms (Python 189), libtorch's per-operation cost on tiny tensors. Not pursued.
 
 **Done** (see the round):
+- AVX-512 kernels (`Vector512`): round 14.
 - Thread count: the default is the physical cores when there are at least 4 (rounds 12–13).
 - Per-call cost on short texts (managed): round 7; concurrent callers: `PipelineOptions.MaxConcurrentCalls` (round 7)
   and the pool's oversubscription fix (round 12).
