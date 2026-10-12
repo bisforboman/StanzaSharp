@@ -116,8 +116,10 @@ public class BenchmarkCommandTests
     {
         Dictionary<string, double> First() => new() { ["tokenize"] = 0.100, ["mwt"] = 0.009, ["pos"] = 1.0 };
         Assert.False(WarmedUp(null, First()));
-        Assert.True(WarmedUp(First(), new() { ["tokenize"] = 0.095, ["mwt"] = 0.001, ["pos"] = 1.05 })); // mwt: under 10 ms
-        Assert.False(WarmedUp(First(), new() { ["tokenize"] = 0.080, ["mwt"] = 0.009, ["pos"] = 1.0 }));
+        Assert.True(WarmedUp(First(), new() { ["tokenize"] = 0.085, ["mwt"] = 0.001, ["pos"] = 1.05 })); // under 20 ms faster
+        Assert.True(WarmedUp(First(), new() { ["tokenize"] = 0.100, ["mwt"] = 0.009, ["pos"] = 0.95 })); // under 10% faster
+        Assert.False(WarmedUp(First(), new() { ["tokenize"] = 0.075, ["mwt"] = 0.009, ["pos"] = 1.0 }));
+        Assert.False(WarmedUp(First(), new() { ["tokenize"] = 0.100, ["mwt"] = 0.009, ["pos"] = 0.85 }));
     }
 
     [Fact]

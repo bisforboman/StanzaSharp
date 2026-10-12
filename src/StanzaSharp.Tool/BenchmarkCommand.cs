@@ -205,11 +205,11 @@ internal static class BenchmarkCommand
     internal const int MaxWarmUps = 5;
 
     /// <summary>
-    /// Whether a side has settled: it has had two warm-up runs, and no stage of 10 ms or more got 10% faster in the
-    /// latest.
+    /// Whether a side has settled: it has had two warm-up runs, and no stage got faster in the latest by more than 10%
+    /// and 20 ms (smaller changes are the runners' noise).
     /// </summary>
     internal static bool WarmedUp(Dictionary<string, double>? previous, Dictionary<string, double> latest) =>
-        previous != null && latest.All(s => s.Value < 0.01 || s.Value >= 0.9 * previous.GetValueOrDefault(s.Key));
+        previous != null && latest.All(s => previous.GetValueOrDefault(s.Key) is var before && before - s.Value <= Math.Max(0.1 * before, 0.02));
 
     /// <summary>The Markdown block the command prints.</summary>
     internal static string Format(Result r)
