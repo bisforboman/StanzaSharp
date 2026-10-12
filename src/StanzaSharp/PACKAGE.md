@@ -11,7 +11,8 @@
 - sentence sentiment (negative, neutral, positive)
 
 It runs Stanza's own pretrained models in plain .NET code, with no Python and no native libraries. The output is
-identical to Python Stanza 1.15.0 on its golden test data.
+identical to Python Stanza 1.15.0 on its golden test data (845 sentences), on Linux, Windows and macOS, x64 and Arm64;
+[how that is checked](https://github.com/bisforboman/StanzaSharp/blob/main/docs/verification.md).
 
 ## Install
 
@@ -111,7 +112,7 @@ foreach (var sentence in doc.Sentences)
   in flight per pipeline give the most throughput; more evict each other's weights from the CPU cache. Set
   `MaxConcurrentCalls = 2` in `PipelineOptions` to make extra callers wait their turn.
 - Memory: a call's peak is set mostly by its largest batches, not by the length of the text: all eight processors peak
-  at about 2.0 GB for 20,000 words and 3.0 GB for 670,000 (a book in one call is fine). What grows is the returned
+  at about 1.3 GB for 20,000 words and 1.9 GB for 200,000 (a book in one call is fine). What grows is the returned
   `Document`, about 0.5 KB per word, and garbage the GC collects when memory runs short (a container's memory limit
   caps it). To bound memory further, call `Process` on parts split at blank lines and drop each part's `Document`
   after use: sentence ids restart, offsets are each part's own, and sentiment labels can change (the classifier's

@@ -273,7 +273,7 @@ jobs:
           mcr.microsoft.com/dotnet/runtime:10.0-noble-chiseled
 
   # Alpine (musl): the same Docker check on mcr.microsoft.com/dotnet/runtime:10.0-alpine, published for linux-musl-x64.
-  # libtorch has no musl build, so only the managed backend runs there. Not a required check (the owner decides).
+  # libtorch has no musl build, so only the managed backend runs there. A required check on main.
   alpine:
     needs: changes
     if: ${{ !cancelled() }}
@@ -309,7 +309,7 @@ jobs:
   # the managed backend runs. The tests build without libtorch (StanzaSharpNoLibTorch) and run every test that needs
   # none: the managed cases of the both-backend theories (DisplayName "managed: True") and the tests marked
   # [Trait("Backend", "Managed")]. Then the same no-skip check and the default install (verify-package.ps1 -Managed).
-  # Models are cached like cross-os's. Not a required check (the owner decides).
+  # Models are cached like cross-os's. A required check on main.
   linux-arm64:
     needs: changes
     if: ${{ !cancelled() }}
