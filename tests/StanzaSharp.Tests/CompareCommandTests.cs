@@ -1,3 +1,4 @@
+using System.Text.Json;
 using StanzaSharp.Tool;
 
 namespace StanzaSharp.Tests;
@@ -67,11 +68,56 @@ public class CompareCommandTests
         Assert.Contains("Identical: the CoNLL-U output is the same, byte for byte.", output.ToString());
         Assert.Contains("10 sentences, 140 words", output.ToString());
     }
+
+    /// <summary>Stanza reads <c>&lt;dir&gt;/en/...</c>; compare.py links a folder of any other name as en.</summary>
+    [PythonStanzaFact]
+    public void Run_PythonStanza_ModelsFolderOfAnyName()
+    {
+        var models = Directory.CreateTempSubdirectory("stanzasharp-models-");
+        try
+        {
+            foreach (var (path, _) in ModelDownloader.FilesFor("tokenize,mwt"))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(models.FullName, path))!);
+                File.Copy(Path.Combine(Repo.StanzaModels, path), Path.Combine(models.FullName, path));
+            }
+
+            var output = new StringWriter();
+            int exit = CompareCommand.Run([Path.Combine(Repo.Golden, "corpus.txt"), "--processors", "tokenize,mwt", "--models", models.FullName,
+                "--python", PythonStanzaFactAttribute.Python], "usage", output);
+            Assert.True(exit == 0, output.ToString());
+            Assert.True(File.Exists(Path.Combine(models.FullName, "tokenize", "combined_nocharlm.pt")), "the link's target survives");
+        }
+        finally
+        {
+            models.Delete(recursive: true);
+        }
+    }
+
+    /// <summary>
+    /// compare.py's resources.json entry must be the Stanza release whose models ModelDownloader pins. After a Stanza
+    /// version change, regenerate it as CLAUDE.md says (StanzaSharp.Tool, compare).
+    /// </summary>
+    [Fact]
+    public void EmbeddedResources_MatchModelDownloader()
+    {
+        using var resource = typeof(CompareCommand).Assembly.GetManifestResourceStream("stanza_resources_en.json")!;
+        using var json = JsonDocument.Parse(resource);
+        Assert.Equal(ModelDownloader.StanzaVersion, json.RootElement.GetProperty("stanza_version").GetString());
+        var en = json.RootElement.GetProperty("en");
+        foreach (var (path, md5) in ModelDownloader.Files)
+        {
+            var (processor, name) = (path.Split('/')[0], Path.GetFileNameWithoutExtension(path));
+            var listed = en.TryGetProperty(processor, out var models) && models.TryGetProperty(name, out var model) ? model.GetProperty("md5").GetString() : null;
+            Assert.True(md5 == listed, $"{path}: stanza_resources_en.json lists MD5 {listed ?? "(none)"}, ModelDownloader.Files {md5}");
+        }
+    }
 }
 
 /// <summary>
 /// A fact that is skipped without Python Stanza (tools/.venv, or STANZASHARP_PYTHON, e.g. for a git worktree) or Stanza's
-/// .pt models (models/stanza/en). CI's no-skip checks allow this one skip: CI has no tools/.venv.
+/// .pt models (models/stanza/en). CI runs these in golden-shard 1 (STANZASHARP_PYTHON); the other jobs' no-skip checks
+/// allow the skip, as they have no Python Stanza.
 /// </summary>
 public sealed class PythonStanzaFactAttribute : FactAttribute
 {

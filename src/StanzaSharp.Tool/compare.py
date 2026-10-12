@@ -3,8 +3,9 @@
   python compare.py TEXT OUT MODELS PACKAGE PROCESSORS VERSION
 
 Runs Stanza on TEXT (UTF-8 bytes, decoded like tools/make_golden.py) with the models in MODELS (Stanza's
-<dir>/en/<processor>/<name>.pt layout) and writes JSON to OUT: the CoNLL-U as make_golden.py writes it ("{:C}\\n"), the
-processors Stanza ran, the model files it loaded (relative to MODELS) and the load and processing times.
+<processor>/<name>.pt files, in a folder of any name) and writes JSON to OUT: the CoNLL-U as make_golden.py writes it
+("{:C}\\n"), the processors Stanza ran, the model files it loaded (<processor>/<name>.pt) and the load and processing
+times.
 Exit code 3: Python or Stanza is not usable (the message says what to install).
 """
 import json
@@ -26,6 +27,31 @@ def model_files(value):
             yield from model_files(v)
 
 
+def load_stanza(models, package, processors):
+    """stanza.Pipeline("en") on the .pt files in MODELS, a folder of any name, with the English entry of Stanza's
+    resources.json shipped with the tool; download_method=None: nothing is downloaded. Stanza reads
+    <dir>/en/<processor>/<name>.pt, so a folder not named en is linked as en in this script's (temporary) folder while
+    Stanza loads."""
+    import stanza
+    here = os.path.dirname(os.path.abspath(__file__))
+    models = os.path.abspath(models)
+    link = None
+    if os.path.basename(models) != "en":
+        link = os.path.join(here, "en")
+        if os.name == "nt":
+            import _winapi
+            _winapi.CreateJunction(models, link)  # unlike a symlink, a junction needs no privilege or developer mode
+        else:
+            os.symlink(models, link)
+    try:
+        return stanza.Pipeline("en", dir=os.path.dirname(link or models), package=package, processors=processors,
+                               download_method=None, resources_filepath=os.path.join(here, "stanza_resources_en.json"),
+                               use_gpu=False, logging_level="WARN")
+    finally:
+        if link:
+            os.unlink(link)  # the link only: its target stays
+
+
 def main():
     text_path, out_path, models, package, processors, version = sys.argv[1:7]
     install = f"{sys.executable} -m pip install stanza=={version}"
@@ -40,13 +66,8 @@ def main():
               f"Install it with: {install} (or pass another Python with --python)", file=sys.stderr)
         sys.exit(3)
 
-    # Stanza reads <dir>/<lang>/<processor>/<name>.pt; resources.json (here Stanza 1.15.0's English entry, shipped with
-    # the tool) maps package and processors to models. download_method=None: nothing is downloaded.
-    models = os.path.abspath(models)
-    resources = os.path.join(os.path.dirname(os.path.abspath(__file__)), "stanza_resources_en.json")
     start = time.perf_counter()
-    nlp = stanza.Pipeline("en", dir=os.path.dirname(models), package=package, processors=processors,
-                          download_method=None, resources_filepath=resources, use_gpu=False, logging_level="WARN")
+    nlp = load_stanza(models, package, processors)
     load = time.perf_counter() - start
 
     # As bytes, so CR/CRLF reach Stanza unchanged.
@@ -57,7 +78,7 @@ def main():
         doc = nlp(text)
     process = time.perf_counter() - start
 
-    files = sorted({os.path.relpath(p, models).replace(os.sep, "/") for p in model_files(nlp.config)})
+    files = sorted({"/".join(p.replace(os.sep, "/").split("/")[-2:]) for p in model_files(nlp.config)})
     with open(out_path, "w", encoding="utf-8", newline="\n") as f:
         json.dump({"conllu": "{:C}\n".format(doc), "processors": list(nlp.processors), "files": files,
                    "load": load, "process": process}, f, ensure_ascii=False)

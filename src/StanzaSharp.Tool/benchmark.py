@@ -1,8 +1,9 @@
-"""The Python half of "stanzasharp benchmark", written next to stanza_resources_en.json in a temporary folder.
+"""The Python half of "stanzasharp benchmark", written next to compare.py and stanza_resources_en.json in a
+temporary folder.
 
   python benchmark.py MODELS PACKAGE PROCESSORS THREADS VERSION      (THREADS 0: torch's default)
 
-Loads Stanza with the models in MODELS (Stanza's <dir>/en/<processor>/<name>.pt layout, as compare.py does) and
+Loads Stanza with the models in MODELS (Stanza's <processor>/<name>.pt files; compare.py's load_stanza) and
 writes one JSON line to stdout: {"load", "processors", "python", "torch", "stanza", "threads", "peak_mb"}. Then it
 answers one JSON command per stdin line with one JSON line, until stdin closes, so the tool can alternate runs with
 StanzaSharp's in the same order and conditions:
@@ -17,6 +18,8 @@ import os
 import platform
 import sys
 import time
+
+from compare import load_stanza
 
 
 def peak_mb():
@@ -66,10 +69,8 @@ def main():
 
     if int(threads) > 0:  # 0: torch's default (the physical cores)
         torch.set_num_threads(int(threads))
-    resources = os.path.join(os.path.dirname(os.path.abspath(__file__)), "stanza_resources_en.json")
     start = time.perf_counter()
-    nlp = stanza.Pipeline("en", dir=os.path.dirname(os.path.abspath(models)), package=package, processors=processors,
-                          download_method=None, resources_filepath=resources, use_gpu=False, logging_level="WARN")
+    nlp = load_stanza(models, package, processors)
     reply({"load": time.perf_counter() - start, "processors": list(nlp.processors), "python": platform.python_version(),
            "torch": torch.__version__, "stanza": stanza.__version__, "threads": torch.get_num_threads()})
 

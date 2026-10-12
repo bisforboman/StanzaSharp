@@ -46,8 +46,8 @@ Different: 1 of 68 sentences differ. The first difference, line 384 of the CoNLL
   StanzaSharp: 3	said	say	VERB	VBD	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	8	parataxis	_	SpaceAfter=No|start_char=1462|end_char=1466|ner=O
 ```
 
-- `--models DIR`: Stanza's `.pt` files as `download` writes them (default `models/stanza/en`). The folder must be
-  named `en`, since Python Stanza looks for `<dir>/en/<processor>/<name>.pt`. Both sides load the same files, and
+- `--models DIR`: Stanza's `.pt` files as `download` writes them (default `models/stanza/en`), in a folder of any
+  name. Both sides load the same files, and
   StanzaSharp checks each against Stanza 1.15.0's MD5.
 - `--python PATH`: the Python with Stanza installed (default `python`).
 - Both sides read the file as the same string (UTF-8, or the encoding its byte order mark names) and process it as one

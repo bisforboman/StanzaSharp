@@ -423,7 +423,8 @@ summarizes what each job proves.
   reference them: one with only StanzaSharp (the default install; it must reproduce the golden CoNLL-U with nothing of
   TorchSharp in it), one with StanzaSharp.Cuda and `TorchSharp-cpu` on `CudaBackend.Cpu` (no `STANZA` build warning allowed, with `StanzaSharpTrimNative`). Then
   `tools/verify-tool.ps1` installs the `stanzasharp` tool from a local feed, downloads `tokenize,mwt` with it and
-  checks `compare`'s setup errors (CI has no Python Stanza, so the no-skip checks allow `Run_PythonStanza_*`). The
+  checks `compare`'s setup errors. Golden shard 2 also installs Python Stanza and runs `stanzasharp compare` and
+  `benchmark` against it (`Run_PythonStanza_*`); the other jobs, without Python, allow those to skip. The
   original and converted models are cached, keyed on `ModelDownloader.cs`, `tools/requirements.txt` and
   `tools/stanza_convert.py`.
 - `docker` runs `tools/verify-docker.sh`: it packs StanzaSharp, builds [samples/docker](samples/docker/Dockerfile) on
