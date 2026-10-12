@@ -142,7 +142,7 @@ public class PipelineTests(SharedPipelines pipelines) : IClassFixture<SharedPipe
     [InlineData(true)]
     public void Process_AllEightProcessorsMatchEachGoldenFolder(bool managed)
     {
-        // No golden file has all eight, so each field is checked against its own folder: word lines and
+        // Each field is checked against its own processor's folder (pipeline.conllu has all eight, but only corpus.txt): word lines and
         // ner= against ner/ (tokenize..depparse,ner), trees against the default pipeline's files, and
         // sentiment against sentiment/. NER, constituency and sentiment share the tagger's CharlmCache.
         var nlp = pipelines.Get(managed: managed, processors: "tokenize,mwt,pos,lemma,depparse,ner,sentiment,constituency");

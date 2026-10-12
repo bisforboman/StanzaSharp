@@ -1,8 +1,9 @@
 # StanzaSharp.Tool
 
-The `stanzasharp` command downloads Stanza's English models for [StanzaSharp](https://www.nuget.org/packages/StanzaSharp),
-for example in a Dockerfile or a CI job. Each file is checked against its published MD5, and files already present are
-kept. It needs no native libtorch.
+The `stanzasharp` command for [StanzaSharp](https://www.nuget.org/packages/StanzaSharp): it downloads Stanza's English
+models (for example in a Dockerfile or a CI job), compares StanzaSharp's output with Python Stanza's on your own text,
+and benchmarks both on your machine. Each downloaded file is checked against its published MD5, and files already
+present are kept. It needs no native libtorch.
 
 ```
 dotnet tool install -g StanzaSharp.Tool
@@ -58,11 +59,12 @@ Different: 1 of 68 sentences differ. The first difference, line 384 of the CoNLL
 
 ## Benchmark it on your machine
 
-`stanzasharp benchmark` times StanzaSharp on a built-in English text (our own test texts, about 1,500 words) and, if
-Python Stanza 1.15.0 is available, Stanza on the same text with the same models, alternating their runs (a warm-up run
-each, then the median of 3). It reports load time, each processor, words/s, single-sentence calls (median and p90) and
+`stanzasharp benchmark` times StanzaSharp on a built-in English text (our own test texts: 1,500 words by whitespace,
+2,009 after tokenizing) and, if Python Stanza 1.15.0 is available, Stanza on the same text with the same models,
+alternating their runs (a warm-up run each, then the median of 3). It reports load time, each processor, words/s, single-sentence calls (median and p90) and
 peak memory, and prints a Markdown block with the CPU, cores, RAM, OS, .NET version, SIMD path and StanzaSharp version,
-ready to paste into an issue. With Python it takes about two minutes on 4 cores.
+ready to paste into an issue. With Python it takes about two minutes on 4 cores. Results from GitHub's free runners:
+[docs/performance.md](https://github.com/bisforboman/StanzaSharp/blob/main/docs/performance.md#run-it-yourself).
 
 ```
 stanzasharp benchmark [--package NAME] [--processors LIST] [--models DIR] [--threads N] [--words N] [--python PATH] [--quick] [--json FILE]
@@ -70,7 +72,8 @@ stanzasharp benchmark [--package NAME] [--processors LIST] [--models DIR] [--thr
 
 - `--threads N`: the same thread count on both sides. By default each side uses its own default (StanzaSharp all
   logical processors, torch the physical cores); the block shows both.
-- `--words N`: a longer or shorter text. `--quick`: 300 words, one run and 10 calls, a smoke test.
+- `--words N`: a longer or shorter text, counted by whitespace before tokenizing (the block counts words after it).
+  `--quick`: 300 words, one run and 10 calls, a smoke test.
 - Without Python Stanza (or with converted models, which Stanza can't read), only StanzaSharp's column is shown, with
   the reason. With it, the block also says whether both sides' CoNLL-U was identical.
 - `--json FILE`: the results as JSON too.

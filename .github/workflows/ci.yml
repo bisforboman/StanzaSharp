@@ -5,7 +5,6 @@ on:
     branches: [main]
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
-  merge_group: # the merge queue: the full suite runs here, once per group, before anything reaches main
   workflow_call: # release.yml runs the same checks before publishing
 
 # A newer push to the same pull request or to main cancels the run still going (GitHub-hosted runners allow 20
@@ -29,7 +28,8 @@ jobs:
   # - level=light: a ready pull request. docker and alpine run everything, golden too apart from torch=smoke (below);
   #   cross-os and linux-arm64 run
   #   a subset (pipeline golden files on both backends, the managed kernels, the no-libtorch check) and no package checks.
-  # - level=full: the merge queue (merge_group), pushes to main and release.yml's runs: everything everywhere.
+  # - level=full: pushes to main and release.yml's runs: everything everywhere. (No merge queue: GitHub offers it only
+  #   to organization-owned repositories.)
   # - torch=smoke (owner's decision, 2026-10-10): a ready pull request that touches none of the TorchSharp backend's
   #   files (below). golden then runs every managed test but, of the TorchSharp-backend cases ("managed: False" and
   #   [Trait("Backend", "TorchSharp")]), only those marked [Trait("Smoke", "TorchSharp")]. Otherwise torch=full.
@@ -273,7 +273,7 @@ jobs:
           mcr.microsoft.com/dotnet/runtime:10.0-noble-chiseled
 
   # Alpine (musl): the same Docker check on mcr.microsoft.com/dotnet/runtime:10.0-alpine, published for linux-musl-x64.
-  # libtorch has no musl build, so only the managed backend runs there. Not a required check (the owner decides).
+  # libtorch has no musl build, so only the managed backend runs there. A required check on main.
   alpine:
     needs: changes
     if: ${{ !cancelled() }}
@@ -309,7 +309,7 @@ jobs:
   # the managed backend runs. The tests build without libtorch (StanzaSharpNoLibTorch) and run every test that needs
   # none: the managed cases of the both-backend theories (DisplayName "managed: True") and the tests marked
   # [Trait("Backend", "Managed")]. Then the same no-skip check and the default install (verify-package.ps1 -Managed).
-  # Models are cached like cross-os's. Not a required check (the owner decides).
+  # Models are cached like cross-os's. A required check on main.
   linux-arm64:
     needs: changes
     if: ${{ !cancelled() }}
@@ -425,7 +425,7 @@ jobs:
           dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/en
           dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/en --package default_fast
 
-      # A ready pull request runs the subset (level light); the merge queue, main and releases run everything.
+      # A ready pull request runs the subset (level light); main and releases run everything.
       - name: Test
         if: needs.changes.outputs.code != 'false'
         run: >

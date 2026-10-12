@@ -36,7 +36,9 @@ default from 0.5) or through TorchSharp (see "Managed backend").
 
 ## Status
 
-All 7 steps of the build order are done:
+All 7 steps of the build order are done. The bullets below describe the original TorchSharp port; its torch classes
+(`Weights`, `Rnn`, `CharLanguageModel`, `HighwayLstm`, `Biaffine`, `CharacterModel`, the nets) live in `StanzaSharp.Cuda`
+since 1.0, and every processor also has a managed net (see "Managed backend"), the default.
 - Models are converted, golden data is in `tests/golden/`, and the checkpoint configs are summarized
   under "Checkpoint findings".
 - `Core` has the document model, `Conllu` (round-trips the golden file byte for byte), `Tree`,
@@ -75,7 +77,7 @@ All 7 steps of the build order are done:
   are read from the file on demand), and `HighwayLstm` frees each layer's padded tensors as soon as they are used.
   Round 7 (per call, `--per-call N`, `--concurrent T`): one short sentence takes 28 ms managed (Python 189); the rest is
   memory bandwidth (weights streamed per call), not setup. Past ~2 concurrent callers managed throughput drops
-  (L3 evictions); a gate in `Pipeline` is an open owner decision.
+  (L3 evictions); `PipelineOptions.MaxConcurrentCalls` (0.6, opt-in) is the gate.
   After a Process call of 1,000+ words, `NativeHeap.Trim` calls glibc's `malloc_trim(0)` on Linux (user's decision,
   2026-10-07: always on, no public API; `PipelineOptions.TrimNativeHeap` is internal, for the benchmark). On Windows
   libtorch's built-in mimalloc keeps freed pages; only `MIMALLOC_PURGE_DELAY=0` releases them (documented, not set).
@@ -87,10 +89,12 @@ All 7 steps of the build order are done:
   Round 12 (concurrent calls, `--with-long`): `ManagedThreads.Pool` keeps workers asleep while callers in a region plus
   awake workers number max(ProcessorCount, Count) (`_busy`/`_limit`); with Threads = ProcessorCount and 8 callers, spinning
   oversubscription had stalled calls for seconds. Calls don't serialize or starve; >2 callers cost throughput (L3/DRAM,
-  same on 1 thread). macOS runner one-sentence slowness was Spotlight indexing (benchmark.yml turns it off).
+  same on 1 thread). macOS runner one-sentence slowness was Spotlight indexing (benchmark.yml turns it off). The
+  default stays all logical processors (measured against physical cores on the Ryzen and the 2-core runners: neither
+  wins everywhere).
   Round 6 (managed backend, docs/performance.md): no native heap (malloc_trim returns nothing there); after a call the
-  GC heap holds the models plus `ArrayPool<T>.Shared`'s scratch buffers (all eight, 6,761 words: 2.4 GB working set),
-  released only by a gen2 GC a minute later; the README tells services to run an aggressive GC when idle. The library
+  GC heap holds the models plus `ArrayPool<T>.Shared`'s scratch buffers (all eight, 6,761 words: 2.4 GB working set
+  then, 1.3 GB since round 10 shrank sentiment's buffers), released only by a gen2 GC a minute later; the README tells services to run an aggressive GC when idle. The library
   runs no GC.
 - `Tree.ToString` prints `(`/`)` in labels and words as `-LRB-`/`-RRB-`, like Stanza. The tree
   itself keeps the raw text.
@@ -170,7 +174,8 @@ All 7 steps of the build order are done:
     empty/whitespace tokens throw (Stanza fails on the first two; whitespace tokens give broken CoNLL-U there).
     Stanza's string form (whitespace tokens, newline sentences) is not exposed; make_golden asserts it equals the list form.
 - 0.4 API (issue #12, items chosen by the owner, 2026-10-06):
-  - `PipelineOptions.Threads` (int?): `torch.set_num_threads` at Load, process-wide. Null = min(libtorch's current
+  - `PipelineOptions.Threads` (int?): at Load, process-wide, `ManagedThreads.Count` on the managed backend and
+    `torch.set_num_threads` on TorchSharp (the rest of this bullet is TorchSharp's). Null = min(libtorch's current
     value, `Environment.ProcessorCount`), so a container's CPU quota is respected and a lower count the caller set is
     kept. Inter-op threads are untouched (eager mode never uses that pool; libtorch allows setting it only once).
     libtorch's OpenMP gives each calling thread its own team of `Threads` threads (measured: 8 callers × 8 threads
@@ -199,7 +204,7 @@ All 7 steps of the build order are done:
     in flight (cache eviction of the charlm weights; docs/performance.md round 7).
   - `Processor` constants; `VerifyChecksums` (MD5 of each `.pt` Load reads, `ModelDownloader.Verify`; throws for
     converted models, which have no published MD5); `Logger` (`Microsoft.Extensions.Logging.Abstractions` 10.0.0,
-    the package's second dependency): load times at Information, per-processor times at Debug, nothing measured
+    since 1.0 the StanzaSharp package's only dependency): load times at Information, per-processor times at Debug, nothing measured
     without a logger.
 
 Tokenizer notes:
@@ -222,8 +227,9 @@ Tokenizer notes:
 src/StanzaSharp.Core           Document model, CoNLL-U I/O, constituency Tree, safetensors reader,
                                checkpoint loading (converted JSON or .pt). No TorchSharp dependency.
 src/StanzaSharp.Nn             Pretrain vocab/vectors, CharlmCache, the managed kernels and layers (Managed/). No TorchSharp.
-src/StanzaSharp.Cuda     The TorchSharp backend: every processor's torch net, the torch layers (charlm, highway
-                               LSTM, Weights, ...), the tensor halves of Pretrain/CharlmCache, processors' `Load`.
+src/StanzaSharp.Cuda           The TorchSharp backend (the StanzaSharp.Cuda package, `CudaBackend`): every processor's
+                               torch net, the torch layers (charlm, highway LSTM, Weights, ...), the tensor halves of
+                               Pretrain/CharlmCache, processors' TorchSharp `Load`. The only project referencing TorchSharp.
 src/StanzaSharp.Tokenize       Tokenizer + sentence splitting.
 src/StanzaSharp.Mwt            Multi-word token expansion.
 src/StanzaSharp.Pos            POS / feature tagger.
@@ -246,9 +252,9 @@ models/stanza/                 Original downloaded models (gitignored).
 models/converted/en/           Converted models (gitignored); C# prefers them over the .pt files.
 ```
 
-Package policy: only `StanzaSharp.Cuda` (the StanzaSharp.Cuda package) uses TorchSharp; the facade, Core, Nn and
-the processors must build without it. Library projects reference the managed `TorchSharp` package only. Runnable
-projects (Cli, Benchmark, Tests) reference `$(TorchSharpNative)` (Directory.Build.props): `TorchSharp-cpu`,
+Package policy: only `StanzaSharp.Cuda` (the StanzaSharp.Cuda package) references TorchSharp, and only the managed
+`TorchSharp` package; the facade, Core, Nn, the processors and the Tool reference no TorchSharp at all and must build
+without it. Runnable projects that test or run the TorchSharp backend (Cli, Benchmark, Tests) reference `$(TorchSharpNative)` (Directory.Build.props): `TorchSharp-cpu`,
 or `TorchSharp-cuda-windows` when built with `STANZASHARP_CUDA=1`, which brings the native libtorch, for the
 TorchSharp backend. The Example and ManagedCheck set `StanzaSharpNoLibTorch` (no libtorch: the default backend needs
 none); the Tests do too when built with `-p:StanzaSharpNoLibTorch=true` (the linux-arm64 job). The
@@ -457,7 +463,9 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
 - Also save selected intermediate tensors so numeric drift can be localized, for example charlm
   hidden states and tagger logits for a few sentences. Compare floats with a tolerance and
   discrete outputs exactly.
-- Tests that need model files must skip, not fail, when `models/converted/en` is missing.
+- Tests that need model files must skip, not fail, when `models/converted/en` (or `STANZASHARP_MODELS`) is missing.
+- `docs/verification.md` is the user-facing summary of all this (counts, tolerances, CI jobs, test counts per runner).
+  Update it when golden data, tolerances or CI jobs change.
 - Loaded models are shared between tests (2026-10-11): a pipeline is read-only after Load, so sharing is safe.
   - `SharedPipelines` (class fixture): `pipelines.Get(package, managed, processors, splitSentences)`. Each pipeline loads on
     first use and is disposed when the last class using it ends, so classes running in parallel share it without being
@@ -469,8 +477,8 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     `ConcurrencyTests` (it runs alone), and one-off options sets (sharing those would only keep them alive longer).
 - Versions are pinned in `tools/requirements.txt`; golden data depends on them.
 - `tools/make_golden.py` regenerates golden data from `tests/golden/corpus.txt`:
-  - `pipeline.conllu`: the full pipeline output, including offsets, MWT ranges, tags, and
-    `# constituency` comments. Ignore its HEAD column, since there is no depparse.
+  - `pipeline.conllu`: the full pipeline output (all eight processors), including offsets, MWT ranges, tags, heads,
+    `ner=`, and the `# constituency` and `# sentiment` comments.
   - `intermediates.safetensors` + `.json`, covering the first 3 sentences, each run alone:
     - tokenizer logits
     - charlm per-word representations
@@ -504,7 +512,7 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     a sent_id offset and the sentences bulk changes), so it stays small.
   - `validation*.conllu`: full pipeline output for each hand-written `validation*.txt` (news,
     academic, instructions, social, dialogue/poetry, tech, multilingual, contractions, long,
-    whitespace, nonbmp; ~830 sentences). They are read as bytes, so CR/CRLF reach Stanza as-is.
+    whitespace, nonbmp; 835 sentences, 845 with corpus.txt). They are read as bytes, so CR/CRLF reach Stanza as-is.
     `validation_whitespace.txt` is `-text` in `.gitattributes` to keep its CRLF. The test compares
     each file and reports its first differing sentence. `validation_nonbmp` is compared without
     `start_char`/`end_char`, because offsets differ by design after non-BMP characters.
@@ -513,11 +521,12 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   Use it wherever Stanza calls `lower()`, `isupper()`, `isspace()` or `split()`. Regexes ported
   from Python need care too: Python's `\b`/`\w` count No/Nl characters such as `²` as word
   characters and combining marks as non-word (see `Tokenizer.PyRegex`).
-- CI (`.github/workflows/ci.yml`, github.com/bisforboman/StanzaSharp; pushes to `main`, PRs, and
+- CI (`.github/workflows/ci.yml`, github.com/bisforboman/StanzaSharp; pushes to `main`, PRs and
   `workflow_call` from release.yml; `ubuntu-26.04`, `ubuntu-26.04-arm`, `windows-2025`, `macos-26`, `windows-11-arm` pinned).
-  - Branch protection on `main` requires the check names `build-test` and `golden`, so they stay
-    plain jobs; a matrix would rename them (`build-test (ubuntu-26.04)`) and block every PR. `alpine` and
-    `linux-arm64` (0.5) are not required; whether they become required is the owner's decision.
+  - Branch protection on `main` requires `build-test`, `golden`, `docker`, `alpine`, `linux-arm64` and the three
+    `cross-os (...)` checks (checked 2026-10-12). `build-test` and `golden` stay plain jobs; a matrix would rename them
+    (`build-test (ubuntu-26.04)`) and block every PR. There is no merge queue (GitHub offers it only to organization-owned
+    repositories; this one is user-owned): a PR merges after its light run, and the full run is main's push.
   - `build-test` runs the suite without models.
   - Docs-only pull requests (`docs/`, `*.md`, `LICENSE`, `NOTICE`): the `changes` job makes `golden`, `docker`,
     `alpine`, `linux-arm64` and `cross-os` run with their steps skipped, so the required checks pass in about a minute. No job is skipped
@@ -527,7 +536,7 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     merge; `ready_for_review` starts the real run), so agents open stacked PRs as drafts and mark them ready once their
     base merges. **Ready** PRs run level `light`: `docker` and `alpine` run everything; `cross-os` and
     `linux-arm64` run only `PipelineTests`, `ManagedBackendTests` and `ManagedCheckTests` (70 tests, ~2.5 min locally)
-    and no package checks. The **merge queue** (`merge_group`), pushes to main and release runs are level `full`.
+    and no package checks. Pushes to main and release runs are level `full`.
   - TorchSharp smoke (owner's decision, 2026-10-10): `changes` also outputs `torch`. A ready PR whose files miss
     `src/StanzaSharp.Cuda/`, `src/StanzaSharp.Nn/`, `src/StanzaSharp/{BackendModels,PipelineBackend}.cs`,
     `Directory.Build.props` and `.github/workflows/` gets `torch=smoke`: golden runs every test except the
@@ -545,7 +554,7 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     | docs-only ready PR | false | light | smoke | steps skipped, passes in ~1 min |
     | ready PR, only `src/StanzaSharp.Pos/**` | true | light | smoke | managed + smoke, 3 shards |
     | ready PR touching `src/StanzaSharp.Cuda/**` | true | light | full | everything, 3 shards |
-    | merge queue, push to main, release (`workflow_call`) | true | full | full | everything, 3 shards |
+    | push to main, release (`workflow_call`) | true | full | full | everything, 3 shards |
     | `changes` failed | (empty) | (empty) | (empty) | everything (anything not clearly false/smoke) |
   - `concurrency` (`${{ github.workflow }}-${{ github.ref }}`): a newer push to the same PR or to main cancels the older
     CI run. release.yml's call gets the group `Release-refs/heads/main` (`github.workflow` is the caller's name), so it
@@ -597,6 +606,8 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     a miss), installs Python 3.12 + `tools/requirements.txt` from the CPU wheel index (continue-on-error: without it the
     block has StanzaSharp only), runs `stanzasharp benchmark --json`, writes the block to its summary and artifact
     `benchmark-<os>`. `summary` combines them with `tools/benchmark_table.py` into `benchmarks.md` (summary + artifact).
+    The tool is built with `-p:Version=<git describe>` (full-history checkout), so the block names e.g.
+    `1.0.0-67-g97089bb` instead of Directory.Build.props' `0.1.0-dev`. First run: docs/performance.md "Run it yourself".
   - Keep paths forward-slash and file names case-exact (Linux). The root `.gitattributes` keeps sources
     LF; `tests/golden/.gitattributes` pins golden files (`eol=lf`, `binary`, `validation_whitespace.txt`
     `-text`), so Windows checkouts with `core.autocrlf=true` stay byte-exact. Bash steps run under
@@ -607,6 +618,7 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
 - Public API (user's decision for 0.1.0, 2026-10-06: "pipeline only"). It is:
   - the facade: `Pipeline`, `PipelineOptions`, `CharlmCacheOptions`, `ModelDownloader`, `Processor` (0.4),
     `PipelineBackend` (0.5);
+  - StanzaSharp.Cuda's `CudaBackend` (1.0);
   - Core's results: `Document`, `Sentence`, `Token`, `Word`, `Entity`, `Tree`, `Conllu`.
 
   Everything else is `internal`.
@@ -661,7 +673,7 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     checks the files are absent; Linux in golden, macOS in cross-os).
 - `StanzaSharp.Tool` (`src/StanzaSharp.Tool`, `PackAsTool`, command `stanzasharp`): `download [DIR] [--package NAME]
   [--processors LIST]`. `DownloadCommand.cs` is compiled into samples/StanzaSharp.Cli too (one implementation). Since
-  1.0 StanzaSharp has no TorchSharp, so the tool has no native files at all (0.45 MB). `tools/verify-tool.ps1` (golden) packs, `dotnet tool install --tool-path`s it from a local feed,
+  1.0 StanzaSharp has no TorchSharp, so the tool has no native files at all (0.5 MB with compare and benchmark). `tools/verify-tool.ps1` (golden) packs, `dotnet tool install --tool-path`s it from a local feed,
   checks for natives and downloads `tokenize,mwt`. release.yml packs it.
   - `compare FILE [--package] [--processors] [--models DIR] [--python PATH]` (`CompareCommand.cs`, owner's "proof for
     new users"): runs the embedded `compare.py` (make_golden's bytes→str and `"{:C}\n"`) with
@@ -676,8 +688,8 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     (`BenchmarkCommand.cs`, owner's decision 2026-10-10): managed backend vs the embedded `benchmark.py`, one Python process
     that loads Stanza once and answers JSON-line commands (`run`, `calls`) so runs alternate (warm-up, 3 timed runs,
     medians; 50 one-sentence calls, median/p90; peak working set, macOS `ru_maxrss`). Text: the benchmark sample's golden
-    texts (validation, corpus, tokenize_stress), embedded under `benchmark/`, cut at 1,500 whitespace words (`--quick`:
-    300, 1 run, 10 calls). Threads default to each side's own (unless `--threads`). Python is optional: any failure
+    texts (validation, corpus, tokenize_stress), embedded under `benchmark/`, cut after the paragraph that reaches 1,500
+    whitespace words (`--quick`: 300, 1 run, 10 calls); the block reports words after tokenizing and MWT (2,009 by default). Threads default to each side's own (unless `--threads`). Python is optional: any failure
     (no Python/Stanza, models not `.pt` in an `en` folder) gives StanzaSharp's column only, with the reason. With
     Python, the CoNLL-U of the last run is compared (`ConlluDiff`). Machine: CPU from the registry / `lscpu` (LC_ALL=C,
     else /proc/cpuinfo) / `sysctl`, cores from GetLogicalProcessorInformation / lscpu / `hw.physicalcpu`, SIMD
@@ -696,8 +708,8 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     package metadata and a `0.1.0-dev` default version).
   - Because of `PrivateAssets`, tests and samples reference the library projects they use directly.
   - `src/StanzaSharp/PACKAGE.md` is the package readme; `NOTICE` ships in the package.
-- Models are downloaded only explicitly (user's decision): `ModelDownloader.DownloadAsync(dir)` or
-  `StanzaSharp.Cli download [DIR]`.
+- Models are downloaded only explicitly (user's decision): `ModelDownloader.DownloadAsync(dir)`, `stanzasharp download
+  [DIR]` (the tool) or `StanzaSharp.Cli download [DIR]` (the same code).
   - Selective download (user's decision, 2026-10-06): `DownloadAsync(dir, processors)` / `download
     --processors LIST`.
   - Packages (user's decision, 2026-10-06: Stanza's package names as strings, so more can be added without
@@ -741,7 +753,8 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     - A 401 "No matching trust policy" on push means the nuget.org policy for that environment is
       missing or misnamed.
 - `main` is protected like StyleBro since 2026-10-06 (user's decision): pull requests required (0
-  approvals), required status checks `build-test` and `golden`, enforced for admins, auto-merge allowed,
+  approvals), required status checks (`build-test` and `golden` at first; all eight CI jobs now, see CI above),
+  enforced for admins, auto-merge allowed,
   merged branches deleted. Every change goes through a PR. A new required CI job must also be added to the
   protection's required checks.
 

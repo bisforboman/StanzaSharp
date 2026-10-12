@@ -28,8 +28,9 @@ const string Usage = $"""
       --python PATH       compare, benchmark: the Python with Stanza installed (default: python)
       --threads N         benchmark: threads on both sides (default: each side's own default, StanzaSharp all
                           logical processors and torch the physical cores)
-      --words N           benchmark: the text's length in words, counted by whitespace (default: 1500)
-      --quick             benchmark: 300 words, one run, 10 calls
+      --words N           benchmark: the text's length in words, counted by whitespace (default: 1500); the block
+                          counts words after tokenizing (2,009 for the default)
+      --quick             benchmark: 300 words (by whitespace), one run, 10 calls
       --json FILE         benchmark: also write the results as JSON
     """;
 

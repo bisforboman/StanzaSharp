@@ -19,7 +19,8 @@ stanzasharp benchmark                 # --package default_fast, --threads N, --w
 ```
 
 It follows the method below on a smaller text: the golden texts (validation.txt, corpus.txt, tokenize_stress.txt,
-shipped with the tool) cut at about 1,500 words (`--words`); the managed backend; a warm-up run on each side, then 3
+shipped with the tool) cut after the paragraph that reaches 1,500 whitespace-separated words (`--words`), which is
+2,009 words after tokenizing, the count the block reports; the managed backend; a warm-up run on each side, then 3
 timed runs with StanzaSharp and Stanza alternating (Stanza runs in one Python process that stays loaded); medians per
 processor; then 50 `Process` calls on one sentence each (the text's sentences of 5-25 words; median and p90, after 5
 warm-up calls); the peak working set of each process (macOS: `ru_maxrss`). Both sides read the same `.pt` files, and
@@ -33,7 +34,26 @@ On GitHub's hosted runners: **Actions > Benchmark > Run workflow** (or `gh workf
 runs it with Python Stanza on ubuntu-26.04, ubuntu-26.04-arm, windows-2025, windows-11-arm and macos-26 (free standard
 runners only). Each job puts its block in its summary and the artifact `benchmark-<runner>`; the last job combines them
 into one table (summary and artifact `benchmarks`, `benchmarks.md`, made by `tools/benchmark_table.py`). Hosted runners
-are shared virtual machines (the macOS one is virtualized Apple Silicon), so compare numbers within one run.
+are shared virtual machines (the macOS one is virtualized Apple Silicon), so compare numbers within one run. The block
+names the StanzaSharp version as `git describe` gives it (`1.0.0-67-g97089bb`: 67 commits after v1.0.0), since the
+workflow builds from source.
+
+First run ([38150941695](https://github.com/bisforboman/StanzaSharp/actions/runs/38150941695), 2026-10-11, commit
+6a08cf6, before round 12's pool change and CI's move to ubuntu-26.04 and macos-26; `default` package, 2,009 words, each
+side's default threads; pairs are StanzaSharp / Python Stanza). The CoNLL-U was identical on every runner with Python:
+
+| runner | CPU, cores/logical | threads | words/s | speed-up | per call, median ms | peak memory MB |
+|---|---|---|---:|---:|---:|---:|
+| ubuntu-24.04 | AMD EPYC 7763, 2/4 | 4 / 2 | 246 / 75 | 3.29x | 68.8 / 248.8 | 1,143 / 3,471 |
+| ubuntu-24.04-arm | Neoverse-N2, 4/4 | 4 / 4 | 228 / 81 | 2.83x | 81.2 / 678.4 | 1,166 / 3,643 |
+| windows-2025 | AMD EPYC 7763, 2/4 | 4 / 2 | 238 / 63 | 3.77x | 73.6 / 327.0 | 1,120 / 3,600 |
+| windows-11-arm | Cobalt 100, 4/4 | 4 | 221 / - | - | 85.9 / - | 1,016 / - |
+| macos-15 | Apple M1 (virtual), 3/3 | 3 / 3 | 183 / 60 | 3.04x | 765.9 / 338.5 | 877 / 2,454 |
+
+- Python Stanza's install step failed on windows-11-arm in that run, so that row is StanzaSharp only.
+- The macOS per-call time was Spotlight indexing (below and round 12); the workflow turns it off since.
+- Per stage, StanzaSharp was ahead in every processor on every runner; the largest gains were in ner (3.9–7.0x),
+  constituency (3.4–4.7x) and depparse (2.3–3.9x). Load took 1.7–3.1 s against 5.0–6.9 s.
 
 On a fresh macOS runner Spotlight indexes the disk for its first minutes, and again after pip installs torch:
 `mds`, `mds_stores` and several `mdworker_shared` take about half of the 3 vCPUs. One-sentence calls then took 717-845 ms
@@ -163,7 +183,7 @@ median ms:
   spinning 10× shorter before they sleep; in another job 100× longer or not at all, which was slower), moved the median by less than the run-to-run noise
   (136-234 ms on 3 threads; 192-217 on 1, 181-273 on 2).
 - `benchmark.yml` now turns Spotlight off on macOS first; "Run it yourself" says so.
-- On **macos-26** (the runner CI moves to; macOS 26.6.2, the same Apple M1 virtual with 3 vCPUs) the slow calls don't
+- On **macos-26** (the runner CI has used since; macOS 26.6.2, the same Apple M1 virtual with 3 vCPUs) the slow calls don't
   show: the same benchmark command right after `pip install`, two runs each, 149 and 104 ms with Spotlight on (the
   first while `mds_stores` used 57% of a vCPU), 132 and 133 ms with it off; Python Stanza 303-704 ms. The `mdutil` step
   stays, as it costs nothing and removes a source of noise.

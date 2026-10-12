@@ -1,9 +1,15 @@
 # StanzaSharp
 
+[![CI](https://img.shields.io/github/actions/workflow/status/bisforboman/StanzaSharp/ci.yml?branch=main&label=CI)](https://github.com/bisforboman/StanzaSharp/actions/workflows/ci.yml?query=branch%3Amain)
+[![NuGet](https://img.shields.io/nuget/v/StanzaSharp)](https://www.nuget.org/packages/StanzaSharp)
+[![License](https://img.shields.io/github/license/bisforboman/StanzaSharp)](LICENSE)
+
 C# port of Stanza's English inference pipeline (tokenize, mwt, pos, lemma, depparse, ner, sentiment, constituency).
-It runs Stanza's own pretrained models in plain .NET code, with no native dependencies. On the golden test corpus, the
-output is byte-identical to Python Stanza 1.15.0.
-See CLAUDE.md for scope, layout, decisions and build order.
+It runs Stanza's own pretrained models in plain .NET code, with no native dependencies. On the golden test texts
+(845 sentences), the output is byte-identical to Python Stanza 1.15.0, on Linux, Windows and macOS, x64 and Arm64.
+[docs/verification.md](docs/verification.md) shows what is compared, how, and how to check it on your own text.
+
+Contributors: CLAUDE.md holds the scope, layout, decisions and conventions.
 
 ## Install
 
@@ -115,6 +121,11 @@ the shared word vectors and character models when used.
 A directory you already have from Python Stanza (`<processor>/<name>.pt`, e.g. `~/stanza_resources/en`)
 works too.
 
+Model files are read without Python and without running any code from them: the `.pt` reader accepts only the plain
+data and tensor types Stanza's checkpoints use (like torch's `weights_only=True`). A malformed, truncated or hostile
+file fails with an `InvalidDataException` in time and memory bounded by its size; a fuzz test of both file formats
+runs in CI.
+
 ### Check it yourself
 
 `stanzasharp compare FILE` runs Python Stanza 1.15.0 and StanzaSharp on your own text, with the same model files
@@ -142,7 +153,7 @@ and Stanza's count code points. `compare` converts StanzaSharp's offsets to code
 that it did.
 
 `stanzasharp benchmark` measures speed on your machine: load time, each processor, words/s, one-sentence calls (median
-and p90) and peak memory on a built-in English text, and, if Python Stanza 1.15.0 is installed, Stanza on the same text
+and p90) and peak memory on a built-in English text (2,009 words), and, if Python Stanza 1.15.0 is installed, Stanza on the same text
 with the same models, so you see the ratio on your own hardware. It prints a Markdown block with the CPU, cores, RAM,
 OS, .NET and SIMD path, ready to paste into an issue. About two minutes with Python on 4 cores; `--quick` for a smoke
 test. See [docs/performance.md](docs/performance.md#run-it-yourself).
@@ -243,8 +254,11 @@ var doc = nlp.Process(text, cancellationToken); // OperationCanceledException wi
   Sharing one pipeline saves memory: a loaded pipeline takes about 0.8–1 GB (`default`; about 0.7 GB
 for `default_fast`), and each call in flight adds
   its own working memory on top (a few hundred MB for a page of text, more for long documents).
-- **Memory.** The numbers below were measured on the TorchSharp backend; the managed backend peaks lower (one call
-  on 8,000 words: 2.5 GB against 3.8–4.3 GB, [docs/backends.md](docs/backends.md#constituency)). A call's peak is set by its largest batch more than by the length of the text: the tagger pads up to
+- **Memory.** The numbers below were measured on the TorchSharp backend; the managed backend peaks lower (all eight
+  processors, one call on 6,761 words: 1.3 GB against 4.3 GB; docs/performance.md
+  [round 10](docs/performance.md#results-round-10-sentiment-memory-on-the-managed-backend) and
+  [round 6](docs/performance.md#results-round-6-memory-after-process-on-the-managed-backend)). A call's peak is set
+  by its largest batch more than by the length of the text: the tagger pads up to
   250 sentences to the longest one among them. With `tokenize,mwt,pos,constituency` (8 threads) loading peaks at about
   0.5 GB, and one call on 500, 5,000 and 15,000 words peaks at 0.65, 1.6 and 1.7 GB (Python Stanza: 0.75, 2.4 and
   2.5 GB). To bound it in a memory-limited container, call `Process` on parts of about 1,000 words, split at blank
@@ -255,8 +269,10 @@ for `default_fast`), and each call in flight adds
   `CharlmCache` changes the peak by less than 50 MB up to its 32k-word cap (turning it off costs 30–40% more time),
   and neither the GC mode nor converting the models changes it much. Measurements: [docs/performance.md](docs/performance.md#results-round-3-memory-of-a-short-lived-process).
 - **Very long texts** (a book in one call). The peak grows slowly with the length of the text: all eight processors on
-  the managed backend peak at about 1.4 GB for 20,000 words (8 threads, Windows; before sentiment's buffers shrank,
-  docs/performance.md round 10, they peaked at 2.0 GB for 20,000, 2.3 GB for 200,000 and 3.0 GB for 670,000). Most of it does not depend on the length (the models, and the scratch buffers of the largest batches,
+  the managed backend peak at about 1.3 GB for 20,000 words and 1.9 GB for 200,000 (8 threads, Windows;
+  [round 11](docs/performance.md#results-round-11-garbage-on-long-texts-managed-backend)). 670,000 words peaked at
+  3.0 GB in round 8, before rounds 10 and 11 cut sentiment's buffers and the garbage of long texts, and haven't been
+  measured since. Most of it does not depend on the length (the models, and the scratch buffers of the largest batches,
   which are at most 5,000 words); what grows is the returned `Document` itself, about 0.5 KB per word (310 MB for
   670,000 words), plus garbage the .NET GC lets build up on a larger heap. That garbage is not needed: with the GC heap
   capped (`DOTNET_GCHeapHardLimit`, or a container's memory limit, of which the GC takes 75%) 670,000 words ran in a
@@ -327,11 +343,16 @@ converts them to `models\converted\en`. Use `-Python` for the environment only, 
 
 ## Performance
 
+On GitHub's free hosted runners (2–4 cores), the default pipeline ran 2.8–3.8x faster than Python Stanza 1.15.0 on the
+same text and models, peaked at about a third of its memory (0.9–1.2 GB against 2.5–3.6 GB), and gave identical
+CoNLL-U ([docs/verification.md](docs/verification.md#speed-on-the-free-runners)). `stanzasharp benchmark` measures
+your own machine (see [Check it yourself](#check-it-yourself)).
+
 The managed backend runs all eight processors about 2.2x faster than the TorchSharp backend on 8 threads (26,264
-words on a Ryzen 7 5800X: 25.9 s against 56.4 s) and peaks lower (2.3 GB against 2.5 GB; one `Process` call on 8,000
-words: 2.5 GB in 11.5 s against 3.8–4.3 GB in 24 s), with byte-identical output. On 1 thread every processor is
-faster too, by 13–52%. Loading takes about as long (1.1 s) and peaks at about 850 MB (TorchSharp: 820 MB). Details per
-processor: [docs/backends.md](docs/backends.md#phase-2-progress).
+words on a Ryzen 7 5800X: 25.9 s against 56.4 s), and peaks lower (one call on 6,761 words: 1.3 GB against 4.3 GB),
+with byte-identical output. On 1 thread every processor is faster too, by 13–52%. Loading takes about as long (1.1 s)
+and peaks at about 850 MB (TorchSharp: 820 MB). Details per processor:
+[docs/backends.md](docs/backends.md#phase-2-progress).
 
 On the TorchSharp backend, on 8 CPU threads the six-processor pipeline is about 1.7x faster than Python Stanza and peaks
 at 2.7 GB of memory (Python: 4.3 GB); see [docs/performance.md](docs/performance.md). The `default_fast` package runs
@@ -374,12 +395,12 @@ Unset it (and let `dotnet` restore again) to go back to the CPU build.
 ## Tests
 
 ```powershell
-dotnet test
+dotnet test -c Release
 ```
 
-Tests that need models skip when `models/converted/en` (or, for the `.pt` loader tests,
-`models/stanza/en`) is missing. To regenerate the golden data, run
-`tools\.venv\Scripts\python tools\make_golden.py`.
+Tests that need models skip when `models/converted/en` (or, for the `.pt` loader tests, `models/stanza/en`) is
+missing; `STANZASHARP_MODELS` points them elsewhere. Build Release: the managed kernels are many times slower in Debug.
+To regenerate the golden data, run `tools\.venv\Scripts\python tools\make_golden.py`.
 
 ## Code style
 
@@ -389,13 +410,15 @@ StanzaSharp.slnx` fixes what they report.
 
 ## CI
 
-`.github/workflows/ci.yml` runs on pushes to `main` and on pull requests (.NET 10; Ubuntu 26.04 x64 and Arm64,
-Windows x64 and Arm64, macOS).
+`.github/workflows/ci.yml` runs on pushes to `main`, on pull requests and before every release (.NET 10; Ubuntu 26.04
+x64 and Arm64, Windows x64 and Arm64, macOS 26 on Apple Silicon). [docs/verification.md](docs/verification.md#where-it-is-checked)
+summarizes what each job proves.
 
 - `build-test` builds the solution with warnings as errors, checks the code style (`stylebro-migrate format
-  --verify-no-changes`, see below) and runs the tests without models (the model tests skip).
+  --verify-no-changes`, see above) and runs the tests without models (the model tests skip).
 - `golden` downloads the English models with `ModelDownloader` (through the CLI), converts them with
-  `tools/stanza_convert.py` (CPU-only torch wheel), and runs the full suite (both backends). It fails if any test was
+  `tools/stanza_convert.py` (CPU-only torch wheel), and runs the full suite (both backends) in three shards
+  (`golden-shard`; `golden` passes only if all three did). It fails if any test was
   skipped. Then `tools/verify-package.ps1` packs StanzaSharp and StanzaSharp.Cuda and runs two fresh apps that
   reference them: one with only StanzaSharp (the default install; it must reproduce the golden CoNLL-U with nothing of
   TorchSharp in it), one with StanzaSharp.Cuda and `TorchSharp-cpu` on `CudaBackend.Cpu` (no `STANZA` build warning allowed, with `StanzaSharpTrimNative`). Then
@@ -415,23 +438,31 @@ Windows x64 and Arm64, macOS).
   that need none (the managed cases of the both-backend theories, and the tests marked
   `[Trait("Backend", "Managed")]`), the no-skip check and the managed `verify-package.ps1`.
 
+How much runs depends on the event: a draft pull request, or one that changes only documentation, runs `build-test` and
+the other jobs with their steps skipped (they pass in about a minute); a ready pull request runs `build-test`, `golden`, `docker` and `alpine` in full but
+only the pipeline and kernel tests on `cross-os` and `linux-arm64`, with no package checks there; a push to `main` and
+a release run everything. A pull request that touches no TorchSharp-backend file runs only a smoke subset of the
+TorchSharp-backend tests in `golden`.
+
+All eight jobs above are required checks on `main`. `build-test` and `golden` stay separate jobs, not a matrix, so their
+check names stay as they are. All upload their `.trx` test results. To reproduce `golden` locally, run `setup.ps1 -Models`, then
+`dotnet test -c Release --logger trx --results-directory TestResults` and check that nothing was skipped.
+
 `.github/workflows/benchmark.yml` runs only by hand (Actions > Benchmark > Run workflow): `stanzasharp benchmark`
 with Python Stanza on each free hosted runner, combined into one table (job summary and artifact `benchmarks`).
-
-`build-test` and `golden` stay separate jobs, not a matrix, because branch protection requires checks
-by those exact names (the others are not required). All upload their `.trx` test results. To reproduce `golden` locally, run `setup.ps1 -Models`, then
-`dotnet test --logger trx --results-directory TestResults` and check that nothing was skipped.
+Results: [docs/performance.md](docs/performance.md#run-it-yourself).
 
 ## Releasing
 
-Merge a pull request that moves the "Unreleased" entries in CHANGELOG.md under a new version heading, such as
-`## [0.5.0] - 2026-10-08`. `.github/workflows/release.yml` sees a version without a tag, runs all CI checks, waits
-for approval, packs that version and publishes it to nuget.org through NuGet Trusted Publishing. Only then does it
-create the tag (`v0.5.0`) and a GitHub release (a prerelease when the version has a `-`).
+Unreleased changes are one file each under [`changes/`](changes/README.md). `python tools/changelog.py release X.Y.Z`
+folds them into CHANGELOG.md under `## [X.Y.Z] - <date>`; merge that pull request. `.github/workflows/release.yml`
+sees a version without a tag, runs all CI checks, waits for approval, packs that version (`StanzaSharp`,
+`StanzaSharp.Cuda`, `StanzaSharp.Tool`) and publishes it to nuget.org through NuGet Trusted Publishing. Only then does
+it create the tag (`vX.Y.Z`) and a GitHub release (a prerelease when the version has a `-`).
 
 ## Changes
 
-See [CHANGELOG.md](CHANGELOG.md).
+See [CHANGELOG.md](CHANGELOG.md), and [`changes/`](changes) for what is merged but not yet released.
 
 ## License
 
