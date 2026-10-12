@@ -54,9 +54,17 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
         }
     }
 
-    /// <summary>The paths to test: Vector256 only where it is hardware (on Arm64 it would be emulated, never chosen).</summary>
+    /// <summary>
+    /// The paths to test: Vector512 and Vector256 only where they are hardware (elsewhere they would be emulated, never
+    /// chosen). Vector512 needs AVX-512, which CI's x64 runners have only sometimes (docs/backends.md).
+    /// </summary>
     private static readonly KernelPath[] NativePaths =
-        [.. Enum.GetValues<KernelPath>().Where(p => p != KernelPath.Vector256 || Vector256.IsHardwareAccelerated)];
+        [.. Enum.GetValues<KernelPath>().Where(p => p switch
+        {
+            KernelPath.Vector512 => Vector512.IsHardwareAccelerated,
+            KernelPath.Vector256 => Vector256.IsHardwareAccelerated,
+            _ => true,
+        })];
 
     // Theory data are path names: KernelPath is internal, and a public test method can't take it.
     public static TheoryData<string> Paths() => [.. NativePaths.Select(p => p.ToString())];
@@ -243,6 +251,84 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
 
             Assert.Equal(expected, actual[..(mr * nr)]);
         }
+    }
+
+    /// <summary>
+    /// Vector512 gives Vector256's bits: the same fused multiply-adds per output in the same order (two panels at a time in
+    /// Gemm.Run, one in the others), and the same activations lane by lane. GEMMs with 1 to 7 and 97 rows,
+    /// an odd panel count (pairs plus a single panel), K over one K block, row-invariant or not; the blocked LSTM kernel;
+    /// the charlm (LSTM cells) and the tagger's highway biLSTM (gated tanh). On a machine without AVX-512 it only says so.
+    /// </summary>
+    [ModelFact]
+    [Trait("Backend", "Managed")]
+    public unsafe void Vector512_GivesVector256sBits()
+    {
+        if (!Vector512.IsHardwareAccelerated)
+        {
+            output.WriteLine("No accelerated Vector512 (AVX-512) on this machine: nothing to compare.");
+            return;
+        }
+
+        static int[] Bits(float[] x) => [.. x.Select(BitConverter.SingleToInt32Bits)];
+        const int k = 300, n = 5 * PackedMatrix.NR + 3;
+        var w = new PackedMatrix(Random(n * k, 41), n, k);
+        var bias = Random(w.PaddedN, 42);
+        foreach (int m in new[] { 1, 2, 3, 4, 5, 6, 7, 97 })
+        {
+            var a = Random(m * k, 43 + m);
+            foreach (bool invariant in new[] { false, true })
+            {
+                float[] Run(KernelPath path) => With(path, 4, () =>
+                {
+                    var c = new float[m * w.PaddedN];
+                    fixed (float* pa = a, pb = bias, pc = c)
+                        Gemm.Run(pa, m, k, w, pb, pc, w.PaddedN, rowInvariant: invariant);
+                    return c;
+                });
+                Assert.Equal(Bits(Run(KernelPath.Vector256)), Bits(Run(KernelPath.Vector512)));
+            }
+        }
+
+        var blockA = Random(Gemm.MR * k, 51);
+        var panel = Random(k * PackedMatrix.NR, 52);
+        var blockInit = Random(Gemm.MR * PackedMatrix.NR, 53);
+        for (int mr = 1; mr <= Gemm.MR; mr++)
+        {
+            int rows = mr;
+            float[] Blocked(KernelPath path) => With(path, 1, () =>
+            {
+                var o = new float[Gemm.MR * PackedMatrix.NR];
+                var aRows = stackalloc float*[Gemm.MR];
+                var inits = stackalloc float*[Gemm.MR];
+                var outs = stackalloc float*[Gemm.MR];
+                fixed (float* pa = blockA, pb = panel, pi = blockInit, po = o)
+                {
+                    for (int r = 0; r < Gemm.MR; r++)
+                    {
+                        aRows[r] = pa + Math.Min(r, rows - 1) * k;
+                        inits[r] = pi + Math.Min(r, rows - 1) * PackedMatrix.NR;
+                        outs[r] = po + r * PackedMatrix.NR;
+                    }
+
+                    Gemm.KernelBlocked(rows, aRows, pb, k, 128, inits, outs);
+                }
+
+                return o[..(rows * PackedMatrix.NR)];
+            });
+            Assert.Equal(Bits(Blocked(KernelPath.Vector256)), Bits(Blocked(KernelPath.Vector512)));
+        }
+
+        var words = File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt")).Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
+        var sentences = Enumerable.Range(0, 9).Select(i => (IReadOnlyList<string>)words.Skip(i * 13).Take(1 + i * 3).ToList()).ToList();
+        float[] Charlm(KernelPath path) => [.. With(path, 4, () => fixture.ManagedForward.BuildCharRepresentation(sentences)).SelectMany(r => r)];
+        Assert.Equal(Bits(Charlm(KernelPath.Vector256)), Bits(Charlm(KernelPath.Vector512)));
+
+        var ckpt = Checkpoint.Load(Repo.Model("pos/combined_charlm"));
+        var highway = new ManagedHighwayLstm(ckpt, ckpt.Root["model"]!, "taggerlstm", 2248, 200, 2);
+        long[] lengths = [7, 30, 1, 12, 12];
+        var input = Random((int)lengths.Sum() * 2248, 9);
+        Assert.Equal(Bits(With(KernelPath.Vector256, 4, () => highway.Forward(input, lengths))),
+            Bits(With(KernelPath.Vector512, 4, () => highway.Forward(input, lengths))));
     }
 
     /// <summary>A random bidirectional LSTM with its packed input, both as nn.LSTM and as <see cref="PackedLstm"/>.</summary>

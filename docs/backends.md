@@ -230,6 +230,16 @@ nearly idle (8–16% load). Medians in seconds, two rounds each:
 - **Load:** all models load in 1.1–1.3 s on either backend; the tokenizer and MWT weights are small, and packing them
   doesn't show.
 
+### Kernel paths
+
+`Gemm.Detect` picks the widest accelerated path at startup: Vector512 (AVX-512, where .NET accelerates `Vector512`),
+Vector256 (AVX2 + FMA), Vector128 (Arm64 NEON, or x64 without AVX2), Scalar. All read the same packed 16-column panels.
+Vector512 gives Vector256's results bit for bit (one register per panel row, two panels per GEMM call, same FMA order),
+and on AVX-512 runners it was 48–53% faster on an EPYC 9V45 (Zen 5) and 3–10% on an EPYC 9V74 (Zen 4)
+([performance.md, round 14](performance.md#results-round-14-avx-512-kernels-vector512)).
+`DOTNET_PreferredVectorBitWidth=256` makes .NET report Vector512 as not accelerated, which selects Vector256.
+`ManagedBackendTests` runs every path the machine has natively; CI's x64 runners have AVX-512 only sometimes.
+
 ### Small batches (the kernels report's open item)
 
 The kernels report had the highway biLSTM at 1.9× TorchSharp on 320 words (16 sentences × 20 words), from

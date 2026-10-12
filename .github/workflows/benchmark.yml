@@ -20,6 +20,10 @@ on:
         description: Smoke run (300 words, one run, 10 calls)
         type: boolean
         default: false
+      avx512_only:
+        description: Only the Vector512-vs-Vector256 jobs (avx512), not the runner matrix
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -30,6 +34,7 @@ env:
 
 jobs:
   benchmark:
+    if: ${{ !inputs.avx512_only }}
     strategy:
       fail-fast: false
       matrix:
@@ -119,10 +124,109 @@ jobs:
             benchmark.md
             benchmark.json
 
+  # The Vector512 (AVX-512) kernels against Vector256 (AVX2) on one machine: ubuntu-26.04 is sometimes an Intel Xeon
+  # Platinum 8573C (AVX-512), sometimes an AMD EPYC 7763 (none), so six jobs try. A job without AVX-512 says so and
+  # stops (success). One with it runs the managed kernel and pipeline tests (Vector512 is then the detected path) and
+  # `stanzasharp benchmark` without Python, alternating DOTNET_PreferredVectorBitWidth=256 (Vector256) and the default
+  # (Vector512), at the default threads and at 1. Its blocks go to the summary and the artifact avx512-<attempt>.
+  avx512:
+    strategy:
+      fail-fast: false
+      matrix:
+        attempt: [1, 2, 3, 4, 5, 6]
+    runs-on: ubuntu-26.04
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash
+    env:
+      STANZASHARP_MODELS: ${{ github.workspace }}/models/stanza/en
+    steps:
+      - name: CPU
+        id: cpu
+        run: |
+          cpu=$(grep -m1 '^model name' /proc/cpuinfo | cut -d: -f2- | xargs)
+          if grep -qw avx512f /proc/cpuinfo; then avx512=yes; else avx512=no; fi
+          echo "avx512=$avx512" >> "$GITHUB_OUTPUT"
+          echo "$cpu, AVX-512: $avx512" | tee -a "$GITHUB_STEP_SUMMARY"
+          if [ $avx512 = no ]; then echo "::notice::No AVX-512 on this runner ($cpu): Vector512 not tested or measured here."; fi
+
+      - uses: actions/checkout@v7
+        if: steps.cpu.outputs.avx512 == 'yes'
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v6
+        if: steps.cpu.outputs.avx512 == 'yes'
+        with:
+          dotnet-version: 10.0.x
+
+      - uses: actions/cache/restore@v6
+        if: steps.cpu.outputs.avx512 == 'yes'
+        id: models
+        with:
+          path: models/stanza/en
+          key: models-pt-${{ runner.os }}-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs') }}
+
+      - name: Build
+        if: steps.cpu.outputs.avx512 == 'yes'
+        run: |
+          version=$(git describe --tags --match 'v*')
+          dotnet build StanzaSharp.slnx -c Release
+          dotnet build src/StanzaSharp.Tool -c Release -p:Version="${version#v}" -p:IncludeSourceRevisionInInformationalVersion=false
+
+      - name: Download the models
+        if: steps.cpu.outputs.avx512 == 'yes' && steps.models.outputs.cache-hit != 'true'
+        run: |
+          dotnet src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll download models/stanza/en
+          dotnet src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll download models/stanza/en --package default_fast
+
+      - name: Benchmark Vector512 against Vector256
+        if: steps.cpu.outputs.avx512 == 'yes'
+        run: |
+          tool=src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll
+          mkdir -p avx512
+          for threads in 0 1; do
+            for round in 1 2; do
+              for width in 256 512; do
+                name="avx512/threads-$threads.round-$round.vector$width"
+                args=(benchmark --package ${{ inputs.package }} --models models/stanza/en --python python-not-used --json "$name.json")
+                if [ $threads != 0 ]; then args+=(--threads $threads); fi
+                if [ $width = 256 ]; then export DOTNET_PreferredVectorBitWidth=256; else unset DOTNET_PreferredVectorBitWidth; fi
+                dotnet $tool "${args[@]}" ${{ inputs.quick && '--quick' || '' }} > "$name.md"
+                grep -q "SIMD Vector$width" "$name.md" || { echo "::error::$name did not run on Vector$width"; cat "$name.md"; exit 1; }
+                { echo "### $name"; echo; cat "$name.md"; echo; } >> "$GITHUB_STEP_SUMMARY"
+              done
+            done
+          done
+
+      - name: Test (Vector512 detected)
+        if: steps.cpu.outputs.avx512 == 'yes'
+        run: >
+          dotnet test tests/StanzaSharp.Tests -c Release --no-build --blame-hang-timeout 30m --blame-hang-dump-type none
+          --logger trx --logger "console;verbosity=detailed" --results-directory TestResults
+          --filter "FullyQualifiedName~ManagedBackendTests|FullyQualifiedName~PipelineTests"
+
+      - name: Check that no test was skipped
+        if: steps.cpu.outputs.avx512 == 'yes'
+        run: |
+          if grep -h 'outcome="NotExecuted"' TestResults/*.trx | grep -qv 'Run_PythonStanza_'; then
+            echo "::error::Tests were skipped; the models in models/stanza/en were not found."
+            exit 1
+          fi
+
+      - uses: actions/upload-artifact@v7
+        if: always() && steps.cpu.outputs.avx512 == 'yes'
+        with:
+          name: avx512-${{ matrix.attempt }}
+          path: |
+            avx512/
+            TestResults/*.trx
+
   # One table over every runner that finished, then each runner's block.
   summary:
     needs: benchmark
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && !inputs.avx512_only }}
     runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7

@@ -7,9 +7,15 @@ namespace StanzaSharp.Nn.Managed;
 // Issue #29: a pure managed float32 backend, used by the processors ported so far when the backend is
 // Backend.Managed. docs/managed-backend-spike.md (kernels) and docs/backends.md (the seam) have the numbers.
 
-/// <summary>The SIMD flavor of the managed kernels. All three compute the same thing; tests run each of them.</summary>
+/// <summary>The SIMD flavor of the managed kernels. All four compute the same thing; tests run each of them.</summary>
 internal enum KernelPath
 {
+    /// <summary>
+    /// AVX-512 (x64): one 16-float register per row of a panel, and two panels at a time in a GEMM. Each
+    /// output gets the fused multiply-adds of <see cref="Vector256"/> in the same order, so the same bits.
+    /// </summary>
+    Vector512,
+
     /// <summary>AVX2 + FMA (x64): 6×16 micro-kernel in 12 registers.</summary>
     Vector256,
 
@@ -88,8 +94,13 @@ internal static unsafe class Gemm
     /// <summary>The kernels' SIMD flavor, detected at startup. Settable so tests can run every path on one machine.</summary>
     public static KernelPath Path { get; set; } = Detect();
 
+    /// <remarks>
+    /// Vector512 only where .NET accelerates it: CPUs with AVX-512 that don't throttle on it, and not when
+    /// <c>DOTNET_PreferredVectorBitWidth=256</c> (or <c>DOTNET_EnableAVX512F=0</c>) is set, which selects Vector256.
+    /// </remarks>
     public static KernelPath Detect() =>
-        Vector256.IsHardwareAccelerated ? KernelPath.Vector256
+        Vector512.IsHardwareAccelerated ? KernelPath.Vector512
+        : Vector256.IsHardwareAccelerated ? KernelPath.Vector256
         : Vector128.IsHardwareAccelerated ? KernelPath.Vector128
         : KernelPath.Scalar;
 
@@ -134,15 +145,17 @@ internal static unsafe class Gemm
             var aRows = stackalloc float*[MR];
             var init = stackalloc float*[MR];
             var cRows = stackalloc float*[MR];
-            var zero = stackalloc float[PackedMatrix.NR];
-            var dummy = stackalloc float[PackedMatrix.NR];
-            for (int i = 0; i < PackedMatrix.NR; i++)
+            var zero = stackalloc float[2 * PackedMatrix.NR]; // two panels wide, for the Vector512 pairs
+            var dummy = stackalloc float[2 * PackedMatrix.NR];
+            for (int i = 0; i < 2 * PackedMatrix.NR; i++)
                 zero[i] = 0;
+            bool pairs = Path == KernelPath.Vector512;
             for (int k0 = 0; k0 < w.K; k0 += KC)
             {
                 int kc = Math.Min(KC, w.K - k0);
                 for (int p = p0; p < p1; p++)
                 {
+                    bool pair = pairs && p + 1 < p1;
                     var panel = w.Data + (long)p * PackedMatrix.NR * w.K + (long)k0 * PackedMatrix.NR;
                     for (int r0 = m0; r0 < m1; r0 += MR)
                     {
@@ -156,8 +169,14 @@ internal static unsafe class Gemm
                             cRows[r] = r < mr ? cRow : dummy;
                         }
 
-                        Kernel(mr, aRows, panel, kc, init, cRows, rowInvariant);
+                        if (pair)
+                            KernelPair512(mr, aRows, panel, (long)PackedMatrix.NR * w.K, kc, init, cRows, rowInvariant);
+                        else
+                            Kernel(mr, aRows, panel, kc, init, cRows, rowInvariant);
                     }
+
+                    if (pair)
+                        p++;
                 }
             }
         });
@@ -190,6 +209,14 @@ internal static unsafe class Gemm
     {
         switch (Path)
         {
+            case KernelPath.Vector512:
+                if (mr == 1 && !rowInvariant)
+                    Kernel1x512(a[0], b, k, init[0], output[0]);
+                else if (mr <= 3)
+                    Kernel3x512(a, b, k, init, output);
+                else
+                    Kernel6x512(a, b, k, init, output);
+                break;
             case KernelPath.Vector256:
                 if (mr == 1 && !rowInvariant)
                     Kernel1x256(a[0], b, k, init[0], output[0]);
@@ -221,6 +248,137 @@ internal static unsafe class Gemm
                 KernelScalar(mr, a, b, k, init, output);
                 break;
         }
+    }
+
+    /// <summary>
+    /// <see cref="Kernel"/> on Vector512 for two adjacent panels (<paramref name="b"/> and <paramref name="b"/> +
+    /// <paramref name="bStride"/>), whose init and output columns follow the first panel's (+16): 12 accumulators for
+    /// 6 rows instead of 6, enough independent chains to cover the FMA latency. Each column's arithmetic is the
+    /// single-panel kernel's.
+    /// </summary>
+    private static void KernelPair512(int mr, float** a, float* b, long bStride, int k, float** init, float** output, bool rowInvariant)
+    {
+        if (mr == 1 && !rowInvariant)
+        {
+            Kernel1x512(a[0], b, k, init[0], output[0]);
+            Kernel1x512(a[0], b + bStride, k, init[0] + PackedMatrix.NR, output[0] + PackedMatrix.NR);
+        }
+        else if (mr <= 3)
+        {
+            Kernel3x512Pair(a, b, bStride, k, init, output);
+        }
+        else
+        {
+            Kernel6x512Pair(a, b, bStride, k, init, output);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private static void Kernel6x512(float** a, float* b, int k, float** init, float** output)
+    {
+        float* a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4 = a[4], a5 = a[5];
+        var c0 = Vector512.Load(init[0]); var c1 = Vector512.Load(init[1]); var c2 = Vector512.Load(init[2]);
+        var c3 = Vector512.Load(init[3]); var c4 = Vector512.Load(init[4]); var c5 = Vector512.Load(init[5]);
+        for (int p = 0; p < k; p++, b += PackedMatrix.NR)
+        {
+            var b0 = Vector512.Load(b);
+            c0 = Fma(Vector512.Create(a0[p]), b0, c0); c1 = Fma(Vector512.Create(a1[p]), b0, c1);
+            c2 = Fma(Vector512.Create(a2[p]), b0, c2); c3 = Fma(Vector512.Create(a3[p]), b0, c3);
+            c4 = Fma(Vector512.Create(a4[p]), b0, c4); c5 = Fma(Vector512.Create(a5[p]), b0, c5);
+        }
+
+        c0.Store(output[0]); c1.Store(output[1]); c2.Store(output[2]);
+        c3.Store(output[3]); c4.Store(output[4]); c5.Store(output[5]);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private static void Kernel3x512(float** a, float* b, int k, float** init, float** output)
+    {
+        float* a0 = a[0], a1 = a[1], a2 = a[2];
+        var c0 = Vector512.Load(init[0]); var c1 = Vector512.Load(init[1]); var c2 = Vector512.Load(init[2]);
+        for (int p = 0; p < k; p++, b += PackedMatrix.NR)
+        {
+            var b0 = Vector512.Load(b);
+            c0 = Fma(Vector512.Create(a0[p]), b0, c0); c1 = Fma(Vector512.Create(a1[p]), b0, c1); c2 = Fma(Vector512.Create(a2[p]), b0, c2);
+        }
+
+        c0.Store(output[0]); c1.Store(output[1]); c2.Store(output[2]);
+    }
+
+    /// <summary>One row: four accumulators over k, summed like <see cref="Kernel1x256"/>'s, so the same bits.</summary>
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private static void Kernel1x512(float* a, float* b, int k, float* init, float* output)
+    {
+        var c = Vector512.Load(init);
+        Vector512<float> d = default, e = default, f = default;
+        int p = 0;
+        for (; p <= k - 4; p += 4, b += 4 * PackedMatrix.NR)
+        {
+            c = Fma(Vector512.Create(a[p]), Vector512.Load(b), c);
+            d = Fma(Vector512.Create(a[p + 1]), Vector512.Load(b + 16), d);
+            e = Fma(Vector512.Create(a[p + 2]), Vector512.Load(b + 32), e);
+            f = Fma(Vector512.Create(a[p + 3]), Vector512.Load(b + 48), f);
+        }
+
+        for (; p < k; p++, b += PackedMatrix.NR)
+            c = Fma(Vector512.Create(a[p]), Vector512.Load(b), c);
+
+        ((c + d) + (e + f)).Store(output);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private static void Kernel6x512Pair(float** a, float* b, long bStride, int k, float** init, float** output)
+    {
+        const int nr = PackedMatrix.NR;
+        float* a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4 = a[4], a5 = a[5];
+        float* bb = b + bStride;
+        var c00 = Vector512.Load(init[0]); var c01 = Vector512.Load(init[0] + nr);
+        var c10 = Vector512.Load(init[1]); var c11 = Vector512.Load(init[1] + nr);
+        var c20 = Vector512.Load(init[2]); var c21 = Vector512.Load(init[2] + nr);
+        var c30 = Vector512.Load(init[3]); var c31 = Vector512.Load(init[3] + nr);
+        var c40 = Vector512.Load(init[4]); var c41 = Vector512.Load(init[4] + nr);
+        var c50 = Vector512.Load(init[5]); var c51 = Vector512.Load(init[5] + nr);
+        for (int p = 0; p < k; p++, b += nr, bb += nr)
+        {
+            var b0 = Vector512.Load(b);
+            var b1 = Vector512.Load(bb);
+            var x = Vector512.Create(a0[p]); c00 = Fma(x, b0, c00); c01 = Fma(x, b1, c01);
+            x = Vector512.Create(a1[p]); c10 = Fma(x, b0, c10); c11 = Fma(x, b1, c11);
+            x = Vector512.Create(a2[p]); c20 = Fma(x, b0, c20); c21 = Fma(x, b1, c21);
+            x = Vector512.Create(a3[p]); c30 = Fma(x, b0, c30); c31 = Fma(x, b1, c31);
+            x = Vector512.Create(a4[p]); c40 = Fma(x, b0, c40); c41 = Fma(x, b1, c41);
+            x = Vector512.Create(a5[p]); c50 = Fma(x, b0, c50); c51 = Fma(x, b1, c51);
+        }
+
+        c00.Store(output[0]); c01.Store(output[0] + nr);
+        c10.Store(output[1]); c11.Store(output[1] + nr);
+        c20.Store(output[2]); c21.Store(output[2] + nr);
+        c30.Store(output[3]); c31.Store(output[3] + nr);
+        c40.Store(output[4]); c41.Store(output[4] + nr);
+        c50.Store(output[5]); c51.Store(output[5] + nr);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private static void Kernel3x512Pair(float** a, float* b, long bStride, int k, float** init, float** output)
+    {
+        const int nr = PackedMatrix.NR;
+        float* a0 = a[0], a1 = a[1], a2 = a[2];
+        float* bb = b + bStride;
+        var c00 = Vector512.Load(init[0]); var c01 = Vector512.Load(init[0] + nr);
+        var c10 = Vector512.Load(init[1]); var c11 = Vector512.Load(init[1] + nr);
+        var c20 = Vector512.Load(init[2]); var c21 = Vector512.Load(init[2] + nr);
+        for (int p = 0; p < k; p++, b += nr, bb += nr)
+        {
+            var b0 = Vector512.Load(b);
+            var b1 = Vector512.Load(bb);
+            var x = Vector512.Create(a0[p]); c00 = Fma(x, b0, c00); c01 = Fma(x, b1, c01);
+            x = Vector512.Create(a1[p]); c10 = Fma(x, b0, c10); c11 = Fma(x, b1, c11);
+            x = Vector512.Create(a2[p]); c20 = Fma(x, b0, c20); c21 = Fma(x, b1, c21);
+        }
+
+        c00.Store(output[0]); c01.Store(output[0] + nr);
+        c10.Store(output[1]); c11.Store(output[1] + nr);
+        c20.Store(output[2]); c21.Store(output[2] + nr);
     }
 
     // Fma is MultiplyAddEstimate: one fused instruction where the CPU has one (x64 FMA3, every Arm64), else a·b + c.
@@ -477,6 +635,12 @@ internal static unsafe class Gemm
     {
         switch (Path)
         {
+            case KernelPath.Vector512:
+                if (mr <= 3)
+                    Kernel3x512Blocked(a, b, k, kb, init, output);
+                else
+                    Kernel6x512Blocked(a, b, k, kb, init, output);
+                break;
             case KernelPath.Vector256:
                 if (mr <= 3)
                     Kernel3x256Blocked(a, b, k, kb, init, output);
@@ -587,6 +751,60 @@ internal static unsafe class Gemm
     }
 
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private static void Kernel6x512Blocked(float** a, float* b, int k, int kb, float** init, float** output)
+    {
+        float* a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4 = a[4], a5 = a[5];
+        for (int k0 = 0; k0 < k; k0 += kb)
+        {
+            Vector512<float> c0 = default, c1 = default, c2 = default, c3 = default, c4 = default, c5 = default;
+            int end = Math.Min(k, k0 + kb);
+            for (int p = k0; p < end; p++, b += PackedMatrix.NR)
+            {
+                var b0 = Vector512.Load(b);
+                c0 = Fma(Vector512.Create(a0[p]), b0, c0); c1 = Fma(Vector512.Create(a1[p]), b0, c1);
+                c2 = Fma(Vector512.Create(a2[p]), b0, c2); c3 = Fma(Vector512.Create(a3[p]), b0, c3);
+                c4 = Fma(Vector512.Create(a4[p]), b0, c4); c5 = Fma(Vector512.Create(a5[p]), b0, c5);
+            }
+
+            bool first = k0 == 0, last = end == k;
+            Flush512(output[0], init[0], first, last, c0); Flush512(output[1], init[1], first, last, c1);
+            Flush512(output[2], init[2], first, last, c2); Flush512(output[3], init[3], first, last, c3);
+            Flush512(output[4], init[4], first, last, c4); Flush512(output[5], init[5], first, last, c5);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private static void Kernel3x512Blocked(float** a, float* b, int k, int kb, float** init, float** output)
+    {
+        float* a0 = a[0], a1 = a[1], a2 = a[2];
+        for (int k0 = 0; k0 < k; k0 += kb)
+        {
+            Vector512<float> c0 = default, c1 = default, c2 = default;
+            int end = Math.Min(k, k0 + kb);
+            for (int p = k0; p < end; p++, b += PackedMatrix.NR)
+            {
+                var b0 = Vector512.Load(b);
+                c0 = Fma(Vector512.Create(a0[p]), b0, c0); c1 = Fma(Vector512.Create(a1[p]), b0, c1); c2 = Fma(Vector512.Create(a2[p]), b0, c2);
+            }
+
+            bool first = k0 == 0, last = end == k;
+            Flush512(output[0], init[0], first, last, c0); Flush512(output[1], init[1], first, last, c1);
+            Flush512(output[2], init[2], first, last, c2);
+        }
+    }
+
+    /// <summary>A blocked kernel's row after a block, like <see cref="Flush128"/>.</summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void Flush512(float* o, float* init, bool first, bool last, Vector512<float> c)
+    {
+        if (!first)
+            c = Vector512.Load(o) + c;
+        if (last)
+            c += Vector512.Load(init);
+        c.Store(o);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private static void Kernel6x128Blocked(float** a, float* b, int k, int kb, float** init, float** output)
     {
         float* a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4 = a[4], a5 = a[5];
@@ -690,6 +908,9 @@ internal static unsafe class Gemm
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static Vector512<float> Fma(Vector512<float> a, Vector512<float> b, Vector512<float> c) => Vector512.MultiplyAddEstimate(a, b, c);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static Vector256<float> Fma(Vector256<float> a, Vector256<float> b, Vector256<float> c) => Vector256.MultiplyAddEstimate(a, b, c);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -703,6 +924,9 @@ internal static unsafe class Gemm
 /// <summary>Activations and the fused element-wise steps, per <see cref="Gemm.Path"/> (PyTorch semantics; values agree to a few ulp).</summary>
 internal static unsafe class Act
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector512<float> Sigmoid(Vector512<float> x) => Vector512<float>.One / (Vector512<float>.One + Vector512.Exp(-x));
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector256<float> Sigmoid(Vector256<float> x) => Vector256<float>.One / (Vector256<float>.One + Vector256.Exp(-x));
 
@@ -730,6 +954,9 @@ internal static unsafe class Act
     public static Vector128<float> Tanh(Vector128<float> x) => Sigmoid(x + x) * Vector128.Create(2f) - Vector128<float>.One;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector512<float> Tanh(Vector512<float> x) => Sigmoid(x + x) * Vector512.Create(2f) - Vector512<float>.One;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector256<float> Tanh(Vector256<float> x) => Sigmoid(x + x) * Vector256.Create(2f) - Vector256<float>.One;
 
     /// <summary>
@@ -741,6 +968,19 @@ internal static unsafe class Act
     {
         switch (Gemm.Path)
         {
+            case KernelPath.Vector512:
+                {
+                    // One exp for all 16 lanes: σ(i), σ(f), σ(2g), σ(o); tanh(g) = 2σ(2g) − 1, as in Tanh.
+                    var g = Vector128.Load(gates + 8);
+                    var s = Sigmoid(Vector512.Create(Vector256.Load(gates), Vector256.Create(g + g, Vector128.Load(gates + 12))));
+                    var lower = s.GetLower();
+                    var upper = s.GetUpper();
+                    var cNew = lower.GetUpper() * Vector128.Load(c) + lower.GetLower() * (upper.GetLower() * Vector128.Create(2f) - Vector128<float>.One);
+                    cNew.Store(c);
+                    (upper.GetUpper() * Tanh(cNew)).Store(h);
+                    break;
+                }
+
             case KernelPath.Vector256:
                 {
                     var ifg = Sigmoid(Vector256.Load(gates));
@@ -775,7 +1015,13 @@ internal static unsafe class Act
     public static void AddGatedTanh(float* o, float* gate, float* highway, int n)
     {
         int j = 0;
-        if (Gemm.Path == KernelPath.Vector256)
+        if (Gemm.Path == KernelPath.Vector512)
+        {
+            for (; j <= n - 16; j += 16)
+                (Vector512.Load(o + j) + Sigmoid(Vector512.Load(gate + j)) * Tanh(Vector512.Load(highway + j))).Store(o + j);
+        }
+
+        if (Gemm.Path is KernelPath.Vector512 or KernelPath.Vector256)
         {
             for (; j <= n - 8; j += 8)
                 (Vector256.Load(o + j) + Sigmoid(Vector256.Load(gate + j)) * Tanh(Vector256.Load(highway + j))).Store(o + j);

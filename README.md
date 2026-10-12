@@ -18,7 +18,7 @@ dotnet add package StanzaSharp
 ```
 
 That is the whole install. Requires .NET 10. The models run on StanzaSharp's **managed backend**: C# kernels using the
-CPU's SIMD instructions (AVX2 or Arm64 NEON where present), with no libtorch or other native library. On the full
+CPU's SIMD instructions (AVX-512, AVX2 or Arm64 NEON where present), with no libtorch or other native library. On the full
 pipeline it is about twice as fast as the TorchSharp backend on 8 threads and peaks lower in memory (see
 [Performance](#performance)), and its output is the same, byte for byte.
 

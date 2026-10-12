@@ -260,6 +260,8 @@ The spike's open items 1, 6 and 7 (other architectures, threading, memory). The 
 ### What changed
 
 - **Kernel paths** (`KernelPath`, `Gemm.Path`, detected at startup by `Gemm.Detect`):
+  - `Vector512` (added after 1.2.0; docs/performance.md, round 14): AVX-512, one register per panel row, two panels
+    per GEMM call; Vector256's bits.
   - `Vector256`: the spike's AVX2/FMA kernels (when `Vector256.IsHardwareAccelerated`).
   - `Vector128`: a 6×16 kernel in 24 accumulators + 4 panel registers + 1 broadcast, which fits Arm64's 32 NEON
     registers; plus 3-row and 1-row kernels. Chosen on Arm64 (and on x64 without AVX2).
@@ -413,7 +415,7 @@ Tagger batches (6,566 words, 2 batches), seconds, managed / torch:
 
 Phase 1 (the seam, tokenize and mwt) is in [backends.md](backends.md), which also remeasures the small-batch item below.
 
-- An AVX-512 kernel (no AVX-512 machine here). Arm64 tuning is done (see "Arm64" above).
+- An AVX-512 kernel: done after 1.2.0 (`Vector512`, docs/performance.md round 14). Arm64 tuning is done (see "Arm64" above).
 - Small batches: the highway at 320 words is 1.9× TorchSharp; per-step regions there are a few microseconds of work.
   Splitting by rows as well as panels, or running small steps on fewer threads, is the fix.
 - `ManagedThreads.Count` is process-wide like `torch.set_num_threads`; Phase 1 maps `PipelineOptions.Threads` to it.
