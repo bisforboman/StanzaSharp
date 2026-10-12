@@ -378,6 +378,18 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
         TokenizerTests.AssertClose(lstm.Expected, With(path, 4, () => lstm.Run()), 1e-5f, "bilstm");
     }
 
+    /// <summary>An LSTM step's split (4 tasks per thread: 4 to 32 tasks over 32 panels here) never changes a bit.</summary>
+    [Theory]
+    [MemberData(nameof(Paths))]
+    public void LstmStep_EveryThreadCountGivesTheSameBits(string path)
+    {
+        // Batch sizes 1 to 6: the 1-, 3- and 6-row kernels; 64 units are 16 panels per direction.
+        var lstm = new RandomLstm(48, 64, [40, 33, 25, 17, 9, 2], 5);
+        var expected = With(path, 1, () => lstm.Run());
+        foreach (int threads in new[] { 2, 3, 5, 8 })
+            Assert.Equal(expected, With(path, threads, () => lstm.Run()));
+    }
+
     [Fact]
     public void ConcurrentCalls_EqualSequentialOutput()
     {
