@@ -8,6 +8,68 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 Unreleased changes are one file each under [`changes/`](changes/README.md), so pull requests don't conflict here;
 a release folds them in (`python tools/changelog.py release X.Y.Z`).
 
+## [1.1.0] - 2026-10-12
+
+1.1: about 1 GB less peak memory with all eight processors, hardened model loading, faster concurrent calls, and two
+new `stanzasharp` commands to check StanzaSharp against Python Stanza on your own text and machine. Outputs are
+unchanged; no API changes.
+
+### Added
+- `stanzasharp benchmark [--package NAME] [--processors LIST] [--models DIR] [--threads N] [--words N] [--python PATH]
+  [--quick] [--json FILE]` (`StanzaSharp.Tool`): times StanzaSharp on a built-in English text (load, each processor,
+  words/s, one-sentence calls with median and p90, peak memory) and, if Python Stanza 1.15.0 is available, Stanza on
+  the same text with the same models, runs alternating, and prints a Markdown block with the machine (CPU model,
+  cores, RAM, OS, .NET, SIMD path), both sides and the ratio. A manual workflow (`benchmark.yml`) runs it on every free
+  GitHub-hosted runner and combines the results into one table.
+- `stanzasharp compare FILE [--package NAME] [--processors LIST] [--models DIR] [--python PATH]` (`StanzaSharp.Tool`):
+  runs Python Stanza 1.15.0 and StanzaSharp on your own text with the same, MD5-checked model files and reports
+  whether the CoNLL-U output is identical, or the first difference (sentence, both lines), with sentence and word
+  counts and both sides' load and processing times. Offsets after characters outside the BMP are converted to code
+  points (Stanza's) before comparing. Exit code 0 identical, 1 different, 2 usage or setup error.
+
+### Changed
+- Less memory on long texts (managed backend): the parsers and classifiers reuse their per-batch arrays instead of
+  leaving them to the garbage collector (constituency recycles its parser states, the dependency parser decodes in
+  rented buffers), so a call allocates about 18 KB per word instead of 54, and one call on 201,313 words with all eight
+  processors peaks at about 1.9 GB instead of 2.2–2.3 GB. Outputs are unchanged.
+- README: guidance for very long texts, including what splitting a text into parts changes (sentiment labels).
+- Less memory with sentiment (managed backend): its LSTM and convolutions no longer hold whole-batch buffers for the
+  padded rows, so one call on 6,761 words peaks at 1.3 GB instead of 2.3 GB with all eight processors (1.1 GB instead of
+  2.0 GB with `default_fast`). Outputs are unchanged, bit for bit.
+- Less memory on long texts: the returned `Document` takes about 19% less (482 instead of 594 bytes per word with all
+  eight processors: tokens hold room for one word, `SpaceAfter` and equal feats strings are shared, tree children are
+  arrays), and NER frees the charlm outputs the tagger kept for it (up to 256 MB) as it goes. One call on 670,000
+  words peaked at 3.0 GB instead of 3.6 GB. Outputs are unchanged. `Tree.Children` of a parsed tree is now an array
+  (still an `IReadOnlyList<Tree>`).
+
+### Fixed
+- Managed backend: concurrent `Process` calls with `Threads` near the number of logical processors (the default) no
+  longer oversubscribe the CPU. The pool's workers stay asleep while callers and workers already fill every logical
+  processor; before, 8 callers on 16 threads got 3-10 calls/s and single calls stalled for up to 20 s, now 13-17
+  calls/s (docs/performance.md, round 12). Output is unchanged.
+- `Pipeline.Load`'s error for a missing model directory now suggests `stanzasharp download` (the .NET tool) instead of the sample CLI.
+- `.pt` loading: an integer pickled as LONG1 that fits in 64 bits (such as a storage of 2^31 elements or more) was kept
+  as a big integer, so such a checkpoint failed to load.
+
+### Security
+- Loading a malformed or hostile model file now always fails with `InvalidDataException` (`NotSupportedException` for
+  a big-endian `.pt`), in time and memory bounded by the file's size. Found by a new fuzz test of the `.pt` and
+  `.json` + `.safetensors` loaders:
+  - A pickle with many nested MARKs took quadratic time (each MARK copied the stack): 400 KB could hang the load.
+  - Deeply nested or self-referencing lists threw `InvalidOperationException` or `JsonException` after recursing up
+    to 1000 levels (a stack overflow on a small thread stack); a dict key of deeply nested tuples overflowed the stack
+    when hashed, crashing the process.
+  - An object referenced many times through the pickle memo was copied into the JSON each time (a 264 KB file asked for
+    gigabytes).
+  - Storage and tensor sizes could overflow: a storage of 2^62 floats passed the "fits in the file" check, a storage
+    view at a huge offset passed its bounds check, and huge strides wrapped a tensor's extent negative. A stride-0
+    tensor could claim terabytes, and a negative size next to a zero was accepted.
+  - A zip `.pt` whose `data.pkl` header claimed 2 GB allocated it before reading; compressed (zip bomb) entries are
+    now rejected, since torch.save stores them uncompressed.
+  - safetensors headers were not validated: an unknown dtype, a shape that disagrees with the byte size, overlapping
+    or missing data, or a malformed header threw `FormatException`, `KeyNotFoundException`, `JsonException` or
+    `InvalidOperationException`, or loaded.
+
 ## [1.0.0] - 2026-10-10
 
 1.0: the `StanzaSharp` package is fully managed, with no native or TorchSharp dependency; GPU and TorchSharp users add
