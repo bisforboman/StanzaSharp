@@ -343,8 +343,8 @@ converts them to `models\converted\en`. Use `-Python` for the environment only, 
 
 ## Performance
 
-On GitHub's free hosted runners (2–4 cores), the default pipeline ran 2.8–3.8x faster than Python Stanza 1.15.0 on the
-same text and models, peaked at about a third of its memory (0.9–1.2 GB against 2.5–3.6 GB), and gave identical
+On GitHub's free hosted runners (2–4 cores), the default pipeline ran 2.1–3.8x faster than Python Stanza 1.15.0 on the
+same text and models, peaked at about a third of its memory (0.9–1.1 GB against 2.2–3.7 GB), and gave identical
 CoNLL-U ([docs/verification.md](docs/verification.md#speed-on-the-free-runners)). `stanzasharp benchmark` measures
 your own machine (see [Check it yourself](#check-it-yourself)).
 
