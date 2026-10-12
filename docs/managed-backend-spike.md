@@ -2,7 +2,11 @@
 
 Can pure managed C# run Stanza's LSTM-heavy paths close enough to libtorch in speed, and within tolerance in
 values? This spike ports the two hottest paths, measures them against TorchSharp on the tagger's real batches,
-and extrapolates to the full pipeline. Nothing in the shipped pipeline uses this code.
+and extrapolates to the full pipeline. At the time nothing in the shipped pipeline used this code.
+
+This page is the record of Phase 0 and the kernels' first production pass (2026-10-07 to 10-10). The kernels became
+the managed backend, the default since 0.5; for the current design, exactness and speed see [backends.md](backends.md)
+and [performance.md](performance.md).
 
 ## What was built
 

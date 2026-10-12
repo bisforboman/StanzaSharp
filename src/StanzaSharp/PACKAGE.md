@@ -70,7 +70,7 @@ await ModelDownloader.DownloadAsync("models/stanza/en", "tokenize,mwt,pos,lemma"
 Each file is checked against its published MD5, and files already present are kept. `Pipeline.Load` itself
 never touches the network.
 
-**Command line:** the `stanzasharp` .NET tool (package `StanzaSharp.Tool`, about 1 MB, no native libraries) downloads
+**Command line:** the `stanzasharp` .NET tool (package `StanzaSharp.Tool`, about 0.5 MB, no native libraries) downloads
 them too, e.g. in a Dockerfile or CI:
 
 ```

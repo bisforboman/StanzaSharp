@@ -121,6 +121,11 @@ the shared word vectors and character models when used.
 A directory you already have from Python Stanza (`<processor>/<name>.pt`, e.g. `~/stanza_resources/en`)
 works too.
 
+Model files are read without Python and without running any code from them: the `.pt` reader accepts only the plain
+data and tensor types Stanza's checkpoints use (like torch's `weights_only=True`). A malformed, truncated or hostile
+file fails with an `InvalidDataException` in time and memory bounded by its size; a fuzz test of both file formats
+runs in CI.
+
 ### Check it yourself
 
 `stanzasharp compare FILE` runs Python Stanza 1.15.0 and StanzaSharp on your own text, with the same model files
