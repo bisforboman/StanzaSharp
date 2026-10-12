@@ -223,6 +223,9 @@ Tokenizer notes:
   - Those later windows run only the unfinished rows (`Tokenizer.LiveRows`, round 15: 2.4x on the benchmark text), plus
     finished (all-padding) rows placed before the last live row until `Gemm.Run`'s single-row kernel (row m − 1 when
     m % 6 is 1) falls on the same row as with the whole batch, so every used logit keeps its bits on every path.
+- `FixLabels` runs the e-mail/URL regex (`MaskRe`) only on paragraphs containing one of `MaskLiterals` (`@`, `://`,
+  `www.`, `.gov` ... read off the pattern's alternatives; round 16). If the pattern changes, re-derive them; the
+  `MaskLiterals_*` tests check every alternative and a fuzz.
 - Model units are code points, like Python. Offsets are UTF-16 indices, so they differ from
   Stanza's only after non-BMP characters.
 - MWT-flagged tokens (`Token.IsMwtCandidate`) carry a single word until the MWT stage runs.
@@ -706,7 +709,8 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     exempt them by name.
   - `benchmark [--package] [--processors] [--models DIR] [--threads N] [--words N] [--python PATH] [--quick] [--json FILE]`
     (`BenchmarkCommand.cs`, owner's decision 2026-10-10): managed backend vs the embedded `benchmark.py`, one Python process
-    that loads Stanza once and answers JSON-line commands (`run`, `calls`) so runs alternate (warm-up, 3 timed runs,
+    that loads Stanza once and answers JSON-line commands (`run`, `calls`) so runs alternate (warm-up runs on the whole text
+    until each side settles, `WarmedUp`: no stage > 10% and 20 ms faster, 2–5 runs, round 16; 3 timed runs,
     medians; 50 one-sentence calls, median/p90; peak working set, macOS `ru_maxrss`). Text: the benchmark sample's golden
     texts (validation, corpus, tokenize_stress), embedded under `benchmark/`, cut after the paragraph that reaches 1,500
     whitespace words (`--quick`: 300, 1 run, 10 calls); the block reports words after tokenizing and MWT (2,009 by default). Threads default to each side's own (unless `--threads`). Python is optional: any failure
@@ -922,6 +926,9 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - `ManagedThreads`: one process-wide pool of `Count` − 1 workers; each caller works its own region and idle workers
     help. Not per-caller teams: those oversubscribe (measured: 8 callers fall to TorchSharp's throughput). A region's
     split must not depend on how many threads help, so results stay bitwise identical under concurrency.
+  - `PackedLstm.Step` runs 4 tasks per thread (`TasksPerThread`; round 16): a late thread then holds a quarter of its
+    share. Tried and dropped: fewer tasks for small steps (a work threshold, or timing each size class: biased by
+    asleep workers, 25–50% slower on the Arm runners). A panel's arithmetic doesn't depend on its task.
   - Per-call buffers come from `ArrayPool<T>.Shared` and go back in `finally`; no buffer is shared between calls, and
     no mutable state lives on a model. Rented arrays hold stale data: write before reading. Measured (round 9): exact-size
     arrays instead raise the peak (+150 MB in depparse); the pool's power-of-two rounding costs no working set. Processors

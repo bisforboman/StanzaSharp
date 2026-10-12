@@ -61,9 +61,9 @@ Different: 1 of 68 sentences differ. The first difference, line 384 of the CoNLL
 
 `stanzasharp benchmark` times StanzaSharp on a built-in English text (our own test texts: 1,500 words by whitespace,
 2,009 after tokenizing) and, if Python Stanza 1.15.0 is available, Stanza on the same text with the same models,
-alternating their runs (a warm-up run each, then the median of 3). It reports load time, each processor, words/s, single-sentence calls (median and p90) and
+alternating their runs (warm-up runs on the whole text until each side's times settle, at most 5, then the median of 3). It reports load time, each processor, words/s, single-sentence calls (median and p90) and
 peak memory, and prints a Markdown block with the CPU, cores, RAM, OS, .NET version, SIMD path and StanzaSharp version,
-ready to paste into an issue. With Python it takes about two minutes on 4 cores. Results from GitHub's free runners:
+ready to paste into an issue. With Python it takes about four minutes on 4 cores. Results from GitHub's free runners:
 [docs/performance.md](https://github.com/bisforboman/StanzaSharp/blob/main/docs/performance.md#run-it-yourself).
 
 ```
