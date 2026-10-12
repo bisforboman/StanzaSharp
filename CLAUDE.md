@@ -521,12 +521,12 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   Use it wherever Stanza calls `lower()`, `isupper()`, `isspace()` or `split()`. Regexes ported
   from Python need care too: Python's `\b`/`\w` count No/Nl characters such as `²` as word
   characters and combining marks as non-word (see `Tokenizer.PyRegex`).
-- CI (`.github/workflows/ci.yml`, github.com/bisforboman/StanzaSharp; pushes to `main`, PRs, `merge_group`, and
+- CI (`.github/workflows/ci.yml`, github.com/bisforboman/StanzaSharp; pushes to `main`, PRs and
   `workflow_call` from release.yml; `ubuntu-26.04`, `ubuntu-26.04-arm`, `windows-2025`, `macos-26`, `windows-11-arm` pinned).
   - Branch protection on `main` requires `build-test`, `golden`, `docker`, `alpine`, `linux-arm64` and the three
     `cross-os (...)` checks (checked 2026-10-12). `build-test` and `golden` stay plain jobs; a matrix would rename them
-    (`build-test (ubuntu-26.04)`) and block every PR. No merge queue is configured (no ruleset), so the `merge_group`
-    trigger never fires: a PR merges after its light run, and the full run is main's push.
+    (`build-test (ubuntu-26.04)`) and block every PR. There is no merge queue (GitHub offers it only to organization-owned
+    repositories; this one is user-owned): a PR merges after its light run, and the full run is main's push.
   - `build-test` runs the suite without models.
   - Docs-only pull requests (`docs/`, `*.md`, `LICENSE`, `NOTICE`): the `changes` job makes `golden`, `docker`,
     `alpine`, `linux-arm64` and `cross-os` run with their steps skipped, so the required checks pass in about a minute. No job is skipped
@@ -536,7 +536,7 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     merge; `ready_for_review` starts the real run), so agents open stacked PRs as drafts and mark them ready once their
     base merges. **Ready** PRs run level `light`: `docker` and `alpine` run everything; `cross-os` and
     `linux-arm64` run only `PipelineTests`, `ManagedBackendTests` and `ManagedCheckTests` (70 tests, ~2.5 min locally)
-    and no package checks. The **merge queue** (`merge_group`), pushes to main and release runs are level `full`.
+    and no package checks. Pushes to main and release runs are level `full`.
   - TorchSharp smoke (owner's decision, 2026-10-10): `changes` also outputs `torch`. A ready PR whose files miss
     `src/StanzaSharp.Cuda/`, `src/StanzaSharp.Nn/`, `src/StanzaSharp/{BackendModels,PipelineBackend}.cs`,
     `Directory.Build.props` and `.github/workflows/` gets `torch=smoke`: golden runs every test except the
@@ -554,7 +554,7 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     | docs-only ready PR | false | light | smoke | steps skipped, passes in ~1 min |
     | ready PR, only `src/StanzaSharp.Pos/**` | true | light | smoke | managed + smoke, 3 shards |
     | ready PR touching `src/StanzaSharp.Cuda/**` | true | light | full | everything, 3 shards |
-    | merge queue, push to main, release (`workflow_call`) | true | full | full | everything, 3 shards |
+    | push to main, release (`workflow_call`) | true | full | full | everything, 3 shards |
     | `changes` failed | (empty) | (empty) | (empty) | everything (anything not clearly false/smoke) |
   - `concurrency` (`${{ github.workflow }}-${{ github.ref }}`): a newer push to the same PR or to main cancels the older
     CI run. release.yml's call gets the group `Release-refs/heads/main` (`github.workflow` is the caller's name), so it
