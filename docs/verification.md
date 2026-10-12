@@ -65,7 +65,7 @@ off (`disableTf32: true`); with TF32 on, 3 of 845 golden sentences differed on a
 ## Where it is checked
 
 [CI](../.github/workflows/ci.yml) runs on free GitHub-hosted runners. All eight jobs are required checks on `main`.
-Test counts are xUnit test cases (theories count once per case) in `main`'s run of 2026-10-11:
+Test counts are passed xUnit test cases (each case of a theory counts) in `main`'s run of 2026-10-11:
 
 | Job | Runner | What it checks |
 |---|---|---|
@@ -73,7 +73,7 @@ Test counts are xUnit test cases (theories count once per case) in `main`'s run 
 | `golden` (3 shards) | ubuntu-26.04 (x64) | the whole suite on both backends against downloaded models, original and converted (360 tests); then packs the packages and builds fresh apps from them: `StanzaSharp` alone must reproduce the golden CoNLL-U with nothing of TorchSharp loaded, and `StanzaSharp.Cuda` with `TorchSharp-cpu` must too; then installs the `stanzasharp` tool and downloads models with it |
 | `cross-os (windows-2025)` | Windows x64 | the whole suite on both backends, reading Stanza's `.pt` files directly (360 tests), and both package checks |
 | `cross-os (macos-26)` | macOS, Apple Silicon | the same (338 tests: Arm64 has no Vector256 path) |
-| `cross-os (windows-11-arm)` | Windows on Arm64 | the same (338 tests), and the managed package check |
+| `cross-os (windows-11-arm)` | Windows on Arm64 | the same suite (338 tests) and only the managed package check (`TorchSharp-cpu` has no Arm64 libtorch) |
 | `linux-arm64` | ubuntu-26.04-arm | every managed-backend test (219; there is no libtorch for Linux Arm64) and the managed package check |
 | `docker` | ubuntu-26.04 | the [Docker sample](../samples/docker/Dockerfile) on `runtime:10.0` and `runtime:10.0-noble-chiseled`: no libtorch in the image, and the container turns `corpus.txt` into the golden CoNLL-U byte for byte |
 | `alpine` | ubuntu-26.04 | the same on `runtime:10.0-alpine` (musl) |
