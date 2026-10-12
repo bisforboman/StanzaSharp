@@ -57,8 +57,8 @@ The seam sits at each processor's **network**: one small interface per processor
 - Internally a `PipelineBackend` makes a `BackendModels` per load: `ManagedModels` (facade) calls each processor's
   `LoadManaged`, `TorchSharpModels` (StanzaSharp.Cuda) its TorchSharp `Load` on the backend's device.
 - **Threads:** with `Backend.Managed`, `Load` also sets `ManagedThreads.Count`, with the documented semantics: an
-  explicit `Threads`, or null for `min(current count, Environment.ProcessorCount)`. The count is ProcessorCount unless
-  something set it lower, and `ProcessorCount` respects a container's CPU quota. It is process-wide, like
+  explicit `Threads`, or null for the physical cores when there are at least 4, otherwise all logical processors, never
+  above `Environment.ProcessorCount` (which respects a container's CPU quota; performance.md, rounds 12–13). It is process-wide, like
   `torch.set_num_threads`. With `Backend.Managed`, libtorch's threads are left alone (see below); on TorchSharp they are
   set as before.
 - Benchmark: `StanzaSharp.Benchmark --backend managed|torch [--processors tokenize,mwt]` (managed by default;
