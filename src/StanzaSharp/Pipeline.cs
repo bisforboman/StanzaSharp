@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.ExceptionServices;
 using Microsoft.Extensions.Logging;
 using StanzaSharp.Constituency;
 using StanzaSharp.Depparse;
@@ -106,10 +107,12 @@ public sealed class Pipeline : IDisposable
         string Model(string processor) => Path.Combine(modelDir, processor, models[processor]);
         string Name(string processor) => $"{processor}/{models[processor]}";
 
-        // Managed: the models load on the thread pool, the shared ones and those that read none first, then the rest
-        // (round 17). TorchSharp: one after another on this thread, in this order (its device and dispose scopes are
-        // per thread).
+        // Managed: two models load at a time, on the thread pool (round 17: the load took 23-40% less time on the
+        // runners, its peak 22-72 MB more; all at once took 27-48% less, but 95-215 MB more). The pretrain and the
+        // charlms go first; their readers start once they are loaded. TorchSharp: one after another on this thread, in
+        // this order (its device and dispose scopes are per thread).
         bool parallel = backend.LoadInParallel;
+        using var lanes = new SemaphoreSlim(Math.Min(LoadLanes, Environment.ProcessorCount));
         T Timed<T>(string name, Func<T> load)
         {
             if (_logger?.IsEnabled(LogLevel.Information) != true)
@@ -122,34 +125,30 @@ public sealed class Pipeline : IDisposable
 
         T Collected<T>(T model)
         {
-            if (backend.CollectAfterEachModel && (!parallel || Environment.GetEnvironmentVariable("LOADGC") == "1"))
+            if (backend.CollectAfterEachModel)
                 GC.Collect();
             return model;
         }
 
         var started = new List<Task>();
-        int nl = int.TryParse(Environment.GetEnvironmentVariable("LOADPAR"), out var x) ? x : 0;
-        var lanes = nl > 0 ? new SemaphoreSlim(nl) : null;
         Task<T> Start<T>(string name, Func<T> load)
         {
-            var task = parallel ? Task.Run(() => { lanes?.Wait(); try { return Timed(name, load); } finally { lanes?.Release(); } }) : Task.FromResult(Timed(name, load));
+            var task = parallel ? Task.Run(() => Laned(name, load)) : Task.FromResult(Timed(name, load));
             started.Add(task);
             return task;
         }
 
-        T? Get<T>(Task<T>? task) where T : class
+        T Laned<T>(string name, Func<T> load)
         {
-            if (task == null)
-                return null;
+            lanes.Wait();
             try
             {
-                Task.WaitAll(started); // so nothing still loads when the first failure is thrown
+                return Timed(name, load);
             }
-            catch (AggregateException)
+            finally
             {
+                lanes.Release();
             }
-
-            return task.GetAwaiter().GetResult(); // the original exception, not an AggregateException
         }
 
         object Charlm(string path, bool forward)
@@ -170,24 +169,39 @@ public sealed class Pipeline : IDisposable
         var tokenizer = Start(Name("tokenize"), () => backend.Tokenizer(Model("tokenize")));
         var mwt = models.ContainsKey("mwt") ? Start(Name("mwt"), () => backend.Mwt(Model("mwt"))) : null;
         var lemma = models.ContainsKey("lemma") ? Start(Name("lemma"), () => backend.Lemma(Model("lemma"))) : null;
-        _pretrain = Get(pretrain);
-        Get(forward);
-        Get(backward);
-        var pos = models.ContainsKey("pos") ? Start(Name("pos"), () => backend.Pos(Model("pos"), _pretrain!)) : null;
-        var depparse = models.ContainsKey("depparse") ? Start(Name("depparse"), () => backend.Depparse(Model("depparse"), _pretrain!)) : null;
-        var ner = models.ContainsKey("ner") ? Start(Name("ner"), () => backend.Ner(Model("ner"), _pretrain!)) : null;
-        var parser = models.ContainsKey("constituency") ? Start(Name("constituency"), () => backend.Constituency(Model("constituency"), _pretrain!)) : null;
-        var sentiment = models.ContainsKey("sentiment") ? Start(Name("sentiment"), () => backend.Sentiment(Model("sentiment"), _pretrain!)) : null;
-        _tokenizer = Get(tokenizer)!;
-        _mwt = Get(mwt);
-        _lemma = Get(lemma);
-        _pos = Get(pos);
-        _depparse = Get(depparse);
-        _ner = Get(ner);
-        _parser = Get(parser);
-        _sentiment = Get(sentiment);
-        if (parallel && backend.CollectAfterEachModel)
-            GC.Collect();
+        try
+        {
+            forward?.GetAwaiter().GetResult();
+            backward?.GetAwaiter().GetResult();
+            _pretrain = pretrain?.GetAwaiter().GetResult();
+            var pos = models.ContainsKey("pos") ? Start(Name("pos"), () => backend.Pos(Model("pos"), _pretrain!)) : null;
+            var depparse = models.ContainsKey("depparse") ? Start(Name("depparse"), () => backend.Depparse(Model("depparse"), _pretrain!)) : null;
+            var ner = models.ContainsKey("ner") ? Start(Name("ner"), () => backend.Ner(Model("ner"), _pretrain!)) : null;
+            var parser = models.ContainsKey("constituency") ? Start(Name("constituency"), () => backend.Constituency(Model("constituency"), _pretrain!)) : null;
+            var sentiment = models.ContainsKey("sentiment") ? Start(Name("sentiment"), () => backend.Sentiment(Model("sentiment"), _pretrain!)) : null;
+            Task.WaitAll(started);
+            _tokenizer = tokenizer.Result;
+            _mwt = mwt?.Result;
+            _lemma = lemma?.Result;
+            _pos = pos?.Result;
+            _depparse = depparse?.Result;
+            _ner = ner?.Result;
+            _parser = parser?.Result;
+            _sentiment = sentiment?.Result;
+        }
+        catch (Exception e)
+        {
+            // Every load finishes before the first failure is thrown, as its own exception (not an AggregateException).
+            try
+            {
+                Task.WaitAll(started);
+            }
+            catch (AggregateException)
+            {
+            }
+
+            ExceptionDispatchInfo.Throw(started.FirstOrDefault(t => t.IsFaulted)?.Exception?.InnerException ?? e);
+        }
     }
 
     /// <summary>
@@ -241,6 +255,9 @@ public sealed class Pipeline : IDisposable
             string.Join(",", AllProcessors.Split(',').Where(models.ContainsKey)), Stopwatch.GetElapsedTime(start).TotalMilliseconds);
         return pipeline;
     }
+
+    // How many models a managed pipeline loads at a time (round 17).
+    private const int LoadLanes = 2;
 
     internal const string PretrainPath = "pretrain/conll17", ForwardCharlmPath = "forward_charlm/1billion", BackwardCharlmPath = "backward_charlm/1billion";
 
