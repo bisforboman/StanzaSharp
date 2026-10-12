@@ -125,8 +125,8 @@ jobs:
             benchmark.json
 
   # The Vector512 (AVX-512) kernels against Vector256 (AVX2) on one machine: ubuntu-26.04 is sometimes an Intel Xeon
-  # Platinum 8573C (AVX-512), sometimes an AMD EPYC 7763 (none), so six jobs try; windows-2025, which drew the Xeon
-  # once, gets three (Git Bash's /proc/cpuinfo has the flags too). A job without AVX-512 says so and
+  # Platinum 8573C or other AVX-512 CPUs, often an AMD EPYC 7763 (none), so six jobs try; windows-2025, which draws the
+  # same machines, gets three (Git Bash's /proc/cpuinfo has the flags too). A job without AVX-512 says so and
   # stops (success). One with it runs the managed kernel and pipeline tests (Vector512 is then the detected path) and
   # `stanzasharp benchmark` without Python, alternating DOTNET_PreferredVectorBitWidth=256 (Vector256) and the default
   # (Vector512), at the default threads and at 1. Its blocks go to the summary and the artifact avx512-<os>-<attempt>.
@@ -180,9 +180,6 @@ jobs:
           version=$(git describe --tags --match 'v*')
           dotnet build StanzaSharp.slnx -c Release
           dotnet build src/StanzaSharp.Tool -c Release -p:Version="${version#v}" -p:IncludeSourceRevisionInInformationalVersion=false
-          # EXPERIMENT (remove before merging): main's tool, for Vector512 before and after the change.
-          git worktree add "$RUNNER_TEMP/base" origin/main
-          dotnet build "$RUNNER_TEMP/base/src/StanzaSharp.Tool" -c Release
 
       - name: Download the models
         if: steps.cpu.outputs.avx512 == 'yes' && steps.models.outputs.cache-hit != 'true'
@@ -197,15 +194,13 @@ jobs:
           mkdir -p avx512
           for threads in 0 1; do
             for round in 1 2; do
-              for width in 256 512 base512; do
+              for width in 256 512; do
                 name="avx512/threads-$threads.round-$round.vector$width"
-                tool=src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll
-                if [ $width = base512 ]; then tool="$RUNNER_TEMP/base/src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll"; fi
                 args=(benchmark --package ${{ inputs.package }} --models models/stanza/en --python python-not-used --json "$name.json")
                 if [ $threads != 0 ]; then args+=(--threads $threads); fi
                 if [ $width = 256 ]; then export DOTNET_PreferredVectorBitWidth=256; else unset DOTNET_PreferredVectorBitWidth; fi
-                dotnet "$tool" "${args[@]}" ${{ inputs.quick && '--quick' || '' }} > "$name.md"
-                grep -q "SIMD Vector${width#base}" "$name.md" || { echo "::error::$name did not run on Vector$width"; cat "$name.md"; exit 1; }
+                dotnet $tool "${args[@]}" ${{ inputs.quick && '--quick' || '' }} > "$name.md"
+                grep -q "SIMD Vector$width" "$name.md" || { echo "::error::$name did not run on Vector$width"; cat "$name.md"; exit 1; }
                 { echo "### $name"; echo; cat "$name.md"; echo; } >> "$GITHUB_STEP_SUMMARY"
               done
             done
@@ -223,15 +218,6 @@ jobs:
               echo '```'; echo
             done
           done | tee -a "$GITHUB_STEP_SUMMARY" avx512/gemm.md
-          # EXPERIMENT (remove before merging): the JIT's code for the Vector512 kernels.
-          DOTNET_JitDisasm='Kernel6x512Pair Kernel6x512BlockedPair Kernel6x512Blocked' DOTNET_JitStdOutFile=avx512/disasm.txt \
-            dotnet src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll benchmark --models models/stanza/en \
-            --python python-not-used --processors tokenize,pos --quick > /dev/null
-          if [ -f "$RUNNER_TEMP/base/src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll" ]; then
-            DOTNET_JitDisasm='Kernel6x512Blocked' DOTNET_JitStdOutFile=avx512/disasm-base.txt \
-              dotnet "$RUNNER_TEMP/base/src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll" benchmark --models models/stanza/en \
-              --python python-not-used --processors tokenize,pos --quick > /dev/null
-          fi
 
       - name: Test (Vector512 detected)
         if: steps.cpu.outputs.avx512 == 'yes'
