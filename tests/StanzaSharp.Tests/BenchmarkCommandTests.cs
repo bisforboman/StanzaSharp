@@ -96,7 +96,7 @@ public class BenchmarkCommandTests
         Assert.Equal(Environment.ProcessorCount, m.LogicalProcessors);
         Assert.True(m.Cores > 0, $"physical cores not found: {m.Cores}");
         Assert.True(m.RamGB > 0.5);
-        Assert.Contains(m.Simd, new[] { "Vector256", "Vector128", "Scalar" });
+        Assert.Contains(m.Simd, new[] { "Vector512", "Vector256", "Vector128", "Scalar" });
     }
 
     [Fact]

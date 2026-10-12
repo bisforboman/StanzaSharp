@@ -12,7 +12,7 @@ using static TorchSharp.torch;
 /// tagger's batches. docs/managed-backend-spike.md has the results.
 /// <code>
 /// StanzaSharp.Benchmark managed-spike check [--models DIR]
-/// StanzaSharp.Benchmark managed-spike speed [--models DIR] [--threads N] [--runs N] [--copies N] [--impl both|torch|managed] [--path vector256|vector128|scalar]
+/// StanzaSharp.Benchmark managed-spike speed [--models DIR] [--threads N] [--runs N] [--copies N] [--impl both|torch|managed] [--path vector512|vector256|vector128|scalar]
 /// StanzaSharp.Benchmark managed-spike concurrent [--callers N] (other options as speed)
 /// </code>
 /// </summary>
