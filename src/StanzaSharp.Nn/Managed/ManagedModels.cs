@@ -150,25 +150,40 @@ internal sealed unsafe class ManagedCharLanguageModel
             throw new ArgumentException("A start state is for one sentence");
         var ids = new int[n][];
         var rowAt = new int[n][]; // position → output row, or -1
+
+        // Character ids straight from the runes, with no string per character (docs/performance.md, round 18).
+        var lookup = _vocab.GetAlternateLookup<ReadOnlySpan<char>>();
+        Span<char> utf16 = stackalloc char[2];
         for (int i = 0, firstRow = 0; i < n; i++)
         {
             var words = sentences[i];
-            var chars = startH == null ? new List<int> { Id(Start) } : [];
-            var ends = new List<int>();
-            foreach (var word in IsForward ? words : words.Reverse())
+            int length = startH == null ? 1 : 0;
+            foreach (var word in words)
+                length += CodePoints(word) + 1;
+            var chars = ids[i] = new int[length];
+            var rows = rowAt[i] = new int[length];
+            Array.Fill(rows, -1);
+            int at = 0;
+            if (startH == null)
+                chars[at++] = Id(Start);
+            for (int k = 0; k < words.Count; k++)
             {
-                var runes = word.EnumerateRunes().Select(r => r.ToString());
-                foreach (var rune in IsForward ? runes : runes.Reverse())
-                    chars.Add(Id(rune));
-                chars.Add(_endId);
-                ends.Add(chars.Count - 1);
+                int w = IsForward ? k : words.Count - 1 - k;
+                int end = at + CodePoints(words[w]), j = IsForward ? at : end;
+                foreach (var rune in words[w].EnumerateRunes())
+                {
+                    int id = lookup.TryGetValue(utf16[..rune.EncodeToUtf16(utf16)], out var known) ? known : _unkId;
+                    if (IsForward)
+                        chars[j++] = id;
+                    else
+                        chars[--j] = id;
+                }
+
+                chars[end] = _endId;
+                rows[end] = firstRow + w;
+                at = end + 1;
             }
 
-            ids[i] = chars.ToArray();
-            rowAt[i] = new int[chars.Count];
-            Array.Fill(rowAt[i], -1);
-            for (int w = 0; w < ends.Count; w++)
-                rowAt[i][ends[w]] = firstRow + (IsForward ? w : ends.Count - 1 - w);
             firstRow += words.Count;
         }
 
@@ -240,6 +255,14 @@ internal sealed unsafe class ManagedCharLanguageModel
     }
 
     private int Id(string unit) => _vocab.TryGetValue(unit, out var id) ? id : _unkId;
+
+    private static int CodePoints(string word)
+    {
+        int count = 0;
+        foreach (var _ in word.EnumerateRunes())
+            count++;
+        return count;
+    }
 }
 
 /// <summary>
