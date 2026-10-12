@@ -23,7 +23,11 @@ namespace StanzaSharp.Nn.Managed;
 internal static class ManagedThreads
 {
     private static readonly Lock Gate = new();
-    private static int _count = Environment.ProcessorCount;
+
+    /// <summary>The default <see cref="Count"/>: <see cref="CpuCores.DefaultThreads"/> for this machine.</summary>
+    public static readonly int Default = CpuCores.DefaultThreads(CpuCores.Physical(), Environment.ProcessorCount);
+
+    private static int _count = Default;
     private static Pool? _pool;
 
     /// <summary>Threads per region, the caller included (at least 1).</summary>

@@ -142,7 +142,7 @@ public class ManagedThreadsOptionTests
 {
     [ModelFact]
     [Trait("Backend", "Managed")]
-    public void Threads_SetsThePoolSize_AndNullCapsItAtProcessorCount()
+    public void Threads_SetsThePoolSize_AndNullCapsItAtTheDefault()
     {
         int old = Nn.Managed.ManagedThreads.Count;
         try
@@ -155,13 +155,29 @@ public class ManagedThreadsOptionTests
                 Assert.Equal(2, Nn.Managed.ManagedThreads.Count);
             Nn.Managed.ManagedThreads.Count = Environment.ProcessorCount + 4;
             using (Pipeline.Load(Repo.Models, new PipelineOptions { Processors = Processor.Tokenize }))
-                Assert.Equal(Environment.ProcessorCount, Nn.Managed.ManagedThreads.Count);
+                Assert.Equal(Nn.Managed.ManagedThreads.Default, Nn.Managed.ManagedThreads.Count);
         }
         finally
         {
             Nn.Managed.ManagedThreads.Count = old;
         }
     }
+
+    /// <summary>Physical cores from 4 up, else every logical processor; never more than the logical ones (a container's quota).</summary>
+    [Theory]
+    [InlineData(8, 16, 8)]
+    [InlineData(4, 8, 4)]
+    [InlineData(4, 4, 4)]
+    [InlineData(3, 3, 3)]
+    [InlineData(2, 4, 4)]
+    [InlineData(16, 2, 2)]
+    [InlineData(null, 16, 16)]
+    public void DefaultThreads_PhysicalCoresFromFourUp_ElseLogicalProcessors(int? physical, int logical, int expected) =>
+        Assert.Equal(expected, Nn.Managed.CpuCores.DefaultThreads(physical, logical));
+
+    [Fact]
+    public void Default_IsBetweenOneAndProcessorCount() =>
+        Assert.InRange(Nn.Managed.ManagedThreads.Default, 1, Environment.ProcessorCount);
 
     [ModelFact]
     public void MaxConcurrentCalls_QueuesExtraCalls_AndTheWaitCanBeCanceled()
