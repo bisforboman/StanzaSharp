@@ -223,6 +223,15 @@ jobs:
               echo '```'; echo
             done
           done | tee -a "$GITHUB_STEP_SUMMARY" avx512/gemm.md
+          # EXPERIMENT (remove before merging): the JIT's code for the Vector512 kernels.
+          DOTNET_JitDisasm='Kernel6x512Pair Kernel6x512BlockedPair Kernel6x512Blocked' DOTNET_JitStdOutFile=avx512/disasm.txt \
+            dotnet src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll benchmark --models models/stanza/en \
+            --python python-not-used --processors tokenize,pos --quick > /dev/null
+          if [ -f "$RUNNER_TEMP/base/src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll" ]; then
+            DOTNET_JitDisasm='Kernel6x512Blocked' DOTNET_JitStdOutFile=avx512/disasm-base.txt \
+              dotnet "$RUNNER_TEMP/base/src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll" benchmark --models models/stanza/en \
+              --python python-not-used --processors tokenize,pos --quick > /dev/null
+          fi
 
       - name: Test (Vector512 detected)
         if: steps.cpu.outputs.avx512 == 'yes'
