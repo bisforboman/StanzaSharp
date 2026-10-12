@@ -47,7 +47,10 @@ jobs:
         if: runner.os == 'macOS'
         run: sudo mdutil -a -i off
 
+      # The whole history, for git describe's version (Build the tool).
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-dotnet@v6
         with:
@@ -61,8 +64,12 @@ jobs:
           path: models/stanza/en
           key: models-pt-${{ runner.os }}-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs') }}
 
+      # The block's StanzaSharp version is git describe's (1.0.0 on the release commit, 1.0.0-67-g97089bb 67 commits
+      # after it) instead of Directory.Build.props' placeholder 0.1.0-dev.
       - name: Build the tool
-        run: dotnet build src/StanzaSharp.Tool -c Release
+        run: |
+          version=$(git describe --tags --match 'v*')
+          dotnet build src/StanzaSharp.Tool -c Release -p:Version="${version#v}" -p:IncludeSourceRevisionInInformationalVersion=false
 
       - name: Download the models
         if: steps.models.outputs.cache-hit != 'true'
