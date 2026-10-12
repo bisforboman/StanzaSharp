@@ -14,7 +14,7 @@ using StanzaSharp;
 /// </code>
 /// <c>--text one</c>: one 13-word sentence per call; <c>bench</c>: the benchmark's 2,009 words (stanzasharp benchmark's
 /// text). <c>--hash</c>: instead, the SHA-256 of the CoNLL-U of every tests/golden/*.txt, each processed alone.
-/// Prints one line: <c>load=ms jit=methods/ms cpu=ms calls=ms/methods/jitms/cpums,… hash=…</c> (cpu: the process's CPU time,
+/// Prints one line: <c>load=ms jit=methods/ms cpu=ms peak=MB calls=ms/methods/jitms/cpums,… hash=…</c> (cpu: the process's CPU time,
 /// all threads, which other load on the machine disturbs less than the wall time).
 /// </summary>
 internal static class Startup
@@ -47,7 +47,8 @@ internal static class Startup
         double load = Stopwatch.GetElapsedTime(start).TotalMilliseconds;
         var (m1, j1) = Jit();
         double loadCpu = (Process.GetCurrentProcess().TotalProcessorTime - cpu0).TotalMilliseconds;
-        var line = new StringBuilder($"load={load:F0} jit={m1 - m0}/{j1 - j0:F0} cpu={loadCpu:F0}");
+        double loadPeak = Process.GetCurrentProcess().PeakWorkingSet64 / 1048576.0; // MiB; 0 on macOS
+        var line = new StringBuilder($"load={load:F0} jit={m1 - m0}/{j1 - j0:F0} cpu={loadCpu:F0} peak={loadPeak:F0}");
 
         if (hash)
         {

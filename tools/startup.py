@@ -40,29 +40,29 @@ def main():
             if a.threads:
                 cmd += ['--threads', str(a.threads)]
             out = subprocess.run(cmd, capture_output=True, text=True, env={**os.environ, **env})
-            m = re.search(r'load=(\S+) jit=(\d+)/(\S+) cpu=(\S+) calls=(\S+) hash=(\w+)', out.stdout)
+            m = re.search(r'load=(\S+) jit=(\d+)/(\S+) cpu=(\S+) peak=(\S+) calls=(\S+) hash=(\w+)', out.stdout)
             if not m:
                 sys.exit(f'{name}: {out.stdout}{out.stderr}')
-            calls = [tuple(float(x) for x in c.split('/')) for c in m.group(5).split(',')]
+            calls = [tuple(float(x) for x in c.split('/')) for c in m.group(6).split(',')]
             results[name].append(dict(load=float(m.group(1)), jm=int(m.group(2)), jt=float(m.group(3)), cpu=float(m.group(4)),
-                                      calls=calls, hash=m.group(6)))
+                                      peak=float(m.group(5)), calls=calls, hash=m.group(7)))
             print(f'round {r + 1} {name}: {out.stdout.strip()}', file=sys.stderr, flush=True)
 
     med = statistics.median
-    print(f'| setting | load ms (CPU) | JIT in load: methods / ms | call 1 ms (CPU) | call 2 (CPU) | call 3 | calls 4+ '
+    print(f'| setting | load ms (CPU) | load peak MB | JIT in load: methods / ms | call 1 ms (CPU) | call 2 (CPU) | call 3 | calls 4+ '
           f'| JIT in calls: methods / ms | load + {a.calls} calls | CoNLL-U |')
-    print('|---|---:|---:|---:|---:|---:|---:|---:|---:|---|')
+    print('|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|')
     hashes = set()
     for name, rs in results.items():
         def call(i, k=0):
-            return med(r['calls'][i][k] for r in rs)
+            return med(r['calls'][i][k] for r in rs) if i < a.calls else float('nan')
         rest = med([c[0] for r in rs for c in r['calls'][3:]]) if a.calls > 3 else float('nan')
         jm = med(sum(c[1] for c in r['calls']) for r in rs)
         jt = med(sum(c[2] for c in r['calls']) for r in rs)
         total = med(r['load'] + sum(c[0] for c in r['calls']) for r in rs)
         hs = sorted({r['hash'] for r in rs})
         hashes.update(hs)
-        print(f"| {name} | {med(r['load'] for r in rs):,.0f} ({med(r['cpu'] for r in rs):,.0f}) "
+        print(f"| {name} | {med(r['load'] for r in rs):,.0f} ({med(r['cpu'] for r in rs):,.0f}) | {med(r['peak'] for r in rs):,.0f} "
               f"| {med(r['jm'] for r in rs):,.0f} / {med(r['jt'] for r in rs):,.0f} "
               f"| {call(0):,.0f} ({call(0, 3):,.0f}) | {call(1):,.0f} ({call(1, 3):,.0f}) | {call(2):,.0f} | {rest:,.1f} "
               f"| {jm:,.0f} / {jt:,.0f} | {total:,.0f} | {', '.join(hs)} |")

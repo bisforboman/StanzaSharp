@@ -28,6 +28,9 @@ internal abstract class BackendModels : IDisposable
     /// <summary>Whether to run a GC after each model: the managed models allocate far more while loading than they keep.</summary>
     public virtual bool CollectAfterEachModel => false;
 
+    /// <summary>Whether the models may load concurrently, on the thread pool (managed: nothing per thread).</summary>
+    public virtual bool LoadInParallel => false;
+
     /// <summary>Whether the dependency parser reads the tagger's charlm outputs (CharlmCache.TryGetAlone).</summary>
     public virtual bool DepparseReadsCache => false;
 
@@ -79,6 +82,10 @@ internal sealed class ManagedModels : BackendModels
     public override bool CollectAfterEachModel => true;
 
     public override bool DepparseReadsCache => true;
+
+    // Each model's load is mostly one thread's work (parsing, packing, the JIT), so loading them side by side cuts the
+    // load time (docs/performance.md, round 17).
+    public override bool LoadInParallel => true;
 
     public override Pretrain Pretrain(string basePath) => Nn.Pretrain.LoadManaged(basePath);
 

@@ -105,6 +105,11 @@ public sealed class Pipeline : IDisposable
         _gate = options.MaxConcurrentCalls is int max ? new SemaphoreSlim(max, max) : null;
         string Model(string processor) => Path.Combine(modelDir, processor, models[processor]);
         string Name(string processor) => $"{processor}/{models[processor]}";
+
+        // Managed: the models load on the thread pool, the shared ones and those that read none first, then the rest
+        // (round 17). TorchSharp: one after another on this thread, in this order (its device and dispose scopes are
+        // per thread).
+        bool parallel = backend.LoadInParallel;
         T Timed<T>(string name, Func<T> load)
         {
             if (_logger?.IsEnabled(LogLevel.Information) != true)
@@ -117,35 +122,72 @@ public sealed class Pipeline : IDisposable
 
         T Collected<T>(T model)
         {
-            if (backend.CollectAfterEachModel)
+            if (backend.CollectAfterEachModel && (!parallel || Environment.GetEnvironmentVariable("LOADGC") == "1"))
                 GC.Collect();
             return model;
         }
 
-        var shared = SharedModels(models);
-        if (shared.Contains(PretrainPath))
-            _pretrain = Timed(PretrainPath, () => backend.Pretrain(Path.Combine(modelDir, PretrainPath)));
-        if (shared.Contains(ForwardCharlmPath))
+        var started = new List<Task>();
+        int nl = int.TryParse(Environment.GetEnvironmentVariable("LOADPAR"), out var x) ? x : 0;
+        var lanes = nl > 0 ? new SemaphoreSlim(nl) : null;
+        Task<T> Start<T>(string name, Func<T> load)
         {
-            Timed(ForwardCharlmPath, () => { backend.Charlm(Path.Combine(modelDir, ForwardCharlmPath), forward: true); return 0; });
-            Timed(BackwardCharlmPath, () => { backend.Charlm(Path.Combine(modelDir, BackwardCharlmPath), forward: false); return 0; });
+            var task = parallel ? Task.Run(() => { lanes?.Wait(); try { return Timed(name, load); } finally { lanes?.Release(); } }) : Task.FromResult(Timed(name, load));
+            started.Add(task);
+            return task;
         }
 
-        _tokenizer = Timed(Name("tokenize"), () => backend.Tokenizer(Model("tokenize")));
-        if (models.ContainsKey("mwt"))
-            _mwt = Timed(Name("mwt"), () => backend.Mwt(Model("mwt")));
-        if (models.ContainsKey("pos"))
-            _pos = Timed(Name("pos"), () => backend.Pos(Model("pos"), _pretrain!));
-        if (models.ContainsKey("lemma"))
-            _lemma = Timed(Name("lemma"), () => backend.Lemma(Model("lemma")));
-        if (models.ContainsKey("depparse"))
-            _depparse = Timed(Name("depparse"), () => backend.Depparse(Model("depparse"), _pretrain!));
-        if (models.ContainsKey("ner"))
-            _ner = Timed(Name("ner"), () => backend.Ner(Model("ner"), _pretrain!));
-        if (models.ContainsKey("constituency"))
-            _parser = Timed(Name("constituency"), () => backend.Constituency(Model("constituency"), _pretrain!));
-        if (models.ContainsKey("sentiment"))
-            _sentiment = Timed(Name("sentiment"), () => backend.Sentiment(Model("sentiment"), _pretrain!));
+        T? Get<T>(Task<T>? task) where T : class
+        {
+            if (task == null)
+                return null;
+            try
+            {
+                Task.WaitAll(started); // so nothing still loads when the first failure is thrown
+            }
+            catch (AggregateException)
+            {
+            }
+
+            return task.GetAwaiter().GetResult(); // the original exception, not an AggregateException
+        }
+
+        object Charlm(string path, bool forward)
+        {
+            backend.Charlm(Path.Combine(modelDir, path), forward);
+            return path;
+        }
+
+        var shared = SharedModels(models);
+        var pretrain = shared.Contains(PretrainPath) ? Start(PretrainPath, () => backend.Pretrain(Path.Combine(modelDir, PretrainPath))) : null;
+        Task<object>? forward = null, backward = null;
+        if (shared.Contains(ForwardCharlmPath))
+        {
+            forward = Start(ForwardCharlmPath, () => Charlm(ForwardCharlmPath, forward: true));
+            backward = Start(BackwardCharlmPath, () => Charlm(BackwardCharlmPath, forward: false));
+        }
+
+        var tokenizer = Start(Name("tokenize"), () => backend.Tokenizer(Model("tokenize")));
+        var mwt = models.ContainsKey("mwt") ? Start(Name("mwt"), () => backend.Mwt(Model("mwt"))) : null;
+        var lemma = models.ContainsKey("lemma") ? Start(Name("lemma"), () => backend.Lemma(Model("lemma"))) : null;
+        _pretrain = Get(pretrain);
+        Get(forward);
+        Get(backward);
+        var pos = models.ContainsKey("pos") ? Start(Name("pos"), () => backend.Pos(Model("pos"), _pretrain!)) : null;
+        var depparse = models.ContainsKey("depparse") ? Start(Name("depparse"), () => backend.Depparse(Model("depparse"), _pretrain!)) : null;
+        var ner = models.ContainsKey("ner") ? Start(Name("ner"), () => backend.Ner(Model("ner"), _pretrain!)) : null;
+        var parser = models.ContainsKey("constituency") ? Start(Name("constituency"), () => backend.Constituency(Model("constituency"), _pretrain!)) : null;
+        var sentiment = models.ContainsKey("sentiment") ? Start(Name("sentiment"), () => backend.Sentiment(Model("sentiment"), _pretrain!)) : null;
+        _tokenizer = Get(tokenizer)!;
+        _mwt = Get(mwt);
+        _lemma = Get(lemma);
+        _pos = Get(pos);
+        _depparse = Get(depparse);
+        _ner = Get(ner);
+        _parser = Get(parser);
+        _sentiment = Get(sentiment);
+        if (parallel && backend.CollectAfterEachModel)
+            GC.Collect();
     }
 
     /// <summary>

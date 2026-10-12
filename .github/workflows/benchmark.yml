@@ -32,6 +32,10 @@ on:
         description: "startup: also measure the library at this ref (e.g. origin/main), with this commit's harness"
         type: string
         default: ''
+      startup_settings:
+        description: "startup: instead of the default settings, NAME=out/jit|out/r2r[@VAR=VALUE,...] separated by ;"
+        type: string
+        default: ''
 
 permissions:
   contents: read
@@ -295,10 +299,13 @@ jobs:
           fi
 
       - name: Measure
+        env:
+          SETTINGS: ${{ inputs.startup_settings }}
         run: |
           settings=(jit=out/jit r2r=out/r2r "jit, no TieredPGO=out/jit@DOTNET_TieredPGO=0"
             "r2r, no TieredPGO=out/r2r@DOTNET_TieredPGO=0" "jit, no tiering=out/jit@DOTNET_TieredCompilation=0"
             "r2r, no tiering=out/r2r@DOTNET_TieredCompilation=0" "jit, no QuickJitForLoops=out/jit@DOTNET_TC_QuickJitForLoops=0")
+          if [ -n "$SETTINGS" ]; then IFS=';' read -ra settings <<< "$SETTINGS"; fi
           if [ -n "${{ inputs.startup_base }}" ]; then settings=("base=out/base" "${settings[@]}"); fi
           {
             echo "## ${{ matrix.os }}"; echo
