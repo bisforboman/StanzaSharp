@@ -49,7 +49,7 @@ internal static class ManagedSpike
         if (mode == "gemm")
             return GemmSpeed();
 
-        using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Processors = "tokenize,mwt" });
+        using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Processors = "tokenize,mwt", Threads = threads });
         var m = new Models(modelDir);
         return mode switch
         {

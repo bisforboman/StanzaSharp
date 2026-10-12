@@ -21,7 +21,7 @@ const string Usage = """
       --models DIR    converted models (default: models/converted/en)
       --copies N      copies of the golden texts in the input (default: 8, ~20k words)
       --runs N        timed runs after a warm-up run on one copy; medians are reported (default: 3)
-      --threads N     threads: the managed pool's size, or torch's intra-op threads (default: all cores)
+      --threads N     threads: the managed pool's size, or torch's intra-op threads (default: the pipeline's)
       --out FILE      write the last run's CoNLL-U here, to compare with Python's
       --device D      torch backend: cpu (default) or cuda; cuda needs a build with STANZASHARP_CUDA=1 (docs/gpu.md)
       --no-tf32       cuda: turn off TF32 in cuDNN and cuBLAS (process-wide torch settings)
@@ -114,7 +114,7 @@ if (perCall > 0)
 {
     // A service calling Process once per short text: the fixed cost per call (docs/performance.md, "Per-call cost").
     var stageLog = new StageLogger();
-    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Processors = processors, Backend = pipelineBackend, TrimNativeHeap = !noTrim, Logger = concurrent > 0 ? null : stageLog });
+    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Processors = processors, Backend = pipelineBackend, Threads = threads > 0 ? threads : null, TrimNativeHeap = !noTrim, Logger = concurrent > 0 ? null : stageLog });
     var texts = perCallText != null ? [perCallText] : BuildShortSentences();
     string header = $"C# StanzaSharp ({package}, {backend} backend), " +
                     (backend == Backend.Managed ? $"managed threads {ManagedThreads.Count}" : $"torch threads {torch.get_num_threads()}");
@@ -186,7 +186,7 @@ if (perCall > 0)
 if (documents > 0)
 {
     // Many short texts: one Process call per text vs one bulk call (Pipeline.Process(IEnumerable<string>)).
-    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Backend = pipelineBackend, TrimNativeHeap = !noTrim });
+    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Backend = pipelineBackend, Threads = threads > 0 ? threads : null, TrimNativeHeap = !noTrim });
     var texts = BuildDocuments(documents);
     nlp.Process(texts.Take(50)); // warm-up
     var watch = Stopwatch.StartNew();

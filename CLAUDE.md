@@ -175,7 +175,13 @@ since 1.0, and every processor also has a managed net (see "Managed backend"), t
     Stanza's string form (whitespace tokens, newline sentences) is not exposed; make_golden asserts it equals the list form.
 - 0.4 API (issue #12, items chosen by the owner, 2026-10-06):
   - `PipelineOptions.Threads` (int?): at Load, process-wide, `ManagedThreads.Count` on the managed backend and
-    `torch.set_num_threads` on TorchSharp (the rest of this bullet is TorchSharp's). Null = min(libtorch's current
+    `torch.set_num_threads` on TorchSharp. Managed null = min(current count, `ManagedThreads.Default`), the pool's initial
+    count: `CpuCores.DefaultThreads` = the physical cores if ≥ 4, else `Environment.ProcessorCount`, never more than
+    ProcessorCount (owner's decision, 2026-10-12; docs/performance.md round 13). `CpuCores.Physical()` (Nn/Managed;
+    the benchmark's core count too) never throws, null → logical: Linux distinct sysfs `thread_siblings_list`, Windows
+    GetLogicalProcessorInformationEx records, macOS sysctlbyname `hw.physicalcpu`; no process spawned. A caller that
+    sets `ManagedThreads.Count` and then loads with null gets it capped at the default, so the benchmark sample passes
+    `Threads` explicitly. The rest of this bullet is TorchSharp's. Null = min(libtorch's current
     value, `Environment.ProcessorCount`), so a container's CPU quota is respected and a lower count the caller set is
     kept. Inter-op threads are untouched (eager mode never uses that pool; libtorch allows setting it only once).
     libtorch's OpenMP gives each calling thread its own team of `Threads` threads (measured: 8 callers × 8 threads
@@ -824,7 +830,7 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   `IMwtNet` (`MwtNet` / `ManagedMwtNet`). Batching, windows, argmax and decoding stay in the processor, shared, so both
   backends see the same batches. `Nn.Backend` { TorchSharp, Managed } is what tests and the benchmark pass to the
   processors' TorchSharp-side `Load(basePath, device, backend)`; the pipeline goes through `BackendModels`. With
-  Managed, `Load` also sets `ManagedThreads.Count` = `Threads ?? min(Count, ProcessorCount)`. Benchmark:
+  Managed, `Load` also sets `ManagedThreads.Count` = `Threads ?? min(Count, ManagedThreads.Default)`. Benchmark:
   `--backend managed|torch --processors ...` (managed by default; `--device`/`--no-tf32` select torch).
   - Tests that only make sense on TorchSharp (libtorch threads, the Scalar GC race, TF32) set
     `Backend = CudaBackend.Cpu`; `ManagedThreadsOptionTests` (in `ManagedKernelsCollection`) covers the managed `Threads`.
