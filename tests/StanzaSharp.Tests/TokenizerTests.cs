@@ -98,6 +98,70 @@ public class TokenizerTests(ITestOutputHelper output, SharedPipelines pipelines)
         Assert.Empty(tokenizer.Process(" \n\n \t").Sentences);
     }
 
+    /// <summary>
+    /// The e-mail/URL regex's matches, one per alternative of its pattern, each containing only the one literal of
+    /// <see cref="Tokenizer.MaskLiterals"/> it needs: the list misses none of these, and each literal is needed.
+    /// </summary>
+    [Theory]
+    [InlineData("write to jane.doe+news@example.io today", "@")]
+    [InlineData("\"john.smith\"@[192.168.1.1]", "@")]
+    [InlineData("x@[1.2.3.ab:Z9]", "@")]
+    [InlineData("see https://example.io/page?q=1", "://")]
+    [InlineData("see http://ab.io", "://")]
+    [InlineData("go to www.example.io now", "www.")]
+    [InlineData("go to www.ab.io", "www.")]
+    [InlineData("site.gov.uk", ".gov")]
+    [InlineData("site.org.uk", ".org")]
+    [InlineData("site.edu.au", ".edu")]
+    [InlineData("site.net.au", ".net")]
+    [InlineData("bbc.co.uk and site.com.au", ".co")]
+    public void MaskLiterals_EveryAlternativeNeedsOne(string text, string literal)
+    {
+        Assert.Matches(Tokenizer.MaskRe(), text);
+        Assert.Contains(literal, text);
+        string[] all = ["@", "://", "www.", ".gov", ".org", ".edu", ".net", ".co"];
+        Assert.All(all.Where(l => l != literal && !literal.Contains(l)), l => Assert.DoesNotContain(l, text));
+        Assert.True(text.AsSpan().ContainsAny(Tokenizer.MaskLiterals));
+    }
+
+    /// <summary>Where <see cref="Tokenizer.MaskRe"/> matches, a literal is present: the golden texts and a fuzz.</summary>
+    [Fact]
+    public void MaskLiterals_PresentWhereverTheRegexMatches()
+    {
+        int matched = 0;
+        void Check(string s)
+        {
+            if (!Tokenizer.MaskRe().IsMatch(s))
+                return;
+            matched++;
+            Assert.True(s.AsSpan().ContainsAny(Tokenizer.MaskLiterals), s);
+        }
+
+        foreach (var file in Directory.GetFiles(Repo.Golden, "*.txt"))
+        {
+            foreach (var paragraph in File.ReadAllText(file).Split("\n\n"))
+                Check(paragraph);
+        }
+
+        int golden = matched;
+        string[] pieces =
+        [
+            "http", "https", "://", ":/", "//", "www", "www.", "WWW.", ".", "..", "@", "@@", "com", "co", "gov", "org", "edu", "net",
+            "Com", "a", "ab", "Z", "9", "255", "1", "-", "_", "+", "\"", "\\", " ", "\n", "[", "]", ":", "é", "日", "x.y",
+        ];
+        var random = new Random(16);
+        for (int i = 0; i < 200_000; i++)
+        {
+            var s = new System.Text.StringBuilder();
+            for (int n = random.Next(1, 12); n > 0; n--)
+                s.Append(pieces[random.Next(pieces.Length)]);
+            Check(s.ToString());
+        }
+
+        output.WriteLine($"matches: {golden} golden paragraphs, {matched - golden} fuzz strings");
+        Assert.True(golden > 0 && matched - golden > 1000);
+    }
+
     /// <summary>One line per sentence with its text, then each token as text[start,end) plus its trailing space.</summary>
     private static List<string> Describe(Document doc) =>
         doc.Sentences.Select(s => $"{s.SentId}: {s.Text} || " + string.Join(" ",
