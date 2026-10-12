@@ -206,6 +206,19 @@ jobs:
             done
           done
 
+      # The kernels alone (`managed-spike gemm`: the charlm's, the tagger's and the highway's GEMM shapes), per path, at 1
+      # thread and at all.
+      - name: GEMM rates
+        if: steps.cpu.outputs.avx512 == 'yes'
+        run: |
+          for threads in 1 4; do
+            for path in vector256 vector512; do
+              echo "### gemm, $path, $threads threads"; echo; echo '```'
+              dotnet samples/StanzaSharp.Benchmark/bin/Release/net10.0/StanzaSharp.Benchmark.dll managed-spike gemm --threads $threads --path $path
+              echo '```'; echo
+            done
+          done | tee -a "$GITHUB_STEP_SUMMARY" avx512/gemm.md
+
       - name: Test (Vector512 detected)
         if: steps.cpu.outputs.avx512 == 'yes'
         run: >
