@@ -274,9 +274,10 @@ mixed (-17% to +23% on the one-sentence process).
 ### Exactness
 
 The CoNLL-U of every `tests/golden/*.txt` (SHA-256, each text processed alone), main against this branch, at 1 and 4
-threads: identical, also with `DOTNET_EnableAVX2=0` (the scalar path) and with tiering off. Every startup process on
-every runner, every setting (ReadyToRun, the knobs, main), gave the same CoNLL-U for both texts; `stanzasharp
-benchmark` matched Python Stanza on all five runners. `VectorExp` equals the runtime's `Exp` on all 2^32 inputs (above).
+threads: identical (`4FD0F4EE…`), also with `DOTNET_EnableAVX2=0` (the Vector128 path), with tiering off and from
+the `.pt` files (the Scalar path is covered by ManagedBackendTests). Every startup process on every runner, every
+setting (ReadyToRun, the knobs, main), gave the same CoNLL-U for both texts; `stanzasharp benchmark` matched Python
+Stanza on all five runners. `VectorExp` equals the runtime's `Exp` on all 2^32 inputs (above).
 PipelineTests, OptionsTests and ManagedBackendTests pass (93 tests, converted models).
 
 ## Results, round 16: tokenizer follow-ups (LSTM step split, warm-up, URL prefilter)
