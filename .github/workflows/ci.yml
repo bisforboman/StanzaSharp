@@ -146,6 +146,19 @@ jobs:
             models/converted/en
           key: models-en-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs', 'tools/requirements.txt', 'tools/stanza_convert.py') }}
 
+      # Which CPU this runner got (informational, never fails). ubuntu-26.04 and windows-2025 are sometimes an AVX-512
+      # Xeon: the managed tests then also run the Vector512 kernels, the detected path there. Vector512 gives Vector256's
+      # bits (ManagedBackendTests.Vector512_GivesVector256sBits), so the draw can't change a result.
+      - name: CPU
+        if: needs.changes.outputs.code != 'false'
+        run: |
+          if [ -r /proc/cpuinfo ]; then
+            cpu=$(grep -m1 '^model name' /proc/cpuinfo | cut -d: -f2- | xargs)
+            if grep -qw avx512f /proc/cpuinfo; then echo "$cpu: AVX-512, Vector512 kernels tested"; else echo "::notice::$cpu: no AVX-512 on this runner, Vector512 kernels not tested"; fi
+          else
+            sysctl -n machdep.cpu.brand_string
+          fi
+
       - name: Build
         if: needs.changes.outputs.code != 'false'
         run: dotnet build StanzaSharp.slnx -c Release
@@ -423,6 +436,19 @@ jobs:
       - name: Install libomp (macOS)
         if: needs.changes.outputs.code != 'false' && (runner.os == 'macOS')
         run: brew install libomp
+
+      # Which CPU this runner got (informational, never fails). ubuntu-26.04 and windows-2025 are sometimes an AVX-512
+      # Xeon: the managed tests then also run the Vector512 kernels, the detected path there. Vector512 gives Vector256's
+      # bits (ManagedBackendTests.Vector512_GivesVector256sBits), so the draw can't change a result.
+      - name: CPU
+        if: needs.changes.outputs.code != 'false'
+        run: |
+          if [ -r /proc/cpuinfo ]; then
+            cpu=$(grep -m1 '^model name' /proc/cpuinfo | cut -d: -f2- | xargs)
+            if grep -qw avx512f /proc/cpuinfo; then echo "$cpu: AVX-512, Vector512 kernels tested"; else echo "::notice::$cpu: no AVX-512 on this runner, Vector512 kernels not tested"; fi
+          else
+            sysctl -n machdep.cpu.brand_string
+          fi
 
       - name: Build
         if: needs.changes.outputs.code != 'false'

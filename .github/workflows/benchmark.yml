@@ -20,6 +20,10 @@ on:
         description: Smoke run (300 words, one run, 10 calls)
         type: boolean
         default: false
+      avx512_only:
+        description: Only the Vector512-vs-Vector256 jobs (avx512), not the runner matrix
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -30,6 +34,7 @@ env:
 
 jobs:
   benchmark:
+    if: ${{ !inputs.avx512_only }}
     strategy:
       fail-fast: false
       matrix:
@@ -109,7 +114,7 @@ jobs:
             benchmark.json
 
   # The Vector512 (AVX-512) kernels against Vector256 (AVX2) on one machine: ubuntu-26.04 is sometimes an Intel Xeon
-  # Platinum 8573C (AVX-512), sometimes an AMD EPYC 7763 (none), so three jobs try. A job without AVX-512 says so and
+  # Platinum 8573C (AVX-512), sometimes an AMD EPYC 7763 (none), so six jobs try. A job without AVX-512 says so and
   # stops (success). One with it runs the managed kernel and pipeline tests (Vector512 is then the detected path) and
   # `stanzasharp benchmark` without Python, alternating DOTNET_PreferredVectorBitWidth=256 (Vector256) and the default
   # (Vector512), at the default threads and at 1. Its blocks go to the summary and the artifact avx512-<attempt>.
@@ -117,7 +122,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        attempt: [1, 2, 3]
+        attempt: [1, 2, 3, 4, 5, 6]
     runs-on: ubuntu-26.04
     timeout-minutes: 60
     defaults:
@@ -210,7 +215,7 @@ jobs:
   # One table over every runner that finished, then each runner's block.
   summary:
     needs: benchmark
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && !inputs.avx512_only }}
     runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
