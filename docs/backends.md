@@ -57,8 +57,8 @@ The seam sits at each processor's **network**: one small interface per processor
 - Internally a `PipelineBackend` makes a `BackendModels` per load: `ManagedModels` (facade) calls each processor's
   `LoadManaged`, `TorchSharpModels` (StanzaSharp.Cuda) its TorchSharp `Load` on the backend's device.
 - **Threads:** with `Backend.Managed`, `Load` also sets `ManagedThreads.Count`, with the documented semantics: an
-  explicit `Threads`, or null for `min(current count, Environment.ProcessorCount)`. The count is ProcessorCount unless
-  something set it lower, and `ProcessorCount` respects a container's CPU quota. It is process-wide, like
+  explicit `Threads`, or null for the physical cores when there are at least 4, otherwise all logical processors, never
+  above `Environment.ProcessorCount` (which respects a container's CPU quota; performance.md, rounds 12–13). It is process-wide, like
   `torch.set_num_threads`. With `Backend.Managed`, libtorch's threads are left alone (see below); on TorchSharp they are
   set as before.
 - Benchmark: `StanzaSharp.Benchmark --backend managed|torch [--processors tokenize,mwt]` (managed by default;
@@ -229,6 +229,16 @@ nearly idle (8–16% load). Medians in seconds, two rounds each:
   compare.
 - **Load:** all models load in 1.1–1.3 s on either backend; the tokenizer and MWT weights are small, and packing them
   doesn't show.
+
+### Kernel paths
+
+`Gemm.Detect` picks the widest accelerated path at startup: Vector512 (AVX-512, where .NET accelerates `Vector512`),
+Vector256 (AVX2 + FMA), Vector128 (Arm64 NEON, or x64 without AVX2), Scalar. All read the same packed 16-column panels.
+Vector512 gives Vector256's results bit for bit (one register per panel row, two panels per GEMM call, same FMA order),
+and on AVX-512 runners it was 48–53% faster on an EPYC 9V45 (Zen 5) and 3–10% on an EPYC 9V74 (Zen 4)
+([performance.md, round 14](performance.md#results-round-14-avx-512-kernels-vector512)).
+`DOTNET_PreferredVectorBitWidth=256` makes .NET report Vector512 as not accelerated, which selects Vector256.
+`ManagedBackendTests` runs every path the machine has natively; CI's x64 runners have AVX-512 only sometimes.
 
 ### Small batches (the kernels report's open item)
 

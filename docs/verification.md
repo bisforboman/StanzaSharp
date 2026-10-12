@@ -27,8 +27,12 @@ the BMP (emoji). One known difference is by design: after a character outside th
 UTF-16 code units in StanzaSharp and code points in Stanza, so `validation_nonbmp` is compared without offsets.
 
 Every test above runs on both backends: the managed backend (the default) and the TorchSharp backend
-(`StanzaSharp.Cuda`). The managed backend's kernels are also tested on each SIMD path a CPU can take (Vector256 with
-AVX2, Vector128, Scalar), so a machine without AVX2 or an Arm64 machine runs code that was checked too.
+(`StanzaSharp.Cuda`). The managed backend's kernels are also tested on each SIMD path a CPU can take (Vector512 with
+AVX-512, Vector256 with AVX2, Vector128, Scalar), so a machine without AVX2 or an Arm64 machine runs code that was
+checked too. Vector512 runs only on a CPU with AVX-512, which the x64 runners get only sometimes (an AVX-512 EPYC or
+Xeon instead of an EPYC 7763): the golden and cross-os jobs then run it as the detected path, and the Benchmark
+workflow's `avx512` jobs test and time it against Vector256 when they get one. Vector512 gives Vector256's results bit
+for bit (`Vector512_GivesVector256sBits`), so which CPU a run gets can't change a test's outcome.
 
 ## Scores and tolerances
 
