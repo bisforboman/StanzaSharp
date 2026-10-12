@@ -8,6 +8,20 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 Unreleased changes are one file each under [`changes/`](changes/README.md), so pull requests don't conflict here;
 a release folds them in (`python tools/changelog.py release X.Y.Z`).
 
+## [1.2.0] - 2026-10-12
+
+1.2: the managed backend now defaults to the physical core count on machines with at least 4 cores (fewer stalls
+on single sentences and concurrent calls), and `stanzasharp compare` accepts a models folder of any name. Outputs
+are unchanged; no API changes.
+
+### Changed
+- `stanzasharp compare` and `benchmark`: `--models` accepts a folder of any name holding Stanza's `.pt` files; it no
+  longer has to be named `en`.
+- Managed backend: with `PipelineOptions.Threads` null the thread pool now uses the physical cores on machines with at
+  least 4 of them (all logical processors before) and still all logical processors on smaller ones, never more than
+  `Environment.ProcessorCount`. On an 8-core/16-thread desktop that cuts the slowest one-sentence calls (p90 16-36%
+  lower) and gives two concurrent callers 11% more calls/s, while long texts run up to 9% slower. Output is unchanged.
+
 ## [1.1.0] - 2026-10-12
 
 1.1: about 1 GB less peak memory with all eight processors, hardened model loading, faster concurrent calls, and two
