@@ -8,6 +8,32 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 Unreleased changes are one file each under [`changes/`](changes/README.md), so pull requests don't conflict here;
 a release folds them in (`python tools/changelog.py release X.Y.Z`).
 
+## [1.3.0] - 2026-10-12
+
+1.3: faster on modern CPUs (AVX-512 kernels, up to 53% on Zen 5) and in the tokenizer (now ahead of Python Stanza on
+every tested runner), with outputs unchanged bit for bit and no API changes. `stanzasharp benchmark` now warms up on
+the whole text, so its numbers aren't directly comparable with earlier versions.
+
+### Added
+- Managed backend: AVX-512 kernels (`Vector512`), used automatically on CPUs where .NET accelerates `Vector512`, with
+  results identical bit for bit to the AVX2 kernels. On GitHub's AVX-512 runners the full pipeline ran 48–53% faster on
+  an AMD EPYC 9V45 (Zen 5) and 3–10% faster on an EPYC 9V74 (Zen 4). `DOTNET_PreferredVectorBitWidth=256` turns them off.
+
+### Changed
+- `stanzasharp benchmark` warms up on the whole text, repeating until each side's stage times settle (2 to 5 runs; the
+  block says how many), instead of one run on a tenth of the text. StanzaSharp's numbers now show a warmed service:
+  on the same runners about 5% more words/s, with tokenize and lemma 30–45% faster; Python Stanza's moved about 1%.
+  Results from earlier versions aren't directly comparable. A run takes about twice as long.
+- Managed backend: each LSTM time step is split into four tasks per thread instead of one, so a thread that runs late
+  holds less of the step. On GitHub's free runners the tokenizer got up to 29% faster (3-vCPU macOS) and the whole
+  pipeline 2–4% (the constituency parser up to 10%, depparse up to 6%). One-sentence `tokenize,mwt` calls take ~0.1 ms
+  longer. The output is unchanged, bit for bit.
+- The tokenizer is about 2.4x faster on a text with a paragraph over 1,000 characters (the benchmark's 2,009 words:
+  144 → 60 ms on 8 threads, 257 → 145 ms on 1): after such a paragraph's first window it no longer runs the other,
+  finished paragraphs of its batch through the network as padding. The output is unchanged, bit for bit.
+- The tokenizer skips Stanza's e-mail/URL pattern on paragraphs that contain none of the literals every match needs
+  (`@`, `://`, `www.`, `.gov`, `.org`, `.edu`, `.net`, `.co`). The output is unchanged.
+
 ## [1.2.0] - 2026-10-12
 
 1.2: the managed backend now defaults to the physical core count on machines with at least 4 cores (fewer stalls
