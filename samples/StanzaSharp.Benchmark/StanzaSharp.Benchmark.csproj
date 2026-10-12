@@ -16,7 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="$(TorchSharpNative)" Version="$(TorchSharpVersion)" />
+    <!-- StanzaSharpNoLibTorch=true: no native libtorch, for the managed-only modes (startup, on every runner). -->
+    <PackageReference Include="$(TorchSharpNative)" Version="$(TorchSharpVersion)" Condition="'$(StanzaSharpNoLibTorch)' != 'true'" />
   </ItemGroup>
 
   <PropertyGroup>
