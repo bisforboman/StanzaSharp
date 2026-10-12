@@ -69,17 +69,17 @@ public class BenchmarkCommandTests
                 Core(s) per socket:      2
                 Socket(s):               1
             """;
-        Assert.Equal(("AMD EPYC 7763 64-Core Processor", 2), ParseLscpu(lscpu));
+        Assert.Equal("AMD EPYC 7763 64-Core Processor", ParseLscpu(lscpu));
     }
 
     [Fact]
     public void ParseLscpu_ArmAndHybrid()
     {
         const string arm = "Architecture: aarch64\nVendor ID: ARM\n  Model name: Neoverse-N2\n    Thread(s) per core: 1\n    Core(s) per socket: 4\n    Socket(s): 1\n";
-        Assert.Equal(("Neoverse-N2", 4), ParseLscpu(arm));
+        Assert.Equal("Neoverse-N2", ParseLscpu(arm));
         const string hybrid = "Vendor ID: ARM\n  Model name: Cortex-A55\n    Core(s) per cluster: 4\n  Model name: Cortex-A76\n    Core(s) per cluster: 4\n";
-        Assert.Equal(("Cortex-A55 + Cortex-A76", 4), ParseLscpu(hybrid));
-        Assert.Equal((null, null), ParseLscpu(""));
+        Assert.Equal("Cortex-A55 + Cortex-A76", ParseLscpu(hybrid));
+        Assert.Null(ParseLscpu(""));
     }
 
     [Fact]
@@ -87,17 +87,14 @@ public class BenchmarkCommandTests
         Assert.Equal("Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz",
             ParseCpuInfo("processor\t: 0\nvendor_id\t: GenuineIntel\nmodel name\t: Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz\n\nprocessor\t: 1\nmodel name\t: other\n"));
 
-    /// <summary>This machine, through its OS's path (Windows: registry and GetLogicalProcessorInformation; Linux: lscpu; macOS: sysctl).</summary>
+    /// <summary>This machine, through its OS's path (Windows: registry; Linux: lscpu; macOS: sysctl), and its physical cores (CpuCores).</summary>
     [Fact]
     public void DescribeMachine_FindsThisCpu()
     {
         var m = DescribeMachine();
         Assert.DoesNotContain("model unknown", m.Cpu);
         Assert.Equal(Environment.ProcessorCount, m.LogicalProcessors);
-        if (m.Cores is { } cores)
-            Assert.InRange(cores, 1, m.LogicalProcessors);
-        else
-            Assert.True(OperatingSystem.IsLinux(), "only lscpu may lack the core count");
+        Assert.True(m.Cores > 0, $"physical cores not found: {m.Cores}");
         Assert.True(m.RamGB > 0.5);
         Assert.Contains(m.Simd, new[] { "Vector256", "Vector128", "Scalar" });
     }

@@ -52,14 +52,18 @@ public sealed class PipelineOptions
     /// The number of threads each operation runs on, set by <see cref="Pipeline.Load"/>. On
     /// <see cref="PipelineBackend.Managed"/> it is the size of StanzaSharp's own thread pool; on TorchSharp
     /// (<c>StanzaSharp.Cuda</c>) it is libtorch's intra-op thread count (<c>torch.set_num_threads</c>).
-    /// Null (the default) caps the current count at <see cref="Environment.ProcessorCount"/>, which .NET limits to a
-    /// container's CPU quota, and keeps a lower count set earlier.
+    /// Null (the default) caps the current count at the default: on <see cref="PipelineBackend.Managed"/> the physical
+    /// cores when there are at least 4, else all logical processors; on TorchSharp libtorch's own default (the physical
+    /// cores). Neither exceeds <see cref="Environment.ProcessorCount"/>, which .NET limits to a container's CPU quota, and
+    /// a lower count set earlier is kept.
     /// </summary>
     /// <exception cref="ArgumentOutOfRangeException">Thrown by <see cref="Pipeline.Load"/> for a value below 1.</exception>
     /// <remarks>
     /// <b>Process-wide</b> on both backends, and the last pipeline loaded wins.
     /// <list type="bullet">
-    /// <item><b>Managed:</b> one pool for the whole process. Concurrent <see cref="Pipeline.Process(string)"/> calls share
+    /// <item><b>Managed:</b> one pool for the whole process. On 4 or more cores with SMT, the physical cores give fewer slow
+    /// calls and more calls/s than all logical processors, and up to 9% fewer words/s on long texts; with 2 cores and
+    /// SMT, all 4 logical processors are faster. Concurrent <see cref="Pipeline.Process(string)"/> calls share
     /// it: each works its own part and idle threads help, so N callers don't start N teams.</item>
     /// <item><b>TorchSharp:</b> libtorch's own default is the host's physical core count, so in a container limited to 2
     /// CPUs on a 32-core node it would start 32 threads per operation. libtorch applies a new count to the loading

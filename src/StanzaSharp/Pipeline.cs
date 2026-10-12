@@ -171,7 +171,7 @@ public sealed class Pipeline : IDisposable
         if (options.CharlmCache.IsEnabled && options.CharlmCache.MaxWords <= 0)
             throw new ArgumentOutOfRangeException(nameof(options), "CharlmCache.MaxWords must be positive; set IsEnabled = false to turn the cache off");
         if (options.Threads < 1)
-            throw new ArgumentOutOfRangeException(nameof(options), "Threads must be at least 1, or null for at most Environment.ProcessorCount");
+            throw new ArgumentOutOfRangeException(nameof(options), "Threads must be at least 1, or null for the default");
         if (options.MaxConcurrentCalls < 1)
             throw new ArgumentOutOfRangeException(nameof(options), "MaxConcurrentCalls must be at least 1, or null for no limit");
         var logger = options.Logger;

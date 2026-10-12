@@ -68,8 +68,8 @@ internal sealed class ManagedModels : BackendModels
 
     public override void Configure(PipelineOptions options)
     {
-        // The same semantics as libtorch's threads: null caps the pool's current count (ProcessorCount unless set lower).
-        ManagedThreads.Count = options.Threads ?? Math.Min(ManagedThreads.Count, Environment.ProcessorCount);
+        // Like libtorch's threads: null caps the pool's current count (the default unless set lower) at the default.
+        ManagedThreads.Count = options.Threads ?? Math.Min(ManagedThreads.Count, ManagedThreads.Default);
         options.Logger?.LogInformation("Using {Threads} managed threads", ManagedThreads.Count);
     }
 

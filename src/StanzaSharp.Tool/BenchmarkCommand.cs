@@ -270,33 +270,25 @@ internal static class BenchmarkCommand
     // ---- The machine ----
     internal static Machine DescribeMachine()
     {
-        var (cpu, cores) = OperatingSystem.IsWindows() ? (WindowsCpuName(), WindowsCores())
-            : OperatingSystem.IsMacOS() ? (Command("sysctl", "-n machdep.cpu.brand_string")?.Trim(), int.TryParse(Command("sysctl", "-n hw.physicalcpu"), out var c) ? c : (int?)null)
+        var cpu = OperatingSystem.IsWindows() ? WindowsCpuName()
+            : OperatingSystem.IsMacOS() ? Command("sysctl", "-n machdep.cpu.brand_string")?.Trim()
             : Command("lscpu", "") is { } lscpu ? ParseLscpu(lscpu)
-            : (ParseCpuInfo(File.Exists("/proc/cpuinfo") ? File.ReadAllText("/proc/cpuinfo") : ""), null);
+            : ParseCpuInfo(File.Exists("/proc/cpuinfo") ? File.ReadAllText("/proc/cpuinfo") : "");
         var version = typeof(Pipeline).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "?";
-        return new Machine(string.IsNullOrWhiteSpace(cpu) ? RuntimeInformation.ProcessArchitecture + " CPU (model unknown)" : cpu, cores,
+        return new Machine(string.IsNullOrWhiteSpace(cpu) ? RuntimeInformation.ProcessArchitecture + " CPU (model unknown)" : cpu, CpuCores.Physical(),
             Environment.ProcessorCount, GC.GetGCMemoryInfo().TotalAvailableMemoryBytes / 1073741824.0,
             $"{RuntimeInformation.OSDescription} ({RuntimeInformation.OSArchitecture})", RuntimeInformation.FrameworkDescription,
             Gemm.Detect().ToString(), version);
     }
 
-    /// <summary>The model name(s) and physical cores from <c>lscpu</c> (run with LC_ALL=C).</summary>
-    internal static (string? Cpu, int? Cores) ParseLscpu(string lscpu)
+    /// <summary>The model name(s) from <c>lscpu</c> (run with LC_ALL=C); hybrid CPUs list a model per core type.</summary>
+    internal static string? ParseLscpu(string lscpu)
     {
-        var fields = lscpu.Split('\n').Select(l => l.Split(':', 2)).Where(f => f.Length == 2)
-            .Select(f => (Key: f[0].Trim(), Value: f[1].Trim()))
+        var names = lscpu.Split('\n').Select(l => l.Split(':', 2)).Where(f => f.Length == 2 && f[0].Trim() == "Model name" && f[1].Trim() != "-")
+            .Select(f => f[1].Trim())
+            .Distinct()
             .ToList();
-        string? First(string key) => fields.FirstOrDefault(f => f.Key == key).Value;
-
-        // Hybrid CPUs list a model per core type.
-        var names = fields.Where(f => f.Key == "Model name" && f.Value != "-").Select(f => f.Value).Distinct().ToList();
-
-        // ponytail: the first block's cores × sockets; a hybrid CPU's other core types aren't added.
-        int? cores = int.TryParse(First("Core(s) per socket") ?? First("Core(s) per cluster"), out var perSocket)
-            ? perSocket * (int.TryParse(First("Socket(s)") ?? First("Cluster(s)"), out var sockets) ? sockets : 1)
-            : null;
-        return (names.Count > 0 ? string.Join(" + ", names) : null, cores);
+        return names.Count > 0 ? string.Join(" + ", names) : null;
     }
 
     /// <summary>The first "model name" of /proc/cpuinfo (x64; Arm has none).</summary>
@@ -324,29 +316,6 @@ internal static class BenchmarkCommand
         OperatingSystem.IsWindows()
             ? (Microsoft.Win32.Registry.GetValue(@"HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\CentralProcessor\0", "ProcessorNameString", null) as string)?.Trim()
             : null;
-
-    [DllImport("kernel32", SetLastError = true)]
-    private static extern bool GetLogicalProcessorInformation(IntPtr buffer, ref uint length);
-
-    /// <summary>Physical cores: the RelationProcessorCore records of GetLogicalProcessorInformation.</summary>
-    private static int? WindowsCores()
-    {
-        // ponytail: the calling thread's processor group only (up to 64 logical processors); Ex for bigger machines.
-        uint length = 0;
-        GetLogicalProcessorInformation(IntPtr.Zero, ref length);
-        var buffer = Marshal.AllocHGlobal((int)length);
-        try
-        {
-            if (!GetLogicalProcessorInformation(buffer, ref length))
-                return null;
-            int size = IntPtr.Size == 8 ? 32 : 24; // SYSTEM_LOGICAL_PROCESSOR_INFORMATION; Relationship follows the mask
-            return Enumerable.Range(0, (int)length / size).Count(i => Marshal.ReadInt32(buffer, i * size + IntPtr.Size) == 0);
-        }
-        finally
-        {
-            Marshal.FreeHGlobal(buffer);
-        }
-    }
 
     [DllImport("libc", EntryPoint = "getrusage")]
     private static extern int GetRusage(int who, long[] usage);

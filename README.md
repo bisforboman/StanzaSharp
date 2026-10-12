@@ -230,7 +230,7 @@ An unknown package name throws, and so does listing a processor the package lack
 using var nlp = Pipeline.Load("models/stanza/en", new PipelineOptions
 {
     Processors = $"{Processor.Tokenize},{Processor.Mwt},{Processor.Pos}", // or "tokenize,mwt,pos"
-    Threads = 2,              // threads per operation; null: at most Environment.ProcessorCount
+    Threads = 2,              // threads per operation; null: physical cores (from 4 up) or logical processors
     VerifyChecksums = true,   // check the .pt files against Stanza's MD5s first
     Logger = loggerFactory.CreateLogger("StanzaSharp"), // load and processing times
 });
@@ -239,8 +239,10 @@ var doc = nlp.Process(text, cancellationToken); // OperationCanceledException wi
 
 - **Threads.** On the managed backend `Threads` is the size of StanzaSharp's thread pool; on the TorchSharp backend it
   is libtorch's `set_num_threads`. Both are **process-wide**: the last pipeline loaded sets it. Null (the default)
-  caps the current count at `Environment.ProcessorCount`, which .NET limits to a container's CPU quota, and keeps a
-  lower count set earlier. (libtorch applies a new count to the loading thread and to threads that haven't run a
+  means, on the managed backend, the physical cores on machines with at least 4 of them (fewer slow calls and more calls/s
+  with concurrent callers than all logical processors, up to 9% slower on long texts) and all logical processors on smaller ones; on
+  TorchSharp, libtorch's own default (the physical cores). Either way at most `Environment.ProcessorCount`, which .NET
+  limits to a container's CPU quota, and a lower count set earlier is kept. (libtorch applies a new count to the loading thread and to threads that haven't run a
   tensor operation yet, so with TorchSharp load before processing starts.)
 - **Concurrency.** `Process` is thread-safe: one pipeline can serve many threads, and each call's output is identical
   to a sequential call's. The models are only read; everything a call changes is its own. On the managed backend

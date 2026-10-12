@@ -128,8 +128,9 @@ foreach (var sentence in doc.Sentences)
   - `Backend`: `PipelineBackend.Managed` (the default), or `CudaBackend.Create()` / `CudaBackend.Cpu` from
     `StanzaSharp.Cuda`.
   - `Threads`: threads per operation, set process-wide at Load: the managed backend's one thread pool (shared by
-    concurrent calls), or libtorch's intra-op threads. By default at most `Environment.ProcessorCount`, which
-    respects a container's CPU quota.
+    concurrent calls), or libtorch's intra-op threads. By default the physical cores when there are at least 4,
+    else all logical processors (managed), or libtorch's own default (TorchSharp); never more than
+    `Environment.ProcessorCount`, which respects a container's CPU quota.
   - `SplitSentences = false`: one sentence per paragraph (Stanza's `tokenize_no_ssplit`).
   - `VerifyChecksums`: checks the `.pt` model files against Stanza's MD5s before loading.
   - `Logger`: an `ILogger` for load and processing times.

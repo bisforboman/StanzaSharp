@@ -3,7 +3,7 @@
 How fast StanzaSharp runs compared with Python Stanza, what was optimized, and what is left.
 The measurements here are of the TorchSharp backend (add `--backend torch` to the benchmark commands; since 0.5 the
 default is the managed backend, measured in [backends.md](backends.md)), except rounds 6 and 7, which compare both,
-and rounds 8 to 12, which measure the managed backend only.
+and rounds 8 to 13, which measure the managed backend only.
 Every change kept the output byte-identical: all golden tests pass, and on the benchmark text the
 C# CoNLL-U equals Python's line for line, before and after.
 
@@ -25,7 +25,7 @@ timed runs with StanzaSharp and Stanza alternating (Stanza runs in one Python pr
 processor; then 50 `Process` calls on one sentence each (the text's sentences of 5-25 words; median and p90, after 5
 warm-up calls); the peak working set of each process (macOS: `ru_maxrss`). Both sides read the same `.pt` files, and
 the block says whether their CoNLL-U was identical. Threads: each side's default unless `--threads` sets both
-(StanzaSharp: all logical processors; torch: the physical cores). It prints a Markdown block with the CPU model, cores
+(StanzaSharp: the physical cores from 4 up, else all logical processors; torch: the physical cores). It prints a Markdown block with the CPU model, cores
 and logical processors, RAM, OS, .NET version, SIMD path (Vector256, Vector128 or Scalar) and StanzaSharp version,
 ready to paste into an issue. About two minutes with Python on 4 cores; `--quick` (300 words, one run, 10 calls) is a
 smoke test.
@@ -114,6 +114,42 @@ per-call times are more sensitive to other busy processes than its throughput is
     same table only.
   - Under load, the default thread count suffers most, because libtorch's OpenMP threads spin
     waiting for each other.
+
+## Results, round 13: physical cores by default from 4 up
+
+The owner's rule after round 12 (2026-10-12): with `Threads` null the managed pool now starts at the physical cores when
+there are at least 4 of them, otherwise at all logical processors, and never above `Environment.ProcessorCount` (a
+container's CPU quota). `CpuCores.Physical()` finds the cores without starting a process (Linux: distinct sysfs
+`thread_siblings_list`; Windows: `GetLogicalProcessorInformationEx`; macOS: `sysctlbyname("hw.physicalcpu")`) and falls
+back to the logical processors if that fails. The benchmark's core count uses it too. TorchSharp is unchanged (libtorch
+already defaults to the physical cores).
+
+**Ryzen 7 5800X** (8 cores / 16 logical): 8 threads (the new default) against 16 (the old one), `samples/StanzaSharp.Benchmark`,
+three rounds, 8 and 16 back to back with the order flipped each round. Other sessions shared the machine, so each run
+waited for two idle readings (< 5% CPU) and was repeated if the machine was busy (≥ 10%) right after it (two runs were):
+
+| | 8 threads | 16 threads | 8 vs 16 (medians) |
+|---|---|---|---:|
+| default, 26,264 words, words/s | 1,197, 1,230, 1,196 | 1,315, 1,247, 1,313 | -9% |
+| default_fast, 26,264 words, words/s | 2,682, 2,721, 2,633 | 2,921, 2,858, 2,758 | -6% |
+| default, one sentence, median ms | 42.1, 32.2, 37.5 | 34.4, 33.3, 40.2 | +9% |
+| default, one sentence, p90 ms | 60.1, 49.8, 59.7 | 59.1, 71.4, 72.9 | -16% |
+| default_fast, one sentence, median ms | 17.3, 15.9, 16.1 | 17.3, 17.4, 22.9 | -7% |
+| default_fast, one sentence, p90 ms | 26.0, 24.8, 23.9 | 38.7, 54.7, 38.7 | -36% |
+| 2 callers (default), calls/s | 30.3, 33.6, 36.1 | 26.4, 30.3, 30.2 | +11% |
+| 2 callers, slowest call ms | 135, 119, 107 | 386, 246, 279 | -57% |
+
+(Big text: `--runs 1`, 8 copies; one sentence: `--per-call 50`; 2 callers: `--per-call 60 --concurrent 2`.) The
+one-sentence `default` median moved back and forth, so six more back-to-back rounds of it alone followed: over all
+nine, 8 threads had the shorter median in 5 (overall medians 36.8 vs 35.8 ms) and a shorter p90 in 8 (57.0 vs 72.5 ms).
+So on a busy desktop 8 threads mostly remove the slow calls rather than shorten the typical one, which round 12 (idle)
+found 18-27% shorter. The big texts lose 1-9% (medians: 9% and 6%), as round 12 found; the owner accepted that with the rule. CoNLL-U of the
+big runs is byte-identical on 8 and 16 threads (MD5 db91abcc… default, a3a3916d… default_fast).
+
+**Free runners** ([38232917125](https://github.com/bisforboman/StanzaSharp/actions/runs/38232917125), this branch): the
+detection found 2 cores on ubuntu-26.04 (AMD EPYC 7763) and windows-2025 (Intel Xeon Platinum 8573C), 4 on both Arm
+runners and 3 on macos-26, so the default stays 4, 4, 4, 4 and 3 threads there, as before; CoNLL-U identical to Python
+Stanza's on every runner that ran it.
 
 ## Results, round 12: concurrent calls and the managed thread pool
 
@@ -224,7 +260,7 @@ have no SMT, so physical = logical there):
 idle Ryzen the physical cores give 18-27% shorter calls and 15-39% more calls/s with 2 callers, but up to 8% fewer
 words/s on the big text. On the 2-core runners the logical processors give 3-8% more words/s (except below), 7-17% more
 calls/s with 2 callers and 8-21% shorter `default` calls (`default_fast` calls: even on ubuntu, 3-10% shorter on
-windows), and lose only windows-2025's big `default` text (31-44% fewer words/s). So the default stays all logical processors.
+windows), and lose only windows-2025's big `default` text (31-44% fewer words/s). So the default stayed all logical processors; round 13 changes it.
 
 ## Results, round 11: garbage on long texts (managed backend)
 
