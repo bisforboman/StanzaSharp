@@ -220,6 +220,9 @@ Tokenizer notes:
   the normal case that is the row's own length + 1, since collate appends one `<PAD>`. In the
   first long-paragraph window, the length is cut to the window. After `advance_old_batch`, every
   row runs at the full window width, so padding then reaches the backward direction.
+  - Those later windows run only the unfinished rows (`Tokenizer.LiveRows`, round 15: 2.4x on the benchmark text), plus
+    finished (all-padding) rows placed before the last live row until `Gemm.Run`'s single-row kernel (row m − 1 when
+    m % 6 is 1) falls on the same row as with the whole batch, so every used logit keeps its bits on every path.
 - Model units are code points, like Python. Offsets are UTF-16 indices, so they differ from
   Stanza's only after non-BMP characters.
 - MWT-flagged tokens (`Token.IsMwtCandidate`) carry a single word until the MWT stage runs.
