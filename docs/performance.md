@@ -54,7 +54,10 @@ macos-26; same text and settings). The CoNLL-U was identical on every runner wit
   gap narrows to 2.1x. Not measured on the same machine.
 - Per stage StanzaSharp led everywhere except tokenize on macos-26 (0.70x) and ubuntu-26.04 (0.97x); ner 3.2–7.5x,
   constituency 1.6–4.7x, depparse 2.0–6.1x. Load took 1.8–3.3 s against 4.2–7.6 s.
-- The workflow's Python Stanza install still fails on windows-11-arm.
+- The workflow's Python Stanza install still failed on windows-11-arm: numpy 2.2.6 has no win_arm64 wheel (numpy's first
+  is 2.3.0), and pip's source build fails with the runner's x64 MinGW gcc. The workflow now installs numpy 2.3.5 on that
+  runner only (Stanza 1.15.0 and torch 2.14.1+cpu as everywhere, Arm64 CPython); a quick run there gave identical
+  CoNLL-U on both sides (run 38274497249).
 
 First run ([38150941695](https://github.com/bisforboman/StanzaSharp/actions/runs/38150941695), 2026-10-11, commit
 6a08cf6, before round 12's pool change and CI's move to ubuntu-26.04 and macos-26; `default` package, 2,009 words, each
@@ -639,7 +642,7 @@ Python 40 calls each), calls/s:
   1 pool thread, 2 callers got only 1.24× the throughput of one (9.2 → 11.4 calls/s).
 - An experiment (a lock around `Process` in the benchmark, not committed): 8 callers serialized got 36.4 calls/s
   instead of 22.8, at a lower median latency; 2 serialized callers 30.7 instead of 38.7. So at most about two calls in
-  flight is best. `Process` itself doesn't limit this (see "Remaining ideas").
+  flight is best. `PipelineOptions.MaxConcurrentCalls` limits it.
 - Still 3.4× TorchSharp's and 6× Python's throughput with 8 callers.
 
 ### Guidance
@@ -1199,43 +1202,33 @@ Note on charlm reuse: the charlm is **not bitwise batch-invariant**.
 
 ## Remaining ideas
 
-Rough payoff estimates at 8 threads, against the current 44.5 s six-processor total.
+A short backlog. Items marked *TorchSharp only* concern the `StanzaSharp.Cuda` backend; the managed backend (the
+default) doesn't have them.
 
-- **Parser step loop: per-state tensor ops.** Round 2 replaced the per-state `select`s with
-  `unbind`, but each step still takes one `WordHx` row view per state and stacks per-state tensors.
-  - A shared "bank" tensor per stack (state rows addressed by index, `index_select` /
-    `index_copy_`) would make the op count per step constant.
-  - Payoff: about 0.5–1 s (≈2%) on the CPU. On a GPU, where each op is a kernel launch, likely
-    more; that is where the parser gains least today (docs/gpu.md). Moderate refactor; exact, since
-    it is data movement only.
-- **Remaining depparse memory.** On the TorchSharp backend the peak is set in depparse on the warm-up batch, about
-  1.1 GB above pos: the [batch, width, width, 53] label scores (275 MB for that batch) plus the charlm and LSTM
-  activations of a 5000-word batch. The managed backend (the default) never had that tensor; see "Depparse memory on
-  the managed backend" below for what it has, what was cut and what is left.
-- **Very large documents.** Measured in round 8: only the `Document` (482 B/word) grows; the per-processor lists are
-  references, dropped when each processor returns. Open:
-  - *Allocation per batch*: a call allocates 56–125 KB per word in arrays the pool doesn't hold (GEMM and LSTM outputs,
-    logits, the parser's per-step rows), and on a long text the GC lets 0.6–1.1 GB of it accumulate. Renting them too
-    would lower the peak without a heap limit; it touches every managed network.
-  - *The tokenizer's inputs*: every paragraph's units, ids and features (about 85 bytes per character) exist before the
-    first batch. Building them per batch would bound that, but tokenizing never sets the peak today.
-- **Padding in depparse's input.** Done for the tagger in round 4. Depparse still builds its input and charlm outputs
-  padded and pads `HighwayLstm`'s output for its scorers, which need [batch, width, width] anyway; its batches are
-  sorted by length, so there is little padding to save. Building its input in packed order like the tagger would
-  remove one padded copy of the 2423-wide input per batch.
-- **Per-call cost on short texts.** Done in round 7 for the managed backend, which is now 6.8× faster than Python per
-  call; what is left is memory bandwidth. Open:
-  - *Concurrent callers* (owner's decision): more than about two concurrent `Process` calls lower the managed backend's
-    throughput (8 callers: 23.6 calls/s, serialized: 36.4). `Pipeline` could let at most two calls run their networks
-    at once and queue the rest, exactly (the output doesn't depend on it); today it is documented guidance.
-  - *TorchSharp per call*: 192 ms (Python 189), libtorch's per-operation cost on tiny tensors; sentiment in
-    `default_fast` is 49 ms against Python's 24. Not pursued, as the managed backend is the default.
-  - *Depparse's forward charlm*: every sentence starts `"
+**In progress** (other branches; each adds its own round):
+- AVX-512 kernels (`Vector512`) for the managed GEMM and LSTM steps; they stop at AVX2 today.
+- A faster tokenizer.
 
- "` (start, ROOT, space), so those three steps could start
-    from a stored state for single sentences (3 of ~90 steps).
-- **Sentiment in default_fast.** With nothing to reuse it runs both charlms on every token. Only a faster
-  charlm (or Stanza changing the package) would help.
-- **Thread count.** On a loaded machine, fewer threads were often faster than the default 8,
-  because spinning OpenMP threads compete. The README now says so; `torch.set_num_threads` is the
-  knob.
+**Open:**
+- **Depparse's forward charlm.** Every sentence starts `"\n "` (start, ROOT, space), so those three steps could
+  start from a stored state for single sentences (3 of ~90 steps).
+- **Sentiment in default_fast.** With nothing to reuse it runs both charlms on every token. Only a faster charlm (or
+  Stanza changing the package) would help.
+- **Long texts: the `ArrayPool`'s churn.** After round 11, what is left of the garbage on a long call is mostly buffers the
+  pool trims at a gen2 GC and rents fresh later, plus per-word outputs under 1 KB each.
+- **Parser step loop: per-state tensor ops** (*TorchSharp only*). Each step takes one `WordHx` row view per state and
+  stacks per-state tensors; a shared "bank" tensor per stack (`index_select` / `index_copy_`) would make the op count
+  per step constant. Exact (data movement only); about 2% on the CPU, likely more on a GPU (docs/gpu.md).
+- **Padding in depparse's input** (*TorchSharp only*). Depparse builds its input and charlm outputs padded; building
+  them in packed order like the tagger (round 4) would remove one padded copy of the 2423-wide input per batch.
+- **Depparse memory** (*TorchSharp only*): the [batch, width, width, 53] label scores (275 MB on the warm-up batch) set
+  the peak there. The managed backend never had that tensor (round 9).
+- **Per-call cost** (*TorchSharp only*): 192 ms (Python 189), libtorch's per-operation cost on tiny tensors. Not pursued.
+
+**Done** (see the round):
+- Thread count: the default is the physical cores when there are at least 4 (rounds 12–13).
+- Per-call cost on short texts (managed): round 7; concurrent callers: `PipelineOptions.MaxConcurrentCalls` (round 7)
+  and the pool's oversubscription fix (round 12).
+- Very large documents: measured in round 8 (only the `Document` grows); allocations cut in round 11. The tokenizer's
+  up-front inputs (about 85 bytes per character) never set the peak (round 8).
+- Managed depparse and sentiment memory: rounds 9 and 10.
