@@ -204,13 +204,23 @@ internal sealed unsafe class PackedLstm
     /// <summary>h_{t-1}·W_hhᵀ is summed in blocks of this many terms (<see cref="Gemm.KernelBlocked"/>).</summary>
     private const int KB = 128;
 
+    /// <summary>A step runs as this many tasks per thread (see <see cref="Step"/>).</summary>
+    private const int TasksPerThread = 4;
+
     /// <summary>One time step for every direction in <paramref name="works"/>, split across threads by panel.</summary>
+    /// <remarks>
+    /// <see cref="TasksPerThread"/> tasks of whole panels per thread, not one: a step waits for its slowest task, and a
+    /// thread that runs late (a busy or slower core) then holds a quarter of its share, while the others claim the rest.
+    /// On the free runners that made the tokenizer (hidden 64, steps of a few µs) up to 29% faster and the constituency
+    /// parser and depparse up to 10% (docs/performance.md, round 16). A panel's arithmetic doesn't depend on its task,
+    /// so the split never changes a bit.
+    /// </remarks>
     public static void Step(StepRows[] works)
     {
         int total = 0;
         foreach (var w in works)
             total += w.Whh.Panels;
-        int tasks = Math.Min(ManagedThreads.Count, total);
+        int tasks = Math.Min(TasksPerThread * ManagedThreads.Count, total);
         ManagedThreads.For(tasks, task =>
         {
             int g0 = (int)((long)total * task / tasks), g1 = (int)((long)total * (task + 1) / tasks);

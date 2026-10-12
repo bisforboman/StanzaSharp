@@ -19,14 +19,14 @@ public class BenchmarkCommandTests
         CultureInfo.CurrentCulture = new CultureInfo("sv-SE"); // decimal comma: the block must not depend on it
         try
         {
-            var text = Format(new Result(TestMachine, "default", "tokenize,pos", 2000, 100, 3, 50, TestSide(1), TestSide(2.5),
+            var text = Format(new Result(TestMachine, "default", "tokenize,pos", 2000, 100, 3, 50, TestSide(1) with { WarmUps = 3 }, TestSide(2.5) with { WarmUps = 2 },
                 "Stanza 1.15.0, torch 2.14.1, Python 3.12.0", "identical CoNLL-U on both sides"));
             Assert.Contains("| CPU | Test CPU 9000: 4 cores, 8 logical processors |", text);
             Assert.Contains("| RAM | 15.6 GB |", text);
             Assert.Contains("| .NET | .NET 10.0.0, SIMD Vector256 |", text);
             Assert.Contains("| StanzaSharp | 1.2.3, managed backend |", text);
             Assert.Contains("| Python Stanza | Stanza 1.15.0, torch 2.14.1, Python 3.12.0 |", text);
-            Assert.Contains("2,000 words in 100 sentences, median of 3 timed runs after a warm-up, the two sides alternating", text);
+            Assert.Contains("2,000 words in 100 sentences, median of 3 timed runs after 3 warm-up runs (Stanza 2), the two sides alternating", text);
             Assert.Contains("| Output | identical CoNLL-U on both sides |", text);
             Assert.Contains("| | StanzaSharp | Python Stanza | StanzaSharp's advantage |", text);
             Assert.Contains("| load | 1.00 s | 2.50 s | 2.50x |", text);
@@ -49,7 +49,7 @@ public class BenchmarkCommandTests
             "not run: could not start python", null));
         Assert.Contains("| CPU | Test CPU 9000: 8 logical processors |", text);
         Assert.Contains("| Python Stanza | not run: could not start python |", text);
-        Assert.Contains("median of 1 timed run after a warm-up;", text);
+        Assert.Contains("median of 1 timed run after 1 warm-up run;", text);
         Assert.DoesNotContain("| Output |", text);
         Assert.Contains("| | StanzaSharp |\n", text.ReplaceLineEndings("\n"));
         Assert.Contains("| **total** | 2.00 s |\n", text.ReplaceLineEndings("\n"));
@@ -109,6 +109,17 @@ public class BenchmarkCommandTests
         var longText = Paragraphs(6000); // more than the ~2,400 of one copy
         Assert.InRange(Words(longText), 6000, 7000);
         Assert.True(longText.IndexOf(longText[0], 1) > 0, "the text repeats");
+    }
+
+    [Fact]
+    public void WarmedUp_WhenNoStageGotMuchFaster()
+    {
+        Dictionary<string, double> First() => new() { ["tokenize"] = 0.100, ["mwt"] = 0.009, ["pos"] = 1.0 };
+        Assert.False(WarmedUp(null, First()));
+        Assert.True(WarmedUp(First(), new() { ["tokenize"] = 0.085, ["mwt"] = 0.001, ["pos"] = 1.05 })); // under 20 ms faster
+        Assert.True(WarmedUp(First(), new() { ["tokenize"] = 0.100, ["mwt"] = 0.009, ["pos"] = 0.95 })); // under 10% faster
+        Assert.False(WarmedUp(First(), new() { ["tokenize"] = 0.075, ["mwt"] = 0.009, ["pos"] = 1.0 }));
+        Assert.False(WarmedUp(First(), new() { ["tokenize"] = 0.100, ["mwt"] = 0.009, ["pos"] = 0.85 }));
     }
 
     [Fact]

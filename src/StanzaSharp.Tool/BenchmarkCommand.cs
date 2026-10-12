@@ -18,8 +18,12 @@ namespace StanzaSharp.Tool;
 /// </summary>
 internal static class BenchmarkCommand
 {
-    /// <summary>One side's medians: <see cref="Stages"/> in seconds per run, per-call times in ms, peak memory in MB.</summary>
-    internal sealed record Side(int Threads, double Load, Dictionary<string, double> Stages, double CallMedian, double CallP90, double PeakMB)
+    /// <summary>
+    /// One side's medians: <see cref="Stages"/> in seconds per run, per-call times in ms, peak memory in MB; and how many
+    /// warm-up runs it had.
+    /// </summary>
+    internal sealed record Side(int Threads, double Load, Dictionary<string, double> Stages, double CallMedian, double CallP90, double PeakMB,
+        int WarmUps = 1)
     {
         public double Total => Stages.Values.Sum();
     }
@@ -79,7 +83,6 @@ internal static class BenchmarkCommand
 
         var paragraphs = Paragraphs(words);
         var text = string.Join("\n\n", paragraphs);
-        var warmUp = string.Join("\n\n", Paragraphs(Math.Max(words / 10, 50)));
 
         var stageLog = new StageLog();
         double load;
@@ -103,34 +106,61 @@ internal static class BenchmarkCommand
             var pyRuns = new List<Dictionary<string, double>>();
             Document doc = null!;
             string? pyConllu = null;
-
-            // A warm-up run each, then the timed runs, alternating: both sides see the same machine state.
-            for (int run = 0; run <= runs; run++)
+            Dictionary<string, double> RunStanzaSharp()
             {
-                var input = run == 0 ? warmUp : text;
-                Console.Error.Write(run == 0 ? "Warm-up run" : $"Run {run} of {runs}");
                 stageLog.Stages.Clear();
-                doc = nlp.Process(input);
-                if (run > 0)
-                    csRuns.Add(new(stageLog.Stages));
+                doc = nlp.Process(text);
                 Console.Error.Write($": StanzaSharp {stageLog.Stages.Values.Sum():F1} s");
-                if (stanza != null)
+                return new(stageLog.Stages);
+            }
+
+            Dictionary<string, double> RunStanza()
+            {
+                var reply = stanza!.Send(new { op = "run", text });
+                pyConllu = reply.GetProperty("conllu").GetString();
+                var stages = reply.GetProperty("stages").EnumerateObject().ToDictionary(p => p.Name, p => p.Value.GetDouble());
+                Console.Error.Write($", Stanza {stages.Values.Sum():F1} s");
+                return stages;
+            }
+
+            // Warm-up runs on the whole text, each side until it settles (WarmedUp), then the timed runs; the two sides
+            // alternate, so both see the same machine state. StanzaSharp's hot per-step methods reach the JIT's optimized
+            // tier only after a few runs (docs/performance.md, round 16), so the timed runs show a warmed service.
+            int maxWarmUps = quick ? 1 : MaxWarmUps, csWarmUps = 0, pyWarmUps = 0;
+            Dictionary<string, double>? csLast = null, pyLast = null;
+            for (bool csDone = false, pyDone = stanza == null; !(csDone && pyDone);)
+            {
+                Console.Error.Write($"Warm-up run {Math.Max(csWarmUps, pyWarmUps) + 1}");
+                if (!csDone)
                 {
-                    var reply = stanza.Send(new { op = "run", text = input });
-                    var stages = reply.GetProperty("stages").EnumerateObject().ToDictionary(p => p.Name, p => p.Value.GetDouble());
-                    if (run > 0)
-                        pyRuns.Add(stages);
-                    pyConllu = reply.GetProperty("conllu").GetString();
-                    Console.Error.Write($", Stanza {stages.Values.Sum():F1} s");
+                    var stages = RunStanzaSharp();
+                    csDone = ++csWarmUps >= maxWarmUps || WarmedUp(csLast, stages);
+                    csLast = stages;
                 }
 
+                if (!pyDone)
+                {
+                    var stages = RunStanza();
+                    pyDone = ++pyWarmUps >= maxWarmUps || WarmedUp(pyLast, stages);
+                    pyLast = stages;
+                }
+
+                Console.Error.WriteLine();
+            }
+
+            for (int run = 1; run <= runs; run++)
+            {
+                Console.Error.Write($"Run {run} of {runs}");
+                csRuns.Add(RunStanzaSharp());
+                if (stanza != null)
+                    pyRuns.Add(RunStanza());
                 Console.Error.WriteLine();
             }
 
             // One short sentence per call: the text's sentences of 5-25 words, cycled; a few calls first to warm up.
             var sentences = doc.Sentences.Select(s => s.Text ?? "").Where(t => WordCount(t) is >= 5 and <= 25).ToList();
             if (sentences.Count == 0)
-                sentences = [warmUp];
+                sentences = [text];
             var callTexts = Enumerable.Range(0, calls).Select(i => sentences[i % sentences.Count]).ToList();
             var warmUpCalls = callTexts.Take(5).ToList();
             Console.Error.WriteLine($"{calls} calls on one sentence each...");
@@ -142,7 +172,7 @@ internal static class BenchmarkCommand
                 nlp.Process(t);
                 return Stopwatch.GetElapsedTime(start).TotalMilliseconds;
             }).ToList();
-            var cs = new Side(ManagedThreads.Count, load, MedianStages(csRuns), Median(csCalls), Percentile(csCalls, 0.9), PeakWorkingSetMB());
+            var cs = new Side(ManagedThreads.Count, load, MedianStages(csRuns), Median(csCalls), Percentile(csCalls, 0.9), PeakWorkingSetMB(), csWarmUps);
 
             Side? py = null;
             string? outputNote = null;
@@ -151,7 +181,8 @@ internal static class BenchmarkCommand
                 stanza.Send(new { op = "calls", texts = warmUpCalls });
                 var reply = stanza.Send(new { op = "calls", texts = callTexts });
                 var pyCalls = reply.GetProperty("ms").EnumerateArray().Select(e => e.GetDouble()).ToList();
-                py = new Side(stanza.Threads, stanza.Load, MedianStages(pyRuns), Median(pyCalls), Percentile(pyCalls, 0.9), reply.GetProperty("peak_mb").GetDouble());
+                py = new Side(stanza.Threads, stanza.Load, MedianStages(pyRuns), Median(pyCalls), Percentile(pyCalls, 0.9), reply.GetProperty("peak_mb").GetDouble(),
+                    pyWarmUps);
                 var conllu = Conllu.Write(doc);
                 if (text.Any(char.IsHighSurrogate))
                     conllu = ConlluDiff.ToCodePointOffsets(conllu, text);
@@ -170,6 +201,16 @@ internal static class BenchmarkCommand
         }
     }
 
+    /// <summary>The most warm-up runs per side (<c>--quick</c>: one).</summary>
+    internal const int MaxWarmUps = 5;
+
+    /// <summary>
+    /// Whether a side has settled: it has had two warm-up runs, and no stage got faster in the latest by more than 10%
+    /// and 20 ms (smaller changes are the runners' noise).
+    /// </summary>
+    internal static bool WarmedUp(Dictionary<string, double>? previous, Dictionary<string, double> latest) =>
+        previous != null && latest.All(s => previous.GetValueOrDefault(s.Key) is var before && before - s.Value <= Math.Max(0.1 * before, 0.02));
+
     /// <summary>The Markdown block the command prints.</summary>
     internal static string Format(Result r)
     {
@@ -187,7 +228,7 @@ internal static class BenchmarkCommand
         s.AppendLine(c, $"| StanzaSharp | {m.StanzaSharp}, managed backend |");
         s.AppendLine(c, $"| Python Stanza | {r.Python} |");
         s.AppendLine(c, $"| Run | {r.Package} package ({r.Processors}); {r.Words:N0} words in {r.Sentences:N0} sentences, median of " +
-                        $"{r.Runs} timed {(r.Runs == 1 ? "run" : "runs")} after a warm-up{(r.Stanza != null ? ", the two sides alternating" : "")}; " +
+                        $"{r.Runs} timed {(r.Runs == 1 ? "run" : "runs")} after {WarmUps(r)}{(r.Stanza != null ? ", the two sides alternating" : "")}; " +
                         $"{r.Calls} calls on one sentence each |");
         if (r.Output != null)
             s.AppendLine(c, $"| Output | {r.Output} |");
@@ -220,6 +261,14 @@ internal static class BenchmarkCommand
         Row("per call, p90", cs.CallP90, py?.CallP90, " ms", "F1");
         Row("peak memory", cs.PeakMB, py?.PeakMB, " MB", "N0");
         return s.ToString();
+    }
+
+    private static string WarmUps(Result r)
+    {
+        static string Runs(int n) => n == 1 ? "1 warm-up run" : $"{n} warm-up runs";
+        return r.Stanza is not { } py || py.WarmUps == r.StanzaSharp.WarmUps
+            ? Runs(r.StanzaSharp.WarmUps)
+            : $"{Runs(r.StanzaSharp.WarmUps)} (Stanza {py.WarmUps})";
     }
 
     /// <summary>

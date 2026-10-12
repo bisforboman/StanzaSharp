@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.Text;
 using System.Text.RegularExpressions;
 using StanzaSharp.Nn.Managed;
@@ -58,7 +59,16 @@ internal sealed partial class Tokenizer : IDisposable
     private const string UrlRe = """"(?:https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s"]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s"]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s"]{2,}|www\.[a-zA-Z0-9]+\.[^\s"]{2,})|[a-zA-Z0-9]+\.(?:gov|org|edu|net|com|co)(?:\.[^\s"]{2,})"""";
 
     [GeneratedRegex("(?:" + EmailRe + "|" + UrlRe + ")")]
-    private static partial Regex MaskRe();
+    internal static partial Regex MaskRe();
+
+    /// <summary>
+    /// Every match of <see cref="MaskRe"/> contains one of these (the pattern is case-sensitive), so a paragraph without
+    /// any is skipped. Read off the pattern's alternatives: an e-mail has a literal <c>@</c> after its local part; the
+    /// four URL forms start <c>https?:\/\/</c> (<c>://</c>) or <c>www\.</c>; the last one has
+    /// <c>\.(?:gov|org|edu|net|com|co)</c>, and ".com" contains ".co". <c>MaskLiterals_*</c> tests check it.
+    /// </summary>
+    internal static readonly SearchValues<string> MaskLiterals =
+        SearchValues.Create(["@", "://", "www.", ".gov", ".org", ".edu", ".net", ".co"], StringComparison.Ordinal);
 
     private readonly ITokenizerNet _net;
     private readonly Dictionary<string, int> _vocab;
@@ -220,6 +230,7 @@ internal sealed partial class Tokenizer : IDisposable
         public required int[] Ends;
         public required long[] Ids;
         public required float[] Feats;    // [Length * featDim]
+        public bool MayHaveMask;          // contains one of MaskLiterals, so MaskRe may match
 
         public int Length => Units.Length;
     }
@@ -272,15 +283,17 @@ internal sealed partial class Tokenizer : IDisposable
             Starts = starts.ToArray(),
             Ends = ends.ToArray(),
             Ids = unitArray.Select(u => (long)_vocab.GetValueOrDefault(u, _unkId)).ToArray(),
-            Feats = Features(unitArray),
+            Feats = Features(unitArray, out bool mayHaveMask),
+            MayHaveMask = mayHaveMask,
         });
     }
 
-    private float[] Features(string[] units)
+    private float[] Features(string[] units, out bool mayHaveMask)
     {
         int n = units.Length;
         var feats = new float[n * _featDim];
         var (joined, unitAt) = Join(units);
+        mayHaveMask = joined.AsSpan().ContainsAny(MaskLiterals);
         for (int k = 0; k < _featDim; k++)
         {
             var name = _featFuncs[k];
@@ -451,6 +464,8 @@ internal sealed partial class Tokenizer : IDisposable
     {
         int last = para.Length - 1;
         pred[last] = pred[last] < 2 ? 2 : pred[last] > 2 ? 4 : 2;
+        if (!para.MayHaveMask)
+            return;
 
         var (joined, unitAt) = Join(para.Units);
         foreach (Match m in MaskRe().Matches(joined))
