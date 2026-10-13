@@ -215,7 +215,6 @@ Vector256 round had a 592 ms median call). Per stage on the Emerald Rapids at 4 
   two FMA ports with a 4-cycle latency need, and its broadcasts come from memory (load ports, not the shuffle port that
   Intel's second FMA unit shares).
 
-<<<<<<< HEAD
 ## Results, round 18: depparse's forward charlm start; garbage on long texts
 
 Two small items from "Remaining ideas". One shipped (the charlm's character ids), one didn't (the stored start state).
@@ -271,7 +270,7 @@ It saves 3 of the forward charlm's ~90 steps per sentence. Per-call A/B (same bi
 processes): the forward charlm took 2.82 / 2.88 / 3.09 ms per sentence (48 steps on average) and 2.62 / 2.75 / 2.96
 ms from the stored state, 0.13–0.2 ms saved, under 1% of a 23 ms five-processor call and about 0.5% of a 40 ms
 all-eight one. Under the noise of a call, so not shipped.
-=======
+
 ## Results, round 17: startup (load and the first calls)
 
 A short-lived process (a CLI run, a serverless function, a one-off job) pays for `Pipeline.Load` and for its first
@@ -412,7 +411,6 @@ the `.pt` files (the Scalar path is covered by ManagedBackendTests). Every start
 setting (ReadyToRun, the knobs, main), gave the same CoNLL-U for both texts; `stanzasharp benchmark` matched Python
 Stanza on all five runners. `VectorExp` equals the runtime's `Exp` on all 2^32 inputs (above).
 PipelineTests, OptionsTests and ManagedBackendTests pass (93 tests, converted models).
->>>>>>> origin/main
 
 ## Results, round 16: tokenizer follow-ups (LSTM step split, warm-up, URL prefilter)
 
@@ -1734,7 +1732,6 @@ A short backlog. Items marked *TorchSharp only* concern the `StanzaSharp.Cuda` b
 default) doesn't have them.
 
 **Open:**
-<<<<<<< HEAD
 - **Depparse's backward charlm in batches.** Today only a one-sentence document continues from the tagger's final
   backward state (`CharlmCache.TryGetAlone`), because a batched row's kernel was thought to depend on its batch. Since
   `Gemm.KernelBlocked` a row's step is batch-invariant (round 18 checked it bit for bit for the forward charlm), so the
@@ -1743,14 +1740,10 @@ default) doesn't have them.
   Check it on the backward charlm the same way first.
 - **Long texts: what is left of the garbage** (round 18): per-word objects outside the charlm (tokenizer inputs,
   constituency's `StackState`s, `bool[]`/`object[]`/`string[]`), each under 1 KB per word. The peak is set by live data.
-=======
 - **Loading `.pt` files.** The pretrain's and NER's 250k-word vocabularies are pickled, mirrored into JSON
   (`TorchCheckpoint.Splitter`), parsed back into nodes and then into a dictionary: about 0.3 s each when warm, more cold,
   and the pretrain then NER are the load's longest chain (round 17). Building the vocabulary straight from the pickle
   would cut most of it.
-- **Depparse's forward charlm.** Every sentence starts `"\n "` (start, ROOT, space), so those three steps could
-  start from a stored state for single sentences (3 of ~90 steps).
->>>>>>> origin/main
 - **Sentiment in default_fast.** With nothing to reuse it runs both charlms on every token. Only a faster charlm (or
   Stanza changing the package) would help.
 - **Parser step loop: per-state tensor ops** (*TorchSharp only*). Each step takes one `WordHx` row view per state and
@@ -1763,13 +1756,10 @@ default) doesn't have them.
 - **Per-call cost** (*TorchSharp only*): 192 ms (Python 189), libtorch's per-operation cost on tiny tensors. Not pursued.
 
 **Done** (see the round):
-<<<<<<< HEAD
 - Depparse's forward charlm from a stored start state (exact, 3 of ~90 steps: under the noise, not shipped); the
   `ArrayPool`'s churn on long texts (measured: none; the charlm's per-character strings were cut instead): round 18.
-=======
 - Startup: the runtime's vector `Exp` and the thread pool at JIT tier 0, two models loading at a time; ReadyToRun and
   the `DOTNET_*` knobs measured: round 17.
->>>>>>> origin/main
 - Small LSTMs on few cores (four tasks per thread in a step), the benchmark's warm-up, the e-mail/URL regex prefilter:
   round 16.
 - AVX-512 kernels (`Vector512`): round 14.
