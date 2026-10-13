@@ -265,38 +265,89 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
         int dim = _charlmForward!.HiddenDim, rows = packedRow.Length;
         var sentences = batch.Texts.Select(t => (IReadOnlyList<string>)t.Prepend("\n").ToList()).ToList();
         var reps = ArrayPool<float>.Shared.Rent(rows * dim);
-
-        // A sentence alone here that the tagger also ran alone: backward, the words come first ("\n" + words reversed is
-        // the tagger's sequence, then ROOT), so run on from the tagger's final state over ROOT only. One row per step in
-        // both runs: the same bits as running it all again.
-        CharlmCache.Alone? tagger = null;
-        bool reuse = batch.Texts.Count == 1 && batch.Charlms != null && batch.Charlms.TryGetAlone(batch.Texts[0], out tagger);
         try
         {
-            foreach (var (charlm, at) in new[] { (_charlmForward, col), (_charlmBackward!, col + dim) })
-            {
-                ct.ThrowIfCancellationRequested();
-                if (reuse && charlm == _charlmBackward)
-                {
-                    fixed (float* pr = reps)
-                    {
-                        // Rows are words in order: ROOT, then the sentence's words (the first word's row is the final h).
-                        _charlmBackward.Continue(tagger!.Backward.AsSpan(0, dim).ToArray(), tagger.BackwardFinalC, ["\n"], pr, dim, ct);
-                        tagger.Backward.CopyTo(reps.AsSpan(dim));
-                    }
-                }
-                else
-                {
-                    charlm.BuildCharRepresentation(sentences, reps, dim, ct);
-                }
-
-                for (int k = 0; k < rows; k++)
-                    reps.AsSpan(k * dim, dim).CopyTo(x.AsSpan(packedRow[k] * _inputSize + at));
-            }
+            _charlmForward.BuildCharRepresentation(sentences, reps, dim, ct);
+            for (int k = 0; k < rows; k++)
+                reps.AsSpan(k * dim, dim).CopyTo(x.AsSpan(packedRow[k] * _inputSize + col));
+            ct.ThrowIfCancellationRequested();
+            BackwardCharlm(batch, sentences, reps, ct);
+            for (int k = 0; k < rows; k++)
+                reps.AsSpan(k * dim, dim).CopyTo(x.AsSpan(packedRow[k] * _inputSize + col + dim));
         }
         finally
         {
             ArrayPool<float>.Shared.Return(reps);
+        }
+    }
+
+    /// <summary>The backward charlm's rows for <see cref="CharlmFeatures"/>, ROOT then the words of each sentence in order.</summary>
+    /// <remarks>
+    /// Backward, ROOT comes last: "\n" + the words reversed is the tagger's sequence, then ROOT. So a sentence whose backward
+    /// outputs the tagger kept (<see cref="CharlmCache.TryGetBackward"/>) takes its words' rows from there and runs on from
+    /// the tagger's final state over ROOT only; the others run in full. A charlm step gives a row the same arithmetic in
+    /// any batch (<see cref="Gemm.KernelBlocked"/>), so these are the bits a full pass over every sentence gives.
+    /// </remarks>
+    private void BackwardCharlm(DepparseBatch batch, List<IReadOnlyList<string>> sentences, float[] reps, CancellationToken ct)
+    {
+        int dim = _charlmBackward!.HiddenDim, n = sentences.Count;
+        var first = new int[n]; // each sentence's first row (ROOT)
+        for (int i = 1; i < n; i++)
+            first[i] = first[i - 1] + sentences[i - 1].Count;
+        var tagger = new (float[] Backward, float[] FinalC)[n];
+        var reused = new List<int>();
+        var rest = new List<int>();
+        for (int i = 0; i < n; i++)
+        {
+            if (batch.Charlms != null && batch.Charlms.TryGetBackward(batch.Keys?[i], batch.Texts[i], out var backward, out var finalC))
+            {
+                tagger[i] = (backward, finalC);
+                reused.Add(i);
+            }
+            else
+            {
+                rest.Add(i);
+            }
+        }
+
+        if (reused.Count == 0)
+        {
+            _charlmBackward.BuildCharRepresentation(sentences, reps, dim, ct);
+            return;
+        }
+
+        int m = reused.Count, restRows = rest.Sum(i => sentences[i].Count);
+        var scratch = ArrayPool<float>.Shared.Rent(Math.Max(restRows, 3 * m) * dim);
+        try
+        {
+            if (rest.Count > 0)
+            {
+                _charlmBackward.BuildCharRepresentation(rest.Select(i => sentences[i]).ToList(), scratch, dim, ct);
+                for (int j = 0, k = 0; j < rest.Count; k += sentences[rest[j]].Count, j++)
+                    scratch.AsSpan(k * dim, sentences[rest[j]].Count * dim).CopyTo(reps.AsSpan(first[rest[j]] * dim));
+            }
+
+            // Start states [m, dim] each: h is the first word's row (the tagger's pass ends there), c the final cell state.
+            for (int j = 0; j < m; j++)
+            {
+                var (backward, finalC) = tagger[reused[j]];
+                backward.AsSpan(0, dim).CopyTo(scratch.AsSpan(j * dim));
+                finalC.CopyTo(scratch.AsSpan((m + j) * dim));
+                backward.CopyTo(reps.AsSpan((first[reused[j]] + 1) * dim));
+            }
+
+            fixed (float* ps = scratch)
+            {
+                _charlmBackward.Continue(ps, ps + (long)m * dim, Enumerable.Repeat<IReadOnlyList<string>>(["\n"], m).ToList(),
+                    ps + 2L * m * dim, dim, ct);
+            }
+
+            for (int j = 0; j < m; j++)
+                scratch.AsSpan((2 * m + j) * dim, dim).CopyTo(reps.AsSpan(first[reused[j]] * dim));
+        }
+        finally
+        {
+            ArrayPool<float>.Shared.Return(scratch);
         }
     }
 

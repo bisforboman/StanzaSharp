@@ -506,8 +506,8 @@ public sealed class Pipeline : IDisposable
         if (_parser != null)
             Step("constituency", () => _parser.Process(doc, charlms, ct), ct);
 
-        // Depparse runs the charlms with a ROOT word in front, so the tagger's outputs apply only to a sentence both ran
-        // alone, backward (a one-sentence document; DependencyParser.Process).
+        // Depparse runs the charlms with a ROOT word in front, so of the tagger's outputs only the backward ones apply, with
+        // ROOT run on from the tagger's final state (managed; DependencyParser.Process).
         if (_depparse != null)
             Step("depparse", () => _depparse.Process(doc, charlms, ct), ct);
         if (_sentiment != null)

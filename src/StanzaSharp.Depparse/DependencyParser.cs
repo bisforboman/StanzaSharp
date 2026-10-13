@@ -65,21 +65,23 @@ internal sealed class DependencyParser : IDisposable
     /// </summary>
     /// <remarks>
     /// The parser runs the charlms over the words with a "\n" ROOT word in front, which changes every forward state and
-    /// the backward ROOT state, so in general the tagger's representations don't apply. One case does: a sentence that
-    /// both ran alone (a one-sentence document, the usual per-call case). Its backward pass is the tagger's, then two
-    /// more characters for ROOT, so the managed parser continues from the tagger's final state in
-    /// <paramref name="charlms"/> (<see cref="CharlmCache.TryGetAlone"/>), with the same bits.
+    /// the backward ROOT state. Backward, though, ROOT comes last: the tagger's backward pass is this one's prefix, then
+    /// two more characters for ROOT. So the managed parser takes each sentence's backward outputs from
+    /// <paramref name="charlms"/> and runs on from the tagger's final state over ROOT only (<see cref="CharlmCache.TryGetBackward"/>).
+    /// A managed charlm step gives a row the same arithmetic in any batch, so that is the same bits as running it again.
     /// </remarks>
     public void Process(Document doc, CharlmCache? charlms = null, CancellationToken cancellationToken = default)
     {
-        var sentences = doc.Sentences.Select(s => s.Words.ToList()).Where(w => w.Count > 0).ToList();
+        var keys = doc.Sentences.Where(s => s.Words.Any()).ToList();
+        var sentences = keys.Select(s => s.Words.ToList()).ToList();
         if (sentences.Any(s => s.Any(w => w.Upos == null && w.Xpos == null)))
             throw new InvalidOperationException("Run the POS tagger before the dependency parser");
 
         foreach (var batch in Batches(sentences.Select(s => s.Count + 1).ToList()))
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var parsed = Parse(batch.Select(i => (IReadOnlyList<Word>)sentences[i]).ToList(), cancellationToken, charlms);
+            var parsed = Parse(batch.Select(i => (IReadOnlyList<Word>)sentences[i]).ToList(), cancellationToken, charlms,
+                batch.Select(i => (Sentence?)keys[i]).ToList());
             for (int b = 0; b < batch.Count; b++)
             {
                 for (int j = 0; j < sentences[batch[b]].Count; j++)
@@ -129,14 +131,15 @@ internal sealed class DependencyParser : IDisposable
     }
 
     /// <summary>Parses one batch: (head, deprel) for each word of each sentence.</summary>
+    /// <param name="keys">Each sentence of <paramref name="batch"/>, to find its entry in <paramref name="charlms"/>.</param>
     /// <remarks>
     /// A batch is up to 5000 words (seconds on a slow CPU), so <paramref name="cancellationToken"/> is also checked inside
     /// it: in the network and between the sentences' tree decodes.
     /// </remarks>
     internal List<(int Head, string Deprel)[]> Parse(IReadOnlyList<IReadOnlyList<Word>> batch, CancellationToken cancellationToken = default,
-        CharlmCache? charlms = null)
+        CharlmCache? charlms = null, IReadOnlyList<Sentence?>? keys = null)
     {
-        var output = Scores(batch, labelScores: false, cancellationToken, charlms, rentScores: true);
+        var output = Scores(batch, labelScores: false, cancellationToken, charlms, rentScores: true, keys);
         int width = output.Width;
         var result = new List<(int, string)[]>(batch.Count);
         var scores = ArrayPool<double>.Shared.Rent(width * width); // each sentence's n × n block, written before it is read
@@ -175,14 +178,15 @@ internal sealed class DependencyParser : IDisposable
     /// <param name="labelScores">Also return the label scores of every word pair (tests).</param>
     /// <param name="charlms">The tagger's charlm outputs (see <see cref="Process"/>).</param>
     /// <param name="rentScores">Let the net return <see cref="DepparseScores.Rented"/> scores, which the caller gives back.</param>
+    /// <param name="keys">Each sentence of <paramref name="batch"/>, to find its entry in <paramref name="charlms"/>.</param>
     internal DepparseScores Scores(IReadOnlyList<IReadOnlyList<Word>> batch, bool labelScores = false, CancellationToken cancellationToken = default,
-        CharlmCache? charlms = null, bool rentScores = false)
+        CharlmCache? charlms = null, bool rentScores = false, IReadOnlyList<Sentence?>? keys = null)
     {
         // data.py load_doc: simplify_punct changes the words the parser sees (vocab and charlm alike).
         var texts = batch.Select(s => (IReadOnlyList<string>)s.Select(w => Punct.Simplify(w.Text)).ToList()).ToList();
         int size = batch.Count, width = batch.Max(s => s.Count) + 1;
         var input = new DepparseBatch(texts, width, batch.Select(s => (long)s.Count + 1).ToArray(),
-            new long[size * width], new long[size * width], new long[size * width], new long[size * width], new long[size * width], charlms, rentScores);
+            new long[size * width], new long[size * width], new long[size * width], new long[size * width], new long[size * width], charlms, rentScores, keys);
         for (int b = 0; b < size; b++)
         {
             int row = b * width;
