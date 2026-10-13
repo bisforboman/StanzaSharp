@@ -93,6 +93,9 @@ since 1.0, and every processor also has a managed net (see "Managed backend"), t
   managed charlm's per-character strings (`EnumerateRunes().Select(ToString)`) were ~3 KB/word, now looked up by span
   (`GetAlternateLookup<ReadOnlySpan<char>>`): 15 KB/word. Depparse's forward charlm from a stored "\n\n " state was
   exact but saved 0.13–0.2 ms per sentence, under a call's noise: not shipped.
+  Round 22: 11 KB/word (NER's emissions rented through `INerNet.Forward`'s span, Tarjan's per-node arrays, ASCII
+  `PyString.Lower`, the `Recycler` keeping `StackState`/`Composed` objects, the tokenizer's `Paragraph` as one string with
+  inputs rented per batch). GC allocation ticks over-credit small objects; trust the benchmark's per-processor bytes.
   Round 12 (concurrent calls, `--with-long`): `ManagedThreads.Pool` keeps workers asleep while callers in a region plus
   awake workers number max(ProcessorCount, Count) (`_busy`/`_limit`); with Threads = ProcessorCount and 8 callers, spinning
   oversubscription had stalled calls for seconds. Calls don't serialize or starve; >2 callers cost throughput (L3/DRAM,

@@ -59,7 +59,7 @@ internal static class ChuLiuEdmonds
     /// </summary>
     internal static int[] Solve(double[] scores, int n)
     {
-        var contractions = new Stack<(int[] Tree, int[] CycleLocs, int[] NoncycleLocs, int[] MetanodeHeads, int[] MetanodeDeps)>();
+        Stack<(int[] Tree, int[] CycleLocs, int[] NoncycleLocs, int[] MetanodeHeads, int[] MetanodeDeps)>? contractions = null; // most trees have no cycle
         var rented = ArrayPool<double>.Shared.Rent(n * n);
         var other = rented;
         try
@@ -71,7 +71,7 @@ internal static class ChuLiuEdmonds
             {
                 var cycle = cycles[^1];
                 var (cycleLocs, noncycleLocs, heads, deps) = ProcessCycle(tree, cycle, scores, other);
-                contractions.Push((tree, cycleLocs, noncycleLocs, heads, deps));
+                (contractions ??= new()).Push((tree, cycleLocs, noncycleLocs, heads, deps));
                 (scores, other) = (other, scores);
                 n = noncycleLocs.Length + 1;
                 Prepare(scores, n);
@@ -79,9 +79,9 @@ internal static class ChuLiuEdmonds
                 cycles = Tarjan(tree);
             }
 
-            while (contractions.Count > 0)
+            while (contractions?.Count > 0)
             {
-                var (outer, cycleLocs, noncycleLocs, heads, deps) = contractions.Pop();
+                var (outer, cycleLocs, noncycleLocs, heads, deps) = contractions!.Pop();
                 tree = Expand(outer, tree, cycleLocs, noncycleLocs, heads, deps);
             }
 
@@ -121,89 +121,103 @@ internal static class ChuLiuEdmonds
     }
 
     /// <summary>tarjan: the cycles (strongly connected components of more than one node), in the order found.</summary>
-    internal static List<bool[]> Tarjan(int[] tree)
+    internal static IReadOnlyList<bool[]> Tarjan(int[] tree)
     {
-        int n = tree.Length, next = 0;
-        var indices = new int[n];
-        var lowlinks = new int[n];
-        Array.Fill(indices, -1);
-        Array.Fill(lowlinks, -1);
-        var onStack = new bool[n];
-        var stack = new List<int>();
-        var cycles = new List<bool[]>();
+        int n = tree.Length;
 
-        // Each node's dependents in ascending order: children[first[i]..first[i + 1]).
-        var first = new int[n + 1];
-        foreach (int head in tree)
-            first[head + 1]++;
-        for (int i = 0; i < n; i++)
-            first[i + 1] += first[i];
-        var children = new int[n];
-        var fill = (int[])first.Clone();
-        for (int d = 0; d < n; d++)
-            children[fill[tree[d]]++] = d;
-
-        // Stanza's explicit call stack: (node, whether it was entered, how many dependents were visited, the one being visited).
-        var calls = new Stack<(int I, bool Entered, int Pos, int J)>();
-        for (int root = 0; root < n; root++)
+        // Scratch, rented (a sentence's decode called this per contraction; new arrays were ~1 KB per word on long texts):
+        // indices, lowlinks, onStack (0/1), the stack, and each node's dependents in ascending order,
+        // children[first[i]..first[i + 1]), with fill as the counting sort's cursor.
+        var ints = ArrayPool<int>.Shared.Rent(7 * n + 1);
+        var calls = ArrayPool<(int I, bool Entered, int Pos, int J)>.Shared.Rent(2 * n);
+        try
         {
-            if (indices[root] != -1)
-                continue;
-            calls.Push((root, false, 0, -1));
-            while (calls.Count > 0)
-            {
-                var (i, entered, pos, j) = calls.Pop();
-                if (!entered)
-                {
-                    indices[i] = lowlinks[i] = next++;
-                    stack.Add(i);
-                    onStack[i] = true;
-                }
-                else
-                {
-                    lowlinks[i] = Math.Min(lowlinks[i], lowlinks[j]);
-                }
+            var indices = ints.AsSpan(0, n);
+            var lowlinks = ints.AsSpan(n, n);
+            var onStack = ints.AsSpan(2 * n, n);
+            var stack = ints.AsSpan(3 * n, n);
+            var children = ints.AsSpan(4 * n, n);
+            var fill = ints.AsSpan(5 * n, n);
+            var first = ints.AsSpan(6 * n, n + 1);
+            indices.Fill(-1);
+            lowlinks.Fill(-1);
+            onStack.Clear();
+            first.Clear();
+            foreach (int head in tree)
+                first[head + 1]++;
+            for (int i = 0; i < n; i++)
+                first[i + 1] += first[i];
+            first[..n].CopyTo(fill);
+            for (int d = 0; d < n; d++)
+                children[fill[tree[d]]++] = d;
 
-                bool descended = false;
-                while (pos < first[i + 1] - first[i])
+            List<bool[]>? cycles = null;
+            int next = 0, depth = 0, calling = 0;
+
+            // Stanza's explicit call stack: (node, whether it was entered, how many dependents were visited, the one being
+            // visited). Each node is pushed unentered once and entered at most once per dependent left pending: under 2n.
+            for (int root = 0; root < n; root++)
+            {
+                if (indices[root] != -1)
+                    continue;
+                calls[calling++] = (root, false, 0, -1);
+                while (calling > 0)
                 {
-                    int d = children[first[i] + pos++];
-                    if (indices[d] == -1)
+                    var (i, entered, pos, j) = calls[--calling];
+                    if (!entered)
                     {
-                        calls.Push((i, true, pos, d));
-                        calls.Push((d, false, 0, -1));
-                        descended = true;
-                        break;
+                        indices[i] = lowlinks[i] = next++;
+                        stack[depth++] = i;
+                        onStack[i] = 1;
+                    }
+                    else
+                    {
+                        lowlinks[i] = Math.Min(lowlinks[i], lowlinks[j]);
                     }
 
-                    if (onStack[d])
-                        lowlinks[i] = Math.Min(lowlinks[i], indices[d]);
+                    bool descended = false;
+                    while (pos < first[i + 1] - first[i])
+                    {
+                        int d = children[first[i] + pos++];
+                        if (indices[d] == -1)
+                        {
+                            calls[calling++] = (i, true, pos, d);
+                            calls[calling++] = (d, false, 0, -1);
+                            descended = true;
+                            break;
+                        }
+
+                        if (onStack[d] != 0)
+                            lowlinks[i] = Math.Min(lowlinks[i], indices[d]);
+                    }
+
+                    if (descended || lowlinks[i] != indices[i])
+                        continue;
+
+                    // The root of a strongly connected component: pop it. Only a component of more than one node gets an
+                    // array (most are single nodes: one n-element array each was O(n²) per sentence).
+                    int top = stack[..depth].LastIndexOf(i);
+                    var cycle = top < depth - 1 ? new bool[n] : null;
+                    for (int p = top; p < depth; p++)
+                    {
+                        onStack[stack[p]] = 0;
+                        if (cycle != null)
+                            cycle[stack[p]] = true;
+                    }
+
+                    depth = top;
+                    if (cycle != null)
+                        (cycles ??= []).Add(cycle);
                 }
-
-                if (descended || lowlinks[i] != indices[i])
-                    continue;
-
-                // The root of a strongly connected component: pop it.
-                var cycle = new bool[n];
-                int size = 0;
-                while (stack[^1] != i)
-                {
-                    int k = stack[^1];
-                    stack.RemoveAt(stack.Count - 1);
-                    onStack[k] = false;
-                    cycle[k] = true;
-                    size++;
-                }
-
-                stack.RemoveAt(stack.Count - 1);
-                onStack[i] = false;
-                cycle[i] = true;
-                if (size > 0)
-                    cycles.Add(cycle);
             }
-        }
 
-        return cycles;
+            return (IReadOnlyList<bool[]>?)cycles ?? [];
+        }
+        finally
+        {
+            ArrayPool<int>.Shared.Return(ints);
+            ArrayPool<(int, bool, int, int)>.Shared.Return(calls);
+        }
     }
 
     /// <summary>

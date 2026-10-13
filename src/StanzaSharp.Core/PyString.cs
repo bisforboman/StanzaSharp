@@ -13,6 +13,14 @@ internal static class PyString
     /// </summary>
     public static string Lower(string s)
     {
+        // ASCII (nearly every word): the string itself when it has no capital, else one new string.
+        if (Ascii.IsValid(s))
+        {
+            if (s.AsSpan().IndexOfAnyInRange('A', 'Z') < 0)
+                return s;
+            return string.Create(s.Length, s, static (dest, src) => Ascii.ToLower(src, dest, out _));
+        }
+
         var sb = new StringBuilder(s.Length);
         int i = 0;
         foreach (var rune in s.EnumerateRunes())

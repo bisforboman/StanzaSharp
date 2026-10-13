@@ -92,18 +92,19 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
     /// <summary>A stack node's LSTM state: [layers, hidden] h and c. The node's output is the last layer's h.</summary>
     /// <remarks>The parser disposes a state when its sentence is done, which gives its arrays back to the
     /// <see cref="Recycler"/> they came from (none for the start states).</remarks>
-    private sealed class StackState(float[] h, float[] c, Recycler? pool = null) : IDisposable
+    private sealed class StackState(float[] h, float[] c) : IDisposable
     {
         public readonly float[] H = h, C = c;
-        private Recycler? _pool = pool;
+
+        /// <summary>The recycler this state goes back to when disposed (set while it is out), or null.</summary>
+        public Recycler? Pool;
 
         public void Dispose()
         {
-            if (_pool is { } pool)
+            if (Pool is { } pool)
             {
-                _pool = null;
-                pool.Return(H);
-                pool.Return(C);
+                Pool = null;
+                pool.Return(this);
             }
         }
     }
@@ -129,17 +130,19 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
     }
 
     /// <summary>A <see cref="Compose"/> output, from the <see cref="Recycler"/>; the parser disposes it when the sentence is done.</summary>
-    private sealed class Composed(float[] vector, Recycler pool) : IDisposable
+    private sealed class Composed(float[] vector) : IDisposable
     {
         public readonly float[] Vector = vector;
-        private Recycler? _pool = pool;
+
+        /// <summary>The recycler this vector goes back to when disposed (set while it is out), or null.</summary>
+        public Recycler? Pool;
 
         public void Dispose()
         {
-            if (_pool is { } pool)
+            if (Pool is { } pool)
             {
-                _pool = null;
-                pool.Return(Vector);
+                Pool = null;
+                pool.Return(this);
             }
         }
     }
@@ -162,6 +165,8 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
         public static Recycler Current => t_current ??= new();
 
         private readonly Dictionary<int, Stack<float[]>> _free = [];
+        private readonly Dictionary<int, Stack<StackState>> _freeStates = []; // by H's length
+        private readonly Stack<Composed> _freeComposed = [];
         private int _out;
 
         public float[] Take(int length)
@@ -170,13 +175,55 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
             return _free.TryGetValue(length, out var free) && free.TryPop(out var a) ? a : GC.AllocateUninitializedArray<float>(length);
         }
 
+        /// <summary>A state with [<paramref name="size"/>] H and C, with the objects too reused: a parse makes one per transition per stack.</summary>
+        public StackState TakeState(int size)
+        {
+            _out++;
+            var state = _freeStates.TryGetValue(size, out var free) && free.TryPop(out var s)
+                ? s
+                : new StackState(GC.AllocateUninitializedArray<float>(size), GC.AllocateUninitializedArray<float>(size));
+            state.Pool = this;
+            return state;
+        }
+
+        public Composed TakeComposed(int length)
+        {
+            _out++;
+            var composed = _freeComposed.TryPop(out var c) ? c : new Composed(GC.AllocateUninitializedArray<float>(length)); // one length: the hidden size
+            composed.Pool = this;
+            return composed;
+        }
+
         public void Return(float[] a)
         {
             if (!_free.TryGetValue(a.Length, out var free))
                 _free[a.Length] = free = new();
             free.Push(a);
+            Returned();
+        }
+
+        public void Return(StackState state)
+        {
+            if (!_freeStates.TryGetValue(state.H.Length, out var free))
+                _freeStates[state.H.Length] = free = new();
+            free.Push(state);
+            Returned();
+        }
+
+        public void Return(Composed composed)
+        {
+            _freeComposed.Push(composed);
+            Returned();
+        }
+
+        private void Returned()
+        {
             if (--_out == 0)
+            {
                 _free.Clear();
+                _freeStates.Clear();
+                _freeComposed.Clear();
+            }
         }
     }
 
@@ -226,16 +273,15 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
 
         /// <summary>Row r: one step from <paramref name="parents"/>[r] with input <paramref name="inputs"/>(r) ([input] floats).</summary>
         /// <param name="pool">Where the new states' arrays come from (and go back to when disposed), or null for new arrays.</param>
-        public StackState[] Push(IReadOnlyList<StackState> parents, Func<int, ReadOnlyMemory<float>> inputs, Recycler? pool, CancellationToken ct)
+        public StackState[] Push(IReadOnlyList<object> parents, Func<int, ReadOnlyMemory<float>> inputs, Recycler? pool, CancellationToken ct)
         {
             int n = parents.Count, h = Hidden, kMax = Math.Max(_input, h) + h, ldg = _layers[0].W.PaddedN, size = _layers.Length * h;
             var result = new StackState[n];
             for (int r = 0; r < n; r++)
             {
                 // Every element of H is written below before it is read; C starts as the parent's.
-                var (hNew, c) = pool == null ? (new float[size], new float[size]) : (pool.Take(size), pool.Take(size));
-                parents[r].C.CopyTo(c, 0);
-                result[r] = new StackState(hNew, c, pool);
+                var state = result[r] = pool == null ? new StackState(new float[size], new float[size]) : pool.TakeState(size);
+                ((StackState)parents[r]).C.CopyTo(state.C, 0);
             }
 
             var xh = ArrayPool<float>.Shared.Rent(n * kMax);
@@ -249,7 +295,7 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
                     {
                         var x = l == 0 ? inputs(r).Span[..inl] : result[r].H.AsSpan((l - 1) * h, h);
                         x.CopyTo(xh.AsSpan(r * k));
-                        parents[r].H.AsSpan(l * h, h).CopyTo(xh.AsSpan(r * k + inl));
+                        ((StackState)parents[r]).H.AsSpan(l * h, h).CopyTo(xh.AsSpan(r * k + inl));
                     }
 
                     var (w, bias) = _layers[l];
@@ -542,10 +588,10 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
             var pool = Recycler.Current;
             for (int r = 0; r < n; r++)
             {
-                var v = pool.Take(h);
-                output.AsSpan(r * ld, h).CopyTo(v);
-                Relu(v);
-                result[r] = new Composed(v, pool);
+                var composed = pool.TakeComposed(h);
+                output.AsSpan(r * ld, h).CopyTo(composed.Vector);
+                Relu(composed.Vector);
+                result[r] = composed;
             }
 
             return result;
@@ -558,11 +604,11 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
     }
 
     public object[] PushTransitions(IReadOnlyList<object> parents, int[] transitions, CancellationToken ct) =>
-        _transitionLstm.Push(parents.Cast<StackState>().ToList(), r => _transitionEmb.AsMemory(transitions[r] * _transitionDim, _transitionDim),
+        _transitionLstm.Push(parents, r => _transitionEmb.AsMemory(transitions[r] * _transitionDim, _transitionDim),
             Recycler.Current, ct);
 
     public object[] PushConstituents(IReadOnlyList<object> parents, IReadOnlyList<object> inputs, CancellationToken ct) =>
-        _constituentLstm.Push(parents.Cast<StackState>().ToList(), r => Vector(inputs[r]), Recycler.Current, ct);
+        _constituentLstm.Push(parents, r => Vector(inputs[r]), Recycler.Current, ct);
 
     private static void Relu(Span<float> x)
     {

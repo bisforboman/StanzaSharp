@@ -40,7 +40,7 @@ internal sealed class NerNet : INerNet
         _tagClf = nn.Linear(hidden * 2, tags).LoadFrom(ckpt, model, $"tag_clfs.{tagset}.");
     }
 
-    public float[] Forward(IReadOnlyList<IReadOnlyList<string>> sentences, long[] wordIds, long[] deltaIds, int width,
+    public void Forward(IReadOnlyList<IReadOnlyList<string>> sentences, long[] wordIds, long[] deltaIds, int width, Span<float> logits,
         CharlmCache? charlms, IReadOnlyList<Sentence?>? cacheKeys, CancellationToken ct)
     {
         using var _ = torch.no_grad();
@@ -71,7 +71,7 @@ internal sealed class NerNet : INerNet
         var h0 = _hInit.expand(_hInit.shape[0], batch, _hInit.shape[2]).contiguous();
         var c0 = _cInit.expand(_cInit.shape[0], batch, _cInit.shape[2]).contiguous();
         var output = Rnn.RunPacked(_lstm, input, lengths, (h0, c0));
-        return _tagClf.forward(output).ToArray<float>();
+        _tagClf.forward(output).ToArray<float>().CopyTo(logits);
     }
 
     public void Dispose()
