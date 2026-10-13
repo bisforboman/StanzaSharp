@@ -998,18 +998,21 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
 
 ## Code style
 
-StyleBro is on (user's decision, 2026-10-11): `StyleBro.Analyzers` 0.5.0-alpha.1 in Directory.Build.props (PrivateAssets,
-no package dependency), `EnforceCodeStyleInBuild`, and `GenerateDocumentationFile` in every project (IDE0005 needs it;
-outside src/ CS1591 is off). Fix findings with `stylebro-migrate format StanzaSharp.slnx` (`dotnet tool install
---global StyleBro.Migrate --version 0.5.0-alpha.1`), not plain `dotnet format`, which also applies every other
-analyzer's fixes. CI's `build-test` builds with warnings as errors and runs `format --verify-no-changes`.
-- `.editorconfig`: `stylebro-migrate init`'s block (between its markers; `init --write` rewrites it), then our own
+StyleBro is on (user's decision, 2026-10-11): `StyleBro.Analyzers` 0.7.0-alpha.1 in Directory.Build.props (PrivateAssets,
+no package dependency; `StyleBroPreset` 1.0, so a newer release's rules stay off until it is raised),
+`EnforceCodeStyleInBuild`, and `GenerateDocumentationFile` in every project (IDE0005 needs it; outside src/ CS1591 is
+off). Fix findings with `stylebro-migrate format StanzaSharp.slnx` (`dotnet tool install --global StyleBro.Migrate
+--version 0.7.0-alpha.1`), not plain `dotnet format`, which also applies every other analyzer's fixes. CI's
+`build-test` builds with warnings as errors and runs `format --verify-no-changes`.
+- `.editorconfig`: `stylebro-migrate init`'s block (between its markers; `init --write` rewrites it; since 0.6 it also
+  writes `end_of_line = lf` and `dotnet_sort_system_directives_first`, which the preset no longer sets), then our own
   section, where each turned-off rule says why: BRO1001 (members stay in reading order), BRO1114/BRO1142 (grouped
   declarations like `int rows, cols`), BRO1108 (lists wrap at 120 columns), BRO1601 (no `<inheritdoc/>` on internal
-  implementations), BRO1604 (property summaries are noun phrases). It also sets `end_of_line = lf` (0.5.0-alpha.1's init
-  doesn't; without it format writes CRLF on Windows), keeps one-line statements, and turns on IDE0005/IDE0051/IDE0052
-  so unused usings and private members fail the build.
-- The reformat commit is in `.git-blame-ignore-revs` (`git config blame.ignoreRevsFile .git-blame-ignore-revs`).
+  implementations), BRO1604 (property summaries are noun phrases). It also keeps one-line statements and turns on
+  IDE0005/IDE0051/IDE0052 so unused usings and private members fail the build.
+- `init --write` (0.7.0-alpha.1) also puts `<StyleBroPreset>` into `samples/docker/Directory.Build.props`, after its
+  `<Project />` (invalid XML; stylebro#177): revert that file after each run.
+- The reformat commits are in `.git-blame-ignore-revs` (`git config blame.ignoreRevsFile .git-blame-ignore-revs`).
 - The SDK formatter puts the `)` of a tuple ending in a block lambda on its own line (`}` newline `);`, in
   TorchCheckpoint); that is IDE0055, not StyleBro.
 

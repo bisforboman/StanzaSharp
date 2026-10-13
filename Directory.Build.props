@@ -1,5 +1,6 @@
 <Project>
   <PropertyGroup>
+    <StyleBroPreset>1.0</StyleBroPreset>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
@@ -27,7 +28,7 @@
   <!-- StyleBro: analyzers whose findings `stylebro-migrate format` fixes (CLAUDE.md, "Code style"). A build-time
        dependency only: PrivateAssets keeps it out of the packages' dependencies. -->
   <ItemGroup>
-    <PackageReference Include="StyleBro.Analyzers" Version="0.5.0-alpha.1" PrivateAssets="all" />
+    <PackageReference Include="StyleBro.Analyzers" Version="0.7.0-alpha.1" PrivateAssets="all" />
   </ItemGroup>
 
   <!-- Library projects (src/*): XML docs, and every public member must have them. The public API is the

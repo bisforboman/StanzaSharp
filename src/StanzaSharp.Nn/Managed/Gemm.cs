@@ -1056,7 +1056,6 @@ internal static unsafe class Act
                     (upper.GetUpper() * Tanh(cNew)).Store(h);
                     break;
                 }
-
             case KernelPath.Vector256:
                 {
                     var ifg = Sigmoid(Vector256.Load(gates));
@@ -1066,7 +1065,6 @@ internal static unsafe class Act
                     (Sigmoid(go.GetUpper()) * Tanh(cNew)).Store(h);
                     break;
                 }
-
             case KernelPath.Vector128:
                 {
                     var cNew = Sigmoid(Vector128.Load(gates + 4)) * Vector128.Load(c) + Sigmoid(Vector128.Load(gates)) * Tanh(Vector128.Load(gates + 8));
@@ -1074,7 +1072,6 @@ internal static unsafe class Act
                     (Sigmoid(Vector128.Load(gates + 12)) * Tanh(cNew)).Store(h);
                     break;
                 }
-
             default:
                 for (int u = 0; u < 4; u++)
                 {
