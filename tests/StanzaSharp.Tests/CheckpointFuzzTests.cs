@@ -67,7 +67,10 @@ public class CheckpointFuzzTests(ITestOutputHelper output)
                     ckpt.Tensors.RawBytes(key);
                 }
 
-                ReadVocabs(ckpt.Root);
+                // Only for .pt files: a converted .json is parsed lazily, and its invalid UTF-8 surfaces only when a node
+                // is read (InvalidOperationException), which this contract leaves to the model code.
+                if (loadPath.EndsWith(".pt", StringComparison.Ordinal))
+                    ReadVocabs(ckpt.Root);
             }
             catch (Exception e) when (e is InvalidDataException or NotSupportedException)
             {

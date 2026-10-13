@@ -156,10 +156,6 @@ default) doesn't have them.
   Check it on the backward charlm the same way first.
 - **Long texts: what is left of the garbage** (round 18): per-word objects outside the charlm (tokenizer inputs,
   constituency's `StackState`s, `bool[]`/`object[]`/`string[]`), each under 1 KB per word. The peak is set by live data.
-- **Loading `.pt` files.** The pretrain's and NER's 250k-word vocabularies are pickled, mirrored into JSON
-  (`TorchCheckpoint.Splitter`), parsed back into nodes and then into a dictionary: about 0.3 s each when warm, more cold,
-  and the pretrain then NER are the load's longest chain (round 17). Building the vocabulary straight from the pickle
-  would cut most of it.
 - **Sentiment in default_fast.** With nothing to reuse it runs both charlms on every token. Only a faster charlm (or
   Stanza changing the package) would help.
 - **Parser step loop: per-state tensor ops** (*TorchSharp only*). Each step takes one `WordHx` row view per state and
@@ -172,6 +168,8 @@ default) doesn't have them.
 - **Per-call cost** (*TorchSharp only*): 192 ms (Python 189), libtorch's per-operation cost on tiny tensors. Not pursued.
 
 **Done** (see the round):
+- Loading `.pt` files: the large vocabularies are read straight from the unpickled objects, without the JSON round
+  trip (35–48% less load time on the runners); the unpickling itself (~0.1 s per 250k-word vocabulary) is what is left: round 21.
 - Depparse's forward charlm from a stored start state (exact, 3 of ~90 steps: under the noise, not shipped); the
   `ArrayPool`'s churn on long texts (measured: none; the charlm's per-character strings were cut instead): round 18.
 - Startup: the runtime's vector `Exp` and the thread pool at JIT tier 0, two models loading at a time; ReadyToRun and
