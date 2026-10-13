@@ -72,7 +72,8 @@ since 1.0, and every processor also has a managed net (see "Managed backend"), t
   `tools/benchmark.py`), the method, the latest runner results and remaining ideas.
   Each measurement round is its own file, `docs/performance/round-NN-<slug>.md` (NN zero-padded, the number the
   brief assigns; owner's decision, 2026-10-13, as parallel PRs kept conflicting in one file). A new round adds
-  its file and leaves performance.md alone (no index there); only "Run it yourself"/"Remaining ideas" changes go there.
+  its file and leaves performance.md alone (no index there); only "Run it yourself" changes go there. Open ideas are one file each in `docs/performance/ideas/` (user's decision,
+  2026-10-13): a new idea adds a file, finishing or dropping one deletes its file (the round file is the record).
   Round 2 (memory): checkpoints are read tensor by tensor straight into TorchSharp memory (no
   whole-file buffers), depparse's biaffine scorers run a few sentences at a time, POS batches are
   cut at 5000 words like Stanza, and `CharlmCache` keeps at most 32k words (`MaxWords`).
@@ -128,7 +129,7 @@ since 1.0, and every processor also has a managed net (see "Managed backend"), t
     over ROOT only: bit for bit (`OneSentenceDocument_ContinuesTheTaggers...`), and a quarter of the charlm work of a
     per-call `Process` saved. Batched sentences don't yet. (Written when a row's kernel depended on its batch; since
     `Gemm.KernelBlocked` an LSTM step's row is batch-invariant, checked for the forward charlm in round 18, so the
-    cache could keep each sentence's final c and continue them all: docs/performance.md "Remaining ideas".)
+    cache could keep each sentence's final c and continue them all: docs/performance/ideas/depparse-backward-charlm-batches.md.)
   - `CharlmCache`'s single-sentence table (`AddAlone`/`TryGetAlone`, keyed by the texts): a managed charlm call on one
     sentence depends on its texts only, so `ManagedCharLanguageModel.BuildBoth` (pos, sentiment, ner) reuses any earlier
     one on the same texts exactly. Besides depparse, NER takes a multi-word-token sentence's token charlms from sentiment.
