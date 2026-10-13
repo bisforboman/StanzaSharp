@@ -30,6 +30,7 @@ internal sealed class PosTagger : IDisposable
         _pretrain = pretrain;
         var config = ckpt.Root["config"]!;
         CheckSupported(config);
+        RemapLegacyHeads(ckpt.Root["model"]!.AsObject());
         var vocab = ckpt.Root["vocab"]!;
         _wordVocab = Checkpoint.UnitToId(vocab["word"]);
         _wordUnk = _wordVocab["<UNK>"];
@@ -149,6 +150,27 @@ internal sealed class PosTagger : IDisposable
         return parts.Count == 0 ? null : string.Join('|', parts);
     }
 
+    // model.py LEGACY_STATE_DICT_PREFIXES: taggers saved before tag_columns (German gsd/hdt) name their heads this way.
+    private static readonly (string Old, string New)[] LegacyPrefixes =
+        [("xpos_hid.", "tag_hid.xpos."), ("xpos_clf.", "tag_clf.xpos."), ("ufeats_hid.", "tag_hid.feats."), ("ufeats_clf.", "tag_clf.feats.")];
+
+    /// <summary>remap_legacy_state_dict: the old head names renamed in place, before either net reads the weights.</summary>
+    private static void RemapLegacyHeads(JsonObject model)
+    {
+        foreach (var key in model.Select(kv => kv.Key).ToList())
+        {
+            foreach (var (old, renamed) in LegacyPrefixes)
+            {
+                if (!key.StartsWith(old, StringComparison.Ordinal))
+                    continue;
+                var value = model[key];
+                model.Remove(key);
+                model[renamed + key[old.Length..]] = value;
+                break;
+            }
+        }
+    }
+
     private static void CheckSupported(JsonNode config)
     {
         void Require(bool ok, string what)
@@ -161,9 +183,11 @@ internal sealed class PosTagger : IDisposable
         Require(config["pretrain"]?.GetValue<bool>() == true, "a configuration without pretrain");
         Require(config["bert_model"] == null, "a transformer");
         Require(config["share_hid"]?.GetValue<bool>() != true, "share_hid");
-        Require(config["tag_column_link"]?.GetValue<string>() == "tag_emb", "a tag column link other than tag_emb");
+
+        // Older taggers (German gsd/hdt) have neither entry: Stanza's defaults, tag_emb and the three native columns.
+        Require(config["tag_column_link"]?.GetValue<string>() is null or "tag_emb", "a tag column link other than tag_emb");
         var columns = config["tag_columns"]?.ToJsonString();
-        Require(columns == """[["upos","upos",null,"WORD",true,[]],["xpos","xpos",null,"AUTO",true,["upos"]],["feats","feats",null,"FEATURES",true,["upos"]]]""",
+        Require(columns is null or """[["upos","upos",null,"WORD",true,[]],["xpos","xpos",null,"AUTO",true,["upos"]],["feats","feats",null,"FEATURES",true,["upos"]]]""",
             $"tag columns {columns}");
     }
 

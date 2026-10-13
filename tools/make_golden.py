@@ -65,6 +65,8 @@ Reads <out>/corpus.txt and writes:
   long_token.txt + long_token.conllu + long_token.fast.conllu
                         both packages on tokens around max_seqlen (200), which Stanza replaces with <UNK>
                         (`--long-token-only`; see write_long_token_golden)
+  de/gsd/, de/hdt/      German only: package=gsd / hdt (tokenize,mwt,pos,lemma,depparse) on corpus.txt (as
+                        corpus.conllu) and each validation*.txt, plus their mwt.json (`--treebank-only`)
   pt/tiny_{legacy,zip}.pt + their stanza_convert.py output (.json/.safetensors)
                         small checkpoints in both torch.save formats for the C# .pt loader tests;
                         `python tools/make_golden.py --pt-only` regenerates just these
@@ -133,12 +135,12 @@ MWT_WORDS = [
 ]
 
 
-def write_mwt_golden(models, out):
+def write_mwt_golden(models, out, package="default"):
     """
     mwt.json: for each word in MWT_WORDS, the words the MWT stage expands it to, both with the
-    pipeline's dictionary+model ensemble and with the character classifier alone.
+    pipeline's dictionary+model ensemble and with the model alone (English: the character classifier; German: the seq2seq).
     """
-    nlp = stanza.Pipeline(LANG, dir=models, processors="tokenize,mwt", download_method=None,
+    nlp = stanza.Pipeline(LANG, dir=models, package=package, processors="tokenize,mwt", download_method=None,
                           use_gpu=False, logging_level="WARN")
     mwt = nlp.processors["mwt"]
 
@@ -161,6 +163,27 @@ def write_mwt_golden(models, out):
 
 
 DEPPARSE_PROCESSORS = "tokenize,mwt,pos,lemma,depparse"
+
+TREEBANK_PACKAGES = ["gsd", "hdt"]  # German's treebank packages (tokenize to depparse); "combined" uses default's models
+
+
+def write_treebank_golden(models, out):
+    """
+    <package>/ for each of TREEBANK_PACKAGES: package=<package> output (all its processors: tokenize,mwt,pos,lemma,depparse)
+    for corpus.txt (as corpus.conllu) and each validation*.txt, and mwt.json (MWT_WORDS with and without the dictionary).
+    """
+    for package in TREEBANK_PACKAGES:
+        nlp = stanza.Pipeline(LANG, dir=models, package=package, processors=DEPPARSE_PROCESSORS, download_method=None,
+                              use_gpu=False, logging_level="WARN")
+        folder = out / package
+        folder.mkdir(exist_ok=True)
+        for path in [out / "corpus.txt"] + sorted(out.glob("validation*.txt")):
+            with torch.no_grad():
+                doc = nlp(path.read_bytes().decode("utf-8"))
+            name = "corpus" if path.name == "corpus.txt" else path.stem
+            (folder / f"{name}.conllu").write_text("{:C}\n".format(doc), encoding="utf-8", newline="\n")
+            print(f"{package}/{name}.conllu: {len(doc.sentences)} sentences, {doc.num_words} words")
+        write_mwt_golden(models, folder, package)
 
 
 def write_depparse_golden(models, out):
@@ -795,6 +818,7 @@ def main():
     p.add_argument("--no-ssplit-only", action="store_true", help="only regenerate no_ssplit/ (tokenize_no_ssplit)")
     p.add_argument("--long-token-only", action="store_true", help="only regenerate long_token.*")
     p.add_argument("--upos64-only", action="store_true", help="only add the float64 UPOS logits to the intermediates")
+    p.add_argument("--treebank-only", action="store_true", help="only regenerate the German treebank packages' folders (gsd/, hdt/)")
     args = p.parse_args()
     LANG = args.lang
     out = Path(args.out or ("tests/golden" if LANG == "en" else f"tests/golden/{LANG}"))
@@ -805,6 +829,9 @@ def main():
         return
     if args.long_token_only:
         write_long_token_golden(args.models, out)
+        return
+    if args.treebank_only:
+        write_treebank_golden(args.models, out)
         return
     if args.pretokenized_only:
         write_pretokenized_golden(args.models, out)
@@ -901,6 +928,8 @@ def main():
     write_bulk_golden(args.models, out)
     write_no_ssplit_golden(args.models, out)
     write_long_token_golden(args.models, out)
+    if LANG == "de":
+        write_treebank_golden(args.models, out)
 
     for i, logits in enumerate(upos_logits64(args.models, [e["words"] for e in index])):
         tensors[f"s{i}.pos.upos_logits64"] = logits

@@ -1,0 +1,160 @@
+# text = Sie sagte:
+# sent_id = 0
+1	Sie	sie	PRON	PPER	Case=Nom|Gender=Fem|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=0|end_char=3
+2	sagt	sagen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=4|end_char=8
+3	e:	e:	PUNCT	$.	PunctType=Peri	2	punct	_	start_char=8|end_char=10
+
+# text = „Ich komme morgen.
+# sent_id = 1
+1	„Ich	„ich	PRON	PWS	Case=Nom|Number=Sing|PronType=Int,Rel	2	nsubj	_	start_char=11|end_char=15
+2	komme	kommen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=16|end_char=21
+3	morgen.	morgen.	INTJ	PTKANT	PartType=Res	2	advmod	_	SpaceAfter=No|start_char=22|end_char=29
+
+# text = “
+# sent_id = 2
+1	“	"	PUNCT	$(	PunctType=Brck	0	root	_	start_char=29|end_char=30
+
+# text = Er antwortete:
+# sent_id = 3
+1	Er	er	PRON	PPER	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=31|end_char=33
+2	antwortet	antworten	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=34|end_char=43
+3	e:	e:	PUNCT	$.	PunctType=Peri	2	punct	_	start_char=43|end_char=45
+
+# text = „Gut, dann bis morgen.
+# sent_id = 4
+1	„Gut	„gut	INTJ	PTKANT	PartType=Res	0	root	_	SpaceAfter=No|start_char=46|end_char=50
+2	,	,	PUNCT	$,	PunctType=Comm	5	punct	_	start_char=50|end_char=51
+3	dann	dann	ADV	ADV	_	1	advmod	_	start_char=52|end_char=56
+4	bis	bis	ADP	APPR	AdpType=Prep	5	case	_	start_char=57|end_char=60
+5	morgen.	morgen.	NOUN	NN	Number=Sing	1	nmod	_	SpaceAfter=No|start_char=61|end_char=68
+
+# text = “
+# sent_id = 5
+1	“	"	PUNCT	$(	PunctType=Brck	0	root	_	SpacesAfter=\n\n|start_char=68|end_char=69
+
+# text = Der Lehrer fragte:
+# sent_id = 6
+1	Der	der	DET	ART	Case=Nom|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	2	det	_	start_char=71|end_char=74
+2	Lehrer	Lehrer	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	3	nsubj	_	start_char=75|end_char=81
+3	fragt	fragen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=82|end_char=87
+4	e:	e:	PUNCT	$.	PunctType=Peri	3	punct	_	start_char=87|end_char=89
+
+# text = „Wer hat ‚Faust‘ gelesen?
+# sent_id = 7
+1	„Wer	„wer	PRON	PWS	Case=Nom|Number=Sing|PronType=Int,Rel	4	nsubj	_	start_char=90|end_char=94
+2	hat	haben	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	aux	_	start_char=95|end_char=98
+3	‚Faust‘	‚Faust‘	PROPN	NE	_	4	obj	_	start_char=99|end_char=106
+4	gelesen	lesen	VERB	VVPP	Aspect=Perf|VerbForm=Part	0	root	_	SpaceAfter=No|start_char=107|end_char=114
+5	?	?	PUNCT	$.	PunctType=Peri	4	punct	_	SpaceAfter=No|start_char=114|end_char=115
+
+# text = “
+# sent_id = 8
+1	“	"	PUNCT	$(	PunctType=Brck	0	root	_	start_char=115|end_char=116
+
+# text = Niemand meldete sich.
+# sent_id = 9
+1	Niemand	niemand	PRON	PIS	Case=Nom|Number=Sing|PronType=Neg	2	nsubj	_	start_char=117|end_char=124
+2	meldete	melden	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=125|end_char=132
+3	sich	sich	PRON	PRF	Case=Acc|Person=3|PronType=Prs|Reflex=Yes	2	expl:pv	_	SpaceAfter=No|start_char=133|end_char=137
+4	.	.	PUNCT	$.	PunctType=Peri	2	punct	_	SpacesAfter=\n\n|start_char=137|end_char=138
+
+# text = Im Buch heißt es:
+# sent_id = 10
+1-2	Im	_	_	_	_	_	_	_	start_char=140|end_char=142
+1	In	in	ADP	APPR	AdpType=Prep|Case=Dat	3	case	_	_
+2	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	3	det	_	_
+3	Buch	Buch	NOUN	NN	Case=Dat|Gender=Neut|Number=Sing	4	obl	_	start_char=143|end_char=147
+4	heißt	heißen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=148|end_char=153
+5	es:	es:	PRON	PPER	Case=Nom|Gender=Neut|Number=Sing|PronType=Prs	4	nsubj	_	start_char=154|end_char=157
+
+# text = »Die Wahrheit ist selten einfach.« Der Satz blieb mir im Gedächtnis.
+# sent_id = 11
+1	»Die	dDie	DET	ART	Case=Nom|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	2	det	_	start_char=158|end_char=162
+2	Wahrheit	Wahrheit	NOUN	NN	Case=Nom|Gender=Fem|Number=Sing	8	nsubj	_	start_char=163|end_char=171
+3	ist	sein	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	cop	_	start_char=172|end_char=175
+4	selten	selten	ADJ	ADJD	Degree=Pos|Variant=Short	5	advmod	_	start_char=176|end_char=182
+5	einfach.«	einfach.«	ADV	ADV	_	8	advmod	_	start_char=183|end_char=192
+6	Der	der	DET	ART	Case=Nom|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	7	det	_	start_char=193|end_char=196
+7	Satz	Satz	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	8	nsubj	_	start_char=197|end_char=201
+8	blieb	bleiben	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=202|end_char=207
+9	mir	ich	PRON	PPER	Case=Dat|Number=Sing|Person=1|PronType=Prs	8	obl:arg	_	start_char=208|end_char=211
+10-11	im	_	_	_	_	_	_	_	start_char=212|end_char=214
+10	in	in	ADP	APPR	AdpType=Prep|Case=Dat	12	case	_	_
+11	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	12	det	_	_
+12	Gedächtnis.	Gedächtnis.	NOUN	NN	Case=Dat|Gender=Neut|Number=Sing	8	obl	_	SpacesAfter=\n\n|start_char=215|end_char=226
+
+# text = In der Schweiz schreibt man oft «so» und ‹so›, in Frankreich ebenfalls.
+# sent_id = 12
+1	In	in	ADP	APPR	AdpType=Prep|Case=Dat	3	case	_	start_char=228|end_char=230
+2	der	der	DET	ART	Case=Dat|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	3	det	_	start_char=231|end_char=234
+3	Schweiz	Schweiz	PROPN	NE	Gender=Fem|Number=Sing	4	obl	_	start_char=235|end_char=242
+4	schreibt	schreiben	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=243|end_char=251
+5	man	man	PRON	PIS	Case=Nom|Number=Sing|PronType=Ind	4	nsubj	_	start_char=252|end_char=255
+6	oft	oft	ADV	ADV	Degree=Pos	4	advmod	_	start_char=256|end_char=259
+7	«so»	«so»	X	FM	Foreign=Yes	4	obj	_	start_char=260|end_char=264
+8	und	und	CCONJ	KON	_	9	cc	_	start_char=265|end_char=268
+9	‹so›	‹so›	X	FM	Foreign=Yes	7	conj	_	SpaceAfter=No|start_char=269|end_char=273
+10	,	,	PUNCT	$,	PunctType=Comm	12	punct	_	start_char=273|end_char=274
+11	in	in	ADP	APPR	AdpType=Prep|Case=Dat	12	case	_	start_char=275|end_char=277
+12	Frankreich	Frankreich	PROPN	NE	Case=Dat|Number=Sing	4	obl	_	start_char=278|end_char=288
+13	ebenfalls	ebenfalls	ADV	ADV	_	4	advmod	_	SpaceAfter=No|start_char=289|end_char=298
+14	.	.	PUNCT	$.	PunctType=Peri	4	punct	_	SpacesAfter=\n\n|start_char=298|end_char=299
+
+# text = Er nannte es "eine einmalige Chance", aber ich war skeptisch.
+# sent_id = 13
+1	Er	er	PRON	PPER	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=301|end_char=303
+2	nannte	nennen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=304|end_char=310
+3	es	es	PRON	PPER	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	2	obj	_	start_char=311|end_char=313
+4	"eine	jein	DET	ART	Case=Acc|Gender=Fem|Number=Sing|PronType=Art	6	det	_	start_char=314|end_char=319
+5	einmalige	einmalig	ADJ	ADJA	Degree=Pos|Gender=Fem|Number=Sing	6	amod	_	start_char=320|end_char=329
+6	Chance"	Chance"	NOUN	NN	Gender=Fem|Number=Sing	2	obj	_	SpaceAfter=No|start_char=330|end_char=337
+7	,	,	PUNCT	$,	PunctType=Comm	11	punct	_	start_char=337|end_char=338
+8	aber	aber	CCONJ	KON	_	11	cc	_	start_char=339|end_char=343
+9	ich	ich	PRON	PPER	Case=Nom|Number=Sing|Person=1|PronType=Prs	11	nsubj	_	start_char=344|end_char=347
+10	war	sein	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	11	cop	_	start_char=348|end_char=351
+11	skeptisch.	skeptisch.	ADJ	ADJD	Degree=Pos|Variant=Short	2	conj	_	SpacesAfter=\n\n|start_char=352|end_char=362
+
+# text = Manche schreiben 'einfache' Anführungszeichen, andere „deutsche“ und wieder andere “englische”.
+# sent_id = 14
+1	Manche	mancher	DET	PIS	Case=Nom|Number=Plur|PronType=Ind	2	nsubj	_	start_char=364|end_char=370
+2	schreiben	schreiben	VERB	VVFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=371|end_char=380
+3	'einfache'	peinfach	ADJ	ADJA	Degree=Pos|Gender=Masc|Number=Plur	4	amod	_	start_char=381|end_char=391
+4	Anführungszeichen	Anführungszeichen	NOUN	NN	Gender=Masc|Number=Plur	2	obj	_	SpaceAfter=No|start_char=392|end_char=409
+5	,	,	PUNCT	$,	PunctType=Comm	7	punct	_	start_char=409|end_char=410
+6	andere	anderer	DET	ADJA	Number=Plur|PronType=Ind	7	det	_	start_char=411|end_char=417
+7	„deutsche“	unknown	NOUN	NN	_	4	conj	_	start_char=418|end_char=428
+8	und	und	CCONJ	KON	_	11	cc	_	start_char=429|end_char=432
+9	wieder	wieder	ADV	ADV	_	11	advmod	_	start_char=433|end_char=439
+10	andere	anderer	DET	ADJA	Number=Plur|PronType=Ind	11	det	_	start_char=440|end_char=446
+11	“englische”.	“englische”.	NOUN	NN	_	4	conj	_	SpacesAfter=\n\n|start_char=447|end_char=459
+
+# text = „Hast du ‚Ja‘ gesagt?“, fragte sie. – „Nein, ich sagte »vielleicht«.
+# sent_id = 15
+1	„Hast	„Hast	PUNCT	$(	PunctType=Brck	4	punct	_	start_char=461|end_char=466
+2	du	du	PRON	PPER	Case=Nom|Number=Sing|Person=1|PronType=Prs	4	nsubj	_	start_char=467|end_char=469
+3	‚Ja‘	‚Ja‘	PROPN	NE	_	2	flat:name	_	start_char=470|end_char=474
+4	gesagt	sagen	VERB	VVPP	Aspect=Perf|VerbForm=Part	0	root	_	SpaceAfter=No|start_char=475|end_char=481
+5	?“	?	PUNCT	$(	PunctType=Brck	4	punct	_	SpaceAfter=No|start_char=481|end_char=483
+6	,	,	PUNCT	$,	PunctType=Comm	7	punct	_	start_char=483|end_char=484
+7	fragte	fragen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	4	parataxis	_	start_char=485|end_char=491
+8	sie.	sie.	PROPN	NE	Number=Sing	7	nsubj	_	start_char=492|end_char=496
+9	–	–	PUNCT	$(	PunctType=Brck	10	punct	_	start_char=497|end_char=498
+10	„Nein	„Nein	INTJ	ITJ	PartType=Res	7	advmod	_	SpaceAfter=No|start_char=499|end_char=504
+11	,	,	PUNCT	$,	PunctType=Comm	13	punct	_	start_char=504|end_char=505
+12	ich	ich	PRON	PPER	Case=Nom|Number=Sing|Person=1|PronType=Prs	13	nsubj	_	start_char=506|end_char=509
+13	sagte	sagen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	7	conj	_	start_char=510|end_char=515
+14	»vielleicht«.	»vielleicht«.	PROPN	NE	_	13	obj	_	SpaceAfter=No|start_char=516|end_char=529
+
+# text = “
+# sent_id = 16
+1	“	"	PUNCT	$(	PunctType=Brck	0	root	_	SpacesAfter=\n\n|start_char=529|end_char=530
+
+# text = Das sogenannte „Wirtschaftswunder“ prägte die 1950er-Jahre.
+# sent_id = 17
+1	Das	der	DET	ART	Case=Nom|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	3	det	_	start_char=532|end_char=535
+2	sogenannte	sogenannte	ADJ	ADJA	Case=Nom|Degree=Pos|Gender=Neut|Number=Sing	3	amod	_	start_char=536|end_char=546
+3	„Wirtschaftswunder	„Wirtschaftswunder	NOUN	NN	Case=Nom|Gender=Neut|Number=Sing	5	nsubj	_	SpaceAfter=No|start_char=547|end_char=565
+4	“	"	PUNCT	$(	PunctType=Brck	3	punct	_	start_char=565|end_char=566
+5	prägte	prägen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=567|end_char=573
+6	die	der	DET	ART	Case=Acc|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	7	det	_	start_char=574|end_char=577
+7	1950er-Jahre.	1950er-Jahre.	NOUN	NN	Case=Acc|Gender=Fem|Number=Plur	5	obj	_	SpacesAfter=\n|start_char=578|end_char=591

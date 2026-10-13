@@ -1,12 +1,19 @@
+using System.Text.Json.Nodes;
+using StanzaSharp.Mwt;
+
 namespace StanzaSharp.Tests;
 
 /// <summary>
-/// German's treebank packages (tokenize to depparse). <c>combined</c>'s models are the default package's, so its golden
-/// data is depparse/ (make_golden.py --lang de).
+/// German's treebank packages (tokenize to depparse): <c>gsd</c> and <c>hdt</c> against tests/golden/de/gsd and hdt
+/// (make_golden.py --lang de --treebank-only), and <c>combined</c>, whose models are the default package's, against depparse/.
 /// </summary>
 public class TreebankPackageTests(SharedPipelines pipelines) : IClassFixture<SharedPipelines>
 {
     [ModelTheory]
+    [German("gsd", false)]
+    [German("gsd", true)]
+    [German("hdt", false)]
+    [German("hdt", true)]
     [German("combined", false)]
     [German("combined", true)]
     public void Process_MatchesEveryGoldenFile(string package, bool managed, string lang)
@@ -36,5 +43,34 @@ public class TreebankPackageTests(SharedPipelines pipelines) : IClassFixture<Sha
         }
 
         Assert.True(failures.Count == 0, string.Join("\n\n", failures));
+    }
+
+    /// <summary>Their MWT seq2seq models with and without the dictionary (hdt's has its own vocabulary and max_dec_len 12).</summary>
+    [ModelTheory]
+    [German("gsd", false)]
+    [German("gsd", true)]
+    [German("hdt", false)]
+    [German("hdt", true)]
+    public void Mwt_MatchesGolden(string package, bool managed, string lang)
+    {
+        using var mwt = MwtExpander.Load(Repo.ModelOf(lang, "mwt", package), backend: Repo.Backend(managed));
+        var golden = JsonNode.Parse(File.ReadAllText(Path.Combine(Repo.GoldenFor(lang), package, "mwt.json")))!.AsArray();
+        var words = golden.Select(g => g!["word"]!.GetValue<string>()).ToList();
+        var expanded = mwt.Expand(words);
+        var predicted = mwt.Predict(words);
+        for (int i = 0; i < words.Count; i++)
+        {
+            Assert.Equal(Words(golden[i]!["pipeline"]), Split(expanded[i], words[i]));
+            Assert.Equal(Words(golden[i]!["model"]), Split(predicted[i], words[i]));
+        }
+    }
+
+    private static List<string> Words(JsonNode? node) => node!.AsArray().Select(w => w!.GetValue<string>()).ToList();
+
+    /// <summary>How set_mwt_expansions turns an expansion into words.</summary>
+    private static List<string> Split(string expansion, string token)
+    {
+        var words = expansion.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
+        return words.Count <= 1 ? [token] : words;
     }
 }
