@@ -29,11 +29,13 @@ dotnet_diagnostic.IDE2003.severity = none
 # 'this.' qualification isn't required (SA1101 is off in the preset)
 dotnet_diagnostic.IDE0009.severity = none
 
-# Conventions in this repository's code (stylebro-migrate init counted them)
+# Conventions in this repository's code (stylebro-migrate init counted them; delete a line to have it counted again)
 # init: private fields: named '_field' in 440 of 440 places in your code
 stylebro_private_field_naming = _camelCase
 # init: one-line if/else/loop/using/lock bodies: without braces in 794 of 795 places in your code
 csharp_prefer_braces = when_multiline
+# init: one-line jumps ('if (x) return;'): on the 'if' line without braces in 5 of 9 places in your code (3 are enough to keep them: without it BRO1514 would add braces to each)
+stylebro_allow_single_line_jump_statements = true
 # init: operators where a line wraps: your code mixes both forms (65 at the start of the line, 35 at the end of the line), so BRO1520 is off. To choose one: set dotnet_style_operator_placement_when_wrapping and remove the next line.
 dotnet_diagnostic.BRO1520.severity = none
 # init: empty strings: "" in 52 of 52 places in your code
@@ -52,12 +54,18 @@ stylebro_constraint_placement = same_line
 stylebro_blank_line_between_switch_sections = omit
 # init: mixed arithmetic ('a + b * c'): without parentheses in 303 of 304 places in your code
 dotnet_style_parentheses_in_arithmetic_binary_operators = never_if_unnecessary
+# init: overloads BRO1001 could split: next to each other in 5 of 5 places in your code
+stylebro_keep_overloads_together = true
+# init: constructor summaries: 11 of 13 in your code are in their own words, so BRO1606 is off. To turn it on: remove the next line.
+dotnet_diagnostic.BRO1606.severity = none
+# init: using directives: 76 of 76 files sorted, 44 of 44 with System first
+dotnet_sort_system_directives_first = true
+# init: C# files' line endings: LF in 106 of 106 files in your code
+end_of_line = lf
 # END stylebro-migrate
 
 # StanzaSharp's own settings. Outside the stylebro-migrate block, so a later 'stylebro-migrate init --write' keeps them.
 [*.cs]
-# .gitattributes keeps sources LF on every OS; without this, dotnet format writes CRLF into the lines it rewrites on Windows.
-end_of_line = lf
 # One-line statements (`if (x) list.Add(y);`, the opcode cases in Pickle) are a deliberate compact form here.
 csharp_preserve_single_line_statements = true
 csharp_preserve_single_line_blocks = true
