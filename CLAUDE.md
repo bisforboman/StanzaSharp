@@ -922,13 +922,17 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - `Gemm.Path` is detected at startup (Vector512 = AVX-512 where .NET accelerates `Vector512`, Vector256 = AVX2/FMA,
     Vector128 = NEON on Arm64, Scalar); every path reads the same packed weights. A new kernel or element-wise step needs
     a version per path and a test per path.
-  - Vector512 (round 14, docs/performance.md): one register per panel row, two panels per kernel call in `Gemm.Run`
-    (`KernelPair512`); the LSTM cell's one exp over 16 gates. It must stay Vector256's bits (same FMAs in the same order,
+  - Vector512 (rounds 14 and 19, docs/performance.md): one register per panel row, two panels per kernel call in
+    `Gemm.Run` (`KernelPair512`) and in `PackedLstm.Step` (`KernelBlockedPair512`; a single panel only at a task's odd
+    end); the LSTM cell's one exp over 16 gates. It must stay Vector256's bits (same FMAs in the same order,
     activations lane-identical; `Vector512_GivesVector256sBits`), so a CI runner's CPU draw can't change a result.
-    Measured on runners: +48–53% (EPYC 9V45, Zen 5), +3–10% (EPYC 9V74, Zen 4). `DOTNET_PreferredVectorBitWidth=256`
-    selects Vector256. No local AVX-512 (Ryzen 5800X): test it with the Benchmark workflow's `avx512` jobs
-    (`gh workflow run benchmark.yml --ref BRANCH -f avx512_only=true`; six ubuntu-26.04 jobs, those without `avx512f`
-    stop with a notice); ci.yml's golden-shard and cross-os print the CPU and run Vector512 when they get AVX-512.
+    Measured vs Vector256 on runners (round 19): +65–82% EPYC 9V45 (Zen 5), +8–16% EPYC 9V74 (Zen 4), +37–54% Xeon
+    8573C (Emerald Rapids), +4–6% Xeon 8370C (Ice Lake; slower than Vector256 before the LSTM pairs). Faster on every
+    CPU drawn, so no vendor rule. `DOTNET_PreferredVectorBitWidth=256` selects Vector256. No local AVX-512 (Ryzen
+    5800X): test it with the Benchmark workflow's `avx512` jobs (`gh workflow run benchmark.yml --ref BRANCH -f
+    avx512_only=true`; six ubuntu-26.04 and three windows-2025 jobs, those without `avx512f` stop with a notice; each
+    also prints `managed-spike gemm` rates per path). Intel came up in 8 of 69 jobs. ci.yml's golden-shard and
+    cross-os print the CPU and run Vector512 when they get AVX-512.
   - `ManagedThreads`: one process-wide pool of `Count` − 1 workers; each caller works its own region and idle workers
     help. Not per-caller teams: those oversubscribe (measured: 8 callers fall to TorchSharp's throughput). A region's
     split must not depend on how many threads help, so results stay bitwise identical under concurrency.

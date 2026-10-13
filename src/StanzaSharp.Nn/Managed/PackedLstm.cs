@@ -227,9 +227,11 @@ internal sealed unsafe class PackedLstm
             var aRows = stackalloc float*[Gemm.MR];
             var init = stackalloc float*[Gemm.MR];
             var outRows = stackalloc float*[Gemm.MR];
-            var scratch = stackalloc float[Gemm.MR * PackedMatrix.NR];
+            const int nr = PackedMatrix.NR;
+            var scratch = stackalloc float[Gemm.MR * 2 * nr]; // two panels wide, for the Vector512 pairs
             for (int r = 0; r < Gemm.MR; r++)
-                outRows[r] = scratch + r * PackedMatrix.NR;
+                outRows[r] = scratch + r * 2 * nr;
+            bool pairs = Gemm.Path == KernelPath.Vector512;
             int offset = 0;
             foreach (var w in works)
             {
@@ -237,7 +239,9 @@ internal sealed unsafe class PackedLstm
                 offset += w.Whh.Panels;
                 for (int p = lo; p < hi; p++)
                 {
-                    var panel = w.Whh.Data + (long)p * PackedMatrix.NR * w.Whh.K;
+                    bool pair = pairs && p + 1 < hi;
+                    long stride = (long)nr * w.Whh.K;
+                    var panel = w.Whh.Data + p * stride;
                     for (int r0 = 0; r0 < w.M; r0 += Gemm.MR)
                     {
                         int mr = Math.Min(Gemm.MR, w.M - r0);
@@ -245,13 +249,23 @@ internal sealed unsafe class PackedLstm
                         {
                             int row = r0 + Math.Min(r, mr - 1);
                             aRows[r] = w.HPrev[row];
-                            init[r] = w.Init[row] + p * PackedMatrix.NR;
+                            init[r] = w.Init[row] + p * nr;
                         }
 
-                        Gemm.KernelBlocked(mr, aRows, panel, w.Whh.K, KB, init, outRows);
+                        if (pair)
+                            Gemm.KernelBlockedPair512(mr, aRows, panel, stride, w.Whh.K, KB, init, outRows);
+                        else
+                            Gemm.KernelBlocked(mr, aRows, panel, w.Whh.K, KB, init, outRows);
                         for (int r = 0; r < mr; r++)
-                            Act.LstmCell(scratch + r * PackedMatrix.NR, w.C[r0 + r] + p * 4, w.HOut[r0 + r] + p * 4);
+                        {
+                            Act.LstmCell(outRows[r], w.C[r0 + r] + p * 4, w.HOut[r0 + r] + p * 4);
+                            if (pair)
+                                Act.LstmCell(outRows[r] + nr, w.C[r0 + r] + (p + 1) * 4, w.HOut[r0 + r] + (p + 1) * 4);
+                        }
                     }
+
+                    if (pair)
+                        p++;
                 }
             }
         });
