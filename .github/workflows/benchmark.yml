@@ -137,17 +137,23 @@ jobs:
             benchmark.json
 
   # The Vector512 (AVX-512) kernels against Vector256 (AVX2) on one machine: ubuntu-26.04 is sometimes an Intel Xeon
-  # Platinum 8573C (AVX-512), sometimes an AMD EPYC 7763 (none), so six jobs try. A job without AVX-512 says so and
+  # Platinum 8573C or other AVX-512 CPUs, often an AMD EPYC 7763 (none), so six jobs try; windows-2025, which draws the
+  # same machines, gets three (Git Bash's /proc/cpuinfo has the flags too). A job without AVX-512 says so and
   # stops (success). One with it runs the managed kernel and pipeline tests (Vector512 is then the detected path) and
   # `stanzasharp benchmark` without Python, alternating DOTNET_PreferredVectorBitWidth=256 (Vector256) and the default
-  # (Vector512), at the default threads and at 1. Its blocks go to the summary and the artifact avx512-<attempt>.
+  # (Vector512), at the default threads and at 1. Its blocks go to the summary and the artifact avx512-<os>-<attempt>.
   avx512:
     if: ${{ !inputs.startup_only }}
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-26.04]
         attempt: [1, 2, 3, 4, 5, 6]
-    runs-on: ubuntu-26.04
+        include:
+          - { os: windows-2025, attempt: 1 }
+          - { os: windows-2025, attempt: 2 }
+          - { os: windows-2025, attempt: 3 }
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     defaults:
       run:
@@ -213,6 +219,19 @@ jobs:
             done
           done
 
+      # The kernels alone (`managed-spike gemm`: the charlm's, the tagger's and the highway's GEMM shapes), per path, at 1
+      # thread and at all.
+      - name: GEMM rates
+        if: steps.cpu.outputs.avx512 == 'yes'
+        run: |
+          for threads in 1 4; do
+            for path in vector256 vector512; do
+              echo "### gemm, $path, $threads threads"; echo; echo '```'
+              dotnet samples/StanzaSharp.Benchmark/bin/Release/net10.0/StanzaSharp.Benchmark.dll managed-spike gemm --threads $threads --path $path
+              echo '```'; echo
+            done
+          done | tee -a "$GITHUB_STEP_SUMMARY" avx512/gemm.md
+
       - name: Test (Vector512 detected)
         if: steps.cpu.outputs.avx512 == 'yes'
         run: >
@@ -231,7 +250,7 @@ jobs:
       - uses: actions/upload-artifact@v7
         if: always() && steps.cpu.outputs.avx512 == 'yes'
         with:
-          name: avx512-${{ matrix.attempt }}
+          name: avx512-${{ matrix.os }}-${{ matrix.attempt }}
           path: |
             avx512/
             TestResults/*.trx
