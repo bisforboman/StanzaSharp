@@ -793,6 +793,80 @@ internal static unsafe class Gemm
         }
     }
 
+    /// <summary>
+    /// <see cref="KernelBlocked"/> on Vector512 for two adjacent panels (<paramref name="b"/> and <paramref name="b"/> +
+    /// <paramref name="bStride"/>), whose init and output columns follow the first panel's (+16), like
+    /// <see cref="KernelPair512"/>: per k, 2 panel loads and mr broadcasts feed 2·mr FMAs instead of 1 and mr feeding
+    /// mr, which held the single-panel kernel back on Intel (load ports; docs/performance.md, round 19). Each
+    /// column's arithmetic is the single-panel kernel's.
+    /// </summary>
+    public static void KernelBlockedPair512(int mr, float** a, float* b, long bStride, int k, int kb, float** init, float** output)
+    {
+        if (mr <= 3)
+            Kernel3x512BlockedPair(a, b, bStride, k, kb, init, output);
+        else
+            Kernel6x512BlockedPair(a, b, bStride, k, kb, init, output);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private static void Kernel6x512BlockedPair(float** a, float* b, long bStride, int k, int kb, float** init, float** output)
+    {
+        const int nr = PackedMatrix.NR;
+        float* a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4 = a[4], a5 = a[5];
+        float* bb = b + bStride;
+        for (int k0 = 0; k0 < k; k0 += kb)
+        {
+            Vector512<float> c00 = default, c01 = default, c10 = default, c11 = default, c20 = default, c21 = default,
+                c30 = default, c31 = default, c40 = default, c41 = default, c50 = default, c51 = default;
+            int end = Math.Min(k, k0 + kb);
+            for (int p = k0; p < end; p++, b += nr, bb += nr)
+            {
+                var b0 = Vector512.Load(b);
+                var b1 = Vector512.Load(bb);
+                var x = Vector512.Create(a0[p]); c00 = Fma(x, b0, c00); c01 = Fma(x, b1, c01);
+                x = Vector512.Create(a1[p]); c10 = Fma(x, b0, c10); c11 = Fma(x, b1, c11);
+                x = Vector512.Create(a2[p]); c20 = Fma(x, b0, c20); c21 = Fma(x, b1, c21);
+                x = Vector512.Create(a3[p]); c30 = Fma(x, b0, c30); c31 = Fma(x, b1, c31);
+                x = Vector512.Create(a4[p]); c40 = Fma(x, b0, c40); c41 = Fma(x, b1, c41);
+                x = Vector512.Create(a5[p]); c50 = Fma(x, b0, c50); c51 = Fma(x, b1, c51);
+            }
+
+            bool first = k0 == 0, last = end == k;
+            Flush512(output[0], init[0], first, last, c00); Flush512(output[0] + nr, init[0] + nr, first, last, c01);
+            Flush512(output[1], init[1], first, last, c10); Flush512(output[1] + nr, init[1] + nr, first, last, c11);
+            Flush512(output[2], init[2], first, last, c20); Flush512(output[2] + nr, init[2] + nr, first, last, c21);
+            Flush512(output[3], init[3], first, last, c30); Flush512(output[3] + nr, init[3] + nr, first, last, c31);
+            Flush512(output[4], init[4], first, last, c40); Flush512(output[4] + nr, init[4] + nr, first, last, c41);
+            Flush512(output[5], init[5], first, last, c50); Flush512(output[5] + nr, init[5] + nr, first, last, c51);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private static void Kernel3x512BlockedPair(float** a, float* b, long bStride, int k, int kb, float** init, float** output)
+    {
+        const int nr = PackedMatrix.NR;
+        float* a0 = a[0], a1 = a[1], a2 = a[2];
+        float* bb = b + bStride;
+        for (int k0 = 0; k0 < k; k0 += kb)
+        {
+            Vector512<float> c00 = default, c01 = default, c10 = default, c11 = default, c20 = default, c21 = default;
+            int end = Math.Min(k, k0 + kb);
+            for (int p = k0; p < end; p++, b += nr, bb += nr)
+            {
+                var b0 = Vector512.Load(b);
+                var b1 = Vector512.Load(bb);
+                var x = Vector512.Create(a0[p]); c00 = Fma(x, b0, c00); c01 = Fma(x, b1, c01);
+                x = Vector512.Create(a1[p]); c10 = Fma(x, b0, c10); c11 = Fma(x, b1, c11);
+                x = Vector512.Create(a2[p]); c20 = Fma(x, b0, c20); c21 = Fma(x, b1, c21);
+            }
+
+            bool first = k0 == 0, last = end == k;
+            Flush512(output[0], init[0], first, last, c00); Flush512(output[0] + nr, init[0] + nr, first, last, c01);
+            Flush512(output[1], init[1], first, last, c10); Flush512(output[1] + nr, init[1] + nr, first, last, c11);
+            Flush512(output[2], init[2], first, last, c20); Flush512(output[2] + nr, init[2] + nr, first, last, c21);
+        }
+    }
+
     /// <summary>A blocked kernel's row after a block, like <see cref="Flush128"/>.</summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void Flush512(float* o, float* init, bool first, bool last, Vector512<float> c)
