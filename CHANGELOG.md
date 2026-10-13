@@ -8,6 +8,26 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 Unreleased changes are one file each under [`changes/`](changes/README.md), so pull requests don't conflict here;
 a release folds them in (`python tools/changelog.py release X.Y.Z`).
 
+## [1.4.0] - 2026-10-13
+
+1.4: faster startup for short-lived processes, faster AVX-512 LSTMs (now ahead of AVX2 on every CPU measured,
+Intel included) and less garbage on long texts. Outputs are unchanged bit for bit; no API changes.
+
+### Changed
+- Managed backend: the character language models look up their character ids without a string per character, so a
+  long `Process` call allocates about 17% less (201,313 words, all eight processors: 3.7 → 3.1 GB, 18 → 15 KB per
+  word). The peak memory and the output are unchanged, bit for bit.
+- Managed backend, startup: `Pipeline.Load` loads two models at a time (21–37% less time on GitHub's free runners, a
+  load peak 25–89 MB higher), and the sigmoid/tanh exponential and the thread pool's per-step code are compiled
+  optimized from the first call instead of starting at JIT tier 0. A fresh process that loads and makes six
+  one-sentence calls finishes 18–29% sooner; the first call is 5–11% faster, the next few 17–52%. Warmed speed is
+  unchanged, and so is the output, bit for bit. README has advice for short-lived processes (tiering, ReadyToRun).
+- Managed backend: on AVX-512 CPUs each LSTM time step now computes two 16-column panels per kernel call, as the other
+  matrix products already did. On GitHub's AVX-512 runners the full pipeline got 11–15% faster on an AMD EPYC 9V45
+  (Zen 5), 5–9% on an Intel Xeon Platinum 8573C (Emerald Rapids) and 11–12% on a Xeon Platinum 8370C (Ice Lake), where
+  the AVX-512 kernels had been 5–7% slower than the AVX2 ones and are now 4–6% faster. The output is unchanged, bit for
+  bit.
+
 ## [1.3.0] - 2026-10-12
 
 1.3: faster on modern CPUs (AVX-512 kernels, up to 53% on Zen 5) and in the tokenizer (now ahead of Python Stanza on
