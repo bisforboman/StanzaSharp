@@ -8,6 +8,6 @@ call; the difference is the pool's first fill, which stays live and isn't garbag
 under 0.3 KB/word each (constituency's `Score` output and `Owned` lists, Chu-Liu/Edmonds' per-cycle arrays, the
 tokenizer's per-batch net input).
 
-On the peak rather than garbage: `ManagedConstituencyNet.EncodeWords` could fill the word LSTM's packed input directly,
-without the padded `[n, width, 2268]` copy, which is exact by construction. From round 23's trace it would save one 64 MB
-buffer on that text (estimated, not built), which is within the peak's noise, so it's worth doing only if a text with longer sentences shows more.
+Filling constituency's word-LSTM input in packed rows (no padded copy) was tried in
+[round 24](../round-24-constituency-packed-input.md): exact, but the pool's first fill only moved to depparse and
+sentiment, so neither the peak nor the allocation dropped.
