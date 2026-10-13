@@ -119,23 +119,31 @@ internal sealed class NerTagger : IDisposable
             }
         }
 
-        var logits = _net.Forward(sentences, wordIds, deltaIds, width, charlms, cacheKeys, cancellationToken);
-
+        // Rented (LOH-sized per batch): only the rows of each sentence's own tokens are written and read.
         int nTags = _tags.Length;
-        emissions = [];
-        var result = new List<string[]>(batch);
-        for (int i = 0; i < batch; i++)
+        var logits = ArrayPool<float>.Shared.Rent(batch * width * nTags);
+        try
         {
-            var scores = logits.AsSpan(i * width * nTags, sentences[i].Count * nTags);
-            if (keepEmissions)
-                emissions.Add(scores.ToArray());
+            _net.Forward(sentences, wordIds, deltaIds, width, logits.AsSpan(0, batch * width * nTags), charlms, cacheKeys, cancellationToken);
+            emissions = [];
+            var result = new List<string[]>(batch);
+            for (int i = 0; i < batch; i++)
+            {
+                var scores = logits.AsSpan(i * width * nTags, sentences[i].Count * nTags);
+                if (keepEmissions)
+                    emissions.Add(scores.ToArray());
 
-            // The model can predict a tag below "O" (a vocab prefix); Stanza turns those into "O".
-            var tags = Viterbi(scores, _transitions, nTags).Select(id => _tags[Math.Max(id, VocabPrefixSize)]).ToArray();
-            result.Add(FixSingletonTags(tags));
+                // The model can predict a tag below "O" (a vocab prefix); Stanza turns those into "O".
+                var tags = Viterbi(scores, _transitions, nTags).Select(id => _tags[Math.Max(id, VocabPrefixSize)]).ToArray();
+                result.Add(FixSingletonTags(tags));
+            }
+
+            return result;
         }
-
-        return result;
+        finally
+        {
+            ArrayPool<float>.Shared.Return(logits);
+        }
     }
 
     /// <summary>

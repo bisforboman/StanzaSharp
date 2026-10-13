@@ -154,8 +154,10 @@ default) doesn't have them.
   parser could continue every cached sentence from the tagger's state over ROOT alone, if the cache also kept each
   sentence's final cell state (4 KB per sentence). That is the whole backward pass of depparse's charlm work, not 3 steps.
   Check it on the backward charlm the same way first.
-- **Long texts: what is left of the garbage** (round 18): per-word objects outside the charlm (tokenizer inputs,
-  constituency's `StackState`s, `bool[]`/`object[]`/`string[]`), each under 1 KB per word. The peak is set by live data.
+- **Long texts: what is left of the garbage** (round 22, 11 KB/word): `ArrayPool` misses (`PoolExhausted`) in
+  `ManagedLstm.ForwardPacked`/`ForwardPadded` for the tokenizer and the parser's word LSTM (~0.4 GB at 201k words), the
+  tagger's `CharlmCache` copies (by design), and sites under 0.3 KB/word each (constituency's `Score` output and
+  `Owned` lists, Chu-Liu/Edmonds' per-cycle arrays, the tokenizer's per-batch net input).
 - **Loading `.pt` files.** The pretrain's and NER's 250k-word vocabularies are pickled, mirrored into JSON
   (`TorchCheckpoint.Splitter`), parsed back into nodes and then into a dictionary: about 0.3 s each when warm, more cold,
   and the pretrain then NER are the load's longest chain (round 17). Building the vocabulary straight from the pickle
@@ -172,6 +174,8 @@ default) doesn't have them.
 - **Per-call cost** (*TorchSharp only*): 192 ms (Python 189), libtorch's per-operation cost on tiny tensors. Not pursued.
 
 **Done** (see the round):
+- Long texts' per-word garbage outside the charlm: NER's emissions rented, Tarjan's per-node arrays, ASCII `Lower`,
+  recycled stack states, the tokenizer's paragraph inputs (15.2 → 11.0 KB/word, peak −0.13 GB): round 22.
 - Depparse's forward charlm from a stored start state (exact, 3 of ~90 steps: under the noise, not shipped); the
   `ArrayPool`'s churn on long texts (measured: none; the charlm's per-character strings were cut instead): round 18.
 - Startup: the runtime's vector `Exp` and the thread pool at JIT tier 0, two models loading at a time; ReadyToRun and

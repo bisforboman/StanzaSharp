@@ -72,8 +72,10 @@ internal sealed partial class Tokenizer : IDisposable
 
     private readonly ITokenizerNet _net;
     private readonly Dictionary<string, int> _vocab;
+    private readonly Dictionary<string, int>.AlternateLookup<ReadOnlySpan<char>> _vocabBySpan;
     private readonly int _unkId, _padId, _batchSize, _featDim, _maxSeqLen, _window;
     private readonly string[] _featFuncs;
+    private readonly Regex?[] _featRes; // per feature: its structural pattern, or null for a per-unit one
 
     /// <param name="net">Builds the network from the checkpoint (a backend's, e.g. <see cref="ManagedTokenizerNet"/>).</param>
     internal Tokenizer(Checkpoint ckpt, Func<Checkpoint, ITokenizerNet> net)
@@ -81,6 +83,7 @@ internal sealed partial class Tokenizer : IDisposable
         _net = net(ckpt);
         var config = ckpt.Root["config"]!;
         _vocab = Checkpoint.UnitToId(ckpt.Root["vocab"]);
+        _vocabBySpan = _vocab.GetAlternateLookup<ReadOnlySpan<char>>();
         _unkId = _vocab["<UNK>"];
         _padId = _vocab["<PAD>"];
         _batchSize = config["batch_size"]!.GetValue<int>();
@@ -103,6 +106,7 @@ internal sealed partial class Tokenizer : IDisposable
             throw new NotSupportedException($"Unknown tokenizer feature functions: {string.Join(", ", unknown)}");
         if (_featFuncs.Length != _featDim)
             throw new InvalidOperationException($"feat_dim is {_featDim} but {_featFuncs.Length} features are configured");
+        _featRes = [.. _featFuncs.Select(name => StructuralFeatures.FirstOrDefault(s => s.Name == name).Re)];
     }
 
     /// <summary>Loads <c>basePath.json</c> + <c>basePath.safetensors</c> (or <c>basePath.pt</c>), e.g. <c>models/converted/en/tokenize/combined_nocharlm</c>, on the managed backend.</summary>
@@ -219,23 +223,50 @@ internal sealed partial class Tokenizer : IDisposable
     {
         var para = SplitParagraphs(paragraph).Single();
         shape = [para.Length + 1, Classes];
-        return Run([para], [0], para.Length + 1, [para.Length + 1], default);
+        RentInputs(para);
+        try
+        {
+            return Run([para], [0], para.Length + 1, [para.Length + 1], default);
+        }
+        finally
+        {
+            ReturnInputs(para);
+        }
     }
 
     // ----- input: paragraphs of code-point units -----
+
+    /// <summary>
+    /// A paragraph's units, one code point each, whitespace normalized to " " (runs of it kept once), as one string and
+    /// each unit's place in it. The model's inputs are built per batch (<see cref="RentInputs"/>), not kept for the call.
+    /// </summary>
     private sealed class Paragraph
     {
-        public required string[] Units;   // one code point each, whitespace normalized to " "
-        public required int[] Starts;     // UTF-16 offset of each unit in the original text
-        public required int[] Ends;
-        public required long[] Ids;
-        public required float[] Feats;    // [Length * featDim]
-        public bool MayHaveMask;          // contains one of MaskLiterals, so MaskRe may match
+        public required string Text;     // the units, concatenated
+        public required int[] UnitStart; // [Length + 1]: unit i is Text[UnitStart[i]..UnitStart[i + 1]]
+        public required int[] Starts;    // UTF-16 offset of each unit in the original text, where it has the same length
+        public bool MayHaveMask;         // contains one of MaskLiterals, so MaskRe may match
 
-        public int Length => Units.Length;
+        // While its batch runs: rented, the first Length (ids) and Length * featDim (features) elements valid.
+        public long[]? Ids;
+        public float[]? Feats;
+
+        public int Length => UnitStart.Length - 1;
+
+        /// <summary>Unit i is " " (no other unit starts with a space).</summary>
+        public bool IsSpace(int i) => Text[UnitStart[i]] == ' ';
+
+        public int End(int i) => Starts[i] + UnitStart[i + 1] - UnitStart[i];
+
+        /// <summary>The unit that UTF-16 index <paramref name="index"/> of <see cref="Text"/> belongs to.</summary>
+        public int UnitAt(int index)
+        {
+            int k = Array.BinarySearch(UnitStart, 0, Length, index);
+            return k >= 0 ? k : ~k - 1;
+        }
     }
 
-    private List<Paragraph> SplitParagraphs(string text)
+    private static List<Paragraph> SplitParagraphs(string text)
     {
         var result = new List<Paragraph>();
         int pos = 0;
@@ -249,72 +280,100 @@ internal sealed partial class Tokenizer : IDisposable
         return result;
     }
 
-    private void AddParagraph(string text, int start, int end, List<Paragraph> result)
+    private static void AddParagraph(string text, int start, int end, List<Paragraph> result)
     {
         while (end > start && PyString.IsSpace(text[end - 1]))
             end--;
         if (end == start)
             return;
 
-        var units = new List<string>();
-        var starts = new List<int>();
-        var ends = new List<int>();
-        int pos = start;
-        foreach (var rune in text.AsSpan(start, end - start).EnumerateRunes())
+        // At most one unit and one char per UTF-16 char of the input: rented scratch, then exact copies.
+        int max = end - start;
+        var offsets = ArrayPool<int>.Shared.Rent(2 * max + 1); // unit starts in the text [0, max], then in the input
+        var chars = ArrayPool<char>.Shared.Rent(max);
+        try
         {
-            int len = rune.Utf16SequenceLength;
-            bool space = rune.IsBmp && (PyString.IsSpace((char)rune.Value) || rune.Value is >= 0x80 and <= 0x9f);
-
-            // filter_consecutive_whitespaces: keep the first of a run of spaces.
-            if (!(space && units.Count > 0 && units[^1] == " "))
+            int n = 0, length = 0, pos = start;
+            foreach (var rune in text.AsSpan(start, end - start).EnumerateRunes())
             {
-                units.Add(space ? " " : rune.ToString());
-                starts.Add(pos);
-                ends.Add(pos + len);
+                bool space = rune.IsBmp && (PyString.IsSpace((char)rune.Value) || rune.Value is >= 0x80 and <= 0x9f);
+
+                // filter_consecutive_whitespaces: keep the first of a run of spaces.
+                if (!(space && length > 0 && chars[length - 1] == ' '))
+                {
+                    offsets[n] = length;
+                    offsets[max + 1 + n] = pos;
+                    n++;
+                    if (space)
+                        chars[length++] = ' ';
+                    else
+                        length += rune.EncodeToUtf16(chars.AsSpan(length));
+                }
+
+                pos += rune.Utf16SequenceLength;
             }
 
-            pos += len;
+            offsets[n] = length;
+            var units = new string(chars, 0, length);
+            result.Add(new Paragraph
+            {
+                Text = units,
+                UnitStart = offsets.AsSpan(0, n + 1).ToArray(),
+                Starts = offsets.AsSpan(max + 1, n).ToArray(),
+                MayHaveMask = units.AsSpan().ContainsAny(MaskLiterals),
+            });
         }
-
-        var unitArray = units.ToArray();
-        result.Add(new Paragraph
+        finally
         {
-            Units = unitArray,
-            Starts = starts.ToArray(),
-            Ends = ends.ToArray(),
-            Ids = unitArray.Select(u => (long)_vocab.GetValueOrDefault(u, _unkId)).ToArray(),
-            Feats = Features(unitArray, out bool mayHaveMask),
-            MayHaveMask = mayHaveMask,
-        });
+            ArrayPool<int>.Shared.Return(offsets);
+            ArrayPool<char>.Shared.Return(chars);
+        }
     }
 
-    private float[] Features(string[] units, out bool mayHaveMask)
+    /// <summary>Rents and fills <paramref name="para"/>'s ids and features; <see cref="ReturnInputs"/> gives them back.</summary>
+    private void RentInputs(Paragraph para)
     {
-        int n = units.Length;
-        var feats = new float[n * _featDim];
-        var (joined, unitAt) = Join(units);
-        mayHaveMask = joined.AsSpan().ContainsAny(MaskLiterals);
+        int n = para.Length;
+        var ids = para.Ids = ArrayPool<long>.Shared.Rent(n);
+        var feats = para.Feats = ArrayPool<float>.Shared.Rent(n * _featDim);
+        for (int i = 0; i < n; i++)
+            ids[i] = _vocabBySpan.TryGetValue(para.Text.AsSpan(para.UnitStart[i], para.UnitStart[i + 1] - para.UnitStart[i]), out int id) ? id : _unkId;
+        Features(para, feats.AsSpan(0, n * _featDim));
+    }
+
+    private static void ReturnInputs(Paragraph para)
+    {
+        ArrayPool<long>.Shared.Return(para.Ids!);
+        ArrayPool<float>.Shared.Return(para.Feats!);
+        (para.Ids, para.Feats) = (null, null);
+    }
+
+    private void Features(Paragraph para, Span<float> feats)
+    {
+        int n = para.Length;
+        feats.Clear();
         for (int k = 0; k < _featDim; k++)
         {
-            var name = _featFuncs[k];
-            var structural = StructuralFeatures.FirstOrDefault(s => s.Name == name).Re;
-            if (structural != null)
+            if (_featRes[k] is { } structural)
             {
-                foreach (Match m in structural.Matches(joined))
+                foreach (var m in structural.EnumerateMatches(para.Text))
                 {
-                    for (int p = m.Index; p < m.Index + m.Length; p++)
-                        feats[unitAt[p] * _featDim + k] = 1;
+                    if (m.Length == 0)
+                        continue;
+                    for (int u = para.UnitAt(m.Index), last = para.UnitAt(m.Index + m.Length - 1); u <= last; u++)
+                        feats[u * _featDim + k] = 1;
                 }
 
                 continue;
             }
 
+            var name = _featFuncs[k];
             for (int i = 0; i < n; i++)
             {
-                var rune = Rune.GetRuneAt(units[i], 0);
+                var rune = Rune.GetRuneAt(para.Text, para.UnitStart[i]);
                 bool on = name switch
                 {
-                    "space_before" => units[i] == " ",
+                    "space_before" => para.IsSpace(i),
                     "capitalized" => PyString.IsUpper(rune),
                     "numeric" => Rune.IsDigit(rune), // NUMERIC_RE on a single code point
                     "end_of_para" => i == n - 1,
@@ -325,8 +384,6 @@ internal sealed partial class Tokenizer : IDisposable
                     feats[i * _featDim + k] = 1;
             }
         }
-
-        return feats;
     }
 
     // ----- prediction, batched exactly like utils.predict -----
@@ -343,14 +400,24 @@ internal sealed partial class Tokenizer : IDisposable
             var rows = order[b..Math.Min(b + _batchSize, order.Length)].Select(i => paragraphs[i]).ToList();
             int maxLen = rows.Max(r => r.Length);
             int[][] rowPreds;
-            if (maxLen + 1 <= _window)
+            foreach (var r in rows)
+                RentInputs(r);
+            try
             {
-                var p = Argmax(Run(rows, new int[rows.Count], maxLen + 1, rows.Select(r => r.Length + 1).ToArray(), ct), rows.Count);
-                rowPreds = rows.Select((r, j) => p[j][..r.Length]).ToArray();
+                if (maxLen + 1 <= _window)
+                {
+                    var p = Argmax(Run(rows, new int[rows.Count], maxLen + 1, rows.Select(r => r.Length + 1).ToArray(), ct), rows.Count);
+                    rowPreds = rows.Select((r, j) => p[j][..r.Length]).ToArray();
+                }
+                else
+                {
+                    rowPreds = PredictWindowed(rows, ct);
+                }
             }
-            else
+            finally
             {
-                rowPreds = PredictWindowed(rows, ct);
+                foreach (var r in rows)
+                    ReturnInputs(r);
             }
 
             for (int j = 0; j < rows.Count; j++)
@@ -425,8 +492,8 @@ internal sealed partial class Tokenizer : IDisposable
         for (int j = 0; j < rows.Count; j++)
         {
             int count = Math.Clamp(rows[j].Length - offsets[j], 0, width);
-            Array.Copy(rows[j].Ids, offsets[j], ids, j * width, count);
-            Array.Copy(rows[j].Feats, offsets[j] * _featDim, feats, j * width * _featDim, count * _featDim);
+            Array.Copy(rows[j].Ids!, offsets[j], ids, j * width, count);
+            Array.Copy(rows[j].Feats!, offsets[j] * _featDim, feats, j * width * _featDim, count * _featDim);
         }
 
         return _net.Forward(ids, feats, rows.Count, width, lengths.Select(l => (long)l).ToArray(), ct);
@@ -467,10 +534,9 @@ internal sealed partial class Tokenizer : IDisposable
         if (!para.MayHaveMask)
             return;
 
-        var (joined, unitAt) = Join(para.Units);
-        foreach (Match m in MaskRe().Matches(joined))
+        foreach (var m in MaskRe().EnumerateMatches(para.Text))
         {
-            int first = unitAt[m.Index], end = unitAt[m.Index + m.Length - 1];
+            int first = para.UnitAt(m.Index), end = para.UnitAt(m.Index + m.Length - 1);
             for (int i = first; i < end; i++)
                 pred[i] = 0;
             if (pred[end] == 0)
@@ -490,20 +556,20 @@ internal sealed partial class Tokenizer : IDisposable
 
             // The token is units [tokStart, i] minus leading spaces; all-space tokens are dropped.
             int first = tokStart;
-            while (first <= i && para.Units[first] == " ")
+            while (first <= i && para.IsSpace(first))
                 first++;
             int label = pred[i];
             tokStart = i + 1;
             if (first > i)
                 continue;
 
-            var text = string.Concat(para.Units[first..(i + 1)]);
+            var text = para.Text[para.UnitStart[first]..para.UnitStart[i + 1]];
 
             // TokenizeProcessor.process: len(token['text']) > max_seqlen, in code points (one per unit). Only the
             // text changes; offsets and the MWT flag stay.
             if (i + 1 - first > _maxSeqLen)
                 text = LongTokenReplacement;
-            int start = para.Starts[first], end = para.Ends[i];
+            int start = para.Starts[first], end = para.End(i);
 
             sent ??= NewSentence(doc);
             var token = new Token { Text = text, StartChar = start, EndChar = end, IsMwtCandidate = label >= 3 };
@@ -531,23 +597,6 @@ internal sealed partial class Tokenizer : IDisposable
 
     private static void FinishSentence(Sentence sent, Document doc) =>
         sent.Text = doc.Text![sent.Tokens[0].StartChar!.Value..sent.Tokens[^1].EndChar!.Value];
-
-    // ----- helpers -----
-
-    /// <summary>Concatenates units and maps each UTF-16 index of the result back to its unit.</summary>
-    private static (string Joined, int[] UnitAt) Join(string[] units)
-    {
-        var sb = new StringBuilder();
-        var unitAt = new List<int>();
-        for (int i = 0; i < units.Length; i++)
-        {
-            sb.Append(units[i]);
-            for (int k = 0; k < units[i].Length; k++)
-                unitAt.Add(i);
-        }
-
-        return (sb.ToString(), unitAt.ToArray());
-    }
 
     public void Dispose() => _net.Dispose();
 }
