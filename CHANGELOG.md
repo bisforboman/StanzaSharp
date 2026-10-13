@@ -8,6 +8,30 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 Unreleased changes are one file each under [`changes/`](changes/README.md), so pull requests don't conflict here;
 a release folds them in (`python tools/changelog.py release X.Y.Z`).
 
+## [1.5.0] - 2026-10-13
+
+1.5: the dependency parser is 22–29% faster (the whole pipeline 6–9%), loading Stanza's `.pt` files is 35–48%
+faster, and long texts allocate 28% less. Outputs are unchanged bit for bit; no API changes.
+
+### Changed
+- Managed backend: the dependency parser reuses the tagger's backward character-LM outputs for every sentence the
+  charlm cache holds, not only for one-sentence documents, and runs only ROOT's two characters on from the tagger's
+  final state. Output is bit for bit the same. The cache keeps about 4 KB more per sentence for it (not counted in
+  `CharlmCacheOptions.MaxWords`).
+- Long texts allocate less garbage (managed backend): the tokenizer keeps each paragraph as one string and builds the
+  model's inputs per batch, constituency reuses its stack-state objects, dependency decoding no longer allocates an
+  array per tree node, NER's emission scores are rented, and lowercasing an ASCII word allocates nothing when it has no
+  capital. Outputs are bit-identical.
+- `Pipeline.Load` from Stanza's own `.pt` files reads the large vocabularies straight from the unpickled checkpoint
+  instead of mirroring them into JSON and parsing that back: 35–48% less load time on GitHub's free runners (e.g.
+  1,993 → 1,046 ms on ubuntu-26.04), with a load peak mostly lower. Converted models load as before, and the output is
+  unchanged, bit for bit.
+
+### Fixed
+- Converted `.json` checkpoints: invalid UTF-8, or an escaped lone surrogate, in a property name or string loaded
+  without error and threw `InvalidOperationException` later, when a model read it; loading now throws
+  `InvalidDataException`.
+
 ## [1.4.0] - 2026-10-13
 
 1.4: faster startup for short-lived processes, faster AVX-512 LSTMs (now ahead of AVX2 on every CPU measured,
