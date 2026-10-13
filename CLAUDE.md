@@ -86,6 +86,10 @@ since 1.0, and every processor also has a managed net (see "Managed backend"), t
   `ParserState.Dispose` disposes them; Chu-Liu/Edmonds works on flat rented n × n buffers; `DepparseBatch.RentScores`
   lets the managed net rent the arc/label outputs, which `DependencyParser.Parse` returns. Rent an output only where its
   one caller gives it back; the Cuda nets keep plain arrays. A call now allocates ~18 KB/word instead of ~54 (docs/performance.md round 11).
+  Round 18: the pool's trimming costs nothing (`DOTNET_SYSTEM_BUFFERS_ARRAYPOOL_TRIMSHARED=false`: same bytes); the
+  managed charlm's per-character strings (`EnumerateRunes().Select(ToString)`) were ~3 KB/word, now looked up by span
+  (`GetAlternateLookup<ReadOnlySpan<char>>`): 15 KB/word. Depparse's forward charlm from a stored "\n\n " state was
+  exact but saved 0.13–0.2 ms per sentence, under a call's noise: not shipped.
   Round 12 (concurrent calls, `--with-long`): `ManagedThreads.Pool` keeps workers asleep while callers in a region plus
   awake workers number max(ProcessorCount, Count) (`_busy`/`_limit`); with Threads = ProcessorCount and 8 callers, spinning
   oversubscription had stalled calls for seconds. Calls don't serialize or starve; >2 callers cost throughput (L3/DRAM,
@@ -116,7 +120,9 @@ since 1.0, and every processor also has a managed net (see "Managed backend"), t
     alone (a one-sentence document) has the tagger's backward pass as its prefix, one row per step in both, so the
     parser continues from the tagger's final (h, c) (`CharlmCache.TryGetAlone`, `ManagedCharLanguageModel.Continue`)
     over ROOT only: bit for bit (`OneSentenceDocument_ContinuesTheTaggers...`), and a quarter of the charlm work of a
-    per-call `Process` saved. Batched sentences can't: a row's kernel (1-row vs 3/6-row) depends on its batch.
+    per-call `Process` saved. Batched sentences don't yet. (Written when a row's kernel depended on its batch; since
+    `Gemm.KernelBlocked` an LSTM step's row is batch-invariant, checked for the forward charlm in round 18, so the
+    cache could keep each sentence's final c and continue them all: docs/performance.md "Remaining ideas".)
   - `CharlmCache`'s single-sentence table (`AddAlone`/`TryGetAlone`, keyed by the texts): a managed charlm call on one
     sentence depends on its texts only, so `ManagedCharLanguageModel.BuildBoth` (pos, sentiment, ner) reuses any earlier
     one on the same texts exactly. Besides depparse, NER takes a multi-word-token sentence's token charlms from sentiment.
