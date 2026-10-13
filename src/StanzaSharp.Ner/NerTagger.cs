@@ -253,7 +253,7 @@ internal sealed class NerTagger : IDisposable
         Require(vocab["word"] != null && vocab["delta"] != null, "a vocab without word and delta embeddings");
 
         // The word embedding is the pretrain's matrix (not saved in the checkpoint), indexed by this vocab.
-        Require(vocab["word"]!["_id2unit"]?.AsArray().Count == pretrain.Count, "a word vocab other than the pretrain's");
+        Require(vocab["word"]!["_id2unit"] is { } words && Checkpoint.Strings(words).Length == pretrain.Count, "a word vocab other than the pretrain's");
         Require(vocab["delta"]!["lower"]?.GetValue<bool>() == true, "a cased delta vocab");
         Require(vocab["delta"]!["ignore"]?.AsArray().Count is null or 0, "emb_finetune_known_only (a delta vocab with ignored words)");
     }

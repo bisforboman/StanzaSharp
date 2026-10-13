@@ -344,6 +344,11 @@ weights share one storage at different offsets. The only globals are `collection
 `bytes`, used by the lemma's `dicts`). The zip format (`archive/data.pkl` +
 `archive/data/<key>`) is read too, for checkpoints saved by newer trainers.
 
+Large plain containers (a str→int dict or list of str with ≥ 1,024 items, `PyContainer.MinCount`) skip the JSON
+round trip when loading a `.pt` (round 21): the node is a `JsonValue` holding the unpickled object, not a `JsonArray`/
+`JsonObject`, and `ToJsonString()` still equals the converter's JSON. Read vocabularies with `Checkpoint.UnitToId` and
+long string lists with `Checkpoint.Strings`; `AsArray()`/`AsObject()` on them throws.
+
 `Unpickler` is restricted like `weights_only=True`: torch's protocol-2 opcodes only, plain data
 (None/bool/int/float/str/bytes/list/tuple/dict), and an allowlist of OrderedDict, `_rebuild_tensor_v2`,
 `_codecs.encode(str, 'latin1')` and the typed storage classes. Anything else throws `InvalidDataException`; nothing is instantiated by
