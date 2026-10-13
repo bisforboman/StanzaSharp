@@ -1008,6 +1008,9 @@ off). Fix findings with `stylebro-migrate format StanzaSharp.slnx` (`dotnet tool
   declarations like `int rows, cols`), BRO1108 (lists wrap at 120 columns), BRO1601 (no `<inheritdoc/>` on internal
   implementations), BRO1604 (property summaries are noun phrases). It also keeps one-line statements and turns on
   IDE0005/IDE0051/IDE0052 so unused usings and private members fail the build.
+- BRO1520 is on (owner's decision, 2026-10-13): where an expression wraps, the operator (`+`, `&&`, `??`, `?`/`:`)
+  starts the continuation line (`dotnet_style_operator_placement_when_wrapping = beginning_of_line`, in init's block,
+  where init had turned the rule off because the code mixed both forms). The rule skips an operator next to a comment.
 - `init --write` (0.7.0-alpha.1) also puts `<StyleBroPreset>` into `samples/docker/Directory.Build.props`, after its
   `<Project />` (invalid XML; stylebro#177): revert that file after each run.
 - The reformat commits are in `.git-blame-ignore-revs` (`git config blame.ignoreRevsFile .git-blame-ignore-revs`).

@@ -36,8 +36,8 @@ stylebro_private_field_naming = _camelCase
 csharp_prefer_braces = when_multiline
 # init: one-line jumps ('if (x) return;'): on the 'if' line without braces in 5 of 9 places in your code (3 are enough to keep them: without it BRO1514 would add braces to each)
 stylebro_allow_single_line_jump_statements = true
-# init: operators where a line wraps: your code mixes both forms (65 at the start of the line, 35 at the end of the line), so BRO1520 is off. To choose one: set dotnet_style_operator_placement_when_wrapping and remove the next line.
-dotnet_diagnostic.BRO1520.severity = none
+# operators where a line wraps: at the start of the continuation line (owner's decision, 2026-10-13; it was 65 of 100)
+dotnet_style_operator_placement_when_wrapping = beginning_of_line
 # init: empty strings: "" in 52 of 52 places in your code
 stylebro_empty_string_style = literal
 # init: null checks: '== null' in 170 of 173 places in your code
