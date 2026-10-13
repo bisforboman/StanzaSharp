@@ -314,6 +314,16 @@ for `default_fast`), and each call in flight adds
 - **Checksums.** `VerifyChecksums` reads every model file once more before loading (about 1.3 s for `default`'s 700 MB, 0.8 s for `default_fast`, with the files in the OS cache) and throws an
   `InvalidDataException` naming a file that doesn't match. Only Stanza's `.pt` files have published checksums, so with
   converted models it throws instead of skipping the check.
+- **Short-lived processes** (a CLI run, a serverless function, a one-off job). `Pipeline.Load` takes about 1–1.5 s
+  on GitHub's free runners (2–4 cores; two models load at a time), and the first calls run while .NET's JIT is still
+  at tier 0: a one-sentence call takes about 180–300 ms the first time and 70–120 ms the next few (60–140 ms once
+  warm). With
+  `DOTNET_TieredCompilation=0` in the environment (or `<TieredCompilation>false</TieredCompilation>` in your project)
+  everything is compiled optimized once: the first call is about 40–50% slower, every later one as fast as in a
+  warmed service, and a process that loads and makes six one-sentence calls finishes up to 16% sooner, long texts up
+  to 6%. Publishing your app with `PublishReadyToRun` precompiles our assemblies too and makes the first call 23–38%
+  faster; combined with tiering off it keeps the precompiled code, which on Arm64 made long texts 20–60% slower.
+  Measurements: [docs/performance.md](docs/performance.md#results-round-17-startup-load-and-the-first-calls).
 - **Logging.** `Logger` gets each model's load time and the thread count at Information, and each processor's time
   per call at Debug. Without a logger nothing is measured.
 - `Sentence.Text` is nullable because CoNLL-U read without `# text` has none, but `Process` always sets it.

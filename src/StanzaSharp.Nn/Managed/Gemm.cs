@@ -999,13 +999,13 @@ internal static unsafe class Gemm
 internal static unsafe class Act
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector512<float> Sigmoid(Vector512<float> x) => Vector512<float>.One / (Vector512<float>.One + Vector512.Exp(-x));
+    public static Vector512<float> Sigmoid(Vector512<float> x) => Vector512<float>.One / (Vector512<float>.One + VectorExp.Exp(-x));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector256<float> Sigmoid(Vector256<float> x) => Vector256<float>.One / (Vector256<float>.One + Vector256.Exp(-x));
+    public static Vector256<float> Sigmoid(Vector256<float> x) => Vector256<float>.One / (Vector256<float>.One + VectorExp.Exp(-x));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector128<float> Sigmoid(Vector128<float> x) => Vector128<float>.One / (Vector128<float>.One + Vector128.Exp(-x));
+    public static Vector128<float> Sigmoid(Vector128<float> x) => Vector128<float>.One / (Vector128<float>.One + VectorExp.Exp(-x));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Sigmoid(float x) => 1f / (1f + MathF.Exp(-x));
@@ -1037,7 +1037,9 @@ internal static unsafe class Act
     /// LSTM cell for four units whose gates are [i×4, f×4, g×4, o×4] (<see cref="PackedLstm.GateOrder"/>):
     /// c = σ(f)·c + σ(i)·tanh(g); h = σ(o)·tanh(c).
     /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    // AggressiveOptimization (also on AddGatedTanh): optimized from the first call, which a caller still at tier 0 makes
+    // per four units (round 17); optimized callers still inline it.
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     public static void LstmCell(float* gates, float* c, float* h)
     {
         switch (Gemm.Path)
@@ -1086,6 +1088,7 @@ internal static unsafe class Act
     }
 
     /// <summary>The highway step o[j] += σ(gate[j])·tanh(highway[j]) for j in [0, n).</summary>
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public static void AddGatedTanh(float* o, float* gate, float* highway, int n)
     {
         int j = 0;

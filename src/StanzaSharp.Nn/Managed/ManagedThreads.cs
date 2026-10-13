@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 
 namespace StanzaSharp.Nn.Managed;
@@ -38,6 +39,9 @@ internal static class ManagedThreads
     }
 
     /// <summary>Runs <paramref name="body"/>(i) for i in [0, n), on the calling thread and the pool's idle workers.</summary>
+    // AggressiveOptimization here and on the pool's methods: an LSTM runs a region per time step, thousands per call,
+    // and at JIT tier 0 (all of a fresh process's first calls) that machinery took most of a short call (round 17).
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public static void For(int n, Action<int> body)
     {
         if (n <= 1 || Count == 1)
@@ -73,6 +77,7 @@ internal static class ManagedThreads
         public Exception? Error;
 
         /// <summary>Claims and runs items until none is left. Returns whether it ran any.</summary>
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public bool Drain()
         {
             bool any = false;
@@ -120,6 +125,7 @@ internal static class ManagedThreads
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Run(int n, Action<int> body)
         {
             var region = new Region(n, body);
@@ -153,6 +159,7 @@ internal static class ManagedThreads
         }
 
         /// <summary>Helps one open region with work left, scanning from a per-worker start so workers spread out.</summary>
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         private bool Help(int id)
         {
             for (int s = 0; s < Slots; s++)
@@ -164,6 +171,7 @@ internal static class ManagedThreads
             return false;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         private void Work(int id)
         {
             while (!_stopped)
