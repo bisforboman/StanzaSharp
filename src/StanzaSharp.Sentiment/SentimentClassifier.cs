@@ -33,9 +33,9 @@ internal sealed class SentimentClassifier : IDisposable
         CheckSupported(config);
 
         // { word: i for i, word in enumerate(extra_vocab) }: a repeated word keeps its last index.
-        var extra = p["extra_vocab"]!.AsArray();
-        for (int i = 0; i < extra.Count; i++)
-            _extraVocab[extra[i]!.GetValue<string>()] = i;
+        var extra = Checkpoint.Strings(p["extra_vocab"]);
+        for (int i = 0; i < extra.Length; i++)
+            _extraVocab[extra[i]] = i;
         if (ckpt.Shape(p["model"]!["extra_embedding.weight"])[1] != pretrain.Dim)
             throw new NotSupportedException("SUM needs the extra embedding to match the pretrain's dimension");
 

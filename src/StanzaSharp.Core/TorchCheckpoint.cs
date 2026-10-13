@@ -6,6 +6,8 @@ using System.Numerics;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 
 namespace StanzaSharp;
 
@@ -41,10 +43,22 @@ internal static class TorchCheckpoint
 
         // The memo lets a pickle reference one object many times, and the JSON copies it each time: cap the JSON
         // at 16 times the file (real checkpoints stay far below; tensors are mostly data).
-        var splitter = new Splitter(new Utf8JsonWriter(buffer), maxBytes: 16 * fileLength + (1 << 20), path);
+        var splitter = new Splitter(new Utf8JsonWriter(buffer), maxBytes: 16 * fileLength + (1 << 20), path, leaveOutLarge: true);
         splitter.Walk(obj);
         splitter.Writer.Flush();
         var root = JsonNode.Parse(buffer.WrittenSpan) ?? throw new InvalidDataException($"{path}: checkpoint is None");
+        foreach (var (steps, value) in splitter.Large)
+        {
+            var parent = root;
+            foreach (var step in steps.AsSpan(0, steps.Length - 1))
+                parent = (step is string name ? parent.AsObject()[name] : parent.AsArray()[(int)step])!;
+            var node = PyContainer.Node(value);
+            if (steps[^1] is string last)
+                parent.AsObject()[last] = node;
+            else
+                parent.AsArray()[(int)steps[^1]] = node;
+        }
+
         return (root, Index(splitter.Tensors, stored, read));
     }
 
@@ -288,25 +302,45 @@ internal static class TorchCheckpoint
     /// The converter's Splitter: writes the JSON mirror and names each tensor by its path. It refuses JSON deeper than
     /// <see cref="MaxDepth"/> (what <see cref="JsonNode.Parse(ReadOnlySpan{byte}, JsonNodeOptions?, JsonDocumentOptions)"/>
     /// reads; also a cyclic list) or longer than <paramref name="maxBytes"/>, so walking a pickle's object graph takes
-    /// bounded stack, time and memory.
+    /// bounded stack, time and memory. With <paramref name="leaveOutLarge"/> it leaves the large flat containers out
+    /// (<see cref="Large"/>), which <see cref="PyContainer"/> writes the same way when asked.
     /// </summary>
-    internal sealed class Splitter(Utf8JsonWriter writer, long maxBytes, string path)
+    internal sealed class Splitter(Utf8JsonWriter writer, long maxBytes, string path, bool leaveOutLarge = false)
     {
         private const int MaxDepth = 60; // JsonNode.Parse's default limit is 64; a tensor adds 2 levels
 
         public Utf8JsonWriter Writer { get; } = writer;
         public List<(string Key, TorchTensor Tensor)> Tensors { get; } = [];
 
+        /// <summary>
+        /// The large flat containers (<see cref="PyContainer.IsLarge"/>) left out of the JSON, each written as <see langword="null"/>,
+        /// with the JSON path to put them back at: property names and array indices.
+        /// </summary>
+        public List<(object[] Steps, object Value)> Large { get; } = [];
+
         private readonly HashSet<string> _keys = [];
         private readonly List<string> _path = [];
+        private readonly List<object> _json = []; // the JSON path: property names (string) and array indices (int)
+        private long _leftOut; // at least the JSON bytes of the containers left out, which still count against maxBytes
 
         public void Walk(object? obj)
         {
             var w = Writer;
             if (w.CurrentDepth > MaxDepth)
                 throw new InvalidDataException($"{path}: checkpoint nested more than {MaxDepth} levels deep");
-            if (w.BytesCommitted + w.BytesPending > maxBytes)
+            if (w.BytesCommitted + w.BytesPending + _leftOut > maxBytes)
                 throw new InvalidDataException($"{path}: checkpoint expands to more than {maxBytes:N0} bytes of JSON");
+            if (leaveOutLarge && _json.Count > 0 && obj != null && PyContainer.IsLarge(obj))
+            {
+                // Refused like its items would be when written (one level deeper), so the same files load.
+                if (w.CurrentDepth + 1 > MaxDepth)
+                    throw new InvalidDataException($"{path}: checkpoint nested more than {MaxDepth} levels deep");
+                _leftOut += PyContainer.MinJsonBytes(obj);
+                Large.Add(([.. _json], obj));
+                w.WriteNullValue();
+                return;
+            }
+
             switch (obj)
             {
                 case TorchTensor t:
@@ -336,7 +370,7 @@ internal static class TorchCheckpoint
                     foreach (var (k, v) in dict)
                     {
                         w.WritePropertyName((string)k);
-                        Child((string)k, v);
+                        Child((string)k, k, v);
                     }
 
                     w.WriteEndObject();
@@ -349,8 +383,10 @@ internal static class TorchCheckpoint
                         foreach (var (k, v) in dict)
                         {
                             w.WriteStartArray();
-                            Child($"k{i++}", k);
-                            Child(PythonStr(k), v);
+                            _json.Add(i);
+                            Child($"k{i++}", 0, k);
+                            Child(PythonStr(k), 1, v);
+                            _json.RemoveAt(_json.Count - 1);
                             w.WriteEndArray();
                         }
 
@@ -368,7 +404,7 @@ internal static class TorchCheckpoint
         {
             Writer.WriteStartArray();
             for (int i = 0; i < items.Count; i++)
-                Child(i.ToString(CultureInfo.InvariantCulture), items[i]);
+                Child(i.ToString(CultureInfo.InvariantCulture), i, items[i]);
             Writer.WriteEndArray();
         }
 
@@ -376,15 +412,21 @@ internal static class TorchCheckpoint
         {
             Writer.WriteStartObject();
             Writer.WritePropertyName(tag);
+            _json.Add(tag);
             writeValue();
+            _json.RemoveAt(_json.Count - 1);
             Writer.WriteEndObject();
         }
 
-        private void Child(string name, object? value)
+        /// <param name="name">The converter's name for <paramref name="value"/>, which names tensors.</param>
+        /// <param name="step">Where <paramref name="value"/> is in its JSON parent: a property name or an array index.</param>
+        private void Child(string name, object step, object? value)
         {
             _path.Add(name);
+            _json.Add(step);
             Walk(value);
             _path.RemoveAt(_path.Count - 1);
+            _json.RemoveAt(_json.Count - 1);
         }
 
         private string NewKey()
@@ -448,5 +490,50 @@ internal static class TorchCheckpoint
         }
 
         return value < 0 ? "-" + text : text;
+    }
+}
+
+/// <summary>
+/// A large flat container of a <c>.pt</c> checkpoint (a vocabulary: a str → int dict or a list of str), kept as the
+/// unpickled object in a <see cref="JsonValue"/> rather than mirrored into JSON nodes. Writing the node gives the
+/// converter's JSON; <see cref="Checkpoint.UnitToId"/> and <see cref="Checkpoint.Strings"/> read the object directly.
+/// </summary>
+internal sealed class PyContainer
+{
+    /// <summary>Fewer items are mirrored into JSON nodes as usual.</summary>
+    internal const int MinCount = 1024;
+
+    private static readonly JsonTypeInfo<PyContainer> Info =
+        JsonMetadataServices.CreateValueInfo<PyContainer>(new JsonSerializerOptions { TypeInfoResolver = JsonTypeInfoResolver.Combine() }, new Converter());
+
+    private PyContainer(object value) => Value = value;
+
+    /// <summary>A <see cref="PyDict"/> of str → int (<see cref="long"/>) or a <see cref="List{T}"/> of str.</summary>
+    public object Value { get; }
+
+    public static bool IsLarge(object obj) => obj switch
+    {
+        PyDict d => d.Count >= MinCount && d.All(kv => kv.Key is string && kv.Value is long),
+        List<object?> l => l.Count >= MinCount && l.All(x => x is string),
+        _ => false,
+    };
+
+    /// <summary>A lower bound of the container's JSON size: its strings' lengths, quotes and separators.</summary>
+    public static long MinJsonBytes(object obj) => obj switch
+    {
+        PyDict d => d.Keys.Sum(k => ((string)k).Length + 4L),
+        List<object?> l => l.Sum(x => ((string)x!).Length + 3L),
+        _ => 0,
+    };
+
+    public static JsonValue Node(object value) => JsonValue.Create(new PyContainer(value), Info)!;
+
+    private sealed class Converter : JsonConverter<PyContainer>
+    {
+        public override PyContainer Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) =>
+            throw new NotSupportedException();
+
+        public override void Write(Utf8JsonWriter writer, PyContainer value, JsonSerializerOptions options) =>
+            new TorchCheckpoint.Splitter(writer, long.MaxValue, "").Walk(value.Value);
     }
 }

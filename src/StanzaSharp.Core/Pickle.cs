@@ -56,7 +56,11 @@ internal sealed class Unpickler
     private readonly List<object?> _stack = [];
     private readonly Stack<int> _marks = new(); // the stack's height at each open MARK: O(1), not a copy of the stack
     private readonly Dictionary<long, object?> _memo = [];
-    private byte[] _buffer = new byte[256];
+
+    // A seekable stream is read ahead in 64 KB blocks rather than with a stream call per opcode, and its position is set
+    // back to just after the STOP when done. Other streams are read exactly.
+    private byte[] _buffer;
+    private int _start, _count; // the unread bytes in _buffer
     private long _pos;
     private readonly long _end; // the stream's length, read once: on some filesystems (Docker bind mounts) each Length is a slow fstat
 
@@ -65,6 +69,7 @@ internal sealed class Unpickler
         _data = data;
         _pos = data.CanSeek ? data.Position : 0;
         _end = data.CanSeek ? data.Length : long.MaxValue;
+        _buffer = new byte[data.CanSeek ? 1 << 16 : 256];
         _persistentLoad = persistentLoad;
     }
 
@@ -73,7 +78,14 @@ internal sealed class Unpickler
     /// pickle or raw data can be read from the same stream.
     /// </summary>
     /// <param name="persistentLoad">Resolves persistent ids (BINPERSID); without it they are rejected.</param>
-    public static object? Load(Stream data, Func<object?, object?>? persistentLoad = null) => new Unpickler(data, persistentLoad).Run();
+    public static object? Load(Stream data, Func<object?, object?>? persistentLoad = null)
+    {
+        var unpickler = new Unpickler(data, persistentLoad);
+        var result = unpickler.Run();
+        if (data.CanSeek)
+            data.Position = unpickler._pos;
+        return result;
+    }
 
     public static object? Load(byte[] data, Func<object?, object?>? persistentLoad = null) => Load(new MemoryStream(data, writable: false), persistentLoad);
 
@@ -212,13 +224,26 @@ internal sealed class Unpickler
     {
         if (n < 0 || n > _end - _pos)
             throw Error("unexpected end of data");
-        if (n > _buffer.Length)
-            _buffer = new byte[Math.Max(n, 2 * _buffer.Length)];
-        var span = _buffer.AsSpan(0, n);
-        if (_data.ReadAtLeast(span, n, throwOnEndOfStream: false) < n)
-            throw Error("unexpected end of data");
+        if (n > _count)
+            Fill(n);
+        var span = _buffer.AsSpan(_start, n);
+        _start += n;
+        _count -= n;
         _pos += n;
         return span;
+    }
+
+    /// <summary>Reads until at least <paramref name="n"/> bytes (at most what the stream has left, checked by the caller) are unread.</summary>
+    private void Fill(int n)
+    {
+        if (n > _buffer.Length)
+            Array.Resize(ref _buffer, Math.Max(n, 2 * _buffer.Length));
+        _buffer.AsSpan(_start, _count).CopyTo(_buffer);
+        _start = 0;
+        int want = _data.CanSeek ? (int)Math.Min(_buffer.Length, _end - _pos) : n; // _end - _pos: all the bytes not yet consumed
+        _count += _data.ReadAtLeast(_buffer.AsSpan(_count, want - _count), want - _count, throwOnEndOfStream: false);
+        if (_count < n)
+            throw Error("unexpected end of data");
     }
 
     private string Utf8(uint n) => n <= int.MaxValue ? Encoding.UTF8.GetString(Bytes((int)n)) : throw Error($"string length {n} too large");
@@ -226,13 +251,8 @@ internal sealed class Unpickler
     private string Line()
     {
         var line = new List<byte>();
-        for (int b; (b = _data.ReadByte()) != '\n'; line.Add((byte)b))
-        {
-            if (b < 0)
-                throw Error("unterminated GLOBAL");
-        }
-
-        _pos += line.Count + 1;
+        for (byte b; (b = _pos < _end ? Bytes(1)[0] : throw Error("unterminated GLOBAL")) != '\n';)
+            line.Add(b);
         return Encoding.UTF8.GetString(line.ToArray());
     }
 
