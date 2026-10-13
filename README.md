@@ -422,7 +422,7 @@ StanzaSharp.slnx` fixes what they report.
 
 ## CI
 
-`.github/workflows/ci.yml` runs on pushes to `main`, on pull requests and before every release (.NET 10; Ubuntu 26.04
+`.github/workflows/ci.yml` runs on pushes to `main` (a release waits for that run) and on pull requests (.NET 10; Ubuntu 26.04
 x64 and Arm64, Windows x64 and Arm64, macOS 26 on Apple Silicon). [docs/verification.md](docs/verification.md#where-it-is-checked)
 summarizes what each job proves.
 
@@ -445,8 +445,10 @@ summarizes what each job proves.
   summary. `alpine` does the same on `runtime:10.0-alpine` (musl).
 - `cross-os (windows-2025)`, `cross-os (macos-26)` (Apple Silicon) and `cross-os (windows-11-arm)` run the same
   full suite, the no-skip check and both `tools/verify-package.ps1` runs (on Windows Arm64 only the managed one:
-  `TorchSharp-cpu` has no Arm64 libtorch), against Stanza's `.pt` files without converting them (no Python). Their
-  models are cached per OS, keyed on `ModelDownloader.cs`.
+  `TorchSharp-cpu` has no Arm64 libtorch), against Stanza's `.pt` files without converting them (no Python). Like
+  `golden`, each OS runs the suite in three shards (`cross-os-shard`, with golden's split; one shard for a pull request's
+  subset), and `cross-os (<os>)` passes only if all of that OS's shards did. Their models are cached per OS, keyed on
+  `ModelDownloader.cs`.
 - `linux-arm64` (`ubuntu-26.04-arm`): no libtorch exists for it, so the tests build without one and it runs those
   that need none (the managed cases of the both-backend theories, and the tests marked
   `[Trait("Backend", "Managed")]`), the no-skip check and the managed `verify-package.ps1`.
@@ -469,7 +471,8 @@ Results: [docs/performance.md](docs/performance.md#run-it-yourself).
 
 Unreleased changes are one file each under [`changes/`](changes/README.md). `python tools/changelog.py release X.Y.Z`
 folds them into CHANGELOG.md under `## [X.Y.Z] - <date>`; merge that pull request. `.github/workflows/release.yml`
-sees a version without a tag, runs all CI checks, waits for approval, packs that version (`StanzaSharp`,
+sees a version without a tag, waits for `main`'s CI run of that commit and requires it to have passed (if there is
+none, it runs all CI checks itself), waits for approval, packs that version (`StanzaSharp`,
 `StanzaSharp.Cuda`, `StanzaSharp.Tool`) and publishes it to nuget.org through NuGet Trusted Publishing. Only then does
 it create the tag (`vX.Y.Z`) and a GitHub release (a prerelease when the version has a `-`).
 

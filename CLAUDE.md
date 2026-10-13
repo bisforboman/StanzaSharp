@@ -347,6 +347,11 @@ weights share one storage at different offsets. The only globals are `collection
 `bytes`, used by the lemma's `dicts`). The zip format (`archive/data.pkl` +
 `archive/data/<key>`) is read too, for checkpoints saved by newer trainers.
 
+Large plain containers (a str→int dict or list of str with ≥ 1,024 items, `PyContainer.MinCount`) skip the JSON
+round trip when loading a `.pt` (round 21): the node is a `JsonValue` holding the unpickled object, not a `JsonArray`/
+`JsonObject`, and `ToJsonString()` still equals the converter's JSON. Read vocabularies with `Checkpoint.UnitToId` and
+long string lists with `Checkpoint.Strings`; `AsArray()`/`AsObject()` on them throws.
+
 `Unpickler` is restricted like `weights_only=True`: torch's protocol-2 opcodes only, plain data
 (None/bool/int/float/str/bytes/list/tuple/dict), and an allowlist of OrderedDict, `_rebuild_tensor_v2`,
 `_codecs.encode(str, 'latin1')` and the typed storage classes. Anything else throws `InvalidDataException`; nothing is instantiated by
@@ -579,11 +584,12 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     | docs-only ready PR | false | light | smoke | steps skipped, passes in ~1 min |
     | ready PR, only `src/StanzaSharp.Pos/**` | true | light | smoke | managed + smoke, 3 shards |
     | ready PR touching `src/StanzaSharp.Cuda/**` | true | light | full | everything, 3 shards |
-    | push to main, release (`workflow_call`) | true | full | full | everything, 3 shards |
+    | push to main, release fallback (`workflow_call`) | true | full | full | everything, 3 shards |
     | `changes` failed | (empty) | (empty) | (empty) | everything (anything not clearly false/smoke) |
   - `concurrency` (`${{ github.workflow }}-${{ github.ref }}`): a newer push to the same PR or to main cancels the older
-    CI run. release.yml's call gets the group `Release-refs/heads/main` (`github.workflow` is the caller's name), so it
-    and main's own CI run don't cancel each other, and it is never cancelled.
+    CI run (a release waiting on that run then fails; see Packaging and releases). release.yml's fallback call gets the
+    group `Release-refs/heads/main` (`github.workflow` is the caller's name), so it and main's own CI run don't cancel
+    each other, and it is never cancelled.
   - `golden` (owner's decision, 2026-10-10) is an aggregate: it `needs` the matrix job `golden-shard` (1, 2, 3), runs
     `if: !cancelled()` and fails unless `needs.golden-shard.result` is `success` (a skipped or failed shard fails it),
     so the required check keeps its name. The shards split the test project by class, balanced on the golden trx
@@ -607,6 +613,17 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     `libtorch-cpu-osx-arm64`): build, full suite with `STANZASHARP_MODELS` = `models/stanza/en` (the
     `.pt` files, no Python or conversion), the same no-skip check, and both `verify-package.ps1` runs. Models are
     cached per OS on `ModelDownloader.cs` only; no NuGet cache, to stay inside the 10 GB cache budget.
+    - Sharded like golden (owner's decision, 2026-10-13): the matrix job `cross-os-shard` (os × shard 1–3) uses golden's
+      three filters (`SHARD_TWO`/`SHARD_THREE` in the workflow `env`; shard 1 the complement). As one job the tests took
+      29 / 40 / 61 min (windows-2025 / macos-26 / windows-11-arm), mostly ConcurrencyTests' two halves running alone
+      at the end (7.6+7.6, 11.8+11.4, 25.4+17.6 min); the shards run them side by side. Each shard has every step
+      (libomp, model cache, no-skip check, trx `test-results-<os>-<shard>`); the package checks run only in shard 3.
+      Light runs have one shard per OS (`fromJSON` on `level`) with the light filter: PipelineTests doesn't split.
+      3 macOS shards + benchmark.yml's 2 macOS jobs = the 5 concurrent macOS jobs free runners allow.
+    - The required checks `cross-os (<os>)` are an aggregate matrix job over the three OSes (`if: !cancelled()`). It
+      passes at once if `needs.cross-os-shard.result` is success; otherwise (that result covers all nine) it lists this
+      run's jobs through the API and passes only if every `cross-os-shard (<os>, *)` job concluded success, so a
+      failure fails only its own OS's check. No shard found fails.
     - macOS first needs `brew install libomp` for the TorchSharp backend's tests. `libtorch_cpu.dylib` from
       `libtorch-cpu-osx-arm64` 2.10.0 links `/opt/homebrew/opt/libomp/lib/libomp.dylib` by absolute path, not the
       `libomp.dylib` it ships. Without it TorchSharp reports only "doesn't contain a reference to
@@ -773,7 +790,12 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   tags twice landed wrong). Merging a PR "CHANGELOG: x.y.z" (made by `python tools/changelog.py release x.y.z`, which writes
   `## [x.y.z] - date` from `changes/` and deletes those files) runs
   `.github/workflows/release.yml` (push to main touching CHANGELOG.md): its `version` job reads the first version
-  heading and stops if tag `vx.y.z` exists; otherwise it runs all of ci.yml, packs that version, pushes via NuGet
+  heading and stops if tag `vx.y.z` exists; otherwise its `ci` job waits for main's ci.yml push run of the same commit
+  (`gh run list --workflow ci.yml --commit $GITHUB_SHA --branch main --event push`, polled every minute, up to 170 min)
+  and fails unless it succeeded (owner's decision, 2026-10-13; before, release.yml ran all of ci.yml a second time via
+  `workflow_call`, and the two suites competing for runners made a release take 40+ min). A cancelled CI run (a newer
+  push to main cancels it) or a failed one fails the release with a message: re-run that CI run, then the release run's
+  failed jobs. Only if no such run turns up within 2 min does `checks` call ci.yml as before. Then it packs that version, pushes via NuGet
   Trusted Publishing (`NuGet/login@v1`, repo variable `NUGET_USER`), and only then creates the tag on that commit
   and the GitHub release (`gh release create --target`; a prerelease if the version has `-`). Never push release
   tags by hand. A failed publish is retried by re-running the run; `--skip-duplicate` keeps already-pushed packages.

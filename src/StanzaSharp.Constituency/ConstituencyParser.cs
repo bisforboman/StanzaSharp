@@ -370,7 +370,7 @@ internal sealed class ConstituencyParser : IDisposable
             throw new NotSupportedException("Maxout output layers are not ported");
     }
 
-    private static List<string> Strings(JsonNode? array) => array!.AsArray().Select(x => x!.GetValue<string>()).ToList();
+    private static string[] Strings(JsonNode? array) => Checkpoint.Strings(array); // "words" is long: a JsonValue in a .pt
 
     public void Dispose() => _net.Dispose();
 }
