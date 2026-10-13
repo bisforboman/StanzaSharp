@@ -18,7 +18,7 @@ internal static class LemmaDivergence
         Usage: StanzaSharp.Benchmark lemma-divergence --docs DOCS.json --out OUT.json [--models DIR] [--package NAME]
                                      [--backend torch|managed] [--double-gates] [--no-dict] [--threads N]
 
-          --double-gates  managed: the decoder's LSTMCell gate sums in double (ManagedLemmaNet.DoubleGates)
+          --double-gates  managed: the decoder's LSTMCell gate sums in double (ManagedSeq2SeqNet.DoubleGates)
           --no-dict       every word through the seq2seq model (its lemma in the records; the document keeps the dictionary's)
         """;
 
@@ -54,7 +54,7 @@ internal static class LemmaDivergence
         }
 
         var texts = JsonSerializer.Deserialize<List<string>>(File.ReadAllText(docsFile))!;
-        ManagedLemmaNet.DoubleGates = doubleGates;
+        ManagedSeq2SeqNet.DoubleGates = doubleGates;
         using var nlp = Pipeline.Load(modelDir, new PipelineOptions
         {
             Package = package,

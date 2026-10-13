@@ -5,7 +5,7 @@ namespace StanzaSharp.Tests;
 
 /// <summary>
 /// <see cref="PipelineOptions.Language"/>: the per-language package, dependency and checksum tables, the downloader, and
-/// German's golden data (tests/golden/de), which Pipeline.Load can't run yet.
+/// German's golden data (tests/golden/de; the processors' test classes run German against it).
 /// </summary>
 [Trait("Backend", "Managed")]
 public class LanguageTests
@@ -72,15 +72,23 @@ public class LanguageTests
     }
 
     [Fact]
-    public void Load_German_ThrowsNotSupported()
+    public void Load_RejectsUnknownLanguagesAndPackages()
     {
-        var ex = Assert.Throws<NotSupportedException>(() => Pipeline.Load(Repo.Root, new PipelineOptions { Language = "de" }));
-        Assert.Contains("MWT", ex.Message);
-        Assert.Contains("supports en", ex.Message);
-
-        // Options are checked first, as for English.
+        // Options are checked before anything loads, as for English.
         Assert.Throws<ArgumentException>(() => Pipeline.Load(Repo.Root, new PipelineOptions { Language = "de", Package = "default_accurate" }));
         Assert.Throws<ArgumentException>(() => Pipeline.Load(Repo.Root, new PipelineOptions { Language = "fr" }));
+        Assert.Throws<ArgumentException>(() => Pipeline.Load(Repo.Root, new PipelineOptions { Language = "de", Package = "gsd", Processors = "tokenize,ner" }));
+    }
+
+    /// <summary>A German pipeline loads both pretrains (fastText for NER) and the newswiki charlms, each once.</summary>
+    [GermanFact]
+    public void Load_German_ReadsBothPretrains()
+    {
+        using var nlp = Pipeline.Load(Repo.ModelsFor("de"), new PipelineOptions { Language = "de", Processors = "tokenize,mwt,pos,ner" });
+        var pretrains = (Nn.Pretrain[])typeof(Pipeline).GetField("_pretrains", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!.GetValue(nlp)!;
+        Assert.Equal([100, 300], pretrains.Select(p => p.Dim).Order());
+        var doc = nlp.Process("Angela Merkel wurde in Hamburg geboren.");
+        Assert.Equal(["Angela Merkel/PER", "Hamburg/LOC"], doc.Entities.Select(e => $"{e.Text}/{e.Type}"));
     }
 
     [Fact]

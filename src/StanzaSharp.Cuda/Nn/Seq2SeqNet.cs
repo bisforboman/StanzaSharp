@@ -1,57 +1,64 @@
-using System.Buffers;
-using StanzaSharp.Nn;
 using TorchSharp;
 using TorchSharp.Modules;
 using static TorchSharp.torch;
 using F = TorchSharp.torch.nn.functional;
 
-namespace StanzaSharp.Lemma;
+namespace StanzaSharp.Nn;
 
-/// <summary>seq2seq_model.py <c>Seq2SeqModel</c> (encode, decode) on TorchSharp.</summary>
-internal sealed class LemmaNet : ILemmaNet
+/// <summary>seq2seq_model.py <c>Seq2SeqModel</c> (encode, decode) on TorchSharp: the lemmatizer's and German MWT's model.</summary>
+internal sealed class Seq2SeqNet : ISeq2SeqNet
 {
     // Scalars kept alive for TorchSharp (see Nn.Scalars): ids, and the masking values the seq2seq model uses.
-    private static readonly Scalar PadScalar = LemmaConfig.PadId, UnkScalar = LemmaConfig.UnkId, MaskedScore = -1e12, Epsilon = 1e-12;
+    private static readonly Scalar PadScalar = Seq2SeqConfig.PadId, UnkScalar = Seq2SeqConfig.UnkId, MaskedScore = -1e12, Epsilon = 1e-12;
 
     private readonly int _vocabSize;
-    private readonly Embedding _embedding, _posEmbedding;
+    private readonly bool _usesPos;
+    private readonly Embedding _embedding;
+    private readonly Embedding? _posEmbedding;
     private readonly LSTM _encoder;
     private readonly LSTMCell _decoderCell;
-    private readonly Linear _attnIn, _attnOut, _dec2vocab, _editHidden, _editOutput, _copyGate;
+    private readonly Linear _attnIn, _attnOut, _dec2vocab, _copyGate;
+    private readonly Linear? _editHidden, _editOutput;
     private readonly Device _device = Weights.Device; // the device the model was loaded on
 
-    public LemmaNet(Checkpoint ckpt, LemmaConfig c)
+    public Seq2SeqNet(Checkpoint ckpt, Seq2SeqConfig c)
     {
         var model = ckpt.Root["model"]!;
         _vocabSize = c.Vocab;
-        _embedding = nn.Embedding(c.Vocab, c.Emb, padding_idx: LemmaConfig.PadId).LoadFrom(ckpt, model, "embedding.");
-        _posEmbedding = nn.Embedding(c.PosVocab, c.PosDim, padding_idx: LemmaConfig.PadId).LoadFrom(ckpt, model, "pos_embedding.");
+        _usesPos = c.UsesPos;
+        _embedding = nn.Embedding(c.Vocab, c.Emb, padding_idx: Seq2SeqConfig.PadId).LoadFrom(ckpt, model, "embedding.");
+        if (c.UsesPos)
+            _posEmbedding = nn.Embedding(c.PosVocab, c.PosDim, padding_idx: Seq2SeqConfig.PadId).LoadFrom(ckpt, model, "pos_embedding.");
         _encoder = nn.LSTM(c.Emb, c.Hidden / 2, numLayers: 1, batchFirst: true, bidirectional: true).LoadFrom(ckpt, model, "encoder.");
         _decoderCell = nn.LSTMCell(c.Emb, c.Hidden).LoadFrom(ckpt, model, "decoder.lstm_cell.");
         _attnIn = nn.Linear(c.Hidden, c.Hidden, hasBias: false).LoadFrom(ckpt, model, "decoder.attention_layer.linear_in.");
         _attnOut = nn.Linear(c.Hidden * 2, c.Hidden, hasBias: false).LoadFrom(ckpt, model, "decoder.attention_layer.linear_out.");
         _dec2vocab = nn.Linear(c.Hidden, c.Vocab).LoadFrom(ckpt, model, "dec2vocab.");
-        _editHidden = nn.Linear(c.Hidden, c.Hidden / 2).LoadFrom(ckpt, model, "edit_clf.0.");
-        _editOutput = nn.Linear(c.Hidden / 2, 3).LoadFrom(ckpt, model, "edit_clf.2.");
+        if (c.Edit)
+        {
+            _editHidden = nn.Linear(c.Hidden, c.Hidden / 2).LoadFrom(ckpt, model, "edit_clf.0.");
+            _editOutput = nn.Linear(c.Hidden / 2, 3).LoadFrom(ckpt, model, "edit_clf.2.");
+        }
+
         _copyGate = nn.Linear(c.Hidden, 1).LoadFrom(ckpt, model, "copy_gate.");
     }
 
-    public ILemmaDecoder Encode(long[] ids, int batch, int width, long[] posIds, long[] lengths, CancellationToken ct) =>
+    public ISeq2SeqDecoder Encode(long[] ids, int batch, int width, long[]? posIds, long[] lengths, CancellationToken ct) =>
         new Decoder(this, ids, batch, width, posIds, lengths);
 
     /// <summary>The batch's tensors live in one dispose scope, freed with the decoder; each step's temporaries in their own.</summary>
-    private sealed class Decoder : ILemmaDecoder
+    private sealed class Decoder : ISeq2SeqDecoder
     {
-        private readonly LemmaNet _net;
+        private readonly Seq2SeqNet _net;
         private readonly DisposeScope _scope;
         private readonly Tensor _src, _ctx, _srcMask;
         private Tensor _h, _c;
         private readonly int _batch;
 
-        public float[] EditLogits { get; }
+        public float[] EditLogits { get; } = [];
         public int Columns { get; }
 
-        public Decoder(LemmaNet net, long[] ids, int batch, int width, long[] posIds, long[] lengths)
+        public Decoder(Seq2SeqNet net, long[] ids, int batch, int width, long[]? posIds, long[] lengths)
         {
             _net = net;
             _batch = batch;
@@ -61,14 +68,18 @@ internal sealed class LemmaNet : ILemmaNet
             {
                 var device = net._device;
                 _src = torch.tensor(ids, [batch, width], device: device);
-                var pos = torch.tensor(posIds, device: device);
                 Columns = (int)Math.Max(net._vocabSize, ids.Max() + 1);
                 using var vocabSize = net._vocabSize.ToScalar();
 
-                // embed: characters past the trained vocabulary embed as <UNK>; the POS embedding goes in front.
-                var embedSrc = _src.masked_fill(_src.ge(vocabSize), UnkScalar);
-                var encInputs = cat([net._posEmbedding.forward(pos).unsqueeze(1), net._embedding.forward(embedSrc)], 1);
-                _srcMask = cat([torch.zeros([batch, 1], ScalarType.Bool, device: device), _src.eq(PadScalar)], 1);
+                // embed: characters past the trained vocabulary embed as <UNK>; the POS embedding (if any) goes in front.
+                var encInputs = net._embedding.forward(_src.masked_fill(_src.ge(vocabSize), UnkScalar));
+                _srcMask = _src.eq(PadScalar);
+                if (net._usesPos)
+                {
+                    var pos = torch.tensor(posIds!, device: device);
+                    encInputs = cat([net._posEmbedding!.forward(pos).unsqueeze(1), encInputs], 1);
+                    _srcMask = cat([torch.zeros([batch, 1], ScalarType.Bool, device: device), _srcMask], 1);
+                }
 
                 // encode
                 using var lens = torch.tensor(lengths);
@@ -77,7 +88,8 @@ internal sealed class LemmaNet : ILemmaNet
                 (_ctx, _) = nn.utils.rnn.pad_packed_sequence(packedOut, batch_first: true);
                 _h = cat([hn[1], hn[0]], 1);
                 _c = cat([cn[1], cn[0]], 1);
-                EditLogits = net._editOutput.forward(F.relu(net._editHidden.forward(_h))).ToArray<float>();
+                if (net._editHidden != null)
+                    EditLogits = net._editOutput!.forward(F.relu(net._editHidden.forward(_h))).ToArray<float>();
             }
             catch
             {
@@ -123,9 +135,11 @@ internal sealed class LemmaNet : ILemmaNet
         var logits = _dec2vocab.forward(hOut.contiguous().view(batch * steps, -1)).view(batch, steps, -1);
         var logProbs = F.log_softmax(logits.view(-1, _vocabSize), 1).view(batch, steps, _vocabSize);
 
-        // Copy: renormalize attention without the POS position, then scatter it onto the source character ids.
+        // Copy: renormalize attention (without the POS position: it can't be copied), then scatter it onto the source character ids.
         var copyLogit = _copyGate.forward(hOut);
-        logAttn = F.log_softmax(logAttn[.., .., 1..], -1);
+        if (_usesPos)
+            logAttn = logAttn[.., .., 1..];
+        logAttn = F.log_softmax(logAttn, -1);
         var logCopyProb = F.logsigmoid(copyLogit).add(logAttn, Scalars.One);
         var mx = logCopyProb.max(-1, keepdim: true).values;
         var copyProb = torch.exp(logCopyProb - mx);
@@ -137,28 +151,15 @@ internal sealed class LemmaNet : ILemmaNet
 
         var logNoCopy = -torch.log(torch.exp(copyLogit).add(Scalars.One, Scalars.One));
         if (vocab > _vocabSize) // characters new to the vocabulary reuse the <UNK> score
-            logProbs = cat([logProbs, logProbs[.., .., LemmaConfig.UnkId].unsqueeze(2).expand(batch, steps, vocab - _vocabSize)], 2);
+            logProbs = cat([logProbs, logProbs[.., .., Seq2SeqConfig.UnkId].unsqueeze(2).expand(batch, steps, vocab - _vocabSize)], 2);
         logProbs = logProbs.add(logNoCopy, Scalars.One);
         return torch.logsumexp(stack([logCopied, logProbs]), 0);
     }
 
     public void Dispose()
     {
-        nn.Module[] modules = [_embedding, _posEmbedding, _encoder, _decoderCell, _attnIn, _attnOut, _dec2vocab, _editHidden, _editOutput, _copyGate];
+        nn.Module?[] modules = [_embedding, _posEmbedding, _encoder, _decoderCell, _attnIn, _attnOut, _dec2vocab, _editHidden, _editOutput, _copyGate];
         foreach (var m in modules)
-            m.Dispose();
-    }
-}
-
-/// <summary>Loads a <see cref="Lemmatizer"/> on either backend.</summary>
-internal static class LemmatizerLoad
-{
-    extension(Lemmatizer)
-    {
-        /// <summary>Loads <c>basePath.json</c> + <c>.safetensors</c> (or <c>basePath.pt</c>), e.g. <c>models/converted/en/lemma/combined_nocharlm</c>.</summary>
-        /// <param name="device">Where the model runs on TorchSharp; CPU by default.</param>
-        /// <param name="backend">The network's backend; the managed one ignores <paramref name="device"/>.</param>
-        public static Lemmatizer Load(string basePath, Device? device = null, Backend backend = Backend.TorchSharp) =>
-            backend == Backend.Managed ? Lemmatizer.LoadManaged(basePath) : Weights.On(device, () => new Lemmatizer(Checkpoint.Load(basePath), (ckpt, sizes) => new LemmaNet(ckpt, sizes)));
+            m?.Dispose();
     }
 }

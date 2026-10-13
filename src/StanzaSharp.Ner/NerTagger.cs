@@ -7,12 +7,13 @@ namespace StanzaSharp.Ner;
 
 /// <summary>
 /// Named-entity recognizer: sets a BIOES tag on every token and builds each sentence's entities.
-/// Port of stanza/models/ner/model.py <c>NERTagger</c> and trainer.py <c>predict</c> for the English
-/// configuration:
-/// - input is the pretrain vector plus a fine-tuned delta embedding (both lowercased) and the
+/// Port of stanza/models/ner/model.py <c>NERTagger</c> and trainer.py <c>predict</c> for the English and German
+/// configurations:
+/// - input is the pretrain vector plus a fine-tuned delta embedding if the model has one (both lowercased) and the
 ///   forward/backward charlm (<c>_charlm</c>) or the model's own bidirectional character LSTM's final
 ///   states (<c>_nocharlm</c>), through a linear <c>input_transform</c>
-/// - a biLSTM, then one linear layer per tag set and CRF Viterbi decoding
+/// - a biLSTM, then one linear layer per tag set and CRF Viterbi decoding (the old format, e.g. German
+///   <c>germeval2014</c>: one tag set, <c>tag_clf</c>/<c>crit</c>, which Stanza renames to <c>tag_clfs.0</c>/<c>crits.0</c>)
 /// - <c>fix_singleton_tags</c> on the decoded sequence
 /// NER reads tokens, not words, like Stanza: an MWT such as "don't" is tagged once.
 /// </summary>
@@ -22,7 +23,7 @@ internal sealed class NerTagger : IDisposable
     private const int VocabPrefixSize = 4;  // <PAD> <UNK> <EMPTY> <ROOT>
 
     private readonly Pretrain _pretrain;
-    private readonly Dictionary<string, int> _deltaVocab;
+    private readonly Dictionary<string, int>? _deltaVocab;
     private readonly string[] _tags;
     private readonly float[] _transitions;
     private readonly int _batchSize;
@@ -34,15 +35,17 @@ internal sealed class NerTagger : IDisposable
         var config = ckpt.Root["config"]!;
         var vocab = ckpt.Root["vocab"]!;
         CheckSupported(config, vocab, pretrain);
-        _deltaVocab = Checkpoint.UnitToId(vocab["delta"]);
+        _deltaVocab = vocab["delta"] is { } delta ? Checkpoint.UnitToId(delta) : null;
         _batchSize = config["batch_size"]!.GetValue<int>();
 
         // The tag vocab has one column per tag set ("multi" NER: OntoNotes and WorldWide here). Stanza
         // decodes every column but keeps only predict_tagset's, so that is the only head we run.
+        // The old format has one plain tag list and unnumbered heads (trainer.load renames them to column 0).
         int tagset = config["predict_tagset"]?.GetValue<int>() ?? 0;
-        var columns = vocab["tag"]!["_id2unit"]!["$dict"]!.AsArray();
-        _tags = columns.Single(c => c![0]!.GetValue<int>() == tagset)![1]!.AsArray().Select(x => x!.GetValue<string>()).ToArray();
-        _transitions = ckpt.Tensor<float>(ckpt.Root["model"]![$"crits.{tagset}._transitions"]);
+        var id2unit = vocab["tag"]!["_id2unit"]!;
+        var tags = id2unit is JsonArray single ? single : id2unit["$dict"]!.AsArray().Single(c => c![0]!.GetValue<int>() == tagset)![1]!.AsArray();
+        _tags = tags.Select(x => x!.GetValue<string>()).ToArray();
+        _transitions = ckpt.Tensor<float>(ckpt.Root["model"]![HeadPrefix(ckpt, "crit", tagset) + "_transitions"]);
         _net = net(_tags.Length, tagset, NeedsCharlm(ckpt));
     }
 
@@ -60,7 +63,15 @@ internal sealed class NerTagger : IDisposable
         });
     }
 
-    internal static int DeltaCount(Checkpoint ckpt) => Checkpoint.UnitToId(ckpt.Root["vocab"]!["delta"]).Count;
+    /// <summary>The delta vocabulary's size, or 0 for a model without a delta embedding (German <c>germeval2014</c>).</summary>
+    internal static int DeltaCount(Checkpoint ckpt) => ckpt.Root["vocab"]!["delta"] is { } delta ? Checkpoint.UnitToId(delta).Count : 0;
+
+    /// <summary>
+    /// The prefix of tag set <paramref name="tagset"/>'s weights named <paramref name="name"/> (<c>tag_clf</c> or <c>crit</c>):
+    /// <c>tag_clfs.N.</c>, or the old format's <c>tag_clf.</c>.
+    /// </summary>
+    internal static string HeadPrefix(Checkpoint ckpt, string name, int tagset) =>
+        ckpt.Root["model"]![$"{name}s.{tagset}." + (name == "crit" ? "_transitions" : "weight")] != null ? $"{name}s.{tagset}." : $"{name}.";
 
     /// <summary>Sets <see cref="Token.Ner"/> on every token and rebuilds every sentence's <see cref="Sentence.Entities"/>.</summary>
     /// <param name="charlms">The tagger's charlm outputs, reused for sentences whose tokens are exactly its words (no MWT); each batch's entries are released after use, as NER is the last reader.</param>
@@ -113,9 +124,12 @@ internal sealed class NerTagger : IDisposable
             {
                 var lower = PyString.Lower(sentences[i][j]);
                 int word = _pretrain.UnitToId(lower);
-                int delta = _deltaVocab.GetValueOrDefault(lower, UnkId);
                 wordIds[i * width + j] = word;
-                deltaIds[i * width + j] = delta == UnkId && word != _pretrain.UnkId ? PadId : delta;
+                if (_deltaVocab != null)
+                {
+                    int delta = _deltaVocab.GetValueOrDefault(lower, UnkId);
+                    deltaIds[i * width + j] = delta == UnkId && word != _pretrain.UnkId ? PadId : delta;
+                }
             }
         }
 
@@ -258,12 +272,15 @@ internal sealed class NerTagger : IDisposable
         Require(config["word_emb_dim"]?.GetValue<int>() == pretrain.Dim, "a word embedding not matching the pretrain");
         Require(config["input_transform"]?.GetValue<bool>() == true, "a configuration without input_transform");
         Require(config["connect_output_layers"]?.GetValue<bool>() != true, "connect_output_layers");
-        Require(vocab["word"] != null && vocab["delta"] != null, "a vocab without word and delta embeddings");
+        Require(vocab["word"] != null, "a vocab without word embeddings");
 
         // The word embedding is the pretrain's matrix (not saved in the checkpoint), indexed by this vocab.
         Require(vocab["word"]!["_id2unit"] is { } words && Checkpoint.Strings(words).Length == pretrain.Count, "a word vocab other than the pretrain's");
-        Require(vocab["delta"]!["lower"]?.GetValue<bool>() == true, "a cased delta vocab");
-        Require(vocab["delta"]!["ignore"]?.AsArray().Count is null or 0, "emb_finetune_known_only (a delta vocab with ignored words)");
+        if (vocab["delta"] is { } delta)
+        {
+            Require(delta["lower"]?.GetValue<bool>() == true, "a cased delta vocab");
+            Require(delta["ignore"]?.AsArray().Count is null or 0, "emb_finetune_known_only (a delta vocab with ignored words)");
+        }
     }
 
     /// <summary>Whether a checkpoint reads the shared charlms (<c>_charlm</c>) rather than its own character model (<c>_nocharlm</c>).</summary>

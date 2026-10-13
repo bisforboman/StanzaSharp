@@ -152,6 +152,23 @@ jobs:
             models/converted/en
           key: models-en-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs', 'tools/requirements.txt', 'tools/stanza_convert.py') }}
 
+      # German (owner's decision, 2026-10-13): Stanza's .pt files only, no conversion (the tests read .pt as they are),
+      # about 1 GB for default and default_fast (combined reads default's). Only these Linux shards run the German
+      # tests; cross-os and linux-arm64 stay English, where the German rows skip and their no-skip checks exempt them.
+      - uses: actions/cache@v6
+        if: needs.changes.outputs.code != 'false' && matrix.shard == 1
+        id: models-de-save
+        with:
+          path: models/stanza/de
+          key: models-de-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs') }}
+
+      - uses: actions/cache/restore@v6
+        if: needs.changes.outputs.code != 'false' && matrix.shard != 1
+        id: models-de-restore
+        with:
+          path: models/stanza/de
+          key: models-de-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs') }}
+
       # Which CPU this runner got (informational, never fails). ubuntu-26.04 and windows-2025 are sometimes an AVX-512
       # Xeon: the managed tests then also run the Vector512 kernels, the detected path there. Vector512 gives Vector256's
       # bits (ManagedBackendTests.Vector512_GivesVector256sBits), so the draw can't change a result.
@@ -175,6 +192,13 @@ jobs:
         run: |
           dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/en
           dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/en --package default_fast
+
+      - name: Download the German models
+        if: needs.changes.outputs.code != 'false' && (steps.models-de-save.outputs.cache-hit || steps.models-de-restore.outputs.cache-hit) != 'true'
+        run: |
+          for package in default default_fast; do
+            dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/de --lang de --package $package
+          done
 
       # Python Stanza: the converter on a model-cache miss, and in shard 2 the Run_PythonStanza_* tests (stanzasharp
       # compare and benchmark against Python Stanza; about 40 s to install, 1 min to run).
@@ -207,8 +231,8 @@ jobs:
           echo "$filter"
           dotnet test StanzaSharp.slnx -c Release --no-build --blame-hang-timeout 30m --blame-hang-dump-type none --logger trx --results-directory TestResults --filter "$filter"
 
-      # A skipped test here means the models (or, for Run_PythonStanza_*, Python Stanza) were not found; no test at all,
-      # a broken filter.
+      # A skipped test here means the models (English or German; or, for Run_PythonStanza_*, Python Stanza) were not
+      # found; no test at all, a broken filter.
       - name: Check that no test was skipped
         if: needs.changes.outputs.code != 'false'
         run: |
@@ -379,8 +403,9 @@ jobs:
         if: needs.changes.outputs.code != 'false'
         run: |
           ls TestResults/*.trx
-          # Run_PythonStanza_* needs Python Stanza, which this job doesn't install (golden-shard 2 runs them).
-          if grep -h 'outcome="NotExecuted"' TestResults/*.trx | grep -qv 'Run_PythonStanza_'; then
+          # Run_PythonStanza_* needs Python Stanza, which this job doesn't install (golden-shard 2 runs them). German tests
+          # (rows with lang "de", names with German) need the German models, which only golden-shard has.
+          if grep -h 'outcome="NotExecuted"' TestResults/*.trx | grep -v 'Run_PythonStanza_' | grep -qvE 'lang: (&quot;|")de|German'; then
             echo "::error::Tests were skipped; the models in models/stanza/en were not found."
             exit 1
           fi
@@ -487,8 +512,9 @@ jobs:
         if: needs.changes.outputs.code != 'false'
         run: |
           ls TestResults/*.trx
-          # Run_PythonStanza_* needs Python Stanza, which this job doesn't install (golden-shard 2 runs them).
-          if grep -h 'outcome="NotExecuted"' TestResults/*.trx | grep -qv 'Run_PythonStanza_'; then
+          # Run_PythonStanza_* needs Python Stanza, which this job doesn't install (golden-shard 2 runs them). German tests
+          # (rows with lang "de", names with German) need the German models, which only golden-shard has.
+          if grep -h 'outcome="NotExecuted"' TestResults/*.trx | grep -v 'Run_PythonStanza_' | grep -qvE 'lang: (&quot;|")de|German'; then
             echo "::error::Tests were skipped; the models in models/stanza/en were not found."
             exit 1
           fi

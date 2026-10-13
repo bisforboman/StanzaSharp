@@ -7,10 +7,10 @@ namespace StanzaSharp.Ner;
 /// <summary>NER's network, per <see cref="Backend"/>: <c>NerNet</c> or <see cref="ManagedNerNet"/>.</summary>
 internal interface INerNet : IDisposable
 {
-    /// <summary>Embeddings (pretrain + delta), character features, input_transform, biLSTM and the tag set's linear layer.</summary>
+    /// <summary>Embeddings (pretrain + delta, if the model has one), character features, input_transform, biLSTM and the tag set's linear layer.</summary>
     /// <param name="sentences">The batch's token texts.</param>
     /// <param name="wordIds">[batch, width] pretrain ids (lowercased tokens), padded.</param>
-    /// <param name="deltaIds">[batch, width] delta ids, padded.</param>
+    /// <param name="deltaIds">[batch, width] delta ids, padded; unused without a delta embedding.</param>
     /// <param name="logits">Gets the [batch, width, tags] emission scores, row-major; rows past a sentence's end are unspecified.</param>
     /// <param name="charlms">With <paramref name="cacheKeys"/>: charlm outputs to reuse; row i's key, if not null, is looked up.</param>
     void Forward(IReadOnlyList<IReadOnlyList<string>> sentences, long[] wordIds, long[] deltaIds, int width, Span<float> logits,
@@ -26,7 +26,7 @@ internal sealed unsafe class ManagedNerNet : INerNet
     private readonly Pretrain _pretrain;
     private readonly ManagedCharLanguageModel? _charlmForward, _charlmBackward;
     private readonly ManagedCharacterModel? _charModel;
-    private readonly float[] _deltaEmb; // [delta vocab, wordDim]
+    private readonly float[]? _deltaEmb; // [delta vocab, wordDim], if any
     private readonly int _wordDim, _inputSize, _tags;
     private readonly PackedMatrix _inputTransform, _tagClf;
     private readonly float[] _inputBias, _tagBias;
@@ -47,10 +47,11 @@ internal sealed unsafe class ManagedNerNet : INerNet
         int layers = config["num_layers"]!.GetValue<int>();
         _inputSize = _wordDim + (_charModel?.OutputDim ?? _charlmForward!.HiddenDim + _charlmBackward!.HiddenDim);
         _tags = tags;
-        _deltaEmb = T("delta_emb.weight");
+        _deltaEmb = model["delta_emb.weight"] != null ? T("delta_emb.weight") : null;
         (_inputTransform, _inputBias) = Linear(T("input_transform.weight"), T("input_transform.bias"), _inputSize, _inputSize);
         _lstm = new ManagedLstm(ckpt, model, "taggerlstm.lstm.", _inputSize, hidden, layers, bidirectional: true, T("taggerlstm_h_init"), T("taggerlstm_c_init"));
-        (_tagClf, _tagBias) = Linear(T($"tag_clfs.{tagset}.weight"), T($"tag_clfs.{tagset}.bias"), tags, 2 * hidden);
+        var head = NerTagger.HeadPrefix(ckpt, "tag_clf", tagset);
+        (_tagClf, _tagBias) = Linear(T(head + "weight"), T(head + "bias"), tags, 2 * hidden);
     }
 
     private static (PackedMatrix, float[]) Linear(float[] w, float[] b, int n, int k)
@@ -85,7 +86,7 @@ internal sealed unsafe class ManagedNerNet : INerNet
         var scores = ArrayPool<float>.Shared.Rent(rows * ldc);
         try
         {
-            // Word embeddings: pretrain + delta.
+            // Word embeddings: pretrain + delta (if any).
             var vectors = _pretrain.CpuVectors();
             for (int i = 0; i < batch; i++)
             {
@@ -93,6 +94,12 @@ internal sealed unsafe class ManagedNerNet : INerNet
                 {
                     var dst = x.AsSpan(Row(i, j) * inSize, _wordDim);
                     var pre = vectors.Slice((int)wordIds[i * width + j] * _wordDim, _wordDim);
+                    if (_deltaEmb == null)
+                    {
+                        pre.CopyTo(dst);
+                        continue;
+                    }
+
                     var delta = _deltaEmb.AsSpan((int)deltaIds[i * width + j] * _wordDim, _wordDim);
                     for (int k = 0; k < _wordDim; k++)
                         dst[k] = pre[k] + delta[k];

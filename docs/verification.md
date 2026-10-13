@@ -1,6 +1,6 @@
 # Verification
 
-StanzaSharp claims that it gives the same output as Python Stanza 1.15.0 with the same English models. This page
+StanzaSharp claims that it gives the same output as Python Stanza 1.15.0 with the same English and German models. This page
 shows how that is checked, on which platforms, and how you can check it on your own text.
 
 ## Same output as Python Stanza
@@ -26,11 +26,17 @@ multilingual names and quotes, contractions, long sentences, unusual whitespace 
 the BMP (emoji). One known difference is by design: after a character outside the BMP, `start_char`/`end_char` count
 UTF-16 code units in StanzaSharp and code points in Stanza, so `validation_nonbmp` is compared without offsets.
 
-German is in progress. [`tests/golden/de/`](../tests/golden/de) holds the same kinds of reference output for 13
-hand-written German texts (181 sentences, 2,227 words: news, dialogue, instructions, social media, poetry, umlauts
-and ß, compounds, every quote style, contractions, capitals, CRLF whitespace, characters outside the BMP, a paragraph
-over 1,000 characters), made with `make_golden.py --lang de`. StanzaSharp doesn't run German yet, so for now the
-tests only read those files back; the byte-for-byte comparison comes with the German processors.
+**German.** [`tests/golden/de/`](../tests/golden/de) holds the same kinds of reference output for 13 hand-written
+German texts (181 sentences, 2,227 words: news, dialogue, instructions, social media, poetry, umlauts and ß,
+compounds, every quote style, contractions, capitals, CRLF whitespace, characters outside the BMP, a paragraph over
+1,000 characters), made with `make_golden.py --lang de`, and every row of the table above is checked on it the same
+way: both packages and the `combined` treebank package (whose models are the default package's), each processor
+(171 words through the lemmatizer's seq2seq model, 58 entities, 200 sentiment sentences), the input modes, the
+tokenizer edge cases, and the MWT expansions of a German word list with and without the dictionary (German MWT is a
+seq2seq model; 68 multi-word tokens in the texts). German texts with characters outside the BMP
+(`validation_nonbmp`, `validation_social`) are compared without offsets, as in English. The sentiment golden also
+classifies all 200 sentences as one document, a single batch, which Stanza labels almost all positive: a stress test
+of the batch padding.
 
 Every test above runs on both backends: the managed backend (the default) and the TorchSharp backend
 (`StanzaSharp.Cuda`). The managed backend's kernels are also tested on each SIMD path a CPU can take (Vector512 with
@@ -47,14 +53,19 @@ float32 numbers summed in a different order than in PyTorch (StanzaSharp's SIMD 
 bits differ. The tests compare the scores Stanza saved (for the first three corpus sentences; for sentiment, every
 sentence) with a tolerance. Largest differences from Python Stanza measured on the managed backend:
 
-| Scores | Largest difference | Tolerance |
-|---|---:|---:|
-| tokenizer log-probabilities | 1.1e-5 | 1e-4 |
-| UPOS logits | 6.1e-5 | 1e-4 |
-| dependency arc / label log-probabilities | 2.3e-5 / 3.4e-5 | 1e-4 |
-| NER emissions | 1.1e-5 | 1e-4 |
-| sentiment logits | 8.2e-5 | 1e-4 (of Stanza's float32 or float64 logits) |
-| constituency transition scores | 3.4e-5 (at most 4.6e-5 on any SIMD path) | 1e-3 |
+| Scores | Largest difference, English | German | Tolerance |
+|---|---:|---:|---:|
+| tokenizer log-probabilities | 1.1e-5 | 1.1e-5 | 1e-4 |
+| UPOS logits | 6.1e-5 | 1.37e-4 (see below) | 1e-4 |
+| dependency arc / label log-probabilities | 2.3e-5 / 3.4e-5 | 1.5e-5 / 2.3e-5 | 1e-4 |
+| NER emissions | 1.1e-5 | 1.3e-5 | 1e-4 |
+| sentiment logits | 8.2e-5 | 4.6e-6 | 1e-4 (of Stanza's float32 or float64 logits) |
+| constituency transition scores | 3.4e-5 (at most 4.6e-5 on any SIMD path) | 3.8e-5 | 1e-3 |
+
+- **German UPOS logits** (open, for the owner): the German tagger's logits reach |140|, and Stanza's own float32
+  logits are up to 1.01e-4 from the same model run in float64. The managed backend is within 1.0e-4 of float64 (6.3e-5
+  on the first sentence) but 1.37e-4 from Stanza's float32 there, and the TorchSharp backend, run one sentence at a
+  time, is 1.22e-4 from it. Summing `upos_hid` and `upos_clf` in double changes nothing. Every German tag is identical.
 
 - **Sentiment** is compared with Stanza's float64 logits as well: the classifier is ill-conditioned, and on one
   sentence Stanza's own float32 logits are 1.49e-4 from float64. With the tagger's character-model outputs reused
@@ -66,7 +77,9 @@ sentence) with a tolerance. Largest differences from Python Stanza measured on t
 - **Near-ties.** A small drift could still flip a decision whose two best options are almost equal. The constituency
   parser's smallest decision margin on the golden sentences is 3.6e-4 over 22,569 steps, against 4.0e-5 between the
   two backends; `ConstituencyTests.NearTies_StayClearOfBackendDrift` fails if a decision differs or the margin drops
-  under 3× the drift. On UD English EWT (254,589 words, 684,407 parser decisions; not in the repository) no tree and no
+  under 3× the drift. German: smallest margin 1.2e-2 over 4,575 steps, drift 7.6e-5. German MWT's seq2seq: smallest
+  margin 0.14 between the best and second-best character, drift 6.0e-5 (`MwtTests.Seq2Seq_German_ManagedMatchesTorchSharp`,
+  which also fails under 3×). On UD English EWT (254,589 words, 684,407 parser decisions; not in the repository) no tree and no
   lemma differed between Python Stanza, the TorchSharp backend and the managed backend.
 
 Per-processor details: [backends.md](backends.md#phase-2-progress). On a GPU the output is identical with TF32 turned
@@ -89,7 +102,9 @@ Test counts are passed xUnit test cases (each case of a theory counts) in `main`
 | `alpine` | ubuntu-26.04 | the same on `runtime:10.0-alpine` (musl) |
 
 Every job that runs the model tests fails if any of them was skipped. The only exceptions are two tests that run
-`stanzasharp compare` and `benchmark` against Python Stanza, which CI doesn't install.
+`stanzasharp compare` and `benchmark` against Python Stanza, which CI doesn't install, and the German tests outside
+`golden`: only the golden shards have the German models (Stanza's `.pt` files, cached), so `cross-os` and
+`linux-arm64` stay English.
 
 A pull request runs a subset on the other operating systems; every push to `main` and every release runs everything
 above. Releases are built from a commit that passed all of it.

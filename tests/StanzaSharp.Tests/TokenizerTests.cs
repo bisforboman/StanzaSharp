@@ -8,17 +8,19 @@ namespace StanzaSharp.Tests;
 public class TokenizerTests(ITestOutputHelper output, SharedPipelines pipelines) : IClassFixture<SharedPipelines>
 {
     // managed: Backend.Managed (issue #29), else TorchSharp. Every golden test runs on both.
-    private static Tokenizer Load(bool managed) =>
-        Tokenizer.Load(Repo.Model("tokenize/combined_nocharlm"), backend: Repo.Backend(managed));
+    private static Tokenizer Load(bool managed, string lang = "en") =>
+        Tokenizer.Load(Repo.ModelOf(lang, "tokenize"), backend: Repo.Backend(managed));
 
     [ModelTheory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void Logits_MatchGoldenIntermediates(bool managed)
+    [InlineData(false, "en")]
+    [InlineData(true, "en")]
+    [German(false)]
+    [German(true)]
+    public void Logits_MatchGoldenIntermediates(bool managed, string lang)
     {
-        using var tokenizer = Load(managed);
-        var golden = SafeTensorFile.Load(Path.Combine(Repo.Golden, "intermediates.safetensors"));
-        var index = JsonNode.Parse(File.ReadAllText(Path.Combine(Repo.Golden, "intermediates.json")))!;
+        using var tokenizer = Load(managed, lang);
+        var golden = SafeTensorFile.Load(Path.Combine(Repo.GoldenFor(lang), "intermediates.safetensors"));
+        var index = JsonNode.Parse(File.ReadAllText(Path.Combine(Repo.GoldenFor(lang), "intermediates.json")))!;
 
         foreach (var entry in index["sentences"]!.AsArray())
         {
@@ -31,13 +33,15 @@ public class TokenizerTests(ITestOutputHelper output, SharedPipelines pipelines)
     }
 
     [ModelTheory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void Process_MatchesGoldenTokensAndSentences(bool managed)
+    [InlineData(false, "en")]
+    [InlineData(true, "en")]
+    [German(false)]
+    [German(true)]
+    public void Process_MatchesGoldenTokensAndSentences(bool managed, string lang)
     {
-        using var tokenizer = Load(managed);
-        var text = File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt"));
-        var golden = Conllu.Read(File.ReadAllText(Path.Combine(Repo.Golden, "pipeline.conllu")));
+        using var tokenizer = Load(managed, lang);
+        var text = File.ReadAllText(Path.Combine(Repo.GoldenFor(lang), "corpus.txt"));
+        var golden = Conllu.Read(File.ReadAllText(Path.Combine(Repo.GoldenFor(lang), "pipeline.conllu")));
 
         var doc = tokenizer.Process(text);
 
@@ -50,38 +54,46 @@ public class TokenizerTests(ITestOutputHelper output, SharedPipelines pipelines)
     }
 
     [ModelTheory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void Process_MatchesGoldenOnLongParagraphsAndManyBatches(bool managed)
+    [InlineData(false, "en")]
+    [InlineData(true, "en")]
+    [German(false)]
+    [German(true)]
+    public void Process_MatchesGoldenOnLongParagraphsAndManyBatches(bool managed, string lang)
     {
-        using var tokenizer = Load(managed);
-        var text = File.ReadAllText(Path.Combine(Repo.Golden, "tokenize_stress.txt"));
-        var golden = Conllu.Read(File.ReadAllText(Path.Combine(Repo.Golden, "tokenize_stress.conllu")));
+        using var tokenizer = Load(managed, lang);
+        var text = File.ReadAllText(Path.Combine(Repo.GoldenFor(lang), "tokenize_stress.txt"));
+        var golden = Conllu.Read(File.ReadAllText(Path.Combine(Repo.GoldenFor(lang), "tokenize_stress.conllu")));
         Assert.Equal(Describe(golden), Describe(tokenizer.Process(text)));
     }
 
     [ModelTheory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void Process_ReplacesTokensLongerThanMaxSeqlen(bool managed)
+    [InlineData(false, "en")]
+    [InlineData(true, "en")]
+    [German(false)]
+    [German(true)]
+    public void Process_ReplacesTokensLongerThanMaxSeqlen(bool managed, string lang)
     {
-        using var tokenizer = Load(managed);
-        var text = File.ReadAllText(Path.Combine(Repo.Golden, "long_token.txt"));
-        var golden = Conllu.Read(File.ReadAllText(Path.Combine(Repo.Golden, "long_token.conllu")));
+        using var tokenizer = Load(managed, lang);
+        var text = File.ReadAllText(Path.Combine(Repo.GoldenFor(lang), "long_token.txt"));
+        var golden = Conllu.Read(File.ReadAllText(Path.Combine(Repo.GoldenFor(lang), "long_token.conllu")));
         Assert.Equal(Describe(golden), Describe(tokenizer.Process(text)));
     }
 
     /// <summary>All processors see <c>&lt;UNK&gt;</c> (tests/golden/long_token*.conllu), in bulk too; pretokenized tokens stay, as in Stanza.</summary>
     [ModelTheory]
-    [InlineData("default", false)]
-    [InlineData("default_fast", false)]
-    [InlineData("default", true)]
-    [InlineData("default_fast", true)]
-    public void Pipeline_LongTokens_MatchGolden(string package, bool managed)
+    [InlineData("default", false, "en")]
+    [InlineData("default_fast", false, "en")]
+    [InlineData("default", true, "en")]
+    [InlineData("default_fast", true, "en")]
+    [German("default", false)]
+    [German("default_fast", false)]
+    [German("default", true)]
+    [German("default_fast", true)]
+    public void Pipeline_LongTokens_MatchGolden(string package, bool managed, string lang)
     {
-        var nlp = pipelines.Get(package, managed);
-        var text = File.ReadAllText(Path.Combine(Repo.Golden, "long_token.txt"));
-        var golden = File.ReadAllText(Path.Combine(Repo.Golden, package == "default" ? "long_token.conllu" : "long_token.fast.conllu"));
+        var nlp = pipelines.Get(package, managed, lang: lang);
+        var text = File.ReadAllText(Path.Combine(Repo.GoldenFor(lang), "long_token.txt"));
+        var golden = File.ReadAllText(Path.Combine(Repo.GoldenFor(lang), package == "default" ? "long_token.conllu" : "long_token.fast.conllu"));
         Assert.Equal(golden, Conllu.Write(nlp.Process(text)));
         Assert.Equal(golden, Conllu.Write(nlp.Process([text])[0]));
         var url = new string('x', 300);

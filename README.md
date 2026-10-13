@@ -4,9 +4,11 @@
 [![NuGet](https://img.shields.io/nuget/v/StanzaSharp)](https://www.nuget.org/packages/StanzaSharp)
 [![License](https://img.shields.io/github/license/bisforboman/StanzaSharp)](LICENSE)
 
-C# port of Stanza's English inference pipeline (tokenize, mwt, pos, lemma, depparse, ner, sentiment, constituency).
+C# port of Stanza's English and German inference pipelines (tokenize, mwt, pos, lemma, depparse, ner, sentiment,
+constituency).
 It runs Stanza's own pretrained models in plain .NET code, with no native dependencies. On the golden test texts
-(845 sentences), the output is byte-identical to Python Stanza 1.15.0, on Linux, Windows and macOS, x64 and Arm64.
+(845 English and 181 German sentences), the output is byte-identical to Python Stanza 1.15.0, on Linux, Windows and
+macOS, x64 and Arm64.
 [docs/verification.md](docs/verification.md) shows what is compared, how, and how to check it on your own text.
 
 Contributors: CLAUDE.md holds the scope, layout, decisions and conventions.
@@ -114,7 +116,8 @@ await ModelDownloader.DownloadAsync("models/stanza/en", new PipelineOptions { Pa
 
 or from the command line with the `stanzasharp` tool (package `StanzaSharp.Tool`, no native libraries):
 `dotnet tool install -g StanzaSharp.Tool`, then `stanzasharp download models/stanza/en`
-(add `--processors LIST` for a subset, `--package default_fast` for that package). In this repository,
+(add `--processors LIST` for a subset, `--package default_fast` for that package, `--lang de` for German, which goes to
+`models/stanza/de` by default). In this repository,
 `dotnet run --project samples/StanzaSharp.Cli -- download models/stanza/en` does the same.
 `DownloadAsync(dir, options)` fetches exactly what `Pipeline.Load(dir, options)` reads. A subset includes the models of the processors it requires and
 the shared word vectors and character models when used.
@@ -182,9 +185,35 @@ needs the ones before it. `PipelineOptions` also holds `Backend` (`PipelineBacke
 The default is all eight processors, like Stanza's English default:
 `tokenize,mwt,pos,lemma,constituency,depparse,sentiment,ner`. List fewer to run less; `ner` and `sentiment`
 need only `tokenize`. NER gives named entities: `Token.Ner` holds the BIOES tag (`B-PERSON`, `O`, ...), and `sentence.Entities` /
-`doc.Entities` the spans (`Text`, `Type`, `StartChar`, `EndChar`), from Stanza's OntoNotes model (18 types).
+`doc.Entities` the spans (`Text`, `Type`, `StartChar`, `EndChar`); the types depend on the language's model (see
+[German](#german)).
 Sentiment gives `sentence.Sentiment`: 0 negative, 1 neutral, 2 positive.
 `Conllu.Write(doc)` gives Stanza-style CoNLL-U, with `ner=` in MISC when NER ran.
+
+### German
+
+`PipelineOptions.Language = "de"` selects Stanza's German models (the same object downloads and loads them):
+
+```csharp
+var german = new PipelineOptions { Language = "de" };
+await ModelDownloader.DownloadAsync("models/stanza/de", german); // ~900 MB
+using var nlp = Pipeline.Load("models/stanza/de", german);
+var doc = nlp.Process("Angela Merkel wurde in Hamburg geboren. Sie zog im Jahr 1954 in die DDR.");
+// "im" is one token of two words, "in" + "dem"; doc.Entities: Angela Merkel/PER, Hamburg/LOC, DDR/LOC
+```
+
+The same eight processors and both packages (`default`, `default_fast`) as English, plus Stanza's treebank packages
+`combined`, `gsd` and `hdt` (tokenize, mwt, pos, lemma and depparse only); `default_accurate` needs transformers and
+throws. German differs from English in its models, not in the API:
+
+- MWT is a character seq2seq model (contractions such as `zum` → `zu dem`, `ins` → `in das`), after Stanza's dictionary.
+- The constituency parser reads UPOS and writes the SPMRL labels (`(ROOT (VROOT (S ...)))`).
+- NER uses fastText's 300-dimensional German vectors, a second word-vector file, and the GermEval 2014 types:
+
+| Language | Model | Entity types (`Entity.Type`; `Token.Ner` is BIOES, e.g. `B-PER`) |
+|---|---|---|
+| English (`en`) | OntoNotes (`ontonotes-ww-multi`) | 18: `PERSON`, `NORP`, `FAC`, `ORG`, `GPE`, `LOC`, `PRODUCT`, `EVENT`, `WORK_OF_ART`, `LAW`, `LANGUAGE`, `DATE`, `TIME`, `PERCENT`, `MONEY`, `QUANTITY`, `ORDINAL`, `CARDINAL` |
+| German (`de`) | GermEval 2014 (`germeval2014`) | 4: `PER`, `LOC`, `ORG`, `MISC` |
 
 ### Many texts, and pretokenized text
 
@@ -207,7 +236,7 @@ multi-word tokens (`"don't"` stays one word), as in Stanza.
 
 ### Packages
 
-`PipelineOptions.Package` picks one of Stanza's English packages by its Stanza name:
+`PipelineOptions.Package` picks one of Stanza's packages by its Stanza name (German's: [German](#german)):
 
 - `"default"` (the default): all eight processors above.
 - `"default_fast"`: tokenize, mwt, pos, lemma, depparse, sentiment and ner, without constituency. Its pos,
@@ -430,8 +459,8 @@ summarizes what each job proves.
   --verify-no-changes`, see above) and runs the tests without models (the model tests skip).
 - `golden` downloads the English models with `ModelDownloader` (through the CLI), converts them with
   `tools/stanza_convert.py` (CPU-only torch wheel), and runs the full suite (both backends) in three shards
-  (`golden-shard`; `golden` passes only if all three did). It fails if any test was
-  skipped. Then `tools/verify-package.ps1` packs StanzaSharp and StanzaSharp.Cuda and runs two fresh apps that
+  (`golden-shard`; `golden` passes only if all three did), with the German tests on Stanza's German `.pt` files (cached;
+  the other jobs stay English). It fails if any test was skipped. Then `tools/verify-package.ps1` packs StanzaSharp and StanzaSharp.Cuda and runs two fresh apps that
   reference them: one with only StanzaSharp (the default install; it must reproduce the golden CoNLL-U with nothing of
   TorchSharp in it), one with StanzaSharp.Cuda and `TorchSharp-cpu` on `CudaBackend.Cpu` (no `STANZA` build warning allowed, with `StanzaSharpTrimNative`). Then
   `tools/verify-tool.ps1` installs the `stanzasharp` tool from a local feed, downloads `tokenize,mwt` with it and

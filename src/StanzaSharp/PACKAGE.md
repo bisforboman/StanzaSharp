@@ -1,17 +1,18 @@
 # StanzaSharp
 
-[Stanza](https://github.com/stanfordnlp/stanza)'s English NLP pipeline in .NET:
+[Stanza](https://github.com/stanfordnlp/stanza)'s English and German NLP pipelines in .NET:
 - tokenization and sentence splitting
-- multi-word token expansion ("don't" → "do" + "n't")
+- multi-word token expansion ("don't" → "do" + "n't", "zum" → "zu" + "dem")
 - part-of-speech tags and morphological features
 - lemmas
 - dependency parsing
-- named entities (OntoNotes types: PERSON, ORG, GPE, DATE, ...)
+- named entities (English: OntoNotes types, PERSON, ORG, GPE, DATE, ...; German: PER, LOC, ORG, MISC)
 - constituency parsing
 - sentence sentiment (negative, neutral, positive)
 
 It runs Stanza's own pretrained models in plain .NET code, with no Python and no native libraries. The output is
-identical to Python Stanza 1.15.0 on its golden test data (845 sentences), on Linux, Windows and macOS, x64 and Arm64;
+identical to Python Stanza 1.15.0 on its golden test data (845 English and 181 German sentences), on Linux, Windows and
+macOS, x64 and Arm64;
 [how that is checked](https://github.com/bisforboman/StanzaSharp/blob/main/docs/verification.md).
 
 ## Install
@@ -76,6 +77,7 @@ them too, e.g. in a Dockerfile or CI:
 ```
 dotnet tool install -g StanzaSharp.Tool
 stanzasharp download models/stanza/en --processors tokenize,mwt,pos,lemma   # --package default_fast for that package
+stanzasharp download --lang de                                              # German, into models/stanza/de
 ```
 
 **Check it yourself:** `stanzasharp compare my-text.txt` runs Python Stanza 1.15.0 (`pip install stanza==1.15.0`) and
@@ -101,6 +103,7 @@ foreach (var sentence in doc.Sentences)
 
 - `Pipeline.Load(dir, new PipelineOptions { Processors = "tokenize,mwt" })` runs only the listed processors; each needs the ones before it. The default is all eight, like Stanza's English default: `tokenize,mwt,pos,lemma,constituency,depparse,sentiment,ner`.
 - Add `ner` to the list for named entities: `doc.Entities` (text, type, character offsets) and a BIOES tag per token (`Token.Ner`).
+  The types depend on the language (table below).
 - Add `sentiment` to the list for `sentence.Sentiment`: 0 negative, 1 neutral, 2 positive.
 - `Conllu.Write(doc)` gives CoNLL-U in Stanza's format.
 - `nlp.Process(texts)` with any `IEnumerable<string>` processes many texts at once, like Stanza's `bulk_process`:
@@ -153,6 +156,26 @@ var options = new PipelineOptions { Package = "default_fast" };
 await ModelDownloader.DownloadAsync("models/stanza/en", options); // what Load reads with these options
 using var nlp = Pipeline.Load("models/stanza/en", options);
 ```
+
+## German
+
+`Language = "de"` selects Stanza's German models: the same processors and packages as English (`default`,
+`default_fast`), plus the treebank packages `combined`, `gsd` and `hdt` (tokenize to depparse).
+
+```csharp
+var german = new PipelineOptions { Language = "de" };
+await ModelDownloader.DownloadAsync("models/stanza/de", german); // ~900 MB
+using var nlp = Pipeline.Load("models/stanza/de", german);
+var doc = nlp.Process("Angela Merkel wurde in Hamburg geboren. Sie zog im Jahr 1954 in die DDR.");
+// "im" is one token of two words, "in" + "dem"; doc.Entities: Angela Merkel/PER, Hamburg/LOC, DDR/LOC
+```
+
+Named entity types per language:
+
+| Language | Model | Entity types (`Entity.Type`; `Token.Ner` is BIOES, e.g. `B-PER`) |
+|---|---|---|
+| English (`en`) | OntoNotes (`ontonotes-ww-multi`) | 18: `PERSON`, `NORP`, `FAC`, `ORG`, `GPE`, `LOC`, `PRODUCT`, `EVENT`, `WORK_OF_ART`, `LAW`, `LANGUAGE`, `DATE`, `TIME`, `PERCENT`, `MONEY`, `QUANTITY`, `ORDINAL`, `CARDINAL` |
+| German (`de`) | GermEval 2014 (`germeval2014`) | 4: `PER`, `LOC`, `ORG`, `MISC` |
 
 ## GPU
 

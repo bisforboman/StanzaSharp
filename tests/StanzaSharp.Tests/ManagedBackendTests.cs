@@ -677,6 +677,34 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
     }
 
     /// <summary>
+    /// German NER (germeval2014: the old checkpoint format, no delta embedding, fastText's 300-dimensional vectors, so
+    /// input_transform sums over 2348 inputs), both backends, on one padded batch of real sentences.
+    /// </summary>
+    [GermanTheory]
+    [MemberData(nameof(Paths))]
+    public void NerNet_German_ManagedMatchesTorchSharp(string path)
+    {
+        using var pretrain = Pretrain.Load(Repo.Model("de", "pretrain/fasttextwiki"));
+        using var forward = CharLanguageModel.Load(Repo.Charlm("de", forward: true));
+        using var backward = CharLanguageModel.Load(Repo.Charlm("de", forward: false));
+        var text = File.ReadAllText(Path.Combine(Repo.GoldenFor("de"), "validation_news.txt")).Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
+        var sentences = new[] { 12, 3, 30, 1, 17 }.Select((n, i) => (IReadOnlyList<string>)Enumerable.Range(i * 31, n).Select(k => text[k % text.Length]).ToList()).ToList();
+        using var reference = Ner.NerTagger.Load(Repo.ModelOf("de", "ner"), pretrain, forward, backward);
+        using var managed = Ner.NerTagger.LoadManaged(Repo.ModelOf("de", "ner"), pretrain,
+            ManagedCharLanguageModel.Load(Repo.Charlm("de", forward: true)), ManagedCharLanguageModel.Load(Repo.Charlm("de", forward: false)));
+        var expectedTags = reference.Predict(sentences, out var expected);
+        var actualTags = With(path, 4, () => managed.Predict(sentences, out var e) is var t ? (t, e) : default);
+        float diff = 0;
+        for (int i = 0; i < sentences.Count; i++)
+        {
+            diff = Math.Max(diff, TokenizerTests.AssertClose(expected[i], actualTags.e[i], 1e-4f, $"{path} s{i}"));
+            Assert.Equal(expectedTags[i], actualTags.t[i]);
+        }
+
+        output.WriteLine($"{path} germeval2014: max |diff| {diff:E2}");
+    }
+
+    /// <summary>
     /// The tagger's network, both backends and both checkpoints, on one batch of real sentences (one with a word
     /// simplify_punct changes). With the charlms, the managed tagger's cache entries (arrays) match the TorchSharp one's.
     /// </summary>

@@ -28,7 +28,7 @@ The seam sits at each processor's **network**: one small interface per processor
 | pos | `IPosNet.Forward(sentences, wordIds, pretrainIds, charlms, cacheKeys, ct)` → `PosOutput` (UPOS scores, UPOS/XPOS/feats ids) | `PosNet` | `ManagedPosNet` |
 | depparse | `IDepparseNet.Forward(DepparseBatch, labelScores, ct)` → `DepparseScores` (arc log-probs, label argmax, optional label scores) | `DepparseNet` | `ManagedDepparseNet` |
 | sentiment | `ISentimentNet.Forward(batch, ids, extraIds, width, charlms, cacheKeys, ct)` → [batch, classes] logits | `SentimentNet` | `ManagedSentimentNet` |
-| lemma | `ILemmaNet.Encode(ids, batch, width, posIds, lengths, ct)` → `ILemmaDecoder` (edit logits; `Step(previous, ct)` → [batch, columns] log-probs) | `LemmaNet` | `ManagedLemmaNet` |
+| lemma, German mwt | `ISeq2SeqNet.Encode(ids, batch, width, posIds, lengths, ct)` → `ISeq2SeqDecoder` (edit logits; `Step(previous, ct)` → [batch, columns] log-probs) | `Seq2SeqNet` | `ManagedSeq2SeqNet` |
 | constituency | `IConstituencyNet`: `EncodeWords`, `Word`, `Score` → [states, transitions] scores, `Open`, `Compose`, `PushTransitions`, `PushConstituents` over opaque handles | `ConstituencyNet` | `ManagedConstituencyNet` |
 
 - **Shared:** everything around the network stays in the processor and serves both backends. That covers paragraph
@@ -572,12 +572,12 @@ reads the tagger's cached charlm outputs for sentences without MWTs.
 
 ### lemma
 
-- **Seam:** `ILemmaNet.Encode(ids, batch, width, posIds, lengths, ct)` → an `ILemmaDecoder` (the batch's state, disposed
+- **Seam:** `ISeq2SeqNet.Encode(ids, batch, width, posIds, lengths, ct)` → an `ISeq2SeqDecoder` (the batch's state, disposed
   after the batch) with `EditLogits` and `Step(previous, ct)` → [batch, Columns] log-probs, Columns = the vocabulary
   widened to the batch's largest DeltaVocab id + 1, as torch sizes the copy scatter. `Lemmatizer` keeps the dictionary
   skip, DeltaVocab, the `batch_size` 50 batches sorted like `sort_all`, the greedy loop (argmax per row: the first maximum,
   as torch's `max`; `max_dec_len`; done rows), the edits and the `<UNK>`/empty fallback; it now also checks cancellation
-  per decoder step. `LemmaNet` is today's TorchSharp code, moved unchanged (the TorchSharp decoder keeps the batch's tensors
+  per decoder step. `Seq2SeqNet` is today's TorchSharp code, moved unchanged (the TorchSharp decoder keeps the batch's tensors
   in one dispose scope); `Lemmatizer.Load(..., backend)` picks the net.
 - **Managed net:**
   - Encoder: the packed rows (UPOS embedding, then the characters; ids past the vocabulary embed as `<UNK>`) through
@@ -614,7 +614,7 @@ reads the tagger's cached charlm outputs for sentences without MWTs.
   - **Measured on UD English EWT** (2026-10-08; `tools/lemma_divergence.py` + `StanzaSharp.Benchmark lemma-divergence`;
     the corpus is CC BY-SA and not in the repository). EWT's train/dev/test `# text` lines, 1,174 documents (one Process
     call each), 254,589 words, `tokenize,mwt,pos,lemma`, 8 threads, four runs: Stanza 1.15.0 (each batch also in float64),
-    TorchSharp, managed, managed with the LSTMCell gate sums in double (`ManagedLemmaNet.DoubleGates`, study only).
+    TorchSharp, managed, managed with the LSTMCell gate sums in double (`ManagedSeq2SeqNet.DoubleGates`, study only).
     - Tokens and tags are identical in all four except 2 documents (127 words, excluded): Stanza replaces tokens longer
       than the tokenizer's `max_seqlen` (200 in its config) with `<UNK>`, our tokenizer only those over 1000, so two
       long URLs stayed whole here and their tags differed. A tokenizer difference, not a lemma one; fixed since in #41.

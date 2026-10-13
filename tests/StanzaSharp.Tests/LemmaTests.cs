@@ -5,22 +5,24 @@ namespace StanzaSharp.Tests;
 
 public class LemmaTests
 {
-    private static readonly string GoldenDir = Path.Combine(Repo.Golden, "lemma");
+    private static string GoldenDir(string lang) => Path.Combine(Repo.GoldenFor(lang), "lemma");
 
-    private static (List<Word> Words, JsonArray Golden) GoldenWords()
+    private static (List<Word> Words, JsonArray Golden) GoldenWords(string lang)
     {
-        var golden = JsonNode.Parse(File.ReadAllText(Path.Combine(GoldenDir, "words.json")))!.AsArray();
+        var golden = JsonNode.Parse(File.ReadAllText(Path.Combine(GoldenDir(lang), "words.json")))!.AsArray();
         var words = golden.Select(g => new Word { Text = (string)g!["word"]!, Upos = (string)g["upos"]! }).ToList();
         return (words, golden);
     }
 
     [ModelTheory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void Lemmatize_MatchesGoldenWords(bool managed)
+    [InlineData(false, "en")]
+    [InlineData(true, "en")]
+    [German(false)]
+    [German(true)]
+    public void Lemmatize_MatchesGoldenWords(bool managed, string lang)
     {
-        using var lemma = Lemmatizer.Load(Repo.Model("lemma/combined_nocharlm"), backend: Repo.Backend(managed));
-        var (words, golden) = GoldenWords();
+        using var lemma = Lemmatizer.Load(Repo.ModelOf(lang, "lemma"), backend: Repo.Backend(managed));
+        var (words, golden) = GoldenWords(lang);
         var doc = new Document();
         var sentence = new Sentence();
         foreach (var w in words)
@@ -31,12 +33,14 @@ public class LemmaTests
     }
 
     [ModelTheory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void Seq2SeqAlone_MatchesGoldenDecodingAndEdits(bool managed)
+    [InlineData(false, "en")]
+    [InlineData(true, "en")]
+    [German(false)]
+    [German(true)]
+    public void Seq2SeqAlone_MatchesGoldenDecodingAndEdits(bool managed, string lang)
     {
-        using var lemma = Lemmatizer.Load(Repo.Model("lemma/combined_nocharlm"), backend: Repo.Backend(managed));
-        var (words, golden) = GoldenWords();
+        using var lemma = Lemmatizer.Load(Repo.ModelOf(lang, "lemma"), backend: Repo.Backend(managed));
+        var (words, golden) = GoldenWords(lang);
         var (decoded, edits) = lemma.Predict(words);
         Assert.Equal(golden.Select(g => (string)g!["seq2seq"]!), decoded);
         Assert.Equal(golden.Select(g => (int)g!["edit"]!), edits);
@@ -54,19 +58,21 @@ public class LemmaTests
     }
 
     [ModelTheory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void Pipeline_ReproducesEveryGoldenFile(bool managed)
+    [InlineData(false, "en")]
+    [InlineData(true, "en")]
+    [German(false)]
+    [German(true)]
+    public void Pipeline_ReproducesEveryGoldenFile(bool managed, string lang)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos,lemma", Backend = Repo.PipelineBackendFor(managed) });
+        using var nlp = Pipeline.Load(Repo.ModelsFor(lang), new PipelineOptions { Language = lang, Processors = "tokenize,mwt,pos,lemma", Backend = Repo.PipelineBackendFor(managed) });
         var failures = new List<string>();
-        var names = Directory.GetFiles(GoldenDir, "*.conllu").Select(Path.GetFileNameWithoutExtension).Order().ToList();
+        var names = Directory.GetFiles(GoldenDir(lang), "*.conllu").Select(Path.GetFileNameWithoutExtension).Order().ToList();
         Assert.Equal(13, names.Count); // corpus + 12 validation files
         foreach (var name in names)
         {
-            var actual = Conllu.Write(nlp.Process(File.ReadAllText(Path.Combine(Repo.Golden, name + ".txt"))));
-            var golden = File.ReadAllText(Path.Combine(GoldenDir, name + ".conllu"));
-            if (name == "validation_nonbmp") // offsets are UTF-16 in C#, code points in Stanza
+            var actual = Conllu.Write(nlp.Process(File.ReadAllText(Path.Combine(Repo.GoldenFor(lang), name + ".txt"))));
+            var golden = File.ReadAllText(Path.Combine(GoldenDir(lang), name + ".conllu"));
+            if (PipelineTests.HasNonBmp(File.ReadAllText(Path.Combine(Repo.GoldenFor(lang), name + ".txt")))) // offsets are UTF-16 in C#, code points in Stanza
                 (actual, golden) = (PipelineTests.StripOffsets(actual), PipelineTests.StripOffsets(golden));
             var expected = golden.Split("\n\n");
             var got = actual.Split("\n\n");

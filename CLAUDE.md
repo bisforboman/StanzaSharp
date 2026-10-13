@@ -6,7 +6,9 @@ default from 0.5) or through TorchSharp (see "Managed backend").
 
 ## Scope
 
-- **Language:** English. German in progress (docs/german-plan.md): models download and golden data exist, `Load` throws.
+- **Language:** English and German (`PipelineOptions.Language = "de"`, 2026-10-13; docs/german-plan.md, "Checkpoint
+  findings (German)"). German runs every processor of `default`, `default_fast` and `combined` byte for byte on both
+  backends; `gsd`/`hdt` download, but their taggers are an older checkpoint format (a follow-up PR).
 - **Processors:** all eight of Stanza's English default, in Stanza's order (`PIPELINE_NAMES`): tokenize,
   mwt, pos, lemma, constituency, depparse, sentiment, ner. This is `Pipeline.AllProcessors`, the default
   (user's decision, 2026-10-06: like Stanza; it costs about 36% more time than without ner and sentiment).
@@ -488,6 +490,34 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     and backward states (`h[-2:]`), 200. Input 300 = word 100 + char 200 → `input_transform` 300→300.
     Reads tokens, as the charlm model does.
 
+## Checkpoint findings (German)
+
+What the German `default`/`default_fast` checkpoints use (Stanza 1.15.0; docs/german-plan.md has the full diff). Every
+model but MWT and NER is English's architecture with other vocabularies and sizes, read from the checkpoint:
+- **tokenize** (`combined_nocharlm`): 5 `feat_funcs` (no `labeled_field`/`phone_id`/`date_pattern`/`currency`), so
+  `rnn.weight_ih_l0` is [256, 37]; `max_seqlen` 400 (tokens over 400 code points become `<UNK>`, windows stay 1000).
+- **mwt** (`combined`): a `Seq2SeqModel` (`force_exact_pieces` null), not the classifier. `MwtExpander` runs it through
+  the lemmatizer's net, now `Nn.ISeq2SeqNet` (`Seq2SeqNet` in StanzaSharp.Cuda / `ManagedSeq2SeqNet` in Nn; a POS step
+  and the edit head are optional, `Seq2SeqConfig.UsesPos`/`Edit`), and `Seq2SeqConfig.Greedy` decodes for both:
+  - emb 50, vocab 25, biLSTM 2×50, `LSTMCell` 100, soft attention, copy (over every source position: no POS step to
+    skip), greedy, `max_dec_len` 10 (hdt 12), `never_decode_unk` (`<UNK>` is never the argmax).
+  - Input `<SOS>` + code points + `<EOS>`; DeltaVocab over all the document's candidates (code point order); batches
+    of `batch_size` 50 in document order, each sorted like `sort_all`. **Every** candidate goes through the model,
+    then the dictionary (17 entries: `im`, `zum`, `ins`, ...) overrides it (`trainer.ensemble`), as in Stanza.
+  - Output ids < 4 dropped, unmapped; blank or space-less output keeps the token. Model-only output can be odd: `IM`
+    → `In deM` (mwt.json).
+- **pos/lemma/depparse** (`combined_charlm`/`combined_nocharlm`, newswiki charlms): as English. STTS XPOS, 23 feats
+  (Conllu.Write sorts feats case-insensitively, like Stanza's writer: the tagger's raw order differs).
+- **constituency** (`spmrl_charlm`): `retag_method: upos` (the parser reads UPOS), `unary_limit` 8, SPMRL labels,
+  trees `(ROOT (VROOT ...))`.
+- **ner** (`germeval2014`, also in `default_fast`): the old checkpoint format. No `delta` vocab or `delta_emb` (the word
+  vector is the pretrain row alone), one tag set as a plain `TagVocab` (21 BIOES tags over PER/LOC/ORG/MISC), heads named
+  `tag_clf.*`/`crit._transitions` (Stanza renames them to `tag_clfs.0`/`crits.0` on load; `NerTagger.HeadPrefix`).
+  Word vectors from its own pretrain, `fasttextwiki` [250000, 300]: input 2348 = 300 + 2048 → `input_transform`
+  2348→2348, biLSTM 256. The pipeline loads every pretrain `Pipeline.Dependencies` names (`_pretrains`), and each
+  processor gets its model's own.
+- **sentiment** (`sb10k_charlm`): as English, `extra_vocab` 24,235.
+
 ## Validation
 
 - Golden tests: run Python Stanza (same version, same models) on a fixed English corpus and save
@@ -558,8 +588,13 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     BULK_TEXTS, LONG_TOKEN_TEXT at max_seqlen 400). No pt/ or mst.json (language-independent). The full run now also
     writes no_ssplit/ (both languages). Sentiment's float64 pass sets the default dtype only around the sentiment
     processor (German's seq2seq MWT breaks under float64). The `combined` package's golden equals `depparse/` (same
-    models); `gsd`/`hdt` golden is left for when German loads (their models aren't downloaded locally).
-    Until German loads, `LanguageTests.GermanGolden_ReadsAndRoundTrips` only reads it back.
+    models; `TreebankPackageTests` checks it). German tests are rows of the English golden theories: a `string lang` last
+    parameter, `[InlineData(..., "en")]` plus `[German(...)]` (Repo.cs: appends `"de"`, skips without German models),
+    and `Repo.ModelsFor(lang)` (models/converted/de next to the English models, else models/stanza/de),
+    `Repo.GoldenFor(lang)`, `Repo.ModelOf(lang, processor, package)`, `Repo.Charlm(lang, forward)`; class fixtures keep
+    models per (backend, language) in `ModelCache`. German-only tests have German in their name (`[GermanFact]`,
+    `[GermanTheory]`). A text with characters outside the BMP (`PipelineTests.HasNonBmp`; German `validation_social`
+    too) is compared without offsets.
 - Python `str` semantics that .NET lacks live in `Core.PyString` (`Lower` with İ and final sigma,
   `IsUpper`/`IsLower` with Other_Uppercase/Other_Lowercase, and `IsSpace` with U+001C..U+001F).
   Use it wherever Stanza calls `lower()`, `isupper()`, `isspace()` or `split()`. Regexes ported
@@ -623,6 +658,12 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     `tools/verify-package.ps1` against `models/stanza/en` twice: plain (StanzaSharp + TorchSharp-cpu, TorchSharp
     backend, `StanzaSharpTrimNative`; also on torch=smoke) and `-Managed` (only StanzaSharp, the default backend, no
     libtorch), and `verify-tool.ps1`. Artifacts: `test-results-golden-<shard>`.
+  - German (owner's decision, 2026-10-13): one `models-de-<hash of ModelDownloader.cs>` cache holding only Stanza's
+    German `.pt` files (`models/stanza/de`, default + default_fast, about 1 GB; no conversion: `Repo.ModelsFor("de")`
+    falls back to models/stanza/de), written by golden-shard 1 and restored by shards 2–3, downloaded with the CLI
+    (`download models/stanza/de --lang de --package ...`) on a miss. Only the golden shards run German, so their no-skip
+    check covers it. cross-os and linux-arm64 stay English: there the German rows skip, and their no-skip checks exempt
+    test names matching `lang: "de"` or `German` (trx-escaped `lang: &quot;de&quot;`).
   - `cross-os (windows-2025)` / `cross-os (macos-26)` (Apple Silicon; `TorchSharp-cpu` brings
     `libtorch-cpu-osx-arm64`): build, full suite with `STANZASHARP_MODELS` = `models/stanza/en` (the
     `.pt` files, no Python or conversion), the same no-skip check, and both `verify-package.ps1` runs. Models are
@@ -787,8 +828,8 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - `DownloadAsync(dir)` and `DownloadAsync(dir, processors)` (0.1.0 API) mean the English `default` package.
   - Languages (owner's decisions, 2026-10-13, docs/german-plan.md): `PipelineOptions.Language` (Stanza's code, default
     `"en"`; `Load` still takes the language folder); `DownloadAsync(dir, options)` honours it, `download --lang de`
-    defaults to `models/stanza/<lang>`. German (`de`): `default`, `default_fast`, `combined`, `gsd`, `hdt` download;
-    `Load` throws `NotSupportedException` (`Pipeline.NotPorted`) until its processors are ported. Unknown languages
+    defaults to `models/stanza/<lang>`. German (`de`): `default`, `default_fast`, `combined`, `gsd`, `hdt` download and
+    load (gsd/hdt's taggers: a follow-up). Unknown languages
     and packages (`default_accurate`: transformers) throw `ArgumentException` with the supported list.
   - `Pipeline.SelectModels` (language + package + processors → processor → model) and `Pipeline.SharedModels`
     (from `Pipeline.Dependencies`: each model's resources.json `dependencies`, since names don't tell them; German
@@ -924,7 +965,8 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     tolerance of the float32 **or** the float64 value, on both backends. The classifier is ill-conditioned: on
     validation.txt sentence 41 Stanza's float32 logits are 1.49e-4 from float64 and the managed ones 1.2e-5 (1.38e-4
     from Stanza's). Double sums (FC, convolutions, LSTM input) only moved managed toward float64.
-  - `ILemmaNet` (`LemmaNet` / `ManagedLemmaNet`): `Encode` → an `ILemmaDecoder` per batch (edit logits, `Step(previous)` →
+  - `ISeq2SeqNet` (`Seq2SeqNet` / `ManagedSeq2SeqNet`, in Nn since German: MWT uses it too, without the POS step and
+    the edit head): `Encode` → an `ISeq2SeqDecoder` per batch (edit logits, `Step(previous)` →
     [batch, columns] log-probs). `Lemmatizer` keeps the dictionary, DeltaVocab, batches, the greedy loop (first maximum,
     like torch), edits and fallbacks; `Load(..., backend)`. Managed: packed encoder (`ManagedLstm.ForwardPacked` with
     `finalC`), per step four GEMMs (cell `[x | h]` K = 250, linear_in, linear_out, dec2vocab + copy gate column), attention

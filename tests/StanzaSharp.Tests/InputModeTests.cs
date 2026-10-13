@@ -11,14 +11,18 @@ public class InputModeTests(SharedPipelines pipelines) : IClassFixture<SharedPip
 
     [ModelTheory]
     [Trait("Smoke", "TorchSharp")] // both packages on TorchSharp in a ready pull request's light golden run (ci.yml)
-    [InlineData("default", false)]
-    [InlineData("default_fast", false)]
-    [InlineData("default", true)]
-    [InlineData("default_fast", true)]
-    public void Pretokenized_MatchesGolden(string package, bool managed)
+    [InlineData("default", false, "en")]
+    [InlineData("default_fast", false, "en")]
+    [InlineData("default", true, "en")]
+    [InlineData("default_fast", true, "en")]
+    [German("default", false)]
+    [German("default_fast", false)]
+    [German("default", true)]
+    [German("default_fast", true)]
+    public void Pretokenized_MatchesGolden(string package, bool managed, string lang)
     {
-        var nlp = pipelines.Get(package, managed);
-        var dir = Path.Combine(Repo.Golden, "pretokenized");
+        var nlp = pipelines.Get(package, managed, lang: lang);
+        var dir = Path.Combine(Repo.GoldenFor(lang), "pretokenized");
         var cases = JsonNode.Parse(File.ReadAllText(Path.Combine(dir, "inputs.json")))!.AsObject();
         Assert.Equal(7, cases.Count);
         foreach (var (name, sentences) in cases)
@@ -28,22 +32,25 @@ public class InputModeTests(SharedPipelines pipelines) : IClassFixture<SharedPip
             var golden = File.ReadAllText(Path.Combine(dir, name + Suffix[package] + ".conllu"));
 
             // Outside the BMP, C# offsets are UTF-16 indices and Stanza's are code points.
-            if (name == "nonbmp")
+            if (input.Any(s => s.Any(PipelineTests.HasNonBmp)))
                 (actual, golden) = (PipelineTests.StripOffsets(actual), PipelineTests.StripOffsets(golden));
             Assert.True(golden == actual, $"{name}:\n--- expected\n{golden}\n--- actual\n{actual}");
         }
     }
 
     [ModelTheory]
-    [InlineData("default", false)]
-    [InlineData("default_fast", false)]
-    [InlineData("default", true)]
-    public void Bulk_MatchesStanzasBulkProcess(string package, bool managed)
+    [InlineData("default", false, "en")]
+    [InlineData("default_fast", false, "en")]
+    [InlineData("default", true, "en")]
+    [German("default", false)]
+    [German("default_fast", false)]
+    [German("default", true)]
+    public void Bulk_MatchesStanzasBulkProcess(string package, bool managed, string lang)
     {
         // bulk/<package>.json stores each document either whole or as its output alone plus what bulk changes.
-        var docs = JsonNode.Parse(File.ReadAllText(Path.Combine(Repo.Golden, "bulk", package + ".json")))!["documents"]!.AsArray();
-        var texts = docs.Select(d => d!["text"]?.GetValue<string>() ?? File.ReadAllText(Path.Combine(Repo.Golden, d["file"]!.GetValue<string>()))).ToList();
-        var nlp = pipelines.Get(package, managed);
+        var docs = JsonNode.Parse(File.ReadAllText(Path.Combine(Repo.GoldenFor(lang), "bulk", package + ".json")))!["documents"]!.AsArray();
+        var texts = docs.Select(d => d!["text"]?.GetValue<string>() ?? File.ReadAllText(Path.Combine(Repo.GoldenFor(lang), d["file"]!.GetValue<string>()))).ToList();
+        var nlp = pipelines.Get(package, managed, lang: lang);
         var results = nlp.Process(texts);
         Assert.Equal(texts.Count, results.Count);
 
@@ -65,7 +72,7 @@ public class InputModeTests(SharedPipelines pipelines) : IClassFixture<SharedPip
             else
             {
                 int offset = d["sent_id_offset"]!.GetValue<int>();
-                var sentences = File.ReadAllText(Path.Combine(Repo.Golden, d["alone"]!.GetValue<string>())).Split("\n\n");
+                var sentences = File.ReadAllText(Path.Combine(Repo.GoldenFor(lang), d["alone"]!.GetValue<string>())).Split("\n\n");
                 for (int j = 0; j < sentences.Length; j++)
                     sentences[j] = new Regex(@"# sent_id = \d+\n").Replace(sentences[j], $"# sent_id = {j + offset}\n", 1);
                 foreach (var (j, sentence) in d["sentences"]!.AsObject())
@@ -77,7 +84,7 @@ public class InputModeTests(SharedPipelines pipelines) : IClassFixture<SharedPip
                 expected = string.Join("\n\n", sentences);
             }
 
-            if (d["file"]?.GetValue<string>() == "validation_nonbmp.txt")
+            if (PipelineTests.HasNonBmp(texts[i]))
                 (actual, expected) = (PipelineTests.StripOffsets(actual), PipelineTests.StripOffsets(expected));
             var e = expected.Split("\n\n");
             var g = actual.Split("\n\n");

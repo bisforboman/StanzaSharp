@@ -19,8 +19,7 @@ public sealed class PipelineOptions
     /// <summary>
     /// Stanza's code for the language of the models: <c>"en"</c> (English, the default) or <c>"de"</c> (German). Any
     /// other code throws. <see cref="Pipeline.Load"/> still takes that language's folder (e.g. <c>models/stanza/de</c>).
-    /// German models can be downloaded with <see cref="ModelDownloader.DownloadAsync(string, PipelineOptions, IProgress{string}?, CancellationToken)"/>,
-    /// but <see cref="Pipeline.Load"/> doesn't run them yet and throws <see cref="NotSupportedException"/>.
+    /// A language's models are downloaded with <see cref="ModelDownloader.DownloadAsync(string, PipelineOptions, IProgress{string}?, CancellationToken)"/>.
     /// </summary>
     public string Language { get; init; } = Pipeline.English;
 
