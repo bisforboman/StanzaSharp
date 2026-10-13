@@ -1,0 +1,98 @@
+# text = Ich liebe Pizza 🍕 und Eis 🍦!
+# sent_id = 0
+1	Ich	ich	PRON	PPER	Case=Nom|Number=Sing|Person=1|PronType=Prs	0	_	_	start_char=0|end_char=3
+2	liebe	lieben	VERB	VVFIN	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	1	_	_	start_char=4|end_char=9
+3	Pizza	Pizza	NOUN	NN	Case=Acc|Gender=Fem|Number=Sing	2	_	_	start_char=10|end_char=15
+4	🍕	🍕	PUNCT	$(	_	3	_	_	start_char=16|end_char=17
+5	und	und	CCONJ	KON	_	4	_	_	start_char=18|end_char=21
+6	Eis	Eis	NOUN	NN	Case=Acc|Gender=Neut|Number=Sing	5	_	_	start_char=22|end_char=25
+7	🍦	🍦	PUNCT	$(	_	6	_	_	SpaceAfter=No|start_char=26|end_char=27
+8	!	!	PUNCT	$.	_	7	_	_	start_char=27|end_char=28
+
+# text = Das war ein toller Tag 😀.
+# sent_id = 1
+1	Das	der	PRON	PDS	Case=Nom|Gender=Neut|Number=Sing|PronType=Dem,Rel	0	_	_	start_char=29|end_char=32
+2	war	sein	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	1	_	_	start_char=33|end_char=36
+3	ein	ein	DET	ART	Case=Nom|Definite=Ind|Gender=Masc|Number=Sing|NumType=Card|PronType=Art	2	_	_	start_char=37|end_char=40
+4	toller	toll	ADJ	ADJA	Case=Nom|Degree=Pos|Gender=Masc|Number=Sing	3	_	_	start_char=41|end_char=47
+5	Tag	Tag	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	4	_	_	start_char=48|end_char=51
+6	😀	😀	PUNCT	$(	_	5	_	_	SpaceAfter=No|start_char=52|end_char=53
+7	.	.	PUNCT	$.	_	6	_	_	SpacesAfter=\n\n|start_char=53|end_char=54
+
+# text = Mathematische Zeichen wie 𝒳 und 𝔸 liegen außerhalb der BMP.
+# sent_id = 2
+1	Mathematische	bathematisch	ADJ	ADJA	Case=Nom|Degree=Pos|Gender=Neut|Number=Plur	0	_	_	start_char=56|end_char=69
+2	Zeichen	Zeichen	NOUN	NN	Case=Nom|Gender=Neut|Number=Plur	1	_	_	start_char=70|end_char=77
+3	wie	wie	ADP	KOKOM	_	2	_	_	start_char=78|end_char=81
+4	𝒳	𝒳	PROPN	NE	_	3	_	_	start_char=82|end_char=83
+5	und	und	CCONJ	KON	_	4	_	_	start_char=84|end_char=87
+6	𝔸	𝔸	NOUN	NN	_	5	_	_	start_char=88|end_char=89
+7	liegen	liegen	VERB	VVFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	6	_	_	start_char=90|end_char=96
+8	außerhalb	außerhalb	ADP	APPR	_	7	_	_	start_char=97|end_char=106
+9	der	der	DET	ART	Case=Gen|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	8	_	_	start_char=107|end_char=110
+10	BMP	BMP	PROPN	NE	Case=Gen|Gender=Fem|Number=Sing	9	_	_	SpaceAfter=No|start_char=111|end_char=114
+11	.	.	PUNCT	$.	_	10	_	_	start_char=114|end_char=115
+
+# text = Die Formel 𝑓(𝑥) = 𝑥² ist einfach.
+# sent_id = 3
+1	Die	der	DET	ART	Case=Nom|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	0	_	_	start_char=116|end_char=119
+2	Formel	Formel	PROPN	NN	Case=Nom|Gender=Fem|Number=Sing	1	_	_	start_char=120|end_char=126
+3	𝑓	𝑓	PROPN	NE	_	2	_	_	SpaceAfter=No|start_char=127|end_char=128
+4	(	(	PUNCT	$(	_	3	_	_	SpaceAfter=No|start_char=128|end_char=129
+5	𝑥	𝑥	X	NE	_	4	_	_	SpaceAfter=No|start_char=129|end_char=130
+6	)	)	PUNCT	$(	_	5	_	_	start_char=130|end_char=131
+7	=	=	PUNCT	$(	_	6	_	_	start_char=132|end_char=133
+8	𝑥	𝑥	PUNCT	$(	_	7	_	_	SpaceAfter=No|start_char=134|end_char=135
+9	²	²	NOUN	NN	_	8	_	_	start_char=135|end_char=136
+10	ist	sein	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	9	_	_	start_char=137|end_char=140
+11	einfach	einfach	ADJ	ADJD	Degree=Pos	10	_	_	SpaceAfter=No|start_char=141|end_char=148
+12	.	.	PUNCT	$.	_	11	_	_	SpacesAfter=\n\n|start_char=148|end_char=149
+
+# text = Die Familie 👨‍👩‍👧 fuhr in den Urlaub ✈️ nach Österreich 🇦🇹.
+# sent_id = 4
+1	Die	der	DET	ART	Case=Nom|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	0	_	_	start_char=151|end_char=154
+2	Familie	Familie	NOUN	NN	Case=Nom|Gender=Fem|Number=Sing	1	_	_	start_char=155|end_char=162
+3	👨‍👩‍👧	👨‍👩‍👧	PROPN	NE	Case=Nom|Gender=Fem|Number=Sing	2	_	_	start_char=163|end_char=168
+4	fuhr	fahren	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	3	_	_	start_char=169|end_char=173
+5	in	in	ADP	APPR	_	4	_	_	start_char=174|end_char=176
+6	den	der	DET	ART	Case=Acc|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	5	_	_	start_char=177|end_char=180
+7	Urlaub	Urlaub	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	6	_	_	start_char=181|end_char=187
+8	✈️	✈️	PROPN	NE	Number=Sing	7	_	_	start_char=188|end_char=190
+9	nach	nach	ADP	APPR	_	8	_	_	start_char=191|end_char=195
+10	Österreich	Österreich	PROPN	NE	Case=Dat|Gender=Neut|Number=Sing	9	_	_	start_char=196|end_char=206
+11	🇦🇹	🇦🇹	PROPN	NE	Case=Dat|Number=Sing	10	_	_	SpaceAfter=No|start_char=207|end_char=209
+12	.	.	PUNCT	$.	_	11	_	_	SpacesAfter=\n\n|start_char=209|end_char=210
+
+# text = Das Schriftzeichen 𠀀 ist selten.
+# sent_id = 5
+1	Das	der	DET	ART	Case=Nom|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	0	_	_	start_char=212|end_char=215
+2	Schriftzeichen	Schriftzeichen	NOUN	NN	Case=Nom|Gender=Neut|Number=Sing	1	_	_	start_char=216|end_char=230
+3	𠀀	𠀀	PUNCT	$(	_	2	_	_	start_char=231|end_char=232
+4	ist	sein	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	_	_	start_char=233|end_char=236
+5	selten	selten	ADJ	ADJD	Degree=Pos	4	_	_	SpaceAfter=No|start_char=237|end_char=243
+6	.	.	PUNCT	$.	_	5	_	_	start_char=243|end_char=244
+
+# text = Auch 𝄞 (der Violinschlüssel) gehört dazu.
+# sent_id = 6
+1	Auch	auch	ADV	ADV	_	0	_	_	start_char=245|end_char=249
+2	𝄞	𝄞	PUNCT	$(	_	1	_	_	start_char=250|end_char=251
+3	(	(	PUNCT	$(	_	2	_	_	SpaceAfter=No|start_char=252|end_char=253
+4	der	der	DET	ART	Case=Nom|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	3	_	_	start_char=253|end_char=256
+5	Violinschlüssel	Violinschlüssel	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	4	_	_	SpaceAfter=No|start_char=257|end_char=272
+6	)	)	PUNCT	$(	_	5	_	_	start_char=272|end_char=273
+7	gehört	gehören	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	6	_	_	start_char=274|end_char=280
+8	dazu	dazu	ADV	PAV	PronType=Dem	7	_	_	SpaceAfter=No|start_char=281|end_char=285
+9	.	.	PUNCT	$.	_	8	_	_	SpacesAfter=\n\n|start_char=285|end_char=286
+
+# text = Gut gemacht 👍🏽!
+# sent_id = 7
+1	Gut	gut	ADJ	ADJD	Degree=Pos	0	_	_	start_char=288|end_char=291
+2	gemacht	machen	VERB	VVPP	VerbForm=Part	1	_	_	start_char=292|end_char=299
+3	👍🏽	👍🏽	PUNCT	$(	_	2	_	_	SpaceAfter=No|start_char=300|end_char=302
+4	!	!	PUNCT	$.	_	3	_	_	start_char=302|end_char=303
+
+# text = Bis morgen 👋.
+# sent_id = 8
+1	Bis	bis	ADP	APPR	_	0	_	_	start_char=304|end_char=307
+2	morgen	morgen	ADV	ADV	_	1	_	_	start_char=308|end_char=314
+3	👋.	👋.	PUNCT	$(	_	2	_	_	SpacesAfter=\n|start_char=315|end_char=317

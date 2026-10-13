@@ -1,0 +1,37 @@
+[
+ [],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "Köln",
+   "type": "LOC",
+   "start_char": 307,
+   "end_char": 311
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "RT @nachrichten",
+   "type": "ORG",
+   "start_char": 592,
+   "end_char": 607
+  },
+  {
+   "text": "https://t.co/abc123",
+   "type": "MISC",
+   "start_char": 676,
+   "end_char": 695
+  }
+ ],
+ [],
+ []
+]

@@ -21,7 +21,7 @@ public class PipelineTests(SharedPipelines pipelines) : IClassFixture<SharedPipe
     [Trait("Backend", "Managed")]
     public void ManagedBackend_LoadsNoTorchSharpCharlms()
     {
-        foreach (var package in Pipeline.Packages.Keys)
+        foreach (var package in Pipeline.Packages["en"].Keys)
         {
             var nlp = pipelines.Get(package);
             const System.Reflection.BindingFlags Private = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;

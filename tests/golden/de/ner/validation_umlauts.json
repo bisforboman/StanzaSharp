@@ -1,0 +1,76 @@
+[
+ [],
+ [],
+ [
+  {
+   "text": "Österreichs",
+   "type": "LOC",
+   "start_char": 87,
+   "end_char": 98
+  }
+ ],
+ [],
+ [],
+ [
+  {
+   "text": "Donaudampfschifffahrtsgesellschaft",
+   "type": "ORG",
+   "start_char": 259,
+   "end_char": 293
+  }
+ ],
+ [],
+ [
+  {
+   "text": "STRASSE",
+   "type": "LOC",
+   "start_char": 421,
+   "end_char": 428
+  },
+  {
+   "text": "GRÖSSE",
+   "type": "ORG",
+   "start_char": 430,
+   "end_char": 436
+  },
+  {
+   "text": "ÄRGER",
+   "type": "ORG",
+   "start_char": 438,
+   "end_char": 443
+  }
+ ],
+ [
+  {
+   "text": "GROẞE",
+   "type": "LOC",
+   "start_char": 510,
+   "end_char": 515
+  }
+ ],
+ [],
+ [],
+ [
+  {
+   "text": "Bad Säckingen",
+   "type": "LOC",
+   "start_char": 823,
+   "end_char": 836
+  },
+  {
+   "text": "Graubünden",
+   "type": "LOC",
+   "start_char": 858,
+   "end_char": 868
+  }
+ ],
+ [],
+ [
+  {
+   "text": "Strauß",
+   "type": "PER",
+   "start_char": 910,
+   "end_char": 916
+  }
+ ]
+]

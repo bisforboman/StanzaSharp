@@ -2,11 +2,11 @@ using StanzaSharp;
 
 const string Usage = """
     Usage: StanzaSharp.Cli [--models DIR] [--package NAME] [--processors LIST] [FILE]
-           StanzaSharp.Cli download [DIR] [--package NAME] [--processors LIST]
+           StanzaSharp.Cli download [DIR] [--lang CODE] [--package NAME] [--processors LIST]
 
     Runs the English pipeline on FILE (or standard input) and writes CoNLL-U to standard output.
-    "download" fetches Stanza's English models into DIR (default: models/stanza/en): all of the package's,
-    or only what LIST needs.
+    "download" fetches Stanza's models of --lang (en, the default, or de) into DIR (default: models/stanza/<lang>):
+    all of the package's, or only what LIST needs.
 
       --models DIR        models (default: models/converted/en if present, else models/stanza/en)
       --package NAME      Stanza's English package: default, or default_fast (faster, no constituency)

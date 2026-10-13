@@ -2,14 +2,14 @@ using StanzaSharp;
 using StanzaSharp.Tool;
 
 const string Usage = $"""
-    Usage: stanzasharp download [DIR] [--package NAME] [--processors LIST]
+    Usage: stanzasharp download [DIR] [--lang CODE] [--package NAME] [--processors LIST]
            stanzasharp compare FILE [--package NAME] [--processors LIST] [--models DIR] [--python PATH]
            stanzasharp benchmark [--package NAME] [--processors LIST] [--models DIR] [--threads N] [--words N]
                                  [--python PATH] [--quick] [--json FILE]
 
-    download: downloads Stanza {ModelDownloader.StanzaVersion}'s English models into DIR (default: models/stanza/en), the
-    layout Pipeline.Load reads: all of the package's, or only what LIST needs. Each file is checked against its MD5;
-    files already there and correct are kept.
+    download: downloads Stanza {ModelDownloader.StanzaVersion}'s models of a language into DIR (default:
+    models/stanza/CODE), the layout Pipeline.Load reads: all of the package's, or only what LIST needs. Each file is
+    checked against its MD5; files already there and correct are kept.
 
     compare: runs Python Stanza {ModelDownloader.StanzaVersion} and StanzaSharp on FILE with the same models (DIR, default
     models/stanza/en, as download writes them) and reports whether their CoNLL-U output is identical, or the first
@@ -21,7 +21,9 @@ const string Usage = $"""
     and threads, alternating runs. Prints a Markdown block with the machine (CPU, cores, RAM, OS, .NET, SIMD) to share.
     Takes about 2 minutes with Python on 4 cores; --quick runs a short smoke test.
 
-      --package NAME      Stanza's English package: default, or default_fast (faster, no constituency)
+      --lang CODE         download: en (default) or de (German; downloadable, not yet loadable by Pipeline.Load)
+      --package NAME      Stanza's package: default, or default_fast (faster, no constituency); German also
+                          combined, gsd, hdt (download only)
       --processors LIST   comma-separated, from tokenize,mwt,pos,lemma,constituency,depparse,sentiment,ner
                           (default: all of the package's)
       --models DIR        compare, benchmark: the models (default: models/stanza/en)

@@ -32,9 +32,11 @@
     <ProjectReference Include="..\StanzaSharp.Sentiment\StanzaSharp.Sentiment.csproj" />
     <None Include="..\..\NOTICE" Pack="true" PackagePath="/" />
     <None Include="README.md" Pack="true" PackagePath="/" />
-    <!-- compare: its Python half, and the English entry of Stanza 1.15.0's resources.json (Apache 2.0, see NOTICE). -->
+    <!-- compare: its Python half, and the English and German entries of Stanza 1.15.0's resources.json (Apache 2.0, see
+         NOTICE; compare reads only English's so far, the tests check ModelDownloader's tables against both). -->
     <EmbeddedResource Include="compare.py" LogicalName="compare.py" />
     <EmbeddedResource Include="stanza_resources_en.json" LogicalName="stanza_resources_en.json" />
+    <EmbeddedResource Include="stanza_resources_de.json" LogicalName="stanza_resources_de.json" />
     <!-- benchmark: its Python half and its text, the golden texts samples/StanzaSharp.Benchmark uses (our own, ~15 KB). -->
     <EmbeddedResource Include="benchmark.py" LogicalName="benchmark.py" />
     <EmbeddedResource Include="..\..\tests\golden\validation.txt;..\..\tests\golden\corpus.txt;..\..\tests\golden\tokenize_stress.txt" LogicalName="benchmark/%(Filename)%(Extension)" />

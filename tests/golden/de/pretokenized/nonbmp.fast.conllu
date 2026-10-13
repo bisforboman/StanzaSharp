@@ -1,0 +1,16 @@
+# text = Ich liebe 😀 !
+# sent_id = 0
+# sentiment = 2
+1	Ich	ich	PRON	PPER	Case=Nom|Number=Sing|Person=1|PronType=Prs	2	nsubj	_	start_char=0|end_char=3|ner=O
+2	liebe	lieben	VERB	VVFIN	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	0	root	_	start_char=4|end_char=9|ner=O
+3	😀	😀	ADV	ADV	_	2	advmod	_	start_char=10|end_char=11|ner=O
+4	!	!	PUNCT	$.	_	2	punct	_	start_char=12|end_char=13|ner=O
+
+# text = 𝒳 markiert die Stelle .
+# sent_id = 1
+# sentiment = 1
+1	𝒳	𝒳	PROPN	NE	Case=Nom|Gender=Masc|Number=Sing	2	nsubj	_	start_char=14|end_char=15|ner=O
+2	markiert	markieren	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=16|end_char=24|ner=O
+3	die	der	DET	ART	Case=Acc|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	4	det	_	start_char=25|end_char=28|ner=O
+4	Stelle	Stelle	NOUN	NN	Case=Acc|Gender=Fem|Number=Sing	2	obj	_	start_char=29|end_char=35|ner=O
+5	.	.	PUNCT	$.	_	2	punct	_	SpaceAfter=No|start_char=36|end_char=37|ner=O

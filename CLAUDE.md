@@ -6,7 +6,7 @@ default from 0.5) or through TorchSharp (see "Managed backend").
 
 ## Scope
 
-- **Language:** English only, to start.
+- **Language:** English. German in progress (docs/german-plan.md): models download and golden data exist, `Load` throws.
 - **Processors:** all eight of Stanza's English default, in Stanza's order (`PIPELINE_NAMES`): tokenize,
   mwt, pos, lemma, constituency, depparse, sentiment, ner. This is `Pipeline.AllProcessors`, the default
   (user's decision, 2026-10-06: like Stanza; it costs about 36% more time than without ner and sentiment).
@@ -552,6 +552,14 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     `validation_whitespace.txt` is `-text` in `.gitattributes` to keep its CRLF. The test compares
     each file and reports its first differing sentence. `validation_nonbmp` is compared without
     `start_char`/`end_char`, because offsets differ by design after non-BMP characters.
+  - `tests/golden/de/` (`make_golden.py --lang de`, 2.9 MB): the same files for 13 hand-written German texts (181
+    sentences, 2,227 words; the validation set adds poetry, umlauts/compounds with decomposed umlauts, quotes) and
+    German word lists (`GERMAN`: MWT_WORDS with non-dictionary contractions for the seq2seq, LEMMA_WORDS, PRETOKENIZED_CASES,
+    BULK_TEXTS, LONG_TOKEN_TEXT at max_seqlen 400). No pt/ or mst.json (language-independent). The full run now also
+    writes no_ssplit/ (both languages). Sentiment's float64 pass sets the default dtype only around the sentiment
+    processor (German's seq2seq MWT breaks under float64). The `combined` package's golden equals `depparse/` (same
+    models); `gsd`/`hdt` golden is left for when German loads (their models aren't downloaded locally).
+    Until German loads, `LanguageTests.GermanGolden_ReadsAndRoundTrips` only reads it back.
 - Python `str` semantics that .NET lacks live in `Core.PyString` (`Lower` with İ and final sigma,
   `IsUpper`/`IsLower` with Other_Uppercase/Other_Lowercase, and `IsSpace` with U+001C..U+001F).
   Use it wherever Stanza calls `lower()`, `isupper()`, `isspace()` or `split()`. Regexes ported
@@ -776,14 +784,21 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
     `DownloadAsync(dir, PipelineOptions)` / `download --package NAME`. The downloader takes the same options
     object as `Load`, so one object downloads and loads the same files; it ignores the other options.
     `Processors` is null by default: all the package's processors. A processor the package lacks throws.
-  - `DownloadAsync(dir)` and `DownloadAsync(dir, processors)` (0.1.0 API) mean the `default` package.
-  - `Pipeline.SelectModels` (package + processors → processor → model) and `Pipeline.SharedModels`
-    (pretrain for pos/depparse/ner/constituency/sentiment, charlms for any `_charlm` model) are what both
-    `Pipeline`'s constructor and `ModelDownloader.FilesFor` use, so they cannot drift apart. A new package
-    needs an entry in `Pipeline.Packages` and its files' MD5s in `ModelDownloader.Files`;
-    `FilesFor_AreEnoughToLoadThePipeline` and `FileTableCoversEveryModelThePipelineLoads` check it. CI
-    downloads both packages.
-  - It fetches the `.pt` files from `huggingface.co/stanfordnlp/stanza-en/resolve/v1.15.0/models/`
+  - `DownloadAsync(dir)` and `DownloadAsync(dir, processors)` (0.1.0 API) mean the English `default` package.
+  - Languages (owner's decisions, 2026-10-13, docs/german-plan.md): `PipelineOptions.Language` (Stanza's code, default
+    `"en"`; `Load` still takes the language folder); `DownloadAsync(dir, options)` honours it, `download --lang de`
+    defaults to `models/stanza/<lang>`. German (`de`): `default`, `default_fast`, `combined`, `gsd`, `hdt` download;
+    `Load` throws `NotSupportedException` (`Pipeline.NotPorted`) until its processors are ported. Unknown languages
+    and packages (`default_accurate`: transformers) throw `ArgumentException` with the supported list.
+  - `Pipeline.SelectModels` (language + package + processors → processor → model) and `Pipeline.SharedModels`
+    (from `Pipeline.Dependencies`: each model's resources.json `dependencies`, since names don't tell them; German
+    NER reads `fasttextwiki` + the charlms) are what both `Pipeline`'s constructor and `ModelDownloader.FilesFor` use,
+    so they cannot drift apart. A new package needs an entry in `Pipeline.Packages[lang]`, its models'
+    `Pipeline.Dependencies[lang]` and its files' MD5s in `ModelDownloader.Files[lang]`;
+    `CompareCommandTests.EmbeddedResources_MatchModelDownloader` checks all three against the tool's embedded
+    `stanza_resources_<lang>.json`, and `FilesFor_AreEnoughToLoadThePipeline`, `FileTableCoversEveryModelThePipelineLoads`
+    and `LanguageTests` the file sets. CI downloads both English packages.
+  - It fetches the `.pt` files from `huggingface.co/stanfordnlp/stanza-<lang>/resolve/v1.15.0/models/`
     and checks each against the MD5 from Stanza 1.15.0's resources.json, kept in
     `ModelDownloader.Files`.
   - It keeps files that already match. `Pipeline.Load` never downloads.

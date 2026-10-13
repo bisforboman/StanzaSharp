@@ -1,0 +1,67 @@
+# text = Die Studie nannte https://example.com/abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghij als Quelle.
+# sent_id = 0
+# sentiment = 1
+1	Die	der	DET	ART	Case=Nom|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	2	det	_	start_char=0|end_char=3|ner=O
+2	Studie	Studie	NOUN	NN	Case=Nom|Gender=Fem|Number=Sing	3	nsubj	_	start_char=4|end_char=10|ner=O
+3	nannte	nennen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=11|end_char=17|ner=O
+4	<UNK>	<UNK>	PROPN	NE	Case=Acc|Gender=Fem|Number=Sing	3	nsubj	_	start_char=18|end_char=518|ner=S-ORG
+5	als	als	ADP	KOKOM	_	3	xcomp	_	start_char=519|end_char=522|ner=O
+6	Quelle	Quelle	NOUN	NN	Case=Nom|Gender=Fem|Number=Sing	5	nmod	_	SpaceAfter=No|start_char=523|end_char=529|ner=O
+7	.	.	PUNCT	$.	_	3	punct	_	start_char=529|end_char=530|ner=O
+
+# text = Später wurde sie gelöscht.
+# sent_id = 1
+# sentiment = 1
+1	Später	spät	ADJ	ADJD	Degree=Cmp	4	advmod	_	start_char=531|end_char=537|ner=O
+2	wurde	werden	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin|Voice=Pass	4	aux:pass	_	start_char=538|end_char=543|ner=O
+3	sie	sie	PRON	PPER	Case=Nom|Gender=Fem|Number=Sing|Person=3|PronType=Prs	4	nsubj:pass	_	start_char=544|end_char=547|ner=O
+4	gelöscht	löschen	VERB	VVPP	VerbForm=Part	0	root	_	SpaceAfter=No|start_char=548|end_char=556|ner=O
+5	.	.	PUNCT	$.	_	4	punct	_	SpacesAfter=\n\n|start_char=556|end_char=557|ner=O
+
+# text = Genau https://example.com/abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghi und https://example.com/abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghij und https://example.com/abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghija wurden getestet.
+# sent_id = 2
+# sentiment = 1
+1	Genau	genau	ADJ	ADJD	Degree=Pos	2	advmod	_	start_char=559|end_char=564|ner=O
+2	https://example.com/abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghi	hermsuelmexamanmel	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	8	nsubj:pass	_	start_char=565|end_char=964|ner=S-MISC
+3	und	und	CCONJ	KON	_	4	cc	_	start_char=965|end_char=968|ner=O
+4	https://example.com/abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghij	Ölbillelmanane	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	2	conj	_	start_char=969|end_char=1369|ner=S-MISC
+5	und	und	CCONJ	KON	_	6	cc	_	start_char=1370|end_char=1373|ner=O
+6	<UNK>	<UNK>	PROPN	NE	Case=Nom|Gender=Masc|Number=Sing	2	conj	_	start_char=1374|end_char=1775|ner=S-MISC
+7	wurden	werden	AUX	VAFIN	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin|Voice=Pass	8	aux:pass	_	start_char=1776|end_char=1782|ner=O
+8	getestet	testen	VERB	VVPP	VerbForm=Part	0	root	_	SpaceAfter=No|start_char=1783|end_char=1791|ner=O
+9	.	.	PUNCT	$.	_	8	punct	_	SpacesAfter=\n\n|start_char=1791|end_char=1792|ner=O
+
+# text = Ein langes Wort: DonaudampfschiffDonaudampfschiffDonaudampfschiffDonaudampfschiffDonaudampfschiffDonaudampfschiffDonaudampfschiffDonaudampfschiffDonaudampfschiffDonaudampfschiffDonaudampfschiffDonaudampfschiffDonaudampfschiffDonaudampfschiffDonaudampfschiffDonaudampfschiffDonaudampfschiffDonaudampfschiffDonaudampfschiffDonaudampfschiffDonaudampfschiffDonaudampfschiffDonaudampfschiffDonaudampfschiffDonaudampfschiffDonaudampfschiffDonaudampfschiffDonaudampfschiffDonaudampfschiffDonaudampfschiff ist keine URL.
+# sent_id = 3
+# sentiment = 1
+1	Ein	ein	DET	ART	Case=Nom|Definite=Ind|Gender=Neut|Number=Sing|NumType=Card|PronType=Art	3	det	_	start_char=1794|end_char=1797|ner=O
+2	langes	lang	ADJ	ADJA	Case=Nom|Degree=Pos|Gender=Neut|Number=Sing	3	amod	_	start_char=1798|end_char=1804|ner=O
+3	Wort	Wort	NOUN	NN	Case=Nom|Gender=Neut|Number=Sing	0	root	_	SpaceAfter=No|start_char=1805|end_char=1809|ner=O
+4	:	:	PUNCT	$.	_	8	punct	_	start_char=1809|end_char=1810|ner=O
+5	<UNK>	<UNK>	PROPN	NE	Case=Nom|Gender=Fem|Number=Sing	8	nsubj	_	start_char=1811|end_char=2291|ner=O
+6	ist	sein	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	8	cop	_	start_char=2292|end_char=2295|ner=O
+7	keine	kein	DET	PIAT	Case=Nom|Gender=Fem|Number=Sing|PronType=Neg	8	det	_	start_char=2296|end_char=2301|ner=O
+8	URL	URL	NOUN	NN	Case=Nom|Gender=Fem|Number=Sing	3	parataxis	_	SpaceAfter=No|start_char=2302|end_char=2305|ner=O
+9	.	.	PUNCT	$.	_	8	punct	_	SpacesAfter=\n\n|start_char=2305|end_char=2306|ner=O
+
+# text = Die längste, https://example.com/abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghij , endet hier.
+# sent_id = 4
+# sentiment = 1
+1	Die	der	DET	ART	Case=Nom|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	4	det	_	start_char=2308|end_char=2311|ner=O
+2	längste	lang	ADJ	ADJA	Case=Nom|Degree=Sup|Gender=Fem|Number=Sing	4	amod	_	SpaceAfter=No|start_char=2312|end_char=2319|ner=O
+3	,	,	PUNCT	$,	_	2	punct	_	start_char=2319|end_char=2320|ner=O
+4	<UNK>	<UNK>	PROPN	NE	Case=Nom|Gender=Fem|Number=Sing	6	nsubj	_	start_char=2321|end_char=3521|ner=O
+5	,	,	PUNCT	$,	_	4	punct	_	start_char=3522|end_char=3523|ner=O
+6	endet	enden	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=3524|end_char=3529|ner=O
+7	hier	hier	ADV	ADV	_	6	advmod	_	SpaceAfter=No|start_char=3530|end_char=3534|ner=O
+8	.	.	PUNCT	$.	_	6	punct	_	SpacesAfter=\n\n|start_char=3534|end_char=3535|ner=O
+
+# text = Danach kommt ein kurzer Satz.
+# sent_id = 5
+# sentiment = 1
+1	Danach	danach	ADV	PAV	_	2	advmod	_	start_char=3537|end_char=3543|ner=O
+2	kommt	kommen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=3544|end_char=3549|ner=O
+3	ein	ein	DET	ART	Case=Nom|Definite=Ind|Gender=Masc|Number=Sing|NumType=Card|PronType=Art	5	det	_	start_char=3550|end_char=3553|ner=O
+4	kurzer	kurz	ADJ	ADJA	Case=Nom|Degree=Pos|Gender=Masc|Number=Sing	5	amod	_	start_char=3554|end_char=3560|ner=O
+5	Satz	Satz	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	2	nsubj	_	SpaceAfter=No|start_char=3561|end_char=3565|ner=O
+6	.	.	PUNCT	$.	_	2	punct	_	SpacesAfter=\n|start_char=3565|end_char=3566|ner=O

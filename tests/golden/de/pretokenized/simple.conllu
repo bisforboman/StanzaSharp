@@ -1,0 +1,14 @@
+# text = Hallo Welt .
+# sent_id = 0
+# constituency = (ROOT (VROOT (PN (NP (PROPN Hallo) (NOUN Welt))) (PUNCT .)))
+# sentiment = 1
+1	Hallo	hallo	PROPN	NE	Case=Nom|Number=Sing	0	root	_	start_char=0|end_char=5|ner=B-ORG
+2	Welt	Welt	NOUN	NN	Case=Nom|Gender=Fem|Number=Sing	1	flat	_	start_char=6|end_char=10|ner=E-ORG
+3	.	.	PUNCT	$.	_	1	punct	_	start_char=11|end_char=12|ner=O
+
+# text = Tschüss .
+# sent_id = 1
+# constituency = (ROOT (VROOT (NOUN Tschüss) (PUNCT .)))
+# sentiment = 1
+1	Tschüss	Tschüss	NOUN	NN	Case=Nom|Gender=Neut|Number=Sing	0	root	_	start_char=13|end_char=20|ner=O
+2	.	.	PUNCT	$.	_	1	punct	_	SpaceAfter=No|start_char=21|end_char=22|ner=O

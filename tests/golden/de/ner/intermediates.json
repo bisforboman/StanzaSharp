@@ -1,0 +1,84 @@
+{
+ "stanza": "1.15.0",
+ "sentences": [
+  {
+   "sentence": 0,
+   "tokens": [
+    "Angela",
+    "Merkel",
+    "wurde",
+    "in",
+    "Hamburg",
+    "geboren",
+    "."
+   ],
+   "ner": [
+    "B-PER",
+    "E-PER",
+    "O",
+    "O",
+    "S-LOC",
+    "O",
+    "O"
+   ]
+  },
+  {
+   "sentence": 1,
+   "tokens": [
+    "Sie",
+    "war",
+    "von",
+    "2005",
+    "bis",
+    "2021",
+    "Bundeskanzlerin",
+    "."
+   ],
+   "ner": [
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O"
+   ]
+  },
+  {
+   "sentence": 2,
+   "tokens": [
+    "Ich",
+    "glaube",
+    "nicht",
+    ",",
+    "dass",
+    "es",
+    "heute",
+    "regnet",
+    ",",
+    "aber",
+    "wir",
+    "werden",
+    "sehen",
+    "."
+   ],
+   "ner": [
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O"
+   ]
+  }
+ ]
+}

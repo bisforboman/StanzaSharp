@@ -1,0 +1,269 @@
+# text = So backen Sie einen einfachen Apfelkuchen:
+# sent_id = 0
+# sentiment = 2
+1	So	_	_	_	_	0	_	_	start_char=0|end_char=2
+2	backen	_	_	_	_	1	_	_	start_char=3|end_char=9
+3	Sie	_	_	_	_	2	_	_	start_char=10|end_char=13
+4	einen	_	_	_	_	3	_	_	start_char=14|end_char=19
+5	einfachen	_	_	_	_	4	_	_	start_char=20|end_char=29
+6	Apfelkuchen	_	_	_	_	5	_	_	SpaceAfter=No|start_char=30|end_char=41
+7	:	_	_	_	_	6	_	_	SpacesAfter=\n\n|start_char=41|end_char=42
+
+# text = 1.
+# sent_id = 1
+# sentiment = 2
+1	1.	_	_	_	_	0	_	_	start_char=44|end_char=46
+
+# text = Heizen Sie den Backofen auf 180 °C (Umluft 160 °C) vor.
+# sent_id = 2
+# sentiment = 0
+1	Heizen	_	_	_	_	0	_	_	start_char=47|end_char=53
+2	Sie	_	_	_	_	1	_	_	start_char=54|end_char=57
+3	den	_	_	_	_	2	_	_	start_char=58|end_char=61
+4	Backofen	_	_	_	_	3	_	_	start_char=62|end_char=70
+5	auf	_	_	_	_	4	_	_	start_char=71|end_char=74
+6	180	_	_	_	_	5	_	_	start_char=75|end_char=78
+7	°	_	_	_	_	6	_	_	SpaceAfter=No|start_char=79|end_char=80
+8	C	_	_	_	_	7	_	_	start_char=80|end_char=81
+9	(	_	_	_	_	8	_	_	SpaceAfter=No|start_char=82|end_char=83
+10	Umluft	_	_	_	_	9	_	_	start_char=83|end_char=89
+11	160	_	_	_	_	10	_	_	start_char=90|end_char=93
+12	°	_	_	_	_	11	_	_	SpaceAfter=No|start_char=94|end_char=95
+13	C	_	_	_	_	12	_	_	SpaceAfter=No|start_char=95|end_char=96
+14	)	_	_	_	_	13	_	_	start_char=96|end_char=97
+15	vor	_	_	_	_	14	_	_	SpaceAfter=No|start_char=98|end_char=101
+16	.	_	_	_	_	15	_	_	SpacesAfter=\n|start_char=101|end_char=102
+
+# text = 2. Schälen Sie vier mittelgroße Äpfel, entfernen Sie das Kerngehäuse und schneiden Sie sie in dünne Spalten.
+# sent_id = 3
+# sentiment = 0
+1	2.	_	_	_	_	0	_	_	start_char=103|end_char=105
+2	Schälen	_	_	_	_	1	_	_	start_char=106|end_char=113
+3	Sie	_	_	_	_	2	_	_	start_char=114|end_char=117
+4	vier	_	_	_	_	3	_	_	start_char=118|end_char=122
+5	mittelgroße	_	_	_	_	4	_	_	start_char=123|end_char=134
+6	Äpfel	_	_	_	_	5	_	_	SpaceAfter=No|start_char=135|end_char=140
+7	,	_	_	_	_	6	_	_	start_char=140|end_char=141
+8	entfernen	_	_	_	_	7	_	_	start_char=142|end_char=151
+9	Sie	_	_	_	_	8	_	_	start_char=152|end_char=155
+10	das	_	_	_	_	9	_	_	start_char=156|end_char=159
+11	Kerngehäuse	_	_	_	_	10	_	_	start_char=160|end_char=171
+12	und	_	_	_	_	11	_	_	start_char=172|end_char=175
+13	schneiden	_	_	_	_	12	_	_	start_char=176|end_char=185
+14	Sie	_	_	_	_	13	_	_	start_char=186|end_char=189
+15	sie	_	_	_	_	14	_	_	start_char=190|end_char=193
+16	in	_	_	_	_	15	_	_	start_char=194|end_char=196
+17	dünne	_	_	_	_	16	_	_	start_char=197|end_char=202
+18	Spalten	_	_	_	_	17	_	_	SpaceAfter=No|start_char=203|end_char=210
+19	.	_	_	_	_	18	_	_	SpacesAfter=\n|start_char=210|end_char=211
+
+# text = 3. Verrühren Sie 200 g Mehl, 100 g Zucker, 125 g weiche Butter, 2 Eier und 1 Päckchen Backpulver zu einem glatten Teig.
+# sent_id = 4
+# sentiment = 1
+1	3.	_	_	_	_	0	_	_	start_char=212|end_char=214
+2	Verrühren	_	_	_	_	1	_	_	start_char=215|end_char=224
+3	Sie	_	_	_	_	2	_	_	start_char=225|end_char=228
+4	200	_	_	_	_	3	_	_	start_char=229|end_char=232
+5	g	_	_	_	_	4	_	_	start_char=233|end_char=234
+6	Mehl	_	_	_	_	5	_	_	SpaceAfter=No|start_char=235|end_char=239
+7	,	_	_	_	_	6	_	_	start_char=239|end_char=240
+8	100	_	_	_	_	7	_	_	start_char=241|end_char=244
+9	g	_	_	_	_	8	_	_	start_char=245|end_char=246
+10	Zucker	_	_	_	_	9	_	_	SpaceAfter=No|start_char=247|end_char=253
+11	,	_	_	_	_	10	_	_	start_char=253|end_char=254
+12	125	_	_	_	_	11	_	_	start_char=255|end_char=258
+13	g	_	_	_	_	12	_	_	start_char=259|end_char=260
+14	weiche	_	_	_	_	13	_	_	start_char=261|end_char=267
+15	Butter	_	_	_	_	14	_	_	SpaceAfter=No|start_char=268|end_char=274
+16	,	_	_	_	_	15	_	_	start_char=274|end_char=275
+17	2	_	_	_	_	16	_	_	start_char=276|end_char=277
+18	Eier	_	_	_	_	17	_	_	start_char=278|end_char=282
+19	und	_	_	_	_	18	_	_	start_char=283|end_char=286
+20	1	_	_	_	_	19	_	_	start_char=287|end_char=288
+21	Päckchen	_	_	_	_	20	_	_	start_char=289|end_char=297
+22	Backpulver	_	_	_	_	21	_	_	start_char=298|end_char=308
+23	zu	_	_	_	_	22	_	_	start_char=309|end_char=311
+24	einem	_	_	_	_	23	_	_	start_char=312|end_char=317
+25	glatten	_	_	_	_	24	_	_	start_char=318|end_char=325
+26	Teig	_	_	_	_	25	_	_	SpaceAfter=No|start_char=326|end_char=330
+27	.	_	_	_	_	26	_	_	SpacesAfter=\n|start_char=330|end_char=331
+
+# text = 4. Füllen Sie den Teig in eine gefettete Springform (Ø 26 cm) und verteilen Sie die Äpfel darauf.
+# sent_id = 5
+# sentiment = 1
+1	4.	_	_	_	_	0	_	_	start_char=332|end_char=334
+2	Füllen	_	_	_	_	1	_	_	start_char=335|end_char=341
+3	Sie	_	_	_	_	2	_	_	start_char=342|end_char=345
+4	den	_	_	_	_	3	_	_	start_char=346|end_char=349
+5	Teig	_	_	_	_	4	_	_	start_char=350|end_char=354
+6	in	_	_	_	_	5	_	_	start_char=355|end_char=357
+7	eine	_	_	_	_	6	_	_	start_char=358|end_char=362
+8	gefettete	_	_	_	_	7	_	_	start_char=363|end_char=372
+9	Springform	_	_	_	_	8	_	_	start_char=373|end_char=383
+10	(	_	_	_	_	9	_	_	SpaceAfter=No|start_char=384|end_char=385
+11	Ø	_	_	_	_	10	_	_	start_char=385|end_char=386
+12	26	_	_	_	_	11	_	_	start_char=387|end_char=389
+13	cm	_	_	_	_	12	_	_	SpaceAfter=No|start_char=390|end_char=392
+14	)	_	_	_	_	13	_	_	start_char=392|end_char=393
+15	und	_	_	_	_	14	_	_	start_char=394|end_char=397
+16	verteilen	_	_	_	_	15	_	_	start_char=398|end_char=407
+17	Sie	_	_	_	_	16	_	_	start_char=408|end_char=411
+18	die	_	_	_	_	17	_	_	start_char=412|end_char=415
+19	Äpfel	_	_	_	_	18	_	_	start_char=416|end_char=421
+20	darauf	_	_	_	_	19	_	_	SpaceAfter=No|start_char=422|end_char=428
+21	.	_	_	_	_	20	_	_	SpacesAfter=\n|start_char=428|end_char=429
+
+# text = 5. Backen Sie den Kuchen etwa 45 Minuten lang.
+# sent_id = 6
+# sentiment = 1
+1	5.	_	_	_	_	0	_	_	start_char=430|end_char=432
+2	Backen	_	_	_	_	1	_	_	start_char=433|end_char=439
+3	Sie	_	_	_	_	2	_	_	start_char=440|end_char=443
+4	den	_	_	_	_	3	_	_	start_char=444|end_char=447
+5	Kuchen	_	_	_	_	4	_	_	start_char=448|end_char=454
+6	etwa	_	_	_	_	5	_	_	start_char=455|end_char=459
+7	45	_	_	_	_	6	_	_	start_char=460|end_char=462
+8	Minuten	_	_	_	_	7	_	_	start_char=463|end_char=470
+9	lang	_	_	_	_	8	_	_	SpaceAfter=No|start_char=471|end_char=475
+10	.	_	_	_	_	9	_	_	start_char=475|end_char=476
+
+# text = Machen Sie die Stäbchenprobe!
+# sent_id = 7
+# sentiment = 1
+1	Machen	_	_	_	_	0	_	_	start_char=477|end_char=483
+2	Sie	_	_	_	_	1	_	_	start_char=484|end_char=487
+3	die	_	_	_	_	2	_	_	start_char=488|end_char=491
+4	Stäbchenprobe	_	_	_	_	3	_	_	SpaceAfter=No|start_char=492|end_char=505
+5	!	_	_	_	_	4	_	_	SpacesAfter=\n\n|start_char=505|end_char=506
+
+# text = Hinweis: Statt Äpfeln können Sie auch Birnen oder Pflaumen verwenden.
+# sent_id = 8
+# sentiment = 1
+1	Hinweis	_	_	_	_	0	_	_	SpaceAfter=No|start_char=508|end_char=515
+2	:	_	_	_	_	1	_	_	start_char=515|end_char=516
+3	Statt	_	_	_	_	2	_	_	start_char=517|end_char=522
+4	Äpfeln	_	_	_	_	3	_	_	start_char=523|end_char=529
+5	können	_	_	_	_	4	_	_	start_char=530|end_char=536
+6	Sie	_	_	_	_	5	_	_	start_char=537|end_char=540
+7	auch	_	_	_	_	6	_	_	start_char=541|end_char=545
+8	Birnen	_	_	_	_	7	_	_	start_char=546|end_char=552
+9	oder	_	_	_	_	8	_	_	start_char=553|end_char=557
+10	Pflaumen	_	_	_	_	9	_	_	start_char=558|end_char=566
+11	verwenden	_	_	_	_	10	_	_	SpaceAfter=No|start_char=567|end_char=576
+12	.	_	_	_	_	11	_	_	SpacesAfter=\n\n|start_char=576|end_char=577
+
+# text = Installation der Software
+# sent_id = 9
+# sentiment = 1
+1	Installation	_	_	_	_	0	_	_	start_char=579|end_char=591
+2	der	_	_	_	_	1	_	_	start_char=592|end_char=595
+3	Software	_	_	_	_	2	_	_	SpacesAfter=\n\n|start_char=596|end_char=604
+
+# text = Laden Sie zuerst das Installationsprogramm herunter.
+# sent_id = 10
+# sentiment = 1
+1	Laden	_	_	_	_	0	_	_	start_char=606|end_char=611
+2	Sie	_	_	_	_	1	_	_	start_char=612|end_char=615
+3	zuerst	_	_	_	_	2	_	_	start_char=616|end_char=622
+4	das	_	_	_	_	3	_	_	start_char=623|end_char=626
+5	Installationsprogramm	_	_	_	_	4	_	_	start_char=627|end_char=648
+6	herunter	_	_	_	_	5	_	_	SpaceAfter=No|start_char=649|end_char=657
+7	.	_	_	_	_	6	_	_	start_char=657|end_char=658
+
+# text = Öffnen Sie danach die Datei setup.exe und folgen Sie den Anweisungen auf dem Bildschirm.
+# sent_id = 11
+# sentiment = 2
+1	Öffnen	_	_	_	_	0	_	_	start_char=659|end_char=665
+2	Sie	_	_	_	_	1	_	_	start_char=666|end_char=669
+3	danach	_	_	_	_	2	_	_	start_char=670|end_char=676
+4	die	_	_	_	_	3	_	_	start_char=677|end_char=680
+5	Datei	_	_	_	_	4	_	_	start_char=681|end_char=686
+6	setup.exe	_	_	_	_	5	_	_	start_char=687|end_char=696
+7	und	_	_	_	_	6	_	_	start_char=697|end_char=700
+8	folgen	_	_	_	_	7	_	_	start_char=701|end_char=707
+9	Sie	_	_	_	_	8	_	_	start_char=708|end_char=711
+10	den	_	_	_	_	9	_	_	start_char=712|end_char=715
+11	Anweisungen	_	_	_	_	10	_	_	start_char=716|end_char=727
+12	auf	_	_	_	_	11	_	_	start_char=728|end_char=731
+13	dem	_	_	_	_	12	_	_	start_char=732|end_char=735
+14	Bildschirm	_	_	_	_	13	_	_	SpaceAfter=No|start_char=736|end_char=746
+15	.	_	_	_	_	14	_	_	start_char=746|end_char=747
+
+# text = Starten Sie den Computer neu, wenn Sie dazu aufgefordert werden.
+# sent_id = 12
+# sentiment = 1
+1	Starten	_	_	_	_	0	_	_	start_char=748|end_char=755
+2	Sie	_	_	_	_	1	_	_	start_char=756|end_char=759
+3	den	_	_	_	_	2	_	_	start_char=760|end_char=763
+4	Computer	_	_	_	_	3	_	_	start_char=764|end_char=772
+5	neu	_	_	_	_	4	_	_	SpaceAfter=No|start_char=773|end_char=776
+6	,	_	_	_	_	5	_	_	start_char=776|end_char=777
+7	wenn	_	_	_	_	6	_	_	start_char=778|end_char=782
+8	Sie	_	_	_	_	7	_	_	start_char=783|end_char=786
+9	dazu	_	_	_	_	8	_	_	start_char=787|end_char=791
+10	aufgefordert	_	_	_	_	9	_	_	start_char=792|end_char=804
+11	werden	_	_	_	_	10	_	_	SpaceAfter=No|start_char=805|end_char=811
+12	.	_	_	_	_	11	_	_	SpacesAfter=\n\n|start_char=811|end_char=812
+
+# text = Achtung: Ziehen Sie vor der Reinigung immer den Netzstecker!
+# sent_id = 13
+# sentiment = 1
+1	Achtung	_	_	_	_	0	_	_	SpaceAfter=No|start_char=814|end_char=821
+2	:	_	_	_	_	1	_	_	start_char=821|end_char=822
+3	Ziehen	_	_	_	_	2	_	_	start_char=823|end_char=829
+4	Sie	_	_	_	_	3	_	_	start_char=830|end_char=833
+5	vor	_	_	_	_	4	_	_	start_char=834|end_char=837
+6	der	_	_	_	_	5	_	_	start_char=838|end_char=841
+7	Reinigung	_	_	_	_	6	_	_	start_char=842|end_char=851
+8	immer	_	_	_	_	7	_	_	start_char=852|end_char=857
+9	den	_	_	_	_	8	_	_	start_char=858|end_char=861
+10	Netzstecker	_	_	_	_	9	_	_	SpaceAfter=No|start_char=862|end_char=873
+11	!	_	_	_	_	10	_	_	start_char=873|end_char=874
+
+# text = Verwenden Sie keine scharfen Reinigungsmittel und tauchen Sie das Gerät nicht in Wasser.
+# sent_id = 14
+# sentiment = 2
+1	Verwenden	_	_	_	_	0	_	_	start_char=875|end_char=884
+2	Sie	_	_	_	_	1	_	_	start_char=885|end_char=888
+3	keine	_	_	_	_	2	_	_	start_char=889|end_char=894
+4	scharfen	_	_	_	_	3	_	_	start_char=895|end_char=903
+5	Reinigungsmittel	_	_	_	_	4	_	_	start_char=904|end_char=920
+6	und	_	_	_	_	5	_	_	start_char=921|end_char=924
+7	tauchen	_	_	_	_	6	_	_	start_char=925|end_char=932
+8	Sie	_	_	_	_	7	_	_	start_char=933|end_char=936
+9	das	_	_	_	_	8	_	_	start_char=937|end_char=940
+10	Gerät	_	_	_	_	9	_	_	start_char=941|end_char=946
+11	nicht	_	_	_	_	10	_	_	start_char=947|end_char=952
+12	in	_	_	_	_	11	_	_	start_char=953|end_char=955
+13	Wasser	_	_	_	_	12	_	_	SpaceAfter=No|start_char=956|end_char=962
+14	.	_	_	_	_	13	_	_	SpacesAfter=\n\n|start_char=962|end_char=963
+
+# text = Bei Problemen wenden Sie sich bitte an unseren Kundendienst unter 0800 123 456 (Mo.–Fr. 8–18 Uhr) oder schreiben Sie an support@beispiel.de.
+# sent_id = 15
+# sentiment = 1
+1	Bei	_	_	_	_	0	_	_	start_char=965|end_char=968
+2	Problemen	_	_	_	_	1	_	_	start_char=969|end_char=978
+3	wenden	_	_	_	_	2	_	_	start_char=979|end_char=985
+4	Sie	_	_	_	_	3	_	_	start_char=986|end_char=989
+5	sich	_	_	_	_	4	_	_	start_char=990|end_char=994
+6	bitte	_	_	_	_	5	_	_	start_char=995|end_char=1000
+7	an	_	_	_	_	6	_	_	start_char=1001|end_char=1003
+8	unseren	_	_	_	_	7	_	_	start_char=1004|end_char=1011
+9	Kundendienst	_	_	_	_	8	_	_	start_char=1012|end_char=1024
+10	unter	_	_	_	_	9	_	_	start_char=1025|end_char=1030
+11	0800	_	_	_	_	10	_	_	start_char=1031|end_char=1035
+12	123	_	_	_	_	11	_	_	start_char=1036|end_char=1039
+13	456	_	_	_	_	12	_	_	start_char=1040|end_char=1043
+14	(	_	_	_	_	13	_	_	SpaceAfter=No|start_char=1044|end_char=1045
+15	Mo.	_	_	_	_	14	_	_	SpaceAfter=No|start_char=1045|end_char=1048
+16	–	_	_	_	_	15	_	_	SpaceAfter=No|start_char=1048|end_char=1049
+17	Fr.	_	_	_	_	16	_	_	start_char=1049|end_char=1052
+18	8–18	_	_	_	_	17	_	_	start_char=1053|end_char=1057
+19	Uhr	_	_	_	_	18	_	_	SpaceAfter=No|start_char=1058|end_char=1061
+20	)	_	_	_	_	19	_	_	start_char=1061|end_char=1062
+21	oder	_	_	_	_	20	_	_	start_char=1063|end_char=1067
+22	schreiben	_	_	_	_	21	_	_	start_char=1068|end_char=1077
+23	Sie	_	_	_	_	22	_	_	start_char=1078|end_char=1081
+24	an	_	_	_	_	23	_	_	start_char=1082|end_char=1084
+25	support@beispiel.de	_	_	_	_	24	_	_	SpaceAfter=No|start_char=1085|end_char=1104
+26	.	_	_	_	_	25	_	_	SpacesAfter=\n|start_char=1104|end_char=1105

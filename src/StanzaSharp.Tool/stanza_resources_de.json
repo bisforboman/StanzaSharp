@@ -1,0 +1,624 @@
+{
+ "stanza_version": "1.15.0",
+ "de": {
+  "backward_charlm": {
+   "newswiki": {
+    "md5": "82f0d9a6a12c736648edbe28d87e9016"
+   }
+  },
+  "constituency": {
+   "spmrl_charlm": {
+    "md5": "a46f6e39f5f34dd0a8d06c26389dbf2b",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "newswiki"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "newswiki"
+     }
+    ]
+   },
+   "spmrl_german-nlp-electra": {
+    "md5": "ecfa0aa508c6bf878929db97786deedf",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "newswiki"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "newswiki"
+     }
+    ]
+   }
+  },
+  "coref": {
+   "udcoref_xlm-roberta-lora": {
+    "md5": "952f55dad09d2350249ed1e2a15a34f8"
+   }
+  },
+  "depparse": {
+   "combined_charlm": {
+    "md5": "c07c3344d2635c789870b6627c6ad680",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "newswiki"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "newswiki"
+     }
+    ]
+   },
+   "combined_german-nlp-electra": {
+    "md5": "e1070166afcca8e4fe8c30a50deac64d",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "newswiki"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "newswiki"
+     }
+    ]
+   },
+   "combined_nocharlm": {
+    "md5": "12824bc61ad28f0377d5136745db005e",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   },
+   "gsd_charlm": {
+    "md5": "daeac687146e4dc32f3ca8f14aea56c2",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "newswiki"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "newswiki"
+     }
+    ]
+   },
+   "gsd_german-nlp-electra": {
+    "md5": "29d6aad732f21eff57e6dcbe51a0a77f",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "newswiki"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "newswiki"
+     }
+    ]
+   },
+   "gsd_nocharlm": {
+    "md5": "ca6edb23b145eb15d4cbb70aca935122",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   },
+   "hdt_charlm": {
+    "md5": "d578c1c4614769122f2cb8481025639e",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "newswiki"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "newswiki"
+     }
+    ]
+   },
+   "hdt_german-nlp-electra": {
+    "md5": "91ecaa874d4217dd1cac9c84e667f377",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "newswiki"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "newswiki"
+     }
+    ]
+   },
+   "hdt_nocharlm": {
+    "md5": "bb25421e576ecc48fffbfe01b8bf235b",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   }
+  },
+  "forward_charlm": {
+   "newswiki": {
+    "md5": "f2841fa3f1981a849d3ed08a723ccc22"
+   }
+  },
+  "lemma": {
+   "combined_charlm": {
+    "md5": "72d678b7bae829693e3f643c22ae08cb",
+    "dependencies": [
+     {
+      "model": "forward_charlm",
+      "package": "newswiki"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "newswiki"
+     }
+    ]
+   },
+   "combined_nocharlm": {
+    "md5": "207e57ac2df6fee797b163df299e0fa0"
+   },
+   "gsd_charlm": {
+    "md5": "a35012b2dd5c598080d74ddb80f39135",
+    "dependencies": [
+     {
+      "model": "forward_charlm",
+      "package": "newswiki"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "newswiki"
+     }
+    ]
+   },
+   "gsd_nocharlm": {
+    "md5": "814edc18ce6743c2bb4acc4867140eab"
+   },
+   "hdt_charlm": {
+    "md5": "512462bc2a4702c0f4e247c2e6cc032e",
+    "dependencies": [
+     {
+      "model": "forward_charlm",
+      "package": "newswiki"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "newswiki"
+     }
+    ]
+   },
+   "hdt_nocharlm": {
+    "md5": "9fd1ffa0dafcfc9cd51b3cecb959be59"
+   }
+  },
+  "mwt": {
+   "combined": {
+    "md5": "0efb649b428cabcb89380498bb61c591"
+   },
+   "gsd": {
+    "md5": "ce401fcf73273ef02cefc757f0d08bec"
+   },
+   "hdt": {
+    "md5": "73846173795e9de1ee0546f182e0541e"
+   }
+  },
+  "ner": {
+   "conll03": {
+    "md5": "9ff9b34529a43b72fabd71626795952a",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttextwiki"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "newswiki"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "newswiki"
+     }
+    ]
+   },
+   "germeval2014_dbmdz-bert-german-cased": {
+    "md5": "d496675af4b1ee6ea610a97fcfce6caf",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttextwiki"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "newswiki"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "newswiki"
+     }
+    ]
+   },
+   "germeval2014_german-nlp-electra": {
+    "md5": "35be8dec3ab2dbed9b6faabe84d342c8",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttextwiki"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "newswiki"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "newswiki"
+     }
+    ]
+   },
+   "germeval2014": {
+    "md5": "e2d33aecdfc079b18dbdbb06ec6d419a",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttextwiki"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "newswiki"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "newswiki"
+     }
+    ]
+   }
+  },
+  "pos": {
+   "combined_charlm": {
+    "md5": "757ff3b6a67c61d919a010f579cefb6c",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "newswiki"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "newswiki"
+     }
+    ]
+   },
+   "combined_german-nlp-electra": {
+    "md5": "b63a58fe066df20895c218b3af8915a7",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "newswiki"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "newswiki"
+     }
+    ]
+   },
+   "combined_nocharlm": {
+    "md5": "e2ccaf6a99711487adfe8e016592556a",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   },
+   "gsd_charlm": {
+    "md5": "b0335ee5f5ad28511020407945c2a393",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "newswiki"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "newswiki"
+     }
+    ]
+   },
+   "gsd_german-nlp-electra": {
+    "md5": "b75ba715175061141842a09e480f7d86",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "newswiki"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "newswiki"
+     }
+    ]
+   },
+   "gsd_nocharlm": {
+    "md5": "7986fcd7d260022e3d89f3e94be86dc9",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   },
+   "hdt_charlm": {
+    "md5": "5d460fe45205e40dea5b55a38097657b",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "newswiki"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "newswiki"
+     }
+    ]
+   },
+   "hdt_german-nlp-electra": {
+    "md5": "276a4063c1c4a00b7bd27a3dc9dd67ba",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "newswiki"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "newswiki"
+     }
+    ]
+   },
+   "hdt_nocharlm": {
+    "md5": "30eebbd85b15369b9fd435397bb0ca94",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   }
+  },
+  "pretrain": {
+   "conll17": {
+    "md5": "c489a3bcc876b2e25f4460e00401c124"
+   },
+   "fasttextwiki": {
+    "md5": "29fe2ec4cf2d8b18c18b6aa9f5d48d78"
+   }
+  },
+  "sentiment": {
+   "sb10k_charlm": {
+    "md5": "278b42bbd2c127d293a8197252dae1eb",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "newswiki"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "newswiki"
+     }
+    ]
+   },
+   "sb10k_dbmdz-bert-german-cased": {
+    "md5": "55ec000d9d899dbac0621536ffac27df",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "newswiki"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "newswiki"
+     }
+    ]
+   },
+   "sb10k_german-nlp-electra": {
+    "md5": "36125922117da581c38e45545ed5a41e",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "newswiki"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "newswiki"
+     }
+    ]
+   }
+  },
+  "tokenize": {
+   "combined_charlm": {
+    "md5": "84f39beb686da1053dd761caf9354949",
+    "dependencies": [
+     {
+      "model": "forward_charlm",
+      "package": "newswiki"
+     }
+    ]
+   },
+   "combined_nocharlm": {
+    "md5": "a52679e759e3f6c29b749cfa8ca506be"
+   },
+   "gsd_charlm": {
+    "md5": "339d8d827fab342e0ab92c9188da1a8b",
+    "dependencies": [
+     {
+      "model": "forward_charlm",
+      "package": "newswiki"
+     }
+    ]
+   },
+   "gsd_nocharlm": {
+    "md5": "9e519a21b6ca839cf0ae74d5ad6213f9"
+   },
+   "hdt_charlm": {
+    "md5": "4889f52a3527e252ef17afeb982de44f",
+    "dependencies": [
+     {
+      "model": "forward_charlm",
+      "package": "newswiki"
+     }
+    ]
+   },
+   "hdt_nocharlm": {
+    "md5": "106e9ec0521d8d6b1f8608b467cc32e9"
+   }
+  },
+  "default_processors": {
+   "tokenize": "combined_nocharlm",
+   "mwt": "combined",
+   "lemma": "combined_nocharlm",
+   "pos": "combined_charlm",
+   "depparse": "combined_charlm",
+   "ner": "germeval2014",
+   "sentiment": "sb10k_charlm",
+   "constituency": "spmrl_charlm",
+   "optional": {
+    "coref": "udcoref_xlm-roberta-lora"
+   }
+  },
+  "packages": {
+   "default": {
+    "tokenize": "combined_nocharlm",
+    "mwt": "combined",
+    "lemma": "combined_nocharlm",
+    "pos": "combined_charlm",
+    "depparse": "combined_charlm",
+    "ner": "germeval2014",
+    "sentiment": "sb10k_charlm",
+    "constituency": "spmrl_charlm",
+    "optional": {
+     "coref": "udcoref_xlm-roberta-lora"
+    }
+   },
+   "default_fast": {
+    "tokenize": "combined_nocharlm",
+    "mwt": "combined",
+    "lemma": "combined_nocharlm",
+    "pos": "combined_nocharlm",
+    "depparse": "combined_nocharlm",
+    "ner": "germeval2014",
+    "sentiment": "sb10k_charlm",
+    "optional": {
+     "coref": "udcoref_xlm-roberta-lora"
+    }
+   },
+   "default_accurate": {
+    "tokenize": "combined_charlm",
+    "mwt": "combined",
+    "lemma": "combined_charlm",
+    "pos": "combined_german-nlp-electra",
+    "depparse": "combined_german-nlp-electra",
+    "ner": "germeval2014",
+    "sentiment": "sb10k_german-nlp-electra",
+    "constituency": "spmrl_german-nlp-electra",
+    "optional": {
+     "coref": "udcoref_xlm-roberta-lora"
+    }
+   },
+   "combined": {
+    "tokenize": "combined_nocharlm",
+    "mwt": "combined",
+    "pos": "combined_charlm",
+    "lemma": "combined_nocharlm",
+    "depparse": "combined_charlm"
+   },
+   "gsd": {
+    "tokenize": "gsd_nocharlm",
+    "mwt": "gsd",
+    "pos": "gsd_charlm",
+    "lemma": "gsd_nocharlm",
+    "depparse": "gsd_charlm"
+   },
+   "hdt": {
+    "tokenize": "hdt_nocharlm",
+    "mwt": "hdt",
+    "pos": "hdt_charlm",
+    "lemma": "hdt_nocharlm",
+    "depparse": "hdt_charlm"
+   }
+  },
+  "default_md5": "cb8f6c594da6b7e4ad40ca278bf1a7ce",
+  "lang_name": "German"
+ }
+}

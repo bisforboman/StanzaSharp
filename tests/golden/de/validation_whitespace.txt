@@ -1,0 +1,33 @@
+
+
+
+   Führende Leerzeilen und Leerzeichen kommen zuerst.  Dann ein normaler Satz.
+
+
+
+
+
+Viele Leerzeilen trennten diesen Absatz. Er hat zwei Sätze.   
+Am Zeilenende stehen Leerzeichen.		
+
+Jetzt folgen Windows-Zeilenenden.
+Diese Zeile endet mit CRLF.
+Diese auch.
+
+Ein neuer Absatz nach einer CRLF-Leerzeile.
+
+	Ein Absatz, der mit einem Tabulator beginnt.
+
+Ein einzelnes CRsteht mitten in dieser Zeile.
+
+   
+  
+Zwischen diesen Absätzen stehen Zeilen nur aus Leerzeichen.
+
+Zeile eins
+Zeile zwei ohne Satzzeichen
+Zeile drei.
+
+ Ein geschütztes Leerzeichen am Anfang und in der Mitte.
+
+Das Ende kommt ohne Zeilenumbruch.
