@@ -87,7 +87,7 @@ jobs:
       # Whitespace and every fix StyleBro's rules have; the version matches StyleBro.Analyzers in Directory.Build.props.
       - name: Code style
         run: |
-          dotnet tool install --tool-path "$RUNNER_TEMP/stylebro" StyleBro.Migrate --version 0.5.0-alpha.1
+          dotnet tool install --tool-path "$RUNNER_TEMP/stylebro" StyleBro.Migrate --version 0.7.0-alpha.1
           "$RUNNER_TEMP/stylebro/stylebro-migrate" format StanzaSharp.slnx --verify-no-changes --severity warn --no-restore
 
       - name: Test
