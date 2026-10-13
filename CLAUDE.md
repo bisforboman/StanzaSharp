@@ -97,6 +97,8 @@ since 1.0, and every processor also has a managed net (see "Managed backend"), t
   Round 22: 11 KB/word (NER's emissions rented through `INerNet.Forward`'s span, Tarjan's per-node arrays, ASCII
   `PyString.Lower`, the `Recycler` keeping `StackState`/`Composed` objects, the tokenizer's `Paragraph` as one string with
   inputs rented per batch). GC allocation ticks over-credit small objects; trust the benchmark's per-processor bytes.
+  Round 23: the `ArrayPool` "misses" (`PoolExhausted`) left in the LSTMs are the pool's first fill on a fresh process
+  (~0.6 GB, live and reused; a second call allocates 8 KB/word), not garbage; no thread, partition or size limit is hit.
   Round 12 (concurrent calls, `--with-long`): `ManagedThreads.Pool` keeps workers asleep while callers in a region plus
   awake workers number max(ProcessorCount, Count) (`_busy`/`_limit`); with Threads = ProcessorCount and 8 callers, spinning
   oversubscription had stalled calls for seconds. Calls don't serialize or starve; >2 callers cost throughput (L3/DRAM,
