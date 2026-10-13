@@ -42,10 +42,10 @@ public class CompareCommandTests
     {
         // "😀" is two UTF-16 code units but one code point, so "ok" starts at 3 in .NET and 2 in Python.
         const string text = "😀 ok";
-        var conllu = "# text = 😀 ok\n1\t😀\t😀\tSYM\tNFP\t_\t0\troot\t_\tstart_char=0|end_char=2\n" +
-            "2\tok\tstart_char=3\tINTJ\tUH\t_\t1\tdiscourse\t_\tSpaceAfter=No|start_char=3|end_char=5|ner=O\n\n";
-        Assert.Equal("# text = 😀 ok\n1\t😀\t😀\tSYM\tNFP\t_\t0\troot\t_\tstart_char=0|end_char=1\n" +
-            "2\tok\tstart_char=3\tINTJ\tUH\t_\t1\tdiscourse\t_\tSpaceAfter=No|start_char=2|end_char=4|ner=O\n\n",
+        var conllu = "# text = 😀 ok\n1\t😀\t😀\tSYM\tNFP\t_\t0\troot\t_\tstart_char=0|end_char=2\n"
+            + "2\tok\tstart_char=3\tINTJ\tUH\t_\t1\tdiscourse\t_\tSpaceAfter=No|start_char=3|end_char=5|ner=O\n\n";
+        Assert.Equal("# text = 😀 ok\n1\t😀\t😀\tSYM\tNFP\t_\t0\troot\t_\tstart_char=0|end_char=1\n"
+            + "2\tok\tstart_char=3\tINTJ\tUH\t_\t1\tdiscourse\t_\tSpaceAfter=No|start_char=2|end_char=4|ner=O\n\n",
             ConlluDiff.ToCodePointOffsets(conllu, text));
     }
 

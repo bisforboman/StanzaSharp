@@ -228,14 +228,14 @@ internal sealed class NerTagger : IDisposable
         {
             var tag = fixedTags[i];
             var type = tag.Length >= 2 ? tag[2..] : "";
-            if (tag.StartsWith("B-", StringComparison.Ordinal) &&
-                (i == n - 1 || (fixedTags[i + 1] != "I-" + type && fixedTags[i + 1] != "E-" + type)))
+            if (tag.StartsWith("B-", StringComparison.Ordinal)
+                && (i == n - 1 || (fixedTags[i + 1] != "I-" + type && fixedTags[i + 1] != "E-" + type)))
             {
                 fixedTags[i] = "S-" + type;
             }
 
-            if (tag.StartsWith("E-", StringComparison.Ordinal) &&
-                (i == 0 || (fixedTags[i - 1] != "B-" + type && fixedTags[i - 1] != "I-" + type)))
+            if (tag.StartsWith("E-", StringComparison.Ordinal)
+                && (i == 0 || (fixedTags[i - 1] != "B-" + type && fixedTags[i - 1] != "I-" + type)))
             {
                 fixedTags[i] = "S-" + type;
             }
