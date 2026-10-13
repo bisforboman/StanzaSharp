@@ -11,9 +11,9 @@ internal interface INerNet : IDisposable
     /// <param name="sentences">The batch's token texts.</param>
     /// <param name="wordIds">[batch, width] pretrain ids (lowercased tokens), padded.</param>
     /// <param name="deltaIds">[batch, width] delta ids, padded.</param>
+    /// <param name="logits">Gets the [batch, width, tags] emission scores, row-major; rows past a sentence's end are unspecified.</param>
     /// <param name="charlms">With <paramref name="cacheKeys"/>: charlm outputs to reuse; row i's key, if not null, is looked up.</param>
-    /// <returns>[batch, width, tags] emission scores, row-major; rows past a sentence's end are unspecified.</returns>
-    float[] Forward(IReadOnlyList<IReadOnlyList<string>> sentences, long[] wordIds, long[] deltaIds, int width,
+    void Forward(IReadOnlyList<IReadOnlyList<string>> sentences, long[] wordIds, long[] deltaIds, int width, Span<float> logits,
         CharlmCache? charlms, IReadOnlyList<Sentence?>? cacheKeys, CancellationToken ct);
 }
 
@@ -61,7 +61,7 @@ internal sealed unsafe class ManagedNerNet : INerNet
         return (packed, bias);
     }
 
-    public float[] Forward(IReadOnlyList<IReadOnlyList<string>> sentences, long[] wordIds, long[] deltaIds, int width,
+    public void Forward(IReadOnlyList<IReadOnlyList<string>> sentences, long[] wordIds, long[] deltaIds, int width, Span<float> logits,
         CharlmCache? charlms, IReadOnlyList<Sentence?>? cacheKeys, CancellationToken ct)
     {
         int batch = sentences.Count, inSize = _inputSize, ldt = _inputTransform.PaddedN, ldc = _tagClf.PaddedN;
@@ -126,14 +126,11 @@ internal sealed unsafe class ManagedNerNet : INerNet
             fixed (float* ph = hidden, ps = scores, ptb = _tagBias)
                 Gemm.Run(ph, rows, _lstm.OutputSize, _tagClf, ptb, ps, ldc, ct);
 
-            var logits = new float[batch * width * _tags];
             for (int i = 0; i < batch; i++)
             {
                 for (int j = 0; j < lengths[i]; j++)
-                    scores.AsSpan(Row(i, j) * ldc, _tags).CopyTo(logits.AsSpan((i * width + j) * _tags));
+                    scores.AsSpan(Row(i, j) * ldc, _tags).CopyTo(logits[((i * width + j) * _tags)..]);
             }
-
-            return logits;
         }
         finally
         {

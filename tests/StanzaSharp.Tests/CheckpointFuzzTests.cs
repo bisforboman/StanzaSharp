@@ -2,6 +2,8 @@ using System.Buffers.Binary;
 using System.Diagnostics;
 using System.IO.Compression;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Xunit.Abstractions;
 
 namespace StanzaSharp.Tests;
@@ -64,6 +66,8 @@ public class CheckpointFuzzTests(ITestOutputHelper output)
 
                     ckpt.Tensors.RawBytes(key);
                 }
+
+                ReadNodes(ckpt.Root);
             }
             catch (Exception e) when (e is InvalidDataException or NotSupportedException)
             {
@@ -80,6 +84,41 @@ public class CheckpointFuzzTests(ITestOutputHelper output)
         if (!thread.Join(TimeSpan.FromSeconds(30)))
             return "no result after 30 s (hang)";
         return problem;
+    }
+
+    /// <summary>Reads every property name and string, and every vocabulary and long string list the way the models do.</summary>
+    private static void ReadNodes(JsonNode? node)
+    {
+        switch (node)
+        {
+            case JsonObject o:
+                if (o.ContainsKey("_unit2id"))
+                    TryRead(() => Checkpoint.UnitToId(o));
+                foreach (var (_, child) in o)
+                    ReadNodes(child);
+                break;
+            case JsonArray a:
+                foreach (var child in a)
+                    ReadNodes(child);
+                break;
+            case JsonValue v when v.TryGetValue(out PyContainer? _):
+                TryRead(() => Checkpoint.Strings(v));
+                break;
+            case JsonValue v:
+                v.TryGetValue(out string? _);
+                break;
+        }
+
+        static void TryRead(Action read)
+        {
+            try
+            {
+                read();
+            }
+            catch (InvalidDataException)
+            {
+            }
+        }
     }
 
     private static readonly long[] Extremes =
@@ -228,7 +267,15 @@ public class CheckpointFuzzTests(ITestOutputHelper output)
         int iterations = Math.Max(1, Iterations / 10);
         var failures = new List<string>();
         foreach (var name in names)
+        {
             failures.AddRange(Fuzz(Path.Combine(Repo.StanzaModels, name + ".pt"), iterations, Seed));
+
+            // The converted JSON too, where present: its vocabularies are read as JSON nodes.
+            var converted = Path.Combine(Repo.Models, name);
+            if (File.Exists(converted + ".json"))
+                failures.AddRange(Fuzz(converted + ".json", iterations, Seed, everyTruncation: false, converted + ".safetensors"));
+        }
+
         AssertNoFailures(failures, timer);
     }
 
@@ -386,6 +433,169 @@ public class CheckpointFuzzTests(ITestOutputHelper output)
     {
         // A dict key nested 100,000 tuples deep, hashed recursively, used to overflow the stack.
         LoadFails(Legacy(P("}", "N", Enumerable.Repeat((byte)0x85, 100_000).ToArray(), "Ns")));
+    }
+
+    // ---------------------------------------------------------------- large flat containers (PyContainer)
+    private static readonly string[] Words = [.. Enumerable.Range(0, PyContainer.MinCount + 3).Select(i => $"w{i}é")];
+
+    private static byte[] WordList() => P("](", Words.SelectMany(Str).ToArray(), "e");
+
+    private static byte[] WordIds() => P("}(", Words.SelectMany((w, i) => P(Str(w), Int(i))).ToArray(), "u");
+
+    /// <summary>
+    /// A vocab (<c>_unit2id</c> and <c>_id2unit</c>), plus long lists under a tuple and a non-string-keyed dict, a short
+    /// list, and a long list with a non-string item, which stays JSON nodes.
+    /// </summary>
+    private static byte[] VocabFile() => Legacy(P("}(",
+        Str("vocab"), "}(", Str("_unit2id"), WordIds(), Str("_id2unit"), WordList(), Str("lower"), 0x89, "u",
+        Str("t"), "(", Int(1), WordList(), "t",
+        Str("d"), "}", Int(7), WordList(), "s",
+        Str("short"), "](", Str("a"), Str("b"), "e",
+        Str("mixed"), WordList(), "N", "a",
+        "u"));
+
+    /// <summary>The converter's JSON for a pickled object: the Splitter with nothing left out.</summary>
+    private static string ConverterJson(object? obj)
+    {
+        var buffer = new System.Buffers.ArrayBufferWriter<byte>();
+        using (var writer = new Utf8JsonWriter(buffer))
+            new TorchCheckpoint.Splitter(writer, long.MaxValue, "test").Walk(obj);
+        return Encoding.UTF8.GetString(buffer.WrittenSpan);
+    }
+
+    private static object? Unpickle(byte[] legacyFile)
+    {
+        using var s = new MemoryStream(legacyFile);
+        for (int i = 0; i < 3; i++)
+            Unpickler.Load(s);
+        return Unpickler.Load(s);
+    }
+
+    [Fact]
+    public void Crafted_LargeContainersLoadLikeTheConverter()
+    {
+        var file = VocabFile();
+        var dir = Directory.CreateTempSubdirectory("stanzasharp-crafted-");
+        try
+        {
+            var path = Path.Combine(dir.FullName, "vocab.pt");
+            File.WriteAllBytes(path, file);
+            var ckpt = Checkpoint.Load(path);
+            Assert.Equal(ConverterJson(Unpickle(file)), ckpt.Root.ToJsonString());
+
+            var root = ckpt.Root;
+            Assert.IsAssignableFrom<JsonValue>(root["vocab"]!["_unit2id"]);
+            Assert.IsAssignableFrom<JsonValue>(root["t"]!["$tuple"]![1]);
+            Assert.IsAssignableFrom<JsonValue>(root["d"]!["$dict"]![0]![1]);
+            Assert.IsType<JsonArray>(root["short"]);
+            Assert.IsType<JsonArray>(root["mixed"]);
+
+            // The readers give what they give for the converter's JSON.
+            var json = JsonNode.Parse(ckpt.Root.ToJsonString())!;
+            Assert.Equal(Checkpoint.UnitToId(json["vocab"]), Checkpoint.UnitToId(root["vocab"]));
+            Assert.Equal(Words.Select((w, i) => (w, i)).ToDictionary(x => x.w, x => x.i), Checkpoint.UnitToId(root["vocab"]));
+            Assert.Equal(Words, Checkpoint.Strings(root["vocab"]!["_id2unit"]));
+            Assert.Equal(Words, Checkpoint.Strings(json["vocab"]!["_id2unit"]));
+            Assert.Equal(Words, Checkpoint.Strings(root["d"]!["$dict"]![0]![1]));
+            Assert.Equal(["a", "b"], Checkpoint.Strings(root["short"]));
+
+            // Wrong kinds fail cleanly, as they do in JSON.
+            Assert.Throws<InvalidDataException>(() => Checkpoint.Strings(root["mixed"]));
+            Assert.Throws<InvalidDataException>(() => Checkpoint.Strings(root["vocab"]!["_unit2id"]));
+            Assert.Throws<InvalidDataException>(() => Checkpoint.Strings(json["vocab"]!["_unit2id"]));
+        }
+        finally
+        {
+            dir.Delete(recursive: true);
+        }
+    }
+
+    [Fact]
+    public void Crafted_LargeContainerIdsOutsideInt()
+    {
+        // A vocab id that doesn't fit an int: refused like the JSON reader refuses it.
+        var dir = Directory.CreateTempSubdirectory("stanzasharp-crafted-");
+        try
+        {
+            var path = Path.Combine(dir.FullName, "vocab.pt");
+            File.WriteAllBytes(path, Legacy(P("}", Str("vocab"), "}", Str("_unit2id"),
+                "}(", Words.SelectMany((w, i) => P(Str(w), Int(i == 5 ? 1L << 40 : i))).ToArray(), "u", "s", "s")));
+            var ckpt = Checkpoint.Load(path);
+            Assert.Throws<InvalidDataException>(() => Checkpoint.UnitToId(ckpt.Root["vocab"]));
+            Assert.Throws<InvalidDataException>(() => Checkpoint.UnitToId(JsonNode.Parse(ckpt.Root.ToJsonString())!["vocab"]));
+        }
+        finally
+        {
+            dir.Delete(recursive: true);
+        }
+    }
+
+    [Fact]
+    public void Crafted_LargeContainersAtTheDepthLimit()
+    {
+        // A long list nested d lists deep loads exactly when the converter's JSON would.
+        var dir = Directory.CreateTempSubdirectory("stanzasharp-crafted-");
+        try
+        {
+            var path = Path.Combine(dir.FullName, "deep.pt");
+            for (int depth = 56; depth <= 64; depth++)
+            {
+                var file = Legacy(P(Enumerable.Repeat((byte)']', depth).ToArray(), WordList(), Enumerable.Repeat((byte)'a', depth).ToArray()));
+                File.WriteAllBytes(path, file);
+                bool converterLoads = true;
+                try
+                {
+                    JsonNode.Parse(ConverterJson(Unpickle(file)));
+                }
+                catch (Exception e) when (e is JsonException or InvalidDataException)
+                {
+                    // Too deep for the Splitter or JsonNode.
+                    converterLoads = false;
+                }
+
+                bool loads = true;
+                try
+                {
+                    Checkpoint.Load(path);
+                }
+                catch (InvalidDataException)
+                {
+                    loads = false;
+                }
+
+                Assert.True(converterLoads == loads, $"depth {depth}: converter's JSON {(converterLoads ? "parses" : "fails")}, Load {(loads ? "succeeds" : "fails")}");
+            }
+        }
+        finally
+        {
+            dir.Delete(recursive: true);
+        }
+    }
+
+    [Fact]
+    public void Crafted_LargeContainerAmplification()
+    {
+        // A 1 MB list of strings referenced 10,000 times through the memo: kept out of the JSON, it still counts
+        // against the cap (10 GB of JSON), as when it was written each time.
+        var big = P("](", Enumerable.Range(0, PyContainer.MinCount).SelectMany(i => Str(new string('a', 1000) + i)).ToArray(), "e");
+        LoadFails(Legacy(P("]", big, "q", 0, "a", Enumerable.Range(0, 10_000).SelectMany(_ => P("h", 0, "a")).ToArray())));
+    }
+
+    [Fact]
+    public void Fuzz_LargeContainers()
+    {
+        var timer = Stopwatch.StartNew();
+        var dir = Directory.CreateTempSubdirectory("stanzasharp-crafted-");
+        try
+        {
+            var path = Path.Combine(dir.FullName, "vocab.pt");
+            File.WriteAllBytes(path, VocabFile());
+            AssertNoFailures(Fuzz(path, Iterations, Seed), timer);
+        }
+        finally
+        {
+            dir.Delete(recursive: true);
+        }
     }
 
     [Fact]
@@ -604,6 +814,25 @@ public class CheckpointFuzzTests(ITestOutputHelper output)
             var ckpt = Checkpoint.Load(basePath);
             Assert.Throws<InvalidDataException>(() => ckpt.Tensor<float>(ckpt.Root["w"]));
             Assert.Throws<InvalidDataException>(() => ckpt.Shape(ckpt.Root["w"]));
+
+            // Invalid UTF-8 or an escaped lone surrogate in a property name or a string: JsonNode would only throw
+            // InvalidOperationException once the model read it.
+            byte[][] bad =
+            [
+                [.. "{\"a"u8, 0xff, .. "\":1}"u8],
+                [.. "{\"a\":[\""u8, 0xc3, .. "\"]}"u8],
+                [.. """{"\ud800":1}"""u8],
+                [.. """{"a":"x\udc00"}"""u8],
+            ];
+            foreach (var json in bad)
+            {
+                File.WriteAllBytes(basePath + ".json", json);
+                Assert.Throws<InvalidDataException>(() => Checkpoint.Load(basePath));
+            }
+
+            // A byte order mark and an escaped surrogate pair are fine.
+            File.WriteAllBytes(basePath + ".json", [0xef, 0xbb, 0xbf, .. """{"\ud83d\ude00":1}"""u8]);
+            Assert.Equal(1, (int)Checkpoint.Load(basePath).Root["\U0001F600"]!);
 
             // A vocabulary whose ids are not integers.
             Assert.Throws<InvalidDataException>(() => Checkpoint.UnitToId(System.Text.Json.Nodes.JsonNode.Parse("""{"_unit2id":{"a":"x"}}""")));

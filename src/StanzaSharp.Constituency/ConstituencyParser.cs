@@ -97,6 +97,7 @@ internal sealed class ConstituencyParser : IDisposable
         var result = new Tree?[sentences.Count];
         var batch = new List<ParserState>();
         var horizon = new Queue<ParserState>();
+        var scoreInputs = new List<(object, int, object, object)>(BatchSize); // refilled every step
         int built = 0;
         try
         {
@@ -123,8 +124,10 @@ internal sealed class ConstituencyParser : IDisposable
                 if (batch.Count == 0)
                     break;
 
-                var logits = _net.Score(batch.Select(s => (s.WordHx, s.WordPosition + 1, s.Transitions.State, s.Constituents.State)).ToList(),
-                    cancellationToken);
+                scoreInputs.Clear();
+                foreach (var s in batch)
+                    scoreInputs.Add((s.WordHx, s.WordPosition + 1, s.Transitions.State, s.Constituents.State));
+                var logits = _net.Score(scoreInputs, cancellationToken);
                 int n = _transitions.Length;
                 var chosen = new Transition?[batch.Count];
                 for (int k = 0; k < batch.Count; k++)
@@ -197,19 +200,20 @@ internal sealed class ConstituencyParser : IDisposable
                 best = j;
         }
 
-        if (state.IsLegal(_transitions[best], _rootLabels, _unaryLimit))
-            return _transitions[best];
-        var row = scores.ToArray();
-        return Enumerable.Range(0, row.Length).OrderByDescending(j => row[j])
+        return state.IsLegal(_transitions[best], _rootLabels, _unaryLimit) ? _transitions[best] : BestLegal(state, scores.ToArray());
+    }
+
+    /// <summary>The best legal transition (separate from <see cref="Choose"/>, so the common path allocates no closure).</summary>
+    private Transition? BestLegal(ParserState state, float[] row) =>
+        Enumerable.Range(0, row.Length).OrderByDescending(j => row[j])
             .Select(j => _transitions[j])
             .FirstOrDefault(t => state.IsLegal(t, _rootLabels, _unaryLimit));
-    }
 
     // ----- applying transitions (bulk_apply) -----
     private void Apply(List<ParserState> states, Transition?[] transitions, CancellationToken ct)
     {
-        var applied = new List<(ParserState State, Transition Transition, StackNode<Constituent> Base)>();
-        var newConstituents = new List<Constituent>();
+        var applied = new List<(ParserState State, Transition Transition, StackNode<Constituent> Base)>(states.Count);
+        var newConstituents = new List<Constituent>(states.Count);
         var opens = new List<(int Slot, string Label, int OpenIndex)>();
         var closes = new List<(int Slot, string Label, List<Constituent> Children)>();
 
@@ -283,9 +287,22 @@ internal sealed class ConstituencyParser : IDisposable
             }
         }
 
-        var newTransitions = _net.PushTransitions(applied.Select(a => a.State.Transitions.State).ToList(),
-            applied.Select(a => a.Transition.Index).ToArray(), ct);
-        var newStacks = _net.PushConstituents(applied.Select(a => a.Base.State).ToList(), newConstituents.Select(c => c.Hx!).ToList(), ct);
+        int count = applied.Count;
+        var parents = new object[count];
+        var indices = new int[count];
+        var inputs = new object[count];
+        for (int i = 0; i < count; i++)
+        {
+            parents[i] = applied[i].State.Transitions.State;
+            indices[i] = applied[i].Transition.Index;
+            inputs[i] = newConstituents[i].Hx!;
+        }
+
+        var newTransitions = _net.PushTransitions(parents, indices, ct);
+        var bases = new object[count];
+        for (int i = 0; i < count; i++)
+            bases[i] = applied[i].Base.State;
+        var newStacks = _net.PushConstituents(bases, inputs, ct);
 
         for (int i = 0; i < applied.Count; i++)
         {
@@ -353,7 +370,7 @@ internal sealed class ConstituencyParser : IDisposable
             throw new NotSupportedException("Maxout output layers are not ported");
     }
 
-    private static List<string> Strings(JsonNode? array) => array!.AsArray().Select(x => x!.GetValue<string>()).ToList();
+    private static string[] Strings(JsonNode? array) => Checkpoint.Strings(array); // "words" is long: a JsonValue in a .pt
 
     public void Dispose() => _net.Dispose();
 }

@@ -144,45 +144,7 @@ per-call times are more sensitive to other busy processes than its throughput is
 
 ## Remaining ideas
 
-A short backlog. Items marked *TorchSharp only* concern the `StanzaSharp.Cuda` backend; the managed backend (the
-default) doesn't have them.
-
-**Open:**
-- **Depparse's backward charlm in batches.** Today only a one-sentence document continues from the tagger's final
-  backward state (`CharlmCache.TryGetAlone`), because a batched row's kernel was thought to depend on its batch. Since
-  `Gemm.KernelBlocked` a row's step is batch-invariant (round 18 checked it bit for bit for the forward charlm), so the
-  parser could continue every cached sentence from the tagger's state over ROOT alone, if the cache also kept each
-  sentence's final cell state (4 KB per sentence). That is the whole backward pass of depparse's charlm work, not 3 steps.
-  Check it on the backward charlm the same way first.
-- **Long texts: what is left of the garbage** (round 18): per-word objects outside the charlm (tokenizer inputs,
-  constituency's `StackState`s, `bool[]`/`object[]`/`string[]`), each under 1 KB per word. The peak is set by live data.
-- **Loading `.pt` files.** The pretrain's and NER's 250k-word vocabularies are pickled, mirrored into JSON
-  (`TorchCheckpoint.Splitter`), parsed back into nodes and then into a dictionary: about 0.3 s each when warm, more cold,
-  and the pretrain then NER are the load's longest chain (round 17). Building the vocabulary straight from the pickle
-  would cut most of it.
-- **Sentiment in default_fast.** With nothing to reuse it runs both charlms on every token. Only a faster charlm (or
-  Stanza changing the package) would help.
-- **Parser step loop: per-state tensor ops** (*TorchSharp only*). Each step takes one `WordHx` row view per state and
-  stacks per-state tensors; a shared "bank" tensor per stack (`index_select` / `index_copy_`) would make the op count
-  per step constant. Exact (data movement only); about 2% on the CPU, likely more on a GPU (docs/gpu.md).
-- **Padding in depparse's input** (*TorchSharp only*). Depparse builds its input and charlm outputs padded; building
-  them in packed order like the tagger (round 4) would remove one padded copy of the 2423-wide input per batch.
-- **Depparse memory** (*TorchSharp only*): the [batch, width, width, 53] label scores (275 MB on the warm-up batch) set
-  the peak there. The managed backend never had that tensor (round 9).
-- **Per-call cost** (*TorchSharp only*): 192 ms (Python 189), libtorch's per-operation cost on tiny tensors. Not pursued.
-
-**Done** (see the round):
-- Depparse's forward charlm from a stored start state (exact, 3 of ~90 steps: under the noise, not shipped); the
-  `ArrayPool`'s churn on long texts (measured: none; the charlm's per-character strings were cut instead): round 18.
-- Startup: the runtime's vector `Exp` and the thread pool at JIT tier 0, two models loading at a time; ReadyToRun and
-  the `DOTNET_*` knobs measured: round 17.
-- Small LSTMs on few cores (four tasks per thread in a step), the benchmark's warm-up, the e-mail/URL regex prefilter:
-  round 16.
-- AVX-512 kernels (`Vector512`): round 14.
-- The tokenizer's long paragraphs (later windows run only unfinished rows): round 15.
-- Thread count: the default is the physical cores when there are at least 4 (rounds 12–13).
-- Per-call cost on short texts (managed): round 7; concurrent callers: `PipelineOptions.MaxConcurrentCalls` (round 7)
-  and the pool's oversubscription fix (round 12).
-- Very large documents: measured in round 8 (only the `Document` grows); allocations cut in round 11. The tokenizer's
-  up-front inputs (about 85 bytes per character) never set the peak (round 8).
-- Managed depparse and sentiment memory: rounds 9 and 10.
+Open ideas are one file each in [performance/ideas/](performance/ideas/), so parallel pull requests don't collide
+here. A new idea adds a file; when one is done (or dropped after measuring), its pull request deletes the file, and
+its round file in [performance/](performance/) is the record. Files marked *TorchSharp only* concern the
+`StanzaSharp.Cuda` backend.

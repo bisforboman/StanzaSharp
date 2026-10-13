@@ -41,14 +41,66 @@ jobs:
             echo "new=true" >> "$GITHUB_OUTPUT"
           fi
 
-  # Everything CI checks, including the full suite against the real models and the package check.
-  checks:
+  # Everything CI checks, including the full suite against the real models and the package checks: main's own CI run of
+  # this commit (ci.yml on push, started by the same push), which this waits for and requires to have succeeded, instead
+  # of running the whole suite a second time on the same runners (owner's decision, 2026-10-13: a release took 40+ min).
+  # A cancelled run (a newer push to main cancels main's older CI run) or a failed one fails the release: re-run that CI
+  # run, then this release run's failed jobs. If main has no CI run of this commit (none found within 2 min), checks
+  # runs ci.yml here instead, as before.
+  ci:
     needs: version
     if: needs.version.outputs.new == 'true'
+    runs-on: ubuntu-26.04
+    timeout-minutes: 180
+    permissions:
+      actions: read
+    outputs:
+      found: ${{ steps.wait.outputs.found }}
+    steps:
+      - id: wait
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          for attempt in 1 2 3 4 5 6 7; do
+            run=$(gh run list --workflow ci.yml --commit "$SHA" --branch main --event push --limit 1 --json databaseId --jq '.[0].databaseId // empty') || run=
+            if [ -n "$run" ] || [ $attempt = 7 ]; then break; fi
+            sleep 20
+          done
+          if [ -z "$run" ]; then
+            echo "::notice::No ci.yml push run for $SHA; running ci.yml in this release instead."
+            echo found=false >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo found=true >> "$GITHUB_OUTPUT"
+          url="https://github.com/$GH_REPO/actions/runs/$run"
+          echo "Waiting for CI run $url"
+          deadline=$((SECONDS + 170 * 60))
+          while :; do
+            state=$(gh run view "$run" --json status,conclusion --jq '.status + " " + .conclusion') || state="unknown "
+            echo "$(date -u +%H:%M:%S) $state"
+            if [ "${state%% *}" = completed ]; then break; fi
+            if [ $SECONDS -ge $deadline ]; then echo "::error::CI run $url did not finish in time; re-run this release run's failed jobs once it has."; exit 1; fi
+            sleep 60
+          done
+          conclusion=${state#* }
+          case $conclusion in
+            success) echo "CI run $url succeeded." ;;
+            cancelled) echo "::error::CI run $url of this commit was cancelled (a newer push to main cancels main's older CI run), so nothing is published. Re-run that CI run, then re-run this release run's failed jobs."; exit 1 ;;
+            *) echo "::error::CI run $url of this commit ended '$conclusion', so nothing is published. Fix it, or re-run it if it was a fluke, then re-run this release run's failed jobs."; exit 1 ;;
+          esac
+
+  # The fallback when main has no CI run of this commit: all of ci.yml, as part of this run.
+  checks:
+    needs: [version, ci]
+    if: needs.ci.outputs.found == 'false'
     uses: ./.github/workflows/ci.yml
 
   release:
-    needs: [version, checks]
+    needs: [version, ci, checks]
+    # checks is skipped when ci found main's run, which then succeeded (ci would have failed otherwise).
+    if: ${{ !cancelled() && needs.ci.result == 'success' && (needs.checks.result == 'success' || (needs.checks.result == 'skipped' && needs.ci.outputs.found == 'true')) }}
     runs-on: ubuntu-26.04
     environment: ${{ contains(needs.version.outputs.version, '-') && 'prerelease' || 'release' }}
     env:
