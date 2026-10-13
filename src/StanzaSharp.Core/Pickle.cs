@@ -112,7 +112,6 @@ internal sealed class Unpickler
                         Push(n >= long.MinValue && n <= long.MaxValue ? (object)(long)n : n); // without (object) the ternary is a BigInteger
                         break;
                     }
-
                 case (byte)'G': Push(BinaryPrimitives.ReadDoubleBigEndian(Bytes(8))); break; // BINFLOAT
                 case (byte)'X': Push(Utf8(BinaryPrimitives.ReadUInt32LittleEndian(Bytes(4)))); break; // BINUNICODE
                 case (byte)'U': Push(Utf8(Bytes(1)[0])); break; // SHORT_BINSTRING (Python 2 str; torch.load decodes it as UTF-8)
@@ -136,7 +135,6 @@ internal sealed class Unpickler
                             dict[Key(items[i])] = items[i + 1];
                         break;
                     }
-
                 case (byte)'h': Push(MemoGet(Bytes(1)[0])); break; // BINGET
                 case (byte)'j': Push(MemoGet(BinaryPrimitives.ReadUInt32LittleEndian(Bytes(4)))); break; // LONG_BINGET
                 case (byte)'q': _memo[Bytes(1)[0]] = Top(); break; // BINPUT
