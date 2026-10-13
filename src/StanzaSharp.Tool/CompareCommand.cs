@@ -57,8 +57,8 @@ internal static class CompareCommand
             return 2;
         if (!stanza.Files.ToHashSet().SetEquals(expectedFiles) || string.Join(",", stanza.Processors) != list)
         {
-            return Fail($"Stanza and StanzaSharp would not run the same models.\n  Stanza:      {string.Join(",", stanza.Processors)}; " +
-                $"{string.Join(", ", stanza.Files.Order())}\n  StanzaSharp: {list}; {string.Join(", ", expectedFiles.Order())}");
+            return Fail($"Stanza and StanzaSharp would not run the same models.\n  Stanza:      {string.Join(",", stanza.Processors)}; "
+                + $"{string.Join(", ", stanza.Files.Order())}\n  StanzaSharp: {list}; {string.Join(", ", expectedFiles.Order())}");
         }
 
         Document doc;
@@ -94,8 +94,8 @@ internal static class CompareCommand
         output.WriteLine($"  StanzaSharp: loaded in {load:F1} s, processed in {process:F1} s");
         if (nonBmp > 0)
         {
-            output.WriteLine($"  note:        the text has {nonBmp:N0} characters outside the BMP (e.g. emoji). StanzaSharp's start_char/end_char " +
-                "count UTF-16 code units like .NET strings, Stanza's count code points like Python; StanzaSharp's were converted to code points before comparing.");
+            output.WriteLine($"  note:        the text has {nonBmp:N0} characters outside the BMP (e.g. emoji). StanzaSharp's start_char/end_char "
+                + "count UTF-16 code units like .NET strings, Stanza's count code points like Python; StanzaSharp's were converted to code points before comparing.");
         }
 
         output.WriteLine();
@@ -147,8 +147,8 @@ internal static class CompareCommand
             }
             catch (Win32Exception e)
             {
-                Fail($"Could not start Python ({python}: {e.Message}). Install Python 3 and Stanza {ModelDownloader.StanzaVersion} " +
-                    $"(pip install stanza=={ModelDownloader.StanzaVersion}), or pass its path with --python.");
+                Fail($"Could not start Python ({python}: {e.Message}). Install Python 3 and Stanza {ModelDownloader.StanzaVersion} "
+                    + $"(pip install stanza=={ModelDownloader.StanzaVersion}), or pass its path with --python.");
                 return null;
             }
 
@@ -199,8 +199,8 @@ internal static class CompareCommand
         var missing = ModelDownloader.FilesFor(list, package).Select(f => f.Path).Where(f => !File.Exists(Path.Combine(dir, f))).Order().ToList();
         return missing.Count == 0
             ? null
-            : $"Missing in {models}: {string.Join(", ", missing)}. Python Stanza needs Stanza's .pt files; download them with: " +
-              $"stanzasharp download {models} --package {package}";
+            : $"Missing in {models}: {string.Join(", ", missing)}. Python Stanza needs Stanza's .pt files; download them with: "
+              + $"stanzasharp download {models} --package {package}";
     }
 
     /// <summary>Writes the tool's embedded files <paramref name="names"/> into <paramref name="dir"/>.</summary>

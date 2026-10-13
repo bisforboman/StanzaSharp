@@ -118,8 +118,8 @@ if (perCall > 0)
     var stageLog = new StageLogger();
     using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Processors = processors, Backend = pipelineBackend, Threads = threads > 0 ? threads : null, TrimNativeHeap = !noTrim, Logger = concurrent > 0 ? null : stageLog });
     var texts = perCallText != null ? [perCallText] : BuildShortSentences();
-    string header = $"C# StanzaSharp ({package}, {backend} backend), " +
-                    (backend == Backend.Managed ? $"managed threads {ManagedThreads.Count}" : $"torch threads {torch.get_num_threads()}");
+    string header = $"C# StanzaSharp ({package}, {backend} backend), "
+                    + (backend == Backend.Managed ? $"managed threads {ManagedThreads.Count}" : $"torch threads {torch.get_num_threads()}");
     for (int i = 0; i < 20; i++) // warm-up
         nlp.Process(texts[i % texts.Count]);
     if (concurrent > 0)
@@ -198,9 +198,9 @@ if (documents > 0)
     watch.Restart();
     nlp.Process(texts);
     double bulk = watch.Elapsed.TotalSeconds;
-    Console.WriteLine($"C# StanzaSharp ({package}, {backend} backend) on {device?.ToString() ?? "cpu"}, " +
-                      (backend == Backend.Managed ? $"managed threads {ManagedThreads.Count}" : $"torch threads {torch.get_num_threads()}") +
-                      $", {texts.Count} documents of one sentence");
+    Console.WriteLine($"C# StanzaSharp ({package}, {backend} backend) on {device?.ToString() ?? "cpu"}, "
+                      + (backend == Backend.Managed ? $"managed threads {ManagedThreads.Count}" : $"torch threads {torch.get_num_threads()}")
+                      + $", {texts.Count} documents of one sentence");
     Console.WriteLine($"{"one by one",-14}{alone,9:F2} s {texts.Count / alone,10:F0} docs/s");
     Console.WriteLine($"{"bulk",-14}{bulk,9:F2} s {texts.Count / bulk,10:F0} docs/s");
     return 0;
@@ -262,12 +262,12 @@ if (memoryWords > 0)
     Console.WriteLine($"C# StanzaSharp ({package}: {processors ?? "all"}) from {modelDir}, {(System.Runtime.GCSettings.IsServerGC ? "Server" : "workstation")} GC, " +
 
                       // A managed pipeline never loads libtorch, so don't ask it.
-                      (backend == Backend.Managed ? $"managed threads {ManagedThreads.Count}" : $"torch threads {torch.get_num_threads()}") +
-                      $": {wordCount} words, {mode}, {(NativeTorchLoaded() ? "native libtorch loaded" : "no native libtorch")}");
-    Console.WriteLine($"load          {loadSeconds,7:F2} s  load peak {loadPeak,6:F0} MB  after load {afterLoad,6:F0} MB  " +
-                      $"(GC heap {gcAfterLoad.HeapSizeBytes / 1048576.0:F0} MB, committed {gcAfterLoad.TotalCommittedBytes / 1048576.0:F0} MB)");
-    Console.WriteLine($"process       {processSeconds,7:F2} s  peak      {PeakMB(),6:F0} MB  at the end {WorkingSetMB(),6:F0} MB  " +
-                      $"(GC heap {gc.HeapSizeBytes / 1048576.0:F0} MB, committed {gc.TotalCommittedBytes / 1048576.0:F0} MB, {GC.CollectionCount(2)} gen2 GCs, {allocatedMB:F0} MB allocated)");
+                      (backend == Backend.Managed ? $"managed threads {ManagedThreads.Count}" : $"torch threads {torch.get_num_threads()}")
+                      + $": {wordCount} words, {mode}, {(NativeTorchLoaded() ? "native libtorch loaded" : "no native libtorch")}");
+    Console.WriteLine($"load          {loadSeconds,7:F2} s  load peak {loadPeak,6:F0} MB  after load {afterLoad,6:F0} MB  "
+                      + $"(GC heap {gcAfterLoad.HeapSizeBytes / 1048576.0:F0} MB, committed {gcAfterLoad.TotalCommittedBytes / 1048576.0:F0} MB)");
+    Console.WriteLine($"process       {processSeconds,7:F2} s  peak      {PeakMB(),6:F0} MB  at the end {WorkingSetMB(),6:F0} MB  "
+                      + $"(GC heap {gc.HeapSizeBytes / 1048576.0:F0} MB, committed {gc.TotalCommittedBytes / 1048576.0:F0} MB, {GC.CollectionCount(2)} gen2 GCs, {allocatedMB:F0} MB allocated)");
     foreach (var line in after)
         Console.WriteLine(line);
     if (verbose)
@@ -404,9 +404,9 @@ if (outFile != null)
     File.WriteAllText(outFile, Conllu.Write(doc));
 
 int words = doc.Sentences.Sum(s => s.Words.Count());
-Console.WriteLine($"C# StanzaSharp ({package}, {backend} backend) on {device?.ToString() ?? "cpu"}, " +
-                  (backend == Backend.Managed ? $"managed threads {ManagedThreads.Count}" : $"torch threads {torch.get_num_threads()}") + $", {copies} copies: " +
-                  $"{text.Length} chars, {doc.Sentences.Count} sentences, {words} words, {runs} runs");
+Console.WriteLine($"C# StanzaSharp ({package}, {backend} backend) on {device?.ToString() ?? "cpu"}, "
+                  + (backend == Backend.Managed ? $"managed threads {ManagedThreads.Count}" : $"torch threads {torch.get_num_threads()}") + $", {copies} copies: "
+                  + $"{text.Length} chars, {doc.Sentences.Count} sentences, {words} words, {runs} runs");
 Console.WriteLine($"{"load",-14}{load,9:F2} s {"",16} {peaks["load"],8:F0} MB peak");
 double total = 0;
 foreach (var s in stages)

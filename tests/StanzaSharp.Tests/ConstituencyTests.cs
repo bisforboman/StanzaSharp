@@ -157,8 +157,8 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
                 decisions++;
                 margins[0].Add(dt.Margin);
                 margins[1].Add(dm.Margin);
-                calls.Add((Math.Min(dt.Margin, dm.Margin), $"{sentences[i].File} sentence {sentences[i].Index} step {k}: {Name(dt.Best)} over {Name(dt.Second)}, " +
-                    $"margin TorchSharp {dt.Margin:E2}, managed {dm.Margin:E2}" + (dt.Second != dm.Second ? $" (managed's runner-up {Name(dm.Second)})" : "")));
+                calls.Add((Math.Min(dt.Margin, dm.Margin), $"{sentences[i].File} sentence {sentences[i].Index} step {k}: {Name(dt.Best)} over {Name(dt.Second)}, "
+                    + $"margin TorchSharp {dt.Margin:E2}, managed {dm.Margin:E2}" + (dt.Second != dm.Second ? $" (managed's runner-up {Name(dm.Second)})" : "")));
             }
         }
 

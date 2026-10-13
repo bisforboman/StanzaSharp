@@ -144,8 +144,8 @@ public static class ModelDownloader
             // Checkpoint.Load reads the converted files whenever the .json exists.
             if (File.Exists(basePath + ".json"))
             {
-                throw new InvalidOperationException($"VerifyChecksums: {basePath}.json is a converted model, which has no published checksum. " +
-                    "Load Stanza's .pt files (e.g. a ModelDownloader directory) or turn VerifyChecksums off.");
+                throw new InvalidOperationException($"VerifyChecksums: {basePath}.json is a converted model, which has no published checksum. "
+                    + "Load Stanza's .pt files (e.g. a ModelDownloader directory) or turn VerifyChecksums off.");
             }
 
             var file = basePath + ".pt";
@@ -157,8 +157,8 @@ public static class ModelDownloader
                 actual = Convert.ToHexStringLower(MD5.HashData(stream));
             if (actual != expected)
             {
-                throw new InvalidDataException($"{file}: checksum {actual} does not match Stanza {StanzaVersion}'s {expected}. " +
-                    "The file is corrupted or from another Stanza version; download it again with ModelDownloader.DownloadAsync.");
+                throw new InvalidDataException($"{file}: checksum {actual} does not match Stanza {StanzaVersion}'s {expected}. "
+                    + "The file is corrupted or from another Stanza version; download it again with ModelDownloader.DownloadAsync.");
             }
         }
     }

@@ -42,9 +42,9 @@ internal static class ManagedSpike
         torch.set_num_threads(threads);
         ManagedThreads.Count = threads;
         using var _ = torch.no_grad();
-        Console.WriteLine($"threads {threads}, kernel path {Gemm.Path} (detected {Gemm.Detect()}), {System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture}, " +
-                          $"AVX2 {System.Runtime.Intrinsics.X86.Avx2.IsSupported}, FMA {System.Runtime.Intrinsics.X86.Fma.IsSupported}, " +
-                          $"AdvSimd {System.Runtime.Intrinsics.Arm.AdvSimd.IsSupported}, Vector512 {System.Runtime.Intrinsics.Vector512.IsHardwareAccelerated}");
+        Console.WriteLine($"threads {threads}, kernel path {Gemm.Path} (detected {Gemm.Detect()}), {System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture}, "
+                          + $"AVX2 {System.Runtime.Intrinsics.X86.Avx2.IsSupported}, FMA {System.Runtime.Intrinsics.X86.Fma.IsSupported}, "
+                          + $"AdvSimd {System.Runtime.Intrinsics.Arm.AdvSimd.IsSupported}, Vector512 {System.Runtime.Intrinsics.Vector512.IsHardwareAccelerated}");
 
         if (mode == "gemm")
             return GemmSpeed();
@@ -397,9 +397,9 @@ internal static class ManagedSpike
             start.SignalAndWait();
             var wall = Stopwatch.StartNew();
             threads.ForEach(t => t.Join());
-            Console.WriteLine($"{which,-8} callers {callers}: wall {wall.Elapsed.TotalSeconds,7:F2} s, per call mean {perCall.Average(),7:F2} s " +
-                              $"(min {perCall.Min():F2}, max {perCall.Max():F2}), throughput {callers / wall.Elapsed.TotalSeconds:F3} calls/s, " +
-                              $"OS threads {Process.GetCurrentProcess().Threads.Count}");
+            Console.WriteLine($"{which,-8} callers {callers}: wall {wall.Elapsed.TotalSeconds,7:F2} s, per call mean {perCall.Average(),7:F2} s "
+                              + $"(min {perCall.Min():F2}, max {perCall.Max():F2}), throughput {callers / wall.Elapsed.TotalSeconds:F3} calls/s, "
+                              + $"OS threads {Process.GetCurrentProcess().Threads.Count}");
         }
 
         return 0;

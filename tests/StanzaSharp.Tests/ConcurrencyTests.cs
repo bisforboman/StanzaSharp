@@ -134,8 +134,8 @@ public class ConcurrencyTests(Xunit.Abstractions.ITestOutputHelper output)
                     continue;
                 }
 
-                output.WriteLine($"{processor} ({ms:F0} ms): canceled after {latency.Elapsed.TotalMilliseconds:F0} ms, " +
-                    $"in {e.StackTrace!.Split('\n').Select(l => l.Trim()).FirstOrDefault(l => l.StartsWith("at StanzaSharp.") && !l.Contains("Pipeline.Step"))}");
+                output.WriteLine($"{processor} ({ms:F0} ms): canceled after {latency.Elapsed.TotalMilliseconds:F0} ms, "
+                    + $"in {e.StackTrace!.Split('\n').Select(l => l.Trim()).FirstOrDefault(l => l.StartsWith("at StanzaSharp.") && !l.Contains("Pipeline.Step"))}");
 
                 // Where the call stopped decides the count (a loaded machine can move it to the next processor).
                 if (timings.Steps.Any(s => s.Processor == "lemma"))
@@ -159,8 +159,8 @@ public class ConcurrencyTests(Xunit.Abstractions.ITestOutputHelper output)
                 output.WriteLine($"  stopped in {stopped}, which now takes {bound.TotalMilliseconds * 4:F0} ms");
                 if (latency.Elapsed < bound)
                     break;
-                Assert.True(++slow < 3, $"canceled in {processor}, the call returned {latency.Elapsed.TotalMilliseconds:F0} ms later, " +
-                    $"over 5 s and a quarter of {stopped}'s time ({bound.TotalMilliseconds * 4:F0} ms), in 3 attempts");
+                Assert.True(++slow < 3, $"canceled in {processor}, the call returned {latency.Elapsed.TotalMilliseconds:F0} ms later, "
+                    + $"over 5 s and a quarter of {stopped}'s time ({bound.TotalMilliseconds * 4:F0} ms), in 3 attempts");
             }
         }
 

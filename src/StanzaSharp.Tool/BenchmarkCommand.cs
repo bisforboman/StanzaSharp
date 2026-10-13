@@ -227,9 +227,9 @@ internal static class BenchmarkCommand
         s.AppendLine(c, $"| .NET | {m.DotNet}, SIMD {m.Simd} |");
         s.AppendLine(c, $"| StanzaSharp | {m.StanzaSharp}, managed backend |");
         s.AppendLine(c, $"| Python Stanza | {r.Python} |");
-        s.AppendLine(c, $"| Run | {r.Package} package ({r.Processors}); {r.Words:N0} words in {r.Sentences:N0} sentences, median of " +
-                        $"{r.Runs} timed {(r.Runs == 1 ? "run" : "runs")} after {WarmUps(r)}{(r.Stanza != null ? ", the two sides alternating" : "")}; " +
-                        $"{r.Calls} calls on one sentence each |");
+        s.AppendLine(c, $"| Run | {r.Package} package ({r.Processors}); {r.Words:N0} words in {r.Sentences:N0} sentences, median of "
+                        + $"{r.Runs} timed {(r.Runs == 1 ? "run" : "runs")} after {WarmUps(r)}{(r.Stanza != null ? ", the two sides alternating" : "")}; "
+                        + $"{r.Calls} calls on one sentence each |");
         if (r.Output != null)
             s.AppendLine(c, $"| Output | {r.Output} |");
         s.AppendLine();
@@ -428,8 +428,8 @@ internal static class BenchmarkCommand
                 var ready = stanza.Read();
                 stanza.Load = ready.GetProperty("load").GetDouble();
                 stanza.Threads = ready.GetProperty("threads").GetInt32();
-                stanza.Versions = $"Stanza {ready.GetProperty("stanza").GetString()}, torch {ready.GetProperty("torch").GetString()}, " +
-                                  $"Python {ready.GetProperty("python").GetString()}";
+                stanza.Versions = $"Stanza {ready.GetProperty("stanza").GetString()}, torch {ready.GetProperty("torch").GetString()}, "
+                                  + $"Python {ready.GetProperty("python").GetString()}";
                 var processors = string.Join(",", ready.GetProperty("processors").EnumerateArray().Select(e => e.GetString()));
                 if (processors != list)
                     throw new InvalidDataException($"Stanza loaded {processors}, StanzaSharp {list}");
@@ -441,8 +441,8 @@ internal static class BenchmarkCommand
                 stanza?.Dispose();
                 if (stanza == null)
                     dir.Delete(recursive: true);
-                note = $"not run: {(e is Win32Exception ? $"could not start {python}" : e.Message)}. " +
-                       $"It needs Python with pip install stanza=={ModelDownloader.StanzaVersion} (--python PATH)";
+                note = $"not run: {(e is Win32Exception ? $"could not start {python}" : e.Message)}. "
+                       + $"It needs Python with pip install stanza=={ModelDownloader.StanzaVersion} (--python PATH)";
                 Console.Error.WriteLine($"Python Stanza: {note}");
                 return null;
             }

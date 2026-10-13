@@ -945,8 +945,8 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
             Assert.Equal(expected.Edits, actual.Edits);
         }
 
-        output.WriteLine($"{path}: {calls.Sum(c => c.Count)} words, {steps} decoder steps: log-probs max |diff| {diff:E2} " +
-            $"(within 10 of the top {nearTop:E2}), smallest top-2 margin {margin:E2}");
+        output.WriteLine($"{path}: {calls.Sum(c => c.Count)} words, {steps} decoder steps: log-probs max |diff| {diff:E2} "
+            + $"(within 10 of the top {nearTop:E2}), smallest top-2 margin {margin:E2}");
     }
 
     /// <summary>
@@ -991,8 +991,8 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
         float diff = 0;
         for (int i = 0; i < sentences.Count; i++)
             diff = Math.Max(diff, TokenizerTests.AssertClose(expectedScores[i].SelectMany(r => r).ToArray(), actualScores[i].SelectMany(r => r).ToArray(), 1e-3f, $"{path} s{i}"));
-        output.WriteLine($"{path}: transition scores max |diff| vs Python {goldenDiff:E2}; {sentences.Count} sentences, " +
-            $"{expectedScores.Sum(s => s.Count)} steps vs TorchSharp {diff:E2}");
+        output.WriteLine($"{path}: transition scores max |diff| vs Python {goldenDiff:E2}; {sentences.Count} sentences, "
+            + $"{expectedScores.Sum(s => s.Count)} steps vs TorchSharp {diff:E2}");
 
         // Per-state arithmetic: 7 states (rows 0..5 a full 6-row block, row 6 alone in the next) against each state alone.
         var net = new Constituency.ManagedConstituencyNet(Checkpoint.Load(model), pretrain, managedForward, managedBackward);
@@ -1081,9 +1081,9 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
             using var scope = NewDisposeScope();
             highway.Forward(Rnn.Pack(torch.tensor(input, [lengths.Sum(), 2248]), lengths), disposeInput: true);
         });
-        Report($"managed-backend speed: {RuntimeInformation.OSDescription}, {RuntimeInformation.ProcessArchitecture}, " +
-               $"{Environment.ProcessorCount} logical CPUs, torch threads {threads}, detected path {Gemm.Detect()}, " +
-               $"{sentences.Count} sentences / {lengths.Sum()} words");
+        Report($"managed-backend speed: {RuntimeInformation.OSDescription}, {RuntimeInformation.ProcessArchitecture}, "
+               + $"{Environment.ProcessorCount} logical CPUs, torch threads {threads}, detected path {Gemm.Detect()}, "
+               + $"{sentences.Count} sentences / {lengths.Sum()} words");
         Report($"  TorchSharp: charlm {torchCharlm,8:F1} ms, highway {torchHighway,8:F1} ms");
         foreach (var path in NativePaths)
         {
