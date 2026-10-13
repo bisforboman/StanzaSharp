@@ -64,6 +64,33 @@ public class PosTests(ITestOutputHelper output, PosTests.Fixture fixture) : ICla
     public void SimplifyPunct_MatchesStanza(string word, string expected) =>
         Assert.Equal(expected, Punct.Simplify(word));
 
+    /// <summary>
+    /// Sentence <paramref name="i"/>'s UPOS logits: each within 1e-4 of Stanza's float32 value ("upos_logits") or of the
+    /// float64 one ("upos_logits64", the model run in float64), as for sentiment (owner's decision, 2026-10-13). German's
+    /// logits reach |140|, and Stanza's own float32 ones are up to 1.01e-4 from float64.
+    /// </summary>
+    /// <returns>The largest difference from the float32 logits, and the largest accepted one (the nearer reference per logit).</returns>
+    internal static (float Float32, float Accepted) AssertUposClose(SafeTensorFile golden, int i, float[] actual, string what)
+    {
+        var expected = golden.Read<float>($"s{i}.pos.upos_logits");
+        var exact = golden.Read<double>($"s{i}.pos.upos_logits64");
+        Assert.Equal(expected.Length, actual.Length);
+        Assert.Equal(exact.Length, actual.Length);
+        float worst32 = 0, worst = 0;
+        int at = 0;
+        for (int k = 0; k < actual.Length; k++)
+        {
+            float d32 = Math.Abs(expected[k] - actual[k]);
+            float d = Math.Min(d32, (float)Math.Abs(exact[k] - actual[k]));
+            worst32 = Math.Max(worst32, d32);
+            if (d > worst)
+                (worst, at) = (d, k);
+        }
+
+        Assert.True(worst <= 1e-4f, $"{what}: logit {at} is {actual[at]}, expected {expected[at]} (float32) or {exact[at]} (float64)");
+        return (worst32, worst);
+    }
+
     [ModelTheory]
     [InlineData(false, "en")]
     [InlineData(true, "en")]
@@ -80,8 +107,8 @@ public class PosTests(ITestOutputHelper output, PosTests.Fixture fixture) : ICla
         var tags = models.Tagger.Predict(sentences, out var logits);
         for (int i = 0; i < sentences.Count; i++)
         {
-            float diff = TokenizerTests.AssertClose(golden.Read<float>($"s{i}.pos.upos_logits"), logits[i], 1e-4f, $"s{i}");
-            output.WriteLine($"s{i}: max |diff| {diff:E2}");
+            var (diff, accepted) = AssertUposClose(golden, i, logits[i], $"s{i}");
+            output.WriteLine($"s{i}: max |diff| vs float32 {diff:E2}, accepted (nearer of float32 and float64) {accepted:E2}");
             Assert.Equal(index[i]!["xpos"]!.AsArray().Select(x => x!.GetValue<string>()), tags[i].Select(t => t.Xpos));
         }
     }

@@ -71,7 +71,7 @@ public class FastPackageTests(ITestOutputHelper output, SharedPipelines pipeline
         var nerTags = ner.Predict(tokens, out var emissions);
         for (int i = 0; i < index.Count; i++)
         {
-            TokenizerTests.AssertClose(golden.Read<float>($"s{i}.pos.upos_logits"), uposLogits[i], 1e-4f, $"s{i}.pos");
+            PosTests.AssertUposClose(golden, i, uposLogits[i], $"s{i}.pos");
             Assert.Equal(Strings(index[i]!["xpos"]), tags[i].Select(t => t.Xpos));
             TokenizerTests.AssertClose(golden.Read<float>($"s{i}.ner.emissions"), emissions[i], 1e-4f, $"s{i}.ner");
             Assert.Equal(Strings(index[i]!["ner"]), nerTags[i]);
@@ -105,7 +105,7 @@ public class FastPackageTests(ITestOutputHelper output, SharedPipelines pipeline
         var nerTags = ner.Predict(tokens, out var emissions);
         for (int i = 0; i < index.Count; i++)
         {
-            output.WriteLine($"s{i}: UPOS max |diff| {TokenizerTests.AssertClose(golden.Read<float>($"s{i}.pos.upos_logits"), uposLogits[i], 1e-4f, $"s{i}.pos"):E2}");
+            output.WriteLine($"s{i}: UPOS max |diff| (vs float32, accepted) {PosTests.AssertUposClose(golden, i, uposLogits[i], $"s{i}.pos")}");
             Assert.Equal(Strings(index[i]!["xpos"]), tags[i].Select(t => t.Xpos));
             output.WriteLine($"s{i}: max |diff| {TokenizerTests.AssertClose(golden.Read<float>($"s{i}.ner.emissions"), emissions[i], 1e-4f, $"s{i}.ner"):E2}");
             Assert.Equal(Strings(index[i]!["ner"]), nerTags[i]);

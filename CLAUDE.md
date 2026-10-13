@@ -548,7 +548,7 @@ model but MWT and NER is English's architecture with other vocabularies and size
   - `intermediates.safetensors` + `.json`, covering the first 3 sentences, each run alone:
     - tokenizer logits
     - charlm per-word representations
-    - UPOS logits
+    - UPOS logits, and `s{i}.pos.upos_logits64`: the same in float64 (fast/ too; `--upos64-only` adds them)
     - per-step parser transition logits
   - `tokenize_stress.txt` + `.conllu`: tokenizer output for a paragraph over 1000 characters and
     for more paragraphs than fit in one batch.
@@ -951,6 +951,10 @@ model but MWT and NER is English's architecture with other vocabularies and size
     embeddings at load (one linear layer per scorer, all UPOS stacked). `upos_clf` sums in double: in float its
     400-term sums of logits up to |150| drifted 1.07e-4 from Stanza (Scalar path); in double ≤ 6.9e-5, at no
     measurable cost. Depparse sums its arcs in double too; its float label scores met 1e-4 as they are.
+    UPOS logits (owner's decision, 2026-10-13, German): like sentiment's, a logit passes within 1e-4 of Stanza's float32
+    **or** float64 value (`PosTests.AssertUposClose`, also FastPackageTests). German's logits reach |140| and Stanza's own
+    float32 is 1.01e-4 from float64; managed was 1.37e-4 from float32 (6.3e-5 from the nearer value), TorchSharp alone
+    1.22e-4. `upos_hid` in double changed nothing.
   - `IDepparseNet` (`DepparseNet` / `ManagedDepparseNet`) → `DepparseScores` (arc log-probs over the padded width, label
     argmax per pair, label scores for tests). `DependencyParser` keeps simplify_punct, vocab ids, ROOT, batching, MST and
     the deprel strings. The managed net scores no padding rows; padding columns all get in2 = ReLU(W2's bias) (LSTM

@@ -56,17 +56,17 @@ sentence) with a tolerance. Largest differences from Python Stanza measured on t
 | Scores | Largest difference, English | German | Tolerance |
 |---|---:|---:|---:|
 | tokenizer log-probabilities | 1.1e-5 | 1.1e-5 | 1e-4 |
-| UPOS logits | 6.1e-5 | 1.37e-4 (see below) | 1e-4 |
+| UPOS logits | 2.9e-5 (6.1e-5 from float32) | 6.3e-5 (1.5e-4 from float32) | 1e-4 (of Stanza's float32 or float64 logits) |
 | dependency arc / label log-probabilities | 2.3e-5 / 3.4e-5 | 1.5e-5 / 2.3e-5 | 1e-4 |
 | NER emissions | 1.1e-5 | 1.3e-5 | 1e-4 |
 | sentiment logits | 8.2e-5 | 4.6e-6 | 1e-4 (of Stanza's float32 or float64 logits) |
 | constituency transition scores | 3.4e-5 (at most 4.6e-5 on any SIMD path) | 3.8e-5 | 1e-3 |
 
-- **German UPOS logits** (open, for the owner): the German tagger's logits reach |140|, and Stanza's own float32
-  logits are up to 1.01e-4 from the same model run in float64. The managed backend is within 1.0e-4 of float64 (6.3e-5
-  on the first sentence) but 1.37e-4 from Stanza's float32 there, and the TorchSharp backend, run one sentence at a
-  time, is 1.22e-4 from it. Summing `upos_hid` and `upos_clf` in double changes nothing. Every German tag is identical.
-
+- **UPOS logits** are compared with Stanza's float64 logits as well, both languages and both packages (owner's
+  decision, 2026-10-13, as for sentiment): a logit passes within 1e-4 of either. The German tagger's logits reach |140|,
+  and Stanza's own float32 logits are up to 1.01e-4 from float64; the managed backend is 1.5e-4 from float32 but within
+  6.3e-5 of the nearer value, and TorchSharp, one sentence at a time, 1.22e-4 from float32. Summing `upos_hid` and
+  `upos_clf` in double changed nothing. Every tag is identical.
 - **Sentiment** is compared with Stanza's float64 logits as well: the classifier is ill-conditioned, and on one
   sentence Stanza's own float32 logits are 1.49e-4 from float64. With the tagger's character-model outputs reused
   (`CharlmCache`, on by default), logits move by up to about 1e-4 more, so those tests use 1e-3; the labels stay
