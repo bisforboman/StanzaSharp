@@ -215,6 +215,7 @@ internal sealed unsafe class PackedLstm
     /// parser and depparse up to 10% (docs/performance.md, round 16). A panel's arithmetic doesn't depend on its task,
     /// so the split never changes a bit.
     /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)] // per time step; see ManagedThreads.For
     public static void Step(StepRows[] works)
     {
         int total = 0;

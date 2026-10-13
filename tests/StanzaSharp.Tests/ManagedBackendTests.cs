@@ -456,6 +456,42 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
         Assert.Equal("item 9", error.Message);
     }
 
+    /// <summary>
+    /// <see cref="VectorExp"/> (round 17) is the runtime's VectorN.Exp operation for operation: the same bits for every
+    /// width this machine accelerates, over every 61st float bit pattern (70 million; all 2^32 matched on Vector256,
+    /// with AVX off and with AVX2 off). Vector512 runs on the Benchmark workflow's avx512 jobs.
+    /// </summary>
+    [Fact]
+    [Trait("Backend", "Managed")]
+    public void VectorExp_GivesTheRuntimesBits()
+    {
+        long mismatches = 0;
+        Parallel.For(0, 64, part =>
+        {
+            Span<uint> u = stackalloc uint[16];
+            long bad = 0;
+            for (ulong i = (ulong)part * 16 * 61; i < 1UL << 32; i += 64 * 16 * 61)
+            {
+                for (int j = 0; j < 16; j++)
+                    u[j] = (uint)(i + (ulong)j * 61);
+                var x = Vector512.Create<uint>(u).AsSingle();
+                for (int h = 0; h < 2; h++)
+                {
+                    var x256 = h == 0 ? x.GetLower() : x.GetUpper();
+                    bad += Vector256.EqualsAll(VectorExp.Exp(x256).AsUInt32(), Vector256.Exp(x256).AsUInt32()) ? 0 : 1;
+                    foreach (var x128 in new[] { x256.GetLower(), x256.GetUpper() })
+                        bad += Vector128.EqualsAll(VectorExp.Exp(x128).AsUInt32(), Vector128.Exp(x128).AsUInt32()) ? 0 : 1;
+                }
+
+                bad += Vector512.EqualsAll(VectorExp.Exp(x).AsUInt32(), Vector512.Exp(x).AsUInt32()) ? 0 : 1;
+            }
+
+            Interlocked.Add(ref mismatches, bad);
+        });
+        output.WriteLine($"Vector256 accelerated: {Vector256.IsHardwareAccelerated}, Vector512: {Vector512.IsHardwareAccelerated}");
+        Assert.Equal(0, mismatches);
+    }
+
     [ModelTheory]
     [MemberData(nameof(Paths))]
     [Trait("Backend", "Managed")]

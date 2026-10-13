@@ -24,6 +24,18 @@ on:
         description: Only the Vector512-vs-Vector256 jobs (avx512), not the runner matrix
         type: boolean
         default: false
+      startup_only:
+        description: Only the startup jobs (fresh processes, JIT and ReadyToRun builds), not the runner matrix
+        type: boolean
+        default: false
+      startup_base:
+        description: "startup: also measure the library at this ref (e.g. origin/main), with this commit's harness"
+        type: string
+        default: ''
+      startup_settings:
+        description: "startup: instead of the default settings, NAME=out/jit|out/r2r[@VAR=VALUE,...] separated by ;"
+        type: string
+        default: ''
 
 permissions:
   contents: read
@@ -34,7 +46,7 @@ env:
 
 jobs:
   benchmark:
-    if: ${{ !inputs.avx512_only }}
+    if: ${{ !inputs.avx512_only && !inputs.startup_only }}
     strategy:
       fail-fast: false
       matrix:
@@ -131,6 +143,7 @@ jobs:
   # `stanzasharp benchmark` without Python, alternating DOTNET_PreferredVectorBitWidth=256 (Vector256) and the default
   # (Vector512), at the default threads and at 1. Its blocks go to the summary and the artifact avx512-<os>-<attempt>.
   avx512:
+    if: ${{ !inputs.startup_only }}
     strategy:
       fail-fast: false
       matrix:
@@ -242,10 +255,96 @@ jobs:
             avx512/
             TestResults/*.trx
 
+  # Startup cost (docs/performance.md, round 17): Pipeline.Load and the first Process calls, each process fresh, under
+  # several settings that alternate within each round (tools/startup.py, `StanzaSharp.Benchmark startup`): the plain
+  # build (JIT), a ReadyToRun publish of the same app (what PublishReadyToRun in a user's app gives our assemblies too),
+  # and DOTNET_* knobs. With startup_base, also the library at that ref under this commit's harness. Stanza's .pt
+  # files, the default package, default threads. Tables in the summary and the artifact startup-<runner>.
+  startup:
+    if: ${{ inputs.startup_only }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-26.04, rid: linux-x64 }
+          - { os: ubuntu-26.04-arm, rid: linux-arm64 }
+          - { os: windows-2025, rid: win-x64 }
+          - { os: windows-11-arm, rid: win-arm64 }
+          - { os: macos-26, rid: osx-arm64 }
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Turn off Spotlight indexing
+        if: runner.os == 'macOS'
+        run: sudo mdutil -a -i off
+
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - uses: actions/cache/restore@v6
+        id: models
+        with:
+          path: models/stanza/en
+          key: models-pt-${{ runner.os }}-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs') }}
+
+      - name: Download the models
+        if: steps.models.outputs.cache-hit != 'true'
+        run: |
+          dotnet build src/StanzaSharp.Tool -c Release
+          dotnet src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll download models/stanza/en
+
+      # No native libtorch (StanzaSharpNoLibTorch): the startup mode runs the managed backend only.
+      - name: Build
+        run: |
+          publish() { dotnet publish "$1/samples/StanzaSharp.Benchmark" -c Release -p:StanzaSharpNoLibTorch=true -o "$2" "${@:3}"; }
+          publish . out/jit
+          publish . out/r2r -r ${{ matrix.rid }} --self-contained false -p:PublishReadyToRun=true
+          if [ -n "${{ inputs.startup_base }}" ]; then
+            git worktree add base "${{ inputs.startup_base }}"
+            git -C base checkout "$GITHUB_SHA" -- samples/StanzaSharp.Benchmark
+            publish base out/base
+          fi
+
+      - name: Measure
+        env:
+          SETTINGS: ${{ inputs.startup_settings }}
+        run: |
+          settings=(jit=out/jit r2r=out/r2r "jit, no TieredPGO=out/jit@DOTNET_TieredPGO=0"
+            "r2r, no TieredPGO=out/r2r@DOTNET_TieredPGO=0" "jit, no tiering=out/jit@DOTNET_TieredCompilation=0"
+            "r2r, no tiering=out/r2r@DOTNET_TieredCompilation=0" "jit, no QuickJitForLoops=out/jit@DOTNET_TC_QuickJitForLoops=0")
+          if [ -n "$SETTINGS" ]; then IFS=';' read -ra settings <<< "$SETTINGS"; fi
+          if [ -n "${{ inputs.startup_base }}" ]; then settings=("base=out/base" "${settings[@]}"); fi
+          {
+            echo "## ${{ matrix.os }}"; echo
+            echo "### One sentence (13 words) per call"; echo
+            python tools/startup.py --models models/stanza/en --rounds 5 --text one --calls 6 "${settings[@]}"
+            echo; echo "### The benchmark text (2,009 words) per call"; echo
+            python tools/startup.py --models models/stanza/en --rounds 3 --text bench --calls 4 "${settings[@]}"
+          } > startup.md
+          cat startup.md >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: startup-${{ matrix.os }}
+          path: startup.md
+
   # One table over every runner that finished, then each runner's block.
   summary:
     needs: benchmark
-    if: ${{ !cancelled() && !inputs.avx512_only }}
+    if: ${{ !cancelled() && !inputs.avx512_only && !inputs.startup_only }}
     runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7

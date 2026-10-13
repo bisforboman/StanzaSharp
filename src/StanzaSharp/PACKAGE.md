@@ -124,6 +124,11 @@ foreach (var sentence in doc.Sentences)
   after loading. On the TorchSharp backend, on Linux (glibc), a call of 1,000 words or more returns the memory it
   freed to the OS (`malloc_trim`); on Windows libtorch's allocator keeps it, and the environment variable
   `MIMALLOC_PURGE_DELAY=0`, set before libtorch loads, returns it for about 20% more time.
+- Short-lived processes (CLI, serverless): loading takes about 1–1.5 s on 2–4 cores, and the first calls run while
+  .NET's JIT is still at tier 0. `DOTNET_TieredCompilation=0` (or `<TieredCompilation>false</TieredCompilation>` in
+  your project) compiles everything optimized once: the first call is slower, every later one as fast as in a warmed
+  service. `PublishReadyToRun` makes the first call about a third faster; don't combine it with tiering off on Arm64
+  for long texts.
 - `PipelineOptions`:
   - `Backend`: `PipelineBackend.Managed` (the default), or `CudaBackend.Create()` / `CudaBackend.Cpu` from
     `StanzaSharp.Cuda`.
