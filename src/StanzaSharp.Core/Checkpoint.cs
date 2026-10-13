@@ -72,6 +72,21 @@ internal sealed class Checkpoint
     public static Dictionary<string, int> UnitToId(JsonNode? vocab)
     {
         var map = (vocab as JsonObject)?["_unit2id"] ?? throw new InvalidDataException("Not a vocab node: no _unit2id");
+        if (map is JsonValue v && v.TryGetValue(out PyContainer? large))
+        {
+            if (large.Value is not PyDict dict)
+                throw new InvalidDataException("_unit2id is not an object");
+            var ids = new Dictionary<string, int>(dict.Count);
+            foreach (var (key, id) in dict)
+            {
+                ids[(string)key] = id is long n && n is >= int.MinValue and <= int.MaxValue
+                    ? (int)n
+                    : throw new InvalidDataException($"_unit2id['{key}'] is not an int");
+            }
+
+            return ids;
+        }
+
         var buffer = new ArrayBufferWriter<byte>();
         using (var writer = new Utf8JsonWriter(buffer))
             map.WriteTo(writer);
@@ -115,6 +130,21 @@ internal sealed class Checkpoint
             }
         }
     }
+
+    /// <summary>Reads a list of strings, such as a vocab's <c>_id2unit</c>.</summary>
+    /// <remarks>
+    /// Use this, not <see cref="JsonNode.AsArray"/>, for lists that can be long: a <c>.pt</c> file's lists of
+    /// <see cref="PyContainer.MinCount"/> or more strings are a <see cref="JsonValue"/>, not a <see cref="JsonArray"/>.
+    /// </remarks>
+    public static string[] Strings(JsonNode? list) => list switch
+    {
+        JsonValue v when v.TryGetValue(out PyContainer? large) && large.Value is List<object?> items =>
+            items.Select(x => (string)x!).ToArray(),
+        JsonArray a => a.Select(x => x is JsonValue s && s.TryGetValue(out string? text)
+            ? text
+            : throw new InvalidDataException($"Not a string: {x?.GetPath()}")).ToArray(),
+        _ => throw new InvalidDataException($"Not a list of strings: {list?.GetPath()}"),
+    };
 
     private static string TensorKey(JsonNode? node) =>
         node is JsonObject o && o["$tensor"] is JsonValue key && key.TryGetValue(out string? s)
