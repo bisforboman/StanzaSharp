@@ -2,6 +2,7 @@ using System.Buffers.Binary;
 using System.Diagnostics;
 using System.IO.Compression;
 using System.Text;
+using System.Text.Json.Nodes;
 using Xunit.Abstractions;
 
 namespace StanzaSharp.Tests;
@@ -64,6 +65,8 @@ public class CheckpointFuzzTests(ITestOutputHelper output)
 
                     ckpt.Tensors.RawBytes(key);
                 }
+
+                ReadNodes(ckpt.Root);
             }
             catch (Exception e) when (e is InvalidDataException or NotSupportedException)
             {
@@ -80,6 +83,36 @@ public class CheckpointFuzzTests(ITestOutputHelper output)
         if (!thread.Join(TimeSpan.FromSeconds(30)))
             return "no result after 30 s (hang)";
         return problem;
+    }
+
+    /// <summary>Reads every property name and string, and every vocabulary the way the models do.</summary>
+    private static void ReadNodes(JsonNode? node)
+    {
+        switch (node)
+        {
+            case JsonObject o:
+                if (o.ContainsKey("_unit2id"))
+                {
+                    try
+                    {
+                        Checkpoint.UnitToId(o);
+                    }
+                    catch (InvalidDataException)
+                    {
+                    }
+                }
+
+                foreach (var (_, child) in o)
+                    ReadNodes(child);
+                break;
+            case JsonArray a:
+                foreach (var child in a)
+                    ReadNodes(child);
+                break;
+            case JsonValue v:
+                v.TryGetValue(out string? _);
+                break;
+        }
     }
 
     private static readonly long[] Extremes =
@@ -228,7 +261,15 @@ public class CheckpointFuzzTests(ITestOutputHelper output)
         int iterations = Math.Max(1, Iterations / 10);
         var failures = new List<string>();
         foreach (var name in names)
+        {
             failures.AddRange(Fuzz(Path.Combine(Repo.StanzaModels, name + ".pt"), iterations, Seed));
+
+            // The converted JSON too, where present: its vocabularies are read as JSON nodes.
+            var converted = Path.Combine(Repo.Models, name);
+            if (File.Exists(converted + ".json"))
+                failures.AddRange(Fuzz(converted + ".json", iterations, Seed, everyTruncation: false, converted + ".safetensors"));
+        }
+
         AssertNoFailures(failures, timer);
     }
 
@@ -604,6 +645,25 @@ public class CheckpointFuzzTests(ITestOutputHelper output)
             var ckpt = Checkpoint.Load(basePath);
             Assert.Throws<InvalidDataException>(() => ckpt.Tensor<float>(ckpt.Root["w"]));
             Assert.Throws<InvalidDataException>(() => ckpt.Shape(ckpt.Root["w"]));
+
+            // Invalid UTF-8 or an escaped lone surrogate in a property name or a string: JsonNode would only throw
+            // InvalidOperationException once the model read it.
+            byte[][] bad =
+            [
+                [.. "{\"a"u8, 0xff, .. "\":1}"u8],
+                [.. "{\"a\":[\""u8, 0xc3, .. "\"]}"u8],
+                [.. """{"\ud800":1}"""u8],
+                [.. """{"a":"x\udc00"}"""u8],
+            ];
+            foreach (var json in bad)
+            {
+                File.WriteAllBytes(basePath + ".json", json);
+                Assert.Throws<InvalidDataException>(() => Checkpoint.Load(basePath));
+            }
+
+            // A byte order mark and an escaped surrogate pair are fine.
+            File.WriteAllBytes(basePath + ".json", [0xef, 0xbb, 0xbf, .. """{"\ud83d\ude00":1}"""u8]);
+            Assert.Equal(1, (int)Checkpoint.Load(basePath).Root["\U0001F600"]!);
 
             // A vocabulary whose ids are not integers.
             Assert.Throws<InvalidDataException>(() => Checkpoint.UnitToId(System.Text.Json.Nodes.JsonNode.Parse("""{"_unit2id":{"a":"x"}}""")));

@@ -368,8 +368,11 @@ bounded by the file's size. The limits that make it so:
   the file, so no claimed size is allocated.
 - safetensors: header ≤ 100 MB (the library's limit), known dtype, `numel × size == end - begin`, and the tensors tile
   the data section exactly (no gaps, overlaps or trailing bytes), as the safetensors library checks.
+- Converted `.json`: valid UTF-8 and no escaped lone surrogate, checked before parsing (`JsonNode` decodes strings
+  lazily, so either would throw `InvalidOperationException` wherever a model first read it).
 - `CheckpointFuzzTests`: seeded mutations (bit flips, truncations, extreme ints, inserted/deleted spans) of the fixtures
-  and three small Stanza checkpoints in CI (~10 s), plus crafted inputs for each bug. Longer runs:
+  and three small Stanza checkpoints in CI (their `.pt` files, and their converted `.json` where present; ~10 s), plus
+  crafted inputs for each bug. Each load also reads every property name, string and vocabulary (`ReadNodes`). Longer runs:
   `STANZASHARP_FUZZ_ITERATIONS`, `STANZASHARP_FUZZ_SEED`, `STANZASHARP_FUZZ_MODELS=all`, `STANZASHARP_FUZZ_REPORT=FILE`.
   It does not validate the model code's reading of the JSON (a missing config key there is still a model-specific error).
 

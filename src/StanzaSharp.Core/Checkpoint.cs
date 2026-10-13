@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.Unicode;
 
 namespace StanzaSharp;
 
@@ -41,16 +42,18 @@ internal sealed class Checkpoint
         }
 
         JsonNode json;
-        using (var stream = File.OpenRead(basePath + ".json"))
+        var bytes = File.ReadAllBytes(basePath + ".json");
+        try
         {
-            try
-            {
-                json = JsonNode.Parse(stream) ?? throw new InvalidDataException($"{basePath}.json is null");
-            }
-            catch (JsonException e)
-            {
-                throw new InvalidDataException($"{basePath}.json: {e.Message}", e);
-            }
+            var text = bytes.AsSpan();
+            if (text.StartsWith("﻿"u8))
+                text = text[3..];
+            ValidateStrings(text, basePath + ".json");
+            json = JsonNode.Parse(text) ?? throw new InvalidDataException($"{basePath}.json is null");
+        }
+        catch (JsonException e)
+        {
+            throw new InvalidDataException($"{basePath}.json: {e.Message}", e);
         }
 
         return new Checkpoint(json, SafeTensorFile.Load(basePath + ".safetensors"));
@@ -86,6 +89,31 @@ internal sealed class Checkpoint
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Throws for invalid UTF-8 or an escaped lone surrogate. <see cref="JsonNode"/> decodes strings lazily, so either
+    /// would otherwise throw <see cref="InvalidOperationException"/> later, wherever a model reads that name or value.
+    /// </summary>
+    private static void ValidateStrings(ReadOnlySpan<byte> json, string path)
+    {
+        if (!Utf8.IsValid(json))
+            throw new InvalidDataException($"{path} is not valid UTF-8");
+        var reader = new Utf8JsonReader(json);
+        while (reader.Read())
+        {
+            if (reader.TokenType is JsonTokenType.PropertyName or JsonTokenType.String && reader.ValueIsEscaped)
+            {
+                try
+                {
+                    reader.GetString();
+                }
+                catch (InvalidOperationException e)
+                {
+                    throw new InvalidDataException($"{path}: {e.Message}", e);
+                }
+            }
+        }
     }
 
     private static string TensorKey(JsonNode? node) =>
