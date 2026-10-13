@@ -1,4 +1,6 @@
+using System.Reflection;
 using StanzaSharp.Nn;
+using Xunit.Sdk;
 
 namespace StanzaSharp.Tests;
 
@@ -17,6 +19,38 @@ public static class Repo
 
     public static string Model(string relativeBase) => Path.Combine(Models, relativeBase);
 
+    /// <summary>
+    /// A language's models: English's are <see cref="Models"/>; another language's are its folder next to them (e.g.
+    /// models/converted/de), else next to <see cref="StanzaModels"/> (models/stanza/de, the .pt files CI caches).
+    /// </summary>
+    public static string ModelsFor(string lang)
+    {
+        if (lang == "en")
+            return Models;
+        var converted = Path.GetFullPath(Path.Combine(Models, "..", lang));
+        return Directory.Exists(converted) ? converted : Path.GetFullPath(Path.Combine(StanzaModels, "..", lang));
+    }
+
+    public static string Model(string lang, string relativeBase) => Path.Combine(ModelsFor(lang), relativeBase);
+
+    /// <summary>The base path of <paramref name="processor"/>'s model in <paramref name="package"/> of <paramref name="lang"/>.</summary>
+    public static string ModelOf(string lang, string processor, string package = Pipeline.DefaultPackage) =>
+        Model(lang, $"{processor}/{Pipeline.Packages[lang][package][processor]}");
+
+    /// <summary>The forward or backward charlm's base path: English's 1billion, German's newswiki.</summary>
+    public static string Charlm(string lang, bool forward) =>
+        Model(lang, (forward ? "forward_charlm/" : "backward_charlm/") + (lang == "en" ? "1billion" : "newswiki"));
+
+    /// <summary>The pretrain <paramref name="processor"/>'s model reads (German NER: fasttextwiki), loaded for the backend.</summary>
+    internal static Pretrain LoadPretrainOf(bool managed, string lang, string processor, string package = Pipeline.DefaultPackage)
+    {
+        var name = Pipeline.Dependencies[lang][$"{processor}/{Pipeline.Packages[lang][package][processor]}"].Single(p => p.StartsWith("pretrain/"));
+        return managed ? Pretrain.LoadManaged(Model(lang, name)) : Pretrain.Load(Model(lang, name));
+    }
+
+    /// <summary>A language's golden data: tests/golden for English, tests/golden/&lt;lang&gt; for the others.</summary>
+    public static string GoldenFor(string lang) => lang == "en" ? Golden : Path.Combine(Golden, lang);
+
     /// <summary>The backend golden tests run on (issue #29): <see cref="Backend.Managed"/> or TorchSharp.</summary>
     internal static Backend Backend(bool managed) => managed ? Nn.Backend.Managed : Nn.Backend.TorchSharp;
 
@@ -24,8 +58,8 @@ public static class Repo
     /// The shared word vectors in the backend's form: a plain array when managed, so no libtorch is needed
     /// (the linux-arm64 CI job runs the managed cases without one).
     /// </summary>
-    internal static Pretrain LoadPretrain(bool managed) =>
-        managed ? Pretrain.LoadManaged(Model("pretrain/conll17")) : Pretrain.Load(Model("pretrain/conll17"));
+    internal static Pretrain LoadPretrain(bool managed, string lang = "en") =>
+        managed ? Pretrain.LoadManaged(Model(lang, "pretrain/conll17")) : Pretrain.Load(Model(lang, "pretrain/conll17"));
 
     /// <summary>The same as a pipeline option.</summary>
     internal static PipelineBackend PipelineBackendFor(bool managed) => managed ? PipelineBackend.Managed : CudaBackend.Cpu;
@@ -59,6 +93,46 @@ public sealed class ModelTheoryAttribute : TheoryAttribute
     {
         if (!Directory.Exists(Repo.Models))
             Skip = "models/converted/en not found; run setup.ps1 -Models";
+    }
+}
+
+/// <summary>
+/// A German row of a golden theory: its arguments plus <c>"de"</c>, the theory's last parameter. Skipped, not failed, where
+/// the German models are missing (CI caches them for the golden shards only; ci.yml's no-skip checks elsewhere exempt
+/// these rows by their <c>lang: "de"</c>).
+/// </summary>
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+public sealed class GermanAttribute : DataAttribute
+{
+    private readonly object?[] _data;
+
+    public GermanAttribute(params object?[] data)
+    {
+        _data = [.. data, "de"];
+        if (!Directory.Exists(Repo.ModelsFor("de")))
+            Skip = "German models not found (models/converted/de or models/stanza/de); run stanzasharp download --lang de";
+    }
+
+    public override IEnumerable<object?[]> GetData(MethodInfo testMethod) => [_data];
+}
+
+/// <summary>A German-only theory (its name says German), skipped where the German models are missing.</summary>
+public sealed class GermanTheoryAttribute : TheoryAttribute
+{
+    public GermanTheoryAttribute()
+    {
+        if (!Directory.Exists(Repo.Models) || !Directory.Exists(Repo.ModelsFor("de")))
+            Skip = "German models not found (models/converted/de or models/stanza/de); run stanzasharp download --lang de";
+    }
+}
+
+/// <summary>A German-only fact (its name says German), skipped where the German models are missing.</summary>
+public sealed class GermanFactAttribute : FactAttribute
+{
+    public GermanFactAttribute()
+    {
+        if (!Directory.Exists(Repo.Models) || !Directory.Exists(Repo.ModelsFor("de")))
+            Skip = "German models not found (models/converted/de or models/stanza/de); run stanzasharp download --lang de";
     }
 }
 

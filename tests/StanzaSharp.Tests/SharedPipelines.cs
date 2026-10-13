@@ -12,18 +12,19 @@ public sealed class SharedPipelines : IDisposable
     private readonly HashSet<string> _used = [];
 
     /// <summary>The pipeline for these options; <paramref name="processors"/> null is all of the package's.</summary>
-    public Pipeline Get(string package = Pipeline.DefaultPackage, bool managed = true, string? processors = null, bool splitSentences = true)
+    public Pipeline Get(string package = Pipeline.DefaultPackage, bool managed = true, string? processors = null, bool splitSentences = true, string lang = "en")
     {
         // The same set of processors in any order is the same pipeline.
-        var set = string.Join(",", Pipeline.SelectModels(package, processors, addRequired: false, nameof(processors)).Keys.Order());
-        var key = $"{package} {(managed ? "managed" : "torch")} {set} split={splitSentences}";
+        var set = string.Join(",", Pipeline.SelectModels(package, processors, addRequired: false, nameof(processors), lang).Keys.Order());
+        var key = $"{lang} {package} {(managed ? "managed" : "torch")} {set} split={splitSentences}";
         Lazy<Pipeline> pipeline;
         lock (Loaded)
         {
             if (!Loaded.TryGetValue(key, out var entry))
             {
-                entry = (new Lazy<Pipeline>(() => Pipeline.Load(Repo.Models, new PipelineOptions
+                entry = (new Lazy<Pipeline>(() => Pipeline.Load(Repo.ModelsFor(lang), new PipelineOptions
                 {
+                    Language = lang,
                     Package = package,
                     Processors = processors,
                     SplitSentences = splitSentences,

@@ -2,33 +2,36 @@ using System.Text.Json.Nodes;
 using StanzaSharp.Depparse;
 using StanzaSharp.Ner;
 using StanzaSharp.Nn;
+using StanzaSharp.Nn.Managed;
 using StanzaSharp.Pos;
 using TorchSharp;
 using Xunit.Abstractions;
 
 namespace StanzaSharp.Tests;
 
-/// <summary>Stanza's English <c>default_fast</c> package against tests/golden/fast (make_golden.py --fast-only).</summary>
+/// <summary>Stanza's <c>default_fast</c> package against tests/golden/fast and tests/golden/de/fast (make_golden.py --fast-only).</summary>
 public class FastPackageTests(ITestOutputHelper output, SharedPipelines pipelines) : IClassFixture<SharedPipelines>
 {
-    private static readonly string Golden = Path.Combine(Repo.Golden, "fast");
+    private static string GoldenDir(string lang) => Path.Combine(Repo.GoldenFor(lang), "fast");
 
     [ModelTheory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void Process_MatchesEveryGoldenFile(bool managed)
+    [InlineData(false, "en")]
+    [InlineData(true, "en")]
+    [German(false)]
+    [German(true)]
+    public void Process_MatchesEveryGoldenFile(bool managed, string lang)
     {
-        var nlp = pipelines.Get("default_fast", managed);
+        var nlp = pipelines.Get("default_fast", managed, lang: lang);
         var failures = new List<string>();
-        var files = new[] { Path.Combine(Repo.Golden, "corpus.txt") }.Concat(Directory.GetFiles(Repo.Golden, "validation*.txt").Order()).ToList();
+        var files = new[] { Path.Combine(Repo.GoldenFor(lang), "corpus.txt") }.Concat(Directory.GetFiles(Repo.GoldenFor(lang), "validation*.txt").Order()).ToList();
         foreach (var txt in files)
         {
             var name = Path.GetFileName(txt) == "corpus.txt" ? "corpus" : Path.GetFileNameWithoutExtension(txt);
             var actual = Conllu.Write(nlp.Process(File.ReadAllText(txt)));
-            var golden = File.ReadAllText(Path.Combine(Golden, name + ".conllu"));
+            var golden = File.ReadAllText(Path.Combine(GoldenDir(lang), name + ".conllu"));
 
             // Outside the BMP, C# offsets are UTF-16 indices and Stanza's are code points.
-            if (name == "validation_nonbmp")
+            if (PipelineTests.HasNonBmp(File.ReadAllText(txt)))
                 (actual, golden) = (PipelineTests.StripOffsets(actual), PipelineTests.StripOffsets(golden));
             var expected = golden.Split("\n\n");
             var got = actual.Split("\n\n");
@@ -42,17 +45,23 @@ public class FastPackageTests(ITestOutputHelper output, SharedPipelines pipeline
         Assert.True(failures.Count == 0, string.Join("\n\n", failures));
     }
 
-    [ModelFact]
-    public void Intermediates_MatchGolden()
+    /// <remarks>German's fast package keeps the charlm NER (germeval2014), with its own pretrain.</remarks>
+    [ModelTheory]
+    [InlineData("en")]
+    [German]
+    public void Intermediates_MatchGolden(string lang)
     {
         // The nocharlm models need no charlms; they are given none.
-        using var pretrain = Pretrain.Load(Repo.Model("pretrain/conll17"));
-        using var tagger = PosTagger.Load(Repo.Model("pos/combined_nocharlm"), pretrain, null, null);
-        using var parser = DependencyParser.Load(Repo.Model("depparse/combined_nocharlm"), pretrain, null, null);
-        using var ner = NerTagger.Load(Repo.Model("ner/ontonotes-ww-multi_nocharlm"), pretrain, null, null);
-        var golden = SafeTensorFile.Load(Path.Combine(Golden, "intermediates.safetensors"));
-        var index = JsonNode.Parse(File.ReadAllText(Path.Combine(Golden, "intermediates.json")))!["sentences"]!.AsArray();
-        var doc = Conllu.Read(File.ReadAllText(Path.Combine(Golden, "corpus.conllu")));
+        using var pretrain = Pretrain.Load(Repo.Model(lang, "pretrain/conll17"));
+        using var tagger = PosTagger.Load(Repo.ModelOf(lang, "pos", "default_fast"), pretrain, null, null);
+        using var parser = DependencyParser.Load(Repo.ModelOf(lang, "depparse", "default_fast"), pretrain, null, null);
+        using var nerPretrain = lang == "en" ? null : Repo.LoadPretrainOf(managed: false, lang, "ner", "default_fast");
+        using var forward = lang == "en" ? null : CharLanguageModel.Load(Repo.Charlm(lang, forward: true));
+        using var backward = lang == "en" ? null : CharLanguageModel.Load(Repo.Charlm(lang, forward: false));
+        using var ner = NerTagger.Load(Repo.ModelOf(lang, "ner", "default_fast"), nerPretrain ?? pretrain, forward, backward);
+        var golden = SafeTensorFile.Load(Path.Combine(GoldenDir(lang), "intermediates.safetensors"));
+        var index = JsonNode.Parse(File.ReadAllText(Path.Combine(GoldenDir(lang), "intermediates.json")))!["sentences"]!.AsArray();
+        var doc = Conllu.Read(File.ReadAllText(Path.Combine(GoldenDir(lang), "corpus.conllu")));
         Assert.Equal(3, index.Count);
 
         // One padded batch each; the golden values were computed one sentence at a time.
@@ -62,7 +71,7 @@ public class FastPackageTests(ITestOutputHelper output, SharedPipelines pipeline
         var nerTags = ner.Predict(tokens, out var emissions);
         for (int i = 0; i < index.Count; i++)
         {
-            TokenizerTests.AssertClose(golden.Read<float>($"s{i}.pos.upos_logits"), uposLogits[i], 1e-4f, $"s{i}.pos");
+            PosTests.AssertUposClose(golden, i, uposLogits[i], $"s{i}.pos");
             Assert.Equal(Strings(index[i]!["xpos"]), tags[i].Select(t => t.Xpos));
             TokenizerTests.AssertClose(golden.Read<float>($"s{i}.ner.emissions"), emissions[i], 1e-4f, $"s{i}.ner");
             Assert.Equal(Strings(index[i]!["ner"]), nerTags[i]);
@@ -75,23 +84,28 @@ public class FastPackageTests(ITestOutputHelper output, SharedPipelines pipeline
         }
     }
 
-    [ModelFact]
-    public void ManagedIntermediates_MatchGolden()
+    [ModelTheory]
+    [InlineData("en")]
+    [German]
+    public void ManagedIntermediates_MatchGolden(string lang)
     {
-        using var pretrain = Pretrain.Load(Repo.Model("pretrain/conll17"));
-        using var tagger = PosTagger.LoadManaged(Repo.Model("pos/combined_nocharlm"), pretrain, null, null);
-        using var ner = NerTagger.LoadManaged(Repo.Model("ner/ontonotes-ww-multi_nocharlm"), pretrain, null, null);
-        using var parser = DependencyParser.LoadManaged(Repo.Model("depparse/combined_nocharlm"), pretrain, null, null);
-        var doc = Conllu.Read(File.ReadAllText(Path.Combine(Golden, "corpus.conllu")));
-        var golden = SafeTensorFile.Load(Path.Combine(Golden, "intermediates.safetensors"));
-        var index = JsonNode.Parse(File.ReadAllText(Path.Combine(Golden, "intermediates.json")))!["sentences"]!.AsArray();
+        using var pretrain = Pretrain.Load(Repo.Model(lang, "pretrain/conll17"));
+        using var tagger = PosTagger.LoadManaged(Repo.ModelOf(lang, "pos", "default_fast"), pretrain, null, null);
+        using var nerPretrain = lang == "en" ? null : Repo.LoadPretrainOf(managed: true, lang, "ner", "default_fast");
+        using var ner = NerTagger.LoadManaged(Repo.ModelOf(lang, "ner", "default_fast"), nerPretrain ?? pretrain,
+            lang == "en" ? null : ManagedCharLanguageModel.Load(Repo.Charlm(lang, forward: true)),
+            lang == "en" ? null : ManagedCharLanguageModel.Load(Repo.Charlm(lang, forward: false)));
+        using var parser = DependencyParser.LoadManaged(Repo.ModelOf(lang, "depparse", "default_fast"), pretrain, null, null);
+        var doc = Conllu.Read(File.ReadAllText(Path.Combine(GoldenDir(lang), "corpus.conllu")));
+        var golden = SafeTensorFile.Load(Path.Combine(GoldenDir(lang), "intermediates.safetensors"));
+        var index = JsonNode.Parse(File.ReadAllText(Path.Combine(GoldenDir(lang), "intermediates.json")))!["sentences"]!.AsArray();
         var words = index.Select(e => (IReadOnlyList<string>)Strings(e!["words"])).ToList();
         var tags = tagger.Predict(words, out var uposLogits);
         var tokens = index.Select(e => (IReadOnlyList<string>)Strings(e!["tokens"])).ToList();
         var nerTags = ner.Predict(tokens, out var emissions);
         for (int i = 0; i < index.Count; i++)
         {
-            output.WriteLine($"s{i}: UPOS max |diff| {TokenizerTests.AssertClose(golden.Read<float>($"s{i}.pos.upos_logits"), uposLogits[i], 1e-4f, $"s{i}.pos"):E2}");
+            output.WriteLine($"s{i}: UPOS max |diff| (vs float32, accepted) {PosTests.AssertUposClose(golden, i, uposLogits[i], $"s{i}.pos")}");
             Assert.Equal(Strings(index[i]!["xpos"]), tags[i].Select(t => t.Xpos));
             output.WriteLine($"s{i}: max |diff| {TokenizerTests.AssertClose(golden.Read<float>($"s{i}.ner.emissions"), emissions[i], 1e-4f, $"s{i}.ner"):E2}");
             Assert.Equal(Strings(index[i]!["ner"]), nerTags[i]);

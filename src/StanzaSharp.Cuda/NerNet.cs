@@ -12,7 +12,7 @@ internal sealed class NerNet : INerNet
     private readonly Pretrain _pretrain;
     private readonly CharLanguageModel? _charlmForward, _charlmBackward;
     private readonly CharacterModel? _charModel;
-    private readonly Embedding _deltaEmb;
+    private readonly Embedding? _deltaEmb;
     private readonly Linear _inputTransform, _tagClf;
     private readonly LSTM _lstm;
     private readonly Tensor _hInit, _cInit;
@@ -32,12 +32,12 @@ internal sealed class NerNet : INerNet
         int layers = config["num_layers"]!.GetValue<int>();
         int inputSize = wordDim + (_charModel?.OutputDim ?? _charlmForward!.HiddenDim + _charlmBackward!.HiddenDim);
 
-        _deltaEmb = nn.Embedding(deltaCount, wordDim, padding_idx: NerTagger.PadId).LoadFrom(ckpt, model, "delta_emb.");
+        _deltaEmb = deltaCount > 0 ? nn.Embedding(deltaCount, wordDim, padding_idx: NerTagger.PadId).LoadFrom(ckpt, model, "delta_emb.") : null;
         _inputTransform = nn.Linear(inputSize, inputSize).LoadFrom(ckpt, model, "input_transform.");
         _lstm = nn.LSTM(inputSize, hidden, numLayers: layers, batchFirst: true, bidirectional: true).LoadFrom(ckpt, model, "taggerlstm.lstm.");
         _hInit = ckpt.ToTensor(model["taggerlstm_h_init"]);
         _cInit = ckpt.ToTensor(model["taggerlstm_c_init"]);
-        _tagClf = nn.Linear(hidden * 2, tags).LoadFrom(ckpt, model, $"tag_clfs.{tagset}.");
+        _tagClf = nn.Linear(hidden * 2, tags).LoadFrom(ckpt, model, NerTagger.HeadPrefix(ckpt, "tag_clf", tagset));
     }
 
     public void Forward(IReadOnlyList<IReadOnlyList<string>> sentences, long[] wordIds, long[] deltaIds, int width, Span<float> logits,
@@ -47,8 +47,9 @@ internal sealed class NerNet : INerNet
         using var scope = NewDisposeScope();
         int batch = sentences.Count;
         var lengths = sentences.Select(s => (long)s.Count).ToArray();
-        var words = _pretrain.Embeddings[torch.tensor(wordIds, [batch, width], device: _device)]
-            .add(_deltaEmb.forward(torch.tensor(deltaIds, [batch, width], device: _device)), Scalars.One);
+        var words = _pretrain.Embeddings[torch.tensor(wordIds, [batch, width], device: _device)];
+        if (_deltaEmb != null)
+            words = words.add(_deltaEmb.forward(torch.tensor(deltaIds, [batch, width], device: _device)), Scalars.One);
 
         Tensor[] chars;
         if (_charModel != null)
@@ -76,8 +77,8 @@ internal sealed class NerNet : INerNet
 
     public void Dispose()
     {
-        foreach (var m in new nn.Module[] { _deltaEmb, _inputTransform, _lstm, _tagClf })
-            m.Dispose();
+        foreach (var m in new nn.Module?[] { _deltaEmb, _inputTransform, _lstm, _tagClf })
+            m?.Dispose();
         _charModel?.Dispose();
         _hInit.Dispose();
         _cInit.Dispose();

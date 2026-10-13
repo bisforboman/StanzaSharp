@@ -1,29 +1,53 @@
 using System.Text.Json.Nodes;
 using StanzaSharp.Nn;
+using StanzaSharp.Nn.Managed;
+using Xunit.Abstractions;
 
 namespace StanzaSharp.Tests;
 
-public class NnTests
+public class NnTests(ITestOutputHelper output)
 {
-    [ModelFact]
-    public void CharLanguageModels_MatchGoldenRepresentations()
+    [ModelTheory]
+    [InlineData(false, "en")]
+    [InlineData(true, "en")]
+    [German(false)]
+    [German(true)]
+    public void CharLanguageModels_MatchGoldenRepresentations(bool managed, string lang)
     {
-        var golden = SafeTensorFile.Load(Path.Combine(Repo.Golden, "intermediates.safetensors"));
-        var index = JsonNode.Parse(File.ReadAllText(Path.Combine(Repo.Golden, "intermediates.json")))!["sentences"]!.AsArray();
+        var golden = SafeTensorFile.Load(Path.Combine(Repo.GoldenFor(lang), "intermediates.safetensors"));
+        var index = JsonNode.Parse(File.ReadAllText(Path.Combine(Repo.GoldenFor(lang), "intermediates.json")))!["sentences"]!.AsArray();
         var sentences = index.Select(e => (IReadOnlyList<string>)e!["words"]!.AsArray().Select(w => w!.GetValue<string>()).ToList()).ToList();
 
-        foreach (var direction in new[] { "forward", "backward" })
+        foreach (bool forward in new[] { true, false })
         {
-            using var charlm = CharLanguageModel.Load(Repo.Model($"{direction}_charlm/1billion"));
-            Assert.Equal(direction == "forward", charlm.IsForward);
-
             // All sentences in one padded batch: the golden tensors were computed one sentence at a time.
-            var reps = charlm.BuildCharRepresentation(sentences);
+            var direction = forward ? "forward" : "backward";
+            List<float[]> reps;
+            if (managed)
+            {
+                var charlm = ManagedCharLanguageModel.Load(Repo.Charlm(lang, forward));
+                Assert.Equal(forward, charlm.IsForward);
+                int dim = charlm.HiddenDim, words = sentences.Sum(s => s.Count);
+                var all = new float[words * dim];
+                charlm.BuildCharRepresentation(sentences, all, dim);
+                int at = 0;
+                reps = [.. sentences.Select(s => all.AsSpan((at += s.Count * dim) - s.Count * dim, s.Count * dim).ToArray())];
+            }
+            else
+            {
+                using var charlm = CharLanguageModel.Load(Repo.Charlm(lang, forward));
+                Assert.Equal(forward, charlm.IsForward);
+                reps = [.. charlm.BuildCharRepresentation(sentences).Select(rep =>
+                {
+                    using (rep)
+                        return rep.data<float>().ToArray();
+                })];
+            }
+
             for (int i = 0; i < sentences.Count; i++)
             {
-                using var rep = reps[i];
-                Assert.Equal(golden[$"s{i}.charlm_{direction}"].Shape, rep.shape);
-                TokenizerTests.AssertClose(golden.Read<float>($"s{i}.charlm_{direction}"), rep.data<float>().ToArray(), 1e-4f, $"{direction} s{i}");
+                var diff = TokenizerTests.AssertClose(golden.Read<float>($"s{i}.charlm_{direction}"), reps[i], 1e-4f, $"{direction} s{i}");
+                output.WriteLine($"{direction} s{i}: max |diff| {diff:E2}");
             }
         }
     }

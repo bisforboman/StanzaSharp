@@ -9,7 +9,7 @@ namespace StanzaSharp.Tests;
 
 public class SentimentTests(ITestOutputHelper output, SharedPipelines pipelines, SentimentTests.Fixture fixture) : IClassFixture<SharedPipelines>, IClassFixture<SentimentTests.Fixture>
 {
-    private static readonly string Golden = Path.Combine(Repo.Golden, "sentiment");
+    private static string GoldenDir(string lang) => Path.Combine(Repo.GoldenFor(lang), "sentiment");
 
     // On Arm64 (macOS, Apple Silicon) libtorch computes with Accelerate instead of the x64 kernels; the
     // classifier's large logits then drift up to ~1.1e-4 (labels still exact), so Arm64 gets 1e-3.
@@ -21,21 +21,14 @@ public class SentimentTests(ITestOutputHelper output, SharedPipelines pipelines,
     private const float CachedTolerance = 1e-3f;
 
     /// <summary>The classifier and the tagger (for the cache) on one backend, with that backend's charlms.</summary>
-    /// <summary>Each backend's <see cref="Models"/>, loaded on first use and shared by the class's tests (read-only).</summary>
+    /// <summary>Each backend's and language's <see cref="Models"/>, loaded on first use and shared by the class's tests (read-only).</summary>
     public sealed class Fixture : IDisposable
     {
-        private readonly Lazy<Models> _torch = new(() => new Models(managed: false)), _managed = new(() => new Models(managed: true));
+        private readonly ModelCache<Models> _models = new((managed, lang) => new Models(managed, lang));
 
-        internal Models Get(bool managed = false) => (managed ? _managed : _torch).Value;
+        internal Models Get(bool managed = false, string lang = "en") => _models.Get(managed, lang);
 
-        public void Dispose()
-        {
-            foreach (var models in new[] { _torch, _managed })
-            {
-                if (models.IsValueCreated)
-                    models.Value.Dispose();
-            }
-        }
+        public void Dispose() => _models.Dispose();
     }
 
     internal sealed class Models : IDisposable
@@ -44,27 +37,29 @@ public class SentimentTests(ITestOutputHelper output, SharedPipelines pipelines,
         private readonly CharLanguageModel? _forward, _backward;
         private readonly ManagedCharLanguageModel? _managedForward, _managedBackward;
         public readonly SentimentClassifier Classifier;
+        private readonly string _lang;
 
-        public Models(bool managed)
+        public Models(bool managed, string lang)
         {
-            Pretrain = Repo.LoadPretrain(managed);
+            _lang = lang;
+            Pretrain = Repo.LoadPretrain(managed, lang);
             if (managed)
             {
-                _managedForward = ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
-                _managedBackward = ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
-                Classifier = SentimentClassifier.LoadManaged(Repo.Model("sentiment/sstplus_charlm"), Pretrain, _managedForward, _managedBackward);
+                _managedForward = ManagedCharLanguageModel.Load(Repo.Charlm(lang, forward: true));
+                _managedBackward = ManagedCharLanguageModel.Load(Repo.Charlm(lang, forward: false));
+                Classifier = SentimentClassifier.LoadManaged(Repo.ModelOf(lang, "sentiment"), Pretrain, _managedForward, _managedBackward);
             }
             else
             {
-                _forward = CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
-                _backward = CharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
-                Classifier = SentimentClassifier.Load(Repo.Model("sentiment/sstplus_charlm"), Pretrain, _forward, _backward);
+                _forward = CharLanguageModel.Load(Repo.Charlm(lang, forward: true));
+                _backward = CharLanguageModel.Load(Repo.Charlm(lang, forward: false));
+                Classifier = SentimentClassifier.Load(Repo.ModelOf(lang, "sentiment"), Pretrain, _forward, _backward);
             }
         }
 
         public PosTagger Tagger() => _managedForward != null
-            ? PosTagger.LoadManaged(Repo.Model("pos/combined_charlm"), Pretrain, _managedForward, _managedBackward)
-            : PosTagger.Load(Repo.Model("pos/combined_charlm"), Pretrain, _forward, _backward);
+            ? PosTagger.LoadManaged(Repo.ModelOf(_lang, "pos"), Pretrain, _managedForward, _managedBackward)
+            : PosTagger.Load(Repo.ModelOf(_lang, "pos"), Pretrain, _forward, _backward);
 
         public void Dispose()
         {
@@ -76,12 +71,12 @@ public class SentimentTests(ITestOutputHelper output, SharedPipelines pipelines,
     }
 
     /// <summary>The texts make_golden.py's write_sentiment_golden reads, in its order: (name, text).</summary>
-    private static List<(string Name, string Text)> Sources() =>
+    private static List<(string Name, string Text)> Sources(string lang) =>
     [
-        ("corpus", File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt"))),
-        .. Directory.GetFiles(Repo.Golden, "validation*.txt").Order(StringComparer.Ordinal)
+        ("corpus", File.ReadAllText(Path.Combine(Repo.GoldenFor(lang), "corpus.txt"))),
+        .. Directory.GetFiles(Repo.GoldenFor(lang), "validation*.txt").Order(StringComparer.Ordinal)
             .Select(f => (Path.GetFileNameWithoutExtension(f), File.ReadAllText(f))),
-        ("reviews", File.ReadAllText(Path.Combine(Golden, "reviews.txt"))),
+        ("reviews", File.ReadAllText(Path.Combine(GoldenDir(lang), "reviews.txt"))),
     ];
 
     private static List<IReadOnlyList<string>> Tokens(Document doc) =>
@@ -93,9 +88,9 @@ public class SentimentTests(ITestOutputHelper output, SharedPipelines pipelines,
     /// on validation.txt sentence 41 Stanza's float32 logits are 1.49e-4 from the float64 ones, the managed backend's 1.2e-5.
     /// </summary>
     /// <returns>The largest difference from the float32 logits, and the largest accepted one (the nearer reference per logit).</returns>
-    private static (float Float32, float Accepted) CompareToJson(string name, int[] labels, float[][] logits, List<string> failures, float? tolerance = null)
+    private static (float Float32, float Accepted) CompareToJson(string lang, string name, int[] labels, float[][] logits, List<string> failures, float? tolerance = null)
     {
-        var golden = JsonNode.Parse(File.ReadAllText(Path.Combine(Golden, name + ".json")))!["sentences"]!.AsArray();
+        var golden = JsonNode.Parse(File.ReadAllText(Path.Combine(GoldenDir(lang), name + ".json")))!["sentences"]!.AsArray();
         if (golden.Count != labels.Length)
         {
             failures.Add($"{name}: {labels.Length} sentences, expected {golden.Count}");
@@ -121,25 +116,27 @@ public class SentimentTests(ITestOutputHelper output, SharedPipelines pipelines,
     private static (float, float) Max((float A, float B) x, (float A, float B) y) => (Math.Max(x.A, y.A), Math.Max(x.B, y.B));
 
     [ModelTheory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void Pipeline_ReproducesGoldenFilesLabelsAndLogits(bool managed)
+    [InlineData(false, "en")]
+    [InlineData(true, "en")]
+    [German(false)]
+    [German(true)]
+    public void Pipeline_ReproducesGoldenFilesLabelsAndLogits(bool managed, string lang)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,sentiment", Backend = Repo.PipelineBackendFor(managed) });
-        var models = fixture.Get(managed);
+        using var nlp = Pipeline.Load(Repo.ModelsFor(lang), new PipelineOptions { Language = lang, Processors = "tokenize,mwt,sentiment", Backend = Repo.PipelineBackendFor(managed) });
+        var models = fixture.Get(managed, lang);
         var failures = new List<string>();
-        var sources = Sources();
+        var sources = Sources(lang);
         Assert.Equal(14, sources.Count);
-        Assert.Equal(14, Directory.GetFiles(Golden, "*.conllu").Length);
+        Assert.Equal(14, Directory.GetFiles(GoldenDir(lang), "*.conllu").Length);
         (float Float32, float Accepted) worst = (0, 0);
         foreach (var (name, text) in sources)
         {
             var doc = nlp.Process(text);
             var actual = Conllu.Write(doc);
-            var golden = File.ReadAllText(Path.Combine(Golden, name + ".conllu"));
+            var golden = File.ReadAllText(Path.Combine(GoldenDir(lang), name + ".conllu"));
 
             // Outside the BMP, C# offsets are UTF-16 indices and Stanza's are code points.
-            if (name == "validation_nonbmp")
+            if (PipelineTests.HasNonBmp(text))
                 (actual, golden) = (PipelineTests.StripOffsets(actual), PipelineTests.StripOffsets(golden));
             var expected = golden.Split("\n\n");
             var got = actual.Split("\n\n");
@@ -150,7 +147,7 @@ public class SentimentTests(ITestOutputHelper output, SharedPipelines pipelines,
 
             var labels = models.Classifier.Classify(Tokens(doc), out var logits);
             Assert.Equal(doc.Sentences.Select(s => s.Sentiment!.Value), labels);
-            worst = Max(worst, CompareToJson(name, labels, logits, failures));
+            worst = Max(worst, CompareToJson(lang, name, labels, logits, failures));
         }
 
         output.WriteLine($"max |logit diff| vs float32 {worst.Float32}, accepted (nearer of float32 and float64) {worst.Accepted}");
@@ -158,39 +155,44 @@ public class SentimentTests(ITestOutputHelper output, SharedPipelines pipelines,
     }
 
     [ModelTheory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void Classify_MatchesStanzaAcrossSeveralBatches(bool managed)
+    [InlineData(false, "en")]
+    [InlineData(true, "en")]
+    [German(false)]
+    [German(true)]
+    public void Classify_MatchesStanzaAcrossSeveralBatches(bool managed, string lang)
     {
         // Every text as one document: Stanza sorts its sentences by length and cuts them into 5000-token
-        // batches, and each sentence's result depends on the padding of its batch.
-        var nlp = pipelines.Get(processors: "tokenize,mwt");
-        var models = fixture.Get(managed);
-        var doc = nlp.Process(string.Join("\n\n", Sources().Select(s => s.Text)));
+        // batches, and each sentence's result depends on the padding of its batch. German's texts fit one batch, a stress
+        // test of its own (owner's decision): Stanza labels nearly every sentence positive there.
+        var nlp = pipelines.Get(processors: "tokenize,mwt", lang: lang);
+        var models = fixture.Get(managed, lang);
+        var doc = nlp.Process(string.Join("\n\n", Sources(lang).Select(s => s.Text)));
         var tokens = Tokens(doc);
         var batches = SentimentClassifier.Batches(tokens.Select(t => t.Count).OrderDescending().ToArray());
-        var json = JsonNode.Parse(File.ReadAllText(Path.Combine(Golden, "all.json")))!;
+        var json = JsonNode.Parse(File.ReadAllText(Path.Combine(GoldenDir(lang), "all.json")))!;
         Assert.Equal(json["batches"]!.GetValue<int>(), batches.Count);
-        Assert.True(batches.Count > 1);
+        Assert.True(batches.Count > 1 || lang != "en");
 
         var labels = models.Classifier.Classify(tokens, out var logits);
         var failures = new List<string>();
-        output.WriteLine($"{tokens.Count} sentences, {batches.Count} batches, max |logit diff| (vs float32, accepted) {CompareToJson("all", labels, logits, failures)}");
+        output.WriteLine($"{tokens.Count} sentences, {batches.Count} batches, max |logit diff| (vs float32, accepted) {CompareToJson(lang, "all", labels, logits, failures)}");
         Assert.True(failures.Count == 0, string.Join("\n\n", failures));
     }
 
     [ModelTheory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void CharlmCache_FromTheTaggerGivesTheSameResults(bool managed)
+    [InlineData(false, "en")]
+    [InlineData(true, "en")]
+    [German(false)]
+    [German(true)]
+    public void CharlmCache_FromTheTaggerGivesTheSameResults(bool managed, string lang)
     {
-        var nlp = pipelines.Get(processors: "tokenize,mwt");
-        var models = fixture.Get(managed);
+        var nlp = pipelines.Get(processors: "tokenize,mwt", lang: lang);
+        var models = fixture.Get(managed, lang);
         using var tagger = models.Tagger();
         var failures = new List<string>();
         int reused = 0, total = 0;
         (float Float32, float Accepted) worst = (0, 0);
-        foreach (var (name, text) in Sources())
+        foreach (var (name, text) in Sources(lang))
         {
             var doc = nlp.Process(text);
             using var cache = new CharlmCache();
@@ -206,7 +208,7 @@ public class SentimentTests(ITestOutputHelper output, SharedPipelines pipelines,
             var withCache = models.Classifier.Classify(tokens, out var cachedLogits, cache, keys);
             total += tokens.Count;
             Assert.Equal(plain, withCache);
-            worst = Max(worst, CompareToJson(name, withCache, cachedLogits, failures, CachedTolerance));
+            worst = Max(worst, CompareToJson(lang, name, withCache, cachedLogits, failures, CachedTolerance));
         }
 
         output.WriteLine($"{reused}/{total} sentences reused the tagger's charlm outputs; max |logit diff| vs float32 {worst.Float32}, accepted {worst.Accepted}");

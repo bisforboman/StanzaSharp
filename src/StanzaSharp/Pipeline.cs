@@ -154,13 +154,6 @@ public sealed class Pipeline : IDisposable
         },
     };
 
-    // Languages whose models can be downloaded but not loaded yet, and why.
-    private static readonly Dictionary<string, string> NotPorted = new()
-    {
-        ["de"] = "the seq2seq MWT model, the germeval2014 NER checkpoint (old format, fastText vectors) and a second "
-            + "pretrain per pipeline are not ported yet",
-    };
-
     // Stanza's processor dependencies (REQUIRES_DEFAULT); English pos also needs mwt to have run.
     internal static readonly Dictionary<string, string[]> Requires = new()
     {
@@ -186,7 +179,7 @@ public sealed class Pipeline : IDisposable
     internal ConstituencyParser? Parser => _parser;
 
     private readonly SentimentClassifier? _sentiment;
-    private readonly Pretrain? _pretrain;
+    private readonly Pretrain[] _pretrains = [];
     private readonly BackendModels _models;
     private readonly CharlmCacheOptions _cacheOptions;
     private readonly bool _splitSentences, _trimNativeHeap, _depparseReadsCache;
@@ -255,14 +248,18 @@ public sealed class Pipeline : IDisposable
             return path;
         }
 
-        // One pretrain and one pair of charlms: every language Load accepts has no more (NotPorted).
+        // Every pretrain the models read (German NER has its own), and one pair of charlms.
         var shared = SharedModels(models, options.Language);
-        string? pretrainPath = shared.SingleOrDefault(p => p.StartsWith("pretrain/", StringComparison.Ordinal));
         string? forwardPath = shared.SingleOrDefault(p => p.StartsWith("forward_charlm/", StringComparison.Ordinal));
         string? backwardPath = shared.SingleOrDefault(p => p.StartsWith("backward_charlm/", StringComparison.Ordinal));
-        var pretrain = pretrainPath != null ? Start(pretrainPath, () => backend.Pretrain(Path.Combine(modelDir, pretrainPath))) : null;
+        var pretrains = shared.Where(p => p.StartsWith("pretrain/", StringComparison.Ordinal))
+            .ToDictionary(p => p, p => Start(p, () => backend.Pretrain(Path.Combine(modelDir, p))));
         var forward = forwardPath != null ? Start(forwardPath, () => Charlm(forwardPath, forward: true)) : null;
         var backward = backwardPath != null ? Start(backwardPath, () => Charlm(backwardPath, forward: false)) : null;
+
+        // The pretrain a processor's model reads (Dependencies), once loaded.
+        Pretrain PretrainOf(string processor) =>
+            pretrains[Dependencies[options.Language][Name(processor)].Single(p => p.StartsWith("pretrain/", StringComparison.Ordinal))].Result;
 
         var tokenizer = Start(Name("tokenize"), () => backend.Tokenizer(Model("tokenize")));
         var mwt = models.ContainsKey("mwt") ? Start(Name("mwt"), () => backend.Mwt(Model("mwt"))) : null;
@@ -271,12 +268,13 @@ public sealed class Pipeline : IDisposable
         {
             forward?.GetAwaiter().GetResult();
             backward?.GetAwaiter().GetResult();
-            _pretrain = pretrain?.GetAwaiter().GetResult();
-            var pos = models.ContainsKey("pos") ? Start(Name("pos"), () => backend.Pos(Model("pos"), _pretrain!)) : null;
-            var depparse = models.ContainsKey("depparse") ? Start(Name("depparse"), () => backend.Depparse(Model("depparse"), _pretrain!)) : null;
-            var ner = models.ContainsKey("ner") ? Start(Name("ner"), () => backend.Ner(Model("ner"), _pretrain!)) : null;
-            var parser = models.ContainsKey("constituency") ? Start(Name("constituency"), () => backend.Constituency(Model("constituency"), _pretrain!)) : null;
-            var sentiment = models.ContainsKey("sentiment") ? Start(Name("sentiment"), () => backend.Sentiment(Model("sentiment"), _pretrain!)) : null;
+            foreach (var p in pretrains.Values)
+                p.GetAwaiter().GetResult();
+            var pos = models.ContainsKey("pos") ? Start(Name("pos"), () => backend.Pos(Model("pos"), PretrainOf("pos"))) : null;
+            var depparse = models.ContainsKey("depparse") ? Start(Name("depparse"), () => backend.Depparse(Model("depparse"), PretrainOf("depparse"))) : null;
+            var ner = models.ContainsKey("ner") ? Start(Name("ner"), () => backend.Ner(Model("ner"), PretrainOf("ner"))) : null;
+            var parser = models.ContainsKey("constituency") ? Start(Name("constituency"), () => backend.Constituency(Model("constituency"), PretrainOf("constituency"))) : null;
+            var sentiment = models.ContainsKey("sentiment") ? Start(Name("sentiment"), () => backend.Sentiment(Model("sentiment"), PretrainOf("sentiment"))) : null;
             Task.WaitAll(started);
             _tokenizer = tokenizer.Result;
             _mwt = mwt?.Result;
@@ -286,6 +284,7 @@ public sealed class Pipeline : IDisposable
             _ner = ner?.Result;
             _parser = parser?.Result;
             _sentiment = sentiment?.Result;
+            _pretrains = [.. pretrains.Values.Select(p => p.Result)];
         }
         catch (Exception e)
         {
@@ -311,8 +310,6 @@ public sealed class Pipeline : IDisposable
     /// processors of the English <see langword="default"/> package on <see cref="PipelineBackend.Managed"/>.</param>
     /// <exception cref="ArgumentException">An unknown language, package or processor, a processor the package lacks
     /// (e.g. constituency in <c>default_fast</c>), or a processor without the ones it requires.</exception>
-    /// <exception cref="NotSupportedException">A language whose models <see cref="ModelDownloader"/> can download but
-    /// this version can't run yet (German).</exception>
     /// <exception cref="ArgumentOutOfRangeException"><see cref="PipelineOptions.Threads"/> below 1, or a
     /// non-positive <see cref="CharlmCacheOptions.MaxWords"/>.</exception>
     /// <exception cref="InvalidDataException">With <see cref="PipelineOptions.VerifyChecksums"/>: a model file whose
@@ -325,12 +322,6 @@ public sealed class Pipeline : IDisposable
         if (!Directory.Exists(modelDir))
             throw new DirectoryNotFoundException($"Model directory not found: {modelDir} (download them with ModelDownloader.DownloadAsync or \"stanzasharp download\")");
         var models = SelectModels(options.Package, options.Processors, addRequired: false, nameof(options), options.Language);
-        if (NotPorted.TryGetValue(options.Language, out var missing))
-        {
-            throw new NotSupportedException($"Language '{options.Language}' can be downloaded but not loaded yet: {missing}. "
-                + $"Pipeline.Load supports {string.Join(", ", Packages.Keys.Where(l => !NotPorted.ContainsKey(l)))}.");
-        }
-
         if (options.CharlmCache.IsEnabled && options.CharlmCache.MaxWords <= 0)
             throw new ArgumentOutOfRangeException(nameof(options), "CharlmCache.MaxWords must be positive; set IsEnabled = false to turn the cache off");
         if (options.Threads < 1)
@@ -654,7 +645,8 @@ public sealed class Pipeline : IDisposable
         _mwt?.Dispose();
         _tokenizer.Dispose();
         _models.Dispose();
-        _pretrain?.Dispose();
+        foreach (var pretrain in _pretrains)
+            pretrain.Dispose();
         _gate?.Dispose();
     }
 }

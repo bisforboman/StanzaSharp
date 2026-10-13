@@ -8,21 +8,14 @@ namespace StanzaSharp.Tests;
 
 public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixture fixture) : IClassFixture<ConstituencyTests.Fixture>
 {
-    /// <summary>Each backend's <see cref="Models"/>, loaded on first use and shared by the class's tests (read-only).</summary>
+    /// <summary>Each backend's and language's <see cref="Models"/>, loaded on first use and shared by the class's tests (read-only).</summary>
     public sealed class Fixture : IDisposable
     {
-        private readonly Lazy<Models> _torch = new(() => new Models(managed: false)), _managed = new(() => new Models(managed: true));
+        private readonly ModelCache<Models> _models = new((managed, lang) => new Models(managed, lang));
 
-        internal Models Get(bool managed = false) => (managed ? _managed : _torch).Value;
+        internal Models Get(bool managed = false, string lang = "en") => _models.Get(managed, lang);
 
-        public void Dispose()
-        {
-            foreach (var models in new[] { _torch, _managed })
-            {
-                if (models.IsValueCreated)
-                    models.Value.Dispose();
-            }
-        }
+        public void Dispose() => _models.Dispose();
     }
 
     internal sealed class Models : IDisposable
@@ -31,19 +24,19 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
         public readonly CharLanguageModel? Forward, Backward;
         public readonly ConstituencyParser Parser;
 
-        public Models(bool managed)
+        public Models(bool managed, string lang)
         {
-            Pretrain = Repo.LoadPretrain(managed);
+            Pretrain = Repo.LoadPretrain(managed, lang);
             if (managed)
             {
-                Parser = ConstituencyParser.LoadManaged(Repo.Model("constituency/ptb3-revised_charlm"), Pretrain,
-                    ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion")), ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion")));
+                Parser = ConstituencyParser.LoadManaged(Repo.ModelOf(lang, "constituency"), Pretrain,
+                    ManagedCharLanguageModel.Load(Repo.Charlm(lang, forward: true)), ManagedCharLanguageModel.Load(Repo.Charlm(lang, forward: false)));
                 return;
             }
 
-            Forward = CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
-            Backward = CharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
-            Parser = ConstituencyParser.Load(Repo.Model("constituency/ptb3-revised_charlm"), Pretrain, Forward, Backward);
+            Forward = CharLanguageModel.Load(Repo.Charlm(lang, forward: true));
+            Backward = CharLanguageModel.Load(Repo.Charlm(lang, forward: false));
+            Parser = ConstituencyParser.Load(Repo.ModelOf(lang, "constituency"), Pretrain, Forward, Backward);
         }
 
         public void Dispose()
@@ -56,17 +49,23 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
     }
 
     [ModelTheory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void TransitionScores_MatchGoldenIntermediates(bool managed)
+    [InlineData(false, "en")]
+    [InlineData(true, "en")]
+    [German(false)]
+    [German(true)]
+    public void TransitionScores_MatchGoldenIntermediates(bool managed, string lang)
     {
-        var models = fixture.Get(managed);
-        var golden = SafeTensorFile.Load(Path.Combine(Repo.Golden, "intermediates.safetensors"));
-        var index = JsonNode.Parse(File.ReadAllText(Path.Combine(Repo.Golden, "intermediates.json")))!["sentences"]!.AsArray();
+        var models = fixture.Get(managed, lang);
+        var golden = SafeTensorFile.Load(Path.Combine(Repo.GoldenFor(lang), "intermediates.safetensors"));
+        var index = JsonNode.Parse(File.ReadAllText(Path.Combine(Repo.GoldenFor(lang), "intermediates.json")))!["sentences"]!.AsArray();
         var sentences = index.Select(e =>
         {
             var words = e!["words"]!.AsArray().Select(w => w!.GetValue<string>());
-            var tags = e["xpos"]!.AsArray().Select(t => t!.GetValue<string>());
+
+            // The tags the parser reads: English's XPOS; German's UPOS (retag_method), the golden tree's preterminals.
+            var tags = lang == "en"
+                ? e["xpos"]!.AsArray().Select(t => t!.GetValue<string>())
+                : Preterminals(Tree.Parse(e["tree"]!.GetValue<string>()));
             return (IReadOnlyList<(string, string)>)words.Zip(tags).ToList();
         }).ToList();
 
@@ -87,18 +86,22 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
     /// charlms computed) with identical decisions at every step. Reports the per-step score drift between the backends and,
     /// per backend, how close each decision was: the margin between the best legal transition and the next legal one
     /// (steps with one legal transition decide nothing), plus the raw top-2 margin of the whole row, and the closest calls.
-    /// Guards that the smallest margin stays at least 3 × the score drift between the backends.
+    /// Guards that the smallest margin stays at least 3 × the score drift between the backends. German's parser reads
+    /// UPOS (retag_method) and allows longer unary chains (unary_limit 8).
     /// </summary>
-    [ModelFact]
-    public void NearTies_StayClearOfBackendDrift()
+    [ModelTheory]
+    [InlineData("en")]
+    [German]
+    public void NearTies_StayClearOfBackendDrift(string lang)
     {
-        var files = new[] { "pipeline.conllu" }.Concat(Directory.GetFiles(Repo.Golden, "validation*.conllu").Select(Path.GetFileName).Order()).ToList();
+        var golden = Repo.GoldenFor(lang);
+        var files = new[] { "pipeline.conllu" }.Concat(Directory.GetFiles(golden, "validation*.conllu").Select(Path.GetFileName).Order()).ToList();
         var sentences = new List<(string File, int Index, IReadOnlyList<(string, string)> Words)>();
         foreach (var file in files)
         {
-            var doc = Conllu.Read(File.ReadAllText(Path.Combine(Repo.Golden, file!)));
+            var doc = Conllu.Read(File.ReadAllText(Path.Combine(golden, file!)));
             for (int i = 0; i < doc.Sentences.Count; i++)
-                sentences.Add((file!, i, doc.Sentences[i].Words.Select(w => (w.Text, w.Xpos!)).ToList()));
+                sentences.Add((file!, i, doc.Sentences[i].Words.Select(w => (w.Text, (lang == "en" ? w.Xpos : w.Upos)!)).ToList()));
         }
 
         var steps = new[] { new List<List<(float[] Row, bool[] Legal)>>(), new List<List<(float[] Row, bool[] Legal)>>() };
@@ -106,7 +109,7 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
         IReadOnlyList<Transition> transitions = [];
         foreach (bool managed in new[] { false, true })
         {
-            var models = fixture.Get(managed);
+            var models = fixture.Get(managed, lang);
             transitions = models.Parser.Transitions;
             var mine = steps[managed ? 1 : 0];
             mine.AddRange(sentences.Select(_ => new List<(float[] Row, bool[] Legal)>()));
@@ -162,7 +165,7 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
             }
         }
 
-        output.WriteLine($"{sentences.Count} sentences, {total} steps, {decisions} with two or more legal transitions; scores max |diff| between backends {drift:E2}");
+        output.WriteLine($"{lang}: {sentences.Count} sentences, {total} steps, {decisions} with two or more legal transitions; scores max |diff| between backends {drift:E2}");
         string Counts(List<float> m) => $"< 1e-2: {m.Count(x => x < 1e-2f)}, < 1e-3: {m.Count(x => x < 1e-3f)}, < 1e-4: {m.Count(x => x < 1e-4f)}, min {m.Min():E2}";
         output.WriteLine($"decision margins TorchSharp {Counts(margins[0])}");
         output.WriteLine($"decision margins managed    {Counts(margins[1])}");
@@ -172,7 +175,7 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
             output.WriteLine(what);
 
         // The guard: a decision flips only if its margin is below the margin difference, at most twice the score drift.
-        // Measured: smallest margin 3.6e-4 = 4.9 × the drift (7.3e-5). k = 3 keeps 50% over that bound and fails once a
+        // Measured (English): smallest margin 3.6e-4 = 4.9 × the drift (7.3e-5). k = 3 keeps 50% over that bound and fails once a
         // kernel change grows the drift by 60% or a change moves the closest call 40% closer (docs/backends.md, "constituency").
         const float K = 3;
         float smallest = Math.Min(margins[0].Min(), margins[1].Min());
@@ -180,15 +183,20 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
     }
 
     [ModelTheory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void Pipeline_MatchesGoldenTrees(bool managed)
+    [InlineData(false, "en")]
+    [InlineData(true, "en")]
+    [German(false)]
+    [German(true)]
+    public void Pipeline_MatchesGoldenTrees(bool managed, string lang)
     {
         // The tagger's charlm cache feeds the parser here; the test above computes the charlms itself.
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos,constituency", Backend = Repo.PipelineBackendFor(managed) });
-        var doc = nlp.Process(File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt")));
-        var golden = Conllu.Read(File.ReadAllText(Path.Combine(Repo.Golden, "pipeline.conllu")));
+        using var nlp = Pipeline.Load(Repo.ModelsFor(lang), new PipelineOptions { Language = lang, Processors = "tokenize,mwt,pos,constituency", Backend = Repo.PipelineBackendFor(managed) });
+        var doc = nlp.Process(File.ReadAllText(Path.Combine(Repo.GoldenFor(lang), "corpus.txt")));
+        var golden = Conllu.Read(File.ReadAllText(Path.Combine(Repo.GoldenFor(lang), "pipeline.conllu")));
 
         Assert.Equal(golden.Sentences.Select(s => s.Constituency?.ToString()), doc.Sentences.Select(s => s.Constituency?.ToString()));
     }
+
+    private static IEnumerable<string> Preterminals(Tree tree) =>
+        tree.IsPreterminal ? [tree.Label] : tree.Children.SelectMany(Preterminals);
 }

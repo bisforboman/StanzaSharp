@@ -1,25 +1,27 @@
 using System.Buffers;
 using System.Text.Json.Nodes;
-using StanzaSharp.Nn;
 using StanzaSharp.Nn.Managed;
 
-namespace StanzaSharp.Lemma;
+namespace StanzaSharp.Nn;
 
-/// <summary>The lemmatizer's seq2seq network, per <see cref="Backend"/>: <c>LemmaNet</c> or <see cref="ManagedLemmaNet"/>.</summary>
-internal interface ILemmaNet : IDisposable
+/// <summary>
+/// seq2seq_model.py <c>Seq2SeqModel</c>, the lemmatizer's and German MWT's character model, per <see cref="Backend"/>:
+/// <c>Seq2SeqNet</c> or <see cref="ManagedSeq2SeqNet"/>.
+/// </summary>
+internal interface ISeq2SeqNet : IDisposable
 {
     /// <summary>Seq2SeqModel.encode on one batch, rows sorted longest first; the decoder then runs one step per call.</summary>
     /// <param name="ids">[batch, width] source ids (<c>&lt;SOS&gt;</c> chars <c>&lt;EOS&gt;</c>, padded with 0); ids past the
     /// vocabulary are DeltaVocab characters, embedded as <c>&lt;UNK&gt;</c> but copyable.</param>
-    /// <param name="posIds">[batch] UPOS ids, the encoder's first step.</param>
-    /// <param name="lengths">Each row's encoder length: its source length + 1 (the UPOS step).</param>
-    ILemmaDecoder Encode(long[] ids, int batch, int width, long[] posIds, long[] lengths, CancellationToken ct);
+    /// <param name="posIds">[batch] UPOS ids, the encoder's first step, with <see cref="Seq2SeqConfig.UsesPos"/>; else null.</param>
+    /// <param name="lengths">Each row's encoder length: its source length, + 1 for the UPOS step.</param>
+    ISeq2SeqDecoder Encode(long[] ids, int batch, int width, long[]? posIds, long[] lengths, CancellationToken ct);
 }
 
-/// <summary>One batch's decoder state (the per-call state of <see cref="ILemmaNet"/>).</summary>
-internal interface ILemmaDecoder : IDisposable
+/// <summary>One batch's decoder state (the per-call state of <see cref="ISeq2SeqNet"/>).</summary>
+internal interface ISeq2SeqDecoder : IDisposable
 {
-    /// <summary>[batch, 3] edit classifier logits.</summary>
+    /// <summary>[batch, 3] edit classifier logits, with <see cref="Seq2SeqConfig.Edit"/>; else empty.</summary>
     float[] EditLogits { get; }
 
     /// <summary>Width of a <see cref="Step"/> row: the vocabulary, widened to the batch's largest source id + 1.</summary>
@@ -33,30 +35,87 @@ internal interface ILemmaDecoder : IDisposable
     float[] Step(long[] previous, CancellationToken ct);
 }
 
-/// <summary>The network's sizes, from the checkpoint config.</summary>
-internal readonly record struct LemmaConfig(int Vocab, int PosVocab, int Emb, int PosDim, int Hidden)
+/// <summary>The network's sizes and options, from the checkpoint config.</summary>
+/// <param name="PosDim">The UPOS embedding's size; 0 without POS input (MWT).</param>
+/// <param name="Edit">Whether the model has the lemmatizer's 3-way edit classifier.</param>
+internal readonly record struct Seq2SeqConfig(int Vocab, int PosVocab, int Emb, int PosDim, int Hidden, bool Edit)
 {
     public const int PadId = 0, UnkId = 1, SosId = 2, EosId = 3; // seq2seq_constant.py
 
-    public static LemmaConfig From(JsonNode config) => new(
-        config["vocab_size"]!.GetValue<int>(), config["pos_vocab_size"]!.GetValue<int>(), config["emb_dim"]!.GetValue<int>(),
-        config["pos_dim"]!.GetValue<int>(), config["hidden_dim"]!.GetValue<int>());
+    /// <summary>Whether a UPOS embedding is the encoder's first step (the lemmatizer).</summary>
+    public bool UsesPos => PosDim > 0;
+
+    public static Seq2SeqConfig From(JsonNode config)
+    {
+        bool pos = config["pos"]?.GetValue<bool>() == true && config["pos_dim"]?.GetValue<int>() > 0;
+        return new(config["vocab_size"]!.GetValue<int>(), pos ? config["pos_vocab_size"]!.GetValue<int>() : 0, config["emb_dim"]!.GetValue<int>(),
+            pos ? config["pos_dim"]!.GetValue<int>() : 0, config["hidden_dim"]!.GetValue<int>(), config["edit"]?.GetValue<bool>() == true);
+    }
+
+    /// <summary>
+    /// Seq2SeqModel.predict_greedy's loop: one character per step for the whole batch, the argmax (torch's max: the first
+    /// maximum) fed back, until every row has decoded <c>&lt;EOS&gt;</c> or <paramref name="maxDecLen"/> steps ran.
+    /// </summary>
+    /// <param name="neverDecodeUnk">MWT's <c>never_decode_unk</c>: <c>&lt;UNK&gt;</c> is never the argmax.</param>
+    /// <param name="onStep">For tests: called after each step with its log-probs, the row width and which rows were done before it.</param>
+    /// <returns>Each row's ids before its <c>&lt;EOS&gt;</c>.</returns>
+    public static List<int>[] Greedy(ISeq2SeqDecoder decoder, int batch, int maxDecLen, bool neverDecodeUnk, CancellationToken ct,
+        Action<float[], int, bool[]>? onStep = null)
+    {
+        var output = Enumerable.Range(0, batch).Select(_ => new List<int>()).ToArray();
+        var previous = new long[batch];
+        Array.Fill(previous, SosId);
+        var done = new bool[batch];
+        int totalDone = 0, columns = decoder.Columns;
+        for (int step = 0; totalDone < batch && step < maxDecLen; step++)
+        {
+            ct.ThrowIfCancellationRequested();
+            var logProbs = decoder.Step(previous, ct);
+            onStep?.Invoke(logProbs, columns, done);
+            for (int i = 0; i < batch; i++)
+            {
+                var row = logProbs.AsSpan(i * columns, columns);
+                int best = 0;
+                for (int v = 1; v < columns; v++)
+                {
+                    if ((!neverDecodeUnk || v != UnkId) && row[v] > row[best])
+                        best = v;
+                }
+
+                previous[i] = best;
+                if (done[i])
+                    continue;
+                if (best == EosId)
+                {
+                    done[i] = true;
+                    totalDone++;
+                }
+                else
+                {
+                    output[i].Add(best);
+                }
+            }
+        }
+
+        return output;
+    }
 }
 
 /// <summary>
-/// Managed twin of <c>LemmaNet</c> (<see cref="Backend.Managed"/>). The encoder is a packed <see cref="ManagedLstm"/>;
+/// Managed twin of <c>Seq2SeqNet</c> (<see cref="Backend.Managed"/>). The encoder is a packed <see cref="ManagedLstm"/>;
 /// each decoder step is three GEMMs over the batch (the LSTM cell with x and h in one K, linear_in; linear_out) and one for
 /// dec2vocab with the copy gate as an extra output, with the attention and the copy mix per row in between. Sums over
 /// attention positions and the vocabulary run in double.
 /// </summary>
-internal sealed unsafe class ManagedLemmaNet : ILemmaNet
+internal sealed unsafe class ManagedSeq2SeqNet : ISeq2SeqNet
 {
-    private readonly LemmaConfig _c;
-    private readonly float[] _emb, _posEmb;
+    private readonly Seq2SeqConfig _c;
+    private readonly float[] _emb;
+    private readonly float[]? _posEmb;
     private readonly ManagedLstm _encoder;
     private readonly PackedMatrix _cell, _attnIn, _attnOut, _out;
     private readonly float[] _cellBias, _outBias;
-    private readonly float[] _edit0, _edit0Bias, _edit2, _edit2Bias;
+    private readonly float[]? _edit0, _edit0Bias, _edit2, _edit2Bias;
 
     /// <summary>
     /// Study only (tools/lemma_divergence.py, the benchmark's <c>lemma-divergence --double-gates</c>): the decoder's
@@ -66,16 +125,16 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
     private readonly float[]? _cellRows;  // with DoubleGates: [4·hidden, emb + hidden], rows in GateOrder
     private readonly double[]? _cellBias64;
 
-    public ManagedLemmaNet(Checkpoint ckpt, LemmaConfig c)
+    public ManagedSeq2SeqNet(Checkpoint ckpt, Seq2SeqConfig c)
     {
         _c = c;
         var model = ckpt.Root["model"]!;
         float[] T(string key) => ckpt.Tensor<float>(model[key] ?? throw new KeyNotFoundException($"Checkpoint has no weight '{key}'"));
         int h = c.Hidden;
-        if (h % 4 != 0 || c.PosDim != c.Emb)
-            throw new NotSupportedException("The managed lemmatizer needs hidden_dim % 4 == 0 and pos_dim == emb_dim");
+        if (h % 4 != 0 || (c.UsesPos && c.PosDim != c.Emb))
+            throw new NotSupportedException("The managed seq2seq model needs hidden_dim % 4 == 0 and pos_dim == emb_dim");
         _emb = T("embedding.weight");
-        _posEmb = T("pos_embedding.weight");
+        _posEmb = c.UsesPos ? T("pos_embedding.weight") : null;
         _encoder = new ManagedLstm(ckpt, model, "encoder.", c.Emb, h / 2, 1, bidirectional: true);
 
         // LSTMCell: gates = [x | h]·[W_ih | W_hh]ᵀ + b_ih + b_hh, rows in PackedLstm.GateOrder for Act.LstmCell.
@@ -115,19 +174,20 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
         T("dec2vocab.bias").CopyTo(_outBias, 0);
         _outBias[c.Vocab] = T("copy_gate.bias")[0];
 
-        (_edit0, _edit0Bias, _edit2, _edit2Bias) = (T("edit_clf.0.weight"), T("edit_clf.0.bias"), T("edit_clf.2.weight"), T("edit_clf.2.bias"));
+        if (c.Edit)
+            (_edit0, _edit0Bias, _edit2, _edit2Bias) = (T("edit_clf.0.weight"), T("edit_clf.0.bias"), T("edit_clf.2.weight"), T("edit_clf.2.bias"));
     }
 
-    public ILemmaDecoder Encode(long[] ids, int batch, int width, long[] posIds, long[] lengths, CancellationToken ct) =>
+    public ISeq2SeqDecoder Encode(long[] ids, int batch, int width, long[]? posIds, long[] lengths, CancellationToken ct) =>
         new Decoder(this, ids, batch, width, posIds, lengths, ct);
 
     /// <summary>One batch: the encoder output and the decoder's buffers, rented for the batch and returned on Dispose.</summary>
-    private sealed class Decoder : ILemmaDecoder
+    private sealed class Decoder : ISeq2SeqDecoder
     {
-        private readonly ManagedLemmaNet _net;
+        private readonly ManagedSeq2SeqNet _net;
         private readonly long[] _ids, _lengths;
-        private readonly int _batch, _width, _h, _ldTarget, _ldOut;
-        private readonly float[] _ctx;    // [batch, width + 1, hidden]: the encoder output, real positions only
+        private readonly int _batch, _width, _steps, _first, _h, _ldTarget, _ldOut;
+        private readonly float[] _ctx;    // [batch, steps, hidden]: the encoder output, real positions only
         private readonly float[] _xh;     // [batch, emb + hidden]: the cell's input and h
         private readonly float[] _cell;   // [batch, hidden]
         private readonly float[] _gates;  // [batch, 4·hidden]
@@ -139,11 +199,14 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
         public float[] EditLogits { get; }
         public int Columns { get; }
 
-        public Decoder(ManagedLemmaNet net, long[] ids, int batch, int width, long[] posIds, long[] lengths, CancellationToken ct)
+        public Decoder(ManagedSeq2SeqNet net, long[] ids, int batch, int width, long[]? posIds, long[] lengths, CancellationToken ct)
         {
             (_net, _ids, _lengths, _batch, _width) = (net, ids, lengths, batch, width);
             var c = net._c;
-            int h = _h = c.Hidden, half = h / 2, steps = width + 1, emb = c.Emb;
+
+            // The encoder's steps: the UPOS step (if any), then the characters. Source position t is encoder step t + _first.
+            _first = c.UsesPos ? 1 : 0;
+            int h = _h = c.Hidden, half = h / 2, steps = _steps = width + _first, emb = c.Emb;
             _ldTarget = net._attnIn.PaddedN;
             _ldOut = net._out.PaddedN;
             Columns = (int)Math.Max(c.Vocab, ids.Max() + 1);
@@ -156,9 +219,9 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
             _wh = pool.Rent(batch * 2 * h);
             _logits = pool.Rent(batch * _ldOut);
             _result = new float[batch * Columns];
-            EditLogits = new float[batch * 3];
+            EditLogits = new float[c.Edit ? batch * 3 : 0];
 
-            // The packed encoder input: step 0 the UPOS embedding, then the characters (<UNK>'s embedding past the vocabulary).
+            // The packed encoder input: the UPOS embedding first (if any), then the characters (<UNK>'s embedding past the vocabulary).
             var batchSizes = PackedLstm.BatchSizes(lengths);
             int rows = batchSizes.Sum();
             var start = new int[batchSizes.Length];
@@ -173,10 +236,10 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
                 {
                     for (int r = 0; r < batchSizes[t]; r++)
                     {
-                        long id = t == 0 ? posIds[r] : ids[r * width + t - 1];
-                        var table = t == 0 ? net._posEmb : net._emb;
-                        if (t > 0 && id >= c.Vocab)
-                            id = LemmaConfig.UnkId;
+                        long id = t < _first ? posIds![r] : ids[r * width + t - _first];
+                        var table = t < _first ? net._posEmb! : net._emb;
+                        if (t >= _first && id >= c.Vocab)
+                            id = Seq2SeqConfig.UnkId;
                         table.AsSpan((int)id * emb, emb).CopyTo(x.AsSpan((start[t] + r) * emb));
                     }
                 }
@@ -193,7 +256,8 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
                     y.AsSpan((start[lengths[r] - 1] + r) * h, half).CopyTo(h0[half..]);
                     finalC.AsSpan((batch + r) * half, half).CopyTo(_cell.AsSpan(r * h));
                     finalC.AsSpan(r * half, half).CopyTo(_cell.AsSpan(r * h + half));
-                    Edit(h0, EditLogits.AsSpan(r * 3, 3));
+                    if (c.Edit)
+                        Edit(h0, EditLogits.AsSpan(r * 3, 3));
                 }
             }
             catch
@@ -213,7 +277,7 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
         private void Edit(ReadOnlySpan<float> h0, Span<float> logits)
         {
             var n = _net;
-            int inner = n._edit0Bias.Length;
+            int inner = n._edit0Bias!.Length;
             Span<double> hidden = stackalloc double[inner];
             for (int j = 0; j < inner; j++)
             {
@@ -226,7 +290,7 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
 
             for (int k = 0; k < logits.Length; k++)
             {
-                double s = n._edit2Bias[k];
+                double s = n._edit2Bias![k];
                 var w = n._edit2.AsSpan(k * inner, inner);
                 for (int j = 0; j < inner; j++)
                     s += w[j] * hidden[j];
@@ -241,7 +305,7 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
             int b = _batch, h = _h, emb = c.Emb, ldxh = emb + h;
             for (int r = 0; r < b; r++)
             {
-                long id = previous[r] >= c.Vocab ? LemmaConfig.UnkId : previous[r];
+                long id = previous[r] >= c.Vocab ? Seq2SeqConfig.UnkId : previous[r];
                 n._emb.AsSpan((int)id * emb, emb).CopyTo(_xh.AsSpan(r * ldxh));
             }
 
@@ -288,7 +352,7 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
 
                 // SoftDotAttention per row: scores over the real positions, softmax, the weighted context next to h.
                 nint pTarget = (nint)target, pWh = (nint)wh, pXh = (nint)xh;
-                var attn = ArrayPool<double>.Shared.Rent(b * (_width + 1));
+                var attn = ArrayPool<double>.Shared.Rent(b * _steps);
                 try
                 {
                     ManagedThreads.For(b, r => Attend(r, (float*)pTarget, (float*)pWh, (float*)pXh, attn));
@@ -315,7 +379,7 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
         /// <summary>Row r's attention: log-softmax scores kept in <paramref name="attn"/>, the weighted context into wh.</summary>
         private void Attend(int r, float* target, float* wh, float* xh, double[] attn)
         {
-            int h = _h, steps = _width + 1, len = (int)_lengths[r];
+            int h = _h, steps = _steps, len = (int)_lengths[r];
             var la = attn.AsSpan(r * steps, len);
             var q = new ReadOnlySpan<float>(target + r * _ldTarget, h);
             double max = double.NegativeInfinity;
@@ -357,7 +421,7 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
         /// </summary>
         private void Mix(int r, float* logits, double[] attn)
         {
-            int vocab = _net._c.Vocab, steps = _width + 1, len = (int)_lengths[r], cols = Columns;
+            int vocab = _net._c.Vocab, steps = _steps, len = (int)_lengths[r], cols = Columns, first = _first;
             var row = new ReadOnlySpan<float>(logits + r * _ldOut, vocab + 1);
             double max = double.NegativeInfinity;
             for (int v = 0; v < vocab; v++)
@@ -372,15 +436,15 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
 
             var output = _result.AsSpan(r * cols, cols);
             for (int v = 0; v < cols; v++)
-                output[v] = (float)((v < vocab ? row[v] : row[LemmaConfig.UnkId]) - lse + logNoCopy);
+                output[v] = (float)((v < vocab ? row[v] : row[Seq2SeqConfig.UnkId]) - lse + logNoCopy);
 
-            // The attention over source positions 1..len-1 renormalized: log a_t − log Σ a_t.
+            // The attention over the source positions (first..len-1) renormalized: log a_t − log Σ a_t.
             var la = attn.AsSpan(r * steps, len);
             double amax = double.NegativeInfinity;
-            for (int t = 1; t < len; t++)
+            for (int t = first; t < len; t++)
                 amax = Math.Max(amax, la[t]);
             double asum = 0;
-            for (int t = 1; t < len; t++)
+            for (int t = first; t < len; t++)
                 asum += Math.Exp(la[t] - amax);
             double alse = amax + Math.Log(asum);
 
@@ -389,8 +453,8 @@ internal sealed unsafe class ManagedLemmaNet : ILemmaNet
             try
             {
                 Array.Clear(copied, 0, cols);
-                for (int t = 1; t < len; t++)
-                    copied[_ids[r * _width + t - 1]] += Math.Exp(la[t] - amax);
+                for (int t = first; t < len; t++)
+                    copied[_ids[r * _width + t - first]] += Math.Exp(la[t] - amax);
                 double mx = logCopy + amax - alse;
                 for (int v = 0; v < cols; v++)
                 {

@@ -17,6 +17,7 @@ Reads <out>/corpus.txt and writes:
                           s{i}.charlm_forward       forward charlm per-word representation [n_words, 1024]
                           s{i}.charlm_backward      backward charlm per-word representation [n_words, 1024]
                           s{i}.pos.upos_logits      tagger UPOS logits [n_words, n_upos]
+                          s{i}.pos.upos_logits64    the same in float64 (fast/ too; `--upos64-only` adds them)
                           s{i}.constituency.scores  parser transition logits per step [n_steps, n_transitions]
                         intermediates.json lists the words/text each tensor was computed from.
   tokenize_stress.txt + tokenize_stress.conllu
@@ -78,7 +79,7 @@ import numpy as np
 import torch
 
 sys.path.insert(0, str(Path(__file__).parent))
-from stanza_convert import convert_object, drop_skipped, load_checkpoint, write_safetensors  # noqa: E402
+from stanza_convert import NP_TO_ST, convert_object, drop_skipped, load_checkpoint, write_safetensors  # noqa: E402
 
 INTERMEDIATE_SENTENCES = 3
 LANG = "en"  # --lang; GERMAN replaces the English word lists below for "de"
@@ -452,6 +453,67 @@ def write_ner_golden(models, out):
         print(f"  {k}: {list(v.shape)}")
 
 
+def upos_logits64(models, sentences, package="default"):
+    """
+    The tagger's UPOS logits for each sentence (a list of words) alone, in float64: the model and its tensors in
+    float64, as for sentiment's logits64. German's float32 logits (up to |140|) are up to 1.01e-4 from these, so the
+    tests accept a logit within tolerance of either (owner's decision, 2026-10-13). A fresh pipeline, so the float32
+    models of the other writers are untouched.
+    """
+    nlp = stanza.Pipeline(LANG, dir=models, package=package, processors="tokenize,mwt,pos", download_method=None,
+                          use_gpu=False, logging_level="WARN")
+    pos = nlp.processors["pos"]
+    model = pos.trainer.model
+    model.double()
+    for m in model.modules():  # tensors held as plain attributes, not parameters or buffers
+        for k, v in list(vars(m).items()):
+            if isinstance(v, torch.Tensor) and v.is_floating_point():
+                setattr(m, k, v.double())
+    result = []
+    torch.set_default_dtype(torch.float64)
+    try:
+        for words in sentences:
+            single = stanza.Document([[{"id": j + 1, "text": w} for j, w in enumerate(words)]])
+            cap, h = capture_module(model.upos_clf)
+            with torch.no_grad():
+                pos.process(single)
+            h.remove()
+            result.append(cap.outputs[0].numpy())
+    finally:
+        torch.set_default_dtype(torch.float32)
+    return result
+
+
+def read_safetensors(path):
+    """The tensors of a safetensors file, in file order, and its metadata."""
+    st_to_np = {v: k for k, v in NP_TO_ST.items()}
+    data = path.read_bytes()
+    n = int.from_bytes(data[:8], "little")
+    header = json.loads(data[8:8 + n])
+    metadata = header.pop("__metadata__", None)
+    tensors = {}
+    for key, entry in sorted(header.items(), key=lambda kv: kv[1]["data_offsets"][0]):
+        begin, end = entry["data_offsets"]
+        tensors[key] = np.frombuffer(data[8 + n + begin:8 + n + end], dtype=st_to_np[entry["dtype"]]).reshape(entry["shape"])
+    return tensors, metadata
+
+
+def write_upos64_golden(models, out):
+    """
+    --upos64-only: adds s{i}.pos.upos_logits64 to intermediates.safetensors and fast/intermediates.safetensors, after
+    the tensors already there, which stay byte-identical (the full run writes the same files).
+    """
+    for folder, package in [(out, "default"), (out / "fast", "default_fast")]:
+        path = folder / "intermediates.safetensors"
+        tensors, metadata = read_safetensors(path)
+        index = json.load(open(folder / "intermediates.json", encoding="utf-8"))["sentences"]
+        for i, logits in enumerate(upos_logits64(models, [e["words"] for e in index], package)):
+            tensors[f"s{i}.pos.upos_logits64"] = logits
+            diff = np.abs(tensors[f"s{i}.pos.upos_logits"].astype(np.float64) - logits).max()
+            print(f"{path.relative_to(out)} s{i}: UPOS float32 vs float64 {diff:.2e}")
+        write_safetensors(tensors, path, metadata)
+
+
 def write_fast_golden(models, out):
     """fast/: Stanza's default_fast package (nocharlm pos, depparse and ner; see the module docstring)."""
     nlp = stanza.Pipeline(LANG, dir=models, package="default_fast", download_method=None,
@@ -511,6 +573,8 @@ def write_fast_golden(models, out):
                           "ner": [t.ner for t in single.sentences[0].tokens]})
     finally:
         dep_model.forward = original
+    for i, logits in enumerate(upos_logits64(models, [e["words"] for e in index], "default_fast")):
+        tensors[f"s{i}.pos.upos_logits64"] = logits
     write_safetensors(tensors, fast / "intermediates.safetensors", {"stanza": stanza.__version__})
     with open(fast / "intermediates.json", "w", encoding="utf-8", newline="\n") as f:
         json.dump({"stanza": stanza.__version__, "sentences": index}, f, indent=1, ensure_ascii=False)
@@ -730,11 +794,15 @@ def main():
     p.add_argument("--bulk-only", action="store_true", help="only regenerate bulk/")
     p.add_argument("--no-ssplit-only", action="store_true", help="only regenerate no_ssplit/ (tokenize_no_ssplit)")
     p.add_argument("--long-token-only", action="store_true", help="only regenerate long_token.*")
+    p.add_argument("--upos64-only", action="store_true", help="only add the float64 UPOS logits to the intermediates")
     args = p.parse_args()
     LANG = args.lang
     out = Path(args.out or ("tests/golden" if LANG == "en" else f"tests/golden/{LANG}"))
     if LANG == "de":
         globals().update(GERMAN)
+    if args.upos64_only:
+        write_upos64_golden(args.models, out)
+        return
     if args.long_token_only:
         write_long_token_golden(args.models, out)
         return
@@ -834,6 +902,8 @@ def main():
     write_no_ssplit_golden(args.models, out)
     write_long_token_golden(args.models, out)
 
+    for i, logits in enumerate(upos_logits64(args.models, [e["words"] for e in index])):
+        tensors[f"s{i}.pos.upos_logits64"] = logits
     write_safetensors(tensors, out / "intermediates.safetensors", {"stanza": stanza.__version__})
     with open(out / "intermediates.json", "w", encoding="utf-8", newline="\n") as f:
         json.dump({"stanza": stanza.__version__, "sentences": index}, f, indent=1, ensure_ascii=False)

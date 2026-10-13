@@ -10,6 +10,8 @@ public class NerTests(ITestOutputHelper output)
 {
     private static readonly string Golden = Path.Combine(Repo.Golden, "ner");
 
+    private static string GoldenDir(string lang) => Path.Combine(Repo.GoldenFor(lang), "ner");
+
     [Fact]
     [Trait("Backend", "Managed")]
     public void Viterbi_BreaksTiesTowardTheLowestTagLikeNumpy()
@@ -85,19 +87,22 @@ public class NerTests(ITestOutputHelper output)
     }
 
     [ModelTheory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void Emissions_MatchGoldenIntermediates(bool managed)
+    [InlineData(false, "en")]
+    [InlineData(true, "en")]
+    [German(false)]
+    [German(true)]
+    public void Emissions_MatchGoldenIntermediates(bool managed, string lang)
     {
-        using var pretrain = Repo.LoadPretrain(managed);
-        using var forward = managed ? null : CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
-        using var backward = managed ? null : CharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
-        string model = Repo.Model("ner/ontonotes-ww-multi_charlm");
+        // German's germeval2014: the old checkpoint format, no delta embedding, fastText's 300-dimensional vectors.
+        using var pretrain = Repo.LoadPretrainOf(managed, lang, "ner");
+        using var forward = managed ? null : CharLanguageModel.Load(Repo.Charlm(lang, forward: true));
+        using var backward = managed ? null : CharLanguageModel.Load(Repo.Charlm(lang, forward: false));
+        string model = Repo.ModelOf(lang, "ner");
         using var ner = managed
-            ? NerTagger.LoadManaged(model, pretrain, ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion")), ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion")))
+            ? NerTagger.LoadManaged(model, pretrain, ManagedCharLanguageModel.Load(Repo.Charlm(lang, forward: true)), ManagedCharLanguageModel.Load(Repo.Charlm(lang, forward: false)))
             : NerTagger.Load(model, pretrain, forward, backward);
-        var golden = SafeTensorFile.Load(Path.Combine(Golden, "intermediates.safetensors"));
-        var index = JsonNode.Parse(File.ReadAllText(Path.Combine(Golden, "intermediates.json")))!["sentences"]!.AsArray();
+        var golden = SafeTensorFile.Load(Path.Combine(GoldenDir(lang), "intermediates.safetensors"));
+        var index = JsonNode.Parse(File.ReadAllText(Path.Combine(GoldenDir(lang), "intermediates.json")))!["sentences"]!.AsArray();
         var sentences = index.Select(e => (IReadOnlyList<string>)Strings(e!["tokens"])).ToList();
 
         // One padded batch; the golden scores were computed one sentence at a time.
@@ -109,35 +114,48 @@ public class NerTests(ITestOutputHelper output)
         }
     }
 
-    public static readonly TheoryData<string, bool, bool> Configurations = new()
+    public static readonly TheoryData<string, bool, bool, string> Configurations = new()
     {
-        { "tokenize,mwt,pos,lemma,depparse,ner", true, false },
-        { "tokenize,mwt,pos,lemma,depparse,ner", false, false }, // no CharlmCache: NER runs its own charlms
-        { "tokenize,ner", true, false }, // NER reads only the tokens, so it needs nothing else
+        { "tokenize,mwt,pos,lemma,depparse,ner", true, false, "en" },
+        { "tokenize,mwt,pos,lemma,depparse,ner", false, false, "en" }, // no CharlmCache: NER runs its own charlms
+        { "tokenize,ner", true, false, "en" }, // NER reads only the tokens, so it needs nothing else
 
         // Managed NER: reading the TorchSharp tagger's cached charlm outputs, computing its own, and alone.
-        { "tokenize,mwt,pos,lemma,depparse,ner", true, true },
-        { "tokenize,mwt,pos,lemma,depparse,ner", false, true },
-        { "tokenize,ner", true, true },
+        { "tokenize,mwt,pos,lemma,depparse,ner", true, true, "en" },
+        { "tokenize,mwt,pos,lemma,depparse,ner", false, true, "en" },
+        { "tokenize,ner", true, true, "en" },
     };
 
+    /// <remarks>German NER reads its own pretrain (fastText) and the tagger's charlms (newswiki), so the cache applies.</remarks>
     [ModelTheory]
     [MemberData(nameof(Configurations))]
-    public void Pipeline_ReproducesGoldenTagsAndEntities(string processors, bool cache, bool managed)
+    [German("tokenize,mwt,pos,lemma,depparse,ner", true, false)]
+    [German("tokenize,mwt,pos,lemma,depparse,ner", false, false)]
+    [German("tokenize,ner", true, false)]
+    [German("tokenize,mwt,pos,lemma,depparse,ner", true, true)]
+    [German("tokenize,mwt,pos,lemma,depparse,ner", false, true)]
+    [German("tokenize,ner", true, true)]
+    public void Pipeline_ReproducesGoldenTagsAndEntities(string processors, bool cache, bool managed, string lang)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = processors, CharlmCache = new() { IsEnabled = cache }, Backend = Repo.PipelineBackendFor(managed) });
+        using var nlp = Pipeline.Load(Repo.ModelsFor(lang), new PipelineOptions
+        {
+            Language = lang,
+            Processors = processors,
+            CharlmCache = new() { IsEnabled = cache },
+            Backend = Repo.PipelineBackendFor(managed),
+        });
         bool full = processors.Contains("depparse");
         var failures = new List<string>();
-        var files = Directory.GetFiles(Golden, "*.conllu").Order().ToList();
+        var files = Directory.GetFiles(GoldenDir(lang), "*.conllu").Order().ToList();
         Assert.Equal(13, files.Count);
         foreach (var conllu in files)
         {
             var name = Path.GetFileNameWithoutExtension(conllu);
-            var txt = Path.Combine(Repo.Golden, name == "corpus" ? "corpus.txt" : name + ".txt");
+            var txt = Path.Combine(Repo.GoldenFor(lang), name == "corpus" ? "corpus.txt" : name + ".txt");
             var doc = nlp.Process(File.ReadAllText(txt));
 
             // Outside the BMP, C# offsets are UTF-16 indices and Stanza's are code points.
-            bool offsets = name != "validation_nonbmp";
+            bool offsets = !PipelineTests.HasNonBmp(File.ReadAllText(txt));
 
             var golden = File.ReadAllText(conllu);
             if (full)

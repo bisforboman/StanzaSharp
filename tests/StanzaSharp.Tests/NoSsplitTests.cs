@@ -6,24 +6,28 @@ namespace StanzaSharp.Tests;
 public class NoSsplitTests(SharedPipelines pipelines) : IClassFixture<SharedPipelines>
 {
     private static readonly Dictionary<string, string> Suffix = new() { ["default"] = "", ["default_fast"] = ".fast" };
-    private static readonly string Dir = Path.Combine(Repo.Golden, "no_ssplit");
+
+    private static string Dir(string lang) => Path.Combine(Repo.GoldenFor(lang), "no_ssplit");
 
     [ModelTheory]
-    [InlineData("default", false)]
-    [InlineData("default_fast", false)]
-    [InlineData("default", true)]
-    public void NoSsplit_MatchesGolden(string package, bool managed)
+    [InlineData("default", false, "en")]
+    [InlineData("default_fast", false, "en")]
+    [InlineData("default", true, "en")]
+    [German("default", false)]
+    [German("default_fast", false)]
+    [German("default", true)]
+    public void NoSsplit_MatchesGolden(string package, bool managed, string lang)
     {
-        var nlp = pipelines.Get(package, managed, splitSentences: false);
-        var names = Directory.GetFiles(Dir, "*.conllu").Select(Path.GetFileName).Where(f => !f!.EndsWith(".fast.conllu")).ToList();
+        var nlp = pipelines.Get(package, managed, splitSentences: false, lang: lang);
+        var names = Directory.GetFiles(Dir(lang), "*.conllu").Select(Path.GetFileName).Where(f => !f!.EndsWith(".fast.conllu")).ToList();
         Assert.Equal(7, names.Count);
         var failures = new List<string>();
         foreach (var name in names)
         {
             var stem = Path.GetFileNameWithoutExtension(name)!;
-            var actual = Conllu.Write(nlp.Process(File.ReadAllText(Path.Combine(Repo.Golden, stem + ".txt"))));
-            var golden = File.ReadAllText(Path.Combine(Dir, stem + Suffix[package] + ".conllu"));
-            if (stem == "validation_nonbmp")
+            var actual = Conllu.Write(nlp.Process(File.ReadAllText(Path.Combine(Repo.GoldenFor(lang), stem + ".txt"))));
+            var golden = File.ReadAllText(Path.Combine(Dir(lang), stem + Suffix[package] + ".conllu"));
+            if (PipelineTests.HasNonBmp(File.ReadAllText(Path.Combine(Repo.GoldenFor(lang), stem + ".txt"))))
                 (actual, golden) = (PipelineTests.StripOffsets(actual), PipelineTests.StripOffsets(golden));
             var e = golden.Split("\n\n");
             var g = actual.Split("\n\n");
@@ -37,13 +41,16 @@ public class NoSsplitTests(SharedPipelines pipelines) : IClassFixture<SharedPipe
     }
 
     [ModelTheory]
-    [InlineData("default", false)]
-    [InlineData("default_fast", false)]
-    [InlineData("default", true)]
-    public void NoSsplit_Bulk_MatchesStanzasBulkProcess(string package, bool managed)
+    [InlineData("default", false, "en")]
+    [InlineData("default_fast", false, "en")]
+    [InlineData("default", true, "en")]
+    [German("default", false)]
+    [German("default_fast", false)]
+    [German("default", true)]
+    public void NoSsplit_Bulk_MatchesStanzasBulkProcess(string package, bool managed, string lang)
     {
-        var cases = JsonNode.Parse(File.ReadAllText(Path.Combine(Dir, "bulk" + Suffix[package] + ".json")))!.AsArray();
-        var nlp = pipelines.Get(package, managed, splitSentences: false);
+        var cases = JsonNode.Parse(File.ReadAllText(Path.Combine(Dir(lang), "bulk" + Suffix[package] + ".json")))!.AsArray();
+        var nlp = pipelines.Get(package, managed, splitSentences: false, lang: lang);
         var docs = nlp.Process(cases.Select(c => c!["text"]!.GetValue<string>()).ToList());
         for (int i = 0; i < cases.Count; i++)
         {

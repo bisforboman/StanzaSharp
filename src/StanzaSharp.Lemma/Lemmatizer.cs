@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using System.Text.Json;
+using StanzaSharp.Nn;
 
 namespace StanzaSharp.Lemma;
 
@@ -9,22 +10,22 @@ namespace StanzaSharp.Lemma;
 /// a dictionary by (UPOS, word), then by word alone; words it misses go through a character seq2seq model
 /// (models/common/seq2seq_model.py) with POS input, soft attention, a copy gate and an edit classifier
 /// (identity / lowercase / use the decoded string), decoded greedily.
-/// The network is an <see cref="ILemmaNet"/> (per backend); the dictionary, DeltaVocab, batching, the greedy
-/// loop and the edits are here.
+/// The network is an <see cref="ISeq2SeqNet"/> (per backend, shared with German MWT); the dictionary, DeltaVocab,
+/// batching and the edits are here.
 /// </summary>
 internal sealed class Lemmatizer : IDisposable
 {
-    private const int UnkId = LemmaConfig.UnkId, SosId = LemmaConfig.SosId, EosId = LemmaConfig.EosId;
+    private const int UnkId = Seq2SeqConfig.UnkId, SosId = Seq2SeqConfig.SosId, EosId = Seq2SeqConfig.EosId;
     private const string Unk = "<UNK>";
 
     private readonly Dictionary<string, Dictionary<string, string?>> _posDict;
     private readonly Dictionary<string, int> _charToId, _posToId;
     private readonly string[] _idToChar;
     private readonly int _batchSize, _maxDecLen;
-    private readonly ILemmaNet _net;
+    private readonly ISeq2SeqNet _net;
 
     /// <param name="net">Builds the network from the checkpoint and its sizes (a backend's).</param>
-    internal Lemmatizer(Checkpoint ckpt, Func<Checkpoint, LemmaConfig, ILemmaNet> net)
+    internal Lemmatizer(Checkpoint ckpt, Func<Checkpoint, Seq2SeqConfig, ISeq2SeqNet> net)
     {
         var root = ckpt.Root;
         var config = root["config"]!;
@@ -57,12 +58,12 @@ internal sealed class Lemmatizer : IDisposable
         _idToChar = vocab["char"]!["_id2unit"]!.AsArray().Select(n => n!.GetValue<string>()).ToArray();
         _batchSize = config["batch_size"]!.GetValue<int>();
         _maxDecLen = config["max_dec_len"]!.GetValue<int>();
-        var sizes = LemmaConfig.From(config);
+        var sizes = Seq2SeqConfig.From(config);
         _net = net(ckpt, sizes);
     }
 
     /// <summary>Loads <c>basePath.json</c> + <c>.safetensors</c> (or <c>basePath.pt</c>), e.g. <c>models/converted/en/lemma/combined_nocharlm</c>, on the managed backend.</summary>
-    public static Lemmatizer LoadManaged(string basePath) => new(Checkpoint.Load(basePath), (ckpt, sizes) => new ManagedLemmaNet(ckpt, sizes));
+    public static Lemmatizer LoadManaged(string basePath) => new(Checkpoint.Load(basePath), (ckpt, sizes) => new ManagedSeq2SeqNet(ckpt, sizes));
 
     /// <summary>Sets the lemma of every word in <paramref name="doc"/>; needs UPOS from the tagger.</summary>
     public void Process(Document doc, CancellationToken cancellationToken = default)
@@ -166,42 +167,8 @@ internal sealed class Lemmatizer : IDisposable
 
         var posIds = order.Select(i => (long)_posToId.GetValueOrDefault(words[i].Upos ?? "_", UnkId)).ToArray();
 
-        // Seq2SeqModel.predict_greedy: one character per step for the whole batch, the argmax fed back (torch's max: the first maximum).
         using var decoder = _net.Encode(ids, batch, width, posIds, order.Select(i => (long)src[i].Length + 1).ToArray(), ct);
-        var output = Enumerable.Range(0, batch).Select(_ => new List<int>()).ToArray();
-        var previous = new long[batch];
-        Array.Fill(previous, SosId);
-        var done = new bool[batch];
-        int totalDone = 0, columns = decoder.Columns;
-        for (int step = 0; totalDone < batch && step < _maxDecLen; step++)
-        {
-            ct.ThrowIfCancellationRequested();
-            var logProbs = decoder.Step(previous, ct);
-            onStep?.Invoke(logProbs, columns, done);
-            for (int i = 0; i < batch; i++)
-            {
-                var row = logProbs.AsSpan(i * columns, columns);
-                int best = 0;
-                for (int v = 1; v < columns; v++)
-                {
-                    if (row[v] > row[best])
-                        best = v;
-                }
-
-                previous[i] = best;
-                if (done[i])
-                    continue;
-                if (best == EosId)
-                {
-                    done[i] = true;
-                    totalDone++;
-                }
-                else
-                {
-                    output[i].Add(best);
-                }
-            }
-        }
+        var output = Seq2SeqConfig.Greedy(decoder, batch, _maxDecLen, neverDecodeUnk: false, ct, onStep);
 
         var editValues = decoder.EditLogits;
         onEdit?.Invoke(editValues);

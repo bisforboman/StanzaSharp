@@ -10,21 +10,16 @@ public class DepparseTests(ITestOutputHelper output, DepparseTests.Fixture fixtu
 {
     private static readonly string Golden = Path.Combine(Repo.Golden, "depparse");
 
-    /// <summary>Each backend's <see cref="Models"/>, loaded on first use and shared by the class's tests (read-only).</summary>
+    private static string GoldenDir(string lang) => Path.Combine(Repo.GoldenFor(lang), "depparse");
+
+    /// <summary>Each backend's and language's <see cref="Models"/>, loaded on first use and shared by the class's tests (read-only).</summary>
     public sealed class Fixture : IDisposable
     {
-        private readonly Lazy<Models> _torch = new(() => new Models(managed: false)), _managed = new(() => new Models(managed: true));
+        private readonly ModelCache<Models> _models = new((managed, lang) => new Models(managed, lang));
 
-        internal Models Get(bool managed = false) => (managed ? _managed : _torch).Value;
+        internal Models Get(bool managed = false, string lang = "en") => _models.Get(managed, lang);
 
-        public void Dispose()
-        {
-            foreach (var models in new[] { _torch, _managed })
-            {
-                if (models.IsValueCreated)
-                    models.Value.Dispose();
-            }
-        }
+        public void Dispose() => _models.Dispose();
     }
 
     internal sealed class Models : IDisposable
@@ -33,19 +28,19 @@ public class DepparseTests(ITestOutputHelper output, DepparseTests.Fixture fixtu
         public readonly CharLanguageModel? Forward, Backward;
         public readonly DependencyParser Parser;
 
-        public Models(bool managed)
+        public Models(bool managed, string lang)
         {
-            Pretrain = Repo.LoadPretrain(managed);
+            Pretrain = Repo.LoadPretrain(managed, lang);
             if (managed)
             {
-                Parser = DependencyParser.LoadManaged(Repo.Model("depparse/combined_charlm"), Pretrain,
-                    ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion")), ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion")));
+                Parser = DependencyParser.LoadManaged(Repo.ModelOf(lang, "depparse"), Pretrain,
+                    ManagedCharLanguageModel.Load(Repo.Charlm(lang, forward: true)), ManagedCharLanguageModel.Load(Repo.Charlm(lang, forward: false)));
                 return;
             }
 
-            Forward = CharLanguageModel.Load(Repo.Model("forward_charlm/1billion"));
-            Backward = CharLanguageModel.Load(Repo.Model("backward_charlm/1billion"));
-            Parser = DependencyParser.Load(Repo.Model("depparse/combined_charlm"), Pretrain, Forward, Backward);
+            Forward = CharLanguageModel.Load(Repo.Charlm(lang, forward: true));
+            Backward = CharLanguageModel.Load(Repo.Charlm(lang, forward: false));
+            Parser = DependencyParser.Load(Repo.ModelOf(lang, "depparse"), Pretrain, Forward, Backward);
         }
 
         public void Dispose()
@@ -159,14 +154,16 @@ public class DepparseTests(ITestOutputHelper output, DepparseTests.Fixture fixtu
     }
 
     [ModelTheory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void Scores_MatchGoldenIntermediates(bool managed)
+    [InlineData(false, "en")]
+    [InlineData(true, "en")]
+    [German(false)]
+    [German(true)]
+    public void Scores_MatchGoldenIntermediates(bool managed, string lang)
     {
-        var models = fixture.Get(managed);
-        var golden = SafeTensorFile.Load(Path.Combine(Golden, "intermediates.safetensors"));
-        var index = JsonNode.Parse(File.ReadAllText(Path.Combine(Golden, "intermediates.json")))!["sentences"]!.AsArray();
-        var doc = Conllu.Read(File.ReadAllText(Path.Combine(Golden, "corpus.conllu")));
+        var models = fixture.Get(managed, lang);
+        var golden = SafeTensorFile.Load(Path.Combine(GoldenDir(lang), "intermediates.safetensors"));
+        var index = JsonNode.Parse(File.ReadAllText(Path.Combine(GoldenDir(lang), "intermediates.json")))!["sentences"]!.AsArray();
+        var doc = Conllu.Read(File.ReadAllText(Path.Combine(GoldenDir(lang), "corpus.conllu")));
         Assert.Equal(3, index.Count);
         for (int i = 0; i < index.Count; i++)
         {
@@ -184,12 +181,14 @@ public class DepparseTests(ITestOutputHelper output, DepparseTests.Fixture fixtu
     private static float Finite(float x) => float.IsNegativeInfinity(x) ? 0 : x;
 
     [ModelTheory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void Process_ReproducesGoldenHeadsAndDeprels(bool managed)
+    [InlineData(false, "en")]
+    [InlineData(true, "en")]
+    [German(false)]
+    [German(true)]
+    public void Process_ReproducesGoldenHeadsAndDeprels(bool managed, string lang)
     {
-        var models = fixture.Get(managed);
-        var files = Directory.GetFiles(Golden, "*.conllu").Order().ToList();
+        var models = fixture.Get(managed, lang);
+        var files = Directory.GetFiles(GoldenDir(lang), "*.conllu").Order().ToList();
         Assert.Equal(13, files.Count); // corpus + 12 validation files
         var failures = new List<string>();
         foreach (var file in files)
@@ -207,22 +206,24 @@ public class DepparseTests(ITestOutputHelper output, DepparseTests.Fixture fixtu
     }
 
     [ModelTheory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void Pipeline_ReproducesGoldenFilesFromText(bool managed)
+    [InlineData(false, "en")]
+    [InlineData(true, "en")]
+    [German(false)]
+    [German(true)]
+    public void Pipeline_ReproducesGoldenFilesFromText(bool managed, string lang)
     {
-        using var nlp = Pipeline.Load(Repo.Models, new PipelineOptions { Processors = "tokenize,mwt,pos,lemma,depparse", Backend = Repo.PipelineBackendFor(managed) });
+        using var nlp = Pipeline.Load(Repo.ModelsFor(lang), new PipelineOptions { Language = lang, Processors = "tokenize,mwt,pos,lemma,depparse", Backend = Repo.PipelineBackendFor(managed) });
         var failures = new List<string>();
-        var files = Directory.GetFiles(Golden, "*.conllu").Order().ToList();
+        var files = Directory.GetFiles(GoldenDir(lang), "*.conllu").Order().ToList();
         Assert.Equal(13, files.Count);
         foreach (var file in files)
         {
-            var txt = Path.Combine(Repo.Golden, Path.GetFileNameWithoutExtension(file) + ".txt");
+            var txt = Path.Combine(Repo.GoldenFor(lang), Path.GetFileNameWithoutExtension(file) + ".txt");
             var actual = Conllu.Write(nlp.Process(File.ReadAllText(txt)));
             var golden = File.ReadAllText(file);
 
             // Outside the BMP, C# offsets are UTF-16 indices and Stanza's are code points.
-            if (Path.GetFileName(txt) == "validation_nonbmp.txt")
+            if (PipelineTests.HasNonBmp(File.ReadAllText(txt)))
                 (actual, golden) = (PipelineTests.StripOffsets(actual), PipelineTests.StripOffsets(golden));
             Compare(Path.GetFileName(file), golden, actual, failures);
         }
@@ -234,14 +235,16 @@ public class DepparseTests(ITestOutputHelper output, DepparseTests.Fixture fixtu
     /// A one-sentence document (a service's per-call case): the managed parser runs its backward charlm on from the
     /// tagger's final state (only ROOT left) instead of over the whole sentence. Every score must stay bit for bit.
     /// </summary>
-    [ModelFact]
+    [ModelTheory]
+    [InlineData("en")]
+    [German]
     [Trait("Backend", "Managed")]
-    public void OneSentenceDocument_ContinuesTheTaggersBackwardCharlm_BitForBit()
+    public void OneSentenceDocument_ContinuesTheTaggersBackwardCharlm_BitForBit(string lang)
     {
-        var models = fixture.Get(managed: true);
-        var (forward, backward) = (ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion")), ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion")));
-        using var tagger = Pos.PosTagger.LoadManaged(Repo.Model("pos/combined_charlm"), models.Pretrain, forward, backward);
-        var sentences = Directory.GetFiles(Golden, "*.conllu").Order().SelectMany(f => Conllu.Read(File.ReadAllText(f)).Sentences.Take(10)).ToList();
+        var models = fixture.Get(managed: true, lang);
+        var (forward, backward) = (ManagedCharLanguageModel.Load(Repo.Charlm(lang, forward: true)), ManagedCharLanguageModel.Load(Repo.Charlm(lang, forward: false)));
+        using var tagger = Pos.PosTagger.LoadManaged(Repo.ModelOf(lang, "pos"), models.Pretrain, forward, backward);
+        var sentences = Directory.GetFiles(GoldenDir(lang), "*.conllu").Order().SelectMany(f => Conllu.Read(File.ReadAllText(f)).Sentences.Take(10)).ToList();
         int reused = 0;
         foreach (var sentence in sentences)
         {
@@ -267,17 +270,19 @@ public class DepparseTests(ITestOutputHelper output, DepparseTests.Fixture fixtu
     /// state; the managed parser's batches (other batches) take them and run on over ROOT only. A charlm step gives a row
     /// the same arithmetic in any batch, so every score must stay bit for bit.
     /// </summary>
-    [ModelFact]
+    [ModelTheory]
+    [InlineData("en")]
+    [German]
     [Trait("Backend", "Managed")]
-    public void Batches_ContinueTheTaggersBackwardCharlm_BitForBit()
+    public void Batches_ContinueTheTaggersBackwardCharlm_BitForBit(string lang)
     {
-        var models = fixture.Get(managed: true);
-        var (forward, backward) = (ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion")), ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion")));
-        using var tagger = Pos.PosTagger.LoadManaged(Repo.Model("pos/combined_charlm"), models.Pretrain, forward, backward);
+        var models = fixture.Get(managed: true, lang);
+        var (forward, backward) = (ManagedCharLanguageModel.Load(Repo.Charlm(lang, forward: true)), ManagedCharLanguageModel.Load(Repo.Charlm(lang, forward: false)));
+        using var tagger = Pos.PosTagger.LoadManaged(Repo.ModelOf(lang, "pos"), models.Pretrain, forward, backward);
         int reused = 0, total = 0;
         foreach (var name in new[] { "corpus.conllu", "validation_long.conllu", "validation_social.conllu" })
         {
-            var doc = Conllu.Read(File.ReadAllText(Path.Combine(Golden, name)));
+            var doc = Conllu.Read(File.ReadAllText(Path.Combine(GoldenDir(lang), name)));
             using var cache = new CharlmCache();
             tagger.Process(doc, cache);
             var keys = doc.Sentences.Where(s => s.Words.Any()).ToList();
