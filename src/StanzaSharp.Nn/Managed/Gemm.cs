@@ -797,7 +797,7 @@ internal static unsafe class Gemm
     /// <see cref="KernelBlocked"/> on Vector512 for two adjacent panels (<paramref name="b"/> and <paramref name="b"/> +
     /// <paramref name="bStride"/>), whose init and output columns follow the first panel's (+16), like
     /// <see cref="KernelPair512"/>: per k, 2 panel loads and mr broadcasts feed 2·mr FMAs instead of 1 and mr feeding
-    /// mr, which held the single-panel kernel back on Intel (load ports; docs/performance.md, round 19). Each
+    /// mr, which held the single-panel kernel back on Intel (load ports; docs/performance/round-19-vector512-intel-two-panels.md). Each
     /// column's arithmetic is the single-panel kernel's.
     /// </summary>
     public static void KernelBlockedPair512(int mr, float** a, float* b, long bStride, int k, int kb, float** init, float** output)

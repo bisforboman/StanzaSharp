@@ -50,7 +50,7 @@ if (args is ["lemma-divergence", ..])
 if (args is ["constituency-divergence", ..])
     return ConstituencyDivergence.Run(args[1..]); // tools/constituency_divergence.py; docs/backends.md, "constituency"
 if (args is ["startup", ..])
-    return Startup.Run(args[1..], FindRepoRoot()); // tools/startup.py; docs/performance.md, round 17
+    return Startup.Run(args[1..], FindRepoRoot()); // tools/startup.py; docs/performance/round-17-startup.md
 if (args is ["managed-spike", ..])
     return ManagedSpike.Run(args[1..], FindRepoRoot(), BuildText); // issue #29: docs/managed-backend-spike.md
 
@@ -114,7 +114,7 @@ if (noTf32)
 
 if (perCall > 0)
 {
-    // A service calling Process once per short text: the fixed cost per call (docs/performance.md, "Per-call cost").
+    // A service calling Process once per short text: the fixed cost per call (docs/performance/round-07-per-call-short-texts.md).
     var stageLog = new StageLogger();
     using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Package = package, Processors = processors, Backend = pipelineBackend, Threads = threads > 0 ? threads : null, TrimNativeHeap = !noTrim, Logger = concurrent > 0 ? null : stageLog });
     var texts = perCallText != null ? [perCallText] : BuildShortSentences();
@@ -288,7 +288,7 @@ if (memoryWords > 0)
 
     if (idleGc)
     {
-        // What a service can do to get the memory back (docs/performance.md, round 6): an aggressive GC decommits the
+        // What a service can do to get the memory back (docs/performance/round-06-memory-managed-backend.md): an aggressive GC decommits the
         // GC's free memory, but ArrayPool<T>.Shared (the managed backend's scratch buffers) gives an array up only at a
         // gen2 GC at least a minute after its last use.
         void Report(string what)

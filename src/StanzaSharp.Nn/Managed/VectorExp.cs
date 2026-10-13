@@ -11,7 +11,7 @@ namespace StanzaSharp.Nn.Managed;
 /// <remarks>
 /// The runtime's own <c>ExpSingle</c> is too large to inline and has no usable ReadyToRun code (it depends on the
 /// machine's vector width), so every sigmoid and tanh of a fresh process ran it at JIT tier 0 until it tiered up,
-/// even inside our fully optimized kernels (docs/performance.md, round 17). Each method below takes the same
+/// even inside our fully optimized kernels (docs/performance/round-17-startup.md). Each method below takes the same
 /// branches as the runtime's (which double vector width, which conversion instructions), and
 /// <c>ManagedBackendTests.VectorExp_GivesTheRuntimesBits</c> compares them over every float pattern in a stride.
 /// </remarks>

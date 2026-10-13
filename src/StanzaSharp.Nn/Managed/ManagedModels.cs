@@ -151,7 +151,7 @@ internal sealed unsafe class ManagedCharLanguageModel
         var ids = new int[n][];
         var rowAt = new int[n][]; // position → output row, or -1
 
-        // Character ids straight from the runes, with no string per character (docs/performance.md, round 18).
+        // Character ids straight from the runes, with no string per character (docs/performance/round-18-depparse-charlm-start-garbage.md).
         var lookup = _vocab.GetAlternateLookup<ReadOnlySpan<char>>();
         Span<char> utf16 = stackalloc char[2];
         for (int i = 0, firstRow = 0; i < n; i++)

@@ -125,7 +125,7 @@ internal static class BenchmarkCommand
 
             // Warm-up runs on the whole text, each side until it settles (WarmedUp), then the timed runs; the two sides
             // alternate, so both see the same machine state. StanzaSharp's hot per-step methods reach the JIT's optimized
-            // tier only after a few runs (docs/performance.md, round 16), so the timed runs show a warmed service.
+            // tier only after a few runs (docs/performance/round-16-tokenizer-follow-ups.md), so the timed runs show a warmed service.
             int maxWarmUps = quick ? 1 : MaxWarmUps, csWarmUps = 0, pyWarmUps = 0;
             Dictionary<string, double>? csLast = null, pyLast = null;
             for (bool csDone = false, pyDone = stanza == null; !(csDone && pyDone);)
