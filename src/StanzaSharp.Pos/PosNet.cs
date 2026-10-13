@@ -213,17 +213,21 @@ internal sealed unsafe class ManagedPosNet : IPosNet
         }
     }
 
-    /// <summary>Both charlms over the batch into each word's input row; sentences with a cache key are also kept in the cache.</summary>
+    /// <summary>
+    /// Both charlms over the batch into each word's input row; sentences with a cache key are also kept in the cache, with
+    /// the backward pass's final cell state, so the dependency parser can run on from it (ManagedDepparseNet.CharlmFeatures).
+    /// </summary>
     private void CharlmFeatures(IReadOnlyList<IReadOnlyList<string>> sentences, int[] packedRow, float[] x, int col,
         CharlmCache? charlms, IReadOnlyList<Sentence?>? cacheKeys, CancellationToken ct)
     {
         int dim = _charlmForward!.HiddenDim, words = packedRow.Length;
         var forward = ArrayPool<float>.Shared.Rent(words * dim);
         var backward = ArrayPool<float>.Shared.Rent(words * dim);
+        var finalC = cacheKeys != null ? ArrayPool<float>.Shared.Rent(sentences.Count * dim) : null;
         try
         {
             // A sentence alone (a one-sentence document) is also kept for the dependency parser (DependencyParser.Process).
-            ManagedCharLanguageModel.BuildBoth(_charlmForward, _charlmBackward!, sentences, forward, backward, charlms, ct);
+            ManagedCharLanguageModel.BuildBoth(_charlmForward, _charlmBackward!, sentences, forward, backward, charlms, ct, finalC);
             for (int k = 0; k < words; k++)
             {
                 int r = packedRow[k] * _inputSize + col;
@@ -237,7 +241,10 @@ internal sealed unsafe class ManagedPosNet : IPosNet
                 {
                     int n = sentences[i].Count;
                     if (cacheKeys[i] is { } key && charlms!.HasRoom(n))
-                        charlms.TryAdd(key, forward.AsSpan(k * dim, n * dim).ToArray(), backward.AsSpan(k * dim, n * dim).ToArray(), n);
+                    {
+                        charlms.TryAdd(key, forward.AsSpan(k * dim, n * dim).ToArray(), backward.AsSpan(k * dim, n * dim).ToArray(), n,
+                            finalC.AsSpan(i * dim, dim).ToArray());
+                    }
                 }
             }
         }
@@ -245,6 +252,8 @@ internal sealed unsafe class ManagedPosNet : IPosNet
         {
             ArrayPool<float>.Shared.Return(forward);
             ArrayPool<float>.Shared.Return(backward);
+            if (finalC != null)
+                ArrayPool<float>.Shared.Return(finalC);
         }
     }
 

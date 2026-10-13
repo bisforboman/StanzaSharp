@@ -127,7 +127,7 @@ public sealed class PipelineOptions
 /// <summary>
 /// The tagger keeps its character-model outputs (about 8 KB per word) for the processors after it that need the same
 /// ones: the constituency parser, sentiment and NER (and, on <see cref="PipelineBackend.Managed"/>, the dependency
-/// parser for one-sentence documents). Output is identical either way; the cache trades memory for speed.
+/// parser's backward pass, from about 4 KB more per sentence). Output is identical either way; the cache trades memory for speed.
 /// </summary>
 public sealed class CharlmCacheOptions
 {

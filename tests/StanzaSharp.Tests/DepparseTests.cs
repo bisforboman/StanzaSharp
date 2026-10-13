@@ -262,6 +262,41 @@ public class DepparseTests(ITestOutputHelper output, DepparseTests.Fixture fixtu
         Assert.True(reused > sentences.Count * 3 / 4, $"only {reused} of {sentences.Count} sentences reused the tagger's state");
     }
 
+    /// <summary>
+    /// A whole document: the tagger runs it in batches and keeps each sentence's backward charlm outputs and final cell
+    /// state; the managed parser's batches (other batches) take them and run on over ROOT only. A charlm step gives a row
+    /// the same arithmetic in any batch, so every score must stay bit for bit.
+    /// </summary>
+    [ModelFact]
+    [Trait("Backend", "Managed")]
+    public void Batches_ContinueTheTaggersBackwardCharlm_BitForBit()
+    {
+        var models = fixture.Get(managed: true);
+        var (forward, backward) = (ManagedCharLanguageModel.Load(Repo.Model("forward_charlm/1billion")), ManagedCharLanguageModel.Load(Repo.Model("backward_charlm/1billion")));
+        using var tagger = Pos.PosTagger.LoadManaged(Repo.Model("pos/combined_charlm"), models.Pretrain, forward, backward);
+        int reused = 0, total = 0;
+        foreach (var name in new[] { "corpus.conllu", "validation_long.conllu", "validation_social.conllu" })
+        {
+            var doc = Conllu.Read(File.ReadAllText(Path.Combine(Golden, name)));
+            using var cache = new CharlmCache();
+            tagger.Process(doc, cache);
+            var keys = doc.Sentences.Where(s => s.Words.Any()).ToList();
+            var sentences = keys.Select(s => (IReadOnlyList<Word>)s.Words.ToList()).ToList();
+            foreach (var batch in models.Parser.Batches(sentences.Select(s => s.Count + 1).ToList()))
+            {
+                var words = batch.Select(i => sentences[i]).ToList();
+                var fresh = models.Parser.Scores(words, labelScores: true);
+                var continued = models.Parser.Scores(words, labelScores: true, charlms: cache, keys: batch.Select(i => (Sentence?)keys[i]).ToList());
+                Assert.Equal(fresh.ArcLogProbs, continued.ArcLogProbs);
+                Assert.Equal(fresh.LabelScores, continued.LabelScores);
+                reused += batch.Count(i => cache.TryGetBackward(keys[i], sentences[i].Select(w => Punct.Simplify(w.Text)).ToList(), out _, out _));
+                total += batch.Count;
+            }
+        }
+
+        Assert.True(reused > total * 3 / 4, $"only {reused} of {total} sentences reused the tagger's state");
+    }
+
     /// <summary>Records the first sentence where <paramref name="actual"/> differs from <paramref name="golden"/>.</summary>
     private static void Compare(string name, string golden, string actual, List<string> failures)
     {

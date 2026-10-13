@@ -31,7 +31,7 @@ internal abstract class BackendModels : IDisposable
     /// <summary>Whether the models may load concurrently, on the thread pool (managed: nothing is per thread).</summary>
     public virtual bool LoadInParallel => false;
 
-    /// <summary>Whether the dependency parser reads the tagger's charlm outputs (CharlmCache.TryGetAlone).</summary>
+    /// <summary>Whether the dependency parser reads the tagger's backward charlm outputs (CharlmCache.TryGetBackward).</summary>
     public virtual bool DepparseReadsCache => false;
 
     public abstract Pretrain Pretrain(string basePath);

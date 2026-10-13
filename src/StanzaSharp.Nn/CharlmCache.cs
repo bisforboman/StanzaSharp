@@ -6,8 +6,9 @@ namespace StanzaSharp.Nn;
 /// is most of their work, so the pipeline keeps one of these per document and each sentence goes through the charlms once.
 /// </summary>
 /// <remarks>
-/// Each word costs 2 x 1024 floats (8 KB) with the English charlms, held until the cache is disposed.
-/// To bound that on large documents the cache keeps at most <see cref="MaxWords"/> words; sentences
+/// Each word costs 2 x 1024 floats (8 KB) with the English charlms, held until the cache is disposed, plus 4 KB per
+/// sentence from a managed tagger (the backward charlm's final cell state, for depparse), not counted in
+/// <see cref="MaxWords"/>. To bound that on large documents the cache keeps at most <see cref="MaxWords"/> words; sentences
 /// past that are not kept, and consumers compute them again as they do for any missing sentence.
 /// <para>
 /// Backend-neutral (issue #29): an entry holds what its producer made, TorchSharp tensors or float arrays, and each
@@ -27,6 +28,7 @@ internal sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords) : 
         public int Words;
         public ICharlmReps? Native;                // TorchSharp producer, or converted for a TorchSharp consumer
         public float[]? ForwardData, BackwardData; // managed producer: [words, dim] row-major
+        public float[]? BackwardFinalC;            // managed producer: the backward pass's final cell state, [dim]
     }
 
     private readonly Dictionary<Sentence, Entry> _reps = [];
@@ -51,11 +53,12 @@ internal sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords) : 
     /// <see cref="TryAdd(Sentence, int, Func{ICharlmReps})"/> for a managed producer: [<paramref name="words"/>, dim] arrays,
     /// which the cache keeps (the caller must not change them afterwards).
     /// </summary>
-    public bool TryAdd(Sentence sentence, float[] forward, float[] backward, int words)
+    /// <param name="backwardFinalC">Optional: the backward pass's final cell state (see <see cref="TryGetBackward"/>).</param>
+    public bool TryAdd(Sentence sentence, float[] forward, float[] backward, int words, float[]? backwardFinalC = null)
     {
         if (!Reserve(sentence, words))
             return false;
-        _reps[sentence] = new Entry { Words = words, ForwardData = forward, BackwardData = backward };
+        _reps[sentence] = new Entry { Words = words, ForwardData = forward, BackwardData = backward, BackwardFinalC = backwardFinalC };
         return true;
     }
 
@@ -65,9 +68,9 @@ internal sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords) : 
     /// </summary>
     internal sealed record Alone(float[] Forward, float[] Backward, float[] BackwardFinalC);
 
-    // By the sentence's texts. Run alone, each step of the charlms runs one row through the same kernel, so the outputs
-    // depend on the texts only: any other single-sentence call on the same texts would compute the same bits. (In a batch
-    // a row's kernel depends on the other rows, which is why the entries above are not exact.)
+    // By the sentence's texts. A managed charlm step gives a row the same arithmetic in any batch (Gemm.KernelBlocked), so
+    // the outputs depend on the texts only: any other call on the same texts computes the same bits. (A TorchSharp
+    // producer's entries above are not exact: there a row's kernel depends on its batch.)
     private readonly Dictionary<string, Alone> _alone = [];
 
     /// <summary>Keeps a single-sentence call's outputs (<see cref="TryGetAlone"/>) if they fit under <see cref="MaxWords"/>.</summary>
@@ -84,6 +87,30 @@ internal sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords) : 
     /// </summary>
     public bool TryGetAlone(IReadOnlyList<string> texts, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)] out Alone outputs) =>
         _alone.TryGetValue(AloneKey(texts), out outputs);
+
+    /// <summary>
+    /// The backward charlm's [words, dim] outputs over <paramref name="texts"/> and its final cell state, from a managed
+    /// producer: <paramref name="sentence"/>'s entry (kept with words as written, which are then its texts) or a
+    /// single-sentence call on the texts. Exactly what a managed charlm call on the texts computes, in any batch.
+    /// </summary>
+    public bool TryGetBackward(Sentence? sentence, IReadOnlyList<string> texts, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)] out float[] backward,
+        [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)] out float[] finalC)
+    {
+        if (sentence != null && _reps.TryGetValue(sentence, out var e) && e.BackwardFinalC != null && e.Words == texts.Count)
+        {
+            (backward, finalC) = (e.BackwardData!, e.BackwardFinalC);
+            return true;
+        }
+
+        if (TryGetAlone(texts, out var alone))
+        {
+            (backward, finalC) = (alone.Backward, alone.BackwardFinalC);
+            return true;
+        }
+
+        (backward, finalC) = (null, null);
+        return false;
+    }
 
     private static string AloneKey(IReadOnlyList<string> texts) => string.Concat(texts.Select(t => $"{t.Length}:{t}"));
 

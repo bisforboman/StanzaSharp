@@ -391,7 +391,7 @@ for (int run = 0; run <= runs; run++)
     Stage("lemma", () => lemma.Process(doc));
     if (parser != null)
         Stage("constituency", () => parser.Process(doc, charlms));
-    Stage("depparse", () => depparse.Process(doc));
+    Stage("depparse", () => depparse.Process(doc, Managed("depparse") ? charlms : null)); // the backward charlm from the tagger's
     Stage("sentiment", () => sentiment.Process(doc, charlms));
     Stage("ner", () => ner.Process(doc, charlms));
     if (run > 0)

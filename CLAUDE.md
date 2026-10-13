@@ -119,13 +119,13 @@ since 1.0, and every processor also has a managed net (see "Managed backend"), t
   byte for byte (13 files, 8401 words), and so does the parser alone on Stanza's own tags and lemmas.
   Arc/label log-prob drift ≈ 2e-5 (tolerance 1e-4).
   - The parser feeds the charlms `"\n"` + the words (a ROOT word), so every forward state and the backward ROOT
-    state differ from the tagger's. One exception (managed only): a sentence that the tagger and the parser both run
-    alone (a one-sentence document) has the tagger's backward pass as its prefix, one row per step in both, so the
-    parser continues from the tagger's final (h, c) (`CharlmCache.TryGetAlone`, `ManagedCharLanguageModel.Continue`)
-    over ROOT only: bit for bit (`OneSentenceDocument_ContinuesTheTaggers...`), and a quarter of the charlm work of a
-    per-call `Process` saved. Batched sentences don't yet. (Written when a row's kernel depended on its batch; since
-    `Gemm.KernelBlocked` an LSTM step's row is batch-invariant, checked for the forward charlm in round 18, so the
-    cache could keep each sentence's final c and continue them all: docs/performance.md "Remaining ideas".)
+    state differ from the tagger's. But backward, ROOT comes last: the tagger's backward pass is the parser's prefix.
+    Since `Gemm.KernelBlocked` a charlm step gives a row the same arithmetic in any batch, so (managed only) the tagger
+    keeps each cached sentence's backward final cell state (`CharlmCache.TryAdd`'s `backwardFinalC`, 4 KB per sentence,
+    not counted in `MaxWords`) and the parser takes every such sentence's backward rows and continues from the tagger's
+    final (h, c) over ROOT only, in its own batches (`CharlmCache.TryGetBackward`: the entry by `Sentence`, else the
+    single-sentence table by texts; `ManagedCharLanguageModel.Continue` takes per-sentence start states). Bit for bit
+    (`Batches_ContinueTheTaggers...`, `OneSentenceDocument_ContinuesTheTaggers...`; round 20 hashed every path).
   - `CharlmCache`'s single-sentence table (`AddAlone`/`TryGetAlone`, keyed by the texts): a managed charlm call on one
     sentence depends on its texts only, so `ManagedCharLanguageModel.BuildBoth` (pos, sentiment, ner) reuses any earlier
     one on the same texts exactly. Besides depparse, NER takes a multi-word-token sentence's token charlms from sentiment.
