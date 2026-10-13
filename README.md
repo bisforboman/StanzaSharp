@@ -198,9 +198,9 @@ var doc = nlp.Process(new[] { new[] { "Hello", "world", "." }, new[] { "Bye", ".
 ```
 
 Both match Python Stanza byte for byte. Bulk is much faster than one call per text for short texts: 7.7× on
-2,000 one-sentence texts ([docs/performance.md](docs/performance.md#bulk-processing-many-short-texts)). One call per
+2,000 one-sentence texts ([docs/performance/bulk-processing.md](docs/performance/bulk-processing.md)). One call per
 text costs about 28 ms for a short sentence on 8 threads (`default_fast`: 14 ms; Python Stanza: 189 and 73 ms), mostly
-reading the models' weights from memory ([round 7](docs/performance.md#results-round-7-one-process-call-per-short-text)). Bulk output
+reading the models' weights from memory ([round 7](docs/performance/round-07-per-call-short-texts.md)). Bulk output
 can differ slightly from processing each text alone, exactly as in Stanza: the sentiment classifier sees its batch's padding (172 of 854
 golden labels change), and sentence ids continue across the documents. Pretokenized tokens are never split into
 multi-word tokens (`"don't"` stays one word), as in Stanza.
@@ -257,9 +257,9 @@ var doc = nlp.Process(text, cancellationToken); // OperationCanceledException wi
 for `default_fast`), and each call in flight adds
   its own working memory on top (a few hundred MB for a page of text, more for long documents).
 - **Memory.** The numbers below were measured on the TorchSharp backend; the managed backend peaks lower (all eight
-  processors, one call on 6,761 words: 1.3 GB against 4.3 GB; docs/performance.md
-  [round 10](docs/performance.md#results-round-10-sentiment-memory-on-the-managed-backend) and
-  [round 6](docs/performance.md#results-round-6-memory-after-process-on-the-managed-backend)). A call's peak is set
+  processors, one call on 6,761 words: 1.3 GB against 4.3 GB;
+  [round 10](docs/performance/round-10-sentiment-memory.md) and
+  [round 6](docs/performance/round-06-memory-managed-backend.md)). A call's peak is set
   by its largest batch more than by the length of the text: the tagger pads up to
   250 sentences to the longest one among them. With `tokenize,mwt,pos,constituency` (8 threads) loading peaks at about
   0.5 GB, and one call on 500, 5,000 and 15,000 words peaks at 0.65, 1.6 and 1.7 GB (Python Stanza: 0.75, 2.4 and
@@ -269,10 +269,10 @@ for `default_fast`), and each call in flight adds
   `sentiment` the labels can change too (see "Very long texts" below). One call per paragraph
   peaks at 0.6 GB but is 5× slower. Bulk `Process(texts)` batches all texts together, so it peaks like one call.
   `CharlmCache` changes the peak by less than 50 MB up to its 32k-word cap (turning it off costs 30–40% more time),
-  and neither the GC mode nor converting the models changes it much. Measurements: [docs/performance.md](docs/performance.md#results-round-3-memory-of-a-short-lived-process).
+  and neither the GC mode nor converting the models changes it much. Measurements: [round 3](docs/performance/round-03-memory-short-lived-process.md).
 - **Very long texts** (a book in one call). The peak grows slowly with the length of the text: all eight processors on
   the managed backend peak at about 1.3 GB for 20,000 words and 1.9 GB for 200,000 (8 threads, Windows;
-  [round 11](docs/performance.md#results-round-11-garbage-on-long-texts-managed-backend)). 670,000 words peaked at
+  [round 11](docs/performance/round-11-garbage-long-texts.md)). 670,000 words peaked at
   3.0 GB in round 8, before rounds 10 and 11 cut sentiment's buffers and the garbage of long texts, and haven't been
   measured since. Most of it does not depend on the length (the models, and the scratch buffers of the largest batches,
   which are at most 5,000 words); what grows is the returned `Document` itself, about 0.5 KB per word (310 MB for
@@ -283,7 +283,7 @@ for `default_fast`), and each call in flight adds
   classifier's batches depend on all of a call's sentences, as in Stanza, so about a quarter of the sentiment labels
   change (508 of 2,091 sentences on 20,000 words); sentence ids restart and offsets are each part's own. Every other
   annotation was the same. Bulk `Process(texts)` batches like one call.
-  Measurements: [docs/performance.md](docs/performance.md#results-round-8-one-call-on-a-very-long-text).
+  Measurements: [round 8](docs/performance/round-08-very-long-text.md).
 - **Memory between calls** (long-running services). On the managed backend (the default) everything lives on the
   .NET GC heap: the models (about 370 MB for `tokenize,mwt,pos,constituency`, 660 MB for all eight) and the scratch
   buffers of the call's largest batches, which `ArrayPool<T>.Shared` keeps for the next call. So the working set
@@ -302,8 +302,8 @@ for `default_fast`), and each call in flight adds
   variable `MIMALLOC_PURGE_DELAY=0` makes it give memory back as it is freed (about 580 MB after a call, and a 370 MB
   lower peak) for about 20% more time. It must be set before libtorch loads: in the environment, or with
   `Environment.SetEnvironmentVariable` before the first TorchSharp call. Measurements:
-  [docs/performance.md](docs/performance.md#results-round-6-memory-after-process-on-the-managed-backend) (managed) and
-  [round 5](docs/performance.md#results-round-5-memory-after-process-returns-linux-and-windows) (TorchSharp).
+  [round 6](docs/performance/round-06-memory-managed-backend.md) (managed) and
+  [round 5](docs/performance/round-05-memory-linux-windows.md) (TorchSharp).
 - **Cancellation.** Every `Process` overload takes a `CancellationToken`. It is checked between processors and
   between batches inside each (inside the tagger's, dependency parser's and sentiment classifier's 5,000-word batches
   too, between their stages), so a call stops within about half a second on an 8-core machine; no document is returned and
@@ -323,7 +323,7 @@ for `default_fast`), and each call in flight adds
   warmed service, and a process that loads and makes six one-sentence calls finishes up to 16% sooner, long texts up
   to 6%. Publishing your app with `PublishReadyToRun` precompiles our assemblies too and makes the first call 23–38%
   faster; combined with tiering off it keeps the precompiled code, which on Arm64 made long texts 20–60% slower.
-  Measurements: [docs/performance.md](docs/performance.md#results-round-17-startup-load-and-the-first-calls).
+  Measurements: [round 17](docs/performance/round-17-startup.md).
 - **Logging.** `Logger` gets each model's load time and the thread count at Information, and each processor's time
   per call at Debug. Without a logger nothing is measured.
 - `Sentence.Text` is nullable because CoNLL-U read without `# text` has none, but `Process` always sets it.

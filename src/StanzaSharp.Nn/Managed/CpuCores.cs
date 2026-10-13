@@ -21,7 +21,7 @@ internal static class CpuCores
 
     /// <summary>
     /// The default thread count: the physical cores when there are at least 4, else every logical processor (on 2 cores
-    /// with SMT the 4 logical ones are faster; docs/performance.md, round 13); never more than <paramref name="logical"/>,
+    /// with SMT the 4 logical ones are faster; docs/performance/round-13-physical-cores.md); never more than <paramref name="logical"/>,
     /// which <see cref="Environment.ProcessorCount"/> limits to a container's CPU quota.
     /// </summary>
     public static int DefaultThreads(int? physical, int logical) => physical >= 4 ? Math.Min(physical.Value, logical) : logical;

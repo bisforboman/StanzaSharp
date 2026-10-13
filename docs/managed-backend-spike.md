@@ -160,7 +160,7 @@ still wins everywhere except the highway layer at 1 thread (6% slower). The conc
 
 - **Base:** the 8-processor benchmark on this branch under the same load, 8 threads: load 1.83, tokenize 4.45,
   mwt 0.02, pos 20.05, lemma 1.89, constituency 21.34, depparse 19.31, sentiment 9.67, ner 22.81; **total 99.55 s**.
-  For comparison, docs/performance.md measured 54.5 s on a quiet machine.
+  For comparison, docs/performance/packages-default-fast.md measured 54.5 s on a quiet machine.
 - **pos:** charlm 13.4 s + highway 1.6 s of its 20.05 s, as measured above.
 - **depparse:** assumed to spend as much in the charlm as pos does (≈13.4 s): it runs both charlms again over
   the same words plus ROOT, uncached.
@@ -260,7 +260,7 @@ The spike's open items 1, 6 and 7 (other architectures, threading, memory). The 
 ### What changed
 
 - **Kernel paths** (`KernelPath`, `Gemm.Path`, detected at startup by `Gemm.Detect`):
-  - `Vector512` (added after 1.2.0; docs/performance.md, round 14): AVX-512, one register per panel row, two panels
+  - `Vector512` (added after 1.2.0; docs/performance/round-14-avx-512-kernels.md): AVX-512, one register per panel row, two panels
     per GEMM call; Vector256's bits.
   - `Vector256`: the spike's AVX2/FMA kernels (when `Vector256.IsHardwareAccelerated`).
   - `Vector128`: a 6×16 kernel in 24 accumulators + 4 panel registers + 1 broadcast, which fits Arm64's 32 NEON
@@ -415,7 +415,7 @@ Tagger batches (6,566 words, 2 batches), seconds, managed / torch:
 
 Phase 1 (the seam, tokenize and mwt) is in [backends.md](backends.md), which also remeasures the small-batch item below.
 
-- An AVX-512 kernel: done after 1.2.0 (`Vector512`, docs/performance.md round 14). Arm64 tuning is done (see "Arm64" above).
+- An AVX-512 kernel: done after 1.2.0 (`Vector512`, docs/performance/round-14-avx-512-kernels.md). Arm64 tuning is done (see "Arm64" above).
 - Small batches: the highway at 320 words is 1.9× TorchSharp; per-step regions there are a few microseconds of work.
   Splitting by rows as well as panels, or running small steps on fewer threads, is the fix.
 - `ManagedThreads.Count` is process-wide like `torch.set_num_threads`; Phase 1 maps `PipelineOptions.Threads` to it.

@@ -212,7 +212,7 @@ internal sealed unsafe class PackedLstm
     /// <see cref="TasksPerThread"/> tasks of whole panels per thread, not one: a step waits for its slowest task, and a
     /// thread that runs late (a busy or slower core) then holds a quarter of its share, while the others claim the rest.
     /// On the free runners that made the tokenizer (hidden 64, steps of a few µs) up to 29% faster and the constituency
-    /// parser and depparse up to 10% (docs/performance.md, round 16). A panel's arithmetic doesn't depend on its task,
+    /// parser and depparse up to 10% (docs/performance/round-16-tokenizer-follow-ups.md). A panel's arithmetic doesn't depend on its task,
     /// so the split never changes a bit.
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveOptimization)] // per time step; see ManagedThreads.For

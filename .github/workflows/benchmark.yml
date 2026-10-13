@@ -59,7 +59,7 @@ jobs:
     steps:
       # A fresh macOS runner indexes with Spotlight for its first minutes, and again after pip writes torch's files:
       # mds/mdworker then take about half of the 3 vCPUs, and one-sentence calls took 717-845 ms instead of 94
-      # (docs/performance.md, round 12).
+      # (docs/performance/round-12-concurrent-calls-thread-pool.md).
       - name: Turn off Spotlight indexing
         if: runner.os == 'macOS'
         run: sudo mdutil -a -i off
@@ -255,7 +255,7 @@ jobs:
             avx512/
             TestResults/*.trx
 
-  # Startup cost (docs/performance.md, round 17): Pipeline.Load and the first Process calls, each process fresh, under
+  # Startup cost (docs/performance/round-17-startup.md): Pipeline.Load and the first Process calls, each process fresh, under
   # several settings that alternate within each round (tools/startup.py, `StanzaSharp.Benchmark startup`): the plain
   # build (JIT), a ReadyToRun publish of the same app (what PublishReadyToRun in a user's app gives our assemblies too),
   # and DOTNET_* knobs. With startup_base, also the library at that ref under this commit's harness. Stanza's .pt

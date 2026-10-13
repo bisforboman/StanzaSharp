@@ -86,7 +86,7 @@ unchanged; no API changes.
 - Managed backend: concurrent `Process` calls with `Threads` near the number of logical processors (the default) no
   longer oversubscribe the CPU. The pool's workers stay asleep while callers and workers already fill every logical
   processor; before, 8 callers on 16 threads got 3-10 calls/s and single calls stalled for up to 20 s, now 13-17
-  calls/s (docs/performance.md, round 12). Output is unchanged.
+  calls/s (docs/performance/round-12-concurrent-calls-thread-pool.md). Output is unchanged.
 - `Pipeline.Load`'s error for a missing model directory now suggests `stanzasharp download` (the .NET tool) instead of the sample CLI.
 - `.pt` loading: an integer pickled as LONG1 that fits in 64 bits (such as a storage of 2^31 elements or more) was kept
   as a big integer, so such a checkpoint failed to load.
@@ -145,7 +145,7 @@ unchanged; no API changes.
   continues the tagger's backward pass; NER reuses sentiment's on multi-word tokens). The output is the same bit for
   bit. One call on a 5–25-word sentence takes 27.9 ms instead of 30.0 (p90 44.6 instead of 50.7) on 8 threads, and
   83 ms instead of 94 (p90 141 instead of 170) on 1 thread, on a Ryzen 7 5800X; Python Stanza takes 189 and 319 ms.
-  Details, and guidance on bulk processing and concurrent callers, in docs/performance.md (round 7).
+  Details, and guidance on bulk processing and concurrent callers, in docs/performance/round-07-per-call-short-texts.md.
 - The TorchSharp backend's code moved into its own assembly, `StanzaSharp.TorchSharp.dll`, which the `StanzaSharp`
   package carries next to the others. Nothing else changes; this prepares the opt-in `StanzaSharp.Cuda` package of 1.0.
 - The managed backend is about 30% faster on Arm64 (Windows on Arm, Linux Arm64, Apple Silicon): its matrix kernel
@@ -223,7 +223,7 @@ unchanged; no API changes.
 - The POS tagger no longer pads its batches: its input and its highway LSTM layers work on the real words only, so
   one long sentence in a batch of 250 no longer makes every sentence as long. With `tokenize,mwt,pos,constituency`
   the peak on 5,000 words falls from 1.57 to 1.02 GB (15,000 words: 1.66 to 1.25 GB), and pos is about 20% faster
-  on such text. Tags, lemmas and parses are unchanged; logits move by at most 5e-5 (docs/performance.md, round 4).
+  on such text. Tags, lemmas and parses are unchanged; logits move by at most 5e-5 (docs/performance/round-04-highway-lstm-packed-rows.md).
 - Cancellation inside the dependency parser is about 8x faster: the token is now also checked inside each 5,000-word
   batch (after each charlm pass, between the LSTM layers, between the scorers' chunks and between the sentences' tree
   decodes), so a call stops within about an eighth of a batch (one charlm pass or LSTM layer) instead of up to a

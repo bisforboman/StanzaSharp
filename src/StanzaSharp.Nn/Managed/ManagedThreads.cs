@@ -17,7 +17,7 @@ namespace StanzaSharp.Nn.Managed;
 /// <para>Workers never make the busy threads (callers in a region plus awake workers) outnumber the logical
 /// processors, or <see cref="Count"/> if that is larger: a region waits for its slowest item, so a worker preempted
 /// while it holds one stalls its caller for a scheduler quantum. With more spinning threads than cores (8 callers on
-/// 16 threads and 16 logical processors) single calls stalled for seconds (docs/performance.md, round 12).</para>
+/// 16 threads and 16 logical processors) single calls stalled for seconds (docs/performance/round-12-concurrent-calls-thread-pool.md).</para>
 /// <para>A region's items are claimed one at a time, so how they are split never depends on how many threads help:
 /// results don't change with the thread count or with concurrent calls.</para>
 /// </remarks>

@@ -69,7 +69,10 @@ since 1.0, and every processor also has a managed net (see "Managed backend"), t
   `simplify_punct` left its words unchanged). The charlm is not bitwise batch-invariant, so cached
   values can differ from a fresh computation in the last bits; outputs are still identical.
 - Performance: `docs/performance.md` has the benchmark (`samples/StanzaSharp.Benchmark`,
-  `tools/benchmark.py`), C# vs Python numbers, what was optimized, and remaining ideas.
+  `tools/benchmark.py`), the method, the latest runner results and remaining ideas.
+  Each measurement round is its own file, `docs/performance/round-NN-<slug>.md` (NN zero-padded, the number the
+  brief assigns; owner's decision, 2026-10-13, as parallel PRs kept conflicting in one file). A new round adds
+  its file and leaves performance.md alone (no index there); only "Run it yourself"/"Remaining ideas" changes go there.
   Round 2 (memory): checkpoints are read tensor by tensor straight into TorchSharp memory (no
   whole-file buffers), depparse's biaffine scorers run a few sentences at a time, POS batches are
   cut at 5000 words like Stanza, and `CharlmCache` keeps at most 32k words (`MaxWords`).
@@ -85,7 +88,7 @@ since 1.0, and every processor also has a managed net (see "Managed backend"), t
   thread-static `Recycler` (per call, since Parse is synchronous; emptied when every array is back) and go back when
   `ParserState.Dispose` disposes them; Chu-Liu/Edmonds works on flat rented n × n buffers; `DepparseBatch.RentScores`
   lets the managed net rent the arc/label outputs, which `DependencyParser.Parse` returns. Rent an output only where its
-  one caller gives it back; the Cuda nets keep plain arrays. A call now allocates ~18 KB/word instead of ~54 (docs/performance.md round 11).
+  one caller gives it back; the Cuda nets keep plain arrays. A call now allocates ~18 KB/word instead of ~54 (docs/performance/round-11-garbage-long-texts.md).
   Round 18: the pool's trimming costs nothing (`DOTNET_SYSTEM_BUFFERS_ARRAYPOOL_TRIMSHARED=false`: same bytes); the
   managed charlm's per-character strings (`EnumerateRunes().Select(ToString)`) were ~3 KB/word, now looked up by span
   (`GetAlternateLookup<ReadOnlySpan<char>>`): 15 KB/word. Depparse's forward charlm from a stored "\n\n " state was
@@ -97,7 +100,7 @@ since 1.0, and every processor also has a managed net (see "Managed backend"), t
   physical cores nor all logical processors won everywhere (Ryzen vs the 2-core runners). Round 13: the default is the
   physical cores from 4 up, else all logical processors (Ryzen 8 vs 16: big texts -9%/-6%, one-sentence p90 -16%/-36%,
   2 callers +11% calls/s; runners unchanged at 4/4/4/4/3).
-  Round 6 (managed backend, docs/performance.md): no native heap (malloc_trim returns nothing there); after a call the
+  Round 6 (managed backend, docs/performance/round-06-memory-managed-backend.md): no native heap (malloc_trim returns nothing there); after a call the
   GC heap holds the models plus `ArrayPool<T>.Shared`'s scratch buffers (all eight, 6,761 words: 2.4 GB working set
   then, 1.3 GB since round 10 shrank sentiment's buffers), released only by a gen2 GC a minute later; the README tells services to run an aggressive GC when idle. The library
   runs no GC.
@@ -184,7 +187,7 @@ since 1.0, and every processor also has a managed net (see "Managed backend"), t
   - `PipelineOptions.Threads` (int?): at Load, process-wide, `ManagedThreads.Count` on the managed backend and
     `torch.set_num_threads` on TorchSharp. Managed null = min(current count, `ManagedThreads.Default`), the pool's initial
     count: `CpuCores.DefaultThreads` = the physical cores if ≥ 4, else `Environment.ProcessorCount`, never more than
-    ProcessorCount (owner's decision, 2026-10-12; docs/performance.md round 13). `CpuCores.Physical()` (Nn/Managed;
+    ProcessorCount (owner's decision, 2026-10-12; docs/performance/round-13-physical-cores.md). `CpuCores.Physical()` (Nn/Managed;
     the benchmark's core count too) never throws, null → logical: Linux distinct sysfs `thread_siblings_list`, Windows
     GetLogicalProcessorInformationEx records, macOS sysctlbyname `hw.physicalcpu`; no process spawned. A caller that
     sets `ManagedThreads.Count` and then loads with null gets it capped at the default, so the benchmark sample passes
@@ -214,7 +217,7 @@ since 1.0, and every processor also has a managed net (see "Managed backend"), t
     `tests/golden/no_ssplit/` (`make_golden.py --no-ssplit-only`). Pretokenized input ignores it, as in Stanza.
   - `MaxConcurrentCalls` (int?, owner's decision 2026-10-09: opt-in, null = no limit): a `SemaphoreSlim` in `Pipeline`
     around each Process overload's work (`Gated`); the wait honours the call's token. Managed throughput peaks at ~2 calls
-    in flight (cache eviction of the charlm weights; docs/performance.md round 7).
+    in flight (cache eviction of the charlm weights; docs/performance/round-07-per-call-short-texts.md).
   - `Processor` constants; `VerifyChecksums` (MD5 of each `.pt` Load reads, `ModelDownloader.Verify`; throws for
     converted models, which have no published MD5); `Logger` (`Microsoft.Extensions.Logging.Abstractions` 10.0.0,
     since 1.0 the StanzaSharp package's only dependency): load times at Information, per-processor times at Debug, nothing measured
@@ -922,7 +925,7 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - `Gemm.Path` is detected at startup (Vector512 = AVX-512 where .NET accelerates `Vector512`, Vector256 = AVX2/FMA,
     Vector128 = NEON on Arm64, Scalar); every path reads the same packed weights. A new kernel or element-wise step needs
     a version per path and a test per path.
-  - Vector512 (rounds 14 and 19, docs/performance.md): one register per panel row, two panels per kernel call in
+  - Vector512 (docs/performance/round-14-avx-512-kernels.md and round-19-vector512-intel-two-panels.md): one register per panel row, two panels per kernel call in
     `Gemm.Run` (`KernelPair512`) and in `PackedLstm.Step` (`KernelBlockedPair512`; a single panel only at a task's odd
     end); the LSTM cell's one exp over 16 gates. It must stay Vector256's bits (same FMAs in the same order,
     activations lane-identical; `Vector512_GivesVector256sBits`), so a CI runner's CPU draw can't change a result.

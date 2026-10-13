@@ -105,7 +105,7 @@ Seconds per run (lower is better). GPU runs use `--no-tf32` unless noted.
 | peak working set |       6,256 MB |       2,100 MB |      6,214 MB |      2,099 MB |     2,105 MB |
 
 - **Caveat:** other agents ran CPU benchmarks on the same machine throughout (CPU load 55–100%). The CPU
-  columns are therefore slower than an idle machine; docs/performance.md has idle numbers for the four
+  columns are therefore slower than an idle machine; docs/performance/round-01-speed-four-processors.md has idle numbers for the four
   original stages, for example pos 17.3 s and constituency 10.5 s at 8 threads, where this table has
   26.9 s and 17.1 s. A fair 8-thread comparison is roughly 4× in the GPU's favour, not the 5.6× in the
   table. The GPU columns suffer less, but the parser's CPU-side work slows down under load too (a

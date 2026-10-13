@@ -58,7 +58,7 @@ The seam sits at each processor's **network**: one small interface per processor
   `LoadManaged`, `TorchSharpModels` (StanzaSharp.Cuda) its TorchSharp `Load` on the backend's device.
 - **Threads:** with `Backend.Managed`, `Load` also sets `ManagedThreads.Count`, with the documented semantics: an
   explicit `Threads`, or null for the physical cores when there are at least 4, otherwise all logical processors, never
-  above `Environment.ProcessorCount` (which respects a container's CPU quota; performance.md, rounds 12–13). It is process-wide, like
+  above `Environment.ProcessorCount` (which respects a container's CPU quota; rounds [12](performance/round-12-concurrent-calls-thread-pool.md)–[13](performance/round-13-physical-cores.md)). It is process-wide, like
   `torch.set_num_threads`. With `Backend.Managed`, libtorch's threads are left alone (see below); on TorchSharp they are
   set as before.
 - Benchmark: `StanzaSharp.Benchmark --backend managed|torch [--processors tokenize,mwt]` (managed by default;
@@ -236,7 +236,7 @@ nearly idle (8–16% load). Medians in seconds, two rounds each:
 Vector256 (AVX2 + FMA), Vector128 (Arm64 NEON, or x64 without AVX2), Scalar. All read the same packed 16-column panels.
 Vector512 gives Vector256's results bit for bit (one register per panel row, two panels per GEMM call, same FMA order),
 and on AVX-512 runners it was 48–53% faster on an EPYC 9V45 (Zen 5) and 3–10% on an EPYC 9V74 (Zen 4)
-([performance.md, round 14](performance.md#results-round-14-avx-512-kernels-vector512)).
+([round 14](performance/round-14-avx-512-kernels.md)).
 `DOTNET_PreferredVectorBitWidth=256` makes .NET report Vector512 as not accelerated, which selects Vector256.
 `ManagedBackendTests` runs every path the machine has natively; CI's x64 runners have AVX-512 only sometimes.
 
@@ -341,7 +341,7 @@ reads the tagger's cached charlm outputs for sentences without MWTs.
   through `ManagedHighwayLstm`; nothing is padded. Each deep biaffine scorer's W1/W2 is one GEMM [rows, 800], computed
   just before the scorer runs; the arc scorers run one after another, so one scorer's buffers are live at a time (until
   1.0.0 all four were one [rows, 3200] GEMM; the same bits, since each scorer's columns were whole panels; see
-  performance.md, round 9).
+  [round 9](performance/round-09-depparse-memory.md)).
   - **Biaffine scorers in two steps:** T = in1·W_bilin per dependent (a GEMM, with in1's appended 1 folded into the
     bias), then T·in2 per word pair. Padding columns all see the same in2, ReLU(W2's bias), because the LSTM output there
     is 0; so the arc log-softmax runs over exactly TorchSharp's padded width without scoring padding rows, which nothing reads.
@@ -367,7 +367,7 @@ reads the tagger's cached charlm outputs for sentences without MWTs.
   2,533 MB (TorchSharp) → 2,978 MB (managed), against 3,132 MB with only tokenize, mwt, pos and ner managed (the extra
   over TorchSharp is the pos/ner one described there). `--memory 6000` (one Process call, two rounds): TorchSharp
   4,367 / 3,748 MB, managed 3,833 / 3,837 MB (pos and ner managed only: 4,131 / 4,136 MB), 24.0 → 14.4 s.
-  Round 9 (performance.md) cut the 5-processor `--memory` peak by another 60–70 MB.
+  [Round 9](performance/round-09-depparse-memory.md) cut the 5-processor `--memory` peak by another 60–70 MB.
 
 ### sentiment
 
@@ -379,7 +379,7 @@ reads the tagger's cached charlm outputs for sentences without MWTs.
 - **Managed net:**
   - Input rows time-major (token (i, t) is row t·n + i, 2148 wide): pretrain (or the learned `unk`; padding reads the PAD
     rows) + delta, then the charlm columns (from the cache, else computed; zeros on padding). They are built a chunk at
-    a time, never for the whole padded batch (round 10, [performance.md](performance.md)).
+    a time, never for the whole padded batch ([round 10](performance/round-10-sentiment-memory.md)).
   - The **unpacked** 2-layer biLSTM is `ManagedLstm.ForwardUnpacked`: every row runs the full padded width, as `nn.LSTM`
     does without packing, with the bits `ForwardPacked` gives with every batch size = n. Per layer and direction, the
     input projection is computed for ~2048 rows (a few steps) just before those steps run (`Gemm.RunRows`, a panel view

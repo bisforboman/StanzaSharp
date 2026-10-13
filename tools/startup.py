@@ -1,4 +1,4 @@
-"""Startup cost under several settings, each run in a fresh process (docs/performance.md, round 17).
+"""Startup cost under several settings, each run in a fresh process (docs/performance/round-17-startup.md).
 
 Runs `StanzaSharp.Benchmark startup` (samples/StanzaSharp.Benchmark/Startup.cs) from one or more builds under each
 setting, alternating settings within each round, and prints a Markdown table of medians.

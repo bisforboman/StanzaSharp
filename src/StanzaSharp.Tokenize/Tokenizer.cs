@@ -32,7 +32,7 @@ internal sealed partial class Tokenizer : IDisposable
     private const string B = "(?:(?<=" + PyWord + ")(?!" + PyWord + ")|(?<!" + PyWord + ")(?=" + PyWord + "))";
 
     // data.py: STRUCTURAL_FEATURES, in the order features are appended. Source-generated: the interpreter took ~5% of
-    // the tokenizer's time (docs/performance.md, round 14).
+    // the tokenizer's time (docs/performance/round-14-avx-512-kernels.md).
     [GeneratedRegex(B + @"[A-Z][a-zA-Z]*(?:\s[A-Z][a-zA-Z]*){0,2}\s*:")]
     private static partial Regex LabeledField();
 

@@ -6,7 +6,7 @@ using System.Text;
 using StanzaSharp;
 
 /// <summary>
-/// Startup cost in a fresh process (docs/performance.md, round 17): <see cref="Pipeline.Load"/>, then a few Process calls,
+/// Startup cost in a fresh process (docs/performance/round-17-startup.md): <see cref="Pipeline.Load"/>, then a few Process calls,
 /// each with the methods the JIT compiled meanwhile (<see cref="JitInfo"/>). tools/startup.py runs it once per process
 /// under each setting (ReadyToRun build, DOTNET_* knobs) and tabulates the medians.
 /// <code>

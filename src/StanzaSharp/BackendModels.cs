@@ -84,7 +84,7 @@ internal sealed class ManagedModels : BackendModels
     public override bool DepparseReadsCache => true;
 
     // Each model's load is mostly one thread's work (parsing, packing, the JIT), so loading two side by side cuts the
-    // load time (Pipeline, docs/performance.md round 17).
+    // load time (Pipeline, docs/performance/round-17-startup.md).
     public override bool LoadInParallel => true;
 
     public override Pretrain Pretrain(string basePath) => Nn.Pretrain.LoadManaged(basePath);
