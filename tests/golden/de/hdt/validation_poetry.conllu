@@ -1,0 +1,136 @@
+# text = Der Nebel liegt auf stillen Feldern, die Krähen ziehen übers Land; ein letztes Licht in kahlen Wäldern, ein Fluss, der seinen Weg nicht fand.
+# sent_id = 0
+1	Der	der	DET	ART	Case=Nom|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	2	det	_	start_char=0|end_char=3
+2	Nebel	Nebel	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	3	nsubj	_	start_char=4|end_char=9
+3	liegt	liegen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=10|end_char=15
+4	auf	auf	ADP	APPR	AdpType=Prep|Case=Dat	6	case	_	start_char=16|end_char=19
+5	stillen	still	ADJ	ADJA	Case=Dat|Degree=Pos|Gender=Neut|Number=Plur	6	amod	_	start_char=20|end_char=27
+6	Feldern	Feld	NOUN	NN	Case=Dat|Gender=Neut|Number=Plur	3	obl	_	SpaceAfter=No|start_char=28|end_char=35
+7	,	,	PUNCT	$,	PunctType=Comm	10	punct	_	SpacesAfter=\n|start_char=35|end_char=36
+8	die	der	DET	ART	Case=Nom|Definite=Def|Gender=Fem|Number=Plur|PronType=Art	9	det	_	start_char=37|end_char=40
+9	Krähen	Krähen	NOUN	NN	Case=Nom|Gender=Masc|Number=Plur	10	nsubj	_	start_char=41|end_char=47
+10	ziehen	ziehen	VERB	VVFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	3	conj	_	start_char=48|end_char=54
+11-12	übers	_	_	_	_	_	_	_	start_char=55|end_char=60
+11	über	über	ADP	APPR	AdpType=Prep|Case=Acc	13	case	_	_
+12	das	der	DET	ART	Case=Acc|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	13	det	_	_
+13	Land	Land	NOUN	NN	Case=Acc|Gender=Neut|Number=Sing	10	obl	_	SpaceAfter=No|start_char=61|end_char=65
+14	;	;	PUNCT	$.	PunctType=Peri	3	punct	_	SpacesAfter=\n|start_char=65|end_char=66
+15	ein	ein	DET	ART	Case=Nom|Definite=Ind|Gender=Neut|Number=Sing|NumType=Card|PronType=Art	17	det	_	start_char=67|end_char=70
+16	letztes	letzte	ADJ	ADJA	Case=Nom|Degree=Sup|Gender=Neut|Number=Sing	17	amod	_	start_char=71|end_char=78
+17	Licht	Licht	NOUN	NN	Case=Nom|Gender=Neut|Number=Sing	3	parataxis	_	start_char=79|end_char=84
+18	in	in	ADP	APPR	AdpType=Prep|Case=Dat	20	case	_	start_char=85|end_char=87
+19	kahlen	kahl	ADJ	ADJA	Case=Dat|Degree=Pos|Gender=Masc|Number=Plur	20	amod	_	start_char=88|end_char=94
+20	Wäldern	Wald	NOUN	NN	Case=Dat|Gender=Masc|Number=Plur	17	nmod	_	SpaceAfter=No|start_char=95|end_char=102
+21	,	,	PUNCT	$,	PunctType=Comm	23	punct	_	SpacesAfter=\n|start_char=102|end_char=103
+22	ein	ein	DET	ART	Case=Nom|Definite=Ind|Gender=Masc|Number=Sing|NumType=Card|PronType=Art	23	det	_	start_char=104|end_char=107
+23	Fluss	Fluß	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	17	appos	_	SpaceAfter=No|start_char=108|end_char=113
+24	,	,	PUNCT	$,	PunctType=Comm	29	punct	_	start_char=113|end_char=114
+25	der	der	PRON	PRELS	Case=Nom|Gender=Masc|Number=Sing|PronType=Dem,Rel	29	nsubj	_	start_char=115|end_char=118
+26	seinen	sein	DET	PPOSAT	Case=Acc|Gender=Masc|Gender[psor]=Masc,Neut|Number=Sing|Number[psor]=Sing|Person=3|Poss=Yes|PronType=Prs	27	det	_	start_char=119|end_char=125
+27	Weg	Weg	NOUN	NN	Gender=Masc|Number=Sing	29	obj	_	start_char=126|end_char=129
+28	nicht	nicht	PART	PTKNEG	Polarity=Neg	29	advmod	_	start_char=130|end_char=135
+29	fand.	finden	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	23	acl:relcl	_	SpacesAfter=\n\n|start_char=136|end_char=141
+
+# text = Und wenn der Abend leise sinkt, und wenn die Glocke ferne klingt, dann geh' ich heim durchs dunkle Tor und horch' dem alten Lied davor.
+# sent_id = 1
+1	Und	und	CCONJ	KON	_	16	cc	_	start_char=143|end_char=146
+2	wenn	wenn	SCONJ	KOUS	_	6	mark	_	start_char=147|end_char=151
+3	der	der	DET	ART	Case=Nom|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	4	det	_	start_char=152|end_char=155
+4	Abend	Abend	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	6	nsubj	_	start_char=156|end_char=161
+5	leise	leise	ADJ	ADJD	Degree=Pos|Variant=Short	6	advmod	_	start_char=162|end_char=167
+6	sinkt	sinken	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	16	ccomp	_	SpaceAfter=No|start_char=168|end_char=173
+7	,	,	PUNCT	$,	PunctType=Comm	13	punct	_	SpacesAfter=\n|start_char=173|end_char=174
+8	und	und	CCONJ	KON	_	13	cc	_	start_char=175|end_char=178
+9	wenn	wenn	SCONJ	KOUS	_	13	mark	_	start_char=179|end_char=183
+10	die	der	DET	ART	Case=Nom|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	11	det	_	start_char=184|end_char=187
+11	Glocke	Glocke	NOUN	NN	Case=Nom|Gender=Fem|Number=Sing	13	nsubj	_	start_char=188|end_char=194
+12	ferne	fern	ADJ	ADJD	Degree=Pos|Variant=Short	13	advmod	_	start_char=195|end_char=200
+13	klingt	klingen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	6	conj	_	SpaceAfter=No|start_char=201|end_char=207
+14	,	,	PUNCT	$,	PunctType=Comm	6	punct	_	SpacesAfter=\n|start_char=207|end_char=208
+15	dann	dann	ADV	ADV	_	16	advmod	_	start_char=209|end_char=213
+16	geh'	gehen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	0	root	_	start_char=214|end_char=218
+17	ich	ich	PRON	PPER	Case=Nom|Number=Sing|Person=1|PronType=Prs	16	nsubj	_	start_char=219|end_char=222
+18	heim	heim	ADJ	ADJD	Degree=Pos|Variant=Short	16	advmod	_	start_char=223|end_char=227
+19-20	durchs	_	_	_	_	_	_	_	start_char=228|end_char=234
+19	durch	durch	ADP	APPR	AdpType=Prep|Case=Acc	22	case	_	_
+20	das	der	DET	ART	Case=Acc|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	22	det	_	_
+21	dunkle	dunkel	ADJ	ADJA	Case=Acc|Degree=Pos|Gender=Neut|Number=Sing	22	amod	_	start_char=235|end_char=241
+22	Tor	Tor	NOUN	NN	Case=Acc|Gender=Neut|Number=Sing	16	obl	_	SpacesAfter=\n|start_char=242|end_char=245
+23	und	und	CCONJ	KON	_	27	cc	_	start_char=246|end_char=249
+24	horch'	horch'	ADJ	ADJD	Degree=Pos|Variant=Short	27	advmod	_	start_char=250|end_char=256
+25	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	27	det	_	start_char=257|end_char=260
+26	alten	alt	ADJ	ADJA	Case=Dat|Degree=Pos|Gender=Neut|Number=Sing	27	amod	_	start_char=261|end_char=266
+27	Lied	Lied	NOUN	NN	Case=Dat|Gender=Neut|Number=Sing	22	conj	_	start_char=267|end_char=271
+28	davor	davor	ADV	PROAV	PronType=Dem	27	advmod	_	SpaceAfter=No|start_char=272|end_char=277
+29	.	.	PUNCT	$.	PunctType=Peri	16	punct	_	SpacesAfter=\n\n|start_char=277|end_char=278
+
+# text = O Sommer, bleib!
+# sent_id = 2
+1	O	O	NOUN	NN	Gender=Neut|Number=Sing	0	root	_	start_char=280|end_char=281
+2	Sommer	Sommer	PROPN	NE	Number=Sing	1	flat:name	_	SpaceAfter=No|start_char=282|end_char=288
+3	,	,	PUNCT	$,	PunctType=Comm	4	punct	_	start_char=288|end_char=289
+4	bleib!	bleib!	INTJ	PTKANT	PartType=Res	1	advmod	_	start_char=290|end_char=296
+
+# text = Noch blüht der Mohn, noch summt die Biene ihren Ton.
+# sent_id = 3
+1	Noch	noch	ADV	ADV	_	2	advmod	_	start_char=297|end_char=301
+2	blüht	blühen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=302|end_char=307
+3	der	der	DET	ART	Case=Nom|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	4	det	_	start_char=308|end_char=311
+4	Mohn	Mohn	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	2	nsubj	_	SpaceAfter=No|start_char=312|end_char=316
+5	,	,	PUNCT	$,	PunctType=Comm	7	punct	_	SpacesAfter=\n|start_char=316|end_char=317
+6	noch	noch	ADV	ADV	_	7	advmod	_	start_char=318|end_char=322
+7	summt	summen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	conj	_	start_char=323|end_char=328
+8	die	der	DET	ART	Case=Nom|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	9	det	_	start_char=329|end_char=332
+9	Biene	Biene	NOUN	NN	Case=Nom|Gender=Fem|Number=Sing	7	nsubj	_	start_char=333|end_char=338
+10	ihren	ihr	DET	PPOSAT	Case=Acc|Gender=Masc|Gender[psor]=Fem|Number=Sing|Number[psor]=Sing|Person=3|Poss=Yes|PronType=Prs	11	det	_	start_char=339|end_char=344
+11	Ton.	unknown	NOUN	NN	Gender=Masc|Number=Sing	7	obj	_	SpacesAfter=\n|start_char=345|end_char=349
+
+# text = Doch morgen schon, ich weiß es wohl, wird alles kühl, wird alles hohl.
+# sent_id = 4
+1	Doch	doch	CCONJ	KON	_	14	cc	_	start_char=350|end_char=354
+2	morgen	morgen	ADV	ADV	_	3	advmod	_	start_char=355|end_char=361
+3	schon	schon	ADV	ADV	_	6	advmod	_	SpaceAfter=No|start_char=362|end_char=367
+4	,	,	PUNCT	$,	PunctType=Comm	6	punct	_	start_char=367|end_char=368
+5	ich	ich	PRON	PPER	Case=Nom|Number=Sing|Person=1|PronType=Prs	6	nsubj	_	start_char=369|end_char=372
+6	weiß	wissen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	0	root	_	start_char=373|end_char=377
+7	es	es	PRON	PPER	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	6	obj	_	start_char=378|end_char=380
+8	wohl	wohl	ADV	ADV	_	6	advmod	_	SpaceAfter=No|start_char=381|end_char=385
+9	,	,	PUNCT	$,	PunctType=Comm	10	punct	_	SpacesAfter=\n|start_char=385|end_char=386
+10	wird	werden	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	6	conj	_	start_char=387|end_char=391
+11	alles	alle	DET	PIS	Case=Nom|Gender=Neut|Number=Sing|PronType=Tot	10	nsubj	_	start_char=392|end_char=397
+12	kühl	kühl	ADJ	ADJD	Degree=Pos|Variant=Short	10	advmod	_	SpaceAfter=No|start_char=398|end_char=402
+13	,	,	PUNCT	$,	PunctType=Comm	14	punct	_	start_char=402|end_char=403
+14	wird	werden	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	10	parataxis	_	start_char=404|end_char=408
+15	alles	alle	DET	PIS	Case=Nom|Gender=Neut|Number=Sing|PronType=Tot	14	nsubj	_	start_char=409|end_char=414
+16	hohl.	hohl.	ADJ	ADJD	Degree=Pos|Variant=Short	14	advmod	_	SpacesAfter=\n\n|start_char=415|end_char=420
+
+# text = Im Hafen schaukeln müde Boote, der Wind erzählt von fernen Meeren, von Sturm und Salz und Abendröte – und keiner wird je wiederkehren.
+# sent_id = 5
+1-2	Im	_	_	_	_	_	_	_	start_char=422|end_char=424
+1	In	in	ADP	APPR	AdpType=Prep|Case=Dat	3	case	_	_
+2	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	3	det	_	_
+3	Hafen	Hafen	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	4	obl	_	start_char=425|end_char=430
+4	schaukeln	schaukeln	VERB	VVFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=431|end_char=440
+5	müde	müde	ADJ	ADJA	Degree=Pos|Gender=Masc|Number=Plur	6	amod	_	start_char=441|end_char=445
+6	Boote	Boot	NOUN	NN	Gender=Masc|Number=Plur	4	nsubj	_	SpaceAfter=No|start_char=446|end_char=451
+7	,	,	PUNCT	$,	PunctType=Comm	10	punct	_	SpacesAfter=\n|start_char=451|end_char=452
+8	der	der	DET	ART	Case=Nom|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	9	det	_	start_char=453|end_char=456
+9	Wind	Wind	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	10	nsubj	_	start_char=457|end_char=461
+10	erzählt	erzählen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	conj	_	start_char=462|end_char=469
+11	von	von	ADP	APPR	AdpType=Prep|Case=Dat	13	case	_	start_char=470|end_char=473
+12	fernen	fern	ADJ	ADJA	Case=Dat|Degree=Pos|Gender=Masc|Number=Plur	13	amod	_	start_char=474|end_char=480
+13	Meeren	Meer	NOUN	NN	Case=Dat|Gender=Masc|Number=Plur	10	obl	_	SpaceAfter=No|start_char=481|end_char=487
+14	,	,	PUNCT	$,	PunctType=Comm	16	punct	_	SpacesAfter=\n|start_char=487|end_char=488
+15	von	von	ADP	APPR	AdpType=Prep|Case=Dat	16	case	_	start_char=489|end_char=492
+16	Sturm	Sturm	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	13	conj	_	start_char=493|end_char=498
+17	und	und	CCONJ	KON	_	18	cc	_	start_char=499|end_char=502
+18	Salz	Salz	NOUN	NN	Case=Dat|Gender=Neut|Number=Sing	16	conj	_	start_char=503|end_char=507
+19	und	und	CCONJ	KON	_	20	cc	_	start_char=508|end_char=511
+20	Abendröte	Abendrot	NOUN	NN	Case=Dat|Gender=Fem|Number=Sing	18	conj	_	start_char=512|end_char=521
+21	–	–	PUNCT	$(	PunctType=Brck	26	punct	_	SpacesAfter=\n|start_char=522|end_char=523
+22	und	und	CCONJ	KON	_	26	cc	_	start_char=524|end_char=527
+23	keiner	kein	DET	PIS	Case=Nom|Gender=Masc|Number=Sing|PronType=Neg	26	nsubj	_	start_char=528|end_char=534
+24	wird	werden	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	26	aux	_	start_char=535|end_char=539
+25	je	je	ADV	ADV	_	26	advmod	_	start_char=540|end_char=542
+26	wiederkehren	wiederkehren	VERB	VVINF	VerbForm=Inf	4	conj	_	SpaceAfter=No|start_char=543|end_char=555
+27	.	.	PUNCT	$.	PunctType=Peri	4	punct	_	SpacesAfter=\n|start_char=555|end_char=556

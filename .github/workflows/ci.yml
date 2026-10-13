@@ -153,21 +153,21 @@ jobs:
           key: models-en-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs', 'tools/requirements.txt', 'tools/stanza_convert.py') }}
 
       # German (owner's decision, 2026-10-13): Stanza's .pt files only, no conversion (the tests read .pt as they are),
-      # about 1 GB for default and default_fast (combined reads default's). Only these Linux shards run the German
-      # tests; cross-os and linux-arm64 stay English, where the German rows skip and their no-skip checks exempt them.
+      # about 1.3 GB for default, default_fast, gsd and hdt (combined reads default's). Only these Linux shards run the
+      # German tests; cross-os and linux-arm64 stay English, where the German rows skip and their no-skip checks exempt them.
       - uses: actions/cache@v6
         if: needs.changes.outputs.code != 'false' && matrix.shard == 1
         id: models-de-save
         with:
           path: models/stanza/de
-          key: models-de-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs') }}
+          key: models-de-treebanks-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs') }}
 
       - uses: actions/cache/restore@v6
         if: needs.changes.outputs.code != 'false' && matrix.shard != 1
         id: models-de-restore
         with:
           path: models/stanza/de
-          key: models-de-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs') }}
+          key: models-de-treebanks-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs') }}
 
       # Which CPU this runner got (informational, never fails). ubuntu-26.04 and windows-2025 are sometimes an AVX-512
       # Xeon: the managed tests then also run the Vector512 kernels, the detected path there. Vector512 gives Vector256's
@@ -196,7 +196,7 @@ jobs:
       - name: Download the German models
         if: needs.changes.outputs.code != 'false' && (steps.models-de-save.outputs.cache-hit || steps.models-de-restore.outputs.cache-hit) != 'true'
         run: |
-          for package in default default_fast; do
+          for package in default default_fast gsd hdt; do
             dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/de --lang de --package $package
           done
 

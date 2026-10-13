@@ -1,0 +1,438 @@
+[
+ {
+  "word": "zum",
+  "pipeline": [
+   "zu",
+   "dem"
+  ],
+  "model": [
+   "zu",
+   "dem"
+  ]
+ },
+ {
+  "word": "Zum",
+  "pipeline": [
+   "Zu",
+   "dem"
+  ],
+  "model": [
+   "Zu",
+   "dem"
+  ]
+ },
+ {
+  "word": "ZUM",
+  "pipeline": [
+   "ZU",
+   "DEM"
+  ],
+  "model": [
+   "ZUM"
+  ]
+ },
+ {
+  "word": "zur",
+  "pipeline": [
+   "zu",
+   "der"
+  ],
+  "model": [
+   "zu",
+   "der"
+  ]
+ },
+ {
+  "word": "Zur",
+  "pipeline": [
+   "Zu",
+   "der"
+  ],
+  "model": [
+   "Zu",
+   "der"
+  ]
+ },
+ {
+  "word": "ZUR",
+  "pipeline": [
+   "ZU",
+   "DER"
+  ],
+  "model": [
+   "ZUR"
+  ]
+ },
+ {
+  "word": "im",
+  "pipeline": [
+   "in",
+   "dem"
+  ],
+  "model": [
+   "in",
+   "dem"
+  ]
+ },
+ {
+  "word": "Im",
+  "pipeline": [
+   "In",
+   "dem"
+  ],
+  "model": [
+   "In",
+   "dem"
+  ]
+ },
+ {
+  "word": "IM",
+  "pipeline": [
+   "IN",
+   "DEM"
+  ],
+  "model": [
+   "IM"
+  ]
+ },
+ {
+  "word": "am",
+  "pipeline": [
+   "an",
+   "dem"
+  ],
+  "model": [
+   "an",
+   "dem"
+  ]
+ },
+ {
+  "word": "Am",
+  "pipeline": [
+   "An",
+   "dem"
+  ],
+  "model": [
+   "An",
+   "dem"
+  ]
+ },
+ {
+  "word": "AM",
+  "pipeline": [
+   "AN",
+   "DEM"
+  ],
+  "model": [
+   "AM"
+  ]
+ },
+ {
+  "word": "ins",
+  "pipeline": [
+   "in",
+   "das"
+  ],
+  "model": [
+   "in",
+   "das"
+  ]
+ },
+ {
+  "word": "Ins",
+  "pipeline": [
+   "In",
+   "das"
+  ],
+  "model": [
+   "In",
+   "das"
+  ]
+ },
+ {
+  "word": "beim",
+  "pipeline": [
+   "bei",
+   "dem"
+  ],
+  "model": [
+   "bei",
+   "dem"
+  ]
+ },
+ {
+  "word": "Beim",
+  "pipeline": [
+   "Bei",
+   "dem"
+  ],
+  "model": [
+   "Bei",
+   "dem"
+  ]
+ },
+ {
+  "word": "vom",
+  "pipeline": [
+   "von",
+   "dem"
+  ],
+  "model": [
+   "von",
+   "dem"
+  ]
+ },
+ {
+  "word": "Vom",
+  "pipeline": [
+   "Von",
+   "dem"
+  ],
+  "model": [
+   "Von",
+   "dem"
+  ]
+ },
+ {
+  "word": "übers",
+  "pipeline": [
+   "über",
+   "das"
+  ],
+  "model": [
+   "über",
+   "das"
+  ]
+ },
+ {
+  "word": "Übers",
+  "pipeline": [
+   "Über",
+   "das"
+  ],
+  "model": [
+   "Über",
+   "das"
+  ]
+ },
+ {
+  "word": "aufs",
+  "pipeline": [
+   "auf",
+   "das"
+  ],
+  "model": [
+   "auf",
+   "das"
+  ]
+ },
+ {
+  "word": "ans",
+  "pipeline": [
+   "an",
+   "das"
+  ],
+  "model": [
+   "an",
+   "das"
+  ]
+ },
+ {
+  "word": "ums",
+  "pipeline": [
+   "um",
+   "das"
+  ],
+  "model": [
+   "um",
+   "das"
+  ]
+ },
+ {
+  "word": "unterm",
+  "pipeline": [
+   "unter",
+   "dem"
+  ],
+  "model": [
+   "unter",
+   "dem"
+  ]
+ },
+ {
+  "word": "hinters",
+  "pipeline": [
+   "hinter",
+   "das"
+  ],
+  "model": [
+   "hinters"
+  ]
+ },
+ {
+  "word": "fürs",
+  "pipeline": [
+   "für",
+   "das"
+  ],
+  "model": [
+   "für",
+   "das"
+  ]
+ },
+ {
+  "word": "Fürs",
+  "pipeline": [
+   "Für",
+   "das"
+  ],
+  "model": [
+   "Für",
+   "das"
+  ]
+ },
+ {
+  "word": "durchs",
+  "pipeline": [
+   "durch",
+   "das"
+  ],
+  "model": [
+   "durch",
+   "das"
+  ]
+ },
+ {
+  "word": "vorm",
+  "pipeline": [
+   "vor",
+   "dem"
+  ],
+  "model": [
+   "vor",
+   "dem"
+  ]
+ },
+ {
+  "word": "überm",
+  "pipeline": [
+   "über",
+   "dem"
+  ],
+  "model": [
+   "über",
+   "dem"
+  ]
+ },
+ {
+  "word": "hinterm",
+  "pipeline": [
+   "hinter",
+   "dem"
+  ],
+  "model": [
+   "hinter",
+   "dem"
+  ]
+ },
+ {
+  "word": "untern",
+  "pipeline": [
+   "untern"
+  ],
+  "model": [
+   "untern"
+  ]
+ },
+ {
+  "word": "zu",
+  "pipeline": [
+   "zu",
+   "de"
+  ],
+  "model": [
+   "zu",
+   "de"
+  ]
+ },
+ {
+  "word": "Haus",
+  "pipeline": [
+   "Hau",
+   "das"
+  ],
+  "model": [
+   "Hau",
+   "das"
+  ]
+ },
+ {
+  "word": "Straße",
+  "pipeline": [
+   "Straße"
+  ],
+  "model": [
+   "Straße"
+  ]
+ },
+ {
+  "word": "zum.",
+  "pipeline": [
+   "zu",
+   "dem"
+  ],
+  "model": [
+   "zu",
+   "dem"
+  ]
+ },
+ {
+  "word": "çum",
+  "pipeline": [
+   "çu",
+   "dem"
+  ],
+  "model": [
+   "çu",
+   "dem"
+  ]
+ },
+ {
+  "word": "zům",
+  "pipeline": [
+   "zů",
+   "dem"
+  ],
+  "model": [
+   "zů",
+   "dem"
+  ]
+ },
+ {
+  "word": "東京zum",
+  "pipeline": [
+   "東京zum"
+  ],
+  "model": [
+   "東京zum"
+  ]
+ },
+ {
+  "word": "😀ins",
+  "pipeline": [
+   "😀ins"
+  ],
+  "model": [
+   "😀ins"
+  ]
+ },
+ {
+  "word": "x",
+  "pipeline": [
+   "x"
+  ],
+  "model": [
+   "x"
+  ]
+ }
+]

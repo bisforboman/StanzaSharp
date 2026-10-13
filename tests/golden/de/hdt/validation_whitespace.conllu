@@ -1,0 +1,136 @@
+# text = Führende Leerzeilen und Leerzeichen kommen zuerst.
+# sent_id = 0
+1	Führende	führen	ADJ	ADJA	Degree=Pos|Gender=Fem|Number=Plur	2	amod	_	SpacesBefore=\n\n\n\s\s\s|start_char=6|end_char=14
+2	Leerzeilen	Leerzeile	NOUN	NN	Gender=Fem|Number=Plur	5	nsubj	_	start_char=15|end_char=25
+3	und	und	CCONJ	KON	_	4	cc	_	start_char=26|end_char=29
+4	Leerzeichen	Leerzeichen	NOUN	NN	Gender=Neut|Number=Plur	2	conj	_	start_char=30|end_char=41
+5	kommen	kommen	VERB	VVFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=42|end_char=48
+6	zuerst.	zuerst.	ADP	PTKVZ	PartType=Vbp	5	compound:prt	_	SpacesAfter=\s\s|start_char=49|end_char=56
+
+# text = Dann ein normaler Satz.
+# sent_id = 1
+1	Dann	dann	ADV	ADV	_	4	advmod	_	start_char=58|end_char=62
+2	ein	ein	DET	ART	Case=Nom|Definite=Ind|Gender=Masc|Number=Sing|NumType=Card|PronType=Art	4	det	_	start_char=63|end_char=66
+3	normaler	normal	ADJ	ADJA	Case=Nom|Degree=Pos|Gender=Masc|Number=Sing	4	amod	_	start_char=67|end_char=75
+4	Satz.	Satz.	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	0	root	_	SpacesAfter=\n\n\n\n\n\n|start_char=76|end_char=81
+
+# text = Viele Leerzeilen trennten diesen Absatz.
+# sent_id = 2
+1	Viele	viel	DET	PIDAT	Case=Nom|Number=Plur|PronType=Ind	2	det	_	start_char=87|end_char=92
+2	Leerzeilen	Leerzeile	NOUN	NN	Gender=Fem|Number=Plur	3	nsubj	_	start_char=93|end_char=103
+3	trennten	trennen	VERB	VVFIN	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=104|end_char=112
+4	diesen	dieser	DET	PDAT	Case=Acc|Gender=Masc|Number=Sing|PronType=Dem	5	det	_	start_char=113|end_char=119
+5	Absatz.	Absatz.	NOUN	NN	Gender=Masc|Number=Sing	3	obj	_	start_char=120|end_char=127
+
+# text = Er hat zwei Sätze.
+# sent_id = 3
+1	Er	er	PRON	PPER	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=128|end_char=130
+2	hat	haben	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=131|end_char=134
+3	zwei	zwei	NUM	CARD	Number=Plur|NumType=Card	4	nummod	_	start_char=135|end_char=139
+4	Sätze.	Sätze.	NOUN	NN	Gender=Fem|Number=Plur	2	obj	_	SpacesAfter=\s\s\s\n|start_char=140|end_char=146
+
+# text = Am Zeilenende stehen Leerzeichen.
+# sent_id = 4
+1-2	Am	_	_	_	_	_	_	_	start_char=150|end_char=152
+1	An	an	ADP	APPR	AdpType=Prep|Case=Dat	3	case	_	_
+2	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Masc,Neut|Number=Sing|PronType=Art	3	det	_	_
+3	Zeilenende	Zeilenende	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	4	obl	_	start_char=153|end_char=163
+4	stehen	stehen	VERB	VVFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=164|end_char=170
+5	Leerzeichen	Leerzeichen	NOUN	NN	Gender=Neut|Number=Plur	4	nsubj	_	SpaceAfter=No|start_char=171|end_char=182
+6	.	.	PUNCT	$.	PunctType=Peri	4	punct	_	SpacesAfter=\t\t\n\n|start_char=182|end_char=183
+
+# text = Jetzt folgen Windows-Zeilenenden.
+# sent_id = 5
+1	Jetzt	jetzt	ADV	ADV	_	2	advmod	_	start_char=187|end_char=192
+2	folgen	folgen	VERB	VVFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=193|end_char=199
+3	Windows-Zeilenenden.	Windows-Zeilenenden.	NOUN	NN	Gender=Masc|Number=Plur	2	nsubj	_	SpacesAfter=\r\n|start_char=200|end_char=220
+
+# text = Diese Zeile endet mit CRLF.
+# sent_id = 6
+1	Diese	dieser	DET	PDAT	Case=Nom|Gender=Fem|Number=Sing|PronType=Dem	2	det	_	start_char=222|end_char=227
+2	Zeile	Zeile	NOUN	NN	Gender=Fem|Number=Sing	3	nsubj	_	start_char=228|end_char=233
+3	endet	enden	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=234|end_char=239
+4	mit	mit	ADP	APPR	AdpType=Prep|Case=Dat	5	case	_	start_char=240|end_char=243
+5	CRLF.	CRLF.	PROPN	NE	_	3	obl	_	SpacesAfter=\r\n|start_char=244|end_char=249
+
+# text = Diese auch.
+# sent_id = 7
+1	Diese	dieser	DET	PDS	Case=Nom|Number=Plur|PronType=Dem	0	root	_	start_char=251|end_char=256
+2	auch	auch	ADV	ADV	_	1	advmod	_	SpaceAfter=No|start_char=257|end_char=261
+3	.	.	PUNCT	$.	PunctType=Peri	1	punct	_	SpacesAfter=\r\n\r\n|start_char=261|end_char=262
+
+# text = Ein neuer Absatz nach einer CRLF-Leerzeile.
+# sent_id = 8
+1	Ein	ein	DET	ART	Case=Nom|Definite=Ind|Gender=Masc|Number=Sing|NumType=Card|PronType=Art	3	det	_	start_char=266|end_char=269
+2	neuer	neu	ADJ	ADJA	Case=Nom|Degree=Pos|Gender=Masc|Number=Sing	3	amod	_	start_char=270|end_char=275
+3	Absatz	Absatz	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	0	root	_	start_char=276|end_char=282
+4	nach	nach	ADP	APPR	AdpType=Prep|Case=Dat	6	case	_	start_char=283|end_char=287
+5	einer	ein	DET	ART	Case=Dat|Definite=Ind|Gender=Fem|Number=Sing|NumType=Card|PronType=Art	6	det	_	start_char=288|end_char=293
+6	CRLF-Leerzeile.	CRLF-Leerzeile.	NOUN	NN	Case=Dat|Gender=Fem|Number=Sing	3	nmod	_	SpacesAfter=\r\n\r\n\t|start_char=294|end_char=309
+
+# text = Ein Absatz, der mit einem Tabulator beginnt.
+# sent_id = 9
+1	Ein	ein	DET	ART	Case=Nom|Definite=Ind|Gender=Masc|Number=Sing|NumType=Card|PronType=Art	2	det	_	start_char=314|end_char=317
+2	Absatz	Absatz	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	0	root	_	SpaceAfter=No|start_char=318|end_char=324
+3	,	,	PUNCT	$,	PunctType=Comm	8	punct	_	start_char=324|end_char=325
+4	der	der	PRON	PRELS	Case=Nom|Gender=Masc|Number=Sing|PronType=Dem,Rel	8	nsubj	_	start_char=326|end_char=329
+5	mit	mit	ADP	APPR	AdpType=Prep|Case=Dat	7	case	_	start_char=330|end_char=333
+6	einem	ein	DET	ART	Case=Dat|Definite=Ind|Gender=Masc|Number=Sing|NumType=Card|PronType=Art	7	det	_	start_char=334|end_char=339
+7	Tabulator	unknown	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	8	obl	_	start_char=340|end_char=349
+8	beginnt.	beginnen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	acl:relcl	_	SpacesAfter=\n\n|start_char=350|end_char=358
+
+# text = Ein einzelnes CR steht mitten in dieser Zeile.
+# sent_id = 10
+1	Ein	ein	DET	ART	Case=Nom|Definite=Ind|Gender=Neut|Number=Sing|NumType=Card|PronType=Art	3	det	_	start_char=360|end_char=363
+2	einzelnes	einzeln	ADJ	ADJA	Case=Nom|Degree=Pos|Gender=Neut|Number=Sing	3	amod	_	start_char=364|end_char=373
+3	CR	CR	NOUN	NN	_	4	nsubj	_	SpacesAfter=\r|start_char=374|end_char=376
+4	steht	stehen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=377|end_char=382
+5	mitten	mitten	ADV	ADV	_	4	advmod	_	start_char=383|end_char=389
+6	in	in	ADP	APPR	AdpType=Prep|Case=Dat	8	case	_	start_char=390|end_char=392
+7	dieser	dieser	DET	PDAT	Case=Dat|Gender=Fem|Number=Sing|PronType=Dem	8	det	_	start_char=393|end_char=399
+8	Zeile.	Zeile.	NOUN	NN	Case=Dat|Gender=Fem|Number=Sing	4	obl	_	SpacesAfter=\n\n\s\s\s\n\s\s\n|start_char=400|end_char=406
+
+# text = Zwischen diesen Absätzen stehen Zeilen nur aus Leerzeichen.
+# sent_id = 11
+1	Zwischen	zwischen	ADP	APPR	AdpType=Prep|Case=Dat	3	case	_	start_char=415|end_char=423
+2	diesen	dieser	DET	PDAT	Case=Dat|Number=Plur|PronType=Dem	3	det	_	start_char=424|end_char=430
+3	Absätzen	Absatz	NOUN	NN	Case=Dat|Gender=Masc|Number=Plur	4	obl	_	start_char=431|end_char=439
+4	stehen	stehen	VERB	VVFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=440|end_char=446
+5	Zeilen	Zeile	NOUN	NN	Gender=Fem|Number=Plur	4	nsubj	_	start_char=447|end_char=453
+6	nur	nur	ADV	ADV	_	8	advmod	_	start_char=454|end_char=457
+7	aus	aus	ADP	APPR	AdpType=Prep|Case=Dat	8	case	_	start_char=458|end_char=461
+8	Leerzeichen	Leerzeichen	NOUN	NN	Case=Dat|Gender=Neut|Number=Plur	4	obl	_	SpaceAfter=No|start_char=462|end_char=473
+9	.	.	PUNCT	$.	PunctType=Peri	4	punct	_	SpacesAfter=\n\n|start_char=473|end_char=474
+
+# text = Zeile eins Zeile zwei ohne Satzzeichen Zeile drei.
+# sent_id = 12
+1	Zeile	Zeile	NOUN	NN	Gender=Fem|Number=Sing	0	root	_	start_char=476|end_char=481
+2	eins	eins	NUM	CARD	Number=Sing|NumType=Card	1	flat	_	SpacesAfter=\n|start_char=482|end_char=486
+3	Zeile	Zeile	NOUN	NN	Gender=Fem|Number=Sing	1	appos	_	start_char=487|end_char=492
+4	zwei	zwei	NUM	CARD	Number=Plur|NumType=Card	1	flat	_	start_char=493|end_char=497
+5	ohne	ohne	ADP	APPR	AdpType=Prep|Case=Acc	6	case	_	start_char=498|end_char=502
+6	Satzzeichen	Satzzeichen	NOUN	NN	Case=Acc|Gender=Fem|Number=Sing	1	nmod	_	SpacesAfter=\n|start_char=503|end_char=514
+7	Zeile	Zeile	NOUN	NN	Gender=Fem|Number=Sing	6	appos	_	start_char=515|end_char=520
+8	drei.	drei.	PROPN	NE	_	6	flat:name	_	SpacesAfter=\n\n\u00A0|start_char=521|end_char=526
+
+# text = Ein geschütztes Leerzeichen am Anfang und in der Mitte.
+# sent_id = 13
+1	Ein	ein	DET	ART	Case=Nom|Definite=Ind|Gender=Neut|Number=Sing|NumType=Card|PronType=Art	3	det	_	start_char=529|end_char=532
+2	geschütztes	schützen	ADJ	ADJA	Case=Nom|Degree=Pos|Gender=Neut|Number=Sing	3	amod	_	start_char=533|end_char=544
+3	Leerzeichen	Leerzeichen	NOUN	NN	Case=Nom|Gender=Neut|Number=Sing	0	root	_	start_char=545|end_char=556
+4-5	am	_	_	_	_	_	_	_	start_char=557|end_char=559
+4	an	an	ADP	APPR	AdpType=Prep|Case=Dat	6	case	_	_
+5	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	6	det	_	_
+6	Anfang	Anfang	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	3	nmod	_	start_char=560|end_char=566
+7	und	und	CCONJ	KON	_	10	cc	_	SpacesAfter=\u00A0|start_char=567|end_char=570
+8	in	in	ADP	APPR	AdpType=Prep|Case=Dat	10	case	_	SpacesAfter=\u00A0|start_char=571|end_char=573
+9	der	der	DET	ART	Case=Dat|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	10	det	_	start_char=574|end_char=577
+10	Mitte.	Mitte.	NOUN	NN	Case=Dat|Gender=Fem|Number=Sing	6	conj	_	SpacesAfter=\n\n|start_char=578|end_char=584
+
+# text = Das Ende kommt ohne Zeilenumbruch.
+# sent_id = 14
+1	Das	der	DET	ART	Case=Nom|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	2	det	_	start_char=586|end_char=589
+2	Ende	Ende	NOUN	NN	Case=Nom|Gender=Neut|Number=Sing	3	nsubj	_	start_char=590|end_char=594
+3	kommt	kommen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=595|end_char=600
+4	ohne	ohne	ADP	APPR	AdpType=Prep|Case=Acc	5	case	_	start_char=601|end_char=605
+5	Zeilenumbruch.	Zeilenumbruch.	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	3	obl	_	SpaceAfter=No|start_char=606|end_char=620

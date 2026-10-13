@@ -30,7 +30,8 @@ UTF-16 code units in StanzaSharp and code points in Stanza, so `validation_nonbm
 German texts (181 sentences, 2,227 words: news, dialogue, instructions, social media, poetry, umlauts and ß,
 compounds, every quote style, contractions, capitals, CRLF whitespace, characters outside the BMP, a paragraph over
 1,000 characters), made with `make_golden.py --lang de`, and every row of the table above is checked on it the same
-way: both packages and the `combined` treebank package (whose models are the default package's), each processor
+way: both packages and the treebank packages `combined` (whose models are the default package's), `gsd` and `hdt`
+(their own folders, with their MWT word lists), each processor
 (171 words through the lemmatizer's seq2seq model, 58 entities, 200 sentiment sentences), the input modes, the
 tokenizer edge cases, and the MWT expansions of a German word list with and without the dictionary (German MWT is a
 seq2seq model; 68 multi-word tokens in the texts). German texts with characters outside the BMP

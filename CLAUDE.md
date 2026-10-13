@@ -7,8 +7,8 @@ default from 0.5) or through TorchSharp (see "Managed backend").
 ## Scope
 
 - **Language:** English and German (`PipelineOptions.Language = "de"`, 2026-10-13; docs/german-plan.md, "Checkpoint
-  findings (German)"). German runs every processor of `default`, `default_fast` and `combined` byte for byte on both
-  backends; `gsd`/`hdt` download, but their taggers are an older checkpoint format (a follow-up PR).
+  findings (German)"). German runs every processor of `default`, `default_fast`, `combined`, `gsd` and `hdt` byte for
+  byte on both backends.
 - **Processors:** all eight of Stanza's English default, in Stanza's order (`PIPELINE_NAMES`): tokenize,
   mwt, pos, lemma, constituency, depparse, sentiment, ner. This is `Pipeline.AllProcessors`, the default
   (user's decision, 2026-10-06: like Stanza; it costs about 36% more time than without ner and sentiment).
@@ -517,6 +517,14 @@ model but MWT and NER is English's architecture with other vocabularies and size
   2348→2348, biLSTM 256. The pipeline loads every pretrain `Pipeline.Dependencies` names (`_pretrains`), and each
   processor gets its model's own.
 - **sentiment** (`sb10k_charlm`): as English, `extra_vocab` 24,235.
+- **gsd / hdt** (treebank packages: tokenize, mwt, pos, lemma, depparse; `<pkg>_nocharlm` tokenizers with their own
+  vocabularies, `gsd`/`hdt` seq2seq MWT, hdt's with `max_dec_len` 12 and 33 dictionary entries):
+  - Their taggers predate `tag_columns`: config without `tag_columns`/`tag_column_link` (Stanza's defaults: the three
+    native columns, `tag_emb`) and heads named `xpos_hid`/`xpos_clf`/`ufeats_hid`/`ufeats_clf`, which `PosTagger`
+    renames like model.py's `remap_legacy_state_dict` before either net reads them.
+  - hdt's depparse batches are 1300 words (`batch_size` in its checkpoint, read like every other parser's).
+  - `tests/golden/de/gsd/`, `hdt/` (`make_golden.py --lang de --treebank-only`): corpus + validation and `mwt.json`;
+    `TreebankPackageTests`.
 
 ## Validation
 
@@ -658,8 +666,8 @@ model but MWT and NER is English's architecture with other vocabularies and size
     `tools/verify-package.ps1` against `models/stanza/en` twice: plain (StanzaSharp + TorchSharp-cpu, TorchSharp
     backend, `StanzaSharpTrimNative`; also on torch=smoke) and `-Managed` (only StanzaSharp, the default backend, no
     libtorch), and `verify-tool.ps1`. Artifacts: `test-results-golden-<shard>`.
-  - German (owner's decision, 2026-10-13): one `models-de-<hash of ModelDownloader.cs>` cache holding only Stanza's
-    German `.pt` files (`models/stanza/de`, default + default_fast, about 1 GB; no conversion: `Repo.ModelsFor("de")`
+  - German (owner's decision, 2026-10-13): one `models-de-treebanks-<hash of ModelDownloader.cs>` cache holding only Stanza's
+    German `.pt` files (`models/stanza/de`, default, default_fast, gsd and hdt, about 1.3 GB; no conversion: `Repo.ModelsFor("de")`
     falls back to models/stanza/de), written by golden-shard 1 and restored by shards 2–3, downloaded with the CLI
     (`download models/stanza/de --lang de --package ...`) on a miss. Only the golden shards run German, so their no-skip
     check covers it. cross-os and linux-arm64 stay English: there the German rows skip, and their no-skip checks exempt
@@ -829,7 +837,7 @@ model but MWT and NER is English's architecture with other vocabularies and size
   - Languages (owner's decisions, 2026-10-13, docs/german-plan.md): `PipelineOptions.Language` (Stanza's code, default
     `"en"`; `Load` still takes the language folder); `DownloadAsync(dir, options)` honours it, `download --lang de`
     defaults to `models/stanza/<lang>`. German (`de`): `default`, `default_fast`, `combined`, `gsd`, `hdt` download and
-    load (gsd/hdt's taggers: a follow-up). Unknown languages
+    load. Unknown languages
     and packages (`default_accurate`: transformers) throw `ArgumentException` with the supported list.
   - `Pipeline.SelectModels` (language + package + processors → processor → model) and `Pipeline.SharedModels`
     (from `Pipeline.Dependencies`: each model's resources.json `dependencies`, since names don't tell them; German

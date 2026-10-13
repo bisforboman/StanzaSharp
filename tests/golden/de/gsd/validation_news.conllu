@@ -1,0 +1,320 @@
+# text = BERLIN (dpa) –
+# sent_id = 0
+1	BERLIN	BERLIN	PROPN	NE	Case=Nom|Gender=Neut|Number=Sing	0	root	_	start_char=0|end_char=6
+2	(	(	PUNCT	$(	_	3	punct	_	SpaceAfter=No|start_char=7|end_char=8
+3	dpa	dpa	PROPN	NE	Case=Nom|Gender=Masc|Number=Sing	1	appos	_	SpaceAfter=No|start_char=8|end_char=11
+4	)	)	PUNCT	$(	_	3	punct	_	start_char=11|end_char=12
+5	–	a	PUNCT	$(	_	1	punct	_	start_char=13|end_char=14
+
+# text = Der Bundestag hat am Donnerstag mit großer Mehrheit ein neues Gesetz zur Förderung erneuerbarer Energien beschlossen.
+# sent_id = 1
+1	Der	der	DET	ART	Case=Nom|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	2	det	_	start_char=15|end_char=18
+2	Bundestag	Bundestag	PROPN	NN	Case=Nom|Gender=Masc|Number=Sing	18	nsubj	_	start_char=19|end_char=28
+3	hat	haben	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	18	aux	_	start_char=29|end_char=32
+4-5	am	_	_	_	_	_	_	_	start_char=33|end_char=35
+4	an	an	ADP	APPR	_	6	case	_	_
+5	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	6	det	_	_
+6	Donnerstag	Donnerstag	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	18	obl	_	start_char=36|end_char=46
+7	mit	mit	ADP	APPR	_	9	case	_	start_char=47|end_char=50
+8	großer	groß	ADJ	ADJA	Case=Dat|Degree=Pos|Gender=Fem|Number=Sing	9	amod	_	start_char=51|end_char=57
+9	Mehrheit	Mehrheit	NOUN	NN	Case=Dat|Gender=Fem|Number=Sing	18	obl	_	start_char=58|end_char=66
+10	ein	ein	DET	ART	Case=Acc|Definite=Ind|Gender=Neut|Number=Sing|NumType=Card|PronType=Art	12	det	_	start_char=67|end_char=70
+11	neues	neu	ADJ	ADJA	Case=Acc|Degree=Pos|Gender=Neut|Number=Sing	12	amod	_	start_char=71|end_char=76
+12	Gesetz	Gesetz	NOUN	NN	Case=Acc|Gender=Neut|Number=Sing	18	obj	_	start_char=77|end_char=83
+13-14	zur	_	_	_	_	_	_	_	start_char=84|end_char=87
+13	zu	zu	ADP	APPR	_	15	case	_	_
+14	der	der	DET	ART	Case=Dat|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	15	det	_	_
+15	Förderung	Förderung	NOUN	NN	Case=Dat|Gender=Fem|Number=Sing	12	nmod	_	start_char=88|end_char=97
+16	erneuerbarer	erneuerbar	ADJ	ADJA	Case=Gen|Degree=Pos|Gender=Fem|Number=Plur	17	amod	_	start_char=98|end_char=110
+17	Energien	Energie	NOUN	NN	Case=Gen|Gender=Fem|Number=Plur	15	nmod	_	start_char=111|end_char=119
+18	beschlossen	beschließen	VERB	VVPP	VerbForm=Part	0	root	_	SpaceAfter=No|start_char=120|end_char=131
+19	.	.	PUNCT	$.	_	18	punct	_	start_char=131|end_char=132
+
+# text = Nach Angaben des Wirtschaftsministeriums sollen bis 2030 rund 80 Prozent des Stroms aus Wind, Sonne und Wasserkraft stammen.
+# sent_id = 2
+1	Nach	nach	ADP	APPR	_	2	case	_	start_char=133|end_char=137
+2	Angaben	Angabe	NOUN	NN	Case=Dat|Gender=Fem|Number=Plur	19	obl	_	start_char=138|end_char=145
+3	des	der	DET	ART	Case=Gen|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	4	det	_	start_char=146|end_char=149
+4	Wirtschaftsministeriums	Wirtschaftsministerium	NOUN	NN	Case=Gen|Gender=Neut|Number=Sing	2	nmod	_	start_char=150|end_char=173
+5	sollen	sollen	AUX	VMFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	19	aux	_	start_char=174|end_char=180
+6	bis	bis	ADP	APPR	_	7	case	_	start_char=181|end_char=184
+7	2030	2030	NUM	CARD	NumType=Card	19	obl	_	start_char=185|end_char=189
+8	rund	rund	ADV	ADV	_	9	advmod	_	start_char=190|end_char=194
+9	80	80	NUM	CARD	NumType=Card	10	nummod	_	start_char=195|end_char=197
+10	Prozent	Prozent	NOUN	NN	Case=Nom|Gender=Neut|Number=Plur	19	nsubj	_	start_char=198|end_char=205
+11	des	der	DET	ART	Case=Gen|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	12	det	_	start_char=206|end_char=209
+12	Stroms	Strom	NOUN	NN	Case=Gen|Gender=Masc|Number=Sing	10	nmod	_	start_char=210|end_char=216
+13	aus	aus	ADP	APPR	_	14	case	_	start_char=217|end_char=220
+14	Wind	Wind	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	12	nmod	_	SpaceAfter=No|start_char=221|end_char=225
+15	,	,	PUNCT	$,	_	16	punct	_	start_char=225|end_char=226
+16	Sonne	Sonne	NOUN	NN	Case=Dat|Gender=Fem|Number=Sing	14	conj	_	start_char=227|end_char=232
+17	und	und	CCONJ	KON	_	18	cc	_	start_char=233|end_char=236
+18	Wasserkraft	Wasserkraft	NOUN	NN	Case=Dat|Gender=Fem|Number=Sing	14	conj	_	start_char=237|end_char=248
+19	stammen	stammen	VERB	VVINF	VerbForm=Inf	0	root	_	SpaceAfter=No|start_char=249|end_char=256
+20	.	.	PUNCT	$.	_	19	punct	_	SpacesAfter=\n\n|start_char=256|end_char=257
+
+# text = Die Opposition kritisierte den Entwurf als unzureichend.
+# sent_id = 3
+1	Die	der	DET	ART	Case=Nom|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	2	det	_	start_char=259|end_char=262
+2	Opposition	Opposition	NOUN	NN	Case=Nom|Gender=Fem|Number=Sing	3	nsubj	_	start_char=263|end_char=273
+3	kritisierte	kritisieren	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=274|end_char=285
+4	den	der	DET	ART	Case=Acc|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	5	det	_	start_char=286|end_char=289
+5	Entwurf	Entwurf	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	6	nsubj	_	start_char=290|end_char=297
+6	als	als	ADP	KOKOM	_	3	xcomp	_	start_char=298|end_char=301
+7	unzureichend	unzureichend	ADJ	ADJD	Degree=Pos	6	amod	_	SpaceAfter=No|start_char=302|end_char=314
+8	.	.	PUNCT	$.	_	3	punct	_	start_char=314|end_char=315
+
+# text = „Das reicht bei Weitem nicht“, sagte die Fraktionsvorsitzende am Rande der Sitzung.
+# sent_id = 4
+1	„	"	PUNCT	$(	_	2	punct	_	SpaceAfter=No|start_char=316|end_char=317
+2	Das	der	PRON	PDS	Case=Nom|Gender=Neut|Number=Sing|PronType=Dem,Rel	3	nsubj	_	start_char=317|end_char=320
+3	reicht	reichen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	9	ccomp	_	start_char=321|end_char=327
+4	bei	bei	ADP	APPR	_	5	case	_	start_char=328|end_char=331
+5	Weitem	Weitem	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	3	obl	_	start_char=332|end_char=338
+6	nicht	nicht	PART	PTKNEG	Polarity=Neg	3	advmod	_	SpaceAfter=No|start_char=339|end_char=344
+7	“	"	PUNCT	$(	_	3	punct	_	SpaceAfter=No|start_char=344|end_char=345
+8	,	,	PUNCT	$,	_	3	punct	_	start_char=345|end_char=346
+9	sagte	sagen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=347|end_char=352
+10	die	der	DET	ART	Case=Nom|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	11	det	_	start_char=353|end_char=356
+11	Fraktionsvorsitzende	Fraktionsvorsitzende	NOUN	NN	Case=Nom|Gender=Fem|Number=Sing	9	nsubj	_	start_char=357|end_char=377
+12-13	am	_	_	_	_	_	_	_	start_char=378|end_char=380
+12	an	an	ADP	APPR	_	14	case	_	_
+13	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	14	det	_	_
+14	Rande	Rand	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	9	obl	_	start_char=381|end_char=386
+15	der	der	DET	ART	Case=Gen|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	16	det	_	start_char=387|end_char=390
+16	Sitzung	Sitzung	NOUN	NN	Case=Gen|Gender=Fem|Number=Sing	14	nmod	_	SpaceAfter=No|start_char=391|end_char=398
+17	.	.	PUNCT	$.	_	9	punct	_	start_char=398|end_char=399
+
+# text = Der Bundesrat muss dem Gesetz noch zustimmen.
+# sent_id = 5
+1	Der	der	DET	ART	Case=Nom|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	2	det	_	start_char=400|end_char=403
+2	Bundesrat	Bundesrat	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	7	nsubj	_	start_char=404|end_char=413
+3	muss	müssen	AUX	VMFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	7	aux	_	start_char=414|end_char=418
+4	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	5	det	_	start_char=419|end_char=422
+5	Gesetz	Gesetz	NOUN	NN	Case=Dat|Gender=Neut|Number=Sing	7	obl:arg	_	start_char=423|end_char=429
+6	noch	noch	ADV	ADV	_	7	advmod	_	start_char=430|end_char=434
+7	zustimmen	zustimmen	VERB	VVINF	VerbForm=Inf	0	root	_	SpaceAfter=No|start_char=435|end_char=444
+8	.	.	PUNCT	$.	_	7	punct	_	SpacesAfter=\n\n|start_char=444|end_char=445
+
+# text = FRANKFURT AM MAIN – Die Europäische Zentralbank (EZB) lässt den Leitzins unverändert bei 3,75 %.
+# sent_id = 6
+1	FRANKFURT	FRANKFURT	PROPN	NE	Case=Nom|Gender=Masc|Number=Sing	11	nsubj	_	start_char=447|end_char=456
+2	AM	AM	PROPN	NE	Case=Nom|Gender=Masc|Number=Sing	1	flat	_	start_char=457|end_char=459
+3	MAIN	MAIN	PROPN	NE	Case=Nom|Gender=Masc|Number=Sing	1	flat	_	start_char=460|end_char=464
+4	–	a	PUNCT	$(	_	7	punct	_	start_char=465|end_char=466
+5	Die	der	DET	ART	Case=Nom|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	7	det	_	start_char=467|end_char=470
+6	Europäische	europäisch	PROPN	ADJA	Case=Nom|Gender=Fem|Number=Sing	7	amod	_	start_char=471|end_char=482
+7	Zentralbank	Zentralbank	PROPN	NN	Case=Nom|Gender=Fem|Number=Sing	1	appos	_	start_char=483|end_char=494
+8	(	(	PUNCT	$(	_	9	punct	_	SpaceAfter=No|start_char=495|end_char=496
+9	EZB	EZB	PROPN	NE	Case=Nom|Gender=Fem|Number=Sing	7	appos	_	SpaceAfter=No|start_char=496|end_char=499
+10	)	)	PUNCT	$(	_	9	punct	_	start_char=499|end_char=500
+11	lässt	lassen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=501|end_char=506
+12	den	der	DET	ART	Case=Acc|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	13	det	_	start_char=507|end_char=510
+13	Leitzins	Leitzin	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	11	obj	_	start_char=511|end_char=519
+14	unverändert	unverändert	ADJ	ADJD	Degree=Pos	11	advmod	_	start_char=520|end_char=531
+15	bei	bei	ADP	APPR	_	17	case	_	start_char=532|end_char=535
+16	3,75	3,75	NUM	CARD	NumType=Card	17	nummod	_	start_char=536|end_char=540
+17	%	%	NOUN	NN	Case=Dat|Gender=Neut|Number=Plur	11	obl	_	SpaceAfter=No|start_char=541|end_char=542
+18	.	.	PUNCT	$.	_	11	punct	_	start_char=542|end_char=543
+
+# text = Ökonomen hatten mit diesem Schritt gerechnet.
+# sent_id = 7
+1	Ökonomen	Ökonom	NOUN	NN	Case=Nom|Gender=Masc|Number=Plur	6	nsubj	_	start_char=544|end_char=552
+2	hatten	haben	AUX	VAFIN	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	6	aux	_	start_char=553|end_char=559
+3	mit	mit	ADP	APPR	_	5	case	_	start_char=560|end_char=563
+4	diesem	dieser	DET	PDAT	Case=Dat|Gender=Masc|Number=Sing|PronType=Dem	5	det	_	start_char=564|end_char=570
+5	Schritt	Schritt	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	6	obl	_	start_char=571|end_char=578
+6	gerechnet	rechnen	VERB	VVPP	VerbForm=Part	0	root	_	SpaceAfter=No|start_char=579|end_char=588
+7	.	.	PUNCT	$.	_	6	punct	_	start_char=588|end_char=589
+
+# text = Der DAX schloss am Nachmittag 0,6 Prozent höher bei 18.432 Punkten.
+# sent_id = 8
+1	Der	der	DET	ART	Case=Nom|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	2	det	_	start_char=590|end_char=593
+2	DAX	DAX	PROPN	NE	Case=Nom|Gender=Masc|Number=Sing	3	nsubj	_	start_char=594|end_char=597
+3	schloss	schließen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=598|end_char=605
+4-5	am	_	_	_	_	_	_	_	start_char=606|end_char=608
+4	an	an	ADP	APPR	_	6	case	_	_
+5	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	6	det	_	_
+6	Nachmittag	Nachmittag	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	3	obl	_	start_char=609|end_char=619
+7	0,6	0,6	NUM	CARD	NumType=Card	8	nummod	_	start_char=620|end_char=623
+8	Prozent	Prozent	NOUN	NN	Case=Acc|Gender=Neut|Number=Plur	9	nmod	_	start_char=624|end_char=631
+9	höher	hoch	ADJ	ADJD	Degree=Cmp	3	advmod	_	start_char=632|end_char=637
+10	bei	bei	ADP	APPR	_	12	case	_	start_char=638|end_char=641
+11	18.432	18.432	NUM	CARD	NumType=Card	12	nummod	_	start_char=642|end_char=648
+12	Punkten	Punkt	NOUN	NN	Case=Dat|Gender=Masc|Number=Plur	3	obl	_	SpaceAfter=No|start_char=649|end_char=656
+13	.	.	PUNCT	$.	_	3	punct	_	SpacesAfter=\n\n|start_char=656|end_char=657
+
+# text = In Hamburg ist am Mittwochabend ein Containerschiff auf der Elbe auf Grund gelaufen.
+# sent_id = 9
+1	In	in	ADP	APPR	_	2	case	_	start_char=659|end_char=661
+2	Hamburg	Hamburg	PROPN	NE	Case=Dat|Gender=Neut|Number=Sing	14	obl	_	start_char=662|end_char=669
+3	ist	sein	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	14	aux	_	start_char=670|end_char=673
+4-5	am	_	_	_	_	_	_	_	start_char=674|end_char=676
+4	an	an	ADP	APPR	_	6	case	_	_
+5	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	6	det	_	_
+6	Mittwochabend	Mittwochabend	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	14	obl	_	start_char=677|end_char=690
+7	ein	ein	DET	ART	Case=Nom|Definite=Ind|Gender=Neut|Number=Sing|NumType=Card|PronType=Art	8	det	_	start_char=691|end_char=694
+8	Containerschiff	Containerschiff	NOUN	NN	Case=Nom|Gender=Neut|Number=Sing	14	nsubj	_	start_char=695|end_char=710
+9	auf	auf	ADP	APPR	_	11	case	_	start_char=711|end_char=714
+10	der	der	DET	ART	Case=Dat|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	11	det	_	start_char=715|end_char=718
+11	Elbe	Elbe	PROPN	NE	Case=Dat|Gender=Fem|Number=Sing	8	nmod	_	start_char=719|end_char=723
+12	auf	auf	ADP	APPR	_	13	case	_	start_char=724|end_char=727
+13	Grund	Grund	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	14	obl	_	start_char=728|end_char=733
+14	gelaufen	laufen	VERB	VVPP	VerbForm=Part	0	root	_	SpaceAfter=No|start_char=734|end_char=742
+15	.	.	PUNCT	$.	_	14	punct	_	start_char=742|end_char=743
+
+# text = Verletzt wurde nach Polizeiangaben niemand.
+# sent_id = 10
+1	Verletzt	verletzen	VERB	VVPP	VerbForm=Part	0	root	_	start_char=744|end_char=752
+2	wurde	werden	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin|Voice=Pass	1	aux:pass	_	start_char=753|end_char=758
+3	nach	nach	ADP	APPR	_	4	case	_	start_char=759|end_char=763
+4	Polizeiangaben	Polizeiangabe	NOUN	NN	Case=Dat|Gender=Masc|Number=Plur	1	obl	_	start_char=764|end_char=778
+5	niemand	niemand	PRON	PIS	Case=Nom|Number=Sing|PronType=Neg	1	nsubj:pass	_	SpaceAfter=No|start_char=779|end_char=786
+6	.	.	PUNCT	$.	_	1	punct	_	start_char=786|end_char=787
+
+# text = Der Schiffsverkehr war für mehrere Stunden eingeschränkt.
+# sent_id = 11
+1	Der	der	DET	ART	Case=Nom|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	2	det	_	start_char=788|end_char=791
+2	Schiffsverkehr	Schiffsverkehr	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	7	nsubj	_	start_char=792|end_char=806
+3	war	sein	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	7	cop	_	start_char=807|end_char=810
+4	für	für	ADP	APPR	_	6	case	_	start_char=811|end_char=814
+5	mehrere	mehr	DET	PIAT	Case=Acc|Degree=Cmp|Gender=Fem|Number=Plur|PronType=Ind	6	det	_	start_char=815|end_char=822
+6	Stunden	Stunde	NOUN	NN	Case=Acc|Gender=Fem|Number=Plur	7	nmod	_	start_char=823|end_char=830
+7	eingeschränkt	einschränken	ADJ	VVPP	Degree=Pos|VerbForm=Part	0	root	_	SpaceAfter=No|start_char=831|end_char=844
+8	.	.	PUNCT	$.	_	7	punct	_	SpacesAfter=\n\n|start_char=844|end_char=845
+
+# text = Der FC Bayern München hat das Spitzenspiel gegen Borussia Dortmund mit 2:1 gewonnen.
+# sent_id = 12
+1	Der	der	DET	ART	Case=Nom|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	2	det	_	start_char=847|end_char=850
+2	FC	FC	PROPN	NN	Case=Nom|Gender=Masc|Number=Sing	13	nsubj	_	start_char=851|end_char=853
+3	Bayern	Bayern	PROPN	NE	Case=Nom|Gender=Neut|Number=Sing	2	appos	_	start_char=854|end_char=860
+4	München	München	PROPN	NE	Case=Nom|Gender=Neut|Number=Sing	3	flat	_	start_char=861|end_char=868
+5	hat	haben	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	13	aux	_	start_char=869|end_char=872
+6	das	der	DET	ART	Case=Acc|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	7	det	_	start_char=873|end_char=876
+7	Spitzenspiel	Spitzenspiel	NOUN	NN	Case=Acc|Gender=Neut|Number=Sing	13	obj	_	start_char=877|end_char=889
+8	gegen	gegen	ADP	APPR	_	9	case	_	start_char=890|end_char=895
+9	Borussia	Borussia	PROPN	NE	Case=Acc|Gender=Fem|Number=Sing	7	nmod	_	start_char=896|end_char=904
+10	Dortmund	Dortmund	PROPN	NE	Case=Acc|Gender=Neut|Number=Sing	9	appos	_	start_char=905|end_char=913
+11	mit	mit	ADP	APPR	_	12	case	_	start_char=914|end_char=917
+12	2:1	2:1	NUM	CARD	NumType=Card	13	obl	_	start_char=918|end_char=921
+13	gewonnen	gewinnen	VERB	VVPP	VerbForm=Part	0	root	_	SpaceAfter=No|start_char=922|end_char=930
+14	.	.	PUNCT	$.	_	13	punct	_	start_char=930|end_char=931
+
+# text = Das entscheidende Tor fiel in der 89. Minute.
+# sent_id = 13
+1	Das	der	DET	ART	Case=Nom|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	3	det	_	start_char=932|end_char=935
+2	entscheidende	entscheidend	ADJ	ADJA	Case=Nom|Degree=Pos|Gender=Neut|Number=Sing	3	amod	_	start_char=936|end_char=949
+3	Tor	Tor	NOUN	NN	Case=Nom|Gender=Neut|Number=Sing	4	nsubj	_	start_char=950|end_char=953
+4	fiel	fallen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=954|end_char=958
+5	in	in	ADP	APPR	_	8	case	_	start_char=959|end_char=961
+6	der	der	DET	ART	Case=Dat|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	8	det	_	start_char=962|end_char=965
+7	89.	89.	ADJ	ADJA	Case=Dat|Degree=Pos|NumType=Ord	8	amod	_	start_char=966|end_char=969
+8	Minute	Minute	NOUN	NN	Case=Dat|Gender=Fem|Number=Sing	4	obl	_	SpaceAfter=No|start_char=970|end_char=976
+9	.	.	PUNCT	$.	_	4	punct	_	SpacesAfter=\n\n|start_char=976|end_char=977
+
+# text = WIEN – Österreichs Regierung will die Mietpreise stärker begrenzen.
+# sent_id = 14
+1	WIEN	WIEN	PROPN	NE	Case=Nom|Gender=Neut|Number=Sing	9	nsubj	_	start_char=979|end_char=983
+2	–	a	PUNCT	$(	_	1	punct	_	start_char=984|end_char=985
+3	Österreichs	Österreich	PROPN	NE	Case=Gen|Gender=Neut|Number=Sing	4	nmod	_	start_char=986|end_char=997
+4	Regierung	Regierung	NOUN	NN	Case=Nom|Gender=Fem|Number=Sing	9	nsubj	_	start_char=998|end_char=1007
+5	will	wollen	AUX	VMFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	9	aux	_	start_char=1008|end_char=1012
+6	die	der	DET	ART	Case=Acc|Definite=Def|Number=Plur|PronType=Art	7	det	_	start_char=1013|end_char=1016
+7	Mietpreise	Mietpreise	NOUN	NN	Case=Acc|Gender=Masc|Number=Plur	9	obj	_	start_char=1017|end_char=1027
+8	stärker	stark	ADJ	ADJD	Degree=Cmp	9	advmod	_	start_char=1028|end_char=1035
+9	begrenzen	begrenzen	VERB	VVINF	VerbForm=Inf	0	root	_	SpaceAfter=No|start_char=1036|end_char=1045
+10	.	.	PUNCT	$.	_	9	punct	_	start_char=1045|end_char=1046
+
+# text = Ein entsprechender Entwurf soll im Herbst vorgelegt werden, teilte das Bundeskanzleramt mit.
+# sent_id = 15
+1	Ein	ein	DET	ART	Case=Nom|Definite=Ind|Gender=Masc|Number=Sing|NumType=Card|PronType=Art	3	det	_	start_char=1047|end_char=1050
+2	entsprechender	entsprechend	ADJ	ADJA	Case=Nom|Degree=Pos|Gender=Masc|Number=Sing	3	amod	_	start_char=1051|end_char=1065
+3	Entwurf	Entwurf	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	8	nsubj:pass	_	start_char=1066|end_char=1073
+4	soll	sollen	AUX	VMFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	8	aux	_	start_char=1074|end_char=1078
+5-6	im	_	_	_	_	_	_	_	start_char=1079|end_char=1081
+5	in	in	ADP	APPR	_	7	case	_	_
+6	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	7	det	_	_
+7	Herbst	Herbst	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	8	obl	_	start_char=1082|end_char=1088
+8	vorgelegt	vorlegen	VERB	VVPP	VerbForm=Part	11	ccomp	_	start_char=1089|end_char=1098
+9	werden	werden	AUX	VAINF	VerbForm=Inf|Voice=Pass	8	aux:pass	_	SpaceAfter=No|start_char=1099|end_char=1105
+10	,	,	PUNCT	$,	_	8	punct	_	start_char=1105|end_char=1106
+11	teilte	teilen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1107|end_char=1113
+12	das	der	DET	ART	Case=Nom|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	13	det	_	start_char=1114|end_char=1117
+13	Bundeskanzleramt	Bundeskanzleramt	NOUN	NN	Case=Nom|Gender=Neut|Number=Sing	11	nsubj	_	start_char=1118|end_char=1134
+14	mit	mit	ADP	PTKVZ	_	11	compound:prt	_	SpaceAfter=No|start_char=1135|end_char=1138
+15	.	.	PUNCT	$.	_	11	punct	_	SpacesAfter=\n\n|start_char=1138|end_char=1139
+
+# text = Die Zahl der Arbeitslosen in Deutschland ist im Juli leicht gestiegen.
+# sent_id = 16
+1	Die	der	DET	ART	Case=Nom|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	2	det	_	start_char=1141|end_char=1144
+2	Zahl	Zahl	NOUN	NN	Case=Nom|Gender=Fem|Number=Sing	12	nsubj	_	start_char=1145|end_char=1149
+3	der	der	DET	ART	Case=Gen|Definite=Def|Number=Plur|PronType=Art	4	det	_	start_char=1150|end_char=1153
+4	Arbeitslosen	Arbeitslose	NOUN	NN	Case=Gen|Number=Plur	2	nmod	_	start_char=1154|end_char=1166
+5	in	in	ADP	APPR	_	6	case	_	start_char=1167|end_char=1169
+6	Deutschland	Deutschland	PROPN	NE	Case=Dat|Gender=Neut|Number=Sing	4	nmod	_	start_char=1170|end_char=1181
+7	ist	sein	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	12	cop	_	start_char=1182|end_char=1185
+8-9	im	_	_	_	_	_	_	_	start_char=1186|end_char=1188
+8	in	in	ADP	APPR	_	10	case	_	_
+9	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	10	det	_	_
+10	Juli	Juli	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	12	nmod	_	start_char=1189|end_char=1193
+11	leicht	leicht	ADJ	ADJD	Degree=Pos	12	advmod	_	start_char=1194|end_char=1200
+12	gestiegen	steigen	ADJ	VVPP	Degree=Pos|VerbForm=Part	0	root	_	SpaceAfter=No|start_char=1201|end_char=1210
+13	.	.	PUNCT	$.	_	12	punct	_	start_char=1210|end_char=1211
+
+# text = Die Bundesagentur für Arbeit in Nürnberg zählte 2,81 Millionen Menschen ohne Job, rund 46.000 mehr als im Vormonat.
+# sent_id = 17
+1	Die	der	DET	ART	Case=Nom|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	2	det	_	start_char=1212|end_char=1215
+2	Bundesagentur	Bundesagentur	PROPN	NN	Case=Nom|Gender=Fem|Number=Sing	7	nsubj	_	start_char=1216|end_char=1229
+3	für	für	ADP	APPR	_	4	case	_	start_char=1230|end_char=1233
+4	Arbeit	Arbeit	PROPN	NN	Case=Acc|Gender=Fem|Number=Sing	2	nmod	_	start_char=1234|end_char=1240
+5	in	in	ADP	APPR	_	6	case	_	start_char=1241|end_char=1243
+6	Nürnberg	Nürnberg	PROPN	NE	Case=Dat|Gender=Neut|Number=Sing	2	nmod	_	start_char=1244|end_char=1252
+7	zählte	zählen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1253|end_char=1259
+8	2,81	2,81	NUM	CARD	NumType=Card	9	nummod	_	start_char=1260|end_char=1264
+9	Millionen	Million	NOUN	NN	Case=Acc|Gender=Fem|Number=Plur	10	nmod	_	start_char=1265|end_char=1274
+10	Menschen	Mensch	NOUN	NN	Case=Acc|Gender=Masc|Number=Plur	7	obj	_	start_char=1275|end_char=1283
+11	ohne	ohne	ADP	APPR	_	12	case	_	start_char=1284|end_char=1288
+12	Job	Job	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	7	obl	_	SpaceAfter=No|start_char=1289|end_char=1292
+13	,	,	PUNCT	$,	_	16	punct	_	start_char=1292|end_char=1293
+14	rund	rund	ADV	ADV	_	15	advmod	_	start_char=1294|end_char=1298
+15	46.000	46.000	NUM	CARD	NumType=Card	16	nummod	_	start_char=1299|end_char=1305
+16	mehr	mehr	ADV	ADV	ExtPos=ADV	7	advmod	_	start_char=1306|end_char=1310
+17	als	als	ADP	KOKOM	_	20	case	_	start_char=1311|end_char=1314
+18-19	im	_	_	_	_	_	_	_	start_char=1315|end_char=1317
+18	in	in	ADP	APPR	_	20	case	_	_
+19	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	20	det	_	_
+20	Vormonat	Vormonat	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	16	nmod	_	SpaceAfter=No|start_char=1318|end_char=1326
+21	.	.	PUNCT	$.	_	7	punct	_	SpacesAfter=\n\n|start_char=1326|end_char=1327
+
+# text = ZÜRICH –
+# sent_id = 18
+1	ZÜRICH	ZÜRICH	PROPN	NE	Case=Nom|Gender=Neut|Number=Sing	0	root	_	start_char=1329|end_char=1335
+2	–	a	PUNCT	$(	_	1	punct	_	start_char=1336|end_char=1337
+
+# text = Der Schweizer Pharmakonzern meldete einen Gewinnrückgang von 4 %.
+# sent_id = 19
+1	Der	der	DET	ART	Case=Nom|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	3	det	_	start_char=1338|end_char=1341
+2	Schweizer	Schweizer	PROPN	ADJA	_	3	amod	_	start_char=1342|end_char=1351
+3	Pharmakonzern	Pharmakonzern	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	4	nsubj	_	start_char=1352|end_char=1365
+4	meldete	melden	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1366|end_char=1373
+5	einen	ein	DET	ART	Case=Acc|Definite=Ind|Gender=Masc|Number=Sing|NumType=Card|PronType=Art	6	det	_	start_char=1374|end_char=1379
+6	Gewinnrückgang	Gewinnrückgang	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	4	obj	_	start_char=1380|end_char=1394
+7	von	von	ADP	APPR	_	9	case	_	start_char=1395|end_char=1398
+8	4	4	NUM	CARD	NumType=Card	9	nummod	_	start_char=1399|end_char=1400
+9	%	%	NOUN	NN	Case=Dat|Gender=Neut|Number=Plur	6	nmod	_	SpaceAfter=No|start_char=1401|end_char=1402
+10	.	.	PUNCT	$.	_	4	punct	_	start_char=1402|end_char=1403
+
+# text = Als Gründe nannte das Unternehmen den starken Franken und auslaufende Patente.
+# sent_id = 20
+1	Als	als	ADP	KOKOM	_	2	case	_	start_char=1404|end_char=1407
+2	Gründe	Grund	NOUN	NN	Case=Acc|Gender=Masc|Number=Plur	3	obl	_	start_char=1408|end_char=1414
+3	nannte	nennen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1415|end_char=1421
+4	das	der	DET	ART	Case=Nom|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	5	det	_	start_char=1422|end_char=1425
+5	Unternehmen	Unternehmen	NOUN	NN	Case=Nom|Gender=Neut|Number=Sing	3	nsubj	_	start_char=1426|end_char=1437
+6	den	der	DET	ART	Case=Acc|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	8	det	_	start_char=1438|end_char=1441
+7	starken	stark	ADJ	ADJA	Case=Acc|Degree=Pos|Gender=Masc|Number=Sing	8	amod	_	start_char=1442|end_char=1449
+8	Franken	Franke	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	3	obj	_	start_char=1450|end_char=1457
+9	und	und	CCONJ	KON	_	11	cc	_	start_char=1458|end_char=1461
+10	auslaufende	auslaufend	ADJ	ADJA	Case=Acc|Degree=Pos|Gender=Neut|Number=Plur	11	amod	_	start_char=1462|end_char=1473
+11	Patente	Patent	NOUN	NN	Case=Acc|Gender=Neut|Number=Plur	8	conj	_	SpaceAfter=No|start_char=1474|end_char=1481
+12	.	.	PUNCT	$.	_	3	punct	_	SpacesAfter=\n|start_char=1481|end_char=1482

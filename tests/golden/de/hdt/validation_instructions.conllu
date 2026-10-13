@@ -1,0 +1,219 @@
+# text = So backen Sie einen einfachen Apfelkuchen:
+# sent_id = 0
+1	So	so	ADV	ADV	Degree=Pos	2	advmod	_	start_char=0|end_char=2
+2	backen	backen	VERB	VVFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=3|end_char=9
+3	Sie	sie	PRON	PPER	Case=Nom|Number=Plur|Person=3|PronType=Prs	2	nsubj	_	start_char=10|end_char=13
+4	einen	ein	DET	ART	Case=Acc|Definite=Ind|Gender=Masc|Number=Sing|NumType=Card|PronType=Art	6	det	_	start_char=14|end_char=19
+5	einfachen	einfach	ADJ	ADJA	Case=Acc|Degree=Pos|Gender=Masc|Number=Sing	6	amod	_	start_char=20|end_char=29
+6	Apfelkuchen:	Apfelkuchen:	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	2	obj	_	SpacesAfter=\n\n|start_char=30|end_char=42
+
+# text = 1. Heizen
+# sent_id = 1
+1	1.	1.	ADJ	ADJA	Gender=Neut|Number=Sing	2	amod	_	start_char=44|end_char=46
+2	Heizen	Heizen	NOUN	NN	Gender=Neut|Number=Sing	0	root	_	start_char=47|end_char=53
+
+# text = Sie den Backofen auf 180 °C (Umluft 160 °C) vor. 2. Schälen
+# sent_id = 2
+1	Sie	sie	PRON	PPER	Case=Nom|Number=Plur|Person=3|PronType=Prs	0	root	_	start_char=54|end_char=57
+2	den	der	DET	ART	Case=Acc|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	3	det	_	start_char=58|end_char=61
+3	Backofen	Backofen	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	1	appos	_	start_char=62|end_char=70
+4	auf	auf	ADP	APPR	AdpType=Prep|Case=Acc	6	case	_	start_char=71|end_char=74
+5	180	180	NUM	CARD	Number=Plur|NumType=Card	6	nummod	_	start_char=75|end_char=78
+6	°C	°C	NOUN	NN	Case=Dat|Gender=Neut|Number=Plur	3	nmod	_	start_char=79|end_char=81
+7	(Umluft	(Umluft	ADP	APPR	AdpType=Prep	9	case	_	start_char=82|end_char=89
+8	160	160	NUM	CARD	Number=Plur|NumType=Card	9	nummod	_	start_char=90|end_char=93
+9	°C)	°C)	NOUN	NN	Gender=Fem|Number=Sing	6	nmod	_	start_char=94|end_char=97
+10	vor.	vor.	ADP	APPR	AdpType=Prep|Case=Dat	12	case	_	SpacesAfter=\n|start_char=98|end_char=102
+11	2.	2.	ADJ	ADJA	Gender=Masc|Number=Sing	12	amod	_	start_char=103|end_char=105
+12	Schälen	Schalen	NOUN	NN	Gender=Fem|Number=Plur	9	nmod	_	start_char=106|end_char=113
+
+# text = Sie vier mittelgroße Äpfel, entfernen Sie das Kerngehäuse und schneiden Sie sie in dünne Spalten.
+# sent_id = 3
+1	Sie	sie	PRON	PPER	Case=Nom|Number=Plur|Person=3|PronType=Prs	6	nsubj	_	start_char=114|end_char=117
+2	vier	vier	NUM	CARD	Number=Plur|NumType=Card	4	nummod	_	start_char=118|end_char=122
+3	mittelgroße	mittelgroße	ADJ	ADJA	Degree=Pos|Gender=Masc|Number=Plur	4	amod	_	start_char=123|end_char=134
+4	Äpfel	Äpfel	NOUN	NN	Gender=Masc|Number=Plur	6	obj	_	SpaceAfter=No|start_char=135|end_char=140
+5	,	,	PUNCT	$,	PunctType=Comm	4	punct	_	start_char=140|end_char=141
+6	entfernen	entfernen	VERB	VVFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=142|end_char=151
+7	Sie	sie	PRON	PPER	Case=Nom|Number=Plur|Person=3|PronType=Prs	6	nsubj	_	start_char=152|end_char=155
+8	das	der	DET	ART	Case=Acc|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	9	det	_	start_char=156|end_char=159
+9	Kerngehäuse	Kerngehäuse	NOUN	NN	Case=Acc|Gender=Neut|Number=Sing	6	obj	_	start_char=160|end_char=171
+10	und	und	CCONJ	KON	_	11	cc	_	start_char=172|end_char=175
+11	schneiden	schneiden	VERB	VVFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	6	conj	_	start_char=176|end_char=185
+12	Sie	sie	PRON	PPER	Case=Nom|Number=Plur|Person=3|PronType=Prs	11	obj	_	start_char=186|end_char=189
+13	sie	sie	PRON	PPER	Case=Acc|Number=Plur|Person=3|PronType=Prs	11	obj	_	start_char=190|end_char=193
+14	in	in	ADP	APPR	AdpType=Prep|Case=Acc	16	case	_	start_char=194|end_char=196
+15	dünne	dünn	ADJ	ADJA	Case=Acc|Degree=Pos|Gender=Fem|Number=Plur	16	amod	_	start_char=197|end_char=202
+16	Spalten.	Spalten.	NOUN	NN	Case=Acc|Gender=Fem|Number=Plur	11	obl	_	SpacesAfter=\n|start_char=203|end_char=211
+
+# text = 3. Verrühren Sie 200 g Mehl, 100 g Zucker, 125 g weiche Butter, 2 Eier und 1 Päckchen Backpulver zu einem glatten Teig. 4. Füllen Sie den Teig in eine gefettete Springform (Ø 26 cm) und verteilen Sie die Äpfel darauf. 5. Backen Sie den Kuchen etwa 45 Minuten lang. Machen Sie die Stäbchenprobe!
+# sent_id = 4
+1	3.	3.	ADJ	ADJA	_	2	nsubj	_	start_char=212|end_char=214
+2	Verrühren	verrühren	VERB	VVFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=215|end_char=224
+3	Sie	sie	PRON	PPER	Case=Nom|Number=Plur|Person=3|PronType=Prs	2	nsubj	_	start_char=225|end_char=228
+4	200	200	NUM	CARD	Number=Plur|NumType=Card	5	nummod	_	start_char=229|end_char=232
+5	g	g	NOUN	NN	Gender=Neut|Number=Plur	2	obj	_	start_char=233|end_char=234
+6	Mehl	Mehl	NOUN	NN	Gender=Neut|Number=Sing	5	appos	_	SpaceAfter=No|start_char=235|end_char=239
+7	,	,	PUNCT	$,	PunctType=Comm	9	punct	_	start_char=239|end_char=240
+8	100	100	NUM	CARD	Number=Plur|NumType=Card	9	nummod	_	start_char=241|end_char=244
+9	g	g	NOUN	NN	Gender=Neut|Number=Plur	5	conj	_	start_char=245|end_char=246
+10	Zucker	Zucker	NOUN	NN	Gender=Masc|Number=Sing	9	appos	_	SpaceAfter=No|start_char=247|end_char=253
+11	,	,	PUNCT	$,	PunctType=Comm	15	punct	_	start_char=253|end_char=254
+12	125	125	NUM	CARD	Number=Plur|NumType=Card	13	nummod	_	start_char=255|end_char=258
+13	g	g	NOUN	NN	Gender=Neut|Number=Plur	5	conj	_	start_char=259|end_char=260
+14	weiche	weich	ADJ	ADJA	Degree=Pos|Gender=Fem|Number=Plur	15	amod	_	start_char=261|end_char=267
+15	Butter	Butter	NOUN	NN	Gender=Fem|Number=Sing	5	conj	_	SpaceAfter=No|start_char=268|end_char=274
+16	,	,	PUNCT	$,	PunctType=Comm	18	punct	_	start_char=274|end_char=275
+17	2	2	NUM	CARD	Number=Plur|NumType=Card	18	nummod	_	start_char=276|end_char=277
+18	Eier	Ei	NOUN	NN	Gender=Masc|Number=Plur	5	conj	_	start_char=278|end_char=282
+19	und	und	CCONJ	KON	_	21	cc	_	start_char=283|end_char=286
+20	1	1	NUM	CARD	Number=Sing|NumType=Card	21	nummod	_	start_char=287|end_char=288
+21	Päckchen	Päckchen	NOUN	NN	Gender=Neut|Number=Sing	5	conj	_	start_char=289|end_char=297
+22	Backpulver	Backpulver	NOUN	NN	Gender=Neut|Number=Sing	21	appos	_	start_char=298|end_char=308
+23	zu	zu	ADP	APPR	AdpType=Prep|Case=Dat	26	case	_	start_char=309|end_char=311
+24	einem	ein	DET	ART	Case=Dat|Definite=Ind|Gender=Masc|Number=Sing|NumType=Card|PronType=Art	26	det	_	start_char=312|end_char=317
+25	glatten	glatt	ADJ	ADJA	Case=Dat|Degree=Pos|Number=Sing	26	amod	_	start_char=318|end_char=325
+26	Teig.	Teig.	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	2	obl	_	SpacesAfter=\n|start_char=326|end_char=331
+27	4.	4.	ADJ	ADJA	_	26	appos	_	start_char=332|end_char=334
+28	Füllen	füllen	VERB	VVFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	2	conj	_	start_char=335|end_char=341
+29	Sie	sie	PRON	PPER	Case=Nom|Number=Plur|Person=3|PronType=Prs	28	nsubj	_	start_char=342|end_char=345
+30	den	der	DET	ART	Case=Acc|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	31	det	_	start_char=346|end_char=349
+31	Teig	Teig	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	28	obj	_	start_char=350|end_char=354
+32	in	in	ADP	APPR	AdpType=Prep|Case=Acc	35	case	_	start_char=355|end_char=357
+33	eine	ein	DET	ART	Case=Acc|Definite=Ind|Gender=Fem|Number=Sing|NumType=Card|PronType=Art	35	det	_	start_char=358|end_char=362
+34	gefettete	fetten	ADJ	ADJA	Case=Acc|Degree=Pos|Gender=Fem|Number=Sing	35	amod	_	start_char=363|end_char=372
+35	Springform	Springform	NOUN	NN	Case=Acc|Gender=Fem|Number=Sing	28	obl	_	start_char=373|end_char=383
+36	(Ø	(Ø	PROPN	NE	_	35	flat:name	_	start_char=384|end_char=386
+37	26	26	NUM	CARD	Number=Plur|NumType=Card	38	nummod	_	start_char=387|end_char=389
+38	cm)	cm)	NOUN	NN	Gender=Masc|Number=Plur	35	appos	_	start_char=390|end_char=393
+39	und	und	CCONJ	KON	_	40	cc	_	start_char=394|end_char=397
+40	verteilen	verteilen	VERB	VVFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	28	conj	_	start_char=398|end_char=407
+41	Sie	sie	PRON	PPER	Case=Nom|Number=Plur|Person=3|PronType=Prs	40	nsubj	_	start_char=408|end_char=411
+42	die	der	DET	ART	Case=Acc|Definite=Def|Gender=Masc|Number=Plur|PronType=Art	43	det	_	start_char=412|end_char=415
+43	Äpfel	Äpfel	NOUN	NN	Case=Acc|Gender=Masc|Number=Plur	40	obj	_	start_char=416|end_char=421
+44	darauf.	darauf.	ADP	APPR	AdpType=Prep|Case=Dat	46	case	_	SpacesAfter=\n|start_char=422|end_char=429
+45	5.	5.	ADJ	ADJA	_	46	amod	_	start_char=430|end_char=432
+46	Backen	Backen	NOUN	NN	Gender=Neut|Number=Plur	40	obl	_	start_char=433|end_char=439
+47	Sie	sie	PRON	PPER	Case=Nom|Number=Plur|Person=3|PronType=Prs	46	flat:name	_	start_char=440|end_char=443
+48	den	der	DET	ART	Case=Acc|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	49	det	_	start_char=444|end_char=447
+49	Kuchen	Kuchen	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	40	obj	_	start_char=448|end_char=454
+50	etwa	etwa	ADV	ADV	_	51	advmod	_	start_char=455|end_char=459
+51	45	45	NUM	CARD	Number=Plur|NumType=Card	52	nummod	_	start_char=460|end_char=462
+52	Minuten	Minute	NOUN	NN	Gender=Fem|Number=Plur	54	obj	_	start_char=463|end_char=470
+53	lang.	lang.	PROPN	NE	_	52	appos	_	start_char=471|end_char=476
+54	Machen	machen	VERB	VVFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	2	conj	_	start_char=477|end_char=483
+55	Sie	sie	PRON	PPER	Case=Nom|Number=Plur|Person=3|PronType=Prs	54	nsubj	_	start_char=484|end_char=487
+56	die	der	DET	ART	Case=Acc|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	57	det	_	start_char=488|end_char=491
+57	Stäbchenprobe!	Stäbchenprobe!	NOUN	NN	Case=Acc|Gender=Fem|Number=Sing	54	obj	_	SpacesAfter=\n\n|start_char=492|end_char=506
+
+# text = Hinweis: Statt Äpfeln können Sie auch Birnen oder Pflaumen verwenden.
+# sent_id = 5
+1	Hinweis:	unknown	NOUN	NN	Gender=Masc|Number=Sing	10	obj	_	start_char=508|end_char=516
+2	Statt	statt	ADP	APPR	AdpType=Prep	3	case	_	start_char=517|end_char=522
+3	Äpfeln	Äpfel	NOUN	NN	Case=Dat|Gender=Masc|Number=Plur	1	nmod	_	start_char=523|end_char=529
+4	können	können	AUX	VMFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin|VerbType=Mod	10	aux	_	start_char=530|end_char=536
+5	Sie	sie	PRON	PPER	Case=Nom|Number=Plur|Person=3|PronType=Prs	10	nsubj	_	start_char=537|end_char=540
+6	auch	auch	ADV	ADV	_	7	advmod	_	start_char=541|end_char=545
+7	Birnen	Birna	NOUN	NN	Gender=Fem|Number=Plur	10	obj	_	start_char=546|end_char=552
+8	oder	oder	CCONJ	KON	_	9	cc	_	start_char=553|end_char=557
+9	Pflaumen	Pflaumen	NOUN	NN	Gender=Fem|Number=Plur	7	conj	_	start_char=558|end_char=566
+10	verwenden	verwenden	VERB	VVINF	VerbForm=Inf	0	root	_	SpaceAfter=No|start_char=567|end_char=576
+11	.	.	PUNCT	$.	PunctType=Peri	10	punct	_	SpacesAfter=\n\n|start_char=576|end_char=577
+
+# text = Installation der Software
+# sent_id = 6
+1	Installation	Installation	NOUN	NN	Gender=Fem|Number=Sing	0	root	_	start_char=579|end_char=591
+2	der	der	DET	ART	Case=Gen|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	3	det	_	start_char=592|end_char=595
+3	Software	Software	NOUN	NN	Case=Gen|Gender=Fem|Number=Sing	1	nmod	_	SpacesAfter=\n\n|start_char=596|end_char=604
+
+# text = Laden
+# sent_id = 7
+1	Laden	Laden	NOUN	NN	Gender=Neut|Number=Sing	0	root	_	start_char=606|end_char=611
+
+# text = Sie zuerst das Installationsprogramm herunter. Öffnen Sie danach die Datei setup.exe und folgen Sie den Anweisungen auf dem Bildschirm. Starten Sie den Computer neu, wenn Sie dazu aufgefordert werden.
+# sent_id = 8
+1	Sie	sie	PRON	PPER	Case=Nom|Number=Plur|Person=3|PronType=Prs	6	nsubj	_	start_char=612|end_char=615
+2	zuerst	zuerst	ADV	ADV	_	6	advmod	_	start_char=616|end_char=622
+3	das	der	DET	ART	Case=Acc|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	4	det	_	start_char=623|end_char=626
+4	Installationsprogramm	Installationsprogramm	NOUN	NN	Case=Acc|Gender=Neut|Number=Sing	6	obj	_	start_char=627|end_char=648
+5	herunter.	herunter.	ADV	ADV	_	4	advmod	_	start_char=649|end_char=658
+6	Öffnen	Öffnen	VERB	VVFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=659|end_char=665
+7	Sie	sie	PRON	PPER	Case=Nom|Number=Plur|Person=3|PronType=Prs	6	nsubj	_	start_char=666|end_char=669
+8	danach	danach	ADV	PROAV	_	6	advmod	_	start_char=670|end_char=676
+9	die	der	DET	ART	Case=Acc|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	10	det	_	start_char=677|end_char=680
+10	Datei	Datei	NOUN	NN	Case=Acc|Gender=Fem|Number=Sing	6	obj	_	start_char=681|end_char=686
+11	setup.exe	setup.exe	PROPN	NE	_	10	flat:name	_	start_char=687|end_char=696
+12	und	und	CCONJ	KON	_	13	cc	_	start_char=697|end_char=700
+13	folgen	folgen	VERB	VVFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	6	conj	_	start_char=701|end_char=707
+14	Sie	sie	PRON	PPER	Case=Nom|Number=Plur|Person=3|PronType=Prs	13	nsubj	_	start_char=708|end_char=711
+15	den	der	DET	ART	Case=Dat|Definite=Def|Gender=Fem|Number=Plur|PronType=Art	16	det	_	start_char=712|end_char=715
+16	Anweisungen	Anweisung	NOUN	NN	Case=Dat|Gender=Fem|Number=Plur	13	obl:arg	_	start_char=716|end_char=727
+17	auf	auf	ADP	APPR	AdpType=Prep|Case=Dat	19	case	_	start_char=728|end_char=731
+18	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	19	det	_	start_char=732|end_char=735
+19	Bildschirm.	Bildschirm.	NOUN	NN	Case=Dat|Number=Sing	16	nmod	_	start_char=736|end_char=747
+20	Starten	starten	VERB	VVFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	6	conj	_	start_char=748|end_char=755
+21	Sie	sie	PRON	PPER	Case=Nom|Number=Plur|Person=3|PronType=Prs	20	nsubj	_	start_char=756|end_char=759
+22	den	der	DET	ART	Case=Acc|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	23	det	_	start_char=760|end_char=763
+23	Computer	Computer	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	20	obj	_	start_char=764|end_char=772
+24	neu	neu	ADJ	ADJD	Degree=Pos|Variant=Short	20	advmod	_	SpaceAfter=No|start_char=773|end_char=776
+25	,	,	PUNCT	$,	PunctType=Comm	29	punct	_	start_char=776|end_char=777
+26	wenn	wenn	SCONJ	KOUS	_	29	mark	_	start_char=778|end_char=782
+27	Sie	sie	PRON	PPER	Case=Nom|Number=Plur|Person=3|PronType=Prs	29	nsubj:pass	_	start_char=783|end_char=786
+28	dazu	dazu	ADV	PROAV	PronType=Dem	29	advmod	_	start_char=787|end_char=791
+29	aufgefordert	auffordern	VERB	VVPP	Aspect=Perf|VerbForm=Part	20	advcl	_	start_char=792|end_char=804
+30	werden	werden	AUX	VAFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	29	aux:pass	_	SpaceAfter=No|start_char=805|end_char=811
+31	.	.	PUNCT	$.	PunctType=Peri	6	punct	_	SpacesAfter=\n\n|start_char=811|end_char=812
+
+# text = Achtung:
+# sent_id = 9
+1	Achtung:	Achtung:	PROPN	NE	_	0	root	_	start_char=814|end_char=822
+
+# text = Ziehen Sie vor der Reinigung immer den Netzstecker! Verwenden Sie keine scharfen Reinigungsmittel und tauchen Sie das Gerät nicht in Wasser.
+# sent_id = 10
+1	Ziehen	ziehen	VERB	VVFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	9	xcomp	_	start_char=823|end_char=829
+2	Sie	sie	PRON	PPER	Case=Nom|Number=Plur|Person=3|PronType=Prs	1	nsubj	_	start_char=830|end_char=833
+3	vor	vor	ADP	APPR	AdpType=Prep|Case=Dat	5	case	_	start_char=834|end_char=837
+4	der	der	DET	ART	Case=Dat|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	5	det	_	start_char=838|end_char=841
+5	Reinigung	Reinigung	NOUN	NN	Case=Dat|Gender=Fem|Number=Sing	1	obl	_	start_char=842|end_char=851
+6	immer	immer	ADV	ADV	_	1	advmod	_	start_char=852|end_char=857
+7	den	der	DET	ART	Case=Acc|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	8	det	_	start_char=858|end_char=861
+8	Netzstecker!	Netzstecker!	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	1	obj	_	start_char=862|end_char=874
+9	Verwenden	verwenden	VERB	VVFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=875|end_char=884
+10	Sie	sie	PRON	PPER	Case=Nom|Number=Plur|Person=3|PronType=Prs	9	nsubj	_	start_char=885|end_char=888
+11	keine	kein	DET	PIAT	Case=Acc|Number=Plur|PronType=Neg	13	det	_	start_char=889|end_char=894
+12	scharfen	scharf	ADJ	ADJA	Degree=Pos|Gender=Neut|Number=Plur	13	amod	_	start_char=895|end_char=903
+13	Reinigungsmittel	Reinigungsmittel	NOUN	NN	Gender=Neut|Number=Plur	9	obj	_	start_char=904|end_char=920
+14	und	und	CCONJ	KON	_	15	cc	_	start_char=921|end_char=924
+15	tauchen	tauchen	VERB	VVFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	9	conj	_	start_char=925|end_char=932
+16	Sie	sie	PRON	PPER	Case=Nom|Number=Plur|Person=3|PronType=Prs	15	obj	_	start_char=933|end_char=936
+17	das	der	DET	ART	Case=Acc|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	18	det	_	start_char=937|end_char=940
+18	Gerät	Gerät	NOUN	NN	Case=Acc|Gender=Neut|Number=Sing	15	obj	_	start_char=941|end_char=946
+19	nicht	nicht	PART	PTKNEG	Polarity=Neg	15	advmod	_	start_char=947|end_char=952
+20	in	in	ADP	APPR	AdpType=Prep|Case=Dat	21	case	_	start_char=953|end_char=955
+21	Wasser.	Wasser.	NOUN	NN	Case=Dat|Gender=Neut|Number=Sing	15	obl	_	SpacesAfter=\n\n|start_char=956|end_char=963
+
+# text = Bei Problemen wenden Sie sich bitte an unseren Kundendienst unter 0800 123 456 (Mo.–Fr. 8–18 Uhr) oder schreiben Sie an support@beispiel.de.
+# sent_id = 11
+1	Bei	bei	ADP	APPR	AdpType=Prep|Case=Dat	2	case	_	start_char=965|end_char=968
+2	Problemen	Problem	NOUN	NN	Case=Dat|Gender=Neut|Number=Plur	3	obl	_	start_char=969|end_char=978
+3	wenden	wenden	VERB	VVFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=979|end_char=985
+4	Sie	sie	PRON	PPER	Case=Nom|Number=Plur|Person=3|PronType=Prs	3	nsubj	_	start_char=986|end_char=989
+5	sich	sich	PRON	PRF	Case=Acc|Person=3|PronType=Prs|Reflex=Yes	3	expl:pv	_	start_char=990|end_char=994
+6	bitte	bitte	INTJ	ITJ	_	3	advmod	_	start_char=995|end_char=1000
+7	an	an	ADP	APPR	AdpType=Prep|Case=Acc	9	case	_	start_char=1001|end_char=1003
+8	unseren	unser	DET	PPOSAT	Case=Acc|Gender=Masc|Number=Sing|Number[psor]=Plur|Person=1|Poss=Yes|PronType=Prs	9	det	_	start_char=1004|end_char=1011
+9	Kundendienst	Kundendienst	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	3	obl	_	start_char=1012|end_char=1024
+10	unter	unter	ADP	APPR	AdpType=Prep|Case=Dat	11	case	_	start_char=1025|end_char=1030
+11	0800	0800	NUM	CARD	Number=Plur|NumType=Card	9	nmod	_	start_char=1031|end_char=1035
+12	123	123	NUM	CARD	Number=Plur|NumType=Card	11	flat	_	start_char=1036|end_char=1039
+13	456	456	NUM	CARD	Number=Plur|NumType=Card	11	flat	_	start_char=1040|end_char=1043
+14	(Mo.	unknown	NOUN	NN	_	11	appos	_	SpaceAfter=No|start_char=1044|end_char=1048
+15	–Fr.	–Fr.	X	FM	Foreign=Yes	14	appos	_	start_char=1048|end_char=1052
+16	8–18	8–18	NUM	CARD	Number=Plur|NumType=Card	15	flat	_	start_char=1053|end_char=1057
+17	Uhr)	Uhr)	NOUN	NN	Gender=Fem|Number=Sing	15	appos	_	start_char=1058|end_char=1062
+18	oder	oder	CCONJ	KON	_	19	cc	_	start_char=1063|end_char=1067
+19	schreiben	schreiben	VERB	VVFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	3	conj	_	start_char=1068|end_char=1077
+20	Sie	sie	PRON	PPER	Case=Nom|Number=Plur|Person=3|PronType=Prs	19	obj	_	start_char=1078|end_char=1081
+21	an	an	ADP	APPR	AdpType=Prep|Case=Dat	22	case	_	start_char=1082|end_char=1084
+22	support@beispiel.de	support@beispiel.de	PROPN	NE	Number=Sing	19	obl	_	SpaceAfter=No|start_char=1085|end_char=1104
+23	.	.	PUNCT	$.	PunctType=Peri	3	punct	_	SpacesAfter=\n|start_char=1104|end_char=1105
