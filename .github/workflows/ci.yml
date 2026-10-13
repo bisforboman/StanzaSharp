@@ -5,10 +5,11 @@ on:
     branches: [main]
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
-  workflow_call: # release.yml runs the same checks before publishing
+  workflow_call: # release.yml waits for main's run of the commit; only without one does it call this
 
 # A newer push to the same pull request or to main cancels the run still going (GitHub-hosted runners allow 20
-# concurrent jobs, 5 on macOS, and back-to-back merges each start the full suite). release.yml's call has its own
+# concurrent jobs, 5 on macOS, and back-to-back merges each start the full suite). A release whose main run was cancelled
+# this way fails and says to re-run that run (release.yml). release.yml's fallback call has its own
 # group (github.workflow is the caller's name there), so it and main's own run never cancel each other, and a release
 # check is never cancelled.
 concurrency:
@@ -18,6 +19,11 @@ concurrency:
 env:
   DOTNET_NOLOGO: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
+  # The test classes of shards 2 and 3 (golden-shard and cross-os-shard); shard 1 runs the complement. See golden-shard.
+  SHARD_TWO: >-
+    .ConcurrencyTests.ConcurrentCalls_ .FastPackageTests. .GcPressureTests. .ManagedBackendTests. .TokenizerTests.
+    .CompareCommandTests. .BenchmarkCommandTests.
+  SHARD_THREE: .PipelineTests. .NerTests. .SentimentTests. .InputModeTests. .DepparseTests. .NoSsplitTests.
 
 jobs:
   # Everything builds and tests in Release: the managed backend's kernels are many times slower in Debug, which once
@@ -192,12 +198,9 @@ jobs:
         env:
           STANZASHARP_PYTHON: ${{ matrix.shard == 2 && steps.python.outputs.python-path || '' }}
         run: |
-          two='.ConcurrencyTests.ConcurrentCalls_ .FastPackageTests. .GcPressureTests. .ManagedBackendTests. .TokenizerTests.
-            .CompareCommandTests. .BenchmarkCommandTests.'
-          three='.PipelineTests. .NerTests. .SentimentTests. .InputModeTests. .DepparseTests. .NoSsplitTests.'
           any() { printf 'FullyQualifiedName~%s|' $1 | sed 's/|$//'; }
           none() { printf 'FullyQualifiedName!~%s&' $1 | sed 's/&$//'; }
-          case ${{ matrix.shard }} in 1) filter=$(none "$two $three");; 2) filter=$(any "$two");; 3) filter=$(any "$three");; esac
+          case ${{ matrix.shard }} in 1) filter=$(none "$SHARD_TWO $SHARD_THREE");; 2) filter=$(any "$SHARD_TWO");; 3) filter=$(any "$SHARD_THREE");; esac
           if [ "${{ needs.changes.outputs.torch }}" = smoke ]; then
             filter="($filter)&((DisplayName!~managed: False&Backend!=TorchSharp)|Smoke=TorchSharp)"
           fi
@@ -396,16 +399,22 @@ jobs:
   # Windows (x64 and Arm64) and macOS (Apple Silicon): the full suite and the package check against Stanza's .pt files.
   # On Windows Arm64, Directory.Build.props adds libtorch-cpu-win-arm64 to the tests (TorchSharp-cpu lacks it).
   # golden stays the reference run; only it converts the models (Python) and compares .pt with converted.
-  # A separate job, not a matrix over build-test/golden, so those two keep their check names (required on main).
   # No NuGet cache here: TorchSharp-cpu pulls all three libtorch builds, and the repository's 10 GB cache
   # budget goes to the models.
-  cross-os:
+  # Split like golden-shard, with the same filters (owner's decision, 2026-10-13). As one job per OS the full suite took
+  # 29 (windows-2025), 40 (macos-26) and 61 min (windows-11-arm) of tests, mostly ConcurrencyTests' two halves, which xunit
+  # runs one test at a time after everything else (7.6 + 7.6, 11.8 + 11.4 and 25.4 + 17.6 min); shards 1 and 2 now run
+  # them side by side. A light run (a ready PR) stays one job per OS, shard 1 with the light filter: its subset is mostly
+  # PipelineTests, one class, which doesn't split. Three macOS shards plus benchmark.yml's two stay within the 5
+  # concurrent macOS jobs of free runners.
+  cross-os-shard:
     needs: changes
     if: ${{ !cancelled() }}
     strategy:
       fail-fast: false
       matrix:
         os: [windows-2025, macos-26, windows-11-arm]
+        shard: ${{ fromJSON(needs.changes.outputs.level == 'light' && '[1]' || '[1, 2, 3]') }}
     timeout-minutes: 90
     runs-on: ${{ matrix.os }}
     defaults:
@@ -423,6 +432,7 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
+      # Every shard may save it: on a miss the first to finish saves, the others' saves are no-ops.
       - uses: actions/cache@v6
         if: needs.changes.outputs.code != 'false'
         id: models
@@ -460,13 +470,18 @@ jobs:
           dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/en
           dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/en --package default_fast
 
-      # A ready pull request runs the subset (level light); main and releases run everything.
+      # A ready pull request runs the subset (level light, one shard); main and releases run everything in three.
       - name: Test
         if: needs.changes.outputs.code != 'false'
-        run: >
-          dotnet test StanzaSharp.slnx -c Release --no-build --blame-hang-timeout 30m --blame-hang-dump-type none
-          --logger trx --results-directory TestResults
-          ${{ needs.changes.outputs.level == 'light' && '--filter "FullyQualifiedName~PipelineTests|FullyQualifiedName~ManagedBackendTests|FullyQualifiedName~ManagedCheckTests"' || '' }}
+        run: |
+          any() { printf 'FullyQualifiedName~%s|' $1 | sed 's/|$//'; }
+          none() { printf 'FullyQualifiedName!~%s&' $1 | sed 's/&$//'; }
+          case ${{ matrix.shard }} in 1) filter=$(none "$SHARD_TWO $SHARD_THREE");; 2) filter=$(any "$SHARD_TWO");; 3) filter=$(any "$SHARD_THREE");; esac
+          if [ "${{ needs.changes.outputs.level }}" = light ]; then
+            filter='FullyQualifiedName~PipelineTests|FullyQualifiedName~ManagedBackendTests|FullyQualifiedName~ManagedCheckTests'
+          fi
+          echo "$filter"
+          dotnet test StanzaSharp.slnx -c Release --no-build --blame-hang-timeout 30m --blame-hang-dump-type none --logger trx --results-directory TestResults --filter "$filter"
 
       - name: Check that no test was skipped
         if: needs.changes.outputs.code != 'false'
@@ -477,22 +492,46 @@ jobs:
             echo "::error::Tests were skipped; the models in models/stanza/en were not found."
             exit 1
           fi
+          if ! grep -q '<UnitTestResult ' TestResults/*.trx; then echo "::error::No test ran."; exit 1; fi
 
+      # The package checks run in one shard per OS (3, the shortest on Windows) and never on light runs.
       # The TorchSharp backend as its users install it (StanzaSharp + TorchSharp-cpu). TorchSharp-cpu has no Windows Arm64
       # libtorch, so not there.
       - name: Verify the package
-        if: needs.changes.outputs.code != 'false' && needs.changes.outputs.level != 'light' && (runner.os != 'Windows' || runner.arch != 'ARM64')
+        if: needs.changes.outputs.code != 'false' && needs.changes.outputs.level != 'light' && matrix.shard == 3 && (runner.os != 'Windows' || runner.arch != 'ARM64')
         shell: pwsh
         run: ./tools/verify-package.ps1 -ModelDir models/stanza/en
 
       # The default install: only StanzaSharp, no libtorch; the default (managed) backend must run without it.
       - name: Verify the package without libtorch (managed backend)
-        if: needs.changes.outputs.code != 'false' && needs.changes.outputs.level != 'light'
+        if: needs.changes.outputs.code != 'false' && needs.changes.outputs.level != 'light' && matrix.shard == 3
         shell: pwsh
         run: ./tools/verify-package.ps1 -ModelDir models/stanza/en -Managed
 
       - uses: actions/upload-artifact@v7
         if: always() && needs.changes.outputs.code != 'false'
         with:
-          name: test-results-${{ matrix.os }}
+          name: test-results-${{ matrix.os }}-${{ matrix.shard }}
           path: TestResults/*.trx
+
+  # The checks branch protection requires, cross-os (<os>): each passes only if every shard of its OS passed. The needs
+  # result covers all nine shards, so when it isn't success this asks the API for this run's shard jobs of its OS (each
+  # job's latest attempt): a failure on one OS fails only that OS's check. No shard found fails too.
+  cross-os:
+    needs: cross-os-shard
+    if: ${{ !cancelled() }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2025, macos-26, windows-11-arm]
+    runs-on: ubuntu-26.04
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "cross-os-shard: ${{ needs.cross-os-shard.result }}"
+          if [ "${{ needs.cross-os-shard.result }}" = success ]; then exit 0; fi
+          gh api --paginate "repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs" \
+            --jq '.jobs[] | select(.name | startswith("cross-os-shard (${{ matrix.os }},")) | "\(.name): \(.conclusion)"' > shards.txt
+          cat shards.txt
+          test -s shards.txt && ! grep -qv ': success$' shards.txt
