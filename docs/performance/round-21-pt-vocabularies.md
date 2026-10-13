@@ -82,4 +82,5 @@ to both directories.
   memo still hits the JSON cap.
 - Found on the way (not changed): a converted `.json` with invalid UTF-8 in a property name loads, and reading that
   object later throws `InvalidOperationException` (System.Text.Json parses lazily). The contract leaves the model
-  code's reading of the JSON out; the harness reads vocabularies only for `.pt` files.
+  code's reading of the JSON out; the harness reads vocabularies only for `.pt` files. Fixed afterwards (#94):
+  `Checkpoint.Load` rejects such a file, and the harness reads every load's names, strings and vocabularies.
