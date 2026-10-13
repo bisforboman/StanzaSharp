@@ -1,0 +1,40 @@
+[
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "Schweiz",
+   "type": "LOC",
+   "start_char": 235,
+   "end_char": 242
+  },
+  {
+   "text": "Frankreich",
+   "type": "LOC",
+   "start_char": 278,
+   "end_char": 288
+  }
+ ],
+ [],
+ [
+  {
+   "text": "deutsche",
+   "type": "LOC",
+   "start_char": 419,
+   "end_char": 427
+  },
+  {
+   "text": "englische",
+   "type": "MISC",
+   "start_char": 448,
+   "end_char": 457
+  }
+ ],
+ [],
+ [],
+ []
+]

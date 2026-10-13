@@ -98,18 +98,36 @@ public class CompareCommandTests
     /// compare.py's resources.json entry must be the Stanza release whose models ModelDownloader pins. After a Stanza
     /// version change, regenerate it as CLAUDE.md says (StanzaSharp.Tool, compare).
     /// </summary>
-    [Fact]
-    public void EmbeddedResources_MatchModelDownloader()
+    [Theory]
+    [InlineData("en")]
+    [InlineData("de")]
+    public void EmbeddedResources_MatchModelDownloader(string language)
     {
-        using var resource = typeof(CompareCommand).Assembly.GetManifestResourceStream("stanza_resources_en.json")!;
+        using var resource = typeof(CompareCommand).Assembly.GetManifestResourceStream($"stanza_resources_{language}.json")!;
         using var json = JsonDocument.Parse(resource);
         Assert.Equal(ModelDownloader.StanzaVersion, json.RootElement.GetProperty("stanza_version").GetString());
-        var en = json.RootElement.GetProperty("en");
-        foreach (var (path, md5) in ModelDownloader.Files)
+        var resources = json.RootElement.GetProperty(language);
+        foreach (var (path, md5) in ModelDownloader.Files[language])
         {
             var (processor, name) = (path.Split('/')[0], Path.GetFileNameWithoutExtension(path));
-            var listed = en.TryGetProperty(processor, out var models) && models.TryGetProperty(name, out var model) ? model.GetProperty("md5").GetString() : null;
-            Assert.True(md5 == listed, $"{path}: stanza_resources_en.json lists MD5 {listed ?? "(none)"}, ModelDownloader.Files {md5}");
+            var listed = resources.TryGetProperty(processor, out var models) && models.TryGetProperty(name, out var model) ? model.GetProperty("md5").GetString() : null;
+            Assert.True(md5 == listed, $"{path}: stanza_resources_{language}.json lists MD5 {listed ?? "(none)"}, ModelDownloader.Files {md5}");
+        }
+
+        // Each package's models are Stanza's, and each model's shared files are its resources.json dependencies.
+        foreach (var (package, models) in Pipeline.Packages[language])
+        {
+            var stanza = resources.GetProperty("packages").GetProperty(package);
+            Assert.Equal(stanza.EnumerateObject().Select(p => p.Name).Where(p => p != "optional").Order(), models.Keys.Order());
+            foreach (var (processor, name) in models)
+            {
+                Assert.Equal(stanza.GetProperty(processor).GetString(), name);
+                var model = resources.GetProperty(processor).GetProperty(name);
+                var dependencies = model.TryGetProperty("dependencies", out var d)
+                    ? d.EnumerateArray().Select(x => $"{x.GetProperty("model").GetString()}/{x.GetProperty("package").GetString()}").Order().ToList()
+                    : [];
+                Assert.Equal(dependencies, Pipeline.SharedModels(new Dictionary<string, string> { [processor] = name }, language).Order());
+            }
         }
     }
 }

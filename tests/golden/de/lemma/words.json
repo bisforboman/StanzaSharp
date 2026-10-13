@@ -1,0 +1,218 @@
+[
+ {
+  "word": "ging",
+  "upos": "VERB",
+  "lemma": "gehen",
+  "seq2seq": "gehen",
+  "edit": 0,
+  "model": "gehen"
+ },
+ {
+  "word": "ging",
+  "upos": "NOUN",
+  "lemma": "gehen",
+  "seq2seq": "gehen",
+  "edit": 0,
+  "model": "gehen"
+ },
+ {
+  "word": "war",
+  "upos": "AUX",
+  "lemma": "sein",
+  "seq2seq": "sein",
+  "edit": 0,
+  "model": "sein"
+ },
+ {
+  "word": "Kinder",
+  "upos": "NOUN",
+  "lemma": "Kind",
+  "seq2seq": "Kind",
+  "edit": 0,
+  "model": "Kind"
+ },
+ {
+  "word": "besser",
+  "upos": "ADJ",
+  "lemma": "gut",
+  "seq2seq": "gut",
+  "edit": 0,
+  "model": "gut"
+ },
+ {
+  "word": "Häuser",
+  "upos": "NOUN",
+  "lemma": "Haus",
+  "seq2seq": "Haus",
+  "edit": 0,
+  "model": "Haus"
+ },
+ {
+  "word": "Straßen",
+  "upos": "NOUN",
+  "lemma": "Straße",
+  "seq2seq": "Straße",
+  "edit": 0,
+  "model": "Straße"
+ },
+ {
+  "word": "STRASSEN",
+  "upos": "NOUN",
+  "lemma": "STRAs",
+  "seq2seq": "STRAs",
+  "edit": 0,
+  "model": "STRAs"
+ },
+ {
+  "word": "Fußballweltmeisterschaften",
+  "upos": "NOUN",
+  "lemma": "Fußballweltmeisterschaft",
+  "seq2seq": "Fußballweltmeisterschaft",
+  "edit": 0,
+  "model": "Fußballweltmeisterschaft"
+ },
+ {
+  "word": "googelte",
+  "upos": "VERB",
+  "lemma": "googeln",
+  "seq2seq": "googeln",
+  "edit": 0,
+  "model": "googeln"
+ },
+ {
+  "word": "gefrühstückt",
+  "upos": "VERB",
+  "lemma": "frühstücken",
+  "seq2seq": "frühstücken",
+  "edit": 0,
+  "model": "frühstücken"
+ },
+ {
+  "word": "zerfledderten",
+  "upos": "ADJ",
+  "lemma": "zerfleddern",
+  "seq2seq": "zerfleddert",
+  "edit": 0,
+  "model": "zerfleddert"
+ },
+ {
+  "word": "Müllers",
+  "upos": "PROPN",
+  "lemma": "Müllers",
+  "seq2seq": "Müllers",
+  "edit": 1,
+  "model": "Müllers"
+ },
+ {
+  "word": "Zürichs",
+  "upos": "PROPN",
+  "lemma": "Zürichs",
+  "seq2seq": "Zürichs",
+  "edit": 1,
+  "model": "Zürichs"
+ },
+ {
+  "word": "naïven",
+  "upos": "ADJ",
+  "lemma": "naïven",
+  "seq2seq": "naïven",
+  "edit": 0,
+  "model": "naïven"
+ },
+ {
+  "word": "東京",
+  "upos": "PROPN",
+  "lemma": "東京",
+  "seq2seq": "東京",
+  "edit": 1,
+  "model": "東京"
+ },
+ {
+  "word": "𝒳e",
+  "upos": "NOUN",
+  "lemma": "𝒳e",
+  "seq2seq": "𝒳e",
+  "edit": 1,
+  "model": "𝒳e"
+ },
+ {
+  "word": "😀😀s",
+  "upos": "SYM",
+  "lemma": "😀😀s",
+  "seq2seq": "😀😀s",
+  "edit": 1,
+  "model": "😀😀s"
+ },
+ {
+  "word": "schönsten",
+  "upos": "ADJ",
+  "lemma": "schön",
+  "seq2seq": "schön",
+  "edit": 0,
+  "model": "schön"
+ },
+ {
+  "word": "Rindfleischetikettierungsüberwachungsaufgabenübertragungsgesetzes",
+  "upos": "NOUN",
+  "lemma": "Rindfleischetikettierungsüberwachungsaufgabenübertragungsgesetz",
+  "seq2seq": "Rindfleischetikettierungsüberwachungsaufgabenübert",
+  "edit": 0,
+  "model": "Rindfleischetikettierungsüberwachungsaufgabenübert"
+ },
+ {
+  "word": "_",
+  "upos": "PUNCT",
+  "lemma": "_",
+  "seq2seq": "_",
+  "edit": 1,
+  "model": "_"
+ },
+ {
+  "word": "<UNK>",
+  "upos": "X",
+  "lemma": "<UNK>",
+  "seq2seq": "<UNK>",
+  "edit": 1,
+  "model": "<UNK>"
+ },
+ {
+  "word": "Schmetterlingen",
+  "upos": "NOUN",
+  "lemma": "Schmetterling",
+  "seq2seq": "Schmetterling",
+  "edit": 0,
+  "model": "Schmetterling"
+ },
+ {
+  "word": "ÄRZTE",
+  "upos": "NOUN",
+  "lemma": "ÄRZTE",
+  "seq2seq": "ÄRZTE",
+  "edit": 1,
+  "model": "ÄRZTE"
+ },
+ {
+  "word": "ﬁnanzierte",
+  "upos": "VERB",
+  "lemma": "ﬁnanzieren",
+  "seq2seq": "ﬁnanzieren",
+  "edit": 0,
+  "model": "ﬁnanzieren"
+ },
+ {
+  "word": "Bäume",
+  "upos": "NOUN",
+  "lemma": "Bäum",
+  "seq2seq": "Bäum",
+  "edit": 0,
+  "model": "Bäum"
+ },
+ {
+  "word": "GROẞE",
+  "upos": "ADJ",
+  "lemma": "GROẞE",
+  "seq2seq": "GROẞE",
+  "edit": 1,
+  "model": "GROẞE"
+ }
+]

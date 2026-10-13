@@ -1,0 +1,293 @@
+# text = „Bist du schon wach?“, fragte Lena leise.
+# sent_id = 0
+# sentiment = 0
+1	„	_	_	_	_	0	_	_	SpaceAfter=No|start_char=0|end_char=1
+2	Bist	_	_	_	_	1	_	_	start_char=1|end_char=5
+3	du	_	_	_	_	2	_	_	start_char=6|end_char=8
+4	schon	_	_	_	_	3	_	_	start_char=9|end_char=14
+5	wach?	_	_	_	_	4	_	_	SpaceAfter=No|start_char=15|end_char=20
+6	“	_	_	_	_	5	_	_	SpaceAfter=No|start_char=20|end_char=21
+7	,	_	_	_	_	6	_	_	start_char=21|end_char=22
+8	fragte	_	_	_	_	7	_	_	start_char=23|end_char=29
+9	Lena	_	_	_	_	8	_	_	start_char=30|end_char=34
+10	leise	_	_	_	_	9	_	_	SpaceAfter=No|start_char=35|end_char=40
+11	.	_	_	_	_	10	_	_	SpacesAfter=\n|start_char=40|end_char=41
+
+# text = „Nein“, murmelte Jonas, „ich schlafe noch.“
+# sent_id = 1
+# sentiment = 2
+1	„	_	_	_	_	0	_	_	SpaceAfter=No|start_char=42|end_char=43
+2	Nein	_	_	_	_	1	_	_	SpaceAfter=No|start_char=43|end_char=47
+3	“	_	_	_	_	2	_	_	SpaceAfter=No|start_char=47|end_char=48
+4	,	_	_	_	_	3	_	_	start_char=48|end_char=49
+5	murmelte	_	_	_	_	4	_	_	start_char=50|end_char=58
+6	Jonas	_	_	_	_	5	_	_	SpaceAfter=No|start_char=59|end_char=64
+7	,	_	_	_	_	6	_	_	start_char=64|end_char=65
+8	„	_	_	_	_	7	_	_	SpaceAfter=No|start_char=66|end_char=67
+9	ich	_	_	_	_	8	_	_	start_char=67|end_char=70
+10	schlafe	_	_	_	_	9	_	_	start_char=71|end_char=78
+11	noch	_	_	_	_	10	_	_	SpaceAfter=No|start_char=79|end_char=83
+12	.	_	_	_	_	11	_	_	SpaceAfter=No|start_char=83|end_char=84
+13	“	_	_	_	_	12	_	_	SpacesAfter=\n|start_char=84|end_char=85
+
+# text = „Dann antwortest du aber ziemlich deutlich für jemanden, der schläft.“
+# sent_id = 2
+# sentiment = 1
+1	„	_	_	_	_	0	_	_	SpaceAfter=No|start_char=86|end_char=87
+2	Dann	_	_	_	_	1	_	_	start_char=87|end_char=91
+3	antwortest	_	_	_	_	2	_	_	start_char=92|end_char=102
+4	du	_	_	_	_	3	_	_	start_char=103|end_char=105
+5	aber	_	_	_	_	4	_	_	start_char=106|end_char=110
+6	ziemlich	_	_	_	_	5	_	_	start_char=111|end_char=119
+7	deutlich	_	_	_	_	6	_	_	start_char=120|end_char=128
+8	für	_	_	_	_	7	_	_	start_char=129|end_char=132
+9	jemanden	_	_	_	_	8	_	_	SpaceAfter=No|start_char=133|end_char=141
+10	,	_	_	_	_	9	_	_	start_char=141|end_char=142
+11	der	_	_	_	_	10	_	_	start_char=143|end_char=146
+12	schläft	_	_	_	_	11	_	_	SpaceAfter=No|start_char=147|end_char=154
+13	.	_	_	_	_	12	_	_	SpaceAfter=No|start_char=154|end_char=155
+14	“	_	_	_	_	13	_	_	SpacesAfter=\n\n|start_char=155|end_char=156
+
+# text = –
+# sent_id = 3
+# sentiment = 1
+1	–	_	_	_	_	0	_	_	start_char=158|end_char=159
+
+# text = Hast du die Schlüssel gesehen? – Welche Schlüssel?
+# sent_id = 4
+# sentiment = 0
+1	Hast	_	_	_	_	0	_	_	start_char=160|end_char=164
+2	du	_	_	_	_	1	_	_	start_char=165|end_char=167
+3	die	_	_	_	_	2	_	_	start_char=168|end_char=171
+4	Schlüssel	_	_	_	_	3	_	_	start_char=172|end_char=181
+5	gesehen	_	_	_	_	4	_	_	SpaceAfter=No|start_char=182|end_char=189
+6	?	_	_	_	_	5	_	_	SpacesAfter=\n|start_char=189|end_char=190
+7	–	_	_	_	_	6	_	_	start_char=191|end_char=192
+8	Welche	_	_	_	_	7	_	_	start_char=193|end_char=199
+9	Schlüssel	_	_	_	_	8	_	_	SpaceAfter=No|start_char=200|end_char=209
+10	?	_	_	_	_	9	_	_	SpacesAfter=\n|start_char=209|end_char=210
+
+# text = – Na, die fürs Auto! – Ach so.
+# sent_id = 5
+# sentiment = 0
+1	–	_	_	_	_	0	_	_	start_char=211|end_char=212
+2	Na	_	_	_	_	1	_	_	SpaceAfter=No|start_char=213|end_char=215
+3	,	_	_	_	_	2	_	_	start_char=215|end_char=216
+4	die	_	_	_	_	3	_	_	start_char=217|end_char=220
+5	fürs	_	_	_	_	4	_	_	start_char=221|end_char=225
+6	Auto	_	_	_	_	5	_	_	SpaceAfter=No|start_char=226|end_char=230
+7	!	_	_	_	_	6	_	_	SpacesAfter=\n|start_char=230|end_char=231
+8	–	_	_	_	_	7	_	_	start_char=232|end_char=233
+9	Ach	_	_	_	_	8	_	_	start_char=234|end_char=237
+10	so	_	_	_	_	9	_	_	SpaceAfter=No|start_char=238|end_char=240
+11	.	_	_	_	_	10	_	_	start_char=240|end_char=241
+
+# text = Die liegen doch auf dem Küchentisch, wie immer.
+# sent_id = 6
+# sentiment = 0
+1	Die	_	_	_	_	0	_	_	start_char=242|end_char=245
+2	liegen	_	_	_	_	1	_	_	start_char=246|end_char=252
+3	doch	_	_	_	_	2	_	_	start_char=253|end_char=257
+4	auf	_	_	_	_	3	_	_	start_char=258|end_char=261
+5	dem	_	_	_	_	4	_	_	start_char=262|end_char=265
+6	Küchentisch	_	_	_	_	5	_	_	SpaceAfter=No|start_char=266|end_char=277
+7	,	_	_	_	_	6	_	_	start_char=277|end_char=278
+8	wie	_	_	_	_	7	_	_	start_char=279|end_char=282
+9	immer	_	_	_	_	8	_	_	SpaceAfter=No|start_char=283|end_char=288
+10	.	_	_	_	_	9	_	_	SpacesAfter=\n\n|start_char=288|end_char=289
+
+# text = »Glaubst du wirklich, dass er kommt?«, fragte die Großmutter.
+# sent_id = 7
+# sentiment = 1
+1	»	_	_	_	_	0	_	_	SpaceAfter=No|start_char=291|end_char=292
+2	Glaubst	_	_	_	_	1	_	_	start_char=292|end_char=299
+3	du	_	_	_	_	2	_	_	start_char=300|end_char=302
+4	wirklich	_	_	_	_	3	_	_	SpaceAfter=No|start_char=303|end_char=311
+5	,	_	_	_	_	4	_	_	start_char=311|end_char=312
+6	dass	_	_	_	_	5	_	_	start_char=313|end_char=317
+7	er	_	_	_	_	6	_	_	start_char=318|end_char=320
+8	kommt?	_	_	_	_	7	_	_	SpaceAfter=No|start_char=321|end_char=327
+9	«	_	_	_	_	8	_	_	SpaceAfter=No|start_char=327|end_char=328
+10	,	_	_	_	_	9	_	_	start_char=328|end_char=329
+11	fragte	_	_	_	_	10	_	_	start_char=330|end_char=336
+12	die	_	_	_	_	11	_	_	start_char=337|end_char=340
+13	Großmutter	_	_	_	_	12	_	_	SpaceAfter=No|start_char=341|end_char=351
+14	.	_	_	_	_	13	_	_	SpacesAfter=\n|start_char=351|end_char=352
+
+# text = »Er hat es versprochen«, sagte das Mädchen.
+# sent_id = 8
+# sentiment = 0
+1	»	_	_	_	_	0	_	_	SpaceAfter=No|start_char=353|end_char=354
+2	Er	_	_	_	_	1	_	_	start_char=354|end_char=356
+3	hat	_	_	_	_	2	_	_	start_char=357|end_char=360
+4	es	_	_	_	_	3	_	_	start_char=361|end_char=363
+5	versprochen	_	_	_	_	4	_	_	SpaceAfter=No|start_char=364|end_char=375
+6	«	_	_	_	_	5	_	_	SpaceAfter=No|start_char=375|end_char=376
+7	,	_	_	_	_	6	_	_	start_char=376|end_char=377
+8	sagte	_	_	_	_	7	_	_	start_char=378|end_char=383
+9	das	_	_	_	_	8	_	_	start_char=384|end_char=387
+10	Mädchen	_	_	_	_	9	_	_	SpaceAfter=No|start_char=388|end_char=395
+11	.	_	_	_	_	10	_	_	start_char=395|end_char=396
+
+# text = »Und er hält, was er verspricht.«
+# sent_id = 9
+# sentiment = 0
+1	»	_	_	_	_	0	_	_	SpaceAfter=No|start_char=397|end_char=398
+2	Und	_	_	_	_	1	_	_	start_char=398|end_char=401
+3	er	_	_	_	_	2	_	_	start_char=402|end_char=404
+4	hält	_	_	_	_	3	_	_	SpaceAfter=No|start_char=405|end_char=409
+5	,	_	_	_	_	4	_	_	start_char=409|end_char=410
+6	was	_	_	_	_	5	_	_	start_char=411|end_char=414
+7	er	_	_	_	_	6	_	_	start_char=415|end_char=417
+8	verspricht	_	_	_	_	7	_	_	SpaceAfter=No|start_char=418|end_char=428
+9	.	_	_	_	_	8	_	_	SpaceAfter=No|start_char=428|end_char=429
+10	«	_	_	_	_	9	_	_	SpacesAfter=\n\n|start_char=429|end_char=430
+
+# text = Verkäufer: Was darf es sein?
+# sent_id = 10
+# sentiment = 0
+1	Verkäufer	_	_	_	_	0	_	_	SpaceAfter=No|start_char=432|end_char=441
+2	:	_	_	_	_	1	_	_	start_char=441|end_char=442
+3	Was	_	_	_	_	2	_	_	start_char=443|end_char=446
+4	darf	_	_	_	_	3	_	_	start_char=447|end_char=451
+5	es	_	_	_	_	4	_	_	start_char=452|end_char=454
+6	sein	_	_	_	_	5	_	_	SpaceAfter=No|start_char=455|end_char=459
+7	?	_	_	_	_	6	_	_	SpacesAfter=\n|start_char=459|end_char=460
+
+# text = Kundin: Ein halbes Brot, bitte, und zwei Brezeln.
+# sent_id = 11
+# sentiment = 1
+1	Kundin	_	_	_	_	0	_	_	SpaceAfter=No|start_char=461|end_char=467
+2	:	_	_	_	_	1	_	_	start_char=467|end_char=468
+3	Ein	_	_	_	_	2	_	_	start_char=469|end_char=472
+4	halbes	_	_	_	_	3	_	_	start_char=473|end_char=479
+5	Brot	_	_	_	_	4	_	_	SpaceAfter=No|start_char=480|end_char=484
+6	,	_	_	_	_	5	_	_	start_char=484|end_char=485
+7	bitte	_	_	_	_	6	_	_	SpaceAfter=No|start_char=486|end_char=491
+8	,	_	_	_	_	7	_	_	start_char=491|end_char=492
+9	und	_	_	_	_	8	_	_	start_char=493|end_char=496
+10	zwei	_	_	_	_	9	_	_	start_char=497|end_char=501
+11	Brezeln	_	_	_	_	10	_	_	SpaceAfter=No|start_char=502|end_char=509
+12	.	_	_	_	_	11	_	_	SpacesAfter=\n|start_char=509|end_char=510
+
+# text = Verkäufer: Gern.
+# sent_id = 12
+# sentiment = 0
+1	Verkäufer	_	_	_	_	0	_	_	SpaceAfter=No|start_char=511|end_char=520
+2	:	_	_	_	_	1	_	_	start_char=520|end_char=521
+3	Gern	_	_	_	_	2	_	_	SpaceAfter=No|start_char=522|end_char=526
+4	.	_	_	_	_	3	_	_	start_char=526|end_char=527
+
+# text = Sonst noch was?
+# sent_id = 13
+# sentiment = 0
+1	Sonst	_	_	_	_	0	_	_	start_char=528|end_char=533
+2	noch	_	_	_	_	1	_	_	start_char=534|end_char=538
+3	was	_	_	_	_	2	_	_	SpaceAfter=No|start_char=539|end_char=542
+4	?	_	_	_	_	3	_	_	SpacesAfter=\n|start_char=542|end_char=543
+
+# text = Kundin: Nein, danke.
+# sent_id = 14
+# sentiment = 2
+1	Kundin	_	_	_	_	0	_	_	SpaceAfter=No|start_char=544|end_char=550
+2	:	_	_	_	_	1	_	_	start_char=550|end_char=551
+3	Nein	_	_	_	_	2	_	_	SpaceAfter=No|start_char=552|end_char=556
+4	,	_	_	_	_	3	_	_	start_char=556|end_char=557
+5	danke	_	_	_	_	4	_	_	SpaceAfter=No|start_char=558|end_char=563
+6	.	_	_	_	_	5	_	_	start_char=563|end_char=564
+
+# text = Das wär's.
+# sent_id = 15
+# sentiment = 0
+1	Das	_	_	_	_	0	_	_	start_char=565|end_char=568
+2	wär	_	_	_	_	1	_	_	SpaceAfter=No|start_char=569|end_char=572
+3	's	_	_	_	_	2	_	_	SpaceAfter=No|start_char=572|end_char=574
+4	.	_	_	_	_	3	_	_	SpacesAfter=\n\n|start_char=574|end_char=575
+
+# text = „Weißt du noch“, sagte er, „wie wir damals am See gezeltet haben?“
+# sent_id = 16
+# sentiment = 2
+1	„	_	_	_	_	0	_	_	SpaceAfter=No|start_char=577|end_char=578
+2	Weißt	_	_	_	_	1	_	_	start_char=578|end_char=583
+3	du	_	_	_	_	2	_	_	start_char=584|end_char=586
+4	noch	_	_	_	_	3	_	_	SpaceAfter=No|start_char=587|end_char=591
+5	“	_	_	_	_	4	_	_	SpaceAfter=No|start_char=591|end_char=592
+6	,	_	_	_	_	5	_	_	start_char=592|end_char=593
+7	sagte	_	_	_	_	6	_	_	start_char=594|end_char=599
+8	er	_	_	_	_	7	_	_	SpaceAfter=No|start_char=600|end_char=602
+9	,	_	_	_	_	8	_	_	start_char=602|end_char=603
+10	„	_	_	_	_	9	_	_	SpaceAfter=No|start_char=604|end_char=605
+11	wie	_	_	_	_	10	_	_	start_char=605|end_char=608
+12	wir	_	_	_	_	11	_	_	start_char=609|end_char=612
+13	damals	_	_	_	_	12	_	_	start_char=613|end_char=619
+14-15	am	_	_	_	_	_	_	_	start_char=620|end_char=622
+14	an	_	_	_	_	13	_	_	_
+15	dem	_	_	_	_	14	_	_	_
+16	See	_	_	_	_	15	_	_	start_char=623|end_char=626
+17	gezeltet	_	_	_	_	16	_	_	start_char=627|end_char=635
+18	haben	_	_	_	_	17	_	_	SpaceAfter=No|start_char=636|end_char=641
+19	?	_	_	_	_	18	_	_	SpaceAfter=No|start_char=641|end_char=642
+20	“	_	_	_	_	19	_	_	SpacesAfter=\n|start_char=642|end_char=643
+
+# text = „Wie könnte ich das vergessen?
+# sent_id = 17
+# sentiment = 0
+1	„	_	_	_	_	0	_	_	SpaceAfter=No|start_char=644|end_char=645
+2	Wie	_	_	_	_	1	_	_	start_char=645|end_char=648
+3	könnte	_	_	_	_	2	_	_	start_char=649|end_char=655
+4	ich	_	_	_	_	3	_	_	start_char=656|end_char=659
+5	das	_	_	_	_	4	_	_	start_char=660|end_char=663
+6	vergessen	_	_	_	_	5	_	_	SpaceAfter=No|start_char=664|end_char=673
+7	?	_	_	_	_	6	_	_	start_char=673|end_char=674
+
+# text = Es hat drei Tage lang geregnet!“
+# sent_id = 18
+# sentiment = 2
+1	Es	_	_	_	_	0	_	_	start_char=675|end_char=677
+2	hat	_	_	_	_	1	_	_	start_char=678|end_char=681
+3	drei	_	_	_	_	2	_	_	start_char=682|end_char=686
+4	Tage	_	_	_	_	3	_	_	start_char=687|end_char=691
+5	lang	_	_	_	_	4	_	_	start_char=692|end_char=696
+6	geregnet	_	_	_	_	5	_	_	SpaceAfter=No|start_char=697|end_char=705
+7	!	_	_	_	_	6	_	_	SpaceAfter=No|start_char=705|end_char=706
+8	“	_	_	_	_	7	_	_	SpacesAfter=\n\n|start_char=706|end_char=707
+
+# text = Mutter: Hast du deine Hausaufgaben gemacht?
+# sent_id = 19
+# sentiment = 0
+1	Mutter	_	_	_	_	0	_	_	SpaceAfter=No|start_char=709|end_char=715
+2	:	_	_	_	_	1	_	_	start_char=715|end_char=716
+3	Hast	_	_	_	_	2	_	_	start_char=717|end_char=721
+4	du	_	_	_	_	3	_	_	start_char=722|end_char=724
+5	deine	_	_	_	_	4	_	_	start_char=725|end_char=730
+6	Hausaufgaben	_	_	_	_	5	_	_	start_char=731|end_char=743
+7	gemacht	_	_	_	_	6	_	_	SpaceAfter=No|start_char=744|end_char=751
+8	?	_	_	_	_	7	_	_	SpacesAfter=\n|start_char=751|end_char=752
+
+# text = Sohn: Fast. Mutter: Was heißt „fast“?
+# sent_id = 20
+# sentiment = 0
+1	Sohn	_	_	_	_	0	_	_	SpaceAfter=No|start_char=753|end_char=757
+2	:	_	_	_	_	1	_	_	start_char=757|end_char=758
+3	Fast.	_	_	_	_	2	_	_	SpacesAfter=\n|start_char=759|end_char=764
+4	Mutter	_	_	_	_	3	_	_	SpaceAfter=No|start_char=765|end_char=771
+5	:	_	_	_	_	4	_	_	start_char=771|end_char=772
+6	Was	_	_	_	_	5	_	_	start_char=773|end_char=776
+7	heißt	_	_	_	_	6	_	_	start_char=777|end_char=782
+8	„	_	_	_	_	7	_	_	SpaceAfter=No|start_char=783|end_char=784
+9	fast	_	_	_	_	8	_	_	SpaceAfter=No|start_char=784|end_char=788
+10	“	_	_	_	_	9	_	_	SpaceAfter=No|start_char=788|end_char=789
+11	?	_	_	_	_	10	_	_	SpacesAfter=\n|start_char=789|end_char=790
+
+# text = Sohn: Ich habe mir die Aufgaben angesehen.
+# sent_id = 21
+# sentiment = 2
+1	Sohn	_	_	_	_	0	_	_	SpaceAfter=No|start_char=791|end_char=795
+2	:	_	_	_	_	1	_	_	start_char=795|end_char=796
+3	Ich	_	_	_	_	2	_	_	start_char=797|end_char=800
+4	habe	_	_	_	_	3	_	_	start_char=801|end_char=805
+5	mir	_	_	_	_	4	_	_	start_char=806|end_char=809
+6	die	_	_	_	_	5	_	_	start_char=810|end_char=813
+7	Aufgaben	_	_	_	_	6	_	_	start_char=814|end_char=822
+8	angesehen	_	_	_	_	7	_	_	SpaceAfter=No|start_char=823|end_char=832
+9	.	_	_	_	_	8	_	_	SpacesAfter=\n|start_char=832|end_char=833

@@ -1,0 +1,119 @@
+{
+ "stanza": "1.15.0",
+ "sentences": [
+  {
+   "sentence": 0,
+   "words": [
+    "Angela",
+    "Merkel",
+    "wurde",
+    "in",
+    "Hamburg",
+    "geboren",
+    "."
+   ],
+   "heads": [
+    6,
+    1,
+    6,
+    5,
+    6,
+    0,
+    6
+   ],
+   "deprels": [
+    "nsubj:pass",
+    "flat",
+    "aux:pass",
+    "case",
+    "obl",
+    "root",
+    "punct"
+   ]
+  },
+  {
+   "sentence": 1,
+   "words": [
+    "Sie",
+    "war",
+    "von",
+    "2005",
+    "bis",
+    "2021",
+    "Bundeskanzlerin",
+    "."
+   ],
+   "heads": [
+    7,
+    7,
+    4,
+    7,
+    6,
+    7,
+    0,
+    7
+   ],
+   "deprels": [
+    "nsubj",
+    "cop",
+    "case",
+    "nmod",
+    "case",
+    "nmod",
+    "root",
+    "punct"
+   ]
+  },
+  {
+   "sentence": 2,
+   "words": [
+    "Ich",
+    "glaube",
+    "nicht",
+    ",",
+    "dass",
+    "es",
+    "heute",
+    "regnet",
+    ",",
+    "aber",
+    "wir",
+    "werden",
+    "sehen",
+    "."
+   ],
+   "heads": [
+    2,
+    0,
+    2,
+    8,
+    8,
+    8,
+    8,
+    2,
+    13,
+    13,
+    13,
+    13,
+    8,
+    2
+   ],
+   "deprels": [
+    "nsubj",
+    "root",
+    "advmod",
+    "punct",
+    "mark",
+    "nsubj",
+    "advmod",
+    "ccomp",
+    "punct",
+    "cc",
+    "nsubj",
+    "aux",
+    "conj",
+    "punct"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,340 @@
+# text = Der Zug nach München fährt heute um 14:05 Uhr von Gleis 7 ab.
+# sent_id = 0
+# constituency = (ROOT (VROOT (S (NP (DET Der) (NOUN Zug) (PP (ADP nach) (PROPN München))) (VERB fährt) (ADV heute) (PP (ADP um) (NUM 14:05) (NOUN Uhr)) (PP (ADP von) (NOUN Gleis) (NUM 7)) (ADP ab)) (PUNCT .)))
+# sentiment = 1
+1	Der	der	DET	ART	Case=Nom|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	2	det	_	start_char=0|end_char=3|ner=O
+2	Zug	Zug	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	5	nsubj	_	start_char=4|end_char=7|ner=O
+3	nach	nach	ADP	APPR	_	4	case	_	start_char=8|end_char=12|ner=O
+4	München	München	PROPN	NE	Case=Dat|Gender=Neut|Number=Sing	2	nmod	_	start_char=13|end_char=20|ner=S-LOC
+5	fährt	fahren	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=21|end_char=26|ner=O
+6	heute	heute	ADV	ADV	_	5	advmod	_	start_char=27|end_char=32|ner=O
+7	um	um	ADP	APPR	_	9	case	_	start_char=33|end_char=35|ner=O
+8	14:05	14:05	NUM	CARD	NumType=Card	9	nummod	_	start_char=36|end_char=41|ner=O
+9	Uhr	Uhr	NOUN	NN	Case=Acc|Gender=Fem|Number=Sing	5	obl	_	start_char=42|end_char=45|ner=O
+10	von	von	ADP	APPR	_	11	case	_	start_char=46|end_char=49|ner=O
+11	Gleis	Gleis	NOUN	NN	Case=Dat|Gender=Neut|Number=Sing	5	obl	_	start_char=50|end_char=55|ner=O
+12	7	7	NUM	CARD	NumType=Card	11	appos	_	start_char=56|end_char=57|ner=O
+13	ab	ab	ADP	PTKVZ	_	5	compound:prt	_	SpaceAfter=No|start_char=58|end_char=60|ner=O
+14	.	.	PUNCT	$.	_	5	punct	_	start_char=60|end_char=61|ner=O
+
+# text = Bitte beachten Sie die geänderte Wagenreihung.
+# sent_id = 1
+# constituency = (ROOT (VROOT (S (ADV Bitte) (VERB beachten) (PRON Sie) (NP (DET die) (ADJ geänderte) (NOUN Wagenreihung))) (PUNCT .)))
+# sentiment = 2
+1	Bitte	bitten	ADV	ADV	_	2	advmod	_	start_char=62|end_char=67|ner=O
+2	beachten	beachen	VERB	VVFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=68|end_char=76|ner=O
+3	Sie	sie	PRON	PPER	Case=Nom|Number=Plur|Person=2|Polite=Form|PronType=Prs	2	nsubj	_	start_char=77|end_char=80|ner=O
+4	die	der	DET	ART	Case=Acc|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	6	det	_	start_char=81|end_char=84|ner=O
+5	geänderte	geändert	ADJ	ADJA	Case=Acc|Degree=Pos|Gender=Fem|Number=Sing	6	amod	_	start_char=85|end_char=94|ner=O
+6	Wagenreihung	Wagenreihung	NOUN	NN	Case=Acc|Gender=Fem|Number=Sing	2	obj	_	SpaceAfter=No|start_char=95|end_char=107|ner=O
+7	.	.	PUNCT	$.	_	2	punct	_	SpacesAfter=\n\n|start_char=107|end_char=108|ner=O
+
+# text = Unsere Nachbarin, Frau Schröder, hat im Garten Tomaten, Gurken und Kürbisse angebaut.
+# sent_id = 2
+# constituency = (ROOT (VROOT (DET Unsere) (NOUN Nachbarin) (PUNCT ,) (NP (NP (NOUN Frau) (PROPN Schröder))) (PUNCT ,) (S (AUX hat) (PP (ADP in) (DET dem) (NOUN Garten)) (CNP (NOUN Tomaten))) (PUNCT ,) (VP (NOUN Gurken) (CCONJ und) (NOUN Kürbisse) (VERB angebaut)) (PUNCT .)))
+# sentiment = 1
+1	Unsere	unser	DET	PPOSAT	Case=Nom|Gender=Fem|Number=Sing|Number[psor]=Plur|Person=1|Poss=Yes|PronType=Prs	2	det:poss	_	start_char=110|end_char=116|ner=O
+2	Nachbarin	Nachbarin	NOUN	NN	Case=Nom|Gender=Fem|Number=Sing	16	nsubj	_	SpaceAfter=No|start_char=117|end_char=126|ner=O
+3	,	,	PUNCT	$,	_	5	punct	_	start_char=126|end_char=127|ner=O
+4	Frau	Frau	NOUN	NN	Case=Nom|Gender=Fem|Number=Sing	5	compound	_	start_char=128|end_char=132|ner=O
+5	Schröder	Schröder	PROPN	NE	Case=Nom|Gender=Fem|Number=Sing	2	appos	_	SpaceAfter=No|start_char=133|end_char=141|ner=S-PER
+6	,	,	PUNCT	$,	_	2	punct	_	start_char=141|end_char=142|ner=O
+7	hat	haben	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	16	aux	_	start_char=143|end_char=146|ner=O
+8-9	im	_	_	_	_	_	_	_	start_char=147|end_char=149|ner=O
+8	in	in	ADP	APPR	_	10	case	_	_
+9	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	10	det	_	_
+10	Garten	Garten	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	16	obl	_	start_char=150|end_char=156|ner=O
+11	Tomaten	Tomate	NOUN	NN	Case=Acc|Gender=Fem|Number=Plur	16	obj	_	SpaceAfter=No|start_char=157|end_char=164|ner=O
+12	,	,	PUNCT	$,	_	13	punct	_	start_char=164|end_char=165|ner=O
+13	Gurken	Gurke	NOUN	NN	Case=Acc|Gender=Fem|Number=Plur	11	conj	_	start_char=166|end_char=172|ner=O
+14	und	und	CCONJ	KON	_	15	cc	_	start_char=173|end_char=176|ner=O
+15	Kürbisse	Kürbis	NOUN	NN	Case=Acc|Gender=Masc|Number=Plur	11	conj	_	start_char=177|end_char=185|ner=O
+16	angebaut	anbauen	VERB	VVPP	VerbForm=Part	0	root	_	SpaceAfter=No|start_char=186|end_char=194|ner=O
+17	.	.	PUNCT	$.	_	16	punct	_	start_char=194|end_char=195|ner=O
+
+# text = Im Herbst verschenkt sie die Hälfte an die Leute aus dem Haus.
+# sent_id = 3
+# constituency = (ROOT (VROOT (S (PP (ADP In) (DET dem) (NOUN Herbst)) (VERB verschenkt) (PRON sie) (NP (DET die) (NOUN Hälfte)) (PP (ADP an) (DET die) (NOUN Leute) (PP (ADP aus) (DET dem) (NOUN Haus)))) (PUNCT .)))
+# sentiment = 1
+1-2	Im	_	_	_	_	_	_	_	start_char=196|end_char=198|ner=O
+1	In	in	ADP	APPR	_	3	case	_	_
+2	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	3	det	_	_
+3	Herbst	Herbst	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	4	obl	_	start_char=199|end_char=205|ner=O
+4	verschenkt	verschenken	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=206|end_char=216|ner=O
+5	sie	sie	PRON	PPER	Case=Nom|Gender=Fem|Number=Sing|Person=3|PronType=Prs	4	nsubj	_	start_char=217|end_char=220|ner=O
+6	die	der	DET	ART	Case=Acc|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	7	det	_	start_char=221|end_char=224|ner=O
+7	Hälfte	Hälfte	NOUN	NN	Case=Acc|Gender=Fem|Number=Sing	4	obj	_	start_char=225|end_char=231|ner=O
+8	an	an	ADP	APPR	_	10	case	_	start_char=232|end_char=234|ner=O
+9	die	der	DET	ART	Case=Acc|Definite=Def|Number=Plur|PronType=Art	10	det	_	start_char=235|end_char=238|ner=O
+10	Leute	Leute	NOUN	NN	Case=Acc|Number=Plur	4	obl	_	start_char=239|end_char=244|ner=O
+11	aus	aus	ADP	APPR	_	13	case	_	start_char=245|end_char=248|ner=O
+12	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	13	det	_	start_char=249|end_char=252|ner=O
+13	Haus	Haus	NOUN	NN	Case=Dat|Gender=Neut|Number=Sing	4	obl	_	SpaceAfter=No|start_char=253|end_char=257|ner=O
+14	.	.	PUNCT	$.	_	4	punct	_	SpacesAfter=\n\n|start_char=257|end_char=258|ner=O
+
+# text = Am Montag beginnt die Schule wieder.
+# sent_id = 4
+# constituency = (ROOT (VROOT (S (PP (ADP An) (DET dem) (NOUN Montag)) (VERB beginnt) (NP (DET die) (NOUN Schule)) (ADV wieder)) (PUNCT .)))
+# sentiment = 1
+1-2	Am	_	_	_	_	_	_	_	start_char=260|end_char=262|ner=O
+1	An	an	ADP	APPR	_	3	case	_	_
+2	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	3	det	_	_
+3	Montag	Montag	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	4	obl	_	start_char=263|end_char=269|ner=O
+4	beginnt	beginnen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=270|end_char=277|ner=O
+5	die	der	DET	ART	Case=Nom|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	6	det	_	start_char=278|end_char=281|ner=O
+6	Schule	Schule	NOUN	NN	Case=Nom|Gender=Fem|Number=Sing	4	nsubj	_	start_char=282|end_char=288|ner=O
+7	wieder	wieder	ADV	PTKVZ	_	4	advmod	_	SpaceAfter=No|start_char=289|end_char=295|ner=O
+8	.	.	PUNCT	$.	_	4	punct	_	start_char=295|end_char=296|ner=O
+
+# text = Viele Kinder freuen sich darauf, ihre Freunde wiederzusehen, andere hätten lieber noch eine Woche Ferien gehabt.
+# sent_id = 5
+# constituency = (ROOT (VROOT (S (NP (DET Viele) (NOUN Kinder)) (VERB freuen) (PRON sich) (PP (ADV darauf))) (PUNCT ,) (VP (NP (DET ihre) (NOUN Freunde)) (VERB wiederzusehen)) (PUNCT ,) (S (DET andere) (AUX hätten) (VP (ADV lieber) (NP (ADV noch) (DET eine) (NOUN Woche)) (NOUN Ferien) (VERB gehabt))) (PUNCT .)))
+# sentiment = 2
+1	Viele	viel	DET	PIAT	Case=Nom|Gender=Neut|Number=Plur|PronType=Ind	2	det	_	start_char=297|end_char=302|ner=O
+2	Kinder	Kind	NOUN	NN	Case=Nom|Gender=Neut|Number=Plur	3	nsubj	_	start_char=303|end_char=309|ner=O
+3	freuen	freuen	VERB	VVFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=310|end_char=316|ner=O
+4	sich	sich	PRON	PRF	Case=Acc|Person=3|PronType=Prs|Reflex=Yes	3	obj	_	start_char=317|end_char=321|ner=O
+5	darauf	darauf	ADV	PAV	PronType=Dem	3	advmod	_	SpaceAfter=No|start_char=322|end_char=328|ner=O
+6	,	,	PUNCT	$,	_	9	punct	_	start_char=328|end_char=329|ner=O
+7	ihre	ihr	DET	PPOSAT	Case=Acc|Gender=Masc|Number=Plur|Person=3|Poss=Yes|PronType=Prs	8	det:poss	_	start_char=330|end_char=334|ner=O
+8	Freunde	Freund	NOUN	NN	Case=Acc|Gender=Masc|Number=Plur	9	obj	_	start_char=335|end_char=342|ner=O
+9	wiederzusehen	wiedersehen	VERB	VVIZU	VerbForm=Inf	3	xcomp	_	SpaceAfter=No|start_char=343|end_char=356|ner=O
+10	,	,	PUNCT	$,	_	18	punct	_	start_char=356|end_char=357|ner=O
+11	andere	anderer	DET	PIS	Case=Nom|Number=Plur|PronType=Ind	18	nsubj	_	start_char=358|end_char=364|ner=O
+12	hätten	haben	AUX	VAFIN	Mood=Sub|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	18	aux	_	start_char=365|end_char=371|ner=O
+13	lieber	lieb	ADV	ADV	_	14	advmod	_	start_char=372|end_char=378|ner=O
+14	noch	noch	ADV	ADV	_	18	advmod	_	start_char=379|end_char=383|ner=O
+15	eine	ein	DET	ART	Case=Acc|Definite=Ind|Gender=Fem|Number=Sing|NumType=Card|PronType=Art	16	det	_	start_char=384|end_char=388|ner=O
+16	Woche	Woche	NOUN	NN	Case=Acc|Gender=Fem|Number=Sing	18	obj	_	start_char=389|end_char=394|ner=O
+17	Ferien	Ferien	NOUN	NN	Case=Acc|Gender=Fem|Number=Plur	18	obj	_	start_char=395|end_char=401|ner=O
+18	gehabt	haben	VERB	VAPP	VerbForm=Part	3	ccomp	_	SpaceAfter=No|start_char=402|end_char=408|ner=O
+19	.	.	PUNCT	$.	_	3	punct	_	SpacesAfter=\n\n|start_char=408|end_char=409|ner=O
+
+# text = Die Stadtbibliothek ist vom 1. bis zum 15. August wegen Umbauarbeiten geschlossen.
+# sent_id = 6
+# constituency = (ROOT (VROOT (S (NP (DET Die) (NOUN Stadtbibliothek)) (AUX ist) (VP (PP (ADP von) (DET dem) (ADJ 1.)) (PP (ADP bis) (ADP zu) (DET dem) (ADJ 15.) (NOUN August)) (PP (ADP wegen) (NOUN Umbauarbeiten)) (VERB geschlossen))) (PUNCT .)))
+# sentiment = 1
+1	Die	der	DET	ART	Case=Nom|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	2	det	_	start_char=411|end_char=414|ner=O
+2	Stadtbibliothek	Stadtbibliothek	NOUN	NN	Case=Nom|Gender=Fem|Number=Sing	14	nsubj:pass	_	start_char=415|end_char=430|ner=O
+3	ist	sein	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	14	aux:pass	_	start_char=431|end_char=434|ner=O
+4-5	vom	_	_	_	_	_	_	_	start_char=435|end_char=438|ner=O
+4	von	von	ADP	APPR	_	6	case	_	_
+5	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	6	det	_	_
+6	1.	1.	ADJ	ADJA	Degree=Pos|NumType=Ord	14	obl:agent	_	start_char=439|end_char=441|ner=O
+7	bis	bis	ADP	APPR	_	11	case	_	start_char=442|end_char=445|ner=O
+8-9	zum	_	_	_	_	_	_	_	start_char=446|end_char=449|ner=O
+8	zu	zu	ADP	APPR	_	11	case	_	_
+9	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	11	det	_	_
+10	15.	15.	ADJ	ADJA	Case=Dat|Degree=Pos|NumType=Ord	11	amod	_	start_char=450|end_char=453|ner=O
+11	August	August	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	14	obl	_	start_char=454|end_char=460|ner=O
+12	wegen	wegen	ADP	APPR	_	13	case	_	start_char=461|end_char=466|ner=O
+13	Umbauarbeiten	Umbauarbeit	NOUN	NN	Case=Gen|Gender=Fem|Number=Plur	14	obl	_	start_char=467|end_char=480|ner=O
+14	geschlossen	schließen	VERB	VVPP	VerbForm=Part	0	root	_	SpaceAfter=No|start_char=481|end_char=492|ner=O
+15	.	.	PUNCT	$.	_	14	punct	_	start_char=492|end_char=493|ner=O
+
+# text = Ausgeliehene Bücher können in dieser Zeit am Rathaus zurückgegeben werden.
+# sent_id = 7
+# constituency = (ROOT (VROOT (S (NP (ADJ Ausgeliehene) (NOUN Bücher)) (AUX können) (PP (ADP in) (DET dieser) (NOUN Zeit)) (VP (VP (PP (ADP an) (DET dem) (NOUN Rathaus)) (VERB zurückgegeben)) (AUX werden))) (PUNCT .)))
+# sentiment = 1
+1	Ausgeliehene	ausgeliehen	ADJ	ADJA	Case=Nom|Degree=Pos|Gender=Neut|Number=Plur	2	amod	_	start_char=494|end_char=506|ner=O
+2	Bücher	Buch	NOUN	NN	Case=Nom|Gender=Neut|Number=Plur	10	nsubj:pass	_	start_char=507|end_char=513|ner=O
+3	können	können	AUX	VMFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	10	aux	_	start_char=514|end_char=520|ner=O
+4	in	in	ADP	APPR	_	6	case	_	start_char=521|end_char=523|ner=O
+5	dieser	dieser	DET	PDAT	Case=Dat|Gender=Fem|Number=Sing|PronType=Dem	6	det	_	start_char=524|end_char=530|ner=O
+6	Zeit	Zeit	NOUN	NN	Case=Dat|Gender=Fem|Number=Sing	10	obl	_	start_char=531|end_char=535|ner=O
+7-8	am	_	_	_	_	_	_	_	start_char=536|end_char=538|ner=O
+7	an	an	ADP	APPR	_	9	case	_	_
+8	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	9	det	_	_
+9	Rathaus	Rathaus	NOUN	NN	Case=Dat|Gender=Neut|Number=Sing	10	obl	_	start_char=539|end_char=546|ner=O
+10	zurückgegeben	zurückgeben	VERB	VVPP	VerbForm=Part	0	root	_	start_char=547|end_char=560|ner=O
+11	werden	werden	AUX	VAINF	VerbForm=Inf|Voice=Pass	10	aux:pass	_	SpaceAfter=No|start_char=561|end_char=567|ner=O
+12	.	.	PUNCT	$.	_	10	punct	_	SpacesAfter=\n\n|start_char=567|end_char=568|ner=O
+
+# text = Er stand früh auf, trank einen Tee und ging zu Fuß ins Büro.
+# sent_id = 8
+# constituency = (ROOT (VROOT (CS (S (PRON Er) (VERB stand) (ADJ früh) (ADP auf))) (PUNCT ,) (S (VERB trank) (NP (DET einen) (NOUN Tee))) (CCONJ und) (S (VERB ging) (PP (ADP zu) (NOUN Fuß)) (PP (ADP in) (DET das) (NOUN Büro))) (PUNCT .)))
+# sentiment = 1
+1	Er	er	PRON	PPER	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=570|end_char=572|ner=O
+2	stand	stehen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=573|end_char=578|ner=O
+3	früh	früh	ADJ	ADJD	Degree=Pos	2	advmod	_	start_char=579|end_char=583|ner=O
+4	auf	auf	ADP	PTKVZ	_	2	compound:prt	_	SpaceAfter=No|start_char=584|end_char=587|ner=O
+5	,	,	PUNCT	$,	_	6	punct	_	start_char=587|end_char=588|ner=O
+6	trank	trinken	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	2	conj	_	start_char=589|end_char=594|ner=O
+7	einen	ein	DET	ART	Case=Acc|Definite=Ind|Gender=Masc|Number=Sing|NumType=Card|PronType=Art	8	det	_	start_char=595|end_char=600|ner=O
+8	Tee	Tee	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	6	obj	_	start_char=601|end_char=604|ner=O
+9	und	und	CCONJ	KON	_	10	cc	_	start_char=605|end_char=608|ner=O
+10	ging	gehen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	2	conj	_	start_char=609|end_char=613|ner=O
+11	zu	zu	ADP	APPR	_	12	case	_	start_char=614|end_char=616|ner=O
+12	Fuß	Fuß	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	10	obl	_	start_char=617|end_char=620|ner=O
+13-14	ins	_	_	_	_	_	_	_	start_char=621|end_char=624|ner=O
+13	in	in	ADP	APPR	_	15	case	_	_
+14	das	der	DET	ART	Case=Acc|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	15	det	_	_
+15	Büro	Büro	NOUN	NN	Case=Acc|Gender=Neut|Number=Sing	10	obl	_	SpaceAfter=No|start_char=625|end_char=629|ner=O
+16	.	.	PUNCT	$.	_	2	punct	_	start_char=629|end_char=630|ner=O
+
+# text = Unterwegs traf er einen alten Schulfreund, den er seit zwanzig Jahren nicht gesehen hatte.
+# sent_id = 9
+# constituency = (ROOT (VROOT (S (ADV Unterwegs) (VERB traf) (PRON er) (DET einen) (ADJ alten) (NOUN Schulfreund)) (PUNCT ,) (NP (S (PRON den) (PRON er) (VP (PP (ADP seit) (NUM zwanzig) (NOUN Jahren)) (PART nicht) (VERB gesehen)) (AUX hatte))) (PUNCT .)))
+# sentiment = 1
+1	Unterwegs	unterwegs	ADV	ADV	_	2	advmod	_	start_char=631|end_char=640|ner=O
+2	traf	treffen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=641|end_char=645|ner=O
+3	er	er	PRON	PPER	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=646|end_char=648|ner=O
+4	einen	ein	DET	ART	Case=Acc|Definite=Ind|Gender=Masc|Number=Sing|NumType=Card|PronType=Art	6	det	_	start_char=649|end_char=654|ner=O
+5	alten	alt	ADJ	ADJA	Case=Acc|Degree=Pos|Gender=Masc|Number=Sing	6	amod	_	start_char=655|end_char=660|ner=O
+6	Schulfreund	Schulfreund	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	2	obj	_	SpaceAfter=No|start_char=661|end_char=672|ner=O
+7	,	,	PUNCT	$,	_	14	punct	_	start_char=672|end_char=673|ner=O
+8	den	der	PRON	PRELS	Case=Acc|Gender=Masc|Number=Sing|PronType=Dem,Rel	14	obj	_	start_char=674|end_char=677|ner=O
+9	er	er	PRON	PPER	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	14	nsubj	_	start_char=678|end_char=680|ner=O
+10	seit	seit	ADP	APPR	_	12	case	_	start_char=681|end_char=685|ner=O
+11	zwanzig	zwanzig	NUM	CARD	NumType=Card	12	nummod	_	start_char=686|end_char=693|ner=O
+12	Jahren	Jahr	NOUN	NN	Case=Dat|Gender=Neut|Number=Plur	14	obl	_	start_char=694|end_char=700|ner=O
+13	nicht	nicht	PART	PTKNEG	Polarity=Neg	14	advmod	_	start_char=701|end_char=706|ner=O
+14	gesehen	sehen	VERB	VVPP	VerbForm=Part	6	acl:relcl	_	start_char=707|end_char=714|ner=O
+15	hatte	haben	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	14	aux	_	SpaceAfter=No|start_char=715|end_char=720|ner=O
+16	.	.	PUNCT	$.	_	2	punct	_	SpacesAfter=\n\n|start_char=720|end_char=721|ner=O
+
+# text = Wie viel kostet eigentlich ein Ticket für das Konzert am Samstag?
+# sent_id = 10
+# constituency = (ROOT (VROOT (S (NP (ADV Wie) (DET viel)) (VERB kostet) (ADV eigentlich) (NP (DET ein) (NOUN Ticket) (PP (ADP für) (DET das) (NOUN Konzert) (PP (ADP an) (DET dem) (NOUN Samstag))))) (PUNCT ?)))
+# sentiment = 2
+1	Wie	wie	ADV	KOUS	PronType=Int	3	advmod	_	start_char=723|end_char=726|ner=O
+2	viel	viel	DET	PIS	PronType=Ind	3	obj	_	start_char=727|end_char=731|ner=O
+3	kostet	kosten	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=732|end_char=738|ner=O
+4	eigentlich	eigentlich	ADV	ADV	_	3	advmod	_	start_char=739|end_char=749|ner=O
+5	ein	ein	DET	ART	Case=Nom|Definite=Ind|Gender=Neut|Number=Sing|NumType=Card|PronType=Art	6	det	_	start_char=750|end_char=753|ner=O
+6	Ticket	Ticket	NOUN	NN	Case=Nom|Gender=Neut|Number=Sing	3	obj	_	start_char=754|end_char=760|ner=O
+7	für	für	ADP	APPR	_	9	case	_	start_char=761|end_char=764|ner=O
+8	das	der	DET	ART	Case=Acc|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	9	det	_	start_char=765|end_char=768|ner=O
+9	Konzert	Konzert	NOUN	NN	Case=Acc|Gender=Neut|Number=Sing	6	nmod	_	start_char=769|end_char=776|ner=O
+10-11	am	_	_	_	_	_	_	_	start_char=777|end_char=779|ner=O
+10	an	an	ADP	APPR	_	12	case	_	_
+11	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	12	det	_	_
+12	Samstag	Samstag	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	9	nmod	_	SpaceAfter=No|start_char=780|end_char=787|ner=O
+13	?	?	PUNCT	$.	_	3	punct	_	start_char=787|end_char=788|ner=O
+
+# text = Ich habe gehört, dass es fast ausverkauft ist.
+# sent_id = 11
+# constituency = (ROOT (VROOT (S (PRON Ich) (AUX habe) (VP (VERB gehört))) (PUNCT ,) (S (SCONJ dass) (PRON es) (AP (ADV fast) (ADJ ausverkauft)) (AUX ist)) (PUNCT .)))
+# sentiment = 0
+1	Ich	ich	PRON	PPER	Case=Nom|Number=Sing|Person=1|PronType=Prs	3	nsubj	_	start_char=789|end_char=792|ner=O
+2	habe	haben	AUX	VAFIN	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	3	aux	_	start_char=793|end_char=797|ner=O
+3	gehört	gehören	VERB	VVPP	VerbForm=Part	0	root	_	SpaceAfter=No|start_char=798|end_char=804|ner=O
+4	,	,	PUNCT	$,	_	8	punct	_	start_char=804|end_char=805|ner=O
+5	dass	dass	SCONJ	KOUS	_	8	mark	_	start_char=806|end_char=810|ner=O
+6	es	es	PRON	PPER	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	8	nsubj	_	start_char=811|end_char=813|ner=O
+7	fast	fast	ADV	ADV	_	8	advmod	_	start_char=814|end_char=818|ner=O
+8	ausverkauft	ausverkaufen	ADJ	ADJD	Degree=Pos	3	ccomp	_	start_char=819|end_char=830|ner=O
+9	ist	sein	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	8	cop	_	SpaceAfter=No|start_char=831|end_char=834|ner=O
+10	.	.	PUNCT	$.	_	3	punct	_	SpacesAfter=\n\n|start_char=834|end_char=835|ner=O
+
+# text = Laut Wetterbericht wird es morgen bis zu 31 °C warm.
+# sent_id = 12
+# constituency = (ROOT (VROOT (S (PP (ADP Laut) (NOUN Wetterbericht)) (VERB wird) (PRON es) (ADV morgen) (NP (AP (ADP bis) (ADP zu) (NUM 31)) (NOUN °C)) (ADJ warm)) (PUNCT .)))
+# sentiment = 2
+1	Laut	laut	ADP	APPR	_	2	case	_	start_char=837|end_char=841|ner=O
+2	Wetterbericht	Wetterbericht	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	10	nmod	_	start_char=842|end_char=855|ner=O
+3	wird	werden	VERB	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=856|end_char=860|ner=O
+4	es	es	PRON	PPER	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	3	nsubj	_	start_char=861|end_char=863|ner=O
+5	morgen	morgen	ADV	ADV	_	3	advmod	_	start_char=864|end_char=870|ner=O
+6	bis	bis	ADP	ADV	_	9	case	_	start_char=871|end_char=874|ner=O
+7	zu	zu	ADP	ADV	_	9	case	_	start_char=875|end_char=877|ner=O
+8	31	31	NUM	CARD	NumType=Card	9	nummod	_	start_char=878|end_char=880|ner=O
+9	°C	°C	NOUN	NN	Case=Acc|Gender=Masc|Number=Plur	10	nmod	_	start_char=881|end_char=883|ner=S-PER
+10	warm	warm	ADJ	ADJD	Degree=Pos	3	xcomp	_	SpaceAfter=No|start_char=884|end_char=888|ner=O
+11	.	.	PUNCT	$.	_	3	punct	_	start_char=888|end_char=889|ner=O
+
+# text = Am Abend sind Gewitter mit Starkregen möglich.
+# sent_id = 13
+# constituency = (ROOT (VROOT (S (PP (ADP An) (DET dem) (NOUN Abend)) (AUX sind) (NP (NOUN Gewitter) (PP (ADP mit) (NOUN Starkregen))) (ADJ möglich)) (PUNCT .)))
+# sentiment = 2
+1-2	Am	_	_	_	_	_	_	_	start_char=890|end_char=892|ner=O
+1	An	an	ADP	APPR	_	3	case	_	_
+2	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	3	det	_	_
+3	Abend	Abend	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	8	nmod	_	start_char=893|end_char=898|ner=O
+4	sind	sein	AUX	VAFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	8	cop	_	start_char=899|end_char=903|ner=O
+5	Gewitter	Gewitter	NOUN	NN	Case=Nom|Gender=Masc|Number=Plur	8	nsubj	_	start_char=904|end_char=912|ner=O
+6	mit	mit	ADP	APPR	_	7	case	_	start_char=913|end_char=916|ner=O
+7	Starkregen	Starkregen	NOUN	NN	Case=Dat|Gender=Masc|Number=Plur	8	nmod	_	start_char=917|end_char=927|ner=O
+8	möglich	möglich	ADJ	ADJD	Degree=Pos	0	root	_	SpaceAfter=No|start_char=928|end_char=935|ner=O
+9	.	.	PUNCT	$.	_	8	punct	_	SpacesAfter=\n\n|start_char=935|end_char=936|ner=O
+
+# text = Die Firma meldete für das dritte Quartal einen Umsatz von 12,4 Mio.
+# sent_id = 14
+# constituency = (ROOT (VROOT (S (NP (DET Die) (NOUN Firma)) (VERB meldete) (PP (ADP für) (DET das) (ADJ dritte) (NOUN Quartal)) (NP (DET einen) (NOUN Umsatz) (PP (ADP von) (NM (NUM 12,4) (NOUN Mio))))) (PUNCT .)))
+# sentiment = 1
+1	Die	der	DET	ART	Case=Nom|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	2	det	_	start_char=938|end_char=941|ner=O
+2	Firma	Firma	NOUN	NN	Case=Nom|Gender=Fem|Number=Sing	3	nsubj	_	start_char=942|end_char=947|ner=O
+3	meldete	melden	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=948|end_char=955|ner=O
+4	für	für	ADP	APPR	_	7	case	_	start_char=956|end_char=959|ner=O
+5	das	der	DET	ART	Case=Acc|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	7	det	_	start_char=960|end_char=963|ner=O
+6	dritte	dritt	ADJ	ADJA	Case=Acc|Degree=Pos|Gender=Neut|Number=Sing|NumType=Ord	7	amod	_	start_char=964|end_char=970|ner=O
+7	Quartal	Quartal	NOUN	NN	Case=Acc|Gender=Neut|Number=Sing	3	obl	_	start_char=971|end_char=978|ner=O
+8	einen	ein	DET	ART	Case=Acc|Definite=Ind|Gender=Masc|Number=Sing|NumType=Card|PronType=Art	9	det	_	start_char=979|end_char=984|ner=O
+9	Umsatz	Umsatz	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	3	obj	_	start_char=985|end_char=991|ner=O
+10	von	von	ADP	APPR	_	12	case	_	start_char=992|end_char=995|ner=O
+11	12,4	12,4	NUM	CARD	NumType=Card	12	nummod	_	start_char=996|end_char=1000|ner=O
+12	Mio	Mio	NOUN	NN	Case=Dat|Gender=Masc|Number=Plur	9	nmod	_	SpaceAfter=No|start_char=1001|end_char=1004|ner=O
+13	.	.	PUNCT	$.	_	3	punct	_	start_char=1004|end_char=1005|ner=O
+
+# text = Euro, das sind etwa 8 % mehr als im Vorjahr.
+# sent_id = 15
+# constituency = (ROOT (VROOT (PROPN Euro) (PUNCT ,) (S (PRON das) (AUX sind) (NP (NP (AP (ADV etwa) (NUM 8)) (SYM %)) (ADV mehr) (PP (ADP als) (ADP in) (DET dem) (NOUN Vorjahr)))) (PUNCT .)))
+# sentiment = 2
+1	Euro	Euro	PROPN	NN	Case=Nom|Gender=Masc|Number=Sing	0	root	_	SpaceAfter=No|start_char=1006|end_char=1010|ner=S-MISC
+2	,	,	PUNCT	$,	_	1	punct	_	start_char=1010|end_char=1011|ner=O
+3	das	der	PRON	PDS	Case=Nom|Gender=Neut|Number=Sing|PronType=Dem,Rel	8	nsubj	_	start_char=1012|end_char=1015|ner=O
+4	sind	sein	AUX	VAFIN	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	8	cop	_	start_char=1016|end_char=1020|ner=O
+5	etwa	etwa	ADV	ADV	_	6	advmod	_	start_char=1021|end_char=1025|ner=O
+6	8	8	NUM	CARD	NumType=Card	7	nummod	_	start_char=1026|end_char=1027|ner=O
+7	%	%	SYM	NN	Case=Nom|Gender=Neut|Number=Plur	8	nmod	_	start_char=1028|end_char=1029|ner=O
+8	mehr	mehr	ADV	ADV	ExtPos=ADV	1	appos	_	start_char=1030|end_char=1034|ner=O
+9	als	als	ADP	KOKOM	_	12	case	_	start_char=1035|end_char=1038|ner=O
+10-11	im	_	_	_	_	_	_	_	start_char=1039|end_char=1041|ner=O
+10	in	in	ADP	APPR	_	12	case	_	_
+11	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	12	det	_	_
+12	Vorjahr	Vorjahr	NOUN	NN	Case=Dat|Gender=Neut|Number=Sing	8	nmod	_	SpaceAfter=No|start_char=1042|end_char=1049|ner=O
+13	.	.	PUNCT	$.	_	8	punct	_	SpacesAfter=\n\n|start_char=1049|end_char=1050|ner=O
+
+# text = Wir haben uns für das kleinere Auto entschieden, weil es weniger verbraucht und leichter zu parken ist.
+# sent_id = 16
+# constituency = (ROOT (VROOT (S (PRON Wir) (AUX haben) (VP (PRON uns) (PP (ADP für) (DET das) (ADJ kleinere) (NOUN Auto)) (VERB entschieden))) (PUNCT ,) (S (SCONJ weil) (PRON es) (CAP (AP (ADV weniger) (ADJ verbraucht)) (CCONJ und) (VP (ADJ leichter) (VZ (PART zu) (VERB parken)))) (AUX ist)) (PUNCT .)))
+# sentiment = 1
+1	Wir	wir	PRON	PPER	Case=Nom|Number=Plur|Person=1|PronType=Prs	8	nsubj	_	start_char=1052|end_char=1055|ner=O
+2	haben	haben	AUX	VAFIN	Mood=Ind|Number=Plur|Person=1|Tense=Pres|VerbForm=Fin	8	aux	_	start_char=1056|end_char=1061|ner=O
+3	uns	wir	PRON	PRF	Case=Acc|Number=Plur|Person=1|PronType=Prs|Reflex=Yes	8	obj	_	start_char=1062|end_char=1065|ner=O
+4	für	für	ADP	APPR	_	7	case	_	start_char=1066|end_char=1069|ner=O
+5	das	der	DET	ART	Case=Acc|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	7	det	_	start_char=1070|end_char=1073|ner=O
+6	kleinere	klein	ADJ	ADJA	Case=Acc|Degree=Cmp|Gender=Neut|Number=Sing	7	amod	_	start_char=1074|end_char=1082|ner=O
+7	Auto	Auto	NOUN	NN	Case=Acc|Gender=Neut|Number=Sing	8	obl	_	start_char=1083|end_char=1087|ner=O
+8	entschieden	entscheiden	VERB	VVPP	VerbForm=Part	0	root	_	SpaceAfter=No|start_char=1088|end_char=1099|ner=O
+9	,	,	PUNCT	$,	_	13	punct	_	start_char=1099|end_char=1100|ner=O
+10	weil	weil	SCONJ	KOUS	_	13	mark	_	start_char=1101|end_char=1105|ner=O
+11	es	es	PRON	PPER	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	13	nsubj	_	start_char=1106|end_char=1108|ner=O
+12	weniger	weniger	ADV	ADV	_	13	advmod	_	start_char=1109|end_char=1116|ner=O
+13	verbraucht	verbrauchen	ADJ	ADJD	Degree=Pos	8	advcl	_	start_char=1117|end_char=1127|ner=O
+14	und	und	CCONJ	KON	_	17	cc	_	start_char=1128|end_char=1131|ner=O
+15	leichter	leicht	ADJ	ADJD	Degree=Cmp	17	advmod	_	start_char=1132|end_char=1140|ner=O
+16	zu	zu	PART	PTKZU	_	17	mark	_	start_char=1141|end_char=1143|ner=O
+17	parken	parken	VERB	VVINF	VerbForm=Inf	13	conj	_	start_char=1144|end_char=1150|ner=O
+18	ist	sein	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	13	cop	_	SpaceAfter=No|start_char=1151|end_char=1154|ner=O
+19	.	.	PUNCT	$.	_	8	punct	_	SpacesAfter=\n\n|start_char=1154|end_char=1155|ner=O
+
+# text = Kannst du mir bitte das Salz geben?
+# sent_id = 17
+# constituency = (ROOT (VROOT (S (AUX Kannst) (PRON du) (PRON mir) (ADV bitte) (VP (NP (DET das) (NOUN Salz)) (VERB geben))) (PUNCT ?)))
+# sentiment = 0
+1	Kannst	können	AUX	VMFIN	Mood=Ind|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin	7	aux	_	start_char=1157|end_char=1163|ner=O
+2	du	du	PRON	PPER	Case=Nom|Number=Sing|Person=2|PronType=Prs	7	nsubj	_	start_char=1164|end_char=1166|ner=O
+3	mir	ich	PRON	PRF	Case=Dat|Number=Sing|Person=1|PronType=Prs	7	obl:arg	_	start_char=1167|end_char=1170|ner=O
+4	bitte	bitten	ADV	ADV	_	7	advmod	_	start_char=1171|end_char=1176|ner=O
+5	das	der	DET	ART	Case=Acc|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	6	det	_	start_char=1177|end_char=1180|ner=O
+6	Salz	Salz	NOUN	NN	Case=Acc|Gender=Neut|Number=Sing	7	obj	_	start_char=1181|end_char=1185|ner=O
+7	geben	geben	VERB	VVINF	VerbForm=Inf	0	root	_	SpaceAfter=No|start_char=1186|end_char=1191|ner=O
+8	?	?	PUNCT	$.	_	7	punct	_	start_char=1191|end_char=1192|ner=O
+
+# text = Danke!
+# sent_id = 18
+# constituency = (ROOT (VROOT (NOUN Danke) (PUNCT !)))
+# sentiment = 1
+1	Danke	Dank	NOUN	PTKANT	_	0	root	_	SpaceAfter=No|start_char=1193|end_char=1198|ner=O
+2	!	!	PUNCT	$.	_	1	punct	_	SpacesAfter=\n|start_char=1198|end_char=1199|ner=O

@@ -11,8 +11,9 @@ stanzasharp download models/stanza/en
 stanzasharp download models/stanza/en --package default_fast --processors tokenize,mwt,pos
 ```
 
-- `DIR`: where to put the models (default `models/stanza/en`), in the layout `Pipeline.Load(DIR)` reads.
-- `--package NAME`: `default` (the default) or `default_fast`.
+- `DIR`: where to put the models (default `models/stanza/<lang>`), in the layout `Pipeline.Load(DIR)` reads.
+- `--lang CODE`: `en` (the default) or `de`. German models can be downloaded, but `Pipeline.Load` doesn't run them yet.
+- `--package NAME`: `default` (the default) or `default_fast`; for German also `combined`, `gsd` and `hdt`.
 - `--processors LIST`: only the models these processors need, e.g. `tokenize,mwt,pos,lemma`.
 
 In a Dockerfile, `dotnet tool install --tool-path /tools StanzaSharp.Tool` avoids touching the global tool path.

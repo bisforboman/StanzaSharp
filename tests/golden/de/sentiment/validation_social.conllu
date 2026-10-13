@@ -1,0 +1,234 @@
+# text = Endlich Wochenende!!!
+# sent_id = 0
+# sentiment = 2
+1	Endlich	_	_	_	_	0	_	_	start_char=0|end_char=7
+2	Wochenende	_	_	_	_	1	_	_	SpaceAfter=No|start_char=8|end_char=18
+3	!	_	_	_	_	2	_	_	SpaceAfter=No|start_char=18|end_char=19
+4	!	_	_	_	_	3	_	_	SpaceAfter=No|start_char=19|end_char=20
+5	!	_	_	_	_	4	_	_	start_char=20|end_char=21
+
+# text = 🎉 Wer kommt heute Abend mit ins Kino? #Freitag #Kino
+# sent_id = 1
+# sentiment = 1
+1	🎉	_	_	_	_	0	_	_	start_char=22|end_char=23
+2	Wer	_	_	_	_	1	_	_	start_char=24|end_char=27
+3	kommt	_	_	_	_	2	_	_	start_char=28|end_char=33
+4	heute	_	_	_	_	3	_	_	start_char=34|end_char=39
+5	Abend	_	_	_	_	4	_	_	start_char=40|end_char=45
+6	mit	_	_	_	_	5	_	_	start_char=46|end_char=49
+7-8	ins	_	_	_	_	_	_	_	start_char=50|end_char=53
+7	in	_	_	_	_	6	_	_	_
+8	das	_	_	_	_	7	_	_	_
+9	Kino	_	_	_	_	8	_	_	SpaceAfter=No|start_char=54|end_char=58
+10	?	_	_	_	_	9	_	_	start_char=58|end_char=59
+11	#	_	_	_	_	10	_	_	SpaceAfter=No|start_char=60|end_char=61
+12	Freitag	_	_	_	_	11	_	_	start_char=61|end_char=68
+13	#	_	_	_	_	12	_	_	SpaceAfter=No|start_char=69|end_char=70
+14	Kino	_	_	_	_	13	_	_	SpacesAfter=\n\n|start_char=70|end_char=74
+
+# text = omg der neue Film ist sooo gut 😍😍 unbedingt anschauen!!!
+# sent_id = 2
+# sentiment = 2
+1	omg	_	_	_	_	0	_	_	start_char=76|end_char=79
+2	der	_	_	_	_	1	_	_	start_char=80|end_char=83
+3	neue	_	_	_	_	2	_	_	start_char=84|end_char=88
+4	Film	_	_	_	_	3	_	_	start_char=89|end_char=93
+5	ist	_	_	_	_	4	_	_	start_char=94|end_char=97
+6	sooo	_	_	_	_	5	_	_	start_char=98|end_char=102
+7	gut	_	_	_	_	6	_	_	start_char=103|end_char=106
+8	😍😍	_	_	_	_	7	_	_	start_char=107|end_char=109
+9	unbedingt	_	_	_	_	8	_	_	start_char=110|end_char=119
+10	anschauen	_	_	_	_	9	_	_	SpaceAfter=No|start_char=120|end_char=129
+11	!	_	_	_	_	10	_	_	SpaceAfter=No|start_char=129|end_char=130
+12	!	_	_	_	_	11	_	_	SpaceAfter=No|start_char=130|end_char=131
+13	!	_	_	_	_	12	_	_	SpacesAfter=\n\n|start_char=131|end_char=132
+
+# text = @lisa_m danke für das tolle Geschenk, hab mich riesig gefreut :)
+# sent_id = 3
+# sentiment = 2
+1	@lisa_m	_	_	_	_	0	_	_	start_char=134|end_char=141
+2	danke	_	_	_	_	1	_	_	start_char=142|end_char=147
+3	für	_	_	_	_	2	_	_	start_char=148|end_char=151
+4	das	_	_	_	_	3	_	_	start_char=152|end_char=155
+5	tolle	_	_	_	_	4	_	_	start_char=156|end_char=161
+6	Geschenk	_	_	_	_	5	_	_	SpaceAfter=No|start_char=162|end_char=170
+7	,	_	_	_	_	6	_	_	start_char=170|end_char=171
+8	hab	_	_	_	_	7	_	_	start_char=172|end_char=175
+9	mich	_	_	_	_	8	_	_	start_char=176|end_char=180
+10	riesig	_	_	_	_	9	_	_	start_char=181|end_char=187
+11	gefreut	_	_	_	_	10	_	_	start_char=188|end_char=195
+12	:	_	_	_	_	11	_	_	SpaceAfter=No|start_char=196|end_char=197
+13	)	_	_	_	_	12	_	_	SpacesAfter=\n\n|start_char=197|end_char=198
+
+# text = Wieder mal 20 Min. Verspätung bei der Bahn... ich liebe es 🙄 #Bahnchaos
+# sent_id = 4
+# sentiment = 2
+1	Wieder	_	_	_	_	0	_	_	start_char=200|end_char=206
+2	mal	_	_	_	_	1	_	_	start_char=207|end_char=210
+3	20	_	_	_	_	2	_	_	start_char=211|end_char=213
+4	Min.	_	_	_	_	3	_	_	start_char=214|end_char=218
+5	Verspätung	_	_	_	_	4	_	_	start_char=219|end_char=229
+6	bei	_	_	_	_	5	_	_	start_char=230|end_char=233
+7	der	_	_	_	_	6	_	_	start_char=234|end_char=237
+8	Bahn	_	_	_	_	7	_	_	SpaceAfter=No|start_char=238|end_char=242
+9	...	_	_	_	_	8	_	_	start_char=242|end_char=245
+10	ich	_	_	_	_	9	_	_	start_char=246|end_char=249
+11	liebe	_	_	_	_	10	_	_	start_char=250|end_char=255
+12	es	_	_	_	_	11	_	_	start_char=256|end_char=258
+13	🙄	_	_	_	_	12	_	_	start_char=259|end_char=260
+14	#	_	_	_	_	13	_	_	SpaceAfter=No|start_char=261|end_char=262
+15	Bahnchaos	_	_	_	_	14	_	_	SpacesAfter=\n\n|start_char=262|end_char=271
+
+# text = Kann mir jemand ein gutes Café in Köln empfehlen?
+# sent_id = 5
+# sentiment = 1
+1	Kann	_	_	_	_	0	_	_	start_char=273|end_char=277
+2	mir	_	_	_	_	1	_	_	start_char=278|end_char=281
+3	jemand	_	_	_	_	2	_	_	start_char=282|end_char=288
+4	ein	_	_	_	_	3	_	_	start_char=289|end_char=292
+5	gutes	_	_	_	_	4	_	_	start_char=293|end_char=298
+6	Café	_	_	_	_	5	_	_	start_char=299|end_char=303
+7	in	_	_	_	_	6	_	_	start_char=304|end_char=306
+8	Köln	_	_	_	_	7	_	_	start_char=307|end_char=311
+9	empfehlen	_	_	_	_	8	_	_	SpaceAfter=No|start_char=312|end_char=321
+10	?	_	_	_	_	9	_	_	start_char=321|end_char=322
+
+# text = Am besten mit WLAN und ohne Laptop-Verbot lol
+# sent_id = 6
+# sentiment = 2
+1-2	Am	_	_	_	_	_	_	_	start_char=323|end_char=325
+1	An	_	_	_	_	0	_	_	_
+2	dem	_	_	_	_	1	_	_	_
+3	besten	_	_	_	_	2	_	_	start_char=326|end_char=332
+4	mit	_	_	_	_	3	_	_	start_char=333|end_char=336
+5	WLAN	_	_	_	_	4	_	_	start_char=337|end_char=341
+6	und	_	_	_	_	5	_	_	start_char=342|end_char=345
+7	ohne	_	_	_	_	6	_	_	start_char=346|end_char=350
+8	Laptop	_	_	_	_	7	_	_	SpaceAfter=No|start_char=351|end_char=357
+9	-	_	_	_	_	8	_	_	SpaceAfter=No|start_char=357|end_char=358
+10	Verbot	_	_	_	_	9	_	_	start_char=358|end_char=364
+11	lol	_	_	_	_	10	_	_	SpacesAfter=\n\n|start_char=365|end_char=368
+
+# text = Heute 10 km gelaufen, neuer Rekord!!! 💪🏃‍♀️
+# sent_id = 7
+# sentiment = 2
+1	Heute	_	_	_	_	0	_	_	start_char=370|end_char=375
+2	10	_	_	_	_	1	_	_	start_char=376|end_char=378
+3	km	_	_	_	_	2	_	_	start_char=379|end_char=381
+4	gelaufen	_	_	_	_	3	_	_	SpaceAfter=No|start_char=382|end_char=390
+5	,	_	_	_	_	4	_	_	start_char=390|end_char=391
+6	neuer	_	_	_	_	5	_	_	start_char=392|end_char=397
+7	Rekord	_	_	_	_	6	_	_	SpaceAfter=No|start_char=398|end_char=404
+8	!	_	_	_	_	7	_	_	SpaceAfter=No|start_char=404|end_char=405
+9	!	_	_	_	_	8	_	_	SpaceAfter=No|start_char=405|end_char=406
+10	!	_	_	_	_	9	_	_	start_char=406|end_char=407
+11	💪🏃‍♀	_	_	_	_	10	_	_	SpaceAfter=No|start_char=408|end_char=412
+12	️	_	_	_	_	11	_	_	SpacesAfter=\n\n|start_char=412|end_char=413
+
+# text = wer hat lust auf grillen am sonntag?
+# sent_id = 8
+# sentiment = 2
+1	wer	_	_	_	_	0	_	_	start_char=415|end_char=418
+2	hat	_	_	_	_	1	_	_	start_char=419|end_char=422
+3	lust	_	_	_	_	2	_	_	start_char=423|end_char=427
+4	auf	_	_	_	_	3	_	_	start_char=428|end_char=431
+5	grillen	_	_	_	_	4	_	_	start_char=432|end_char=439
+6-7	am	_	_	_	_	_	_	_	start_char=440|end_char=442
+6	an	_	_	_	_	5	_	_	_
+7	dem	_	_	_	_	6	_	_	_
+8	sonntag	_	_	_	_	7	_	_	SpaceAfter=No|start_char=443|end_char=450
+9	?	_	_	_	_	8	_	_	start_char=450|end_char=451
+
+# text = bringt was zu trinken mit, ich kümmere mich ums fleisch
+# sent_id = 9
+# sentiment = 1
+1	bringt	_	_	_	_	0	_	_	start_char=452|end_char=458
+2	was	_	_	_	_	1	_	_	start_char=459|end_char=462
+3	zu	_	_	_	_	2	_	_	start_char=463|end_char=465
+4	trinken	_	_	_	_	3	_	_	start_char=466|end_char=473
+5	mit	_	_	_	_	4	_	_	SpaceAfter=No|start_char=474|end_char=477
+6	,	_	_	_	_	5	_	_	start_char=477|end_char=478
+7	ich	_	_	_	_	6	_	_	start_char=479|end_char=482
+8	kümmere	_	_	_	_	7	_	_	start_char=483|end_char=490
+9	mich	_	_	_	_	8	_	_	start_char=491|end_char=495
+10-11	ums	_	_	_	_	_	_	_	start_char=496|end_char=499
+10	um	_	_	_	_	9	_	_	_
+11	das	_	_	_	_	10	_	_	_
+12	fleisch	_	_	_	_	11	_	_	SpacesAfter=\n\n|start_char=500|end_char=507
+
+# text = Kurze Frage: Weiß jemand, ob der Supermarkt am Feiertag aufhat??
+# sent_id = 10
+# sentiment = 1
+1	Kurze	_	_	_	_	0	_	_	start_char=509|end_char=514
+2	Frage	_	_	_	_	1	_	_	SpaceAfter=No|start_char=515|end_char=520
+3	:	_	_	_	_	2	_	_	start_char=520|end_char=521
+4	Weiß	_	_	_	_	3	_	_	start_char=522|end_char=526
+5	jemand	_	_	_	_	4	_	_	SpaceAfter=No|start_char=527|end_char=533
+6	,	_	_	_	_	5	_	_	start_char=533|end_char=534
+7	ob	_	_	_	_	6	_	_	start_char=535|end_char=537
+8	der	_	_	_	_	7	_	_	start_char=538|end_char=541
+9	Supermarkt	_	_	_	_	8	_	_	start_char=542|end_char=552
+10-11	am	_	_	_	_	_	_	_	start_char=553|end_char=555
+10	an	_	_	_	_	9	_	_	_
+11	dem	_	_	_	_	10	_	_	_
+12	Feiertag	_	_	_	_	11	_	_	start_char=556|end_char=564
+13	aufhat	_	_	_	_	12	_	_	SpaceAfter=No|start_char=565|end_char=571
+14	?	_	_	_	_	13	_	_	SpaceAfter=No|start_char=571|end_char=572
+15	?	_	_	_	_	14	_	_	start_char=572|end_char=573
+
+# text = Danke im Voraus!
+# sent_id = 11
+# sentiment = 2
+1	Danke	_	_	_	_	0	_	_	start_char=574|end_char=579
+2-3	im	_	_	_	_	_	_	_	start_char=580|end_char=582
+2	in	_	_	_	_	1	_	_	_
+3	dem	_	_	_	_	2	_	_	_
+4	Voraus	_	_	_	_	3	_	_	SpaceAfter=No|start_char=583|end_char=589
+5	!	_	_	_	_	4	_	_	SpacesAfter=\n\n|start_char=589|end_char=590
+
+# text = RT @nachrichten: Bundesweiter Warnstreik im Nahverkehr am Montag – alle Infos hier: https://t.co/abc123
+# sent_id = 12
+# sentiment = 1
+1	RT	_	_	_	_	0	_	_	start_char=592|end_char=594
+2	@nachrichten	_	_	_	_	1	_	_	SpaceAfter=No|start_char=595|end_char=607
+3	:	_	_	_	_	2	_	_	start_char=607|end_char=608
+4	Bundesweiter	_	_	_	_	3	_	_	start_char=609|end_char=621
+5	Warnstreik	_	_	_	_	4	_	_	start_char=622|end_char=632
+6-7	im	_	_	_	_	_	_	_	start_char=633|end_char=635
+6	in	_	_	_	_	5	_	_	_
+7	dem	_	_	_	_	6	_	_	_
+8	Nahverkehr	_	_	_	_	7	_	_	start_char=636|end_char=646
+9-10	am	_	_	_	_	_	_	_	start_char=647|end_char=649
+9	an	_	_	_	_	8	_	_	_
+10	dem	_	_	_	_	9	_	_	_
+11	Montag	_	_	_	_	10	_	_	start_char=650|end_char=656
+12	–	_	_	_	_	11	_	_	start_char=657|end_char=658
+13	alle	_	_	_	_	12	_	_	start_char=659|end_char=663
+14	Infos	_	_	_	_	13	_	_	start_char=664|end_char=669
+15	hier	_	_	_	_	14	_	_	SpaceAfter=No|start_char=670|end_char=674
+16	:	_	_	_	_	15	_	_	start_char=674|end_char=675
+17	https://t.co/abc123	_	_	_	_	16	_	_	SpacesAfter=\n\n|start_char=676|end_char=695
+
+# text = Hab grad meinen Kaffee über die Tastatur gekippt.
+# sent_id = 13
+# sentiment = 2
+1	Hab	_	_	_	_	0	_	_	start_char=697|end_char=700
+2	grad	_	_	_	_	1	_	_	start_char=701|end_char=705
+3	meinen	_	_	_	_	2	_	_	start_char=706|end_char=712
+4	Kaffee	_	_	_	_	3	_	_	start_char=713|end_char=719
+5	über	_	_	_	_	4	_	_	start_char=720|end_char=724
+6	die	_	_	_	_	5	_	_	start_char=725|end_char=728
+7	Tastatur	_	_	_	_	6	_	_	start_char=729|end_char=737
+8	gekippt	_	_	_	_	7	_	_	SpaceAfter=No|start_char=738|end_char=745
+9	.	_	_	_	_	8	_	_	start_char=745|end_char=746
+
+# text = Großartiger Start in den Tag. 😂
+# sent_id = 14
+# sentiment = 2
+1	Großartiger	_	_	_	_	0	_	_	start_char=747|end_char=758
+2	Start	_	_	_	_	1	_	_	start_char=759|end_char=764
+3	in	_	_	_	_	2	_	_	start_char=765|end_char=767
+4	den	_	_	_	_	3	_	_	start_char=768|end_char=771
+5	Tag	_	_	_	_	4	_	_	SpaceAfter=No|start_char=772|end_char=775
+6	.	_	_	_	_	5	_	_	start_char=775|end_char=776
+7	😂	_	_	_	_	6	_	_	SpacesAfter=\n|start_char=777|end_char=778

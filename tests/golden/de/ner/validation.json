@@ -1,0 +1,49 @@
+[
+ [
+  {
+   "text": "München",
+   "type": "LOC",
+   "start_char": 13,
+   "end_char": 20
+  }
+ ],
+ [],
+ [
+  {
+   "text": "Schröder",
+   "type": "PER",
+   "start_char": 133,
+   "end_char": 141
+  }
+ ],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "°C",
+   "type": "PER",
+   "start_char": 881,
+   "end_char": 883
+  }
+ ],
+ [],
+ [],
+ [
+  {
+   "text": "Euro",
+   "type": "MISC",
+   "start_char": 1006,
+   "end_char": 1010
+  }
+ ],
+ [],
+ [],
+ []
+]

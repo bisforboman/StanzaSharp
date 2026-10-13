@@ -1,0 +1,167 @@
+# text = Führende Leerzeilen und Leerzeichen kommen zuerst.
+# sent_id = 0
+# sentiment = 2
+1	Führende	_	_	_	_	0	_	_	SpacesBefore=\n\n\n\s\s\s|start_char=6|end_char=14
+2	Leerzeilen	_	_	_	_	1	_	_	start_char=15|end_char=25
+3	und	_	_	_	_	2	_	_	start_char=26|end_char=29
+4	Leerzeichen	_	_	_	_	3	_	_	start_char=30|end_char=41
+5	kommen	_	_	_	_	4	_	_	start_char=42|end_char=48
+6	zuerst	_	_	_	_	5	_	_	SpaceAfter=No|start_char=49|end_char=55
+7	.	_	_	_	_	6	_	_	SpacesAfter=\s\s|start_char=55|end_char=56
+
+# text = Dann ein normaler Satz.
+# sent_id = 1
+# sentiment = 2
+1	Dann	_	_	_	_	0	_	_	start_char=58|end_char=62
+2	ein	_	_	_	_	1	_	_	start_char=63|end_char=66
+3	normaler	_	_	_	_	2	_	_	start_char=67|end_char=75
+4	Satz	_	_	_	_	3	_	_	SpaceAfter=No|start_char=76|end_char=80
+5	.	_	_	_	_	4	_	_	SpacesAfter=\n\n\n\n\n\n|start_char=80|end_char=81
+
+# text = Viele Leerzeilen trennten diesen Absatz.
+# sent_id = 2
+# sentiment = 2
+1	Viele	_	_	_	_	0	_	_	start_char=87|end_char=92
+2	Leerzeilen	_	_	_	_	1	_	_	start_char=93|end_char=103
+3	trennten	_	_	_	_	2	_	_	start_char=104|end_char=112
+4	diesen	_	_	_	_	3	_	_	start_char=113|end_char=119
+5	Absatz	_	_	_	_	4	_	_	SpaceAfter=No|start_char=120|end_char=126
+6	.	_	_	_	_	5	_	_	start_char=126|end_char=127
+
+# text = Er hat zwei Sätze.
+# sent_id = 3
+# sentiment = 2
+1	Er	_	_	_	_	0	_	_	start_char=128|end_char=130
+2	hat	_	_	_	_	1	_	_	start_char=131|end_char=134
+3	zwei	_	_	_	_	2	_	_	start_char=135|end_char=139
+4	Sätze	_	_	_	_	3	_	_	SpaceAfter=No|start_char=140|end_char=145
+5	.	_	_	_	_	4	_	_	SpacesAfter=\s\s\s\n|start_char=145|end_char=146
+
+# text = Am Zeilenende stehen Leerzeichen.
+# sent_id = 4
+# sentiment = 1
+1-2	Am	_	_	_	_	_	_	_	start_char=150|end_char=152
+1	An	_	_	_	_	0	_	_	_
+2	dem	_	_	_	_	1	_	_	_
+3	Zeilenende	_	_	_	_	2	_	_	start_char=153|end_char=163
+4	stehen	_	_	_	_	3	_	_	start_char=164|end_char=170
+5	Leerzeichen	_	_	_	_	4	_	_	SpaceAfter=No|start_char=171|end_char=182
+6	.	_	_	_	_	5	_	_	SpacesAfter=\t\t\n\n|start_char=182|end_char=183
+
+# text = Jetzt folgen Windows-Zeilenenden.
+# sent_id = 5
+# sentiment = 1
+1	Jetzt	_	_	_	_	0	_	_	start_char=187|end_char=192
+2	folgen	_	_	_	_	1	_	_	start_char=193|end_char=199
+3	Windows	_	_	_	_	2	_	_	SpaceAfter=No|start_char=200|end_char=207
+4	-	_	_	_	_	3	_	_	SpaceAfter=No|start_char=207|end_char=208
+5	Zeilenenden	_	_	_	_	4	_	_	SpaceAfter=No|start_char=208|end_char=219
+6	.	_	_	_	_	5	_	_	SpacesAfter=\r\n|start_char=219|end_char=220
+
+# text = Diese Zeile endet mit CRLF.
+# sent_id = 6
+# sentiment = 2
+1	Diese	_	_	_	_	0	_	_	start_char=222|end_char=227
+2	Zeile	_	_	_	_	1	_	_	start_char=228|end_char=233
+3	endet	_	_	_	_	2	_	_	start_char=234|end_char=239
+4	mit	_	_	_	_	3	_	_	start_char=240|end_char=243
+5	CRLF	_	_	_	_	4	_	_	SpaceAfter=No|start_char=244|end_char=248
+6	.	_	_	_	_	5	_	_	SpacesAfter=\r\n|start_char=248|end_char=249
+
+# text = Diese auch.
+# sent_id = 7
+# sentiment = 0
+1	Diese	_	_	_	_	0	_	_	start_char=251|end_char=256
+2	auch	_	_	_	_	1	_	_	SpaceAfter=No|start_char=257|end_char=261
+3	.	_	_	_	_	2	_	_	SpacesAfter=\r\n\r\n|start_char=261|end_char=262
+
+# text = Ein neuer Absatz nach einer CRLF-Leerzeile.
+# sent_id = 8
+# sentiment = 1
+1	Ein	_	_	_	_	0	_	_	start_char=266|end_char=269
+2	neuer	_	_	_	_	1	_	_	start_char=270|end_char=275
+3	Absatz	_	_	_	_	2	_	_	start_char=276|end_char=282
+4	nach	_	_	_	_	3	_	_	start_char=283|end_char=287
+5	einer	_	_	_	_	4	_	_	start_char=288|end_char=293
+6	CRLF	_	_	_	_	5	_	_	SpaceAfter=No|start_char=294|end_char=298
+7	-	_	_	_	_	6	_	_	SpaceAfter=No|start_char=298|end_char=299
+8	Leerzeile	_	_	_	_	7	_	_	SpaceAfter=No|start_char=299|end_char=308
+9	.	_	_	_	_	8	_	_	SpacesAfter=\r\n\r\n\t|start_char=308|end_char=309
+
+# text = Ein Absatz, der mit einem Tabulator beginnt.
+# sent_id = 9
+# sentiment = 1
+1	Ein	_	_	_	_	0	_	_	start_char=314|end_char=317
+2	Absatz	_	_	_	_	1	_	_	SpaceAfter=No|start_char=318|end_char=324
+3	,	_	_	_	_	2	_	_	start_char=324|end_char=325
+4	der	_	_	_	_	3	_	_	start_char=326|end_char=329
+5	mit	_	_	_	_	4	_	_	start_char=330|end_char=333
+6	einem	_	_	_	_	5	_	_	start_char=334|end_char=339
+7	Tabulator	_	_	_	_	6	_	_	start_char=340|end_char=349
+8	beginnt	_	_	_	_	7	_	_	SpaceAfter=No|start_char=350|end_char=357
+9	.	_	_	_	_	8	_	_	SpacesAfter=\n\n|start_char=357|end_char=358
+
+# text = Ein einzelnes CR steht mitten in dieser Zeile.
+# sent_id = 10
+# sentiment = 1
+1	Ein	_	_	_	_	0	_	_	start_char=360|end_char=363
+2	einzelnes	_	_	_	_	1	_	_	start_char=364|end_char=373
+3	CR	_	_	_	_	2	_	_	SpacesAfter=\r|start_char=374|end_char=376
+4	steht	_	_	_	_	3	_	_	start_char=377|end_char=382
+5	mitten	_	_	_	_	4	_	_	start_char=383|end_char=389
+6	in	_	_	_	_	5	_	_	start_char=390|end_char=392
+7	dieser	_	_	_	_	6	_	_	start_char=393|end_char=399
+8	Zeile	_	_	_	_	7	_	_	SpaceAfter=No|start_char=400|end_char=405
+9	.	_	_	_	_	8	_	_	SpacesAfter=\n\n\s\s\s\n\s\s\n|start_char=405|end_char=406
+
+# text = Zwischen diesen Absätzen stehen Zeilen nur aus Leerzeichen.
+# sent_id = 11
+# sentiment = 1
+1	Zwischen	_	_	_	_	0	_	_	start_char=415|end_char=423
+2	diesen	_	_	_	_	1	_	_	start_char=424|end_char=430
+3	Absätzen	_	_	_	_	2	_	_	start_char=431|end_char=439
+4	stehen	_	_	_	_	3	_	_	start_char=440|end_char=446
+5	Zeilen	_	_	_	_	4	_	_	start_char=447|end_char=453
+6	nur	_	_	_	_	5	_	_	start_char=454|end_char=457
+7	aus	_	_	_	_	6	_	_	start_char=458|end_char=461
+8	Leerzeichen	_	_	_	_	7	_	_	SpaceAfter=No|start_char=462|end_char=473
+9	.	_	_	_	_	8	_	_	SpacesAfter=\n\n|start_char=473|end_char=474
+
+# text = Zeile eins Zeile zwei ohne Satzzeichen Zeile drei.
+# sent_id = 12
+# sentiment = 1
+1	Zeile	_	_	_	_	0	_	_	start_char=476|end_char=481
+2	eins	_	_	_	_	1	_	_	SpacesAfter=\n|start_char=482|end_char=486
+3	Zeile	_	_	_	_	2	_	_	start_char=487|end_char=492
+4	zwei	_	_	_	_	3	_	_	start_char=493|end_char=497
+5	ohne	_	_	_	_	4	_	_	start_char=498|end_char=502
+6	Satzzeichen	_	_	_	_	5	_	_	SpacesAfter=\n|start_char=503|end_char=514
+7	Zeile	_	_	_	_	6	_	_	start_char=515|end_char=520
+8	drei	_	_	_	_	7	_	_	SpaceAfter=No|start_char=521|end_char=525
+9	.	_	_	_	_	8	_	_	SpacesAfter=\n\n\u00A0|start_char=525|end_char=526
+
+# text = Ein geschütztes Leerzeichen am Anfang und in der Mitte.
+# sent_id = 13
+# sentiment = 1
+1	Ein	_	_	_	_	0	_	_	start_char=529|end_char=532
+2	geschütztes	_	_	_	_	1	_	_	start_char=533|end_char=544
+3	Leerzeichen	_	_	_	_	2	_	_	start_char=545|end_char=556
+4-5	am	_	_	_	_	_	_	_	start_char=557|end_char=559
+4	an	_	_	_	_	3	_	_	_
+5	dem	_	_	_	_	4	_	_	_
+6	Anfang	_	_	_	_	5	_	_	start_char=560|end_char=566
+7	und	_	_	_	_	6	_	_	SpacesAfter=\u00A0|start_char=567|end_char=570
+8	in	_	_	_	_	7	_	_	SpacesAfter=\u00A0|start_char=571|end_char=573
+9	der	_	_	_	_	8	_	_	start_char=574|end_char=577
+10	Mitte	_	_	_	_	9	_	_	SpaceAfter=No|start_char=578|end_char=583
+11	.	_	_	_	_	10	_	_	SpacesAfter=\n\n|start_char=583|end_char=584
+
+# text = Das Ende kommt ohne Zeilenumbruch.
+# sent_id = 14
+# sentiment = 1
+1	Das	_	_	_	_	0	_	_	start_char=586|end_char=589
+2	Ende	_	_	_	_	1	_	_	start_char=590|end_char=594
+3	kommt	_	_	_	_	2	_	_	start_char=595|end_char=600
+4	ohne	_	_	_	_	3	_	_	start_char=601|end_char=605
+5	Zeilenumbruch	_	_	_	_	4	_	_	SpaceAfter=No|start_char=606|end_char=619
+6	.	_	_	_	_	5	_	_	SpaceAfter=No|start_char=619|end_char=620

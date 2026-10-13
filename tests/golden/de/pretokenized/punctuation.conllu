@@ -1,0 +1,30 @@
+# text = „ Hallo “ , sagte sie ...
+# sent_id = 0
+# constituency = (ROOT (VROOT (PUNCT „) (NOUN Hallo) (PUNCT “) (PUNCT ,) (S (VERB sagte) (PRON sie)) (PUNCT ...)))
+# sentiment = 1
+1	„	"	PUNCT	$(	_	2	punct	_	start_char=0|end_char=1|ner=O
+2	Hallo	Hallo	NOUN	NN	Case=Nom|Gender=Neut|Number=Sing	5	ccomp	_	start_char=2|end_char=7|ner=O
+3	“	"	PUNCT	$(	_	2	punct	_	start_char=8|end_char=9|ner=O
+4	,	,	PUNCT	$,	_	2	punct	_	start_char=10|end_char=11|ner=O
+5	sagte	sagen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=12|end_char=17|ner=O
+6	sie	sie	PRON	PPER	Case=Nom|Gender=Fem|Number=Sing|Person=3|PronType=Prs	5	nsubj	_	start_char=18|end_char=21|ner=O
+7	...	...	PUNCT	$(	_	5	punct	_	start_char=22|end_char=25|ner=O
+
+# text = Wirklich ?!
+# sent_id = 1
+# constituency = (ROOT (VROOT (ADV Wirklich) (PUNCT ?!)))
+# sentiment = 2
+1	Wirklich	wirklich	ADV	ADV	_	0	root	_	start_char=26|end_char=34|ner=O
+2	?!	?!	PUNCT	$.	_	1	punct	_	start_char=35|end_char=37|ner=O
+
+# text = A : b ; c / d
+# sent_id = 2
+# constituency = (ROOT (VROOT (X A) (PUNCT :) (X b) (PUNCT ;) (X c) (SYM /) (X d)))
+# sentiment = 2
+1	A	A	X	NE	_	0	root	_	start_char=38|end_char=39|ner=O
+2	:	:	PUNCT	$.	_	3	punct	_	start_char=40|end_char=41|ner=O
+3	b	B	X	XY	_	1	appos	_	start_char=42|end_char=43|ner=O
+4	;	;	PUNCT	$.	_	5	punct	_	start_char=44|end_char=45|ner=O
+5	c	c	X	NE	_	3	dep	_	start_char=46|end_char=47|ner=O
+6	/	/	SYM	$(	_	7	dep	_	start_char=48|end_char=49|ner=O
+7	d	d	X	NE	Case=Nom|Gender=Masc|Number=Sing	3	dep	_	SpaceAfter=No|start_char=50|end_char=51|ner=O

@@ -1,0 +1,90 @@
+{
+ "stanza": "1.15.0",
+ "sentences": [
+  {
+   "sentence": 0,
+   "text": "Angela Merkel wurde in Hamburg geboren.",
+   "words": [
+    "Angela",
+    "Merkel",
+    "wurde",
+    "in",
+    "Hamburg",
+    "geboren",
+    "."
+   ],
+   "xpos": [
+    "NE",
+    "NE",
+    "VAFIN",
+    "APPR",
+    "NE",
+    "VVPP",
+    "$."
+   ],
+   "tree": "(ROOT (VROOT (S (PN (PROPN Angela) (PROPN Merkel)) (AUX wurde) (VP (PP (ADP in) (PROPN Hamburg)) (VERB geboren))) (PUNCT .)))"
+  },
+  {
+   "sentence": 1,
+   "text": "Sie war von 2005 bis 2021 Bundeskanzlerin.",
+   "words": [
+    "Sie",
+    "war",
+    "von",
+    "2005",
+    "bis",
+    "2021",
+    "Bundeskanzlerin",
+    "."
+   ],
+   "xpos": [
+    "PPER",
+    "VAFIN",
+    "APPR",
+    "CARD",
+    "APPR",
+    "CARD",
+    "NN",
+    "$."
+   ],
+   "tree": "(ROOT (VROOT (S (PRON Sie) (AUX war) (PP (ADP von) (NUM 2005)) (PP (ADP bis) (NUM 2021)) (NOUN Bundeskanzlerin)) (PUNCT .)))"
+  },
+  {
+   "sentence": 2,
+   "text": "Ich glaube nicht, dass es heute regnet, aber wir werden sehen.",
+   "words": [
+    "Ich",
+    "glaube",
+    "nicht",
+    ",",
+    "dass",
+    "es",
+    "heute",
+    "regnet",
+    ",",
+    "aber",
+    "wir",
+    "werden",
+    "sehen",
+    "."
+   ],
+   "xpos": [
+    "PPER",
+    "VVFIN",
+    "PTKNEG",
+    "$,",
+    "KOUS",
+    "PPER",
+    "ADV",
+    "VVFIN",
+    "$,",
+    "KON",
+    "PPER",
+    "VAFIN",
+    "VVINF",
+    "$."
+   ],
+   "tree": "(ROOT (VROOT (CS (S (PRON Ich) (VERB glaube) (PART nicht))) (PUNCT ,) (S (SCONJ dass) (PRON es) (ADV heute) (VERB regnet)) (PUNCT ,) (CCONJ aber) (S (PRON wir) (AUX werden) (VERB sehen)) (PUNCT .)))"
+  }
+ ]
+}

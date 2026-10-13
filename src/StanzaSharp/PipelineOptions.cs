@@ -17,10 +17,20 @@ namespace StanzaSharp;
 public sealed class PipelineOptions
 {
     /// <summary>
-    /// Stanza's name for the set of English models to use: <c>"default"</c> (<see cref="Pipeline.DefaultPackage"/>,
+    /// Stanza's code for the language of the models: <c>"en"</c> (English, the default) or <c>"de"</c> (German). Any
+    /// other code throws. <see cref="Pipeline.Load"/> still takes that language's folder (e.g. <c>models/stanza/de</c>).
+    /// German models can be downloaded with <see cref="ModelDownloader.DownloadAsync(string, PipelineOptions, IProgress{string}?, CancellationToken)"/>,
+    /// but <see cref="Pipeline.Load"/> doesn't run them yet and throws <see cref="NotSupportedException"/>.
+    /// </summary>
+    public string Language { get; init; } = Pipeline.English;
+
+    /// <summary>
+    /// Stanza's name for the set of models to use. English: <c>"default"</c> (<see cref="Pipeline.DefaultPackage"/>,
     /// all eight processors) or <c>"default_fast"</c> (no constituency; pos, depparse and ner use their own small
     /// character models instead of the large character language models, which makes them faster and smaller).
-    /// Any other name throws.
+    /// German: <c>"default"</c>, <c>"default_fast"</c> (pos and depparse as in English; ner and sentiment unchanged), and
+    /// the treebank packages <c>"combined"</c>, <c>"gsd"</c> and <c>"hdt"</c> (tokenize to depparse only). Any other name
+    /// throws, including <c>"default_accurate"</c>, whose transformer models StanzaSharp doesn't run.
     /// </summary>
     public string Package { get; init; } = Pipeline.DefaultPackage;
 

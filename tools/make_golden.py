@@ -2,7 +2,10 @@
 """
 Generate golden test data from Python Stanza for the C# port.
 
-  python tools/make_golden.py [--models models/stanza] [--out tests/golden]
+  python tools/make_golden.py [--lang en|de] [--models models/stanza] [--out tests/golden]
+
+--lang de writes the same files (except pt/ and depparse/mst.json, which don't depend on the language) for the
+hand-written German texts in tests/golden/de, with German word lists (GERMAN).
 
 Reads <out>/corpus.txt and writes:
   pipeline.conllu       full pipeline output: token offsets (misc start_char/end_char), MWT ranges,
@@ -78,6 +81,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from stanza_convert import convert_object, drop_skipped, load_checkpoint, write_safetensors  # noqa: E402
 
 INTERMEDIATE_SENTENCES = 3
+LANG = "en"  # --lang; GERMAN replaces the English word lists below for "de"
 PROCESSORS = "tokenize,mwt,pos,lemma,constituency,depparse,sentiment,ner"  # the default Pipeline (Stanza's order)
 
 
@@ -109,7 +113,7 @@ def write_tokenize_stress(models, corpus, out):
     text = "\n\n".join([short_paras[0], long_para] + short_paras[1:]) + "\n"
     (out / "tokenize_stress.txt").write_text(text, encoding="utf-8", newline="\n")
 
-    nlp = stanza.Pipeline("en", dir=models, processors="tokenize,mwt", download_method=None,
+    nlp = stanza.Pipeline(LANG, dir=models, processors="tokenize,mwt", download_method=None,
                           use_gpu=False, logging_level="WARN")
     with torch.no_grad():
         doc = nlp(text)
@@ -133,7 +137,7 @@ def write_mwt_golden(models, out):
     mwt.json: for each word in MWT_WORDS, the words the MWT stage expands it to, both with the
     pipeline's dictionary+model ensemble and with the character classifier alone.
     """
-    nlp = stanza.Pipeline("en", dir=models, processors="tokenize,mwt", download_method=None,
+    nlp = stanza.Pipeline(LANG, dir=models, processors="tokenize,mwt", download_method=None,
                           use_gpu=False, logging_level="WARN")
     mwt = nlp.processors["mwt"]
 
@@ -163,11 +167,12 @@ def write_depparse_golden(models, out):
     depparse/: full output with heads and deprels, kept apart from the files above. The C# parser
     gets each file's own words, tags and lemmas, since the lemmatizer is ported separately.
     """
-    nlp = stanza.Pipeline("en", dir=models, processors=DEPPARSE_PROCESSORS, download_method=None,
+    nlp = stanza.Pipeline(LANG, dir=models, processors=DEPPARSE_PROCESSORS, download_method=None,
                           use_gpu=False, logging_level="WARN")
     dep = out / "depparse"
     dep.mkdir(exist_ok=True)
-    write_mst_golden(out)
+    if LANG == "en":
+        write_mst_golden(out)
     sources = [out / "corpus.txt"] + sorted(out.glob("validation*.txt"))
     corpus_doc = None
     for path in sources:
@@ -256,7 +261,7 @@ def write_lemma_golden(models, out):
 
     lemma_out = out / "lemma"
     lemma_out.mkdir(exist_ok=True)
-    nlp = stanza.Pipeline("en", dir=models, processors="tokenize,mwt,pos,lemma", download_method=None,
+    nlp = stanza.Pipeline(LANG, dir=models, processors="tokenize,mwt,pos,lemma", download_method=None,
                           use_gpu=False, logging_level="WARN")
     for path in [out / "corpus.txt"] + sorted(out.glob("validation*.txt")):
         with torch.no_grad():
@@ -303,7 +308,7 @@ def write_sentiment_golden(models, out):
 
     sent_out = out / "sentiment"
     sent_out.mkdir(exist_ok=True)
-    nlp = stanza.Pipeline("en", dir=models, processors=SENTIMENT_PROCESSORS, download_method=None,
+    nlp = stanza.Pipeline(LANG, dir=models, processors=SENTIMENT_PROCESSORS, download_method=None,
                           use_gpu=False, logging_level="WARN")
     model = nlp.processors["sentiment"]._model
     captured = []
@@ -340,12 +345,23 @@ def write_sentiment_golden(models, out):
         # The same batches in float64: the exact logits. The classifier is ill-conditioned on some sentences, where
         # Stanza's own float32 result is over 1e-4 from them (validation.txt sentence 41: 1.49e-4), so the tests accept
         # a logit within tolerance of either.
-        torch.set_default_dtype(torch.float64)  # build_char_reps' torch.zeros
         model.double()
         for m in model.modules():  # tensors held as plain attributes, not parameters or buffers
             for k, v in list(vars(m).items()):
                 if isinstance(v, torch.Tensor) and v.is_floating_point():
                     setattr(m, k, v.double())
+        processor = nlp.processors["sentiment"]
+        process = processor.process
+
+        def process64(doc):
+            # build_char_reps' torch.zeros; only here, as German's seq2seq MWT makes float32-only tensors the same way.
+            torch.set_default_dtype(torch.float64)
+            try:
+                return process(doc)
+            finally:
+                torch.set_default_dtype(torch.float32)
+
+        processor.process = process64
         exact = {name: run(text, name, False)[1] for name, text in texts}
     finally:
         torch.set_default_dtype(torch.float32)
@@ -399,7 +415,7 @@ NER_PROCESSORS = "tokenize,mwt,pos,lemma,depparse,ner"
 
 def write_ner_golden(models, out):
     """ner/: NER golden data, in its own folder (see the module docstring)."""
-    nlp = stanza.Pipeline("en", dir=models, processors=NER_PROCESSORS, download_method=None,
+    nlp = stanza.Pipeline(LANG, dir=models, processors=NER_PROCESSORS, download_method=None,
                           use_gpu=False, logging_level="WARN")
     ner = out / "ner"
     ner.mkdir(exist_ok=True)
@@ -423,7 +439,7 @@ def write_ner_golden(models, out):
     for i, sent in enumerate(corpus_doc.sentences[:INTERMEDIATE_SENTENCES]):
         tokens = [t.text for t in sent.tokens]
         single = stanza.Document([[{"id": j + 1, "text": t} for j, t in enumerate(tokens)]])
-        cap, h = capture_module(trainer.model.tag_clfs[trainer.args["predict_tagset"]])
+        cap, h = capture_module(trainer.model.tag_clfs[trainer.args.get("predict_tagset", 0)])  # German's old checkpoint lacks it
         with torch.no_grad():
             processor.process(single)
         h.remove()
@@ -438,7 +454,7 @@ def write_ner_golden(models, out):
 
 def write_fast_golden(models, out):
     """fast/: Stanza's default_fast package (nocharlm pos, depparse and ner; see the module docstring)."""
-    nlp = stanza.Pipeline("en", dir=models, package="default_fast", download_method=None,
+    nlp = stanza.Pipeline(LANG, dir=models, package="default_fast", download_method=None,
                           use_gpu=False, logging_level="WARN")
     assert list(nlp.processors) == FAST_PROCESSORS.split(","), list(nlp.processors)
     fast = out / "fast"
@@ -485,7 +501,7 @@ def write_fast_golden(models, out):
 
                 tokens = [t.text for t in sent.tokens]
                 single = stanza.Document([[{"id": j + 1, "text": t} for j, t in enumerate(tokens)]])
-                cap, h = capture_module(ner.trainers[0].model.tag_clfs[ner.trainers[0].args["predict_tagset"]])
+                cap, h = capture_module(ner.trainers[0].model.tag_clfs[ner.trainers[0].args.get("predict_tagset", 0)])
                 ner.process(single)
                 h.remove()
                 tensors[f"s{i}.ner.emissions"] = cap.outputs[0].numpy()
@@ -527,13 +543,13 @@ def write_pretokenized_golden(models, out):
     """
     pre = out / "pretokenized"
     pre.mkdir(exist_ok=True)
-    tok = stanza.Pipeline("en", dir=models, processors="tokenize", download_method=None, use_gpu=False, logging_level="WARN")
+    tok = stanza.Pipeline(LANG, dir=models, processors="tokenize", download_method=None, use_gpu=False, logging_level="WARN")
     cases = dict(PRETOKENIZED_CASES)
     cases["corpus"] = [[t.text for t in s.tokens] for s in tok((out / "corpus.txt").read_text(encoding="utf-8")).sentences]
     with open(pre / "inputs.json", "w", encoding="utf-8", newline="\n") as f:
         json.dump(cases, f, indent=1, ensure_ascii=False)
     for package, suffix in PACKAGES.items():
-        nlp = stanza.Pipeline("en", dir=models, package=package, tokenize_pretokenized=True, download_method=None,
+        nlp = stanza.Pipeline(LANG, dir=models, package=package, tokenize_pretokenized=True, download_method=None,
                               use_gpu=False, logging_level="WARN")
         for name, sentences in cases.items():
             with torch.no_grad():
@@ -559,7 +575,7 @@ def write_bulk_golden(models, out):
     files = [out / "corpus.txt"] + sorted(out.glob("validation*.txt"))
     texts = BULK_TEXTS + [p.read_bytes().decode("utf-8") for p in files]
     for package in PACKAGES:
-        nlp = stanza.Pipeline("en", dir=models, package=package, download_method=None, use_gpu=False, logging_level="WARN")
+        nlp = stanza.Pipeline(LANG, dir=models, package=package, download_method=None, use_gpu=False, logging_level="WARN")
         with torch.no_grad():
             docs = nlp.bulk_process(texts)
         entries, offset, changed = [], 0, 0
@@ -599,7 +615,7 @@ def write_no_ssplit_golden(models, out):
     d = out / "no_ssplit"
     d.mkdir(exist_ok=True)
     for package, suffix in PACKAGES.items():
-        nlp = stanza.Pipeline("en", dir=models, package=package, tokenize_no_ssplit=True, download_method=None,
+        nlp = stanza.Pipeline(LANG, dir=models, package=package, tokenize_no_ssplit=True, download_method=None,
                               use_gpu=False, logging_level="WARN")
         for file in NO_SSPLIT_FILES:
             name = "corpus" if file == "corpus.txt" else Path(file).stem
@@ -612,9 +628,9 @@ def write_no_ssplit_golden(models, out):
         with open(d / f"bulk{suffix}.json", "w", encoding="utf-8", newline="\n") as f:
             json.dump([{"text": t, "conllu": "{:C}".format(doc)} for t, doc in zip(BULK_TEXTS, docs)], f, indent=1, ensure_ascii=False)
         print(f"no_ssplit/bulk{suffix}.json: {len(docs)} documents")
-        pre = stanza.Pipeline("en", dir=models, package=package, tokenize_pretokenized=True, download_method=None,
+        pre = stanza.Pipeline(LANG, dir=models, package=package, tokenize_pretokenized=True, download_method=None,
                               use_gpu=False, logging_level="WARN")
-        pre_no_ssplit = stanza.Pipeline("en", dir=models, package=package, tokenize_pretokenized=True,
+        pre_no_ssplit = stanza.Pipeline(LANG, dir=models, package=package, tokenize_pretokenized=True,
                                         tokenize_no_ssplit=True, download_method=None, use_gpu=False, logging_level="WARN")
         with torch.no_grad():
             for sentences in PRETOKENIZED_CASES.values():
@@ -627,6 +643,7 @@ def long_url(n):
 
 
 # Tokens around the tokenizer config's max_seqlen (200), one far over the 1000-unit window, and a long non-URL word.
+MAX_SEQLEN = 200
 LONG_TOKEN_TEXT = "\n\n".join([
     f"The study cited {long_url(300)} as its source. It was later removed.",
     f"Exactly {long_url(199)} and {long_url(200)} and {long_url(201)} were tested.",
@@ -644,23 +661,65 @@ def write_long_token_golden(models, out):
     """
     (out / "long_token.txt").write_text(LONG_TOKEN_TEXT, encoding="utf-8", newline="\n")
     for package, suffix in PACKAGES.items():
-        nlp = stanza.Pipeline("en", dir=models, package=package, download_method=None, use_gpu=False,
+        nlp = stanza.Pipeline(LANG, dir=models, package=package, download_method=None, use_gpu=False,
                               logging_level="WARN")
-        assert nlp.processors["tokenize"].config["max_seqlen"] == 200
+        assert nlp.processors["tokenize"].config["max_seqlen"] == MAX_SEQLEN
         with torch.no_grad():
             doc = nlp(LONG_TOKEN_TEXT)
         (out / f"long_token{suffix}.conllu").write_text("{:C}\n".format(doc), encoding="utf-8", newline="\n")
         print(f"long_token{suffix}.conllu: {len(doc.sentences)} sentences, "
               f"{sum(t.text == '<UNK>' for s in doc.sentences for t in s.tokens)} <UNK> tokens")
-    pre = stanza.Pipeline("en", dir=models, processors="tokenize", tokenize_pretokenized=True, download_method=None,
+    pre = stanza.Pipeline(LANG, dir=models, processors="tokenize", tokenize_pretokenized=True, download_method=None,
                           use_gpu=False, logging_level="WARN")
-    assert pre([["see", long_url(300)]]).sentences[0].tokens[1].text == long_url(300)
+    assert pre([["see", long_url(MAX_SEQLEN + 100)]]).sentences[0].tokens[1].text == long_url(MAX_SEQLEN + 100)
+
+
+# --lang de: the German word lists, replacing the English ones above. The German texts are hand-written for
+# tests/golden/de (no copyrighted text); the MST cases and the pt/ fixtures are language-independent, so English only.
+GERMAN = {
+    # Dictionary contractions, their capitals, forms the dictionary lacks (the seq2seq decides them), unknown characters.
+    "MWT_WORDS": [
+        "zum", "Zum", "ZUM", "zur", "Zur", "ZUR", "im", "Im", "IM", "am", "Am", "AM", "ins", "Ins", "beim", "Beim", "vom",
+        "Vom", "übers", "Übers", "aufs", "ans", "ums", "unterm", "hinters", "fürs", "Fürs", "durchs", "vorm", "überm",
+        "hinterm", "untern", "zu", "Haus", "Straße", "zum.", "çum", "zům", "東京zum", "😀ins", "x",
+    ],
+    "LEMMA_WORDS": [
+        ("ging", "VERB"), ("ging", "NOUN"), ("war", "AUX"), ("Kinder", "NOUN"), ("besser", "ADJ"), ("Häuser", "NOUN"),
+        ("Straßen", "NOUN"), ("STRASSEN", "NOUN"), ("Fußballweltmeisterschaften", "NOUN"), ("googelte", "VERB"),
+        ("gefrühstückt", "VERB"), ("zerfledderten", "ADJ"), ("Müllers", "PROPN"), ("Zürichs", "PROPN"),
+        ("naïven", "ADJ"), ("東京", "PROPN"), ("𝒳e", "NOUN"), ("😀😀s", "SYM"), ("schönsten", "ADJ"),
+        ("Rindfleischetikettierungsüberwachungsaufgabenübertragungsgesetzes", "NOUN"), ("_", "PUNCT"), ("<UNK>", "X"),
+        ("Schmetterlingen", "NOUN"), ("ÄRZTE", "NOUN"), ("ﬁnanzierte", "VERB"), ("Bäume", "NOUN"), ("GROẞE", "ADJ"),
+    ],
+    "PRETOKENIZED_CASES": {
+        "simple": [["Hallo", "Welt", "."], ["Tschüss", "."]],
+        "single": [["Halt"]],
+        "contractions": [["Ich", "gehe", "zum", "Bahnhof", "."], ["Wir", "waren", "im", "Kino", "!"], ["Er", "geht", "zu", "dem", "Haus", "."]],
+        "punctuation": [["„", "Hallo", "“", ",", "sagte", "sie", "..."], ["Wirklich", "?!"], ["A", ":", "b", ";", "c", "/", "d"]],
+        "spaces": [["New York", "ist", "groß", "."], ["Ich", "wohne", "in", "Bad Homburg", "."]],
+        "nonbmp": [["Ich", "liebe", "😀", "!"], ["𝒳", "markiert", "die", "Stelle", "."]],
+    },
+    "BULK_TEXTS": ["Hallo zusammen.", "", "   ", "\n\n", "Kurzer Satz. Zwei Sätze!", " gepolsterter Text \n", "ok",
+                   "Ich gehe zum Arzt, ins Kino und beim Bäcker vorbei.",
+                   "Angela Merkel wurde in Hamburg geboren.\n\nSie war ab 2005 Bundeskanzlerin.", "?"],
+    # German's tokenizer has max_seqlen 400.
+    "MAX_SEQLEN": 400,
+    "LONG_TOKEN_TEXT": "\n\n".join([
+        f"Die Studie nannte {long_url(500)} als Quelle. Später wurde sie gelöscht.",
+        f"Genau {long_url(399)} und {long_url(400)} und {long_url(401)} wurden getestet.",
+        f"Ein langes Wort: {'Donaudampfschiff' * 30} ist keine URL.",
+        f"Die längste, {long_url(1200)} , endet hier.",
+        "Danach kommt ein kurzer Satz.",
+    ]) + "\n",
+}
 
 
 def main():
+    global LANG
     p = argparse.ArgumentParser()
+    p.add_argument("--lang", default="en", choices=["en", "de"], help="de writes the German golden data (default --out tests/golden/de)")
     p.add_argument("--models", default="models/stanza")
-    p.add_argument("--out", default="tests/golden")
+    p.add_argument("--out", default=None, help="default tests/golden (en) or tests/golden/<lang>")
     p.add_argument("--pt-only", action="store_true", help="only regenerate the pt/ loader fixtures")
     p.add_argument("--depparse-only", action="store_true", help="only regenerate depparse/")
     p.add_argument("--lemma-only", action="store_true", help="only regenerate the lemma/ golden data")
@@ -672,7 +731,10 @@ def main():
     p.add_argument("--no-ssplit-only", action="store_true", help="only regenerate no_ssplit/ (tokenize_no_ssplit)")
     p.add_argument("--long-token-only", action="store_true", help="only regenerate long_token.*")
     args = p.parse_args()
-    out = Path(args.out)
+    LANG = args.lang
+    out = Path(args.out or ("tests/golden" if LANG == "en" else f"tests/golden/{LANG}"))
+    if LANG == "de":
+        globals().update(GERMAN)
     if args.long_token_only:
         write_long_token_golden(args.models, out)
         return
@@ -701,12 +763,13 @@ def main():
     if args.sentiment_only:
         write_sentiment_golden(args.models, out)
         return
-    write_pt_fixtures(out)
+    if LANG == "en":
+        write_pt_fixtures(out)
     if args.pt_only:
         return
 
     torch.manual_seed(0)
-    nlp = stanza.Pipeline("en", dir=args.models, processors=PROCESSORS, download_method=None,
+    nlp = stanza.Pipeline(LANG, dir=args.models, processors=PROCESSORS, download_method=None,
                           use_gpu=False, logging_level="WARN")
     text = (out / "corpus.txt").read_text(encoding="utf-8")
 
@@ -768,6 +831,7 @@ def main():
     write_fast_golden(args.models, out)
     write_pretokenized_golden(args.models, out)
     write_bulk_golden(args.models, out)
+    write_no_ssplit_golden(args.models, out)
     write_long_token_golden(args.models, out)
 
     write_safetensors(tensors, out / "intermediates.safetensors", {"stanza": stanza.__version__})

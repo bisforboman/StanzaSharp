@@ -1,0 +1,73 @@
+[
+ [
+  {
+   "text": "Angela Merkel",
+   "type": "PER",
+   "start_char": 0,
+   "end_char": 13
+  },
+  {
+   "text": "Hamburg",
+   "type": "LOC",
+   "start_char": 23,
+   "end_char": 30
+  }
+ ],
+ [],
+ [],
+ [],
+ [
+  {
+   "text": "Müller",
+   "type": "PER",
+   "start_char": 178,
+   "end_char": 184
+  }
+ ],
+ [
+  {
+   "text": "Berlin",
+   "type": "LOC",
+   "start_char": 207,
+   "end_char": 213
+  },
+  {
+   "text": "€",
+   "type": "MISC",
+   "start_char": 230,
+   "end_char": 231
+  }
+ ],
+ [],
+ [],
+ [
+  {
+   "text": "E-Mails",
+   "type": "ORG",
+   "start_char": 395,
+   "end_char": 402
+  },
+  {
+   "text": "info@beispiel.de",
+   "type": "MISC",
+   "start_char": 406,
+   "end_char": 422
+  },
+  {
+   "text": "https://www.beispiel.de/ueber-uns.",
+   "type": "MISC",
+   "start_char": 459,
+   "end_char": 493
+  }
+ ],
+ [
+  {
+   "text": "Marias",
+   "type": "PER",
+   "start_char": 495,
+   "end_char": 501
+  }
+ ],
+ [],
+ []
+]

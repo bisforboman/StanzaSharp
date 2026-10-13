@@ -32,36 +32,134 @@ public sealed class Pipeline : IDisposable
     /// <summary>The package <see cref="PipelineOptions.Package"/> selects by default: Stanza's English <see langword="default"/>.</summary>
     public const string DefaultPackage = "default";
 
-    // Stanza 1.15.0's English packages (resources.json): each processor's model. Their files need MD5s in ModelDownloader.Files.
-    internal static readonly Dictionary<string, Dictionary<string, string>> Packages = new()
-    {
-        [DefaultPackage] = new()
-        {
-            ["tokenize"] = "combined_nocharlm",
-            ["mwt"] = "combined",
-            ["pos"] = "combined_charlm",
-            ["lemma"] = "combined_nocharlm",
-            ["constituency"] = "ptb3-revised_charlm",
-            ["depparse"] = "combined_charlm",
-            ["sentiment"] = "sstplus_charlm",
-            ["ner"] = "ontonotes-ww-multi_charlm",
-        },
+    internal const string English = "en";
 
-        // Smaller and faster: pos, depparse and ner have their own character LSTMs instead of the charlms. No constituency.
-        ["default_fast"] = new()
+    // Stanza 1.15.0's packages per language (resources.json): each processor's model. Their files need MD5s in
+    // ModelDownloader.Files, and the shared files they read an entry in Dependencies.
+    internal static readonly Dictionary<string, Dictionary<string, Dictionary<string, string>>> Packages = new()
+    {
+        [English] = new()
         {
-            ["tokenize"] = "combined_nocharlm",
-            ["mwt"] = "combined",
-            ["pos"] = "combined_nocharlm",
-            ["lemma"] = "combined_nocharlm",
-            ["depparse"] = "combined_nocharlm",
-            ["sentiment"] = "sstplus_charlm",
-            ["ner"] = "ontonotes-ww-multi_nocharlm",
+            [DefaultPackage] = new()
+            {
+                ["tokenize"] = "combined_nocharlm",
+                ["mwt"] = "combined",
+                ["pos"] = "combined_charlm",
+                ["lemma"] = "combined_nocharlm",
+                ["constituency"] = "ptb3-revised_charlm",
+                ["depparse"] = "combined_charlm",
+                ["sentiment"] = "sstplus_charlm",
+                ["ner"] = "ontonotes-ww-multi_charlm",
+            },
+
+            // Smaller and faster: pos, depparse and ner have their own character LSTMs instead of the charlms. No constituency.
+            ["default_fast"] = new()
+            {
+                ["tokenize"] = "combined_nocharlm",
+                ["mwt"] = "combined",
+                ["pos"] = "combined_nocharlm",
+                ["lemma"] = "combined_nocharlm",
+                ["depparse"] = "combined_nocharlm",
+                ["sentiment"] = "sstplus_charlm",
+                ["ner"] = "ontonotes-ww-multi_nocharlm",
+            },
+        },
+        ["de"] = new()
+        {
+            [DefaultPackage] = new()
+            {
+                ["tokenize"] = "combined_nocharlm",
+                ["mwt"] = "combined",
+                ["pos"] = "combined_charlm",
+                ["lemma"] = "combined_nocharlm",
+                ["constituency"] = "spmrl_charlm",
+                ["depparse"] = "combined_charlm",
+                ["sentiment"] = "sb10k_charlm",
+                ["ner"] = "germeval2014",
+            },
+
+            // Like English's, but ner and sentiment keep their charlm models.
+            ["default_fast"] = new()
+            {
+                ["tokenize"] = "combined_nocharlm",
+                ["mwt"] = "combined",
+                ["pos"] = "combined_nocharlm",
+                ["lemma"] = "combined_nocharlm",
+                ["depparse"] = "combined_nocharlm",
+                ["sentiment"] = "sb10k_charlm",
+                ["ner"] = "germeval2014",
+            },
+
+            // The treebank packages: tokenize to depparse only.
+            ["combined"] = new()
+            {
+                ["tokenize"] = "combined_nocharlm",
+                ["mwt"] = "combined",
+                ["pos"] = "combined_charlm",
+                ["lemma"] = "combined_nocharlm",
+                ["depparse"] = "combined_charlm",
+            },
+            ["gsd"] = new()
+            {
+                ["tokenize"] = "gsd_nocharlm",
+                ["mwt"] = "gsd",
+                ["pos"] = "gsd_charlm",
+                ["lemma"] = "gsd_nocharlm",
+                ["depparse"] = "gsd_charlm",
+            },
+            ["hdt"] = new()
+            {
+                ["tokenize"] = "hdt_nocharlm",
+                ["mwt"] = "hdt",
+                ["pos"] = "hdt_charlm",
+                ["lemma"] = "hdt_nocharlm",
+                ["depparse"] = "hdt_charlm",
+            },
         },
     };
 
-    // Processors whose models (every package's) read the shared pretrained word vectors.
-    private static readonly HashSet<string> UsesPretrain = ["pos", "depparse", "ner", "constituency", "sentiment"];
+    private static readonly string[] Conll17 = ["pretrain/conll17"],
+        EnglishCharlm = ["pretrain/conll17", "forward_charlm/1billion", "backward_charlm/1billion"],
+        GermanCharlm = ["pretrain/conll17", "forward_charlm/newswiki", "backward_charlm/newswiki"];
+
+    // The shared files (pretrains, charlms) each model reads, by "<processor>/<model>": resources.json's "dependencies",
+    // which the model's name doesn't tell (germeval2014 reads charlms and its own pretrain). Models without an entry
+    // (tokenize, mwt, lemma) read none.
+    internal static readonly Dictionary<string, Dictionary<string, string[]>> Dependencies = new()
+    {
+        [English] = new()
+        {
+            ["pos/combined_charlm"] = EnglishCharlm,
+            ["constituency/ptb3-revised_charlm"] = EnglishCharlm,
+            ["depparse/combined_charlm"] = EnglishCharlm,
+            ["sentiment/sstplus_charlm"] = EnglishCharlm,
+            ["ner/ontonotes-ww-multi_charlm"] = EnglishCharlm,
+            ["pos/combined_nocharlm"] = Conll17,
+            ["depparse/combined_nocharlm"] = Conll17,
+            ["ner/ontonotes-ww-multi_nocharlm"] = Conll17,
+        },
+        ["de"] = new()
+        {
+            ["pos/combined_charlm"] = GermanCharlm,
+            ["constituency/spmrl_charlm"] = GermanCharlm,
+            ["depparse/combined_charlm"] = GermanCharlm,
+            ["sentiment/sb10k_charlm"] = GermanCharlm,
+            ["ner/germeval2014"] = ["pretrain/fasttextwiki", "forward_charlm/newswiki", "backward_charlm/newswiki"],
+            ["pos/combined_nocharlm"] = Conll17,
+            ["depparse/combined_nocharlm"] = Conll17,
+            ["pos/gsd_charlm"] = GermanCharlm,
+            ["depparse/gsd_charlm"] = GermanCharlm,
+            ["pos/hdt_charlm"] = GermanCharlm,
+            ["depparse/hdt_charlm"] = GermanCharlm,
+        },
+    };
+
+    // Languages whose models can be downloaded but not loaded yet, and why.
+    private static readonly Dictionary<string, string> NotPorted = new()
+    {
+        ["de"] = "the seq2seq MWT model, the germeval2014 NER checkpoint (old format, fastText vectors) and a second "
+            + "pretrain per pipeline are not ported yet",
+    };
 
     // Stanza's processor dependencies (REQUIRES_DEFAULT); English pos also needs mwt to have run.
     internal static readonly Dictionary<string, string[]> Requires = new()
@@ -157,14 +255,14 @@ public sealed class Pipeline : IDisposable
             return path;
         }
 
-        var shared = SharedModels(models);
-        var pretrain = shared.Contains(PretrainPath) ? Start(PretrainPath, () => backend.Pretrain(Path.Combine(modelDir, PretrainPath))) : null;
-        Task<object>? forward = null, backward = null;
-        if (shared.Contains(ForwardCharlmPath))
-        {
-            forward = Start(ForwardCharlmPath, () => Charlm(ForwardCharlmPath, forward: true));
-            backward = Start(BackwardCharlmPath, () => Charlm(BackwardCharlmPath, forward: false));
-        }
+        // One pretrain and one pair of charlms: every language Load accepts has no more (NotPorted).
+        var shared = SharedModels(models, options.Language);
+        string? pretrainPath = shared.SingleOrDefault(p => p.StartsWith("pretrain/", StringComparison.Ordinal));
+        string? forwardPath = shared.SingleOrDefault(p => p.StartsWith("forward_charlm/", StringComparison.Ordinal));
+        string? backwardPath = shared.SingleOrDefault(p => p.StartsWith("backward_charlm/", StringComparison.Ordinal));
+        var pretrain = pretrainPath != null ? Start(pretrainPath, () => backend.Pretrain(Path.Combine(modelDir, pretrainPath))) : null;
+        var forward = forwardPath != null ? Start(forwardPath, () => Charlm(forwardPath, forward: true)) : null;
+        var backward = backwardPath != null ? Start(backwardPath, () => Charlm(backwardPath, forward: false)) : null;
 
         var tokenizer = Start(Name("tokenize"), () => backend.Tokenizer(Model("tokenize")));
         var mwt = models.ContainsKey("mwt") ? Start(Name("mwt"), () => backend.Mwt(Model("mwt"))) : null;
@@ -205,13 +303,16 @@ public sealed class Pipeline : IDisposable
     }
 
     /// <summary>
-    /// Loads the English models from <paramref name="modelDir"/>: either converted ones (e.g. <c>models/converted/en</c>)
-    /// or Stanza's own download with its <c>.pt</c> files (e.g. <c>models/stanza/en</c>), chosen per file.
+    /// Loads the models of <see cref="PipelineOptions.Language"/> (English by default) from <paramref name="modelDir"/>,
+    /// that language's folder: either converted ones (e.g. <c>models/converted/en</c>) or Stanza's own download with its
+    /// <c>.pt</c> files (e.g. <c>models/stanza/en</c>), chosen per file.
     /// </summary>
-    /// <param name="options">Package, processors, backend, threads and cache settings; defaults to all eight processors
-    /// of the <see langword="default"/> package on <see cref="PipelineBackend.Managed"/>.</param>
-    /// <exception cref="ArgumentException">An unknown package or processor, a processor the package lacks (e.g.
-    /// constituency in <c>default_fast</c>), or a processor without the ones it requires.</exception>
+    /// <param name="options">Language, package, processors, backend, threads and cache settings; defaults to all eight
+    /// processors of the English <see langword="default"/> package on <see cref="PipelineBackend.Managed"/>.</param>
+    /// <exception cref="ArgumentException">An unknown language, package or processor, a processor the package lacks
+    /// (e.g. constituency in <c>default_fast</c>), or a processor without the ones it requires.</exception>
+    /// <exception cref="NotSupportedException">A language whose models <see cref="ModelDownloader"/> can download but
+    /// this version can't run yet (German).</exception>
     /// <exception cref="ArgumentOutOfRangeException"><see cref="PipelineOptions.Threads"/> below 1, or a
     /// non-positive <see cref="CharlmCacheOptions.MaxWords"/>.</exception>
     /// <exception cref="InvalidDataException">With <see cref="PipelineOptions.VerifyChecksums"/>: a model file whose
@@ -223,7 +324,13 @@ public sealed class Pipeline : IDisposable
         options ??= new PipelineOptions();
         if (!Directory.Exists(modelDir))
             throw new DirectoryNotFoundException($"Model directory not found: {modelDir} (download them with ModelDownloader.DownloadAsync or \"stanzasharp download\")");
-        var models = SelectModels(options.Package, options.Processors, addRequired: false, nameof(options));
+        var models = SelectModels(options.Package, options.Processors, addRequired: false, nameof(options), options.Language);
+        if (NotPorted.TryGetValue(options.Language, out var missing))
+        {
+            throw new NotSupportedException($"Language '{options.Language}' can be downloaded but not loaded yet: {missing}. "
+                + $"Pipeline.Load supports {string.Join(", ", Packages.Keys.Where(l => !NotPorted.ContainsKey(l)))}.");
+        }
+
         if (options.CharlmCache.IsEnabled && options.CharlmCache.MaxWords <= 0)
             throw new ArgumentOutOfRangeException(nameof(options), "CharlmCache.MaxWords must be positive; set IsEnabled = false to turn the cache off");
         if (options.Threads < 1)
@@ -234,7 +341,7 @@ public sealed class Pipeline : IDisposable
         long start = Stopwatch.GetTimestamp();
         if (options.VerifyChecksums)
         {
-            ModelDownloader.Verify(modelDir, models);
+            ModelDownloader.Verify(modelDir, models, options.Language);
             logger?.LogInformation("Verified the model checksums in {Milliseconds:F0} ms", Stopwatch.GetElapsedTime(start).TotalMilliseconds);
         }
 
@@ -259,17 +366,24 @@ public sealed class Pipeline : IDisposable
     // How many models a managed pipeline loads at a time (round 17).
     private const int LoadLanes = 2;
 
+    // English's shared files, for the samples that load them by hand.
     internal const string PretrainPath = "pretrain/conll17", ForwardCharlmPath = "forward_charlm/1billion", BackwardCharlmPath = "backward_charlm/1billion";
 
     /// <summary>
     /// The processors to run and each one's model: <paramref name="processors"/> (null: all of the package's), checked
-    /// against <paramref name="package"/>. With <paramref name="addRequired"/> the processors they require are added
-    /// (what to download); without, a missing one throws (what to load).
+    /// against <paramref name="package"/> of <paramref name="language"/>. With <paramref name="addRequired"/> the
+    /// processors they require are added (what to download); without, a missing one throws (what to load).
     /// </summary>
-    internal static Dictionary<string, string> SelectModels(string package, string? processors, bool addRequired, string paramName)
+    internal static Dictionary<string, string> SelectModels(string package, string? processors, bool addRequired, string paramName, string language = English)
     {
-        if (!Packages.TryGetValue(package ?? "", out var models))
-            throw new ArgumentException($"Unknown package '{package}'. Available: {string.Join(", ", Packages.Keys)}", paramName);
+        if (!Packages.TryGetValue(language ?? "", out var packages))
+            throw new ArgumentException($"Unknown language '{language}'. Available: {string.Join(", ", Packages.Keys)}", paramName);
+        if (!packages.TryGetValue(package ?? "", out var models))
+        {
+            string why = package == "default_accurate" ? " (default_accurate needs transformer models, which StanzaSharp doesn't run)" : "";
+            throw new ArgumentException($"Unknown package '{package}' for language '{language}'{why}. Available: {string.Join(", ", packages.Keys)}", paramName);
+        }
+
         var set = processors == null ? models.Keys.ToHashSet() : ParseProcessors(processors, paramName);
         foreach (var p in set.ToList())
         {
@@ -283,7 +397,7 @@ public sealed class Pipeline : IDisposable
         {
             if (!models.ContainsKey(p))
             {
-                var others = Packages.Where(kv => kv.Value.ContainsKey(p)).Select(kv => $"\"{kv.Key}\"");
+                var others = packages.Where(kv => kv.Value.ContainsKey(p)).Select(kv => $"\"{kv.Key}\"");
                 throw new ArgumentException($"Package '{package}' has no {p} model; use Package = {string.Join(" or ", others)} for {p}", paramName);
             }
         }
@@ -292,18 +406,15 @@ public sealed class Pipeline : IDisposable
     }
 
     /// <summary>
-    /// The shared files <paramref name="models"/> read (paths without extension): the pretrained word vectors for pos,
-    /// depparse, ner, constituency and sentiment, and the charlms for every <c>_charlm</c> model (Stanza's naming).
+    /// The shared files <paramref name="models"/> of <paramref name="language"/> read (paths without extension), from
+    /// <see cref="Dependencies"/>: pretrains first, then the forward and the backward charlm.
     /// </summary>
-    internal static List<string> SharedModels(IReadOnlyDictionary<string, string> models)
-    {
-        var shared = new List<string>();
-        if (models.Keys.Any(UsesPretrain.Contains))
-            shared.Add(PretrainPath);
-        if (models.Values.Any(m => m.EndsWith("_charlm", StringComparison.Ordinal)))
-            shared.AddRange([ForwardCharlmPath, BackwardCharlmPath]);
-        return shared;
-    }
+    internal static List<string> SharedModels(IReadOnlyDictionary<string, string> models, string language = English) =>
+        models.SelectMany(m => Dependencies[language].GetValueOrDefault($"{m.Key}/{m.Value}", []))
+            .Distinct()
+            .OrderBy(p => p.StartsWith("pretrain/", StringComparison.Ordinal) ? 0 : p.StartsWith("forward_charlm/", StringComparison.Ordinal) ? 1 : 2)
+            .ThenBy(p => p, StringComparer.Ordinal)
+            .ToList();
 
     /// <summary>A comma-separated processor list as a set, checking every name.</summary>
     internal static HashSet<string> ParseProcessors(string processors, string paramName)

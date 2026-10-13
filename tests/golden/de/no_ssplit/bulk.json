@@ -1,0 +1,42 @@
+[
+ {
+  "text": "Hallo zusammen.",
+  "conllu": "# text = Hallo zusammen.\n# sent_id = 0\n# constituency = (ROOT (VROOT (S (INTJ Hallo) (ADV zusammen)) (PUNCT .)))\n# sentiment = 0\n1\tHallo\thallo\tINTJ\tITJ\t_\t0\troot\t_\tstart_char=0|end_char=5|ner=O\n2\tzusammen\tzusammen\tADV\tPTKVZ\t_\t1\tcompound:prt\t_\tSpaceAfter=No|start_char=6|end_char=14|ner=O\n3\t.\t.\tPUNCT\t$.\t_\t1\tpunct\t_\tSpaceAfter=No|start_char=14|end_char=15|ner=O"
+ },
+ {
+  "text": "",
+  "conllu": ""
+ },
+ {
+  "text": "   ",
+  "conllu": ""
+ },
+ {
+  "text": "\n\n",
+  "conllu": ""
+ },
+ {
+  "text": "Kurzer Satz. Zwei Sätze!",
+  "conllu": "# text = Kurzer Satz. Zwei Sätze!\n# sent_id = 1\n# constituency = (ROOT (VROOT (S (NP (ADJ Kurzer) (NOUN Satz))) (PUNCT .) (NP (NUM Zwei) (NOUN Sätze)) (PUNCT !)))\n# sentiment = 2\n1\tKurzer\tKurzer\tADJ\tADJA\tCase=Nom|Degree=Pos|Gender=Masc|Number=Sing\t2\tamod\t_\tstart_char=0|end_char=6|ner=O\n2\tSatz\tSatz\tNOUN\tNN\tCase=Nom|Gender=Masc|Number=Sing\t0\troot\t_\tSpaceAfter=No|start_char=7|end_char=11|ner=O\n3\t.\t.\tPUNCT\t$.\t_\t5\tpunct\t_\tstart_char=11|end_char=12|ner=O\n4\tZwei\tzwei\tNUM\tCARD\tNumType=Card\t5\tnummod\t_\tstart_char=13|end_char=17|ner=O\n5\tSätze\tSatz\tNOUN\tNN\tCase=Nom|Gender=Masc|Number=Plur\t2\tconj\t_\tSpaceAfter=No|start_char=18|end_char=23|ner=O\n6\t!\t!\tPUNCT\t$.\t_\t2\tpunct\t_\tSpaceAfter=No|start_char=23|end_char=24|ner=O"
+ },
+ {
+  "text": " gepolsterter Text \n",
+  "conllu": "# text = gepolsterter Text\n# sent_id = 2\n# constituency = (ROOT (NP (ADJ gepolsterter) (NOUN Text)))\n# sentiment = 2\n1\tgepolsterter\tgepolstert\tADJ\tADJA\tCase=Nom|Degree=Pos|Gender=Masc|Number=Sing\t2\tamod\t_\tSpacesBefore=\\s|start_char=1|end_char=13|ner=O\n2\tText\tText\tNOUN\tNN\tCase=Nom|Gender=Masc|Number=Sing\t0\troot\t_\tSpacesAfter=\\s\\n|start_char=14|end_char=18|ner=O"
+ },
+ {
+  "text": "ok",
+  "conllu": "# text = ok\n# sent_id = 3\n# constituency = (ROOT (ADJ ok))\n# sentiment = 1\n1\tok\tok\tADJ\tADJD\tDegree=Pos\t0\troot\t_\tSpaceAfter=No|start_char=0|end_char=2|ner=O"
+ },
+ {
+  "text": "Ich gehe zum Arzt, ins Kino und beim Bäcker vorbei.",
+  "conllu": "# text = Ich gehe zum Arzt, ins Kino und beim Bäcker vorbei.\n# sent_id = 4\n# constituency = (ROOT (VROOT (S (PRON Ich) (VERB gehe) (CPP (PP (ADP zu) (DET dem) (NOUN Arzt)))) (PUNCT ,) (PP (ADP in) (DET das) (NOUN Kino)) (CCONJ und) (PP (ADP bei) (DET dem) (NOUN Bäcker)) (ADV vorbei) (PUNCT .)))\n# sentiment = 1\n1\tIch\tich\tPRON\tPPER\tCase=Nom|Number=Sing|Person=1|PronType=Prs\t2\tnsubj\t_\tstart_char=0|end_char=3|ner=O\n2\tgehe\tgehen\tVERB\tVVFIN\tMood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin\t0\troot\t_\tstart_char=4|end_char=8|ner=O\n3-4\tzum\t_\t_\t_\t_\t_\t_\t_\tstart_char=9|end_char=12|ner=O\n3\tzu\tzu\tADP\tAPPR\t_\t5\tcase\t_\t_\n4\tdem\tder\tDET\tART\tCase=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art\t5\tdet\t_\t_\n5\tArzt\tArzt\tNOUN\tNN\tCase=Dat|Gender=Masc|Number=Sing\t2\tobl\t_\tSpaceAfter=No|start_char=13|end_char=17|ner=O\n6\t,\t,\tPUNCT\t$,\t_\t9\tpunct\t_\tstart_char=17|end_char=18|ner=O\n7-8\tins\t_\t_\t_\t_\t_\t_\t_\tstart_char=19|end_char=22|ner=O\n7\tin\tin\tADP\tAPPR\t_\t9\tcase\t_\t_\n8\tdas\tder\tDET\tART\tCase=Acc|Definite=Def|Gender=Neut|Number=Sing|PronType=Art\t9\tdet\t_\t_\n9\tKino\tKino\tNOUN\tNN\tCase=Acc|Gender=Neut|Number=Sing\t5\tconj\t_\tstart_char=23|end_char=27|ner=O\n10\tund\tund\tCCONJ\tKON\t_\t13\tcc\t_\tstart_char=28|end_char=31|ner=O\n11-12\tbeim\t_\t_\t_\t_\t_\t_\t_\tstart_char=32|end_char=36|ner=O\n11\tbei\tbei\tADP\tAPPR\t_\t13\tcase\t_\t_\n12\tdem\tder\tDET\tART\tCase=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art\t13\tdet\t_\t_\n13\tBäcker\tBäcker\tNOUN\tNN\tCase=Dat|Gender=Masc|Number=Sing\t5\tconj\t_\tstart_char=37|end_char=43|ner=O\n14\tvorbei\tvorbei\tADV\tPTKVZ\t_\t2\tcompound:prt\t_\tSpaceAfter=No|start_char=44|end_char=50|ner=O\n15\t.\t.\tPUNCT\t$.\t_\t2\tpunct\t_\tSpaceAfter=No|start_char=50|end_char=51|ner=O"
+ },
+ {
+  "text": "Angela Merkel wurde in Hamburg geboren.\n\nSie war ab 2005 Bundeskanzlerin.",
+  "conllu": "# text = Angela Merkel wurde in Hamburg geboren.\n# sent_id = 5\n# constituency = (ROOT (VROOT (S (PN (PROPN Angela) (PROPN Merkel)) (AUX wurde) (VP (PP (ADP in) (PROPN Hamburg)) (VERB geboren))) (PUNCT .)))\n# sentiment = 1\n1\tAngela\tAngela\tPROPN\tNE\tCase=Nom|Gender=Fem|Number=Sing\t6\tnsubj:pass\t_\tstart_char=0|end_char=6|ner=B-PER\n2\tMerkel\tMerkel\tPROPN\tNE\tCase=Nom|Gender=Fem|Number=Sing\t1\tflat\t_\tstart_char=7|end_char=13|ner=E-PER\n3\twurde\twerden\tAUX\tVAFIN\tMood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin|Voice=Pass\t6\taux:pass\t_\tstart_char=14|end_char=19|ner=O\n4\tin\tin\tADP\tAPPR\t_\t5\tcase\t_\tstart_char=20|end_char=22|ner=O\n5\tHamburg\tHamburg\tPROPN\tNE\tCase=Dat|Gender=Neut|Number=Sing\t6\tobl\t_\tstart_char=23|end_char=30|ner=S-LOC\n6\tgeboren\tgebären\tVERB\tVVPP\tVerbForm=Part\t0\troot\t_\tSpaceAfter=No|start_char=31|end_char=38|ner=O\n7\t.\t.\tPUNCT\t$.\t_\t6\tpunct\t_\tSpacesAfter=\\n\\n|start_char=38|end_char=39|ner=O\n\n# text = Sie war ab 2005 Bundeskanzlerin.\n# sent_id = 6\n# constituency = (ROOT (VROOT (S (PRON Sie) (AUX war) (PP (ADP ab) (NUM 2005)) (NOUN Bundeskanzlerin)) (PUNCT .)))\n# sentiment = 1\n1\tSie\tsie\tPRON\tPPER\tCase=Nom|Gender=Fem|Number=Sing|Person=3|PronType=Prs\t5\tnsubj\t_\tstart_char=41|end_char=44|ner=O\n2\twar\tsein\tAUX\tVAFIN\tMood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin\t5\tcop\t_\tstart_char=45|end_char=48|ner=O\n3\tab\tab\tADP\tAPPR\t_\t4\tcase\t_\tstart_char=49|end_char=51|ner=O\n4\t2005\t2005\tNUM\tCARD\tNumType=Card\t5\tnmod\t_\tstart_char=52|end_char=56|ner=O\n5\tBundeskanzlerin\tBundeskanzlerin\tNOUN\tNN\tCase=Nom|Gender=Fem|Number=Sing\t0\troot\t_\tSpaceAfter=No|start_char=57|end_char=72|ner=O\n6\t.\t.\tPUNCT\t$.\t_\t5\tpunct\t_\tSpaceAfter=No|start_char=72|end_char=73|ner=O"
+ },
+ {
+  "text": "?",
+  "conllu": "# text = ?\n# sent_id = 7\n# constituency = (ROOT (PUNCT ?))\n# sentiment = 0\n1\t?\t?\tPUNCT\t$.\t_\t0\troot\t_\tSpaceAfter=No|start_char=0|end_char=1|ner=O"
+ }
+]

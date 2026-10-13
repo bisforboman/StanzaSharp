@@ -1,0 +1,187 @@
+# text = Angela Merkel wurde in Hamburg geboren.
+# sent_id = 0
+# sentiment = 2
+1	Angela	_	_	_	_	0	_	_	start_char=0|end_char=6
+2	Merkel	_	_	_	_	1	_	_	start_char=7|end_char=13
+3	wurde	_	_	_	_	2	_	_	start_char=14|end_char=19
+4	in	_	_	_	_	3	_	_	start_char=20|end_char=22
+5	Hamburg	_	_	_	_	4	_	_	start_char=23|end_char=30
+6	geboren	_	_	_	_	5	_	_	SpaceAfter=No|start_char=31|end_char=38
+7	.	_	_	_	_	6	_	_	start_char=38|end_char=39
+
+# text = Sie war von 2005 bis 2021 Bundeskanzlerin.
+# sent_id = 1
+# sentiment = 1
+1	Sie	_	_	_	_	0	_	_	start_char=40|end_char=43
+2	war	_	_	_	_	1	_	_	start_char=44|end_char=47
+3	von	_	_	_	_	2	_	_	start_char=48|end_char=51
+4	2005	_	_	_	_	3	_	_	start_char=52|end_char=56
+5	bis	_	_	_	_	4	_	_	start_char=57|end_char=60
+6	2021	_	_	_	_	5	_	_	start_char=61|end_char=65
+7	Bundeskanzlerin	_	_	_	_	6	_	_	SpaceAfter=No|start_char=66|end_char=81
+8	.	_	_	_	_	7	_	_	SpacesAfter=\n\n|start_char=81|end_char=82
+
+# text = Ich glaube nicht, dass es heute regnet, aber wir werden sehen.
+# sent_id = 2
+# sentiment = 1
+1	Ich	_	_	_	_	0	_	_	start_char=84|end_char=87
+2	glaube	_	_	_	_	1	_	_	start_char=88|end_char=94
+3	nicht	_	_	_	_	2	_	_	SpaceAfter=No|start_char=95|end_char=100
+4	,	_	_	_	_	3	_	_	start_char=100|end_char=101
+5	dass	_	_	_	_	4	_	_	start_char=102|end_char=106
+6	es	_	_	_	_	5	_	_	start_char=107|end_char=109
+7	heute	_	_	_	_	6	_	_	start_char=110|end_char=115
+8	regnet	_	_	_	_	7	_	_	SpaceAfter=No|start_char=116|end_char=122
+9	,	_	_	_	_	8	_	_	start_char=122|end_char=123
+10	aber	_	_	_	_	9	_	_	start_char=124|end_char=128
+11	wir	_	_	_	_	10	_	_	start_char=129|end_char=132
+12	werden	_	_	_	_	11	_	_	start_char=133|end_char=139
+13	sehen	_	_	_	_	12	_	_	SpaceAfter=No|start_char=140|end_char=145
+14	.	_	_	_	_	13	_	_	start_char=145|end_char=146
+
+# text = Hörst du den Donner nicht?
+# sent_id = 3
+# sentiment = 2
+1	Hörst	_	_	_	_	0	_	_	start_char=147|end_char=152
+2	du	_	_	_	_	1	_	_	start_char=153|end_char=155
+3	den	_	_	_	_	2	_	_	start_char=156|end_char=159
+4	Donner	_	_	_	_	3	_	_	start_char=160|end_char=166
+5	nicht	_	_	_	_	4	_	_	SpaceAfter=No|start_char=167|end_char=172
+6	?	_	_	_	_	5	_	_	SpacesAfter=\n|start_char=172|end_char=173
+
+# text = Dr. Müller zog im Jan.
+# sent_id = 4
+# sentiment = 1
+1	Dr.	_	_	_	_	0	_	_	start_char=174|end_char=177
+2	Müller	_	_	_	_	1	_	_	start_char=178|end_char=184
+3	zog	_	_	_	_	2	_	_	start_char=185|end_char=188
+4-5	im	_	_	_	_	_	_	_	start_char=189|end_char=191
+4	in	_	_	_	_	3	_	_	_
+5	dem	_	_	_	_	4	_	_	_
+6	Jan	_	_	_	_	5	_	_	SpaceAfter=No|start_char=192|end_char=195
+7	.	_	_	_	_	6	_	_	start_char=195|end_char=196
+
+# text = 1999 nach Berlin und zahlte 4,50 € für einen Kaffee um 7:30 Uhr.
+# sent_id = 5
+# sentiment = 0
+1	1999	_	_	_	_	0	_	_	start_char=197|end_char=201
+2	nach	_	_	_	_	1	_	_	start_char=202|end_char=206
+3	Berlin	_	_	_	_	2	_	_	start_char=207|end_char=213
+4	und	_	_	_	_	3	_	_	start_char=214|end_char=217
+5	zahlte	_	_	_	_	4	_	_	start_char=218|end_char=224
+6	4,50	_	_	_	_	5	_	_	start_char=225|end_char=229
+7	€	_	_	_	_	6	_	_	start_char=230|end_char=231
+8	für	_	_	_	_	7	_	_	start_char=232|end_char=235
+9	einen	_	_	_	_	8	_	_	start_char=236|end_char=241
+10	Kaffee	_	_	_	_	9	_	_	start_char=242|end_char=248
+11	um	_	_	_	_	10	_	_	start_char=249|end_char=251
+12	7:30	_	_	_	_	11	_	_	start_char=252|end_char=256
+13	Uhr	_	_	_	_	12	_	_	SpaceAfter=No|start_char=257|end_char=260
+14	.	_	_	_	_	13	_	_	SpacesAfter=\n\n|start_char=260|end_char=261
+
+# text = „Wohin gehst du?“, fragte sie.
+# sent_id = 6
+# sentiment = 0
+1	„	_	_	_	_	0	_	_	SpaceAfter=No|start_char=263|end_char=264
+2	Wohin	_	_	_	_	1	_	_	start_char=264|end_char=269
+3	gehst	_	_	_	_	2	_	_	start_char=270|end_char=275
+4	du?	_	_	_	_	3	_	_	SpaceAfter=No|start_char=276|end_char=279
+5	“	_	_	_	_	4	_	_	SpaceAfter=No|start_char=279|end_char=280
+6	,	_	_	_	_	5	_	_	start_char=280|end_char=281
+7	fragte	_	_	_	_	6	_	_	start_char=282|end_char=288
+8	sie	_	_	_	_	7	_	_	SpaceAfter=No|start_char=289|end_char=292
+9	.	_	_	_	_	8	_	_	start_char=292|end_char=293
+
+# text = Die Spielsachen der Kinder (alle 23 Stück) lagen im ganzen Zimmer verstreut!
+# sent_id = 7
+# sentiment = 2
+1	Die	_	_	_	_	0	_	_	start_char=294|end_char=297
+2	Spielsachen	_	_	_	_	1	_	_	start_char=298|end_char=309
+3	der	_	_	_	_	2	_	_	start_char=310|end_char=313
+4	Kinder	_	_	_	_	3	_	_	start_char=314|end_char=320
+5	(	_	_	_	_	4	_	_	SpaceAfter=No|start_char=321|end_char=322
+6	alle	_	_	_	_	5	_	_	start_char=322|end_char=326
+7	23	_	_	_	_	6	_	_	start_char=327|end_char=329
+8	Stück	_	_	_	_	7	_	_	SpaceAfter=No|start_char=330|end_char=335
+9	)	_	_	_	_	8	_	_	start_char=335|end_char=336
+10	lagen	_	_	_	_	9	_	_	start_char=337|end_char=342
+11-12	im	_	_	_	_	_	_	_	start_char=343|end_char=345
+11	in	_	_	_	_	10	_	_	_
+12	dem	_	_	_	_	11	_	_	_
+13	ganzen	_	_	_	_	12	_	_	start_char=346|end_char=352
+14	Zimmer	_	_	_	_	13	_	_	start_char=353|end_char=359
+15	verstreut	_	_	_	_	14	_	_	SpaceAfter=No|start_char=360|end_char=369
+16	!	_	_	_	_	15	_	_	SpacesAfter=\n|start_char=369|end_char=370
+
+# text = Der bekannte Autor, der E-Mails an info@beispiel.de geschrieben hatte, besuchte gestern https://www.beispiel.de/ueber-uns.
+# sent_id = 8
+# sentiment = 2
+1	Der	_	_	_	_	0	_	_	start_char=371|end_char=374
+2	bekannte	_	_	_	_	1	_	_	start_char=375|end_char=383
+3	Autor	_	_	_	_	2	_	_	SpaceAfter=No|start_char=384|end_char=389
+4	,	_	_	_	_	3	_	_	start_char=389|end_char=390
+5	der	_	_	_	_	4	_	_	start_char=391|end_char=394
+6	E	_	_	_	_	5	_	_	SpaceAfter=No|start_char=395|end_char=396
+7	-	_	_	_	_	6	_	_	SpaceAfter=No|start_char=396|end_char=397
+8	Mails	_	_	_	_	7	_	_	start_char=397|end_char=402
+9	an	_	_	_	_	8	_	_	start_char=403|end_char=405
+10	info@beispiel.de	_	_	_	_	9	_	_	start_char=406|end_char=422
+11	geschrieben	_	_	_	_	10	_	_	start_char=423|end_char=434
+12	hatte	_	_	_	_	11	_	_	SpaceAfter=No|start_char=435|end_char=440
+13	,	_	_	_	_	12	_	_	start_char=440|end_char=441
+14	besuchte	_	_	_	_	13	_	_	start_char=442|end_char=450
+15	gestern	_	_	_	_	14	_	_	start_char=451|end_char=458
+16	https://www.beispiel.de/ueber-uns.	_	_	_	_	15	_	_	SpacesAfter=\n\n|start_char=459|end_char=493
+
+# text = Marias Schwester wäre nicht zum Treffen gegangen, wenn sie gewusst hätte, dass es am Freitag um 15 Uhr abgesagt worden war;
+# sent_id = 9
+# sentiment = 1
+1	Marias	_	_	_	_	0	_	_	start_char=495|end_char=501
+2	Schwester	_	_	_	_	1	_	_	start_char=502|end_char=511
+3	wäre	_	_	_	_	2	_	_	start_char=512|end_char=516
+4	nicht	_	_	_	_	3	_	_	start_char=517|end_char=522
+5-6	zum	_	_	_	_	_	_	_	start_char=523|end_char=526
+5	zu	_	_	_	_	4	_	_	_
+6	dem	_	_	_	_	5	_	_	_
+7	Treffen	_	_	_	_	6	_	_	start_char=527|end_char=534
+8	gegangen	_	_	_	_	7	_	_	SpaceAfter=No|start_char=535|end_char=543
+9	,	_	_	_	_	8	_	_	start_char=543|end_char=544
+10	wenn	_	_	_	_	9	_	_	start_char=545|end_char=549
+11	sie	_	_	_	_	10	_	_	start_char=550|end_char=553
+12	gewusst	_	_	_	_	11	_	_	start_char=554|end_char=561
+13	hätte	_	_	_	_	12	_	_	SpaceAfter=No|start_char=562|end_char=567
+14	,	_	_	_	_	13	_	_	start_char=567|end_char=568
+15	dass	_	_	_	_	14	_	_	start_char=569|end_char=573
+16	es	_	_	_	_	15	_	_	start_char=574|end_char=576
+17-18	am	_	_	_	_	_	_	_	start_char=577|end_char=579
+17	an	_	_	_	_	16	_	_	_
+18	dem	_	_	_	_	17	_	_	_
+19	Freitag	_	_	_	_	18	_	_	start_char=580|end_char=587
+20	um	_	_	_	_	19	_	_	start_char=588|end_char=590
+21	15	_	_	_	_	20	_	_	start_char=591|end_char=593
+22	Uhr	_	_	_	_	21	_	_	start_char=594|end_char=597
+23	abgesagt	_	_	_	_	22	_	_	start_char=598|end_char=606
+24	worden	_	_	_	_	23	_	_	start_char=607|end_char=613
+25	war	_	_	_	_	24	_	_	SpaceAfter=No|start_char=614|end_char=617
+26	;	_	_	_	_	25	_	_	start_char=617|end_char=618
+
+# text = niemand sagte es ihr.
+# sent_id = 10
+# sentiment = 0
+1	niemand	_	_	_	_	0	_	_	start_char=619|end_char=626
+2	sagte	_	_	_	_	1	_	_	start_char=627|end_char=632
+3	es	_	_	_	_	2	_	_	start_char=633|end_char=635
+4	ihr	_	_	_	_	3	_	_	SpaceAfter=No|start_char=636|end_char=639
+5	.	_	_	_	_	4	_	_	SpacesAfter=\n|start_char=639|end_char=640
+
+# text = Wow... das ist ja großartig!!
+# sent_id = 11
+# sentiment = 2
+1	Wow	_	_	_	_	0	_	_	SpaceAfter=No|start_char=641|end_char=644
+2	...	_	_	_	_	1	_	_	start_char=644|end_char=647
+3	das	_	_	_	_	2	_	_	start_char=648|end_char=651
+4	ist	_	_	_	_	3	_	_	start_char=652|end_char=655
+5	ja	_	_	_	_	4	_	_	start_char=656|end_char=658
+6	großartig	_	_	_	_	5	_	_	SpaceAfter=No|start_char=659|end_char=668
+7	!	_	_	_	_	6	_	_	SpaceAfter=No|start_char=668|end_char=669
+8	!	_	_	_	_	7	_	_	SpacesAfter=\n|start_char=669|end_char=670

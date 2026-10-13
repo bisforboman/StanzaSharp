@@ -87,10 +87,10 @@ public class ModelDownloaderTests : IDisposable
             "depparse/combined_charlm.pt", "ner/ontonotes-ww-multi_charlm.pt", "sentiment/sstplus_charlm.pt",
             "pos/combined_nocharlm.pt", "depparse/combined_nocharlm.pt", "ner/ontonotes-ww-multi_nocharlm.pt",
         ];
-        Assert.Equal(expected.Order(), ModelDownloader.Files.Select(f => f.Path).Order());
+        Assert.Equal(expected.Order(), ModelDownloader.Files["en"].Select(f => f.Path).Order());
 
         // Every package's files, together, are the table.
-        Assert.Equal(expected.Order(), Pipeline.Packages.Keys.SelectMany(p => ModelDownloader.FilesFor(null, p)).Select(f => f.Path).Distinct().Order());
+        Assert.Equal(expected.Order(), Pipeline.Packages["en"].Keys.SelectMany(p => ModelDownloader.FilesFor(null, p)).Select(f => f.Path).Distinct().Order());
     }
 
     [Theory]

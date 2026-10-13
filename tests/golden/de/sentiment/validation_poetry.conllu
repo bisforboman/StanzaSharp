@@ -1,0 +1,148 @@
+# text = Der Nebel liegt auf stillen Feldern, die Krähen ziehen übers Land;
+# sent_id = 0
+# sentiment = 2
+1	Der	_	_	_	_	0	_	_	start_char=0|end_char=3
+2	Nebel	_	_	_	_	1	_	_	start_char=4|end_char=9
+3	liegt	_	_	_	_	2	_	_	start_char=10|end_char=15
+4	auf	_	_	_	_	3	_	_	start_char=16|end_char=19
+5	stillen	_	_	_	_	4	_	_	start_char=20|end_char=27
+6	Feldern	_	_	_	_	5	_	_	SpaceAfter=No|start_char=28|end_char=35
+7	,	_	_	_	_	6	_	_	SpacesAfter=\n|start_char=35|end_char=36
+8	die	_	_	_	_	7	_	_	start_char=37|end_char=40
+9	Krähen	_	_	_	_	8	_	_	start_char=41|end_char=47
+10	ziehen	_	_	_	_	9	_	_	start_char=48|end_char=54
+11-12	übers	_	_	_	_	_	_	_	start_char=55|end_char=60
+11	über	_	_	_	_	10	_	_	_
+12	das	_	_	_	_	11	_	_	_
+13	Land	_	_	_	_	12	_	_	SpaceAfter=No|start_char=61|end_char=65
+14	;	_	_	_	_	13	_	_	SpacesAfter=\n|start_char=65|end_char=66
+
+# text = ein letztes Licht in kahlen Wäldern, ein Fluss, der seinen Weg nicht fand.
+# sent_id = 1
+# sentiment = 2
+1	ein	_	_	_	_	0	_	_	start_char=67|end_char=70
+2	letztes	_	_	_	_	1	_	_	start_char=71|end_char=78
+3	Licht	_	_	_	_	2	_	_	start_char=79|end_char=84
+4	in	_	_	_	_	3	_	_	start_char=85|end_char=87
+5	kahlen	_	_	_	_	4	_	_	start_char=88|end_char=94
+6	Wäldern	_	_	_	_	5	_	_	SpaceAfter=No|start_char=95|end_char=102
+7	,	_	_	_	_	6	_	_	SpacesAfter=\n|start_char=102|end_char=103
+8	ein	_	_	_	_	7	_	_	start_char=104|end_char=107
+9	Fluss	_	_	_	_	8	_	_	SpaceAfter=No|start_char=108|end_char=113
+10	,	_	_	_	_	9	_	_	start_char=113|end_char=114
+11	der	_	_	_	_	10	_	_	start_char=115|end_char=118
+12	seinen	_	_	_	_	11	_	_	start_char=119|end_char=125
+13	Weg	_	_	_	_	12	_	_	start_char=126|end_char=129
+14	nicht	_	_	_	_	13	_	_	start_char=130|end_char=135
+15	fand	_	_	_	_	14	_	_	SpaceAfter=No|start_char=136|end_char=140
+16	.	_	_	_	_	15	_	_	SpacesAfter=\n\n|start_char=140|end_char=141
+
+# text = Und wenn der Abend leise sinkt, und wenn die Glocke ferne klingt, dann geh' ich heim durchs dunkle Tor und horch' dem alten Lied davor.
+# sent_id = 2
+# sentiment = 1
+1	Und	_	_	_	_	0	_	_	start_char=143|end_char=146
+2	wenn	_	_	_	_	1	_	_	start_char=147|end_char=151
+3	der	_	_	_	_	2	_	_	start_char=152|end_char=155
+4	Abend	_	_	_	_	3	_	_	start_char=156|end_char=161
+5	leise	_	_	_	_	4	_	_	start_char=162|end_char=167
+6	sinkt	_	_	_	_	5	_	_	SpaceAfter=No|start_char=168|end_char=173
+7	,	_	_	_	_	6	_	_	SpacesAfter=\n|start_char=173|end_char=174
+8	und	_	_	_	_	7	_	_	start_char=175|end_char=178
+9	wenn	_	_	_	_	8	_	_	start_char=179|end_char=183
+10	die	_	_	_	_	9	_	_	start_char=184|end_char=187
+11	Glocke	_	_	_	_	10	_	_	start_char=188|end_char=194
+12	ferne	_	_	_	_	11	_	_	start_char=195|end_char=200
+13	klingt	_	_	_	_	12	_	_	SpaceAfter=No|start_char=201|end_char=207
+14	,	_	_	_	_	13	_	_	SpacesAfter=\n|start_char=207|end_char=208
+15	dann	_	_	_	_	14	_	_	start_char=209|end_char=213
+16	geh'	_	_	_	_	15	_	_	start_char=214|end_char=218
+17	ich	_	_	_	_	16	_	_	start_char=219|end_char=222
+18	heim	_	_	_	_	17	_	_	start_char=223|end_char=227
+19	durchs	_	_	_	_	18	_	_	start_char=228|end_char=234
+20	dunkle	_	_	_	_	19	_	_	start_char=235|end_char=241
+21	Tor	_	_	_	_	20	_	_	SpacesAfter=\n|start_char=242|end_char=245
+22	und	_	_	_	_	21	_	_	start_char=246|end_char=249
+23	horch'	_	_	_	_	22	_	_	start_char=250|end_char=256
+24	dem	_	_	_	_	23	_	_	start_char=257|end_char=260
+25	alten	_	_	_	_	24	_	_	start_char=261|end_char=266
+26	Lied	_	_	_	_	25	_	_	start_char=267|end_char=271
+27	davor	_	_	_	_	26	_	_	SpaceAfter=No|start_char=272|end_char=277
+28	.	_	_	_	_	27	_	_	SpacesAfter=\n\n|start_char=277|end_char=278
+
+# text = O Sommer, bleib!
+# sent_id = 3
+# sentiment = 2
+1	O	_	_	_	_	0	_	_	start_char=280|end_char=281
+2	Sommer	_	_	_	_	1	_	_	SpaceAfter=No|start_char=282|end_char=288
+3	,	_	_	_	_	2	_	_	start_char=288|end_char=289
+4	bleib	_	_	_	_	3	_	_	SpaceAfter=No|start_char=290|end_char=295
+5	!	_	_	_	_	4	_	_	start_char=295|end_char=296
+
+# text = Noch blüht der Mohn, noch summt die Biene ihren Ton.
+# sent_id = 4
+# sentiment = 1
+1	Noch	_	_	_	_	0	_	_	start_char=297|end_char=301
+2	blüht	_	_	_	_	1	_	_	start_char=302|end_char=307
+3	der	_	_	_	_	2	_	_	start_char=308|end_char=311
+4	Mohn	_	_	_	_	3	_	_	SpaceAfter=No|start_char=312|end_char=316
+5	,	_	_	_	_	4	_	_	SpacesAfter=\n|start_char=316|end_char=317
+6	noch	_	_	_	_	5	_	_	start_char=318|end_char=322
+7	summt	_	_	_	_	6	_	_	start_char=323|end_char=328
+8	die	_	_	_	_	7	_	_	start_char=329|end_char=332
+9	Biene	_	_	_	_	8	_	_	start_char=333|end_char=338
+10	ihren	_	_	_	_	9	_	_	start_char=339|end_char=344
+11	Ton	_	_	_	_	10	_	_	SpaceAfter=No|start_char=345|end_char=348
+12	.	_	_	_	_	11	_	_	SpacesAfter=\n|start_char=348|end_char=349
+
+# text = Doch morgen schon, ich weiß es wohl, wird alles kühl, wird alles hohl.
+# sent_id = 5
+# sentiment = 2
+1	Doch	_	_	_	_	0	_	_	start_char=350|end_char=354
+2	morgen	_	_	_	_	1	_	_	start_char=355|end_char=361
+3	schon	_	_	_	_	2	_	_	SpaceAfter=No|start_char=362|end_char=367
+4	,	_	_	_	_	3	_	_	start_char=367|end_char=368
+5	ich	_	_	_	_	4	_	_	start_char=369|end_char=372
+6	weiß	_	_	_	_	5	_	_	start_char=373|end_char=377
+7	es	_	_	_	_	6	_	_	start_char=378|end_char=380
+8	wohl	_	_	_	_	7	_	_	SpaceAfter=No|start_char=381|end_char=385
+9	,	_	_	_	_	8	_	_	SpacesAfter=\n|start_char=385|end_char=386
+10	wird	_	_	_	_	9	_	_	start_char=387|end_char=391
+11	alles	_	_	_	_	10	_	_	start_char=392|end_char=397
+12	kühl	_	_	_	_	11	_	_	SpaceAfter=No|start_char=398|end_char=402
+13	,	_	_	_	_	12	_	_	start_char=402|end_char=403
+14	wird	_	_	_	_	13	_	_	start_char=404|end_char=408
+15	alles	_	_	_	_	14	_	_	start_char=409|end_char=414
+16	hohl	_	_	_	_	15	_	_	SpaceAfter=No|start_char=415|end_char=419
+17	.	_	_	_	_	16	_	_	SpacesAfter=\n\n|start_char=419|end_char=420
+
+# text = Im Hafen schaukeln müde Boote, der Wind erzählt von fernen Meeren, von Sturm und Salz und Abendröte – und keiner wird je wiederkehren.
+# sent_id = 6
+# sentiment = 2
+1-2	Im	_	_	_	_	_	_	_	start_char=422|end_char=424
+1	In	_	_	_	_	0	_	_	_
+2	dem	_	_	_	_	1	_	_	_
+3	Hafen	_	_	_	_	2	_	_	start_char=425|end_char=430
+4	schaukeln	_	_	_	_	3	_	_	start_char=431|end_char=440
+5	müde	_	_	_	_	4	_	_	start_char=441|end_char=445
+6	Boote	_	_	_	_	5	_	_	SpaceAfter=No|start_char=446|end_char=451
+7	,	_	_	_	_	6	_	_	SpacesAfter=\n|start_char=451|end_char=452
+8	der	_	_	_	_	7	_	_	start_char=453|end_char=456
+9	Wind	_	_	_	_	8	_	_	start_char=457|end_char=461
+10	erzählt	_	_	_	_	9	_	_	start_char=462|end_char=469
+11	von	_	_	_	_	10	_	_	start_char=470|end_char=473
+12	fernen	_	_	_	_	11	_	_	start_char=474|end_char=480
+13	Meeren	_	_	_	_	12	_	_	SpaceAfter=No|start_char=481|end_char=487
+14	,	_	_	_	_	13	_	_	SpacesAfter=\n|start_char=487|end_char=488
+15	von	_	_	_	_	14	_	_	start_char=489|end_char=492
+16	Sturm	_	_	_	_	15	_	_	start_char=493|end_char=498
+17	und	_	_	_	_	16	_	_	start_char=499|end_char=502
+18	Salz	_	_	_	_	17	_	_	start_char=503|end_char=507
+19	und	_	_	_	_	18	_	_	start_char=508|end_char=511
+20	Abendröte	_	_	_	_	19	_	_	start_char=512|end_char=521
+21	–	_	_	_	_	20	_	_	SpacesAfter=\n|start_char=522|end_char=523
+22	und	_	_	_	_	21	_	_	start_char=524|end_char=527
+23	keiner	_	_	_	_	22	_	_	start_char=528|end_char=534
+24	wird	_	_	_	_	23	_	_	start_char=535|end_char=539
+25	je	_	_	_	_	24	_	_	start_char=540|end_char=542
+26	wiederkehren	_	_	_	_	25	_	_	SpaceAfter=No|start_char=543|end_char=555
+27	.	_	_	_	_	26	_	_	SpacesAfter=\n|start_char=555|end_char=556

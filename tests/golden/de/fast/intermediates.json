@@ -1,0 +1,189 @@
+{
+ "stanza": "1.15.0",
+ "sentences": [
+  {
+   "sentence": 0,
+   "words": [
+    "Angela",
+    "Merkel",
+    "wurde",
+    "in",
+    "Hamburg",
+    "geboren",
+    "."
+   ],
+   "tokens": [
+    "Angela",
+    "Merkel",
+    "wurde",
+    "in",
+    "Hamburg",
+    "geboren",
+    "."
+   ],
+   "xpos": [
+    "NE",
+    "NE",
+    "VAFIN",
+    "APPR",
+    "NE",
+    "VVPP",
+    "$."
+   ],
+   "heads": [
+    6,
+    1,
+    6,
+    5,
+    6,
+    0,
+    6
+   ],
+   "ner": [
+    "B-PER",
+    "E-PER",
+    "O",
+    "O",
+    "S-LOC",
+    "O",
+    "O"
+   ]
+  },
+  {
+   "sentence": 1,
+   "words": [
+    "Sie",
+    "war",
+    "von",
+    "2005",
+    "bis",
+    "2021",
+    "Bundeskanzlerin",
+    "."
+   ],
+   "tokens": [
+    "Sie",
+    "war",
+    "von",
+    "2005",
+    "bis",
+    "2021",
+    "Bundeskanzlerin",
+    "."
+   ],
+   "xpos": [
+    "PPER",
+    "VAFIN",
+    "APPR",
+    "CARD",
+    "APPR",
+    "CARD",
+    "NN",
+    "$."
+   ],
+   "heads": [
+    7,
+    7,
+    4,
+    7,
+    6,
+    7,
+    0,
+    7
+   ],
+   "ner": [
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O"
+   ]
+  },
+  {
+   "sentence": 2,
+   "words": [
+    "Ich",
+    "glaube",
+    "nicht",
+    ",",
+    "dass",
+    "es",
+    "heute",
+    "regnet",
+    ",",
+    "aber",
+    "wir",
+    "werden",
+    "sehen",
+    "."
+   ],
+   "tokens": [
+    "Ich",
+    "glaube",
+    "nicht",
+    ",",
+    "dass",
+    "es",
+    "heute",
+    "regnet",
+    ",",
+    "aber",
+    "wir",
+    "werden",
+    "sehen",
+    "."
+   ],
+   "xpos": [
+    "PPER",
+    "VVFIN",
+    "PTKNEG",
+    "$,",
+    "KOUS",
+    "PPER",
+    "ADV",
+    "VVFIN",
+    "$,",
+    "KON",
+    "PPER",
+    "VAFIN",
+    "VVINF",
+    "$."
+   ],
+   "heads": [
+    2,
+    0,
+    2,
+    8,
+    8,
+    8,
+    8,
+    2,
+    13,
+    13,
+    13,
+    13,
+    2,
+    2
+   ],
+   "ner": [
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O",
+    "O"
+   ]
+  }
+ ]
+}

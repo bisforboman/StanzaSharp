@@ -26,6 +26,12 @@ multilingual names and quotes, contractions, long sentences, unusual whitespace 
 the BMP (emoji). One known difference is by design: after a character outside the BMP, `start_char`/`end_char` count
 UTF-16 code units in StanzaSharp and code points in Stanza, so `validation_nonbmp` is compared without offsets.
 
+German is in progress. [`tests/golden/de/`](../tests/golden/de) holds the same kinds of reference output for 13
+hand-written German texts (181 sentences, 2,227 words: news, dialogue, instructions, social media, poetry, umlauts
+and ß, compounds, every quote style, contractions, capitals, CRLF whitespace, characters outside the BMP, a paragraph
+over 1,000 characters), made with `make_golden.py --lang de`. StanzaSharp doesn't run German yet, so for now the
+tests only read those files back; the byte-for-byte comparison comes with the German processors.
+
 Every test above runs on both backends: the managed backend (the default) and the TorchSharp backend
 (`StanzaSharp.Cuda`). The managed backend's kernels are also tested on each SIMD path a CPU can take (Vector512 with
 AVX-512, Vector256 with AVX2, Vector128, Scalar), so a machine without AVX2 or an Arm64 machine runs code that was
@@ -73,12 +79,12 @@ Test counts are passed xUnit test cases (each case of a theory counts) in `main`
 
 | Job | Runner | What it checks |
 |---|---|---|
-| `build-test` | ubuntu-26.04 (x64) | builds with warnings as errors, checks the code style, runs the 179 tests that need no models |
-| `golden` (3 shards) | ubuntu-26.04 (x64) | the whole suite on both backends against downloaded models, original and converted (360 tests); then packs the packages and builds fresh apps from them: `StanzaSharp` alone must reproduce the golden CoNLL-U with nothing of TorchSharp loaded, and `StanzaSharp.Cuda` with `TorchSharp-cpu` must too; then installs the `stanzasharp` tool and downloads models with it |
-| `cross-os (windows-2025)` | Windows x64 | the whole suite on both backends, reading Stanza's `.pt` files directly (360 tests), and both package checks |
-| `cross-os (macos-26)` | macOS, Apple Silicon | the same (338 tests: Arm64 has no Vector256 path) |
-| `cross-os (windows-11-arm)` | Windows on Arm64 | the same suite (338 tests) and only the managed package check (`TorchSharp-cpu` has no Arm64 libtorch) |
-| `linux-arm64` | ubuntu-26.04-arm | every managed-backend test (219; there is no libtorch for Linux Arm64) and the managed package check |
+| `build-test` | ubuntu-26.04 (x64) | builds with warnings as errors, checks the code style, runs the 196 tests that need no models |
+| `golden` (3 shards) | ubuntu-26.04 (x64) | the whole suite on both backends against downloaded models, original and converted (377 tests); then packs the packages and builds fresh apps from them: `StanzaSharp` alone must reproduce the golden CoNLL-U with nothing of TorchSharp loaded, and `StanzaSharp.Cuda` with `TorchSharp-cpu` must too; then installs the `stanzasharp` tool and downloads models with it |
+| `cross-os (windows-2025)` | Windows x64 | the whole suite on both backends, reading Stanza's `.pt` files directly (377 tests), and both package checks |
+| `cross-os (macos-26)` | macOS, Apple Silicon | the same (355 tests: Arm64 has no Vector256 path) |
+| `cross-os (windows-11-arm)` | Windows on Arm64 | the same suite (355 tests) and only the managed package check (`TorchSharp-cpu` has no Arm64 libtorch) |
+| `linux-arm64` | ubuntu-26.04-arm | every managed-backend test (235; there is no libtorch for Linux Arm64) and the managed package check |
 | `docker` | ubuntu-26.04 | the [Docker sample](../samples/docker/Dockerfile) on `runtime:10.0` and `runtime:10.0-noble-chiseled`: no libtorch in the image, and the container turns `corpus.txt` into the golden CoNLL-U byte for byte |
 | `alpine` | ubuntu-26.04 | the same on `runtime:10.0-alpine` (musl) |
 
