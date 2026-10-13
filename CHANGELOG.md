@@ -8,6 +8,24 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 Unreleased changes are one file each under [`changes/`](changes/README.md), so pull requests don't conflict here;
 a release folds them in (`python tools/changelog.py release X.Y.Z`).
 
+## [1.6.0] - 2026-10-13
+
+1.6: German. `PipelineOptions.Language = "de"` runs Stanza's German models byte-identical to Python Stanza 1.15.0,
+on both backends. English is unchanged; the new option defaults to `"en"`, so existing code needs no change.
+
+### Added
+- German: `Pipeline.Load(dir, new PipelineOptions { Language = "de" })` runs Stanza's German models, all eight processors,
+  byte-identical to Python Stanza 1.15.0 on both backends, with the packages `default`, `default_fast` and the treebank
+  packages `combined`, `gsd` and `hdt` (tokenize to depparse; gsd's and hdt's taggers are Stanza's older checkpoint
+  format, read as Stanza reads it). German MWT is a character seq2seq model (shared with the
+  lemmatizer), and German NER (GermEval 2014: `PER`, `LOC`, `ORG`, `MISC`) reads fastText's German vectors, so a German
+  pipeline loads two word-vector files. The samples' `StanzaSharp.Cli` takes `--lang de`.
+- `PipelineOptions.Language` (Stanza's language code, default `"en"`). German (`"de"`) models can be downloaded:
+  `ModelDownloader.DownloadAsync(dir, new PipelineOptions { Language = "de" })` or `stanzasharp download --lang de`
+  (into `models/stanza/de` by default), with the packages `default`, `default_fast`, `combined`, `gsd` and `hdt`.
+  An unknown language throws with the supported list, and so does `default_accurate`, whose transformer models
+  StanzaSharp doesn't run. The `DownloadAsync(dir)` and `DownloadAsync(dir, processors)` overloads stay English.
+
 ## [1.5.0] - 2026-10-13
 
 1.5: the dependency parser is 22–29% faster (the whole pipeline 6–9%), loading Stanza's `.pt` files is 35–48%
