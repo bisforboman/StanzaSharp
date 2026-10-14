@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="coverlet.collector" Version="10.1.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
     <!-- StanzaSharpNoLibTorch=true (the linux-arm64 CI job, which has no libtorch): only the tests that need none can pass. -->
     <PackageReference Include="$(TorchSharpNative)" Version="$(TorchSharpVersion)" Condition="'$(StanzaSharpNoLibTorch)' != 'true'" />
