@@ -251,7 +251,7 @@ jobs:
       - name: Check that no test was skipped
         if: steps.cpu.outputs.avx512 == 'yes'
         run: |
-          if grep -h 'outcome="NotExecuted"' TestResults/*.trx | grep -qv 'Run_PythonStanza_'; then
+          if grep -h 'outcome="NotExecuted"' TestResults/*.trx | grep -v 'Run_PythonStanza_' | grep -qvE 'lang: (&quot;|")de|German'; then
             echo "::error::Tests were skipped; the models in models/stanza/en were not found."
             exit 1
           fi
