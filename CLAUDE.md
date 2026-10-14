@@ -755,8 +755,7 @@ model but MWT and NER is English's architecture with other vocabularies and size
   dotnet/TorchSharp#1583), StyleBro.* (prerelease, upgraded by hand with a reformat), StanzaSharp* (the docker
   sample); pip is not watched (tools/requirements.txt pins the golden data). Microsoft.Extensions.Logging.Abstractions
   is included (the owner chose auto-merge for it too), so a bump raises the package's minimum dependency.
-  Auto-merge enabled with `GITHUB_TOKEN` merges without starting workflows on main (GitHub doesn't run workflows for
-  `GITHUB_TOKEN` pushes): a Dependabot merge gets the PR's light CI only; the next human merge to main runs the full suite.
+  A Dependabot merge to main runs main's full CI like any other (seen 2026-10-14, coverlet #115).
 
 - Public API (user's decision for 0.1.0, 2026-10-06: "pipeline only"). It is:
   - the facade: `Pipeline`, `PipelineOptions`, `CharlmCacheOptions`, `ModelDownloader`, `Processor` (0.4),
