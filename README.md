@@ -137,10 +137,11 @@ with `pip install stanza==1.15.0`:
 
 ```
 stanzasharp download models/stanza/en
-stanzasharp compare my-text.txt                   # --package, --processors, --models DIR, --python PATH
+stanzasharp compare my-text.txt                   # --lang de, --package, --processors, --models DIR, --python PATH
 ```
 ```
 Stanza 1.15.0 (Python) and StanzaSharp on my-text.txt
+  language:    en
   package:     default (tokenize,mwt,pos,lemma,constituency,depparse,sentiment,ner)
   models:      /home/me/models/stanza/en: the same 11 files on both sides, MD5s match Stanza 1.15.0's
   text:        10 sentences, 140 words
@@ -150,13 +151,15 @@ Stanza 1.15.0 (Python) and StanzaSharp on my-text.txt
 Identical: the CoNLL-U output is the same, byte for byte.
 ```
 
-Exit code 0 means identical, 1 different, 2 a usage or setup problem (no Python, wrong Stanza version, missing models).
+For German, `stanzasharp download --lang de` and `stanzasharp compare my-text.txt --lang de` (models from
+`models/stanza/de`; Stanza runs its German pipeline). Exit code 0 means identical, 1 different, 2 a usage or setup
+problem (no Python, wrong Stanza version, missing models).
 After characters outside the BMP (emoji, for example), StanzaSharp's `start_char`/`end_char` count UTF-16 code units
 and Stanza's count code points. `compare` converts StanzaSharp's offsets to code points before comparing and says
 that it did.
 
 `stanzasharp benchmark` measures speed on your machine: load time, each processor, words/s, one-sentence calls (median
-and p90) and peak memory on a built-in English text (2,009 words), and, if Python Stanza 1.15.0 is installed, Stanza on the same text
+and p90) and peak memory on a built-in English text (2,009 words; `--lang de`: a German one), and, if Python Stanza 1.15.0 is installed, Stanza on the same text
 with the same models, so you see the ratio on your own hardware. It prints a Markdown block with the CPU, cores, RAM,
 OS, .NET and SIMD path, ready to paste into an issue. About two minutes with Python on 4 cores; `--quick` for a smoke
 test. See [docs/performance.md](docs/performance.md#run-it-yourself).
@@ -465,7 +468,7 @@ summarizes what each job proves.
   TorchSharp in it), one with StanzaSharp.Cuda and `TorchSharp-cpu` on `CudaBackend.Cpu` (no `STANZA` build warning allowed, with `StanzaSharpTrimNative`). Then
   `tools/verify-tool.ps1` installs the `stanzasharp` tool from a local feed, downloads `tokenize,mwt` with it and
   checks `compare`'s setup errors. Golden shard 2 also installs Python Stanza and runs `stanzasharp compare` and
-  `benchmark` against it (`Run_PythonStanza_*`); the other jobs, without Python, allow those to skip. The
+  `benchmark` against it, in English and German (`Run_PythonStanza_*`); the other jobs, without Python, allow those to skip. The
   original and converted models are cached, keyed on `ModelDownloader.cs`, `tools/requirements.txt` and
   `tools/stanza_convert.py`.
 - `docker` runs `tools/verify-docker.sh`: it packs StanzaSharp, builds [samples/docker](samples/docker/Dockerfile) on
@@ -493,7 +496,7 @@ check names stay as they are. All upload their `.trx` test results. To reproduce
 `dotnet test -c Release --logger trx --results-directory TestResults` and check that nothing was skipped.
 
 `.github/workflows/benchmark.yml` runs only by hand (Actions > Benchmark > Run workflow): `stanzasharp benchmark`
-with Python Stanza on each free hosted runner, combined into one table (job summary and artifact `benchmarks`).
+with Python Stanza on each free hosted runner, in English or German (input `lang`), combined into one table (job summary and artifact `benchmarks`).
 Results: [docs/performance.md](docs/performance.md#run-it-yourself).
 
 ## Releasing

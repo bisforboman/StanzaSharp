@@ -2,7 +2,7 @@ name: Benchmark
 
 # StanzaSharp vs Python Stanza on every free GitHub-hosted runner: `stanzasharp benchmark` (built from the checked-out
 # commit) with Python Stanza 1.15.0 next to it. Manual only (Actions > Benchmark > Run workflow, or
-# `gh workflow run benchmark.yml`); never on pushes or pull requests, and never a required check.
+# `gh workflow run benchmark.yml [-f lang=de]`); never on pushes or pull requests, and never a required check.
 # Free standard runners only (owner's rule): no larger or paid runners.
 # Each job writes its Markdown block to the job summary and the artifact benchmark-<runner> (benchmark.md + .json);
 # the last job puts them into one table (its summary and the artifact benchmarks, benchmarks.md).
@@ -11,10 +11,15 @@ name: Benchmark
 on:
   workflow_dispatch:
     inputs:
-      package:
-        description: Stanza's English package
+      lang:
+        description: The language (benchmark jobs only; avx512 and startup stay English)
         type: choice
-        options: [default, default_fast]
+        options: [en, de]
+        default: en
+      package:
+        description: Stanza's package (combined, gsd and hdt are German only)
+        type: choice
+        options: [default, default_fast, combined, gsd, hdt]
         default: default
       quick:
         description: Smoke run (300 words, one run, 10 calls)
@@ -73,13 +78,14 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
-      # Stanza's .pt files, which both sides read: the cache ci.yml's cross-os and linux-arm64 jobs write (restore only,
-      # no new entry). On a miss the tool downloads them.
+      # Stanza's .pt files, which both sides read: English's from the cache ci.yml's cross-os and linux-arm64 jobs write,
+      # German's (all its packages, fastText vectors included) from the one golden-shard 1 writes on Linux (a Linux cache
+      # isn't restored on Windows or macOS). Restore only, no new entry; on a miss the tool downloads the package's files.
       - uses: actions/cache/restore@v6
         id: models
         with:
-          path: models/stanza/en
-          key: models-pt-${{ runner.os }}-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs') }}
+          path: models/stanza/${{ inputs.lang }}
+          key: ${{ inputs.lang == 'de' && format('models-de-treebanks-{0}', hashFiles('src/StanzaSharp/ModelDownloader.cs')) || format('models-pt-{0}-{1}', runner.os, hashFiles('src/StanzaSharp/ModelDownloader.cs')) }}
 
       # The block's StanzaSharp version is git describe's (1.0.0 on the release commit, 1.0.0-67-g97089bb 67 commits
       # after it) instead of Directory.Build.props' placeholder 0.1.0-dev.
@@ -90,9 +96,12 @@ jobs:
 
       - name: Download the models
         if: steps.models.outputs.cache-hit != 'true'
-        run: dotnet src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll download models/stanza/en --package ${{ inputs.package }}
+        run: >
+          dotnet src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll download models/stanza/${{ inputs.lang }}
+          --lang ${{ inputs.lang }} --package ${{ inputs.package }}
 
-      # Python Stanza as golden installs it (the CPU-only torch wheel). If a runner has no wheel for it, the benchmark
+      # Python Stanza as golden installs it (the CPU-only torch wheel); German needs nothing more (its models, fastText
+      # vectors included, are the .pt files above). If a runner has no wheel for it, the benchmark
       # still runs, with StanzaSharp's column only and the reason in the block.
       # windows-11-arm: setup-python gives the Arm64 CPython and download.pytorch.org has torch 2.14.1+cpu for
       # win_arm64, but numpy 2.2.6 has no win_arm64 wheel (numpy's first is 2.3.0), and building it from source fails
@@ -125,8 +134,8 @@ jobs:
             python=python-stanza-not-installed
             echo "::warning::Python Stanza could not be installed on ${{ matrix.os }}; StanzaSharp only."
           fi
-          dotnet src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll benchmark --package ${{ inputs.package }} \
-            --models models/stanza/en --python "$python" --json benchmark.json ${{ inputs.quick && '--quick' || '' }} > benchmark.md
+          dotnet src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll benchmark --lang ${{ inputs.lang }} --package ${{ inputs.package }} \
+            --models models/stanza/${{ inputs.lang }} --python "$python" --json benchmark.json ${{ inputs.quick && '--quick' || '' }} > benchmark.md
           { echo "## ${{ matrix.os }}"; echo; cat benchmark.md; } >> "$GITHUB_STEP_SUMMARY"
 
       - uses: actions/upload-artifact@v7

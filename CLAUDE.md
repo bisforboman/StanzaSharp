@@ -707,10 +707,10 @@ model but MWT and NER is English's architecture with other vocabularies and size
     the managed cases of the both-backend theories plus tests marked `[Trait("Backend", "Managed")]` (they must need
     no libtorch: check with that build and an empty `NUGET_PACKAGES` locally). Then the no-skip check and
     `verify-package.ps1 -Managed`. Models cached like cross-os (`models-pt-Linux-…`).
-  - `benchmark.yml` (owner's decision 2026-10-10): `workflow_dispatch` only (inputs `package`, `quick`), never on
+  - `benchmark.yml` (owner's decision 2026-10-10): `workflow_dispatch` only (inputs `lang`, `package`, `quick`), never on
     pushes/PRs, never required; free standard runners only (ubuntu-26.04, ubuntu-26.04-arm, windows-2025,
-    windows-11-arm, macos-26). Each job builds the tool, restores the `models-pt-<os>` cache (restore only; downloads on
-    a miss), installs Python 3.12 + `tools/requirements.txt` from the CPU wheel index (continue-on-error: without it the
+    windows-11-arm, macos-26). Each job builds the tool, restores the `models-pt-<os>` cache (`lang=de`: golden-shard 1's
+    `models-de-treebanks-…`, Linux only; restore only; downloads the package on a miss), installs Python 3.12 + `tools/requirements.txt` from the CPU wheel index (continue-on-error: without it the
     block has StanzaSharp only), runs `stanzasharp benchmark --json`, writes the block to its summary and artifact
     `benchmark-<os>`. `summary` combines them with `tools/benchmark_table.py` into `benchmarks.md` (summary + artifact).
     The tool is built with `-p:Version=<git describe>` (full-history checkout), so the block names e.g.
@@ -778,39 +778,42 @@ model but MWT and NER is English's architecture with other vocabularies and size
     libiompstubs5md.dll and torch_global_deps.dll, 250 KB, are kept). A marker file in `obj/` is a .deps.json input,
     so switching the property regenerates it. Proven by the plain `verify-package.ps1` (it sets the property and
     checks the files are absent; Linux in golden, macOS in cross-os).
-- `StanzaSharp.Tool` (`src/StanzaSharp.Tool`, `PackAsTool`, command `stanzasharp`): `download [DIR] [--package NAME]
+- `StanzaSharp.Tool` (`src/StanzaSharp.Tool`, `PackAsTool`, command `stanzasharp`): `download [DIR] [--lang CODE] [--package NAME]
   [--processors LIST]`. `DownloadCommand.cs` is compiled into samples/StanzaSharp.Cli too (one implementation). Since
   1.0 StanzaSharp has no TorchSharp, so the tool has no native files at all (0.5 MB with compare and benchmark). `tools/verify-tool.ps1` (golden) packs, `dotnet tool install --tool-path`s it from a local feed,
   checks for natives and downloads `tokenize,mwt`. release.yml packs it.
-  - `compare FILE [--package] [--processors] [--models DIR] [--python PATH]` (`CompareCommand.cs`, owner's "proof for
-    new users"): runs the embedded `compare.py` (make_golden's bytes→str and `"{:C}\n"`) with
-    `stanza.Pipeline('en', dir=<parent of DIR>, resources_filepath=<embedded stanza_resources_en.json>,
-    download_method=None)`, so no network and no resources.json in the model folder. DIR may have any name: if it isn't
-    `en`, compare.py's `load_stanza` (benchmark.py imports it) links it as `en` in its temp folder (a junction on
+  - `compare FILE [--lang CODE] [--package] [--processors] [--models DIR] [--python PATH]` (`CompareCommand.cs`, owner's
+    "proof for new users"; `--lang` 2026-10-14): runs the embedded `compare.py` (make_golden's bytes→str and `"{:C}\n"`)
+    with `stanza.Pipeline(lang, dir=<parent of DIR>, resources_filepath=<embedded stanza_resources_<lang>.json>,
+    download_method=None)`, so no network and no resources.json in the model folder; C# loads with `Language`, DIR
+    defaults to `models/stanza/<lang>`, and the processor list and files come from that language's package (a German
+    treebank package runs tokenize to depparse). DIR may have any name: if it isn't
+    `<lang>`, compare.py's `load_stanza` (benchmark.py imports it) links it as `<lang>` in its temp folder (a junction on
     Windows, which needs no privilege; a symlink elsewhere) while Stanza loads, then unlinks it itself (.NET's
     `Directory.Delete(recursive)` throws UnauthorizedAccessException on such a junction). Both sides
     get the full processor list (requirements added); Stanza's loaded `.pt` set must equal `ModelDownloader.FilesFor`,
     and C# loads with `VerifyChecksums`. C# offsets are converted to code points when the text has non-BMP characters
     (`ConlluDiff.ToCodePointOffsets`). Exit 0/1/2. `stanza_resources_en.json` is `{"stanza_version", "en": resources.json["en"]}`
-    of Stanza 1.15.0; `CompareCommandTests.EmbeddedResources_MatchModelDownloader` fails when its version or an MD5 of
+    of Stanza 1.15.0 (`stanza_resources_de.json` likewise with `de`); `CompareCommandTests.EmbeddedResources_MatchModelDownloader` fails when its version or an MD5 of
     `ModelDownloader.Files` disagrees. Regenerate it after a Stanza version change (Stanza's own downloader, run from
     the repo root; `stanza.__version__` is the new version):
     `tools/.venv/Scripts/python -c "import json, stanza; from stanza.resources.common import download_resources_json as d; d('models/stanza'); r = json.load(open('models/stanza/resources.json', encoding='utf-8')); open('src/StanzaSharp.Tool/stanza_resources_en.json', 'w', encoding='utf-8', newline='\n').write(json.dumps({'stanza_version': stanza.__version__, 'en': r['en']}, indent=1, ensure_ascii=False) + '\n')"`.
     `Run_PythonStanza_*` (CompareCommandTests, BenchmarkCommandTests) need tools/.venv (or `STANZASHARP_PYTHON`) and
-    models/stanza/en; CI runs them in golden-shard 2, the only job with Python Stanza; the other jobs' no-skip checks
+    models/stanza/en (the German ones, `[PythonStanzaFact("de")]`, models/stanza/de next to it); CI runs them in golden-shard 2, the only job with Python Stanza; the other jobs' no-skip checks
     exempt them by name.
-  - `benchmark [--package] [--processors] [--models DIR] [--threads N] [--words N] [--python PATH] [--quick] [--json FILE]`
+  - `benchmark [--lang CODE] [--package] [--processors] [--models DIR] [--threads N] [--words N] [--python PATH] [--quick] [--json FILE]`
     (`BenchmarkCommand.cs`, owner's decision 2026-10-10): managed backend vs the embedded `benchmark.py`, one Python process
     that loads Stanza once and answers JSON-line commands (`run`, `calls`) so runs alternate (warm-up runs on the whole text
     until each side settles, `WarmedUp`: no stage > 10% and 20 ms faster, 2–5 runs, round 16; 3 timed runs,
     medians; 50 one-sentence calls, median/p90; peak working set, macOS `ru_maxrss`). Text: the benchmark sample's golden
-    texts (validation, corpus, tokenize_stress), embedded under `benchmark/`, cut after the paragraph that reaches 1,500
+    texts (validation, corpus, tokenize_stress), embedded under `benchmark/` (`--lang de`: tests/golden/de's files of the
+    same names, under `benchmark/de/`; the block's Run row names the language), cut after the paragraph that reaches 1,500
     whitespace words (`--quick`: 300, 1 run, 10 calls); the block reports words after tokenizing and MWT (2,009 by default). Threads default to each side's own (unless `--threads`). Python is optional: any failure
     (no Python/Stanza, models not `.pt`) gives StanzaSharp's column only, with the reason. With
     Python, the CoNLL-U of the last run is compared (`ConlluDiff`). Machine: CPU from the registry / `lscpu` (LC_ALL=C,
     else /proc/cpuinfo) / `sysctl`, cores from GetLogicalProcessorInformation / lscpu / `hw.physicalcpu`, SIMD
     `Gemm.Detect()`. Report formatting is invariant-culture ASCII (`x` for ratios). `BenchmarkCommandTests`
-    (`Run_PythonStanza_Quick` runs in golden-shard 2); `verify-tool.ps1` runs `benchmark --quick`.
+    (`Run_PythonStanza_Quick` and `_GermanQuick` run in golden-shard 2); `verify-tool.ps1` runs `benchmark --quick`.
 - The `StanzaSharp` package, packed from `src/StanzaSharp` (user's decision, 2026-10-06).
   - It carries all nine assemblies (facade, Core, Nn, the processors) plus their XML docs: the facade's
     ProjectReferences are `PrivateAssets="all"`, and an `IncludeProjectReferences` target adds them.

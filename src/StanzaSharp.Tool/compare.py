@@ -1,8 +1,8 @@
-"""The Python half of "stanzasharp compare", written next to stanza_resources_en.json in a temporary folder.
+"""The Python half of "stanzasharp compare", written next to stanza_resources_<lang>.json in a temporary folder.
 
-  python compare.py TEXT OUT MODELS PACKAGE PROCESSORS VERSION
+  python compare.py TEXT OUT MODELS LANG PACKAGE PROCESSORS VERSION
 
-Runs Stanza on TEXT (UTF-8 bytes, decoded like tools/make_golden.py) with the models in MODELS (Stanza's
+Runs Stanza's LANG pipeline on TEXT (UTF-8 bytes, decoded like tools/make_golden.py) with the models in MODELS (Stanza's
 <processor>/<name>.pt files, in a folder of any name) and writes JSON to OUT: the CoNLL-U as make_golden.py writes it
 ("{:C}\\n"), the processors Stanza ran, the model files it loaded (<processor>/<name>.pt) and the load and processing
 times.
@@ -27,25 +27,25 @@ def model_files(value):
             yield from model_files(v)
 
 
-def load_stanza(models, package, processors):
-    """stanza.Pipeline("en") on the .pt files in MODELS, a folder of any name, with the English entry of Stanza's
-    resources.json shipped with the tool; download_method=None: nothing is downloaded. Stanza reads
-    <dir>/en/<processor>/<name>.pt, so a folder not named en is linked as en in this script's (temporary) folder while
-    Stanza loads."""
+def load_stanza(models, lang, package, processors):
+    """stanza.Pipeline(lang) on the .pt files in MODELS, a folder of any name, with the language's entry of Stanza's
+    resources.json shipped with the tool (stanza_resources_<lang>.json); download_method=None: nothing is downloaded.
+    Stanza reads <dir>/<lang>/<processor>/<name>.pt, so a folder not named after the language is linked under that name
+    in this script's (temporary) folder while Stanza loads."""
     import stanza
     here = os.path.dirname(os.path.abspath(__file__))
     models = os.path.abspath(models)
     link = None
-    if os.path.basename(models) != "en":
-        link = os.path.join(here, "en")
+    if os.path.basename(models) != lang:
+        link = os.path.join(here, lang)
         if os.name == "nt":
             import _winapi
             _winapi.CreateJunction(models, link)  # unlike a symlink, a junction needs no privilege or developer mode
         else:
             os.symlink(models, link)
     try:
-        return stanza.Pipeline("en", dir=os.path.dirname(link or models), package=package, processors=processors,
-                               download_method=None, resources_filepath=os.path.join(here, "stanza_resources_en.json"),
+        return stanza.Pipeline(lang, dir=os.path.dirname(link or models), package=package, processors=processors,
+                               download_method=None, resources_filepath=os.path.join(here, f"stanza_resources_{lang}.json"),
                                use_gpu=False, logging_level="WARN")
     finally:
         if link:
@@ -53,7 +53,7 @@ def load_stanza(models, package, processors):
 
 
 def main():
-    text_path, out_path, models, package, processors, version = sys.argv[1:7]
+    text_path, out_path, models, lang, package, processors, version = sys.argv[1:8]
     install = f"{sys.executable} -m pip install stanza=={version}"
     try:
         import stanza
@@ -67,7 +67,7 @@ def main():
         sys.exit(3)
 
     start = time.perf_counter()
-    nlp = load_stanza(models, package, processors)
+    nlp = load_stanza(models, lang, package, processors)
     load = time.perf_counter() - start
 
     # As bytes, so CR/CRLF reach Stanza unchanged.

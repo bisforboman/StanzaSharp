@@ -8,7 +8,7 @@
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>stanzasharp</ToolCommandName>
     <PackageId>StanzaSharp.Tool</PackageId>
-    <Description>The stanzasharp command: downloads Stanza's English models for StanzaSharp, checked against their MD5s, e.g. in a Dockerfile or CI. "stanzasharp download DIR [--package default_fast] [--processors tokenize,mwt,pos]". "stanzasharp compare FILE" runs Python Stanza and StanzaSharp on your own text and shows whether their output is identical; "stanzasharp benchmark" measures both on your machine. Needs no native libtorch.</Description>
+    <Description>The stanzasharp command: downloads Stanza's English and German models for StanzaSharp, checked against their MD5s, e.g. in a Dockerfile or CI. "stanzasharp download DIR [--lang de] [--package default_fast] [--processors tokenize,mwt,pos]". "stanzasharp compare FILE" runs Python Stanza and StanzaSharp on your own text and shows whether their output is identical; "stanzasharp benchmark" measures both on your machine. Needs no native libtorch.</Description>
     <PackageTags>nlp;stanza;models;download;dotnet-tool</PackageTags>
     <!-- Doc comments are parsed only so IDE0005 (unused usings) runs on build; the tool needs no XML docs, so none is
          required (CS1591) or shipped. -->
@@ -33,12 +33,14 @@
     <None Include="..\..\NOTICE" Pack="true" PackagePath="/" />
     <None Include="README.md" Pack="true" PackagePath="/" />
     <!-- compare: its Python half, and the English and German entries of Stanza 1.15.0's resources.json (Apache 2.0, see
-         NOTICE; compare reads only English's so far, the tests check ModelDownloader's tables against both). -->
+         NOTICE; compare and benchmark pass the selected language's to Stanza, the tests check ModelDownloader's tables against both). -->
     <EmbeddedResource Include="compare.py" LogicalName="compare.py" />
     <EmbeddedResource Include="stanza_resources_en.json" LogicalName="stanza_resources_en.json" />
     <EmbeddedResource Include="stanza_resources_de.json" LogicalName="stanza_resources_de.json" />
-    <!-- benchmark: its Python half and its text, the golden texts samples/StanzaSharp.Benchmark uses (our own, ~15 KB). -->
+    <!-- benchmark: its Python half and its texts, the golden texts samples/StanzaSharp.Benchmark uses (our own, ~15 KB), and
+         German's files of the same names (~12 KB). -->
     <EmbeddedResource Include="benchmark.py" LogicalName="benchmark.py" />
     <EmbeddedResource Include="..\..\tests\golden\validation.txt;..\..\tests\golden\corpus.txt;..\..\tests\golden\tokenize_stress.txt" LogicalName="benchmark/%(Filename)%(Extension)" />
+    <EmbeddedResource Include="..\..\tests\golden\de\validation.txt;..\..\tests\golden\de\corpus.txt;..\..\tests\golden\de\tokenize_stress.txt" LogicalName="benchmark/de/%(Filename)%(Extension)" />
   </ItemGroup>
 </Project>

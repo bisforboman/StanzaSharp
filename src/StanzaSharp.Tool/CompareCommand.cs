@@ -6,7 +6,7 @@ using System.Text.Json;
 namespace StanzaSharp.Tool;
 
 /// <summary>
-/// <c>compare FILE [--package NAME] [--processors LIST] [--models DIR] [--python PATH]</c>: runs Python Stanza and
+/// <c>compare FILE [--lang CODE] [--package NAME] [--processors LIST] [--models DIR] [--python PATH]</c>: runs Python Stanza and
 /// StanzaSharp on FILE with the same model files and reports whether their CoNLL-U is identical. Exit code 0 identical,
 /// 1 different, 2 bad arguments or setup (Python, Stanza, models).
 /// </summary>
@@ -14,11 +14,13 @@ internal static class CompareCommand
 {
     internal static int Run(string[] args, string usage, TextWriter output)
     {
-        string? file = null, processors = null;
-        string package = Pipeline.DefaultPackage, models = DownloadCommand.DefaultDir, python = "python";
+        string? file = null, processors = null, models = null;
+        string package = Pipeline.DefaultPackage, language = Pipeline.English, python = "python";
         for (int i = 0; i < args.Length; i++)
         {
-            if (args[i] == "--package" && i + 1 < args.Length)
+            if (args[i] == "--lang" && i + 1 < args.Length)
+                language = args[++i];
+            else if (args[i] == "--package" && i + 1 < args.Length)
                 package = args[++i];
             else if (args[i] == "--processors" && i + 1 < args.Length)
                 processors = args[++i];
@@ -39,20 +41,21 @@ internal static class CompareCommand
         string list;
         try
         {
-            list = ProcessorList(package, processors);
+            list = ProcessorList(package, processors, language);
         }
         catch (ArgumentException e)
         {
             return Fail(e.Message);
         }
 
-        if (StanzaModelsProblem(ref models, package, list) is { } problem)
+        models ??= DownloadCommand.DirFor(language);
+        if (StanzaModelsProblem(ref models, language, package, list) is { } problem)
             return Fail(problem);
-        var expectedFiles = ModelDownloader.FilesFor(list, package).Select(f => f.Path).ToHashSet();
+        var expectedFiles = ModelDownloader.FilesFor(list, package, language: language).Select(f => f.Path).ToHashSet();
 
         // Both sides get this string: StanzaSharp directly, Stanza as UTF-8 bytes it decodes again.
         var text = File.ReadAllText(file);
-        var stanza = RunStanza(python, text, models, package, list);
+        var stanza = RunStanza(python, text, models, language, package, list);
         if (stanza == null)
             return 2;
         if (!stanza.Files.ToHashSet().SetEquals(expectedFiles) || string.Join(",", stanza.Processors) != list)
@@ -69,7 +72,7 @@ internal static class CompareCommand
             var watch = Stopwatch.StartNew();
 
             // VerifyChecksums: every file is Stanza's published one, so both sides read the same, unmodified models.
-            using var nlp = Pipeline.Load(models, new PipelineOptions { Package = package, Processors = list, VerifyChecksums = true });
+            using var nlp = Pipeline.Load(models, new PipelineOptions { Language = language, Package = package, Processors = list, VerifyChecksums = true });
             load = watch.Elapsed.TotalSeconds;
             watch.Restart();
             doc = nlp.Process(text);
@@ -87,6 +90,7 @@ internal static class CompareCommand
         var difference = ConlluDiff.Find(stanza.Conllu, conllu);
 
         output.WriteLine($"Stanza {ModelDownloader.StanzaVersion} (Python) and StanzaSharp on {file}");
+        output.WriteLine($"  language:    {language}");
         output.WriteLine($"  package:     {package} ({list})");
         output.WriteLine($"  models:      {models}: the same {expectedFiles.Count} files on both sides, MD5s match Stanza {ModelDownloader.StanzaVersion}'s");
         output.WriteLine($"  text:        {doc.Sentences.Count:N0} sentences, {doc.Sentences.Sum(s => s.Words.Count()):N0} words");
@@ -125,19 +129,19 @@ internal static class CompareCommand
     private sealed record StanzaResult(string Conllu, string[] Processors, string[] Files, double Load, double Process);
 
     /// <summary>Runs compare.py; null (after printing why) when Python or Stanza is missing or fails.</summary>
-    private static StanzaResult? RunStanza(string python, string text, string models, string package, string processors)
+    private static StanzaResult? RunStanza(string python, string text, string models, string language, string package, string processors)
     {
         var dir = Directory.CreateTempSubdirectory("stanzasharp-compare-");
         try
         {
-            WriteResources(dir.FullName, "compare.py", "stanza_resources_en.json");
+            WriteResources(dir.FullName, "compare.py", $"stanza_resources_{language}.json");
             var input = Path.Combine(dir.FullName, "input.txt");
             var result = Path.Combine(dir.FullName, "result.json");
             File.WriteAllText(input, text, new UTF8Encoding(false));
 
             // Standard output and error are the user's console: Stanza's warnings and errors show as they happen.
             var start = new ProcessStartInfo(python);
-            foreach (var arg in new[] { Path.Combine(dir.FullName, "compare.py"), input, result, models, package, processors, ModelDownloader.StanzaVersion })
+            foreach (var arg in new[] { Path.Combine(dir.FullName, "compare.py"), input, result, models, language, package, processors, ModelDownloader.StanzaVersion })
                 start.ArgumentList.Add(arg);
             Console.Error.WriteLine($"Running Stanza {ModelDownloader.StanzaVersion} with {python}...");
             Process process;
@@ -178,29 +182,30 @@ internal static class CompareCommand
 
     /// <summary>
     /// The processors both sides run, in Stanza's order: the requested ones (default: the package's) plus those they
-    /// require, as Stanza adds them itself. Throws <see cref="ArgumentException"/> for an unknown package or processor.
+    /// require, as Stanza adds them itself. Throws <see cref="ArgumentException"/> for an unknown language, package or
+    /// processor.
     /// </summary>
-    internal static string ProcessorList(string package, string? processors)
+    internal static string ProcessorList(string package, string? processors, string language = Pipeline.English)
     {
-        var selected = Pipeline.SelectModels(package, processors, addRequired: true, "--processors");
+        var selected = Pipeline.SelectModels(package, processors, addRequired: true, "--processors", language);
         return string.Join(",", Pipeline.AllProcessors.Split(',').Where(selected.ContainsKey));
     }
 
     /// <summary>
     /// Why Python Stanza can't load <paramref name="list"/> from <paramref name="models"/> (made a full path), or null:
-    /// it needs Stanza's .pt files, in a folder of any name (compare.py links it as the en folder Stanza reads).
+    /// it needs Stanza's .pt files, in a folder of any name (compare.py links it as the &lt;lang&gt; folder Stanza reads).
     /// </summary>
-    internal static string? StanzaModelsProblem(ref string models, string package, string list)
+    internal static string? StanzaModelsProblem(ref string models, string language, string package, string list)
     {
+        var download = $"stanzasharp download {models} --lang {language} --package {package}";
         if (!Directory.Exists(models))
-            return $"Model directory not found: {models}. Download the models with: stanzasharp download {models} --package {package}";
+            return $"Model directory not found: {models}. Download the models with: {download}";
         models = Path.GetFullPath(models).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
         var dir = models;
-        var missing = ModelDownloader.FilesFor(list, package).Select(f => f.Path).Where(f => !File.Exists(Path.Combine(dir, f))).Order().ToList();
+        var missing = ModelDownloader.FilesFor(list, package, language: language).Select(f => f.Path).Where(f => !File.Exists(Path.Combine(dir, f))).Order().ToList();
         return missing.Count == 0
             ? null
-            : $"Missing in {models}: {string.Join(", ", missing)}. Python Stanza needs Stanza's .pt files; download them with: "
-              + $"stanzasharp download {models} --package {package}";
+            : $"Missing in {models}: {string.Join(", ", missing)}. Python Stanza needs Stanza's .pt files; download them with: {download}";
     }
 
     /// <summary>Writes the tool's embedded files <paramref name="names"/> into <paramref name="dir"/>.</summary>

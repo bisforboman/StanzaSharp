@@ -102,9 +102,9 @@ Test counts are passed xUnit test cases (each case of a theory counts) in `main`
 | `docker` | ubuntu-26.04 | the [Docker sample](../samples/docker/Dockerfile) on `runtime:10.0` and `runtime:10.0-noble-chiseled`: no libtorch in the image, and the container turns `corpus.txt` into the golden CoNLL-U byte for byte |
 | `alpine` | ubuntu-26.04 | the same on `runtime:10.0-alpine` (musl) |
 
-Every job that runs the model tests fails if any of them was skipped. The only exceptions are two tests that run
-`stanzasharp compare` and `benchmark` against Python Stanza, which CI doesn't install, and the German tests outside
-`golden`: only the golden shards have the German models (Stanza's `.pt` files, cached), so `cross-os` and
+Every job that runs the model tests fails if any of them was skipped. The only exceptions are the tests that run
+`stanzasharp compare` and `benchmark` against Python Stanza (`Run_PythonStanza_*`, English and German), which only
+golden shard 2 installs and runs, and the German tests outside `golden`: only the golden shards have the German models (Stanza's `.pt` files, cached), so `cross-os` and
 `linux-arm64` stay English.
 
 A pull request runs a subset on the other operating systems; every push to `main` and every release runs everything
@@ -120,6 +120,8 @@ dotnet tool install -g StanzaSharp.Tool
 pip install stanza==1.15.0
 stanzasharp download models/stanza/en
 stanzasharp compare my-text.txt          # --package default_fast, --processors LIST
+stanzasharp download --lang de           # German, into models/stanza/de
+stanzasharp compare my-text.txt --lang de
 ```
 
 It checks the model files' MD5s on both sides and converts the offsets after non-BMP characters before comparing.
