@@ -1,0 +1,373 @@
+[
+  [
+    {
+      "id": 1,
+      "text": "\"",
+      "upos": "PUNCT",
+      "xpos": "``",
+      "start_char": 2,
+      "end_char": 3,
+      "misc": "SpaceAfter=No|SpacesBefore=\\s\\s"
+    },
+    {
+      "id": 2,
+      "text": "Hello",
+      "upos": "INTJ",
+      "xpos": "UH",
+      "start_char": 3,
+      "end_char": 8,
+      "misc": "SpaceAfter=No"
+    },
+    {
+      "id": 3,
+      "text": ",",
+      "upos": "PUNCT",
+      "xpos": ",",
+      "start_char": 8,
+      "end_char": 9,
+      "misc": "SpaceAfter=No"
+    },
+    {
+      "id": 4,
+      "text": "\"",
+      "upos": "PUNCT",
+      "xpos": "''",
+      "start_char": 9,
+      "end_char": 10
+    },
+    {
+      "id": 5,
+      "text": "she",
+      "upos": "PRON",
+      "xpos": "PRP",
+      "feats": "Case=Nom|Gender=Fem|Number=Sing|Person=3|PronType=Prs",
+      "start_char": 11,
+      "end_char": 14
+    },
+    {
+      "id": 6,
+      "text": "said",
+      "upos": "VERB",
+      "xpos": "VBD",
+      "feats": "Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin",
+      "start_char": 15,
+      "end_char": 19,
+      "misc": "SpaceAfter=No"
+    },
+    {
+      "id": 7,
+      "text": ".",
+      "upos": "PUNCT",
+      "xpos": ".",
+      "start_char": 19,
+      "end_char": 20
+    }
+  ],
+  [
+    {
+      "id": 1,
+      "text": "I",
+      "upos": "PRON",
+      "xpos": "PRP",
+      "feats": "Case=Nom|Number=Sing|Person=1|PronType=Prs",
+      "start_char": 21,
+      "end_char": 22
+    },
+    {
+      "id": [
+        2,
+        3
+      ],
+      "text": "don't",
+      "start_char": 23,
+      "end_char": 28,
+      "misc": "SpaceAfter=No"
+    },
+    {
+      "id": 2,
+      "text": "do",
+      "upos": "AUX",
+      "xpos": "VBP",
+      "feats": "Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin",
+      "start_char": 23,
+      "end_char": 25
+    },
+    {
+      "id": 3,
+      "text": "n't",
+      "upos": "PART",
+      "xpos": "RB",
+      "feats": "Polarity=Neg",
+      "start_char": 25,
+      "end_char": 28
+    },
+    {
+      "id": 4,
+      "text": ".",
+      "upos": "PUNCT",
+      "xpos": ".",
+      "start_char": 28,
+      "end_char": 29,
+      "misc": "SpacesAfter=\\t"
+    }
+  ],
+  [
+    {
+      "id": [
+        1,
+        2
+      ],
+      "text": "It's",
+      "start_char": 30,
+      "end_char": 34
+    },
+    {
+      "id": 1,
+      "text": "It",
+      "upos": "PRON",
+      "xpos": "PRP",
+      "feats": "Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs",
+      "start_char": 30,
+      "end_char": 32
+    },
+    {
+      "id": 2,
+      "text": "'s",
+      "upos": "AUX",
+      "xpos": "VBZ",
+      "feats": "Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin",
+      "start_char": 32,
+      "end_char": 34
+    },
+    {
+      "id": 3,
+      "text": "Barack",
+      "upos": "PROPN",
+      "xpos": "NNP",
+      "feats": "Number=Sing",
+      "start_char": 35,
+      "end_char": 41
+    },
+    {
+      "id": [
+        4,
+        5
+      ],
+      "text": "Obama's",
+      "start_char": 42,
+      "end_char": 49
+    },
+    {
+      "id": 4,
+      "text": "Obama",
+      "upos": "PROPN",
+      "xpos": "NNP",
+      "feats": "Number=Sing",
+      "start_char": 42,
+      "end_char": 47
+    },
+    {
+      "id": 5,
+      "text": "'s",
+      "upos": "PART",
+      "xpos": "POS",
+      "start_char": 47,
+      "end_char": 49
+    },
+    {
+      "id": 6,
+      "text": "café",
+      "upos": "NOUN",
+      "xpos": "NN",
+      "feats": "Number=Sing",
+      "start_char": 50,
+      "end_char": 54
+    },
+    {
+      "id": 7,
+      "text": "in",
+      "upos": "ADP",
+      "xpos": "IN",
+      "start_char": 55,
+      "end_char": 57
+    },
+    {
+      "id": 8,
+      "text": "New",
+      "upos": "ADJ",
+      "xpos": "NNP",
+      "feats": "Degree=Pos",
+      "start_char": 58,
+      "end_char": 61
+    },
+    {
+      "id": 9,
+      "text": "York",
+      "upos": "PROPN",
+      "xpos": "NNP",
+      "feats": "Number=Sing",
+      "start_char": 62,
+      "end_char": 66,
+      "misc": "SpacesAfter=\\u00A0"
+    },
+    {
+      "id": 10,
+      "text": "City",
+      "upos": "PROPN",
+      "xpos": "NNP",
+      "feats": "Number=Sing",
+      "start_char": 67,
+      "end_char": 71,
+      "misc": "SpaceAfter=No"
+    },
+    {
+      "id": 11,
+      "text": ",",
+      "upos": "PUNCT",
+      "xpos": ",",
+      "start_char": 71,
+      "end_char": 72
+    },
+    {
+      "id": 12,
+      "text": "see",
+      "upos": "VERB",
+      "xpos": "VB",
+      "feats": "Mood=Imp|VerbForm=Fin",
+      "start_char": 73,
+      "end_char": 76
+    },
+    {
+      "id": 13,
+      "text": "C",
+      "upos": "PROPN",
+      "xpos": "NNP",
+      "feats": "Number=Sing",
+      "start_char": 77,
+      "end_char": 78,
+      "misc": "SpaceAfter=No"
+    },
+    {
+      "id": 14,
+      "text": ":",
+      "upos": "PUNCT",
+      "xpos": ":",
+      "start_char": 78,
+      "end_char": 79,
+      "misc": "SpaceAfter=No"
+    },
+    {
+      "id": 15,
+      "text": "\\temp\\x",
+      "upos": "NOUN",
+      "xpos": "NN",
+      "feats": "Number=Sing",
+      "start_char": 79,
+      "end_char": 86,
+      "misc": "SpaceAfter=No"
+    },
+    {
+      "id": 16,
+      "text": "!",
+      "upos": "PUNCT",
+      "xpos": ".",
+      "start_char": 86,
+      "end_char": 87,
+      "misc": "SpacesAfter=\\r\\n\\r\\n"
+    }
+  ],
+  [
+    {
+      "id": 1,
+      "text": "We",
+      "upos": "PRON",
+      "xpos": "PRP",
+      "feats": "Case=Nom|Number=Plur|Person=1|PronType=Prs",
+      "start_char": 91,
+      "end_char": 93
+    },
+    {
+      "id": [
+        2,
+        3
+      ],
+      "text": "can't",
+      "start_char": 94,
+      "end_char": 99,
+      "misc": "SpacesAfter=\u001c"
+    },
+    {
+      "id": 2,
+      "text": "ca",
+      "upos": "AUX",
+      "xpos": "MD",
+      "feats": "VerbForm=Fin",
+      "start_char": 94,
+      "end_char": 96
+    },
+    {
+      "id": 3,
+      "text": "n't",
+      "upos": "PART",
+      "xpos": "RB",
+      "feats": "Polarity=Neg",
+      "start_char": 96,
+      "end_char": 99
+    },
+    {
+      "id": 4,
+      "text": "go",
+      "upos": "VERB",
+      "xpos": "VB",
+      "feats": "VerbForm=Inf",
+      "start_char": 100,
+      "end_char": 102
+    },
+    {
+      "id": 5,
+      "text": "(",
+      "upos": "PUNCT",
+      "xpos": "-LRB-",
+      "start_char": 103,
+      "end_char": 104,
+      "misc": "SpaceAfter=No"
+    },
+    {
+      "id": [
+        6,
+        7
+      ],
+      "text": "won't",
+      "start_char": 104,
+      "end_char": 109,
+      "misc": "SpaceAfter=No"
+    },
+    {
+      "id": 6,
+      "text": "wo",
+      "upos": "AUX",
+      "xpos": "MD",
+      "feats": "VerbForm=Fin",
+      "start_char": 104,
+      "end_char": 106
+    },
+    {
+      "id": 7,
+      "text": "n't",
+      "upos": "PART",
+      "xpos": "RB",
+      "feats": "Polarity=Neg",
+      "start_char": 106,
+      "end_char": 109
+    },
+    {
+      "id": 8,
+      "text": ")",
+      "upos": "PUNCT",
+      "xpos": "-RRB-",
+      "start_char": 109,
+      "end_char": 110,
+      "misc": "SpacesAfter=\\s\\s"
+    }
+  ]
+]

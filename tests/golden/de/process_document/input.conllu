@@ -1,0 +1,187 @@
+# text = Angela Merkel wurde in Hamburg geboren.
+# sent_id = 0
+# constituency = (ROOT (X wrong))
+1	Angela	wrong	X	XX	Foo=Bar	0	dep	_	start_char=0|end_char=6|ner=S-WRONG
+2	Merkel	wrong	X	XX	Foo=Bar	0	dep	_	start_char=7|end_char=13|ner=S-WRONG
+3	wurde	wrong	X	XX	Foo=Bar	0	dep	_	start_char=14|end_char=19|ner=S-WRONG
+4	in	wrong	X	XX	Foo=Bar	0	dep	_	start_char=20|end_char=22|ner=S-WRONG
+5	Hamburg	wrong	X	XX	Foo=Bar	0	dep	_	start_char=23|end_char=30|ner=S-WRONG
+6	geboren	wrong	X	XX	Foo=Bar	0	dep	_	SpaceAfter=No|start_char=31|end_char=38|ner=S-WRONG
+7	.	wrong	X	XX	Foo=Bar	0	dep	_	start_char=38|end_char=39|ner=S-WRONG
+
+# text = Sie war von 2005 bis 2021 Bundeskanzlerin.
+# sent_id = 1
+# constituency = (ROOT (X wrong))
+1	Sie	wrong	X	XX	Foo=Bar	0	dep	_	start_char=40|end_char=43|ner=S-WRONG
+2	war	wrong	X	XX	Foo=Bar	0	dep	_	start_char=44|end_char=47|ner=S-WRONG
+3	von	wrong	X	XX	Foo=Bar	0	dep	_	start_char=48|end_char=51|ner=S-WRONG
+4	2005	wrong	X	XX	Foo=Bar	0	dep	_	start_char=52|end_char=56|ner=S-WRONG
+5	bis	wrong	X	XX	Foo=Bar	0	dep	_	start_char=57|end_char=60|ner=S-WRONG
+6	2021	wrong	X	XX	Foo=Bar	0	dep	_	start_char=61|end_char=65|ner=S-WRONG
+7	Bundeskanzlerin	wrong	X	XX	Foo=Bar	0	dep	_	SpaceAfter=No|start_char=66|end_char=81|ner=S-WRONG
+8	.	wrong	X	XX	Foo=Bar	0	dep	_	SpacesAfter=\n\n|start_char=81|end_char=82|ner=S-WRONG
+
+# text = Ich glaube nicht, dass es heute regnet, aber wir werden sehen.
+# sent_id = 2
+# constituency = (ROOT (X wrong))
+1	Ich	wrong	X	XX	Foo=Bar	0	dep	_	start_char=84|end_char=87|ner=S-WRONG
+2	glaube	wrong	X	XX	Foo=Bar	0	dep	_	start_char=88|end_char=94|ner=S-WRONG
+3	nicht	wrong	X	XX	Foo=Bar	0	dep	_	SpaceAfter=No|start_char=95|end_char=100|ner=S-WRONG
+4	,	wrong	X	XX	Foo=Bar	0	dep	_	start_char=100|end_char=101|ner=S-WRONG
+5	dass	wrong	X	XX	Foo=Bar	0	dep	_	start_char=102|end_char=106|ner=S-WRONG
+6	es	wrong	X	XX	Foo=Bar	0	dep	_	start_char=107|end_char=109|ner=S-WRONG
+7	heute	wrong	X	XX	Foo=Bar	0	dep	_	start_char=110|end_char=115|ner=S-WRONG
+8	regnet	wrong	X	XX	Foo=Bar	0	dep	_	SpaceAfter=No|start_char=116|end_char=122|ner=S-WRONG
+9	,	wrong	X	XX	Foo=Bar	0	dep	_	start_char=122|end_char=123|ner=S-WRONG
+10	aber	wrong	X	XX	Foo=Bar	0	dep	_	start_char=124|end_char=128|ner=S-WRONG
+11	wir	wrong	X	XX	Foo=Bar	0	dep	_	start_char=129|end_char=132|ner=S-WRONG
+12	werden	wrong	X	XX	Foo=Bar	0	dep	_	start_char=133|end_char=139|ner=S-WRONG
+13	sehen	wrong	X	XX	Foo=Bar	0	dep	_	SpaceAfter=No|start_char=140|end_char=145|ner=S-WRONG
+14	.	wrong	X	XX	Foo=Bar	0	dep	_	start_char=145|end_char=146|ner=S-WRONG
+
+# text = Hörst du den Donner nicht?
+# sent_id = 3
+# constituency = (ROOT (X wrong))
+1	Hörst	wrong	X	XX	Foo=Bar	0	dep	_	start_char=147|end_char=152|ner=S-WRONG
+2	du	wrong	X	XX	Foo=Bar	0	dep	_	start_char=153|end_char=155|ner=S-WRONG
+3	den	wrong	X	XX	Foo=Bar	0	dep	_	start_char=156|end_char=159|ner=S-WRONG
+4	Donner	wrong	X	XX	Foo=Bar	0	dep	_	start_char=160|end_char=166|ner=S-WRONG
+5	nicht	wrong	X	XX	Foo=Bar	0	dep	_	SpaceAfter=No|start_char=167|end_char=172|ner=S-WRONG
+6	?	wrong	X	XX	Foo=Bar	0	dep	_	SpacesAfter=\n|start_char=172|end_char=173|ner=S-WRONG
+
+# text = Dr. Müller zog im Jan.
+# sent_id = 4
+# constituency = (ROOT (X wrong))
+1	Dr.	wrong	X	XX	Foo=Bar	0	dep	_	start_char=174|end_char=177|ner=S-WRONG
+2	Müller	wrong	X	XX	Foo=Bar	0	dep	_	start_char=178|end_char=184|ner=S-WRONG
+3	zog	wrong	X	XX	Foo=Bar	0	dep	_	start_char=185|end_char=188|ner=S-WRONG
+4-5	im	_	_	_	_	_	_	_	start_char=189|end_char=191|ner=S-WRONG
+4	in	wrong	X	XX	Foo=Bar	0	dep	_	_
+5	dem	wrong	X	XX	Foo=Bar	0	dep	_	_
+6	Jan	wrong	X	XX	Foo=Bar	0	dep	_	SpaceAfter=No|start_char=192|end_char=195|ner=S-WRONG
+7	.	wrong	X	XX	Foo=Bar	0	dep	_	start_char=195|end_char=196|ner=S-WRONG
+
+# text = 1999 nach Berlin und zahlte 4,50 € für einen Kaffee um 7:30 Uhr.
+# sent_id = 5
+# constituency = (ROOT (X wrong))
+1	1999	wrong	X	XX	Foo=Bar	0	dep	_	start_char=197|end_char=201|ner=S-WRONG
+2	nach	wrong	X	XX	Foo=Bar	0	dep	_	start_char=202|end_char=206|ner=S-WRONG
+3	Berlin	wrong	X	XX	Foo=Bar	0	dep	_	start_char=207|end_char=213|ner=S-WRONG
+4	und	wrong	X	XX	Foo=Bar	0	dep	_	start_char=214|end_char=217|ner=S-WRONG
+5	zahlte	wrong	X	XX	Foo=Bar	0	dep	_	start_char=218|end_char=224|ner=S-WRONG
+6	4,50	wrong	X	XX	Foo=Bar	0	dep	_	start_char=225|end_char=229|ner=S-WRONG
+7	€	wrong	X	XX	Foo=Bar	0	dep	_	start_char=230|end_char=231|ner=S-WRONG
+8	für	wrong	X	XX	Foo=Bar	0	dep	_	start_char=232|end_char=235|ner=S-WRONG
+9	einen	wrong	X	XX	Foo=Bar	0	dep	_	start_char=236|end_char=241|ner=S-WRONG
+10	Kaffee	wrong	X	XX	Foo=Bar	0	dep	_	start_char=242|end_char=248|ner=S-WRONG
+11	um	wrong	X	XX	Foo=Bar	0	dep	_	start_char=249|end_char=251|ner=S-WRONG
+12	7:30	wrong	X	XX	Foo=Bar	0	dep	_	start_char=252|end_char=256|ner=S-WRONG
+13	Uhr	wrong	X	XX	Foo=Bar	0	dep	_	SpaceAfter=No|start_char=257|end_char=260|ner=S-WRONG
+14	.	wrong	X	XX	Foo=Bar	0	dep	_	SpacesAfter=\n\n|start_char=260|end_char=261|ner=S-WRONG
+
+# text = „Wohin gehst du?“, fragte sie.
+# sent_id = 6
+# constituency = (ROOT (X wrong))
+1	„	wrong	X	XX	Foo=Bar	0	dep	_	SpaceAfter=No|start_char=263|end_char=264|ner=S-WRONG
+2	Wohin	wrong	X	XX	Foo=Bar	0	dep	_	start_char=264|end_char=269|ner=S-WRONG
+3	gehst	wrong	X	XX	Foo=Bar	0	dep	_	start_char=270|end_char=275|ner=S-WRONG
+4	du?	wrong	X	XX	Foo=Bar	0	dep	_	SpaceAfter=No|start_char=276|end_char=279|ner=S-WRONG
+5	“	wrong	X	XX	Foo=Bar	0	dep	_	SpaceAfter=No|start_char=279|end_char=280|ner=S-WRONG
+6	,	wrong	X	XX	Foo=Bar	0	dep	_	start_char=280|end_char=281|ner=S-WRONG
+7	fragte	wrong	X	XX	Foo=Bar	0	dep	_	start_char=282|end_char=288|ner=S-WRONG
+8	sie	wrong	X	XX	Foo=Bar	0	dep	_	SpaceAfter=No|start_char=289|end_char=292|ner=S-WRONG
+9	.	wrong	X	XX	Foo=Bar	0	dep	_	start_char=292|end_char=293|ner=S-WRONG
+
+# text = Die Spielsachen der Kinder (alle 23 Stück) lagen im ganzen Zimmer verstreut!
+# sent_id = 7
+# constituency = (ROOT (X wrong))
+1	Die	wrong	X	XX	Foo=Bar	0	dep	_	start_char=294|end_char=297|ner=S-WRONG
+2	Spielsachen	wrong	X	XX	Foo=Bar	0	dep	_	start_char=298|end_char=309|ner=S-WRONG
+3	der	wrong	X	XX	Foo=Bar	0	dep	_	start_char=310|end_char=313|ner=S-WRONG
+4	Kinder	wrong	X	XX	Foo=Bar	0	dep	_	start_char=314|end_char=320|ner=S-WRONG
+5	(	wrong	X	XX	Foo=Bar	0	dep	_	SpaceAfter=No|start_char=321|end_char=322|ner=S-WRONG
+6	alle	wrong	X	XX	Foo=Bar	0	dep	_	start_char=322|end_char=326|ner=S-WRONG
+7	23	wrong	X	XX	Foo=Bar	0	dep	_	start_char=327|end_char=329|ner=S-WRONG
+8	Stück	wrong	X	XX	Foo=Bar	0	dep	_	SpaceAfter=No|start_char=330|end_char=335|ner=S-WRONG
+9	)	wrong	X	XX	Foo=Bar	0	dep	_	start_char=335|end_char=336|ner=S-WRONG
+10	lagen	wrong	X	XX	Foo=Bar	0	dep	_	start_char=337|end_char=342|ner=S-WRONG
+11-12	im	_	_	_	_	_	_	_	start_char=343|end_char=345|ner=S-WRONG
+11	in	wrong	X	XX	Foo=Bar	0	dep	_	_
+12	dem	wrong	X	XX	Foo=Bar	0	dep	_	_
+13	ganzen	wrong	X	XX	Foo=Bar	0	dep	_	start_char=346|end_char=352|ner=S-WRONG
+14	Zimmer	wrong	X	XX	Foo=Bar	0	dep	_	start_char=353|end_char=359|ner=S-WRONG
+15	verstreut	wrong	X	XX	Foo=Bar	0	dep	_	SpaceAfter=No|start_char=360|end_char=369|ner=S-WRONG
+16	!	wrong	X	XX	Foo=Bar	0	dep	_	SpacesAfter=\n|start_char=369|end_char=370|ner=S-WRONG
+
+# text = Der bekannte Autor, der E-Mails an info@beispiel.de geschrieben hatte, besuchte gestern https://www.beispiel.de/ueber-uns.
+# sent_id = 8
+# constituency = (ROOT (X wrong))
+1	Der	wrong	X	XX	Foo=Bar	0	dep	_	start_char=371|end_char=374|ner=S-WRONG
+2	bekannte	wrong	X	XX	Foo=Bar	0	dep	_	start_char=375|end_char=383|ner=S-WRONG
+3	Autor	wrong	X	XX	Foo=Bar	0	dep	_	SpaceAfter=No|start_char=384|end_char=389|ner=S-WRONG
+4	,	wrong	X	XX	Foo=Bar	0	dep	_	start_char=389|end_char=390|ner=S-WRONG
+5	der	wrong	X	XX	Foo=Bar	0	dep	_	start_char=391|end_char=394|ner=S-WRONG
+6	E	wrong	X	XX	Foo=Bar	0	dep	_	SpaceAfter=No|start_char=395|end_char=396|ner=S-WRONG
+7	-	wrong	X	XX	Foo=Bar	0	dep	_	SpaceAfter=No|start_char=396|end_char=397|ner=S-WRONG
+8	Mails	wrong	X	XX	Foo=Bar	0	dep	_	start_char=397|end_char=402|ner=S-WRONG
+9	an	wrong	X	XX	Foo=Bar	0	dep	_	start_char=403|end_char=405|ner=S-WRONG
+10	info@beispiel.de	wrong	X	XX	Foo=Bar	0	dep	_	start_char=406|end_char=422|ner=S-WRONG
+11	geschrieben	wrong	X	XX	Foo=Bar	0	dep	_	start_char=423|end_char=434|ner=S-WRONG
+12	hatte	wrong	X	XX	Foo=Bar	0	dep	_	SpaceAfter=No|start_char=435|end_char=440|ner=S-WRONG
+13	,	wrong	X	XX	Foo=Bar	0	dep	_	start_char=440|end_char=441|ner=S-WRONG
+14	besuchte	wrong	X	XX	Foo=Bar	0	dep	_	start_char=442|end_char=450|ner=S-WRONG
+15	gestern	wrong	X	XX	Foo=Bar	0	dep	_	start_char=451|end_char=458|ner=S-WRONG
+16	https://www.beispiel.de/ueber-uns.	wrong	X	XX	Foo=Bar	0	dep	_	SpacesAfter=\n\n|start_char=459|end_char=493|ner=S-WRONG
+
+# text = Marias Schwester wäre nicht zum Treffen gegangen, wenn sie gewusst hätte, dass es am Freitag um 15 Uhr abgesagt worden war;
+# sent_id = 9
+# constituency = (ROOT (X wrong))
+1	Marias	wrong	X	XX	Foo=Bar	0	dep	_	start_char=495|end_char=501|ner=S-WRONG
+2	Schwester	wrong	X	XX	Foo=Bar	0	dep	_	start_char=502|end_char=511|ner=S-WRONG
+3	wäre	wrong	X	XX	Foo=Bar	0	dep	_	start_char=512|end_char=516|ner=S-WRONG
+4	nicht	wrong	X	XX	Foo=Bar	0	dep	_	start_char=517|end_char=522|ner=S-WRONG
+5-6	zum	_	_	_	_	_	_	_	start_char=523|end_char=526|ner=S-WRONG
+5	zu	wrong	X	XX	Foo=Bar	0	dep	_	_
+6	dem	wrong	X	XX	Foo=Bar	0	dep	_	_
+7	Treffen	wrong	X	XX	Foo=Bar	0	dep	_	start_char=527|end_char=534|ner=S-WRONG
+8	gegangen	wrong	X	XX	Foo=Bar	0	dep	_	SpaceAfter=No|start_char=535|end_char=543|ner=S-WRONG
+9	,	wrong	X	XX	Foo=Bar	0	dep	_	start_char=543|end_char=544|ner=S-WRONG
+10	wenn	wrong	X	XX	Foo=Bar	0	dep	_	start_char=545|end_char=549|ner=S-WRONG
+11	sie	wrong	X	XX	Foo=Bar	0	dep	_	start_char=550|end_char=553|ner=S-WRONG
+12	gewusst	wrong	X	XX	Foo=Bar	0	dep	_	start_char=554|end_char=561|ner=S-WRONG
+13	hätte	wrong	X	XX	Foo=Bar	0	dep	_	SpaceAfter=No|start_char=562|end_char=567|ner=S-WRONG
+14	,	wrong	X	XX	Foo=Bar	0	dep	_	start_char=567|end_char=568|ner=S-WRONG
+15	dass	wrong	X	XX	Foo=Bar	0	dep	_	start_char=569|end_char=573|ner=S-WRONG
+16	es	wrong	X	XX	Foo=Bar	0	dep	_	start_char=574|end_char=576|ner=S-WRONG
+17-18	am	_	_	_	_	_	_	_	start_char=577|end_char=579|ner=S-WRONG
+17	an	wrong	X	XX	Foo=Bar	0	dep	_	_
+18	dem	wrong	X	XX	Foo=Bar	0	dep	_	_
+19	Freitag	wrong	X	XX	Foo=Bar	0	dep	_	start_char=580|end_char=587|ner=S-WRONG
+20	um	wrong	X	XX	Foo=Bar	0	dep	_	start_char=588|end_char=590|ner=S-WRONG
+21	15	wrong	X	XX	Foo=Bar	0	dep	_	start_char=591|end_char=593|ner=S-WRONG
+22	Uhr	wrong	X	XX	Foo=Bar	0	dep	_	start_char=594|end_char=597|ner=S-WRONG
+23	abgesagt	wrong	X	XX	Foo=Bar	0	dep	_	start_char=598|end_char=606|ner=S-WRONG
+24	worden	wrong	X	XX	Foo=Bar	0	dep	_	start_char=607|end_char=613|ner=S-WRONG
+25	war	wrong	X	XX	Foo=Bar	0	dep	_	SpaceAfter=No|start_char=614|end_char=617|ner=S-WRONG
+26	;	wrong	X	XX	Foo=Bar	0	dep	_	start_char=617|end_char=618|ner=S-WRONG
+
+# text = niemand sagte es ihr.
+# sent_id = 10
+# constituency = (ROOT (X wrong))
+1	niemand	wrong	X	XX	Foo=Bar	0	dep	_	start_char=619|end_char=626|ner=S-WRONG
+2	sagte	wrong	X	XX	Foo=Bar	0	dep	_	start_char=627|end_char=632|ner=S-WRONG
+3	es	wrong	X	XX	Foo=Bar	0	dep	_	start_char=633|end_char=635|ner=S-WRONG
+4	ihr	wrong	X	XX	Foo=Bar	0	dep	_	SpaceAfter=No|start_char=636|end_char=639|ner=S-WRONG
+5	.	wrong	X	XX	Foo=Bar	0	dep	_	SpacesAfter=\n|start_char=639|end_char=640|ner=S-WRONG
+
+# text = Wow... das ist ja großartig!!
+# sent_id = 11
+# constituency = (ROOT (X wrong))
+1	Wow	wrong	X	XX	Foo=Bar	0	dep	_	SpaceAfter=No|start_char=641|end_char=644|ner=S-WRONG
+2	...	wrong	X	XX	Foo=Bar	0	dep	_	start_char=644|end_char=647|ner=S-WRONG
+3	das	wrong	X	XX	Foo=Bar	0	dep	_	start_char=648|end_char=651|ner=S-WRONG
+4	ist	wrong	X	XX	Foo=Bar	0	dep	_	start_char=652|end_char=655|ner=S-WRONG
+5	ja	wrong	X	XX	Foo=Bar	0	dep	_	start_char=656|end_char=658|ner=S-WRONG
+6	großartig	wrong	X	XX	Foo=Bar	0	dep	_	SpaceAfter=No|start_char=659|end_char=668|ner=S-WRONG
+7	!	wrong	X	XX	Foo=Bar	0	dep	_	SpaceAfter=No|start_char=668|end_char=669|ner=S-WRONG
+8	!	wrong	X	XX	Foo=Bar	0	dep	_	SpacesAfter=\n|start_char=669|end_char=670|ner=S-WRONG

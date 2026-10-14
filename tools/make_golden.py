@@ -65,6 +65,15 @@ Reads <out>/corpus.txt and writes:
   long_token.txt + long_token.conllu + long_token.fast.conllu
                         both packages on tokens around max_seqlen (200), which Stanza replaces with <UNK>
                         (`--long-token-only`; see write_long_token_golden)
+  json/inputs.json + json/<package>.json + json/pos.json
+                        str(doc) (Document.__repr__: to_dict as indented JSON) of JSON_TEXT, a short text with
+                        every field Stanza's JSON has (MWTs with and without spacing, SpacesBefore, escaped spaces,
+                        quotes and backslashes, entities), for both packages and for tokenize,mwt,pos alone
+                        (`--json-only`; see write_json_golden)
+  process_document/input.conllu + corpus.conllu + corpus.fast.conllu
+                        Pipeline.process on CoNLL.conll2doc of tokenize,mwt's output for corpus.txt with wrong
+                        annotations, running every processor but tokenize and mwt (`--process-document-only`; see
+                        write_process_document_golden)
   de/gsd/, de/hdt/      German only: package=gsd / hdt (tokenize,mwt,pos,lemma,depparse) on corpus.txt (as
                         corpus.conllu) and each validation*.txt, plus their mwt.json (`--treebank-only`)
   pt/tiny_{legacy,zip}.pt + their stanza_convert.py output (.json/.safetensors)
@@ -77,6 +86,7 @@ import sys
 from pathlib import Path
 
 import stanza
+from stanza.utils.conll import CoNLL
 import numpy as np
 import torch
 
@@ -761,6 +771,65 @@ def write_long_token_golden(models, out):
     assert pre([["see", long_url(MAX_SEQLEN + 100)]]).sentences[0].tokens[1].text == long_url(MAX_SEQLEN + 100)
 
 
+JSON_TEXT = ('  "Hello," she said. I don\'t.\tIt\'s Barack Obama\'s café in New York\u00a0City, see C:\\temp\\x!\r\n\r\n'
+             'We can\'t\x1cgo (won\'t)  ')
+JSON_OUTPUTS = {"default": None, "default_fast": None, "pos": "tokenize,mwt,pos"}  # file name -> processors
+
+
+def write_json_golden(models, out):
+    """
+    json/: Stanza's str(doc), i.e. json.dumps(doc.to_dict(), indent=2, ensure_ascii=False), of JSON_TEXT (stored in
+    json/inputs.json, as it holds CRs) for both packages (<package>.json) and for the default package's
+    tokenize,mwt,pos (pos.json, where the later fields are missing). No trailing newline, as str(doc) has none.
+    """
+    folder = out / "json"
+    folder.mkdir(exist_ok=True)
+    with open(folder / "inputs.json", "w", encoding="utf-8", newline="\n") as f:
+        json.dump({"text": JSON_TEXT}, f, indent=1, ensure_ascii=False)
+    for name, processors in JSON_OUTPUTS.items():
+        package = "default" if processors else name
+        nlp = stanza.Pipeline(LANG, dir=models, package=package, processors=processors, download_method=None,
+                              use_gpu=False, logging_level="WARN")
+        with torch.no_grad():
+            doc = nlp(JSON_TEXT)
+        (folder / f"{name}.json").write_text(str(doc), encoding="utf-8", newline="\n")
+        print(f"json/{name}.json: {len(doc.sentences)} sentences, {doc.num_words} words")
+
+
+WRONG_TREE = "(ROOT (X wrong))"
+
+
+def write_process_document_golden(models, out):
+    """
+    process_document/: Pipeline.process(doc, processors=...) on a document read with CoNLL.conll2doc, as
+    Pipeline.process_conllu does, running every loaded processor but tokenize and mwt. input.conllu is tokenize,mwt's
+    output for corpus.txt with every annotation wrong (UPOS, XPOS, lemma, feats, head, deprel, NER, and a
+    constituency comment), so the output shows what the processors overwrite: corpus.conllu for the default package,
+    corpus.fast.conllu for default_fast, which has no parser and keeps the input's tree.
+    """
+    folder = out / "process_document"
+    folder.mkdir(exist_ok=True)
+    tok = stanza.Pipeline(LANG, dir=models, processors="tokenize,mwt", download_method=None, use_gpu=False, logging_level="WARN")
+    doc = tok((out / "corpus.txt").read_text(encoding="utf-8"))
+    for sentence in doc.sentences:
+        for token in sentence.tokens:
+            token.ner = "S-WRONG"
+        for word in sentence.words:
+            word.upos, word.xpos, word.lemma, word.feats, word.head, word.deprel = "X", "XX", "wrong", "Foo=Bar", 0, "dep"
+    # The tree goes after sent_id, where a parser's comment goes (a sentiment comment set before would stay first).
+    text = "{:C}\n".format(doc)
+    text = "\n".join(line + (f"\n# constituency = {WRONG_TREE}" if line.startswith("# sent_id = ") else "")
+                     for line in text.split("\n"))
+    (folder / "input.conllu").write_text(text, encoding="utf-8", newline="\n")
+    for package, suffix in PACKAGES.items():
+        nlp = stanza.Pipeline(LANG, dir=models, package=package, download_method=None, use_gpu=False, logging_level="WARN")
+        processors = [p for p in nlp.processors if p not in ("tokenize", "mwt")]
+        with torch.no_grad():
+            result = nlp.process(CoNLL.conll2doc(input_str=text), processors=processors)
+        (folder / f"corpus{suffix}.conllu").write_text("{:C}\n".format(result), encoding="utf-8", newline="\n")
+        print(f"process_document/corpus{suffix}.conllu: {','.join(processors)}, {len(result.sentences)} sentences")
+
+
 # --lang de: the German word lists, replacing the English ones above. The German texts are hand-written for
 # tests/golden/de (no copyrighted text); the MST cases and the pt/ fixtures are language-independent, so English only.
 GERMAN = {
@@ -790,6 +859,8 @@ GERMAN = {
                    "Ich gehe zum Arzt, ins Kino und beim Bäcker vorbei.",
                    "Angela Merkel wurde in Hamburg geboren.\n\nSie war ab 2005 Bundeskanzlerin.", "?"],
     # German's tokenizer has max_seqlen 400.
+    "JSON_TEXT": ('  „Hallo“, sagte sie. Wir gehen zum.\tAngela Merkel wohnt im Haus in Berlin\u00a0Mitte, siehe C:\\temp\\x!\r\n\r\n'
+                  'Das "ist"\x1cgut (am Ende)  '),
     "MAX_SEQLEN": 400,
     "LONG_TOKEN_TEXT": "\n\n".join([
         f"Die Studie nannte {long_url(500)} als Quelle. Später wurde sie gelöscht.",
@@ -818,6 +889,8 @@ def main():
     p.add_argument("--no-ssplit-only", action="store_true", help="only regenerate no_ssplit/ (tokenize_no_ssplit)")
     p.add_argument("--long-token-only", action="store_true", help="only regenerate long_token.*")
     p.add_argument("--upos64-only", action="store_true", help="only add the float64 UPOS logits to the intermediates")
+    p.add_argument("--json-only", action="store_true", help="only regenerate json/ (str(doc))")
+    p.add_argument("--process-document-only", action="store_true", help="only regenerate process_document/")
     p.add_argument("--treebank-only", action="store_true", help="only regenerate the German treebank packages' folders (gsd/, hdt/)")
     args = p.parse_args()
     LANG = args.lang
@@ -832,6 +905,12 @@ def main():
         return
     if args.treebank_only:
         write_treebank_golden(args.models, out)
+        return
+    if args.json_only:
+        write_json_golden(args.models, out)
+        return
+    if args.process_document_only:
+        write_process_document_golden(args.models, out)
         return
     if args.pretokenized_only:
         write_pretokenized_golden(args.models, out)
@@ -928,6 +1007,8 @@ def main():
     write_bulk_golden(args.models, out)
     write_no_ssplit_golden(args.models, out)
     write_long_token_golden(args.models, out)
+    write_json_golden(args.models, out)
+    write_process_document_golden(args.models, out)
     if LANG == "de":
         write_treebank_golden(args.models, out)
 
