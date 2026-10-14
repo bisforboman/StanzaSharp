@@ -103,10 +103,14 @@ public class SentimentTests(ITestOutputHelper output, SharedPipelines pipelines,
             var expected = golden[i]!["logits"]!.AsArray().Select(x => x!.GetValue<double>()).ToArray();
             var exact = golden[i]!["logits64"]!.AsArray().Select(x => x!.GetValue<double>()).ToArray();
             var diff32 = expected.Select((e, k) => (float)Math.Abs(e - logits[i][k])).ToArray();
-            float diff = diff32.Select((d, k) => Math.Min(d, (float)Math.Abs(exact[k] - logits[i][k]))).Max();
+            var diff64 = exact.Select((e, k) => Math.Abs(e - logits[i][k])).ToArray();
+            float diff = diff32.Select((d, k) => Math.Min(d, (float)diff64[k])).Max();
             worst32 = Math.Max(worst32, diff32.Max());
             worst = Math.Max(worst, diff);
-            if (golden[i]!["sentiment"]!.GetValue<int>() != labels[i] || diff > (tolerance ?? Tolerance))
+            float t = tolerance ?? Tolerance;
+            bool close = Enumerable.Range(0, exact.Length).All(k =>
+                diff32[k] <= TokenizerTests.Allowed(t, expected[k]) || diff64[k] <= TokenizerTests.Allowed(t, exact[k]));
+            if (golden[i]!["sentiment"]!.GetValue<int>() != labels[i] || !close)
                 failures.Add($"{name}, sentence {i}: label {labels[i]} logits [{string.Join(", ", logits[i])}], expected {golden[i]}");
         }
 

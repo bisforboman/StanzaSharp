@@ -17,7 +17,8 @@ internal sealed class PosNet : IPosNet
     private readonly Embedding _wordEmb, _uposEmb;
     private readonly Linear _transPretrained;
     private readonly HighwayLstm _lstm;
-    private readonly Linear _uposHid, _uposClf, _xposHid, _featsHid;
+    private readonly Linear _uposHid, _xposHid, _featsHid;
+    private readonly Tensor _uposClfWeight, _uposClfBias; // upos_clf in float64 (see Forward)
     private readonly Biaffine _xposClf;
     private readonly Biaffine[] _featsClf;
     private readonly Device _device = Weights.Device; // the device the model was loaded on
@@ -53,7 +54,9 @@ internal sealed class PosNet : IPosNet
         _lstm = new HighwayLstm(ckpt, model, "taggerlstm", inputSize, hidden, config["num_layers"]!.GetValue<int>());
 
         _uposHid = nn.Linear(hidden * 2, biaff).LoadFrom(ckpt, model, "upos_hid.");
-        _uposClf = nn.Linear(biaff, upos).LoadFrom(ckpt, model, "upos_clf.");
+        using (var weight = ckpt.ToTensor(model["upos_clf.weight"]))
+        using (var bias = ckpt.ToTensor(model["upos_clf.bias"]))
+            (_uposClfWeight, _uposClfBias) = (weight.to(ScalarType.Float64), bias.to(ScalarType.Float64));
         _xposHid = nn.Linear(hidden * 2, biaff).LoadFrom(ckpt, model, "tag_hid.xpos.");
         _xposClf = new Biaffine(ckpt, model, "tag_clf.xpos.", biaff, tagEmb, xpos);
         _featsHid = nn.Linear(hidden * 2, compositeBiaff).LoadFrom(ckpt, model, "tag_hid.feats.");
@@ -120,7 +123,10 @@ internal sealed class PosNet : IPosNet
         var output = _lstm.Forward(packed, disposeInput: true, ct).data.index_select(0, torch.tensor(packedRow, device: _device));
 
         ct.ThrowIfCancellationRequested();
-        var uposScores = _uposClf.forward(F.relu(_uposHid.forward(output)));
+
+        // upos_clf sums in double, rounded to float once, as the managed net does: German logits reach |380|, where a float
+        // sum's last bits depend on libtorch's CPU kernels (Intel AVX-512 drifted 1.2e-4 from Stanza, AMD 6.1e-5; round 26).
+        var uposScores = F.linear(F.relu(_uposHid.forward(output)).to(ScalarType.Float64), _uposClfWeight, _uposClfBias).to(ScalarType.Float32);
         var uposIds = uposScores.argmax(1);
         var parent = _uposEmb.forward(uposIds);
         var xposIds = _xposClf.Forward(F.relu(_xposHid.forward(output)), parent).argmax(1);
@@ -132,8 +138,10 @@ internal sealed class PosNet : IPosNet
 
     public void Dispose()
     {
-        foreach (var m in new nn.Module[] { _wordEmb, _uposEmb, _transPretrained, _uposHid, _uposClf, _xposHid, _featsHid })
+        foreach (var m in new nn.Module[] { _wordEmb, _uposEmb, _transPretrained, _uposHid, _xposHid, _featsHid })
             m.Dispose();
+        _uposClfWeight.Dispose();
+        _uposClfBias.Dispose();
         _lstm.Dispose();
         _charModel?.Dispose();
         _transChar?.Dispose();

@@ -229,6 +229,11 @@ jobs:
             filter="($filter)&((DisplayName!~managed: False&Backend!=TorchSharp)|Smoke=TorchSharp)"
           fi
           echo "$filter"
+          # libtorch picks its float32 kernels by CPU (MKL's sgemm per ISA, ATen's avx2/avx512 kernels), so on an Intel
+          # AVX-512 runner the TorchSharp backend drifted 1.2e-4 from Stanza where AMD drifts 6.1e-5 (German default_fast
+          # UPOS logits near |285|; docs/performance/round-26-torchsharp-intel-drift.md). These two pick the same kernels on
+          # every x64 CPU: results are bit-identical on all runners drawn. Test environment only; users keep the defaults.
+          if [ "$RUNNER_ARCH" = X64 ]; then export ATEN_CPU_CAPABILITY=default MKL_CBWR=COMPATIBLE,STRICT; fi
           dotnet test StanzaSharp.slnx -c Release --no-build --blame-hang-timeout 30m --blame-hang-dump-type none --logger trx --results-directory TestResults --filter "$filter"
 
       # A skipped test here means the models (English or German; or, for Run_PythonStanza_*, Python Stanza) were not
@@ -506,6 +511,11 @@ jobs:
             filter='FullyQualifiedName~PipelineTests|FullyQualifiedName~ManagedBackendTests|FullyQualifiedName~ManagedCheckTests'
           fi
           echo "$filter"
+          # libtorch picks its float32 kernels by CPU (MKL's sgemm per ISA, ATen's avx2/avx512 kernels), so on an Intel
+          # AVX-512 runner the TorchSharp backend drifted 1.2e-4 from Stanza where AMD drifts 6.1e-5 (German default_fast
+          # UPOS logits near |285|; docs/performance/round-26-torchsharp-intel-drift.md). These two pick the same kernels on
+          # every x64 CPU: results are bit-identical on all runners drawn. Test environment only; users keep the defaults.
+          if [ "$RUNNER_ARCH" = X64 ]; then export ATEN_CPU_CAPABILITY=default MKL_CBWR=COMPATIBLE,STRICT; fi
           dotnet test StanzaSharp.slnx -c Release --no-build --blame-hang-timeout 30m --blame-hang-dump-type none --logger trx --results-directory TestResults --filter "$filter"
 
       - name: Check that no test was skipped

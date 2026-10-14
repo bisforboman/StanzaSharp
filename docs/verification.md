@@ -59,12 +59,16 @@ sentence) with a tolerance. Largest differences from Python Stanza measured on t
 | Scores | Largest difference, English | German | Tolerance |
 |---|---:|---:|---:|
 | tokenizer log-probabilities | 1.1e-5 | 1.1e-5 | 1e-4 |
-| UPOS logits | 2.9e-5 (6.1e-5 from float32) | 6.3e-5 (1.5e-4 from float32) | 1e-4 (of Stanza's float32 or float64 logits) |
+| UPOS logits | 2.9e-5 (6.1e-5 from float32) | 6.3e-5 (1.5e-4 from float32) | 1e-4, relative above \|100\| (of Stanza's float32 or float64 logits) |
 | dependency arc / label log-probabilities | 2.3e-5 / 3.4e-5 | 1.5e-5 / 2.3e-5 | 1e-4 |
 | NER emissions | 1.1e-5 | 1.3e-5 | 1e-4 |
 | sentiment logits | 8.2e-5 | 4.6e-6 | 1e-4 (of Stanza's float32 or float64 logits) |
 | constituency transition scores | 3.4e-5 (at most 4.6e-5 on any SIMD path) | 3.8e-5 | 1e-3 |
 
+- **Large values.** A 1e-4 tolerance grows with the reference value above |100|: 1e-4 × max(1, |expected| / 100)
+  (owner's decision, 2026-10-14). Float32 can't hold 1e-4 above |x| ≈ 300: from 256 up one float32 step is 3.05e-5,
+  so 1e-4 would allow only about three roundings. Only UPOS logits go above |100| in the golden data (German up to
+  |380|, English |139|), so nothing else changes; the 1e-3 tolerances stay absolute.
 - **UPOS logits** are compared with Stanza's float64 logits as well, both languages and both packages (owner's
   decision, 2026-10-13, as for sentiment): a logit passes within 1e-4 of either. The German tagger's logits reach |140|,
   and Stanza's own float32 logits are up to 1.01e-4 from float64; the managed backend is 1.5e-4 from float32 but within
@@ -108,6 +112,10 @@ Every job that runs the model tests fails if any of them was skipped. The only e
 `stanzasharp compare` and `benchmark` against Python Stanza (`Run_PythonStanza_*`, English and German), which only
 golden shard 2 installs and runs, and the German tests outside `golden`: only the golden shards have the German models (Stanza's `.pt` files, cached), so `cross-os` and
 `linux-arm64` stay English.
+
+On x64 runners the test steps set `ATEN_CPU_CAPABILITY=default` and `MKL_CBWR=COMPATIBLE,STRICT`, so libtorch picks
+the same kernels on every CPU the runner draws (Intel or AMD) and the TorchSharp backend gives the same bits on all of
+them ([round 26](performance/round-26-torchsharp-intel-drift.md)). Users keep libtorch's defaults.
 
 A pull request runs a subset on the other operating systems; every push to `main` and every release runs everything
 above. Releases are built from a commit that passed all of it.
