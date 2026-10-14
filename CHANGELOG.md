@@ -10,9 +10,10 @@ a release folds them in (`python tools/changelog.py release X.Y.Z`).
 
 ## [1.7.0] - 2026-10-14
 
-1.7: `stanzasharp compare` and `benchmark` take `--lang de`, so German can be checked against Python Stanza and timed
+1.7: JSON output (`Json.Write`/`Json.Read`, like Stanza's `print(doc)`), `Pipeline.Process(Document)` for
+annotating a parsed CoNLL-U document, `stanzasharp compare` and `benchmark` take `--lang de`, so German can be checked against Python Stanza and timed
 like English; and the TorchSharp backend (`StanzaSharp.Cuda`) parses faster with a lower depparse peak. Outputs are
-unchanged bit for bit; no API changes.
+unchanged bit for bit; the new API is additive.
 
 ### Added
 - `stanzasharp compare` and `stanzasharp benchmark` take `--lang de` for German: Python Stanza runs its German pipeline
@@ -21,11 +22,21 @@ unchanged bit for bit; no API changes.
   `gsd` and `hdt` run only their processors, tokenize to depparse). `benchmark --lang de` times a built-in German text
   (our German test texts, cut like the English one), and the block names the language. The manual Benchmark workflow
   has a `lang` input.
+- `Json.Write(doc)` writes a document as Python Stanza's `str(doc)` does (`json.dumps(doc.to_dict(), indent=2,
+  ensure_ascii=False)`), byte for byte, and `Json.Read(json)` reads it back (`Json.Write(Json.Read(json))` equals
+  `json`). Like Stanza's JSON, it holds the tokens and words only, not the sentence text, id, tree or sentiment.
+- `Pipeline.Process(Document)` (and a `CancellationToken` overload) runs the pipeline's processors on a document
+  that already has its tokens, such as one from `Conllu.Read` or `Json.Read`, like Stanza's `process_conllu`:
+  tokenize and mwt are skipped, every other processor overwrites what it sets, and the rest is kept.
 
 ### Changed
 - TorchSharp backend (`StanzaSharp.Cuda`): the constituency parser is about 20% faster on the CPU (each step reads and
   writes its states with a constant number of tensor ops), and the dependency parser's memory peak is about 280 MB
   lower on a 27k-word text (no padded input, no full label-score tensor). Outputs and scores are bit-identical.
+- TorchSharp backend (`StanzaSharp.Cuda`): the tagger's UPOS head (`upos_clf`) sums in double, as the managed backend
+  does, so its logits come closer to Stanza's float64 values and no longer depend on libtorch's CPU kernels in the last
+  layer (German `default_fast` on an Intel AVX-512 CPU: 1.2e-4 from Stanza before). Tags are unchanged.
+- The `StanzaSharp` package depends on `Microsoft.Extensions.Logging.Abstractions` 10.0.13 (was 10.0.0).
 
 ### Fixed
 - `stanzasharp --help` and the tool's README said German models could be downloaded but not loaded by `Pipeline.Load`;
