@@ -181,19 +181,32 @@ public class TokenizerTests(ITestOutputHelper output, SharedPipelines pipelines)
 
     private static string Escape(string space) => space == " " ? "" : "<" + space.Replace("\n", "\\n") + ">";
 
+    /// <summary>
+    /// The difference allowed from a reference value <paramref name="expected"/>: <paramref name="tolerance"/>, except that
+    /// 1e-4 grows with large values, 1e-4 × max(1, |expected| / 100) (owner's decision, 2026-10-14). Float32 can't hold
+    /// 1e-4 above |x| ≈ 300 (one ulp is 3.05e-5 from 256 up, so 1e-4 is about three roundings there), and German UPOS
+    /// logits reach |380| (round 26). Nothing changes up to |x| = 100; other tolerances (1e-3) stay absolute.
+    /// </summary>
+    internal static double Allowed(float tolerance, double expected) =>
+        tolerance == 1e-4f ? 1e-4 * Math.Max(1, Math.Abs(expected) / 100) : tolerance;
+
+    /// <summary>Each value within <see cref="Allowed"/> of the expected one.</summary>
     /// <returns>The largest difference.</returns>
     internal static float AssertClose(float[] expected, float[] actual, float tolerance, string what)
     {
         Assert.Equal(expected.Length, actual.Length);
-        int worst = 0;
-        for (int i = 1; i < expected.Length; i++)
+        int worst = 0, over = -1;
+        for (int i = 0; i < expected.Length; i++)
         {
-            if (Math.Abs(expected[i] - actual[i]) > Math.Abs(expected[worst] - actual[worst]))
+            float d = Math.Abs(expected[i] - actual[i]);
+            if (d > Math.Abs(expected[worst] - actual[worst]))
                 worst = i;
+            if (over < 0 && !(d <= Allowed(tolerance, expected[i])))
+                over = i;
         }
 
-        float diff = Math.Abs(expected[worst] - actual[worst]);
-        Assert.True(diff <= tolerance, $"{what}: max |diff| {diff} at {worst} (expected {expected[worst]}, got {actual[worst]})");
-        return diff;
+        if (over >= 0)
+            Assert.Fail($"{what}: |diff| {Math.Abs(expected[over] - actual[over])} at {over}, over {Allowed(tolerance, expected[over]):E2} (expected {expected[over]}, got {actual[over]})");
+        return Math.Abs(expected[worst] - actual[worst]);
     }
 }

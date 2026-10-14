@@ -65,9 +65,10 @@ public class PosTests(ITestOutputHelper output, PosTests.Fixture fixture) : ICla
         Assert.Equal(expected, Punct.Simplify(word));
 
     /// <summary>
-    /// Sentence <paramref name="i"/>'s UPOS logits: each within 1e-4 of Stanza's float32 value ("upos_logits") or of the
-    /// float64 one ("upos_logits64", the model run in float64), as for sentiment (owner's decision, 2026-10-13). German's
-    /// logits reach |140|, and Stanza's own float32 ones are up to 1.01e-4 from float64.
+    /// Sentence <paramref name="i"/>'s UPOS logits: each within 1e-4 (<see cref="TokenizerTests.Allowed"/>: relative above
+    /// |100|) of Stanza's float32 value ("upos_logits") or of the float64 one ("upos_logits64", the model run in float64), as
+    /// for sentiment (owner's decision, 2026-10-13). German's logits reach |380|, and Stanza's own float32 ones are up to
+    /// 1.01e-4 from float64.
     /// </summary>
     /// <returns>The largest difference from the float32 logits, and the largest accepted one (the nearer reference per logit).</returns>
     internal static (float Float32, float Accepted) AssertUposClose(SafeTensorFile golden, int i, float[] actual, string what)
@@ -77,17 +78,19 @@ public class PosTests(ITestOutputHelper output, PosTests.Fixture fixture) : ICla
         Assert.Equal(expected.Length, actual.Length);
         Assert.Equal(exact.Length, actual.Length);
         float worst32 = 0, worst = 0;
-        int at = 0;
+        int over = -1;
         for (int k = 0; k < actual.Length; k++)
         {
             float d32 = Math.Abs(expected[k] - actual[k]);
-            float d = Math.Min(d32, (float)Math.Abs(exact[k] - actual[k]));
+            double d64 = Math.Abs(exact[k] - actual[k]);
             worst32 = Math.Max(worst32, d32);
-            if (d > worst)
-                (worst, at) = (d, k);
+            worst = Math.Max(worst, Math.Min(d32, (float)d64));
+            if (over < 0 && !(d32 <= TokenizerTests.Allowed(1e-4f, expected[k]) || d64 <= TokenizerTests.Allowed(1e-4f, exact[k])))
+                over = k;
         }
 
-        Assert.True(worst <= 1e-4f, $"{what}: logit {at} is {actual[at]}, expected {expected[at]} (float32) or {exact[at]} (float64)");
+        if (over >= 0)
+            Assert.Fail($"{what}: logit {over} is {actual[over]}, expected {expected[over]} (float32) or {exact[over]} (float64), allowed {TokenizerTests.Allowed(1e-4f, exact[over]):E2}");
         return (worst32, worst);
     }
 
