@@ -741,6 +741,15 @@ model but MWT and NER is English's architecture with other vocabularies and size
 
 ## Packaging and releases
 
+- Dependabot (owner's decision, 2026-10-14; `.github/dependabot.yml`): GitHub Actions and NuGet, weekly.
+  `dependabot-auto-merge.yml` turns on auto-merge (merge commit) for minor and patch updates, so they land once the
+  required checks pass; majors wait for a person. Ignored: TorchSharp*/libtorch-* (move together, check
+  dotnet/TorchSharp#1583), StyleBro.* (prerelease, upgraded by hand with a reformat), StanzaSharp* (the docker
+  sample); pip is not watched (tools/requirements.txt pins the golden data). Microsoft.Extensions.Logging.Abstractions
+  is included (the owner chose auto-merge for it too), so a bump raises the package's minimum dependency.
+  Auto-merge enabled with `GITHUB_TOKEN` merges without starting workflows on main (GitHub doesn't run workflows for
+  `GITHUB_TOKEN` pushes): a Dependabot merge gets the PR's light CI only; the next human merge to main runs the full suite.
+
 - Public API (user's decision for 0.1.0, 2026-10-06: "pipeline only"). It is:
   - the facade: `Pipeline`, `PipelineOptions`, `CharlmCacheOptions`, `ModelDownloader`, `Processor` (0.4),
     `PipelineBackend` (0.5);

@@ -1,0 +1,22 @@
+# Dependabot (owner's decision, 2026-10-14): GitHub Actions and NuGet, weekly. Minor and patch updates merge
+# themselves once CI passes (dependabot-auto-merge.yml); major updates wait for a person.
+# Left out on purpose:
+# - TorchSharp, TorchSharp-*, libtorch-*: TorchSharpVersion and LibTorchVersion must move together
+#   (Directory.Build.props, STANZA001), and an upgrade means checking dotnet/TorchSharp#1583 (CLAUDE.md).
+# - StyleBro.*: a prerelease, upgraded by hand with `stylebro-migrate init` and a reformat commit.
+# - tools/requirements.txt (pip): Stanza, torch and numpy are pinned because the golden data depends on them.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: weekly
+    ignore:
+      - dependency-name: "TorchSharp*"
+      - dependency-name: "libtorch-*"
+      - dependency-name: "StyleBro.*"
+      - dependency-name: "StanzaSharp*"
