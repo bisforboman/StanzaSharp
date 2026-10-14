@@ -84,6 +84,7 @@ stanzasharp download --lang de                                              # Ge
 StanzaSharp on your text with the same model files and reports whether the CoNLL-U output is identical, or shows the
 first difference, with both sides' timings. `stanzasharp benchmark` times StanzaSharp (and Python Stanza, if installed)
 on a built-in text on your machine and prints a shareable Markdown block with the hardware and both sides' results.
+Both take `--lang de` for German.
 
 ## Use
 

@@ -33,7 +33,7 @@ def main():
         sys.exit("No benchmark.json found")
     first = results[0][1]
     print("## StanzaSharp vs Python Stanza on GitHub-hosted runners\n")
-    print(f'{first["Package"]} package ({first["Processors"]}), {first["Words"]:,} words; StanzaSharp {first["Machine"]["StanzaSharp"]}. '
+    print(f'Language {first.get("Language", "en")}, {first["Package"]} package ({first["Processors"]}), {first["Words"]:,} words; StanzaSharp {first["Machine"]["StanzaSharp"]}. '
           "Pairs are StanzaSharp / Python Stanza. Shared virtual machines: compare runs of the same day only; macOS runners "
           "are virtualized (Apple Silicon).\n")
     print("| runner | CPU | cores/logical | SIMD | threads | StanzaSharp words/s | Stanza words/s | speed-up "

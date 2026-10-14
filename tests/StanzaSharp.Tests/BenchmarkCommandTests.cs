@@ -19,14 +19,14 @@ public class BenchmarkCommandTests
         CultureInfo.CurrentCulture = new CultureInfo("sv-SE"); // decimal comma: the block must not depend on it
         try
         {
-            var text = Format(new Result(TestMachine, "default", "tokenize,pos", 2000, 100, 3, 50, TestSide(1) with { WarmUps = 3 }, TestSide(2.5) with { WarmUps = 2 },
+            var text = Format(new Result(TestMachine, "en", "default", "tokenize,pos", 2000, 100, 3, 50, TestSide(1) with { WarmUps = 3 }, TestSide(2.5) with { WarmUps = 2 },
                 "Stanza 1.15.0, torch 2.14.1, Python 3.12.0", "identical CoNLL-U on both sides"));
             Assert.Contains("| CPU | Test CPU 9000: 4 cores, 8 logical processors |", text);
             Assert.Contains("| RAM | 15.6 GB |", text);
             Assert.Contains("| .NET | .NET 10.0.0, SIMD Vector256 |", text);
             Assert.Contains("| StanzaSharp | 1.2.3, managed backend |", text);
             Assert.Contains("| Python Stanza | Stanza 1.15.0, torch 2.14.1, Python 3.12.0 |", text);
-            Assert.Contains("2,000 words in 100 sentences, median of 3 timed runs after 3 warm-up runs (Stanza 2), the two sides alternating", text);
+            Assert.Contains("| Run | language en, default package (tokenize,pos); 2,000 words in 100 sentences, median of 3 timed runs after 3 warm-up runs (Stanza 2), the two sides alternating", text);
             Assert.Contains("| Output | identical CoNLL-U on both sides |", text);
             Assert.Contains("| | StanzaSharp | Python Stanza | StanzaSharp's advantage |", text);
             Assert.Contains("| load | 1.00 s | 2.50 s | 2.50x |", text);
@@ -45,10 +45,11 @@ public class BenchmarkCommandTests
     [Fact]
     public void Format_WithoutPython_HasOneColumn()
     {
-        var text = Format(new Result(TestMachine with { Cores = null }, "default_fast", "tokenize,pos", 2000, 100, 1, 10, TestSide(1), null,
+        var text = Format(new Result(TestMachine with { Cores = null }, "de", "default_fast", "tokenize,pos", 2000, 100, 1, 10, TestSide(1), null,
             "not run: could not start python", null));
         Assert.Contains("| CPU | Test CPU 9000: 8 logical processors |", text);
         Assert.Contains("| Python Stanza | not run: could not start python |", text);
+        Assert.Contains("| Run | language de, default_fast package", text);
         Assert.Contains("median of 1 timed run after 1 warm-up run;", text);
         Assert.DoesNotContain("| Output |", text);
         Assert.Contains("| | StanzaSharp |\n", text.ReplaceLineEndings("\n"));
@@ -112,6 +113,15 @@ public class BenchmarkCommandTests
     }
 
     [Fact]
+    public void Paragraphs_German_CutsTheGermanGoldenTexts()
+    {
+        var text = Paragraphs(1500, "de");
+        Assert.Equal(File.ReadAllText(Path.Combine(Repo.GoldenFor("de"), "validation.txt")).Split("\n\n")[0].Trim('\n'), text[0]);
+        Assert.Contains(File.ReadAllText(Path.Combine(Repo.GoldenFor("de"), "corpus.txt")).Split("\n\n")[0].Trim('\n'), text);
+        Assert.InRange(text.Sum(p => p.Split([' ', '\t', '\r', '\n'], StringSplitOptions.RemoveEmptyEntries).Length), 1500, 1800);
+    }
+
+    [Fact]
     public void WarmedUp_WhenNoStageGotMuchFaster()
     {
         Dictionary<string, double> First() => new() { ["tokenize"] = 0.100, ["mwt"] = 0.009, ["pos"] = 1.0 };
@@ -129,6 +139,8 @@ public class BenchmarkCommandTests
         Assert.Equal(2, BenchmarkCommand.Run(["--threads", "0"], "usage", TextWriter.Null));
         Assert.Equal(2, BenchmarkCommand.Run(["--package", "nope"], "usage", TextWriter.Null));
         Assert.Equal(2, BenchmarkCommand.Run(["--models", "no-such-dir"], "usage", TextWriter.Null));
+        Assert.Equal(2, BenchmarkCommand.Run(["--lang", "xx"], "usage", TextWriter.Null));
+        Assert.Equal(2, BenchmarkCommand.Run(["--lang", "de", "--package", "gsd", "--processors", "ner"], "usage", TextWriter.Null));
     }
 
     /// <summary>The smoke run without Python: StanzaSharp's column only, with the reason Stanza didn't run.</summary>
@@ -154,5 +166,17 @@ public class BenchmarkCommandTests
         Assert.Contains("| Python Stanza | Stanza 1.15.0, torch ", text);
         Assert.Contains("| Output | identical CoNLL-U on both sides |", text);
         Assert.Contains("| | StanzaSharp | Python Stanza | StanzaSharp's advantage |", text);
+    }
+
+    /// <summary>The same in German: the German text and models on both sides, and identical output.</summary>
+    [PythonStanzaFact("de")]
+    public void Run_PythonStanza_GermanQuick()
+    {
+        var output = new StringWriter();
+        Assert.Equal(0, BenchmarkCommand.Run(["--quick", "--lang", "de", "--models", PythonStanzaFactAttribute.ModelsFor("de"), "--python", PythonStanzaFactAttribute.Python],
+            "usage", output));
+        var text = output.ToString();
+        Assert.Contains("| Run | language de, default package (" + Pipeline.AllProcessors + ")", text);
+        Assert.Contains("| Output | identical CoNLL-U on both sides |", text);
     }
 }

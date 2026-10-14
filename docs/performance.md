@@ -19,10 +19,11 @@ dotnet tool install -g StanzaSharp.Tool
 stanzasharp download models/stanza/en
 pip install stanza==1.15.0            # optional: without it only StanzaSharp is measured
 stanzasharp benchmark                 # --package default_fast, --threads N, --words N, --quick, --python PATH
+stanzasharp download --lang de && stanzasharp benchmark --lang de    # German
 ```
 
 It follows the method below on a smaller text: the golden texts (validation.txt, corpus.txt, tokenize_stress.txt,
-shipped with the tool) cut after the paragraph that reaches 1,500 whitespace-separated words (`--words`), which is
+shipped with the tool; `--lang de`: tests/golden/de's files of the same names) cut after the paragraph that reaches 1,500 whitespace-separated words (`--words`), which is
 2,009 words after tokenizing, the count the block reports; the managed backend; warm-up runs on the whole text until
 each side settles (no stage more than 10% and 20 ms faster than in the run before; 2 to 5 runs, the block says how
 many; round 16), then 3 timed runs with StanzaSharp and Stanza alternating (Stanza runs in one Python process that
@@ -35,7 +36,7 @@ and logical processors, RAM, OS, .NET version, SIMD path (Vector512, Vector256, 
 ready to paste into an issue. About four minutes with Python on 4 cores; `--quick` (300 words, one warm-up run, one
 timed run, 10 calls) is a smoke test.
 
-On GitHub's hosted runners: **Actions > Benchmark > Run workflow** (or `gh workflow run benchmark.yml -f package=default`)
+On GitHub's hosted runners: **Actions > Benchmark > Run workflow** (or `gh workflow run benchmark.yml -f package=default`; `-f lang=de` for German)
 runs it with Python Stanza on ubuntu-26.04, ubuntu-26.04-arm, windows-2025, windows-11-arm and macos-26 (free standard
 runners only). Each job puts its block in its summary and the artifact `benchmark-<runner>`; the last job combines them
 into one table (summary and artifact `benchmarks`, `benchmarks.md`, made by `tools/benchmark_table.py`). Hosted runners

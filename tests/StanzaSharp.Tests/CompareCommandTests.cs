@@ -55,6 +55,22 @@ public class CompareCommandTests
         Assert.Equal(2, CompareCommand.Run([], "usage", TextWriter.Null));
         Assert.Equal(2, CompareCommand.Run(["missing.txt"], "usage", TextWriter.Null));
         Assert.Equal(2, CompareCommand.Run([Path.Combine(Repo.Golden, "corpus.txt"), "--nonsense"], "usage", TextWriter.Null));
+        Assert.Equal(2, CompareCommand.Run([Path.Combine(Repo.Golden, "corpus.txt"), "--lang", "xx"], "usage", TextWriter.Null));
+        Assert.Equal(2, CompareCommand.Run([Path.Combine(Repo.Golden, "corpus.txt"), "--lang", "de", "--package", "gsd", "--processors", "ner"], "usage",
+            TextWriter.Null));
+        Assert.Equal(2, CompareCommand.Run([Path.Combine(Repo.Golden, "corpus.txt"), "--lang", "de", "--models", "no-such-dir"], "usage", TextWriter.Null));
+    }
+
+    /// <summary>Each language's packages; a partial one (German's treebank packages) runs only its processors.</summary>
+    [Fact]
+    public void ProcessorList_PerLanguage()
+    {
+        Assert.Equal(Pipeline.AllProcessors, CompareCommand.ProcessorList("default", null, "de"));
+        Assert.Equal("tokenize,mwt,pos,lemma,depparse", CompareCommand.ProcessorList("gsd", null, "de"));
+        Assert.Equal("tokenize,mwt,pos,lemma,depparse", CompareCommand.ProcessorList("hdt", "depparse", "de"));
+        Assert.Equal("tokenize,mwt,pos,lemma,depparse,sentiment,ner", CompareCommand.ProcessorList("default_fast", null, "de"));
+        Assert.Throws<ArgumentException>(() => CompareCommand.ProcessorList("gsd", null, "en"));
+        Assert.Throws<ArgumentException>(() => CompareCommand.ProcessorList("combined", "ner", "de"));
     }
 
     /// <summary>The whole command, as a new user runs it: Python Stanza (tools/.venv) and StanzaSharp agree on corpus.txt.</summary>
@@ -67,6 +83,30 @@ public class CompareCommandTests
         Assert.True(exit == 0, output.ToString());
         Assert.Contains("Identical: the CoNLL-U output is the same, byte for byte.", output.ToString());
         Assert.Contains("10 sentences, 140 words", output.ToString());
+    }
+
+    /// <summary>German, all eight processors: Stanza's German pipeline and StanzaSharp agree on validation.txt.</summary>
+    [PythonStanzaFact("de")]
+    public void Run_PythonStanza_GermanIsIdentical()
+    {
+        var output = new StringWriter();
+        int exit = CompareCommand.Run([Path.Combine(Repo.GoldenFor("de"), "validation.txt"), "--lang", "de", "--models", PythonStanzaFactAttribute.ModelsFor("de"),
+            "--python", PythonStanzaFactAttribute.Python], "usage", output);
+        Assert.True(exit == 0, output.ToString());
+        Assert.Contains("language:    de", output.ToString());
+        Assert.Contains("Identical: the CoNLL-U output is the same, byte for byte.", output.ToString());
+    }
+
+    /// <summary>A German treebank package: both sides run only its processors (tokenize to depparse) with its models.</summary>
+    [PythonStanzaFact("de")]
+    public void Run_PythonStanza_GermanTreebankPackage()
+    {
+        var output = new StringWriter();
+        int exit = CompareCommand.Run([Path.Combine(Repo.GoldenFor("de"), "corpus.txt"), "--lang", "de", "--package", "gsd", "--models",
+            PythonStanzaFactAttribute.ModelsFor("de"), "--python", PythonStanzaFactAttribute.Python], "usage", output);
+        Assert.True(exit == 0, output.ToString());
+        Assert.Contains("package:     gsd (tokenize,mwt,pos,lemma,depparse)", output.ToString());
+        Assert.Contains("Identical: the CoNLL-U output is the same, byte for byte.", output.ToString());
     }
 
     /// <summary>Stanza reads <c>&lt;dir&gt;/en/...</c>; compare.py links a folder of any other name as en.</summary>
@@ -134,8 +174,8 @@ public class CompareCommandTests
 
 /// <summary>
 /// A fact that is skipped without Python Stanza (tools/.venv, or STANZASHARP_PYTHON, e.g. for a git worktree) or Stanza's
-/// .pt models (models/stanza/en). CI runs these in golden-shard 1 (STANZASHARP_PYTHON); the other jobs' no-skip checks
-/// allow the skip, as they have no Python Stanza.
+/// .pt models of the language (models/stanza/en, or models/stanza/de next to it). CI runs these in golden-shard 2
+/// (STANZASHARP_PYTHON, both languages' models); the other jobs' no-skip checks allow the skip, as they have no Python Stanza.
 /// </summary>
 public sealed class PythonStanzaFactAttribute : FactAttribute
 {
@@ -143,11 +183,14 @@ public sealed class PythonStanzaFactAttribute : FactAttribute
         ? python
         : Path.Combine(Repo.Root, "tools", ".venv", OperatingSystem.IsWindows() ? "Scripts/python.exe" : "bin/python");
 
-    public PythonStanzaFactAttribute()
+    public PythonStanzaFactAttribute(string lang = "en")
     {
         if (!File.Exists(Python))
             Skip = $"{Python} not found; see tools/requirements.txt";
-        else if (!Directory.Exists(Repo.StanzaModels))
-            Skip = $"{Repo.StanzaModels} not found; run setup.ps1 -Models";
+        else if (!Directory.Exists(ModelsFor(lang)))
+            Skip = $"{ModelsFor(lang)} not found; run stanzasharp download --lang {lang}";
     }
+
+    /// <summary>Stanza's .pt files of a language: <see cref="Repo.StanzaModels"/> for English, its sibling folder for the others.</summary>
+    internal static string ModelsFor(string lang) => lang == "en" ? Repo.StanzaModels : Path.GetFullPath(Path.Combine(Repo.StanzaModels, "..", lang));
 }
