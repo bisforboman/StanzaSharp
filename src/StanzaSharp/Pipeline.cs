@@ -450,7 +450,7 @@ public sealed class Pipeline : IDisposable
         return Gated(() =>
         {
             var doc = Step("tokenize", () => _tokenizer.Process(text, _splitSentences, cancellationToken), cancellationToken);
-            return Annotate(doc, cancellationToken);
+            return Annotate(doc, mwt: true, cancellationToken);
         }, cancellationToken);
     }
 
@@ -489,7 +489,7 @@ public sealed class Pipeline : IDisposable
                 throw new ArgumentException("Tokens must not be null, empty or whitespace", nameof(sentences));
         }
 
-        return Gated(() => Annotate(Tokenizer.Pretokenized(list), cancellationToken), cancellationToken);
+        return Gated(() => Annotate(Tokenizer.Pretokenized(list), mwt: true, cancellationToken), cancellationToken);
     }
 
     /// <summary>
@@ -531,7 +531,7 @@ public sealed class Pipeline : IDisposable
             // The other processors run on all sentences as one document (UDProcessor.bulk_process).
             var combined = new Document();
             combined.Sentences.AddRange(docs.SelectMany(d => d.Sentences));
-            Annotate(combined, cancellationToken);
+            Annotate(combined, mwt: true, cancellationToken);
             return docs;
         }, cancellationToken);
 
@@ -546,6 +546,30 @@ public sealed class Pipeline : IDisposable
         }
 
         return docs;
+    }
+
+    /// <summary>
+    /// Runs the loaded processors on a document that already has its sentences, tokens and words, such as one from
+    /// <see cref="Conllu.Read"/> or <see cref="Json.Read"/>, like Stanza's <c>nlp.process(doc, processors=...)</c>
+    /// without tokenize and mwt (<c>Pipeline.process_conllu</c>): tokenize and mwt are skipped, and every other
+    /// processor of the pipeline runs in Stanza's order and overwrites what it sets (UPOS, XPOS and feats; lemmas;
+    /// the tree; heads and relations; sentiment; NER tags and entities). Everything else is kept, including
+    /// annotations of processors the pipeline lacks. The document is changed in place and returned.
+    /// </summary>
+    /// <param name="document">The document to annotate. Its offsets and texts are kept as they are; none are needed.</param>
+    /// <example>
+    /// <code>
+    /// var doc = nlp.Process(Conllu.Read(File.ReadAllText("tokens.conllu")));
+    /// </code>
+    /// </example>
+    public Document Process(Document document) => Process(document, CancellationToken.None);
+
+    /// <summary><see cref="Process(Document)"/> that can be canceled, like <see cref="Process(string, CancellationToken)"/>.</summary>
+    /// <exception cref="OperationCanceledException">The token was canceled. The document may be partly annotated.</exception>
+    public Document Process(Document document, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(document);
+        return Gated(() => Annotate(document, mwt: false, cancellationToken), cancellationToken);
     }
 
     /// <summary>
@@ -571,11 +595,11 @@ public sealed class Pipeline : IDisposable
     /// Everything after the tokenizer, in Stanza's order. All state is per call (the document and the charlm cache);
     /// the models are only read, which is what makes Process thread-safe.
     /// </summary>
-    private Document Annotate(Document doc, CancellationToken ct)
+    private Document Annotate(Document doc, bool mwt, CancellationToken ct)
     {
         try
         {
-            return AnnotateWithModels(doc, ct);
+            return AnnotateWithModels(doc, mwt, ct);
         }
         finally
         {
@@ -590,9 +614,9 @@ public sealed class Pipeline : IDisposable
         }
     }
 
-    private Document AnnotateWithModels(Document doc, CancellationToken ct)
+    private Document AnnotateWithModels(Document doc, bool mwt, CancellationToken ct)
     {
-        if (_mwt != null)
+        if (mwt && _mwt != null)
             Step("mwt", () => _mwt.Process(doc), ct); // one batch, and only for the words the dictionary lacks
 
         // NER, the parser and the sentiment classifier reuse the tagger's charlm outputs instead of computing them again.

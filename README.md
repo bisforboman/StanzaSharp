@@ -191,7 +191,10 @@ need only `tokenize`. NER gives named entities: `Token.Ner` holds the BIOES tag 
 `doc.Entities` the spans (`Text`, `Type`, `StartChar`, `EndChar`); the types depend on the language's model (see
 [German](#german)).
 Sentiment gives `sentence.Sentiment`: 0 negative, 1 neutral, 2 positive.
-`Conllu.Write(doc)` gives Stanza-style CoNLL-U, with `ner=` in MISC when NER ran.
+`Conllu.Write(doc)` gives Stanza-style CoNLL-U, with `ner=` in MISC when NER ran. `Json.Write(doc)` gives Python
+Stanza's `str(doc)` byte for byte: per sentence, a list of token and word objects (`id`, `text`, `lemma`, `upos`, `xpos`,
+`feats`, `head`, `deprel`, `start_char`, `end_char`, `ner`, `multi_ner`, `misc`); like Stanza's, it has no sentence text,
+tree or sentiment. `Json.Read` reads it back.
 
 ### German
 
@@ -218,7 +221,7 @@ throws. German differs from English in its models, not in the API:
 | English (`en`) | OntoNotes (`ontonotes-ww-multi`) | 18: `PERSON`, `NORP`, `FAC`, `ORG`, `GPE`, `LOC`, `PRODUCT`, `EVENT`, `WORK_OF_ART`, `LAW`, `LANGUAGE`, `DATE`, `TIME`, `PERCENT`, `MONEY`, `QUANTITY`, `ORDINAL`, `CARDINAL` |
 | German (`de`) | GermEval 2014 (`germeval2014`) | 4: `PER`, `LOC`, `ORG`, `MISC` |
 
-### Many texts, and pretokenized text
+### Many texts, pretokenized text, and annotating a document
 
 ```csharp
 // Bulk: one Document per text, in order; sentences of all texts are batched together (Stanza's bulk_process).
@@ -227,6 +230,10 @@ List<Document> docs = nlp.Process(tweets); // any IEnumerable<string>
 // Pretokenized: sentences of tokens; the tokenizer model is skipped and the tokens kept as given
 // (Stanza's tokenize_pretokenized=True). doc.Text is the tokens joined by spaces: "Hello world . Bye ."
 var doc = nlp.Process(new[] { new[] { "Hello", "world", "." }, new[] { "Bye", "." } });
+
+// A document that already has its tokens, e.g. read from CoNLL-U or JSON (Stanza's process_conllu): tokenize and mwt
+// are skipped, the other processors overwrite what they set (tags, lemmas, parses, NER, sentiment), the rest stays.
+var annotated = nlp.Process(Conllu.Read(File.ReadAllText("tokens.conllu")));
 ```
 
 Both match Python Stanza byte for byte. Bulk is much faster than one call per text for short texts: 7.7× on
@@ -235,7 +242,8 @@ text costs about 28 ms for a short sentence on 8 threads (`default_fast`: 14 ms;
 reading the models' weights from memory ([round 7](docs/performance/round-07-per-call-short-texts.md)). Bulk output
 can differ slightly from processing each text alone, exactly as in Stanza: the sentiment classifier sees its batch's padding (172 of 854
 golden labels change), and sentence ids continue across the documents. Pretokenized tokens are never split into
-multi-word tokens (`"don't"` stays one word), as in Stanza.
+multi-word tokens (`"don't"` stays one word), as in Stanza. `Process(Document)` changes the document in place and
+returns it; its tokens and words are never split or merged.
 
 ### Packages
 

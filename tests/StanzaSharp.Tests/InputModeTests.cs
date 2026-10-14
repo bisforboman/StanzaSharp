@@ -143,6 +143,50 @@ public class InputModeTests(SharedPipelines pipelines) : IClassFixture<SharedPip
         Assert.Equal(["don't"], nlp.Process([["don't"]]).Sentences[0].Words.Select(w => w.Text)); // no MWT expansion
     }
 
+    [ModelTheory]
+    [InlineData("default", false, "en")]
+    [InlineData("default_fast", false, "en")]
+    [InlineData("default", true, "en")]
+    [InlineData("default_fast", true, "en")]
+    [German("default", false)]
+    [German("default_fast", false)]
+    [German("default", true)]
+    [German("default_fast", true)]
+    public void ProcessDocument_MatchesStanzasProcessConllu(string package, bool managed, string lang)
+    {
+        // process_document/input.conllu: tokenize,mwt's output for corpus.txt with every annotation wrong. Every
+        // processor but tokenize and mwt overwrites its own; default_fast has no parser, so the input's tree stays.
+        var dir = Path.Combine(Repo.GoldenFor(lang), "process_document");
+        var input = Conllu.Read(File.ReadAllText(Path.Combine(dir, "input.conllu")));
+        var tokens = Json.Write(input);
+        var doc = pipelines.Get(package, managed, lang: lang).Process(input);
+        Assert.Same(input, doc);
+        var golden = File.ReadAllText(Path.Combine(dir, "corpus" + Suffix[package] + ".conllu"));
+        var actual = Conllu.Write(doc);
+        Assert.True(golden == actual, $"--- expected\n{golden}\n--- actual\n{actual}");
+        Assert.Contains(doc.Entities, e => e.Type != "WRONG");
+        Assert.DoesNotContain(doc.Entities, e => e.Type == "WRONG");
+        Assert.NotEqual(tokens, Json.Write(doc));
+    }
+
+    [ModelFact]
+    [Trait("Backend", "Managed")]
+    public void ProcessDocument_SkipsTokenizeAndMwt()
+    {
+        // A document's tokens stay as they are: "don't" read as one word is not expanded, "Hello world" not split.
+        var nlp = pipelines.Get(processors: "tokenize,mwt,pos");
+        var doc = Conllu.Read("1\tHello world\t_\t_\t_\t_\t_\t_\t_\t_\n2\tdon't\t_\t_\t_\t_\t_\t_\t_\tSpaceAfter=No\n3\t!\t_\t_\t_\t_\t_\t_\t_\t_\n");
+        nlp.Process(doc);
+        Assert.Equal(["Hello world", "don't", "!"], doc.Sentences[0].Words.Select(w => w.Text));
+        Assert.All(doc.Sentences[0].Words, w => Assert.NotNull(w.Upos));
+        Assert.Null(doc.Text);
+        Assert.Null(doc.Sentences[0].Words.First().Lemma);
+
+        Assert.Empty(nlp.Process(new Document()).Sentences);
+        Assert.Throws<ArgumentNullException>(() => nlp.Process((Document)null!));
+        Assert.Throws<OperationCanceledException>(() => nlp.Process(doc, new CancellationToken(canceled: true)));
+    }
+
     [Fact]
     [Trait("Backend", "Managed")]
     public void Pretokenized_JoinsTokensWithSpacesLikeStanza()

@@ -17,6 +17,8 @@ The tests compare StanzaSharp's output with it **byte for byte**, with no tolera
 | Full pipeline, `default_fast` package (seven processors) | the same 13 files | the whole CoNLL-U |
 | Each processor on its own | the same 13 files; sentiment also on `sentiment/reviews.txt` (14 files, 886 sentences) | lemmas (868 words through the seq2seq model), dependency parses, entities (706), sentiment labels |
 | Input modes, both packages | bulk processing (Stanza's `bulk_process`), pretokenized text, one sentence per paragraph (`tokenize_no_ssplit`), very long tokens | the CoNLL-U |
+| JSON output (`Json.Write`), both packages and `tokenize,mwt,pos` | a short text with every JSON field (multi-word tokens with and without spacing, leading spaces, tabs, CRLF, NBSP, a control character, quotes, backslashes, entities): 4 sentences, 35 words | Stanza's `str(doc)`; `Json.Read` round-trips it |
+| Annotating a document (`Process(Document)`, Stanza's `process_conllu`), both packages | `corpus.txt` after tokenize and mwt, read from CoNLL-U with every annotation wrong (tags, lemmas, features, heads, relations, NER, a tree): 10 sentences | the CoNLL-U |
 | Tokenizer edge cases | a paragraph over 1,000 characters, more paragraphs than one batch | tokens, sentences and offsets |
 | Parts | MWT expansions of a word list (dictionary and classifier); the dependency parser's tree decoding on tie-heavy score matrices | the expansions and trees |
 | Model loading | Stanza's 14 `.pt` checkpoints, read by StanzaSharp's own unpickler | every tensor byte-identical to torch's |
@@ -30,7 +32,7 @@ UTF-16 code units in StanzaSharp and code points in Stanza, so `validation_nonbm
 German texts (181 sentences, 2,227 words: news, dialogue, instructions, social media, poetry, umlauts and ß,
 compounds, every quote style, contractions, capitals, CRLF whitespace, characters outside the BMP, a paragraph over
 1,000 characters), made with `make_golden.py --lang de`, and every row of the table above is checked on it the same
-way: both packages and the treebank packages `combined` (whose models are the default package's), `gsd` and `hdt`
+way (JSON on the same kind of short text, 4 sentences, 35 words; `Process(Document)` on its `corpus.txt`, 12 sentences): both packages and the treebank packages `combined` (whose models are the default package's), `gsd` and `hdt`
 (their own folders, with their MWT word lists), each processor
 (171 words through the lemmatizer's seq2seq model, 58 entities, 200 sentiment sentences), the input modes, the
 tokenizer edge cases, and the MWT expansions of a German word list with and without the dictionary (German MWT is a
@@ -39,7 +41,7 @@ seq2seq model; 68 multi-word tokens in the texts). German texts with characters 
 classifies all 200 sentences as one document, a single batch, which Stanza labels almost all positive: a stress test
 of the batch padding.
 
-Every test above runs on both backends: the managed backend (the default) and the TorchSharp backend
+Every test above runs on both backends (the JSON comparison on the managed one: the writer does not depend on the backend): the managed backend (the default) and the TorchSharp backend
 (`StanzaSharp.Cuda`). The managed backend's kernels are also tested on each SIMD path a CPU can take (Vector512 with
 AVX-512, Vector256 with AVX2, Vector128, Scalar), so a machine without AVX2 or an Arm64 machine runs code that was
 checked too. Vector512 runs only on a CPU with AVX-512, which the x64 runners get only sometimes (an AVX-512 EPYC or

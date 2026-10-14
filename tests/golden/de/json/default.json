@@ -1,0 +1,574 @@
+[
+  [
+    {
+      "id": 1,
+      "text": "„",
+      "lemma": "\"",
+      "upos": "PUNCT",
+      "xpos": "$(",
+      "head": 2,
+      "deprel": "punct",
+      "start_char": 2,
+      "end_char": 3,
+      "ner": "O",
+      "multi_ner": [
+        "O"
+      ],
+      "misc": "SpaceAfter=No|SpacesBefore=\\s\\s"
+    },
+    {
+      "id": 2,
+      "text": "Hallo",
+      "lemma": "Hallo",
+      "upos": "NOUN",
+      "xpos": "NN",
+      "feats": "Case=Nom|Gender=Neut|Number=Sing",
+      "head": 5,
+      "deprel": "ccomp",
+      "start_char": 3,
+      "end_char": 8,
+      "ner": "O",
+      "multi_ner": [
+        "O"
+      ],
+      "misc": "SpaceAfter=No"
+    },
+    {
+      "id": 3,
+      "text": "“",
+      "lemma": "\"",
+      "upos": "PUNCT",
+      "xpos": "$(",
+      "head": 2,
+      "deprel": "punct",
+      "start_char": 8,
+      "end_char": 9,
+      "ner": "O",
+      "multi_ner": [
+        "O"
+      ],
+      "misc": "SpaceAfter=No"
+    },
+    {
+      "id": 4,
+      "text": ",",
+      "lemma": ",",
+      "upos": "PUNCT",
+      "xpos": "$,",
+      "head": 2,
+      "deprel": "punct",
+      "start_char": 9,
+      "end_char": 10,
+      "ner": "O",
+      "multi_ner": [
+        "O"
+      ]
+    },
+    {
+      "id": 5,
+      "text": "sagte",
+      "lemma": "sagen",
+      "upos": "VERB",
+      "xpos": "VVFIN",
+      "feats": "Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin",
+      "head": 0,
+      "deprel": "root",
+      "start_char": 11,
+      "end_char": 16,
+      "ner": "O",
+      "multi_ner": [
+        "O"
+      ]
+    },
+    {
+      "id": 6,
+      "text": "sie",
+      "lemma": "sie",
+      "upos": "PRON",
+      "xpos": "PPER",
+      "feats": "Case=Nom|Gender=Fem|Number=Sing|Person=3|PronType=Prs",
+      "head": 5,
+      "deprel": "nsubj",
+      "start_char": 17,
+      "end_char": 20,
+      "ner": "O",
+      "multi_ner": [
+        "O"
+      ],
+      "misc": "SpaceAfter=No"
+    },
+    {
+      "id": 7,
+      "text": ".",
+      "lemma": ".",
+      "upos": "PUNCT",
+      "xpos": "$.",
+      "head": 5,
+      "deprel": "punct",
+      "start_char": 20,
+      "end_char": 21,
+      "ner": "O",
+      "multi_ner": [
+        "O"
+      ]
+    }
+  ],
+  [
+    {
+      "id": 1,
+      "text": "Wir",
+      "lemma": "wir",
+      "upos": "PRON",
+      "xpos": "PPER",
+      "feats": "Case=Nom|Number=Plur|Person=1|PronType=Prs",
+      "head": 2,
+      "deprel": "nsubj",
+      "start_char": 22,
+      "end_char": 25,
+      "ner": "O",
+      "multi_ner": [
+        "O"
+      ]
+    },
+    {
+      "id": 2,
+      "text": "gehen",
+      "lemma": "gehen",
+      "upos": "VERB",
+      "xpos": "VVFIN",
+      "feats": "Mood=Ind|Number=Plur|Person=1|Tense=Pres|VerbForm=Fin",
+      "head": 0,
+      "deprel": "root",
+      "start_char": 26,
+      "end_char": 31,
+      "ner": "O",
+      "multi_ner": [
+        "O"
+      ]
+    },
+    {
+      "id": [
+        3,
+        4
+      ],
+      "text": "zum",
+      "start_char": 32,
+      "end_char": 35,
+      "ner": "O",
+      "multi_ner": [
+        "O"
+      ],
+      "misc": "SpaceAfter=No"
+    },
+    {
+      "id": 3,
+      "text": "zu",
+      "lemma": "zu",
+      "upos": "ADP",
+      "xpos": "APPR",
+      "head": 4,
+      "deprel": "case"
+    },
+    {
+      "id": 4,
+      "text": "dem",
+      "lemma": "der",
+      "upos": "DET",
+      "xpos": "ART",
+      "feats": "Case=Dat|Definite=Def|Gender=Neut|Number=Sing|PronType=Art",
+      "head": 2,
+      "deprel": "det"
+    },
+    {
+      "id": 5,
+      "text": ".",
+      "lemma": ".",
+      "upos": "PUNCT",
+      "xpos": "$.",
+      "head": 2,
+      "deprel": "punct",
+      "start_char": 35,
+      "end_char": 36,
+      "ner": "O",
+      "multi_ner": [
+        "O"
+      ],
+      "misc": "SpacesAfter=\\t"
+    }
+  ],
+  [
+    {
+      "id": 1,
+      "text": "Angela",
+      "lemma": "Angela",
+      "upos": "PROPN",
+      "xpos": "NE",
+      "feats": "Case=Nom|Gender=Fem|Number=Sing",
+      "head": 3,
+      "deprel": "nsubj",
+      "start_char": 37,
+      "end_char": 43,
+      "ner": "B-PER",
+      "multi_ner": [
+        "B-PER"
+      ]
+    },
+    {
+      "id": 2,
+      "text": "Merkel",
+      "lemma": "Merkel",
+      "upos": "PROPN",
+      "xpos": "NE",
+      "feats": "Case=Nom|Gender=Fem|Number=Sing",
+      "head": 1,
+      "deprel": "flat",
+      "start_char": 44,
+      "end_char": 50,
+      "ner": "E-PER",
+      "multi_ner": [
+        "E-PER"
+      ]
+    },
+    {
+      "id": 3,
+      "text": "wohnt",
+      "lemma": "wohnen",
+      "upos": "VERB",
+      "xpos": "VVFIN",
+      "feats": "Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin",
+      "head": 0,
+      "deprel": "root",
+      "start_char": 51,
+      "end_char": 56,
+      "ner": "O",
+      "multi_ner": [
+        "O"
+      ]
+    },
+    {
+      "id": [
+        4,
+        5
+      ],
+      "text": "im",
+      "start_char": 57,
+      "end_char": 59,
+      "ner": "O",
+      "multi_ner": [
+        "O"
+      ]
+    },
+    {
+      "id": 4,
+      "text": "in",
+      "lemma": "in",
+      "upos": "ADP",
+      "xpos": "APPR",
+      "head": 6,
+      "deprel": "case"
+    },
+    {
+      "id": 5,
+      "text": "dem",
+      "lemma": "der",
+      "upos": "DET",
+      "xpos": "ART",
+      "feats": "Case=Dat|Definite=Def|Gender=Neut|Number=Sing|PronType=Art",
+      "head": 6,
+      "deprel": "det"
+    },
+    {
+      "id": 6,
+      "text": "Haus",
+      "lemma": "Haus",
+      "upos": "NOUN",
+      "xpos": "NN",
+      "feats": "Case=Dat|Gender=Neut|Number=Sing",
+      "head": 3,
+      "deprel": "obl",
+      "start_char": 60,
+      "end_char": 64,
+      "ner": "O",
+      "multi_ner": [
+        "O"
+      ]
+    },
+    {
+      "id": 7,
+      "text": "in",
+      "lemma": "in",
+      "upos": "ADP",
+      "xpos": "APPR",
+      "head": 8,
+      "deprel": "case",
+      "start_char": 65,
+      "end_char": 67,
+      "ner": "O",
+      "multi_ner": [
+        "O"
+      ]
+    },
+    {
+      "id": 8,
+      "text": "Berlin",
+      "lemma": "Berlin",
+      "upos": "PROPN",
+      "xpos": "NE",
+      "feats": "Case=Dat|Gender=Neut|Number=Sing",
+      "head": 3,
+      "deprel": "obl",
+      "start_char": 68,
+      "end_char": 74,
+      "ner": "S-LOC",
+      "multi_ner": [
+        "S-LOC"
+      ],
+      "misc": "SpacesAfter=\\u00A0"
+    },
+    {
+      "id": 9,
+      "text": "Mitte",
+      "lemma": "Mitte",
+      "upos": "NOUN",
+      "xpos": "NN",
+      "feats": "Case=Dat|Gender=Fem|Number=Sing",
+      "head": 3,
+      "deprel": "obl",
+      "start_char": 75,
+      "end_char": 80,
+      "ner": "O",
+      "multi_ner": [
+        "O"
+      ],
+      "misc": "SpaceAfter=No"
+    },
+    {
+      "id": 10,
+      "text": ",",
+      "lemma": ",",
+      "upos": "PUNCT",
+      "xpos": "$,",
+      "head": 11,
+      "deprel": "punct",
+      "start_char": 80,
+      "end_char": 81,
+      "ner": "O",
+      "multi_ner": [
+        "O"
+      ]
+    },
+    {
+      "id": 11,
+      "text": "siehe",
+      "lemma": "sehen",
+      "upos": "VERB",
+      "xpos": "VVIMP",
+      "feats": "Mood=Imp|Number=Sing|VerbForm=Fin",
+      "head": 3,
+      "deprel": "parataxis",
+      "start_char": 82,
+      "end_char": 87,
+      "ner": "O",
+      "multi_ner": [
+        "O"
+      ]
+    },
+    {
+      "id": 12,
+      "text": "C:\\temp\\x",
+      "lemma": "C:\\temp\\x",
+      "upos": "PROPN",
+      "xpos": "NE",
+      "feats": "Case=Nom|Gender=Fem|Number=Sing",
+      "head": 11,
+      "deprel": "obj",
+      "start_char": 88,
+      "end_char": 97,
+      "ner": "O",
+      "multi_ner": [
+        "O"
+      ],
+      "misc": "SpaceAfter=No"
+    },
+    {
+      "id": 13,
+      "text": "!",
+      "lemma": "!",
+      "upos": "PUNCT",
+      "xpos": "$.",
+      "head": 3,
+      "deprel": "punct",
+      "start_char": 97,
+      "end_char": 98,
+      "ner": "O",
+      "multi_ner": [
+        "O"
+      ],
+      "misc": "SpacesAfter=\\r\\n\\r\\n"
+    }
+  ],
+  [
+    {
+      "id": 1,
+      "text": "Das",
+      "lemma": "der",
+      "upos": "DET",
+      "xpos": "ART",
+      "feats": "Case=Nom|Definite=Def|Gender=Neut|Number=Sing|PronType=Art",
+      "head": 5,
+      "deprel": "nsubj",
+      "start_char": 102,
+      "end_char": 105,
+      "ner": "O",
+      "multi_ner": [
+        "O"
+      ]
+    },
+    {
+      "id": 2,
+      "text": "\"",
+      "lemma": "\"",
+      "upos": "PUNCT",
+      "xpos": "$(",
+      "head": 5,
+      "deprel": "punct",
+      "start_char": 106,
+      "end_char": 107,
+      "ner": "O",
+      "multi_ner": [
+        "O"
+      ],
+      "misc": "SpaceAfter=No"
+    },
+    {
+      "id": 3,
+      "text": "ist",
+      "lemma": "sein",
+      "upos": "AUX",
+      "xpos": "VAFIN",
+      "feats": "Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin",
+      "head": 5,
+      "deprel": "cop",
+      "start_char": 107,
+      "end_char": 110,
+      "ner": "O",
+      "multi_ner": [
+        "O"
+      ],
+      "misc": "SpaceAfter=No"
+    },
+    {
+      "id": 4,
+      "text": "\"",
+      "lemma": "\"",
+      "upos": "PUNCT",
+      "xpos": "$(",
+      "head": 5,
+      "deprel": "punct",
+      "start_char": 110,
+      "end_char": 111,
+      "ner": "O",
+      "multi_ner": [
+        "O"
+      ],
+      "misc": "SpacesAfter=\u001c"
+    },
+    {
+      "id": 5,
+      "text": "gut",
+      "lemma": "gut",
+      "upos": "ADJ",
+      "xpos": "ADJD",
+      "feats": "Degree=Pos",
+      "head": 0,
+      "deprel": "root",
+      "start_char": 112,
+      "end_char": 115,
+      "ner": "O",
+      "multi_ner": [
+        "O"
+      ]
+    },
+    {
+      "id": 6,
+      "text": "(",
+      "lemma": "(",
+      "upos": "PUNCT",
+      "xpos": "$(",
+      "head": 9,
+      "deprel": "punct",
+      "start_char": 116,
+      "end_char": 117,
+      "ner": "O",
+      "multi_ner": [
+        "O"
+      ],
+      "misc": "SpaceAfter=No"
+    },
+    {
+      "id": [
+        7,
+        8
+      ],
+      "text": "am",
+      "start_char": 117,
+      "end_char": 119,
+      "ner": "O",
+      "multi_ner": [
+        "O"
+      ]
+    },
+    {
+      "id": 7,
+      "text": "an",
+      "lemma": "an",
+      "upos": "ADP",
+      "xpos": "APPR",
+      "head": 9,
+      "deprel": "case"
+    },
+    {
+      "id": 8,
+      "text": "dem",
+      "lemma": "der",
+      "upos": "DET",
+      "xpos": "ART",
+      "feats": "Case=Dat|Definite=Def|Gender=Neut|Number=Sing|PronType=Art",
+      "head": 9,
+      "deprel": "det"
+    },
+    {
+      "id": 9,
+      "text": "Ende",
+      "lemma": "Ende",
+      "upos": "NOUN",
+      "xpos": "NN",
+      "feats": "Case=Dat|Gender=Neut|Number=Sing",
+      "head": 5,
+      "deprel": "nmod",
+      "start_char": 120,
+      "end_char": 124,
+      "ner": "O",
+      "multi_ner": [
+        "O"
+      ],
+      "misc": "SpaceAfter=No"
+    },
+    {
+      "id": 10,
+      "text": ")",
+      "lemma": ")",
+      "upos": "PUNCT",
+      "xpos": "$(",
+      "head": 9,
+      "deprel": "punct",
+      "start_char": 124,
+      "end_char": 125,
+      "ner": "O",
+      "multi_ner": [
+        "O"
+      ],
+      "misc": "SpacesAfter=\\s\\s"
+    }
+  ]
+]

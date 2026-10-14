@@ -193,6 +193,14 @@ since 1.0, and every processor also has a managed net (see "Managed backend"), t
     it, `IsMwtCandidate` false, so mwt changes nothing ("don't" stays one word, as in Stanza). Empty sentences and
     empty/whitespace tokens throw (Stanza fails on the first two; whitespace tokens give broken CoNLL-U there).
     Stanza's string form (whitespace tokens, newline sentences) is not exposed; make_golden asserts it equals the list form.
+  - `Process(Document)` (owner's decision, 2026-10-14) = Stanza's `process_conllu`: `nlp.process(doc, processors=` the
+    loaded ones minus tokenize and mwt`)`. Same `Annotate` as the other overloads with `mwt: false`, gated and cancelable
+    like them; the document is changed in place and returned. Each processor overwrites what it sets (Stanza does too);
+    the rest is kept (a tree in default_fast). Stanza's `*_pretagged` options (depparse without pos in the pipeline) are
+    not ported: Load still requires each processor's requirements. Stanza keeps comments in input order, so a document
+    whose CoNLL-U had `# sentiment` before a new `# constituency` writes them the other way round there; `Conllu.Write`
+    always writes constituency first. `Process(null)` stays ambiguous; `Document` is no collection type, so collection
+    expressions never pick it.
 - 0.4 API (issue #12, items chosen by the owner, 2026-10-06):
   - `PipelineOptions.Threads` (int?): at Load, process-wide, `ManagedThreads.Count` on the managed backend and
     `torch.set_num_threads` on TorchSharp. Managed null = min(current count, `ManagedThreads.Default`), the pool's initial
@@ -581,6 +589,15 @@ model but MWT and NER is English's architecture with other vocabularies and size
   - `fast/` (`--fast-only`): `package='default_fast'` output (all seven of its processors) for `corpus.txt`
     (as `corpus.conllu`) and each `validation*.txt`; for the first 3 sentences, each run alone, UPOS logits,
     arc/label log-probs (from the run's tags and lemmas) and NER emissions.
+  - `json/` (`--json-only`): `inputs.json` (`JSON_TEXT`: every field of Stanza's JSON) and Stanza's `str(doc)` of it
+    (`Document.__repr__`, `json.dumps(to_dict(), indent=2, ensure_ascii=False)`, no final newline) for `default.json`,
+    `default_fast.json` and `pos.json` (`tokenize,mwt,pos`). `Json.Write` matches it: field order DEFAULT_OUTPUT_FIELDS,
+    a field only when not None, an MWT's range line first with `id` `[a, b]`, `ner`/`multi_ner` (`[ner]`, one model)
+    on the token's line, `misc` = the spacing (`Conllu.Misc`), appended last. No text, sent_id, tree or sentiment (not
+    in `to_dict`). `Json.Read` = `Document(json)`: sent_id = index, no text; entities rebuilt like `Conllu.Read`.
+  - `process_document/` (`--process-document-only`): `input.conllu` (tokenize,mwt on corpus.txt with every annotation
+    wrong and a `(ROOT (X wrong))` tree), `corpus.conllu` / `corpus.fast.conllu` = `nlp.process(CoNLL.conll2doc(...),
+    processors=` all loaded but tokenize, mwt`)`. The default output equals `pipeline.conllu`.
   - `pretokenized/` (`--pretokenized-only`): `inputs.json` (cases of token lists, plus `corpus`: corpus.txt's
     Stanza tokens) and `<name>.conllu` / `<name>.fast.conllu` for both packages.
   - `bulk/<package>.json` (`--bulk-only`): one `bulk_process` call over `BULK_TEXTS` (tiny, empty and
@@ -728,7 +745,8 @@ model but MWT and NER is English's architecture with other vocabularies and size
   - the facade: `Pipeline`, `PipelineOptions`, `CharlmCacheOptions`, `ModelDownloader`, `Processor` (0.4),
     `PipelineBackend` (0.5);
   - StanzaSharp.Cuda's `CudaBackend` (1.0);
-  - Core's results: `Document`, `Sentence`, `Token`, `Word`, `Entity`, `Tree`, `Conllu`.
+  - Core's results: `Document`, `Sentence`, `Token`, `Word`, `Entity`, `Tree`, `Conllu`, `Json` (owner's decision,
+    2026-10-14).
 
   Everything else is `internal`.
   - Directory.Build.props gives every `src/*` assembly `InternalsVisibleTo` for the other StanzaSharp

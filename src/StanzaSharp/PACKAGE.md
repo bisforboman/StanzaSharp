@@ -106,11 +106,14 @@ foreach (var sentence in doc.Sentences)
 - Add `ner` to the list for named entities: `doc.Entities` (text, type, character offsets) and a BIOES tag per token (`Token.Ner`).
   The types depend on the language (table below).
 - Add `sentiment` to the list for `sentence.Sentiment`: 0 negative, 1 neutral, 2 positive.
-- `Conllu.Write(doc)` gives CoNLL-U in Stanza's format.
+- `Conllu.Write(doc)` gives CoNLL-U in Stanza's format; `Json.Write(doc)` gives Python Stanza's `str(doc)` JSON, byte for
+  byte, and `Json.Read` reads it back.
 - `nlp.Process(texts)` with any `IEnumerable<string>` processes many texts at once, like Stanza's `bulk_process`:
   one `Document` per text, much faster for short texts.
 - `nlp.Process(new[] { new[] { "Hello", "world", "." } })` takes text that is already split into sentences and
   tokens, like Stanza's `tokenize_pretokenized=True`.
+- `nlp.Process(Conllu.Read(conllu))` annotates a document that already has its tokens, like Stanza's `process_conllu`:
+  tokenize and mwt are skipped, and the other processors overwrite what they set.
 - `Process` is thread-safe: share one pipeline between threads. Every overload takes a `CancellationToken`.
   One call on a short sentence takes about 28 ms on 8 threads (`default_fast`: 14 ms). On short texts, about two calls
   in flight per pipeline give the most throughput; more evict each other's weights from the CPU cache. Set

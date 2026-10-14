@@ -180,9 +180,9 @@ public static class Conllu
     private static string? SortFeats(string? feats) =>
         feats == null ? null : string.Join('|', feats.Split('|').OrderBy(p => p.ToLowerInvariant(), StringComparer.Ordinal));
 
-    private readonly record struct MiscFields(string Space, string SpacesBefore, int? Start, int? End, string? Ner);
+    internal readonly record struct MiscFields(string Space, string SpacesBefore, int? Start, int? End, string? Ner);
 
-    private static MiscFields ParseMisc(string misc)
+    internal static MiscFields ParseMisc(string misc)
     {
         string space = " ", before = "";
         int? start = null, end = null;
@@ -219,7 +219,7 @@ public static class Conllu
     }
 
     // Stanza sorts the space pieces (SpaceAfter/SpacesAfter sort before SpacesBefore), then adds the offsets.
-    private static string Misc(string spaceAfter, string spacesBefore, int? start, int? end, string? ner)
+    internal static string Misc(string spaceAfter, string spacesBefore, int? start, int? end, string? ner)
     {
         var pieces = new List<string>(4);
         if (spaceAfter.Length == 0)
