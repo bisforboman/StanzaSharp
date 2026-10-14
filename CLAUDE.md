@@ -117,7 +117,11 @@ since 1.0, and every processor also has a managed net (see "Managed backend"), t
 - `Tree.ToString` prints `(`/`)` in labels and words as `-LRB-`/`-RRB-`, like Stanza. The tree
   itself keeps the raw text.
 - Measured float drift vs Python: charlm < 1e-7, tokenizer logits ≈ 4e-6, UPOS logits ≈ 2e-5,
-  parser scores ≈ 2e-5. Test tolerances are 1e-4 and 1e-3.
+  parser scores ≈ 2e-5. Test tolerances are 1e-4 and 1e-3. A 1e-4 tolerance is relative above |100| (owner's decision,
+  2026-10-14, round 26): a value passes within 1e-4 × max(1, |expected| / 100) of its reference
+  (`TokenizerTests.Allowed`, used by `AssertClose`, `PosTests.AssertUposClose` and `SentimentTests`), since float32
+  can't hold 1e-4 above |x| ≈ 300 (one ulp is 3.05e-5 from 256 up). Only UPOS logits exceed |100| in the golden data
+  (German up to |380|, English |139|); 1e-3 tolerances stay absolute.
 - `StanzaSharp.Pipeline` ties the processors together: `Load(modelDir, "tokenize,mwt,...")`, then
   `Process(text)`. It loads the shared pretrain/charlms once. `Conllu.Write(pipeline.Process(corpus))`
   is byte-identical to `tests/golden/pipeline.conllu`.
@@ -971,7 +975,8 @@ model but MWT and NER is English's architecture with other vocabularies and size
     UPOS logits (owner's decision, 2026-10-13, German): like sentiment's, a logit passes within 1e-4 of Stanza's float32
     **or** float64 value (`PosTests.AssertUposClose`, also FastPackageTests). German's logits reach |140| and Stanza's own
     float32 is 1.01e-4 from float64; managed was 1.37e-4 from float32 (6.3e-5 from the nearer value), TorchSharp alone
-    1.22e-4. `upos_hid` in double changed nothing.
+    1.22e-4. `upos_hid` in double changed nothing. The TorchSharp `PosNet` sums `upos_clf` in double too (round 26:
+    on Intel AVX-512 runners libtorch's float sums put German `default_fast` UPOS 1.2e-4 from Stanza).
   - `IDepparseNet` (`DepparseNet` / `ManagedDepparseNet`) → `DepparseScores` (arc log-probs over the padded width, label
     argmax per pair, label scores for tests). `DependencyParser` keeps simplify_punct, vocab ids, ROOT, batching, MST and
     the deprel strings. The managed net scores no padding rows; padding columns all get in2 = ReLU(W2's bias) (LSTM

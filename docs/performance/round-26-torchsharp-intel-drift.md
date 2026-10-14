@@ -132,3 +132,30 @@ Option 1 now: it makes golden independent of the runner's CPU without touching a
 validation run shows the whole suite passing with it on Intel and AMD. Option 3 deserves the owner's consideration as
 the long-term rule, since the failure is a float32 resolution limit (1e-4 is 3.3 ulps at |285|) rather than a
 port error. Option 2 is cheap, mirrors the managed backend and halves the TorchSharp drift; worth taking with either.
+
+## Decision and result
+
+The owner took all three (2026-10-14):
+
+1. The CI setting above, on golden-shard's and cross-os-shard's Test steps (x64 only).
+2. The TorchSharp `PosNet` sums `upos_clf` in double (weights kept as float64 tensors, rounded to float once), as the
+   managed net does. Every tag is unchanged (PosTests, FastPackageTests, DepparseTests, NerTests and SentimentTests,
+   both languages, both packages, both backends).
+3. A 1e-4 tolerance is relative above |100|: a value passes within 1e-4 × max(1, |expected| / 100) of its reference
+   (`TokenizerTests.Allowed`, in `AssertClose`, `PosTests.AssertUposClose` and `SentimentTests`); 1e-3 stays absolute.
+   In the golden data only UPOS logits exceed |100|: German `default_fast` up to |329| (90 of 609 values) and `default`
+   up to |380| (66 of 609), English `default_fast` up to |139| (12 of 630) and `default` |131| (8 of 630). Tokenizer,
+   charlm, NER, depparse and sentiment values all stay under |100|, so their checks are unchanged.
+
+Worst accepted UPOS difference on the TorchSharp backend with the double `upos_clf` (temporary workflow run 38530251561,
+16 jobs; local Ryzen without the CI setting):
+
+| CPU | de `default_fast` | de `default` | en `default_fast` | en `default` |
+|---|---|---|---|---|
+| Ryzen 5800X (local, Windows) | 1.57e-5 (was 3.05e-5) | 4.03e-5 (3.24e-5) | 8.79e-6 | 2.32e-5 |
+| EPYC 7763 / 9V74 / 9V45 | 1.53e-5 (was 6.10e-5) | 3.24e-5 (4.48e-5) | ≤ 9.29e-6 | 1.68e-5 |
+| Xeon 8370C | **5.88e-5** (was 1.20e-4) | 3.54e-5 (6.10e-5) | 1.53e-5 | 1.55e-5 |
+| any of them, with the CI setting | 1.87e-5 | 4.03e-5 | 8.79e-6 | 1.66e-5 |
+
+So an Intel user of the TorchSharp backend is now within the absolute 1e-4 too, and CI sees the same bits on every x64
+runner.
