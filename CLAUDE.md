@@ -65,7 +65,9 @@ since 1.0, and every processor also has a managed net (see "Managed backend"), t
   golden trees and the per-step transition scores. It schedules like Stanza's `parse_sentences`:
   sentences sorted longest first, 50 states in flight, each finished state replaced by the next.
   Each step is one forward pass plus batched stack pushes. Stack LSTMs are stepped without
-  padding, so batching does not change results.
+  padding, so batching does not change results. On TorchSharp (round 25) the net's handles are rows of per-thread
+  "bank" tensors (vectors, each stack's h and c; a free list, freed when the last row comes back), so a step costs a
+  constant number of ops (`index_select`/`index_copy_`), not a few per state.
 - `Nn.CharlmCache`: the pipeline passes one to `PosTagger.Process` and `ConstituencyParser.Process`,
   so the parser reuses the tagger's charlm outputs (the tagger keeps a sentence only if
   `simplify_punct` left its words unchanged). The charlm is not bitwise batch-invariant, so cached

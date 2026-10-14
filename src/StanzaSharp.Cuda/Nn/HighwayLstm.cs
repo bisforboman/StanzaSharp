@@ -1,5 +1,4 @@
 using System.Text.Json.Nodes;
-using TorchSharp;
 using TorchSharp.Modules;
 using static TorchSharp.torch;
 
@@ -35,22 +34,6 @@ internal sealed class HighwayLstm : IDisposable
 
         _hInit = ckpt.ToTensor(stateDict[$"{name}_h_init"]);
         _cInit = ckpt.ToTensor(stateDict[$"{name}_c_init"]);
-    }
-
-    /// <param name="input">[batch, maxLen, inputSize].</param>
-    /// <param name="disposeInput">Dispose <paramref name="input"/> once it is packed.</param>
-    /// <param name="cancellationToken">Checked between layers.</param>
-    /// <returns>[batch, maxLen, 2 * hidden], zero past each sentence's length.</returns>
-    public Tensor Forward(Tensor input, long[] lengths, bool disposeInput = false, CancellationToken cancellationToken = default)
-    {
-        using var scope = NewDisposeScope();
-        long width = input.shape[1];
-        using var lens = torch.tensor(lengths);
-        var packed = nn.utils.rnn.pack_padded_sequence(input, lens, batch_first: true, enforce_sorted: false);
-        if (disposeInput)
-            input.Dispose();
-        var (padded, _) = nn.utils.rnn.pad_packed_sequence(Forward(packed, disposeInput: true, cancellationToken), batch_first: true, total_length: width);
-        return padded.MoveToOuterDisposeScope();
     }
 
     /// <param name="input">A packed batch, data [words, inputSize] (pack_padded_sequence or <see cref="Rnn.Pack"/>).</param>
