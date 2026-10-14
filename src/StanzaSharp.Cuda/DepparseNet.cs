@@ -69,23 +69,38 @@ internal sealed class DepparseNet : IDepparseNet
     {
         using var _ = torch.no_grad();
         using var scope = NewDisposeScope();
-        var (unlabeled, deprel) = Scores(batch, ct);
-        var labels = deprel.max(3).indexes.ToArray<long>();
-        return new((int)unlabeled.shape[1], (int)deprel.shape[3], unlabeled.ToArray<float>(), labels.Select(l => (int)l).ToArray(),
+        var (unlabeled, deprel) = Scores(batch, labelScores, ct);
+        var labels = (labelScores ? deprel.max(3).indexes : deprel).ToArray<long>();
+        return new((int)unlabeled.shape[1], (int)_deprel.Outputs, unlabeled.ToArray<float>(), labels.Select(l => (int)l).ToArray(),
             labelScores ? deprel.ToArray<float>() : null);
     }
 
     /// <summary>
     /// GraphParser.forward_scores, then the log-softmax over heads that predict applies:
-    /// arc log-probs [batch, width, width] (dependent, head) and label scores [batch, width, width, relations].
+    /// arc log-probs [batch, width, width] (dependent, head) and label scores [batch, width, width, relations], or with
+    /// <paramref name="labelScores"/> false only their argmax [batch, width, width].
     /// Row and column 0 are ROOT; padding columns count in the log-softmax, as in Stanza.
     /// </summary>
-    private (Tensor Unlabeled, Tensor Deprel) Scores(DepparseBatch batch, CancellationToken cancellationToken)
+    private (Tensor Unlabeled, Tensor Deprel) Scores(DepparseBatch batch, bool labelScores, CancellationToken cancellationToken)
     {
         var texts = batch.Texts;
         int size = texts.Count, width = batch.Width;
         var lengths = batch.Lengths;
-        Tensor Ids(long[] ids) => torch.tensor(ids, [size, width], device: _device);
+
+        // Nothing is padded until the LSTM's output: like the tagger's (round 4), the input is built straight in the
+        // packed order of pack_padded_sequence. Packed row p is word padded[p] of the [size, width] batch, and word
+        // ordered[p] of the batch's words in sentence order (ROOT first in each).
+        var padded = Rnn.PackedOrder(lengths);
+        var offsets = new long[size];
+        for (int i = 1; i < size; i++)
+            offsets[i] = offsets[i - 1] + lengths[i - 1];
+        var ordered = torch.tensor(padded.Select(x => offsets[x / width] + x % width).ToArray(), device: _device);
+        Tensor Ids(long[] ids) => torch.tensor(padded.Select(x => ids[x]).ToArray(), device: _device);
+        Tensor Packed(Tensor t)
+        {
+            using (t)
+                return t.index_select(0, ordered);
+        }
 
         var pos = _uposEmb.forward(Ids(batch.Upos)).add(_xposEmb.forward(Ids(batch.Xpos)), Scalars.One);
         Tensor[] chars;
@@ -93,15 +108,15 @@ internal sealed class DepparseNet : IDepparseNet
         {
             // ROOT is a word of the single character id ROOT_ID.
             long[] root = [DependencyParser.RootId];
-            chars = [_transChar!.forward(_charModel.Forward(texts.Select(t => (IReadOnlyList<long[]>)t.Select(_charModel.CharIds).Prepend(root).ToList()).ToList()))];
+            chars = [_transChar!.forward(Packed(_charModel.ForwardWords(texts.Select(t => (IReadOnlyList<long[]>)t.Select(_charModel.CharIds).Prepend(root).ToList()).ToList())))];
         }
         else
         {
             // "\n" stands in for ROOT in the charlm input.
             var charlmText = texts.Select(t => (IReadOnlyList<string>)t.Prepend("\n").ToList()).ToList();
-            var forward = Rnn.PadSequence(_charlmForward!.BuildCharRepresentation(charlmText));
+            var forward = Packed(cat(_charlmForward!.BuildCharRepresentation(charlmText), 0));
             cancellationToken.ThrowIfCancellationRequested();
-            chars = [forward, Rnn.PadSequence(_charlmBackward!.BuildCharRepresentation(charlmText))];
+            chars = [forward, Packed(cat(_charlmBackward!.BuildCharRepresentation(charlmText), 0))];
         }
 
         var input = cat([
@@ -111,11 +126,13 @@ internal sealed class DepparseNet : IDepparseNet
             pos,
             pos,
             .. chars,
-        ], 2);
+        ], 1);
         foreach (var t in chars)
             t.Dispose();
         cancellationToken.ThrowIfCancellationRequested();
-        var output = _lstm.Forward(input, lengths, disposeInput: true, cancellationToken);
+        var packed = Rnn.Pack(input, lengths);
+        input.Dispose();
+        var (output, _) = nn.utils.rnn.pad_packed_sequence(_lstm.Forward(packed, disposeInput: true, cancellationToken), batch_first: true, total_length: width);
 
         // pad_packed_sequence leaves zeros past each sentence; the scorers see them in the padding columns.
         using var widthScalar = width.ToScalar();
@@ -124,7 +141,7 @@ internal sealed class DepparseNet : IDepparseNet
         output = output.masked_fill(padding.unsqueeze(2), Scalars.Zero);
 
         var unlabeled = _unlabeled.Forward(output, cancellationToken).squeeze(3);
-        var deprel = _deprel.Forward(output, cancellationToken);
+        var deprel = _deprel.Forward(output, cancellationToken, argmax: !labelScores);
         var headOffset = (positions.view(1, 1, -1) - positions.view(1, -1, 1)).expand(size, -1, -1);
         if (_linearizationScorer != null)
         {
@@ -180,9 +197,14 @@ internal sealed class DepparseNet : IDepparseNet
                 throw new InvalidOperationException($"{prefix}scorer.W_bilin.weight has shape [{string.Join(", ", _weight.shape)}]");
         }
 
-        /// <returns>[batch, width, width, output]: [b, i, j] scores word i against word j.</returns>
+        public long Outputs => _weight.shape[2];
+
+        /// <returns>
+        /// [batch, width, width, output]: [b, i, j] scores word i against word j; with <paramref name="argmax"/> only each
+        /// pair's best output [batch, width, width] (int64), so the scores never exist all at once.
+        /// </returns>
         /// <remarks><paramref name="ct"/> is checked before each chunk.</remarks>
-        public Tensor Forward(Tensor x, CancellationToken ct)
+        public Tensor Forward(Tensor x, CancellationToken ct, bool argmax = false)
         {
             using var scope = NewDisposeScope();
             var input1 = AppendOne(F.relu(_w1.forward(x)));
@@ -193,18 +215,22 @@ internal sealed class DepparseNet : IDepparseNet
             // sentence's scores depend only on its own rows, so score a few sentences at a time.
             long batch = x.shape[0], width = x.shape[1];
             long chunk = Math.Max(1, ChunkFloats / (width * _weight.shape[1] * _weight.shape[2]));
-            var output = empty([batch, width, width, _weight.shape[2]], dtype: x.dtype, device: x.device);
+
+            // The label scorer's whole output, [batch, width, width, relations], was the depparse peak (round 25).
+            var output = argmax
+                ? empty([batch, width, width], dtype: ScalarType.Int64, device: x.device)
+                : empty([batch, width, width, Outputs], dtype: x.dtype, device: x.device);
             for (long n = 0; n < batch; n += chunk)
             {
                 ct.ThrowIfCancellationRequested();
                 using var part = NewDisposeScope();
                 long size = Math.Min(chunk, batch - n);
                 var intermediate = einsum("NLI,IJO->NLJO", input1.narrow(0, n, size), _weight);
-                output.narrow(0, n, size).copy_(einsum("NLJO,NMJ->NLMO", intermediate, input2.narrow(0, n, size)));
+                var scores = einsum("NLJO,NMJ->NLMO", intermediate, input2.narrow(0, n, size)).add_(_bias, Scalars.One);
+                output.narrow(0, n, size).copy_(argmax ? scores.max(3).indexes : scores);
             }
 
-            // In place: the label scorer's output is [batch, width, width, relations], too large to copy.
-            return output.add_(_bias, Scalars.One).MoveToOuterDisposeScope();
+            return output.MoveToOuterDisposeScope();
         }
 
         private static Tensor AppendOne(Tensor x)

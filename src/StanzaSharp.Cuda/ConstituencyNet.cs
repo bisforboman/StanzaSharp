@@ -8,20 +8,105 @@ using F = TorchSharp.torch.nn.functional;
 namespace StanzaSharp.Constituency;
 
 /// <summary>The parser's network on TorchSharp.</summary>
+/// <remarks>
+/// Every vector and stack state the parser holds is a row of a <see cref="Bank"/>, and a handle is its row number, so a
+/// step reads and writes each bank with one <c>index_select</c> / <c>index_copy_</c> whatever the number of states (it
+/// took a view per state and a stack of them before round 25). The banks belong to the calling thread, since Parse is
+/// synchronous, so concurrent calls never share one. Copying rows moves no bits: the results are the same.
+/// </remarks>
 internal sealed class ConstituencyNet : IConstituencyNet
 {
-    /// <summary>A stack node's LSTM state: [layers, hidden] h and c, and the last layer's output [hidden] (views).</summary>
-    private sealed class StackState(Tensor hx, Tensor cx, Tensor output) : IDisposable
+    /// <summary>A row of a bank that something else owns (a word row, a stack's start state).</summary>
+    private class Row(int slot)
     {
-        public readonly Tensor Hx = hx, Cx = cx, Output = output;
+        public readonly int Slot = slot;
+    }
+
+    /// <summary>A row the parser owns: disposing it gives the row back.</summary>
+    private sealed class OwnedRow(Bank bank, int slot) : Row(slot), IDisposable
+    {
+        public void Dispose() => bank.Free(Slot);
+    }
+
+    /// <summary>A sentence's word vectors (<see cref="EncodeWords"/>): one vector-bank row per position.</summary>
+    private sealed class WordRows(Bank bank, int[] slots) : IDisposable
+    {
+        public readonly int[] Slots = slots;
 
         public void Dispose()
         {
-            Hx.Dispose();
-            Cx.Dispose();
-            Output.Dispose();
+            foreach (var slot in Slots)
+                bank.Free(slot);
         }
     }
+
+    /// <summary>
+    /// Rows of one shape in one growing tensor, with a free list. Row 0 may be a fixed start row. The tensor is freed when
+    /// the last row given out comes back (the end of a Parse call), and made again on the next use.
+    /// </summary>
+    private sealed class Bank(long[] rowShape, Tensor? start, Device device)
+    {
+        private readonly Stack<int> _free = new();
+        private int _next, _live;
+        private Tensor? _data;
+
+        public Tensor Data
+        {
+            get
+            {
+                if (_data is null)
+                {
+                    _data = empty([64, .. rowShape], device: device).DetachFromDisposeScope();
+                    if (start is not null)
+                        _data[0].copy_(start);
+                    _next = start is null ? 0 : 1;
+                }
+
+                return _data;
+            }
+        }
+
+        /// <summary>Writes <paramref name="rows"/> ([n, ..row]) to n free rows.</summary>
+        public int[] Add(Tensor rows)
+        {
+            var data = Data;
+            var slots = new int[rows.shape[0]];
+            for (int i = 0; i < slots.Length; i++)
+                slots[i] = _free.Count > 0 ? _free.Pop() : _next++;
+            if (_next > data.shape[0])
+            {
+                var grown = empty([Math.Max(2 * data.shape[0], _next), .. rowShape], device: device).DetachFromDisposeScope();
+                grown.narrow(0, 0, data.shape[0]).copy_(data);
+                data.Dispose();
+                _data = data = grown;
+            }
+
+            _live += slots.Length;
+            data.index_copy_(0, Index(slots, device), rows);
+            return slots;
+        }
+
+        public void Free(int slot)
+        {
+            _free.Push(slot);
+            if (--_live == 0)
+            {
+                _data!.Dispose();
+                _data = null;
+                _free.Clear();
+            }
+        }
+    }
+
+    /// <summary>The calling thread's banks for this net.</summary>
+    private sealed class Banks(ConstituencyNet net)
+    {
+        public readonly Bank Vectors = new([net._hidden], null, net._device);
+        public readonly Bank Transitions = new(net._transitionStart.shape, net._transitionStart, net._device);
+        public readonly Bank Constituents = new(net._constituentStart.shape, net._constituentStart, net._device);
+    }
+
+    private static readonly Row StartRow = new(0);
 
     private readonly Pretrain _pretrain;
     private readonly CharLanguageModel _charlmForward, _charlmBackward;
@@ -30,11 +115,13 @@ internal sealed class ConstituencyNet : IConstituencyNet
     private readonly Linear _wordToConstituent, _reduceLinear;
     private readonly Linear[] _outputLayers;
     private readonly Tensor _wordStart, _wordEnd;
-    private readonly StackState _transitionStart, _constituentStart;
+    private readonly Tensor _transitionStart, _constituentStart; // [2, layers, hidden]: h and c after the start embedding
+    private readonly int _hidden;
+    private readonly ThreadLocal<Banks> _banks;
     private readonly Device _device = Weights.Device; // the device the model was loaded on
 
-    public object TransitionStart => _transitionStart;
-    public object ConstituentStart => _constituentStart;
+    public object TransitionStart => StartRow;
+    public object ConstituentStart => StartRow;
 
     public ConstituencyNet(Checkpoint ckpt, Pretrain pretrain, CharLanguageModel charlmForward, CharLanguageModel charlmBackward)
     {
@@ -46,6 +133,8 @@ internal sealed class ConstituencyNet : IConstituencyNet
         int hidden = config["hidden_size"]!.GetValue<int>();
         int layers = config["num_lstm_layers"]!.GetValue<int>();
         int transitionHidden = config["transition_hidden_size"]!.GetValue<int>();
+        _hidden = hidden;
+        _banks = new(() => new Banks(this));
 
         Embedding Emb(string name) =>
             nn.Embedding(ckpt.Shape(model[name + ".weight"])[0], ckpt.Shape(model[name + ".weight"])[1]).LoadFrom(ckpt, model, name + ".");
@@ -80,8 +169,7 @@ internal sealed class ConstituencyNet : IConstituencyNet
         {
             _transitionStart = InitialStack(_transitionLstm, ckpt.ToTensor(model["transition_stack.start_embedding"]));
             _constituentStart = InitialStack(_constituentLstm, ckpt.ToTensor(model["constituent_stack.start_embedding"]));
-            scope.Detach((IEnumerable<IDisposable>)[_transitionStart.Hx, _transitionStart.Cx, _transitionStart.Output,
-                _constituentStart.Hx, _constituentStart.Cx, _constituentStart.Output]);
+            scope.Detach((IEnumerable<IDisposable>)[_transitionStart, _constituentStart]);
         }
     }
 
@@ -127,23 +215,33 @@ internal sealed class ConstituencyNet : IConstituencyNet
         var lengths = sentences.Select(s => (long)s.Words.Count + 2).ToArray();
         var output = Rnn.RunPacked(_wordLstm, Rnn.PadSequence(inputs), lengths);
         var wordHx = F.relu(_wordToConstituent.forward(output));
-        return Enumerable.Range(0, sentences.Count).Select(i => (object)scope.Detach(wordHx[i])).ToArray();
+
+        // Each sentence's real rows (not the padding) go to the vector bank.
+        long width = wordHx.shape[1];
+        var rows = new List<long>();
+        for (int i = 0; i < lengths.Length; i++)
+        {
+            for (int p = 0; p < lengths[i]; p++)
+                rows.Add(i * width + p);
+        }
+
+        var bank = _banks.Value!.Vectors;
+        var slots = bank.Add(wordHx.view(-1, _hidden).index_select(0, torch.tensor(rows.ToArray(), device: _device)));
+        var result = new object[lengths.Length];
+        for (int i = 0, first = 0; i < result.Length; first += (int)lengths[i++])
+            result[i] = new WordRows(bank, slots[first..(first + (int)lengths[i])]);
+        return result;
     }
 
-    public object Word(object words, int position)
-    {
-        using var scope = NewDisposeScope();
-        return scope.Detach(((Tensor)words)[position]);
-    }
+    public object Word(object words, int position) => new Row(((WordRows)words).Slots[position]);
 
     public float[] Score(IReadOnlyList<(object Words, int Position, object Transition, object Constituent)> states, CancellationToken ct)
     {
         using var noGrad = torch.no_grad();
         using var scope = NewDisposeScope();
-        var word = stack(states.Select(s => ((Tensor)s.Words)[s.Position]).ToArray());
-        var transition = stack(states.Select(s => ((StackState)s.Transition).Output).ToArray());
-        var constituent = stack(states.Select(s => ((StackState)s.Constituent).Output).ToArray());
-        var hx = cat([word, transition, constituent], 1);
+        var banks = _banks.Value!;
+        var word = banks.Vectors.Data.index_select(0, Index(states.Select(s => ((WordRows)s.Words).Slots[s.Position]), _device));
+        var hx = cat([word, Top(banks.Transitions, states.Select(s => s.Transition)), Top(banks.Constituents, states.Select(s => s.Constituent))], 1);
         foreach (var layer in _outputLayers)
             hx = layer.forward(F.relu(hx)); // nonlinearity before every layer, including the first
         return hx.ToArray<float>();
@@ -153,17 +251,27 @@ internal sealed class ConstituencyNet : IConstituencyNet
     {
         using var noGrad = torch.no_grad();
         using var scope = NewDisposeScope();
-        var hx = _dummyEmbedding.forward(torch.tensor(openIndices.Select(i => (long)i).ToArray(), device: _device)).unbind(0);
-        return hx.Select(t => (object)scope.Detach(t)).ToArray();
+        return Owned(_banks.Value!.Vectors, _dummyEmbedding.forward(torch.tensor(openIndices.Select(i => (long)i).ToArray(), device: _device)));
     }
 
     public object[] Compose(IReadOnlyList<IReadOnlyList<object>> children, CancellationToken ct)
     {
         using var noGrad = torch.no_grad();
         using var scope = NewDisposeScope();
-        var pooled = stack(children.Select(c => stack(c.Select(x => (Tensor)x).ToArray()).max(0).values).ToArray());
-        var hx = F.relu(_reduceLinear.forward(pooled)).unbind(0);
-        return hx.Select(t => (object)scope.Detach(t)).ToArray();
+
+        // Every close's children as one [closes, most children] gather, short lists padded with their first child
+        // (a repeated value doesn't change a max).
+        int most = children.Max(c => c.Count);
+        var index = new long[children.Count * most];
+        for (int i = 0; i < children.Count; i++)
+        {
+            for (int k = 0; k < most; k++)
+                index[i * most + k] = ((Row)children[i][k < children[i].Count ? k : 0]).Slot;
+        }
+
+        var bank = _banks.Value!.Vectors;
+        var pooled = bank.Data.index_select(0, torch.tensor(index, device: _device)).view(children.Count, most, _hidden).max(1).values;
+        return Owned(bank, F.relu(_reduceLinear.forward(pooled)));
     }
 
     public object[] PushTransitions(IReadOnlyList<object> parents, int[] transitions, CancellationToken ct)
@@ -171,42 +279,44 @@ internal sealed class ConstituencyNet : IConstituencyNet
         using var noGrad = torch.no_grad();
         using var scope = NewDisposeScope();
         var input = _transitionEmbedding.forward(torch.tensor(transitions.Select(i => (long)i).ToArray(), device: _device));
-        return Push(_transitionLstm, parents, input, scope);
+        return Push(_transitionLstm, _banks.Value!.Transitions, parents, input);
     }
 
     public object[] PushConstituents(IReadOnlyList<object> parents, IReadOnlyList<object> inputs, CancellationToken ct)
     {
         using var noGrad = torch.no_grad();
         using var scope = NewDisposeScope();
-        return Push(_constituentLstm, parents, stack(inputs.Select(x => (Tensor)x).ToArray()), scope);
+        var banks = _banks.Value!;
+        return Push(_constituentLstm, banks.Constituents, parents, banks.Vectors.Data.index_select(0, Index(inputs.Select(x => ((Row)x).Slot), _device)));
     }
+
+    private static Tensor Index(IEnumerable<int> slots, Device device) => torch.tensor(slots.Select(i => (long)i).ToArray(), device: device);
+
+    private static object[] Owned(Bank bank, Tensor rows) => bank.Add(rows).Select(slot => (object)new OwnedRow(bank, slot)).ToArray();
 
     // ----- LSTM stacks (lstm_tree_stack.py) -----
-    private static StackState InitialStack(LSTM lstm, Tensor startEmbedding)
+
+    /// <returns>[2, layers, hidden]: h and c after the start embedding.</returns>
+    private static Tensor InitialStack(LSTM lstm, Tensor startEmbedding)
     {
-        var (output, hx, cx) = lstm.forward(startEmbedding.view(1, 1, -1));
-        return new StackState(hx.squeeze(1), cx.squeeze(1), output[0, 0]);
+        var (_, hx, cx) = lstm.forward(startEmbedding.view(1, 1, -1));
+        return stack([hx.squeeze(1), cx.squeeze(1)]);
     }
 
-    /// <summary>Runs the LSTM one step for each stack from its own state; the new states' tensors leave <paramref name="scope"/>.</summary>
-    private static object[] Push(LSTM lstm, IReadOnlyList<object> parents, Tensor inputs, DisposeScope scope)
+    /// <summary>The stacks' outputs, [states, hidden]: the last layer's h (a one-step LSTM's output is its last h).</summary>
+    private static Tensor Top(Bank bank, IEnumerable<object> states)
     {
-        var stacks = parents.Cast<StackState>().ToList();
-        var hx = torch.stack(stacks.Select(s => s.Hx).ToArray(), 1);
-        var cx = torch.stack(stacks.Select(s => s.Cx).ToArray(), 1);
-        var (output, hn, cn) = lstm.forward(inputs.unsqueeze(0), (hx, cx));
+        var data = bank.Data;
+        return data.index_select(0, Index(states.Select(s => ((Row)s).Slot), data.device)).select(1, 0).select(1, data.shape[2] - 1);
+    }
 
-        // One unbind per tensor instead of a view op per stack: the per-step op count is the parser's overhead.
-        var (hs, cs, outputs) = (hn.unbind(1), cn.unbind(1), output[0].unbind(0));
-        var result = new object[stacks.Count];
-        for (int i = 0; i < result.Length; i++)
-        {
-            // Views of hn/cn/output; disposing a view leaves the storage to the others.
-            scope.Detach((IEnumerable<IDisposable>)[hs[i], cs[i], outputs[i]]);
-            result[i] = new StackState(hs[i], cs[i], outputs[i]);
-        }
-
-        return result;
+    /// <summary>Runs the LSTM one step for each stack from its own state, into new rows of <paramref name="bank"/>.</summary>
+    private static object[] Push(LSTM lstm, Bank bank, IReadOnlyList<object> parents, Tensor inputs)
+    {
+        var data = bank.Data;
+        var states = data.index_select(0, Index(parents.Select(s => ((Row)s).Slot), data.device)).transpose(0, 2); // [layers, 2, stacks, hidden]
+        var (_, hn, cn) = lstm.forward(inputs.unsqueeze(0), (states.select(1, 0).contiguous(), states.select(1, 1).contiguous()));
+        return Owned(bank, stack([hn, cn], 1).transpose(0, 2));
     }
 
     public void Dispose()
@@ -223,6 +333,7 @@ internal sealed class ConstituencyNet : IConstituencyNet
         _wordEnd.Dispose();
         _transitionStart.Dispose();
         _constituentStart.Dispose();
+        _banks.Dispose();
     }
 }
 
