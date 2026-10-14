@@ -8,6 +8,29 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 Unreleased changes are one file each under [`changes/`](changes/README.md), so pull requests don't conflict here;
 a release folds them in (`python tools/changelog.py release X.Y.Z`).
 
+## [1.7.0] - 2026-10-14
+
+1.7: `stanzasharp compare` and `benchmark` take `--lang de`, so German can be checked against Python Stanza and timed
+like English; and the TorchSharp backend (`StanzaSharp.Cuda`) parses faster with a lower depparse peak. Outputs are
+unchanged bit for bit; no API changes.
+
+### Added
+- `stanzasharp compare` and `stanzasharp benchmark` take `--lang de` for German: Python Stanza runs its German pipeline
+  with the German entry of Stanza 1.15.0's resources.json (shipped with the tool), StanzaSharp loads with
+  `Language = "de"`, and `--models` defaults to `models/stanza/de`. `--package` takes German's packages too (`combined`,
+  `gsd` and `hdt` run only their processors, tokenize to depparse). `benchmark --lang de` times a built-in German text
+  (our German test texts, cut like the English one), and the block names the language. The manual Benchmark workflow
+  has a `lang` input.
+
+### Changed
+- TorchSharp backend (`StanzaSharp.Cuda`): the constituency parser is about 20% faster on the CPU (each step reads and
+  writes its states with a constant number of tensor ops), and the dependency parser's memory peak is about 280 MB
+  lower on a 27k-word text (no padded input, no full label-score tensor). Outputs and scores are bit-identical.
+
+### Fixed
+- `stanzasharp --help` and the tool's README said German models could be downloaded but not loaded by `Pipeline.Load`;
+  they load since 1.6.0.
+
 ## [1.6.0] - 2026-10-13
 
 1.6: German. `PipelineOptions.Language = "de"` runs Stanza's German models byte-identical to Python Stanza 1.15.0,
