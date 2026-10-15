@@ -124,10 +124,11 @@ internal static class ManagedThreads
         private volatile bool _stopped;
 
         // Callers inside Run plus workers not asleep; workers stay out (asleep) while this exceeds _limit.
-        private int _sleepers, _busy;
+        private int _sleepers, _busy, _callers;
 
-        // Workers kept asleep after stalls (0 to Size − 1): awake workers stay at most Size − 1 − _shed. The window
-        // started at _windowAt and has seen _stalled ticks of stalls.
+        // Workers kept asleep after stalls (0 to _maxShed, which keeps max(1, Size / 4) workers): awake workers stay at
+        // most Size − 1 − _shed. The window started at _windowAt and has seen _stalled ticks of stalls.
+        private readonly int _maxShed;
         private int _shed;
         private long _windowAt = Stopwatch.GetTimestamp(), _stalled;
 
@@ -140,6 +141,7 @@ internal static class ManagedThreads
             Size = size;
             _limit = Math.Max(size, Environment.ProcessorCount);
             _busy = size - 1;
+            _maxShed = Math.Max(0, size - 1 - Math.Max(1, size / 4));
             for (int i = 1; i < size; i++)
             {
                 int id = i;
@@ -160,6 +162,7 @@ internal static class ManagedThreads
 
             // ponytail: with more than 64 regions open at once the extra callers run alone; raise Slots if that happens.
             int idleCores = _limit - Interlocked.Increment(ref _busy);
+            Interlocked.Increment(ref _callers);
             int asleep = Volatile.Read(ref _sleepers), shed = Volatile.Read(ref _shed);
             int sleepers = Math.Min(Math.Min(Math.Min(asleep, n - 1), idleCores), asleep - shed);
             if (slot >= 0 && sleepers > 0)
@@ -175,7 +178,9 @@ internal static class ManagedThreads
                 while (Volatile.Read(ref region.Done) < n)
                     spin.SpinOnce(-1);
                 long wait = Stopwatch.GetTimestamp() - joined;
-                if (ran > 0 && wait > StallTicks && wait > StallItems * (joined - start) / ran)
+                // Only a lone caller's stalls count: with several callers, round 12's gate already keeps our own threads
+                // within the cores, and shedding took help from the long calls among them.
+                if (ran > 0 && wait > StallTicks && wait > StallItems * (joined - start) / ran && Volatile.Read(ref _callers) == 1)
                     Interlocked.Add(ref _stalled, wait);
             }
 
@@ -183,6 +188,7 @@ internal static class ManagedThreads
             if (start - window > WindowTicks && Interlocked.CompareExchange(ref _windowAt, start, window) == window)
                 Adjust(shed, Interlocked.Exchange(ref _stalled, 0), start - window);
 
+            Interlocked.Decrement(ref _callers);
             Interlocked.Decrement(ref _busy);
             if (region.Error != null)
                 ExceptionDispatchInfo.Throw(region.Error);
@@ -192,7 +198,7 @@ internal static class ManagedThreads
         private void Adjust(int shed, long stalled, long ticks)
         {
             int threads = Size - shed;
-            if (stalled * threads > ticks && shed < Size - 1)
+            if (stalled * threads > ticks && shed < _maxShed)
                 Interlocked.CompareExchange(ref _shed, shed + 1, shed);
             else if (stalled * 4 * threads < ticks && shed > 0)
                 Interlocked.CompareExchange(ref _shed, shed - 1, shed);
