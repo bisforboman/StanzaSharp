@@ -1084,6 +1084,57 @@ internal static unsafe class Act
         }
     }
 
+    /// <summary>
+    /// Σ a[q]·b[q] in double with four accumulators s0..s3 over q mod 4, then (s0 + s1) + (s2 + s3); the tail past the
+    /// last multiple of 4 goes into s0. Every path gives the same bits: the SIMD lanes are the accumulators, a float
+    /// product is exact in double, and each lane adds in the scalar order.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    public static double Dot(ReadOnlySpan<float> a, ReadOnlySpan<float> b)
+    {
+        int n = b.Length, q = 0;
+        if (a.Length < n)
+            throw new ArgumentException("a is shorter than b", nameof(a));
+        double s0 = 0, s1 = 0, s2 = 0, s3 = 0;
+        fixed (float* pa = a, pb = b)
+        {
+            if (Gemm.Path is KernelPath.Vector512 or KernelPath.Vector256)
+            {
+                var s = Vector256<double>.Zero;
+                for (; q <= n - 4; q += 4)
+                    s += Vector256.WidenLower(Vector128.Load(pa + q).ToVector256Unsafe()) * Vector256.WidenLower(Vector128.Load(pb + q).ToVector256Unsafe());
+                (s0, s1, s2, s3) = (s[0], s[1], s[2], s[3]);
+            }
+            else if (Gemm.Path == KernelPath.Vector128)
+            {
+                Vector128<double> s01 = Vector128<double>.Zero, s23 = Vector128<double>.Zero;
+                for (; q <= n - 4; q += 4)
+                {
+                    var (x, y) = (Vector128.Load(pa + q), Vector128.Load(pb + q));
+                    s01 += Vector128.WidenLower(x) * Vector128.WidenLower(y);
+                    s23 += Vector128.WidenUpper(x) * Vector128.WidenUpper(y);
+                }
+
+                (s0, s1, s2, s3) = (s01[0], s01[1], s23[0], s23[1]);
+            }
+            else
+            {
+                for (; q <= n - 4; q += 4)
+                {
+                    s0 += (double)pa[q] * pb[q];
+                    s1 += (double)pa[q + 1] * pb[q + 1];
+                    s2 += (double)pa[q + 2] * pb[q + 2];
+                    s3 += (double)pa[q + 3] * pb[q + 3];
+                }
+            }
+
+            for (; q < n; q++)
+                s0 += (double)pa[q] * pb[q];
+        }
+
+        return (s0 + s1) + (s2 + s3);
+    }
+
     /// <summary>The highway step o[j] += σ(gate[j])·tanh(highway[j]) for j in [0, n).</summary>
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     public static void AddGatedTanh(float* o, float* gate, float* highway, int n)
