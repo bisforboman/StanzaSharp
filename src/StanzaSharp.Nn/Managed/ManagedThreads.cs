@@ -124,12 +124,13 @@ internal static class ManagedThreads
         private volatile bool _stopped;
 
         // Callers inside Run plus workers not asleep; workers stay out (asleep) while this exceeds _limit.
-        private int _sleepers, _busy, _callers;
+        private int _sleepers, _busy;
 
         // Workers kept asleep after stalls (0 to _maxShed, which keeps max(1, Size / 4) workers): awake workers stay at
-        // most Size − 1 − _shed. The window started at _windowAt and has seen _stalled ticks of stalls.
+        // most Size − 1 − _shed. The window started at _windowAt and has seen _stalled ticks of stalls; _shared is 1 if
+        // two callers overlapped in it.
         private readonly int _maxShed;
-        private int _shed;
+        private int _shed, _shared;
         private long _windowAt = Stopwatch.GetTimestamp(), _stalled;
 
         public int Size { get; }
@@ -161,9 +162,19 @@ internal static class ManagedThreads
             }
 
             // ponytail: with more than 64 regions open at once the extra callers run alone; raise Slots if that happens.
-            int idleCores = _limit - Interlocked.Increment(ref _busy);
-            Interlocked.Increment(ref _callers);
+            int busy = Interlocked.Increment(ref _busy), idleCores = _limit - busy;
             int asleep = Volatile.Read(ref _sleepers), shed = Volatile.Read(ref _shed);
+
+            // Concurrent callers (busy threads − awake workers > 1) turn shedding off for the window: round 12's gate
+            // already keeps our own threads within the cores, and shedding took help from the long calls among them.
+            if (busy - (Size - 1 - asleep) > 1)
+            {
+                if (Volatile.Read(ref _shared) == 0)
+                    Volatile.Write(ref _shared, 1);
+                if (shed > 0)
+                    Volatile.Write(ref _shed, shed = 0);
+            }
+
             int sleepers = Math.Min(Math.Min(Math.Min(asleep, n - 1), idleCores), asleep - shed);
             if (slot >= 0 && sleepers > 0)
                 _wake.Release(sleepers);
@@ -178,17 +189,14 @@ internal static class ManagedThreads
                 while (Volatile.Read(ref region.Done) < n)
                     spin.SpinOnce(-1);
                 long wait = Stopwatch.GetTimestamp() - joined;
-                // Only a lone caller's stalls count: with several callers, round 12's gate already keeps our own threads
-                // within the cores, and shedding took help from the long calls among them.
-                if (ran > 0 && wait > StallTicks && wait > StallItems * (joined - start) / ran && Volatile.Read(ref _callers) == 1)
+                if (ran > 0 && wait > StallTicks && wait > StallItems * (joined - start) / ran)
                     Interlocked.Add(ref _stalled, wait);
             }
 
             long window = Volatile.Read(ref _windowAt);
             if (start - window > WindowTicks && Interlocked.CompareExchange(ref _windowAt, start, window) == window)
-                Adjust(shed, Interlocked.Exchange(ref _stalled, 0), start - window);
+                Adjust(shed, Interlocked.Exchange(ref _stalled, 0) * (1 - Interlocked.Exchange(ref _shared, 0)), start - window);
 
-            Interlocked.Decrement(ref _callers);
             Interlocked.Decrement(ref _busy);
             if (region.Error != null)
                 ExceptionDispatchInfo.Throw(region.Error);
@@ -239,13 +247,15 @@ internal static class ManagedThreads
                 if (found)
                     continue;
 
-                // Announce the sleep before the last look: a caller that opens a region after that look sees us.
-                Interlocked.Increment(ref _sleepers);
+                // Announce the sleep before the last look: a caller that opens a region after that look sees us. _busy
+                // drops first and rises last, so a caller counting callers as _busy minus the awake workers (Run) never
+                // counts this worker as a caller, even if it is preempted between the two.
                 Interlocked.Decrement(ref _busy);
+                Interlocked.Increment(ref _sleepers);
                 if (!_stopped && (Volatile.Read(ref _busy) >= _limit || !Help(id)))
                     _wake.Wait();
-                Interlocked.Increment(ref _busy);
                 Interlocked.Decrement(ref _sleepers);
+                Interlocked.Increment(ref _busy);
             }
         }
     }
