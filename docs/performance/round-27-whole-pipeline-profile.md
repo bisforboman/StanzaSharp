@@ -222,7 +222,7 @@ The estimates are for this text on this machine. The 8-thread figures are agains
    machine. With 12 other busy threads: 5.7 to 8.6 s at 8 threads against 4.3 to 4.7 s at 4 threads, so a pool that
    sheds workers when its joins stall would be about 35% faster and steady. The benchmark could also report other
    processes' CPU use during its runs, so loaded runs stand out.
-3. **Run both charlms in one region per character step** ([idea](ideas/charlm-one-region-per-step.md)). This halves the
+3. **Run both charlms in one region per character step** (dropped in [round 31](round-31-charlm-one-region.md)). This halves the
    charlm's regions. Estimate: about 60 ms of its 122 ms of join waits at 8 threads (3%); nothing at 1 thread.
 4. **Constituency: run `StackLstm.Push`'s LSTM cell inside the GEMM's tasks**
    ([idea](ideas/constituency-push-cell-in-tasks.md)). This parallelizes 64 ms of serial work per call at 8 threads.
