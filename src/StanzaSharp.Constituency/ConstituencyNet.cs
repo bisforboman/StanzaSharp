@@ -273,52 +273,87 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
 
         /// <summary>Row r: one step from <paramref name="parents"/>[r] with input <paramref name="inputs"/>(r) ([input] floats).</summary>
         /// <param name="pool">Where the new states' arrays come from (and go back to when disposed), or null for new arrays.</param>
+        /// <remarks>
+        /// Each layer is one GEMM over the rows' <c>[x | h]</c>. A 16-column gate panel holds four whole units
+        /// (<see cref="PackedLstm.GateOrder"/>), so the task that computed a block of rows × panels finishes those units' cell
+        /// (copying the parent's c first) and copies the new h and the parent's next-layer h into the next layer's
+        /// <c>[x | h]</c> rows. Only layer 0's rows are copied on the caller. The cell is element-wise and the GEMM keeps its
+        /// split and <c>rowInvariant</c>, so this changes no bit.
+        /// </remarks>
         public StackState[] Push(IReadOnlyList<object> parents, Func<int, ReadOnlyMemory<float>> inputs, Recycler? pool, CancellationToken ct)
         {
             int n = parents.Count, h = Hidden, kMax = Math.Max(_input, h) + h, ldg = _layers[0].W.PaddedN, size = _layers.Length * h;
             var result = new StackState[n];
             for (int r = 0; r < n; r++)
             {
-                // Every element of H is written below before it is read; C starts as the parent's.
-                var state = result[r] = pool == null ? new StackState(new float[size], new float[size]) : pool.TakeState(size);
-                ((StackState)parents[r]).C.CopyTo(state.C, 0);
+                // Every element of H and C is written below before it is read.
+                result[r] = pool == null ? new StackState(new float[size], new float[size]) : pool.TakeState(size);
             }
 
             var xh = ArrayPool<float>.Shared.Rent(n * kMax);
+            var next = ArrayPool<float>.Shared.Rent(n * kMax);
             var gates = ArrayPool<float>.Shared.Rent(n * ldg);
             try
             {
+                int k0 = _input + h;
+                for (int r = 0; r < n; r++)
+                {
+                    inputs(r).Span[.._input].CopyTo(xh.AsSpan(r * k0));
+                    ((StackState)parents[r]).H.AsSpan(0, h).CopyTo(xh.AsSpan(r * k0 + _input));
+                }
+
                 for (int l = 0; l < _layers.Length; l++)
                 {
-                    int inl = l == 0 ? _input : h, k = inl + h;
-                    for (int r = 0; r < n; r++)
+                    int k = (l == 0 ? _input : h) + h, layer = l;
+                    bool last = l == _layers.Length - 1;
+                    var (into, gateRows) = (next, gates);
+
+                    // Rows [m0, m1) × units [4·p0, 4·p1) of this layer, once their gates are final.
+                    void Cell(int m0, int m1, int p0, int p1)
                     {
-                        var x = l == 0 ? inputs(r).Span[..inl] : result[r].H.AsSpan((l - 1) * h, h);
-                        x.CopyTo(xh.AsSpan(r * k));
-                        ((StackState)parents[r]).H.AsSpan(l * h, h).CopyTo(xh.AsSpan(r * k + inl));
+                        int u0 = p0 * 4, units = (p1 - p0) * 4, at = layer * h + u0;
+                        fixed (float* pg = gateRows)
+                        {
+                            for (int r = m0; r < m1; r++)
+                            {
+                                var (parent, state) = ((StackState)parents[r], result[r]);
+                                parent.C.AsSpan(at, units).CopyTo(state.C.AsSpan(at));
+                                fixed (float* c = state.C, hOut = state.H)
+                                {
+                                    for (int p = p0; p < p1; p++)
+                                        Act.LstmCell(pg + r * ldg + p * 16, c + layer * h + p * 4, hOut + layer * h + p * 4);
+                                }
+
+                                if (!last)
+                                {
+                                    state.H.AsSpan(at, units).CopyTo(into.AsSpan(r * 2 * h + u0));
+                                    parent.H.AsSpan(at + h, units).CopyTo(into.AsSpan(r * 2 * h + h + u0));
+                                }
+                            }
+                        }
                     }
 
                     var (w, bias) = _layers[l];
                     fixed (float* pxh = xh, pg = gates, pb = bias)
                     {
                         if (_raw != null)
-                            DoubleLinear(_raw[l], 4 * h, k, bias, pxh, k, n, pg, ldg, _order);
-                        else
-                            Gemm.Run(pxh, n, k, w, pb, pg, ldg, ct, rowInvariant: true);
-                        for (int r = 0; r < n; r++)
                         {
-                            fixed (float* c = result[r].C, hOut = result[r].H)
-                            {
-                                for (int p = 0; p < h / 4; p++)
-                                    Act.LstmCell(pg + r * ldg + p * 16, c + l * h + p * 4, hOut + l * h + p * 4);
-                            }
+                            DoubleLinear(_raw[l], 4 * h, k, bias, pxh, k, n, pg, ldg, _order);
+                            Cell(0, n, 0, h / 4);
+                        }
+                        else
+                        {
+                            Gemm.Run(pxh, n, k, w, pb, pg, ldg, ct, rowInvariant: true, epilogue: Cell);
                         }
                     }
+
+                    (xh, next) = (next, xh);
                 }
             }
             finally
             {
                 ArrayPool<float>.Shared.Return(xh);
+                ArrayPool<float>.Shared.Return(next);
                 ArrayPool<float>.Shared.Return(gates);
             }
 
