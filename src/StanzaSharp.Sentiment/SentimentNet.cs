@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Runtime.Intrinsics;
 using StanzaSharp.Nn;
 using StanzaSharp.Nn.Managed;
 using Filter = StanzaSharp.Sentiment.SentimentClassifier.Filter;
@@ -42,7 +43,11 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
     /// One convolution. Full width (Width 0): <see cref="Packed"/> [channels, Height·lstm width]. Otherwise
     /// <see cref="Weights"/> [channels, Height, Width] with stride (1, Width), giving <see cref="Columns"/> outputs per channel.
     /// </summary>
-    private sealed record Conv(int Height, int Width, int Channels, int Columns, int Offset, PackedMatrix? Packed, float[] Weights, float[] Bias);
+    internal sealed record Conv(int Height, int Width, int Channels, int Columns, int Offset, PackedMatrix? Packed, float[] Weights, float[] Bias)
+    {
+        /// <summary><see cref="Weights"/> as [Height·Width, channels], so a window's channels are adjacent (<see cref="Strided"/>).</summary>
+        public float[] Transposed { get; } = [.. Enumerable.Range(0, Weights.Length).Select(k => Weights[k % Channels * (Weights.Length / Channels) + k / Channels])];
+    }
 
     public ManagedSentimentNet(Checkpoint ckpt, Filter[] filters, Pretrain pretrain, ManagedCharLanguageModel charlmForward, ManagedCharLanguageModel charlmBackward)
     {
@@ -136,8 +141,9 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
                 }
             }
 
-            // The unpacked LSTM: every row runs the full width.
-            _lstm.ForwardUnpacked(n, width, Fill, z, ct);
+            // The unpacked LSTM: every row runs the full width. Padding rows all have the same input (PAD's rows, zero
+            // charlms), so their first-layer projection is computed once.
+            _lstm.ForwardUnpacked(n, width, Fill, z, ct, lengths: [.. batch.Select(s => s.Count)]);
 
             foreach (var conv in _convs)
             {
@@ -145,7 +151,7 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
                 if (conv.Packed != null)
                     FullWidth(conv, z, n, width, pooled, ct);
                 else
-                    Strided(conv, z, n, width, pooled);
+                    Strided(conv, z, n, width, _lstm.OutputSize, pooled, _pooledSize);
             }
 
             // Fully connected layers, ReLU between.
@@ -221,32 +227,68 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
     /// The Height × Width filter with stride (1, Width): output (channel, column) at window t sums Height·Width products.
     /// Pooled as Stanza flattens it: channel·Columns + column.
     /// </summary>
-    // ponytail: scalar loops (8 channels × 120 columns × 25 products per window, ~2% of the full-width convolutions' work); a GEMM if it ever shows.
-    private void Strided(Conv conv, float[] z, int n, int width, float[] pooled)
+    /// <remarks>
+    /// On the SIMD paths a vector holds 8 (Vector256, also on Vector512) or 4 (Vector128) channels: each lane starts at its
+    /// bias and adds the products one at a time, a multiply then an add (no FMA), in the scalar loop's order, so every path
+    /// gives the Scalar path's bits. The max is taken per lane with <see cref="Math.Max(float, float)"/>, as there.
+    /// </remarks>
+    internal static void Strided(Conv conv, float[] z, int n, int width, int h2, float[] pooled, int ldPooled)
     {
-        int h2 = _lstm.OutputSize, windows = width - conv.Height + 1, area = conv.Height * conv.Width;
+        int windows = width - conv.Height + 1, area = conv.Height * conv.Width, channels = conv.Channels;
+        int lanes = Gemm.Path is KernelPath.Vector512 or KernelPath.Vector256 && channels % 8 == 0 ? 8
+            : Gemm.Path != KernelPath.Scalar && channels % 4 == 0 ? 4 : 1;
         ManagedThreads.For(n, i =>
         {
-            var o = pooled.AsSpan(i * _pooledSize + conv.Offset, conv.Channels * conv.Columns);
+            var o = pooled.AsSpan(i * ldPooled + conv.Offset, channels * conv.Columns);
             o.Clear();
+            Span<float> s = stackalloc float[lanes];
             for (int t = 0; t < windows; t++)
             {
-                for (int ch = 0; ch < conv.Channels; ch++)
+                for (int col = 0; col < conv.Columns; col++)
                 {
-                    var wc = conv.Weights.AsSpan(ch * area, area);
-                    for (int col = 0; col < conv.Columns; col++)
+                    var src = z.AsSpan((i * width + t) * h2 + col * conv.Width);
+                    for (int c0 = 0; c0 < channels; c0 += lanes)
                     {
-                        float s = conv.Bias[ch];
-                        for (int a = 0; a < conv.Height; a++)
+                        if (lanes == 8)
                         {
-                            var src = z.AsSpan((i * width + t + a) * h2 + col * conv.Width, conv.Width);
-                            var wr = wc.Slice(a * conv.Width, conv.Width);
-                            for (int b = 0; b < src.Length; b++)
-                                s += wr[b] * src[b];
+                            var v = Vector256.Create<float>(conv.Bias.AsSpan(c0));
+                            for (int a = 0, j = 0; a < conv.Height; a++)
+                            {
+                                for (int b = 0; b < conv.Width; b++, j++)
+                                    v += Vector256.Create<float>(conv.Transposed.AsSpan(j * channels + c0)) * Vector256.Create(src[a * h2 + b]);
+                            }
+
+                            v.CopyTo(s);
+                        }
+                        else if (lanes == 4)
+                        {
+                            var v = Vector128.Create<float>(conv.Bias.AsSpan(c0));
+                            for (int a = 0, j = 0; a < conv.Height; a++)
+                            {
+                                for (int b = 0; b < conv.Width; b++, j++)
+                                    v += Vector128.Create<float>(conv.Transposed.AsSpan(j * channels + c0)) * Vector128.Create(src[a * h2 + b]);
+                            }
+
+                            v.CopyTo(s);
+                        }
+                        else
+                        {
+                            var wc = conv.Weights.AsSpan(c0 * area, area);
+                            float sum = conv.Bias[c0];
+                            for (int a = 0; a < conv.Height; a++)
+                            {
+                                for (int b = 0; b < conv.Width; b++)
+                                    sum += wc[a * conv.Width + b] * src[a * h2 + b];
+                            }
+
+                            s[0] = sum;
                         }
 
-                        ref float m = ref o[ch * conv.Columns + col];
-                        m = Math.Max(m, s);
+                        for (int c = 0; c < lanes; c++)
+                        {
+                            ref float m = ref o[(c0 + c) * conv.Columns + col];
+                            m = Math.Max(m, s[c]);
+                        }
                     }
                 }
             }

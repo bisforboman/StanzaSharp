@@ -555,7 +555,9 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
 
     /// <summary>
     /// <see cref="ManagedLstm.ForwardUnpacked"/> (sentiment's biLSTM) gives the bits of <see cref="ManagedLstm.ForwardPacked"/>
-    /// on the same time-major rows, in chunks of several steps, of one step, and with n·width % MR == 1.
+    /// on the same time-major rows, in chunks of several steps, of one step, and with n·width % MR == 1. Also with padding
+    /// (<c>lengths</c>, every padding row the same input, its projection shared), the last row (the single-row kernel's
+    /// when n·width % MR == 1) padding or real; there the filler must be asked for no other padding row.
     /// </summary>
     [ModelTheory]
     [MemberData(nameof(Paths))]
@@ -563,19 +565,36 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
     {
         var ckpt = Checkpoint.Load(Repo.Model("sentiment/sstplus_charlm"));
         var lstm = new ManagedLstm(ckpt, ckpt.Root["params"]!["model"]!, "bilstm.", 2148, 300, 2, bidirectional: true);
-        foreach (var (n, width, chunkRows) in new[] { (5, 13, 20), (7, 7, 1), (3, 9, 2048) })
+        foreach (var (n, width, chunkRows, lengths) in new (int, int, int, int[]?)[]
+        {
+            (5, 13, 20, null), (7, 7, 1, null), (3, 9, 2048, null),
+            (5, 13, 20, [13, 9, 13, 2, 1]), (7, 7, 1, [7, 6, 5, 5, 3, 1, 1]), (7, 7, 20, [3, 7, 1, 7, 2, 1, 7]), (3, 9, 2048, [9, 4, 4]),
+        })
         {
             var x = Random(n * width * 2148, n);
+            var padding = Random(2148, 99);
+            bool IsPadding(int r) => lengths != null && r / n >= lengths[r % n];
+            for (int r = 0; r < n * width; r++)
+            {
+                if (IsPadding(r))
+                    padding.CopyTo(x, r * 2148);
+            }
+
             var packed = new float[n * width * 600];
             var batchSizes = Enumerable.Repeat(n, width).ToArray();
             With(path, 4, () => { lstm.ForwardPacked(x, 2148, batchSizes, packed); return 0; });
             var unpacked = new float[n * width * 600];
+            int paddingFilled = 0;
             With(path, 4, () =>
             {
-                lstm.ForwardUnpacked(n, width, (r0, r1, dst) => x.AsSpan(r0 * 2148, (r1 - r0) * 2148).CopyTo(new Span<float>(dst, (r1 - r0) * 2148)),
-                    unpacked, chunkRows: chunkRows);
+                lstm.ForwardUnpacked(n, width, (r0, r1, dst) =>
+                {
+                    paddingFilled += Enumerable.Range(r0, r1 - r0).Count(IsPadding);
+                    x.AsSpan(r0 * 2148, (r1 - r0) * 2148).CopyTo(new Span<float>(dst, (r1 - r0) * 2148));
+                }, unpacked, chunkRows: chunkRows, lengths: lengths);
                 return 0;
             });
+            Assert.Equal(lengths == null ? 0 : 1, paddingFilled);
             for (int i = 0; i < n; i++)
             {
                 for (int t = 0; t < width; t++)
@@ -584,6 +603,54 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
                         unpacked.AsSpan((i * width + t) * 600, 600).ToArray().Select(BitConverter.SingleToInt32Bits));
                 }
             }
+        }
+    }
+
+    /// <summary>
+    /// Sentiment's strided (5, 5) filter (stride (1, 5), 8 channels) gives the scalar loop's bits on every path: the SIMD
+    /// paths put the channels in lanes and must keep each channel's order of operations. Also 4 and 3 channels (Vector128
+    /// lanes, scalar).
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(Paths))]
+    public void SentimentStrided_GivesTheScalarLoopsBits(string path)
+    {
+        foreach (int channels in new[] { 8, 4, 3 })
+        {
+            const int height = 5, width = 5, h2 = 600, columns = 120, offset = 7, ld = 2000;
+            int n = 3, tokens = 9, windows = tokens - height + 1;
+            var z = Random(n * tokens * h2, 31);
+            var weights = Random(channels * height * width, 32);
+            var bias = Random(channels, 33);
+            var conv = new ManagedSentimentNet.Conv(height, width, channels, columns, offset, null, weights, bias);
+            var expected = new float[n * ld];
+            for (int i = 0; i < n; i++)
+            {
+                for (int ch = 0; ch < channels; ch++)
+                {
+                    for (int col = 0; col < columns; col++)
+                    {
+                        float max = 0;
+                        for (int t = 0; t < windows; t++)
+                        {
+                            float s = bias[ch];
+                            for (int a = 0; a < height; a++)
+                            {
+                                for (int b = 0; b < width; b++)
+                                    s += weights[(ch * height + a) * width + b] * z[(i * tokens + t + a) * h2 + col * width + b];
+                            }
+
+                            max = Math.Max(max, s);
+                        }
+
+                        expected[i * ld + offset + ch * columns + col] = max;
+                    }
+                }
+            }
+
+            var actual = new float[n * ld];
+            With(path, 4, () => { ManagedSentimentNet.Strided(conv, z, n, tokens, h2, actual, ld); return 0; });
+            Assert.Equal(expected.Select(BitConverter.SingleToInt32Bits), actual.Select(BitConverter.SingleToInt32Bits));
         }
     }
 

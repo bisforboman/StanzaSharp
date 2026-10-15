@@ -558,7 +558,11 @@ internal sealed unsafe class ManagedLstm
     /// <param name="output">Gets [n, width, OutputSize], batch-major (row i·width + t).</param>
     /// <param name="ct">Checked per chunk and before each time step.</param>
     /// <param name="chunkRows">About how many rows a chunk has (at least one step's n).</param>
-    public void ForwardUnpacked(int n, int width, RowFiller fill, Span<float> output, CancellationToken ct = default, int chunkRows = 2048)
+    /// <param name="lengths">Optional: sequence i's steps from lengths[i] on are padding, and every padding row has the same
+    /// input. The first layer's input projection is then computed once for all of them (the bits each would get in the
+    /// whole GEMM, the single-row kernel's row included), and <paramref name="fill"/> is asked for one padding row only.</param>
+    public void ForwardUnpacked(int n, int width, RowFiller fill, Span<float> output, CancellationToken ct = default, int chunkRows = 2048,
+        int[]? lengths = null)
     {
         // ponytail: padded hidden units would need the last layer in a separate buffer; no caller has them.
         if (_padded != _hidden)
@@ -570,13 +574,27 @@ internal sealed unsafe class ManagedLstm
         var p = ArrayPool<float>.Shared.Rent(steps * n * gates);
         var cells = ArrayPool<float>.Shared.Rent(n * h);
         var pointers = ArrayPool<nint>.Shared.Rent(4 * n);
+        var slot = ArrayPool<int>.Shared.Rent(steps * n); // a chunk's row (t − t0)·n + i → its row in x and p, or −1 for padding
+        var pad = ArrayPool<float>.Shared.Rent(InputSize + 2 * _dirs * gates); // the padding input, then per direction its projection twice
+        bool IsReal(int i, int t) => lengths == null || t < lengths[i];
 
         // Every layer but the last writes time-major rows, ping-ponging between two buffers.
         var mid = Enumerable.Range(0, Math.Min(_layers.Length - 1, 2)).Select(_ => ArrayPool<float>.Shared.Rent(rows * ldo)).ToArray();
         try
         {
-            fixed (float* px = x, pp = p, pc = cells, po = output, pm0 = mid.ElementAtOrDefault(0), pm1 = mid.ElementAtOrDefault(1))
+            fixed (float* px = x, pp = p, pc = cells, po = output, pm0 = mid.ElementAtOrDefault(0), pm1 = mid.ElementAtOrDefault(1), padIn = pad)
             {
+                float* padProj = padIn + InputSize;
+                int padRow = -1; // a padding row's index, if any
+                for (int i = 0; i < n && padRow < 0; i++)
+                {
+                    if (!IsReal(i, width - 1))
+                        padRow = lengths![i] * n + i;
+                }
+
+                if (padRow >= 0)
+                    fill(padRow, padRow + 1, padIn);
+
                 fixed (nint* pointerBase = pointers)
                 {
                     var ptr = (float**)pointerBase;
@@ -598,14 +616,50 @@ internal sealed unsafe class ManagedLstm
                             int chunks = (width + steps - 1) / steps;
                             fixed (float* pb = bias, ph0 = h0)
                             {
+                                if (src == null && padRow >= 0)
+                                {
+                                    // Row-invariant, as in the chunk GEMMs; and through the single-row kernel, for row rows − 1.
+                                    Gemm.Run(padIn, 1, InputSize, wd, pb + d * gates, padProj + d * 2 * gates, gates, ct, rowInvariant: true);
+                                    Gemm.Run(padIn, 1, InputSize, wd, pb + d * gates, padProj + (d * 2 + 1) * gates, gates, ct);
+                                }
+
                                 for (int k = 0; k < chunks; k++)
                                 {
                                     ct.ThrowIfCancellationRequested();
                                     int t0 = (forward ? k : chunks - 1 - k) * steps, t1 = Math.Min(width, t0 + steps);
-                                    if (src == null)
-                                        fill(t0 * n, t1 * n, px);
-                                    Gemm.RunRows(src == null ? px : src + (long)t0 * n * ldo, t0 * n, t1 * n, rows, src == null ? InputSize : ldo,
-                                        wd, pb + d * gates, pp, gates, ct);
+                                    if (src != null)
+                                    {
+                                        Gemm.RunRows(src + (long)t0 * n * ldo, t0 * n, t1 * n, rows, ldo, wd, pb + d * gates, pp, gates, ct);
+                                    }
+                                    else
+                                    {
+                                        // Real rows only, packed together; each padding row points at the shared projection.
+                                        int real = 0;
+                                        for (int t = t0; t < t1; t++)
+                                        {
+                                            for (int i = 0; i < n;)
+                                            {
+                                                if (!IsReal(i, t))
+                                                {
+                                                    slot[(t - t0) * n + i++] = -1;
+                                                    continue;
+                                                }
+
+                                                int i0 = i;
+                                                for (; i < n && IsReal(i, t); i++)
+                                                    slot[(t - t0) * n + i] = real + i - i0;
+                                                fill(t * n + i0, t * n + i, px + (long)real * InputSize);
+                                                real += i - i0;
+                                            }
+                                        }
+
+                                        // As RunRows: row rows − 1 (the last step's last sequence) through the single-row kernel when rows % MR is 1.
+                                        int single = t1 == width && rows % Gemm.MR == 1 && IsReal(n - 1, width - 1) ? 1 : 0;
+                                        Gemm.Run(px, real - single, InputSize, wd, pb + d * gates, pp, gates, ct, rowInvariant: true);
+                                        if (single == 1)
+                                            Gemm.Run(px + (long)(real - 1) * InputSize, 1, InputSize, wd, pb + d * gates, pp + (long)(real - 1) * gates, gates, ct);
+                                    }
+
                                     for (int s = 0; s < t1 - t0; s++)
                                     {
                                         ct.ThrowIfCancellationRequested();
@@ -615,7 +669,10 @@ internal sealed unsafe class ManagedLstm
                                         {
                                             long at = last ? (long)i * width + t : (long)t * n + i, before = last ? (long)i * width + prev : (long)prev * n + i;
                                             ptr[i] = fresh ? ph0 : dst + before * ldo + d * h;
-                                            ptr[n + i] = pp + ((long)(t - t0) * n + i) * gates;
+                                            int projRow = src != null ? (t - t0) * n + i : slot[(t - t0) * n + i];
+                                            ptr[n + i] = projRow >= 0
+                                                ? pp + (long)projRow * gates
+                                                : padProj + (d * 2 + (t == width - 1 && i == n - 1 && rows % Gemm.MR == 1 ? 1 : 0)) * gates;
                                             ptr[2 * n + i] = pc + (long)i * h;
                                             ptr[3 * n + i] = dst + at * ldo + d * h;
                                         }
@@ -635,6 +692,8 @@ internal sealed unsafe class ManagedLstm
             ArrayPool<float>.Shared.Return(p);
             ArrayPool<float>.Shared.Return(cells);
             ArrayPool<nint>.Shared.Return(pointers);
+            ArrayPool<int>.Shared.Return(slot);
+            ArrayPool<float>.Shared.Return(pad);
             foreach (var m in mid)
                 ArrayPool<float>.Shared.Return(m);
         }

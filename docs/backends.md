@@ -383,13 +383,17 @@ reads the tagger's cached charlm outputs for sentences without MWTs.
   - The **unpacked** 2-layer biLSTM is `ManagedLstm.ForwardUnpacked`: every row runs the full padded width, as `nn.LSTM`
     does without packing, with the bits `ForwardPacked` gives with every batch size = n. Per layer and direction, the
     input projection is computed for ~2048 rows (a few steps) just before those steps run (`Gemm.RunRows`, a panel view
-    per direction); only the layer outputs are whole, and the last layer writes batch-major.
+    per direction); only the layer outputs are whole, and the last layer writes batch-major. Padding rows all have the
+    same input, so the first layer projects it once per direction (row-invariant, plus a single-row-kernel copy for row
+    n·width − 1 when n·width % 6 is 1) and every padding row points at it; only real rows are filled and multiplied
+    ([round 28](performance/round-28-sentiment-padding.md)).
   - Each full-width convolution (3, 4, 5 tokens × 600) is a GEMM whose A rows overlap: row r starts at token r with
     lda = 600 and K = Height·600, so window t of sentence i is row i·width + t and nothing is copied (windows crossing
     into the next sentence are computed and ignored, (Height − 1)/width of the work). It runs 2048 rows at a time
     (`Gemm.RunRows`), each chunk pooled as it comes: ReLU + max over each sentence's windows = max(0, max).
-  - The (5, 5) filter with stride (1, 5) (8 channels × 120 columns, 25 products each) runs as scalar loops, parallel per
-    sentence; it is ~2% of the convolutions' multiply-adds.
+  - The (5, 5) filter with stride (1, 5) (8 channels × 120 columns, 25 products each) runs parallel per sentence with
+    the 8 channels in the lanes of a `Vector256` (Vector128: two halves; Scalar: plain loops), each lane a multiply then
+    an add in the scalar loop's order, so every path gives the same bits.
   - FC 3960 → 400 → 100 → 3 through `Gemm` with ReLU between.
 - **Exactness:** labels byte-identical everywhere (14 golden files, `all.json`'s two batches, pipeline, validation,
   fast, bulk, pretokenized, concurrency). Logits vs Python's float32 logits (`SentimentTests`, tolerance 1e-4; how the
