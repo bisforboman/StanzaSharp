@@ -28,10 +28,12 @@ internal sealed class ConstituencyParser : IDisposable
     private readonly Transition[] _transitions;
     private readonly HashSet<string> _rootLabels;
     private readonly int _unaryLimit;
-    private readonly bool _usesXpos;
     private readonly IConstituencyNet _net;
     private readonly StackNode<Transition?> _initialTransitions;
     private readonly StackNode<Constituent> _initialConstituents;
+
+    /// <summary>Whether the parser reads XPOS (<c>retag_method: xpos</c>, English) rather than UPOS (German).</summary>
+    internal bool UsesXpos { get; }
 
     internal ConstituencyParser(Checkpoint ckpt, Pretrain pretrain, Func<IConstituencyNet> net)
     {
@@ -45,7 +47,7 @@ internal sealed class ConstituencyParser : IDisposable
         _tagMap = Strings(p["tags"]).Select((t, i) => (t, i)).ToDictionary(x => x.t, x => x.i + 2);
         _rootLabels = Strings(p["root_labels"]).ToHashSet();
         _unaryLimit = p["unary_limit"]!.GetValue<int>();
-        _usesXpos = config["retag_method"]?.GetValue<string>() == "xpos";
+        UsesXpos = config["retag_method"]?.GetValue<string>() == "xpos";
         var opens = p["constituent_opens"]!.AsArray().Select(OpenLabel).ToList();
         _transitions = Strings(p["transitions"]).Select((t, i) => ParseTransition(t, i, opens)).ToArray();
 
@@ -69,7 +71,7 @@ internal sealed class ConstituencyParser : IDisposable
     {
         var sentences = doc.Sentences.Where(s => s.Tokens.Count > 0).ToList();
         var tagged = sentences.Select(s => (IReadOnlyList<(string, string)>)s.Words.Select(w =>
-            (w.Text, (_usesXpos ? w.Xpos : w.Upos) ?? throw new InvalidOperationException("Run the POS tagger before the parser"))).ToList()).ToList();
+            (w.Text, (UsesXpos ? w.Xpos : w.Upos) ?? throw new InvalidOperationException("Run the POS tagger before the parser"))).ToList()).ToList();
         var trees = Parse(tagged, charlms: charlms, cacheKeys: charlms == null ? null : sentences, cancellationToken: cancellationToken);
         for (int i = 0; i < sentences.Count; i++)
             sentences[i].Constituency = trees[i];
