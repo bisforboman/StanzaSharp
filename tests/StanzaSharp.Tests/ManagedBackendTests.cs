@@ -390,6 +390,33 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
             Assert.Equal(expected, With(path, threads, () => lstm.Run()));
     }
 
+    /// <summary>Depparse's arc dot product gives the scalar four-accumulator sum's bits on every path, tails included.</summary>
+    [Theory]
+    [MemberData(nameof(Paths))]
+    [Trait("Backend", "Managed")]
+    public void Dot_GivesTheScalarSumsBits(string path)
+    {
+        foreach (int n in new[] { 0, 1, 2, 3, 4, 5, 7, 8, 9, 400, 401, 403 })
+        {
+            var a = Random(n + 1, 60 + n).Select(x => x * 100).ToArray(); // one longer, as depparse's T row
+            var b = Random(n, 61 + n);
+            double s0 = 0, s1 = 0, s2 = 0, s3 = 0;
+            int q = 0;
+            for (; q <= n - 4; q += 4)
+            {
+                s0 += (double)a[q] * b[q];
+                s1 += (double)a[q + 1] * b[q + 1];
+                s2 += (double)a[q + 2] * b[q + 2];
+                s3 += (double)a[q + 3] * b[q + 3];
+            }
+
+            for (; q < n; q++)
+                s0 += (double)a[q] * b[q];
+            double expected = (s0 + s1) + (s2 + s3);
+            Assert.Equal(BitConverter.DoubleToInt64Bits(expected), With(path, 1, () => BitConverter.DoubleToInt64Bits(Act.Dot(a, b))));
+        }
+    }
+
     [Fact]
     public void ConcurrentCalls_EqualSequentialOutput()
     {
