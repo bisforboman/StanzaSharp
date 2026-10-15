@@ -1006,7 +1006,8 @@ model but MWT and NER is English's architecture with other vocabularies and size
   - `IDepparseNet` (`DepparseNet` / `ManagedDepparseNet`) → `DepparseScores` (arc log-probs over the padded width, label
     argmax per pair, label scores for tests). `DependencyParser` keeps simplify_punct, vocab ids, ROOT, batching, MST and
     the deprel strings. The managed net scores no padding rows; padding columns all get in2 = ReLU(W2's bias) (LSTM
-    output 0 there), so the log-softmax sees TorchSharp's exact width. Arcs (pair sums, terms, log-softmax) in double;
+    output 0 there), so the log-softmax sees TorchSharp's exact width, and a row scores them once (round 29). Arcs (pair
+    sums through `Act.Dot`, whose SIMD lanes are its four double accumulators; terms; log-softmax) in double;
     labels per dependent through `Gemm.Kernel` on a repacked T row, real pairs only, T in ≤ 32 MB chunks.
   - `ISentimentNet` (`SentimentNet` / `ManagedSentimentNet`) → [batch, classes] logits. `SentimentClassifier` keeps map_word,
     the delta vocab, `label_sentences` sorting, 5000-token batches, the padded width (≥ widest filter), cache keys (no MWT)
@@ -1034,7 +1035,8 @@ model but MWT and NER is English's architecture with other vocabularies and size
     `EncodeWords`, `Word`, `Score`, `Open`, `Compose`, `PushTransitions`, `PushConstituents`. `ConstituencyParser` keeps the
     transition system, legality, unary_limit, the vocab lookups, the schedule (longest first, 50 in flight) and the trees.
     Managed: the word encoder is `ManagedLstm.ForwardPadded`; each stack LSTM layer is one GEMM over `[x | h]` (like the
-    lemma's cell); scores, compositions and pushes run `Gemm.Run(..., rowInvariant: true)` (no 1-row kernel, whose split sum
+    lemma's cell), whose tasks also run their panels' LSTM cells and copy the next layer's rows (`Gemm.Run`'s
+    `epilogue`, round 30); scores, compositions and pushes run `Gemm.Run(..., rowInvariant: true)` (no 1-row kernel, whose split sum
     differs from the 6-row one), so a state's arithmetic is bitwise the same in any batch (tested). All float: scores 3.4e-5
     from Python (TorchSharp 3.1e-5; every path ≤ 4.6e-5, tolerance 1e-3 as before); trees byte-identical. Near-ties over
     845 golden sentences (22,569 steps): smallest decision margin 3.6e-4 (both backends), backends 7.3e-5 apart;

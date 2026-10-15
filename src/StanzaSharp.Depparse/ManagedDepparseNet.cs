@@ -8,8 +8,8 @@ namespace StanzaSharp.Depparse;
 /// Managed twin of <c>DepparseNet</c> (<see cref="Backend.Managed"/>). The input and the highway biLSTM work on
 /// the packed rows only. Each deep biaffine scorer runs in two steps: its <c>W1</c>/<c>W2</c> layers (one GEMM per
 /// scorer, one scorer's buffers at a time), then T = in1·W_bilin per dependent (a GEMM) and T·in2 per word pair. Padding columns, which count in the
-/// arc log-softmax, all see the same in2 (the LSTM output there is 0, so in2 = ReLU(W2's bias)); padding rows are not
-/// scored, since nothing reads them.
+/// arc log-softmax, all see the same in2 (the LSTM output there is 0, so in2 = ReLU(W2's bias)), so a row's T·in2 for them
+/// is computed once; padding rows are not scored, since nothing reads them.
 /// </summary>
 internal sealed unsafe class ManagedDepparseNet : IDepparseNet
 {
@@ -388,10 +388,14 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
                             var tRow = new ReadOnlySpan<float>((float*)tBase + (long)k * ldT, b + 1);
                             var vRow = v.AsSpan(k * width, width);
                             double constant = tRow[b] + (double)scorer.Bias[0];
+
+                            // Every padding column has in2 = Pad2, so the same score.
+                            double padScore = n < width ? Act.Dot(tRow, scorer.Pad2) + constant : 0;
                             for (int j = 0; j < width; j++)
                             {
-                                var in2 = j < n ? new ReadOnlySpan<float>((float*)hidBase + (long)(offset[sent] + j) * ldH + b, b) : scorer.Pad2;
-                                double score = Dot(tRow, in2) + constant;
+                                double score = j < n
+                                    ? Act.Dot(tRow, new ReadOnlySpan<float>((float*)hidBase + (long)(offset[sent] + j) * ldH + b, b)) + constant
+                                    : padScore;
                                 int offsetJ = j - i;
                                 vRow[j] = term switch
                                 {
@@ -432,24 +436,6 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
         }
 
         return result;
-    }
-
-    /// <summary>Σ a[q]·b[q] in double, four accumulators.</summary>
-    private static double Dot(ReadOnlySpan<float> a, ReadOnlySpan<float> b)
-    {
-        double s0 = 0, s1 = 0, s2 = 0, s3 = 0;
-        int q = 0;
-        for (; q <= b.Length - 4; q += 4)
-        {
-            s0 += (double)a[q] * b[q];
-            s1 += (double)a[q + 1] * b[q + 1];
-            s2 += (double)a[q + 2] * b[q + 2];
-            s3 += (double)a[q + 3] * b[q + 3];
-        }
-
-        for (; q < b.Length; q++)
-            s0 += (double)a[q] * b[q];
-        return (s0 + s1) + (s2 + s3);
     }
 
     private static double Square(double x) => x * x;
