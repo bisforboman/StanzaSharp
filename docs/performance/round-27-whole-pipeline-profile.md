@@ -213,7 +213,7 @@ nothing else runs.
 The estimates are for this text on this machine. The 8-thread figures are against a 1.75 s idle call.
 
 1. **Sentiment: compute the padding rows' first-layer input projection once per batch**
-   ([idea](ideas/sentiment-padding-rows.md)). The benchmark text is one sentiment batch, 163 sentences padded to 71
+   ([done in round 28](round-28-sentiment-padding.md)). The benchmark text is one sentiment batch, 163 sentences padded to 71
    tokens, so 1,911 real rows out of 11,573 (83.5% padding). Every padding row has the same input, so its 2148 → 2400
    projection, the largest GEMM in the stage, is the same too. Estimate: about 0.7 s of sentiment's 3.45 s at 1 thread,
    about 110 ms at 8 (6% of the call). The gain is large for short and mid-length documents, small for long ones (whose
@@ -231,7 +231,7 @@ The estimates are for this text on this machine. The 8-thread figures are agains
    ([round 29](round-29-depparse-padding-columns.md)). 72% of the 156,384 arc pairs are padding columns, whose score is
    the same within a row. Estimate: about 200 ms of depparse's 2.32 s at 1 thread (9%), and 25 to 30 ms at 8 (1.5%).
 6. **Sentiment: vectorize the strided (5, 5) filter across its 8 channels**
-   ([idea](ideas/sentiment-strided-filter-simd.md)). Its scalar loops take 157 ms at 1 thread (4.5% of sentiment).
+   ([done in round 28](round-28-sentiment-padding.md)). Its scalar loops take 157 ms at 1 thread (4.5% of sentiment).
    Estimate: about 130 ms at 1 thread and 15 to 20 ms at 8 (1%).
 
 Left out:

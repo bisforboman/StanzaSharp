@@ -1012,8 +1012,10 @@ model but MWT and NER is English's architecture with other vocabularies and size
   - `ISentimentNet` (`SentimentNet` / `ManagedSentimentNet`) → [batch, classes] logits. `SentimentClassifier` keeps map_word,
     the delta vocab, `label_sentences` sorting, 5000-token batches, the padded width (≥ widest filter), cache keys (no MWT)
     and the argmax. Managed: input rows time-major, `ManagedLstm.ForwardPacked` with every batch size = n (the unpacked
-    LSTM: padding runs through it), full-width convolutions as one GEMM whose A rows overlap (lda = 600, K = Height·600),
-    the (5,5)/(1,5) filter as scalar loops, FC layers through `Gemm`. Labels byte-identical. Logits: the sentiment
+    LSTM: padding runs through it; `ForwardUnpacked(lengths:)` projects the shared padding input once per direction, with
+    the single-row kernel's row kept apart, round 28), full-width convolutions as one GEMM whose A rows overlap (lda = 600,
+    K = Height·600), the (5,5)/(1,5) filter with its 8 channels in SIMD lanes (multiply then add, the scalar order: same
+    bits on every path), FC layers through `Gemm`. Labels byte-identical. Logits: the sentiment
     golden also holds Stanza's float64 logits (owner's decision, 2026-10-08), and a logit passes within the usual
     tolerance of the float32 **or** the float64 value, on both backends. The classifier is ill-conditioned: on
     validation.txt sentence 41 Stanza's float32 logits are 1.49e-4 from float64 and the managed ones 1.2e-5 (1.38e-4
