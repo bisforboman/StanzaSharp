@@ -457,6 +457,38 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
     }
 
     /// <summary>
+    /// Round 32: when workers hold items far longer than the caller's (a preempted worker, simulated by a sleep), the pool
+    /// puts workers to sleep; once regions run without such stalls, they come back. Every item runs either way.
+    /// </summary>
+    [Fact]
+    [Trait("Backend", "Managed")]
+    public void ParallelFor_ShedsWorkersWhileJoinsStallAndBringsThemBack()
+    {
+        With(Gemm.Path, 4, () =>
+        {
+            int[] runs = new int[8];
+            var watch = Stopwatch.StartNew();
+            while (ManagedThreads.Shed == 0 && watch.ElapsedMilliseconds < 5000)
+            {
+                ManagedThreads.For(8, i =>
+                {
+                    Interlocked.Increment(ref runs[i]);
+                    if (Thread.CurrentThread.Name?.StartsWith("managed-kernel") == true)
+                        Thread.Sleep(3);
+                });
+            }
+
+            Assert.True(ManagedThreads.Shed > 0, "no worker was shed");
+            Assert.All(runs, r => Assert.Equal(runs[0], r));
+            watch.Restart();
+            while (ManagedThreads.Shed > 0 && watch.ElapsedMilliseconds < 5000)
+                ManagedThreads.For(8, _ => Thread.SpinWait(100));
+            Assert.Equal(0, ManagedThreads.Shed);
+            return 0;
+        });
+    }
+
+    /// <summary>
     /// <see cref="VectorExp"/> (round 17) is the runtime's VectorN.Exp operation for operation: the same bits for every
     /// width this machine accelerates, over every 61st float bit pattern (70 million; all 2^32 matched on Vector256,
     /// with AVX off and with AVX2 off). Vector512 runs on the Benchmark workflow's avx512 jobs.

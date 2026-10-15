@@ -218,7 +218,7 @@ The estimates are for this text on this machine. The 8-thread figures are agains
    projection, the largest GEMM in the stage, is the same too. Estimate: about 0.7 s of sentiment's 3.45 s at 1 thread,
    about 110 ms at 8 (6% of the call). The gain is large for short and mid-length documents, small for long ones (whose
    batches are sorted by length), and zero for one-sentence calls.
-2. **The pool under CPU contention** ([idea](ideas/managed-threads-under-contention.md)). Nothing changes on an idle
+2. **The pool under CPU contention** ([round 32](round-32-pool-under-contention.md)). Nothing changes on an idle
    machine. With 12 other busy threads: 5.7 to 8.6 s at 8 threads against 4.3 to 4.7 s at 4 threads, so a pool that
    sheds workers when its joins stall would be about 35% faster and steady. The benchmark could also report other
    processes' CPU use during its runs, so loaded runs stand out.

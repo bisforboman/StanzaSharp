@@ -42,6 +42,9 @@ internal static class ManagedThreads
         set => _count = Math.Max(1, value);
     }
 
+    /// <summary>The workers kept asleep after stalls (tests).</summary>
+    internal static int Shed => _pool?.Shed ?? 0;
+
     /// <summary>Runs <paramref name="body"/>(i) for i in [0, n), on the calling thread and the pool's idle workers.</summary>
     // AggressiveOptimization here and on the pool's methods: an LSTM runs a region per time step, thousands per call,
     // and at JIT tier 0 (all of a fresh process's first calls) that machinery took most of a short call (round 17).
@@ -129,6 +132,8 @@ internal static class ManagedThreads
         private long _windowAt = Stopwatch.GetTimestamp(), _stalled;
 
         public int Size { get; }
+
+        public int Shed => Volatile.Read(ref _shed);
 
         public Pool(int size)
         {
