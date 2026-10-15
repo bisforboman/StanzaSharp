@@ -225,7 +225,7 @@ The estimates are for this text on this machine. The 8-thread figures are agains
 3. **Run both charlms in one region per character step** (dropped in [round 31](round-31-charlm-one-region.md)). This halves the
    charlm's regions. Estimate: about 60 ms of its 122 ms of join waits at 8 threads (3%); nothing at 1 thread.
 4. **Constituency: run `StackLstm.Push`'s LSTM cell inside the GEMM's tasks**
-   ([idea](ideas/constituency-push-cell-in-tasks.md)). This parallelizes 64 ms of serial work per call at 8 threads.
+   ([done in round 30](round-30-constituency-cell-in-tasks.md)). This parallelizes 64 ms of serial work per call at 8 threads.
    Estimate: 40 to 50 ms (13 to 15% of constituency, 2.5% of the call); nothing at 1 thread.
 5. **Depparse: score each row's padding columns once, and the remaining dot products with SIMD**
    ([idea](ideas/depparse-arc-padding-columns.md)). 72% of the 156,384 arc pairs are padding columns, whose score is
