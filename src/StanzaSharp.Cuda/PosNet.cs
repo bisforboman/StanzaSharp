@@ -19,11 +19,11 @@ internal sealed class PosNet : IPosNet
     private readonly HighwayLstm _lstm;
     private readonly Linear _uposHid, _xposHid, _featsHid;
     private readonly Tensor _uposClfWeight, _uposClfBias; // upos_clf in float64 (see Forward)
-    private readonly Biaffine _xposClf;
+    private readonly Biaffine[] _xposClf; // one per part of a composite XPOS vocabulary
     private readonly Biaffine[] _featsClf;
     private readonly Device _device = Weights.Device; // the device the model was loaded on
 
-    public PosNet(Checkpoint ckpt, int words, int upos, int xpos, int[] feats, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward)
+    public PosNet(Checkpoint ckpt, int words, int upos, XposVocab xpos, int[] feats, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward)
     {
         var config = ckpt.Root["config"]!;
         var model = ckpt.Root["model"]!;
@@ -57,8 +57,11 @@ internal sealed class PosNet : IPosNet
         using (var weight = ckpt.ToTensor(model["upos_clf.weight"]))
         using (var bias = ckpt.ToTensor(model["upos_clf.bias"]))
             (_uposClfWeight, _uposClfBias) = (weight.to(ScalarType.Float64), bias.to(ScalarType.Float64));
-        _xposHid = nn.Linear(hidden * 2, biaff).LoadFrom(ckpt, model, "tag_hid.xpos.");
-        _xposClf = new Biaffine(ckpt, model, "tag_clf.xpos.", biaff, tagEmb, xpos);
+        int xposHid = xpos.IsComposite ? compositeBiaff : biaff;
+        _xposHid = nn.Linear(hidden * 2, xposHid).LoadFrom(ckpt, model, "tag_hid.xpos.");
+        _xposClf = xpos.IsComposite
+            ? [.. xpos.Sizes.Select((n, i) => new Biaffine(ckpt, model, $"tag_clf.xpos.{i}.", xposHid, tagEmb, n))]
+            : [new Biaffine(ckpt, model, "tag_clf.xpos.", xposHid, tagEmb, xpos.Sizes[0])];
         _featsHid = nn.Linear(hidden * 2, compositeBiaff).LoadFrom(ckpt, model, "tag_hid.feats.");
         _featsClf = feats.Select((n, i) => new Biaffine(ckpt, model, $"tag_clf.feats.{i}.", compositeBiaff, tagEmb, n)).ToArray();
     }
@@ -129,11 +132,12 @@ internal sealed class PosNet : IPosNet
         var uposScores = F.linear(F.relu(_uposHid.forward(output)).to(ScalarType.Float64), _uposClfWeight, _uposClfBias).to(ScalarType.Float32);
         var uposIds = uposScores.argmax(1);
         var parent = _uposEmb.forward(uposIds);
-        var xposIds = _xposClf.Forward(F.relu(_xposHid.forward(output)), parent).argmax(1);
+        var xposHid = F.relu(_xposHid.forward(output));
+        var xposIds = _xposClf.Select(c => c.Forward(xposHid, parent).argmax(1).ToArray<long>()).ToArray();
         ct.ThrowIfCancellationRequested();
         var featsHid = F.relu(_featsHid.forward(output));
         var featIds = _featsClf.Select(c => c.Forward(featsHid, parent).argmax(1).ToArray<long>()).ToArray();
-        return new(uposScores.ToArray<float>(), uposIds.ToArray<long>(), xposIds.ToArray<long>(), featIds);
+        return new(uposScores.ToArray<float>(), uposIds.ToArray<long>(), xposIds, featIds);
     }
 
     public void Dispose()
@@ -145,8 +149,7 @@ internal sealed class PosNet : IPosNet
         _lstm.Dispose();
         _charModel?.Dispose();
         _transChar?.Dispose();
-        _xposClf.Dispose();
-        foreach (var c in _featsClf)
+        foreach (var c in _xposClf.Concat(_featsClf))
             c.Dispose();
     }
 }

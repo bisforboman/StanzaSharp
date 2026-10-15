@@ -87,11 +87,22 @@ public class ModelDownloaderTests : IDisposable
             "depparse/combined_charlm.pt", "ner/ontonotes-ww-multi_charlm.pt", "sentiment/sstplus_charlm.pt",
             "pos/combined_nocharlm.pt", "depparse/combined_nocharlm.pt", "ner/ontonotes-ww-multi_nocharlm.pt",
         ];
-        Assert.Equal(expected.Order(), ModelDownloader.Files["en"].Select(f => f.Path).Order());
+        Assert.Equal(expected.Order(), new[] { "default", "default_fast" }.SelectMany(p => ModelDownloader.FilesFor(null, p)).Select(f => f.Path).Distinct().Order());
 
-        // Every package's files, together, are the table.
-        Assert.Equal(expected.Order(), Pipeline.Packages["en"].Keys.SelectMany(p => ModelDownloader.FilesFor(null, p)).Select(f => f.Path).Distinct().Order());
+        // Every package's files, together, are the table (the treebank packages' too).
+        Assert.Equal(ModelDownloader.Files["en"].Select(f => f.Path).Order(),
+            Pipeline.Packages["en"].Keys.SelectMany(p => ModelDownloader.FilesFor(null, p)).Select(f => f.Path).Distinct().Order());
     }
+
+    [Theory]
+
+    // Without mwt (pos requires it only where the package has it) and with the identity lemmatizer, which has no file.
+    [InlineData("eslspok", null, "tokenize/eslspok_nocharlm.pt pos/eslspok_charlm.pt depparse/eslspok_charlm.pt pretrain/conll17.pt forward_charlm/1billion.pt backward_charlm/1billion.pt")]
+    [InlineData("eslspok", "tokenize,lemma", "tokenize/eslspok_nocharlm.pt")]
+    [InlineData("ewt", "lemma", "tokenize/ewt_nocharlm.pt mwt/ewt.pt pos/ewt_charlm.pt lemma/ewt_nocharlm.pt pretrain/conll17.pt forward_charlm/1billion.pt backward_charlm/1billion.pt")]
+    [InlineData("combined", null, "tokenize/combined_nocharlm.pt mwt/combined.pt pos/combined_charlm.pt lemma/combined_nocharlm.pt depparse/combined_charlm.pt pretrain/conll17.pt forward_charlm/1billion.pt backward_charlm/1billion.pt")]
+    public void FilesFor_SelectsTheTreebankPackagesFiles(string package, string? processors, string expected) =>
+        Assert.Equal(expected.Split(' ').Order(), ModelDownloader.FilesFor(processors, package).Select(f => f.Path).Order());
 
     [Theory]
 

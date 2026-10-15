@@ -8,8 +8,9 @@ namespace StanzaSharp.Lemma;
 /// Sets <see cref="Word.Lemma"/> from each word's text and UPOS. Port of Stanza's LemmaProcessor for an
 /// <c>ensemble_dict</c> checkpoint (stanza/pipeline/lemma_processor.py, models/lemma/trainer.py):
 /// a dictionary by (UPOS, word), then by word alone; words it misses go through a character seq2seq model
-/// (models/common/seq2seq_model.py) with POS input, soft attention, a copy gate and an edit classifier
-/// (identity / lowercase / use the decoded string), decoded greedily.
+/// (models/common/seq2seq_model.py) with POS input, soft attention, a copy gate (not in older checkpoints: English craft,
+/// genia, mimic) and an edit classifier (identity / lowercase / use the decoded string), decoded greedily. A <c>caseless</c>
+/// model (English atis) sees the words lowercased, in the dictionary too; the edits and the fallback keep their case.
 /// The network is an <see cref="ISeq2SeqNet"/> (per backend, shared with German MWT); the dictionary, DeltaVocab,
 /// batching and the edits are here.
 /// </summary>
@@ -22,6 +23,7 @@ internal sealed class Lemmatizer : IDisposable
     private readonly Dictionary<string, int> _charToId, _posToId;
     private readonly string[] _idToChar;
     private readonly int _batchSize, _maxDecLen;
+    private readonly bool _caseless;
     private readonly ISeq2SeqNet _net;
 
     /// <param name="net">Builds the network from the checkpoint and its sizes (a backend's).</param>
@@ -40,10 +42,8 @@ internal sealed class Lemmatizer : IDisposable
         Require(config["beam_size"]?.GetValue<int>() == 1, "beam search (beam_size > 1)");
         Require(config["attn_type"]?.GetValue<string>() == "soft", $"attn_type {config["attn_type"]}");
         Require(Flag("edit") && config["num_edit"]?.GetValue<int>() == 3, "edit off or num_edit != 3");
-        Require(Flag("copy"), "copy off");
         Require(Flag("pos") && config["pos_dim"]?.GetValue<int>() > 0, "POS input off");
         Require(!Flag("charlm"), "a charlm");
-        Require(!Flag("caseless"), "caseless");
         Require(config["num_layers"]?.GetValue<int>() == 1, "more than one encoder layer");
         Require(root["contextual"]?.AsArray().Count is null or 0, "contextual lemmatizers");
         Require(root["dicts_version"]?.GetValue<int>() == 3, "a dictionary format other than v3 (gzip + JSON)");
@@ -58,6 +58,7 @@ internal sealed class Lemmatizer : IDisposable
         _idToChar = vocab["char"]!["_id2unit"]!.AsArray().Select(n => n!.GetValue<string>()).ToArray();
         _batchSize = config["batch_size"]!.GetValue<int>();
         _maxDecLen = config["max_dec_len"]!.GetValue<int>();
+        _caseless = Flag("caseless");
         var sizes = Seq2SeqConfig.From(config);
         _net = net(ckpt, sizes);
     }
@@ -76,16 +77,26 @@ internal sealed class Lemmatizer : IDisposable
             words[i].Lemma = lemmas[i] == "_" && words[i].Text != "_" ? null : lemmas[i];
     }
 
+    /// <summary>LemmaProcessor with <c>use_identity</c> (lemma model "identity", e.g. English eslspok): each word's lemma is its text.</summary>
+    public static void Identity(Document doc)
+    {
+        foreach (var word in doc.Sentences.SelectMany(s => s.Words))
+            word.Lemma = word.Text.Length == 0 ? null : word.Text; // "" becomes "_", which the Word.lemma setter stores as None
+    }
+
     /// <summary>LemmaProcessor.process: dictionary hits, else the seq2seq prediction; "_" for an empty lemma.</summary>
     internal List<string> Lemmatize(IReadOnlyList<Word> words, CancellationToken cancellationToken = default)
     {
-        var lemmas = words.Select(w => Lookup(w.Text, w.Upos)).ToList();
+        var lemmas = words.Select(w => Lookup(Input(w), w.Upos)).ToList();
         var misses = Enumerable.Range(0, words.Count).Where(i => lemmas[i] == null).ToList();
         var predicted = Postprocess(misses.Select(i => words[i]).ToList(), cancellationToken);
         for (int k = 0; k < misses.Count; k++)
             lemmas[misses[k]] = predicted[k];
         return lemmas.Select(l => l!.Length == 0 ? "_" : l).ToList();
     }
+
+    /// <summary>The text the model and the dictionary see: lowercased for a caseless model (data.lowercase_data).</summary>
+    private string Input(Word word) => _caseless ? PyString.Lower(word.Text) : word.Text;
 
     /// <summary>trainer._lookup: the (UPOS, word) entry, then the POS-independent one.</summary>
     internal string? Lookup(string word, string? upos)
@@ -123,7 +134,7 @@ internal sealed class Lemmatizer : IDisposable
         // gate can still output them. Stanza builds it over the text, UPOS and current lemma of every word.
         var charToId = _charToId;
         var idToChar = _idToChar;
-        var unknown = words.SelectMany(w => (w.Text + (w.Upos ?? "_") + (w.Lemma ?? "_")).EnumerateRunes())
+        var unknown = words.SelectMany(w => (Input(w) + (w.Upos ?? "_") + (w.Lemma ?? "_")).EnumerateRunes())
             .Where(r => !_charToId.ContainsKey(r.ToString()))
             .Distinct()
             .Order()
@@ -155,7 +166,7 @@ internal sealed class Lemmatizer : IDisposable
         Action<float[], int, bool[]>? onStep, Action<float[]>? onEdit)
     {
         // <SOS> chars <EOS>, one unit per code point; sorted like data.sort_all: longest first, ties by later index first.
-        var src = words.Select(w => w.Text.EnumerateRunes().Select(r => charToId[r.ToString()]).Prepend(SosId).Append(EosId).ToArray()).ToList();
+        var src = words.Select(w => Input(w).EnumerateRunes().Select(r => charToId[r.ToString()]).Prepend(SosId).Append(EosId).ToArray()).ToList();
         var order = Enumerable.Range(0, words.Count).OrderByDescending(i => src[i].Length).ThenByDescending(i => i).ToArray();
         int batch = words.Count, width = src[order[0]].Length;
         var ids = new long[batch * width];

@@ -26,7 +26,9 @@ public sealed class PipelineOptions
     /// <summary>
     /// Stanza's name for the set of models to use. English: <c>"default"</c> (<see cref="Pipeline.DefaultPackage"/>,
     /// all eight processors) or <c>"default_fast"</c> (no constituency; pos, depparse and ner use their own small
-    /// character models instead of the large character language models, which makes them faster and smaller).
+    /// character models instead of the large character language models, which makes them faster and smaller), and the
+    /// treebank packages <c>"combined"</c>, <c>"ewt"</c>, <c>"gum"</c>, <c>"lines"</c>, <c>"partut"</c>, <c>"atis"</c>,
+    /// <c>"childes"</c> and <c>"eslspok"</c> (tokenize to depparse only; eslspok has no mwt, and its lemma is the word).
     /// German: <c>"default"</c>, <c>"default_fast"</c> (pos and depparse as in English; ner and sentiment unchanged), and
     /// the treebank packages <c>"combined"</c>, <c>"gsd"</c> and <c>"hdt"</c> (tokenize to depparse only). Any other name
     /// throws, including <c>"default_accurate"</c>, whose transformer models StanzaSharp doesn't run.

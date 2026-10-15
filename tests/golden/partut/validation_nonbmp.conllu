@@ -1,0 +1,336 @@
+# text = Just finished my first marathon 🏃‍♀️🎉 so proud of myself!
+# sent_id = 0
+1	Just	just	ADV	B	_	2	advmod	_	start_char=0|end_char=4
+2	finished	finish	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=5|end_char=13
+3	my	my	DET	AP	Number=Sing|Poss=Yes|PronType=Prs	5	nmod:poss	_	start_char=14|end_char=16
+4	first	first	ADJ	NO	Degree=Pos|NumType=Ord	5	amod	_	start_char=17|end_char=22
+5	marathon	marathon	NOUN	S	Number=Sing	2	obj	_	start_char=23|end_char=31
+6	🏃‍♀️🎉	🏃‍♀️🎉	PUNCT	FF	_	8	punct	_	start_char=32|end_char=37
+7	so	so	ADV	B	_	8	advmod	_	start_char=38|end_char=40
+8	proud	proud	ADJ	A	Degree=Pos	2	obl	_	start_char=41|end_char=46
+9	of	of	ADP	E	_	10	case	_	start_char=47|end_char=49
+10	myself	myself	PRON	PE	Number=Sing|Person=3|PronType=Prs	8	obl	_	SpaceAfter=No|start_char=50|end_char=56
+11	!	!	PUNCT	FS	_	2	punct	_	SpaceAfter=No|start_char=56|end_char=57
+
+# text = !
+# sent_id = 1
+1	!	!	PUNCT	FS	_	0	root	_	SpacesAfter=\n\n|start_char=57|end_char=58
+
+# text = lol that's hilarious 😂😂😂
+# sent_id = 2
+1	lol	lol	ADV	B	_	4	advmod	_	start_char=60|end_char=63
+2-3	that's	_	_	_	_	_	_	_	start_char=64|end_char=70
+2	that	that	PRON	PD	Number=Sing|PronType=Dem	4	nsubj	_	start_char=64|end_char=68
+3	's	be	AUX	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	cop	_	start_char=68|end_char=70
+4	hilarious	hilarious	ADJ	A	Degree=Pos	0	root	_	start_char=71|end_char=80
+5	😂😂	😂😂	PUNCT	FB	_	4	punct	_	SpaceAfter=No|start_char=81|end_char=83
+6	😂	😂	PUNCT	FB	_	4	punct	_	SpacesAfter=\n\n|start_char=83|end_char=84
+
+# text = Good morning ☀️ coffee first ☕ then emails 📧
+# sent_id = 3
+1	Good	good	ADJ	A	Degree=Pos	2	amod	_	start_char=86|end_char=90
+2	morning	morning	NOUN	S	Number=Sing	0	root	_	start_char=91|end_char=98
+3	☀️	☀️	PUNCT	FF	_	2	punct	_	start_char=99|end_char=101
+4	coffee	coffee	NOUN	S	Number=Sing	8	nmod:poss	_	start_char=102|end_char=108
+5	first	first	ADJ	NO	Degree=Pos|NumType=Ord	8	amod	_	start_char=109|end_char=114
+6	☕	☕	PUNCT	FF	_	7	punct	_	start_char=115|end_char=116
+7	then	then	ADV	B	_	8	advmod	_	start_char=117|end_char=121
+8	emails	email	NOUN	S	Number=Plur	2	conj	_	start_char=122|end_char=128
+9	📧	📧	PUNCT	FS	_	2	punct	_	SpacesAfter=\n\n|start_char=129|end_char=130
+
+# text = The weather today:
+# sent_id = 4
+1	The	the	DET	RD	Definite=Def|PronType=Art	2	det	_	start_char=132|end_char=135
+2	weather	weather	NOUN	S	Number=Sing	0	root	_	start_char=136|end_char=143
+3	today	today	ADV	B	_	2	advmod	_	SpaceAfter=No|start_char=144|end_char=149
+4	:	:	PUNCT	FC	_	2	punct	_	start_char=149|end_char=150
+
+# text = 🌧️ then 🌈. Not bad.
+# sent_id = 5
+1	🌧️	🌧️	PUNCT	FB	_	2	punct	_	start_char=151|end_char=153
+2	then	then	ADV	B	_	5	advmod	_	start_char=154|end_char=158
+3	🌈.	🌈	PUNCT	FF	_	2	punct	_	start_char=159|end_char=161
+4	Not	not	PART	PART	Polarity=Neg	5	advmod	_	start_char=162|end_char=165
+5	bad	bad	ADV	B	_	0	root	_	SpaceAfter=No|start_char=166|end_char=169
+6	.	.	PUNCT	FS	_	5	punct	_	SpacesAfter=\n\n|start_char=169|end_char=170
+
+# text = I ❤️ NY. You 💙 LA.
+# sent_id = 6
+1	I	I	PRON	PE	Number=Sing|Person=1|PronType=Prs	3	nsubj	_	start_char=172|end_char=173
+2	❤️	❤️	PUNCT	FF	_	3	punct	_	start_char=174|end_char=176
+3	NY.	NY.	PROPN	SP	_	0	root	_	start_char=177|end_char=180
+4	You	you	PRON	PE	Person=2|PronType=Prs	3	flat	_	start_char=181|end_char=184
+5	💙	💙	PUNCT	FF	_	3	punct	_	start_char=185|end_char=186
+6	LA	LA	PROPN	SP	_	3	flat	_	SpaceAfter=No|start_char=187|end_char=189
+7	.	.	PUNCT	FS	_	3	punct	_	SpacesAfter=\n\n|start_char=189|end_char=190
+
+# text = Congrats on the new job 👏👏 you deserve it 💯
+# sent_id = 7
+1	Congrats	congrat	NOUN	S	Number=Plur	0	root	_	start_char=192|end_char=200
+2	on	on	ADP	E	_	5	case	_	start_char=201|end_char=203
+3	the	the	DET	RD	Definite=Def|PronType=Art	5	det	_	start_char=204|end_char=207
+4	new	new	ADJ	A	Degree=Pos	5	amod	_	start_char=208|end_char=211
+5	job	job	NOUN	S	Number=Sing	1	nmod	_	start_char=212|end_char=215
+6	👏👏	👏👏	PUNCT	FF	_	8	punct	_	start_char=216|end_char=218
+7	you	you	PRON	PE	Person=2|PronType=Prs	8	nsubj	_	start_char=219|end_char=222
+8	deserve	deserve	VERB	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	1	parataxis	_	start_char=223|end_char=230
+9	it	it	PRON	PE	Number=Sing|Person=3|PronType=Prs	8	obj	_	start_char=231|end_char=233
+10	💯	💯	PUNCT	FS	_	1	punct	_	SpacesAfter=\n\n|start_char=234|end_char=235
+
+# text = my dog 🐶 ate my homework 📚 again smh 🤦‍♂️
+# sent_id = 8
+1	my	my	DET	AP	Number=Sing|Poss=Yes|PronType=Prs	2	nmod:poss	_	start_char=237|end_char=239
+2	dog	dog	NOUN	S	Number=Sing	4	nsubj	_	start_char=240|end_char=243
+3	🐶	🐶	PUNCT	FB	_	4	punct	_	start_char=244|end_char=245
+4	ate	eat	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=246|end_char=249
+5	my	my	DET	AP	Number=Sing|Poss=Yes|PronType=Prs	6	nmod:poss	_	start_char=250|end_char=252
+6	homework	homework	NOUN	S	Number=Sing	4	obj	_	start_char=253|end_char=261
+7	📚	📚	PUNCT	FF	_	4	punct	_	start_char=262|end_char=263
+8	again	again	ADV	B	_	9	advmod	_	start_char=264|end_char=269
+9	smh	smh	NOUN	S	Number=Sing	4	obj	_	start_char=270|end_char=273
+10	🤦‍♂	🤦‍♂	PUNCT	FB	_	4	punct	_	SpaceAfter=No|start_char=274|end_char=277
+11	️	️	PUNCT	FS	_	4	punct	_	SpacesAfter=\n\n|start_char=277|end_char=278
+
+# text = Pizza 🍕 or tacos 🌮?
+# sent_id = 9
+1	Pizza	Pizza	PROPN	SP	_	0	root	_	start_char=280|end_char=285
+2	🍕	🍕	PUNCT	FF	_	1	punct	_	start_char=286|end_char=287
+3	or	or	CCONJ	CC	_	4	cc	_	start_char=288|end_char=290
+4	tacos	taco	NOUN	S	Number=Plur	1	conj	_	start_char=291|end_char=296
+5	🌮	🌮	PUNCT	FB	_	1	punct	_	SpaceAfter=No|start_char=297|end_char=298
+6	?	?	PUNCT	FS	_	1	punct	_	start_char=298|end_char=299
+
+# text = Why not both 🤷
+# sent_id = 10
+1	Why	why	ADV	B	_	3	advmod	_	start_char=300|end_char=303
+2	not	not	PART	PART	Polarity=Neg	3	advmod	_	start_char=304|end_char=307
+3	both	both	DET	DI	PronType=Ind	0	root	_	start_char=308|end_char=312
+4	🤷	🤷	PUNCT	FB	_	3	punct	_	SpacesAfter=\n\n|start_char=313|end_char=314
+
+# text = Flags:
+# sent_id = 11
+1	Flags	flag	NOUN	S	Number=Plur	0	root	_	SpaceAfter=No|start_char=316|end_char=321
+2	:	:	PUNCT	FC	_	1	punct	_	start_char=321|end_char=322
+
+# text = 🇺🇸 🇬🇧 🇯🇵 🇸🇪.
+# sent_id = 12
+1	🇺🇸	🇺🇸	PUNCT	FB	_	4	punct	_	start_char=323|end_char=325
+2	🇬🇧	🇬🇧	PUNCT	FB	_	4	punct	_	start_char=326|end_char=328
+3	🇯🇵	🇯🇵	PUNCT	FB	_	4	punct	_	start_char=329|end_char=331
+4	🇸🇪	🇸🇪	PUNCT	FB	_	5	punct	_	SpaceAfter=No|start_char=332|end_char=334
+5	.	.	PUNCT	FS	_	0	root	_	start_char=334|end_char=335
+
+# text = Skin tones:
+# sent_id = 13
+1	Skin	skin	NOUN	S	Number=Sing	2	nmod	_	start_char=336|end_char=340
+2	tones	tone	NOUN	S	Number=Plur	0	root	_	SpaceAfter=No|start_char=341|end_char=346
+3	:	:	PUNCT	FC	_	2	punct	_	start_char=346|end_char=347
+
+# text = 👍🏽 👋🏿.
+# sent_id = 14
+1	👍🏽	👍🏽	PUNCT	FB	_	2	punct	_	start_char=348|end_char=350
+2	👋🏿.	👋e	PUNCT	FS	_	0	root	_	SpacesAfter=\n\n|start_char=351|end_char=354
+
+# text = The math symbol 𝔸 and the musical symbol 𝄞 are outside the BMP.
+# sent_id = 15
+1	The	the	DET	RD	Definite=Def|PronType=Art	3	det	_	start_char=356|end_char=359
+2	math	math	NOUN	S	Number=Sing	3	nmod	_	start_char=360|end_char=364
+3	symbol	symbol	NOUN	S	Number=Sing	13	nsubj	_	start_char=365|end_char=371
+4	𝔸	𝔸	PUNCT	FF	_	3	punct	_	start_char=372|end_char=373
+5	and	and	CCONJ	CC	_	8	cc	_	start_char=374|end_char=377
+6	the	the	DET	RD	Definite=Def|PronType=Art	8	det	_	start_char=378|end_char=381
+7	musical	musical	ADJ	A	Degree=Pos	8	amod	_	start_char=382|end_char=389
+8	symbol	symbol	NOUN	S	Number=Sing	3	conj	_	start_char=390|end_char=396
+9	𝄞	𝄞	PUNCT	FB	_	8	punct	_	start_char=397|end_char=398
+10	are	be	AUX	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	13	cop	_	start_char=399|end_char=402
+11	outside	outside	ADP	E	_	13	case	_	start_char=403|end_char=410
+12	the	the	DET	RD	Definite=Def|PronType=Art	13	det	_	start_char=411|end_char=414
+13	BMP	BMP	PROPN	SP	_	0	root	_	SpaceAfter=No|start_char=415|end_char=418
+14	.	.	PUNCT	FS	_	13	punct	_	start_char=418|end_char=419
+
+# text = So is the Gothic letter 𐌰.
+# sent_id = 16
+1	So	so	ADV	B	_	5	advmod	_	start_char=420|end_char=422
+2	is	be	AUX	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	5	cop	_	start_char=423|end_char=425
+3	the	the	DET	RD	Definite=Def|PronType=Art	5	det	_	start_char=426|end_char=429
+4	Gothic	gothic	ADJ	A	Degree=Pos	5	amod	_	start_char=430|end_char=436
+5	letter	letter	NOUN	S	Number=Sing	0	root	_	start_char=437|end_char=443
+6	𐌰.	𐌰	PUNCT	FS	_	5	punct	_	SpacesAfter=\n\n|start_char=444|end_char=446
+
+# text = Rare CJK characters like 𠀋 and 𪚥 need surrogate pairs in UTF-16.
+# sent_id = 17
+1	Rare	rare	ADJ	A	Degree=Pos	3	amod	_	start_char=448|end_char=452
+2	CJK	cjk	ADJ	A	Degree=Pos	3	amod	_	start_char=453|end_char=456
+3	characters	character	NOUN	S	Number=Plur	8	nsubj	_	start_char=457|end_char=467
+4	like	like	ADP	E	_	3	nmod	_	start_char=468|end_char=472
+5	𠀋	𠀋	PUNCT	FB	_	8	punct	_	start_char=473|end_char=474
+6	and	and	CCONJ	CC	_	8	cc	_	start_char=475|end_char=478
+7	𪚥	𪚥	PUNCT	FB	_	8	punct	_	start_char=479|end_char=480
+8	need	need	VERB	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	0	root	_	start_char=481|end_char=485
+9	surrogate	surrogate	ADJ	A	Degree=Pos	10	amod	_	start_char=486|end_char=495
+10	pairs	pair	NOUN	S	Number=Plur	8	obj	_	start_char=496|end_char=501
+11	in	in	ADP	E	_	12	case	_	start_char=502|end_char=504
+12	UTF	UTF	PROPN	SP	_	8	obl	_	SpaceAfter=No|start_char=505|end_char=508
+13	-	-	SYM	X	_	14	case	_	SpaceAfter=No|start_char=508|end_char=509
+14	16	16	NUM	N	NumType=Card	12	nmod	_	SpaceAfter=No|start_char=509|end_char=511
+15	.	.	PUNCT	FS	_	8	punct	_	SpacesAfter=\n\n|start_char=511|end_char=512
+
+# text = She wrote "thank you 🙏" and left.
+# sent_id = 18
+1	She	she	PRON	PE	Gender=Fem|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=514|end_char=517
+2	wrote	write	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=518|end_char=523
+3	"	"	PUNCT	FB	_	4	punct	_	SpaceAfter=No|start_char=524|end_char=525
+4	thank	thank	VERB	V	VerbForm=Inf	2	parataxis	_	start_char=525|end_char=530
+5	you	you	PRON	PE	Person=2|PronType=Prs	4	obj	_	start_char=531|end_char=534
+6	🙏	🙏	PUNCT	FB	_	4	punct	_	SpaceAfter=No|start_char=535|end_char=536
+7	"	"	PUNCT	FB	_	4	punct	_	start_char=536|end_char=537
+8	and	and	CCONJ	CC	_	9	cc	_	start_char=538|end_char=541
+9	left	leave	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	2	conj	_	SpaceAfter=No|start_char=542|end_char=546
+10	.	.	PUNCT	FS	_	2	punct	_	start_char=546|end_char=547
+
+# text = He replied 👍.
+# sent_id = 19
+1	He	he	PRON	PE	Gender=Masc|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=548|end_char=550
+2	replied	reply	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=551|end_char=558
+3	👍.	👍	PUNCT	FS	_	2	punct	_	SpacesAfter=\n\n|start_char=559|end_char=561
+
+# text = Score:
+# sent_id = 20
+1	Score	score	NOUN	S	Number=Sing	0	root	_	SpaceAfter=No|start_char=563|end_char=568
+2	:	:	PUNCT	FC	_	1	punct	_	start_char=568|end_char=569
+
+# text = 🏆 Team A 3 – 1 Team B ⚽
+# sent_id = 21
+1	🏆	🏆	PUNCT	FB	_	2	punct	_	start_char=570|end_char=571
+2	Team	team	NOUN	S	Number=Sing	0	root	_	start_char=572|end_char=576
+3	A	a	DET	RI	Definite=Ind|Number=Sing|PronType=Art	7	det	_	start_char=577|end_char=578
+4	3	3	NUM	N	NumType=Card	7	nummod	_	start_char=579|end_char=580
+5	–	–	PUNCT	FF	_	4	punct	_	start_char=581|end_char=582
+6	1	1	NUM	N	NumType=Card	4	conj	_	start_char=583|end_char=584
+7	Team	team	NOUN	S	Number=Sing	2	nmod	_	start_char=585|end_char=589
+8	B	B	PROPN	SP	_	2	flat	_	start_char=590|end_char=591
+9	⚽	⚽	PUNCT	FS	_	2	punct	_	SpacesAfter=\n\n|start_char=592|end_char=593
+
+# text = Going to the beach 🏖️🌊 this weekend, who's in??
+# sent_id = 22
+1	Going	go	VERB	V	VerbForm=Ger	0	root	_	start_char=595|end_char=600
+2	to	to	ADP	E	_	4	case	_	start_char=601|end_char=603
+3	the	the	DET	RD	Definite=Def|PronType=Art	4	det	_	start_char=604|end_char=607
+4	beach	beach	NOUN	S	Number=Sing	1	obl	_	start_char=608|end_char=613
+5	🏖️🌊	🏖️🌊	ADP	E	_	7	case	_	start_char=614|end_char=617
+6	this	this	DET	DD	Number=Sing|PronType=Dem	7	det	_	start_char=618|end_char=622
+7	weekend	weekend	NOUN	S	Number=Sing	1	obl	_	SpaceAfter=No|start_char=623|end_char=630
+8	,	,	PUNCT	FF	_	1	punct	_	start_char=630|end_char=631
+9-10	who's	_	_	_	_	_	_	_	start_char=632|end_char=637
+9	who	who	PRON	PR	PronType=Rel	11	nsubj	_	start_char=632|end_char=635
+10	's	be	AUX	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	11	cop	_	start_char=635|end_char=637
+11	in	in	ADP	E	_	12	case	_	SpaceAfter=No|start_char=638|end_char=640
+12	?	?	PUNCT	FS	_	1	punct	_	SpaceAfter=No|start_char=640|end_char=641
+13	?	?	PUNCT	FS	_	1	punct	_	start_char=641|end_char=642
+
+# text = 😎
+# sent_id = 23
+1	😎	😎	PUNCT	FS	_	0	root	_	SpacesAfter=\n\n|start_char=643|end_char=644
+
+# text = 😀 starts this sentence.
+# sent_id = 24
+1	😀	😀	PUNCT	FB	_	2	punct	_	start_char=646|end_char=647
+2	starts	start	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=648|end_char=654
+3	this	this	DET	DD	Number=Sing|PronType=Dem	4	det	_	start_char=655|end_char=659
+4	sentence	sentence	NOUN	S	Number=Sing	2	obj	_	SpaceAfter=No|start_char=660|end_char=668
+5	.	.	PUNCT	FS	_	2	punct	_	start_char=668|end_char=669
+
+# text = This one ends with 🎈
+# sent_id = 25
+1	This	this	DET	DD	Number=Sing|PronType=Dem	2	det	_	start_char=670|end_char=674
+2	one	one	PRON	PE	Number=Sing|Person=3|PronType=Prs	3	nsubj	_	start_char=675|end_char=678
+3	ends	end	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=679|end_char=683
+4	with	with	ADP	E	_	3	compound:prt	_	start_char=684|end_char=688
+5	🎈	🎈	PUNCT	FS	_	3	punct	_	SpacesAfter=\n\n|start_char=689|end_char=690
+
+# text = Rocket launch 🚀 at 10:30 am.
+# sent_id = 26
+1	Rocket	Rocket	PROPN	SP	_	2	nmod	_	start_char=692|end_char=698
+2	launch	launch	NOUN	S	Number=Sing	0	root	_	start_char=699|end_char=705
+3	🚀	🚀	PUNCT	FF	_	2	punct	_	start_char=706|end_char=707
+4	at	at	ADP	E	_	5	case	_	start_char=708|end_char=710
+5	10:30	10:30	NUM	N	NumType=Card	2	nmod	_	start_char=711|end_char=716
+6	am	be	AUX	V	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	5	punct	_	SpaceAfter=No|start_char=717|end_char=719
+7	.	.	PUNCT	FS	_	2	punct	_	start_char=719|end_char=720
+
+# text = Countdown begins now ⏱️.
+# sent_id = 27
+1	Countdown	countdown	NOUN	S	Number=Sing	2	nsubj	_	start_char=721|end_char=730
+2	begins	begin	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=731|end_char=737
+3	now	now	ADV	B	_	2	advmod	_	start_char=738|end_char=741
+4	⏱️	⏱️	PUNCT	FB	_	2	punct	_	SpaceAfter=No|start_char=742|end_char=744
+5	.	.	PUNCT	FS	_	2	punct	_	SpacesAfter=\n\n|start_char=744|end_char=745
+
+# text = It's 🔥🔥🔥 outside today.
+# sent_id = 28
+1-2	It's	_	_	_	_	_	_	_	start_char=747|end_char=751
+1	It	it	PRON	PE	Number=Sing|Person=3|PronType=Prs	4	nsubj	_	start_char=747|end_char=749
+2	's	be	AUX	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	cop	_	start_char=749|end_char=751
+3	🔥🔥🔥	🔥🔥🔥	ADV	B	_	4	advmod	_	start_char=752|end_char=755
+4	outside	outside	ADV	B	_	0	root	_	start_char=756|end_char=763
+5	today	today	ADV	B	_	4	advmod	_	SpaceAfter=No|start_char=764|end_char=769
+6	.	.	PUNCT	FS	_	4	punct	_	start_char=769|end_char=770
+
+# text = Stay hydrated 💧.
+# sent_id = 29
+1	Stay	stay	VERB	V	Mood=Imp|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=771|end_char=775
+2	hydrated	hydrated	ADJ	A	Degree=Pos	1	xcomp	_	start_char=776|end_char=784
+3	💧.	💧	PUNCT	FS	_	1	punct	_	SpacesAfter=\n\n|start_char=785|end_char=787
+
+# text = Family:
+# sent_id = 30
+1	Family	family	NOUN	S	Number=Sing	0	root	_	SpaceAfter=No|start_char=789|end_char=795
+2	:	:	PUNCT	FC	_	1	punct	_	start_char=795|end_char=796
+
+# text = 👨‍👩‍👧‍👦.
+# sent_id = 31
+1	👨‍👩‍👧‍👦	👨‍👩‍👧‍👦	PUNCT	FB	_	2	punct	_	SpaceAfter=No|start_char=797|end_char=804
+2	.	.	PUNCT	FS	_	0	root	_	start_char=804|end_char=805
+
+# text = Couple:
+# sent_id = 32
+1	Couple	couple	NOUN	S	Number=Sing	0	root	_	SpaceAfter=No|start_char=806|end_char=812
+2	:	:	PUNCT	FC	_	1	punct	_	start_char=812|end_char=813
+
+# text = 👩‍❤️‍👨.
+# sent_id = 33
+1	👩‍❤️‍👨	👩‍❤️‍👨	PUNCT	FB	_	2	punct	_	SpaceAfter=No|start_char=814|end_char=820
+2	.	.	PUNCT	FS	_	0	root	_	SpacesAfter=\n\n|start_char=820|end_char=821
+
+# text = The mathematical bold 𝐀𝐁𝐂 letters look like ABC. Italic 𝑥 is x.
+# sent_id = 34
+1	The	the	DET	RD	Definite=Def|PronType=Art	5	det	_	start_char=823|end_char=826
+2	mathematical	mathematical	ADJ	A	Degree=Pos	5	amod	_	start_char=827|end_char=839
+3	bold	bold	ADJ	A	Degree=Pos	5	amod	_	start_char=840|end_char=844
+4	𝐀𝐁𝐂	𝐀𝐁𝐂	PUNCT	FB	_	3	punct	_	start_char=845|end_char=848
+5	letters	letter	NOUN	S	Number=Plur	6	nsubj	_	start_char=849|end_char=856
+6	look	look	VERB	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	0	root	_	start_char=857|end_char=861
+7	like	like	ADP	E	_	8	case	_	start_char=862|end_char=866
+8	ABC	ABC	PROPN	SP	_	6	obl	_	SpaceAfter=No|start_char=867|end_char=870
+9	.	.	PUNCT	FF	_	8	punct	_	start_char=870|end_char=871
+10	Italic	italic	NOUN	S	Number=Sing	6	obj	_	start_char=872|end_char=878
+11	𝑥	𝑥	PUNCT	FB	_	10	punct	_	start_char=879|end_char=880
+12	is	be	AUX	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	10	cop	_	start_char=881|end_char=883
+13	x.	x	PUNCT	FB	_	6	punct	_	SpacesAfter=\n\n|start_char=884|end_char=886
+
+# text = Tea 🍵, cake 🍰, and a good book 📖. Perfect Sunday.
+# sent_id = 35
+1	Tea	tea	NOUN	S	Number=Sing	0	root	_	start_char=888|end_char=891
+2	🍵	🍵	PUNCT	FF	_	1	punct	_	SpaceAfter=No|start_char=892|end_char=893
+3	,	,	PUNCT	FF	_	4	punct	_	start_char=893|end_char=894
+4	cake	cake	NOUN	S	Number=Sing	1	conj	_	start_char=895|end_char=899
+5	🍰	🍰	PUNCT	FF	_	4	punct	_	SpaceAfter=No|start_char=900|end_char=901
+6	,	,	PUNCT	FF	_	10	punct	_	start_char=901|end_char=902
+7	and	and	CCONJ	CC	_	10	cc	_	start_char=903|end_char=906
+8	a	a	DET	RI	Definite=Ind|Number=Sing|PronType=Art	10	det	_	start_char=907|end_char=908
+9	good	good	ADJ	A	Degree=Pos	10	amod	_	start_char=909|end_char=913
+10	book	book	NOUN	S	Number=Sing	1	conj	_	start_char=914|end_char=918
+11	📖.	📖	PUNCT	FF	_	10	punct	_	start_char=919|end_char=921
+12	Perfect	perfect	ADJ	A	Degree=Pos	13	amod	_	start_char=922|end_char=929
+13	Sunday	sunday	NOUN	S	Number=Sing	10	orphan	_	SpaceAfter=No|start_char=930|end_char=936
+14	.	.	PUNCT	FS	_	1	punct	_	SpacesAfter=\n|start_char=936|end_char=937

@@ -15,9 +15,10 @@ internal sealed class ManagedTokenizerNet : ITokenizerNet
     private readonly float[] _embeddings; // [vocab, emb]
     private readonly int _emb;
     private readonly ManagedLstm _rnn, _rnn2;
-    private readonly PackedMatrix _clf, _clf2; // rows tok, sent, mwt
+    private readonly PackedMatrix _clf, _clf2; // rows tok, sent, mwt (without use_mwt: tok, sent)
     private readonly float[] _clfBias;
     private readonly float _hierInvTemp;
+    private readonly bool _useMwt;
 
     public ManagedTokenizerNet(Checkpoint ckpt)
     {
@@ -34,11 +35,12 @@ internal sealed class ManagedTokenizerNet : ITokenizerNet
         _rnn = new ManagedLstm(ckpt, model, "rnn.", _emb + config["feat_dim"]!.GetValue<int>(), hidden,
             config["rnn_layers"]!.GetValue<int>(), bidirectional: true);
         _rnn2 = new ManagedLstm(ckpt, model, "rnn2.", 2 * hidden, hidden, 1, bidirectional: true);
-        string[] heads = ["tok_clf", "sent_clf", "mwt_clf"];
-        _clf = new PackedMatrix(heads.SelectMany(h => T(h + ".weight")).ToArray(), 3, 2 * hidden);
+        _useMwt = config["use_mwt"]!.GetValue<bool>();
+        string[] heads = _useMwt ? ["tok_clf", "sent_clf", "mwt_clf"] : ["tok_clf", "sent_clf"];
+        _clf = new PackedMatrix(heads.SelectMany(h => T(h + ".weight")).ToArray(), heads.Length, 2 * hidden);
         _clfBias = new float[_clf.PaddedN];
         heads.SelectMany(h => T(h + ".bias")).ToArray().CopyTo(_clfBias, 0);
-        _clf2 = new PackedMatrix(heads.SelectMany(h => T(h + "2.weight")).ToArray(), 3, 2 * hidden);
+        _clf2 = new PackedMatrix(heads.SelectMany(h => T(h + "2.weight")).ToArray(), heads.Length, 2 * hidden);
     }
 
     public float[] Forward(long[] ids, float[] feats, int rows, int width, long[] lengths, CancellationToken ct)
@@ -77,11 +79,18 @@ internal sealed class ManagedTokenizerNet : ITokenizerNet
             for (int i = 0; i < n; i++)
             {
                 int a = i * ldl;
-                float tok0 = level1[a] + level2[a], sent0 = level1[a + 1] + level2[a + 1], mwt0 = level1[a + 2] + level2[a + 2];
+                float tok0 = level1[a] + level2[a], sent0 = level1[a + 1] + level2[a + 1];
                 float tok = LogSigmoid(tok0), sent = LogSigmoid(sent0), nonsent = LogSigmoid(-sent0);
-                float mwt = LogSigmoid(mwt0), nonmwt = LogSigmoid(-mwt0);
                 var o = pred.AsSpan(i * Classes, Classes);
                 o[0] = LogSigmoid(-tok0);
+                if (!_useMwt)
+                {
+                    // [nontok, tok + nonsent, tok + sent]; the MWT classes can't win.
+                    (o[1], o[2], o[3], o[4]) = (tok + nonsent, tok + sent, float.NegativeInfinity, float.NegativeInfinity);
+                    continue;
+                }
+
+                float mwt0 = level1[a + 2] + level2[a + 2], mwt = LogSigmoid(mwt0), nonmwt = LogSigmoid(-mwt0);
                 o[1] = tok + nonsent + nonmwt;
                 o[2] = tok + sent + nonmwt;
                 o[3] = tok + nonsent + mwt;

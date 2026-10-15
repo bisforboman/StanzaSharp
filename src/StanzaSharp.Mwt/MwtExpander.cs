@@ -11,8 +11,8 @@ namespace StanzaSharp.Mwt;
 /// first (<c>ensemble_dict</c>), then the model, either
 /// - a character classifier that predicts where to cut the token (<c>force_exact_pieces</c>, English:
 ///   stanza/models/mwt/character_classifier.py), or
-/// - a character seq2seq model that writes the expansion (German: models/common/seq2seq_model.py, shared with the
-///   lemmatizer as <see cref="ISeq2SeqNet"/>), decoded greedily without <c>&lt;UNK&gt;</c>.
+/// - a character seq2seq model that writes the expansion (German, English partut: models/common/seq2seq_model.py, shared
+///   with the lemmatizer as <see cref="ISeq2SeqNet"/>), decoded by a beam search of 5 without <c>&lt;UNK&gt;</c>.
 /// </summary>
 internal sealed class MwtExpander : IDisposable
 {
@@ -20,6 +20,9 @@ internal sealed class MwtExpander : IDisposable
     private readonly Dictionary<string, int> _vocab;
     private readonly bool _useDict, _useModel;
     private readonly int _padId, _unkId, _sosId, _eosId, _batchSize, _maxDecLen;
+
+    // trainer.predict passes its beam_size (1) where Seq2SeqModel.predict takes pos, so Stanza always searches the default 5 beams.
+    private const int BeamSize = 5;
     private readonly string[] _idToChar;
     private readonly IMwtNet? _net;
     private readonly ISeq2SeqNet? _seq2seq;
@@ -197,8 +200,8 @@ internal sealed class MwtExpander : IDisposable
                     ids[r * width + k] = src[order[r]][k];
             }
 
-            using var decoder = _seq2seq!.Encode(ids, batch.Count, width, null, order.Select(i => (long)src[i].Length).ToArray(), CancellationToken.None);
-            var output = Seq2SeqConfig.Greedy(decoder, batch.Count, _maxDecLen, neverDecodeUnk: true, CancellationToken.None, onStep);
+            using var decoder = _seq2seq!.Encode(ids, batch.Count, width, null, order.Select(i => (long)src[i].Length).ToArray(), CancellationToken.None, BeamSize);
+            var output = Seq2SeqConfig.Beam(decoder, batch.Count, BeamSize, _maxDecLen, neverDecodeUnk: true, CancellationToken.None, onStep);
             var expansions = new string[batch.Count];
             for (int r = 0; r < batch.Count; r++)
             {

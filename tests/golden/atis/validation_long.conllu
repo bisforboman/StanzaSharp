@@ -1,0 +1,922 @@
+# text = When the expedition finally reached the ridge after eleven days of slow progress through snow that was sometimes waist-deep, the leader, a soft-spoken
+# sent_id = 0
+1	When	when	ADV	_	PronType=Int,Rel	5	discourse	_	start_char=0|end_char=4
+2	the	the	DET	_	PronType=Art	3	det	_	start_char=5|end_char=8
+3	expedition	expedition	NOUN	_	Number=Sing	5	nsubj	_	start_char=9|end_char=19
+4	finally	finally	ADV	_	Degree=Pos	5	advmod	_	start_char=20|end_char=27
+5	reached	reach	VERB	_	Tense=Pres|VerbForm=Part	0	root	_	start_char=28|end_char=35
+6	the	the	DET	_	PronType=Art	7	det	_	start_char=36|end_char=39
+7	ridge	Ridge	PROPN	_	Number=Sing	5	obl	_	start_char=40|end_char=45
+8	after	after	ADP	_	_	10	case	_	start_char=46|end_char=51
+9	eleven	eleven	NUM	_	NumType=Card	10	nummod	_	start_char=52|end_char=58
+10	days	day	NOUN	_	Number=Plur	5	obl:unmarked	_	start_char=59|end_char=63
+11	of	of	ADP	_	_	13	case	_	start_char=64|end_char=66
+12	slow	slow	NOUN	_	Number=Sing	13	nmod	_	start_char=67|end_char=71
+13	progress	progress	NOUN	_	Number=Sing	5	obl	_	start_char=72|end_char=80
+14	through	through	ADP	_	_	15	case	_	start_char=81|end_char=88
+15	snow	snow	NOUN	_	Number=Sing	13	nmod	_	start_char=89|end_char=93
+16	that	that	ADP	_	_	20	nsubj	_	start_char=94|end_char=98
+17	was	wave	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	19	cop	_	start_char=99|end_char=102
+18	sometimes	sometime	ADV	_	Degree=Pos	20	advmod	_	start_char=103|end_char=112
+19	waist	waist	NOUN	_	Number=Sing	20	nsubj	_	SpaceAfter=No|start_char=113|end_char=118
+20	-deep,	-deep,	VERB	_	Tense=Pres|VerbForm=Part	5	advcl	_	start_char=118|end_char=124
+21	the	the	DET	_	PronType=Art	24	det	_	start_char=125|end_char=128
+22	leader,	Leader,	PROPN	_	Number=Sing	20	obl	_	start_char=129|end_char=136
+23	a	a	DET	_	PronType=Art	24	det	_	start_char=137|end_char=138
+24	soft-spoken	soft-spoken	NOUN	_	Number=Sing	20	obj	_	start_char=139|end_char=150
+
+# text = geologist from Tromsø who had spent most of her career
+# sent_id = 1
+1	geologist	Geologist	PROPN	_	Number=Sing	5	obl	_	start_char=151|end_char=160
+2	from	from	ADP	_	_	3	case	_	start_char=161|end_char=165
+3	Tromsø	Tromsø	PROPN	_	Number=Sing	5	obl	_	start_char=166|end_char=172
+4	who	who	PRON	_	PronType=Int,Rel	5	nsubj	_	start_char=173|end_char=176
+5	had	had	VERB	_	VerbForm=Inf	6	mark	_	start_char=177|end_char=180
+6	spent	spent	VERB	_	Tense=Pres|VerbForm=Part	0	root	_	start_char=181|end_char=186
+7	most	most	ADV	_	Degree=Sup	6	advmod	_	start_char=187|end_char=191
+8	of	of	ADP	_	_	10	case	_	start_char=192|end_char=194
+9	her	her	DET	_	Number=Sing|Poss=Yes|PronType=Prs	10	det	_	start_char=195|end_char=198
+10	career	career	NOUN	_	Number=Sing	6	obl	_	start_char=199|end_char=205
+
+# text = studying glaciers that no longer existed, sat down on a flat rock, unwrapped a chocolate bar that she had been saving since the first night, and announced, to nobody in particular and to everybody at once, that this was the most beautiful view she had ever seen,
+# sent_id = 2
+1	studying	study	VERB	_	Tense=Pres|VerbForm=Part	0	root	_	start_char=206|end_char=214
+2	glaciers	glacier	NOUN	_	Number=Plur	1	obj	_	start_char=215|end_char=223
+3	that	that	ADP	_	_	1	fixed	_	start_char=224|end_char=228
+4	no	no	DET	_	PronType=Art	2	det	_	start_char=229|end_char=231
+5	longer	longer	ADV	_	Degree=Pos	7	advmod	_	start_char=232|end_char=238
+6	existed,	existed,	NOUN	_	Number=Sing	7	nsubj	_	start_char=239|end_char=247
+7	sat	sat	VERB	_	Tense=Pres|VerbForm=Part	1	parataxis	_	start_char=248|end_char=251
+8	down	down	ADV	_	Degree=Pos	7	mark	_	start_char=252|end_char=256
+9	on	on	ADP	_	_	12	case	_	start_char=257|end_char=259
+10	a	a	DET	_	PronType=Art	12	det	_	start_char=260|end_char=261
+11	flat	flat	ADJ	_	Degree=Pos	12	amod	_	start_char=262|end_char=266
+12	rock,	Lock,	PROPN	_	Number=Sing	13	obl	_	start_char=267|end_char=272
+13	unwrapped	unwrapp	VERB	_	Tense=Pres|VerbForm=Part	7	advcl	_	start_char=273|end_char=282
+14	a	a	DET	_	PronType=Art	16	det	_	start_char=283|end_char=284
+15	chocolate	chocolate	NOUN	_	Number=Sing	16	nmod	_	start_char=285|end_char=294
+16	bar	bar	NOUN	_	Number=Sing	13	obl	_	start_char=295|end_char=298
+17	that	that	ADP	_	_	21	mark	_	start_char=299|end_char=303
+18	she	she	PRON	_	Case=Nom|Number=Sing|Person=3|PronType=Prs	21	nsubj	_	start_char=304|end_char=307
+19	had	have	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	21	aux	_	start_char=308|end_char=311
+20	been	been	ADV	_	Degree=Pos	21	mark	_	start_char=312|end_char=316
+21	saving	save	VERB	_	Tense=Pres|VerbForm=Part	13	advcl	_	start_char=317|end_char=323
+22	since	since	ADP	_	_	25	case	_	start_char=324|end_char=329
+23	the	the	DET	_	PronType=Art	25	det	_	start_char=330|end_char=333
+24	first	one	ADJ	_	Degree=Pos|NumType=Ord	25	amod	_	start_char=334|end_char=339
+25	night,	night,	NOUN	_	Number=Sing	21	obl	_	start_char=340|end_char=346
+26	and	and	CCONJ	_	_	27	cc	_	start_char=347|end_char=350
+27	announced,	announced,	VERB	_	Tense=Pres|VerbForm=Fin	21	conj	_	start_char=351|end_char=361
+28	to	to	PART	_	_	29	case	_	start_char=362|end_char=364
+29	nobody	nobody	ADV	_	Degree=Pos	27	advcl	_	start_char=365|end_char=371
+30	in	in	ADP	_	_	31	case	_	start_char=372|end_char=374
+31	particular	particular	ADJ	_	Degree=Pos	29	obl	_	start_char=375|end_char=385
+32	and	and	CCONJ	_	_	34	cc	_	start_char=386|end_char=389
+33	to	to	ADP	_	_	34	case	_	start_char=390|end_char=392
+34	everybody	everybody	ADV	_	Degree=Pos	31	conj	_	start_char=393|end_char=402
+35	at	at	ADP	_	_	36	case	_	start_char=403|end_char=405
+36	once,	once,	ADV	_	Degree=Pos	34	advmod	_	start_char=406|end_char=411
+37	that	that	ADP	_	_	36	case	_	start_char=412|end_char=416
+38	this	this	PRON	_	PronType=Int,Rel	47	nsubj	_	start_char=417|end_char=421
+39	was	wave	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	43	cop	_	start_char=422|end_char=425
+40	the	the	DET	_	PronType=Art	43	det	_	start_char=426|end_char=429
+41	most	most	ADV	_	Degree=Sup	42	advmod	_	start_char=430|end_char=434
+42	beautiful	beautiful	ADJ	_	Degree=Pos	43	amod	_	start_char=435|end_char=444
+43	view	view	NOUN	_	Number=Sing	47	nsubj	_	start_char=445|end_char=449
+44	she	she	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	47	nsubj	_	start_char=450|end_char=453
+45	had	have	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	47	aux	_	start_char=454|end_char=457
+46	ever	ever	ADV	_	Degree=Pos	47	advmod	_	start_char=458|end_char=462
+47	seen,	seen,	NOUN	_	Number=Sing	36	parataxis	_	start_char=463|end_char=468
+
+# text = which, given everything she had seen, was saying quite a lot, though several members of the team later admitted that they had been too exhausted to notice anything other than the fact that, for once, the ground was not sloping upward.
+# sent_id = 3
+1	which,	which,	PRON	_	PronType=Int,Rel	2	discourse	_	start_char=469|end_char=475
+2	given	given	VERB	_	Tense=Past|VerbForm=Fin	0	root	_	start_char=476|end_char=481
+3	everything	everything	ADV	_	Degree=Pos	2	advmod	_	start_char=482|end_char=492
+4	she	she	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=493|end_char=496
+5	had	have	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	6	aux	_	start_char=497|end_char=500
+6	seen,	Seen,	PROPN	_	Number=Sing	8	nsubj	_	start_char=501|end_char=506
+7	was	wave	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	8	aux	_	start_char=507|end_char=510
+8	saying	say	VERB	_	Tense=Pres|VerbForm=Part	2	parataxis	_	start_char=511|end_char=517
+9	quite	quite	ADV	_	Degree=Pos	8	mark	_	start_char=518|end_char=523
+10	a	a	DET	_	PronType=Art	11	det	_	start_char=524|end_char=525
+11	lot,	Lot,	PROPN	_	Number=Sing	8	obl	_	start_char=526|end_char=530
+12	though	though	ADV	_	Degree=Pos	14	fixed	_	start_char=531|end_char=537
+13	several	several	NUM	_	NumType=Card	14	amod	_	start_char=538|end_char=545
+14	members	member	NOUN	_	Number=Plur	8	obl	_	start_char=546|end_char=553
+15	of	of	ADP	_	_	17	case	_	start_char=554|end_char=556
+16	the	the	DET	_	PronType=Art	17	det	_	start_char=557|end_char=560
+17	team	team	NOUN	_	Number=Sing	19	nsubj	_	start_char=561|end_char=565
+18	later	late	ADV	_	Degree=Pos	19	mark	_	start_char=566|end_char=571
+19	admitted	admitte	VERB	_	Tense=Past|VerbForm=Part	8	advcl	_	start_char=572|end_char=580
+20	that	that	ADP	_	_	23	mark	_	start_char=581|end_char=585
+21	they	they	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	25	nsubj	_	start_char=586|end_char=590
+22	had	have	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	25	cop	_	start_char=591|end_char=594
+23	been	been	ADV	_	Degree=Pos	25	advmod	_	start_char=595|end_char=599
+24	too	too	ADV	_	Degree=Pos	25	advmod	_	start_char=600|end_char=603
+25	exhausted	exhaust	ADJ	_	Degree=Pos	19	advcl	_	start_char=604|end_char=613
+26	to	to	PART	_	_	27	mark	_	start_char=614|end_char=616
+27	notice	notice	VERB	_	VerbForm=Inf	25	advcl	_	start_char=617|end_char=623
+28	anything	anything	ADV	_	Degree=Pos	29	advmod	_	start_char=624|end_char=632
+29	other	other	ADJ	_	Degree=Pos	25	advmod	_	start_char=633|end_char=638
+30	than	than	ADP	_	_	32	case	_	start_char=639|end_char=643
+31	the	the	DET	_	PronType=Art	32	det	_	start_char=644|end_char=647
+32	fact	fact	NOUN	_	Number=Sing	29	obl	_	start_char=648|end_char=652
+33	that,	that,	ADV	_	Degree=Pos	29	advmod	_	start_char=653|end_char=658
+34	for	for	ADP	_	_	35	case	_	start_char=659|end_char=662
+35	once,	once,	ADV	_	Degree=Pos	33	advmod	_	start_char=663|end_char=668
+36	the	the	DET	_	PronType=Art	37	det	_	start_char=669|end_char=672
+37	ground	ground	NOUN	_	Number=Sing	40	nsubj	_	start_char=673|end_char=679
+38	was	wave	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	40	aux	_	start_char=680|end_char=683
+39	not	not	ADV	_	Degree=Pos	40	advmod	_	start_char=684|end_char=687
+40	sloping	slop	VERB	_	Tense=Past|VerbForm=Part	33	advcl	_	start_char=688|end_char=695
+41	upward.	upward.	NOUN	_	Number=Sing	40	obj	_	SpacesAfter=\n\n|start_char=696|end_char=703
+
+# text = The report, which runs to more than four hundred pages and includes appendices on everything from soil chemistry to the migratory habits of local birds, concludes that the proposed highway would increase traffic on surrounding roads, reduce air quality in at least three neighborhoods, fragment the habitat of two protected species, and cost considerably more than the original estimate, but that it would also shorten average commute times by roughly eight minutes, create several thousand jobs during construction, and, according to the authors, provide long-term economic benefits that might or might not outweigh those costs
+# sent_id = 4
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=705|end_char=708
+2	report,	report,	NOUN	_	Number=Sing	0	root	_	start_char=709|end_char=716
+3	which	which	PRON	_	PronType=Int,Rel	4	nsubj	_	start_char=717|end_char=722
+4	runs	runs	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	acl:relcl	_	start_char=723|end_char=727
+5	to	to	ADP	_	_	6	case	_	start_char=728|end_char=730
+6	more	more	ADJ	_	Degree=Cmp	4	obl	_	start_char=731|end_char=735
+7	than	than	ADP	_	_	10	case	_	start_char=736|end_char=740
+8	four	four	NUM	_	NumType=Card	10	nummod	_	start_char=741|end_char=745
+9	hundred	hundred	NUM	_	NumType=Card	10	nummod	_	start_char=746|end_char=753
+10	pages	page	NOUN	_	Number=Plur	4	obl	_	start_char=754|end_char=759
+11	and	and	CCONJ	_	_	12	cc	_	start_char=760|end_char=763
+12	includes	include	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	conj	_	start_char=764|end_char=772
+13	appendices	appendice	NOUN	_	Number=Plur	12	obj	_	start_char=773|end_char=783
+14	on	on	ADP	_	_	15	case	_	start_char=784|end_char=786
+15	everything	everything	NOUN	_	Number=Plur	13	nmod	_	start_char=787|end_char=797
+16	from	from	ADP	_	_	17	case	_	start_char=798|end_char=802
+17	soil	soil	NOUN	_	Number=Sing	15	nmod	_	start_char=803|end_char=807
+18	chemistry	Chemistry	PROPN	_	Number=Sing	17	flat	_	start_char=808|end_char=817
+19	to	to	ADP	_	_	22	case	_	start_char=818|end_char=820
+20	the	the	DET	_	PronType=Art	22	det	_	start_char=821|end_char=824
+21	migratory	migratory	ADJ	_	Degree=Pos	22	amod	_	start_char=825|end_char=834
+22	habits	habit	NOUN	_	Number=Plur	26	obl	_	start_char=835|end_char=841
+23	of	of	ADP	_	_	24	case	_	start_char=842|end_char=844
+24	local	local	NOUN	_	Number=Sing	25	nmod	_	start_char=845|end_char=850
+25	birds,	Birds,	PROPN	_	Number=Sing	26	nsubj	_	start_char=851|end_char=857
+26	concludes	conclude	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	17	flat	_	start_char=858|end_char=867
+27	that	that	ADP	_	_	26	fixed	_	start_char=868|end_char=872
+28	the	the	DET	_	PronType=Art	30	det	_	start_char=873|end_char=876
+29	proposed	propose	NOUN	_	Number=Sing	30	nmod	_	start_char=877|end_char=885
+30	highway	highway	NOUN	_	Number=Sing	32	nsubj	_	start_char=886|end_char=893
+31	would	will	AUX	_	_	32	aux	_	start_char=894|end_char=899
+32	increase	increase	VERB	_	VerbForm=Inf	26	advcl	_	start_char=900|end_char=908
+33	traffic	traffic	NOUN	_	Number=Sing	32	obj	_	start_char=909|end_char=916
+34	on	on	ADP	_	_	36	case	_	start_char=917|end_char=919
+35	surrounding	surrounde	ADJ	_	Degree=Pos	36	amod	_	start_char=920|end_char=931
+36	roads,	Roads,	PROPN	_	Number=Sing	37	nsubj	_	start_char=932|end_char=938
+37	reduce	reduce	VERB	_	VerbForm=Inf	32	parataxis	_	start_char=939|end_char=945
+38	air	Air	PROPN	_	Number=Sing	37	flat	_	start_char=946|end_char=949
+39	quality	quality	NOUN	_	Number=Sing	37	obl	_	start_char=950|end_char=957
+40	in	in	ADP	_	_	42	case	_	start_char=958|end_char=960
+41	at	at	ADP	_	_	42	case	_	start_char=961|end_char=963
+42	least	least	ADJ	_	Degree=Sup	44	amod	_	start_char=964|end_char=969
+43	three	three	NUM	_	NumType=Card	44	nummod	_	start_char=970|end_char=975
+44	neighborhoods,	neighborhod	NOUN	_	Number=Sing	45	nmod	_	start_char=976|end_char=990
+45	fragment	fragment	NOUN	_	Number=Sing	39	conj	_	start_char=991|end_char=999
+46	the	the	DET	_	PronType=Art	47	det	_	start_char=1000|end_char=1003
+47	habitat	habitat	NOUN	_	Number=Sing	45	conj	_	start_char=1004|end_char=1011
+48	of	of	ADP	_	_	51	case	_	start_char=1012|end_char=1014
+49	two	two	NUM	_	NumType=Card	50	nummod	_	start_char=1015|end_char=1018
+50	protected	protect	VERB	_	Tense=Past|VerbForm=Part	47	acl:relcl	_	start_char=1019|end_char=1028
+51	species,	species,	NOUN	_	Number=Sing	50	flat	_	start_char=1029|end_char=1037
+52	and	and	CCONJ	_	_	53	cc	_	start_char=1038|end_char=1041
+53	cost	cost	VERB	_	VerbForm=Inf	45	conj	_	start_char=1042|end_char=1046
+54	considerably	considerably	ADV	_	Degree=Pos	55	mark	_	start_char=1047|end_char=1059
+55	more	more	ADJ	_	Degree=Cmp	53	advcl	_	start_char=1060|end_char=1064
+56	than	than	ADP	_	_	59	case	_	start_char=1065|end_char=1069
+57	the	the	DET	_	PronType=Art	59	det	_	start_char=1070|end_char=1073
+58	original	original	ADJ	_	Degree=Pos	59	amod	_	start_char=1074|end_char=1082
+59	estimate,	estimate,	NOUN	_	Number=Sing	55	obl	_	start_char=1083|end_char=1092
+60	but	but	CCONJ	_	_	65	cc	_	start_char=1093|end_char=1096
+61	that	that	ADP	_	_	60	fixed	_	start_char=1097|end_char=1101
+62	it	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	65	nsubj	_	start_char=1102|end_char=1104
+63	would	will	AUX	_	_	65	aux	_	start_char=1105|end_char=1110
+64	also	also	ADV	_	Degree=Pos	65	advmod	_	start_char=1111|end_char=1115
+65	shorten	shorten	VERB	_	VerbForm=Inf	59	acl:relcl	_	start_char=1116|end_char=1123
+66	average	average	ADJ	_	Degree=Pos	68	amod	_	start_char=1124|end_char=1131
+67	commute	commute	NOUN	_	Number=Sing	65	obl	_	start_char=1132|end_char=1139
+68	times	time	NOUN	_	Number=Plur	65	obl	_	start_char=1140|end_char=1145
+69	by	by	ADP	_	_	70	case	_	start_char=1146|end_char=1148
+70	roughly	roughly	ADV	_	Degree=Pos	72	amod	_	start_char=1149|end_char=1156
+71	eight	eight	NUM	_	NumType=Card	72	nummod	_	start_char=1157|end_char=1162
+72	minutes,	minutes,	NOUN	_	Number=Plur	73	nsubj	_	start_char=1163|end_char=1171
+73	create	create	VERB	_	VerbForm=Inf	65	parataxis	_	start_char=1172|end_char=1178
+74	several	several	NUM	_	NumType=Card	76	nummod	_	start_char=1179|end_char=1186
+75	thousand	thousand	NUM	_	NumType=Card	76	nummod	_	start_char=1187|end_char=1195
+76	jobs	job	NOUN	_	Number=Plur	68	nmod	_	start_char=1196|end_char=1200
+77	during	during	ADP	_	_	78	case	_	start_char=1201|end_char=1207
+78	construction,	construction,	NOUN	_	Number=Sing	76	nmod	_	start_char=1208|end_char=1221
+79	and,	and,	NOUN	_	Number=Sing	80	nsubj	_	start_char=1222|end_char=1226
+80	according	accord	VERB	_	Tense=Past|VerbForm=Part	68	acl:relcl	_	start_char=1227|end_char=1236
+81	to	to	ADP	_	_	84	case	_	start_char=1237|end_char=1239
+82	the	the	DET	_	PronType=Art	83	det	_	start_char=1240|end_char=1243
+83	authors,	author	NOUN	_	Number=Sing	84	obj	_	start_char=1244|end_char=1252
+84	provide	provide	VERB	_	VerbForm=Inf	73	advcl	_	start_char=1253|end_char=1260
+85	long	Long	PROPN	_	Number=Sing	88	nmod:poss	_	SpaceAfter=No|start_char=1261|end_char=1265
+86	-term	-term	NOUN	_	Number=Sing	88	compound	_	start_char=1265|end_char=1270
+87	economic	economic	NOUN	_	Number=Sing	88	compound	_	start_char=1271|end_char=1279
+88	benefits	benefit	NOUN	_	Number=Plur	84	obj	_	start_char=1280|end_char=1288
+89	that	that	ADP	_	_	94	mark	_	start_char=1289|end_char=1293
+90	might	might	AUX	_	_	94	aux	_	start_char=1294|end_char=1299
+91	or	or	CCONJ	_	_	94	cc	_	start_char=1300|end_char=1302
+92	might	might	AUX	_	_	94	aux	_	start_char=1303|end_char=1308
+93	not	not	ADV	_	Degree=Pos	94	advmod	_	start_char=1309|end_char=1312
+94	outweigh	outweigh	VERB	_	VerbForm=Inf	84	advcl	_	start_char=1313|end_char=1321
+95	those	that	DET	_	PronType=Art	96	det	_	start_char=1322|end_char=1327
+96	costs	cost	NOUN	_	Number=Plur	94	obj	_	start_char=1328|end_char=1333
+
+# text = depending on assumptions about fuel prices,
+# sent_id = 5
+1	depending	depend	VERB	_	Tense=Pres|VerbForm=Part	0	root	_	start_char=1334|end_char=1343
+2	on	on	ADP	_	_	3	case	_	start_char=1344|end_char=1346
+3	assumptions	assumption	NOUN	_	Number=Plur	1	obj	_	start_char=1347|end_char=1358
+4	about	about	ADP	_	_	6	case	_	start_char=1359|end_char=1364
+5	fuel	fuel	NOUN	_	Number=Sing	6	compound	_	start_char=1365|end_char=1369
+6	prices,	price	NOUN	_	Number=Sing	3	nmod	_	start_char=1370|end_char=1377
+
+# text = population growth, and the future of remote work.
+# sent_id = 6
+1	population	population	NOUN	_	Number=Sing	2	nmod	_	start_char=1378|end_char=1388
+2	growth,	growth,	NOUN	_	Number=Sing	0	root	_	start_char=1389|end_char=1396
+3	and	and	CCONJ	_	_	5	cc	_	start_char=1397|end_char=1400
+4	the	the	DET	_	PronType=Art	5	det	_	start_char=1401|end_char=1404
+5	future	future	NOUN	_	Number=Sing	2	conj	_	start_char=1405|end_char=1411
+6	of	of	ADP	_	_	8	case	_	start_char=1412|end_char=1414
+7	remote	remote	NOUN	_	Number=Sing	8	compound	_	start_char=1415|end_char=1421
+8	work.	work.	NOUN	_	Number=Sing	2	nmod	_	SpacesAfter=\n\n|start_char=1422|end_char=1427
+
+# text = Ask anyone who grew up in the valley and they will tell you about the summer the river flooded, the summer the mill closed, the summer the fair came back, or the summer the old bridge
+# sent_id = 7
+1	Ask	ave	VERB	_	VerbForm=Inf	0	root	_	start_char=1429|end_char=1432
+2	anyone	anyone	ADV	_	Degree=Pos	1	fixed	_	start_char=1433|end_char=1439
+3	who	who	PRON	_	PronType=Int,Rel	4	nsubj	_	start_char=1440|end_char=1443
+4	grew	grew	VERB	_	Mood=Ind|Person=3|Tense=Pres|VerbForm=Fin	1	parataxis	_	start_char=1444|end_char=1448
+5	up	up	ADV	_	Degree=Pos	4	advmod	_	start_char=1449|end_char=1451
+6	in	in	ADP	_	_	8	case	_	start_char=1452|end_char=1454
+7	the	the	DET	_	PronType=Art	8	det	_	start_char=1455|end_char=1458
+8	valley	Valley	PROPN	_	Number=Sing	4	obl	_	start_char=1459|end_char=1465
+9	and	and	CCONJ	_	_	12	cc	_	start_char=1466|end_char=1469
+10	they	they	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	12	nsubj	_	start_char=1470|end_char=1474
+11	will	will	AUX	_	_	12	aux	_	start_char=1475|end_char=1479
+12	tell	tell	VERB	_	VerbForm=Inf	1	conj	_	start_char=1480|end_char=1484
+13	you	you	PRON	_	Case=Nom|Number=Sing|Person=2|PronType=Prs	12	iobj	_	start_char=1485|end_char=1488
+14	about	about	ADP	_	_	16	case	_	start_char=1489|end_char=1494
+15	the	the	DET	_	PronType=Art	16	det	_	start_char=1495|end_char=1498
+16	summer	summer	NOUN	_	Number=Sing	12	obl	_	start_char=1499|end_char=1505
+17	the	the	DET	_	PronType=Art	18	det	_	start_char=1506|end_char=1509
+18	river	river	NOUN	_	Number=Sing	19	nsubj	_	start_char=1510|end_char=1515
+19	flooded,	flooded,	VERB	_	Tense=Pres|VerbForm=Part	12	parataxis	_	start_char=1516|end_char=1524
+20	the	the	DET	_	PronType=Art	21	det	_	start_char=1525|end_char=1528
+21	summer	summer	NOUN	_	Number=Sing	19	obl:unmarked	_	start_char=1529|end_char=1535
+22	the	the	DET	_	PronType=Art	23	det	_	start_char=1536|end_char=1539
+23	mill	mill	NOUN	_	Number=Sing	24	nsubj	_	start_char=1540|end_char=1544
+24	closed,	close	VERB	_	Tense=Pres|VerbForm=Part	18	acl:relcl	_	start_char=1545|end_char=1552
+25	the	the	DET	_	PronType=Art	26	det	_	start_char=1553|end_char=1556
+26	summer	summer	NOUN	_	Number=Sing	24	obl:unmarked	_	start_char=1557|end_char=1563
+27	the	the	DET	_	PronType=Art	28	det	_	start_char=1564|end_char=1567
+28	fair	fair	NOUN	_	Number=Sing	29	nsubj	_	start_char=1568|end_char=1572
+29	came	came	VERB	_	Tense=Past|VerbForm=Fin	24	advcl	_	start_char=1573|end_char=1577
+30	back,	back,	ADV	_	Degree=Pos	29	advmod	_	start_char=1578|end_char=1583
+31	or	or	CCONJ	_	_	33	cc	_	start_char=1584|end_char=1586
+32	the	the	DET	_	PronType=Art	33	det	_	start_char=1587|end_char=1590
+33	summer	summer	NOUN	_	Number=Sing	29	conj	_	start_char=1591|end_char=1597
+34	the	the	DET	_	PronType=Art	36	det	_	start_char=1598|end_char=1601
+35	old	old	ADJ	_	Degree=Sup	36	amod	_	start_char=1602|end_char=1605
+36	bridge	bridge	NOUN	_	Number=Sing	33	nmod	_	start_char=1606|end_char=1612
+
+# text = finally collapsed, and every one of them will tell it differently, with different heroes and different villains and different weather, until you start to suspect that the past is less a place than a conversation that never quite ends.
+# sent_id = 8
+1	finally	finally	ADV	_	Degree=Pos	2	nmod:poss	_	start_char=1613|end_char=1620
+2	collapsed,	collapsed,	NOUN	_	Number=Sing	9	obj	_	start_char=1621|end_char=1631
+3	and	and	CCONJ	_	_	9	cc	_	start_char=1632|end_char=1635
+4	every	every	DET	_	PronType=Art	5	det	_	start_char=1636|end_char=1641
+5	one	one	NUM	_	NumType=Card	2	nsubj	_	start_char=1642|end_char=1645
+6	of	of	ADP	_	_	7	case	_	start_char=1646|end_char=1648
+7	them	they	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	2	nmod	_	start_char=1649|end_char=1653
+8	will	will	AUX	_	_	9	aux	_	start_char=1654|end_char=1658
+9	tell	tell	VERB	_	VerbForm=Inf	0	root	_	start_char=1659|end_char=1663
+10	it	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	9	iobj	_	start_char=1664|end_char=1666
+11	differently,	differently,	ADV	_	Degree=Pos	9	advmod	_	start_char=1667|end_char=1679
+12	with	with	ADP	_	_	14	case	_	start_char=1680|end_char=1684
+13	different	different	ADJ	_	Degree=Pos	14	amod	_	start_char=1685|end_char=1694
+14	heroes	heroe	NOUN	_	Number=Plur	9	obl	_	start_char=1695|end_char=1701
+15	and	and	CCONJ	_	_	17	cc	_	start_char=1702|end_char=1705
+16	different	different	ADJ	_	Degree=Pos	17	amod	_	start_char=1706|end_char=1715
+17	villains	villain	NOUN	_	Number=Plur	14	conj	_	start_char=1716|end_char=1724
+18	and	and	CCONJ	_	_	20	cc	_	start_char=1725|end_char=1728
+19	different	different	ADJ	_	Degree=Pos	20	amod	_	start_char=1729|end_char=1738
+20	weather,	weather,	NOUN	_	Number=Sing	17	conj	_	start_char=1739|end_char=1747
+21	until	until	ADV	_	Degree=Pos	23	advmod	_	start_char=1748|end_char=1753
+22	you	you	PRON	_	Case=Nom|Number=Sing|Person=2|PronType=Prs	23	nsubj	_	start_char=1754|end_char=1757
+23	start	start	VERB	_	VerbForm=Inf	9	advcl	_	start_char=1758|end_char=1763
+24	to	to	PART	_	_	25	mark	_	start_char=1764|end_char=1766
+25	suspect	suspect	VERB	_	VerbForm=Inf	23	xcomp	_	start_char=1767|end_char=1774
+26	that	that	ADP	_	_	28	case	_	start_char=1775|end_char=1779
+27	the	the	DET	_	PronType=Art	28	det	_	start_char=1780|end_char=1783
+28	past	past	ADV	_	Degree=Pos	30	advmod	_	start_char=1784|end_char=1788
+29	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	30	cop	_	start_char=1789|end_char=1791
+30	less	less	ADJ	_	Degree=Cmp	25	ccomp	_	start_char=1792|end_char=1796
+31	a	a	DET	_	PronType=Art	32	det	_	start_char=1797|end_char=1798
+32	place	place	NOUN	_	Number=Sing	30	nsubj	_	start_char=1799|end_char=1804
+33	than	than	ADP	_	_	35	case	_	start_char=1805|end_char=1809
+34	a	a	DET	_	PronType=Art	35	det	_	start_char=1810|end_char=1811
+35	conversation	conversation	NOUN	_	Number=Sing	32	nmod	_	start_char=1812|end_char=1824
+36	that	that	ADP	_	_	39	mark	_	start_char=1825|end_char=1829
+37	never	never	ADV	_	Degree=Pos	39	advmod	_	start_char=1830|end_char=1835
+38	quite	quite	ADV	_	Degree=Pos	39	advmod	_	start_char=1836|end_char=1841
+39	ends.	ends.	NOUN	_	Number=Sing	35	acl:relcl	_	SpacesAfter=\n\n|start_char=1842|end_char=1847
+
+# text = I went to the store to buy eggs and came home with a lamp.
+# sent_id = 9
+1	I	I	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	2	nsubj	_	start_char=1849|end_char=1850
+2	went	went	VERB	_	Tense=Pres|VerbForm=Part	0	root	_	start_char=1851|end_char=1855
+3	to	to	ADP	_	_	5	case	_	start_char=1856|end_char=1858
+4	the	the	DET	_	PronType=Art	5	det	_	start_char=1859|end_char=1862
+5	store	store	NOUN	_	Number=Sing	2	obj	_	start_char=1863|end_char=1868
+6	to	to	PART	_	_	7	mark	_	start_char=1869|end_char=1871
+7	buy	buy	VERB	_	VerbForm=Inf	5	acl:relcl	_	start_char=1872|end_char=1875
+8	eggs	eggs	NOUN	_	Number=Plur	7	obj	_	start_char=1876|end_char=1880
+9	and	and	CCONJ	_	_	10	cc	_	start_char=1881|end_char=1884
+10	came	came	VERB	_	Tense=Pres|VerbForm=Fin	7	conj	_	start_char=1885|end_char=1889
+11	home	home	NOUN	_	Number=Sing	10	obl	_	start_char=1890|end_char=1894
+12	with	with	ADP	_	_	14	case	_	start_char=1895|end_char=1899
+13	a	a	DET	_	PronType=Art	14	det	_	start_char=1900|end_char=1901
+14	lamp.	Lamp.	PROPN	_	Number=Sing	10	obl	_	SpacesAfter=\n\n|start_char=1902|end_char=1907
+
+# text = The meeting is moved to Thurs.
+# sent_id = 10
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=1909|end_char=1912
+2	meeting	meet	NOUN	_	Number=Sing	4	nsubj	_	start_char=1913|end_char=1920
+3	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	cop	_	start_char=1921|end_char=1923
+4	moved	move	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=1924|end_char=1929
+5	to	to	ADP	_	_	6	case	_	start_char=1930|end_char=1932
+6	Thurs.	Thurs.	PROPN	_	Number=Sing	4	obl	_	start_char=1933|end_char=1939
+
+# text = Please tell Dr. Patel and the rest of the U.S. team.
+# sent_id = 11
+1	Please	please	INTJ	_	_	2	discourse	_	start_char=1940|end_char=1946
+2	tell	tell	VERB	_	VerbForm=Inf	0	root	_	start_char=1947|end_char=1951
+3	Dr.	Dr.	PROPN	_	Number=Sing	2	obj	_	start_char=1952|end_char=1955
+4	Patel	Patel	PROPN	_	Number=Sing	3	conj	_	start_char=1956|end_char=1961
+5	and	and	CCONJ	_	_	7	cc	_	start_char=1962|end_char=1965
+6	the	the	DET	_	PronType=Art	7	det	_	start_char=1966|end_char=1969
+7	rest	rest	NOUN	_	Number=Sing	2	obj	_	start_char=1970|end_char=1974
+8	of	of	ADP	_	_	10	case	_	start_char=1975|end_char=1977
+9	the	the	DET	_	PronType=Art	10	det	_	start_char=1978|end_char=1981
+10	U.S.	U.s.	PROPN	_	Number=Sing	7	nmod	_	start_char=1982|end_char=1986
+11	team.	Team.	PROPN	_	Number=Sing	10	flat	_	SpacesAfter=\n\n|start_char=1987|end_char=1992
+
+# text = He works for Acme Corp. She works for Globex Inc. They both used to work at Initech Ltd.
+# sent_id = 12
+1	He	He	ADV	_	Degree=Pos	2	advmod	_	start_char=1994|end_char=1996
+2	works	work	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1997|end_char=2002
+3	for	for	ADP	_	_	4	case	_	start_char=2003|end_char=2006
+4	Acme	Acme	PROPN	_	Number=Sing	2	obl	_	start_char=2007|end_char=2011
+5	Corp.	Corp.	PROPN	_	Number=Sing	4	flat	_	start_char=2012|end_char=2017
+6	She	She	ADV	_	Degree=Pos	7	mark	_	start_char=2018|end_char=2021
+7	works	work	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	conj	_	start_char=2022|end_char=2027
+8	for	for	ADP	_	_	9	case	_	start_char=2028|end_char=2031
+9	Globex	Globex	PROPN	_	Number=Sing	7	obl	_	start_char=2032|end_char=2038
+10	Inc.	Inc.	PROPN	_	Number=Sing	9	flat	_	start_char=2039|end_char=2043
+11	They	they	PRON	_	Number=Sing|PronType=Prs	13	nsubj	_	start_char=2044|end_char=2048
+12	both	both	ADV	_	Degree=Pos	13	advmod	_	start_char=2049|end_char=2053
+13	used	use	VERB	_	Tense=Past|VerbForm=Part	7	conj	_	start_char=2054|end_char=2058
+14	to	to	PART	_	_	15	mark	_	start_char=2059|end_char=2061
+15	work	work	VERB	_	VerbForm=Inf	13	xcomp	_	start_char=2062|end_char=2066
+16	at	at	ADP	_	_	17	case	_	start_char=2067|end_char=2069
+17	Initech	Initech	PROPN	_	Number=Sing	15	obl	_	start_char=2070|end_char=2077
+18	Ltd.	Ltd.	PROPN	_	Number=Sing	17	flat	_	SpacesAfter=\n\n|start_char=2078|end_char=2082
+
+# text = We left at 6 a.m. The drive took four hrs. We arrived around 10 a.m.
+# sent_id = 13
+1	We	we	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	2	nsubj	_	start_char=2084|end_char=2086
+2	left	left	VERB	_	Tense=Pres|VerbForm=Part	0	root	_	start_char=2087|end_char=2091
+3	at	at	ADP	_	_	5	case	_	start_char=2092|end_char=2094
+4	6	6	NUM	_	NumType=Card	5	nummod	_	start_char=2095|end_char=2096
+5	a.m.	A.m.	NOUN	_	Number=Sing	2	obl:unmarked	_	start_char=2097|end_char=2101
+6	The	the	DET	_	PronType=Art	7	det	_	start_char=2102|end_char=2105
+7	drive	drive	NOUN	_	Number=Sing	2	nsubj	_	start_char=2106|end_char=2111
+8	took	took	VERB	_	Tense=Pres|VerbForm=Part	2	conj	_	start_char=2112|end_char=2116
+9	four	four	NUM	_	NumType=Card	10	nummod	_	start_char=2117|end_char=2121
+10	hrs.	Srs.	PROPN	_	Number=Sing	8	obl	_	start_char=2122|end_char=2126
+11	We	we	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	12	nsubj	_	start_char=2127|end_char=2129
+12	arrived	arrive	VERB	_	Tense=Pres|VerbForm=Part	8	conj	_	start_char=2130|end_char=2137
+13	around	around	ADP	_	_	15	case	_	start_char=2138|end_char=2144
+14	10	10	NUM	_	NumType=Card	15	nummod	_	start_char=2145|end_char=2147
+15	a.m.	A.m.	NOUN	_	Number=Sing	12	obl:unmarked	_	SpacesAfter=\n\n|start_char=2148|end_char=2152
+
+# text = The package was shipped via U.P.S. It should arrive by Fri. or Sat.
+# sent_id = 14
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=2154|end_char=2157
+2	package	package	NOUN	_	Number=Sing	4	nsubj	_	start_char=2158|end_char=2165
+3	was	wave	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	aux	_	start_char=2166|end_char=2169
+4	shipped	ship	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=2170|end_char=2177
+5	via	via	ADP	_	_	6	case	_	start_char=2178|end_char=2181
+6	U.P.S.	U.p.s.	PROPN	_	Number=Sing	4	obl	_	start_char=2182|end_char=2188
+7	It	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	9	nsubj	_	start_char=2189|end_char=2191
+8	should	should	AUX	_	_	9	aux	_	start_char=2192|end_char=2198
+9	arrive	arrive	VERB	_	VerbForm=Inf	4	conj	_	start_char=2199|end_char=2205
+10	by	by	ADP	_	_	11	case	_	start_char=2206|end_char=2208
+11	Fri.	Fri.	PROPN	_	Number=Sing	9	obl	_	start_char=2209|end_char=2213
+12	or	or	CCONJ	_	_	13	cc	_	start_char=2214|end_char=2216
+13	Sat.	Sat.	PROPN	_	Number=Sing	11	conj	_	SpacesAfter=\n\n|start_char=2217|end_char=2221
+
+# text = She has a Ph.D. He has an M.B.A. Neither has a job.
+# sent_id = 15
+1	She	She	ADV	_	PronType=Int,Rel	2	advmod	_	start_char=2223|end_char=2226
+2	has	have	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2227|end_char=2230
+3	a	a	DET	_	PronType=Art	4	det	_	start_char=2231|end_char=2232
+4	Ph.D.	Ph.d.	PROPN	_	Number=Sing	2	obj	_	start_char=2233|end_char=2238
+5	He	He	ADV	_	Degree=Pos	6	advmod	_	start_char=2239|end_char=2241
+6	has	have	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	ccomp	_	start_char=2242|end_char=2245
+7	an	a	DET	_	PronType=Art	8	det	_	start_char=2246|end_char=2248
+8	M.B.A.	M.b.a.	PROPN	_	Number=Sing	6	obj	_	start_char=2249|end_char=2255
+9	Neither	Neither	ADV	_	Degree=Pos	10	nsubj	_	start_char=2256|end_char=2263
+10	has	have	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	6	ccomp	_	start_char=2264|end_char=2267
+11	a	a	DET	_	PronType=Art	12	det	_	start_char=2268|end_char=2269
+12	job.	job.	NOUN	_	Number=Sing	10	obj	_	SpacesAfter=\n\n|start_char=2270|end_char=2274
+
+# text = Bring snacks, drinks, napkins, etc. Don't forget the ice.
+# sent_id = 16
+1	Bring	bring	VERB	_	VerbForm=Inf	7	parataxis	_	start_char=2276|end_char=2281
+2	snacks,	Snack	PROPN	_	Number=Sing	7	obl	_	start_char=2282|end_char=2289
+3	drinks,	Drinks,	PROPN	_	Number=Sing	2	conj	_	start_char=2290|end_char=2297
+4	napkins,	Napkins,	PROPN	_	Number=Sing	2	conj	_	start_char=2298|end_char=2306
+5	etc.	etc.	ADV	_	Degree=Pos	7	advmod	_	start_char=2307|end_char=2311
+6	Don't	Don't	ADV	_	Degree=Pos	7	advmod	_	start_char=2312|end_char=2317
+7	forget	forget	VERB	_	VerbForm=Inf	0	root	_	start_char=2318|end_char=2324
+8	the	the	DET	_	PronType=Art	9	det	_	start_char=2325|end_char=2328
+9	ice.	ice.	NOUN	_	Number=Sing	7	obj	_	SpacesAfter=\n\n|start_char=2329|end_char=2333
+
+# text = Our next stop is Washington, D.C. After that, we go to St. Louis.
+# sent_id = 17
+1	Our	our	DET	_	PronType=Art	3	det	_	start_char=2335|end_char=2338
+2	next	next	ADJ	_	Degree=Pos	3	amod	_	start_char=2339|end_char=2343
+3	stop	stop	NOUN	_	Number=Sing	10	obl:unmarked	_	start_char=2344|end_char=2348
+4	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	cop	_	start_char=2349|end_char=2351
+5	Washington,	Washington,	PROPN	_	Number=Sing	10	nsubj	_	start_char=2352|end_char=2363
+6	D.C.	D.c.	PROPN	_	Number=Sing	5	appos	_	start_char=2364|end_char=2368
+7	After	after	ADP	_	_	8	case	_	start_char=2369|end_char=2374
+8	that,	that,	ADV	_	Degree=Pos	10	advmod	_	start_char=2375|end_char=2380
+9	we	we	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	10	nsubj	_	start_char=2381|end_char=2383
+10	go	go	VERB	_	VerbForm=Inf	0	root	_	start_char=2384|end_char=2386
+11	to	to	ADP	_	_	12	case	_	start_char=2387|end_char=2389
+12	St.	St.	PROPN	_	Number=Sing	10	obl	_	start_char=2390|end_char=2393
+13	Louis.	Louis.	PROPN	_	Number=Sing	12	flat	_	SpacesAfter=\n\n|start_char=2394|end_char=2400
+
+# text = The talk was given by Prof. Ramos, Jr. Questions were taken afterward.
+# sent_id = 18
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=2402|end_char=2405
+2	talk	talk	NOUN	_	Number=Sing	4	nsubj	_	start_char=2406|end_char=2410
+3	was	wave	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	aux	_	start_char=2411|end_char=2414
+4	given	given	VERB	_	Tense=Past|VerbForm=Fin	0	root	_	start_char=2415|end_char=2420
+5	by	by	ADP	_	_	6	case	_	start_char=2421|end_char=2423
+6	Prof.	Prof.	PROPN	_	Number=Sing	4	obl	_	start_char=2424|end_char=2429
+7	Ramos,	Ramos,	PROPN	_	Number=Sing	6	flat	_	start_char=2430|end_char=2436
+8	Jr.	Jr.	PROPN	_	Number=Sing	6	flat	_	start_char=2437|end_char=2440
+9	Questions	question	NOUN	_	Number=Plur	11	nsubj	_	start_char=2441|end_char=2450
+10	were	were	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	11	aux	_	start_char=2451|end_char=2455
+11	taken	take	VERB	_	Tense=Past|VerbForm=Part	4	conj	_	start_char=2456|end_char=2461
+12	afterward.	afterward.	ADV	_	Degree=Pos	11	advmod	_	SpacesAfter=\n\n|start_char=2462|end_char=2472
+
+# text = The company moved its HQ to the U.K. Its CEO did not.
+# sent_id = 19
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=2474|end_char=2477
+2	company	company	NOUN	_	Number=Sing	3	nsubj	_	start_char=2478|end_char=2485
+3	moved	move	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=2486|end_char=2491
+4	its	its	DET	_	PronType=Art	5	det	_	start_char=2492|end_char=2495
+5	HQ	HX	PROPN	_	Number=Sing	3	obl	_	start_char=2496|end_char=2498
+6	to	to	ADP	_	_	8	case	_	start_char=2499|end_char=2501
+7	the	the	DET	_	PronType=Art	8	det	_	start_char=2502|end_char=2505
+8	U.K.	U.k.	PROPN	_	Number=Sing	3	obl	_	start_char=2506|end_char=2510
+9	Its	it	ADJ	_	Degree=Cmp	8	flat	_	start_char=2511|end_char=2514
+10	CEO	Ceo	PROPN	_	Number=Sing	8	flat	_	start_char=2515|end_char=2518
+11	did	did	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	12	cop	_	start_char=2519|end_char=2522
+12	not.	not.	ADV	_	Degree=Pos	3	advmod	_	SpacesAfter=\n\n|start_char=2523|end_char=2527
+
+# text = I live on Maple Ave. My sister lives on Oak St.
+# sent_id = 20
+1	I	I	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	2	nsubj	_	start_char=2529|end_char=2530
+2	live	live	VERB	_	VerbForm=Inf	0	root	_	start_char=2531|end_char=2535
+3	on	on	ADP	_	_	4	case	_	start_char=2536|end_char=2538
+4	Maple	Maple	PROPN	_	Number=Sing	2	obl	_	start_char=2539|end_char=2544
+5	Ave.	Ave.	PROPN	_	Number=Sing	4	appos	_	start_char=2545|end_char=2549
+6	My	I	DET	_	Number=Sing|Poss=Yes|PronType=Prs	7	cc	_	start_char=2550|end_char=2552
+7	sister	Sister	PROPN	_	Number=Sing	8	nsubj	_	start_char=2553|end_char=2559
+8	lives	life	NOUN	_	Number=Plur	2	parataxis	_	start_char=2560|end_char=2565
+9	on	on	ADP	_	_	10	case	_	start_char=2566|end_char=2568
+10	Oak	oak	PROPN	_	Number=Sing	8	obl	_	start_char=2569|end_char=2572
+11	St.	St.	PROPN	_	Number=Sing	10	flat	_	SpacesAfter=\n\n|start_char=2573|end_char=2576
+
+# text = The sample size was approx. 300. It was small, i.e. underpowered.
+# sent_id = 21
+1	The	the	DET	_	PronType=Art	3	det	_	start_char=2578|end_char=2581
+2	sample	sample	NOUN	_	Number=Sing	3	compound	_	start_char=2582|end_char=2588
+3	size	size	NOUN	_	Number=Sing	9	nsubj	_	start_char=2589|end_char=2593
+4	was	wave	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	5	case	_	start_char=2594|end_char=2597
+5	approx.	approx.	NOUN	_	Number=Sing	3	nmod	_	start_char=2598|end_char=2605
+6	300.	300.	NUM	_	NumType=Card	3	nummod	_	start_char=2606|end_char=2610
+7	It	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	9	nsubj	_	start_char=2611|end_char=2613
+8	was	wave	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	9	cop	_	start_char=2614|end_char=2617
+9	small,	small,	ADJ	_	Degree=Pos	0	root	_	start_char=2618|end_char=2624
+10	i.e.	i.e.	ADV	_	Degree=Pos	11	advmod	_	start_char=2625|end_char=2629
+11	underpowered.	underpowered.	NOUN	_	Number=Sing	9	obl	_	SpacesAfter=\n\n|start_char=2630|end_char=2643
+
+# text = Yes.
+# sent_id = 22
+1	Yes.	Yes.	INTJ	_	_	0	root	_	SpacesAfter=\n\n|start_char=2645|end_char=2649
+
+# text = No!
+# sent_id = 23
+1	No!	No!	PROPN	_	Number=Sing	0	root	_	SpacesAfter=\n\n|start_char=2651|end_char=2654
+
+# text = Why?
+# sent_id = 24
+1	Why?	Why?	INTJ	_	_	0	root	_	SpacesAfter=\n\n|start_char=2656|end_char=2660
+
+# text = Absolutely.
+# sent_id = 25
+1	Absolutely.	Absolutely.	INTJ	_	_	0	root	_	SpacesAfter=\n\n|start_char=2662|end_char=2673
+
+# text = Hmm.
+# sent_id = 26
+1	Hmm.	Hmm.	PROPN	_	Number=Sing	0	root	_	SpacesAfter=\n\n|start_char=2675|end_char=2679
+
+# text = Okay...
+# sent_id = 27
+1	Okay...	Okay...	PROPN	_	Number=Sing	0	root	_	SpacesAfter=\n\n|start_char=2681|end_char=2688
+
+# text = Wow!
+# sent_id = 28
+1	Wow	Wow	INTJ	_	_	2	discourse	_	SpaceAfter=No|start_char=2690|end_char=2693
+2	!	!	INTJ	_	_	0	root	_	SpacesAfter=\n\n|start_char=2693|end_char=2694
+
+# text = Fine.
+# sent_id = 29
+1	Fine.	Fine.	INTJ	_	_	0	root	_	SpacesAfter=\n\n|start_char=2696|end_char=2701
+
+# text = Seriously?
+# sent_id = 30
+1	Seriously	Seriously	ADV	_	Degree=Pos	2	advmod	_	SpaceAfter=No|start_char=2703|end_char=2712
+2	?	?	ADV	_	Degree=Pos	0	root	_	SpacesAfter=\n\n|start_char=2712|end_char=2713
+
+# text = Later.
+# sent_id = 31
+1	Later.	Later.	PROPN	_	Number=Sing	0	root	_	SpacesAfter=\n\n|start_char=2715|end_char=2721
+
+# text = Thanks.
+# sent_id = 32
+1	Thanks.	thank	INTJ	_	_	0	root	_	SpacesAfter=\n\n|start_char=2723|end_char=2730
+
+# text = Exactly!
+# sent_id = 33
+1	Exactly	Exactly	ADV	_	Degree=Pos	2	advmod	_	SpaceAfter=No|start_char=2732|end_char=2739
+2	!	!	ADV	_	Degree=Pos	0	root	_	SpacesAfter=\n\n|start_char=2739|end_char=2740
+
+# text = Never.
+# sent_id = 34
+1	Never.	Never.	INTJ	_	_	0	root	_	SpacesAfter=\n\n|start_char=2742|end_char=2748
+
+# text = Goodnight.
+# sent_id = 35
+1	Goodnight.	Goodnight.	PROPN	_	Number=Sing	0	root	_	SpacesAfter=\n\n|start_char=2750|end_char=2760
+
+# text = The rain had stopped and the street was quiet and nobody came
+# sent_id = 36
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=2762|end_char=2765
+2	rain	rain	NOUN	_	Number=Sing	4	nsubj	_	start_char=2766|end_char=2770
+3	had	have	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	4	aux	_	start_char=2771|end_char=2774
+4	stopped	stop	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=2775|end_char=2782
+5	and	and	CCONJ	_	_	7	cc	_	start_char=2783|end_char=2786
+6	the	the	DET	_	PronType=Art	7	det	_	start_char=2787|end_char=2790
+7	street	street	NOUN	_	Number=Sing	4	obl	_	start_char=2791|end_char=2797
+8	was	wave	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	9	cop	_	start_char=2798|end_char=2801
+9	quiet	quie	ADJ	_	Degree=Pos	4	conj	_	start_char=2802|end_char=2807
+10	and	and	CCONJ	_	_	12	cc	_	start_char=2808|end_char=2811
+11	nobody	nobody	ADV	_	Degree=Pos	12	advmod	_	start_char=2812|end_char=2818
+12	came	came	VERB	_	Tense=Pres|VerbForm=Fin	4	conj	_	SpacesAfter=\n\n|start_char=2819|end_char=2823
+
+# text = She opened the door and looked outside and there was nothing there and she closed it again and went back to bed
+# sent_id = 37
+1	She	She	ADV	_	Degree=Pos	2	advmod	_	start_char=2825|end_char=2828
+2	opened	one	VERB	_	Mood=Ind|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2829|end_char=2835
+3	the	the	DET	_	PronType=Art	4	det	_	start_char=2836|end_char=2839
+4	door	door	NOUN	_	Number=Sing	2	obj	_	start_char=2840|end_char=2844
+5	and	and	CCONJ	_	_	6	cc	_	start_char=2845|end_char=2848
+6	looked	look	VERB	_	Tense=Pres|VerbForm=Fin	2	conj	_	start_char=2849|end_char=2855
+7	outside	outside	ADV	_	Degree=Pos	6	advmod	_	start_char=2856|end_char=2863
+8	and	and	CCONJ	_	_	11	cc	_	start_char=2864|end_char=2867
+9	there	there	PRON	_	PronType=Dem	11	nsubj	_	start_char=2868|end_char=2873
+10	was	wave	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	11	cop	_	start_char=2874|end_char=2877
+11	nothing	nothing	ADV	_	Degree=Pos	15	advmod	_	start_char=2878|end_char=2885
+12	there	there	PRON	_	PronType=Dem	11	nsubj	_	start_char=2886|end_char=2891
+13	and	and	CCONJ	_	_	15	cc	_	start_char=2892|end_char=2895
+14	she	she	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	15	nsubj	_	start_char=2896|end_char=2899
+15	closed	clo	VERB	_	Tense=Pres|VerbForm=Part	2	conj	_	start_char=2900|end_char=2906
+16	it	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	15	obj	_	start_char=2907|end_char=2909
+17	again	again	ADV	_	Degree=Pos	15	advmod	_	start_char=2910|end_char=2915
+18	and	and	CCONJ	_	_	19	cc	_	start_char=2916|end_char=2919
+19	went	went	VERB	_	Tense=Pres|VerbForm=Part	15	conj	_	start_char=2920|end_char=2924
+20	back	back	ADV	_	Degree=Pos	19	advmod	_	start_char=2925|end_char=2929
+21	to	to	ADP	_	_	22	case	_	start_char=2930|end_char=2932
+22	bed	Bed	PROPN	_	Number=Sing	19	obl	_	SpacesAfter=\n\n|start_char=2933|end_char=2936
+
+# text = it was late and the lights were off
+# sent_id = 38
+1	it	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	7	obj	_	start_char=2938|end_char=2940
+2	was	wave	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	7	aux	_	start_char=2941|end_char=2944
+3	late	late	ADJ	_	Degree=Pos	7	advmod	_	start_char=2945|end_char=2949
+4	and	and	CCONJ	_	_	6	cc	_	start_char=2950|end_char=2953
+5	the	the	DET	_	PronType=Art	6	det	_	start_char=2954|end_char=2957
+6	lights	light	NOUN	_	Number=Plur	7	nsubj	_	start_char=2958|end_char=2964
+7	were	were	VERB	_	VerbForm=Fin	0	root	_	start_char=2965|end_char=2969
+8	off	off	ADP	_	_	7	compound:prt	_	SpacesAfter=\n\n|start_char=2970|end_char=2973
+
+# text = The quick brown fox jumps over the lazy dog
+# sent_id = 39
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=2975|end_char=2978
+2	quick	quick	ADJ	_	Degree=Pos	3	amod	_	start_char=2979|end_char=2984
+3	brown	Brown	PROPN	_	Number=Sing	5	nsubj	_	start_char=2985|end_char=2990
+4	fox	Fox	PROPN	_	Number=Sing	3	nmod	_	start_char=2991|end_char=2994
+5	jumps	jump	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2995|end_char=3000
+6	over	over	ADP	_	_	8	case	_	start_char=3001|end_char=3005
+7	the	the	DET	_	PronType=Art	8	det	_	start_char=3006|end_char=3009
+8	lazy	Lazy	PROPN	_	Number=Sing	5	obl	_	start_char=3010|end_char=3014
+9	dog	Dog	PROPN	_	Number=Sing	8	flat	_	SpacesAfter=\n\n|start_char=3015|end_char=3018
+
+# text = Section headings without punctuation Lines that end abruptly and continue on the next
+# sent_id = 40
+1	Section	Section	NOUN	_	Number=Sing	2	nmod	_	start_char=3020|end_char=3027
+2	headings	heading	NOUN	_	Number=Plur	0	root	_	start_char=3028|end_char=3036
+3	without	without	ADP	_	_	5	case	_	start_char=3037|end_char=3044
+4	punctuation	punctuation	NOUN	_	Number=Plur	5	compound	_	SpacesAfter=\n|start_char=3045|end_char=3056
+5	Lines	line	NOUN	_	Number=Plur	2	nmod	_	start_char=3057|end_char=3062
+6	that	that	ADP	_	_	7	mark	_	start_char=3063|end_char=3067
+7	end	end	VERB	_	VerbForm=Inf	5	acl:relcl	_	start_char=3068|end_char=3071
+8	abruptly	abruptly	ADV	_	Degree=Pos	7	advmod	_	start_char=3072|end_char=3080
+9	and	and	CCONJ	_	_	10	cc	_	start_char=3081|end_char=3084
+10	continue	continue	VERB	_	VerbForm=Fin	7	conj	_	start_char=3085|end_char=3093
+11	on	on	ADP	_	_	13	case	_	start_char=3094|end_char=3096
+12	the	the	DET	_	PronType=Art	13	det	_	start_char=3097|end_char=3100
+13	next	next	ADJ	_	Degree=Pos	10	obl:unmarked	_	start_char=3101|end_char=3105
+
+# text = line without any capital letters at all
+# sent_id = 41
+1	line	line	NOUN	_	Number=Sing	0	root	_	SpacesAfter=\n|start_char=3106|end_char=3110
+2	without	without	ADP	_	_	5	case	_	start_char=3111|end_char=3118
+3	any	any	DET	_	PronType=Art	5	det	_	start_char=3119|end_char=3122
+4	capital	capital	NOUN	_	Number=Sing	5	compound	_	start_char=3123|end_char=3130
+5	letters	letter	NOUN	_	Number=Plur	1	nmod	_	start_char=3131|end_char=3138
+6	at	at	ADP	_	_	7	case	_	start_char=3139|end_char=3141
+7	all	all	DET	_	PronType=Art	5	nmod	_	SpacesAfter=\n\n|start_char=3142|end_char=3145
+
+# text = If you had asked me ten years ago whether I would ever live in a city, own a car, work in an office, wear a tie, drink black coffee, or enjoy opera, I would have laughed at every single one of those suggestions — and yet here I am, in a city, driving a car to an office, in a tie, with black coffee in my cup and an opera ticket in my pocket, wondering when exactly all of that happened and whether the person I was then would recognize,
+# sent_id = 42
+1	If	if	ADV	_	Degree=Pos	4	discourse	_	start_char=3147|end_char=3149
+2	you	you	PRON	_	Case=Nom|Number=Sing|Person=2|PronType=Prs	4	nsubj	_	start_char=3150|end_char=3153
+3	had	had	VERB	_	VerbForm=Inf	0	root	_	start_char=3154|end_char=3157
+4	asked	ase	VERB	_	VerbForm=Inf	3	xcomp	_	start_char=3158|end_char=3163
+5	me	I	PRON	_	Case=Acc|Number=Sing|Person=1|PronType=Prs	4	iobj	_	start_char=3164|end_char=3166
+6	ten	ten	NUM	_	NumType=Card	7	nummod	_	start_char=3167|end_char=3170
+7	years	year	NOUN	_	Number=Plur	4	obl	_	start_char=3171|end_char=3176
+8	ago	ago	ADV	_	Degree=Pos	4	advmod	_	start_char=3177|end_char=3180
+9	whether	whether	ADP	_	_	8	fixed	_	start_char=3181|end_char=3188
+10	I	I	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	13	nsubj	_	start_char=3189|end_char=3190
+11	would	will	AUX	_	_	13	aux	_	start_char=3191|end_char=3196
+12	ever	ever	ADV	_	Degree=Pos	13	aux	_	start_char=3197|end_char=3201
+13	live	live	VERB	_	VerbForm=Inf	3	parataxis	_	start_char=3202|end_char=3206
+14	in	in	ADP	_	_	16	case	_	start_char=3207|end_char=3209
+15	a	a	DET	_	PronType=Art	16	det	_	start_char=3210|end_char=3211
+16	city,	City,	PROPN	_	Number=Sing	17	nsubj	_	start_char=3212|end_char=3217
+17	own	own	VERB	_	Tense=Pres|VerbForm=Inf	13	advcl	_	start_char=3218|end_char=3221
+18	a	a	DET	_	PronType=Art	19	det	_	start_char=3222|end_char=3223
+19	car,	car,	NOUN	_	Number=Sing	20	nsubj	_	start_char=3224|end_char=3228
+20	work	work	VERB	_	VerbForm=Inf	13	advcl	_	start_char=3229|end_char=3233
+21	in	in	ADP	_	_	23	case	_	start_char=3234|end_char=3236
+22	an	a	DET	_	PronType=Art	23	det	_	start_char=3237|end_char=3239
+23	office,	Office,	PROPN	_	Number=Sing	24	obl	_	start_char=3240|end_char=3247
+24	wear	wear	VERB	_	VerbForm=Inf	17	advcl	_	start_char=3248|end_char=3252
+25	a	a	DET	_	PronType=Art	26	det	_	start_char=3253|end_char=3254
+26	tie,	Tie,	PROPN	_	Number=Sing	24	obl	_	start_char=3255|end_char=3259
+27	drink	drink	NOUN	_	Number=Sing	24	obl	_	start_char=3260|end_char=3265
+28	black	Black	PROPN	_	Number=Sing	27	nmod	_	start_char=3266|end_char=3271
+29	coffee,	Coffee,	PROPN	_	Number=Sing	28	flat	_	start_char=3272|end_char=3279
+30	or	or	CCONJ	_	_	31	cc	_	start_char=3280|end_char=3282
+31	enjoy	enjoy	VERB	_	VerbForm=Inf	24	advcl	_	start_char=3283|end_char=3288
+32	opera,	opera,	ADV	_	Degree=Pos	31	mark	_	start_char=3289|end_char=3295
+33	I	I	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	35	nsubj	_	start_char=3296|end_char=3297
+34	would	will	AUX	_	_	35	aux	_	start_char=3298|end_char=3303
+35	have	have	VERB	_	VerbForm=Inf	24	advcl	_	start_char=3304|end_char=3308
+36	laughed	laugh	VERB	_	Tense=Pres|VerbForm=Part	31	advcl	_	start_char=3309|end_char=3316
+37	at	at	ADP	_	_	40	case	_	start_char=3317|end_char=3319
+38	every	every	DET	_	PronType=Art	40	det	_	start_char=3320|end_char=3325
+39	single	single	ADJ	_	Degree=Pos	40	amod	_	start_char=3326|end_char=3332
+40	one	one	NUM	_	NumType=Card	36	obl	_	start_char=3333|end_char=3336
+41	of	of	ADP	_	_	43	case	_	start_char=3337|end_char=3339
+42	those	that	DET	_	PronType=Art	43	det	_	start_char=3340|end_char=3345
+43	suggestions	suggestion	NOUN	_	Number=Plur	40	nmod	_	start_char=3346|end_char=3357
+44	—	—	ADV	_	Degree=Pos	43	nmod	_	start_char=3358|end_char=3359
+45	and	and	CCONJ	_	_	46	cc	_	start_char=3360|end_char=3363
+46	yet	yet	ADV	_	Degree=Pos	44	fixed	_	start_char=3364|end_char=3367
+47	here	here	ADV	_	Degree=Pos	49	advmod	_	start_char=3368|end_char=3372
+48	I	I	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	49	nsubj	_	start_char=3373|end_char=3374
+49	am,	am,	ADV	_	Degree=Pos	46	fixed	_	start_char=3375|end_char=3378
+50	in	in	ADP	_	_	52	case	_	start_char=3379|end_char=3381
+51	a	a	DET	_	PronType=Art	52	det	_	start_char=3382|end_char=3383
+52	city,	City,	PROPN	_	Number=Sing	53	nsubj	_	start_char=3384|end_char=3389
+53	driving	drive	VERB	_	Tense=Pres|VerbForm=Part	49	parataxis	_	start_char=3390|end_char=3397
+54	a	a	DET	_	PronType=Art	55	det	_	start_char=3398|end_char=3399
+55	car	car	NOUN	_	Number=Sing	53	obl	_	start_char=3400|end_char=3403
+56	to	to	ADP	_	_	58	case	_	start_char=3404|end_char=3406
+57	an	a	DET	_	PronType=Art	58	det	_	start_char=3407|end_char=3409
+58	office,	Office,	PROPN	_	Number=Sing	53	obl	_	start_char=3410|end_char=3417
+59	in	in	ADP	_	_	61	case	_	start_char=3418|end_char=3420
+60	a	a	DET	_	PronType=Art	61	det	_	start_char=3421|end_char=3422
+61	tie,	Tie,	PROPN	_	Number=Sing	58	nmod	_	start_char=3423|end_char=3427
+62	with	with	ADP	_	_	63	case	_	start_char=3428|end_char=3432
+63	black	Black	PROPN	_	Number=Sing	61	nmod	_	start_char=3433|end_char=3438
+64	coffee	coffee	NOUN	_	Number=Sing	63	flat	_	start_char=3439|end_char=3445
+65	in	in	ADP	_	_	67	case	_	start_char=3446|end_char=3448
+66	my	I	DET	_	Number=Sing|Poss=Yes|PronType=Prs	67	det	_	start_char=3449|end_char=3451
+67	cup	Cup	PROPN	_	Number=Sing	64	nmod	_	start_char=3452|end_char=3455
+68	and	and	CCONJ	_	_	71	cc	_	start_char=3456|end_char=3459
+69	an	a	DET	_	PronType=Art	71	det	_	start_char=3460|end_char=3462
+70	opera	opera	ADJ	_	Degree=Pos	71	amod	_	start_char=3463|end_char=3468
+71	ticket	ticket	NOUN	_	Number=Sing	61	conj	_	start_char=3469|end_char=3475
+72	in	in	ADP	_	_	74	case	_	start_char=3476|end_char=3478
+73	my	I	DET	_	Number=Sing|Poss=Yes|PronType=Prs	74	det	_	start_char=3479|end_char=3481
+74	pocket,	Pocket,	PROPN	_	Number=Sing	75	obl	_	start_char=3482|end_char=3489
+75	wondering	wonder	VERB	_	Tense=Pres|VerbForm=Part	67	conj	_	start_char=3490|end_char=3499
+76	when	when	ADV	_	PronType=Int,Rel	75	advmod	_	start_char=3500|end_char=3504
+77	exactly	exactly	ADV	_	Degree=Pos	75	advmod	_	start_char=3505|end_char=3512
+78	all	all	DET	_	PronType=Art	75	nsubj	_	start_char=3513|end_char=3516
+79	of	of	ADP	_	_	81	case	_	start_char=3517|end_char=3519
+80	that	that	ADP	_	_	81	mark	_	start_char=3520|end_char=3524
+81	happened	happ	VERB	_	Tense=Pres|VerbForm=Fin	75	advcl	_	start_char=3525|end_char=3533
+82	and	and	CCONJ	_	_	85	cc	_	start_char=3534|end_char=3537
+83	whether	whether	ADP	_	_	85	case	_	start_char=3538|end_char=3545
+84	the	the	DET	_	PronType=Art	85	det	_	start_char=3546|end_char=3549
+85	person	person	NOUN	_	Number=Sing	90	obj	_	start_char=3550|end_char=3556
+86	I	I	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	90	nsubj	_	start_char=3557|end_char=3558
+87	was	wave	AUX	_	_	90	aux	_	start_char=3559|end_char=3562
+88	then	then	ADV	_	Degree=Pos	90	advmod	_	start_char=3563|end_char=3567
+89	would	will	AUX	_	_	90	aux	_	start_char=3568|end_char=3573
+90	recognize,	recognize,	VERB	_	VerbForm=Inf	81	conj	_	start_char=3574|end_char=3584
+
+# text = let alone approve of, the person I am now.
+# sent_id = 43
+1	let	let	VERB	_	VerbForm=Inf	3	discourse	_	start_char=3585|end_char=3588
+2	alone	alone	ADV	_	Degree=Pos	3	advmod	_	start_char=3589|end_char=3594
+3	approve	approve	VERB	_	VerbForm=Inf	0	root	_	start_char=3595|end_char=3602
+4	of,	of,	ADV	_	Degree=Pos	3	advmod	_	start_char=3603|end_char=3606
+5	the	the	DET	_	PronType=Art	6	det	_	start_char=3607|end_char=3610
+6	person	person	NOUN	_	Number=Sing	3	obj	_	start_char=3611|end_char=3617
+7	I	I	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	9	nsubj	_	start_char=3618|end_char=3619
+8	am	be	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	9	cop	_	start_char=3620|end_char=3622
+9	now.	now.	INTJ	_	_	3	ccomp	_	SpacesAfter=\n\n|start_char=3623|end_char=3627
+
+# text = Because the trains were delayed, because the buses were full, because the taxis were too expensive, and because walking would have taken nearly two hours, we did
+# sent_id = 44
+1	Because	Because	ADV	_	Degree=Pos	3	discourse	_	start_char=3629|end_char=3636
+2	the	the	DET	_	PronType=Art	3	det	_	start_char=3637|end_char=3640
+3	trains	train	NOUN	_	Number=Plur	5	nsubj	_	start_char=3641|end_char=3647
+4	were	were	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	5	cop	_	start_char=3648|end_char=3652
+5	delayed,	delayed,	ADJ	_	Degree=Pos	0	root	_	start_char=3653|end_char=3661
+6	because	because	ADP	_	_	8	case	_	start_char=3662|end_char=3669
+7	the	the	DET	_	PronType=Art	8	det	_	start_char=3670|end_char=3673
+8	buses	buse	NOUN	_	Number=Plur	5	obl	_	start_char=3674|end_char=3679
+9	were	were	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	10	aux	_	start_char=3680|end_char=3684
+10	full,	full,	ADJ	_	Degree=Pos	5	advcl	_	start_char=3685|end_char=3690
+11	because	because	ADP	_	_	13	case	_	start_char=3691|end_char=3698
+12	the	the	DET	_	PronType=Art	13	det	_	start_char=3699|end_char=3702
+13	taxis	taxi	NOUN	_	Number=Plur	10	nsubj	_	start_char=3703|end_char=3708
+14	were	were	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	16	aux	_	start_char=3709|end_char=3713
+15	too	too	ADV	_	Degree=Pos	16	advmod	_	start_char=3714|end_char=3717
+16	expensive,	expensive,	ADJ	_	Degree=Pos	10	advcl	_	start_char=3718|end_char=3728
+17	and	and	CCONJ	_	_	21	cc	_	start_char=3729|end_char=3732
+18	because	because	ADP	_	_	15	fixed	_	start_char=3733|end_char=3740
+19	walking	walk	NOUN	_	Number=Plur	21	nsubj	_	start_char=3741|end_char=3748
+20	would	will	AUX	_	_	21	aux	_	start_char=3749|end_char=3754
+21	have	have	VERB	_	VerbForm=Inf	16	conj	_	start_char=3755|end_char=3759
+22	taken	take	VERB	_	Tense=Past|VerbForm=Part	21	xcomp	_	start_char=3760|end_char=3765
+23	nearly	nearly	ADV	_	Degree=Pos	25	amod	_	start_char=3766|end_char=3772
+24	two	two	NUM	_	NumType=Card	25	nummod	_	start_char=3773|end_char=3776
+25	hours,	hour	NOUN	_	Number=Plur	27	nsubj	_	start_char=3777|end_char=3783
+26	we	we	PRON	_	Case=Nom|Number=Sing|PronType=Prs	27	nsubj	_	start_char=3784|end_char=3786
+27	did	did	VERB	_	Tense=Past|VerbForm=Fin	22	conj	_	start_char=3787|end_char=3790
+
+# text = what any reasonable group of adults would do in that situation: we went back inside, ordered another round of tea, and argued for forty
+# sent_id = 45
+1	what	what	PRON	_	PronType=Int,Rel	0	root	_	start_char=3791|end_char=3795
+2	any	any	DET	_	PronType=Art	4	det	_	start_char=3796|end_char=3799
+3	reasonable	reasonable	ADJ	_	Degree=Pos	4	amod	_	start_char=3800|end_char=3810
+4	group	group	NOUN	_	Number=Sing	1	nsubj	_	start_char=3811|end_char=3816
+5	of	of	ADP	_	_	6	case	_	start_char=3817|end_char=3819
+6	adults	adult	NOUN	_	Number=Plur	4	nmod	_	start_char=3820|end_char=3826
+7	would	will	AUX	_	_	8	aux	_	start_char=3827|end_char=3832
+8	do	do	VERB	_	VerbForm=Inf	4	acl:relcl	_	start_char=3833|end_char=3835
+9	in	in	ADP	_	_	11	case	_	start_char=3836|end_char=3838
+10	that	that	ADP	_	_	11	det	_	start_char=3839|end_char=3843
+11	situation:	situation:	NOUN	_	Number=Sing	13	nsubj	_	start_char=3844|end_char=3854
+12	we	we	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	13	nsubj	_	start_char=3855|end_char=3857
+13	went	went	VERB	_	Tense=Pres|VerbForm=Fin	16	advcl	_	start_char=3858|end_char=3862
+14	back	back	ADV	_	Degree=Pos	16	advmod	_	start_char=3863|end_char=3867
+15	inside,	Inside,	PROPN	_	Number=Sing	16	obl	_	start_char=3868|end_char=3875
+16	ordered	order	VERB	_	Tense=Past|VerbForm=Part	1	csubj	_	start_char=3876|end_char=3883
+17	another	another	DET	_	PronType=Art	18	det	_	start_char=3884|end_char=3891
+18	round	round	NOUN	_	Number=Sing	16	obj	_	start_char=3892|end_char=3897
+19	of	of	ADP	_	_	20	case	_	start_char=3898|end_char=3900
+20	tea,	tea,	NOUN	_	Number=Sing	16	obl	_	start_char=3901|end_char=3905
+21	and	and	CCONJ	_	_	22	cc	_	start_char=3906|end_char=3909
+22	argued	argue	VERB	_	Tense=Past|VerbForm=Fin	16	conj	_	start_char=3910|end_char=3916
+23	for	for	ADP	_	_	24	case	_	start_char=3917|end_char=3920
+24	forty	forty	NUM	_	NumType=Card	22	obl:unmarked	_	SpaceAfter=No|start_char=3921|end_char=3926
+
+# text = -five minutes about whose idea it had been to come in the first place.
+# sent_id = 46
+1	-five	-five	NUM	_	NumType=Card	2	nummod	_	start_char=3926|end_char=3931
+2	minutes	minute	NOUN	_	Number=Plur	8	obl:unmarked	_	start_char=3932|end_char=3939
+3	about	about	ADP	_	_	5	case	_	start_char=3940|end_char=3945
+4	whose	what	DET	_	PronType=Art	5	det	_	start_char=3946|end_char=3951
+5	idea	idea	NOUN	_	Number=Sing	2	nmod	_	start_char=3952|end_char=3956
+6	it	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	8	nsubj	_	start_char=3957|end_char=3959
+7	had	have	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	8	cop	_	start_char=3960|end_char=3963
+8	been	been	ADJ	_	Degree=Pos	0	root	_	start_char=3964|end_char=3968
+9	to	to	PART	_	_	10	mark	_	start_char=3969|end_char=3971
+10	come	come	VERB	_	VerbForm=Inf	8	xcomp	_	start_char=3972|end_char=3976
+11	in	in	ADP	_	_	14	case	_	start_char=3977|end_char=3979
+12	the	the	DET	_	PronType=Art	14	det	_	start_char=3980|end_char=3983
+13	first	one	ADJ	_	Degree=Pos|NumType=Ord	14	amod	_	start_char=3984|end_char=3989
+14	place.	place.	NOUN	_	Number=Sing	10	obl	_	SpacesAfter=\n\n|start_char=3990|end_char=3996
+
+# text = Among the items recovered from the site were: three bronze coins, a broken comb, two clay lamps, a bone needle, several iron nails of varying
+# sent_id = 47
+1	Among	Among	ADP	_	_	3	case	_	start_char=3998|end_char=4003
+2	the	the	DET	_	PronType=Art	3	det	_	start_char=4004|end_char=4007
+3	items	ite	NOUN	_	Number=Plur	4	nsubj	_	start_char=4008|end_char=4013
+4	recovered	recovere	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=4014|end_char=4023
+5	from	from	ADP	_	_	7	case	_	start_char=4024|end_char=4028
+6	the	the	DET	_	PronType=Art	7	det	_	start_char=4029|end_char=4032
+7	site	site	NOUN	_	Number=Sing	4	obl	_	start_char=4033|end_char=4037
+8	were:	Were:	PROPN	_	Number=Sing	7	nmod	_	start_char=4038|end_char=4043
+9	three	three	NUM	_	NumType=Card	8	nummod	_	start_char=4044|end_char=4049
+10	bronze	Bronze	PROPN	_	Number=Sing	8	nmod	_	start_char=4050|end_char=4056
+11	coins,	coins	NOUN	_	Number=Sing	4	obl	_	start_char=4057|end_char=4063
+12	a	a	DET	_	PronType=Art	14	det	_	start_char=4064|end_char=4065
+13	broken	broken	ADJ	_	Degree=Pos	14	amod	_	start_char=4066|end_char=4072
+14	comb,	Comb,	PROPN	_	Number=Sing	11	nmod	_	start_char=4073|end_char=4078
+15	two	two	NUM	_	NumType=Card	14	flat	_	start_char=4079|end_char=4082
+16	clay	Clay	PROPN	_	Number=Sing	14	flat	_	start_char=4083|end_char=4087
+17	lamps,	Lamps,	PROPN	_	Number=Sing	19	flat	_	start_char=4088|end_char=4094
+18	a	a	DET	_	PronType=Art	19	det	_	start_char=4095|end_char=4096
+19	bone	Bone	PROPN	_	Number=Sing	14	conj	_	start_char=4097|end_char=4101
+20	needle,	Needle,	PROPN	_	Number=Sing	19	flat	_	start_char=4102|end_char=4109
+21	several	several	NUM	_	NumType=Card	22	nummod	_	start_char=4110|end_char=4117
+22	iron	iron	NOUN	_	Number=Sing	23	compound	_	start_char=4118|end_char=4122
+23	nails	nail	NOUN	_	Number=Plur	4	obl	_	start_char=4123|end_char=4128
+24	of	of	ADP	_	_	25	case	_	start_char=4129|end_char=4131
+25	varying	vary	ADJ	_	Degree=Pos	23	amod	_	start_char=4132|end_char=4139
+
+# text = sizes, a fragment of painted plaster showing what may be a bird or possibly a leaf, and a small glass bead, blue with white swirls, that the excavators nicknamed "the marble.
+# sent_id = 48
+1	sizes,	size	VERB	_	Tense=Pres|VerbForm=Part	0	root	_	start_char=4140|end_char=4146
+2	a	a	DET	_	PronType=Art	3	det	_	start_char=4147|end_char=4148
+3	fragment	fragment	NOUN	_	Number=Sing	1	obj	_	start_char=4149|end_char=4157
+4	of	of	ADP	_	_	5	case	_	start_char=4158|end_char=4160
+5	painted	paint	ADJ	_	Degree=Pos	3	amod	_	start_char=4161|end_char=4168
+6	plaster	plast	ADJ	_	Degree=Pos	3	amod	_	start_char=4169|end_char=4176
+7	showing	show	VERB	_	Tense=Pres|VerbForm=Part	3	acl:relcl	_	start_char=4177|end_char=4184
+8	what	what	PRON	_	PronType=Int,Rel	7	obj	_	start_char=4185|end_char=4189
+9	may	may	AUX	_	_	12	aux	_	start_char=4190|end_char=4193
+10	be	be	AUX	_	VerbForm=Inf	12	cop	_	start_char=4194|end_char=4196
+11	a	a	DET	_	PronType=Art	12	det	_	start_char=4197|end_char=4198
+12	bird	Bird	PROPN	_	Number=Sing	16	conj	_	start_char=4199|end_char=4203
+13	or	or	CCONJ	_	_	16	cc	_	start_char=4204|end_char=4206
+14	possibly	possibly	ADV	_	Degree=Pos	7	fixed	_	start_char=4207|end_char=4215
+15	a	a	DET	_	PronType=Art	16	det	_	start_char=4216|end_char=4217
+16	leaf,	Leaf,	PROPN	_	Number=Sing	7	obl	_	start_char=4218|end_char=4223
+17	and	and	CCONJ	_	_	20	cc	_	start_char=4224|end_char=4227
+18	a	a	DET	_	PronType=Art	20	det	_	start_char=4228|end_char=4229
+19	small	small	ADJ	_	Degree=Pos	20	amod	_	start_char=4230|end_char=4235
+20	glass	glass	NOUN	_	Number=Sing	16	conj	_	start_char=4236|end_char=4241
+21	bead,	Bead,	PROPN	_	Number=Sing	20	nmod	_	start_char=4242|end_char=4247
+22	blue	Blue	PROPN	_	Number=Sing	21	flat	_	start_char=4248|end_char=4252
+23	with	with	ADP	_	_	24	case	_	start_char=4253|end_char=4257
+24	white	White	PROPN	_	Number=Sing	21	nmod	_	start_char=4258|end_char=4263
+25	swirls,	Swirl	PROPN	_	Number=Sing	24	flat	_	start_char=4264|end_char=4271
+26	that	that	ADP	_	_	29	mark	_	start_char=4272|end_char=4276
+27	the	the	DET	_	PronType=Art	28	det	_	start_char=4277|end_char=4280
+28	excavators	excavator	NOUN	_	Number=Plur	29	nsubj	_	start_char=4281|end_char=4291
+29	nicknamed	nickname	VERB	_	Tense=Past|VerbForm=Fin	7	advcl	_	start_char=4292|end_char=4301
+30	"the	"the	ADP	_	_	31	case	_	start_char=4302|end_char=4306
+31	marble.	Marble.	PROPN	_	Number=Sing	29	obl	_	SpaceAfter=No|start_char=4307|end_char=4314
+
+# text = "
+# sent_id = 49
+1	"	"	ADV	_	Degree=Pos	0	root	_	SpacesAfter=\n|start_char=4314|end_char=4315

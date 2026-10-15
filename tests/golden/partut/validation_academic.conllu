@@ -1,0 +1,1180 @@
+# text = See Hartwell v. Dunmore Logistics, LLC, 512 F.3d 1044, 1049 (9th Cir. 2008) (holding that the clause was unenforceable).
+# sent_id = 0
+1	See	see	VERB	V	Mood=Imp|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=0|end_char=3
+2	Hartwell	Hartwell	PROPN	SP	_	1	obj	_	start_char=4|end_char=12
+3	v.	v	PUNCT	FF	_	4	punct	_	start_char=13|end_char=15
+4	Dunmore	Dunmore	PROPN	SP	_	2	conj	_	start_char=16|end_char=23
+5	Logistics	Logistics	PROPN	SP	_	2	flat	_	SpaceAfter=No|start_char=24|end_char=33
+6	,	,	PUNCT	FF	_	7	punct	_	start_char=33|end_char=34
+7	LLC	LLC	PROPN	SP	_	2	conj	_	SpaceAfter=No|start_char=35|end_char=38
+8	,	,	PUNCT	FF	_	7	punct	_	start_char=38|end_char=39
+9	512	512	NUM	N	NumType=Card	7	flat	_	start_char=40|end_char=43
+10	F.3d	F.3d	PROPN	SP	_	9	nmod:unmarked	_	start_char=44|end_char=48
+11	1044	1044	NUM	N	NumType=Card	9	nmod:unmarked	_	SpaceAfter=No|start_char=49|end_char=53
+12	,	,	PUNCT	FF	_	13	punct	_	start_char=53|end_char=54
+13	1049	1049	NUM	N	NumType=Card	9	conj	_	start_char=55|end_char=59
+14	(	(	PUNCT	FB	_	15	punct	_	SpaceAfter=No|start_char=60|end_char=61
+15	9th	9th	NUM	N	NumType=Card	13	nmod	_	start_char=61|end_char=64
+16	Cir.	cir.	NOUN	S	Number=Sing	15	nmod:unmarked	_	start_char=65|end_char=69
+17	2008	2008	NUM	N	NumType=Card	15	nmod:unmarked	_	SpaceAfter=No|start_char=70|end_char=74
+18	)	)	PUNCT	FB	_	15	punct	_	start_char=74|end_char=75
+19	(	(	PUNCT	FB	_	20	punct	_	SpaceAfter=No|start_char=76|end_char=77
+20	holding	hold	VERB	V	Number=Sing|Tense=Pres|VerbForm=Part	1	conj	_	start_char=77|end_char=84
+21	that	that	SCONJ	CS	_	25	mark	_	start_char=85|end_char=89
+22	the	the	DET	RD	Definite=Def|PronType=Art	23	det	_	start_char=90|end_char=93
+23	clause	clause	NOUN	S	Number=Sing	25	nsubj	_	start_char=94|end_char=100
+24	was	be	AUX	V	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	25	cop	_	start_char=101|end_char=104
+25	unenforceable	unenforceable	ADJ	A	Degree=Pos	20	ccomp	_	SpaceAfter=No|start_char=105|end_char=118
+26	)	)	PUNCT	FB	_	25	punct	_	SpaceAfter=No|start_char=118|end_char=119
+27	.	.	PUNCT	FS	_	1	punct	_	start_char=119|end_char=120
+
+# text = But cf.
+# sent_id = 1
+1	But	but	CCONJ	CC	_	2	cc	_	start_char=121|end_char=124
+2	cf	cf	INTJ	_	_	0	root	_	SpaceAfter=No|start_char=125|end_char=127
+3	.	.	PUNCT	FS	_	2	punct	_	start_char=127|end_char=128
+
+# text = In re Pell Grain Co., 77 B.R. 301 (Bankr.
+# sent_id = 2
+1	In	in	ADP	E	_	4	case	_	start_char=129|end_char=131
+2	re	re	ADJ	A	Degree=Pos	3	amod	_	start_char=132|end_char=134
+3	Pell	Pell	PROPN	SP	_	4	nmod	_	start_char=135|end_char=139
+4	Grain	Grain	PROPN	SP	_	0	root	_	start_char=140|end_char=145
+5	Co.	Co.	PROPN	SP	_	4	flat	_	SpaceAfter=No|start_char=146|end_char=149
+6	,	,	PUNCT	FF	_	4	punct	_	start_char=149|end_char=150
+7	77	77	NUM	N	NumType=Card	4	flat	_	start_char=151|end_char=153
+8	B.	B.	PROPN	SP	_	7	flat	_	SpaceAfter=No|start_char=154|end_char=156
+9	R.	R.	PROPN	SP	_	7	flat	_	start_char=156|end_char=158
+10	301	301	NUM	N	NumType=Card	7	flat	_	start_char=159|end_char=162
+11	(	(	PUNCT	FB	_	12	punct	_	SpaceAfter=No|start_char=163|end_char=164
+12	Bankr	Bankr	PROPN	SP	_	7	nmod	_	SpaceAfter=No|start_char=164|end_char=169
+13	.	.	PUNCT	FS	_	4	punct	_	start_char=169|end_char=170
+
+# text = D. Kan. 1987).
+# sent_id = 3
+1	D.	D.	PROPN	SP	_	0	root	_	start_char=171|end_char=173
+2	Kan.	Kan.	PROPN	SP	_	1	flat	_	start_char=174|end_char=178
+3	1987	1987	NUM	N	NumType=Card	1	flat	_	SpaceAfter=No|start_char=179|end_char=183
+4	)	)	PUNCT	FB	_	1	punct	_	SpaceAfter=No|start_char=183|end_char=184
+5	.	.	PUNCT	FS	_	1	punct	_	SpacesAfter=\n\n|start_char=184|end_char=185
+
+# text = The statute provides that "no person shall be deprived of a hearing" except as set forth in § 12(b)(3).
+# sent_id = 4
+1	The	the	DET	RD	Definite=Def|PronType=Art	2	det	_	start_char=187|end_char=190
+2	statute	statute	NOUN	S	Number=Sing	3	nsubj	_	start_char=191|end_char=198
+3	provides	provide	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=199|end_char=207
+4	that	that	SCONJ	CS	_	10	mark	_	start_char=208|end_char=212
+5	"	"	PUNCT	FB	_	10	punct	_	SpaceAfter=No|start_char=213|end_char=214
+6	no	no	DET	DI	PronType=Ind	7	det	_	start_char=214|end_char=216
+7	person	person	NOUN	S	Number=Sing	10	nsubj:pass	_	start_char=217|end_char=223
+8	shall	shall	AUX	VM	Mood=Ind|Person=3|Tense=Pres|VerbForm=Fin	10	aux	_	start_char=224|end_char=229
+9	be	be	AUX	VA	VerbForm=Inf	10	aux:pass	_	start_char=230|end_char=232
+10	deprived	deprive	VERB	V	Tense=Past|VerbForm=Part	3	ccomp	_	start_char=233|end_char=241
+11	of	of	ADP	E	_	13	case	_	start_char=242|end_char=244
+12	a	a	DET	RI	Definite=Ind|Number=Sing|PronType=Art	13	det	_	start_char=245|end_char=246
+13	hearing	hearing	NOUN	S	Number=Sing	10	obl	_	SpaceAfter=No|start_char=247|end_char=254
+14	"	"	PUNCT	FB	_	13	punct	_	start_char=254|end_char=255
+15	except	except	ADP	E	_	17	mark	_	start_char=256|end_char=262
+16	as	as	ADP	E	_	17	mark	_	start_char=263|end_char=265
+17	set	set	VERB	V	Tense=Past|VerbForm=Part	10	advcl	_	start_char=266|end_char=269
+18	forth	forth	ADV	B	_	17	advmod	_	start_char=270|end_char=275
+19	in	in	ADP	E	_	20	case	_	start_char=276|end_char=278
+20	§	§	SYM	X	_	17	obl	_	start_char=279|end_char=280
+21	12	12	NUM	N	NumType=Card	20	flat	_	SpaceAfter=No|start_char=281|end_char=283
+22	(	(	PUNCT	FB	_	23	punct	_	SpaceAfter=No|start_char=283|end_char=284
+23	b	b	NUM	N	NumType=Card	20	appos	_	SpaceAfter=No|start_char=284|end_char=285
+24	)	)	PUNCT	FB	_	23	punct	_	SpaceAfter=No|start_char=285|end_char=286
+25	(	(	PUNCT	FB	_	26	punct	_	SpaceAfter=No|start_char=286|end_char=287
+26	3	3	NUM	N	NumType=Card	17	discourse	_	SpaceAfter=No|start_char=287|end_char=288
+27	)	)	PUNCT	FB	_	26	punct	_	SpaceAfter=No|start_char=288|end_char=289
+28	.	.	PUNCT	FS	_	3	punct	_	start_char=289|end_char=290
+
+# text = Section 4(a)(ii) was repealed in 1994.
+# sent_id = 5
+1	Section	section	NOUN	S	Number=Sing	9	nsubj:pass	_	start_char=291|end_char=298
+2	4(	4(	NUM	N	NumType=Card	1	flat	_	SpaceAfter=No|start_char=299|end_char=301
+3	a	a	X	X	_	1	flat	_	SpaceAfter=No|start_char=301|end_char=302
+4	)	)	PUNCT	FB	_	6	punct	_	SpaceAfter=No|start_char=302|end_char=303
+5	(	(	PUNCT	FB	_	6	punct	_	SpaceAfter=No|start_char=303|end_char=304
+6	ii	ii	NUM	N	NumType=Card	9	parataxis	_	SpaceAfter=No|start_char=304|end_char=306
+7	)	)	PUNCT	FB	_	6	punct	_	start_char=306|end_char=307
+8	was	be	AUX	VA	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	9	aux:pass	_	start_char=308|end_char=311
+9	repealed	repeal	VERB	V	Tense=Past|VerbForm=Part	0	root	_	start_char=312|end_char=320
+10	in	in	ADP	E	_	11	case	_	start_char=321|end_char=323
+11	1994	1994	NUM	N	NumType=Card	9	obl	_	SpaceAfter=No|start_char=324|end_char=328
+12	.	.	PUNCT	FS	_	9	punct	_	start_char=328|end_char=329
+
+# text = See 42 U.S.C.
+# sent_id = 6
+1	See	see	VERB	V	Mood=Imp|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=330|end_char=333
+2	42	42	NUM	N	NumType=Card	3	nummod	_	start_char=334|end_char=336
+3	U.S.	U.S.	PROPN	SP	_	1	obj	_	SpaceAfter=No|start_char=337|end_char=341
+4	C.	C.	PROPN	SP	_	3	flat	_	start_char=341|end_char=343
+
+# text = § 1983 (2018);
+# sent_id = 7
+1	§	§	PROPN	SP	_	0	root	_	start_char=344|end_char=345
+2	1983	1983	NUM	N	NumType=Card	1	flat	_	start_char=346|end_char=350
+3	(	(	PUNCT	FB	_	4	punct	_	SpaceAfter=No|start_char=351|end_char=352
+4	2018	2018	NUM	N	NumType=Card	1	flat	_	SpaceAfter=No|start_char=352|end_char=356
+5	)	)	PUNCT	FB	_	4	punct	_	SpaceAfter=No|start_char=356|end_char=357
+6	;	;	PUNCT	FC	_	1	punct	_	start_char=357|end_char=358
+
+# text = Fed. R. Civ. P. 12(b)(6).
+# sent_id = 8
+1	Fed	Fed	PROPN	SP	_	0	root	_	SpaceAfter=No|start_char=359|end_char=362
+2	.	.	PUNCT	FF	_	1	punct	_	start_char=362|end_char=363
+3	R.	R.	PROPN	SP	_	1	flat	_	start_char=364|end_char=366
+4	Civ.	Civ.	X	SW	Foreign=Yes	3	flat	_	start_char=367|end_char=371
+5	P.	P.	PROPN	SP	_	3	flat	_	start_char=372|end_char=374
+6	12	12	NUM	N	NumType=Card	3	flat	_	SpaceAfter=No|start_char=375|end_char=377
+7	(	(	PUNCT	FB	_	8	punct	_	SpaceAfter=No|start_char=377|end_char=378
+8	b	b	NUM	N	NumType=Card	3	flat	_	SpaceAfter=No|start_char=378|end_char=379
+9	)	)	PUNCT	FB	_	8	punct	_	SpaceAfter=No|start_char=379|end_char=380
+10	(	(	PUNCT	FB	_	11	punct	_	SpaceAfter=No|start_char=380|end_char=381
+11	6	6	NUM	N	NumType=Card	3	flat	_	SpaceAfter=No|start_char=381|end_char=382
+12	)	)	PUNCT	FB	_	11	punct	_	SpaceAfter=No|start_char=382|end_char=383
+13	.	.	PUNCT	FS	_	3	punct	_	SpacesAfter=\n\n|start_char=383|end_char=384
+
+# text = Plaintiff's motion is GRANTED in part and DENIED in part.
+# sent_id = 9
+1-2	Plaintiff's	_	_	_	_	_	_	_	start_char=386|end_char=397
+1	Plaintiff	plaintiff	NOUN	S	Number=Sing	3	nmod:poss	_	start_char=386|end_char=395
+2	's	's	PART	PART	_	1	case	_	start_char=395|end_char=397
+3	motion	motion	NOUN	S	Number=Sing	5	nsubj:pass	_	start_char=398|end_char=404
+4	is	be	AUX	VA	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	5	aux:pass	_	start_char=405|end_char=407
+5	GRANTED	grant	VERB	V	Tense=Past|VerbForm=Part	0	root	_	start_char=408|end_char=415
+6	in	in	ADP	E	_	7	case	_	start_char=416|end_char=418
+7	part	part	NOUN	S	Number=Sing	5	obl	_	start_char=419|end_char=423
+8	and	and	CCONJ	CC	_	9	cc	_	start_char=424|end_char=427
+9	DENIED	Denied	PROPN	SP	_	7	conj	_	start_char=428|end_char=434
+10	in	in	ADP	E	_	11	case	_	start_char=435|end_char=437
+11	part	part	NOUN	S	Number=Sing	5	obl	_	SpaceAfter=No|start_char=438|end_char=442
+12	.	.	PUNCT	FS	_	5	punct	_	start_char=442|end_char=443
+
+# text = The Clerk of Court is directed to close the case.
+# sent_id = 10
+1	The	the	DET	RD	Definite=Def|PronType=Art	2	det	_	start_char=444|end_char=447
+2	Clerk	clerk	NOUN	S	Number=Sing	6	nsubj:pass	_	start_char=448|end_char=453
+3	of	of	ADP	E	_	4	case	_	start_char=454|end_char=456
+4	Court	court	NOUN	S	Number=Sing	2	nmod	_	start_char=457|end_char=462
+5	is	be	AUX	VA	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	6	aux:pass	_	start_char=463|end_char=465
+6	directed	direct	VERB	V	Tense=Past|VerbForm=Part	0	root	_	start_char=466|end_char=474
+7	to	to	PART	PART	_	8	mark	_	start_char=475|end_char=477
+8	close	close	VERB	V	VerbForm=Inf	6	ccomp	_	start_char=478|end_char=483
+9	the	the	DET	RD	Definite=Def|PronType=Art	10	det	_	start_char=484|end_char=487
+10	case	case	NOUN	S	Number=Sing	8	obj	_	SpaceAfter=No|start_char=488|end_char=492
+11	.	.	PUNCT	FS	_	6	punct	_	start_char=492|end_char=493
+
+# text = SO ORDERED.
+# sent_id = 11
+1	SO	so	ADP	E	_	2	case	_	start_char=494|end_char=496
+2	ORDERED	Ordered	PROPN	SP	_	0	root	_	SpaceAfter=No|start_char=497|end_char=504
+3	.	.	PUNCT	FS	_	2	punct	_	SpacesAfter=\n\n|start_char=504|end_char=505
+
+# text = Id. at 1051.
+# sent_id = 12
+1	Id	Id	PROPN	SP	_	0	root	_	SpaceAfter=No|start_char=507|end_char=509
+2	.	.	PUNCT	FF	_	1	punct	_	start_char=509|end_char=510
+3	at	at	ADP	E	_	4	case	_	start_char=511|end_char=513
+4	1051	1051	NUM	N	NumType=Card	1	nmod	_	SpaceAfter=No|start_char=514|end_char=518
+5	.	.	PUNCT	FS	_	1	punct	_	start_char=518|end_char=519
+
+# text = The court reasoned that the parties "could not have contemplated" such a result.
+# sent_id = 13
+1	The	the	DET	RD	Definite=Def|PronType=Art	2	det	_	start_char=520|end_char=523
+2	court	court	NOUN	S	Number=Sing	3	nsubj	_	start_char=524|end_char=529
+3	reasoned	reason	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=530|end_char=538
+4	that	that	SCONJ	CS	_	11	mark	_	start_char=539|end_char=543
+5	the	the	DET	RD	Definite=Def|PronType=Art	6	det	_	start_char=544|end_char=547
+6	parties	party	NOUN	S	Number=Plur	11	nsubj	_	start_char=548|end_char=555
+7	"	"	PUNCT	FB	_	11	punct	_	SpaceAfter=No|start_char=556|end_char=557
+8	could	can	AUX	VM	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	11	aux	_	start_char=557|end_char=562
+9	not	not	PART	PART	Polarity=Neg	11	advmod	_	start_char=563|end_char=566
+10	have	have	AUX	VA	VerbForm=Inf	11	aux	_	start_char=567|end_char=571
+11	contemplated	contemplate	VERB	V	Tense=Past|VerbForm=Part	3	ccomp	_	SpaceAfter=No|start_char=572|end_char=584
+12	"	"	PUNCT	FB	_	15	punct	_	start_char=584|end_char=585
+13	such	such	DET	DD	PronType=Dem	15	det	_	start_char=586|end_char=590
+14	a	a	DET	RI	Definite=Ind|Number=Sing|PronType=Art	15	det	_	start_char=591|end_char=592
+15	result	result	NOUN	S	Number=Sing	11	obj	_	SpaceAfter=No|start_char=593|end_char=599
+16	.	.	PUNCT	FS	_	3	punct	_	start_char=599|end_char=600
+
+# text = Ibid.
+# sent_id = 14
+1	Ibid	Ibid	PROPN	SP	_	0	root	_	SpaceAfter=No|start_char=601|end_char=605
+2	.	.	PUNCT	FS	_	1	punct	_	SpacesAfter=\n\n|start_char=605|end_char=606
+
+# text = As noted by Kowalski et al. (2019), the effect disappears at low temperatures.
+# sent_id = 15
+1	As	as	ADP	E	ExtPos=ADP	2	mark	_	start_char=608|end_char=610
+2	noted	note	VERB	V	Tense=Past|VerbForm=Part	13	advcl	_	start_char=611|end_char=616
+3	by	by	ADP	E	_	4	case	_	start_char=617|end_char=619
+4	Kowalski	Kowalski	PROPN	SP	_	2	obl	_	start_char=620|end_char=628
+5	et	et	CCONJ	CC	_	6	cc	_	start_char=629|end_char=631
+6	al.	al.	X	SW	Foreign=Yes	4	conj	_	start_char=632|end_char=635
+7	(	(	PUNCT	FB	_	8	punct	_	SpaceAfter=No|start_char=636|end_char=637
+8	2019	2019	NUM	N	NumType=Card	6	nmod:unmarked	_	SpaceAfter=No|start_char=637|end_char=641
+9	)	)	PUNCT	FB	_	8	punct	_	SpaceAfter=No|start_char=641|end_char=642
+10	,	,	PUNCT	FF	_	2	punct	_	start_char=642|end_char=643
+11	the	the	DET	RD	Definite=Def|PronType=Art	12	det	_	start_char=644|end_char=647
+12	effect	effect	NOUN	S	Number=Sing	13	nsubj	_	start_char=648|end_char=654
+13	disappears	disappear	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=655|end_char=665
+14	at	at	ADP	E	_	16	case	_	start_char=666|end_char=668
+15	low	low	ADJ	A	Degree=Pos	16	amod	_	start_char=669|end_char=672
+16	temperatures	temperature	NOUN	S	Number=Plur	13	obl	_	SpaceAfter=No|start_char=673|end_char=685
+17	.	.	PUNCT	FS	_	13	punct	_	start_char=685|end_char=686
+
+# text = Similar findings were reported elsewhere [3, 7–9].
+# sent_id = 16
+1	Similar	similar	ADJ	A	Degree=Pos	2	amod	_	start_char=687|end_char=694
+2	findings	finding	NOUN	S	Number=Plur	4	nsubj:pass	_	start_char=695|end_char=703
+3	were	be	AUX	VA	Mood=Ind|Number=Plur|Tense=Past|VerbForm=Fin	4	aux:pass	_	start_char=704|end_char=708
+4	reported	report	VERB	V	Tense=Past|VerbForm=Part	0	root	_	start_char=709|end_char=717
+5	elsewhere	elsewhere	ADV	B	_	4	advmod	_	start_char=718|end_char=727
+6	[	[	PUNCT	FB	_	7	punct	_	SpaceAfter=No|start_char=728|end_char=729
+7	3	3	NUM	N	NumType=Card	4	parataxis	_	SpaceAfter=No|start_char=729|end_char=730
+8	,	,	PUNCT	FF	_	9	punct	_	start_char=730|end_char=731
+9	7	7	NUM	N	NumType=Card	7	flat	_	SpaceAfter=No|start_char=732|end_char=733
+10	–	–	SYM	X	_	11	case	_	SpaceAfter=No|start_char=733|end_char=734
+11	9	9	NUM	N	NumType=Card	7	nmod	_	SpaceAfter=No|start_char=734|end_char=735
+12	]	]	PUNCT	FB	_	7	punct	_	SpaceAfter=No|start_char=735|end_char=736
+13	.	.	PUNCT	FS	_	4	punct	_	start_char=736|end_char=737
+
+# text = However, Nguyen and Abara (2021, p. 44) argue otherwise.
+# sent_id = 17
+1	However	however	ADV	B	_	12	advmod	_	SpaceAfter=No|start_char=738|end_char=745
+2	,	,	PUNCT	FF	_	1	punct	_	start_char=745|end_char=746
+3	Nguyen	Nguyen	PROPN	SP	_	12	nsubj	_	start_char=747|end_char=753
+4	and	and	CCONJ	CC	_	5	cc	_	start_char=754|end_char=757
+5	Abara	Abara	PROPN	SP	_	3	conj	_	start_char=758|end_char=763
+6	(	(	PUNCT	FB	_	7	punct	_	SpaceAfter=No|start_char=764|end_char=765
+7	2021	2021	NUM	N	NumType=Card	3	nmod	_	SpaceAfter=No|start_char=765|end_char=769
+8	,	,	PUNCT	FF	_	9	punct	_	start_char=769|end_char=770
+9	p.	page	NOUN	S	Number=Sing	7	flat	_	start_char=771|end_char=773
+10	44	44	NUM	N	NumType=Card	7	nmod:unmarked	_	SpaceAfter=No|start_char=774|end_char=776
+11	)	)	PUNCT	FB	_	7	punct	_	start_char=776|end_char=777
+12	argue	argue	VERB	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	0	root	_	start_char=778|end_char=783
+13	otherwise	otherwise	ADV	B	_	12	advmod	_	SpaceAfter=No|start_char=784|end_char=793
+14	.	.	PUNCT	FS	_	12	punct	_	SpacesAfter=\n\n|start_char=793|end_char=794
+
+# text = Previous work (e.g., Smith, 2003;
+# sent_id = 18
+1	Previous	previous	ADJ	A	Degree=Pos	2	amod	_	start_char=796|end_char=804
+2	work	work	NOUN	S	Number=Sing	0	root	_	start_char=805|end_char=809
+3	(	(	PUNCT	FB	_	4	punct	_	SpaceAfter=No|start_char=810|end_char=811
+4	e.g.	e.g.	PROPN	SP	_	2	conj	_	SpaceAfter=No|start_char=811|end_char=815
+5	,	,	PUNCT	FF	_	6	punct	_	start_char=815|end_char=816
+6	Smith	Smith	PROPN	SP	_	4	conj	_	SpaceAfter=No|start_char=817|end_char=822
+7	,	,	PUNCT	FF	_	8	punct	_	start_char=822|end_char=823
+8	2003	2003	NUM	N	NumType=Card	4	conj	_	SpaceAfter=No|start_char=824|end_char=828
+9	;	;	PUNCT	FC	_	2	punct	_	start_char=828|end_char=829
+
+# text = Lee & Park, 2010) has largely ignored this question.
+# sent_id = 19
+1	Lee	Lee	PROPN	SP	_	9	nsubj	_	start_char=830|end_char=833
+2	&	&	PUNCT	FF	_	1	punct	_	start_char=834|end_char=835
+3	Park	park	NOUN	S	Number=Sing	1	flat	_	SpaceAfter=No|start_char=836|end_char=840
+4	,	,	PUNCT	FF	_	1	punct	_	start_char=840|end_char=841
+5	2010	2010	NUM	N	NumType=Card	3	nmod:unmarked	_	SpaceAfter=No|start_char=842|end_char=846
+6	)	)	PUNCT	FB	_	5	punct	_	start_char=846|end_char=847
+7	has	have	AUX	VA	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	9	aux	_	start_char=848|end_char=851
+8	largely	largely	ADV	B	_	9	advmod	_	start_char=852|end_char=859
+9	ignored	ignore	VERB	V	Tense=Past|VerbForm=Part	0	root	_	start_char=860|end_char=867
+10	this	this	DET	DD	Number=Sing|PronType=Dem	11	det	_	start_char=868|end_char=872
+11	question	question	NOUN	S	Number=Sing	9	obj	_	SpaceAfter=No|start_char=873|end_char=881
+12	.	.	PUNCT	FS	_	9	punct	_	start_char=881|end_char=882
+
+# text = Our results, summarized in Table 2, suggest that the relationship is non-linear (r = 0.42, p < .001).
+# sent_id = 20
+1	Our	us	DET	AP	Poss=Yes|PronType=Prs	2	nmod:poss	_	start_char=883|end_char=886
+2	results	result	NOUN	S	Number=Plur	9	nsubj	_	SpaceAfter=No|start_char=887|end_char=894
+3	,	,	PUNCT	FF	_	2	punct	_	start_char=894|end_char=895
+4	summarized	summarize	VERB	V	Tense=Past|VerbForm=Part	2	acl	_	start_char=896|end_char=906
+5	in	in	ADP	E	_	6	case	_	start_char=907|end_char=909
+6	Table	table	NOUN	S	Number=Sing	4	obl	_	start_char=910|end_char=915
+7	2	2	NUM	N	NumType=Card	6	flat	_	SpaceAfter=No|start_char=916|end_char=917
+8	,	,	PUNCT	FF	_	2	punct	_	start_char=917|end_char=918
+9	suggest	suggest	VERB	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	0	root	_	start_char=919|end_char=926
+10	that	that	SCONJ	CS	_	16	mark	_	start_char=927|end_char=931
+11	the	the	DET	RD	Definite=Def|PronType=Art	12	det	_	start_char=932|end_char=935
+12	relationship	relationship	NOUN	S	Number=Sing	16	nsubj	_	start_char=936|end_char=948
+13	is	be	AUX	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	16	cop	_	start_char=949|end_char=951
+14	non	non	ADV	BN	PronType=Neg	16	advmod	_	SpaceAfter=No|start_char=952|end_char=955
+15	-	-	PUNCT	FF	_	14	punct	_	SpaceAfter=No|start_char=955|end_char=956
+16	linear	linear	ADJ	A	Degree=Pos	9	ccomp	_	start_char=956|end_char=962
+17	(	(	PUNCT	FB	_	20	punct	_	SpaceAfter=No|start_char=963|end_char=964
+18	r	r	PUNCT	FB	_	20	punct	_	start_char=964|end_char=965
+19	=	=	PUNCT	FF	_	20	punct	_	start_char=966|end_char=967
+20	0.42	0.42	NUM	N	NumType=Card	16	obl	_	SpaceAfter=No|start_char=968|end_char=972
+21	,	,	PUNCT	FF	_	22	punct	_	start_char=972|end_char=973
+22	p	p	NUM	N	NumType=Card	20	conj	_	start_char=974|end_char=975
+23	<	<	PUNCT	FB	_	20	punct	_	start_char=976|end_char=977
+24	.001	.001	NUM	N	NumType=Card	20	conj	_	SpaceAfter=No|start_char=978|end_char=982
+25	)	)	PUNCT	FB	_	20	punct	_	SpaceAfter=No|start_char=982|end_char=983
+26	.	.	PUNCT	FS	_	9	punct	_	SpacesAfter=\n\n|start_char=983|end_char=984
+
+# text = Participants (N = 128;
+# sent_id = 21
+1	Participants	participant	NOUN	S	Number=Plur	0	root	_	start_char=986|end_char=998
+2	(	(	PUNCT	FB	_	3	punct	_	SpaceAfter=No|start_char=999|end_char=1000
+3	N	N	PROPN	SP	_	1	flat	_	start_char=1000|end_char=1001
+4	=	=	PUNCT	FB	_	3	punct	_	start_char=1002|end_char=1003
+5	128	128	NUM	N	NumType=Card	3	nmod:unmarked	_	SpaceAfter=No|start_char=1004|end_char=1007
+6	;	;	PUNCT	FC	_	1	punct	_	start_char=1007|end_char=1008
+
+# text = 71 female, 55 male, 2 non-binary;
+# sent_id = 22
+1	71	71	NUM	N	NumType=Card	5	nummod	_	start_char=1009|end_char=1011
+2	female	female	ADJ	A	Degree=Pos	5	amod	_	SpaceAfter=No|start_char=1012|end_char=1018
+3	,	,	PUNCT	FF	_	4	punct	_	start_char=1018|end_char=1019
+4	55	55	NUM	N	NumType=Card	5	nummod	_	start_char=1020|end_char=1022
+5	male	male	NOUN	S	Number=Sing	0	root	_	SpaceAfter=No|start_char=1023|end_char=1027
+6	,	,	PUNCT	FF	_	7	punct	_	start_char=1027|end_char=1028
+7	2	2	NUM	N	NumType=Card	10	nummod	_	start_char=1029|end_char=1030
+8	non	non	ADV	BN	PronType=Neg	10	advmod	_	SpaceAfter=No|start_char=1031|end_char=1034
+9	-	-	PUNCT	FF	_	10	punct	_	SpaceAfter=No|start_char=1034|end_char=1035
+10	binary	binary	ADJ	A	Degree=Pos	5	conj	_	SpaceAfter=No|start_char=1035|end_char=1041
+11	;	;	PUNCT	FC	_	5	punct	_	start_char=1041|end_char=1042
+
+# text = Mage = 24.6, SD = 3.1) were recruited via an online panel.
+# sent_id = 23
+1	Mage	mage	NOUN	S	Number=Sing	10	nsubj:pass	_	start_char=1043|end_char=1047
+2	=	=	PUNCT	FF	_	3	punct	_	start_char=1048|end_char=1049
+3	24.6	24.6	NUM	N	NumType=Card	1	flat	_	SpaceAfter=No|start_char=1050|end_char=1054
+4	,	,	PUNCT	FF	_	5	punct	_	start_char=1054|end_char=1055
+5	SD	SD	PROPN	SP	_	1	flat	_	start_char=1056|end_char=1058
+6	=	=	PUNCT	FB	_	7	punct	_	start_char=1059|end_char=1060
+7	3.1	3.1	NUM	N	NumType=Card	5	flat	_	SpaceAfter=No|start_char=1061|end_char=1064
+8	)	)	PUNCT	FB	_	7	punct	_	start_char=1064|end_char=1065
+9	were	be	AUX	VA	Mood=Ind|Number=Plur|Tense=Past|VerbForm=Fin	10	aux:pass	_	start_char=1066|end_char=1070
+10	recruited	recruit	VERB	V	Tense=Past|VerbForm=Part	0	root	_	start_char=1071|end_char=1080
+11	via	via	ADP	E	_	14	case	_	start_char=1081|end_char=1084
+12	an	a	DET	RI	Definite=Ind|Number=Sing|PronType=Art	14	det	_	start_char=1085|end_char=1087
+13	online	online	ADJ	A	Degree=Pos	14	amod	_	start_char=1088|end_char=1094
+14	panel	panel	NOUN	S	Number=Sing	10	obl	_	SpaceAfter=No|start_char=1095|end_char=1100
+15	.	.	PUNCT	FS	_	10	punct	_	start_char=1100|end_char=1101
+
+# text = Each received $8.00 for completing the 20-min survey.
+# sent_id = 24
+1	Each	each	PRON	PI	PronType=Ind	2	nsubj	_	start_char=1102|end_char=1106
+2	received	receive	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1107|end_char=1115
+3	$	$	SYM	X	_	2	obj	_	SpaceAfter=No|start_char=1116|end_char=1117
+4	8.00	8.00	NUM	N	NumType=Card	3	nummod	_	start_char=1117|end_char=1121
+5	for	for	ADP	E	_	6	mark	_	start_char=1122|end_char=1125
+6	completing	complete	VERB	V	VerbForm=Ger	2	advcl	_	start_char=1126|end_char=1136
+7	the	the	DET	RD	Definite=Def|PronType=Art	11	det	_	start_char=1137|end_char=1140
+8	20	20	NUM	N	NumType=Card	10	nummod	_	SpaceAfter=No|start_char=1141|end_char=1143
+9	-	-	PUNCT	FF	_	8	punct	_	SpaceAfter=No|start_char=1143|end_char=1144
+10	min	min	ADJ	A	Degree=Pos	11	amod	_	start_char=1144|end_char=1147
+11	survey	survey	NOUN	S	Number=Sing	6	obj	_	SpaceAfter=No|start_char=1148|end_char=1154
+12	.	.	PUNCT	FS	_	2	punct	_	SpacesAfter=\n\n|start_char=1154|end_char=1155
+
+# text = The reaction was carried out at 25 °C and 1 atm for 3 h.
+# sent_id = 25
+1	The	the	DET	RD	Definite=Def|PronType=Art	2	det	_	start_char=1157|end_char=1160
+2	reaction	reaction	NOUN	S	Number=Sing	4	nsubj:pass	_	start_char=1161|end_char=1169
+3	was	be	AUX	VA	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	4	aux:pass	_	start_char=1170|end_char=1173
+4	carried	carry	VERB	V	Tense=Past|VerbForm=Part	0	root	_	start_char=1174|end_char=1181
+5	out	out	ADP	E	_	4	compound:prt	_	start_char=1182|end_char=1185
+6	at	at	ADP	E	_	8	case	_	start_char=1186|end_char=1188
+7	25	25	NUM	N	NumType=Card	8	nummod	_	start_char=1189|end_char=1191
+8	°C	°C	PROPN	SP	_	4	obl	_	start_char=1192|end_char=1194
+9	and	and	CCONJ	CC	_	10	cc	_	start_char=1195|end_char=1198
+10	1	1	NUM	N	NumType=Card	11	nummod	_	start_char=1199|end_char=1200
+11	atm	atm	NOUN	S	Number=Sing	8	conj	_	start_char=1201|end_char=1204
+12	for	for	ADP	E	_	13	case	_	start_char=1205|end_char=1208
+13	3	3	NUM	N	NumType=Card	4	obl	_	start_char=1209|end_char=1210
+14	h.	he	PUNCT	FS	_	4	punct	_	start_char=1211|end_char=1213
+
+# text = The yield was 87% (0.62 g, 2.4 mmol).
+# sent_id = 26
+1	The	the	DET	RD	Definite=Def|PronType=Art	2	det	_	start_char=1214|end_char=1217
+2	yield	yield	NOUN	S	Number=Sing	5	nsubj	_	start_char=1218|end_char=1223
+3	was	be	AUX	V	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	5	cop	_	start_char=1224|end_char=1227
+4	87	87	NUM	N	NumType=Card	5	nummod	_	SpaceAfter=No|start_char=1228|end_char=1230
+5	%	%	SYM	X	_	0	root	_	start_char=1230|end_char=1231
+6	(	(	PUNCT	FB	_	7	punct	_	SpaceAfter=No|start_char=1232|end_char=1233
+7	0	0	NUM	N	NumType=Card	5	nummod	_	SpaceAfter=No|start_char=1233|end_char=1234
+8	.	.	PUNCT	FF	_	7	punct	_	SpaceAfter=No|start_char=1234|end_char=1235
+9	62	62	NUM	N	NumType=Card	10	nummod	_	start_char=1235|end_char=1237
+10	g	g	SYM	X	_	7	conj	_	SpaceAfter=No|start_char=1238|end_char=1239
+11	,	,	PUNCT	FF	_	10	punct	_	start_char=1239|end_char=1240
+12	2.4	2.4	NUM	N	NumType=Card	13	nummod	_	start_char=1241|end_char=1244
+13	mmol	mmol	NOUN	S	Number=Sing	5	nmod	_	SpaceAfter=No|start_char=1245|end_char=1249
+14	)	)	PUNCT	FB	_	7	punct	_	SpaceAfter=No|start_char=1249|end_char=1250
+15	.	.	PUNCT	FS	_	5	punct	_	start_char=1250|end_char=1251
+
+# text = The product was purified by flash chromatography (hexane/EtOAc 4:1).
+# sent_id = 27
+1	The	the	DET	RD	Definite=Def|PronType=Art	2	det	_	start_char=1252|end_char=1255
+2	product	product	NOUN	S	Number=Sing	4	nsubj:pass	_	start_char=1256|end_char=1263
+3	was	be	AUX	VA	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	4	aux:pass	_	start_char=1264|end_char=1267
+4	purified	purify	VERB	V	Tense=Past|VerbForm=Part	0	root	_	start_char=1268|end_char=1276
+5	by	by	ADP	E	_	7	case	_	start_char=1277|end_char=1279
+6	flash	flash	NOUN	S	Number=Sing	7	nmod	_	start_char=1280|end_char=1285
+7	chromatography	chromatography	NOUN	S	Number=Sing	4	obl	_	start_char=1286|end_char=1300
+8	(	(	PUNCT	FB	_	9	punct	_	SpaceAfter=No|start_char=1301|end_char=1302
+9	hexane	hexane	NOUN	S	Number=Sing	7	nmod	_	SpaceAfter=No|start_char=1302|end_char=1308
+10	/	/	PUNCT	FF	_	11	punct	_	SpaceAfter=No|start_char=1308|end_char=1309
+11	EtOAc	EtOAc	PROPN	SP	_	9	flat	_	start_char=1309|end_char=1314
+12	4:	4:	NUM	N	NumType=Card	9	flat	_	SpaceAfter=No|start_char=1315|end_char=1317
+13	1	1	NUM	N	NumType=Card	9	flat	_	SpaceAfter=No|start_char=1317|end_char=1318
+14	)	)	PUNCT	FB	_	9	punct	_	SpaceAfter=No|start_char=1318|end_char=1319
+15	.	.	PUNCT	FS	_	4	punct	_	SpacesAfter=\n\n|start_char=1319|end_char=1320
+
+# text = The speed of light in vacuum is approximately 3.00 × 10^8 m/s.
+# sent_id = 28
+1	The	the	DET	RD	Definite=Def|PronType=Art	2	det	_	start_char=1322|end_char=1325
+2	speed	speed	NOUN	S	Number=Sing	12	nsubj	_	start_char=1326|end_char=1331
+3	of	of	ADP	E	_	4	case	_	start_char=1332|end_char=1334
+4	light	light	NOUN	S	Number=Sing	2	nmod	_	start_char=1335|end_char=1340
+5	in	in	ADP	E	_	6	case	_	start_char=1341|end_char=1343
+6	vacuum	vacuum	NOUN	S	Number=Sing	4	nmod	_	start_char=1344|end_char=1350
+7	is	be	AUX	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	12	cop	_	start_char=1351|end_char=1353
+8	approximately	approximately	ADV	B	_	12	advmod	_	start_char=1354|end_char=1367
+9	3.00	3.00	NUM	N	NumType=Card	10	nummod	_	start_char=1368|end_char=1372
+10	×	×	SYM	X	_	12	nmod	_	start_char=1373|end_char=1374
+11	10^8	10^8	NUM	N	NumType=Card	10	nummod	_	start_char=1375|end_char=1379
+12	m/s	m/s	NOUN	S	Number=Plur	0	root	_	SpaceAfter=No|start_char=1380|end_char=1383
+13	.	.	PUNCT	FS	_	12	punct	_	start_char=1383|end_char=1384
+
+# text = Avogadro's number is 6.022e23 mol^-1.
+# sent_id = 29
+1	Avogadro's	Avogadro's	PROPN	SP	_	2	nmod	_	start_char=1385|end_char=1395
+2	number	number	NOUN	S	Number=Sing	5	nsubj	_	start_char=1396|end_char=1402
+3	is	be	AUX	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	5	cop	_	start_char=1403|end_char=1405
+4	6.022e23	6.022e23	NUM	N	NumType=Card	5	nummod	_	start_char=1406|end_char=1414
+5	mol^	mol^	NOUN	S	Number=Sing	0	root	_	SpaceAfter=No|start_char=1415|end_char=1419
+6	-	-	PUNCT	FF	_	5	punct	_	SpaceAfter=No|start_char=1419|end_char=1420
+7	1	1	NUM	N	NumType=Card	5	flat	_	SpaceAfter=No|start_char=1420|end_char=1421
+8	.	.	PUNCT	FS	_	5	punct	_	start_char=1421|end_char=1422
+
+# text = Planck's constant, h, equals 6.626 × 10⁻³⁴ J·s.
+# sent_id = 30
+1-2	Planck's	_	_	_	_	_	_	_	start_char=1423|end_char=1431
+1	Planck	Planck	PROPN	SP	_	3	nmod:poss	_	start_char=1423|end_char=1429
+2	's	's	PART	PART	_	1	case	_	start_char=1429|end_char=1431
+3	constant	constant	ADJ	A	Degree=Pos	7	amod	_	SpaceAfter=No|start_char=1432|end_char=1440
+4	,	,	PUNCT	FF	_	7	punct	_	start_char=1440|end_char=1441
+5	h	h	PUNCT	FB	_	7	punct	_	SpaceAfter=No|start_char=1442|end_char=1443
+6	,	,	PUNCT	FF	_	7	punct	_	start_char=1443|end_char=1444
+7	equals	equal	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1445|end_char=1451
+8	6	6	NUM	N	NumType=Card	7	nummod	_	SpaceAfter=No|start_char=1452|end_char=1453
+9	.	.	PUNCT	FF	_	8	punct	_	SpaceAfter=No|start_char=1453|end_char=1454
+10	626	626	NUM	N	NumType=Card	7	nummod	_	start_char=1454|end_char=1457
+11	×	×	SYM	X	_	12	case	_	start_char=1458|end_char=1459
+12	10⁻³⁴	10⁻³⁴	NUM	N	NumType=Card	10	nummod	_	start_char=1460|end_char=1465
+13	J·s	J·s	PROPN	SP	_	12	nmod	_	SpaceAfter=No|start_char=1466|end_char=1469
+14	.	.	PUNCT	FS	_	3	punct	_	SpacesAfter=\n\n|start_char=1469|end_char=1470
+
+# text = A typical adult human has about 5 L of blood.
+# sent_id = 31
+1	A	a	DET	RI	Definite=Ind|Number=Sing|PronType=Art	4	det	_	start_char=1472|end_char=1473
+2	typical	typical	ADJ	A	Degree=Pos	4	amod	_	start_char=1474|end_char=1481
+3	adult	adult	ADJ	A	Degree=Pos	4	amod	_	start_char=1482|end_char=1487
+4	human	human	ADJ	A	Degree=Pos	5	nsubj	_	start_char=1488|end_char=1493
+5	has	have	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1494|end_char=1497
+6	about	about	ADV	B	_	8	advmod	_	start_char=1498|end_char=1503
+7	5	5	NUM	N	NumType=Card	8	nummod	_	start_char=1504|end_char=1505
+8	L	le	NUM	N	NumType=Card	5	obj	_	start_char=1506|end_char=1507
+9	of	of	ADP	E	_	10	case	_	start_char=1508|end_char=1510
+10	blood	blood	NOUN	S	Number=Sing	8	nmod	_	SpaceAfter=No|start_char=1511|end_char=1516
+11	.	.	PUNCT	FS	_	5	punct	_	start_char=1516|end_char=1517
+
+# text = The sample was diluted to 10 µg/mL and stored at −80 °C.
+# sent_id = 32
+1	The	the	DET	RD	Definite=Def|PronType=Art	2	det	_	start_char=1518|end_char=1521
+2	sample	sample	NOUN	S	Number=Sing	4	nsubj:pass	_	start_char=1522|end_char=1528
+3	was	be	AUX	VA	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	4	aux:pass	_	start_char=1529|end_char=1532
+4	diluted	dilute	VERB	V	Tense=Past|VerbForm=Part	0	root	_	start_char=1533|end_char=1540
+5	to	to	ADP	E	_	7	case	_	start_char=1541|end_char=1543
+6	10	10	NUM	N	NumType=Card	7	nummod	_	start_char=1544|end_char=1546
+7	µg	µg	NOUN	S	Number=Plur	4	obl	_	SpaceAfter=No|start_char=1547|end_char=1549
+8	/mL	/mL	X	X	_	7	nmod	_	start_char=1549|end_char=1552
+9	and	and	CCONJ	CC	_	10	cc	_	start_char=1553|end_char=1556
+10	stored	store	VERB	V	Tense=Past|VerbForm=Part	4	conj	_	start_char=1557|end_char=1563
+11	at	at	ADP	E	_	13	case	_	start_char=1564|end_char=1566
+12	−80	−80	NUM	N	NumType=Card	13	nummod	_	start_char=1567|end_char=1570
+13	°	°	NOUN	S	Number=Plur	10	obl	_	SpaceAfter=No|start_char=1571|end_char=1572
+14	C	C	PROPN	SP	_	13	nmod:unmarked	_	SpaceAfter=No|start_char=1572|end_char=1573
+15	.	.	PUNCT	FS	_	4	punct	_	start_char=1573|end_char=1574
+
+# text = Centrifuge at 3,000 × g for 10 min.
+# sent_id = 33
+1	Centrifuge	centrifuge	NOUN	S	Number=Sing	0	root	_	start_char=1575|end_char=1585
+2	at	at	ADP	E	_	5	case	_	start_char=1586|end_char=1588
+3	3,000	3,000	NUM	N	NumType=Card	5	nummod	_	start_char=1589|end_char=1594
+4	×	×	PUNCT	FF	_	3	punct	_	start_char=1595|end_char=1596
+5	g	g	NOUN	S	Number=Sing	1	nmod	_	start_char=1597|end_char=1598
+6	for	for	ADP	E	_	8	case	_	start_char=1599|end_char=1602
+7	10	10	NUM	N	NumType=Card	8	nummod	_	start_char=1603|end_char=1605
+8	min	min	NOUN	S	Number=Plur	5	nmod	_	SpaceAfter=No|start_char=1606|end_char=1609
+9	.	.	PUNCT	FS	_	1	punct	_	SpacesAfter=\n\n|start_char=1609|end_char=1610
+
+# text = The probe traveled 1.5×10^9 km in 14 yr.
+# sent_id = 34
+1	The	the	DET	RD	Definite=Def|PronType=Art	2	det	_	start_char=1612|end_char=1615
+2	probe	probe	NOUN	S	Number=Sing	3	nsubj	_	start_char=1616|end_char=1621
+3	traveled	traveled	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1622|end_char=1630
+4	1.5×10^9	1.5×10^9	NUM	N	NumType=Card	5	nummod	_	start_char=1631|end_char=1639
+5	km	kilometer	NOUN	S	Number=Plur	3	obj	_	start_char=1640|end_char=1642
+6	in	in	ADP	E	_	8	case	_	start_char=1643|end_char=1645
+7	14	14	NUM	N	NumType=Card	8	nummod	_	start_char=1646|end_char=1648
+8	yr	yr	NOUN	S	Number=Sing	3	obl	_	SpaceAfter=No|start_char=1649|end_char=1651
+9	.	.	PUNCT	FS	_	3	punct	_	start_char=1651|end_char=1652
+
+# text = Its power source produced 470 W at launch and roughly 240 W by 2015.
+# sent_id = 35
+1	Its	its	DET	AP	Number=Sing|Poss=Yes|PronType=Prs	3	nmod:poss	_	start_char=1653|end_char=1656
+2	power	power	NOUN	S	Number=Sing	3	nmod	_	start_char=1657|end_char=1662
+3	source	source	NOUN	S	Number=Sing	4	nsubj	_	start_char=1663|end_char=1669
+4	produced	produce	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1670|end_char=1678
+5	470	470	NUM	N	NumType=Card	6	nummod	_	start_char=1679|end_char=1682
+6	W	w	NOUN	S	Number=Plur	4	obj	_	start_char=1683|end_char=1684
+7	at	at	ADP	E	_	8	case	_	start_char=1685|end_char=1687
+8	launch	launch	NOUN	S	Number=Sing	6	nmod	_	start_char=1688|end_char=1694
+9	and	and	CCONJ	CC	_	12	cc	_	start_char=1695|end_char=1698
+10	roughly	roughly	ADV	B	_	12	advmod	_	start_char=1699|end_char=1706
+11	240	240	NUM	N	NumType=Card	12	nummod	_	start_char=1707|end_char=1710
+12	W	W	PROPN	SP	_	8	conj	_	start_char=1711|end_char=1712
+13	by	by	ADP	E	_	14	case	_	start_char=1713|end_char=1715
+14	2015	2015	NUM	N	NumType=Card	4	obl	_	SpaceAfter=No|start_char=1716|end_char=1720
+15	.	.	PUNCT	FS	_	4	punct	_	SpacesAfter=\n\n|start_char=1720|end_char=1721
+
+# text = Water boils at 100°C (212°F) at sea level.
+# sent_id = 36
+1	Water	water	NOUN	S	Number=Sing	2	nsubj	_	start_char=1723|end_char=1728
+2	boils	boil	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1729|end_char=1734
+3	at	at	ADP	E	_	4	case	_	start_char=1735|end_char=1737
+4	100°C	100°C	NUM	N	NumType=Card	2	obl	_	start_char=1738|end_char=1743
+5	(	(	PUNCT	FB	_	7	punct	_	SpaceAfter=No|start_char=1744|end_char=1745
+6	212	212	NUM	N	NumType=Card	7	nummod	_	SpaceAfter=No|start_char=1745|end_char=1748
+7	°	°	NOUN	S	Number=Plur	4	conj	_	SpaceAfter=No|start_char=1748|end_char=1749
+8	F	"	NUM	N	NumType=Card	7	appos	_	SpaceAfter=No|start_char=1749|end_char=1750
+9	)	)	PUNCT	FB	_	8	punct	_	start_char=1750|end_char=1751
+10	at	at	ADP	E	_	12	case	_	start_char=1752|end_char=1754
+11	sea	sea	NOUN	S	Number=Sing	12	nmod	_	start_char=1755|end_char=1758
+12	level	level	NOUN	S	Number=Sing	2	obl	_	SpaceAfter=No|start_char=1759|end_char=1764
+13	.	.	PUNCT	FS	_	2	punct	_	start_char=1764|end_char=1765
+
+# text = At an altitude of 2,400 m, it boils at about 92 °C.
+# sent_id = 37
+1	At	at	ADP	E	_	3	case	_	start_char=1766|end_char=1768
+2	an	a	DET	RI	Definite=Ind|Number=Sing|PronType=Art	3	det	_	start_char=1769|end_char=1771
+3	altitude	altitude	NOUN	S	Number=Sing	9	obl	_	start_char=1772|end_char=1780
+4	of	of	ADP	E	_	5	case	_	start_char=1781|end_char=1783
+5	2,400	2,400	NUM	N	NumType=Card	3	nmod	_	start_char=1784|end_char=1789
+6	m	milometer	NUM	N	NumType=Card	5	nummod	_	SpaceAfter=No|start_char=1790|end_char=1791
+7	,	,	PUNCT	FF	_	3	punct	_	start_char=1791|end_char=1792
+8	it	it	PRON	PE	Number=Sing|Person=3|PronType=Prs	9	nsubj	_	start_char=1793|end_char=1795
+9	boils	boil	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1796|end_char=1801
+10	at	at	ADP	E	_	13	case	_	start_char=1802|end_char=1804
+11	about	about	ADV	B	_	13	advmod	_	start_char=1805|end_char=1810
+12	92	92	NUM	N	NumType=Card	13	nummod	_	start_char=1811|end_char=1813
+13	°	°	NOUN	S	Number=Plur	9	obl	_	SpaceAfter=No|start_char=1814|end_char=1815
+14	C	C	PROPN	SP	_	13	nmod:unmarked	_	SpaceAfter=No|start_char=1815|end_char=1816
+15	.	.	PUNCT	FS	_	9	punct	_	SpacesAfter=\n\n|start_char=1816|end_char=1817
+
+# text = Fig.
+# sent_id = 38
+1	Fig	Fig	PROPN	SP	_	0	root	_	SpaceAfter=No|start_char=1819|end_char=1822
+2	.	.	PUNCT	FS	_	1	punct	_	start_char=1822|end_char=1823
+
+# text = 3 shows the distribution of residuals.
+# sent_id = 39
+1	3	3	NUM	N	NumType=Card	2	nsubj	_	start_char=1824|end_char=1825
+2	shows	show	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1826|end_char=1831
+3	the	the	DET	RD	Definite=Def|PronType=Art	4	det	_	start_char=1832|end_char=1835
+4	distribution	distribution	NOUN	S	Number=Sing	2	obj	_	start_char=1836|end_char=1848
+5	of	of	ADP	E	_	6	case	_	start_char=1849|end_char=1851
+6	residuals	residual	NOUN	S	Number=Plur	4	nmod	_	SpaceAfter=No|start_char=1852|end_char=1861
+7	.	.	PUNCT	FS	_	2	punct	_	start_char=1861|end_char=1862
+
+# text = Eq. (7) can be rewritten as y = ax² + bx + c, where a ≠ 0.
+# sent_id = 40
+1	Eq	Eq	PROPN	SP	_	8	nsubj:pass	_	SpaceAfter=No|start_char=1863|end_char=1865
+2	.	.	PUNCT	FF	_	1	punct	_	start_char=1865|end_char=1866
+3	(	(	PUNCT	FB	_	4	punct	_	SpaceAfter=No|start_char=1867|end_char=1868
+4	7	7	NUM	N	NumType=Card	8	discourse	_	SpaceAfter=No|start_char=1868|end_char=1869
+5	)	)	PUNCT	FB	_	4	punct	_	start_char=1869|end_char=1870
+6	can	can	AUX	VM	Mood=Ind|Person=3|Tense=Pres|VerbForm=Fin	8	aux	_	start_char=1871|end_char=1874
+7	be	be	AUX	VA	VerbForm=Inf	8	aux:pass	_	start_char=1875|end_char=1877
+8	rewritten	rewrit	VERB	V	Tense=Past|VerbForm=Part	0	root	_	start_char=1878|end_char=1887
+9	as	as	ADP	E	_	10	case	_	start_char=1888|end_char=1890
+10	y	y	X	X	_	8	obl	_	start_char=1891|end_char=1892
+11	=	=	PUNCT	FF	_	10	punct	_	start_char=1893|end_char=1894
+12	ax²	ax²	PROPN	SP	_	10	flat	_	start_char=1895|end_char=1898
+13	+	+	PUNCT	FF	_	10	punct	_	start_char=1899|end_char=1900
+14	bx	bx	PROPN	SP	_	10	flat	_	start_char=1901|end_char=1903
+15	+	+	PUNCT	FF	_	10	punct	_	start_char=1904|end_char=1905
+16	c	c	PROPN	SP	_	10	flat	_	SpaceAfter=No|start_char=1906|end_char=1907
+17	,	,	PUNCT	FF	_	10	punct	_	start_char=1907|end_char=1908
+18	where	where	ADV	B	PronType=Int	20	orphan	_	start_char=1909|end_char=1914
+19	a	a	DET	RI	Definite=Ind|Number=Sing|PronType=Art	20	det	_	start_char=1915|end_char=1916
+20	≠	≠	NOUN	S	Number=Sing	10	nmod	_	start_char=1917|end_char=1918
+21	0	0	NUM	N	NumType=Card	20	flat	_	SpaceAfter=No|start_char=1919|end_char=1920
+22	.	.	PUNCT	FS	_	8	punct	_	SpacesAfter=\n\n|start_char=1920|end_char=1921
+
+# text = The mean was 4.2 ± 0.3 mm (95% CI:
+# sent_id = 41
+1	The	the	DET	RD	Definite=Def|PronType=Art	2	det	_	start_char=1923|end_char=1926
+2	mean	mean	NOUN	S	Number=Sing	4	nsubj	_	start_char=1927|end_char=1931
+3	was	be	AUX	V	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	4	cop	_	start_char=1932|end_char=1935
+4	4.2	4.2	NUM	N	NumType=Card	5	nummod	_	start_char=1936|end_char=1939
+5	±	±	SYM	X	_	6	nmod	_	start_char=1940|end_char=1941
+6	0.3	0.3	NUM	N	NumType=Card	10	nummod	_	start_char=1942|end_char=1945
+7	mm	mm	NUM	N	NumType=Card	6	nummod	_	start_char=1946|end_char=1948
+8	(	(	PUNCT	FB	_	10	punct	_	SpaceAfter=No|start_char=1949|end_char=1950
+9	95	95	NUM	N	NumType=Card	10	nummod	_	SpaceAfter=No|start_char=1950|end_char=1952
+10	%	%	SYM	X	_	11	nmod	_	start_char=1952|end_char=1953
+11	CI	CI	PROPN	SP	_	0	root	_	SpaceAfter=No|start_char=1954|end_char=1956
+12	:	:	PUNCT	FC	_	4	punct	_	start_char=1956|end_char=1957
+
+# text = 3.6–4.8).
+# sent_id = 42
+1	3.6	3.6	NUM	N	NumType=Card	0	root	_	SpaceAfter=No|start_char=1958|end_char=1961
+2	–	–	SYM	X	_	3	case	_	SpaceAfter=No|start_char=1961|end_char=1962
+3	4.8	4.8	NUM	N	NumType=Card	1	conj	_	SpaceAfter=No|start_char=1962|end_char=1965
+4	)	)	PUNCT	FB	_	3	punct	_	SpaceAfter=No|start_char=1965|end_char=1966
+5	.	.	PUNCT	FS	_	1	punct	_	start_char=1966|end_char=1967
+
+# text = Values below the detection limit (< 0.05 ppm) were excluded.
+# sent_id = 43
+1	Values	value	NOUN	S	Number=Plur	12	nsubj:pass	_	start_char=1968|end_char=1974
+2	below	below	ADP	E	_	5	case	_	start_char=1975|end_char=1980
+3	the	the	DET	RD	Definite=Def|PronType=Art	5	det	_	start_char=1981|end_char=1984
+4	detection	detection	NOUN	S	Number=Sing	5	nmod	_	start_char=1985|end_char=1994
+5	limit	limit	NOUN	S	Number=Sing	1	nmod	_	start_char=1995|end_char=2000
+6	(	(	PUNCT	FB	_	9	punct	_	SpaceAfter=No|start_char=2001|end_char=2002
+7	<	<	PUNCT	FB	_	9	punct	_	start_char=2002|end_char=2003
+8	0.05	0.05	NUM	N	NumType=Card	9	nummod	_	start_char=2004|end_char=2008
+9	ppm	ppm	NUM	N	NumType=Card	5	nmod	_	SpaceAfter=No|start_char=2009|end_char=2012
+10	)	)	PUNCT	FB	_	9	punct	_	start_char=2012|end_char=2013
+11	were	be	AUX	VA	Mood=Ind|Number=Plur|Tense=Past|VerbForm=Fin	12	aux:pass	_	start_char=2014|end_char=2018
+12	excluded	exclude	VERB	V	Tense=Past|VerbForm=Part	0	root	_	SpaceAfter=No|start_char=2019|end_char=2027
+13	.	.	PUNCT	FS	_	12	punct	_	SpacesAfter=\n\n|start_char=2027|end_char=2028
+
+# text = The resistor is rated at 4.7 kΩ and 0.25 W. Apply 5 V DC and measure the current in mA.
+# sent_id = 44
+1	The	the	DET	RD	Definite=Def|PronType=Art	2	det	_	start_char=2030|end_char=2033
+2	resistor	resistor	NOUN	S	Number=Sing	4	nsubj:pass	_	start_char=2034|end_char=2042
+3	is	be	AUX	VA	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	aux:pass	_	start_char=2043|end_char=2045
+4	rated	rate	VERB	V	Tense=Past|VerbForm=Part	0	root	_	start_char=2046|end_char=2051
+5	at	at	ADP	E	_	7	case	_	start_char=2052|end_char=2054
+6	4.7	4.7	NUM	N	NumType=Card	7	nummod	_	start_char=2055|end_char=2058
+7	kΩ	kΩ	NUM	N	NumType=Card	4	obl	_	start_char=2059|end_char=2061
+8	and	and	CCONJ	CC	_	10	cc	_	start_char=2062|end_char=2065
+9	0.25	0.25	NUM	N	NumType=Card	10	nummod	_	start_char=2066|end_char=2070
+10	W	w	X	X	_	7	conj	_	SpaceAfter=No|start_char=2071|end_char=2072
+11	.	.	PUNCT	FF	_	7	punct	_	start_char=2072|end_char=2073
+12	Apply	apply	VERB	V	Mood=Ind|Tense=Pres|VerbForm=Fin	4	advcl	_	start_char=2074|end_char=2079
+13	5	5	NUM	N	NumType=Card	14	nummod	_	start_char=2080|end_char=2081
+14	V	V	PROPN	SP	_	12	obj	_	start_char=2082|end_char=2083
+15	DC	DC	PROPN	SP	_	12	obj	_	start_char=2084|end_char=2086
+16	and	and	CCONJ	CC	_	17	cc	_	start_char=2087|end_char=2090
+17	measure	measure	VERB	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	4	conj	_	start_char=2091|end_char=2098
+18	the	the	DET	RD	Definite=Def|PronType=Art	19	det	_	start_char=2099|end_char=2102
+19	current	current	ADJ	A	Degree=Pos	17	obj	_	start_char=2103|end_char=2110
+20	in	in	ADP	E	_	21	case	_	start_char=2111|end_char=2113
+21	mA	mA	PROPN	SP	_	17	obl	_	SpaceAfter=No|start_char=2114|end_char=2116
+22	.	.	PUNCT	FS	_	4	punct	_	SpacesAfter=\n\n|start_char=2116|end_char=2117
+
+# text = In Section 3.2, we describe the dataset.
+# sent_id = 45
+1	In	in	ADP	E	_	2	case	_	start_char=2119|end_char=2121
+2	Section	section	NOUN	S	Number=Sing	6	obl	_	start_char=2122|end_char=2129
+3	3.2	3.2	NUM	N	NumType=Card	2	flat	_	SpaceAfter=No|start_char=2130|end_char=2133
+4	,	,	PUNCT	FF	_	2	punct	_	start_char=2133|end_char=2134
+5	we	we	PRON	PE	Number=Plur|Person=1|PronType=Prs	6	nsubj	_	start_char=2135|end_char=2137
+6	describe	describe	VERB	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2138|end_char=2146
+7	the	the	DET	RD	Definite=Def|PronType=Art	8	det	_	start_char=2147|end_char=2150
+8	dataset	dataset	NOUN	S	Number=Sing	6	obj	_	SpaceAfter=No|start_char=2151|end_char=2158
+9	.	.	PUNCT	FS	_	6	punct	_	start_char=2158|end_char=2159
+
+# text = Section 4 presents the results;
+# sent_id = 46
+1	Section	section	NOUN	S	Number=Sing	3	nsubj	_	start_char=2160|end_char=2167
+2	4	4	NUM	N	NumType=Card	1	flat	_	start_char=2168|end_char=2169
+3	presents	present	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2170|end_char=2178
+4	the	the	DET	RD	Definite=Def|PronType=Art	5	det	_	start_char=2179|end_char=2182
+5	results	result	NOUN	S	Number=Plur	3	obj	_	SpaceAfter=No|start_char=2183|end_char=2190
+6	;	;	PUNCT	FC	_	3	punct	_	start_char=2190|end_char=2191
+
+# text = Sect. 5 concludes.
+# sent_id = 47
+1	Sect	sect	NOUN	S	Number=Sing	4	nsubj	_	SpaceAfter=No|start_char=2192|end_char=2196
+2	.	.	PUNCT	FF	_	1	punct	_	start_char=2196|end_char=2197
+3	5	5	NUM	N	NumType=Card	4	nsubj	_	start_char=2198|end_char=2199
+4	concludes	conclude	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=2200|end_char=2209
+5	.	.	PUNCT	FS	_	4	punct	_	start_char=2209|end_char=2210
+
+# text = Appendix A contains proofs of Lemmas 1–3.
+# sent_id = 48
+1	Appendix	appendix	ADJ	A	Degree=Pos	2	amod	_	start_char=2211|end_char=2219
+2	A	à	X	X	Foreign=Yes	3	nsubj	_	start_char=2220|end_char=2221
+3	contains	contain	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2222|end_char=2230
+4	proofs	proof	NOUN	S	Number=Plur	3	obj	_	start_char=2231|end_char=2237
+5	of	of	ADP	E	_	6	case	_	start_char=2238|end_char=2240
+6	Lemmas	lemma	NOUN	S	Number=Plur	4	nmod	_	start_char=2241|end_char=2247
+7	1	1	NUM	N	NumType=Card	6	flat	_	SpaceAfter=No|start_char=2248|end_char=2249
+8	–	–	SYM	X	_	9	case	_	SpaceAfter=No|start_char=2249|end_char=2250
+9	3	3	NUM	N	NumType=Card	7	conj	_	SpaceAfter=No|start_char=2250|end_char=2251
+10	.	.	PUNCT	FS	_	3	punct	_	SpacesAfter=\n\n|start_char=2251|end_char=2252
+
+# text = Theorem 2.1.
+# sent_id = 49
+1	Theorem	theorem	NOUN	S	Number=Sing	0	root	_	start_char=2254|end_char=2261
+2	2.1	2.1	NUM	N	NumType=Card	1	flat	_	SpaceAfter=No|start_char=2262|end_char=2265
+3	.	.	PUNCT	FS	_	1	punct	_	start_char=2265|end_char=2266
+
+# text = Let f: ℝ → ℝ be continuous.
+# sent_id = 50
+1	Let	let	VERB	V	Mood=Imp|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2267|end_char=2270
+2	f:	f:	NOUN	S	Number=Sing	1	obj	_	start_char=2271|end_char=2273
+3	ℝ	ℝ	PUNCT	FB	_	7	punct	_	start_char=2274|end_char=2275
+4	→	→	PUNCT	B	_	7	mark	_	start_char=2276|end_char=2277
+5	ℝ	ℝ	PUNCT	FB	_	7	punct	_	start_char=2278|end_char=2279
+6	be	be	AUX	V	Mood=Sub|Person=3|Tense=Pres|VerbForm=Fin	7	cop	_	start_char=2280|end_char=2282
+7	continuous	continuous	ADJ	A	Degree=Pos	1	advcl	_	SpaceAfter=No|start_char=2283|end_char=2293
+8	.	.	PUNCT	FS	_	1	punct	_	start_char=2293|end_char=2294
+
+# text = Then f attains a maximum on [a, b].
+# sent_id = 51
+1	Then	then	ADV	B	_	3	advmod	_	start_char=2295|end_char=2299
+2	f	f	PUNCT	FF	_	1	punct	_	start_char=2300|end_char=2301
+3	attains	attain	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2302|end_char=2309
+4	a	a	DET	RI	Definite=Ind|Number=Sing|PronType=Art	5	det	_	start_char=2310|end_char=2311
+5	maximum	maximum	NOUN	S	Number=Sing	3	obj	_	start_char=2312|end_char=2319
+6	on	on	ADP	E	_	8	case	_	start_char=2320|end_char=2322
+7	[	[	PUNCT	FB	_	10	punct	_	SpaceAfter=No|start_char=2323|end_char=2324
+8	a	a	DET	RI	Definite=Ind|Number=Sing|PronType=Art	10	det	_	SpaceAfter=No|start_char=2324|end_char=2325
+9	,	,	PUNCT	FF	_	10	punct	_	start_char=2325|end_char=2326
+10	b]	b]	INTJ	_	_	3	discourse	_	SpaceAfter=No|start_char=2327|end_char=2329
+11	.	.	PUNCT	FS	_	3	punct	_	SpacesAfter=\n\n|start_char=2329|end_char=2330
+
+# text = Proof.
+# sent_id = 52
+1	Proof	proof	NOUN	S	Number=Sing	0	root	_	SpaceAfter=No|start_char=2332|end_char=2337
+2	.	.	PUNCT	FS	_	1	punct	_	start_char=2337|end_char=2338
+
+# text = Suppose not.
+# sent_id = 53
+1	Suppose	suppose	VERB	V	Mood=Imp|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2339|end_char=2346
+2	not	not	PART	PART	Polarity=Neg	1	advmod	_	SpaceAfter=No|start_char=2347|end_char=2350
+3	.	.	PUNCT	FS	_	1	punct	_	start_char=2350|end_char=2351
+
+# text = Then there exists a sequence (x_n) such that f(x_n) → sup f.
+# sent_id = 54
+1	Then	then	ADV	B	_	3	advmod	_	start_char=2352|end_char=2356
+2	there	there	PRON	_	PronType=Dem	3	expl	_	start_char=2357|end_char=2362
+3	exists	exist	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2363|end_char=2369
+4	a	a	DET	RI	Definite=Ind|Number=Sing|PronType=Art	5	det	_	start_char=2370|end_char=2371
+5	sequence	sequence	NOUN	S	Number=Sing	3	nsubj	_	start_char=2372|end_char=2380
+6	(	(	PUNCT	FB	_	7	punct	_	SpaceAfter=No|start_char=2381|end_char=2382
+7	x_n	x_n	PROPN	SP	_	5	parataxis	_	SpaceAfter=No|start_char=2382|end_char=2385
+8	)	)	PUNCT	FB	_	7	punct	_	start_char=2385|end_char=2386
+9	such	such	ADJ	A	Degree=Pos|ExtPos=ADP	15	case	_	start_char=2387|end_char=2391
+10	that	that	SCONJ	CS	_	9	fixed	_	start_char=2392|end_char=2396
+11	f(	f(	PUNCT	FB	_	12	punct	_	SpaceAfter=No|start_char=2397|end_char=2399
+12	x_n	x_n	X	X	_	15	nmod	_	SpaceAfter=No|start_char=2399|end_char=2402
+13	)	)	PUNCT	FB	_	12	punct	_	start_char=2402|end_char=2403
+14	→	→	PUNCT	FF	_	12	punct	_	start_char=2404|end_char=2405
+15	sup	sup	NOUN	S	Number=Sing	3	obl	_	start_char=2406|end_char=2409
+16	f.	f	PUNCT	FS	_	3	punct	_	start_char=2410|end_char=2412
+
+# text = By compactness, a subsequence converges.
+# sent_id = 55
+1	By	by	ADP	E	_	2	case	_	start_char=2413|end_char=2415
+2	compactness	compactness	NOUN	S	Number=Sing	6	obl	_	SpaceAfter=No|start_char=2416|end_char=2427
+3	,	,	PUNCT	FF	_	2	punct	_	start_char=2427|end_char=2428
+4	a	a	DET	RI	Definite=Ind|Number=Sing|PronType=Art	5	det	_	start_char=2429|end_char=2430
+5	subsequence	subsequence	NOUN	S	Number=Sing	6	nsubj	_	start_char=2431|end_char=2442
+6	converges	converge	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=2443|end_char=2452
+7	.	.	PUNCT	FS	_	6	punct	_	start_char=2452|end_char=2453
+
+# text = QED.
+# sent_id = 56
+1	QED	QED	PROPN	SP	_	0	root	_	SpaceAfter=No|start_char=2454|end_char=2457
+2	.	.	PUNCT	FS	_	1	punct	_	SpacesAfter=\n\n|start_char=2457|end_char=2458
+
+# text = The study was approved by the institutional review board (protocol no.
+# sent_id = 57
+1	The	the	DET	RD	Definite=Def|PronType=Art	2	det	_	start_char=2460|end_char=2463
+2	study	study	NOUN	S	Number=Sing	4	nsubj:pass	_	start_char=2464|end_char=2469
+3	was	be	AUX	VA	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	4	aux:pass	_	start_char=2470|end_char=2473
+4	approved	approve	VERB	V	Tense=Past|VerbForm=Part	0	root	_	start_char=2474|end_char=2482
+5	by	by	ADP	E	_	9	case	_	start_char=2483|end_char=2485
+6	the	the	DET	RD	Definite=Def|PronType=Art	9	det	_	start_char=2486|end_char=2489
+7	institutional	institutional	ADJ	A	Degree=Pos	8	amod	_	start_char=2490|end_char=2503
+8	review	review	NOUN	S	Number=Sing	9	nmod	_	start_char=2504|end_char=2510
+9	board	board	NOUN	S	Number=Sing	4	obl	_	start_char=2511|end_char=2516
+10	(	(	PUNCT	FB	_	11	punct	_	SpaceAfter=No|start_char=2517|end_char=2518
+11	protocol	protocol	NOUN	S	Number=Sing	9	appos	_	start_char=2518|end_char=2526
+12	no	no	ADV	BN	PronType=Neg	11	advmod	_	SpaceAfter=No|start_char=2527|end_char=2529
+13	.	.	PUNCT	FS	_	4	punct	_	start_char=2529|end_char=2530
+
+# text = 2021-0457).
+# sent_id = 58
+1	2021	2021	NUM	N	NumType=Card	0	root	_	SpaceAfter=No|start_char=2531|end_char=2535
+2	-	-	SYM	X	_	3	case	_	SpaceAfter=No|start_char=2535|end_char=2536
+3	0457	0457	NUM	N	NumType=Card	1	nmod:unmarked	_	SpaceAfter=No|start_char=2536|end_char=2540
+4	)	)	PUNCT	FB	_	1	punct	_	SpaceAfter=No|start_char=2540|end_char=2541
+5	.	.	PUNCT	FS	_	1	punct	_	start_char=2541|end_char=2542
+
+# text = All participants gave written informed consent.
+# sent_id = 59
+1	All	all	DET	T	PronType=Tot	2	det	_	start_char=2543|end_char=2546
+2	participants	participant	NOUN	S	Number=Plur	3	nsubj	_	start_char=2547|end_char=2559
+3	gave	give	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=2560|end_char=2564
+4	written	write	VERB	V	Tense=Past|VerbForm=Part	6	acl	_	start_char=2565|end_char=2572
+5	informed	inform	VERB	V	Tense=Past|VerbForm=Part	6	acl	_	start_char=2573|end_char=2581
+6	consent	consent	NOUN	S	Number=Sing	3	obj	_	SpaceAfter=No|start_char=2582|end_char=2589
+7	.	.	PUNCT	FS	_	3	punct	_	SpacesAfter=\n\n|start_char=2589|end_char=2590
+
+# text = Correspondence should be addressed to Dr. H. Lindqvist, Dept.
+# sent_id = 60
+1	Correspondence	correspondence	NOUN	S	Number=Sing	4	nsubj:pass	_	start_char=2592|end_char=2606
+2	should	shall	AUX	VM	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	4	aux	_	start_char=2607|end_char=2613
+3	be	be	AUX	VA	VerbForm=Inf	4	aux:pass	_	start_char=2614|end_char=2616
+4	addressed	address	VERB	V	Tense=Past|VerbForm=Part	0	root	_	start_char=2617|end_char=2626
+5	to	to	ADP	E	_	6	case	_	start_char=2627|end_char=2629
+6	Dr.	Dr.	PROPN	SP	_	4	obl	_	start_char=2630|end_char=2633
+7	H.	H.	PROPN	SP	_	6	flat	_	start_char=2634|end_char=2636
+8	Lindqvist	Lindqvist	PROPN	SP	_	6	flat	_	SpaceAfter=No|start_char=2637|end_char=2646
+9	,	,	PUNCT	FF	_	6	punct	_	start_char=2646|end_char=2647
+10	Dept	dept	NOUN	S	Number=Sing	6	nmod	_	SpaceAfter=No|start_char=2648|end_char=2652
+11	.	.	PUNCT	FS	_	4	punct	_	start_char=2652|end_char=2653
+
+# text = of Psychology, Univ. of Northbridge, 14 College Rd., Northbridge NB4 2XY, U.K.
+# sent_id = 61
+1	of	of	ADP	E	_	2	case	_	start_char=2654|end_char=2656
+2	Psychology	psychology	NOUN	S	Number=Sing	0	root	_	SpaceAfter=No|start_char=2657|end_char=2667
+3	,	,	PUNCT	FF	_	4	punct	_	start_char=2667|end_char=2668
+4	Univ.	Univ.	PROPN	SP	_	2	conj	_	start_char=2669|end_char=2674
+5	of	of	ADP	E	_	6	case	_	start_char=2675|end_char=2677
+6	Northbridge	Northbridge	PROPN	SP	_	4	nmod	_	SpaceAfter=No|start_char=2678|end_char=2689
+7	,	,	PUNCT	FF	_	9	punct	_	start_char=2689|end_char=2690
+8	14	14	NUM	N	NumType=Card	9	nummod	_	start_char=2691|end_char=2693
+9	College	college	PROPN	SP	_	2	conj	_	start_char=2694|end_char=2701
+10	Rd.	Rd.	PROPN	SP	_	9	flat	_	SpaceAfter=No|start_char=2702|end_char=2705
+11	,	,	PUNCT	FF	_	12	punct	_	start_char=2705|end_char=2706
+12	Northbridge	Northbridge	PROPN	SP	_	2	conj	_	start_char=2707|end_char=2718
+13	NB4	NB4	PROPN	SP	_	12	nmod	_	start_char=2719|end_char=2722
+14	2XY	2XY	PROPN	SP	_	12	flat	_	SpaceAfter=No|start_char=2723|end_char=2726
+15	,	,	PUNCT	FF	_	16	punct	_	start_char=2726|end_char=2727
+16	U.K	U.K	PROPN	SP	_	2	conj	_	SpaceAfter=No|start_char=2728|end_char=2731
+17	.	.	PUNCT	FS	_	2	punct	_	SpacesAfter=\n\n|start_char=2731|end_char=2732
+
+# text = This work was supported by grant R01-GM123456 from the NIH.
+# sent_id = 62
+1	This	this	DET	DD	Number=Sing|PronType=Dem	2	det	_	start_char=2734|end_char=2738
+2	work	work	NOUN	S	Number=Sing	4	nsubj:pass	_	start_char=2739|end_char=2743
+3	was	be	AUX	VA	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	4	aux:pass	_	start_char=2744|end_char=2747
+4	supported	support	VERB	V	Tense=Past|VerbForm=Part	0	root	_	start_char=2748|end_char=2757
+5	by	by	ADP	E	_	7	case	_	start_char=2758|end_char=2760
+6	grant	grant	NOUN	S	Number=Sing	7	nmod	_	start_char=2761|end_char=2766
+7	R01-	R01-	PROPN	SP	Number=Sing	4	obl	_	SpaceAfter=No|start_char=2767|end_char=2771
+8	GM123456	GM123456	PROPN	SP	Number=Sing	7	flat	_	start_char=2771|end_char=2779
+9	from	from	ADP	E	_	11	case	_	start_char=2780|end_char=2784
+10	the	the	DET	RD	Definite=Def|PronType=Art	11	det	_	start_char=2785|end_char=2788
+11	NIH	NIH	PROPN	SP	_	7	nmod	_	SpaceAfter=No|start_char=2789|end_char=2792
+12	.	.	PUNCT	FS	_	4	punct	_	start_char=2792|end_char=2793
+
+# text = The authors declare no competing interests.
+# sent_id = 63
+1	The	the	DET	RD	Definite=Def|PronType=Art	2	det	_	start_char=2794|end_char=2797
+2	authors	author	NOUN	S	Number=Plur	3	nsubj	_	start_char=2798|end_char=2805
+3	declare	declare	VERB	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2806|end_char=2813
+4	no	no	DET	DI	PronType=Ind	6	det	_	start_char=2814|end_char=2816
+5	competing	competing	ADJ	A	Degree=Pos	6	amod	_	start_char=2817|end_char=2826
+6	interests	interest	NOUN	S	Number=Plur	3	obj	_	SpaceAfter=No|start_char=2827|end_char=2836
+7	.	.	PUNCT	FS	_	3	punct	_	SpacesAfter=\n\n|start_char=2836|end_char=2837
+
+# text = Smith, J. A., & Jones, B. (2015).
+# sent_id = 64
+1	Smith	Smith	PROPN	SP	_	0	root	_	SpaceAfter=No|start_char=2839|end_char=2844
+2	,	,	PUNCT	FF	_	3	punct	_	start_char=2844|end_char=2845
+3	J.	J.	PROPN	SP	_	1	conj	_	start_char=2846|end_char=2848
+4	A.	A.	PROPN	SP	_	3	flat	_	SpaceAfter=No|start_char=2849|end_char=2851
+5	,	,	PUNCT	FF	_	7	punct	_	start_char=2851|end_char=2852
+6	&	&	PUNCT	FF	_	7	punct	_	start_char=2853|end_char=2854
+7	Jones	Jones	PROPN	SP	_	1	conj	_	SpaceAfter=No|start_char=2855|end_char=2860
+8	,	,	PUNCT	FF	_	9	punct	_	start_char=2860|end_char=2861
+9	B.	B.	PROPN	SP	_	1	conj	_	start_char=2862|end_char=2864
+10	(	(	PUNCT	FB	_	11	punct	_	SpaceAfter=No|start_char=2865|end_char=2866
+11	2015	2015	NUM	N	NumType=Card	1	conj	_	SpaceAfter=No|start_char=2866|end_char=2870
+12	)	)	PUNCT	FB	_	11	punct	_	SpaceAfter=No|start_char=2870|end_char=2871
+13	.	.	PUNCT	FS	_	1	punct	_	start_char=2871|end_char=2872
+
+# text = On the measurement of things.
+# sent_id = 65
+1	On	on	ADP	E	_	3	case	_	start_char=2873|end_char=2875
+2	the	the	DET	RD	Definite=Def|PronType=Art	3	det	_	start_char=2876|end_char=2879
+3	measurement	measurement	NOUN	S	Number=Sing	0	root	_	start_char=2880|end_char=2891
+4	of	of	ADP	E	_	5	case	_	start_char=2892|end_char=2894
+5	things	thing	NOUN	S	Number=Plur	3	nmod	_	SpaceAfter=No|start_char=2895|end_char=2901
+6	.	.	PUNCT	FS	_	3	punct	_	start_char=2901|end_char=2902
+
+# text = Journal of Applied Stuff, 12(3), 45–67.
+# sent_id = 66
+1	Journal	journal	NOUN	S	Number=Sing	0	root	_	start_char=2903|end_char=2910
+2	of	of	ADP	E	_	4	case	_	start_char=2911|end_char=2913
+3	Applied	applied	ADJ	A	Degree=Pos	4	amod	_	start_char=2914|end_char=2921
+4	Stuff	stuff	NOUN	S	Number=Sing	1	nmod	_	SpaceAfter=No|start_char=2922|end_char=2927
+5	,	,	PUNCT	FF	_	6	punct	_	start_char=2927|end_char=2928
+6	12(	12(	NUM	N	NumType=Card	7	nummod	_	SpaceAfter=No|start_char=2929|end_char=2932
+7	3	3	NUM	N	NumType=Card	4	flat	_	SpaceAfter=No|start_char=2932|end_char=2933
+8	)	)	PUNCT	FB	_	7	punct	_	SpaceAfter=No|start_char=2933|end_char=2934
+9	,	,	PUNCT	FF	_	10	punct	_	start_char=2934|end_char=2935
+10	45	45	NUM	N	NumType=Card	1	conj	_	SpaceAfter=No|start_char=2936|end_char=2938
+11	–	–	SYM	X	_	12	case	_	SpaceAfter=No|start_char=2938|end_char=2939
+12	67	67	NUM	N	NumType=Card	10	nmod	_	SpaceAfter=No|start_char=2939|end_char=2941
+13	.	.	PUNCT	FS	_	1	punct	_	start_char=2941|end_char=2942
+
+# text = https://doi.org/10.1000/jas.2015.012
+# sent_id = 67
+1	https://doi.org/10.1000/jas.2015.012	https://doi.org/10.1000/jas.2015.012	PROPN	SP	Number=Sing	0	root	_	SpacesAfter=\n\n|start_char=2943|end_char=2979
+
+# text = Okonkwo, C. (2020).
+# sent_id = 68
+1	Okonkwo	Okonkwo	PROPN	SP	_	0	root	_	SpaceAfter=No|start_char=2981|end_char=2988
+2	,	,	PUNCT	FF	_	1	punct	_	start_char=2988|end_char=2989
+3	C.	C.	PROPN	SP	_	1	conj	_	start_char=2990|end_char=2992
+4	(	(	PUNCT	FB	_	5	punct	_	SpaceAfter=No|start_char=2993|end_char=2994
+5	2020	2020	NUM	N	NumType=Card	1	flat	_	SpaceAfter=No|start_char=2994|end_char=2998
+6	)	)	PUNCT	FB	_	5	punct	_	SpaceAfter=No|start_char=2998|end_char=2999
+7	.	.	PUNCT	FS	_	1	punct	_	start_char=2999|end_char=3000
+
+# text = A Short History of Long Words (2nd ed.).
+# sent_id = 69
+1	A	a	DET	RI	Definite=Ind|Number=Sing|PronType=Art	3	det	_	start_char=3001|end_char=3002
+2	Short	short	ADJ	A	Degree=Pos	3	amod	_	start_char=3003|end_char=3008
+3	History	history	NOUN	S	Number=Sing	0	root	_	start_char=3009|end_char=3016
+4	of	of	ADP	E	_	6	case	_	start_char=3017|end_char=3019
+5	Long	long	ADJ	A	Degree=Pos	6	amod	_	start_char=3020|end_char=3024
+6	Words	word	NOUN	S	Number=Plur	3	nmod	_	start_char=3025|end_char=3030
+7	(	(	PUNCT	FB	_	8	punct	_	SpaceAfter=No|start_char=3031|end_char=3032
+8	2nd	2nd	NUM	N	NumType=Card	3	nmod:unmarked	_	start_char=3032|end_char=3035
+9	ed.	ed.	NOUN	S	Number=Sing	8	punct	_	SpaceAfter=No|start_char=3036|end_char=3039
+10	)	)	PUNCT	FB	_	8	punct	_	SpaceAfter=No|start_char=3039|end_char=3040
+11	.	.	PUNCT	FS	_	3	punct	_	start_char=3040|end_char=3041
+
+# text = Oxford: Clarendon Press.
+# sent_id = 70
+1	Oxford	Oxford	PROPN	SP	_	0	root	_	SpaceAfter=No|start_char=3042|end_char=3048
+2	:	:	PUNCT	FF	_	1	punct	_	start_char=3048|end_char=3049
+3	Clarendon	Clarendon	PROPN	SP	_	4	nmod	_	start_char=3050|end_char=3059
+4	Press	press	NOUN	S	Number=Sing	1	flat	_	SpaceAfter=No|start_char=3060|end_char=3065
+5	.	.	PUNCT	FS	_	1	punct	_	SpacesAfter=\n\n|start_char=3065|end_char=3066
+
+# text = The data are available upon request.
+# sent_id = 71
+1	The	the	DET	RD	Definite=Def|PronType=Art	2	det	_	start_char=3068|end_char=3071
+2	data	data	NOUN	S	Number=Plur	4	nsubj	_	start_char=3072|end_char=3076
+3	are	be	AUX	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	4	cop	_	start_char=3077|end_char=3080
+4	available	available	ADJ	A	Degree=Pos	0	root	_	start_char=3081|end_char=3090
+5	upon	upon	ADP	E	_	6	case	_	start_char=3091|end_char=3095
+6	request	request	NOUN	S	Number=Sing	4	obl	_	SpaceAfter=No|start_char=3096|end_char=3103
+7	.	.	PUNCT	FS	_	4	punct	_	start_char=3103|end_char=3104
+
+# text = Code is available at github.com/example/proj.
+# sent_id = 72
+1	Code	code	NOUN	S	Number=Sing	3	nsubj	_	start_char=3105|end_char=3109
+2	is	be	AUX	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	cop	_	start_char=3110|end_char=3112
+3	available	available	ADJ	A	Degree=Pos	0	root	_	start_char=3113|end_char=3122
+4	at	at	ADP	E	_	6	case	_	start_char=3123|end_char=3125
+5	github.	github.	NOUN	S	Number=Sing	6	nmod	_	SpaceAfter=No|start_char=3126|end_char=3133
+6	com	com	NOUN	S	Number=Sing	3	obl	_	SpaceAfter=No|start_char=3133|end_char=3136
+7	/	/	PUNCT	FF	_	8	punct	_	SpaceAfter=No|start_char=3136|end_char=3137
+8	example	example	NOUN	S	Number=Sing	6	flat	_	SpaceAfter=No|start_char=3137|end_char=3144
+9	/	/	PUNCT	FF	_	10	punct	_	SpaceAfter=No|start_char=3144|end_char=3145
+10	proj	proj	NOUN	S	Number=Sing	6	conj	_	SpaceAfter=No|start_char=3145|end_char=3149
+11	.	.	PUNCT	FS	_	3	punct	_	SpacesAfter=\n\n|start_char=3149|end_char=3150
+
+# text = cf.
+# sent_id = 73
+1	cf	cf	INTJ	_	_	0	root	_	SpaceAfter=No|start_char=3152|end_char=3154
+2	.	.	PUNCT	FS	_	1	punct	_	start_char=3154|end_char=3155
+
+# text = the discussion in ch. 4, pp. 112–19, n. 23.
+# sent_id = 74
+1	the	the	DET	RD	Definite=Def|PronType=Art	2	det	_	start_char=3156|end_char=3159
+2	discussion	discussion	NOUN	S	Number=Sing	0	root	_	start_char=3160|end_char=3170
+3	in	in	ADP	E	_	4	case	_	start_char=3171|end_char=3173
+4	ch.	ch.	NOUN	S	Number=Sing	2	nmod	_	start_char=3174|end_char=3177
+5	4	4	NUM	N	NumType=Card	4	flat	_	SpaceAfter=No|start_char=3178|end_char=3179
+6	,	,	PUNCT	FF	_	7	punct	_	start_char=3179|end_char=3180
+7	pp.	page	NOUN	S	Number=Sing	4	conj	_	start_char=3181|end_char=3184
+8	112	112	NUM	N	NumType=Card	7	flat	_	SpaceAfter=No|start_char=3185|end_char=3188
+9	–	–	SYM	X	_	10	case	_	SpaceAfter=No|start_char=3188|end_char=3189
+10	19	19	NUM	N	NumType=Card	7	nmod	_	SpaceAfter=No|start_char=3189|end_char=3191
+11	,	,	PUNCT	FF	_	10	punct	_	start_char=3191|end_char=3192
+12	n.	n.	PROPN	SP	_	10	nmod:unmarked	_	start_char=3193|end_char=3195
+13	23	23	NUM	N	NumType=Card	12	flat	_	SpaceAfter=No|start_char=3196|end_char=3198
+14	.	.	PUNCT	FS	_	2	punct	_	SpacesAfter=\n\n|start_char=3198|end_char=3199
+
+# text = The vote passed 52–48.
+# sent_id = 75
+1	The	the	DET	RD	Definite=Def|PronType=Art	2	det	_	start_char=3201|end_char=3204
+2	vote	vote	NOUN	S	Number=Sing	3	nsubj	_	start_char=3205|end_char=3209
+3	passed	pass	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=3210|end_char=3216
+4	52	52	NUM	N	NumType=Card	3	obj	_	SpaceAfter=No|start_char=3217|end_char=3219
+5	–	–	SYM	X	_	6	case	_	SpaceAfter=No|start_char=3219|end_char=3220
+6	48	48	NUM	N	NumType=Card	4	nmod	_	SpaceAfter=No|start_char=3220|end_char=3222
+7	.	.	PUNCT	FS	_	3	punct	_	start_char=3222|end_char=3223
+
+# text = The bill now goes to the House, where its prospects are uncertain.
+# sent_id = 76
+1	The	the	DET	RD	Definite=Def|PronType=Art	2	det	_	start_char=3224|end_char=3227
+2	bill	bill	NOUN	S	Number=Sing	4	nsubj	_	start_char=3228|end_char=3232
+3	now	now	ADV	B	_	4	advmod	_	start_char=3233|end_char=3236
+4	goes	go	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=3237|end_char=3241
+5	to	to	ADP	E	_	7	case	_	start_char=3242|end_char=3244
+6	the	the	DET	RD	Definite=Def|PronType=Art	7	det	_	start_char=3245|end_char=3248
+7	House	house	NOUN	S	Number=Sing	4	obl	_	SpaceAfter=No|start_char=3249|end_char=3254
+8	,	,	PUNCT	FF	_	7	punct	_	start_char=3254|end_char=3255
+9	where	where	ADV	B	PronType=Rel	13	advmod	_	start_char=3256|end_char=3261
+10	its	its	DET	AP	Number=Sing|Poss=Yes|PronType=Prs	11	nmod:poss	_	start_char=3262|end_char=3265
+11	prospects	prospect	NOUN	S	Number=Plur	13	nsubj	_	start_char=3266|end_char=3275
+12	are	be	AUX	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	13	cop	_	start_char=3276|end_char=3279
+13	uncertain	uncertain	ADJ	A	Degree=Pos	7	acl:relcl	_	SpaceAfter=No|start_char=3280|end_char=3289
+14	.	.	PUNCT	FS	_	4	punct	_	SpacesAfter=\n\n|start_char=3289|end_char=3290
+
+# text = Section 2(a) of the Act — sometimes called the "safe harbor" provision — was amended in 2011.
+# sent_id = 77
+1	Section	section	NOUN	S	Number=Sing	19	nsubj:pass	_	start_char=3292|end_char=3299
+2	2(	2(	NUM	N	NumType=Card	1	flat	_	SpaceAfter=No|start_char=3300|end_char=3302
+3	a	a	DET	RI	Definite=Ind|Number=Sing|PronType=Art	1	flat	_	SpaceAfter=No|start_char=3302|end_char=3303
+4	)	)	PUNCT	FB	_	2	punct	_	start_char=3303|end_char=3304
+5	of	of	ADP	E	_	7	case	_	start_char=3305|end_char=3307
+6	the	the	DET	RD	Definite=Def|PronType=Art	7	det	_	start_char=3308|end_char=3311
+7	Act	act	NOUN	S	Number=Sing	1	nmod	_	start_char=3312|end_char=3315
+8	—	—	PUNCT	FB	_	10	punct	_	start_char=3316|end_char=3317
+9	sometimes	sometimes	ADV	B	_	10	advmod	_	start_char=3318|end_char=3327
+10	called	call	VERB	V	Tense=Past|VerbForm=Part	1	acl:relcl	_	start_char=3328|end_char=3334
+11	the	the	DET	RD	Definite=Def|PronType=Art	16	det	_	start_char=3335|end_char=3338
+12	"	"	PUNCT	FB	_	14	punct	_	SpaceAfter=No|start_char=3339|end_char=3340
+13	safe	safe	ADJ	A	Degree=Pos	14	amod	_	start_char=3340|end_char=3344
+14	harbor	harbor	NOUN	S	Number=Sing	16	nmod	_	SpaceAfter=No|start_char=3345|end_char=3351
+15	"	"	PUNCT	FB	_	14	punct	_	start_char=3351|end_char=3352
+16	provision	provision	NOUN	S	Number=Sing	10	obj	_	start_char=3353|end_char=3362
+17	—	—	PUNCT	FB	_	16	punct	_	start_char=3363|end_char=3364
+18	was	be	AUX	VA	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	19	aux:pass	_	start_char=3365|end_char=3368
+19	amended	amend	VERB	V	Tense=Past|VerbForm=Part	0	root	_	start_char=3369|end_char=3376
+20	in	in	ADP	E	_	21	case	_	start_char=3377|end_char=3379
+21	2011	2011	NUM	N	NumType=Card	19	obl	_	SpaceAfter=No|start_char=3380|end_char=3384
+22	.	.	PUNCT	FS	_	19	punct	_	start_char=3384|end_char=3385
+
+# text = Courts have disagreed about its scope ever since.
+# sent_id = 78
+1	Courts	court	NOUN	S	Number=Plur	3	nsubj	_	start_char=3386|end_char=3392
+2	have	have	AUX	VA	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	3	aux	_	start_char=3393|end_char=3397
+3	disagreed	disagree	VERB	V	Tense=Past|VerbForm=Part	0	root	_	start_char=3398|end_char=3407
+4	about	about	ADP	E	_	6	case	_	start_char=3408|end_char=3413
+5	its	its	DET	AP	Number=Sing|Poss=Yes|PronType=Prs	6	nmod:poss	_	start_char=3414|end_char=3417
+6	scope	scope	NOUN	S	Number=Sing	3	obl	_	start_char=3418|end_char=3423
+7	ever	ever	ADV	B	_	8	advmod	_	start_char=3424|end_char=3428
+8	since	since	ADV	B	_	3	advmod	_	SpaceAfter=No|start_char=3429|end_char=3434
+9	.	.	PUNCT	FS	_	3	punct	_	SpacesAfter=\n\n|start_char=3434|end_char=3435
+
+# text = The patient was given 500 mg of amoxicillin t.i.d. for 10 days.
+# sent_id = 79
+1	The	the	DET	RD	Definite=Def|PronType=Art	2	det	_	start_char=3437|end_char=3440
+2	patient	patient	NOUN	S	Number=Sing	4	nsubj:pass	_	start_char=3441|end_char=3448
+3	was	be	AUX	VA	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	4	aux:pass	_	start_char=3449|end_char=3452
+4	given	give	VERB	V	Tense=Past|VerbForm=Part	0	root	_	start_char=3453|end_char=3458
+5	500	500	NUM	N	NumType=Card	6	nummod	_	start_char=3459|end_char=3462
+6	mg	mg	NOUN	S	Number=Sing	4	obj	_	start_char=3463|end_char=3465
+7	of	of	ADP	E	_	9	case	_	start_char=3466|end_char=3468
+8	amoxicillin	amoxicillin	NOUN	S	Number=Sing	9	nmod	_	start_char=3469|end_char=3480
+9	t.i.d	t.i.d	NOUN	S	Number=Sing	6	nmod	_	SpaceAfter=No|start_char=3481|end_char=3486
+10	.	.	PUNCT	FF	_	6	punct	_	start_char=3486|end_char=3487
+11	for	for	ADP	E	_	13	case	_	start_char=3488|end_char=3491
+12	10	10	NUM	N	NumType=Card	13	nummod	_	start_char=3492|end_char=3494
+13	days	day	NOUN	S	Number=Plur	4	obl	_	SpaceAfter=No|start_char=3495|end_char=3499
+14	.	.	PUNCT	FS	_	4	punct	_	start_char=3499|end_char=3500
+
+# text = Her temperature dropped from 39.4 °C to 37.1 °C within 48 hrs.
+# sent_id = 80
+1	Her	her	DET	AP	Poss=Yes|PronType=Prs	2	nmod:poss	_	start_char=3501|end_char=3504
+2	temperature	temperature	NOUN	S	Number=Sing	3	nsubj	_	start_char=3505|end_char=3516
+3	dropped	drop	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=3517|end_char=3524
+4	from	from	ADP	E	_	6	case	_	start_char=3525|end_char=3529
+5	39.4	39.4	NUM	N	NumType=Card	6	nummod	_	start_char=3530|end_char=3534
+6	°	°	NOUN	S	Number=Plur	3	obl	_	SpaceAfter=No|start_char=3535|end_char=3536
+7	C	C	PROPN	SP	_	6	flat	_	start_char=3536|end_char=3537
+8	to	to	ADP	E	_	10	case	_	start_char=3538|end_char=3540
+9	37.1	37.1	NUM	N	NumType=Card	10	nummod	_	start_char=3541|end_char=3545
+10	°	°	NOUN	S	Number=Plur	3	obl	_	SpaceAfter=No|start_char=3546|end_char=3547
+11	C	C	PROPN	SP	_	10	nmod:unmarked	_	start_char=3547|end_char=3548
+12	within	within	ADP	E	_	14	case	_	start_char=3549|end_char=3555
+13	48	48	NUM	N	NumType=Card	14	nummod	_	start_char=3556|end_char=3558
+14	hrs	hrs	NOUN	S	Number=Plur	3	obl	_	SpaceAfter=No|start_char=3559|end_char=3562
+15	.	.	PUNCT	FS	_	3	punct	_	SpacesAfter=\n\n|start_char=3562|end_char=3563
+
+# text = pH 7.4 buffer was used throughout.
+# sent_id = 81
+1	pH	fo	NOUN	S	Number=Sing	3	nmod	_	start_char=3565|end_char=3567
+2	7.4	7.4	NUM	N	NumType=Card	3	nummod	_	start_char=3568|end_char=3571
+3	buffer	buffer	NOUN	S	Number=Sing	5	nsubj:pass	_	start_char=3572|end_char=3578
+4	was	be	AUX	VA	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	5	aux:pass	_	start_char=3579|end_char=3582
+5	used	use	VERB	V	Tense=Past|VerbForm=Part	0	root	_	start_char=3583|end_char=3587
+6	throughout	throughout	ADP	E	_	5	obl	_	SpaceAfter=No|start_char=3588|end_char=3598
+7	.	.	PUNCT	FS	_	5	punct	_	start_char=3598|end_char=3599
+
+# text = The solution's molarity was 0.15 M.
+# sent_id = 82
+1	The	the	DET	RD	Definite=Def|PronType=Art	2	det	_	start_char=3600|end_char=3603
+2-3	solution's	_	_	_	_	_	_	_	start_char=3604|end_char=3614
+2	solution	solution	NOUN	S	Number=Sing	4	nmod:poss	_	start_char=3604|end_char=3612
+3	's	's	PART	PART	_	2	case	_	start_char=3612|end_char=3614
+4	molarity	molarity	NOUN	S	Number=Sing	6	nsubj	_	start_char=3615|end_char=3623
+5	was	be	AUX	V	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	6	cop	_	start_char=3624|end_char=3627
+6	0.15	0.15	NUM	N	NumType=Card	0	root	_	start_char=3628|end_char=3632
+7	M.	M.	PROPN	SP	_	6	nmod	_	SpacesAfter=\n\n|start_char=3633|end_char=3635
+
+# text = The mass of the electron is 9.109 × 10^−31 kg, roughly 1/1836 that of the proton.
+# sent_id = 83
+1	The	the	DET	RD	Definite=Def|PronType=Art	2	det	_	start_char=3637|end_char=3640
+2	mass	mass	NOUN	S	Number=Sing	10	nsubj	_	start_char=3641|end_char=3645
+3	of	of	ADP	E	_	5	case	_	start_char=3646|end_char=3648
+4	the	the	DET	RD	Definite=Def|PronType=Art	5	det	_	start_char=3649|end_char=3652
+5	electron	electron	NOUN	S	Number=Sing	2	nmod	_	start_char=3653|end_char=3661
+6	is	be	AUX	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	10	cop	_	start_char=3662|end_char=3664
+7	9.109	9.109	NUM	N	NumType=Card	8	nummod	_	start_char=3665|end_char=3670
+8	×	×	SYM	X	_	10	nmod	_	start_char=3671|end_char=3672
+9	10^−31	10^−31	NUM	N	NumType=Card	10	nummod	_	start_char=3673|end_char=3679
+10	kg	kg	NOUN	S	Number=Sing	0	root	_	SpaceAfter=No|start_char=3680|end_char=3682
+11	,	,	PUNCT	FF	_	10	punct	_	start_char=3682|end_char=3683
+12	roughly	roughly	ADV	B	_	13	advmod	_	start_char=3684|end_char=3691
+13	1/1836	1/1836	NUM	N	NumType=Card	10	nummod	_	start_char=3692|end_char=3698
+14	that	that	PRON	PR	Number=Sing|PronType=Dem	13	nmod	_	start_char=3699|end_char=3703
+15	of	of	ADP	E	_	17	case	_	start_char=3704|end_char=3706
+16	the	the	DET	RD	Definite=Def|PronType=Art	17	det	_	start_char=3707|end_char=3710
+17	proton	proton	NOUN	S	Number=Sing	14	nmod	_	SpaceAfter=No|start_char=3711|end_char=3717
+18	.	.	PUNCT	FS	_	10	punct	_	SpacesAfter=\n\n|start_char=3717|end_char=3718
+
+# text = The filing deadline was 3/14/2023² and the hotline is 555-012-3456¹.
+# sent_id = 84
+1	The	the	DET	RD	Definite=Def|PronType=Art	3	det	_	start_char=3720|end_char=3723
+2	filing	filing	NOUN	S	Number=Sing	3	nmod	_	start_char=3724|end_char=3730
+3	deadline	deadline	NOUN	S	Number=Sing	6	nsubj	_	start_char=3731|end_char=3739
+4	was	be	AUX	V	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	6	cop	_	start_char=3740|end_char=3743
+5	3/14/2023	3/14/2023	PROPN	SP	Number=Sing	6	nmod	_	SpaceAfter=No|start_char=3744|end_char=3753
+6	²	²	PROPN	SP	_	0	root	_	start_char=3753|end_char=3754
+7	and	and	CCONJ	CC	_	11	cc	_	start_char=3755|end_char=3758
+8	the	the	DET	RD	Definite=Def|PronType=Art	9	det	_	start_char=3759|end_char=3762
+9	hotline	hotline	NOUN	S	Number=Sing	11	nsubj	_	start_char=3763|end_char=3770
+10	is	be	AUX	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	11	cop	_	start_char=3771|end_char=3773
+11	555-012	555-012	NUM	N	NumType=Card	6	conj	_	SpaceAfter=No|start_char=3774|end_char=3781
+12	-	-	SYM	X	_	13	case	_	SpaceAfter=No|start_char=3781|end_char=3782
+13	3456	3456	NUM	N	NumType=Card	11	nmod	_	SpaceAfter=No|start_char=3782|end_char=3786
+14	¹	¹	PUNCT	FB	_	11	punct	_	SpaceAfter=No|start_char=3786|end_char=3787
+15	.	.	PUNCT	FS	_	6	punct	_	start_char=3787|end_char=3788
+
+# text = See note³ below.
+# sent_id = 85
+1	See	see	VERB	V	Mood=Imp|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=3789|end_char=3792
+2	note³	note³	NOUN	S	Number=Sing	1	obj	_	start_char=3793|end_char=3798
+3	below	below	ADV	B	_	1	advmod	_	SpaceAfter=No|start_char=3799|end_char=3804
+4	.	.	PUNCT	FS	_	1	punct	_	SpacesAfter=\n|start_char=3804|end_char=3805

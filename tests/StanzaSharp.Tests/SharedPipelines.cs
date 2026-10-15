@@ -22,7 +22,7 @@ public sealed class SharedPipelines : IDisposable
         {
             if (!Loaded.TryGetValue(key, out var entry))
             {
-                entry = (new Lazy<Pipeline>(() => Pipeline.Load(Repo.ModelsFor(lang), new PipelineOptions
+                entry = (new Lazy<Pipeline>(() => Pipeline.Load(Repo.ModelsFor(lang, package), new PipelineOptions
                 {
                     Language = lang,
                     Package = package,

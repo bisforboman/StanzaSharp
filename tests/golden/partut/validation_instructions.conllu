@@ -1,0 +1,812 @@
+# text = Lemon Ricotta Pancakes Serves 4.
+# sent_id = 0
+1	Lemon	Lemon	PROPN	SP	_	0	root	_	start_char=0|end_char=5
+2	Ricotta	Ricotta	PROPN	SP	_	1	flat	_	start_char=6|end_char=13
+3	Pancakes	Pancakes	PROPN	SP	_	1	flat	_	SpacesAfter=\n|start_char=14|end_char=22
+4	Serves	Serves	PROPN	SP	_	1	conj	_	start_char=23|end_char=29
+5	4	4	NUM	N	NumType=Card	1	flat	_	SpaceAfter=No|start_char=30|end_char=31
+6	.	.	PUNCT	FS	_	1	punct	_	start_char=31|end_char=32
+
+# text = Prep time:
+# sent_id = 1
+1	Prep	Prep	PROPN	SP	_	2	nmod	_	start_char=33|end_char=37
+2	time	time	NOUN	S	Number=Sing	0	root	_	SpaceAfter=No|start_char=38|end_char=42
+3	:	:	PUNCT	FC	_	2	punct	_	start_char=42|end_char=43
+
+# text = 10 min.
+# sent_id = 2
+1	10	10	NUM	N	NumType=Card	2	nummod	_	start_char=44|end_char=46
+2	min	min	NOUN	S	Number=Sing	0	root	_	SpaceAfter=No|start_char=47|end_char=50
+3	.	.	PUNCT	FS	_	2	punct	_	start_char=50|end_char=51
+
+# text = Cook time:
+# sent_id = 3
+1	Cook	Cook	PROPN	SP	_	2	nmod	_	start_char=52|end_char=56
+2	time	time	NOUN	S	Number=Sing	0	root	_	SpaceAfter=No|start_char=57|end_char=61
+3	:	:	PUNCT	FC	_	2	punct	_	start_char=61|end_char=62
+
+# text = 20 min.
+# sent_id = 4
+1	20	20	NUM	N	NumType=Card	2	nummod	_	start_char=63|end_char=65
+2	min	min	NOUN	S	Number=Sing	0	root	_	SpaceAfter=No|start_char=66|end_char=69
+3	.	.	PUNCT	FS	_	2	punct	_	SpacesAfter=\n\n|start_char=69|end_char=70
+
+# text = Ingredients:
+# sent_id = 5
+1	Ingredients	ingredient	NOUN	S	Number=Plur	0	root	_	SpaceAfter=No|start_char=72|end_char=83
+2	:	:	PUNCT	FC	_	1	punct	_	SpacesAfter=\n|start_char=83|end_char=84
+
+# text = • 1 ½ cups all-purpose flour • 2 tbsp sugar • 1 tsp baking powder • ½ tsp baking soda • ¼ tsp salt • 1 cup ricotta cheese • ¾ cup milk • 2 large eggs, separated • zest of 1 lemon • 2 tbsp.
+# sent_id = 6
+1	•	•	PUNCT	FF	_	2	punct	_	start_char=85|end_char=86
+2	1	1	NUM	N	NumType=Card	4	nummod	_	start_char=87|end_char=88
+3	½	½	PUNCT	FB	_	2	punct	_	start_char=89|end_char=90
+4	cups	cup	NOUN	S	Number=Plur	0	root	_	start_char=91|end_char=95
+5	all	all	DET	T	PronType=Tot	8	det	_	SpaceAfter=No|start_char=96|end_char=99
+6	-	-	PUNCT	FF	_	7	punct	_	SpaceAfter=No|start_char=99|end_char=100
+7	purpose	purpose	NOUN	S	Number=Sing	8	nmod	_	start_char=100|end_char=107
+8	flour	flour	NOUN	S	Number=Sing	4	nmod	_	SpacesAfter=\n|start_char=108|end_char=113
+9	•	•	PUNCT	FF	_	12	punct	_	start_char=114|end_char=115
+10	2	2	NUM	N	NumType=Card	12	nummod	_	start_char=116|end_char=117
+11	tbsp	tbsp	NOUN	S	Number=Plur	12	nmod	_	start_char=118|end_char=122
+12	sugar	sugar	NOUN	S	Number=Sing	17	nmod	_	SpacesAfter=\n|start_char=123|end_char=128
+13	•	•	PUNCT	FF	_	17	punct	_	start_char=129|end_char=130
+14	1	1	NUM	N	NumType=Card	12	nummod	_	start_char=131|end_char=132
+15	tsp	tsp	NOUN	S	Number=Sing	12	nmod	_	start_char=133|end_char=136
+16	baking	baking	NOUN	S	Number=Sing	17	nmod	_	start_char=137|end_char=143
+17	powder	powder	NOUN	S	Number=Sing	8	conj	_	SpacesAfter=\n|start_char=144|end_char=150
+18	•	•	PUNCT	FF	_	22	punct	_	start_char=151|end_char=152
+19	½	½	PUNCT	FF	_	22	punct	_	start_char=153|end_char=154
+20	tsp	tsp	NOUN	S	Number=Sing	22	nmod	_	start_char=155|end_char=158
+21	baking	baking	NOUN	S	Number=Sing	22	nmod	_	start_char=159|end_char=165
+22	soda	soda	NOUN	S	Number=Sing	8	conj	_	SpacesAfter=\n|start_char=166|end_char=170
+23	•	•	PUNCT	FF	_	26	punct	_	start_char=171|end_char=172
+24	¼	¼	PUNCT	FF	_	26	punct	_	start_char=173|end_char=174
+25	tsp	tsp	NOUN	S	Number=Sing	26	nmod	_	start_char=175|end_char=178
+26	salt	salt	NOUN	S	Number=Sing	22	nmod	_	SpacesAfter=\n|start_char=179|end_char=183
+27	•	•	PUNCT	FF	_	31	punct	_	start_char=184|end_char=185
+28	1	1	NUM	N	NumType=Card	30	nummod	_	start_char=186|end_char=187
+29	cup	cup	NOUN	S	Number=Sing	30	nmod	_	start_char=188|end_char=191
+30	ricotta	ricotta	NOUN	S	Number=Sing	31	nmod	_	start_char=192|end_char=199
+31	cheese	cheese	NOUN	S	Number=Sing	26	nmod	_	SpacesAfter=\n|start_char=200|end_char=206
+32	•	•	PUNCT	FF	_	35	punct	_	start_char=207|end_char=208
+33	¾	¾	PUNCT	FF	_	35	punct	_	start_char=209|end_char=210
+34	cup	cup	NOUN	S	Number=Sing	35	nmod	_	start_char=211|end_char=214
+35	milk	milk	NOUN	S	Number=Sing	26	nmod	_	SpacesAfter=\n|start_char=215|end_char=219
+36	•	•	PUNCT	FF	_	39	punct	_	start_char=220|end_char=221
+37	2	2	NUM	N	NumType=Card	38	compound	_	start_char=222|end_char=223
+38	large	large	ADJ	A	Degree=Pos	39	amod	_	start_char=224|end_char=229
+39	eggs	egg	NOUN	S	Number=Plur	35	nmod	_	SpaceAfter=No|start_char=230|end_char=234
+40	,	,	PUNCT	FF	_	43	punct	_	start_char=234|end_char=235
+41	separated	separate	VERB	V	Tense=Past|VerbForm=Part	35	acl	_	SpacesAfter=\n|start_char=236|end_char=245
+42	•	•	PUNCT	FF	_	43	punct	_	start_char=246|end_char=247
+43	zest	zest	NOUN	S	Number=Sing	41	obl	_	start_char=248|end_char=252
+44	of	of	ADP	E	_	46	case	_	start_char=253|end_char=255
+45	1	1	NUM	N	NumType=Card	46	nummod	_	start_char=256|end_char=257
+46	lemon	lemon	NOUN	S	Number=Sing	43	nmod	_	SpacesAfter=\n|start_char=258|end_char=263
+47	•	•	PUNCT	FF	_	48	punct	_	start_char=264|end_char=265
+48	2	2	NUM	N	NumType=Card	49	nummod	_	start_char=266|end_char=267
+49	tbsp	tbsp	NOUN	S	Number=Plur	43	nmod	_	SpaceAfter=No|start_char=268|end_char=272
+50	.	.	PUNCT	FS	_	26	punct	_	start_char=272|end_char=273
+
+# text = butter, melted, plus more for the pan
+# sent_id = 7
+1	butter	butter	NOUN	S	Number=Sing	0	root	_	SpaceAfter=No|start_char=274|end_char=280
+2	,	,	PUNCT	FF	_	1	punct	_	start_char=280|end_char=281
+3	melted	melt	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	1	conj	_	SpaceAfter=No|start_char=282|end_char=288
+4	,	,	PUNCT	FF	_	3	punct	_	start_char=288|end_char=289
+5	plus	plus	ADV	B	_	6	advmod	_	start_char=290|end_char=294
+6	more	more	ADJ	A	Degree=Cmp	3	obl	_	start_char=295|end_char=299
+7	for	for	ADP	E	_	9	case	_	start_char=300|end_char=303
+8	the	the	DET	RD	Definite=Def|PronType=Art	9	det	_	start_char=304|end_char=307
+9	pan	pan	NOUN	S	Number=Sing	6	obl	_	SpacesAfter=\n\n|start_char=308|end_char=311
+
+# text = Directions 1) Whisk the dry ingredients together in a medium bowl.
+# sent_id = 8
+1	Directions	Direction	NOUN	S	Number=Plur	4	nsubj	_	SpacesAfter=\n|start_char=313|end_char=323
+2	1	1	NUM	N	NumType=Card	1	flat	_	SpaceAfter=No|start_char=324|end_char=325
+3	)	)	PUNCT	FB	_	2	punct	_	start_char=325|end_char=326
+4	Whisk	whisk	VERB	V	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=327|end_char=332
+5	the	the	DET	RD	Definite=Def|PronType=Art	7	det	_	start_char=333|end_char=336
+6	dry	dry	ADJ	A	Degree=Pos	7	amod	_	start_char=337|end_char=340
+7	ingredients	ingredient	NOUN	S	Number=Plur	4	obj	_	start_char=341|end_char=352
+8	together	together	ADV	B	_	4	advmod	_	start_char=353|end_char=361
+9	in	in	ADP	E	_	12	case	_	start_char=362|end_char=364
+10	a	a	DET	RI	Definite=Ind|Number=Sing|PronType=Art	12	det	_	start_char=365|end_char=366
+11	medium	medium	ADJ	A	Degree=Pos	12	amod	_	start_char=367|end_char=373
+12	bowl	bowl	NOUN	S	Number=Sing	4	obl	_	SpaceAfter=No|start_char=374|end_char=378
+13	.	.	PUNCT	FS	_	4	punct	_	SpacesAfter=\n|start_char=378|end_char=379
+
+# text = 2) In a second bowl, combine the ricotta, milk, egg yolks, lemon zest and melted butter.
+# sent_id = 9
+1	2	2	NUM	N	NumType=Card	8	discourse	_	SpaceAfter=No|start_char=380|end_char=381
+2	)	)	PUNCT	FB	_	1	punct	_	start_char=381|end_char=382
+3	In	in	ADP	E	_	6	case	_	start_char=383|end_char=385
+4	a	a	DET	RI	Definite=Ind|Number=Sing|PronType=Art	6	det	_	start_char=386|end_char=387
+5	second	second	ADJ	NO	Degree=Pos|NumType=Ord	6	amod	_	start_char=388|end_char=394
+6	bowl	bowl	NOUN	S	Number=Sing	8	obl	_	SpaceAfter=No|start_char=395|end_char=399
+7	,	,	PUNCT	FF	_	6	punct	_	start_char=399|end_char=400
+8	combine	combine	VERB	V	Mood=Imp|Tense=Pres|VerbForm=Fin	0	root	_	start_char=401|end_char=408
+9	the	the	DET	RD	Definite=Def|PronType=Art	10	det	_	start_char=409|end_char=412
+10	ricotta	ricotta	NOUN	S	Number=Sing	8	obj	_	SpaceAfter=No|start_char=413|end_char=420
+11	,	,	PUNCT	FF	_	12	punct	_	start_char=420|end_char=421
+12	milk	milk	NOUN	S	Number=Sing	10	conj	_	SpaceAfter=No|start_char=422|end_char=426
+13	,	,	PUNCT	FF	_	15	punct	_	start_char=426|end_char=427
+14	egg	egg	NOUN	S	Number=Sing	15	nmod	_	start_char=428|end_char=431
+15	yolks	yolk	NOUN	S	Number=Plur	10	conj	_	SpaceAfter=No|start_char=432|end_char=437
+16	,	,	PUNCT	FF	_	18	punct	_	start_char=437|end_char=438
+17	lemon	lemon	NOUN	S	Number=Sing	18	nmod	_	start_char=439|end_char=444
+18	zest	zest	NOUN	S	Number=Sing	10	conj	_	start_char=445|end_char=449
+19	and	and	CCONJ	CC	_	21	cc	_	start_char=450|end_char=453
+20	melted	melt	VERB	V	Tense=Past|VerbForm=Part	21	acl	_	start_char=454|end_char=460
+21	butter	butter	NOUN	S	Number=Sing	10	conj	_	SpaceAfter=No|start_char=461|end_char=467
+22	.	.	PUNCT	FS	_	8	punct	_	SpacesAfter=\n|start_char=467|end_char=468
+
+# text = 3) Beat the egg whites until stiff peaks form, about 2–3 minutes.
+# sent_id = 10
+1	3	3	NUM	N	NumType=Card	3	discourse	_	SpaceAfter=No|start_char=469|end_char=470
+2	)	)	PUNCT	FB	_	1	punct	_	start_char=470|end_char=471
+3	Beat	beat	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=472|end_char=476
+4	the	the	DET	RD	Definite=Def|PronType=Art	6	det	_	start_char=477|end_char=480
+5	egg	egg	NOUN	S	Number=Sing	6	nmod	_	start_char=481|end_char=484
+6	whites	white	NOUN	S	Number=Plur	3	obj	_	start_char=485|end_char=491
+7	until	until	SCONJ	CS	_	10	mark	_	start_char=492|end_char=497
+8	stiff	stiff	ADJ	A	Degree=Pos	9	amod	_	start_char=498|end_char=503
+9	peaks	peak	NOUN	S	Number=Plur	10	nsubj	_	start_char=504|end_char=509
+10	form	form	VERB	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	3	advcl	_	SpaceAfter=No|start_char=510|end_char=514
+11	,	,	PUNCT	FF	_	10	punct	_	start_char=514|end_char=515
+12	about	about	ADV	B	_	16	advmod	_	start_char=516|end_char=521
+13	2	2	NUM	N	NumType=Card	16	nummod	_	SpaceAfter=No|start_char=522|end_char=523
+14	–	–	PUNCT	FF	_	13	punct	_	SpaceAfter=No|start_char=523|end_char=524
+15	3	3	NUM	N	NumType=Card	13	conj	_	start_char=524|end_char=525
+16	minutes	minute	NOUN	S	Number=Plur	10	obl	_	SpaceAfter=No|start_char=526|end_char=533
+17	.	.	PUNCT	FS	_	3	punct	_	SpacesAfter=\n|start_char=533|end_char=534
+
+# text = 4) Fold everything together gently.
+# sent_id = 11
+1	4	4	NUM	N	NumType=Card	3	nummod	_	SpaceAfter=No|start_char=535|end_char=536
+2	)	)	PUNCT	FB	_	1	punct	_	start_char=536|end_char=537
+3	Fold	fold	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=538|end_char=542
+4	everything	everything	PRON	PE	Number=Sing|Person=3|PronType=Prs	3	obj	_	start_char=543|end_char=553
+5	together	together	ADV	B	_	6	advmod	_	start_char=554|end_char=562
+6	gently	gently	ADV	B	_	3	advmod	_	SpaceAfter=No|start_char=563|end_char=569
+7	.	.	PUNCT	FS	_	3	punct	_	start_char=569|end_char=570
+
+# text = Don't overmix!
+# sent_id = 12
+1-2	Don't	_	_	_	_	_	_	_	start_char=571|end_char=576
+1	Do	Do	AUX	VM	Mood=Imp|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin	3	aux	_	start_char=571|end_char=573
+2	n't	not	PART	PART	Polarity=Neg	3	advmod	_	start_char=573|end_char=576
+3	overmix	overmix	NOUN	S	Number=Sing	0	root	_	SpaceAfter=No|start_char=577|end_char=584
+4	!	!	PUNCT	FS	_	3	punct	_	SpacesAfter=\n|start_char=584|end_char=585
+
+# text = 5) Heat a skillet over medium-low heat.
+# sent_id = 13
+1	5	5	NUM	N	NumType=Card	3	nummod	_	SpaceAfter=No|start_char=586|end_char=587
+2	)	)	PUNCT	FB	_	1	punct	_	start_char=587|end_char=588
+3	Heat	heat	NOUN	S	Number=Sing	0	root	_	start_char=589|end_char=593
+4	a	a	DET	RI	Definite=Ind|Number=Sing|PronType=Art	5	det	_	start_char=594|end_char=595
+5	skillet	skillet	NOUN	S	Number=Sing	3	nmod	_	start_char=596|end_char=603
+6	over	over	ADP	E	_	10	case	_	start_char=604|end_char=608
+7	medium	medium	NOUN	S	Number=Sing	9	obl	_	SpaceAfter=No|start_char=609|end_char=615
+8	-	-	PUNCT	FF	_	9	punct	_	SpaceAfter=No|start_char=615|end_char=616
+9	low	low	ADJ	A	Degree=Pos	10	amod	_	start_char=616|end_char=619
+10	heat	heat	NOUN	S	Number=Sing	5	nmod	_	SpaceAfter=No|start_char=620|end_char=624
+11	.	.	PUNCT	FS	_	3	punct	_	start_char=624|end_char=625
+
+# text = Cook ¼-cup portions for 2 min per side.
+# sent_id = 14
+1	Cook	Cook	PROPN	SP	_	3	nmod	_	start_char=626|end_char=630
+2	¼-cup	¼-cup	NOUN	S	Number=Sing	3	nmod	_	start_char=631|end_char=636
+3	portions	portion	NOUN	S	Number=Plur	0	root	_	start_char=637|end_char=645
+4	for	for	ADP	E	_	6	case	_	start_char=646|end_char=649
+5	2	2	NUM	N	NumType=Card	6	nummod	_	start_char=650|end_char=651
+6	min	min	NOUN	S	Number=Sing	3	nmod	_	start_char=652|end_char=655
+7	per	per	ADP	E	_	8	case	_	start_char=656|end_char=659
+8	side	side	NOUN	S	Number=Sing	6	nmod	_	SpaceAfter=No|start_char=660|end_char=664
+9	.	.	PUNCT	FS	_	3	punct	_	SpacesAfter=\n\n|start_char=664|end_char=665
+
+# text = Tip:
+# sent_id = 15
+1	Tip	tip	NOUN	S	Number=Sing	0	root	_	SpaceAfter=No|start_char=667|end_char=670
+2	:	:	PUNCT	FC	_	1	punct	_	start_char=670|end_char=671
+
+# text = if the batter seems too thick, add another tablespoon or two of milk.
+# sent_id = 16
+1	if	if	SCONJ	CS	_	4	mark	_	start_char=672|end_char=674
+2	the	the	DET	RD	Definite=Def|PronType=Art	3	det	_	start_char=675|end_char=678
+3	batter	batter	NOUN	S	Number=Sing	4	nsubj	_	start_char=679|end_char=685
+4	seems	seem	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	8	advcl	_	start_char=686|end_char=691
+5	too	too	ADV	B	_	6	advmod	_	start_char=692|end_char=695
+6	thick	thick	ADJ	A	Degree=Pos	4	xcomp	_	SpaceAfter=No|start_char=696|end_char=701
+7	,	,	PUNCT	FF	_	4	punct	_	start_char=701|end_char=702
+8	add	add	VERB	V	Mood=Ind|Tense=Pres|VerbForm=Fin	0	root	_	start_char=703|end_char=706
+9	another	another	DET	RI	Definite=Ind|Number=Sing|PronType=Art	10	det	_	start_char=707|end_char=714
+10	tablespoon	tablespoon	NOUN	S	Number=Sing	8	obj	_	start_char=715|end_char=725
+11	or	or	CCONJ	CC	_	12	cc	_	start_char=726|end_char=728
+12	two	two	NUM	N	NumType=Card	10	conj	_	start_char=729|end_char=732
+13	of	of	ADP	E	_	14	case	_	start_char=733|end_char=735
+14	milk	milk	NOUN	S	Number=Sing	12	nmod	_	SpaceAfter=No|start_char=736|end_char=740
+15	.	.	PUNCT	FS	_	8	punct	_	start_char=740|end_char=741
+
+# text = Leftovers keep in the fridge for up to 3 days.
+# sent_id = 17
+1	Leftovers	leftover	NOUN	S	Number=Plur	2	nsubj	_	start_char=742|end_char=751
+2	keep	keep	VERB	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	0	root	_	start_char=752|end_char=756
+3	in	in	ADP	E	_	5	case	_	start_char=757|end_char=759
+4	the	the	DET	RD	Definite=Def|PronType=Art	5	det	_	start_char=760|end_char=763
+5	fridge	fridge	NOUN	S	Number=Sing	2	obl	_	start_char=764|end_char=770
+6	for	for	ADP	E	_	7	case	_	start_char=771|end_char=774
+7	up	up	ADV	B	_	2	advmod	_	start_char=775|end_char=777
+8	to	to	ADP	E	_	10	case	_	start_char=778|end_char=780
+9	3	3	NUM	N	NumType=Card	10	nummod	_	start_char=781|end_char=782
+10	days	day	NOUN	S	Number=Plur	2	obl	_	SpaceAfter=No|start_char=783|end_char=787
+11	.	.	PUNCT	FS	_	2	punct	_	SpacesAfter=\n\n|start_char=787|end_char=788
+
+# text = To assemble the shelf:
+# sent_id = 18
+1	To	to	ADP	E	_	2	mark	_	start_char=790|end_char=792
+2	assemble	assemble	VERB	V	VerbForm=Inf	0	root	_	start_char=793|end_char=801
+3	the	the	DET	RD	Definite=Def|PronType=Art	4	det	_	start_char=802|end_char=805
+4	shelf	shelf	NOUN	S	Number=Sing	2	obj	_	SpaceAfter=No|start_char=806|end_char=811
+5	:	:	PUNCT	FC	_	2	punct	_	SpacesAfter=\n|start_char=811|end_char=812
+
+# text = a. Remove all parts from the box and check them against the parts list.
+# sent_id = 19
+1	a	a	DET	RI	Definite=Ind|Number=Sing|PronType=Art	3	nsubj	_	SpaceAfter=No|start_char=813|end_char=814
+2	.	.	PUNCT	FF	_	3	punct	_	start_char=814|end_char=815
+3	Remove	remove	VERB	V	Mood=Imp|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=816|end_char=822
+4	all	all	DET	T	PronType=Tot	5	det	_	start_char=823|end_char=826
+5	parts	part	NOUN	S	Number=Plur	3	obj	_	start_char=827|end_char=832
+6	from	from	ADP	E	_	8	case	_	start_char=833|end_char=837
+7	the	the	DET	RD	Definite=Def|PronType=Art	8	det	_	start_char=838|end_char=841
+8	box	box	NOUN	S	Number=Sing	5	nmod	_	start_char=842|end_char=845
+9	and	and	CCONJ	CC	_	10	cc	_	start_char=846|end_char=849
+10	check	check	VERB	V	Tense=Pres|VerbForm=Fin	3	conj	_	start_char=850|end_char=855
+11	them	they	PRON	PE	Number=Plur|Person=3|PronType=Prs	10	obj	_	start_char=856|end_char=860
+12	against	against	ADP	E	_	15	case	_	start_char=861|end_char=868
+13	the	the	DET	RD	Definite=Def|PronType=Art	15	det	_	start_char=869|end_char=872
+14	parts	part	NOUN	S	Number=Plur	15	nmod	_	start_char=873|end_char=878
+15	list	list	NOUN	S	Number=Sing	10	obl	_	SpaceAfter=No|start_char=879|end_char=883
+16	.	.	PUNCT	FS	_	3	punct	_	SpacesAfter=\n|start_char=883|end_char=884
+
+# text = b. Attach side panel (A) to base (B) using four M6 × 30 mm screws.
+# sent_id = 20
+1	b.	b.	PUNCT	FF	_	2	punct	_	start_char=885|end_char=887
+2	Attach	attach	VERB	V	Mood=Imp|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=888|end_char=894
+3	side	side	NOUN	S	Number=Sing	4	nmod	_	start_char=895|end_char=899
+4	panel	panel	NOUN	S	Number=Sing	2	obj	_	start_char=900|end_char=905
+5	(	(	PUNCT	FB	_	6	punct	_	SpaceAfter=No|start_char=906|end_char=907
+6	A	a	PROPN	SP	_	4	nmod	_	SpaceAfter=No|start_char=907|end_char=908
+7	)	)	PUNCT	FB	_	6	punct	_	start_char=908|end_char=909
+8	to	to	PART	PART	_	9	mark	_	start_char=910|end_char=912
+9	base	base	NOUN	S	Number=Sing	4	nmod	_	start_char=913|end_char=917
+10	(	(	PUNCT	FB	_	11	punct	_	SpaceAfter=No|start_char=918|end_char=919
+11	B	B	PROPN	SP	_	9	appos	_	SpaceAfter=No|start_char=919|end_char=920
+12	)	)	PUNCT	FB	_	11	punct	_	start_char=920|end_char=921
+13	using	use	VERB	V	Number=Sing|Tense=Pres|VerbForm=Part	9	acl	_	start_char=922|end_char=927
+14	four	four	NUM	N	NumType=Card	19	nummod	_	start_char=928|end_char=932
+15	M6	m6	NUM	N	NumType=Card	19	nummod	_	start_char=933|end_char=935
+16	×	×	PUNCT	FF	_	15	punct	_	start_char=936|end_char=937
+17	30	30	NUM	N	NumType=Card	15	nummod	_	start_char=938|end_char=940
+18	mm	mmo	ADJ	A	Degree=Pos	19	amod	_	start_char=941|end_char=943
+19	screws	screw	NOUN	S	Number=Plur	13	obj	_	SpaceAfter=No|start_char=944|end_char=950
+20	.	.	PUNCT	FS	_	2	punct	_	SpacesAfter=\n|start_char=950|end_char=951
+
+# text = c. Insert the shelf pins into holes 3 and 7. d. Do NOT overtighten the cam locks.
+# sent_id = 21
+1	c.	c.	CCONJ	CC	_	2	cc	_	start_char=952|end_char=954
+2	Insert	insert	VERB	V	Mood=Imp|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=955|end_char=961
+3	the	the	DET	RD	Definite=Def|PronType=Art	5	det	_	start_char=962|end_char=965
+4	shelf	shelf	NOUN	S	Number=Sing	5	nmod	_	start_char=966|end_char=971
+5	pins	pin	NOUN	S	Number=Plur	2	obj	_	start_char=972|end_char=976
+6	into	into	ADP	E	_	7	case	_	start_char=977|end_char=981
+7	holes	hole	NOUN	S	Number=Plur	2	obl	_	start_char=982|end_char=987
+8	3	3	NUM	N	NumType=Card	7	flat	_	start_char=988|end_char=989
+9	and	and	CCONJ	CC	_	10	cc	_	start_char=990|end_char=993
+10	7	7	NUM	N	NumType=Card	8	conj	_	SpaceAfter=No|start_char=994|end_char=995
+11	.	.	PUNCT	FF	_	10	punct	_	SpacesAfter=\n|start_char=995|end_char=996
+12	d	d	PUNCT	FF	_	7	punct	_	SpaceAfter=No|start_char=997|end_char=998
+13	.	.	PUNCT	FS	_	16	punct	_	start_char=998|end_char=999
+14	Do	Do	AUX	VM	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	16	aux	_	start_char=1000|end_char=1002
+15	NOT	not	PART	PART	Polarity=Neg	16	advmod	_	start_char=1003|end_char=1006
+16	overtighten	overtight	VERB	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	2	conj	_	start_char=1007|end_char=1018
+17	the	the	DET	RD	Definite=Def|PronType=Art	19	det	_	start_char=1019|end_char=1022
+18	cam	cam	NOUN	S	Number=Sing	19	nmod	_	start_char=1023|end_char=1026
+19	locks	lock	NOUN	S	Number=Plur	16	obj	_	SpaceAfter=No|start_char=1027|end_char=1032
+20	.	.	PUNCT	FS	_	2	punct	_	SpacesAfter=\n|start_char=1032|end_char=1033
+
+# text = e. Place the top panel (C) and secure with the remaining screws.
+# sent_id = 22
+1	e.	e	PUNCT	FB	_	2	punct	_	start_char=1034|end_char=1036
+2	Place	place	NOUN	S	Number=Sing	0	root	_	start_char=1037|end_char=1042
+3	the	the	DET	RD	Definite=Def|PronType=Art	5	det	_	start_char=1043|end_char=1046
+4	top	top	ADJ	A	Degree=Pos	5	amod	_	start_char=1047|end_char=1050
+5	panel	panel	NOUN	S	Number=Sing	2	nmod	_	start_char=1051|end_char=1056
+6	(	(	PUNCT	FB	_	7	punct	_	SpaceAfter=No|start_char=1057|end_char=1058
+7	C	C	PROPN	SP	_	5	nmod	_	SpaceAfter=No|start_char=1058|end_char=1059
+8	)	)	PUNCT	FB	_	7	punct	_	start_char=1059|end_char=1060
+9	and	and	CCONJ	CC	_	10	cc	_	start_char=1061|end_char=1064
+10	secure	secure	ADJ	A	Degree=Pos	5	conj	_	start_char=1065|end_char=1071
+11	with	with	ADP	E	_	14	case	_	start_char=1072|end_char=1076
+12	the	the	DET	RD	Definite=Def|PronType=Art	14	det	_	start_char=1077|end_char=1080
+13	remaining	remain	VERB	V	Number=Sing|Tense=Pres|VerbForm=Part	14	acl	_	start_char=1081|end_char=1090
+14	screws	screw	NOUN	S	Number=Plur	10	obl	_	SpaceAfter=No|start_char=1091|end_char=1097
+15	.	.	PUNCT	FS	_	2	punct	_	SpacesAfter=\n\n|start_char=1097|end_char=1098
+
+# text = WARNING:
+# sent_id = 23
+1	WARNING	warning	NOUN	S	Number=Sing	0	root	_	SpaceAfter=No|start_char=1100|end_char=1107
+2	:	:	PUNCT	FC	_	1	punct	_	start_char=1107|end_char=1108
+
+# text = Risk of tip-over.
+# sent_id = 24
+1	Risk	risk	NOUN	S	Number=Sing	0	root	_	start_char=1109|end_char=1113
+2	of	of	ADP	E	_	3	case	_	start_char=1114|end_char=1116
+3	tip	tip	NOUN	S	Number=Sing	1	nmod	_	SpaceAfter=No|start_char=1117|end_char=1120
+4	-	-	PUNCT	FF	_	1	punct	_	SpaceAfter=No|start_char=1120|end_char=1121
+5	over	over	ADP	E	_	3	flat	_	SpaceAfter=No|start_char=1121|end_char=1125
+6	.	.	PUNCT	FS	_	1	punct	_	start_char=1125|end_char=1126
+
+# text = Always anchor the unit to the wall.
+# sent_id = 25
+1	Always	always	ADV	B	_	2	advmod	_	start_char=1127|end_char=1133
+2	anchor	anchor	VERB	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1134|end_char=1140
+3	the	the	DET	RD	Definite=Def|PronType=Art	4	det	_	start_char=1141|end_char=1144
+4	unit	unit	NOUN	S	Number=Sing	2	obj	_	start_char=1145|end_char=1149
+5	to	to	ADP	E	_	7	case	_	start_char=1150|end_char=1152
+6	the	the	DET	RD	Definite=Def|PronType=Art	7	det	_	start_char=1153|end_char=1156
+7	wall	wall	NOUN	S	Number=Sing	2	obl	_	SpaceAfter=No|start_char=1157|end_char=1161
+8	.	.	PUNCT	FS	_	2	punct	_	SpacesAfter=\n\n|start_char=1161|end_char=1162
+
+# text = Step 1 — Unplug the router.
+# sent_id = 26
+1	Step	step	NOUN	S	Number=Sing	4	nsubj	_	start_char=1164|end_char=1168
+2	1	1	NUM	N	NumType=Card	1	flat	_	start_char=1169|end_char=1170
+3	—	—	PUNCT	FF	_	2	punct	_	start_char=1171|end_char=1172
+4	Unplug	unplug	VERB	V	Mood=Imp|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1173|end_char=1179
+5	the	the	DET	RD	Definite=Def|PronType=Art	6	det	_	start_char=1180|end_char=1183
+6	router	router	NOUN	S	Number=Sing	4	obj	_	SpaceAfter=No|start_char=1184|end_char=1190
+7	.	.	PUNCT	FS	_	4	punct	_	start_char=1190|end_char=1191
+
+# text = Step 2 — Wait 30 seconds.
+# sent_id = 27
+1	Step	step	NOUN	S	Number=Sing	4	nsubj	_	start_char=1192|end_char=1196
+2	2	2	NUM	N	NumType=Card	1	flat	_	start_char=1197|end_char=1198
+3	—	—	PUNCT	FF	_	2	punct	_	start_char=1199|end_char=1200
+4	Wait	wait	VERB	V	Mood=Imp|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1201|end_char=1205
+5	30	30	NUM	N	NumType=Card	6	nummod	_	start_char=1206|end_char=1208
+6	seconds	second	NOUN	S	Number=Plur	4	obj	_	SpaceAfter=No|start_char=1209|end_char=1216
+7	.	.	PUNCT	FS	_	4	punct	_	start_char=1216|end_char=1217
+
+# text = Step 3 — Plug it back in and wait for the light to turn green.
+# sent_id = 28
+1	Step	step	NOUN	S	Number=Sing	4	nsubj	_	start_char=1218|end_char=1222
+2	3	3	NUM	N	NumType=Card	1	flat	_	start_char=1223|end_char=1224
+3	—	—	PUNCT	FF	_	1	punct	_	start_char=1225|end_char=1226
+4	Plug	pluk	VERB	V	Mood=Imp|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1227|end_char=1231
+5	it	it	PRON	PE	Number=Sing|Person=3|PronType=Prs	4	obj	_	start_char=1232|end_char=1234
+6	back	back	ADV	B	_	4	advmod	_	start_char=1235|end_char=1239
+7	in	in	ADP	E	_	4	advmod	_	start_char=1240|end_char=1242
+8	and	and	CCONJ	CC	_	9	cc	_	start_char=1243|end_char=1246
+9	wait	wait	VERB	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	4	conj	_	start_char=1247|end_char=1251
+10	for	for	ADP	E	_	12	case	_	start_char=1252|end_char=1255
+11	the	the	DET	RD	Definite=Def|PronType=Art	12	det	_	start_char=1256|end_char=1259
+12	light	light	NOUN	S	Number=Sing	9	obl	_	start_char=1260|end_char=1265
+13	to	to	PART	PART	_	14	mark	_	start_char=1266|end_char=1268
+14	turn	turn	VERB	V	VerbForm=Inf	12	acl	_	start_char=1269|end_char=1273
+15	green	green	NOUN	S	Number=Sing	14	obj	_	SpaceAfter=No|start_char=1274|end_char=1279
+16	.	.	PUNCT	FS	_	4	punct	_	SpacesAfter=\n\n|start_char=1279|end_char=1280
+
+# text = Before you begin, make sure you have:
+# sent_id = 29
+1	Before	before	ADP	E	_	3	mark	_	start_char=1282|end_char=1288
+2	you	you	PRON	PE	Person=2|PronType=Prs	3	nsubj	_	start_char=1289|end_char=1292
+3	begin	begin	VERB	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	5	advcl	_	SpaceAfter=No|start_char=1293|end_char=1298
+4	,	,	PUNCT	FF	_	3	punct	_	start_char=1298|end_char=1299
+5	make	make	VERB	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1300|end_char=1304
+6	sure	sure	ADJ	A	Degree=Pos	5	xcomp	_	start_char=1305|end_char=1309
+7	you	you	PRON	PE	Person=2|PronType=Prs	8	nsubj	_	start_char=1310|end_char=1313
+8	have	have	VERB	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	5	ccomp	_	SpaceAfter=No|start_char=1314|end_char=1318
+9	:	:	PUNCT	FC	_	5	punct	_	SpacesAfter=\n|start_char=1318|end_char=1319
+
+# text = - a Phillips-head screwdriver (#2) - a 10 mm wrench - safety glasses
+# sent_id = 30
+1	-	-	PUNCT	FF	_	6	punct	_	start_char=1320|end_char=1321
+2	a	a	DET	RI	Definite=Ind|Number=Sing|PronType=Art	6	det	_	start_char=1322|end_char=1323
+3	Phillips	Phillips	PROPN	SP	_	5	nmod	_	SpaceAfter=No|start_char=1324|end_char=1332
+4	-	-	PUNCT	FF	_	5	punct	_	SpaceAfter=No|start_char=1332|end_char=1333
+5	head	head	NOUN	S	Number=Sing	6	nmod	_	start_char=1333|end_char=1337
+6	screwdriver	screwdriver	NOUN	S	Number=Sing	0	root	_	start_char=1338|end_char=1349
+7	(	(	PUNCT	FB	_	8	punct	_	SpaceAfter=No|start_char=1350|end_char=1351
+8	#2	#2	NUM	N	NumType=Card	6	appos	_	SpaceAfter=No|start_char=1351|end_char=1353
+9	)	)	PUNCT	FB	_	8	punct	_	SpacesAfter=\n|start_char=1353|end_char=1354
+10	-	-	PUNCT	FF	_	8	punct	_	start_char=1355|end_char=1356
+11	a	a	DET	RI	Definite=Ind|Number=Sing|PronType=Art	17	det	_	start_char=1357|end_char=1358
+12	10	10	NUM	N	NumType=Card	17	nummod	_	start_char=1359|end_char=1361
+13	mm	mmo	ADJ	A	Degree=Pos	14	amod	_	start_char=1362|end_char=1364
+14	wrench	wrench	NOUN	S	Number=Sing	16	nmod	_	SpacesAfter=\n|start_char=1365|end_char=1371
+15	-	-	PUNCT	FF	_	14	punct	_	start_char=1372|end_char=1373
+16	safety	safety	NOUN	S	Number=Sing	17	nmod	_	start_char=1374|end_char=1380
+17	glasses	glass	NOUN	S	Number=Plur	6	appos	_	SpacesAfter=\n\n|start_char=1381|end_char=1388
+
+# text = | Item | Qty | Price | |------|-----|-------|
+# sent_id = 31
+1	|	|	PUNCT	FF	_	2	punct	_	start_char=1390|end_char=1391
+2	Item	item	NOUN	S	Number=Sing	0	root	_	start_char=1392|end_char=1396
+3	|	|	PUNCT	FF	_	4	punct	_	start_char=1397|end_char=1398
+4	Qty	Qty	PROPN	SP	_	2	flat	_	start_char=1399|end_char=1402
+5	|	|	PUNCT	FF	_	6	punct	_	start_char=1403|end_char=1404
+6	Price	Price	PROPN	SP	_	4	flat	_	start_char=1405|end_char=1410
+7	|	|	PUNCT	FF	_	6	punct	_	SpacesAfter=\n|start_char=1411|end_char=1412
+8	|-	|-	PUNCT	FF	_	6	punct	_	SpaceAfter=No|start_char=1413|end_char=1415
+9	-	-	PUNCT	FF	_	6	punct	_	SpaceAfter=No|start_char=1415|end_char=1416
+10	-	-	PUNCT	FF	_	6	punct	_	SpaceAfter=No|start_char=1416|end_char=1417
+11	-	-	PUNCT	FF	_	6	punct	_	SpaceAfter=No|start_char=1417|end_char=1418
+12	-	-	PUNCT	FF	_	14	punct	_	SpaceAfter=No|start_char=1418|end_char=1419
+13	-	-	PUNCT	FF	_	14	punct	_	SpaceAfter=No|start_char=1419|end_char=1420
+14	|-	|-	PUNCT	FF	_	4	punct	_	SpaceAfter=No|start_char=1420|end_char=1422
+15	-	-	PUNCT	FF	_	19	punct	_	SpaceAfter=No|start_char=1422|end_char=1423
+16	-	-	PUNCT	FF	_	19	punct	_	SpaceAfter=No|start_char=1423|end_char=1424
+17	-	-	PUNCT	FF	_	19	punct	_	SpaceAfter=No|start_char=1424|end_char=1425
+18	-	-	PUNCT	FF	_	19	punct	_	SpaceAfter=No|start_char=1425|end_char=1426
+19	|-	|-	PUNCT	FF	_	14	punct	_	SpaceAfter=No|start_char=1426|end_char=1428
+20	-	-	PUNCT	FF	_	24	punct	_	SpaceAfter=No|start_char=1428|end_char=1429
+21	-	-	PUNCT	FF	_	19	punct	_	SpaceAfter=No|start_char=1429|end_char=1430
+22	-	-	PUNCT	FF	_	24	punct	_	SpaceAfter=No|start_char=1430|end_char=1431
+23	-	-	PUNCT	FF	_	24	punct	_	SpaceAfter=No|start_char=1431|end_char=1432
+24	-	-	PUNCT	FF	_	19	punct	_	SpaceAfter=No|start_char=1432|end_char=1433
+25	-	-	PUNCT	FB	_	4	punct	_	SpaceAfter=No|start_char=1433|end_char=1434
+26	|	|	PUNCT	FS	_	2	punct	_	SpacesAfter=\n|start_char=1434|end_char=1435
+
+# text = | Widget | 3 | $4.99 | | Gadget | 1 | $12.50 | | Total | 4 | $27.47 |
+# sent_id = 32
+1	|	|	PUNCT	FF	_	2	punct	_	start_char=1436|end_char=1437
+2	Widget	Widget	PROPN	SP	_	0	root	_	start_char=1438|end_char=1444
+3	|	|	PUNCT	FF	_	4	punct	_	start_char=1445|end_char=1446
+4	3	3	NUM	N	NumType=Card	2	flat	_	start_char=1447|end_char=1448
+5	|	|	PUNCT	FF	_	4	punct	_	start_char=1449|end_char=1450
+6	$	$	SYM	X	_	4	nmod	_	SpaceAfter=No|start_char=1451|end_char=1452
+7	4.99	4.99	NUM	N	NumType=Card	4	flat	_	start_char=1452|end_char=1456
+8	|	|	PUNCT	FF	_	4	punct	_	SpacesAfter=\n|start_char=1457|end_char=1458
+9	|	|	PUNCT	FF	_	10	punct	_	start_char=1459|end_char=1460
+10	Gadget	gadget	NOUN	S	Number=Sing	2	appos	_	start_char=1461|end_char=1467
+11	|	|	PUNCT	FF	_	12	punct	_	start_char=1468|end_char=1469
+12	1	1	NUM	N	NumType=Card	2	flat	_	start_char=1470|end_char=1471
+13	|	|	PUNCT	FF	_	12	punct	_	start_char=1472|end_char=1473
+14	$	$	SYM	X	_	10	nmod	_	SpaceAfter=No|start_char=1474|end_char=1475
+15	12.50	12.50	NUM	N	NumType=Card	14	nummod	_	start_char=1475|end_char=1480
+16	|	|	PUNCT	FF	_	12	punct	_	SpacesAfter=\n|start_char=1481|end_char=1482
+17	|	|	PUNCT	FF	_	18	punct	_	start_char=1483|end_char=1484
+18	Total	total	NOUN	S	Number=Sing	2	conj	_	start_char=1485|end_char=1490
+19	|	|	PUNCT	FF	_	20	punct	_	start_char=1491|end_char=1492
+20	4	4	NUM	N	NumType=Card	18	nmod	_	start_char=1493|end_char=1494
+21	|	|	PUNCT	FF	_	20	punct	_	start_char=1495|end_char=1496
+22	$	$	SYM	X	_	18	nmod	_	SpaceAfter=No|start_char=1497|end_char=1498
+23	27.47	27.47	NUM	N	NumType=Card	22	nummod	_	start_char=1498|end_char=1503
+24	|	|	PUNCT	FS	_	2	punct	_	SpacesAfter=\n\n|start_char=1504|end_char=1505
+
+# text = Name Age City Anna 34 Lisbon Ravi 29 Pune Kofi 41 Accra
+# sent_id = 33
+1	Name	name	NOUN	S	Number=Sing	2	nmod	_	SpacesAfter=\t|start_char=1507|end_char=1511
+2	Age	age	NOUN	S	Number=Sing	0	root	_	SpacesAfter=\t|start_char=1512|end_char=1515
+3	City	City	PROPN	SP	_	4	nmod:desc	_	SpacesAfter=\n|start_char=1516|end_char=1520
+4	Anna	Anna	PROPN	SP	_	2	nmod	_	SpacesAfter=\t|start_char=1521|end_char=1525
+5	34	34	NUM	N	NumType=Card	4	flat	_	SpacesAfter=\t|start_char=1526|end_char=1528
+6	Lisbon	Lisbon	PROPN	SP	_	4	flat	_	SpacesAfter=\n|start_char=1529|end_char=1535
+7	Ravi	Ravi	PROPN	SP	_	4	flat	_	SpacesAfter=\t|start_char=1536|end_char=1540
+8	29	29	NUM	N	NumType=Card	4	flat	_	SpacesAfter=\t|start_char=1541|end_char=1543
+9	Pune	Pune	PROPN	SP	_	4	flat	_	SpacesAfter=\n|start_char=1544|end_char=1548
+10	Kofi	Kofi	PROPN	SP	_	4	flat	_	SpacesAfter=\t|start_char=1549|end_char=1553
+11	41	41	NUM	N	NumType=Card	4	flat	_	SpacesAfter=\t|start_char=1554|end_char=1556
+12	Accra	Accra	PROPN	SP	_	4	flat	_	SpacesAfter=\n\n|start_char=1557|end_char=1562
+
+# text = Mix well.
+# sent_id = 34
+1	Mix	mix	VERB	V	Mood=Imp|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1564|end_char=1567
+2	well	well	ADV	B	_	1	advmod	_	SpaceAfter=No|start_char=1568|end_char=1572
+3	.	.	PUNCT	FS	_	1	punct	_	start_char=1572|end_char=1573
+
+# text = Let rest.
+# sent_id = 35
+1	Let	let	VERB	V	Mood=Imp|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1574|end_char=1577
+2	rest	rest	NOUN	S	Number=Sing	1	obj	_	SpaceAfter=No|start_char=1578|end_char=1582
+3	.	.	PUNCT	FS	_	1	punct	_	start_char=1582|end_char=1583
+
+# text = Serve warm.
+# sent_id = 36
+1	Serve	serve	VERB	V	Mood=Imp|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1584|end_char=1589
+2	warm	warm	ADJ	A	Degree=Pos	1	xcomp	_	SpaceAfter=No|start_char=1590|end_char=1594
+3	.	.	PUNCT	FS	_	1	punct	_	SpacesAfter=\n\n|start_char=1594|end_char=1595
+
+# text = Preheat oven to 350°F / 175°C.
+# sent_id = 37
+1	Preheat	preheat	VERB	V	Mood=Imp|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1597|end_char=1604
+2	oven	oven	NOUN	S	Number=Sing	1	obj	_	start_char=1605|end_char=1609
+3	to	to	ADP	E	_	4	case	_	start_char=1610|end_char=1612
+4	350°F	350°F	NUM	N	NumType=Card	1	obl	_	start_char=1613|end_char=1618
+5	/	/	PUNCT	FF	_	4	punct	_	start_char=1619|end_char=1620
+6	175°	175°	NUM	N	NumType=Card	4	conj	_	SpaceAfter=No|start_char=1621|end_char=1625
+7	C	C	PROPN	SP	_	4	nmod:unmarked	_	SpaceAfter=No|start_char=1625|end_char=1626
+8	.	.	PUNCT	FS	_	1	punct	_	start_char=1626|end_char=1627
+
+# text = Grease a 9x13-inch pan.
+# sent_id = 38
+1	Grease	grease	VERB	V	Mood=Imp|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1628|end_char=1634
+2	a	a	DET	RI	Definite=Ind|Number=Sing|PronType=Art	6	det	_	start_char=1635|end_char=1636
+3	9x13	9x13	NUM	N	NumType=Card	5	nummod	_	SpaceAfter=No|start_char=1637|end_char=1641
+4	-	-	PUNCT	FF	_	3	punct	_	SpaceAfter=No|start_char=1641|end_char=1642
+5	inch	inch	NOUN	S	Number=Sing	6	nmod	_	start_char=1642|end_char=1646
+6	pan	pan	NOUN	S	Number=Sing	1	obj	_	SpaceAfter=No|start_char=1647|end_char=1650
+7	.	.	PUNCT	FS	_	1	punct	_	start_char=1650|end_char=1651
+
+# text = Bake 35–40 min or till a toothpick comes out clean
+# sent_id = 39
+1	Bake	bake	NOUN	S	Number=Sing	10	nsubj	_	start_char=1652|end_char=1656
+2	35	35	NUM	N	NumType=Card	1	flat	_	SpaceAfter=No|start_char=1657|end_char=1659
+3	–	–	PUNCT	FF	_	2	punct	_	SpaceAfter=No|start_char=1659|end_char=1660
+4	40	40	NUM	N	NumType=Card	5	nummod	_	start_char=1660|end_char=1662
+5	min	min	NOUN	S	Number=Plur	1	conj	_	start_char=1663|end_char=1666
+6	or	or	CCONJ	CC	_	7	cc	_	start_char=1667|end_char=1669
+7	till	till	ADV	B	_	5	conj	_	start_char=1670|end_char=1674
+8	a	a	DET	RI	Definite=Ind|Number=Sing|PronType=Art	9	det	_	start_char=1675|end_char=1676
+9	toothpick	toothpick	NOUN	S	Number=Sing	10	nsubj	_	start_char=1677|end_char=1686
+10	comes	come	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1687|end_char=1692
+11	out	out	ADP	E	_	10	compound:prt	_	start_char=1693|end_char=1696
+12	clean	clean	ADV	B	_	10	advmod	_	SpacesAfter=\n\n|start_char=1697|end_char=1702
+
+# text = Remove from heat and stir in the vanilla (or almond extract, if you prefer).
+# sent_id = 40
+1	Remove	remove	VERB	V	Mood=Imp|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1704|end_char=1710
+2	from	from	ADP	E	_	3	case	_	start_char=1711|end_char=1715
+3	heat	heat	NOUN	S	Number=Sing	1	obl	_	start_char=1716|end_char=1720
+4	and	and	CCONJ	CC	_	5	cc	_	start_char=1721|end_char=1724
+5	stir	stir	NOUN	S	Number=Sing	3	conj	_	start_char=1725|end_char=1729
+6	in	in	ADP	E	_	8	case	_	start_char=1730|end_char=1732
+7	the	the	DET	RD	Definite=Def|PronType=Art	8	det	_	start_char=1733|end_char=1736
+8	vanilla	vanilla	NOUN	S	Number=Sing	1	obl	_	start_char=1737|end_char=1744
+9	(	(	PUNCT	FB	_	12	punct	_	SpaceAfter=No|start_char=1745|end_char=1746
+10	or	or	CCONJ	CC	_	12	cc	_	start_char=1746|end_char=1748
+11	almond	almond	ADJ	A	Degree=Pos	12	amod	_	start_char=1749|end_char=1755
+12	extract	extract	NOUN	S	Number=Sing	8	conj	_	SpaceAfter=No|start_char=1756|end_char=1763
+13	,	,	PUNCT	FF	_	1	punct	_	start_char=1763|end_char=1764
+14	if	if	SCONJ	CS	_	16	mark	_	start_char=1765|end_char=1767
+15	you	you	PRON	PE	Person=2|PronType=Prs	16	nsubj	_	start_char=1768|end_char=1771
+16	prefer	prefer	VERB	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	1	advcl	_	SpaceAfter=No|start_char=1772|end_char=1778
+17	)	)	PUNCT	FB	_	16	punct	_	SpaceAfter=No|start_char=1778|end_char=1779
+18	.	.	PUNCT	FS	_	1	punct	_	start_char=1779|end_char=1780
+
+# text = Allow to cool completely before frosting.
+# sent_id = 41
+1	Allow	allow	VERB	V	Mood=Imp|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1781|end_char=1786
+2	to	to	PART	PART	_	3	mark	_	start_char=1787|end_char=1789
+3	cool	cool	VERB	V	VerbForm=Inf	1	xcomp	_	start_char=1790|end_char=1794
+4	completely	completely	ADV	B	_	3	advmod	_	start_char=1795|end_char=1805
+5	before	before	ADP	E	_	6	case	_	start_char=1806|end_char=1812
+6	frosting	frosting	NOUN	S	Number=Sing	3	obl	_	SpaceAfter=No|start_char=1813|end_char=1821
+7	.	.	PUNCT	FS	_	1	punct	_	SpacesAfter=\n\n|start_char=1821|end_char=1822
+
+# text = *
+# sent_id = 42
+1	*	*	PUNCT	FB	_	0	root	_	start_char=1824|end_char=1825
+
+# text = Wash hands for at least 20 seconds.
+# sent_id = 43
+1	Wash	wash	VERB	V	Mood=Imp|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1826|end_char=1830
+2	hands	hand	NOUN	S	Number=Plur	1	obj	_	start_char=1831|end_char=1836
+3	for	for	ADP	E	_	7	case	_	start_char=1837|end_char=1840
+4	at	at	ADP	E	_	5	case	_	start_char=1841|end_char=1843
+5	least	least	ADJ	A	Degree=Sup	7	nmod	_	start_char=1844|end_char=1849
+6	20	20	NUM	N	NumType=Card	7	nummod	_	start_char=1850|end_char=1852
+7	seconds	second	NOUN	S	Number=Plur	1	obl	_	SpaceAfter=No|start_char=1853|end_char=1860
+8	.	.	PUNCT	FS	_	1	punct	_	SpacesAfter=\n|start_char=1860|end_char=1861
+
+# text = * Cover your mouth when you cough.
+# sent_id = 44
+1	*	*	PUNCT	_	_	2	punct	_	start_char=1862|end_char=1863
+2	Cover	cover	VERB	V	Mood=Imp|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1864|end_char=1869
+3	your	you	DET	AP	Poss=Yes|PronType=Prs	4	nmod:poss	_	start_char=1870|end_char=1874
+4	mouth	mouth	NOUN	S	Number=Sing	2	obj	_	start_char=1875|end_char=1880
+5	when	when	SCONJ	CS	_	7	mark	_	start_char=1881|end_char=1885
+6	you	you	PRON	PE	Person=2|PronType=Prs	7	nsubj	_	start_char=1886|end_char=1889
+7	cough	cough	VERB	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	2	advcl	_	SpaceAfter=No|start_char=1890|end_char=1895
+8	.	.	PUNCT	FS	_	2	punct	_	SpacesAfter=\n|start_char=1895|end_char=1896
+
+# text = * Stay home if you're sick.
+# sent_id = 45
+1	*	*	PUNCT	_	_	2	punct	_	start_char=1897|end_char=1898
+2	Stay	stay	VERB	V	Mood=Imp|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1899|end_char=1903
+3	home	home	NOUN	S	Number=Sing	2	obj	_	start_char=1904|end_char=1908
+4	if	if	SCONJ	CS	_	7	mark	_	start_char=1909|end_char=1911
+5-6	you're	_	_	_	_	_	_	_	start_char=1912|end_char=1918
+5	you	you	PRON	PE	Person=2|PronType=Prs	7	nsubj	_	start_char=1912|end_char=1915
+6	're	be	AUX	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	7	cop	_	start_char=1915|end_char=1918
+7	sick	sick	ADJ	A	Degree=Pos	2	advcl	_	SpaceAfter=No|start_char=1919|end_char=1923
+8	.	.	PUNCT	FS	_	2	punct	_	SpacesAfter=\n\n|start_char=1923|end_char=1924
+
+# text = FAQ Q. How long does shipping take?
+# sent_id = 46
+1	FAQ	Fave	PROPN	SP	_	7	nsubj	_	SpacesAfter=\n|start_char=1926|end_char=1929
+2	Q.	".	PUNCT	FF	_	1	punct	_	start_char=1930|end_char=1932
+3	How	how	ADV	B	_	4	advmod	_	start_char=1933|end_char=1936
+4	long	long	ADV	B	_	7	advmod	_	start_char=1937|end_char=1941
+5	does	do	AUX	VM	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	7	aux	_	start_char=1942|end_char=1946
+6	shipping	shipping	NOUN	S	Number=Sing	7	nsubj	_	start_char=1947|end_char=1955
+7	take	take	VERB	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=1956|end_char=1960
+8	?	?	PUNCT	FS	_	7	punct	_	SpacesAfter=\n|start_char=1960|end_char=1961
+
+# text = A. Usually 3–5 business days.
+# sent_id = 47
+1	A.	A.	CCONJ	CC	_	7	cc	_	start_char=1962|end_char=1964
+2	Usually	usually	ADV	B	_	7	advmod	_	start_char=1965|end_char=1972
+3	3	3	NUM	N	NumType=Card	7	nummod	_	SpaceAfter=No|start_char=1973|end_char=1974
+4	–	–	PUNCT	FF	_	3	punct	_	SpaceAfter=No|start_char=1974|end_char=1975
+5	5	5	NUM	N	NumType=Card	6	nummod	_	start_char=1975|end_char=1976
+6	business	business	NOUN	S	Number=Sing	7	nmod	_	start_char=1977|end_char=1985
+7	days	day	NOUN	S	Number=Plur	0	root	_	SpaceAfter=No|start_char=1986|end_char=1990
+8	.	.	PUNCT	FS	_	7	punct	_	SpacesAfter=\n|start_char=1990|end_char=1991
+
+# text = Q. Can I return an item?
+# sent_id = 48
+1	Q.	".	PUNCT	FB	_	4	punct	_	start_char=1992|end_char=1994
+2	Can	can	AUX	VM	Mood=Ind|Person=3|Tense=Pres|VerbForm=Fin	4	aux	_	start_char=1995|end_char=1998
+3	I	I	PRON	PE	Number=Sing|Person=1|PronType=Prs	4	nsubj	_	start_char=1999|end_char=2000
+4	return	return	VERB	V	VerbForm=Inf	0	root	_	start_char=2001|end_char=2007
+5	an	a	DET	RI	Definite=Ind|Number=Sing|PronType=Art	6	det	_	start_char=2008|end_char=2010
+6	item	item	NOUN	S	Number=Sing	4	obj	_	SpaceAfter=No|start_char=2011|end_char=2015
+7	?	?	PUNCT	FS	_	4	punct	_	SpacesAfter=\n|start_char=2015|end_char=2016
+
+# text = A. Yes, within 30 days of delivery.
+# sent_id = 49
+1	A.	A.	PROPN	SP	_	6	vocative	_	start_char=2017|end_char=2019
+2	Yes	yes	INTJ	_	_	1	flat	_	SpaceAfter=No|start_char=2020|end_char=2023
+3	,	,	PUNCT	FF	_	2	punct	_	start_char=2023|end_char=2024
+4	within	within	ADP	E	_	6	case	_	start_char=2025|end_char=2031
+5	30	30	NUM	N	NumType=Card	6	nummod	_	start_char=2032|end_char=2034
+6	days	day	NOUN	S	Number=Plur	0	root	_	start_char=2035|end_char=2039
+7	of	of	ADP	E	_	8	case	_	start_char=2040|end_char=2042
+8	delivery	delivery	NOUN	S	Number=Sing	6	nmod	_	SpaceAfter=No|start_char=2043|end_char=2051
+9	.	.	PUNCT	FS	_	6	punct	_	SpacesAfter=\n\n|start_char=2051|end_char=2052
+
+# text = Chapter 1:
+# sent_id = 50
+1	Chapter	chapter	NOUN	S	Number=Sing	0	root	_	start_char=2054|end_char=2061
+2	1	1	NUM	N	NumType=Card	1	flat	_	SpaceAfter=No|start_char=2062|end_char=2063
+3	:	:	PUNCT	FC	_	1	punct	_	start_char=2063|end_char=2064
+
+# text = Getting Started 1.1 Installation 1.2 Configuration 1.3 First steps
+# sent_id = 51
+1	Getting	get	VERB	V	VerbForm=Ger	0	root	_	start_char=2065|end_char=2072
+2	Started	start	VERB	V	Tense=Past|VerbForm=Part	1	xcomp	_	SpacesAfter=\n|start_char=2073|end_char=2080
+3	1.1	1.1	NUM	N	NumType=Card	4	nummod	_	start_char=2081|end_char=2084
+4	Installation	installation	NOUN	S	Number=Sing	6	nmod	_	SpacesAfter=\n|start_char=2085|end_char=2097
+5	1.2	1.2	NUM	N	NumType=Card	6	nummod	_	start_char=2098|end_char=2101
+6	Configuration	configuration	NOUN	S	Number=Sing	2	obj	_	SpacesAfter=\n|start_char=2102|end_char=2115
+7	1.3	1.3	NUM	N	NumType=Card	6	nummod	_	start_char=2116|end_char=2119
+8	First	first	ADJ	NO	Degree=Pos|NumType=Ord	9	amod	_	start_char=2120|end_char=2125
+9	steps	step	NOUN	S	Number=Plur	1	obj	_	SpacesAfter=\n\n|start_char=2126|end_char=2131
+
+# text = Combine 2/3 cup water, 1/2 cup vinegar and 1 Tbsp honey.
+# sent_id = 52
+1	Combine	combine	VERB	V	Mood=Imp|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2133|end_char=2140
+2	2/3	2/3	NUM	N	NumType=Card	3	nummod	_	start_char=2141|end_char=2144
+3	cup	cup	NOUN	S	Number=Sing	4	nmod	_	start_char=2145|end_char=2148
+4	water	water	NOUN	S	Number=Sing	1	obj	_	SpaceAfter=No|start_char=2149|end_char=2154
+5	,	,	PUNCT	FF	_	8	punct	_	start_char=2154|end_char=2155
+6	1/2	1/2	NUM	N	NumType=Card	7	nummod	_	start_char=2156|end_char=2159
+7	cup	cup	NOUN	S	Number=Sing	8	nmod	_	start_char=2160|end_char=2163
+8	vinegar	vinegar	NOUN	S	Number=Sing	4	conj	_	start_char=2164|end_char=2171
+9	and	and	CCONJ	CC	_	12	cc	_	start_char=2172|end_char=2175
+10	1	1	NUM	N	NumType=Card	11	nummod	_	start_char=2176|end_char=2177
+11	Tbsp	tbsp	NOUN	S	Number=Plur	12	nmod	_	start_char=2178|end_char=2182
+12	honey	honey	NOUN	S	Number=Sing	4	conj	_	SpaceAfter=No|start_char=2183|end_char=2188
+13	.	.	PUNCT	FS	_	1	punct	_	start_char=2188|end_char=2189
+
+# text = Simmer for 5-7 min.
+# sent_id = 53
+1	Simmer	simmer	VERB	V	Mood=Imp|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2190|end_char=2196
+2	for	for	ADP	E	_	5	case	_	start_char=2197|end_char=2200
+3	5-	5-	NUM	N	NumType=Card	5	nummod	_	SpaceAfter=No|start_char=2201|end_char=2203
+4	7	7	NUM	N	NumType=Card	5	nummod	_	start_char=2203|end_char=2204
+5	min	min	NOUN	S	Number=Sing	1	obl	_	SpaceAfter=No|start_char=2205|end_char=2208
+6	.	.	PUNCT	FS	_	1	punct	_	start_char=2208|end_char=2209
+
+# text = Season to taste w/ salt & pepper.
+# sent_id = 54
+1	Season	season	NOUN	S	Number=Sing	0	root	_	start_char=2210|end_char=2216
+2	to	to	ADP	E	_	3	case	_	start_char=2217|end_char=2219
+3	taste	taste	NOUN	S	Number=Sing	1	nmod	_	start_char=2220|end_char=2225
+4	w/	will	PUNCT	FF	_	5	punct	_	start_char=2226|end_char=2228
+5	salt	salt	NOUN	S	Number=Sing	3	conj	_	start_char=2229|end_char=2233
+6	&	&	PUNCT	FF	_	7	punct	_	start_char=2234|end_char=2235
+7	pepper	pepper	NOUN	S	Number=Sing	1	conj	_	SpaceAfter=No|start_char=2236|end_char=2242
+8	.	.	PUNCT	FS	_	1	punct	_	SpacesAfter=\n\n|start_char=2242|end_char=2243
+
+# text = Turn left at the light, then right onto Elm St.
+# sent_id = 55
+1	Turn	turn	VERB	V	Mood=Imp|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2245|end_char=2249
+2	left	leave	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	1	xcomp	_	start_char=2250|end_char=2254
+3	at	at	ADP	E	_	5	case	_	start_char=2255|end_char=2257
+4	the	the	DET	RD	Definite=Def|PronType=Art	5	det	_	start_char=2258|end_char=2261
+5	light	light	NOUN	S	Number=Sing	2	obl	_	SpaceAfter=No|start_char=2262|end_char=2267
+6	,	,	PUNCT	FF	_	5	punct	_	start_char=2267|end_char=2268
+7	then	then	ADV	B	_	8	advmod	_	start_char=2269|end_char=2273
+8	right	right	ADV	B	_	5	advmod	_	start_char=2274|end_char=2279
+9	onto	onto	ADP	E	_	10	case	_	start_char=2280|end_char=2284
+10	Elm	Elm	PROPN	SP	_	2	obl	_	start_char=2285|end_char=2288
+11	St	St	PROPN	SP	_	10	flat	_	SpaceAfter=No|start_char=2289|end_char=2291
+12	.	.	PUNCT	FS	_	1	punct	_	start_char=2291|end_char=2292
+
+# text = Our office is the 2nd building on the left (No. 48).
+# sent_id = 56
+1	Our	us	DET	AP	Poss=Yes|PronType=Prs	2	nmod:poss	_	start_char=2293|end_char=2296
+2	office	office	NOUN	S	Number=Sing	6	nsubj	_	start_char=2297|end_char=2303
+3	is	be	AUX	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	6	cop	_	start_char=2304|end_char=2306
+4	the	the	DET	RD	Definite=Def|PronType=Art	6	det	_	start_char=2307|end_char=2310
+5	2nd	2nd	ADJ	NO	Degree=Pos|NumType=Ord	6	amod	_	start_char=2311|end_char=2314
+6	building	building	NOUN	S	Number=Sing	0	root	_	start_char=2315|end_char=2323
+7	on	on	ADP	E	_	9	case	_	start_char=2324|end_char=2326
+8	the	the	DET	RD	Definite=Def|PronType=Art	9	det	_	start_char=2327|end_char=2330
+9	left	left	ADJ	A	Degree=Pos	6	nmod	_	start_char=2331|end_char=2335
+10	(	(	PUNCT	FB	_	11	punct	_	SpaceAfter=No|start_char=2336|end_char=2337
+11	No.	no.	NUM	N	NumType=Card	6	discourse	_	start_char=2337|end_char=2340
+12	48	48	NUM	N	NumType=Card	11	nmod	_	SpaceAfter=No|start_char=2341|end_char=2343
+13	)	)	PUNCT	FB	_	11	punct	_	SpaceAfter=No|start_char=2343|end_char=2344
+14	.	.	PUNCT	FS	_	6	punct	_	start_char=2344|end_char=2345
+
+# text = Parking is in the rear.
+# sent_id = 57
+1	Parking	parking	NOUN	S	Number=Sing	5	nsubj	_	start_char=2346|end_char=2353
+2	is	be	AUX	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	5	cop	_	start_char=2354|end_char=2356
+3	in	in	ADP	E	_	5	case	_	start_char=2357|end_char=2359
+4	the	the	DET	RD	Definite=Def|PronType=Art	5	det	_	start_char=2360|end_char=2363
+5	rear	rear	NOUN	S	Number=Sing	0	root	_	SpaceAfter=No|start_char=2364|end_char=2368
+6	.	.	PUNCT	FS	_	5	punct	_	SpacesAfter=\n\n|start_char=2368|end_char=2369
+
+# text = Note:
+# sent_id = 58
+1	Note	note	VERB	V	Mood=Imp|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=2371|end_char=2375
+2	:	:	PUNCT	FC	_	1	punct	_	start_char=2375|end_char=2376
+
+# text = this recipe was tested at sea level.
+# sent_id = 59
+1	this	this	DET	DD	Number=Sing|PronType=Dem	2	det	_	start_char=2377|end_char=2381
+2	recipe	recipe	NOUN	S	Number=Sing	4	nsubj:pass	_	start_char=2382|end_char=2388
+3	was	be	AUX	VA	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	4	aux:pass	_	start_char=2389|end_char=2392
+4	tested	test	VERB	V	Tense=Past|VerbForm=Part	0	root	_	start_char=2393|end_char=2399
+5	at	at	ADP	E	_	7	case	_	start_char=2400|end_char=2402
+6	sea	sea	ADJ	A	Degree=Pos	7	amod	_	start_char=2403|end_char=2406
+7	level	level	NOUN	S	Number=Sing	4	obl	_	SpaceAfter=No|start_char=2407|end_char=2412
+8	.	.	PUNCT	FS	_	4	punct	_	start_char=2412|end_char=2413
+
+# text = At high altitude, reduce the baking powder by ⅛ tsp.
+# sent_id = 60
+1	At	at	ADP	E	_	3	case	_	start_char=2414|end_char=2416
+2	high	high	ADJ	A	Degree=Pos	3	amod	_	start_char=2417|end_char=2421
+3	altitude	altitude	NOUN	S	Number=Sing	5	obl	_	SpaceAfter=No|start_char=2422|end_char=2430
+4	,	,	PUNCT	FF	_	3	punct	_	start_char=2430|end_char=2431
+5	reduce	reduce	VERB	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2432|end_char=2438
+6	the	the	DET	RD	Definite=Def|PronType=Art	8	det	_	start_char=2439|end_char=2442
+7	baking	baking	NOUN	S	Number=Sing	8	nmod	_	start_char=2443|end_char=2449
+8	powder	powder	NOUN	S	Number=Sing	5	obj	_	start_char=2450|end_char=2456
+9	by	by	ADP	E	_	11	case	_	start_char=2457|end_char=2459
+10	⅛	⅛	NOUN	S	Number=Sing	11	nmod	_	start_char=2460|end_char=2461
+11	tsp	tsp	NOUN	S	Number=Sing	5	obl	_	SpaceAfter=No|start_char=2462|end_char=2465
+12	.	.	PUNCT	FS	_	5	punct	_	SpacesAfter=\n\n|start_char=2465|end_char=2466
+
+# text = Questions?
+# sent_id = 61
+1	Questions	question	NOUN	S	Number=Plur	0	root	_	SpaceAfter=No|start_char=2468|end_char=2477
+2	?	?	PUNCT	FS	_	1	punct	_	start_char=2477|end_char=2478
+
+# text = Comments?
+# sent_id = 62
+1	Comments	comment	NOUN	S	Number=Plur	0	root	_	SpaceAfter=No|start_char=2479|end_char=2487
+2	?	?	PUNCT	FS	_	1	punct	_	start_char=2487|end_char=2488
+
+# text = Contact us anytime.
+# sent_id = 63
+1	Contact	contact	VERB	V	Mood=Imp|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2489|end_char=2496
+2	us	us	PRON	PE	Number=Plur|Person=1|PronType=Prs	1	obj	_	start_char=2497|end_char=2499
+3	anytime	anytime	ADV	B	_	1	advmod	_	SpaceAfter=No|start_char=2500|end_char=2507
+4	.	.	PUNCT	FS	_	1	punct	_	SpacesAfter=\n|start_char=2507|end_char=2508

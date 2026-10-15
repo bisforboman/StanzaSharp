@@ -63,6 +63,23 @@ public sealed class Pipeline : IDisposable
                 ["sentiment"] = "sstplus_charlm",
                 ["ner"] = "ontonotes-ww-multi_nocharlm",
             },
+
+            // The treebank packages: tokenize to depparse only. combined has default's models; eslspok has no mwt and
+            // Stanza's identity lemmatizer (no model).
+            ["combined"] = Treebank("combined"),
+            ["ewt"] = Treebank("ewt"),
+            ["gum"] = Treebank("gum"),
+            ["lines"] = Treebank("lines"),
+            ["partut"] = Treebank("partut"),
+            ["atis"] = Treebank("atis"),
+            ["childes"] = Treebank("childes"),
+            ["eslspok"] = new()
+            {
+                ["tokenize"] = "eslspok_nocharlm",
+                ["pos"] = "eslspok_charlm",
+                ["lemma"] = IdentityLemma,
+                ["depparse"] = "eslspok_charlm",
+            },
         },
         ["de"] = new()
         {
@@ -91,31 +108,23 @@ public sealed class Pipeline : IDisposable
             },
 
             // The treebank packages: tokenize to depparse only.
-            ["combined"] = new()
-            {
-                ["tokenize"] = "combined_nocharlm",
-                ["mwt"] = "combined",
-                ["pos"] = "combined_charlm",
-                ["lemma"] = "combined_nocharlm",
-                ["depparse"] = "combined_charlm",
-            },
-            ["gsd"] = new()
-            {
-                ["tokenize"] = "gsd_nocharlm",
-                ["mwt"] = "gsd",
-                ["pos"] = "gsd_charlm",
-                ["lemma"] = "gsd_nocharlm",
-                ["depparse"] = "gsd_charlm",
-            },
-            ["hdt"] = new()
-            {
-                ["tokenize"] = "hdt_nocharlm",
-                ["mwt"] = "hdt",
-                ["pos"] = "hdt_charlm",
-                ["lemma"] = "hdt_nocharlm",
-                ["depparse"] = "hdt_charlm",
-            },
+            ["combined"] = Treebank("combined"),
+            ["gsd"] = Treebank("gsd"),
+            ["hdt"] = Treebank("hdt"),
         },
+    };
+
+    /// <summary>Stanza's lemma "model" that sets each word's lemma to its text (LemmaProcessor's use_identity); it has no file.</summary>
+    internal const string IdentityLemma = "identity";
+
+    // A treebank package: <name>_nocharlm tokenizer and lemmatizer, <name> MWT, <name>_charlm tagger and parser.
+    private static Dictionary<string, string> Treebank(string name) => new()
+    {
+        ["tokenize"] = $"{name}_nocharlm",
+        ["mwt"] = name,
+        ["pos"] = $"{name}_charlm",
+        ["lemma"] = $"{name}_nocharlm",
+        ["depparse"] = $"{name}_charlm",
     };
 
     private static readonly string[] Conll17 = ["pretrain/conll17"],
@@ -137,6 +146,20 @@ public sealed class Pipeline : IDisposable
             ["pos/combined_nocharlm"] = Conll17,
             ["depparse/combined_nocharlm"] = Conll17,
             ["ner/ontonotes-ww-multi_nocharlm"] = Conll17,
+            ["pos/ewt_charlm"] = EnglishCharlm,
+            ["depparse/ewt_charlm"] = EnglishCharlm,
+            ["pos/gum_charlm"] = EnglishCharlm,
+            ["depparse/gum_charlm"] = EnglishCharlm,
+            ["pos/lines_charlm"] = EnglishCharlm,
+            ["depparse/lines_charlm"] = EnglishCharlm,
+            ["pos/partut_charlm"] = EnglishCharlm,
+            ["depparse/partut_charlm"] = EnglishCharlm,
+            ["pos/atis_charlm"] = EnglishCharlm,
+            ["depparse/atis_charlm"] = EnglishCharlm,
+            ["pos/childes_charlm"] = EnglishCharlm,
+            ["depparse/childes_charlm"] = EnglishCharlm,
+            ["pos/eslspok_charlm"] = EnglishCharlm,
+            ["depparse/eslspok_charlm"] = EnglishCharlm,
         },
         ["de"] = new()
         {
@@ -182,7 +205,7 @@ public sealed class Pipeline : IDisposable
     private readonly Pretrain[] _pretrains = [];
     private readonly BackendModels _models;
     private readonly CharlmCacheOptions _cacheOptions;
-    private readonly bool _splitSentences, _trimNativeHeap, _depparseReadsCache;
+    private readonly bool _splitSentences, _trimNativeHeap, _depparseReadsCache, _identityLemma;
     private readonly ILogger? _logger;
     private readonly SemaphoreSlim? _gate;
 
@@ -263,7 +286,8 @@ public sealed class Pipeline : IDisposable
 
         var tokenizer = Start(Name("tokenize"), () => backend.Tokenizer(Model("tokenize")));
         var mwt = models.ContainsKey("mwt") ? Start(Name("mwt"), () => backend.Mwt(Model("mwt"))) : null;
-        var lemma = models.ContainsKey("lemma") ? Start(Name("lemma"), () => backend.Lemma(Model("lemma"))) : null;
+        _identityLemma = models.GetValueOrDefault("lemma") == IdentityLemma;
+        var lemma = models.ContainsKey("lemma") && !_identityLemma ? Start(Name("lemma"), () => backend.Lemma(Model("lemma"))) : null;
         try
         {
             forward?.GetAwaiter().GetResult();
@@ -378,7 +402,9 @@ public sealed class Pipeline : IDisposable
         var set = processors == null ? models.Keys.ToHashSet() : ParseProcessors(processors, paramName);
         foreach (var p in set.ToList())
         {
-            var missing = Requires[p].Where(n => !set.Contains(n)).ToList();
+            // What the package lacks isn't required (eslspok has no mwt); the identity lemmatizer reads no UPOS.
+            var needs = p == "lemma" && models.GetValueOrDefault(p) == IdentityLemma ? ["tokenize"] : Requires[p];
+            var missing = needs.Where(n => !set.Contains(n) && models.ContainsKey(n)).ToList();
             if (missing.Count > 0 && !addRequired)
                 throw new ArgumentException($"Processor '{p}' requires {string.Join(", ", missing)}", paramName);
             set.UnionWith(missing);
@@ -406,6 +432,10 @@ public sealed class Pipeline : IDisposable
             .OrderBy(p => p.StartsWith("pretrain/", StringComparison.Ordinal) ? 0 : p.StartsWith("forward_charlm/", StringComparison.Ordinal) ? 1 : 2)
             .ThenBy(p => p, StringComparer.Ordinal)
             .ToList();
+
+    /// <summary>Every file <paramref name="models"/> read (paths without extension): their own, but none for the identity lemmatizer, then <see cref="SharedModels"/>.</summary>
+    internal static IEnumerable<string> ModelFiles(IReadOnlyDictionary<string, string> models, string language) =>
+        models.Where(m => m.Value != IdentityLemma).Select(m => $"{m.Key}/{m.Value}").Concat(SharedModels(models, language));
 
     /// <summary>A comma-separated processor list as a set, checking every name.</summary>
     internal static HashSet<string> ParseProcessors(string processors, string paramName)
@@ -627,6 +657,8 @@ public sealed class Pipeline : IDisposable
             Step("pos", () => _pos.Process(doc, charlms, ct), ct);
         if (_lemma != null)
             Step("lemma", () => _lemma.Process(doc, ct), ct);
+        else if (_identityLemma)
+            Step("lemma", () => Lemmatizer.Identity(doc), ct);
 
         // Stanza's order (PIPELINE_NAMES). Only the CoNLL-U comment order shows it, and Conllu.Write fixes that.
         if (_parser != null)

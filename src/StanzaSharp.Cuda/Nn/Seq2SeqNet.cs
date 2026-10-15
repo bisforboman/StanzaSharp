@@ -17,7 +17,8 @@ internal sealed class Seq2SeqNet : ISeq2SeqNet
     private readonly Embedding? _posEmbedding;
     private readonly LSTM _encoder;
     private readonly LSTMCell _decoderCell;
-    private readonly Linear _attnIn, _attnOut, _dec2vocab, _copyGate;
+    private readonly Linear _attnIn, _attnOut, _dec2vocab;
+    private readonly Linear? _copyGate; // null without copy (older lemmatizers)
     private readonly Linear? _editHidden, _editOutput;
     private readonly Device _device = Weights.Device; // the device the model was loaded on
 
@@ -40,11 +41,12 @@ internal sealed class Seq2SeqNet : ISeq2SeqNet
             _editOutput = nn.Linear(c.Hidden / 2, 3).LoadFrom(ckpt, model, "edit_clf.2.");
         }
 
-        _copyGate = nn.Linear(c.Hidden, 1).LoadFrom(ckpt, model, "copy_gate.");
+        if (c.Copy)
+            _copyGate = nn.Linear(c.Hidden, 1).LoadFrom(ckpt, model, "copy_gate.");
     }
 
-    public ISeq2SeqDecoder Encode(long[] ids, int batch, int width, long[]? posIds, long[] lengths, CancellationToken ct) =>
-        new Decoder(this, ids, batch, width, posIds, lengths);
+    public ISeq2SeqDecoder Encode(long[] ids, int batch, int width, long[]? posIds, long[] lengths, CancellationToken ct, int beam = 1) =>
+        new Decoder(this, ids, batch, width, posIds, lengths, beam);
 
     /// <summary>The batch's tensors live in one dispose scope, freed with the decoder; each step's temporaries in their own.</summary>
     private sealed class Decoder : ISeq2SeqDecoder
@@ -58,17 +60,17 @@ internal sealed class Seq2SeqNet : ISeq2SeqNet
         public float[] EditLogits { get; } = [];
         public int Columns { get; }
 
-        public Decoder(Seq2SeqNet net, long[] ids, int batch, int width, long[]? posIds, long[] lengths)
+        public Decoder(Seq2SeqNet net, long[] ids, int batch, int width, long[]? posIds, long[] lengths, int beam)
         {
             _net = net;
-            _batch = batch;
+            _batch = batch * beam;
             using var noGrad = torch.no_grad();
             _scope = NewDisposeScope();
             try
             {
                 var device = net._device;
                 _src = torch.tensor(ids, [batch, width], device: device);
-                Columns = (int)Math.Max(net._vocabSize, ids.Max() + 1);
+                Columns = net._copyGate != null ? (int)Math.Max(net._vocabSize, ids.Max() + 1) : net._vocabSize;
                 using var vocabSize = net._vocabSize.ToScalar();
 
                 // embed: characters past the trained vocabulary embed as <UNK>; the POS embedding (if any) goes in front.
@@ -90,6 +92,13 @@ internal sealed class Seq2SeqNet : ISeq2SeqNet
                 _c = cat([cn[1], cn[0]], 1);
                 if (net._editHidden != null)
                     EditLogits = net._editOutput!.forward(F.relu(net._editHidden.forward(_h))).ToArray<float>();
+
+                // Beam search: h_in, src_mask, hn and cn repeated beam times; src (for the copy) is not, as in Stanza.
+                if (beam > 1)
+                {
+                    (_ctx, _srcMask) = (_ctx.repeat(beam, 1, 1), _srcMask.repeat(beam, 1));
+                    (_h, _c) = (_h.repeat(beam, 1), _c.repeat(beam, 1));
+                }
             }
             catch
             {
@@ -109,6 +118,15 @@ internal sealed class Seq2SeqNet : ISeq2SeqNet
             _h.MoveToOuterDisposeScope();
             _c.MoveToOuterDisposeScope();
             return logProbs.ToArray<float>();
+        }
+
+        public void Reorder(int[] rows)
+        {
+            using var noGrad = torch.no_grad();
+            using var stepScope = NewDisposeScope();
+            var index = torch.tensor(rows.Select(r => (long)r).ToArray(), device: _net._device);
+            _h = _h.index_select(0, index).MoveToOuterDisposeScope();
+            _c = _c.index_select(0, index).MoveToOuterDisposeScope();
         }
 
         public void Dispose() => _scope.Dispose();
@@ -134,6 +152,8 @@ internal sealed class Seq2SeqNet : ISeq2SeqNet
         long batch = hOut.shape[0], steps = hOut.shape[1];
         var logits = _dec2vocab.forward(hOut.contiguous().view(batch * steps, -1)).view(batch, steps, -1);
         var logProbs = F.log_softmax(logits.view(-1, _vocabSize), 1).view(batch, steps, _vocabSize);
+        if (_copyGate == null)
+            return logProbs;
 
         // Copy: renormalize attention (without the POS position: it can't be copied), then scatter it onto the source character ids.
         var copyLogit = _copyGate.forward(hOut);

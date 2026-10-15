@@ -1,0 +1,772 @@
+# text = I'm here. You're late. He's tired. She's gone. It's cold. We're ready. They're coming.
+# sent_id = 0
+1-2	I'm	_	_	_	_	_	_	_	start_char=0|end_char=3
+1	I	I	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	3	nsubj	_	start_char=0|end_char=1
+2	'm	be	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	3	aux	_	start_char=1|end_char=3
+3	here.	here.	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=4|end_char=9
+4-5	You're	_	_	_	_	_	_	_	start_char=10|end_char=16
+4	You	you	PRON	_	Case=Nom|Number=Sing|Person=2|PronType=Prs	3	nsubj	_	start_char=10|end_char=13
+5	're	be	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	3	aux	_	start_char=13|end_char=16
+6	late.	late	ADJ	_	Degree=Pos	3	advmod	_	start_char=17|end_char=22
+7-8	He's	_	_	_	_	_	_	_	start_char=23|end_char=27
+7	He	He	ADV	_	Degree=Pos	9	advmod	_	start_char=23|end_char=25
+8	's	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	9	aux	_	start_char=25|end_char=27
+9	tired.	tire	ADJ	_	Degree=Pos	6	parataxis	_	start_char=28|end_char=34
+10-11	She's	_	_	_	_	_	_	_	start_char=35|end_char=40
+10	She	She	ADV	_	Degree=Pos	12	advmod	_	start_char=35|end_char=38
+11	's	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	9	cop	_	start_char=38|end_char=40
+12	gone.	gone.	ADV	_	Degree=Pos	15	advmod	_	start_char=41|end_char=46
+13-14	It's	_	_	_	_	_	_	_	start_char=47|end_char=51
+13	It	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	15	nsubj	_	start_char=47|end_char=49
+14	's	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	18	cop	_	start_char=49|end_char=51
+15	cold.	cold.	ADV	_	Degree=Pos	18	advmod	_	start_char=52|end_char=57
+16-17	We're	_	_	_	_	_	_	_	start_char=58|end_char=63
+16	We	we	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	18	nsubj	_	start_char=58|end_char=60
+17	're	be	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	18	aux	_	start_char=60|end_char=63
+18	ready.	ready.	ADJ	_	Degree=Pos	9	advcl	_	start_char=64|end_char=70
+19-20	They're	_	_	_	_	_	_	_	start_char=71|end_char=78
+19	They	they	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	21	nsubj	_	start_char=71|end_char=75
+20	're	be	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	21	cop	_	start_char=75|end_char=78
+21	coming.	Coming.	PROPN	_	Number=Sing	18	obl	_	SpacesAfter=\n\n|start_char=79|end_char=86
+
+# text = I’m here. You’re late. He’s tired. She’s gone. It’s cold. We’re ready. They’re coming.
+# sent_id = 1
+1	I’m	I’m	ADV	_	Degree=Pos	10	discourse	_	start_char=88|end_char=91
+2	here.	here.	ADV	_	Degree=Pos	1	fixed	_	start_char=92|end_char=97
+3	You’re	You’re	ADV	_	Degree=Pos	4	advmod	_	start_char=98|end_char=104
+4	late.	late	ADV	_	Degree=Pos	10	advmod	_	start_char=105|end_char=110
+5	He’s	He’s	PROPN	_	Number=Sing	6	compound	_	start_char=111|end_char=115
+6	tired.	tired.	NOUN	_	Number=Sing	8	compound	_	start_char=116|end_char=122
+7	She’s	She’s	PROPN	_	Number=Sing	8	nsubj	_	start_char=123|end_char=128
+8	gone.	gone.	NOUN	_	Number=Sing	10	nsubj	_	start_char=129|end_char=134
+9	It’s	It’s	ADV	_	Degree=Pos	10	advmod	_	start_char=135|end_char=139
+10	cold.	cold.	VERB	_	Tense=Pres|VerbForm=Part	0	root	_	start_char=140|end_char=145
+11	We’re	We’re	PROPN	_	Number=Sing	10	obl	_	start_char=146|end_char=151
+12	ready.	ready.	NOUN	_	Number=Sing	14	nsubj	_	start_char=152|end_char=158
+13	They’re	They’re	PROPN	_	Number=Sing	14	nsubj	_	start_char=159|end_char=166
+14	coming.	coming.	NOUN	_	Number=Plur	10	obj	_	SpacesAfter=\n\n|start_char=167|end_char=174
+
+# text = I'M HERE. YOU'RE LATE. HE'S TIRED. WE'RE READY. THEY'RE COMING. DON'T GO. CAN'T STOP. WON'T STOP.
+# sent_id = 2
+1-2	I'M	_	_	_	_	_	_	_	start_char=176|end_char=179
+1	I	I	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	3	nsubj	_	start_char=176|end_char=177
+2	'M	be	AUX	_	Mood=Ind|VerbForm=Fin	3	aux	_	start_char=177|end_char=179
+3	HERE.	HERE.	ADV	_	Degree=Pos	4	amod	_	start_char=180|end_char=185
+4	YOU'RE	you're	NOUN	_	Number=Sing	0	root	_	start_char=186|end_char=192
+5	LATE.	LATE.	NUM	_	NumType=Card	4	nmod	_	start_char=193|end_char=198
+6-7	HE'S	_	_	_	_	_	_	_	start_char=199|end_char=203
+6	HE	HE	ADV	_	Degree=Pos	4	amod	_	start_char=199|end_char=201
+7	'S	be	PRON	_	PronType=Prs	4	nmod	_	start_char=201|end_char=203
+8	TIRED.	TIRED.	INTJ	_	_	11	mark	_	start_char=204|end_char=210
+9-10	WE'RE	_	_	_	_	_	_	_	start_char=211|end_char=216
+9	WE	we	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	11	nsubj	_	start_char=211|end_char=213
+10	'RE	be	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	11	aux	_	start_char=213|end_char=216
+11	READY.	READY.	NOUN	_	Number=Sing	4	parataxis	_	start_char=217|end_char=223
+12	THEY'RE	THEY'RE	NOUN	_	Number=Sing	11	obl	_	start_char=224|end_char=231
+13	COMING.	Coming.	PROPN	_	Number=Sing	14	compound	_	start_char=232|end_char=239
+14	DON'T	DON'T	NOUN	_	Number=Sing	11	obl	_	start_char=240|end_char=245
+15	GO.	GO.	INTJ	_	_	16	advmod	_	start_char=246|end_char=249
+16	CAN'T	Can't	PROPN	_	Number=Sing	14	conj	_	start_char=250|end_char=255
+17	STOP.	STOP.	NOUN	_	Number=Sing	18	nsubj	_	start_char=256|end_char=261
+18	WON'T	WON'T	NOUN	_	Number=Sing	19	compound	_	start_char=262|end_char=267
+19	STOP.	Stop.	PROPN	_	Number=Sing	16	flat	_	SpacesAfter=\n\n|start_char=268|end_char=273
+
+# text = I've seen it. You've won. We've lost. They've left. I’ve seen it. They’ve left.
+# sent_id = 3
+1-2	I've	_	_	_	_	_	_	_	start_char=275|end_char=279
+1	I	I	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	3	nsubj	_	start_char=275|end_char=276
+2	've	have	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	3	aux	_	start_char=276|end_char=279
+3	seen	seen	VERB	_	Tense=Past|VerbForm=Fin	0	root	_	start_char=280|end_char=284
+4	it.	it.	ADV	_	Degree=Pos	3	advmod	_	start_char=285|end_char=288
+5	You've	You've	PROPN	_	Number=Sing	3	obl	_	start_char=289|end_char=295
+6	won.	won.	ADV	_	Degree=Pos	8	advmod	_	start_char=296|end_char=300
+7	We've	We've	PROPN	_	Number=Sing	8	nsubj	_	start_char=301|end_char=306
+8	lost.	lost.	VERB	_	VerbForm=Inf	3	parataxis	_	start_char=307|end_char=312
+9-10	They've	_	_	_	_	_	_	_	start_char=313|end_char=320
+9	They	they	PRON	_	Case=Nom|Number=Sing|PronType=Prs	11	nsubj	_	start_char=313|end_char=317
+10	've	have	AUX	_	VerbForm=Fin	13	aux	_	start_char=317|end_char=320
+11	left.	left.	NOUN	_	Number=Sing	8	obl	_	start_char=321|end_char=326
+12	I’ve	I’ve	ADV	_	Degree=Pos	13	advmod	_	start_char=327|end_char=331
+13	seen	seen	VERB	_	Tense=Past|VerbForm=Fin	8	advcl	_	start_char=332|end_char=336
+14	it.	it.	ADV	_	Degree=Pos	16	advmod	_	start_char=337|end_char=340
+15	They’ve	They’ve	PROPN	_	Number=Sing	16	nsubj	_	start_char=341|end_char=348
+16	left.	left.	NOUN	_	Number=Sing	13	obj	_	SpacesAfter=\n\n|start_char=349|end_char=354
+
+# text = I'll call. You'll see. He'll know. She'll try. It'll work. We'll go. They'll wait. That'll do.
+# sent_id = 4
+1-2	I'll	_	_	_	_	_	_	_	start_char=356|end_char=360
+1	I	I	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	3	nsubj	_	start_char=356|end_char=357
+2	'll	will	AUX	_	_	3	aux	_	start_char=357|end_char=360
+3	call.	call.	VERB	_	VerbForm=Inf	0	root	_	start_char=361|end_char=366
+4	You'll	you'll	ADV	_	Degree=Pos	5	advmod	_	start_char=367|end_char=373
+5	see.	see.	VERB	_	VerbForm=Inf	3	xcomp	_	start_char=374|end_char=378
+6-7	He'll	_	_	_	_	_	_	_	start_char=379|end_char=384
+6	He	He	PRON	_	Case=Nom|Number=Sing|PronType=Prs	8	nsubj	_	start_char=379|end_char=381
+7	'll	will	AUX	_	_	8	aux	_	start_char=381|end_char=384
+8	know.	know.	VERB	_	VerbForm=Inf	3	parataxis	_	start_char=385|end_char=390
+9-10	She'll	_	_	_	_	_	_	_	start_char=391|end_char=397
+9	She	She	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	11	nsubj	_	start_char=391|end_char=394
+10	'll	will	AUX	_	_	11	aux	_	start_char=394|end_char=397
+11	try.	try.	VERB	_	VerbForm=Inf	8	xcomp	_	start_char=398|end_char=402
+12-13	It'll	_	_	_	_	_	_	_	start_char=403|end_char=408
+12	It	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	14	nsubj	_	start_char=403|end_char=405
+13	'll	will	AUX	_	_	14	aux	_	start_char=405|end_char=408
+14	work.	work.	VERB	_	VerbForm=Inf	11	xcomp	_	start_char=409|end_char=414
+15-16	We'll	_	_	_	_	_	_	_	start_char=415|end_char=420
+15	We	we	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	17	nsubj	_	start_char=415|end_char=417
+16	'll	will	AUX	_	_	17	aux	_	start_char=417|end_char=420
+17	go.	ge.	VERB	_	VerbForm=Inf	14	conj	_	start_char=421|end_char=424
+18-19	They'll	_	_	_	_	_	_	_	start_char=425|end_char=432
+18	They	they	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	20	nsubj	_	start_char=425|end_char=429
+19	'll	will	AUX	_	_	20	aux	_	start_char=429|end_char=432
+20	wait.	wait.	VERB	_	VerbForm=Inf	17	xcomp	_	start_char=433|end_char=438
+21-22	That'll	_	_	_	_	_	_	_	start_char=439|end_char=446
+21	That	that	ADP	_	_	23	mark	_	start_char=439|end_char=443
+22	'll	will	AUX	_	_	23	cop	_	start_char=443|end_char=446
+23	do.	Do.	PROPN	_	Number=Sing	20	xcomp	_	SpacesAfter=\n\n|start_char=447|end_char=450
+
+# text = I'd go. You'd know. He'd agree. She'd laugh. We'd stay.
+# sent_id = 5
+1-2	I'd	_	_	_	_	_	_	_	start_char=452|end_char=455
+1	I	I	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	3	nsubj	_	start_char=452|end_char=453
+2	'd	would	AUX	_	_	3	aux	_	start_char=453|end_char=455
+3	go.	ge.	VERB	_	VerbForm=Inf	0	root	_	start_char=456|end_char=459
+4	You'd	You'd	ADP	_	_	5	mark	_	start_char=460|end_char=465
+5	know.	know.	VERB	_	VerbForm=Inf	3	xcomp	_	start_char=466|end_char=471
+6-7	He'd	_	_	_	_	_	_	_	start_char=472|end_char=476
+6	He	He	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	8	nsubj	_	start_char=472|end_char=474
+7	'd	would	AUX	_	_	8	aux	_	start_char=474|end_char=476
+8	agree.	agree.	VERB	_	VerbForm=Inf	5	ccomp	_	start_char=477|end_char=483
+9-10	She'd	_	_	_	_	_	_	_	start_char=484|end_char=489
+9	She	She	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	11	nsubj	_	start_char=484|end_char=487
+10	'd	would	AUX	_	_	11	aux	_	start_char=487|end_char=489
+11	laugh.	laugh.	VERB	_	VerbForm=Inf	8	xcomp	_	start_char=490|end_char=496
+12-13	We'd	_	_	_	_	_	_	_	start_char=497|end_char=501
+12	We	we	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	14	nsubj	_	start_char=497|end_char=499
+13	'd	would	AUX	_	_	14	aux	_	start_char=499|end_char=501
+14	stay.	Stay.	PROPN	_	Number=Sing	11	xcomp	_	start_char=502|end_char=507
+
+# text = They'd leave. I’d go. They’d leave.
+# sent_id = 6
+1-2	They'd	_	_	_	_	_	_	_	start_char=508|end_char=514
+1	They	they	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	3	nsubj	_	start_char=508|end_char=512
+2	'd	would	AUX	_	_	3	aux	_	start_char=512|end_char=514
+3	leave.	leave.	VERB	_	VerbForm=Inf	0	root	_	start_char=515|end_char=521
+4	I’d	I’d	ADV	_	Degree=Pos	5	advmod	_	start_char=522|end_char=525
+5	go.	ge.	VERB	_	VerbForm=Inf	3	ccomp	_	start_char=526|end_char=529
+6	They’d	They’d	PROPN	_	Number=Sing	5	obl	_	start_char=530|end_char=536
+7	leave.	Leave.	PROPN	_	Number=Sing	6	flat	_	SpacesAfter=\n\n|start_char=537|end_char=543
+
+# text = Don't. Doesn't. Didn't. Isn't. Aren't.
+# sent_id = 7
+1	Don't.	Don't.	PROPN	_	Number=Sing	0	root	_	start_char=545|end_char=551
+2	Doesn't.	Doesn't.	PROPN	_	Number=Sing	1	conj	_	start_char=552|end_char=560
+3	Didn't.	Didn't.	PROPN	_	Number=Sing	4	nmod	_	start_char=561|end_char=568
+4	Isn't.	Usn't.	PROPN	_	Number=Sing	1	conj	_	start_char=569|end_char=575
+5	Aren't.	Aren't.	PROPN	_	Number=Sing	4	flat	_	start_char=576|end_char=583
+
+# text = Wasn't. Weren't. Hasn't. Haven't. Hadn't. Won't.
+# sent_id = 8
+1	Wasn't.	Wasn't.	PROPN	_	Number=Sing	0	root	_	start_char=584|end_char=591
+2	Weren't.	Weren't.	PROPN	_	Number=Sing	1	conj	_	start_char=592|end_char=600
+3	Hasn't.	Hasn't.	PROPN	_	Number=Sing	1	conj	_	start_char=601|end_char=608
+4	Haven't.	Haven't.	PROPN	_	Number=Sing	1	conj	_	start_char=609|end_char=617
+5	Hadn't.	Hadn't.	PROPN	_	Number=Sing	4	nmod	_	start_char=618|end_char=625
+6	Won't.	Won't.	PROPN	_	Number=Sing	1	conj	_	start_char=626|end_char=632
+
+# text = Wouldn't. Can't. Couldn't. Shouldn't. Mightn't. Mustn't. Needn't.
+# sent_id = 9
+1	Wouldn't.	Wouldn't.	PROPN	_	Number=Sing	0	root	_	start_char=633|end_char=642
+2	Can't.	Can't.	PROPN	_	Number=Sing	1	appos	_	start_char=643|end_char=649
+3	Couldn't.	Couldn't.	PROPN	_	Number=Sing	1	conj	_	start_char=650|end_char=659
+4	Shouldn't.	Shouldn't	PROPN	_	Number=Sing	1	conj	_	start_char=660|end_char=670
+5	Mightn't.	Mightn't.	PROPN	_	Number=Sing	4	conj	_	start_char=671|end_char=680
+6	Mustn't.	Mustn't.	PROPN	_	Number=Sing	5	nmod	_	start_char=681|end_char=689
+7	Needn't.	Needn't.	PROPN	_	Number=Sing	1	conj	_	SpacesAfter=\n\n|start_char=690|end_char=698
+
+# text = Don’t. Doesn’t. Didn’t. Isn’t. Aren’t.
+# sent_id = 10
+1	Don’t.	Don’t.	INTJ	_	_	2	discourse	_	start_char=700|end_char=706
+2	Doesn’t.	Doesn’t.	PROPN	_	Number=Sing	0	root	_	start_char=707|end_char=715
+3	Didn’t.	Didn’t.	PROPN	_	Number=Sing	2	conj	_	start_char=716|end_char=723
+4	Isn’t.	Isn’t.	PROPN	_	Number=Sing	2	conj	_	start_char=724|end_char=730
+5	Aren’t.	Aren’t.	PROPN	_	Number=Sing	2	conj	_	start_char=731|end_char=738
+
+# text = Wasn’t. Weren’t. Won’t. Can’t. Shouldn’t.
+# sent_id = 11
+1	Wasn’t.	Wasn’t.	PROPN	_	Number=Sing	0	root	_	start_char=739|end_char=746
+2	Weren’t.	Weren’t.	PROPN	_	Number=Sing	1	conj	_	start_char=747|end_char=755
+3	Won’t.	Won’t.	PROPN	_	Number=Sing	1	conj	_	start_char=756|end_char=762
+4	Can’t.	Can’t.	PROPN	_	Number=Sing	1	conj	_	start_char=763|end_char=769
+5	Shouldn’t.	Shouldn’t.	INTJ	_	_	1	discourse	_	SpacesAfter=\n\n|start_char=770|end_char=780
+
+# text = Who's there? What's that? Where's Bob? When's dinner? Why's it broken? How's it going? There's a problem. Here's the thing.
+# sent_id = 12
+1-2	Who's	_	_	_	_	_	_	_	start_char=782|end_char=787
+1	Who	who	ADV	_	PronType=Int,Rel	4	discourse	_	start_char=782|end_char=785
+2	's	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	cop	_	start_char=785|end_char=787
+3	there?	there?	PRON	_	PronType=Int,Rel	4	nsubj	_	start_char=788|end_char=794
+4-5	What's	_	_	_	_	_	_	_	start_char=795|end_char=801
+4	What	what	PRON	_	PronType=Int,Rel	0	root	_	start_char=795|end_char=799
+5	's	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	cop	_	start_char=799|end_char=801
+6	that?	That?	PROPN	_	Number=Sing	4	nsubj	_	start_char=802|end_char=807
+7-8	Where's	_	_	_	_	_	_	_	start_char=808|end_char=815
+7	Where	where	ADV	_	PronType=Int,Rel	4	acl:relcl	_	start_char=808|end_char=813
+8	's	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	7	cop	_	start_char=813|end_char=815
+9	Bob?	Bob?	PROPN	_	Number=Sing	7	nsubj	_	start_char=816|end_char=820
+10-11	When's	_	_	_	_	_	_	_	start_char=821|end_char=827
+10	When	when	ADV	_	PronType=Int,Rel	12	advmod	_	start_char=821|end_char=825
+11	's	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	12	cop	_	start_char=825|end_char=827
+12	dinner?	Dinner?	PROPN	_	Number=Sing	9	flat	_	start_char=828|end_char=835
+13-14	Why's	_	_	_	_	_	_	_	start_char=836|end_char=841
+13	Why	Why	PRON	_	PronType=Int,Rel	12	nsubj	_	start_char=836|end_char=839
+14	's	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	16	cop	_	start_char=839|end_char=841
+15	it	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	20	nsubj	_	start_char=842|end_char=844
+16	broken?	broken?	INTJ	_	_	20	mark	_	start_char=845|end_char=852
+17-18	How's	_	_	_	_	_	_	_	start_char=853|end_char=858
+17	How	how	ADV	_	PronType=Int,Rel	20	advmod	_	start_char=853|end_char=856
+18	's	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	20	aux	_	start_char=856|end_char=858
+19	it	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	20	nsubj	_	start_char=859|end_char=861
+20	going?	go	VERB	_	Tense=Pres|VerbForm=Part	4	parataxis	_	start_char=862|end_char=868
+21-22	There's	_	_	_	_	_	_	_	start_char=869|end_char=876
+21	There	there	PRON	_	PronType=Dem	20	expl	_	start_char=869|end_char=874
+22	's	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	24	cop	_	start_char=874|end_char=876
+23	a	a	DET	_	PronType=Art	24	det	_	start_char=877|end_char=878
+24	problem.	problem.	NOUN	_	Number=Sing	20	obl	_	start_char=879|end_char=887
+25-26	Here's	_	_	_	_	_	_	_	start_char=888|end_char=894
+25	Here	here	ADV	_	Degree=Pos	28	advmod	_	start_char=888|end_char=892
+26	's	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	28	cop	_	start_char=892|end_char=894
+27	the	the	DET	_	PronType=Art	28	det	_	start_char=895|end_char=898
+28	thing.	th	NOUN	_	Number=Sing	24	nmod	_	SpacesAfter=\n\n|start_char=899|end_char=905
+
+# text = Who’s there? What’s that? Where’s Bob? How’s it going? There’s a problem.
+# sent_id = 13
+1	Who’s	who’	ADV	_	PronType=Int,Rel	2	advmod	_	start_char=907|end_char=912
+2	there?	there?	PRON	_	PronType=Int,Rel	9	obj	_	start_char=913|end_char=919
+3	What’s	what	AUX	_	Mood=Ind|Number=Sing|Tense=Pres|VerbForm=Fin	9	aux	_	start_char=920|end_char=926
+4	that?	That?	PROPN	_	Number=Sing	5	compound	_	start_char=927|end_char=932
+5	Where’s	where’	NOUN	_	Number=Plur	9	nsubj	_	start_char=933|end_char=940
+6	Bob?	Bob?	ADV	_	Degree=Pos	9	advmod	_	start_char=941|end_char=945
+7	How’s	how’	ADV	_	Degree=Pos	9	advmod	_	start_char=946|end_char=951
+8	it	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	9	nsubj	_	start_char=952|end_char=954
+9	going?	go	VERB	_	Tense=Pres|VerbForm=Part	0	root	_	start_char=955|end_char=961
+10	There’s	there	VERB	_	Tense=Pres|VerbForm=Part	9	xcomp	_	start_char=962|end_char=969
+11	a	a	DET	_	PronType=Art	12	det	_	start_char=970|end_char=971
+12	problem.	problem.	NOUN	_	Number=Sing	10	obj	_	SpacesAfter=\n\n|start_char=972|end_char=980
+
+# text = Who'd have thought? What'll happen? Where've you been? How'd you do it?
+# sent_id = 14
+1-2	Who'd	_	_	_	_	_	_	_	start_char=982|end_char=987
+1	Who	who	PRON	_	Case=Nom|Number=Sing|PronType=Prs	3	nsubj	_	start_char=982|end_char=985
+2	'd	would	AUX	_	_	3	aux	_	start_char=985|end_char=987
+3	have	have	VERB	_	VerbForm=Inf	0	root	_	start_char=988|end_char=992
+4	thought?	thought	ADJ	_	Degree=Pos	5	amod	_	start_char=993|end_char=1001
+5-6	What'll	_	_	_	_	_	_	_	start_char=1002|end_char=1009
+5	What	what	PRON	_	PronType=Int,Rel	3	obj	_	start_char=1002|end_char=1006
+6	'll	will	AUX	_	_	7	aux	_	start_char=1006|end_char=1009
+7	happen?	happen?	ADV	_	Degree=Pos	3	ccomp	_	start_char=1010|end_char=1017
+8	Where've	Where've	ADV	_	Degree=Pos	10	advmod	_	start_char=1018|end_char=1026
+9	you	you	PRON	_	Case=Nom|Number=Sing|Person=2|PronType=Prs	14	nsubj	_	start_char=1027|end_char=1030
+10	been?	been?	ADV	_	Degree=Pos	14	advmod	_	start_char=1031|end_char=1036
+11-12	How'd	_	_	_	_	_	_	_	start_char=1037|end_char=1042
+11	How	how	ADV	_	PronType=Int,Rel	14	advmod	_	start_char=1037|end_char=1040
+12	'd	would	AUX	_	_	14	aux	_	start_char=1040|end_char=1042
+13	you	you	PRON	_	Case=Nom|Number=Sing|Person=2|PronType=Prs	14	nsubj	_	start_char=1043|end_char=1046
+14	do	do	VERB	_	VerbForm=Inf	3	parataxis	_	start_char=1047|end_char=1049
+15	it?	It?	PROPN	_	Number=Sing	14	obj	_	SpacesAfter=\n\n|start_char=1050|end_char=1053
+
+# text = You'd've liked it. I shouldn't've said that. It couldn't've been worse. She must've known.
+# sent_id = 15
+1-2	You'd've	_	_	_	_	_	_	_	start_char=1055|end_char=1063
+1	You	you	PRON	_	Case=Nom|Number=Sing|Person=2|PronType=Prs	3	nsubj	_	start_char=1055|end_char=1058
+2	'd've	'd've	AUX	_	_	3	aux	_	start_char=1058|end_char=1063
+3	liked	like	VERB	_	VerbForm=Inf	0	root	_	start_char=1064|end_char=1069
+4	it.	it.	ADV	_	Degree=Pos	3	advmod	_	start_char=1070|end_char=1073
+5	I	I	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	8	nsubj	_	start_char=1074|end_char=1075
+6-7	shouldn't've	_	_	_	_	_	_	_	start_char=1076|end_char=1088
+6	shouldn't	shouldn't	AUX	_	_	8	aux	_	start_char=1076|end_char=1085
+7	've	have	AUX	_	VerbForm=Fin	8	aux	_	start_char=1085|end_char=1088
+8	said	said	VERB	_	Tense=Pres|VerbForm=Part	3	parataxis	_	start_char=1089|end_char=1093
+9	that.	that.	ADP	_	_	8	compound:prt	_	start_char=1094|end_char=1099
+10	It	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	13	nsubj	_	start_char=1100|end_char=1102
+11-12	couldn't've	_	_	_	_	_	_	_	start_char=1103|end_char=1114
+11	couldn't	can	AUX	_	_	13	aux	_	start_char=1103|end_char=1111
+12	've	have	AUX	_	_	13	aux	_	start_char=1111|end_char=1114
+13	been	been	ADJ	_	Degree=Pos	8	xcomp	_	start_char=1115|end_char=1119
+14	worse.	worse.	NOUN	_	Number=Sing	13	obl	_	start_char=1120|end_char=1126
+15	She	She	ADV	_	Degree=Pos	16	advmod	_	start_char=1127|end_char=1130
+16	must've	Must've	PROPN	_	Number=Sing	14	conj	_	start_char=1131|end_char=1138
+17	known.	Known.	PROPN	_	Number=Sing	16	flat	_	SpacesAfter=\n\n|start_char=1139|end_char=1145
+
+# text = Let's go. Let’s go. LET'S GO.
+# sent_id = 16
+1-2	Let's	_	_	_	_	_	_	_	start_char=1147|end_char=1152
+1	Let	let	VERB	_	VerbForm=Inf	0	root	_	start_char=1147|end_char=1150
+2	's	be	PRON	_	PronType=Prs	1	obj	_	start_char=1150|end_char=1152
+3	go.	ge.	VERB	_	VerbForm=Inf	5	nsubj	_	start_char=1153|end_char=1156
+4	Let’s	Let’s	PROPN	_	Number=Sing	5	nsubj	_	start_char=1157|end_char=1162
+5	go.	ge.	VERB	_	VerbForm=Inf	1	ccomp	_	start_char=1163|end_char=1166
+6-7	LET'S	_	_	_	_	_	_	_	start_char=1167|end_char=1172
+6	LET	let	ADV	_	Degree=Pos	8	advmod	_	start_char=1167|end_char=1170
+7	'S	's	PART	_	_	8	case	_	start_char=1170|end_char=1172
+8	GO.	Go.	PROPN	_	Number=Sing	5	obl	_	SpacesAfter=\n\n|start_char=1173|end_char=1176
+
+# text = Ma'am, it's five o'clock. The rock 'n' roll band played till 'round midnight.
+# sent_id = 17
+1	Ma'am,	Ma'am,	ADV	_	Degree=Pos	12	advmod	_	start_char=1178|end_char=1184
+2-3	it's	_	_	_	_	_	_	_	start_char=1185|end_char=1189
+2	it	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	12	nsubj	_	start_char=1185|end_char=1187
+3	's	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	5	cop	_	start_char=1187|end_char=1189
+4	five	five	NUM	_	NumType=Card	5	advmod	_	start_char=1190|end_char=1194
+5	o'clock.	o'clock.	ADV	_	Degree=Pos	12	advmod	_	start_char=1195|end_char=1203
+6	The	the	DET	_	PronType=Art	11	det	_	start_char=1204|end_char=1207
+7	rock	Lock	PROPN	_	Number=Sing	11	compound	_	start_char=1208|end_char=1212
+8-9	'n'	_	_	_	_	_	_	_	start_char=1213|end_char=1216
+8	'n	SN	PROPN	_	Number=Sing	7	flat	_	start_char=1213|end_char=1215
+9	'	S	PROPN	_	Number=Sing	7	flat	_	start_char=1215|end_char=1216
+10	roll	Loll	PROPN	_	Number=Sing	7	flat	_	start_char=1217|end_char=1221
+11	band	band	NOUN	_	Number=Sing	12	nsubj	_	start_char=1222|end_char=1226
+12	played	play	VERB	_	Tense=Past|VerbForm=Fin	0	root	_	start_char=1227|end_char=1233
+13	till	till	ADV	_	Degree=Pos	15	advmod	_	start_char=1234|end_char=1238
+14	'round	'round	NOUN	_	Number=Sing	15	compound	_	start_char=1239|end_char=1245
+15	midnight.	midnight.	NOUN	_	Number=Sing	12	obl	_	SpacesAfter=\n\n|start_char=1246|end_char=1255
+
+# text = The cat's toy, the cats' toys, the children's books, the men's room, the women's team.
+# sent_id = 18
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=1257|end_char=1260
+2-3	cat's	_	_	_	_	_	_	_	start_char=1261|end_char=1266
+2	cat	Cat	PROPN	_	Number=Sing	4	nsubj	_	start_char=1261|end_char=1264
+3	's	's	PART	_	_	2	case	_	start_char=1264|end_char=1266
+4	toy,	Toy,	PROPN	_	Number=Sing	0	root	_	start_char=1267|end_char=1271
+5	the	the	DET	_	PronType=Art	6	det	_	start_char=1272|end_char=1275
+6	cats'	Cats'	PROPN	_	Number=Sing	4	nmod	_	start_char=1276|end_char=1281
+7	toys,	toy	NOUN	_	Number=Sing	4	conj	_	start_char=1282|end_char=1287
+8	the	the	DET	_	PronType=Art	9	det	_	start_char=1288|end_char=1291
+9-10	children's	_	_	_	_	_	_	_	start_char=1292|end_char=1302
+9	children	children	NOUN	_	Number=Plur	7	nmod	_	start_char=1292|end_char=1300
+10	's	's	PART	_	_	11	case	_	start_char=1300|end_char=1302
+11	books,	book	NOUN	_	Number=Sing	9	nmod	_	start_char=1303|end_char=1309
+12	the	the	DET	_	PronType=Art	13	det	_	start_char=1310|end_char=1313
+13-14	men's	_	_	_	_	_	_	_	start_char=1314|end_char=1319
+13	men	Men	PROPN	_	Number=Sing	11	flat	_	start_char=1314|end_char=1317
+14	's	's	PART	_	_	13	case	_	start_char=1317|end_char=1319
+15	room,	Hoom,	PROPN	_	Number=Sing	11	flat	_	start_char=1320|end_char=1325
+16	the	the	DET	_	PronType=Art	17	det	_	start_char=1326|end_char=1329
+17	women's	Women'	PROPN	_	Number=Sing	15	flat	_	start_char=1330|end_char=1337
+18	team.	Team.	PROPN	_	Number=Sing	17	flat	_	SpacesAfter=\n\n|start_char=1338|end_char=1343
+
+# text = James's car, James' car,
+# sent_id = 19
+1-2	James's	_	_	_	_	_	_	_	start_char=1345|end_char=1352
+1	James	Jame	PROPN	_	Number=Sing	0	root	_	start_char=1345|end_char=1350
+2	's	's	PART	_	_	1	case	_	start_char=1350|end_char=1352
+3	car,	Car,	PROPN	_	Number=Sing	1	nsubj	_	start_char=1353|end_char=1357
+4	James'	James'	PROPN	_	Number=Sing	3	flat	_	start_char=1358|end_char=1364
+5	car,	Car,	PROPN	_	Number=Sing	3	flat	_	start_char=1365|end_char=1369
+
+# text = Chris's idea, the boss's office, the bosses' meeting.
+# sent_id = 20
+1-2	Chris's	_	_	_	_	_	_	_	start_char=1370|end_char=1377
+1	Chris	Chris	PROPN	_	Number=Sing	6	nsubj	_	start_char=1370|end_char=1375
+2	's	's	PART	_	_	1	case	_	start_char=1375|end_char=1377
+3	idea,	Idea,	PROPN	_	Number=Sing	6	nmod	_	start_char=1378|end_char=1383
+4	the	the	DET	_	PronType=Art	6	det	_	start_char=1384|end_char=1387
+5	boss's	boss's	NOUN	_	Number=Sing	6	nmod	_	start_char=1388|end_char=1394
+6	office,	office,	NOUN	_	Number=Sing	0	root	_	start_char=1395|end_char=1402
+7	the	the	DET	_	PronType=Art	9	det	_	start_char=1403|end_char=1406
+8	bosses'	bosse	NOUN	_	Number=Sing	9	compound	_	start_char=1407|end_char=1414
+9	meeting.	meeting.	NOUN	_	Number=Sing	6	nmod	_	SpacesAfter=\n\n|start_char=1415|end_char=1423
+
+# text = The company’s profits, the companies’ profits, the people’s choice, Jesus’ disciples.
+# sent_id = 21
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=1425|end_char=1428
+2	company’s	company	NOUN	_	Number=Sing	3	compound	_	start_char=1429|end_char=1438
+3	profits,	profit	NOUN	_	Number=Sing	6	nsubj	_	start_char=1439|end_char=1447
+4	the	the	DET	_	PronType=Art	5	det	_	start_char=1448|end_char=1451
+5	companies’	company	NOUN	_	Number=Sing	3	nmod	_	start_char=1452|end_char=1462
+6	profits,	profit	VERB	_	Tense=Pres|VerbForm=Fin	0	root	_	start_char=1463|end_char=1471
+7	the	the	DET	_	PronType=Art	8	det	_	start_char=1472|end_char=1475
+8	people’s	people’	NOUN	_	Number=Plur	6	obl	_	start_char=1476|end_char=1484
+9	choice,	Choice,	PROPN	_	Number=Sing	8	nmod	_	start_char=1485|end_char=1492
+10	Jesus’	Jesus’	PROPN	_	Number=Sing	9	flat	_	start_char=1493|end_char=1499
+11	disciples.	Disciple	PROPN	_	Number=Sing	9	flat	_	SpacesAfter=\n\n|start_char=1500|end_char=1510
+
+# text = Somebody else's problem. Anyone's guess. No one's fault. Everybody's favorite.
+# sent_id = 22
+1	Somebody	somebody	ADV	_	Degree=Pos	2	advmod	_	start_char=1512|end_char=1520
+2-3	else's	_	_	_	_	_	_	_	start_char=1521|end_char=1527
+2	else	else	ADV	_	Degree=Pos	0	root	_	start_char=1521|end_char=1525
+3	's	be	PRON	_	PronType=Prs	4	nsubj	_	start_char=1525|end_char=1527
+4	problem.	problem.	NOUN	_	Number=Sing	2	nsubj	_	start_char=1528|end_char=1536
+5-6	Anyone's	_	_	_	_	_	_	_	start_char=1537|end_char=1545
+5	Anyone	Anyone	ADV	_	Degree=Pos	7	advmod	_	start_char=1537|end_char=1543
+6	's	be	PRON	_	PronType=Prs	7	nsubj	_	start_char=1543|end_char=1545
+7	guess.	guess.	VERB	_	VerbForm=Inf	4	ccomp	_	start_char=1546|end_char=1552
+8	No	no	DET	_	PronType=Art	9	det	_	start_char=1553|end_char=1555
+9-10	one's	_	_	_	_	_	_	_	start_char=1556|end_char=1561
+9	one	one	PRON	_	PronType=Prs	7	obl	_	start_char=1556|end_char=1559
+10	's	be	PRON	_	PronType=Prs	11	nsubj	_	start_char=1559|end_char=1561
+11	fault.	fault.	NOUN	_	Number=Sing	7	ccomp	_	start_char=1562|end_char=1568
+12-13	Everybody's	_	_	_	_	_	_	_	start_char=1569|end_char=1580
+12	Everybody	Everybody	ADV	_	Degree=Pos	11	advmod	_	start_char=1569|end_char=1578
+13	's	be	PRON	_	PronType=Prs	14	nsubj	_	start_char=1578|end_char=1580
+14	favorite.	Favorite.	PROPN	_	Number=Sing	11	nmod	_	SpacesAfter=\n\n|start_char=1581|end_char=1590
+
+# text = The U.N.'s report, NASA's rover, the CEO's memo, the 1990s' excess, the '90s' music, the IBM
+# sent_id = 23
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=1592|end_char=1595
+2	U.	UX	PROPN	_	Number=Sing	5	nmod	_	SpaceAfter=No|start_char=1596|end_char=1598
+3-4	N.'s	_	_	_	_	_	_	_	start_char=1598|end_char=1602
+3	N.	NX	PROPN	_	Number=Sing	2	flat	_	start_char=1598|end_char=1600
+4	's	's	PART	_	_	2	case	_	start_char=1600|end_char=1602
+5	report,	report,	NOUN	_	Number=Sing	0	root	_	start_char=1603|end_char=1610
+6-7	NASA's	_	_	_	_	_	_	_	start_char=1611|end_char=1617
+6	NASA	Nasa	PROPN	_	Number=Sing	8	nmod:poss	_	start_char=1611|end_char=1615
+7	's	's	PART	_	_	10	case	_	start_char=1615|end_char=1617
+8	rover,	Rover,	PROPN	_	Number=Sing	5	nmod	_	start_char=1618|end_char=1624
+9	the	the	DET	_	PronType=Art	10	det	_	start_char=1625|end_char=1628
+10-11	CEO's	_	_	_	_	_	_	_	start_char=1629|end_char=1634
+10	CEO	Ceo	PROPN	_	Number=Sing	12	nmod:poss	_	start_char=1629|end_char=1632
+11	's	's	PART	_	_	10	case	_	start_char=1632|end_char=1634
+12	memo,	memo,	NOUN	_	Number=Sing	8	nmod	_	start_char=1635|end_char=1640
+13	the	the	DET	_	PronType=Art	14	det	_	start_char=1641|end_char=1644
+14	1990s'	P990s'	PROPN	_	Number=Sing	12	nmod	_	start_char=1645|end_char=1651
+15	excess,	excess,	NOUN	_	Number=Sing	12	flat	_	start_char=1652|end_char=1659
+16	the	the	DET	_	PronType=Art	17	det	_	start_char=1660|end_char=1663
+17	'90s'	A90s'	PROPN	_	Number=Sing	12	conj	_	start_char=1664|end_char=1669
+18	music,	Music,	PROPN	_	Number=Sing	17	flat	_	start_char=1670|end_char=1676
+19	the	the	DET	_	PronType=Art	20	det	_	start_char=1677|end_char=1680
+20	IBM	Ibm	PROPN	_	Number=Sing	17	conj	_	start_char=1681|end_char=1684
+
+# text = PC's keyboard.
+# sent_id = 24
+1-2	PC's	_	_	_	_	_	_	_	start_char=1685|end_char=1689
+1	PC	PC	PROPN	_	Number=Sing	0	root	_	start_char=1685|end_char=1687
+2	's	's	PART	_	_	1	case	_	start_char=1687|end_char=1689
+3	keyboard.	Keyboard.	PROPN	_	Number=Sing	1	nmod	_	SpacesAfter=\n\n|start_char=1690|end_char=1699
+
+# text = Ain't nobody got time for that. Y'all better listen. Gonna be fine. Wanna come? Gotta go.
+# sent_id = 25
+1-2	Ain't	_	_	_	_	_	_	_	start_char=1701|end_char=1706
+1	Ain	Ain	PROPN	_	Number=Sing	4	discourse	_	start_char=1701|end_char=1704
+2	't	would	AUX	_	VerbForm=Fin	4	aux	_	start_char=1704|end_char=1706
+3	nobody	nobody	ADV	_	Degree=Pos	4	advmod	_	start_char=1707|end_char=1713
+4	got	get	VERB	_	Tense=Pres|VerbForm=Fin	0	root	_	start_char=1714|end_char=1717
+5	time	time	NOUN	_	Number=Sing	4	obj	_	start_char=1718|end_char=1722
+6	for	for	ADP	_	_	7	case	_	start_char=1723|end_char=1726
+7	that.	That.	PROPN	_	Number=Sing	5	nmod	_	start_char=1727|end_char=1732
+8	Y'all	Y'all	INTJ	_	_	10	discourse	_	start_char=1733|end_char=1738
+9	better	better	ADV	_	Degree=Pos	10	fixed	_	start_char=1739|end_char=1745
+10	listen.	listen.	NOUN	_	Number=Sing	11	nsubj	_	start_char=1746|end_char=1753
+11	Gonna	Gonna	ADV	_	Degree=Pos	17	advmod	_	start_char=1754|end_char=1759
+12	be	be	AUX	_	VerbForm=Inf	17	aux	_	start_char=1760|end_char=1762
+13	fine.	Fine.	PROPN	_	Number=Sing	17	nsubj	_	start_char=1763|end_char=1768
+14	Wanna	Wanna	PROPN	_	Number=Sing	13	flat	_	start_char=1769|end_char=1774
+15	come?	Come?	PROPN	_	Number=Sing	13	flat	_	start_char=1775|end_char=1780
+16	Gotta	Gotta	PROPN	_	Number=Sing	17	nsubj	_	start_char=1781|end_char=1786
+17	go.	ge.	VERB	_	VerbForm=Inf	4	parataxis	_	SpacesAfter=\n\n|start_char=1787|end_char=1790
+
+# text = 'Cause I said so. 'Tis the season. 'Em, I mean, them.
+# sent_id = 26
+1	'Cause	'Cause	INTJ	_	_	3	discourse	_	start_char=1792|end_char=1798
+2	I	I	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	3	nsubj	_	start_char=1799|end_char=1800
+3	said	said	VERB	_	Tense=Pres|VerbForm=Part	0	root	_	start_char=1801|end_char=1805
+4	so.	So.	PROPN	_	Number=Sing	5	nsubj	_	start_char=1806|end_char=1809
+5	'Tis	'Tis	VERB	_	VerbForm=Inf	3	ccomp	_	start_char=1810|end_char=1814
+6	the	the	DET	_	PronType=Art	7	det	_	start_char=1815|end_char=1818
+7	season.	season.	NOUN	_	Number=Sing	5	obl	_	start_char=1819|end_char=1826
+8	'Em,	'Em,	ADV	_	Degree=Pos	10	advmod	_	start_char=1827|end_char=1831
+9	I	I	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	10	nsubj	_	start_char=1832|end_char=1833
+10	mean,	mean,	VERB	_	Tense=Pres|VerbForm=Fin	3	ccomp	_	start_char=1834|end_char=1839
+11	them.	Them.	PROPN	_	Number=Sing	10	obj	_	SpacesAfter=\n\n|start_char=1840|end_char=1845
+
+# text = I'd've done it if I'd had time. We'd better leave. You'd rather stay
+# sent_id = 27
+1-2	I'd've	_	_	_	_	_	_	_	start_char=1847|end_char=1853
+1	I	I	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	3	nsubj	_	start_char=1847|end_char=1848
+2	'd've	'd've	AUX	_	_	3	aux	_	start_char=1848|end_char=1853
+3	done	done	VERB	_	Tense=Past|VerbForm=Fin	0	root	_	start_char=1854|end_char=1858
+4	it	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	3	obj	_	start_char=1859|end_char=1861
+5	if	if	ADP	_	_	7	mark	_	start_char=1862|end_char=1864
+6	I'd	I'd	ADV	_	Degree=Pos	7	advmod	_	start_char=1865|end_char=1868
+7	had	had	VERB	_	VerbForm=Inf	3	ccomp	_	start_char=1869|end_char=1872
+8	time.	time.	NOUN	_	Number=Sing	7	obj	_	start_char=1873|end_char=1878
+9-10	We'd	_	_	_	_	_	_	_	start_char=1879|end_char=1883
+9	We	we	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	15	nsubj	_	start_char=1879|end_char=1881
+10	'd	would	AUX	_	_	11	aux	_	start_char=1881|end_char=1883
+11	better	better	ADJ	_	Degree=Pos	7	ccomp	_	start_char=1884|end_char=1890
+12	leave.	leave.	NOUN	_	Number=Sing	15	nsubj	_	start_char=1891|end_char=1897
+13	You'd	yild	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	15	aux	_	start_char=1898|end_char=1903
+14	rather	rather	ADV	_	Degree=Pos	15	advmod	_	start_char=1904|end_char=1910
+15	stay	stay	NOUN	_	Number=Sing	11	xcomp	_	SpaceAfter=No|start_char=1911|end_char=1915
+
+# text = ?
+# sent_id = 28
+1	?	?	INTJ	_	_	0	root	_	SpacesAfter=\n\n|start_char=1915|end_char=1916
+
+# text = DON’T TOUCH THAT. IT’S HOT. YOU’LL GET BURNED.
+# sent_id = 29
+1	DON’T	Don’t	PROPN	_	Number=Sing	7	obl	_	start_char=1918|end_char=1923
+2	TOUCH	touch	ADV	_	Degree=Pos	1	fixed	_	start_char=1924|end_char=1929
+3	THAT.	THAT.	NOUN	_	Number=Sing	5	compound	_	start_char=1930|end_char=1935
+4	IT’S	it’s	NOUN	_	Number=Sing	5	compound	_	start_char=1936|end_char=1940
+5	HOT.	HOT.	NOUN	_	Number=Sing	7	nsubj	_	start_char=1941|end_char=1945
+6	YOU’LL	you’ll	ADV	_	Degree=Pos	7	advmod	_	start_char=1946|end_char=1952
+7	GET	get	VERB	_	VerbForm=Inf	0	root	_	start_char=1953|end_char=1956
+8	BURNED.	Burned.	PROPN	_	Number=Sing	7	obj	_	SpacesAfter=\n\n|start_char=1957|end_char=1964
+
+# text = He's been here; he's got it. She's done; she's left.
+# sent_id = 30
+1-2	He's	_	_	_	_	_	_	_	start_char=1966|end_char=1970
+1	He	He	ADV	_	Degree=Pos	3	advmod	_	start_char=1966|end_char=1968
+2	's	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	cop	_	start_char=1968|end_char=1970
+3	been	been	ADV	_	Degree=Pos	7	advmod	_	start_char=1971|end_char=1975
+4	here;	here;	ADV	_	Degree=Pos	3	advmod	_	start_char=1976|end_char=1981
+5-6	he's	_	_	_	_	_	_	_	start_char=1982|end_char=1986
+5	he	he	ADV	_	Degree=Pos	7	advmod	_	start_char=1982|end_char=1984
+6	's	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	7	aux	_	start_char=1984|end_char=1986
+7	got	get	VERB	_	Tense=Past|VerbForm=Fin	0	root	_	start_char=1987|end_char=1990
+8	it.	it.	ADV	_	Degree=Pos	7	advmod	_	start_char=1991|end_char=1994
+9-10	She's	_	_	_	_	_	_	_	start_char=1995|end_char=2000
+9	She	She	PRON	_	Case=Nom|Number=Sing|PronType=Prs	11	nsubj	_	start_char=1995|end_char=1998
+10	's	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	11	cop	_	start_char=1998|end_char=2000
+11	done;	done;	ADJ	_	Degree=Pos	7	ccomp	_	start_char=2001|end_char=2006
+12-13	she's	_	_	_	_	_	_	_	start_char=2007|end_char=2012
+12	she	she	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	11	nsubj	_	start_char=2007|end_char=2010
+13	's	be	PRON	_	PronType=Prs	14	nsubj	_	start_char=2010|end_char=2012
+14	left.	Left.	PROPN	_	Number=Sing	11	obl	_	SpacesAfter=\n\n|start_char=2013|end_char=2018
+
+# text = O'Brien's pub is next to D'Angelo's pizzeria. McDonald's is across the street.
+# sent_id = 31
+1-2	O'Brien's	_	_	_	_	_	_	_	start_char=2020|end_char=2029
+1	O'Brien	O'brien	PROPN	_	Number=Sing	3	discourse	_	start_char=2020|end_char=2027
+2	's	's	PART	_	_	1	case	_	start_char=2027|end_char=2029
+3	pub	pub	NOUN	_	Number=Sing	5	nsubj	_	start_char=2030|end_char=2033
+4	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	5	cop	_	start_char=2034|end_char=2036
+5	next	next	ADJ	_	Degree=Pos	0	root	_	start_char=2037|end_char=2041
+6	to	to	ADP	_	_	7	case	_	start_char=2042|end_char=2044
+7-8	D'Angelo's	_	_	_	_	_	_	_	start_char=2045|end_char=2055
+7	D'Angelo	D'angelo	PROPN	_	Number=Sing	5	obl	_	start_char=2045|end_char=2053
+8	's	's	PART	_	_	9	case	_	start_char=2053|end_char=2055
+9	pizzeria.	Pizzeria.	PROPN	_	Number=Sing	7	nmod	_	start_char=2056|end_char=2065
+10-11	McDonald's	_	_	_	_	_	_	_	start_char=2066|end_char=2076
+10	McDonald	Mcdonald	PROPN	_	Number=Sing	9	flat	_	start_char=2066|end_char=2074
+11	's	be	PRON	_	PronType=Prs	15	nsubj	_	start_char=2074|end_char=2076
+12	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	15	cop	_	start_char=2077|end_char=2079
+13	across	across	ADP	_	_	15	case	_	start_char=2080|end_char=2086
+14	the	the	DET	_	PronType=Art	15	det	_	start_char=2087|end_char=2090
+15	street.	Street.	PROPN	_	Number=Sing	9	nmod	_	SpacesAfter=\n\n|start_char=2091|end_char=2098
+
+# text = It's its own thing. Whose is it? Who's is wrong.
+# sent_id = 32
+1-2	It's	_	_	_	_	_	_	_	start_char=2100|end_char=2104
+1	It	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	5	nsubj	_	start_char=2100|end_char=2102
+2	's	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	1	cop	_	start_char=2102|end_char=2104
+3	its	its	DET	_	PronType=Art	5	det	_	start_char=2105|end_char=2108
+4	own	own	ADJ	_	Degree=Pos	5	amod	_	start_char=2109|end_char=2112
+5	thing.	th	NOUN	_	Number=Sing	6	compound	_	start_char=2113|end_char=2119
+6	Whose	what	PRON	_	PronType=Int,Rel	0	root	_	start_char=2120|end_char=2125
+7	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	6	cop	_	start_char=2126|end_char=2128
+8	it?	It?	PROPN	_	Number=Sing	6	nmod	_	start_char=2129|end_char=2132
+9-10	Who's	_	_	_	_	_	_	_	start_char=2133|end_char=2138
+9	Who	who	PRON	_	PronType=Int,Rel	8	nsubj	_	start_char=2133|end_char=2136
+10	's	be	PRON	_	PronType=Prs	8	nsubj	_	start_char=2136|end_char=2138
+11	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	12	cop	_	start_char=2139|end_char=2141
+12	wrong.	wrong.	ADV	_	Degree=Pos	8	ccomp	_	SpacesAfter=\n\n|start_char=2142|end_char=2148
+
+# text = They're there with their friends. You're your own worst critic.
+# sent_id = 33
+1-2	They're	_	_	_	_	_	_	_	start_char=2150|end_char=2157
+1	They	they	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	2	nsubj	_	start_char=2150|end_char=2154
+2	're	be	VERB	_	Mood=Ind|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2154|end_char=2157
+3	there	there	PRON	_	PronType=Dem	2	expl	_	start_char=2158|end_char=2163
+4	with	with	ADP	_	_	6	case	_	start_char=2164|end_char=2168
+5	their	they	DET	_	Number=Plur|Poss=Yes|PronType=Prs	6	nmod:poss	_	start_char=2169|end_char=2174
+6	friends.	friend..	NOUN	_	Number=Plur	2	nsubj	_	start_char=2175|end_char=2183
+7	You're	you're	ADV	_	Degree=Pos	9	advmod	_	start_char=2184|end_char=2190
+8	your	you	DET	_	Number=Sing|Poss=Yes|PronType=Prs	11	nmod:poss	_	start_char=2191|end_char=2195
+9	own	own	ADJ	_	Degree=Pos	11	amod	_	start_char=2196|end_char=2199
+10	worst	wirst	ADJ	_	Degree=Sup	11	amod	_	start_char=2200|end_char=2205
+11	critic.	critic.	NOUN	_	Number=Sing	2	obl	_	SpacesAfter=\n\n|start_char=2206|end_char=2213
+
+# text = Don't you dare! Can't you see? Won't they come? Isn't it obvious? Aren't we done?
+# sent_id = 34
+1	Don't	Don't	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	6	aux	_	start_char=2215|end_char=2220
+2	you	you	PRON	_	Case=Nom|Number=Sing|Person=2|PronType=Prs	6	nsubj	_	start_char=2221|end_char=2224
+3	dare!	dare!	INTJ	_	_	6	discourse	_	start_char=2225|end_char=2230
+4	Can't	Can't	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	6	aux	_	start_char=2231|end_char=2236
+5	you	you	PRON	_	Case=Nom|Number=Sing|Person=2|PronType=Prs	6	nsubj	_	start_char=2237|end_char=2240
+6	see?	see?	VERB	_	VerbForm=Inf	0	root	_	start_char=2241|end_char=2245
+7	Won't	Won't	PRON	_	Case=Nom|Number=Sing|PronType=Prs	6	obj	_	start_char=2246|end_char=2251
+8	they	they	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	9	nsubj	_	start_char=2252|end_char=2256
+9	come?	come	ADV	_	Degree=Pos	15	advmod	_	start_char=2257|end_char=2262
+10	Isn't	be	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	15	aux	_	start_char=2263|end_char=2268
+11	it	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	15	nsubj	_	start_char=2269|end_char=2271
+12	obvious?	obvious?	ADV	_	Degree=Pos	15	advmod	_	start_char=2272|end_char=2280
+13	Aren't	Aren't	ADV	_	Degree=Pos	15	advmod	_	start_char=2281|end_char=2287
+14	we	we	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	15	nsubj	_	start_char=2288|end_char=2290
+15	done?	done?	VERB	_	Tense=Pres|VerbForm=Fin	6	parataxis	_	SpacesAfter=\n\n|start_char=2291|end_char=2296
+
+# text = Wasn't it? Didn't I? Couldn't we? Hadn't they?
+# sent_id = 35
+1	Wasn't	Wasn't	ADV	_	Degree=Pos	2	advmod	_	start_char=2298|end_char=2304
+2	it?	it?	ADV	_	Degree=Pos	4	advmod	_	start_char=2305|end_char=2308
+3	Didn't	Didn't	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	4	nsubj	_	start_char=2309|end_char=2315
+4	I?	I?	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	0	root	_	start_char=2316|end_char=2318
+5	Couldn't	couldn	ADV	_	Degree=Pos	6	advmod	_	start_char=2319|end_char=2327
+6	we?	we?	PRON	_	Number=Sing|PronType=Prs	4	nsubj	_	start_char=2328|end_char=2331
+7	Hadn't	Hadn't	PROPN	_	Number=Sing	6	flat	_	start_char=2332|end_char=2338
+8	they?	They?	PROPN	_	Number=Sing	6	flat	_	SpacesAfter=\n\n|start_char=2339|end_char=2344
+
+# text = "Don't," he said. 'Can't,' she replied. “Won't,” they insisted.
+# sent_id = 36
+1	"Don't,"	Ldon't,"	PROPN	_	Number=Sing	3	discourse	_	start_char=2346|end_char=2354
+2	he	he	ADV	_	Degree=Pos	3	advmod	_	start_char=2355|end_char=2357
+3	said.	said.	VERB	_	VerbForm=Inf	10	parataxis	_	start_char=2358|end_char=2363
+4-5	'Can't,'	_	_	_	_	_	_	_	start_char=2364|end_char=2372
+4	'Can't,	Rcan't,	PROPN	_	Number=Sing	3	obj	_	start_char=2364|end_char=2371
+5	'	'	ADV	_	Degree=Pos	7	advmod	_	start_char=2371|end_char=2372
+6	she	she	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	7	nsubj	_	start_char=2373|end_char=2376
+7	replied.	replied.	VERB	_	VerbForm=Fin	10	advcl	_	start_char=2377|end_char=2385
+8	“Won't,”	Wwon't,”	PROPN	_	Number=Sing	10	nsubj	_	start_char=2386|end_char=2394
+9	they	they	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	10	nsubj	_	start_char=2395|end_char=2399
+10	insisted.	insist	VERB	_	Tense=Past|VerbForm=Part	0	root	_	SpacesAfter=\n\n|start_char=2400|end_char=2409
+
+# text = (I can't believe it.) [They're wrong.] {It's fine.}
+# sent_id = 37
+1	(I	(I	INTJ	_	_	3	discourse	_	start_char=2411|end_char=2413
+2	can't	can't	INTJ	_	_	3	discourse	_	start_char=2414|end_char=2419
+3	believe	believe	VERB	_	VerbForm=Inf	0	root	_	start_char=2420|end_char=2427
+4	it.)	it.)	ADV	_	Degree=Pos	3	advmod	_	start_char=2428|end_char=2432
+5-6	[They're	_	_	_	_	_	_	_	start_char=2433|end_char=2441
+5	[They	[They	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	7	nsubj	_	start_char=2433|end_char=2438
+6	're	be	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	7	cop	_	start_char=2438|end_char=2441
+7	wrong.]	Wrong.]	PROPN	_	Number=Sing	3	ccomp	_	start_char=2442|end_char=2449
+8-9	{It's	_	_	_	_	_	_	_	start_char=2450|end_char=2455
+8	{It	Pit	PROPN	_	Number=Sing	7	flat	_	start_char=2450|end_char=2453
+9	's	's	PART	_	_	7	case	_	start_char=2453|end_char=2455
+10	fine.}	Fine.}	PROPN	_	Number=Sing	7	nmod	_	SpacesAfter=\n\n|start_char=2456|end_char=2462
+
+# text = The result (see below) was unexpected. A few (perhaps 10%)
+# sent_id = 38
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=2464|end_char=2467
+2	result	result	NOUN	_	Number=Sing	6	nsubj	_	start_char=2468|end_char=2474
+3	(see	Ssee	PROPN	_	Number=Sing	6	nsubj	_	start_char=2475|end_char=2479
+4	below)	Below)	PROPN	_	Number=Sing	6	nsubj	_	start_char=2480|end_char=2486
+5	was	wave	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	6	aux	_	start_char=2487|end_char=2490
+6	unexpected.	unexpected.	ADJ	_	Degree=Pos	0	root	_	start_char=2491|end_char=2502
+7	A	a	DET	_	PronType=Art	8	det	_	start_char=2503|end_char=2504
+8	few	few	NUM	_	NumType=Card	9	compound	_	start_char=2505|end_char=2508
+9	(perhaps	(perhap	PROPN	_	Number=Sing	6	obl	_	start_char=2509|end_char=2517
+10	10%)	10%)	NUM	_	NumType=Card	9	nummod	_	start_char=2518|end_char=2522
+
+# text = disagreed. Results [Table 3] confirm this.
+# sent_id = 39
+1	disagreed.	disagreed.	VERB	_	VerbForm=Inf	5	parataxis	_	start_char=2523|end_char=2533
+2	Results	result	NOUN	_	Number=Plur	5	obj	_	start_char=2534|end_char=2541
+3	[Table	Ttable	PROPN	_	Number=Sing	5	nsubj	_	start_char=2542|end_char=2548
+4	3]	3]	NUM	_	NumType=Card	3	flat	_	start_char=2549|end_char=2551
+5	confirm	confire	VERB	_	VerbForm=Inf	0	root	_	start_char=2552|end_char=2559
+6	this.	this.	NOUN	_	Number=Sing	5	obj	_	SpacesAfter=\n\n|start_char=2560|end_char=2565
+
+# text = ((nested (parentheses) are fun)) and [brackets [inside] brackets] too.
+# sent_id = 40
+1	((nested	((nest	NOUN	_	Number=Sing	2	compound	_	start_char=2567|end_char=2575
+2	(parentheses)	Pparentheses)	PROPN	_	Number=Sing	4	nsubj	_	start_char=2576|end_char=2589
+3	are	be	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	4	cop	_	start_char=2590|end_char=2593
+4	fun))	Fun))	PROPN	_	Number=Sing	0	root	_	start_char=2594|end_char=2599
+5	and	and	CCONJ	_	_	6	cc	_	start_char=2600|end_char=2603
+6	[brackets	Cbracket	PROPN	_	Number=Sing	4	conj	_	start_char=2604|end_char=2613
+7	[inside]	Pinside]	PROPN	_	Number=Sing	6	nmod	_	start_char=2614|end_char=2622
+8	brackets]	Brackets]	PROPN	_	Number=Sing	6	appos	_	start_char=2623|end_char=2632
+9	too.	too.	ADV	_	Degree=Pos	2	discourse	_	SpacesAfter=\n\n|start_char=2633|end_char=2637
+
+# text = He arrived (late, as usual).
+# sent_id = 41
+1	He	He	ADV	_	Degree=Pos	2	advmod	_	start_char=2639|end_char=2641
+2	arrived	arrive	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=2642|end_char=2649
+3	(late,	Clate,	PROPN	_	Number=Sing	2	nsubj	_	start_char=2650|end_char=2656
+4	as	as	ADP	_	_	5	case	_	start_char=2657|end_char=2659
+5	usual).	Usual).	PROPN	_	Number=Sing	2	obl	_	SpacesAfter=\n\n|start_char=2660|end_char=2667
+
+# text = (This entire sentence is in parentheses.) This one is not.
+# sent_id = 42
+1	(This	(this	DET	_	PronType=Int,Rel	3	det	_	start_char=2669|end_char=2674
+2	entire	entire	ADJ	_	Degree=Pos	3	amod	_	start_char=2675|end_char=2681
+3	sentence	sentence	NOUN	_	Number=Sing	6	nsubj	_	start_char=2682|end_char=2690
+4	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	10	cop	_	start_char=2691|end_char=2693
+5	in	in	ADP	_	_	6	case	_	start_char=2694|end_char=2696
+6	parentheses.)	Parentheses.	PROPN	_	Number=Sing	8	compound	_	start_char=2697|end_char=2710
+7	This	this	PRON	_	PronType=Int,Rel	8	det	_	start_char=2711|end_char=2715
+8	one	one	PRON	_	PronType=Int,Rel	10	nsubj	_	start_char=2716|end_char=2719
+9	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	10	cop	_	start_char=2720|end_char=2722
+10	not.	not.	ADV	_	Degree=Pos	0	root	_	SpacesAfter=\n\n|start_char=2723|end_char=2727
+
+# text = The answer is (a) yes, (b) no, or (c) maybe. Options i), ii) and iii) were rejected.
+# sent_id = 43
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=2729|end_char=2732
+2	answer	answer	NOUN	_	Number=Sing	17	obl	_	start_char=2733|end_char=2739
+3	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	cop	_	start_char=2740|end_char=2742
+4	(a)	La	PROPN	_	Number=Sing	2	nsubj	_	start_char=2743|end_char=2746
+5	yes,	Jes,	PROPN	_	Number=Sing	4	flat	_	start_char=2747|end_char=2751
+6	(b)	(b)	ADV	_	Degree=Pos	4	case	_	start_char=2752|end_char=2755
+7	no,	No,	PROPN	_	Number=Sing	4	conj	_	start_char=2756|end_char=2759
+8	or	or	CCONJ	_	_	9	cc	_	start_char=2760|end_char=2762
+9	(c)	Cc)	PROPN	_	Number=Sing	7	conj	_	start_char=2763|end_char=2766
+10	maybe.	maybe.	VERB	_	Tense=Pres|VerbForm=Inf	2	acl:relcl	_	start_char=2767|end_char=2773
+11	Options	option	NOUN	_	Number=Plur	10	obl	_	start_char=2774|end_char=2781
+12	i),	I),	PROPN	_	Number=Sing	10	obl	_	start_char=2782|end_char=2785
+13	ii)	Ii)	PROPN	_	Number=Sing	12	flat	_	start_char=2786|end_char=2789
+14	and	and	CCONJ	_	_	15	cc	_	start_char=2790|end_char=2793
+15	iii)	Iii)	PROPN	_	Number=Sing	17	nsubj	_	start_char=2794|end_char=2798
+16	were	were	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	17	aux	_	start_char=2799|end_char=2803
+17	rejected.	rejected.	VERB	_	Tense=Past|VerbForm=Part	0	root	_	SpacesAfter=\n\n|start_char=2804|end_char=2813
+
+# text = Her brother-in-law's car and her
+# sent_id = 44
+1	Her	Her	ADV	_	Degree=Cmp	2	advmod	_	start_char=2815|end_char=2818
+2	brother	Brother	PROPN	_	Number=Sing	4	nsubj	_	SpaceAfter=No|start_char=2819|end_char=2826
+3	-in-law's	Pin-law'	PROPN	_	Number=Sing	4	nmod	_	start_char=2826|end_char=2835
+4	car	car	NOUN	_	Number=Sing	0	root	_	start_char=2836|end_char=2839
+5	and	and	CCONJ	_	_	6	cc	_	start_char=2840|end_char=2843
+6	her	her	ADV	_	Degree=Cmp	4	conj	_	start_char=2844|end_char=2847
+
+# text = sisters-in-law's houses were nearby.
+# sent_id = 45
+1	sisters	Sisters	PROPN	_	Number=Plur	4	nmod	_	SpaceAfter=No|start_char=2848|end_char=2855
+2-3	-in-law's	_	_	_	_	_	_	_	start_char=2855|end_char=2864
+2	-in-law	Pin-law	PROPN	_	Number=Sing	1	conj	_	start_char=2855|end_char=2862
+3	's	's	PART	_	_	1	case	_	start_char=2862|end_char=2864
+4	houses	house	NOUN	_	Number=Plur	6	nsubj	_	start_char=2865|end_char=2871
+5	were	were	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	6	cop	_	start_char=2872|end_char=2876
+6	nearby.	Nearby.	PROPN	_	Number=Sing	0	root	_	SpacesAfter=\n\n|start_char=2877|end_char=2884
+
+# text = The '60s were wild; the '70s, wilder. Rock'n'roll never died.
+# sent_id = 46
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=2886|end_char=2889
+2	'60s	'60s	NOUN	_	Number=Plur	3	nsubj	_	start_char=2890|end_char=2894
+3	were	were	VERB	_	VerbForm=Fin	0	root	_	start_char=2895|end_char=2899
+4	wild;	wild;	ADJ	_	Degree=Pos	3	advmod	_	start_char=2900|end_char=2905
+5	the	the	DET	_	PronType=Art	6	det	_	start_char=2906|end_char=2909
+6	'70s,	A70s,	PROPN	_	Number=Sing	3	obl	_	start_char=2910|end_char=2915
+7	wilder.	Wilder.	PROPN	_	Number=Sing	6	flat	_	start_char=2916|end_char=2923
+8	Rock'n'roll	Rock'n'rol	PROPN	_	Number=Sing	6	flat	_	start_char=2924|end_char=2935
+9	never	never	ADV	_	Degree=Pos	10	advmod	_	start_char=2936|end_char=2941
+10	died.	died.	NOUN	_	Number=Sing	3	obl	_	SpacesAfter=\n\n|start_char=2942|end_char=2947
+
+# text = Mom's and Dad's opinions differ. My parents' house is old.
+# sent_id = 47
+1-2	Mom's	_	_	_	_	_	_	_	start_char=2949|end_char=2954
+1	Mom	Mom	PROPN	_	Number=Sing	7	obl	_	start_char=2949|end_char=2952
+2	's	be	PRON	_	PronType=Prs	1	flat	_	start_char=2952|end_char=2954
+3	and	and	CCONJ	_	_	4	cc	_	start_char=2955|end_char=2958
+4-5	Dad's	_	_	_	_	_	_	_	start_char=2959|end_char=2964
+4	Dad	Dad	PROPN	_	Number=Sing	1	conj	_	start_char=2959|end_char=2962
+5	's	's	PART	_	_	4	case	_	start_char=2962|end_char=2964
+6	opinions	opinion	NOUN	_	Number=Plur	7	nsubj	_	start_char=2965|end_char=2973
+7	differ.	differ.	VERB	_	VerbForm=Inf	0	root	_	start_char=2974|end_char=2981
+8	My	I	DET	_	Number=Sing|Poss=Yes|PronType=Prs	9	det	_	start_char=2982|end_char=2984
+9	parents'	Parents'	PROPN	_	Number=Sing	10	compound	_	start_char=2985|end_char=2993
+10	house	house	NOUN	_	Number=Sing	12	nsubj	_	start_char=2994|end_char=2999
+11	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	12	cop	_	start_char=3000|end_char=3002
+12	old.	Old.	PROPN	_	Number=Sing	7	ccomp	_	SpacesAfter=\n|start_char=3003|end_char=3007

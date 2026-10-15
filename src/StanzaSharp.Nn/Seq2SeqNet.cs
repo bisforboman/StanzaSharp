@@ -15,7 +15,10 @@ internal interface ISeq2SeqNet : IDisposable
     /// vocabulary are DeltaVocab characters, embedded as <c>&lt;UNK&gt;</c> but copyable.</param>
     /// <param name="posIds">[batch] UPOS ids, the encoder's first step, with <see cref="Seq2SeqConfig.UsesPos"/>; else null.</param>
     /// <param name="lengths">Each row's encoder length: its source length, + 1 for the UPOS step.</param>
-    ISeq2SeqDecoder Encode(long[] ids, int batch, int width, long[]? posIds, long[] lengths, CancellationToken ct);
+    /// <param name="beam">The decoder's rows per source row, for <see cref="Seq2SeqConfig.Beam"/>: row k · batch + b is beam k of
+    /// source b, all starting from b's encoding (Seq2SeqModel.predict's repeat). As in Stanza, only the first batch rows (beam
+    /// 0) see the copy distribution: decode scatters the unrepeated source into the repeated rows.</param>
+    ISeq2SeqDecoder Encode(long[] ids, int batch, int width, long[]? posIds, long[] lengths, CancellationToken ct, int beam = 1);
 }
 
 /// <summary>One batch's decoder state (the per-call state of <see cref="ISeq2SeqNet"/>).</summary>
@@ -24,21 +27,25 @@ internal interface ISeq2SeqDecoder : IDisposable
     /// <summary>[batch, 3] edit classifier logits, with <see cref="Seq2SeqConfig.Edit"/>; else empty.</summary>
     float[] EditLogits { get; }
 
-    /// <summary>Width of a <see cref="Step"/> row: the vocabulary, widened to the batch's largest source id + 1.</summary>
+    /// <summary>Width of a <see cref="Step"/> row: the vocabulary, widened to the batch's largest source id + 1 with <see cref="Seq2SeqConfig.Copy"/>.</summary>
     int Columns { get; }
 
     /// <summary>
     /// Seq2SeqModel.decode for one step: feeds each row's previous character (<c>&lt;SOS&gt;</c> first) and returns
-    /// [batch, <see cref="Columns"/>] log-probs, the vocabulary mixed with the copy distribution. The array may be reused
-    /// by the next call.
+    /// [rows, <see cref="Columns"/>] log-probs, the vocabulary mixed with the copy distribution (with
+    /// <see cref="Seq2SeqConfig.Copy"/>). The array may be reused by the next call.
     /// </summary>
     float[] Step(long[] previous, CancellationToken ct);
+
+    /// <summary>Beam search's update_state: row r's decoder state (h and c) becomes row <paramref name="rows"/>[r]'s.</summary>
+    void Reorder(int[] rows);
 }
 
 /// <summary>The network's sizes and options, from the checkpoint config.</summary>
 /// <param name="PosDim">The UPOS embedding's size; 0 without POS input (MWT).</param>
 /// <param name="Edit">Whether the model has the lemmatizer's 3-way edit classifier.</param>
-internal readonly record struct Seq2SeqConfig(int Vocab, int PosVocab, int Emb, int PosDim, int Hidden, bool Edit)
+/// <param name="Copy">Whether the model has the copy gate (<c>copy</c>; older lemmatizers, English craft, genia and mimic, don't).</param>
+internal readonly record struct Seq2SeqConfig(int Vocab, int PosVocab, int Emb, int PosDim, int Hidden, bool Edit, bool Copy)
 {
     public const int PadId = 0, UnkId = 1, SosId = 2, EosId = 3; // seq2seq_constant.py
 
@@ -49,7 +56,8 @@ internal readonly record struct Seq2SeqConfig(int Vocab, int PosVocab, int Emb, 
     {
         bool pos = config["pos"]?.GetValue<bool>() == true && config["pos_dim"]?.GetValue<int>() > 0;
         return new(config["vocab_size"]!.GetValue<int>(), pos ? config["pos_vocab_size"]!.GetValue<int>() : 0, config["emb_dim"]!.GetValue<int>(),
-            pos ? config["pos_dim"]!.GetValue<int>() : 0, config["hidden_dim"]!.GetValue<int>(), config["edit"]?.GetValue<bool>() == true);
+            pos ? config["pos_dim"]!.GetValue<int>() : 0, config["hidden_dim"]!.GetValue<int>(), config["edit"]?.GetValue<bool>() == true,
+            config["copy"]?.GetValue<bool>() == true);
     }
 
     /// <summary>
@@ -98,6 +106,148 @@ internal readonly record struct Seq2SeqConfig(int Vocab, int PosVocab, int Emb, 
         }
 
         return output;
+    }
+
+    /// <summary>
+    /// Seq2SeqModel.predict with <paramref name="beamSize"/> &gt; 1 (common/beam.py <c>Beam</c>): each source keeps the
+    /// <paramref name="beamSize"/> best hypotheses by summed float32 log-prob (torch.topk; ties to the lower index), the first
+    /// step expanding beam 0 alone; a source is done when its best hypothesis ends in <c>&lt;EOS&gt;</c>. The decoder must
+    /// have been encoded with <c>beam: beamSize</c>. Stanza's MWT trainer runs this with the default 5 (it passes its
+    /// <c>beam_size</c> 1 where predict takes <c>pos</c>).
+    /// </summary>
+    /// <param name="onStep">For tests: as <see cref="Greedy"/>'s, per decoder row (the done flags repeated over the beams).</param>
+    /// <returns>Each source's best hypothesis before its first <c>&lt;EOS&gt;</c>.</returns>
+    public static List<int>[] Beam(ISeq2SeqDecoder decoder, int batch, int beamSize, int maxDecLen, bool neverDecodeUnk, CancellationToken ct,
+        Action<float[], int, bool[]>? onStep = null)
+    {
+        int k = beamSize, columns = decoder.Columns, rows = batch * k;
+        var scores = new float[batch][];
+        var prevKs = new List<int[]>[batch];
+        var nextYs = new List<int[]>[batch];
+        for (int b = 0; b < batch; b++)
+        {
+            scores[b] = new float[k];
+            prevKs[b] = [];
+            var first = new int[k]; // <SOS> in beam 0, <PAD> in the others
+            first[0] = SosId;
+            nextYs[b] = [first];
+        }
+
+        var done = new bool[batch];
+        var rowDone = new bool[rows];
+        var previous = new long[rows];
+        var perm = new int[rows];
+        var flat = new float[k * columns];
+        for (int step = 0; step < maxDecLen; step++)
+        {
+            ct.ThrowIfCancellationRequested();
+            for (int b = 0; b < batch; b++)
+            {
+                for (int j = 0; j < k; j++)
+                    previous[j * batch + b] = nextYs[b][^1][j];
+            }
+
+            var logProbs = decoder.Step(previous, ct);
+            if (neverDecodeUnk)
+            {
+                for (int r = 0; r < rows; r++)
+                    logProbs[r * columns + UnkId] = float.NegativeInfinity;
+            }
+
+            onStep?.Invoke(logProbs, columns, rowDone);
+            for (int b = 0; b < batch; b++)
+            {
+                if (done[b])
+                    continue;
+
+                // Beam.advance: the first step expands beam 0 only; later ones every beam's row plus its score.
+                int n = prevKs[b].Count == 0 ? columns : k * columns;
+                for (int j = 0; j < n / columns; j++)
+                {
+                    var row = logProbs.AsSpan((j * batch + b) * columns, columns);
+                    for (int w = 0; w < columns; w++)
+                        flat[j * columns + w] = prevKs[b].Count == 0 ? row[w] : row[w] + scores[b][j];
+                }
+
+                var best = TopK(flat.AsSpan(0, n), k);
+                var prevK = new int[k];
+                var nextY = new int[k];
+                for (int j = 0; j < k; j++)
+                {
+                    scores[b][j] = flat[best[j]];
+                    prevK[j] = best[j] / columns;
+                    nextY[j] = best[j] - prevK[j] * columns;
+                }
+
+                prevKs[b].Add(prevK);
+                nextYs[b].Add(nextY);
+                done[b] = nextY[0] == EosId;
+            }
+
+            if (done.All(d => d))
+                break;
+
+            // update_state: each source's beams take their origins' states.
+            for (int b = 0; b < batch; b++)
+            {
+                for (int j = 0; j < k; j++)
+                {
+                    perm[j * batch + b] = prevKs[b][^1][j] * batch + b;
+                    rowDone[j * batch + b] = done[b];
+                }
+            }
+
+            decoder.Reorder(perm);
+        }
+
+        var output = new List<int>[batch];
+        for (int b = 0; b < batch; b++)
+        {
+            // sort_best's first, then get_hyp's walk back over the back pointers, pruned at <EOS> (prune_hyp).
+            int at = 0;
+            for (int j = 1; j < k; j++)
+            {
+                if (scores[b][j] > scores[b][at])
+                    at = j;
+            }
+
+            var hyp = new List<int>();
+            for (int t = prevKs[b].Count - 1; t >= 0; t--)
+            {
+                hyp.Add(nextYs[b][t + 1][at]);
+                at = prevKs[b][t][at];
+            }
+
+            hyp.Reverse();
+            int eos = hyp.IndexOf(EosId);
+            output[b] = eos < 0 ? hyp : hyp[..eos];
+        }
+
+        return output;
+    }
+
+    /// <summary>The indices of the <paramref name="k"/> largest values, largest first; equal values by lower index first.</summary>
+    private static int[] TopK(ReadOnlySpan<float> values, int k)
+    {
+        var best = new int[k];
+        int count = 0;
+        for (int i = 0; i < values.Length; i++)
+        {
+            float v = values[i];
+            if (count == k && !(v > values[best[k - 1]]))
+                continue;
+            int at = Math.Min(count, k - 1);
+            while (at > 0 && v > values[best[at - 1]])
+            {
+                best[at] = best[at - 1];
+                at--;
+            }
+
+            best[at] = i;
+            count = Math.Min(count + 1, k);
+        }
+
+        return best;
     }
 }
 
@@ -168,40 +318,44 @@ internal sealed unsafe class ManagedSeq2SeqNet : ISeq2SeqNet
         _attnIn = new PackedMatrix(T("decoder.attention_layer.linear_in.weight"), h, h);
         _attnOut = new PackedMatrix(T("decoder.attention_layer.linear_out.weight"), h, 2 * h);
 
-        // dec2vocab and the copy gate read the same h_tilde: one GEMM, the gate is column Vocab.
-        _out = new PackedMatrix([.. T("dec2vocab.weight"), .. T("copy_gate.weight")], c.Vocab + 1, h);
+        // dec2vocab and the copy gate (if any) read the same h_tilde: one GEMM, the gate is column Vocab.
+        _out = new PackedMatrix(c.Copy ? [.. T("dec2vocab.weight"), .. T("copy_gate.weight")] : T("dec2vocab.weight"), c.Vocab + (c.Copy ? 1 : 0), h);
         _outBias = new float[_out.PaddedN];
         T("dec2vocab.bias").CopyTo(_outBias, 0);
-        _outBias[c.Vocab] = T("copy_gate.bias")[0];
+        if (c.Copy)
+            _outBias[c.Vocab] = T("copy_gate.bias")[0];
 
         if (c.Edit)
             (_edit0, _edit0Bias, _edit2, _edit2Bias) = (T("edit_clf.0.weight"), T("edit_clf.0.bias"), T("edit_clf.2.weight"), T("edit_clf.2.bias"));
     }
 
-    public ISeq2SeqDecoder Encode(long[] ids, int batch, int width, long[]? posIds, long[] lengths, CancellationToken ct) =>
-        new Decoder(this, ids, batch, width, posIds, lengths, ct);
+    public ISeq2SeqDecoder Encode(long[] ids, int batch, int width, long[]? posIds, long[] lengths, CancellationToken ct, int beam = 1) =>
+        new Decoder(this, ids, batch, width, posIds, lengths, ct, beam);
 
-    /// <summary>One batch: the encoder output and the decoder's buffers, rented for the batch and returned on Dispose.</summary>
+    /// <summary>
+    /// One batch: the encoder output and the decoder's buffers, rented for the batch and returned on Dispose. The decoder has
+    /// rows = batch · beam: row r decodes source r % batch, and only rows below batch mix in the copy distribution.
+    /// </summary>
     private sealed class Decoder : ISeq2SeqDecoder
     {
         private readonly ManagedSeq2SeqNet _net;
         private readonly long[] _ids, _lengths;
-        private readonly int _batch, _width, _steps, _first, _h, _ldTarget, _ldOut;
+        private readonly int _batch, _rows, _width, _steps, _first, _h, _ldTarget, _ldOut;
         private readonly float[] _ctx;    // [batch, steps, hidden]: the encoder output, real positions only
-        private readonly float[] _xh;     // [batch, emb + hidden]: the cell's input and h
-        private readonly float[] _cell;   // [batch, hidden]
-        private readonly float[] _gates;  // [batch, 4·hidden]
-        private readonly float[] _target; // [batch, ldTarget]: linear_in(h), then h_tilde
-        private readonly float[] _wh;     // [batch, 2·hidden]: the attention-weighted context and h
-        private readonly float[] _logits; // [batch, ldOut]: dec2vocab and the copy gate
+        private readonly float[] _xh;     // [rows, emb + hidden]: the cell's input and h
+        private readonly float[] _cell;   // [rows, hidden]
+        private readonly float[] _gates;  // [rows, 4·hidden]
+        private readonly float[] _target; // [rows, ldTarget]: linear_in(h), then h_tilde
+        private readonly float[] _wh;     // [rows, 2·hidden]: the attention-weighted context and h
+        private readonly float[] _logits; // [rows, ldOut]: dec2vocab and the copy gate
         private readonly float[] _result;
 
         public float[] EditLogits { get; }
         public int Columns { get; }
 
-        public Decoder(ManagedSeq2SeqNet net, long[] ids, int batch, int width, long[]? posIds, long[] lengths, CancellationToken ct)
+        public Decoder(ManagedSeq2SeqNet net, long[] ids, int batch, int width, long[]? posIds, long[] lengths, CancellationToken ct, int beam)
         {
-            (_net, _ids, _lengths, _batch, _width) = (net, ids, lengths, batch, width);
+            (_net, _ids, _lengths, _batch, _rows, _width) = (net, ids, lengths, batch, batch * beam, width);
             var c = net._c;
 
             // The encoder's steps: the UPOS step (if any), then the characters. Source position t is encoder step t + _first.
@@ -209,16 +363,16 @@ internal sealed unsafe class ManagedSeq2SeqNet : ISeq2SeqNet
             int h = _h = c.Hidden, half = h / 2, steps = _steps = width + _first, emb = c.Emb;
             _ldTarget = net._attnIn.PaddedN;
             _ldOut = net._out.PaddedN;
-            Columns = (int)Math.Max(c.Vocab, ids.Max() + 1);
+            Columns = c.Copy ? (int)Math.Max(c.Vocab, ids.Max() + 1) : c.Vocab;
             var pool = ArrayPool<float>.Shared;
             _ctx = pool.Rent(batch * steps * h);
-            _xh = pool.Rent(batch * (emb + h));
-            _cell = pool.Rent(batch * h);
-            _gates = pool.Rent(batch * net._cell.PaddedN);
-            _target = pool.Rent(batch * _ldTarget);
-            _wh = pool.Rent(batch * 2 * h);
-            _logits = pool.Rent(batch * _ldOut);
-            _result = new float[batch * Columns];
+            _xh = pool.Rent(_rows * (emb + h));
+            _cell = pool.Rent(_rows * h);
+            _gates = pool.Rent(_rows * net._cell.PaddedN);
+            _target = pool.Rent(_rows * _ldTarget);
+            _wh = pool.Rent(_rows * 2 * h);
+            _logits = pool.Rent(_rows * _ldOut);
+            _result = new float[_rows * Columns];
             EditLogits = new float[c.Edit ? batch * 3 : 0];
 
             // The packed encoder input: the UPOS embedding first (if any), then the characters (<UNK>'s embedding past the vocabulary).
@@ -258,6 +412,13 @@ internal sealed unsafe class ManagedSeq2SeqNet : ISeq2SeqNet
                     finalC.AsSpan(r * half, half).CopyTo(_cell.AsSpan(r * h + half));
                     if (c.Edit)
                         Edit(h0, EditLogits.AsSpan(r * 3, 3));
+                }
+
+                // The other beams start from their source's state (hn.repeat, cn.repeat).
+                for (int r = batch; r < _rows; r++)
+                {
+                    _xh.AsSpan((r % batch) * (emb + h) + emb, h).CopyTo(_xh.AsSpan(r * (emb + h) + emb));
+                    _cell.AsSpan((r % batch) * h, h).CopyTo(_cell.AsSpan(r * h));
                 }
             }
             catch
@@ -302,7 +463,7 @@ internal sealed unsafe class ManagedSeq2SeqNet : ISeq2SeqNet
         {
             var n = _net;
             var c = n._c;
-            int b = _batch, h = _h, emb = c.Emb, ldxh = emb + h;
+            int b = _rows, h = _h, emb = c.Emb, ldxh = emb + h;
             for (int r = 0; r < b; r++)
             {
                 long id = previous[r] >= c.Vocab ? Seq2SeqConfig.UnkId : previous[r];
@@ -379,13 +540,13 @@ internal sealed unsafe class ManagedSeq2SeqNet : ISeq2SeqNet
         /// <summary>Row r's attention: log-softmax scores kept in <paramref name="attn"/>, the weighted context into wh.</summary>
         private void Attend(int r, float* target, float* wh, float* xh, double[] attn)
         {
-            int h = _h, steps = _steps, len = (int)_lengths[r];
+            int h = _h, steps = _steps, source = r % _batch, len = (int)_lengths[source];
             var la = attn.AsSpan(r * steps, len);
             var q = new ReadOnlySpan<float>(target + r * _ldTarget, h);
             double max = double.NegativeInfinity;
             for (int t = 0; t < len; t++)
             {
-                var k = _ctx.AsSpan((r * steps + t) * h, h);
+                var k = _ctx.AsSpan((source * steps + t) * h, h);
                 double s = 0;
                 for (int i = 0; i < h; i++)
                     s += (double)k[i] * q[i];
@@ -404,7 +565,7 @@ internal sealed unsafe class ManagedSeq2SeqNet : ISeq2SeqNet
             {
                 la[t] -= lse;
                 double wt = Math.Exp(la[t]);
-                var k = _ctx.AsSpan((r * steps + t) * h, h);
+                var k = _ctx.AsSpan((source * steps + t) * h, h);
                 for (int i = 0; i < h; i++)
                     acc[i] += wt * k[i];
             }
@@ -421,8 +582,8 @@ internal sealed unsafe class ManagedSeq2SeqNet : ISeq2SeqNet
         /// </summary>
         private void Mix(int r, float* logits, double[] attn)
         {
-            int vocab = _net._c.Vocab, steps = _steps, len = (int)_lengths[r], cols = Columns, first = _first;
-            var row = new ReadOnlySpan<float>(logits + r * _ldOut, vocab + 1);
+            int vocab = _net._c.Vocab, steps = _steps, len = (int)_lengths[r % _batch], cols = Columns, first = _first;
+            var row = new ReadOnlySpan<float>(logits + r * _ldOut, _net._out.N);
             double max = double.NegativeInfinity;
             for (int v = 0; v < vocab; v++)
                 max = Math.Max(max, row[v]);
@@ -430,13 +591,23 @@ internal sealed unsafe class ManagedSeq2SeqNet : ISeq2SeqNet
             for (int v = 0; v < vocab; v++)
                 sum += Math.Exp(row[v] - max);
             double lse = max + Math.Log(sum);
+            var output = _result.AsSpan(r * cols, cols);
+            if (!_net._c.Copy)
+            {
+                // get_log_prob alone: log_softmax over the vocabulary.
+                for (int v = 0; v < vocab; v++)
+                    output[v] = (float)(row[v] - lse);
+                return;
+            }
+
             double copyLogit = row[vocab];
             double logNoCopy = -Math.Log(Math.Exp(copyLogit) + 1);
             double logCopy = Math.Min(copyLogit, 0) - Math.Log(1 + Math.Exp(-Math.Abs(copyLogit))); // logsigmoid
 
-            var output = _result.AsSpan(r * cols, cols);
             for (int v = 0; v < cols; v++)
                 output[v] = (float)((v < vocab ? row[v] : row[Seq2SeqConfig.UnkId]) - lse + logNoCopy);
+            if (r >= _batch)
+                return; // a later beam's row: Stanza's scatter_add of the unrepeated source reaches only the first batch rows
 
             // The attention over the source positions (first..len-1) renormalized: log a_t − log Σ a_t.
             var la = attn.AsSpan(r * steps, len);
@@ -469,6 +640,20 @@ internal sealed unsafe class ManagedSeq2SeqNet : ISeq2SeqNet
             finally
             {
                 ArrayPool<double>.Shared.Return(copied);
+            }
+        }
+
+        public void Reorder(int[] rows)
+        {
+            int h = _h, ldxh = _net._c.Emb + h;
+            var oldH = new float[_rows * h];
+            var oldC = _cell.AsSpan(0, _rows * h).ToArray();
+            for (int r = 0; r < _rows; r++)
+                _xh.AsSpan(r * ldxh + _net._c.Emb, h).CopyTo(oldH.AsSpan(r * h));
+            for (int r = 0; r < _rows; r++)
+            {
+                oldH.AsSpan(rows[r] * h, h).CopyTo(_xh.AsSpan(r * ldxh + _net._c.Emb));
+                oldC.AsSpan(rows[r] * h, h).CopyTo(_cell.AsSpan(r * h));
             }
         }
 

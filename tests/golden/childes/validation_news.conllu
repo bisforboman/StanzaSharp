@@ -1,0 +1,1270 @@
+# text = HARBORVIEW, Ore.
+# sent_id = 0
+1	HA	ha	INTJ	UH	_	0	root	_	SpaceAfter=No|start_char=0|end_char=2
+2	RBORVI	RBORVI	PROPN	NNP	_	1	flat	_	SpaceAfter=No|start_char=2|end_char=8
+3	EW,	EW,	PROPN	NNP	_	1	flat	_	start_char=8|end_char=11
+4	Ore	Ore	PROPN	NNP	_	2	flat	_	SpaceAfter=No|start_char=12|end_char=15
+5	.	.	PUNCT	.	_	1	punct	_	start_char=15|end_char=16
+
+# text = — The Harborview Port Authority approved a $214 million expansion plan on Wednesday, ending a two-year dispute with local fishing cooperatives.
+# sent_id = 1
+1	—	—	INTJ	UH	_	6	discourse	_	start_char=17|end_char=18
+2	The	the	DET	DT	_	5	det	_	start_char=19|end_char=22
+3	Harborview	Harborview	PROPN	NNP	_	5	compound	_	start_char=23|end_char=33
+4	Port	Port	PROPN	NNP	_	5	compound	_	start_char=34|end_char=38
+5	Authority	Authority	PROPN	NNP	_	6	nsubj	_	start_char=39|end_char=48
+6	approved	approve	VERB	VBD	_	0	root	_	start_char=49|end_char=57
+7	a	a	DET	DT	_	11	det	_	start_char=58|end_char=59
+8	$214	$214	ADJ	JJ	_	11	amod	_	start_char=60|end_char=64
+9	million	million	NOUN	NN	_	11	compound	_	start_char=65|end_char=72
+10	expansion	expansion	NOUN	NN	_	11	compound	_	start_char=73|end_char=82
+11	plan	plan	NOUN	NN	_	6	obj	_	start_char=83|end_char=87
+12	on	on	ADP	IN	_	13	case	_	start_char=88|end_char=90
+13	Wednesday,	Wednesday,	PROPN	NNP	_	14	obl	_	start_char=91|end_char=101
+14	ending	end	VERB	VBG	_	6	advcl	_	start_char=102|end_char=108
+15	a	a	DET	DT	_	17	det	_	start_char=109|end_char=110
+16	two-year	two-year	ADJ	JJ	_	17	amod	_	start_char=111|end_char=119
+17	dispute	dispute	NOUN	NN	_	14	obj	_	start_char=120|end_char=127
+18	with	with	ADP	IN	_	21	case	_	start_char=128|end_char=132
+19	local	local	ADJ	JJ	_	21	amod	_	start_char=133|end_char=138
+20	fishing	fishing	NOUN	NN	_	21	compound	_	start_char=139|end_char=146
+21	cooperatives	cooperative	NOUN	NNS	_	17	nmod	_	SpaceAfter=No|start_char=147|end_char=159
+22	.	.	PUNCT	.	_	6	punct	_	start_char=159|end_char=160
+
+# text = The vote was 5-2.
+# sent_id = 2
+1	The	the	DET	DT	_	2	det	_	start_char=161|end_char=164
+2	vote	vote	NOUN	NN	_	4	nsubj	_	start_char=165|end_char=169
+3	was	be	AUX	VBD	_	4	cop	_	start_char=170|end_char=173
+4	5-2	5-2	NUM	CD	_	0	root	_	SpaceAfter=No|start_char=174|end_char=177
+5	.	.	PUNCT	.	_	4	punct	_	start_char=177|end_char=178
+
+# text = Commissioner Dana Whitlock, who cast one of the dissenting votes, called the plan "a gamble with other people's money.
+# sent_id = 3
+1	Commissioner	commissioner	NOUN	NN	_	0	root	_	start_char=179|end_char=191
+2	Dana	Dana	PROPN	NNP	_	1	flat	_	start_char=192|end_char=196
+3	Whitlock,	Whitlock,	PROPN	NNP	_	2	flat	_	start_char=197|end_char=206
+4	who	who	PRON	WP	_	5	nsubj	_	start_char=207|end_char=210
+5	cast	cast	VERB	VBD	_	1	acl:relcl	_	start_char=211|end_char=215
+6	one	one	NUM	CD	_	5	obj	_	start_char=216|end_char=219
+7	of	of	ADP	IN	_	10	case	_	start_char=220|end_char=222
+8	the	the	DET	DT	_	10	det	_	start_char=223|end_char=226
+9	dissenting	dissenting	NOUN	NN	_	10	compound	_	start_char=227|end_char=237
+10	votes,	votes,	NOUN	NN	_	6	nmod	_	start_char=238|end_char=244
+11	called	call	VERB	VBD	_	1	parataxis	_	start_char=245|end_char=251
+12	the	the	DET	DT	_	13	det	_	start_char=252|end_char=255
+13	plan	plan	NOUN	NN	_	11	obj	_	start_char=256|end_char=260
+14	"a	to	PART	TO	_	15	mark	_	start_char=261|end_char=263
+15	gamble	gamble	VERB	VB	_	11	xcomp	_	start_char=264|end_char=270
+16	with	with	ADP	IN	_	20	case	_	start_char=271|end_char=275
+17	other	other	ADJ	JJ	_	18	amod	_	start_char=276|end_char=281
+18-19	people's	_	_	_	_	_	_	_	start_char=282|end_char=290
+18	people	people	NOUN	NNS	_	20	nmod:poss	_	start_char=282|end_char=288
+19	's	's	PART	POS	_	18	case	_	start_char=288|end_char=290
+20	money	money	NOUN	NN	_	15	obl	_	SpaceAfter=No|start_char=291|end_char=296
+21	.	.	PUNCT	.	_	1	punct	_	SpaceAfter=No|start_char=296|end_char=297
+
+# text = "
+# sent_id = 4
+1	"	"	PUNCT	.	_	0	root	_	SpacesAfter=\n\n|start_char=297|end_char=298
+
+# text = Under the agreement, the authority will dredge the north channel to a depth of 14 m (about 46 ft.) and build two new berths by Q3 2028.
+# sent_id = 5
+1	Under	under	ADP	IN	_	3	case	_	start_char=300|end_char=305
+2	the	the	DET	DT	_	3	det	_	start_char=306|end_char=309
+3	agreement,	agreement,	NOUN	NN	_	0	root	_	start_char=310|end_char=320
+4	the	the	DET	DT	_	5	det	_	start_char=321|end_char=324
+5	authority	authority	NOUN	NN	_	7	nsubj	_	start_char=325|end_char=334
+6	will	will	AUX	MD	_	7	aux	_	start_char=335|end_char=339
+7	dredge	dredge	VERB	VB	_	3	parataxis	_	start_char=340|end_char=346
+8	the	the	DET	DT	_	10	det	_	start_char=347|end_char=350
+9	north	north	ADJ	JJ	_	10	amod	_	start_char=351|end_char=356
+10	channel	channel	NOUN	NN	_	7	obj	_	start_char=357|end_char=364
+11	to	to	ADP	IN	_	13	case	_	start_char=365|end_char=367
+12	a	a	DET	DT	_	13	det	_	start_char=368|end_char=369
+13	depth	depth	NOUN	NN	_	7	obl	_	start_char=370|end_char=375
+14	of	of	ADP	IN	_	16	case	_	start_char=376|end_char=378
+15	14	14	NUM	CD	_	13	nummod	_	start_char=379|end_char=381
+16	m	m	NOUN	NN	_	13	nmod	_	start_char=382|end_char=383
+17	(about	(about	ADP	IN	_	20	case	_	start_char=384|end_char=390
+18	46	46	NUM	CD	_	20	nummod	_	start_char=391|end_char=393
+19	ft	ft	NOUN	NN	_	20	compound	_	SpaceAfter=No|start_char=394|end_char=396
+20	.)	.)	NOUN	NN	_	7	obl	_	start_char=396|end_char=398
+21	and	and	CCONJ	CC	_	22	cc	_	start_char=399|end_char=402
+22	build	build	VERB	VB	_	7	conj	_	start_char=403|end_char=408
+23	two	two	NUM	CD	_	25	nummod	_	start_char=409|end_char=412
+24	new	new	ADJ	JJ	_	25	amod	_	start_char=413|end_char=416
+25	berths	berth	NOUN	NNS	_	22	obj	_	start_char=417|end_char=423
+26	by	by	ADP	IN	_	27	case	_	start_char=424|end_char=426
+27	Q3	q3	PROPN	NNP	_	22	obl	_	start_char=427|end_char=429
+28	2028	2028	PROPN	NNP	_	27	flat	_	SpaceAfter=No|start_char=430|end_char=434
+29	.	.	PUNCT	.	_	3	punct	_	start_char=434|end_char=435
+
+# text = Construction is expected to create roughly 1,100 temporary jobs.
+# sent_id = 6
+1	Construction	construction	NOUN	NN	_	3	nsubj:pass	_	start_char=436|end_char=448
+2	is	be	AUX	VBZ	_	3	aux:pass	_	start_char=449|end_char=451
+3	expected	expect	VERB	VBN	_	0	root	_	start_char=452|end_char=460
+4	to	to	PART	TO	_	5	mark	_	start_char=461|end_char=463
+5	create	create	VERB	VB	_	3	csubj	_	start_char=464|end_char=470
+6	roughly	roughly	ADV	RB	_	7	advmod	_	start_char=471|end_char=478
+7	1,100	1,100	NUM	CD	_	8	compound	_	start_char=479|end_char=484
+8	temporary	temporary	ADJ	JJ	_	9	amod	_	start_char=485|end_char=494
+9	jobs	job	NOUN	NNS	_	5	obj	_	SpaceAfter=No|start_char=495|end_char=499
+10	.	.	PUNCT	.	_	3	punct	_	start_char=499|end_char=500
+
+# text = Critics say that number is inflated.
+# sent_id = 7
+1	Critics	critic	NOUN	NNS	_	2	nsubj	_	start_char=501|end_char=508
+2	say	say	VERB	VBP	_	0	root	_	start_char=509|end_char=512
+3	that	that	DET	DT	_	4	det	_	start_char=513|end_char=517
+4	number	number	NOUN	NN	_	6	nsubj	_	start_char=518|end_char=524
+5	is	be	AUX	VBZ	_	6	aux	_	start_char=525|end_char=527
+6	inflated	inflate	VERB	VBN	_	2	ccomp	_	SpaceAfter=No|start_char=528|end_char=536
+7	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=536|end_char=537
+
+# text = Stocks slipped on Monday as investors weighed fresh inflation data.
+# sent_id = 8
+1	Stocks	stock	NOUN	NNS	_	2	nsubj	_	start_char=539|end_char=545
+2	slipped	slip	VERB	VBD	_	0	root	_	start_char=546|end_char=553
+3	on	on	ADP	IN	_	4	case	_	start_char=554|end_char=556
+4	Monday	Monday	PROPN	NNP	_	2	obl	_	start_char=557|end_char=563
+5	as	as	SCONJ	IN	_	7	mark	_	start_char=564|end_char=566
+6	investors	investor	NOUN	NNS	_	7	nsubj	_	start_char=567|end_char=576
+7	weighed	weigh	VERB	VBD	_	2	advcl	_	start_char=577|end_char=584
+8	fresh	fresh	ADJ	JJ	_	10	amod	_	start_char=585|end_char=590
+9	inflation	inflation	NOUN	NN	_	10	compound	_	start_char=591|end_char=600
+10	data	data	NOUN	NN	_	7	obj	_	SpaceAfter=No|start_char=601|end_char=605
+11	.	.	PUNCT	.	_	2	punct	_	start_char=605|end_char=606
+
+# text = The S&P 500 fell 0.
+# sent_id = 9
+1	The	the	DET	DT	_	4	det	_	start_char=607|end_char=610
+2	S	s	PROPN	NNP	_	4	compound	_	SpaceAfter=No|start_char=611|end_char=612
+3	&P	&P	PROPN	NNP	_	4	reparandum	_	start_char=612|end_char=614
+4	500	500	NOUN	NN	_	5	nsubj	_	start_char=615|end_char=618
+5	fell	fall	VERB	VBD	_	0	root	_	start_char=619|end_char=623
+6	0	0	NUM	CD	_	5	nummod	_	SpaceAfter=No|start_char=624|end_char=625
+7	.	.	PUNCT	.	_	5	punct	_	SpaceAfter=No|start_char=625|end_char=626
+
+# text = 8%, the Dow Jones Industrial Average lost 212.
+# sent_id = 10
+1	8%,	8%,	INTJ	UH	_	7	discourse	_	start_char=626|end_char=629
+2	the	the	DET	DT	_	6	det	_	start_char=630|end_char=633
+3	Dow	Dow	PROPN	NNP	_	5	compound	_	start_char=634|end_char=637
+4	Jones	Jones	PROPN	NNP	_	3	flat	_	start_char=638|end_char=643
+5	Industrial	industrial	NOUN	NN	_	6	compound	_	start_char=644|end_char=654
+6	Average	Average	PROPN	NNP	_	7	nsubj	_	start_char=655|end_char=662
+7	lost	lose	VERB	VBD	_	0	root	_	start_char=663|end_char=667
+8	212	212	NUM	CD	_	7	nummod	_	SpaceAfter=No|start_char=668|end_char=671
+9	.	.	PUNCT	.	_	7	punct	_	SpaceAfter=No|start_char=671|end_char=672
+
+# text = 45 points, or 0.6 percent, and the Nasdaq Composite dropped 1.
+# sent_id = 11
+1	45	45	NUM	CD	_	2	nummod	_	start_char=672|end_char=674
+2	points,	point	NOUN	NN	_	0	root	_	start_char=675|end_char=682
+3	or	or	CCONJ	CC	_	4	cc	_	start_char=683|end_char=685
+4	0	0	NUM	CD	_	6	nsubj	_	SpaceAfter=No|start_char=686|end_char=687
+5	.6	.6	NUM	CD	_	6	reparandum	_	start_char=687|end_char=689
+6	percent,	percent,	NOUN	NN	_	2	conj	_	start_char=690|end_char=698
+7	and	and	CCONJ	CC	_	11	cc	_	start_char=699|end_char=702
+8	the	the	DET	DT	_	10	det	_	start_char=703|end_char=706
+9	Nasdaq	Nasdaq	PROPN	NNP	_	10	compound	_	start_char=707|end_char=713
+10	Composite	Composite	PROPN	NNP	_	11	nsubj	_	start_char=714|end_char=723
+11	dropped	drop	VERB	VBD	_	2	conj	_	start_char=724|end_char=731
+12	1	1	NUM	CD	_	11	obj	_	SpaceAfter=No|start_char=732|end_char=733
+13	.	.	PUNCT	.	_	2	punct	_	SpaceAfter=No|start_char=733|end_char=734
+
+# text = 1%.
+# sent_id = 12
+1	1%	1%	INTJ	UH	_	0	root	_	SpaceAfter=No|start_char=734|end_char=736
+2	.	.	PUNCT	.	_	1	punct	_	start_char=736|end_char=737
+
+# text = The 10-year Treasury yield rose to 4.
+# sent_id = 13
+1	The	the	DET	DT	_	4	det	_	start_char=738|end_char=741
+2	10-year	10-year	ADJ	JJ	_	4	amod	_	start_char=742|end_char=749
+3	Treasury	treasury	NOUN	NN	_	4	compound	_	start_char=750|end_char=758
+4	yield	yield	NOUN	NN	_	5	nsubj	_	start_char=759|end_char=764
+5	rose	rose	VERB	VBD	_	0	root	_	start_char=765|end_char=769
+6	to	to	ADP	IN	_	7	case	_	start_char=770|end_char=772
+7	4	4	NUM	CD	_	5	obl	_	SpaceAfter=No|start_char=773|end_char=774
+8	.	.	PUNCT	.	_	5	punct	_	SpaceAfter=No|start_char=774|end_char=775
+
+# text = 37% from 4.
+# sent_id = 14
+1	37%	37%	NUM	CD	_	0	root	_	start_char=775|end_char=778
+2	from	from	ADP	IN	_	3	case	_	start_char=779|end_char=783
+3	4	4	NUM	CD	_	1	nmod:npmod	_	SpaceAfter=No|start_char=784|end_char=785
+4	.	.	PUNCT	.	_	1	punct	_	SpaceAfter=No|start_char=785|end_char=786
+
+# text = 29% late Friday.
+# sent_id = 15
+1	29%	29%	NUM	CD	_	0	root	_	start_char=786|end_char=789
+2	late	late	ADV	RB	_	3	advmod	_	start_char=790|end_char=794
+3	Friday	Friday	PROPN	NNP	_	1	conj	_	SpaceAfter=No|start_char=795|end_char=801
+4	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=801|end_char=802
+
+# text = Brent crude settled at $83.
+# sent_id = 16
+1	Brent	Brent	PROPN	NNP	_	2	compound	_	start_char=804|end_char=809
+2	crude	crude	NOUN	NN	_	3	nsubj	_	start_char=810|end_char=815
+3	settled	set	VERB	VBD	_	0	root	_	start_char=816|end_char=823
+4	at	at	ADP	IN	_	5	case	_	start_char=824|end_char=826
+5	$83	$83	ADV	RB	_	3	obl	_	SpaceAfter=No|start_char=827|end_char=830
+6	.	.	PUNCT	.	_	3	punct	_	SpaceAfter=No|start_char=830|end_char=831
+
+# text = 12 a barrel, up 41 cents.
+# sent_id = 17
+1	12	12	NUM	CD	_	6	nsubj	_	start_char=831|end_char=833
+2	a	a	DET	DT	_	3	det	_	start_char=834|end_char=835
+3	barrel,	barrel,	NOUN	NN	_	6	reparandum	_	start_char=836|end_char=843
+4	up	up	ADP	RP	_	6	case	_	start_char=844|end_char=846
+5	41	41	NUM	CD	_	6	nummod	_	start_char=847|end_char=849
+6	cents	cent	NOUN	NNS	_	0	root	_	SpaceAfter=No|start_char=850|end_char=855
+7	.	.	PUNCT	.	_	6	punct	_	start_char=855|end_char=856
+
+# text = Gold futures were little changed at $2,018.
+# sent_id = 18
+1	Gold	gold	NOUN	NN	_	2	compound	_	start_char=857|end_char=861
+2	futures	future	NOUN	NNS	_	5	nsubj:pass	_	start_char=862|end_char=869
+3	were	be	AUX	VBD	_	5	aux:pass	_	start_char=870|end_char=874
+4	little	little	ADJ	JJ	_	5	advmod	_	start_char=875|end_char=881
+5	changed	change	VERB	VBN	_	0	root	_	start_char=882|end_char=889
+6	at	at	ADP	IN	_	7	case	_	start_char=890|end_char=892
+7	$2,018	$2,018	NUM	CD	_	5	obl	_	SpaceAfter=No|start_char=893|end_char=899
+8	.	.	PUNCT	.	_	5	punct	_	SpaceAfter=No|start_char=899|end_char=900
+
+# text = 30 an ounce.
+# sent_id = 19
+1	30	30	PROPN	NNP	_	3	reparandum	_	start_char=900|end_char=902
+2	an	a	DET	DT	_	3	det	_	start_char=903|end_char=905
+3	ounce	ounce	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=906|end_char=911
+4	.	.	PUNCT	.	_	3	punct	_	start_char=911|end_char=912
+
+# text = The euro traded at $1.
+# sent_id = 20
+1	The	the	DET	DT	_	2	det	_	start_char=913|end_char=916
+2	euro	euro	NOUN	NN	_	3	nsubj	_	start_char=917|end_char=921
+3	traded	trad	VERB	VBD	_	0	root	_	start_char=922|end_char=928
+4	at	at	ADP	IN	_	5	case	_	start_char=929|end_char=931
+5	$1	$1	NUM	CD	_	3	obl	_	SpaceAfter=No|start_char=932|end_char=934
+6	.	.	PUNCT	.	_	3	punct	_	SpaceAfter=No|start_char=934|end_char=935
+
+# text = 0842, while the yen weakened past ¥151 per dollar for the first time since mid-October.
+# sent_id = 21
+1	0842,	0842,	INTJ	UH	_	5	discourse	_	start_char=935|end_char=940
+2	while	while	SCONJ	IN	_	5	mark	_	start_char=941|end_char=946
+3	the	the	DET	DT	_	4	det	_	start_char=947|end_char=950
+4	yen	yen	PROPN	NNP	_	5	nsubj	_	start_char=951|end_char=954
+5	weakened	weaken	VERB	VBD	_	0	root	_	start_char=955|end_char=963
+6	past	past	ADP	IN	_	9	case	_	start_char=964|end_char=968
+7	¥151	¥151	NUM	CD	_	9	nummod	_	start_char=969|end_char=973
+8	per	per	NUM	CD	_	9	nummod	_	start_char=974|end_char=977
+9	dollar	dollar	NOUN	NN	_	5	obl	_	start_char=978|end_char=984
+10	for	for	ADP	IN	_	13	case	_	start_char=985|end_char=988
+11	the	the	DET	DT	_	13	det	_	start_char=989|end_char=992
+12	first	first	ADJ	JJ	_	13	amod	_	start_char=993|end_char=998
+13	time	time	NOUN	NN	_	5	obl	_	start_char=999|end_char=1003
+14	since	since	ADP	IN	_	15	case	_	start_char=1004|end_char=1009
+15	mid	mid	PROPN	NNP	_	13	nmod	_	SpaceAfter=No|start_char=1010|end_char=1013
+16	-October	-October	PROPN	NNP	_	15	flat	_	SpaceAfter=No|start_char=1013|end_char=1021
+17	.	.	PUNCT	.	_	5	punct	_	SpacesAfter=\n\n|start_char=1021|end_char=1022
+
+# text = Mapleford Holdings Inc.
+# sent_id = 22
+1	Mapleford	Mapleford	PROPN	NNP	_	3	compound	_	start_char=1024|end_char=1033
+2	Holdings	Holdings	PROPN	NNPS	_	1	flat	_	start_char=1034|end_char=1042
+3	Inc	Inc	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=1043|end_char=1046
+4	.	.	PUNCT	.	_	3	punct	_	start_char=1046|end_char=1047
+
+# text = (
+# sent_id = 23
+1	(	(	PUNCT	?	_	0	root	_	SpaceAfter=No|start_char=1048|end_char=1049
+
+# text = NYSE: MPF) reported second-quarter earnings of $1.
+# sent_id = 24
+1	NYSE:	NYSE:	PROPN	NNP	_	3	nsubj	_	start_char=1049|end_char=1054
+2	MPF)	MPF)	PROPN	NNP	_	1	flat	_	start_char=1055|end_char=1059
+3	reported	report	VERB	VBD	_	0	root	_	start_char=1060|end_char=1068
+4	second-quarter	second-quarter	NOUN	NN	_	5	compound	_	start_char=1069|end_char=1083
+5	earnings	earning	NOUN	NNS	_	3	obj	_	start_char=1084|end_char=1092
+6	of	of	ADP	IN	_	7	case	_	start_char=1093|end_char=1095
+7	$1	$1	NUM	CD	_	5	nmod	_	SpaceAfter=No|start_char=1096|end_char=1098
+8	.	.	PUNCT	.	_	3	punct	_	SpaceAfter=No|start_char=1098|end_char=1099
+
+# text = 42 per share, beating the consensus estimate of $1.
+# sent_id = 25
+1	42	42	NUM	CD	_	0	root	_	start_char=1099|end_char=1101
+2	per	per	DET	DT	_	3	compound	_	start_char=1102|end_char=1105
+3	share,	share,	NOUN	NN	_	1	conj	_	start_char=1106|end_char=1112
+4	beating	beat	VERB	VBG	_	1	parataxis	_	start_char=1113|end_char=1120
+5	the	the	DET	DT	_	7	det	_	start_char=1121|end_char=1124
+6	consensus	consensus	NOUN	NN	_	7	compound	_	start_char=1125|end_char=1134
+7	estimate	estimate	NOUN	NN	_	4	obj	_	start_char=1135|end_char=1143
+8	of	of	ADP	IN	_	9	case	_	start_char=1144|end_char=1146
+9	$1	$1	NUM	CD	_	7	nmod	_	SpaceAfter=No|start_char=1147|end_char=1149
+10	.	.	PUNCT	.	_	1	punct	_	SpaceAfter=No|start_char=1149|end_char=1150
+
+# text = 35.
+# sent_id = 26
+1	35	35	NUM	CD	_	0	root	_	SpaceAfter=No|start_char=1150|end_char=1152
+2	.	.	PUNCT	.	_	1	punct	_	start_char=1152|end_char=1153
+
+# text = Revenue climbed 9% year over year to $3.8 bn.
+# sent_id = 27
+1	Revenue	revenue	NOUN	NN	_	2	nsubj	_	start_char=1154|end_char=1161
+2	climbed	climb	VERB	VBD	_	0	root	_	start_char=1162|end_char=1169
+3	9%	9%	NUM	CD	_	4	nummod	_	start_char=1170|end_char=1172
+4	year	year	NOUN	NN	_	6	reparandum	_	start_char=1173|end_char=1177
+5	over	over	ADP	IN	_	6	case	_	start_char=1178|end_char=1182
+6	year	year	NOUN	NN	_	2	obl	_	start_char=1183|end_char=1187
+7	to	to	ADP	IN	_	8	case	_	start_char=1188|end_char=1190
+8	$3	$3	NUM	CD	_	6	nmod	_	SpaceAfter=No|start_char=1191|end_char=1193
+9	.8	.8	NUM	CD	_	8	conj	_	start_char=1193|end_char=1195
+10	bn	bn	PROPN	NNP	_	8	flat	_	SpaceAfter=No|start_char=1196|end_char=1198
+11	.	.	PUNCT	.	_	2	punct	_	start_char=1198|end_char=1199
+
+# text = The company raised its full-year guidance and announced a $50
+# sent_id = 28
+1	The	the	DET	DT	_	2	det	_	start_char=1200|end_char=1203
+2	company	company	NOUN	NN	_	3	nsubj	_	start_char=1204|end_char=1211
+3	raised	raise	VERB	VBD	_	0	root	_	start_char=1212|end_char=1218
+4	its	its	PRON	PRP$	_	6	nmod:poss	_	start_char=1219|end_char=1222
+5	full-year	full-year	ADJ	JJ	_	6	amod	_	start_char=1223|end_char=1232
+6	guidance	guidance	NOUN	NN	_	3	obj	_	start_char=1233|end_char=1241
+7	and	and	CCONJ	CC	_	8	cc	_	start_char=1242|end_char=1245
+8	announced	announce	VERB	VBD	_	3	conj	_	start_char=1246|end_char=1255
+9	a	a	DET	DT	_	10	det	_	start_char=1256|end_char=1257
+10	$50	$50	NOUN	NN	_	8	obj	_	SpaceAfter=No|start_char=1258|end_char=1261
+
+# text = 0M buyback.
+# sent_id = 29
+1	0M	0m	NOUN	NN	_	2	compound	_	start_char=1261|end_char=1263
+2	buyback	buyback	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=1264|end_char=1271
+3	.	.	PUNCT	.	_	2	punct	_	start_char=1271|end_char=1272
+
+# text = Its shares jumped 7.
+# sent_id = 30
+1	Its	its	PRON	PRP$	_	2	nmod:poss	_	start_char=1273|end_char=1276
+2	shares	share	NOUN	NNS	_	3	nsubj	_	start_char=1277|end_char=1283
+3	jumped	jump	VERB	VBD	_	0	root	_	start_char=1284|end_char=1290
+4	7	7	NUM	CD	_	3	obj	_	SpaceAfter=No|start_char=1291|end_char=1292
+5	.	.	PUNCT	.	_	3	punct	_	SpaceAfter=No|start_char=1292|end_char=1293
+
+# text = 3% in after-hours trading.
+# sent_id = 31
+1	3%	3%	NUM	CD	_	0	root	_	start_char=1293|end_char=1295
+2	in	in	ADP	IN	_	4	case	_	start_char=1296|end_char=1298
+3	after-hours	after-hour	NOUN	NN	_	4	compound	_	start_char=1299|end_char=1310
+4	trading	trading	NOUN	NN	_	1	nmod	_	SpaceAfter=No|start_char=1311|end_char=1318
+5	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=1318|end_char=1319
+
+# text = "We're seeing demand hold up better than anyone expected,"
+# sent_id = 32
+1-2	"We're	_	_	_	_	_	_	_	start_char=1321|end_char=1327
+1	"We	"we	PRON	PRP	_	3	nsubj	_	start_char=1321|end_char=1324
+2	're	be	AUX	VBP	_	3	aux	_	start_char=1324|end_char=1327
+3	seeing	see	VERB	VBG	_	0	root	_	start_char=1328|end_char=1334
+4	demand	demand	NOUN	NN	_	3	obj	_	start_char=1335|end_char=1341
+5	hold	hold	VERB	VB	_	3	xcomp	_	start_char=1342|end_char=1346
+6	up	up	ADP	RP	_	5	compound:prt	_	start_char=1347|end_char=1349
+7	better	good	ADJ	JJR	_	5	advmod	_	start_char=1350|end_char=1356
+8	than	than	ADP	IN	_	9	case	_	start_char=1357|end_char=1361
+9	anyone	anyone	PRON	NN	_	5	obl	_	start_char=1362|end_char=1368
+10	expected,	expect	VERB	VBN	_	9	acl	_	SpaceAfter=No|start_char=1369|end_char=1378
+11	"	"	INTJ	UH	_	3	discourse	_	start_char=1378|end_char=1379
+
+# text = Chief Financial Officer Priya Ramaswamy told analysts on a conference call.
+# sent_id = 33
+1	Chief	chief	NOUN	NN	_	3	compound	_	start_char=1380|end_char=1385
+2	Financial	Financial	PROPN	NNP	_	3	compound	_	start_char=1386|end_char=1395
+3	Officer	officer	NOUN	NN	_	0	root	_	start_char=1396|end_char=1403
+4	Priya	Priya	PROPN	NNP	_	5	reparandum	_	start_char=1404|end_char=1409
+5	Ramaswamy	Ramaswamy	PROPN	NNP	_	6	nsubj	_	start_char=1410|end_char=1419
+6	told	tell	VERB	VBD	_	3	parataxis	_	start_char=1420|end_char=1424
+7	analysts	analyst	NOUN	NNS	_	6	obj	_	start_char=1425|end_char=1433
+8	on	on	ADP	IN	_	11	case	_	start_char=1434|end_char=1436
+9	a	a	DET	DT	_	11	det	_	start_char=1437|end_char=1438
+10	conference	conference	NOUN	NN	_	11	compound	_	start_char=1439|end_char=1449
+11	call	call	NOUN	NN	_	6	obl	_	SpaceAfter=No|start_char=1450|end_char=1454
+12	.	.	PUNCT	.	_	3	punct	_	start_char=1454|end_char=1455
+
+# text = "That said, we aren't assuming it'll last forever.
+# sent_id = 34
+1	"That	"that	PRON	DT	_	2	nsubj	_	start_char=1456|end_char=1461
+2	said,	say	VERB	VBP	_	0	root	_	start_char=1462|end_char=1467
+3	we	we	PRON	PRP	_	6	nsubj	_	start_char=1468|end_char=1470
+4-5	aren't	_	_	_	_	_	_	_	start_char=1471|end_char=1477
+4	are	be	AUX	VBP	_	6	aux	_	start_char=1471|end_char=1474
+5	n't	not	PART	RB	_	6	advmod	_	start_char=1474|end_char=1477
+6	assuming	assum	VERB	VBG	_	2	ccomp	_	start_char=1478|end_char=1486
+7-8	it'll	_	_	_	_	_	_	_	start_char=1487|end_char=1492
+7	it	it	PRON	PRP	_	9	nsubj	_	start_char=1487|end_char=1489
+8	'll	will	AUX	MD	_	9	aux	_	start_char=1489|end_char=1492
+9	last	last	VERB	VB	_	6	ccomp	_	start_char=1493|end_char=1497
+10	forever	forever	ADV	RB	_	9	advmod	_	SpaceAfter=No|start_char=1498|end_char=1505
+11	.	.	PUNCT	.	_	2	punct	_	SpaceAfter=No|start_char=1505|end_char=1506
+
+# text = "
+# sent_id = 35
+1	"	"	PUNCT	.	_	0	root	_	SpacesAfter=\n\n|start_char=1506|end_char=1507
+
+# text = The central bank kept its benchmark rate unchanged at 5.
+# sent_id = 36
+1	The	the	DET	DT	_	3	det	_	start_char=1509|end_char=1512
+2	central	central	ADJ	JJ	_	3	amod	_	start_char=1513|end_char=1520
+3	bank	bank	NOUN	NN	_	4	nsubj	_	start_char=1521|end_char=1525
+4	kept	keep	VERB	VBD	_	0	root	_	start_char=1526|end_char=1530
+5	its	its	PRON	PRP$	_	7	nmod:poss	_	start_char=1531|end_char=1534
+6	benchmark	benchmark	NOUN	NN	_	7	compound	_	start_char=1535|end_char=1544
+7	rate	rate	NOUN	NN	_	4	obj	_	start_char=1545|end_char=1549
+8	unchanged	unchange	VERB	VBN	_	4	xcomp	_	start_char=1550|end_char=1559
+9	at	at	ADP	IN	_	10	case	_	start_char=1560|end_char=1562
+10	5	5	NUM	CD	_	8	obl	_	SpaceAfter=No|start_char=1563|end_char=1564
+11	.	.	PUNCT	.	_	4	punct	_	SpaceAfter=No|start_char=1564|end_char=1565
+
+# text = 25%–5.
+# sent_id = 37
+1	25%–5	25%–5	NUM	CD	_	0	root	_	SpaceAfter=No|start_char=1565|end_char=1570
+2	.	.	PUNCT	.	_	1	punct	_	SpaceAfter=No|start_char=1570|end_char=1571
+
+# text = 50% for a third consecutive meeting.
+# sent_id = 38
+1	50%	50%	PROPN	NNP	_	0	root	_	start_char=1571|end_char=1574
+2	for	for	ADP	IN	_	6	case	_	start_char=1575|end_char=1578
+3	a	a	DET	DT	_	6	det	_	start_char=1579|end_char=1580
+4	third	third	ADJ	JJ	_	6	amod	_	start_char=1581|end_char=1586
+5	consecutive	consecutive	ADJ	JJS	_	6	amod	_	start_char=1587|end_char=1598
+6	meeting	meeting	NOUN	NN	_	1	nmod	_	SpaceAfter=No|start_char=1599|end_char=1606
+7	.	.	PUNCT	.	_	1	punct	_	start_char=1606|end_char=1607
+
+# text = Policymakers signaled that cuts could come later in the year, but only if price pressures continue to ease.
+# sent_id = 39
+1	Policymakers	policymaker	NOUN	NNS	_	2	nsubj	_	start_char=1608|end_char=1620
+2	signaled	signale	VERB	VBD	_	0	root	_	start_char=1621|end_char=1629
+3	that	that	SCONJ	IN	_	6	mark	_	start_char=1630|end_char=1634
+4	cuts	cut	NOUN	NNS	_	6	nsubj	_	start_char=1635|end_char=1639
+5	could	could	AUX	MD	_	6	aux	_	start_char=1640|end_char=1645
+6	come	come	VERB	VB	_	2	ccomp	_	start_char=1646|end_char=1650
+7	later	late	ADV	RB	_	6	advmod	_	start_char=1651|end_char=1656
+8	in	in	ADP	IN	_	10	case	_	start_char=1657|end_char=1659
+9	the	the	DET	DT	_	10	det	_	start_char=1660|end_char=1663
+10	year,	year,	NOUN	NN	_	6	obl	_	start_char=1664|end_char=1669
+11	but	but	CCONJ	CC	_	16	cc	_	start_char=1670|end_char=1673
+12	only	only	ADV	RB	_	16	advmod	_	start_char=1674|end_char=1678
+13	if	if	SCONJ	IN	_	16	mark	_	start_char=1679|end_char=1681
+14	price	price	NOUN	NN	_	15	compound	_	start_char=1682|end_char=1687
+15	pressures	pressure	NOUN	NNS	_	16	nsubj	_	start_char=1688|end_char=1697
+16	continue	continue	VERB	VBP	_	6	advcl	_	start_char=1698|end_char=1706
+17	to	to	PART	TO	_	18	mark	_	start_char=1707|end_char=1709
+18	ease	ease	VERB	VB	_	16	xcomp	_	SpaceAfter=No|start_char=1710|end_char=1714
+19	.	.	PUNCT	.	_	2	punct	_	start_char=1714|end_char=1715
+
+# text = Two members dissented in favor of a quarter-point reduction.
+# sent_id = 40
+1	Two	two	NUM	CD	_	2	nummod	_	start_char=1716|end_char=1719
+2	members	member	NOUN	NNS	_	3	nsubj	_	start_char=1720|end_char=1727
+3	dissented	dissent	VERB	VBD	_	0	root	_	start_char=1728|end_char=1737
+4	in	in	ADP	IN	_	5	case	_	start_char=1738|end_char=1740
+5	favor	favor	NOUN	NN	_	3	obl	_	start_char=1741|end_char=1746
+6	of	of	ADP	IN	_	9	case	_	start_char=1747|end_char=1749
+7	a	a	DET	DT	_	9	det	_	start_char=1750|end_char=1751
+8	quarter-point	quarter-point	ADJ	JJ	_	9	amod	_	start_char=1752|end_char=1765
+9	reduction	reduction	NOUN	NN	_	5	nmod	_	SpaceAfter=No|start_char=1766|end_char=1775
+10	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=1775|end_char=1776
+
+# text = Unemployment fell to 3.
+# sent_id = 41
+1	Unemployment	unemployment	NOUN	NN	_	2	nsubj	_	start_char=1778|end_char=1790
+2	fell	fall	VERB	VBD	_	0	root	_	start_char=1791|end_char=1795
+3	to	to	ADP	IN	_	4	case	_	start_char=1796|end_char=1798
+4	3	3	NUM	CD	_	2	obl	_	SpaceAfter=No|start_char=1799|end_char=1800
+5	.	.	PUNCT	.	_	2	punct	_	SpaceAfter=No|start_char=1800|end_char=1801
+
+# text = 7% in March from 3.
+# sent_id = 42
+1	7%	7%	NUM	CD	_	0	root	_	start_char=1801|end_char=1803
+2	in	in	ADP	IN	_	3	case	_	start_char=1804|end_char=1806
+3	March	March	PROPN	NNP	_	1	nmod	_	start_char=1807|end_char=1812
+4	from	from	ADP	IN	_	5	case	_	start_char=1813|end_char=1817
+5	3	3	NUM	CD	_	3	nmod	_	SpaceAfter=No|start_char=1818|end_char=1819
+6	.	.	PUNCT	.	_	1	punct	_	SpaceAfter=No|start_char=1819|end_char=1820
+
+# text = 9% in February, the Labor Department said.
+# sent_id = 43
+1	9%	9%	NUM	CD	_	0	root	_	start_char=1820|end_char=1822
+2	in	in	ADP	IN	_	3	case	_	start_char=1823|end_char=1825
+3	February,	February,	PROPN	NNP	_	1	nmod	_	start_char=1826|end_char=1835
+4	the	the	DET	DT	_	6	det	_	start_char=1836|end_char=1839
+5	Labor	Labor	PROPN	NNP	_	6	compound	_	start_char=1840|end_char=1845
+6	Department	Department	PROPN	NNP	_	7	nsubj	_	start_char=1846|end_char=1856
+7	said	say	VERB	VBD	_	3	parataxis	_	SpaceAfter=No|start_char=1857|end_char=1861
+8	.	.	PUNCT	.	_	1	punct	_	start_char=1861|end_char=1862
+
+# text = Employers added 236,000 jobs, well above forecasts.
+# sent_id = 44
+1	Employers	employer	NOUN	NNS	_	2	nsubj	_	start_char=1863|end_char=1872
+2	added	add	VERB	VBD	_	0	root	_	start_char=1873|end_char=1878
+3	236,000	236,000	NUM	CD	_	4	nummod	_	start_char=1879|end_char=1886
+4	jobs,	jobs,	NOUN	NNS	_	2	obj	_	start_char=1887|end_char=1892
+5	well	well	ADV	RB	_	2	advmod	_	start_char=1893|end_char=1897
+6	above	above	ADP	IN	_	7	case	_	start_char=1898|end_char=1903
+7	forecasts	forecast	NOUN	NNS	_	2	obl	_	SpaceAfter=No|start_char=1904|end_char=1913
+8	.	.	PUNCT	.	_	2	punct	_	start_char=1913|end_char=1914
+
+# text = Average hourly earnings rose 0.
+# sent_id = 45
+1	Average	average	ADJ	JJ	_	3	amod	_	start_char=1915|end_char=1922
+2	hourly	hourly	ADJ	JJ	_	3	amod	_	start_char=1923|end_char=1929
+3	earnings	earning	NOUN	NNS	_	4	nsubj	_	start_char=1930|end_char=1938
+4	rose	rose	VERB	VBD	_	0	root	_	start_char=1939|end_char=1943
+5	0	0	NUM	CD	_	4	obj	_	SpaceAfter=No|start_char=1944|end_char=1945
+6	.	.	PUNCT	.	_	4	punct	_	SpaceAfter=No|start_char=1945|end_char=1946
+
+# text = 3% m/m and 4.
+# sent_id = 46
+1	3%	3%	NUM	CD	_	0	root	_	start_char=1946|end_char=1948
+2	m/m	m/m	PROPN	NNP	_	1	conj	_	start_char=1949|end_char=1952
+3	and	and	CCONJ	CC	_	4	cc	_	start_char=1953|end_char=1956
+4	4	4	NUM	CD	_	1	conj	_	SpaceAfter=No|start_char=1957|end_char=1958
+5	.	.	PUNCT	.	_	1	punct	_	SpaceAfter=No|start_char=1958|end_char=1959
+
+# text = 2% y/y.
+# sent_id = 47
+1	2%	2%	INTJ	UH	_	0	root	_	start_char=1959|end_char=1961
+2	y/y	y/y	PROPN	NNP	_	1	conj	_	SpaceAfter=No|start_char=1962|end_char=1965
+3	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=1965|end_char=1966
+
+# text = In a filing with the SEC, the firm disclosed that its former CEO, Mr.
+# sent_id = 48
+1	In	in	ADP	IN	_	3	case	_	start_char=1968|end_char=1970
+2	a	a	DET	DT	_	3	det	_	start_char=1971|end_char=1972
+3	filing	filing	NOUN	NN	_	0	root	_	start_char=1973|end_char=1979
+4	with	with	ADP	IN	_	6	case	_	start_char=1980|end_char=1984
+5	the	the	DET	DT	_	6	det	_	start_char=1985|end_char=1988
+6	SEC,	SEC,	PROPN	NNP	_	3	nmod	_	start_char=1989|end_char=1993
+7	the	the	DET	DT	_	8	det	_	start_char=1994|end_char=1997
+8	firm	firm	NOUN	NN	_	9	nsubj	_	start_char=1998|end_char=2002
+9	disclosed	disclose	VERB	VBD	_	3	parataxis	_	start_char=2003|end_char=2012
+10	that	that	ADP	IN	_	13	case	_	start_char=2013|end_char=2017
+11	its	its	PRON	PRP$	_	13	nmod:poss	_	start_char=2018|end_char=2021
+12	former	former	PROPN	NNP	_	13	compound	_	start_char=2022|end_char=2028
+13	CEO,	CEO,	PROPN	NNP	_	9	obj	_	start_char=2029|end_char=2033
+14	Mr	Mr	PROPN	NNP	_	13	flat	_	SpaceAfter=No|start_char=2034|end_char=2036
+15	.	.	PUNCT	.	_	3	punct	_	start_char=2036|end_char=2037
+
+# text = Hal Brandt Jr., received a severance package worth approx.
+# sent_id = 49
+1	Hal	hal	PROPN	NNP	_	5	nsubj	_	start_char=2038|end_char=2041
+2	Brandt	Brandt	PROPN	NNP	_	1	flat	_	start_char=2042|end_char=2048
+3	Jr	Jr	PROPN	NNP	_	4	reparandum	_	SpaceAfter=No|start_char=2049|end_char=2051
+4	.,	.,	PROPN	NNP	_	5	nsubj	_	start_char=2051|end_char=2053
+5	received	receive	VERB	VBD	_	0	root	_	start_char=2054|end_char=2062
+6	a	a	DET	DT	_	8	det	_	start_char=2063|end_char=2064
+7	severance	severance	NOUN	NN	_	8	compound	_	start_char=2065|end_char=2074
+8	package	package	NOUN	NN	_	5	obj	_	start_char=2075|end_char=2082
+9	worth	worth	ADV	RB	_	10	advmod	_	start_char=2083|end_char=2088
+10	approx	approx	ADV	RB	_	5	obl	_	SpaceAfter=No|start_char=2089|end_char=2095
+11	.	.	PUNCT	.	_	5	punct	_	start_char=2095|end_char=2096
+
+# text = $18.6 million.
+# sent_id = 50
+1	$18	$18	NUM	CD	_	0	root	_	SpaceAfter=No|start_char=2097|end_char=2100
+2	.6	.6	NUM	CD	_	1	conj	_	start_char=2100|end_char=2102
+3	million	million	NOUN	NN	_	1	conj	_	SpaceAfter=No|start_char=2103|end_char=2110
+4	.	.	PUNCT	.	_	1	punct	_	start_char=2110|end_char=2111
+
+# text = Shareholder groups have asked the board to explain the payout before the annual meeting on May 22.
+# sent_id = 51
+1	Shareholder	shareholder	NOUN	NN	_	2	compound	_	start_char=2112|end_char=2123
+2	groups	group	NOUN	NNS	_	4	nsubj	_	start_char=2124|end_char=2130
+3	have	have	AUX	VBP	_	4	aux	_	start_char=2131|end_char=2135
+4	asked	ask	VERB	VBN	_	0	root	_	start_char=2136|end_char=2141
+5	the	the	DET	DT	_	6	det	_	start_char=2142|end_char=2145
+6	board	board	NOUN	NN	_	4	obj	_	start_char=2146|end_char=2151
+7	to	to	PART	TO	_	8	mark	_	start_char=2152|end_char=2154
+8	explain	explain	VERB	VB	_	4	xcomp	_	start_char=2155|end_char=2162
+9	the	the	DET	DT	_	10	det	_	start_char=2163|end_char=2166
+10	payout	payout	NOUN	NN	_	8	obj	_	start_char=2167|end_char=2173
+11	before	before	ADP	IN	_	14	case	_	start_char=2174|end_char=2180
+12	the	the	DET	DT	_	14	det	_	start_char=2181|end_char=2184
+13	annual	annual	NOUN	NN	_	14	compound	_	start_char=2185|end_char=2191
+14	meeting	meeting	NOUN	NN	_	8	obl	_	start_char=2192|end_char=2199
+15	on	on	ADP	IN	_	16	case	_	start_char=2200|end_char=2202
+16	May	May	PROPN	NNP	_	14	nmod	_	start_char=2203|end_char=2206
+17	22	22	PROPN	NNP	_	16	flat	_	SpaceAfter=No|start_char=2207|end_char=2209
+18	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=2209|end_char=2210
+
+# text = The merger, valued at €4.2 billion including debt, would create the region's third-largest grocer.
+# sent_id = 52
+1	The	the	DET	DT	_	2	det	_	start_char=2212|end_char=2215
+2	merger,	merger,	NOUN	NN	_	3	nsubj:pass	_	start_char=2216|end_char=2223
+3	valued	value	VERB	VBN	_	0	root	_	start_char=2224|end_char=2230
+4	at	at	ADP	IN	_	7	case	_	start_char=2231|end_char=2233
+5	€4	€4	NUM	CD	_	7	nummod	_	SpaceAfter=No|start_char=2234|end_char=2236
+6	.2	.2	NUM	CD	_	7	nummod	_	start_char=2236|end_char=2238
+7	billion	billion	NOUN	NN	_	3	obl	_	start_char=2239|end_char=2246
+8	including	including	SCONJ	IN	_	11	mark	_	start_char=2247|end_char=2256
+9	debt,	debt,	NOUN	NN	_	11	nsubj	_	start_char=2257|end_char=2262
+10	would	would	AUX	MD	_	11	aux	_	start_char=2263|end_char=2268
+11	create	create	VERB	VB	_	3	advcl	_	start_char=2269|end_char=2275
+12	the	the	DET	DT	_	13	det	_	start_char=2276|end_char=2279
+13-14	region's	_	_	_	_	_	_	_	start_char=2280|end_char=2288
+13	region	region	NOUN	NN	_	16	nmod:poss	_	start_char=2280|end_char=2286
+14	's	's	PART	POS	_	13	case	_	start_char=2286|end_char=2288
+15	third-largest	third-largest	ADJ	JJS	_	16	amod	_	start_char=2289|end_char=2302
+16	grocer	grocer	NOUN	NN	_	11	obj	_	SpaceAfter=No|start_char=2303|end_char=2309
+17	.	.	PUNCT	.	_	3	punct	_	start_char=2309|end_char=2310
+
+# text = Regulators in Brussels opened an in-depth probe on Thursday.
+# sent_id = 53
+1	Regulators	regulator	NOUN	NNS	_	0	root	_	start_char=2311|end_char=2321
+2	in	in	ADP	IN	_	3	case	_	start_char=2322|end_char=2324
+3	Brussels	Brussels	PROPN	NNP	_	1	nmod	_	start_char=2325|end_char=2333
+4	opened	open	VERB	VBD	_	1	acl:relcl	_	start_char=2334|end_char=2340
+5	an	a	DET	DT	_	7	det	_	start_char=2341|end_char=2343
+6	in-depth	in-depth	ADJ	JJ	_	7	amod	_	start_char=2344|end_char=2352
+7	probe	probe	NOUN	NN	_	4	obj	_	start_char=2353|end_char=2358
+8	on	on	ADP	IN	_	9	case	_	start_char=2359|end_char=2361
+9	Thursday	Thursday	PROPN	NNP	_	4	obl	_	SpaceAfter=No|start_char=2362|end_char=2370
+10	.	.	PUNCT	.	_	4	punct	_	start_char=2370|end_char=2371
+
+# text = A decision is due by Oct.
+# sent_id = 54
+1	A	a	DET	DT	_	2	det	_	start_char=2372|end_char=2373
+2	decision	decision	NOUN	NN	_	4	nsubj	_	start_char=2374|end_char=2382
+3	is	be	AUX	VBZ	_	4	cop	_	start_char=2383|end_char=2385
+4	due	due	ADV	RB	_	0	root	_	start_char=2386|end_char=2389
+5	by	by	ADP	IN	_	6	case	_	start_char=2390|end_char=2392
+6	Oct	Oct	PROPN	NNP	_	4	obl	_	SpaceAfter=No|start_char=2393|end_char=2396
+7	.	.	PUNCT	.	_	4	punct	_	start_char=2396|end_char=2397
+
+# text = 9.
+# sent_id = 55
+1	9	9	NUM	CD	_	0	root	_	SpaceAfter=No|start_char=2398|end_char=2399
+2	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=2399|end_char=2400
+
+# text = Meanwhile, the city of Ellsworth said it would refinance $75 million in general obligation bonds.
+# sent_id = 56
+1	Meanwhile,	meanwhile,	ADV	RB	_	6	advmod	_	start_char=2402|end_char=2412
+2	the	the	DET	DT	_	3	det	_	start_char=2413|end_char=2416
+3	city	city	NOUN	NN	_	6	nsubj	_	start_char=2417|end_char=2421
+4	of	of	ADP	IN	_	5	case	_	start_char=2422|end_char=2424
+5	Ellsworth	Ellsworth	PROPN	NNP	_	3	nmod	_	start_char=2425|end_char=2434
+6	said	say	VERB	VBD	_	0	root	_	start_char=2435|end_char=2439
+7	it	it	PRON	PRP	_	9	nsubj	_	start_char=2440|end_char=2442
+8	would	would	AUX	MD	_	9	aux	_	start_char=2443|end_char=2448
+9	refinance	refinance	VERB	VB	_	6	ccomp	_	start_char=2449|end_char=2458
+10	$75	$75	NUM	CD	_	11	nummod	_	start_char=2459|end_char=2462
+11	million	million	NOUN	NN	_	9	obj	_	start_char=2463|end_char=2470
+12	in	in	ADP	IN	_	15	case	_	start_char=2471|end_char=2473
+13	general	general	ADJ	JJ	_	15	amod	_	start_char=2474|end_char=2481
+14	obligation	obligation	NOUN	NN	_	15	compound	_	start_char=2482|end_char=2492
+15	bonds	bond	NOUN	NNS	_	11	nmod	_	SpaceAfter=No|start_char=2493|end_char=2498
+16	.	.	PUNCT	.	_	6	punct	_	start_char=2498|end_char=2499
+
+# text = Moody's affirmed its Aa2 rating.
+# sent_id = 57
+1-2	Moody's	_	_	_	_	_	_	_	start_char=2500|end_char=2507
+1	Moody	Moody	PROPN	NNP	_	3	nsubj	_	start_char=2500|end_char=2505
+2	's	be	AUX	VBZ	_	3	aux:pass	_	start_char=2505|end_char=2507
+3	affirmed	affirm	VERB	VBN	_	0	root	_	start_char=2508|end_char=2516
+4	its	its	PRON	PRP$	_	6	nmod:poss	_	start_char=2517|end_char=2520
+5	Aa2	aa2	NOUN	NN	_	6	compound	_	start_char=2521|end_char=2524
+6	rating	rating	NOUN	NN	_	3	obj	_	SpaceAfter=No|start_char=2525|end_char=2531
+7	.	.	PUNCT	.	_	3	punct	_	start_char=2531|end_char=2532
+
+# text = S&P Global Ratings has the city at AA, with a stable outlook.
+# sent_id = 58
+1	S&P	S&P	PROPN	NNP	_	4	nsubj	_	start_char=2533|end_char=2536
+2	Global	Global	PROPN	NNP	_	3	compound	_	start_char=2537|end_char=2543
+3	Ratings	Ratings	PROPN	NNPS	_	1	flat	_	start_char=2544|end_char=2551
+4	has	have	VERB	VBZ	_	0	root	_	start_char=2552|end_char=2555
+5	the	the	DET	DT	_	6	det	_	start_char=2556|end_char=2559
+6	city	city	NOUN	NN	_	4	obj	_	start_char=2560|end_char=2564
+7	at	at	ADP	IN	_	8	case	_	start_char=2565|end_char=2567
+8	AA,	AA,	PROPN	NNP	_	4	obl	_	start_char=2568|end_char=2571
+9	with	with	ADP	IN	_	12	case	_	start_char=2572|end_char=2576
+10	a	a	DET	DT	_	12	det	_	start_char=2577|end_char=2578
+11	stable	stable	ADJ	JJ	_	12	amod	_	start_char=2579|end_char=2585
+12	outlook	outlook	NOUN	NN	_	4	obl	_	SpaceAfter=No|start_char=2586|end_char=2593
+13	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=2593|end_char=2594
+
+# text = Residents of the Lower Fenwick neighborhood were told to boil water until further notice after a main broke early Saturday.
+# sent_id = 59
+1	Residents	resident	NOUN	NNS	_	8	nsubj	_	start_char=2596|end_char=2605
+2	of	of	ADP	IN	_	6	case	_	start_char=2606|end_char=2608
+3	the	the	DET	DT	_	6	det	_	start_char=2609|end_char=2612
+4	Lower	Lower	PROPN	NNP	_	6	amod	_	start_char=2613|end_char=2618
+5	Fenwick	Fenwick	PROPN	NNP	_	6	compound	_	start_char=2619|end_char=2626
+6	neighborhood	neighborhood	NOUN	NN	_	1	nmod	_	start_char=2627|end_char=2639
+7	were	be	AUX	VBD	_	8	aux:pass	_	start_char=2640|end_char=2644
+8	told	tell	VERB	VBN	_	0	root	_	start_char=2645|end_char=2649
+9	to	to	PART	TO	_	10	mark	_	start_char=2650|end_char=2652
+10	boil	boil	VERB	VB	_	8	xcomp	_	start_char=2653|end_char=2657
+11	water	water	NOUN	NN	_	10	obj	_	start_char=2658|end_char=2663
+12	until	until	ADP	IN	_	14	case	_	start_char=2664|end_char=2669
+13	further	further	ADJ	JJR	_	14	amod	_	start_char=2670|end_char=2677
+14	notice	notice	NOUN	NN	_	10	obl	_	start_char=2678|end_char=2684
+15	after	after	ADP	IN	_	18	mark	_	start_char=2685|end_char=2690
+16	a	a	DET	DT	_	17	det	_	start_char=2691|end_char=2692
+17	main	main	NOUN	NN	_	18	nsubj	_	start_char=2693|end_char=2697
+18	broke	break	VERB	VBD	_	10	advcl	_	start_char=2698|end_char=2703
+19	early	early	ADV	RB	_	20	advmod	_	start_char=2704|end_char=2709
+20	Saturday	Saturday	PROPN	NNP	_	18	obl:unmarked	_	SpaceAfter=No|start_char=2710|end_char=2718
+21	.	.	PUNCT	.	_	8	punct	_	start_char=2718|end_char=2719
+
+# text = Crews worked through the night.
+# sent_id = 60
+1	Crews	crew	NOUN	NNS	_	2	nsubj	_	start_char=2720|end_char=2725
+2	worked	work	VERB	VBD	_	0	root	_	start_char=2726|end_char=2732
+3	through	through	ADP	IN	_	5	case	_	start_char=2733|end_char=2740
+4	the	the	DET	DT	_	5	det	_	start_char=2741|end_char=2744
+5	night	night	NOUN	NN	_	2	obl	_	SpaceAfter=No|start_char=2745|end_char=2750
+6	.	.	PUNCT	.	_	2	punct	_	start_char=2750|end_char=2751
+
+# text = By 6 a.m.
+# sent_id = 61
+1	By	by	ADP	IN	_	2	case	_	start_char=2752|end_char=2754
+2	6	6	NUM	CD	_	0	root	_	start_char=2755|end_char=2756
+3	a	a	X	_	_	2	list	_	SpaceAfter=No|start_char=2757|end_char=2758
+4	.m	.m	NOUN	NN	_	2	list	_	SpaceAfter=No|start_char=2758|end_char=2760
+5	.	.	PUNCT	.	_	2	punct	_	start_char=2760|end_char=2761
+
+# text = Sunday, service had been restored to about two-thirds of the 4,800 affected homes.
+# sent_id = 62
+1	Sunday,	sunday,	NOUN	NN	_	2	compound	_	start_char=2762|end_char=2769
+2	service	service	NOUN	NN	_	5	nsubj:pass	_	start_char=2770|end_char=2777
+3	had	have	AUX	VBD	_	5	aux	_	start_char=2778|end_char=2781
+4	been	be	AUX	VBN	_	5	aux:pass	_	start_char=2782|end_char=2786
+5	restored	restore	VERB	VBN	_	0	root	_	start_char=2787|end_char=2795
+6	to	to	ADP	IN	_	8	case	_	start_char=2796|end_char=2798
+7	about	about	ADV	RB	_	8	case	_	start_char=2799|end_char=2804
+8	two-thirds	two-thirds	NUM	CD	_	5	obl	_	start_char=2805|end_char=2815
+9	of	of	ADP	IN	_	13	case	_	start_char=2816|end_char=2818
+10	the	the	DET	DT	_	13	det	_	start_char=2819|end_char=2822
+11	4,800	4,800	NUM	CD	_	13	nummod	_	start_char=2823|end_char=2828
+12	affected	affect	VERB	VBN	_	13	amod	_	start_char=2829|end_char=2837
+13	homes	home	NOUN	NNS	_	8	nmod	_	SpaceAfter=No|start_char=2838|end_char=2843
+14	.	.	PUNCT	.	_	5	punct	_	SpacesAfter=\n\n|start_char=2843|end_char=2844
+
+# text = A spokesperson for the utility,
+# sent_id = 63
+1	A	a	DET	DT	_	2	det	_	start_char=2846|end_char=2847
+2	spokesperson	spokesperson	NOUN	NN	_	0	root	_	start_char=2848|end_char=2860
+3	for	for	ADP	IN	_	5	case	_	start_char=2861|end_char=2864
+4	the	the	DET	DT	_	5	det	_	start_char=2865|end_char=2868
+5	utility	utility	NOUN	NN	_	2	nmod	_	SpaceAfter=No|start_char=2869|end_char=2876
+6	,	,	PUNCT	.	_	2	punct	_	start_char=2876|end_char=2877
+
+# text = Marisol Ortega, said the pipe was installed in 1931.
+# sent_id = 64
+1	Marisol	Marisol	PROPN	NNP	_	3	nsubj	_	start_char=2878|end_char=2885
+2	Ortega,	Ortega,	PROPN	NNP	_	1	flat	_	start_char=2886|end_char=2893
+3	said	say	VERB	VBD	_	0	root	_	start_char=2894|end_char=2898
+4	the	the	DET	DT	_	5	det	_	start_char=2899|end_char=2902
+5	pipe	pipe	NOUN	NN	_	7	nsubj:pass	_	start_char=2903|end_char=2907
+6	was	be	AUX	VBD	_	7	aux:pass	_	start_char=2908|end_char=2911
+7	installed	install	VERB	VBN	_	3	ccomp	_	start_char=2912|end_char=2921
+8	in	in	ADP	IN	_	9	case	_	start_char=2922|end_char=2924
+9	1931	1931	PROPN	NNP	_	7	obl	_	SpaceAfter=No|start_char=2925|end_char=2929
+10	.	.	PUNCT	.	_	3	punct	_	start_char=2929|end_char=2930
+
+# text = "Frankly, it's a miracle it lasted this long," she said.
+# sent_id = 65
+1	"Frankly,	"frankly,	INTJ	UH	_	5	discourse	_	start_char=2931|end_char=2940
+2-3	it's	_	_	_	_	_	_	_	start_char=2941|end_char=2945
+2	it	it	PRON	PRP	_	5	nsubj	_	start_char=2941|end_char=2943
+3	's	be	AUX	VBZ	_	5	cop	_	start_char=2943|end_char=2945
+4	a	a	DET	DT	_	5	det	_	start_char=2946|end_char=2947
+5	miracle	miracle	NOUN	NN	_	0	root	_	start_char=2948|end_char=2955
+6	it	it	PRON	PRP	_	7	nsubj	_	start_char=2956|end_char=2958
+7	lasted	last	VERB	VBD	_	5	parataxis	_	start_char=2959|end_char=2965
+8	this	this	DET	DT	_	9	det	_	start_char=2966|end_char=2970
+9	long,"	long,"	ADV	RB	_	7	advmod	_	start_char=2971|end_char=2977
+10	she	she	PRON	PRP	_	11	nsubj	_	start_char=2978|end_char=2981
+11	said	say	VERB	VBD	_	5	parataxis	_	SpaceAfter=No|start_char=2982|end_char=2986
+12	.	.	PUNCT	.	_	5	punct	_	SpacesAfter=\n\n|start_char=2986|end_char=2987
+
+# text = The school board voted to delay the start of classes by one week.
+# sent_id = 66
+1	The	the	DET	DT	_	3	det	_	start_char=2989|end_char=2992
+2	school	school	NOUN	NN	_	3	compound	_	start_char=2993|end_char=2999
+3	board	board	NOUN	NN	_	4	nsubj	_	start_char=3000|end_char=3005
+4	voted	vot	VERB	VBD	_	0	root	_	start_char=3006|end_char=3011
+5	to	to	PART	TO	_	6	mark	_	start_char=3012|end_char=3014
+6	delay	delay	VERB	VB	_	4	xcomp	_	start_char=3015|end_char=3020
+7	the	the	DET	DT	_	8	det	_	start_char=3021|end_char=3024
+8	start	start	NOUN	NN	_	6	obj	_	start_char=3025|end_char=3030
+9	of	of	ADP	IN	_	10	case	_	start_char=3031|end_char=3033
+10	classes	class	NOUN	NNS	_	8	nmod	_	start_char=3034|end_char=3041
+11	by	by	ADP	IN	_	13	case	_	start_char=3042|end_char=3044
+12	one	one	NUM	CD	_	13	nummod	_	start_char=3045|end_char=3048
+13	week	week	NOUN	NN	_	6	obl	_	SpaceAfter=No|start_char=3049|end_char=3053
+14	.	.	PUNCT	.	_	4	punct	_	start_char=3053|end_char=3054
+
+# text = Superintendent Dr.
+# sent_id = 67
+1	Superintendent	superintendent	NOUN	NN	_	0	root	_	start_char=3055|end_char=3069
+2	Dr	Dr	PROPN	NNP	_	1	flat	_	SpaceAfter=No|start_char=3070|end_char=3072
+3	.	.	PUNCT	.	_	1	punct	_	start_char=3072|end_char=3073
+
+# text = Kevin O'Hare cited staffing shortages and unfinished repairs at three buildings.
+# sent_id = 68
+1	Kevin	Kevin	PROPN	NNP	_	3	nsubj	_	start_char=3074|end_char=3079
+2	O'Hare	O'Hare	PROPN	NNP	_	1	flat	_	start_char=3080|end_char=3086
+3	cited	cite	VERB	VBD	_	0	root	_	start_char=3087|end_char=3092
+4	staffing	staffing	NOUN	NN	_	5	compound	_	start_char=3093|end_char=3101
+5	shortages	shortage	NOUN	NNS	_	3	obj	_	start_char=3102|end_char=3111
+6	and	and	CCONJ	CC	_	8	cc	_	start_char=3112|end_char=3115
+7	unfinished	unfinished	ADJ	JJ	_	8	amod	_	start_char=3116|end_char=3126
+8	repairs	repair	NOUN	NNS	_	5	conj	_	start_char=3127|end_char=3134
+9	at	at	ADP	IN	_	11	case	_	start_char=3135|end_char=3137
+10	three	three	NUM	CD	_	11	nummod	_	start_char=3138|end_char=3143
+11	buildings	building	NOUN	NNS	_	8	nmod	_	SpaceAfter=No|start_char=3144|end_char=3153
+12	.	.	PUNCT	.	_	3	punct	_	start_char=3153|end_char=3154
+
+# text = Parents who spoke at the meeting were divided.
+# sent_id = 69
+1	Parents	parent	NOUN	NNS	_	8	nsubj:pass	_	start_char=3155|end_char=3162
+2	who	who	PRON	WP	_	3	nsubj	_	start_char=3163|end_char=3166
+3	spoke	spoke	VERB	VBD	_	1	acl:relcl	_	start_char=3167|end_char=3172
+4	at	at	ADP	IN	_	6	case	_	start_char=3173|end_char=3175
+5	the	the	DET	DT	_	6	det	_	start_char=3176|end_char=3179
+6	meeting	meeting	NOUN	NN	_	3	obl	_	start_char=3180|end_char=3187
+7	were	be	AUX	VBD	_	8	aux:pass	_	start_char=3188|end_char=3192
+8	divided	divide	VERB	VBN	_	0	root	_	SpaceAfter=No|start_char=3193|end_char=3200
+9	.	.	PUNCT	.	_	8	punct	_	SpacesAfter=\n\n|start_char=3200|end_char=3201
+
+# text = Shares of regional banks rallied for a second day.
+# sent_id = 70
+1	Shares	share	NOUN	NNS	_	5	nsubj	_	start_char=3203|end_char=3209
+2	of	of	ADP	IN	_	4	case	_	start_char=3210|end_char=3212
+3	regional	regional	ADJ	JJ	_	4	amod	_	start_char=3213|end_char=3221
+4	banks	bank	NOUN	NNS	_	1	nmod	_	start_char=3222|end_char=3227
+5	rallied	rally	VERB	VBD	_	0	root	_	start_char=3228|end_char=3235
+6	for	for	ADP	IN	_	9	case	_	start_char=3236|end_char=3239
+7	a	a	DET	DT	_	9	det	_	start_char=3240|end_char=3241
+8	second	second	ADJ	JJ	_	9	amod	_	start_char=3242|end_char=3248
+9	day	day	NOUN	NN	_	5	obl	_	SpaceAfter=No|start_char=3249|end_char=3252
+10	.	.	PUNCT	.	_	5	punct	_	start_char=3252|end_char=3253
+
+# text = The KBW Nasdaq Bank Index gained 2.
+# sent_id = 71
+1	The	the	DET	DT	_	5	det	_	start_char=3254|end_char=3257
+2	KBW	KBW	PROPN	NNP	_	5	compound	_	start_char=3258|end_char=3261
+3	Nasdaq	Nasdaq	PROPN	NNP	_	4	compound	_	start_char=3262|end_char=3268
+4	Bank	bank	NOUN	NN	_	5	compound	_	start_char=3269|end_char=3273
+5	Index	index	NOUN	NN	_	6	nsubj	_	start_char=3274|end_char=3279
+6	gained	gain	VERB	VBD	_	0	root	_	start_char=3280|end_char=3286
+7	2	2	NUM	CD	_	6	obj	_	SpaceAfter=No|start_char=3287|end_char=3288
+8	.	.	PUNCT	.	_	6	punct	_	SpaceAfter=No|start_char=3288|end_char=3289
+
+# text = 4%.
+# sent_id = 72
+1	4%	4%	INTJ	UH	_	0	root	_	SpaceAfter=No|start_char=3289|end_char=3291
+2	.	.	PUNCT	.	_	1	punct	_	start_char=3291|end_char=3292
+
+# text = Ferrisburg Savings, which had fallen 30% earlier in the month, rose 11 percent.
+# sent_id = 73
+1	Ferrisburg	Ferrisburg	PROPN	NNP	_	0	root	_	start_char=3293|end_char=3303
+2	Savings,	Savings,	PROPN	NNP	_	1	flat	_	start_char=3304|end_char=3312
+3	which	which	PRON	WDT	_	5	nsubj	_	start_char=3313|end_char=3318
+4	had	have	AUX	VBD	_	5	aux	_	start_char=3319|end_char=3322
+5	fallen	fall	VERB	VBN	_	1	acl:relcl	_	start_char=3323|end_char=3329
+6	30%	30%	ADV	RB	_	7	advmod	_	start_char=3330|end_char=3333
+7	earlier	early	ADV	RBR	_	5	advmod	_	start_char=3334|end_char=3341
+8	in	in	ADP	IN	_	10	case	_	start_char=3342|end_char=3344
+9	the	the	DET	DT	_	10	det	_	start_char=3345|end_char=3348
+10	month,	month,	NOUN	NN	_	11	nsubj	_	start_char=3349|end_char=3355
+11	rose	rose	VERB	VBD	_	5	advcl	_	start_char=3356|end_char=3360
+12	11	11	NUM	CD	_	13	nummod	_	start_char=3361|end_char=3363
+13	percent	percent	NOUN	NN	_	11	obj	_	SpaceAfter=No|start_char=3364|end_char=3371
+14	.	.	PUNCT	.	_	11	punct	_	SpacesAfter=\n\n|start_char=3371|end_char=3372
+
+# text = Q:
+# sent_id = 74
+1	Q	q	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=3374|end_char=3375
+2	:	:	PUNCT	.	_	1	punct	_	start_char=3375|end_char=3376
+
+# text = What does the rate decision mean for mortgages?
+# sent_id = 75
+1	What	what	PRON	WP	_	6	obj	_	start_char=3377|end_char=3381
+2	does	do	AUX	VBZ	_	6	aux	_	start_char=3382|end_char=3386
+3	the	the	DET	DT	_	5	det	_	start_char=3387|end_char=3390
+4	rate	rate	NOUN	NN	_	5	compound	_	start_char=3391|end_char=3395
+5	decision	decision	NOUN	NN	_	6	nsubj	_	start_char=3396|end_char=3404
+6	mean	mean	VERB	VB	_	0	root	_	start_char=3405|end_char=3409
+7	for	for	ADP	IN	_	8	case	_	start_char=3410|end_char=3413
+8	mortgages	mortgage	NOUN	NNS	_	6	obl	_	SpaceAfter=No|start_char=3414|end_char=3423
+9	?	?	PUNCT	.	_	6	punct	_	SpacesAfter=\n|start_char=3423|end_char=3424
+
+# text = A:
+# sent_id = 76
+1	A	a	DET	DT	_	0	root	_	SpaceAfter=No|start_char=3425|end_char=3426
+2	:	:	PUNCT	.	_	1	punct	_	start_char=3426|end_char=3427
+
+# text = Not much in the short run.
+# sent_id = 77
+1	Not	not	PART	RB	_	2	advmod	_	start_char=3428|end_char=3431
+2	much	much	ADV	RB	_	0	root	_	start_char=3432|end_char=3436
+3	in	in	ADP	IN	_	6	case	_	start_char=3437|end_char=3439
+4	the	the	DET	DT	_	6	det	_	start_char=3440|end_char=3443
+5	short	short	ADJ	JJ	_	6	amod	_	start_char=3444|end_char=3449
+6	run	run	NOUN	NN	_	2	obl	_	SpaceAfter=No|start_char=3450|end_char=3453
+7	.	.	PUNCT	.	_	2	punct	_	start_char=3453|end_char=3454
+
+# text = Thirty-year fixed rates averaged 6.
+# sent_id = 78
+1	Thirty-year	thirty-year	ADJ	JJ	_	3	amod	_	start_char=3455|end_char=3466
+2	fixed	fix	ADJ	JJ	_	3	amod	_	start_char=3467|end_char=3472
+3	rates	rate	NOUN	NNS	_	4	nsubj	_	start_char=3473|end_char=3478
+4	averaged	average	VERB	VBN	_	0	root	_	start_char=3479|end_char=3487
+5	6	6	NUM	CD	_	4	xcomp	_	SpaceAfter=No|start_char=3488|end_char=3489
+6	.	.	PUNCT	.	_	4	punct	_	SpaceAfter=No|start_char=3489|end_char=3490
+
+# text = 94% last week, according to Freddie Mac.
+# sent_id = 79
+1	94%	94%	DET	DT	_	3	discourse	_	start_char=3490|end_char=3493
+2	last	last	ADJ	JJ	_	3	amod	_	start_char=3494|end_char=3498
+3	week,	week,	NOUN	NN	_	0	root	_	start_char=3499|end_char=3504
+4	according	accord	VERB	VBG	_	3	acl	_	start_char=3505|end_char=3514
+5	to	to	ADP	IN	_	6	case	_	start_char=3515|end_char=3517
+6	Freddie	Freddie	PROPN	NNP	_	4	obl	_	start_char=3518|end_char=3525
+7	Mac	Mac	PROPN	NNP	_	6	flat	_	SpaceAfter=No|start_char=3526|end_char=3529
+8	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=3529|end_char=3530
+
+# text = Retail sales unexpectedly fell 0.
+# sent_id = 80
+1	Retail	retail	NOUN	NN	_	2	compound	_	start_char=3532|end_char=3538
+2	sales	sale	NOUN	NNS	_	4	nsubj	_	start_char=3539|end_char=3544
+3	unexpectedly	unexpectedly	ADV	RB	_	4	advmod	_	start_char=3545|end_char=3557
+4	fell	fall	VERB	VBD	_	0	root	_	start_char=3558|end_char=3562
+5	0	0	NUM	CD	_	4	xcomp	_	SpaceAfter=No|start_char=3563|end_char=3564
+6	.	.	PUNCT	.	_	4	punct	_	SpaceAfter=No|start_char=3564|end_char=3565
+
+# text = 2% in January.
+# sent_id = 81
+1	2%	2%	NUM	CD	_	0	root	_	start_char=3565|end_char=3567
+2	in	in	ADP	IN	_	3	case	_	start_char=3568|end_char=3570
+3	January	January	PROPN	NNP	_	1	nmod	_	SpaceAfter=No|start_char=3571|end_char=3578
+4	.	.	PUNCT	.	_	1	punct	_	start_char=3578|end_char=3579
+
+# text = Economists polled by the agency had forecast a 0.
+# sent_id = 82
+1	Economists	economist	NOUN	NNS	_	2	nsubj	_	start_char=3580|end_char=3590
+2	polled	poll	VERB	VBD	_	0	root	_	start_char=3591|end_char=3597
+3	by	by	ADP	IN	_	5	case	_	start_char=3598|end_char=3600
+4	the	the	DET	DT	_	5	det	_	start_char=3601|end_char=3604
+5	agency	agency	NOUN	NN	_	7	nsubj	_	start_char=3605|end_char=3611
+6	had	have	AUX	VBD	_	7	aux	_	start_char=3612|end_char=3615
+7	forecast	forecast	VERB	VB	_	2	advcl	_	start_char=3616|end_char=3624
+8	a	a	DET	DT	_	9	det	_	start_char=3625|end_char=3626
+9	0	0	NUM	CD	_	7	obj	_	SpaceAfter=No|start_char=3627|end_char=3628
+10	.	.	PUNCT	.	_	2	punct	_	SpaceAfter=No|start_char=3628|end_char=3629
+
+# text = 1% gain.
+# sent_id = 83
+1	1%	1%	INTJ	UH	_	2	discourse	_	start_char=3629|end_char=3631
+2	gain	gain	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=3632|end_char=3636
+3	.	.	PUNCT	.	_	2	punct	_	start_char=3636|end_char=3637
+
+# text = Sales at gas stations slid 3.
+# sent_id = 84
+1	Sales	sale	NOUN	NNS	_	0	root	_	start_char=3638|end_char=3643
+2	at	at	ADP	IN	_	4	case	_	start_char=3644|end_char=3646
+3	gas	gas	NOUN	NN	_	4	compound	_	start_char=3647|end_char=3650
+4	stations	station	NOUN	NNS	_	1	nmod	_	start_char=3651|end_char=3659
+5	slid	slide	VERB	VBD	_	1	parataxis	_	start_char=3660|end_char=3664
+6	3	3	NUM	CD	_	5	obj	_	SpaceAfter=No|start_char=3665|end_char=3666
+7	.	.	PUNCT	.	_	1	punct	_	SpaceAfter=No|start_char=3666|end_char=3667
+
+# text = 1%, and receipts at department stores dropped 1.
+# sent_id = 85
+1	1%,	1%,	NOUN	NN	_	7	nsubj	_	start_char=3667|end_char=3670
+2	and	and	CCONJ	CC	_	3	cc	_	start_char=3671|end_char=3674
+3	receipts	receipt	NOUN	NNS	_	1	conj	_	start_char=3675|end_char=3683
+4	at	at	ADP	IN	_	6	case	_	start_char=3684|end_char=3686
+5	department	department	NOUN	NN	_	6	compound	_	start_char=3687|end_char=3697
+6	stores	store	NOUN	NNS	_	1	nmod	_	start_char=3698|end_char=3704
+7	dropped	drop	VERB	VBD	_	0	root	_	start_char=3705|end_char=3712
+8	1	1	NUM	CD	_	7	obj	_	SpaceAfter=No|start_char=3713|end_char=3714
+9	.	.	PUNCT	.	_	7	punct	_	SpaceAfter=No|start_char=3714|end_char=3715
+
+# text = 4%.
+# sent_id = 86
+1	4%	4%	INTJ	UH	_	0	root	_	SpaceAfter=No|start_char=3715|end_char=3717
+2	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=3717|end_char=3718
+
+# text = The company's market capitalization briefly topped $1 trillion, making it only the seventh U.
+# sent_id = 87
+1	The	the	DET	DT	_	2	det	_	start_char=3720|end_char=3723
+2-3	company's	_	_	_	_	_	_	_	start_char=3724|end_char=3733
+2	company	company	NOUN	NN	_	5	nmod	_	start_char=3724|end_char=3731
+3	's	's	PART	POS	_	2	case	_	start_char=3731|end_char=3733
+4	market	market	NOUN	NN	_	5	compound	_	start_char=3734|end_char=3740
+5	capitalization	capitalization	NOUN	NN	_	7	nsubj	_	start_char=3741|end_char=3755
+6	briefly	briefly	ADV	RB	_	7	advmod	_	start_char=3756|end_char=3763
+7	topped	top	VERB	VBD	_	0	root	_	start_char=3764|end_char=3770
+8	$1	$1	NUM	CD	_	9	nummod	_	start_char=3771|end_char=3773
+9	trillion,	trillion,	NOUN	NN	_	7	obj	_	start_char=3774|end_char=3783
+10	making	make	VERB	VBG	_	7	csubj	_	start_char=3784|end_char=3790
+11	it	it	PRON	PRP	_	10	obj	_	start_char=3791|end_char=3793
+12	only	only	ADV	RB	_	14	advmod	_	start_char=3794|end_char=3798
+13	the	the	DET	DT	_	15	det	_	start_char=3799|end_char=3802
+14	seventh	seventh	ADJ	JJ	_	15	amod	_	start_char=3803|end_char=3810
+15	U	u	NOUN	NN	_	10	xcomp	_	SpaceAfter=No|start_char=3811|end_char=3812
+16	.	.	PUNCT	.	_	7	punct	_	SpaceAfter=No|start_char=3812|end_char=3813
+
+# text = S.
+# sent_id = 88
+1	S	s	X	_	_	0	root	_	SpaceAfter=No|start_char=3813|end_char=3814
+2	.	.	PUNCT	.	_	1	punct	_	start_char=3814|end_char=3815
+
+# text = firm to do so.
+# sent_id = 89
+1	firm	firm	NOUN	NN	_	0	root	_	start_char=3816|end_char=3820
+2	to	to	PART	TO	_	3	mark	_	start_char=3821|end_char=3823
+3	do	do	VERB	VB	_	1	acl	_	start_char=3824|end_char=3826
+4	so	so	ADV	RB	_	3	advmod	_	SpaceAfter=No|start_char=3827|end_char=3829
+5	.	.	PUNCT	.	_	1	punct	_	start_char=3829|end_char=3830
+
+# text = It later gave back some gains and closed at $412.
+# sent_id = 90
+1	It	it	PRON	PRP	_	3	nsubj	_	start_char=3831|end_char=3833
+2	later	late	ADV	RB	_	3	advmod	_	start_char=3834|end_char=3839
+3	gave	give	VERB	VBD	_	0	root	_	start_char=3840|end_char=3844
+4	back	back	ADP	RP	_	3	compound:prt	_	start_char=3845|end_char=3849
+5	some	some	DET	DT	_	6	det	_	start_char=3850|end_char=3854
+6	gains	gain	NOUN	NNS	_	3	obj	_	start_char=3855|end_char=3860
+7	and	and	CCONJ	CC	_	8	cc	_	start_char=3861|end_char=3864
+8	closed	close	VERB	VBD	_	3	conj	_	start_char=3865|end_char=3871
+9	at	at	ADP	IN	_	10	case	_	start_char=3872|end_char=3874
+10	$412	$412	NUM	CD	_	8	obl	_	SpaceAfter=No|start_char=3875|end_char=3879
+11	.	.	PUNCT	.	_	3	punct	_	SpaceAfter=No|start_char=3879|end_char=3880
+
+# text = 88, up 3.
+# sent_id = 91
+1	88,	88,	INTJ	UH	_	0	root	_	start_char=3880|end_char=3883
+2	up	up	ADP	RP	_	1	conj	_	start_char=3884|end_char=3886
+3	3	3	NUM	CD	_	1	conj	_	SpaceAfter=No|start_char=3887|end_char=3888
+4	.	.	PUNCT	.	_	1	punct	_	SpaceAfter=No|start_char=3888|end_char=3889
+
+# text = 9%.
+# sent_id = 92
+1	9%	9%	INTJ	UH	_	0	root	_	SpaceAfter=No|start_char=3889|end_char=3891
+2	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=3891|end_char=3892
+
+# text = According to the report, global shipments of smartphones declined for the eighth straight quarter.
+# sent_id = 93
+1	According	accord	VERB	VB	_	9	reparandum	_	start_char=3894|end_char=3903
+2	to	to	ADP	IN	_	4	case	_	start_char=3904|end_char=3906
+3	the	the	DET	DT	_	4	det	_	start_char=3907|end_char=3910
+4	report,	report,	NOUN	NN	_	1	obl	_	start_char=3911|end_char=3918
+5	global	global	ADJ	JJ	_	6	amod	_	start_char=3919|end_char=3925
+6	shipments	shipment	NOUN	NNS	_	9	nsubj	_	start_char=3926|end_char=3935
+7	of	of	ADP	IN	_	8	case	_	start_char=3936|end_char=3938
+8	smartphones	smartphone	NOUN	NNS	_	6	nmod	_	start_char=3939|end_char=3950
+9	declined	decline	VERB	VBD	_	0	root	_	start_char=3951|end_char=3959
+10	for	for	ADP	IN	_	14	case	_	start_char=3960|end_char=3963
+11	the	the	DET	DT	_	14	det	_	start_char=3964|end_char=3967
+12	eighth	eighth	ADJ	JJ	_	14	amod	_	start_char=3968|end_char=3974
+13	straight	straight	ADJ	JJ	_	12	conj	_	start_char=3975|end_char=3983
+14	quarter	quarter	NOUN	NN	_	9	obl	_	SpaceAfter=No|start_char=3984|end_char=3991
+15	.	.	PUNCT	.	_	9	punct	_	start_char=3991|end_char=3992
+
+# text = Vendors shipped 289.4 million units, down 4.
+# sent_id = 94
+1	Vendors	eendor	NOUN	NNS	_	2	nsubj	_	start_char=3993|end_char=4000
+2	shipped	ship	VERB	VBD	_	0	root	_	start_char=4001|end_char=4008
+3	289	289	NUM	CD	_	6	reparandum	_	SpaceAfter=No|start_char=4009|end_char=4012
+4	.4	.4	NUM	CD	_	3	conj	_	start_char=4012|end_char=4014
+5	million	million	NUM	CD	_	6	nummod	_	start_char=4015|end_char=4022
+6	units,	units,	NOUN	NN	_	2	obj	_	start_char=4023|end_char=4029
+7	down	down	ADV	RB	_	8	advmod	_	start_char=4030|end_char=4034
+8	4	4	NUM	CD	_	2	parataxis	_	SpaceAfter=No|start_char=4035|end_char=4036
+9	.	.	PUNCT	.	_	2	punct	_	SpaceAfter=No|start_char=4036|end_char=4037
+
+# text = 7% from a year earlier.
+# sent_id = 95
+1	7%	7%	NUM	CD	_	5	nsubj	_	start_char=4037|end_char=4039
+2	from	from	ADP	IN	_	5	case	_	start_char=4040|end_char=4044
+3	a	a	DET	DT	_	4	det	_	start_char=4045|end_char=4046
+4	year	year	NOUN	NN	_	5	obl:npmod	_	start_char=4047|end_char=4051
+5	earlier	early	ADV	RBR	_	0	root	_	SpaceAfter=No|start_char=4052|end_char=4059
+6	.	.	PUNCT	.	_	5	punct	_	start_char=4059|end_char=4060
+
+# text = The top five vendors accounted for roughly 70% of the market.
+# sent_id = 96
+1	The	the	DET	DT	_	4	det	_	start_char=4061|end_char=4064
+2	top	top	ADJ	JJ	_	4	amod	_	start_char=4065|end_char=4068
+3	five	five	NUM	CD	_	4	nummod	_	start_char=4069|end_char=4073
+4	vendors	vendor	NOUN	NNS	_	5	nsubj	_	start_char=4074|end_char=4081
+5	accounted	account	VERB	VBD	_	0	root	_	start_char=4082|end_char=4091
+6	for	for	ADP	IN	_	8	case	_	start_char=4092|end_char=4095
+7	roughly	roughly	ADV	RB	_	8	advmod	_	start_char=4096|end_char=4103
+8	70%	70%	NUM	CD	_	5	obl	_	start_char=4104|end_char=4107
+9	of	of	ADP	IN	_	11	case	_	start_char=4108|end_char=4110
+10	the	the	DET	DT	_	11	det	_	start_char=4111|end_char=4114
+11	market	market	NOUN	NN	_	8	nmod	_	SpaceAfter=No|start_char=4115|end_char=4121
+12	.	.	PUNCT	.	_	5	punct	_	SpacesAfter=\n\n|start_char=4121|end_char=4122
+
+# text = The trial is expected to last six weeks.
+# sent_id = 97
+1	The	the	DET	DT	_	2	det	_	start_char=4124|end_char=4127
+2	trial	trial	NOUN	NN	_	4	nsubj:pass	_	start_char=4128|end_char=4133
+3	is	be	AUX	VBZ	_	4	aux:pass	_	start_char=4134|end_char=4136
+4	expected	expect	VERB	VBN	_	0	root	_	start_char=4137|end_char=4145
+5	to	to	PART	TO	_	6	mark	_	start_char=4146|end_char=4148
+6	last	last	VERB	VB	_	4	xcomp	_	start_char=4149|end_char=4153
+7	six	six	NUM	CD	_	8	nummod	_	start_char=4154|end_char=4157
+8	weeks	week	NOUN	NNS	_	6	obl:unmarked	_	SpaceAfter=No|start_char=4158|end_char=4163
+9	.	.	PUNCT	.	_	4	punct	_	start_char=4163|end_char=4164
+
+# text = Jury selection begins Monday at the federal courthouse in Lancaster.
+# sent_id = 98
+1	Jury	jury	NOUN	NN	_	2	compound	_	start_char=4165|end_char=4169
+2	selection	selection	NOUN	NN	_	3	nsubj	_	start_char=4170|end_char=4179
+3	begins	begin	VERB	VBZ	_	0	root	_	start_char=4180|end_char=4186
+4	Monday	Monday	PROPN	NNP	_	3	obl:unmarked	_	start_char=4187|end_char=4193
+5	at	at	ADP	IN	_	8	case	_	start_char=4194|end_char=4196
+6	the	the	DET	DT	_	8	det	_	start_char=4197|end_char=4200
+7	federal	federal	ADJ	JJ	_	8	compound	_	start_char=4201|end_char=4208
+8	courthouse	courthouse	NOUN	NN	_	3	obl	_	start_char=4209|end_char=4219
+9	in	in	ADP	IN	_	10	case	_	start_char=4220|end_char=4222
+10	Lancaster	Lancaster	PROPN	NNP	_	8	nmod	_	SpaceAfter=No|start_char=4223|end_char=4232
+11	.	.	PUNCT	.	_	3	punct	_	start_char=4232|end_char=4233
+
+# text = The defendant, who has pleaded not guilty to all 14 counts, faces up to 20 years in prison if convicted.
+# sent_id = 99
+1	The	the	DET	DT	_	2	det	_	start_char=4234|end_char=4237
+2	defendant,	defendant,	NOUN	NN	_	0	root	_	start_char=4238|end_char=4248
+3	who	who	PRON	WP	_	5	nsubj	_	start_char=4249|end_char=4252
+4	has	have	AUX	VBZ	_	5	aux	_	start_char=4253|end_char=4256
+5	pleaded	plead	VERB	VBN	_	2	acl:relcl	_	start_char=4257|end_char=4264
+6	not	not	PART	RB	_	7	advmod	_	start_char=4265|end_char=4268
+7	guilty	guilty	VERB	VBN	_	5	xcomp	_	start_char=4269|end_char=4275
+8	to	to	ADP	IN	_	10	case	_	start_char=4276|end_char=4278
+9	all	all	DET	DT	_	11	det	_	start_char=4279|end_char=4282
+10	14	14	NUM	CD	_	11	nummod	_	start_char=4283|end_char=4285
+11	counts,	count	NOUN	NN	_	12	nsubj	_	start_char=4286|end_char=4293
+12	faces	face	VERB	VBZ	_	2	acl:relcl	_	start_char=4294|end_char=4299
+13	up	up	ADP	RP	_	12	compound:prt	_	start_char=4300|end_char=4302
+14	to	to	ADP	IN	_	16	case	_	start_char=4303|end_char=4305
+15	20	20	NUM	CD	_	16	nummod	_	start_char=4306|end_char=4308
+16	years	year	NOUN	NNS	_	12	obl	_	start_char=4309|end_char=4314
+17	in	in	ADP	IN	_	18	case	_	start_char=4315|end_char=4317
+18	prison	prison	NOUN	NN	_	16	nmod	_	start_char=4318|end_char=4324
+19	if	if	SCONJ	IN	_	20	mark	_	start_char=4325|end_char=4327
+20	convicted	convict	VERB	VBN	_	16	acl	_	SpaceAfter=No|start_char=4328|end_char=4337
+21	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=4337|end_char=4338
+
+# text = Tickets go on sale Friday at 10 a.m.
+# sent_id = 100
+1	Tickets	ticket	NOUN	NNS	_	2	nsubj	_	start_char=4340|end_char=4347
+2	go	go	VERB	VBP	_	0	root	_	start_char=4348|end_char=4350
+3	on	on	ADP	IN	_	4	case	_	start_char=4351|end_char=4353
+4	sale	sale	NOUN	NN	_	2	obl	_	start_char=4354|end_char=4358
+5	Friday	Friday	PROPN	NNP	_	2	obl:unmarked	_	start_char=4359|end_char=4365
+6	at	at	ADP	IN	_	7	case	_	start_char=4366|end_char=4368
+7	10	10	NUM	CD	_	2	obl	_	start_char=4369|end_char=4371
+8	a	a	PROPN	NNP	_	7	flat	_	SpaceAfter=No|start_char=4372|end_char=4373
+9	.m	.m	PROPN	NNP	_	7	flat	_	SpaceAfter=No|start_char=4373|end_char=4375
+10	.	.	PUNCT	.	_	2	punct	_	start_char=4375|end_char=4376
+
+# text = local time.
+# sent_id = 101
+1	local	local	NOUN	NN	_	2	compound	_	start_char=4377|end_char=4382
+2	time	time	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=4383|end_char=4387
+3	.	.	PUNCT	.	_	2	punct	_	start_char=4387|end_char=4388
+
+# text = Prices range from $35 to $250, plus fees.
+# sent_id = 102
+1	Prices	price	NOUN	NNS	_	2	nsubj	_	start_char=4389|end_char=4395
+2	range	range	VERB	VBP	_	0	root	_	start_char=4396|end_char=4401
+3	from	from	ADP	IN	_	4	case	_	start_char=4402|end_char=4406
+4	$35	$35	NUM	CD	_	2	obl	_	start_char=4407|end_char=4410
+5	to	to	ADP	IN	_	6	case	_	start_char=4411|end_char=4413
+6	$250,	$250,	NUM	CD	_	4	nmod	_	start_char=4414|end_char=4419
+7	plus	plus	ADP	IN	_	8	case	_	start_char=4420|end_char=4424
+8	fees	fee	NOUN	NNS	_	4	nmod	_	SpaceAfter=No|start_char=4425|end_char=4429
+9	.	.	PUNCT	.	_	2	punct	_	start_char=4429|end_char=4430
+
+# text = Organizers expect a sellout.
+# sent_id = 103
+1	Organizers	organizer	NOUN	NNS	_	2	nsubj	_	start_char=4431|end_char=4441
+2	expect	expect	VERB	VBP	_	0	root	_	start_char=4442|end_char=4448
+3	a	a	DET	DT	_	4	det	_	start_char=4449|end_char=4450
+4	sellout	sellout	NOUN	NN	_	2	obj	_	SpaceAfter=No|start_char=4451|end_char=4458
+5	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=4458|end_char=4459
+
+# text = The wildfire had burned more than 12,000 acres by Tuesday night and was 15% contained.
+# sent_id = 104
+1	The	the	DET	DT	_	2	det	_	start_char=4461|end_char=4464
+2	wildfire	wildfire	NOUN	NN	_	4	nsubj	_	start_char=4465|end_char=4473
+3	had	have	AUX	VBD	_	4	aux	_	start_char=4474|end_char=4477
+4	burned	burn	VERB	VBN	_	0	root	_	start_char=4478|end_char=4484
+5	more	more	ADJ	JJR	_	8	amod	_	start_char=4485|end_char=4489
+6	than	than	ADP	IN	_	8	case	_	start_char=4490|end_char=4494
+7	12,000	12,000	NUM	CD	_	8	nummod	_	start_char=4495|end_char=4501
+8	acres	acre	NOUN	NNS	_	4	obj	_	start_char=4502|end_char=4507
+9	by	by	ADP	IN	_	11	case	_	start_char=4508|end_char=4510
+10	Tuesday	Guesday	PROPN	NNP	_	11	compound	_	start_char=4511|end_char=4518
+11	night	night	NOUN	NN	_	4	obl:unmarked	_	start_char=4519|end_char=4524
+12	and	and	CCONJ	CC	_	15	cc	_	start_char=4525|end_char=4528
+13	was	be	AUX	VBD	_	15	aux:pass	_	start_char=4529|end_char=4532
+14	15%	15%	ADV	RB	_	15	advmod	_	start_char=4533|end_char=4536
+15	contained	containe	VERB	VBN	_	4	conj	_	SpaceAfter=No|start_char=4537|end_char=4546
+16	.	.	PUNCT	.	_	4	punct	_	start_char=4546|end_char=4547
+
+# text = Evacuation orders remained in effect for parts of Pine Hollow and Cedar Gap.
+# sent_id = 105
+1	Evacuation	evacuation	NOUN	NN	_	2	compound	_	start_char=4548|end_char=4558
+2	orders	order	NOUN	NNS	_	3	nsubj	_	start_char=4559|end_char=4565
+3	remained	remain	VERB	VBD	_	0	root	_	start_char=4566|end_char=4574
+4	in	in	ADP	IN	_	5	case	_	start_char=4575|end_char=4577
+5	effect	effect	NOUN	NN	_	3	obl	_	start_char=4578|end_char=4584
+6	for	for	ADP	IN	_	7	case	_	start_char=4585|end_char=4588
+7	parts	part	NOUN	NNS	_	3	obl	_	start_char=4589|end_char=4594
+8	of	of	ADP	IN	_	10	case	_	start_char=4595|end_char=4597
+9	Pine	pine	PROPN	NNP	_	10	compound	_	start_char=4598|end_char=4602
+10	Hollow	Hollow	PROPN	NNP	_	7	nmod	_	start_char=4603|end_char=4609
+11	and	and	CCONJ	CC	_	12	cc	_	start_char=4610|end_char=4613
+12	Cedar	Cedar	PROPN	NNP	_	13	compound	_	start_char=4614|end_char=4619
+13	Gap	Gap	PROPN	NNP	_	10	conj	_	SpaceAfter=No|start_char=4620|end_char=4623
+14	.	.	PUNCT	.	_	3	punct	_	start_char=4623|end_char=4624
+
+# text = No injuries were reported.
+# sent_id = 106
+1	No	no	DET	DT	_	2	det	_	start_char=4625|end_char=4627
+2	injuries	injury	NOUN	NNS	_	4	nsubj:pass	_	start_char=4628|end_char=4636
+3	were	be	AUX	VBD	_	4	aux:pass	_	start_char=4637|end_char=4641
+4	reported	report	VERB	VBN	_	0	root	_	SpaceAfter=No|start_char=4642|end_char=4650
+5	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=4650|end_char=4651
+
+# text = Officials said the blaze may have been sparked by a downed power line.
+# sent_id = 107
+1	Officials	officiall	NOUN	NNS	_	2	nsubj	_	start_char=4653|end_char=4662
+2	said	say	VERB	VBD	_	0	root	_	start_char=4663|end_char=4667
+3	the	the	DET	DT	_	4	det	_	start_char=4668|end_char=4671
+4	blaze	blaze	NOUN	NN	_	8	nsubj:pass	_	start_char=4672|end_char=4677
+5	may	may	AUX	MD	_	8	aux	_	start_char=4678|end_char=4681
+6	have	have	AUX	VB	_	8	aux	_	start_char=4682|end_char=4686
+7	been	be	AUX	VBN	_	8	aux:pass	_	start_char=4687|end_char=4691
+8	sparked	spark	VERB	VBN	_	2	ccomp	_	start_char=4692|end_char=4699
+9	by	by	ADP	IN	_	13	case	_	start_char=4700|end_char=4702
+10	a	a	DET	DT	_	13	det	_	start_char=4703|end_char=4704
+11	downed	down	VERB	VBN	_	13	amod	_	start_char=4705|end_char=4711
+12	power	power	NOUN	NN	_	13	compound	_	start_char=4712|end_char=4717
+13	line	line	NOUN	NN	_	8	obl	_	SpaceAfter=No|start_char=4718|end_char=4722
+14	.	.	PUNCT	.	_	2	punct	_	start_char=4722|end_char=4723
+
+# text = An investigation is under way.
+# sent_id = 108
+1	An	a	DET	DT	_	2	det	_	start_char=4724|end_char=4726
+2	investigation	investigation	NOUN	NN	_	5	nsubj	_	start_char=4727|end_char=4740
+3	is	be	AUX	VBZ	_	5	cop	_	start_char=4741|end_char=4743
+4	under	under	ADP	IN	_	5	case	_	start_char=4744|end_char=4749
+5	way	way	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=4750|end_char=4753
+6	.	.	PUNCT	.	_	5	punct	_	SpacesAfter=\n|start_char=4753|end_char=4754

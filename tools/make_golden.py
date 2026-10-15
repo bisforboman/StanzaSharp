@@ -74,8 +74,10 @@ Reads <out>/corpus.txt and writes:
                         Pipeline.process on CoNLL.conll2doc of tokenize,mwt's output for corpus.txt with wrong
                         annotations, running every processor but tokenize and mwt (`--process-document-only`; see
                         write_process_document_golden)
-  de/gsd/, de/hdt/      German only: package=gsd / hdt (tokenize,mwt,pos,lemma,depparse) on corpus.txt (as
-                        corpus.conllu) and each validation*.txt, plus their mwt.json (`--treebank-only`)
+  <package>/            the treebank packages (TREEBANK_PACKAGES: English ewt/, gum/, ..., German de/gsd/, de/hdt/):
+                        package=<package> (all its processors, tokenize to depparse) on corpus.txt (as corpus.conllu)
+                        and each validation*.txt, plus mwt.json where the package has mwt (`--treebank-only`, some of
+                        them with `--packages`)
   pt/tiny_{legacy,zip}.pt + their stanza_convert.py output (.json/.safetensors)
                         small checkpoints in both torch.save formats for the C# .pt loader tests;
                         `python tools/make_golden.py --pt-only` regenerates just these
@@ -174,16 +176,24 @@ def write_mwt_golden(models, out, package="default"):
 
 DEPPARSE_PROCESSORS = "tokenize,mwt,pos,lemma,depparse"
 
-TREEBANK_PACKAGES = ["gsd", "hdt"]  # German's treebank packages (tokenize to depparse); "combined" uses default's models
+# The treebank packages (tokenize to depparse) per language; "combined" uses default's models, so depparse/ covers it.
+TREEBANK_PACKAGES = {
+    "en": ["ewt", "gum", "lines", "partut", "atis", "childes", "eslspok", "craft", "genia", "mimic"],
+    "de": ["gsd", "hdt"],
+}
 
 
-def write_treebank_golden(models, out):
+def write_treebank_golden(models, out, packages=None):
     """
-    <package>/ for each of TREEBANK_PACKAGES: package=<package> output (all its processors: tokenize,mwt,pos,lemma,depparse)
-    for corpus.txt (as corpus.conllu) and each validation*.txt, and mwt.json (MWT_WORDS with and without the dictionary).
+    <package>/ for each of TREEBANK_PACKAGES (or `packages`): package=<package> output (all its processors, tokenize to
+    depparse; eslspok and the biomedical ones have no mwt) for corpus.txt (as corpus.conllu) and each validation*.txt, and
+    mwt.json (MWT_WORDS with and without the dictionary) where the package has mwt.
     """
-    for package in TREEBANK_PACKAGES:
-        nlp = stanza.Pipeline(LANG, dir=models, package=package, processors=DEPPARSE_PROCESSORS, download_method=None,
+    with open(Path(models) / "resources.json", encoding="utf-8") as f:
+        resources = json.load(f)[LANG]["packages"]
+    for package in packages or TREEBANK_PACKAGES[LANG]:
+        processors = [p for p in DEPPARSE_PROCESSORS.split(",") if p in resources[package]]
+        nlp = stanza.Pipeline(LANG, dir=models, package=package, processors=",".join(processors), download_method=None,
                               use_gpu=False, logging_level="WARN")
         folder = out / package
         folder.mkdir(exist_ok=True)
@@ -193,7 +203,8 @@ def write_treebank_golden(models, out):
             name = "corpus" if path.name == "corpus.txt" else path.stem
             (folder / f"{name}.conllu").write_text("{:C}\n".format(doc), encoding="utf-8", newline="\n")
             print(f"{package}/{name}.conllu: {len(doc.sentences)} sentences, {doc.num_words} words")
-        write_mwt_golden(models, folder, package)
+        if "mwt" in processors:
+            write_mwt_golden(models, folder, package)
 
 
 def write_depparse_golden(models, out):
@@ -891,7 +902,8 @@ def main():
     p.add_argument("--upos64-only", action="store_true", help="only add the float64 UPOS logits to the intermediates")
     p.add_argument("--json-only", action="store_true", help="only regenerate json/ (str(doc))")
     p.add_argument("--process-document-only", action="store_true", help="only regenerate process_document/")
-    p.add_argument("--treebank-only", action="store_true", help="only regenerate the German treebank packages' folders (gsd/, hdt/)")
+    p.add_argument("--treebank-only", action="store_true", help="only regenerate the treebank packages' folders (ewt/, ..., de/gsd/, de/hdt/)")
+    p.add_argument("--packages", default=None, help="with --treebank-only: only these treebank packages (comma-separated)")
     args = p.parse_args()
     LANG = args.lang
     out = Path(args.out or ("tests/golden" if LANG == "en" else f"tests/golden/{LANG}"))
@@ -904,7 +916,7 @@ def main():
         write_long_token_golden(args.models, out)
         return
     if args.treebank_only:
-        write_treebank_golden(args.models, out)
+        write_treebank_golden(args.models, out, args.packages and args.packages.split(","))
         return
     if args.json_only:
         write_json_golden(args.models, out)
@@ -1009,8 +1021,7 @@ def main():
     write_long_token_golden(args.models, out)
     write_json_golden(args.models, out)
     write_process_document_golden(args.models, out)
-    if LANG == "de":
-        write_treebank_golden(args.models, out)
+    write_treebank_golden(args.models, out)
 
     for i, logits in enumerate(upos_logits64(args.models, [e["words"] for e in index])):
         tensors[f"s{i}.pos.upos_logits64"] = logits

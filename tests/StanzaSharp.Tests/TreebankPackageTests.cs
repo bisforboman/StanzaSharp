@@ -4,12 +4,29 @@ using StanzaSharp.Mwt;
 namespace StanzaSharp.Tests;
 
 /// <summary>
-/// German's treebank packages (tokenize to depparse): <c>gsd</c> and <c>hdt</c> against tests/golden/de/gsd and hdt
-/// (make_golden.py --lang de --treebank-only), and <c>combined</c>, whose models are the default package's, against depparse/.
+/// The treebank packages (tokenize to depparse) against tests/golden/&lt;package&gt; (make_golden.py --treebank-only):
+/// English ewt, gum, lines, partut, atis, childes and eslspok (no mwt, the identity lemmatizer), German gsd and hdt; and
+/// <c>combined</c>, whose models are the default package's, against depparse/.
 /// </summary>
-public class TreebankPackageTests(SharedPipelines pipelines) : IClassFixture<SharedPipelines>
+public class TreebankPackageTests
 {
     [ModelTheory]
+    [EnglishTreebank("combined", false)]
+    [EnglishTreebank("combined", true)]
+    [EnglishTreebank("ewt", false)]
+    [EnglishTreebank("ewt", true)]
+    [EnglishTreebank("gum", false)]
+    [EnglishTreebank("gum", true)]
+    [EnglishTreebank("lines", false)]
+    [EnglishTreebank("lines", true)]
+    [EnglishTreebank("partut", false)]
+    [EnglishTreebank("partut", true)]
+    [EnglishTreebank("atis", false)]
+    [EnglishTreebank("atis", true)]
+    [EnglishTreebank("childes", false)]
+    [EnglishTreebank("childes", true)]
+    [EnglishTreebank("eslspok", false)]
+    [EnglishTreebank("eslspok", true)]
     [German("gsd", false)]
     [German("gsd", true)]
     [German("hdt", false)]
@@ -18,7 +35,8 @@ public class TreebankPackageTests(SharedPipelines pipelines) : IClassFixture<Sha
     [German("combined", true)]
     public void Process_MatchesEveryGoldenFile(string package, bool managed, string lang)
     {
-        var nlp = pipelines.Get(package, managed, lang: lang);
+        // Loaded here, not shared: a pipeline per row would otherwise stay in memory until the class ends.
+        using var nlp = Pipeline.Load(Repo.ModelsFor(lang, package), new PipelineOptions { Language = lang, Package = package, Backend = Repo.PipelineBackendFor(managed) });
         var golden = Repo.GoldenFor(lang);
         var dir = Path.Combine(golden, package == "combined" ? "depparse" : package);
         var files = new[] { Path.Combine(golden, "corpus.txt") }.Concat(Directory.GetFiles(golden, "validation*.txt").Order()).ToList();
@@ -45,8 +63,23 @@ public class TreebankPackageTests(SharedPipelines pipelines) : IClassFixture<Sha
         Assert.True(failures.Count == 0, string.Join("\n\n", failures));
     }
 
-    /// <summary>Their MWT seq2seq models with and without the dictionary (hdt's has its own vocabulary and max_dec_len 12).</summary>
+    /// <summary>
+    /// Their MWT models with and without the dictionary: English's character classifiers (partut's a seq2seq), German's
+    /// seq2seq models (hdt's has its own vocabulary and max_dec_len 12).
+    /// </summary>
     [ModelTheory]
+    [EnglishTreebank("ewt", false)]
+    [EnglishTreebank("ewt", true)]
+    [EnglishTreebank("gum", false)]
+    [EnglishTreebank("gum", true)]
+    [EnglishTreebank("lines", false)]
+    [EnglishTreebank("lines", true)]
+    [EnglishTreebank("partut", false)]
+    [EnglishTreebank("partut", true)]
+    [EnglishTreebank("atis", false)]
+    [EnglishTreebank("atis", true)]
+    [EnglishTreebank("childes", false)]
+    [EnglishTreebank("childes", true)]
     [German("gsd", false)]
     [German("gsd", true)]
     [German("hdt", false)]

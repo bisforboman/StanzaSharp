@@ -1,0 +1,683 @@
+# text = Run `pip install -r requirements.txt` and then `python manage.py migrate`. If that fails, check C:\Program Files\Python312\python.exe and your PATH.
+# sent_id = 0
+1	Run	run	NOUN	_	Number=Sing	3	nsubj	_	start_char=0|end_char=3
+2	`pip	`pip	NOUN	_	Number=Sing	3	nsubj	_	start_char=4|end_char=8
+3	install	install	VERB	_	VerbForm=Inf	0	root	_	start_char=9|end_char=16
+4	-r	W	PROPN	_	Number=Sing	5	compound	_	start_char=17|end_char=19
+5	requirements.txt`	requirements.txt`	NOUN	_	Number=Sing	3	obj	_	start_char=20|end_char=37
+6	and	and	CCONJ	_	_	10	cc	_	start_char=38|end_char=41
+7	then	then	ADV	_	Degree=Pos	10	advmod	_	start_char=42|end_char=46
+8	`python	Tpython	PROPN	_	Number=Sing	9	compound	_	start_char=47|end_char=54
+9	manage.py	manage.py	NOUN	_	Number=Plur	10	nsubj	_	start_char=55|end_char=64
+10	migrate`.	migrate`.	VERB	_	VerbForm=Inf	3	parataxis	_	start_char=65|end_char=74
+11	If	if	ADP	_	_	10	mark	_	start_char=75|end_char=77
+12	that	that	ADP	_	_	14	mark	_	start_char=78|end_char=82
+13	fails,	fail	NOUN	_	Number=Sing	14	nsubj	_	start_char=83|end_char=89
+14	check	check	VERB	_	VerbForm=Inf	10	advcl	_	start_char=90|end_char=95
+15	C:\Program	C:\Program	NOUN	_	Number=Sing	14	obj	_	start_char=96|end_char=106
+16	Files\Python312	Files\python	PROPN	_	Number=Sing	14	obj	_	SpaceAfter=No|start_char=107|end_char=122
+17	\python.exe	Ppython.exxe	PROPN	_	Number=Sing	16	flat	_	start_char=122|end_char=133
+18	and	and	CCONJ	_	_	20	cc	_	start_char=134|end_char=137
+19	your	you	DET	_	Number=Sing|Poss=Yes|PronType=Prs	20	nmod:poss	_	start_char=138|end_char=142
+20	PATH.	Path.	PROPN	_	Number=Sing	16	conj	_	SpacesAfter=\n\n|start_char=143|end_char=148
+
+# text = The config lives in ~/.config/app/settings.yaml on Linux and %APPDATA%\App\settings.yaml on Windows. Delete /var/cache/app/*.tmp before upgrading.
+# sent_id = 1
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=150|end_char=153
+2	config	config	NOUN	_	Number=Sing	3	compound	_	start_char=154|end_char=160
+3	lives	life	NOUN	_	Number=Plur	0	root	_	start_char=161|end_char=166
+4	in	in	ADP	_	_	5	case	_	start_char=167|end_char=169
+5	~/.config/app/settings.yaml	R/.configinpal	PROPN	_	Number=Sing	3	nmod	_	start_char=170|end_char=197
+6	on	on	ADP	_	_	7	case	_	start_char=198|end_char=200
+7	Linux	Linux	PROPN	_	Number=Sing	3	nmod	_	start_char=201|end_char=206
+8	and	and	CCONJ	_	_	9	cc	_	start_char=207|end_char=210
+9	%APPDATA%\App\settings.yaml	Rappdata%ingam	PROPN	_	Number=Sing	7	conj	_	start_char=211|end_char=238
+10	on	on	ADP	_	_	11	case	_	start_char=239|end_char=241
+11	Windows.	Windows.	PROPN	_	Number=Sing	3	nmod	_	start_char=242|end_char=250
+12	Delete	Delete	VERB	_	VerbForm=Inf	3	acl:relcl	_	start_char=251|end_char=257
+13	/var/cache/app/*.tmp	Cvar/cachphp	PROPN	_	Number=Sing	12	obj	_	start_char=258|end_char=278
+14	before	before	ADP	_	_	15	case	_	start_char=279|end_char=285
+15	upgrading.	upgrading.	NOUN	_	Number=Sing	12	obl	_	SpacesAfter=\n\n|start_char=286|end_char=296
+
+# text = Call foo.bar(baz, 42) to get a list[int]. The function returns None if x == 0 or y != 1.
+# sent_id = 2
+1	Call	Call	NOUN	_	Number=Sing	0	root	_	start_char=298|end_char=302
+2	foo.bar	Foo.bar	PROPN	_	Number=Sing	1	nmod	_	SpaceAfter=No|start_char=303|end_char=310
+3	(baz,	Tbaz,	PROPN	_	Number=Sing	2	flat	_	start_char=310|end_char=315
+4	42)	42)	NUM	_	NumType=Card	2	nummod	_	start_char=316|end_char=319
+5	to	to	PART	_	_	6	mark	_	start_char=320|end_char=322
+6	get	get	VERB	_	VerbForm=Inf	2	acl:relcl	_	start_char=323|end_char=326
+7	a	a	DET	_	PronType=Art	8	det	_	start_char=327|end_char=328
+8	list	list	NOUN	_	Number=Sing	6	obj	_	SpaceAfter=No|start_char=329|end_char=333
+9	[int].	[int].	ADP	_	_	13	case	_	start_char=333|end_char=339
+10	The	the	DET	_	PronType=Art	13	det	_	start_char=340|end_char=343
+11	function	function	NOUN	_	Number=Sing	12	compound	_	start_char=344|end_char=352
+12	returns	return	NOUN	_	Number=Plur	13	nmod	_	start_char=353|end_char=360
+13	None	None	NOUN	_	Number=Sing	8	nmod	_	start_char=361|end_char=365
+14	if	if	ADP	_	_	15	case	_	start_char=366|end_char=368
+15	x	Q	PROPN	_	Number=Sing	13	nmod	_	start_char=369|end_char=370
+16	==	W	PROPN	_	Number=Sing	15	conj	_	start_char=371|end_char=373
+17	0	Q	PROPN	_	Number=Sing	15	conj	_	start_char=374|end_char=375
+18	or	or	CCONJ	_	_	19	cc	_	start_char=376|end_char=378
+19	y	y	NOUN	_	Number=Sing	17	conj	_	start_char=379|end_char=380
+20	!=	W	PROPN	_	Number=Sing	19	flat	_	start_char=381|end_char=383
+21	1.	1.	NUM	_	NumType=Card	19	flat	_	SpacesAfter=\n\n|start_char=384|end_char=386
+
+# text = Set MAX_RETRIES=5 and TIMEOUT_MS=3000 in the .env file.
+# sent_id = 3
+1	Set	Set	VERB	_	VerbForm=Inf	0	root	_	start_char=388|end_char=391
+2	MAX_RETRIES=5	Max_retris=	PROPN	_	Number=Sing	1	obj	_	start_char=392|end_char=405
+3	and	and	CCONJ	_	_	4	cc	_	start_char=406|end_char=409
+4	TIMEOUT_MS	Pimeout_mS	PROPN	_	Number=Sing	2	conj	_	SpaceAfter=No|start_char=410|end_char=420
+5	=3000	=3000	NUM	_	NumType=Card	4	flat	_	start_char=420|end_char=425
+6	in	in	ADP	_	_	8	case	_	start_char=426|end_char=428
+7	the	the	DET	_	PronType=Art	8	det	_	start_char=429|end_char=432
+8	.env	Nenv	PROPN	_	Number=Sing	2	nmod	_	start_char=433|end_char=437
+9	file.	File.	PROPN	_	Number=Sing	8	flat	_	start_char=438|end_char=443
+
+# text = Then restart nginx with sudo systemctl
+# sent_id = 4
+1	Then	then	ADV	_	Degree=Pos	2	advmod	_	start_char=444|end_char=448
+2	restart	restart	VERB	_	VerbForm=Inf	0	root	_	start_char=449|end_char=456
+3	nginx	nginx	NOUN	_	Number=Sing	2	obj	_	start_char=457|end_char=462
+4	with	with	ADP	_	_	5	case	_	start_char=463|end_char=467
+5	sudo	Sudo	PROPN	_	Number=Sing	3	nmod	_	start_char=468|end_char=472
+6	systemctl	systemctl	INTJ	_	_	3	discourse	_	start_char=473|end_char=482
+
+# text = restart nginx.service.
+# sent_id = 5
+1	restart	restart	VERB	_	VerbForm=Inf	0	root	_	start_char=483|end_char=490
+2	nginx.	Nginx.	PROPN	_	Number=Sing	1	obj	_	SpaceAfter=No|start_char=491|end_char=497
+3	service.	Service.	PROPN	_	Number=Sing	2	flat	_	SpacesAfter=\n\n|start_char=497|end_char=505
+
+# text = The error was "NullReferenceException: Object reference
+# sent_id = 6
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=507|end_char=510
+2	error	error	NOUN	_	Number=Sing	7	obl	_	start_char=511|end_char=516
+3	was	wave	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	7	aux	_	start_char=517|end_char=520
+4	"Null	Rnull	PROPN	_	Number=Sing	7	nmod	_	SpaceAfter=No|start_char=521|end_char=526
+5	ReferenceException:	Referencex	PROPN	_	Number=Sing	4	flat	_	start_char=526|end_char=545
+6	Object	Object	NOUN	_	Number=Sing	7	compound	_	start_char=546|end_char=552
+7	reference	reference	NOUN	_	Number=Sing	0	root	_	start_char=553|end_char=562
+
+# text = not set to an instance of an object." It came from line 217 of Parser.cs.
+# sent_id = 7
+1	not	not	ADV	_	Degree=Pos	2	advmod	_	start_char=563|end_char=566
+2	set	set	VERB	_	Tense=Past|VerbForm=Fin	0	root	_	start_char=567|end_char=570
+3	to	to	ADP	_	_	5	case	_	start_char=571|end_char=573
+4	an	a	DET	_	PronType=Art	5	det	_	start_char=574|end_char=576
+5	instance	instance	NOUN	_	Number=Sing	2	obj	_	start_char=577|end_char=585
+6	of	of	ADP	_	_	8	case	_	start_char=586|end_char=588
+7	an	a	DET	_	PronType=Art	8	det	_	start_char=589|end_char=591
+8	object."	object."	NOUN	_	Number=Sing	5	nmod	_	start_char=592|end_char=600
+9	It	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	10	nsubj	_	start_char=601|end_char=603
+10	came	came	VERB	_	Tense=Past|VerbForm=Fin	8	acl:relcl	_	start_char=604|end_char=608
+11	from	from	ADP	_	_	12	case	_	start_char=609|end_char=613
+12	line	line	NOUN	_	Number=Sing	10	obl	_	start_char=614|end_char=618
+13	217	217	NUM	_	NumType=Card	12	flat	_	start_char=619|end_char=622
+14	of	of	ADP	_	_	15	case	_	start_char=623|end_char=625
+15	Parser.cs.	Parser.cs.	PROPN	_	Number=Sing	10	obl	_	SpacesAfter=\n\n|start_char=626|end_char=636
+
+# text = Open http://localhost:8080/api/v2/users?id=17&sort=desc in your browser. You should see a JSON array like [{"id": 17, "name": "Ana"}].
+# sent_id = 8
+1	Open	Open	NOUN	_	Number=Sing	2	nmod:poss	_	start_char=638|end_char=642
+2	http:/	Http:/	PROPN	_	Number=Sing	14	obl	_	SpaceAfter=No|start_char=643|end_char=649
+3	/localhost	Clocalhost	PROPN	_	Number=Sing	2	flat	_	SpaceAfter=No|start_char=649|end_char=659
+4	:8080	:8080	NUM	_	NumType=Card	2	flat	_	SpaceAfter=No|start_char=659|end_char=664
+5	/api/v2	Lapi/v2	PROPN	_	Number=Sing	2	nmod	_	SpaceAfter=No|start_char=664|end_char=671
+6	/users?id	Pusers?id	PROPN	_	Number=Sing	5	nmod	_	SpaceAfter=No|start_char=671|end_char=680
+7	=17	=17	NUM	_	NumType=Card	6	nummod	_	SpaceAfter=No|start_char=680|end_char=683
+8	&sort=desc	&sort=	NUM	_	NumType=Card	2	nummod	_	start_char=683|end_char=693
+9	in	in	ADP	_	_	11	case	_	start_char=694|end_char=696
+10	your	you	DET	_	Number=Sing|Poss=Yes|PronType=Prs	11	det	_	start_char=697|end_char=701
+11	browser.	Browser.	PROPN	_	Number=Sing	14	obj	_	start_char=702|end_char=710
+12	You	you	PRON	_	Case=Nom|Number=Sing|Person=2|PronType=Prs	14	nsubj	_	start_char=711|end_char=714
+13	should	should	AUX	_	_	14	aux	_	start_char=715|end_char=721
+14	see	see	VERB	_	VerbForm=Inf	0	root	_	start_char=722|end_char=725
+15	a	a	DET	_	PronType=Art	17	det	_	start_char=726|end_char=727
+16	JSON	json	NOUN	_	Number=Sing	17	compound	_	start_char=728|end_char=732
+17	array	array	NOUN	_	Number=Sing	14	obj	_	start_char=733|end_char=738
+18	like	like	ADP	_	_	19	case	_	start_char=739|end_char=743
+19	[{"id":	R{"id":	PROPN	_	Number=Sing	17	nmod	_	start_char=744|end_char=751
+20	17,	17,	NUM	_	NumType=Card	19	flat	_	start_char=752|end_char=755
+21	"name":	Rname":	PROPN	_	Number=Sing	19	conj	_	start_char=756|end_char=763
+22	"Ana"}].	Wana"}].	PROPN	_	Number=Sing	19	conj	_	SpacesAfter=\n\n|start_char=764|end_char=772
+
+# text = My email is j.doe+news@mail.example.org, and my handle is @jdoe_dev. My IP was 192.168.0.12 at the time.
+# sent_id = 9
+1	My	I	DET	_	Number=Sing|Poss=Yes|PronType=Prs	2	nmod:poss	_	start_char=774|end_char=776
+2	email	Fmail	NOUN	_	Number=Sing	0	root	_	start_char=777|end_char=782
+3	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	cop	_	start_char=783|end_char=785
+4	j.doe+news@mail.example.org	J.doe+nesple.ererg	PROPN	_	Number=Sing	2	nmod	_	SpaceAfter=No|start_char=786|end_char=813
+5	,	Q	PROPN	_	Number=Sing	4	flat	_	start_char=813|end_char=814
+6	and	and	CCONJ	_	_	8	cc	_	start_char=815|end_char=818
+7	my	I	DET	_	Number=Sing|Poss=Yes|PronType=Prs	8	nmod:poss	_	start_char=819|end_char=821
+8	handle	handle	NOUN	_	Number=Sing	4	conj	_	start_char=822|end_char=828
+9	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	10	cop	_	start_char=829|end_char=831
+10	@jdoe_dev.	Cjdoe_dev.	PROPN	_	Number=Sing	8	nmod	_	start_char=832|end_char=842
+11	My	I	DET	_	Number=Sing|Poss=Yes|PronType=Prs	12	nmod:poss	_	start_char=843|end_char=845
+12	IP	IP	PROPN	_	Number=Sing	10	nsubj	_	start_char=846|end_char=848
+13	was	wave	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	10	cop	_	start_char=849|end_char=852
+14	192	192	NUM	_	NumType=Card	12	flat	_	SpaceAfter=No|start_char=853|end_char=856
+15	.168	.168	NUM	_	NumType=Card	10	flat	_	SpaceAfter=No|start_char=856|end_char=860
+16	.0	.0	NUM	_	NumType=Card	15	nummod	_	SpaceAfter=No|start_char=860|end_char=862
+17	.12	.12	NUM	_	NumType=Card	20	nummod	_	start_char=862|end_char=865
+18	at	at	ADP	_	_	20	case	_	start_char=866|end_char=868
+19	the	the	DET	_	PronType=Art	20	det	_	start_char=869|end_char=872
+20	time.	time.	NOUN	_	Number=Sing	12	nmod	_	SpacesAfter=\n\n|start_char=873|end_char=878
+
+# text = Version 3.10.2 was released on 2023-10-02. Upgrade from v3.9.x
+# sent_id = 10
+1	Version	Version	NOUN	_	Number=Sing	4	nsubj	_	start_char=880|end_char=887
+2	3.10.2	3.10.2	NUM	_	NumType=Card	4	nsubj	_	start_char=888|end_char=894
+3	was	wave	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	aux	_	start_char=895|end_char=898
+4	released	release	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=899|end_char=907
+5	on	on	ADP	_	_	6	case	_	start_char=908|end_char=910
+6	2023	2023	NUM	_	NumType=Card	4	obl	_	SpaceAfter=No|start_char=911|end_char=915
+7	-10	-10	NUM	_	NumType=Card	6	nummod	_	SpaceAfter=No|start_char=915|end_char=918
+8	-02.	-02.	NUM	_	NumType=Card	9	nummod	_	start_char=918|end_char=922
+9	Upgrade	Upgrade	NOUN	_	Number=Sing	4	obl	_	start_char=923|end_char=930
+10	from	from	ADP	_	_	11	case	_	start_char=931|end_char=935
+11	v3.9.x	H3.9.x	PROPN	_	Number=Sing	4	obl	_	start_char=936|end_char=942
+
+# text = is recommended; v2.* is no longer supported.
+# sent_id = 11
+1	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	7	cop	_	start_char=943|end_char=945
+2	recommended;	recommended;	NOUN	_	Number=Sing	3	compound	_	start_char=946|end_char=958
+3	v2.*	V2.*	PROPN	_	Number=Sing	7	nsubj	_	start_char=959|end_char=963
+4	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	7	cop	_	start_char=964|end_char=966
+5	no	no	DET	_	PronType=Art	7	det	_	start_char=967|end_char=969
+6	longer	longer	ADJ	_	Degree=Pos	7	amod	_	start_char=970|end_char=976
+7	supported.	supported.	NOUN	_	Number=Sing	0	root	_	SpacesAfter=\n\n|start_char=977|end_char=987
+
+# text = Use git commit -m "fix: handle empty input" && git push origin main. Hash a1b2c3d introduced the regression.
+# sent_id = 12
+1	Use	use	VERB	_	VerbForm=Inf	0	root	_	start_char=989|end_char=992
+2	git	git	NOUN	_	Number=Sing	3	compound	_	start_char=993|end_char=996
+3	commit	commit	NOUN	_	Number=Sing	1	obj	_	start_char=997|end_char=1003
+4	-m	LM	PROPN	_	Number=Sing	3	conj	_	start_char=1004|end_char=1006
+5	"fix:	Pfix:	PROPN	_	Number=Sing	4	conj	_	start_char=1007|end_char=1012
+6	handle	handle	NOUN	_	Number=Sing	7	compound	_	start_char=1013|end_char=1019
+7	empty	empty	NOUN	_	Number=Sing	8	compound	_	start_char=1020|end_char=1025
+8	input"	Input"	PROPN	_	Number=Sing	4	conj	_	start_char=1026|end_char=1032
+9	&&	W	PROPN	_	Number=Sing	8	nmod	_	start_char=1033|end_char=1035
+10	git	git	NOUN	_	Number=Sing	8	conj	_	start_char=1036|end_char=1039
+11	push	push	NOUN	_	Number=Sing	10	nmod	_	start_char=1040|end_char=1044
+12	origin	origin	NOUN	_	Number=Sing	11	conj	_	start_char=1045|end_char=1051
+13	main.	Main.	PROPN	_	Number=Sing	12	nmod	_	start_char=1052|end_char=1057
+14	Hash	Hash	PROPN	_	Number=Sing	13	flat	_	start_char=1058|end_char=1062
+15	a1b2c3d	A1b2c3d	PROPN	_	Number=Sing	16	nsubj	_	start_char=1063|end_char=1070
+16	introduced	introduce	VERB	_	Tense=Past|VerbForm=Fin	1	advcl	_	start_char=1071|end_char=1081
+17	the	the	DET	_	PronType=Art	18	det	_	start_char=1082|end_char=1085
+18	regression.	regression.	NOUN	_	Number=Sing	16	obj	_	SpacesAfter=\n\n|start_char=1086|end_char=1097
+
+# text = The file README.md says to use Node >= 18. package.json
+# sent_id = 13
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=1099|end_char=1102
+2	file	file	NOUN	_	Number=Sing	5	nsubj	_	start_char=1103|end_char=1107
+3	RE	RE	NOUN	_	Number=Sing	4	compound	_	SpaceAfter=No|start_char=1108|end_char=1110
+4	ADME.md	Adme.md	PROPN	_	Number=Sing	5	nsubj	_	start_char=1110|end_char=1117
+5	says	say	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1118|end_char=1122
+6	to	to	PART	_	_	7	mark	_	start_char=1123|end_char=1125
+7	use	use	VERB	_	VerbForm=Inf	5	xcomp	_	start_char=1126|end_char=1129
+8	Node	Node	NOUN	_	Number=Sing	7	obj	_	start_char=1130|end_char=1134
+9	>=	>=	ADP	_	_	11	case	_	start_char=1135|end_char=1137
+10	18.	18.	NUM	_	NumType=Card	11	nummod	_	start_char=1138|end_char=1141
+11	package.json	Package.json	PROPN	_	Number=Sing	8	nmod	_	start_char=1142|end_char=1154
+
+# text = pins "typescript": "^5.4.0".
+# sent_id = 14
+1	pins	pins	NOUN	_	Number=Plur	0	root	_	start_char=1155|end_char=1159
+2	"typescript":	Wtypescripp"	PROPN	_	Number=Sing	1	conj	_	start_char=1160|end_char=1173
+3	"^5.4.0	"^5.4.0	NUM	_	NumType=Card	2	flat	_	SpaceAfter=No|start_char=1174|end_char=1181
+4	".	QX	PROPN	_	Number=Sing	2	conj	_	SpacesAfter=\n\n|start_char=1181|end_char=1183
+
+# text = x = (a + b) * c / 2; if (x > 10) { return x; } else { return -1; }
+# sent_id = 15
+1	x	Q	PROPN	_	Number=Sing	0	root	_	start_char=1185|end_char=1186
+2	=	Q	PROPN	_	Number=Sing	1	fixed	_	start_char=1187|end_char=1188
+3	(a	LA	PROPN	_	Number=Sing	1	conj	_	start_char=1189|end_char=1191
+4	+	Q	PROPN	_	Number=Sing	3	conj	_	start_char=1192|end_char=1193
+5	b)	B	PROPN	_	Number=Sing	4	nmod	_	start_char=1194|end_char=1196
+6	*	Q	PROPN	_	Number=Sing	5	nmod	_	start_char=1197|end_char=1198
+7	c	C	PROPN	_	Number=Sing	6	nmod	_	start_char=1199|end_char=1200
+8	/	Q	PROPN	_	Number=Sing	7	nmod	_	start_char=1201|end_char=1202
+9	2;	2;	NUM	_	NumType=Card	8	nummod	_	start_char=1203|end_char=1205
+10	if	if	ADP	_	_	11	case	_	start_char=1206|end_char=1208
+11	(x	QX	PROPN	_	Number=Sing	8	nmod	_	start_char=1209|end_char=1211
+12	>	>	NUM	_	NumType=Card	11	flat	_	start_char=1212|end_char=1213
+13	10)	P0)	PROPN	_	Number=Sing	11	conj	_	start_char=1214|end_char=1217
+14	{	{	NOUN	_	Number=Sing	15	nsubj	_	start_char=1218|end_char=1219
+15	return	return	NOUN	_	Number=Sing	13	conj	_	start_char=1220|end_char=1226
+16	x;	x;	NOUN	_	Number=Sing	15	obj	_	start_char=1227|end_char=1229
+17	}	}	NOUN	_	Number=Sing	15	obj	_	start_char=1230|end_char=1231
+18	else	else	ADV	_	Degree=Pos	20	advmod	_	start_char=1232|end_char=1236
+19	{	{	NOUN	_	Number=Sing	20	nsubj	_	start_char=1237|end_char=1238
+20	return	return	NOUN	_	Number=Sing	15	conj	_	start_char=1239|end_char=1245
+21	-1;	-1;	NUM	_	NumType=Card	22	nummod	_	start_char=1246|end_char=1249
+22	}	}	NOUN	_	Number=Sing	20	obj	_	SpacesAfter=\n\n|start_char=1250|end_char=1251
+
+# text = The meeting is at 9:30 a.m. on Mon., Jan. 8, 2024. Or was it 09:30 on 08/01/2024? In ISO format: 2024-01-08T09:30:00Z.
+# sent_id = 16
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=1253|end_char=1256
+2	meeting	meet	NOUN	_	Number=Sing	0	root	_	start_char=1257|end_char=1264
+3	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	cop	_	start_char=1265|end_char=1267
+4	at	at	ADP	_	_	6	case	_	start_char=1268|end_char=1270
+5	9:30	9:30	NUM	_	NumType=Card	6	nummod	_	start_char=1271|end_char=1275
+6	a.m.	A.m.	NOUN	_	Number=Sing	2	nmod:tmod	_	start_char=1276|end_char=1280
+7	on	on	ADP	_	_	8	case	_	start_char=1281|end_char=1283
+8	Mon.,	Mon.,	PROPN	_	Number=Sing	6	nmod	_	start_char=1284|end_char=1289
+9	Jan.	Jan.	PROPN	_	Number=Sing	8	flat	_	start_char=1290|end_char=1294
+10	8,	8,	NUM	_	NumType=Card	9	nummod	_	start_char=1295|end_char=1297
+11	2024.	2024.	NUM	_	NumType=Card	6	nummod	_	start_char=1298|end_char=1303
+12	Or	or	CCONJ	_	_	15	cc	_	start_char=1304|end_char=1306
+13	was	wave	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	15	cop	_	start_char=1307|end_char=1310
+14	it	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	15	nsubj	_	start_char=1311|end_char=1313
+15	09:30	09:30	NUM	_	NumType=Card	6	conj	_	start_char=1314|end_char=1319
+16	on	on	ADP	_	_	17	case	_	start_char=1320|end_char=1322
+17	08/01	08/01	NUM	_	NumType=Card	15	nummod	_	SpaceAfter=No|start_char=1323|end_char=1328
+18	/2024?	/2024?	NUM	_	NumType=Card	15	nummod	_	start_char=1328|end_char=1334
+19	In	in	ADP	_	_	20	case	_	start_char=1335|end_char=1337
+20	ISO	Iso	PROPN	_	Number=Sing	15	nmod	_	start_char=1338|end_char=1341
+21	format:	Format:	PROPN	_	Number=Sing	20	flat	_	start_char=1342|end_char=1349
+22	2024	2024	NUM	_	NumType=Card	21	flat	_	SpaceAfter=No|start_char=1350|end_char=1354
+23	-01	-01	NUM	_	NumType=Card	21	flat	_	SpaceAfter=No|start_char=1354|end_char=1357
+24	-08	-08	NUM	_	NumType=Card	23	nummod	_	SpaceAfter=No|start_char=1357|end_char=1360
+25	T09	T09	NUM	_	NumType=Card	24	nummod	_	SpaceAfter=No|start_char=1360|end_char=1363
+26	:30	:30	NUM	_	NumType=Card	27	nummod	_	SpaceAfter=No|start_char=1363|end_char=1366
+27	:00Z.	:00Z.	NUM	_	NumType=Card	25	nummod	_	SpacesAfter=\n\n|start_char=1366|end_char=1371
+
+# text = We're open 9am–5pm, Mon–Fri, and 10:00–14:00 on Saturdays. Closed Dec 24–26.
+# sent_id = 17
+1-2	We're	_	_	_	_	_	_	_	start_char=1373|end_char=1378
+1	We	we	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	3	nsubj	_	start_char=1373|end_char=1375
+2	're	be	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	3	cop	_	start_char=1375|end_char=1378
+3	open	open	ADJ	_	Degree=Pos	0	root	_	start_char=1379|end_char=1383
+4	9am–5pm,	Cam–5pm,	PROPN	_	Number=Sing	3	obl	_	start_char=1384|end_char=1392
+5	Mon–Fri,	Mon–fri,	PROPN	_	Number=Sing	4	nmod	_	start_char=1393|end_char=1401
+6	and	and	CCONJ	_	_	8	cc	_	start_char=1402|end_char=1405
+7	10	10	NUM	_	NumType=Card	8	nummod	_	SpaceAfter=No|start_char=1406|end_char=1408
+8	:00	:00	NUM	_	NumType=Card	4	nmod	_	SpaceAfter=No|start_char=1408|end_char=1411
+9	–14:00	–14:00	NUM	_	NumType=Card	4	nmod	_	start_char=1411|end_char=1417
+10	on	on	ADP	_	_	11	case	_	start_char=1418|end_char=1420
+11	Saturdays.	Saturday	PROPN	_	Number=Sing	4	nmod	_	start_char=1421|end_char=1431
+12	Closed	clo	VERB	_	Tense=Pres|VerbForm=Part	4	acl:relcl	_	start_char=1432|end_char=1438
+13	Dec	Dec	NOUN	_	Number=Sing	12	obl:unmarked	_	start_char=1439|end_char=1442
+14	24	24	NUM	_	NumType=Card	13	nummod	_	SpaceAfter=No|start_char=1443|end_char=1445
+15	–26.	–26.	NUM	_	NumType=Card	13	nummod	_	SpacesAfter=\n\n|start_char=1445|end_char=1449
+
+# text = The war lasted from 1914 to 1918. The 1990s
+# sent_id = 18
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=1451|end_char=1454
+2	war	war	NOUN	_	Number=Sing	3	nsubj	_	start_char=1455|end_char=1458
+3	lasted	last	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=1459|end_char=1465
+4	from	from	ADP	_	_	5	case	_	start_char=1466|end_char=1470
+5	1914	1914	NUM	_	NumType=Card	3	obl	_	start_char=1471|end_char=1475
+6	to	to	ADP	_	_	7	case	_	start_char=1476|end_char=1478
+7	1918.	1918.	NUM	_	NumType=Card	3	obl	_	start_char=1479|end_char=1484
+8	The	the	DET	_	PronType=Art	9	det	_	start_char=1485|end_char=1488
+9	1990s	1990	NUM	_	NumType=Card	3	obl	_	start_char=1489|end_char=1494
+
+# text = saw rapid growth; the '80s did not. She was born in the mid-'60s.
+# sent_id = 19
+1	saw	saw	VERB	_	VerbForm=Fin	0	root	_	start_char=1495|end_char=1498
+2	rapid	rape	ADJ	_	Degree=Pos	3	amod	_	start_char=1499|end_char=1504
+3	growth;	growth;	NOUN	_	Number=Sing	1	obj	_	start_char=1505|end_char=1512
+4	the	the	DET	_	PronType=Art	5	det	_	start_char=1513|end_char=1516
+5	'80s	'80s	NOUN	_	Number=Plur	3	conj	_	start_char=1517|end_char=1521
+6	did	did	VERB	_	VerbForm=Inf	1	parataxis	_	start_char=1522|end_char=1525
+7	not.	not.	ADV	_	Degree=Pos	6	advmod	_	start_char=1526|end_char=1530
+8	She	She	ADV	_	Degree=Pos	10	advmod	_	start_char=1531|end_char=1534
+9	was	wave	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	10	aux	_	start_char=1535|end_char=1538
+10	born	born	VERB	_	Tense=Past|VerbForm=Part	6	conj	_	start_char=1539|end_char=1543
+11	in	in	ADP	_	_	13	case	_	start_char=1544|end_char=1546
+12	the	the	DET	_	PronType=Art	13	det	_	start_char=1547|end_char=1550
+13	mid-'60s.	mid-'60s.	NOUN	_	Number=Sing	10	obl	_	SpacesAfter=\n\n|start_char=1551|end_char=1560
+
+# text = He finished 1st, she came in 2nd, and I was 3rd. The 21st century began on 1/1/2001, not 1/1/2000. It was his 102nd birthday.
+# sent_id = 20
+1	He	He	ADV	_	Degree=Pos	2	discourse	_	start_char=1562|end_char=1564
+2	finished	finish	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=1565|end_char=1573
+3	1st,	1st,	NUM	_	NumType=Card	2	obj	_	start_char=1574|end_char=1578
+4	she	she	ADV	_	Degree=Pos	5	advmod	_	start_char=1579|end_char=1582
+5	came	came	VERB	_	Tense=Pres|VerbForm=Part	2	conj	_	start_char=1583|end_char=1587
+6	in	in	ADP	_	_	7	case	_	start_char=1588|end_char=1590
+7	2nd,	2nd,	NUM	_	NumType=Card	5	obl	_	start_char=1591|end_char=1595
+8	and	and	CCONJ	_	_	5	cc	_	start_char=1596|end_char=1599
+9	I	I	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	11	nsubj	_	start_char=1600|end_char=1601
+10	was	wave	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	15	aux	_	start_char=1602|end_char=1605
+11	3rd.	3rd.	NUM	_	NumType=Card	5	obl	_	start_char=1606|end_char=1610
+12	The	the	DET	_	PronType=Art	14	det	_	start_char=1611|end_char=1614
+13	21st	best	ADJ	_	Degree=Pos	14	amod	_	start_char=1615|end_char=1619
+14	century	century	ADJ	_	Degree=Pos	15	amod	_	start_char=1620|end_char=1627
+15	began	began	VERB	_	Tense=Pres|VerbForm=Part	2	parataxis	_	start_char=1628|end_char=1633
+16	on	on	ADP	_	_	17	case	_	start_char=1634|end_char=1636
+17	1/1	1/1	NUM	_	NumType=Card	15	obl	_	SpaceAfter=No|start_char=1637|end_char=1640
+18	/2001,	/2001,	NUM	_	NumType=Card	15	obl	_	start_char=1640|end_char=1646
+19	not	not	ADV	_	Degree=Pos	15	advmod	_	start_char=1647|end_char=1650
+20	1/1	1/1	NUM	_	NumType=Card	18	nummod	_	SpaceAfter=No|start_char=1651|end_char=1654
+21	/2000.	/2000.	NUM	_	NumType=Card	15	obl	_	start_char=1654|end_char=1660
+22	It	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	26	nsubj	_	start_char=1661|end_char=1663
+23	was	wave	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	26	cop	_	start_char=1664|end_char=1667
+24	his	his	DET	_	PronType=Art	26	det	_	start_char=1668|end_char=1671
+25	102nd	T02nd	PROPN	_	Number=Sing	26	compound	_	start_char=1672|end_char=1677
+26	birthday.	Birthday.	NOUN	_	Number=Sing	2	parataxis	_	SpacesAfter=\n\n|start_char=1678|end_char=1687
+
+# text = Divide by ½, multiply by ¾, then add 3/8. About 2/3 of respondents agreed; 1 in 5 strongly
+# sent_id = 21
+1	Divide	Divide	VERB	_	VerbForm=Inf	0	root	_	start_char=1689|end_char=1695
+2	by	by	ADP	_	_	3	case	_	start_char=1696|end_char=1698
+3	½,	W	PROPN	_	Number=Sing	1	obl	_	start_char=1699|end_char=1701
+4	multiply	multiply	VERB	_	VerbForm=Fin	1	conj	_	start_char=1702|end_char=1710
+5	by	by	ADP	_	_	6	case	_	start_char=1711|end_char=1713
+6	¾,	W	PROPN	_	Number=Sing	4	obl	_	start_char=1714|end_char=1716
+7	then	then	ADV	_	Degree=Pos	8	advmod	_	start_char=1717|end_char=1721
+8	add	add	VERB	_	VerbForm=Inf	1	conj	_	start_char=1722|end_char=1725
+9	3/8.	3/8.	NUM	_	NumType=Card	8	obl	_	start_char=1726|end_char=1730
+10	About	about	ADP	_	_	11	case	_	start_char=1731|end_char=1736
+11	2/3	2/3	NUM	_	NumType=Card	8	obl	_	start_char=1737|end_char=1740
+12	of	of	ADP	_	_	13	case	_	start_char=1741|end_char=1743
+13	respondents	respondent	NOUN	_	Number=Plur	8	obl	_	start_char=1744|end_char=1755
+14	agreed;	agreed;	VERB	_	Tense=Pres|VerbForm=Part	8	ccomp	_	start_char=1756|end_char=1763
+15	1	1	NUM	_	NumType=Card	14	obl:unmarked	_	start_char=1764|end_char=1765
+16	in	in	ADP	_	_	18	case	_	start_char=1766|end_char=1768
+17	5	5	NUM	_	NumType=Card	18	nummod	_	start_char=1769|end_char=1770
+18	strongly	strongly	ADV	_	Degree=Pos	14	advmod	_	start_char=1771|end_char=1779
+
+# text = disagreed.
+# sent_id = 22
+1	disagreed.	disagreed.	NOUN	_	Number=Sing	0	root	_	SpacesAfter=\n\n|start_char=1780|end_char=1790
+
+# text = The deadline is 11:59 PM EST on March 3rd. Late submissions lose 10% per day.
+# sent_id = 23
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=1792|end_char=1795
+2	deadline	deadline	NOUN	_	Number=Sing	13	obl	_	start_char=1796|end_char=1804
+3	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	cop	_	start_char=1805|end_char=1807
+4	11	11	NUM	_	NumType=Card	2	nummod	_	SpaceAfter=No|start_char=1808|end_char=1810
+5	:59	:59	NUM	_	NumType=Card	6	nummod	_	start_char=1810|end_char=1813
+6	PM	pm	NOUN	_	Number=Sing	2	nmod:tmod	_	start_char=1814|end_char=1816
+7	EST	EST	NUM	_	NumType=Card	6	nummod	_	start_char=1817|end_char=1820
+8	on	on	ADP	_	_	9	case	_	start_char=1821|end_char=1823
+9	March	March	NOUN	_	Number=Sing	6	nmod:tmod	_	start_char=1824|end_char=1829
+10	3rd.	3rd.	NUM	_	NumType=Card	9	nummod	_	start_char=1830|end_char=1834
+11	Late	late	ADJ	_	Degree=Pos	12	amod	_	start_char=1835|end_char=1839
+12	submissions	submission	NOUN	_	Number=Plur	13	nsubj	_	start_char=1840|end_char=1851
+13	lose	lose	VERB	_	VerbForm=Inf	0	root	_	start_char=1852|end_char=1856
+14	10%	10%	NUM	_	NumType=Card	16	nummod	_	start_char=1857|end_char=1860
+15	per	per	ADJ	_	Degree=Pos	16	amod	_	start_char=1861|end_char=1864
+16	day.	day.	NOUN	_	Number=Plur	13	obj	_	SpacesAfter=\n\n|start_char=1865|end_char=1869
+
+# text = Between 1–3 June and 5–7 July the office will be closed. Call between 2 and 4 p.m. weekdays.
+# sent_id = 24
+1	Between	between	ADP	_	_	2	case	_	start_char=1871|end_char=1878
+2	1–3	1–3	NUM	_	NumType=Card	3	nummod	_	start_char=1879|end_char=1882
+3	June	June	NOUN	_	Number=Sing	11	obl:unmarked	_	start_char=1883|end_char=1887
+4	and	and	CCONJ	_	_	6	cc	_	start_char=1888|end_char=1891
+5	5–7	5–7	NUM	_	NumType=Card	3	conj	_	start_char=1892|end_char=1895
+6	July	July	NOUN	_	Number=Sing	3	conj	_	start_char=1896|end_char=1900
+7	the	the	DET	_	PronType=Art	8	det	_	start_char=1901|end_char=1904
+8	office	office	NOUN	_	Number=Sing	11	nsubj	_	start_char=1905|end_char=1911
+9	will	will	AUX	_	_	11	aux	_	start_char=1912|end_char=1916
+10	be	be	AUX	_	VerbForm=Inf	11	cop	_	start_char=1917|end_char=1919
+11	closed.	close	ADJ	_	Degree=Pos	0	root	_	start_char=1920|end_char=1927
+12	Call	Call	NOUN	_	Number=Sing	11	obl	_	start_char=1928|end_char=1932
+13	between	between	ADP	_	_	14	case	_	start_char=1933|end_char=1940
+14	2	2	NUM	_	NumType=Card	18	nummod	_	start_char=1941|end_char=1942
+15	and	and	CCONJ	_	_	16	cc	_	start_char=1943|end_char=1946
+16	4	4	NUM	_	NumType=Card	14	conj	_	start_char=1947|end_char=1948
+17	p.m.	p.m.	NOUN	_	Number=Sing	14	conj	_	start_char=1949|end_char=1953
+18	weekdays.	weekday	NOUN	_	Number=Sing	12	obl:unmarked	_	SpacesAfter=\n\n|start_char=1954|end_char=1963
+
+# text = It took 1h 23m 45s. The record is 01:19:02.7.
+# sent_id = 25
+1	It	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=1965|end_char=1967
+2	took	took	VERB	_	VerbForm=Fin	0	root	_	start_char=1968|end_char=1972
+3	1h	1h	NUM	_	NumType=Card	2	obl	_	start_char=1973|end_char=1975
+4	23m	23m	NUM	_	NumType=Card	2	obl	_	start_char=1976|end_char=1979
+5	45s.	45s.	NUM	_	NumType=Card	2	obl	_	start_char=1980|end_char=1984
+6	The	the	DET	_	PronType=Art	7	det	_	start_char=1985|end_char=1988
+7	record	record	NOUN	_	Number=Sing	2	obl	_	start_char=1989|end_char=1995
+8	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	9	cop	_	start_char=1996|end_char=1998
+9	01	01	NUM	_	NumType=Card	2	obl	_	SpaceAfter=No|start_char=1999|end_char=2001
+10	:19	:19	NUM	_	NumType=Card	9	nummod	_	SpaceAfter=No|start_char=2001|end_char=2004
+11	:02.7.	:02.7.	NUM	_	NumType=Card	2	obl	_	SpacesAfter=\n\n|start_char=2004|end_char=2010
+
+# text = The appointment is on Tues 12/5 @ 3:15pm. Please arrive 15 min early.
+# sent_id = 26
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=2012|end_char=2015
+2	appointment	appointment	NOUN	_	Number=Sing	0	root	_	start_char=2016|end_char=2027
+3	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	cop	_	start_char=2028|end_char=2030
+4	on	on	ADP	_	_	5	case	_	start_char=2031|end_char=2033
+5	Tues	tue	NOUN	_	Number=Sing	2	nmod	_	start_char=2034|end_char=2038
+6	12/5	P2/5	PROPN	_	Number=Sing	5	nmod	_	start_char=2039|end_char=2043
+7	@	Q	PROPN	_	Number=Sing	6	nmod	_	start_char=2044|end_char=2045
+8	3:15pm.	3:15pm.	NUM	_	NumType=Card	6	nummod	_	start_char=2046|end_char=2053
+9	Please	please	INTJ	_	_	10	mark	_	start_char=2054|end_char=2060
+10	arrive	arrive	VERB	_	VerbForm=Inf	5	conj	_	start_char=2061|end_char=2067
+11	15	15	NUM	_	NumType=Card	12	nummod	_	start_char=2068|end_char=2070
+12	min	Min	PROPN	_	Number=Sing	10	obl	_	start_char=2071|end_char=2074
+13	early.	early.	ADV	_	Degree=Pos	10	advmod	_	SpacesAfter=\n\n|start_char=2075|end_char=2081
+
+# text = Today is the twenty-first of September, two thousand twenty-three.
+# sent_id = 27
+1	Today	today	NOUN	_	Number=Sing	0	root	_	start_char=2083|end_char=2088
+2	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	1	cop	_	start_char=2089|end_char=2091
+3	the	the	DET	_	PronType=Art	5	det	_	start_char=2092|end_char=2095
+4	twenty	twenty	NUM	_	NumType=Card	5	compound	_	SpaceAfter=No|start_char=2096|end_char=2102
+5	-first	-fy	ADJ	_	Degree=Pos|NumType=Ord	1	nsubj	_	start_char=2102|end_char=2108
+6	of	of	ADP	_	_	7	case	_	start_char=2109|end_char=2111
+7	September,	September	NOUN	_	Number=Sing	5	nmod	_	start_char=2112|end_char=2122
+8	two	two	NUM	_	NumType=Card	9	compound	_	start_char=2123|end_char=2126
+9	thousand	thousand	NUM	_	NumType=Card	7	amod	_	start_char=2127|end_char=2135
+10	twenty	twenty	NUM	_	NumType=Card	11	compound	_	SpaceAfter=No|start_char=2136|end_char=2142
+11	-three.	-three.	NUM	_	NumType=Card	7	nummod	_	SpacesAfter=\n\n|start_char=2142|end_char=2149
+
+# text = FY2022-23 revenue was flat. FY24 is expected to be better.
+# sent_id = 28
+1	F	F	PROPN	_	Number=Sing	9	obl	_	SpaceAfter=No|start_char=2151|end_char=2152
+2	Y2022	Y2022	NUM	_	NumType=Card	1	flat	_	SpaceAfter=No|start_char=2152|end_char=2157
+3	-23	-23	NUM	_	NumType=Card	4	nummod	_	start_char=2157|end_char=2160
+4	revenue	revenue	NOUN	_	Number=Sing	9	nsubj	_	start_char=2161|end_char=2168
+5	was	wave	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	9	aux	_	start_char=2169|end_char=2172
+6	flat.	flat.	NOUN	_	Number=Sing	7	compound	_	start_char=2173|end_char=2178
+7	FY24	FY24	NOUN	_	Number=Sing	9	nsubj	_	start_char=2179|end_char=2183
+8	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	9	cop	_	start_char=2184|end_char=2186
+9	expected	expected	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=2187|end_char=2195
+10	to	to	PART	_	_	12	mark	_	start_char=2196|end_char=2198
+11	be	be	AUX	_	VerbForm=Inf	12	cop	_	start_char=2199|end_char=2201
+12	better.	better.	ADJ	_	Degree=Pos	9	advmod	_	SpacesAfter=\n\n|start_char=2202|end_char=2209
+
+# text = int main(int argc, char **argv) { printf("hello, world\n"); return 0; }
+# sent_id = 29
+1	int	Int	PROPN	_	Number=Sing	10	nsubj	_	start_char=2211|end_char=2214
+2	main(int	Main(int	PROPN	_	Number=Sing	10	nsubj	_	start_char=2215|end_char=2223
+3	argc,	Argc,	PROPN	_	Number=Sing	2	conj	_	start_char=2224|end_char=2229
+4	char	Char	PROPN	_	Number=Sing	3	conj	_	start_char=2230|end_char=2234
+5	**argv)	R*argv)	PROPN	_	Number=Sing	8	compound	_	start_char=2235|end_char=2242
+6	{	{	NOUN	_	Number=Sing	7	compound	_	start_char=2243|end_char=2244
+7	printf	printf	NOUN	_	Number=Sing	10	compound	_	SpaceAfter=No|start_char=2245|end_char=2251
+8	("hello,	C"hello,,	PROPN	_	Number=Sing	10	compound	_	start_char=2251|end_char=2259
+9	world\n");	World\n")	PROPN	_	Number=Sing	8	nmod	_	start_char=2260|end_char=2270
+10	return	return	NOUN	_	Number=Sing	0	root	_	start_char=2271|end_char=2277
+11	0;	0;	NUM	_	NumType=Card	12	nummod	_	start_char=2278|end_char=2280
+12	}	}	NOUN	_	Number=Sing	10	obj	_	SpacesAfter=\n\n|start_char=2281|end_char=2282
+
+# text = The variable is named user_id, not userId or UserID. Use snake_case in Python and camelCase in JavaScript.
+# sent_id = 30
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=2284|end_char=2287
+2	variable	variable	NOUN	_	Number=Sing	4	nsubj	_	start_char=2288|end_char=2296
+3	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	cop	_	start_char=2297|end_char=2299
+4	named	name	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=2300|end_char=2305
+5	user_id,	user_id,	NOUN	_	Number=Sing	4	obl	_	start_char=2306|end_char=2314
+6	not	not	ADV	_	Degree=Pos	4	advmod	_	start_char=2315|end_char=2318
+7	userId	userId	NOUN	_	Number=Sing	5	conj	_	start_char=2319|end_char=2325
+8	or	or	CCONJ	_	_	9	cc	_	start_char=2326|end_char=2328
+9	UserID.	Userid.	PROPN	_	Number=Sing	7	conj	_	start_char=2329|end_char=2336
+10	Use	use	NOUN	_	Number=Sing	7	conj	_	start_char=2337|end_char=2340
+11	snake	Snake	PROPN	_	Number=Sing	10	nmod	_	SpaceAfter=No|start_char=2341|end_char=2346
+12	_case	Lcase	PROPN	_	Number=Sing	7	nmod	_	start_char=2346|end_char=2351
+13	in	in	ADP	_	_	14	case	_	start_char=2352|end_char=2354
+14	Python	Python	PROPN	_	Number=Sing	12	nmod	_	start_char=2355|end_char=2361
+15	and	and	CCONJ	_	_	16	cc	_	start_char=2362|end_char=2365
+16	camelCase	Camelcase	PROPN	_	Number=Sing	14	conj	_	start_char=2366|end_char=2375
+17	in	in	ADP	_	_	18	case	_	start_char=2376|end_char=2378
+18	JavaScript.	Javascript..	PROPN	_	Number=Sing	16	nmod	_	SpacesAfter=\n\n|start_char=2379|end_char=2390
+
+# text = Ctrl+Alt+Del restarts it. Press Cmd-Shift-4 for a screenshot.
+# sent_id = 31
+1	Ctrl+Alt	Ctrl+alt	PROPN	_	Number=Sing	3	obl	_	SpaceAfter=No|start_char=2392|end_char=2400
+2	+Del	Ldel	PROPN	_	Number=Sing	1	flat	_	start_char=2400|end_char=2404
+3	restarts	restart	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2405|end_char=2413
+4	it.	It.	PROPN	_	Number=Sing	3	obl	_	start_char=2414|end_char=2417
+5	Press	Tress	PROPN	_	Number=Sing	4	nmod	_	start_char=2418|end_char=2423
+6	Cmd-Shift-4	Cmd-Shift-4	NUM	_	NumType=Card	4	nummod	_	start_char=2424|end_char=2435
+7	for	for	ADP	_	_	9	case	_	start_char=2436|end_char=2439
+8	a	a	DET	_	PronType=Art	9	det	_	start_char=2440|end_char=2441
+9	screenshot.	Screenshot	PROPN	_	Number=Sing	3	obl	_	SpacesAfter=\n\n|start_char=2442|end_char=2453
+
+# text = The ratio is 16:9. The score was 3–2 after extra time. Gate B12, seat 14C.
+# sent_id = 32
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=2455|end_char=2458
+2	ratio	ratio	NOUN	_	Number=Sing	0	root	_	start_char=2459|end_char=2464
+3	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	cop	_	start_char=2465|end_char=2467
+4	16	16	NUM	_	NumType=Card	2	nsubj	_	SpaceAfter=No|start_char=2468|end_char=2470
+5	:9.	:9.	ADV	_	Degree=Pos	7	advmod	_	start_char=2470|end_char=2473
+6	The	the	DET	_	PronType=Art	7	det	_	start_char=2474|end_char=2477
+7	score	score	NOUN	_	Number=Sing	2	nmod	_	start_char=2478|end_char=2483
+8	was	wave	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	7	nmod	_	start_char=2484|end_char=2487
+9	3–2	3–2	NUM	_	NumType=Card	7	nummod	_	start_char=2488|end_char=2491
+10	after	after	ADP	_	_	12	case	_	start_char=2492|end_char=2497
+11	extra	extra	ADJ	_	Degree=Pos	12	amod	_	start_char=2498|end_char=2503
+12	time.	time.	NOUN	_	Number=Sing	7	nmod	_	start_char=2504|end_char=2509
+13	Gate	Gate	NOUN	_	Number=Sing	12	nmod	_	start_char=2510|end_char=2514
+14	B12,	B12,	PROPN	_	Number=Sing	13	flat	_	start_char=2515|end_char=2519
+15	seat	seat	NOUN	_	Number=Sing	14	flat	_	start_char=2520|end_char=2524
+16	14C.	14C.	NUM	_	NumType=Card	15	nummod	_	SpacesAfter=\n\n|start_char=2525|end_char=2529
+
+# text = Download the 2.4GB ISO from ftp://mirror.example.net/pub/linux/ and verify
+# sent_id = 33
+1	Download	download	VERB	_	VerbForm=Inf	0	root	_	start_char=2531|end_char=2539
+2	the	the	DET	_	PronType=Art	4	det	_	start_char=2540|end_char=2543
+3	2.4GB	U.4gb	PROPN	_	Number=Sing	4	compound	_	start_char=2544|end_char=2549
+4	ISO	Iso	PROPN	_	Number=Sing	1	obj	_	start_char=2550|end_char=2553
+5	from	from	ADP	_	_	6	case	_	start_char=2554|end_char=2558
+6	ftp:/	Ftp:/	PROPN	_	Number=Sing	4	nmod	_	SpaceAfter=No|start_char=2559|end_char=2564
+7	/mirror.e	Tmirror.e	PROPN	_	Number=Sing	6	flat	_	SpaceAfter=No|start_char=2564|end_char=2573
+8	xample.net	Pample.net	PROPN	_	Number=Sing	6	appos	_	SpaceAfter=No|start_char=2573|end_char=2583
+9	/pub/linux/	Ppub/linuxx	PROPN	_	Number=Sing	6	appos	_	start_char=2583|end_char=2594
+10	and	and	CCONJ	_	_	11	cc	_	start_char=2595|end_char=2598
+11	verify	verify	VERB	_	VerbForm=Inf	1	conj	_	start_char=2599|end_char=2605
+
+# text = its SHA-256 checksum.
+# sent_id = 34
+1	its	its	DET	_	PronType=Art	2	det	_	start_char=2606|end_char=2609
+2	SHA	Sha	PROPN	_	Number=Sing	4	nmod	_	SpaceAfter=No|start_char=2610|end_char=2613
+3	-256	W256	PROPN	_	Number=Sing	2	flat	_	start_char=2613|end_char=2617
+4	checksum.	checksum.	NOUN	_	Number=Sing	0	root	_	SpacesAfter=\n\n|start_char=2618|end_char=2627
+
+# text = Use the -v flag (or --verbose) for more output. The --dry-run option prints commands without executing them.
+# sent_id = 35
+1	Use	use	VERB	_	VerbForm=Inf	0	root	_	start_char=2629|end_char=2632
+2	the	the	DET	_	PronType=Art	4	det	_	start_char=2633|end_char=2636
+3	-v	HH	PROPN	_	Number=Sing	4	compound	_	start_char=2637|end_char=2639
+4	flag	flag	NOUN	_	Number=Sing	1	obj	_	start_char=2640|end_char=2644
+5	(or	(or	ADP	_	_	6	case	_	start_char=2645|end_char=2648
+6	--verbose)	W-verbose)	PROPN	_	Number=Sing	4	nmod	_	start_char=2649|end_char=2659
+7	for	for	ADP	_	_	9	case	_	start_char=2660|end_char=2663
+8	more	more	ADJ	_	Degree=Cmp	9	amod	_	start_char=2664|end_char=2668
+9	output.	output.	NOUN	_	Number=Plur	4	nmod	_	start_char=2669|end_char=2676
+10	The	the	DET	_	PronType=Art	12	det	_	start_char=2677|end_char=2680
+11	--dry-run	C-dry-run	PROPN	_	Number=Sing	12	compound	_	start_char=2681|end_char=2690
+12	option	option	NOUN	_	Number=Sing	13	compound	_	start_char=2691|end_char=2697
+13	prints	print	NOUN	_	Number=Plur	14	compound	_	start_char=2698|end_char=2704
+14	commands	command	NOUN	_	Number=Plur	1	obl	_	start_char=2705|end_char=2713
+15	without	without	ADP	_	_	16	mark	_	start_char=2714|end_char=2721
+16	executing	execute	VERB	_	Tense=Pres|VerbForm=Part	14	acl:relcl	_	start_char=2722|end_char=2731
+17	them.	Them.	PROPN	_	Number=Sing	16	obj	_	SpacesAfter=\n\n|start_char=2732|end_char=2737
+
+# text = He paid $1.5M for a 3BR/2BA house built c. 1925.
+# sent_id = 36
+1	He	He	ADV	_	Degree=Pos	2	advmod	_	start_char=2739|end_char=2741
+2	paid	paid	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=2742|end_char=2746
+3	$1.5M	$1.5M	NUM	_	NumType=Card	2	obj	_	start_char=2747|end_char=2752
+4	for	for	ADP	_	_	8	case	_	start_char=2753|end_char=2756
+5	a	a	DET	_	PronType=Art	8	det	_	start_char=2757|end_char=2758
+6	3BR	Bbr	PROPN	_	Number=Sing	8	compound	_	SpaceAfter=No|start_char=2759|end_char=2762
+7	/2BA	P2ba	PROPN	_	Number=Sing	8	nmod	_	start_char=2762|end_char=2766
+8	house	house	NOUN	_	Number=Sing	2	obl	_	start_char=2767|end_char=2772
+9	built	built	VERB	_	Tense=Past|VerbForm=Part	8	acl:relcl	_	start_char=2773|end_char=2778
+10	c.	CX	PROPN	_	Number=Sing	9	obl	_	start_char=2779|end_char=2781
+11	1925.	1925.	NUM	_	NumType=Card	10	nummod	_	SpacesAfter=\n\n|start_char=2782|end_char=2787
+
+# text = The function f(x) = 2x + 1 maps 3 to 7. Let n ≥ 1.
+# sent_id = 37
+1	The	the	DET	_	PronType=Art	3	det	_	start_char=2789|end_char=2792
+2	function	function	NOUN	_	Number=Sing	3	compound	_	start_char=2793|end_char=2801
+3	f(x)	f(x)	NOUN	_	Number=Sing	0	root	_	start_char=2802|end_char=2806
+4	=	Q	PROPN	_	Number=Sing	3	nmod	_	start_char=2807|end_char=2808
+5	2x	2x	NUM	_	NumType=Card	3	nmod	_	start_char=2809|end_char=2811
+6	+	Q	PROPN	_	Number=Sing	3	nmod	_	start_char=2812|end_char=2813
+7	1	1	NUM	_	NumType=Card	8	nummod	_	start_char=2814|end_char=2815
+8	maps	Mape	NOUN	_	Number=Plur	3	nmod	_	start_char=2816|end_char=2820
+9	3	3	NUM	_	NumType=Card	8	nummod	_	start_char=2821|end_char=2822
+10	to	to	ADP	_	_	11	case	_	start_char=2823|end_char=2825
+11	7.	7.	NUM	_	NumType=Card	8	nummod	_	start_char=2826|end_char=2828
+12	Let	let	VERB	_	VerbForm=Inf	3	acl:relcl	_	start_char=2829|end_char=2832
+13	n	N	PROPN	_	Number=Sing	12	obj	_	start_char=2833|end_char=2834
+14	≥	Q	PROPN	_	Number=Sing	12	obj	_	start_char=2835|end_char=2836
+15	1.	1.	NUM	_	NumType=Card	14	nummod	_	SpacesAfter=\n\n|start_char=2837|end_char=2839
+
+# text = Temperatures ranged from -5 to +12 degrees. The wind was 15-20 mph, gusting to 35.
+# sent_id = 38
+1	Temperatures	temperaturer	NOUN	_	Number=Plur	2	nsubj	_	start_char=2841|end_char=2853
+2	ranged	ranged	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=2854|end_char=2860
+3	from	from	ADP	_	_	4	case	_	start_char=2861|end_char=2865
+4	-5	-5	NUM	_	NumType=Card	2	obl	_	start_char=2866|end_char=2868
+5	to	to	ADP	_	_	7	case	_	start_char=2869|end_char=2871
+6	+12	+12	NUM	_	NumType=Card	7	nummod	_	start_char=2872|end_char=2875
+7	degrees.	degrees.	NOUN	_	Number=Sing	2	obl	_	start_char=2876|end_char=2884
+8	The	the	DET	_	PronType=Art	9	det	_	start_char=2885|end_char=2888
+9	wind	wind	NOUN	_	Number=Sing	2	obl	_	start_char=2889|end_char=2893
+10	was	wave	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	9	cop	_	start_char=2894|end_char=2897
+11	15-20	15-20	NUM	_	NumType=Card	9	nummod	_	start_char=2898|end_char=2903
+12	mph,	Mph,	PROPN	_	Number=Sing	9	nmod	_	start_char=2904|end_char=2908
+13	gusting	gust	VERB	_	Tense=Pres|VerbForm=Part	2	advcl	_	start_char=2909|end_char=2916
+14	to	to	ADP	_	_	15	case	_	start_char=2917|end_char=2919
+15	35.	35.	NUM	_	NumType=Card	13	obl:unmarked	_	SpacesAfter=\n\n|start_char=2920|end_char=2923
+
+# text = Call 1-800-555-0100 ext. 42. Fax: (212) 555-0188.
+# sent_id = 39
+1	Call	Call	VERB	_	VerbForm=Inf	0	root	_	start_char=2925|end_char=2929
+2	1-800	1-800	NUM	_	NumType=Card	1	obl	_	SpaceAfter=No|start_char=2930|end_char=2935
+3	-555	-555	NUM	_	NumType=Card	1	obl	_	SpaceAfter=No|start_char=2935|end_char=2939
+4	-0100	-0100	NUM	_	NumType=Card	3	nummod	_	start_char=2939|end_char=2944
+5	ext.	Ext.	PROPN	_	Number=Sing	2	nmod	_	start_char=2945|end_char=2949
+6	42.	42.	NUM	_	NumType=Card	7	nummod	_	start_char=2950|end_char=2953
+7	Fax:	Fax:	PROPN	_	Number=Sing	1	obl	_	start_char=2954|end_char=2958
+8	(212)	(212)	NUM	_	NumType=Card	7	flat	_	start_char=2959|end_char=2964
+9	555	555	NUM	_	NumType=Card	7	nummod	_	SpaceAfter=No|start_char=2965|end_char=2968
+10	-0188.	-0188.	NUM	_	NumType=Card	9	nummod	_	SpacesAfter=\n\n|start_char=2968|end_char=2974
+
+# text = Room 4B, 2nd fl., 1600 Example Ave. NW, Washington, DC 20500.
+# sent_id = 40
+1	Room	Room	NOUN	_	Number=Sing	0	root	_	start_char=2976|end_char=2980
+2	4B,	4B,	NUM	_	NumType=Card	1	nmod	_	start_char=2981|end_char=2984
+3	2nd	2nd	NUM	_	NumType=Card	1	nmod	_	start_char=2985|end_char=2988
+4	fl.,	Fl.,	PROPN	_	Number=Sing	1	nmod	_	start_char=2989|end_char=2993
+5	1600	1600	NUM	_	NumType=Card	6	nummod	_	start_char=2994|end_char=2998
+6	Example	Example	NOUN	_	Number=Sing	1	nmod	_	start_char=2999|end_char=3006
+7	Ave.	Ave.	PROPN	_	Number=Sing	1	nmod	_	start_char=3007|end_char=3011
+8	NW,	Nw,	PROPN	_	Number=Sing	7	flat	_	start_char=3012|end_char=3015
+9	Washington,	Washington,	NUM	_	NumType=Card	7	flat	_	start_char=3016|end_char=3027
+10	DC	DC	PROPN	_	Number=Sing	1	nmod	_	start_char=3028|end_char=3030
+11	20500.	20500.	NUM	_	NumType=Card	10	nummod	_	SpacesAfter=\n\n|start_char=3031|end_char=3037
+
+# text = Mon 3 Apr 2023 14:05:59 +0200
+# sent_id = 41
+1	Mon	Mon	NOUN	_	Number=Sing	0	root	_	start_char=3039|end_char=3042
+2	3	3	NUM	_	NumType=Card	1	nummod	_	start_char=3043|end_char=3044
+3	Apr	Apr	NUM	_	NumType=Card	1	nmod	_	start_char=3045|end_char=3048
+4	2023	2023	NUM	_	NumType=Card	1	nummod	_	start_char=3049|end_char=3053
+5	14:05	14:05	NUM	_	NumType=Card	1	nummod	_	SpaceAfter=No|start_char=3054|end_char=3059
+6	:59	:59	NUM	_	NumType=Card	7	nummod	_	start_char=3059|end_char=3062
+7	+0200	+0200	NOUN	_	Number=Sing	1	nmod:tmod	_	SpacesAfter=\n|start_char=3063|end_char=3068

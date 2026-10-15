@@ -41,6 +41,15 @@ seq2seq model; 68 multi-word tokens in the texts). German texts with characters 
 classifies all 200 sentences as one document, a single batch, which Stanza labels almost all positive: a stress test
 of the batch padding.
 
+**English treebank packages.** Stanza's English treebank packages (tokenize, mwt, pos, lemma, depparse) run on the same
+English texts (`corpus.txt` and every `validation*.txt`), each against its own folder of `tests/golden/<package>/`
+(`make_golden.py --treebank-only`): `ewt` (858 sentences, 8,393 words), `gum` (819, 8,395), `lines` (767, 8,111),
+`partut` (942, 8,454), `atis` (472, 6,587), `childes` (1,231, 7,905) and `eslspok` (855, 7,131; no MWT, and Stanza's
+identity lemmatizer), plus `combined`, whose models are the default package's, against `depparse/`. The packages with
+MWT also have their MWT word list (`mwt.json`, with and without the dictionary). They exercise what the default package
+doesn't: a tokenizer without MWT heads, composite XPOS tags (`lines`, `partut`: a scorer and an embedding per part),
+a caseless lemmatizer (`atis`) and an MWT seq2seq model (`partut`), which Stanza decodes with a beam search of 5.
+
 Every test above runs on both backends (the JSON comparison on the managed one: the writer does not depend on the backend): the managed backend (the default) and the TorchSharp backend
 (`StanzaSharp.Cuda`). The managed backend's kernels are also tested on each SIMD path a CPU can take (Vector512 with
 AVX-512, Vector256 with AVX2, Vector128, Scalar), so a machine without AVX2 or an Arm64 machine runs code that was
@@ -110,8 +119,9 @@ Test counts are passed xUnit test cases (each case of a theory counts) in `main`
 
 Every job that runs the model tests fails if any of them was skipped. The only exceptions are the tests that run
 `stanzasharp compare` and `benchmark` against Python Stanza (`Run_PythonStanza_*`, English and German), which only
-golden shard 2 installs and runs, and the German tests outside `golden`: only the golden shards have the German models (Stanza's `.pt` files, cached), so `cross-os` and
-`linux-arm64` stay English.
+golden shard 2 installs and runs, and the German tests and the English treebank packages' tests outside `golden`: only
+the golden shards have those models (Stanza's `.pt` files, cached), so `cross-os` and `linux-arm64` run the English
+default packages only.
 
 On x64 runners the test steps set `ATEN_CPU_CAPABILITY=default` and `MKL_CBWR=COMPATIBLE,STRICT`, so libtorch picks
 the same kernels on every CPU the runner draws (Intel or AMD) and the TorchSharp backend gives the same bits on all of

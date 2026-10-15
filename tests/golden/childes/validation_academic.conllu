@@ -1,0 +1,1321 @@
+# text = See Hartwell v.
+# sent_id = 0
+1	See	see	VERB	VB	_	0	root	_	start_char=0|end_char=3
+2	Hartwell	Hartwell	PROPN	NNP	_	1	obj	_	start_char=4|end_char=12
+3	v	v	PROPN	NNP	_	2	flat	_	SpaceAfter=No|start_char=13|end_char=14
+4	.	.	PUNCT	.	_	1	punct	_	start_char=14|end_char=15
+
+# text = Dunmore Logistics,
+# sent_id = 1
+1	Dunmore	Dunmore	PROPN	NNP	_	2	compound	_	start_char=16|end_char=23
+2	Logistics	Logistics	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=24|end_char=33
+3	,	,	PUNCT	.	_	2	punct	_	start_char=33|end_char=34
+
+# text = LLC, 512
+# sent_id = 2
+1	L	l	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=35|end_char=36
+2	LC,	LC,	PROPN	NNP	_	1	conj	_	start_char=36|end_char=39
+3	51	51	NUM	CD	_	1	conj	_	SpaceAfter=No|start_char=40|end_char=42
+4	2	2	PROPN	NNP	_	1	conj	_	start_char=42|end_char=43
+
+# text = F.3d 1044, 1049 (9th Cir.
+# sent_id = 3
+1	F	F	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=44|end_char=45
+2	.3d	.3d	PROPN	NNP	_	1	flat	_	start_char=45|end_char=48
+3	1044,	1044,	PROPN	NNP	_	1	flat	_	start_char=49|end_char=54
+4	1049	1049	PROPN	NNP	_	1	flat	_	start_char=55|end_char=59
+5	(9th	(9th	PROPN	NNP	_	1	flat	_	start_char=60|end_char=64
+6	Cir	cir	PROPN	NNP	_	1	flat	_	SpaceAfter=No|start_char=65|end_char=68
+7	.	.	PUNCT	.	_	1	punct	_	start_char=68|end_char=69
+
+# text = 2008) (holding that the clause was unenforceable).
+# sent_id = 4
+1	2008)	2008)	INTJ	UH	_	0	root	_	start_char=70|end_char=75
+2	(holding	(holding	NOUN	NN	_	1	flat	_	start_char=76|end_char=84
+3	that	that	SCONJ	IN	_	4	reparandum	_	start_char=85|end_char=89
+4	the	the	DET	DT	_	5	det	_	start_char=90|end_char=93
+5	clause	clause	NOUN	NN	_	7	nsubj	_	start_char=94|end_char=100
+6	was	be	AUX	VBD	_	7	cop	_	start_char=101|end_char=104
+7	unenforceable)	unenforceable)	ADJ	JJ	_	1	parataxis	_	SpaceAfter=No|start_char=105|end_char=119
+8	.	.	PUNCT	.	_	1	punct	_	start_char=119|end_char=120
+
+# text = But cf.
+# sent_id = 5
+1	But	but	CCONJ	CC	_	2	cc	_	start_char=121|end_char=124
+2	cf	cf	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=125|end_char=127
+3	.	.	PUNCT	.	_	2	punct	_	start_char=127|end_char=128
+
+# text = In re Pell Grain Co.
+# sent_id = 6
+1	In	in	ADP	IN	_	5	case	_	start_char=129|end_char=131
+2	re	re	PROPN	NNP	_	5	compound	_	start_char=132|end_char=134
+3	Pell	Pell	PROPN	NNP	_	5	compound	_	start_char=135|end_char=139
+4	Grain	Grain	PROPN	NNP	_	5	compound	_	start_char=140|end_char=145
+5	Co	co	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=146|end_char=148
+6	.	.	PUNCT	.	_	5	punct	_	SpaceAfter=No|start_char=148|end_char=149
+
+# text = ,
+# sent_id = 7
+1	,	,	PUNCT	?	_	0	root	_	start_char=149|end_char=150
+
+# text = 77 B.R.
+# sent_id = 8
+1	77	77	NUM	CD	_	0	root	_	start_char=151|end_char=153
+2	B	b	NUM	CD	_	1	conj	_	SpaceAfter=No|start_char=154|end_char=155
+3	.R	.R	PROPN	NNP	_	1	conj	_	SpaceAfter=No|start_char=155|end_char=157
+4	.	.	PUNCT	.	_	1	punct	_	start_char=157|end_char=158
+
+# text = 301 (Bankr.
+# sent_id = 9
+1	301	301	NOUN	NN	_	0	root	_	start_char=159|end_char=162
+2	(Bankr	(Bankr	PROPN	NNP	_	1	conj	_	SpaceAfter=No|start_char=163|end_char=169
+3	.	.	PUNCT	.	_	1	punct	_	start_char=169|end_char=170
+
+# text = D.
+# sent_id = 10
+1	D	d	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=171|end_char=172
+2	.	.	PUNCT	.	_	1	punct	_	start_char=172|end_char=173
+
+# text = Kan.
+# sent_id = 11
+1	Kan	Kan	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=174|end_char=177
+2	.	.	PUNCT	.	_	1	punct	_	start_char=177|end_char=178
+
+# text = 1987).
+# sent_id = 12
+1	1987)	1987)	INTJ	UH	_	0	root	_	SpaceAfter=No|start_char=179|end_char=184
+2	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=184|end_char=185
+
+# text = The statute provides that "no person shall be deprived of a hearing" except as set forth in § 12(b)(3).
+# sent_id = 13
+1	The	the	DET	DT	_	2	det	_	start_char=187|end_char=190
+2	statute	statute	NOUN	NN	_	3	nsubj	_	start_char=191|end_char=198
+3	provides	provide	VERB	VBZ	_	0	root	_	start_char=199|end_char=207
+4	that	that	SCONJ	IN	_	9	mark	_	start_char=208|end_char=212
+5	"no	"no	DET	DT	_	6	det	_	start_char=213|end_char=216
+6	person	person	NOUN	NN	_	9	nsubj:pass	_	start_char=217|end_char=223
+7	shall	shall	AUX	MD	_	9	aux	_	start_char=224|end_char=229
+8	be	be	AUX	VB	_	9	aux:pass	_	start_char=230|end_char=232
+9	deprived	deprive	VERB	VBN	_	3	ccomp	_	start_char=233|end_char=241
+10	of	of	ADP	IN	_	13	case	_	start_char=242|end_char=244
+11	a	a	DET	DT	_	13	det	_	start_char=245|end_char=246
+12	hearing	hearing	NOUN	NN	_	13	compound	_	SpaceAfter=No|start_char=247|end_char=254
+13	"	"	NOUN	NN	_	9	obl	_	start_char=254|end_char=255
+14	except	except	ADP	IN	_	16	cc	_	start_char=256|end_char=262
+15	as	as	ADP	IN	_	16	mark	_	start_char=263|end_char=265
+16	set	set	VERB	VB	_	9	conj	_	start_char=266|end_char=269
+17	forth	forth	ADV	RB	_	16	compound:prt	_	start_char=270|end_char=275
+18	in	in	ADP	IN	_	19	case	_	start_char=276|end_char=278
+19	§	§	PROPN	NNP	_	16	obl	_	start_char=279|end_char=280
+20	12(b)(3)	12(b)(3)	PROPN	NNP	_	19	flat	_	SpaceAfter=No|start_char=281|end_char=289
+21	.	.	PUNCT	.	_	3	punct	_	start_char=289|end_char=290
+
+# text = Section 4(a)(ii) was repealed in 1994.
+# sent_id = 14
+1	Section	section	NOUN	NN	_	2	compound	_	start_char=291|end_char=298
+2	4(a)(ii)	4(a)(ii)	NOUN	NN	_	4	nsubj:pass	_	start_char=299|end_char=307
+3	was	be	AUX	VBD	_	4	aux:pass	_	start_char=308|end_char=311
+4	repealed	repeal	VERB	VBN	_	0	root	_	start_char=312|end_char=320
+5	in	in	ADP	IN	_	6	case	_	start_char=321|end_char=323
+6	1994	1994	PROPN	NNP	_	4	obl	_	SpaceAfter=No|start_char=324|end_char=328
+7	.	.	PUNCT	.	_	4	punct	_	start_char=328|end_char=329
+
+# text = See 42 U.
+# sent_id = 15
+1	See	see	VERB	VB	_	0	root	_	start_char=330|end_char=333
+2	42	42	NUM	CD	_	1	obj	_	start_char=334|end_char=336
+3	U	u	PROPN	NNP	_	1	obj	_	SpaceAfter=No|start_char=337|end_char=338
+4	.	.	PUNCT	.	_	1	punct	_	SpaceAfter=No|start_char=338|end_char=339
+
+# text = S
+# sent_id = 16
+1	S	s	X	_	_	0	root	_	SpaceAfter=No|start_char=339|end_char=340
+
+# text = .
+# sent_id = 17
+1	.	.	PUNCT	.	_	0	root	_	SpaceAfter=No|start_char=340|end_char=341
+
+# text = C.
+# sent_id = 18
+1	C	c	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=341|end_char=342
+2	.	.	PUNCT	.	_	1	punct	_	start_char=342|end_char=343
+
+# text = § 1983 (2018); Fed.
+# sent_id = 19
+1	§	§	PROPN	NNP	_	0	root	_	start_char=344|end_char=345
+2	1983	1983	PROPN	NNP	_	1	conj	_	start_char=346|end_char=350
+3	(2018);	(2018);	PROPN	NNP	_	1	conj	_	start_char=351|end_char=358
+4	Fed	Fed	PROPN	NNP	_	1	conj	_	SpaceAfter=No|start_char=359|end_char=362
+5	.	.	PUNCT	.	_	1	punct	_	start_char=362|end_char=363
+
+# text = R.
+# sent_id = 20
+1	R	be	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=364|end_char=365
+2	.	.	PUNCT	.	_	1	punct	_	start_char=365|end_char=366
+
+# text = Civ.
+# sent_id = 21
+1	Civ	Civ	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=367|end_char=370
+2	.	.	PUNCT	.	_	1	punct	_	start_char=370|end_char=371
+
+# text = P.
+# sent_id = 22
+1	P	p	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=372|end_char=373
+2	.	.	PUNCT	.	_	1	punct	_	start_char=373|end_char=374
+
+# text = 12(b)(6).
+# sent_id = 23
+1	12(b)(6)	12(b)(6)	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=375|end_char=383
+2	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=383|end_char=384
+
+# text = Plaintiff's motion is GRA
+# sent_id = 24
+1-2	Plaintiff's	_	_	_	_	_	_	_	start_char=386|end_char=397
+1	Plaintiff	plaintiff	NOUN	NN	_	3	nmod:poss	_	start_char=386|end_char=395
+2	's	's	PART	POS	_	1	case	_	start_char=395|end_char=397
+3	motion	motion	NOUN	NN	_	5	nsubj	_	start_char=398|end_char=404
+4	is	be	AUX	VBZ	_	5	cop	_	start_char=405|end_char=407
+5	GRA	GRA	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=408|end_char=411
+
+# text = NTED in part and DENIED in part.
+# sent_id = 25
+1	NTED	nted	NOUN	NN	_	0	root	_	start_char=411|end_char=415
+2	in	in	ADP	IN	_	3	case	_	start_char=416|end_char=418
+3	part	part	NOUN	NN	_	1	nmod	_	start_char=419|end_char=423
+4	and	and	CCONJ	CC	_	5	cc	_	start_char=424|end_char=427
+5	DENI	DENI	PROPN	NNP	_	3	conj	_	SpaceAfter=No|start_char=428|end_char=432
+6	ED	ED	PROPN	NNP	_	5	flat	_	start_char=432|end_char=434
+7	in	in	ADP	IN	_	8	case	_	start_char=435|end_char=437
+8	part	part	NOUN	NN	_	3	nmod	_	SpaceAfter=No|start_char=438|end_char=442
+9	.	.	PUNCT	.	_	1	punct	_	start_char=442|end_char=443
+
+# text = The Clerk of Court is directed to close the case.
+# sent_id = 26
+1	The	the	DET	DT	_	2	det	_	start_char=444|end_char=447
+2	Clerk	clerk	NOUN	NN	_	6	nsubj:pass	_	start_char=448|end_char=453
+3	of	of	ADP	IN	_	4	case	_	start_char=454|end_char=456
+4	Court	court	NOUN	NN	_	2	nmod	_	start_char=457|end_char=462
+5	is	be	AUX	VBZ	_	6	aux:pass	_	start_char=463|end_char=465
+6	directed	direct	VERB	VBN	_	0	root	_	start_char=466|end_char=474
+7	to	to	PART	TO	_	8	mark	_	start_char=475|end_char=477
+8	close	close	VERB	VB	_	6	advcl	_	start_char=478|end_char=483
+9	the	the	DET	DT	_	10	det	_	start_char=484|end_char=487
+10	case	case	NOUN	NN	_	8	obj	_	SpaceAfter=No|start_char=488|end_char=492
+11	.	.	PUNCT	.	_	6	punct	_	start_char=492|end_char=493
+
+# text = SO ORDERED.
+# sent_id = 27
+1	SO	so	INTJ	UH	_	2	discourse	_	start_char=494|end_char=496
+2	ORDERED	ordered	VERB	VBD	_	0	root	_	SpaceAfter=No|start_char=497|end_char=504
+3	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=504|end_char=505
+
+# text = Id.
+# sent_id = 28
+1	Id	id	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=507|end_char=509
+2	.	.	PUNCT	.	_	1	punct	_	start_char=509|end_char=510
+
+# text = at 1051.
+# sent_id = 29
+1	at	at	ADP	IN	_	2	case	_	start_char=511|end_char=513
+2	1051	1051	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=514|end_char=518
+3	.	.	PUNCT	.	_	2	punct	_	start_char=518|end_char=519
+
+# text = The court reasoned that the parties "could not have contemplated" such a result.
+# sent_id = 30
+1	The	the	DET	DT	_	2	det	_	start_char=520|end_char=523
+2	court	court	NOUN	NN	_	3	nsubj	_	start_char=524|end_char=529
+3	reasoned	reason	VERB	VBD	_	0	root	_	start_char=530|end_char=538
+4	that	that	SCONJ	IN	_	10	mark	_	start_char=539|end_char=543
+5	the	the	DET	DT	_	6	det	_	start_char=544|end_char=547
+6	parties	party	NOUN	NNS	_	10	nsubj	_	start_char=548|end_char=555
+7	"could	"could	AUX	VBP	_	10	aux	_	start_char=556|end_char=562
+8	not	not	PART	RB	_	10	advmod	_	start_char=563|end_char=566
+9	have	have	AUX	VB	_	10	aux	_	start_char=567|end_char=571
+10	contemplated"	contemplated"	VERB	VB	_	3	ccomp	_	start_char=572|end_char=585
+11	such	such	DET	PDT	_	13	det:predet	_	start_char=586|end_char=590
+12	a	a	DET	DT	_	13	det	_	start_char=591|end_char=592
+13	result	result	NOUN	NN	_	10	obj	_	SpaceAfter=No|start_char=593|end_char=599
+14	.	.	PUNCT	.	_	3	punct	_	start_char=599|end_char=600
+
+# text = Ibid.
+# sent_id = 31
+1	Ibid	Ibid	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=601|end_char=605
+2	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=605|end_char=606
+
+# text = As noted by Kowalski et al.
+# sent_id = 32
+1	As	as	ADV	RB	_	2	advmod	_	start_char=608|end_char=610
+2	noted	not	VERB	VBN	_	0	root	_	start_char=611|end_char=616
+3	by	by	ADP	IN	_	4	case	_	start_char=617|end_char=619
+4	Kowalski	Kowalski	PROPN	NNP	_	2	obl	_	start_char=620|end_char=628
+5	et	et	PROPN	NNP	_	4	flat	_	start_char=629|end_char=631
+6	al	al	PROPN	NNP	_	5	flat	_	SpaceAfter=No|start_char=632|end_char=634
+7	.	.	PUNCT	.	_	2	punct	_	start_char=634|end_char=635
+
+# text = (2019), the effect disappears at low temperatures.
+# sent_id = 33
+1	(2019),	(2019),	INTJ	UH	_	4	discourse	_	start_char=636|end_char=643
+2	the	the	DET	DT	_	3	det	_	start_char=644|end_char=647
+3	effect	effect	NOUN	NN	_	4	nsubj	_	start_char=648|end_char=654
+4	disappears	appear	VERB	VBZ	_	0	root	_	start_char=655|end_char=665
+5	at	at	ADP	IN	_	7	case	_	start_char=666|end_char=668
+6	low	low	ADJ	JJ	_	7	amod	_	start_char=669|end_char=672
+7	temperatures	temperature	NOUN	NNS	_	4	obl	_	SpaceAfter=No|start_char=673|end_char=685
+8	.	.	PUNCT	.	_	4	punct	_	start_char=685|end_char=686
+
+# text = Similar findings were reported elsewhere [3, 7–9].
+# sent_id = 34
+1	Similar	similar	ADJ	JJ	_	2	amod	_	start_char=687|end_char=694
+2	findings	finding	NOUN	NNS	_	4	nsubj:pass	_	start_char=695|end_char=703
+3	were	be	AUX	VBD	_	4	aux:pass	_	start_char=704|end_char=708
+4	reported	report	VERB	VBN	_	0	root	_	start_char=709|end_char=717
+5	elsewhere	elsewhere	ADV	RB	_	4	advmod	_	start_char=718|end_char=727
+6	[3,	[3,	ADV	RB	_	4	advmod	_	start_char=728|end_char=731
+7	7–9]	7–9]	INTJ	UH	_	4	discourse	_	SpaceAfter=No|start_char=732|end_char=736
+8	.	.	PUNCT	.	_	4	punct	_	start_char=736|end_char=737
+
+# text = However, Nguyen and Abara (2021, p.
+# sent_id = 35
+1	However	however	ADV	RB	_	0	root	_	SpaceAfter=No|start_char=738|end_char=745
+2	,	,	CCONJ	CC	_	3	cc	_	start_char=745|end_char=746
+3	Nguyen	Nguyen	PROPN	NNP	_	1	conj	_	start_char=747|end_char=753
+4	and	and	CCONJ	CC	_	5	cc	_	start_char=754|end_char=757
+5	Abara	Abara	PROPN	NNP	_	1	conj	_	start_char=758|end_char=763
+6	(2021,	(2021,	PROPN	NNP	_	1	conj	_	start_char=764|end_char=770
+7	p	p	NOUN	NN	_	1	flat	_	SpaceAfter=No|start_char=771|end_char=772
+8	.	.	PUNCT	.	_	1	punct	_	start_char=772|end_char=773
+
+# text = 44) argue otherwise.
+# sent_id = 36
+1	44)	44)	INTJ	UH	_	2	discourse	_	start_char=774|end_char=777
+2	argue	argue	VERB	VB	_	0	root	_	start_char=778|end_char=783
+3	otherwise	otherwise	ADV	RB	_	2	advmod	_	SpaceAfter=No|start_char=784|end_char=793
+4	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=793|end_char=794
+
+# text = Previous work (e.g.
+# sent_id = 37
+1	Previous	previous	ADJ	JJS	_	2	amod	_	start_char=796|end_char=804
+2	work	work	NOUN	NN	_	0	root	_	start_char=805|end_char=809
+3	(e	(e	PROPN	NNP	_	2	conj	_	SpaceAfter=No|start_char=810|end_char=812
+4	.g	.g	PROPN	NNP	_	2	conj	_	SpaceAfter=No|start_char=812|end_char=814
+5	.	.	PUNCT	.	_	2	punct	_	SpaceAfter=No|start_char=814|end_char=815
+
+# text = ,
+# sent_id = 38
+1	,	,	PUNCT	?	_	0	root	_	start_char=815|end_char=816
+
+# text = Smith, 2003;
+# sent_id = 39
+1	Smith,	Smith,	PROPN	NNP	_	0	root	_	start_char=817|end_char=823
+2	2003	2003	PROPN	NNP	_	1	flat	_	SpaceAfter=No|start_char=824|end_char=828
+3	;	;	PUNCT	.	_	1	punct	_	start_char=828|end_char=829
+
+# text = Lee & Park, 2010) has largely ignored this question.
+# sent_id = 40
+1	Lee	Lee	PROPN	NNP	_	7	nsubj	_	start_char=830|end_char=833
+2	&	&	PROPN	NNP	_	1	flat	_	start_char=834|end_char=835
+3	Park,	Park,	PROPN	NNP	_	1	flat	_	start_char=836|end_char=841
+4	2010)	2010)	PROPN	NNP	_	1	flat	_	start_char=842|end_char=847
+5	has	have	AUX	VBZ	_	7	aux	_	start_char=848|end_char=851
+6	largely	largely	ADV	RB	_	7	advmod	_	start_char=852|end_char=859
+7	ignored	ignore	VERB	VBN	_	0	root	_	start_char=860|end_char=867
+8	this	this	DET	DT	_	9	det	_	start_char=868|end_char=872
+9	question	question	NOUN	NN	_	7	obj	_	SpaceAfter=No|start_char=873|end_char=881
+10	.	.	PUNCT	.	_	7	punct	_	start_char=881|end_char=882
+
+# text = Our results, summarized in Table 2, suggest that the relationship is non-linear (r = 0.
+# sent_id = 41
+1	Our	we	PRON	PRP$	_	2	nmod:poss	_	start_char=883|end_char=886
+2	results,	result	NOUN	NN	_	3	nsubj	_	start_char=887|end_char=895
+3	summarized	summarize	VERB	VBN	_	0	root	_	start_char=896|end_char=906
+4	in	in	ADP	IN	_	5	case	_	start_char=907|end_char=909
+5	Table	Table	PROPN	NNP	_	3	obl	_	start_char=910|end_char=915
+6	2,	2,	PRON	PRP	_	7	nsubj	_	start_char=916|end_char=918
+7	suggest	suggest	VERB	VB	_	3	parataxis	_	start_char=919|end_char=926
+8	that	that	SCONJ	IN	_	12	mark	_	start_char=927|end_char=931
+9	the	the	DET	DT	_	10	det	_	start_char=932|end_char=935
+10	relationship	relationship	NOUN	NN	_	12	nsubj	_	start_char=936|end_char=948
+11	is	be	AUX	VBZ	_	12	cop	_	start_char=949|end_char=951
+12	non-linear	non-linear	ADJ	JJ	_	7	ccomp	_	start_char=952|end_char=962
+13	(r	(r	X	NN	_	12	conj	_	start_char=963|end_char=965
+14	=	=	X	NN	_	13	flat	_	start_char=966|end_char=967
+15	0	0	NOUN	NN	_	13	flat	_	SpaceAfter=No|start_char=968|end_char=969
+16	.	.	PUNCT	.	_	3	punct	_	SpaceAfter=No|start_char=969|end_char=970
+
+# text = 42, p < .
+# sent_id = 42
+1	42,	42,	INTJ	UH	_	0	root	_	start_char=970|end_char=973
+2	p	p	NOUN	NN	_	1	conj	_	start_char=974|end_char=975
+3	<	<	NOUN	NN	_	1	conj	_	start_char=976|end_char=977
+4	.	.	PUNCT	.	_	1	punct	_	SpaceAfter=No|start_char=978|end_char=979
+
+# text = 001).
+# sent_id = 43
+1	001)	001)	INTJ	UH	_	0	root	_	SpaceAfter=No|start_char=979|end_char=983
+2	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=983|end_char=984
+
+# text = Participants (N = 128; 71 female, 55 male, 2 non-binary;
+# sent_id = 44
+1	Participants	participant	NOUN	NNS	_	0	root	_	start_char=986|end_char=998
+2	(N	(n	X	_	_	1	conj	_	start_char=999|end_char=1001
+3	=	=	X	_	_	1	conj	_	start_char=1002|end_char=1003
+4	128;	128;	NUM	CD	_	1	conj	_	start_char=1004|end_char=1008
+5	71	71	NUM	CD	_	1	conj	_	start_char=1009|end_char=1011
+6	female,	female,	NUM	CD	_	1	conj	_	start_char=1012|end_char=1019
+7	55	55	NUM	CD	_	1	conj	_	start_char=1020|end_char=1022
+8	male,	male,	NUM	CD	_	1	conj	_	start_char=1023|end_char=1028
+9	2	2	NUM	CD	_	1	conj	_	start_char=1029|end_char=1030
+10	non-binary	non-binary	PROPN	NNP	_	1	conj	_	SpaceAfter=No|start_char=1031|end_char=1041
+11	;	;	PUNCT	.	_	1	punct	_	start_char=1041|end_char=1042
+
+# text = Mage = 24.6, SD = 3.
+# sent_id = 45
+1	Mage	mage	NOUN	NN	_	0	root	_	start_char=1043|end_char=1047
+2	=	=	X	_	_	1	conj	_	start_char=1048|end_char=1049
+3	24	24	NUM	CD	_	1	conj	_	SpaceAfter=No|start_char=1050|end_char=1052
+4	.6,	.6,	PROPN	NNP	_	1	flat	_	start_char=1052|end_char=1055
+5	SD	SD	PROPN	NNP	_	1	flat	_	start_char=1056|end_char=1058
+6	=	=	PROPN	NNP	_	1	flat	_	start_char=1059|end_char=1060
+7	3	3	PROPN	NNP	_	1	flat	_	SpaceAfter=No|start_char=1061|end_char=1062
+8	.	.	PUNCT	.	_	1	punct	_	SpaceAfter=No|start_char=1062|end_char=1063
+
+# text = 1) were recruited via an online panel.
+# sent_id = 46
+1	1)	1)	PRON	PRP	_	3	nsubj:pass	_	start_char=1063|end_char=1065
+2	were	be	AUX	VBD	_	3	aux:pass	_	start_char=1066|end_char=1070
+3	recruited	recruit	VERB	VBN	_	0	root	_	start_char=1071|end_char=1080
+4	via	via	ADP	IN	_	7	case	_	start_char=1081|end_char=1084
+5	an	a	DET	DT	_	7	det	_	start_char=1085|end_char=1087
+6	online	online	NOUN	NN	_	7	compound	_	start_char=1088|end_char=1094
+7	panel	panel	NOUN	NN	_	3	obl	_	SpaceAfter=No|start_char=1095|end_char=1100
+8	.	.	PUNCT	.	_	3	punct	_	start_char=1100|end_char=1101
+
+# text = Each received $8.
+# sent_id = 47
+1	Each	each	DET	DT	_	2	nsubj	_	start_char=1102|end_char=1106
+2	received	receive	VERB	VBD	_	0	root	_	start_char=1107|end_char=1115
+3	$8	$8	NOUN	NN	_	2	obj	_	SpaceAfter=No|start_char=1116|end_char=1118
+4	.	.	PUNCT	.	_	2	punct	_	SpaceAfter=No|start_char=1118|end_char=1119
+
+# text = 00 for completing the 20-min survey.
+# sent_id = 48
+1	00	00	NOUN	NN	_	0	root	_	start_char=1119|end_char=1121
+2	for	for	SCONJ	IN	_	3	mark	_	start_char=1122|end_char=1125
+3	completing	complet	VERB	VBG	_	1	acl	_	start_char=1126|end_char=1136
+4	the	the	DET	DT	_	6	det	_	start_char=1137|end_char=1140
+5	20-min	20-min	NOUN	NN	_	6	compound	_	start_char=1141|end_char=1147
+6	survey	survey	NOUN	NN	_	3	obj	_	SpaceAfter=No|start_char=1148|end_char=1154
+7	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=1154|end_char=1155
+
+# text = The reaction was carried out at 25 °C and 1 atm for 3 h.
+# sent_id = 49
+1	The	the	DET	DT	_	2	det	_	start_char=1157|end_char=1160
+2	reaction	reaction	NOUN	NN	_	4	nsubj:pass	_	start_char=1161|end_char=1169
+3	was	be	AUX	VBD	_	4	aux:pass	_	start_char=1170|end_char=1173
+4	carried	carry	VERB	VBN	_	0	root	_	start_char=1174|end_char=1181
+5	out	out	ADP	RP	_	4	compound:prt	_	start_char=1182|end_char=1185
+6	at	at	ADP	IN	_	8	case	_	start_char=1186|end_char=1188
+7	25	25	NUM	CD	_	8	compound	_	start_char=1189|end_char=1191
+8	°C	°C	PROPN	NNP	_	4	obl	_	start_char=1192|end_char=1194
+9	and	and	CCONJ	CC	_	10	cc	_	start_char=1195|end_char=1198
+10	1	1	NUM	CD	_	8	conj	_	start_char=1199|end_char=1200
+11	atm	atm	NOUN	NN	_	8	conj	_	start_char=1201|end_char=1204
+12	for	for	ADP	IN	_	13	case	_	start_char=1205|end_char=1208
+13	3	3	NUM	CD	_	11	nmod	_	start_char=1209|end_char=1210
+14	h	h	NOUN	NN	_	13	flat	_	SpaceAfter=No|start_char=1211|end_char=1212
+15	.	.	PUNCT	.	_	4	punct	_	start_char=1212|end_char=1213
+
+# text = The yield was 87% (0.
+# sent_id = 50
+1	The	the	DET	DT	_	2	det	_	start_char=1214|end_char=1217
+2	yield	yield	NOUN	NN	_	5	nsubj	_	start_char=1218|end_char=1223
+3	was	be	AUX	VBD	_	5	cop	_	start_char=1224|end_char=1227
+4	87%	87%	NUM	CD	_	5	compound	_	start_char=1228|end_char=1231
+5	(0	(0	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=1232|end_char=1234
+6	.	.	PUNCT	.	_	5	punct	_	SpaceAfter=No|start_char=1234|end_char=1235
+
+# text = 62 g, 2.4 mmol).
+# sent_id = 51
+1	62	62	NUM	CD	_	0	root	_	start_char=1235|end_char=1237
+2	g,	g,	X	NN	_	1	conj	_	start_char=1238|end_char=1240
+3	2	2	NUM	CD	_	1	conj	_	SpaceAfter=No|start_char=1241|end_char=1242
+4	.4	.4	PROPN	NNP	_	1	conj	_	start_char=1242|end_char=1244
+5	mmol)	mmol)	NOUN	NN	_	1	conj	_	SpaceAfter=No|start_char=1245|end_char=1250
+6	.	.	PUNCT	.	_	1	punct	_	start_char=1250|end_char=1251
+
+# text = The product was purified by flash chromatography (hexane/EtOAc 4:1).
+# sent_id = 52
+1	The	the	DET	DT	_	2	det	_	start_char=1252|end_char=1255
+2	product	product	NOUN	NN	_	4	nsubj:pass	_	start_char=1256|end_char=1263
+3	was	be	AUX	VBD	_	4	aux:pass	_	start_char=1264|end_char=1267
+4	purified	purify	VERB	VBN	_	0	root	_	start_char=1268|end_char=1276
+5	by	by	ADP	IN	_	8	case	_	start_char=1277|end_char=1279
+6	flash	flash	NOUN	NN	_	8	compound	_	start_char=1280|end_char=1285
+7	chromatography	chromatography	VERB	VBN	_	8	amod	_	start_char=1286|end_char=1300
+8	(hexane	(hexane	NOUN	NN	_	4	obl	_	SpaceAfter=No|start_char=1301|end_char=1308
+9	/EtOAc	/EtOAc	PROPN	NNP	_	4	parataxis	_	start_char=1308|end_char=1314
+10	4:1)	4:1)	NOUN	NN	_	4	dislocated	_	SpaceAfter=No|start_char=1315|end_char=1319
+11	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=1319|end_char=1320
+
+# text = The speed of light in vacuum is approximately 3.
+# sent_id = 53
+1	The	the	DET	DT	_	2	det	_	start_char=1322|end_char=1325
+2	speed	speed	NOUN	NN	_	9	nsubj	_	start_char=1326|end_char=1331
+3	of	of	ADP	IN	_	4	case	_	start_char=1332|end_char=1334
+4	light	light	NOUN	NN	_	2	nmod	_	start_char=1335|end_char=1340
+5	in	in	ADP	IN	_	6	case	_	start_char=1341|end_char=1343
+6	vacuum	vacuum	NOUN	NN	_	2	nmod	_	start_char=1344|end_char=1350
+7	is	be	AUX	VBZ	_	9	cop	_	start_char=1351|end_char=1353
+8	approximately	approximately	ADJ	JJS	_	9	case	_	start_char=1354|end_char=1367
+9	3	3	NUM	CD	_	0	root	_	SpaceAfter=No|start_char=1368|end_char=1369
+10	.	.	PUNCT	.	_	9	punct	_	SpaceAfter=No|start_char=1369|end_char=1370
+
+# text = 00 × 10^8 m/s.
+# sent_id = 54
+1	00	00	INTJ	UH	_	0	root	_	start_char=1370|end_char=1372
+2	×	×	PROPN	NNP	_	1	flat	_	start_char=1373|end_char=1374
+3	10^8	10^8	PROPN	NNP	_	1	flat	_	start_char=1375|end_char=1379
+4	m/s	m/s	PROPN	NNP	_	1	flat	_	SpaceAfter=No|start_char=1380|end_char=1383
+5	.	.	PUNCT	.	_	1	punct	_	start_char=1383|end_char=1384
+
+# text = Avogadro's number is 6.
+# sent_id = 55
+1-2	Avogadro's	_	_	_	_	_	_	_	start_char=1385|end_char=1395
+1	Avogadro	Avogadro	PROPN	NNP	_	3	nmod:poss	_	start_char=1385|end_char=1393
+2	's	's	PART	POS	_	1	case	_	start_char=1393|end_char=1395
+3	number	number	NOUN	NN	_	5	nsubj	_	start_char=1396|end_char=1402
+4	is	be	AUX	VBZ	_	5	cop	_	start_char=1403|end_char=1405
+5	6	6	NUM	CD	_	0	root	_	SpaceAfter=No|start_char=1406|end_char=1407
+6	.	.	PUNCT	.	_	5	punct	_	SpaceAfter=No|start_char=1407|end_char=1408
+
+# text = 022e23 mol^-1.
+# sent_id = 56
+1	022e23	022e23	INTJ	UH	_	0	root	_	start_char=1408|end_char=1414
+2	mol^-1	mol^-1	PROPN	NNP	_	1	conj	_	SpaceAfter=No|start_char=1415|end_char=1421
+3	.	.	PUNCT	.	_	1	punct	_	start_char=1421|end_char=1422
+
+# text = Planck's constant, h, equals 6.
+# sent_id = 57
+1-2	Planck's	_	_	_	_	_	_	_	start_char=1423|end_char=1431
+1	Planck	Planck	PROPN	NNP	_	3	nsubj	_	start_char=1423|end_char=1429
+2	's	be	AUX	VBZ	_	3	cop	_	start_char=1429|end_char=1431
+3	constant,	constant,	NOUN	NN	_	0	root	_	start_char=1432|end_char=1441
+4	h,	h,	NOUN	NN	_	3	flat	_	start_char=1442|end_char=1444
+5	equals	equal	VERB	VBZ	_	3	parataxis	_	start_char=1445|end_char=1451
+6	6	6	NUM	CD	_	5	nsubj	_	SpaceAfter=No|start_char=1452|end_char=1453
+7	.	.	PUNCT	.	_	3	punct	_	SpaceAfter=No|start_char=1453|end_char=1454
+
+# text = 626 × 10⁻³⁴ J·s.
+# sent_id = 58
+1	626	626	PROPN	NNP	_	0	root	_	start_char=1454|end_char=1457
+2	×	×	PROPN	NNP	_	1	conj	_	start_char=1458|end_char=1459
+3	10⁻³⁴	10⁻³⁴	NUM	CD	_	1	conj	_	start_char=1460|end_char=1465
+4	J·s	J·s	PROPN	NNP	_	1	conj	_	SpaceAfter=No|start_char=1466|end_char=1469
+5	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=1469|end_char=1470
+
+# text = A typical adult human has about 5
+# sent_id = 59
+1	A	a	DET	DT	_	4	det	_	start_char=1472|end_char=1473
+2	typical	typical	ADJ	JJ	_	4	amod	_	start_char=1474|end_char=1481
+3	adult	adult	NOUN	NN	_	4	amod	_	start_char=1482|end_char=1487
+4	human	human	NOUN	NN	_	5	nsubj	_	start_char=1488|end_char=1493
+5	has	have	VERB	VBZ	_	0	root	_	start_char=1494|end_char=1497
+6	about	about	ADP	IN	_	7	case	_	start_char=1498|end_char=1503
+7	5	5	NUM	CD	_	5	obl	_	start_char=1504|end_char=1505
+
+# text = L of blood.
+# sent_id = 60
+1	L	l	NOUN	NN	_	0	root	_	start_char=1506|end_char=1507
+2	of	of	ADP	IN	_	3	case	_	start_char=1508|end_char=1510
+3	blood	blood	NOUN	NN	_	1	nmod	_	SpaceAfter=No|start_char=1511|end_char=1516
+4	.	.	PUNCT	.	_	1	punct	_	start_char=1516|end_char=1517
+
+# text = The sample was diluted to 10 µg/mL and stored at −80 °C.
+# sent_id = 61
+1	The	the	DET	DT	_	2	det	_	start_char=1518|end_char=1521
+2	sample	sample	NOUN	NN	_	4	nsubj:pass	_	start_char=1522|end_char=1528
+3	was	be	AUX	VBD	_	4	aux:pass	_	start_char=1529|end_char=1532
+4	diluted	dilute	VERB	VBN	_	0	root	_	start_char=1533|end_char=1540
+5	to	to	ADP	IN	_	7	case	_	start_char=1541|end_char=1543
+6	10	10	NUM	CD	_	7	compound	_	start_char=1544|end_char=1546
+7	µg/mL	µg/ml	NOUN	NN	_	4	obl	_	start_char=1547|end_char=1552
+8	and	and	CCONJ	CC	_	9	cc	_	start_char=1553|end_char=1556
+9	stored	store	VERB	VBN	_	4	conj	_	start_char=1557|end_char=1563
+10	at	at	ADP	IN	_	11	case	_	start_char=1564|end_char=1566
+11	−80	−80	PROPN	NNP	_	9	obl	_	start_char=1567|end_char=1570
+12	°C	°C	PROPN	NNP	_	11	flat	_	SpaceAfter=No|start_char=1571|end_char=1573
+13	.	.	PUNCT	.	_	4	punct	_	start_char=1573|end_char=1574
+
+# text = Centrifuge at 3,000 × g for 10 min.
+# sent_id = 62
+1	Centrifuge	centrifuge	NOUN	NN	_	0	root	_	start_char=1575|end_char=1585
+2	at	at	ADP	IN	_	3	case	_	start_char=1586|end_char=1588
+3	3,000	3,000	NUM	CD	_	1	nmod	_	start_char=1589|end_char=1594
+4	×	×	NOUN	NN	_	3	conj	_	start_char=1595|end_char=1596
+5	g	g	NOUN	NN	_	1	conj	_	start_char=1597|end_char=1598
+6	for	for	ADP	IN	_	8	case	_	start_char=1599|end_char=1602
+7	10	10	NUM	CD	_	8	nummod	_	start_char=1603|end_char=1605
+8	min	min	NOUN	NN	_	1	nmod	_	SpaceAfter=No|start_char=1606|end_char=1609
+9	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=1609|end_char=1610
+
+# text = The probe traveled 1.
+# sent_id = 63
+1	The	the	DET	DT	_	2	det	_	start_char=1612|end_char=1615
+2	probe	probe	NOUN	NN	_	3	nsubj	_	start_char=1616|end_char=1621
+3	traveled	travel	VERB	VBD	_	0	root	_	start_char=1622|end_char=1630
+4	1	1	NUM	CD	_	3	obj	_	SpaceAfter=No|start_char=1631|end_char=1632
+5	.	.	PUNCT	.	_	3	punct	_	SpaceAfter=No|start_char=1632|end_char=1633
+
+# text = 5×10^9 km in 14 yr.
+# sent_id = 64
+1	5×10^9	5×10^9	INTJ	UH	_	4	discourse	_	start_char=1633|end_char=1639
+2	km	km	PROPN	NNP	_	1	conj	_	start_char=1640|end_char=1642
+3	in	in	ADP	IN	_	4	case	_	start_char=1643|end_char=1645
+4	14	14	NUM	CD	_	0	root	_	start_char=1646|end_char=1648
+5	yr	yr	PROPN	NNP	_	4	flat	_	SpaceAfter=No|start_char=1649|end_char=1651
+6	.	.	PUNCT	.	_	4	punct	_	start_char=1651|end_char=1652
+
+# text = Its power source produced 470
+# sent_id = 65
+1	Its	its	PRON	PRP$	_	3	nmod:poss	_	start_char=1653|end_char=1656
+2	power	power	NOUN	NN	_	3	compound	_	start_char=1657|end_char=1662
+3	source	source	NOUN	NN	_	4	nsubj	_	start_char=1663|end_char=1669
+4	produced	produce	VERB	VBD	_	0	root	_	start_char=1670|end_char=1678
+5	47	47	NUM	CD	_	6	reparandum	_	SpaceAfter=No|start_char=1679|end_char=1681
+6	0	0	NUM	CD	_	4	obj	_	start_char=1681|end_char=1682
+
+# text = W at launch and roughly 240
+# sent_id = 66
+1	W	with	PROPN	NNP	_	0	root	_	start_char=1683|end_char=1684
+2	at	at	ADP	IN	_	3	case	_	start_char=1685|end_char=1687
+3	launch	launch	NOUN	NN	_	1	nmod	_	start_char=1688|end_char=1694
+4	and	and	CCONJ	CC	_	6	cc	_	start_char=1695|end_char=1698
+5	roughly	roughly	ADV	RB	_	6	advmod	_	start_char=1699|end_char=1706
+6	24	24	NUM	CD	_	7	compound	_	SpaceAfter=No|start_char=1707|end_char=1709
+7	0	0	PROPN	NNP	_	3	conj	_	start_char=1709|end_char=1710
+
+# text = W by 2015.
+# sent_id = 67
+1	W	with	PROPN	NNP	_	0	root	_	start_char=1711|end_char=1712
+2	by	by	ADP	IN	_	3	case	_	start_char=1713|end_char=1715
+3	2015	2015	PROPN	NNP	_	1	nmod	_	SpaceAfter=No|start_char=1716|end_char=1720
+4	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=1720|end_char=1721
+
+# text = Water boils at 100
+# sent_id = 68
+1	Water	water	NOUN	NN	_	2	nsubj	_	start_char=1723|end_char=1728
+2	boils	boil	VERB	VBZ	_	0	root	_	start_char=1729|end_char=1734
+3	at	at	ADP	IN	_	4	case	_	start_char=1735|end_char=1737
+4	10	10	NUM	CD	_	2	obl	_	SpaceAfter=No|start_char=1738|end_char=1740
+5	0	0	NUM	CD	_	4	list	_	SpaceAfter=No|start_char=1740|end_char=1741
+
+# text = °C (212
+# sent_id = 69
+1	°C	°C	PROPN	NNP	_	0	root	_	start_char=1741|end_char=1743
+2	(21	(21	PROPN	NNP	_	1	conj	_	SpaceAfter=No|start_char=1744|end_char=1747
+3	2	2	NUM	CD	_	1	conj	_	SpaceAfter=No|start_char=1747|end_char=1748
+
+# text = °F) at sea level.
+# sent_id = 70
+1	°F)	°f)	INTJ	UH	_	4	discourse	_	start_char=1748|end_char=1751
+2	at	at	ADP	IN	_	4	case	_	start_char=1752|end_char=1754
+3	sea	sea	NOUN	NN	_	4	compound	_	start_char=1755|end_char=1758
+4	level	level	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=1759|end_char=1764
+5	.	.	PUNCT	.	_	4	punct	_	start_char=1764|end_char=1765
+
+# text = At an altitude of 2,400 m, it boils at about 92 °C.
+# sent_id = 71
+1	At	at	ADP	IN	_	3	case	_	start_char=1766|end_char=1768
+2	an	a	DET	DT	_	3	det	_	start_char=1769|end_char=1771
+3	altitude	altitude	NOUN	NN	_	8	obl	_	start_char=1772|end_char=1780
+4	of	of	ADP	IN	_	6	case	_	start_char=1781|end_char=1783
+5	2,400	2,400	NUM	CD	_	6	compound	_	start_char=1784|end_char=1789
+6	m,	m,	NOUN	NN	_	3	nmod	_	start_char=1790|end_char=1792
+7	it	it	PRON	PRP	_	8	nsubj	_	start_char=1793|end_char=1795
+8	boils	boil	VERB	VBZ	_	0	root	_	start_char=1796|end_char=1801
+9	at	at	ADP	IN	_	12	case	_	start_char=1802|end_char=1804
+10	about	about	ADV	RB	_	12	case	_	start_char=1805|end_char=1810
+11	92	92	NUM	CD	_	12	nummod	_	start_char=1811|end_char=1813
+12	°C	°C	PROPN	NNP	_	8	obl	_	SpaceAfter=No|start_char=1814|end_char=1816
+13	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=1816|end_char=1817
+
+# text = Fig.
+# sent_id = 72
+1	Fig	Fig	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=1819|end_char=1822
+2	.	.	PUNCT	.	_	1	punct	_	start_char=1822|end_char=1823
+
+# text = 3 shows the distribution of residuals.
+# sent_id = 73
+1	3	3	NUM	CD	_	2	nsubj	_	start_char=1824|end_char=1825
+2	shows	show	VERB	VBZ	_	0	root	_	start_char=1826|end_char=1831
+3	the	the	DET	DT	_	4	det	_	start_char=1832|end_char=1835
+4	distribution	distribution	NOUN	NN	_	2	obj	_	start_char=1836|end_char=1848
+5	of	of	ADP	IN	_	6	case	_	start_char=1849|end_char=1851
+6	residuals	residual	NOUN	NNS	_	4	nmod	_	SpaceAfter=No|start_char=1852|end_char=1861
+7	.	.	PUNCT	.	_	2	punct	_	start_char=1861|end_char=1862
+
+# text = Eq.
+# sent_id = 74
+1	Eq	eq	INTJ	UH	_	0	root	_	SpaceAfter=No|start_char=1863|end_char=1865
+2	.	.	PUNCT	.	_	1	punct	_	start_char=1865|end_char=1866
+
+# text = (7) can be rewritten as y = ax² + bx + c, where a ≠ 0.
+# sent_id = 75
+1	(7)	(7)	PROPN	NNP	_	4	nsubj:pass	_	start_char=1867|end_char=1870
+2	can	can	AUX	MD	_	4	aux	_	start_char=1871|end_char=1874
+3	be	be	AUX	VB	_	4	cop	_	start_char=1875|end_char=1877
+4	rewritten	rewritten	VERB	VBN	_	0	root	_	start_char=1878|end_char=1887
+5	as	as	ADP	IN	_	6	case	_	start_char=1888|end_char=1890
+6	y	y	X	NN	_	4	obl	_	start_char=1891|end_char=1892
+7	=	=	X	NN	_	6	flat	_	start_char=1893|end_char=1894
+8	ax²	ax²	X	FW	_	6	flat	_	start_char=1895|end_char=1898
+9	+	+	X	FW	_	6	flat	_	start_char=1899|end_char=1900
+10	bx	bx	X	FW	_	6	flat	_	start_char=1901|end_char=1903
+11	+	+	X	FW	_	6	flat	_	start_char=1904|end_char=1905
+12	c,	c,	NOUN	NN	_	6	flat	_	start_char=1906|end_char=1908
+13	where	where	ADV	WRB	_	4	parataxis	_	start_char=1909|end_char=1914
+14	a	a	X	NN	_	6	flat	_	start_char=1915|end_char=1916
+15	≠	≠	X	FW	_	6	flat	_	start_char=1917|end_char=1918
+16	0	0	PROPN	NNP	_	6	flat	_	SpaceAfter=No|start_char=1919|end_char=1920
+17	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=1920|end_char=1921
+
+# text = The mean was 4.
+# sent_id = 76
+1	The	the	DET	DT	_	2	det	_	start_char=1923|end_char=1926
+2	mean	mean	NOUN	NN	_	4	nsubj	_	start_char=1927|end_char=1931
+3	was	be	AUX	VBD	_	4	cop	_	start_char=1932|end_char=1935
+4	4	4	NUM	CD	_	0	root	_	SpaceAfter=No|start_char=1936|end_char=1937
+5	.	.	PUNCT	.	_	4	punct	_	SpaceAfter=No|start_char=1937|end_char=1938
+
+# text = 2
+# sent_id = 77
+1	2	2	INTJ	UH	_	0	root	_	start_char=1938|end_char=1939
+
+# text = ± 0.3 mm (95%
+# sent_id = 78
+1	±	±	INTJ	UH	_	6	discourse	_	start_char=1940|end_char=1941
+2	0	0	NUM	CD	_	6	reparandum	_	SpaceAfter=No|start_char=1942|end_char=1943
+3	.3	.3	NUM	CD	_	6	reparandum	_	start_char=1943|end_char=1945
+4	mm	mm	INTJ	UH	_	6	discourse	_	start_char=1946|end_char=1948
+5	(95	(95	NUM	CD	_	6	nummod	_	SpaceAfter=No|start_char=1949|end_char=1952
+6	%	%	NOUN	NN	_	0	root	_	start_char=1952|end_char=1953
+
+# text = CI: 3.
+# sent_id = 79
+1	CI:	CI:	PROPN	NNP	_	0	root	_	start_char=1954|end_char=1957
+2	3	3	PROPN	NNP	_	1	conj	_	SpaceAfter=No|start_char=1958|end_char=1959
+3	.	.	PUNCT	.	_	1	punct	_	SpaceAfter=No|start_char=1959|end_char=1960
+
+# text = 6–4.
+# sent_id = 80
+1	6–4	6–4	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=1960|end_char=1963
+2	.	.	PUNCT	.	_	1	punct	_	SpaceAfter=No|start_char=1963|end_char=1964
+
+# text = 8).
+# sent_id = 81
+1	8)	8)	INTJ	UH	_	0	root	_	SpaceAfter=No|start_char=1964|end_char=1966
+2	.	.	PUNCT	.	_	1	punct	_	start_char=1966|end_char=1967
+
+# text = Values below the detection limit (< 0.
+# sent_id = 82
+1	Values	walue	NOUN	NNS	_	0	root	_	start_char=1968|end_char=1974
+2	below	below	ADP	IN	_	5	case	_	start_char=1975|end_char=1980
+3	the	the	DET	DT	_	5	det	_	start_char=1981|end_char=1984
+4	detection	detection	NOUN	NN	_	5	compound	_	start_char=1985|end_char=1994
+5	limit	limit	NOUN	NN	_	1	nmod	_	start_char=1995|end_char=2000
+6	(<	(<	NOUN	NN	_	7	cc	_	start_char=2001|end_char=2003
+7	0	0	NOUN	NN	_	5	conj	_	SpaceAfter=No|start_char=2004|end_char=2005
+8	.	.	PUNCT	.	_	1	punct	_	SpaceAfter=No|start_char=2005|end_char=2006
+
+# text = 05 ppm) were excluded.
+# sent_id = 83
+1	05	05	PROPN	NNP	_	4	discourse	_	start_char=2006|end_char=2008
+2	ppm)	ppm)	PROPN	NNP	_	4	nsubj:pass	_	start_char=2009|end_char=2013
+3	were	be	AUX	VBD	_	4	aux:pass	_	start_char=2014|end_char=2018
+4	excluded	exclud	VERB	VBN	_	0	root	_	SpaceAfter=No|start_char=2019|end_char=2027
+5	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=2027|end_char=2028
+
+# text = The resistor is rated at 4.7 kΩ and 0.
+# sent_id = 84
+1	The	the	DET	DT	_	2	det	_	start_char=2030|end_char=2033
+2	resistor	resistor	NOUN	NN	_	4	nsubj	_	start_char=2034|end_char=2042
+3	is	be	AUX	VBZ	_	4	cop	_	start_char=2043|end_char=2045
+4	rated	rated	ADJ	JJ	_	0	root	_	start_char=2046|end_char=2051
+5	at	at	ADP	IN	_	6	case	_	start_char=2052|end_char=2054
+6	4	4	NUM	CD	_	4	obl	_	SpaceAfter=No|start_char=2055|end_char=2056
+7	.7	.7	NUM	CD	_	6	flat	_	start_char=2056|end_char=2058
+8	kΩ	kΩ	NOUN	NN	_	6	flat	_	start_char=2059|end_char=2061
+9	and	and	CCONJ	CC	_	10	cc	_	start_char=2062|end_char=2065
+10	0	0	NUM	CD	_	6	conj	_	SpaceAfter=No|start_char=2066|end_char=2067
+11	.	.	PUNCT	.	_	4	punct	_	SpaceAfter=No|start_char=2067|end_char=2068
+
+# text = 25 W.
+# sent_id = 85
+1	25	25	NUM	CD	_	0	root	_	start_char=2068|end_char=2070
+2	W	with	PROPN	NNP	_	1	conj	_	SpaceAfter=No|start_char=2071|end_char=2072
+3	.	.	PUNCT	.	_	1	punct	_	start_char=2072|end_char=2073
+
+# text = Apply 5 V DC and measure the current in mA.
+# sent_id = 86
+1	Apply	apply	VERB	VB	_	0	root	_	start_char=2074|end_char=2079
+2	5	5	NUM	CD	_	4	compound	_	start_char=2080|end_char=2081
+3	V	be	PROPN	NNP	_	4	compound	_	start_char=2082|end_char=2083
+4	DC	DC	PROPN	NNP	_	1	obj	_	start_char=2084|end_char=2086
+5	and	and	CCONJ	CC	_	6	cc	_	start_char=2087|end_char=2090
+6	measure	measure	VERB	VB	_	1	conj	_	start_char=2091|end_char=2098
+7	the	the	DET	DT	_	8	det	_	start_char=2099|end_char=2102
+8	current	current	ADJ	JJ	_	6	obj	_	start_char=2103|end_char=2110
+9	in	in	ADP	IN	_	10	case	_	start_char=2111|end_char=2113
+10	mA	ma	PROPN	NNP	_	6	obl	_	SpaceAfter=No|start_char=2114|end_char=2116
+11	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=2116|end_char=2117
+
+# text = In Section 3.
+# sent_id = 87
+1	In	in	ADP	IN	_	2	case	_	start_char=2119|end_char=2121
+2	Section	Section	PROPN	NNP	_	0	root	_	start_char=2122|end_char=2129
+3	3	3	PROPN	NNP	_	2	flat	_	SpaceAfter=No|start_char=2130|end_char=2131
+4	.	.	PUNCT	.	_	2	punct	_	SpaceAfter=No|start_char=2131|end_char=2132
+
+# text = 2, we describe the dataset.
+# sent_id = 88
+1	2,	2,	INTJ	UH	_	3	discourse	_	start_char=2132|end_char=2134
+2	we	we	PRON	PRP	_	3	nsubj	_	start_char=2135|end_char=2137
+3	describe	describe	VERB	VBP	_	0	root	_	start_char=2138|end_char=2146
+4	the	the	DET	DT	_	5	det	_	start_char=2147|end_char=2150
+5	dataset	dataset	NOUN	NN	_	3	obj	_	SpaceAfter=No|start_char=2151|end_char=2158
+6	.	.	PUNCT	.	_	3	punct	_	start_char=2158|end_char=2159
+
+# text = Section 4 presents the results;
+# sent_id = 89
+1	Section	section	NOUN	NN	_	3	nsubj	_	start_char=2160|end_char=2167
+2	4	4	PROPN	NNP	_	1	flat	_	start_char=2168|end_char=2169
+3	presents	present	VERB	VBZ	_	0	root	_	start_char=2170|end_char=2178
+4	the	the	DET	DT	_	5	det	_	start_char=2179|end_char=2182
+5	results	result	NOUN	NNS	_	3	obj	_	SpaceAfter=No|start_char=2183|end_char=2190
+6	;	;	PUNCT	.	_	3	punct	_	start_char=2190|end_char=2191
+
+# text = Sect.
+# sent_id = 90
+1	Sect	sect	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=2192|end_char=2196
+2	.	.	PUNCT	.	_	1	punct	_	start_char=2196|end_char=2197
+
+# text = 5 concludes.
+# sent_id = 91
+1	5	5	NUM	CD	_	2	nsubj	_	start_char=2198|end_char=2199
+2	concludes	conclude	VERB	VBZ	_	0	root	_	SpaceAfter=No|start_char=2200|end_char=2209
+3	.	.	PUNCT	.	_	2	punct	_	start_char=2209|end_char=2210
+
+# text = Appendix A contains proofs of Lemmas 1–3.
+# sent_id = 92
+1	Appendix	appendix	NOUN	NN	_	3	nsubj	_	start_char=2211|end_char=2219
+2	A	A	PROPN	NNP	_	1	flat	_	start_char=2220|end_char=2221
+3	contains	contain	VERB	VBZ	_	0	root	_	start_char=2222|end_char=2230
+4	proofs	proof	NOUN	NNS	_	3	obj	_	start_char=2231|end_char=2237
+5	of	of	ADP	IN	_	6	case	_	start_char=2238|end_char=2240
+6	Lemmas	Lemmas	PROPN	NNPS	_	4	nmod	_	start_char=2241|end_char=2247
+7	1–3	1–3	PROPN	NNP	_	6	flat	_	SpaceAfter=No|start_char=2248|end_char=2251
+8	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=2251|end_char=2252
+
+# text = Theorem 2.1.
+# sent_id = 93
+1	Theorem	theorem	NOUN	NN	_	0	root	_	start_char=2254|end_char=2261
+2	2	2	NUM	CD	_	1	conj	_	SpaceAfter=No|start_char=2262|end_char=2263
+3	.1	.1	PROPN	NNP	_	1	conj	_	SpaceAfter=No|start_char=2263|end_char=2265
+4	.	.	PUNCT	.	_	1	punct	_	start_char=2265|end_char=2266
+
+# text = Let f:
+# sent_id = 94
+1	Let	let	VERB	VB	_	0	root	_	start_char=2267|end_char=2270
+2	f	for	PROPN	NNP	_	1	obj	_	SpaceAfter=No|start_char=2271|end_char=2272
+3	:	:	PUNCT	.	_	1	punct	_	start_char=2272|end_char=2273
+
+# text = ℝ → ℝ be continuous.
+# sent_id = 95
+1	ℝ	ℝ	INTJ	UH	_	5	discourse	_	start_char=2274|end_char=2275
+2	→	→	X	FW	_	1	flat	_	start_char=2276|end_char=2277
+3	ℝ	ℝ	INTJ	UH	_	1	flat	_	start_char=2278|end_char=2279
+4	be	be	AUX	VB	_	5	cop	_	start_char=2280|end_char=2282
+5	continuous	continuous	ADJ	JJ	_	0	root	_	SpaceAfter=No|start_char=2283|end_char=2293
+6	.	.	PUNCT	.	_	5	punct	_	start_char=2293|end_char=2294
+
+# text = Then f attains a maximum on [a, b].
+# sent_id = 96
+1	Then	then	ADV	RB	_	3	advmod	_	start_char=2295|end_char=2299
+2	f	f	PRON	PRP	_	3	nsubj	_	start_char=2300|end_char=2301
+3	attains	attain	VERB	VBZ	_	0	root	_	start_char=2302|end_char=2309
+4	a	a	DET	DT	_	5	det	_	start_char=2310|end_char=2311
+5	maximum	maximum	NOUN	NN	_	3	obj	_	start_char=2312|end_char=2319
+6	on	on	ADP	IN	_	7	case	_	start_char=2320|end_char=2322
+7	[a,	[a,	NOUN	NN	_	3	obl	_	start_char=2323|end_char=2326
+8	b]	b]	INTJ	UH	_	3	discourse	_	SpaceAfter=No|start_char=2327|end_char=2329
+9	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=2329|end_char=2330
+
+# text = Proof.
+# sent_id = 97
+1	Proof	proof	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=2332|end_char=2337
+2	.	.	PUNCT	.	_	1	punct	_	start_char=2337|end_char=2338
+
+# text = Suppose not.
+# sent_id = 98
+1	Suppose	suppose	VERB	VB	_	0	root	_	start_char=2339|end_char=2346
+2	not	not	PART	RB	_	1	advmod	_	SpaceAfter=No|start_char=2347|end_char=2350
+3	.	.	PUNCT	.	_	1	punct	_	start_char=2350|end_char=2351
+
+# text = Then there exists a sequence (x_n) such that f(x_n) → sup f.
+# sent_id = 99
+1	Then	then	ADV	RB	_	3	advmod	_	start_char=2352|end_char=2356
+2	there	there	PRON	EX	_	3	expl	_	start_char=2357|end_char=2362
+3	exists	exist	VERB	VBZ	_	0	root	_	start_char=2363|end_char=2369
+4	a	a	DET	DT	_	5	det	_	start_char=2370|end_char=2371
+5	sequence	sequence	NOUN	NN	_	3	nsubj	_	start_char=2372|end_char=2380
+6	(x_n)	(x_n)	NOUN	NN	_	7	amod	_	start_char=2381|end_char=2386
+7	such	such	DET	DT	_	5	conj	_	start_char=2387|end_char=2391
+8	that	that	PRON	WDT	_	9	nsubj	_	start_char=2392|end_char=2396
+9	f(x_n)	f(x_n)	NOUN	NN	_	7	flat	_	start_char=2397|end_char=2403
+10	→	→	X	FW	_	9	flat	_	start_char=2404|end_char=2405
+11	sup	sup	NOUN	NN	_	9	flat	_	start_char=2406|end_char=2409
+12	f	f	NOUN	NN	_	10	flat	_	SpaceAfter=No|start_char=2410|end_char=2411
+13	.	.	PUNCT	.	_	3	punct	_	start_char=2411|end_char=2412
+
+# text = By compactness, a subsequence converges.
+# sent_id = 100
+1	By	by	ADP	IN	_	2	case	_	start_char=2413|end_char=2415
+2	compactness,	compactness,	NOUN	NN	_	5	obl	_	start_char=2416|end_char=2428
+3	a	a	DET	DT	_	4	det	_	start_char=2429|end_char=2430
+4	subsequence	subsequence	NOUN	NN	_	5	nsubj	_	start_char=2431|end_char=2442
+5	converges	converge	VERB	VBZ	_	0	root	_	SpaceAfter=No|start_char=2443|end_char=2452
+6	.	.	PUNCT	.	_	5	punct	_	start_char=2452|end_char=2453
+
+# text = QED.
+# sent_id = 101
+1	QED	QED	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=2454|end_char=2457
+2	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=2457|end_char=2458
+
+# text = The study was approved by the institutional review board (protocol no.
+# sent_id = 102
+1	The	the	DET	DT	_	2	det	_	start_char=2460|end_char=2463
+2	study	study	NOUN	NN	_	4	nsubj:pass	_	start_char=2464|end_char=2469
+3	was	be	AUX	VBD	_	4	aux:pass	_	start_char=2470|end_char=2473
+4	approved	approve	VERB	VBN	_	0	root	_	start_char=2474|end_char=2482
+5	by	by	ADP	IN	_	9	case	_	start_char=2483|end_char=2485
+6	the	the	DET	DT	_	9	det	_	start_char=2486|end_char=2489
+7	institutional	institutional	ADJ	JJ	_	9	amod	_	start_char=2490|end_char=2503
+8	review	review	NOUN	NN	_	9	compound	_	start_char=2504|end_char=2510
+9	board	board	NOUN	NN	_	4	obl	_	start_char=2511|end_char=2516
+10	(protocol	(protocol	NOUN	NN	_	4	parataxis	_	start_char=2517|end_char=2526
+11	no	no	INTJ	UH	_	4	discourse	_	SpaceAfter=No|start_char=2527|end_char=2529
+12	.	.	PUNCT	.	_	4	punct	_	start_char=2529|end_char=2530
+
+# text = 2021-0457).
+# sent_id = 103
+1	2021-0457)	2021-0457)	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=2531|end_char=2541
+2	.	.	PUNCT	.	_	1	punct	_	start_char=2541|end_char=2542
+
+# text = All participants gave written informed consent.
+# sent_id = 104
+1	All	all	DET	DT	_	2	det	_	start_char=2543|end_char=2546
+2	participants	participant	NOUN	NNS	_	3	nsubj	_	start_char=2547|end_char=2559
+3	gave	give	VERB	VBD	_	0	root	_	start_char=2560|end_char=2564
+4	written	written	VERB	VBN	_	6	amod	_	start_char=2565|end_char=2572
+5	informed	inform	VERB	VBN	_	6	amod	_	start_char=2573|end_char=2581
+6	consent	consent	NOUN	NN	_	3	obj	_	SpaceAfter=No|start_char=2582|end_char=2589
+7	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=2589|end_char=2590
+
+# text = Correspondence should be addressed to Dr.
+# sent_id = 105
+1	Correspondence	correspondence	NOUN	NN	_	4	nsubj:pass	_	start_char=2592|end_char=2606
+2	should	should	AUX	MD	_	4	aux	_	start_char=2607|end_char=2613
+3	be	be	AUX	VB	_	4	aux:pass	_	start_char=2614|end_char=2616
+4	addressed	address	VERB	VBN	_	0	root	_	start_char=2617|end_char=2626
+5	to	to	ADP	IN	_	6	case	_	start_char=2627|end_char=2629
+6	Dr	Dr	PROPN	NNP	_	4	obl	_	SpaceAfter=No|start_char=2630|end_char=2632
+7	.	.	PUNCT	.	_	4	punct	_	start_char=2632|end_char=2633
+
+# text = H.
+# sent_id = 106
+1	H	h	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=2634|end_char=2635
+2	.	.	PUNCT	.	_	1	punct	_	start_char=2635|end_char=2636
+
+# text = Lindqvist, Dept.
+# sent_id = 107
+1	Lindqvist,	Lindqvist,	PROPN	NNP	_	0	root	_	start_char=2637|end_char=2647
+2	Dept	Dept	PROPN	NNP	_	1	flat	_	SpaceAfter=No|start_char=2648|end_char=2652
+3	.	.	PUNCT	.	_	1	punct	_	start_char=2652|end_char=2653
+
+# text = of Psychology,
+# sent_id = 108
+1	of	of	ADP	IN	_	2	case	_	start_char=2654|end_char=2656
+2	Psychology	Psychology	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=2657|end_char=2667
+3	,	,	PUNCT	.	_	2	punct	_	start_char=2667|end_char=2668
+
+# text = Univ.
+# sent_id = 109
+1	Univ	Univ	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=2669|end_char=2673
+2	.	.	PUNCT	.	_	1	punct	_	start_char=2673|end_char=2674
+
+# text = of Northbridge, 14 College Rd.
+# sent_id = 110
+1	of	of	ADP	IN	_	2	case	_	start_char=2675|end_char=2677
+2	Northbridge,	Northbridge,	PROPN	NNP	_	0	root	_	start_char=2678|end_char=2690
+3	14	14	NUM	CD	_	2	flat	_	start_char=2691|end_char=2693
+4	College	College	PROPN	NNP	_	2	flat	_	start_char=2694|end_char=2701
+5	Rd	Rd	PROPN	NNP	_	2	flat	_	SpaceAfter=No|start_char=2702|end_char=2704
+6	.	.	PUNCT	.	_	2	punct	_	SpaceAfter=No|start_char=2704|end_char=2705
+
+# text = ,
+# sent_id = 111
+1	,	,	PUNCT	?	_	0	root	_	start_char=2705|end_char=2706
+
+# text = Northbridge NB4 2
+# sent_id = 112
+1	Northbridge	Northbridge	PROPN	NNP	_	0	root	_	start_char=2707|end_char=2718
+2	NB4	NB4	PROPN	NNP	_	1	conj	_	start_char=2719|end_char=2722
+3	2	2	PROPN	NNP	_	1	conj	_	SpaceAfter=No|start_char=2723|end_char=2724
+
+# text = XY, U.
+# sent_id = 113
+1	XY,	XY,	PROPN	NNP	_	0	root	_	start_char=2724|end_char=2727
+2	U	u	PROPN	NNP	_	1	conj	_	SpaceAfter=No|start_char=2728|end_char=2729
+3	.	.	PUNCT	.	_	1	punct	_	SpaceAfter=No|start_char=2729|end_char=2730
+
+# text = K.
+# sent_id = 114
+1	K.	K.	PROPN	NNP	_	0	root	_	SpacesAfter=\n\n|start_char=2730|end_char=2732
+
+# text = This work was supported by grant R01-GM123456 from the NIH.
+# sent_id = 115
+1	This	this	DET	DT	_	2	det	_	start_char=2734|end_char=2738
+2	work	work	NOUN	NN	_	4	nsubj:pass	_	start_char=2739|end_char=2743
+3	was	be	AUX	VBD	_	4	aux:pass	_	start_char=2744|end_char=2747
+4	supported	support	VERB	VBN	_	0	root	_	start_char=2748|end_char=2757
+5	by	by	ADP	IN	_	6	case	_	start_char=2758|end_char=2760
+6	grant	grant	NOUN	NN	_	4	obl	_	start_char=2761|end_char=2766
+7	R01-	R01-	PROPN	NNP	_	6	flat	_	SpaceAfter=No|start_char=2767|end_char=2771
+8	GM123456	GM123456	PROPN	NNP	_	4	parataxis	_	start_char=2771|end_char=2779
+9	from	from	ADP	IN	_	11	case	_	start_char=2780|end_char=2784
+10	the	the	DET	DT	_	11	det	_	start_char=2785|end_char=2788
+11	NIH	NIH	PROPN	NNP	_	8	nmod	_	SpaceAfter=No|start_char=2789|end_char=2792
+12	.	.	PUNCT	.	_	4	punct	_	start_char=2792|end_char=2793
+
+# text = The authors declare no competing interests.
+# sent_id = 116
+1	The	the	DET	DT	_	2	det	_	start_char=2794|end_char=2797
+2	authors	author	NOUN	NNS	_	3	nsubj	_	start_char=2798|end_char=2805
+3	declare	declare	VERB	VBP	_	0	root	_	start_char=2806|end_char=2813
+4	no	no	DET	DT	_	6	det	_	start_char=2814|end_char=2816
+5	competing	compet	VERB	VBG	_	6	amod	_	start_char=2817|end_char=2826
+6	interests	interest	NOUN	NNS	_	3	obj	_	SpaceAfter=No|start_char=2827|end_char=2836
+7	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=2836|end_char=2837
+
+# text = Smith, J.
+# sent_id = 117
+1	Smith,	Smith,	PROPN	NNP	_	0	root	_	start_char=2839|end_char=2845
+2	J	j	PROPN	NNP	_	1	flat	_	SpaceAfter=No|start_char=2846|end_char=2847
+3	.	.	PUNCT	.	_	1	punct	_	start_char=2847|end_char=2848
+
+# text = A., & Jones,
+# sent_id = 118
+1	A	a	DET	DT	_	2	dep	_	SpaceAfter=No|start_char=2849|end_char=2850
+2	.,	.,	NOUN	NN	_	0	root	_	start_char=2850|end_char=2852
+3	&	&	PROPN	NNP	_	4	reparandum	_	start_char=2853|end_char=2854
+4	Jones	Jones	PROPN	NNP	_	2	conj	_	SpaceAfter=No|start_char=2855|end_char=2860
+5	,	,	PUNCT	.	_	2	punct	_	start_char=2860|end_char=2861
+
+# text = B.
+# sent_id = 119
+1	B.	B.	PROPN	NNP	_	0	root	_	start_char=2862|end_char=2864
+
+# text = (2015).
+# sent_id = 120
+1	(2015)	(2015)	INTJ	UH	_	0	root	_	SpaceAfter=No|start_char=2865|end_char=2871
+2	.	.	PUNCT	.	_	1	punct	_	start_char=2871|end_char=2872
+
+# text = On the measurement of things.
+# sent_id = 121
+1	On	on	ADP	IN	_	3	case	_	start_char=2873|end_char=2875
+2	the	the	DET	DT	_	3	det	_	start_char=2876|end_char=2879
+3	measurement	measurement	NOUN	NN	_	0	root	_	start_char=2880|end_char=2891
+4	of	of	ADP	IN	_	5	case	_	start_char=2892|end_char=2894
+5	things	thing	NOUN	NNS	_	3	nmod	_	SpaceAfter=No|start_char=2895|end_char=2901
+6	.	.	PUNCT	.	_	3	punct	_	start_char=2901|end_char=2902
+
+# text = Journal of Applied Stuff, 12(3), 45–67.
+# sent_id = 122
+1	Journal	journal	NOUN	NN	_	0	root	_	start_char=2903|end_char=2910
+2	of	of	ADP	IN	_	4	case	_	start_char=2911|end_char=2913
+3	Applied	apply	VERB	VBN	_	4	amod	_	start_char=2914|end_char=2921
+4	Stuff,	Stuff,	PROPN	NNP	_	1	nmod	_	start_char=2922|end_char=2928
+5	12(3),	12(3),	PROPN	NNP	_	4	flat	_	start_char=2929|end_char=2935
+6	45–67	45–67	PROPN	NNP	_	5	flat	_	SpaceAfter=No|start_char=2936|end_char=2941
+7	.	.	PUNCT	.	_	1	punct	_	start_char=2941|end_char=2942
+
+# text = https://doi.org/10.1000/jas.2015.012
+# sent_id = 123
+1	https://doi.org/10.1000/jas.2015.012	https://doi.org/10.1000/jas.2015.012	INTJ	UH	_	0	root	_	SpacesAfter=\n\n|start_char=2943|end_char=2979
+
+# text = Okonkwo, C.
+# sent_id = 124
+1	Okonkwo,	Okonkwo,	PROPN	NNP	_	0	root	_	start_char=2981|end_char=2989
+2	C	c	PROPN	NNP	_	1	conj	_	SpaceAfter=No|start_char=2990|end_char=2991
+3	.	.	PUNCT	.	_	1	punct	_	start_char=2991|end_char=2992
+
+# text = (2020).
+# sent_id = 125
+1	(2020)	(2020)	INTJ	UH	_	0	root	_	SpaceAfter=No|start_char=2993|end_char=2999
+2	.	.	PUNCT	.	_	1	punct	_	start_char=2999|end_char=3000
+
+# text = A Short History of Long Words (2nd ed.).
+# sent_id = 126
+1	A	a	DET	DT	_	3	det	_	start_char=3001|end_char=3002
+2	Short	short	ADJ	JJ	_	3	amod	_	start_char=3003|end_char=3008
+3	History	History	PROPN	NNP	_	0	root	_	start_char=3009|end_char=3016
+4	of	of	ADP	IN	_	6	case	_	start_char=3017|end_char=3019
+5	Long	long	PROPN	NNP	_	6	amod	_	start_char=3020|end_char=3024
+6	Words	Words	PROPN	NNPS	_	3	nmod	_	start_char=3025|end_char=3030
+7	(2nd	(2nd	PROPN	NNP	_	5	flat	_	start_char=3031|end_char=3035
+8	ed	ed	PROPN	NNP	_	7	flat	_	SpaceAfter=No|start_char=3036|end_char=3038
+9	.)	.)	PROPN	NNP	_	8	flat	_	SpaceAfter=No|start_char=3038|end_char=3040
+10	.	.	PUNCT	.	_	3	punct	_	start_char=3040|end_char=3041
+
+# text = Oxford: Clarendon Press.
+# sent_id = 127
+1	Oxford	Oxford	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=3042|end_char=3048
+2	:	:	PROPN	NNP	_	1	flat	_	start_char=3048|end_char=3049
+3	Clarendon	Clarendon	PROPN	NNP	_	1	flat	_	start_char=3050|end_char=3059
+4	Press	press	PROPN	NNP	_	1	flat	_	SpaceAfter=No|start_char=3060|end_char=3065
+5	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=3065|end_char=3066
+
+# text = The data are available upon request.
+# sent_id = 128
+1	The	the	DET	DT	_	2	det	_	start_char=3068|end_char=3071
+2	data	data	NOUN	NN	_	4	nsubj	_	start_char=3072|end_char=3076
+3	are	be	AUX	VBP	_	4	cop	_	start_char=3077|end_char=3080
+4	available	available	ADJ	JJ	_	0	root	_	start_char=3081|end_char=3090
+5	upon	upon	ADP	IN	_	6	case	_	start_char=3091|end_char=3095
+6	request	request	NOUN	NN	_	4	obl	_	SpaceAfter=No|start_char=3096|end_char=3103
+7	.	.	PUNCT	.	_	4	punct	_	start_char=3103|end_char=3104
+
+# text = Code is available at github.com/example/proj.
+# sent_id = 129
+1	Code	code	NOUN	NN	_	3	nsubj	_	start_char=3105|end_char=3109
+2	is	be	AUX	VBZ	_	3	cop	_	start_char=3110|end_char=3112
+3	available	available	ADJ	JJ	_	0	root	_	start_char=3113|end_char=3122
+4	at	at	ADP	IN	_	5	case	_	start_char=3123|end_char=3125
+5	github	github	NOUN	NN	_	3	obl	_	SpaceAfter=No|start_char=3126|end_char=3132
+6	.com/example	.com/example	NOUN	NN	_	5	flat	_	SpaceAfter=No|start_char=3132|end_char=3144
+7	/proj	/proj	NOUN	NN	_	5	flat	_	SpaceAfter=No|start_char=3144|end_char=3149
+8	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=3149|end_char=3150
+
+# text = cf.
+# sent_id = 130
+1	cf	cf	INTJ	UH	_	0	root	_	SpaceAfter=No|start_char=3152|end_char=3154
+2	.	.	PUNCT	.	_	1	punct	_	start_char=3154|end_char=3155
+
+# text = the discussion in ch.
+# sent_id = 131
+1	the	the	DET	DT	_	2	det	_	start_char=3156|end_char=3159
+2	discussion	discussion	NOUN	NN	_	0	root	_	start_char=3160|end_char=3170
+3	in	in	ADP	IN	_	4	case	_	start_char=3171|end_char=3173
+4	ch	ch	PROPN	NNP	_	2	nmod	_	SpaceAfter=No|start_char=3174|end_char=3176
+5	.	.	PUNCT	.	_	2	punct	_	start_char=3176|end_char=3177
+
+# text = 4, pp.
+# sent_id = 132
+1	4,	4,	INTJ	UH	_	0	root	_	start_char=3178|end_char=3180
+2	pp	pp	PROPN	NNP	_	1	conj	_	SpaceAfter=No|start_char=3181|end_char=3183
+3	.	.	PUNCT	.	_	1	punct	_	start_char=3183|end_char=3184
+
+# text = 112–19, n.
+# sent_id = 133
+1	112–19,	112–19,	INTJ	UH	_	0	root	_	start_char=3185|end_char=3192
+2	n	n	INTJ	UH	_	1	flat	_	SpaceAfter=No|start_char=3193|end_char=3194
+3	.	.	PUNCT	.	_	1	punct	_	start_char=3194|end_char=3195
+
+# text = 23.
+# sent_id = 134
+1	23	23	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=3196|end_char=3198
+2	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=3198|end_char=3199
+
+# text = The vote passed 52–48.
+# sent_id = 135
+1	The	the	DET	DT	_	2	det	_	start_char=3201|end_char=3204
+2	vote	vote	NOUN	NN	_	3	nsubj	_	start_char=3205|end_char=3209
+3	passed	pass	VERB	VBD	_	0	root	_	start_char=3210|end_char=3216
+4	52–48	52–48	PROPN	NNP	_	3	obj	_	SpaceAfter=No|start_char=3217|end_char=3222
+5	.	.	PUNCT	.	_	3	punct	_	start_char=3222|end_char=3223
+
+# text = The bill now goes to the House, where its prospects are uncertain.
+# sent_id = 136
+1	The	the	DET	DT	_	2	det	_	start_char=3224|end_char=3227
+2	bill	bill	NOUN	NN	_	4	nsubj	_	start_char=3228|end_char=3232
+3	now	now	ADV	RB	_	4	advmod	_	start_char=3233|end_char=3236
+4	goes	go	VERB	VBZ	_	0	root	_	start_char=3237|end_char=3241
+5	to	to	ADP	IN	_	7	case	_	start_char=3242|end_char=3244
+6	the	the	DET	DT	_	7	det	_	start_char=3245|end_char=3248
+7	House,	House,	PROPN	NNP	_	4	obl	_	start_char=3249|end_char=3255
+8	where	where	SCONJ	WRB	_	12	mark	_	start_char=3256|end_char=3261
+9	its	its	PRON	PRP$	_	10	nmod:poss	_	start_char=3262|end_char=3265
+10	prospects	prospect	NOUN	NNS	_	12	nsubj	_	start_char=3266|end_char=3275
+11	are	be	AUX	VBP	_	12	cop	_	start_char=3276|end_char=3279
+12	uncertain	uncertain	ADJ	JJ	_	4	advcl	_	SpaceAfter=No|start_char=3280|end_char=3289
+13	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=3289|end_char=3290
+
+# text = Section 2(a) of the Act — sometimes called the "safe harbor" provision — was amended in 2011.
+# sent_id = 137
+1	Section	section	NOUN	NN	_	2	compound	_	start_char=3292|end_char=3299
+2	2(a)	2(a)	NOUN	NN	_	0	root	_	start_char=3300|end_char=3304
+3	of	of	ADP	IN	_	5	case	_	start_char=3305|end_char=3307
+4	the	the	DET	DT	_	5	det	_	start_char=3308|end_char=3311
+5	Act	act	NOUN	NN	_	2	nmod	_	start_char=3312|end_char=3315
+6	—	—	NOUN	NN	_	2	nmod	_	start_char=3316|end_char=3317
+7	sometimes	sometimes	ADV	RB	_	8	advmod	_	start_char=3318|end_char=3327
+8	called	call	VERB	VBD	_	2	parataxis	_	start_char=3328|end_char=3334
+9	the	the	DET	DT	_	12	det	_	start_char=3335|end_char=3338
+10	"safe	"safe	NOUN	NN	_	12	compound	_	start_char=3339|end_char=3344
+11	harbor"	harbor"	NOUN	NN	_	12	compound	_	start_char=3345|end_char=3352
+12	provision	provision	NOUN	NN	_	8	obj	_	start_char=3353|end_char=3362
+13	—	—	PRON	PRP	_	15	nsubj:pass	_	start_char=3363|end_char=3364
+14	was	be	AUX	VBD	_	15	aux	_	start_char=3365|end_char=3368
+15	amended	amend	VERB	VBN	_	12	acl:relcl	_	start_char=3369|end_char=3376
+16	in	in	ADP	IN	_	17	case	_	start_char=3377|end_char=3379
+17	2011	2011	PROPN	NNP	_	15	obl	_	SpaceAfter=No|start_char=3380|end_char=3384
+18	.	.	PUNCT	.	_	1	punct	_	start_char=3384|end_char=3385
+
+# text = Courts have disagreed about its scope ever since.
+# sent_id = 138
+1	Courts	court	NOUN	NNS	_	3	nsubj	_	start_char=3386|end_char=3392
+2	have	have	AUX	VBP	_	3	aux	_	start_char=3393|end_char=3397
+3	disagreed	disagre	VERB	VBN	_	0	root	_	start_char=3398|end_char=3407
+4	about	about	ADP	IN	_	6	case	_	start_char=3408|end_char=3413
+5	its	its	PRON	PRP$	_	6	nmod:poss	_	start_char=3414|end_char=3417
+6	scope	scope	NOUN	NN	_	3	obl	_	start_char=3418|end_char=3423
+7	ever	ever	ADV	RB	_	8	advmod	_	start_char=3424|end_char=3428
+8	since	since	ADV	RB	_	3	advmod	_	SpaceAfter=No|start_char=3429|end_char=3434
+9	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=3434|end_char=3435
+
+# text = The patient was given 500 mg of amoxicillin t.i.d.
+# sent_id = 139
+1	The	the	DET	DT	_	2	det	_	start_char=3437|end_char=3440
+2	patient	patient	NOUN	NN	_	4	nsubj:pass	_	start_char=3441|end_char=3448
+3	was	be	AUX	VBD	_	4	aux:pass	_	start_char=3449|end_char=3452
+4	given	give	VERB	VBN	_	0	root	_	start_char=3453|end_char=3458
+5	500	500	NUM	CD	_	6	nummod	_	start_char=3459|end_char=3462
+6	mg	mg	NOUN	NN	_	4	obj	_	start_char=3463|end_char=3465
+7	of	of	ADP	IN	_	8	case	_	start_char=3466|end_char=3468
+8	amoxicillin	amoxicillin	NOUN	NN	_	6	nmod	_	start_char=3469|end_char=3480
+9	t	t	NOUN	NN	_	6	nmod	_	SpaceAfter=No|start_char=3481|end_char=3482
+10	.i	.i	NOUN	NN	_	9	flat	_	SpaceAfter=No|start_char=3482|end_char=3484
+11	.d	.d	NOUN	NN	_	9	flat	_	SpaceAfter=No|start_char=3484|end_char=3486
+12	.	.	PUNCT	.	_	4	punct	_	start_char=3486|end_char=3487
+
+# text = for 10 days.
+# sent_id = 140
+1	for	for	ADP	IN	_	3	case	_	start_char=3488|end_char=3491
+2	10	10	NUM	CD	_	3	nummod	_	start_char=3492|end_char=3494
+3	days	day	NOUN	NNS	_	0	root	_	SpaceAfter=No|start_char=3495|end_char=3499
+4	.	.	PUNCT	.	_	3	punct	_	start_char=3499|end_char=3500
+
+# text = Her temperature dropped from 39.
+# sent_id = 141
+1	Her	she	PRON	PRP$	_	2	nmod:poss	_	start_char=3501|end_char=3504
+2	temperature	temperature	NOUN	NN	_	3	nsubj	_	start_char=3505|end_char=3516
+3	dropped	drop	VERB	VBD	_	0	root	_	start_char=3517|end_char=3524
+4	from	from	ADP	IN	_	5	case	_	start_char=3525|end_char=3529
+5	39	39	NUM	CD	_	3	obl	_	SpaceAfter=No|start_char=3530|end_char=3532
+6	.	.	PUNCT	.	_	3	punct	_	SpaceAfter=No|start_char=3532|end_char=3533
+
+# text = 4
+# sent_id = 142
+1	4	4	PROPN	NNP	_	0	root	_	start_char=3533|end_char=3534
+
+# text = °C to 37.
+# sent_id = 143
+1	°C	°C	PROPN	NNP	_	0	root	_	start_char=3535|end_char=3537
+2	to	to	ADP	IN	_	3	case	_	start_char=3538|end_char=3540
+3	37	37	NUM	CD	_	1	nmod:npmod	_	SpaceAfter=No|start_char=3541|end_char=3543
+4	.	.	PUNCT	.	_	1	punct	_	SpaceAfter=No|start_char=3543|end_char=3544
+
+# text = 1
+# sent_id = 144
+1	1	1	INTJ	UH	_	0	root	_	start_char=3544|end_char=3545
+
+# text = °C within 48 hrs.
+# sent_id = 145
+1	°C	°c	NOUN	NN	_	3	discourse	_	start_char=3546|end_char=3548
+2	within	within	ADP	IN	_	4	case	_	start_char=3549|end_char=3555
+3	48	48	NUM	CD	_	4	nummod	_	start_char=3556|end_char=3558
+4	hrs	hrs	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=3559|end_char=3562
+5	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=3562|end_char=3563
+
+# text = pH 7.4 buffer was used throughout.
+# sent_id = 146
+1	pH	ph	NOUN	NN	_	4	reparandum	_	start_char=3565|end_char=3567
+2	7	7	NUM	CD	_	4	reparandum	_	SpaceAfter=No|start_char=3568|end_char=3569
+3	.4	.4	NOUN	NN	_	4	compound	_	start_char=3569|end_char=3571
+4	buffer	buffer	NOUN	NN	_	6	nsubj:pass	_	start_char=3572|end_char=3578
+5	was	be	AUX	VBD	_	6	aux:pass	_	start_char=3579|end_char=3582
+6	used	use	VERB	VBN	_	0	root	_	start_char=3583|end_char=3587
+7	throughout	throughout	ADV	RB	_	6	advmod	_	SpaceAfter=No|start_char=3588|end_char=3598
+8	.	.	PUNCT	.	_	6	punct	_	start_char=3598|end_char=3599
+
+# text = The solution's molarity was 0.
+# sent_id = 147
+1	The	the	DET	DT	_	2	det	_	start_char=3600|end_char=3603
+2-3	solution's	_	_	_	_	_	_	_	start_char=3604|end_char=3614
+2	solution	solution	NOUN	NN	_	6	nsubj	_	start_char=3604|end_char=3612
+3	's	be	AUX	VBZ	_	4	cop	_	start_char=3612|end_char=3614
+4	molarity	molarity	NOUN	NN	_	6	nsubj	_	start_char=3615|end_char=3623
+5	was	be	AUX	VBD	_	6	cop	_	start_char=3624|end_char=3627
+6	0	0	NUM	CD	_	0	root	_	SpaceAfter=No|start_char=3628|end_char=3629
+7	.	.	PUNCT	.	_	6	punct	_	SpaceAfter=No|start_char=3629|end_char=3630
+
+# text = 15 M.
+# sent_id = 148
+1	15	15	NUM	CD	_	0	root	_	start_char=3630|end_char=3632
+2	M.	M.	PROPN	NNP	_	1	conj	_	SpacesAfter=\n\n|start_char=3633|end_char=3635
+
+# text = The mass of the electron is 9.
+# sent_id = 149
+1	The	the	DET	DT	_	2	det	_	start_char=3637|end_char=3640
+2	mass	mass	NOUN	NN	_	7	nsubj	_	start_char=3641|end_char=3645
+3	of	of	ADP	IN	_	5	case	_	start_char=3646|end_char=3648
+4	the	the	DET	DT	_	5	det	_	start_char=3649|end_char=3652
+5	electron	electron	NOUN	NN	_	2	nmod	_	start_char=3653|end_char=3661
+6	is	be	AUX	VBZ	_	7	cop	_	start_char=3662|end_char=3664
+7	9	9	NUM	CD	_	0	root	_	SpaceAfter=No|start_char=3665|end_char=3666
+8	.	.	PUNCT	.	_	7	punct	_	SpaceAfter=No|start_char=3666|end_char=3667
+
+# text = 109 × 10^−31 kg, roughly 1/1836 that of the proton.
+# sent_id = 150
+1	109	109	NUM	CD	_	0	root	_	start_char=3667|end_char=3670
+2	×	×	NOUN	NN	_	1	conj	_	start_char=3671|end_char=3672
+3	10^−31	10^−31	NUM	CD	_	5	reparandum	_	start_char=3673|end_char=3679
+4	kg,	kg,	NOUN	NN	_	5	discourse	_	start_char=3680|end_char=3683
+5	roughly	roughly	NUM	CD	_	6	flat	_	start_char=3684|end_char=3691
+6	1/1836	1/1836	NUM	CD	_	1	conj	_	start_char=3692|end_char=3698
+7	that	that	PRON	DT	_	1	conj	_	start_char=3699|end_char=3703
+8	of	of	ADP	IN	_	10	case	_	start_char=3704|end_char=3706
+9	the	the	DET	DT	_	10	det	_	start_char=3707|end_char=3710
+10	proton	proton	NOUN	NN	_	7	nmod	_	SpaceAfter=No|start_char=3711|end_char=3717
+11	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=3717|end_char=3718
+
+# text = The filing deadline was 3/14/2023² and the hotline is 555-012-3456¹.
+# sent_id = 151
+1	The	the	DET	DT	_	3	det	_	start_char=3720|end_char=3723
+2	filing	filing	NOUN	NN	_	3	compound	_	start_char=3724|end_char=3730
+3	deadline	deadline	NOUN	NN	_	5	nsubj	_	start_char=3731|end_char=3739
+4	was	be	AUX	VBD	_	5	cop	_	start_char=3740|end_char=3743
+5	3/14/2023²	3/14/2023²	NOUN	NN	_	0	root	_	start_char=3744|end_char=3754
+6	and	and	CCONJ	CC	_	10	cc	_	start_char=3755|end_char=3758
+7	the	the	DET	DT	_	8	det	_	start_char=3759|end_char=3762
+8	hotline	hotline	NOUN	NN	_	10	nsubj	_	start_char=3763|end_char=3770
+9	is	be	AUX	VBZ	_	10	cop	_	start_char=3771|end_char=3773
+10	555-012-3456¹	555-012-3456¹	PROPN	NNP	_	5	conj	_	SpaceAfter=No|start_char=3774|end_char=3787
+11	.	.	PUNCT	.	_	5	punct	_	start_char=3787|end_char=3788
+
+# text = See note³ below.
+# sent_id = 152
+1	See	see	VERB	VB	_	0	root	_	start_char=3789|end_char=3792
+2	note³	note³	NOUN	NN	_	1	obj	_	start_char=3793|end_char=3798
+3	below	below	ADV	RB	_	1	advmod	_	SpaceAfter=No|start_char=3799|end_char=3804
+4	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n|start_char=3804|end_char=3805

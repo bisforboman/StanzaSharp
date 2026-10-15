@@ -21,7 +21,8 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
     private readonly ManagedCharLanguageModel? _charlmForward, _charlmBackward;
     private readonly ManagedCharacterModel? _charModel;
     private readonly PackedMatrix? _transChar;
-    private readonly float[] _wordEmb, _lemmaEmb, _uposEmb, _xposEmb;
+    private readonly float[] _wordEmb, _lemmaEmb, _uposEmb;
+    private readonly float[][] _xposEmb; // one table per part of a composite XPOS vocabulary
     private readonly int _wordDim, _tagDim, _transformed, _inputSize, _biaff;
     private readonly PackedMatrix _transPretrained;
     private readonly ManagedHighwayLstm _lstm;
@@ -74,7 +75,9 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
             _inputSize += _transformed;
         }
 
-        (_wordEmb, _lemmaEmb, _uposEmb, _xposEmb) = (T("word_emb.weight"), T("lemma_emb.weight"), T("upos_emb.weight"), T("xpos_emb.weight"));
+        (_wordEmb, _lemmaEmb, _uposEmb) = (T("word_emb.weight"), T("lemma_emb.weight"), T("upos_emb.weight"));
+        var xpos = XposVocab.Read(ckpt.Root["vocab"]!);
+        _xposEmb = xpos.IsComposite ? [.. xpos.Sizes.Select((_, i) => T($"xpos_emb.{i}.weight"))] : [T("xpos_emb.weight")];
         _transPretrained = new PackedMatrix(T("trans_pretrained.weight"), _transformed, pretrain.Dim);
         _lstm = new ManagedHighwayLstm(ckpt, model, "parserlstm", _inputSize, hidden, config["num_layers"]!.GetValue<int>());
 
@@ -206,10 +209,18 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
                     var row = x.AsSpan(r * inSize, inSize);
                     _wordEmb.AsSpan((int)batch.Word[id] * _wordDim, _wordDim).CopyTo(row[_transformed..]);
                     _lemmaEmb.AsSpan((int)batch.Lemma[id] * _wordDim, _wordDim).CopyTo(row[(_transformed + _wordDim)..]);
-                    var upos = _uposEmb.AsSpan((int)batch.Upos[id] * _tagDim, _tagDim);
-                    var xpos = _xposEmb.AsSpan((int)batch.Xpos[id] * _tagDim, _tagDim);
-                    for (int e = 0; e < _tagDim; e++)
-                        row[posCol + e] = row[posCol + _tagDim + e] = upos[e] + xpos[e];
+
+                    // upos_emb + each XPOS part's embedding, added in order as Stanza's pos_emb += does.
+                    var pos = row.Slice(posCol, _tagDim);
+                    _uposEmb.AsSpan((int)batch.Upos[id] * _tagDim, _tagDim).CopyTo(pos);
+                    for (int p = 0; p < _xposEmb.Length; p++)
+                    {
+                        var xpos = _xposEmb[p].AsSpan((int)batch.Xpos[id * _xposEmb.Length + p] * _tagDim, _tagDim);
+                        for (int e = 0; e < _tagDim; e++)
+                            pos[e] += xpos[e];
+                    }
+
+                    pos.CopyTo(row[(posCol + _tagDim)..]);
                     vectors.Slice((int)batch.Pretrained[id] * dim, dim).CopyTo(a.AsSpan(r * dim));
                 }
             }

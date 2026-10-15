@@ -18,12 +18,12 @@ public class PipelineTests(SharedPipelines pipelines) : IClassFixture<SharedPipe
         Assert.Equal(golden, Conllu.Write(doc));
     }
 
-    /// <summary>Every processor runs managed, so a managed pipeline of either package holds only the managed charlms.</summary>
+    /// <summary>Every processor runs managed, so a managed pipeline of either default package holds only the managed charlms.</summary>
     [ModelFact]
     [Trait("Backend", "Managed")]
     public void ManagedBackend_LoadsNoTorchSharpCharlms()
     {
-        foreach (var package in Pipeline.Packages["en"].Keys)
+        foreach (var package in new[] { Pipeline.DefaultPackage, "default_fast" })
         {
             var nlp = pipelines.Get(package);
             const System.Reflection.BindingFlags Private = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
