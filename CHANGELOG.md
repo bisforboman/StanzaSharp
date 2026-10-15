@@ -8,6 +8,27 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 Unreleased changes are one file each under [`changes/`](changes/README.md), so pull requests don't conflict here;
 a release folds them in (`python tools/changelog.py release X.Y.Z`).
 
+## [1.8.0] - 2026-10-15
+
+1.8: performance only (rounds 27–32, docs/performance/). Sentiment about 22% faster, depparse and constituency a few
+percent, and the managed thread pool holds up when other processes keep the cores busy. No API change; output is bit
+for bit the same as 1.7.
+
+### Changed
+- Managed backend: the constituency parser's stack LSTMs run their cell updates and row copies inside the GEMM's
+  parallel tasks instead of on the calling thread, so constituency is 2 to 5% faster at 4 threads on the free x64 and
+  Arm runners (more on macOS). Output is bit-for-bit unchanged.
+- Managed backend: the dependency parser scores the padding columns of a batch's arc matrix once per row instead of
+  once per column, and sums its arc dot products with SIMD. Output, arc log-probs and label scores are bit for bit the
+  same.
+- Managed backend: when other processes keep the cores busy, the thread pool puts some workers to sleep instead of
+  letting every parallel step wait for a preempted one, and wakes them again once the stalls stop. On a loaded machine
+  a call took less wall time and about a third of the CPU time. Concurrent calls share the pool as before, and results
+  are unchanged (bitwise).
+- Managed backend: sentiment computes its biLSTM's first-layer input projection once for all padding rows of a batch
+  instead of once per row, and runs its strided (5, 5) filter with SIMD across the 8 channels. Results are bit for bit
+  the same; sentiment is faster on short and mid-length documents (docs/performance/round-28-sentiment-padding.md).
+
 ## [1.7.0] - 2026-10-14
 
 1.7: JSON output (`Json.Write`/`Json.Read`, like Stanza's `print(doc)`), `Pipeline.Process(Document)` for
