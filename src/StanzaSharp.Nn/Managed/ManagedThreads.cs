@@ -21,7 +21,7 @@ namespace StanzaSharp.Nn.Managed;
 /// 16 threads and 16 logical processors) single calls stalled for seconds (docs/performance/round-12-concurrent-calls-thread-pool.md).</para>
 /// <para>Other processes can keep the cores busy too, which that count can't see. When the caller's wait for a region's
 /// last item is far longer than an item (a worker holding one was preempted), one more worker stays asleep; after a
-/// while without such a stall one comes back (docs/performance/round-32-pool-under-contention.md).</para>
+/// while without such a stall one comes back. Concurrent callers switch this off (docs/performance/round-32-pool-under-contention.md).</para>
 /// <para>A region's items are claimed one at a time, so how they are split never depends on how many threads help:
 /// results don't change with the thread count or with concurrent calls.</para>
 /// </remarks>

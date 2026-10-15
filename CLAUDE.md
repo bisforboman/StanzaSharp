@@ -1083,8 +1083,11 @@ model but MWT and NER is English's architecture with other vocabularies and size
     split must not depend on how many threads help, so results stay bitwise identical under concurrency.
   - Contention from other processes (round 32): a join wait over 0.5 ms and over 8× the caller's mean item is a stall
     (a preempted worker holding an item). Per 100 ms window, with k threads per region, stalls over 1/k of the window
-    put one more worker to sleep (`Pool._shed`), under 1/(4k) one comes back. Only who runs items changes, never the
-    split. Internal, no option (a public one would be the owner's decision).
+    put one more worker to sleep (`Pool._shed`, keeping max(1, Count/4) awake), under 1/(4k) one comes back. Concurrent
+    callers (busy threads − awake workers > 1) reset `_shed` to 0 and void the window: shedding there starved long calls
+    (owner's tuning request). `Work` lowers `_busy` before raising `_sleepers` and vice versa so that count never
+    over-counts. Only who runs items changes, never the split. Internal, no option (a public one would be the owner's
+    decision).
   - `PackedLstm.Step` runs 4 tasks per thread (`TasksPerThread`; round 16): a late thread then holds a quarter of its
     share. Tried and dropped: fewer tasks for small steps (a work threshold, or timing each size class: biased by
     asleep workers, 25–50% slower on the Arm runners). A panel's arithmetic doesn't depend on its task.

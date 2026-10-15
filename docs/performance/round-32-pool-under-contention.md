@@ -7,7 +7,127 @@ an 8-thread call goes 3–10x slower while 4 threads stay steady. Every parallel
 worker preempted while it holds one stalls the caller for a scheduler quantum. Round 12's gate (`_busy`/`_limit`) counts
 only this process's threads. This round makes `ManagedThreads`' pool notice those stalls and put workers to sleep.
 
-## What changed
+## Result
+
+The pool now notices when other processes' threads preempt its workers, and puts some of them to sleep. This makes a
+lone call 2–3x faster under heavy foreign load and cuts its CPU time to about a third. Concurrent callers behave as on
+main, and so does an idle machine. Results are bitwise identical.
+
+The first version (below, kept as history) won under load but lost twice with concurrent callers. A long call next to
+8 short callers took 23–24 s against 12–14 s on main, and the short calls' median rose from 154–221 to 316–376 ms. The
+owner asked for those two losses to be fixed before merging. The final version fixes them by switching shedding off
+whenever callers overlap.
+
+## What changed (final version)
+
+`ManagedThreads.Pool.Run` already spins until the region's last item is done (the join). Now it times that join:
+
+- **A stall** is a join wait over 0.5 ms and over 8 times the caller's own mean item in that region. A preempted worker
+  costs a scheduler quantum (milliseconds). An imbalance costs about one item, and items are microseconds.
+- **Every 100 ms** (a window, ended by whichever caller's region crosses it), with k threads per region (the caller plus
+  the awake workers):
+  - if stalls took more than 1/k of the window, one more worker stays asleep (`_shed`);
+  - if they took less than 1/(4k), one comes back.
+- The 1/k rule is the conservative one: k threads that lose a fraction f of their time to stalls do k(1 − f) work, so
+  dropping to k − 1 only pays when f > 1/k, even if the stalls then vanish entirely.
+- **A floor:** at least max(1, `Count` / 4) workers stay awake (2 of 7 at 8 threads, so 3 threads per region).
+- **Concurrent callers switch shedding off.** When a caller enters a region while another caller is in one, `_shed`
+  drops to 0 at once, and that window's stalls don't count. The test is busy threads minus awake workers > 1, from values
+  `Run` already reads. With several callers, round 12's gate already keeps our own threads within the cores, and
+  shedding only took help away from the long calls among them.
+- `Work` now lowers `_busy` before raising `_sleepers` and raises `_busy` after lowering `_sleepers`. A worker
+  preempted between the two steps can then never be counted as a caller. The announce-before-last-look order is
+  unchanged.
+- A worker keeps spinning only while at least `_shed` workers are asleep, and a caller wakes at most
+  `sleepers − _shed` of them.
+
+Nothing about how a region is split changed: items are still claimed one at a time from the same counter. Shedding only
+changes which thread runs an item. Cost on an idle machine: one `Stopwatch.GetTimestamp` per region, two more when the
+caller has to wait at the join, and a few reads.
+
+Tried on the way:
+
+- **Counting only a lone caller's stalls, with a separate `_callers` counter.** This fell short: a short caller spends
+  part of every call in serial code, outside any region, so the long caller often looked alone and shed workers anyway
+  (8 + long: 6.6–9.4 calls/s against main's 9.9–13.5). It also added two contended atomics per region.
+- **The floor alone.** Under 12 spinning threads it was as fast as no floor (5.35–5.46 s against 5.09–5.47 s), so the
+  floor costs nothing there.
+
+## Measurements (final version)
+
+Same harness and machine as below (Ryzen 7 5800X, 8 threads, all eight processors, 2,009 words, 5 timed calls per
+process). Main is now `873f8c9`, with rounds 29 to 31 merged; the branch has main merged. The other agents' load was
+heavier than in the first measurements, and burst to 100% often, so single runs moved 2–5x. Main and the branch
+alternated throughout.
+
+**Heavy load** (ambient load plus 12 spinning threads), median seconds per call:
+
+| round | main, 8 threads | branch, 8 threads | main, 4 threads |
+|---:|---:|---:|---:|
+| 1 | 13.4 | **6.2** | 11.9 |
+| 2 | 25.0 | **19.4** | 28.3 |
+| 3 | 47.2 | **20.8** | 35.8 |
+| CPU per call | 51–74 s | **20–21 s** | 26–32 s |
+
+The branch mostly ran at 3 threads (`_shed` 5, the floor, in 28–92% of samples) and beat both main settings in every
+round.
+
+**Concurrent callers** (`--per-call 60 --concurrent T [--with-long]`, 3 rounds, order alternating). Calls/s, short-call
+median in ms, and the first long call in s:
+
+| callers | main | branch |
+|---|---|---|
+| 2 | 1.9 / 698, 7.1 / 114, 25.2 / 72 | 8.4 / 102, 15.0 / 82, 21.1 / 83 |
+| 8 | 7.5 / 205, 18.7 / 232, 10.4 / 313 | 10.5 / 151, 17.9 / 233, 4.6 / 384 |
+| 1 + long | 2.4 / 216 / 22.4, 5.8 / 90 / 12.4, 3.1 / 84 / 51.0 | 7.1 / 119 / 7.9, 8.4 / 105 / 6.6, 2.2 / 256 / 23.9 |
+| 8 + long | 15.5 / 327 / 20.2, 14.6 / 266 / 18.3, 9.0 / 382 / 27.8 | 13.9 / 293 / 21.2, 13.2 / 312 / 16.5, 12.8 / 409 / 26.1 |
+
+- **The two losses are gone.** With 8 short callers plus the long one, the long call took 16.5–26.1 s against main's
+  18.3–27.8 s in the same rounds. With 8 short callers, the short calls' median was 151–384 ms against main's
+  205–313 ms.
+- Under this noise the remaining differences go both ways. The first version's concurrency gains are gone too, by
+  design: callers now share the pool as on main.
+
+**Ambient load only** (no spinning threads), 7 alternating rounds in all. Median seconds per call:
+
+| | values |
+|---|---|
+| main, 8 threads | 2.93, 5.36, 3.85, 2.87, 3.92, 11.08, 3.00 |
+| branch, 8 threads | 2.95, 3.05, 16.41, 3.13, 3.29, 2.60, 4.40 |
+
+- These runs show the bursts more than the code: each side had one outlier (main 11.08 s, branch 16.41 s).
+- In the branch's outlier, and in one single-call exactness run (11.8 s against main's 2.49 s just before), the branch
+  was shedding at 3 threads. So a burst was on at the time.
+- At 3 threads an undisturbed call takes about 3.5 s, so shedding alone doesn't explain 11–16 s. Neither run can be
+  separated from the burst on this machine.
+- With deliberate load the branch won every round.
+
+**Idle (Benchmark workflow, free runners)**, total and one-sentence median. Two samples each: branch runs
+38727397605 and 38735514369, main runs 38727401474 and 38735518300.
+
+| runner | main | branch |
+|---|---|---|
+| ubuntu-26.04-arm | 7.76 s, 84.6 ms; 7.82 s, 88.6 ms | 7.97 s, 92.1 ms; 7.74 s, 86.9 ms |
+| windows-11-arm | 8.30 s, 98.1 ms; 7.80 s, 86.6 ms | 7.69 s, 101.9 ms; 7.73 s, 88.7 ms |
+| macos-26 | 6.39 s, 121 ms; 9.37 s, 150 ms | 6.85 s, 94 ms; 7.76 s, 142 ms |
+| ubuntu-26.04 | 7.37 s, 85.9 ms (EPYC 7763); 7.33 s (EPYC 7763) | 7.77 s, 95.2 ms (EPYC 7763); 7.08 s (Xeon 8573C): only the first pair compares |
+| windows-2025 | different CPUs in both pairs | not comparable |
+
+- Within noise. The only same-CPU x64 pair favours main by 5%; the Arm runners and macOS go both ways.
+
+**Exactness (final version).** The same set as for the first version, on the current head:
+- the CoNLL-U was `93D9524692F2D690` in all 8 processes and in every timed call above;
+- UPOS logits `6E17E2D3EF88EBCE`, sentiment logits `3237876DB4C70D2D` and charlm vectors `19FECB3074201698` matched in
+  all 24 score sets, from main and the branch, at 1 and 8 threads, with and without the 12 spinning threads.
+
+The branch's runs under load moved between 8 and 3 threads during the call. `ConcurrencyTests` (7 cases, both
+backends), `ManagedThreadsOptionTests` and the `ParallelFor_*` tests pass.
+
+## First version (history)
+
+The PR's first commits (`2070354`, `7eebc00`) had no floor and also shed workers while several callers ran.
+
+### Design
 
 `ManagedThreads.Pool.Run` already spins until the region's last item is done (the join). Now it times that join:
 
@@ -30,7 +150,7 @@ The first version shed a worker on every single stall and brought one back after
 load it went down to 1 thread most of the time (59% of samples at 1 thread, 16 s per call), while a fixed 4 threads
 took 5.6 s. That version was dropped in favour of the stall fraction.
 
-## Setup
+### Setup
 
 Ryzen 7 5800X (8 cores, 16 logical processors), Windows 11, .NET 10.0.13, Vector256, converted models, all eight
 processors, the benchmark text (2,009 words). A scratch harness (not committed) loads the pipeline at a fixed `Threads`,
@@ -42,7 +162,7 @@ Their load varied from about 50% to 100% CPU (at worst three test hosts using ab
 is a second process with 12 threads that spin at normal priority, as in round 27. Idle speed was measured on the
 Benchmark workflow's free runners.
 
-## Under load
+### Under load
 
 **Ambient load plus 12 spinning threads** (about 28 other busy threads on 16 logical processors), seconds per call:
 
@@ -66,7 +186,7 @@ when the other agents' load dropped. It was faster than main at 8 threads in eve
 
 At this load the branch never shed a worker (`_shed` was 0 in every sample), and both sides took the same time.
 
-## Concurrent callers
+### Concurrent callers
 
 Round 12's method (`StanzaSharp.Benchmark --per-call 60 --concurrent T [--with-long]`, 8 threads), two alternating
 sweeps under the ambient load:
@@ -85,7 +205,7 @@ got less help. Its first run took 23–24 s on the branch against 12–14 s on m
 instead of 3–4, while the short callers made 18 calls/s instead of 14–16. Round 12's rule still holds: no caller stopped
 making progress. `ConcurrencyTests` passed (all 7 cases, both backends), as did the `ManagedThreadsOptionTests`.
 
-## Idle speed (free runners)
+### Idle speed (free runners)
 
 The Benchmark workflow (`stanzasharp benchmark`), branch run 38709412313 against main run 38709415811, total seconds
 for all eight processors and the one-sentence median:
@@ -101,7 +221,7 @@ for all eight processors and the one-sentence median:
 Within noise on every runner that drew the same CPU. On macOS the order flipped between the run and its rerun (the
 virtualized runner's usual spread).
 
-## Exactness
+### Exactness (first version)
 
 The CoNLL-U (all eight processors) and the SHA-256 of three score sets on the benchmark text: every UPOS logit (pos,
 `combined_charlm`), every sentiment logit, and the backward charlm's per-word vectors, each computed 3 times per process.
@@ -126,5 +246,6 @@ come back once the stalls stop.
   stall rule needs neither.
 - **A public option** (for example `PipelineOptions.AdaptiveThreads`, on by default): everything is internal. Turning
   it off would only help someone who wants to grab cores from other processes. That is the owner's decision.
-- The constants (0.5 ms, 8 items, 100 ms, 1/k and 1/(4k)) were set once and not tuned. Under the heaviest load the
-  pool ran at 1–2 threads, where a fixed 4 threads might have been better (the 4-thread runs were themselves 16–21 s).
+- The constants (0.5 ms, 8 items, 100 ms, 1/k and 1/(4k), the Count/4 floor) were set once and not tuned further.
+- **Shedding with concurrent callers under foreign load.** The first version's throughput gains there (+15–60%) came
+  with the long-call loss. A per-caller share of the awake workers could keep both, at the cost of more code in the pool.
