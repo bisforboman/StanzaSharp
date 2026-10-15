@@ -13,7 +13,8 @@ namespace StanzaSharp.Depparse;
 ///   (<c>combined_charlm</c>), or the model's own character LSTM projected by <c>trans_char</c> (<c>combined_nocharlm</c>)
 /// - a highway biLSTM
 /// - deep biaffine arc and label scorers, plus the linearization and distance terms
-/// - a maximum spanning tree with one root (Chu-Liu/Edmonds)
+/// - a maximum spanning tree with one root (Chu-Liu/Edmonds), then, for checkpoints that don't turn it off (English
+///   craft, genia, mimic), head_constraints.py's repair of heads with two subjects or objects (<see cref="ResolveHeadConstraints"/>)
 /// The network is an <see cref="IDepparseNet"/> per backend; vocab lookups, batching and decoding are here.
 /// </summary>
 internal sealed class DependencyParser : IDisposable
@@ -26,6 +27,7 @@ internal sealed class DependencyParser : IDisposable
     private readonly XposVocab _xposVocab;
     private readonly string[] _deprels;
     private readonly int _batchSize;
+    private readonly bool _resolveHeadConstraints;
     private readonly IDepparseNet _net;
 
     internal DependencyParser(Checkpoint ckpt, Pretrain pretrain, Func<bool, IDepparseNet> net)
@@ -40,6 +42,10 @@ internal sealed class DependencyParser : IDisposable
         _xposVocab = XposVocab.Read(vocab);
         _deprels = vocab["deprel"]!["_id2unit"]!.AsArray().Select(x => x!.GetValue<string>()).ToArray();
         _batchSize = config["batch_size"]!.GetValue<int>();
+
+        // depparse_processor: config.get('resolve_head_constraints', True), the checkpoint's config (English default's
+        // models say false; older ones, like the biomedical packages', lack the key).
+        _resolveHeadConstraints = config["resolve_head_constraints"]?.GetValue<bool>() ?? true;
         _net = net(config["charlm"]?.GetValue<bool>() == true);
     }
 
@@ -140,7 +146,7 @@ internal sealed class DependencyParser : IDisposable
     internal List<(int Head, string Deprel)[]> Parse(IReadOnlyList<IReadOnlyList<Word>> batch, CancellationToken cancellationToken = default,
         CharlmCache? charlms = null, IReadOnlyList<Sentence?>? keys = null)
     {
-        var output = Scores(batch, labelScores: false, cancellationToken, charlms, rentScores: true, keys);
+        var output = Scores(batch, labelScores: _resolveHeadConstraints, cancellationToken, charlms, rentScores: true, keys);
         int width = output.Width;
         var result = new List<(int, string)[]>(batch.Count);
         var scores = ArrayPool<double>.Shared.Rent(width * width); // each sentence's n × n block, written before it is read
@@ -156,10 +162,18 @@ internal sealed class DependencyParser : IDisposable
                         scores[i * n + j] = output.ArcLogProbs[(b * width + i) * width + j];
                 }
 
-                var tree = ChuLiuEdmonds.OneRoot(scores, n);
-                result.Add(Enumerable.Range(1, n - 1)
-                    .Select(i => (tree[i], _deprels[output.Labels[(b * width + i) * width + tree[i]] + VocabPrefixSize]))
-                    .ToArray());
+                if (_resolveHeadConstraints)
+                {
+                    var (tree, raw) = ResolveHeadConstraints(output, b, n);
+                    result.Add(Enumerable.Range(1, n - 1).Select(i => (tree[i], _deprels[raw[i - 1] + VocabPrefixSize])).ToArray());
+                }
+                else
+                {
+                    var tree = ChuLiuEdmonds.OneRoot(scores, n);
+                    result.Add(Enumerable.Range(1, n - 1)
+                        .Select(i => (tree[i], _deprels[output.Labels[(b * width + i) * width + tree[i]] + VocabPrefixSize]))
+                        .ToArray());
+                }
             }
         }
         finally
@@ -173,6 +187,157 @@ internal sealed class DependencyParser : IDisposable
         }
 
         return result;
+    }
+
+    // head_constraints.py SINGLETON_DEPREL_GROUPS: relations a head may have only one dependent of per group.
+    private static readonly Dictionary<string, string> DeprelGroups = new()
+    {
+        ["nsubj"] = "subj",
+        ["csubj"] = "subj",
+        ["nsubj:pass"] = "subj",
+        ["csubj:pass"] = "subj",
+        ["nsubj:outer"] = "subj_outer",
+        ["csubj:outer"] = "subj_outer",
+        ["obj"] = "obj",
+    };
+
+    /// <summary>
+    /// decode_graph_predictions with resolve_head_constraints (head_constraints.py resolve_head_constraint_violations, at
+    /// most 5 rounds): the tree, then labels by each arc's best label log-prob; while a head has two dependents of one
+    /// group, each choice of the one that keeps it reruns Chu-Liu/Edmonds with the others' rows plus their best allowed
+    /// label (not that group at that head), and the best tree by summed float32 arc + label log-prob wins.
+    /// </summary>
+    /// <returns>The tree (ROOT first) and each word's relation, without the vocabulary prefix.</returns>
+    private (int[] Tree, int[] Raw) ResolveHeadConstraints(DepparseScores output, int b, int n)
+    {
+        int width = output.Width, rel = output.Relations;
+        var arcs = new float[n * n]; // preds[0][:n, :n], float32
+        var labels = new float[n * n * rel]; // log_softmax(deprel_scores, 3)[:n, :n], float32
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                arcs[i * n + j] = output.ArcLogProbs[(b * width + i) * width + j];
+                var x = output.LabelScores.AsSpan(((b * width + i) * width + j) * rel, rel);
+                float max = float.NegativeInfinity;
+                foreach (var v in x)
+                    max = Math.Max(max, v);
+                double sum = 0;
+                foreach (var v in x)
+                    sum += Math.Exp(v - max);
+                float lse = (float)Math.Log(sum);
+                for (int r = 0; r < rel; r++)
+                    labels[(i * n + j) * rel + r] = x[r] - max - lse;
+            }
+        }
+
+        var groupOf = Enumerable.Range(0, rel).Select(r => DeprelGroups.GetValueOrDefault(_deprels[r + VocabPrefixSize])).ToArray();
+        var excluded = new Dictionary<(int Dep, int Head), HashSet<string>>();
+        (int Id, float Score) LabelFor(int dep, int head, string? extra = null)
+        {
+            var row = labels.AsSpan((dep * n + head) * rel, rel);
+            var exclude = excluded.GetValueOrDefault((dep, head));
+            if ((exclude == null || exclude.Count == 0) && extra == null)
+            {
+                int best = 0; // np.argmax: the first maximum
+                for (int r = 1; r < rel; r++)
+                {
+                    if (row[r] > row[best])
+                        best = r;
+                }
+
+                return (best, row[best]);
+            }
+
+            (int Id, float Score) result = (-1, float.NegativeInfinity);
+            for (int r = 0; r < rel; r++)
+            {
+                if (groupOf[r] is { } g && (g == extra || exclude?.Contains(g) == true))
+                    continue;
+                if (row[r] > result.Score)
+                    result = (r, row[r]);
+            }
+
+            return result;
+        }
+
+        int[] LabelsFor(int[] t) => [.. Enumerable.Range(1, n - 1).Select(j => LabelFor(j, t[j]).Id)];
+        float Combined(int[] t, int[] ids)
+        {
+            float sum = 0;
+            for (int j = 1; j < n; j++)
+                sum += arcs[j * n + t[j]] + labels[(j * n + t[j]) * rel + ids[j - 1]];
+            return sum;
+        }
+
+        int[] Cle(float[] s) => ChuLiuEdmonds.OneRoot([.. s.Select(v => (double)v)], n);
+
+        var tree = Cle(arcs);
+        var raw = LabelsFor(tree);
+        for (int round = 0; round < 5; round++)
+        {
+            // find_head_constraint_violations: heads in order of their first grouped dependent, groups likewise.
+            var perHead = new Dictionary<int, Dictionary<string, List<int>>>();
+            var heads = new List<int>();
+            for (int j = 1; j < n; j++)
+            {
+                if (groupOf[raw[j - 1]] is not { } g)
+                    continue;
+                if (!perHead.TryGetValue(tree[j], out var groups))
+                {
+                    perHead[tree[j]] = groups = [];
+                    heads.Add(tree[j]);
+                }
+
+                if (!groups.TryGetValue(g, out var list))
+                    groups[g] = list = [];
+                list.Add(j);
+            }
+
+            var violation = heads.SelectMany(h => perHead[h].Where(kv => kv.Value.Count > 1).Select(kv => (Head: h, Group: kv.Key, Deps: kv.Value)))
+                .Cast<(int Head, string Group, List<int> Deps)?>()
+                .FirstOrDefault();
+            if (violation is not var (headIdx, group, deps))
+                break;
+
+            (float Score, int[] Tree, int[] Ids, int Keep)? best = null;
+            for (int keep = 0; keep < deps.Count; keep++)
+            {
+                var trial = (float[])arcs.Clone();
+                for (int k = 0; k < deps.Count; k++)
+                {
+                    if (k == keep)
+                        continue;
+                    int dep = deps[k];
+                    for (int h = 0; h < n; h++)
+                        trial[dep * n + h] = (float)((double)arcs[dep * n + h] + LabelFor(dep, h, h == headIdx ? group : null).Score);
+                }
+
+                var trialTree = Cle(trial);
+                var trialIds = LabelsFor(trialTree);
+                for (int k = 0; k < deps.Count; k++)
+                {
+                    if (k != keep && trialTree[deps[k]] == headIdx)
+                        trialIds[deps[k] - 1] = LabelFor(deps[k], headIdx, group).Id;
+                }
+
+                float score = Combined(trialTree, trialIds);
+                if (best == null || score > best.Value.Score)
+                    best = (score, trialTree, trialIds, keep);
+            }
+
+            (tree, raw) = (best!.Value.Tree, best.Value.Ids);
+            for (int k = 0; k < deps.Count; k++)
+            {
+                if (k == best.Value.Keep)
+                    continue;
+                if (!excluded.TryGetValue((deps[k], headIdx), out var set))
+                    excluded[(deps[k], headIdx)] = set = [];
+                set.Add(group);
+            }
+        }
+
+        return (tree, raw);
     }
 
     /// <summary>The network's scores for one batch (see <see cref="DepparseScores"/>).</summary>
@@ -225,7 +390,6 @@ internal sealed class DependencyParser : IDisposable
         Require(config["word_emb_dim"]!.GetValue<int>() > 0 && config["tag_emb_dim"]!.GetValue<int>() > 0, "disabled word or tag embeddings");
         Require(Flag("use_upos", true) && Flag("use_xpos", true) && Flag("use_ufeats", true), "a subset of UPOS/XPOS/UFeats");
         Require(!Flag("reversed", false), "reversed sentences");
-        Require(!Flag("resolve_head_constraints", false), "resolve_head_constraints");
         foreach (var key in new[] { "word", "lemma" })
             Require(root["vocab"]![key]!["lower"]!.GetValue<bool>(), $"a cased {key} vocab");
         foreach (var key in new[] { "upos", "xpos" })

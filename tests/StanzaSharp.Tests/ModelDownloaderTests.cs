@@ -100,6 +100,8 @@ public class ModelDownloaderTests : IDisposable
     [InlineData("eslspok", null, "tokenize/eslspok_nocharlm.pt pos/eslspok_charlm.pt depparse/eslspok_charlm.pt pretrain/conll17.pt forward_charlm/1billion.pt backward_charlm/1billion.pt")]
     [InlineData("eslspok", "tokenize,lemma", "tokenize/eslspok_nocharlm.pt")]
     [InlineData("ewt", "lemma", "tokenize/ewt_nocharlm.pt mwt/ewt.pt pos/ewt_charlm.pt lemma/ewt_nocharlm.pt pretrain/conll17.pt forward_charlm/1billion.pt backward_charlm/1billion.pt")]
+    [InlineData("craft", null, "tokenize/craft_nocharlm.pt pos/craft_nocharlm.pt lemma/craft_nocharlm.pt depparse/craft_nocharlm.pt pretrain/biomed.pt")]
+    [InlineData("mimic", "pos", "tokenize/mimic_nocharlm.pt pos/mimic_charlm.pt pretrain/mimic.pt forward_charlm/mimic.pt backward_charlm/mimic.pt")]
     [InlineData("combined", null, "tokenize/combined_nocharlm.pt mwt/combined.pt pos/combined_charlm.pt lemma/combined_nocharlm.pt depparse/combined_charlm.pt pretrain/conll17.pt forward_charlm/1billion.pt backward_charlm/1billion.pt")]
     public void FilesFor_SelectsTheTreebankPackagesFiles(string package, string? processors, string expected) =>
         Assert.Equal(expected.Split(' ').Order(), ModelDownloader.FilesFor(processors, package).Select(f => f.Path).Order());

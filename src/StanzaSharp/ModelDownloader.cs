@@ -79,6 +79,24 @@ public static class ModelDownloader
             ("tokenize/eslspok_nocharlm.pt", "41daea96fefb4138103090d4ee42d236"),
             ("pos/eslspok_charlm.pt", "ca420543b5be33e904cb098cebe7de80"),
             ("depparse/eslspok_charlm.pt", "74f0bf70725a90cdf0e7b40bbdc9b1c7"),
+
+            // The biomedical packages' (no mwt; craft and genia read biomed, mimic its own vectors and charlms)
+            ("tokenize/craft_nocharlm.pt", "fc95d998b9ad6c94e4d683a2e22f4b83"),
+            ("pos/craft_nocharlm.pt", "0bcb9b9712e81beb38a2ed4d7649b437"),
+            ("lemma/craft_nocharlm.pt", "62758246109e9ed243f158ce9e4294c3"),
+            ("depparse/craft_nocharlm.pt", "a7f21d3415745f5fe4debad7bc233eb5"),
+            ("pretrain/biomed.pt", "9e038ff1a932086483da05102558a37c"),
+            ("tokenize/genia_nocharlm.pt", "1f9e66486fc7e38917c817e65fa05501"),
+            ("pos/genia_nocharlm.pt", "65a2bf877185e1b92747fd0a46aabe84"),
+            ("lemma/genia_nocharlm.pt", "5922b24bda427f0a8578f1732964e06b"),
+            ("depparse/genia_nocharlm.pt", "4c5328dae9e34f042230cf87194c1022"),
+            ("tokenize/mimic_nocharlm.pt", "2ff39c4010bd9b96ecd03835206e4589"),
+            ("pos/mimic_charlm.pt", "8208c89c2e4ff1abd7d06d45973091ce"),
+            ("lemma/mimic_nocharlm.pt", "8a75bbe7d73e4148abf980d7d5233745"),
+            ("depparse/mimic_charlm.pt", "7b254811da5f794bc60f82b73f6e7638"),
+            ("pretrain/mimic.pt", "4fe1487ea48eb27af23a2a482610d0bd"),
+            ("forward_charlm/mimic.pt", "3d3863e27afd67bf356354a728b0fb76"),
+            ("backward_charlm/mimic.pt", "19a16ba4b8526e54ef8ab21ca33cc423"),
         ],
         ["de"] =
         [

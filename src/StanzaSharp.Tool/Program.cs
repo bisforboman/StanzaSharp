@@ -23,7 +23,8 @@ const string Usage = $"""
 
       --lang CODE         the language: en (default) or de (German)
       --package NAME      Stanza's package: default, or default_fast (faster, no constituency); the treebank
-                          packages (tokenize to depparse only): English combined, ewt, gum, lines, partut, atis, childes, eslspok;
+                          packages (tokenize to depparse only): English combined, ewt, gum, lines, partut, atis, childes, eslspok,
+                          craft, genia, mimic;
                           German combined, gsd, hdt
       --processors LIST   comma-separated, from tokenize,mwt,pos,lemma,constituency,depparse,sentiment,ner
                           (default: all of the package's)

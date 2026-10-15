@@ -44,11 +44,13 @@ of the batch padding.
 **English treebank packages.** Stanza's English treebank packages (tokenize, mwt, pos, lemma, depparse) run on the same
 English texts (`corpus.txt` and every `validation*.txt`), each against its own folder of `tests/golden/<package>/`
 (`make_golden.py --treebank-only`): `ewt` (858 sentences, 8,393 words), `gum` (819, 8,395), `lines` (767, 8,111),
-`partut` (942, 8,454), `atis` (472, 6,587), `childes` (1,231, 7,905) and `eslspok` (855, 7,131; no MWT, and Stanza's
-identity lemmatizer), plus `combined`, whose models are the default package's, against `depparse/`. The packages with
+`partut` (942, 8,454), `atis` (472, 6,587), `childes` (1,231, 7,905), `eslspok` (855, 7,131; no MWT, and Stanza's
+identity lemmatizer) and the biomedical `craft` (833, 8,237), `genia` (830, 8,075) and `mimic` (829, 8,296; no MWT,
+their own word vectors), plus `combined`, whose models are the default package's, against `depparse/`. The packages with
 MWT also have their MWT word list (`mwt.json`, with and without the dictionary). They exercise what the default package
 doesn't: a tokenizer without MWT heads, composite XPOS tags (`lines`, `partut`: a scorer and an embedding per part),
-a caseless lemmatizer (`atis`) and an MWT seq2seq model (`partut`), which Stanza decodes with a beam search of 5.
+a caseless lemmatizer (`atis`), an MWT seq2seq model (`partut`), which Stanza decodes with a beam search of 5, a
+lemmatizer without a copy gate, and the parser's repair of heads with two subjects or objects (the biomedical ones).
 
 Every test above runs on both backends (the JSON comparison on the managed one: the writer does not depend on the backend): the managed backend (the default) and the TorchSharp backend
 (`StanzaSharp.Cuda`). The managed backend's kernels are also tested on each SIMD path a CPU can take (Vector512 with

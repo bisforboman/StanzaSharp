@@ -1,0 +1,755 @@
+# text = Lemon Ricotta Pancakes Serves 4. Prep time: 10 min.
+# sent_id = 0
+1	Lemon	lemon	NOUN	NN	_	3	compound	_	start_char=0|end_char=5
+2	Ricotta	Ricotta	PROPN	NNP	_	3	compound	_	start_char=6|end_char=13
+3	Pancakes	Pancakes	PROPN	NNPS	_	4	nsubj	_	SpacesAfter=\n|start_char=14|end_char=22
+4	Serves	serve	VERB	VBZ	_	0	root	_	start_char=23|end_char=29
+5	4	4	NUM	CD	_	4	flat	_	SpaceAfter=No|start_char=30|end_char=31
+6	.	.	PUNCT	.	_	8	punct	_	start_char=31|end_char=32
+7	Prep	prep	NOUN	NN	_	8	compound	_	start_char=33|end_char=37
+8	time	time	NOUN	NN	_	4	parataxis	_	SpaceAfter=No|start_char=38|end_char=42
+9	:	:	PUNCT	:	_	11	punct	_	start_char=42|end_char=43
+10	10	10	NUM	CD	_	11	nummod	_	start_char=44|end_char=46
+11	min	min	NOUN	NN	_	8	appos	_	SpaceAfter=No|start_char=47|end_char=50
+12	.	.	PUNCT	.	_	4	punct	_	start_char=50|end_char=51
+
+# text = Cook time: 20 min.
+# sent_id = 1
+1	Cook	cook	NOUN	NN	_	2	compound	_	start_char=52|end_char=56
+2	time	time	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=57|end_char=61
+3	:	:	PUNCT	:	_	5	punct	_	start_char=61|end_char=62
+4	20	20	NUM	CD	_	5	nummod	_	start_char=63|end_char=65
+5	min	min	NOUN	NN	_	2	appos	_	SpaceAfter=No|start_char=66|end_char=69
+6	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=69|end_char=70
+
+# text = Ingredients:
+# sent_id = 2
+1	Ingredients	ingredient	NOUN	NNS	_	0	root	_	SpaceAfter=No|start_char=72|end_char=83
+2	:	:	PUNCT	:	_	1	punct	_	SpacesAfter=\n|start_char=83|end_char=84
+
+# text = • 1 ½ cups all-purpose flour • 2 tbsp sugar • 1 tsp baking powder • ½ tsp baking soda • ¼ tsp salt • 1 cup ricotta cheese • ¾ cup milk • 2 large eggs, separated • zest of 1 lemon • 2 tbsp. butter, melted, plus more for the pan
+# sent_id = 3
+1	•	•	SYM	$	_	0	root	_	start_char=85|end_char=86
+2	1	1	NUM	CD	_	1	nummod	_	start_char=87|end_char=88
+3	½	½	PUNCT	.	_	1	nummod	_	start_char=89|end_char=90
+4	cups	cup	NOUN	NNS	_	6	compound	_	start_char=91|end_char=95
+5	all-purpose	all-purpose	ADJ	JJ	_	6	amod	_	start_char=96|end_char=107
+6	flour	flour	NOUN	NN	_	1	appos	_	SpacesAfter=\n|start_char=108|end_char=113
+7	•	•	PUNCT	,	_	10	punct	_	start_char=114|end_char=115
+8	2	2	NUM	CD	_	10	nummod	_	start_char=116|end_char=117
+9	tbsp	tbsp	NOUN	NN	_	10	compound	_	start_char=118|end_char=122
+10	sugar	sugar	NOUN	NN	_	15	compound	_	SpacesAfter=\n|start_char=123|end_char=128
+11	•	•	PUNCT	HYPH	_	15	punct	_	start_char=129|end_char=130
+12	1	1	NUM	CD	_	13	nummod	_	start_char=131|end_char=132
+13	tsp	tsp	NOUN	NN	_	15	compound	_	start_char=133|end_char=136
+14	baking	baking	NOUN	NN	_	15	compound	_	start_char=137|end_char=143
+15	powder	powder	NOUN	NN	_	1	list	_	SpacesAfter=\n|start_char=144|end_char=150
+16	•	•	PUNCT	,	_	20	punct	_	start_char=151|end_char=152
+17	½	½	NOUN	NN	_	20	compound	_	start_char=153|end_char=154
+18	tsp	tsp	NOUN	NN	_	20	compound	_	start_char=155|end_char=158
+19	baking	baking	NOUN	NN	_	20	compound	_	start_char=159|end_char=165
+20	soda	soda	NOUN	NN	_	1	list	_	SpacesAfter=\n|start_char=166|end_char=170
+21	•	•	PUNCT	,	_	24	punct	_	start_char=171|end_char=172
+22	¼	¼	NOUN	NN	_	24	compound	_	start_char=173|end_char=174
+23	tsp	tsp	NOUN	NN	_	24	compound	_	start_char=175|end_char=178
+24	salt	salt	NOUN	NN	_	1	conj	_	SpacesAfter=\n|start_char=179|end_char=183
+25	•	•	PUNCT	,	_	29	punct	_	start_char=184|end_char=185
+26	1	1	NUM	CD	_	27	nummod	_	start_char=186|end_char=187
+27	cup	cup	NOUN	NN	_	29	compound	_	start_char=188|end_char=191
+28	ricotta	ricotta	NOUN	NN	_	29	compound	_	start_char=192|end_char=199
+29	cheese	cheese	NOUN	NN	_	1	list	_	SpacesAfter=\n|start_char=200|end_char=206
+30	•	•	PUNCT	,	_	33	punct	_	start_char=207|end_char=208
+31	¾	¾	NOUN	NN	_	33	compound	_	start_char=209|end_char=210
+32	cup	cup	NOUN	NN	_	33	compound	_	start_char=211|end_char=214
+33	milk	milk	NOUN	NN	_	1	parataxis	_	SpacesAfter=\n|start_char=215|end_char=219
+34	•	•	PUNCT	,	_	37	punct	_	start_char=220|end_char=221
+35	2	2	NUM	CD	_	37	nummod	_	start_char=222|end_char=223
+36	large	large	ADJ	JJ	_	37	amod	_	start_char=224|end_char=229
+37	eggs	egg	NOUN	NNS	_	1	parataxis	_	SpaceAfter=No|start_char=230|end_char=234
+38	,	,	PUNCT	,	_	39	punct	_	start_char=234|end_char=235
+39	separated	separate	VERB	VBN	_	1	parataxis	_	SpacesAfter=\n|start_char=236|end_char=245
+40	•	•	ADP	IN	_	41	case	_	start_char=246|end_char=247
+41	zest	zest	NOUN	NN	_	39	obl	_	start_char=248|end_char=252
+42	of	of	ADP	IN	_	44	case	_	start_char=253|end_char=255
+43	1	1	NUM	CD	_	44	nummod	_	start_char=256|end_char=257
+44	lemon	lemon	NOUN	NN	_	41	nmod	_	SpacesAfter=\n|start_char=258|end_char=263
+45	•	•	SYM	SYM	_	48	cc	_	start_char=264|end_char=265
+46	2	2	NUM	CD	_	47	nummod	_	start_char=266|end_char=267
+47	tbsp.	tbsp.	NOUN	NN	_	48	compound	_	start_char=268|end_char=273
+48	butter	butter	NOUN	NN	_	44	nmod	_	SpaceAfter=No|start_char=274|end_char=280
+49	,	,	PUNCT	,	_	50	punct	_	start_char=280|end_char=281
+50	melted	melt	VERB	VBN	_	48	acl	_	SpaceAfter=No|start_char=282|end_char=288
+51	,	,	PUNCT	,	_	53	punct	_	start_char=288|end_char=289
+52	plus	plus	CCONJ	CC	_	53	cc	_	start_char=290|end_char=294
+53	more	more	ADJ	JJR	_	50	conj	_	start_char=295|end_char=299
+54	for	for	ADP	IN	_	56	case	_	start_char=300|end_char=303
+55	the	the	DET	DT	_	56	det	_	start_char=304|end_char=307
+56	pan	pan	NOUN	NN	_	53	obl	_	SpacesAfter=\n\n|start_char=308|end_char=311
+
+# text = Directions
+# sent_id = 4
+1	Directions	direction	NOUN	NNS	_	0	root	_	SpacesAfter=\n|start_char=313|end_char=323
+
+# text = 1) Whisk the dry ingredients together in a medium bowl.
+# sent_id = 5
+1	1	1	X	LS	_	3	discourse	_	SpaceAfter=No|start_char=324|end_char=325
+2	)	)	PUNCT	-RRB-	_	1	punct	_	start_char=325|end_char=326
+3	Whisk	whisk	VERB	VB	_	0	root	_	start_char=327|end_char=332
+4	the	the	DET	DT	_	6	det	_	start_char=333|end_char=336
+5	dry	dry	ADJ	JJ	_	6	amod	_	start_char=337|end_char=340
+6	ingredients	ingredient	NOUN	NNS	_	3	obj	_	start_char=341|end_char=352
+7	together	together	ADV	RB	_	3	advmod	_	start_char=353|end_char=361
+8	in	in	ADP	IN	_	11	case	_	start_char=362|end_char=364
+9	a	a	DET	DT	_	11	det	_	start_char=365|end_char=366
+10	medium	medium	ADJ	JJ	_	11	amod	_	start_char=367|end_char=373
+11	bowl	bowl	NOUN	NN	_	3	obl	_	SpaceAfter=No|start_char=374|end_char=378
+12	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n|start_char=378|end_char=379
+
+# text = 2) In a second bowl, combine the ricotta, milk, egg yolks, lemon zest and melted butter.
+# sent_id = 6
+1	2	2	X	LS	_	8	discourse	_	SpaceAfter=No|start_char=380|end_char=381
+2	)	)	PUNCT	-RRB-	_	1	punct	_	start_char=381|end_char=382
+3	In	in	ADP	IN	_	6	case	_	start_char=383|end_char=385
+4	a	a	DET	DT	_	6	det	_	start_char=386|end_char=387
+5	second	second	ADJ	JJ	_	6	amod	_	start_char=388|end_char=394
+6	bowl	bowl	NOUN	NN	_	8	obl	_	SpaceAfter=No|start_char=395|end_char=399
+7	,	,	PUNCT	,	_	6	punct	_	start_char=399|end_char=400
+8	combine	combine	VERB	VB	_	0	root	_	start_char=401|end_char=408
+9	the	the	DET	DT	_	10	det	_	start_char=409|end_char=412
+10	ricotta	ricotta	NOUN	NN	_	8	obj	_	SpaceAfter=No|start_char=413|end_char=420
+11	,	,	PUNCT	,	_	12	punct	_	start_char=420|end_char=421
+12	milk	milk	NOUN	NN	_	10	conj	_	SpaceAfter=No|start_char=422|end_char=426
+13	,	,	PUNCT	,	_	15	punct	_	start_char=426|end_char=427
+14	egg	egg	NOUN	NN	_	15	compound	_	start_char=428|end_char=431
+15	yolks	yolk	NOUN	NNS	_	10	conj	_	SpaceAfter=No|start_char=432|end_char=437
+16	,	,	PUNCT	,	_	18	punct	_	start_char=437|end_char=438
+17	lemon	lemon	NOUN	NN	_	18	compound	_	start_char=439|end_char=444
+18	zest	zest	NOUN	NN	_	10	conj	_	start_char=445|end_char=449
+19	and	and	CCONJ	CC	_	21	cc	_	start_char=450|end_char=453
+20	melted	melt	VERB	VBN	_	21	amod	_	start_char=454|end_char=460
+21	butter	butter	NOUN	NN	_	10	conj	_	SpaceAfter=No|start_char=461|end_char=467
+22	.	.	PUNCT	.	_	8	punct	_	SpacesAfter=\n|start_char=467|end_char=468
+
+# text = 3) Beat the egg whites until stiff peaks form, about 2–3 minutes.
+# sent_id = 7
+1	3	3	X	LS	_	3	discourse	_	SpaceAfter=No|start_char=469|end_char=470
+2	)	)	PUNCT	-RRB-	_	1	punct	_	start_char=470|end_char=471
+3	Beat	beat	VERB	VB	_	0	root	_	start_char=472|end_char=476
+4	the	the	DET	DT	_	6	det	_	start_char=477|end_char=480
+5	egg	egg	NOUN	NN	_	6	compound	_	start_char=481|end_char=484
+6	whites	white	NOUN	NNS	_	3	obj	_	start_char=485|end_char=491
+7	until	until	ADP	IN	_	10	mark	_	start_char=492|end_char=497
+8	stiff	stiff	ADJ	JJ	_	9	amod	_	start_char=498|end_char=503
+9	peaks	peak	NOUN	NNS	_	10	nsubj	_	start_char=504|end_char=509
+10	form	form	VERB	VBP	_	3	advcl	_	SpaceAfter=No|start_char=510|end_char=514
+11	,	,	PUNCT	,	_	16	punct	_	start_char=514|end_char=515
+12	about	about	ADV	RB	_	15	advmod	_	start_char=516|end_char=521
+13	2	2	NUM	CD	_	15	compound	_	SpaceAfter=No|start_char=522|end_char=523
+14	–	–	SYM	SYM	_	15	case	_	SpaceAfter=No|start_char=523|end_char=524
+15	3	3	NUM	CD	_	16	nummod	_	start_char=524|end_char=525
+16	minutes	minute	NOUN	NNS	_	10	obj	_	SpaceAfter=No|start_char=526|end_char=533
+17	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n|start_char=533|end_char=534
+
+# text = 4) Fold everything together gently.
+# sent_id = 8
+1	4	4	X	LS	_	3	discourse	_	SpaceAfter=No|start_char=535|end_char=536
+2	)	)	PUNCT	-RRB-	_	1	punct	_	start_char=536|end_char=537
+3	Fold	fold	VERB	VB	_	0	root	_	start_char=538|end_char=542
+4	everything	everything	PRON	NN	_	3	obj	_	start_char=543|end_char=553
+5	together	together	ADV	RB	_	3	advmod	_	start_char=554|end_char=562
+6	gently	gently	ADV	RB	_	3	advmod	_	SpaceAfter=No|start_char=563|end_char=569
+7	.	.	PUNCT	.	_	3	punct	_	start_char=569|end_char=570
+
+# text = Don't overmix!
+# sent_id = 9
+1	Do	do	AUX	VB	_	3	aux	_	SpaceAfter=No|start_char=571|end_char=573
+2	n't	not	PART	RB	_	3	advmod	_	start_char=573|end_char=576
+3	overmix	overmix	VERB	VB	_	0	root	_	SpaceAfter=No|start_char=577|end_char=584
+4	!	!	PUNCT	.	_	3	punct	_	SpacesAfter=\n|start_char=584|end_char=585
+
+# text = 5) Heat a skillet over medium-low heat.
+# sent_id = 10
+1	5	5	X	LS	_	3	discourse	_	SpaceAfter=No|start_char=586|end_char=587
+2	)	)	PUNCT	-RRB-	_	1	punct	_	start_char=587|end_char=588
+3	Heat	heat	VERB	VB	_	0	root	_	start_char=589|end_char=593
+4	a	a	DET	DT	_	5	det	_	start_char=594|end_char=595
+5	skillet	skillet	NOUN	NN	_	3	obj	_	start_char=596|end_char=603
+6	over	over	ADP	IN	_	10	case	_	start_char=604|end_char=608
+7	medium	medium	NOUN	NN	_	9	compound	_	SpaceAfter=No|start_char=609|end_char=615
+8	-	-	PUNCT	HYPH	_	7	punct	_	SpaceAfter=No|start_char=615|end_char=616
+9	low	low	ADJ	JJ	_	10	amod	_	start_char=616|end_char=619
+10	heat	heat	NOUN	NN	_	3	obl	_	SpaceAfter=No|start_char=620|end_char=624
+11	.	.	PUNCT	.	_	3	punct	_	start_char=624|end_char=625
+
+# text = Cook ¼-cup portions for 2 min per side.
+# sent_id = 11
+1	Cook	cook	VERB	VB	_	0	root	_	start_char=626|end_char=630
+2	¼-cup	¼-cup	NOUN	NN	_	3	compound	_	start_char=631|end_char=636
+3	portions	portion	NOUN	NNS	_	1	obj	_	start_char=637|end_char=645
+4	for	for	ADP	IN	_	6	case	_	start_char=646|end_char=649
+5	2	2	NUM	CD	_	6	nummod	_	start_char=650|end_char=651
+6	min	min	NOUN	NN	_	1	obl	_	start_char=652|end_char=655
+7	per	per	ADP	IN	_	8	case	_	start_char=656|end_char=659
+8	side	side	NOUN	NN	_	6	nmod	_	SpaceAfter=No|start_char=660|end_char=664
+9	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=664|end_char=665
+
+# text = Tip: if the batter seems too thick, add another tablespoon or two of milk.
+# sent_id = 12
+1	Tip	tip	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=667|end_char=670
+2	:	:	PUNCT	:	_	10	punct	_	start_char=670|end_char=671
+3	if	if	SCONJ	IN	_	6	mark	_	start_char=672|end_char=674
+4	the	the	DET	DT	_	5	det	_	start_char=675|end_char=678
+5	batter	batter	NOUN	NN	_	6	nsubj	_	start_char=679|end_char=685
+6	seems	seem	VERB	VBZ	_	10	advcl	_	start_char=686|end_char=691
+7	too	too	ADV	RB	_	8	advmod	_	start_char=692|end_char=695
+8	thick	thick	ADJ	JJ	_	6	xcomp	_	SpaceAfter=No|start_char=696|end_char=701
+9	,	,	PUNCT	,	_	6	punct	_	start_char=701|end_char=702
+10	add	add	VERB	VB	_	1	appos	_	start_char=703|end_char=706
+11	another	another	DET	DT	_	12	det	_	start_char=707|end_char=714
+12	tablespoon	tablespoon	NOUN	NN	_	10	obj	_	start_char=715|end_char=725
+13	or	or	CCONJ	CC	_	14	cc	_	start_char=726|end_char=728
+14	two	two	NUM	CD	_	12	conj	_	start_char=729|end_char=732
+15	of	of	ADP	IN	_	16	case	_	start_char=733|end_char=735
+16	milk	milk	NOUN	NN	_	14	nmod	_	SpaceAfter=No|start_char=736|end_char=740
+17	.	.	PUNCT	.	_	1	punct	_	start_char=740|end_char=741
+
+# text = Leftovers keep in the fridge for up to 3 days.
+# sent_id = 13
+1	Leftovers	leftover	NOUN	NNS	_	2	nsubj	_	start_char=742|end_char=751
+2	keep	keep	VERB	VBP	_	0	root	_	start_char=752|end_char=756
+3	in	in	ADP	IN	_	5	case	_	start_char=757|end_char=759
+4	the	the	DET	DT	_	5	det	_	start_char=760|end_char=763
+5	fridge	fridge	NOUN	NN	_	2	obl	_	start_char=764|end_char=770
+6	for	for	ADP	IN	_	10	case	_	start_char=771|end_char=774
+7	up	up	ADP	IN	_	9	advmod	_	start_char=775|end_char=777
+8	to	to	ADP	IN	_	7	fixed	_	start_char=778|end_char=780
+9	3	3	NUM	CD	_	10	nummod	_	start_char=781|end_char=782
+10	days	day	NOUN	NNS	_	2	obl	_	SpaceAfter=No|start_char=783|end_char=787
+11	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=787|end_char=788
+
+# text = To assemble the shelf: a. Remove all parts from the box and check them against the parts list.
+# sent_id = 14
+1	To	to	PART	TO	_	2	mark	_	start_char=790|end_char=792
+2	assemble	assemble	VERB	VB	_	7	advcl	_	start_char=793|end_char=801
+3	the	the	DET	DT	_	4	det	_	start_char=802|end_char=805
+4	shelf	shelf	NOUN	NN	_	2	obj	_	SpaceAfter=No|start_char=806|end_char=811
+5	:	:	PUNCT	:	_	2	punct	_	SpacesAfter=\n|start_char=811|end_char=812
+6	a.	a.	PROPN	NNP	_	7	nsubj	_	start_char=813|end_char=815
+7	Remove	remove	VERB	VB	_	0	root	_	start_char=816|end_char=822
+8	all	all	DET	DT	_	9	det	_	start_char=823|end_char=826
+9	parts	part	NOUN	NNS	_	7	obj	_	start_char=827|end_char=832
+10	from	from	ADP	IN	_	12	case	_	start_char=833|end_char=837
+11	the	the	DET	DT	_	12	det	_	start_char=838|end_char=841
+12	box	box	NOUN	NN	_	7	obl	_	start_char=842|end_char=845
+13	and	and	CCONJ	CC	_	14	cc	_	start_char=846|end_char=849
+14	check	check	VERB	VB	_	7	conj	_	start_char=850|end_char=855
+15	them	they	PRON	PRP	_	14	obj	_	start_char=856|end_char=860
+16	against	against	ADP	IN	_	19	case	_	start_char=861|end_char=868
+17	the	the	DET	DT	_	19	det	_	start_char=869|end_char=872
+18	parts	part	NOUN	NNS	_	19	compound	_	start_char=873|end_char=878
+19	list	list	NOUN	NN	_	14	obl	_	SpaceAfter=No|start_char=879|end_char=883
+20	.	.	PUNCT	.	_	7	punct	_	SpacesAfter=\n|start_char=883|end_char=884
+
+# text = b. Attach side panel (A) to base (B) using four M6 × 30 mm screws.
+# sent_id = 15
+1	b.	b.	PROPN	NNP	_	2	nsubj	_	start_char=885|end_char=887
+2	Attach	attach	VERB	VB	_	0	root	_	start_char=888|end_char=894
+3	side	side	NOUN	NN	_	4	compound	_	start_char=895|end_char=899
+4	panel	panel	NOUN	NN	_	2	obj	_	start_char=900|end_char=905
+5	(	(	PUNCT	-LRB-	_	6	punct	_	SpaceAfter=No|start_char=906|end_char=907
+6	A	a	NOUN	NN	_	4	appos	_	SpaceAfter=No|start_char=907|end_char=908
+7	)	)	PUNCT	-RRB-	_	6	punct	_	start_char=908|end_char=909
+8	to	to	ADP	IN	_	9	case	_	start_char=910|end_char=912
+9	base	base	NOUN	NN	_	2	obl	_	start_char=913|end_char=917
+10	(	(	PUNCT	-LRB-	_	11	punct	_	SpaceAfter=No|start_char=918|end_char=919
+11	B	b	NOUN	NN	_	9	appos	_	SpaceAfter=No|start_char=919|end_char=920
+12	)	)	PUNCT	-RRB-	_	11	punct	_	start_char=920|end_char=921
+13	using	use	VERB	VBG	_	2	xcomp	_	start_char=922|end_char=927
+14	four	four	NUM	CD	_	19	nummod	_	start_char=928|end_char=932
+15	M6	m6	NOUN	NN	_	18	compound	_	start_char=933|end_char=935
+16	×	×	SYM	SYM	_	18	dep	_	start_char=936|end_char=937
+17	30	30	NUM	CD	_	18	nummod	_	start_char=938|end_char=940
+18	mm	mm	NOUN	NN	_	19	compound	_	start_char=941|end_char=943
+19	screws	screw	NOUN	NNS	_	13	obj	_	SpaceAfter=No|start_char=944|end_char=950
+20	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n|start_char=950|end_char=951
+
+# text = c. Insert the shelf pins into holes 3 and 7. d.
+# sent_id = 16
+1	c.	c.	PROPN	NNP	_	2	nmod:desc	_	start_char=952|end_char=954
+2	Insert	insert	PROPN	NNP	_	0	root	_	start_char=955|end_char=961
+3	the	the	DET	DT	_	5	det	_	start_char=962|end_char=965
+4	shelf	shelf	NOUN	NN	_	5	compound	_	start_char=966|end_char=971
+5	pins	pin	NOUN	NNS	_	2	obj	_	start_char=972|end_char=976
+6	into	into	ADP	IN	_	8	case	_	start_char=977|end_char=981
+7	holes	hole	NOUN	NNS	_	8	compound	_	start_char=982|end_char=987
+8	3	3	NUM	CD	_	5	nmod	_	start_char=988|end_char=989
+9	and	and	CCONJ	CC	_	10	cc	_	start_char=990|end_char=993
+10	7.	7.	NUM	CD	_	8	conj	_	SpacesAfter=\n|start_char=994|end_char=996
+11	d.	d.	PROPN	NNP	_	8	conj	_	start_char=997|end_char=999
+
+# text = Do NOT overtighten the cam locks.
+# sent_id = 17
+1	Do	do	AUX	VB	_	3	aux	_	start_char=1000|end_char=1002
+2	NOT	not	PART	RB	_	3	advmod	_	start_char=1003|end_char=1006
+3	overtighten	overtightent	VERB	VB	_	0	root	_	start_char=1007|end_char=1018
+4	the	the	DET	DT	_	6	det	_	start_char=1019|end_char=1022
+5	cam	cam	NOUN	NN	_	6	compound	_	start_char=1023|end_char=1026
+6	locks	lock	NOUN	NNS	_	3	obj	_	SpaceAfter=No|start_char=1027|end_char=1032
+7	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n|start_char=1032|end_char=1033
+
+# text = e. Place the top panel (C) and secure with the remaining screws.
+# sent_id = 18
+1	e.	e.	PROPN	NNP	_	2	nsubj	_	start_char=1034|end_char=1036
+2	Place	place	VERB	VBP	_	0	root	_	start_char=1037|end_char=1042
+3	the	the	DET	DT	_	5	det	_	start_char=1043|end_char=1046
+4	top	top	ADJ	JJ	_	5	amod	_	start_char=1047|end_char=1050
+5	panel	panel	NOUN	NN	_	2	obj	_	start_char=1051|end_char=1056
+6	(	(	PUNCT	-LRB-	_	7	punct	_	SpaceAfter=No|start_char=1057|end_char=1058
+7	C	c	NOUN	NN	_	5	appos	_	SpaceAfter=No|start_char=1058|end_char=1059
+8	)	)	PUNCT	-RRB-	_	7	punct	_	start_char=1059|end_char=1060
+9	and	and	CONJ	CC	_	10	cc	_	start_char=1061|end_char=1064
+10	secure	secure	ADJ	JJ	_	2	conj	_	start_char=1065|end_char=1071
+11	with	with	ADP	IN	_	14	case	_	start_char=1072|end_char=1076
+12	the	the	DET	DT	_	14	det	_	start_char=1077|end_char=1080
+13	remaining	remain	VERB	VBG	_	14	amod	_	start_char=1081|end_char=1090
+14	screws	screw	NOUN	NNS	_	10	obl	_	SpaceAfter=No|start_char=1091|end_char=1097
+15	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=1097|end_char=1098
+
+# text = WARNING: Risk of tip-over.
+# sent_id = 19
+1	WARNING	warn	VERB	VBG	_	0	root	_	SpaceAfter=No|start_char=1100|end_char=1107
+2	:	:	PUNCT	:	_	3	punct	_	start_char=1107|end_char=1108
+3	Risk	risk	NOUN	NN	_	1	appos	_	start_char=1109|end_char=1113
+4	of	of	ADP	IN	_	5	case	_	start_char=1114|end_char=1116
+5	tip-over	tip-over	NOUN	NN	_	3	nmod	_	SpaceAfter=No|start_char=1117|end_char=1125
+6	.	.	PUNCT	.	_	1	punct	_	start_char=1125|end_char=1126
+
+# text = Always anchor the unit to the wall.
+# sent_id = 20
+1	Always	always	ADV	RB	_	2	advmod	_	start_char=1127|end_char=1133
+2	anchor	anchor	VERB	VB	_	0	root	_	start_char=1134|end_char=1140
+3	the	the	DET	DT	_	4	det	_	start_char=1141|end_char=1144
+4	unit	unit	NOUN	NN	_	2	obj	_	start_char=1145|end_char=1149
+5	to	to	ADP	IN	_	7	case	_	start_char=1150|end_char=1152
+6	the	the	DET	DT	_	7	det	_	start_char=1153|end_char=1156
+7	wall	wall	NOUN	NN	_	2	obl	_	SpaceAfter=No|start_char=1157|end_char=1161
+8	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=1161|end_char=1162
+
+# text = Step 1 — Unplug the router.
+# sent_id = 21
+1	Step	step	NOUN	NN	_	0	root	_	start_char=1164|end_char=1168
+2	1	1	NUM	CD	_	1	flat	_	start_char=1169|end_char=1170
+3	—	—	PUNCT	,	_	4	punct	_	start_char=1171|end_char=1172
+4	Unplug	Unplug	PROPN	NNP	_	1	appos	_	start_char=1173|end_char=1179
+5	the	the	DET	DT	_	6	det	_	start_char=1180|end_char=1183
+6	router	router	NOUN	NN	_	4	obj	_	SpaceAfter=No|start_char=1184|end_char=1190
+7	.	.	PUNCT	.	_	1	punct	_	start_char=1190|end_char=1191
+
+# text = Step 2 — Wait 30 seconds.
+# sent_id = 22
+1	Step	step	NOUN	NN	_	0	root	_	start_char=1192|end_char=1196
+2	2	2	NUM	CD	_	1	flat	_	start_char=1197|end_char=1198
+3	—	—	PUNCT	,	_	4	punct	_	start_char=1199|end_char=1200
+4	Wait	wait	VERB	VB	_	1	parataxis	_	start_char=1201|end_char=1205
+5	30	30	NUM	CD	_	6	nummod	_	start_char=1206|end_char=1208
+6	seconds	seconds	NOUN	NNS	_	4	obj	_	SpaceAfter=No|start_char=1209|end_char=1216
+7	.	.	PUNCT	.	_	1	punct	_	start_char=1216|end_char=1217
+
+# text = Step 3 — Plug it back in and wait for the light to turn green.
+# sent_id = 23
+1	Step	step	NOUN	NN	_	0	root	_	start_char=1218|end_char=1222
+2	3	3	NUM	CD	_	1	flat	_	start_char=1223|end_char=1224
+3	—	—	PUNCT	,	_	4	punct	_	start_char=1225|end_char=1226
+4	Plug	plug	VERB	VB	_	1	parataxis	_	start_char=1227|end_char=1231
+5	it	it	PRON	PRP	_	4	obj	_	start_char=1232|end_char=1234
+6	back	back	ADV	RB	_	4	advmod	_	start_char=1235|end_char=1239
+7	in	in	ADV	RB	_	4	advmod	_	start_char=1240|end_char=1242
+8	and	and	CCONJ	CC	_	9	cc	_	start_char=1243|end_char=1246
+9	wait	wait	VERB	VB	_	4	conj	_	start_char=1247|end_char=1251
+10	for	for	ADP	IN	_	12	case	_	start_char=1252|end_char=1255
+11	the	the	DET	DT	_	12	det	_	start_char=1256|end_char=1259
+12	light	light	NOUN	NN	_	9	obl	_	start_char=1260|end_char=1265
+13	to	to	PART	TO	_	14	mark	_	start_char=1266|end_char=1268
+14	turn	turn	VERB	VB	_	9	advcl	_	start_char=1269|end_char=1273
+15	green	green	ADJ	JJ	_	14	xcomp	_	SpaceAfter=No|start_char=1274|end_char=1279
+16	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=1279|end_char=1280
+
+# text = Before you begin, make sure you have: - a Phillips-head screwdriver (#2) - a 10 mm wrench - safety glasses
+# sent_id = 24
+1	Before	before	SCONJ	IN	_	3	mark	_	start_char=1282|end_char=1288
+2	you	you	PRON	PRP	_	3	nsubj	_	start_char=1289|end_char=1292
+3	begin	begin	VERB	VBP	_	5	advcl	_	SpaceAfter=No|start_char=1293|end_char=1298
+4	,	,	PUNCT	,	_	3	punct	_	start_char=1298|end_char=1299
+5	make	make	VERB	VB	_	0	root	_	start_char=1300|end_char=1304
+6	sure	sure	ADJ	JJ	_	5	xcomp	_	start_char=1305|end_char=1309
+7	you	you	PRON	PRP	_	8	nsubj	_	start_char=1310|end_char=1313
+8	have	have	VERB	VBP	_	6	ccomp	_	SpaceAfter=No|start_char=1314|end_char=1318
+9	:	:	PUNCT	:	_	15	punct	_	SpacesAfter=\n|start_char=1318|end_char=1319
+10	-	-	PUNCT	NFP	_	15	punct	_	start_char=1320|end_char=1321
+11	a	a	DET	DT	_	15	det	_	start_char=1322|end_char=1323
+12	Phillips	Phillips	PROPN	NNP	_	14	compound	_	SpaceAfter=No|start_char=1324|end_char=1332
+13	-	-	PUNCT	HYPH	_	12	punct	_	SpaceAfter=No|start_char=1332|end_char=1333
+14	head	head	NOUN	NN	_	15	compound	_	start_char=1333|end_char=1337
+15	screwdriver	screwdriver	NOUN	NN	_	8	obj	_	start_char=1338|end_char=1349
+16	(	(	PUNCT	-LRB-	_	17	punct	_	SpaceAfter=No|start_char=1350|end_char=1351
+17	#	#	SYM	NN	_	15	appos	_	SpaceAfter=No|start_char=1351|end_char=1352
+18	2	2	X	LS	_	17	flat	_	SpaceAfter=No|start_char=1352|end_char=1353
+19	)	)	PUNCT	-RRB-	_	18	punct	_	SpacesAfter=\n|start_char=1353|end_char=1354
+20	-	-	PUNCT	,	_	27	punct	_	start_char=1355|end_char=1356
+21	a	a	DET	DT	_	27	det	_	start_char=1357|end_char=1358
+22	10	10	NUM	CD	_	23	nummod	_	start_char=1359|end_char=1361
+23	mm	mm	NOUN	NN	_	27	compound	_	start_char=1362|end_char=1364
+24	wrench	wrench	NOUN	NN	_	26	compound	_	SpacesAfter=\n|start_char=1365|end_char=1371
+25	-	-	PUNCT	HYPH	_	24	punct	_	start_char=1372|end_char=1373
+26	safety	safety	NOUN	NN	_	27	compound	_	start_char=1374|end_char=1380
+27	glasses	glass	NOUN	NNS	_	15	conj	_	SpacesAfter=\n\n|start_char=1381|end_char=1388
+
+# text = | Item | Qty | Price | |------|-----|-------| | Widget | 3 | $4.99 | | Gadget | 1 | $12.50 | | Total | 4 | $27.47 |
+# sent_id = 25
+1	|	|	SYM	NFP	_	2	punct	_	start_char=1390|end_char=1391
+2	Item	item	NOUN	NN	_	0	root	_	start_char=1392|end_char=1396
+3	|	|	SYM	NFP	_	4	punct	_	start_char=1397|end_char=1398
+4	Qty	qty	X	ADD	_	2	list	_	start_char=1399|end_char=1402
+5	|	|	SYM	NFP	_	4	punct	_	start_char=1403|end_char=1404
+6	Price	price	NOUN	NN	_	2	list	_	start_char=1405|end_char=1410
+7	|	|	SYM	NFP	_	10	punct	_	SpacesAfter=\n|start_char=1411|end_char=1412
+8	|------|-----|-------|	|------|-----|-------|	SYM	NFP	_	2	punct	_	SpacesAfter=\n|start_char=1413|end_char=1435
+9	|	|	SYM	NFP	_	10	punct	_	start_char=1436|end_char=1437
+10	Widget	Widget	PROPN	NNP	_	6	list	_	start_char=1438|end_char=1444
+11	|	|	SYM	NFP	_	12	punct	_	start_char=1445|end_char=1446
+12	3	3	NUM	CD	_	10	list	_	start_char=1447|end_char=1448
+13	|	|	SYM	NFP	_	14	punct	_	start_char=1449|end_char=1450
+14	$	$	SYM	$	_	6	list	_	SpaceAfter=No|start_char=1451|end_char=1452
+15	4.99	4.99	NUM	CD	_	14	nummod	_	start_char=1452|end_char=1456
+16	|	|	SYM	NFP	_	18	punct	_	SpacesAfter=\n|start_char=1457|end_char=1458
+17	|	|	SYM	NFP	_	18	punct	_	start_char=1459|end_char=1460
+18	Gadget	Gadget	PROPN	NNP	_	6	list	_	start_char=1461|end_char=1467
+19	|	|	SYM	NFP	_	20	punct	_	start_char=1468|end_char=1469
+20	1	1	NUM	CD	_	18	flat	_	start_char=1470|end_char=1471
+21	|	|	SYM	NFP	_	20	punct	_	start_char=1472|end_char=1473
+22	$	$	SYM	$	_	6	list	_	SpaceAfter=No|start_char=1474|end_char=1475
+23	12.50	12.50	NUM	CD	_	22	nummod	_	start_char=1475|end_char=1480
+24	|	|	SYM	NFP	_	26	punct	_	SpacesAfter=\n|start_char=1481|end_char=1482
+25	|	|	SYM	NFP	_	26	punct	_	start_char=1483|end_char=1484
+26	Total	total	ADJ	JJ	_	2	list	_	start_char=1485|end_char=1490
+27	|	|	SYM	NFP	_	28	punct	_	start_char=1491|end_char=1492
+28	4	4	NUM	CD	_	30	nummod	_	start_char=1493|end_char=1494
+29	|	|	SYM	NFP	_	28	punct	_	start_char=1495|end_char=1496
+30	$	$	SYM	$	_	2	list	_	SpaceAfter=No|start_char=1497|end_char=1498
+31	27.47	27.47	NUM	CD	_	30	nummod	_	start_char=1498|end_char=1503
+32	|	|	SYM	NFP	_	2	punct	_	SpacesAfter=\n\n|start_char=1504|end_char=1505
+
+# text = Name Age City Anna 34 Lisbon Ravi 29 Pune Kofi 41 Accra
+# sent_id = 26
+1	Name	name	NOUN	NN	_	0	root	_	SpacesAfter=\t|start_char=1507|end_char=1511
+2	Age	Age	PROPN	NNP	_	3	compound	_	SpacesAfter=\t|start_char=1512|end_char=1515
+3	City	City	PROPN	NNP	_	1	list	_	SpacesAfter=\n|start_char=1516|end_char=1520
+4	Anna	Anna	PROPN	NNP	_	1	list	_	SpacesAfter=\t|start_char=1521|end_char=1525
+5	34	34	NUM	CD	_	4	flat	_	SpacesAfter=\t|start_char=1526|end_char=1528
+6	Lisbon	Lisbon	PROPN	NNP	_	1	list	_	SpacesAfter=\n|start_char=1529|end_char=1535
+7	Ravi	Ravi	PROPN	NNP	_	6	flat	_	SpacesAfter=\t|start_char=1536|end_char=1540
+8	29	29	NUM	CD	_	7	flat	_	SpacesAfter=\t|start_char=1541|end_char=1543
+9	Pune	Pune	PROPN	NNP	_	1	list	_	SpacesAfter=\n|start_char=1544|end_char=1548
+10	Kofi	Kofi	PROPN	NNP	_	9	flat	_	SpacesAfter=\t|start_char=1549|end_char=1553
+11	41	41	NUM	CD	_	10	flat	_	SpacesAfter=\t|start_char=1554|end_char=1556
+12	Accra	Accra	PROPN	NNP	_	11	nmod:unmarked	_	SpacesAfter=\n\n|start_char=1557|end_char=1562
+
+# text = Mix well.
+# sent_id = 27
+1	Mix	mix	VERB	VB	_	0	root	_	start_char=1564|end_char=1567
+2	well	well	ADV	RB	_	1	advmod	_	SpaceAfter=No|start_char=1568|end_char=1572
+3	.	.	PUNCT	.	_	1	punct	_	start_char=1572|end_char=1573
+
+# text = Let rest.
+# sent_id = 28
+1	Let	let	VERB	VB	_	0	root	_	start_char=1574|end_char=1577
+2	rest	rest	VERB	VB	_	1	xcomp	_	SpaceAfter=No|start_char=1578|end_char=1582
+3	.	.	PUNCT	.	_	1	punct	_	start_char=1582|end_char=1583
+
+# text = Serve warm.
+# sent_id = 29
+1	Serve	serve	VERB	VB	_	0	root	_	start_char=1584|end_char=1589
+2	warm	warm	ADJ	JJ	_	1	xcomp	_	SpaceAfter=No|start_char=1590|end_char=1594
+3	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=1594|end_char=1595
+
+# text = Preheat oven to 350°F / 175°C.
+# sent_id = 30
+1	Preheat	Preheat	PROPN	NNP	_	2	compound	_	start_char=1597|end_char=1604
+2	oven	oven	NOUN	NN	_	0	root	_	start_char=1605|end_char=1609
+3	to	to	ADP	IN	_	5	case	_	start_char=1610|end_char=1612
+4	350	350	NUM	CD	_	5	nummod	_	SpaceAfter=No|start_char=1613|end_char=1616
+5	°F	°f	NOUN	NN	_	2	nmod	_	start_char=1616|end_char=1618
+6	/	/	PUNCT	,	_	7	case	_	start_char=1619|end_char=1620
+7	175	175	NUM	CD	_	5	nmod	_	SpaceAfter=No|start_char=1621|end_char=1624
+8	°C.	°c.	NOUN	NN	_	5	conj	_	start_char=1624|end_char=1627
+
+# text = Grease a 9x13-inch pan.
+# sent_id = 31
+1	Grease	grease	VERB	VB	_	0	root	_	start_char=1628|end_char=1634
+2	a	a	DET	DT	_	6	det	_	start_char=1635|end_char=1636
+3	9x13	9x13	NUM	CD	_	5	nummod	_	SpaceAfter=No|start_char=1637|end_char=1641
+4	-	-	PUNCT	HYPH	_	3	punct	_	SpaceAfter=No|start_char=1641|end_char=1642
+5	inch	inch	NOUN	NN	_	6	compound	_	start_char=1642|end_char=1646
+6	pan	pan	NOUN	NN	_	1	obj	_	SpaceAfter=No|start_char=1647|end_char=1650
+7	.	.	PUNCT	.	_	1	punct	_	start_char=1650|end_char=1651
+
+# text = Bake 35–40 min or till a toothpick comes out clean
+# sent_id = 32
+1	Bake	Bake	PROPN	NNP	_	0	root	_	start_char=1652|end_char=1656
+2	35–40	35–40	NUM	CD	_	3	nummod	_	start_char=1657|end_char=1662
+3	min	min	NOUN	NN	_	1	obj	_	start_char=1663|end_char=1666
+4	or	or	CCONJ	CC	_	8	cc	_	start_char=1667|end_char=1669
+5	till	till	SCONJ	IN	_	8	mark	_	start_char=1670|end_char=1674
+6	a	a	DET	DT	_	7	det	_	start_char=1675|end_char=1676
+7	toothpick	toothpick	NOUN	NN	_	8	nsubj	_	start_char=1677|end_char=1686
+8	comes	come	VERB	VBZ	_	1	conj	_	start_char=1687|end_char=1692
+9	out	out	ADV	RB	_	8	advmod	_	start_char=1693|end_char=1696
+10	clean	clean	ADJ	JJ	_	8	xcomp	_	SpacesAfter=\n\n|start_char=1697|end_char=1702
+
+# text = Remove from heat and stir in the vanilla (or almond extract, if you prefer).
+# sent_id = 33
+1	Remove	remove	VERB	VB	_	0	root	_	start_char=1704|end_char=1710
+2	from	from	ADP	IN	_	3	case	_	start_char=1711|end_char=1715
+3	heat	heat	NOUN	NN	_	1	obl	_	start_char=1716|end_char=1720
+4	and	and	CCONJ	CC	_	5	cc	_	start_char=1721|end_char=1724
+5	stir	stir	VERB	VB	_	1	conj	_	start_char=1725|end_char=1729
+6	in	in	ADP	IN	_	8	case	_	start_char=1730|end_char=1732
+7	the	the	DET	DT	_	8	det	_	start_char=1733|end_char=1736
+8	vanilla	vanilla	NOUN	NN	_	5	obl	_	start_char=1737|end_char=1744
+9	(	(	PUNCT	-LRB-	_	12	punct	_	SpaceAfter=No|start_char=1745|end_char=1746
+10	or	or	CCONJ	CC	_	12	cc	_	start_char=1746|end_char=1748
+11	almond	almond	NOUN	NN	_	12	compound	_	start_char=1749|end_char=1755
+12	extract	extract	NOUN	NN	_	8	conj	_	SpaceAfter=No|start_char=1756|end_char=1763
+13	,	,	PUNCT	,	_	16	punct	_	start_char=1763|end_char=1764
+14	if	if	SCONJ	IN	_	16	mark	_	start_char=1765|end_char=1767
+15	you	you	PRON	PRP	_	16	nsubj	_	start_char=1768|end_char=1771
+16	prefer	prefer	VERB	VBP	_	5	advcl	_	SpaceAfter=No|start_char=1772|end_char=1778
+17	)	)	PUNCT	-RRB-	_	16	punct	_	SpaceAfter=No|start_char=1778|end_char=1779
+18	.	.	PUNCT	.	_	1	punct	_	start_char=1779|end_char=1780
+
+# text = Allow to cool completely before frosting.
+# sent_id = 34
+1	Allow	allow	VERB	VB	_	0	root	_	start_char=1781|end_char=1786
+2	to	to	PART	TO	_	3	mark	_	start_char=1787|end_char=1789
+3	cool	cool	VERB	VB	_	1	xcomp	_	start_char=1790|end_char=1794
+4	completely	completely	ADV	RB	_	3	advmod	_	start_char=1795|end_char=1805
+5	before	before	SCONJ	IN	_	6	mark	_	start_char=1806|end_char=1812
+6	frosting	frosting	VERB	VBG	_	3	advcl	_	SpaceAfter=No|start_char=1813|end_char=1821
+7	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=1821|end_char=1822
+
+# text = * Wash hands for at least 20 seconds.
+# sent_id = 35
+1	*	*	PUNCT	NFP	_	3	punct	_	start_char=1824|end_char=1825
+2	Wash	wash	NOUN	NN	_	3	compound	_	start_char=1826|end_char=1830
+3	hands	hand	NOUN	NNS	_	0	root	_	start_char=1831|end_char=1836
+4	for	for	ADP	IN	_	8	case	_	start_char=1837|end_char=1840
+5	at	at	ADV	RB	_	6	case	_	start_char=1841|end_char=1843
+6	least	least	ADV	RBS	_	7	nmod	_	start_char=1844|end_char=1849
+7	20	20	NUM	CD	_	8	nummod	_	start_char=1850|end_char=1852
+8	seconds	seconds	NOUN	NNS	_	3	nmod	_	SpaceAfter=No|start_char=1853|end_char=1860
+9	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n|start_char=1860|end_char=1861
+
+# text = * Cover your mouth when you cough.
+# sent_id = 36
+1	*	*	PUNCT	NFP	_	2	punct	_	start_char=1862|end_char=1863
+2	Cover	cover	VERB	VB	_	0	root	_	start_char=1864|end_char=1869
+3	your	you	PRON	PRP$	_	4	nmod:poss	_	start_char=1870|end_char=1874
+4	mouth	mouth	NOUN	NN	_	2	obj	_	start_char=1875|end_char=1880
+5	when	when	ADV	WRB	_	7	advmod	_	start_char=1881|end_char=1885
+6	you	you	PRON	PRP	_	7	nsubj	_	start_char=1886|end_char=1889
+7	cough	cough	VERB	VBP	_	2	advcl	_	SpaceAfter=No|start_char=1890|end_char=1895
+8	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n|start_char=1895|end_char=1896
+
+# text = * Stay home if you're sick.
+# sent_id = 37
+1	*	*	PUNCT	NFP	_	2	punct	_	start_char=1897|end_char=1898
+2	Stay	stay	VERB	VB	_	0	root	_	start_char=1899|end_char=1903
+3	home	home	ADV	RB	_	2	advmod	_	start_char=1904|end_char=1908
+4	if	if	SCONJ	IN	_	7	mark	_	start_char=1909|end_char=1911
+5	you	you	PRON	PRP	_	7	nsubj	_	SpaceAfter=No|start_char=1912|end_char=1915
+6	're	be	AUX	VBP	_	7	cop	_	start_char=1915|end_char=1918
+7	sick	sick	ADJ	JJ	_	2	advcl	_	SpaceAfter=No|start_char=1919|end_char=1923
+8	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=1923|end_char=1924
+
+# text = FAQ Q. How long does shipping take?
+# sent_id = 38
+1	FAQ	faq	PROPN	NNP	_	7	vocative	_	SpacesAfter=\n|start_char=1926|end_char=1929
+2	Q.	Q.	PROPN	NNP	_	1	flat	_	start_char=1930|end_char=1932
+3	How	how	ADV	WRB	_	4	advmod	_	start_char=1933|end_char=1936
+4	long	long	ADV	RB	_	7	advmod	_	start_char=1937|end_char=1941
+5	does	do	AUX	VBZ	_	7	aux	_	start_char=1942|end_char=1946
+6	shipping	shipping	VERB	VBG	_	7	nsubj	_	start_char=1947|end_char=1955
+7	take	take	VERB	VB	_	0	root	_	SpaceAfter=No|start_char=1956|end_char=1960
+8	?	?	PUNCT	.	_	7	punct	_	SpacesAfter=\n|start_char=1960|end_char=1961
+
+# text = A. Usually 3–5 business days.
+# sent_id = 39
+1	A.	A.	PROPN	NNP	_	6	nsubj	_	start_char=1962|end_char=1964
+2	Usually	usually	ADV	RB	_	6	advmod	_	start_char=1965|end_char=1972
+3	3	3	NUM	CD	_	4	compound	_	SpaceAfter=No|start_char=1973|end_char=1974
+4	–5	–5	NUM	CD	_	6	nummod	_	start_char=1974|end_char=1976
+5	business	business	NOUN	NN	_	6	compound	_	start_char=1977|end_char=1985
+6	days	day	NOUN	NNS	_	0	root	_	SpaceAfter=No|start_char=1986|end_char=1990
+7	.	.	PUNCT	.	_	6	punct	_	SpacesAfter=\n|start_char=1990|end_char=1991
+
+# text = Q. Can I return an item?
+# sent_id = 40
+1	Q.	Q.	PROPN	NNP	_	4	discourse	_	start_char=1992|end_char=1994
+2	Can	can	AUX	MD	_	4	aux	_	start_char=1995|end_char=1998
+3	I	I	PRON	PRP	_	4	nsubj	_	start_char=1999|end_char=2000
+4	return	return	VERB	VB	_	0	root	_	start_char=2001|end_char=2007
+5	an	a	DET	DT	_	6	det	_	start_char=2008|end_char=2010
+6	item	item	NOUN	NN	_	4	obj	_	SpaceAfter=No|start_char=2011|end_char=2015
+7	?	?	PUNCT	.	_	4	punct	_	SpacesAfter=\n|start_char=2015|end_char=2016
+
+# text = A. Yes, within 30 days of delivery.
+# sent_id = 41
+1	A.	A.	PROPN	NNP	_	2	discourse	_	start_char=2017|end_char=2019
+2	Yes	yes	INTJ	UH	_	6	discourse	_	SpaceAfter=No|start_char=2020|end_char=2023
+3	,	,	PUNCT	,	_	2	punct	_	start_char=2023|end_char=2024
+4	within	within	ADP	IN	_	6	case	_	start_char=2025|end_char=2031
+5	30	30	NUM	CD	_	6	nummod	_	start_char=2032|end_char=2034
+6	days	day	NOUN	NNS	_	0	root	_	start_char=2035|end_char=2039
+7	of	of	ADP	IN	_	8	case	_	start_char=2040|end_char=2042
+8	delivery	delivery	NOUN	NN	_	6	nmod	_	SpaceAfter=No|start_char=2043|end_char=2051
+9	.	.	PUNCT	.	_	6	punct	_	SpacesAfter=\n\n|start_char=2051|end_char=2052
+
+# text = Chapter 1: Getting Started 1.1 Installation
+# sent_id = 42
+1	Chapter	chapter	NOUN	NN	_	0	root	_	start_char=2054|end_char=2061
+2	1	1	NUM	CD	_	1	flat	_	SpaceAfter=No|start_char=2062|end_char=2063
+3	:	:	PUNCT	:	_	5	punct	_	start_char=2063|end_char=2064
+4	Getting	get	AUX	VBG	_	5	aux:pass	_	start_char=2065|end_char=2072
+5	Started	start	VERB	VBN	_	1	appos	_	SpacesAfter=\n|start_char=2073|end_char=2080
+6	1.1	1.1	NUM	CD	_	7	nummod	_	start_char=2081|end_char=2084
+7	Installation	installation	NOUN	NN	_	5	obj	_	SpacesAfter=\n|start_char=2085|end_char=2097
+
+# text = 1.2 Configuration
+# sent_id = 43
+1	1.2	1.2	NUM	CD	_	2	nummod	_	start_char=2098|end_char=2101
+2	Configuration	configuration	NOUN	NN	_	0	root	_	SpacesAfter=\n|start_char=2102|end_char=2115
+
+# text = 1.3 First steps
+# sent_id = 44
+1	1.3	1.3	NUM	CD	_	3	nummod	_	start_char=2116|end_char=2119
+2	First	first	ADJ	JJ	_	3	amod	_	start_char=2120|end_char=2125
+3	steps	step	NOUN	NNS	_	0	root	_	SpacesAfter=\n\n|start_char=2126|end_char=2131
+
+# text = Combine 2/3 cup water, 1/2 cup vinegar and 1 Tbsp honey.
+# sent_id = 45
+1	Combine	combine	VERB	VB	_	0	root	_	start_char=2133|end_char=2140
+2	2/3	2/3	NUM	CD	_	3	nummod	_	start_char=2141|end_char=2144
+3	cup	cup	NOUN	NN	_	4	compound	_	start_char=2145|end_char=2148
+4	water	water	NOUN	NN	_	1	obj	_	SpaceAfter=No|start_char=2149|end_char=2154
+5	,	,	PUNCT	,	_	8	punct	_	start_char=2154|end_char=2155
+6	1/2	1/2	NUM	CD	_	7	nummod	_	start_char=2156|end_char=2159
+7	cup	cup	NOUN	NN	_	8	compound	_	start_char=2160|end_char=2163
+8	vinegar	vinegar	NOUN	NN	_	4	conj	_	start_char=2164|end_char=2171
+9	and	and	CCONJ	CC	_	12	cc	_	start_char=2172|end_char=2175
+10	1	1	NUM	CD	_	11	nummod	_	start_char=2176|end_char=2177
+11	Tbsp	tbsp	NOUN	NN	_	12	compound	_	start_char=2178|end_char=2182
+12	honey	honey	NOUN	NN	_	4	conj	_	SpaceAfter=No|start_char=2183|end_char=2188
+13	.	.	PUNCT	.	_	1	punct	_	start_char=2188|end_char=2189
+
+# text = Simmer for 5-7 min.
+# sent_id = 46
+1	Simmer	Simmer	PROPN	NNP	_	0	root	_	start_char=2190|end_char=2196
+2	for	for	ADP	IN	_	6	case	_	start_char=2197|end_char=2200
+3	5	5	NUM	CD	_	6	nummod	_	SpaceAfter=No|start_char=2201|end_char=2202
+4	-	-	SYM	SYM	_	5	case	_	SpaceAfter=No|start_char=2202|end_char=2203
+5	7	7	NUM	CD	_	3	nmod	_	start_char=2203|end_char=2204
+6	min	min	NOUN	NN	_	1	obl	_	SpaceAfter=No|start_char=2205|end_char=2208
+7	.	.	PUNCT	.	_	1	punct	_	start_char=2208|end_char=2209
+
+# text = Season to taste w/ salt & pepper.
+# sent_id = 47
+1	Season	season	NOUN	NN	_	0	root	_	start_char=2210|end_char=2216
+2	to	to	PART	TO	_	3	mark	_	start_char=2217|end_char=2219
+3	taste	taste	VERB	VB	_	1	acl	_	start_char=2220|end_char=2225
+4	w/	with	NOUN	NN	_	5	compound	_	start_char=2226|end_char=2228
+5	salt	salt	NOUN	NN	_	3	obj	_	start_char=2229|end_char=2233
+6	&	&	CCONJ	CC	_	7	cc	_	start_char=2234|end_char=2235
+7	pepper	pepper	NOUN	NN	_	5	conj	_	SpaceAfter=No|start_char=2236|end_char=2242
+8	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=2242|end_char=2243
+
+# text = Turn left at the light, then right onto Elm St. Our office is the 2nd building on the left (No. 48).
+# sent_id = 48
+1	Turn	turn	VERB	VB	_	0	root	_	start_char=2245|end_char=2249
+2	left	leave	VERB	VBN	_	1	xcomp	_	start_char=2250|end_char=2254
+3	at	at	ADP	IN	_	5	case	_	start_char=2255|end_char=2257
+4	the	the	DET	DT	_	5	det	_	start_char=2258|end_char=2261
+5	light	light	NOUN	NN	_	2	obl	_	SpaceAfter=No|start_char=2262|end_char=2267
+6	,	,	PUNCT	,	_	17	punct	_	start_char=2267|end_char=2268
+7	then	then	ADV	RB	_	17	advmod	_	start_char=2269|end_char=2273
+8	right	right	ADV	RB	_	10	advmod	_	start_char=2274|end_char=2279
+9	onto	onto	ADP	IN	_	10	case	_	start_char=2280|end_char=2284
+10	Elm	Elm	PROPN	NNP	_	17	obl	_	start_char=2285|end_char=2288
+11	St.	St.	PROPN	NNP	_	10	flat	_	start_char=2289|end_char=2292
+12	Our	we	PRON	PRP$	_	13	nmod:poss	_	start_char=2293|end_char=2296
+13	office	office	NOUN	NN	_	17	nsubj	_	start_char=2297|end_char=2303
+14	is	be	AUX	VBZ	_	17	cop	_	start_char=2304|end_char=2306
+15	the	the	DET	DT	_	17	det	_	start_char=2307|end_char=2310
+16	2nd	2nd	ADJ	JJ	_	17	amod	_	start_char=2311|end_char=2314
+17	building	building	NOUN	NN	_	1	parataxis	_	start_char=2315|end_char=2323
+18	on	on	ADP	IN	_	20	case	_	start_char=2324|end_char=2326
+19	the	the	DET	DT	_	20	det	_	start_char=2327|end_char=2330
+20	left	left	NOUN	NN	_	17	nmod	_	start_char=2331|end_char=2335
+21	(	(	PUNCT	-LRB-	_	22	punct	_	SpaceAfter=No|start_char=2336|end_char=2337
+22	No.	no.	NOUN	NN	_	17	dep	_	start_char=2337|end_char=2340
+23	48	48	NUM	CD	_	22	flat	_	SpaceAfter=No|start_char=2341|end_char=2343
+24	)	)	PUNCT	-RRB-	_	22	punct	_	SpaceAfter=No|start_char=2343|end_char=2344
+25	.	.	PUNCT	.	_	1	punct	_	start_char=2344|end_char=2345
+
+# text = Parking is in the rear.
+# sent_id = 49
+1	Parking	parking	NOUN	NN	_	5	nsubj	_	start_char=2346|end_char=2353
+2	is	be	AUX	VBZ	_	5	cop	_	start_char=2354|end_char=2356
+3	in	in	ADP	IN	_	5	case	_	start_char=2357|end_char=2359
+4	the	the	DET	DT	_	5	det	_	start_char=2360|end_char=2363
+5	rear	rear	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=2364|end_char=2368
+6	.	.	PUNCT	.	_	5	punct	_	SpacesAfter=\n\n|start_char=2368|end_char=2369
+
+# text = Note: this recipe was tested at sea level.
+# sent_id = 50
+1	Note	note	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=2371|end_char=2375
+2	:	:	PUNCT	:	_	6	punct	_	start_char=2375|end_char=2376
+3	this	this	DET	DT	_	4	det	_	start_char=2377|end_char=2381
+4	recipe	recipe	NOUN	NN	_	6	nsubj:pass	_	start_char=2382|end_char=2388
+5	was	be	AUX	VBD	_	6	aux:pass	_	start_char=2389|end_char=2392
+6	tested	test	VERB	VBN	_	1	appos	_	start_char=2393|end_char=2399
+7	at	at	ADP	IN	_	9	case	_	start_char=2400|end_char=2402
+8	sea	sea	NOUN	NN	_	9	compound	_	start_char=2403|end_char=2406
+9	level	level	NOUN	NN	_	6	obl	_	SpaceAfter=No|start_char=2407|end_char=2412
+10	.	.	PUNCT	.	_	1	punct	_	start_char=2412|end_char=2413
+
+# text = At high altitude, reduce the baking powder by ⅛ tsp.
+# sent_id = 51
+1	At	at	ADP	IN	_	3	case	_	start_char=2414|end_char=2416
+2	high	high	ADJ	JJ	_	3	amod	_	start_char=2417|end_char=2421
+3	altitude	altitude	NOUN	NN	_	5	obl	_	SpaceAfter=No|start_char=2422|end_char=2430
+4	,	,	PUNCT	,	_	3	punct	_	start_char=2430|end_char=2431
+5	reduce	reduce	VERB	VB	_	0	root	_	start_char=2432|end_char=2438
+6	the	the	DET	DT	_	8	det	_	start_char=2439|end_char=2442
+7	baking	baking	NOUN	NN	_	8	compound	_	start_char=2443|end_char=2449
+8	powder	powder	NOUN	NN	_	5	obj	_	start_char=2450|end_char=2456
+9	by	by	ADP	IN	_	11	case	_	start_char=2457|end_char=2459
+10	⅛	⅛	PROPN	NNP	_	5	obl	_	start_char=2460|end_char=2461
+11	tsp	tsp	NOUN	NN	_	5	obl	_	SpaceAfter=No|start_char=2462|end_char=2465
+12	.	.	PUNCT	.	_	5	punct	_	SpacesAfter=\n\n|start_char=2465|end_char=2466
+
+# text = Questions?
+# sent_id = 52
+1	Questions	question	NOUN	NNS	_	0	root	_	SpaceAfter=No|start_char=2468|end_char=2477
+2	?	?	PUNCT	.	_	1	punct	_	start_char=2477|end_char=2478
+
+# text = Comments?
+# sent_id = 53
+1	Comments	comment	NOUN	NNS	_	0	root	_	SpaceAfter=No|start_char=2479|end_char=2487
+2	?	?	PUNCT	.	_	1	punct	_	start_char=2487|end_char=2488
+
+# text = Contact us anytime.
+# sent_id = 54
+1	Contact	contact	VERB	VB	_	0	root	_	start_char=2489|end_char=2496
+2	us	we	PRON	PRP	_	1	obj	_	start_char=2497|end_char=2499
+3	anytime	anytime	ADV	RB	_	1	advmod	_	SpaceAfter=No|start_char=2500|end_char=2507
+4	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n|start_char=2507|end_char=2508
