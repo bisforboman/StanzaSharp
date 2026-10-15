@@ -125,8 +125,10 @@ internal static unsafe class Gemm
     /// </summary>
     /// <param name="rowInvariant">Compute every row with the same arithmetic whatever <paramref name="m"/> is (no
     /// single-row kernel), so a row's result doesn't depend on the other rows in the call.</param>
+    /// <param name="epilogue">Called by the task that computed them, once rows [m0, m1) × panels [p0, p1) of C are final:
+    /// (m0, m1, p0, p1). Tasks are split the same way whatever the thread count.</param>
     public static void Run(float* a, int m, int lda, PackedMatrix w, float* bias, float* c, int ldc, CancellationToken ct = default,
-        bool rowInvariant = false)
+        bool rowInvariant = false, Action<int, int, int, int>? epilogue = null)
     {
         if (m == 0)
             return;
@@ -179,6 +181,8 @@ internal static unsafe class Gemm
                         p++;
                 }
             }
+
+            epilogue?.Invoke(m0, m1, p0, p1);
         });
     }
 
