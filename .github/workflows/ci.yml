@@ -227,7 +227,7 @@ jobs:
           key: models-en-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs', 'tools/requirements.txt', 'tools/stanza_convert.py') }}
 
       # English treebank packages (owner's decision, 2026-10-15): their own .pt files only (the shared word vectors and
-      # charlms are the default package's, in the cache above), about 1.2 GB, restored into models/stanza/en, where the
+      # charlms are the default package's, in the cache above; the biomedical ones' own are in it), about 1.9 GB, restored into models/stanza/en, where the
       # tests read them. Only these Linux shards run them; elsewhere TreebankPackageTests' rows skip, and the no-skip
       # checks exempt that class.
       - uses: actions/cache@v6
@@ -242,6 +242,10 @@ jobs:
             models/stanza/en/*/atis*
             models/stanza/en/*/childes*
             models/stanza/en/*/eslspok*
+            models/stanza/en/*/craft*
+            models/stanza/en/*/genia*
+            models/stanza/en/*/mimic*
+            models/stanza/en/pretrain/biomed.pt
           key: models-en-treebanks-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs') }}
 
       - uses: actions/cache/restore@v6
@@ -256,12 +260,16 @@ jobs:
             models/stanza/en/*/atis*
             models/stanza/en/*/childes*
             models/stanza/en/*/eslspok*
+            models/stanza/en/*/craft*
+            models/stanza/en/*/genia*
+            models/stanza/en/*/mimic*
+            models/stanza/en/pretrain/biomed.pt
           key: models-en-treebanks-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs') }}
 
       - name: Download the English treebank models
         if: needs.changes.outputs.code != 'false' && (steps.models-en-treebanks-save.outputs.cache-hit || steps.models-en-treebanks-restore.outputs.cache-hit) != 'true'
         run: |
-          for package in ewt gum lines partut atis childes eslspok; do
+          for package in ewt gum lines partut atis childes eslspok craft genia mimic; do
             dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/en --package $package
           done
 

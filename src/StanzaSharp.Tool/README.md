@@ -15,7 +15,7 @@ stanzasharp download --lang de                     # German, into models/stanza/
 - `DIR`: where to put the models (default `models/stanza/<lang>`), in the layout `Pipeline.Load(DIR)` reads.
 - `--lang CODE`: `en` (the default) or `de` (German), for `download`, `compare` and `benchmark` alike.
 - `--package NAME`: `default` (the default) or `default_fast`; or a treebank package (tokenize to depparse only):
-  English `combined`, `ewt`, `gum`, `lines`, `partut`, `atis`, `childes` and `eslspok`, German `combined`, `gsd` and
+  English `combined`, `ewt`, `gum`, `lines`, `partut`, `atis`, `childes`, `eslspok`, `craft`, `genia` and `mimic`, German `combined`, `gsd` and
   `hdt`.
 - `--processors LIST`: only the models these processors need, e.g. `tokenize,mwt,pos,lemma`.
 

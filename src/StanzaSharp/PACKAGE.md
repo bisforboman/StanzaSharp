@@ -162,7 +162,8 @@ using var nlp = Pipeline.Load("models/stanza/en", options);
 ```
 
 Stanza's English treebank packages run too, each trained on one treebank, with tokenize, mwt, pos, lemma and depparse
-only: `combined`, `ewt`, `gum`, `lines`, `partut`, `atis`, `childes` and `eslspok` (no mwt; its lemma is the word).
+only: `combined`, `ewt`, `gum`, `lines`, `partut`, `atis`, `childes`, `eslspok` (no mwt; its lemma is the word), and
+the biomedical `craft`, `genia` and `mimic` (no mwt).
 
 ## German
 

@@ -65,7 +65,8 @@ public sealed class Pipeline : IDisposable
             },
 
             // The treebank packages: tokenize to depparse only. combined has default's models; eslspok has no mwt and
-            // Stanza's identity lemmatizer (no model).
+            // Stanza's identity lemmatizer (no model); the biomedical craft, genia and mimic have no mwt and their own
+            // word vectors (mimic also its own charlms).
             ["combined"] = Treebank("combined"),
             ["ewt"] = Treebank("ewt"),
             ["gum"] = Treebank("gum"),
@@ -80,6 +81,9 @@ public sealed class Pipeline : IDisposable
                 ["lemma"] = IdentityLemma,
                 ["depparse"] = "eslspok_charlm",
             },
+            ["craft"] = Biomedical("craft", "nocharlm"),
+            ["genia"] = Biomedical("genia", "nocharlm"),
+            ["mimic"] = Biomedical("mimic", "charlm"),
         },
         ["de"] = new()
         {
@@ -127,6 +131,15 @@ public sealed class Pipeline : IDisposable
         ["depparse"] = $"{name}_charlm",
     };
 
+    // A biomedical package: no mwt, a _nocharlm tokenizer and lemmatizer, the tagger and parser as <kind>.
+    private static Dictionary<string, string> Biomedical(string name, string kind) => new()
+    {
+        ["tokenize"] = $"{name}_nocharlm",
+        ["pos"] = $"{name}_{kind}",
+        ["lemma"] = $"{name}_nocharlm",
+        ["depparse"] = $"{name}_{kind}",
+    };
+
     private static readonly string[] Conll17 = ["pretrain/conll17"],
         EnglishCharlm = ["pretrain/conll17", "forward_charlm/1billion", "backward_charlm/1billion"],
         GermanCharlm = ["pretrain/conll17", "forward_charlm/newswiki", "backward_charlm/newswiki"];
@@ -160,6 +173,12 @@ public sealed class Pipeline : IDisposable
             ["depparse/childes_charlm"] = EnglishCharlm,
             ["pos/eslspok_charlm"] = EnglishCharlm,
             ["depparse/eslspok_charlm"] = EnglishCharlm,
+            ["pos/craft_nocharlm"] = ["pretrain/biomed"],
+            ["depparse/craft_nocharlm"] = ["pretrain/biomed"],
+            ["pos/genia_nocharlm"] = ["pretrain/biomed"],
+            ["depparse/genia_nocharlm"] = ["pretrain/biomed"],
+            ["pos/mimic_charlm"] = ["pretrain/mimic", "forward_charlm/mimic", "backward_charlm/mimic"],
+            ["depparse/mimic_charlm"] = ["pretrain/mimic", "forward_charlm/mimic", "backward_charlm/mimic"],
         },
         ["de"] = new()
         {

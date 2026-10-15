@@ -31,7 +31,8 @@ default from 0.5) or through TorchSharp (see "Managed backend").
   `combined_nocharlm`, ner `ontonotes-ww-multi_nocharlm`; sentiment `sstplus_charlm`; no constituency.
   Its default processors are those seven. `Pipeline.Packages` maps package → processor → model.
 - **English treebank packages** (owner's decision, 2026-10-15; no new API, `PipelineOptions.Package`): `combined` (the
-  default package's models), `ewt`, `gum`, `lines`, `partut`, `atis`, `childes` and `eslspok` (no mwt; lemma `identity`):
+  default package's models), `ewt`, `gum`, `lines`, `partut`, `atis`, `childes`, `eslspok` (no mwt; lemma `identity`)
+  and the biomedical `craft`, `genia`, `mimic` (no mwt; own pretrains, mimic own charlms):
   tokenize, mwt, pos, lemma, depparse only, byte for byte on both backends (`TreebankPackageTests` against
   `tests/golden/<package>/`). Per-processor model choice (NER conll03, ptb3 constituency, biomedical NER) is out of scope.
   "Checkpoint findings (English treebank packages)" has what they needed.
@@ -573,6 +574,17 @@ What the English treebank packages' checkpoints add to the default package's pat
 - **depparse**: lines and partut embed the composite XPOS one table per part (`xpos_emb.{i}`), added after UPOS in part
   order (pos_emb += ...); `DepparseBatch.Xpos` is [size, width, `XposParts`], ROOT all ROOT; an unknown part is UNK, a
   missing one EMPTY (CompositeVocab.unit2id). Everything else as combined (5000-word batches).
+- **biomedical** (craft, genia: `_nocharlm` tagger and parser on `pretrain/biomed` [100000, 200]; mimic: `_charlm` on
+  `pretrain/mimic` [100000, 200] and its own forward/backward charlms, 1024 hidden, 101-char vocab): no mwt; tokenizers
+  without `use_mwt` and with 5 `feat_funcs` (like German), `max_seqlen` 400 (craft, genia) and 300 (mimic). Their
+  lemmatizers are older: no `copy` key (Seq2SeqModel's default False: no copy gate, `Seq2SeqConfig.Copy`, log-probs
+  over the vocabulary alone), no `SOS_tensor`, no `contextual`. Their parsers lack `resolve_head_constraints`, and
+  depparse_processor's default is True: after Chu-Liu/Edmonds, head_constraints.py's repair runs
+  (`DependencyParser.ResolveHeadConstraints`: labels by each arc's best float32 log_softmax label; while a head has two
+  dependents of one group — nsubj/csubj/nsubj:pass/csubj:pass, nsubj:outer/csubj:outer, obj — each choice of the one
+  that keeps it reruns CLE with the others' rows plus their best allowed label, and the best tree by float32 summed
+  arc + label log-prob wins; at most 5 rounds, exclusions kept). The parser then asks the net for label scores
+  (`labelScores`), [size, width, width, relations] per batch. The default package's parsers say false.
 - `SelectModels` requires only the processors the package has (eslspok's pos and depparse need no mwt).
 - `tests/golden/<package>/` (`make_golden.py --treebank-only [--packages ...]`): corpus + validation (13 files) and
   `mwt.json` where the package has mwt; `combined` is checked against `depparse/` (same models). The tests read the .pt
@@ -738,8 +750,8 @@ What the English treebank packages' checkpoints add to the default package's pat
     check covers it. cross-os and linux-arm64 stay English: there the German rows skip, and their no-skip checks exempt
     test names matching `lang: "de"` or `German` (trx-escaped `lang: &quot;de&quot;`).
   - English treebank packages (owner's decision, 2026-10-15): one `models-en-treebanks-<hash of ModelDownloader.cs>` cache
-    of only their own `.pt` files (path globs `models/stanza/en/*/<package>*`, about 1.2 GB), restored into
-    models/stanza/en next to the default package's, written by golden-shard 1 and restored by shards 2–3, downloaded with
+    of only their own `.pt` files (path globs `models/stanza/en/*/<package>*` and `pretrain/biomed.pt`, about 1.9 GB),
+    restored into models/stanza/en next to the default package's, written by golden-shard 1 and restored by shards 2–3, downloaded with
     the CLI (`download models/stanza/en --package ...`) on a miss. So that models-en doesn't take them in, shard 1 restores
     models-en with `actions/cache/restore` and saves it with `actions/cache/save` right after the convert step, before the
     treebank models arrive. cross-os and linux-arm64 don't have them: their no-skip checks exempt `TreebankPackageTests`.
@@ -920,7 +932,7 @@ What the English treebank packages' checkpoints add to the default package's pat
   - Languages (owner's decisions, 2026-10-13, docs/german-plan.md): `PipelineOptions.Language` (Stanza's code, default
     `"en"`; `Load` still takes the language folder); `DownloadAsync(dir, options)` honours it, `download --lang de`
     defaults to `models/stanza/<lang>`. German (`de`): `default`, `default_fast`, `combined`, `gsd`, `hdt` download and
-    load. English also has the treebank packages (`combined`, `ewt`, ..., `eslspok`; 2026-10-15). Unknown languages
+    load. English also has the treebank packages (`combined`, `ewt`, ..., `eslspok`, `craft`, `genia`, `mimic`; 2026-10-15). Unknown languages
     and packages (`default_accurate`: transformers) throw `ArgumentException` with the supported list.
   - `Pipeline.SelectModels` (language + package + processors → processor → model) and `Pipeline.SharedModels`
     (from `Pipeline.Dependencies`: each model's resources.json `dependencies`, since names don't tell them; German

@@ -17,9 +17,9 @@ on:
         options: [en, de]
         default: en
       package:
-        description: Stanza's package (gsd and hdt are German only; ewt to eslspok English only)
+        description: Stanza's package (gsd and hdt are German only; ewt to mimic English only)
         type: choice
-        options: [default, default_fast, combined, gsd, hdt, ewt, gum, lines, partut, atis, childes, eslspok]
+        options: [default, default_fast, combined, gsd, hdt, ewt, gum, lines, partut, atis, childes, eslspok, craft, genia, mimic]
         default: default
       quick:
         description: Smoke run (300 words, one run, 10 calls)

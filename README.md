@@ -262,9 +262,11 @@ using var fast = Pipeline.Load("models/stanza/en", options);
 ```
 
 - The treebank packages, each trained on one English treebank: `"combined"` (the default package's models), `"ewt"`,
-  `"gum"`, `"lines"`, `"partut"`, `"atis"`, `"childes"` and `"eslspok"`. They have tokenize, mwt, pos, lemma and depparse
-  only; `eslspok` has no mwt and its lemma is the word itself (Stanza's identity lemmatizer). Each downloads about
-  330 MB, of which 150 MB (the word vectors and character language models) is shared with the default package.
+  `"gum"`, `"lines"`, `"partut"`, `"atis"`, `"childes"` and `"eslspok"`, and the biomedical `"craft"`, `"genia"` and
+  `"mimic"` (clinical notes). They have tokenize, mwt, pos, lemma and depparse only; `eslspok` and the biomedical ones
+  have no mwt, and `eslspok`'s lemma is the word itself (Stanza's identity lemmatizer). Each downloads about 330 MB, of
+  which 150 MB (the word vectors and character language models) is shared with the default package; the biomedical
+  ones bring their own word vectors (`craft`, `genia`: about 220 MB; `mimic`: 310 MB with its character models).
 
 An unknown package name throws, and so does listing a processor the package lacks (`constituency` with
 `default_fast`). See [docs/performance.md](docs/performance.md) for the speed of both.

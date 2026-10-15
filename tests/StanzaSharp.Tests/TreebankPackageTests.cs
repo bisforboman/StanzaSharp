@@ -5,7 +5,8 @@ namespace StanzaSharp.Tests;
 
 /// <summary>
 /// The treebank packages (tokenize to depparse) against tests/golden/&lt;package&gt; (make_golden.py --treebank-only):
-/// English ewt, gum, lines, partut, atis, childes and eslspok (no mwt, the identity lemmatizer), German gsd and hdt; and
+/// English ewt, gum, lines, partut, atis, childes, eslspok (no mwt, the identity lemmatizer) and the biomedical craft,
+/// genia and mimic (no mwt, their own word vectors), German gsd and hdt; and
 /// <c>combined</c>, whose models are the default package's, against depparse/.
 /// </summary>
 public class TreebankPackageTests
@@ -27,6 +28,12 @@ public class TreebankPackageTests
     [EnglishTreebank("childes", true)]
     [EnglishTreebank("eslspok", false)]
     [EnglishTreebank("eslspok", true)]
+    [EnglishTreebank("craft", false)]
+    [EnglishTreebank("craft", true)]
+    [EnglishTreebank("genia", false)]
+    [EnglishTreebank("genia", true)]
+    [EnglishTreebank("mimic", false)]
+    [EnglishTreebank("mimic", true)]
     [German("gsd", false)]
     [German("gsd", true)]
     [German("hdt", false)]
