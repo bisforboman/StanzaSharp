@@ -208,7 +208,7 @@ var doc = nlp.Process("Angela Merkel wurde in Hamburg geboren. Sie zog im Jahr 1
 // "im" is one token of two words, "in" + "dem"; doc.Entities: Angela Merkel/PER, Hamburg/LOC, DDR/LOC
 ```
 
-The same eight processors and both packages (`default`, `default_fast`) as English, plus Stanza's treebank packages
+The same eight processors and both packages (`default`, `default_fast`) as English, plus Stanza's German treebank packages
 `combined`, `gsd` and `hdt` (tokenize, mwt, pos, lemma and depparse only); `default_accurate` needs transformers and
 throws. German differs from English in its models, not in the API:
 
@@ -260,6 +260,11 @@ var options = new PipelineOptions { Package = "default_fast" };
 await ModelDownloader.DownloadAsync("models/stanza/en", options);
 using var fast = Pipeline.Load("models/stanza/en", options);
 ```
+
+- The treebank packages, each trained on one English treebank: `"combined"` (the default package's models), `"ewt"`,
+  `"gum"`, `"lines"`, `"partut"`, `"atis"`, `"childes"` and `"eslspok"`. They have tokenize, mwt, pos, lemma and depparse
+  only; `eslspok` has no mwt and its lemma is the word itself (Stanza's identity lemmatizer). Each downloads about
+  330 MB, of which 150 MB (the word vectors and character language models) is shared with the default package.
 
 An unknown package name throws, and so does listing a processor the package lacks (`constituency` with
 `default_fast`). See [docs/performance.md](docs/performance.md) for the speed of both.

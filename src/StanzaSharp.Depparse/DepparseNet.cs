@@ -3,7 +3,9 @@ using StanzaSharp.Nn;
 namespace StanzaSharp.Depparse;
 
 /// <summary>
-/// One parser batch: row b of each [size, width] id array is ROOT (id 3) then sentence b's words, 0 past its length.
+/// One parser batch: row b of each [size, width] id array is ROOT (id 3) then sentence b's words, 0 past its length;
+/// <see cref="Xpos"/> is [size, width, <see cref="XposParts"/>], one id per part of a composite XPOS vocabulary (English lines,
+/// partut), ROOT's all ROOT.
 /// <see cref="Texts"/> are the words after simplify_punct, without ROOT. <see cref="Charlms"/> (optional): the tagger's charlm
 /// outputs (see <see cref="DependencyParser.Process"/>), found by <see cref="Keys"/> (each sentence's, or null) or by the
 /// texts. <see cref="RentScores"/>: the net may return
@@ -11,7 +13,7 @@ namespace StanzaSharp.Depparse;
 /// </summary>
 internal sealed record DepparseBatch(IReadOnlyList<IReadOnlyList<string>> Texts, int Width, long[] Lengths,
     long[] Word, long[] Lemma, long[] Upos, long[] Xpos, long[] Pretrained, CharlmCache? Charlms = null, bool RentScores = false,
-    IReadOnlyList<Sentence?>? Keys = null);
+    IReadOnlyList<Sentence?>? Keys = null, int XposParts = 1);
 
 /// <summary>
 /// A batch's scores, [size, width, width] with [b, i, j] = dependent i, head j (0 is ROOT):

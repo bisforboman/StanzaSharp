@@ -133,8 +133,9 @@ jobs:
 
       # ModelDownloader.cs pins the models (and their MD5s); the converter decides their converted form.
       # Both are kept: the .pt loader tests compare models/stanza/en with models/converted/en.
-      # Shard 1 writes the cache; the others, docker and alpine only restore it. On a miss each shard makes its own.
-      - uses: actions/cache@v6
+      # Shard 1 writes the cache (right after converting, before the English treebank models join models/stanza/en); the
+      # others, docker and alpine only restore it. On a miss each shard makes its own.
+      - uses: actions/cache/restore@v6
         if: needs.changes.outputs.code != 'false' && matrix.shard == 1
         id: models-save
         with:
@@ -216,6 +217,53 @@ jobs:
       - name: Convert the models
         if: needs.changes.outputs.code != 'false' && (steps.models-save.outputs.cache-hit || steps.models-restore.outputs.cache-hit) != 'true'
         run: python tools/stanza_convert.py convert models/stanza/en --out models/converted/en
+
+      - uses: actions/cache/save@v6
+        if: needs.changes.outputs.code != 'false' && matrix.shard == 1 && steps.models-save.outputs.cache-hit != 'true'
+        with:
+          path: |
+            models/stanza/en
+            models/converted/en
+          key: models-en-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs', 'tools/requirements.txt', 'tools/stanza_convert.py') }}
+
+      # English treebank packages (owner's decision, 2026-10-15): their own .pt files only (the shared word vectors and
+      # charlms are the default package's, in the cache above), about 1.2 GB, restored into models/stanza/en, where the
+      # tests read them. Only these Linux shards run them; elsewhere TreebankPackageTests' rows skip, and the no-skip
+      # checks exempt that class.
+      - uses: actions/cache@v6
+        if: needs.changes.outputs.code != 'false' && matrix.shard == 1
+        id: models-en-treebanks-save
+        with:
+          path: |
+            models/stanza/en/*/ewt*
+            models/stanza/en/*/gum*
+            models/stanza/en/*/lines*
+            models/stanza/en/*/partut*
+            models/stanza/en/*/atis*
+            models/stanza/en/*/childes*
+            models/stanza/en/*/eslspok*
+          key: models-en-treebanks-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs') }}
+
+      - uses: actions/cache/restore@v6
+        if: needs.changes.outputs.code != 'false' && matrix.shard != 1
+        id: models-en-treebanks-restore
+        with:
+          path: |
+            models/stanza/en/*/ewt*
+            models/stanza/en/*/gum*
+            models/stanza/en/*/lines*
+            models/stanza/en/*/partut*
+            models/stanza/en/*/atis*
+            models/stanza/en/*/childes*
+            models/stanza/en/*/eslspok*
+          key: models-en-treebanks-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs') }}
+
+      - name: Download the English treebank models
+        if: needs.changes.outputs.code != 'false' && (steps.models-en-treebanks-save.outputs.cache-hit || steps.models-en-treebanks-restore.outputs.cache-hit) != 'true'
+        run: |
+          for package in ewt gum lines partut atis childes eslspok; do
+            dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/en --package $package
+          done
 
       - name: Test
         if: needs.changes.outputs.code != 'false'
@@ -409,8 +457,9 @@ jobs:
         run: |
           ls TestResults/*.trx
           # Run_PythonStanza_* needs Python Stanza, which this job doesn't install (golden-shard 2 runs them). German tests
-          # (rows with lang "de", names with German) need the German models, which only golden-shard has.
-          if grep -h 'outcome="NotExecuted"' TestResults/*.trx | grep -v 'Run_PythonStanza_' | grep -qvE 'lang: (&quot;|")de|German'; then
+          # (rows with lang "de", names with German) need the German models, and TreebankPackageTests' English rows the
+          # English treebank models, which only golden-shard has.
+          if grep -h 'outcome="NotExecuted"' TestResults/*.trx | grep -v 'Run_PythonStanza_' | grep -qvE 'lang: (&quot;|")de|German|TreebankPackageTests'; then
             echo "::error::Tests were skipped; the models in models/stanza/en were not found."
             exit 1
           fi
@@ -523,8 +572,9 @@ jobs:
         run: |
           ls TestResults/*.trx
           # Run_PythonStanza_* needs Python Stanza, which this job doesn't install (golden-shard 2 runs them). German tests
-          # (rows with lang "de", names with German) need the German models, which only golden-shard has.
-          if grep -h 'outcome="NotExecuted"' TestResults/*.trx | grep -v 'Run_PythonStanza_' | grep -qvE 'lang: (&quot;|")de|German'; then
+          # (rows with lang "de", names with German) need the German models, and TreebankPackageTests' English rows the
+          # English treebank models, which only golden-shard has.
+          if grep -h 'outcome="NotExecuted"' TestResults/*.trx | grep -v 'Run_PythonStanza_' | grep -qvE 'lang: (&quot;|")de|German|TreebankPackageTests'; then
             echo "::error::Tests were skipped; the models in models/stanza/en were not found."
             exit 1
           fi

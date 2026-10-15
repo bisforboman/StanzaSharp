@@ -1,0 +1,705 @@
+# text = “Did she really say ‘I’ll never come back’?” asked Ellen.
+# sent_id = 0
+1	“Did	“o	AUX	VM	Mood=Imp|Person=3|Tense=Pres|VerbForm=Fin	4	aux	_	start_char=0|end_char=4
+2	she	she	PRON	PE	Gender=Fem|Number=Sing|Person=3|PronType=Prs	4	nsubj	_	start_char=5|end_char=8
+3	really	really	ADV	B	_	4	advmod	_	start_char=9|end_char=15
+4	say	say	VERB	V	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	0	root	_	start_char=16|end_char=19
+5	‘	‘	PUNCT	FF	_	9	punct	_	SpaceAfter=No|start_char=20|end_char=21
+6	I	I	PRON	PE	Number=Sing|Person=1|PronType=Prs	9	nsubj	_	SpaceAfter=No|start_char=21|end_char=22
+7	’ll	will	AUX	VM	Mood=Ind|Person=3|Tense=Pres|VerbForm=Fin	9	aux	_	start_char=22|end_char=25
+8	never	never	ADV	B	_	9	advmod	_	start_char=26|end_char=31
+9	come	come	VERB	V	VerbForm=Inf	4	ccomp	_	start_char=32|end_char=36
+10	back	back	ADV	B	_	9	advmod	_	SpaceAfter=No|start_char=37|end_char=41
+11	’?	s?	PUNCT	FF	_	9	punct	_	SpaceAfter=No|start_char=41|end_char=43
+12	”	"	PUNCT	FB	_	13	punct	_	start_char=43|end_char=44
+13	asked	ask	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	4	parataxis	_	start_char=45|end_char=50
+14	Ellen	Ellen	PROPN	SP	_	13	obj	_	SpaceAfter=No|start_char=51|end_char=56
+15	.	.	PUNCT	FS	_	4	punct	_	SpacesAfter=\n|start_char=56|end_char=57
+
+# text = “Those were her exact words,” Martin replied.
+# sent_id = 1
+1	“	“	PUNCT	FB	_	6	punct	_	SpaceAfter=No|start_char=58|end_char=59
+2	Those	that	PRON	PD	Number=Plur|PronType=Dem	6	nsubj	_	start_char=59|end_char=64
+3	were	be	AUX	V	Mood=Ind|Number=Plur|Tense=Past|VerbForm=Fin	6	cop	_	start_char=65|end_char=69
+4	her	her	DET	AP	Poss=Yes|PronType=Prs	6	nmod:poss	_	start_char=70|end_char=73
+5	exact	exact	ADJ	A	Degree=Pos	6	amod	_	start_char=74|end_char=79
+6	words	word	NOUN	S	Number=Plur	0	root	_	SpaceAfter=No|start_char=80|end_char=85
+7	,	,	PUNCT	FF	_	6	punct	_	SpaceAfter=No|start_char=85|end_char=86
+8	”	"	PUNCT	FF	_	10	punct	_	start_char=86|end_char=87
+9	Martin	Martin	PROPN	SP	_	10	nsubj	_	start_char=88|end_char=94
+10	replied	reply	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	6	conj	_	SpaceAfter=No|start_char=95|end_char=102
+11	.	.	PUNCT	FS	_	6	punct	_	start_char=102|end_char=103
+
+# text = “Then she slammed the door.
+# sent_id = 2
+1	“	“	PUNCT	FB	_	4	punct	_	SpaceAfter=No|start_char=104|end_char=105
+2	Then	then	ADV	B	_	4	advmod	_	start_char=105|end_char=109
+3	she	she	PRON	PE	Gender=Fem|Number=Sing|Person=3|PronType=Prs	4	nsubj	_	start_char=110|end_char=113
+4	slammed	slam	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=114|end_char=121
+5	the	the	DET	RD	Definite=Def|PronType=Art	6	det	_	start_char=122|end_char=125
+6	door	door	NOUN	S	Number=Sing	4	obj	_	SpaceAfter=No|start_char=126|end_char=130
+7	.	.	PUNCT	FS	_	4	punct	_	SpaceAfter=No|start_char=130|end_char=131
+
+# text = ”
+# sent_id = 3
+1	”	"	PUNCT	FB	_	0	punct	_	SpacesAfter=\n\n|start_char=131|end_char=132
+
+# text = "He told me, 'Don't bother calling,' and hung up," said Rosa.
+# sent_id = 4
+1	"	"	PUNCT	FB	_	3	punct	_	SpaceAfter=No|start_char=134|end_char=135
+2	He	he	PRON	PE	Gender=Masc|Number=Sing|Person=3|PronType=Prs	3	nsubj	_	start_char=135|end_char=137
+3	told	tell	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=138|end_char=142
+4	me	i	PRON	PE	Number=Sing|Person=1|PronType=Prs	3	obj	_	SpaceAfter=No|start_char=143|end_char=145
+5	,	,	PUNCT	FF	_	3	punct	_	start_char=145|end_char=146
+6	'	'	PUNCT	FB	_	9	punct	_	SpaceAfter=No|start_char=147|end_char=148
+7-8	Don't	_	_	_	_	_	_	_	start_char=148|end_char=153
+7	Do	Do	AUX	VM	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	9	aux	_	start_char=148|end_char=150
+8	n't	not	PART	PART	Polarity=Neg	9	advmod	_	start_char=150|end_char=153
+9	bother	bother	VERB	V	VerbForm=Inf	3	ccomp	_	start_char=154|end_char=160
+10	calling	call	VERB	V	VerbForm=Ger	9	xcomp	_	SpaceAfter=No|start_char=161|end_char=168
+11	,	,	PUNCT	FF	_	10	punct	_	SpaceAfter=No|start_char=168|end_char=169
+12	'	'	PUNCT	FB	_	14	punct	_	start_char=169|end_char=170
+13	and	and	CCONJ	CC	_	14	cc	_	start_char=171|end_char=174
+14	hung	hung	VERB	V	Tense=Past|VerbForm=Part	10	conj	_	start_char=175|end_char=179
+15	up	up	ADP	E	_	14	compound:prt	_	SpaceAfter=No|start_char=180|end_char=182
+16	,	,	PUNCT	FF	_	14	punct	_	SpaceAfter=No|start_char=182|end_char=183
+17	"	"	PUNCT	FB	_	18	punct	_	start_char=183|end_char=184
+18	said	say	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	14	parataxis	_	start_char=185|end_char=189
+19	Rosa	Rosa	PROPN	SP	_	18	nsubj	_	SpaceAfter=No|start_char=190|end_char=194
+20	.	.	PUNCT	FS	_	3	punct	_	start_char=194|end_char=195
+
+# text = "Can you believe that?
+# sent_id = 5
+1	"	"	PUNCT	FB	_	4	punct	_	SpaceAfter=No|start_char=196|end_char=197
+2	Can	can	AUX	VM	Mood=Ind|Person=3|Tense=Pres|VerbForm=Fin	4	aux	_	start_char=197|end_char=200
+3	you	you	PRON	PE	Person=2|PronType=Prs	4	nsubj	_	start_char=201|end_char=204
+4	believe	believe	VERB	V	VerbForm=Inf	0	root	_	start_char=205|end_char=212
+5	that	that	PRON	PD	PronType=Dem	4	obj	_	SpaceAfter=No|start_char=213|end_char=217
+6	?	?	PUNCT	FS	_	4	punct	_	SpaceAfter=No|start_char=217|end_char=218
+
+# text = "
+# sent_id = 6
+1	"	"	PUNCT	FB	_	0	punct	_	SpacesAfter=\n\n|start_char=218|end_char=219
+
+# text = 'I'm not sure,' she whispered.
+# sent_id = 7
+1	'	'	PUNCT	FB	_	5	punct	_	SpaceAfter=No|start_char=221|end_char=222
+2-3	I'm	_	_	_	_	_	_	_	start_char=222|end_char=225
+2	I	I	PRON	PE	Number=Sing|Person=1|PronType=Prs	5	nsubj	_	start_char=222|end_char=223
+3	'm	be	AUX	V	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	5	cop	_	start_char=223|end_char=225
+4	not	not	PART	PART	Polarity=Neg	5	advmod	_	start_char=226|end_char=229
+5	sure	sure	ADJ	A	Degree=Pos	0	root	_	SpaceAfter=No|start_char=230|end_char=234
+6	,	,	PUNCT	FF	_	5	punct	_	SpaceAfter=No|start_char=234|end_char=235
+7	'	'	PUNCT	FB	_	9	punct	_	start_char=235|end_char=236
+8	she	she	PRON	PE	Gender=Fem|Number=Sing|Person=3|PronType=Prs	9	nsubj	_	start_char=237|end_char=240
+9	whispered	whisper	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	5	parataxis	_	SpaceAfter=No|start_char=241|end_char=250
+10	.	.	PUNCT	FS	_	5	punct	_	start_char=250|end_char=251
+
+# text = 'Maybe tomorrow.
+# sent_id = 8
+1	'	'	PUNCT	FF	_	3	punct	_	SpaceAfter=No|start_char=252|end_char=253
+2	Maybe	maybe	ADV	B	_	3	advmod	_	start_char=253|end_char=258
+3	tomorrow	tomorrow	ADV	B	_	0	root	_	SpaceAfter=No|start_char=259|end_char=267
+4	.	.	PUNCT	FS	_	3	punct	_	SpaceAfter=No|start_char=267|end_char=268
+
+# text = '
+# sent_id = 9
+1	'	'	PUNCT	FB	_	0	root	_	SpacesAfter=\n\n|start_char=268|end_char=269
+
+# text = “Well,” said the old man, “when I was your age, we didn’t have any of this.”
+# sent_id = 10
+1	“Well	“Well	PROPN	SP	_	18	nsubj	_	SpaceAfter=No|start_char=271|end_char=276
+2	,	,	PUNCT	FF	_	1	punct	_	SpaceAfter=No|start_char=276|end_char=277
+3	”	"	PUNCT	FB	_	4	punct	_	start_char=277|end_char=278
+4	said	say	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	18	advcl	_	start_char=279|end_char=283
+5	the	the	DET	RD	Definite=Def|PronType=Art	7	det	_	start_char=284|end_char=287
+6	old	old	ADJ	A	Degree=Pos	7	amod	_	start_char=288|end_char=291
+7	man	man	NOUN	S	Number=Sing	4	nsubj	_	SpaceAfter=No|start_char=292|end_char=295
+8	,	,	PUNCT	FF	_	7	punct	_	start_char=295|end_char=296
+9	“when	“when	CCONJ	CC	_	13	cc	_	start_char=297|end_char=302
+10	I	I	PRON	PE	Number=Sing|Person=1|PronType=Prs	13	nsubj	_	start_char=303|end_char=304
+11	was	be	AUX	V	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	13	cop	_	start_char=305|end_char=308
+12	your	you	DET	AP	Poss=Yes|PronType=Prs	13	nmod:poss	_	start_char=309|end_char=313
+13	age	age	NOUN	S	Number=Sing	18	advcl	_	SpaceAfter=No|start_char=314|end_char=317
+14	,	,	PUNCT	FF	_	13	punct	_	start_char=317|end_char=318
+15	we	we	PRON	PE	Number=Plur|Person=1|PronType=Prs	18	nsubj	_	start_char=319|end_char=321
+16	didn	didn	AUX	VM	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	18	aux	_	SpaceAfter=No|start_char=322|end_char=326
+17	’t	's	PART	PART	Polarity=Neg	18	advmod	_	start_char=326|end_char=328
+18	have	have	VERB	V	VerbForm=Inf	0	root	_	start_char=329|end_char=333
+19	any	any	DET	DI	PronType=Ind	18	obj	_	start_char=334|end_char=337
+20	of	of	ADP	E	_	21	case	_	start_char=338|end_char=340
+21	this	this	PRON	PD	Number=Sing|PronType=Dem	19	nmod	_	SpaceAfter=No|start_char=341|end_char=345
+22	.	.	PUNCT	FS	_	18	punct	_	SpaceAfter=No|start_char=345|end_char=346
+23	”	"	PUNCT	FS	_	18	punct	_	start_char=346|end_char=347
+
+# text = He waved a hand at the screens.
+# sent_id = 11
+1	He	he	PRON	PE	Gender=Masc|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=348|end_char=350
+2	waved	wave	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=351|end_char=356
+3	a	a	DET	RI	Definite=Ind|Number=Sing|PronType=Art	4	det	_	start_char=357|end_char=358
+4	hand	hand	NOUN	S	Number=Sing	2	obj	_	start_char=359|end_char=363
+5	at	at	ADP	E	_	7	case	_	start_char=364|end_char=366
+6	the	the	DET	RD	Definite=Def|PronType=Art	7	det	_	start_char=367|end_char=370
+7	screens	screen	NOUN	S	Number=Plur	2	obl	_	SpaceAfter=No|start_char=371|end_char=378
+8	.	.	PUNCT	FS	_	2	punct	_	start_char=378|end_char=379
+
+# text = “We had books.
+# sent_id = 12
+1	“	“	PUNCT	FB	_	3	punct	_	SpaceAfter=No|start_char=380|end_char=381
+2	We	we	PRON	PE	Number=Plur|Person=1|PronType=Prs	3	nsubj	_	start_char=381|end_char=383
+3	had	have	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=384|end_char=387
+4	books	book	NOUN	S	Number=Plur	3	obj	_	SpaceAfter=No|start_char=388|end_char=393
+5	.	.	PUNCT	FS	_	3	punct	_	start_char=393|end_char=394
+
+# text = Real ones.
+# sent_id = 13
+1	Real	real	ADJ	A	Degree=Pos	2	amod	_	start_char=395|end_char=399
+2	ones	one	PRON	PE	Number=Plur|Person=3|PronType=Prs	0	root	_	SpaceAfter=No|start_char=400|end_char=404
+3	.	.	PUNCT	FS	_	2	punct	_	SpaceAfter=No|start_char=404|end_char=405
+
+# text = ”
+# sent_id = 14
+1	”	"	PUNCT	FB	_	0	punct	_	SpacesAfter=\n\n|start_char=405|end_char=406
+
+# text = “Mom says, ‘If your brother tells you “it’s fine,” it isn’t,’” Lily explained.
+# sent_id = 15
+1	“Mom	“Mom	PROPN	SP	_	2	nsubj	_	start_char=408|end_char=412
+2	says	say	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=413|end_char=417
+3	,	,	PUNCT	FF	_	2	punct	_	start_char=417|end_char=418
+4	‘	‘	PUNCT	FB	_	8	punct	_	SpaceAfter=No|start_char=419|end_char=420
+5	If	if	SCONJ	CS	_	8	mark	_	start_char=420|end_char=422
+6	your	you	DET	AP	Poss=Yes|PronType=Prs	7	nmod:poss	_	start_char=423|end_char=427
+7	brother	brother	NOUN	S	Number=Sing	8	nsubj	_	start_char=428|end_char=435
+8	tells	tell	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	16	parataxis	_	start_char=436|end_char=441
+9	you	you	PRON	PE	Person=2|PronType=Prs	10	nsubj	_	start_char=442|end_char=445
+10	“it	“it	VERB	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	8	xcomp	_	SpaceAfter=No|start_char=446|end_char=449
+11	’s	's	AUX	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	12	cop	_	start_char=449|end_char=451
+12	fine	fine	ADJ	A	Degree=Pos	16	advcl	_	SpaceAfter=No|start_char=452|end_char=456
+13	,	,	PUNCT	FF	_	16	punct	_	SpaceAfter=No|start_char=456|end_char=457
+14	”	"	PUNCT	FB	_	16	punct	_	start_char=457|end_char=458
+15	it	it	PRON	PE	Number=Sing|Person=3|PronType=Prs	16	nsubj	_	start_char=459|end_char=461
+16	isn	isn	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	parataxis	_	SpaceAfter=No|start_char=462|end_char=465
+17	’t	st	PUNCT	FB	_	16	punct	_	SpaceAfter=No|start_char=465|end_char=467
+18	,	,	PUNCT	FF	_	16	punct	_	SpaceAfter=No|start_char=467|end_char=468
+19	’	’	PUNCT	FF	_	16	punct	_	SpaceAfter=No|start_char=468|end_char=469
+20	”	"	PUNCT	FF	_	22	punct	_	start_char=469|end_char=470
+21	Lily	Lily	PROPN	SP	_	22	nsubj	_	start_char=471|end_char=475
+22	explained	explain	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	16	advcl	_	SpaceAfter=No|start_char=476|end_char=485
+23	.	.	PUNCT	FS	_	2	punct	_	SpacesAfter=\n\n|start_char=485|end_char=486
+
+# text = Jamal paused.
+# sent_id = 16
+1	Jamal	Jamal	PROPN	SP	_	2	nsubj	_	start_char=488|end_char=493
+2	paused	pause	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=494|end_char=500
+3	.	.	PUNCT	FS	_	2	punct	_	start_char=500|end_char=501
+
+# text = “You know what my grandfather used to say?
+# sent_id = 17
+1	“	“	PUNCT	FB	_	3	punct	_	SpaceAfter=No|start_char=502|end_char=503
+2	You	you	PRON	PE	Person=2|PronType=Prs	3	nsubj	_	start_char=503|end_char=506
+3	know	know	VERB	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	0	root	_	start_char=507|end_char=511
+4	what	what	PRON	PQ	PronType=Int	3	obj	_	start_char=512|end_char=516
+5	my	my	DET	AP	Number=Sing|Poss=Yes|PronType=Prs	6	nmod:poss	_	start_char=517|end_char=519
+6	grandfather	grandfather	NOUN	S	Number=Sing	7	nsubj	_	start_char=520|end_char=531
+7	used	use	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	3	ccomp	_	start_char=532|end_char=536
+8	to	to	PART	PART	_	9	mark	_	start_char=537|end_char=539
+9	say	say	VERB	V	VerbForm=Inf	7	xcomp	_	SpaceAfter=No|start_char=540|end_char=543
+10	?	?	PUNCT	FS	_	3	punct	_	start_char=543|end_char=544
+
+# text = ‘Measure twice, cut once.’
+# sent_id = 18
+1	‘	‘	PUNCT	FF	_	2	punct	_	SpaceAfter=No|start_char=545|end_char=546
+2	Measure	measure	NOUN	S	Number=Sing	0	root	_	start_char=546|end_char=553
+3	twice	twice	ADV	B	_	5	advmod	_	SpaceAfter=No|start_char=554|end_char=559
+4	,	,	PUNCT	FF	_	5	punct	_	start_char=559|end_char=560
+5	cut	cut	VERB	V	Tense=Past|VerbForm=Part	2	conj	_	start_char=561|end_char=564
+6	once	once	ADV	B	_	5	advmod	_	SpaceAfter=No|start_char=565|end_char=569
+7	.	.	PUNCT	FS	_	5	punct	_	SpaceAfter=No|start_char=569|end_char=570
+8	’	’	PUNCT	FS	_	2	punct	_	start_char=570|end_char=571
+
+# text = I never understood it until now.
+# sent_id = 19
+1	I	I	PRON	PE	Number=Sing|Person=1|PronType=Prs	3	nsubj	_	start_char=572|end_char=573
+2	never	never	ADV	B	_	3	advmod	_	start_char=574|end_char=579
+3	understood	understood	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=580|end_char=590
+4	it	it	PRON	PE	Number=Sing|Person=3|PronType=Prs	3	obj	_	start_char=591|end_char=593
+5	until	until	SCONJ	CS	_	6	mark	_	start_char=594|end_char=599
+6	now	now	ADV	B	_	3	advmod	_	SpaceAfter=No|start_char=600|end_char=603
+7	.	.	PUNCT	FS	_	3	punct	_	SpaceAfter=No|start_char=603|end_char=604
+
+# text = ”
+# sent_id = 20
+1	”	"	PUNCT	FB	_	0	punct	_	SpacesAfter=\n\n|start_char=604|end_char=605
+
+# text = “Wait—what?”
+# sent_id = 21
+1	“Wait—what	“wait—what	INTJ	_	_	0	root	_	SpaceAfter=No|start_char=607|end_char=617
+2	?	?	PUNCT	FS	_	1	punct	_	SpaceAfter=No|start_char=617|end_char=618
+3	”	"	PUNCT	FS	_	1	punct	_	start_char=618|end_char=619
+
+# text = “You heard me.” “But—” “No buts.
+# sent_id = 22
+1	“	“	PUNCT	FB	_	3	punct	_	SpaceAfter=No|start_char=620|end_char=621
+2	You	you	PRON	PE	Person=2|PronType=Prs	3	nsubj	_	start_char=621|end_char=624
+3	heard	hear	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=625|end_char=630
+4	me.	i	PRON	PE	Number=Sing|Person=1|PronType=Prs	3	obj	_	SpaceAfter=No|start_char=631|end_char=634
+5	”	"	PUNCT	FF	_	3	punct	_	start_char=634|end_char=635
+6	“	“	PUNCT	FB	_	7	punct	_	SpaceAfter=No|start_char=636|end_char=637
+7	But—	But—	PROPN	SP	_	3	parataxis	_	SpaceAfter=No|start_char=637|end_char=641
+8	”	"	PUNCT	FB	_	7	punct	_	start_char=641|end_char=642
+9	“	“	PUNCT	FB	_	7	punct	_	SpaceAfter=No|start_char=643|end_char=644
+10	No	no	DET	DI	PronType=Ind	11	det	_	start_char=644|end_char=646
+11	buts	but	NOUN	S	Number=Plur	3	ccomp	_	SpaceAfter=No|start_char=647|end_char=651
+12	.	.	PUNCT	FS	_	3	punct	_	SpaceAfter=No|start_char=651|end_char=652
+
+# text = ”
+# sent_id = 23
+1	”	"	PUNCT	FB	_	0	punct	_	SpacesAfter=\n\n|start_char=652|end_char=653
+
+# text = —Where are you going?
+# sent_id = 24
+1	—Where	—where	ADV	B	_	4	advmod	_	start_char=655|end_char=661
+2	are	be	AUX	VA	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	4	aux	_	start_char=662|end_char=665
+3	you	you	PRON	PE	Person=2|PronType=Prs	4	nsubj	_	start_char=666|end_char=669
+4	going	go	VERB	V	VerbForm=Ger	0	root	_	SpaceAfter=No|start_char=670|end_char=675
+5	?	?	PUNCT	FS	_	4	punct	_	SpacesAfter=\n|start_char=675|end_char=676
+
+# text = —Out.
+# sent_id = 25
+1	—	—	PUNCT	FF	_	3	punct	_	SpaceAfter=No|start_char=677|end_char=678
+2	Out	out	ADP	E	_	0	root	_	SpaceAfter=No|start_char=678|end_char=681
+3	.	.	PUNCT	FS	_	2	punct	_	SpacesAfter=\n|start_char=681|end_char=682
+
+# text = —Out where?
+# sent_id = 26
+1	—	—	PUNCT	FF	_	2	punct	_	SpaceAfter=No|start_char=683|end_char=684
+2	Out	out	ADP	E	_	3	case	_	start_char=684|end_char=687
+3	where	where	ADV	B	PronType=Int	0	root	_	SpaceAfter=No|start_char=688|end_char=693
+4	?	?	PUNCT	FS	_	3	punct	_	SpacesAfter=\n|start_char=693|end_char=694
+
+# text = —Just out.
+# sent_id = 27
+1	—	—	PUNCT	FF	_	3	punct	_	SpaceAfter=No|start_char=695|end_char=696
+2	Just	just	ADV	B	_	0	root	_	start_char=696|end_char=700
+3	out	out	ADP	E	_	2	compound:prt	_	SpaceAfter=No|start_char=701|end_char=704
+4	.	.	PUNCT	FS	_	3	punct	_	SpacesAfter=\n\n|start_char=704|end_char=705
+
+# text = "Stop!" "Why?" "Because I said so!"
+# sent_id = 28
+1	"	"	PUNCT	FB	_	2	punct	_	SpaceAfter=No|start_char=707|end_char=708
+2	Stop	stop	VERB	V	VerbForm=Inf	0	root	_	SpaceAfter=No|start_char=708|end_char=712
+3	!	!	PUNCT	FF	_	2	punct	_	SpaceAfter=No|start_char=712|end_char=713
+4	"	"	PUNCT	FB	_	2	punct	_	start_char=713|end_char=714
+5	"	"	PUNCT	FB	_	6	punct	_	SpaceAfter=No|start_char=715|end_char=716
+6	Why	why	ADV	B	_	2	advmod	_	SpaceAfter=No|start_char=716|end_char=719
+7	?	?	PUNCT	FF	_	6	punct	_	SpaceAfter=No|start_char=719|end_char=720
+8	"	"	PUNCT	FB	_	6	punct	_	start_char=720|end_char=721
+9	"	"	PUNCT	FB	_	12	punct	_	SpaceAfter=No|start_char=722|end_char=723
+10	Because	because	SCONJ	CS	_	12	mark	_	start_char=723|end_char=730
+11	I	I	PRON	PE	Number=Sing|Person=1|PronType=Prs	12	nsubj	_	start_char=731|end_char=732
+12	said	say	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	2	parataxis	_	start_char=733|end_char=737
+13	so	so	ADV	B	_	12	advmod	_	SpaceAfter=No|start_char=738|end_char=740
+14	!	!	PUNCT	FS	_	12	punct	_	SpaceAfter=No|start_char=740|end_char=741
+15	"	"	PUNCT	FB	_	2	punct	_	SpacesAfter=\n\n|start_char=741|end_char=742
+
+# text = The sign read “NO ENTRY — AUTHORIZED PERSONNEL ONLY.”
+# sent_id = 29
+1	The	the	DET	RD	Definite=Def|PronType=Art	2	det	_	start_char=744|end_char=747
+2	sign	sign	NOUN	S	Number=Sing	3	nsubj	_	start_char=748|end_char=752
+3	read	read	VERB	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	0	root	_	start_char=753|end_char=757
+4	“NO	“no	ADJ	A	Degree=Pos	8	amod	_	start_char=758|end_char=761
+5	ENTRY	entry	NOUN	S	Number=Sing	3	obj	_	start_char=762|end_char=767
+6	—	—	PUNCT	FF	_	5	punct	_	start_char=768|end_char=769
+7	AUTHORIZED	authorize	ADJ	A	Degree=Pos	8	amod	_	start_char=770|end_char=780
+8	PERSONNEL	personnel	NOUN	S	Number=Plur	3	obj	_	start_char=781|end_char=790
+9	ONLY	only	ADV	B	_	3	advmod	_	SpaceAfter=No|start_char=791|end_char=795
+10	.	.	PUNCT	FS	_	3	punct	_	SpaceAfter=No|start_char=795|end_char=796
+11	”	"	PUNCT	FS	_	3	punct	_	start_char=796|end_char=797
+
+# text = We entered anyway.
+# sent_id = 30
+1	We	we	PRON	PE	Number=Plur|Person=1|PronType=Prs	2	nsubj	_	start_char=798|end_char=800
+2	entered	enter	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=801|end_char=808
+3	anyway	anyway	ADV	B	_	2	advmod	_	SpaceAfter=No|start_char=809|end_char=815
+4	.	.	PUNCT	FS	_	2	punct	_	SpacesAfter=\n\n|start_char=815|end_char=816
+
+# text = He muttered something like “whatever…” and walked off.
+# sent_id = 31
+1	He	he	PRON	PE	Gender=Masc|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=818|end_char=820
+2	muttered	mutter	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=821|end_char=829
+3	something	something	PRON	PI	Number=Sing|PronType=Ind	2	obj	_	start_char=830|end_char=839
+4	like	like	ADP	E	_	6	case	_	start_char=840|end_char=844
+5	“	“	PUNCT	FB	_	6	punct	_	SpaceAfter=No|start_char=845|end_char=846
+6	whatever…	whatever…	NOUN	S	Number=Sing	2	obl	_	SpaceAfter=No|start_char=846|end_char=855
+7	”	"	PUNCT	FB	_	6	punct	_	start_char=855|end_char=856
+8	and	and	CCONJ	CC	_	9	cc	_	start_char=857|end_char=860
+9	walked	walk	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	2	conj	_	start_char=861|end_char=867
+10	off	off	ADP	E	_	9	compound:prt	_	SpaceAfter=No|start_char=868|end_char=871
+11	.	.	PUNCT	FS	_	2	punct	_	SpacesAfter=\n\n|start_char=871|end_char=872
+
+# text = “I… I don’t know what to say,” she stammered.
+# sent_id = 32
+1	“I…	“i…	PUNCT	FB	_	5	punct	_	start_char=874|end_char=877
+2	I	I	PRON	PE	Number=Sing|Person=1|PronType=Prs	5	nsubj	_	start_char=878|end_char=879
+3	don	do	AUX	VM	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	5	aux	_	SpaceAfter=No|start_char=880|end_char=883
+4	’t	's	PART	PART	Polarity=Neg	3	advmod	_	start_char=883|end_char=885
+5	know	know	VERB	V	Mood=Ind|Number=Plur|Person=1|Tense=Pres|VerbForm=Fin	0	root	_	start_char=886|end_char=890
+6	what	what	PRON	PR	Number=Sing|PronType=Rel	5	obj	_	start_char=891|end_char=895
+7	to	to	PART	PART	_	8	mark	_	start_char=896|end_char=898
+8	say	say	VERB	V	VerbForm=Inf	6	acl:relcl	_	SpaceAfter=No|start_char=899|end_char=902
+9	,	,	PUNCT	FF	_	8	punct	_	SpaceAfter=No|start_char=902|end_char=903
+10	”	"	PUNCT	FB	_	12	punct	_	start_char=903|end_char=904
+11	she	she	PRON	PE	Gender=Fem|Number=Sing|Person=3|PronType=Prs	12	nsubj	_	start_char=905|end_char=908
+12	stammered	stammer	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	5	ccomp	_	SpaceAfter=No|start_char=909|end_char=918
+13	.	.	PUNCT	FS	_	5	punct	_	SpacesAfter=\n\n|start_char=918|end_char=919
+
+# text = “It’s ‘affect,’ not ‘effect,’” the editor wrote in the margin.
+# sent_id = 33
+1	“It	“it	PRON	PE	Number=Sing|Person=3|PronType=Prs	3	nsubj	_	SpaceAfter=No|start_char=921|end_char=924
+2	’s	's	AUX	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	cop	_	start_char=924|end_char=926
+3	‘affect	‘affect	ADJ	A	Degree=Pos	0	root	_	SpaceAfter=No|start_char=927|end_char=934
+4	,	,	PUNCT	FF	_	3	punct	_	SpaceAfter=No|start_char=934|end_char=935
+5	’	’	PUNCT	FF	_	7	punct	_	start_char=935|end_char=936
+6	not	not	PART	PART	Polarity=Neg	7	advmod	_	start_char=937|end_char=940
+7	‘effect	‘effect	NOUN	S	Number=Sing	3	conj	_	SpaceAfter=No|start_char=941|end_char=948
+8	,	,	PUNCT	FF	_	3	punct	_	SpaceAfter=No|start_char=948|end_char=949
+9	’”	'	PUNCT	FB	_	12	punct	_	start_char=949|end_char=951
+10	the	the	DET	RD	Definite=Def|PronType=Art	11	det	_	start_char=952|end_char=955
+11	editor	editor	NOUN	S	Number=Sing	12	nsubj	_	start_char=956|end_char=962
+12	wrote	write	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	3	conj	_	start_char=963|end_char=968
+13	in	in	ADP	E	_	15	case	_	start_char=969|end_char=971
+14	the	the	DET	RD	Definite=Def|PronType=Art	15	det	_	start_char=972|end_char=975
+15	margin	margin	NOUN	S	Number=Sing	12	obl	_	SpaceAfter=No|start_char=976|end_char=982
+16	.	.	PUNCT	FS	_	3	punct	_	SpacesAfter=\n\n|start_char=982|end_char=983
+
+# text = She asked, "Have you read 'The Lighthouse Keeper's Daughter'?" I hadn't.
+# sent_id = 34
+1	She	she	PRON	PE	Gender=Fem|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=985|end_char=988
+2	asked	ask	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=989|end_char=994
+3	,	,	PUNCT	FF	_	2	punct	_	start_char=994|end_char=995
+4	"	"	PUNCT	FB	_	7	punct	_	SpaceAfter=No|start_char=996|end_char=997
+5	Have	have	AUX	VM	Mood=Ind|Person=3|Tense=Pres|VerbForm=Fin	7	aux	_	start_char=997|end_char=1001
+6	you	you	PRON	PE	Person=2|PronType=Prs	7	nsubj	_	start_char=1002|end_char=1005
+7	read	read	VERB	V	VerbForm=Inf	2	parataxis	_	start_char=1006|end_char=1010
+8	'	'	PUNCT	FB	_	13	punct	_	SpaceAfter=No|start_char=1011|end_char=1012
+9	The	the	DET	RD	Definite=Def|PronType=Art	11	det	_	start_char=1012|end_char=1015
+10	Lighthouse	lighthouse	NOUN	S	Number=Sing	11	nmod	_	start_char=1016|end_char=1026
+11-12	Keeper's	_	_	_	_	_	_	_	start_char=1027|end_char=1035
+11	Keeper	keeper	NOUN	S	Number=Sing	13	nmod:poss	_	start_char=1027|end_char=1033
+12	's	's	PART	PART	_	11	case	_	start_char=1033|end_char=1035
+13	Daughter	daughter	NOUN	S	Number=Sing	7	obj	_	SpaceAfter=No|start_char=1036|end_char=1044
+14	'	'	PUNCT	FB	_	13	punct	_	SpaceAfter=No|start_char=1044|end_char=1045
+15	?	?	PUNCT	FF	_	7	punct	_	SpaceAfter=No|start_char=1045|end_char=1046
+16	"	"	PUNCT	FB	_	7	punct	_	start_char=1046|end_char=1047
+17	I	I	PRON	PE	Number=Sing|Person=1|PronType=Prs	18	nsubj	_	start_char=1048|end_char=1049
+18-19	hadn't	_	_	_	_	_	_	_	SpaceAfter=No|start_char=1050|end_char=1056
+18	had	have	AUX	VA	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	7	aux	_	start_char=1050|end_char=1053
+19	n't	not	PART	PART	Polarity=Neg	18	advmod	_	start_char=1053|end_char=1056
+20	.	.	PUNCT	FS	_	2	punct	_	SpacesAfter=\n\n|start_char=1056|end_char=1057
+
+# text = The leaves come down in amber rain, and every road leads home again;
+# sent_id = 35
+1	The	the	DET	RD	Definite=Def|PronType=Art	2	det	_	start_char=1059|end_char=1062
+2	leaves	leaf	NOUN	S	Number=Plur	3	nsubj	_	start_char=1063|end_char=1069
+3	come	come	VERB	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1070|end_char=1074
+4	down	down	ADV	B	_	3	compound:prt	_	start_char=1075|end_char=1079
+5	in	in	ADP	E	_	7	case	_	start_char=1080|end_char=1082
+6	amber	amber	NOUN	S	Number=Sing	7	nmod	_	start_char=1083|end_char=1088
+7	rain	rain	NOUN	S	Number=Sing	3	obl	_	SpaceAfter=No|start_char=1089|end_char=1093
+8	,	,	PUNCT	FF	_	12	punct	_	SpacesAfter=\n|start_char=1093|end_char=1094
+9	and	and	CCONJ	CC	_	12	cc	_	start_char=1095|end_char=1098
+10	every	every	DET	DI	Number=Sing|PronType=Ind	11	det	_	start_char=1099|end_char=1104
+11	road	road	NOUN	S	Number=Sing	12	nsubj	_	start_char=1105|end_char=1109
+12	leads	lead	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	conj	_	start_char=1110|end_char=1115
+13	home	home	NOUN	S	Number=Sing	12	obj	_	start_char=1116|end_char=1120
+14	again	again	ADV	B	_	12	advmod	_	SpaceAfter=No|start_char=1121|end_char=1126
+15	;	;	PUNCT	FC	_	3	punct	_	SpacesAfter=\n|start_char=1126|end_char=1127
+
+# text = the kettle hums, the window fogs, and somewhere far, a farmer's dogs
+# sent_id = 36
+1	the	the	DET	RD	Definite=Def|PronType=Art	3	det	_	start_char=1128|end_char=1131
+2	kettle	kettle	NOUN	S	Number=Sing	3	nmod	_	start_char=1132|end_char=1138
+3	hums	hum	NOUN	S	Number=Plur	0	root	_	SpaceAfter=No|start_char=1139|end_char=1143
+4	,	,	PUNCT	FF	_	7	punct	_	start_char=1143|end_char=1144
+5	the	the	DET	RD	Definite=Def|PronType=Art	7	det	_	start_char=1145|end_char=1148
+6	window	window	NOUN	S	Number=Sing	7	nmod	_	start_char=1149|end_char=1155
+7	fogs	fog	NOUN	S	Number=Plur	3	conj	_	SpaceAfter=No|start_char=1156|end_char=1160
+8	,	,	PUNCT	FF	_	11	punct	_	SpacesAfter=\n|start_char=1160|end_char=1161
+9	and	and	CCONJ	CC	_	11	cc	_	start_char=1162|end_char=1165
+10	somewhere	somewhere	ADV	B	_	11	advmod	_	start_char=1166|end_char=1175
+11	far	far	ADV	B	_	16	advmod	_	SpaceAfter=No|start_char=1176|end_char=1179
+12	,	,	PUNCT	FF	_	11	punct	_	start_char=1179|end_char=1180
+13	a	a	DET	RI	Definite=Ind|Number=Sing|PronType=Art	14	det	_	start_char=1181|end_char=1182
+14-15	farmer's	_	_	_	_	_	_	_	start_char=1183|end_char=1191
+14	farmer	farmer	NOUN	S	Number=Sing	16	nmod:poss	_	start_char=1183|end_char=1189
+15	's	's	PART	PART	_	14	case	_	start_char=1189|end_char=1191
+16	dogs	dog	NOUN	S	Number=Plur	3	conj	_	SpacesAfter=\n\n|start_char=1192|end_char=1196
+
+# text = bark once, then twice, then not at all.
+# sent_id = 37
+1	bark	bark	VERB	V	Mood=Ind|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1198|end_char=1202
+2	once	once	ADV	B	_	1	advmod	_	SpaceAfter=No|start_char=1203|end_char=1207
+3	,	,	PUNCT	FF	_	1	punct	_	start_char=1207|end_char=1208
+4	then	then	ADV	B	_	1	advmod	_	start_char=1209|end_char=1213
+5	twice	twice	ADV	B	_	1	advmod	_	SpaceAfter=No|start_char=1214|end_char=1219
+6	,	,	PUNCT	FF	_	1	punct	_	start_char=1219|end_char=1220
+7	then	then	ADV	B	_	10	cc	_	start_char=1221|end_char=1225
+8	not	not	PART	PART	Polarity=Neg	10	advmod	_	start_char=1226|end_char=1229
+9	at	at	ADP	E	_	10	case	_	start_char=1230|end_char=1232
+10	all	all	PRON	PI	PronType=Ind	5	conj	_	SpaceAfter=No|start_char=1233|end_char=1236
+11	.	.	PUNCT	FS	_	1	punct	_	SpacesAfter=\n|start_char=1236|end_char=1237
+
+# text = The evening settles on the wall.
+# sent_id = 38
+1	The	the	DET	RD	Definite=Def|PronType=Art	2	det	_	start_char=1238|end_char=1241
+2	evening	evening	NOUN	S	Number=Sing	3	nsubj	_	start_char=1242|end_char=1249
+3	settles	settle	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1250|end_char=1257
+4	on	on	ADP	E	_	6	case	_	start_char=1258|end_char=1260
+5	the	the	DET	RD	Definite=Def|PronType=Art	6	det	_	start_char=1261|end_char=1264
+6	wall	wall	NOUN	S	Number=Sing	3	obl	_	SpaceAfter=No|start_char=1265|end_char=1269
+7	.	.	PUNCT	FS	_	3	punct	_	SpacesAfter=\n\n|start_char=1269|end_char=1270
+
+# text = I wandered where the river bends beneath a sky that never ends and counted stones and counted bones of summers I had called my friends
+# sent_id = 39
+1	I	I	PRON	PE	Number=Sing|Person=1|PronType=Prs	2	nsubj	_	start_char=1272|end_char=1273
+2	wandered	wander	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1274|end_char=1282
+3	where	where	ADV	B	PronType=Int	6	advmod	_	start_char=1283|end_char=1288
+4	the	the	DET	RD	Definite=Def|PronType=Art	5	det	_	start_char=1289|end_char=1292
+5	river	river	NOUN	S	Number=Sing	6	nsubj	_	start_char=1293|end_char=1298
+6	bends	bend	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	ccomp	_	SpacesAfter=\n|start_char=1299|end_char=1304
+7	beneath	beneath	ADP	E	_	9	case	_	start_char=1305|end_char=1312
+8	a	a	DET	RI	Definite=Ind|Number=Sing|PronType=Art	9	det	_	start_char=1313|end_char=1314
+9	sky	sky	NOUN	S	Number=Sing	6	obl	_	start_char=1315|end_char=1318
+10	that	that	PRON	PR	PronType=Rel	12	nsubj	_	start_char=1319|end_char=1323
+11	never	never	ADV	B	_	12	advmod	_	start_char=1324|end_char=1329
+12	ends	end	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	9	acl:relcl	_	SpacesAfter=\n|start_char=1330|end_char=1334
+13	and	and	CCONJ	CC	_	14	cc	_	start_char=1335|end_char=1338
+14	counted	count	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	12	conj	_	start_char=1339|end_char=1346
+15	stones	stone	NOUN	S	Number=Plur	14	obj	_	SpacesAfter=\n|start_char=1347|end_char=1353
+16	and	and	CCONJ	CC	_	18	cc	_	start_char=1354|end_char=1357
+17	counted	count	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	18	acl	_	start_char=1358|end_char=1365
+18	bones	bon	NOUN	S	Number=Plur	14	nsubj	_	SpacesAfter=\n|start_char=1366|end_char=1371
+19	of	of	ADP	E	_	20	case	_	start_char=1372|end_char=1374
+20	summers	summer	NOUN	S	Number=Plur	18	nmod	_	start_char=1375|end_char=1382
+21	I	I	PRON	PE	Number=Sing|Person=1|PronType=Prs	23	nsubj	_	start_char=1383|end_char=1384
+22	had	have	AUX	VA	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	23	aux	_	start_char=1385|end_char=1388
+23	called	call	VERB	V	Tense=Past|VerbForm=Part	18	acl:relcl	_	start_char=1389|end_char=1395
+24	my	my	DET	AP	Number=Sing|Poss=Yes|PronType=Prs	25	nmod:poss	_	start_char=1396|end_char=1398
+25	friends	friend	NOUN	S	Number=Plur	23	obj	_	SpacesAfter=\n\n|start_char=1399|end_char=1406
+
+# text = so much depends upon a borrowed pen left out in the rain beside the gate
+# sent_id = 40
+1	so	so	ADV	B	_	3	advmod	_	start_char=1408|end_char=1410
+2	much	much	ADV	B	_	3	advmod	_	start_char=1411|end_char=1415
+3	depends	depend	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	SpacesAfter=\n|start_char=1416|end_char=1423
+4	upon	upon	ADP	E	_	7	case	_	SpacesAfter=\n|start_char=1424|end_char=1428
+5	a	a	DET	RI	Definite=Ind|Number=Sing|PronType=Art	7	det	_	start_char=1429|end_char=1430
+6	borrowed	borrow	VERB	V	Tense=Past|VerbForm=Part	7	acl	_	start_char=1431|end_char=1439
+7	pen	pen	NOUN	S	Number=Sing	3	obl	_	SpacesAfter=\n|start_char=1440|end_char=1443
+8	left	leave	VERB	V	Tense=Past|VerbForm=Part	7	acl	_	start_char=1444|end_char=1448
+9	out	out	ADP	E	_	8	compound:prt	_	start_char=1449|end_char=1452
+10	in	in	ADP	E	_	12	case	_	start_char=1453|end_char=1455
+11	the	the	DET	RD	Definite=Def|PronType=Art	12	det	_	start_char=1456|end_char=1459
+12	rain	rain	NOUN	S	Number=Sing	8	obl	_	SpacesAfter=\n|start_char=1460|end_char=1464
+13	beside	beside	ADP	E	_	15	case	_	start_char=1465|end_char=1471
+14	the	the	DET	RD	Definite=Def|PronType=Art	15	det	_	start_char=1472|end_char=1475
+15	gate	gate	NOUN	S	Number=Sing	8	obl	_	SpacesAfter=\n\n|start_char=1476|end_char=1480
+
+# text = Roses are red, violets are blue, this poem is short, and so are you.
+# sent_id = 41
+1	Roses	rose	NOUN	S	Number=Plur	3	nsubj	_	start_char=1482|end_char=1487
+2	are	be	AUX	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	3	cop	_	start_char=1488|end_char=1491
+3	red	red	ADJ	A	Degree=Pos	12	advcl	_	SpaceAfter=No|start_char=1492|end_char=1495
+4	,	,	PUNCT	FF	_	5	punct	_	SpacesAfter=\n|start_char=1495|end_char=1496
+5	violets	violet	NOUN	S	Number=Plur	3	conj	_	start_char=1497|end_char=1504
+6	are	be	AUX	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	7	cop	_	start_char=1505|end_char=1508
+7	blue	blue	ADJ	A	Degree=Pos	3	advcl	_	SpaceAfter=No|start_char=1509|end_char=1513
+8	,	,	PUNCT	FF	_	3	punct	_	SpacesAfter=\n|start_char=1513|end_char=1514
+9	this	this	DET	DD	Number=Sing|PronType=Dem	10	det	_	start_char=1515|end_char=1519
+10	poem	poem	NOUN	S	Number=Sing	12	nsubj	_	start_char=1520|end_char=1524
+11	is	be	AUX	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	12	cop	_	start_char=1525|end_char=1527
+12	short	short	ADJ	A	Degree=Pos	0	root	_	SpaceAfter=No|start_char=1528|end_char=1533
+13	,	,	PUNCT	FF	_	16	punct	_	SpacesAfter=\n|start_char=1533|end_char=1534
+14	and	and	CCONJ	CC	_	16	cc	_	start_char=1535|end_char=1538
+15	so	so	ADV	B	_	16	advmod	_	start_char=1539|end_char=1541
+16	are	be	VERB	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	12	conj	_	start_char=1542|end_char=1545
+17	you	you	PRON	PE	Person=2|PronType=Prs	16	nsubj	_	SpaceAfter=No|start_char=1546|end_char=1549
+18	.	.	PUNCT	FS	_	12	punct	_	SpacesAfter=\n\n|start_char=1549|end_char=1550
+
+# text = The clock struck twelve.
+# sent_id = 42
+1	The	the	DET	RD	Definite=Def|PronType=Art	2	det	_	start_char=1552|end_char=1555
+2	clock	clock	NOUN	S	Number=Sing	3	nsubj	_	start_char=1556|end_char=1561
+3	struck	struck	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1562|end_char=1568
+4	twelve	twelve	NUM	N	NumType=Card	3	obj	_	SpaceAfter=No|start_char=1569|end_char=1575
+5	.	.	PUNCT	FS	_	3	punct	_	start_char=1575|end_char=1576
+
+# text = Nobody moved.
+# sent_id = 43
+1	Nobody	nobody	PRON	PE	Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=1577|end_char=1583
+2	moved	move	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=1584|end_char=1589
+3	.	.	PUNCT	FS	_	2	punct	_	start_char=1589|end_char=1590
+
+# text = Then, slowly, the door creaked open… and in walked the cat.
+# sent_id = 44
+1	Then	then	ADV	B	_	7	advmod	_	SpaceAfter=No|start_char=1591|end_char=1595
+2	,	,	PUNCT	FF	_	1	punct	_	start_char=1595|end_char=1596
+3	slowly	slowly	ADV	B	_	7	advmod	_	SpaceAfter=No|start_char=1597|end_char=1603
+4	,	,	PUNCT	FF	_	3	punct	_	start_char=1603|end_char=1604
+5	the	the	DET	RD	Definite=Def|PronType=Art	6	det	_	start_char=1605|end_char=1608
+6	door	door	NOUN	S	Number=Sing	7	nsubj	_	start_char=1609|end_char=1613
+7	creaked	creake	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1614|end_char=1621
+8	open…	open…	ADJ	A	Degree=Pos	7	xcomp	_	start_char=1622|end_char=1627
+9	and	and	CCONJ	CC	_	11	cc	_	start_char=1628|end_char=1631
+10	in	in	ADP	E	_	11	mark	_	start_char=1632|end_char=1634
+11	walked	walk	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	7	conj	_	start_char=1635|end_char=1641
+12	the	the	DET	RD	Definite=Def|PronType=Art	13	det	_	start_char=1642|end_char=1645
+13	cat	cat	NOUN	S	Number=Sing	11	obj	_	SpaceAfter=No|start_char=1646|end_char=1649
+14	.	.	PUNCT	FS	_	7	punct	_	SpacesAfter=\n\n|start_char=1649|end_char=1650
+
+# text = He said—and I quote—“absolutely not.
+# sent_id = 45
+1	He	he	PRON	PE	Gender=Masc|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=1652|end_char=1654
+2	said—and	said—and	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1655|end_char=1663
+3	I	I	PRON	PE	Number=Sing|Person=1|PronType=Prs	4	nsubj	_	start_char=1664|end_char=1665
+4	quote—	quote	VERB	V	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	2	conj	_	SpaceAfter=No|start_char=1666|end_char=1672
+5	“absolutely	“absolutely	ADV	B	_	4	advmod	_	start_char=1672|end_char=1683
+6	not	not	PART	PART	Polarity=Neg	4	advmod	_	SpaceAfter=No|start_char=1684|end_char=1687
+7	.	.	PUNCT	FS	_	2	punct	_	SpaceAfter=No|start_char=1687|end_char=1688
+
+# text = ”
+# sent_id = 46
+1	”	"	PUNCT	FB	_	0	punct	_	SpacesAfter=\n\n|start_char=1688|end_char=1689
+
+# text = “Is that you, Grandpa?”
+# sent_id = 47
+1	“Is	be	VERB	V	Mood=Imp|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1691|end_char=1694
+2	that	that	SCONJ	CS	_	1	fixed	_	start_char=1695|end_char=1699
+3	you	you	PRON	PE	Person=2|PronType=Prs	1	obj	_	SpaceAfter=No|start_char=1700|end_char=1703
+4	,	,	PUNCT	FF	_	5	punct	_	start_char=1703|end_char=1704
+5	Grandpa	Grandpa	NOUN	S	Number=Sing	1	vocative	_	SpaceAfter=No|start_char=1705|end_char=1712
+6	?	?	PUNCT	FS	_	1	punct	_	SpaceAfter=No|start_char=1712|end_char=1713
+7	”	"	PUNCT	FS	_	1	punct	_	start_char=1713|end_char=1714
+
+# text = “Who else would it be?” “Sorry.
+# sent_id = 48
+1	“	“	PUNCT	FB	_	10	punct	_	SpaceAfter=No|start_char=1715|end_char=1716
+2	Who	who	PRON	PQ	PronType=Int	10	nsubj	_	start_char=1716|end_char=1719
+3	else	else	ADV	B	_	2	advmod	_	start_char=1720|end_char=1724
+4	would	will	AUX	VM	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	2	aux	_	start_char=1725|end_char=1730
+5	it	it	PRON	PE	Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=1731|end_char=1733
+6	be	be	AUX	V	VerbForm=Inf	10	cop	_	SpaceAfter=No|start_char=1734|end_char=1736
+7	?	?	PUNCT	FF	_	10	punct	_	SpaceAfter=No|start_char=1736|end_char=1737
+8	”	"	PUNCT	FF	_	10	punct	_	start_char=1737|end_char=1738
+9	“	“	PUNCT	FF	_	10	punct	_	SpaceAfter=No|start_char=1739|end_char=1740
+10	Sorry	sorry	INTJ	_	_	0	root	_	SpaceAfter=No|start_char=1740|end_char=1745
+11	.	.	PUNCT	FS	_	10	punct	_	start_char=1745|end_char=1746
+
+# text = It’s dark.
+# sent_id = 49
+1	It	it	PRON	PE	Number=Sing|Person=3|PronType=Prs	3	nsubj	_	SpaceAfter=No|start_char=1747|end_char=1749
+2	’s	's	AUX	V	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	cop	_	start_char=1749|end_char=1751
+3	dark	dark	ADJ	A	Degree=Pos	0	root	_	SpaceAfter=No|start_char=1752|end_char=1756
+4	.	.	PUNCT	FS	_	3	punct	_	SpaceAfter=No|start_char=1756|end_char=1757
+
+# text = ”
+# sent_id = 50
+1	”	"	PUNCT	FB	_	0	punct	_	SpacesAfter=\n\n|start_char=1757|end_char=1758
+
+# text = As my teacher liked to put it:
+# sent_id = 51
+1	As	as	SCONJ	CS	_	4	mark	_	start_char=1760|end_char=1762
+2	my	my	DET	AP	Number=Sing|Poss=Yes|PronType=Prs	3	nmod:poss	_	start_char=1763|end_char=1765
+3	teacher	teacher	NOUN	S	Number=Sing	4	nsubj	_	start_char=1766|end_char=1773
+4	liked	like	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1774|end_char=1779
+5	to	to	PART	PART	_	6	mark	_	start_char=1780|end_char=1782
+6	put	put	VERB	V	VerbForm=Inf	4	xcomp	_	start_char=1783|end_char=1786
+7	it	it	PRON	PE	Number=Sing|Person=3|PronType=Prs	6	obj	_	SpaceAfter=No|start_char=1787|end_char=1789
+8	:	:	PUNCT	FC	_	4	punct	_	start_char=1789|end_char=1790
+
+# text = “There are no stupid questions — only stupid answers.
+# sent_id = 52
+1	“	“	PUNCT	FB	_	3	punct	_	SpaceAfter=No|start_char=1791|end_char=1792
+2	There	there	PRON	_	PronType=Dem	3	expl	_	start_char=1792|end_char=1797
+3	are	be	VERB	V	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1798|end_char=1801
+4	no	no	DET	DI	PronType=Ind	6	det	_	start_char=1802|end_char=1804
+5	stupid	stupid	ADJ	A	Degree=Pos	6	amod	_	start_char=1805|end_char=1811
+6	questions	question	NOUN	S	Number=Plur	3	nsubj	_	start_char=1812|end_char=1821
+7	—	—	PUNCT	FF	_	6	punct	_	start_char=1822|end_char=1823
+8	only	only	ADV	B	_	10	advmod	_	start_char=1824|end_char=1828
+9	stupid	stupid	ADJ	A	Degree=Pos	10	amod	_	start_char=1829|end_char=1835
+10	answers	answer	NOUN	S	Number=Plur	6	nmod	_	SpaceAfter=No|start_char=1836|end_char=1843
+11	.	.	PUNCT	FS	_	3	punct	_	SpaceAfter=No|start_char=1843|end_char=1844
+
+# text = ”
+# sent_id = 53
+1	”	"	PUNCT	FB	_	0	punct	_	SpacesAfter=\n\n|start_char=1844|end_char=1845
+
+# text = ‘Twas the night before the deadline, and all through the lab, not a printer was working.
+# sent_id = 54
+1	‘Twas	‘Twas	ADV	B	_	3	advmod	_	start_char=1847|end_char=1852
+2	the	the	DET	RD	Definite=Def|PronType=Art	3	det	_	start_char=1853|end_char=1856
+3	night	night	NOUN	S	Number=Sing	0	root	_	start_char=1857|end_char=1862
+4	before	before	ADP	E	_	6	case	_	start_char=1863|end_char=1869
+5	the	the	DET	RD	Definite=Def|PronType=Art	6	det	_	start_char=1870|end_char=1873
+6	deadline	deadline	NOUN	S	Number=Sing	3	nmod	_	SpaceAfter=No|start_char=1874|end_char=1882
+7	,	,	PUNCT	FF	_	18	punct	_	start_char=1882|end_char=1883
+8	and	and	CCONJ	CC	_	18	cc	_	start_char=1884|end_char=1887
+9	all	all	PRON	PI	PronType=Ind	18	nsubj	_	start_char=1888|end_char=1891
+10	through	through	ADP	E	_	12	case	_	start_char=1892|end_char=1899
+11	the	the	DET	RD	Definite=Def|PronType=Art	12	det	_	start_char=1900|end_char=1903
+12	lab	lab	NOUN	S	Number=Sing	9	nmod	_	SpaceAfter=No|start_char=1904|end_char=1907
+13	,	,	PUNCT	FF	_	12	punct	_	start_char=1907|end_char=1908
+14	not	not	PART	PART	Polarity=Neg	16	advmod	_	start_char=1909|end_char=1912
+15	a	a	DET	RI	Definite=Ind|Number=Sing|PronType=Art	16	det	_	start_char=1913|end_char=1914
+16	printer	printer	NOUN	S	Number=Sing	18	nsubj	_	start_char=1915|end_char=1922
+17	was	be	AUX	VA	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	18	aux	_	start_char=1923|end_char=1926
+18	working	work	VERB	V	VerbForm=Ger	3	acl	_	SpaceAfter=No|start_char=1927|end_char=1934
+19	.	.	PUNCT	FS	_	3	punct	_	SpacesAfter=\n\n|start_char=1934|end_char=1935
+
+# text = “Hello?” she called.
+# sent_id = 55
+1	“Hello	“hello	INTJ	_	_	5	nummod	_	SpaceAfter=No|start_char=1937|end_char=1943
+2	?	?	PUNCT	FF	_	1	punct	_	SpaceAfter=No|start_char=1943|end_char=1944
+3	”	"	PUNCT	FB	_	5	punct	_	start_char=1944|end_char=1945
+4	she	she	PRON	PE	Gender=Fem|Number=Sing|Person=3|PronType=Prs	5	nsubj	_	start_char=1946|end_char=1949
+5	called	call	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=1950|end_char=1956
+6	.	.	PUNCT	FS	_	5	punct	_	start_char=1956|end_char=1957
+
+# text = “Hello??” Silence.
+# sent_id = 56
+1	“	“	PUNCT	FB	_	2	punct	_	SpaceAfter=No|start_char=1958|end_char=1959
+2	Hello	Hello	PROPN	SP	_	6	nmod:poss	_	SpaceAfter=No|start_char=1959|end_char=1964
+3	?	?	PUNCT	FF	_	2	punct	_	SpaceAfter=No|start_char=1964|end_char=1965
+4	?	?	PUNCT	FF	_	2	punct	_	SpaceAfter=No|start_char=1965|end_char=1966
+5	”	"	PUNCT	FF	_	6	punct	_	start_char=1966|end_char=1967
+6	Silence	silence	NOUN	S	Number=Sing	0	root	_	SpaceAfter=No|start_char=1968|end_char=1975
+7	.	.	PUNCT	FS	_	6	punct	_	SpacesAfter=\n\n|start_char=1975|end_char=1976
+
+# text = I said "no."
+# sent_id = 57
+1	I	I	PRON	PE	Number=Sing|Person=1|PronType=Prs	2	nsubj	_	start_char=1978|end_char=1979
+2	said	say	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1980|end_char=1984
+3	"	"	PUNCT	FB	_	2	punct	_	SpaceAfter=No|start_char=1985|end_char=1986
+4	no	no	ADV	BN	_	2	discourse	_	SpaceAfter=No|start_char=1986|end_char=1988
+5	.	.	PUNCT	FS	_	2	punct	_	SpaceAfter=No|start_char=1988|end_char=1989
+6	"	"	PUNCT	FB	_	2	punct	_	start_char=1989|end_char=1990
+
+# text = She said "yes." We compromised on "maybe.
+# sent_id = 58
+1	She	she	PRON	PE	Gender=Fem|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=1991|end_char=1994
+2	said	say	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1995|end_char=1999
+3	"	"	PUNCT	FB	_	4	punct	_	SpaceAfter=No|start_char=2000|end_char=2001
+4	yes	yes	INTJ	_	_	2	discourse	_	SpaceAfter=No|start_char=2001|end_char=2004
+5	.	.	PUNCT	FS	_	4	punct	_	SpaceAfter=No|start_char=2004|end_char=2005
+6	"	"	PUNCT	FB	_	8	punct	_	start_char=2005|end_char=2006
+7	We	we	PRON	PE	Number=Plur|Person=1|PronType=Prs	8	nsubj	_	start_char=2007|end_char=2009
+8	compromised	compromize	VERB	V	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	2	parataxis	_	start_char=2010|end_char=2021
+9	on	on	ADP	E	_	11	case	_	start_char=2022|end_char=2024
+10	"	"	PUNCT	FB	_	8	punct	_	SpaceAfter=No|start_char=2025|end_char=2026
+11	maybe	maybe	ADV	B	_	8	advmod	_	SpaceAfter=No|start_char=2026|end_char=2031
+12	.	.	PUNCT	FS	_	2	punct	_	SpaceAfter=No|start_char=2031|end_char=2032
+
+# text = "
+# sent_id = 59
+1	"	"	PUNCT	FB	_	0	punct	_	SpacesAfter=\n|start_char=2032|end_char=2033

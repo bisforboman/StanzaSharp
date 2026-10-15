@@ -1,0 +1,698 @@
+# text = “Did she really say ‘I’ll never come back’?” asked Ellen.
+# sent_id = 0
+1	“Did	do	AUX	VBP	_	4	aux	_	start_char=0|end_char=4
+2	she	she	PRON	PRP	_	4	nsubj	_	start_char=5|end_char=8
+3	really	really	ADV	RB	_	4	advmod	_	start_char=9|end_char=15
+4	say	say	VERB	VB	_	0	root	_	start_char=16|end_char=19
+5-6	‘I’ll	_	_	_	_	_	_	_	start_char=20|end_char=25
+5	‘I	‘i	PRON	PRP	_	8	nsubj	_	start_char=20|end_char=22
+6	’ll	will	AUX	MD	_	8	aux	_	start_char=22|end_char=25
+7	never	never	ADV	RB	_	8	advmod	_	start_char=26|end_char=31
+8	come	come	VERB	VB	_	4	ccomp	_	start_char=32|end_char=36
+9	back’	back’	ADV	RB	_	8	advmod	_	SpaceAfter=No|start_char=37|end_char=42
+10	?”	?”	CCONJ	CC	_	11	cc	_	start_char=42|end_char=44
+11	asked	ask	VERB	VBD	_	4	conj	_	start_char=45|end_char=50
+12	Ellen	Ellen	PROPN	NNP	_	11	obj	_	SpaceAfter=No|start_char=51|end_char=56
+13	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n|start_char=56|end_char=57
+
+# text = “Those were her exact words,”
+# sent_id = 1
+1	“Those	“those	PRON	PRP	_	5	nsubj	_	start_char=58|end_char=64
+2	were	be	AUX	VBD	_	5	cop	_	start_char=65|end_char=69
+3	her	she	PRON	PRP$	_	5	nmod:poss	_	start_char=70|end_char=73
+4	exact	exact	ADJ	JJ	_	5	amod	_	start_char=74|end_char=79
+5	words,	words,	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=80|end_char=86
+6	”	”	PUNCT	.	_	5	punct	_	start_char=86|end_char=87
+
+# text = Martin replied.
+# sent_id = 2
+1	Martin	Martin	PROPN	NNP	_	2	nsubj	_	start_char=88|end_char=94
+2	replied	reply	VERB	VBD	_	0	root	_	SpaceAfter=No|start_char=95|end_char=102
+3	.	.	PUNCT	.	_	2	punct	_	start_char=102|end_char=103
+
+# text = “Then she slammed the door.
+# sent_id = 3
+1	“Then	“then	INTJ	UH	_	3	discourse	_	start_char=104|end_char=109
+2	she	she	PRON	PRP	_	3	nsubj	_	start_char=110|end_char=113
+3	slammed	slamm	VERB	VBD	_	0	root	_	start_char=114|end_char=121
+4	the	the	DET	DT	_	5	det	_	start_char=122|end_char=125
+5	door	door	NOUN	NN	_	3	obj	_	SpaceAfter=No|start_char=126|end_char=130
+6	.	.	PUNCT	.	_	3	punct	_	SpaceAfter=No|start_char=130|end_char=131
+
+# text = ”
+# sent_id = 4
+1	”	”	INTJ	UH	_	0	root	_	SpacesAfter=\n\n|start_char=131|end_char=132
+
+# text = "He told me,
+# sent_id = 5
+1	"He	"he	PRON	PRP	_	2	nsubj	_	start_char=134|end_char=137
+2	told	tell	VERB	VBD	_	0	root	_	start_char=138|end_char=142
+3	me	I	PRON	PRP	_	2	iobj	_	SpaceAfter=No|start_char=143|end_char=145
+4	,	,	PUNCT	.	_	2	punct	_	start_char=145|end_char=146
+
+# text = 'Don't bother calling,' and hung up," said Rosa.
+# sent_id = 6
+1-2	'Don't	_	_	_	_	_	_	_	start_char=147|end_char=153
+1	'Do	woulD	AUX	VB	_	3	aux	_	start_char=147|end_char=150
+2	n't	not	PART	RB	_	3	advmod	_	start_char=150|end_char=153
+3	bother	bother	VERB	VB	_	0	root	_	start_char=154|end_char=160
+4	calling	call	VERB	VBG	_	3	xcomp	_	SpaceAfter=No|start_char=161|end_char=168
+5	,'	,'	INTJ	UH	_	4	discourse	_	start_char=168|end_char=170
+6	and	and	CCONJ	CC	_	7	cc	_	start_char=171|end_char=174
+7	hung	hang	VERB	VB	_	4	conj	_	start_char=175|end_char=179
+8	up,"	up,"	ADV	RB	_	7	compound:prt	_	start_char=180|end_char=184
+9	said	say	VERB	VBD	_	3	parataxis	_	start_char=185|end_char=189
+10	Rosa	Rosa	PROPN	NNP	_	9	nsubj	_	SpaceAfter=No|start_char=190|end_char=194
+11	.	.	PUNCT	.	_	3	punct	_	start_char=194|end_char=195
+
+# text = "Can you believe that?
+# sent_id = 7
+1	"Can	"can	INTJ	UH	_	3	discourse	_	start_char=196|end_char=200
+2	you	you	PRON	PRP	_	3	nsubj	_	start_char=201|end_char=204
+3	believe	believe	VERB	VBP	_	0	root	_	start_char=205|end_char=212
+4	that	that	PRON	DT	_	3	obj	_	SpaceAfter=No|start_char=213|end_char=217
+5	?	?	PUNCT	?	_	3	punct	_	SpaceAfter=No|start_char=217|end_char=218
+
+# text = "
+# sent_id = 8
+1	"	"	PUNCT	.	_	0	root	_	SpacesAfter=\n\n|start_char=218|end_char=219
+
+# text = 'I'm not sure,' she whispered.
+# sent_id = 9
+1-2	'I'm	_	_	_	_	_	_	_	start_char=221|end_char=225
+1	'I	we	PRON	PRP	_	4	nsubj	_	start_char=221|end_char=223
+2	'm	be	AUX	VBP	_	4	cop	_	start_char=223|end_char=225
+3	not	not	PART	RB	_	4	advmod	_	start_char=226|end_char=229
+4	sure,'	sure,'	ADJ	JJ	_	0	root	_	start_char=230|end_char=236
+5	she	she	PRON	PRP	_	6	nsubj	_	start_char=237|end_char=240
+6	whispered	whisper	VERB	VBD	_	4	parataxis	_	SpaceAfter=No|start_char=241|end_char=250
+7	.	.	PUNCT	.	_	4	punct	_	start_char=250|end_char=251
+
+# text = 'Maybe tomorrow.
+# sent_id = 10
+1	'Maybe	'maybe	INTJ	UH	_	2	discourse	_	start_char=252|end_char=258
+2	tomorrow	tomorrow	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=259|end_char=267
+3	.	.	PUNCT	.	_	2	punct	_	SpaceAfter=No|start_char=267|end_char=268
+
+# text = '
+# sent_id = 11
+1	'	'	PUNCT	.	_	0	root	_	SpacesAfter=\n\n|start_char=268|end_char=269
+
+# text = “Well,” said the old man, “when I was your age, we didn’t have any of this.
+# sent_id = 12
+1	“Well	“well	INTJ	UH	_	3	discourse	_	SpaceAfter=No|start_char=271|end_char=276
+2	,”	,”	PROPN	NNP	_	3	nsubj	_	start_char=276|end_char=278
+3	said	say	VERB	VBD	_	0	root	_	start_char=279|end_char=283
+4	the	the	DET	DT	_	6	det	_	start_char=284|end_char=287
+5	old	old	ADJ	JJ	_	6	amod	_	start_char=288|end_char=291
+6	man,	man,	NOUN	NN	_	3	nsubj	_	start_char=292|end_char=296
+7	“when	“when	ADV	RB	_	11	advmod	_	start_char=297|end_char=302
+8	I	I	PRON	PRP	_	11	nsubj	_	start_char=303|end_char=304
+9	was	be	AUX	VBD	_	11	cop	_	start_char=305|end_char=308
+10	your	you	PRON	PRP$	_	11	nmod:poss	_	start_char=309|end_char=313
+11	age,	age,	NOUN	NN	_	3	ccomp	_	start_char=314|end_char=318
+12	we	we	PRON	PRP	_	15	nsubj	_	start_char=319|end_char=321
+13-14	didn’t	_	_	_	_	_	_	_	start_char=322|end_char=328
+13	did	do	AUX	VBD	_	15	aux	_	start_char=322|end_char=325
+14	n’t	not	PART	RB	_	15	advmod	_	start_char=325|end_char=328
+15	have	have	VERB	VB	_	3	parataxis	_	start_char=329|end_char=333
+16	any	any	DET	DT	_	15	obj	_	start_char=334|end_char=337
+17	of	of	ADP	IN	_	18	case	_	start_char=338|end_char=340
+18	this	this	PRON	DT	_	16	nmod	_	SpaceAfter=No|start_char=341|end_char=345
+19	.	.	PUNCT	.	_	3	punct	_	SpaceAfter=No|start_char=345|end_char=346
+
+# text = ”
+# sent_id = 13
+1	”	”	INTJ	UH	_	0	root	_	start_char=346|end_char=347
+
+# text = He waved a hand at the screens.
+# sent_id = 14
+1	He	he	PRON	PRP	_	2	nsubj	_	start_char=348|end_char=350
+2	waved	wave	VERB	VBD	_	0	root	_	start_char=351|end_char=356
+3	a	a	DET	DT	_	4	det	_	start_char=357|end_char=358
+4	hand	hand	NOUN	NN	_	2	obj	_	start_char=359|end_char=363
+5	at	at	ADP	IN	_	7	case	_	start_char=364|end_char=366
+6	the	the	DET	DT	_	7	det	_	start_char=367|end_char=370
+7	screens	screen	NOUN	NNS	_	2	obl	_	SpaceAfter=No|start_char=371|end_char=378
+8	.	.	PUNCT	.	_	2	punct	_	start_char=378|end_char=379
+
+# text = “We had books.
+# sent_id = 15
+1	“We	“we	PRON	PRP	_	2	nsubj	_	start_char=380|end_char=383
+2	had	have	VERB	VBD	_	0	root	_	start_char=384|end_char=387
+3	books	book	NOUN	NNS	_	2	obj	_	SpaceAfter=No|start_char=388|end_char=393
+4	.	.	PUNCT	.	_	2	punct	_	start_char=393|end_char=394
+
+# text = Real ones.
+# sent_id = 16
+1	Real	real	ADJ	JJ	_	2	amod	_	start_char=395|end_char=399
+2	ones	one	NOUN	NNS	_	0	root	_	SpaceAfter=No|start_char=400|end_char=404
+3	.	.	PUNCT	.	_	2	punct	_	SpaceAfter=No|start_char=404|end_char=405
+
+# text = ”
+# sent_id = 17
+1	”	”	INTJ	UH	_	0	root	_	SpacesAfter=\n\n|start_char=405|end_char=406
+
+# text = “Mom says, ‘If your brother tells you “it’s fine,” it isn’t,’” Lily explained.
+# sent_id = 18
+1	“Mom	“mom	INTJ	UH	_	2	discourse	_	start_char=408|end_char=412
+2	says,	says,	VERB	VB	_	0	root	_	start_char=413|end_char=418
+3	‘If	‘if	SCONJ	IN	_	6	mark	_	start_char=419|end_char=422
+4	your	you	PRON	PRP$	_	5	nmod:poss	_	start_char=423|end_char=427
+5	brother	brother	NOUN	NN	_	6	nsubj	_	start_char=428|end_char=435
+6	tells	tell	VERB	VBZ	_	2	advcl	_	start_char=436|end_char=441
+7	you	you	PRON	PRP	_	6	obj	_	start_char=442|end_char=445
+8-9	“it’s	_	_	_	_	_	_	_	start_char=446|end_char=451
+8	“it	“it	VERB	VB	_	6	xcomp	_	start_char=446|end_char=449
+9	’s	be	AUX	VBZ	_	10	cop	_	start_char=449|end_char=451
+10	fine,”	fine,”	NOUN	NN	_	6	ccomp	_	start_char=452|end_char=458
+11	it	it	PRON	PRP	_	10	nsubj	_	start_char=459|end_char=461
+12-13	isn’t	_	_	_	_	_	_	_	SpaceAfter=No|start_char=462|end_char=467
+12	is	be	AUX	VBZ	_	10	cop	_	start_char=462|end_char=464
+13	n’t	not	PART	RB	_	10	advmod	_	start_char=464|end_char=467
+14	,’”	,’”	CCONJ	CC	_	16	cc	_	start_char=467|end_char=470
+15	Lily	Lily	PROPN	NNP	_	16	nsubj	_	start_char=471|end_char=475
+16	explained	explain	VERB	VBD	_	2	conj	_	SpaceAfter=No|start_char=476|end_char=485
+17	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=485|end_char=486
+
+# text = Jamal paused.
+# sent_id = 19
+1	Jamal	Jamal	PROPN	NNP	_	2	nsubj	_	start_char=488|end_char=493
+2	paused	pause	VERB	VBD	_	0	root	_	SpaceAfter=No|start_char=494|end_char=500
+3	.	.	PUNCT	.	_	2	punct	_	start_char=500|end_char=501
+
+# text = “You know what my grandfather used to say?
+# sent_id = 20
+1	“You	“you	PRON	PRP	_	2	nsubj	_	start_char=502|end_char=506
+2	know	know	VERB	VBP	_	0	root	_	start_char=507|end_char=511
+3	what	what	PRON	WP	_	8	obj	_	start_char=512|end_char=516
+4	my	my	PRON	PRP$	_	5	nmod:poss	_	start_char=517|end_char=519
+5	grandfather	grandfather	NOUN	NN	_	6	nsubj	_	start_char=520|end_char=531
+6	used	use	VERB	VBD	_	2	ccomp	_	start_char=532|end_char=536
+7	to	to	PART	TO	_	8	mark	_	start_char=537|end_char=539
+8	say	say	VERB	VB	_	6	xcomp	_	SpaceAfter=No|start_char=540|end_char=543
+9	?	?	PUNCT	?	_	2	punct	_	start_char=543|end_char=544
+
+# text = ‘Measure twice, cut once.
+# sent_id = 21
+1	‘Measure	‘measure	NOUN	NN	_	0	root	_	start_char=545|end_char=553
+2	twice,	twice,	NOUN	NN	_	1	conj	_	start_char=554|end_char=560
+3	cut	cut	VERB	VB	_	1	parataxis	_	start_char=561|end_char=564
+4	once	once	ADV	RB	_	3	advmod	_	SpaceAfter=No|start_char=565|end_char=569
+5	.	.	PUNCT	.	_	1	punct	_	SpaceAfter=No|start_char=569|end_char=570
+
+# text = ’
+# sent_id = 22
+1	’	’	INTJ	UH	_	0	root	_	start_char=570|end_char=571
+
+# text = I never understood it until now.
+# sent_id = 23
+1	I	I	PRON	PRP	_	3	nsubj	_	start_char=572|end_char=573
+2	never	never	ADV	RB	_	3	advmod	_	start_char=574|end_char=579
+3	understood	understand	VERB	VBD	_	0	root	_	start_char=580|end_char=590
+4	it	it	PRON	PRP	_	3	obj	_	start_char=591|end_char=593
+5	until	until	ADP	IN	_	6	case	_	start_char=594|end_char=599
+6	now	now	ADV	RB	_	3	advmod	_	SpaceAfter=No|start_char=600|end_char=603
+7	.	.	PUNCT	.	_	3	punct	_	SpaceAfter=No|start_char=603|end_char=604
+
+# text = ”
+# sent_id = 24
+1	”	”	INTJ	UH	_	0	root	_	SpacesAfter=\n\n|start_char=604|end_char=605
+
+# text = “Wait—what?
+# sent_id = 25
+1	“Wait	“wait	INTJ	UH	_	0	root	_	SpaceAfter=No|start_char=607|end_char=612
+2	—what	—what	PRON	WP	_	1	dep	_	SpaceAfter=No|start_char=612|end_char=617
+3	?	?	PUNCT	?	_	1	punct	_	SpaceAfter=No|start_char=617|end_char=618
+
+# text = ”
+# sent_id = 26
+1	”	”	INTJ	UH	_	0	root	_	start_char=618|end_char=619
+
+# text = “You heard me.
+# sent_id = 27
+1	“You	“you	PRON	PRP	_	2	nsubj	_	start_char=620|end_char=624
+2	heard	hear	VERB	VBD	_	0	root	_	start_char=625|end_char=630
+3	me	I	PRON	PRP	_	2	obj	_	SpaceAfter=No|start_char=631|end_char=633
+4	.	.	PUNCT	.	_	2	punct	_	SpaceAfter=No|start_char=633|end_char=634
+
+# text = ”
+# sent_id = 28
+1	”	”	INTJ	UH	_	0	root	_	start_char=634|end_char=635
+
+# text = “But—” “No buts.
+# sent_id = 29
+1	“But—”	“but—”	INTJ	UH	_	0	root	_	start_char=636|end_char=642
+2	“No	“no	INTJ	UH	_	1	flat	_	start_char=643|end_char=646
+3	buts	but	NOUN	NNS	_	1	conj	_	SpaceAfter=No|start_char=647|end_char=651
+4	.	.	PUNCT	.	_	1	punct	_	SpaceAfter=No|start_char=651|end_char=652
+
+# text = ”
+# sent_id = 30
+1	”	”	INTJ	UH	_	0	root	_	SpacesAfter=\n\n|start_char=652|end_char=653
+
+# text = —Where are you going?
+# sent_id = 31
+1	—Where	—where	ADV	WRB	_	4	advmod	_	start_char=655|end_char=661
+2	are	be	AUX	VBP	_	4	aux	_	start_char=662|end_char=665
+3	you	you	PRON	PRP	_	4	nsubj	_	start_char=666|end_char=669
+4	going	go	VERB	VBG	_	0	root	_	SpaceAfter=No|start_char=670|end_char=675
+5	?	?	PUNCT	?	_	4	punct	_	SpacesAfter=\n|start_char=675|end_char=676
+
+# text = —Out.
+# sent_id = 32
+1	—Out	—out	INTJ	UH	_	0	root	_	SpaceAfter=No|start_char=677|end_char=681
+2	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n|start_char=681|end_char=682
+
+# text = —Out where?
+# sent_id = 33
+1	—Out	—out	INTJ	UH	_	2	discourse	_	start_char=683|end_char=687
+2	where	where	ADV	WRB	_	0	root	_	SpaceAfter=No|start_char=688|end_char=693
+3	?	?	PUNCT	?	_	2	punct	_	SpacesAfter=\n|start_char=693|end_char=694
+
+# text = —Just out.
+# sent_id = 34
+1	—Just	—just	ADV	RB	_	2	advmod	_	start_char=695|end_char=700
+2	out	out	ADV	RB	_	0	root	_	SpaceAfter=No|start_char=701|end_char=704
+3	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=704|end_char=705
+
+# text = "Stop!" "Why?" "Because I said so!
+# sent_id = 35
+1	"Stop	"stop	INTJ	UH	_	0	root	_	SpaceAfter=No|start_char=707|end_char=712
+2	!"	!"	INTJ	UH	_	1	flat	_	start_char=712|end_char=714
+3	"Why	"Why	PROPN	NNP	_	1	flat	_	SpaceAfter=No|start_char=715|end_char=719
+4	?"	?"	INTJ	UH	_	1	flat	_	start_char=719|end_char=721
+5	"Because	"Because	PROPN	NNP	_	1	flat	_	start_char=722|end_char=730
+6	I	I	PRON	PRP	_	7	nsubj	_	start_char=731|end_char=732
+7	said	say	VERB	VBD	_	1	parataxis	_	start_char=733|end_char=737
+8	so	so	ADV	RB	_	7	advmod	_	SpaceAfter=No|start_char=738|end_char=740
+9	!	!	PUNCT	!	_	1	punct	_	SpaceAfter=No|start_char=740|end_char=741
+
+# text = "
+# sent_id = 36
+1	"	"	PUNCT	.	_	0	root	_	SpacesAfter=\n\n|start_char=741|end_char=742
+
+# text = The sign read “
+# sent_id = 37
+1	The	the	DET	DT	_	2	det	_	start_char=744|end_char=747
+2	sign	sign	NOUN	NN	_	3	nsubj	_	start_char=748|end_char=752
+3	read	read	VERB	VBD	_	0	root	_	start_char=753|end_char=757
+4	“	“	PUNCT	.	_	3	punct	_	SpaceAfter=No|start_char=758|end_char=759
+
+# text = NO E
+# sent_id = 38
+1	NO	no	DET	DT	_	2	det	_	start_char=759|end_char=761
+2	E	e	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=762|end_char=763
+
+# text = NTRY — AUTHORIZED PERSONNEL ONLY.
+# sent_id = 39
+1	NTRY	ntry	INTJ	UH	_	0	root	_	start_char=763|end_char=767
+2	—	—	PROPN	NNP	_	1	flat	_	start_char=768|end_char=769
+3	A	a	DET	DT	_	1	flat	_	SpaceAfter=No|start_char=770|end_char=771
+4	UTHORI	UTHORI	PROPN	NNP	_	1	flat	_	SpaceAfter=No|start_char=771|end_char=777
+5	ZED	ZED	PROPN	NNP	_	1	flat	_	start_char=777|end_char=780
+6	PER	PER	PROPN	NNP	_	1	flat	_	SpaceAfter=No|start_char=781|end_char=784
+7	SO	SO	PROPN	NNP	_	1	flat	_	SpaceAfter=No|start_char=784|end_char=786
+8	NNEL	NNEL	PROPN	NNP	_	1	flat	_	start_char=786|end_char=790
+9	ONLY	ONLY	PROPN	NNP	_	1	flat	_	SpaceAfter=No|start_char=791|end_char=795
+10	.	.	PUNCT	.	_	1	punct	_	SpaceAfter=No|start_char=795|end_char=796
+
+# text = ”
+# sent_id = 40
+1	”	”	INTJ	UH	_	0	root	_	start_char=796|end_char=797
+
+# text = We entered anyway.
+# sent_id = 41
+1	We	we	PRON	PRP	_	2	nsubj	_	start_char=798|end_char=800
+2	entered	enter	VERB	VBD	_	0	root	_	start_char=801|end_char=808
+3	anyway	anyway	ADV	RB	_	2	advmod	_	SpaceAfter=No|start_char=809|end_char=815
+4	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=815|end_char=816
+
+# text = He muttered something like “whatever…” and walked off.
+# sent_id = 42
+1	He	he	PRON	PRP	_	2	nsubj	_	start_char=818|end_char=820
+2	muttered	mutter	VERB	VBD	_	0	root	_	start_char=821|end_char=829
+3	something	something	PRON	NN	_	2	obj	_	start_char=830|end_char=839
+4	like	like	ADP	IN	_	5	case	_	start_char=840|end_char=844
+5	“whatever…”	“whatever…”	NOUN	NN	_	3	nmod	_	start_char=845|end_char=856
+6	and	and	CCONJ	CC	_	7	cc	_	start_char=857|end_char=860
+7	walked	walk	VERB	VBD	_	2	conj	_	start_char=861|end_char=867
+8	off	off	ADP	RP	_	7	compound:prt	_	SpaceAfter=No|start_char=868|end_char=871
+9	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=871|end_char=872
+
+# text = “I… I don’t know what to say,” she stammered.
+# sent_id = 43
+1	“I…	“i…	INTJ	UH	_	5	discourse	_	start_char=874|end_char=877
+2	I	I	PRON	PRP	_	5	nsubj	_	start_char=878|end_char=879
+3-4	don’t	_	_	_	_	_	_	_	start_char=880|end_char=885
+3	do	do	AUX	VBP	_	5	aux	_	start_char=880|end_char=882
+4	n’t	not	PART	RB	_	5	advmod	_	start_char=882|end_char=885
+5	know	know	VERB	VB	_	0	root	_	start_char=886|end_char=890
+6	what	what	PRON	WP	_	10	obj	_	start_char=891|end_char=895
+7	to	to	PART	TO	_	8	mark	_	start_char=896|end_char=898
+8	say,”	say,”	VERB	VB	_	6	acl	_	start_char=899|end_char=904
+9	she	she	PRON	PRP	_	10	nsubj	_	start_char=905|end_char=908
+10	stammered	stammere	VERB	VBD	_	5	parataxis	_	SpaceAfter=No|start_char=909|end_char=918
+11	.	.	PUNCT	.	_	5	punct	_	SpacesAfter=\n\n|start_char=918|end_char=919
+
+# text = “It’s ‘affect,’ not ‘effect,’” the editor wrote in the margin.
+# sent_id = 44
+1-2	“It’s	_	_	_	_	_	_	_	start_char=921|end_char=926
+1	“It	“it	PRON	PRP	_	3	nsubj	_	start_char=921|end_char=924
+2	’s	be	AUX	VBZ	_	3	cop	_	start_char=924|end_char=926
+3	‘affect,’	‘affect,’	NOUN	NN	_	0	root	_	start_char=927|end_char=936
+4	not	not	PART	RB	_	5	advmod	_	start_char=937|end_char=940
+5-6	‘effect,’”	_	_	_	_	_	_	_	start_char=941|end_char=951
+5	‘effect,	‘effect,	NOUN	NN	_	3	parataxis	_	start_char=941|end_char=949
+6	’”	’”	SCONJ	IN	_	9	mark	_	start_char=949|end_char=951
+7	the	the	DET	DT	_	8	det	_	start_char=952|end_char=955
+8	editor	editor	NOUN	NN	_	9	nsubj	_	start_char=956|end_char=962
+9	wrote	write	VERB	VBD	_	5	advcl	_	start_char=963|end_char=968
+10	in	in	ADP	IN	_	12	case	_	start_char=969|end_char=971
+11	the	the	DET	DT	_	12	det	_	start_char=972|end_char=975
+12	margin	margin	NOUN	NN	_	9	obl	_	SpaceAfter=No|start_char=976|end_char=982
+13	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=982|end_char=983
+
+# text = She asked, "Have you read 'The Lighthouse Keeper's Daughter'?
+# sent_id = 45
+1	She	she	PRON	PRP	_	2	nsubj	_	start_char=985|end_char=988
+2	asked	ask	VERB	VBD	_	0	root	_	SpaceAfter=No|start_char=989|end_char=994
+3	,	,	ADP	IN	_	4	case	_	start_char=994|end_char=995
+4	"Have	"Have	PROPN	NNP	_	2	obl	_	start_char=996|end_char=1001
+5	you	you	PRON	PRP	_	6	nsubj	_	start_char=1002|end_char=1005
+6	read	read	VERB	VB	_	2	parataxis	_	start_char=1006|end_char=1010
+7	'The	'The	PROPN	NNP	_	11	nmod:poss	_	start_char=1011|end_char=1015
+8	Lighthouse	Lighthouse	PROPN	NNP	_	11	nmod:poss	_	start_char=1016|end_char=1026
+9-10	Keeper's	_	_	_	_	_	_	_	start_char=1027|end_char=1035
+9	Keeper	Keeper	PROPN	NNP	_	11	nmod:poss	_	start_char=1027|end_char=1033
+10	's	's	PART	POS	_	9	case	_	start_char=1033|end_char=1035
+11	Daughter'	Daughter'	PROPN	NNP	_	6	obj	_	SpaceAfter=No|start_char=1036|end_char=1045
+12	?	?	PUNCT	?	_	2	punct	_	SpaceAfter=No|start_char=1045|end_char=1046
+
+# text = "
+# sent_id = 46
+1	"	"	PUNCT	.	_	0	root	_	start_char=1046|end_char=1047
+
+# text = I hadn't.
+# sent_id = 47
+1	I	I	PRON	PRP	_	2	nsubj	_	start_char=1048|end_char=1049
+2-3	hadn't	_	_	_	_	_	_	_	SpaceAfter=No|start_char=1050|end_char=1056
+2	had	have	AUX	VBD	_	0	root	_	start_char=1050|end_char=1053
+3	n't	not	PART	RB	_	2	advmod	_	start_char=1053|end_char=1056
+4	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=1056|end_char=1057
+
+# text = The leaves come down in amber rain, and every road leads home again; the kettle hums, the window fogs, and somewhere far, a farmer's dogs
+# sent_id = 48
+1	The	the	DET	DT	_	2	det	_	start_char=1059|end_char=1062
+2	leaves	leave	NOUN	NNS	_	3	nsubj	_	start_char=1063|end_char=1069
+3	come	come	VERB	VBP	_	0	root	_	start_char=1070|end_char=1074
+4	down	down	ADV	RB	_	3	advmod	_	start_char=1075|end_char=1079
+5	in	in	ADP	IN	_	7	case	_	start_char=1080|end_char=1082
+6	amber	amber	NOUN	NN	_	7	compound	_	start_char=1083|end_char=1088
+7	rain,	rain,	NOUN	NN	_	3	obl	_	SpacesAfter=\n|start_char=1089|end_char=1094
+8	and	and	CCONJ	CC	_	11	cc	_	start_char=1095|end_char=1098
+9	every	every	DET	DT	_	10	det	_	start_char=1099|end_char=1104
+10	road	road	NOUN	NN	_	11	nsubj	_	start_char=1105|end_char=1109
+11	leads	lead	VERB	VBZ	_	3	conj	_	start_char=1110|end_char=1115
+12	home	home	ADV	RB	_	11	advmod	_	start_char=1116|end_char=1120
+13	again;	again;	CCONJ	CC	_	15	cc	_	SpacesAfter=\n|start_char=1121|end_char=1127
+14	the	the	DET	DT	_	15	det	_	start_char=1128|end_char=1131
+15	kettle	kettle	NOUN	NN	_	11	obj	_	start_char=1132|end_char=1138
+16	hums,	hums,	NOUN	NN	_	19	discourse	_	start_char=1139|end_char=1144
+17	the	the	DET	DT	_	19	det	_	start_char=1145|end_char=1148
+18	window	window	NOUN	NN	_	19	compound	_	start_char=1149|end_char=1155
+19	fogs,	fog	NOUN	NN	_	11	conj	_	SpacesAfter=\n|start_char=1156|end_char=1161
+20	and	and	CCONJ	CC	_	26	cc	_	start_char=1162|end_char=1165
+21	somewhere	somewhere	ADV	RB	_	26	advmod	_	start_char=1166|end_char=1175
+22	far,	far,	ADP	IN	_	26	case	_	start_char=1176|end_char=1180
+23	a	a	DET	DT	_	24	det	_	start_char=1181|end_char=1182
+24-25	farmer's	_	_	_	_	_	_	_	start_char=1183|end_char=1191
+24	farmer	farmer	NOUN	NN	_	26	nmod:poss	_	start_char=1183|end_char=1189
+25	's	's	PART	POS	_	24	case	_	start_char=1189|end_char=1191
+26	dogs	dog	NOUN	NNS	_	11	conj	_	SpacesAfter=\n\n|start_char=1192|end_char=1196
+
+# text = bark once, then twice, then not at all.
+# sent_id = 49
+1	bark	bark	VERB	VB	_	0	root	_	start_char=1198|end_char=1202
+2	once,	once,	ADV	RB	_	1	advmod	_	start_char=1203|end_char=1208
+3	then	then	ADV	RB	_	4	advmod	_	start_char=1209|end_char=1213
+4	twice,	twice,	ADV	RB	_	5	reparandum	_	start_char=1214|end_char=1220
+5	then	then	ADV	RB	_	8	advmod	_	start_char=1221|end_char=1225
+6	not	not	PART	RB	_	8	advmod	_	start_char=1226|end_char=1229
+7	at	at	ADP	IN	_	8	case	_	start_char=1230|end_char=1232
+8	all	all	DET	DT	_	1	conj	_	SpaceAfter=No|start_char=1233|end_char=1236
+9	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n|start_char=1236|end_char=1237
+
+# text = The evening settles on the wall.
+# sent_id = 50
+1	The	the	DET	DT	_	2	det	_	start_char=1238|end_char=1241
+2	evening	evening	NOUN	NN	_	3	nsubj	_	start_char=1242|end_char=1249
+3	settles	setcle	VERB	VBZ	_	0	root	_	start_char=1250|end_char=1257
+4	on	on	ADP	IN	_	6	case	_	start_char=1258|end_char=1260
+5	the	the	DET	DT	_	6	det	_	start_char=1261|end_char=1264
+6	wall	wall	NOUN	NN	_	3	obl	_	SpaceAfter=No|start_char=1265|end_char=1269
+7	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=1269|end_char=1270
+
+# text = I wandered where the river bends beneath a sky that never ends and counted stones and counted bones of summers I had called my friends
+# sent_id = 51
+1	I	I	PRON	PRP	_	2	nsubj	_	start_char=1272|end_char=1273
+2	wandered	wander	VERB	VBD	_	0	root	_	start_char=1274|end_char=1282
+3	where	where	SCONJ	WRB	_	6	mark	_	start_char=1283|end_char=1288
+4	the	the	DET	DT	_	5	det	_	start_char=1289|end_char=1292
+5	river	river	NOUN	NN	_	6	nsubj	_	start_char=1293|end_char=1298
+6	bends	bend	VERB	VBZ	_	2	advcl	_	SpacesAfter=\n|start_char=1299|end_char=1304
+7	beneath	beneath	ADP	IN	_	9	case	_	start_char=1305|end_char=1312
+8	a	a	DET	DT	_	9	det	_	start_char=1313|end_char=1314
+9	sky	sky	NOUN	NN	_	6	obl	_	start_char=1315|end_char=1318
+10	that	that	PRON	WDT	_	12	nsubj	_	start_char=1319|end_char=1323
+11	never	never	ADV	RB	_	12	advmod	_	start_char=1324|end_char=1329
+12	ends	end	VERB	VBZ	_	9	acl:relcl	_	SpacesAfter=\n|start_char=1330|end_char=1334
+13	and	and	CCONJ	CC	_	14	cc	_	start_char=1335|end_char=1338
+14	counted	count	VERB	VBD	_	12	conj	_	start_char=1339|end_char=1346
+15	stones	stone	NOUN	NNS	_	14	obj	_	SpacesAfter=\n|start_char=1347|end_char=1353
+16	and	and	CCONJ	CC	_	17	cc	_	start_char=1354|end_char=1357
+17	counted	count	VERB	VBN	_	14	conj	_	start_char=1358|end_char=1365
+18	bones	bone	NOUN	NNS	_	17	obj	_	SpacesAfter=\n|start_char=1366|end_char=1371
+19	of	of	ADP	IN	_	20	case	_	start_char=1372|end_char=1374
+20	summers	summer	NOUN	NNS	_	18	nmod	_	start_char=1375|end_char=1382
+21	I	I	PRON	PRP	_	23	nsubj	_	start_char=1383|end_char=1384
+22	had	have	AUX	VBD	_	23	aux	_	start_char=1385|end_char=1388
+23	called	call	VERB	VBN	_	2	parataxis	_	start_char=1389|end_char=1395
+24	my	my	PRON	PRP$	_	25	nmod:poss	_	start_char=1396|end_char=1398
+25	friends	friend	NOUN	NNS	_	23	obj	_	SpacesAfter=\n\n|start_char=1399|end_char=1406
+
+# text = so much depends upon a borrowed pen left out in the rain beside the gate
+# sent_id = 52
+1	so	so	ADV	RB	_	3	advmod	_	start_char=1408|end_char=1410
+2	much	much	ADJ	JJ	_	3	nsubj	_	start_char=1411|end_char=1415
+3	depends	depend	VERB	VBZ	_	0	root	_	SpacesAfter=\n|start_char=1416|end_char=1423
+4	upon	upon	ADP	IN	_	7	case	_	SpacesAfter=\n|start_char=1424|end_char=1428
+5	a	a	DET	DT	_	7	det	_	start_char=1429|end_char=1430
+6	borrowed	borrow	VERB	VBN	_	7	amod	_	start_char=1431|end_char=1439
+7	pen	pen	NOUN	NN	_	3	obl	_	SpacesAfter=\n|start_char=1440|end_char=1443
+8	left	leave	VERB	VBN	_	7	acl	_	start_char=1444|end_char=1448
+9	out	out	ADP	RP	_	8	compound:prt	_	start_char=1449|end_char=1452
+10	in	in	ADP	IN	_	12	case	_	start_char=1453|end_char=1455
+11	the	the	DET	DT	_	12	det	_	start_char=1456|end_char=1459
+12	rain	rain	NOUN	NN	_	8	obl	_	SpacesAfter=\n|start_char=1460|end_char=1464
+13	beside	beside	ADP	IN	_	15	case	_	start_char=1465|end_char=1471
+14	the	the	DET	DT	_	15	det	_	start_char=1472|end_char=1475
+15	gate	gate	NOUN	NN	_	12	nmod	_	SpacesAfter=\n\n|start_char=1476|end_char=1480
+
+# text = Roses are red, violets are blue, this poem is short, and so are you.
+# sent_id = 53
+1	Roses	rose	NOUN	NNS	_	2	nsubj	_	start_char=1482|end_char=1487
+2	are	be	AUX	VBP	_	6	reparandum	_	start_char=1488|end_char=1491
+3	red,	red,	ADJ	JJ	_	4	amod	_	SpacesAfter=\n|start_char=1492|end_char=1496
+4	violets	violet	NOUN	NNS	_	6	nsubj	_	start_char=1497|end_char=1504
+5	are	be	AUX	VBP	_	6	cop	_	start_char=1505|end_char=1508
+6	blue,	blue,	ADJ	JJ	_	0	root	_	SpacesAfter=\n|start_char=1509|end_char=1514
+7	this	this	DET	DT	_	8	det	_	start_char=1515|end_char=1519
+8	poem	poem	NOUN	NN	_	10	nsubj	_	start_char=1520|end_char=1524
+9	is	be	AUX	VBZ	_	10	cop	_	start_char=1525|end_char=1527
+10	short,	short,	ADJ	JJ	_	6	parataxis	_	SpacesAfter=\n|start_char=1528|end_char=1534
+11	and	and	CCONJ	CC	_	12	cc	_	start_char=1535|end_char=1538
+12	so	so	ADV	RB	_	10	advmod	_	start_char=1539|end_char=1541
+13	are	be	AUX	VBP	_	12	cop	_	start_char=1542|end_char=1545
+14	you	you	PRON	PRP	_	12	nsubj	_	SpaceAfter=No|start_char=1546|end_char=1549
+15	.	.	PUNCT	.	_	6	punct	_	SpacesAfter=\n\n|start_char=1549|end_char=1550
+
+# text = The clock struck twelve.
+# sent_id = 54
+1	The	the	DET	DT	_	2	det	_	start_char=1552|end_char=1555
+2	clock	clock	NOUN	NN	_	3	nsubj	_	start_char=1556|end_char=1561
+3	struck	struck	VERB	VBD	_	0	root	_	start_char=1562|end_char=1568
+4	twelve	twelve	NUM	CD	_	3	obj	_	SpaceAfter=No|start_char=1569|end_char=1575
+5	.	.	PUNCT	.	_	3	punct	_	start_char=1575|end_char=1576
+
+# text = Nobody moved.
+# sent_id = 55
+1	Nobody	nobody	PRON	NN	_	2	nsubj	_	start_char=1577|end_char=1583
+2	moved	move	VERB	VBD	_	0	root	_	SpaceAfter=No|start_char=1584|end_char=1589
+3	.	.	PUNCT	.	_	2	punct	_	start_char=1589|end_char=1590
+
+# text = Then, slowly, the door creaked open… and in walked the cat.
+# sent_id = 56
+1	Then,	then,	ADV	RB	_	5	advmod	_	start_char=1591|end_char=1596
+2	slowly,	slowly,	ADV	RB	_	5	advmod	_	start_char=1597|end_char=1604
+3	the	the	DET	DT	_	4	det	_	start_char=1605|end_char=1608
+4	door	door	NOUN	NN	_	5	nsubj	_	start_char=1609|end_char=1613
+5	creaked	creak	VERB	VBD	_	0	root	_	start_char=1614|end_char=1621
+6	open…	open…	ADV	RB	_	5	advmod	_	start_char=1622|end_char=1627
+7	and	and	CCONJ	CC	_	8	cc	_	start_char=1628|end_char=1631
+8	in	in	ADV	RB	_	9	advmod	_	start_char=1632|end_char=1634
+9	walked	walk	VERB	VBD	_	5	conj	_	start_char=1635|end_char=1641
+10	the	the	DET	DT	_	11	det	_	start_char=1642|end_char=1645
+11	cat	cat	NOUN	NN	_	9	obj	_	SpaceAfter=No|start_char=1646|end_char=1649
+12	.	.	PUNCT	.	_	5	punct	_	SpacesAfter=\n\n|start_char=1649|end_char=1650
+
+# text = He said—and I quote—“absolutely not.
+# sent_id = 57
+1	He	he	PRON	PRP	_	2	nsubj	_	start_char=1652|end_char=1654
+2	said	say	VERB	VBD	_	0	root	_	SpaceAfter=No|start_char=1655|end_char=1659
+3	—and	—and	NOUN	NN	_	2	obj	_	start_char=1659|end_char=1663
+4	I	I	PRON	PRP	_	5	nsubj	_	start_char=1664|end_char=1665
+5	quote—“absolutely	quote—“absolutely	ADV	RB	_	2	parataxis	_	start_char=1666|end_char=1683
+6	not	not	PART	RB	_	5	advmod	_	SpaceAfter=No|start_char=1684|end_char=1687
+7	.	.	PUNCT	.	_	2	punct	_	SpaceAfter=No|start_char=1687|end_char=1688
+
+# text = ”
+# sent_id = 58
+1	”	”	INTJ	UH	_	0	root	_	SpacesAfter=\n\n|start_char=1688|end_char=1689
+
+# text = “Is that you,
+# sent_id = 59
+1	“Is	be	AUX	VBZ	_	3	cop	_	start_char=1691|end_char=1694
+2	that	that	SCONJ	IN	_	3	nsubj	_	start_char=1695|end_char=1699
+3	you	you	PRON	PRP	_	0	root	_	SpaceAfter=No|start_char=1700|end_char=1703
+4	,	,	PUNCT	.	_	3	punct	_	start_char=1703|end_char=1704
+
+# text = Grandpa?
+# sent_id = 60
+1	Grandpa	Grandpa	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=1705|end_char=1712
+2	?	?	PUNCT	?	_	1	punct	_	SpaceAfter=No|start_char=1712|end_char=1713
+
+# text = ” “Who else would it be?” “Sorry.
+# sent_id = 61
+1	”	”	INTJ	UH	_	7	discourse	_	start_char=1713|end_char=1714
+2	“Who	“who	PRON	WP	_	7	reparandum	_	start_char=1715|end_char=1719
+3	else	else	ADV	RB	_	2	amod	_	start_char=1720|end_char=1724
+4	would	would	AUX	MD	_	7	aux	_	start_char=1725|end_char=1730
+5	it	it	PRON	PRP	_	7	nsubj	_	start_char=1731|end_char=1733
+6	be	be	AUX	VB	_	7	cop	_	SpaceAfter=No|start_char=1734|end_char=1736
+7	?”	?”	PROPN	NNP	_	0	root	_	start_char=1736|end_char=1738
+8	“Sorry	“Sorry	PROPN	NNP	_	7	flat	_	SpaceAfter=No|start_char=1739|end_char=1745
+9	.	.	PUNCT	.	_	7	punct	_	start_char=1745|end_char=1746
+
+# text = It’s dark.
+# sent_id = 62
+1-2	It’s	_	_	_	_	_	_	_	start_char=1747|end_char=1751
+1	It	it	PRON	PRP	_	3	nsubj	_	start_char=1747|end_char=1749
+2	’s	be	AUX	VBZ	_	3	cop	_	start_char=1749|end_char=1751
+3	dark	dark	ADJ	JJ	_	0	root	_	SpaceAfter=No|start_char=1752|end_char=1756
+4	.	.	PUNCT	.	_	3	punct	_	SpaceAfter=No|start_char=1756|end_char=1757
+
+# text = ”
+# sent_id = 63
+1	”	”	INTJ	UH	_	0	root	_	SpacesAfter=\n\n|start_char=1757|end_char=1758
+
+# text = As my teacher liked to put it:
+# sent_id = 64
+1	As	as	SCONJ	IN	_	4	mark	_	start_char=1760|end_char=1762
+2	my	my	PRON	PRP$	_	3	nmod:poss	_	start_char=1763|end_char=1765
+3	teacher	teacher	NOUN	NN	_	4	nsubj	_	start_char=1766|end_char=1773
+4	liked	like	VERB	VBD	_	0	root	_	start_char=1774|end_char=1779
+5	to	to	PART	TO	_	6	mark	_	start_char=1780|end_char=1782
+6	put	put	VERB	VB	_	4	xcomp	_	start_char=1783|end_char=1786
+7	it	it	PRON	PRP	_	6	obj	_	SpaceAfter=No|start_char=1787|end_char=1789
+8	:	:	PUNCT	?	_	6	compound:prt	_	start_char=1789|end_char=1790
+
+# text = “There are no stupid questions — only stupid answers.
+# sent_id = 65
+1	“There	“there	PRON	EX	_	5	expl	_	start_char=1791|end_char=1797
+2	are	be	AUX	VBP	_	5	cop	_	start_char=1798|end_char=1801
+3	no	no	DET	DT	_	5	det	_	start_char=1802|end_char=1804
+4	stupid	stupid	ADJ	JJ	_	5	amod	_	start_char=1805|end_char=1811
+5	questions	question	NOUN	NNS	_	0	root	_	start_char=1812|end_char=1821
+6	—	—	ADP	IN	_	9	case	_	start_char=1822|end_char=1823
+7	only	only	ADV	RB	_	9	advmod	_	start_char=1824|end_char=1828
+8	stupid	stupid	ADJ	JJ	_	9	amod	_	start_char=1829|end_char=1835
+9	answers	answer	NOUN	NNS	_	5	nmod	_	SpaceAfter=No|start_char=1836|end_char=1843
+10	.	.	PUNCT	.	_	5	punct	_	SpaceAfter=No|start_char=1843|end_char=1844
+
+# text = ”
+# sent_id = 66
+1	”	”	INTJ	UH	_	0	root	_	SpacesAfter=\n\n|start_char=1844|end_char=1845
+
+# text = ‘Twas the night before the deadline, and all through the lab, not a printer was working.
+# sent_id = 67
+1	‘Twas	‘twas	INTJ	UH	_	16	discourse	_	start_char=1847|end_char=1852
+2	the	the	DET	DT	_	3	det	_	start_char=1853|end_char=1856
+3	night	night	NOUN	NN	_	16	obl:unmarked	_	start_char=1857|end_char=1862
+4	before	before	ADP	IN	_	6	case	_	start_char=1863|end_char=1869
+5	the	the	DET	DT	_	6	det	_	start_char=1870|end_char=1873
+6	deadline,	deadline,	NOUN	NN	_	3	nmod	_	start_char=1874|end_char=1883
+7	and	and	CCONJ	CC	_	11	cc	_	start_char=1884|end_char=1887
+8	all	all	DET	DT	_	11	advmod	_	start_char=1888|end_char=1891
+9	through	through	ADP	IN	_	11	case	_	start_char=1892|end_char=1899
+10	the	the	DET	DT	_	11	det	_	start_char=1900|end_char=1903
+11	lab,	lab,	NOUN	NN	_	6	conj	_	start_char=1904|end_char=1908
+12	not	not	PART	RB	_	16	advmod	_	start_char=1909|end_char=1912
+13	a	a	DET	DT	_	14	det	_	start_char=1913|end_char=1914
+14	printer	printer	NOUN	NN	_	16	nsubj	_	start_char=1915|end_char=1922
+15	was	be	AUX	VBD	_	16	aux	_	start_char=1923|end_char=1926
+16	working	work	VERB	VBG	_	0	root	_	SpaceAfter=No|start_char=1927|end_char=1934
+17	.	.	PUNCT	.	_	16	punct	_	SpacesAfter=\n\n|start_char=1934|end_char=1935
+
+# text = “Hello?” she called.
+# sent_id = 68
+1	“Hello	“hello	INTJ	UH	_	4	discourse	_	SpaceAfter=No|start_char=1937|end_char=1943
+2	?”	?”	INTJ	UH	_	1	flat	_	start_char=1943|end_char=1945
+3	she	she	PRON	PRP	_	4	nsubj	_	start_char=1946|end_char=1949
+4	called	call	VERB	VBD	_	0	root	_	SpaceAfter=No|start_char=1950|end_char=1956
+5	.	.	PUNCT	.	_	4	punct	_	start_char=1956|end_char=1957
+
+# text = “Hello?
+# sent_id = 69
+1	“Hello	“hello	INTJ	UH	_	0	root	_	SpaceAfter=No|start_char=1958|end_char=1964
+2	?	?	PUNCT	?	_	1	punct	_	SpaceAfter=No|start_char=1964|end_char=1965
+
+# text = ?” Silence.
+# sent_id = 70
+1	?”	?”	INTJ	UH	_	0	root	_	start_char=1965|end_char=1967
+2	Silence	Silence	PROPN	NNP	_	1	flat	_	SpaceAfter=No|start_char=1968|end_char=1975
+3	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=1975|end_char=1976
+
+# text = I said "no.
+# sent_id = 71
+1	I	I	PRON	PRP	_	2	nsubj	_	start_char=1978|end_char=1979
+2	said	say	VERB	VBD	_	0	root	_	start_char=1980|end_char=1984
+3	"no	"no	INTJ	UH	_	2	obj	_	SpaceAfter=No|start_char=1985|end_char=1988
+4	.	.	PUNCT	.	_	2	punct	_	SpaceAfter=No|start_char=1988|end_char=1989
+
+# text = "
+# sent_id = 72
+1	"	"	PUNCT	.	_	0	root	_	start_char=1989|end_char=1990
+
+# text = She said "yes.
+# sent_id = 73
+1	She	she	PRON	PRP	_	2	nsubj	_	start_char=1991|end_char=1994
+2	said	say	VERB	VBD	_	0	root	_	start_char=1995|end_char=1999
+3	"yes	"ye	NOUN	NNS	_	2	obj	_	SpaceAfter=No|start_char=2000|end_char=2004
+4	.	.	PUNCT	.	_	2	punct	_	SpaceAfter=No|start_char=2004|end_char=2005
+
+# text = "
+# sent_id = 74
+1	"	"	PUNCT	.	_	0	root	_	start_char=2005|end_char=2006
+
+# text = We compromised on "maybe.
+# sent_id = 75
+1	We	we	PRON	PRP	_	2	nsubj	_	start_char=2007|end_char=2009
+2	compromised	compromise	VERB	VBD	_	0	root	_	start_char=2010|end_char=2021
+3	on	on	ADP	IN	_	4	case	_	start_char=2022|end_char=2024
+4	"maybe	"maybe	PROPN	NNP	_	2	obl	_	SpaceAfter=No|start_char=2025|end_char=2031
+5	.	.	PUNCT	.	_	2	punct	_	SpaceAfter=No|start_char=2031|end_char=2032
+
+# text = "
+# sent_id = 76
+1	"	"	PUNCT	.	_	0	root	_	SpacesAfter=\n|start_char=2032|end_char=2033

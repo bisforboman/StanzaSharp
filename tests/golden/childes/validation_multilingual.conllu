@@ -1,0 +1,683 @@
+# text = Søren Kierkegaard was born in Copenhagen.
+# sent_id = 0
+1	Søren	Søren	PROPN	NNP	_	4	nsubj	_	start_char=0|end_char=5
+2	Kierkegaard	Kierkegaard	PROPN	NNP	_	1	flat	_	start_char=6|end_char=17
+3	was	be	AUX	VBD	_	4	aux	_	start_char=18|end_char=21
+4	born	born	VERB	VBN	_	0	root	_	start_char=22|end_char=26
+5	in	in	ADP	IN	_	6	case	_	start_char=27|end_char=29
+6	Copenhagen	Copenhagen	PROPN	NNP	_	4	obl	_	SpaceAfter=No|start_char=30|end_char=40
+7	.	.	PUNCT	.	_	4	punct	_	start_char=40|end_char=41
+
+# text = Gabriel García Márquez wrote in Spanish.
+# sent_id = 1
+1	Gabriel	Gabriel	PROPN	NNP	_	0	root	_	start_char=42|end_char=49
+2	García	García	PROPN	NNP	_	1	flat	_	start_char=50|end_char=56
+3	Márquez	Márquez	PROPN	NNP	_	1	flat	_	start_char=57|end_char=64
+4	wrote	write	VERB	VBD	_	1	parataxis	_	start_char=65|end_char=70
+5	in	in	ADP	IN	_	6	case	_	start_char=71|end_char=73
+6	Spanish	Spanish	PROPN	NNP	_	4	obl	_	SpaceAfter=No|start_char=74|end_char=81
+7	.	.	PUNCT	.	_	4	punct	_	start_char=81|end_char=82
+
+# text = Antonín Dvořák composed the New World Symphony.
+# sent_id = 2
+1	Antonín	Antonín	PROPN	NNP	_	3	nsubj	_	start_char=83|end_char=90
+2	Dvořák	Dvořák	PROPN	NNP	_	1	flat	_	start_char=91|end_char=97
+3	composed	compose	VERB	VBD	_	0	root	_	start_char=98|end_char=106
+4	the	the	DET	DT	_	7	det	_	start_char=107|end_char=110
+5	New	new	ADJ	NNP	_	7	amod	_	start_char=111|end_char=114
+6	World	World	PROPN	NNP	_	7	compound	_	start_char=115|end_char=120
+7	Symphony	Symphony	PROPN	NNP	_	3	obj	_	SpaceAfter=No|start_char=121|end_char=129
+8	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=129|end_char=130
+
+# text = We met Łukasz Wiśniewski and Ágnes Szabó at the conference in Kraków.
+# sent_id = 3
+1	We	we	PRON	PRP	_	2	nsubj	_	start_char=132|end_char=134
+2	met	meet	VERB	VBD	_	0	root	_	start_char=135|end_char=138
+3	Łukasz	Łukasz	PROPN	NNP	_	2	obj	_	start_char=139|end_char=145
+4	Wiśniewski	Wiśniewski	PROPN	NNP	_	3	flat	_	start_char=146|end_char=156
+5	and	and	CCONJ	CC	_	6	cc	_	start_char=157|end_char=160
+6	Ágnes	Ágnes	PROPN	NNP	_	3	conj	_	start_char=161|end_char=166
+7	Szabó	Szabó	PROPN	NNP	_	6	flat	_	start_char=167|end_char=172
+8	at	at	ADP	IN	_	10	case	_	start_char=173|end_char=175
+9	the	the	DET	DT	_	10	det	_	start_char=176|end_char=179
+10	conference	conference	NOUN	NN	_	2	obl	_	start_char=180|end_char=190
+11	in	in	ADP	IN	_	12	case	_	start_char=191|end_char=193
+12	Kraków	Kraków	PROPN	NNP	_	10	nmod	_	SpaceAfter=No|start_char=194|end_char=200
+13	.	.	PUNCT	.	_	2	punct	_	start_char=200|end_char=201
+
+# text = Later we flew to Reykjavík, where Guðrún Ólafsdóttir showed us around.
+# sent_id = 4
+1	Later	late	ADV	RB	_	3	advmod	_	start_char=202|end_char=207
+2	we	we	PRON	PRP	_	3	nsubj	_	start_char=208|end_char=210
+3	flew	fly	VERB	VBD	_	0	root	_	start_char=211|end_char=215
+4	to	to	ADP	IN	_	5	case	_	start_char=216|end_char=218
+5	Reykjavík,	Reykjavík,	PROPN	NNP	_	3	obl	_	start_char=219|end_char=229
+6	where	where	SCONJ	WRB	_	9	mark	_	start_char=230|end_char=235
+7	Guðrún	Guðrún	PROPN	NNP	_	9	nsubj	_	start_char=236|end_char=242
+8	Ólafsdóttir	Ólafsdóttir	PROPN	NNP	_	7	flat	_	start_char=243|end_char=254
+9	showed	show	VERB	VBD	_	3	advcl	_	start_char=255|end_char=261
+10	us	we	PRON	PRP	_	9	obj	_	start_char=262|end_char=264
+11	around	around	ADV	RB	_	9	compound:prt	_	SpaceAfter=No|start_char=265|end_char=271
+12	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=271|end_char=272
+
+# text = The menu featured jalapeño poppers, a soupçon of crème fraîche, and smørrebrød.
+# sent_id = 5
+1	The	the	DET	DT	_	2	det	_	start_char=274|end_char=277
+2	menu	menu	NOUN	NN	_	3	nsubj	_	start_char=278|end_char=282
+3	featured	feature	VERB	VBD	_	0	root	_	start_char=283|end_char=291
+4	jalapeño	jalapeño	NOUN	NN	_	5	compound	_	start_char=292|end_char=300
+5	poppers,	popper	NOUN	NN	_	7	reparandum	_	start_char=301|end_char=309
+6	a	a	DET	DT	_	7	det	_	start_char=310|end_char=311
+7	soupçon	soupçon	NOUN	NN	_	3	obj	_	start_char=312|end_char=319
+8	of	of	ADP	IN	_	10	case	_	start_char=320|end_char=322
+9	crème	crème	NOUN	NN	_	7	nmod	_	start_char=323|end_char=328
+10	fraîche,	fraîche,	NOUN	NN	_	7	nmod	_	start_char=329|end_char=337
+11	and	and	CCONJ	CC	_	12	cc	_	start_char=338|end_char=341
+12	smørrebrød	smørrebrød	NOUN	NN	_	10	conj	_	SpaceAfter=No|start_char=342|end_char=352
+13	.	.	PUNCT	.	_	3	punct	_	start_char=352|end_char=353
+
+# text = The sommelier recommended a Grüner Veltliner.
+# sent_id = 6
+1	The	the	DET	DT	_	2	det	_	start_char=354|end_char=357
+2	sommelier	sommelier	NOUN	NN	_	3	nsubj	_	start_char=358|end_char=367
+3	recommended	recommend	VERB	VBD	_	0	root	_	start_char=368|end_char=379
+4	a	a	DET	DT	_	6	det	_	start_char=380|end_char=381
+5	Grüner	Grüner	PROPN	NNP	_	6	compound	_	start_char=382|end_char=388
+6	Veltliner	Veltliner	PROPN	NNP	_	3	obj	_	SpaceAfter=No|start_char=389|end_char=398
+7	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=398|end_char=399
+
+# text = İstanbul and Ankara are both in Türkiye.
+# sent_id = 7
+1	İstanbul	İstanbul	PROPN	NNP	_	7	nsubj	_	start_char=401|end_char=409
+2	and	and	CCONJ	CC	_	3	cc	_	start_char=410|end_char=413
+3	Ankara	Ankara	PROPN	NNP	_	1	conj	_	start_char=414|end_char=420
+4	are	be	AUX	VBP	_	7	cop	_	start_char=421|end_char=424
+5	both	both	ADV	RB	_	7	advmod	_	start_char=425|end_char=429
+6	in	in	ADP	IN	_	7	case	_	start_char=430|end_char=432
+7	Türkiye	Türkiye	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=433|end_char=440
+8	.	.	PUNCT	.	_	7	punct	_	start_char=440|end_char=441
+
+# text = The Turkish word for "thank you" is teşekkürler.
+# sent_id = 8
+1	The	the	DET	DT	_	3	det	_	start_char=442|end_char=445
+2	Turkish	turkish	ADJ	JJ	_	3	amod	_	start_char=446|end_char=453
+3	word	word	NOUN	NN	_	0	root	_	start_char=454|end_char=458
+4	for	for	ADP	IN	_	5	case	_	start_char=459|end_char=462
+5	"thank	"thank	NOUN	NN	_	3	nmod	_	start_char=463|end_char=469
+6	you"	you"	NOUN	NN	_	8	nsubj	_	start_char=470|end_char=474
+7	is	be	AUX	VBZ	_	8	cop	_	start_char=475|end_char=477
+8	teşekkürler	teşekkürler	PROPN	NNP	_	3	parataxis	_	SpaceAfter=No|start_char=478|end_char=489
+9	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=489|end_char=490
+
+# text = François and Hélène moved to Montréal in 2015.
+# sent_id = 9
+1	François	François	PROPN	NNP	_	4	nsubj	_	start_char=492|end_char=500
+2	and	and	CCONJ	CC	_	3	cc	_	start_char=501|end_char=504
+3	Hélène	Hélène	PROPN	NNP	_	1	conj	_	start_char=505|end_char=511
+4	moved	move	VERB	VBD	_	0	root	_	start_char=512|end_char=517
+5	to	to	ADP	IN	_	6	case	_	start_char=518|end_char=520
+6	Montréal	Montréal	PROPN	NNP	_	4	obl	_	start_char=521|end_char=529
+7	in	in	ADP	IN	_	8	case	_	start_char=530|end_char=532
+8	2015	2015	PROPN	NNP	_	4	obl	_	SpaceAfter=No|start_char=533|end_char=537
+9	.	.	PUNCT	.	_	4	punct	_	start_char=537|end_char=538
+
+# text = Their son,
+# sent_id = 10
+1	Their	they	PRON	PRP$	_	2	nmod:poss	_	start_char=539|end_char=544
+2	son	son	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=545|end_char=548
+3	,	,	PUNCT	.	_	2	punct	_	start_char=548|end_char=549
+
+# text = Noël, now attends École Saint-Exupéry.
+# sent_id = 11
+1	Noël,	Noël,	PROPN	NNP	_	3	nsubj	_	start_char=550|end_char=555
+2	now	now	ADV	RB	_	3	advmod	_	start_char=556|end_char=559
+3	attends	attend	VERB	VBZ	_	0	root	_	start_char=560|end_char=567
+4	École	École	PROPN	NNP	_	3	obj	_	start_char=568|end_char=573
+5	Saint-Exupéry	Saint-Exupéry	PROPN	NNP	_	4	flat	_	SpaceAfter=No|start_char=574|end_char=587
+6	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=587|end_char=588
+
+# text = The Japanese word 東京 means "eastern capital.
+# sent_id = 12
+1	The	the	DET	DT	_	3	det	_	start_char=590|end_char=593
+2	Japanese	japanese	ADJ	JJ	_	3	amod	_	start_char=594|end_char=602
+3	word	word	NOUN	NN	_	0	root	_	start_char=603|end_char=607
+4	東京	東京	PRON	DT	_	5	nsubj	_	start_char=608|end_char=610
+5	means	mean	VERB	VBZ	_	3	parataxis	_	start_char=611|end_char=616
+6	"eastern	"eastern	ADJ	JJS	_	7	amod	_	start_char=617|end_char=625
+7	capital	capital	NOUN	NN	_	5	parataxis	_	SpaceAfter=No|start_char=626|end_char=633
+8	.	.	PUNCT	.	_	3	punct	_	SpaceAfter=No|start_char=633|end_char=634
+
+# text = "
+# sent_id = 13
+1	"	"	PUNCT	.	_	0	root	_	start_char=634|end_char=635
+
+# text = In Chinese, 北京 is Beijing, and 你好 means hello.
+# sent_id = 14
+1	In	in	ADP	IN	_	2	case	_	start_char=636|end_char=638
+2	Chinese,	Chinese,	PROPN	NNP	_	5	obl	_	start_char=639|end_char=647
+3	北京	北京	PROPN	NNP	_	5	nsubj	_	start_char=648|end_char=650
+4	is	be	AUX	VBZ	_	5	cop	_	start_char=651|end_char=653
+5	Beijing,	Beijing,	PROPN	NNP	_	0	root	_	start_char=654|end_char=662
+6	and	and	CCONJ	CC	_	8	cc	_	start_char=663|end_char=666
+7	你好	你好	PROPN	NNP	_	8	nsubj	_	start_char=667|end_char=669
+8	means	mean	VERB	VBZ	_	5	conj	_	start_char=670|end_char=675
+9	hello	hello	INTJ	UH	_	8	obj	_	SpaceAfter=No|start_char=676|end_char=681
+10	.	.	PUNCT	.	_	5	punct	_	SpacesAfter=\n\n|start_char=681|end_char=682
+
+# text = She studied 한국어 for two years before moving to Seoul.
+# sent_id = 15
+1	She	she	PRON	PRP	_	2	nsubj	_	start_char=684|end_char=687
+2	studied	study	VERB	VBD	_	0	root	_	start_char=688|end_char=695
+3	한국어	한국어	PROPN	NNP	_	2	obj	_	start_char=696|end_char=699
+4	for	for	ADP	IN	_	6	case	_	start_char=700|end_char=703
+5	two	two	NUM	CD	_	6	nummod	_	start_char=704|end_char=707
+6	years	year	NOUN	NNS	_	2	obl	_	start_char=708|end_char=713
+7	before	before	SCONJ	IN	_	8	mark	_	start_char=714|end_char=720
+8	moving	move	VERB	VBG	_	2	advcl	_	start_char=721|end_char=727
+9	to	to	ADP	IN	_	10	case	_	start_char=728|end_char=730
+10	Seoul	Seoul	PROPN	NNP	_	8	obl	_	SpaceAfter=No|start_char=731|end_char=736
+11	.	.	PUNCT	.	_	2	punct	_	start_char=736|end_char=737
+
+# text = Her favorite dish is 김치찌개.
+# sent_id = 16
+1	Her	she	PRON	PRP$	_	3	nmod:poss	_	start_char=738|end_char=741
+2	favorite	favorite	ADJ	JJ	_	3	amod	_	start_char=742|end_char=750
+3	dish	dish	NOUN	NN	_	5	nsubj	_	start_char=751|end_char=755
+4	is	be	AUX	VBZ	_	5	cop	_	start_char=756|end_char=758
+5	김치찌개	김치찌개	ADV	RB	_	0	root	_	SpaceAfter=No|start_char=759|end_char=763
+6	.	.	PUNCT	.	_	5	punct	_	SpacesAfter=\n\n|start_char=763|end_char=764
+
+# text = The Russian word for "peace" is мир.
+# sent_id = 17
+1	The	the	DET	DT	_	3	det	_	start_char=766|end_char=769
+2	Russian	Russian	ADJ	JJ	_	3	amod	_	start_char=770|end_char=777
+3	word	word	NOUN	NN	_	7	nsubj	_	start_char=778|end_char=782
+4	for	for	ADP	IN	_	5	case	_	start_char=783|end_char=786
+5	"peace"	"peace"	NOUN	NN	_	3	nmod	_	start_char=787|end_char=794
+6	is	be	AUX	VBZ	_	7	cop	_	start_char=795|end_char=797
+7	мир	мир	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=798|end_char=801
+8	.	.	PUNCT	.	_	7	punct	_	start_char=801|end_char=802
+
+# text = Москва is the capital;
+# sent_id = 18
+1	Москва	Москва	PROPN	NNP	_	4	nsubj	_	start_char=803|end_char=809
+2	is	be	AUX	VBZ	_	4	cop	_	start_char=810|end_char=812
+3	the	the	DET	DT	_	4	det	_	start_char=813|end_char=816
+4	capital	capital	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=817|end_char=824
+5	;	;	PUNCT	.	_	4	punct	_	start_char=824|end_char=825
+
+# text = Санкт-Петербург is the second-largest city.
+# sent_id = 19
+1	Санк	санк	INTJ	UH	_	6	discourse	_	SpaceAfter=No|start_char=826|end_char=830
+2	т-Петербург	т-Петербург	PROPN	NNP	_	6	nsubj	_	start_char=830|end_char=841
+3	is	be	AUX	VBZ	_	6	cop	_	start_char=842|end_char=844
+4	the	the	DET	DT	_	6	det	_	start_char=845|end_char=848
+5	second-largest	second-largest	ADJ	JJS	_	6	amod	_	start_char=849|end_char=863
+6	city	city	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=864|end_char=868
+7	.	.	PUNCT	.	_	6	punct	_	SpacesAfter=\n\n|start_char=868|end_char=869
+
+# text = Greek letters such as α, β, γ and Ω appear in physics formulas.
+# sent_id = 20
+1	Greek	greek	ADJ	JJ	_	2	amod	_	start_char=871|end_char=876
+2	letters	letter	NOUN	NNS	_	0	root	_	start_char=877|end_char=884
+3	such	such	DET	DT	_	5	advmod	_	start_char=885|end_char=889
+4	as	as	ADP	IN	_	5	case	_	start_char=890|end_char=892
+5	α,	α,	DET	DT	_	2	nmod	_	start_char=893|end_char=895
+6	β,	β,	NOUN	NN	_	5	flat	_	start_char=896|end_char=898
+7	γ	γ	NOUN	NN	_	6	flat	_	start_char=899|end_char=900
+8	and	and	CCONJ	CC	_	9	cc	_	start_char=901|end_char=904
+9	Ω	ω	NOUN	NN	_	10	nsubj	_	start_char=905|end_char=906
+10	appear	appear	VERB	VBP	_	2	conj	_	start_char=907|end_char=913
+11	in	in	ADP	IN	_	13	case	_	start_char=914|end_char=916
+12	physics	physic	NOUN	NN	_	13	compound	_	start_char=917|end_char=924
+13	formulas	formulas	NOUN	NNS	_	10	obl	_	SpaceAfter=No|start_char=925|end_char=933
+14	.	.	PUNCT	.	_	2	punct	_	start_char=933|end_char=934
+
+# text = The word φιλοσοφία means love of wisdom.
+# sent_id = 21
+1	The	the	DET	DT	_	2	det	_	start_char=935|end_char=938
+2	word	word	NOUN	NN	_	0	root	_	start_char=939|end_char=943
+3	φιλοσοφία	φιλοσοφία	NOUN	NN	_	4	nsubj	_	start_char=944|end_char=953
+4	means	mean	VERB	VBZ	_	2	parataxis	_	start_char=954|end_char=959
+5	love	love	NOUN	NN	_	4	obj	_	start_char=960|end_char=964
+6	of	of	ADP	IN	_	7	case	_	start_char=965|end_char=967
+7	wisdom	wisdom	NOUN	NN	_	5	nmod	_	SpaceAfter=No|start_char=968|end_char=974
+8	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=974|end_char=975
+
+# text = The Arabic greeting مرحبا is common.
+# sent_id = 22
+1	The	the	DET	DT	_	4	det	_	start_char=977|end_char=980
+2	Arabic	arabic	ADJ	JJ	_	4	amod	_	start_char=981|end_char=987
+3	greeting	greeting	NOUN	NN	_	4	compound	_	start_char=988|end_char=996
+4	مرحبا	مرحبا	NOUN	NN	_	6	nsubj	_	start_char=997|end_char=1002
+5	is	be	AUX	VBZ	_	6	cop	_	start_char=1003|end_char=1005
+6	common	common	ADJ	JJ	_	0	root	_	SpaceAfter=No|start_char=1006|end_char=1012
+7	.	.	PUNCT	.	_	6	punct	_	start_char=1012|end_char=1013
+
+# text = Hebrew writes שלום for peace.
+# sent_id = 23
+1	Hebrew	Hebrew	PROPN	NNP	_	2	nsubj	_	start_char=1014|end_char=1020
+2	writes	write	VERB	VBZ	_	0	root	_	start_char=1021|end_char=1027
+3	שלום	שלום	ADP	IN	_	5	case	_	start_char=1028|end_char=1032
+4	for	for	ADP	IN	_	5	case	_	start_char=1033|end_char=1036
+5	peace	peace	NOUN	NN	_	2	obl	_	SpaceAfter=No|start_char=1037|end_char=1042
+6	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=1042|end_char=1043
+
+# text = Dmitri Shostakovich (Дмитрий
+# sent_id = 24
+1	Dmitri	Dmitri	PROPN	NNP	_	0	root	_	start_char=1045|end_char=1051
+2	Shostakovich	Shostakovich	PROPN	NNP	_	1	flat	_	start_char=1052|end_char=1064
+3	(Дмитри	(Дмитри	PROPN	NNP	_	1	conj	_	SpaceAfter=No|start_char=1065|end_char=1072
+4	й	й	PROPN	NNP	_	1	conj	_	start_char=1072|end_char=1073
+
+# text = Шостакович) wrote fifteen symphonies.
+# sent_id = 25
+1	Шостакович)	шостакович)	NOUN	NN	_	2	nsubj	_	start_char=1074|end_char=1085
+2	wrote	write	VERB	VBD	_	0	root	_	start_char=1086|end_char=1091
+3	fifteen	fifteen	NUM	CD	_	4	nummod	_	start_char=1092|end_char=1099
+4	symphonies	symphonie	NOUN	NNS	_	2	obj	_	SpaceAfter=No|start_char=1100|end_char=1110
+5	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=1110|end_char=1111
+
+# text = Nguyễn Thị Minh Khai Street is in Hồ Chí Minh City.
+# sent_id = 26
+1	Nguyễn	Nguyễn	PROPN	NNP	_	8	nsubj	_	start_char=1113|end_char=1119
+2	Thị	Thị	PROPN	NNP	_	4	reparandum	_	start_char=1120|end_char=1123
+3	Minh	Minh	PROPN	NNP	_	4	compound	_	start_char=1124|end_char=1128
+4	Khai	Khai	PROPN	NNP	_	5	compound	_	start_char=1129|end_char=1133
+5	Street	Street	PROPN	NNP	_	8	nsubj	_	start_char=1134|end_char=1140
+6	is	be	AUX	VBZ	_	8	cop	_	start_char=1141|end_char=1143
+7	in	in	ADP	IN	_	8	case	_	start_char=1144|end_char=1146
+8	Hồ	hồ	PROPN	NNP	_	0	root	_	start_char=1147|end_char=1149
+9	Chí	Chí	PROPN	NNP	_	8	flat	_	start_char=1150|end_char=1153
+10	Minh	Minh	PROPN	NNP	_	8	flat	_	start_char=1154|end_char=1158
+11	City	city	PROPN	NNP	_	8	flat	_	SpaceAfter=No|start_char=1159|end_char=1163
+12	.	.	PUNCT	.	_	8	punct	_	start_char=1163|end_char=1164
+
+# text = Phở is served everywhere.
+# sent_id = 27
+1	Phở	phở	NOUN	NN	_	3	nsubj:pass	_	start_char=1165|end_char=1168
+2	is	be	AUX	VBZ	_	3	aux:pass	_	start_char=1169|end_char=1171
+3	served	serve	VERB	VBN	_	0	root	_	start_char=1172|end_char=1178
+4	everywhere	everywhere	ADV	RB	_	3	advmod	_	SpaceAfter=No|start_char=1179|end_char=1189
+5	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=1189|end_char=1190
+
+# text = The author,
+# sent_id = 28
+1	The	the	DET	DT	_	2	det	_	start_char=1192|end_char=1195
+2	author	author	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=1196|end_char=1202
+3	,	,	PUNCT	.	_	2	punct	_	start_char=1202|end_char=1203
+
+# text = Chimamanda Ngozi Adichie, spoke in Lagos.
+# sent_id = 29
+1	Chimamanda	Chimamanda	PROPN	NNP	_	4	nsubj	_	start_char=1204|end_char=1214
+2	Ngozi	ngozi	PROPN	NNP	_	1	flat	_	start_char=1215|end_char=1220
+3	Adichie,	Adichie,	PROPN	NNP	_	1	flat	_	start_char=1221|end_char=1229
+4	spoke	spoke	VERB	VBD	_	0	root	_	start_char=1230|end_char=1235
+5	in	in	ADP	IN	_	6	case	_	start_char=1236|end_char=1238
+6	Lagos	Lagos	PROPN	NNP	_	4	obl	_	SpaceAfter=No|start_char=1239|end_char=1244
+7	.	.	PUNCT	.	_	4	punct	_	start_char=1244|end_char=1245
+
+# text = Ngũgĩ wa Thiong'o was in the audience.
+# sent_id = 30
+1	Ngũgĩ	Ngũgĩ	PROPN	NNP	_	7	nsubj	_	start_char=1246|end_char=1251
+2	wa	wa	PROPN	NNP	_	3	reparandum	_	start_char=1252|end_char=1254
+3	Thiong'o	Thiong'o	PROPN	NNP	_	7	nsubj	_	start_char=1255|end_char=1263
+4	was	be	AUX	VBD	_	7	cop	_	start_char=1264|end_char=1267
+5	in	in	ADP	IN	_	7	case	_	start_char=1268|end_char=1270
+6	the	the	DET	DT	_	7	det	_	start_char=1271|end_char=1274
+7	audience	audience	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=1275|end_char=1283
+8	.	.	PUNCT	.	_	7	punct	_	SpacesAfter=\n\n|start_char=1283|end_char=1284
+
+# text = São Paulo's population exceeds 12 million.
+# sent_id = 31
+1	São	são	PROPN	NNP	_	4	nmod:poss	_	start_char=1286|end_char=1289
+2-3	Paulo's	_	_	_	_	_	_	_	start_char=1290|end_char=1297
+2	Paulo	Paulo	PROPN	NNP	_	1	flat	_	start_char=1290|end_char=1295
+3	's	's	PART	POS	_	2	case	_	start_char=1295|end_char=1297
+4	population	population	NOUN	NN	_	5	nsubj	_	start_char=1298|end_char=1308
+5	exceeds	exceed	VERB	VBZ	_	0	root	_	start_char=1309|end_char=1316
+6	12	12	NUM	CD	_	7	nummod	_	start_char=1317|end_char=1319
+7	million	million	NOUN	NN	_	5	obj	_	SpaceAfter=No|start_char=1320|end_char=1327
+8	.	.	PUNCT	.	_	5	punct	_	start_char=1327|end_char=1328
+
+# text = Ação and coração are Portuguese words.
+# sent_id = 32
+1	Ação	Ação	PROPN	NNP	_	6	nsubj	_	start_char=1329|end_char=1333
+2	and	and	CCONJ	CC	_	3	cc	_	start_char=1334|end_char=1337
+3	coração	coração	PROPN	NNP	_	1	conj	_	start_char=1338|end_char=1345
+4	are	be	AUX	VBP	_	6	cop	_	start_char=1346|end_char=1349
+5	Portuguese	portuguese	ADJ	JJ	_	6	amod	_	start_char=1350|end_char=1360
+6	words	word	NOUN	NNS	_	0	root	_	SpaceAfter=No|start_char=1361|end_char=1366
+7	.	.	PUNCT	.	_	6	punct	_	SpacesAfter=\n\n|start_char=1366|end_char=1367
+
+# text = The Māori name for New Zealand is Aotearoa.
+# sent_id = 33
+1	The	the	DET	DT	_	3	det	_	start_char=1369|end_char=1372
+2	Māori	māori	NOUN	NN	_	3	compound	_	start_char=1373|end_char=1378
+3	name	name	NOUN	NN	_	8	nsubj	_	start_char=1379|end_char=1383
+4	for	for	ADP	IN	_	5	case	_	start_char=1384|end_char=1387
+5	New	New	PROPN	NNP	_	3	nmod	_	start_char=1388|end_char=1391
+6	Zealand	Zealand	PROPN	NNP	_	5	flat	_	start_char=1392|end_char=1399
+7	is	be	AUX	VBZ	_	8	cop	_	start_char=1400|end_char=1402
+8	Aotearoa	Aotearoa	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=1403|end_char=1411
+9	.	.	PUNCT	.	_	8	punct	_	start_char=1411|end_char=1412
+
+# text = Te reo Māori is an official language.
+# sent_id = 34
+1	Te	te	INTJ	UH	_	7	reparandum	_	start_char=1413|end_char=1415
+2	reo	reo	PROPN	NNP	_	3	reparandum	_	start_char=1416|end_char=1419
+3	Māori	Māori	PROPN	NNP	_	7	nsubj	_	start_char=1420|end_char=1425
+4	is	be	AUX	VBZ	_	7	cop	_	start_char=1426|end_char=1428
+5	an	a	DET	DT	_	7	det	_	start_char=1429|end_char=1431
+6	official	official	ADJ	JJ	_	7	amod	_	start_char=1432|end_char=1440
+7	language	language	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=1441|end_char=1449
+8	.	.	PUNCT	.	_	7	punct	_	SpacesAfter=\n\n|start_char=1449|end_char=1450
+
+# text = Hindi uses Devanagari: नमस्ते means hello.
+# sent_id = 35
+1	Hindi	Hindi	PROPN	NNP	_	2	nsubj	_	start_char=1452|end_char=1457
+2	uses	use	VERB	VBZ	_	0	root	_	start_char=1458|end_char=1462
+3	Devanagari:	Devanagari:	PROPN	NNP	_	2	obj	_	start_char=1463|end_char=1474
+4	नमस्ते	नमस्ते	PRON	PRP	_	5	nsubj	_	start_char=1475|end_char=1481
+5	means	mean	VERB	VBZ	_	2	parataxis	_	start_char=1482|end_char=1487
+6	hello	hello	INTJ	UH	_	5	obj	_	SpaceAfter=No|start_char=1488|end_char=1493
+7	.	.	PUNCT	.	_	2	punct	_	start_char=1493|end_char=1494
+
+# text = Tamil uses its own script: வணக்கம்.
+# sent_id = 36
+1	Tamil	Tamil	PROPN	NNP	_	2	nsubj	_	start_char=1495|end_char=1500
+2	uses	use	VERB	VBZ	_	0	root	_	start_char=1501|end_char=1505
+3	its	its	PRON	PRP$	_	5	nmod:poss	_	start_char=1506|end_char=1509
+4	own	own	ADJ	JJ	_	5	amod	_	start_char=1510|end_char=1513
+5	script:	script:	NOUN	NN	_	2	obj	_	start_char=1514|end_char=1521
+6	வணக்கம்	வணக்கம்	INTJ	UH	_	2	discourse	_	SpaceAfter=No|start_char=1522|end_char=1529
+7	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=1529|end_char=1530
+
+# text = Herr Müller from Düsseldorf ordered a Weißbier.
+# sent_id = 37
+1	Herr	Herr	PROPN	NNP	_	5	nsubj	_	start_char=1532|end_char=1536
+2	Müller	Müller	PROPN	NNP	_	1	flat	_	start_char=1537|end_char=1543
+3	from	from	ADP	IN	_	4	case	_	start_char=1544|end_char=1548
+4	Düsseldorf	Düsseldorf	PROPN	NNP	_	1	nmod	_	start_char=1549|end_char=1559
+5	ordered	order	VERB	VBD	_	0	root	_	start_char=1560|end_char=1567
+6	a	a	DET	DT	_	7	det	_	start_char=1568|end_char=1569
+7	Weißbier	Weißbier	PROPN	NNP	_	5	obj	_	SpaceAfter=No|start_char=1570|end_char=1578
+8	.	.	PUNCT	.	_	5	punct	_	start_char=1578|end_char=1579
+
+# text = Straße means street.
+# sent_id = 38
+1	Straße	Straße	PROPN	NNP	_	2	nsubj	_	start_char=1580|end_char=1586
+2	means	mean	VERB	VBZ	_	0	root	_	start_char=1587|end_char=1592
+3	street	street	NOUN	NN	_	2	obj	_	SpaceAfter=No|start_char=1593|end_char=1599
+4	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=1599|end_char=1600
+
+# text = Ångström units measure tiny distances.
+# sent_id = 39
+1	Ångström	Ångström	NOUN	NN	_	2	compound	_	start_char=1602|end_char=1610
+2	units	unit	NOUN	NNS	_	3	nsubj	_	start_char=1611|end_char=1616
+3	measure	measure	VERB	VBP	_	0	root	_	start_char=1617|end_char=1624
+4	tiny	tiny	ADJ	JJ	_	5	amod	_	start_char=1625|end_char=1629
+5	distances	distance	NOUN	NNS	_	3	obj	_	SpaceAfter=No|start_char=1630|end_char=1639
+6	.	.	PUNCT	.	_	3	punct	_	start_char=1639|end_char=1640
+
+# text = The Øresund Bridge connects Denmark and Sweden.
+# sent_id = 40
+1	The	the	DET	DT	_	3	det	_	start_char=1641|end_char=1644
+2	Øresund	Øresund	NOUN	NN	_	3	compound	_	start_char=1645|end_char=1652
+3	Bridge	bridge	NOUN	NN	_	4	nsubj	_	start_char=1653|end_char=1659
+4	connects	connect	VERB	VBZ	_	0	root	_	start_char=1660|end_char=1668
+5	Denmark	Denmark	PROPN	NNP	_	4	obj	_	start_char=1669|end_char=1676
+6	and	and	CCONJ	CC	_	7	cc	_	start_char=1677|end_char=1680
+7	Sweden	Sweden	PROPN	NNP	_	5	conj	_	SpaceAfter=No|start_char=1681|end_char=1687
+8	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=1687|end_char=1688
+
+# text = The novel Cien años de soledad was translated as One Hundred Years of Solitude.
+# sent_id = 41
+1	The	the	DET	DT	_	2	det	_	start_char=1690|end_char=1693
+2	novel	novel	NOUN	NN	_	8	nsubj:pass	_	start_char=1694|end_char=1699
+3	Cien	cien	PROPN	NNP	_	6	amod	_	start_char=1700|end_char=1704
+4	años	años	PROPN	NNP	_	6	reparandum	_	start_char=1705|end_char=1709
+5	de	de	DET	NNP	_	6	det	_	start_char=1710|end_char=1712
+6	soledad	soledad	PROPN	NNP	_	8	nsubj:pass	_	start_char=1713|end_char=1720
+7	was	be	AUX	VBD	_	8	aux:pass	_	start_char=1721|end_char=1724
+8	translated	translate	VERB	VBN	_	0	root	_	start_char=1725|end_char=1735
+9	as	as	ADP	IN	_	12	case	_	start_char=1736|end_char=1738
+10	One	one	NUM	CD	_	12	nummod	_	start_char=1739|end_char=1742
+11	Hundred	hundred	NUM	CD	_	12	nummod	_	start_char=1743|end_char=1750
+12	Years	year	NOUN	NNS	_	8	obl	_	start_char=1751|end_char=1756
+13	of	of	ADP	IN	_	14	case	_	start_char=1757|end_char=1759
+14	Solitude	Solitude	PROPN	NNP	_	12	nmod	_	SpaceAfter=No|start_char=1760|end_char=1768
+15	.	.	PUNCT	.	_	8	punct	_	SpacesAfter=\n\n|start_char=1768|end_char=1769
+
+# text = Señor Peña's niño spoke español and English fluently.
+# sent_id = 42
+1	Señor	Señor	PROPN	NNP	_	5	nsubj	_	start_char=1771|end_char=1776
+2-3	Peña's	_	_	_	_	_	_	_	start_char=1777|end_char=1783
+2	Peña	Peña	PROPN	NNP	_	4	nmod:poss	_	start_char=1777|end_char=1781
+3	's	's	PART	POS	_	2	case	_	start_char=1781|end_char=1783
+4	niño	niño	NOUN	NN	_	5	nsubj	_	start_char=1784|end_char=1788
+5	spoke	spoke	VERB	VBD	_	0	root	_	start_char=1789|end_char=1794
+6	español	español	PROPN	NNP	_	5	obj	_	start_char=1795|end_char=1802
+7	and	and	CCONJ	CC	_	8	cc	_	start_char=1803|end_char=1806
+8	English	English	ADJ	JJ	_	6	conj	_	start_char=1807|end_char=1814
+9	fluently	fluently	ADV	RB	_	5	advmod	_	SpaceAfter=No|start_char=1815|end_char=1823
+10	.	.	PUNCT	.	_	5	punct	_	SpacesAfter=\n\n|start_char=1823|end_char=1824
+
+# text = Dvořák's and Janáček's works are often performed together.
+# sent_id = 43
+1-2	Dvořák's	_	_	_	_	_	_	_	start_char=1826|end_char=1834
+1	Dvořák	Dvořák	PROPN	NNP	_	9	nsubj:pass	_	start_char=1826|end_char=1832
+2	's	be	AUX	POS	_	9	reparandum	_	start_char=1832|end_char=1834
+3	and	and	CCONJ	CC	_	4	cc	_	start_char=1835|end_char=1838
+4-5	Janáček's	_	_	_	_	_	_	_	start_char=1839|end_char=1848
+4	Janáček	Janáček	PROPN	NNP	_	6	nmod:poss	_	start_char=1839|end_char=1846
+5	's	's	PART	POS	_	4	case	_	start_char=1846|end_char=1848
+6	works	work	NOUN	NNS	_	1	nmod	_	start_char=1849|end_char=1854
+7	are	be	AUX	VBP	_	9	aux:pass	_	start_char=1855|end_char=1858
+8	often	often	ADV	RB	_	9	advmod	_	start_char=1859|end_char=1864
+9	performed	perform	VERB	VBN	_	0	root	_	start_char=1865|end_char=1874
+10	together	together	ADV	RB	_	9	advmod	_	SpaceAfter=No|start_char=1875|end_char=1883
+11	.	.	PUNCT	.	_	9	punct	_	start_char=1883|end_char=1884
+
+# text = Zoë's café is near Château Frontenac.
+# sent_id = 44
+1-2	Zoë's	_	_	_	_	_	_	_	start_char=1885|end_char=1890
+1	Zoë	Zoë	PROPN	NNP	_	3	nmod:poss	_	start_char=1885|end_char=1888
+2	's	's	PART	POS	_	1	case	_	start_char=1888|end_char=1890
+3	café	café	NOUN	NN	_	6	nsubj	_	start_char=1891|end_char=1895
+4	is	be	AUX	VBZ	_	6	cop	_	start_char=1896|end_char=1898
+5	near	near	ADP	IN	_	6	case	_	start_char=1899|end_char=1903
+6	Château	Château	PROPN	NNP	_	0	root	_	start_char=1904|end_char=1911
+7	Frontenac	Frontenac	PROPN	NNP	_	6	appos	_	SpaceAfter=No|start_char=1912|end_char=1921
+8	.	.	PUNCT	.	_	6	punct	_	SpacesAfter=\n\n|start_char=1921|end_char=1922
+
+# text = The Thai word สวัสดี is a greeting.
+# sent_id = 45
+1	The	the	DET	DT	_	3	det	_	start_char=1924|end_char=1927
+2	Thai	thai	ADJ	JJ	_	3	amod	_	start_char=1928|end_char=1932
+3	word	word	NOUN	NN	_	0	root	_	start_char=1933|end_char=1937
+4	สวัสดี	สวัสดี	PRON	PRP	_	7	nsubj	_	start_char=1938|end_char=1944
+5	is	be	AUX	VBZ	_	7	cop	_	start_char=1945|end_char=1947
+6	a	a	DET	DT	_	7	det	_	start_char=1948|end_char=1949
+7	greeting	greeting	NOUN	NN	_	3	parataxis	_	SpaceAfter=No|start_char=1950|end_char=1958
+8	.	.	PUNCT	.	_	7	punct	_	start_char=1958|end_char=1959
+
+# text = Georgian has its own alphabet:
+# sent_id = 46
+1	Georgian	Georgian	ADJ	JJ	_	2	nsubj	_	start_char=1960|end_char=1968
+2	has	have	VERB	VBZ	_	0	root	_	start_char=1969|end_char=1972
+3	its	its	PRON	PRP$	_	5	nmod:poss	_	start_char=1973|end_char=1976
+4	own	own	ADJ	JJ	_	5	amod	_	start_char=1977|end_char=1980
+5	alphabet:	alphabet:	NOUN	NN	_	2	obj	_	start_char=1981|end_char=1990
+
+# text = ქართული.
+# sent_id = 47
+1	ქართული	ქართული	INTJ	UH	_	0	root	_	SpaceAfter=No|start_char=1991|end_char=1998
+2	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=1998|end_char=1999
+
+# text = Mr.
+# sent_id = 48
+1	Mr	Mr	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=2001|end_char=2003
+2	.	.	PUNCT	.	_	1	punct	_	start_char=2003|end_char=2004
+
+# text = Ødegaard flew from Oslo to Ålesund.
+# sent_id = 49
+1	Ødegaard	Ødegaard	PROPN	NNP	_	2	nsubj	_	start_char=2005|end_char=2013
+2	flew	fly	VERB	VBD	_	0	root	_	start_char=2014|end_char=2018
+3	from	from	ADP	IN	_	4	case	_	start_char=2019|end_char=2023
+4	Oslo	Oslo	PROPN	NNP	_	2	obl	_	start_char=2024|end_char=2028
+5	to	to	ADP	IN	_	6	case	_	start_char=2029|end_char=2031
+6	Ålesund	Ålesund	PROPN	NNP	_	2	obl	_	SpaceAfter=No|start_char=2032|end_char=2039
+7	.	.	PUNCT	.	_	2	punct	_	start_char=2039|end_char=2040
+
+# text = Ms.
+# sent_id = 50
+1	Ms	ms	PROPN	NNP	_	0	root	_	SpaceAfter=No|start_char=2041|end_char=2043
+2	.	.	PUNCT	.	_	1	punct	_	start_char=2043|end_char=2044
+
+# text = Ünal took the train from Köln.
+# sent_id = 51
+1	Ünal	ünal	NOUN	NN	_	2	nsubj	_	start_char=2045|end_char=2049
+2	took	take	VERB	VBD	_	0	root	_	start_char=2050|end_char=2054
+3	the	the	DET	DT	_	4	det	_	start_char=2055|end_char=2058
+4	train	train	NOUN	NN	_	2	obj	_	start_char=2059|end_char=2064
+5	from	from	ADP	IN	_	6	case	_	start_char=2065|end_char=2069
+6	Köln	Köln	PROPN	NNP	_	2	obl	_	SpaceAfter=No|start_char=2070|end_char=2074
+7	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=2074|end_char=2075
+
+# text = Ελλάδα is the Greek name for Greece.
+# sent_id = 52
+1	Ελλάδα	Ελλάδα	PROPN	NNP	_	5	nsubj	_	start_char=2077|end_char=2083
+2	is	be	AUX	VBZ	_	5	cop	_	start_char=2084|end_char=2086
+3	the	the	DET	DT	_	5	det	_	start_char=2087|end_char=2090
+4	Greek	greek	ADJ	JJ	_	5	amod	_	start_char=2091|end_char=2096
+5	name	name	NOUN	NN	_	0	root	_	start_char=2097|end_char=2101
+6	for	for	ADP	IN	_	7	case	_	start_char=2102|end_char=2105
+7	Greece	Greece	PROPN	NNP	_	5	nmod	_	SpaceAfter=No|start_char=2106|end_char=2112
+8	.	.	PUNCT	.	_	5	punct	_	start_char=2112|end_char=2113
+
+# text = Αθήνα is its capital.
+# sent_id = 53
+1	Αθήνα	Αθήνα	PROPN	NNP	_	4	nsubj	_	start_char=2114|end_char=2119
+2	is	be	AUX	VBZ	_	4	cop	_	start_char=2120|end_char=2122
+3	its	its	PRON	PRP$	_	4	nmod:poss	_	start_char=2123|end_char=2126
+4	capital	capital	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=2127|end_char=2134
+5	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=2134|end_char=2135
+
+# text = The sign said ДОБРО ПОЖАЛОВА
+# sent_id = 54
+1	The	the	DET	DT	_	2	det	_	start_char=2137|end_char=2140
+2	sign	sign	NOUN	NN	_	3	nsubj	_	start_char=2141|end_char=2145
+3	said	say	VERB	VBD	_	0	root	_	start_char=2146|end_char=2150
+4	ДОБРО	добро	NOUN	NN	_	3	parataxis	_	start_char=2151|end_char=2156
+5	ПОЖАЛОВА	пожалова	NOUN	NN	_	4	conj	_	SpaceAfter=No|start_char=2157|end_char=2165
+
+# text = ТЬ, which means "welcome.
+# sent_id = 55
+1	ТЬ,	ть,	INTJ	UH	_	0	root	_	start_char=2165|end_char=2168
+2	which	which	PRON	WDT	_	3	nsubj	_	start_char=2169|end_char=2174
+3	means	mean	VERB	VBZ	_	1	parataxis	_	start_char=2175|end_char=2180
+4	"welcome	"welcome	NOUN	NN	_	3	obj	_	SpaceAfter=No|start_char=2181|end_char=2189
+5	.	.	PUNCT	.	_	1	punct	_	SpaceAfter=No|start_char=2189|end_char=2190
+
+# text = "
+# sent_id = 56
+1	"	"	PUNCT	.	_	0	root	_	SpacesAfter=\n\n|start_char=2190|end_char=2191
+
+# text = I ordered pão de queijo, dulce de leche and a café con leche.
+# sent_id = 57
+1	I	I	PRON	PRP	_	2	nsubj	_	start_char=2193|end_char=2194
+2	ordered	order	VERB	VBD	_	0	root	_	start_char=2195|end_char=2202
+3	pão	pão	PROPN	NNP	_	2	obj	_	start_char=2203|end_char=2206
+4	de	de	DET	NNP	_	3	conj	_	start_char=2207|end_char=2209
+5	queijo,	queijo,	PROPN	NNP	_	3	conj	_	start_char=2210|end_char=2217
+6	dulce	dulce	PROPN	NNP	_	3	conj	_	start_char=2218|end_char=2223
+7	de	de	DET	NNP	_	8	det	_	start_char=2224|end_char=2226
+8	leche	leche	PROPN	NNP	_	3	conj	_	start_char=2227|end_char=2232
+9	and	and	CCONJ	CC	_	11	cc	_	start_char=2233|end_char=2236
+10	a	a	DET	DT	_	11	det	_	start_char=2237|end_char=2238
+11	café	café	NOUN	NN	_	3	conj	_	start_char=2239|end_char=2243
+12	con	con	NOUN	NN	_	13	compound	_	start_char=2244|end_char=2247
+13	leche	leche	NOUN	NN	_	3	conj	_	SpaceAfter=No|start_char=2248|end_char=2253
+14	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=2253|end_char=2254
+
+# text = Ēriks Lūsis,
+# sent_id = 58
+1	Ēriks	Ēry	NOUN	NNS	_	0	root	_	start_char=2256|end_char=2261
+2	Lūsis	Lūsis	PROPN	NNP	_	1	conj	_	SpaceAfter=No|start_char=2262|end_char=2267
+3	,	,	PUNCT	.	_	1	punct	_	start_char=2267|end_char=2268
+
+# text = Žydrūnas Ilgauskas and Ģirts Āboliņš are Baltic names.
+# sent_id = 59
+1	Žydrūnas	sydrūnas	NOUN	NN	_	8	nsubj	_	start_char=2269|end_char=2277
+2	Ilgauskas	Ilgauskas	PROPN	NNP	_	1	conj	_	start_char=2278|end_char=2287
+3	and	and	CCONJ	CC	_	4	cc	_	start_char=2288|end_char=2291
+4	Ģirts	Ģirt	NOUN	NNS	_	1	conj	_	start_char=2292|end_char=2297
+5	Āboliņš	Āboliņš	NOUN	NNS	_	1	conj	_	start_char=2298|end_char=2305
+6	are	be	AUX	VBP	_	8	cop	_	start_char=2306|end_char=2309
+7	Baltic	baltic	ADJ	JJ	_	8	amod	_	start_char=2310|end_char=2316
+8	names	name	NOUN	NNS	_	0	root	_	SpaceAfter=No|start_char=2317|end_char=2322
+9	.	.	PUNCT	.	_	8	punct	_	SpacesAfter=\n\n|start_char=2322|end_char=2323
+
+# text = He spells his name Jürgen, but his passport says Juergen.
+# sent_id = 60
+1	He	he	PRON	PRP	_	2	nsubj	_	start_char=2325|end_char=2327
+2	spells	spell	VERB	VBZ	_	0	root	_	start_char=2328|end_char=2334
+3	his	he	PRON	PRP$	_	4	nmod:poss	_	start_char=2335|end_char=2338
+4	name	name	NOUN	NN	_	2	obj	_	start_char=2339|end_char=2343
+5	Jürgen,	Jürgen,	PROPN	NNP	_	2	vocative	_	start_char=2344|end_char=2351
+6	but	but	CCONJ	CC	_	9	cc	_	start_char=2352|end_char=2355
+7	his	he	PRON	PRP$	_	8	nmod:poss	_	start_char=2356|end_char=2359
+8	passport	passport	NOUN	NN	_	9	nsubj	_	start_char=2360|end_char=2368
+9	says	say	VERB	VBZ	_	2	conj	_	start_char=2369|end_char=2373
+10	Juergen	Juergen	PROPN	NNP	_	9	obj	_	SpaceAfter=No|start_char=2374|end_char=2381
+11	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=2381|end_char=2382
+
+# text = Kyiv (Київ) is the capital of Ukraine.
+# sent_id = 61
+1	Kyiv	Kyiv	PROPN	NNP	_	5	vocative	_	start_char=2384|end_char=2388
+2	(Київ)	(Київ)	PROPN	NNP	_	1	flat	_	start_char=2389|end_char=2395
+3	is	be	AUX	VBZ	_	5	cop	_	start_char=2396|end_char=2398
+4	the	the	DET	DT	_	5	det	_	start_char=2399|end_char=2402
+5	capital	capital	NOUN	NN	_	0	root	_	start_char=2403|end_char=2410
+6	of	of	ADP	IN	_	7	case	_	start_char=2411|end_char=2413
+7	Ukraine	Ukraine	PROPN	NNP	_	5	nmod	_	SpaceAfter=No|start_char=2414|end_char=2421
+8	.	.	PUNCT	.	_	5	punct	_	SpacesAfter=\n\n|start_char=2421|end_char=2422
+
+# text = The poet wrote haiku: 古池や 蛙飛び込む 水の音.
+# sent_id = 62
+1	The	the	DET	DT	_	2	det	_	start_char=2424|end_char=2427
+2	poet	poet	NOUN	NN	_	3	nsubj	_	start_char=2428|end_char=2432
+3	wrote	write	VERB	VBD	_	0	root	_	start_char=2433|end_char=2438
+4	haiku:	haiku:	PROPN	NNP	_	3	obj	_	start_char=2439|end_char=2445
+5	古池や	古池や	INTJ	UH	_	4	flat	_	start_char=2446|end_char=2449
+6	蛙飛び込む	蛙飛び込む	INTJ	UH	_	4	flat	_	start_char=2450|end_char=2455
+7	水の音	水の音	INTJ	UH	_	5	flat	_	SpaceAfter=No|start_char=2456|end_char=2459
+8	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=2459|end_char=2460
+
+# text = The old sign said ΤΗΣ ΠΟΛΕΩΣ in capitals, and the guide read it aloud.
+# sent_id = 63
+1	The	the	DET	DT	_	3	det	_	start_char=2462|end_char=2465
+2	old	old	ADJ	JJ	_	3	amod	_	start_char=2466|end_char=2469
+3	sign	sign	NOUN	NN	_	4	nsubj	_	start_char=2470|end_char=2474
+4	said	say	VERB	VBD	_	0	root	_	start_char=2475|end_char=2479
+5	ΤΗΣ	της	DET	DT	_	6	det	_	start_char=2480|end_char=2483
+6	ΠΟΛΕΩΣ	πολεως	NOUN	NN	_	4	obj	_	start_char=2484|end_char=2490
+7	in	in	ADP	IN	_	8	case	_	start_char=2491|end_char=2493
+8	capitals,	capital	NOUN	NN	_	6	nmod	_	start_char=2494|end_char=2503
+9	and	and	CCONJ	CC	_	12	cc	_	start_char=2504|end_char=2507
+10	the	the	DET	DT	_	11	det	_	start_char=2508|end_char=2511
+11	guide	guide	NOUN	NN	_	12	nsubj	_	start_char=2512|end_char=2517
+12	read	read	VERB	VBD	_	4	conj	_	start_char=2518|end_char=2522
+13	it	it	PRON	PRP	_	12	obj	_	start_char=2523|end_char=2525
+14	aloud	aloud	ADV	RB	_	12	advmod	_	SpaceAfter=No|start_char=2526|end_char=2531
+15	.	.	PUNCT	.	_	4	punct	_	start_char=2531|end_char=2532
+
+# text = ΕΙΣ was carved below it.
+# sent_id = 64
+1	ΕΙΣ	ΕΙΣ	PROPN	NNP	_	3	nsubj:pass	_	start_char=2533|end_char=2536
+2	was	be	AUX	VBD	_	3	aux	_	start_char=2537|end_char=2540
+3	carved	carve	VERB	VBN	_	0	root	_	start_char=2541|end_char=2547
+4	below	below	ADP	IN	_	5	case	_	start_char=2548|end_char=2553
+5	it	it	PRON	PRP	_	3	obl	_	SpaceAfter=No|start_char=2554|end_char=2556
+6	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n|start_char=2556|end_char=2557

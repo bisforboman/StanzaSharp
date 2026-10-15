@@ -4,8 +4,11 @@ using StanzaSharp.Nn.Managed;
 
 namespace StanzaSharp.Pos;
 
-/// <summary>A batch's tagger outputs per word, sentences in order: UPOS scores [words, upos] and each column's ids.</summary>
-internal sealed record PosOutput(float[] UposScores, long[] Upos, long[] Xpos, long[][] Feats);
+/// <summary>
+/// A batch's tagger outputs per word, sentences in order: UPOS scores [words, upos] and each column's ids (XPOS: one array per
+/// part of a composite vocabulary, else one).
+/// </summary>
+internal sealed record PosOutput(float[] UposScores, long[] Upos, long[][] Xpos, long[][] Feats);
 
 /// <summary>The tagger's network, per <see cref="Backend"/>: <c>PosNet</c> or <see cref="ManagedPosNet"/>.</summary>
 internal interface IPosNet : IDisposable
@@ -32,27 +35,26 @@ internal sealed unsafe class ManagedPosNet : IPosNet
     private readonly ManagedCharacterModel? _charModel;
     private readonly PackedMatrix? _transChar;
     private readonly float[] _wordEmb; // [words, wordDim]
-    private readonly int _wordDim, _transformed, _inputSize, _biaff, _upos, _xpos;
-    private readonly int[] _feats, _featOffsets;
+    private readonly int _wordDim, _transformed, _inputSize, _biaff, _xposHid, _upos;
+    private readonly int[] _xpos, _xposOffsets, _feats, _featOffsets;
     private readonly PackedMatrix _transPretrained, _hid, _xposClf, _featsClf;
     private readonly float[] _hidBias, _xposBias, _featsBias;
     private readonly float[] _uposClf, _uposBias; // [upos, biaff], [upos]: dot products in double (see Heads)
     private readonly ManagedHighwayLstm _lstm;
 
-    public ManagedPosNet(Checkpoint ckpt, int upos, int xpos, int[] feats, Pretrain pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward)
+    public ManagedPosNet(Checkpoint ckpt, int upos, XposVocab xpos, int[] feats, Pretrain pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward)
     {
         var config = ckpt.Root["config"]!;
         var model = ckpt.Root["model"]!;
         float[] T(string key) => ckpt.Tensor<float>(model[key] ?? throw new KeyNotFoundException($"Checkpoint has no weight '{key}'"));
         _pretrain = pretrain;
         (_charlmForward, _charlmBackward) = (charlmForward, charlmBackward);
-        (_upos, _xpos, _feats) = (upos, xpos, feats);
-        _featOffsets = new int[feats.Length];
-        for (int f = 1; f < feats.Length; f++)
-            _featOffsets[f] = _featOffsets[f - 1] + feats[f - 1];
+        (_upos, _xpos, _feats) = (upos, xpos.Sizes, feats);
+        (_xposOffsets, _featOffsets) = (Offsets(_xpos), Offsets(feats));
         int hidden = config["hidden_dim"]!.GetValue<int>();
         _biaff = config["deep_biaff_hidden_dim"]!.GetValue<int>();
         int compositeBiaff = config["composite_deep_biaff_hidden_dim"]!.GetValue<int>();
+        _xposHid = xpos.IsComposite ? compositeBiaff : _biaff;
         int tagEmb = config["tag_emb_dim"]!.GetValue<int>();
         _transformed = config["transformed_dim"]!.GetValue<int>();
         _wordDim = config["word_emb_dim"]!.GetValue<int>();
@@ -75,12 +77,21 @@ internal sealed unsafe class ManagedPosNet : IPosNet
 
         // upos_hid, tag_hid.xpos and tag_hid.feats all read the LSTM output: one GEMM.
         (_hid, _hidBias) = Linear([.. T("upos_hid.weight"), .. T("tag_hid.xpos.weight"), .. T("tag_hid.feats.weight")],
-            [.. T("upos_hid.bias"), .. T("tag_hid.xpos.bias"), .. T("tag_hid.feats.bias")], 2 * _biaff + compositeBiaff, 2 * hidden);
+            [.. T("upos_hid.bias"), .. T("tag_hid.xpos.bias"), .. T("tag_hid.feats.bias")], _biaff + _xposHid + compositeBiaff, 2 * hidden);
         (_uposClf, _uposBias) = (T("upos_clf.weight"), T("upos_clf.bias"));
         var uposEmb = T("upos_emb.weight");
-        (_xposClf, _xposBias) = BiaffinePerUpos([(T("tag_clf.xpos.W_bilin.weight"), T("tag_clf.xpos.W_bilin.bias"))], [xpos], uposEmb, upos, _biaff, tagEmb);
+        var xposHeads = xpos.IsComposite ? _xpos.Select((_, i) => $"tag_clf.xpos.{i}.").ToArray() : ["tag_clf.xpos."];
+        (_xposClf, _xposBias) = BiaffinePerUpos([.. xposHeads.Select(h => (T(h + "W_bilin.weight"), T(h + "W_bilin.bias")))], _xpos, uposEmb, upos, _xposHid, tagEmb);
         (_featsClf, _featsBias) = BiaffinePerUpos(feats.Select((_, f) => (T($"tag_clf.feats.{f}.W_bilin.weight"), T($"tag_clf.feats.{f}.W_bilin.bias"))).ToArray(),
             feats, uposEmb, upos, compositeBiaff, tagEmb);
+    }
+
+    private static int[] Offsets(int[] sizes)
+    {
+        var offsets = new int[sizes.Length];
+        for (int i = 1; i < sizes.Length; i++)
+            offsets[i] = offsets[i - 1] + sizes[i - 1];
+        return offsets;
     }
 
     private static (PackedMatrix, float[]) Linear(float[] w, float[] b, int n, int k)
@@ -264,7 +275,7 @@ internal sealed unsafe class ManagedPosNet : IPosNet
         var hid = ArrayPool<float>.Shared.Rent(rows * ldHid);
         var uposScores = new float[rows * _upos];
         var upos = new long[rows];
-        var xpos = new long[rows];
+        var xpos = _xpos.Select(_ => new long[rows]).ToArray();
         var feats = _feats.Select(_ => new long[rows]).ToArray();
         try
         {
@@ -298,14 +309,18 @@ internal sealed unsafe class ManagedPosNet : IPosNet
                     }
                 });
 
-                int ldx = _xposClf.PaddedN;
+                int ldx = _xposClf.PaddedN, totalX = _xpos.Sum();
                 Gemm.Run(pd + _biaff, rows, ldHid, _xposClf, pxb, ps, ldx, ct);
                 for (int k = 0; k < rows; k++)
-                    xpos[k] = Act.ArgMax(scratch.AsSpan(packedRow[k] * ldx + (int)upos[k] * _xpos, _xpos));
+                {
+                    for (int x = 0; x < _xpos.Length; x++)
+                        xpos[x][k] = Act.ArgMax(scratch.AsSpan(packedRow[k] * ldx + (int)upos[k] * totalX + _xposOffsets[x], _xpos[x]));
+                }
+
                 ct.ThrowIfCancellationRequested();
 
                 int ldf = _featsClf.PaddedN, total = _feats.Sum();
-                Gemm.Run(pd + 2 * _biaff, rows, ldHid, _featsClf, pfb, ps, ldf, ct);
+                Gemm.Run(pd + _biaff + _xposHid, rows, ldHid, _featsClf, pfb, ps, ldf, ct);
                 for (int k = 0; k < rows; k++)
                 {
                     for (int f = 0; f < _feats.Length; f++)

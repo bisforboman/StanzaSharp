@@ -44,6 +44,41 @@ public static class ModelDownloader
             ("pos/combined_nocharlm.pt", "005fab042873317838e692c650e8e5e9"),
             ("depparse/combined_nocharlm.pt", "d155cf16050ba5fb640dc38424924346"),
             ("ner/ontonotes-ww-multi_nocharlm.pt", "e927ed0ce0960638a158c8838b1e7265"),
+
+            // The treebank packages' (combined has default's; eslspok has no mwt and the identity lemmatizer)
+            ("tokenize/ewt_nocharlm.pt", "d0145aa1ac58887bd51fc56c017278fe"),
+            ("mwt/ewt.pt", "4315978c5d7002e179df725aee751ec5"),
+            ("pos/ewt_charlm.pt", "d6991b157942d44dff468e2cd00bfe82"),
+            ("lemma/ewt_nocharlm.pt", "6e05dfc22768b87fca86b95895d4deef"),
+            ("depparse/ewt_charlm.pt", "168e503d6687ecadc1609c5f429c95ae"),
+            ("tokenize/gum_nocharlm.pt", "967be4681e0f9bd464a156869cc4d3df"),
+            ("mwt/gum.pt", "85857cef3a7031b5d83b3e123ded0f27"),
+            ("pos/gum_charlm.pt", "b02c70afabd16c21cd46e38db455eb31"),
+            ("lemma/gum_nocharlm.pt", "b15b09576a8807c2b6e3d85fa9ab0c17"),
+            ("depparse/gum_charlm.pt", "6691010e4e6501da6fa6a2728e8bc3c5"),
+            ("tokenize/lines_nocharlm.pt", "5f3b845efdfe7c44a70e71dcdf66d38d"),
+            ("mwt/lines.pt", "45b262202b7142820e1e7b12e58c8398"),
+            ("pos/lines_charlm.pt", "727f46b076c76c5d87433be90d613f21"),
+            ("lemma/lines_nocharlm.pt", "7bb3141bec928e73020132f366a6a64c"),
+            ("depparse/lines_charlm.pt", "b9d90427dac74a14eea084588031908b"),
+            ("tokenize/partut_nocharlm.pt", "c66aa091d1be5148187de8ccbb79e1af"),
+            ("mwt/partut.pt", "50aa57ff5fe536c3534488e50f541051"),
+            ("pos/partut_charlm.pt", "83b413d52e521e91e58009ddfd2d47d0"),
+            ("lemma/partut_nocharlm.pt", "e1f14329648a2883ed4948e2416c3684"),
+            ("depparse/partut_charlm.pt", "53996edc3bcf682262a71326b2ac73b8"),
+            ("tokenize/atis_nocharlm.pt", "404c52b35c297ad8b31bafd991864b51"),
+            ("mwt/atis.pt", "7723a36e7ef135ada202951e7cfca0af"),
+            ("pos/atis_charlm.pt", "be48972ce60043971db6f91b4fbc2e60"),
+            ("lemma/atis_nocharlm.pt", "28fba07e6dd33806510eada307054ee7"),
+            ("depparse/atis_charlm.pt", "1c29d854041a1ec9c31acf5e2ff4c359"),
+            ("tokenize/childes_nocharlm.pt", "cd0831ca6fe7c736e99423b10721335f"),
+            ("mwt/childes.pt", "0b6a21bfa6b8da3e90fbdf903e3948de"),
+            ("pos/childes_charlm.pt", "3aa0b518745acbab56f5597aa4585488"),
+            ("lemma/childes_nocharlm.pt", "cfce17057c0053dd595fb5bb8010b244"),
+            ("depparse/childes_charlm.pt", "e6021bb09de4c6719599f2ba16b03fd5"),
+            ("tokenize/eslspok_nocharlm.pt", "41daea96fefb4138103090d4ee42d236"),
+            ("pos/eslspok_charlm.pt", "ca420543b5be33e904cb098cebe7de80"),
+            ("depparse/eslspok_charlm.pt", "74f0bf70725a90cdf0e7b40bbdc9b1c7"),
         ],
         ["de"] =
         [
@@ -87,7 +122,7 @@ public static class ModelDownloader
         string language = Pipeline.English)
     {
         var models = Pipeline.SelectModels(package, processors, addRequired: true, paramName, language);
-        var paths = models.Select(m => $"{m.Key}/{m.Value}").Concat(Pipeline.SharedModels(models, language)).Select(p => p + ".pt").ToHashSet();
+        var paths = Pipeline.ModelFiles(models, language).Select(p => p + ".pt").ToHashSet();
         var files = Files[language].Where(f => paths.Contains(f.Path)).ToList();
         if (files.Count != paths.Count)
             throw new InvalidOperationException($"No checksum for {string.Join(", ", paths.Except(files.Select(f => f.Path)))}");
@@ -175,7 +210,7 @@ public static class ModelDownloader
     /// </summary>
     internal static void Verify(string modelDir, IReadOnlyDictionary<string, string> models, string language)
     {
-        foreach (var path in models.Select(m => $"{m.Key}/{m.Value}").Concat(Pipeline.SharedModels(models, language)))
+        foreach (var path in Pipeline.ModelFiles(models, language))
         {
             var basePath = Path.Combine(modelDir, path);
 

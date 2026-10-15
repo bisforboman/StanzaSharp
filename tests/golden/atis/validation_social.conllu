@@ -1,0 +1,606 @@
+# text = omg just landed in lisbon and the weather is PERFECT #travel #blessed
+# sent_id = 0
+1	omg	Omg	PROPN	_	Number=Sing	3	nsubj	_	start_char=0|end_char=3
+2	just	just	ADV	_	Degree=Pos	3	advmod	_	start_char=4|end_char=8
+3	landed	land	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=9|end_char=15
+4	in	in	ADP	_	_	5	case	_	start_char=16|end_char=18
+5	lisbon	Lisbon	PROPN	_	Number=Sing	3	obl	_	start_char=19|end_char=25
+6	and	and	CCONJ	_	_	8	cc	_	start_char=26|end_char=29
+7	the	the	DET	_	PronType=Art	8	det	_	start_char=30|end_char=33
+8	weather	weather	NOUN	_	Number=Sing	3	obl	_	start_char=34|end_char=41
+9	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	10	cop	_	start_char=42|end_char=44
+10	PERFECT	PERFECT	ADJ	_	Degree=Pos	3	parataxis	_	start_char=45|end_char=52
+11	#travel	Ttravel	PROPN	_	Number=Sing	10	flat	_	start_char=53|end_char=60
+12	#blessed	Cblessed	PROPN	_	Number=Sing	11	flat	_	SpacesAfter=\n\n|start_char=61|end_char=69
+
+# text = @jen_k99 lol no way that's real :P
+# sent_id = 1
+1	@jen	Jjen	PROPN	_	Number=Sing	3	nsubj	_	SpaceAfter=No|start_char=71|end_char=75
+2	_k99	Ck99	PROPN	_	Number=Sing	1	flat	_	start_char=75|end_char=79
+3	lol	lol	VERB	_	Tense=Pres|VerbForm=Inf	0	root	_	start_char=80|end_char=83
+4	no	no	DET	_	PronType=Art	5	det	_	start_char=84|end_char=86
+5	way	way	NOUN	_	Number=Sing	3	obj	_	start_char=87|end_char=90
+6-7	that's	_	_	_	_	_	_	_	start_char=91|end_char=97
+6	that	that	ADP	_	_	8	mark	_	start_char=91|end_char=95
+7	's	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	8	cop	_	start_char=95|end_char=97
+8	real	real	ADJ	_	Degree=Pos	3	ccomp	_	start_char=98|end_char=102
+9	:P	:P	NOUN	_	Number=Sing	8	obj	_	SpacesAfter=\n\n|start_char=103|end_char=105
+
+# text = cant believe its already friday...
+# sent_id = 2
+1	cant	cant	AUX	_	_	2	aux	_	start_char=107|end_char=111
+2	believe	believe	VERB	_	VerbForm=Inf	0	root	_	start_char=112|end_char=119
+3	its	its	DET	_	PronType=Art	5	det	_	start_char=120|end_char=123
+4	already	already	ADV	_	Degree=Pos	5	advmod	_	start_char=124|end_char=131
+5	friday...	Friday...	NOUN	_	Number=Sing	2	obj	_	start_char=132|end_char=141
+
+# text = where did the week go
+# sent_id = 3
+1	where	where	ADV	_	PronType=Int,Rel	5	advmod	_	start_char=142|end_char=147
+2	did	did	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	5	aux	_	start_char=148|end_char=151
+3	the	the	DET	_	PronType=Art	4	det	_	start_char=152|end_char=155
+4	week	week	NOUN	_	Number=Sing	5	nsubj	_	start_char=156|end_char=160
+5	go	go	VERB	_	VerbForm=Inf	0	root	_	SpacesAfter=\n\n|start_char=161|end_char=163
+
+# text = THIS IS THE BEST DAY OF MY LIFE!!!!!!
+# sent_id = 4
+1	THIS	this	PRON	_	PronType=Prs	5	nsubj	_	start_char=165|end_char=169
+2	IS	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	5	cop	_	start_char=170|end_char=172
+3	THE	the	DET	_	PronType=Art	5	det	_	start_char=173|end_char=176
+4	BEST	BEST	ADV	_	Degree=Pos	5	amod	_	start_char=177|end_char=181
+5	DAY	day	NOUN	_	Number=Sing	0	root	_	start_char=182|end_char=185
+6	OF	of	ADP	_	_	8	case	_	start_char=186|end_char=188
+7	MY	I	DET	_	Number=Sing|Poss=Yes|PronType=Prs	8	det	_	start_char=189|end_char=191
+8	LIFE!!!!!!	Life!!!!!	PROPN	_	Number=Sing	5	nmod	_	SpacesAfter=\n\n|start_char=192|end_char=202
+
+# text = soooo tired rn. need coffeeeee
+# sent_id = 5
+1	soooo	soooo	NOUN	_	Number=Sing	2	nsubj	_	start_char=204|end_char=209
+2	tired	tine	VERB	_	Tense=Pres|VerbForm=Part	4	nsubj	_	start_char=210|end_char=215
+3	rn.	Rn.	PROPN	_	Number=Sing	4	nsubj	_	start_char=216|end_char=219
+4	need	need	VERB	_	Mood=Ind|Tense=Pres|VerbForm=Fin	0	root	_	start_char=220|end_char=224
+5	coffeeeee	Coffeeeee	PROPN	_	Number=Sing	4	obl	_	SpacesAfter=\n\n|start_char=225|end_char=234
+
+# text = ok so hear me out: pineapple on pizza is actually good. fight me
+# sent_id = 6
+1	ok	ok	INTJ	_	_	3	discourse	_	start_char=236|end_char=238
+2	so	so	ADV	_	Degree=Pos	3	advmod	_	start_char=239|end_char=241
+3	hear	hear	VERB	_	VerbForm=Inf	0	root	_	start_char=242|end_char=246
+4	me	I	PRON	_	Case=Acc|Number=Sing|Person=1|PronType=Prs	3	iobj	_	start_char=247|end_char=249
+5	out:	out:	ADV	_	Degree=Pos	6	amod	_	start_char=250|end_char=254
+6	pineapple	pineapple	NOUN	_	Number=Sing	3	obj	_	start_char=255|end_char=264
+7	on	on	ADP	_	_	8	case	_	start_char=265|end_char=267
+8	pizza	pizza	NOUN	_	Number=Sing	6	nmod	_	start_char=268|end_char=273
+9	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	12	aux	_	start_char=274|end_char=276
+10	actually	actually	ADV	_	Degree=Pos	12	advmod	_	start_char=277|end_char=285
+11	good.	good.	NOUN	_	Number=Sing	12	nsubj	_	start_char=286|end_char=291
+12	fight	fight	VERB	_	VerbForm=Inf	3	parataxis	_	start_char=292|end_char=297
+13	me	I	PRON	_	Case=Acc|Number=Sing|Person=1|PronType=Prs	12	obj	_	SpacesAfter=\n\n|start_char=298|end_char=300
+
+# text = Thanks @CityTransit for the 45 min delay this morning :( #commute #fail
+# sent_id = 7
+1	Thanks	thank	VERB	_	VerbForm=Inf	0	root	_	start_char=302|end_char=308
+2	@City	Ccity	PROPN	_	Number=Sing	3	compound	_	SpaceAfter=No|start_char=309|end_char=314
+3	Transit	Transit	NOUN	_	Number=Sing	1	obj	_	start_char=314|end_char=321
+4	for	for	ADP	_	_	8	case	_	start_char=322|end_char=325
+5	the	the	DET	_	PronType=Art	8	det	_	start_char=326|end_char=329
+6	45	45	NUM	_	NumType=Card	7	nummod	_	start_char=330|end_char=332
+7	min	Min	PROPN	_	Number=Sing	8	nmod	_	start_char=333|end_char=336
+8	delay	delay	NOUN	_	Number=Sing	3	nmod	_	start_char=337|end_char=342
+9	this	this	DET	_	PronType=Art	10	det	_	start_char=343|end_char=347
+10	morning	morning	NOUN	_	Number=Sing	8	nmod:tmod	_	start_char=348|end_char=355
+11	:(	:(	NOUN	_	Number=Sing	8	nmod	_	start_char=356|end_char=358
+12	#commute	Ccommute	PROPN	_	Number=Sing	11	obj	_	start_char=359|end_char=367
+13	#fail	Pfail	PROPN	_	Number=Sing	12	flat	_	SpacesAfter=\n\n|start_char=368|end_char=373
+
+# text = lmaooo did u see
+# sent_id = 8
+1	lmaooo	Lmaooo	PROPN	_	Number=Sing	4	obj	_	start_char=375|end_char=381
+2	did	did	AUX	_	_	4	aux	_	start_char=382|end_char=385
+3	u	U	PROPN	_	Number=Sing	4	nsubj	_	start_char=386|end_char=387
+4	see	see	VERB	_	VerbForm=Inf	0	root	_	start_char=388|end_char=391
+
+# text = what he posted last nite
+# sent_id = 9
+1	what	what	PRON	_	PronType=Int,Rel	3	obj	_	start_char=392|end_char=396
+2	he	he	PRON	_	Case=Nom|Number=Sing|Person=3|PronType=Prs	3	nsubj	_	start_char=397|end_char=399
+3	posted	post	VERB	_	Tense=Pres|VerbForm=Fin	0	root	_	start_char=400|end_char=406
+4	last	last	ADJ	_	Degree=Pos	5	amod	_	start_char=407|end_char=411
+5	nite	nite	NOUN	_	Number=Sing	3	obj	_	SpacesAfter=\n\n|start_char=412|end_char=416
+
+# text = brb gotta walk the dog
+# sent_id = 10
+1	brb	Brb	PROPN	_	Number=Sing	3	nsubj	_	start_char=418|end_char=421
+2	gotta	gotta	INTJ	_	_	3	discourse	_	start_char=422|end_char=427
+3	walk	walk	VERB	_	VerbForm=Inf	0	root	_	start_char=428|end_char=432
+4	the	the	DET	_	PronType=Art	5	det	_	start_char=433|end_char=436
+5	dog	Dog	PROPN	_	Number=Sing	3	obj	_	SpacesAfter=\n\n|start_char=437|end_char=440
+
+# text = idk man... seems kinda sketchy to me tbh
+# sent_id = 11
+1	idk	Idk	PROPN	_	Number=Sing	3	nsubj	_	start_char=442|end_char=445
+2	man...	Man...	PROPN	_	Number=Sing	1	nmod	_	start_char=446|end_char=452
+3	seems	seem	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=453|end_char=458
+4	kinda	Kinda	PROPN	_	Number=Sing	3	obl	_	start_char=459|end_char=464
+5	sketchy	sketchy	ADV	_	Degree=Pos	3	advmod	_	start_char=465|end_char=472
+6	to	to	ADP	_	_	7	case	_	start_char=473|end_char=475
+7	me	I	PRON	_	Case=Acc|Number=Sing|Person=1|PronType=Prs	3	obl	_	start_char=476|end_char=478
+8	tbh	tbh	ADV	_	Degree=Pos	3	advmod	_	SpacesAfter=\n\n|start_char=479|end_char=482
+
+# text = Happy bday @marcus_t!!! hope it's a great one :) :) :)
+# sent_id = 12
+1	Happy	Happy	INTJ	_	_	2	discourse	_	start_char=484|end_char=489
+2	bday	bday	NOUN	_	Number=Sing	4	nsubj	_	start_char=490|end_char=494
+3	@marcus_t!!!	@marcus_t!!	INTJ	_	_	4	discourse	_	start_char=495|end_char=507
+4	hope	hope	VERB	_	VerbForm=Inf	0	root	_	start_char=508|end_char=512
+5-6	it's	_	_	_	_	_	_	_	start_char=513|end_char=517
+5	it	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	4	obj	_	start_char=513|end_char=515
+6	's	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	9	cop	_	start_char=515|end_char=517
+7	a	a	DET	_	PronType=Art	9	det	_	start_char=518|end_char=519
+8	great	great	ADJ	_	Degree=Pos	9	amod	_	start_char=520|end_char=525
+9	one	one	NOUN	_	Number=Sing	4	obj	_	start_char=526|end_char=529
+10	:)	:)	ADV	_	Degree=Pos	12	advmod	_	start_char=530|end_char=532
+11	:)	:)	ADV	_	Degree=Pos	12	advmod	_	start_char=533|end_char=535
+12	:)	:)	VERB	_	Mood=Ind|Tense=Pres|VerbForm=Fin	9	acl:relcl	_	SpacesAfter=\n\n|start_char=536|end_char=538
+
+# text = i luv this song so much <3 <3
+# sent_id = 13
+1	i	I	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	2	nsubj	_	start_char=540|end_char=541
+2	luv	luv	VERB	_	Mood=Ind|Tense=Pres|VerbForm=Fin	0	root	_	start_char=542|end_char=545
+3	this	this	DET	_	PronType=Art	4	det	_	start_char=546|end_char=550
+4	song	song	NOUN	_	Number=Sing	2	obj	_	start_char=551|end_char=555
+5	so	so	ADV	_	Degree=Pos	6	advmod	_	start_char=556|end_char=558
+6	much	much	ADV	_	Degree=Pos	2	advmod	_	start_char=559|end_char=563
+7	<3	<3	NUM	_	NumType=Card	6	nummod	_	start_char=564|end_char=566
+8	<3	<3	NUM	_	NumType=Card	6	nummod	_	SpacesAfter=\n\n|start_char=567|end_char=569
+
+# text = anyone else having trouble logging in?? site keeps saying error 503
+# sent_id = 14
+1	anyone	anyone	ADV	_	Degree=Pos	3	advmod	_	start_char=571|end_char=577
+2	else	else	ADV	_	Degree=Pos	3	advmod	_	start_char=578|end_char=582
+3	having	have	VERB	_	Tense=Pres|VerbForm=Part	8	parataxis	_	start_char=583|end_char=589
+4	trouble	trouble	VERB	_	Tense=Pres|VerbForm=Part	5	case	_	start_char=590|end_char=597
+5	logging	logg	VERB	_	Tense=Pres|VerbForm=Part	7	compound	_	start_char=598|end_char=605
+6	in??	In??	PROPN	_	Number=Sing	5	obl	_	start_char=606|end_char=610
+7	site	site	NOUN	_	Number=Sing	8	nsubj	_	start_char=611|end_char=615
+8	keeps	keey	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=616|end_char=621
+9	saying	say	VERB	_	Tense=Pres|VerbForm=Part	8	obl	_	start_char=622|end_char=628
+10	error	error	NOUN	_	Number=Sing	9	obj	_	start_char=629|end_char=634
+11	503	503	NUM	_	NumType=Card	10	nummod	_	SpacesAfter=\n\n|start_char=635|end_char=638
+
+# text = new blog post is up!! link in bio
+# sent_id = 15
+1	new	New	PROPN	_	Number=Sing	3	compound	_	start_char=640|end_char=643
+2	blog	blog	NOUN	_	Number=Sing	1	nmod	_	start_char=644|end_char=648
+3	post	post	NOUN	_	Number=Sing	6	nsubj	_	start_char=649|end_char=653
+4	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	6	cop	_	start_char=654|end_char=656
+5	up!!	Up!!	PROPN	_	Number=Sing	6	nmod	_	start_char=657|end_char=661
+6	link	link	NOUN	_	Number=Sing	0	root	_	start_char=662|end_char=666
+7	in	in	ADP	_	_	8	case	_	start_char=667|end_char=669
+8	bio	Bio	PROPN	_	Number=Sing	6	nmod	_	SpacesAfter=\n\n|start_char=670|end_char=673
+
+# text = RT @newsdesk: Power outage reported across downtown; crews on scene.
+# sent_id = 16
+1	RT	RX	PROPN	_	Number=Sing	5	obl	_	start_char=675|end_char=677
+2	@newsdesk:	Wnewsdeskk	PROPN	_	Number=Sing	1	conj	_	start_char=678|end_char=688
+3	Power	Power	NOUN	_	Number=Sing	4	compound	_	start_char=689|end_char=694
+4	outage	outage	NOUN	_	Number=Sing	5	nsubj	_	start_char=695|end_char=701
+5	reported	report	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=702|end_char=710
+6	across	across	ADP	_	_	8	case	_	start_char=711|end_char=717
+7	downtown;	Downtown;	PROPN	_	Number=Sing	8	nmod	_	start_char=718|end_char=727
+8	crews	crew	NOUN	_	Number=Plur	5	obl	_	start_char=728|end_char=733
+9	on	on	ADP	_	_	10	case	_	start_char=734|end_char=736
+10	scene.	scene.	NOUN	_	Number=Sing	8	nmod	_	SpacesAfter=\n\n|start_char=737|end_char=743
+
+# text = can u pick up milk on the way home thx
+# sent_id = 17
+1	can	can	AUX	_	_	3	aux	_	start_char=745|end_char=748
+2	u	U	PROPN	_	Number=Sing	3	nsubj	_	start_char=749|end_char=750
+3	pick	pick	VERB	_	VerbForm=Inf	0	root	_	start_char=751|end_char=755
+4	up	up	ADP	_	_	5	case	_	start_char=756|end_char=758
+5	milk	milk	NOUN	_	Number=Sing	3	obj	_	start_char=759|end_char=763
+6	on	on	ADP	_	_	8	case	_	start_char=764|end_char=766
+7	the	the	DET	_	PronType=Art	8	det	_	start_char=767|end_char=770
+8	way	way	NOUN	_	Number=Sing	9	compound	_	start_char=771|end_char=774
+9	home	home	NOUN	_	Number=Sing	10	compound	_	start_char=775|end_char=779
+10	thx	THx	PROPN	_	Number=Sing	3	obl	_	SpacesAfter=\n\n|start_char=780|end_char=783
+
+# text = Nope. Not doing it. Never again.
+# sent_id = 18
+1	Nope.	Nope.	INTJ	_	_	3	discourse	_	start_char=785|end_char=790
+2	Not	not	ADV	_	Degree=Pos	3	advmod	_	start_char=791|end_char=794
+3	doing	do	VERB	_	Tense=Pres|VerbForm=Part	0	root	_	start_char=795|end_char=800
+4	it.	it.	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	3	obj	_	start_char=801|end_char=804
+5	Never	Never	ADV	_	Degree=Pos	6	advmod	_	start_char=805|end_char=810
+6	again.	again.	ADV	_	Degree=Pos	3	advmod	_	SpacesAfter=\n\n|start_char=811|end_char=817
+
+# text = #MondayMotivation: Start where you are. Use
+# sent_id = 19
+1	#Monday	Gmonday	PROPN	_	Number=Sing	2	amod	_	SpaceAfter=No|start_char=819|end_char=826
+2	Motivation:	Motivation:	NOUN	_	Number=Sing	3	compound	_	start_char=826|end_char=837
+3	Start	Start	NOUN	_	Number=Sing	7	dislocated	_	start_char=838|end_char=843
+4	where	where	ADV	_	PronType=Int,Rel	7	advmod	_	start_char=844|end_char=849
+5	you	you	PRON	_	Case=Nom|Number=Sing|Person=2|PronType=Prs	7	nsubj	_	start_char=850|end_char=853
+6	are.	are.	INTJ	_	_	7	discourse	_	start_char=854|end_char=858
+7	Use	use	VERB	_	VerbForm=Inf	0	root	_	start_char=859|end_char=862
+
+# text = what you have. Do what you can.
+# sent_id = 20
+1	what	what	PRON	_	PronType=Int,Rel	7	xcomp	_	start_char=863|end_char=867
+2	you	you	PRON	_	Case=Nom|Number=Sing|Person=2|PronType=Prs	7	obj	_	start_char=868|end_char=871
+3	have.	have.	INTJ	_	_	7	advmod	_	start_char=872|end_char=877
+4	Do	do	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	7	aux	_	start_char=878|end_char=880
+5	what	what	PRON	_	PronType=Int,Rel	7	nsubj	_	start_char=881|end_char=885
+6	you	you	PRON	_	Case=Nom|Number=Sing|Person=2|PronType=Prs	7	nsubj	_	start_char=886|end_char=889
+7	can.	can.	VERB	_	VerbForm=Inf	0	root	_	SpacesAfter=\n\n|start_char=890|end_char=894
+
+# text = wait what?!?! since WHEN
+# sent_id = 21
+1	wait	wait	VERB	_	VerbForm=Inf	0	root	_	start_char=896|end_char=900
+2	what	what	PRON	_	PronType=Int,Rel	1	obj	_	SpaceAfter=No|start_char=901|end_char=905
+3	?!?!	?!?!	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	1	obj	_	start_char=905|end_char=909
+4	since	since	ADP	_	_	5	case	_	start_char=910|end_char=915
+5	WHEN	when	ADV	_	PronType=Int,Rel	1	advmod	_	SpacesAfter=\n\n|start_char=916|end_char=920
+
+# text = Yesss we won 3-1!!! GO TEAM GO
+# sent_id = 22
+1	Yesss	Yesss	INTJ	_	_	3	discourse	_	start_char=922|end_char=927
+2	we	we	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	3	nsubj	_	start_char=928|end_char=930
+3	won	won	VERB	_	Tense=Past|VerbForm=Fin	0	root	_	start_char=931|end_char=934
+4	3-1	3-1	NUM	_	NumType=Card	3	obj	_	SpaceAfter=No|start_char=935|end_char=938
+5	!!!	!!!	ADV	_	Degree=Pos	6	advmod	_	start_char=938|end_char=941
+6	GO	go	VERB	_	VerbForm=Inf	8	nsubj	_	start_char=942|end_char=944
+7	TEAM	Team	PROPN	_	Number=Sing	8	nsubj	_	start_char=945|end_char=949
+8	GO	go	VERB	_	VerbForm=Inf	3	ccomp	_	SpacesAfter=\n\n|start_char=950|end_char=952
+
+# text = that moment when u realize ur phone was in ur hand the whole time ;-)
+# sent_id = 23
+1	that	that	ADP	_	_	2	case	_	start_char=954|end_char=958
+2	moment	moment	NOUN	_	Number=Sing	5	discourse	_	start_char=959|end_char=965
+3	when	when	ADV	_	PronType=Int,Rel	2	fixed	_	start_char=966|end_char=970
+4	u	U	PROPN	_	Number=Sing	5	nsubj	_	start_char=971|end_char=972
+5	realize	realize	VERB	_	VerbForm=Inf	0	root	_	start_char=973|end_char=980
+6	ur	UR	PROPN	_	Number=Sing	7	compound	_	start_char=981|end_char=983
+7	phone	phone	NOUN	_	Number=Sing	5	obj	_	start_char=984|end_char=989
+8	was	wave	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	10	cop	_	start_char=990|end_char=993
+9	in	in	ADP	_	_	10	case	_	start_char=994|end_char=996
+10	ur	UR	PROPN	_	Number=Sing	5	obl	_	start_char=997|end_char=999
+11	hand	hand	ADV	_	Degree=Pos	14	advmod	_	start_char=1000|end_char=1004
+12	the	the	DET	_	PronType=Art	14	det	_	start_char=1005|end_char=1008
+13	whole	whole	ADJ	_	Degree=Pos	14	amod	_	start_char=1009|end_char=1014
+14	time	time	NOUN	_	Number=Sing	5	obl	_	start_char=1015|end_char=1019
+15	;-)	;-)	ADV	_	Degree=Pos	14	advmod	_	SpacesAfter=\n\n|start_char=1020|end_char=1023
+
+# text = ugh my flight got cancelled AGAIN. thanks a lot @SkyJetAir
+# sent_id = 24
+1	ugh	ugh	INTJ	_	_	4	discourse	_	start_char=1025|end_char=1028
+2	my	I	DET	_	Number=Sing|Poss=Yes|PronType=Prs	3	det	_	start_char=1029|end_char=1031
+3	flight	flight	NOUN	_	Number=Sing	4	nsubj	_	start_char=1032|end_char=1038
+4	got	get	VERB	_	VerbForm=Inf	0	root	_	start_char=1039|end_char=1042
+5	cancelled	cancell	VERB	_	Tense=Past|VerbForm=Part	4	obl	_	start_char=1043|end_char=1052
+6	AGAIN.	AGAIN.	ADV	_	Degree=Pos	7	advmod	_	start_char=1053|end_char=1059
+7	thanks	thank	VERB	_	VerbForm=Inf	5	conj	_	start_char=1060|end_char=1066
+8	a	a	DET	_	PronType=Art	9	det	_	start_char=1067|end_char=1068
+9	lot	lot	NOUN	_	Number=Sing	7	obl	_	start_char=1069|end_char=1072
+10	@Sky	Ssky	PROPN	_	Number=Sing	9	nmod	_	SpaceAfter=No|start_char=1073|end_char=1077
+11	JetAir	Jetair	PROPN	_	Number=Sing	9	nmod	_	SpacesAfter=\n\n|start_char=1077|end_char=1083
+
+# text = he said "see u at 8" and showed up at 9:30 smh
+# sent_id = 25
+1	he	he	ADV	_	Degree=Pos	2	advmod	_	start_char=1085|end_char=1087
+2	said	said	VERB	_	Tense=Pres|VerbForm=Fin	0	root	_	start_char=1088|end_char=1092
+3	"see	"see	VERB	_	Tense=Pres|VerbForm=Fin	2	xcomp	_	start_char=1093|end_char=1097
+4	u	U	PROPN	_	Number=Sing	3	obl	_	start_char=1098|end_char=1099
+5	at	at	ADP	_	_	6	case	_	start_char=1100|end_char=1102
+6	8"	8"	NUM	_	NumType=Card	3	obl	_	start_char=1103|end_char=1105
+7	and	and	CCONJ	_	_	8	cc	_	start_char=1106|end_char=1109
+8	showed	showed	VERB	_	VerbForm=Fin	3	conj	_	start_char=1110|end_char=1116
+9	up	up	ADV	_	Degree=Pos	8	advmod	_	start_char=1117|end_char=1119
+10	at	at	ADP	_	_	12	case	_	start_char=1120|end_char=1122
+11	9	9	NUM	_	NumType=Card	13	nummod	_	SpaceAfter=No|start_char=1123|end_char=1124
+12	:30	:30	NUM	_	NumType=Card	13	nummod	_	start_char=1124|end_char=1127
+13	smh	Smh	PROPN	_	Number=Sing	8	obl	_	SpacesAfter=\n\n|start_char=1128|end_char=1131
+
+# text = this tweet is about u and u know who u r
+# sent_id = 26
+1	this	this	DET	_	PronType=Art	2	det	_	start_char=1133|end_char=1137
+2	tweet	tweet	NOUN	_	Number=Sing	8	obj	_	start_char=1138|end_char=1143
+3	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	8	aux	_	start_char=1144|end_char=1146
+4	about	about	ADP	_	_	5	case	_	start_char=1147|end_char=1152
+5	u	U	PROPN	_	Number=Sing	8	nsubj	_	start_char=1153|end_char=1154
+6	and	and	CCONJ	_	_	7	cc	_	start_char=1155|end_char=1158
+7	u	U	PROPN	_	Number=Sing	8	nsubj	_	start_char=1159|end_char=1160
+8	know	know	VERB	_	VerbForm=Inf	0	root	_	start_char=1161|end_char=1165
+9	who	who	ADP	_	_	10	case	_	start_char=1166|end_char=1169
+10	u	U	PROPN	_	Number=Sing	8	obl	_	start_char=1170|end_char=1171
+11	r	R	PROPN	_	Number=Sing	10	flat	_	SpacesAfter=\n\n|start_char=1172|end_char=1173
+
+# text = who's coming to the bbq sat?? bring chips n dip
+# sent_id = 27
+1-2	who's	_	_	_	_	_	_	_	start_char=1175|end_char=1180
+1	who	who	PRON	_	PronType=Int,Rel	3	nsubj	_	start_char=1175|end_char=1178
+2	's	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	aux	_	start_char=1178|end_char=1180
+3	coming	come	VERB	_	Tense=Pres|VerbForm=Part	8	parataxis	_	start_char=1181|end_char=1187
+4	to	to	ADP	_	_	7	case	_	start_char=1188|end_char=1190
+5	the	the	DET	_	PronType=Art	7	det	_	start_char=1191|end_char=1194
+6	bbq	Bbq	PROPN	_	Number=Sing	8	nsubj	_	start_char=1195|end_char=1198
+7	sat??	Sat??	PROPN	_	Number=Sing	6	nmod	_	start_char=1199|end_char=1204
+8	bring	bring	VERB	_	VerbForm=Inf	0	root	_	start_char=1205|end_char=1210
+9	chips	chip	NOUN	_	Number=Plur	10	compound	_	start_char=1211|end_char=1216
+10	n	N	PROPN	_	Number=Sing	11	compound	_	start_char=1217|end_char=1218
+11	dip	dip	NOUN	_	Number=Sing	8	obj	_	SpacesAfter=\n\n|start_char=1219|end_char=1222
+
+# text = 10/10 would recommend. the pasta was amazing & the service was even better
+# sent_id = 28
+1	10	10	NUM	_	NumType=Card	2	nummod	_	SpaceAfter=No|start_char=1224|end_char=1226
+2	/10	/10	NUM	_	NumType=Card	4	nsubj	_	start_char=1226|end_char=1229
+3	would	will	AUX	_	_	4	aux	_	start_char=1230|end_char=1235
+4	recommend.	recommend.	VERB	_	VerbForm=Inf	0	root	_	start_char=1236|end_char=1246
+5	the	the	DET	_	PronType=Art	6	det	_	start_char=1247|end_char=1250
+6	pasta	pasta	NOUN	_	Number=Sing	8	nsubj	_	start_char=1251|end_char=1256
+7	was	wave	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	8	cop	_	start_char=1257|end_char=1260
+8	amazing	amaz	ADJ	_	Degree=Pos	4	ccomp	_	start_char=1261|end_char=1268
+9	&	&	ADP	_	_	11	case	_	start_char=1269|end_char=1270
+10	the	the	DET	_	PronType=Art	11	det	_	start_char=1271|end_char=1274
+11	service	service	NOUN	_	Number=Sing	14	nsubj	_	start_char=1275|end_char=1282
+12	was	wave	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	14	cop	_	start_char=1283|end_char=1286
+13	even	even	ADV	_	Degree=Pos	14	advmod	_	start_char=1287|end_char=1291
+14	better	better	ADJ	_	Degree=Pos	4	ccomp	_	SpacesAfter=\n\n|start_char=1292|end_char=1298
+
+# text = Me: I'll go to bed early tonight. Also me at 3am: *watches 14 videos about octopuses
+# sent_id = 29
+1	Me:	Me:	INTJ	_	_	4	discourse	_	start_char=1300|end_char=1303
+2-3	I'll	_	_	_	_	_	_	_	start_char=1304|end_char=1308
+2	I	I	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	4	nsubj	_	start_char=1304|end_char=1305
+3	'll	will	AUX	_	_	4	aux	_	start_char=1305|end_char=1308
+4	go	go	VERB	_	VerbForm=Inf	0	root	_	start_char=1309|end_char=1311
+5	to	to	ADP	_	_	6	case	_	start_char=1312|end_char=1314
+6	bed	Bed	PROPN	_	Number=Sing	4	obl	_	start_char=1315|end_char=1318
+7	early	early	ADJ	_	Degree=Pos	4	advmod	_	start_char=1319|end_char=1324
+8	tonight.	tonight.	ADV	_	Degree=Pos	4	advmod	_	start_char=1325|end_char=1333
+9	Also	also	ADV	_	Degree=Pos	4	advmod	_	start_char=1334|end_char=1338
+10	me	I	PRON	_	Case=Acc|Number=Sing|Person=1|PronType=Prs	4	obl	_	start_char=1339|end_char=1341
+11	at	at	ADP	_	_	12	case	_	start_char=1342|end_char=1344
+12	3am:	3am:	NUM	_	NumType=Card	13	nummod	_	start_char=1345|end_char=1349
+13	*watches	Cwatche	PROPN	_	Number=Sing	4	obl	_	start_char=1350|end_char=1358
+14	14	14	NUM	_	NumType=Card	13	nummod	_	start_char=1359|end_char=1361
+15	videos	videos	NOUN	_	Number=Plur	4	parataxis	_	start_char=1362|end_char=1368
+16	about	about	ADP	_	_	17	case	_	start_char=1369|end_char=1374
+17	octopuses	octopuse	NOUN	_	Number=Plur	15	nmod	_	SpaceAfter=No|start_char=1375|end_char=1384
+
+# text = *
+# sent_id = 30
+1	*	Q	PROPN	_	Number=Sing	0	root	_	SpacesAfter=\n\n|start_char=1384|end_char=1385
+
+# text = pls retweet!!! our dog Biscuit
+# sent_id = 31
+1	pls	Pls	PROPN	_	Number=Sing	2	advmod	_	start_char=1387|end_char=1390
+2	retweet	retweet	VERB	_	VerbForm=Inf	0	root	_	SpaceAfter=No|start_char=1391|end_char=1398
+3	!!!	!!!	ADV	_	Degree=Pos	2	advmod	_	start_char=1398|end_char=1401
+4	our	our	DET	_	PronType=Art	5	det	_	start_char=1402|end_char=1405
+5	dog	Dog	PROPN	_	Number=Sing	2	obl	_	start_char=1406|end_char=1409
+6	Biscuit	Biscuit	PROPN	_	Number=Sing	5	flat	_	start_char=1410|end_char=1417
+
+# text = went missing near 5th & Main. brown, small, very friendly. call 555-0199
+# sent_id = 32
+1	went	went	VERB	_	Tense=Pres|VerbForm=Part	0	root	_	start_char=1418|end_char=1422
+2	missing	miss	VERB	_	Tense=Pres|VerbForm=Part	1	conj	_	start_char=1423|end_char=1430
+3	near	near	ADP	_	_	5	case	_	start_char=1431|end_char=1435
+4	5th	5th	NUM	_	NumType=Card	2	nmod	_	start_char=1436|end_char=1439
+5	&	Q	PROPN	_	Number=Sing	2	nmod	_	start_char=1440|end_char=1441
+6	Main.	Main.	PROPN	_	Number=Sing	5	appos	_	start_char=1442|end_char=1447
+7	brown,	Brown,	PROPN	_	Number=Sing	5	appos	_	start_char=1448|end_char=1454
+8	small,	Small,	PROPN	_	Number=Sing	7	appos	_	start_char=1455|end_char=1461
+9	very	very	ADJ	_	Degree=Pos	10	amod	_	start_char=1462|end_char=1466
+10	friendly.	Friendly.	NOUN	_	Number=Sing	11	nsubj	_	start_char=1467|end_char=1476
+11	call	call	NOUN	_	Number=Sing	1	obl	_	start_char=1477|end_char=1481
+12	555	555	NUM	_	NumType=Card	13	nummod	_	SpaceAfter=No|start_char=1482|end_char=1485
+13	-0199	-0199	NUM	_	NumType=Card	11	nummod	_	SpacesAfter=\n\n|start_char=1485|end_char=1490
+
+# text = can't stop laughing XD XD
+# sent_id = 33
+1	can't	can't	INTJ	_	_	2	discourse	_	start_char=1492|end_char=1497
+2	stop	stop	VERB	_	VerbForm=Inf	0	root	_	start_char=1498|end_char=1502
+3	laughing	laugh	VERB	_	Tense=Pres|VerbForm=Part	2	obj	_	start_char=1503|end_char=1511
+4	XD	QD	PROPN	_	Number=Sing	3	obj	_	start_char=1512|end_char=1514
+5	XD	QD	PROPN	_	Number=Sing	4	flat	_	SpacesAfter=\n\n|start_char=1515|end_char=1517
+
+# text = Who else remembers dial-up internet?? lol
+# sent_id = 34
+1	Who	who	ADV	_	PronType=Int,Rel	3	advmod	_	start_char=1519|end_char=1522
+2	else	else	ADV	_	Degree=Pos	3	advmod	_	start_char=1523|end_char=1527
+3	remembers	remember	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1528|end_char=1537
+4	dial-up	Dial-up	PROPN	_	Number=Sing	3	obj	_	start_char=1538|end_char=1545
+5	internet??	Internet?	PROPN	_	Number=Sing	3	obl	_	start_char=1546|end_char=1556
+6	lol	lol	ADV	_	Degree=Pos	3	advmod	_	SpacesAfter=\n\n|start_char=1557|end_char=1560
+
+# text = gr8 news everyone, the shop reopens tmrw at 10
+# sent_id = 35
+1	gr8	Gr8	PROPN	_	Number=Sing	2	nmod	_	start_char=1562|end_char=1565
+2	news	news	NOUN	_	Number=Sing	6	nsubj	_	start_char=1566|end_char=1570
+3	everyone,	everyone,	ADV	_	Degree=Pos	6	advmod	_	start_char=1571|end_char=1580
+4	the	the	DET	_	PronType=Art	5	det	_	start_char=1581|end_char=1584
+5	shop	shop	NOUN	_	Number=Sing	6	nsubj	_	start_char=1585|end_char=1589
+6	reopens	reop	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1590|end_char=1597
+7	tmrw	Tmrw	PROPN	_	Number=Sing	6	obl	_	start_char=1598|end_char=1602
+8	at	at	ADP	_	_	9	case	_	start_char=1603|end_char=1605
+9	10	10	NUM	_	NumType=Card	6	obl	_	SpacesAfter=\n\n|start_char=1606|end_char=1608
+
+# text = ok ok ok ok ok fine
+# sent_id = 36
+1	ok	ok	INTJ	_	_	2	discourse	_	start_char=1610|end_char=1612
+2	ok	ok	ADV	_	Degree=Pos	3	advmod	_	start_char=1613|end_char=1615
+3	ok	ok	ADV	_	Degree=Pos	0	root	_	start_char=1616|end_char=1618
+4	ok	ok	ADV	_	Degree=Pos	3	advmod	_	start_char=1619|end_char=1621
+5	ok	ok	ADV	_	Degree=Pos	4	advmod	_	start_char=1622|end_char=1624
+6	fine	fine	ADV	_	Degree=Pos	5	advmod	_	SpacesAfter=\n\n|start_char=1625|end_char=1629
+
+# text = hmm... not sure about this one. 3/5 stars
+# sent_id = 37
+1	hmm...	hmm...	INTJ	_	_	3	discourse	_	start_char=1631|end_char=1637
+2	not	not	ADV	_	Degree=Pos	3	advmod	_	start_char=1638|end_char=1641
+3	sure	sure	ADV	_	Degree=Pos	8	advmod	_	start_char=1642|end_char=1646
+4	about	about	ADP	_	_	8	case	_	start_char=1647|end_char=1652
+5	this	this	DET	_	PronType=Art	8	det	_	start_char=1653|end_char=1657
+6	one.	one.	NOUN	_	Number=Sing	8	compound	_	start_char=1658|end_char=1662
+7	3/5	3/5	NUM	_	NumType=Card	8	compound	_	start_char=1663|end_char=1666
+8	stars	star	NOUN	_	Number=Plur	0	root	_	SpacesAfter=\n\n|start_char=1667|end_char=1672
+
+# text = BREAKING: local man finally finds matching socks. more at 11
+# sent_id = 38
+1	BREAK	BREAK	NOUN	_	Number=Sing	2	case	_	SpaceAfter=No|start_char=1674|end_char=1679
+2	ING:	Ing:	PROPN	_	Number=Sing	6	obl	_	start_char=1679|end_char=1683
+3	local	local	NOUN	_	Number=Sing	4	compound	_	start_char=1684|end_char=1689
+4	man	man	NOUN	_	Number=Sing	2	nmod	_	start_char=1690|end_char=1693
+5	finally	finally	ADV	_	Degree=Pos	6	advmod	_	start_char=1694|end_char=1701
+6	finds	find	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1702|end_char=1707
+7	matching	match	VERB	_	Tense=Pres|VerbForm=Part	6	obl	_	start_char=1708|end_char=1716
+8	socks.	socks.	NOUN	_	Number=Plur	7	obj	_	start_char=1717|end_char=1723
+9	more	more	ADJ	_	Degree=Cmp	8	amod	_	start_char=1724|end_char=1728
+10	at	at	ADP	_	_	11	case	_	start_char=1729|end_char=1731
+11	11	11	NUM	_	NumType=Card	9	obl	_	SpacesAfter=\n\n|start_char=1732|end_char=1734
+
+# text = my cat just knocked my coffee off the table and stared at me while doing it. rude.
+# sent_id = 39
+1	my	I	DET	_	Number=Sing|Poss=Yes|PronType=Prs	4	discourse	_	start_char=1736|end_char=1738
+2	cat	Cat	PROPN	_	Number=Sing	4	nsubj	_	start_char=1739|end_char=1742
+3	just	just	ADV	_	Degree=Pos	4	advmod	_	start_char=1743|end_char=1747
+4	knocked	knock	VERB	_	Tense=Pres|VerbForm=Part	0	root	_	start_char=1748|end_char=1755
+5	my	I	DET	_	Number=Sing|Poss=Yes|PronType=Prs	6	nmod:poss	_	start_char=1756|end_char=1758
+6	coffee	coffee	NOUN	_	Number=Sing	4	obj	_	start_char=1759|end_char=1765
+7	off	off	ADP	_	_	9	case	_	start_char=1766|end_char=1769
+8	the	the	DET	_	PronType=Art	9	det	_	start_char=1770|end_char=1773
+9	table	table	NOUN	_	Number=Sing	6	nmod	_	start_char=1774|end_char=1779
+10	and	and	CCONJ	_	_	11	cc	_	start_char=1780|end_char=1783
+11	stared	stare	VERB	_	Tense=Pres|VerbForm=Fin	4	conj	_	start_char=1784|end_char=1790
+12	at	at	ADP	_	_	13	case	_	start_char=1791|end_char=1793
+13	me	I	PRON	_	Case=Acc|Number=Sing|Person=1|PronType=Prs	11	obl	_	start_char=1794|end_char=1796
+14	while	while	ADP	_	_	15	mark	_	start_char=1797|end_char=1802
+15	doing	do	VERB	_	Tense=Pres|VerbForm=Part	11	acl:relcl	_	start_char=1803|end_char=1808
+16	it.	it.	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	15	obj	_	start_char=1809|end_char=1812
+17	rude.	Rude.	PROPN	_	Number=Sing	16	flat	_	SpacesAfter=\n\n|start_char=1813|end_char=1818
+
+# text = so excited for the concert tonight!!!! #livemusic #summer2024
+# sent_id = 40
+1	so	so	ADV	_	Degree=Pos	2	advmod	_	start_char=1820|end_char=1822
+2	excited	excit	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=1823|end_char=1830
+3	for	for	ADP	_	_	5	case	_	start_char=1831|end_char=1834
+4	the	the	DET	_	PronType=Art	5	det	_	start_char=1835|end_char=1838
+5	concert	concert	NOUN	_	Number=Sing	2	obl	_	start_char=1839|end_char=1846
+6	tonight!!!!	Tonight!!!!	PROPN	_	Number=Sing	2	obl	_	start_char=1847|end_char=1858
+7	#livemusic	Llivemusic	PROPN	_	Number=Sing	6	nmod	_	start_char=1859|end_char=1869
+8	#summe	Tsumme	PROPN	_	Number=Sing	6	conj	_	SpaceAfter=No|start_char=1870|end_char=1876
+9	r2024	r2024	NUM	_	NumType=Card	6	nummod	_	SpacesAfter=\n\n|start_char=1876|end_char=1881
+
+# text = stop. just stop.
+# sent_id = 41
+1	stop.	stop.	NOUN	_	Number=Sing	0	root	_	start_char=1883|end_char=1888
+2	just	just	ADV	_	Degree=Pos	3	advmod	_	start_char=1889|end_char=1893
+3	stop.	stop.	NOUN	_	Number=Sing	1	nsubj	_	SpacesAfter=\n\n|start_char=1894|end_char=1899
+
+# text = Wow. Just wow.
+# sent_id = 42
+1	Wow.	Wow.	INTJ	_	_	2	discourse	_	start_char=1901|end_char=1905
+2	Just	Just	ADV	_	Degree=Pos	3	advmod	_	start_char=1906|end_char=1910
+3	wow.	wow.	INTJ	_	_	0	root	_	SpacesAfter=\n\n|start_char=1911|end_char=1915
+
+# text = ikr?? same here
+# sent_id = 43
+1	ikr??	Ikr??	PROPN	_	Number=Sing	0	root	_	start_char=1917|end_char=1922
+2	same	same	ADJ	_	Degree=Pos	1	amod	_	start_char=1923|end_char=1927
+3	here	here	ADV	_	Degree=Pos	1	nsubj	_	SpacesAfter=\n\n|start_char=1928|end_char=1932
+
+# text = dm me for details
+# sent_id = 44
+1	dm	DM	PROPN	_	Number=Sing	0	root	_	start_char=1934|end_char=1936
+2	me	I	PRON	_	Case=Acc|Number=Sing|Person=1|PronType=Prs	1	iobj	_	start_char=1937|end_char=1939
+3	for	for	ADP	_	_	4	case	_	start_char=1940|end_char=1943
+4	details	detail	NOUN	_	Number=Plur	1	nmod	_	SpacesAfter=\n\n|start_char=1944|end_char=1951
+
+# text = Yo!! wassup
+# sent_id = 45
+1	Yo!!	Yo!!	PROPN	_	Number=Sing	0	root	_	start_char=1953|end_char=1957
+2	wassup	wassup	NOUN	_	Number=Sing	1	nmod	_	SpacesAfter=\n\n|start_char=1958|end_char=1964
+
+# text = hahahahaha no
+# sent_id = 46
+1	hahahahaha	hahahahaha	INTJ	_	_	2	discourse	_	start_char=1966|end_char=1976
+2	no	no	ADV	_	Degree=Pos	0	root	_	SpacesAfter=\n\n|start_char=1977|end_char=1979
+
+# text = TBH I dont even know why I bother anymore
+# sent_id = 47
+1	TBH	TBH	ADV	_	Degree=Pos	5	advmod	_	start_char=1981|end_char=1984
+2	I	I	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	5	nsubj	_	start_char=1985|end_char=1986
+3	dont	dont	AUX	_	_	5	aux	_	start_char=1987|end_char=1991
+4	even	even	ADV	_	Degree=Pos	5	advmod	_	start_char=1992|end_char=1996
+5	know	know	VERB	_	VerbForm=Inf	0	root	_	start_char=1997|end_char=2001
+6	why	why	ADP	_	_	8	mark	_	start_char=2002|end_char=2005
+7	I	I	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	8	nsubj	_	start_char=2006|end_char=2007
+8	bother	bother	VERB	_	VerbForm=Inf	5	ccomp	_	start_char=2008|end_char=2014
+9	anymore	anymore	ADV	_	Degree=Pos	8	advmod	_	SpacesAfter=\n\n|start_char=2015|end_char=2022
+
+# text = #ThrowbackThursday to that time we got lost in Prague for 6 hrs
+# sent_id = 48
+1	#Thro	Tthro	PROPN	_	Number=Sing	8	discourse	_	SpaceAfter=No|start_char=2024|end_char=2029
+2	wback	wback	NOUN	_	Number=Sing	1	fixed	_	SpaceAfter=No|start_char=2029|end_char=2034
+3	Thursday	Thursday	NOUN	_	Number=Sing	2	nmod:tmod	_	start_char=2034|end_char=2042
+4	to	to	ADP	_	_	6	case	_	start_char=2043|end_char=2045
+5	that	that	DET	_	PronType=Art	6	det	_	start_char=2046|end_char=2050
+6	time	time	NOUN	_	Number=Sing	2	nmod	_	start_char=2051|end_char=2055
+7	we	we	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	8	nsubj	_	start_char=2056|end_char=2058
+8	got	get	VERB	_	VerbForm=Fin	0	root	_	start_char=2059|end_char=2062
+9	lost	lost	VERB	_	Tense=Past|VerbForm=Part	8	xcomp	_	start_char=2063|end_char=2067
+10	in	in	ADP	_	_	11	case	_	start_char=2068|end_char=2070
+11	Prague	Prague	PROPN	_	Number=Sing	9	obl	_	start_char=2071|end_char=2077
+12	for	for	ADP	_	_	14	case	_	start_char=2078|end_char=2081
+13	6	6	NUM	_	NumType=Card	14	nummod	_	start_char=2082|end_char=2083
+14	hrs	hrs	NOUN	_	Number=Sing	9	obl:unmarked	_	SpacesAfter=\n\n|start_char=2084|end_char=2087
+
+# text = is it just me or is the new update terrible
+# sent_id = 49
+1	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	9	aux	_	start_char=2089|end_char=2091
+2	it	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	9	nsubj	_	start_char=2092|end_char=2094
+3	just	just	ADV	_	Degree=Pos	0	root	_	start_char=2095|end_char=2099
+4	me	I	PRON	_	Case=Acc|Number=Sing|Person=1|PronType=Prs	3	nsubj	_	start_char=2100|end_char=2102
+5	or	or	CCONJ	_	_	10	cc	_	start_char=2103|end_char=2105
+6	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	10	cop	_	start_char=2106|end_char=2108
+7	the	the	DET	_	PronType=Art	8	det	_	start_char=2109|end_char=2112
+8	new	New	PROPN	_	Number=Sing	9	compound	_	start_char=2113|end_char=2116
+9	update	update	NOUN	_	Number=Sing	3	obl	_	start_char=2117|end_char=2123
+10	terrible	terrible	ADJ	_	Degree=Pos	9	amod	_	SpacesAfter=\n\n|start_char=2124|end_char=2132
+
+# text = Ppl who don't use turn signals >:(
+# sent_id = 50
+1	Ppl	Ppl	PROPN	_	Number=Sing	4	obj	_	start_char=2134|end_char=2137
+2	who	who	ADV	_	Degree=Pos	4	advmod	_	start_char=2138|end_char=2141
+3	don't	don't	ADV	_	Degree=Pos	4	advmod	_	start_char=2142|end_char=2147
+4	use	use	VERB	_	VerbForm=Inf	0	root	_	start_char=2148|end_char=2151
+5	turn	turn	VERB	_	VerbForm=Inf	4	ccomp	_	start_char=2152|end_char=2156
+6	signals	signal	NOUN	_	Number=Plur	5	obj	_	start_char=2157|end_char=2164
+7	>:(	>:(	NUM	_	NumType=Card	6	nummod	_	SpacesAfter=\n\n|start_char=2165|end_char=2168
+
+# text = cooking dinner 4 the fam tonite,
+# sent_id = 51
+1	cooking	cook	VERB	_	Tense=Pres|VerbForm=Part	0	root	_	start_char=2170|end_char=2177
+2	dinner	dinner	NOUN	_	Number=Sing	1	obj	_	start_char=2178|end_char=2184
+3	4	4	NUM	_	NumType=Card	5	nummod	_	start_char=2185|end_char=2186
+4	the	the	DET	_	PronType=Art	5	det	_	start_char=2187|end_char=2190
+5	fam	Fam	PROPN	_	Number=Sing	2	conj	_	start_char=2191|end_char=2194
+6	tonite,	Tonite,	PROPN	_	Number=Sing	5	flat	_	start_char=2195|end_char=2202
+
+# text = wish me luck
+# sent_id = 52
+1	wish	wish	VERB	_	VerbForm=Inf	0	root	_	start_char=2203|end_char=2207
+2	me	I	PRON	_	Case=Acc|Number=Sing|Person=1|PronType=Prs	1	iobj	_	start_char=2208|end_char=2210
+3	luck	luck	NOUN	_	Number=Sing	1	obj	_	SpacesAfter=\n\n|start_char=2211|end_char=2215
+
+# text = @sam @alex @priya meeting moved to 3pm fyi
+# sent_id = 53
+1	@sam	Ssam	PROPN	_	Number=Sing	4	compound	_	start_char=2217|end_char=2221
+2	@alex	Lalex	PROPN	_	Number=Sing	1	conj	_	start_char=2222|end_char=2227
+3	@priya	Rpriya	PROPN	_	Number=Sing	2	nmod	_	start_char=2228|end_char=2234
+4	meeting	meet	NOUN	_	Number=Sing	5	nsubj	_	start_char=2235|end_char=2242
+5	moved	move	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=2243|end_char=2248
+6	to	to	ADP	_	_	7	case	_	start_char=2249|end_char=2251
+7	3pm	Ipm	PROPN	_	Number=Sing	5	obl	_	start_char=2252|end_char=2255
+8	fyi	Fyi	PROPN	_	Number=Sing	5	obl	_	SpacesAfter=\n|start_char=2256|end_char=2259

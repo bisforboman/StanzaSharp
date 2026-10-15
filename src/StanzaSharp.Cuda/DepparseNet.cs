@@ -14,7 +14,8 @@ internal sealed class DepparseNet : IDepparseNet
     private readonly CharLanguageModel? _charlmForward, _charlmBackward;
     private readonly CharacterModel? _charModel;
     private readonly Linear? _transChar;
-    private readonly Embedding _wordEmb, _lemmaEmb, _uposEmb, _xposEmb;
+    private readonly Embedding _wordEmb, _lemmaEmb, _uposEmb;
+    private readonly Embedding[] _xposEmb; // one per part of a composite XPOS vocabulary
     private readonly Linear _transPretrained;
     private readonly HighwayLstm _lstm;
     private readonly DeepBiaffine _unlabeled, _deprel;
@@ -52,7 +53,10 @@ internal sealed class DepparseNet : IDepparseNet
         _wordEmb = nn.Embedding(Count("word"), wordEmb, padding_idx: 0).LoadFrom(ckpt, model, "word_emb.");
         _lemmaEmb = nn.Embedding(Count("lemma"), wordEmb, padding_idx: 0).LoadFrom(ckpt, model, "lemma_emb.");
         _uposEmb = nn.Embedding(Count("upos"), tagEmb, padding_idx: 0).LoadFrom(ckpt, model, "upos_emb.");
-        _xposEmb = nn.Embedding(Count("xpos"), tagEmb, padding_idx: 0).LoadFrom(ckpt, model, "xpos_emb.");
+        var xpos = XposVocab.Read(vocab);
+        _xposEmb = xpos.IsComposite
+            ? [.. xpos.Sizes.Select((n, i) => nn.Embedding(n, tagEmb, padding_idx: 0).LoadFrom(ckpt, model, $"xpos_emb.{i}."))]
+            : [nn.Embedding(Count("xpos"), tagEmb, padding_idx: 0).LoadFrom(ckpt, model, "xpos_emb.")];
         _transPretrained = nn.Linear(pretrain.Dim, transformed, hasBias: false).LoadFrom(ckpt, model, "trans_pretrained.");
         _lstm = new HighwayLstm(ckpt, model, "parserlstm", inputSize, hidden, config["num_layers"]!.GetValue<int>());
 
@@ -102,7 +106,14 @@ internal sealed class DepparseNet : IDepparseNet
                 return t.index_select(0, ordered);
         }
 
-        var pos = _uposEmb.forward(Ids(batch.Upos)).add(_xposEmb.forward(Ids(batch.Xpos)), Scalars.One);
+        // upos_emb + each XPOS part's embedding, in Stanza's order.
+        var pos = _uposEmb.forward(Ids(batch.Upos));
+        for (int p = 0; p < _xposEmb.Length; p++)
+        {
+            int part = p, parts = batch.XposParts;
+            pos = pos.add(_xposEmb[p].forward(torch.tensor(padded.Select(x => batch.Xpos[x * parts + part]).ToArray(), device: _device)), Scalars.One);
+        }
+
         Tensor[] chars;
         if (_charModel != null)
         {
@@ -166,7 +177,7 @@ internal sealed class DepparseNet : IDepparseNet
 
     public void Dispose()
     {
-        foreach (var m in new nn.Module[] { _wordEmb, _lemmaEmb, _uposEmb, _xposEmb, _transPretrained })
+        foreach (var m in (nn.Module[])[_wordEmb, _lemmaEmb, _uposEmb, _transPretrained, .. _xposEmb])
             m.Dispose();
         _lstm.Dispose();
         _charModel?.Dispose();

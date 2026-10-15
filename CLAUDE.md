@@ -30,6 +30,11 @@ default from 0.5) or through TorchSharp (see "Managed backend").
   `PipelineOptions.Package`): tokenize, mwt and lemma as above; pos `combined_nocharlm`, depparse
   `combined_nocharlm`, ner `ontonotes-ww-multi_nocharlm`; sentiment `sstplus_charlm`; no constituency.
   Its default processors are those seven. `Pipeline.Packages` maps package → processor → model.
+- **English treebank packages** (owner's decision, 2026-10-15; no new API, `PipelineOptions.Package`): `combined` (the
+  default package's models), `ewt`, `gum`, `lines`, `partut`, `atis`, `childes` and `eslspok` (no mwt; lemma `identity`):
+  tokenize, mwt, pos, lemma, depparse only, byte for byte on both backends (`TreebankPackageTests` against
+  `tests/golden/<package>/`). Per-processor model choice (NER conll03, ptb3 constituency, biomedical NER) is out of scope.
+  "Checkpoint findings (English treebank packages)" has what they needed.
 - **Shared dependencies:** `pos`, `constituency`, `depparse`, `ner` and `sentiment` all depend on the
   pretrained word-vector file (pretrain). Every `_charlm` model also depends on the forward and backward
   character LMs (charlm); the `_nocharlm` ones have their own character LSTM (`Nn.CharacterModel`) instead.
@@ -512,9 +517,16 @@ model but MWT and NER is English's architecture with other vocabularies and size
   `rnn.weight_ih_l0` is [256, 37]; `max_seqlen` 400 (tokens over 400 code points become `<UNK>`, windows stay 1000).
 - **mwt** (`combined`): a `Seq2SeqModel` (`force_exact_pieces` null), not the classifier. `MwtExpander` runs it through
   the lemmatizer's net, now `Nn.ISeq2SeqNet` (`Seq2SeqNet` in StanzaSharp.Cuda / `ManagedSeq2SeqNet` in Nn; a POS step
-  and the edit head are optional, `Seq2SeqConfig.UsesPos`/`Edit`), and `Seq2SeqConfig.Greedy` decodes for both:
+  and the edit head are optional, `Seq2SeqConfig.UsesPos`/`Edit`), decoded by `Seq2SeqConfig.Beam` (the lemmatizer:
+  `Greedy`):
   - emb 50, vocab 25, biLSTM 2×50, `LSTMCell` 100, soft attention, copy (over every source position: no POS step to
-    skip), greedy, `max_dec_len` 10 (hdt 12), `never_decode_unk` (`<UNK>` is never the argmax).
+    skip), `max_dec_len` 10 (hdt 12), `never_decode_unk` (`<UNK>` is -inf).
+  - A beam search of 5, though the config says `beam_size` 1: mwt/trainer.py passes it positionally where
+    `Seq2SeqModel.predict` takes `pos`, so predict's default 5 applies. Rows are beam k · batch + b (h_in, mask, h, c
+    repeated); the first step expands beam 0 alone; scores are float32 sums, torch.topk (ties to the lower index here);
+    update_state reorders h and c (`ISeq2SeqDecoder.Reorder`). decode scatters the *unrepeated* source into the repeated
+    rows, so only beam 0 (rows below batch) mixes in the copy distribution; the other beams keep vocab + log(1 − σ(copy)).
+    Greedy decoding had matched German's golden by luck; English partut's `'90s'` needed the beam (found 2026-10-15).
   - Input `<SOS>` + code points + `<EOS>`; DeltaVocab over all the document's candidates (code point order); batches
     of `batch_size` 50 in document order, each sorted like `sort_all`. **Every** candidate goes through the model,
     then the dictionary (17 entries: `im`, `zum`, `ins`, ...) overrides it (`trainer.ensemble`), as in Stanza.
@@ -539,6 +551,32 @@ model but MWT and NER is English's architecture with other vocabularies and size
   - hdt's depparse batches are 1300 words (`batch_size` in its checkpoint, read like every other parser's).
   - `tests/golden/de/gsd/`, `hdt/` (`make_golden.py --lang de --treebank-only`): corpus + validation and `mwt.json`;
     `TreebankPackageTests`.
+
+## Checkpoint findings (English treebank packages)
+
+What the English treebank packages' checkpoints add to the default package's paths (Stanza 1.15.0; each package is
+`<pkg>_nocharlm` tokenizer and lemmatizer, `<pkg>` MWT, `<pkg>_charlm` tagger and parser on conll17 + 1billion):
+- **tokenize**: `max_seqlen` 300 (ewt, lines), 400 (partut), 100 (childes); vocabularies of their own. eslspok has
+  `use_mwt` false: no `mwt_clf`/`mwt_clf2`, three classes; both nets pad the two MWT classes with -inf, so the shared
+  decoding sees five as before.
+- **mwt**: ewt, gum, lines, atis, childes are character classifiers like combined; partut's is a seq2seq (1 layer,
+  `max_dec_len` 19), decoded by the beam search German's needs too (see German's mwt above).
+- **pos**: all predate `tag_columns` (legacy heads, like gsd/hdt). lines and partut have a composite XPOS vocabulary
+  (`XPOSVocab`: a CompositeVocab, not keyed; lines `sep` "-", 3 parts; partut `sep` "", one part per character, 4 parts),
+  so `tag_hid.xpos` has `composite_deep_biaff_hidden_dim` (100) outputs and `tag_clf.xpos.{i}` one biaffine per part;
+  the tag is the parts' argmaxes joined with `sep` without `<EMPTY>` ones, "" or "_" stored as null (`Nn.XposVocab`;
+  `PosOutput.Xpos` is one id array per part). A WordVocab's `<EMPTY>` id is "_" (its `ignore`), null too.
+- **lemma**: atis is `caseless`: the seq2seq input, DeltaVocab and dictionary lookups use the lowercased word; the edits
+  and the fallback use the word as written (trainer.postprocess). eslspok's lemma is `identity` (LemmaProcessor's
+  use_identity): lemma = the word's text, no model file (`Pipeline.IdentityLemma`, skipped by `Pipeline.ModelFiles`),
+  requiring only tokenize, as in Stanza.
+- **depparse**: lines and partut embed the composite XPOS one table per part (`xpos_emb.{i}`), added after UPOS in part
+  order (pos_emb += ...); `DepparseBatch.Xpos` is [size, width, `XposParts`], ROOT all ROOT; an unknown part is UNK, a
+  missing one EMPTY (CompositeVocab.unit2id). Everything else as combined (5000-word batches).
+- `SelectModels` requires only the processors the package has (eslspok's pos and depparse need no mwt).
+- `tests/golden/<package>/` (`make_golden.py --treebank-only [--packages ...]`): corpus + validation (13 files) and
+  `mwt.json` where the package has mwt; `combined` is checked against `depparse/` (same models). The tests read the .pt
+  files from `Repo.StanzaModels` (`Repo.ModelsFor(lang, package)`); rows skip when a package's files are missing.
 
 ## Validation
 
@@ -699,6 +737,12 @@ model but MWT and NER is English's architecture with other vocabularies and size
     (`download models/stanza/de --lang de --package ...`) on a miss. Only the golden shards run German, so their no-skip
     check covers it. cross-os and linux-arm64 stay English: there the German rows skip, and their no-skip checks exempt
     test names matching `lang: "de"` or `German` (trx-escaped `lang: &quot;de&quot;`).
+  - English treebank packages (owner's decision, 2026-10-15): one `models-en-treebanks-<hash of ModelDownloader.cs>` cache
+    of only their own `.pt` files (path globs `models/stanza/en/*/<package>*`, about 1.2 GB), restored into
+    models/stanza/en next to the default package's, written by golden-shard 1 and restored by shards 2–3, downloaded with
+    the CLI (`download models/stanza/en --package ...`) on a miss. So that models-en doesn't take them in, shard 1 restores
+    models-en with `actions/cache/restore` and saves it with `actions/cache/save` right after the convert step, before the
+    treebank models arrive. cross-os and linux-arm64 don't have them: their no-skip checks exempt `TreebankPackageTests`.
   - `cross-os (windows-2025)` / `cross-os (macos-26)` (Apple Silicon; `TorchSharp-cpu` brings
     `libtorch-cpu-osx-arm64`): build, full suite with `STANZASHARP_MODELS` = `models/stanza/en` (the
     `.pt` files, no Python or conversion), the same no-skip check, and both `verify-package.ps1` runs. Models are
@@ -876,7 +920,7 @@ model but MWT and NER is English's architecture with other vocabularies and size
   - Languages (owner's decisions, 2026-10-13, docs/german-plan.md): `PipelineOptions.Language` (Stanza's code, default
     `"en"`; `Load` still takes the language folder); `DownloadAsync(dir, options)` honours it, `download --lang de`
     defaults to `models/stanza/<lang>`. German (`de`): `default`, `default_fast`, `combined`, `gsd`, `hdt` download and
-    load. Unknown languages
+    load. English also has the treebank packages (`combined`, `ewt`, ..., `eslspok`; 2026-10-15). Unknown languages
     and packages (`default_accurate`: transformers) throw `ArgumentException` with the supported list.
   - `Pipeline.SelectModels` (language + package + processors → processor → model) and `Pipeline.SharedModels`
     (from `Pipeline.Dependencies`: each model's resources.json `dependencies`, since names don't tell them; German

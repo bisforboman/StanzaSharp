@@ -1,0 +1,552 @@
+# text = Søren Kierkegaard was born in Copenhagen. Gabriel García Márquez wrote in Spanish. Antonín Dvořák composed the New World Symphony.
+# sent_id = 0
+1	Søren	Søren	PROPN	_	Number=Sing	4	discourse	_	start_char=0|end_char=5
+2	Kierkegaard	Hierkegard	PROPN	_	Number=Sing	1	flat	_	start_char=6|end_char=17
+3	was	wave	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	aux	_	start_char=18|end_char=21
+4	born	born	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=22|end_char=26
+5	in	in	ADP	_	_	6	case	_	start_char=27|end_char=29
+6	Copenhagen.	Copenhagen.	PROPN	_	Number=Sing	4	obl	_	start_char=30|end_char=41
+7	Gabriel	Gabriel	PROPN	_	Number=Sing	6	appos	_	start_char=42|end_char=49
+8	García	García	PROPN	_	Number=Sing	7	flat	_	start_char=50|end_char=56
+9	Márquez	Márquez	PROPN	_	Number=Sing	7	flat	_	start_char=57|end_char=64
+10	wrote	wrote	VERB	_	Tense=Pres|VerbForm=Part	4	parataxis	_	start_char=65|end_char=70
+11	in	in	ADP	_	_	12	case	_	start_char=71|end_char=73
+12	Spanish.	Spanish.	PROPN	_	Number=Sing	10	obl	_	start_char=74|end_char=82
+13	Antonín	Antonín	PROPN	_	Number=Sing	12	flat	_	start_char=83|end_char=90
+14	Dvořák	Dvořák	PROPN	_	Number=Sing	12	flat	_	start_char=91|end_char=97
+15	composed	compose	VERB	_	Tense=Past|VerbForm=Fin	10	advcl	_	start_char=98|end_char=106
+16	the	the	DET	_	PronType=Art	17	det	_	start_char=107|end_char=110
+17	New	New	PROPN	_	Number=Sing	15	obj	_	start_char=111|end_char=114
+18	World	World	PROPN	_	Number=Sing	17	flat	_	start_char=115|end_char=120
+19	Symphony.	Symphony.	PROPN	_	Number=Sing	17	flat	_	SpacesAfter=\n\n|start_char=121|end_char=130
+
+# text = We met Łukasz Wiśniewski and Ágnes Szabó at the conference in Kraków.
+# sent_id = 1
+1	We	we	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	2	nsubj	_	start_char=132|end_char=134
+2	met	met	VERB	_	Tense=Pres|VerbForm=Part	0	root	_	start_char=135|end_char=138
+3	Łukasz	Tukasz	PROPN	_	Number=Sing	2	obj	_	start_char=139|end_char=145
+4	Wiśniewski	Wiśniewski	PROPN	_	Number=Sing	3	appos	_	start_char=146|end_char=156
+5	and	and	CCONJ	_	_	6	cc	_	start_char=157|end_char=160
+6	Ágnes	Tgnes	PROPN	_	Number=Sing	3	conj	_	start_char=161|end_char=166
+7	Szabó	Szabó	PROPN	_	Number=Sing	6	flat	_	start_char=167|end_char=172
+8	at	at	ADP	_	_	10	case	_	start_char=173|end_char=175
+9	the	the	DET	_	PronType=Art	10	det	_	start_char=176|end_char=179
+10	conference	conference	NOUN	_	Number=Sing	2	obl	_	start_char=180|end_char=190
+11	in	in	ADP	_	_	12	case	_	start_char=191|end_char=193
+12	Kraków.	Araków.	PROPN	_	Number=Sing	10	nmod	_	start_char=194|end_char=201
+
+# text = Later we flew to Reykjavík, where Guðrún Ólafsdóttir
+# sent_id = 2
+1	Later	late	ADV	_	Degree=Pos	3	advmod	_	start_char=202|end_char=207
+2	we	we	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	3	nsubj	_	start_char=208|end_char=210
+3	flew	flew	VERB	_	Tense=Pres|VerbForm=Part	0	root	_	start_char=211|end_char=215
+4	to	to	ADP	_	_	5	case	_	start_char=216|end_char=218
+5	Reykjavík,	Reykjavík	PROPN	_	Number=Sing	3	obl	_	start_char=219|end_char=229
+6	where	where	ADV	_	PronType=Int,Rel	3	advmod	_	start_char=230|end_char=235
+7	Guðrún	Guðrún	PROPN	_	Number=Sing	6	nmod	_	start_char=236|end_char=242
+8	Ólafsdóttir	Llafsdóttir	PROPN	_	Number=Sing	7	flat	_	start_char=243|end_char=254
+
+# text = showed us around.
+# sent_id = 3
+1	showed	showed	VERB	_	Tense=Pres|VerbForm=Fin	0	root	_	start_char=255|end_char=261
+2	us	US	PROPN	_	Number=Sing	1	obj	_	start_char=262|end_char=264
+3	around.	Around.	PROPN	_	Number=Sing	2	flat	_	SpacesAfter=\n\n|start_char=265|end_char=272
+
+# text = The menu featured jalapeño poppers, a soupçon of crème fraîche, and smørrebrød. The sommelier recommended a Grüner Veltliner.
+# sent_id = 4
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=274|end_char=277
+2	menu	menu	NOUN	_	Number=Sing	3	nsubj	_	start_char=278|end_char=282
+3	featured	featy	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=283|end_char=291
+4	jalapeño	jalapeño	NOUN	_	Number=Sing	3	obj	_	start_char=292|end_char=300
+5	poppers,	Poppers,	PROPN	_	Number=Sing	7	nmod	_	start_char=301|end_char=309
+6	a	a	DET	_	PronType=Art	7	det	_	start_char=310|end_char=311
+7	soupçon	Soupçon	PROPN	_	Number=Sing	3	obl	_	start_char=312|end_char=319
+8	of	of	ADP	_	_	9	case	_	start_char=320|end_char=322
+9	crème	Crème	PROPN	_	Number=Sing	7	nmod	_	start_char=323|end_char=328
+10	fraîche,	Fraîche,	PROPN	_	Number=Sing	9	flat	_	start_char=329|end_char=337
+11	and	and	CCONJ	_	_	12	cc	_	start_char=338|end_char=341
+12	smørrebrød.	Smørrebrød	PROPN	_	Number=Sing	9	conj	_	start_char=342|end_char=353
+13	The	the	DET	_	PronType=Art	14	det	_	start_char=354|end_char=357
+14	sommelier	Sommelier	PROPN	_	Number=Sing	15	nsubj	_	start_char=358|end_char=367
+15	recommended	recommend	VERB	_	Tense=Past|VerbForm=Part	3	conj	_	start_char=368|end_char=379
+16	a	a	DET	_	PronType=Art	17	det	_	start_char=380|end_char=381
+17	Grüner	Grüner	PROPN	_	Number=Sing	15	obj	_	start_char=382|end_char=388
+18	Veltliner.	Veltliner	PROPN	_	Number=Sing	17	flat	_	SpacesAfter=\n\n|start_char=389|end_char=399
+
+# text = İstanbul and Ankara are both in Türkiye. The Turkish word for "thank you"
+# sent_id = 5
+1	İstanbul	İstanbul	PROPN	_	Number=Sing	0	root	_	start_char=401|end_char=409
+2	and	and	CCONJ	_	_	3	cc	_	start_char=410|end_char=413
+3	Ankara	Ankara	PROPN	_	Number=Sing	1	conj	_	start_char=414|end_char=420
+4	are	be	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	5	cop	_	start_char=421|end_char=424
+5	both	both	ADV	_	Degree=Pos	1	conj	_	start_char=425|end_char=429
+6	in	in	ADP	_	_	7	case	_	start_char=430|end_char=432
+7	Türkiye.	Türkiye.	PROPN	_	Number=Sing	5	obl	_	start_char=433|end_char=441
+8	The	the	DET	_	PronType=Art	9	det	_	start_char=442|end_char=445
+9	Turkish	Turkish	PROPN	_	Number=Sing	7	conj	_	start_char=446|end_char=453
+10	word	word	NOUN	_	Number=Sing	7	nmod	_	start_char=454|end_char=458
+11	for	for	ADP	_	_	12	case	_	start_char=459|end_char=462
+12	"thank	Tthank	PROPN	_	Number=Sing	5	obl	_	start_char=463|end_char=469
+13	you"	You"	PROPN	_	Number=Sing	12	flat	_	start_char=470|end_char=474
+
+# text = is teşekkürler.
+# sent_id = 6
+1	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	cop	_	start_char=475|end_char=477
+2	teşekk	Teşekk	PROPN	_	Number=Sing	0	root	_	SpaceAfter=No|start_char=478|end_char=484
+3	ürler.	Rrler.	PROPN	_	Number=Sing	2	flat	_	SpacesAfter=\n\n|start_char=484|end_char=490
+
+# text = François and Hélène moved to Montréal in 2015. Their son, Noël, now attends École Saint-Exupéry.
+# sent_id = 7
+1	François	François	PROPN	_	Number=Sing	4	obl	_	start_char=492|end_char=500
+2	and	and	CCONJ	_	_	4	cc	_	start_char=501|end_char=504
+3	Hélène	Hélène	PROPN	_	Number=Sing	1	conj	_	start_char=505|end_char=511
+4	moved	move	VERB	_	Tense=Pres|VerbForm=Part	0	root	_	start_char=512|end_char=517
+5	to	to	ADP	_	_	6	case	_	start_char=518|end_char=520
+6	Montréal	Montréal	PROPN	_	Number=Sing	4	obl	_	start_char=521|end_char=529
+7	in	in	ADP	_	_	8	case	_	start_char=530|end_char=532
+8	2015.	2015.	NUM	_	NumType=Card	4	obl	_	start_char=533|end_char=538
+9	Their	they	DET	_	Number=Sing|Poss=Yes|PronType=Prs	10	det	_	start_char=539|end_char=544
+10	son,	Son,	PROPN	_	Number=Sing	4	obl	_	start_char=545|end_char=549
+11	Noël,	Noël,	PROPN	_	Number=Sing	10	flat	_	start_char=550|end_char=555
+12	now	now	ADV	_	Degree=Pos	13	advmod	_	start_char=556|end_char=559
+13	attends	attend	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	parataxis	_	start_char=560|end_char=567
+14	École	Tcole	PROPN	_	Number=Sing	13	obj	_	start_char=568|end_char=573
+15	Saint-Exupéry.	Saint-exuépry.	PROPN	_	Number=Sing	14	flat	_	SpacesAfter=\n\n|start_char=574|end_char=588
+
+# text = The Japanese word 東京 means "eastern capital." In Chinese, 北京 is Beijing, and 你好 means
+# sent_id = 8
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=590|end_char=593
+2	Japanese	japanese	NOUN	_	Number=Sing	3	compound	_	start_char=594|end_char=602
+3	word	word	NOUN	_	Number=Sing	5	nsubj	_	start_char=603|end_char=607
+4	東京	W	PROPN	_	Number=Sing	3	nmod	_	start_char=608|end_char=610
+5	means	means	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=611|end_char=616
+6	"eastern	Weastern	PROPN	_	Number=Sing	5	obl	_	start_char=617|end_char=625
+7	capital."	Capital."	PROPN	_	Number=Sing	5	obl	_	start_char=626|end_char=635
+8	In	in	ADP	_	_	9	case	_	start_char=636|end_char=638
+9	Chinese,	Chinese,	PROPN	_	Number=Sing	7	nmod	_	start_char=639|end_char=647
+10	北京	W	PROPN	_	Number=Sing	9	flat	_	start_char=648|end_char=650
+11	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	15	aux	_	start_char=651|end_char=653
+12	Beijing,	Beijing,	PROPN	_	Number=Sing	5	obl	_	start_char=654|end_char=662
+13	and	and	CCONJ	_	_	15	cc	_	start_char=663|end_char=666
+14	你好	W	PROPN	_	Number=Sing	15	nsubj	_	start_char=667|end_char=669
+15	means	means	VERB	_	Tense=Pres|VerbForm=Fin	5	parataxis	_	start_char=670|end_char=675
+
+# text = hello.
+# sent_id = 9
+1	hello.	Hello.	PROPN	_	Number=Sing	0	root	_	SpacesAfter=\n\n|start_char=676|end_char=682
+
+# text = She studied 한국어 for two years before moving to Seoul. Her favorite
+# sent_id = 10
+1	She	She	ADV	_	Degree=Pos	2	advmod	_	start_char=684|end_char=687
+2	studied	studie	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=688|end_char=695
+3	한국어	W국어	PROPN	_	Number=Sing	2	obj	_	start_char=696|end_char=699
+4	for	for	ADP	_	_	6	case	_	start_char=700|end_char=703
+5	two	two	NUM	_	NumType=Card	6	nummod	_	start_char=704|end_char=707
+6	years	year	NOUN	_	Number=Plur	2	obl:unmarked	_	start_char=708|end_char=713
+7	before	before	ADP	_	_	8	case	_	start_char=714|end_char=720
+8	moving	move	VERB	_	Tense=Pres|VerbForm=Part	2	conj	_	start_char=721|end_char=727
+9	to	to	ADP	_	_	10	case	_	start_char=728|end_char=730
+10	Seoul.	Seoul.	PROPN	_	Number=Sing	8	obl	_	start_char=731|end_char=737
+11	Her	Her	ADV	_	Degree=Cmp	12	advmod	_	start_char=738|end_char=741
+12	favorite	favorite	ADJ	_	Degree=Pos	10	appos	_	start_char=742|end_char=750
+
+# text = dish is 김치찌개.
+# sent_id = 11
+1	dish	dish	NOUN	_	Number=Sing	0	root	_	start_char=751|end_char=755
+2	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	1	cop	_	start_char=756|end_char=758
+3	김치찌개.	T치찌개.	PROPN	_	Number=Sing	1	nsubj	_	SpacesAfter=\n\n|start_char=759|end_char=764
+
+# text = The Russian word for "peace" is мир. Москва is the capital; Санкт-Петербург is the second-largest city.
+# sent_id = 12
+1	The	the	DET	_	PronType=Art	3	det	_	start_char=766|end_char=769
+2	Russian	Russian	PROPN	_	Number=Sing	3	amod	_	start_char=770|end_char=777
+3	word	word	NOUN	_	Number=Sing	7	nsubj	_	start_char=778|end_char=782
+4	for	for	ADP	_	_	5	case	_	start_char=783|end_char=786
+5	"peace"	"peace"	NOUN	_	Number=Sing	3	nmod	_	start_char=787|end_char=794
+6	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	cop	_	start_char=795|end_char=797
+7	мир.	Wир.	PROPN	_	Number=Sing	12	nmod:poss	_	start_char=798|end_char=802
+8	Москва	Rосква	PROPN	_	Number=Sing	7	flat	_	start_char=803|end_char=809
+9	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	12	cop	_	start_char=810|end_char=812
+10	the	the	DET	_	PronType=Art	11	det	_	start_char=813|end_char=816
+11	capital;	Capital;	PROPN	_	Number=Sing	17	compound	_	start_char=817|end_char=825
+12	Санкт-Петербург	7анкт-петееббррр	PROPN	_	Number=Sing	0	root	_	start_char=826|end_char=841
+13	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	17	cop	_	start_char=842|end_char=844
+14	the	the	DET	_	PronType=Art	17	det	_	start_char=845|end_char=848
+15	second	two	ADJ	_	Degree=Pos|NumType=Ord	17	amod	_	SpaceAfter=No|start_char=849|end_char=855
+16	-largest	-larg	ADJ	_	Degree=Sup	17	amod	_	start_char=855|end_char=863
+17	city.	City.	PROPN	_	Number=Sing	12	nsubj	_	SpacesAfter=\n\n|start_char=864|end_char=869
+
+# text = Greek letters such as α, β, γ and Ω appear in physics formulas. The word φιλοσοφία means love of wisdom.
+# sent_id = 13
+1	Greek	Greek	PROPN	_	Number=Sing	2	amod	_	start_char=871|end_char=876
+2	letters	letter	NOUN	_	Number=Plur	3	nsubj	_	start_char=877|end_char=884
+3	such	such	VERB	_	Tense=Pres|VerbForm=Part	0	root	_	start_char=885|end_char=889
+4	as	as	ADP	_	_	5	case	_	start_char=890|end_char=892
+5	α,	W	PROPN	_	Number=Sing	3	obl	_	start_char=893|end_char=895
+6	β,	W	PROPN	_	Number=Sing	5	appos	_	start_char=896|end_char=898
+7	γ	Q	PROPN	_	Number=Sing	5	appos	_	start_char=899|end_char=900
+8	and	and	CCONJ	_	_	9	cc	_	start_char=901|end_char=904
+9	Ω	Q	PROPN	_	Number=Sing	5	conj	_	start_char=905|end_char=906
+10	appear	appear	VERB	_	VerbForm=Inf	3	conj	_	start_char=907|end_char=913
+11	in	in	ADP	_	_	12	case	_	start_char=914|end_char=916
+12	physics	Physics	PROPN	_	Number=Sing	10	obl	_	start_char=917|end_char=924
+13	formulas.	Formulas.	PROPN	_	Number=Sing	12	flat	_	start_char=925|end_char=934
+14	The	the	DET	_	PronType=Art	16	det	_	start_char=935|end_char=938
+15	word	word	NOUN	_	Number=Sing	10	obl	_	start_char=939|end_char=943
+16	φιλοσοφία	Pιλοσοφία	PROPN	_	Number=Sing	17	nsubj	_	start_char=944|end_char=953
+17	means	means	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	parataxis	_	start_char=954|end_char=959
+18	love	Love	PROPN	_	Number=Sing	17	obj	_	start_char=960|end_char=964
+19	of	of	ADP	_	_	20	case	_	start_char=965|end_char=967
+20	wisdom.	Wisdom.	PROPN	_	Number=Sing	17	obj	_	SpacesAfter=\n\n|start_char=968|end_char=975
+
+# text = The Arabic greeting مرحبا is common. Hebrew
+# sent_id = 14
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=977|end_char=980
+2	Arabic	Arabic	PROPN	_	Number=Sing	4	nsubj	_	start_char=981|end_char=987
+3	greeting	greet	NOUN	_	Number=Sing	4	compound	_	start_char=988|end_char=996
+4	مرحبا	مرحبا	NOUN	_	Number=Sing	0	root	_	start_char=997|end_char=1002
+5	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	cop	_	start_char=1003|end_char=1005
+6	common.	Common.	PROPN	_	Number=Sing	4	obl	_	start_char=1006|end_char=1013
+7	Hebrew	Aebrew	PROPN	_	Number=Sing	6	flat	_	start_char=1014|end_char=1020
+
+# text = writes שלום for peace.
+# sent_id = 15
+1	writes	writ	VERB	_	Tense=Pres|VerbForm=Part	0	root	_	start_char=1021|end_char=1027
+2	שלום	שלום	ADV	_	Degree=Pos	1	advmod	_	start_char=1028|end_char=1032
+3	for	for	ADP	_	_	4	case	_	start_char=1033|end_char=1036
+4	peace.	peace.	NOUN	_	Number=Sing	1	obl	_	SpacesAfter=\n\n|start_char=1037|end_char=1043
+
+# text = Dmitri Shostakovich (Дмитрий Шостакович) wrote fifteen symphonies.
+# sent_id = 16
+1	Dmitri	Dmitri	PROPN	_	Number=Sing	5	obl	_	start_char=1045|end_char=1051
+2	Shostakovich	Shostakovic	PROPN	_	Number=Sing	1	flat	_	start_char=1052|end_char=1064
+3	(Дмитрий	(дмитрий	VERB	_	Tense=Pres|VerbForm=Fin	5	nsubj	_	start_char=1065|end_char=1073
+4	Шостакович)	Pостакович	PROPN	_	Number=Sing	5	nsubj	_	start_char=1074|end_char=1085
+5	wrote	wrote	VERB	_	Tense=Pres|VerbForm=Part	0	root	_	start_char=1086|end_char=1091
+6	fifteen	fifteen	NUM	_	NumType=Card	7	nummod	_	start_char=1092|end_char=1099
+7	symphonies.	symphonis.s.	NOUN	_	Number=Plur	5	obj	_	SpacesAfter=\n\n|start_char=1100|end_char=1111
+
+# text = Nguyễn Thị Minh Khai Street is in Hồ Chí Minh City. Phở is served everywhere.
+# sent_id = 17
+1	Nguyễn	Nguyễn	PROPN	_	Number=Sing	14	obl	_	start_char=1113|end_char=1119
+2	Thị	ThK	PROPN	_	Number=Sing	1	flat	_	start_char=1120|end_char=1123
+3	Minh	Minh	PROPN	_	Number=Sing	5	compound	_	start_char=1124|end_char=1128
+4	Khai	Vhai	PROPN	_	Number=Sing	5	compound	_	start_char=1129|end_char=1133
+5	Street	Street	NOUN	_	Number=Sing	1	conj	_	start_char=1134|end_char=1140
+6	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	8	cop	_	start_char=1141|end_char=1143
+7	in	in	ADP	_	_	8	case	_	start_char=1144|end_char=1146
+8	Hồ	HX	PROPN	_	Number=Sing	5	nmod	_	start_char=1147|end_char=1149
+9	Chí	Chí	PROPN	_	Number=Sing	8	flat	_	start_char=1150|end_char=1153
+10	Minh	Minh	PROPN	_	Number=Sing	8	flat	_	start_char=1154|end_char=1158
+11	City.	City.	PROPN	_	Number=Sing	8	flat	_	start_char=1159|end_char=1164
+12	Phở	Phở	PROPN	_	Number=Sing	14	nsubj	_	start_char=1165|end_char=1168
+13	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	14	cop	_	start_char=1169|end_char=1171
+14	served	serve	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=1172|end_char=1178
+15	everywhere.	Everywher.	PROPN	_	Number=Sing	14	obj	_	SpacesAfter=\n\n|start_char=1179|end_char=1190
+
+# text = The author, Chimamanda Ngozi Adichie, spoke in Lagos. Ngũgĩ wa Thiong'o was in the audience.
+# sent_id = 18
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=1192|end_char=1195
+2	author,	Author,	PROPN	_	Number=Sing	12	obl	_	start_char=1196|end_char=1203
+3	Chimamanda	Chimamanda	PROPN	_	Number=Sing	2	flat	_	start_char=1204|end_char=1214
+4	Ngozi	Ngozi	PROPN	_	Number=Sing	2	conj	_	start_char=1215|end_char=1220
+5	Adichie,	Adichie,	PROPN	_	Number=Sing	2	conj	_	start_char=1221|end_char=1229
+6	spoke	spoke	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1230|end_char=1235
+7	in	in	ADP	_	_	8	case	_	start_char=1236|end_char=1238
+8	Lagos.	Lagos.	PROPN	_	Number=Sing	6	obl	_	start_char=1239|end_char=1245
+9	Ngũgĩ	Ngũgĩ	PROPN	_	Number=Sing	8	appos	_	start_char=1246|end_char=1251
+10	wa	WA	PROPN	_	Number=Sing	8	appos	_	start_char=1252|end_char=1254
+11	Thiong'o	Thiong'o	PROPN	_	Number=Sing	10	appos	_	start_char=1255|end_char=1263
+12	was	wave	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	6	advcl	_	start_char=1264|end_char=1267
+13	in	in	ADP	_	_	15	case	_	start_char=1268|end_char=1270
+14	the	the	DET	_	PronType=Art	15	det	_	start_char=1271|end_char=1274
+15	audience.	audience.	NOUN	_	Number=Sing	12	obl	_	SpacesAfter=\n\n|start_char=1275|end_char=1284
+
+# text = São Paulo's population exceeds 12 million. Ação and coração are Portuguese words.
+# sent_id = 19
+1	São	São	PROPN	_	Number=Sing	4	nmod	_	start_char=1286|end_char=1289
+2-3	Paulo's	_	_	_	_	_	_	_	start_char=1290|end_char=1297
+2	Paulo	Paulo	PROPN	_	Number=Sing	1	flat	_	start_char=1290|end_char=1295
+3	's	's	PART	_	_	1	case	_	start_char=1295|end_char=1297
+4	population	population	NOUN	_	Number=Sing	0	root	_	start_char=1298|end_char=1308
+5	exceeds	exceed	ADP	_	_	7	case	_	start_char=1309|end_char=1316
+6	12	12	NUM	_	NumType=Card	7	nummod	_	start_char=1317|end_char=1319
+7	million.	million.	NOUN	_	Number=Sing	4	nmod	_	start_char=1320|end_char=1328
+8	Ação	Ação	PROPN	_	Number=Sing	7	nmod	_	start_char=1329|end_char=1333
+9	and	and	CCONJ	_	_	10	cc	_	start_char=1334|end_char=1337
+10	coração	Coração	PROPN	_	Number=Sing	8	conj	_	start_char=1338|end_char=1345
+11	are	be	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	13	cop	_	start_char=1346|end_char=1349
+12	Portuguese	Portuguese	PROPN	_	Number=Sing	10	flat	_	start_char=1350|end_char=1360
+13	words.	word	NOUN	_	Number=Plur	12	flat	_	SpacesAfter=\n\n|start_char=1361|end_char=1367
+
+# text = The Māori name for New Zealand is Aotearoa. Te reo
+# sent_id = 20
+1	The	the	DET	_	PronType=Art	3	det	_	start_char=1369|end_char=1372
+2	Māori	Māori	PROPN	_	Number=Sing	3	compound	_	start_char=1373|end_char=1378
+3	name	name	NOUN	_	Number=Sing	0	root	_	start_char=1379|end_char=1383
+4	for	for	ADP	_	_	5	case	_	start_char=1384|end_char=1387
+5	New	New	PROPN	_	Number=Sing	3	nmod	_	start_char=1388|end_char=1391
+6	Zealand	Lealand	PROPN	_	Number=Sing	5	flat	_	start_char=1392|end_char=1399
+7	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	cop	_	start_char=1400|end_char=1402
+8	Aotearoa.	Aotearoa.	PROPN	_	Number=Sing	3	nsubj	_	start_char=1403|end_char=1412
+9	Te	TE	PROPN	_	Number=Sing	8	flat	_	start_char=1413|end_char=1415
+10	reo	Reo	PROPN	_	Number=Sing	8	flat	_	start_char=1416|end_char=1419
+
+# text = Māori is an official language.
+# sent_id = 21
+1	Māori	Māori	PROPN	_	Number=Sing	0	root	_	start_char=1420|end_char=1425
+2	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	5	cop	_	start_char=1426|end_char=1428
+3	an	a	DET	_	PronType=Art	5	det	_	start_char=1429|end_char=1431
+4	official	Official	PROPN	_	Number=Sing	5	compound	_	start_char=1432|end_char=1440
+5	language.	language.	NOUN	_	Number=Sing	1	nsubj	_	SpacesAfter=\n\n|start_char=1441|end_char=1450
+
+# text = Hindi uses Devanagari: नमस्ते means
+# sent_id = 22
+1	Hindi	Hindi	NOUN	_	Number=Sing	2	obj	_	start_char=1452|end_char=1457
+2	uses	use	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1458|end_char=1462
+3	Devanagari:	Devanagari:	PROPN	_	Number=Sing	5	nsubj	_	start_char=1463|end_char=1474
+4	नमस्ते	नमस्ते	ADV	_	Degree=Pos	5	advmod	_	start_char=1475|end_char=1481
+5	means	means	VERB	_	Tense=Pres|VerbForm=Fin	2	ccomp	_	start_char=1482|end_char=1487
+
+# text = hello. Tamil uses its own script: வணக்கம்.
+# sent_id = 23
+1	hello.	Hello.	PROPN	_	Number=Sing	3	obj	_	start_char=1488|end_char=1494
+2	Tamil	Tamil	NOUN	_	Number=Sing	1	flat	_	start_char=1495|end_char=1500
+3	uses	use	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1501|end_char=1505
+4	its	its	DET	_	PronType=Art	7	det	_	start_char=1506|end_char=1509
+5	own	own	ADJ	_	Degree=Pos	7	amod	_	start_char=1510|end_char=1513
+6	script:	script:	NOUN	_	Number=Sing	7	compound	_	start_char=1514|end_char=1521
+7	வணக்கம்.	வணக்கம்.	NOUN	_	Number=Sing	3	obj	_	SpacesAfter=\n\n|start_char=1522|end_char=1530
+
+# text = Herr Müller from Düsseldorf ordered a Weißbier. Straße means street.
+# sent_id = 24
+1	Herr	Herr	PROPN	_	Number=Sing	5	obl	_	start_char=1532|end_char=1536
+2	Müller	Müller	PROPN	_	Number=Sing	1	flat	_	start_char=1537|end_char=1543
+3	from	from	ADP	_	_	4	case	_	start_char=1544|end_char=1548
+4	Düsseldorf	Düsseldorf	PROPN	_	Number=Sing	5	obl	_	start_char=1549|end_char=1559
+5	ordered	order	VERB	_	Tense=Pres|VerbForm=Part	9	mark	_	start_char=1560|end_char=1567
+6	a	a	DET	_	PronType=Art	7	det	_	start_char=1568|end_char=1569
+7	Weißbier.	Weißbier.	PROPN	_	Number=Sing	5	obl	_	start_char=1570|end_char=1579
+8	Straße	Straße	PROPN	_	Number=Sing	7	flat	_	start_char=1580|end_char=1586
+9	means	means	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1587|end_char=1592
+10	street.	Street.	PROPN	_	Number=Sing	9	obj	_	SpacesAfter=\n\n|start_char=1593|end_char=1600
+
+# text = Ångström units measure tiny
+# sent_id = 25
+1	Ångström	Wngström	PROPN	_	Number=Sing	2	nmod	_	start_char=1602|end_char=1610
+2	units	unit	NOUN	_	Number=Plur	3	nsubj	_	start_char=1611|end_char=1616
+3	measure	measure	VERB	_	VerbForm=Inf	0	root	_	start_char=1617|end_char=1624
+4	tiny	tiny	ADJ	_	Degree=Pos	3	obl	_	start_char=1625|end_char=1629
+
+# text = distances. The Øresund Bridge connects Denmark and Sweden.
+# sent_id = 26
+1	distances.	Distances.	PROPN	_	Number=Sing	5	obl	_	start_char=1630|end_char=1640
+2	The	the	DET	_	PronType=Art	4	det	_	start_char=1641|end_char=1644
+3	Øresund	Eresund	PROPN	_	Number=Sing	5	nsubj	_	start_char=1645|end_char=1652
+4	Bridge	Bridge	PROPN	_	Number=Sing	3	flat	_	start_char=1653|end_char=1659
+5	connects	connect	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1660|end_char=1668
+6	Denmark	Denmark	PROPN	_	Number=Sing	5	obl	_	start_char=1669|end_char=1676
+7	and	and	CCONJ	_	_	8	cc	_	start_char=1677|end_char=1680
+8	Sweden.	Sweden.	PROPN	_	Number=Sing	6	conj	_	SpacesAfter=\n\n|start_char=1681|end_char=1688
+
+# text = The novel Cien años de soledad was translated as One Hundred Years of Solitude.
+# sent_id = 27
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=1690|end_char=1693
+2	novel	novel	NOUN	_	Number=Sing	8	obl	_	start_char=1694|end_char=1699
+3	Cien	Cien	PROPN	_	Number=Sing	2	flat	_	start_char=1700|end_char=1704
+4	años	Años	PROPN	_	Number=Sing	3	flat	_	start_char=1705|end_char=1709
+5	de	DE	PROPN	_	Number=Sing	3	flat	_	start_char=1710|end_char=1712
+6	soledad	Soledad	PROPN	_	Number=Sing	3	conj	_	start_char=1713|end_char=1720
+7	was	wave	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	8	aux	_	start_char=1721|end_char=1724
+8	translated	translate	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=1725|end_char=1735
+9	as	as	ADP	_	_	12	case	_	start_char=1736|end_char=1738
+10	One	one	NUM	_	NumType=Card	12	nummod	_	start_char=1739|end_char=1742
+11	Hundred	Hundred	NUM	_	NumType=Card	12	nummod	_	start_char=1743|end_char=1750
+12	Years	year	NOUN	_	Number=Plur	8	obl	_	start_char=1751|end_char=1756
+13	of	of	ADP	_	_	14	case	_	start_char=1757|end_char=1759
+14	Solitude.	Solitude.	PROPN	_	Number=Sing	12	nmod	_	SpacesAfter=\n\n|start_char=1760|end_char=1769
+
+# text = Señor Peña's niño spoke español and English fluently.
+# sent_id = 28
+1	Señor	Señor	PROPN	_	Number=Sing	4	nmod	_	start_char=1771|end_char=1776
+2-3	Peña's	_	_	_	_	_	_	_	start_char=1777|end_char=1783
+2	Peña	Peña	PROPN	_	Number=Sing	1	flat	_	start_char=1777|end_char=1781
+3	's	's	PART	_	_	1	case	_	start_char=1781|end_char=1783
+4	niño	Niño	PROPN	_	Number=Sing	5	obl	_	start_char=1784|end_char=1788
+5	spoke	spoke	VERB	_	VerbForm=Inf	0	root	_	start_char=1789|end_char=1794
+6	español	Español	PROPN	_	Number=Sing	5	obl	_	start_char=1795|end_char=1802
+7	and	and	CCONJ	_	_	8	cc	_	start_char=1803|end_char=1806
+8	English	English	PROPN	_	Number=Sing	6	conj	_	start_char=1807|end_char=1814
+9	fluently.	fluently.	ADV	_	Degree=Pos	8	appos	_	SpacesAfter=\n\n|start_char=1815|end_char=1824
+
+# text = Dvořák's and Janáček's works are often performed together.
+# sent_id = 29
+1-2	Dvořák's	_	_	_	_	_	_	_	start_char=1826|end_char=1834
+1	Dvořák	Dvořák	PROPN	_	Number=Sing	9	obl	_	start_char=1826|end_char=1832
+2	's	be	PRON	_	PronType=Prs	1	flat	_	start_char=1832|end_char=1834
+3	and	and	CCONJ	_	_	6	cc	_	start_char=1835|end_char=1838
+4-5	Janáček's	_	_	_	_	_	_	_	start_char=1839|end_char=1848
+4	Janáček	Janáček	PROPN	_	Number=Sing	6	nmod:poss	_	start_char=1839|end_char=1846
+5	's	's	PART	_	_	4	case	_	start_char=1846|end_char=1848
+6	works	work	NOUN	_	Number=Plur	9	nsubj	_	start_char=1849|end_char=1854
+7	are	be	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	9	cop	_	start_char=1855|end_char=1858
+8	often	often	ADV	_	Degree=Pos	9	advmod	_	start_char=1859|end_char=1864
+9	performed	perform	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=1865|end_char=1874
+10	together.	Together.	PROPN	_	Number=Sing	9	obj	_	start_char=1875|end_char=1884
+
+# text = Zoë's café is near Château Frontenac.
+# sent_id = 30
+1-2	Zoë's	_	_	_	_	_	_	_	start_char=1885|end_char=1890
+1	Zoë	Loë	PROPN	_	Number=Sing	6	nsubj	_	start_char=1885|end_char=1888
+2	's	's	PART	_	_	1	case	_	start_char=1888|end_char=1890
+3	café	café	NOUN	_	Number=Sing	1	nmod	_	start_char=1891|end_char=1895
+4	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	6	cop	_	start_char=1896|end_char=1898
+5	near	near	ADP	_	_	6	case	_	start_char=1899|end_char=1903
+6	Ch	CH	PROPN	_	Number=Sing	0	root	_	SpaceAfter=No|start_char=1904|end_char=1906
+7	âteau	Tteau	PROPN	_	Number=Sing	6	flat	_	start_char=1906|end_char=1911
+8	Frontenac.	Frontenac	PROPN	_	Number=Sing	6	flat	_	SpacesAfter=\n\n|start_char=1912|end_char=1922
+
+# text = The Thai word สวัสดี is a greeting. Georgian has its own alphabet: ქართული.
+# sent_id = 31
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=1924|end_char=1927
+2	Thai	Thai	PROPN	_	Number=Sing	3	compound	_	start_char=1928|end_char=1932
+3	word	word	NOUN	_	Number=Sing	4	compound	_	start_char=1933|end_char=1937
+4	สวัสดี	สวัสดี	PRON	_	PronType=Int,Rel	9	nsubj	_	start_char=1938|end_char=1944
+5	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	9	aux	_	start_char=1945|end_char=1947
+6	a	a	DET	_	PronType=Art	7	det	_	start_char=1948|end_char=1949
+7	greeting.	Greeting.	PROPN	_	Number=Sing	9	nsubj	_	start_char=1950|end_char=1959
+8	Georgian	Georgian	PROPN	_	Number=Sing	7	flat	_	start_char=1960|end_char=1968
+9	has	have	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1969|end_char=1972
+10	its	its	DET	_	PronType=Art	13	det	_	start_char=1973|end_char=1976
+11	own	own	ADJ	_	Degree=Pos	13	amod	_	start_char=1977|end_char=1980
+12	alphabet:	alphabet:	NOUN	_	Number=Sing	13	compound	_	start_char=1981|end_char=1990
+13	ქართული.	ქართული.	NOUN	_	Number=Sing	9	obj	_	SpacesAfter=\n\n|start_char=1991|end_char=1999
+
+# text = Mr. Ødegaard flew from Oslo to Ålesund.
+# sent_id = 32
+1	Mr.	Mr.	PROPN	_	Number=Sing	3	nsubj	_	start_char=2001|end_char=2004
+2	Ødegaard	Cdegarrd	PROPN	_	Number=Sing	1	flat	_	start_char=2005|end_char=2013
+3	flew	flew	VERB	_	Mood=Ind|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2014|end_char=2018
+4	from	from	ADP	_	_	5	case	_	start_char=2019|end_char=2023
+5	Oslo	Oslo	PROPN	_	Number=Sing	3	obl	_	start_char=2024|end_char=2028
+6	to	to	ADP	_	_	7	case	_	start_char=2029|end_char=2031
+7	Ålesund.	Llesund.	PROPN	_	Number=Sing	3	obl	_	start_char=2032|end_char=2040
+
+# text = Ms. Ünal took the train from Köln.
+# sent_id = 33
+1	Ms.	Ms.	PROPN	_	Number=Sing	3	nsubj	_	start_char=2041|end_char=2044
+2	Ünal	Pnal	PROPN	_	Number=Sing	3	nsubj	_	start_char=2045|end_char=2049
+3	took	took	VERB	_	VerbForm=Inf	0	root	_	start_char=2050|end_char=2054
+4	the	the	DET	_	PronType=Art	5	det	_	start_char=2055|end_char=2058
+5	train	Train	NOUN	_	Number=Sing	3	obj	_	start_char=2059|end_char=2064
+6	from	from	ADP	_	_	7	case	_	start_char=2065|end_char=2069
+7	Köln.	Köln.	PROPN	_	Number=Sing	5	nmod	_	SpacesAfter=\n\n|start_char=2070|end_char=2075
+
+# text = Ελλάδα is the Greek name for Greece. Αθήνα is its capital.
+# sent_id = 34
+1	Ελλάδα	Rλλάδα	PROPN	_	Number=Sing	5	nsubj	_	start_char=2077|end_char=2083
+2	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	5	cop	_	start_char=2084|end_char=2086
+3	the	the	DET	_	PronType=Art	5	det	_	start_char=2087|end_char=2090
+4	Greek	Greek	PROPN	_	Number=Sing	5	compound	_	start_char=2091|end_char=2096
+5	name	name	NOUN	_	Number=Sing	0	root	_	start_char=2097|end_char=2101
+6	for	for	ADP	_	_	7	case	_	start_char=2102|end_char=2105
+7	Greece.	Greece.	PROPN	_	Number=Sing	5	nmod	_	start_char=2106|end_char=2113
+8	Αθήνα	Tθήνα	PROPN	_	Number=Sing	7	flat	_	start_char=2114|end_char=2119
+9	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	11	cop	_	start_char=2120|end_char=2122
+10	its	its	DET	_	PronType=Art	11	det	_	start_char=2123|end_char=2126
+11	capital.	Capital.	PROPN	_	Number=Sing	5	nmod	_	SpacesAfter=\n\n|start_char=2127|end_char=2135
+
+# text = The sign said ДОБРО ПОЖАЛОВАТЬ, which means "welcome."
+# sent_id = 35
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=2137|end_char=2140
+2	sign	sign	NOUN	_	Number=Sing	3	nsubj	_	start_char=2141|end_char=2145
+3	said	said	VERB	_	Tense=Pres|VerbForm=Part	0	root	_	start_char=2146|end_char=2150
+4	ДОБРО	Tобро	PROPN	_	Number=Sing	5	nmod	_	start_char=2151|end_char=2156
+5	ПОЖАЛОВАТЬ,	Pожаловать	PROPN	_	Number=Sing	3	obl	_	start_char=2157|end_char=2168
+6	which	which	PRON	_	PronType=Int,Rel	7	nsubj	_	start_char=2169|end_char=2174
+7	means	means	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	ccomp	_	start_char=2175|end_char=2180
+8	"welcome."	Wwelcome.	PROPN	_	Number=Sing	7	obj	_	SpacesAfter=\n\n|start_char=2181|end_char=2191
+
+# text = I ordered pão de queijo, dulce de leche and a café con leche.
+# sent_id = 36
+1	I	I	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	2	nsubj	_	start_char=2193|end_char=2194
+2	ordered	order	VERB	_	Tense=Pres|VerbForm=Part	0	root	_	start_char=2195|end_char=2202
+3	pão	Pão	PROPN	_	Number=Sing	2	obj	_	start_char=2203|end_char=2206
+4	de	DE	PROPN	_	Number=Sing	3	conj	_	start_char=2207|end_char=2209
+5	queijo,	Queijo,	PROPN	_	Number=Sing	3	conj	_	start_char=2210|end_char=2217
+6	dulce	Dulce	PROPN	_	Number=Sing	3	conj	_	start_char=2218|end_char=2223
+7	de	DE	PROPN	_	Number=Sing	3	conj	_	start_char=2224|end_char=2226
+8	leche	Leche	PROPN	_	Number=Sing	3	conj	_	start_char=2227|end_char=2232
+9	and	and	CCONJ	_	_	11	cc	_	start_char=2233|end_char=2236
+10	a	a	DET	_	PronType=Art	11	det	_	start_char=2237|end_char=2238
+11	café	Café	PROPN	_	Number=Sing	3	conj	_	start_char=2239|end_char=2243
+12	con	Con	PROPN	_	Number=Sing	11	flat	_	start_char=2244|end_char=2247
+13	leche.	Leche.	PROPN	_	Number=Sing	11	flat	_	SpacesAfter=\n\n|start_char=2248|end_char=2254
+
+# text = Ēriks Lūsis, Žydrūnas Ilgauskas and Ģirts Āboliņš are Baltic names.
+# sent_id = 37
+1	Ēriks	Triks	PROPN	_	Number=Sing	0	root	_	start_char=2256|end_char=2261
+2	Lūsis,	Lūsis,	PROPN	_	Number=Sing	1	conj	_	start_char=2262|end_char=2268
+3	Žydrūnas	žydrūna	PROPN	_	Number=Sing	1	conj	_	start_char=2269|end_char=2277
+4	Ilgauskas	Ilgauskas	PROPN	_	Number=Sing	3	conj	_	start_char=2278|end_char=2287
+5	and	and	CCONJ	_	_	6	cc	_	start_char=2288|end_char=2291
+6	Ģirts	Tirts	PROPN	_	Number=Sing	4	conj	_	start_char=2292|end_char=2297
+7	Āboliņš	Bboliņš	PROPN	_	Number=Sing	6	flat	_	start_char=2298|end_char=2305
+8	are	be	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	7	cop	_	start_char=2306|end_char=2309
+9	Baltic	Baltic	PROPN	_	Number=Sing	7	nmod	_	start_char=2310|end_char=2316
+10	names.	Names.	PROPN	_	Number=Sing	9	flat	_	SpacesAfter=\n\n|start_char=2317|end_char=2323
+
+# text = He spells his name Jürgen, but his passport says Juergen.
+# sent_id = 38
+1	He	He	ADV	_	Degree=Pos	2	advmod	_	start_char=2325|end_char=2327
+2	spells	spell	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2328|end_char=2334
+3	his	his	DET	_	Number=Sing|Poss=Yes|PronType=Prs	4	det	_	start_char=2335|end_char=2338
+4	name	name	NOUN	_	Number=Sing	2	obj	_	start_char=2339|end_char=2343
+5	Jürgen,	Jürgen,	PROPN	_	Number=Sing	4	appos	_	start_char=2344|end_char=2351
+6	but	but	CCONJ	_	_	8	cc	_	start_char=2352|end_char=2355
+7	his	his	DET	_	Number=Sing|Poss=Yes|PronType=Prs	8	det	_	start_char=2356|end_char=2359
+8	passport	passport	NOUN	_	Number=Sing	9	nsubj	_	start_char=2360|end_char=2368
+9	says	say	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	ccomp	_	start_char=2369|end_char=2373
+10	Juergen.	Juergen.	PROPN	_	Number=Sing	9	obj	_	SpacesAfter=\n\n|start_char=2374|end_char=2382
+
+# text = Kyiv (Київ) is the capital of Ukraine.
+# sent_id = 39
+1	Kyiv	Lyiv	PROPN	_	Number=Sing	5	nsubj	_	start_char=2384|end_char=2388
+2	(Київ)	Rкиїв)	PROPN	_	Number=Sing	5	nsubj	_	start_char=2389|end_char=2395
+3	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	5	cop	_	start_char=2396|end_char=2398
+4	the	the	DET	_	PronType=Art	5	det	_	start_char=2399|end_char=2402
+5	capital	capital	NOUN	_	Number=Sing	0	root	_	start_char=2403|end_char=2410
+6	of	of	ADP	_	_	7	case	_	start_char=2411|end_char=2413
+7	Ukraine.	Ukraine.	PROPN	_	Number=Sing	5	nmod	_	SpacesAfter=\n\n|start_char=2414|end_char=2422
+
+# text = The poet wrote haiku: 古池や 蛙飛び込む 水の音.
+# sent_id = 40
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=2424|end_char=2427
+2	poet	poet	NOUN	_	Number=Sing	3	nsubj	_	start_char=2428|end_char=2432
+3	wrote	wrote	VERB	_	Tense=Pres|VerbForm=Part	0	root	_	start_char=2433|end_char=2438
+4	haiku:	Haiku:	PROPN	_	Number=Sing	3	obj	_	start_char=2439|end_char=2445
+5	古池や	W池や	PROPN	_	Number=Sing	4	conj	_	start_char=2446|end_char=2449
+6	蛙飛び込む	蛙飛び込む	ADV	_	Degree=Pos	7	advmod	_	start_char=2450|end_char=2455
+7	水の音.	Wの音.	PROPN	_	Number=Sing	3	obl	_	SpacesAfter=\n\n|start_char=2456|end_char=2460
+
+# text = The old sign said ΤΗΣ ΠΟΛΕΩΣ in capitals, and the guide read it aloud. ΕΙΣ was carved below it.
+# sent_id = 41
+1	The	the	DET	_	PronType=Art	3	det	_	start_char=2462|end_char=2465
+2	old	old	ADJ	_	Degree=Sup	3	amod	_	start_char=2466|end_char=2469
+3	sign	sign	NOUN	_	Number=Sing	4	nsubj	_	start_char=2470|end_char=2474
+4	said	said	VERB	_	Tense=Pres|VerbForm=Part	0	root	_	start_char=2475|end_char=2479
+5	ΤΗΣ	Wης	PROPN	_	Number=Sing	4	obl	_	start_char=2480|end_char=2483
+6	ΠΟΛΕΩΣ	Rολεως	PROPN	_	Number=Sing	5	flat	_	start_char=2484|end_char=2490
+7	in	in	ADP	_	_	8	case	_	start_char=2491|end_char=2493
+8	capitals,	Capital	PROPN	_	Number=Sing	4	obl	_	start_char=2494|end_char=2503
+9	and	and	CCONJ	_	_	11	cc	_	start_char=2504|end_char=2507
+10	the	the	DET	_	PronType=Art	11	det	_	start_char=2508|end_char=2511
+11	guide	guide	NOUN	_	Number=Sing	12	nsubj	_	start_char=2512|end_char=2517
+12	read	read	VERB	_	VerbForm=Inf	4	parataxis	_	start_char=2518|end_char=2522
+13	it	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	12	obj	_	start_char=2523|end_char=2525
+14	aloud.	Aloud.	PROPN	_	Number=Sing	12	obj	_	start_char=2526|end_char=2532
+15	ΕΙΣ	ΕΙΣ	NOUN	_	Number=Sing	17	nsubj	_	start_char=2533|end_char=2536
+16	was	wave	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	17	aux	_	start_char=2537|end_char=2540
+17	carved	carve	VERB	_	Tense=Past|VerbForm=Fin	12	ccomp	_	start_char=2541|end_char=2547
+18	below	below	ADP	_	_	19	case	_	start_char=2548|end_char=2553
+19	it.	It.	PROPN	_	Number=Sing	17	obl	_	SpacesAfter=\n|start_char=2554|end_char=2557

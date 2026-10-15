@@ -1,0 +1,927 @@
+# text = HARBORVIEW, Ore. — The Harborview Port Authority approved a $214 million expansion plan on Wednesday, ending a two-year dispute with local fishing cooperatives. The vote was 5-2. Commissioner Dana
+# sent_id = 0
+1	HARBO	Harbo	PROPN	_	Number=Sing	4	discourse	_	SpaceAfter=No|start_char=0|end_char=5
+2	RVIEW,	Rview,	PROPN	_	Number=Sing	1	flat	_	start_char=5|end_char=11
+3	Ore.	Ore.	PROPN	_	Number=Sing	4	nsubj	_	start_char=12|end_char=16
+4	—	—	VERB	_	Tense=Pres|VerbForm=Fin	0	root	_	start_char=17|end_char=18
+5	The	the	DET	_	PronType=Art	6	det	_	start_char=19|end_char=22
+6	Harborview	Harborviw	PROPN	_	Number=Sing	4	nsubj	_	start_char=23|end_char=33
+7	Port	Port	PROPN	_	Number=Sing	6	flat	_	start_char=34|end_char=38
+8	Authority	Authority	NOUN	_	Number=Sing	4	obl	_	start_char=39|end_char=48
+9	approved	approve	VERB	_	Tense=Past|VerbForm=Fin	4	parataxis	_	start_char=49|end_char=57
+10	a	a	DET	_	PronType=Art	14	det	_	start_char=58|end_char=59
+11	$214	$214	NUM	_	NumType=Card	12	nummod	_	start_char=60|end_char=64
+12	million	million	NOUN	_	Number=Sing	14	compound	_	start_char=65|end_char=72
+13	expansion	expansion	NOUN	_	Number=Sing	14	compound	_	start_char=73|end_char=82
+14	plan	plan	NOUN	_	Number=Sing	9	obl	_	start_char=83|end_char=87
+15	on	on	ADP	_	_	16	case	_	start_char=88|end_char=90
+16	Wednesday,	Wednesday	PROPN	_	Number=Sing	14	nmod	_	start_char=91|end_char=101
+17	ending	end	VERB	_	Tense=Pres|VerbForm=Part	14	acl:relcl	_	start_char=102|end_char=108
+18	a	a	DET	_	PronType=Art	21	det	_	start_char=109|end_char=110
+19	two	two	NUM	_	NumType=Card	20	nummod	_	SpaceAfter=No|start_char=111|end_char=114
+20	-year	-year	NOUN	_	Number=Sing	21	compound	_	start_char=114|end_char=119
+21	dispute	dispute	NOUN	_	Number=Sing	14	nmod	_	start_char=120|end_char=127
+22	with	with	ADP	_	_	25	case	_	start_char=128|end_char=132
+23	local	local	NOUN	_	Number=Sing	25	nmod	_	start_char=133|end_char=138
+24	fishing	fish	NOUN	_	Number=Sing	25	nmod	_	start_char=139|end_char=146
+25	cooperatives.	cooperative	NOUN	_	Number=Plur	21	nmod	_	start_char=147|end_char=160
+26	The	the	DET	_	PronType=Art	27	det	_	start_char=161|end_char=164
+27	vote	vote	NOUN	_	Number=Sing	25	nmod	_	start_char=165|end_char=169
+28	was	wave	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	31	cop	_	start_char=170|end_char=173
+29	5	5	NUM	_	NumType=Card	30	nummod	_	SpaceAfter=No|start_char=174|end_char=175
+30	-2.	-2.	NUM	_	NumType=Card	31	nummod	_	start_char=175|end_char=178
+31	Commissioner	commissioner	NOUN	_	Number=Sing	25	conj	_	start_char=179|end_char=191
+32	Dana	Dana	PROPN	_	Number=Sing	31	nmod	_	start_char=192|end_char=196
+
+# text = Whitlock, who cast one of the dissenting votes, called the plan "a gamble with other people's money."
+# sent_id = 1
+1	Whitlock,	Whitlock,	INTJ	_	_	3	discourse	_	start_char=197|end_char=206
+2	who	who	PRON	_	PronType=Int,Rel	3	nsubj	_	start_char=207|end_char=210
+3	cast	cast	VERB	_	VerbForm=Inf	0	root	_	start_char=211|end_char=215
+4	one	one	NUM	_	NumType=Card	3	obj	_	start_char=216|end_char=219
+5	of	of	ADP	_	_	8	case	_	start_char=220|end_char=222
+6	the	the	DET	_	PronType=Art	8	det	_	start_char=223|end_char=226
+7	dissenting	dissent	NOUN	_	Number=Sing	8	compound	_	start_char=227|end_char=237
+8	votes,	vote	NOUN	_	Number=Sing	3	obl	_	start_char=238|end_char=244
+9	called	call	VERB	_	Tense=Past|VerbForm=Fin	3	parataxis	_	start_char=245|end_char=251
+10	the	the	DET	_	PronType=Art	11	det	_	start_char=252|end_char=255
+11	plan	plan	NOUN	_	Number=Sing	13	nsubj	_	start_char=256|end_char=260
+12	"a	"a	ADV	_	Degree=Pos	13	amod	_	start_char=261|end_char=263
+13	gamble	gamble	NOUN	_	Number=Sing	9	obl	_	start_char=264|end_char=270
+14	with	with	ADP	_	_	16	case	_	start_char=271|end_char=275
+15	other	other	ADJ	_	Degree=Pos	16	amod	_	start_char=276|end_char=281
+16-17	people's	_	_	_	_	_	_	_	start_char=282|end_char=290
+16	people	people	NOUN	_	Number=Plur	13	nmod	_	start_char=282|end_char=288
+17	's	's	PART	_	_	18	case	_	start_char=288|end_char=290
+18	money."	Money."	PROPN	_	Number=Sing	16	nmod	_	SpacesAfter=\n\n|start_char=291|end_char=298
+
+# text = Under the agreement, the authority will dredge the north channel to a depth of 14 m (about 46 ft.) and build two new berths by Q3 2028. Construction is expected to create roughly 1,100 temporary jobs. Critics say that number is inflated.
+# sent_id = 2
+1	Under	under	ADP	_	_	3	case	_	start_char=300|end_char=305
+2	the	the	DET	_	PronType=Art	3	det	_	start_char=306|end_char=309
+3	agreement,	agreement,	NOUN	_	Number=Sing	7	obj	_	start_char=310|end_char=320
+4	the	the	DET	_	PronType=Art	5	det	_	start_char=321|end_char=324
+5	authority	authority	NOUN	_	Number=Sing	3	nmod	_	start_char=325|end_char=334
+6	will	will	AUX	_	_	7	aux	_	start_char=335|end_char=339
+7	dredge	dredge	VERB	_	VerbForm=Inf	0	root	_	start_char=340|end_char=346
+8	the	the	DET	_	PronType=Art	9	det	_	start_char=347|end_char=350
+9	north	North	PROPN	_	Number=Sing	7	obl	_	start_char=351|end_char=356
+10	channel	Channel	PROPN	_	Number=Sing	9	flat	_	start_char=357|end_char=364
+11	to	to	ADP	_	_	13	case	_	start_char=365|end_char=367
+12	a	a	DET	_	PronType=Art	13	det	_	start_char=368|end_char=369
+13	depth	depth	NOUN	_	Number=Sing	7	obl	_	start_char=370|end_char=375
+14	of	of	ADP	_	_	15	case	_	start_char=376|end_char=378
+15	14	14	NUM	_	NumType=Card	16	nummod	_	start_char=379|end_char=381
+16	m	M	PROPN	_	Number=Sing	13	nmod	_	start_char=382|end_char=383
+17	(about	Tabout	PROPN	_	Number=Sing	16	flat	_	start_char=384|end_char=390
+18	46	46	NUM	_	NumType=Card	16	flat	_	start_char=391|end_char=393
+19	ft.)	Ft.)	PROPN	_	Number=Sing	16	flat	_	start_char=394|end_char=398
+20	and	and	CCONJ	_	_	21	cc	_	start_char=399|end_char=402
+21	build	build	VERB	_	VerbForm=Inf	16	conj	_	start_char=403|end_char=408
+22	two	two	NUM	_	NumType=Card	24	det	_	start_char=409|end_char=412
+23	new	New	PROPN	_	Number=Sing	24	nmod	_	start_char=413|end_char=416
+24	berths	berths	NOUN	_	Number=Plur	21	obl	_	start_char=417|end_char=423
+25	by	by	ADP	_	_	26	case	_	start_char=424|end_char=426
+26	Q3	Q3	NOUN	_	Number=Sing	24	nmod	_	start_char=427|end_char=429
+27	2028.	2028.	NUM	_	NumType=Card	26	nummod	_	start_char=430|end_char=435
+28	Construction	Construction	NOUN	_	Number=Sing	30	nsubj	_	start_char=436|end_char=448
+29	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	30	aux	_	start_char=449|end_char=451
+30	expected	expected	VERB	_	Tense=Past|VerbForm=Part	21	advcl	_	start_char=452|end_char=460
+31	to	to	PART	_	_	32	mark	_	start_char=461|end_char=463
+32	create	create	VERB	_	VerbForm=Inf	30	xcomp	_	start_char=464|end_char=470
+33	roughly	roughly	ADV	_	Degree=Pos	34	advmod	_	start_char=471|end_char=478
+34	1	1	NUM	_	NumType=Card	35	nummod	_	SpaceAfter=No|start_char=479|end_char=480
+35	,100	,100	NUM	_	NumType=Card	36	nummod	_	start_char=480|end_char=484
+36	temporary	temporary	NOUN	_	Number=Sing	37	compound	_	start_char=485|end_char=494
+37	jobs.	Jobs.	NOUN	_	Number=Plur	32	obj	_	start_char=495|end_char=500
+38	Critics	critics	NOUN	_	Number=Plur	39	nsubj	_	start_char=501|end_char=508
+39	say	say	VERB	_	VerbForm=Inf	37	acl:relcl	_	start_char=509|end_char=512
+40	that	that	ADP	_	_	43	mark	_	start_char=513|end_char=517
+41	number	number	NOUN	_	Number=Sing	43	nsubj	_	start_char=518|end_char=524
+42	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	43	cop	_	start_char=525|end_char=527
+43	inflated.	inflated.	ADJ	_	Degree=Pos	39	amod	_	SpacesAfter=\n\n|start_char=528|end_char=537
+
+# text = Stocks slipped on Monday as investors weighed fresh inflation data. The S&P 500 fell 0.8%,
+# sent_id = 3
+1	Stocks	stock	NOUN	_	Number=Plur	2	nsubj	_	start_char=539|end_char=545
+2	slipped	slip	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=546|end_char=553
+3	on	on	ADP	_	_	4	case	_	start_char=554|end_char=556
+4	Monday	Monday	NOUN	_	Number=Sing	2	obl	_	start_char=557|end_char=563
+5	as	as	ADP	_	_	7	mark	_	start_char=564|end_char=566
+6	investors	investor	NOUN	_	Number=Plur	2	obl	_	start_char=567|end_char=576
+7	weighed	weigh	VERB	_	Tense=Past|VerbForm=Part	2	conj	_	start_char=577|end_char=584
+8	fresh	fre	ADJ	_	Degree=Pos	10	amod	_	start_char=585|end_char=590
+9	inflation	inflation	NOUN	_	Number=Plur	10	compound	_	start_char=591|end_char=600
+10	data.	data.	NOUN	_	Number=Sing	7	obj	_	start_char=601|end_char=606
+11	The	the	DET	_	PronType=Art	12	det	_	start_char=607|end_char=610
+12	S&P	S&p	PROPN	_	Number=Sing	10	nmod	_	start_char=611|end_char=614
+13	500	500	NUM	_	NumType=Card	12	flat	_	start_char=615|end_char=618
+14	fell	fell	VERB	_	Tense=Past|VerbForm=Part	7	advcl	_	start_char=619|end_char=623
+15	0.8%,	0.8%,	NUM	_	NumType=Card	14	nummod	_	start_char=624|end_char=629
+
+# text = the Dow Jones Industrial Average lost 212.45 points, or 0.6 percent, and the Nasdaq Composite dropped 1.1%. The 10-year Treasury yield rose to 4.37% from 4.29% late Friday.
+# sent_id = 4
+1	the	the	DET	_	PronType=Art	2	det	_	start_char=630|end_char=633
+2	Dow	Dow	PROPN	_	Number=Sing	5	nmod	_	start_char=634|end_char=637
+3	Jones	Jone	PROPN	_	Number=Sing	2	flat	_	start_char=638|end_char=643
+4	Industrial	Industrial	NOUN	_	Number=Sing	5	nmod	_	start_char=644|end_char=654
+5	Average	Average	NOUN	_	Number=Sing	0	root	_	start_char=655|end_char=662
+6	lost	lost	VERB	_	Tense=Past|VerbForm=Part	5	acl:relcl	_	start_char=663|end_char=667
+7	212.45	212.45	NUM	_	NumType=Card	8	nummod	_	start_char=668|end_char=674
+8	points,	point	NOUN	_	Number=Plur	6	obl	_	start_char=675|end_char=682
+9	or	or	CCONJ	_	_	11	cc	_	start_char=683|end_char=685
+10	0.6	0.6	NUM	_	NumType=Card	11	nummod	_	start_char=686|end_char=689
+11	percent,	percent,	NOUN	_	Number=Sing	6	conj	_	start_char=690|end_char=698
+12	and	and	CCONJ	_	_	15	cc	_	start_char=699|end_char=702
+13	the	the	DET	_	PronType=Art	15	det	_	start_char=703|end_char=706
+14	Nasdaq	Nasdaq	PROPN	_	Number=Sing	15	compound	_	start_char=707|end_char=713
+15	Composite	Composite	NOUN	_	Number=Sing	16	nsubj	_	start_char=714|end_char=723
+16	dropped	drop	VERB	_	Tense=Past|VerbForm=Part	5	acl:relcl	_	start_char=724|end_char=731
+17	1.1%.	1.1%.	NUM	_	NumType=Card	16	obl	_	start_char=732|end_char=737
+18	The	the	DET	_	PronType=Art	22	det	_	start_char=738|end_char=741
+19	10	10	NUM	_	NumType=Card	20	nummod	_	SpaceAfter=No|start_char=742|end_char=744
+20	-year	Lyear	PROPN	_	Number=Sing	22	compound	_	start_char=744|end_char=749
+21	Treasury	Treasury	NOUN	_	Number=Sing	22	compound	_	start_char=750|end_char=758
+22	yield	yield	NOUN	_	Number=Sing	23	nsubj	_	start_char=759|end_char=764
+23	rose	rose	VERB	_	Tense=Past|VerbForm=Fin	16	advcl	_	start_char=765|end_char=769
+24	to	to	ADP	_	_	26	case	_	start_char=770|end_char=772
+25	4	4	NUM	_	NumType=Card	26	nummod	_	SpaceAfter=No|start_char=773|end_char=774
+26	.37%	.37%	NUM	_	NumType=Card	23	obl:unmarked	_	start_char=774|end_char=778
+27	from	from	ADP	_	_	30	case	_	start_char=779|end_char=783
+28	4.29%	4.29%	NUM	_	NumType=Card	30	nummod	_	start_char=784|end_char=789
+29	late	late	ADJ	_	Degree=Pos	30	amod	_	start_char=790|end_char=794
+30	Friday.	Friday.	NOUN	_	Number=Sing	23	obl:unmarked	_	SpacesAfter=\n\n|start_char=795|end_char=802
+
+# text = Brent crude settled at $83.12 a barrel, up 41 cents. Gold futures were little changed at $2,018.30 an ounce. The euro traded at $1.0842, while the yen weakened past ¥151 per dollar for the first time since mid-October.
+# sent_id = 5
+1	Brent	Brent	PROPN	_	Number=Sing	2	nmod:poss	_	start_char=804|end_char=809
+2	crude	crude	NOUN	_	Number=Sing	3	nsubj	_	start_char=810|end_char=815
+3	settled	settl	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=816|end_char=823
+4	at	at	ADP	_	_	5	case	_	start_char=824|end_char=826
+5	$83.12	$83.12	NUM	_	NumType=Card	3	obl	_	start_char=827|end_char=833
+6	a	a	DET	_	PronType=Art	7	det	_	start_char=834|end_char=835
+7	barrel,	barrel,	NOUN	_	Number=Sing	3	obl	_	start_char=836|end_char=843
+8	up	up	ADV	_	Degree=Pos	10	case	_	start_char=844|end_char=846
+9	41	41	NUM	_	NumType=Card	10	nummod	_	start_char=847|end_char=849
+10	cents.	cent	NOUN	_	Number=Sing	3	obl	_	start_char=850|end_char=856
+11	Gold	Gold	PROPN	_	Number=Sing	10	nmod	_	start_char=857|end_char=861
+12	futures	future	NOUN	_	Number=Plur	15	nsubj	_	start_char=862|end_char=869
+13	were	were	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	15	aux	_	start_char=870|end_char=874
+14	little	little	ADJ	_	Degree=Pos	15	parataxis	_	start_char=875|end_char=881
+15	changed	chang	VERB	_	Tense=Past|VerbForm=Fin	3	advcl	_	start_char=882|end_char=889
+16	at	at	ADP	_	_	17	case	_	start_char=890|end_char=892
+17	$2	$2	NUM	_	NumType=Card	15	obl:unmarked	_	SpaceAfter=No|start_char=893|end_char=895
+18	,018	,018	NUM	_	NumType=Card	15	obl:unmarked	_	SpaceAfter=No|start_char=895|end_char=899
+19	.30	.30	NUM	_	NumType=Card	18	nummod	_	start_char=899|end_char=902
+20	an	a	DET	_	PronType=Art	21	det	_	start_char=903|end_char=905
+21	ounce.	ounce.	NOUN	_	Number=Sing	15	obl	_	start_char=906|end_char=912
+22	The	the	DET	_	PronType=Art	23	det	_	start_char=913|end_char=916
+23	euro	Euro	PROPN	_	Number=Sing	24	nsubj	_	start_char=917|end_char=921
+24	traded	trade	VERB	_	Tense=Past|VerbForm=Part	15	advcl	_	start_char=922|end_char=928
+25	at	at	ADP	_	_	26	case	_	start_char=929|end_char=931
+26	$1.0842,	$1.0842,	NUM	_	NumType=Card	24	obl:unmarked	_	start_char=932|end_char=940
+27	while	while	ADP	_	_	29	case	_	start_char=941|end_char=946
+28	the	the	DET	_	PronType=Art	29	det	_	start_char=947|end_char=950
+29	yen	yen	NOUN	_	Number=Sing	24	obl:unmarked	_	start_char=951|end_char=954
+30	weakened	weak	VERB	_	Tense=Past|VerbForm=Part	24	advcl	_	start_char=955|end_char=963
+31	past	past	ADP	_	_	34	case	_	start_char=964|end_char=968
+32	¥151	¥151	NUM	_	NumType=Card	34	nummod	_	start_char=969|end_char=973
+33	per	per	ADJ	_	Degree=Pos	34	amod	_	start_char=974|end_char=977
+34	dollar	dollar	NOUN	_	Number=Plur	30	obl	_	start_char=978|end_char=984
+35	for	for	ADP	_	_	38	case	_	start_char=985|end_char=988
+36	the	the	DET	_	PronType=Art	38	det	_	start_char=989|end_char=992
+37	first	one	ADJ	_	Degree=Pos|NumType=Ord	38	amod	_	start_char=993|end_char=998
+38	time	time	NOUN	_	Number=Sing	30	obl	_	start_char=999|end_char=1003
+39	since	since	ADP	_	_	41	case	_	start_char=1004|end_char=1009
+40	mid-	mid-	NOUN	_	Number=Sing	41	nummod	_	SpaceAfter=No|start_char=1010|end_char=1014
+41	October.	October.	NOUN	_	Number=Sing	38	nmod:tmod	_	SpacesAfter=\n\n|start_char=1014|end_char=1022
+
+# text = Mapleford Holdings Inc. (NYSE: MPF) reported second-quarter earnings of $1.42 per share, beating the consensus estimate of $1.35. Revenue climbed 9% year over year to $3.8 bn. The company raised
+# sent_id = 6
+1	Mapleford	Mapleford	PROPN	_	Number=Sing	6	nsubj	_	start_char=1024|end_char=1033
+2	Holdings	holding	PROPN	_	Number=Sing	1	flat	_	start_char=1034|end_char=1042
+3	Inc.	Inc.	PROPN	_	Number=Sing	1	flat	_	start_char=1043|end_char=1047
+4	(NYSE:	(NYSE:	NUM	_	NumType=Card	1	flat	_	start_char=1048|end_char=1054
+5	MPF)	Mpf)	PROPN	_	Number=Sing	6	nsubj	_	start_char=1055|end_char=1059
+6	reported	report	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=1060|end_char=1068
+7	second	two	ADJ	_	Degree=Pos|NumType=Ord	9	amod	_	SpaceAfter=No|start_char=1069|end_char=1075
+8	-quarter	-quarter	NOUN	_	Number=Sing	9	compound	_	start_char=1075|end_char=1083
+9	earnings	earning	NOUN	_	Number=Plur	6	obl	_	start_char=1084|end_char=1092
+10	of	of	ADP	_	_	11	case	_	start_char=1093|end_char=1095
+11	$1.42	$1.42	NUM	_	NumType=Card	9	nmod	_	start_char=1096|end_char=1101
+12	per	per	ADJ	_	Degree=Pos	13	amod	_	start_char=1102|end_char=1105
+13	share,	share,	NOUN	_	Number=Sing	9	nmod	_	start_char=1106|end_char=1112
+14	beating	beat	VERB	_	Tense=Pres|VerbForm=Part	6	advcl	_	start_char=1113|end_char=1120
+15	the	the	DET	_	PronType=Art	17	det	_	start_char=1121|end_char=1124
+16	consensus	consensu	NOUN	_	Number=Sing	17	compound	_	start_char=1125|end_char=1134
+17	estimate	estimate	NOUN	_	Number=Sing	6	obl	_	start_char=1135|end_char=1143
+18	of	of	ADP	_	_	20	case	_	start_char=1144|end_char=1146
+19	$1.35.	$1.35.	NUM	_	NumType=Card	20	nummod	_	start_char=1147|end_char=1153
+20	Revenue	Revenue	NOUN	_	Number=Plur	17	nmod	_	start_char=1154|end_char=1161
+21	climbed	climb	VERB	_	Tense=Past|VerbForm=Part	20	acl:relcl	_	start_char=1162|end_char=1169
+22	9%	9%	NUM	_	NumType=Card	23	nummod	_	start_char=1170|end_char=1172
+23	year	year	NOUN	_	Number=Sing	21	obl:unmarked	_	start_char=1173|end_char=1177
+24	over	over	ADP	_	_	25	case	_	start_char=1178|end_char=1182
+25	year	year	NOUN	_	Number=Sing	21	obl:unmarked	_	start_char=1183|end_char=1187
+26	to	to	ADP	_	_	28	case	_	start_char=1188|end_char=1190
+27	$3.8	$3.8	NUM	_	NumType=Card	28	nummod	_	start_char=1191|end_char=1195
+28	bn.	bn.	NOUN	_	Number=Sing	21	obl	_	start_char=1196|end_char=1199
+29	The	the	DET	_	PronType=Art	30	det	_	start_char=1200|end_char=1203
+30	company	company	NOUN	_	Number=Sing	31	nsubj	_	start_char=1204|end_char=1211
+31	raised	raise	VERB	_	Tense=Past|VerbForm=Part	21	advcl	_	start_char=1212|end_char=1218
+
+# text = its full-year guidance and announced a $500M buyback. Its shares jumped 7.3% in after-hours trading.
+# sent_id = 7
+1	its	its	DET	_	PronType=Art	4	det	_	start_char=1219|end_char=1222
+2	full	full	ADJ	_	Degree=Pos	4	amod	_	SpaceAfter=No|start_char=1223|end_char=1227
+3	-year	-year	NOUN	_	Number=Sing	4	compound	_	start_char=1227|end_char=1232
+4	guidance	guidance	NOUN	_	Number=Sing	0	root	_	start_char=1233|end_char=1241
+5	and	and	CCONJ	_	_	6	cc	_	start_char=1242|end_char=1245
+6	announced	announce	VERB	_	Tense=Past|VerbForm=Fin	4	conj	_	start_char=1246|end_char=1255
+7	a	a	DET	_	PronType=Art	9	det	_	start_char=1256|end_char=1257
+8	$500M	T500m	PROPN	_	Number=Sing	9	compound	_	start_char=1258|end_char=1263
+9	buyback.	buyback.	NOUN	_	Number=Sing	6	obl	_	start_char=1264|end_char=1272
+10	Its	it	ADJ	_	Degree=Pos	11	amod	_	start_char=1273|end_char=1276
+11	shares	share	NOUN	_	Number=Plur	6	obl	_	start_char=1277|end_char=1283
+12	jumped	jump	VERB	_	Tense=Past|VerbForm=Part	11	acl:relcl	_	start_char=1284|end_char=1290
+13	7.3%	7.3%	NUM	_	NumType=Card	12	obl	_	start_char=1291|end_char=1295
+14	in	in	ADP	_	_	17	case	_	start_char=1296|end_char=1298
+15	after	after	ADP	_	_	17	case	_	SpaceAfter=No|start_char=1299|end_char=1304
+16	-hours	-hour	NOUN	_	Number=Plur	17	nummod	_	start_char=1304|end_char=1310
+17	trading.	trading.	NOUN	_	Number=Plur	12	obl	_	SpacesAfter=\n\n|start_char=1311|end_char=1319
+
+# text = "We're seeing demand hold up better than anyone expected," Chief Financial Officer Priya Ramaswamy told analysts on a conference call. "That said, we aren't assuming it'll last forever."
+# sent_id = 8
+1-2	"We're	_	_	_	_	_	_	_	start_char=1321|end_char=1327
+1	"We	"We	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	3	nsubj	_	start_char=1321|end_char=1324
+2	're	be	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	3	aux	_	start_char=1324|end_char=1327
+3	seeing	see	VERB	_	Tense=Pres|VerbForm=Part	0	root	_	start_char=1328|end_char=1334
+4	demand	demand	NOUN	_	Number=Sing	3	obj	_	start_char=1335|end_char=1341
+5	hold	hold	VERB	_	VerbForm=Inf	3	xcomp	_	start_char=1342|end_char=1346
+6	up	up	ADV	_	Degree=Pos	7	advmod	_	start_char=1347|end_char=1349
+7	better	better	ADJ	_	Degree=Cmp	5	advmod	_	start_char=1350|end_char=1356
+8	than	than	ADP	_	_	10	case	_	start_char=1357|end_char=1361
+9	anyone	anyone	ADV	_	Degree=Pos	10	fixed	_	start_char=1362|end_char=1368
+10	expected,"	expected,"	NOUN	_	Number=Sing	11	nmod	_	start_char=1369|end_char=1379
+11	Chief	ch	NOUN	_	Number=Sing	13	nmod	_	start_char=1380|end_char=1385
+12	Financial	Financial	NOUN	_	Number=Sing	13	nmod	_	start_char=1386|end_char=1395
+13	Officer	Officer	NOUN	_	Number=Sing	16	nsubj	_	start_char=1396|end_char=1403
+14	Priya	Priya	PROPN	_	Number=Sing	13	flat	_	start_char=1404|end_char=1409
+15	Ramaswamy	Ramaswamy	NOUN	_	Number=Sing	16	nsubj	_	start_char=1410|end_char=1419
+16	told	told	VERB	_	Tense=Pres|VerbForm=Fin	3	parataxis	_	start_char=1420|end_char=1424
+17	analysts	analy	NOUN	_	Number=Plur	16	obj	_	start_char=1425|end_char=1433
+18	on	on	ADP	_	_	21	case	_	start_char=1434|end_char=1436
+19	a	a	DET	_	PronType=Art	21	det	_	start_char=1437|end_char=1438
+20	conference	conference	NOUN	_	Number=Sing	21	compound	_	start_char=1439|end_char=1449
+21	call.	call.	NOUN	_	Number=Sing	17	nmod	_	start_char=1450|end_char=1455
+22	"That	"That	ADP	_	_	23	case	_	start_char=1456|end_char=1461
+23	said,	said,	NOUN	_	Number=Sing	21	nmod	_	start_char=1462|end_char=1467
+24	we	we	PRON	_	Case=Nom|Number=Sing|Person=1|PronType=Prs	26	nsubj	_	start_char=1468|end_char=1470
+25	aren't	aren't	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	26	aux	_	start_char=1471|end_char=1477
+26	assuming	assum	VERB	_	Tense=Pres|VerbForm=Part	16	advcl	_	start_char=1478|end_char=1486
+27-28	it'll	_	_	_	_	_	_	_	start_char=1487|end_char=1492
+27	it	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	29	nsubj	_	start_char=1487|end_char=1489
+28	'll	will	AUX	_	_	29	aux	_	start_char=1489|end_char=1492
+29	last	last	ADJ	_	Degree=Pos	26	advcl	_	start_char=1493|end_char=1497
+30	forever."	Forever."	PROPN	_	Number=Sing	29	obj	_	SpacesAfter=\n\n|start_char=1498|end_char=1507
+
+# text = The central bank kept its benchmark rate unchanged at 5.25%–5.50% for a third consecutive meeting. Policymakers signaled that cuts could come later in the year, but only if price pressures continue to ease. Two members
+# sent_id = 9
+1	The	the	DET	_	PronType=Art	3	det	_	start_char=1509|end_char=1512
+2	central	central	ADJ	_	Degree=Pos	3	amod	_	start_char=1513|end_char=1520
+3	bank	bank	NOUN	_	Number=Sing	4	nsubj	_	start_char=1521|end_char=1525
+4	kept	kept	VERB	_	Tense=Past|VerbForm=Fin	0	root	_	start_char=1526|end_char=1530
+5	its	its	DET	_	Poss=Yes|PronType=Art	7	det	_	start_char=1531|end_char=1534
+6	benchmark	benchmark	ADJ	_	Degree=Sup	7	amod	_	start_char=1535|end_char=1544
+7	rate	rate	NOUN	_	Number=Sing	4	obj	_	start_char=1545|end_char=1549
+8	unchanged	unchang	ADJ	_	Degree=Pos	7	amod	_	start_char=1550|end_char=1559
+9	at	at	ADP	_	_	11	case	_	start_char=1560|end_char=1562
+10	5.25	5.25	NUM	_	NumType=Card	11	nummod	_	SpaceAfter=No|start_char=1563|end_char=1567
+11	%	%	NOUN	_	Number=Plur	8	obl	_	SpaceAfter=No|start_char=1567|end_char=1568
+12	–5.50%	–5.50%	NUM	_	NumType=Card	11	nummod	_	start_char=1568|end_char=1574
+13	for	for	ADP	_	_	17	case	_	start_char=1575|end_char=1578
+14	a	a	DET	_	PronType=Art	17	det	_	start_char=1579|end_char=1580
+15	third	three	ADJ	_	Degree=Pos|NumType=Ord	16	amod	_	start_char=1581|end_char=1586
+16	consecutive	consecutive	ADJ	_	Degree=Pos	17	amod	_	start_char=1587|end_char=1598
+17	meeting.	meeting.	NOUN	_	Number=Sing	19	nsubj	_	start_char=1599|end_char=1607
+18	Policymakers	policymar	NOUN	_	Number=Plur	19	nsubj	_	start_char=1608|end_char=1620
+19	signaled	signale	VERB	_	Tense=Past|VerbForm=Part	7	acl:relcl	_	start_char=1621|end_char=1629
+20	that	that	ADP	_	_	23	mark	_	start_char=1630|end_char=1634
+21	cuts	cuts	NOUN	_	Number=Plur	23	nsubj	_	start_char=1635|end_char=1639
+22	could	can	AUX	_	_	23	aux	_	start_char=1640|end_char=1645
+23	come	come	VERB	_	Tense=Past|VerbForm=Fin	19	advcl	_	start_char=1646|end_char=1650
+24	later	late	ADV	_	Degree=Pos	23	advmod	_	start_char=1651|end_char=1656
+25	in	in	ADP	_	_	27	case	_	start_char=1657|end_char=1659
+26	the	the	DET	_	PronType=Art	27	det	_	start_char=1660|end_char=1663
+27	year,	year,	NOUN	_	Number=Sing	23	obl:unmarked	_	start_char=1664|end_char=1669
+28	but	but	CCONJ	_	_	33	cc	_	start_char=1670|end_char=1673
+29	only	only	ADV	_	Degree=Pos	33	advmod	_	start_char=1674|end_char=1678
+30	if	if	ADP	_	_	32	case	_	start_char=1679|end_char=1681
+31	price	price	NOUN	_	Number=Sing	32	compound	_	start_char=1682|end_char=1687
+32	pressures	pressure	NOUN	_	Number=Plur	33	nsubj	_	start_char=1688|end_char=1697
+33	continue	continue	VERB	_	Tense=Pres|VerbForm=Fin	23	advcl	_	start_char=1698|end_char=1706
+34	to	to	ADP	_	_	37	case	_	start_char=1707|end_char=1709
+35	ease.	Ease.	PROPN	_	Number=Sing	37	det	_	start_char=1710|end_char=1715
+36	Two	two	NUM	_	NumType=Card	37	nummod	_	start_char=1716|end_char=1719
+37	members	member	NOUN	_	Number=Plur	33	obl	_	start_char=1720|end_char=1727
+
+# text = dissented in favor of a quarter-point reduction.
+# sent_id = 10
+1	dissented	dissent	VERB	_	Tense=Past|VerbForm=Fin	0	root	_	start_char=1728|end_char=1737
+2	in	in	ADP	_	_	3	case	_	start_char=1738|end_char=1740
+3	favor	favor	NOUN	_	Number=Sing	1	obl	_	start_char=1741|end_char=1746
+4	of	of	ADP	_	_	8	case	_	start_char=1747|end_char=1749
+5	a	a	DET	_	PronType=Art	8	det	_	start_char=1750|end_char=1751
+6	quarter	quarter	NOUN	_	Number=Sing	7	compound	_	SpaceAfter=No|start_char=1752|end_char=1759
+7	-point	-point	NOUN	_	Number=Sing	8	compound	_	start_char=1759|end_char=1765
+8	reduction.	reduction.	NOUN	_	Number=Sing	1	obl	_	SpacesAfter=\n\n|start_char=1766|end_char=1776
+
+# text = Unemployment fell to 3.7% in March from 3.9% in February, the Labor Department said. Employers added 236,000 jobs,
+# sent_id = 11
+1	Unemployment	Unemployment	NOUN	_	Number=Plur	2	nsubj	_	start_char=1778|end_char=1790
+2	fell	fell	VERB	_	Tense=Past|VerbForm=Part	16	parataxis	_	start_char=1791|end_char=1795
+3	to	to	ADP	_	_	4	case	_	start_char=1796|end_char=1798
+4	3.7%	3.7%	NUM	_	NumType=Card	2	obl	_	start_char=1799|end_char=1803
+5	in	in	ADP	_	_	6	case	_	start_char=1804|end_char=1806
+6	March	March	NOUN	_	Number=Sing	2	obl	_	start_char=1807|end_char=1812
+7	from	from	ADP	_	_	8	case	_	start_char=1813|end_char=1817
+8	3.9%	3.9%	NUM	_	NumType=Card	2	obl	_	start_char=1818|end_char=1822
+9	in	in	ADP	_	_	10	case	_	start_char=1823|end_char=1825
+10	February,	February	NOUN	_	Number=Sing	6	nmod:tmod	_	start_char=1826|end_char=1835
+11	the	the	DET	_	PronType=Art	13	det	_	start_char=1836|end_char=1839
+12	Labor	Labor	NOUN	_	Number=Sing	13	compound	_	start_char=1840|end_char=1845
+13	Department	Department	NOUN	_	Number=Sing	14	compound	_	start_char=1846|end_char=1856
+14	said.	said.	NOUN	_	Number=Sing	16	nsubj	_	start_char=1857|end_char=1862
+15	Employers	employer	NOUN	_	Number=Plur	16	nsubj	_	start_char=1863|end_char=1872
+16	added	add	VERB	_	Tense=Past|VerbForm=Fin	0	root	_	start_char=1873|end_char=1878
+17	236	236	NUM	_	NumType=Card	19	nummod	_	SpaceAfter=No|start_char=1879|end_char=1882
+18	,000	,000	NUM	_	NumType=Card	19	nummod	_	start_char=1882|end_char=1886
+19	jobs,	Jobs,	NOUN	_	Number=Plur	16	obj	_	start_char=1887|end_char=1892
+
+# text = well above forecasts. Average hourly earnings rose 0.3% m/m and 4.2% y/y.
+# sent_id = 12
+1	well	well	ADV	_	Degree=Pos	7	advmod	_	start_char=1893|end_char=1897
+2	above	above	ADP	_	_	3	case	_	start_char=1898|end_char=1903
+3	forecasts.	forecast	NOUN	_	Number=Plur	7	obl	_	start_char=1904|end_char=1914
+4	Average	Average	ADJ	_	Degree=Pos	6	amod	_	start_char=1915|end_char=1922
+5	hourly	Hourly	NOUN	_	Number=Sing	6	compound	_	start_char=1923|end_char=1929
+6	earnings	earning	NOUN	_	Number=Plur	7	obl	_	start_char=1930|end_char=1938
+7	rose	rose	VERB	_	Tense=Pres|VerbForm=Part	0	root	_	start_char=1939|end_char=1943
+8	0.3%	0.3%	NUM	_	NumType=Card	9	nummod	_	start_char=1944|end_char=1948
+9	m/m	m/m	NOUN	_	Number=Sing	7	obl	_	start_char=1949|end_char=1952
+10	and	and	CCONJ	_	_	12	cc	_	start_char=1953|end_char=1956
+11	4.2%	4.2%	NUM	_	NumType=Card	12	nummod	_	start_char=1957|end_char=1961
+12	y/y.	Y/y.	PROPN	_	Number=Sing	9	conj	_	SpacesAfter=\n\n|start_char=1962|end_char=1966
+
+# text = In a filing with the SEC, the firm disclosed that its former CEO, Mr. Hal Brandt Jr., received a severance package worth approx. $18.6 million. Shareholder groups have asked the board to explain the payout before the annual meeting on May 22.
+# sent_id = 13
+1	In	in	ADP	_	_	3	case	_	start_char=1968|end_char=1970
+2	a	a	DET	_	PronType=Art	3	det	_	start_char=1971|end_char=1972
+3	filing	fil	NOUN	_	Number=Sing	18	obl	_	start_char=1973|end_char=1979
+4	with	with	ADP	_	_	6	case	_	start_char=1980|end_char=1984
+5	the	the	DET	_	PronType=Art	6	det	_	start_char=1985|end_char=1988
+6	SEC,	SEC,	NOUN	_	Number=Sing	3	nmod	_	start_char=1989|end_char=1993
+7	the	the	DET	_	PronType=Art	8	det	_	start_char=1994|end_char=1997
+8	firm	firm	NOUN	_	Number=Sing	6	nmod	_	start_char=1998|end_char=2002
+9	disclosed	disclose	VERB	_	Tense=Past|VerbForm=Fin	6	acl:relcl	_	start_char=2003|end_char=2012
+10	that	that	ADP	_	_	12	case	_	start_char=2013|end_char=2017
+11	its	its	DET	_	PronType=Art	12	det	_	start_char=2018|end_char=2021
+12	former	Former	PROPN	_	Number=Sing	9	obl	_	start_char=2022|end_char=2028
+13	CEO,	Ceo,	PROPN	_	Number=Sing	12	flat	_	start_char=2029|end_char=2033
+14	Mr.	Mr.	NOUN	_	Number=Sing	12	flat	_	start_char=2034|end_char=2037
+15	Hal	Hal	PROPN	_	Number=Sing	14	flat	_	start_char=2038|end_char=2041
+16	Brandt	Brandt	PROPN	_	Number=Sing	15	flat	_	start_char=2042|end_char=2048
+17	Jr.,	Jr.,	ADV	_	Degree=Pos	18	mark	_	start_char=2049|end_char=2053
+18	received	receive	VERB	_	Tense=Past|VerbForm=Fin	0	root	_	start_char=2054|end_char=2062
+19	a	a	DET	_	PronType=Art	21	det	_	start_char=2063|end_char=2064
+20	severance	severance	NOUN	_	Number=Sing	21	compound	_	start_char=2065|end_char=2074
+21	package	package	NOUN	_	Number=Sing	18	obl	_	start_char=2075|end_char=2082
+22	worth	Worth	PROPN	_	Number=Sing	21	nmod	_	start_char=2083|end_char=2088
+23	approx.	approx.	NUM	_	NumType=Card	25	nummod	_	start_char=2089|end_char=2096
+24	$18.6	$18.6	NUM	_	NumType=Card	25	nummod	_	start_char=2097|end_char=2102
+25	million.	million.	NOUN	_	Number=Sing	21	nmod	_	start_char=2103|end_char=2111
+26	Shareholder	Shareholder	NOUN	_	Number=Sing	27	compound	_	start_char=2112|end_char=2123
+27	groups	group	NOUN	_	Number=Plur	21	nmod	_	start_char=2124|end_char=2130
+28	have	have	VERB	_	VerbForm=Inf	18	parataxis	_	start_char=2131|end_char=2135
+29	asked	ase	VERB	_	Tense=Pres|VerbForm=Part	25	acl:relcl	_	start_char=2136|end_char=2141
+30	the	the	DET	_	PronType=Art	31	det	_	start_char=2142|end_char=2145
+31	board	board	NOUN	_	Number=Sing	29	obj	_	start_char=2146|end_char=2151
+32	to	to	PART	_	_	33	mark	_	start_char=2152|end_char=2154
+33	explain	explain	VERB	_	VerbForm=Inf	31	acl:relcl	_	start_char=2155|end_char=2162
+34	the	the	DET	_	PronType=Art	35	det	_	start_char=2163|end_char=2166
+35	payout	payout	NOUN	_	Number=Sing	33	obj	_	start_char=2167|end_char=2173
+36	before	before	ADP	_	_	39	case	_	start_char=2174|end_char=2180
+37	the	the	DET	_	PronType=Art	39	det	_	start_char=2181|end_char=2184
+38	annual	annual	NOUN	_	Number=Sing	39	compound	_	start_char=2185|end_char=2191
+39	meeting	meet	NOUN	_	Number=Sing	35	nmod	_	start_char=2192|end_char=2199
+40	on	on	ADP	_	_	41	case	_	start_char=2200|end_char=2202
+41	May	May	NOUN	_	Number=Sing	39	nmod:tmod	_	start_char=2203|end_char=2206
+42	22.	22.	NUM	_	NumType=Card	41	nummod	_	SpacesAfter=\n\n|start_char=2207|end_char=2210
+
+# text = The merger, valued at €4.2 billion including debt,
+# sent_id = 14
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=2212|end_char=2215
+2	merger,	merger,	NOUN	_	Number=Sing	3	nsubj	_	start_char=2216|end_char=2223
+3	valued	value	VERB	_	Tense=Past|VerbForm=Fin	0	root	_	start_char=2224|end_char=2230
+4	at	at	ADP	_	_	6	case	_	start_char=2231|end_char=2233
+5	€4.2	€4.2	NUM	_	NumType=Card	6	nummod	_	start_char=2234|end_char=2238
+6	billion	billion	NOUN	_	Number=Plur	3	obl	_	start_char=2239|end_char=2246
+7	including	include	VERB	_	Tense=Pres|VerbForm=Part	3	obl	_	start_char=2247|end_char=2256
+8	debt,	Debt,	PROPN	_	Number=Sing	7	obj	_	start_char=2257|end_char=2262
+
+# text = would create the region's third-largest grocer. Regulators in Brussels opened an in-depth probe on Thursday. A decision is due by Oct. 9.
+# sent_id = 15
+1	would	will	AUX	_	_	2	aux	_	start_char=2263|end_char=2268
+2	create	create	VERB	_	VerbForm=Inf	0	root	_	start_char=2269|end_char=2275
+3	the	the	DET	_	PronType=Art	4	det	_	start_char=2276|end_char=2279
+4-5	region's	_	_	_	_	_	_	_	start_char=2280|end_char=2288
+4	region	region	NOUN	_	Number=Sing	2	obj	_	start_char=2280|end_char=2286
+5	's	's	PART	_	_	4	case	_	start_char=2286|end_char=2288
+6	third	three	ADJ	_	Degree=Pos|NumType=Ord	9	amod	_	SpaceAfter=No|start_char=2289|end_char=2294
+7	-largest	-larg	ADJ	_	Degree=Sup	9	amod	_	start_char=2294|end_char=2302
+8	grocer.	Grocer.	PROPN	_	Number=Sing	9	nmod	_	start_char=2303|end_char=2310
+9	Regulators	regulator	NOUN	_	Number=Plur	2	obj	_	start_char=2311|end_char=2321
+10	in	in	ADP	_	_	11	case	_	start_char=2322|end_char=2324
+11	Brussels	brussels	PROPN	_	Number=Sing	9	nmod	_	start_char=2325|end_char=2333
+12	opened	one	VERB	_	Tense=Past|VerbForm=Fin	9	acl:relcl	_	start_char=2334|end_char=2340
+13	an	a	DET	_	PronType=Art	15	det	_	start_char=2341|end_char=2343
+14	in-depth	in-dep	ADJ	_	Degree=Pos	15	amod	_	start_char=2344|end_char=2352
+15	probe	probe	NOUN	_	Number=Sing	12	obj	_	start_char=2353|end_char=2358
+16	on	on	ADP	_	_	17	case	_	start_char=2359|end_char=2361
+17	Thursday.	Thursday	NOUN	_	Number=Sing	15	nmod	_	start_char=2362|end_char=2371
+18	A	a	DET	_	PronType=Art	19	det	_	start_char=2372|end_char=2373
+19	decision	decision	NOUN	_	Number=Sing	21	nsubj	_	start_char=2374|end_char=2382
+20	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	21	cop	_	start_char=2383|end_char=2385
+21	due	due	VERB	_	Tense=Past|VerbForm=Part	12	advcl	_	start_char=2386|end_char=2389
+22	by	by	ADP	_	_	23	case	_	start_char=2390|end_char=2392
+23	Oct.	Oct.	NOUN	_	Number=Sing	21	obl	_	start_char=2393|end_char=2397
+24	9.	9.	NUM	_	NumType=Card	23	nummod	_	SpacesAfter=\n\n|start_char=2398|end_char=2400
+
+# text = Meanwhile, the city of Ellsworth said it would refinance $75 million in general obligation bonds.
+# sent_id = 16
+1	Meanwhile,	Meanwhile,	ADV	_	Degree=Pos	3	discourse	_	start_char=2402|end_char=2412
+2	the	the	DET	_	PronType=Art	3	det	_	start_char=2413|end_char=2416
+3	city	City	PROPN	_	Number=Sing	6	nsubj	_	start_char=2417|end_char=2421
+4	of	of	ADP	_	_	5	case	_	start_char=2422|end_char=2424
+5	Ellsworth	Cllsworth	PROPN	_	Number=Sing	3	nmod	_	start_char=2425|end_char=2434
+6	said	said	VERB	_	VerbForm=Inf	0	root	_	start_char=2435|end_char=2439
+7	it	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	9	nsubj	_	start_char=2440|end_char=2442
+8	would	will	AUX	_	_	9	aux	_	start_char=2443|end_char=2448
+9	refinance	refinance	VERB	_	VerbForm=Inf	6	xcomp	_	start_char=2449|end_char=2458
+10	$75	$75	NUM	_	NumType=Card	11	nummod	_	start_char=2459|end_char=2462
+11	million	million	NOUN	_	Number=Plur	9	obj	_	start_char=2463|end_char=2470
+12	in	in	ADP	_	_	13	case	_	start_char=2471|end_char=2473
+13	general	General	PROPN	_	Number=Sing	15	nmod	_	start_char=2474|end_char=2481
+14	obligation	obligation	NOUN	_	Number=Sing	13	flat	_	start_char=2482|end_char=2492
+15	bonds.	bond	NOUN	_	Number=Plur	9	obl	_	start_char=2493|end_char=2499
+
+# text = Moody's affirmed its Aa2 rating. S&P Global Ratings has the city at AA, with a stable outlook.
+# sent_id = 17
+1-2	Moody's	_	_	_	_	_	_	_	start_char=2500|end_char=2507
+1	Moody	Moody	PROPN	_	Number=Sing	3	discourse	_	start_char=2500|end_char=2505
+2	's	be	PRON	_	PronType=Prs	3	nsubj	_	start_char=2505|end_char=2507
+3	affirmed	affirm	VERB	_	Tense=Past|VerbForm=Fin	0	root	_	start_char=2508|end_char=2516
+4	its	its	DET	_	PronType=Art	5	det	_	start_char=2517|end_char=2520
+5	Aa2	Aa2	PROPN	_	Number=Sing	3	obj	_	start_char=2521|end_char=2524
+6	rating.	rating.	NOUN	_	Number=Sing	3	obj	_	start_char=2525|end_char=2532
+7	S&P	S&p	PROPN	_	Number=Sing	6	nmod	_	start_char=2533|end_char=2536
+8	Global	Global	NOUN	_	Number=Sing	9	compound	_	start_char=2537|end_char=2543
+9	Ratings	rating	NOUN	_	Number=Plur	10	nsubj	_	start_char=2544|end_char=2551
+10	has	have	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	ccomp	_	start_char=2552|end_char=2555
+11	the	the	DET	_	PronType=Art	12	det	_	start_char=2556|end_char=2559
+12	city	City	PROPN	_	Number=Sing	10	obj	_	start_char=2560|end_char=2564
+13	at	at	ADP	_	_	14	case	_	start_char=2565|end_char=2567
+14	AA,	Aa,	PROPN	_	Number=Sing	12	nmod	_	start_char=2568|end_char=2571
+15	with	with	ADP	_	_	18	case	_	start_char=2572|end_char=2576
+16	a	a	DET	_	PronType=Art	18	det	_	start_char=2577|end_char=2578
+17	stable	stable	ADJ	_	Degree=Pos	18	amod	_	start_char=2579|end_char=2585
+18	outlook.	outlook.	NOUN	_	Number=Sing	12	nmod	_	SpacesAfter=\n\n|start_char=2586|end_char=2594
+
+# text = Residents of the Lower Fenwick neighborhood were told to boil water until further notice after a main broke early Saturday. Crews worked through the night. By 6 a.m. Sunday, service had been
+# sent_id = 18
+1	Residents	resident	NOUN	_	Number=Plur	0	root	_	start_char=2596|end_char=2605
+2	of	of	ADP	_	_	4	case	_	start_char=2606|end_char=2608
+3	the	the	DET	_	PronType=Art	4	det	_	start_char=2609|end_char=2612
+4	Lower	Lower	PROPN	_	Number=Sing	1	nmod	_	start_char=2613|end_char=2618
+5	Fenwick	Fenwick	PROPN	_	Number=Sing	4	flat	_	start_char=2619|end_char=2626
+6	neighborhood	Neighborhod	PROPN	_	Number=Sing	4	flat	_	start_char=2627|end_char=2639
+7	were	were	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	8	aux	_	start_char=2640|end_char=2644
+8	told	told	VERB	_	Tense=Past|VerbForm=Part	1	acl:relcl	_	start_char=2645|end_char=2649
+9	to	to	PART	_	_	10	mark	_	start_char=2650|end_char=2652
+10	boil	boil	VERB	_	VerbForm=Inf	8	xcomp	_	start_char=2653|end_char=2657
+11	water	wate	NOUN	_	Number=Sing	10	obl	_	start_char=2658|end_char=2663
+12	until	until	ADP	_	_	14	case	_	start_char=2664|end_char=2669
+13	further	further	ADJ	_	Degree=Pos	14	amod	_	start_char=2670|end_char=2677
+14	notice	notice	NOUN	_	Number=Sing	10	obl	_	start_char=2678|end_char=2684
+15	after	after	ADP	_	_	17	case	_	start_char=2685|end_char=2690
+16	a	a	DET	_	PronType=Art	17	det	_	start_char=2691|end_char=2692
+17	main	main	NOUN	_	Number=Sing	14	nmod	_	start_char=2693|end_char=2697
+18	broke	broke	VERB	_	Tense=Pres|VerbForm=Part	8	advcl	_	start_char=2698|end_char=2703
+19	early	early	ADJ	_	Degree=Pos	18	advmod	_	start_char=2704|end_char=2709
+20	Saturday.	Saturday	NOUN	_	Number=Sing	18	obl:unmarked	_	start_char=2710|end_char=2719
+21	Crews	crew	NOUN	_	Number=Plur	22	nsubj	_	start_char=2720|end_char=2725
+22	worked	work	VERB	_	Tense=Past|VerbForm=Part	18	advcl	_	start_char=2726|end_char=2732
+23	through	through	ADP	_	_	25	case	_	start_char=2733|end_char=2740
+24	the	the	DET	_	PronType=Art	25	det	_	start_char=2741|end_char=2744
+25	night.	Night.	PROPN	_	Number=Sing	22	obl	_	start_char=2745|end_char=2751
+26	By	by	ADP	_	_	28	case	_	start_char=2752|end_char=2754
+27	6	6	NUM	_	NumType=Card	28	nummod	_	start_char=2755|end_char=2756
+28	a.m.	A.m.	NOUN	_	Number=Sing	25	nmod:tmod	_	start_char=2757|end_char=2761
+29	Sunday,	Sunday,	NOUN	_	Number=Sing	30	compound	_	start_char=2762|end_char=2769
+30	service	service	NOUN	_	Number=Sing	32	nsubj	_	start_char=2770|end_char=2777
+31	had	have	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	32	cop	_	start_char=2778|end_char=2781
+32	been	been	ADJ	_	Degree=Pos	22	advcl	_	start_char=2782|end_char=2786
+
+# text = restored to about two-thirds of the 4,800 affected homes.
+# sent_id = 19
+1	restored	restore	VERB	_	Tense=Past|VerbForm=Fin	0	root	_	start_char=2787|end_char=2795
+2	to	to	ADP	_	_	4	case	_	start_char=2796|end_char=2798
+3	about	about	ADP	_	_	4	case	_	start_char=2799|end_char=2804
+4	two-thirds	two-third	NUM	_	NumType=Card	1	obl	_	start_char=2805|end_char=2815
+5	of	of	ADP	_	_	10	case	_	start_char=2816|end_char=2818
+6	the	the	DET	_	PronType=Art	10	det	_	start_char=2819|end_char=2822
+7	4	4	NUM	_	NumType=Card	8	nummod	_	SpaceAfter=No|start_char=2823|end_char=2824
+8	,800	,800	NUM	_	NumType=Card	9	nummod	_	start_char=2824|end_char=2828
+9	affected	affect	VERB	_	Tense=Past|VerbForm=Part	10	compound	_	start_char=2829|end_char=2837
+10	homes.	home	NOUN	_	Number=Plur	1	obl	_	SpacesAfter=\n\n|start_char=2838|end_char=2844
+
+# text = A spokesperson for the utility, Marisol Ortega, said the pipe was installed in 1931. "Frankly, it's a miracle it lasted this long," she said.
+# sent_id = 20
+1	A	a	DET	_	PronType=Art	2	det	_	start_char=2846|end_char=2847
+2	spokesperson	spokesperson	NOUN	_	Number=Sing	8	nsubj	_	start_char=2848|end_char=2860
+3	for	for	ADP	_	_	5	case	_	start_char=2861|end_char=2864
+4	the	the	DET	_	PronType=Art	5	det	_	start_char=2865|end_char=2868
+5	utility,	Utility	PROPN	_	Number=Sing	2	nmod	_	start_char=2869|end_char=2877
+6	Marisol	Marisol	PROPN	_	Number=Sing	5	flat	_	start_char=2878|end_char=2885
+7	Ortega,	Ortega,	PROPN	_	Number=Sing	5	flat	_	start_char=2886|end_char=2893
+8	said	said	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2894|end_char=2898
+9	the	the	DET	_	PronType=Art	10	det	_	start_char=2899|end_char=2902
+10	pipe	pipe	NOUN	_	Number=Sing	12	nsubj	_	start_char=2903|end_char=2907
+11	was	wave	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	12	aux	_	start_char=2908|end_char=2911
+12	installed	installe	VERB	_	Tense=Past|VerbForm=Part	8	advcl	_	start_char=2912|end_char=2921
+13	in	in	ADP	_	_	14	case	_	start_char=2922|end_char=2924
+14	1931.	1931.	NUM	_	NumType=Card	12	obl	_	start_char=2925|end_char=2930
+15	"Frankly,	"Frankly,	ADV	_	Degree=Pos	12	advmod	_	start_char=2931|end_char=2940
+16-17	it's	_	_	_	_	_	_	_	start_char=2941|end_char=2945
+16	it	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	19	nsubj	_	start_char=2941|end_char=2943
+17	's	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	19	cop	_	start_char=2943|end_char=2945
+18	a	a	DET	_	PronType=Art	19	det	_	start_char=2946|end_char=2947
+19	miracle	miracle	NOUN	_	Number=Sing	12	obl	_	start_char=2948|end_char=2955
+20	it	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	21	nsubj	_	start_char=2956|end_char=2958
+21	lasted	last	VERB	_	Tense=Past|VerbForm=Fin	12	advcl	_	start_char=2959|end_char=2965
+22	this	this	DET	_	PronType=Art	23	det	_	start_char=2966|end_char=2970
+23	long,"	long,"	NOUN	_	Number=Sing	25	nsubj	_	start_char=2971|end_char=2977
+24	she	she	ADV	_	Degree=Pos	25	advmod	_	start_char=2978|end_char=2981
+25	said.	said.	VERB	_	Tense=Pres|VerbForm=Fin	21	conj	_	SpacesAfter=\n\n|start_char=2982|end_char=2987
+
+# text = The school board voted to delay the start of classes by one
+# sent_id = 21
+1	The	the	DET	_	PronType=Art	3	det	_	start_char=2989|end_char=2992
+2	school	school	NOUN	_	Number=Sing	3	compound	_	start_char=2993|end_char=2999
+3	board	board	NOUN	_	Number=Sing	4	nsubj	_	start_char=3000|end_char=3005
+4	voted	vate	VERB	_	Tense=Pres|VerbForm=Fin	0	root	_	start_char=3006|end_char=3011
+5	to	to	PART	_	_	6	mark	_	start_char=3012|end_char=3014
+6	delay	delay	VERB	_	VerbForm=Inf	4	xcomp	_	start_char=3015|end_char=3020
+7	the	the	DET	_	PronType=Art	8	det	_	start_char=3021|end_char=3024
+8	start	start	NOUN	_	Number=Sing	6	obj	_	start_char=3025|end_char=3030
+9	of	of	ADP	_	_	10	case	_	start_char=3031|end_char=3033
+10	classes	class	NOUN	_	Number=Plur	8	nmod	_	start_char=3034|end_char=3041
+11	by	by	ADP	_	_	12	case	_	start_char=3042|end_char=3044
+12	one	one	NUM	_	NumType=Card	10	nmod	_	start_char=3045|end_char=3048
+
+# text = week. Superintendent Dr. Kevin O'Hare cited staffing shortages and unfinished repairs at three buildings. Parents who spoke at the meeting were divided.
+# sent_id = 22
+1	week.	week.	NOUN	_	Number=Sing	2	nmod:poss	_	start_char=3049|end_char=3054
+2	Superintendent	Superintendent	NOUN	_	Number=Sing	6	nsubj	_	start_char=3055|end_char=3069
+3	Dr.	Dr.	PROPN	_	Number=Sing	2	flat	_	start_char=3070|end_char=3073
+4	Kevin	Kevin	PROPN	_	Number=Sing	3	flat	_	start_char=3074|end_char=3079
+5	O'Hare	O'hare	PROPN	_	Number=Sing	3	flat	_	start_char=3080|end_char=3086
+6	cited	cite	VERB	_	Tense=Past|VerbForm=Fin	0	root	_	start_char=3087|end_char=3092
+7	staffing	staff	NOUN	_	Number=Sing	8	compound	_	start_char=3093|end_char=3101
+8	shortages	shortage	NOUN	_	Number=Plur	6	obj	_	start_char=3102|end_char=3111
+9	and	and	CCONJ	_	_	11	cc	_	start_char=3112|end_char=3115
+10	unfinished	unfinishD	ADJ	_	Degree=Pos	11	amod	_	start_char=3116|end_char=3126
+11	repairs	repair	NOUN	_	Number=Plur	8	conj	_	start_char=3127|end_char=3134
+12	at	at	ADP	_	_	14	case	_	start_char=3135|end_char=3137
+13	three	three	NUM	_	NumType=Card	14	nummod	_	start_char=3138|end_char=3143
+14	buildings.	Buildings.	PROPN	_	Number=Sing	11	nmod	_	start_char=3144|end_char=3154
+15	Parents	parent	NOUN	_	Number=Plur	14	flat	_	start_char=3155|end_char=3162
+16	who	who	PRON	_	PronType=Int,Rel	17	nsubj	_	start_char=3163|end_char=3166
+17	spoke	spoke	VERB	_	Tense=Pres|VerbForm=Fin	6	advcl	_	start_char=3167|end_char=3172
+18	at	at	ADP	_	_	20	case	_	start_char=3173|end_char=3175
+19	the	the	DET	_	PronType=Art	20	det	_	start_char=3176|end_char=3179
+20	meeting	meet	NOUN	_	Number=Sing	17	obl	_	start_char=3180|end_char=3187
+21	were	were	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	22	cop	_	start_char=3188|end_char=3192
+22	divided.	divided.	NOUN	_	Number=Sing	17	obl	_	SpacesAfter=\n\n|start_char=3193|end_char=3201
+
+# text = Shares of regional banks rallied for a second
+# sent_id = 23
+1	Shares	share	NOUN	_	Number=Plur	5	nsubj	_	start_char=3203|end_char=3209
+2	of	of	ADP	_	_	4	case	_	start_char=3210|end_char=3212
+3	regional	Regional	PROPN	_	Number=Sing	4	compound	_	start_char=3213|end_char=3221
+4	banks	bank	NOUN	_	Number=Plur	5	nsubj	_	start_char=3222|end_char=3227
+5	rallied	rally	VERB	_	Tense=Past|VerbForm=Fin	0	root	_	start_char=3228|end_char=3235
+6	for	for	ADP	_	_	8	case	_	start_char=3236|end_char=3239
+7	a	a	DET	_	PronType=Art	8	det	_	start_char=3240|end_char=3241
+8	second	two	ADJ	_	Degree=Pos|NumType=Ord	5	obl	_	start_char=3242|end_char=3248
+
+# text = day. The KBW Nasdaq Bank Index gained 2.4%. Ferrisburg Savings, which had fallen 30% earlier in the month, rose 11 percent.
+# sent_id = 24
+1	day.	day.	NOUN	_	Number=Sing	7	discourse	_	start_char=3249|end_char=3253
+2	The	the	DET	_	PronType=Art	6	det	_	start_char=3254|end_char=3257
+3	KBW	Lbw	PROPN	_	Number=Sing	6	compound	_	start_char=3258|end_char=3261
+4	Nasdaq	Nasdaq	PROPN	_	Number=Sing	3	flat	_	start_char=3262|end_char=3268
+5	Bank	Bank	PROPN	_	Number=Sing	4	flat	_	start_char=3269|end_char=3273
+6	Index	Index	NOUN	_	Number=Sing	7	nsubj	_	start_char=3274|end_char=3279
+7	gained	ga	VERB	_	Tense=Past|VerbForm=Fin	0	root	_	start_char=3280|end_char=3286
+8	2.4%.	2.4%.	NUM	_	NumType=Card	10	nummod	_	start_char=3287|end_char=3292
+9	Ferrisburg	Ferrisburg	PROPN	_	Number=Sing	10	compound	_	start_char=3293|end_char=3303
+10	Savings,	saving	NOUN	_	Number=Plur	7	obl	_	start_char=3304|end_char=3312
+11	which	which	PRON	_	PronType=Int,Rel	12	nsubj	_	start_char=3313|end_char=3318
+12	had	had	VERB	_	Tense=Past|VerbForm=Fin	7	conj	_	start_char=3319|end_char=3322
+13	fallen	fallen	VERB	_	Tense=Past|VerbForm=Fin	12	obl	_	start_char=3323|end_char=3329
+14	30%	30%	NUM	_	NumType=Card	15	nummod	_	start_char=3330|end_char=3333
+15	earlier	early	ADJ	_	Degree=Cmp	13	advmod	_	start_char=3334|end_char=3341
+16	in	in	ADP	_	_	18	case	_	start_char=3342|end_char=3344
+17	the	the	DET	_	PronType=Art	18	det	_	start_char=3345|end_char=3348
+18	month,	month,	NOUN	_	Number=Sing	12	obl:unmarked	_	start_char=3349|end_char=3355
+19	rose	rose	VERB	_	Tense=Past|VerbForm=Part	7	advcl	_	start_char=3356|end_char=3360
+20	11	11	NUM	_	NumType=Card	21	nummod	_	start_char=3361|end_char=3363
+21	percent.	percent.	NOUN	_	Number=Plur	19	obj	_	SpacesAfter=\n\n|start_char=3364|end_char=3372
+
+# text = Q: What does the rate decision mean for mortgages? A:
+# sent_id = 25
+1	Q:	Q:	ADV	_	Degree=Pos	2	advmod	_	start_char=3374|end_char=3376
+2	What	what	PRON	_	PronType=Int,Rel	7	obj	_	start_char=3377|end_char=3381
+3	does	do	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	7	aux	_	start_char=3382|end_char=3386
+4	the	the	DET	_	PronType=Art	6	det	_	start_char=3387|end_char=3390
+5	rate	rate	NOUN	_	Number=Sing	6	compound	_	start_char=3391|end_char=3395
+6	decision	decision	NOUN	_	Number=Sing	7	nsubj	_	start_char=3396|end_char=3404
+7	mean	mean	VERB	_	Mood=Ind|Tense=Pres|VerbForm=Fin	0	root	_	start_char=3405|end_char=3409
+8	for	for	ADP	_	_	9	case	_	start_char=3410|end_char=3413
+9	mortgages?	Mortgages?	PROPN	_	Number=Sing	7	obl	_	SpacesAfter=\n|start_char=3414|end_char=3424
+10	A:	A:	ADV	_	Degree=Pos	7	advmod	_	start_char=3425|end_char=3427
+
+# text = Not much in the short run. Thirty-year fixed rates averaged 6.94% last week, according to Freddie Mac.
+# sent_id = 26
+1	Not	not	ADV	_	Degree=Pos	2	advmod	_	start_char=3428|end_char=3431
+2	much	much	ADJ	_	Degree=Pos	0	root	_	start_char=3432|end_char=3436
+3	in	in	ADP	_	_	6	case	_	start_char=3437|end_char=3439
+4	the	the	DET	_	PronType=Art	6	det	_	start_char=3440|end_char=3443
+5	short	short	ADJ	_	Degree=Pos	6	amod	_	start_char=3444|end_char=3449
+6	run.	run.	NOUN	_	Number=Sing	2	obl	_	start_char=3450|end_char=3454
+7	Thirty	thirty	NUM	_	NumType=Card	8	compound	_	SpaceAfter=No|start_char=3455|end_char=3461
+8	-year	Lyear	PROPN	_	Number=Sing	10	compound	_	start_char=3461|end_char=3466
+9	fixed	fixe	ADJ	_	Degree=Pos	10	amod	_	start_char=3467|end_char=3472
+10	rates	rate	NOUN	_	Number=Plur	2	nsubj	_	start_char=3473|end_char=3478
+11	averaged	average	VERB	_	Tense=Past|VerbForm=Part	10	acl:relcl	_	start_char=3479|end_char=3487
+12	6.94%	6.94%	NUM	_	NumType=Card	11	obl	_	start_char=3488|end_char=3493
+13	last	last	ADJ	_	Degree=Pos	14	amod	_	start_char=3494|end_char=3498
+14	week,	week,	NOUN	_	Number=Sing	11	obl:unmarked	_	start_char=3499|end_char=3504
+15	according	accord	VERB	_	Tense=Pres|VerbForm=Part	11	conj	_	start_char=3505|end_char=3514
+16	to	to	ADP	_	_	17	case	_	start_char=3515|end_char=3517
+17	Freddie	Freddie	PROPN	_	Number=Sing	15	obl	_	start_char=3518|end_char=3525
+18	Mac.	Mac.	PROPN	_	Number=Sing	17	appos	_	SpacesAfter=\n\n|start_char=3526|end_char=3530
+
+# text = Retail sales unexpectedly fell 0.2% in January. Economists polled by the agency had forecast a 0.1% gain. Sales at gas stations slid 3.1%, and receipts at department stores dropped 1.4%.
+# sent_id = 27
+1	Retail	Retail	NOUN	_	Number=Sing	2	nmod:poss	_	start_char=3532|end_char=3538
+2	sales	sale	NOUN	_	Number=Plur	4	nsubj	_	start_char=3539|end_char=3544
+3	unexpectedly	unexpectedly	ADV	_	Degree=Pos	4	aux	_	start_char=3545|end_char=3557
+4	fell	fell	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=3558|end_char=3562
+5	0.2%	0.2%	NUM	_	NumType=Card	4	obl	_	start_char=3563|end_char=3567
+6	in	in	ADP	_	_	7	case	_	start_char=3568|end_char=3570
+7	January.	January.	NOUN	_	Number=Sing	4	obl	_	start_char=3571|end_char=3579
+8	Economists	economist	NOUN	_	Number=Plur	9	nsubj	_	start_char=3580|end_char=3590
+9	polled	poll	VERB	_	Tense=Past|VerbForm=Part	4	conj	_	start_char=3591|end_char=3597
+10	by	by	ADP	_	_	12	case	_	start_char=3598|end_char=3600
+11	the	the	DET	_	PronType=Art	12	det	_	start_char=3601|end_char=3604
+12	agency	agency	NOUN	_	Number=Sing	13	nsubj	_	start_char=3605|end_char=3611
+13	had	had	VERB	_	Tense=Past|VerbForm=Fin	4	parataxis	_	start_char=3612|end_char=3615
+14	forecast	forecast	VERB	_	Tense=Past|VerbForm=Part	9	advcl	_	start_char=3616|end_char=3624
+15	a	a	DET	_	PronType=Art	18	det	_	start_char=3625|end_char=3626
+16	0.1%	0.1%	NUM	_	NumType=Card	17	nummod	_	start_char=3627|end_char=3631
+17	gain.	gain.	NOUN	_	Number=Sing	18	compound	_	start_char=3632|end_char=3637
+18	Sales	sale	NOUN	_	Number=Plur	14	obj	_	start_char=3638|end_char=3643
+19	at	at	ADP	_	_	21	case	_	start_char=3644|end_char=3646
+20	gas	Ga	PROPN	_	Number=Sing	21	nmod	_	start_char=3647|end_char=3650
+21	stations	station	NOUN	_	Number=Plur	18	nmod	_	start_char=3651|end_char=3659
+22	slid	slid	VERB	_	Tense=Past|VerbForm=Part	21	acl:relcl	_	start_char=3660|end_char=3664
+23	3.1%,	3.1%,	NUM	_	NumType=Card	22	nummod	_	start_char=3665|end_char=3670
+24	and	and	CCONJ	_	_	25	cc	_	start_char=3671|end_char=3674
+25	receipts	receipt	NOUN	_	Number=Plur	22	conj	_	start_char=3675|end_char=3683
+26	at	at	ADP	_	_	27	case	_	start_char=3684|end_char=3686
+27	department	Department	PROPN	_	Number=Sing	22	obl	_	start_char=3687|end_char=3697
+28	stores	store	NOUN	_	Number=Plur	27	flat	_	start_char=3698|end_char=3704
+29	dropped	drop	VERB	_	Tense=Past|VerbForm=Part	28	acl:relcl	_	start_char=3705|end_char=3712
+30	1.4%.	1.4%.	NUM	_	NumType=Card	29	nummod	_	SpacesAfter=\n\n|start_char=3713|end_char=3718
+
+# text = The company's market capitalization briefly topped $1 trillion, making it only the seventh U.S. firm to do so. It later gave back some gains and closed at $412.88, up 3.9%.
+# sent_id = 28
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=3720|end_char=3723
+2-3	company's	_	_	_	_	_	_	_	start_char=3724|end_char=3733
+2	company	company	NOUN	_	Number=Sing	0	root	_	start_char=3724|end_char=3731
+3	's	's	PART	_	_	2	case	_	start_char=3731|end_char=3733
+4	market	market	NOUN	_	Number=Sing	5	nmod	_	start_char=3734|end_char=3740
+5	capitalization	capitalization	NOUN	_	Number=Plur	2	nmod	_	start_char=3741|end_char=3755
+6	briefly	briefly	ADV	_	Degree=Pos	7	mark	_	start_char=3756|end_char=3763
+7	topped	topp	VERB	_	Tense=Past|VerbForm=Fin	5	acl:relcl	_	start_char=3764|end_char=3770
+8	$1	$1	NUM	_	NumType=Card	7	flat	_	start_char=3771|end_char=3773
+9	trillion,	Trillion,	PROPN	_	Number=Sing	7	obl	_	start_char=3774|end_char=3783
+10	making	make	VERB	_	Tense=Pres|VerbForm=Part	5	acl:relcl	_	start_char=3784|end_char=3790
+11	it	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	10	obl	_	start_char=3791|end_char=3793
+12	only	only	ADV	_	Degree=Pos	10	fixed	_	start_char=3794|end_char=3798
+13	the	the	DET	_	PronType=Art	16	det	_	start_char=3799|end_char=3802
+14	seventh	seven	ADJ	_	Degree=Pos|NumType=Ord	15	amod	_	start_char=3803|end_char=3810
+15	U.S.	U.s.	PROPN	_	Number=Sing	16	nmod	_	start_char=3811|end_char=3815
+16	firm	Firm	PROPN	_	Number=Sing	2	parataxis	_	start_char=3816|end_char=3820
+17	to	to	PART	_	_	18	mark	_	start_char=3821|end_char=3823
+18	do	do	VERB	_	VerbForm=Inf	15	acl:relcl	_	start_char=3824|end_char=3826
+19	so.	So.	PROPN	_	Number=Sing	18	obl	_	start_char=3827|end_char=3830
+20	It	it	PRON	_	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	22	nsubj	_	start_char=3831|end_char=3833
+21	later	late	ADV	_	Degree=Pos	22	advmod	_	start_char=3834|end_char=3839
+22	gave	gave	VERB	_	VerbForm=Inf	7	advcl	_	start_char=3840|end_char=3844
+23	back	back	ADV	_	Degree=Pos	25	advmod	_	start_char=3845|end_char=3849
+24	some	some	DET	_	PronType=Art	25	det	_	start_char=3850|end_char=3854
+25	gains	gain	NOUN	_	Number=Plur	22	obj	_	start_char=3855|end_char=3860
+26	and	and	CCONJ	_	_	27	cc	_	start_char=3861|end_char=3864
+27	closed	clo	VERB	_	Tense=Past|VerbForm=Part	22	conj	_	start_char=3865|end_char=3871
+28	at	at	ADP	_	_	29	case	_	start_char=3872|end_char=3874
+29	$412	$412	NUM	_	NumType=Card	27	obl:unmarked	_	SpaceAfter=No|start_char=3875|end_char=3879
+30	.88,	.88,	NUM	_	NumType=Card	27	obl:unmarked	_	start_char=3879|end_char=3883
+31	up	up	ADV	_	Degree=Pos	32	advmod	_	start_char=3884|end_char=3886
+32	3.9%.	3.9%.	NUM	_	NumType=Card	27	obl:unmarked	_	SpacesAfter=\n\n|start_char=3887|end_char=3892
+
+# text = According to the report, global
+# sent_id = 29
+1	According	accord	VERB	_	Tense=Pres|VerbForm=Part	0	root	_	start_char=3894|end_char=3903
+2	to	to	ADP	_	_	5	case	_	start_char=3904|end_char=3906
+3	the	the	DET	_	PronType=Art	5	det	_	start_char=3907|end_char=3910
+4	report,	report,	NOUN	_	Number=Sing	5	compound	_	start_char=3911|end_char=3918
+5	global	global	NOUN	_	Number=Sing	1	obj	_	start_char=3919|end_char=3925
+
+# text = shipments of smartphones declined for the eighth straight quarter. Vendors shipped 289.4 million units, down 4.7% from a year earlier. The top five vendors accounted for roughly 70% of the market.
+# sent_id = 30
+1	shipments	shipment	NOUN	_	Number=Plur	4	nsubj	_	start_char=3926|end_char=3935
+2	of	of	ADP	_	_	3	case	_	start_char=3936|end_char=3938
+3	smartphones	smartphone	NOUN	_	Number=Plur	1	nmod	_	start_char=3939|end_char=3950
+4	declined	decl	VERB	_	Tense=Past|VerbForm=Fin	0	root	_	start_char=3951|end_char=3959
+5	for	for	ADP	_	_	7	case	_	start_char=3960|end_char=3963
+6	the	the	DET	_	PronType=Art	7	det	_	start_char=3964|end_char=3967
+7	eighth	eight	ADJ	_	Degree=Pos|NumType=Ord	9	amod	_	start_char=3968|end_char=3974
+8	straight	straight	ADJ	_	Degree=Pos	9	amod	_	start_char=3975|end_char=3983
+9	quarter.	quarter.	NOUN	_	Number=Sing	4	obl	_	start_char=3984|end_char=3992
+10	Vendors	vendor	NOUN	_	Number=Plur	9	nmod	_	start_char=3993|end_char=4000
+11	shipped	ship	VERB	_	Tense=Past|VerbForm=Part	9	acl:relcl	_	start_char=4001|end_char=4008
+12	289.4	289.4	NUM	_	NumType=Card	11	obl	_	start_char=4009|end_char=4014
+13	million	million	NUM	_	NumType=Card	14	nummod	_	start_char=4015|end_char=4022
+14	units,	unit	NOUN	_	Number=Sing	11	obl	_	start_char=4023|end_char=4029
+15	down	down	ADV	_	Degree=Pos	14	fixed	_	start_char=4030|end_char=4034
+16	4.7%	4.7%	NUM	_	NumType=Card	15	nummod	_	start_char=4035|end_char=4039
+17	from	from	ADP	_	_	19	case	_	start_char=4040|end_char=4044
+18	a	a	DET	_	PronType=Art	19	det	_	start_char=4045|end_char=4046
+19	year	year	NOUN	_	Number=Sing	25	obl:unmarked	_	start_char=4047|end_char=4051
+20	earlier.	earlier.	ADP	_	_	25	case	_	start_char=4052|end_char=4060
+21	The	the	DET	_	PronType=Art	24	det	_	start_char=4061|end_char=4064
+22	top	top	ADJ	_	Degree=Sup	19	amod	_	start_char=4065|end_char=4068
+23	five	five	NUM	_	NumType=Card	24	compound	_	start_char=4069|end_char=4073
+24	vendors	vendor	NOUN	_	Number=Plur	25	nsubj	_	start_char=4074|end_char=4081
+25	accounted	accounte	VERB	_	Tense=Past|VerbForm=Part	4	parataxis	_	start_char=4082|end_char=4091
+26	for	for	ADP	_	_	28	case	_	start_char=4092|end_char=4095
+27	roughly	roughly	ADJ	_	Degree=Pos	28	amod	_	start_char=4096|end_char=4103
+28	70%	70%	NUM	_	NumType=Card	25	obl	_	start_char=4104|end_char=4107
+29	of	of	ADP	_	_	31	case	_	start_char=4108|end_char=4110
+30	the	the	DET	_	PronType=Art	31	det	_	start_char=4111|end_char=4114
+31	market.	market.	NOUN	_	Number=Sing	25	obl	_	SpacesAfter=\n\n|start_char=4115|end_char=4122
+
+# text = The trial is expected to last six weeks. Jury selection begins Monday at the federal courthouse in Lancaster. The defendant, who has pleaded not guilty to all 14
+# sent_id = 31
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=4124|end_char=4127
+2	trial	trial	NOUN	_	Number=Sing	4	nsubj	_	start_char=4128|end_char=4133
+3	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	aux	_	start_char=4134|end_char=4136
+4	expected	expected	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=4137|end_char=4145
+5	to	to	PART	_	_	6	case	_	start_char=4146|end_char=4148
+6	last	last	ADJ	_	Degree=Pos	4	xcomp	_	start_char=4149|end_char=4153
+7	six	six	NUM	_	NumType=Card	8	nummod	_	start_char=4154|end_char=4157
+8	weeks.	weeks.	NOUN	_	Number=Plur	6	obl	_	start_char=4158|end_char=4164
+9	Jury	Jury	NOUN	_	Number=Sing	8	nmod	_	start_char=4165|end_char=4169
+10	selection	selection	NOUN	_	Number=Sing	11	nsubj	_	start_char=4170|end_char=4179
+11	begins	begin	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	advcl	_	start_char=4180|end_char=4186
+12	Monday	Monday	NOUN	_	Number=Sing	11	obl:unmarked	_	start_char=4187|end_char=4193
+13	at	at	ADP	_	_	16	case	_	start_char=4194|end_char=4196
+14	the	the	DET	_	PronType=Art	16	det	_	start_char=4197|end_char=4200
+15	federal	federal	NOUN	_	Number=Sing	16	nmod	_	start_char=4201|end_char=4208
+16	courthouse	courthouse	NOUN	_	Number=Sing	11	obl	_	start_char=4209|end_char=4219
+17	in	in	ADP	_	_	18	case	_	start_char=4220|end_char=4222
+18	Lancaster.	Lancaster	PROPN	_	Number=Sing	16	nmod	_	start_char=4223|end_char=4233
+19	The	the	DET	_	PronType=Art	20	det	_	start_char=4234|end_char=4237
+20	defendant,	Defendant,	PROPN	_	Number=Sing	22	obj	_	start_char=4238|end_char=4248
+21	who	who	PRON	_	PronType=Int,Rel	22	nsubj	_	start_char=4249|end_char=4252
+22	has	have	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	parataxis	_	start_char=4253|end_char=4256
+23	pleaded	plead	VERB	_	Tense=Past|VerbForm=Part	22	advcl	_	start_char=4257|end_char=4264
+24	not	not	ADV	_	Degree=Pos	25	advmod	_	start_char=4265|end_char=4268
+25	guilty	guilty	VERB	_	Tense=Past|VerbForm=Part	23	obl	_	start_char=4269|end_char=4275
+26	to	to	ADP	_	_	28	case	_	start_char=4276|end_char=4278
+27	all	all	DET	_	PronType=Art	28	det	_	start_char=4279|end_char=4282
+28	14	14	NUM	_	NumType=Card	25	obl:unmarked	_	start_char=4283|end_char=4285
+
+# text = counts, faces up to 20 years in prison if convicted.
+# sent_id = 32
+1	counts,	Count	PROPN	_	Number=Sing	2	nsubj	_	start_char=4286|end_char=4293
+2	faces	face	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=4294|end_char=4299
+3	up	up	ADV	_	Degree=Pos	2	advmod	_	start_char=4300|end_char=4302
+4	to	to	ADP	_	_	6	case	_	start_char=4303|end_char=4305
+5	20	20	NUM	_	NumType=Card	6	nummod	_	start_char=4306|end_char=4308
+6	years	year	NOUN	_	Number=Plur	2	obl	_	start_char=4309|end_char=4314
+7	in	in	ADP	_	_	8	case	_	start_char=4315|end_char=4317
+8	prison	prison	NOUN	_	Number=Sing	6	nmod	_	start_char=4318|end_char=4324
+9	if	if	ADP	_	_	10	case	_	start_char=4325|end_char=4327
+10	convicted.	convicted.	NOUN	_	Number=Sing	2	obl	_	SpacesAfter=\n\n|start_char=4328|end_char=4338
+
+# text = Tickets go on sale Friday at 10 a.m. local time.
+# sent_id = 33
+1	Tickets	ticket	NOUN	_	Number=Plur	2	nsubj	_	start_char=4340|end_char=4347
+2	go	go	VERB	_	VerbForm=Inf	0	root	_	start_char=4348|end_char=4350
+3	on	on	ADP	_	_	4	case	_	start_char=4351|end_char=4353
+4	sale	sale	NOUN	_	Number=Sing	2	obl:unmarked	_	start_char=4354|end_char=4358
+5	Friday	Friday	NOUN	_	Number=Sing	2	obl:unmarked	_	start_char=4359|end_char=4365
+6	at	at	ADP	_	_	8	case	_	start_char=4366|end_char=4368
+7	10	10	NUM	_	NumType=Card	8	nummod	_	start_char=4369|end_char=4371
+8	a.m.	A.m.	NOUN	_	Number=Sing	2	obl:unmarked	_	start_char=4372|end_char=4376
+9	local	local	ADJ	_	Degree=Pos	10	amod	_	start_char=4377|end_char=4382
+10	time.	time.	NOUN	_	Number=Sing	2	obl	_	start_char=4383|end_char=4388
+
+# text = Prices range from $35 to $250,
+# sent_id = 34
+1	Prices	price	NOUN	_	Number=Plur	2	nsubj	_	start_char=4389|end_char=4395
+2	range	range	VERB	_	Tense=Past|VerbForm=Fin	0	root	_	start_char=4396|end_char=4401
+3	from	from	ADP	_	_	4	case	_	start_char=4402|end_char=4406
+4	$35	$35	NUM	_	NumType=Card	2	obl	_	start_char=4407|end_char=4410
+5	to	to	ADP	_	_	6	case	_	start_char=4411|end_char=4413
+6	$250,	T250,	PROPN	_	Number=Sing	2	obl	_	start_char=4414|end_char=4419
+
+# text = plus fees. Organizers expect a sellout.
+# sent_id = 35
+1	plus	plus	NUM	_	NumType=Card	2	nummod	_	start_char=4420|end_char=4424
+2	fees.	fees.	NOUN	_	Number=Plur	4	nsubj	_	start_char=4425|end_char=4430
+3	Organizers	organizer	NOUN	_	Number=Plur	4	nsubj	_	start_char=4431|end_char=4441
+4	expect	expect	VERB	_	VerbForm=Inf	0	root	_	start_char=4442|end_char=4448
+5	a	a	DET	_	PronType=Art	6	det	_	start_char=4449|end_char=4450
+6	sellout.	Sellout.	PROPN	_	Number=Sing	4	obj	_	SpacesAfter=\n\n|start_char=4451|end_char=4459
+
+# text = The wildfire had burned more than 12,000 acres by Tuesday night and was 15% contained. Evacuation orders remained in effect for parts of Pine Hollow and Cedar Gap. No injuries were reported.
+# sent_id = 36
+1	The	the	DET	_	PronType=Art	2	det	_	start_char=4461|end_char=4464
+2	wildfire	wildfire	NOUN	_	Number=Sing	4	nsubj	_	start_char=4465|end_char=4473
+3	had	have	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	4	aux	_	start_char=4474|end_char=4477
+4	burned	burned	VERB	_	Tense=Past|VerbForm=Part	0	root	_	start_char=4478|end_char=4484
+5	more	more	ADJ	_	Degree=Cmp	4	obl	_	start_char=4485|end_char=4489
+6	than	than	ADP	_	_	8	case	_	start_char=4490|end_char=4494
+7	12	12	NUM	_	NumType=Card	9	nummod	_	SpaceAfter=No|start_char=4495|end_char=4497
+8	,000	,000	NUM	_	NumType=Card	9	nummod	_	start_char=4497|end_char=4501
+9	acres	acre	NOUN	_	Number=Plur	4	obl	_	start_char=4502|end_char=4507
+10	by	by	ADP	_	_	11	case	_	start_char=4508|end_char=4510
+11	Tuesday	Tuesday	NOUN	_	Number=Sing	12	nmod	_	start_char=4511|end_char=4518
+12	night	Night	PROPN	_	Number=Sing	9	nmod	_	start_char=4519|end_char=4524
+13	and	and	CCONJ	_	_	16	cc	_	start_char=4525|end_char=4528
+14	was	wave	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	19	cop	_	start_char=4529|end_char=4532
+15	15%	15%	NUM	_	NumType=Card	16	nummod	_	start_char=4533|end_char=4536
+16	contained.	contained.	NOUN	_	Number=Sing	4	conj	_	start_char=4537|end_char=4547
+17	Evacuation	Evacuation	NOUN	_	Number=Sing	16	nmod	_	start_char=4548|end_char=4558
+18	orders	order	NOUN	_	Number=Plur	16	nmod	_	start_char=4559|end_char=4565
+19	remained	remaine	VERB	_	Tense=Past|VerbForm=Part	16	acl:relcl	_	start_char=4566|end_char=4574
+20	in	in	ADP	_	_	21	case	_	start_char=4575|end_char=4577
+21	effect	effect	NOUN	_	Number=Sing	19	obl	_	start_char=4578|end_char=4584
+22	for	for	ADP	_	_	23	case	_	start_char=4585|end_char=4588
+23	parts	part	NOUN	_	Number=Plur	19	obl	_	start_char=4589|end_char=4594
+24	of	of	ADP	_	_	25	case	_	start_char=4595|end_char=4597
+25	Pine	Pine	PROPN	_	Number=Sing	23	nmod	_	start_char=4598|end_char=4602
+26	Hollow	Hollow	PROPN	_	Number=Sing	25	flat	_	start_char=4603|end_char=4609
+27	and	and	CCONJ	_	_	28	cc	_	start_char=4610|end_char=4613
+28	Cedar	Cedar	PROPN	_	Number=Sing	25	conj	_	start_char=4614|end_char=4619
+29	Gap.	Gap.	PROPN	_	Number=Sing	28	flat	_	start_char=4620|end_char=4624
+30	No	no	DET	_	PronType=Art	31	det	_	start_char=4625|end_char=4627
+31	injuries	injurie	NOUN	_	Number=Plur	33	nsubj	_	start_char=4628|end_char=4636
+32	were	were	AUX	_	Mood=Ind|Tense=Pres|VerbForm=Fin	33	aux	_	start_char=4637|end_char=4641
+33	reported.	reported.	VERB	_	Tense=Past|VerbForm=Part	4	parataxis	_	SpacesAfter=\n\n|start_char=4642|end_char=4651
+
+# text = Officials said the blaze may have been sparked by a downed power line. An investigation is under way.
+# sent_id = 37
+1	Officials	official	NOUN	_	Number=Plur	2	nsubj	_	start_char=4653|end_char=4662
+2	said	said	VERB	_	Tense=Pres|VerbForm=Fin	0	root	_	start_char=4663|end_char=4667
+3	the	the	DET	_	PronType=Art	4	det	_	start_char=4668|end_char=4671
+4	blaze	blaze	NOUN	_	Number=Sing	2	obj	_	start_char=4672|end_char=4677
+5	may	may	AUX	_	_	6	aux	_	start_char=4678|end_char=4681
+6	have	have	VERB	_	VerbForm=Inf	2	conj	_	start_char=4682|end_char=4686
+7	been	been	ADV	_	Degree=Pos	8	mark	_	start_char=4687|end_char=4691
+8	sparked	spark	VERB	_	Tense=Past|VerbForm=Part	6	xcomp	_	start_char=4692|end_char=4699
+9	by	by	ADP	_	_	13	case	_	start_char=4700|end_char=4702
+10	a	a	DET	_	PronType=Art	13	det	_	start_char=4703|end_char=4704
+11	downed	downed	NOUN	_	Number=Sing	12	compound	_	start_char=4705|end_char=4711
+12	power	power	NOUN	_	Number=Sing	8	obl	_	start_char=4712|end_char=4717
+13	line.	Line.	PROPN	_	Number=Sing	8	obl	_	start_char=4718|end_char=4723
+14	An	a	DET	_	PronType=Art	15	det	_	start_char=4724|end_char=4726
+15	investigation	investigation	NOUN	_	Number=Sing	18	nsubj	_	start_char=4727|end_char=4740
+16	is	be	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	18	cop	_	start_char=4741|end_char=4743
+17	under	under	ADP	_	_	18	case	_	start_char=4744|end_char=4749
+18	way.	Way.	PROPN	_	Number=Sing	13	nmod	_	SpacesAfter=\n|start_char=4750|end_char=4754

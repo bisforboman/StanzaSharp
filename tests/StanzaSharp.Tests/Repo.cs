@@ -31,11 +31,18 @@ public static class Repo
         return Directory.Exists(converted) ? converted : Path.GetFullPath(Path.Combine(StanzaModels, "..", lang));
     }
 
+    /// <summary>
+    /// A package's models: <see cref="ModelsFor(string)"/>, but English's treebank packages are only Stanza's .pt files
+    /// (<see cref="StanzaModels"/>; CI caches them for the golden shards).
+    /// </summary>
+    public static string ModelsFor(string lang, string package) =>
+        lang == "en" && package is not (Pipeline.DefaultPackage or "default_fast") ? StanzaModels : ModelsFor(lang);
+
     public static string Model(string lang, string relativeBase) => Path.Combine(ModelsFor(lang), relativeBase);
 
     /// <summary>The base path of <paramref name="processor"/>'s model in <paramref name="package"/> of <paramref name="lang"/>.</summary>
     public static string ModelOf(string lang, string processor, string package = Pipeline.DefaultPackage) =>
-        Model(lang, $"{processor}/{Pipeline.Packages[lang][package][processor]}");
+        Path.Combine(ModelsFor(lang, package), $"{processor}/{Pipeline.Packages[lang][package][processor]}");
 
     /// <summary>The forward or backward charlm's base path: English's 1billion, German's newswiki.</summary>
     public static string Charlm(string lang, bool forward) =>
@@ -111,6 +118,27 @@ public sealed class GermanAttribute : DataAttribute
         _data = [.. data, "de"];
         if (!Directory.Exists(Repo.ModelsFor("de")))
             Skip = "German models not found (models/converted/de or models/stanza/de); run stanzasharp download --lang de";
+    }
+
+    public override IEnumerable<object?[]> GetData(MethodInfo testMethod) => [_data];
+}
+
+/// <summary>
+/// An English treebank package's row of a <see cref="TreebankPackageTests"/> theory: its arguments plus <c>"en"</c>. Skipped,
+/// not failed, where the package's .pt files are missing from <see cref="Repo.StanzaModels"/> (CI caches them for the golden
+/// shards only; ci.yml's no-skip checks elsewhere exempt TreebankPackageTests).
+/// </summary>
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+public sealed class EnglishTreebankAttribute : DataAttribute
+{
+    private readonly object?[] _data;
+
+    public EnglishTreebankAttribute(string package, params object?[] data)
+    {
+        _data = [package, .. data, "en"];
+        var missing = ModelDownloader.FilesFor(null, package).Select(f => f.Path).Where(f => !File.Exists(Path.Combine(Repo.StanzaModels, f))).ToList();
+        if (missing.Count > 0)
+            Skip = $"{package}'s models not found in {Repo.StanzaModels} ({missing[0]}); run stanzasharp download models/stanza/en --package {package}";
     }
 
     public override IEnumerable<object?[]> GetData(MethodInfo testMethod) => [_data];

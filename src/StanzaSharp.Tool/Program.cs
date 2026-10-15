@@ -22,8 +22,9 @@ const string Usage = $"""
     Takes about 2 minutes with Python on 4 cores; --quick runs a short smoke test.
 
       --lang CODE         the language: en (default) or de (German)
-      --package NAME      Stanza's package: default, or default_fast (faster, no constituency); German also
-                          combined, gsd, hdt (tokenize to depparse only)
+      --package NAME      Stanza's package: default, or default_fast (faster, no constituency); the treebank
+                          packages (tokenize to depparse only): English combined, ewt, gum, lines, partut, atis, childes, eslspok;
+                          German combined, gsd, hdt
       --processors LIST   comma-separated, from tokenize,mwt,pos,lemma,constituency,depparse,sentiment,ner
                           (default: all of the package's)
       --models DIR        compare, benchmark: the models (default: models/stanza/CODE)

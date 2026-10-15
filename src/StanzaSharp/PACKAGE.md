@@ -161,10 +161,13 @@ await ModelDownloader.DownloadAsync("models/stanza/en", options); // what Load r
 using var nlp = Pipeline.Load("models/stanza/en", options);
 ```
 
+Stanza's English treebank packages run too, each trained on one treebank, with tokenize, mwt, pos, lemma and depparse
+only: `combined`, `ewt`, `gum`, `lines`, `partut`, `atis`, `childes` and `eslspok` (no mwt; its lemma is the word).
+
 ## German
 
 `Language = "de"` selects Stanza's German models: the same processors and packages as English (`default`,
-`default_fast`), plus the treebank packages `combined`, `gsd` and `hdt` (tokenize to depparse).
+`default_fast`), plus the German treebank packages `combined`, `gsd` and `hdt` (tokenize to depparse).
 
 ```csharp
 var german = new PipelineOptions { Language = "de" };

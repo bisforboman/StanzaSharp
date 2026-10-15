@@ -11,7 +11,8 @@ namespace StanzaSharp.Pos;
 ///   or the model's own character LSTM projected by <c>trans_char</c> (<c>combined_nocharlm</c>)
 /// - a highway biLSTM
 /// - UPOS from an MLP
-/// - XPOS and each UFeats key from biaffine scorers on an embedding of the predicted UPOS.
+/// - XPOS and each UFeats key from biaffine scorers on an embedding of the predicted UPOS; a composite XPOS vocabulary
+///   (English lines, partut) has a scorer per part, like the feats.
 /// </summary>
 internal sealed class PosTagger : IDisposable
 {
@@ -20,7 +21,8 @@ internal sealed class PosTagger : IDisposable
 
     private readonly Pretrain _pretrain;
     private readonly Dictionary<string, int> _wordVocab;
-    private readonly string[] _upos, _xpos;
+    private readonly string[] _upos;
+    private readonly XposVocab _xpos;
     private readonly (string Key, string[] Values)[] _feats;
     private readonly int _wordUnk, _batchSize;
     private readonly IPosNet _net;
@@ -35,7 +37,7 @@ internal sealed class PosTagger : IDisposable
         _wordVocab = Checkpoint.UnitToId(vocab["word"]);
         _wordUnk = _wordVocab["<UNK>"];
         _upos = Strings(vocab["upos"]!["_id2unit"]);
-        _xpos = Strings(vocab["xpos"]!["_id2unit"]);
+        _xpos = XposVocab.Read(vocab);
         _feats = vocab["feats"]!["_id2unit"]!.AsObject().Select(kv => (kv.Key, Strings(kv.Value))).ToArray();
         _batchSize = config["batch_size"]!.GetValue<int>();
         UsesCharlm = config["charlm"]?.GetValue<bool>() == true;
@@ -55,10 +57,11 @@ internal sealed class PosTagger : IDisposable
         });
     }
 
-    internal static (int Words, int Upos, int Xpos) Counts(Checkpoint ckpt)
+    /// <summary>The vocabularies' sizes: words, UPOS, and the XPOS vocabulary (a scorer per part if composite).</summary>
+    internal static (int Words, int Upos, XposVocab Xpos) Counts(Checkpoint ckpt)
     {
         var vocab = ckpt.Root["vocab"]!;
-        return (Checkpoint.UnitToId(vocab["word"]).Count, vocab["upos"]!["_id2unit"]!.AsArray().Count, vocab["xpos"]!["_id2unit"]!.AsArray().Count);
+        return (Checkpoint.UnitToId(vocab["word"]).Count, vocab["upos"]!["_id2unit"]!.AsArray().Count, XposVocab.Read(vocab));
     }
 
     /// <summary>Sets Upos, Xpos and Feats on every word of the document.</summary>
@@ -92,7 +95,7 @@ internal sealed class PosTagger : IDisposable
     /// <param name="cancellationToken">A batch is up to 5000 words (seconds on a slow CPU), so this is checked after each
     /// charlm pass (or the character model), between LSTM layers and between the heads.</param>
     /// <param name="featStrings">If given, equal feats strings are shared through it (memory on large documents).</param>
-    internal List<(string Upos, string Xpos, string? Feats)[]> Predict(IReadOnlyList<IReadOnlyList<string>> sentences, out List<float[]> uposLogits,
+    internal List<(string Upos, string? Xpos, string? Feats)[]> Predict(IReadOnlyList<IReadOnlyList<string>> sentences, out List<float[]> uposLogits,
         CharlmCache? charlms = null, IReadOnlyList<Sentence?>? cacheKeys = null, CancellationToken cancellationToken = default,
         Dictionary<string, string>? featStrings = null)
     {
@@ -117,17 +120,20 @@ internal sealed class PosTagger : IDisposable
 
         int nUpos = _upos.Length;
         uposLogits = [];
-        var result = new List<(string, string, string?)[]>(batch);
+        var result = new List<(string, string?, string?)[]>(batch);
+        var xposIds = new long[output.Xpos.Length];
         for (int i = 0, k = 0; i < batch; i++)
         {
-            var tags = new (string, string, string?)[sentences[i].Count];
+            var tags = new (string, string?, string?)[sentences[i].Count];
             uposLogits.Add(output.UposScores[(k * nUpos)..((k + tags.Length) * nUpos)]);
             for (int j = 0; j < tags.Length; j++, k++)
             {
                 var feats = FeatsString(output.Feats, k);
                 if (feats != null && featStrings != null)
                     feats = featStrings.TryAdd(feats, feats) ? feats : featStrings[feats];
-                tags[j] = (_upos[output.Upos[k]], _xpos[output.Xpos[k]], feats);
+                for (int x = 0; x < xposIds.Length; x++)
+                    xposIds[x] = output.Xpos[x][k];
+                tags[j] = (_upos[output.Upos[k]], _xpos.Unit(xposIds), feats);
             }
 
             result.Add(tags);

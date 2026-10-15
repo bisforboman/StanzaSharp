@@ -14,8 +14,9 @@ stanzasharp download --lang de                     # German, into models/stanza/
 
 - `DIR`: where to put the models (default `models/stanza/<lang>`), in the layout `Pipeline.Load(DIR)` reads.
 - `--lang CODE`: `en` (the default) or `de` (German), for `download`, `compare` and `benchmark` alike.
-- `--package NAME`: `default` (the default) or `default_fast`; for German also `combined`, `gsd` and `hdt` (tokenize to
-  depparse only).
+- `--package NAME`: `default` (the default) or `default_fast`; or a treebank package (tokenize to depparse only):
+  English `combined`, `ewt`, `gum`, `lines`, `partut`, `atis`, `childes` and `eslspok`, German `combined`, `gsd` and
+  `hdt`.
 - `--processors LIST`: only the models these processors need, e.g. `tokenize,mwt,pos,lemma`.
 
 In a Dockerfile, `dotnet tool install --tool-path /tools StanzaSharp.Tool` avoids touching the global tool path.
@@ -52,7 +53,7 @@ Different: 1 of 68 sentences differ. The first difference, line 384 of the CoNLL
 
 - `--lang CODE`: the language, `en` (default) or `de`. Stanza runs `stanza.Pipeline(CODE)` with that language's entry
   of Stanza 1.15.0's resources.json (shipped with the tool, so nothing is downloaded), StanzaSharp loads with
-  `Language = CODE`. A German treebank package (`--package gsd`, `hdt` or `combined`) runs only its processors.
+  `Language = CODE`. A treebank package (e.g. `--package ewt`, or German `gsd`) runs only its processors.
 - `--models DIR`: Stanza's `.pt` files as `download` writes them (default `models/stanza/<lang>`), in a folder of any
   name. Both sides load the same files, and
   StanzaSharp checks each against Stanza 1.15.0's MD5.

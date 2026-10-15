@@ -68,8 +68,8 @@ public class MwtTests(ITestOutputHelper output)
 
     /// <summary>
     /// German's seq2seq on both backends, on mwt.json's words and every token of the golden texts the tokenizer marks: the
-    /// same decoder steps and output. Reports the log-prob drift and the smallest top-2 margin of a row still decoding
-    /// (the greedy argmax's room), like the lemmatizer's (ManagedBackendTests.LemmaNet_ManagedMatchesTorchSharp), and
+    /// same decoder steps (every beam's row) and output. Reports the log-prob drift and the smallest top-2 margin of a row
+    /// still decoding, like the lemmatizer's (ManagedBackendTests.LemmaNet_ManagedMatchesTorchSharp), and
     /// guards that the margin stays above 3 × the drift.
     /// </summary>
     [GermanFact]
@@ -116,7 +116,11 @@ public class MwtTests(ITestOutputHelper output)
                     var er = e.AsSpan(r * c, c);
                     var ar = l.AsSpan(r * c, c);
                     for (int v = 0; v < c; v++)
-                        diff = Math.Max(diff, Math.Abs(er[v] - ar[v]));
+                    {
+                        if (v != 1) // never_decode_unk: <UNK> is -inf in both
+                            diff = Math.Max(diff, Math.Abs(er[v] - ar[v]));
+                    }
+
                     if (!done[r])
                         margin = Math.Min(margin, Math.Min(Margin(er), Margin(ar)));
                 }

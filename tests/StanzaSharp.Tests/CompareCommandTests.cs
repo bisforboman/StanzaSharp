@@ -162,6 +162,8 @@ public class CompareCommandTests
             foreach (var (processor, name) in models)
             {
                 Assert.Equal(stanza.GetProperty(processor).GetString(), name);
+                if (name == Pipeline.IdentityLemma)
+                    continue; // Stanza's identity lemmatizer: no model in resources.json
                 var model = resources.GetProperty(processor).GetProperty(name);
                 var dependencies = model.TryGetProperty("dependencies", out var d)
                     ? d.EnumerateArray().Select(x => $"{x.GetProperty("model").GetString()}/{x.GetProperty("package").GetString()}").Order().ToList()

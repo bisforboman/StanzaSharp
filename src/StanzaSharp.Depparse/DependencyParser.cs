@@ -22,7 +22,8 @@ internal sealed class DependencyParser : IDisposable
     private const int SeparateBatchLength = 150;       // depparse_processor.DEFAULT_SEPARATE_BATCH
 
     private readonly Pretrain _pretrain;
-    private readonly Dictionary<string, int> _wordVocab, _lemmaVocab, _uposVocab, _xposVocab;
+    private readonly Dictionary<string, int> _wordVocab, _lemmaVocab, _uposVocab;
+    private readonly XposVocab _xposVocab;
     private readonly string[] _deprels;
     private readonly int _batchSize;
     private readonly IDepparseNet _net;
@@ -36,7 +37,7 @@ internal sealed class DependencyParser : IDisposable
         _wordVocab = Checkpoint.UnitToId(vocab["word"]);
         _lemmaVocab = Checkpoint.UnitToId(vocab["lemma"]);
         _uposVocab = Checkpoint.UnitToId(vocab["upos"]);
-        _xposVocab = Checkpoint.UnitToId(vocab["xpos"]);
+        _xposVocab = XposVocab.Read(vocab);
         _deprels = vocab["deprel"]!["_id2unit"]!.AsArray().Select(x => x!.GetValue<string>()).ToArray();
         _batchSize = config["batch_size"]!.GetValue<int>();
         _net = net(config["charlm"]?.GetValue<bool>() == true);
@@ -184,13 +185,15 @@ internal sealed class DependencyParser : IDisposable
     {
         // data.py load_doc: simplify_punct changes the words the parser sees (vocab and charlm alike).
         var texts = batch.Select(s => (IReadOnlyList<string>)s.Select(w => Punct.Simplify(w.Text)).ToList()).ToList();
-        int size = batch.Count, width = batch.Max(s => s.Count) + 1;
+        int size = batch.Count, width = batch.Max(s => s.Count) + 1, parts = _xposVocab.Sizes.Length;
         var input = new DepparseBatch(texts, width, batch.Select(s => (long)s.Count + 1).ToArray(),
-            new long[size * width], new long[size * width], new long[size * width], new long[size * width], new long[size * width], charlms, rentScores, keys);
+            new long[size * width], new long[size * width], new long[size * width], new long[size * width * parts], new long[size * width], charlms, rentScores, keys,
+            parts);
         for (int b = 0; b < size; b++)
         {
             int row = b * width;
-            input.Word[row] = input.Lemma[row] = input.Upos[row] = input.Xpos[row] = input.Pretrained[row] = RootId;
+            input.Word[row] = input.Lemma[row] = input.Upos[row] = input.Pretrained[row] = RootId;
+            input.Xpos.AsSpan(row * parts, parts).Fill(RootId);
             for (int j = 0; j < batch[b].Count; j++)
             {
                 var w = batch[b][j];
@@ -198,7 +201,7 @@ internal sealed class DependencyParser : IDisposable
                 input.Word[row + j + 1] = _wordVocab.GetValueOrDefault(lower, 1);
                 input.Lemma[row + j + 1] = _lemmaVocab.GetValueOrDefault(PyString.Lower(w.Lemma ?? "_"), 1);
                 input.Upos[row + j + 1] = _uposVocab.GetValueOrDefault(w.Upos ?? "_", 1);
-                input.Xpos[row + j + 1] = _xposVocab.GetValueOrDefault(w.Xpos ?? "_", 1);
+                _xposVocab.Ids(w.Xpos ?? "_", input.Xpos.AsSpan((row + j + 1) * parts, parts));
                 input.Pretrained[row + j + 1] = _pretrain.UnitToId(lower);
             }
         }
@@ -223,7 +226,6 @@ internal sealed class DependencyParser : IDisposable
         Require(Flag("use_upos", true) && Flag("use_xpos", true) && Flag("use_ufeats", true), "a subset of UPOS/XPOS/UFeats");
         Require(!Flag("reversed", false), "reversed sentences");
         Require(!Flag("resolve_head_constraints", false), "resolve_head_constraints");
-        Require(root["vocab"]!["_key2class"]!["xpos"]!.GetValue<string>() == "WordVocab", "a composite XPOS vocab");
         foreach (var key in new[] { "word", "lemma" })
             Require(root["vocab"]![key]!["lower"]!.GetValue<bool>(), $"a cased {key} vocab");
         foreach (var key in new[] { "upos", "xpos" })

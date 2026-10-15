@@ -1,0 +1,679 @@
+# text = omg just landed in lisbon and the weather is PERFECT #travel #blessed
+# sent_id = 0
+1	omg	omg	X	FW	_	3	nsubj:pass	_	start_char=0|end_char=3
+2	just	just	ADV	RB	_	3	advmod	_	start_char=4|end_char=8
+3	landed	landed	VERB	VBN	_	0	root	_	start_char=9|end_char=15
+4	in	in	ADP	IN	_	5	case	_	start_char=16|end_char=18
+5	lisbon	lisbon	NOUN	NN	_	3	obl	_	start_char=19|end_char=25
+6	and	and	CCONJ	CC	_	11	cc	_	start_char=26|end_char=29
+7	the	the	DET	DT	_	8	det	_	start_char=30|end_char=33
+8	weather	weather	NOUN	NN	_	11	nsubj	_	start_char=34|end_char=41
+9	is	is	AUX	VBZ	_	11	cop	_	start_char=42|end_char=44
+10	PERFECT	PERFECT	ADJ	JJ	_	11	amod	_	start_char=45|end_char=52
+11	#travel	#travel	PROPN	NNP	_	3	conj	_	start_char=53|end_char=60
+12	#blessed	#blessed	X	FW	_	11	goeswith	_	SpacesAfter=\n\n|start_char=61|end_char=69
+
+# text = @jen_k99 lol no way that's real :
+# sent_id = 1
+1	@jen_k99	@jen_k99	X	FW	_	6	dep	_	start_char=71|end_char=79
+2	lol	lol	X	FW	_	1	flat:foreign	_	start_char=80|end_char=83
+3	no	no	DET	DT	_	4	det	_	start_char=84|end_char=86
+4	way	way	NOUN	NN	_	1	flat:foreign	_	start_char=87|end_char=90
+5	that's	that's	AUX	VBZ	_	6	cop	_	start_char=91|end_char=97
+6	real	real	ADJ	JJ	_	0	root	_	start_char=98|end_char=102
+7	:	:	PUNCT	.	_	6	punct	_	SpaceAfter=No|start_char=103|end_char=104
+
+# text = P
+# sent_id = 2
+1	P	P	NOUN	NN	_	0	root	_	SpacesAfter=\n\n|start_char=104|end_char=105
+
+# text = cant believe its already friday...
+# sent_id = 3
+1	cant	cant	AUX	MD	_	2	aux	_	start_char=107|end_char=111
+2	believe	believe	VERB	VB	_	0	root	_	start_char=112|end_char=119
+3	its	its	PRON	PRP$	_	5	nmod:poss	_	start_char=120|end_char=123
+4	already	already	ADV	RB	_	2	advmod	_	start_char=124|end_char=131
+5	friday...	friday...	PUNCT	:	_	2	punct	_	start_char=132|end_char=141
+
+# text = where did the week go
+# sent_id = 4
+1	where	where	ADV	WRB	_	2	advmod	_	start_char=142|end_char=147
+2	did	did	VERB	VBD	_	0	root	_	start_char=148|end_char=151
+3	the	the	DET	DT	_	4	det	_	start_char=152|end_char=155
+4	week	week	NOUN	NN	_	2	obj	_	start_char=156|end_char=160
+5	go	go	VERB	VB	_	2	xcomp	_	SpacesAfter=\n\n|start_char=161|end_char=163
+
+# text = THIS IS THE BEST DAY OF MY LIFE!!!!!!
+# sent_id = 5
+1	THIS	THIS	PRON	DT	_	5	nsubj	_	start_char=165|end_char=169
+2	IS	IS	AUX	VBZ	_	5	cop	_	start_char=170|end_char=172
+3	THE	THE	PUNCT	"	_	5	punct	_	start_char=173|end_char=176
+4	BEST	BEST	PROPN	NNP	_	5	compound	_	start_char=177|end_char=181
+5	DAY	DAY	PROPN	NNP	_	0	root	_	start_char=182|end_char=185
+6	OF	OF	PUNCT	"	_	5	punct	_	start_char=186|end_char=188
+7	MY	MY	PUNCT	"	_	5	punct	_	start_char=189|end_char=191
+8	LIFE!!!!!	LIFE!!!!!	PUNCT	"	_	5	punct	_	SpaceAfter=No|start_char=192|end_char=201
+9	!	!	PUNCT	.	_	5	punct	_	SpacesAfter=\n\n|start_char=201|end_char=202
+
+# text = soooo tired rn. need coffeeeee
+# sent_id = 6
+1	soooo	soooo	ADV	RB	_	2	advmod	_	start_char=204|end_char=209
+2	tired	tired	ADJ	JJ	_	0	root	_	start_char=210|end_char=215
+3	rn.	rn.	X	FW	_	2	dep	_	start_char=216|end_char=219
+4	need	need	VERB	VB	_	2	xcomp	_	start_char=220|end_char=224
+5	coffeeeee	coffeeeee	X	FW	_	4	dep	_	SpacesAfter=\n\n|start_char=225|end_char=234
+
+# text = ok so hear me out: pineapple on pizza is actually good.
+# sent_id = 7
+1	ok	ok	INTJ	UH	_	3	discourse	_	start_char=236|end_char=238
+2	so	so	CCONJ	CC	_	3	advmod	_	start_char=239|end_char=241
+3	hear	hear	VERB	VB	_	0	root	_	start_char=242|end_char=246
+4	me	me	PRON	PRP	_	3	iobj	_	start_char=247|end_char=249
+5	out:	out:	NOUN	NN	_	6	compound	_	start_char=250|end_char=254
+6	pineapple	pineapple	NOUN	NN	_	3	obj	_	start_char=255|end_char=264
+7	on	on	ADP	IN	_	8	case	_	start_char=265|end_char=267
+8	pizza	pizza	NOUN	NN	_	11	nsubj	_	start_char=268|end_char=273
+9	is	is	AUX	VBZ	_	11	cop	_	start_char=274|end_char=276
+10	actually	actually	ADV	RB	_	11	advmod	_	start_char=277|end_char=285
+11	good.	good.	ADJ	JJ	_	3	conj	_	start_char=286|end_char=291
+
+# text = fight me
+# sent_id = 8
+1	fight	fight	VERB	VB	_	0	root	_	start_char=292|end_char=297
+2	me	me	PRON	PRP	_	1	obj	_	SpacesAfter=\n\n|start_char=298|end_char=300
+
+# text = Thanks @CityTransit for the 45 min delay this morning :( #commute #fail
+# sent_id = 9
+1	Thanks	Thanks	NOUN	NNS	_	2	nsubj	_	start_char=302|end_char=308
+2	@CityTransit	@CityTransit	PROPN	NNP	_	0	root	_	start_char=309|end_char=321
+3	for	for	ADP	IN	_	7	case	_	start_char=322|end_char=325
+4	the	the	DET	DT	_	7	det	_	start_char=326|end_char=329
+5	45	45	NUM	CD	_	7	nummod	_	start_char=330|end_char=332
+6	min	min	X	FW	_	5	goeswith	_	start_char=333|end_char=336
+7	delay	delay	NOUN	NN	_	2	obl	_	start_char=337|end_char=342
+8	this	this	DET	DT	_	9	det	_	start_char=343|end_char=347
+9	morning	morning	NOUN	NN	_	7	nmod	_	start_char=348|end_char=355
+10	:(	:(	ADV	RB	_	11	case	_	start_char=356|end_char=358
+11	#commute	#commute	PROPN	NNP	_	12	compound	_	start_char=359|end_char=367
+12	#fail	#fail	PROPN	NNP	_	7	appos	_	SpacesAfter=\n\n|start_char=368|end_char=373
+
+# text = lmaooo did u
+# sent_id = 10
+1	lmaooo	lmaooo	X	FW	_	2	dep	_	start_char=375|end_char=381
+2	did	did	VERB	VBD	_	0	root	_	start_char=382|end_char=385
+3	u	u	PUNCT	"	_	2	punct	_	start_char=386|end_char=387
+
+# text = see what he posted last nite
+# sent_id = 11
+1	see	see	VERB	VB	_	0	root	_	start_char=388|end_char=391
+2	what	what	PRON	WP	_	4	obj	_	start_char=392|end_char=396
+3	he	he	PRON	PRP	_	4	nsubj	_	start_char=397|end_char=399
+4	posted	posted	VERB	VBD	_	1	advcl	_	start_char=400|end_char=406
+5	last	last	ADJ	JJ	_	6	amod	_	start_char=407|end_char=411
+6	nite	nite	NOUN	NN	_	4	obj	_	SpacesAfter=\n\n|start_char=412|end_char=416
+
+# text = brb gotta walk the dog
+# sent_id = 12
+1	brb	brb	X	FW	_	3	dep	_	start_char=418|end_char=421
+2	gotta	gotta	X	FW	_	3	dep	_	start_char=422|end_char=427
+3	walk	walk	VERB	VB	_	0	root	_	start_char=428|end_char=432
+4	the	the	DET	DT	_	5	det	_	start_char=433|end_char=436
+5	dog	dog	NOUN	NN	_	3	obj	_	SpacesAfter=\n\n|start_char=437|end_char=440
+
+# text = idk man...
+# sent_id = 13
+1	idk	idk	X	FW	_	0	root	_	start_char=442|end_char=445
+2	man...	man...	PUNCT	"	_	1	punct	_	start_char=446|end_char=452
+
+# text = seems kinda sketchy to me tbh
+# sent_id = 14
+1	seems	seems	VERB	VBZ	_	0	root	_	start_char=453|end_char=458
+2	kinda	kinda	ADV	RB	_	3	advmod	_	start_char=459|end_char=464
+3	sketchy	sketchy	ADJ	JJ	_	1	xcomp	_	start_char=465|end_char=472
+4	to	to	PART	TO	_	5	case	_	start_char=473|end_char=475
+5	me	me	PRON	PRP	_	3	obl	_	start_char=476|end_char=478
+6	tbh	tbh	X	FW	_	3	obl	_	SpacesAfter=\n\n|start_char=479|end_char=482
+
+# text = Happy bday @marcus_t!!! hope it's a great one :) :) :
+# sent_id = 15
+1	Happy	Happy	ADJ	JJ	_	2	amod	_	start_char=484|end_char=489
+2	bday	bday	NOUN	NN	_	4	nsubj	_	start_char=490|end_char=494
+3	@marcus_t!!!	@marcus_t!!!	PUNCT	"	_	4	punct	_	start_char=495|end_char=507
+4	hope	hope	VERB	VB	_	0	root	_	start_char=508|end_char=512
+5	it's	it's	AUX	VBZ	_	8	cop	_	start_char=513|end_char=517
+6	a	a	DET	DT	_	8	det	_	start_char=518|end_char=519
+7	great	great	ADJ	JJ	_	8	amod	_	start_char=520|end_char=525
+8	one	one	NOUN	NN	_	4	obj	_	start_char=526|end_char=529
+9	:)	:)	PUNCT	"	_	8	punct	_	start_char=530|end_char=532
+10	:)	:)	PUNCT	"	_	8	punct	_	start_char=533|end_char=535
+11	:	:	PUNCT	"	_	8	punct	_	SpaceAfter=No|start_char=536|end_char=537
+
+# text = )
+# sent_id = 16
+1	)	)	PUNCT	"	_	0	root	_	SpacesAfter=\n\n|start_char=537|end_char=538
+
+# text = i luv this song so much <3 <
+# sent_id = 17
+1	i	i	PRON	PRP	_	2	nsubj	_	start_char=540|end_char=541
+2	luv	luv	VERB	VBP	_	0	root	_	start_char=542|end_char=545
+3	this	this	DET	DT	_	4	det	_	start_char=546|end_char=550
+4	song	song	NOUN	NN	_	2	obj	_	start_char=551|end_char=555
+5	so	so	ADV	RB	_	6	advmod	_	start_char=556|end_char=558
+6	much	much	ADV	RB	_	2	advmod	_	start_char=559|end_char=563
+7	<3	<3	PUNCT	"	_	2	punct	_	start_char=564|end_char=566
+8	<	<	PUNCT	"	_	2	punct	_	SpaceAfter=No|start_char=567|end_char=568
+
+# text = 3
+# sent_id = 18
+1	3	3	NUM	CD	_	0	root	_	SpacesAfter=\n\n|start_char=568|end_char=569
+
+# text = anyone else having trouble logging in??
+# sent_id = 19
+1	anyone	anyone	NOUN	NN	_	3	nsubj	_	start_char=571|end_char=577
+2	else	else	ADV	RB	_	3	advmod	_	start_char=578|end_char=582
+3	having	having	VERB	VBG	_	0	root	_	start_char=583|end_char=589
+4	trouble	trouble	NOUN	NN	_	3	obj	_	start_char=590|end_char=597
+5	logging	logging	VERB	VBG	_	4	acl	_	start_char=598|end_char=605
+6	in	in	ADP	IN	_	3	advmod	_	SpaceAfter=No|start_char=606|end_char=608
+7	?	?	PUNCT	.	_	3	punct	_	SpaceAfter=No|start_char=608|end_char=609
+8	?	?	PUNCT	.	_	3	punct	_	start_char=609|end_char=610
+
+# text = site keeps saying error 503
+# sent_id = 20
+1	site	site	NOUN	NN	_	2	nsubj	_	start_char=611|end_char=615
+2	keeps	keeps	VERB	VBZ	_	0	root	_	start_char=616|end_char=621
+3	saying	saying	VERB	VBG	_	2	xcomp	_	start_char=622|end_char=628
+4	error	error	NOUN	NN	_	3	obj	_	start_char=629|end_char=634
+5	50	50	NUM	CD	_	6	compound	_	SpaceAfter=No|start_char=635|end_char=637
+6	3	3	NUM	CD	_	4	conj	_	SpacesAfter=\n\n|start_char=637|end_char=638
+
+# text = new blog post is up!! link in bio
+# sent_id = 21
+1	new	new	ADJ	JJ	_	3	amod	_	start_char=640|end_char=643
+2	blog	blog	NOUN	NN	_	3	compound	_	start_char=644|end_char=648
+3	post	post	NOUN	NN	_	6	nsubj	_	start_char=649|end_char=653
+4	is	is	AUX	VBZ	_	6	cop	_	start_char=654|end_char=656
+5	up!!	up!!	X	FW	_	6	dep	_	start_char=657|end_char=661
+6	link	link	VERB	VB	_	0	root	_	start_char=662|end_char=666
+7	in	in	ADP	IN	_	8	case	_	start_char=667|end_char=669
+8	bio	bio	NOUN	NN	_	6	obl	_	SpacesAfter=\n\n|start_char=670|end_char=673
+
+# text = RT @newsdesk:
+# sent_id = 22
+1	RT	RT	PROPN	NNP	_	0	root	_	start_char=675|end_char=677
+2	@newsdesk:	@newsdesk:	X	FW	_	1	flat:foreign	_	start_char=678|end_char=688
+
+# text = Power outage reported across downtown; crews on scene.
+# sent_id = 23
+1	Power	Power	NOUN	NN	_	2	compound	_	start_char=689|end_char=694
+2	outage	outage	NOUN	NN	_	3	nsubj	_	start_char=695|end_char=701
+3	reported	reported	VERB	VBD	_	0	root	_	start_char=702|end_char=710
+4	across	across	ADP	IN	_	6	case	_	start_char=711|end_char=717
+5	downtown;	downtown;	ADJ	JJ	_	6	amod	_	start_char=718|end_char=727
+6	crews	crews	NOUN	NNS	_	3	obl	_	start_char=728|end_char=733
+7	on	on	ADP	IN	_	8	case	_	start_char=734|end_char=736
+8	scene	scene	NOUN	NN	_	3	obl	_	SpaceAfter=No|start_char=737|end_char=742
+9	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=742|end_char=743
+
+# text = can u pick up milk on the way home thx
+# sent_id = 24
+1	can	can	AUX	MD	_	3	aux	_	start_char=745|end_char=748
+2	u	u	PRON	PRP	_	3	nsubj	_	start_char=749|end_char=750
+3	pick	pick	VERB	VB	_	0	root	_	start_char=751|end_char=755
+4	up	up	ADP	RP	_	3	compound:prt	_	start_char=756|end_char=758
+5	milk	milk	NOUN	NN	_	3	obj	_	start_char=759|end_char=763
+6	on	on	ADP	IN	_	10	case	_	start_char=764|end_char=766
+7	the	the	DET	DT	_	10	det	_	start_char=767|end_char=770
+8	way	way	NOUN	NN	_	10	nmod:poss	_	start_char=771|end_char=774
+9	home	home	NOUN	NN	_	10	compound	_	start_char=775|end_char=779
+10	thx	thx	NOUN	NN	_	3	obl	_	SpacesAfter=\n\n|start_char=780|end_char=783
+
+# text = Nope. Not doing it.
+# sent_id = 25
+1	Nope.	Nope.	PUNCT	"	_	3	punct	_	start_char=785|end_char=790
+2	Not	Not	PART	RB	_	3	advmod	_	start_char=791|end_char=794
+3	doing	doing	VERB	VBG	_	0	root	_	start_char=795|end_char=800
+4	it.	it.	PRON	PRP	_	3	obj	_	start_char=801|end_char=804
+
+# text = Never again.
+# sent_id = 26
+1	Never	Never	ADV	RB	_	2	advmod	_	start_char=805|end_char=810
+2	again	again	ADV	RB	_	0	root	_	SpaceAfter=No|start_char=811|end_char=816
+3	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=816|end_char=817
+
+# text = #MondayMotivation: Start where you are.
+# sent_id = 27
+1	#MondayMotivation:	#MondayMotivation:	PROPN	NNP	_	2	compound	_	start_char=819|end_char=837
+2	Start	Start	PROPN	NNP	_	0	root	_	start_char=838|end_char=843
+3	where	where	ADV	WRB	_	5	advmod	_	start_char=844|end_char=849
+4	you	you	PRON	PRP	_	5	nsubj	_	start_char=850|end_char=853
+5	are.	are.	VERB	VBP	_	2	parataxis	_	start_char=854|end_char=858
+
+# text = Use what you have.
+# sent_id = 28
+1	Use	Use	VERB	VB	_	0	root	_	start_char=859|end_char=862
+2	what	what	PRON	WP	_	1	obj	_	start_char=863|end_char=867
+3	you	you	PRON	PRP	_	4	nsubj	_	start_char=868|end_char=871
+4	have.	have.	VERB	VBP	_	1	ccomp	_	start_char=872|end_char=877
+
+# text = Do what you can.
+# sent_id = 29
+1	Do	Do	AUX	VBP	_	2	cop	_	start_char=878|end_char=880
+2	what	what	PRON	WP	_	0	root	_	start_char=881|end_char=885
+3	you	you	PRON	PRP	_	4	nsubj	_	start_char=886|end_char=889
+4	can	can	AUX	MD	_	2	cop	_	SpaceAfter=No|start_char=890|end_char=893
+5	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=893|end_char=894
+
+# text = wait what?!?! since WHEN
+# sent_id = 30
+1	wait	wait	VERB	VB	_	0	root	_	start_char=896|end_char=900
+2	what	what	PRON	WP	_	1	obj	_	SpaceAfter=No|start_char=901|end_char=905
+3	?!?!	?!?!	PUNCT	.	_	1	punct	_	start_char=905|end_char=909
+4	since	since	ADP	IN	_	1	obl	_	start_char=910|end_char=915
+5	WHEN	WHEN	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=916|end_char=920
+
+# text = Yesss we won 3-1!!!
+# sent_id = 31
+1	Yesss	Yesss	PROPN	NNP	_	3	nsubj	_	start_char=922|end_char=927
+2	we	we	PRON	PRP	_	3	nsubj	_	start_char=928|end_char=930
+3	won	won	VERB	VBD	_	0	root	_	start_char=931|end_char=934
+4	3-	3-	NUM	CD	_	3	obj	_	SpaceAfter=No|start_char=935|end_char=937
+5	1!!!	1!!!	PUNCT	:	_	3	punct	_	start_char=937|end_char=941
+
+# text = GO TEAM GO
+# sent_id = 32
+1	GO	GO	PROPN	NNP	_	2	compound	_	start_char=942|end_char=944
+2	TEAM	TEAM	PROPN	NNP	_	3	compound	_	start_char=945|end_char=949
+3	GO	GO	PROPN	NNP	_	0	root	_	SpacesAfter=\n\n|start_char=950|end_char=952
+
+# text = that moment when u realize ur phone was in ur hand the whole time ;-)
+# sent_id = 33
+1	that	that	DET	DT	_	2	det	_	start_char=954|end_char=958
+2	moment	moment	NOUN	NN	_	11	obl:tmod	_	start_char=959|end_char=965
+3	when	when	SCONJ	WRB	_	5	mark	_	start_char=966|end_char=970
+4	u	u	PRON	PRP	_	5	nsubj	_	start_char=971|end_char=972
+5	realize	realize	VERB	VB	_	11	advcl	_	start_char=973|end_char=980
+6	ur	ur	PRON	PRP$	_	7	nmod:poss	_	start_char=981|end_char=983
+7	phone	phone	NOUN	NN	_	11	nsubj	_	start_char=984|end_char=989
+8	was	was	AUX	VBD	_	11	cop	_	start_char=990|end_char=993
+9	in	in	ADP	IN	_	11	case	_	start_char=994|end_char=996
+10	ur	ur	PRON	PRP$	_	11	nmod:poss	_	start_char=997|end_char=999
+11	hand	hand	NOUN	NN	_	0	root	_	start_char=1000|end_char=1004
+12	the	the	DET	DT	_	14	det	_	start_char=1005|end_char=1008
+13	whole	whole	ADJ	JJ	_	14	amod	_	start_char=1009|end_char=1014
+14	time	time	NOUN	NN	_	11	nmod	_	start_char=1015|end_char=1019
+15	;	;	PUNCT	,	_	11	punct	_	SpaceAfter=No|start_char=1020|end_char=1021
+16	-	-	PUNCT	:	_	11	punct	_	SpaceAfter=No|start_char=1021|end_char=1022
+17	)	)	PUNCT	"	_	11	punct	_	SpacesAfter=\n\n|start_char=1022|end_char=1023
+
+# text = ugh my flight got cancelled AGAIN. thanks a lot @SkyJetAir
+# sent_id = 34
+1	ugh	ugh	INTJ	UH	_	4	discourse	_	start_char=1025|end_char=1028
+2	my	my	PRON	PRP$	_	3	nmod:poss	_	start_char=1029|end_char=1031
+3	flight	flight	NOUN	NN	_	4	nsubj	_	start_char=1032|end_char=1038
+4	got	got	VERB	VBD	_	0	root	_	start_char=1039|end_char=1042
+5	cancelled	cancelled	VERB	VBN	_	4	xcomp	_	start_char=1043|end_char=1052
+6	AGAIN.	AGAIN.	PUNCT	.	_	7	cc	_	start_char=1053|end_char=1059
+7	thanks	thanks	VERB	VBZ	_	4	conj	_	start_char=1060|end_char=1066
+8	a	a	DET	DT	_	9	det	_	start_char=1067|end_char=1068
+9	lot	lot	NOUN	NN	_	7	obj	_	start_char=1069|end_char=1072
+10	@SkyJetAir	@SkyJetAir	ADV	RB	_	9	advmod	_	SpacesAfter=\n\n|start_char=1073|end_char=1083
+
+# text = he said "see u at 8" and showed up at 9:30 smh
+# sent_id = 35
+1	he	he	PRON	PRP	_	2	nsubj	_	start_char=1085|end_char=1087
+2	said	said	VERB	VBD	_	0	root	_	start_char=1088|end_char=1092
+3	"see	"see	PUNCT	"	_	6	punct	_	start_char=1093|end_char=1097
+4	u	u	X	FW	_	2	obl	_	start_char=1098|end_char=1099
+5	at	at	ADP	IN	_	6	case	_	start_char=1100|end_char=1102
+6	8"	8"	NUM	CD	_	2	obl	_	start_char=1103|end_char=1105
+7	and	and	CCONJ	CC	_	8	cc	_	start_char=1106|end_char=1109
+8	showed	showed	VERB	VBD	_	2	conj	_	start_char=1110|end_char=1116
+9	up	up	ADP	RP	_	8	advmod	_	start_char=1117|end_char=1119
+10	at	at	ADP	IN	_	11	case	_	start_char=1120|end_char=1122
+11	9:30	9:30	NUM	CD	_	8	obl	_	start_char=1123|end_char=1127
+12	smh	smh	X	FW	_	11	goeswith	_	SpacesAfter=\n\n|start_char=1128|end_char=1131
+
+# text = this tweet is about u and u know who u r
+# sent_id = 36
+1	this	this	DET	DT	_	2	det	_	start_char=1133|end_char=1137
+2	tweet	tweet	NOUN	NN	_	5	nsubj	_	start_char=1138|end_char=1143
+3	is	is	AUX	VBZ	_	5	cop	_	start_char=1144|end_char=1146
+4	about	about	ADP	IN	_	5	case	_	start_char=1147|end_char=1152
+5	u	u	X	FW	_	0	root	_	start_char=1153|end_char=1154
+6	and	and	CCONJ	CC	_	8	cc	_	start_char=1155|end_char=1158
+7	u	u	PRON	PRP	_	8	nsubj	_	start_char=1159|end_char=1160
+8	know	know	VERB	VBP	_	5	conj	_	start_char=1161|end_char=1165
+9	who	who	PRON	WP	_	8	obj	_	start_char=1166|end_char=1169
+10	u	u	PUNCT	"	_	8	punct	_	start_char=1170|end_char=1171
+11	r	r	X	NN	_	9	flat:foreign	_	SpacesAfter=\n\n|start_char=1172|end_char=1173
+
+# text = who's coming to the bbq sat??
+# sent_id = 37
+1	who's	who's	AUX	VBZ	_	2	aux	_	start_char=1175|end_char=1180
+2	coming	coming	VERB	VBG	_	0	root	_	start_char=1181|end_char=1187
+3	to	to	PART	TO	_	5	case	_	start_char=1188|end_char=1190
+4	the	the	DET	DT	_	5	det	_	start_char=1191|end_char=1194
+5	bbq	bbq	NOUN	NN	_	2	obl	_	start_char=1195|end_char=1198
+6	sat	sat	VERB	VBD	_	2	advmod	_	SpaceAfter=No|start_char=1199|end_char=1202
+7	?	?	PUNCT	.	_	2	punct	_	SpaceAfter=No|start_char=1202|end_char=1203
+8	?	?	PUNCT	.	_	2	punct	_	start_char=1203|end_char=1204
+
+# text = bring chips n dip
+# sent_id = 38
+1	bring	bring	VERB	VB	_	0	root	_	start_char=1205|end_char=1210
+2	chips	chips	NOUN	NNS	_	1	obj	_	start_char=1211|end_char=1216
+3	n	n	X	FW	_	2	dep	_	start_char=1217|end_char=1218
+4	dip	dip	NOUN	NN	_	2	conj	_	SpacesAfter=\n\n|start_char=1219|end_char=1222
+
+# text = 10/10 would recommend.
+# sent_id = 39
+1	10/10	10/10	NOUN	NN	_	3	nsubj	_	start_char=1224|end_char=1229
+2	would	would	AUX	MD	_	3	aux	_	start_char=1230|end_char=1235
+3	recommend.	recommend.	VERB	VB	_	0	root	_	start_char=1236|end_char=1246
+
+# text = the pasta was amazing & the service was even better
+# sent_id = 40
+1	the	the	DET	DT	_	2	det	_	start_char=1247|end_char=1250
+2	pasta	pasta	NOUN	NN	_	4	nsubj	_	start_char=1251|end_char=1256
+3	was	was	AUX	VBD	_	4	cop	_	start_char=1257|end_char=1260
+4	amazing	amazing	ADJ	JJ	_	0	root	_	start_char=1261|end_char=1268
+5	&	&	CCONJ	CC	_	10	cc	_	start_char=1269|end_char=1270
+6	the	the	DET	DT	_	7	det	_	start_char=1271|end_char=1274
+7	service	service	NOUN	NN	_	10	nsubj	_	start_char=1275|end_char=1282
+8	was	was	AUX	VBD	_	10	cop	_	start_char=1283|end_char=1286
+9	even	even	ADV	RB	_	10	advmod	_	start_char=1287|end_char=1291
+10	better	better	ADJ	JJR	_	4	conj	_	SpacesAfter=\n\n|start_char=1292|end_char=1298
+
+# text = Me: I'll go to bed early tonight.
+# sent_id = 41
+1	Me:	Me:	PROPN	NNP	_	3	nsubj	_	start_char=1300|end_char=1303
+2	I'll	I'll	PROPN	NNP	_	3	nsubj	_	start_char=1304|end_char=1308
+3	go	go	VERB	VB	_	0	root	_	start_char=1309|end_char=1311
+4	to	to	PART	TO	_	5	case	_	start_char=1312|end_char=1314
+5	bed	bed	NOUN	NN	_	3	obl	_	start_char=1315|end_char=1318
+6	early	early	ADJ	JJ	_	7	amod	_	start_char=1319|end_char=1324
+7	tonigh	tonigh	NOUN	NN	_	3	obl	_	SpaceAfter=No|start_char=1325|end_char=1331
+8	t.	t.	PUNCT	.	_	3	punct	_	start_char=1331|end_char=1333
+
+# text = Also me at 3am: *watches 14 videos about octopuses*
+# sent_id = 42
+1	Also	Also	ADV	RB	_	5	advmod	_	start_char=1334|end_char=1338
+2	me	me	PRON	PRP	_	5	dep	_	start_char=1339|end_char=1341
+3	at	at	ADP	IN	_	5	case	_	start_char=1342|end_char=1344
+4	3am:	3am:	PROPN	NNP	_	5	obl	_	start_char=1345|end_char=1349
+5	*watches	*watches	NOUN	NN	_	0	root	_	start_char=1350|end_char=1358
+6	14	14	NUM	CD	_	7	nummod	_	start_char=1359|end_char=1361
+7	videos	videos	NOUN	NNS	_	5	conj	_	start_char=1362|end_char=1368
+8	about	about	ADP	IN	_	9	case	_	start_char=1369|end_char=1374
+9	octopuses	octopuses	NOUN	NNS	_	5	conj	_	SpaceAfter=No|start_char=1375|end_char=1384
+10	*	*	PUNCT	"	_	5	punct	_	SpacesAfter=\n\n|start_char=1384|end_char=1385
+
+# text = pls retweet!!! our dog Biscuit went missing near 5th &
+# sent_id = 43
+1	pls	pls	X	FW	_	6	dep	_	start_char=1387|end_char=1390
+2	retweet!!!	retweet!!!	X	FW	_	6	dep	_	start_char=1391|end_char=1401
+3	our	our	PRON	PRP$	_	4	nmod:poss	_	start_char=1402|end_char=1405
+4	dog	dog	NOUN	NN	_	5	compound	_	start_char=1406|end_char=1409
+5	Biscuit	Biscuit	NOUN	NN	_	6	nsubj	_	start_char=1410|end_char=1417
+6	went	went	VERB	VBD	_	0	root	_	start_char=1418|end_char=1422
+7	missing	missing	ADV	RB	_	6	advmod	_	start_char=1423|end_char=1430
+8	near	near	ADP	IN	_	9	case	_	start_char=1431|end_char=1435
+9	5th	5th	PROPN	NNP	_	6	obl	_	start_char=1436|end_char=1439
+10	&	&	PROPN	NNP	_	6	obl	_	start_char=1440|end_char=1441
+
+# text = Main. brown, small, very friendly.
+# sent_id = 44
+1	Main.	Main.	ADJ	JJ	_	2	compound	_	start_char=1442|end_char=1447
+2	brown	brown	ADJ	JJ	_	0	root	_	SpaceAfter=No|start_char=1448|end_char=1453
+3	,	,	PUNCT	,	_	4	punct	_	start_char=1453|end_char=1454
+4	small	small	ADJ	JJ	_	2	conj	_	SpaceAfter=No|start_char=1455|end_char=1460
+5	,	,	PUNCT	,	_	7	punct	_	start_char=1460|end_char=1461
+6	very	very	ADV	RB	_	7	advmod	_	start_char=1462|end_char=1466
+7	friendly.	friendly.	ADJ	JJ	_	2	conj	_	start_char=1467|end_char=1476
+
+# text = call 555-0199
+# sent_id = 45
+1	call	call	VERB	VB	_	0	root	_	start_char=1477|end_char=1481
+2	555-019	555-019	PROPN	NNP	_	1	obj	_	SpaceAfter=No|start_char=1482|end_char=1489
+3	9	9	PROPN	NNP	_	1	xcomp	_	SpacesAfter=\n\n|start_char=1489|end_char=1490
+
+# text = can't stop laughing XD XD
+# sent_id = 46
+1	can't	can't	X	FW	_	2	dep	_	start_char=1492|end_char=1497
+2	stop	stop	VERB	VB	_	0	root	_	start_char=1498|end_char=1502
+3	laughing	laughing	VERB	VBG	_	2	xcomp	_	start_char=1503|end_char=1511
+4	XD	XD	PROPN	NNP	_	5	compound	_	start_char=1512|end_char=1514
+5	XD	XD	PROPN	NNP	_	3	obj	_	SpacesAfter=\n\n|start_char=1515|end_char=1517
+
+# text = Who else remembers dial-up internet??
+# sent_id = 47
+1	Who	Who	PRON	WP	_	3	nsubj	_	start_char=1519|end_char=1522
+2	else	else	ADV	RB	_	3	advmod	_	start_char=1523|end_char=1527
+3	remembers	remembers	VERB	VBZ	_	0	root	_	start_char=1528|end_char=1537
+4	dial-up	dial-up	NOUN	NN	_	5	compound	_	start_char=1538|end_char=1545
+5	internet	internet	NOUN	NN	_	3	obj	_	SpaceAfter=No|start_char=1546|end_char=1554
+6	?	?	PUNCT	.	_	3	punct	_	SpaceAfter=No|start_char=1554|end_char=1555
+7	?	?	PUNCT	.	_	3	punct	_	start_char=1555|end_char=1556
+
+# text = lol
+# sent_id = 48
+1	lol	lol	INTJ	UH	_	0	root	_	SpacesAfter=\n\n|start_char=1557|end_char=1560
+
+# text = gr8 news everyone, the shop reopens tmrw at 1
+# sent_id = 49
+1	gr8	gr8	ADJ	JJ	_	2	amod	_	start_char=1562|end_char=1565
+2	news	news	NOUN	NNS	_	3	compound	_	start_char=1566|end_char=1570
+3	everyone	everyone	NOUN	NN	_	7	nsubj	_	SpaceAfter=No|start_char=1571|end_char=1579
+4	,	,	PUNCT	,	_	3	punct	_	start_char=1579|end_char=1580
+5	the	the	DET	DT	_	6	det	_	start_char=1581|end_char=1584
+6	shop	shop	NOUN	NN	_	7	nsubj	_	start_char=1585|end_char=1589
+7	reopens	reopens	VERB	VBZ	_	0	root	_	start_char=1590|end_char=1597
+8	tmrw	tmrw	X	FW	_	7	obj	_	start_char=1598|end_char=1602
+9	at	at	ADP	IN	_	10	case	_	start_char=1603|end_char=1605
+10	1	1	NUM	CD	_	7	obl	_	SpaceAfter=No|start_char=1606|end_char=1607
+
+# text = 0
+# sent_id = 50
+1	0	0	PUNCT	"	_	0	root	_	SpacesAfter=\n\n|start_char=1607|end_char=1608
+
+# text = ok ok ok ok ok fine
+# sent_id = 51
+1	ok	ok	INTJ	UH	_	0	root	_	start_char=1610|end_char=1612
+2	ok	ok	INTJ	UH	_	1	discourse	_	start_char=1613|end_char=1615
+3	ok	ok	INTJ	UH	_	1	discourse	_	start_char=1616|end_char=1618
+4	ok	ok	INTJ	UH	_	1	discourse	_	start_char=1619|end_char=1621
+5	ok	ok	INTJ	UH	_	1	discourse	_	start_char=1622|end_char=1624
+6	fine	fine	X	FW	_	1	discourse	_	SpacesAfter=\n\n|start_char=1625|end_char=1629
+
+# text = hmm...
+# sent_id = 52
+1	hmm...	hmm...	PUNCT	"	_	0	root	_	start_char=1631|end_char=1637
+
+# text = not sure about this one.
+# sent_id = 53
+1	not	not	PART	RB	_	2	advmod	_	start_char=1638|end_char=1641
+2	sure	sure	ADJ	JJ	_	0	root	_	start_char=1642|end_char=1646
+3	about	about	ADP	IN	_	4	case	_	start_char=1647|end_char=1652
+4	this	this	PRON	DT	_	5	det	_	start_char=1653|end_char=1657
+5	one.	one.	NOUN	NN	_	2	obl	_	start_char=1658|end_char=1662
+
+# text = 3/5 stars
+# sent_id = 54
+1	3/5	3/5	ADJ	JJ	_	2	amod	_	start_char=1663|end_char=1666
+2	stars	stars	NOUN	NNS	_	0	root	_	SpacesAfter=\n\n|start_char=1667|end_char=1672
+
+# text = BREAKING: local man finally finds matching socks.
+# sent_id = 55
+1	BREAKING:	BREAKING:	ADJ	JJ	_	3	amod	_	start_char=1674|end_char=1683
+2	local	local	ADJ	JJ	_	3	amod	_	start_char=1684|end_char=1689
+3	man	man	NOUN	NN	_	5	nsubj	_	start_char=1690|end_char=1693
+4	finally	finally	ADV	RB	_	5	advmod	_	start_char=1694|end_char=1701
+5	finds	finds	VERB	VBZ	_	0	root	_	start_char=1702|end_char=1707
+6	matching	matching	NOUN	NN	_	7	compound	_	start_char=1708|end_char=1716
+7	socks.	socks.	NOUN	NN	_	5	obj	_	start_char=1717|end_char=1723
+
+# text = more at 11
+# sent_id = 56
+1	more	more	ADV	RBR	_	4	advmod	_	start_char=1724|end_char=1728
+2	at	at	ADP	IN	_	4	case	_	start_char=1729|end_char=1731
+3	1	1	NUM	CD	_	4	compound	_	SpaceAfter=No|start_char=1732|end_char=1733
+4	1	1	NUM	CD	_	0	root	_	SpacesAfter=\n\n|start_char=1733|end_char=1734
+
+# text = my cat just knocked my coffee off the table and stared at me while doing it.
+# sent_id = 57
+1	my	my	PRON	PRP$	_	2	nmod:poss	_	start_char=1736|end_char=1738
+2	cat	cat	NOUN	NN	_	4	nsubj	_	start_char=1739|end_char=1742
+3	just	just	ADV	RB	_	4	advmod	_	start_char=1743|end_char=1747
+4	knocked	knocked	VERB	VBD	_	0	root	_	start_char=1748|end_char=1755
+5	my	my	PRON	PRP$	_	6	nmod:poss	_	start_char=1756|end_char=1758
+6	coffee	coffee	NOUN	NN	_	4	obj	_	start_char=1759|end_char=1765
+7	off	off	ADP	RP	_	6	goeswith	_	start_char=1766|end_char=1769
+8	the	the	DET	DT	_	9	det	_	start_char=1770|end_char=1773
+9	table	table	NOUN	NN	_	4	obl	_	start_char=1774|end_char=1779
+10	and	and	CCONJ	CC	_	11	cc	_	start_char=1780|end_char=1783
+11	stared	stared	VERB	VBD	_	4	conj	_	start_char=1784|end_char=1790
+12	at	at	ADP	IN	_	13	case	_	start_char=1791|end_char=1793
+13	me	me	PRON	PRP	_	11	obl	_	start_char=1794|end_char=1796
+14	while	while	SCONJ	IN	_	15	mark	_	start_char=1797|end_char=1802
+15	doing	doing	VERB	VBG	_	11	xcomp	_	start_char=1803|end_char=1808
+16	it	it	PRON	PRP	_	15	obj	_	SpaceAfter=No|start_char=1809|end_char=1811
+17	.	.	PUNCT	.	_	4	punct	_	start_char=1811|end_char=1812
+
+# text = rude.
+# sent_id = 58
+1	rude.	rude.	NOUN	NN	_	0	root	_	SpacesAfter=\n\n|start_char=1813|end_char=1818
+
+# text = so excited for the concert tonight!!!! #livemusic #summer2024
+# sent_id = 59
+1	so	so	ADV	RB	_	2	advmod	_	start_char=1820|end_char=1822
+2	excited	excited	ADJ	JJ	_	0	root	_	start_char=1823|end_char=1830
+3	for	for	ADP	IN	_	6	case	_	start_char=1831|end_char=1834
+4	the	the	DET	DT	_	6	det	_	start_char=1835|end_char=1838
+5	concert	concert	NOUN	NN	_	6	compound	_	start_char=1839|end_char=1846
+6	tonight!!!!	tonight!!!!	NOUN	NN	_	2	obl	_	start_char=1847|end_char=1858
+7	#livemusic	#livemusic	PROPN	NNP	_	6	compound	_	start_char=1859|end_char=1869
+8	#summer202	#summer202	X	FW	_	7	flat:foreign	_	SpaceAfter=No|start_char=1870|end_char=1880
+9	4	4	X	NN	_	7	flat:foreign	_	SpacesAfter=\n\n|start_char=1880|end_char=1881
+
+# text = stop. just stop.
+# sent_id = 60
+1	stop.	stop.	PUNCT	"	_	3	punct	_	start_char=1883|end_char=1888
+2	just	just	ADV	RB	_	3	advmod	_	start_char=1889|end_char=1893
+3	stop	stop	VERB	VB	_	0	root	_	SpaceAfter=No|start_char=1894|end_char=1898
+4	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=1898|end_char=1899
+
+# text = Wow. Just wow.
+# sent_id = 61
+1	Wow.	Wow.	PUNCT	"	_	3	punct	_	start_char=1901|end_char=1905
+2	Just	Just	ADV	RB	_	3	advmod	_	start_char=1906|end_char=1910
+3	wow	wow	VERB	VB	_	0	root	_	SpaceAfter=No|start_char=1911|end_char=1914
+4	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=1914|end_char=1915
+
+# text = ikr??
+# sent_id = 62
+1	ikr	ikr	X	FW	_	0	root	_	SpaceAfter=No|start_char=1917|end_char=1920
+2	?	?	PUNCT	.	_	1	punct	_	SpaceAfter=No|start_char=1920|end_char=1921
+3	?	?	PUNCT	.	_	1	punct	_	start_char=1921|end_char=1922
+
+# text = same here
+# sent_id = 63
+1	same	same	ADJ	JJ	_	2	amod	_	start_char=1923|end_char=1927
+2	her	her	PRON	PRP	_	0	root	_	SpaceAfter=No|start_char=1928|end_char=1931
+3	e	e	NOUN	NN	_	2	dep	_	SpacesAfter=\n\n|start_char=1931|end_char=1932
+
+# text = dm me for details
+# sent_id = 64
+1	dm	dm	VERB	VB	_	0	root	_	start_char=1934|end_char=1936
+2	me	me	PRON	PRP	_	1	obj	_	start_char=1937|end_char=1939
+3	for	for	ADP	IN	_	4	case	_	start_char=1940|end_char=1943
+4	details	details	NOUN	NNS	_	1	obl	_	SpacesAfter=\n\n|start_char=1944|end_char=1951
+
+# text = Yo!! wassup
+# sent_id = 65
+1	Yo!!	Yo!!	PROPN	NNP	_	0	root	_	start_char=1953|end_char=1957
+2	wassup	wassup	X	FW	_	1	flat:foreign	_	SpacesAfter=\n\n|start_char=1958|end_char=1964
+
+# text = hahahahaha no
+# sent_id = 66
+1	hahahahaha	hahahahaha	X	FW	_	0	root	_	start_char=1966|end_char=1976
+2	no	no	INTJ	UH	_	1	flat:foreign	_	SpacesAfter=\n\n|start_char=1977|end_char=1979
+
+# text = TBH I dont even know why I bother anymore
+# sent_id = 67
+1	TBH	TBH	ADV	RB	_	5	advmod	_	start_char=1981|end_char=1984
+2	I	I	PRON	PRP	_	5	nsubj	_	start_char=1985|end_char=1986
+3	dont	dont	AUX	VBP	_	5	aux	_	start_char=1987|end_char=1991
+4	even	even	ADV	RB	_	5	advmod	_	start_char=1992|end_char=1996
+5	know	know	VERB	VB	_	0	root	_	start_char=1997|end_char=2001
+6	why	why	ADV	WRB	_	8	advmod	_	start_char=2002|end_char=2005
+7	I	I	PRON	PRP	_	8	nsubj	_	start_char=2006|end_char=2007
+8	bother	bother	VERB	VBP	_	5	ccomp	_	start_char=2008|end_char=2014
+9	anymor	anymor	NOUN	NN	_	8	obj	_	SpaceAfter=No|start_char=2015|end_char=2021
+10	e	e	ADJ	JJ	_	9	amod	_	SpacesAfter=\n\n|start_char=2021|end_char=2022
+
+# text = #ThrowbackThursday to that time we got lost in Prague for 6 hrs
+# sent_id = 68
+1	#ThrowbackThursday	#ThrowbackThursday	PROPN	NNP	_	7	obl	_	start_char=2024|end_char=2042
+2	to	to	PART	TO	_	4	case	_	start_char=2043|end_char=2045
+3	that	that	DET	DT	_	4	det	_	start_char=2046|end_char=2050
+4	time	time	NOUN	NN	_	7	obl	_	start_char=2051|end_char=2055
+5	we	we	PRON	PRP	_	7	nsubj:pass	_	start_char=2056|end_char=2058
+6	got	got	AUX	VBD	_	7	aux:pass	_	start_char=2059|end_char=2062
+7	lost	lost	VERB	VBN	_	0	root	_	start_char=2063|end_char=2067
+8	in	in	ADP	IN	_	9	case	_	start_char=2068|end_char=2070
+9	Prague	Prague	PROPN	NNP	_	7	obl	_	start_char=2071|end_char=2077
+10	for	for	ADP	IN	_	12	case	_	start_char=2078|end_char=2081
+11	6	6	NUM	CD	_	12	nummod	_	start_char=2082|end_char=2083
+12	hrs	hrs	ADV	RB	_	7	advmod	_	SpacesAfter=\n\n|start_char=2084|end_char=2087
+
+# text = is it just me or is the new update terrible
+# sent_id = 69
+1	is	is	AUX	VBZ	_	4	cop	_	start_char=2089|end_char=2091
+2	it	it	PRON	PRP	_	4	nsubj	_	start_char=2092|end_char=2094
+3	just	just	ADV	RB	_	4	advmod	_	start_char=2095|end_char=2099
+4	me	me	PRON	PRP	_	0	root	_	start_char=2100|end_char=2102
+5	or	or	CCONJ	CC	_	9	cc	_	start_char=2103|end_char=2105
+6	is	is	AUX	VBZ	_	9	cop	_	start_char=2106|end_char=2108
+7	the	the	DET	DT	_	9	det	_	start_char=2109|end_char=2112
+8	new	new	ADJ	JJ	_	9	amod	_	start_char=2113|end_char=2116
+9	update	update	NOUN	NN	_	4	conj	_	start_char=2117|end_char=2123
+10	terrible	terrible	ADJ	JJ	_	4	conj	_	SpacesAfter=\n\n|start_char=2124|end_char=2132
+
+# text = Ppl who don't use turn signals >:(
+# sent_id = 70
+1	Ppl	Ppl	PROPN	NNPS	_	4	nsubj	_	start_char=2134|end_char=2137
+2	who	who	PRON	WP	_	4	nsubj	_	start_char=2138|end_char=2141
+3	don't	don't	ADV	RB	_	4	advmod	_	start_char=2142|end_char=2147
+4	use	use	VERB	VB	_	0	root	_	start_char=2148|end_char=2151
+5	turn	turn	VERB	VB	_	4	xcomp	_	start_char=2152|end_char=2156
+6	signals	signals	NOUN	NNS	_	5	obj	_	start_char=2157|end_char=2164
+7	>:	>:	PUNCT	:	_	4	punct	_	SpaceAfter=No|start_char=2165|end_char=2167
+8	(	(	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=2167|end_char=2168
+
+# text = cooking dinner 4
+# sent_id = 71
+1	cooking	cooking	NOUN	NN	_	2	compound	_	start_char=2170|end_char=2177
+2	dinner	dinner	NOUN	NN	_	0	root	_	start_char=2178|end_char=2184
+3	4	4	NOUN	NN	_	2	punct	_	start_char=2185|end_char=2186
+
+# text = the fam tonite, wish me luck
+# sent_id = 72
+1	the	the	DET	DT	_	3	det	_	start_char=2187|end_char=2190
+2	fam	fam	NOUN	NN	_	3	compound	_	start_char=2191|end_char=2194
+3	tonite	tonite	NOUN	NN	_	5	dislocated	_	SpaceAfter=No|start_char=2195|end_char=2201
+4	,	,	PUNCT	,	_	5	punct	_	start_char=2201|end_char=2202
+5	wish	wish	VERB	VB	_	0	root	_	start_char=2203|end_char=2207
+6	me	me	PRON	PRP	_	5	obj	_	start_char=2208|end_char=2210
+7	luck	luck	NOUN	NN	_	5	obj	_	SpacesAfter=\n\n|start_char=2211|end_char=2215
+
+# text = @sam @alex @priya meeting moved to 3pm fyi
+# sent_id = 73
+1	@sam	@sam	X	FW	_	5	dep	_	start_char=2217|end_char=2221
+2	@alex	@alex	X	FW	_	1	flat:foreign	_	start_char=2222|end_char=2227
+3	@priya	@priya	X	FW	_	1	flat:foreign	_	start_char=2228|end_char=2234
+4	meeting	meeting	NOUN	NN	_	1	flat:foreign	_	start_char=2235|end_char=2242
+5	moved	moved	VERB	VBD	_	0	root	_	start_char=2243|end_char=2248
+6	to	to	PART	TO	_	7	case	_	start_char=2249|end_char=2251
+7	3pm	3pm	PROPN	NNP	_	5	obl	_	start_char=2252|end_char=2255
+8	fyi	fyi	X	FW	_	5	obl	_	SpacesAfter=\n|start_char=2256|end_char=2259
