@@ -228,7 +228,7 @@ The estimates are for this text on this machine. The 8-thread figures are agains
    ([idea](ideas/constituency-push-cell-in-tasks.md)). This parallelizes 64 ms of serial work per call at 8 threads.
    Estimate: 40 to 50 ms (13 to 15% of constituency, 2.5% of the call); nothing at 1 thread.
 5. **Depparse: score each row's padding columns once, and the remaining dot products with SIMD**
-   ([idea](ideas/depparse-arc-padding-columns.md)). 72% of the 156,384 arc pairs are padding columns, whose score is
+   ([round 29](round-29-depparse-padding-columns.md)). 72% of the 156,384 arc pairs are padding columns, whose score is
    the same within a row. Estimate: about 200 ms of depparse's 2.32 s at 1 thread (9%), and 25 to 30 ms at 8 (1.5%).
 6. **Sentiment: vectorize the strided (5, 5) filter across its 8 channels**
    ([idea](ideas/sentiment-strided-filter-simd.md)). Its scalar loops take 157 ms at 1 thread (4.5% of sentiment).
