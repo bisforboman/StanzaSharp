@@ -13,11 +13,12 @@ namespace StanzaSharp.Nn.Managed;
 /// and outputs, as float arrays. The input projection is a table: the input is an embedding, so
 /// emb·W_ihᵀ + b_ih + b_hh is computed once per character of the vocabulary at load.
 /// </summary>
-internal sealed unsafe class ManagedCharLanguageModel
+internal sealed unsafe class ManagedCharLanguageModel : IPerCharLanguageModel
 {
     private const string Start = "\n", End = " ";
 
     private readonly Dictionary<string, int> _vocab;
+    private readonly Dictionary<string, int>.AlternateLookup<ReadOnlySpan<char>> _lookup;
     private readonly int _unkId, _endId;
     private readonly float[] _table; // [vocab, 4H], gates in PackedLstm.GateOrder; pinned
     private readonly PackedMatrix _whh;
@@ -35,6 +36,7 @@ internal sealed unsafe class ManagedCharLanguageModel
         IsForward = ckpt.Root["is_forward_lm"]!.GetValue<bool>();
         HiddenDim = args["char_hidden_dim"]!.GetValue<int>();
         _vocab = Checkpoint.UnitToId(ckpt.Root["vocab"]);
+        _lookup = _vocab.GetAlternateLookup<ReadOnlySpan<char>>();
         _unkId = _vocab["<UNK>"];
         _endId = _vocab[End];
 
@@ -141,18 +143,43 @@ internal sealed unsafe class ManagedCharLanguageModel
     public void Continue(float* h, float* c, IReadOnlyList<IReadOnlyList<string>> sentences, float* output, int ldo, CancellationToken ct = default) =>
         Run(sentences, h, c, output, ldo, ct, null);
 
+    public int Id(ReadOnlySpan<char> unit) => _lookup.TryGetValue(unit, out var id) ? id : _unkId;
+
+    /// <inheritdoc/>
+    public void PerChar(IReadOnlyList<int[]> sequences, int[] firstRow, Span<float> output, int ldo, CancellationToken ct)
+    {
+        var ids = new int[sequences.Count][];
+        var rowAt = new int[sequences.Count][];
+        long needed = 0;
+        for (int i = 0; i < ids.Length; i++)
+        {
+            ids[i] = sequences[i];
+            var rows = rowAt[i] = new int[ids[i].Length];
+            for (int t = 0; t < rows.Length; t++)
+                rows[t] = firstRow[i] + t;
+            if (rows.Length == 0)
+                throw new ArgumentException("A sequence is empty", nameof(sequences));
+            needed = Math.Max(needed, (long)rows[^1] * ldo + HiddenDim);
+        }
+
+        if (output.Length < needed || ldo < HiddenDim)
+            throw new ArgumentException("output is too small", nameof(output));
+        fixed (float* o = output)
+            Recur(ids, rowAt, null, null, o, ldo, ct, null);
+    }
+
     /// <summary>
     /// The packed recurrence. With start states ([sentences, HiddenDim] each) there is no start character: sequence i runs
     /// on from row i of <paramref name="startH"/> and <paramref name="startC"/> instead of (h_init, c_init).
     /// </summary>
     private void Run(IReadOnlyList<IReadOnlyList<string>> sentences, float* startH, float* startC, float* output, int ldo, CancellationToken ct, float* finalC)
     {
-        int n = sentences.Count, h = HiddenDim;
+        int n = sentences.Count;
         var ids = new int[n][];
         var rowAt = new int[n][]; // position → output row, or -1
 
         // Character ids straight from the runes, with no string per character (docs/performance/round-18-depparse-charlm-start-garbage.md).
-        var lookup = _vocab.GetAlternateLookup<ReadOnlySpan<char>>();
+        var lookup = _lookup;
         Span<char> utf16 = stackalloc char[2];
         for (int i = 0, firstRow = 0; i < n; i++)
         {
@@ -187,6 +214,16 @@ internal sealed unsafe class ManagedCharLanguageModel
             firstRow += words.Count;
         }
 
+        Recur(ids, rowAt, startH, startC, output, ldo, ct, finalC);
+    }
+
+    /// <summary>
+    /// The recurrence over sequences of ids (rows with start states as in <see cref="Run"/>): the state after position t of
+    /// sequence i goes to output row <paramref name="rowAt"/>[i][t], or nowhere for -1.
+    /// </summary>
+    private void Recur(int[][] ids, int[][] rowAt, float* startH, float* startC, float* output, int ldo, CancellationToken ct, float* finalC)
+    {
+        int n = ids.Length, h = HiddenDim;
         if (n == 0)
             return;
 
@@ -252,8 +289,6 @@ internal sealed unsafe class ManagedCharLanguageModel
             ArrayPool<float>.Shared.Return(buffers);
         }
     }
-
-    private int Id(string unit) => _vocab.TryGetValue(unit, out var id) ? id : _unkId;
 
     private static int CodePoints(string word)
     {

@@ -329,6 +329,11 @@ The models beyond the packages':
   `atis_nocharlm`, `childes_nocharlm`, `eslspok_nocharlm`, depparse `mimic_nocharlm`; German pos and depparse
   `gsd_nocharlm`, `hdt_nocharlm` (e.g. `Package = "ewt"` with `[Processor.Pos] = "ewt_nocharlm"` and
   `[Processor.Depparse] = "ewt_nocharlm"`).
+- The treebanks' tokenizers and lemmatizers with character language models (they read the charlm's state at every
+  character): English tokenize `combined_charlm`, `ewt_charlm`, `gum_charlm`, `lines_charlm`, `partut_charlm`,
+  `atis_charlm`, `childes_charlm`, `eslspok_charlm` and lemma `ewt_charlm`, `gum_charlm`, `lines_charlm`,
+  `partut_charlm`, `atis_charlm`, `childes_charlm`; German tokenize and lemma `combined_charlm`, `gsd_charlm`,
+  `hdt_charlm`. English lemma `combined_charlm` is not supported (its contextual lemma classifiers are not ported).
 
 Their output is byte-identical to Python Stanza's on both backends. Names are exact, as in Stanza (`ptb3` is not
 `ptb3_charlm`). An unknown, transformer or not yet supported name throws. A model may read other character language

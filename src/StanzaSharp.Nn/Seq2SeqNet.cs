@@ -18,7 +18,10 @@ internal interface ISeq2SeqNet : IDisposable
     /// <param name="beam">The decoder's rows per source row, for <see cref="Seq2SeqConfig.Beam"/>: row k · batch + b is beam k of
     /// source b, all starting from b's encoding (Seq2SeqModel.predict's repeat). As in Stanza, only the first batch rows (beam
     /// 0) see the copy distribution: decode scatters the unrepeated source into the repeated rows.</param>
-    ISeq2SeqDecoder Encode(long[] ids, int batch, int width, long[]? posIds, long[] lengths, CancellationToken ct, int beam = 1);
+    /// <param name="contextual">With <see cref="Seq2SeqConfig.Contextual"/>: [batch, steps, Contextual] more encoder input per
+    /// step (steps = width, + 1 for the UPOS step), appended to the embedding (seq2seq_model.py embed's raw_inputs, the
+    /// lemmatizer's charlm states); else null.</param>
+    ISeq2SeqDecoder Encode(long[] ids, int batch, int width, long[]? posIds, long[] lengths, CancellationToken ct, int beam = 1, float[]? contextual = null);
 }
 
 /// <summary>One batch's decoder state (the per-call state of <see cref="ISeq2SeqNet"/>).</summary>
@@ -45,19 +48,22 @@ internal interface ISeq2SeqDecoder : IDisposable
 /// <param name="PosDim">The UPOS embedding's size; 0 without POS input (MWT).</param>
 /// <param name="Edit">Whether the model has the lemmatizer's 3-way edit classifier.</param>
 /// <param name="Copy">Whether the model has the copy gate (<c>copy</c>; older lemmatizers, English craft, genia and mimic, don't).</param>
-internal readonly record struct Seq2SeqConfig(int Vocab, int PosVocab, int Emb, int PosDim, int Hidden, bool Edit, bool Copy)
+/// <param name="Contextual">The width of the encoder input after the embedding (the <c>_charlm</c> lemmatizers' charlm states,
+/// both charlms' hidden sizes); 0 for none.</param>
+internal readonly record struct Seq2SeqConfig(int Vocab, int PosVocab, int Emb, int PosDim, int Hidden, bool Edit, bool Copy, int Contextual = 0)
 {
     public const int PadId = 0, UnkId = 1, SosId = 2, EosId = 3; // seq2seq_constant.py
 
     /// <summary>Whether a UPOS embedding is the encoder's first step (the lemmatizer).</summary>
     public bool UsesPos => PosDim > 0;
 
-    public static Seq2SeqConfig From(JsonNode config)
+    /// <param name="contextual">See <see cref="Contextual"/>.</param>
+    public static Seq2SeqConfig From(JsonNode config, int contextual = 0)
     {
         bool pos = config["pos"]?.GetValue<bool>() == true && config["pos_dim"]?.GetValue<int>() > 0;
         return new(config["vocab_size"]!.GetValue<int>(), pos ? config["pos_vocab_size"]!.GetValue<int>() : 0, config["emb_dim"]!.GetValue<int>(),
             pos ? config["pos_dim"]!.GetValue<int>() : 0, config["hidden_dim"]!.GetValue<int>(), config["edit"]?.GetValue<bool>() == true,
-            config["copy"]?.GetValue<bool>() == true);
+            config["copy"]?.GetValue<bool>() == true, contextual);
     }
 
     /// <summary>
@@ -285,7 +291,7 @@ internal sealed unsafe class ManagedSeq2SeqNet : ISeq2SeqNet
             throw new NotSupportedException("The managed seq2seq model needs hidden_dim % 4 == 0 and pos_dim == emb_dim");
         _emb = T("embedding.weight");
         _posEmb = c.UsesPos ? T("pos_embedding.weight") : null;
-        _encoder = new ManagedLstm(ckpt, model, "encoder.", c.Emb, h / 2, 1, bidirectional: true);
+        _encoder = new ManagedLstm(ckpt, model, "encoder.", c.Emb + c.Contextual, h / 2, 1, bidirectional: true);
 
         // LSTMCell: gates = [x | h]·[W_ih | W_hh]ᵀ + b_ih + b_hh, rows in PackedLstm.GateOrder for Act.LstmCell.
         var wih = T("decoder.lstm_cell.weight_ih");
@@ -329,8 +335,8 @@ internal sealed unsafe class ManagedSeq2SeqNet : ISeq2SeqNet
             (_edit0, _edit0Bias, _edit2, _edit2Bias) = (T("edit_clf.0.weight"), T("edit_clf.0.bias"), T("edit_clf.2.weight"), T("edit_clf.2.bias"));
     }
 
-    public ISeq2SeqDecoder Encode(long[] ids, int batch, int width, long[]? posIds, long[] lengths, CancellationToken ct, int beam = 1) =>
-        new Decoder(this, ids, batch, width, posIds, lengths, ct, beam);
+    public ISeq2SeqDecoder Encode(long[] ids, int batch, int width, long[]? posIds, long[] lengths, CancellationToken ct, int beam = 1, float[]? contextual = null) =>
+        new Decoder(this, ids, batch, width, posIds, lengths, ct, beam, contextual);
 
     /// <summary>
     /// One batch: the encoder output and the decoder's buffers, rented for the batch and returned on Dispose. The decoder has
@@ -353,7 +359,7 @@ internal sealed unsafe class ManagedSeq2SeqNet : ISeq2SeqNet
         public float[] EditLogits { get; }
         public int Columns { get; }
 
-        public Decoder(ManagedSeq2SeqNet net, long[] ids, int batch, int width, long[]? posIds, long[] lengths, CancellationToken ct, int beam)
+        public Decoder(ManagedSeq2SeqNet net, long[] ids, int batch, int width, long[]? posIds, long[] lengths, CancellationToken ct, int beam, float[]? contextual)
         {
             (_net, _ids, _lengths, _batch, _rows, _width) = (net, ids, lengths, batch, batch * beam, width);
             var c = net._c;
@@ -381,7 +387,10 @@ internal sealed unsafe class ManagedSeq2SeqNet : ISeq2SeqNet
             var start = new int[batchSizes.Length];
             for (int t = 1; t < start.Length; t++)
                 start[t] = start[t - 1] + batchSizes[t - 1];
-            var x = pool.Rent(rows * emb);
+            int ctxDim = c.Contextual, inDim = emb + ctxDim;
+            if ((ctxDim > 0) != (contextual != null))
+                throw new ArgumentException(ctxDim > 0 ? "This model reads contextual input" : "This model reads no contextual input", nameof(contextual));
+            var x = pool.Rent(rows * inDim);
             var y = pool.Rent(rows * h);
             var finalC = pool.Rent(2 * batch * half);
             try
@@ -394,11 +403,12 @@ internal sealed unsafe class ManagedSeq2SeqNet : ISeq2SeqNet
                         var table = t < _first ? net._posEmb! : net._emb;
                         if (t >= _first && id >= c.Vocab)
                             id = Seq2SeqConfig.UnkId;
-                        table.AsSpan((int)id * emb, emb).CopyTo(x.AsSpan((start[t] + r) * emb));
+                        table.AsSpan((int)id * emb, emb).CopyTo(x.AsSpan((start[t] + r) * inDim));
+                        contextual?.AsSpan((r * steps + t) * ctxDim, ctxDim).CopyTo(x.AsSpan((start[t] + r) * inDim + emb));
                     }
                 }
 
-                net._encoder.ForwardPacked(x, emb, batchSizes, y, ct, finalC);
+                net._encoder.ForwardPacked(x, inDim, batchSizes, y, ct, finalC);
                 for (int r = 0; r < batch; r++)
                 {
                     for (int t = 0; t < lengths[r]; t++)

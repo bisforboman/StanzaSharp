@@ -312,7 +312,7 @@ fail the same way before any I/O:
 | **1: API + "as is"** | constituency `ptb3_charlm`; ner `ontonotes_charlm`, `ontonotes_nocharlm`, `combined_charlm`; de ner `conll03` | none (tables, API, tool) | 114 + 345 (incl. fasttextcrawl 123) + 51 = **510** | ~0.4 MB |
 | 2: domain NER + several charlm pairs | ner `i2b2`, `radiology`, `conll03_charlm` (+ glove), the 8 biomedical (+ pubmed) | `NerTagger` flags; several charlms in `Pipeline`/`BackendModels`/`CharlmCache` | 95 + 90 + 469 = **654** | ~0.4 MB + two hand-written domain texts |
 | 3: treebank `_nocharlm` taggers and parsers (**done**, 2026-10-16) | en pos ×7, depparse ×8; de pos ×2, depparse ×2 | none | 965 + 269 = **1,234**, own cache `models-nocharlm` | 0.15 MB (corpus.txt only, owner's decision; 10 rows) |
-| 4 (owner's decision, 2026-10-16: next, without English lemma `combined_charlm`, whose contextual `LemmaClassifier`s stay unported) | tokenizer and lemmatizer `_charlm` (en 15, de 6) | new paths in `ITokenizerNet` and `ISeq2SeqNet` on both backends | 105 + 41 = 146 | ~1 MB |
+| 4: tokenizer and lemmatizer `_charlm` (**done**, 2026-10-16; without English lemma `combined_charlm`, whose contextual `LemmaClassifier`s stay unported) | tokenizer and lemmatizer `_charlm` (en 15, de 6) | new paths in `ITokenizerNet` and `ISeq2SeqNet` on both backends | 105 + 41 = 146 | ~1 MB |
 
 The owner's examples were `ner: i2b2` and `constituency: ptb3`. `ptb3` is `ptb3_charlm` (exact names). `i2b2` belongs to
 PR 2, but can move into PR 1 without the multi-charlm work, if the owner wants it there: it needs only the

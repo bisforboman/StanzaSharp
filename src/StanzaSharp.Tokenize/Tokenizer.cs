@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.Text;
 using System.Text.RegularExpressions;
+using StanzaSharp.Nn;
 using StanzaSharp.Nn.Managed;
 
 namespace StanzaSharp.Tokenize;
@@ -76,12 +77,19 @@ internal sealed partial class Tokenizer : IDisposable
     private readonly int _unkId, _padId, _batchSize, _featDim, _maxSeqLen, _window;
     private readonly string[] _featFuncs;
     private readonly Regex?[] _featRes; // per feature: its structural pattern, or null for a per-unit one
+    private readonly IPerCharLanguageModel? _charlm; // a _charlm model's forward charlm, run over the raw units
+    private readonly int _charlmPad;
 
     /// <param name="net">Builds the network from the checkpoint (a backend's, e.g. <see cref="ManagedTokenizerNet"/>).</param>
-    internal Tokenizer(Checkpoint ckpt, Func<Checkpoint, ITokenizerNet> net)
+    /// <param name="charlm">The forward charlm a <c>_charlm</c> model reads (config <c>charlm</c>); else null.</param>
+    internal Tokenizer(Checkpoint ckpt, Func<Checkpoint, ITokenizerNet> net, IPerCharLanguageModel? charlm = null)
     {
-        _net = net(ckpt);
         var config = ckpt.Root["config"]!;
+        if ((config["charlm"]?.GetValue<bool>() == true) != (charlm != null))
+            throw new ArgumentException(charlm == null ? "This tokenizer reads a forward charlm; none was given" : "This tokenizer reads no charlm", nameof(charlm));
+        _charlm = charlm;
+        _charlmPad = charlm?.Id("<PAD>") ?? 0;
+        _net = net(ckpt);
         _vocab = Checkpoint.UnitToId(ckpt.Root["vocab"]);
         _vocabBySpan = _vocab.GetAlternateLookup<ReadOnlySpan<char>>();
         _unkId = _vocab["<UNK>"];
@@ -110,7 +118,9 @@ internal sealed partial class Tokenizer : IDisposable
     }
 
     /// <summary>Loads <c>basePath.json</c> + <c>basePath.safetensors</c> (or <c>basePath.pt</c>), e.g. <c>models/converted/en/tokenize/combined_nocharlm</c>, on the managed backend.</summary>
-    public static Tokenizer LoadManaged(string basePath) => new(Checkpoint.Load(basePath), ckpt => new ManagedTokenizerNet(ckpt));
+    /// <param name="charlm">The forward charlm of a <c>_charlm</c> model; null for the others.</param>
+    public static Tokenizer LoadManaged(string basePath, ManagedCharLanguageModel? charlm = null) =>
+        new(Checkpoint.Load(basePath), ckpt => new ManagedTokenizerNet(ckpt), charlm);
 
     /// <param name="splitSentences">False is Stanza's <c>tokenize_no_ssplit</c>: each paragraph is one sentence.</param>
     public Document Process(string text, bool splitSentences = true, CancellationToken cancellationToken = default)
@@ -247,9 +257,10 @@ internal sealed partial class Tokenizer : IDisposable
         public required int[] Starts;    // UTF-16 offset of each unit in the original text, where it has the same length
         public bool MayHaveMask;         // contains one of MaskLiterals, so MaskRe may match
 
-        // While its batch runs: rented, the first Length (ids) and Length * featDim (features) elements valid.
+        // While its batch runs: rented, the first Length (ids, charlm ids) and Length * featDim (features) elements valid.
         public long[]? Ids;
         public float[]? Feats;
+        public int[]? CharlmIds; // with a charlm
 
         public int Length => UnitStart.Length - 1;
 
@@ -352,6 +363,13 @@ internal sealed partial class Tokenizer : IDisposable
         var feats = para.Feats = ArrayPool<float>.Shared.Rent(n * _featDim);
         for (int i = 0; i < n; i++)
             ids[i] = _vocabBySpan.TryGetValue(para.Text.AsSpan(para.UnitStart[i], para.UnitStart[i + 1] - para.UnitStart[i]), out int id) ? id : _unkId;
+        if (_charlm != null)
+        {
+            var charIds = para.CharlmIds = ArrayPool<int>.Shared.Rent(n);
+            for (int i = 0; i < n; i++)
+                charIds[i] = _charlm.Id(para.Text.AsSpan(para.UnitStart[i], para.UnitStart[i + 1] - para.UnitStart[i]));
+        }
+
         Features(para, feats.AsSpan(0, n * _featDim));
     }
 
@@ -359,7 +377,9 @@ internal sealed partial class Tokenizer : IDisposable
     {
         ArrayPool<long>.Shared.Return(para.Ids!);
         ArrayPool<float>.Shared.Return(para.Feats!);
-        (para.Ids, para.Feats) = (null, null);
+        if (para.CharlmIds != null)
+            ArrayPool<int>.Shared.Return(para.CharlmIds);
+        (para.Ids, para.Feats, para.CharlmIds) = (null, null, null);
     }
 
     private void Features(Paragraph para, Span<float> feats)
@@ -508,7 +528,36 @@ internal sealed partial class Tokenizer : IDisposable
             Array.Copy(rows[j].Feats!, offsets[j] * _featDim, feats, j * width * _featDim, count * _featDim);
         }
 
-        return _net.Forward(ids, feats, rows.Count, width, lengths.Select(l => (long)l).ToArray(), ct);
+        if (_charlm == null)
+            return _net.Forward(ids, feats, null, rows.Count, width, lengths.Select(l => (long)l).ToArray(), ct);
+
+        // The charlm reads each row's raw units as the model gets them (trainer.predict's text): the units, then <PAD>
+        // units up to the row's length (collate's one, advance_old_batch's fill), each unit a charlm character. Past the
+        // length, zeros (CharacterLanguageModelWordAdapter's padding; the LSTMs never read them).
+        int dim = _charlm.HiddenDim;
+        var sequences = new int[rows.Count][];
+        var firstRow = new int[rows.Count];
+        for (int j = 0; j < rows.Count; j++)
+        {
+            int count = Math.Clamp(rows[j].Length - offsets[j], 0, Math.Min(width, lengths[j]));
+            var seq = sequences[j] = new int[lengths[j]];
+            Array.Copy(rows[j].CharlmIds!, offsets[j], seq, 0, count);
+            seq.AsSpan(count).Fill(_charlmPad);
+            firstRow[j] = j * width;
+        }
+
+        var charlm = ArrayPool<float>.Shared.Rent(rows.Count * width * dim);
+        try
+        {
+            var used = charlm.AsSpan(0, rows.Count * width * dim);
+            used.Clear();
+            _charlm.PerChar(sequences, firstRow, used, dim, ct);
+            return _net.Forward(ids, feats, charlm, rows.Count, width, lengths.Select(l => (long)l).ToArray(), ct);
+        }
+        finally
+        {
+            ArrayPool<float>.Shared.Return(charlm);
+        }
     }
 
     private const int Classes = 5;

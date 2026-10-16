@@ -1,0 +1,974 @@
+[
+ {
+  "word": "Barack",
+  "upos": "PROPN",
+  "seq2seq": "Barack",
+  "edit": 1
+ },
+ {
+  "word": "Obama",
+  "upos": "PROPN",
+  "seq2seq": "Obama",
+  "edit": 1
+ },
+ {
+  "word": "was",
+  "upos": "AUX",
+  "seq2seq": "be",
+  "edit": 0
+ },
+ {
+  "word": "born",
+  "upos": "VERB",
+  "seq2seq": "bear",
+  "edit": 0
+ },
+ {
+  "word": "in",
+  "upos": "ADP",
+  "seq2seq": "in",
+  "edit": 1
+ },
+ {
+  "word": "Hawaii",
+  "upos": "PROPN",
+  "seq2seq": "Hawaii",
+  "edit": 1
+ },
+ {
+  "word": ".",
+  "upos": "PUNCT",
+  "seq2seq": ".",
+  "edit": 1
+ },
+ {
+  "word": "He",
+  "upos": "PRON",
+  "seq2seq": "he",
+  "edit": 2
+ },
+ {
+  "word": "was",
+  "upos": "AUX",
+  "seq2seq": "be",
+  "edit": 0
+ },
+ {
+  "word": "elected",
+  "upos": "VERB",
+  "seq2seq": "elect",
+  "edit": 0
+ },
+ {
+  "word": "president",
+  "upos": "NOUN",
+  "seq2seq": "president",
+  "edit": 1
+ },
+ {
+  "word": "in",
+  "upos": "ADP",
+  "seq2seq": "in",
+  "edit": 1
+ },
+ {
+  "word": "2008",
+  "upos": "NUM",
+  "seq2seq": "2008",
+  "edit": 1
+ },
+ {
+  "word": ".",
+  "upos": "PUNCT",
+  "seq2seq": ".",
+  "edit": 1
+ },
+ {
+  "word": "I",
+  "upos": "PRON",
+  "seq2seq": "I",
+  "edit": 1
+ },
+ {
+  "word": "do",
+  "upos": "AUX",
+  "seq2seq": "do",
+  "edit": 1
+ },
+ {
+  "word": "n't",
+  "upos": "PART",
+  "seq2seq": "not",
+  "edit": 0
+ },
+ {
+  "word": "think",
+  "upos": "VERB",
+  "seq2seq": "think",
+  "edit": 1
+ },
+ {
+  "word": "it",
+  "upos": "PRON",
+  "seq2seq": "it",
+  "edit": 1
+ },
+ {
+  "word": "'s",
+  "upos": "AUX",
+  "seq2seq": "be",
+  "edit": 0
+ },
+ {
+  "word": "going",
+  "upos": "VERB",
+  "seq2seq": "go",
+  "edit": 0
+ },
+ {
+  "word": "to",
+  "upos": "PART",
+  "seq2seq": "to",
+  "edit": 1
+ },
+ {
+  "word": "rain",
+  "upos": "VERB",
+  "seq2seq": "rain",
+  "edit": 1
+ },
+ {
+  "word": "today",
+  "upos": "NOUN",
+  "seq2seq": "today",
+  "edit": 1
+ },
+ {
+  "word": ",",
+  "upos": "PUNCT",
+  "seq2seq": ",",
+  "edit": 1
+ },
+ {
+  "word": "but",
+  "upos": "CCONJ",
+  "seq2seq": "but",
+  "edit": 1
+ },
+ {
+  "word": "we",
+  "upos": "PRON",
+  "seq2seq": "we",
+  "edit": 1
+ },
+ {
+  "word": "'ll",
+  "upos": "AUX",
+  "seq2seq": "will",
+  "edit": 0
+ },
+ {
+  "word": "see",
+  "upos": "VERB",
+  "seq2seq": "see",
+  "edit": 1
+ },
+ {
+  "word": ".",
+  "upos": "PUNCT",
+  "seq2seq": ".",
+  "edit": 1
+ },
+ {
+  "word": "Ca",
+  "upos": "AUX",
+  "seq2seq": "can",
+  "edit": 0
+ },
+ {
+  "word": "n't",
+  "upos": "PART",
+  "seq2seq": "not",
+  "edit": 0
+ },
+ {
+  "word": "you",
+  "upos": "PRON",
+  "seq2seq": "you",
+  "edit": 1
+ },
+ {
+  "word": "hear",
+  "upos": "VERB",
+  "seq2seq": "hear",
+  "edit": 1
+ },
+ {
+  "word": "the",
+  "upos": "DET",
+  "seq2seq": "the",
+  "edit": 1
+ },
+ {
+  "word": "thunder",
+  "upos": "NOUN",
+  "seq2seq": "thunder",
+  "edit": 1
+ },
+ {
+  "word": "?",
+  "upos": "PUNCT",
+  "seq2seq": "?",
+  "edit": 1
+ },
+ {
+  "word": "Dr.",
+  "upos": "NOUN",
+  "seq2seq": "Dr.",
+  "edit": 1
+ },
+ {
+  "word": "Smith",
+  "upos": "PROPN",
+  "seq2seq": "Smith",
+  "edit": 1
+ },
+ {
+  "word": "moved",
+  "upos": "VERB",
+  "seq2seq": "move",
+  "edit": 0
+ },
+ {
+  "word": "to",
+  "upos": "ADP",
+  "seq2seq": "to",
+  "edit": 1
+ },
+ {
+  "word": "the",
+  "upos": "DET",
+  "seq2seq": "the",
+  "edit": 1
+ },
+ {
+  "word": "U.S.",
+  "upos": "PROPN",
+  "seq2seq": "U.S.",
+  "edit": 1
+ },
+ {
+  "word": "in",
+  "upos": "ADP",
+  "seq2seq": "in",
+  "edit": 1
+ },
+ {
+  "word": "Jan",
+  "upos": "PROPN",
+  "seq2seq": "Jan",
+  "edit": 1
+ },
+ {
+  "word": ".",
+  "upos": "PUNCT",
+  "seq2seq": ".",
+  "edit": 1
+ },
+ {
+  "word": "1999",
+  "upos": "NUM",
+  "seq2seq": "1999",
+  "edit": 1
+ },
+ {
+  "word": "and",
+  "upos": "CCONJ",
+  "seq2seq": "and",
+  "edit": 1
+ },
+ {
+  "word": "paid",
+  "upos": "VERB",
+  "seq2seq": "pay",
+  "edit": 0
+ },
+ {
+  "word": "$4.50",
+  "upos": "NUM",
+  "seq2seq": "$4.50",
+  "edit": 1
+ },
+ {
+  "word": "for",
+  "upos": "ADP",
+  "seq2seq": "for",
+  "edit": 1
+ },
+ {
+  "word": "a",
+  "upos": "DET",
+  "seq2seq": "a",
+  "edit": 1
+ },
+ {
+  "word": "cup",
+  "upos": "NOUN",
+  "seq2seq": "cup",
+  "edit": 1
+ },
+ {
+  "word": "of",
+  "upos": "ADP",
+  "seq2seq": "of",
+  "edit": 1
+ },
+ {
+  "word": "coffee",
+  "upos": "NOUN",
+  "seq2seq": "coffee",
+  "edit": 1
+ },
+ {
+  "word": "at",
+  "upos": "ADP",
+  "seq2seq": "at",
+  "edit": 1
+ },
+ {
+  "word": "7:30",
+  "upos": "NUM",
+  "seq2seq": "7:30",
+  "edit": 1
+ },
+ {
+  "word": "a.m.",
+  "upos": "ADV",
+  "seq2seq": "a.m.",
+  "edit": 1
+ },
+ {
+  "word": "\"",
+  "upos": "PUNCT",
+  "seq2seq": "&quot;",
+  "edit": 0
+ },
+ {
+  "word": "Where",
+  "upos": "ADV",
+  "seq2seq": "where",
+  "edit": 2
+ },
+ {
+  "word": "are",
+  "upos": "AUX",
+  "seq2seq": "be",
+  "edit": 0
+ },
+ {
+  "word": "you",
+  "upos": "PRON",
+  "seq2seq": "you",
+  "edit": 1
+ },
+ {
+  "word": "going",
+  "upos": "VERB",
+  "seq2seq": "go",
+  "edit": 0
+ },
+ {
+  "word": "?",
+  "upos": "PUNCT",
+  "seq2seq": "?",
+  "edit": 1
+ },
+ {
+  "word": "\"",
+  "upos": "PUNCT",
+  "seq2seq": "&quot;",
+  "edit": 0
+ },
+ {
+  "word": "she",
+  "upos": "PRON",
+  "seq2seq": "she",
+  "edit": 1
+ },
+ {
+  "word": "asked",
+  "upos": "VERB",
+  "seq2seq": "ask",
+  "edit": 0
+ },
+ {
+  "word": ".",
+  "upos": "PUNCT",
+  "seq2seq": ".",
+  "edit": 1
+ },
+ {
+  "word": "The",
+  "upos": "DET",
+  "seq2seq": "the",
+  "edit": 2
+ },
+ {
+  "word": "children",
+  "upos": "NOUN",
+  "seq2seq": "child",
+  "edit": 0
+ },
+ {
+  "word": "'s",
+  "upos": "PART",
+  "seq2seq": "'s",
+  "edit": 1
+ },
+ {
+  "word": "toys",
+  "upos": "NOUN",
+  "seq2seq": "toy",
+  "edit": 0
+ },
+ {
+  "word": "(",
+  "upos": "PUNCT",
+  "seq2seq": "(",
+  "edit": 1
+ },
+ {
+  "word": "all",
+  "upos": "DET",
+  "seq2seq": "all",
+  "edit": 1
+ },
+ {
+  "word": "23",
+  "upos": "NUM",
+  "seq2seq": "23",
+  "edit": 1
+ },
+ {
+  "word": "of",
+  "upos": "ADP",
+  "seq2seq": "of",
+  "edit": 1
+ },
+ {
+  "word": "them",
+  "upos": "PRON",
+  "seq2seq": "they",
+  "edit": 0
+ },
+ {
+  "word": ")",
+  "upos": "PUNCT",
+  "seq2seq": ")",
+  "edit": 1
+ },
+ {
+  "word": "were",
+  "upos": "AUX",
+  "seq2seq": "be",
+  "edit": 0
+ },
+ {
+  "word": "scattered",
+  "upos": "VERB",
+  "seq2seq": "scatter",
+  "edit": 0
+ },
+ {
+  "word": "across",
+  "upos": "ADP",
+  "seq2seq": "across",
+  "edit": 1
+ },
+ {
+  "word": "the",
+  "upos": "DET",
+  "seq2seq": "the",
+  "edit": 1
+ },
+ {
+  "word": "room",
+  "upos": "NOUN",
+  "seq2seq": "room",
+  "edit": 1
+ },
+ {
+  "word": "!",
+  "upos": "PUNCT",
+  "seq2seq": "!",
+  "edit": 1
+ },
+ {
+  "word": "The",
+  "upos": "DET",
+  "seq2seq": "the",
+  "edit": 2
+ },
+ {
+  "word": "well-known",
+  "upos": "ADJ",
+  "seq2seq": "well-known",
+  "edit": 1
+ },
+ {
+  "word": "author",
+  "upos": "NOUN",
+  "seq2seq": "author",
+  "edit": 1
+ },
+ {
+  "word": ",",
+  "upos": "PUNCT",
+  "seq2seq": ",",
+  "edit": 1
+ },
+ {
+  "word": "who",
+  "upos": "PRON",
+  "seq2seq": "who",
+  "edit": 1
+ },
+ {
+  "word": "had",
+  "upos": "AUX",
+  "seq2seq": "have",
+  "edit": 0
+ },
+ {
+  "word": "written",
+  "upos": "VERB",
+  "seq2seq": "write",
+  "edit": 0
+ },
+ {
+  "word": "e-mails",
+  "upos": "NOUN",
+  "seq2seq": "e-mail",
+  "edit": 0
+ },
+ {
+  "word": "to",
+  "upos": "ADP",
+  "seq2seq": "to",
+  "edit": 1
+ },
+ {
+  "word": "info@example.com",
+  "upos": "NOUN",
+  "seq2seq": "info@exampl.com",
+  "edit": 1
+ },
+ {
+  "word": ",",
+  "upos": "PUNCT",
+  "seq2seq": ",",
+  "edit": 1
+ },
+ {
+  "word": "visited",
+  "upos": "VERB",
+  "seq2seq": "visit",
+  "edit": 0
+ },
+ {
+  "word": "https://www.example.org/about",
+  "upos": "NOUN",
+  "seq2seq": "https://ww..expouet",
+  "edit": 1
+ },
+ {
+  "word": "yesterday",
+  "upos": "NOUN",
+  "seq2seq": "yesterday",
+  "edit": 1
+ },
+ {
+  "word": ".",
+  "upos": "PUNCT",
+  "seq2seq": ".",
+  "edit": 1
+ },
+ {
+  "word": "Mary",
+  "upos": "PROPN",
+  "seq2seq": "Mary",
+  "edit": 1
+ },
+ {
+  "word": "'s",
+  "upos": "PART",
+  "seq2seq": "'s",
+  "edit": 1
+ },
+ {
+  "word": "sister",
+  "upos": "NOUN",
+  "seq2seq": "sister",
+  "edit": 1
+ },
+ {
+  "word": "would",
+  "upos": "AUX",
+  "seq2seq": "would",
+  "edit": 1
+ },
+ {
+  "word": "n't",
+  "upos": "PART",
+  "seq2seq": "not",
+  "edit": 0
+ },
+ {
+  "word": "have",
+  "upos": "AUX",
+  "seq2seq": "have",
+  "edit": 1
+ },
+ {
+  "word": "gone",
+  "upos": "VERB",
+  "seq2seq": "go",
+  "edit": 0
+ },
+ {
+  "word": "if",
+  "upos": "SCONJ",
+  "seq2seq": "if",
+  "edit": 1
+ },
+ {
+  "word": "she",
+  "upos": "PRON",
+  "seq2seq": "she",
+  "edit": 1
+ },
+ {
+  "word": "'d",
+  "upos": "AUX",
+  "seq2seq": "will",
+  "edit": 0
+ },
+ {
+  "word": "known",
+  "upos": "VERB",
+  "seq2seq": "know",
+  "edit": 0
+ },
+ {
+  "word": "that",
+  "upos": "SCONJ",
+  "seq2seq": "that",
+  "edit": 1
+ },
+ {
+  "word": "the",
+  "upos": "DET",
+  "seq2seq": "the",
+  "edit": 1
+ },
+ {
+  "word": "meeting",
+  "upos": "NOUN",
+  "seq2seq": "meeting",
+  "edit": 1
+ },
+ {
+  "word": ",",
+  "upos": "PUNCT",
+  "seq2seq": ",",
+  "edit": 1
+ },
+ {
+  "word": "which",
+  "upos": "PRON",
+  "seq2seq": "which",
+  "edit": 1
+ },
+ {
+  "word": "was",
+  "upos": "AUX",
+  "seq2seq": "be",
+  "edit": 0
+ },
+ {
+  "word": "scheduled",
+  "upos": "VERB",
+  "seq2seq": "schedule",
+  "edit": 0
+ },
+ {
+  "word": "for",
+  "upos": "ADP",
+  "seq2seq": "for",
+  "edit": 1
+ },
+ {
+  "word": "3",
+  "upos": "NUM",
+  "seq2seq": "3",
+  "edit": 1
+ },
+ {
+  "word": "p.m.",
+  "upos": "ADV",
+  "seq2seq": "pm",
+  "edit": 0
+ },
+ {
+  "word": "on",
+  "upos": "ADP",
+  "seq2seq": "on",
+  "edit": 1
+ },
+ {
+  "word": "Friday",
+  "upos": "NOUN",
+  "seq2seq": "Friday",
+  "edit": 1
+ },
+ {
+  "word": ",",
+  "upos": "PUNCT",
+  "seq2seq": ",",
+  "edit": 1
+ },
+ {
+  "word": "had",
+  "upos": "AUX",
+  "seq2seq": "have",
+  "edit": 0
+ },
+ {
+  "word": "been",
+  "upos": "AUX",
+  "seq2seq": "be",
+  "edit": 0
+ },
+ {
+  "word": "cancelled",
+  "upos": "VERB",
+  "seq2seq": "cancell",
+  "edit": 0
+ },
+ {
+  "word": ";",
+  "upos": "PUNCT",
+  "seq2seq": ";",
+  "edit": 1
+ },
+ {
+  "word": "nobody",
+  "upos": "PRON",
+  "seq2seq": "nobody",
+  "edit": 1
+ },
+ {
+  "word": "told",
+  "upos": "VERB",
+  "seq2seq": "tell",
+  "edit": 0
+ },
+ {
+  "word": "her",
+  "upos": "PRON",
+  "seq2seq": "her",
+  "edit": 1
+ },
+ {
+  "word": ".",
+  "upos": "PUNCT",
+  "seq2seq": ".",
+  "edit": 1
+ },
+ {
+  "word": "Wow",
+  "upos": "INTJ",
+  "seq2seq": "wow",
+  "edit": 2
+ },
+ {
+  "word": "...",
+  "upos": "PUNCT",
+  "seq2seq": "...",
+  "edit": 1
+ },
+ {
+  "word": "that",
+  "upos": "PRON",
+  "seq2seq": "that",
+  "edit": 1
+ },
+ {
+  "word": "'s",
+  "upos": "AUX",
+  "seq2seq": "be",
+  "edit": 0
+ },
+ {
+  "word": "amazing",
+  "upos": "ADJ",
+  "seq2seq": "amazing",
+  "edit": 1
+ },
+ {
+  "word": "!",
+  "upos": "PUNCT",
+  "seq2seq": "!",
+  "edit": 1
+ },
+ {
+  "word": "!",
+  "upos": "PUNCT",
+  "seq2seq": "!",
+  "edit": 1
+ },
+ {
+  "word": "saw",
+  "upos": "VERB",
+  "seq2seq": "see",
+  "edit": 0
+ },
+ {
+  "word": "saw",
+  "upos": "NOUN",
+  "seq2seq": "sew",
+  "edit": 1
+ },
+ {
+  "word": "was",
+  "upos": "AUX",
+  "seq2seq": "be",
+  "edit": 0
+ },
+ {
+  "word": "children",
+  "upos": "NOUN",
+  "seq2seq": "child",
+  "edit": 0
+ },
+ {
+  "word": "better",
+  "upos": "ADJ",
+  "seq2seq": "good",
+  "edit": 0
+ },
+ {
+  "word": "Running",
+  "upos": "VERB",
+  "seq2seq": "run",
+  "edit": 0
+ },
+ {
+  "word": "flibbertigibbets",
+  "upos": "NOUN",
+  "seq2seq": "flibbertigibbet",
+  "edit": 0
+ },
+ {
+  "word": "unfriended",
+  "upos": "VERB",
+  "seq2seq": "unfriend",
+  "edit": 0
+ },
+ {
+  "word": "GOOGLING",
+  "upos": "VERB",
+  "seq2seq": "goowlinct",
+  "edit": 0
+ },
+ {
+  "word": "Zoomers",
+  "upos": "PROPN",
+  "seq2seq": "Zoomer",
+  "edit": 0
+ },
+ {
+  "word": "ãntennae",
+  "upos": "NOUN",
+  "seq2seq": "ãntennae",
+  "edit": 1
+ },
+ {
+  "word": "Zürichers",
+  "upos": "PROPN",
+  "seq2seq": "Züricher",
+  "edit": 0
+ },
+ {
+  "word": "naïvely",
+  "upos": "ADV",
+  "seq2seq": "naïvely",
+  "edit": 1
+ },
+ {
+  "word": "東京",
+  "upos": "PROPN",
+  "seq2seq": "東京",
+  "edit": 1
+ },
+ {
+  "word": "𝒳s",
+  "upos": "NOUN",
+  "seq2seq": "'s",
+  "edit": 0
+ },
+ {
+  "word": "😀😀s",
+  "upos": "SYM",
+  "seq2seq": "😀😀s",
+  "edit": 0
+ },
+ {
+  "word": "blorptastically",
+  "upos": "ADV",
+  "seq2seq": "blorptastically",
+  "edit": 1
+ },
+ {
+  "word": "supercalifragilisticexpialidociousnessesqwertyuiopasdfgh",
+  "upos": "NOUN",
+  "seq2seq": "supercalifragtishas",
+  "edit": 1
+ },
+ {
+  "word": "_",
+  "upos": "PUNCT",
+  "seq2seq": "_",
+  "edit": 1
+ },
+ {
+  "word": "<UNK>",
+  "upos": "X",
+  "seq2seq": "bucak",
+  "edit": 0
+ },
+ {
+  "word": "quizzeroos",
+  "upos": "NOUN",
+  "seq2seq": "quizzeroos",
+  "edit": 1
+ },
+ {
+  "word": "Wugs",
+  "upos": "NOUN",
+  "seq2seq": "wug",
+  "edit": 0
+ },
+ {
+  "word": "ÉCOLES",
+  "upos": "NOUN",
+  "seq2seq": "acole",
+  "edit": 2
+ },
+ {
+  "word": "ﬁnalized",
+  "upos": "VERB",
+  "seq2seq": "ﬁnalize",
+  "edit": 0
+ }
+]

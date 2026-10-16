@@ -13,7 +13,7 @@ internal sealed class ManagedTokenizerNet : ITokenizerNet
     private const int Classes = 5;
 
     private readonly float[] _embeddings; // [vocab, emb]
-    private readonly int _emb;
+    private readonly int _emb, _charDim; // _charDim: the charlm's hidden size for a _charlm model, else 0
     private readonly ManagedLstm _rnn, _rnn2;
     private readonly PackedMatrix _clf, _clf2; // rows tok, sent, mwt (without use_mwt: tok, sent)
     private readonly float[] _clfBias;
@@ -32,7 +32,9 @@ internal sealed class ManagedTokenizerNet : ITokenizerNet
         float[] T(string key) => ckpt.Tensor<float>(model[key] ?? throw new KeyNotFoundException($"Checkpoint has no weight '{key}'"));
 
         _embeddings = T("embeddings.weight");
-        _rnn = new ManagedLstm(ckpt, model, "rnn.", _emb + config["feat_dim"]!.GetValue<int>(), hidden,
+        int featDim = config["feat_dim"]!.GetValue<int>();
+        _charDim = (int)ckpt.Shape(model["rnn.weight_ih_l0"])[1] - _emb - featDim;
+        _rnn = new ManagedLstm(ckpt, model, "rnn.", _emb + _charDim + featDim, hidden,
             config["rnn_layers"]!.GetValue<int>(), bidirectional: true);
         _rnn2 = new ManagedLstm(ckpt, model, "rnn2.", 2 * hidden, hidden, 1, bidirectional: true);
         _useMwt = config["use_mwt"]!.GetValue<bool>();
@@ -43,9 +45,11 @@ internal sealed class ManagedTokenizerNet : ITokenizerNet
         _clf2 = new PackedMatrix(heads.SelectMany(h => T(h + "2.weight")).ToArray(), heads.Length, 2 * hidden);
     }
 
-    public float[] Forward(long[] ids, float[] feats, int rows, int width, long[] lengths, CancellationToken ct)
+    public float[] Forward(long[] ids, float[] feats, float[]? charlm, int rows, int width, long[] lengths, CancellationToken ct)
     {
-        int n = rows * width, featDim = feats.Length / n, inDim = _emb + featDim, h2 = _rnn.OutputSize;
+        int n = rows * width, featDim = feats.Length / n, inDim = _emb + _charDim + featDim, h2 = _rnn.OutputSize;
+        if ((_charDim > 0) != (charlm != null))
+            throw new ArgumentException(_charDim > 0 ? "This tokenizer reads charlm states" : "This tokenizer reads no charlm states", nameof(charlm));
         var x = ArrayPool<float>.Shared.Rent(n * inDim);
         var inp = ArrayPool<float>.Shared.Rent(n * h2);
         var inp2 = ArrayPool<float>.Shared.Rent(n * h2);
@@ -57,8 +61,10 @@ internal sealed class ManagedTokenizerNet : ITokenizerNet
         {
             for (int i = 0; i < n; i++)
             {
+                // model.forward: [embedding | charlm | features]
                 _embeddings.AsSpan((int)ids[i] * _emb, _emb).CopyTo(x.AsSpan(i * inDim));
-                feats.AsSpan(i * featDim, featDim).CopyTo(x.AsSpan(i * inDim + _emb));
+                charlm?.AsSpan(i * _charDim, _charDim).CopyTo(x.AsSpan(i * inDim + _emb));
+                feats.AsSpan(i * featDim, featDim).CopyTo(x.AsSpan(i * inDim + _emb + _charDim));
             }
 
             _rnn.ForwardPadded(x, rows, width, lengths, inp, ct);

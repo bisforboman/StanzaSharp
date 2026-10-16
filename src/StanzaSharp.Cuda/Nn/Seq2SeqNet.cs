@@ -13,6 +13,7 @@ internal sealed class Seq2SeqNet : ISeq2SeqNet
 
     private readonly int _vocabSize;
     private readonly bool _usesPos;
+    private readonly int _contextual;
     private readonly Embedding _embedding;
     private readonly Embedding? _posEmbedding;
     private readonly LSTM _encoder;
@@ -27,10 +28,11 @@ internal sealed class Seq2SeqNet : ISeq2SeqNet
         var model = ckpt.Root["model"]!;
         _vocabSize = c.Vocab;
         _usesPos = c.UsesPos;
+        _contextual = c.Contextual;
         _embedding = nn.Embedding(c.Vocab, c.Emb, padding_idx: Seq2SeqConfig.PadId).LoadFrom(ckpt, model, "embedding.");
         if (c.UsesPos)
             _posEmbedding = nn.Embedding(c.PosVocab, c.PosDim, padding_idx: Seq2SeqConfig.PadId).LoadFrom(ckpt, model, "pos_embedding.");
-        _encoder = nn.LSTM(c.Emb, c.Hidden / 2, numLayers: 1, batchFirst: true, bidirectional: true).LoadFrom(ckpt, model, "encoder.");
+        _encoder = nn.LSTM(c.Emb + c.Contextual, c.Hidden / 2, numLayers: 1, batchFirst: true, bidirectional: true).LoadFrom(ckpt, model, "encoder.");
         _decoderCell = nn.LSTMCell(c.Emb, c.Hidden).LoadFrom(ckpt, model, "decoder.lstm_cell.");
         _attnIn = nn.Linear(c.Hidden, c.Hidden, hasBias: false).LoadFrom(ckpt, model, "decoder.attention_layer.linear_in.");
         _attnOut = nn.Linear(c.Hidden * 2, c.Hidden, hasBias: false).LoadFrom(ckpt, model, "decoder.attention_layer.linear_out.");
@@ -45,8 +47,8 @@ internal sealed class Seq2SeqNet : ISeq2SeqNet
             _copyGate = nn.Linear(c.Hidden, 1).LoadFrom(ckpt, model, "copy_gate.");
     }
 
-    public ISeq2SeqDecoder Encode(long[] ids, int batch, int width, long[]? posIds, long[] lengths, CancellationToken ct, int beam = 1) =>
-        new Decoder(this, ids, batch, width, posIds, lengths, beam);
+    public ISeq2SeqDecoder Encode(long[] ids, int batch, int width, long[]? posIds, long[] lengths, CancellationToken ct, int beam = 1, float[]? contextual = null) =>
+        new Decoder(this, ids, batch, width, posIds, lengths, beam, contextual);
 
     /// <summary>The batch's tensors live in one dispose scope, freed with the decoder; each step's temporaries in their own.</summary>
     private sealed class Decoder : ISeq2SeqDecoder
@@ -60,8 +62,10 @@ internal sealed class Seq2SeqNet : ISeq2SeqNet
         public float[] EditLogits { get; } = [];
         public int Columns { get; }
 
-        public Decoder(Seq2SeqNet net, long[] ids, int batch, int width, long[]? posIds, long[] lengths, int beam)
+        public Decoder(Seq2SeqNet net, long[] ids, int batch, int width, long[]? posIds, long[] lengths, int beam, float[]? contextual)
         {
+            if ((net._contextual > 0) != (contextual != null))
+                throw new ArgumentException(net._contextual > 0 ? "This model reads contextual input" : "This model reads no contextual input", nameof(contextual));
             _net = net;
             _batch = batch * beam;
             using var noGrad = torch.no_grad();
@@ -81,6 +85,14 @@ internal sealed class Seq2SeqNet : ISeq2SeqNet
                     var pos = torch.tensor(posIds!, device: device);
                     encInputs = cat([net._posEmbedding!.forward(pos).unsqueeze(1), encInputs], 1);
                     _srcMask = cat([torch.zeros([batch, 1], ScalarType.Bool, device: device), _srcMask], 1);
+                }
+
+                // embed's raw_inputs (the lemmatizer's charlm states), appended per step.
+                if (contextual != null)
+                {
+                    long steps = encInputs.shape[1];
+                    var ctx = torch.tensor(contextual.AsSpan(0, (int)(batch * steps * net._contextual)).ToArray(), [batch, steps, net._contextual], device: device);
+                    encInputs = cat([encInputs, ctx], 2);
                 }
 
                 // encode

@@ -69,8 +69,15 @@ default from 0.5) or through TorchSharp (see "Managed backend").
   3): English `{ewt,gum,lines,partut,atis,childes,eslspok}_nocharlm` pos and depparse, depparse `mimic_nocharlm`
   (mimic pretrain, so the head-constraint repair), German `{gsd,hdt}_nocharlm`; no new code (the `_charlm` twins' legacy
   heads and composite XPOS + `combined_nocharlm`'s character model). Golden rows `pos+depparse=<tb>_nocharlm` on their
-  package (`depparse=mimic_nocharlm` on mimic), corpus.txt only; their own CI cache (`models-nocharlm`, about 1.2 GB,
-  tools/ci-models.sh `en-nocharlm` + `de-nocharlm`). Later (not yet): the `_charlm` tokenizers and lemmatizers.
+  package (`depparse=mimic_nocharlm` on mimic), corpus.txt only; their own CI cache (`models-treebank-choices`, about 1.2 GB,
+  tools/ci-models.sh `en-treebank-choices` + `de-treebank-choices`). The `_charlm` tokenizers and lemmatizers (owner's
+  decision, 2026-10-16, part 4): English tokenize `{combined,ewt,gum,lines,partut,atis,childes,eslspok}_charlm`, lemma
+  `{ewt,gum,lines,partut,atis,childes}_charlm`, German tokenize and lemma `{combined,gsd,hdt}_charlm`; English lemma
+  `combined_charlm` stays unsupported (its contextual `LemmaClassifier`s; the error says so). They read per-character charlm
+  states (`Nn.IPerCharLanguageModel`, "Checkpoint findings (English treebank packages)"); golden rows
+  `tokenize+lemma=<tb>_charlm` (tokenize only for eslspok and `combined`, which also runs `tokenize_stress.txt`), each lemma
+  row with `seq2seq.json` (the model alone on every corpus.txt word, `CharlmLemmatizer_Seq2Seq_MatchesGolden`); the same
+  CI cache; `CharlmInputTests` (per path). Byte for byte on both backends.
 - **Shared dependencies:** `pos`, `constituency`, `depparse`, `ner` and `sentiment` all depend on the
   pretrained word-vector file (pretrain). Every `_charlm` model also depends on the forward and backward
   character LMs (charlm); the `_nocharlm` ones have their own character LSTM (`Nn.CharacterModel`) instead.
@@ -632,6 +639,18 @@ What the English treebank packages' checkpoints add to the default package's pat
   arc + label log-prob wins; at most 5 rounds, exclusions kept). The parser then asks the net for label scores
   (`labelScores`), [size, width, width, relations] per batch. The default package's parsers say false.
 - `SelectModels` requires only the processors the package has (eslspok's pos and depparse need no mwt).
+- **The `_charlm` tokenizers and lemmatizers** (Alternatives; English and German): the `_nocharlm` twin's config and
+  weights plus `CharacterLanguageModelWordAdapter`, whose `per_char_representation` gives the charlm's state after every
+  unit (`Nn.IPerCharLanguageModel.PerChar`, both backends), each sequence from (h_init, c_init) **left to right even for the
+  backward charlm** (no reversal there), packed (padding `" "`), zeros past its length.
+  - tokenize (forward charlm only, `Dependencies`): input `[emb 32 | charlm 1024 | feats]` (English `rnn.weight_ih_l0`
+    [256, 1065], German 1061). The charlm reads trainer.predict's raw units, the normalized `Paragraph` units: per row the
+    units, then charlm `<PAD>` units (id 0) up to the row's packed length (collate's one, advance_old_batch's fill;
+    `Tokenizer.Run`), zeros past it.
+  - lemma (both charlms): encoder input `[emb 50 | forward 1024 | backward 1024]` (2098). Per word the states over
+    `"\n" + word + " "` (the source text: lowercased for caseless atis), n + 2 of them, at encoder steps 0 to n + 1: the
+    UPOS step gets the state after `"\n"`, `<SOS>` the next, and the last step (`<EOS>`) zeros (embed appends its
+    raw_zeros row at the end, not where the UPOS step is). `Seq2SeqConfig.Contextual`, `ISeq2SeqNet.Encode`'s `contextual`.
 - `tests/golden/<package>/` (`make_golden.py --treebank-only [--packages ...]`): corpus + validation (13 files) and
   `mwt.json` where the package has mwt; `combined` is checked against `depparse/` (same models). The tests read the .pt
   files from `Repo.StanzaModels` (`Repo.ModelsFor(lang, package)`); rows skip when a package's files are missing.
@@ -815,9 +834,11 @@ What the English treebank packages' checkpoints add to the default package's pat
     The same cache holds `Pipeline.Alternatives`' English files (explicit paths, 501 MB: ptb3_charlm, the four NER
     models, fasttextcrawl), and models-de-treebanks German ner conll03 (51 MB); their rows (`ModelChoiceTests`) are
     exempt elsewhere the same way.
-  - The treebanks' `_nocharlm` taggers and parsers (owner's decision, 2026-10-16): their own `models-nocharlm-<key>` cache
-    (tools/ci-models.sh `en-nocharlm` + `de-nocharlm`, their files only, explicit paths `nocharlm_paths`; English 965 MB,
-    German 269 MB), so adding them rotated no other key; written by golden-shard 1, restored by 2–3. So that
+  - The treebanks' `_nocharlm` taggers and parsers and `_charlm` tokenizers and lemmatizers (owner's decisions, 2026-10-16):
+    their own `models-treebank-choices-<key>` cache (tools/ci-models.sh `en-treebank-choices` + `de-treebank-choices`, their
+    files only, explicit paths `treebank_choices_paths`; English 965 + 74 MB, German 269 + 41 MB), so adding them rotated no
+    other key; written by golden-shard 1, restored by 2–3. `CharlmInputTests` (ewt's `_charlm` models) is exempt from the
+    no-skip checks elsewhere, like `ModelChoiceTests`. So that
     models-de-treebanks (path `models/stanza/de`) doesn't take the German ones in, shard 1 restores it with
     `actions/cache/restore` and saves it with `actions/cache/save` right after the German download.
   - `cross-os (windows-2025)` / `cross-os (macos-26)` (Apple Silicon; `TorchSharp-cpu` brings

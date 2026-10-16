@@ -740,8 +740,8 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
         var rng = new Random(5);
         var ids = Enumerable.Range(0, lengths.Length * width).Select(_ => (long)rng.Next(vocab)).ToArray();
         var feats = Enumerable.Range(0, lengths.Length * width * 9).Select(_ => rng.Next(4) == 0 ? 1f : 0f).ToArray();
-        var expected = reference.Forward(ids, feats, lengths.Length, width, lengths, default);
-        var actual = With(path, 4, () => managed.Forward(ids, feats, lengths.Length, width, lengths, default));
+        var expected = reference.Forward(ids, feats, null, lengths.Length, width, lengths, default);
+        var actual = With(path, 4, () => managed.Forward(ids, feats, null, lengths.Length, width, lengths, default));
         output.WriteLine($"{path}: max |diff| {TokenizerTests.AssertClose(expected, actual, 1e-4f, path):E2}");
     }
 

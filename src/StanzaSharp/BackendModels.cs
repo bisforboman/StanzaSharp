@@ -42,11 +42,13 @@ internal abstract class BackendModels : IDisposable
     /// </summary>
     public abstract void Charlm(string path, string basePath);
 
-    public abstract Tokenizer Tokenizer(string basePath);
+    /// <param name="charlms">The forward charlm a <c>_charlm</c> tokenizer reads; both null for the others.</param>
+    public abstract Tokenizer Tokenizer(string basePath, Charlms charlms);
 
     public abstract MwtExpander Mwt(string basePath);
 
-    public abstract Lemmatizer Lemma(string basePath);
+    /// <param name="charlms">The charlms a <c>_charlm</c> lemmatizer reads; both null for the others.</param>
+    public abstract Lemmatizer Lemma(string basePath, Charlms charlms);
 
     public abstract PosTagger Pos(string basePath, Pretrain pretrain, Charlms charlms);
 
@@ -110,11 +112,12 @@ internal sealed class ManagedModels : BackendModels
 
     public override void Charlm(string path, string basePath) => Add(_charlms, path, ManagedCharLanguageModel.Load(basePath));
 
-    public override Tokenizer Tokenizer(string basePath) => Tokenize.Tokenizer.LoadManaged(basePath);
+    public override Tokenizer Tokenizer(string basePath, Charlms charlms) => Tokenize.Tokenizer.LoadManaged(basePath, Find(_charlms, charlms.Forward));
 
     public override MwtExpander Mwt(string basePath) => MwtExpander.LoadManaged(basePath);
 
-    public override Lemmatizer Lemma(string basePath) => Lemmatizer.LoadManaged(basePath);
+    public override Lemmatizer Lemma(string basePath, Charlms charlms) =>
+        Lemmatizer.LoadManaged(basePath, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward));
 
     public override PosTagger Pos(string basePath, Pretrain pretrain, Charlms charlms) =>
         PosTagger.LoadManaged(basePath, pretrain, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward));

@@ -1,0 +1,980 @@
+[
+ {
+  "word": "Angela",
+  "upos": "PROPN",
+  "seq2seq": "Angela",
+  "edit": 1
+ },
+ {
+  "word": "Merkel",
+  "upos": "PROPN",
+  "seq2seq": "Merkel",
+  "edit": 1
+ },
+ {
+  "word": "wurde",
+  "upos": "AUX",
+  "seq2seq": "werden",
+  "edit": 0
+ },
+ {
+  "word": "in",
+  "upos": "ADP",
+  "seq2seq": "in",
+  "edit": 1
+ },
+ {
+  "word": "Hamburg",
+  "upos": "PROPN",
+  "seq2seq": "Hamburg",
+  "edit": 1
+ },
+ {
+  "word": "geboren",
+  "upos": "VERB",
+  "seq2seq": "gebären",
+  "edit": 0
+ },
+ {
+  "word": ".",
+  "upos": "PUNCT",
+  "seq2seq": ".",
+  "edit": 1
+ },
+ {
+  "word": "Sie",
+  "upos": "PRON",
+  "seq2seq": "sie",
+  "edit": 2
+ },
+ {
+  "word": "war",
+  "upos": "AUX",
+  "seq2seq": "sein",
+  "edit": 0
+ },
+ {
+  "word": "von",
+  "upos": "ADP",
+  "seq2seq": "von",
+  "edit": 1
+ },
+ {
+  "word": "2005",
+  "upos": "NUM",
+  "seq2seq": "2005",
+  "edit": 1
+ },
+ {
+  "word": "bis",
+  "upos": "ADP",
+  "seq2seq": "bis",
+  "edit": 1
+ },
+ {
+  "word": "2021",
+  "upos": "NUM",
+  "seq2seq": "2021",
+  "edit": 1
+ },
+ {
+  "word": "Bundeskanzlerin",
+  "upos": "NOUN",
+  "seq2seq": "Bundeskanzlerin",
+  "edit": 1
+ },
+ {
+  "word": ".",
+  "upos": "PUNCT",
+  "seq2seq": ".",
+  "edit": 1
+ },
+ {
+  "word": "Ich",
+  "upos": "PRON",
+  "seq2seq": "ich",
+  "edit": 2
+ },
+ {
+  "word": "glaube",
+  "upos": "VERB",
+  "seq2seq": "glauben",
+  "edit": 0
+ },
+ {
+  "word": "nicht",
+  "upos": "PART",
+  "seq2seq": "nicht",
+  "edit": 1
+ },
+ {
+  "word": ",",
+  "upos": "PUNCT",
+  "seq2seq": ",",
+  "edit": 1
+ },
+ {
+  "word": "dass",
+  "upos": "SCONJ",
+  "seq2seq": "dass",
+  "edit": 1
+ },
+ {
+  "word": "es",
+  "upos": "PRON",
+  "seq2seq": "es",
+  "edit": 1
+ },
+ {
+  "word": "heute",
+  "upos": "ADV",
+  "seq2seq": "heute",
+  "edit": 1
+ },
+ {
+  "word": "regnet",
+  "upos": "VERB",
+  "seq2seq": "regnen",
+  "edit": 0
+ },
+ {
+  "word": ",",
+  "upos": "PUNCT",
+  "seq2seq": ",",
+  "edit": 1
+ },
+ {
+  "word": "aber",
+  "upos": "CCONJ",
+  "seq2seq": "aber",
+  "edit": 1
+ },
+ {
+  "word": "wir",
+  "upos": "PRON",
+  "seq2seq": "wir",
+  "edit": 1
+ },
+ {
+  "word": "werden",
+  "upos": "AUX",
+  "seq2seq": "werden",
+  "edit": 1
+ },
+ {
+  "word": "sehen",
+  "upos": "VERB",
+  "seq2seq": "sehen",
+  "edit": 1
+ },
+ {
+  "word": ".",
+  "upos": "PUNCT",
+  "seq2seq": ".",
+  "edit": 1
+ },
+ {
+  "word": "Hörst",
+  "upos": "VERB",
+  "seq2seq": "hören",
+  "edit": 0
+ },
+ {
+  "word": "du",
+  "upos": "PRON",
+  "seq2seq": "du",
+  "edit": 1
+ },
+ {
+  "word": "den",
+  "upos": "DET",
+  "seq2seq": "der",
+  "edit": 0
+ },
+ {
+  "word": "Donner",
+  "upos": "NOUN",
+  "seq2seq": "Donner",
+  "edit": 1
+ },
+ {
+  "word": "nicht",
+  "upos": "PART",
+  "seq2seq": "nicht",
+  "edit": 1
+ },
+ {
+  "word": "?",
+  "upos": "PUNCT",
+  "seq2seq": "?",
+  "edit": 1
+ },
+ {
+  "word": "Dr.",
+  "upos": "NOUN",
+  "seq2seq": "Dr.",
+  "edit": 1
+ },
+ {
+  "word": "Müller",
+  "upos": "PROPN",
+  "seq2seq": "Müller",
+  "edit": 1
+ },
+ {
+  "word": "zog",
+  "upos": "VERB",
+  "seq2seq": "ziehen",
+  "edit": 0
+ },
+ {
+  "word": "in",
+  "upos": "ADP",
+  "seq2seq": "in",
+  "edit": 1
+ },
+ {
+  "word": "dem",
+  "upos": "DET",
+  "seq2seq": "der",
+  "edit": 0
+ },
+ {
+  "word": "Jan",
+  "upos": "PROPN",
+  "seq2seq": "Jan",
+  "edit": 1
+ },
+ {
+  "word": ".",
+  "upos": "PUNCT",
+  "seq2seq": ".",
+  "edit": 1
+ },
+ {
+  "word": "1999",
+  "upos": "NUM",
+  "seq2seq": "1999",
+  "edit": 1
+ },
+ {
+  "word": "nach",
+  "upos": "ADP",
+  "seq2seq": "nach",
+  "edit": 1
+ },
+ {
+  "word": "Berlin",
+  "upos": "PROPN",
+  "seq2seq": "Berlin",
+  "edit": 1
+ },
+ {
+  "word": "und",
+  "upos": "CCONJ",
+  "seq2seq": "und",
+  "edit": 1
+ },
+ {
+  "word": "zahlte",
+  "upos": "VERB",
+  "seq2seq": "zahlen",
+  "edit": 0
+ },
+ {
+  "word": "4,50",
+  "upos": "NUM",
+  "seq2seq": "4,50",
+  "edit": 1
+ },
+ {
+  "word": "€",
+  "upos": "NOUN",
+  "seq2seq": "€",
+  "edit": 1
+ },
+ {
+  "word": "für",
+  "upos": "ADP",
+  "seq2seq": "für",
+  "edit": 1
+ },
+ {
+  "word": "einen",
+  "upos": "DET",
+  "seq2seq": "ein",
+  "edit": 0
+ },
+ {
+  "word": "Kaffee",
+  "upos": "NOUN",
+  "seq2seq": "Kaffee",
+  "edit": 1
+ },
+ {
+  "word": "um",
+  "upos": "ADP",
+  "seq2seq": "um",
+  "edit": 1
+ },
+ {
+  "word": "7:30",
+  "upos": "NUM",
+  "seq2seq": "7:30",
+  "edit": 1
+ },
+ {
+  "word": "Uhr",
+  "upos": "NOUN",
+  "seq2seq": "Uhr",
+  "edit": 1
+ },
+ {
+  "word": ".",
+  "upos": "PUNCT",
+  "seq2seq": ".",
+  "edit": 1
+ },
+ {
+  "word": "„",
+  "upos": "PUNCT",
+  "seq2seq": "\"",
+  "edit": 0
+ },
+ {
+  "word": "Wohin",
+  "upos": "ADV",
+  "seq2seq": "wohin",
+  "edit": 2
+ },
+ {
+  "word": "gehst",
+  "upos": "VERB",
+  "seq2seq": "gehen",
+  "edit": 0
+ },
+ {
+  "word": "du",
+  "upos": "PRON",
+  "seq2seq": "du",
+  "edit": 1
+ },
+ {
+  "word": "?",
+  "upos": "PUNCT",
+  "seq2seq": "?",
+  "edit": 1
+ },
+ {
+  "word": "“",
+  "upos": "PUNCT",
+  "seq2seq": "\"",
+  "edit": 0
+ },
+ {
+  "word": ",",
+  "upos": "PUNCT",
+  "seq2seq": ",",
+  "edit": 1
+ },
+ {
+  "word": "fragte",
+  "upos": "VERB",
+  "seq2seq": "fragen",
+  "edit": 0
+ },
+ {
+  "word": "sie",
+  "upos": "PRON",
+  "seq2seq": "sie",
+  "edit": 1
+ },
+ {
+  "word": ".",
+  "upos": "PUNCT",
+  "seq2seq": ".",
+  "edit": 1
+ },
+ {
+  "word": "Die",
+  "upos": "DET",
+  "seq2seq": "der",
+  "edit": 0
+ },
+ {
+  "word": "Spielsachen",
+  "upos": "NOUN",
+  "seq2seq": "Spielsache",
+  "edit": 0
+ },
+ {
+  "word": "der",
+  "upos": "DET",
+  "seq2seq": "der",
+  "edit": 1
+ },
+ {
+  "word": "Kinder",
+  "upos": "NOUN",
+  "seq2seq": "Kind",
+  "edit": 0
+ },
+ {
+  "word": "(",
+  "upos": "PUNCT",
+  "seq2seq": "(",
+  "edit": 1
+ },
+ {
+  "word": "alle",
+  "upos": "DET",
+  "seq2seq": "alle",
+  "edit": 1
+ },
+ {
+  "word": "23",
+  "upos": "NUM",
+  "seq2seq": "23",
+  "edit": 1
+ },
+ {
+  "word": "Stück",
+  "upos": "NOUN",
+  "seq2seq": "Stück",
+  "edit": 1
+ },
+ {
+  "word": ")",
+  "upos": "PUNCT",
+  "seq2seq": ")",
+  "edit": 1
+ },
+ {
+  "word": "lagen",
+  "upos": "VERB",
+  "seq2seq": "liegen",
+  "edit": 0
+ },
+ {
+  "word": "in",
+  "upos": "ADP",
+  "seq2seq": "in",
+  "edit": 1
+ },
+ {
+  "word": "dem",
+  "upos": "DET",
+  "seq2seq": "der",
+  "edit": 0
+ },
+ {
+  "word": "ganzen",
+  "upos": "ADJ",
+  "seq2seq": "ganz",
+  "edit": 0
+ },
+ {
+  "word": "Zimmer",
+  "upos": "NOUN",
+  "seq2seq": "Zimmer",
+  "edit": 1
+ },
+ {
+  "word": "verstreut",
+  "upos": "ADJ",
+  "seq2seq": "verstreut",
+  "edit": 1
+ },
+ {
+  "word": "!",
+  "upos": "PUNCT",
+  "seq2seq": "!",
+  "edit": 1
+ },
+ {
+  "word": "Der",
+  "upos": "DET",
+  "seq2seq": "der",
+  "edit": 2
+ },
+ {
+  "word": "bekannte",
+  "upos": "ADJ",
+  "seq2seq": "bekannt",
+  "edit": 0
+ },
+ {
+  "word": "Autor",
+  "upos": "NOUN",
+  "seq2seq": "Autor",
+  "edit": 1
+ },
+ {
+  "word": ",",
+  "upos": "PUNCT",
+  "seq2seq": ",",
+  "edit": 1
+ },
+ {
+  "word": "der",
+  "upos": "PRON",
+  "seq2seq": "der",
+  "edit": 1
+ },
+ {
+  "word": "E",
+  "upos": "NOUN",
+  "seq2seq": "E",
+  "edit": 1
+ },
+ {
+  "word": "-",
+  "upos": "PUNCT",
+  "seq2seq": "-",
+  "edit": 1
+ },
+ {
+  "word": "Mails",
+  "upos": "NOUN",
+  "seq2seq": "Mail",
+  "edit": 1
+ },
+ {
+  "word": "an",
+  "upos": "ADP",
+  "seq2seq": "an",
+  "edit": 1
+ },
+ {
+  "word": "info@beispiel.de",
+  "upos": "PROPN",
+  "seq2seq": "info@beispiel.de",
+  "edit": 1
+ },
+ {
+  "word": "geschrieben",
+  "upos": "VERB",
+  "seq2seq": "schreiben",
+  "edit": 0
+ },
+ {
+  "word": "hatte",
+  "upos": "AUX",
+  "seq2seq": "haben",
+  "edit": 0
+ },
+ {
+  "word": ",",
+  "upos": "PUNCT",
+  "seq2seq": ",",
+  "edit": 1
+ },
+ {
+  "word": "besuchte",
+  "upos": "VERB",
+  "seq2seq": "besuchen",
+  "edit": 0
+ },
+ {
+  "word": "gestern",
+  "upos": "ADV",
+  "seq2seq": "gestern",
+  "edit": 1
+ },
+ {
+  "word": "https://www.beispiel.de/ueber-uns.",
+  "upos": "X",
+  "seq2seq": "alpild",
+  "edit": 0
+ },
+ {
+  "word": "Marias",
+  "upos": "PROPN",
+  "seq2seq": "Maria",
+  "edit": 0
+ },
+ {
+  "word": "Schwester",
+  "upos": "NOUN",
+  "seq2seq": "Schwester",
+  "edit": 1
+ },
+ {
+  "word": "wäre",
+  "upos": "AUX",
+  "seq2seq": "sein",
+  "edit": 0
+ },
+ {
+  "word": "nicht",
+  "upos": "PART",
+  "seq2seq": "nicht",
+  "edit": 1
+ },
+ {
+  "word": "zu",
+  "upos": "ADP",
+  "seq2seq": "zu",
+  "edit": 1
+ },
+ {
+  "word": "dem",
+  "upos": "DET",
+  "seq2seq": "der",
+  "edit": 0
+ },
+ {
+  "word": "Treffen",
+  "upos": "NOUN",
+  "seq2seq": "Treffen",
+  "edit": 1
+ },
+ {
+  "word": "gegangen",
+  "upos": "VERB",
+  "seq2seq": "gehen",
+  "edit": 0
+ },
+ {
+  "word": ",",
+  "upos": "PUNCT",
+  "seq2seq": ",",
+  "edit": 1
+ },
+ {
+  "word": "wenn",
+  "upos": "SCONJ",
+  "seq2seq": "wenn",
+  "edit": 1
+ },
+ {
+  "word": "sie",
+  "upos": "PRON",
+  "seq2seq": "sie",
+  "edit": 1
+ },
+ {
+  "word": "gewusst",
+  "upos": "VERB",
+  "seq2seq": "wissen",
+  "edit": 0
+ },
+ {
+  "word": "hätte",
+  "upos": "AUX",
+  "seq2seq": "haben",
+  "edit": 0
+ },
+ {
+  "word": ",",
+  "upos": "PUNCT",
+  "seq2seq": ",",
+  "edit": 1
+ },
+ {
+  "word": "dass",
+  "upos": "SCONJ",
+  "seq2seq": "dass",
+  "edit": 1
+ },
+ {
+  "word": "es",
+  "upos": "PRON",
+  "seq2seq": "es",
+  "edit": 1
+ },
+ {
+  "word": "an",
+  "upos": "ADP",
+  "seq2seq": "an",
+  "edit": 1
+ },
+ {
+  "word": "dem",
+  "upos": "DET",
+  "seq2seq": "der",
+  "edit": 0
+ },
+ {
+  "word": "Freitag",
+  "upos": "NOUN",
+  "seq2seq": "Freitag",
+  "edit": 1
+ },
+ {
+  "word": "um",
+  "upos": "ADP",
+  "seq2seq": "um",
+  "edit": 1
+ },
+ {
+  "word": "15",
+  "upos": "NUM",
+  "seq2seq": "15",
+  "edit": 1
+ },
+ {
+  "word": "Uhr",
+  "upos": "NOUN",
+  "seq2seq": "Uhr",
+  "edit": 1
+ },
+ {
+  "word": "abgesagt",
+  "upos": "VERB",
+  "seq2seq": "absagen",
+  "edit": 0
+ },
+ {
+  "word": "worden",
+  "upos": "AUX",
+  "seq2seq": "werden",
+  "edit": 0
+ },
+ {
+  "word": "war",
+  "upos": "AUX",
+  "seq2seq": "sein",
+  "edit": 0
+ },
+ {
+  "word": ";",
+  "upos": "PUNCT",
+  "seq2seq": ";",
+  "edit": 1
+ },
+ {
+  "word": "niemand",
+  "upos": "PRON",
+  "seq2seq": "niemand",
+  "edit": 1
+ },
+ {
+  "word": "sagte",
+  "upos": "VERB",
+  "seq2seq": "sagen",
+  "edit": 0
+ },
+ {
+  "word": "es",
+  "upos": "PRON",
+  "seq2seq": "es",
+  "edit": 1
+ },
+ {
+  "word": "ihr",
+  "upos": "PRON",
+  "seq2seq": "sie",
+  "edit": 0
+ },
+ {
+  "word": ".",
+  "upos": "PUNCT",
+  "seq2seq": ".",
+  "edit": 1
+ },
+ {
+  "word": "Wow...",
+  "upos": "PUNCT",
+  "seq2seq": "mom...",
+  "edit": 2
+ },
+ {
+  "word": "das",
+  "upos": "PRON",
+  "seq2seq": "der",
+  "edit": 0
+ },
+ {
+  "word": "ist",
+  "upos": "AUX",
+  "seq2seq": "sein",
+  "edit": 0
+ },
+ {
+  "word": "ja",
+  "upos": "ADV",
+  "seq2seq": "ja",
+  "edit": 1
+ },
+ {
+  "word": "großartig",
+  "upos": "ADJ",
+  "seq2seq": "großartig",
+  "edit": 1
+ },
+ {
+  "word": "!",
+  "upos": "PUNCT",
+  "seq2seq": "!",
+  "edit": 1
+ },
+ {
+  "word": "!",
+  "upos": "PUNCT",
+  "seq2seq": "!",
+  "edit": 1
+ },
+ {
+  "word": "ging",
+  "upos": "VERB",
+  "seq2seq": "gehen",
+  "edit": 0
+ },
+ {
+  "word": "ging",
+  "upos": "NOUN",
+  "seq2seq": "gehen",
+  "edit": 0
+ },
+ {
+  "word": "war",
+  "upos": "AUX",
+  "seq2seq": "sein",
+  "edit": 0
+ },
+ {
+  "word": "Kinder",
+  "upos": "NOUN",
+  "seq2seq": "Kind",
+  "edit": 0
+ },
+ {
+  "word": "besser",
+  "upos": "ADJ",
+  "seq2seq": "gut",
+  "edit": 0
+ },
+ {
+  "word": "Häuser",
+  "upos": "NOUN",
+  "seq2seq": "Haus",
+  "edit": 0
+ },
+ {
+  "word": "Straßen",
+  "upos": "NOUN",
+  "seq2seq": "Straße",
+  "edit": 0
+ },
+ {
+  "word": "STRASSEN",
+  "upos": "NOUN",
+  "seq2seq": "Sinau",
+  "edit": 1
+ },
+ {
+  "word": "Fußballweltmeisterschaften",
+  "upos": "NOUN",
+  "seq2seq": "Fußballweltmeisterschaft",
+  "edit": 0
+ },
+ {
+  "word": "googelte",
+  "upos": "VERB",
+  "seq2seq": "googeln",
+  "edit": 0
+ },
+ {
+  "word": "gefrühstückt",
+  "upos": "VERB",
+  "seq2seq": "frühstücken",
+  "edit": 0
+ },
+ {
+  "word": "zerfledderten",
+  "upos": "ADJ",
+  "seq2seq": "zerfleddert",
+  "edit": 0
+ },
+ {
+  "word": "Müllers",
+  "upos": "PROPN",
+  "seq2seq": "Müllers",
+  "edit": 1
+ },
+ {
+  "word": "Zürichs",
+  "upos": "PROPN",
+  "seq2seq": "Zürich",
+  "edit": 0
+ },
+ {
+  "word": "naïven",
+  "upos": "ADJ",
+  "seq2seq": "naïven",
+  "edit": 1
+ },
+ {
+  "word": "東京",
+  "upos": "PROPN",
+  "seq2seq": "w'",
+  "edit": 0
+ },
+ {
+  "word": "𝒳e",
+  "upos": "NOUN",
+  "seq2seq": "𝒳e",
+  "edit": 1
+ },
+ {
+  "word": "😀😀s",
+  "upos": "SYM",
+  "seq2seq": "😀😀s",
+  "edit": 1
+ },
+ {
+  "word": "schönsten",
+  "upos": "ADJ",
+  "seq2seq": "schön",
+  "edit": 0
+ },
+ {
+  "word": "Rindfleischetikettierungsüberwachungsaufgabenübertragungsgesetzes",
+  "upos": "NOUN",
+  "seq2seq": "Rindfleischetikettierungsüberwachgabenübertragungs",
+  "edit": 0
+ },
+ {
+  "word": "_",
+  "upos": "PUNCT",
+  "seq2seq": "_",
+  "edit": 1
+ },
+ {
+  "word": "<UNK>",
+  "upos": "X",
+  "seq2seq": "<ung",
+  "edit": 0
+ },
+ {
+  "word": "Schmetterlingen",
+  "upos": "NOUN",
+  "seq2seq": "Schmetterling",
+  "edit": 0
+ },
+ {
+  "word": "ÄRZTE",
+  "upos": "NOUN",
+  "seq2seq": "Ärr",
+  "edit": 0
+ },
+ {
+  "word": "ﬁnanzierte",
+  "upos": "VERB",
+  "seq2seq": "ﬁnanzieren",
+  "edit": 0
+ },
+ {
+  "word": "Bäume",
+  "upos": "NOUN",
+  "seq2seq": "Bäum",
+  "edit": 0
+ },
+ {
+  "word": "GROẞE",
+  "upos": "ADJ",
+  "seq2seq": "droẞ",
+  "edit": 0
+ }
+]
