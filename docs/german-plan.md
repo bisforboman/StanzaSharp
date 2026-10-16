@@ -1,5 +1,9 @@
 # German (`de`): research and plan
 
+Since done (2026-10-16): measured on real text in [german-divergence.md](german-divergence.md) (UD GSD and HDT: no
+output differs among Stanza, TorchSharp and managed) and benchmarked in
+[round 33](performance/round-33-german-benchmark.md).
+
 Research only (2026-10-13): nothing in `src/`, `tests/` or the workflows has changed yet. Stanza 1.15.0's German
 models are in `models/stanza/de` (gitignored), from `stanza.download('de', model_dir=r'models\stanza')` and
 again with `package='default_fast'`. The configs were dumped with `tools/stanza_convert.py inspect` and diffed

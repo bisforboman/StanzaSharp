@@ -90,6 +90,8 @@ internal static class ConstituencyDivergence
             var doc = nlp.Process(texts[n]);
             seconds += clock.Elapsed.TotalSeconds;
             var conllu = Conllu.Write(doc);
+            if (n % 100 == 0)
+                Console.Error.WriteLine($"{n}/{texts.Count} documents");
             if (parser == null)
             {
                 docs.Add(new { conllu });
@@ -115,8 +117,6 @@ internal static class ConstituencyDivergence
                 trees = strings,
                 steps,
             });
-            if (n % 100 == 0)
-                Console.Error.WriteLine($"{n}/{texts.Count} documents");
         }
 
         var meta = new
