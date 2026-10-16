@@ -209,7 +209,8 @@ class Stanza:
     def __call__(self, text):
         try:
             with self.torch.no_grad():
-                return {"conllu": "{:C}\n".format(self.nlp(text))}
+                conllu = "{:C}".format(self.nlp(text))
+                return {"conllu": conllu + "\n" if conllu else ""}  # as compare.py: "" without sentences
         except Exception as e:  # noqa: BLE001 - Stanza's failures are results here
             return {"error": f"{type(e).__name__}: {e}"}
 
