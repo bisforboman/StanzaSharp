@@ -803,7 +803,7 @@ What the English treebank packages' checkpoints add to the default package's pat
     lines, no network) per group; the downloads on a miss are `tools/ci-models.sh download GROUP`, and the treebank
     cache's paths are the group's file list. A new model goes into a group line there, nowhere else in ci.yml.
   - English treebank packages (owner's decision, 2026-10-15): one `models-en-treebanks-<hash>` cache
-    of only their own `.pt` files (the en-treebanks group's files that models-en lacks, about 2.2 GB),
+    of only their own `.pt` files (the en-treebanks group's files that models-en lacks, about 2.8 GB with the domain NER models),
     restored into models/stanza/en next to the default package's, written by golden-shard 1 and restored by shards 2–3, downloaded with
     the CLI (`download models/stanza/en --package ...`) on a miss. So that models-en doesn't take them in, shard 1 restores
     models-en with `actions/cache/restore` and saves it with `actions/cache/save` right after the convert step, before the
