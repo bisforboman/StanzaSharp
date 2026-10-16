@@ -22,6 +22,7 @@ SETTINGS = [
     ('fast loop', {}),
     ('parallel', {'STANZASHARP_PACK': 'parallel'}),
     ('dict reader', {'STANZASHARP_DICT': 'reader'}),
+    ('prefetch', {'STANZASHARP_PREFETCH': '1'}),
     ('cache read', {'STANZASHARP_PACK_CACHE': '{cache}'}),
     ('cache map', {'STANZASHARP_PACK_CACHE': '{cache}', 'STANZASHARP_PACK_CACHE_MODE': 'map'}),
     ('cache map, no GC', {'STANZASHARP_PACK_CACHE': '{cache}', 'STANZASHARP_PACK_CACHE_MODE': 'map', 'STANZASHARP_HIT_NO_GC': '1'}),
@@ -72,7 +73,7 @@ def main():
         res.setdefault(('cache miss (writes)', cname), []).append(r)
         print('miss', cname, {k: r[k] for k in KEYS}, file=sys.stderr, flush=True)
     for i in range(a.rounds):
-        for s in settings:
+        for s in settings[i % len(settings):] + settings[:i % len(settings)]:  # rotated: no setting always first
             for cname, models, extra in configs:
                 r = run(a.build, models, extra, env_of(s, cname), a.cold)
                 res.setdefault((s[0], cname), []).append(r)
@@ -98,7 +99,7 @@ def main():
                   f"| {v['Pack']:,.0f} | {v['Prep']:,.0f} | {v['Gc']:,.0f} | {v['CacheRead']:,.0f} | {v['CacheWrite']:,.0f} "
                   f"| {other:,.0f} | {', '.join(hs)} |")
     print()
-    print(f'{a.rounds} processes per setting and config, alternating; medians; thread ms are summed over the load lanes. '
+    print(f'{a.rounds} processes per setting and config, alternating (the order rotated each round); medians; thread ms are summed over the load lanes. '
           + ('Cold: the OS file cache dropped before each process. ' if a.cold else 'Warm OS file cache. ')
           + ('The CoNLL-U was identical within each config.' if all(len(h) == 1 for h in hashes.values())
              else '**The CoNLL-U differed between settings.**'))

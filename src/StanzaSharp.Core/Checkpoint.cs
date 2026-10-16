@@ -36,6 +36,8 @@ internal sealed class Checkpoint
     {
         using var _ = LoadProfile.Measure(LoadProfile.Stage.Parse);
         var pt = basePath.EndsWith(".pt", StringComparison.OrdinalIgnoreCase) ? basePath : basePath + ".pt";
+        if (Prefetch)
+            StartPrefetch(File.Exists(basePath + ".safetensors") ? basePath + ".safetensors" : pt);
         if (pt == basePath || (!File.Exists(basePath + ".json") && File.Exists(pt)))
         {
             var (root, tensors) = TorchCheckpoint.Load(pt);
@@ -58,6 +60,26 @@ internal sealed class Checkpoint
         }
 
         return new Checkpoint(json, SafeTensorFile.Load(basePath + ".safetensors"));
+    }
+
+    private static readonly bool Prefetch = Environment.GetEnvironmentVariable("STANZASHARP_PREFETCH") != null;
+
+    /// <summary>Round 34 prototype: reads the file once, front to back, on the thread pool, so the OS cache holds it
+    /// before the tensor reads (in model order, not file order) ask for it.</summary>
+    private static void StartPrefetch(string path)
+    {
+        if (!File.Exists(path))
+            return;
+        Task.Run(() =>
+        {
+            using var file = File.OpenHandle(path, options: FileOptions.SequentialScan);
+            var buffer = ArrayPool<byte>.Shared.Rent(4 << 20);
+            for (long offset = 0, n; (n = RandomAccess.Read(file, buffer, offset)) > 0; offset += n)
+            {
+            }
+
+            ArrayPool<byte>.Shared.Return(buffer);
+        });
     }
 
     /// <summary>Reads the tensor a <c>$tensor</c> node in the JSON points to.</summary>
