@@ -256,6 +256,9 @@ public sealed class Pipeline : IDisposable
     private readonly BackendModels _models;
     private readonly CharlmCacheOptions _cacheOptions;
     private readonly bool _splitSentences, _trimNativeHeap, _depparseReadsCache, _identityLemma;
+
+    // Each processor's forward charlm (Dependencies), or none: a call's CharlmCache serves the tagger's pair only.
+    private readonly Dictionary<string, string?> _charlmOf = [];
     private readonly ILogger? _logger;
     private readonly SemaphoreSlim? _gate;
 
@@ -315,24 +318,27 @@ public sealed class Pipeline : IDisposable
             }
         }
 
-        object Charlm(string path, bool forward)
-        {
-            backend.Charlm(Path.Combine(modelDir, path), forward);
-            return path;
-        }
-
-        // Every pretrain the models read (German NER has its own), and one pair of charlms.
+        // Every pretrain the models read (German NER has its own), and every charlm (each pair once: default's 1billion,
+        // and mimic's for ner i2b2).
         var shared = SharedModels(models, options.Language);
-        string? forwardPath = shared.SingleOrDefault(p => p.StartsWith("forward_charlm/", StringComparison.Ordinal));
-        string? backwardPath = shared.SingleOrDefault(p => p.StartsWith("backward_charlm/", StringComparison.Ordinal));
         var pretrains = shared.Where(p => p.StartsWith("pretrain/", StringComparison.Ordinal))
             .ToDictionary(p => p, p => Start(p, () => backend.Pretrain(Path.Combine(modelDir, p))));
-        var forward = forwardPath != null ? Start(forwardPath, () => Charlm(forwardPath, forward: true)) : null;
-        var backward = backwardPath != null ? Start(backwardPath, () => Charlm(backwardPath, forward: false)) : null;
+        var charlms = shared.Where(p => !p.StartsWith("pretrain/", StringComparison.Ordinal))
+            .Select(p => Start(p, () =>
+            {
+                backend.Charlm(p, Path.Combine(modelDir, p));
+                return p;
+            }))
+            .ToList();
 
-        // The pretrain a processor's model reads (Dependencies), once loaded.
-        Pretrain PretrainOf(string processor) =>
-            pretrains[Dependencies[options.Language][Name(processor)].Single(p => p.StartsWith("pretrain/", StringComparison.Ordinal))].Result;
+        // The pretrain and the charlms a processor's model reads (Dependencies), once loaded.
+        string[] DependenciesOf(string processor) => Dependencies[options.Language].GetValueOrDefault(Name(processor), []);
+        Pretrain PretrainOf(string processor) => pretrains[DependenciesOf(processor).Single(p => p.StartsWith("pretrain/", StringComparison.Ordinal))].Result;
+        Charlms CharlmsOf(string processor) => new(
+            DependenciesOf(processor).SingleOrDefault(p => p.StartsWith("forward_charlm/", StringComparison.Ordinal)),
+            DependenciesOf(processor).SingleOrDefault(p => p.StartsWith("backward_charlm/", StringComparison.Ordinal)));
+        foreach (var processor in models.Keys)
+            _charlmOf[processor] = CharlmsOf(processor).Forward;
 
         var tokenizer = Start(Name("tokenize"), () => backend.Tokenizer(Model("tokenize")));
         var mwt = models.ContainsKey("mwt") ? Start(Name("mwt"), () => backend.Mwt(Model("mwt"))) : null;
@@ -340,15 +346,21 @@ public sealed class Pipeline : IDisposable
         var lemma = models.ContainsKey("lemma") && !_identityLemma ? Start(Name("lemma"), () => backend.Lemma(Model("lemma"))) : null;
         try
         {
-            forward?.GetAwaiter().GetResult();
-            backward?.GetAwaiter().GetResult();
+            foreach (var c in charlms)
+                c.GetAwaiter().GetResult();
             foreach (var p in pretrains.Values)
                 p.GetAwaiter().GetResult();
-            var pos = models.ContainsKey("pos") ? Start(Name("pos"), () => backend.Pos(Model("pos"), PretrainOf("pos"))) : null;
-            var depparse = models.ContainsKey("depparse") ? Start(Name("depparse"), () => backend.Depparse(Model("depparse"), PretrainOf("depparse"))) : null;
-            var ner = models.ContainsKey("ner") ? Start(Name("ner"), () => backend.Ner(Model("ner"), PretrainOf("ner"))) : null;
-            var parser = models.ContainsKey("constituency") ? Start(Name("constituency"), () => backend.Constituency(Model("constituency"), PretrainOf("constituency"))) : null;
-            var sentiment = models.ContainsKey("sentiment") ? Start(Name("sentiment"), () => backend.Sentiment(Model("sentiment"), PretrainOf("sentiment"))) : null;
+            var pos = models.ContainsKey("pos") ? Start(Name("pos"), () => backend.Pos(Model("pos"), PretrainOf("pos"), CharlmsOf("pos"))) : null;
+            var depparse = models.ContainsKey("depparse")
+                ? Start(Name("depparse"), () => backend.Depparse(Model("depparse"), PretrainOf("depparse"), CharlmsOf("depparse")))
+                : null;
+            var ner = models.ContainsKey("ner") ? Start(Name("ner"), () => backend.Ner(Model("ner"), PretrainOf("ner"), CharlmsOf("ner"))) : null;
+            var parser = models.ContainsKey("constituency")
+                ? Start(Name("constituency"), () => backend.Constituency(Model("constituency"), PretrainOf("constituency"), CharlmsOf("constituency")))
+                : null;
+            var sentiment = models.ContainsKey("sentiment")
+                ? Start(Name("sentiment"), () => backend.Sentiment(Model("sentiment"), PretrainOf("sentiment"), CharlmsOf("sentiment")))
+                : null;
             Task.WaitAll(started);
             _tokenizer = tokenizer.Result;
             _mwt = mwt?.Result;
@@ -514,9 +526,7 @@ public sealed class Pipeline : IDisposable
             }
         }
 
-        var selected = set.ToDictionary(p => p, p => models[p]);
-        CheckOneCharlmPair(selected, language!, paramName);
-        return selected;
+        return set.ToDictionary(p => p, p => models[p]);
     }
 
     /// <summary>
@@ -568,23 +578,6 @@ public sealed class Pipeline : IDisposable
             return tokenize;
         var stem = tokenize.EndsWith("_nocharlm", StringComparison.Ordinal) || tokenize.EndsWith("_charlm", StringComparison.Ordinal) ? tokenize[..tokenize.LastIndexOf('_')] : null;
         return stem != null && mwt.Contains(stem) ? stem : null;
-    }
-
-    /// <summary>A pipeline loads one pair of charlms: throws if <paramref name="models"/> read two (e.g. 1billion and mimic).</summary>
-    private static void CheckOneCharlmPair(Dictionary<string, string> models, string language, string paramName)
-    {
-        var readers = models
-            .Select(m => (Model: $"{m.Key} {m.Value}", Charlm: Dependencies[language].GetValueOrDefault($"{m.Key}/{m.Value}", [])
-                .FirstOrDefault(d => d.StartsWith("forward_charlm/", StringComparison.Ordinal))))
-            .Where(m => m.Charlm != null)
-            .GroupBy(m => m.Charlm!["forward_charlm/".Length..])
-            .ToList();
-        if (readers.Count > 1)
-        {
-            throw new ArgumentException("These models read different character language models, and a pipeline loads only one pair: "
-                + string.Join("; ", readers.Select(g => $"{g.Key}: {string.Join(", ", g.Select(m => m.Model))}"))
-                + ". Choose models that share one (e.g. Package = \"mimic\" for ner i2b2), or leave out processors with Processors.", paramName);
-        }
     }
 
     /// <summary>
@@ -815,9 +808,13 @@ public sealed class Pipeline : IDisposable
             Step("mwt", () => _mwt.Process(doc), ct); // one batch, and only for the words the dictionary lacks
 
         // NER, the parser and the sentiment classifier reuse the tagger's charlm outputs instead of computing them again.
-        // A _nocharlm tagger (default_fast) has no charlm outputs to share.
-        using var charlms = _pos is { UsesCharlm: true } && (_ner != null || _parser != null || _sentiment != null || (_depparse != null && _depparseReadsCache))
+        // A _nocharlm tagger (default_fast) has no charlm outputs to share. The cache holds the tagger's pair only: a
+        // processor reading another pair (ner i2b2's mimic next to default's 1billion) gets none, so nothing crosses pairs.
+        string? tagger = _pos is { UsesCharlm: true } ? _charlmOf["pos"] : null;
+        bool Shares(string processor) => tagger != null && _charlmOf.GetValueOrDefault(processor) == tagger;
+        using var charlms = tagger != null && (Shares("ner") || Shares("constituency") || Shares("sentiment") || (Shares("depparse") && _depparseReadsCache))
             && _cacheOptions.IsEnabled ? new CharlmCache(_cacheOptions.MaxWords) : null;
+        CharlmCache? CacheFor(string processor) => Shares(processor) ? charlms : null;
         if (_pos != null)
             Step("pos", () => _pos.Process(doc, charlms, ct), ct);
         if (_lemma != null)
@@ -827,16 +824,16 @@ public sealed class Pipeline : IDisposable
 
         // Stanza's order (PIPELINE_NAMES). Only the CoNLL-U comment order shows it, and Conllu.Write fixes that.
         if (_parser != null)
-            Step("constituency", () => _parser.Process(doc, charlms, ct), ct);
+            Step("constituency", () => _parser.Process(doc, CacheFor("constituency"), ct), ct);
 
         // Depparse runs the charlms with a ROOT word in front, so of the tagger's outputs only the backward ones apply, with
         // ROOT run on from the tagger's final state (managed; DependencyParser.Process).
         if (_depparse != null)
-            Step("depparse", () => _depparse.Process(doc, charlms, ct), ct);
+            Step("depparse", () => _depparse.Process(doc, CacheFor("depparse"), ct), ct);
         if (_sentiment != null)
-            Step("sentiment", () => _sentiment.Process(doc, charlms, ct), ct);
+            Step("sentiment", () => _sentiment.Process(doc, CacheFor("sentiment"), ct), ct);
         if (_ner != null)
-            Step("ner", () => _ner.Process(doc, charlms, ct), ct);
+            Step("ner", () => _ner.Process(doc, CacheFor("ner"), ct), ct);
         return doc;
     }
 

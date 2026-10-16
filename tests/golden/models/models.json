@@ -63,5 +63,18 @@
    "validation.txt",
    "models/clinical.txt"
   ]
+ },
+ {
+  "name": "default+ner=i2b2",
+  "package": "default",
+  "processors": "tokenize,mwt,pos,lemma,constituency,depparse,sentiment,ner",
+  "models": {
+   "ner": "i2b2"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "models/clinical.txt"
+  ]
  }
 ]

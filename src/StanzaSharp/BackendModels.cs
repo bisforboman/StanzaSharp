@@ -36,8 +36,11 @@ internal abstract class BackendModels : IDisposable
 
     public abstract Pretrain Pretrain(string basePath);
 
-    /// <summary>Loads a charlm the processors below then read; the forward one first.</summary>
-    public abstract void Charlm(string basePath, bool forward);
+    /// <summary>
+    /// Loads the charlm at <paramref name="basePath"/> as <paramref name="path"/> (e.g. <c>forward_charlm/1billion</c>), the
+    /// name a processor's <see cref="Charlms"/> give: a pipeline loads every charlm its models read (Pipeline.Dependencies).
+    /// </summary>
+    public abstract void Charlm(string path, string basePath);
 
     public abstract Tokenizer Tokenizer(string basePath);
 
@@ -45,15 +48,31 @@ internal abstract class BackendModels : IDisposable
 
     public abstract Lemmatizer Lemma(string basePath);
 
-    public abstract PosTagger Pos(string basePath, Pretrain pretrain);
+    public abstract PosTagger Pos(string basePath, Pretrain pretrain, Charlms charlms);
 
-    public abstract DependencyParser Depparse(string basePath, Pretrain pretrain);
+    public abstract DependencyParser Depparse(string basePath, Pretrain pretrain, Charlms charlms);
 
-    public abstract NerTagger Ner(string basePath, Pretrain pretrain);
+    public abstract NerTagger Ner(string basePath, Pretrain pretrain, Charlms charlms);
 
-    public abstract ConstituencyParser Constituency(string basePath, Pretrain pretrain);
+    public abstract ConstituencyParser Constituency(string basePath, Pretrain pretrain, Charlms charlms);
 
-    public abstract SentimentClassifier Sentiment(string basePath, Pretrain pretrain);
+    public abstract SentimentClassifier Sentiment(string basePath, Pretrain pretrain, Charlms charlms);
+
+    /// <summary>The charlm loaded as <paramref name="path"/> into <paramref name="loaded"/>, or null for none.</summary>
+    protected static T? Find<T>(Dictionary<string, T> loaded, string? path) where T : class
+    {
+        if (path == null)
+            return null;
+        lock (loaded)
+            return loaded.TryGetValue(path, out var charlm) ? charlm : throw new InvalidOperationException($"Charlm {path} was not loaded");
+    }
+
+    /// <summary>Adds a loaded charlm (the managed models load in parallel).</summary>
+    protected static void Add<T>(Dictionary<string, T> loaded, string path, T charlm)
+    {
+        lock (loaded)
+            loaded.Add(path, charlm);
+    }
 
     /// <summary>Frees the charlms.</summary>
     public virtual void Dispose()
@@ -67,7 +86,7 @@ internal abstract class BackendModels : IDisposable
 /// </summary>
 internal sealed class ManagedModels : BackendModels
 {
-    private ManagedCharLanguageModel? _forward, _backward;
+    private readonly Dictionary<string, ManagedCharLanguageModel> _charlms = [];
 
     public override void Configure(PipelineOptions options)
     {
@@ -89,14 +108,7 @@ internal sealed class ManagedModels : BackendModels
 
     public override Pretrain Pretrain(string basePath) => Nn.Pretrain.LoadManaged(basePath);
 
-    public override void Charlm(string basePath, bool forward)
-    {
-        var charlm = ManagedCharLanguageModel.Load(basePath);
-        if (forward)
-            _forward = charlm;
-        else
-            _backward = charlm;
-    }
+    public override void Charlm(string path, string basePath) => Add(_charlms, path, ManagedCharLanguageModel.Load(basePath));
 
     public override Tokenizer Tokenizer(string basePath) => Tokenize.Tokenizer.LoadManaged(basePath);
 
@@ -104,13 +116,24 @@ internal sealed class ManagedModels : BackendModels
 
     public override Lemmatizer Lemma(string basePath) => Lemmatizer.LoadManaged(basePath);
 
-    public override PosTagger Pos(string basePath, Pretrain pretrain) => PosTagger.LoadManaged(basePath, pretrain, _forward, _backward);
+    public override PosTagger Pos(string basePath, Pretrain pretrain, Charlms charlms) =>
+        PosTagger.LoadManaged(basePath, pretrain, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward));
 
-    public override DependencyParser Depparse(string basePath, Pretrain pretrain) => DependencyParser.LoadManaged(basePath, pretrain, _forward, _backward);
+    public override DependencyParser Depparse(string basePath, Pretrain pretrain, Charlms charlms) =>
+        DependencyParser.LoadManaged(basePath, pretrain, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward));
 
-    public override NerTagger Ner(string basePath, Pretrain pretrain) => NerTagger.LoadManaged(basePath, pretrain, _forward, _backward);
+    public override NerTagger Ner(string basePath, Pretrain pretrain, Charlms charlms) =>
+        NerTagger.LoadManaged(basePath, pretrain, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward));
 
-    public override ConstituencyParser Constituency(string basePath, Pretrain pretrain) => ConstituencyParser.LoadManaged(basePath, pretrain, _forward!, _backward!);
+    public override ConstituencyParser Constituency(string basePath, Pretrain pretrain, Charlms charlms) =>
+        ConstituencyParser.LoadManaged(basePath, pretrain, Find(_charlms, charlms.Forward)!, Find(_charlms, charlms.Backward)!);
 
-    public override SentimentClassifier Sentiment(string basePath, Pretrain pretrain) => SentimentClassifier.LoadManaged(basePath, pretrain, _forward!, _backward!);
+    public override SentimentClassifier Sentiment(string basePath, Pretrain pretrain, Charlms charlms) =>
+        SentimentClassifier.LoadManaged(basePath, pretrain, Find(_charlms, charlms.Forward)!, Find(_charlms, charlms.Backward)!);
 }
+
+/// <summary>
+/// The pair of charlms a processor's model reads, by their Pipeline.Dependencies names (e.g. <c>forward_charlm/1billion</c>);
+/// both null for a model that reads none (<c>_nocharlm</c>).
+/// </summary>
+internal readonly record struct Charlms(string? Forward, string? Backward);

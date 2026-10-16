@@ -223,6 +223,8 @@ MODEL_CHOICES = {
         ("ner=combined_charlm", "default", "tokenize,mwt,ner", {"ner": "combined_charlm"}),
         # with the mimic package, whose tagger reads the same (mimic) charlms as i2b2
         ("ner=i2b2", "mimic", "tokenize,pos,lemma,depparse,ner", {"ner": "i2b2"}),
+        # with the default package: two charlm pairs in one pipeline (1billion, and mimic for ner)
+        ("default+ner=i2b2", "default", PROCESSORS, {"ner": "i2b2"}),
     ],
     "de": [
         ("ner=conll03", "default", "tokenize,mwt,ner", {"ner": "conll03"}),
@@ -230,16 +232,21 @@ MODEL_CHOICES = {
 }
 
 
-def write_models_golden(models, out):
+def write_models_golden(models, out, only=None):
     """
-    models/<name>/ for each of MODEL_CHOICES: Stanza with processors={p: model, other p: package} (package None) on
-    corpus.txt (as corpus.conllu), validation.txt and models/*.txt; models/models.json lists the choices for the tests.
+    models/<name>/ for each of MODEL_CHOICES (or only those named in `only`): Stanza with processors={p: model, other p:
+    package} (package None) on corpus.txt (as corpus.conllu), validation.txt and models/*.txt; models/models.json lists
+    every choice for the tests.
     """
     folder = out / "models"
     folder.mkdir(exist_ok=True)
     texts = [out / "corpus.txt", out / "validation.txt"] + sorted(folder.glob("*.txt"))
     index = []
     for name, package, processors, chosen in MODEL_CHOICES[LANG]:
+        index.append({"name": name, "package": package, "processors": processors, "models": chosen,
+                      "texts": [path.relative_to(out).as_posix() for path in texts]})
+        if only and name not in only:
+            continue
         spec = {p: chosen.get(p, package) for p in processors.split(",")}
         nlp = stanza.Pipeline(LANG, dir=models, package=None, processors=spec, download_method=None, use_gpu=False,
                               logging_level="WARN")
@@ -251,15 +258,12 @@ def write_models_golden(models, out):
         assert loaded == chosen, (name, loaded)
         target = folder / name
         target.mkdir(exist_ok=True)
-        files = []
         for path in texts:
             with torch.no_grad():
                 doc = nlp(path.read_bytes().decode("utf-8"))
             stem = "corpus" if path.name == "corpus.txt" else path.stem
             (target / f"{stem}.conllu").write_text("{:C}\n".format(doc), encoding="utf-8", newline="\n")
-            files.append(path.relative_to(out).as_posix())
             print(f"models/{name}/{stem}.conllu: {len(doc.sentences)} sentences, {len(doc.ents)} entities")
-        index.append({"name": name, "package": package, "processors": processors, "models": chosen, "texts": files})
     with open(folder / "models.json", "w", encoding="utf-8", newline="\n") as f:
         json.dump(index, f, indent=1, ensure_ascii=False)
         f.write("\n")
@@ -993,6 +997,7 @@ def main():
     p.add_argument("--treebank-only", action="store_true", help="only regenerate the treebank packages' folders (ewt/, ..., de/gsd/, de/hdt/)")
     p.add_argument("--packages", default=None, help="with --treebank-only: only these treebank packages (comma-separated)")
     p.add_argument("--models-only", action="store_true", help="only regenerate models/ (MODEL_CHOICES: single models chosen per processor)")
+    p.add_argument("--choices", default=None, help="with --models-only: only these MODEL_CHOICES names (comma-separated)")
     args = p.parse_args()
     LANG = args.lang
     out = Path(args.out or ("tests/golden" if LANG == "en" else f"tests/golden/{LANG}"))
@@ -1011,7 +1016,7 @@ def main():
         write_treebank_golden(args.models, out, args.packages and args.packages.split(","))
         return
     if args.models_only:
-        write_models_golden(args.models, out)
+        write_models_golden(args.models, out, args.choices and args.choices.split(","))
         return
     if args.json_only:
         write_json_golden(args.models, out)

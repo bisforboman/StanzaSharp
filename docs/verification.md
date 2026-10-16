@@ -66,7 +66,9 @@ processors dict). The texts are `corpus.txt`, `validation.txt` and a hand-writte
 
 - English constituency `ptb3_charlm` (tokenize, mwt, pos, constituency);
 - English ner `ontonotes_charlm`, `ontonotes_nocharlm` and `combined_charlm` (tokenize, mwt, ner);
-- English ner `i2b2` on the `mimic` package (tokenize, pos, lemma, depparse, ner; also with the charlm cache off);
+- English ner `i2b2` on the `mimic` package (tokenize, pos, lemma, depparse, ner; also with the charlm cache off),
+  and on the default package (all eight processors), where the pipeline loads two pairs of character language models
+  (1billion, and mimic for ner): also with the cache off, and one-sentence calls against the uncached pipeline;
 - German ner `conll03` (on German's `corpus.txt` and `validation.txt`).
 
 They exercise what the packages don't: a second pretrain next to conll17 (fastText crawl, 300-dimensional), a tag
