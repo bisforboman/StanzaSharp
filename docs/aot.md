@@ -55,7 +55,8 @@ VS 2022 C++ workload (as on GitHub's `windows-2025` runner) links directly. The 
 such a toolchain once (see Decisions).
 
 linux-x64 AOT needs clang (or gcc) and zlib on Linux; this machine has no Linux toolchain (WSL has only Docker Desktop's
-distribution, and Docker was stopped), so linux-x64 was not tried. Nothing found below is Windows-specific.
+distribution, and Docker was stopped), so linux-x64 was not tried here. CI tried it since (PR #136, golden shard 1 on ubuntu-26.04, whose image already has
+clang and zlib1g-dev): AOT and trimmed both publish with no warning and reproduce both English packages byte for byte.
 
 ## Warnings
 
@@ -202,4 +203,6 @@ in the publish output or any torch/c10/libgomp file in the published folder, and
 - `cross-os (windows-2025)` shard 3 (win-x64): full runs only, like the package checks there. The runner's VS 2022 has
   the C++ linker, so no stub.
 
-Locally the Windows half took 107 s per publish and 35 s (AOT) / 71 s (trimmed) to run, on a machine at 100% CPU.
+Time: 47 s in golden shard 1 (AOT publish 22 s, run 5 s; trimmed publish 14 s, run 6 s; no apt-get needed). Locally
+on Windows each publish took 107 s and the runs 35 s / 71 s, on a machine at 100% CPU; the windows-2025 step's time shows
+on main's first full run.
