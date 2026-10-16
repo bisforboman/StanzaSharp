@@ -45,27 +45,33 @@ bug at a different place.
 
 ## Results (2026-10-16)
 
-| Language, package | Processors | Texts | Characters | Differences |
-|---|---|---|---|---|
-| English `default` | tokenize, mwt | 1,500 + 200 + 30 | 1.8 M | 1 (fixed) |
-| English `default` | all eight | 80 + 30 + 8 | 0.13 M | 0 |
-| English `default_fast` | all seven | RESULT | | |
-| English `ewt` | tokenize, mwt | 800 | 0.86 M | 0 |
-| English `ewt` | tokenize to depparse | RESULT | | |
-| English `partut` | tokenize, mwt | 800 | 0.86 M | 1 (harness) |
-| English `partut` | tokenize to depparse | RESULT | | |
-| German `default` | tokenize, mwt | 1,000 | 1.18 M | 0 |
-| German `default` | all eight | RESULT | | |
+Managed backend, after the fixes below (the first tokenizer run, before them, found finding 1 at its 314th text):
 
-Neither side crashed or threw on any text. What the fuzzer found:
+| Language, package | Processors | Seeds | Texts | Characters | Differences |
+|---|---|---|---|---|---|
+| English `default` | tokenize, mwt | 3, 10, 41 | 4,700 | 5.06 M | 0 |
+| English `default` | all eight | 1, 2, 14, 40 | 418 | 0.46 M | 0 |
+| English `default_fast` | all seven | 13 | 80 | 0.08 M | 0 |
+| English `ewt` | tokenize, mwt | 15 | 800 | 0.86 M | 0 |
+| English `ewt` | tokenize to depparse | 11 | 200 | 0.22 M | 0 |
+| English `partut` | tokenize, mwt | 16 | 800 | 0.86 M | 1: finding 2 |
+| English `partut` | tokenize to depparse | 12 | 200 | 0.21 M | 0 |
+| German `default` | tokenize, mwt | 20, 44 | 3,000 | 3.48 M | 0 |
+| German `default` | all eight | 21 | 60 | 0.08 M | 0 |
+| German `default_fast` | all seven | 45 | 100 | 0.11 M | 0 |
+| German `gsd` | tokenize to depparse | 42 | 300 | 0.36 M | 6: finding 3 |
+| German `hdt` | tokenize to depparse | 43 | 300 | 0.40 M | 0 |
+
+10,958 texts, 12.2 million characters. Neither side crashed or threw on any text. What the fuzzer found:
 
 1. **Characters outside the BMP in the tokenizer's regexes (port bug, fixed).** Stanza runs its `STRUCTURAL_FEATURES`
    (English `labeled_field`, `phone_id`, `date_pattern`, `currency`) and `MASK_RE` (e-mails and URLs) over the
    paragraph's code points; StanzaSharp ran them over the UTF-16 string. A surrogate pair is no word character to
    .NET, so in `𠀁C:` (CJK Extension B, a letter to Python) `\b` matched before `C` and `labeled_field` marked `C:`,
-   which made the model keep `𠀁C` as one token (Stanza: `𠀁`, `C`, `:`). And an emoji is two UTF-16 units, so it
-   satisfied a URL's `[^\s"]{2,}` tail alone: `example.com.😀` stayed one token where Stanza splits `example.com`,
-   `.`, `😀` (English and German). The regexes now run over one char per code point (`Tokenizer.Paragraph.CodePoints`:
+   which made the model keep `𠀁C` as one token (Stanza: `𠀁`, `C`, `:`). The same root cause had a second effect,
+   found by hand-written texts once the first was understood: an emoji is two UTF-16 units, so it satisfied a URL's
+   `[^\s"]{2,}` tail alone, and `example.com.😀` stayed one token where Stanza splits `example.com`, `.`, `😀`
+   (English and German). The regexes now run over one char per code point (`Tokenizer.Paragraph.CodePoints`:
    a non-BMP digit becomes `٠`, another letter or number `ª`, anything else U+FFFD, which every pattern treats as it
    treats the original), and a match's index is a unit index. Regression: `tests/golden/fuzz.json` and
    `tests/golden/de/fuzz.json` (`make_golden.py --fuzz-only`), checked by `TokenizerTests.Pipeline_FuzzFindings_MatchGolden`
@@ -74,6 +80,16 @@ Neither side crashed or threw on any text. What the fuzzer found:
    wrote `"{:C}\n"`, a lone newline, where `Conllu.Write` (like Stanza's CoNLL file writer) gives an empty string. Not a
    port difference, but `stanzasharp compare` reported it as one too; `compare.py` now writes an empty CoNLL-U then
    (`CompareCommandTests.Run_PythonStanza_BlankTextIsIdentical`).
+3. **float32 noise on degenerate sentences (not a port bug; open).** Six German `gsd` texts differ in tags, heads or
+   relations, all of them sentences of 100 to 700 tokens made of a hyphenated run (`ab-ab-ab-…`, the long-token
+   generator's hyphen kind). Tokenization is identical; the tagger and parser are not. The TorchSharp backend differs
+   from Stanza on the same six texts (on the originals in 8 to 405 lines, the managed backend in 32 to 408), each
+   backend in other places. On the first one, word 130's UPOS logits (`abela`: NOUN over PROPN) are 1.9e-3 apart in
+   Stanza's float64, and Stanza's own float32 result is 3.0e-3 from its float64 one, 150 times its float32 error on
+   ordinary text (2e-5): on such input any other summation order, Stanza's on another CPU included, can flip a
+   near-tie. The managed result is 3.2e-3 from float64 (the other
+   way round), TorchSharp's 6e-5. No other package showed it (`hdt`, `ewt` and `partut` ran the same kinds of text).
+   Options for the owner are in the PR description; nothing was changed.
 
 Not a port difference, and not seen in these runs, but possible with random code points: Python 3.10's `unicodedata`
 is Unicode 13, .NET 10's is newer, so a character assigned since then is a letter (or upper case, or a space) on one
@@ -95,8 +111,10 @@ tools/.venv/Scripts/python tools/text_fuzz.py texts cases.json --no-shrink      
 
 `--processors` defaults to the package's processors (all eight for `default`). Each side uses 4 threads
 (`--threads`; 0 for their defaults). The exit code is 1 if anything differed; `--report` writes every finding with its
-original and shrunk text. Speed on a Ryzen 7 5800X, one run at a time: tokenize and mwt about 3.5 texts (4,000
-characters) a second, Stanza taking 95% of it; all eight processors about 3 s a text, almost all of it Stanza's.
+original and shrunk text (`--shrink-budget`, 300 candidates by default, bounds the shrinking: a long text through the
+whole pipeline costs seconds a candidate). Speed on a Ryzen 7 5800X with another run beside it: tokenize and mwt 8 to
+12 texts (9,000 to 14,000 characters) a second, Stanza taking 90% of the time; the treebank packages about 3 s a text,
+`default_fast` 1.6 s, all eight processors about 5 s, mostly Stanza's.
 
 A short seeded run is not in CI: Python Stanza runs only in golden-shard 2, and a run long enough to find anything
 new costs minutes there. Findings go into `fuzz.json` instead, which every golden run checks.
