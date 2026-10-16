@@ -320,13 +320,17 @@ def check(stanza, sharp, text):
     return kind, {"stanza": x, "csharp": y}
 
 
-def shrink(text, still_fails):
-    """ddmin over code points, then over single code points: the smallest text for which still_fails holds."""
+def shrink(text, still_fails, budget):
+    """ddmin over code points down to single ones: the smallest text for which still_fails holds, trying at most
+    budget candidates (a long text through the whole pipeline takes seconds a candidate)."""
     chars, n = list(text), 2
-    while len(chars) >= 2:
+    while len(chars) >= 2 and budget > 0:
         size = max(1, len(chars) // n)
         for start in range(0, len(chars), size):
             candidate = chars[:start] + chars[start + size:]
+            budget -= 1
+            if budget < 0:
+                break
             if candidate and still_fails("".join(candidate)):
                 chars, n = candidate, max(n - 1, 2)
                 break
@@ -356,7 +360,8 @@ def run(args, texts):
         print(f"text {i}: {kind}: {details}", file=sys.stderr)
         small = t
         if not args.no_shrink:
-            small = shrink(t, lambda c: (r := check(stanza, sharp, c)) is not None and r[0] == kind)
+            small = shrink(t, lambda c: (r := check(stanza, sharp, c)) is not None and r[0] == kind,
+                           args.shrink_budget)
             print(f"  shrunk to {small!r}: {check(stanza, sharp, small)}", file=sys.stderr)
         found.append({"index": i, "kind": kind, "details": details, "text": t, "minimal": small,
                       "minimal_details": check(stanza, sharp, small)})
@@ -390,6 +395,7 @@ def main():
         s.add_argument("--threads", type=int, default=4, help="each side's threads (0: their defaults)")
         s.add_argument("--report")
         s.add_argument("--no-shrink", action="store_true")
+        s.add_argument("--shrink-budget", type=int, default=300, help="candidates tried per shrink")
     args = p.parse_args()
     if args.cmd == "generate":
         for t in generate(args.lang, args.seed, args.count):
