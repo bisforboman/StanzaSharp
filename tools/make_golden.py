@@ -78,6 +78,10 @@ Reads <out>/corpus.txt and writes:
                         package=<package> (all its processors, tokenize to depparse) on corpus.txt (as corpus.conllu)
                         and each validation*.txt, plus mwt.json where the package has mwt (`--treebank-only`, some of
                         them with `--packages`)
+  models/<name>/<text>.conllu + models/models.json
+                        single models chosen per processor (MODEL_CHOICES, Stanza's processors dict; StanzaSharp's
+                        PipelineOptions.Models), e.g. models/ner=i2b2/, on corpus.txt (as corpus.conllu), validation.txt
+                        and models/*.txt (English: clinical.txt) (`--models-only`)
   pt/tiny_{legacy,zip}.pt + their stanza_convert.py output (.json/.safetensors)
                         small checkpoints in both torch.save formats for the C# .pt loader tests;
                         `python tools/make_golden.py --pt-only` regenerates just these
@@ -205,6 +209,58 @@ def write_treebank_golden(models, out, packages=None):
             print(f"{package}/{name}.conllu: {len(doc.sentences)} sentences, {doc.num_words} words")
         if "mwt" in processors:
             write_mwt_golden(models, folder, package)
+
+
+# Single models chosen per processor (PipelineOptions.Models, Stanza's processors dict): name, package, processors,
+# processor -> model. Each runs on corpus.txt, validation.txt and models/*.txt (e.g. English's clinical.txt).
+MODEL_CHOICES = {
+    "en": [
+        ("constituency=ptb3_charlm", "default", "tokenize,mwt,pos,constituency", {"constituency": "ptb3_charlm"}),
+        ("ner=ontonotes_charlm", "default", "tokenize,mwt,ner", {"ner": "ontonotes_charlm"}),
+        ("ner=ontonotes_nocharlm", "default", "tokenize,mwt,ner", {"ner": "ontonotes_nocharlm"}),
+        ("ner=combined_charlm", "default", "tokenize,mwt,ner", {"ner": "combined_charlm"}),
+        # with the mimic package, whose tagger reads the same (mimic) charlms as i2b2
+        ("ner=i2b2", "mimic", "tokenize,pos,lemma,depparse,ner", {"ner": "i2b2"}),
+    ],
+    "de": [
+        ("ner=conll03", "default", "tokenize,mwt,ner", {"ner": "conll03"}),
+    ],
+}
+
+
+def write_models_golden(models, out):
+    """
+    models/<name>/ for each of MODEL_CHOICES: Stanza with processors={p: model, other p: package} (package None) on
+    corpus.txt (as corpus.conllu), validation.txt and models/*.txt; models/models.json lists the choices for the tests.
+    """
+    folder = out / "models"
+    folder.mkdir(exist_ok=True)
+    texts = [out / "corpus.txt", out / "validation.txt"] + sorted(folder.glob("*.txt"))
+    index = []
+    for name, package, processors, chosen in MODEL_CHOICES[LANG]:
+        spec = {p: chosen.get(p, package) for p in processors.split(",")}
+        nlp = stanza.Pipeline(LANG, dir=models, package=None, processors=spec, download_method=None, use_gpu=False,
+                              logging_level="WARN")
+        def model_of(processor):
+            path = nlp.processors[processor].config["model_path"]
+            path = path[0] if isinstance(path, (list, tuple)) else path.split(";")[0]
+            return Path(path).stem
+        loaded = {p: model_of(p) for p in chosen}
+        assert loaded == chosen, (name, loaded)
+        target = folder / name
+        target.mkdir(exist_ok=True)
+        files = []
+        for path in texts:
+            with torch.no_grad():
+                doc = nlp(path.read_bytes().decode("utf-8"))
+            stem = "corpus" if path.name == "corpus.txt" else path.stem
+            (target / f"{stem}.conllu").write_text("{:C}\n".format(doc), encoding="utf-8", newline="\n")
+            files.append(path.relative_to(out).as_posix())
+            print(f"models/{name}/{stem}.conllu: {len(doc.sentences)} sentences, {len(doc.ents)} entities")
+        index.append({"name": name, "package": package, "processors": processors, "models": chosen, "texts": files})
+    with open(folder / "models.json", "w", encoding="utf-8", newline="\n") as f:
+        json.dump(index, f, indent=1, ensure_ascii=False)
+        f.write("\n")
 
 
 def write_depparse_golden(models, out):
@@ -904,6 +960,7 @@ def main():
     p.add_argument("--process-document-only", action="store_true", help="only regenerate process_document/")
     p.add_argument("--treebank-only", action="store_true", help="only regenerate the treebank packages' folders (ewt/, ..., de/gsd/, de/hdt/)")
     p.add_argument("--packages", default=None, help="with --treebank-only: only these treebank packages (comma-separated)")
+    p.add_argument("--models-only", action="store_true", help="only regenerate models/ (MODEL_CHOICES: single models chosen per processor)")
     args = p.parse_args()
     LANG = args.lang
     out = Path(args.out or ("tests/golden" if LANG == "en" else f"tests/golden/{LANG}"))
@@ -917,6 +974,9 @@ def main():
         return
     if args.treebank_only:
         write_treebank_golden(args.models, out, args.packages and args.packages.split(","))
+        return
+    if args.models_only:
+        write_models_golden(args.models, out)
         return
     if args.json_only:
         write_json_golden(args.models, out)
@@ -1022,6 +1082,7 @@ def main():
     write_json_golden(args.models, out)
     write_process_document_golden(args.models, out)
     write_treebank_golden(args.models, out)
+    write_models_golden(args.models, out)
 
     for i, logits in enumerate(upos_logits64(args.models, [e["words"] for e in index])):
         tensors[f"s{i}.pos.upos_logits64"] = logits

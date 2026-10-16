@@ -52,6 +52,19 @@ doesn't: a tokenizer without MWT heads, composite XPOS tags (`lines`, `partut`: 
 a caseless lemmatizer (`atis`), an MWT seq2seq model (`partut`), which Stanza decodes with a beam search of 5, a
 lemmatizer without a copy gate, and the parser's repair of heads with two subjects or objects (the biomedical ones).
 
+**One model per processor.** Each model `PipelineOptions.Models` can choose beyond the packages' runs against its own
+folder of `tests/golden/models/<processor>=<model>/` (`make_golden.py --models-only`; Stanza with the same
+processors dict). The texts are `corpus.txt`, `validation.txt` and a hand-written clinical note (`models/clinical.txt`,
+31 sentences). The models:
+
+- English constituency `ptb3_charlm` (tokenize, mwt, pos, constituency);
+- English ner `ontonotes_charlm`, `ontonotes_nocharlm` and `combined_charlm` (tokenize, mwt, ner);
+- English ner `i2b2` on the `mimic` package (tokenize, pos, lemma, depparse, ner; also with the charlm cache off);
+- German ner `conll03` (on German's `corpus.txt` and `validation.txt`).
+
+They exercise what the packages don't: a second pretrain next to conll17 (fastText crawl, 300-dimensional), a tag
+vocabulary with three tag sets, and the old NER checkpoint format with a fine-tuned delta embedding (`i2b2`).
+
 Every test above runs on both backends (the JSON comparison on the managed one: the writer does not depend on the backend): the managed backend (the default) and the TorchSharp backend
 (`StanzaSharp.Cuda`). The managed backend's kernels are also tested on each SIMD path a CPU can take (Vector512 with
 AVX-512, Vector256 with AVX2, Vector128, Scalar), so a machine without AVX2 or an Arm64 machine runs code that was
@@ -114,8 +127,8 @@ Test counts are passed xUnit test cases (each case of a theory counts, summed ov
 | Job | Runner | What it checks |
 |---|---|---|
 | `build-test` | ubuntu-26.04 (x64) | builds with warnings as errors, checks the code style, runs the 263 tests that need no models |
-| `golden` (3 shards) | ubuntu-26.04 (x64) | the whole suite on both backends against downloaded models, original and converted, English and German, every package (590 tests); then packs the packages and builds fresh apps from them: `StanzaSharp` alone must reproduce the golden CoNLL-U with nothing of TorchSharp loaded, and `StanzaSharp.Cuda` with `TorchSharp-cpu` must too; then installs the `stanzasharp` tool and downloads models with it |
-| `cross-os (windows-2025)` | Windows x64 | the whole suite on both backends, reading Stanza's `.pt` files directly (447 tests; the English default packages), and both package checks |
+| `golden` (3 shards) | ubuntu-26.04 (x64) | the whole suite on both backends against downloaded models, original and converted, English and German, every package (590 tests); then packs the packages and builds fresh apps from them: `StanzaSharp` alone must reproduce the golden CoNLL-U with nothing of TorchSharp loaded, and `StanzaSharp.Cuda` with `TorchSharp-cpu` must too; then installs the `stanzasharp` tool and downloads models with it; then publishes the [managed check](../tests/StanzaSharp.ManagedCheck/Program.cs) with Native AOT (`x86-64-v3`) and trimmed, with no trim/AOT warning and no torch file allowed, and both binaries must reproduce the golden CoNLL-U ([tools/verify-aot.sh](../tools/verify-aot.sh)) |
+| `cross-os (windows-2025)` | Windows x64 | the whole suite on both backends, reading Stanza's `.pt` files directly (447 tests; the English default packages), both package checks, and the Native AOT and trimming check |
 | `cross-os (macos-26)` | macOS, Apple Silicon | the same (422 tests: Arm64 has no Vector256 path) |
 | `cross-os (windows-11-arm)` | Windows on Arm64 | the same suite (422 tests) and only the managed package check (`TorchSharp-cpu` has no Arm64 libtorch) |
 | `linux-arm64` | ubuntu-26.04-arm | every managed-backend test (260; there is no libtorch for Linux Arm64) and the managed package check |
@@ -124,7 +137,7 @@ Test counts are passed xUnit test cases (each case of a theory counts, summed ov
 
 Every job that runs the model tests fails if any of them was skipped. The only exceptions are the tests that run
 `stanzasharp compare` and `benchmark` against Python Stanza (`Run_PythonStanza_*`, English and German), which only
-golden shard 2 installs and runs, and the German tests and the English treebank packages' tests outside `golden`: only
+golden shard 2 installs and runs, and the German tests, the English treebank packages' and the chosen models' tests outside `golden`: only
 the golden shards have those models (Stanza's `.pt` files, cached), so `cross-os` and `linux-arm64` run the English
 default packages only.
 

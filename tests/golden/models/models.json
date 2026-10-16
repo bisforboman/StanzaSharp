@@ -1,0 +1,67 @@
+[
+ {
+  "name": "constituency=ptb3_charlm",
+  "package": "default",
+  "processors": "tokenize,mwt,pos,constituency",
+  "models": {
+   "constituency": "ptb3_charlm"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "models/clinical.txt"
+  ]
+ },
+ {
+  "name": "ner=ontonotes_charlm",
+  "package": "default",
+  "processors": "tokenize,mwt,ner",
+  "models": {
+   "ner": "ontonotes_charlm"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "models/clinical.txt"
+  ]
+ },
+ {
+  "name": "ner=ontonotes_nocharlm",
+  "package": "default",
+  "processors": "tokenize,mwt,ner",
+  "models": {
+   "ner": "ontonotes_nocharlm"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "models/clinical.txt"
+  ]
+ },
+ {
+  "name": "ner=combined_charlm",
+  "package": "default",
+  "processors": "tokenize,mwt,ner",
+  "models": {
+   "ner": "combined_charlm"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "models/clinical.txt"
+  ]
+ },
+ {
+  "name": "ner=i2b2",
+  "package": "mimic",
+  "processors": "tokenize,pos,lemma,depparse,ner",
+  "models": {
+   "ner": "i2b2"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "models/clinical.txt"
+  ]
+ }
+]

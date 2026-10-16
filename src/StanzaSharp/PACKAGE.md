@@ -59,6 +59,23 @@ The managed backend runs wherever .NET 10 runs. CI runs it against the golden da
 the models read-only rather than copying them into the image. A sample Dockerfile is in the repository's
 [samples/docker](https://github.com/bisforboman/StanzaSharp/tree/main/samples/docker).
 
+## Native AOT and trimming
+
+On the managed backend, apps can be published with Native AOT or trimmed (`PublishTrimmed`, self-contained): no trim or
+AOT warning, byte-identical output. `StanzaSharp.Cuda` is not supported there (TorchSharp isn't AOT-safe).
+
+```xml
+<PropertyGroup>
+  <PublishAot>true</PublishAot>
+  <!-- AVX2/FMA: the 256-bit kernels. Without it AOT runs the 128-bit ones, ~2x slower. -->
+  <IlcInstructionSet>x86-64-v3</IlcInstructionSet>
+</PropertyGroup>
+```
+
+Without `IlcInstructionSet` AOT runs the 128-bit kernels, about 2x slower; `x86-64-v3` needs AVX2/FMA (Intel from Haswell,
+AMD from Excavator), `x86-64-v4` gives the AVX-512 kernels on AVX-512 CPUs only. Arm64 needs nothing: NEON is its baseline. AOT
+needs `clang` and `zlib1g-dev` on Linux, Visual Studio's C++ workload on Windows.
+
 ## Download the models
 
 The models (about 600 MB) come from Stanza's Hugging Face repository. Download them once:
@@ -164,6 +181,21 @@ using var nlp = Pipeline.Load("models/stanza/en", options);
 Stanza's English treebank packages run too, each trained on one treebank, with tokenize, mwt, pos, lemma and depparse
 only: `combined`, `ewt`, `gum`, `lines`, `partut`, `atis`, `childes`, `eslspok` (no mwt; its lemma is the word), and
 the biomedical `craft`, `genia` and `mimic` (no mwt).
+
+## One model per processor
+
+`PipelineOptions.Models` replaces single models of the package, like Python Stanza's `processors={'ner': 'i2b2'}`
+(processor → a model's or a package's name). The keys' processors are added to the package's when `Processors` is null.
+
+```csharp
+var clinical = new PipelineOptions { Package = "mimic", Models = new Dictionary<string, string> { [Processor.Ner] = "i2b2" } };
+await ModelDownloader.DownloadAsync("models/stanza/en", clinical);
+using var nlp = Pipeline.Load("models/stanza/en", clinical);
+```
+
+Beyond the packages' models: English constituency `ptb3_charlm`; English ner `ontonotes_charlm`, `ontonotes_nocharlm`,
+`combined_charlm` and `i2b2` (clinical, with `Package = "mimic"`: one pipeline loads one pair of character language
+models); German ner `conll03`. Unknown or unsupported names throw `ArgumentException`.
 
 ## German
 

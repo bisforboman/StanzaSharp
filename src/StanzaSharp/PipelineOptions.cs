@@ -44,6 +44,30 @@ public sealed class PipelineOptions
     public string? Processors { get; init; }
 
     /// <summary>
+    /// Models chosen per processor, as with Stanza's <c>processors={"ner": "i2b2"}</c>: <see cref="Processor"/> → a
+    /// model's name (e.g. <c>"i2b2"</c>) or a package's name (that package's model for the processor). Every other
+    /// processor uses the <see cref="Package"/>'s model. With <see cref="Processors"/> null the pipeline runs the
+    /// package's processors plus these (and what they require); with <see cref="Processors"/> set, each key must be
+    /// one of them. A replaced tokenizer brings its own treebank's mwt, as in Stanza.
+    /// </summary>
+    /// <remarks>
+    /// Models beyond the packages': English constituency <c>ptb3_charlm</c>; English ner <c>ontonotes_charlm</c>,
+    /// <c>ontonotes_nocharlm</c>, <c>combined_charlm</c> and <c>i2b2</c> (clinical, with the <c>mimic</c> package's
+    /// character models: use <c>Package = "mimic"</c>, or <c>Processors = "tokenize,ner"</c>); German ner
+    /// <c>conll03</c>. <see cref="Pipeline.Load"/> and <see cref="ModelDownloader"/> throw
+    /// <see cref="ArgumentException"/> for an unknown processor, an unknown, transformer or unported model, and for a
+    /// choice whose models read two different pairs of character language models.
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// var options = new PipelineOptions { Package = "mimic", Models = new Dictionary&lt;string, string&gt; { [Processor.Ner] = "i2b2" } };
+    /// await ModelDownloader.DownloadAsync("models/stanza/en", options);
+    /// using var nlp = Pipeline.Load("models/stanza/en", options);
+    /// </code>
+    /// </example>
+    public IReadOnlyDictionary<string, string>? Models { get; init; }
+
+    /// <summary>
     /// The implementation that runs the models: <see cref="PipelineBackend.Managed"/> (the default; no native
     /// dependencies), or TorchSharp (libtorch) on a GPU or the CPU from the <c>StanzaSharp.Cuda</c> package
     /// (<c>CudaBackend.Create()</c>, <c>CudaBackend.Cpu</c>). Output is the same on all of them (on a GPU, with TF32

@@ -7,6 +7,9 @@ TestResults/
 
 # Model files (downloaded and converted, large, separately licensed)
 models/
+# ...but not the golden data of the models chosen per processor (make_golden.py --models-only)
+!tests/golden/models/
+!tests/golden/de/models/
 
 # Python
 tools/.venv/

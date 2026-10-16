@@ -103,6 +103,35 @@ To download the models in a Dockerfile (on the SDK image):
 RUN dotnet tool install --tool-path /tools StanzaSharp.Tool && /tools/stanzasharp download /models --processors tokenize,mwt,pos
 ```
 
+### Native AOT and trimming
+
+On the managed backend an app can be published with Native AOT (`PublishAot`) or trimmed (`PublishTrimmed`, self-contained):
+the StanzaSharp assemblies are `IsAotCompatible`, publish with no trim or AOT warning, and give byte-identical output.
+`StanzaSharp.Cuda` is not supported there: TorchSharp isn't trim- or AOT-safe.
+
+```xml
+<PropertyGroup>
+  <PublishAot>true</PublishAot>
+  <!-- AVX2/FMA: the 256-bit kernels. Without it AOT runs the 128-bit ones, ~2x slower. -->
+  <IlcInstructionSet>x86-64-v3</IlcInstructionSet>
+</PropertyGroup>
+```
+
+`dotnet publish -c Release -r linux-x64` (or `win-x64`) then writes one self-contained executable of about 6 MB that loads
+the models about 0.6 s faster and answers its first call about 3x sooner than the JIT, at the JIT's speed afterwards.
+AOT fixes the SIMD width at compile time, unlike the JIT, which picks it per CPU:
+
+- no `IlcInstructionSet` (x86-64-v2): the 128-bit kernels on every CPU, about 2x slower;
+- `x86-64-v3` (recommended): AVX2 and FMA: Intel from Haswell (2013) and AMD from Excavator (2015), but not
+  some Atom, Celeron and Pentium models (the binary won't start without them);
+- `x86-64-v4`: the AVX-512 kernels, for fleets of AVX-512 CPUs only;
+- Arm64 (`linux-arm64`, `win-arm64`): NEON is part of the Arm64 baseline, so nothing to set (not tested in CI yet).
+
+AOT needs the platform's linker: `clang` and `zlib1g-dev` on Linux, Visual Studio's "Desktop development with C++" on
+Windows. CI publishes [tests/StanzaSharp.ManagedCheck](tests/StanzaSharp.ManagedCheck/Program.cs) both ways on Linux and
+Windows x64 and compares its output with the golden files ([tools/verify-aot.sh](tools/verify-aot.sh)). Details and
+measurements: [docs/aot.md](docs/aot.md).
+
 ## Models
 
 Download Stanza's English models (about 600 MB, from Stanza's Hugging Face repository) once. Every file is
@@ -116,7 +145,7 @@ await ModelDownloader.DownloadAsync("models/stanza/en", new PipelineOptions { Pa
 
 or from the command line with the `stanzasharp` tool (package `StanzaSharp.Tool`, no native libraries):
 `dotnet tool install -g StanzaSharp.Tool`, then `stanzasharp download models/stanza/en`
-(add `--processors LIST` for a subset, `--package default_fast` for that package, `--lang de` for German, which goes to
+(add `--processors LIST` for a subset, `--package default_fast` for that package, `--model ner=i2b2` for single models, `--lang de` for German, which goes to
 `models/stanza/de` by default). In this repository,
 `dotnet run --project samples/StanzaSharp.Cli -- download models/stanza/en` does the same.
 `DownloadAsync(dir, options)` fetches exactly what `Pipeline.Load(dir, options)` reads. A subset includes the models of the processors it requires and
@@ -270,6 +299,33 @@ using var fast = Pipeline.Load("models/stanza/en", options);
 
 An unknown package name throws, and so does listing a processor the package lacks (`constituency` with
 `default_fast`). See [docs/performance.md](docs/performance.md) for the speed of both.
+
+### One model per processor
+
+`PipelineOptions.Models` replaces single models of the package, like Python Stanza's `processors={'ner': 'i2b2'}`. Each
+key is a processor, each value a model's name or a package's name (that package's model). Every other processor keeps
+the package's model. With `Processors` null, the keys' processors are added to the package's (`mimic` has no ner);
+with `Processors` set, every key must be in it.
+
+```csharp
+// Clinical entities (PROBLEM, TEST, TREATMENT) on the mimic package, whose character models i2b2 shares
+var clinical = new PipelineOptions { Package = "mimic", Models = new Dictionary<string, string> { [Processor.Ner] = "i2b2" } };
+await ModelDownloader.DownloadAsync("models/stanza/en", clinical);
+using var nlp = Pipeline.Load("models/stanza/en", clinical);
+```
+
+The models beyond the packages':
+
+- English constituency: `ptb3_charlm` (the original Penn Treebank labels; the default is `ptb3-revised_charlm`).
+- English ner: `ontonotes_charlm` and `ontonotes_nocharlm` (OntoNotes only, with 300-dimensional fastText vectors, 123
+  MB), `combined_charlm` (three tag sets, of which Stanza uses OntoNotes'), and `i2b2` (clinical).
+- German ner: `conll03` (PER, LOC, ORG, MISC).
+
+Their output is byte-identical to Python Stanza's on both backends. Names are exact, as in Stanza (`ptb3` is not
+`ptb3_charlm`). An unknown, transformer or not yet supported name throws, and so does a choice whose models read two
+different character language models: `i2b2` reads mimic's, the default package's tagger 1billion's, so `ner = "i2b2"`
+needs `Package = "mimic"` or `Processors = "tokenize,mwt,ner"`. The tool takes the same as `--model ner=i2b2`.
+docs/per-processor-models-plan.md lists every other model and what it needs.
 
 ### Threads, concurrency and cancellation
 
@@ -496,6 +552,10 @@ summarizes what each job proves.
   `golden`, each OS runs the suite in three shards (`cross-os-shard`, with golden's split; one shard for a pull request's
   subset), and `cross-os (<os>)` passes only if all of that OS's shards did. Their models are cached per OS, keyed on
   `ModelDownloader.cs`.
+- Native AOT and trimming: golden shard 1 (linux-x64) and `cross-os (windows-2025)` shard 3 run `tools/verify-aot.sh`, which
+  publishes `tests/StanzaSharp.ManagedCheck` with `PublishAot` (`x86-64-v3`) and with `PublishTrimmed`, fails on any
+  IL2xxx/IL3xxx warning or torch file, and runs both binaries against the golden files. Full runs only (in golden also
+  pull requests that touch CI or the backends' shared files).
 - `linux-arm64` (`ubuntu-26.04-arm`): no libtorch exists for it, so the tests build without one and it runs those
   that need none (the managed cases of the both-backend theories, and the tests marked
   `[Trait("Backend", "Managed")]`), the no-skip check and the managed `verify-package.ps1`.

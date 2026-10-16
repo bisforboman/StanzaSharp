@@ -118,6 +118,27 @@ public sealed class Pipeline : IDisposable
         },
     };
 
+    // Models beyond the packages' that PipelineOptions.Models can choose, per language and processor (docs/per-processor-models-plan.md).
+    // Like the packages' models, each needs its MD5 in ModelDownloader.Files and its shared files in Dependencies.
+    internal static readonly Dictionary<string, Dictionary<string, string[]>> Alternatives = new()
+    {
+        [English] = new()
+        {
+            ["constituency"] = ["ptb3_charlm"],
+            ["ner"] = ["ontonotes_charlm", "ontonotes_nocharlm", "combined_charlm", "i2b2"],
+        },
+        ["de"] = new()
+        {
+            ["ner"] = ["conll03"],
+        },
+    };
+
+    /// <summary>Every model <paramref name="processor"/> of <paramref name="language"/> can run: its packages' and <see cref="Alternatives"/>.</summary>
+    internal static IEnumerable<string> ModelsOf(string language, string processor) =>
+        Packages[language].Values.Select(p => p.GetValueOrDefault(processor)).OfType<string>()
+            .Concat(Alternatives[language].GetValueOrDefault(processor, []))
+            .Distinct();
+
     /// <summary>Stanza's lemma "model" that sets each word's lemma to its text (LemmaProcessor's use_identity); it has no file.</summary>
     internal const string IdentityLemma = "identity";
 
@@ -179,6 +200,13 @@ public sealed class Pipeline : IDisposable
             ["depparse/genia_nocharlm"] = ["pretrain/biomed"],
             ["pos/mimic_charlm"] = ["pretrain/mimic", "forward_charlm/mimic", "backward_charlm/mimic"],
             ["depparse/mimic_charlm"] = ["pretrain/mimic", "forward_charlm/mimic", "backward_charlm/mimic"],
+
+            // Alternatives
+            ["constituency/ptb3_charlm"] = EnglishCharlm,
+            ["ner/ontonotes_charlm"] = ["pretrain/fasttextcrawl", "forward_charlm/1billion", "backward_charlm/1billion"],
+            ["ner/ontonotes_nocharlm"] = ["pretrain/fasttextcrawl"],
+            ["ner/combined_charlm"] = EnglishCharlm,
+            ["ner/i2b2"] = ["pretrain/mimic", "forward_charlm/mimic", "backward_charlm/mimic"],
         },
         ["de"] = new()
         {
@@ -193,6 +221,9 @@ public sealed class Pipeline : IDisposable
             ["depparse/gsd_charlm"] = GermanCharlm,
             ["pos/hdt_charlm"] = GermanCharlm,
             ["depparse/hdt_charlm"] = GermanCharlm,
+
+            // Alternatives
+            ["ner/conll03"] = ["pretrain/fasttextwiki", "forward_charlm/newswiki", "backward_charlm/newswiki"],
         },
     };
 
@@ -352,7 +383,8 @@ public sealed class Pipeline : IDisposable
     /// <param name="options">Language, package, processors, backend, threads and cache settings; defaults to all eight
     /// processors of the English <see langword="default"/> package on <see cref="PipelineBackend.Managed"/>.</param>
     /// <exception cref="ArgumentException">An unknown language, package or processor, a processor the package lacks
-    /// (e.g. constituency in <c>default_fast</c>), or a processor without the ones it requires.</exception>
+    /// (e.g. constituency in <c>default_fast</c>), a processor without the ones it requires, or an unknown or
+    /// unsupported model in <see cref="PipelineOptions.Models"/>.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><see cref="PipelineOptions.Threads"/> below 1, or a
     /// non-positive <see cref="CharlmCacheOptions.MaxWords"/>.</exception>
     /// <exception cref="FileNotFoundException">A model file the processors read is missing from
@@ -366,7 +398,7 @@ public sealed class Pipeline : IDisposable
         options ??= new PipelineOptions();
         if (!Directory.Exists(modelDir))
             throw new DirectoryNotFoundException($"Model directory not found: {modelDir} (download them with ModelDownloader.DownloadAsync or \"stanzasharp download\")");
-        var models = SelectModels(options.Package, options.Processors, addRequired: false, nameof(options), options.Language);
+        var models = SelectModels(options.Package, options.Processors, addRequired: false, nameof(options), options.Language, options.Models);
         if (options.CharlmCache.IsEnabled && options.CharlmCache.MaxWords <= 0)
             throw new ArgumentOutOfRangeException(nameof(options), "CharlmCache.MaxWords must be positive; set IsEnabled = false to turn the cache off");
         if (options.Threads < 1)
@@ -396,7 +428,8 @@ public sealed class Pipeline : IDisposable
         }
 
         logger?.LogInformation("Loaded the {Package} pipeline ({Processors}) in {Milliseconds:F0} ms", options.Package,
-            string.Join(",", AllProcessors.Split(',').Where(models.ContainsKey)), Stopwatch.GetElapsedTime(start).TotalMilliseconds);
+            string.Join(",", AllProcessors.Split(',').Where(models.ContainsKey).Select(p => options.Models == null ? p : $"{p}={models[p]}")),
+            Stopwatch.GetElapsedTime(start).TotalMilliseconds);
         return pipeline;
     }
 
@@ -424,22 +457,39 @@ public sealed class Pipeline : IDisposable
     internal const string PretrainPath = "pretrain/conll17", ForwardCharlmPath = "forward_charlm/1billion", BackwardCharlmPath = "backward_charlm/1billion";
 
     /// <summary>
-    /// The processors to run and each one's model: <paramref name="processors"/> (null: all of the package's), checked
-    /// against <paramref name="package"/> of <paramref name="language"/>, plus the package's mwt wherever tokenize is (as
-    /// Stanza adds it). With <paramref name="addRequired"/> the processors they require are added (what to download);
-    /// without, a missing one throws (what to load).
+    /// The processors to run and each one's model: <paramref name="processors"/> (null: all of the package's, plus the
+    /// keys of <paramref name="chosen"/>), checked against <paramref name="package"/> of <paramref name="language"/>,
+    /// with <paramref name="chosen"/> (<see cref="PipelineOptions.Models"/>) replacing the package's models, plus the
+    /// package's mwt wherever tokenize is (as Stanza adds it). With <paramref name="addRequired"/> the processors they
+    /// require are added (what to download); without, a missing one throws (what to load), unless
+    /// <paramref name="processors"/> is null.
     /// </summary>
-    internal static Dictionary<string, string> SelectModels(string package, string? processors, bool addRequired, string paramName, string language = English)
+    internal static Dictionary<string, string> SelectModels(string package, string? processors, bool addRequired, string paramName, string language = English,
+        IReadOnlyDictionary<string, string>? chosen = null)
     {
         if (!Packages.TryGetValue(language ?? "", out var packages))
             throw new ArgumentException($"Unknown language '{language}'. Available: {string.Join(", ", Packages.Keys)}", paramName);
-        if (!packages.TryGetValue(package ?? "", out var models))
+        if (!packages.TryGetValue(package ?? "", out var packageModels))
         {
             string why = package == "default_accurate" ? " (default_accurate needs transformer models, which StanzaSharp doesn't run)" : "";
             throw new ArgumentException($"Unknown package '{package}' for language '{language}'{why}. Available: {string.Join(", ", packages.Keys)}", paramName);
         }
 
+        var overrides = ResolveModels(chosen, language!, paramName);
+        var models = new Dictionary<string, string>(packageModels);
+        foreach (var (p, model) in overrides)
+            models[p] = model;
+
+        // Stanza's add_mwt: a replaced tokenizer brings the mwt of its own treebank, if there is one.
+        if (chosen != null && overrides.ContainsKey("tokenize") && !overrides.ContainsKey("mwt") && models.ContainsKey("mwt")
+            && MwtFor(chosen.First(kv => kv.Key.Trim().Equals("tokenize", StringComparison.OrdinalIgnoreCase)).Value.Trim().ToLowerInvariant(), language!) is { } mwt)
+        {
+            models["mwt"] = mwt;
+        }
+
         var set = processors == null ? models.Keys.ToHashSet() : ParseProcessors(processors, paramName);
+        if (processors != null && overrides.Keys.FirstOrDefault(p => !set.Contains(p)) is { } unlisted)
+            throw new ArgumentException($"Models names {unlisted}, which Processors ({processors}) doesn't list", paramName);
 
         // Stanza's add_mwt: tokenize brings the package's mwt along (tokenize,ner expands "don't" too).
         if (set.Contains("tokenize") && models.ContainsKey("mwt"))
@@ -449,7 +499,7 @@ public sealed class Pipeline : IDisposable
             // What the package lacks isn't required (eslspok has no mwt); the identity lemmatizer reads no UPOS.
             var needs = p == "lemma" && models.GetValueOrDefault(p) == IdentityLemma ? ["tokenize"] : Requires[p];
             var missing = needs.Where(n => !set.Contains(n) && models.ContainsKey(n)).ToList();
-            if (missing.Count > 0 && !addRequired)
+            if (missing.Count > 0 && !addRequired && processors != null)
                 throw new ArgumentException($"Processor '{p}' requires {string.Join(", ", missing)}", paramName);
             set.UnionWith(missing);
         }
@@ -459,11 +509,82 @@ public sealed class Pipeline : IDisposable
             if (!models.ContainsKey(p))
             {
                 var others = packages.Where(kv => kv.Value.ContainsKey(p)).Select(kv => $"\"{kv.Key}\"");
-                throw new ArgumentException($"Package '{package}' has no {p} model; use Package = {string.Join(" or ", others)} for {p}", paramName);
+                throw new ArgumentException($"Package '{package}' has no {p} model; use Package = {string.Join(" or ", others)} for {p}, "
+                    + $"or choose one with Models: {string.Join(", ", ModelsOf(language!, p))}", paramName);
             }
         }
 
-        return set.ToDictionary(p => p, p => models[p]);
+        var selected = set.ToDictionary(p => p, p => models[p]);
+        CheckOneCharlmPair(selected, language!, paramName);
+        return selected;
+    }
+
+    /// <summary>
+    /// <see cref="PipelineOptions.Models"/> as processor → model: each key a processor, each value one of the models
+    /// <see cref="ModelsOf"/> lists, or a package with that processor (its model), as Stanza resolves them. Names are
+    /// trimmed and lowercased, like Stanza's.
+    /// </summary>
+    private static Dictionary<string, string> ResolveModels(IReadOnlyDictionary<string, string>? chosen, string language, string paramName)
+    {
+        var resolved = new Dictionary<string, string>();
+        foreach (var (key, value) in chosen ?? new Dictionary<string, string>())
+        {
+            var p = key?.Trim().ToLowerInvariant() ?? "";
+            if (!Requires.ContainsKey(p))
+                throw new ArgumentException($"Unknown processor '{key}' in Models. Available: {AllProcessors}", paramName);
+            if (resolved.ContainsKey(p))
+                throw new ArgumentException($"Models names {p} twice", paramName);
+            var name = value?.Trim().ToLowerInvariant() ?? "";
+            var supported = ModelsOf(language, p).ToList();
+            if (supported.Contains(name))
+            {
+                resolved[p] = name;
+            }
+            else if (Packages[language].TryGetValue(name, out var package) && package.TryGetValue(p, out var model))
+            {
+                resolved[p] = model;
+            }
+            else
+            {
+                string why = name.Contains("electra", StringComparison.Ordinal) || name.Contains("bert", StringComparison.Ordinal)
+                    ? " (a transformer model, which StanzaSharp doesn't run)"
+                    : "";
+                var packagesWith = Packages[language].Where(kv => kv.Value.ContainsKey(p)).Select(kv => kv.Key);
+                throw new ArgumentException($"Unknown or unsupported {p} model '{value}' for language '{language}'{why}. Supported: "
+                    + $"{string.Join(", ", supported)}; or a package's name ({string.Join(", ", packagesWith)})", paramName);
+            }
+        }
+
+        return resolved;
+    }
+
+    /// <summary>The mwt model Stanza's add_mwt picks for tokenize <paramref name="tokenize"/> (as given: a package's or a model's name), or null.</summary>
+    private static string? MwtFor(string tokenize, string language)
+    {
+        var mwt = ModelsOf(language, "mwt").ToHashSet();
+        if (Packages[language].TryGetValue(tokenize, out var package))
+            return package.GetValueOrDefault("mwt");
+        if (mwt.Contains(tokenize))
+            return tokenize;
+        var stem = tokenize.EndsWith("_nocharlm", StringComparison.Ordinal) || tokenize.EndsWith("_charlm", StringComparison.Ordinal) ? tokenize[..tokenize.LastIndexOf('_')] : null;
+        return stem != null && mwt.Contains(stem) ? stem : null;
+    }
+
+    /// <summary>A pipeline loads one pair of charlms: throws if <paramref name="models"/> read two (e.g. 1billion and mimic).</summary>
+    private static void CheckOneCharlmPair(Dictionary<string, string> models, string language, string paramName)
+    {
+        var readers = models
+            .Select(m => (Model: $"{m.Key} {m.Value}", Charlm: Dependencies[language].GetValueOrDefault($"{m.Key}/{m.Value}", [])
+                .FirstOrDefault(d => d.StartsWith("forward_charlm/", StringComparison.Ordinal))))
+            .Where(m => m.Charlm != null)
+            .GroupBy(m => m.Charlm!["forward_charlm/".Length..])
+            .ToList();
+        if (readers.Count > 1)
+        {
+            throw new ArgumentException("These models read different character language models, and a pipeline loads only one pair: "
+                + string.Join("; ", readers.Select(g => $"{g.Key}: {string.Join(", ", g.Select(m => m.Model))}"))
+                + ". Choose models that share one (e.g. Package = \"mimic\" for ner i2b2), or leave out processors with Processors.", paramName);
+        }
     }
 
     /// <summary>
