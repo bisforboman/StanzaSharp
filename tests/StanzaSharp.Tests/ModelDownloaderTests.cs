@@ -123,14 +123,14 @@ public class ModelDownloaderTests : IDisposable
         Assert.Equal(expected.Split(' ').Order(), ModelDownloader.FilesFor(processors, "default_fast").Select(f => f.Path).Order());
 
     [Theory]
-    [InlineData("tokenize", "tokenize/combined_nocharlm.pt")]
+    [InlineData("tokenize", "tokenize/combined_nocharlm.pt mwt/combined.pt")] // mwt comes along, as in Stanza
     [InlineData("tokenize,mwt", "tokenize/combined_nocharlm.pt mwt/combined.pt")]
 
     // pos pulls in what it requires (tokenize, mwt) and the shared pretrain and charlms.
     [InlineData("pos", "tokenize/combined_nocharlm.pt mwt/combined.pt pos/combined_charlm.pt pretrain/conll17.pt forward_charlm/1billion.pt backward_charlm/1billion.pt")]
     [InlineData("tokenize,lemma", "tokenize/combined_nocharlm.pt mwt/combined.pt pos/combined_charlm.pt lemma/combined_nocharlm.pt pretrain/conll17.pt forward_charlm/1billion.pt backward_charlm/1billion.pt")]
-    [InlineData("tokenize,sentiment", "tokenize/combined_nocharlm.pt sentiment/sstplus_charlm.pt pretrain/conll17.pt forward_charlm/1billion.pt backward_charlm/1billion.pt")]
-    [InlineData(" NER , tokenize ", "tokenize/combined_nocharlm.pt ner/ontonotes-ww-multi_charlm.pt pretrain/conll17.pt forward_charlm/1billion.pt backward_charlm/1billion.pt")]
+    [InlineData("tokenize,sentiment", "tokenize/combined_nocharlm.pt mwt/combined.pt sentiment/sstplus_charlm.pt pretrain/conll17.pt forward_charlm/1billion.pt backward_charlm/1billion.pt")]
+    [InlineData(" NER , tokenize ", "tokenize/combined_nocharlm.pt mwt/combined.pt ner/ontonotes-ww-multi_charlm.pt pretrain/conll17.pt forward_charlm/1billion.pt backward_charlm/1billion.pt")]
     public void FilesFor_SelectsWhatTheProcessorsNeed(string processors, string expected) =>
         Assert.Equal(expected.Split(' ').Order(), ModelDownloader.FilesFor(processors).Select(f => f.Path).Order());
 

@@ -72,9 +72,37 @@ public class OptionsTests
         {
             Directory.CreateDirectory(Path.Combine(dir, "tokenize"));
             File.WriteAllText(Path.Combine(dir, "tokenize", "combined_nocharlm.json"), "{}");
+            Directory.CreateDirectory(Path.Combine(dir, "mwt"));
+            File.WriteAllText(Path.Combine(dir, "mwt", "combined.json"), "{}");
             var e = Assert.Throws<InvalidOperationException>(() =>
                 Pipeline.Load(dir, new PipelineOptions { Processors = Processor.Tokenize, VerifyChecksums = true }));
             Assert.Contains("combined_nocharlm.json", e.Message);
+        }
+        finally
+        {
+            Directory.Delete(dir, recursive: true);
+        }
+    }
+
+    [Fact]
+    [Trait("Backend", "Managed")]
+    public void MissingModelFile_NamesItAndTheDownload()
+    {
+        // A folder downloaded for tokenize,ner before tokenize brought mwt along: everything but mwt/combined.pt.
+        var dir = Directory.CreateTempSubdirectory("stanzasharp-nomwt-").FullName;
+        try
+        {
+            foreach (var f in ModelDownloader.FilesFor("tokenize,ner").Where(f => !f.Path.StartsWith("mwt/")))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(dir, f.Path))!);
+                File.WriteAllText(Path.Combine(dir, f.Path), "");
+            }
+
+            var e = Assert.Throws<FileNotFoundException>(() => Pipeline.Load(dir, new PipelineOptions { Processors = "tokenize,ner" }));
+            Assert.Equal(Path.Combine(dir, "mwt", "combined.pt"), e.FileName);
+            Assert.Contains("tokenize loads the package's mwt too", e.Message);
+            Assert.Contains($"stanzasharp download {dir} --lang en --package default --processors tokenize,ner", e.Message);
+            Assert.Contains("ModelDownloader.DownloadAsync", e.Message);
         }
         finally
         {

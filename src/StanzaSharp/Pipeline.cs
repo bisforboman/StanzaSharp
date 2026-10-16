@@ -387,6 +387,8 @@ public sealed class Pipeline : IDisposable
     /// unsupported model in <see cref="PipelineOptions.Models"/>.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><see cref="PipelineOptions.Threads"/> below 1, or a
     /// non-positive <see cref="CharlmCacheOptions.MaxWords"/>.</exception>
+    /// <exception cref="FileNotFoundException">A model file the processors read is missing from
+    /// <paramref name="modelDir"/>; download it with <see cref="ModelDownloader.DownloadAsync(string, PipelineOptions, IProgress{string}, CancellationToken)"/>.</exception>
     /// <exception cref="InvalidDataException">With <see cref="PipelineOptions.VerifyChecksums"/>: a model file whose
     /// checksum differs from Stanza's.</exception>
     /// <exception cref="InvalidOperationException">With <see cref="PipelineOptions.VerifyChecksums"/>: a model that
@@ -403,6 +405,7 @@ public sealed class Pipeline : IDisposable
             throw new ArgumentOutOfRangeException(nameof(options), "Threads must be at least 1, or null for the default");
         if (options.MaxConcurrentCalls < 1)
             throw new ArgumentOutOfRangeException(nameof(options), "MaxConcurrentCalls must be at least 1, or null for no limit");
+        ThrowIfMissing(modelDir, models, options);
         var logger = options.Logger;
         long start = Stopwatch.GetTimestamp();
         if (options.VerifyChecksums)
@@ -430,6 +433,23 @@ public sealed class Pipeline : IDisposable
         return pipeline;
     }
 
+    // A folder downloaded for fewer processors (or before tokenize brought mwt along, 1.x) lacks some files: say which
+    // and how to fetch them, instead of the FileNotFoundException of whichever model reads it first.
+    private static void ThrowIfMissing(string modelDir, Dictionary<string, string> models, PipelineOptions options)
+    {
+        var missing = ModelFiles(models, options.Language)
+            .FirstOrDefault(p => !File.Exists(Path.Combine(modelDir, p + ".pt")) && !File.Exists(Path.Combine(modelDir, p + ".json")));
+        if (missing == null)
+            return;
+        var file = Path.Combine([modelDir, .. (missing + ".pt").Split('/')]);
+        string why = missing.StartsWith("mwt/", StringComparison.Ordinal) && options.Processors != null && !ParseProcessors(options.Processors, nameof(options)).Contains("mwt")
+            ? " (tokenize loads the package's mwt too, as Stanza does)"
+            : "";
+        string processors = options.Processors == null ? "" : $" --processors {options.Processors}";
+        throw new FileNotFoundException($"Model file not found: {file}{why}. Run \"stanzasharp download {modelDir} --lang {options.Language} "
+            + $"--package {options.Package}{processors}\" or ModelDownloader.DownloadAsync(dir, options) again; it fetches only the missing files.", file);
+    }
+
     // How many models a managed pipeline loads at a time (round 17).
     private const int LoadLanes = 2;
 
@@ -439,9 +459,10 @@ public sealed class Pipeline : IDisposable
     /// <summary>
     /// The processors to run and each one's model: <paramref name="processors"/> (null: all of the package's, plus the
     /// keys of <paramref name="chosen"/>), checked against <paramref name="package"/> of <paramref name="language"/>,
-    /// with <paramref name="chosen"/> (<see cref="PipelineOptions.Models"/>) replacing the package's models. With
-    /// <paramref name="addRequired"/> the processors they require are added (what to download); without, a missing one
-    /// throws (what to load), unless <paramref name="processors"/> is null.
+    /// with <paramref name="chosen"/> (<see cref="PipelineOptions.Models"/>) replacing the package's models, plus the
+    /// package's mwt wherever tokenize is (as Stanza adds it). With <paramref name="addRequired"/> the processors they
+    /// require are added (what to download); without, a missing one throws (what to load), unless
+    /// <paramref name="processors"/> is null.
     /// </summary>
     internal static Dictionary<string, string> SelectModels(string package, string? processors, bool addRequired, string paramName, string language = English,
         IReadOnlyDictionary<string, string>? chosen = null)
@@ -469,6 +490,10 @@ public sealed class Pipeline : IDisposable
         var set = processors == null ? models.Keys.ToHashSet() : ParseProcessors(processors, paramName);
         if (processors != null && overrides.Keys.FirstOrDefault(p => !set.Contains(p)) is { } unlisted)
             throw new ArgumentException($"Models names {unlisted}, which Processors ({processors}) doesn't list", paramName);
+
+        // Stanza's add_mwt: tokenize brings the package's mwt along (tokenize,ner expands "don't" too).
+        if (set.Contains("tokenize") && models.ContainsKey("mwt"))
+            set.Add("mwt");
         foreach (var p in set.ToList())
         {
             // What the package lacks isn't required (eslspok has no mwt); the identity lemmatizer reads no UPOS.

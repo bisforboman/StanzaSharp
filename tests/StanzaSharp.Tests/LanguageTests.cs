@@ -19,7 +19,7 @@ public class LanguageTests
         + "depparse/combined_charlm.pt sentiment/sb10k_charlm.pt ner/germeval2014.pt pretrain/fasttextwiki.pt " + GermanShared)]
 
     // NER reads fastText's vectors and the charlms, not conll17.
-    [InlineData("default", "tokenize,ner", "tokenize/combined_nocharlm.pt ner/germeval2014.pt pretrain/fasttextwiki.pt forward_charlm/newswiki.pt backward_charlm/newswiki.pt")]
+    [InlineData("default", "tokenize,ner", "tokenize/combined_nocharlm.pt mwt/combined.pt ner/germeval2014.pt pretrain/fasttextwiki.pt forward_charlm/newswiki.pt backward_charlm/newswiki.pt")]
     [InlineData("default", "tokenize,mwt", "tokenize/combined_nocharlm.pt mwt/combined.pt")]
 
     // ner and sentiment keep their charlm models, so the fast package still needs both pretrains and the charlms.

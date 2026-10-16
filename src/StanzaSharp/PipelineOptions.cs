@@ -38,7 +38,8 @@ public sealed class PipelineOptions
 
     /// <summary>
     /// Comma-separated subset of <see cref="Pipeline.AllProcessors"/>; each needs the ones before it. Null (the
-    /// default) runs every processor of the <see cref="Package"/>. A processor the package lacks throws.
+    /// default) runs every processor of the <see cref="Package"/>. A processor the package lacks throws. Like Stanza,
+    /// <c>tokenize</c> brings the package's <c>mwt</c> along, so <c>"tokenize,ner"</c> also expands multi-word tokens.
     /// </summary>
     public string? Processors { get; init; }
 

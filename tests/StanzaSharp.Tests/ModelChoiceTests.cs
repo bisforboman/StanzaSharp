@@ -90,8 +90,9 @@ public class ModelChoiceTests
     [Fact]
     public void Models_WithProcessors_StayInsideThem()
     {
+        // tokenize brings the package's mwt along, as in Stanza.
         var two = Pipeline.SelectModels("default", "tokenize,ner", addRequired: false, "options", "en", Models("ner=i2b2"));
-        Assert.Equal(new Dictionary<string, string> { ["tokenize"] = "combined_nocharlm", ["ner"] = "i2b2" }, two);
+        Assert.Equal(new Dictionary<string, string> { ["tokenize"] = "combined_nocharlm", ["mwt"] = "combined", ["ner"] = "i2b2" }, two);
         var e = Assert.Throws<ArgumentException>(() => Pipeline.SelectModels("default", "tokenize,mwt", false, "options", "en", Models("ner=i2b2")));
         Assert.Contains("Models names ner, which Processors", e.Message);
     }
@@ -137,19 +138,19 @@ public class ModelChoiceTests
         Assert.Throws<ArgumentException>(() => Pipeline.Load(Repo.Root, new PipelineOptions { Models = Models("ner=i2b2") }));
 
         // Without them it is fine (ner reads only tokens).
-        Assert.Equal(2, Pipeline.SelectModels("default", "tokenize,ner", false, "options", "en", Models("ner=i2b2")).Count);
+        Assert.Equal(3, Pipeline.SelectModels("default", "tokenize,ner", false, "options", "en", Models("ner=i2b2")).Count);
     }
 
     [Theory]
     [InlineData("en", "default", "tokenize,ner", "ner=ontonotes_charlm",
-        "tokenize/combined_nocharlm.pt ner/ontonotes_charlm.pt pretrain/fasttextcrawl.pt forward_charlm/1billion.pt backward_charlm/1billion.pt")]
-    [InlineData("en", "default", "tokenize,ner", "ner=ontonotes_nocharlm", "tokenize/combined_nocharlm.pt ner/ontonotes_nocharlm.pt pretrain/fasttextcrawl.pt")]
+        "tokenize/combined_nocharlm.pt mwt/combined.pt ner/ontonotes_charlm.pt pretrain/fasttextcrawl.pt forward_charlm/1billion.pt backward_charlm/1billion.pt")]
+    [InlineData("en", "default", "tokenize,ner", "ner=ontonotes_nocharlm", "tokenize/combined_nocharlm.pt mwt/combined.pt ner/ontonotes_nocharlm.pt pretrain/fasttextcrawl.pt")]
     [InlineData("en", "mimic", null, "ner=i2b2",
         "tokenize/mimic_nocharlm.pt pos/mimic_charlm.pt lemma/mimic_nocharlm.pt depparse/mimic_charlm.pt ner/i2b2.pt pretrain/mimic.pt forward_charlm/mimic.pt backward_charlm/mimic.pt")]
     [InlineData("en", "default", "constituency", "constituency=ptb3_charlm",
         "tokenize/combined_nocharlm.pt mwt/combined.pt pos/combined_charlm.pt constituency/ptb3_charlm.pt pretrain/conll17.pt forward_charlm/1billion.pt backward_charlm/1billion.pt")]
     [InlineData("de", "default", "tokenize,ner", "ner=conll03",
-        "tokenize/combined_nocharlm.pt ner/conll03.pt pretrain/fasttextwiki.pt forward_charlm/newswiki.pt backward_charlm/newswiki.pt")]
+        "tokenize/combined_nocharlm.pt mwt/combined.pt ner/conll03.pt pretrain/fasttextwiki.pt forward_charlm/newswiki.pt backward_charlm/newswiki.pt")]
     public void FilesFor_IncludesTheChosenModelsAndTheirDependencies(string lang, string package, string? processors, string pair, string expected)
     {
         var files = ModelDownloader.FilesFor(processors, package, "options", lang, Models(pair)).Select(f => f.Path);

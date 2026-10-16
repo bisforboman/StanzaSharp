@@ -252,9 +252,7 @@ public static class ModelDownloader
                     + "Load Stanza's .pt files (e.g. a ModelDownloader directory) or turn VerifyChecksums off.");
             }
 
-            var file = basePath + ".pt";
-            if (!File.Exists(file))
-                throw new FileNotFoundException($"Model file not found: {file}", file);
+            var file = basePath + ".pt"; // Load checked that it exists
             var expected = Files[language].Single(f => f.Path == path + ".pt").Md5;
             string actual;
             using (var stream = File.OpenRead(file))

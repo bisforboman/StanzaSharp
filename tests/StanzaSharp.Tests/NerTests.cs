@@ -172,10 +172,12 @@ public class NerTests(ITestOutputHelper output)
             }
             else
             {
-                var expected = Conllu.Read(golden).Sentences.SelectMany(s => s.Tokens.Select(t => $"{t.Text} {t.Ner}"));
-                var got = doc.Sentences.SelectMany(s => s.Tokens.Select(t => $"{t.Text} {t.Ner}"));
+                // tokenize brings mwt along, as in Stanza, so the words are expanded too.
+                static string Line(Token t) => $"{t.Text} {string.Join('+', t.Words.Select(w => w.Text))} {t.Ner}";
+                var expected = Conllu.Read(golden).Sentences.SelectMany(s => s.Tokens.Select(Line));
+                var got = doc.Sentences.SelectMany(s => s.Tokens.Select(Line));
                 if (!expected.SequenceEqual(got))
-                    failures.Add($"{name}: token NER tags differ");
+                    failures.Add($"{name}: token NER tags or words differ");
             }
 
             var ents = JsonNode.Parse(File.ReadAllText(Path.ChangeExtension(conllu, ".json")))!.AsArray();
