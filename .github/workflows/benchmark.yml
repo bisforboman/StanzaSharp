@@ -41,6 +41,10 @@ on:
         description: "startup: instead of the default settings, NAME=out/jit|out/r2r[@VAR=VALUE,...] separated by ;"
         type: string
         default: ''
+      load_profile:
+        description: "With startup_only: round 34's load split and packed-cache prototype (tools/load_profile.py) instead"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -270,7 +274,7 @@ jobs:
   # and DOTNET_* knobs. With startup_base, also the library at that ref under this commit's harness. Stanza's .pt
   # files, the default package, default threads. Tables in the summary and the artifact startup-<runner>.
   startup:
-    if: ${{ inputs.startup_only }}
+    if: ${{ inputs.startup_only && !inputs.load_profile }}
     strategy:
       fail-fast: false
       matrix:
@@ -349,6 +353,107 @@ jobs:
         with:
           name: startup-${{ matrix.os }}
           path: startup.md
+
+  # Round 34 (prototype branch): Pipeline.Load split by stage, packing variants and the packed cache
+  # (tools/load_profile.py), warm and (Linux, macOS) with the OS file cache dropped before each process.
+  load-profile:
+    if: ${{ inputs.startup_only && inputs.load_profile }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-26.04, ubuntu-26.04-arm, windows-2025, windows-11-arm, macos-26]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 180
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Turn off Spotlight indexing
+        if: runner.os == 'macOS'
+        run: sudo mdutil -a -i off
+
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      # ubuntu-26.04: golden's cache (Stanza's .pt files and the converted ones) and German's .pt files.
+      - uses: actions/cache/restore@v6
+        if: matrix.os == 'ubuntu-26.04'
+        id: models-en
+        with:
+          path: |
+            models/stanza/en
+            models/converted/en
+          key: models-en-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs', 'tools/requirements.txt', 'tools/stanza_convert.py') }}
+
+      - uses: actions/cache/restore@v6
+        if: matrix.os == 'ubuntu-26.04'
+        with:
+          path: models/stanza/de
+          key: models-de-treebanks-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs') }}
+
+      - uses: actions/cache/restore@v6
+        if: matrix.os != 'ubuntu-26.04'
+        with:
+          path: models/stanza/en
+          key: models-pt-${{ runner.os }}-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs') }}
+
+      - name: Download the models
+        run: |
+          dotnet build src/StanzaSharp.Tool -c Release
+          tool() { dotnet src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll "$@"; }
+          tool download models/stanza/en
+          tool download models/stanza/en --package default_fast
+          if [ "${{ matrix.os }}" = ubuntu-26.04 ]; then
+            tool download models/stanza/de --lang de
+            tool download models/stanza/de --lang de --package default_fast
+          fi
+
+      - name: Convert (ubuntu-26.04)
+        if: matrix.os == 'ubuntu-26.04'
+        run: |
+          pip install -r tools/requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
+          [ -d models/converted/en/pos ] || python tools/stanza_convert.py convert models/stanza/en --out models/converted/en
+          python tools/stanza_convert.py convert models/stanza/de --out models/converted/de
+
+      - name: Build
+        run: dotnet publish samples/StanzaSharp.Benchmark -c Release -p:StanzaSharpNoLibTorch=true -o out/jit
+
+      - name: Measure
+        run: |
+          configs=(--config "en default pt=models/stanza/en" --config "en fast pt=models/stanza/en --package default_fast")
+          if [ "${{ matrix.os }}" = ubuntu-26.04 ]; then
+            configs+=(--config "en default conv=models/converted/en" --config "en fast conv=models/converted/en --package default_fast"
+              --config "de default pt=models/stanza/de --lang de" --config "de default conv=models/converted/de --lang de")
+          fi
+          cold=
+          case "${{ runner.os }}" in
+            Linux) cold="sudo sh -c 'sync; echo 3 > /proc/sys/vm/drop_caches'" ;;
+            macOS) cold="sync && sudo purge" ;;
+          esac
+          {
+            echo "## ${{ matrix.os }}"; echo
+            lscpu 2>/dev/null | grep -E '^Model name' || sysctl -n machdep.cpu.brand_string 2>/dev/null || true; echo
+            echo "### Warm OS file cache"; echo
+            python tools/load_profile.py --build out/jit --rounds 5 "${configs[@]}"
+            if [ -n "$cold" ]; then
+              echo; echo "### Cold: the OS file cache dropped before each process"; echo
+              python tools/load_profile.py --build out/jit --rounds 3 --cold "$cold" "${configs[@]}"
+            fi
+          } > load-profile.md
+          cat load-profile.md >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: load-profile-${{ matrix.os }}
+          path: load-profile.md
 
   # One table over every runner that finished, then each runner's block.
   summary:

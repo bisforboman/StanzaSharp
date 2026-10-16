@@ -21,7 +21,7 @@ internal static class Startup
 {
     public static int Run(string[] args, string repoRoot)
     {
-        string modelDir = Path.Combine("models", "converted", "en"), text = "one";
+        string modelDir = Path.Combine("models", "converted", "en"), text = "one", package = "default", lang = "en";
         int calls = 5;
         int? threads = null;
         bool hash = false;
@@ -34,6 +34,8 @@ internal static class Startup
                 case "--calls": calls = int.Parse(args[++i]); break;
                 case "--threads": threads = int.Parse(args[++i]); break;
                 case "--hash": hash = true; break;
+                case "--package": package = args[++i]; break;
+                case "--lang": lang = args[++i]; break;
                 default: Console.Error.WriteLine($"Unknown option {args[i]}"); return 2;
             }
         }
@@ -43,12 +45,16 @@ internal static class Startup
         var (m0, j0) = Jit();
         var cpu0 = Process.GetCurrentProcess().TotalProcessorTime;
         long start = Stopwatch.GetTimestamp();
-        using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Threads = threads });
+        StanzaSharp.LoadProfile.Enabled = true;
+        using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Threads = threads, Package = package, Language = lang });
+        StanzaSharp.LoadProfile.Enabled = false;
         double load = Stopwatch.GetElapsedTime(start).TotalMilliseconds;
         var (m1, j1) = Jit();
         double loadCpu = (Process.GetCurrentProcess().TotalProcessorTime - cpu0).TotalMilliseconds;
         double loadPeak = Process.GetCurrentProcess().PeakWorkingSet64 / 1048576.0; // MiB; 0 on macOS
         var line = new StringBuilder($"load={load:F0} jit={m1 - m0}/{j1 - j0:F0} cpu={loadCpu:F0} peak={loadPeak:F0}");
+        Console.Error.WriteLine("stages=" + string.Join(",", Enum.GetValues<StanzaSharp.LoadProfile.Stage>()
+            .Select(st => $"{st}:{StanzaSharp.LoadProfile.Ms(st):F0}")) + $" packedMB={StanzaSharp.LoadProfile.PackedFloats * 4 / 1048576.0:F0} tensorMB={StanzaSharp.LoadProfile.TensorBytes / 1048576.0:F0}");
 
         if (hash)
         {

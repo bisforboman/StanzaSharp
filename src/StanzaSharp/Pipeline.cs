@@ -248,6 +248,22 @@ public sealed class Pipeline : IDisposable
         using var lanes = new SemaphoreSlim(Math.Min(LoadLanes, Environment.ProcessorCount));
         T Timed<T>(string name, Func<T> load)
         {
+            var before = LoadProfile.Local();
+            using var whole = LoadProfile.Measure(LoadProfile.Stage.Model);
+            if (LoadProfile.Enabled)
+            {
+                long t0 = Stopwatch.GetTimestamp();
+                var j0 = System.Runtime.JitInfo.GetCompilationTime(currentThread: true);
+                var file = Path.Combine(modelDir, name);
+                var cache = Nn.Managed.PackCache.Begin(name, File.Exists(file + ".safetensors") ? file + ".safetensors" : file + ".pt");
+                var loaded = load();
+                cache?.End(loaded!);
+                var m = cache?.IsHit == true && Environment.GetEnvironmentVariable("STANZASHARP_HIT_NO_GC") != null ? loaded : Collected(loaded);
+                var jit = System.Runtime.JitInfo.GetCompilationTime(currentThread: true) - j0;
+                Console.Error.WriteLine($"model {name} {(cache == null ? "" : cache.IsHit ? "hit " : "miss ")}total:{Stopwatch.GetElapsedTime(t0).TotalMilliseconds:F0} Jit:{jit.TotalMilliseconds:F0} {LoadProfile.Since(before)}");
+                return m;
+            }
+
             if (_logger?.IsEnabled(LogLevel.Information) != true)
                 return Collected(load());
             long start = Stopwatch.GetTimestamp();
@@ -259,7 +275,11 @@ public sealed class Pipeline : IDisposable
         T Collected<T>(T model)
         {
             if (backend.CollectAfterEachModel)
+            {
+                using var _ = LoadProfile.Measure(LoadProfile.Stage.Gc);
                 GC.Collect();
+            }
+
             return model;
         }
 

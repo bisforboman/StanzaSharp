@@ -149,6 +149,8 @@ internal sealed class SafeTensorFile
     /// <summary>Copies a tensor's raw bytes into <paramref name="destination"/>, which must be exactly its size.</summary>
     public void ReadInto(string key, Span<byte> destination)
     {
+        using var _ = LoadProfile.Measure(LoadProfile.Stage.Tensor);
+        Interlocked.Add(ref LoadProfile.TensorBytes, destination.Length);
         var info = this[key];
         if (destination.Length != info.Length)
             throw new ArgumentException($"Tensor '{key}' has {info.Length} bytes, the destination {destination.Length}");

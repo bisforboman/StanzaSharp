@@ -34,6 +34,7 @@ internal sealed class Checkpoint
     /// <exception cref="IOException">The operating system's errors (a missing or unreadable file) pass through.</exception>
     public static Checkpoint Load(string basePath)
     {
+        using var _ = LoadProfile.Measure(LoadProfile.Stage.Parse);
         var pt = basePath.EndsWith(".pt", StringComparison.OrdinalIgnoreCase) ? basePath : basePath + ".pt";
         if (pt == basePath || (!File.Exists(basePath + ".json") && File.Exists(pt)))
         {
@@ -60,7 +61,15 @@ internal sealed class Checkpoint
     }
 
     /// <summary>Reads the tensor a <c>$tensor</c> node in the JSON points to.</summary>
-    public T[] Tensor<T>(JsonNode? node) where T : unmanaged => Tensors.Read<T>(TensorKey(node));
+    public T[] Tensor<T>(JsonNode? node) where T : unmanaged
+    {
+        var key = TensorKey(node);
+        if (TensorHooks.Skip?.Invoke(key) == true)
+            return GC.AllocateUninitializedArray<T>((int)(Tensors[key].Length / System.Runtime.CompilerServices.Unsafe.SizeOf<T>()));
+        var result = Tensors.Read<T>(key);
+        TensorHooks.Read?.Invoke(key, result);
+        return result;
+    }
 
     public long[] Shape(JsonNode? node) => Tensors[TensorKey(node)].Shape;
 
@@ -71,6 +80,7 @@ internal sealed class Checkpoint
     /// </remarks>
     public static Dictionary<string, int> UnitToId(JsonNode? vocab)
     {
+        using var _ = LoadProfile.Measure(LoadProfile.Stage.Vocab);
         var map = (vocab as JsonObject)?["_unit2id"] ?? throw new InvalidDataException("Not a vocab node: no _unit2id");
         if (map is JsonValue v && v.TryGetValue(out PyContainer? large))
         {
@@ -136,7 +146,13 @@ internal sealed class Checkpoint
     /// Use this, not <see cref="JsonNode.AsArray"/>, for lists that can be long: a <c>.pt</c> file's lists of
     /// <see cref="PyContainer.MinCount"/> or more strings are a <see cref="JsonValue"/>, not a <see cref="JsonArray"/>.
     /// </remarks>
-    public static string[] Strings(JsonNode? list) => list switch
+    public static string[] Strings(JsonNode? list)
+    {
+        using var _ = LoadProfile.Measure(LoadProfile.Stage.Vocab);
+        return StringsCore(list);
+    }
+
+    private static string[] StringsCore(JsonNode? list) => list switch
     {
         JsonValue v when v.TryGetValue(out PyContainer? large) && large.Value is List<object?> items =>
             items.Select(x => (string)x!).ToArray(),

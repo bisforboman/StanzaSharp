@@ -109,31 +109,45 @@ internal sealed unsafe class ManagedPosNet : IPosNet
     private static (PackedMatrix, float[]) BiaffinePerUpos((float[] W, float[] B)[] heads, int[] outs, float[] uposEmb, int upos, int in1, int in2)
     {
         int total = outs.Sum();
-        var w = new float[upos * total * in1];
-        var bias = new float[upos * total];
-        for (int u = 0; u < upos; u++)
+        var unit = PackCache.Unit(() =>
         {
-            for (int h = 0, offset = 0; h < heads.Length; offset += outs[h], h++)
+            using var prep = LoadProfile.Measure(LoadProfile.Stage.Prep);
+            var w = new float[upos * total * in1];
+            var bias = new float[upos * total];
+            void PerUpos(int u)
             {
-                for (int k = 0; k < outs[h]; k++)
+                for (int h = 0, offset = 0; h < heads.Length; offset += outs[h], h++)
                 {
-                    int row = u * total + offset + k;
-                    for (int i = 0; i <= in1; i++)
+                    for (int k = 0; k < outs[h]; k++)
                     {
-                        // W[k, i, :] · [emb[u], 1]
-                        int at = (k * (in1 + 1) + i) * (in2 + 1);
-                        double s = heads[h].W[at + in2];
-                        for (int j = 0; j < in2; j++)
-                            s += (double)heads[h].W[at + j] * uposEmb[u * in2 + j];
-                        if (i < in1)
-                            w[row * in1 + i] = (float)s;
-                        else
-                            bias[row] = (float)(s + heads[h].B[k]);
+                        int row = u * total + offset + k;
+                        for (int i = 0; i <= in1; i++)
+                        {
+                            // W[k, i, :] · [emb[u], 1]
+                            int at = (k * (in1 + 1) + i) * (in2 + 1);
+                            double s = heads[h].W[at + in2];
+                            for (int j = 0; j < in2; j++)
+                                s += (double)heads[h].W[at + j] * uposEmb[u * in2 + j];
+                            if (i < in1)
+                                w[row * in1 + i] = (float)s;
+                            else
+                                bias[row] = (float)(s + heads[h].B[k]);
+                        }
                     }
                 }
             }
-        }
 
+            if (PackedMatrix.Mode == "parallel")
+                Parallel.For(0, upos, PerUpos);
+            else
+            {
+                for (int u = 0; u < upos; u++)
+                    PerUpos(u);
+            }
+
+            return [w, bias];
+        }, false, true);
+        var (w, bias) = (unit[0], unit[1]);
         return Linear(w, bias, upos * total, in1);
     }
 

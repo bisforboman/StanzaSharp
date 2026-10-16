@@ -35,7 +35,8 @@ internal sealed unsafe class PackedMatrix
 {
     public const int NR = 16;
 
-    private readonly float[] _data; // pinned (POH), so Data stays valid
+    private readonly float[]? _data; // pinned (POH), so Data stays valid
+    private readonly float* _mapped; // or a mapped cache view (PackCache, round 34 prototype)
 
     public int N { get; }
     public int K { get; }
@@ -44,7 +45,7 @@ internal sealed unsafe class PackedMatrix
     /// <summary>N rounded up to a whole panel: the width a GEMM output must have.</summary>
     public int PaddedN => Panels * NR;
 
-    public float* Data => (float*)Unsafe.AsPointer(ref _data[_offset]);
+    public float* Data => _mapped != null ? _mapped + _offset : (float*)Unsafe.AsPointer(ref _data![_offset]);
 
     private readonly int _offset;
 
@@ -58,6 +59,7 @@ internal sealed unsafe class PackedMatrix
         if (firstPanel < 0 || panels <= 0 || firstPanel + panels > source.Panels)
             throw new ArgumentOutOfRangeException(nameof(panels));
         _data = source._data;
+        _mapped = source._mapped;
         _offset = source._offset + firstPanel * NR * source.K;
         K = source.K;
         Panels = panels;
@@ -73,14 +75,70 @@ internal sealed unsafe class PackedMatrix
         N = n;
         K = k;
         Panels = (n + NR - 1) / NR;
-        _data = GC.AllocateArray<float>(Panels * NR * k, pinned: true);
-        for (int j = 0; j < n; j++)
+        int length = Panels * NR * k;
+        Interlocked.Add(ref LoadProfile.PackedFloats, length);
+        var cache = PackCache.Current;
+        if (cache != null && cache.TryHit(length, out _data, out _mapped))
+            return;
+        using var _ = LoadProfile.Measure(LoadProfile.Stage.Pack);
+        if (Mode == "old")
         {
-            var src = w.Slice((rows?[j] ?? j) * k, k);
-            int panel = j / NR, lane = j % NR;
-            int dst = panel * NR * k + lane;
+            _data = GC.AllocateArray<float>(length, pinned: true);
+            for (int j = 0; j < n; j++)
+            {
+                var src = w.Slice((rows?[j] ?? j) * k, k);
+                int panel = j / NR, lane = j % NR;
+                int dst = panel * NR * k + lane;
+                for (int kk = 0; kk < k; kk++)
+                    _data[dst + kk * NR] = src[kk];
+            }
+        }
+        else
+        {
+            _data = GC.AllocateUninitializedArray<float>(length, pinned: true);
+            fixed (float* source = w)
+            {
+                nint src = (nint)source, dst = (nint)Data;
+                if ((long)n * k >= ParallelPackFloats && Environment.ProcessorCount > 1 && Mode == "parallel")
+                    Parallel.For(0, Panels, p => PackPanel((float*)src, (float*)dst, p, n, k, rows));
+                else
+                {
+                    for (int p = 0; p < Panels; p++)
+                        PackPanel((float*)src, (float*)dst, p, n, k, rows);
+                }
+            }
+        }
+
+        cache?.Record(_data);
+    }
+
+    /// <summary>Round 34 prototype: STANZASHARP_PACK = old (main's loop), fast (default here), parallel.</summary>
+    internal static readonly string Mode = Environment.GetEnvironmentVariable("STANZASHARP_PACK") ?? "fast";
+
+    private const long ParallelPackFloats = 1 << 20;
+
+    /// <summary>Panel p of W [n, k]: its [k][NR] block, rows past n zero. A copy, so the bits don't depend on how it's done.</summary>
+    private static void PackPanel(float* w, float* data, int p, int n, int k, int[]? rows)
+    {
+        var src = stackalloc nint[NR];
+        int lanes = Math.Min(NR, n - p * NR);
+        for (int lane = 0; lane < lanes; lane++)
+        {
+            int j = p * NR + lane, r = rows?[j] ?? j;
+            if ((uint)r >= (uint)n)
+                throw new ArgumentOutOfRangeException(nameof(rows));
+            src[lane] = (nint)(w + (long)r * k);
+        }
+
+        float* dst = data + (long)p * NR * k;
+        if (lanes < NR)
+            new Span<float>(dst, NR * k).Clear();
+        for (int lane = 0; lane < lanes; lane++)
+        {
+            float* s = (float*)src[lane];
+            float* d = dst + lane;
             for (int kk = 0; kk < k; kk++)
-                _data[dst + kk * NR] = src[kk];
+                d[(long)kk * NR] = s[kk];
         }
     }
 }

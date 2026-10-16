@@ -104,24 +104,30 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
         if (!shape.SequenceEqual([b1, b1, shape[2]]))
             throw new InvalidOperationException($"{name}.scorer.W_bilin.weight has shape [{string.Join(", ", shape)}]");
         int outs = (int)shape[2];
-        var wb = ckpt.Tensor<float>(model[name + ".scorer.W_bilin.weight"]); // [p, q, o]
-        var w = new float[b1 * outs * b];
-        var wBias = new float[(b1 * outs + PackedMatrix.NR - 1) / PackedMatrix.NR * PackedMatrix.NR];
-        for (int p = 0; p < b1; p++)
+        var unit = PackCache.Unit(() =>
         {
-            for (int q = 0; q < b1; q++)
+            using var prep = LoadProfile.Measure(LoadProfile.Stage.Prep);
+            var wb = ckpt.Tensor<float>(model[name + ".scorer.W_bilin.weight"]); // [p, q, o]
+            var w = new float[b1 * outs * b];
+            var wBias = new float[(b1 * outs + PackedMatrix.NR - 1) / PackedMatrix.NR * PackedMatrix.NR];
+            for (int p = 0; p < b1; p++)
             {
-                for (int o = 0; o < outs; o++)
+                for (int q = 0; q < b1; q++)
                 {
-                    float v = wb[(p * b1 + q) * outs + o];
-                    if (p < b)
-                        w[(q * outs + o) * b + p] = v;
-                    else
-                        wBias[q * outs + o] = v;
+                    for (int o = 0; o < outs; o++)
+                    {
+                        float v = wb[(p * b1 + q) * outs + o];
+                        if (p < b)
+                            w[(q * outs + o) * b + p] = v;
+                        else
+                            wBias[q * outs + o] = v;
+                    }
                 }
             }
-        }
 
+            return [w, wBias];
+        }, false, true);
+        var (w, wBias) = (unit[0], unit[1]);
         return new Scorer
         {
             Out = outs,

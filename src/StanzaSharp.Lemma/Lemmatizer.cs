@@ -49,8 +49,32 @@ internal sealed class Lemmatizer : IDisposable
         Require(root["dicts_version"]?.GetValue<int>() == 3, "a dictionary format other than v3 (gzip + JSON)");
 
         // trainer._unpack_pos_dict: {pos: {word: lemma}}, "*" holding the POS-independent entries.
-        using (var gz = new GZipStream(new MemoryStream(Convert.FromBase64String(root["dicts"]!["$bytes"]!.GetValue<string>())), CompressionMode.Decompress))
-            _posDict = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string?>>>(gz)!;
+        using (LoadProfile.Measure(LoadProfile.Stage.Dict))
+        {
+            long t0 = System.Diagnostics.Stopwatch.GetTimestamp();
+            var raw = Convert.FromBase64String(root["dicts"]!["$bytes"]!.GetValue<string>());
+            long t1 = System.Diagnostics.Stopwatch.GetTimestamp();
+            var json = new MemoryStream();
+            using (var gz = new GZipStream(new MemoryStream(raw), CompressionMode.Decompress))
+                gz.CopyTo(json);
+            long t2 = System.Diagnostics.Stopwatch.GetTimestamp();
+            json.Position = 0;
+            _posDict = Environment.GetEnvironmentVariable("STANZASHARP_DICT") is not ("reader" or "check")
+                ? JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string?>>>(json)!
+                : ReadDicts(json.GetBuffer().AsSpan(0, (int)json.Length));
+            if (Environment.GetEnvironmentVariable("STANZASHARP_DICT") == "check")
+            {
+                json.Position = 0;
+                var reference = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string?>>>(json)!;
+                if (reference.Count != _posDict.Count || reference.Any(p => !_posDict.TryGetValue(p.Key, out var d) || d.Count != p.Value.Count
+                    || p.Value.Any(e => !d.TryGetValue(e.Key, out var v) || v != e.Value)))
+                    throw new InvalidOperationException("ReadDicts differs from JsonSerializer");
+                Console.Error.WriteLine("lemma dicts: ReadDicts equals JsonSerializer");
+            }
+            long t3 = System.Diagnostics.Stopwatch.GetTimestamp();
+            if (LoadProfile.Enabled)
+                Console.Error.WriteLine($"lemma dicts: base64 {raw.Length / 1024} KB gz {(t1 - t0) * 1000.0 / System.Diagnostics.Stopwatch.Frequency:F0} ms, gunzip {json.Length / 1024} KB {(t2 - t1) * 1000.0 / System.Diagnostics.Stopwatch.Frequency:F0} ms, deserialize {_posDict.Sum(d => d.Value.Count)} entries {(t3 - t2) * 1000.0 / System.Diagnostics.Stopwatch.Frequency:F0} ms");
+        }
 
         var vocab = root["vocab"]!;
         _charToId = Checkpoint.UnitToId(vocab["char"]);
@@ -61,6 +85,38 @@ internal sealed class Lemmatizer : IDisposable
         _caseless = Flag("caseless");
         var sizes = Seq2SeqConfig.From(config);
         _net = net(ckpt, sizes);
+    }
+
+    /// <summary>The dictionaries' JSON, <c>{pos: {word: lemma or null}}</c>, read like JsonSerializer (a repeated key: the last wins).</summary>
+    private static Dictionary<string, Dictionary<string, string?>> ReadDicts(ReadOnlySpan<byte> json)
+    {
+        var reader = new Utf8JsonReader(json);
+        var result = new Dictionary<string, Dictionary<string, string?>>();
+        Expect(reader.Read() && reader.TokenType == JsonTokenType.StartObject);
+        while (reader.Read() && reader.TokenType == JsonTokenType.PropertyName)
+        {
+            var pos = reader.GetString()!;
+            Expect(reader.Read() && reader.TokenType == JsonTokenType.StartObject);
+            var words = new Dictionary<string, string?>();
+            while (reader.Read() && reader.TokenType == JsonTokenType.PropertyName)
+            {
+                var word = reader.GetString()!;
+                Expect(reader.Read() && reader.TokenType is JsonTokenType.String or JsonTokenType.Null);
+                words[word] = reader.TokenType == JsonTokenType.Null ? null : reader.GetString();
+            }
+
+            Expect(reader.TokenType == JsonTokenType.EndObject);
+            result[pos] = words;
+        }
+
+        Expect(reader.TokenType == JsonTokenType.EndObject);
+        return result;
+
+        static void Expect(bool ok)
+        {
+            if (!ok)
+                throw new InvalidDataException("The lemma dictionaries are not {pos: {word: lemma}}");
+        }
     }
 
     /// <summary>Loads <c>basePath.json</c> + <c>.safetensors</c> (or <c>basePath.pt</c>), e.g. <c>models/converted/en/lemma/combined_nocharlm</c>, on the managed backend.</summary>

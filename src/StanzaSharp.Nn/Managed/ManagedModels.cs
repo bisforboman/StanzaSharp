@@ -41,12 +41,16 @@ internal sealed unsafe class ManagedCharLanguageModel
         int h = HiddenDim;
         var embShape = ckpt.Shape(state["char_emb.weight"]);
         int vocab = (int)embShape[0], dim = (int)embShape[1];
-        var emb = ckpt.Tensor<float>(state["char_emb.weight"]);
-        var (wih, bias) = PackedLstm.PackInput(h, dim, [ckpt.Tensor<float>(state["charlstm.lstm.weight_ih_l0"])],
-            [ckpt.Tensor<float>(state["charlstm.lstm.bias_ih_l0"])], [ckpt.Tensor<float>(state["charlstm.lstm.bias_hh_l0"])]);
-        _table = GC.AllocateArray<float>(vocab * 4 * h, pinned: true);
-        fixed (float* e = emb, b = bias)
-            Gemm.Run(e, vocab, dim, wih, b, (float*)Unsafe.AsPointer(ref _table[0]), 4 * h);
+        _table = PackCache.Unit(() =>
+        {
+            var emb = ckpt.Tensor<float>(state["char_emb.weight"]);
+            var (wih, bias) = PackedLstm.PackInput(h, dim, [ckpt.Tensor<float>(state["charlstm.lstm.weight_ih_l0"])],
+                [ckpt.Tensor<float>(state["charlstm.lstm.bias_ih_l0"])], [ckpt.Tensor<float>(state["charlstm.lstm.bias_hh_l0"])]);
+            var table = GC.AllocateArray<float>(vocab * 4 * h, pinned: true);
+            fixed (float* e = emb, b = bias, t = table)
+                Gemm.Run(e, vocab, dim, wih, b, t, 4 * h);
+            return [table];
+        }, true)[0];
         _whh = new PackedMatrix(ckpt.Tensor<float>(state["charlstm.lstm.weight_hh_l0"]), 4 * h, h, PackedLstm.GateOrder(h));
         _h0 = GC.AllocateArray<float>(h, pinned: true);
         ckpt.Tensor<float>(state["charlstm_h_init"]).CopyTo(_h0, 0);
