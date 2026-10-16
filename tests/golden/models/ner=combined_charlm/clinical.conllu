@@ -1,0 +1,499 @@
+# text = History of present illness:
+# sent_id = 0
+1	History	_	_	_	_	0	_	_	start_char=0|end_char=7|ner=O
+2	of	_	_	_	_	1	_	_	start_char=8|end_char=10|ner=O
+3	present	_	_	_	_	2	_	_	start_char=11|end_char=18|ner=O
+4	illness	_	_	_	_	3	_	_	SpaceAfter=No|start_char=19|end_char=26|ner=O
+5	:	_	_	_	_	4	_	_	start_char=26|end_char=27|ner=O
+
+# text = The patient is a 67-year-old man with a history of hypertension, type 2 diabetes mellitus and chronic kidney disease who presented to the emergency department with three days of worsening shortness of breath and a productive cough.
+# sent_id = 1
+1	The	_	_	_	_	0	_	_	start_char=28|end_char=31|ner=O
+2	patient	_	_	_	_	1	_	_	start_char=32|end_char=39|ner=O
+3	is	_	_	_	_	2	_	_	start_char=40|end_char=42|ner=O
+4	a	_	_	_	_	3	_	_	start_char=43|end_char=44|ner=O
+5	67	_	_	_	_	4	_	_	SpaceAfter=No|start_char=45|end_char=47|ner=B-DATE
+6	-	_	_	_	_	5	_	_	SpaceAfter=No|start_char=47|end_char=48|ner=I-DATE
+7	year	_	_	_	_	6	_	_	SpaceAfter=No|start_char=48|end_char=52|ner=I-DATE
+8	-	_	_	_	_	7	_	_	SpaceAfter=No|start_char=52|end_char=53|ner=I-DATE
+9	old	_	_	_	_	8	_	_	start_char=53|end_char=56|ner=E-DATE
+10	man	_	_	_	_	9	_	_	start_char=57|end_char=60|ner=O
+11	with	_	_	_	_	10	_	_	start_char=61|end_char=65|ner=O
+12	a	_	_	_	_	11	_	_	start_char=66|end_char=67|ner=O
+13	history	_	_	_	_	12	_	_	start_char=68|end_char=75|ner=O
+14	of	_	_	_	_	13	_	_	start_char=76|end_char=78|ner=O
+15	hypertension	_	_	_	_	14	_	_	SpaceAfter=No|start_char=79|end_char=91|ner=O
+16	,	_	_	_	_	15	_	_	start_char=91|end_char=92|ner=O
+17	type	_	_	_	_	16	_	_	start_char=93|end_char=97|ner=O
+18	2	_	_	_	_	17	_	_	start_char=98|end_char=99|ner=S-CARDINAL
+19	diabetes	_	_	_	_	18	_	_	start_char=100|end_char=108|ner=O
+20	mellitus	_	_	_	_	19	_	_	start_char=109|end_char=117|ner=O
+21	and	_	_	_	_	20	_	_	start_char=118|end_char=121|ner=O
+22	chronic	_	_	_	_	21	_	_	start_char=122|end_char=129|ner=O
+23	kidney	_	_	_	_	22	_	_	start_char=130|end_char=136|ner=O
+24	disease	_	_	_	_	23	_	_	start_char=137|end_char=144|ner=O
+25	who	_	_	_	_	24	_	_	start_char=145|end_char=148|ner=O
+26	presented	_	_	_	_	25	_	_	start_char=149|end_char=158|ner=O
+27	to	_	_	_	_	26	_	_	start_char=159|end_char=161|ner=O
+28	the	_	_	_	_	27	_	_	start_char=162|end_char=165|ner=O
+29	emergency	_	_	_	_	28	_	_	start_char=166|end_char=175|ner=O
+30	department	_	_	_	_	29	_	_	start_char=176|end_char=186|ner=O
+31	with	_	_	_	_	30	_	_	start_char=187|end_char=191|ner=O
+32	three	_	_	_	_	31	_	_	start_char=192|end_char=197|ner=B-DATE
+33	days	_	_	_	_	32	_	_	start_char=198|end_char=202|ner=E-DATE
+34	of	_	_	_	_	33	_	_	start_char=203|end_char=205|ner=O
+35	worsening	_	_	_	_	34	_	_	start_char=206|end_char=215|ner=O
+36	shortness	_	_	_	_	35	_	_	start_char=216|end_char=225|ner=O
+37	of	_	_	_	_	36	_	_	start_char=226|end_char=228|ner=O
+38	breath	_	_	_	_	37	_	_	start_char=229|end_char=235|ner=O
+39	and	_	_	_	_	38	_	_	start_char=236|end_char=239|ner=O
+40	a	_	_	_	_	39	_	_	start_char=240|end_char=241|ner=O
+41	productive	_	_	_	_	40	_	_	start_char=242|end_char=252|ner=O
+42	cough	_	_	_	_	41	_	_	SpaceAfter=No|start_char=253|end_char=258|ner=O
+43	.	_	_	_	_	42	_	_	start_char=258|end_char=259|ner=O
+
+# text = He denies chest pain, fever or recent travel.
+# sent_id = 2
+1	He	_	_	_	_	0	_	_	start_char=260|end_char=262|ner=O
+2	denies	_	_	_	_	1	_	_	start_char=263|end_char=269|ner=O
+3	chest	_	_	_	_	2	_	_	start_char=270|end_char=275|ner=O
+4	pain	_	_	_	_	3	_	_	SpaceAfter=No|start_char=276|end_char=280|ner=O
+5	,	_	_	_	_	4	_	_	start_char=280|end_char=281|ner=O
+6	fever	_	_	_	_	5	_	_	start_char=282|end_char=287|ner=O
+7	or	_	_	_	_	6	_	_	start_char=288|end_char=290|ner=O
+8	recent	_	_	_	_	7	_	_	start_char=291|end_char=297|ner=O
+9	travel	_	_	_	_	8	_	_	SpaceAfter=No|start_char=298|end_char=304|ner=O
+10	.	_	_	_	_	9	_	_	start_char=304|end_char=305|ner=O
+
+# text = He reports mild swelling of both ankles since last week.
+# sent_id = 3
+1	He	_	_	_	_	0	_	_	start_char=306|end_char=308|ner=O
+2	reports	_	_	_	_	1	_	_	start_char=309|end_char=316|ner=O
+3	mild	_	_	_	_	2	_	_	start_char=317|end_char=321|ner=O
+4	swelling	_	_	_	_	3	_	_	start_char=322|end_char=330|ner=O
+5	of	_	_	_	_	4	_	_	start_char=331|end_char=333|ner=O
+6	both	_	_	_	_	5	_	_	start_char=334|end_char=338|ner=O
+7	ankles	_	_	_	_	6	_	_	start_char=339|end_char=345|ner=O
+8	since	_	_	_	_	7	_	_	start_char=346|end_char=351|ner=O
+9	last	_	_	_	_	8	_	_	start_char=352|end_char=356|ner=B-DATE
+10	week	_	_	_	_	9	_	_	SpaceAfter=No|start_char=357|end_char=361|ner=E-DATE
+11	.	_	_	_	_	10	_	_	SpacesAfter=\n\n|start_char=361|end_char=362|ner=O
+
+# text = Past medical history: Coronary artery disease status post stent placement in 2019.
+# sent_id = 4
+1	Past	_	_	_	_	0	_	_	start_char=364|end_char=368|ner=O
+2	medical	_	_	_	_	1	_	_	start_char=369|end_char=376|ner=O
+3	history	_	_	_	_	2	_	_	SpaceAfter=No|start_char=377|end_char=384|ner=O
+4	:	_	_	_	_	3	_	_	start_char=384|end_char=385|ner=O
+5	Coronary	_	_	_	_	4	_	_	start_char=386|end_char=394|ner=O
+6	artery	_	_	_	_	5	_	_	start_char=395|end_char=401|ner=O
+7	disease	_	_	_	_	6	_	_	start_char=402|end_char=409|ner=O
+8	status	_	_	_	_	7	_	_	start_char=410|end_char=416|ner=O
+9	post	_	_	_	_	8	_	_	start_char=417|end_char=421|ner=O
+10	stent	_	_	_	_	9	_	_	start_char=422|end_char=427|ner=O
+11	placement	_	_	_	_	10	_	_	start_char=428|end_char=437|ner=O
+12	in	_	_	_	_	11	_	_	start_char=438|end_char=440|ner=O
+13	2019	_	_	_	_	12	_	_	SpaceAfter=No|start_char=441|end_char=445|ner=S-DATE
+14	.	_	_	_	_	13	_	_	start_char=445|end_char=446|ner=O
+
+# text = Atrial fibrillation on warfarin.
+# sent_id = 5
+1	Atrial	_	_	_	_	0	_	_	start_char=447|end_char=453|ner=O
+2	fibrillation	_	_	_	_	1	_	_	start_char=454|end_char=466|ner=O
+3	on	_	_	_	_	2	_	_	start_char=467|end_char=469|ner=O
+4	warfarin	_	_	_	_	3	_	_	SpaceAfter=No|start_char=470|end_char=478|ner=O
+5	.	_	_	_	_	4	_	_	start_char=478|end_char=479|ner=O
+
+# text = Gout.
+# sent_id = 6
+1	Gout	_	_	_	_	0	_	_	SpaceAfter=No|start_char=480|end_char=484|ner=O
+2	.	_	_	_	_	1	_	_	start_char=484|end_char=485|ner=O
+
+# text = Mild depression treated with sertraline.
+# sent_id = 7
+1	Mild	_	_	_	_	0	_	_	start_char=486|end_char=490|ner=O
+2	depression	_	_	_	_	1	_	_	start_char=491|end_char=501|ner=O
+3	treated	_	_	_	_	2	_	_	start_char=502|end_char=509|ner=O
+4	with	_	_	_	_	3	_	_	start_char=510|end_char=514|ner=O
+5	sertraline	_	_	_	_	4	_	_	SpaceAfter=No|start_char=515|end_char=525|ner=O
+6	.	_	_	_	_	5	_	_	SpacesAfter=\n\n|start_char=525|end_char=526|ner=O
+
+# text = Medications on admission: metoprolol 25 mg twice daily, lisinopril 10 mg daily, metformin 500 mg twice daily, warfarin 5 mg daily, atorvastatin 40 mg at night and allopurinol 100 mg daily.
+# sent_id = 8
+1	Medications	_	_	_	_	0	_	_	start_char=528|end_char=539|ner=O
+2	on	_	_	_	_	1	_	_	start_char=540|end_char=542|ner=O
+3	admission	_	_	_	_	2	_	_	SpaceAfter=No|start_char=543|end_char=552|ner=O
+4	:	_	_	_	_	3	_	_	start_char=552|end_char=553|ner=O
+5	metoprolol	_	_	_	_	4	_	_	start_char=554|end_char=564|ner=O
+6	25	_	_	_	_	5	_	_	start_char=565|end_char=567|ner=B-QUANTITY
+7	mg	_	_	_	_	6	_	_	start_char=568|end_char=570|ner=E-QUANTITY
+8	twice	_	_	_	_	7	_	_	start_char=571|end_char=576|ner=O
+9	daily	_	_	_	_	8	_	_	SpaceAfter=No|start_char=577|end_char=582|ner=O
+10	,	_	_	_	_	9	_	_	start_char=582|end_char=583|ner=O
+11	lisinopril	_	_	_	_	10	_	_	start_char=584|end_char=594|ner=O
+12	10	_	_	_	_	11	_	_	start_char=595|end_char=597|ner=B-QUANTITY
+13	mg	_	_	_	_	12	_	_	start_char=598|end_char=600|ner=E-QUANTITY
+14	daily	_	_	_	_	13	_	_	SpaceAfter=No|start_char=601|end_char=606|ner=O
+15	,	_	_	_	_	14	_	_	start_char=606|end_char=607|ner=O
+16	metformin	_	_	_	_	15	_	_	start_char=608|end_char=617|ner=O
+17	500	_	_	_	_	16	_	_	start_char=618|end_char=621|ner=B-QUANTITY
+18	mg	_	_	_	_	17	_	_	start_char=622|end_char=624|ner=E-QUANTITY
+19	twice	_	_	_	_	18	_	_	start_char=625|end_char=630|ner=O
+20	daily	_	_	_	_	19	_	_	SpaceAfter=No|start_char=631|end_char=636|ner=O
+21	,	_	_	_	_	20	_	_	start_char=636|end_char=637|ner=O
+22	warfarin	_	_	_	_	21	_	_	start_char=638|end_char=646|ner=O
+23	5	_	_	_	_	22	_	_	start_char=647|end_char=648|ner=B-QUANTITY
+24	mg	_	_	_	_	23	_	_	start_char=649|end_char=651|ner=E-QUANTITY
+25	daily	_	_	_	_	24	_	_	SpaceAfter=No|start_char=652|end_char=657|ner=O
+26	,	_	_	_	_	25	_	_	start_char=657|end_char=658|ner=O
+27	atorvastatin	_	_	_	_	26	_	_	start_char=659|end_char=671|ner=O
+28	40	_	_	_	_	27	_	_	start_char=672|end_char=674|ner=B-QUANTITY
+29	mg	_	_	_	_	28	_	_	start_char=675|end_char=677|ner=E-QUANTITY
+30	at	_	_	_	_	29	_	_	start_char=678|end_char=680|ner=O
+31	night	_	_	_	_	30	_	_	start_char=681|end_char=686|ner=O
+32	and	_	_	_	_	31	_	_	start_char=687|end_char=690|ner=O
+33	allopurinol	_	_	_	_	32	_	_	start_char=691|end_char=702|ner=O
+34	100	_	_	_	_	33	_	_	start_char=703|end_char=706|ner=B-QUANTITY
+35	mg	_	_	_	_	34	_	_	start_char=707|end_char=709|ner=E-QUANTITY
+36	daily	_	_	_	_	35	_	_	SpaceAfter=No|start_char=710|end_char=715|ner=O
+37	.	_	_	_	_	36	_	_	SpacesAfter=\n\n|start_char=715|end_char=716|ner=O
+
+# text = Physical examination: Temperature 37.8 C, heart rate 104, blood pressure 148/92, respiratory rate 24, oxygen saturation 89% on room air.
+# sent_id = 9
+1	Physical	_	_	_	_	0	_	_	start_char=718|end_char=726|ner=O
+2	examination	_	_	_	_	1	_	_	SpaceAfter=No|start_char=727|end_char=738|ner=O
+3	:	_	_	_	_	2	_	_	start_char=738|end_char=739|ner=O
+4	Temperature	_	_	_	_	3	_	_	start_char=740|end_char=751|ner=O
+5	37.8	_	_	_	_	4	_	_	start_char=752|end_char=756|ner=O
+6	C	_	_	_	_	5	_	_	SpaceAfter=No|start_char=757|end_char=758|ner=O
+7	,	_	_	_	_	6	_	_	start_char=758|end_char=759|ner=O
+8	heart	_	_	_	_	7	_	_	start_char=760|end_char=765|ner=O
+9	rate	_	_	_	_	8	_	_	start_char=766|end_char=770|ner=O
+10	104	_	_	_	_	9	_	_	SpaceAfter=No|start_char=771|end_char=774|ner=S-CARDINAL
+11	,	_	_	_	_	10	_	_	start_char=774|end_char=775|ner=O
+12	blood	_	_	_	_	11	_	_	start_char=776|end_char=781|ner=O
+13	pressure	_	_	_	_	12	_	_	start_char=782|end_char=790|ner=O
+14	148	_	_	_	_	13	_	_	SpaceAfter=No|start_char=791|end_char=794|ner=S-CARDINAL
+15	/	_	_	_	_	14	_	_	SpaceAfter=No|start_char=794|end_char=795|ner=O
+16	92	_	_	_	_	15	_	_	SpaceAfter=No|start_char=795|end_char=797|ner=S-CARDINAL
+17	,	_	_	_	_	16	_	_	start_char=797|end_char=798|ner=O
+18	respiratory	_	_	_	_	17	_	_	start_char=799|end_char=810|ner=O
+19	rate	_	_	_	_	18	_	_	start_char=811|end_char=815|ner=O
+20	24	_	_	_	_	19	_	_	SpaceAfter=No|start_char=816|end_char=818|ner=S-CARDINAL
+21	,	_	_	_	_	20	_	_	start_char=818|end_char=819|ner=O
+22	oxygen	_	_	_	_	21	_	_	start_char=820|end_char=826|ner=O
+23	saturation	_	_	_	_	22	_	_	start_char=827|end_char=837|ner=O
+24	89	_	_	_	_	23	_	_	SpaceAfter=No|start_char=838|end_char=840|ner=B-PERCENT
+25	%	_	_	_	_	24	_	_	start_char=840|end_char=841|ner=E-PERCENT
+26	on	_	_	_	_	25	_	_	start_char=842|end_char=844|ner=O
+27	room	_	_	_	_	26	_	_	start_char=845|end_char=849|ner=O
+28	air	_	_	_	_	27	_	_	SpaceAfter=No|start_char=850|end_char=853|ner=O
+29	.	_	_	_	_	28	_	_	start_char=853|end_char=854|ner=O
+
+# text = Crackles were heard at both lung bases.
+# sent_id = 10
+1	Crackles	_	_	_	_	0	_	_	start_char=855|end_char=863|ner=O
+2	were	_	_	_	_	1	_	_	start_char=864|end_char=868|ner=O
+3	heard	_	_	_	_	2	_	_	start_char=869|end_char=874|ner=O
+4	at	_	_	_	_	3	_	_	start_char=875|end_char=877|ner=O
+5	both	_	_	_	_	4	_	_	start_char=878|end_char=882|ner=O
+6	lung	_	_	_	_	5	_	_	start_char=883|end_char=887|ner=O
+7	bases	_	_	_	_	6	_	_	SpaceAfter=No|start_char=888|end_char=893|ner=O
+8	.	_	_	_	_	7	_	_	start_char=893|end_char=894|ner=O
+
+# text = There was 2+ pitting edema of the lower extremities.
+# sent_id = 11
+1	There	_	_	_	_	0	_	_	start_char=895|end_char=900|ner=O
+2	was	_	_	_	_	1	_	_	start_char=901|end_char=904|ner=O
+3	2	_	_	_	_	2	_	_	SpaceAfter=No|start_char=905|end_char=906|ner=S-CARDINAL
+4	+	_	_	_	_	3	_	_	start_char=906|end_char=907|ner=O
+5	pitting	_	_	_	_	4	_	_	start_char=908|end_char=915|ner=O
+6	edema	_	_	_	_	5	_	_	start_char=916|end_char=921|ner=O
+7	of	_	_	_	_	6	_	_	start_char=922|end_char=924|ner=O
+8	the	_	_	_	_	7	_	_	start_char=925|end_char=928|ner=O
+9	lower	_	_	_	_	8	_	_	start_char=929|end_char=934|ner=O
+10	extremities	_	_	_	_	9	_	_	SpaceAfter=No|start_char=935|end_char=946|ner=O
+11	.	_	_	_	_	10	_	_	start_char=946|end_char=947|ner=O
+
+# text = The abdomen was soft and non-tender.
+# sent_id = 12
+1	The	_	_	_	_	0	_	_	start_char=948|end_char=951|ner=O
+2	abdomen	_	_	_	_	1	_	_	start_char=952|end_char=959|ner=O
+3	was	_	_	_	_	2	_	_	start_char=960|end_char=963|ner=O
+4	soft	_	_	_	_	3	_	_	start_char=964|end_char=968|ner=O
+5	and	_	_	_	_	4	_	_	start_char=969|end_char=972|ner=O
+6	non-tender	_	_	_	_	5	_	_	SpaceAfter=No|start_char=973|end_char=983|ner=O
+7	.	_	_	_	_	6	_	_	SpacesAfter=\n\n|start_char=983|end_char=984|ner=O
+
+# text = Laboratory data: White blood cell count 13.2, hemoglobin 10.9, platelets 210.
+# sent_id = 13
+1	Laboratory	_	_	_	_	0	_	_	start_char=986|end_char=996|ner=O
+2	data	_	_	_	_	1	_	_	SpaceAfter=No|start_char=997|end_char=1001|ner=O
+3	:	_	_	_	_	2	_	_	start_char=1001|end_char=1002|ner=O
+4	White	_	_	_	_	3	_	_	start_char=1003|end_char=1008|ner=O
+5	blood	_	_	_	_	4	_	_	start_char=1009|end_char=1014|ner=O
+6	cell	_	_	_	_	5	_	_	start_char=1015|end_char=1019|ner=O
+7	count	_	_	_	_	6	_	_	start_char=1020|end_char=1025|ner=O
+8	13.2	_	_	_	_	7	_	_	SpaceAfter=No|start_char=1026|end_char=1030|ner=S-CARDINAL
+9	,	_	_	_	_	8	_	_	start_char=1030|end_char=1031|ner=O
+10	hemoglobin	_	_	_	_	9	_	_	start_char=1032|end_char=1042|ner=O
+11	10.9	_	_	_	_	10	_	_	SpaceAfter=No|start_char=1043|end_char=1047|ner=S-CARDINAL
+12	,	_	_	_	_	11	_	_	start_char=1047|end_char=1048|ner=O
+13	platelets	_	_	_	_	12	_	_	start_char=1049|end_char=1058|ner=O
+14	210	_	_	_	_	13	_	_	SpaceAfter=No|start_char=1059|end_char=1062|ner=S-CARDINAL
+15	.	_	_	_	_	14	_	_	start_char=1062|end_char=1063|ner=O
+
+# text = Sodium 134, potassium 5.1, creatinine 2.1 (baseline 1.6).
+# sent_id = 14
+1	Sodium	_	_	_	_	0	_	_	start_char=1064|end_char=1070|ner=O
+2	134	_	_	_	_	1	_	_	SpaceAfter=No|start_char=1071|end_char=1074|ner=S-CARDINAL
+3	,	_	_	_	_	2	_	_	start_char=1074|end_char=1075|ner=O
+4	potassium	_	_	_	_	3	_	_	start_char=1076|end_char=1085|ner=O
+5	5.1	_	_	_	_	4	_	_	SpaceAfter=No|start_char=1086|end_char=1089|ner=S-CARDINAL
+6	,	_	_	_	_	5	_	_	start_char=1089|end_char=1090|ner=O
+7	creatinine	_	_	_	_	6	_	_	start_char=1091|end_char=1101|ner=O
+8	2.1	_	_	_	_	7	_	_	start_char=1102|end_char=1105|ner=S-CARDINAL
+9	(	_	_	_	_	8	_	_	SpaceAfter=No|start_char=1106|end_char=1107|ner=O
+10	baseline	_	_	_	_	9	_	_	start_char=1107|end_char=1115|ner=O
+11	1.6	_	_	_	_	10	_	_	SpaceAfter=No|start_char=1116|end_char=1119|ner=S-CARDINAL
+12	)	_	_	_	_	11	_	_	SpaceAfter=No|start_char=1119|end_char=1120|ner=O
+13	.	_	_	_	_	12	_	_	start_char=1120|end_char=1121|ner=O
+
+# text = BNP was elevated at 1,480.
+# sent_id = 15
+1	BNP	_	_	_	_	0	_	_	start_char=1122|end_char=1125|ner=S-ORG
+2	was	_	_	_	_	1	_	_	start_char=1126|end_char=1129|ner=O
+3	elevated	_	_	_	_	2	_	_	start_char=1130|end_char=1138|ner=O
+4	at	_	_	_	_	3	_	_	start_char=1139|end_char=1141|ner=O
+5	1,480	_	_	_	_	4	_	_	SpaceAfter=No|start_char=1142|end_char=1147|ner=S-CARDINAL
+6	.	_	_	_	_	5	_	_	start_char=1147|end_char=1148|ner=O
+
+# text = Troponin was negative twice.
+# sent_id = 16
+1	Troponin	_	_	_	_	0	_	_	start_char=1149|end_char=1157|ner=O
+2	was	_	_	_	_	1	_	_	start_char=1158|end_char=1161|ner=O
+3	negative	_	_	_	_	2	_	_	start_char=1162|end_char=1170|ner=O
+4	twice	_	_	_	_	3	_	_	SpaceAfter=No|start_char=1171|end_char=1176|ner=O
+5	.	_	_	_	_	4	_	_	start_char=1176|end_char=1177|ner=O
+
+# text = INR 2.7.
+# sent_id = 17
+1	INR	_	_	_	_	0	_	_	start_char=1178|end_char=1181|ner=O
+2	2.7	_	_	_	_	1	_	_	SpaceAfter=No|start_char=1182|end_char=1185|ner=S-CARDINAL
+3	.	_	_	_	_	2	_	_	SpacesAfter=\n\n|start_char=1185|end_char=1186|ner=O
+
+# text = Imaging: A chest x-ray showed bilateral pleural effusions and pulmonary vascular congestion, with a possible infiltrate in the right lower lobe.
+# sent_id = 18
+1	Imaging	_	_	_	_	0	_	_	SpaceAfter=No|start_char=1188|end_char=1195|ner=O
+2	:	_	_	_	_	1	_	_	start_char=1195|end_char=1196|ner=O
+3	A	_	_	_	_	2	_	_	start_char=1197|end_char=1198|ner=O
+4	chest	_	_	_	_	3	_	_	start_char=1199|end_char=1204|ner=O
+5	x	_	_	_	_	4	_	_	SpaceAfter=No|start_char=1205|end_char=1206|ner=O
+6	-	_	_	_	_	5	_	_	SpaceAfter=No|start_char=1206|end_char=1207|ner=O
+7	ray	_	_	_	_	6	_	_	start_char=1207|end_char=1210|ner=O
+8	showed	_	_	_	_	7	_	_	start_char=1211|end_char=1217|ner=O
+9	bilateral	_	_	_	_	8	_	_	start_char=1218|end_char=1227|ner=O
+10	pleural	_	_	_	_	9	_	_	start_char=1228|end_char=1235|ner=O
+11	effusions	_	_	_	_	10	_	_	start_char=1236|end_char=1245|ner=O
+12	and	_	_	_	_	11	_	_	start_char=1246|end_char=1249|ner=O
+13	pulmonary	_	_	_	_	12	_	_	start_char=1250|end_char=1259|ner=O
+14	vascular	_	_	_	_	13	_	_	start_char=1260|end_char=1268|ner=O
+15	congestion	_	_	_	_	14	_	_	SpaceAfter=No|start_char=1269|end_char=1279|ner=O
+16	,	_	_	_	_	15	_	_	start_char=1279|end_char=1280|ner=O
+17	with	_	_	_	_	16	_	_	start_char=1281|end_char=1285|ner=O
+18	a	_	_	_	_	17	_	_	start_char=1286|end_char=1287|ner=O
+19	possible	_	_	_	_	18	_	_	start_char=1288|end_char=1296|ner=O
+20	infiltrate	_	_	_	_	19	_	_	start_char=1297|end_char=1307|ner=O
+21	in	_	_	_	_	20	_	_	start_char=1308|end_char=1310|ner=O
+22	the	_	_	_	_	21	_	_	start_char=1311|end_char=1314|ner=O
+23	right	_	_	_	_	22	_	_	start_char=1315|end_char=1320|ner=O
+24	lower	_	_	_	_	23	_	_	start_char=1321|end_char=1326|ner=O
+25	lobe	_	_	_	_	24	_	_	SpaceAfter=No|start_char=1327|end_char=1331|ner=O
+26	.	_	_	_	_	25	_	_	start_char=1331|end_char=1332|ner=O
+
+# text = An echocardiogram showed an ejection fraction of 35%, reduced from 50% last year.
+# sent_id = 19
+1	An	_	_	_	_	0	_	_	start_char=1333|end_char=1335|ner=O
+2	echocardiogram	_	_	_	_	1	_	_	start_char=1336|end_char=1350|ner=O
+3	showed	_	_	_	_	2	_	_	start_char=1351|end_char=1357|ner=O
+4	an	_	_	_	_	3	_	_	start_char=1358|end_char=1360|ner=O
+5	ejection	_	_	_	_	4	_	_	start_char=1361|end_char=1369|ner=O
+6	fraction	_	_	_	_	5	_	_	start_char=1370|end_char=1378|ner=O
+7	of	_	_	_	_	6	_	_	start_char=1379|end_char=1381|ner=O
+8	35	_	_	_	_	7	_	_	SpaceAfter=No|start_char=1382|end_char=1384|ner=B-PERCENT
+9	%	_	_	_	_	8	_	_	SpaceAfter=No|start_char=1384|end_char=1385|ner=E-PERCENT
+10	,	_	_	_	_	9	_	_	start_char=1385|end_char=1386|ner=O
+11	reduced	_	_	_	_	10	_	_	start_char=1387|end_char=1394|ner=O
+12	from	_	_	_	_	11	_	_	start_char=1395|end_char=1399|ner=O
+13	50	_	_	_	_	12	_	_	SpaceAfter=No|start_char=1400|end_char=1402|ner=B-PERCENT
+14	%	_	_	_	_	13	_	_	start_char=1402|end_char=1403|ner=E-PERCENT
+15	last	_	_	_	_	14	_	_	start_char=1404|end_char=1408|ner=B-DATE
+16	year	_	_	_	_	15	_	_	SpaceAfter=No|start_char=1409|end_char=1413|ner=E-DATE
+17	.	_	_	_	_	16	_	_	SpacesAfter=\n\n|start_char=1413|end_char=1414|ner=O
+
+# text = Assessment and plan: Acute on chronic systolic heart failure, likely precipitated by community-acquired pneumonia.
+# sent_id = 20
+1	Assessment	_	_	_	_	0	_	_	start_char=1416|end_char=1426|ner=O
+2	and	_	_	_	_	1	_	_	start_char=1427|end_char=1430|ner=O
+3	plan	_	_	_	_	2	_	_	SpaceAfter=No|start_char=1431|end_char=1435|ner=O
+4	:	_	_	_	_	3	_	_	start_char=1435|end_char=1436|ner=O
+5	Acute	_	_	_	_	4	_	_	start_char=1437|end_char=1442|ner=O
+6	on	_	_	_	_	5	_	_	start_char=1443|end_char=1445|ner=O
+7	chronic	_	_	_	_	6	_	_	start_char=1446|end_char=1453|ner=O
+8	systolic	_	_	_	_	7	_	_	start_char=1454|end_char=1462|ner=O
+9	heart	_	_	_	_	8	_	_	start_char=1463|end_char=1468|ner=O
+10	failure	_	_	_	_	9	_	_	SpaceAfter=No|start_char=1469|end_char=1476|ner=O
+11	,	_	_	_	_	10	_	_	start_char=1476|end_char=1477|ner=O
+12	likely	_	_	_	_	11	_	_	start_char=1478|end_char=1484|ner=O
+13	precipitated	_	_	_	_	12	_	_	start_char=1485|end_char=1497|ner=O
+14	by	_	_	_	_	13	_	_	start_char=1498|end_char=1500|ner=O
+15	community	_	_	_	_	14	_	_	SpaceAfter=No|start_char=1501|end_char=1510|ner=O
+16	-	_	_	_	_	15	_	_	SpaceAfter=No|start_char=1510|end_char=1511|ner=O
+17	acquired	_	_	_	_	16	_	_	start_char=1511|end_char=1519|ner=O
+18	pneumonia	_	_	_	_	17	_	_	SpaceAfter=No|start_char=1520|end_char=1529|ner=O
+19	.	_	_	_	_	18	_	_	start_char=1529|end_char=1530|ner=O
+
+# text = We started intravenous furosemide 40 mg twice daily and ceftriaxone with azithromycin.
+# sent_id = 21
+1	We	_	_	_	_	0	_	_	start_char=1531|end_char=1533|ner=O
+2	started	_	_	_	_	1	_	_	start_char=1534|end_char=1541|ner=O
+3	intravenous	_	_	_	_	2	_	_	start_char=1542|end_char=1553|ner=O
+4	furosemide	_	_	_	_	3	_	_	start_char=1554|end_char=1564|ner=O
+5	40	_	_	_	_	4	_	_	start_char=1565|end_char=1567|ner=B-QUANTITY
+6	mg	_	_	_	_	5	_	_	start_char=1568|end_char=1570|ner=E-QUANTITY
+7	twice	_	_	_	_	6	_	_	start_char=1571|end_char=1576|ner=O
+8	daily	_	_	_	_	7	_	_	start_char=1577|end_char=1582|ner=O
+9	and	_	_	_	_	8	_	_	start_char=1583|end_char=1586|ner=O
+10	ceftriaxone	_	_	_	_	9	_	_	start_char=1587|end_char=1598|ner=O
+11	with	_	_	_	_	10	_	_	start_char=1599|end_char=1603|ner=O
+12	azithromycin	_	_	_	_	11	_	_	SpaceAfter=No|start_char=1604|end_char=1616|ner=O
+13	.	_	_	_	_	12	_	_	start_char=1616|end_char=1617|ner=O
+
+# text = Metformin was held because of the acute kidney injury.
+# sent_id = 22
+1	Metformin	_	_	_	_	0	_	_	start_char=1618|end_char=1627|ner=O
+2	was	_	_	_	_	1	_	_	start_char=1628|end_char=1631|ner=O
+3	held	_	_	_	_	2	_	_	start_char=1632|end_char=1636|ner=O
+4	because	_	_	_	_	3	_	_	start_char=1637|end_char=1644|ner=O
+5	of	_	_	_	_	4	_	_	start_char=1645|end_char=1647|ner=O
+6	the	_	_	_	_	5	_	_	start_char=1648|end_char=1651|ner=O
+7	acute	_	_	_	_	6	_	_	start_char=1652|end_char=1657|ner=O
+8	kidney	_	_	_	_	7	_	_	start_char=1658|end_char=1664|ner=O
+9	injury	_	_	_	_	8	_	_	SpaceAfter=No|start_char=1665|end_char=1671|ner=O
+10	.	_	_	_	_	9	_	_	start_char=1671|end_char=1672|ner=O
+
+# text = Repeat basic metabolic panel in the morning.
+# sent_id = 23
+1	Repeat	_	_	_	_	0	_	_	start_char=1673|end_char=1679|ner=O
+2	basic	_	_	_	_	1	_	_	start_char=1680|end_char=1685|ner=O
+3	metabolic	_	_	_	_	2	_	_	start_char=1686|end_char=1695|ner=O
+4	panel	_	_	_	_	3	_	_	start_char=1696|end_char=1701|ner=O
+5	in	_	_	_	_	4	_	_	start_char=1702|end_char=1704|ner=O
+6	the	_	_	_	_	5	_	_	start_char=1705|end_char=1708|ner=B-TIME
+7	morning	_	_	_	_	6	_	_	SpaceAfter=No|start_char=1709|end_char=1716|ner=E-TIME
+8	.	_	_	_	_	7	_	_	start_char=1716|end_char=1717|ner=O
+
+# text = Continue warfarin with daily INR checks.
+# sent_id = 24
+1	Continue	_	_	_	_	0	_	_	start_char=1718|end_char=1726|ner=O
+2	warfarin	_	_	_	_	1	_	_	start_char=1727|end_char=1735|ner=O
+3	with	_	_	_	_	2	_	_	start_char=1736|end_char=1740|ner=O
+4	daily	_	_	_	_	3	_	_	start_char=1741|end_char=1746|ner=S-DATE
+5	INR	_	_	_	_	4	_	_	start_char=1747|end_char=1750|ner=O
+6	checks	_	_	_	_	5	_	_	SpaceAfter=No|start_char=1751|end_char=1757|ner=O
+7	.	_	_	_	_	6	_	_	start_char=1757|end_char=1758|ner=O
+
+# text = Consult cardiology for evaluation of the new drop in ejection fraction.
+# sent_id = 25
+1	Consult	_	_	_	_	0	_	_	start_char=1759|end_char=1766|ner=O
+2	cardiology	_	_	_	_	1	_	_	start_char=1767|end_char=1777|ner=O
+3	for	_	_	_	_	2	_	_	start_char=1778|end_char=1781|ner=O
+4	evaluation	_	_	_	_	3	_	_	start_char=1782|end_char=1792|ner=O
+5	of	_	_	_	_	4	_	_	start_char=1793|end_char=1795|ner=O
+6	the	_	_	_	_	5	_	_	start_char=1796|end_char=1799|ner=O
+7	new	_	_	_	_	6	_	_	start_char=1800|end_char=1803|ner=O
+8	drop	_	_	_	_	7	_	_	start_char=1804|end_char=1808|ner=O
+9	in	_	_	_	_	8	_	_	start_char=1809|end_char=1811|ner=O
+10	ejection	_	_	_	_	9	_	_	start_char=1812|end_char=1820|ner=O
+11	fraction	_	_	_	_	10	_	_	SpaceAfter=No|start_char=1821|end_char=1829|ner=O
+12	.	_	_	_	_	11	_	_	SpacesAfter=\n\n|start_char=1829|end_char=1830|ner=O
+
+# text = Hospital course:
+# sent_id = 26
+1	Hospital	_	_	_	_	0	_	_	start_char=1832|end_char=1840|ner=O
+2	course	_	_	_	_	1	_	_	SpaceAfter=No|start_char=1841|end_char=1847|ner=O
+3	:	_	_	_	_	2	_	_	start_char=1847|end_char=1848|ner=O
+
+# text = The dyspnea improved after diuresis, and he was weaned to 2 liters of oxygen by nasal cannula on day three.
+# sent_id = 27
+1	The	_	_	_	_	0	_	_	start_char=1849|end_char=1852|ner=O
+2	dyspnea	_	_	_	_	1	_	_	start_char=1853|end_char=1860|ner=O
+3	improved	_	_	_	_	2	_	_	start_char=1861|end_char=1869|ner=O
+4	after	_	_	_	_	3	_	_	start_char=1870|end_char=1875|ner=O
+5	diuresis	_	_	_	_	4	_	_	SpaceAfter=No|start_char=1876|end_char=1884|ner=O
+6	,	_	_	_	_	5	_	_	start_char=1884|end_char=1885|ner=O
+7	and	_	_	_	_	6	_	_	start_char=1886|end_char=1889|ner=O
+8	he	_	_	_	_	7	_	_	start_char=1890|end_char=1892|ner=O
+9	was	_	_	_	_	8	_	_	start_char=1893|end_char=1896|ner=O
+10	weaned	_	_	_	_	9	_	_	start_char=1897|end_char=1903|ner=O
+11	to	_	_	_	_	10	_	_	start_char=1904|end_char=1906|ner=O
+12	2	_	_	_	_	11	_	_	start_char=1907|end_char=1908|ner=B-QUANTITY
+13	liters	_	_	_	_	12	_	_	start_char=1909|end_char=1915|ner=E-QUANTITY
+14	of	_	_	_	_	13	_	_	start_char=1916|end_char=1918|ner=O
+15	oxygen	_	_	_	_	14	_	_	start_char=1919|end_char=1925|ner=O
+16	by	_	_	_	_	15	_	_	start_char=1926|end_char=1928|ner=O
+17	nasal	_	_	_	_	16	_	_	start_char=1929|end_char=1934|ner=O
+18	cannula	_	_	_	_	17	_	_	start_char=1935|end_char=1942|ner=O
+19	on	_	_	_	_	18	_	_	start_char=1943|end_char=1945|ner=O
+20	day	_	_	_	_	19	_	_	start_char=1946|end_char=1949|ner=B-DATE
+21	three	_	_	_	_	20	_	_	SpaceAfter=No|start_char=1950|end_char=1955|ner=E-DATE
+22	.	_	_	_	_	21	_	_	start_char=1955|end_char=1956|ner=O
+
+# text = Blood cultures remained negative.
+# sent_id = 28
+1	Blood	_	_	_	_	0	_	_	start_char=1957|end_char=1962|ner=O
+2	cultures	_	_	_	_	1	_	_	start_char=1963|end_char=1971|ner=O
+3	remained	_	_	_	_	2	_	_	start_char=1972|end_char=1980|ner=O
+4	negative	_	_	_	_	3	_	_	SpaceAfter=No|start_char=1981|end_char=1989|ner=O
+5	.	_	_	_	_	4	_	_	start_char=1989|end_char=1990|ner=O
+
+# text = Creatinine returned to 1.7.
+# sent_id = 29
+1	Creatinine	_	_	_	_	0	_	_	start_char=1991|end_char=2001|ner=O
+2	returned	_	_	_	_	1	_	_	start_char=2002|end_char=2010|ner=O
+3	to	_	_	_	_	2	_	_	start_char=2011|end_char=2013|ner=O
+4	1.7	_	_	_	_	3	_	_	SpaceAfter=No|start_char=2014|end_char=2017|ner=S-CARDINAL
+5	.	_	_	_	_	4	_	_	start_char=2017|end_char=2018|ner=O
+
+# text = He was discharged home on oral furosemide 40 mg daily with instructions to weigh himself every morning and to follow up with his primary care physician in one week.
+# sent_id = 30
+1	He	_	_	_	_	0	_	_	start_char=2019|end_char=2021|ner=O
+2	was	_	_	_	_	1	_	_	start_char=2022|end_char=2025|ner=O
+3	discharged	_	_	_	_	2	_	_	start_char=2026|end_char=2036|ner=O
+4	home	_	_	_	_	3	_	_	start_char=2037|end_char=2041|ner=O
+5	on	_	_	_	_	4	_	_	start_char=2042|end_char=2044|ner=O
+6	oral	_	_	_	_	5	_	_	start_char=2045|end_char=2049|ner=O
+7	furosemide	_	_	_	_	6	_	_	start_char=2050|end_char=2060|ner=O
+8	40	_	_	_	_	7	_	_	start_char=2061|end_char=2063|ner=B-QUANTITY
+9	mg	_	_	_	_	8	_	_	start_char=2064|end_char=2066|ner=E-QUANTITY
+10	daily	_	_	_	_	9	_	_	start_char=2067|end_char=2072|ner=O
+11	with	_	_	_	_	10	_	_	start_char=2073|end_char=2077|ner=O
+12	instructions	_	_	_	_	11	_	_	start_char=2078|end_char=2090|ner=O
+13	to	_	_	_	_	12	_	_	start_char=2091|end_char=2093|ner=O
+14	weigh	_	_	_	_	13	_	_	start_char=2094|end_char=2099|ner=O
+15	himself	_	_	_	_	14	_	_	start_char=2100|end_char=2107|ner=O
+16	every	_	_	_	_	15	_	_	start_char=2108|end_char=2113|ner=O
+17	morning	_	_	_	_	16	_	_	start_char=2114|end_char=2121|ner=O
+18	and	_	_	_	_	17	_	_	start_char=2122|end_char=2125|ner=O
+19	to	_	_	_	_	18	_	_	start_char=2126|end_char=2128|ner=O
+20	follow	_	_	_	_	19	_	_	start_char=2129|end_char=2135|ner=O
+21	up	_	_	_	_	20	_	_	start_char=2136|end_char=2138|ner=O
+22	with	_	_	_	_	21	_	_	start_char=2139|end_char=2143|ner=O
+23	his	_	_	_	_	22	_	_	start_char=2144|end_char=2147|ner=O
+24	primary	_	_	_	_	23	_	_	start_char=2148|end_char=2155|ner=O
+25	care	_	_	_	_	24	_	_	start_char=2156|end_char=2160|ner=O
+26	physician	_	_	_	_	25	_	_	start_char=2161|end_char=2170|ner=O
+27	in	_	_	_	_	26	_	_	start_char=2171|end_char=2173|ner=O
+28	one	_	_	_	_	27	_	_	start_char=2174|end_char=2177|ner=B-DATE
+29	week	_	_	_	_	28	_	_	SpaceAfter=No|start_char=2178|end_char=2182|ner=E-DATE
+30	.	_	_	_	_	29	_	_	SpacesAfter=\n|start_char=2182|end_char=2183|ner=O
