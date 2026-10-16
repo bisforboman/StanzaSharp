@@ -36,7 +36,7 @@ public class LanguageTests
     [Fact]
     public void FileTable_IsEveryGermanPackagesFiles()
     {
-        Assert.Equal(29, ModelDownloader.Files["de"].Length);
+        Assert.Equal(35, ModelDownloader.Files["de"].Length);
         Assert.Equal(ModelDownloader.Files["de"].Select(f => f.Path).Order(),
             Pipeline.Packages["de"].Keys.SelectMany(p => ModelDownloader.FilesFor(null, p, "options", "de")).Select(f => f.Path)
                 .Concat(ModelDownloaderTests.AlternativesFiles("de")).Distinct().Order());

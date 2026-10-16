@@ -1,5 +1,8 @@
 using System.Reflection;
 using System.Text.Json.Nodes;
+using StanzaSharp.Lemma;
+using StanzaSharp.Nn;
+using StanzaSharp.Nn.Managed;
 using StanzaSharp.Tool;
 using Xunit.Sdk;
 
@@ -68,6 +71,28 @@ public class ModelChoiceTests
     [ModelChoice("de", "pos+depparse=gsd_nocharlm", true)]
     [ModelChoice("de", "pos+depparse=hdt_nocharlm", false)]
     [ModelChoice("de", "pos+depparse=hdt_nocharlm", true)]
+    [ModelChoice("en", "tokenize+lemma=ewt_charlm", false)]
+    [ModelChoice("en", "tokenize+lemma=ewt_charlm", true)]
+    [ModelChoice("en", "tokenize+lemma=gum_charlm", false)]
+    [ModelChoice("en", "tokenize+lemma=gum_charlm", true)]
+    [ModelChoice("en", "tokenize+lemma=lines_charlm", false)]
+    [ModelChoice("en", "tokenize+lemma=lines_charlm", true)]
+    [ModelChoice("en", "tokenize+lemma=partut_charlm", false)]
+    [ModelChoice("en", "tokenize+lemma=partut_charlm", true)]
+    [ModelChoice("en", "tokenize+lemma=atis_charlm", false)]
+    [ModelChoice("en", "tokenize+lemma=atis_charlm", true)]
+    [ModelChoice("en", "tokenize+lemma=childes_charlm", false)]
+    [ModelChoice("en", "tokenize+lemma=childes_charlm", true)]
+    [ModelChoice("en", "tokenize=eslspok_charlm", false)]
+    [ModelChoice("en", "tokenize=eslspok_charlm", true)]
+    [ModelChoice("en", "tokenize=combined_charlm", false)]
+    [ModelChoice("en", "tokenize=combined_charlm", true)]
+    [ModelChoice("de", "tokenize+lemma=combined_charlm", false)]
+    [ModelChoice("de", "tokenize+lemma=combined_charlm", true)]
+    [ModelChoice("de", "tokenize+lemma=gsd_charlm", false)]
+    [ModelChoice("de", "tokenize+lemma=gsd_charlm", true)]
+    [ModelChoice("de", "tokenize+lemma=hdt_charlm", false)]
+    [ModelChoice("de", "tokenize+lemma=hdt_charlm", true)]
     public void Process_MatchesGolden(string name, bool managed, string lang) => AssertGolden(name, managed, lang, cache: true);
 
     /// <summary>i2b2 reads the mimic charlms, like the mimic tagger, so it reuses the tagger's outputs; without the cache it computes its own.</summary>
@@ -76,6 +101,55 @@ public class ModelChoiceTests
     [ModelChoice("en", "default+ner=i2b2", false)]
     [ModelChoice("en", "default+ner=i2b2", true)]
     public void Process_WithoutTheCharlmCache_MatchesGolden(string name, bool managed, string lang) => AssertGolden(name, managed, lang, cache: false);
+
+    /// <summary>
+    /// A <c>_charlm</c> lemmatizer's seq2seq model alone (its encoder reads both charlms' per-character states) on every word of
+    /// corpus.txt and the lemma word list (seq2seq.json): the same decoded strings and edit classes as Stanza's.
+    /// </summary>
+    [ModelTheory]
+    [ModelChoice("en", "tokenize+lemma=ewt_charlm", false)]
+    [ModelChoice("en", "tokenize+lemma=ewt_charlm", true)]
+    [ModelChoice("en", "tokenize+lemma=gum_charlm", false)]
+    [ModelChoice("en", "tokenize+lemma=gum_charlm", true)]
+    [ModelChoice("en", "tokenize+lemma=lines_charlm", false)]
+    [ModelChoice("en", "tokenize+lemma=lines_charlm", true)]
+    [ModelChoice("en", "tokenize+lemma=partut_charlm", false)]
+    [ModelChoice("en", "tokenize+lemma=partut_charlm", true)]
+    [ModelChoice("en", "tokenize+lemma=atis_charlm", false)]
+    [ModelChoice("en", "tokenize+lemma=atis_charlm", true)]
+    [ModelChoice("en", "tokenize+lemma=childes_charlm", false)]
+    [ModelChoice("en", "tokenize+lemma=childes_charlm", true)]
+    [ModelChoice("de", "tokenize+lemma=combined_charlm", false)]
+    [ModelChoice("de", "tokenize+lemma=combined_charlm", true)]
+    [ModelChoice("de", "tokenize+lemma=gsd_charlm", false)]
+    [ModelChoice("de", "tokenize+lemma=gsd_charlm", true)]
+    [ModelChoice("de", "tokenize+lemma=hdt_charlm", false)]
+    [ModelChoice("de", "tokenize+lemma=hdt_charlm", true)]
+    public void CharlmLemmatizer_Seq2Seq_MatchesGolden(string name, bool managed, string lang)
+    {
+        var dir = ModelChoiceAttribute.ModelsFor(lang);
+        var model = ModelChoiceAttribute.Options(ModelChoiceAttribute.Choice(lang, name), lang).Models["lemma"];
+        var charlms = Pipeline.Dependencies[lang][$"lemma/{model}"].Select(p => Path.Combine(dir, p)).ToArray();
+        var basePath = Path.Combine(dir, "lemma", model);
+        var golden = JsonNode.Parse(File.ReadAllText(Path.Combine(Repo.GoldenFor(lang), "models", name, "seq2seq.json")))!.AsArray();
+        var words = golden.Select(g => new Word { Text = (string)g!["word"]!, Upos = (string?)g["upos"] }).ToList();
+        (List<string> Decoded, List<int> Edits) actual;
+        if (managed)
+        {
+            using var lemmatizer = Lemmatizer.LoadManaged(basePath, ManagedCharLanguageModel.Load(charlms[0]), ManagedCharLanguageModel.Load(charlms[1]));
+            actual = lemmatizer.Predict(words);
+        }
+        else
+        {
+            using var forward = CharLanguageModel.Load(charlms[0]);
+            using var backward = CharLanguageModel.Load(charlms[1]);
+            using var lemmatizer = Lemmatizer.Load(basePath, forward: forward, backward: backward);
+            actual = lemmatizer.Predict(words);
+        }
+
+        Assert.Equal(golden.Select(g => (string)g!["seq2seq"]!), actual.Decoded);
+        Assert.Equal(golden.Select(g => (int)g!["edit"]!), actual.Edits);
+    }
 
     private static void AssertGolden(string name, bool managed, string lang, bool cache)
     {
@@ -161,7 +235,7 @@ public class ModelChoiceTests
     [Theory]
     [InlineData("nerr=i2b2", "Unknown processor 'nerr'")]
     [InlineData("ner=ontonotes", "Unknown or unsupported ner model 'ontonotes'")]
-    [InlineData("tokenize=ewt_charlm", "Unknown or unsupported tokenize model 'ewt_charlm'")]
+    [InlineData("lemma=combined_charlm", "Unknown or unsupported lemma model 'combined_charlm' for language 'en' (its contextual lemma classifiers are not ported)")]
     [InlineData("pos=combined_electra-large", "a transformer model")]
     [InlineData("constituency=ptb3", "Supported: ptb3-revised_charlm, ptb3_charlm")]
     [InlineData("ner=", "Unknown or unsupported ner model ''")]

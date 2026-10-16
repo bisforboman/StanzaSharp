@@ -303,5 +303,100 @@
   "texts": [
    "corpus.txt"
   ]
+ },
+ {
+  "name": "tokenize+lemma=ewt_charlm",
+  "package": "ewt",
+  "processors": "tokenize,mwt,pos,lemma",
+  "models": {
+   "tokenize": "ewt_charlm",
+   "lemma": "ewt_charlm"
+  },
+  "texts": [
+   "corpus.txt"
+  ]
+ },
+ {
+  "name": "tokenize+lemma=gum_charlm",
+  "package": "gum",
+  "processors": "tokenize,mwt,pos,lemma",
+  "models": {
+   "tokenize": "gum_charlm",
+   "lemma": "gum_charlm"
+  },
+  "texts": [
+   "corpus.txt"
+  ]
+ },
+ {
+  "name": "tokenize+lemma=lines_charlm",
+  "package": "lines",
+  "processors": "tokenize,mwt,pos,lemma",
+  "models": {
+   "tokenize": "lines_charlm",
+   "lemma": "lines_charlm"
+  },
+  "texts": [
+   "corpus.txt"
+  ]
+ },
+ {
+  "name": "tokenize+lemma=partut_charlm",
+  "package": "partut",
+  "processors": "tokenize,mwt,pos,lemma",
+  "models": {
+   "tokenize": "partut_charlm",
+   "lemma": "partut_charlm"
+  },
+  "texts": [
+   "corpus.txt"
+  ]
+ },
+ {
+  "name": "tokenize+lemma=atis_charlm",
+  "package": "atis",
+  "processors": "tokenize,mwt,pos,lemma",
+  "models": {
+   "tokenize": "atis_charlm",
+   "lemma": "atis_charlm"
+  },
+  "texts": [
+   "corpus.txt"
+  ]
+ },
+ {
+  "name": "tokenize+lemma=childes_charlm",
+  "package": "childes",
+  "processors": "tokenize,mwt,pos,lemma",
+  "models": {
+   "tokenize": "childes_charlm",
+   "lemma": "childes_charlm"
+  },
+  "texts": [
+   "corpus.txt"
+  ]
+ },
+ {
+  "name": "tokenize=eslspok_charlm",
+  "package": "eslspok",
+  "processors": "tokenize",
+  "models": {
+   "tokenize": "eslspok_charlm"
+  },
+  "texts": [
+   "corpus.txt"
+  ]
+ },
+ {
+  "name": "tokenize=combined_charlm",
+  "package": "default",
+  "processors": "tokenize,mwt",
+  "models": {
+   "tokenize": "combined_charlm"
+  },
+  "texts": [
+   "corpus.txt",
+   "tokenize_stress.txt"
+  ]
  }
 ]

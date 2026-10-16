@@ -126,6 +126,14 @@ public sealed class Pipeline : IDisposable
         {
             ["constituency"] = ["ptb3_charlm"],
 
+            // the treebanks' _charlm tokenizers and lemmatizers (per-character charlm states); not lemma combined_charlm,
+            // whose contextual lemma classifiers are not ported
+            ["tokenize"] =
+            [
+                "combined_charlm", "ewt_charlm", "gum_charlm", "lines_charlm", "partut_charlm", "atis_charlm", "childes_charlm", "eslspok_charlm",
+            ],
+            ["lemma"] = ["ewt_charlm", "gum_charlm", "lines_charlm", "partut_charlm", "atis_charlm", "childes_charlm"],
+
             // the treebanks' own _nocharlm taggers and parsers (mimic has only a parser); combined's are default_fast's
             ["pos"] = ["ewt_nocharlm", "gum_nocharlm", "lines_nocharlm", "partut_nocharlm", "atis_nocharlm", "childes_nocharlm", "eslspok_nocharlm"],
             ["depparse"] =
@@ -143,6 +151,8 @@ public sealed class Pipeline : IDisposable
         },
         ["de"] = new()
         {
+            ["tokenize"] = ["combined_charlm", "gsd_charlm", "hdt_charlm"],
+            ["lemma"] = ["combined_charlm", "gsd_charlm", "hdt_charlm"],
             ["pos"] = ["gsd_nocharlm", "hdt_nocharlm"],
             ["depparse"] = ["gsd_nocharlm", "hdt_nocharlm"],
             ["ner"] = ["conll03"],
@@ -180,11 +190,15 @@ public sealed class Pipeline : IDisposable
     private static readonly string[] Conll17 = ["pretrain/conll17"],
         EnglishCharlm = ["pretrain/conll17", "forward_charlm/1billion", "backward_charlm/1billion"],
         Pubmed = ["pretrain/biomed", "forward_charlm/pubmed", "backward_charlm/pubmed"],
-        GermanCharlm = ["pretrain/conll17", "forward_charlm/newswiki", "backward_charlm/newswiki"];
+        GermanCharlm = ["pretrain/conll17", "forward_charlm/newswiki", "backward_charlm/newswiki"],
+        EnglishForward = ["forward_charlm/1billion"],
+        EnglishPair = ["forward_charlm/1billion", "backward_charlm/1billion"],
+        GermanForward = ["forward_charlm/newswiki"],
+        GermanPair = ["forward_charlm/newswiki", "backward_charlm/newswiki"];
 
     // The shared files (pretrains, charlms) each model reads, by "<processor>/<model>": resources.json's "dependencies",
     // which the model's name doesn't tell (germeval2014 reads charlms and its own pretrain). Models without an entry
-    // (tokenize, mwt, lemma) read none.
+    // (mwt, the _nocharlm tokenizers and lemmatizers) read none; the _charlm tokenizers read only the forward charlm.
     internal static readonly Dictionary<string, Dictionary<string, string[]>> Dependencies = new()
     {
         [English] = new()
@@ -220,6 +234,20 @@ public sealed class Pipeline : IDisposable
 
             // Alternatives
             ["constituency/ptb3_charlm"] = EnglishCharlm,
+            ["tokenize/combined_charlm"] = EnglishForward,
+            ["tokenize/ewt_charlm"] = EnglishForward,
+            ["tokenize/gum_charlm"] = EnglishForward,
+            ["tokenize/lines_charlm"] = EnglishForward,
+            ["tokenize/partut_charlm"] = EnglishForward,
+            ["tokenize/atis_charlm"] = EnglishForward,
+            ["tokenize/childes_charlm"] = EnglishForward,
+            ["tokenize/eslspok_charlm"] = EnglishForward,
+            ["lemma/ewt_charlm"] = EnglishPair,
+            ["lemma/gum_charlm"] = EnglishPair,
+            ["lemma/lines_charlm"] = EnglishPair,
+            ["lemma/partut_charlm"] = EnglishPair,
+            ["lemma/atis_charlm"] = EnglishPair,
+            ["lemma/childes_charlm"] = EnglishPair,
             ["pos/ewt_nocharlm"] = Conll17,
             ["depparse/ewt_nocharlm"] = Conll17,
             ["pos/gum_nocharlm"] = Conll17,
@@ -265,6 +293,12 @@ public sealed class Pipeline : IDisposable
             ["depparse/hdt_charlm"] = GermanCharlm,
 
             // Alternatives
+            ["tokenize/combined_charlm"] = GermanForward,
+            ["lemma/combined_charlm"] = GermanPair,
+            ["tokenize/gsd_charlm"] = GermanForward,
+            ["lemma/gsd_charlm"] = GermanPair,
+            ["tokenize/hdt_charlm"] = GermanForward,
+            ["lemma/hdt_charlm"] = GermanPair,
             ["pos/gsd_nocharlm"] = Conll17,
             ["depparse/gsd_nocharlm"] = Conll17,
             ["pos/hdt_nocharlm"] = Conll17,
@@ -386,16 +420,28 @@ public sealed class Pipeline : IDisposable
         foreach (var processor in models.Keys)
             _charlmOf[processor] = CharlmsOf(processor).Forward;
 
-        var tokenizer = Start(Name("tokenize"), () => backend.Tokenizer(Model("tokenize")));
-        var mwt = models.ContainsKey("mwt") ? Start(Name("mwt"), () => backend.Mwt(Model("mwt"))) : null;
+        // The tokenizer and the lemmatizer go first, unless they read charlms (the _charlm ones): then after them.
+        Task<Tokenizer>? tokenizer = null;
+        Task<Lemmatizer>? lemma = null;
         _identityLemma = models.GetValueOrDefault("lemma") == IdentityLemma;
-        var lemma = models.ContainsKey("lemma") && !_identityLemma ? Start(Name("lemma"), () => backend.Lemma(Model("lemma"))) : null;
+        bool hasLemma = models.ContainsKey("lemma") && !_identityLemma;
+        void StartReaders(bool ofCharlms)
+        {
+            if (tokenizer == null && CharlmsOf("tokenize").Forward != null == ofCharlms)
+                tokenizer = Start(Name("tokenize"), () => backend.Tokenizer(Model("tokenize"), CharlmsOf("tokenize")));
+            if (hasLemma && lemma == null && CharlmsOf("lemma").Forward != null == ofCharlms)
+                lemma = Start(Name("lemma"), () => backend.Lemma(Model("lemma"), CharlmsOf("lemma")));
+        }
+
+        StartReaders(ofCharlms: false);
+        var mwt = models.ContainsKey("mwt") ? Start(Name("mwt"), () => backend.Mwt(Model("mwt"))) : null;
         try
         {
             foreach (var c in charlms)
                 c.GetAwaiter().GetResult();
             foreach (var p in pretrains.Values)
                 p.GetAwaiter().GetResult();
+            StartReaders(ofCharlms: true);
             var pos = models.ContainsKey("pos") ? Start(Name("pos"), () => backend.Pos(Model("pos"), PretrainOf("pos"), CharlmsOf("pos"))) : null;
             var depparse = models.ContainsKey("depparse")
                 ? Start(Name("depparse"), () => backend.Depparse(Model("depparse"), PretrainOf("depparse"), CharlmsOf("depparse")))
@@ -408,7 +454,7 @@ public sealed class Pipeline : IDisposable
                 ? Start(Name("sentiment"), () => backend.Sentiment(Model("sentiment"), PretrainOf("sentiment"), CharlmsOf("sentiment")))
                 : null;
             Task.WaitAll(started);
-            _tokenizer = tokenizer.Result;
+            _tokenizer = tokenizer!.Result;
             _mwt = mwt?.Result;
             _lemma = lemma?.Result;
             _pos = pos?.Result;
@@ -604,7 +650,9 @@ public sealed class Pipeline : IDisposable
             {
                 string why = name.Contains("electra", StringComparison.Ordinal) || name.Contains("bert", StringComparison.Ordinal)
                     ? " (a transformer model, which StanzaSharp doesn't run)"
-                    : "";
+                    : (language, p, name) == (English, "lemma", "combined_charlm")
+                        ? " (its contextual lemma classifiers are not ported)"
+                        : "";
                 var packagesWith = Packages[language].Where(kv => kv.Value.ContainsKey(p)).Select(kv => kv.Key);
                 throw new ArgumentException($"Unknown or unsupported {p} model '{value}' for language '{language}'{why}. Supported: "
                     + $"{string.Join(", ", supported)}; or a package's name ({string.Join(", ", packagesWith)})", paramName);

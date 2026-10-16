@@ -7,7 +7,9 @@ internal interface ITokenizerNet : IDisposable
 {
     /// <param name="ids">[rows, width] character ids.</param>
     /// <param name="feats">[rows, width, feat_dim] features.</param>
+    /// <param name="charlm">A <c>_charlm</c> model's [rows, width, charlm hidden] forward charlm states (zeros past each
+    /// row's length; the array may be longer); else null.</param>
     /// <param name="lengths">Per-row length both LSTMs are packed at, as model.forward does.</param>
     /// <returns>[rows, width, 5] log-probabilities, row-major.</returns>
-    float[] Forward(long[] ids, float[] feats, int rows, int width, long[] lengths, CancellationToken ct);
+    float[] Forward(long[] ids, float[] feats, float[]? charlm, int rows, int width, long[] lengths, CancellationToken ct);
 }

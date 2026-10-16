@@ -100,6 +100,20 @@ public static class ModelDownloader
 
             // Pipeline.Alternatives (PipelineOptions.Models)
             ("constituency/ptb3_charlm.pt", "45d737c2172a5f8cb9324cc25af335f6"),
+            ("tokenize/combined_charlm.pt", "1e2acd7f1340961385442a106c94950d"),
+            ("tokenize/ewt_charlm.pt", "08e17410ba853cf519019d4ea17ec313"),
+            ("tokenize/gum_charlm.pt", "5e797c73ecd132555f9769dddb694458"),
+            ("tokenize/lines_charlm.pt", "8720268c9682bb80a282f560d64e0e8c"),
+            ("tokenize/partut_charlm.pt", "eccecee9b79a7c02038e9cbff44602bf"),
+            ("tokenize/atis_charlm.pt", "5a54394b7800d08cd0708ca11d5b9f60"),
+            ("tokenize/childes_charlm.pt", "a964dbbbfe7107a6d866ff5f610e73e9"),
+            ("tokenize/eslspok_charlm.pt", "41f8fa611e1aeaf0ec7fdec4b968c878"),
+            ("lemma/ewt_charlm.pt", "fb22142bdc178161966291ca017c7f34"),
+            ("lemma/gum_charlm.pt", "c2c3eac4e7d2bd494cc03cfaea144a66"),
+            ("lemma/lines_charlm.pt", "ef652b9b807a80467e0260684069e9ef"),
+            ("lemma/partut_charlm.pt", "4d1b20ef133b0ac643cdca2f44f9dc95"),
+            ("lemma/atis_charlm.pt", "836ced25ae428cb8ea19a015f64cfb2e"),
+            ("lemma/childes_charlm.pt", "e7a6891511f8cd9b444a3ce31b6eb37e"),
             ("pos/ewt_nocharlm.pt", "31da311072360b086165291e99b1358a"),
             ("depparse/ewt_nocharlm.pt", "d4de2f2bfb1df4b508a66e036118aa5b"),
             ("pos/gum_nocharlm.pt", "7126837c00e6093fc28f84beb96fd92e"),
@@ -166,6 +180,12 @@ public static class ModelDownloader
             ("depparse/hdt_charlm.pt", "d578c1c4614769122f2cb8481025639e"),
 
             // Pipeline.Alternatives (PipelineOptions.Models)
+            ("tokenize/combined_charlm.pt", "84f39beb686da1053dd761caf9354949"),
+            ("tokenize/gsd_charlm.pt", "339d8d827fab342e0ab92c9188da1a8b"),
+            ("tokenize/hdt_charlm.pt", "4889f52a3527e252ef17afeb982de44f"),
+            ("lemma/combined_charlm.pt", "72d678b7bae829693e3f643c22ae08cb"),
+            ("lemma/gsd_charlm.pt", "a35012b2dd5c598080d74ddb80f39135"),
+            ("lemma/hdt_charlm.pt", "512462bc2a4702c0f4e247c2e6cc032e"),
             ("pos/gsd_nocharlm.pt", "7986fcd7d260022e3d89f3e94be86dc9"),
             ("depparse/gsd_nocharlm.pt", "ca6edb23b145eb15d4cbb70aca935122"),
             ("pos/hdt_nocharlm.pt", "30eebbd85b15369b9fd435397bb0ca94"),

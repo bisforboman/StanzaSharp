@@ -83,7 +83,8 @@ Reads <out>/corpus.txt and writes:
   models/<name>/<text>.conllu + models/models.json
                         single models chosen per processor (MODEL_CHOICES, Stanza's processors dict; StanzaSharp's
                         PipelineOptions.Models), e.g. models/ner=i2b2/, on corpus.txt (as corpus.conllu), validation.txt
-                        and each choice's hand-written texts in models/ (clinical.txt, biomedical.txt, radiology.txt) (`--models-only`)
+                        and each choice's hand-written texts in models/ (clinical.txt, biomedical.txt, radiology.txt) (`--models-only`);
+                        a chosen lemmatizer's folder also has seq2seq.json (its model alone on corpus.txt's words)
   pt/tiny_{legacy,zip}.pt + their stanza_convert.py output (.json/.safetensors)
                         small checkpoints in both torch.save formats for the C# .pt loader tests;
                         `python tools/make_golden.py --pt-only` regenerates just these
@@ -248,13 +249,50 @@ MODEL_CHOICES = {
         ("pos+depparse=childes_nocharlm", "childes", "tokenize,mwt,pos,lemma,depparse", {"pos": "childes_nocharlm", "depparse": "childes_nocharlm"}, []),
         ("pos+depparse=eslspok_nocharlm", "eslspok", "tokenize,pos,lemma,depparse", {"pos": "eslspok_nocharlm", "depparse": "eslspok_nocharlm"}, []),
         ("depparse=mimic_nocharlm", "mimic", "tokenize,pos,lemma,depparse", {"depparse": "mimic_nocharlm"}, []),
+        # the _charlm tokenizers and lemmatizers (per-character charlm states), on their package; combined's tokenizer
+        # also on tokenize_stress.txt (windows); English lemma combined_charlm is not ported (contextual classifiers)
+        ("tokenize+lemma=ewt_charlm", "ewt", "tokenize,mwt,pos,lemma", {"tokenize": "ewt_charlm", "lemma": "ewt_charlm"}, []),
+        ("tokenize+lemma=gum_charlm", "gum", "tokenize,mwt,pos,lemma", {"tokenize": "gum_charlm", "lemma": "gum_charlm"}, []),
+        ("tokenize+lemma=lines_charlm", "lines", "tokenize,mwt,pos,lemma", {"tokenize": "lines_charlm", "lemma": "lines_charlm"}, []),
+        ("tokenize+lemma=partut_charlm", "partut", "tokenize,mwt,pos,lemma", {"tokenize": "partut_charlm", "lemma": "partut_charlm"}, []),
+        ("tokenize+lemma=atis_charlm", "atis", "tokenize,mwt,pos,lemma", {"tokenize": "atis_charlm", "lemma": "atis_charlm"}, []),
+        ("tokenize+lemma=childes_charlm", "childes", "tokenize,mwt,pos,lemma", {"tokenize": "childes_charlm", "lemma": "childes_charlm"}, []),
+        ("tokenize=eslspok_charlm", "eslspok", "tokenize", {"tokenize": "eslspok_charlm"}, []),
+        ("tokenize=combined_charlm", "default", "tokenize,mwt", {"tokenize": "combined_charlm"}, ["tokenize_stress.txt"]),
     ],
     "de": [
         ("ner=conll03", "default", "tokenize,mwt,ner", {"ner": "conll03"}, ["validation.txt"]),
         ("pos+depparse=gsd_nocharlm", "gsd", "tokenize,mwt,pos,lemma,depparse", {"pos": "gsd_nocharlm", "depparse": "gsd_nocharlm"}, []),
         ("pos+depparse=hdt_nocharlm", "hdt", "tokenize,mwt,pos,lemma,depparse", {"pos": "hdt_nocharlm", "depparse": "hdt_nocharlm"}, []),
+        ("tokenize+lemma=combined_charlm", "combined", "tokenize,mwt,pos,lemma", {"tokenize": "combined_charlm", "lemma": "combined_charlm"}, []),
+        ("tokenize+lemma=gsd_charlm", "gsd", "tokenize,mwt,pos,lemma", {"tokenize": "gsd_charlm", "lemma": "gsd_charlm"}, []),
+        ("tokenize+lemma=hdt_charlm", "hdt", "tokenize,mwt,pos,lemma", {"tokenize": "hdt_charlm", "lemma": "hdt_charlm"}, []),
     ],
 }
+
+
+def write_seq2seq_golden(nlp, doc, path):
+    """
+    seq2seq.json: the lemmatizer's seq2seq model alone (no dictionary), as in words.json, on every word of `doc` (with
+    Stanza's UPOS) and LEMMA_WORDS: the decoded string and the edit class. A chosen lemmatizer's corpus.conllu sends few
+    words through the model.
+    """
+    from stanza.models.lemma.data import DataLoader
+
+    proc = nlp.processors["lemma"]
+    pairs = [(w.text, w.upos) for s in doc.sentences for w in s.words] + list(LEMMA_WORDS)
+    words = stanza.Document([[{"id": 1, "text": w, "upos": u}] for w, u in pairs])
+    batch = DataLoader(words, proc.config["batch_size"], proc.config, vocab=proc.vocab, evaluation=True, expand_unk_vocab=True)
+    raw, edits = [], []
+    with torch.no_grad():
+        for b in batch:
+            r, e = proc.trainer.predict(b, proc.config["beam_size"], batch.vocab)
+            raw += r
+            edits += e
+    result = [{"word": w, "upos": u, "seq2seq": r, "edit": e} for (w, u), r, e in zip(pairs, raw, edits)]
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        json.dump(result, f, indent=1, ensure_ascii=False)
+    print(f"{path.parent.name}/seq2seq.json: {len(result)} words")
 
 
 def write_models_golden(models, out, only=None):
@@ -289,6 +327,8 @@ def write_models_golden(models, out, only=None):
             stem = "corpus" if path.name == "corpus.txt" else path.stem
             (target / f"{stem}.conllu").write_text("{:C}\n".format(doc), encoding="utf-8", newline="\n")
             print(f"models/{name}/{stem}.conllu: {len(doc.sentences)} sentences, {len(doc.ents)} entities")
+            if "lemma" in chosen and path.name == "corpus.txt":
+                write_seq2seq_golden(nlp, doc, target / "seq2seq.json")
     with open(folder / "models.json", "w", encoding="utf-8", newline="\n") as f:
         json.dump(index, f, indent=1, ensure_ascii=False)
         f.write("\n")

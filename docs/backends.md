@@ -22,13 +22,13 @@ The seam sits at each processor's **network**: one small interface per processor
 
 | processor | interface | TorchSharp | managed |
 |---|---|---|---|
-| tokenize | `ITokenizerNet.Forward(ids, feats, rows, width, lengths, ct)` → [rows, width, 5] log-probs | `TokenizerNet` | `ManagedTokenizerNet` |
+| tokenize | `ITokenizerNet.Forward(ids, feats, charlm, rows, width, lengths, ct)` (charlm: a `_charlm` model's per-character states, from `IPerCharLanguageModel`) → [rows, width, 5] log-probs | `TokenizerNet` | `ManagedTokenizerNet` |
 | mwt | `IMwtNet.Forward(ids, rows, width, lengths)` → [rows, width, 2] logits | `MwtNet` | `ManagedMwtNet` |
 | ner | `INerNet.Forward(sentences, wordIds, deltaIds, width, charlms, cacheKeys, ct)` → [batch, width, tags] emissions | `NerNet` | `ManagedNerNet` |
 | pos | `IPosNet.Forward(sentences, wordIds, pretrainIds, charlms, cacheKeys, ct)` → `PosOutput` (UPOS scores, UPOS/XPOS/feats ids) | `PosNet` | `ManagedPosNet` |
 | depparse | `IDepparseNet.Forward(DepparseBatch, labelScores, ct)` → `DepparseScores` (arc log-probs, label argmax, optional label scores) | `DepparseNet` | `ManagedDepparseNet` |
 | sentiment | `ISentimentNet.Forward(batch, ids, extraIds, width, charlms, cacheKeys, ct)` → [batch, classes] logits | `SentimentNet` | `ManagedSentimentNet` |
-| lemma, German mwt | `ISeq2SeqNet.Encode(ids, batch, width, posIds, lengths, ct)` → `ISeq2SeqDecoder` (edit logits; `Step(previous, ct)` → [batch, columns] log-probs) | `Seq2SeqNet` | `ManagedSeq2SeqNet` |
+| lemma, German mwt | `ISeq2SeqNet.Encode(ids, batch, width, posIds, lengths, ct, beam, contextual)` (contextual: a `_charlm` lemmatizer's per-step charlm states) → `ISeq2SeqDecoder` (edit logits; `Step(previous, ct)` → [batch, columns] log-probs) | `Seq2SeqNet` | `ManagedSeq2SeqNet` |
 | constituency | `IConstituencyNet`: `EncodeWords`, `Word`, `Score` → [states, transitions] scores, `Open`, `Compose`, `PushTransitions`, `PushConstituents` over opaque handles | `ConstituencyNet` | `ManagedConstituencyNet` |
 
 - **Shared:** everything around the network stays in the processor and serves both backends. That covers paragraph

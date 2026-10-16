@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using StanzaSharp.Nn;
+using StanzaSharp.Nn.Managed;
 
 namespace StanzaSharp.Lemma;
 
@@ -8,7 +9,8 @@ namespace StanzaSharp.Lemma;
 /// <c>ensemble_dict</c> checkpoint (stanza/pipeline/lemma_processor.py, models/lemma/trainer.py):
 /// a dictionary by (UPOS, word), then by word alone; words it misses go through a character seq2seq model
 /// (models/common/seq2seq_model.py) with POS input, soft attention, a copy gate (not in older checkpoints: English craft,
-/// genia, mimic) and an edit classifier (identity / lowercase / use the decoded string), decoded greedily. A <c>caseless</c>
+/// genia, mimic) and an edit classifier (identity / lowercase / use the decoded string), decoded greedily. A <c>_charlm</c>
+/// model also feeds the encoder both charlms' states over <c>"\n" + word + " "</c> (seq2seq_model.py embed). A <c>caseless</c>
 /// model (English atis) sees the words lowercased, in the dictionary too; the edits and the fallback keep their case.
 /// The network is an <see cref="ISeq2SeqNet"/> (per backend, shared with German MWT); the dictionary, DeltaVocab,
 /// batching and the edits are here.
@@ -24,9 +26,13 @@ internal sealed class Lemmatizer : IDisposable
     private readonly int _batchSize, _maxDecLen;
     private readonly bool _caseless;
     private readonly ISeq2SeqNet _net;
+    private readonly IPerCharLanguageModel? _forward, _backward; // a _charlm model's charlms
 
     /// <param name="net">Builds the network from the checkpoint and its sizes (a backend's).</param>
-    internal Lemmatizer(Checkpoint ckpt, Func<Checkpoint, Seq2SeqConfig, ISeq2SeqNet> net)
+    /// <param name="forward">The forward charlm a <c>_charlm</c> model reads (config <c>charlm</c>); else null.</param>
+    /// <param name="backward">Its backward charlm.</param>
+    internal Lemmatizer(Checkpoint ckpt, Func<Checkpoint, Seq2SeqConfig, ISeq2SeqNet> net, IPerCharLanguageModel? forward = null,
+        IPerCharLanguageModel? backward = null)
     {
         var root = ckpt.Root;
         var config = root["config"]!;
@@ -42,7 +48,6 @@ internal sealed class Lemmatizer : IDisposable
         Require(config["attn_type"]?.GetValue<string>() == "soft", $"attn_type {config["attn_type"]}");
         Require(Flag("edit") && config["num_edit"]?.GetValue<int>() == 3, "edit off or num_edit != 3");
         Require(Flag("pos") && config["pos_dim"]?.GetValue<int>() > 0, "POS input off");
-        Require(!Flag("charlm"), "a charlm");
         Require(config["num_layers"]?.GetValue<int>() == 1, "more than one encoder layer");
         Require(root["contextual"]?.AsArray().Count is null or 0, "contextual lemmatizers");
         Require(root["dicts_version"]?.GetValue<int>() == 3, "a dictionary format other than v3 (gzip + JSON)");
@@ -60,12 +65,33 @@ internal sealed class Lemmatizer : IDisposable
         _batchSize = config["batch_size"]!.GetValue<int>();
         _maxDecLen = config["max_dec_len"]!.GetValue<int>();
         _caseless = Flag("caseless");
-        var sizes = Seq2SeqConfig.From(config);
+
+        // trainer.build_seq2seq: with charlm, CharacterLanguageModelWordAdapter([forward, backward]) after the embedding.
+        int contextual = 0;
+        if (Flag("charlm"))
+        {
+            if (forward == null || backward == null)
+                throw new ArgumentException("This lemmatizer reads a forward and a backward charlm; give both", nameof(forward));
+            contextual = forward.HiddenDim + backward.HiddenDim;
+            int encoderInput = (int)ckpt.Shape(root["model"]!["encoder.weight_ih_l0"])[1];
+            if (encoderInput != config["emb_dim"]!.GetValue<int>() + contextual)
+                throw new InvalidDataException($"The encoder reads {encoderInput} inputs, not the embedding + both charlms' {contextual}");
+            (_forward, _backward) = (forward, backward);
+        }
+        else if (forward != null || backward != null)
+        {
+            throw new ArgumentException("This lemmatizer reads no charlm", nameof(forward));
+        }
+
+        var sizes = Seq2SeqConfig.From(config, contextual);
         _net = net(ckpt, sizes);
     }
 
     /// <summary>Loads <c>basePath.json</c> + <c>.safetensors</c> (or <c>basePath.pt</c>), e.g. <c>models/converted/en/lemma/combined_nocharlm</c>, on the managed backend.</summary>
-    public static Lemmatizer LoadManaged(string basePath) => new(Checkpoint.Load(basePath), (ckpt, sizes) => new ManagedSeq2SeqNet(ckpt, sizes));
+    /// <param name="forward">The forward charlm of a <c>_charlm</c> model; null for the others.</param>
+    /// <param name="backward">Its backward charlm.</param>
+    public static Lemmatizer LoadManaged(string basePath, ManagedCharLanguageModel? forward = null, ManagedCharLanguageModel? backward = null) =>
+        new(Checkpoint.Load(basePath), (ckpt, sizes) => new ManagedSeq2SeqNet(ckpt, sizes), forward, backward);
 
     /// <summary>Sets the lemma of every word in <paramref name="doc"/>; needs UPOS from the tagger.</summary>
     public void Process(Document doc, CancellationToken cancellationToken = default)
@@ -177,7 +203,8 @@ internal sealed class Lemmatizer : IDisposable
 
         var posIds = order.Select(i => (long)_posToId.GetValueOrDefault(words[i].Upos ?? "_", UnkId)).ToArray();
 
-        using var decoder = _net.Encode(ids, batch, width, posIds, order.Select(i => (long)src[i].Length + 1).ToArray(), ct);
+        var contextual = Contextual(words, order, width + 1, ct);
+        using var decoder = _net.Encode(ids, batch, width, posIds, order.Select(i => (long)src[i].Length + 1).ToArray(), ct, contextual: contextual);
         var output = Seq2SeqConfig.Greedy(decoder, batch, _maxDecLen, neverDecodeUnk: false, ct, onStep);
 
         var editValues = decoder.EditLogits;
@@ -198,6 +225,34 @@ internal sealed class Lemmatizer : IDisposable
         }
 
         return (decoded, edits);
+    }
+
+    /// <summary>
+    /// A <c>_charlm</c> model's encoder input after the embedding (seq2seq_model.py embed): per sorted row r and encoder step t
+    /// (of <paramref name="steps"/>), the forward then the backward charlm's state after unit t of <c>"\n" + word + " "</c>
+    /// (both left to right: per_char_representation). Its n + 2 states fill steps 0 to n + 1, so the UPOS step gets the
+    /// state after "\n", and the last (the word's <c>&lt;EOS&gt;</c>, Stanza's appended raw_zeros row) zeros. Null without charlms.
+    /// </summary>
+    private float[]? Contextual(List<Word> words, int[] order, int steps, CancellationToken ct)
+    {
+        if (_forward == null || _backward == null)
+            return null;
+        int f = _forward.HiddenDim, dim = f + _backward.HiddenDim;
+        var forward = new int[order.Length][];
+        var backward = new int[order.Length][];
+        var firstRow = new int[order.Length];
+        for (int r = 0; r < order.Length; r++)
+        {
+            var units = Input(words[order[r]]).EnumerateRunes().Select(rune => rune.ToString()).Prepend("\n").Append(" ").ToArray();
+            forward[r] = [.. units.Select(u => _forward.Id(u))];
+            backward[r] = [.. units.Select(u => _backward.Id(u))];
+            firstRow[r] = r * steps;
+        }
+
+        var contextual = new float[order.Length * steps * dim];
+        _forward.PerChar(forward, firstRow, contextual, dim, ct);
+        _backward.PerChar(backward, firstRow, contextual.AsSpan(f), dim, ct);
+        return contextual;
     }
 
     public void Dispose() => _net.Dispose();

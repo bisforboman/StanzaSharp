@@ -9,7 +9,7 @@ namespace StanzaSharp.Nn;
 /// sentiment. Port of stanza/models/common/char_model.py <c>CharacterLanguageModel</c> (inference only:
 /// the decoder that predicts the next character is not needed).
 /// </summary>
-internal sealed class CharLanguageModel : IDisposable
+internal sealed class CharLanguageModel : IDisposable, IPerCharLanguageModel
 {
     // char_model.py CHARLM_START / CHARLM_END: a sentence starts with "\n", every word ends with " ".
     private const string Start = "\n", End = " ";
@@ -18,6 +18,7 @@ internal sealed class CharLanguageModel : IDisposable
     private readonly LSTM _lstm;
     private readonly Tensor _hInit, _cInit;
     private readonly Dictionary<string, int> _vocab;
+    private readonly Dictionary<string, int>.AlternateLookup<ReadOnlySpan<char>> _lookup;
     private readonly int _unkId, _endId;
     private readonly Device _device = Weights.Device; // the device the model was loaded on
 
@@ -37,6 +38,7 @@ internal sealed class CharLanguageModel : IDisposable
         HiddenDim = args["char_hidden_dim"]!.GetValue<int>();
         int layers = args["char_num_layers"]!.GetValue<int>();
         _vocab = Checkpoint.UnitToId(ckpt.Root["vocab"]);
+        _lookup = _vocab.GetAlternateLookup<ReadOnlySpan<char>>();
         _unkId = _vocab["<UNK>"];
         _endId = _vocab[End];
 
@@ -100,6 +102,49 @@ internal sealed class CharLanguageModel : IDisposable
     }
 
     private long Id(string unit) => _vocab.TryGetValue(unit, out var id) ? id : _unkId;
+
+    public int Id(ReadOnlySpan<char> unit) => _lookup.TryGetValue(unit, out var id) ? id : _unkId;
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// As per_char_representation: sequences sorted longest first (stable), padded with <c>" "</c> and packed
+    /// (enforce_sorted), so each runs alone; the batch is the caller's.
+    /// </remarks>
+    public void PerChar(IReadOnlyList<int[]> sequences, int[] firstRow, Span<float> output, int ldo, CancellationToken ct)
+    {
+        if (sequences.Count == 0)
+            return;
+        ct.ThrowIfCancellationRequested();
+        using var _ = torch.no_grad();
+        using var scope = NewDisposeScope();
+        int n = sequences.Count;
+        var order = Enumerable.Range(0, n).OrderByDescending(i => sequences[i].Length).ToArray();
+        int width = sequences[order[0]].Length;
+        var flat = new long[n * width];
+        Array.Fill(flat, _endId);
+        for (int r = 0; r < n; r++)
+        {
+            var seq = sequences[order[r]];
+            for (int t = 0; t < seq.Length; t++)
+                flat[r * width + t] = seq[t];
+        }
+
+        using var input = torch.tensor(flat, [n, width], device: _device);
+        var h0 = _hInit.expand(_hInit.shape[0], n, HiddenDim).contiguous();
+        var c0 = _cInit.expand(_cInit.shape[0], n, HiddenDim).contiguous();
+        using var lens = torch.tensor(order.Select(i => (long)sequences[i].Length).ToArray());
+        var packed = nn.utils.rnn.pack_padded_sequence(_charEmb.forward(input), lens, batch_first: true, enforce_sorted: true);
+        var (packedOut, _, _) = _lstm.call(packed, (h0, c0));
+        var (padded, _) = nn.utils.rnn.pad_packed_sequence(packedOut, batch_first: true);
+        var values = padded.ToArray<float>(); // [n, width, HiddenDim]
+        int h = HiddenDim;
+        for (int r = 0; r < n; r++)
+        {
+            int i = order[r];
+            for (int t = 0; t < sequences[i].Length; t++)
+                values.AsSpan((r * width + t) * h, h).CopyTo(output[((firstRow[i] + t) * ldo)..]);
+        }
+    }
 
     private static string Reverse(string word)
     {

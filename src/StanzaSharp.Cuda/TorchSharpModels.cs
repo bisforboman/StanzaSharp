@@ -35,11 +35,12 @@ internal sealed class TorchSharpModels(torch.Device? device, bool disableTf32) :
 
     public override void Charlm(string path, string basePath) => Add(_charlms, path, CharLanguageModel.Load(basePath));
 
-    public override Tokenizer Tokenizer(string basePath) => Tokenize.Tokenizer.Load(basePath);
+    public override Tokenizer Tokenizer(string basePath, Charlms charlms) => Tokenize.Tokenizer.Load(basePath, charlm: Find(_charlms, charlms.Forward));
 
     public override MwtExpander Mwt(string basePath) => MwtExpander.Load(basePath);
 
-    public override Lemmatizer Lemma(string basePath) => Lemmatizer.Load(basePath);
+    public override Lemmatizer Lemma(string basePath, Charlms charlms) =>
+        Lemmatizer.Load(basePath, forward: Find(_charlms, charlms.Forward), backward: Find(_charlms, charlms.Backward));
 
     public override PosTagger Pos(string basePath, Pretrain pretrain, Charlms charlms) =>
         PosTagger.Load(basePath, pretrain, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward));

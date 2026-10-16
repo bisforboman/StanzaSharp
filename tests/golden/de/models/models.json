@@ -34,5 +34,41 @@
   "texts": [
    "corpus.txt"
   ]
+ },
+ {
+  "name": "tokenize+lemma=combined_charlm",
+  "package": "combined",
+  "processors": "tokenize,mwt,pos,lemma",
+  "models": {
+   "tokenize": "combined_charlm",
+   "lemma": "combined_charlm"
+  },
+  "texts": [
+   "corpus.txt"
+  ]
+ },
+ {
+  "name": "tokenize+lemma=gsd_charlm",
+  "package": "gsd",
+  "processors": "tokenize,mwt,pos,lemma",
+  "models": {
+   "tokenize": "gsd_charlm",
+   "lemma": "gsd_charlm"
+  },
+  "texts": [
+   "corpus.txt"
+  ]
+ },
+ {
+  "name": "tokenize+lemma=hdt_charlm",
+  "package": "hdt",
+  "processors": "tokenize,mwt,pos,lemma",
+  "models": {
+   "tokenize": "hdt_charlm",
+   "lemma": "hdt_charlm"
+  },
+  "texts": [
+   "corpus.txt"
+  ]
  }
 ]

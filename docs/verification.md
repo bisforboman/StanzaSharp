@@ -78,7 +78,13 @@ processors dict). The texts are `corpus.txt`, `validation.txt` and a hand-writte
 - the treebanks' taggers and parsers without character language models, on their package's tokenizer, mwt and lemmatizer
   (tokenize to depparse, `corpus.txt` only): English pos and depparse `ewt_nocharlm`, `gum_nocharlm`, `lines_nocharlm`,
   `partut_nocharlm`, `atis_nocharlm`, `childes_nocharlm`, `eslspok_nocharlm`, depparse `mimic_nocharlm` (with mimic's
-  tagger), and German pos and depparse `gsd_nocharlm` and `hdt_nocharlm`.
+  tagger), and German pos and depparse `gsd_nocharlm` and `hdt_nocharlm`;
+- the treebanks' tokenizers and lemmatizers with character language models (per-character charlm states), on their
+  package (tokenize to lemma, `corpus.txt`; `combined_charlm`'s tokenizer also on `tokenize_stress.txt`, whose long
+  paragraph runs in windows): English tokenize `combined`, `ewt`, `gum`, `lines`, `partut`, `atis`, `childes`, `eslspok`
+  and lemma `ewt`, `gum`, `lines`, `partut`, `atis`, `childes` (each `_charlm`), German tokenize and lemma `combined`,
+  `gsd`, `hdt`. Each lemmatizer's seq2seq model also runs alone on every word of `corpus.txt` and the lemma word list
+  (`seq2seq.json`: Stanza's decoded strings and edit classes), on both backends and, for ewt's, on every SIMD path.
 
 They exercise what the packages don't: a second pretrain next to conll17 (fastText crawl, 300-dimensional), a tag
 vocabulary with three tag sets, and the old NER checkpoint format with a fine-tuned delta embedding (`i2b2`).
