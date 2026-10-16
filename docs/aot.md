@@ -1,9 +1,12 @@
 # Native AOT and trimming
 
-Feasibility study (owner's decision, 2026-10-16: study only, nothing in `src/` changed): can an app that uses only the
-`StanzaSharp` package (the default managed backend) be published with `PublishAot=true` or `PublishTrimmed=true`, and
-is its output still byte-identical? `StanzaSharp.Cuda` (TorchSharp) is out of scope: TorchSharp is not trim- or
-AOT-compatible.
+**Status (owner's decisions, 2026-10-16, after this study): supported on the managed backend.** The Lemmatizer fix
+below shipped, `IsAotCompatible=true` is set on the eleven `StanzaSharp` package projects (Directory.Build.props; not
+`StanzaSharp.Cuda`, since TorchSharp is neither trim- nor AOT-safe, nor the Tool), README and PACKAGE.md document it, and
+CI runs `tools/verify-aot.sh` (see "CI check"). The rest of this page is the study that led there.
+
+The question: can an app that uses only the `StanzaSharp` package (the default managed backend) be published with
+`PublishAot=true` or `PublishTrimmed=true`, and is its output still byte-identical?
 
 **Verdict:** yes, after one small fix in `src/StanzaSharp.Lemma`. With it, both publish modes give zero IL2xxx/IL3xxx
 warnings and byte-identical CoNLL-U for English and German `default`. Without it, both publish fine (two warnings) but
@@ -98,9 +101,8 @@ _posDict = JsonSerializer.Deserialize(gz, LemmaJson.Default.DictionaryStringDict
 internal sealed partial class LemmaJson : JsonSerializerContext;
 ```
 
-Tested locally (then reverted, as the study changes no source): zero warnings, and every result below is with it.
-Until it ships, a trimmed app can set `<JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>`
-(verified: identical output, two warnings); an AOT app has no workaround.
+Tested locally first (every result below is with it), then shipped. Before it, a trimmed app could set `<JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>`
+(verified: identical output, two warnings); an AOT app had no workaround.
 
 ## SIMD paths under AOT
 
@@ -173,30 +175,31 @@ project) gives exactly blocker 1's IL2026 + IL3050 and nothing else; with the fi
 reach, and marks the assemblies trimmable for consumers; CI's warnings-as-errors build then keeps it that way. Not for `StanzaSharp.Cuda` (TorchSharp) or `StanzaSharp.Tool`
 (`JsonSerializer` with `object`, `DllImport("libc")` getrusage, a .NET tool anyway).
 
-## Recommendation
+## Decisions (owner, 2026-10-16)
 
-Ship fix 1 (3 lines, no behaviour change) and set `IsAotCompatible=true` on the eleven package projects (Directory.Build.props, for `src/*` but Cuda and Tool), so the analyzers
-keep it that way. Then add a cheap CI check and document AOT and trimming as supported for the managed backend, with
-the instruction-set note: AOT apps should publish with `IlcInstructionSet=x86-64-v3` (or v4 on AVX-512 fleets), since
-the default gives Vector128 at about half the speed. AOT's gain is startup and first-call latency (no JIT) and a
-single 6 MB file with no runtime; steady-state speed is the JIT's at best, and memory is dominated by the models either
-way.
+All as recommended:
 
-## Decisions for the owner
+1. The Lemmatizer reads its dictionary through a source-generated `LemmaJson` context.
+2. `IsAotCompatible=true` on the eleven package projects; new code there must stay AOT-safe (CLAUDE.md, "Native AOT and
+   trimming").
+3. README and PACKAGE.md say trimming and Native AOT are supported on the managed backend, with a csproj snippet, and
+   recommend `IlcInstructionSet=x86-64-v3`: the default x64 target runs the 128-bit kernels (~2x slower), v3 needs
+   AVX2/FMA (Intel Haswell, AMD Excavator and later), v4 gives the AVX-512 kernels on AVX-512 CPUs only. Arm64 needs
+   nothing (NEON is the Arm64 baseline, so `Vector128.IsHardwareAccelerated` and `AdvSimd.Arm64.IsSupported` are true
+   at compile time); linux-arm64/win-arm64 AOT is not tested yet.
+4. CI check, below. Not done: run-time AVX2/AVX-512 dispatch inside `Gemm`.
 
-1. Ship fix 1 (source-generated JSON context in `Lemmatizer`)? Recommended; without it no trimmed or AOT app can load
-   the lemmatizer.
-2. Set `IsAotCompatible=true` on the eleven `StanzaSharp` package projects? Recommended (it also marks the package
-   trimmable for consumers, so their publish analyzes it).
-3. Advertise trimming and AOT support (README, PACKAGE.md) for the managed backend? Recommended once 1 and 2 land and a
-   CI check runs; state the instruction-set choice and that `StanzaSharp.Cuda` is excluded.
-4. A CI check? Proposed, not added: in an existing job that already has the English models (golden-shard 1 on
-   ubuntu-26.04, plus `cross-os (windows-2025)` shard 3), publish `tests/StanzaSharp.ManagedCheck` with
-   `-p:PublishAot=true -p:IlcInstructionSet=x86-64-v3` and with `-p:PublishTrimmed=true --self-contained`, fail on any
-   IL warning (`-warnaserror` on the publish, or a grep), and run both binaries on the cached models (they already
-   compare both English packages byte for byte). Linux needs `clang` and `zlib1g-dev` (preinstalled on GitHub's Ubuntu images, else one `apt-get`); windows-2025 has the
-   VS 2022 C++ workload. A few minutes per job (two publishes, two ~20 s runs); not timed here. A `workflow_dispatch`-only workflow is the
-   alternative if the owner doesn't want it on every main push.
-5. Default instruction-set guidance: x86-64-v3 (recommended), or leave it to each app?
-6. Optional, later: run-time AVX2/AVX-512 dispatch inside `Gemm` so one AOT binary picks Vector512/256/128 like the JIT.
-   Not recommended now (a second set of kernels to keep bit-identical).
+## CI check
+
+`tools/verify-aot.sh MODEL_DIR RID` publishes `tests/StanzaSharp.ManagedCheck` with `-p:PublishAot=true
+-p:IlcInstructionSet=x86-64-v3` and with `--self-contained -p:PublishTrimmed=true`, fails on any `warning IL2xxx/IL3xxx`
+in the publish output or any torch/c10/libgomp file in the published folder, and runs each binary: ManagedCheck loads
+`default` and `default_fast` (with checksums for `.pt` models), compares corpus.txt's CoNLL-U with `pipeline.conllu` and
+`fast/corpus.conllu` byte for byte, runs the other input modes, and fails if any torch module loaded.
+
+- golden shard 1 (ubuntu-26.04, linux-x64): on full runs, and on light runs with torch=full (pull requests touching CI,
+  Nn or the backend seam). Installs `clang` and `zlib1g-dev` first if the image lacks them.
+- `cross-os (windows-2025)` shard 3 (win-x64): full runs only, like the package checks there. The runner's VS 2022 has
+  the C++ linker, so no stub.
+
+Locally the Windows half took 107 s per publish and 35 s (AOT) / 71 s (trimmed) to run, on a machine at 100% CPU.

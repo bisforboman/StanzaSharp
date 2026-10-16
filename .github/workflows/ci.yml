@@ -345,6 +345,14 @@ jobs:
         shell: pwsh
         run: ./tools/verify-tool.ps1
 
+      # Native AOT (x86-64-v3) and trimmed publishes of ManagedCheck (docs/aot.md): no IL2xxx/IL3xxx warning, no torch
+      # file, both English packages byte-identical. Full runs, and light runs that touch the shared seam or CI (torch=full).
+      - name: Verify Native AOT and trimming
+        if: needs.changes.outputs.code != 'false' && matrix.shard == 1 && (needs.changes.outputs.level != 'light' || needs.changes.outputs.torch == 'full')
+        run: |
+          command -v clang > /dev/null && dpkg -s zlib1g-dev > /dev/null 2>&1 || { sudo apt-get update && sudo apt-get install -y clang zlib1g-dev; }
+          bash tools/verify-aot.sh models/stanza/en linux-x64
+
       - uses: actions/upload-artifact@v7
         if: always() && needs.changes.outputs.code != 'false'
         with:
@@ -621,6 +629,11 @@ jobs:
         if: needs.changes.outputs.code != 'false' && needs.changes.outputs.level != 'light' && matrix.shard == 3
         shell: pwsh
         run: ./tools/verify-package.ps1 -ModelDir models/stanza/en -Managed
+
+      # Native AOT and trimming on Windows x64 (tools/verify-aot.sh; the runner's VS 2022 has the C++ linker AOT needs).
+      - name: Verify Native AOT and trimming
+        if: needs.changes.outputs.code != 'false' && needs.changes.outputs.level != 'light' && matrix.shard == 3 && matrix.os == 'windows-2025'
+        run: bash tools/verify-aot.sh models/stanza/en win-x64
 
       - uses: actions/upload-artifact@v7
         if: always() && needs.changes.outputs.code != 'false'

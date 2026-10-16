@@ -1202,6 +1202,26 @@ What the English treebank packages' checkpoints add to the default package's pat
   - `Gemm.Path` and `ManagedThreads.Count` are process-wide. Only `Pipeline.Load` (managed backend: the count) and tests
     in `ManagedKernelsCollection` (parallelization off, so other classes never see a switched path) may set them.
 
+## Native AOT and trimming
+
+- Supported on the managed backend (owner's decision, 2026-10-16; docs/aot.md): Directory.Build.props sets
+  `IsAotCompatible=true` on every `src/*` project but `StanzaSharp.Cuda` (TorchSharp isn't AOT-safe) and
+  `StanzaSharp.Tool` (a .NET tool, reflection JSON). The trim/AOT analyzers then run on every build, and build-test's
+  warnings as errors turns any IL2xxx/IL3xxx into a failure.
+- New code in those projects must stay AOT-safe: no reflection-based `JsonSerializer` (use `JsonNode`/`Utf8JsonReader`,
+  or a source-generated `JsonSerializerContext` like `LemmaJson` in Lemmatizer.cs), no `Type.GetType`/`Activator`/
+  `MakeGenericType`/`Assembly.Load` or reflection over members, no `Reflection.Emit` or `RegexOptions.Compiled`
+  (`[GeneratedRegex]`), no `[DynamicDependency]`/suppressions to silence a warning. P/Invoke stays blittable.
+- AOT fixes the SIMD width at compile time: `Vector256.IsHardwareAccelerated` is false on the default x64 target, so
+  `Gemm` runs Vector128 (~2x slower, same bits). Apps set `IlcInstructionSet=x86-64-v3` (docs, README, PACKAGE.md);
+  v4 gives Vector512. `[MethodImpl(AggressiveOptimization)]` is a no-op there (no tiers). Arm64: NEON is baseline.
+- CI: `tools/verify-aot.sh MODEL_DIR RID` publishes tests/StanzaSharp.ManagedCheck with `PublishAot`
+  (`x86-64-v3`) and with `PublishTrimmed` (self-contained), fails on any IL2xxx/IL3xxx warning or torch file, and runs
+  both (ManagedCheck compares both English packages with the golden files byte for byte). Golden shard 1 (linux-x64;
+  installs clang/zlib1g-dev if missing) on full runs and on light runs with torch=full; cross-os windows-2025 shard 3
+  on full runs (the runner's VS 2022 has the C++ linker). Locally AOT on Windows needs VS 2022's C++ workload; this
+  machine's VS 2017 MSVC can't link .NET 10's runtime (`__tls_guard`, docs/aot.md).
+
 ## Code style
 
 StyleBro is on (user's decision, 2026-10-11): `StyleBro.Analyzers` 0.7.0-alpha.1 in Directory.Build.props (PrivateAssets,

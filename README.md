@@ -103,6 +103,35 @@ To download the models in a Dockerfile (on the SDK image):
 RUN dotnet tool install --tool-path /tools StanzaSharp.Tool && /tools/stanzasharp download /models --processors tokenize,mwt,pos
 ```
 
+### Native AOT and trimming
+
+On the managed backend an app can be published with Native AOT (`PublishAot`) or trimmed (`PublishTrimmed`, self-contained):
+the StanzaSharp assemblies are `IsAotCompatible`, publish with no trim or AOT warning, and give byte-identical output.
+`StanzaSharp.Cuda` is not supported there: TorchSharp isn't trim- or AOT-safe.
+
+```xml
+<PropertyGroup>
+  <PublishAot>true</PublishAot>
+  <!-- AVX2/FMA: the 256-bit kernels. Without it AOT runs the 128-bit ones, ~2x slower. -->
+  <IlcInstructionSet>x86-64-v3</IlcInstructionSet>
+</PropertyGroup>
+```
+
+`dotnet publish -c Release -r linux-x64` (or `win-x64`) then writes one self-contained executable of about 6 MB that loads
+the models about 0.6 s faster and answers its first call about 3x sooner than the JIT, at the JIT's speed afterwards.
+AOT fixes the SIMD width at compile time, unlike the JIT, which picks it per CPU:
+
+- no `IlcInstructionSet` (x86-64-v2): the 128-bit kernels on every CPU, about 2x slower;
+- `x86-64-v3` (recommended): AVX2 and FMA: Intel from Haswell (2013) and AMD from Excavator (2015), but not
+  some Atom, Celeron and Pentium models (the binary won't start without them);
+- `x86-64-v4`: the AVX-512 kernels, for fleets of AVX-512 CPUs only;
+- Arm64 (`linux-arm64`, `win-arm64`): NEON is part of the Arm64 baseline, so nothing to set (not tested in CI yet).
+
+AOT needs the platform's linker: `clang` and `zlib1g-dev` on Linux, Visual Studio's "Desktop development with C++" on
+Windows. CI publishes [tests/StanzaSharp.ManagedCheck](tests/StanzaSharp.ManagedCheck/Program.cs) both ways on Linux and
+Windows x64 and compares its output with the golden files ([tools/verify-aot.sh](tools/verify-aot.sh)). Details and
+measurements: [docs/aot.md](docs/aot.md).
+
 ## Models
 
 Download Stanza's English models (about 600 MB, from Stanza's Hugging Face repository) once. Every file is
@@ -523,6 +552,10 @@ summarizes what each job proves.
   `golden`, each OS runs the suite in three shards (`cross-os-shard`, with golden's split; one shard for a pull request's
   subset), and `cross-os (<os>)` passes only if all of that OS's shards did. Their models are cached per OS, keyed on
   `ModelDownloader.cs`.
+- Native AOT and trimming: golden shard 1 (linux-x64) and `cross-os (windows-2025)` shard 3 run `tools/verify-aot.sh`, which
+  publishes `tests/StanzaSharp.ManagedCheck` with `PublishAot` (`x86-64-v3`) and with `PublishTrimmed`, fails on any
+  IL2xxx/IL3xxx warning or torch file, and runs both binaries against the golden files. Full runs only (in golden also
+  pull requests that touch CI or the backends' shared files).
 - `linux-arm64` (`ubuntu-26.04-arm`): no libtorch exists for it, so the tests build without one and it runs those
   that need none (the managed cases of the both-backend theories, and the tests marked
   `[Trait("Backend", "Managed")]`), the no-skip check and the managed `verify-package.ps1`.
