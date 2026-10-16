@@ -3,6 +3,8 @@ temporary folder.
 
   python benchmark.py MODELS LANG PACKAGE PROCESSORS THREADS VERSION      (THREADS 0: torch's default)
 
+PROCESSORS as in compare.py: a comma-separated list, or a JSON object processor -> model.
+
 Loads Stanza's LANG pipeline with the models in MODELS (Stanza's <processor>/<name>.pt files; compare.py's load_stanza) and
 writes one JSON line to stdout: {"load", "processors", "python", "torch", "stanza", "threads", "peak_mb"}. Then it
 answers one JSON command per stdin line with one JSON line, until stdin closes, so the tool can alternate runs with

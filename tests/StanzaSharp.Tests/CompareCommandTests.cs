@@ -173,7 +173,7 @@ public class CompareCommandTests
             Assert.True(md5 == listed, $"{path}: stanza_resources_{language}.json lists MD5 {listed ?? "(none)"}, ModelDownloader.Files {md5}");
         }
 
-        // Each package's models are Stanza's, and each model's shared files are its resources.json dependencies.
+        // Each package's models are Stanza's, and each model's shared files (the alternatives' too) are its resources.json dependencies.
         foreach (var (package, models) in Pipeline.Packages[language])
         {
             var stanza = resources.GetProperty("packages").GetProperty(package);
@@ -181,14 +181,24 @@ public class CompareCommandTests
             foreach (var (processor, name) in models)
             {
                 Assert.Equal(stanza.GetProperty(processor).GetString(), name);
-                if (name == Pipeline.IdentityLemma)
-                    continue; // Stanza's identity lemmatizer: no model in resources.json
-                var model = resources.GetProperty(processor).GetProperty(name);
-                var dependencies = model.TryGetProperty("dependencies", out var d)
-                    ? d.EnumerateArray().Select(x => $"{x.GetProperty("model").GetString()}/{x.GetProperty("package").GetString()}").Order().ToList()
-                    : [];
-                Assert.Equal(dependencies, Pipeline.SharedModels(new Dictionary<string, string> { [processor] = name }, language).Order());
+                if (name != Pipeline.IdentityLemma) // Stanza's identity lemmatizer: no model in resources.json
+                    AssertDependencies(processor, name);
             }
+        }
+
+        foreach (var (processor, names) in Pipeline.Alternatives[language])
+        {
+            foreach (var name in names)
+                AssertDependencies(processor, name);
+        }
+
+        void AssertDependencies(string processor, string name)
+        {
+            var model = resources.GetProperty(processor).GetProperty(name);
+            var dependencies = model.TryGetProperty("dependencies", out var d)
+                ? d.EnumerateArray().Select(x => $"{x.GetProperty("model").GetString()}/{x.GetProperty("package").GetString()}").Order().ToList()
+                : [];
+            Assert.Equal(dependencies, Pipeline.SharedModels(new Dictionary<string, string> { [processor] = name }, language).Order());
         }
     }
 }

@@ -23,7 +23,7 @@ public static class ModelDownloader
 
     private static string BaseUrl(string language) => $"https://huggingface.co/stanfordnlp/stanza-{language}/resolve/v{StanzaVersion}/models/";
 
-    // Every file of each language's packages in Pipeline.Packages and their MD5s, from Stanza 1.15.0's resources.json.
+    // Every file of each language's packages in Pipeline.Packages and of Pipeline.Alternatives, and their MD5s, from Stanza 1.15.0's resources.json.
     internal static readonly Dictionary<string, (string Path, string Md5)[]> Files = new()
     {
         [Pipeline.English] =
@@ -97,6 +97,14 @@ public static class ModelDownloader
             ("pretrain/mimic.pt", "4fe1487ea48eb27af23a2a482610d0bd"),
             ("forward_charlm/mimic.pt", "3d3863e27afd67bf356354a728b0fb76"),
             ("backward_charlm/mimic.pt", "19a16ba4b8526e54ef8ab21ca33cc423"),
+
+            // Pipeline.Alternatives (PipelineOptions.Models)
+            ("constituency/ptb3_charlm.pt", "45d737c2172a5f8cb9324cc25af335f6"),
+            ("ner/ontonotes_charlm.pt", "313fa9ec8b3b76c388c71eb456c355e7"),
+            ("ner/ontonotes_nocharlm.pt", "96a6cb9857d6f71a8d6f1cd041d0edbd"),
+            ("ner/combined_charlm.pt", "3f1017a2f0151b2556a105ddee17db49"),
+            ("ner/i2b2.pt", "d860eeb99b2fd96e5e26fc1bb821eda5"),
+            ("pretrain/fasttextcrawl.pt", "32e21612fdf3ea9b404ddbf663e9e438"),
         ],
         ["de"] =
         [
@@ -128,6 +136,9 @@ public static class ModelDownloader
             ("pos/hdt_charlm.pt", "5d460fe45205e40dea5b55a38097657b"),
             ("lemma/hdt_nocharlm.pt", "9fd1ffa0dafcfc9cd51b3cecb959be59"),
             ("depparse/hdt_charlm.pt", "d578c1c4614769122f2cb8481025639e"),
+
+            // Pipeline.Alternatives (PipelineOptions.Models)
+            ("ner/conll03.pt", "9ff9b34529a43b72fabd71626795952a"),
         ],
     };
 
@@ -137,10 +148,10 @@ public static class ModelDownloader
     /// pretrains and charlms they read. Exactly what <see cref="Pipeline.Load"/> reads for the same options.
     /// </summary>
     internal static IEnumerable<(string Path, string Md5)> FilesFor(string? processors, string package = Pipeline.DefaultPackage, string paramName = "processors",
-        string language = Pipeline.English)
+        string language = Pipeline.English, IReadOnlyDictionary<string, string>? models = null)
     {
-        var models = Pipeline.SelectModels(package, processors, addRequired: true, paramName, language);
-        var paths = Pipeline.ModelFiles(models, language).Select(p => p + ".pt").ToHashSet();
+        var selected = Pipeline.SelectModels(package, processors, addRequired: true, paramName, language, models);
+        var paths = Pipeline.ModelFiles(selected, language).Select(p => p + ".pt").ToHashSet();
         var files = Files[language].Where(f => paths.Contains(f.Path)).ToList();
         if (files.Count != paths.Count)
             throw new InvalidOperationException($"No checksum for {string.Join(", ", paths.Except(files.Select(f => f.Path)))}");
@@ -170,10 +181,12 @@ public static class ModelDownloader
     /// <summary>
     /// Downloads exactly the models <see cref="Pipeline.Load"/> reads with the same <paramref name="options"/>: those
     /// of its <see cref="PipelineOptions.Language"/> and <see cref="PipelineOptions.Package"/> for its
-    /// <see cref="PipelineOptions.Processors"/> (all of the package's when null) and the processors they require. The
+    /// <see cref="PipelineOptions.Processors"/> (all of the package's when null) and the processors they require, with
+    /// the models <see cref="PipelineOptions.Models"/> chooses. The
     /// other options are ignored. Otherwise like <see cref="DownloadAsync(string, IProgress{string}?, CancellationToken)"/>.
     /// </summary>
-    /// <exception cref="ArgumentException">An unknown language, package or processor, or a processor the package lacks.</exception>
+    /// <exception cref="ArgumentException">An unknown language, package or processor, a processor the package lacks, or an
+    /// unknown or unsupported model in <see cref="PipelineOptions.Models"/>.</exception>
     /// <example>
     /// <code>
     /// var options = new PipelineOptions { Package = "default_fast" };
@@ -182,7 +195,7 @@ public static class ModelDownloader
     /// </code>
     /// </example>
     public static Task DownloadAsync(string modelDir, PipelineOptions options, IProgress<string>? progress = null, CancellationToken cancellationToken = default) =>
-        DownloadAsync(modelDir, FilesFor(options.Processors, options.Package, nameof(options), options.Language), Http, progress, cancellationToken,
+        DownloadAsync(modelDir, FilesFor(options.Processors, options.Package, nameof(options), options.Language, options.Models), Http, progress, cancellationToken,
             options.Language);
 
     internal static async Task DownloadAsync(string modelDir, IEnumerable<(string Path, string Md5)> files, HttpClient http,

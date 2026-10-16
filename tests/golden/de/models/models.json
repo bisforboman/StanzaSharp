@@ -1,0 +1,14 @@
+[
+ {
+  "name": "ner=conll03",
+  "package": "default",
+  "processors": "tokenize,mwt,ner",
+  "models": {
+   "ner": "conll03"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt"
+  ]
+ }
+]

@@ -80,7 +80,7 @@ Managed backend, after the fixes below (the first tokenizer run, before them, fo
    wrote `"{:C}\n"`, a lone newline, where `Conllu.Write` (like Stanza's CoNLL file writer) gives an empty string. Not a
    port difference, but `stanzasharp compare` reported it as one too; `compare.py` now writes an empty CoNLL-U then
    (`CompareCommandTests.Run_PythonStanza_BlankTextIsIdentical`).
-3. **float32 noise on degenerate sentences (not a port bug; open).** Six German `gsd` texts differ in tags, heads or
+3. **float32 noise on degenerate sentences (not a port bug; accepted).** Six German `gsd` texts differ in tags, heads or
    relations, all of them sentences of 100 to 700 tokens made of a hyphenated run (`ab-ab-ab-…`, the long-token
    generator's hyphen kind). Tokenization is identical; the tagger and parser are not. The TorchSharp backend differs
    from Stanza on the same six texts (on the originals in 8 to 405 lines, the managed backend in 32 to 408), each
@@ -89,7 +89,8 @@ Managed backend, after the fixes below (the first tokenizer run, before them, fo
    ordinary text (2e-5): on such input any other summation order, Stanza's on another CPU included, can flip a
    near-tie. The managed result is 3.2e-3 from float64 (the other
    way round), TorchSharp's 6e-5. No other package showed it (`hdt`, `ewt` and `partut` ran the same kinds of text).
-   Options for the owner are in the PR description; nothing was changed.
+   Owner's decision (2026-10-16): accepted and documented, nothing changed; the fuzzer stays local (no CI run), its
+   findings live in `fuzz.json`, which every golden run checks.
 
 Not a port difference, and not seen in these runs, but possible with random code points: Python 3.10's `unicodedata`
 is Unicode 13, .NET 10's is newer, so a character assigned since then is a letter (or upper case, or a space) on one

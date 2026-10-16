@@ -11,7 +11,7 @@ using StanzaSharp.Nn.Managed;
 namespace StanzaSharp.Tool;
 
 /// <summary>
-/// <c>benchmark [--lang CODE] [--package] [--processors] [--models DIR] [--threads N] [--words N] [--python PATH] [--quick]
+/// <c>benchmark [--lang CODE] [--package] [--processors] [--model PROCESSOR=NAME]... [--models DIR] [--threads N] [--words N] [--python PATH] [--quick]
 /// [--json FILE]</c>: times StanzaSharp (managed backend) and, when Python Stanza is available, Stanza on the same text
 /// with the same models and threads, alternating their runs, and prints a Markdown block with the machine, both sides'
 /// times and the ratio. Exit code 0, or 2 for bad arguments or setup.
@@ -43,10 +43,13 @@ internal static class BenchmarkCommand
         string package = Pipeline.DefaultPackage, language = Pipeline.English, python = "python";
         int threads = 0, words = 1500, runs = 3, calls = 50;
         bool quick = false;
+        var chosenModels = new Dictionary<string, string>();
         for (int i = 0; i < args.Length; i++)
         {
             if (args[i] == "--lang" && i + 1 < args.Length)
                 language = args[++i];
+            else if (args[i] == "--model" && i + 1 < args.Length && DownloadCommand.AddModels(args[i + 1], chosenModels))
+                i++;
             else if (args[i] == "--package" && i + 1 < args.Length)
                 package = args[++i];
             else if (args[i] == "--processors" && i + 1 < args.Length)
@@ -70,10 +73,11 @@ internal static class BenchmarkCommand
         if (quick)
             (words, runs, calls) = (Math.Min(words, 300), 1, 10);
 
+        var chosen = DownloadCommand.ModelsOrNull(chosenModels);
         string list;
         try
         {
-            list = CompareCommand.ProcessorList(package, processors, language);
+            list = CompareCommand.ProcessorList(package, processors, language, chosen);
         }
         catch (ArgumentException e)
         {
@@ -94,7 +98,7 @@ internal static class BenchmarkCommand
         {
             Console.Error.WriteLine($"Loading StanzaSharp ({language}, {package}: {list}) from {models}...");
             var watch = Stopwatch.StartNew();
-            nlp = Pipeline.Load(models, new PipelineOptions { Language = language, Package = package, Processors = list, Threads = threads > 0 ? threads : null, Logger = stageLog });
+            nlp = Pipeline.Load(models, new PipelineOptions { Language = language, Package = package, Processors = list, Models = chosen, Threads = threads > 0 ? threads : null, Logger = stageLog });
             load = watch.Elapsed.TotalSeconds;
         }
         catch (Exception e) when (e is IOException or InvalidDataException or InvalidOperationException or ArgumentException or UnauthorizedAccessException)
@@ -104,7 +108,7 @@ internal static class BenchmarkCommand
 
         using (nlp)
         {
-            using var stanza = PythonStanza.Start(python, models, language, package, list, threads, out var pythonNote);
+            using var stanza = PythonStanza.Start(python, models, language, package, list, chosen, threads, out var pythonNote);
             var csRuns = new List<Dictionary<string, double>>();
             var pyRuns = new List<Dictionary<string, double>>();
             Document doc = null!;
@@ -195,7 +199,8 @@ internal static class BenchmarkCommand
                 pythonNote = stanza.Versions;
             }
 
-            var result = new Result(DescribeMachine(), language, package, list, doc.Sentences.Sum(s => s.Words.Count()), doc.Sentences.Count,
+            var shown = chosen == null ? package : $"{package} + {string.Join(", ", chosen.Select(m => $"{m.Key}={m.Value}"))}";
+            var result = new Result(DescribeMachine(), language, shown, list, doc.Sentences.Sum(s => s.Words.Count()), doc.Sentences.Count,
                 runs, calls, cs, py, pythonNote, outputNote);
             output.Write(Format(result));
             if (json != null)
@@ -411,9 +416,10 @@ internal static class BenchmarkCommand
 
         private PythonStanza(Process process, DirectoryInfo dir) => (_process, _dir) = (process, dir);
 
-        public static PythonStanza? Start(string python, string models, string language, string package, string list, int threads, out string note)
+        public static PythonStanza? Start(string python, string models, string language, string package, string list, IReadOnlyDictionary<string, string>? chosen,
+            int threads, out string note)
         {
-            if (CompareCommand.StanzaModelsProblem(ref models, language, package, list) is { } problem)
+            if (CompareCommand.StanzaModelsProblem(ref models, language, package, list, chosen) is { } problem)
             {
                 note = "not run: " + problem;
                 Console.Error.WriteLine($"Python Stanza: {note}");
@@ -423,7 +429,8 @@ internal static class BenchmarkCommand
             var dir = Directory.CreateTempSubdirectory("stanzasharp-benchmark-");
             CompareCommand.WriteResources(dir.FullName, "benchmark.py", "compare.py", $"stanza_resources_{language}.json");
             var start = new ProcessStartInfo(python) { RedirectStandardInput = true, RedirectStandardOutput = true, StandardInputEncoding = new UTF8Encoding(false) };
-            foreach (var arg in new[] { Path.Combine(dir.FullName, "benchmark.py"), models, language, package, list, threads.ToString(CultureInfo.InvariantCulture), ModelDownloader.StanzaVersion })
+            var stanzaProcessors = CompareCommand.StanzaProcessors(package, list, language, chosen);
+            foreach (var arg in new[] { Path.Combine(dir.FullName, "benchmark.py"), models, language, package, stanzaProcessors, threads.ToString(CultureInfo.InvariantCulture), ModelDownloader.StanzaVersion })
                 start.ArgumentList.Add(arg);
             Console.Error.WriteLine($"Loading Stanza {ModelDownloader.StanzaVersion} with {python}...");
             PythonStanza? stanza = null;
