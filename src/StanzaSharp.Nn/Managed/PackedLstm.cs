@@ -32,6 +32,10 @@ internal unsafe struct StepRows
 /// </remarks>
 internal sealed unsafe class PackedLstm
 {
+    /// <summary>Tests only: called on the caller's thread with each time step's index, just before its cancellation check.</summary>
+    [ThreadStatic]
+    internal static Action<int>? OnStep;
+
     private readonly PackedMatrix[] _whh;
     private readonly float[][] _h0, _c0;
 
@@ -160,6 +164,7 @@ internal sealed unsafe class PackedLstm
 
                     for (int s = 0; s < steps; s++)
                     {
+                        OnStep?.Invoke(s);
                         ct.ThrowIfCancellationRequested();
                         for (int d = 0; d < dirs; d++)
                         {
