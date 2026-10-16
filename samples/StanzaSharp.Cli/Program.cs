@@ -1,8 +1,8 @@
 using StanzaSharp;
 
 const string Usage = """
-    Usage: StanzaSharp.Cli [--lang CODE] [--models DIR] [--package NAME] [--processors LIST] [FILE]
-           StanzaSharp.Cli download [DIR] [--lang CODE] [--package NAME] [--processors LIST]
+    Usage: StanzaSharp.Cli [--lang CODE] [--models DIR] [--package NAME] [--processors LIST] [--model P=NAME]... [FILE]
+           StanzaSharp.Cli download [DIR] [--lang CODE] [--package NAME] [--processors LIST] [--model P=NAME]...
 
     Runs the pipeline of --lang (en, the default, or de) on FILE (or standard input) and writes CoNLL-U to standard output.
     "download" fetches Stanza's models of --lang (en, the default, or de) into DIR (default: models/stanza/<lang>):
@@ -16,6 +16,9 @@ const string Usage = """
                           German combined, gsd, hdt
       --processors LIST   comma-separated, from tokenize,mwt,pos,lemma,constituency,depparse,sentiment,ner
                           (default: all of the package's)
+      --model P=NAME      a model for processor P instead of the package's (repeatable, or P=NAME,P=NAME), as Stanza's
+                          processors dict: English constituency=ptb3_charlm; ner=ontonotes_charlm, ontonotes_nocharlm,
+                          combined_charlm, i2b2 (with --package mimic); German ner=conll03. Its processor is added if needed
       --backend NAME      managed (default; no native code) or torch (TorchSharp, with this sample's TorchSharp-cpu)
     """;
 
@@ -27,6 +30,7 @@ string language = "en";
 string? processors = null;
 string package = Pipeline.DefaultPackage;
 string? file = null;
+var models = new Dictionary<string, string>();
 var backend = PipelineBackend.Managed;
 
 for (int i = 0; i < args.Length; i++)
@@ -44,6 +48,9 @@ for (int i = 0; i < args.Length; i++)
             break;
         case "--package" when i + 1 < args.Length:
             package = args[++i];
+            break;
+        case "--model" when i + 1 < args.Length && StanzaSharp.Tool.DownloadCommand.AddModels(args[i + 1], models):
+            i++;
             break;
         case "--backend" when i + 1 < args.Length && args[i + 1] is "managed" or "torch":
             backend = args[++i] == "managed" ? PipelineBackend.Managed : CudaBackend.Cpu;
@@ -68,7 +75,7 @@ try
     string convertedDir = Path.Combine("models", "converted", language);
     modelDir ??= Directory.Exists(convertedDir) ? convertedDir : StanzaSharp.Tool.DownloadCommand.DirFor(language);
     var text = file != null ? File.ReadAllText(file) : Console.In.ReadToEnd();
-    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Language = language, Package = package, Processors = processors, Backend = backend });
+    using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Language = language, Package = package, Processors = processors, Models = StanzaSharp.Tool.DownloadCommand.ModelsOrNull(models), Backend = backend });
     var doc = nlp.Process(text);
     Console.Out.Write(Conllu.Write(doc));
     return 0;

@@ -165,6 +165,21 @@ Stanza's English treebank packages run too, each trained on one treebank, with t
 only: `combined`, `ewt`, `gum`, `lines`, `partut`, `atis`, `childes`, `eslspok` (no mwt; its lemma is the word), and
 the biomedical `craft`, `genia` and `mimic` (no mwt).
 
+## One model per processor
+
+`PipelineOptions.Models` replaces single models of the package, like Python Stanza's `processors={'ner': 'i2b2'}`
+(processor → a model's or a package's name). The keys' processors are added to the package's when `Processors` is null.
+
+```csharp
+var clinical = new PipelineOptions { Package = "mimic", Models = new Dictionary<string, string> { [Processor.Ner] = "i2b2" } };
+await ModelDownloader.DownloadAsync("models/stanza/en", clinical);
+using var nlp = Pipeline.Load("models/stanza/en", clinical);
+```
+
+Beyond the packages' models: English constituency `ptb3_charlm`; English ner `ontonotes_charlm`, `ontonotes_nocharlm`,
+`combined_charlm` and `i2b2` (clinical, with `Package = "mimic"`: one pipeline loads one pair of character language
+models); German ner `conll03`. Unknown or unsupported names throw `ArgumentException`.
+
 ## German
 
 `Language = "de"` selects Stanza's German models: the same processors and packages as English (`default`,
