@@ -52,9 +52,11 @@ public sealed class PipelineOptions
     /// </summary>
     /// <remarks>
     /// Models beyond the packages': English constituency <c>ptb3_charlm</c>; English ner <c>ontonotes_charlm</c>,
-    /// <c>ontonotes_nocharlm</c>, <c>combined_charlm</c> and <c>i2b2</c> (clinical, with the <c>mimic</c> package's
-    /// character models, which the pipeline then loads next to the package's if it reads others); German ner
-    /// <c>conll03</c>. <see cref="Pipeline.Load"/> and <see cref="ModelDownloader"/> throw
+    /// <c>ontonotes_nocharlm</c>, <c>combined_charlm</c>, <c>conll03_charlm</c>, the clinical <c>i2b2</c> and
+    /// <c>radiology</c> (with the <c>mimic</c> package's character models) and the biomedical <c>anatem</c>,
+    /// <c>bc4chemd</c>, <c>bc5cdr</c>, <c>bionlp13cg</c>, <c>jnlpba</c>, <c>linnaeus</c>, <c>ncbi_disease</c> and
+    /// <c>s800</c> (with the <c>pubmed</c> character models); German ner <c>conll03</c>. Character models a chosen
+    /// model reads are loaded next to the package's when they differ. <see cref="Pipeline.Load"/> and <see cref="ModelDownloader"/> throw
     /// <see cref="ArgumentException"/> for an unknown processor and for an unknown, transformer or unported model.
     /// </remarks>
     /// <example>

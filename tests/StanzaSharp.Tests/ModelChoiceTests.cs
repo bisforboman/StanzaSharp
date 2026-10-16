@@ -24,6 +24,28 @@ public class ModelChoiceTests
     [ModelChoice("en", "ner=i2b2", true)]
     [ModelChoice("en", "default+ner=i2b2", false)]
     [ModelChoice("en", "default+ner=i2b2", true)]
+    [ModelChoice("en", "ner=conll03_charlm", false)]
+    [ModelChoice("en", "ner=conll03_charlm", true)]
+    [ModelChoice("en", "ner=radiology", false)]
+    [ModelChoice("en", "ner=radiology", true)]
+    [ModelChoice("en", "default+ner=bc5cdr", false)]
+    [ModelChoice("en", "default+ner=bc5cdr", true)]
+    [ModelChoice("en", "ner=anatem", false)]
+    [ModelChoice("en", "ner=anatem", true)]
+    [ModelChoice("en", "ner=bc4chemd", false)]
+    [ModelChoice("en", "ner=bc4chemd", true)]
+    [ModelChoice("en", "ner=bc5cdr", false)]
+    [ModelChoice("en", "ner=bc5cdr", true)]
+    [ModelChoice("en", "ner=bionlp13cg", false)]
+    [ModelChoice("en", "ner=bionlp13cg", true)]
+    [ModelChoice("en", "ner=jnlpba", false)]
+    [ModelChoice("en", "ner=jnlpba", true)]
+    [ModelChoice("en", "ner=linnaeus", false)]
+    [ModelChoice("en", "ner=linnaeus", true)]
+    [ModelChoice("en", "ner=ncbi_disease", false)]
+    [ModelChoice("en", "ner=ncbi_disease", true)]
+    [ModelChoice("en", "ner=s800", false)]
+    [ModelChoice("en", "ner=s800", true)]
     [ModelChoice("de", "ner=conll03", false)]
     [ModelChoice("de", "ner=conll03", true)]
     public void Process_MatchesGolden(string name, bool managed, string lang) => AssertGolden(name, managed, lang, cache: true);
@@ -119,7 +141,7 @@ public class ModelChoiceTests
     [Theory]
     [InlineData("nerr=i2b2", "Unknown processor 'nerr'")]
     [InlineData("ner=ontonotes", "Unknown or unsupported ner model 'ontonotes'")]
-    [InlineData("ner=anatem", "Unknown or unsupported ner model 'anatem'")]
+    [InlineData("tokenize=ewt_charlm", "Unknown or unsupported tokenize model 'ewt_charlm'")]
     [InlineData("pos=combined_electra-large", "a transformer model")]
     [InlineData("constituency=ptb3", "Supported: ptb3-revised_charlm, ptb3_charlm")]
     [InlineData("ner=", "Unknown or unsupported ner model ''")]
@@ -195,6 +217,10 @@ public class ModelChoiceTests
         "tokenize/mimic_nocharlm.pt pos/mimic_charlm.pt lemma/mimic_nocharlm.pt depparse/mimic_charlm.pt ner/i2b2.pt pretrain/mimic.pt forward_charlm/mimic.pt backward_charlm/mimic.pt")]
     [InlineData("en", "default", "constituency", "constituency=ptb3_charlm",
         "tokenize/combined_nocharlm.pt mwt/combined.pt pos/combined_charlm.pt constituency/ptb3_charlm.pt pretrain/conll17.pt forward_charlm/1billion.pt backward_charlm/1billion.pt")]
+    [InlineData("en", "craft", null, "ner=anatem",
+        "tokenize/craft_nocharlm.pt pos/craft_nocharlm.pt lemma/craft_nocharlm.pt depparse/craft_nocharlm.pt ner/anatem.pt pretrain/biomed.pt forward_charlm/pubmed.pt backward_charlm/pubmed.pt")]
+    [InlineData("en", "default", "tokenize,ner", "ner=conll03_charlm",
+        "tokenize/combined_nocharlm.pt mwt/combined.pt ner/conll03_charlm.pt pretrain/glove.pt forward_charlm/1billion.pt backward_charlm/1billion.pt")]
     [InlineData("de", "default", "tokenize,ner", "ner=conll03",
         "tokenize/combined_nocharlm.pt mwt/combined.pt ner/conll03.pt pretrain/fasttextwiki.pt forward_charlm/newswiki.pt backward_charlm/newswiki.pt")]
     public void FilesFor_IncludesTheChosenModelsAndTheirDependencies(string lang, string package, string? processors, string pair, string expected)
@@ -202,6 +228,13 @@ public class ModelChoiceTests
         var files = ModelDownloader.FilesFor(processors, package, "options", lang, Models(pair)).Select(f => f.Path);
         Assert.Equal(expected.Split(' ').Order(), files.Order());
     }
+
+    [Theory]
+    [InlineData("CHEST CT", "chest ct")]
+    [InlineData("ΟΔΟΣ", "οδοσ")] // each character alone: no final sigma
+    [InlineData("İZMİR", "\uFFFFzm\uFFFFr")] // İ lowercases to two characters, one unknown unit for Python's char vocab
+    [InlineData("a😀B", "a😀b")]
+    public void LowerChars_LowercasesEachCharacterAlone(string word, string expected) => Assert.Equal(expected, Ner.NerTagger.LowerChars(word));
 
     [Fact]
     public void EveryAlternative_HasItsFilesAndDependencies()

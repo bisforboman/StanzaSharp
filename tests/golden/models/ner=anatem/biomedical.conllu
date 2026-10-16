@@ -1,0 +1,315 @@
+# text = Background:
+# sent_id = 0
+1	Background	_	_	_	_	0	_	_	SpaceAfter=No|start_char=0|end_char=10|ner=O
+2	:	_	_	_	_	1	_	_	start_char=10|end_char=11|ner=O
+
+# text = Cisplatin-induced nephrotoxicity limits the use of cisplatin in patients with ovarian cancer and head and neck squamous cell carcinoma.
+# sent_id = 1
+1	Cisplatin-induced	_	_	_	_	0	_	_	start_char=12|end_char=29|ner=O
+2	nephrotoxicity	_	_	_	_	1	_	_	start_char=30|end_char=44|ner=O
+3	limits	_	_	_	_	2	_	_	start_char=45|end_char=51|ner=O
+4	the	_	_	_	_	3	_	_	start_char=52|end_char=55|ner=O
+5	use	_	_	_	_	4	_	_	start_char=56|end_char=59|ner=O
+6	of	_	_	_	_	5	_	_	start_char=60|end_char=62|ner=O
+7	cisplatin	_	_	_	_	6	_	_	start_char=63|end_char=72|ner=O
+8	in	_	_	_	_	7	_	_	start_char=73|end_char=75|ner=O
+9	patients	_	_	_	_	8	_	_	start_char=76|end_char=84|ner=O
+10	with	_	_	_	_	9	_	_	start_char=85|end_char=89|ner=O
+11	ovarian	_	_	_	_	10	_	_	start_char=90|end_char=97|ner=B-ANATOMY
+12	cancer	_	_	_	_	11	_	_	start_char=98|end_char=104|ner=E-ANATOMY
+13	and	_	_	_	_	12	_	_	start_char=105|end_char=108|ner=O
+14	head	_	_	_	_	13	_	_	start_char=109|end_char=113|ner=B-ANATOMY
+15	and	_	_	_	_	14	_	_	start_char=114|end_char=117|ner=I-ANATOMY
+16	neck	_	_	_	_	15	_	_	start_char=118|end_char=122|ner=I-ANATOMY
+17	squamous	_	_	_	_	16	_	_	start_char=123|end_char=131|ner=I-ANATOMY
+18	cell	_	_	_	_	17	_	_	start_char=132|end_char=136|ner=I-ANATOMY
+19	carcinoma	_	_	_	_	18	_	_	SpaceAfter=No|start_char=137|end_char=146|ner=E-ANATOMY
+20	.	_	_	_	_	19	_	_	start_char=146|end_char=147|ner=O
+
+# text = We examined whether metformin protects the kidney against this injury in mice.
+# sent_id = 2
+1	We	_	_	_	_	0	_	_	start_char=148|end_char=150|ner=O
+2	examined	_	_	_	_	1	_	_	start_char=151|end_char=159|ner=O
+3	whether	_	_	_	_	2	_	_	start_char=160|end_char=167|ner=O
+4	metformin	_	_	_	_	3	_	_	start_char=168|end_char=177|ner=O
+5	protects	_	_	_	_	4	_	_	start_char=178|end_char=186|ner=O
+6	the	_	_	_	_	5	_	_	start_char=187|end_char=190|ner=O
+7	kidney	_	_	_	_	6	_	_	start_char=191|end_char=197|ner=S-ANATOMY
+8	against	_	_	_	_	7	_	_	start_char=198|end_char=205|ner=O
+9	this	_	_	_	_	8	_	_	start_char=206|end_char=210|ner=O
+10	injury	_	_	_	_	9	_	_	start_char=211|end_char=217|ner=O
+11	in	_	_	_	_	10	_	_	start_char=218|end_char=220|ner=O
+12	mice	_	_	_	_	11	_	_	SpaceAfter=No|start_char=221|end_char=225|ner=O
+13	.	_	_	_	_	12	_	_	SpacesAfter=\n\n|start_char=225|end_char=226|ner=O
+
+# text = Methods: Male C57BL/6 mice received a single intraperitoneal dose of cisplatin (20 mg/kg) with or without metformin in the drinking water.
+# sent_id = 3
+1	Methods	_	_	_	_	0	_	_	SpaceAfter=No|start_char=228|end_char=235|ner=O
+2	:	_	_	_	_	1	_	_	start_char=235|end_char=236|ner=O
+3	Male	_	_	_	_	2	_	_	start_char=237|end_char=241|ner=O
+4	C57BL	_	_	_	_	3	_	_	SpaceAfter=No|start_char=242|end_char=247|ner=O
+5	/	_	_	_	_	4	_	_	SpaceAfter=No|start_char=247|end_char=248|ner=O
+6	6	_	_	_	_	5	_	_	start_char=248|end_char=249|ner=O
+7	mice	_	_	_	_	6	_	_	start_char=250|end_char=254|ner=O
+8	received	_	_	_	_	7	_	_	start_char=255|end_char=263|ner=O
+9	a	_	_	_	_	8	_	_	start_char=264|end_char=265|ner=O
+10	single	_	_	_	_	9	_	_	start_char=266|end_char=272|ner=O
+11	intraperitoneal	_	_	_	_	10	_	_	start_char=273|end_char=288|ner=S-ANATOMY
+12	dose	_	_	_	_	11	_	_	start_char=289|end_char=293|ner=O
+13	of	_	_	_	_	12	_	_	start_char=294|end_char=296|ner=O
+14	cisplatin	_	_	_	_	13	_	_	start_char=297|end_char=306|ner=O
+15	(	_	_	_	_	14	_	_	SpaceAfter=No|start_char=307|end_char=308|ner=O
+16	20	_	_	_	_	15	_	_	start_char=308|end_char=310|ner=O
+17	mg	_	_	_	_	16	_	_	SpaceAfter=No|start_char=311|end_char=313|ner=O
+18	/	_	_	_	_	17	_	_	SpaceAfter=No|start_char=313|end_char=314|ner=O
+19	kg	_	_	_	_	18	_	_	SpaceAfter=No|start_char=314|end_char=316|ner=O
+20	)	_	_	_	_	19	_	_	start_char=316|end_char=317|ner=O
+21	with	_	_	_	_	20	_	_	start_char=318|end_char=322|ner=O
+22	or	_	_	_	_	21	_	_	start_char=323|end_char=325|ner=O
+23	without	_	_	_	_	22	_	_	start_char=326|end_char=333|ner=O
+24	metformin	_	_	_	_	23	_	_	start_char=334|end_char=343|ner=O
+25	in	_	_	_	_	24	_	_	start_char=344|end_char=346|ner=O
+26	the	_	_	_	_	25	_	_	start_char=347|end_char=350|ner=O
+27	drinking	_	_	_	_	26	_	_	start_char=351|end_char=359|ner=O
+28	water	_	_	_	_	27	_	_	SpaceAfter=No|start_char=360|end_char=365|ner=O
+29	.	_	_	_	_	28	_	_	start_char=365|end_char=366|ner=O
+
+# text = Serum creatinine and blood urea nitrogen were measured after 72 hours.
+# sent_id = 4
+1	Serum	_	_	_	_	0	_	_	start_char=367|end_char=372|ner=S-ANATOMY
+2	creatinine	_	_	_	_	1	_	_	start_char=373|end_char=383|ner=O
+3	and	_	_	_	_	2	_	_	start_char=384|end_char=387|ner=O
+4	blood	_	_	_	_	3	_	_	start_char=388|end_char=393|ner=S-ANATOMY
+5	urea	_	_	_	_	4	_	_	start_char=394|end_char=398|ner=O
+6	nitrogen	_	_	_	_	5	_	_	start_char=399|end_char=407|ner=O
+7	were	_	_	_	_	6	_	_	start_char=408|end_char=412|ner=O
+8	measured	_	_	_	_	7	_	_	start_char=413|end_char=421|ner=O
+9	after	_	_	_	_	8	_	_	start_char=422|end_char=427|ner=O
+10	72	_	_	_	_	9	_	_	start_char=428|end_char=430|ner=O
+11	hours	_	_	_	_	10	_	_	SpaceAfter=No|start_char=431|end_char=436|ner=O
+12	.	_	_	_	_	11	_	_	start_char=436|end_char=437|ner=O
+
+# text = Proximal tubule cells were stained for the tumor suppressor p53, cleaved caspase-3 and the kidney injury molecule KIM-1.
+# sent_id = 5
+1	Proximal	_	_	_	_	0	_	_	start_char=438|end_char=446|ner=B-ANATOMY
+2	tubule	_	_	_	_	1	_	_	start_char=447|end_char=453|ner=I-ANATOMY
+3	cells	_	_	_	_	2	_	_	start_char=454|end_char=459|ner=E-ANATOMY
+4	were	_	_	_	_	3	_	_	start_char=460|end_char=464|ner=O
+5	stained	_	_	_	_	4	_	_	start_char=465|end_char=472|ner=O
+6	for	_	_	_	_	5	_	_	start_char=473|end_char=476|ner=O
+7	the	_	_	_	_	6	_	_	start_char=477|end_char=480|ner=O
+8	tumor	_	_	_	_	7	_	_	start_char=481|end_char=486|ner=S-ANATOMY
+9	suppressor	_	_	_	_	8	_	_	start_char=487|end_char=497|ner=O
+10	p53	_	_	_	_	9	_	_	SpaceAfter=No|start_char=498|end_char=501|ner=O
+11	,	_	_	_	_	10	_	_	start_char=501|end_char=502|ner=O
+12	cleaved	_	_	_	_	11	_	_	start_char=503|end_char=510|ner=O
+13	caspase	_	_	_	_	12	_	_	SpaceAfter=No|start_char=511|end_char=518|ner=O
+14	-	_	_	_	_	13	_	_	SpaceAfter=No|start_char=518|end_char=519|ner=O
+15	3	_	_	_	_	14	_	_	start_char=519|end_char=520|ner=O
+16	and	_	_	_	_	15	_	_	start_char=521|end_char=524|ner=O
+17	the	_	_	_	_	16	_	_	start_char=525|end_char=528|ner=O
+18	kidney	_	_	_	_	17	_	_	start_char=529|end_char=535|ner=S-ANATOMY
+19	injury	_	_	_	_	18	_	_	start_char=536|end_char=542|ner=O
+20	molecule	_	_	_	_	19	_	_	start_char=543|end_char=551|ner=O
+21	KIM	_	_	_	_	20	_	_	SpaceAfter=No|start_char=552|end_char=555|ner=O
+22	-	_	_	_	_	21	_	_	SpaceAfter=No|start_char=555|end_char=556|ner=O
+23	1	_	_	_	_	22	_	_	SpaceAfter=No|start_char=556|end_char=557|ner=O
+24	.	_	_	_	_	23	_	_	start_char=557|end_char=558|ner=O
+
+# text = In vitro, HK-2 cells and the human embryonic kidney line HEK293 were treated with cisplatin and with the AMPK activator AICAR.
+# sent_id = 6
+1	In	_	_	_	_	0	_	_	start_char=559|end_char=561|ner=O
+2	vitro	_	_	_	_	1	_	_	SpaceAfter=No|start_char=562|end_char=567|ner=O
+3	,	_	_	_	_	2	_	_	start_char=567|end_char=568|ner=O
+4	HK	_	_	_	_	3	_	_	SpaceAfter=No|start_char=569|end_char=571|ner=B-ANATOMY
+5	-	_	_	_	_	4	_	_	SpaceAfter=No|start_char=571|end_char=572|ner=I-ANATOMY
+6	2	_	_	_	_	5	_	_	start_char=572|end_char=573|ner=I-ANATOMY
+7	cells	_	_	_	_	6	_	_	start_char=574|end_char=579|ner=E-ANATOMY
+8	and	_	_	_	_	7	_	_	start_char=580|end_char=583|ner=O
+9	the	_	_	_	_	8	_	_	start_char=584|end_char=587|ner=O
+10	human	_	_	_	_	9	_	_	start_char=588|end_char=593|ner=O
+11	embryonic	_	_	_	_	10	_	_	start_char=594|end_char=603|ner=B-ANATOMY
+12	kidney	_	_	_	_	11	_	_	start_char=604|end_char=610|ner=I-ANATOMY
+13	line	_	_	_	_	12	_	_	start_char=611|end_char=615|ner=I-ANATOMY
+14	HEK293	_	_	_	_	13	_	_	start_char=616|end_char=622|ner=E-ANATOMY
+15	were	_	_	_	_	14	_	_	start_char=623|end_char=627|ner=O
+16	treated	_	_	_	_	15	_	_	start_char=628|end_char=635|ner=O
+17	with	_	_	_	_	16	_	_	start_char=636|end_char=640|ner=O
+18	cisplatin	_	_	_	_	17	_	_	start_char=641|end_char=650|ner=O
+19	and	_	_	_	_	18	_	_	start_char=651|end_char=654|ner=O
+20	with	_	_	_	_	19	_	_	start_char=655|end_char=659|ner=O
+21	the	_	_	_	_	20	_	_	start_char=660|end_char=663|ner=O
+22	AMPK	_	_	_	_	21	_	_	start_char=664|end_char=668|ner=O
+23	activator	_	_	_	_	22	_	_	start_char=669|end_char=678|ner=O
+24	AICAR	_	_	_	_	23	_	_	SpaceAfter=No|start_char=679|end_char=684|ner=O
+25	.	_	_	_	_	24	_	_	SpacesAfter=\n\n|start_char=684|end_char=685|ner=O
+
+# text = Results: Metformin lowered serum creatinine by 40% and reduced tubular necrosis in the renal cortex.
+# sent_id = 7
+1	Results	_	_	_	_	0	_	_	SpaceAfter=No|start_char=687|end_char=694|ner=O
+2	:	_	_	_	_	1	_	_	start_char=694|end_char=695|ner=O
+3	Metformin	_	_	_	_	2	_	_	start_char=696|end_char=705|ner=O
+4	lowered	_	_	_	_	3	_	_	start_char=706|end_char=713|ner=O
+5	serum	_	_	_	_	4	_	_	start_char=714|end_char=719|ner=S-ANATOMY
+6	creatinine	_	_	_	_	5	_	_	start_char=720|end_char=730|ner=O
+7	by	_	_	_	_	6	_	_	start_char=731|end_char=733|ner=O
+8	40	_	_	_	_	7	_	_	SpaceAfter=No|start_char=734|end_char=736|ner=O
+9	%	_	_	_	_	8	_	_	start_char=736|end_char=737|ner=O
+10	and	_	_	_	_	9	_	_	start_char=738|end_char=741|ner=O
+11	reduced	_	_	_	_	10	_	_	start_char=742|end_char=749|ner=O
+12	tubular	_	_	_	_	11	_	_	start_char=750|end_char=757|ner=S-ANATOMY
+13	necrosis	_	_	_	_	12	_	_	start_char=758|end_char=766|ner=O
+14	in	_	_	_	_	13	_	_	start_char=767|end_char=769|ner=O
+15	the	_	_	_	_	14	_	_	start_char=770|end_char=773|ner=O
+16	renal	_	_	_	_	15	_	_	start_char=774|end_char=779|ner=B-ANATOMY
+17	cortex	_	_	_	_	16	_	_	SpaceAfter=No|start_char=780|end_char=786|ner=E-ANATOMY
+18	.	_	_	_	_	17	_	_	start_char=786|end_char=787|ner=O
+
+# text = The expression of p53 and of the pro-apoptotic protein BAX fell, while Bcl-2 levels rose.
+# sent_id = 8
+1	The	_	_	_	_	0	_	_	start_char=788|end_char=791|ner=O
+2	expression	_	_	_	_	1	_	_	start_char=792|end_char=802|ner=O
+3	of	_	_	_	_	2	_	_	start_char=803|end_char=805|ner=O
+4	p53	_	_	_	_	3	_	_	start_char=806|end_char=809|ner=O
+5	and	_	_	_	_	4	_	_	start_char=810|end_char=813|ner=O
+6	of	_	_	_	_	5	_	_	start_char=814|end_char=816|ner=O
+7	the	_	_	_	_	6	_	_	start_char=817|end_char=820|ner=O
+8	pro-apoptotic	_	_	_	_	7	_	_	start_char=821|end_char=834|ner=O
+9	protein	_	_	_	_	8	_	_	start_char=835|end_char=842|ner=O
+10	BAX	_	_	_	_	9	_	_	start_char=843|end_char=846|ner=O
+11	fell	_	_	_	_	10	_	_	SpaceAfter=No|start_char=847|end_char=851|ner=O
+12	,	_	_	_	_	11	_	_	start_char=851|end_char=852|ner=O
+13	while	_	_	_	_	12	_	_	start_char=853|end_char=858|ner=O
+14	Bcl-	_	_	_	_	13	_	_	SpaceAfter=No|start_char=859|end_char=863|ner=O
+15	2	_	_	_	_	14	_	_	start_char=863|end_char=864|ner=O
+16	levels	_	_	_	_	15	_	_	start_char=865|end_char=871|ner=O
+17	rose	_	_	_	_	16	_	_	SpaceAfter=No|start_char=872|end_char=876|ner=O
+18	.	_	_	_	_	17	_	_	start_char=876|end_char=877|ner=O
+
+# text = Knockdown of AMPK alpha 1 with small interfering RNA abolished the protective effect in HK-2 cells.
+# sent_id = 9
+1	Knockdown	_	_	_	_	0	_	_	start_char=878|end_char=887|ner=O
+2	of	_	_	_	_	1	_	_	start_char=888|end_char=890|ner=O
+3	AMPK	_	_	_	_	2	_	_	start_char=891|end_char=895|ner=O
+4	alpha	_	_	_	_	3	_	_	start_char=896|end_char=901|ner=O
+5	1	_	_	_	_	4	_	_	start_char=902|end_char=903|ner=O
+6	with	_	_	_	_	5	_	_	start_char=904|end_char=908|ner=O
+7	small	_	_	_	_	6	_	_	start_char=909|end_char=914|ner=O
+8	interfering	_	_	_	_	7	_	_	start_char=915|end_char=926|ner=O
+9	RNA	_	_	_	_	8	_	_	start_char=927|end_char=930|ner=O
+10	abolished	_	_	_	_	9	_	_	start_char=931|end_char=940|ner=O
+11	the	_	_	_	_	10	_	_	start_char=941|end_char=944|ner=O
+12	protective	_	_	_	_	11	_	_	start_char=945|end_char=955|ner=O
+13	effect	_	_	_	_	12	_	_	start_char=956|end_char=962|ner=O
+14	in	_	_	_	_	13	_	_	start_char=963|end_char=965|ner=O
+15	HK	_	_	_	_	14	_	_	SpaceAfter=No|start_char=966|end_char=968|ner=B-ANATOMY
+16	-	_	_	_	_	15	_	_	SpaceAfter=No|start_char=968|end_char=969|ner=I-ANATOMY
+17	2	_	_	_	_	16	_	_	start_char=969|end_char=970|ner=I-ANATOMY
+18	cells	_	_	_	_	17	_	_	SpaceAfter=No|start_char=971|end_char=976|ner=E-ANATOMY
+19	.	_	_	_	_	18	_	_	start_char=976|end_char=977|ner=O
+
+# text = Interleukin-6 and tumor necrosis factor alpha mRNA in the kidney were halved.
+# sent_id = 10
+1	Interleukin-6	_	_	_	_	0	_	_	start_char=978|end_char=991|ner=O
+2	and	_	_	_	_	1	_	_	start_char=992|end_char=995|ner=O
+3	tumor	_	_	_	_	2	_	_	start_char=996|end_char=1001|ner=O
+4	necrosis	_	_	_	_	3	_	_	start_char=1002|end_char=1010|ner=O
+5	factor	_	_	_	_	4	_	_	start_char=1011|end_char=1017|ner=O
+6	alpha	_	_	_	_	5	_	_	start_char=1018|end_char=1023|ner=O
+7	mRNA	_	_	_	_	6	_	_	start_char=1024|end_char=1028|ner=O
+8	in	_	_	_	_	7	_	_	start_char=1029|end_char=1031|ner=O
+9	the	_	_	_	_	8	_	_	start_char=1032|end_char=1035|ner=O
+10	kidney	_	_	_	_	9	_	_	start_char=1036|end_char=1042|ner=S-ANATOMY
+11	were	_	_	_	_	10	_	_	start_char=1043|end_char=1047|ner=O
+12	halved	_	_	_	_	11	_	_	SpaceAfter=No|start_char=1048|end_char=1054|ner=O
+13	.	_	_	_	_	12	_	_	start_char=1054|end_char=1055|ner=O
+
+# text = No protection was seen in Rattus norvegicus given lithium chloride instead of metformin.
+# sent_id = 11
+1	No	_	_	_	_	0	_	_	start_char=1056|end_char=1058|ner=O
+2	protection	_	_	_	_	1	_	_	start_char=1059|end_char=1069|ner=O
+3	was	_	_	_	_	2	_	_	start_char=1070|end_char=1073|ner=O
+4	seen	_	_	_	_	3	_	_	start_char=1074|end_char=1078|ner=O
+5	in	_	_	_	_	4	_	_	start_char=1079|end_char=1081|ner=O
+6	Rattus	_	_	_	_	5	_	_	start_char=1082|end_char=1088|ner=O
+7	norvegicus	_	_	_	_	6	_	_	start_char=1089|end_char=1099|ner=O
+8	given	_	_	_	_	7	_	_	start_char=1100|end_char=1105|ner=O
+9	lithium	_	_	_	_	8	_	_	start_char=1106|end_char=1113|ner=O
+10	chloride	_	_	_	_	9	_	_	start_char=1114|end_char=1122|ner=O
+11	instead	_	_	_	_	10	_	_	start_char=1123|end_char=1130|ner=O
+12	of	_	_	_	_	11	_	_	start_char=1131|end_char=1133|ner=O
+13	metformin	_	_	_	_	12	_	_	SpaceAfter=No|start_char=1134|end_char=1143|ner=O
+14	.	_	_	_	_	13	_	_	SpacesAfter=\n\n|start_char=1143|end_char=1144|ner=O
+
+# text = Conclusions: Metformin activates AMPK and attenuates acute kidney injury caused by cisplatin.
+# sent_id = 12
+1	Conclusions	_	_	_	_	0	_	_	SpaceAfter=No|start_char=1146|end_char=1157|ner=O
+2	:	_	_	_	_	1	_	_	start_char=1157|end_char=1158|ner=O
+3	Metformin	_	_	_	_	2	_	_	start_char=1159|end_char=1168|ner=O
+4	activates	_	_	_	_	3	_	_	start_char=1169|end_char=1178|ner=O
+5	AMPK	_	_	_	_	4	_	_	start_char=1179|end_char=1183|ner=O
+6	and	_	_	_	_	5	_	_	start_char=1184|end_char=1187|ner=O
+7	attenuates	_	_	_	_	6	_	_	start_char=1188|end_char=1198|ner=O
+8	acute	_	_	_	_	7	_	_	start_char=1199|end_char=1204|ner=O
+9	kidney	_	_	_	_	8	_	_	start_char=1205|end_char=1211|ner=S-ANATOMY
+10	injury	_	_	_	_	9	_	_	start_char=1212|end_char=1218|ner=O
+11	caused	_	_	_	_	10	_	_	start_char=1219|end_char=1225|ner=O
+12	by	_	_	_	_	11	_	_	start_char=1226|end_char=1228|ner=O
+13	cisplatin	_	_	_	_	12	_	_	SpaceAfter=No|start_char=1229|end_char=1238|ner=O
+14	.	_	_	_	_	13	_	_	start_char=1238|end_char=1239|ner=O
+
+# text = Drosophila melanogaster and Saccharomyces cerevisiae screens identified similar pathways, and CD4+ T cells from the spleen showed less infiltration.
+# sent_id = 13
+1	Drosophila	_	_	_	_	0	_	_	start_char=1240|end_char=1250|ner=O
+2	melanogaster	_	_	_	_	1	_	_	start_char=1251|end_char=1263|ner=O
+3	and	_	_	_	_	2	_	_	start_char=1264|end_char=1267|ner=O
+4	Saccharomyces	_	_	_	_	3	_	_	start_char=1268|end_char=1281|ner=O
+5	cerevisiae	_	_	_	_	4	_	_	start_char=1282|end_char=1292|ner=O
+6	screens	_	_	_	_	5	_	_	start_char=1293|end_char=1300|ner=O
+7	identified	_	_	_	_	6	_	_	start_char=1301|end_char=1311|ner=O
+8	similar	_	_	_	_	7	_	_	start_char=1312|end_char=1319|ner=O
+9	pathways	_	_	_	_	8	_	_	SpaceAfter=No|start_char=1320|end_char=1328|ner=O
+10	,	_	_	_	_	9	_	_	start_char=1328|end_char=1329|ner=O
+11	and	_	_	_	_	10	_	_	start_char=1330|end_char=1333|ner=O
+12	CD4	_	_	_	_	11	_	_	SpaceAfter=No|start_char=1334|end_char=1337|ner=B-ANATOMY
+13	+	_	_	_	_	12	_	_	start_char=1337|end_char=1338|ner=I-ANATOMY
+14	T	_	_	_	_	13	_	_	start_char=1339|end_char=1340|ner=I-ANATOMY
+15	cells	_	_	_	_	14	_	_	start_char=1341|end_char=1346|ner=E-ANATOMY
+16	from	_	_	_	_	15	_	_	start_char=1347|end_char=1351|ner=O
+17	the	_	_	_	_	16	_	_	start_char=1352|end_char=1355|ner=O
+18	spleen	_	_	_	_	17	_	_	start_char=1356|end_char=1362|ner=S-ANATOMY
+19	showed	_	_	_	_	18	_	_	start_char=1363|end_char=1369|ner=O
+20	less	_	_	_	_	19	_	_	start_char=1370|end_char=1374|ner=O
+21	infiltration	_	_	_	_	20	_	_	SpaceAfter=No|start_char=1375|end_char=1387|ner=O
+22	.	_	_	_	_	21	_	_	start_char=1387|end_char=1388|ner=O
+
+# text = These findings support a trial of metformin in patients with diabetes mellitus who receive platinum chemotherapy, although lactic acidosis remains a concern in chronic kidney disease.
+# sent_id = 14
+1	These	_	_	_	_	0	_	_	start_char=1389|end_char=1394|ner=O
+2	findings	_	_	_	_	1	_	_	start_char=1395|end_char=1403|ner=O
+3	support	_	_	_	_	2	_	_	start_char=1404|end_char=1411|ner=O
+4	a	_	_	_	_	3	_	_	start_char=1412|end_char=1413|ner=O
+5	trial	_	_	_	_	4	_	_	start_char=1414|end_char=1419|ner=O
+6	of	_	_	_	_	5	_	_	start_char=1420|end_char=1422|ner=O
+7	metformin	_	_	_	_	6	_	_	start_char=1423|end_char=1432|ner=O
+8	in	_	_	_	_	7	_	_	start_char=1433|end_char=1435|ner=O
+9	patients	_	_	_	_	8	_	_	start_char=1436|end_char=1444|ner=O
+10	with	_	_	_	_	9	_	_	start_char=1445|end_char=1449|ner=O
+11	diabetes	_	_	_	_	10	_	_	start_char=1450|end_char=1458|ner=O
+12	mellitus	_	_	_	_	11	_	_	start_char=1459|end_char=1467|ner=O
+13	who	_	_	_	_	12	_	_	start_char=1468|end_char=1471|ner=O
+14	receive	_	_	_	_	13	_	_	start_char=1472|end_char=1479|ner=O
+15	platinum	_	_	_	_	14	_	_	start_char=1480|end_char=1488|ner=O
+16	chemotherapy	_	_	_	_	15	_	_	SpaceAfter=No|start_char=1489|end_char=1501|ner=O
+17	,	_	_	_	_	16	_	_	start_char=1501|end_char=1502|ner=O
+18	although	_	_	_	_	17	_	_	start_char=1503|end_char=1511|ner=O
+19	lactic	_	_	_	_	18	_	_	start_char=1512|end_char=1518|ner=O
+20	acidosis	_	_	_	_	19	_	_	start_char=1519|end_char=1527|ner=O
+21	remains	_	_	_	_	20	_	_	start_char=1528|end_char=1535|ner=O
+22	a	_	_	_	_	21	_	_	start_char=1536|end_char=1537|ner=O
+23	concern	_	_	_	_	22	_	_	start_char=1538|end_char=1545|ner=O
+24	in	_	_	_	_	23	_	_	start_char=1546|end_char=1548|ner=O
+25	chronic	_	_	_	_	24	_	_	start_char=1549|end_char=1556|ner=O
+26	kidney	_	_	_	_	25	_	_	start_char=1557|end_char=1563|ner=S-ANATOMY
+27	disease	_	_	_	_	26	_	_	SpaceAfter=No|start_char=1564|end_char=1571|ner=O
+28	.	_	_	_	_	27	_	_	SpacesAfter=\n|start_char=1571|end_char=1572|ner=O

@@ -318,7 +318,11 @@ The models beyond the packages':
 
 - English constituency: `ptb3_charlm` (the original Penn Treebank labels; the default is `ptb3-revised_charlm`).
 - English ner: `ontonotes_charlm` and `ontonotes_nocharlm` (OntoNotes only, with 300-dimensional fastText vectors, 123
-  MB), `combined_charlm` (three tag sets, of which Stanza uses OntoNotes'), and `i2b2` (clinical).
+  MB), `combined_charlm` (three tag sets, of which Stanza uses OntoNotes'), `conll03_charlm` (PER, LOC, ORG, MISC, with
+  GloVe vectors), the clinical `i2b2` (problems, tests, treatments) and `radiology` (anatomy, observations, uncertainty),
+  and the biomedical `anatem` (anatomy), `bc4chemd` (chemicals), `bc5cdr` (chemicals, diseases), `bionlp13cg` (cancer
+  genetics, 16 types), `jnlpba` (proteins, DNA, RNA, cell lines and types), `linnaeus` and `s800` (species) and
+  `ncbi_disease` (diseases), which read biomedical word vectors and PubMed character models (about 470 MB together).
 - German ner: `conll03` (PER, LOC, ORG, MISC).
 
 Their output is byte-identical to Python Stanza's on both backends. Names are exact, as in Stanza (`ptb3` is not

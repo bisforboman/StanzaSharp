@@ -1,0 +1,263 @@
+# text = EXAMINATION: CT CHEST WITH CONTRAST.
+# sent_id = 0
+1	EXAMINATION	examination	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=0|end_char=11|ner=O
+2	:	:	PUNCT	:	_	1	punct	_	start_char=11|end_char=12|ner=O
+3	CT	ct	PROPN	NNP	_	4	compound	_	start_char=13|end_char=15|ner=O
+4	CHEST	chest	NOUN	NN	_	1	appos	_	start_char=16|end_char=21|ner=S-ANATOMY
+5	WITH	with	ADP	IN	_	6	case	_	start_char=22|end_char=26|ner=O
+6	CONTRAST	contrast	NOUN	NN	_	4	nmod	_	SpaceAfter=No|start_char=27|end_char=35|ner=O
+7	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=35|end_char=36|ner=O
+
+# text = INDICATION: Shortness of breath and cough for two weeks.
+# sent_id = 1
+1	INDICATION	indication	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=38|end_char=48|ner=O
+2	:	:	PUNCT	:	_	1	punct	_	start_char=48|end_char=49|ner=O
+3	Shortness	shortness	NOUN	NN	_	1	appos	_	start_char=50|end_char=59|ner=O
+4	of	of	ADP	IN	_	5	case	_	start_char=60|end_char=62|ner=O
+5	breath	breath	NOUN	NN	_	3	nmod	_	start_char=63|end_char=69|ner=O
+6	and	and	CCONJ	CC	_	7	cc	_	start_char=70|end_char=73|ner=O
+7	cough	cough	NOUN	NN	_	5	conj	_	start_char=74|end_char=79|ner=S-OBSERVATION
+8	for	for	ADP	IN	_	10	case	_	start_char=80|end_char=83|ner=O
+9	two	two	NUM	CD	_	10	nummod	_	start_char=84|end_char=87|ner=O
+10	weeks	week	NOUN	NNS	_	3	nmod	_	SpaceAfter=No|start_char=88|end_char=93|ner=O
+11	.	.	PUNCT	.	_	1	punct	_	start_char=93|end_char=94|ner=O
+
+# text = Evaluate for pneumonia or pulmonary embolism.
+# sent_id = 2
+1	Evaluate	evaluate	VERB	VB	_	0	root	_	start_char=95|end_char=103|ner=O
+2	for	for	ADP	IN	_	3	case	_	start_char=104|end_char=107|ner=O
+3	pneumonia	pneumonia	NOUN	NN	_	1	obl	_	start_char=108|end_char=117|ner=S-OBSERVATION
+4	or	or	CCONJ	CC	_	6	cc	_	start_char=118|end_char=120|ner=O
+5	pulmonary	pulmonary	ADJ	JJ	_	6	amod	_	start_char=121|end_char=130|ner=S-ANATOMY
+6	embolism	embolism	NOUN	NN	_	3	conj	_	SpaceAfter=No|start_char=131|end_char=139|ner=S-OBSERVATION
+7	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=139|end_char=140|ner=O
+
+# text = FINDINGS:
+# sent_id = 3
+1	FINDINGS	finding	NOUN	NNS	_	0	root	_	SpaceAfter=No|start_char=142|end_char=150|ner=O
+2	:	:	PUNCT	:	_	1	punct	_	start_char=150|end_char=151|ner=O
+
+# text = There is a small right pleural effusion with adjacent atelectasis of the right lower lobe.
+# sent_id = 4
+1	There	there	PRON	EX	_	2	expl	_	start_char=152|end_char=157|ner=O
+2	is	be	VERB	VBZ	_	0	root	_	start_char=158|end_char=160|ner=O
+3	a	a	DET	DT	_	7	det	_	start_char=161|end_char=162|ner=O
+4	small	small	ADJ	JJ	_	7	amod	_	start_char=163|end_char=168|ner=S-OBSERVATION_MODIFIER
+5	right	right	ADJ	JJ	_	7	amod	_	start_char=169|end_char=174|ner=S-ANATOMY_MODIFIER
+6	pleural	pleural	ADJ	JJ	_	7	amod	_	start_char=175|end_char=182|ner=S-ANATOMY
+7	effusion	effusion	NOUN	NN	_	2	nsubj	_	start_char=183|end_char=191|ner=S-OBSERVATION
+8	with	with	ADP	IN	_	10	case	_	start_char=192|end_char=196|ner=O
+9	adjacent	adjacent	ADJ	JJ	_	10	amod	_	start_char=197|end_char=205|ner=O
+10	atelectasis	atelectasis	NOUN	NN	_	7	nmod	_	start_char=206|end_char=217|ner=S-OBSERVATION
+11	of	of	ADP	IN	_	15	case	_	start_char=218|end_char=220|ner=O
+12	the	the	DET	DT	_	15	det	_	start_char=221|end_char=224|ner=O
+13	right	right	ADJ	JJ	_	15	amod	_	start_char=225|end_char=230|ner=B-ANATOMY
+14	lower	lower	ADJ	JJR	_	15	amod	_	start_char=231|end_char=236|ner=I-ANATOMY
+15	lobe	lobe	NOUN	NN	_	10	nmod	_	SpaceAfter=No|start_char=237|end_char=241|ner=E-ANATOMY
+16	.	.	PUNCT	.	_	2	punct	_	start_char=241|end_char=242|ner=O
+
+# text = A 6 mm nodule is seen in the left upper lobe, unchanged from the prior study.
+# sent_id = 5
+1	A	a	DET	DT	_	4	det	_	start_char=243|end_char=244|ner=O
+2	6	6	NUM	CD	_	3	nummod	_	start_char=245|end_char=246|ner=B-OBSERVATION_MODIFIER
+3	mm	mm	NOUN	NN	_	4	compound	_	start_char=247|end_char=249|ner=E-OBSERVATION_MODIFIER
+4	nodule	nodule	NOUN	NN	_	6	nsubj:pass	_	start_char=250|end_char=256|ner=S-OBSERVATION
+5	is	be	AUX	VBZ	_	6	aux:pass	_	start_char=257|end_char=259|ner=O
+6	seen	see	VERB	VBN	_	0	root	_	start_char=260|end_char=264|ner=O
+7	in	in	ADP	IN	_	11	case	_	start_char=265|end_char=267|ner=O
+8	the	the	DET	DT	_	11	det	_	start_char=268|end_char=271|ner=O
+9	left	leave	VERB	VBN	_	11	amod	_	start_char=272|end_char=276|ner=B-ANATOMY
+10	upper	upper	ADJ	JJ	_	11	amod	_	start_char=277|end_char=282|ner=I-ANATOMY
+11	lobe	lobe	NOUN	NN	_	6	obl	_	SpaceAfter=No|start_char=283|end_char=287|ner=E-ANATOMY
+12	,	,	PUNCT	,	_	11	punct	_	start_char=287|end_char=288|ner=O
+13	unchanged	unchanged	ADJ	JJ	_	11	amod	_	start_char=289|end_char=298|ner=S-OBSERVATION_MODIFIER
+14	from	from	ADP	IN	_	17	case	_	start_char=299|end_char=303|ner=O
+15	the	the	DET	DT	_	17	det	_	start_char=304|end_char=307|ner=O
+16	prior	prior	ADJ	JJ	_	17	amod	_	start_char=308|end_char=313|ner=O
+17	study	study	NOUN	NN	_	13	obl	_	SpaceAfter=No|start_char=314|end_char=319|ner=O
+18	.	.	PUNCT	.	_	6	punct	_	start_char=319|end_char=320|ner=O
+
+# text = No filling defect is identified in the main or lobar pulmonary arteries.
+# sent_id = 6
+1	No	no	DET	DT	_	3	det	_	start_char=321|end_char=323|ner=O
+2	filling	fill	NOUN	NN	_	3	compound	_	start_char=324|end_char=331|ner=B-OBSERVATION
+3	defect	defect	NOUN	NN	_	5	nsubj:pass	_	start_char=332|end_char=338|ner=E-OBSERVATION
+4	is	be	AUX	VBZ	_	5	aux:pass	_	start_char=339|end_char=341|ner=O
+5	identified	identify	VERB	VBN	_	0	root	_	start_char=342|end_char=352|ner=O
+6	in	in	ADP	IN	_	12	case	_	start_char=353|end_char=355|ner=O
+7	the	the	DET	DT	_	12	det	_	start_char=356|end_char=359|ner=O
+8	main	main	ADJ	JJ	_	12	amod	_	start_char=360|end_char=364|ner=S-ANATOMY_MODIFIER
+9	or	or	CCONJ	CC	_	10	cc	_	start_char=365|end_char=367|ner=O
+10	lobar	lobar	ADJ	JJ	_	8	conj	_	start_char=368|end_char=373|ner=B-ANATOMY
+11	pulmonary	pulmonary	ADJ	JJ	_	12	amod	_	start_char=374|end_char=383|ner=I-ANATOMY
+12	arteries	artery	NOUN	NNS	_	5	obl	_	SpaceAfter=No|start_char=384|end_char=392|ner=E-ANATOMY
+13	.	.	PUNCT	.	_	5	punct	_	start_char=392|end_char=393|ner=O
+
+# text = The heart is mildly enlarged.
+# sent_id = 7
+1	The	the	DET	DT	_	2	det	_	start_char=394|end_char=397|ner=O
+2	heart	heart	NOUN	NN	_	5	nsubj:pass	_	start_char=398|end_char=403|ner=S-ANATOMY
+3	is	be	AUX	VBZ	_	5	aux:pass	_	start_char=404|end_char=406|ner=O
+4	mildly	mildly	ADV	RB	_	5	advmod	_	start_char=407|end_char=413|ner=S-OBSERVATION_MODIFIER
+5	enlarged	enlarge	VERB	VBN	_	0	root	_	SpaceAfter=No|start_char=414|end_char=422|ner=S-OBSERVATION
+6	.	.	PUNCT	.	_	5	punct	_	start_char=422|end_char=423|ner=O
+
+# text = There is no pericardial effusion.
+# sent_id = 8
+1	There	there	PRON	EX	_	2	expl	_	start_char=424|end_char=429|ner=O
+2	is	be	VERB	VBZ	_	0	root	_	start_char=430|end_char=432|ner=O
+3	no	no	DET	DT	_	5	det	_	start_char=433|end_char=435|ner=S-UNCERTAINTY
+4	pericardial	pericardial	ADJ	JJ	_	5	amod	_	start_char=436|end_char=447|ner=S-ANATOMY
+5	effusion	effusion	NOUN	NN	_	2	nsubj	_	SpaceAfter=No|start_char=448|end_char=456|ner=S-OBSERVATION
+6	.	.	PUNCT	.	_	2	punct	_	start_char=456|end_char=457|ner=O
+
+# text = Mild emphysematous changes are present in both upper lobes.
+# sent_id = 9
+1	Mild	mild	ADJ	JJ	_	3	amod	_	start_char=458|end_char=462|ner=O
+2	emphysematous	emphysematous	ADJ	JJ	_	3	amod	_	start_char=463|end_char=476|ner=S-OBSERVATION
+3	changes	change	NOUN	NNS	_	5	nsubj	_	start_char=477|end_char=484|ner=O
+4	are	be	AUX	VBP	_	5	cop	_	start_char=485|end_char=488|ner=O
+5	present	present	ADJ	JJ	_	0	root	_	start_char=489|end_char=496|ner=O
+6	in	in	ADP	IN	_	9	case	_	start_char=497|end_char=499|ner=O
+7	both	both	DET	DT	_	9	det	_	start_char=500|end_char=504|ner=B-ANATOMY
+8	upper	upper	ADJ	JJ	_	9	amod	_	start_char=505|end_char=510|ner=I-ANATOMY
+9	lobes	lobe	NOUN	NNS	_	5	obl	_	SpaceAfter=No|start_char=511|end_char=516|ner=E-ANATOMY
+10	.	.	PUNCT	.	_	5	punct	_	start_char=516|end_char=517|ner=O
+
+# text = The visualized portions of the liver and spleen are unremarkable.
+# sent_id = 10
+1	The	the	DET	DT	_	3	det	_	start_char=518|end_char=521|ner=O
+2	visualized	visualize	VERB	VBN	_	3	amod	_	start_char=522|end_char=532|ner=S-ANATOMY_MODIFIER
+3	portions	portion	NOUN	NNS	_	10	nsubj	_	start_char=533|end_char=541|ner=S-ANATOMY_MODIFIER
+4	of	of	ADP	IN	_	6	case	_	start_char=542|end_char=544|ner=O
+5	the	the	DET	DT	_	6	det	_	start_char=545|end_char=548|ner=O
+6	liver	liver	NOUN	NN	_	3	nmod	_	start_char=549|end_char=554|ner=S-ANATOMY
+7	and	and	CCONJ	CC	_	8	cc	_	start_char=555|end_char=558|ner=O
+8	spleen	spleen	NOUN	NN	_	6	conj	_	start_char=559|end_char=565|ner=S-ANATOMY
+9	are	be	AUX	VBP	_	10	cop	_	start_char=566|end_char=569|ner=O
+10	unremarkable	unremarkable	ADJ	JJ	_	0	root	_	SpaceAfter=No|start_char=570|end_char=582|ner=S-OBSERVATION
+11	.	.	PUNCT	.	_	10	punct	_	start_char=582|end_char=583|ner=O
+
+# text = Degenerative changes are noted in the thoracic spine without acute fracture.
+# sent_id = 11
+1	Degenerative	degenerative	ADJ	JJ	_	2	amod	_	start_char=584|end_char=596|ner=O
+2	changes	change	NOUN	NNS	_	4	nsubj:pass	_	start_char=597|end_char=604|ner=O
+3	are	be	AUX	VBP	_	4	aux:pass	_	start_char=605|end_char=608|ner=O
+4	noted	note	VERB	VBN	_	0	root	_	start_char=609|end_char=614|ner=O
+5	in	in	ADP	IN	_	8	case	_	start_char=615|end_char=617|ner=O
+6	the	the	DET	DT	_	8	det	_	start_char=618|end_char=621|ner=O
+7	thoracic	thoracic	ADJ	JJ	_	8	amod	_	start_char=622|end_char=630|ner=S-ANATOMY_MODIFIER
+8	spine	spine	NOUN	NN	_	4	obl	_	start_char=631|end_char=636|ner=S-ANATOMY
+9	without	without	ADP	IN	_	11	case	_	start_char=637|end_char=644|ner=S-UNCERTAINTY
+10	acute	acute	ADJ	JJ	_	11	amod	_	start_char=645|end_char=650|ner=S-OBSERVATION_MODIFIER
+11	fracture	fracture	NOUN	NN	_	4	obl	_	SpaceAfter=No|start_char=651|end_char=659|ner=S-OBSERVATION
+12	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=659|end_char=660|ner=O
+
+# text = IMPRESSION:
+# sent_id = 12
+1	IMPRESSION	impression	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=662|end_char=672|ner=O
+2	:	:	PUNCT	:	_	1	punct	_	SpacesAfter=\n|start_char=672|end_char=673|ner=O
+
+# text = 1. Small right pleural effusion with right basilar atelectasis; superimposed infection cannot be excluded.
+# sent_id = 13
+1	1	1	X	LS	_	6	nummod	_	SpaceAfter=No|start_char=674|end_char=675|ner=O
+2	.	.	PUNCT	.	_	1	punct	_	start_char=675|end_char=676|ner=O
+3	Small	small	ADJ	JJ	_	6	amod	_	start_char=677|end_char=682|ner=S-OBSERVATION_MODIFIER
+4	right	right	ADJ	JJ	_	6	amod	_	start_char=683|end_char=688|ner=S-ANATOMY_MODIFIER
+5	pleural	pleural	ADJ	JJ	_	6	amod	_	start_char=689|end_char=696|ner=S-ANATOMY
+6	effusion	effusion	NOUN	NN	_	0	root	_	start_char=697|end_char=705|ner=S-OBSERVATION
+7	with	with	ADP	IN	_	10	case	_	start_char=706|end_char=710|ner=O
+8	right	right	ADJ	JJ	_	10	amod	_	start_char=711|end_char=716|ner=S-ANATOMY_MODIFIER
+9	basilar	basilar	ADJ	JJ	_	10	amod	_	start_char=717|end_char=724|ner=S-ANATOMY_MODIFIER
+10	atelectasis	atelectasis	NOUN	NN	_	6	nmod	_	SpaceAfter=No|start_char=725|end_char=736|ner=S-OBSERVATION
+11	;	;	PUNCT	,	_	6	punct	_	start_char=736|end_char=737|ner=O
+12	superimposed	superimpose	VERB	VBN	_	13	amod	_	start_char=738|end_char=750|ner=S-OBSERVATION_MODIFIER
+13	infection	infection	NOUN	NN	_	16	nsubj:pass	_	start_char=751|end_char=760|ner=S-OBSERVATION
+14	cannot	cannot	AUX	MD	_	16	aux	_	start_char=761|end_char=767|ner=B-UNCERTAINTY
+15	be	be	AUX	VB	_	16	aux:pass	_	start_char=768|end_char=770|ner=I-UNCERTAINTY
+16	excluded	exclude	VERB	VBN	_	6	parataxis	_	SpaceAfter=No|start_char=771|end_char=779|ner=E-UNCERTAINTY
+17	.	.	PUNCT	.	_	6	punct	_	SpacesAfter=\n|start_char=779|end_char=780|ner=O
+
+# text = 2. No evidence of pulmonary embolism.
+# sent_id = 14
+1	2	2	X	LS	_	4	nummod	_	SpaceAfter=No|start_char=781|end_char=782|ner=O
+2	.	.	PUNCT	.	_	1	punct	_	start_char=782|end_char=783|ner=O
+3	No	no	DET	DT	_	4	det	_	start_char=784|end_char=786|ner=B-UNCERTAINTY
+4	evidence	evidence	NOUN	NN	_	0	root	_	start_char=787|end_char=795|ner=I-UNCERTAINTY
+5	of	of	ADP	IN	_	7	case	_	start_char=796|end_char=798|ner=E-UNCERTAINTY
+6	pulmonary	pulmonary	ADJ	JJ	_	7	amod	_	start_char=799|end_char=808|ner=S-ANATOMY
+7	embolism	embolism	NOUN	NN	_	4	nmod	_	SpaceAfter=No|start_char=809|end_char=817|ner=S-OBSERVATION
+8	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n|start_char=817|end_char=818|ner=O
+
+# text = 3. Stable 6 mm left upper lobe nodule, likely benign.
+# sent_id = 15
+1	3	3	X	LS	_	6	nummod	_	SpaceAfter=No|start_char=819|end_char=820|ner=O
+2	.	.	PUNCT	.	_	1	punct	_	start_char=820|end_char=821|ner=O
+3	Stable	stable	ADJ	JJ	_	5	amod	_	start_char=822|end_char=828|ner=S-OBSERVATION_MODIFIER
+4	6	6	NUM	CD	_	5	nummod	_	start_char=829|end_char=830|ner=B-OBSERVATION_MODIFIER
+5	mm	mm	NOUN	NN	_	6	nsubj	_	start_char=831|end_char=833|ner=E-OBSERVATION_MODIFIER
+6	left	leave	VERB	VBN	_	0	root	_	start_char=834|end_char=838|ner=B-ANATOMY
+7	upper	upper	ADJ	JJ	_	9	amod	_	start_char=839|end_char=844|ner=I-ANATOMY
+8	lobe	lobe	NOUN	NN	_	9	compound	_	start_char=845|end_char=849|ner=E-ANATOMY
+9	nodule	nodule	NOUN	NN	_	6	obj	_	SpaceAfter=No|start_char=850|end_char=856|ner=S-OBSERVATION
+10	,	,	PUNCT	,	_	9	punct	_	start_char=856|end_char=857|ner=O
+11	likely	likely	ADV	RB	_	12	advmod	_	start_char=858|end_char=864|ner=S-UNCERTAINTY
+12	benign	benign	ADJ	JJ	_	9	amod	_	SpaceAfter=No|start_char=865|end_char=871|ner=S-OBSERVATION_MODIFIER
+13	.	.	PUNCT	.	_	6	punct	_	start_char=871|end_char=872|ner=O
+
+# text = Follow-up CT in 12 months may be considered.
+# sent_id = 16
+1	Follow	follow	VERB	VB	_	4	compound	_	SpaceAfter=No|start_char=873|end_char=879|ner=O
+2	-	-	PUNCT	HYPH	_	3	punct	_	SpaceAfter=No|start_char=879|end_char=880|ner=O
+3	up	up	ADP	RP	_	1	compound:prt	_	start_char=880|end_char=882|ner=O
+4	CT	ct	PROPN	NNP	_	10	nsubj:pass	_	start_char=883|end_char=885|ner=O
+5	in	in	ADP	IN	_	7	case	_	start_char=886|end_char=888|ner=O
+6	12	12	NUM	CD	_	7	nummod	_	start_char=889|end_char=891|ner=O
+7	months	month	NOUN	NNS	_	4	nmod	_	start_char=892|end_char=898|ner=O
+8	may	may	AUX	MD	_	10	aux	_	start_char=899|end_char=902|ner=O
+9	be	be	AUX	VB	_	10	aux:pass	_	start_char=903|end_char=905|ner=O
+10	considered	consider	VERB	VBN	_	0	root	_	SpaceAfter=No|start_char=906|end_char=916|ner=O
+11	.	.	PUNCT	.	_	10	punct	_	SpacesAfter=\n|start_char=916|end_char=917|ner=O
+
+# text = 4. Mild cardiomegaly and emphysema.
+# sent_id = 17
+1	4	4	X	LS	_	3	discourse	_	SpaceAfter=No|start_char=918|end_char=919|ner=O
+2	.	.	PUNCT	.	_	1	punct	_	start_char=919|end_char=920|ner=O
+3	Mild	mild	ADJ	JJ	_	0	root	_	start_char=921|end_char=925|ner=S-OBSERVATION_MODIFIER
+4	cardiomegaly	cardiomegaly	ADV	RB	_	3	advmod	_	start_char=926|end_char=938|ner=S-OBSERVATION
+5	and	and	CCONJ	CC	_	6	cc	_	start_char=939|end_char=942|ner=O
+6	emphysema	emphysema	NOUN	NN	_	4	conj	_	SpaceAfter=No|start_char=943|end_char=952|ner=S-OBSERVATION
+7	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=952|end_char=953|ner=O
+
+# text = The findings were discussed with Dr. Smith on the day of the examination.
+# sent_id = 18
+1	The	the	DET	DT	_	2	det	_	start_char=955|end_char=958|ner=O
+2	findings	finding	NOUN	NNS	_	4	nsubj:pass	_	start_char=959|end_char=967|ner=O
+3	were	be	AUX	VBD	_	4	aux:pass	_	start_char=968|end_char=972|ner=O
+4	discussed	discuss	VERB	VBN	_	0	root	_	start_char=973|end_char=982|ner=O
+5	with	with	ADP	IN	_	7	case	_	start_char=983|end_char=987|ner=O
+6	Dr.	Dr.	PROPN	NNP	_	7	nmod:desc	_	start_char=988|end_char=991|ner=O
+7	Smith	Smith	PROPN	NNP	_	4	obl	_	start_char=992|end_char=997|ner=O
+8	on	on	ADP	IN	_	10	case	_	start_char=998|end_char=1000|ner=O
+9	the	the	DET	DT	_	10	det	_	start_char=1001|end_char=1004|ner=O
+10	day	day	NOUN	NN	_	4	obl	_	start_char=1005|end_char=1008|ner=O
+11	of	of	ADP	IN	_	13	case	_	start_char=1009|end_char=1011|ner=O
+12	the	the	DET	DT	_	13	det	_	start_char=1012|end_char=1015|ner=O
+13	examination	examination	NOUN	NN	_	10	nmod	_	SpaceAfter=No|start_char=1016|end_char=1027|ner=O
+14	.	.	PUNCT	.	_	4	punct	_	start_char=1027|end_char=1028|ner=O
+
+# text = Prior outside imaging from İZMİR GENERAL HOSPITAL was not available for comparison.
+# sent_id = 19
+1	Prior	prior	ADJ	JJ	_	3	amod	_	start_char=1029|end_char=1034|ner=O
+2	outside	outside	ADJ	JJ	_	3	amod	_	start_char=1035|end_char=1042|ner=O
+3	imaging	imaging	NOUN	NN	_	10	nsubj	_	start_char=1043|end_char=1050|ner=O
+4	from	from	ADP	IN	_	7	case	_	start_char=1051|end_char=1055|ner=O
+5	İZMİR	İZMİR	PROPN	NNP	_	7	compound	_	start_char=1056|end_char=1061|ner=O
+6	GENERAL	GENERAL	PROPN	NNP	_	7	compound	_	start_char=1062|end_char=1069|ner=O
+7	HOSPITAL	hospital	PROPN	NNP	_	3	nmod	_	start_char=1070|end_char=1078|ner=O
+8	was	be	AUX	VBD	_	10	cop	_	start_char=1079|end_char=1082|ner=O
+9	not	not	PART	RB	_	10	advmod	_	start_char=1083|end_char=1086|ner=O
+10	available	available	ADJ	JJ	_	0	root	_	start_char=1087|end_char=1096|ner=O
+11	for	for	ADP	IN	_	12	case	_	start_char=1097|end_char=1100|ner=O
+12	comparison	comparison	NOUN	NN	_	10	obl	_	SpaceAfter=No|start_char=1101|end_char=1111|ner=O
+13	.	.	PUNCT	.	_	10	punct	_	SpacesAfter=\n|start_char=1111|end_char=1112|ner=O

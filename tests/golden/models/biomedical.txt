@@ -1,0 +1,7 @@
+Background: Cisplatin-induced nephrotoxicity limits the use of cisplatin in patients with ovarian cancer and head and neck squamous cell carcinoma. We examined whether metformin protects the kidney against this injury in mice.
+
+Methods: Male C57BL/6 mice received a single intraperitoneal dose of cisplatin (20 mg/kg) with or without metformin in the drinking water. Serum creatinine and blood urea nitrogen were measured after 72 hours. Proximal tubule cells were stained for the tumor suppressor p53, cleaved caspase-3 and the kidney injury molecule KIM-1. In vitro, HK-2 cells and the human embryonic kidney line HEK293 were treated with cisplatin and with the AMPK activator AICAR.
+
+Results: Metformin lowered serum creatinine by 40% and reduced tubular necrosis in the renal cortex. The expression of p53 and of the pro-apoptotic protein BAX fell, while Bcl-2 levels rose. Knockdown of AMPK alpha 1 with small interfering RNA abolished the protective effect in HK-2 cells. Interleukin-6 and tumor necrosis factor alpha mRNA in the kidney were halved. No protection was seen in Rattus norvegicus given lithium chloride instead of metformin.
+
+Conclusions: Metformin activates AMPK and attenuates acute kidney injury caused by cisplatin. Drosophila melanogaster and Saccharomyces cerevisiae screens identified similar pathways, and CD4+ T cells from the spleen showed less infiltration. These findings support a trial of metformin in patients with diabetes mellitus who receive platinum chemotherapy, although lactic acidosis remains a concern in chronic kidney disease.

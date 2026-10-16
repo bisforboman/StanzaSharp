@@ -232,7 +232,7 @@ jobs:
 
       # English treebank packages (owner's decision, 2026-10-15) and Pipeline.Alternatives' English models
       # (PipelineOptions.Models, 2026-10-16): exactly the files of tools/ci-models.sh's en-treebanks group that models-en
-      # lacks (the biomedical packages' own vectors and charlms included), listed by the keys step, about 2.2 GB,
+      # lacks (the biomedical packages' own vectors and charlms included), listed by the keys step, about 2.8 GB,
       # restored into models/stanza/en, where the tests read them. Only these Linux shards run them; elsewhere
       # TreebankPackageTests' and ModelChoiceTests' rows skip, and the no-skip checks exempt those classes.
       - uses: actions/cache@v6

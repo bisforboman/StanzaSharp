@@ -59,8 +59,14 @@ default from 0.5) or through TorchSharp (see "Managed backend").
   --models-only`, `MODEL_CHOICES`; i2b2 on the mimic package also on a hand-written `models/clinical.txt`). A new
   alternative needs `Alternatives`, `Dependencies`, `ModelDownloader.Files`, a `MODEL_CHOICES` row and a
   `ModelChoiceTests` row (`EveryAlternative_HasItsFilesAndDependencies`, `EmbeddedResources_MatchModelDownloader`
-  check the tables). Later (not yet): the treebank `_nocharlm` pos/depparse (CI cache), the other domain NER models,
-  the `_charlm` tokenizers and lemmatizers.
+  check the tables). The domain NER models (owner's decision, 2026-10-16, part 2): `conll03_charlm` (glove pretrain),
+  `radiology` (mimic) and the biomedical anatem, bc4chemd, bc5cdr, bionlp13cg, jnlpba, linnaeus, ncbi_disease, s800
+  (biomed pretrain, pubmed charlms; `lowercase: false`). `NerTagger` reads `lowercase` (the word as written for both
+  vocabs when off) and `char_lowercase` (radiology: each character lowercased alone, `LowerChars`, a multi-character
+  result being one unknown unit like Python's; then neither cache reads nor writes, since its charlm input differs from
+  the tagger's). Golden on hand-written `models/biomedical.txt` / `radiology.txt` (craft + each biomedical model,
+  default + bc5cdr, mimic + radiology). Later (not yet): the treebank `_nocharlm` pos/depparse (CI cache), the `_charlm`
+  tokenizers and lemmatizers.
 - **Shared dependencies:** `pos`, `constituency`, `depparse`, `ner` and `sentiment` all depend on the
   pretrained word-vector file (pretrain). Every `_charlm` model also depends on the forward and backward
   character LMs (charlm); the `_nocharlm` ones have their own character LSTM (`Nn.CharacterModel`) instead.
@@ -797,7 +803,7 @@ What the English treebank packages' checkpoints add to the default package's pat
     lines, no network) per group; the downloads on a miss are `tools/ci-models.sh download GROUP`, and the treebank
     cache's paths are the group's file list. A new model goes into a group line there, nowhere else in ci.yml.
   - English treebank packages (owner's decision, 2026-10-15): one `models-en-treebanks-<hash>` cache
-    of only their own `.pt` files (the en-treebanks group's files that models-en lacks, about 2.2 GB),
+    of only their own `.pt` files (the en-treebanks group's files that models-en lacks, about 2.8 GB with the domain NER models),
     restored into models/stanza/en next to the default package's, written by golden-shard 1 and restored by shards 2–3, downloaded with
     the CLI (`download models/stanza/en --package ...`) on a miss. So that models-en doesn't take them in, shard 1 restores
     models-en with `actions/cache/restore` and saves it with `actions/cache/save` right after the convert step, before the

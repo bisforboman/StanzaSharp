@@ -83,7 +83,7 @@ Reads <out>/corpus.txt and writes:
   models/<name>/<text>.conllu + models/models.json
                         single models chosen per processor (MODEL_CHOICES, Stanza's processors dict; StanzaSharp's
                         PipelineOptions.Models), e.g. models/ner=i2b2/, on corpus.txt (as corpus.conllu), validation.txt
-                        and models/*.txt (English: clinical.txt) (`--models-only`)
+                        and each choice's hand-written texts in models/ (clinical.txt, biomedical.txt, radiology.txt) (`--models-only`)
   pt/tiny_{legacy,zip}.pt + their stanza_convert.py output (.json/.safetensors)
                         small checkpoints in both torch.save formats for the C# .pt loader tests;
                         `python tools/make_golden.py --pt-only` regenerates just these
@@ -214,20 +214,34 @@ def write_treebank_golden(models, out, packages=None):
 
 
 # Single models chosen per processor (PipelineOptions.Models, Stanza's processors dict): name, package, processors,
-# processor -> model. Each runs on corpus.txt, validation.txt and models/*.txt (e.g. English's clinical.txt).
+# processor -> model, and its texts besides corpus.txt (validation.txt, hand-written domain texts in models/; the
+# biomedical and radiology models find almost nothing in validation.txt, so they skip it).
 MODEL_CHOICES = {
     "en": [
-        ("constituency=ptb3_charlm", "default", "tokenize,mwt,pos,constituency", {"constituency": "ptb3_charlm"}),
-        ("ner=ontonotes_charlm", "default", "tokenize,mwt,ner", {"ner": "ontonotes_charlm"}),
-        ("ner=ontonotes_nocharlm", "default", "tokenize,mwt,ner", {"ner": "ontonotes_nocharlm"}),
-        ("ner=combined_charlm", "default", "tokenize,mwt,ner", {"ner": "combined_charlm"}),
-        # with the mimic package, whose tagger reads the same (mimic) charlms as i2b2
-        ("ner=i2b2", "mimic", "tokenize,pos,lemma,depparse,ner", {"ner": "i2b2"}),
-        # with the default package: two charlm pairs in one pipeline (1billion, and mimic for ner)
-        ("default+ner=i2b2", "default", PROCESSORS, {"ner": "i2b2"}),
+        ("constituency=ptb3_charlm", "default", "tokenize,mwt,pos,constituency", {"constituency": "ptb3_charlm"}, ["validation.txt", "models/clinical.txt"]),
+        ("ner=ontonotes_charlm", "default", "tokenize,mwt,ner", {"ner": "ontonotes_charlm"}, ["validation.txt", "models/clinical.txt"]),
+        ("ner=ontonotes_nocharlm", "default", "tokenize,mwt,ner", {"ner": "ontonotes_nocharlm"}, ["validation.txt", "models/clinical.txt"]),
+        ("ner=combined_charlm", "default", "tokenize,mwt,ner", {"ner": "combined_charlm"}, ["validation.txt", "models/clinical.txt"]),
+        ("ner=conll03_charlm", "default", "tokenize,mwt,ner", {"ner": "conll03_charlm"}, ["validation.txt"]),
+        # with the mimic package, whose tagger reads the same (mimic) charlms as i2b2 and radiology (which lowercases
+        # its charlm input, so it can't reuse the tagger's)
+        ("ner=i2b2", "mimic", "tokenize,pos,lemma,depparse,ner", {"ner": "i2b2"}, ["validation.txt", "models/clinical.txt"]),
+        ("ner=radiology", "mimic", "tokenize,pos,lemma,depparse,ner", {"ner": "radiology"}, ["models/radiology.txt"]),
+        # with the default package: two charlm pairs in one pipeline (1billion, and mimic or pubmed for ner)
+        ("default+ner=i2b2", "default", PROCESSORS, {"ner": "i2b2"}, ["validation.txt", "models/clinical.txt"]),
+        ("default+ner=bc5cdr", "default", PROCESSORS, {"ner": "bc5cdr"}, ["models/biomedical.txt"]),
+        # the biomedical models (cased word vectors, pubmed's charlms) on the craft package's tokenizer
+        ("ner=anatem", "craft", "tokenize,ner", {"ner": "anatem"}, ["models/biomedical.txt"]),
+        ("ner=bc4chemd", "craft", "tokenize,ner", {"ner": "bc4chemd"}, ["models/biomedical.txt"]),
+        ("ner=bc5cdr", "craft", "tokenize,ner", {"ner": "bc5cdr"}, ["models/biomedical.txt"]),
+        ("ner=bionlp13cg", "craft", "tokenize,ner", {"ner": "bionlp13cg"}, ["models/biomedical.txt"]),
+        ("ner=jnlpba", "craft", "tokenize,ner", {"ner": "jnlpba"}, ["models/biomedical.txt"]),
+        ("ner=linnaeus", "craft", "tokenize,ner", {"ner": "linnaeus"}, ["models/biomedical.txt"]),
+        ("ner=ncbi_disease", "craft", "tokenize,ner", {"ner": "ncbi_disease"}, ["models/biomedical.txt"]),
+        ("ner=s800", "craft", "tokenize,ner", {"ner": "s800"}, ["models/biomedical.txt"]),
     ],
     "de": [
-        ("ner=conll03", "default", "tokenize,mwt,ner", {"ner": "conll03"}),
+        ("ner=conll03", "default", "tokenize,mwt,ner", {"ner": "conll03"}, ["validation.txt"]),
     ],
 }
 
@@ -235,14 +249,14 @@ MODEL_CHOICES = {
 def write_models_golden(models, out, only=None):
     """
     models/<name>/ for each of MODEL_CHOICES (or only those named in `only`): Stanza with processors={p: model, other p:
-    package} (package None) on corpus.txt (as corpus.conllu), validation.txt and models/*.txt; models/models.json lists
+    package} (package None) on corpus.txt (as corpus.conllu), validation.txt and its texts in models/; models/models.json lists
     every choice for the tests.
     """
     folder = out / "models"
     folder.mkdir(exist_ok=True)
-    texts = [out / "corpus.txt", out / "validation.txt"] + sorted(folder.glob("*.txt"))
     index = []
-    for name, package, processors, chosen in MODEL_CHOICES[LANG]:
+    for name, package, processors, chosen, extra in MODEL_CHOICES[LANG]:
+        texts = [out / "corpus.txt"] + [out / t for t in extra]
         index.append({"name": name, "package": package, "processors": processors, "models": chosen,
                       "texts": [path.relative_to(out).as_posix() for path in texts]})
         if only and name not in only:

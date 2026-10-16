@@ -26,7 +26,8 @@ group() {
       done
       # Pipeline.Alternatives (PipelineOptions.Models, ModelChoiceTests)
       echo "models/stanza/en --processors tokenize,mwt,pos,constituency --model constituency=ptb3_charlm"
-      for ner in ontonotes_charlm ontonotes_nocharlm combined_charlm; do
+      for ner in ontonotes_charlm ontonotes_nocharlm combined_charlm conll03_charlm radiology \
+        anatem bc4chemd bc5cdr bionlp13cg jnlpba linnaeus ncbi_disease s800; do
         echo "models/stanza/en --processors tokenize,ner --model ner=$ner"
       done
       echo "models/stanza/en --package mimic --model ner=i2b2"
