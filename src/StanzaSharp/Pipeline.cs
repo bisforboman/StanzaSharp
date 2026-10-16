@@ -405,8 +405,9 @@ public sealed class Pipeline : IDisposable
 
     /// <summary>
     /// The processors to run and each one's model: <paramref name="processors"/> (null: all of the package's), checked
-    /// against <paramref name="package"/> of <paramref name="language"/>. With <paramref name="addRequired"/> the
-    /// processors they require are added (what to download); without, a missing one throws (what to load).
+    /// against <paramref name="package"/> of <paramref name="language"/>, plus the package's mwt wherever tokenize is (as
+    /// Stanza adds it). With <paramref name="addRequired"/> the processors they require are added (what to download);
+    /// without, a missing one throws (what to load).
     /// </summary>
     internal static Dictionary<string, string> SelectModels(string package, string? processors, bool addRequired, string paramName, string language = English)
     {
@@ -419,6 +420,10 @@ public sealed class Pipeline : IDisposable
         }
 
         var set = processors == null ? models.Keys.ToHashSet() : ParseProcessors(processors, paramName);
+
+        // Stanza's add_mwt: tokenize brings the package's mwt along (tokenize,ner expands "don't" too).
+        if (set.Contains("tokenize") && models.ContainsKey("mwt"))
+            set.Add("mwt");
         foreach (var p in set.ToList())
         {
             // What the package lacks isn't required (eslspok has no mwt); the identity lemmatizer reads no UPOS.
