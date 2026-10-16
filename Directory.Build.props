@@ -45,7 +45,8 @@
   <ItemGroup Condition="'$([System.IO.Path]::GetFileName($([System.IO.Path]::GetDirectoryName($(MSBuildProjectDirectory)))))' == 'src'">
     <InternalsVisibleTo Include="StanzaSharp;StanzaSharp.Cuda;StanzaSharp.Nn;StanzaSharp.Tokenize;StanzaSharp.Mwt;StanzaSharp.Pos;StanzaSharp.Lemma;StanzaSharp.Constituency;StanzaSharp.Depparse;StanzaSharp.Ner;StanzaSharp.Sentiment;StanzaSharp.Tool"
                         Exclude="$(AssemblyName)" />
-    <InternalsVisibleTo Include="StanzaSharp.Tests;StanzaSharp.Benchmark" />
+    <!-- The Cli sample compiles the Tool's DownloadCommand.cs, so it gets the Tool's access. -->
+    <InternalsVisibleTo Include="StanzaSharp.Tests;StanzaSharp.Benchmark;StanzaSharp.Cli" />
   </ItemGroup>
 
   <!-- The native libtorch the runnable projects (Cli, Benchmark, Tests) reference. Of the libraries only

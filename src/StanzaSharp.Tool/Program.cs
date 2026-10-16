@@ -2,7 +2,7 @@ using StanzaSharp;
 using StanzaSharp.Tool;
 
 const string Usage = $"""
-    Usage: stanzasharp download [DIR] [--lang CODE] [--package NAME] [--processors LIST] [--model P=NAME]...
+    Usage: stanzasharp download [DIR] [--lang CODE] [--package NAME] [--processors LIST] [--model P=NAME]... [--list]
            stanzasharp compare FILE [--lang CODE] [--package NAME] [--processors LIST] [--model P=NAME]... [--models DIR]
                                [--python PATH]
            stanzasharp benchmark [--lang CODE] [--package NAME] [--processors LIST] [--model P=NAME]... [--models DIR]
@@ -32,6 +32,7 @@ const string Usage = $"""
       --model P=NAME      a model for processor P instead of the package's (repeatable, or P=NAME,P=NAME), as Stanza's
                           processors dict: English constituency=ptb3_charlm; ner=ontonotes_charlm, ontonotes_nocharlm,
                           combined_charlm, i2b2 (clinical); German ner=conll03. Its processor is added if needed
+      --list              download: print each file and its MD5 instead of downloading
       --models DIR        compare, benchmark: the models (default: models/stanza/CODE)
       --python PATH       compare, benchmark: the Python with Stanza installed (default: python)
       --threads N         benchmark: threads on both sides (default: each side's own default, StanzaSharp the

@@ -131,7 +131,16 @@ jobs:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Build.props') }}
 
-      # ModelDownloader.cs pins the models (and their MD5s); the converter decides their converted form.
+      # Each model cache's key hashes exactly the files and MD5s it holds (tools/ci-models.sh, from the Cli's
+      # `download --list`), so a new or changed MD5 rotates only the caches holding that file (owner's decision, 2026-10-16).
+      - name: Model cache keys
+        if: needs.changes.outputs.code != 'false'
+        id: keys
+        run: |
+          dotnet build samples/StanzaSharp.Cli -c Release
+          tools/ci-models.sh keys
+
+      # The model list (tools/ci-models.sh en) pins the models; the converter decides their converted form.
       # Both are kept: the .pt loader tests compare models/stanza/en with models/converted/en.
       # Shard 1 writes the cache (right after converting, before the English treebank models join models/stanza/en); the
       # others, docker and alpine only restore it. On a miss each shard makes its own.
@@ -142,7 +151,7 @@ jobs:
           path: |
             models/stanza/en
             models/converted/en
-          key: models-en-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs', 'tools/requirements.txt', 'tools/stanza_convert.py') }}
+          key: models-en-${{ steps.keys.outputs.en }}-${{ hashFiles('tools/requirements.txt', 'tools/stanza_convert.py') }}
 
       - uses: actions/cache/restore@v6
         if: needs.changes.outputs.code != 'false' && matrix.shard != 1
@@ -151,7 +160,7 @@ jobs:
           path: |
             models/stanza/en
             models/converted/en
-          key: models-en-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs', 'tools/requirements.txt', 'tools/stanza_convert.py') }}
+          key: models-en-${{ steps.keys.outputs.en }}-${{ hashFiles('tools/requirements.txt', 'tools/stanza_convert.py') }}
 
       # German (owner's decision, 2026-10-13): Stanza's .pt files only, no conversion (the tests read .pt as they are),
       # about 1.3 GB for default, default_fast, gsd and hdt (combined reads default's), and ner conll03 (51 MB, ModelChoiceTests). Only these Linux shards run the
@@ -161,14 +170,14 @@ jobs:
         id: models-de-save
         with:
           path: models/stanza/de
-          key: models-de-treebanks-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs') }}
+          key: models-de-treebanks-${{ steps.keys.outputs.de }}
 
       - uses: actions/cache/restore@v6
         if: needs.changes.outputs.code != 'false' && matrix.shard != 1
         id: models-de-restore
         with:
           path: models/stanza/de
-          key: models-de-treebanks-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs') }}
+          key: models-de-treebanks-${{ steps.keys.outputs.de }}
 
       # Which CPU this runner got (informational, never fails). ubuntu-26.04 and windows-2025 are sometimes an AVX-512
       # Xeon: the managed tests then also run the Vector512 kernels, the detected path there. Vector512 gives Vector256's
@@ -190,17 +199,11 @@ jobs:
       # The library's own downloader, as users run it; Python is only needed for the converter.
       - name: Download the models
         if: needs.changes.outputs.code != 'false' && (steps.models-save.outputs.cache-hit || steps.models-restore.outputs.cache-hit) != 'true'
-        run: |
-          dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/en
-          dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/en --package default_fast
+        run: tools/ci-models.sh download en
 
       - name: Download the German models
         if: needs.changes.outputs.code != 'false' && (steps.models-de-save.outputs.cache-hit || steps.models-de-restore.outputs.cache-hit) != 'true'
-        run: |
-          for package in default default_fast gsd hdt; do
-            dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/de --lang de --package $package
-          done
-          dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/de --lang de --processors tokenize,ner --model ner=conll03
+        run: tools/ci-models.sh download de
 
       # Python Stanza: the converter on a model-cache miss, and in shard 2 the Run_PythonStanza_* tests (stanzasharp
       # compare and benchmark against Python Stanza; about 40 s to install, 1 min to run).
@@ -225,73 +228,30 @@ jobs:
           path: |
             models/stanza/en
             models/converted/en
-          key: models-en-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs', 'tools/requirements.txt', 'tools/stanza_convert.py') }}
+          key: models-en-${{ steps.keys.outputs.en }}-${{ hashFiles('tools/requirements.txt', 'tools/stanza_convert.py') }}
 
-      # English treebank packages (owner's decision, 2026-10-15): their own .pt files only (the shared word vectors and
-      # charlms are the default package's, in the cache above; the biomedical ones' own are in it), about 1.9 GB, restored into models/stanza/en, where the
-      # tests read them; plus Pipeline.Alternatives' English models (PipelineOptions.Models, owner's decision 2026-10-16:
-      # constituency ptb3_charlm, ner ontonotes_charlm/ontonotes_nocharlm/combined_charlm/i2b2 and the fasttextcrawl
-      # vectors, 501 MB). Only these Linux shards run them; elsewhere TreebankPackageTests' and ModelChoiceTests' rows
-      # skip, and the no-skip checks exempt those classes.
+      # English treebank packages (owner's decision, 2026-10-15) and Pipeline.Alternatives' English models
+      # (PipelineOptions.Models, 2026-10-16): exactly the files of tools/ci-models.sh's en-treebanks group that models-en
+      # lacks (the biomedical packages' own vectors and charlms included), listed by the keys step, about 2.2 GB,
+      # restored into models/stanza/en, where the tests read them. Only these Linux shards run them; elsewhere
+      # TreebankPackageTests' and ModelChoiceTests' rows skip, and the no-skip checks exempt those classes.
       - uses: actions/cache@v6
         if: needs.changes.outputs.code != 'false' && matrix.shard == 1
         id: models-en-treebanks-save
         with:
-          path: |
-            models/stanza/en/*/ewt*
-            models/stanza/en/*/gum*
-            models/stanza/en/*/lines*
-            models/stanza/en/*/partut*
-            models/stanza/en/*/atis*
-            models/stanza/en/*/childes*
-            models/stanza/en/*/eslspok*
-            models/stanza/en/*/craft*
-            models/stanza/en/*/genia*
-            models/stanza/en/*/mimic*
-            models/stanza/en/pretrain/biomed.pt
-            models/stanza/en/constituency/ptb3_charlm.pt
-            models/stanza/en/ner/ontonotes_charlm.pt
-            models/stanza/en/ner/ontonotes_nocharlm.pt
-            models/stanza/en/ner/combined_charlm.pt
-            models/stanza/en/ner/i2b2.pt
-            models/stanza/en/pretrain/fasttextcrawl.pt
-          key: models-en-treebanks-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs') }}
+          path: ${{ steps.keys.outputs.en_treebanks_paths }}
+          key: models-en-treebanks-${{ steps.keys.outputs.en_treebanks }}
 
       - uses: actions/cache/restore@v6
         if: needs.changes.outputs.code != 'false' && matrix.shard != 1
         id: models-en-treebanks-restore
         with:
-          path: |
-            models/stanza/en/*/ewt*
-            models/stanza/en/*/gum*
-            models/stanza/en/*/lines*
-            models/stanza/en/*/partut*
-            models/stanza/en/*/atis*
-            models/stanza/en/*/childes*
-            models/stanza/en/*/eslspok*
-            models/stanza/en/*/craft*
-            models/stanza/en/*/genia*
-            models/stanza/en/*/mimic*
-            models/stanza/en/pretrain/biomed.pt
-            models/stanza/en/constituency/ptb3_charlm.pt
-            models/stanza/en/ner/ontonotes_charlm.pt
-            models/stanza/en/ner/ontonotes_nocharlm.pt
-            models/stanza/en/ner/combined_charlm.pt
-            models/stanza/en/ner/i2b2.pt
-            models/stanza/en/pretrain/fasttextcrawl.pt
-          key: models-en-treebanks-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs') }}
+          path: ${{ steps.keys.outputs.en_treebanks_paths }}
+          key: models-en-treebanks-${{ steps.keys.outputs.en_treebanks }}
 
       - name: Download the English treebank models
         if: needs.changes.outputs.code != 'false' && (steps.models-en-treebanks-save.outputs.cache-hit || steps.models-en-treebanks-restore.outputs.cache-hit) != 'true'
-        run: |
-          for package in ewt gum lines partut atis childes eslspok craft genia mimic; do
-            dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/en --package $package
-          done
-          # Pipeline.Alternatives (PipelineOptions.Models, ModelChoiceTests)
-          cli="dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/en"
-          $cli --processors tokenize,mwt,pos,constituency --model constituency=ptb3_charlm
-          for ner in ontonotes_charlm ontonotes_nocharlm combined_charlm; do $cli --processors tokenize,ner --model ner=$ner; done
-          $cli --package mimic --model ner=i2b2
+        run: tools/ci-models.sh download en-treebanks
 
       - name: Test
         if: needs.changes.outputs.code != 'false'
@@ -390,6 +350,15 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
+      # Each model cache's key hashes exactly the files and MD5s it holds (tools/ci-models.sh, from the Cli's
+      # `download --list`), so a new or changed MD5 rotates only the caches holding that file (owner's decision, 2026-10-16).
+      - name: Model cache keys
+        if: needs.changes.outputs.code != 'false'
+        id: keys
+        run: |
+          dotnet build samples/StanzaSharp.Cli -c Release -p:StanzaSharpNoLibTorch=true
+          tools/ci-models.sh keys
+
       - uses: actions/cache/restore@v6
         if: needs.changes.outputs.code != 'false'
         id: models
@@ -397,11 +366,11 @@ jobs:
           path: |
             models/stanza/en
             models/converted/en
-          key: models-en-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs', 'tools/requirements.txt', 'tools/stanza_convert.py') }}
+          key: models-en-${{ steps.keys.outputs.en }}-${{ hashFiles('tools/requirements.txt', 'tools/stanza_convert.py') }}
 
       - name: Download the models
         if: needs.changes.outputs.code != 'false' && (steps.models.outputs.cache-hit != 'true')
-        run: dotnet run --project samples/StanzaSharp.Cli -- download models/stanza/en
+        run: dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/en
 
       - name: Build and check the images
         if: needs.changes.outputs.code != 'false'
@@ -426,6 +395,15 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
+      # Each model cache's key hashes exactly the files and MD5s it holds (tools/ci-models.sh, from the Cli's
+      # `download --list`), so a new or changed MD5 rotates only the caches holding that file (owner's decision, 2026-10-16).
+      - name: Model cache keys
+        if: needs.changes.outputs.code != 'false'
+        id: keys
+        run: |
+          dotnet build samples/StanzaSharp.Cli -c Release -p:StanzaSharpNoLibTorch=true
+          tools/ci-models.sh keys
+
       - uses: actions/cache/restore@v6
         if: needs.changes.outputs.code != 'false'
         id: models
@@ -433,11 +411,11 @@ jobs:
           path: |
             models/stanza/en
             models/converted/en
-          key: models-en-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs', 'tools/requirements.txt', 'tools/stanza_convert.py') }}
+          key: models-en-${{ steps.keys.outputs.en }}-${{ hashFiles('tools/requirements.txt', 'tools/stanza_convert.py') }}
 
       - name: Download the models
         if: needs.changes.outputs.code != 'false' && (steps.models.outputs.cache-hit != 'true')
-        run: dotnet run --project samples/StanzaSharp.Cli -- download models/stanza/en
+        run: dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/en
 
       - name: Build and check the image
         if: needs.changes.outputs.code != 'false'
@@ -464,12 +442,21 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
+      # Each model cache's key hashes exactly the files and MD5s it holds (tools/ci-models.sh, from the Cli's
+      # `download --list`), so a new or changed MD5 rotates only the caches holding that file (owner's decision, 2026-10-16).
+      - name: Model cache keys
+        if: needs.changes.outputs.code != 'false'
+        id: keys
+        run: |
+          dotnet build samples/StanzaSharp.Cli -c Release -p:StanzaSharpNoLibTorch=true
+          tools/ci-models.sh keys
+
       - uses: actions/cache@v6
         if: needs.changes.outputs.code != 'false'
         id: models
         with:
           path: models/stanza/en
-          key: models-pt-${{ runner.os }}-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs') }}
+          key: models-pt-${{ runner.os }}-${{ steps.keys.outputs.en }}
 
       - name: Build
         if: needs.changes.outputs.code != 'false'
@@ -477,9 +464,7 @@ jobs:
 
       - name: Download the models
         if: needs.changes.outputs.code != 'false' && (steps.models.outputs.cache-hit != 'true')
-        run: |
-          dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/en
-          dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/en --package default_fast
+        run: tools/ci-models.sh download en
 
       - name: Test (managed backend)
         if: needs.changes.outputs.code != 'false'
@@ -547,13 +532,22 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
+      # Each model cache's key hashes exactly the files and MD5s it holds (tools/ci-models.sh, from the Cli's
+      # `download --list`), so a new or changed MD5 rotates only the caches holding that file (owner's decision, 2026-10-16).
+      - name: Model cache keys
+        if: needs.changes.outputs.code != 'false'
+        id: keys
+        run: |
+          dotnet build samples/StanzaSharp.Cli -c Release
+          tools/ci-models.sh keys
+
       # Every shard may save it: on a miss the first to finish saves, the others' saves are no-ops.
       - uses: actions/cache@v6
         if: needs.changes.outputs.code != 'false'
         id: models
         with:
           path: models/stanza/en
-          key: models-pt-${{ runner.os }}-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs') }}
+          key: models-pt-${{ runner.os }}-${{ steps.keys.outputs.en }}
 
       # For the TorchSharp backend's tests: libtorch-cpu-osx-arm64's libtorch_cpu.dylib links OpenMP by Homebrew's
       # absolute path (/opt/homebrew/opt/libomp/lib/libomp.dylib), not the libomp.dylib it ships. TorchSharp-backend
@@ -581,9 +575,7 @@ jobs:
 
       - name: Download the models
         if: needs.changes.outputs.code != 'false' && (steps.models.outputs.cache-hit != 'true')
-        run: |
-          dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/en
-          dotnet run --project samples/StanzaSharp.Cli -c Release --no-build -- download models/stanza/en --package default_fast
+        run: tools/ci-models.sh download en
 
       # A ready pull request runs the subset (level light, one shard); main and releases run everything in three.
       - name: Test

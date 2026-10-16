@@ -2,7 +2,7 @@ using StanzaSharp;
 
 const string Usage = """
     Usage: StanzaSharp.Cli [--lang CODE] [--models DIR] [--package NAME] [--processors LIST] [--model P=NAME]... [FILE]
-           StanzaSharp.Cli download [DIR] [--lang CODE] [--package NAME] [--processors LIST] [--model P=NAME]...
+           StanzaSharp.Cli download [DIR] [--lang CODE] [--package NAME] [--processors LIST] [--model P=NAME]... [--list]
 
     Runs the pipeline of --lang (en, the default, or de) on FILE (or standard input) and writes CoNLL-U to standard output.
     "download" fetches Stanza's models of --lang (en, the default, or de) into DIR (default: models/stanza/<lang>):
@@ -19,6 +19,7 @@ const string Usage = """
       --model P=NAME      a model for processor P instead of the package's (repeatable, or P=NAME,P=NAME), as Stanza's
                           processors dict: English constituency=ptb3_charlm; ner=ontonotes_charlm, ontonotes_nocharlm,
                           combined_charlm, i2b2 (clinical); German ner=conll03. Its processor is added if needed
+      --list              download: print each file and its MD5 instead of downloading
       --backend NAME      managed (default; no native code) or torch (TorchSharp, with this sample's TorchSharp-cpu)
     """;
 
