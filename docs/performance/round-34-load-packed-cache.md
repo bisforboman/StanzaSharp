@@ -224,6 +224,8 @@ For load time, these are better targets than packing, none of which needs a cach
 If the owner wants the cache anyway (for short-lived processes, where 0.2 s matters), I'd build the mapped variant,
 opt-in.
 
+**Owner's decision (2026-10-16): no cache.** The three cache-free ideas stay as idea files.
+
 ## What a cache would need decided
 
 - **Opt-in or default.** I'd make it opt-in: a default would write 250-420 MB next to the user's models or into their

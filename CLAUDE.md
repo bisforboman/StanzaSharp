@@ -331,7 +331,9 @@ checkpoint configs tell you; skip unused options.
 C# loads either format. `Checkpoint.Load(basePath)` reads `basePath.json` + `basePath.safetensors`
 when they exist, else the original `basePath.pt`, so `Pipeline.Load` accepts both `models/converted/en`
 and Stanza's own download directory `models/stanza/en` (`<processor>/<name>.pt`). Converting is
-optional: it saves about a second of load time and makes the checkpoints easy to inspect.
+optional: it makes the checkpoints easy to inspect, but since round 21 it no longer loads faster than the `.pt`
+files (round 34). A packed-weight cache was measured and dropped (owner, 2026-10-16: 0.1–0.2 s for 250–420 MB
+per package).
 
 Use `setup.ps1 -Models`, or run the steps by hand:
 
