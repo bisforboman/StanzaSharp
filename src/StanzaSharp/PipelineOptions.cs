@@ -53,10 +53,9 @@ public sealed class PipelineOptions
     /// <remarks>
     /// Models beyond the packages': English constituency <c>ptb3_charlm</c>; English ner <c>ontonotes_charlm</c>,
     /// <c>ontonotes_nocharlm</c>, <c>combined_charlm</c> and <c>i2b2</c> (clinical, with the <c>mimic</c> package's
-    /// character models: use <c>Package = "mimic"</c>, or <c>Processors = "tokenize,ner"</c>); German ner
+    /// character models, which the pipeline then loads next to the package's if it reads others); German ner
     /// <c>conll03</c>. <see cref="Pipeline.Load"/> and <see cref="ModelDownloader"/> throw
-    /// <see cref="ArgumentException"/> for an unknown processor, an unknown, transformer or unported model, and for a
-    /// choice whose models read two different pairs of character language models.
+    /// <see cref="ArgumentException"/> for an unknown processor and for an unknown, transformer or unported model.
     /// </remarks>
     /// <example>
     /// <code>
@@ -164,7 +163,9 @@ public sealed class PipelineOptions
 /// <summary>
 /// The tagger keeps its character-model outputs (about 8 KB per word) for the processors after it that need the same
 /// ones: the constituency parser, sentiment and NER (and, on <see cref="PipelineBackend.Managed"/>, the dependency
-/// parser's backward pass, from about 4 KB more per sentence). Output is identical either way; the cache trades memory for speed.
+/// parser's backward pass, from about 4 KB more per sentence), when their models read the tagger's character language
+/// models (one chosen with <see cref="PipelineOptions.Models"/> may read others, e.g. ner <c>i2b2</c>; it then computes
+/// its own). Output is identical either way; the cache trades memory for speed.
 /// </summary>
 public sealed class CharlmCacheOptions
 {
@@ -172,8 +173,9 @@ public sealed class CharlmCacheOptions
     public bool IsEnabled { get; init; } = true;
 
     /// <summary>
-    /// The most words kept per document. Sentences past it are recomputed by the processors that read them. The default,
-    /// 32,768 words, is about 256 MB.
+    /// The most words kept per document (the cache holds only the tagger's pair of character language models, so this is
+    /// also the total). Sentences past it are recomputed by the processors that read them. The default, 32,768 words, is
+    /// about 256 MB.
     /// </summary>
     public int MaxWords { get; init; } = Nn.CharlmCache.DefaultMaxWords;
 }

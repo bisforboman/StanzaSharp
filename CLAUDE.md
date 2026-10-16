@@ -41,8 +41,14 @@ default from 0.5) or through TorchSharp (see "Managed backend").
   `Pipeline.Alternatives`) or a package's name (its model). With `Processors` null the set is the package's processors
   plus the keys (requirements added); with `Processors` set a key outside it throws. Like Stanza's add_mwt, a replaced
   tokenizer brings its treebank's mwt unless Models names one. Unknown, transformer and unported names throw
-  `ArgumentException` listing the supported ones (Stanza warns and ignores), and so do models reading two charlm pairs
-  (`Pipeline.CheckOneCharlmPair`: the pipeline loads one pair; default + `ner: i2b2` throws, `mimic` + i2b2 works).
+  `ArgumentException` listing the supported ones (Stanza warns and ignores).
+  - Several charlm pairs (owner's decision, 2026-10-16, part 2): like the pretrains, the pipeline loads every charlm
+    `Dependencies` names (`BackendModels.Charlm(path, ...)`, keyed by path, e.g. `forward_charlm/mimic`) and each
+    processor gets its model's own pair (`Charlms`). default + `ner: i2b2` loads 1billion and mimic. A call's
+    `CharlmCache` serves only the tagger's pair: a processor whose model reads another pair gets null (`CacheFor` in
+    `AnnotateWithModels`), so no entry, single-sentence table entry or backward continuation crosses pairs.
+    `CharlmCacheOptions.MaxWords` therefore bounds that one cache (per pair and total alike). Tested by
+    `ModelChoiceTests` (`default+ner=i2b2` golden, cache off, one-sentence calls against the uncached pipeline).
   All in `SelectModels`, so Load, `ModelDownloader.FilesFor`/`DownloadAsync(dir, options)` and the tool (`--model
   P=NAME`, repeatable or comma-separated, on download, compare, benchmark and the Cli sample) agree. compare/benchmark
   pass Stanza the resolved processor → model map as a JSON processors dict (package None). Alternatives (first PR):
@@ -53,8 +59,8 @@ default from 0.5) or through TorchSharp (see "Managed backend").
   --models-only`, `MODEL_CHOICES`; i2b2 on the mimic package also on a hand-written `models/clinical.txt`). A new
   alternative needs `Alternatives`, `Dependencies`, `ModelDownloader.Files`, a `MODEL_CHOICES` row and a
   `ModelChoiceTests` row (`EveryAlternative_HasItsFilesAndDependencies`, `EmbeddedResources_MatchModelDownloader`
-  check the tables). Later (not yet): the treebank `_nocharlm` pos/depparse (CI cache), the other domain NER models
-  and several charlm pairs per pipeline, the `_charlm` tokenizers and lemmatizers.
+  check the tables). Later (not yet): the treebank `_nocharlm` pos/depparse (CI cache), the other domain NER models,
+  the `_charlm` tokenizers and lemmatizers.
 - **Shared dependencies:** `pos`, `constituency`, `depparse`, `ner` and `sentiment` all depend on the
   pretrained word-vector file (pretrain). Every `_charlm` model also depends on the forward and backward
   character LMs (charlm); the `_nocharlm` ones have their own character LSTM (`Nn.CharacterModel`) instead.

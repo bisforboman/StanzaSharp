@@ -18,7 +18,7 @@ const string Usage = """
                           (default: all of the package's)
       --model P=NAME      a model for processor P instead of the package's (repeatable, or P=NAME,P=NAME), as Stanza's
                           processors dict: English constituency=ptb3_charlm; ner=ontonotes_charlm, ontonotes_nocharlm,
-                          combined_charlm, i2b2 (with --package mimic); German ner=conll03. Its processor is added if needed
+                          combined_charlm, i2b2 (clinical); German ner=conll03. Its processor is added if needed
       --list              download: print each file and its MD5 instead of downloading
       --backend NAME      managed (default; no native code) or torch (TorchSharp, with this sample's TorchSharp-cpu)
     """;

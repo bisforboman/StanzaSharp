@@ -21,6 +21,10 @@
 4. Byte-exact against Stanza on both backends, with golden data per model (`make_golden.py --models-only`, a
    hand-written clinical text for i2b2), the Linux golden shards' cache, and docs.
 
+Part 2 (owner's decision, 2026-10-16): several charlm pairs per pipeline. Every charlm the models read is loaded,
+and each processor gets its model's pair; the per-call `CharlmCache` serves only the tagger's pair, so the blocker below
+is gone (default + `ner: i2b2` works). The ten other domain NER models follow in their own PR.
+
 Built in the same PR as this plan. The selection lives in `Pipeline.SelectModels`, the table in `Pipeline.Alternatives`,
 and the tests in `ModelChoiceTests`. The CI cache grows by 501 MB (English, in `models-en-treebanks`) and 51 MB (German
 `conll03`, in `models-de-treebanks`).

@@ -1,0 +1,561 @@
+# text = History of present illness:
+# sent_id = 0
+# constituency = (ROOT (NP (NP (NN History)) (PP (IN of) (NP (JJ present) (NN illness))) (: :)))
+# sentiment = 1
+1	History	history	NOUN	NN	Number=Sing	0	root	_	start_char=0|end_char=7|ner=O
+2	of	of	ADP	IN	_	4	case	_	start_char=8|end_char=10|ner=O
+3	present	present	ADJ	JJ	Degree=Pos	4	amod	_	start_char=11|end_char=18|ner=O
+4	illness	illness	NOUN	NN	Number=Sing	1	nmod	_	SpaceAfter=No|start_char=19|end_char=26|ner=O
+5	:	:	PUNCT	:	_	1	punct	_	start_char=26|end_char=27|ner=O
+
+# text = The patient is a 67-year-old man with a history of hypertension, type 2 diabetes mellitus and chronic kidney disease who presented to the emergency department with three days of worsening shortness of breath and a productive cough.
+# sent_id = 1
+# constituency = (ROOT (S (NP (DT The) (NN patient)) (VP (VBZ is) (NP (NP (DT a) (ADJP (NP (CD 67) (HYPH -) (NN year)) (HYPH -) (JJ old)) (NN man)) (PP (IN with) (NP (NP (DT a) (NN history)) (PP (IN of) (NP (NP (NP (NN hypertension)) (, ,) (NP (NML (NML (NN type) (CD 2)) (NN diabetes)) (NN mellitus)) (CC and) (NP (JJ chronic) (NN kidney) (NN disease))) (SBAR (WHNP (WP who)) (S (VP (VBD presented) (PP (IN to) (NP (DT the) (NN emergency) (NN department))) (PP (IN with) (NP (NP (CD three) (NNS days)) (PP (IN of) (NP (NP (NP (VBG worsening) (NN shortness)) (PP (IN of) (NP (NN breath)))) (CC and) (NP (DT a) (JJ productive) (NN cough))))))))))))))) (. .)))
+# sentiment = 1
+1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=28|end_char=31|ner=O
+2	patient	patient	NOUN	NN	Number=Sing	10	nsubj	_	start_char=32|end_char=39|ner=O
+3	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	10	cop	_	start_char=40|end_char=42|ner=O
+4	a	a	DET	DT	Definite=Ind|PronType=Art	10	det	_	start_char=43|end_char=44|ner=O
+5	67	67	NUM	CD	NumForm=Digit|NumType=Card	7	nummod	_	SpaceAfter=No|start_char=45|end_char=47|ner=O
+6	-	-	PUNCT	HYPH	_	5	punct	_	SpaceAfter=No|start_char=47|end_char=48|ner=O
+7	year	year	NOUN	NN	Number=Sing	9	compound	_	SpaceAfter=No|start_char=48|end_char=52|ner=O
+8	-	-	PUNCT	HYPH	_	7	punct	_	SpaceAfter=No|start_char=52|end_char=53|ner=O
+9	old	old	ADJ	JJ	Degree=Pos	10	amod	_	start_char=53|end_char=56|ner=O
+10	man	man	NOUN	NN	Number=Sing	0	root	_	start_char=57|end_char=60|ner=O
+11	with	with	ADP	IN	_	13	case	_	start_char=61|end_char=65|ner=O
+12	a	a	DET	DT	Definite=Ind|PronType=Art	13	det	_	start_char=66|end_char=67|ner=O
+13	history	history	NOUN	NN	Number=Sing	10	nmod	_	start_char=68|end_char=75|ner=O
+14	of	of	ADP	IN	_	15	case	_	start_char=76|end_char=78|ner=O
+15	hypertension	hypertension	NOUN	NN	Number=Sing	13	nmod	_	SpaceAfter=No|start_char=79|end_char=91|ner=S-PROBLEM
+16	,	,	PUNCT	,	_	20	punct	_	start_char=91|end_char=92|ner=O
+17	type	type	NOUN	NN	Number=Sing	20	compound	_	start_char=93|end_char=97|ner=B-PROBLEM
+18	2	2	NUM	CD	NumForm=Digit|NumType=Card	17	flat	_	start_char=98|end_char=99|ner=I-PROBLEM
+19	diabetes	diabetes	NOUN	NN	Number=Sing	20	compound	_	start_char=100|end_char=108|ner=I-PROBLEM
+20	mellitus	mellitus	NOUN	NN	Number=Sing	15	conj	_	start_char=109|end_char=117|ner=E-PROBLEM
+21	and	and	CCONJ	CC	_	24	cc	_	start_char=118|end_char=121|ner=O
+22	chronic	chronic	ADJ	JJ	Degree=Pos	24	amod	_	start_char=122|end_char=129|ner=B-PROBLEM
+23	kidney	kidney	NOUN	NN	Number=Sing	24	compound	_	start_char=130|end_char=136|ner=I-PROBLEM
+24	disease	disease	NOUN	NN	Number=Sing	15	conj	_	start_char=137|end_char=144|ner=E-PROBLEM
+25	who	who	PRON	WP	Case=Nom|PronType=Rel	26	nsubj	_	start_char=145|end_char=148|ner=O
+26	presented	present	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	24	acl:relcl	_	start_char=149|end_char=158|ner=O
+27	to	to	ADP	IN	_	30	case	_	start_char=159|end_char=161|ner=O
+28	the	the	DET	DT	Definite=Def|PronType=Art	30	det	_	start_char=162|end_char=165|ner=O
+29	emergency	emergency	NOUN	NN	Number=Sing	30	compound	_	start_char=166|end_char=175|ner=O
+30	department	department	NOUN	NN	Number=Sing	26	obl	_	start_char=176|end_char=186|ner=O
+31	with	with	ADP	IN	_	33	case	_	start_char=187|end_char=191|ner=O
+32	three	three	NUM	CD	NumForm=Word|NumType=Card	33	nummod	_	start_char=192|end_char=197|ner=O
+33	days	day	NOUN	NNS	Number=Plur	26	obl	_	start_char=198|end_char=202|ner=O
+34	of	of	SCONJ	IN	_	35	mark	_	start_char=203|end_char=205|ner=O
+35	worsening	worsen	VERB	VBG	VerbForm=Ger	33	acl	_	start_char=206|end_char=215|ner=B-PROBLEM
+36	shortness	shortness	NOUN	NN	Number=Sing	35	obj	_	start_char=216|end_char=225|ner=I-PROBLEM
+37	of	of	ADP	IN	_	38	case	_	start_char=226|end_char=228|ner=I-PROBLEM
+38	breath	breath	NOUN	NN	Number=Sing	36	nmod	_	start_char=229|end_char=235|ner=E-PROBLEM
+39	and	and	CCONJ	CC	_	42	cc	_	start_char=236|end_char=239|ner=O
+40	a	a	DET	DT	Definite=Ind|PronType=Art	42	det	_	start_char=240|end_char=241|ner=B-PROBLEM
+41	productive	productive	ADJ	JJ	Degree=Pos	42	amod	_	start_char=242|end_char=252|ner=I-PROBLEM
+42	cough	cough	NOUN	NN	Number=Sing	36	conj	_	SpaceAfter=No|start_char=253|end_char=258|ner=E-PROBLEM
+43	.	.	PUNCT	.	_	10	punct	_	start_char=258|end_char=259|ner=O
+
+# text = He denies chest pain, fever or recent travel.
+# sent_id = 2
+# constituency = (ROOT (S (NP (PRP He)) (VP (VBZ denies) (NP (NP (NN chest) (NN pain)) (, ,) (NP (NN fever)) (CC or) (NP (JJ recent) (NN travel)))) (. .)))
+# sentiment = 1
+1	He	he	PRON	PRP	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=260|end_char=262|ner=O
+2	denies	deny	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=263|end_char=269|ner=O
+3	chest	chest	NOUN	NN	Number=Sing	4	compound	_	start_char=270|end_char=275|ner=B-PROBLEM
+4	pain	pain	NOUN	NN	Number=Sing	2	obj	_	SpaceAfter=No|start_char=276|end_char=280|ner=E-PROBLEM
+5	,	,	PUNCT	,	_	6	punct	_	start_char=280|end_char=281|ner=O
+6	fever	fever	NOUN	NN	Number=Sing	4	conj	_	start_char=282|end_char=287|ner=S-PROBLEM
+7	or	or	CCONJ	CC	_	9	cc	_	start_char=288|end_char=290|ner=O
+8	recent	recent	ADJ	JJ	Degree=Pos	9	amod	_	start_char=291|end_char=297|ner=B-PROBLEM
+9	travel	travel	NOUN	NN	Number=Sing	4	conj	_	SpaceAfter=No|start_char=298|end_char=304|ner=E-PROBLEM
+10	.	.	PUNCT	.	_	2	punct	_	start_char=304|end_char=305|ner=O
+
+# text = He reports mild swelling of both ankles since last week.
+# sent_id = 3
+# constituency = (ROOT (S (NP (PRP He)) (VP (VBZ reports) (NP (NP (JJ mild) (NN swelling)) (PP (IN of) (NP (DT both) (NNS ankles)))) (PP (IN since) (NP (JJ last) (NN week)))) (. .)))
+# sentiment = 0
+1	He	he	PRON	PRP	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=306|end_char=308|ner=O
+2	reports	report	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=309|end_char=316|ner=O
+3	mild	mild	ADJ	JJ	Degree=Pos	4	amod	_	start_char=317|end_char=321|ner=B-PROBLEM
+4	swelling	swell	NOUN	NN	Number=Sing	2	obj	_	start_char=322|end_char=330|ner=I-PROBLEM
+5	of	of	ADP	IN	_	7	case	_	start_char=331|end_char=333|ner=I-PROBLEM
+6	both	both	DET	DT	PronType=Tot	7	det	_	start_char=334|end_char=338|ner=I-PROBLEM
+7	ankles	ankle	NOUN	NNS	Number=Plur	4	nmod	_	start_char=339|end_char=345|ner=E-PROBLEM
+8	since	since	ADP	IN	_	10	case	_	start_char=346|end_char=351|ner=O
+9	last	last	ADJ	JJ	Degree=Pos	10	amod	_	start_char=352|end_char=356|ner=O
+10	week	week	NOUN	NN	Number=Sing	2	obl	_	SpaceAfter=No|start_char=357|end_char=361|ner=O
+11	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=361|end_char=362|ner=O
+
+# text = Past medical history: Coronary artery disease status post stent placement in 2019.
+# sent_id = 4
+# constituency = (ROOT (NP (NP (JJ Past) (JJ medical) (NN history)) (: :) (NP (NP (NP (NML (NML (JJ Coronary) (NN artery)) (NN disease)) (NN status)) (VP (NN post) (NN stent)) (NN placement)) (PP (IN in) (NP (CD 2019)))) (. .)))
+# sentiment = 1
+1	Past	past	ADJ	JJ	Degree=Pos	3	amod	_	start_char=364|end_char=368|ner=O
+2	medical	medical	ADJ	JJ	Degree=Pos	3	amod	_	start_char=369|end_char=376|ner=O
+3	history	history	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=377|end_char=384|ner=O
+4	:	:	PUNCT	:	_	11	punct	_	start_char=384|end_char=385|ner=O
+5	Coronary	coronary	ADJ	JJ	Degree=Pos	7	amod	_	start_char=386|end_char=394|ner=B-PROBLEM
+6	artery	artery	NOUN	NN	Number=Sing	7	compound	_	start_char=395|end_char=401|ner=I-PROBLEM
+7	disease	disease	NOUN	NN	Number=Sing	8	compound	_	start_char=402|end_char=409|ner=E-PROBLEM
+8	status	status	NOUN	NN	Number=Sing	11	compound	_	start_char=410|end_char=416|ner=O
+9	post	post	NOUN	NN	Number=Sing	10	compound	_	start_char=417|end_char=421|ner=O
+10	stent	stent	NOUN	NN	Number=Sing	11	compound	_	start_char=422|end_char=427|ner=B-TREATMENT
+11	placement	placement	NOUN	NN	Number=Sing	3	appos	_	start_char=428|end_char=437|ner=E-TREATMENT
+12	in	in	ADP	IN	_	13	case	_	start_char=438|end_char=440|ner=O
+13	2019	2019	NUM	CD	NumForm=Digit|NumType=Card	11	nmod	_	SpaceAfter=No|start_char=441|end_char=445|ner=O
+14	.	.	PUNCT	.	_	3	punct	_	start_char=445|end_char=446|ner=O
+
+# text = Atrial fibrillation on warfarin.
+# sent_id = 5
+# constituency = (ROOT (NP (NP (JJ Atrial) (NN fibrillation)) (PP (IN on) (NP (NN warfarin))) (. .)))
+# sentiment = 0
+1	Atrial	Atrial	ADJ	JJ	Degree=Pos	2	amod	_	start_char=447|end_char=453|ner=B-PROBLEM
+2	fibrillation	fibrillation	NOUN	NN	Number=Sing	0	root	_	start_char=454|end_char=466|ner=E-PROBLEM
+3	on	on	ADP	IN	_	4	case	_	start_char=467|end_char=469|ner=O
+4	warfarin	warfarin	NOUN	NN	Number=Sing	2	nmod	_	SpaceAfter=No|start_char=470|end_char=478|ner=S-TREATMENT
+5	.	.	PUNCT	.	_	2	punct	_	start_char=478|end_char=479|ner=O
+
+# text = Gout.
+# sent_id = 6
+# constituency = (ROOT (S (VP (VB Gout)) (. .)))
+# sentiment = 1
+1	Gout	gout	VERB	VB	Mood=Imp|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=480|end_char=484|ner=S-PROBLEM
+2	.	.	PUNCT	.	_	1	punct	_	start_char=484|end_char=485|ner=O
+
+# text = Mild depression treated with sertraline.
+# sent_id = 7
+# constituency = (ROOT (NP (NP (JJ Mild) (NN depression)) (VP (VBN treated) (PP (IN with) (NP (NN sertraline)))) (. .)))
+# sentiment = 1
+1	Mild	mild	ADJ	JJ	Degree=Pos	2	amod	_	start_char=486|end_char=490|ner=B-PROBLEM
+2	depression	depression	NOUN	NN	Number=Sing	0	root	_	start_char=491|end_char=501|ner=E-PROBLEM
+3	treated	treat	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	2	acl	_	start_char=502|end_char=509|ner=O
+4	with	with	ADP	IN	_	5	case	_	start_char=510|end_char=514|ner=O
+5	sertraline	sertraline	NOUN	NN	Number=Sing	3	obl	_	SpaceAfter=No|start_char=515|end_char=525|ner=S-TREATMENT
+6	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=525|end_char=526|ner=O
+
+# text = Medications on admission: metoprolol 25 mg twice daily, lisinopril 10 mg daily, metformin 500 mg twice daily, warfarin 5 mg daily, atorvastatin 40 mg at night and allopurinol 100 mg daily.
+# sent_id = 8
+# constituency = (ROOT (NP (NP (NP (NNS Medications)) (PP (IN on) (NP (NN admission)))) (: :) (NP (NP (NP (NN metoprolol) (CD 25) (NNS mg)) (RB twice) (JJ daily)) (, ,) (NP (NP (NN lisinopril) (CD 10) (NNS mg)) (RB daily)) (, ,) (NP (NP (NN metformin) (CD 500) (NNS mg)) (RB twice) (JJ daily)) (, ,) (NP (NP (NN warfarin) (CD 5) (NNS mg)) (ADVP (RB daily))) (, ,) (NP (NP (NN atorvastatin) (CD 40) (NNS mg)) (PP (IN at) (NP (NN night)))) (CC and) (NP (NP (NN allopurinol) (CD 100) (NNS mg)) (ADVP (RB daily)))) (. .)))
+# sentiment = 1
+1	Medications	medication	NOUN	NNS	Number=Plur	0	root	_	start_char=528|end_char=539|ner=B-TREATMENT
+2	on	on	ADP	IN	_	3	case	_	start_char=540|end_char=542|ner=I-TREATMENT
+3	admission	admission	NOUN	NN	Number=Sing	1	nmod	_	SpaceAfter=No|start_char=543|end_char=552|ner=E-TREATMENT
+4	:	:	PUNCT	:	_	7	punct	_	start_char=552|end_char=553|ner=O
+5	metoprolol	metoprolol	NOUN	NN	Number=Sing	1	parataxis	_	start_char=554|end_char=564|ner=S-TREATMENT
+6	25	25	NUM	CD	NumForm=Digit|NumType=Card	7	nummod	_	start_char=565|end_char=567|ner=O
+7	mg	mg	NOUN	NNS	Number=Plur	1	parataxis	_	start_char=568|end_char=570|ner=O
+8	twice	twice	ADV	RB	NumForm=Word|NumType=Mult	9	advmod	_	start_char=571|end_char=576|ner=O
+9	daily	daily	ADJ	JJ	Degree=Pos	7	amod	_	SpaceAfter=No|start_char=577|end_char=582|ner=O
+10	,	,	PUNCT	,	_	11	punct	_	start_char=582|end_char=583|ner=O
+11	lisinopril	lisinopril	NOUN	NN	Number=Sing	7	conj	_	start_char=584|end_char=594|ner=S-TREATMENT
+12	10	10	NUM	CD	NumForm=Digit|NumType=Card	13	nummod	_	start_char=595|end_char=597|ner=O
+13	mg	mg	NOUN	NNS	Number=Plur	11	conj	_	start_char=598|end_char=600|ner=O
+14	daily	daily	ADV	RB	_	13	advmod	_	SpaceAfter=No|start_char=601|end_char=606|ner=O
+15	,	,	PUNCT	,	_	16	punct	_	start_char=606|end_char=607|ner=O
+16	metformin	metformin	NOUN	NN	Number=Sing	18	compound	_	start_char=608|end_char=617|ner=S-TREATMENT
+17	500	500	NUM	CD	NumForm=Digit|NumType=Card	18	nummod	_	start_char=618|end_char=621|ner=O
+18	mg	mg	NOUN	NNS	Number=Plur	1	conj	_	start_char=622|end_char=624|ner=O
+19	twice	twice	ADV	RB	NumForm=Word|NumType=Mult	20	advmod	_	start_char=625|end_char=630|ner=O
+20	daily	daily	ADJ	JJ	Degree=Pos	18	amod	_	SpaceAfter=No|start_char=631|end_char=636|ner=O
+21	,	,	PUNCT	,	_	22	punct	_	start_char=636|end_char=637|ner=O
+22	warfarin	warfarin	NOUN	NN	Number=Sing	5	conj	_	start_char=638|end_char=646|ner=S-TREATMENT
+23	5	5	NUM	CD	NumForm=Digit|NumType=Card	24	nummod	_	start_char=647|end_char=648|ner=O
+24	mg	mg	NOUN	NNS	Number=Plur	22	conj	_	start_char=649|end_char=651|ner=O
+25	daily	daily	ADV	RB	_	24	advmod	_	SpaceAfter=No|start_char=652|end_char=657|ner=O
+26	,	,	PUNCT	,	_	27	punct	_	start_char=657|end_char=658|ner=O
+27	atorvastatin	atorvastatin	NOUN	NN	Number=Sing	29	compound	_	start_char=659|end_char=671|ner=S-TREATMENT
+28	40	40	NUM	CD	NumForm=Digit|NumType=Card	29	nummod	_	start_char=672|end_char=674|ner=O
+29	mg	mg	NOUN	NNS	Number=Plur	1	conj	_	start_char=675|end_char=677|ner=O
+30	at	at	ADP	IN	_	31	case	_	start_char=678|end_char=680|ner=O
+31	night	night	NOUN	NN	Number=Sing	29	nmod	_	start_char=681|end_char=686|ner=O
+32	and	and	CCONJ	CC	_	33	cc	_	start_char=687|end_char=690|ner=O
+33	allopurinol	allopurinol	NOUN	NN	Number=Sing	35	compound	_	start_char=691|end_char=702|ner=S-TREATMENT
+34	100	100	NUM	CD	NumForm=Digit|NumType=Card	35	nummod	_	start_char=703|end_char=706|ner=O
+35	mg	mg	NOUN	NNS	Number=Plur	1	conj	_	start_char=707|end_char=709|ner=O
+36	daily	daily	ADV	RB	_	35	advmod	_	SpaceAfter=No|start_char=710|end_char=715|ner=O
+37	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=715|end_char=716|ner=O
+
+# text = Physical examination: Temperature 37.8 C, heart rate 104, blood pressure 148/92, respiratory rate 24, oxygen saturation 89% on room air.
+# sent_id = 9
+# constituency = (ROOT (NP (NP (JJ Physical) (NN examination)) (: :) (NP (NP (NN Temperature) (CD 37.8) (NN C)) (, ,) (NP (NML (NN heart) (NN rate)) (CD 104)) (, ,) (NP (NP (NN blood) (NN pressure)) (NP (NP (CD 148)) (PP (SYM /) (NP (CD 92))))) (, ,) (NP (NML (JJ respiratory) (NN rate)) (CD 24)) (, ,) (NP (NP (NN oxygen) (NN saturation)) (NP (CD 89) (NN %)) (PP (IN on) (NP (NN room) (NN air))))) (. .)))
+# sentiment = 1
+1	Physical	physical	ADJ	JJ	Degree=Pos	2	amod	_	start_char=718|end_char=726|ner=B-TEST
+2	examination	examination	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=727|end_char=738|ner=E-TEST
+3	:	:	PUNCT	:	_	4	punct	_	start_char=738|end_char=739|ner=O
+4	Temperature	temperature	NOUN	NN	Number=Sing	2	appos	_	start_char=740|end_char=751|ner=S-TEST
+5	37.8	37.8	NUM	CD	NumForm=Digit|NumType=Frac	4	flat	_	start_char=752|end_char=756|ner=O
+6	C	C	NOUN	NN	Number=Sing	4	conj	_	SpaceAfter=No|start_char=757|end_char=758|ner=O
+7	,	,	PUNCT	,	_	9	punct	_	start_char=758|end_char=759|ner=O
+8	heart	heart	NOUN	NN	Number=Sing	9	compound	_	start_char=760|end_char=765|ner=B-TEST
+9	rate	rate	NOUN	NN	Number=Sing	4	conj	_	start_char=766|end_char=770|ner=E-TEST
+10	104	104	NUM	CD	NumForm=Digit|NumType=Card	9	flat	_	SpaceAfter=No|start_char=771|end_char=774|ner=O
+11	,	,	PUNCT	,	_	13	punct	_	start_char=774|end_char=775|ner=O
+12	blood	blood	NOUN	NN	Number=Sing	13	compound	_	start_char=776|end_char=781|ner=B-TEST
+13	pressure	pressure	NOUN	NN	Number=Sing	4	conj	_	start_char=782|end_char=790|ner=E-TEST
+14	148	148	NUM	CD	NumForm=Digit|NumType=Card	13	flat	_	SpaceAfter=No|start_char=791|end_char=794|ner=O
+15	/	/	SYM	SYM	_	16	case	_	SpaceAfter=No|start_char=794|end_char=795|ner=O
+16	92	92	NUM	CD	NumForm=Digit|NumType=Card	14	nmod	_	SpaceAfter=No|start_char=795|end_char=797|ner=O
+17	,	,	PUNCT	,	_	19	punct	_	start_char=797|end_char=798|ner=O
+18	respiratory	respiratory	ADJ	JJ	Degree=Pos	19	amod	_	start_char=799|end_char=810|ner=B-TEST
+19	rate	rate	NOUN	NN	Number=Sing	4	conj	_	start_char=811|end_char=815|ner=E-TEST
+20	24	24	NUM	CD	NumForm=Digit|NumType=Card	19	flat	_	SpaceAfter=No|start_char=816|end_char=818|ner=O
+21	,	,	PUNCT	,	_	23	punct	_	start_char=818|end_char=819|ner=O
+22	oxygen	oxygen	NOUN	NN	Number=Sing	23	compound	_	start_char=820|end_char=826|ner=B-TEST
+23	saturation	saturation	NOUN	NN	Number=Sing	4	conj	_	start_char=827|end_char=837|ner=E-TEST
+24	89	89	NUM	CD	NumForm=Digit|NumType=Card	25	nummod	_	SpaceAfter=No|start_char=838|end_char=840|ner=O
+25	%	%	SYM	NN	Number=Sing	4	list	_	start_char=840|end_char=841|ner=O
+26	on	on	ADP	IN	_	28	case	_	start_char=842|end_char=844|ner=O
+27	room	room	NOUN	NN	Number=Sing	28	compound	_	start_char=845|end_char=849|ner=O
+28	air	air	NOUN	NN	Number=Sing	25	nmod	_	SpaceAfter=No|start_char=850|end_char=853|ner=O
+29	.	.	PUNCT	.	_	2	punct	_	start_char=853|end_char=854|ner=O
+
+# text = Crackles were heard at both lung bases.
+# sent_id = 10
+# constituency = (ROOT (S (NP (NNS Crackles)) (VP (VBD were) (VP (VBN heard) (PP (IN at) (NP (DT both) (NN lung) (NNS bases))))) (. .)))
+# sentiment = 1
+1	Crackles	crackle	NOUN	NNS	Number=Plur	3	nsubj:pass	_	start_char=855|end_char=863|ner=S-PROBLEM
+2	were	be	AUX	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	3	aux:pass	_	start_char=864|end_char=868|ner=O
+3	heard	hear	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	start_char=869|end_char=874|ner=O
+4	at	at	ADP	IN	_	7	case	_	start_char=875|end_char=877|ner=O
+5	both	both	DET	DT	PronType=Tot	7	det	_	start_char=878|end_char=882|ner=O
+6	lung	lung	NOUN	NN	Number=Sing	7	compound	_	start_char=883|end_char=887|ner=O
+7	bases	basis	NOUN	NNS	Number=Plur	3	obl	_	SpaceAfter=No|start_char=888|end_char=893|ner=O
+8	.	.	PUNCT	.	_	3	punct	_	start_char=893|end_char=894|ner=O
+
+# text = There was 2+ pitting edema of the lower extremities.
+# sent_id = 11
+# constituency = (ROOT (S (NP (EX There)) (VP (VBD was) (NP (NP (CD 2) (SYM +)) (S (VP (VBG pitting) (NP (NP (NN edema)) (PP (IN of) (NP (DT the) (JJR lower) (NNS extremities)))))))) (. .)))
+# sentiment = 1
+1	There	there	PRON	EX	PronType=Dem	2	expl	_	start_char=895|end_char=900|ner=O
+2	was	be	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=901|end_char=904|ner=O
+3	2	2	NUM	CD	NumForm=Digit|NumType=Card	6	nummod	_	SpaceAfter=No|start_char=905|end_char=906|ner=O
+4	+	+	SYM	SYM	_	5	cc	_	start_char=906|end_char=907|ner=O
+5	pitting	pit	VERB	VBG	VerbForm=Ger	3	conj	_	start_char=908|end_char=915|ner=B-PROBLEM
+6	edema	edema	NOUN	NN	Number=Sing	2	nsubj	_	start_char=916|end_char=921|ner=I-PROBLEM
+7	of	of	ADP	IN	_	10	case	_	start_char=922|end_char=924|ner=I-PROBLEM
+8	the	the	DET	DT	Definite=Def|PronType=Art	10	det	_	start_char=925|end_char=928|ner=I-PROBLEM
+9	lower	low	ADJ	JJR	Degree=Cmp	10	amod	_	start_char=929|end_char=934|ner=I-PROBLEM
+10	extremities	extremity	NOUN	NNS	Number=Plur	6	nmod	_	SpaceAfter=No|start_char=935|end_char=946|ner=E-PROBLEM
+11	.	.	PUNCT	.	_	2	punct	_	start_char=946|end_char=947|ner=O
+
+# text = The abdomen was soft and non-tender.
+# sent_id = 12
+# constituency = (ROOT (S (NP (DT The) (NN abdomen)) (VP (VBD was) (ADJP (JJ soft) (CC and) (JJ non-tender))) (. .)))
+# sentiment = 0
+1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=948|end_char=951|ner=O
+2	abdomen	abdomen	NOUN	NN	Number=Sing	4	nsubj	_	start_char=952|end_char=959|ner=O
+3	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	4	cop	_	start_char=960|end_char=963|ner=O
+4	soft	soft	ADJ	JJ	Degree=Pos	0	root	_	start_char=964|end_char=968|ner=O
+5	and	and	CCONJ	CC	_	6	cc	_	start_char=969|end_char=972|ner=O
+6	non-tender	non-tender	ADJ	JJ	Degree=Pos	4	conj	_	SpaceAfter=No|start_char=973|end_char=983|ner=S-PROBLEM
+7	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=983|end_char=984|ner=O
+
+# text = Laboratory data: White blood cell count 13.2, hemoglobin 10.9, platelets 210.
+# sent_id = 13
+# constituency = (ROOT (NP (NP (NN Laboratory) (NN data)) (: :) (S (NP (JJ White) (NN blood) (NN cell)) (VP (NN count) (NP (NP (CD 13.2)) (, ,) (NP (NN hemoglobin) (CD 10.9)) (, ,) (NP (NNS platelets) (CD 210))))) (. .)))
+# sentiment = 1
+1	Laboratory	Laboratory	NOUN	NN	Number=Sing	2	compound	_	start_char=986|end_char=996|ner=B-TEST
+2	data	data	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=997|end_char=1001|ner=E-TEST
+3	:	:	PUNCT	:	_	7	punct	_	start_char=1001|end_char=1002|ner=O
+4	White	White	ADJ	JJ	Degree=Pos	7	amod	_	start_char=1003|end_char=1008|ner=B-TEST
+5	blood	blood	NOUN	NN	Number=Sing	6	compound	_	start_char=1009|end_char=1014|ner=I-TEST
+6	cell	cell	NOUN	NN	Number=Sing	7	compound	_	start_char=1015|end_char=1019|ner=I-TEST
+7	count	count	NOUN	NN	Number=Sing	2	parataxis	_	start_char=1020|end_char=1025|ner=E-TEST
+8	13.2	13.2	NUM	CD	NumForm=Digit|NumType=Frac	7	flat	_	SpaceAfter=No|start_char=1026|end_char=1030|ner=O
+9	,	,	PUNCT	,	_	10	punct	_	start_char=1030|end_char=1031|ner=O
+10	hemoglobin	hemoglobin	NOUN	NN	Number=Sing	7	conj	_	start_char=1032|end_char=1042|ner=S-TEST
+11	10.9	10.9	NUM	CD	NumForm=Digit|NumType=Frac	10	flat	_	SpaceAfter=No|start_char=1043|end_char=1047|ner=O
+12	,	,	PUNCT	,	_	13	punct	_	start_char=1047|end_char=1048|ner=O
+13	platelets	platelet	NOUN	NNS	Number=Plur	7	conj	_	start_char=1049|end_char=1058|ner=S-TEST
+14	210	210	NUM	CD	NumForm=Digit|NumType=Card	13	flat	_	SpaceAfter=No|start_char=1059|end_char=1062|ner=O
+15	.	.	PUNCT	.	_	2	punct	_	start_char=1062|end_char=1063|ner=O
+
+# text = Sodium 134, potassium 5.1, creatinine 2.1 (baseline 1.6).
+# sent_id = 14
+# constituency = (ROOT (NP (NP (NN Sodium) (CD 134)) (, ,) (NP (NN potassium) (CD 5.1)) (, ,) (NP (NP (NN creatinine) (CD 2.1)) (-LRB- -LRB-) (NP (NN baseline) (CD 1.6)) (-RRB- -RRB-)) (. .)))
+# sentiment = 0
+1	Sodium	sodium	NOUN	NN	Number=Sing	0	root	_	start_char=1064|end_char=1070|ner=S-TEST
+2	134	134	NUM	CD	NumForm=Digit|NumType=Card	1	flat	_	SpaceAfter=No|start_char=1071|end_char=1074|ner=O
+3	,	,	PUNCT	,	_	4	punct	_	start_char=1074|end_char=1075|ner=O
+4	potassium	potassium	NOUN	NN	Number=Sing	1	conj	_	start_char=1076|end_char=1085|ner=S-TEST
+5	5.1	5.1	NUM	CD	NumForm=Digit|NumType=Frac	4	flat	_	SpaceAfter=No|start_char=1086|end_char=1089|ner=O
+6	,	,	PUNCT	,	_	7	punct	_	start_char=1089|end_char=1090|ner=O
+7	creatinine	creatinine	NOUN	NN	Number=Sing	1	list	_	start_char=1091|end_char=1101|ner=S-TEST
+8	2.1	2.1	NUM	CD	NumForm=Digit|NumType=Frac	7	flat	_	start_char=1102|end_char=1105|ner=O
+9	(	(	PUNCT	-LRB-	_	10	punct	_	SpaceAfter=No|start_char=1106|end_char=1107|ner=O
+10	baseline	baseline	NOUN	NN	Number=Sing	1	list	_	start_char=1107|end_char=1115|ner=S-TEST
+11	1.6	1.6	NUM	CD	NumForm=Digit|NumType=Frac	10	nummod	_	SpaceAfter=No|start_char=1116|end_char=1119|ner=O
+12	)	)	PUNCT	-RRB-	_	10	punct	_	SpaceAfter=No|start_char=1119|end_char=1120|ner=O
+13	.	.	PUNCT	.	_	1	punct	_	start_char=1120|end_char=1121|ner=O
+
+# text = BNP was elevated at 1,480.
+# sent_id = 15
+# constituency = (ROOT (S (NP (NNP BNP)) (VP (VBD was) (VP (VBN elevated) (PP (IN at) (NP (CD 1,480))))) (. .)))
+# sentiment = 2
+1	BNP	BNP	PROPN	NNP	Number=Sing	3	nsubj:pass	_	start_char=1122|end_char=1125|ner=S-TEST
+2	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	3	aux:pass	_	start_char=1126|end_char=1129|ner=O
+3	elevated	elevate	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	start_char=1130|end_char=1138|ner=S-PROBLEM
+4	at	at	ADP	IN	_	5	case	_	start_char=1139|end_char=1141|ner=O
+5	1,480	1480	NUM	CD	NumForm=Digit|NumType=Card	3	obl	_	SpaceAfter=No|start_char=1142|end_char=1147|ner=O
+6	.	.	PUNCT	.	_	3	punct	_	start_char=1147|end_char=1148|ner=O
+
+# text = Troponin was negative twice.
+# sent_id = 16
+# constituency = (ROOT (S (NP (NNP Troponin)) (VP (VBD was) (ADJP (JJ negative)) (ADVP (RB twice))) (. .)))
+# sentiment = 0
+1	Troponin	Troponin	PROPN	NNP	Number=Sing	3	nsubj	_	start_char=1149|end_char=1157|ner=S-TEST
+2	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	3	cop	_	start_char=1158|end_char=1161|ner=O
+3	negative	negative	ADJ	JJ	Degree=Pos	0	root	_	start_char=1162|end_char=1170|ner=O
+4	twice	twice	ADV	RB	NumForm=Word|NumType=Mult	3	advmod	_	SpaceAfter=No|start_char=1171|end_char=1176|ner=O
+5	.	.	PUNCT	.	_	3	punct	_	start_char=1176|end_char=1177|ner=O
+
+# text = INR 2.7.
+# sent_id = 17
+# constituency = (ROOT (NP ($ INR) (CD 2.7) (. .)))
+# sentiment = 1
+1	INR	inr	SYM	$	_	0	root	_	start_char=1178|end_char=1181|ner=S-TEST
+2	2.7	2.7	NUM	CD	NumForm=Digit|NumType=Frac	1	nummod	_	SpaceAfter=No|start_char=1182|end_char=1185|ner=O
+3	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=1185|end_char=1186|ner=O
+
+# text = Imaging: A chest x-ray showed bilateral pleural effusions and pulmonary vascular congestion, with a possible infiltrate in the right lower lobe.
+# sent_id = 18
+# constituency = (ROOT (NP (NN Imaging) (: :) (S (NP (DT A) (NN chest) (NN x) (HYPH -) (NN ray)) (VP (VBD showed) (NP (NP (JJ bilateral) (JJ pleural) (NNS effusions)) (CC and) (NP (JJ pulmonary) (JJ vascular) (NN congestion))) (, ,) (PP (IN with) (NP (NP (DT a) (JJ possible) (NN infiltrate)) (PP (IN in) (NP (DT the) (ADJP (JJ right) (JJR lower)) (NN lobe))))))) (. .)))
+# sentiment = 1
+1	Imaging	imaging	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=1188|end_char=1195|ner=S-TEST
+2	:	:	PUNCT	:	_	8	punct	_	start_char=1195|end_char=1196|ner=O
+3	A	a	DET	DT	Definite=Ind|PronType=Art	7	det	_	start_char=1197|end_char=1198|ner=B-TEST
+4	chest	chest	NOUN	NN	Number=Sing	7	compound	_	start_char=1199|end_char=1204|ner=I-TEST
+5	x	x	NOUN	NN	Number=Sing	7	compound	_	SpaceAfter=No|start_char=1205|end_char=1206|ner=I-TEST
+6	-	-	PUNCT	HYPH	_	5	punct	_	SpaceAfter=No|start_char=1206|end_char=1207|ner=I-TEST
+7	ray	ray	NOUN	NN	Number=Sing	8	nsubj	_	start_char=1207|end_char=1210|ner=E-TEST
+8	showed	show	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	1	appos	_	start_char=1211|end_char=1217|ner=O
+9	bilateral	bilateral	ADJ	JJ	Degree=Pos	11	amod	_	start_char=1218|end_char=1227|ner=B-PROBLEM
+10	pleural	pleural	ADJ	JJ	Degree=Pos	11	amod	_	start_char=1228|end_char=1235|ner=I-PROBLEM
+11	effusions	effusion	NOUN	NNS	Number=Plur	8	obj	_	start_char=1236|end_char=1245|ner=E-PROBLEM
+12	and	and	CCONJ	CC	_	15	cc	_	start_char=1246|end_char=1249|ner=O
+13	pulmonary	pulmonary	ADJ	JJ	Degree=Pos	15	amod	_	start_char=1250|end_char=1259|ner=B-PROBLEM
+14	vascular	vascular	ADJ	JJ	Degree=Pos	15	amod	_	start_char=1260|end_char=1268|ner=I-PROBLEM
+15	congestion	congestion	NOUN	NN	Number=Sing	11	conj	_	SpaceAfter=No|start_char=1269|end_char=1279|ner=E-PROBLEM
+16	,	,	PUNCT	,	_	20	punct	_	start_char=1279|end_char=1280|ner=O
+17	with	with	ADP	IN	_	20	case	_	start_char=1281|end_char=1285|ner=O
+18	a	a	DET	DT	Definite=Ind|PronType=Art	20	det	_	start_char=1286|end_char=1287|ner=O
+19	possible	possible	ADJ	JJ	Degree=Pos	20	amod	_	start_char=1288|end_char=1296|ner=O
+20	infiltrate	infiltrate	NOUN	NN	Number=Sing	8	obl	_	start_char=1297|end_char=1307|ner=B-PROBLEM
+21	in	in	ADP	IN	_	25	case	_	start_char=1308|end_char=1310|ner=I-PROBLEM
+22	the	the	DET	DT	Definite=Def|PronType=Art	25	det	_	start_char=1311|end_char=1314|ner=I-PROBLEM
+23	right	right	ADJ	JJ	Degree=Pos	25	amod	_	start_char=1315|end_char=1320|ner=I-PROBLEM
+24	lower	low	ADJ	JJR	Degree=Cmp	25	amod	_	start_char=1321|end_char=1326|ner=I-PROBLEM
+25	lobe	lobe	NOUN	NN	Number=Sing	20	nmod	_	SpaceAfter=No|start_char=1327|end_char=1331|ner=E-PROBLEM
+26	.	.	PUNCT	.	_	1	punct	_	start_char=1331|end_char=1332|ner=O
+
+# text = An echocardiogram showed an ejection fraction of 35%, reduced from 50% last year.
+# sent_id = 19
+# constituency = (ROOT (S (NP (DT An) (NN echocardiogram)) (VP (VBD showed) (NP (NP (NP (DT an) (NN ejection) (NN fraction)) (PP (IN of) (NP (CD 35) (NN %)))) (, ,) (VP (VBN reduced) (PP (IN from) (NP (CD 50) (NN %)) (NP (JJ last) (NN year)))))) (. .)))
+# sentiment = 1
+1	An	a	DET	DT	Definite=Ind|PronType=Art	2	det	_	start_char=1333|end_char=1335|ner=B-TEST
+2	echocardiogram	echocardiogram	NOUN	NN	Number=Sing	3	nsubj	_	start_char=1336|end_char=1350|ner=E-TEST
+3	showed	show	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1351|end_char=1357|ner=O
+4	an	a	DET	DT	Definite=Ind|PronType=Art	6	det	_	start_char=1358|end_char=1360|ner=B-TEST
+5	ejection	ejection	NOUN	NN	Number=Sing	6	compound	_	start_char=1361|end_char=1369|ner=I-TEST
+6	fraction	fraction	NOUN	NN	Number=Sing	3	obj	_	start_char=1370|end_char=1378|ner=E-TEST
+7	of	of	ADP	IN	_	9	case	_	start_char=1379|end_char=1381|ner=O
+8	35	35	NUM	CD	NumForm=Digit|NumType=Card	9	nummod	_	SpaceAfter=No|start_char=1382|end_char=1384|ner=O
+9	%	%	SYM	NN	Number=Sing	6	nmod	_	SpaceAfter=No|start_char=1384|end_char=1385|ner=O
+10	,	,	PUNCT	,	_	11	punct	_	start_char=1385|end_char=1386|ner=O
+11	reduced	reduce	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	6	acl	_	start_char=1387|end_char=1394|ner=O
+12	from	from	ADP	IN	_	14	case	_	start_char=1395|end_char=1399|ner=O
+13	50	50	NUM	CD	NumForm=Digit|NumType=Card	14	nummod	_	SpaceAfter=No|start_char=1400|end_char=1402|ner=O
+14	%	%	SYM	NN	Number=Sing	11	obl	_	start_char=1402|end_char=1403|ner=O
+15	last	last	ADJ	JJ	Degree=Pos	16	amod	_	start_char=1404|end_char=1408|ner=O
+16	year	year	NOUN	NN	Number=Sing	11	obl:unmarked	_	SpaceAfter=No|start_char=1409|end_char=1413|ner=O
+17	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=1413|end_char=1414|ner=O
+
+# text = Assessment and plan: Acute on chronic systolic heart failure, likely precipitated by community-acquired pneumonia.
+# sent_id = 20
+# constituency = (ROOT (NP (NP (NN Assessment) (CC and) (NN plan)) (: :) (NP (NP (JJ Acute)) (PP (IN on) (NP (NP (JJ chronic) (JJ systolic) (NN heart) (NN failure)) (, ,) (VP (ADVP (RB likely)) (VBN precipitated) (PP (IN by) (NP (ADJP (NN community) (HYPH -) (VBN acquired)) (NN pneumonia))))))) (. .)))
+# sentiment = 0
+1	Assessment	Assessment	NOUN	NN	Number=Sing	0	root	_	start_char=1416|end_char=1426|ner=O
+2	and	and	CCONJ	CC	_	3	cc	_	start_char=1427|end_char=1430|ner=O
+3	plan	plan	NOUN	NN	Number=Sing	1	conj	_	SpaceAfter=No|start_char=1431|end_char=1435|ner=O
+4	:	:	PUNCT	:	_	5	punct	_	start_char=1435|end_char=1436|ner=O
+5	Acute	acute	ADJ	JJ	Degree=Pos	1	parataxis	_	start_char=1437|end_char=1442|ner=O
+6	on	on	ADP	IN	_	10	case	_	start_char=1443|end_char=1445|ner=O
+7	chronic	chronic	ADJ	JJ	Degree=Pos	10	amod	_	start_char=1446|end_char=1453|ner=B-PROBLEM
+8	systolic	systolic	ADJ	JJ	Degree=Pos	10	amod	_	start_char=1454|end_char=1462|ner=I-PROBLEM
+9	heart	heart	NOUN	NN	Number=Sing	10	compound	_	start_char=1463|end_char=1468|ner=I-PROBLEM
+10	failure	failure	NOUN	NN	Number=Sing	5	obl	_	SpaceAfter=No|start_char=1469|end_char=1476|ner=E-PROBLEM
+11	,	,	PUNCT	,	_	13	punct	_	start_char=1476|end_char=1477|ner=O
+12	likely	likely	ADV	RB	_	13	advmod	_	start_char=1478|end_char=1484|ner=O
+13	precipitated	precipitate	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	10	acl	_	start_char=1485|end_char=1497|ner=O
+14	by	by	ADP	IN	_	18	case	_	start_char=1498|end_char=1500|ner=O
+15	community	community	NOUN	NN	Number=Sing	17	compound	_	SpaceAfter=No|start_char=1501|end_char=1510|ner=B-PROBLEM
+16	-	-	PUNCT	HYPH	_	15	punct	_	SpaceAfter=No|start_char=1510|end_char=1511|ner=I-PROBLEM
+17	acquired	acquire	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	18	amod	_	start_char=1511|end_char=1519|ner=I-PROBLEM
+18	pneumonia	pneumonia	NOUN	NN	Number=Sing	13	obl:agent	_	SpaceAfter=No|start_char=1520|end_char=1529|ner=E-PROBLEM
+19	.	.	PUNCT	.	_	1	punct	_	start_char=1529|end_char=1530|ner=O
+
+# text = We started intravenous furosemide 40 mg twice daily and ceftriaxone with azithromycin.
+# sent_id = 21
+# constituency = (ROOT (S (NP (PRP We)) (VP (VBD started) (NP (NP (NP (JJ intravenous) (NN furosemide) (CD 40) (NNS mg)) (RB twice) (JJ daily)) (CC and) (NN ceftriaxone)) (PP (IN with) (NP (NN azithromycin)))) (. .)))
+# sentiment = 1
+1	We	we	PRON	PRP	Case=Nom|Number=Plur|Person=1|PronType=Prs	2	nsubj	_	start_char=1531|end_char=1533|ner=O
+2	started	start	VERB	VBD	Mood=Ind|Number=Plur|Person=1|Tense=Past|VerbForm=Fin	0	root	_	start_char=1534|end_char=1541|ner=O
+3	intravenous	intravenous	ADJ	JJ	Degree=Pos	4	amod	_	start_char=1542|end_char=1553|ner=B-TREATMENT
+4	furosemide	furosemide	NOUN	NN	Number=Sing	2	obj	_	start_char=1554|end_char=1564|ner=E-TREATMENT
+5	40	40	NUM	CD	NumForm=Digit|NumType=Card	6	nummod	_	start_char=1565|end_char=1567|ner=O
+6	mg	mg	NOUN	NNS	Number=Plur	2	obj	_	start_char=1568|end_char=1570|ner=O
+7	twice	twice	ADV	RB	NumForm=Word|NumType=Mult	8	advmod	_	start_char=1571|end_char=1576|ner=O
+8	daily	daily	ADJ	JJ	Degree=Pos	6	amod	_	start_char=1577|end_char=1582|ner=O
+9	and	and	CCONJ	CC	_	10	cc	_	start_char=1583|end_char=1586|ner=O
+10	ceftriaxone	ceftriaxone	NOUN	NN	Number=Sing	4	conj	_	start_char=1587|end_char=1598|ner=S-TREATMENT
+11	with	with	ADP	IN	_	12	case	_	start_char=1599|end_char=1603|ner=O
+12	azithromycin	azithromycin	NOUN	NN	Number=Sing	10	nmod	_	SpaceAfter=No|start_char=1604|end_char=1616|ner=S-TREATMENT
+13	.	.	PUNCT	.	_	2	punct	_	start_char=1616|end_char=1617|ner=O
+
+# text = Metformin was held because of the acute kidney injury.
+# sent_id = 22
+# constituency = (ROOT (S (NP (NNP Metformin)) (VP (VBD was) (VP (VBN held) (PP (IN because) (IN of) (NP (DT the) (JJ acute) (NN kidney) (NN injury))))) (. .)))
+# sentiment = 0
+1	Metformin	Metformin	PROPN	NNP	Number=Sing	3	nsubj:pass	_	start_char=1618|end_char=1627|ner=S-TREATMENT
+2	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	3	aux:pass	_	start_char=1628|end_char=1631|ner=O
+3	held	hold	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	start_char=1632|end_char=1636|ner=O
+4	because	because	ADP	IN	ExtPos=ADP	9	case	_	start_char=1637|end_char=1644|ner=O
+5	of	of	ADP	IN	_	4	fixed	_	start_char=1645|end_char=1647|ner=O
+6	the	the	DET	DT	Definite=Def|PronType=Art	9	det	_	start_char=1648|end_char=1651|ner=B-PROBLEM
+7	acute	acute	ADJ	JJ	Degree=Pos	9	amod	_	start_char=1652|end_char=1657|ner=I-PROBLEM
+8	kidney	kidney	NOUN	NN	Number=Sing	9	compound	_	start_char=1658|end_char=1664|ner=I-PROBLEM
+9	injury	injury	NOUN	NN	Number=Sing	3	obl	_	SpaceAfter=No|start_char=1665|end_char=1671|ner=E-PROBLEM
+10	.	.	PUNCT	.	_	3	punct	_	start_char=1671|end_char=1672|ner=O
+
+# text = Repeat basic metabolic panel in the morning.
+# sent_id = 23
+# constituency = (ROOT (S (VP (VB Repeat) (NP (JJ basic) (NN metabolic) (NN panel)) (PP (IN in) (NP (DT the) (NN morning)))) (. .)))
+# sentiment = 1
+1	Repeat	repeat	VERB	VB	Mood=Imp|VerbForm=Fin	0	root	_	start_char=1673|end_char=1679|ner=B-TEST
+2	basic	basic	ADJ	JJ	Degree=Pos	4	amod	_	start_char=1680|end_char=1685|ner=I-TEST
+3	metabolic	metabolic	NOUN	NN	Number=Sing	4	compound	_	start_char=1686|end_char=1695|ner=I-TEST
+4	panel	panel	NOUN	NN	Number=Sing	1	obj	_	start_char=1696|end_char=1701|ner=E-TEST
+5	in	in	ADP	IN	_	7	case	_	start_char=1702|end_char=1704|ner=O
+6	the	the	DET	DT	Definite=Def|PronType=Art	7	det	_	start_char=1705|end_char=1708|ner=O
+7	morning	morning	NOUN	NN	Number=Sing	1	obl	_	SpaceAfter=No|start_char=1709|end_char=1716|ner=O
+8	.	.	PUNCT	.	_	1	punct	_	start_char=1716|end_char=1717|ner=O
+
+# text = Continue warfarin with daily INR checks.
+# sent_id = 24
+# constituency = (ROOT (S (VP (VB Continue) (NP (NN warfarin)) (PP (IN with) (NP (JJ daily) (NN INR) (NNS checks)))) (. .)))
+# sentiment = 1
+1	Continue	continue	VERB	VB	Mood=Imp|VerbForm=Fin	0	root	_	start_char=1718|end_char=1726|ner=O
+2	warfarin	warfarin	NOUN	NN	Number=Sing	1	obj	_	start_char=1727|end_char=1735|ner=S-TREATMENT
+3	with	with	ADP	IN	_	6	case	_	start_char=1736|end_char=1740|ner=O
+4	daily	daily	ADJ	JJ	Degree=Pos	6	amod	_	start_char=1741|end_char=1746|ner=B-TEST
+5	INR	inr	NOUN	NN	Number=Sing	6	compound	_	start_char=1747|end_char=1750|ner=I-TEST
+6	checks	check	NOUN	NNS	Number=Plur	1	obl	_	SpaceAfter=No|start_char=1751|end_char=1757|ner=E-TEST
+7	.	.	PUNCT	.	_	1	punct	_	start_char=1757|end_char=1758|ner=O
+
+# text = Consult cardiology for evaluation of the new drop in ejection fraction.
+# sent_id = 25
+# constituency = (ROOT (S (VP (VB Consult) (NP (NN cardiology)) (PP (IN for) (NP (NP (NN evaluation)) (PP (IN of) (NP (NP (DT the) (JJ new) (NN drop)) (PP (IN in) (NP (NN ejection) (NN fraction)))))))) (. .)))
+# sentiment = 1
+1	Consult	consult	VERB	VB	Mood=Imp|VerbForm=Fin	0	root	_	start_char=1759|end_char=1766|ner=O
+2	cardiology	cardiology	NOUN	NN	Number=Sing	1	obj	_	start_char=1767|end_char=1777|ner=O
+3	for	for	ADP	IN	_	4	case	_	start_char=1778|end_char=1781|ner=O
+4	evaluation	evaluation	NOUN	NN	Number=Sing	1	obl	_	start_char=1782|end_char=1792|ner=S-TEST
+5	of	of	ADP	IN	_	8	case	_	start_char=1793|end_char=1795|ner=O
+6	the	the	DET	DT	Definite=Def|PronType=Art	8	det	_	start_char=1796|end_char=1799|ner=B-PROBLEM
+7	new	new	ADJ	JJ	Degree=Pos	8	amod	_	start_char=1800|end_char=1803|ner=I-PROBLEM
+8	drop	drop	NOUN	NN	Number=Sing	4	nmod	_	start_char=1804|end_char=1808|ner=I-PROBLEM
+9	in	in	ADP	IN	_	11	case	_	start_char=1809|end_char=1811|ner=I-PROBLEM
+10	ejection	ejection	NOUN	NN	Number=Sing	11	compound	_	start_char=1812|end_char=1820|ner=I-PROBLEM
+11	fraction	fraction	NOUN	NN	Number=Sing	8	nmod	_	SpaceAfter=No|start_char=1821|end_char=1829|ner=E-PROBLEM
+12	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=1829|end_char=1830|ner=O
+
+# text = Hospital course:
+# sent_id = 26
+# constituency = (ROOT (NP (NN Hospital) (NN course) (: :)))
+# sentiment = 1
+1	Hospital	Hospital	NOUN	NN	Number=Sing	2	compound	_	start_char=1832|end_char=1840|ner=O
+2	course	course	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=1841|end_char=1847|ner=O
+3	:	:	PUNCT	:	_	2	punct	_	start_char=1847|end_char=1848|ner=O
+
+# text = The dyspnea improved after diuresis, and he was weaned to 2 liters of oxygen by nasal cannula on day three.
+# sent_id = 27
+# constituency = (ROOT (S (S (NP (DT The) (NNS dyspnea)) (VP (VBD improved) (PP (IN after) (NP (NN diuresis))))) (, ,) (CC and) (S (NP (PRP he)) (VP (VBD was) (VP (VBN weaned) (PP (IN to) (NP (NP (CD 2) (NNS liters)) (PP (IN of) (NP (NN oxygen))))) (PP (IN by) (NP (JJ nasal) (NN cannula))) (PP (IN on) (NP (NN day) (CD three)))))) (. .)))
+# sentiment = 0
+1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=1849|end_char=1852|ner=B-PROBLEM
+2	dyspnea	dyspnea	NOUN	NNS	Number=Plur	3	nsubj	_	start_char=1853|end_char=1860|ner=E-PROBLEM
+3	improved	improve	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1861|end_char=1869|ner=O
+4	after	after	ADP	IN	_	5	case	_	start_char=1870|end_char=1875|ner=O
+5	diuresis	diuresis	NOUN	NN	Number=Sing	3	obl	_	SpaceAfter=No|start_char=1876|end_char=1884|ner=S-TREATMENT
+6	,	,	PUNCT	,	_	10	punct	_	start_char=1884|end_char=1885|ner=O
+7	and	and	CCONJ	CC	_	10	cc	_	start_char=1886|end_char=1889|ner=O
+8	he	he	PRON	PRP	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	10	nsubj:pass	_	start_char=1890|end_char=1892|ner=O
+9	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	10	aux:pass	_	start_char=1893|end_char=1896|ner=O
+10	weaned	wean	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	3	conj	_	start_char=1897|end_char=1903|ner=O
+11	to	to	ADP	IN	_	13	case	_	start_char=1904|end_char=1906|ner=O
+12	2	2	NUM	CD	NumForm=Digit|NumType=Card	13	nummod	_	start_char=1907|end_char=1908|ner=O
+13	liters	liter	NOUN	NNS	Number=Plur	10	obl	_	start_char=1909|end_char=1915|ner=O
+14	of	of	ADP	IN	_	15	case	_	start_char=1916|end_char=1918|ner=O
+15	oxygen	oxygen	NOUN	NN	Number=Sing	13	nmod	_	start_char=1919|end_char=1925|ner=S-TREATMENT
+16	by	by	ADP	IN	_	18	case	_	start_char=1926|end_char=1928|ner=O
+17	nasal	nasal	ADJ	JJ	Degree=Pos	18	amod	_	start_char=1929|end_char=1934|ner=B-TREATMENT
+18	cannula	cannula	NOUN	NN	Number=Sing	10	obl	_	start_char=1935|end_char=1942|ner=E-TREATMENT
+19	on	on	ADP	IN	_	20	case	_	start_char=1943|end_char=1945|ner=O
+20	day	day	NOUN	NN	Number=Sing	10	obl	_	start_char=1946|end_char=1949|ner=O
+21	three	three	NUM	CD	NumForm=Word|NumType=Card	20	flat	_	SpaceAfter=No|start_char=1950|end_char=1955|ner=O
+22	.	.	PUNCT	.	_	3	punct	_	start_char=1955|end_char=1956|ner=O
+
+# text = Blood cultures remained negative.
+# sent_id = 28
+# constituency = (ROOT (S (NP (NN Blood) (NNS cultures)) (VP (VBD remained) (ADJP (JJ negative))) (. .)))
+# sentiment = 1
+1	Blood	blood	NOUN	NN	Number=Sing	2	compound	_	start_char=1957|end_char=1962|ner=B-TEST
+2	cultures	culture	NOUN	NNS	Number=Plur	3	nsubj	_	start_char=1963|end_char=1971|ner=E-TEST
+3	remained	remain	VERB	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1972|end_char=1980|ner=O
+4	negative	negative	ADJ	JJ	Degree=Pos	3	xcomp	_	SpaceAfter=No|start_char=1981|end_char=1989|ner=O
+5	.	.	PUNCT	.	_	3	punct	_	start_char=1989|end_char=1990|ner=O
+
+# text = Creatinine returned to 1.7.
+# sent_id = 29
+# constituency = (ROOT (S (NP (NN Creatinine)) (VP (VBD returned) (PP (IN to) (NP (CD 1.7)))) (. .)))
+# sentiment = 1
+1	Creatinine	creatinine	NOUN	NN	Number=Sing	2	nsubj	_	start_char=1991|end_char=2001|ner=S-TEST
+2	returned	return	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=2002|end_char=2010|ner=O
+3	to	to	ADP	IN	_	4	case	_	start_char=2011|end_char=2013|ner=O
+4	1.7	1.7	NUM	CD	NumForm=Digit|NumType=Frac	2	obl	_	SpaceAfter=No|start_char=2014|end_char=2017|ner=O
+5	.	.	PUNCT	.	_	2	punct	_	start_char=2017|end_char=2018|ner=O
+
+# text = He was discharged home on oral furosemide 40 mg daily with instructions to weigh himself every morning and to follow up with his primary care physician in one week.
+# sent_id = 30
+# constituency = (ROOT (S (NP (PRP He)) (VP (VBD was) (VP (VBN discharged) (ADVP (RB home)) (PP (IN on) (NP (NP (JJ oral) (NN furosemide) (CD 40) (NNS mg)) (RB daily))) (PP (IN with) (NP (NNS instructions) (S (VP (VP (TO to) (VP (VB weigh) (NP (PRP himself)) (NP (DT every) (NN morning)))) (CC and) (VP (TO to) (VP (VB follow) (PRT (RP up)) (PP (IN with) (NP (PRP$ his) (NML (JJ primary) (NN care)) (NN physician))) (PP (IN in) (NP (CD one) (NN week))))))))))) (. .)))
+# sentiment = 1
+1	He	he	PRON	PRP	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	3	nsubj:pass	_	start_char=2019|end_char=2021|ner=O
+2	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	3	aux:pass	_	start_char=2022|end_char=2025|ner=O
+3	discharged	discharge	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	start_char=2026|end_char=2036|ner=O
+4	home	home	ADV	RB	_	3	advmod	_	start_char=2037|end_char=2041|ner=O
+5	on	on	ADP	IN	_	7	case	_	start_char=2042|end_char=2044|ner=O
+6	oral	oral	ADJ	JJ	Degree=Pos	7	amod	_	start_char=2045|end_char=2049|ner=B-TREATMENT
+7	furosemide	furosemide	NOUN	NN	Number=Sing	3	obl	_	start_char=2050|end_char=2060|ner=E-TREATMENT
+8	40	40	NUM	CD	NumForm=Digit|NumType=Card	9	nummod	_	start_char=2061|end_char=2063|ner=O
+9	mg	mg	NOUN	NNS	Number=Plur	3	obl:unmarked	_	start_char=2064|end_char=2066|ner=O
+10	daily	daily	ADV	RB	_	3	advmod	_	start_char=2067|end_char=2072|ner=O
+11	with	with	ADP	IN	_	12	case	_	start_char=2073|end_char=2077|ner=O
+12	instructions	instruction	NOUN	NNS	Number=Plur	3	obl	_	start_char=2078|end_char=2090|ner=O
+13	to	to	PART	TO	_	14	mark	_	start_char=2091|end_char=2093|ner=O
+14	weigh	weigh	VERB	VB	VerbForm=Inf	12	acl	_	start_char=2094|end_char=2099|ner=O
+15	himself	himself	PRON	PRP	Case=Acc|Gender=Masc|Number=Sing|Person=3|PronType=Prs|Reflex=Yes	14	obj	_	start_char=2100|end_char=2107|ner=O
+16	every	every	DET	DT	PronType=Ind	17	det	_	start_char=2108|end_char=2113|ner=O
+17	morning	morning	NOUN	NN	Number=Sing	14	obl:unmarked	_	start_char=2114|end_char=2121|ner=O
+18	and	and	CCONJ	CC	_	20	cc	_	start_char=2122|end_char=2125|ner=O
+19	to	to	PART	TO	_	20	mark	_	start_char=2126|end_char=2128|ner=O
+20	follow	follow	VERB	VB	VerbForm=Inf	14	conj	_	start_char=2129|end_char=2135|ner=O
+21	up	up	ADP	RP	_	20	compound:prt	_	start_char=2136|end_char=2138|ner=O
+22	with	with	ADP	IN	_	26	case	_	start_char=2139|end_char=2143|ner=O
+23	his	his	PRON	PRP$	Case=Gen|Gender=Masc|Number=Sing|Person=3|Poss=Yes|PronType=Prs	26	nmod:poss	_	start_char=2144|end_char=2147|ner=O
+24	primary	primary	ADJ	JJ	Degree=Pos	25	amod	_	start_char=2148|end_char=2155|ner=O
+25	care	care	NOUN	NN	Number=Sing	26	compound	_	start_char=2156|end_char=2160|ner=O
+26	physician	physician	NOUN	NN	Number=Sing	20	obl	_	start_char=2161|end_char=2170|ner=O
+27	in	in	ADP	IN	_	29	case	_	start_char=2171|end_char=2173|ner=O
+28	one	one	NUM	CD	NumForm=Word|NumType=Card	29	nummod	_	start_char=2174|end_char=2177|ner=O
+29	week	week	NOUN	NN	Number=Sing	20	obl	_	SpaceAfter=No|start_char=2178|end_char=2182|ner=O
+30	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n|start_char=2182|end_char=2183|ner=O

@@ -22,6 +22,8 @@ public class ModelChoiceTests
     [ModelChoice("en", "ner=combined_charlm", true)]
     [ModelChoice("en", "ner=i2b2", false)]
     [ModelChoice("en", "ner=i2b2", true)]
+    [ModelChoice("en", "default+ner=i2b2", false)]
+    [ModelChoice("en", "default+ner=i2b2", true)]
     [ModelChoice("de", "ner=conll03", false)]
     [ModelChoice("de", "ner=conll03", true)]
     public void Process_MatchesGolden(string name, bool managed, string lang) => AssertGolden(name, managed, lang, cache: true);
@@ -29,6 +31,8 @@ public class ModelChoiceTests
     /// <summary>i2b2 reads the mimic charlms, like the mimic tagger, so it reuses the tagger's outputs; without the cache it computes its own.</summary>
     [ModelTheory]
     [ModelChoice("en", "ner=i2b2", true)]
+    [ModelChoice("en", "default+ner=i2b2", false)]
+    [ModelChoice("en", "default+ner=i2b2", true)]
     public void Process_WithoutTheCharlmCache_MatchesGolden(string name, bool managed, string lang) => AssertGolden(name, managed, lang, cache: false);
 
     private static void AssertGolden(string name, bool managed, string lang, bool cache)
@@ -129,16 +133,58 @@ public class ModelChoiceTests
     }
 
     [Fact]
-    public void Models_ThrowForTwoCharlmPairs()
+    public void Models_MayReadSeveralCharlmPairs()
     {
-        // default's tagger, parsers and sentiment read 1billion, i2b2 mimic: a pipeline loads one pair.
-        var e = Assert.Throws<ArgumentException>(() => Pipeline.SelectModels("default", null, false, "options", "en", Models("ner=i2b2")));
-        Assert.Contains("1billion: ", e.Message);
-        Assert.Contains("mimic: ner i2b2", e.Message);
-        Assert.Throws<ArgumentException>(() => Pipeline.Load(Repo.Root, new PipelineOptions { Models = Models("ner=i2b2") }));
+        // default's tagger, parsers and sentiment read 1billion, i2b2 mimic (with its own pretrain): the pipeline loads both pairs.
+        var models = Pipeline.SelectModels("default", null, false, "options", "en", Models("ner=i2b2"));
+        Assert.Equal(8, models.Count);
+        Assert.Equal("i2b2", models["ner"]);
+        Assert.Equal(["pretrain/conll17", "pretrain/mimic", "forward_charlm/1billion", "forward_charlm/mimic", "backward_charlm/1billion", "backward_charlm/mimic"],
+            Pipeline.SharedModels(models, "en"));
+        var files = ModelDownloader.FilesFor(null, "default", "options", "en", Models("ner=i2b2")).Select(f => f.Path).ToList();
+        Assert.Contains("ner/i2b2.pt", files);
+        Assert.Contains("forward_charlm/mimic.pt", files);
+        Assert.Contains("backward_charlm/1billion.pt", files);
+        Assert.DoesNotContain("ner/ontonotes-ww-multi_charlm.pt", files);
+    }
 
-        // Without them it is fine (ner reads only tokens).
-        Assert.Equal(3, Pipeline.SelectModels("default", "tokenize,ner", false, "options", "en", Models("ner=i2b2")).Count);
+    /// <summary>
+    /// With two pairs (1billion for pos, constituency, depparse and sentiment; mimic for ner i2b2) the cache serves only the
+    /// tagger's, so each one-sentence call (CharlmCache's single-sentence table, depparse's backward continuation, NER
+    /// taking sentiment's multi-word-token sentences) equals the uncached pipeline.
+    /// </summary>
+    [ModelTheory]
+    [ModelChoice("en", "default+ner=i2b2", true)]
+    public void OneSentenceDocuments_WithTwoCharlmPairs_EqualTheUncachedPipeline(string name, bool managed, string lang)
+    {
+        var (package, processors, models) = ModelChoiceAttribute.Options(ModelChoiceAttribute.Choice(lang, name), lang);
+        PipelineOptions Options(bool cache) => new()
+        {
+            Language = lang,
+            Package = package,
+            Processors = processors,
+            Models = models,
+            Backend = Repo.PipelineBackendFor(managed),
+            CharlmCache = new() { IsEnabled = cache },
+        };
+        using var cached = Pipeline.Load(ModelChoiceAttribute.ModelsFor(lang), Options(cache: true));
+        using var uncached = Pipeline.Load(ModelChoiceAttribute.ModelsFor(lang), Options(cache: false));
+        var texts = new[] { "validation.conllu", "validation_contractions.conllu" }
+            .SelectMany(f => File.ReadLines(Path.Combine(Repo.GoldenFor(lang), f)).Where(l => l.StartsWith("# text = ")).Take(12))
+            .Select(l => l["# text = ".Length..])
+            .Concat(File.ReadLines(Path.Combine(Repo.GoldenFor(lang), "models", "clinical.txt")).Where(l => l.Length > 0))
+            .ToList();
+        int mwt = 0, entities = 0;
+        foreach (var text in texts)
+        {
+            var doc = cached.Process(text);
+            mwt += doc.Sentences.Count(s => s.Tokens.Any(t => t.Words.Count > 1));
+            entities += doc.Entities.Count();
+            Assert.Equal(Conllu.Write(uncached.Process(text)), Conllu.Write(doc));
+        }
+
+        Assert.True(mwt >= 5, $"only {mwt} of {texts.Count} texts have multi-word tokens");
+        Assert.True(entities >= 20, $"only {entities} entities");
     }
 
     [Theory]
