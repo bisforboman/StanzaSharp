@@ -9,14 +9,16 @@ using TorchSharp;
 
 /// <summary>
 /// <c>constituency-divergence</c>: the C# side of tools/constituency_divergence.py (docs/backends.md, "constituency").
-/// Runs tokenize,mwt,pos,constituency on each document of a JSON list of texts, then parses the document's words and XPOS
-/// again with the step hook (charlms computed, as Stanza's parser does), and writes the same JSON as the Python side: each
-/// sentence's words and XPOS, its tree, and per step [best legal transition, score, second legal transition, score].
+/// Runs --processors (default tokenize,mwt,pos,constituency) on each document of a JSON list of texts, then parses the
+/// document's words and tags (XPOS, or UPOS for German) again with the step hook (charlms computed, as Stanza's parser
+/// does), and writes the same JSON as the Python side: each document's CoNLL-U, each sentence's words and tags, its tree,
+/// and per step [best legal transition, score, second legal transition, score]. Without constituency, the CoNLL-U only.
 /// </summary>
 internal static class ConstituencyDivergence
 {
     private const string Usage = """
-        Usage: StanzaSharp.Benchmark constituency-divergence --docs DOCS.json --out OUT.json [--models DIR]
+        Usage: StanzaSharp.Benchmark constituency-divergence --docs DOCS.json --out OUT.json [--models DIR] [--lang CODE]
+                                     [--package NAME] [--processors LIST]
                                      [--backend torch|managed] [--double output,last-output,stacks,reduce] [--torch-charlm] [--threads N]
 
           --double  managed: those per-step layers' sums in double (ManagedConstituencyNet.Double, study only)
@@ -25,8 +27,8 @@ internal static class ConstituencyDivergence
 
     public static int Run(string[] args)
     {
-        string modelDir = Path.Combine("models", "converted", "en");
-        string? docsFile = null, outFile = null, variant = null;
+        string language = Pipeline.English, package = Pipeline.DefaultPackage, processors = "tokenize,mwt,pos,constituency";
+        string? docsFile = null, outFile = null, variant = null, modelDir = null;
         bool managed = true, torchCharlm = false;
         int threads = 0;
         var sums = ManagedConstituencyNet.DoubleSums.None;
@@ -37,6 +39,9 @@ internal static class ConstituencyDivergence
                 case "--docs" when i + 1 < args.Length: docsFile = args[++i]; break;
                 case "--out" when i + 1 < args.Length: outFile = args[++i]; break;
                 case "--models" when i + 1 < args.Length: modelDir = args[++i]; break;
+                case "--lang" when i + 1 < args.Length: language = args[++i]; break;
+                case "--package" when i + 1 < args.Length: package = args[++i]; break;
+                case "--processors" when i + 1 < args.Length: processors = args[++i]; break;
                 case "--backend" when i + 1 < args.Length: managed = args[++i] == "managed"; break;
                 case "--threads" when i + 1 < args.Length: threads = int.Parse(args[++i]); break;
                 case "--torch-charlm": torchCharlm = true; break;
@@ -59,15 +64,18 @@ internal static class ConstituencyDivergence
             return 2;
         }
 
+        modelDir ??= Path.Combine("models", "converted", language);
         var texts = JsonSerializer.Deserialize<List<string>>(File.ReadAllText(docsFile))!;
         ManagedConstituencyNet.Double = sums;
         using var nlp = Pipeline.Load(modelDir, new PipelineOptions
         {
-            Processors = "tokenize,mwt,pos,constituency",
+            Language = language,
+            Package = package,
+            Processors = processors,
             Backend = managed ? PipelineBackend.Managed : CudaBackend.Cpu,
             Threads = threads > 0 ? threads : null,
         });
-        var parser = nlp.Parser!;
+        var parser = nlp.Parser;
         using var forwardLm = torchCharlm ? CharLanguageModel.Load(Path.Combine(modelDir, Pipeline.ForwardCharlmPath)) : null;
         using var backwardLm = torchCharlm ? CharLanguageModel.Load(Path.Combine(modelDir, Pipeline.BackwardCharlmPath)) : null;
 
@@ -81,8 +89,17 @@ internal static class ConstituencyDivergence
             clock.Restart();
             var doc = nlp.Process(texts[n]);
             seconds += clock.Elapsed.TotalSeconds;
+            var conllu = Conllu.Write(doc);
+            if (n % 100 == 0)
+                Console.Error.WriteLine($"{n}/{texts.Count} documents");
+            if (parser == null)
+            {
+                docs.Add(new { conllu });
+                continue;
+            }
+
             var sentences = doc.Sentences.Where(s => s.Tokens.Count > 0).ToList();
-            var tagged = sentences.Select(s => (IReadOnlyList<(string, string)>)s.Words.Select(w => (w.Text, w.Xpos!)).ToList()).ToList();
+            var tagged = sentences.Select(s => (IReadOnlyList<(string, string)>)s.Words.Select(w => (w.Text, (parser.UsesXpos ? w.Xpos : w.Upos)!)).ToList()).ToList();
             var steps = sentences.Select(_ => new List<double[]>()).ToList();
             using var cache = torchCharlm ? TorchCharlms(forwardLm!, backwardLm!, sentences) : null;
             clock.Restart();
@@ -95,18 +112,20 @@ internal static class ConstituencyDivergence
             cacheMismatches += sentences.Where((s, i) => s.Constituency?.ToString() != strings[i]).Count();
             docs.Add(new
             {
+                conllu,
                 sents = tagged.Select(s => s.Select(x => new[] { x.Item1, x.Item2 })),
                 trees = strings,
                 steps,
             });
-            if (n % 100 == 0)
-                Console.Error.WriteLine($"{n}/{texts.Count} documents");
         }
 
         var meta = new
         {
             backend = managed ? "managed" : "torch",
             variant,
+            lang = language,
+            package,
+            processors,
             threads = managed ? ManagedThreads.Count : torch.get_num_threads(),
             seconds,
             constituency_seconds = parseSeconds,

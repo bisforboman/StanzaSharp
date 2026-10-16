@@ -552,6 +552,12 @@ model but MWT and NER is English's architecture with other vocabularies and size
   - hdt's depparse batches are 1300 words (`batch_size` in its checkpoint, read like every other parser's).
   - `tests/golden/de/gsd/`, `hdt/` (`make_golden.py --lang de --treebank-only`): corpus + validation and `mwt.json`;
     `TreebankPackageTests`.
+- **UD divergence study** (2026-10-16, docs/german-divergence.md; `default` and `default_fast` on UD GSD + HDT test,
+  652k words): Stanza f32, TorchSharp and managed give identical CoNLL-U (every field), trees, lemmas (also vs Stanza
+  float64). Smallest parser margin 1.9e-5, smallest margin / backend difference 11 (EWT 15); lemma margins ≥ 1.8e-3.
+  The tools take `--lang`/`--package`/`--processors` and diff whole-pipeline CoNLL-U (`constituency_divergence.py`).
+  Benchmark: docs/performance/round-33-german-benchmark.md (2.4–7.4x Stanza; the macOS smoke run's 0.90x was quick-mode
+  noise).
 
 ## Checkpoint findings (English treebank packages)
 

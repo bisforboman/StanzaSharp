@@ -15,7 +15,7 @@ using TorchSharp;
 internal static class LemmaDivergence
 {
     private const string Usage = """
-        Usage: StanzaSharp.Benchmark lemma-divergence --docs DOCS.json --out OUT.json [--models DIR] [--package NAME]
+        Usage: StanzaSharp.Benchmark lemma-divergence --docs DOCS.json --out OUT.json [--models DIR] [--lang CODE] [--package NAME]
                                      [--backend torch|managed] [--double-gates] [--no-dict] [--threads N]
 
           --double-gates  managed: the decoder's LSTMCell gate sums in double (ManagedSeq2SeqNet.DoubleGates)
@@ -24,8 +24,8 @@ internal static class LemmaDivergence
 
     public static int Run(string[] args)
     {
-        string modelDir = Path.Combine("models", "converted", "en"), package = Pipeline.DefaultPackage;
-        string? docsFile = null, outFile = null;
+        string language = Pipeline.English, package = Pipeline.DefaultPackage;
+        string? docsFile = null, outFile = null, modelDir = null;
         var backend = Backend.TorchSharp;
         bool doubleGates = false, noDict = false;
         int threads = 0;
@@ -36,6 +36,7 @@ internal static class LemmaDivergence
                 case "--docs" when i + 1 < args.Length: docsFile = args[++i]; break;
                 case "--out" when i + 1 < args.Length: outFile = args[++i]; break;
                 case "--models" when i + 1 < args.Length: modelDir = args[++i]; break;
+                case "--lang" when i + 1 < args.Length: language = args[++i]; break;
                 case "--package" when i + 1 < args.Length: package = args[++i]; break;
                 case "--backend" when i + 1 < args.Length: backend = args[++i] == "managed" ? Backend.Managed : Backend.TorchSharp; break;
                 case "--threads" when i + 1 < args.Length: threads = int.Parse(args[++i]); break;
@@ -53,16 +54,18 @@ internal static class LemmaDivergence
             return 2;
         }
 
+        modelDir ??= Path.Combine("models", "converted", language);
         var texts = JsonSerializer.Deserialize<List<string>>(File.ReadAllText(docsFile))!;
         ManagedSeq2SeqNet.DoubleGates = doubleGates;
         using var nlp = Pipeline.Load(modelDir, new PipelineOptions
         {
+            Language = language,
             Package = package,
             Processors = "tokenize,mwt,pos",
             Backend = backend == Backend.Managed ? PipelineBackend.Managed : CudaBackend.Cpu,
             Threads = threads > 0 ? threads : null,
         });
-        var lemmaModel = Pipeline.SelectModels(package, null, addRequired: false, "--package")["lemma"];
+        var lemmaModel = Pipeline.SelectModels(package, null, addRequired: false, "--package", language)["lemma"];
         using var lemmatizer = Lemmatizer.Load(Path.Combine(modelDir, "lemma", lemmaModel), null, backend);
 
         lemmatizer.Process(nlp.Process("Warm up the pipeline."));
@@ -88,6 +91,7 @@ internal static class LemmaDivergence
         {
             backend = backend == Backend.Managed ? "managed" : "torch",
             double_gates = doubleGates,
+            lang = language,
             package,
             no_dict = noDict,
             threads = backend == Backend.Managed ? ManagedThreads.Count : torch.get_num_threads(),

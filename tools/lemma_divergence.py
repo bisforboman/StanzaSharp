@@ -2,14 +2,15 @@
 """
 Lemma divergence study (issue #29, docs/backends.md "lemma"): how often do the lemmatizer's backends disagree on real text?
 
-  python tools/lemma_divergence.py text UD_EWT_DIR DOCS.json        # raw text per document from en_ewt-ud-*.conllu
-  python tools/lemma_divergence.py stanza DOCS.json OUT.json [--package default|default_fast] [--models models/stanza]
-  StanzaSharp.Benchmark lemma-divergence --docs DOCS.json --out OUT.json [--backend torch|managed] [--double-gates] ...
+  python tools/lemma_divergence.py text UD_DIR DOCS.json [--splits train,dev,test]  # raw text per document
+  python tools/lemma_divergence.py stanza DOCS.json OUT.json [--lang en|de] [--package NAME] [--models models/stanza]
+  StanzaSharp.Benchmark lemma-divergence --docs DOCS.json --out OUT.json [--lang en|de] [--backend torch|managed] ...
   python tools/lemma_divergence.py compare stanza.json torch.json managed.json managed-double.json
 
-UD English EWT (CC BY-SA 4.0, github.com/UniversalDependencies/UD_English-EWT) is not ours to redistribute: download its
-train/dev/test .conllu files outside the repository. Each document (# newdoc) is one Process call, its paragraphs
-(# newpar) separated by blank lines, so every run sees the same documents and the same lemmatizer batches.
+UD treebanks (English EWT, German GSD and HDT: CC BY-SA 4.0, github.com/UniversalDependencies) are not ours to
+redistribute: download their .conllu files outside the repository. Each document (# newdoc; GSD and HDT have none, so
+every 20 sentences, in paragraphs of 5) is one Process call, its paragraphs (# newpar) separated by blank lines, so
+every run sees the same documents and the same lemmatizer batches.
 
 Every run writes, per document, each sentence's words (text, UPOS, XPOS, feats, lemma) and, per word that went through
 the seq2seq model: the decoded string, the edit class and logits, and per decoder step the top-2 ids and log-probs.
@@ -25,18 +26,30 @@ from pathlib import Path
 EOS = 3
 
 
-def build_docs(ewt_dir):
+def build_docs(ud_dir, splits=("train", "dev", "test"), per_doc=20, per_par=5):
+    """
+    Raw text per document from a UD treebank's <code>-ud-<split>*.conllu files (HDT's train comes in four parts). A
+    file without "# newdoc" lines (German GSD and HDT) starts a document every per_doc sentences and a paragraph every
+    per_par sentences, in file order.
+    """
     docs, paras = [], None
-    for split in ("train", "dev", "test"):
-        for line in (Path(ewt_dir) / f"en_ewt-ud-{split}.conllu").read_text(encoding="utf-8").splitlines():
-            if line.startswith("# newdoc"):
-                paras = [[]]
-                docs.append(paras)
-            elif line.startswith("# newpar"):
-                if paras[-1]:
-                    paras.append([])
-            elif line.startswith("# text = "):
-                paras[-1].append(line[len("# text = "):])
+    for split in splits:
+        for f in sorted(Path(ud_dir).glob(f"*-ud-{split}*.conllu")):
+            lines = f.read_text(encoding="utf-8").splitlines()
+            synthetic, n = not any(line.startswith("# newdoc") for line in lines), 0
+            for line in lines:
+                if line.startswith("# text = ") and synthetic:
+                    line, text, n = ("# newdoc" if n % per_doc == 0 else "# newpar" if n % per_par == 0 else ""), line, n + 1
+                else:
+                    text = None
+                if line.startswith("# newdoc"):
+                    paras = [[]]
+                    docs.append(paras)
+                elif line.startswith("# newpar"):
+                    if paras[-1]:
+                        paras.append([])
+                if (text or line).startswith("# text = "):
+                    paras[-1].append((text or line)[len("# text = "):])
     return ["\n\n".join(" ".join(p) for p in d if p) for d in docs]
 
 
@@ -64,7 +77,7 @@ def run_stanza(args):
     texts = json.loads(Path(args.docs).read_text(encoding="utf-8"))
     if args.threads:
         torch.set_num_threads(args.threads)
-    nlp = stanza.Pipeline("en", dir=args.models, package=args.package, processors="tokenize,mwt,pos,lemma",
+    nlp = stanza.Pipeline(args.lang, dir=args.models, package=args.package, processors="tokenize,mwt,pos,lemma",
                           download_method=None, use_gpu=False, logging_level="WARN")
     proc = nlp.processors["lemma"]
     trainer = proc.trainer
@@ -163,7 +176,7 @@ def run_stanza(args):
         if n % 100 == 0:
             print(f"{n}/{len(texts)} documents", file=sys.stderr)
     total = time.perf_counter() - clock - state["f64"]
-    meta = {"backend": "stanza", "package": args.package, "no_dict": args.no_dict, "threads": torch.get_num_threads(),
+    meta = {"backend": "stanza", "lang": args.lang, "package": args.package, "no_dict": args.no_dict, "threads": torch.get_num_threads(),
             "seconds": total, "lemma_seconds": lemma_time[0] - state["f64"], "study_seconds": state["f64"],
             "stanza": stanza.__version__}
     Path(args.out).write_text(json.dumps({"meta": meta, "docs": out_docs}, ensure_ascii=False), encoding="utf-8")
@@ -222,6 +235,11 @@ def compare(args):
     # The closest calls: the steps with the smallest Stanza float32 margin while every run is still on the same prefix,
     # with each run's margin, and how far each run's margins are from float64's over all such steps.
     chars = None
+    if not args.vocab:  # default and default_fast read the combined lemmatizer, a treebank package its own
+        package = ref["meta"].get("package", "default")
+        model = "combined" if package in ("default", "default_fast") else package
+        args.vocab = str(Path(__file__).resolve().parent.parent / "models" / "converted" / ref["meta"].get("lang", "en")
+                         / "lemma" / f"{model}_nocharlm.json")
     if Path(args.vocab).exists():
         chars = json.loads(Path(args.vocab).read_text(encoding="utf-8"))["vocab"]["char"]["_id2unit"]
 
@@ -316,11 +334,13 @@ def main():
     p = argparse.ArgumentParser()
     sub = p.add_subparsers(dest="cmd", required=True)
     t = sub.add_parser("text")
-    t.add_argument("ewt")
+    t.add_argument("ud")
     t.add_argument("out")
+    t.add_argument("--splits", default="train,dev,test")
     s = sub.add_parser("stanza")
     s.add_argument("docs")
     s.add_argument("out")
+    s.add_argument("--lang", default="en")
     s.add_argument("--package", default="default")
     s.add_argument("--models", default=str(Path(__file__).resolve().parent.parent / "models" / "stanza"))
     s.add_argument("--threads", type=int, default=0)
@@ -328,11 +348,11 @@ def main():
     c = sub.add_parser("compare")
     c.add_argument("runs", nargs="+", help="the Stanza run first")
     c.add_argument("--closest", type=int, default=20, help="list this many of the closest decoder steps")
-    c.add_argument("--vocab", default=str(Path(__file__).resolve().parent.parent / "models" / "converted" / "en" / "lemma" / "combined_nocharlm.json"),
-                   help="the lemmatizer's converted checkpoint JSON, for character names")
+    c.add_argument("--vocab", help="the lemmatizer's converted checkpoint JSON, for character names "
+                                   "(default: models/converted/<lang>/lemma/<package's model>.json)")
     args = p.parse_args()
     if args.cmd == "text":
-        docs = build_docs(args.ewt)
+        docs = build_docs(args.ud, args.splits.split(","))
         Path(args.out).write_text(json.dumps(docs, ensure_ascii=False), encoding="utf-8")
         print(f"{len(docs)} documents, {sum(len(d.split()) for d in docs)} whitespace tokens")
     elif args.cmd == "stanza":

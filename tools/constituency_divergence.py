@@ -3,16 +3,20 @@
 Constituency near-tie study (docs/backends.md "constituency"): how close are the parser's transition decisions on real
 text, and do the backends ever choose differently?
 
-  python tools/lemma_divergence.py text UD_EWT_DIR DOCS.json        # raw text per document from en_ewt-ud-*.conllu
-  python tools/constituency_divergence.py stanza DOCS.json OUT.json [--models models/stanza] [--threads N]
-  StanzaSharp.Benchmark constituency-divergence --docs DOCS.json --out OUT.json [--backend torch|managed] ...
+  python tools/lemma_divergence.py text UD_DIR DOCS.json [--splits ...]  # raw text per document (UD EWT, GSD, HDT)
+  python tools/constituency_divergence.py stanza DOCS.json OUT.json [--lang en|de] [--package NAME] [--processors LIST]
+                                                [--models models/stanza] [--threads N] [--no-f64]
+  StanzaSharp.Benchmark constituency-divergence --docs DOCS.json --out OUT.json [--lang] [--package] [--processors] ...
   python tools/constituency_divergence.py compare stanza.json torch.json managed.json [more C# runs ...]
 
-UD English EWT (CC BY-SA 4.0) is not ours to redistribute: download it outside the repository. Each document is one
-Process call of tokenize,mwt,pos,constituency. Every run writes, per document, each sentence's words and XPOS, its tree,
-and per parser step the decision: [best legal transition, its score, second-best legal transition, its score] (second
--1 when only one transition is legal). The Stanza run also parses each document's tagged words with a float64 copy of
-the parser (charlms included), from its own float64 states (the *64 fields); --no-f64 skips it.
+UD treebanks (CC BY-SA 4.0) are not ours to redistribute: download them outside the repository. Each document is one
+Process call of --processors (default tokenize,mwt,pos,constituency; any list, e.g. all eight, makes it a whole-pipeline
+study). Every run writes, per document, its CoNLL-U, and with constituency each sentence's words and parser tags (XPOS,
+or UPOS for German's parser), its tree, and per parser step the decision: [best legal transition, its score,
+second-best legal transition, its score] (second -1 when only one transition is legal). The Stanza run also parses each
+document's tagged words with a float64 copy of the parser (charlms included), from its own float64 states (the *64
+fields); --no-f64 skips it. compare diffs the CoNLL-U field by field first (tokens, MWT, tags, lemmas, heads, deprels,
+ner, the constituency and sentiment comments), then the parser's decisions.
 
 All of EWT is slow on libtorch: split DOCS.json into shards, run each with --threads 1 (several 8-thread libtorch processes
 spin-wait each other to a crawl) and concatenate the shards' "docs" before comparing.
@@ -73,8 +77,21 @@ def run_stanza(args):
     texts = json.loads(Path(args.docs).read_text(encoding="utf-8"))
     if args.threads:
         torch.set_num_threads(args.threads)
-    nlp = stanza.Pipeline("en", dir=args.models, processors="tokenize,mwt,pos,constituency",
+    nlp = stanza.Pipeline(args.lang, dir=args.models, package=args.package, processors=args.processors,
                           download_method=None, use_gpu=False, logging_level="WARN")
+    if "constituency" not in nlp.processors:  # whole-pipeline output only
+        nlp("Warm up the pipeline.")
+        out_docs, clock = [], time.perf_counter()
+        for n, text in enumerate(texts):
+            with torch.no_grad():
+                out_docs.append({"conllu": "{:C}\n".format(nlp(text))})
+            if n % 100 == 0:
+                print(f"{n}/{len(texts)} documents", file=sys.stderr)
+        meta = {"backend": "stanza", "lang": args.lang, "package": args.package, "processors": args.processors,
+                "threads": torch.get_num_threads(), "seconds": time.perf_counter() - clock, "stanza": stanza.__version__}
+        Path(args.out).write_text(json.dumps({"meta": meta, "docs": out_docs}, ensure_ascii=False), encoding="utf-8")
+        print(json.dumps(meta))
+        return
     proc = nlp.processors["constituency"]
     model32 = proc._model
     model64 = copy.deepcopy(model32).double()
@@ -108,10 +125,10 @@ def run_stanza(args):
         seconds += time.perf_counter() - clock
         clock = time.perf_counter()
         sents = [s for s in doc.sentences if s.words]
-        tagged = [[(w.text, w.xpos) for w in s.words] for s in sents]
+        tagged = [[(w.text, w.xpos if model32.uses_xpos() else w.upos) for w in s.words] for s in sents]
         words = [[w for w, _ in s] for s in tagged]
         steps = by_sentence(rec32, words)
-        out_docs.append({"sents": [[[w, t] for w, t in s] for s in tagged],
+        out_docs.append({"conllu": "{:C}\n".format(doc), "sents": [[[w, t] for w, t in s] for s in tagged],
                          "trees": ["{}".format(s.constituency) for s in sents], "steps": steps})
         if args.no_f64:
             study += time.perf_counter() - clock
@@ -131,17 +148,80 @@ def run_stanza(args):
         study += time.perf_counter() - clock
         if n % 100 == 0:
             print(f"{n}/{len(texts)} documents", file=sys.stderr)
-    meta = {"backend": "stanza", "threads": torch.get_num_threads(), "seconds": seconds,
+    meta = {"backend": "stanza", "lang": args.lang, "package": args.package, "processors": args.processors,
+            "threads": torch.get_num_threads(), "seconds": seconds,
             "constituency_seconds": stage[0], "study_seconds": study, "stanza": stanza.__version__,
             "transitions": [str(t) for t in model32.transitions]}
     Path(args.out).write_text(json.dumps({"meta": meta, "docs": out_docs}, ensure_ascii=False), encoding="utf-8")
     print(json.dumps({k: v for k, v in meta.items() if k != "transitions"}))
 
 
+FIELDS = ["ID", "FORM", "LEMMA", "UPOS", "XPOS", "FEATS", "HEAD", "DEPREL", "DEPS", "MISC"]
+
+
+def conllu_fields(conllu, offsets):
+    """Per sentence: its comments by key and its lines' fields (MISC split into ner and the rest; start_char/end_char
+    dropped unless offsets, since C# counts UTF-16 units where Stanza counts code points)."""
+    out = []
+    for block in conllu.strip("\n").split("\n\n"):
+        comments, rows = {}, []
+        for line in block.split("\n"):
+            if line.startswith("#"):
+                key, _, value = line[1:].partition("=")
+                comments[key.strip()] = value.strip()
+                continue
+            cols = line.split("\t")
+            misc = cols[9].split("|")
+            ner = [m for m in misc if m.startswith("ner=")]
+            rest = [m for m in misc if not m.startswith("ner=") and (offsets or not m.startswith(("start_char=", "end_char=")))]
+            rows.append(cols[:9] + ["|".join(rest), "|".join(ner)])
+        out.append((comments, rows))
+    return out
+
+
+def compare_conllu(runs, names, examples):
+    """Whole-pipeline outputs: per run, the documents and fields that differ from the Stanza run (the first)."""
+    ref = runs[0]
+    print("CoNLL-U vs " + names[0] + f" ({len(ref['docs'])} documents):")
+    for r, n in zip(runs[1:], names[1:]):
+        counts, shown, same_docs = {}, 0, 0
+        for d, (a_doc, b_doc) in enumerate(zip(ref["docs"], r["docs"])):
+            if a_doc["conllu"] == b_doc["conllu"]:
+                same_docs += 1
+                continue
+            offsets = not any(ord(c) > 0xFFFF for c in a_doc["conllu"])
+            a, b = conllu_fields(a_doc["conllu"], offsets), conllu_fields(b_doc["conllu"], offsets)
+            if len(a) != len(b) or any(len(x[1]) != len(y[1]) or [c[0] for c in x[1]] != [c[0] for c in y[1]]
+                                       for x, y in zip(a, b)):
+                diffs = [("sentences/tokens/MWT", "structure", None, None)]
+            else:
+                diffs = [(f, s, x[0][f] if f in x[0] else None, y[0].get(f)) for s, (x, y) in enumerate(zip(a, b))
+                         for f in sorted(set(x[0]) | set(y[0])) if x[0].get(f) != y[0].get(f)]
+                diffs += [(field, s, xr[1], (xr[k], yr[k])) for s, (x, y) in enumerate(zip(a, b))
+                          for xr, yr in zip(x[1], y[1]) for k, field in enumerate(FIELDS[:9] + ["MISC (spacing)", "ner"])
+                          if xr[k] != yr[k]]
+            if not diffs and not offsets:
+                same_docs += 1  # only offsets after non-BMP characters differ
+                continue
+            diffs = diffs or [("format (comment order, whitespace)", None, None, None)]
+            for field, s, word, values in diffs:
+                counts[field] = counts.get(field, 0) + 1
+                if shown < examples:
+                    shown += 1
+                    print(f"  {n}: doc {d} sentence {s} {field}: {word!r} {values!r}")
+        print(f"  {n}: {same_docs} of {len(ref['docs'])} documents identical"
+              + ("" if not counts else "; differing lines per field: " + ", ".join(f"{k} {v}" for k, v in sorted(counts.items()))))
+    print()
+
+
 def compare(args):
     runs = [json.loads(Path(p).read_text(encoding="utf-8")) for p in args.runs]
     names = [r["meta"]["backend"] + (f" {r['meta']['variant']}" if r["meta"].get("variant") else "") for r in runs]
     ref = runs[0]
+    if all("conllu" in r["docs"][0] for r in runs):
+        compare_conllu(runs, names, args.closest)
+    if "transitions" not in ref["meta"]:
+        return
     transitions = ref["meta"]["transitions"]
 
     def name(j):
@@ -241,6 +321,9 @@ def main():
     s.add_argument("docs")
     s.add_argument("out")
     s.add_argument("--models", default=str(Path(__file__).resolve().parent.parent / "models" / "stanza"))
+    s.add_argument("--lang", default="en")
+    s.add_argument("--package", default="default")
+    s.add_argument("--processors", default="tokenize,mwt,pos,constituency")
     s.add_argument("--threads", type=int, default=0)
     s.add_argument("--no-f64", action="store_true", help="skip the float64 parse (it doubles the run time)")
     c = sub.add_parser("compare")
