@@ -8,6 +8,52 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 Unreleased changes are one file each under [`changes/`](changes/README.md), so pull requests don't conflict here;
 a release folds them in (`python tools/changelog.py release X.Y.Z`).
 
+## [1.9.0] - 2026-10-16
+
+1.9: Stanza's English treebank and biomedical packages, one model per processor (`PipelineOptions.Models`), Native
+AOT and trimming on the managed backend, and fixes found by differential text fuzzing. The new API is additive. One
+behaviour change: `tokenize` now brings the package's `mwt` along, as in Stanza, so a model folder downloaded on 1.x
+for a list like `tokenize,ner` needs a re-download (see Changed).
+
+### Added
+- Stanza's English biomedical packages `craft`, `genia` and `mimic` (tokenize, pos, lemma and depparse, with their own
+  word vectors), including the dependency parser's repair of heads with two subjects or objects that their checkpoints
+  turn on, byte-identical to Python Stanza on both backends.
+- Stanza's English treebank packages: `PipelineOptions.Package` (and `download --package`) accepts `combined`, `ewt`,
+  `gum`, `lines`, `partut`, `atis`, `childes` and `eslspok` (tokenize, mwt, pos, lemma and depparse; `eslspok` has no
+  mwt and Stanza's identity lemmatizer), byte-identical to Python Stanza on both backends.
+- Native AOT and trimming on the managed backend: the StanzaSharp assemblies are `IsAotCompatible` and publish with
+  `PublishAot` or `PublishTrimmed` without a warning, with byte-identical output. The lemmatizer read its dictionary
+  through reflection-based System.Text.Json, so such apps failed in `Pipeline.Load`; it now uses a source-generated
+  context. Publish AOT apps with `<IlcInstructionSet>x86-64-v3</IlcInstructionSet>`: the default x64 target runs the
+  128-bit kernels, about 2x slower. Not `StanzaSharp.Cuda` (TorchSharp isn't AOT-safe).
+- `PipelineOptions.Models`: one model per processor instead of the package's, like Python Stanza's
+  `processors={'ner': 'i2b2'}` (a model's or a package's name per processor; the keys' processors are added to the
+  package's), honoured by `ModelDownloader.DownloadAsync(dir, options)` and `--model PROCESSOR=NAME` in the tool's
+  download, compare and benchmark. New models: English constituency `ptb3_charlm`, English ner `ontonotes_charlm`,
+  `ontonotes_nocharlm`, `combined_charlm` and `i2b2` (clinical, with the `mimic` package), German ner `conll03`, all
+  byte-identical to Python Stanza on both backends.
+
+### Changed
+- `tokenize` now loads and runs the package's `mwt` too, as Stanza does (`add_mwt`): `Processors = "tokenize,ner"`
+  (or `"tokenize,sentiment"`, `"tokenize"`) expands multi-word tokens into words like Stanza's output, and
+  `ModelDownloader` and `stanzasharp compare` select the files Stanza loads. A model folder downloaded on 1.x for such a
+  list lacks the mwt model: `Pipeline.Load` then throws a `FileNotFoundException` naming the file; re-run
+  `stanzasharp download` (or `ModelDownloader.DownloadAsync(dir, options)`), which fetches only the missing files.
+
+### Fixed
+- `stanzasharp compare`: a text without sentences (empty or whitespace only) was reported as different, since Stanza's
+  side wrote a lone newline where StanzaSharp's CoNLL-U is empty.
+- `Pipeline.Load` with a model file missing from the folder threw a bare `FileNotFoundException` from whichever model
+  read it first; it now names the file and the `stanzasharp download` command (or `ModelDownloader.DownloadAsync`)
+  that fetches the missing files.
+- MWT seq2seq models (German, English `partut`) are decoded with a beam search of 5, as Stanza does (its MWT trainer
+  never passes its `beam_size` of 1 through), instead of greedily, which could expand a token differently.
+- Tokenizer: a character outside the BMP could change tokens, since the regexes Stanza runs over code points ran over
+  UTF-16 text: a letter such as `𠀁` before `C:` was no word character for the `labeled_field` feature (`𠀁C` became one
+  token), and an emoji counted as two characters for a URL's tail (`example.com.😀` was kept as one token). Found by
+  the new differential text fuzzer (`tools/text_fuzz.py`, docs/text-fuzzing.md).
+
 ## [1.8.0] - 2026-10-15
 
 1.8: performance only (rounds 27–32, docs/performance/). Sentiment about 22% faster, depparse and constituency a few
