@@ -323,8 +323,8 @@ The models beyond the packages':
 
 Their output is byte-identical to Python Stanza's on both backends. Names are exact, as in Stanza (`ptb3` is not
 `ptb3_charlm`). An unknown, transformer or not yet supported name throws. A model may read other character language
-models than the package's: `i2b2` reads mimic's, so with the default package the pipeline loads both pairs (about 60 MB
-more); with `Package = "mimic"` they are the tagger's, whose outputs it then reuses. The tool takes the same as
+models than the package's: `i2b2` reads mimic's, so with the default package the pipeline loads both pairs (mimic's two
+files are 19 MB each); with `Package = "mimic"` they are the tagger's, whose outputs it then reuses. The tool takes the same as
 `--model ner=i2b2`.
 docs/per-processor-models-plan.md lists every other model and what it needs.
 
