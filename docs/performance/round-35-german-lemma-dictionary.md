@@ -62,7 +62,9 @@ for German before, ~37 MB of bytes and table now).
 - `LemmaTests.Dictionary_EqualsJsonSerializers` looks every entry of the English and German dictionaries up in the new
   table and compares it with `JsonSerializer`'s; `Dictionary_ReadsJsonLikeJsonSerializer` covers escapes, null lemmas,
   repeated keys (the last wins, a repeated POS replaces the earlier one), whitespace, a word with a lone surrogate and
-  malformed JSON. `LemmaTests` passes on both backends and languages.
+  malformed JSON. `LemmaTests` passes on both backends and languages. A one-off run of the same comparison over all 23
+  lemmatizers downloaded here (English default and treebank packages, `_charlm` ones too, German default, gsd, hdt;
+  885 to 524,460 entries) found every entry equal.
 - Lookups keep their semantics: (UPOS, word) first, then `*`; a null lemma counts as missing.
 
 `LemmaJson`, the source-generated `JsonSerializer` context the dictionary needed for Native AOT (docs/aot.md), is gone

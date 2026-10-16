@@ -98,7 +98,7 @@ public class LemmaTests
         Assert.Equal(["*", "NOUN", "VERB"], reference.Keys);
         Assert.False(reference["VERB"].ContainsKey("d"));
 
-        foreach (var bad in new[] { "", "{", "{\"*\": {\"a\": 1}}", "{\"*\": {\"a\": \"b\"}", "{\"*\": {\"a\": \"b\\", "{} x", "[]", "{\"*\": {\"a\": nul}}" })
+        foreach (var bad in new[] { "", "{", "{\"*\": {\"a\": 1}}", "{\"*\": {\"a\": \"b\"}", "{\"*\": {\"a\": \"b\\", "{} x", "[]", "{\"*\": {\"a\": nul}}", "{\"*\": {\"a\\q\": \"b\"}}", "{\"*\": {\"\\ud800\": \"b\"}}" })
             Assert.Throws<InvalidDataException>(() => new LemmaDictionary(Encoding.UTF8.GetBytes(bad), Encoding.UTF8.GetByteCount(bad)));
     }
 

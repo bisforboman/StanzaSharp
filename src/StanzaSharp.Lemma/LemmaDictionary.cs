@@ -137,9 +137,18 @@ internal sealed class LemmaDictionary
 
             if (!escaped)
                 return (start, at - 1 - start);
-            var reader = new Utf8JsonReader(json.AsSpan(start - 1, at - start + 1));
-            reader.Read();
-            var bytes = Encoding.UTF8.GetBytes(reader.GetString()!);
+            byte[] bytes;
+            try
+            {
+                var reader = new Utf8JsonReader(json.AsSpan(start - 1, at - start + 1));
+                reader.Read();
+                bytes = Encoding.UTF8.GetBytes(reader.GetString()!);
+            }
+            catch (Exception e) when (e is JsonException or InvalidOperationException)
+            {
+                throw new InvalidDataException($"The lemma dictionaries have a malformed string: {e.Message}", e);
+            }
+
             int offset = length + (int)extra.Length;
             extra.Write(bytes);
             return (offset, bytes.Length);
