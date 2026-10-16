@@ -8,6 +8,21 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 Unreleased changes are one file each under [`changes/`](changes/README.md), so pull requests don't conflict here;
 a release folds them in (`python tools/changelog.py release X.Y.Z`).
 
+## [1.10.0] - 2026-10-16
+
+1.10: ten more NER models and several character-model pairs in one pipeline, both through `PipelineOptions.Models`,
+and `download --list`. Additive; no behaviour change.
+
+### Added
+- Ten more NER models for `PipelineOptions.Models` (`--model ner=NAME`): `conll03_charlm`, the clinical `radiology`,
+  and the biomedical `anatem`, `bc4chemd`, `bc5cdr`, `bionlp13cg`, `jnlpba`, `linnaeus`, `ncbi_disease` and `s800`
+  (cased word vectors, PubMed character models), byte-identical to Python Stanza on both backends.
+- `stanzasharp download --list`: prints each file the download would fetch, with its MD5, without downloading.
+- A pipeline can read several pairs of character language models: `PipelineOptions.Models` may choose a model whose
+  pair differs from the package's (e.g. the default package with ner `i2b2`, which reads mimic's), which no longer
+  throws; the pipeline loads each pair once (mimic's two charlm files are 19 MB each), and the tagger's
+  cached outputs are reused only by models that read the same pair. Byte-identical to Python Stanza on both backends.
+
 ## [1.9.0] - 2026-10-16
 
 1.9: Stanza's English treebank and biomedical packages, one model per processor (`PipelineOptions.Models`), Native
