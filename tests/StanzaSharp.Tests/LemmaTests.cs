@@ -1,3 +1,6 @@
+using System.IO.Compression;
+using System.Text;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using StanzaSharp.Lemma;
 
@@ -55,6 +58,48 @@ public class LemmaTests
         Assert.Equal("saw", lemma.Lookup("saw", "NOUN"));
         Assert.Equal("see", lemma.Lookup("saw", null));
         Assert.Null(lemma.Lookup("flibbertigibbets", "NOUN"));
+    }
+
+    [ModelTheory]
+    [InlineData("en")]
+    [German]
+    public void Dictionary_EqualsJsonSerializers(string lang)
+    {
+        // The dictionaries as the lemmatizer read them up to round 35: every entry must look up the same lemma.
+        var root = Checkpoint.Load(Repo.ModelOf(lang, "lemma")).Root;
+        var json = new MemoryStream();
+        using (var gz = new GZipStream(new MemoryStream(Convert.FromBase64String(root["dicts"]!["$bytes"]!.GetValue<string>())), CompressionMode.Decompress))
+            gz.CopyTo(json);
+        var dict = new LemmaDictionary(json.GetBuffer(), (int)json.Length);
+        var reference = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string?>>>(json.ToArray())!;
+        Assert.True(reference.Values.Sum(d => d.Count) > 30_000);
+        foreach (var (pos, words) in reference)
+        {
+            foreach (var (word, lemma) in words)
+                Assert.Equal(lemma, dict.Lookup(pos, word));
+        }
+    }
+
+    [Fact]
+    public void Dictionary_ReadsJsonLikeJsonSerializer()
+    {
+        var text = " { \"*\" : {\"a\\u00e4\\\"\": \"x\\ny\", \"b\": null,\"c\":\"1\",\"c\":\"2\"},\r\n\t\"NOUN\": {}, \"VERB\": {\"d\": \"e\"}, \"VERB\": {\"f\": \"g\"} } ";
+        var bytes = Encoding.UTF8.GetBytes(text);
+        var dict = new LemmaDictionary(bytes, bytes.Length);
+        Assert.Equal("x\ny", dict.Lookup("*", "aä\""));
+        Assert.Null(dict.Lookup("*", "b"));
+        Assert.Equal("2", dict.Lookup("*", "c"));
+        Assert.Null(dict.Lookup("NOUN", "c"));
+        Assert.Null(dict.Lookup("VERB", "d")); // a repeated POS replaces the earlier one, as in JsonSerializer
+        Assert.Equal("g", dict.Lookup("VERB", "f"));
+        Assert.Null(dict.Lookup("ADJ", "f"));
+        Assert.Null(dict.Lookup("*", "\ud800"));
+        var reference = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string?>>>(text)!;
+        Assert.Equal(["*", "NOUN", "VERB"], reference.Keys);
+        Assert.False(reference["VERB"].ContainsKey("d"));
+
+        foreach (var bad in new[] { "", "{", "{\"*\": {\"a\": 1}}", "{\"*\": {\"a\": \"b\"}", "{\"*\": {\"a\": \"b\\", "{} x", "[]", "{\"*\": {\"a\": nul}}" })
+            Assert.Throws<InvalidDataException>(() => new LemmaDictionary(Encoding.UTF8.GetBytes(bad), Encoding.UTF8.GetByteCount(bad)));
     }
 
     [ModelTheory]

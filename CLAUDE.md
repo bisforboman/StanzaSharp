@@ -1235,7 +1235,7 @@ What the English treebank packages' checkpoints add to the default package's pat
   `StanzaSharp.Tool` (a .NET tool, reflection JSON). The trim/AOT analyzers then run on every build, and build-test's
   warnings as errors turns any IL2xxx/IL3xxx into a failure.
 - New code in those projects must stay AOT-safe: no reflection-based `JsonSerializer` (use `JsonNode`/`Utf8JsonReader`,
-  or a source-generated `JsonSerializerContext` like `LemmaJson` in Lemmatizer.cs), no `Type.GetType`/`Activator`/
+  or a source-generated `JsonSerializerContext`), no `Type.GetType`/`Activator`/
   `MakeGenericType`/`Assembly.Load` or reflection over members, no `Reflection.Emit` or `RegexOptions.Compiled`
   (`[GeneratedRegex]`), no `[DynamicDependency]`/suppressions to silence a warning. P/Invoke stays blittable.
 - AOT fixes the SIMD width at compile time: `Vector256.IsHardwareAccelerated` is false on the default x64 target, so

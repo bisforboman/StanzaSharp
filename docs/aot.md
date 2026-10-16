@@ -180,7 +180,8 @@ reach, and marks the assemblies trimmable for consumers; CI's warnings-as-errors
 
 All as recommended:
 
-1. The Lemmatizer reads its dictionary through a source-generated `LemmaJson` context.
+1. The Lemmatizer reads its dictionary through a source-generated `LemmaJson` context. (Since round 35 it reads the
+   dictionary's JSON with its own scanner, `LemmaDictionary`, and `LemmaJson` is gone.)
 2. `IsAotCompatible=true` on the eleven package projects; new code there must stay AOT-safe (CLAUDE.md, "Native AOT and
    trimming").
 3. README and PACKAGE.md say trimming and Native AOT are supported on the managed backend, with a csproj snippet, and

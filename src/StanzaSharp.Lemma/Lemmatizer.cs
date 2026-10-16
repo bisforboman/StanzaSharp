@@ -1,6 +1,4 @@
 using System.IO.Compression;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using StanzaSharp.Nn;
 
 namespace StanzaSharp.Lemma;
@@ -20,7 +18,7 @@ internal sealed class Lemmatizer : IDisposable
     private const int UnkId = Seq2SeqConfig.UnkId, SosId = Seq2SeqConfig.SosId, EosId = Seq2SeqConfig.EosId;
     private const string Unk = "<UNK>";
 
-    private readonly Dictionary<string, Dictionary<string, string?>> _posDict;
+    private readonly LemmaDictionary _dict;
     private readonly Dictionary<string, int> _charToId, _posToId;
     private readonly string[] _idToChar;
     private readonly int _batchSize, _maxDecLen;
@@ -50,8 +48,10 @@ internal sealed class Lemmatizer : IDisposable
         Require(root["dicts_version"]?.GetValue<int>() == 3, "a dictionary format other than v3 (gzip + JSON)");
 
         // trainer._unpack_pos_dict: {pos: {word: lemma}}, "*" holding the POS-independent entries.
+        var json = new MemoryStream();
         using (var gz = new GZipStream(new MemoryStream(Convert.FromBase64String(root["dicts"]!["$bytes"]!.GetValue<string>())), CompressionMode.Decompress))
-            _posDict = JsonSerializer.Deserialize(gz, LemmaJson.Default.DictionaryStringDictionaryStringString)!;
+            gz.CopyTo(json);
+        _dict = new LemmaDictionary(json.GetBuffer(), (int)json.Length);
 
         var vocab = root["vocab"]!;
         _charToId = Checkpoint.UnitToId(vocab["char"]);
@@ -102,9 +102,7 @@ internal sealed class Lemmatizer : IDisposable
     /// <summary>trainer._lookup: the (UPOS, word) entry, then the POS-independent one.</summary>
     internal string? Lookup(string word, string? upos)
     {
-        if (upos != null && _posDict.TryGetValue(upos, out var byPos) && byPos.GetValueOrDefault(word) is { } lemma)
-            return lemma;
-        return _posDict.TryGetValue("*", out var any) ? any.GetValueOrDefault(word) : null;
+        return (upos == null ? null : _dict.Lookup(upos, word)) ?? _dict.Lookup("*", word);
     }
 
     /// <summary>trainer.postprocess over the seq2seq output: apply the edit, and fall back to the word on empty or &lt;UNK&gt;.</summary>
@@ -204,7 +202,3 @@ internal sealed class Lemmatizer : IDisposable
 
     public void Dispose() => _net.Dispose();
 }
-
-/// <summary>The dictionary's JSON, source-generated so that trimmed and Native AOT apps can read it (docs/aot.md).</summary>
-[JsonSerializable(typeof(Dictionary<string, Dictionary<string, string?>>))]
-internal sealed partial class LemmaJson : JsonSerializerContext;
