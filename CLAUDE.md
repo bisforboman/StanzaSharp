@@ -769,21 +769,29 @@ What the English treebank packages' checkpoints add to the default package's pat
       123 tests, 14.6 min. So the union is always the whole suite, each test once (checked with `--list-tests`).
     - Expected wall per shard on full: ~12–15 min (was 38–44 for one job); light: ~4–6 min.
     Each shard, on a model-cache miss, downloads the models with the C# `ModelDownloader` (via the
-    CLI) and converts them with CPU torch. The models are cached on `ModelDownloader.cs`,
+    CLI) and converts them with CPU torch. The models are cached on the en group's file list (see "Model cache keys"),
     `tools/requirements.txt` and `tools/stanza_convert.py`; shard 1 writes the cache, shards 2–3 (like docker and
     alpine) only restore it. Each shard fails if any test is skipped
     (`outcome="NotExecuted"` in the trx; the trx `notExecuted` counter stays 0 for skips) or none ran. Shard 1 runs
     `tools/verify-package.ps1` against `models/stanza/en` twice: plain (StanzaSharp + TorchSharp-cpu, TorchSharp
     backend, `StanzaSharpTrimNative`; also on torch=smoke) and `-Managed` (only StanzaSharp, the default backend, no
     libtorch), and `verify-tool.ps1`. Artifacts: `test-results-golden-<shard>`.
-  - German (owner's decision, 2026-10-13): one `models-de-treebanks-<hash of ModelDownloader.cs>` cache holding only Stanza's
+  - German (owner's decision, 2026-10-13): one `models-de-treebanks-<hash of the de group's file list>` cache holding only Stanza's
     German `.pt` files (`models/stanza/de`, default, default_fast, gsd and hdt, about 1.3 GB; no conversion: `Repo.ModelsFor("de")`
     falls back to models/stanza/de), written by golden-shard 1 and restored by shards 2–3, downloaded with the CLI
     (`download models/stanza/de --lang de --package ...`) on a miss. Only the golden shards run German, so their no-skip
     check covers it. cross-os and linux-arm64 stay English: there the German rows skip, and their no-skip checks exempt
     test names matching `lang: "de"` or `German` (trx-escaped `lang: &quot;de&quot;`).
-  - English treebank packages (owner's decision, 2026-10-15): one `models-en-treebanks-<hash of ModelDownloader.cs>` cache
-    of only their own `.pt` files (path globs `models/stanza/en/*/<package>*` and `pretrain/biomed.pt`, about 1.9 GB),
+  - Model cache keys (owner's decision, 2026-10-16): each model cache's key hashes exactly the files and MD5s it holds,
+    not `ModelDownloader.cs`, so a new or changed MD5 rotates only the caches holding that file. `tools/ci-models.sh` defines
+    each group once as lines of `download` arguments: `en` (default + default_fast: `models-en-<hash>-<hash of
+    requirements.txt and stanza_convert.py>` and `models-pt-<os>-<hash>`), `en-treebanks` (the treebank packages and
+    `Pipeline.Alternatives`' English models, minus en's files) and `de` (all German). Each job's "Model cache keys" step
+    builds the Cli and runs `tools/ci-models.sh keys`, which hashes the Cli's `download ... --list` output (`path md5`
+    lines, no network) per group; the downloads on a miss are `tools/ci-models.sh download GROUP`, and the treebank
+    cache's paths are the group's file list. A new model goes into a group line there, nowhere else in ci.yml.
+  - English treebank packages (owner's decision, 2026-10-15): one `models-en-treebanks-<hash>` cache
+    of only their own `.pt` files (the en-treebanks group's files that models-en lacks, about 2.2 GB),
     restored into models/stanza/en next to the default package's, written by golden-shard 1 and restored by shards 2–3, downloaded with
     the CLI (`download models/stanza/en --package ...`) on a miss. So that models-en doesn't take them in, shard 1 restores
     models-en with `actions/cache/restore` and saves it with `actions/cache/save` right after the convert step, before the
@@ -794,7 +802,7 @@ What the English treebank packages' checkpoints add to the default package's pat
   - `cross-os (windows-2025)` / `cross-os (macos-26)` (Apple Silicon; `TorchSharp-cpu` brings
     `libtorch-cpu-osx-arm64`): build, full suite with `STANZASHARP_MODELS` = `models/stanza/en` (the
     `.pt` files, no Python or conversion), the same no-skip check, and both `verify-package.ps1` runs. Models are
-    cached per OS on `ModelDownloader.cs` only; no NuGet cache, to stay inside the 10 GB cache budget.
+    cached per OS on the en group's file list only; no NuGet cache, to stay inside the 10 GB cache budget.
     - Sharded like golden (owner's decision, 2026-10-13): the matrix job `cross-os-shard` (os × shard 1–3) uses golden's
       three filters (`SHARD_TWO`/`SHARD_THREE` in the workflow `env`; shard 1 the complement). As one job the tests took
       29 / 40 / 61 min (windows-2025 / macos-26 / windows-11-arm), mostly ConcurrencyTests' two halves running alone

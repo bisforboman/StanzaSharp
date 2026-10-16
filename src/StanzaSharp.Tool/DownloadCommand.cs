@@ -1,7 +1,7 @@
 namespace StanzaSharp.Tool;
 
 /// <summary>
-/// <c>download [DIR] [--lang CODE] [--package NAME] [--processors LIST] [--model PROCESSOR=NAME]...</c>, shared by the <c>stanzasharp</c> tool and
+/// <c>download [DIR] [--lang CODE] [--package NAME] [--processors LIST] [--model PROCESSOR=NAME]... [--list]</c>, shared by the <c>stanzasharp</c> tool and
 /// samples/StanzaSharp.Cli (which compiles this file in).
 /// </summary>
 internal static class DownloadCommand
@@ -36,11 +36,16 @@ internal static class DownloadCommand
         string? target = null, only = null;
         string package = Pipeline.DefaultPackage, language = "en";
         var models = new Dictionary<string, string>();
+        bool list = false;
         for (int i = 0; i < args.Length; i++)
         {
             if (args[i] == "--processors" && i + 1 < args.Length)
             {
                 only = args[++i];
+            }
+            else if (args[i] == "--list")
+            {
+                list = true;
             }
             else if (args[i] == "--model" && i + 1 < args.Length && AddModels(args[i + 1], models))
             {
@@ -68,6 +73,14 @@ internal static class DownloadCommand
         target ??= DirFor(language);
         try
         {
+            // --list (for CI's cache keys, tools/ci-models.sh): each file and its MD5, what a download would fetch; no network.
+            if (list)
+            {
+                foreach (var (path, md5) in ModelDownloader.FilesFor(only, package, "--processors", language, ModelsOrNull(models)).OrderBy(f => f.Path, StringComparer.Ordinal))
+                    Console.WriteLine($"{path} {md5}");
+                return 0;
+            }
+
             var progress = new Progress<string>(Console.Error.WriteLine);
             await ModelDownloader.DownloadAsync(target, new PipelineOptions { Language = language, Package = package, Processors = only, Models = ModelsOrNull(models) }, progress);
             Console.Error.WriteLine($"Models are in {target}");

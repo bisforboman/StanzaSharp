@@ -1,0 +1,1 @@
+- `stanzasharp download --list`: prints each file the download would fetch, with its MD5, without downloading.
