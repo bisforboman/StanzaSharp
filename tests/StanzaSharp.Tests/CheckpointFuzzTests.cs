@@ -480,34 +480,44 @@ public class CheckpointFuzzTests(ITestOutputHelper output)
         {
             var path = Path.Combine(dir.FullName, "vocab.pt");
             File.WriteAllBytes(path, file);
-            var ckpt = Checkpoint.Load(path);
-            Assert.Equal(ConverterJson(Unpickle(file)), ckpt.Root.ToJsonString());
 
-            var root = ckpt.Root;
-            Assert.IsAssignableFrom<JsonValue>(root["vocab"]!["_unit2id"]);
-            Assert.IsAssignableFrom<JsonValue>(root["t"]!["$tuple"]![1]);
-            Assert.IsAssignableFrom<JsonValue>(root["d"]!["$dict"]![0]![1]);
-            Assert.IsType<JsonArray>(root["short"]);
-            Assert.IsType<JsonArray>(root["mixed"]);
-
-            // The readers give what they give for the converter's JSON.
-            var json = JsonNode.Parse(ckpt.Root.ToJsonString())!;
-            Assert.Equal(Checkpoint.UnitToId(json["vocab"]), Checkpoint.UnitToId(root["vocab"]));
-            Assert.Equal(Words.Select((w, i) => (w, i)).ToDictionary(x => x.w, x => x.i), Checkpoint.UnitToId(root["vocab"]));
-            Assert.Equal(Words, Checkpoint.Strings(root["vocab"]!["_id2unit"]));
-            Assert.Equal(Words, Checkpoint.Strings(json["vocab"]!["_id2unit"]));
-            Assert.Equal(Words, Checkpoint.Strings(root["d"]!["$dict"]![0]![1]));
-            Assert.Equal(["a", "b"], Checkpoint.Strings(root["short"]));
-
-            // Wrong kinds fail cleanly, as they do in JSON.
-            Assert.Throws<InvalidDataException>(() => Checkpoint.Strings(root["mixed"]));
-            Assert.Throws<InvalidDataException>(() => Checkpoint.Strings(root["vocab"]!["_unit2id"]));
-            Assert.Throws<InvalidDataException>(() => Checkpoint.Strings(json["vocab"]!["_unit2id"]));
+            // The converter's output loads the same way (round 36): its JSON, with any safetensors file next to it.
+            var converterJson = ConverterJson(Unpickle(file));
+            File.WriteAllText(Path.Combine(dir.FullName, "converted.json"), converterJson);
+            File.Copy(Path.Combine(Repo.Golden, "pt", "tiny_legacy.safetensors"), Path.Combine(dir.FullName, "converted.safetensors"));
+            AssertLoadsLikeTheConverter(Checkpoint.Load(path), converterJson);
+            AssertLoadsLikeTheConverter(Checkpoint.Load(Path.Combine(dir.FullName, "converted")), converterJson);
         }
         finally
         {
             dir.Delete(recursive: true);
         }
+    }
+
+    private static void AssertLoadsLikeTheConverter(Checkpoint ckpt, string converterJson)
+    {
+        Assert.Equal(converterJson, ckpt.Root.ToJsonString());
+
+        var root = ckpt.Root;
+        Assert.IsAssignableFrom<JsonValue>(root["vocab"]!["_unit2id"]);
+        Assert.IsAssignableFrom<JsonValue>(root["t"]!["$tuple"]![1]);
+        Assert.IsAssignableFrom<JsonValue>(root["d"]!["$dict"]![0]![1]);
+        Assert.IsType<JsonArray>(root["short"]);
+        Assert.IsType<JsonArray>(root["mixed"]);
+
+        // The readers give what they give for the converter's JSON.
+        var json = JsonNode.Parse(ckpt.Root.ToJsonString())!;
+        Assert.Equal(Checkpoint.UnitToId(json["vocab"]), Checkpoint.UnitToId(root["vocab"]));
+        Assert.Equal(Words.Select((w, i) => (w, i)).ToDictionary(x => x.w, x => x.i), Checkpoint.UnitToId(root["vocab"]));
+        Assert.Equal(Words, Checkpoint.Strings(root["vocab"]!["_id2unit"]));
+        Assert.Equal(Words, Checkpoint.Strings(json["vocab"]!["_id2unit"]));
+        Assert.Equal(Words, Checkpoint.Strings(root["d"]!["$dict"]![0]![1]));
+        Assert.Equal(["a", "b"], Checkpoint.Strings(root["short"]));
+
+        // Wrong kinds fail cleanly, as they do in JSON.
+        Assert.Throws<InvalidDataException>(() => Checkpoint.Strings(root["mixed"]));
+        Assert.Throws<InvalidDataException>(() => Checkpoint.Strings(root["vocab"]!["_unit2id"]));
+        Assert.Throws<InvalidDataException>(() => Checkpoint.Strings(json["vocab"]!["_unit2id"]));
     }
 
     [Fact]

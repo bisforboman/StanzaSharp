@@ -377,7 +377,7 @@ C# loads either format. `Checkpoint.Load(basePath)` reads `basePath.json` + `bas
 when they exist, else the original `basePath.pt`, so `Pipeline.Load` accepts both `models/converted/en`
 and Stanza's own download directory `models/stanza/en` (`<processor>/<name>.pt`). Converting is
 optional: it makes the checkpoints easy to inspect, but since round 21 it no longer loads faster than the `.pt`
-files (round 34). A packed-weight cache was measured and dropped (owner, 2026-10-16: 0.1–0.2 s for 250–420 MB
+files (round 34; still slower after round 36). A packed-weight cache was measured and dropped (owner, 2026-10-16: 0.1–0.2 s for 250–420 MB
 per package).
 
 Use `setup.ps1 -Models`, or run the steps by hand:
@@ -420,7 +420,8 @@ weights share one storage at different offsets. The only globals are `collection
 `archive/data/<key>`) is read too, for checkpoints saved by newer trainers.
 
 Large plain containers (a str→int dict or list of str with ≥ 1,024 items, `PyContainer.MinCount`) skip the JSON
-round trip when loading a `.pt` (round 21): the node is a `JsonValue` holding the unpickled object, not a `JsonArray`/
+round trip when loading a `.pt` (round 21) and a converted `.json` (round 36: built in the validating reader pass, the
+rest parsed with them as `null`): the node is a `JsonValue` holding the unpickled object, not a `JsonArray`/
 `JsonObject`, and `ToJsonString()` still equals the converter's JSON. Read vocabularies with `Checkpoint.UnitToId` and
 long string lists with `Checkpoint.Strings`; `AsArray()`/`AsObject()` on them throws.
 
@@ -1265,7 +1266,7 @@ What the English treebank packages' checkpoints add to the default package's pat
   `StanzaSharp.Tool` (a .NET tool, reflection JSON). The trim/AOT analyzers then run on every build, and build-test's
   warnings as errors turns any IL2xxx/IL3xxx into a failure.
 - New code in those projects must stay AOT-safe: no reflection-based `JsonSerializer` (use `JsonNode`/`Utf8JsonReader`,
-  or a source-generated `JsonSerializerContext` like `LemmaJson` in Lemmatizer.cs), no `Type.GetType`/`Activator`/
+  or a source-generated `JsonSerializerContext`), no `Type.GetType`/`Activator`/
   `MakeGenericType`/`Assembly.Load` or reflection over members, no `Reflection.Emit` or `RegexOptions.Compiled`
   (`[GeneratedRegex]`), no `[DynamicDependency]`/suppressions to silence a warning. P/Invoke stays blittable.
 - AOT fixes the SIMD width at compile time: `Vector256.IsHardwareAccelerated` is false on the default x64 target, so

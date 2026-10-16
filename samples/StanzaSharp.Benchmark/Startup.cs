@@ -10,7 +10,7 @@ using StanzaSharp;
 /// each with the methods the JIT compiled meanwhile (<see cref="JitInfo"/>). tools/startup.py runs it once per process
 /// under each setting (ReadyToRun build, DOTNET_* knobs) and tabulates the medians.
 /// <code>
-/// StanzaSharp.Benchmark startup [--models DIR] [--text one|bench] [--calls N] [--threads N] [--hash]
+/// StanzaSharp.Benchmark startup [--models DIR] [--text one|bench] [--calls N] [--threads N] [--lang CODE] [--package NAME] [--hash]
 /// </code>
 /// <c>--text one</c>: one 13-word sentence per call; <c>bench</c>: the benchmark's 2,009 words (stanzasharp benchmark's
 /// text). <c>--hash</c>: instead, the SHA-256 of the CoNLL-U of every tests/golden/*.txt, each processed alone.
@@ -21,7 +21,7 @@ internal static class Startup
 {
     public static int Run(string[] args, string repoRoot)
     {
-        string modelDir = Path.Combine("models", "converted", "en"), text = "one";
+        string modelDir = Path.Combine("models", "converted", "en"), text = "one", package = "default", lang = "en";
         int calls = 5;
         int? threads = null;
         bool hash = false;
@@ -34,16 +34,18 @@ internal static class Startup
                 case "--calls": calls = int.Parse(args[++i]); break;
                 case "--threads": threads = int.Parse(args[++i]); break;
                 case "--hash": hash = true; break;
+                case "--package": package = args[++i]; break;
+                case "--lang": lang = args[++i]; break;
                 default: Console.Error.WriteLine($"Unknown option {args[i]}"); return 2;
             }
         }
 
         CultureInfo.CurrentCulture = CultureInfo.InvariantCulture; // tools/startup.py parses the numbers
-        string golden = Path.Combine(repoRoot, "tests", "golden");
+        string golden = lang == "en" ? Path.Combine(repoRoot, "tests", "golden") : Path.Combine(repoRoot, "tests", "golden", lang);
         var (m0, j0) = Jit();
         var cpu0 = Process.GetCurrentProcess().TotalProcessorTime;
         long start = Stopwatch.GetTimestamp();
-        using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Threads = threads });
+        using var nlp = Pipeline.Load(modelDir, new PipelineOptions { Threads = threads, Package = package, Language = lang });
         double load = Stopwatch.GetElapsedTime(start).TotalMilliseconds;
         var (m1, j1) = Jit();
         double loadCpu = (Process.GetCurrentProcess().TotalProcessorTime - cpu0).TotalMilliseconds;
