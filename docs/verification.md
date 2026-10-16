@@ -52,6 +52,13 @@ doesn't: a tokenizer without MWT heads, composite XPOS tags (`lines`, `partut`: 
 a caseless lemmatizer (`atis`), an MWT seq2seq model (`partut`), which Stanza decodes with a beam search of 5, a
 lemmatizer without a copy gate, and the parser's repair of heads with two subjects or objects (the biomedical ones).
 
+**Fuzzing.** `tools/text_fuzz.py` generates seeded adversarial texts (control and zero-width characters, every
+newline and space, emoji sequences, bidi marks, combining and decomposed forms, scripts outside the BMP, URLs and
+e-mails, tokens around `max_seqlen`, paragraphs past the 1,000-unit window, punctuation runs, contractions) and
+compares Stanza's CoNLL-U with StanzaSharp's on each, byte for byte, offsets included. Its findings, shrunk to small
+texts, are kept in `tests/golden/fuzz.json` (and `de/fuzz.json`) and checked for both packages:
+[Differential text fuzzing](text-fuzzing.md) has the method, the runs and the results.
+
 **One model per processor.** Each model `PipelineOptions.Models` can choose beyond the packages' runs against its own
 folder of `tests/golden/models/<processor>=<model>/` (`make_golden.py --models-only`; Stanza with the same
 processors dict). The texts are `corpus.txt`, `validation.txt` and a hand-written clinical note (`models/clinical.txt`,

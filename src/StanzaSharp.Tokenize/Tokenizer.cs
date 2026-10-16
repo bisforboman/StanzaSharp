@@ -258,12 +258,26 @@ internal sealed partial class Tokenizer : IDisposable
 
         public int End(int i) => Starts[i] + UnitStart[i + 1] - UnitStart[i];
 
-        /// <summary>The unit that UTF-16 index <paramref name="index"/> of <see cref="Text"/> belongs to.</summary>
-        public int UnitAt(int index)
+        /// <summary>
+        /// The units as one char each, for the regexes Stanza runs over code points (STRUCTURAL_FEATURES, MASK_RE), so a
+        /// match's index is a unit index. A unit outside the BMP becomes a BMP char of its kind for those patterns (none
+        /// names a non-BMP char): ٠ (Nd: \d and a word character) for a decimal digit, ª (Lo: a word character) for
+        /// another letter or number, U+FFFD otherwise. As a surrogate pair, a non-BMP letter was no word character for
+        /// \b (so "𠀁C:" matched labeled_field) and counted twice for [^\s"]{2,}.
+        /// </summary>
+        public string CodePoints => _codePoints ??= Text.Length == Length ? Text : string.Create(Length, this, static (span, p) =>
         {
-            int k = Array.BinarySearch(UnitStart, 0, Length, index);
-            return k >= 0 ? k : ~k - 1;
-        }
+            for (int i = 0; i < span.Length; i++)
+            {
+                var rune = Rune.GetRuneAt(p.Text, p.UnitStart[i]);
+                span[i] = rune.IsBmp ? (char)rune.Value
+                    : Rune.IsDigit(rune) ? '٠'
+                    : Rune.IsLetter(rune) || Rune.IsNumber(rune) ? 'ª'
+                    : '�';
+            }
+        });
+
+        private string? _codePoints;
     }
 
     private static List<Paragraph> SplitParagraphs(string text)
@@ -356,11 +370,9 @@ internal sealed partial class Tokenizer : IDisposable
         {
             if (_featRes[k] is { } structural)
             {
-                foreach (var m in structural.EnumerateMatches(para.Text))
+                foreach (var m in structural.EnumerateMatches(para.CodePoints))
                 {
-                    if (m.Length == 0)
-                        continue;
-                    for (int u = para.UnitAt(m.Index), last = para.UnitAt(m.Index + m.Length - 1); u <= last; u++)
+                    for (int u = m.Index; u < m.Index + m.Length; u++)
                         feats[u * _featDim + k] = 1;
                 }
 
@@ -534,9 +546,9 @@ internal sealed partial class Tokenizer : IDisposable
         if (!para.MayHaveMask)
             return;
 
-        foreach (var m in MaskRe().EnumerateMatches(para.Text))
+        foreach (var m in MaskRe().EnumerateMatches(para.CodePoints))
         {
-            int first = para.UnitAt(m.Index), end = para.UnitAt(m.Index + m.Length - 1);
+            int first = m.Index, end = m.Index + m.Length - 1;
             for (int i = first; i < end; i++)
                 pred[i] = 0;
             if (pred[end] == 0)

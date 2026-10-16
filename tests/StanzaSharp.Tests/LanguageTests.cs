@@ -134,7 +134,7 @@ public class LanguageTests
         string[] parts =
         [
             "corpus.txt", "pipeline.conllu", "intermediates.safetensors", "mwt.json", "lemma/words.json", "sentiment/reviews.txt",
-            "bulk/default.json", "bulk/default_fast.json", "pretokenized/inputs.json", "long_token.txt", "tokenize_stress.txt",
+            "bulk/default.json", "bulk/default_fast.json", "pretokenized/inputs.json", "long_token.txt", "tokenize_stress.txt", "fuzz.json",
         ];
         foreach (var name in parts)
         {

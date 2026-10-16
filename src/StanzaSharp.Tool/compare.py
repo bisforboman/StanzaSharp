@@ -84,8 +84,9 @@ def main():
     process = time.perf_counter() - start
 
     files = sorted({"/".join(p.replace(os.sep, "/").split("/")[-2:]) for p in model_files(nlp.config)})
+    conllu = "{:C}".format(doc)  # "" without sentences (a blank text), as Conllu.Write and Stanza's file writer give
     with open(out_path, "w", encoding="utf-8", newline="\n") as f:
-        json.dump({"conllu": "{:C}\n".format(doc), "processors": list(nlp.processors), "files": files,
+        json.dump({"conllu": conllu + "\n" if conllu else "", "processors": list(nlp.processors), "files": files,
                    "load": load, "process": process}, f, ensure_ascii=False)
 
 
