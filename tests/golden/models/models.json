@@ -208,5 +208,100 @@
    "corpus.txt",
    "models/biomedical.txt"
   ]
+ },
+ {
+  "name": "pos+depparse=ewt_nocharlm",
+  "package": "ewt",
+  "processors": "tokenize,mwt,pos,lemma,depparse",
+  "models": {
+   "pos": "ewt_nocharlm",
+   "depparse": "ewt_nocharlm"
+  },
+  "texts": [
+   "corpus.txt"
+  ]
+ },
+ {
+  "name": "pos+depparse=gum_nocharlm",
+  "package": "gum",
+  "processors": "tokenize,mwt,pos,lemma,depparse",
+  "models": {
+   "pos": "gum_nocharlm",
+   "depparse": "gum_nocharlm"
+  },
+  "texts": [
+   "corpus.txt"
+  ]
+ },
+ {
+  "name": "pos+depparse=lines_nocharlm",
+  "package": "lines",
+  "processors": "tokenize,mwt,pos,lemma,depparse",
+  "models": {
+   "pos": "lines_nocharlm",
+   "depparse": "lines_nocharlm"
+  },
+  "texts": [
+   "corpus.txt"
+  ]
+ },
+ {
+  "name": "pos+depparse=partut_nocharlm",
+  "package": "partut",
+  "processors": "tokenize,mwt,pos,lemma,depparse",
+  "models": {
+   "pos": "partut_nocharlm",
+   "depparse": "partut_nocharlm"
+  },
+  "texts": [
+   "corpus.txt"
+  ]
+ },
+ {
+  "name": "pos+depparse=atis_nocharlm",
+  "package": "atis",
+  "processors": "tokenize,mwt,pos,lemma,depparse",
+  "models": {
+   "pos": "atis_nocharlm",
+   "depparse": "atis_nocharlm"
+  },
+  "texts": [
+   "corpus.txt"
+  ]
+ },
+ {
+  "name": "pos+depparse=childes_nocharlm",
+  "package": "childes",
+  "processors": "tokenize,mwt,pos,lemma,depparse",
+  "models": {
+   "pos": "childes_nocharlm",
+   "depparse": "childes_nocharlm"
+  },
+  "texts": [
+   "corpus.txt"
+  ]
+ },
+ {
+  "name": "pos+depparse=eslspok_nocharlm",
+  "package": "eslspok",
+  "processors": "tokenize,pos,lemma,depparse",
+  "models": {
+   "pos": "eslspok_nocharlm",
+   "depparse": "eslspok_nocharlm"
+  },
+  "texts": [
+   "corpus.txt"
+  ]
+ },
+ {
+  "name": "depparse=mimic_nocharlm",
+  "package": "mimic",
+  "processors": "tokenize,pos,lemma,depparse",
+  "models": {
+   "depparse": "mimic_nocharlm"
+  },
+  "texts": [
+   "corpus.txt"
+  ]
  }
 ]

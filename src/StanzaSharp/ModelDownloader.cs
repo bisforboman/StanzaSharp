@@ -100,6 +100,21 @@ public static class ModelDownloader
 
             // Pipeline.Alternatives (PipelineOptions.Models)
             ("constituency/ptb3_charlm.pt", "45d737c2172a5f8cb9324cc25af335f6"),
+            ("pos/ewt_nocharlm.pt", "31da311072360b086165291e99b1358a"),
+            ("depparse/ewt_nocharlm.pt", "d4de2f2bfb1df4b508a66e036118aa5b"),
+            ("pos/gum_nocharlm.pt", "7126837c00e6093fc28f84beb96fd92e"),
+            ("depparse/gum_nocharlm.pt", "6d105ef7f3d65d00b4ff80139eab2807"),
+            ("pos/lines_nocharlm.pt", "2d67edd3ed6d0ec3f9224c5ba0d95b46"),
+            ("depparse/lines_nocharlm.pt", "2489849db172a3cc705fd4a902171767"),
+            ("pos/partut_nocharlm.pt", "1c445ee0609cd017458a9c88b0e3359b"),
+            ("depparse/partut_nocharlm.pt", "0a159f9eba80c3b15ea1a7a834d0940f"),
+            ("pos/atis_nocharlm.pt", "3fe8ffa1de12518ffd09cf5e0a32a379"),
+            ("depparse/atis_nocharlm.pt", "4ba5d940f287f5e6b8bdd551e8e2835b"),
+            ("pos/childes_nocharlm.pt", "787a65690865ccbf29b177f6eedcee54"),
+            ("depparse/childes_nocharlm.pt", "6e5ab2e8409d58bf9ff3b8d32e69c4eb"),
+            ("pos/eslspok_nocharlm.pt", "1f91bc08dfc0fd69e2d7a35009be52bd"),
+            ("depparse/eslspok_nocharlm.pt", "afcdcdadfbeb1fb9511a9f9a1ed2127a"),
+            ("depparse/mimic_nocharlm.pt", "0fbc82facddcfcf4395a5bebf6c6ccf0"),
             ("ner/ontonotes_charlm.pt", "313fa9ec8b3b76c388c71eb456c355e7"),
             ("ner/ontonotes_nocharlm.pt", "96a6cb9857d6f71a8d6f1cd041d0edbd"),
             ("ner/combined_charlm.pt", "3f1017a2f0151b2556a105ddee17db49"),
@@ -151,6 +166,10 @@ public static class ModelDownloader
             ("depparse/hdt_charlm.pt", "d578c1c4614769122f2cb8481025639e"),
 
             // Pipeline.Alternatives (PipelineOptions.Models)
+            ("pos/gsd_nocharlm.pt", "7986fcd7d260022e3d89f3e94be86dc9"),
+            ("depparse/gsd_nocharlm.pt", "ca6edb23b145eb15d4cbb70aca935122"),
+            ("pos/hdt_nocharlm.pt", "30eebbd85b15369b9fd435397bb0ca94"),
+            ("depparse/hdt_nocharlm.pt", "bb25421e576ecc48fffbfe01b8bf235b"),
             ("ner/conll03.pt", "9ff9b34529a43b72fabd71626795952a"),
         ],
     };

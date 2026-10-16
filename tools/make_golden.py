@@ -239,9 +239,20 @@ MODEL_CHOICES = {
         ("ner=linnaeus", "craft", "tokenize,ner", {"ner": "linnaeus"}, ["models/biomedical.txt"]),
         ("ner=ncbi_disease", "craft", "tokenize,ner", {"ner": "ncbi_disease"}, ["models/biomedical.txt"]),
         ("ner=s800", "craft", "tokenize,ner", {"ner": "s800"}, ["models/biomedical.txt"]),
+        # the treebanks' _nocharlm taggers and parsers, on their package (corpus.txt only: owner's decision)
+        ("pos+depparse=ewt_nocharlm", "ewt", "tokenize,mwt,pos,lemma,depparse", {"pos": "ewt_nocharlm", "depparse": "ewt_nocharlm"}, []),
+        ("pos+depparse=gum_nocharlm", "gum", "tokenize,mwt,pos,lemma,depparse", {"pos": "gum_nocharlm", "depparse": "gum_nocharlm"}, []),
+        ("pos+depparse=lines_nocharlm", "lines", "tokenize,mwt,pos,lemma,depparse", {"pos": "lines_nocharlm", "depparse": "lines_nocharlm"}, []),
+        ("pos+depparse=partut_nocharlm", "partut", "tokenize,mwt,pos,lemma,depparse", {"pos": "partut_nocharlm", "depparse": "partut_nocharlm"}, []),
+        ("pos+depparse=atis_nocharlm", "atis", "tokenize,mwt,pos,lemma,depparse", {"pos": "atis_nocharlm", "depparse": "atis_nocharlm"}, []),
+        ("pos+depparse=childes_nocharlm", "childes", "tokenize,mwt,pos,lemma,depparse", {"pos": "childes_nocharlm", "depparse": "childes_nocharlm"}, []),
+        ("pos+depparse=eslspok_nocharlm", "eslspok", "tokenize,pos,lemma,depparse", {"pos": "eslspok_nocharlm", "depparse": "eslspok_nocharlm"}, []),
+        ("depparse=mimic_nocharlm", "mimic", "tokenize,pos,lemma,depparse", {"depparse": "mimic_nocharlm"}, []),
     ],
     "de": [
         ("ner=conll03", "default", "tokenize,mwt,ner", {"ner": "conll03"}, ["validation.txt"]),
+        ("pos+depparse=gsd_nocharlm", "gsd", "tokenize,mwt,pos,lemma,depparse", {"pos": "gsd_nocharlm", "depparse": "gsd_nocharlm"}, []),
+        ("pos+depparse=hdt_nocharlm", "hdt", "tokenize,mwt,pos,lemma,depparse", {"pos": "hdt_nocharlm", "depparse": "hdt_nocharlm"}, []),
     ],
 }
 

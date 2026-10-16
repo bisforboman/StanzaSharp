@@ -1,0 +1,144 @@
+# text = Angela Merkel wurde in Hamburg geboren.
+# sent_id = 0
+1	Angela	Angela	PROPN	NE	Gender=Fem|Number=Sing	3	nsubj	_	start_char=0|end_char=6
+2	Merkel	Merkel	PROPN	NE	Number=Sing	1	flat:name	_	start_char=7|end_char=13
+3	wurde	werden	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=14|end_char=19
+4	in	in	ADP	APPR	AdpType=Prep|Case=Dat	5	case	_	start_char=20|end_char=22
+5	Hamburg	Hamburg	PROPN	NE	Number=Sing	3	obl	_	start_char=23|end_char=30
+6	geboren.	geboren.	ADJ	ADJD	Degree=Pos|Variant=Short	3	advmod	_	start_char=31|end_char=39
+
+# text = Sie war von 2005 bis 2021 Bundeskanzlerin.
+# sent_id = 1
+1	Sie	sie	PRON	PPER	Case=Nom|Gender=Fem|Number=Sing|Person=3|PronType=Prs	7	nsubj	_	start_char=40|end_char=43
+2	war	sein	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	7	cop	_	start_char=44|end_char=47
+3	von	von	ADP	APPR	AdpType=Prep|Case=Dat	4	case	_	start_char=48|end_char=51
+4	2005	2005	NUM	CARD	Number=Plur|NumType=Card	7	nmod	_	start_char=52|end_char=56
+5	bis	bis	ADP	APPR	AdpType=Prep	7	case	_	start_char=57|end_char=60
+6	2021	2021	NUM	CARD	Number=Plur|NumType=Card	7	nummod	_	start_char=61|end_char=65
+7	Bundeskanzlerin.	Bundeskanzlerin.	NOUN	NN	Gender=Fem|Number=Sing	0	root	_	SpacesAfter=\n\n|start_char=66|end_char=82
+
+# text = Ich glaube nicht, dass es heute regnet, aber wir werden sehen.
+# sent_id = 2
+1	Ich	ich	PRON	PPER	Case=Nom|Number=Sing|Person=1|PronType=Prs	2	nsubj	_	start_char=84|end_char=87
+2	glaube	glauben	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=88|end_char=94
+3	nicht	nicht	PART	PTKNEG	Polarity=Neg	2	advmod	_	SpaceAfter=No|start_char=95|end_char=100
+4	,	,	PUNCT	$,	PunctType=Comm	8	punct	_	start_char=100|end_char=101
+5	dass	dass	SCONJ	KOUS	_	8	mark	_	start_char=102|end_char=106
+6	es	es	PRON	PPER	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	8	nsubj	_	start_char=107|end_char=109
+7	heute	heute	ADV	ADV	_	8	advmod	_	start_char=110|end_char=115
+8	regnet	regnen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	ccomp	_	SpaceAfter=No|start_char=116|end_char=122
+9	,	,	PUNCT	$,	PunctType=Comm	13	punct	_	start_char=122|end_char=123
+10	aber	aber	CCONJ	KON	_	13	cc	_	start_char=124|end_char=128
+11	wir	wir	PRON	PPER	Case=Nom|Number=Plur|Person=1|PronType=Prs	13	nsubj	_	start_char=129|end_char=132
+12	werden	werden	AUX	VAFIN	Mood=Ind|Number=Plur|Person=1|Tense=Pres|VerbForm=Fin	13	aux	_	start_char=133|end_char=139
+13	sehen.	sehen	VERB	VVINF	VerbForm=Inf	2	conj	_	start_char=140|end_char=146
+
+# text = Hörst du den Donner nicht? Dr. Müller zog im Jan. 1999 nach Berlin und zahlte 4,50 € für einen Kaffee um 7:30 Uhr.
+# sent_id = 3
+1	Hörst	Hörst	PROPN	NE	_	2	nsubj	_	start_char=147|end_char=152
+2	du	du	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=153|end_char=155
+3	den	der	DET	ART	Case=Acc|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	4	det	_	start_char=156|end_char=159
+4	Donner	Donner	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	2	obj	_	start_char=160|end_char=166
+5	nicht	nicht	PART	PTKNEG	Polarity=Neg	2	advmod	_	SpaceAfter=No|start_char=167|end_char=172
+6	?	?	PUNCT	$.	PunctType=Peri	2	punct	_	SpacesAfter=\n|start_char=172|end_char=173
+7	Dr.	Doktor	PROPN	NE	Number=Sing	9	nsubj	_	start_char=174|end_char=177
+8	Müller	Müller	PROPN	NE	Number=Sing	7	flat:name	_	start_char=178|end_char=184
+9	zog	ziehen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	2	conj	_	start_char=185|end_char=188
+10-11	im	_	_	_	_	_	_	_	start_char=189|end_char=191
+10	in	in	ADP	APPR	AdpType=Prep|Case=Dat	12	case	_	_
+11	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	12	det	_	_
+12	Jan.	Jan.	NOUN	NN	Case=Dat	9	obl	_	start_char=192|end_char=196
+13	1999	1999	NUM	CARD	Number=Plur|NumType=Card	12	nmod	_	start_char=197|end_char=201
+14	nach	nach	ADP	APPR	AdpType=Prep|Case=Dat	15	case	_	start_char=202|end_char=206
+15	Berlin	Berlin	PROPN	NE	Number=Sing	9	obl	_	start_char=207|end_char=213
+16	und	und	CCONJ	KON	_	17	cc	_	start_char=214|end_char=217
+17	zahlte	zahlen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	9	conj	_	start_char=218|end_char=224
+18	4,50	4,50	NUM	CARD	Number=Plur|NumType=Card	19	nummod	_	start_char=225|end_char=229
+19	€	€	NOUN	NN	_	17	obj	_	start_char=230|end_char=231
+20	für	für	ADP	APPR	AdpType=Prep|Case=Acc	22	case	_	start_char=232|end_char=235
+21	einen	ein	DET	ART	Case=Acc|Definite=Ind|Gender=Masc|Number=Sing|NumType=Card|PronType=Art	22	det	_	start_char=236|end_char=241
+22	Kaffee	Kaffee	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	17	obl	_	start_char=242|end_char=248
+23	um	um	ADP	APPR	AdpType=Prep|Case=Acc	25	case	_	start_char=249|end_char=251
+24	7:30	7:30	NUM	CARD	Number=Plur|NumType=Card	25	nummod	_	start_char=252|end_char=256
+25	Uhr.	Uhr.	PROPN	NE	_	22	nmod	_	SpacesAfter=\n\n|start_char=257|end_char=261
+
+# text = „Wohin gehst du?“, fragte sie. Die Spielsachen der Kinder (alle 23 Stück) lagen im ganzen Zimmer verstreut!
+# sent_id = 4
+1	„Wohin	„Wohin	PROPN	NE	_	2	nsubj	_	start_char=263|end_char=269
+2	gehst	gehen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=270|end_char=275
+3	du?“	du?“	PROPN	NE	_	2	obj	_	SpaceAfter=No|start_char=276|end_char=280
+4	,	,	PUNCT	$,	PunctType=Comm	5	punct	_	start_char=280|end_char=281
+5	fragte	fragen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	2	parataxis	_	start_char=282|end_char=288
+6	sie.	sie.	PROPN	NE	_	5	nsubj	_	start_char=289|end_char=293
+7	Die	der	DET	ART	Case=Acc|Definite=Def|Gender=Fem|Number=Plur|PronType=Art	8	det	_	start_char=294|end_char=297
+8	Spielsachen	Spielsache	NOUN	NN	Case=Acc|Gender=Fem|Number=Plur	14	nsubj	_	start_char=298|end_char=309
+9	der	der	DET	ART	Case=Gen|Definite=Def|Gender=Masc|Number=Plur|PronType=Art	10	det	_	start_char=310|end_char=313
+10	Kinder	Kind	NOUN	NN	Case=Gen|Gender=Neut|Number=Plur	8	nmod	_	start_char=314|end_char=320
+11	(alle	(alle	ADP	APPR	AdpType=Prep	13	case	_	start_char=321|end_char=326
+12	23	23	NUM	CARD	Number=Plur|NumType=Card	13	nummod	_	start_char=327|end_char=329
+13	Stück)	Stück)	NOUN	NN	Gender=Fem	14	obl	_	start_char=330|end_char=336
+14	lagen	liegen	VERB	VVFIN	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	5	conj	_	start_char=337|end_char=342
+15-16	im	_	_	_	_	_	_	_	start_char=343|end_char=345
+15	in	in	ADP	APPR	AdpType=Prep|Case=Dat	18	case	_	_
+16	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	18	det	_	_
+17	ganzen	ganz	ADJ	ADJA	Case=Dat|Degree=Pos|Gender=Neut|Number=Sing	18	amod	_	start_char=346|end_char=352
+18	Zimmer	Zimmer	NOUN	NN	Case=Dat|Gender=Neut|Number=Sing	19	obl	_	start_char=353|end_char=359
+19	verstreut!	verstreuen	VERB	VVFIN	VerbForm=Part	14	conj	_	SpacesAfter=\n|start_char=360|end_char=370
+
+# text = Der bekannte Autor, der E-Mails an info@beispiel.de geschrieben hatte, besuchte gestern https://www.beispiel.de/ueber-uns.
+# sent_id = 5
+1	Der	der	DET	ART	Case=Nom|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	3	det	_	start_char=371|end_char=374
+2	bekannte	bekannt	ADJ	ADJA	Case=Nom|Degree=Pos|Gender=Masc|Number=Sing	3	amod	_	start_char=375|end_char=383
+3	Autor	Autor	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	12	nsubj	_	SpaceAfter=No|start_char=384|end_char=389
+4	,	,	PUNCT	$,	PunctType=Comm	9	punct	_	start_char=389|end_char=390
+5	der	der	PRON	PRELS	Case=Nom|Gender=Masc|Number=Sing|PronType=Dem,Rel	9	nsubj	_	start_char=391|end_char=394
+6	E-Mails	E-Mail	NOUN	NN	Gender=Fem|Number=Plur	9	obj	_	start_char=395|end_char=402
+7	an	an	ADP	APPR	AdpType=Prep|Case=Dat	8	case	_	start_char=403|end_char=405
+8	info@beispiel.de	info@beispiel.de	PROPN	NE	Number=Sing	9	obl	_	start_char=406|end_char=422
+9	geschrieben	schreiben	VERB	VVPP	Aspect=Perf|VerbForm=Part	3	acl:relcl	_	start_char=423|end_char=434
+10	hatte	haben	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	9	aux	_	SpaceAfter=No|start_char=435|end_char=440
+11	,	,	PUNCT	$,	PunctType=Comm	9	punct	_	start_char=440|end_char=441
+12	besuchte	besuchen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=442|end_char=450
+13	gestern	gestern	ADV	ADV	_	12	advmod	_	start_char=451|end_char=458
+14	https://www.beispiel.de/ueber-uns.	https://www.beispiel.de/ueber-uns.	PROPN	NE	_	12	obj	_	SpacesAfter=\n\n|start_char=459|end_char=493
+
+# text = Marias Schwester wäre nicht zum Treffen gegangen, wenn sie gewusst hätte, dass es am Freitag um 15 Uhr abgesagt worden war; niemand sagte es ihr. Wow... das ist ja großartig!!
+# sent_id = 6
+1	Marias	Marias	PROPN	NE	Number=Sing	2	nmod	_	start_char=495|end_char=501
+2	Schwester	Schwester	NOUN	NN	Gender=Fem|Number=Sing	8	nsubj:pass	_	start_char=502|end_char=511
+3	wäre	sein	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	8	aux:pass	_	start_char=512|end_char=516
+4	nicht	nicht	PART	PTKNEG	Polarity=Neg	8	advmod	_	start_char=517|end_char=522
+5-6	zum	_	_	_	_	_	_	_	start_char=523|end_char=526
+5	zu	zu	ADP	APPR	AdpType=Prep|Case=Dat	7	case	_	_
+6	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	7	det	_	_
+7	Treffen	Treffen	NOUN	NN	Case=Dat|Gender=Neut|Number=Sing	8	obl	_	start_char=527|end_char=534
+8	gegangen	gehen	VERB	VVPP	Aspect=Perf|VerbForm=Part	0	root	_	SpaceAfter=No|start_char=535|end_char=543
+9	,	,	PUNCT	$,	PunctType=Comm	12	punct	_	start_char=543|end_char=544
+10	wenn	wenn	SCONJ	KOUS	_	12	mark	_	start_char=545|end_char=549
+11	sie	sie	PRON	PPER	Case=Nom|Gender=Fem|Number=Sing|Person=3|PronType=Prs	12	nsubj	_	start_char=550|end_char=553
+12	gewusst	wissen	VERB	VVPP	Aspect=Perf|VerbForm=Part	8	advcl	_	start_char=554|end_char=561
+13	hätte	haben	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	12	aux	_	SpaceAfter=No|start_char=562|end_char=567
+14	,	,	PUNCT	$,	PunctType=Comm	23	punct	_	start_char=567|end_char=568
+15	dass	dass	SCONJ	KOUS	_	23	mark	_	start_char=569|end_char=573
+16	es	es	PRON	PPER	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	23	nsubj:pass	_	start_char=574|end_char=576
+17-18	am	_	_	_	_	_	_	_	start_char=577|end_char=579
+17	an	an	ADP	APPR	AdpType=Prep|Case=Dat	19	case	_	_
+18	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	19	det	_	_
+19	Freitag	Freitag	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	23	obl	_	start_char=580|end_char=587
+20	um	um	ADP	APPR	AdpType=Prep|Case=Acc	22	case	_	start_char=588|end_char=590
+21	15	15	NUM	CARD	Number=Plur|NumType=Card	22	nummod	_	start_char=591|end_char=593
+22	Uhr	Uhr	NOUN	NN	Case=Acc|Gender=Fem|Number=Sing	23	obl	_	start_char=594|end_char=597
+23	abgesagt	absagen	VERB	VVPP	Aspect=Perf|VerbForm=Part	12	ccomp	_	start_char=598|end_char=606
+24	worden	werden	AUX	VAPP	Aspect=Perf|VerbForm=Part	23	aux:pass	_	start_char=607|end_char=613
+25	war	sein	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	23	aux	_	SpaceAfter=No|start_char=614|end_char=617
+26	;	;	PUNCT	$.	PunctType=Peri	8	punct	_	start_char=617|end_char=618
+27	niemand	niemand	PRON	PIS	Case=Nom|Number=Sing|PronType=Ind	28	nsubj	_	start_char=619|end_char=626
+28	sagte	sagen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	8	parataxis	_	start_char=627|end_char=632
+29	es	es	PRON	PPER	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	28	nsubj	_	start_char=633|end_char=635
+30	ihr.	ihr.	PROPN	NE	_	28	obj	_	SpacesAfter=\n|start_char=636|end_char=640
+31	Wow..	Wow..	PROPN	NE	_	30	flat:name	_	SpaceAfter=No|start_char=641|end_char=646
+32	.	.	PUNCT	$.	PunctType=Peri	8	punct	_	start_char=646|end_char=647
+33	das	der	PRON	PDS	Case=Nom|Gender=Neut|Number=Sing|PronType=Dem,Rel	36	nsubj	_	start_char=648|end_char=651
+34	ist	sein	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	36	cop	_	start_char=652|end_char=655
+35	ja	ja	ADV	ADV	_	36	advmod	_	start_char=656|end_char=658
+36	großartig!!	großartig!!	ADJ	ADJD	Degree=Pos|Variant=Short	8	parataxis	_	SpacesAfter=\n|start_char=659|end_char=670

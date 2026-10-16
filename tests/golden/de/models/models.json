@@ -10,5 +10,29 @@
    "corpus.txt",
    "validation.txt"
   ]
+ },
+ {
+  "name": "pos+depparse=gsd_nocharlm",
+  "package": "gsd",
+  "processors": "tokenize,mwt,pos,lemma,depparse",
+  "models": {
+   "pos": "gsd_nocharlm",
+   "depparse": "gsd_nocharlm"
+  },
+  "texts": [
+   "corpus.txt"
+  ]
+ },
+ {
+  "name": "pos+depparse=hdt_nocharlm",
+  "package": "hdt",
+  "processors": "tokenize,mwt,pos,lemma,depparse",
+  "models": {
+   "pos": "hdt_nocharlm",
+   "depparse": "hdt_nocharlm"
+  },
+  "texts": [
+   "corpus.txt"
+  ]
  }
 ]

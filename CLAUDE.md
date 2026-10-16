@@ -65,8 +65,12 @@ default from 0.5) or through TorchSharp (see "Managed backend").
   vocabs when off) and `char_lowercase` (radiology: each character lowercased alone, `LowerChars`, a multi-character
   result being one unknown unit like Python's; then neither cache reads nor writes, since its charlm input differs from
   the tagger's). Golden on hand-written `models/biomedical.txt` / `radiology.txt` (craft + each biomedical model,
-  default + bc5cdr, mimic + radiology). Later (not yet): the treebank `_nocharlm` pos/depparse (CI cache), the `_charlm`
-  tokenizers and lemmatizers.
+  default + bc5cdr, mimic + radiology). The treebanks' `_nocharlm` pos and depparse (owner's decision, 2026-10-16, part
+  3): English `{ewt,gum,lines,partut,atis,childes,eslspok}_nocharlm` pos and depparse, depparse `mimic_nocharlm`
+  (mimic pretrain, so the head-constraint repair), German `{gsd,hdt}_nocharlm`; no new code (the `_charlm` twins' legacy
+  heads and composite XPOS + `combined_nocharlm`'s character model). Golden rows `pos+depparse=<tb>_nocharlm` on their
+  package (`depparse=mimic_nocharlm` on mimic), corpus.txt only; their own CI cache (`models-nocharlm`, about 1.2 GB,
+  tools/ci-models.sh `en-nocharlm` + `de-nocharlm`). Later (not yet): the `_charlm` tokenizers and lemmatizers.
 - **Shared dependencies:** `pos`, `constituency`, `depparse`, `ner` and `sentiment` all depend on the
   pretrained word-vector file (pretrain). Every `_charlm` model also depends on the forward and backward
   character LMs (charlm); the `_nocharlm` ones have their own character LSTM (`Nn.CharacterModel`) instead.
@@ -812,6 +816,11 @@ What the English treebank packages' checkpoints add to the default package's pat
     The same cache holds `Pipeline.Alternatives`' English files (explicit paths, 501 MB: ptb3_charlm, the four NER
     models, fasttextcrawl), and models-de-treebanks German ner conll03 (51 MB); their rows (`ModelChoiceTests`) are
     exempt elsewhere the same way.
+  - The treebanks' `_nocharlm` taggers and parsers (owner's decision, 2026-10-16): their own `models-nocharlm-<key>` cache
+    (tools/ci-models.sh `en-nocharlm` + `de-nocharlm`, their files only, explicit paths `nocharlm_paths`; English 965 MB,
+    German 269 MB), so adding them rotated no other key; written by golden-shard 1, restored by 2–3. So that
+    models-de-treebanks (path `models/stanza/de`) doesn't take the German ones in, shard 1 restores it with
+    `actions/cache/restore` and saves it with `actions/cache/save` right after the German download.
   - `cross-os (windows-2025)` / `cross-os (macos-26)` (Apple Silicon; `TorchSharp-cpu` brings
     `libtorch-cpu-osx-arm64`): build, full suite with `STANZASHARP_MODELS` = `models/stanza/en` (the
     `.pt` files, no Python or conversion), the same no-skip check, and both `verify-package.ps1` runs. Models are
@@ -879,7 +888,7 @@ What the English treebank packages' checkpoints add to the default package's pat
 
   Everything else is `internal`.
   - Directory.Build.props gives every `src/*` assembly `InternalsVisibleTo` for the other StanzaSharp
-    assemblies, the tests and the benchmark. Don't add per-project `InternalsVisibleTo`.
+    assemblies, the tests, the benchmark and the Cli sample. Don't add per-project `InternalsVisibleTo`.
   - New types default to `internal`. Making one public is an API decision for the user.
   - `src/*` builds docs with CS1591 as an error, so every public member needs an XML doc.
   - Each user-visible change adds one file, `changes/<section>/<slug>.md` (section: added, changed, deprecated, removed,

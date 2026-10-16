@@ -195,7 +195,9 @@ using var nlp = Pipeline.Load("models/stanza/en", clinical);
 
 Beyond the packages' models: English constituency `ptb3_charlm`; English ner `ontonotes_charlm`, `ontonotes_nocharlm`,
 `combined_charlm`, `conll03_charlm`, the clinical `i2b2` and `radiology` and the biomedical `anatem`, `bc4chemd`, `bc5cdr`, `bionlp13cg`, `jnlpba`, `linnaeus`, `ncbi_disease`, `s800`
-(they read their own character language models, loaded next to the package's when they differ); German ner `conll03`. Unknown or unsupported names throw `ArgumentException`.
+(they read their own character language models, loaded next to the package's when they differ); German ner `conll03`;
+the treebanks' `_nocharlm` taggers and parsers: English pos and depparse `ewt`, `gum`, `lines`, `partut`, `atis`,
+`childes`, `eslspok` + `_nocharlm`, depparse `mimic_nocharlm`, German pos and depparse `gsd_nocharlm`, `hdt_nocharlm`. Unknown or unsupported names throw `ArgumentException`.
 
 ## German
 
