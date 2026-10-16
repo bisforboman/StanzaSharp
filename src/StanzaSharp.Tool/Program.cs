@@ -31,7 +31,7 @@ const string Usage = $"""
                           (default: all of the package's)
       --model P=NAME      a model for processor P instead of the package's (repeatable, or P=NAME,P=NAME), as Stanza's
                           processors dict: English constituency=ptb3_charlm; ner=ontonotes_charlm, ontonotes_nocharlm,
-                          combined_charlm, i2b2 (with --package mimic); German ner=conll03. Its processor is added if needed
+                          combined_charlm, i2b2 (clinical); German ner=conll03. Its processor is added if needed
       --models DIR        compare, benchmark: the models (default: models/stanza/CODE)
       --python PATH       compare, benchmark: the Python with Stanza installed (default: python)
       --threads N         benchmark: threads on both sides (default: each side's own default, StanzaSharp the

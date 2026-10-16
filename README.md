@@ -322,9 +322,10 @@ The models beyond the packages':
 - German ner: `conll03` (PER, LOC, ORG, MISC).
 
 Their output is byte-identical to Python Stanza's on both backends. Names are exact, as in Stanza (`ptb3` is not
-`ptb3_charlm`). An unknown, transformer or not yet supported name throws, and so does a choice whose models read two
-different character language models: `i2b2` reads mimic's, the default package's tagger 1billion's, so `ner = "i2b2"`
-needs `Package = "mimic"` or `Processors = "tokenize,mwt,ner"`. The tool takes the same as `--model ner=i2b2`.
+`ptb3_charlm`). An unknown, transformer or not yet supported name throws. A model may read other character language
+models than the package's: `i2b2` reads mimic's, so with the default package the pipeline loads both pairs (about 60 MB
+more); with `Package = "mimic"` they are the tagger's, whose outputs it then reuses. The tool takes the same as
+`--model ner=i2b2`.
 docs/per-processor-models-plan.md lists every other model and what it needs.
 
 ### Threads, concurrency and cancellation

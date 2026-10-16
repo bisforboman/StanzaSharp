@@ -30,8 +30,8 @@ public class PipelineTests(SharedPipelines pipelines) : IClassFixture<SharedPipe
 
             // The charlms belong to the backend's models (BackendModels); a managed pipeline's are managed by construction.
             var models = Assert.IsType<ManagedModels>(typeof(Pipeline).GetField("_models", Private)!.GetValue(nlp));
-            Assert.NotNull(typeof(ManagedModels).GetField("_forward", Private)!.GetValue(models));
-            Assert.NotNull(typeof(ManagedModels).GetField("_backward", Private)!.GetValue(models));
+            var charlms = Assert.IsType<Dictionary<string, Nn.Managed.ManagedCharLanguageModel>>(typeof(ManagedModels).GetField("_charlms", Private)!.GetValue(models));
+            Assert.Equal(["backward_charlm/1billion", "forward_charlm/1billion"], charlms.Keys.Order());
         }
     }
 

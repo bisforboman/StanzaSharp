@@ -16,7 +16,7 @@ namespace StanzaSharp;
 /// <param name="disableTf32">Sets both torch TF32 switches to false at load, process-wide, and doesn't restore them.</param>
 internal sealed class TorchSharpModels(torch.Device? device, bool disableTf32) : BackendModels
 {
-    private CharLanguageModel? _forward, _backward;
+    private readonly Dictionary<string, CharLanguageModel> _charlms = [];
 
     public override void Configure(PipelineOptions options)
     {
@@ -33,14 +33,7 @@ internal sealed class TorchSharpModels(torch.Device? device, bool disableTf32) :
 
     public override Pretrain Pretrain(string basePath) => Nn.Pretrain.Load(basePath);
 
-    public override void Charlm(string basePath, bool forward)
-    {
-        var charlm = CharLanguageModel.Load(basePath);
-        if (forward)
-            _forward = charlm;
-        else
-            _backward = charlm;
-    }
+    public override void Charlm(string path, string basePath) => Add(_charlms, path, CharLanguageModel.Load(basePath));
 
     public override Tokenizer Tokenizer(string basePath) => Tokenize.Tokenizer.Load(basePath);
 
@@ -48,19 +41,24 @@ internal sealed class TorchSharpModels(torch.Device? device, bool disableTf32) :
 
     public override Lemmatizer Lemma(string basePath) => Lemmatizer.Load(basePath);
 
-    public override PosTagger Pos(string basePath, Pretrain pretrain) => PosTagger.Load(basePath, pretrain, _forward, _backward);
+    public override PosTagger Pos(string basePath, Pretrain pretrain, Charlms charlms) =>
+        PosTagger.Load(basePath, pretrain, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward));
 
-    public override DependencyParser Depparse(string basePath, Pretrain pretrain) => DependencyParser.Load(basePath, pretrain, _forward, _backward);
+    public override DependencyParser Depparse(string basePath, Pretrain pretrain, Charlms charlms) =>
+        DependencyParser.Load(basePath, pretrain, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward));
 
-    public override NerTagger Ner(string basePath, Pretrain pretrain) => NerTagger.Load(basePath, pretrain, _forward, _backward);
+    public override NerTagger Ner(string basePath, Pretrain pretrain, Charlms charlms) =>
+        NerTagger.Load(basePath, pretrain, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward));
 
-    public override ConstituencyParser Constituency(string basePath, Pretrain pretrain) => ConstituencyParser.Load(basePath, pretrain, _forward!, _backward!);
+    public override ConstituencyParser Constituency(string basePath, Pretrain pretrain, Charlms charlms) =>
+        ConstituencyParser.Load(basePath, pretrain, Find(_charlms, charlms.Forward)!, Find(_charlms, charlms.Backward)!);
 
-    public override SentimentClassifier Sentiment(string basePath, Pretrain pretrain) => SentimentClassifier.Load(basePath, pretrain, _forward!, _backward!);
+    public override SentimentClassifier Sentiment(string basePath, Pretrain pretrain, Charlms charlms) =>
+        SentimentClassifier.Load(basePath, pretrain, Find(_charlms, charlms.Forward)!, Find(_charlms, charlms.Backward)!);
 
     public override void Dispose()
     {
-        _forward?.Dispose();
-        _backward?.Dispose();
+        foreach (var charlm in _charlms.Values)
+            charlm.Dispose();
     }
 }

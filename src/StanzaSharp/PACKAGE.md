@@ -194,8 +194,8 @@ using var nlp = Pipeline.Load("models/stanza/en", clinical);
 ```
 
 Beyond the packages' models: English constituency `ptb3_charlm`; English ner `ontonotes_charlm`, `ontonotes_nocharlm`,
-`combined_charlm` and `i2b2` (clinical, with `Package = "mimic"`: one pipeline loads one pair of character language
-models); German ner `conll03`. Unknown or unsupported names throw `ArgumentException`.
+`combined_charlm` and `i2b2` (clinical; it reads the mimic character language models, loaded next to the package's
+when they differ); German ner `conll03`. Unknown or unsupported names throw `ArgumentException`.
 
 ## German
 
