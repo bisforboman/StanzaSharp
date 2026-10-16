@@ -109,6 +109,25 @@ public class CompareCommandTests
         Assert.Contains("Identical: the CoNLL-U output is the same, byte for byte.", output.ToString());
     }
 
+    /// <summary>A text without sentences: both CoNLL-U outputs are empty (compare.py wrote "\n" for Stanza's).</summary>
+    [PythonStanzaFact]
+    public void Run_PythonStanza_BlankTextIsIdentical()
+    {
+        var file = Path.GetTempFileName();
+        try
+        {
+            File.WriteAllText(file, "  \n\n\t");
+            var output = new StringWriter();
+            int exit = CompareCommand.Run([file, "--processors", "tokenize,mwt", "--models", Repo.StanzaModels, "--python", PythonStanzaFactAttribute.Python],
+                "usage", output);
+            Assert.True(exit == 0, output.ToString());
+        }
+        finally
+        {
+            File.Delete(file);
+        }
+    }
+
     /// <summary>Stanza reads <c>&lt;dir&gt;/en/...</c>; compare.py links a folder of any other name as en.</summary>
     [PythonStanzaFact]
     public void Run_PythonStanza_ModelsFolderOfAnyName()
