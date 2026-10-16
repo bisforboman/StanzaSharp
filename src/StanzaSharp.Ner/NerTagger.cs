@@ -24,6 +24,7 @@ internal sealed class NerTagger : IDisposable
 
     private readonly Pretrain _pretrain;
     private readonly Dictionary<string, int>? _deltaVocab;
+    private readonly bool _deltaSpaces;
     private readonly string[] _tags;
     private readonly float[] _transitions;
     private readonly int _batchSize;
@@ -36,6 +37,9 @@ internal sealed class NerTagger : IDisposable
         var vocab = ckpt.Root["vocab"]!;
         CheckSupported(config, vocab, pretrain);
         _deltaVocab = vocab["delta"] is { } delta ? Checkpoint.UnitToId(delta) : null;
+
+        // The old format's delta (i2b2) is a PretrainedWordVocab, whose normalize_unit stores spaces as U+00A0.
+        _deltaSpaces = vocab["_key2class"]?["delta"]?.GetValue<string>() == "PretrainedWordVocab";
         _batchSize = config["batch_size"]!.GetValue<int>();
 
         // The tag vocab has one column per tag set ("multi" NER: OntoNotes and WorldWide here). Stanza
@@ -127,7 +131,7 @@ internal sealed class NerTagger : IDisposable
                 wordIds[i * width + j] = word;
                 if (_deltaVocab != null)
                 {
-                    int delta = _deltaVocab.GetValueOrDefault(lower, UnkId);
+                    int delta = _deltaVocab.GetValueOrDefault(_deltaSpaces ? lower.Replace(' ', ' ') : lower, UnkId);
                     deltaIds[i * width + j] = delta == UnkId && word != _pretrain.UnkId ? PadId : delta;
                 }
             }
@@ -276,11 +280,11 @@ internal sealed class NerTagger : IDisposable
 
         // The word embedding is the pretrain's matrix (not saved in the checkpoint), indexed by this vocab.
         Require(vocab["word"]!["_id2unit"] is { } words && Checkpoint.Strings(words).Length == pretrain.Count, "a word vocab other than the pretrain's");
+
+        // extract_static_embeddings lowercases the word (lowercase, checked above) before either vocab's map, so a delta
+        // vocab's own lower flag changes nothing (the old format's PretrainedWordVocab has it off).
         if (vocab["delta"] is { } delta)
-        {
-            Require(delta["lower"]?.GetValue<bool>() == true, "a cased delta vocab");
             Require(delta["ignore"]?.AsArray().Count is null or 0, "emb_finetune_known_only (a delta vocab with ignored words)");
-        }
     }
 
     /// <summary>Whether a checkpoint reads the shared charlms (<c>_charlm</c>) rather than its own character model (<c>_nocharlm</c>).</summary>

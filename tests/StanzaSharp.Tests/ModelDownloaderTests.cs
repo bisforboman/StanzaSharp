@@ -89,10 +89,15 @@ public class ModelDownloaderTests : IDisposable
         ];
         Assert.Equal(expected.Order(), new[] { "default", "default_fast" }.SelectMany(p => ModelDownloader.FilesFor(null, p)).Select(f => f.Path).Distinct().Order());
 
-        // Every package's files, together, are the table (the treebank packages' too).
+        // Every package's files and Pipeline.Alternatives', together, are the table (the treebank packages' too).
         Assert.Equal(ModelDownloader.Files["en"].Select(f => f.Path).Order(),
-            Pipeline.Packages["en"].Keys.SelectMany(p => ModelDownloader.FilesFor(null, p)).Select(f => f.Path).Distinct().Order());
+            Pipeline.Packages["en"].Keys.SelectMany(p => ModelDownloader.FilesFor(null, p)).Select(f => f.Path).Concat(AlternativesFiles("en")).Distinct().Order());
     }
+
+    /// <summary>The files of each of <see cref="Pipeline.Alternatives"/>' models of <paramref name="lang"/>: its own and its shared ones.</summary>
+    internal static IEnumerable<string> AlternativesFiles(string lang) =>
+        Pipeline.Alternatives[lang].SelectMany(kv => kv.Value.SelectMany(name => Pipeline.ModelFiles(new Dictionary<string, string> { [kv.Key] = name }, lang)))
+            .Select(p => p + ".pt");
 
     [Theory]
 

@@ -1,7 +1,7 @@
 namespace StanzaSharp.Tool;
 
 /// <summary>
-/// <c>download [DIR] [--lang CODE] [--package NAME] [--processors LIST]</c>, shared by the <c>stanzasharp</c> tool and
+/// <c>download [DIR] [--lang CODE] [--package NAME] [--processors LIST] [--model PROCESSOR=NAME]...</c>, shared by the <c>stanzasharp</c> tool and
 /// samples/StanzaSharp.Cli (which compiles this file in).
 /// </summary>
 internal static class DownloadCommand
@@ -11,16 +11,40 @@ internal static class DownloadCommand
     /// <summary>Where download puts a language's models without a DIR: <c>models/stanza/&lt;lang&gt;</c>.</summary>
     internal static string DirFor(string language) => Path.Combine("models", "stanza", language);
 
+    /// <summary>
+    /// Adds <c>--model</c>'s <c>PROCESSOR=NAME</c> pairs (comma-separated, e.g. <c>ner=i2b2,constituency=ptb3_charlm</c>)
+    /// to <paramref name="models"/>; false if one is malformed. <see cref="Pipeline.Load"/> checks the names.
+    /// </summary>
+    internal static bool AddModels(string value, Dictionary<string, string> models)
+    {
+        var pairs = value.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        foreach (var pair in pairs)
+        {
+            if (pair.Split('=', StringSplitOptions.TrimEntries) is not [{ Length: > 0 } processor, { Length: > 0 } model] || !models.TryAdd(processor, model))
+                return false;
+        }
+
+        return pairs.Length > 0;
+    }
+
+    /// <summary><paramref name="models"/>, or null when empty (no <c>--model</c>).</summary>
+    internal static Dictionary<string, string>? ModelsOrNull(Dictionary<string, string> models) => models.Count > 0 ? models : null;
+
     /// <summary>Runs the command on the arguments after <c>download</c>; returns the exit code (2: bad arguments).</summary>
     internal static async Task<int> RunAsync(string[] args, string usage)
     {
         string? target = null, only = null;
         string package = Pipeline.DefaultPackage, language = "en";
+        var models = new Dictionary<string, string>();
         for (int i = 0; i < args.Length; i++)
         {
             if (args[i] == "--processors" && i + 1 < args.Length)
             {
                 only = args[++i];
+            }
+            else if (args[i] == "--model" && i + 1 < args.Length && AddModels(args[i + 1], models))
+            {
+                i++;
             }
             else if (args[i] == "--package" && i + 1 < args.Length)
             {
@@ -45,7 +69,7 @@ internal static class DownloadCommand
         try
         {
             var progress = new Progress<string>(Console.Error.WriteLine);
-            await ModelDownloader.DownloadAsync(target, new PipelineOptions { Language = language, Package = package, Processors = only }, progress);
+            await ModelDownloader.DownloadAsync(target, new PipelineOptions { Language = language, Package = package, Processors = only, Models = ModelsOrNull(models) }, progress);
             Console.Error.WriteLine($"Models are in {target}");
             return 0;
         }

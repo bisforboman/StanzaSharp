@@ -116,7 +116,7 @@ await ModelDownloader.DownloadAsync("models/stanza/en", new PipelineOptions { Pa
 
 or from the command line with the `stanzasharp` tool (package `StanzaSharp.Tool`, no native libraries):
 `dotnet tool install -g StanzaSharp.Tool`, then `stanzasharp download models/stanza/en`
-(add `--processors LIST` for a subset, `--package default_fast` for that package, `--lang de` for German, which goes to
+(add `--processors LIST` for a subset, `--package default_fast` for that package, `--model ner=i2b2` for single models, `--lang de` for German, which goes to
 `models/stanza/de` by default). In this repository,
 `dotnet run --project samples/StanzaSharp.Cli -- download models/stanza/en` does the same.
 `DownloadAsync(dir, options)` fetches exactly what `Pipeline.Load(dir, options)` reads. A subset includes the models of the processors it requires and
@@ -270,6 +270,33 @@ using var fast = Pipeline.Load("models/stanza/en", options);
 
 An unknown package name throws, and so does listing a processor the package lacks (`constituency` with
 `default_fast`). See [docs/performance.md](docs/performance.md) for the speed of both.
+
+### One model per processor
+
+`PipelineOptions.Models` replaces single models of the package, like Python Stanza's `processors={'ner': 'i2b2'}`. Each
+key is a processor, each value a model's name or a package's name (that package's model). Every other processor keeps
+the package's model. With `Processors` null, the keys' processors are added to the package's (`mimic` has no ner);
+with `Processors` set, every key must be in it.
+
+```csharp
+// Clinical entities (PROBLEM, TEST, TREATMENT) on the mimic package, whose character models i2b2 shares
+var clinical = new PipelineOptions { Package = "mimic", Models = new Dictionary<string, string> { [Processor.Ner] = "i2b2" } };
+await ModelDownloader.DownloadAsync("models/stanza/en", clinical);
+using var nlp = Pipeline.Load("models/stanza/en", clinical);
+```
+
+The models beyond the packages':
+
+- English constituency: `ptb3_charlm` (the original Penn Treebank labels; the default is `ptb3-revised_charlm`).
+- English ner: `ontonotes_charlm` and `ontonotes_nocharlm` (OntoNotes only, with 300-dimensional fastText vectors, 123
+  MB), `combined_charlm` (three tag sets, of which Stanza uses OntoNotes'), and `i2b2` (clinical).
+- German ner: `conll03` (PER, LOC, ORG, MISC).
+
+Their output is byte-identical to Python Stanza's on both backends. Names are exact, as in Stanza (`ptb3` is not
+`ptb3_charlm`). An unknown, transformer or not yet supported name throws, and so does a choice whose models read two
+different character language models: `i2b2` reads mimic's, the default package's tagger 1billion's, so `ner = "i2b2"`
+needs `Package = "mimic"` or `Processors = "tokenize,mwt,ner"`. The tool takes the same as `--model ner=i2b2`.
+docs/per-processor-models-plan.md lists every other model and what it needs.
 
 ### Threads, concurrency and cancellation
 

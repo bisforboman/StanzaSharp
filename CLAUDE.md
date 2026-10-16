@@ -34,8 +34,27 @@ default from 0.5) or through TorchSharp (see "Managed backend").
   default package's models), `ewt`, `gum`, `lines`, `partut`, `atis`, `childes`, `eslspok` (no mwt; lemma `identity`)
   and the biomedical `craft`, `genia`, `mimic` (no mwt; own pretrains, mimic own charlms):
   tokenize, mwt, pos, lemma, depparse only, byte for byte on both backends (`TreebankPackageTests` against
-  `tests/golden/<package>/`). Per-processor model choice (NER conll03, ptb3 constituency, biomedical NER) is out of scope.
-  "Checkpoint findings (English treebank packages)" has what they needed.
+  `tests/golden/<package>/`). "Checkpoint findings (English treebank packages)" has what they needed.
+- **One model per processor** (owner's decisions, 2026-10-16; docs/per-processor-models-plan.md has the inventory and
+  the decisions): `PipelineOptions.Models` (`IReadOnlyDictionary<string, string>?`, `Processor` keys), Stanza's
+  `processors={'ner': 'i2b2'}`. A value is a model of `Pipeline.ModelsOf(lang, processor)` (the packages' models plus
+  `Pipeline.Alternatives`) or a package's name (its model). With `Processors` null the set is the package's processors
+  plus the keys (requirements added); with `Processors` set a key outside it throws. Like Stanza's add_mwt, a replaced
+  tokenizer brings its treebank's mwt unless Models names one. Unknown, transformer and unported names throw
+  `ArgumentException` listing the supported ones (Stanza warns and ignores), and so do models reading two charlm pairs
+  (`Pipeline.CheckOneCharlmPair`: the pipeline loads one pair; default + `ner: i2b2` throws, `mimic` + i2b2 works).
+  All in `SelectModels`, so Load, `ModelDownloader.FilesFor`/`DownloadAsync(dir, options)` and the tool (`--model
+  P=NAME`, repeatable or comma-separated, on download, compare, benchmark and the Cli sample) agree. compare/benchmark
+  pass Stanza the resolved processor → model map as a JSON processors dict (package None). Alternatives (first PR):
+  English constituency `ptb3_charlm`, ner `ontonotes_charlm`, `ontonotes_nocharlm` (fasttextcrawl pretrain, 300-d),
+  `combined_charlm` (3 tag sets, predict_tagset 0), `i2b2` (old format with a `PretrainedWordVocab` delta: lowercased
+  word looked up as is, spaces as U+00A0; mimic pretrain and charlms); German ner `conll03` (germeval2014's format).
+  Byte for byte on both backends (`ModelChoiceTests` against `tests/golden/models/<name>/`, `make_golden.py
+  --models-only`, `MODEL_CHOICES`; i2b2 on the mimic package also on a hand-written `models/clinical.txt`). A new
+  alternative needs `Alternatives`, `Dependencies`, `ModelDownloader.Files`, a `MODEL_CHOICES` row and a
+  `ModelChoiceTests` row (`EveryAlternative_HasItsFilesAndDependencies`, `EmbeddedResources_MatchModelDownloader`
+  check the tables). Later (not yet): the treebank `_nocharlm` pos/depparse (CI cache), the other domain NER models
+  and several charlm pairs per pipeline, the `_charlm` tokenizers and lemmatizers.
 - **Shared dependencies:** `pos`, `constituency`, `depparse`, `ner` and `sentiment` all depend on the
   pretrained word-vector file (pretrain). Every `_charlm` model also depends on the forward and backward
   character LMs (charlm); the `_nocharlm` ones have their own character LSTM (`Nn.CharacterModel`) instead.
@@ -761,6 +780,9 @@ What the English treebank packages' checkpoints add to the default package's pat
     the CLI (`download models/stanza/en --package ...`) on a miss. So that models-en doesn't take them in, shard 1 restores
     models-en with `actions/cache/restore` and saves it with `actions/cache/save` right after the convert step, before the
     treebank models arrive. cross-os and linux-arm64 don't have them: their no-skip checks exempt `TreebankPackageTests`.
+    The same cache holds `Pipeline.Alternatives`' English files (explicit paths, 501 MB: ptb3_charlm, the four NER
+    models, fasttextcrawl), and models-de-treebanks German ner conll03 (51 MB); their rows (`ModelChoiceTests`) are
+    exempt elsewhere the same way.
   - `cross-os (windows-2025)` / `cross-os (macos-26)` (Apple Silicon; `TorchSharp-cpu` brings
     `libtorch-cpu-osx-arm64`): build, full suite with `STANZASHARP_MODELS` = `models/stanza/en` (the
     `.pt` files, no Python or conversion), the same no-skip check, and both `verify-package.ps1` runs. Models are

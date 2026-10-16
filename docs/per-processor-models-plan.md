@@ -1,9 +1,31 @@
 # One model per processor (`processors={'ner': 'i2b2'}`): research and plan
 
 > **Owner's decision (2026-10-16):** support choosing a single alternative model per processor, as Stanza does. This
-> changes the API, so this file is phase 1: research and a proposal. Nothing is built until the owner approves.
+> changes the API, so this file was phase 1: research and a proposal.
 
-This is research only (2026-10-16). Nothing in `src/`, `tests/` or the workflows has changed. The inventory comes from
+## Owner's decisions (2026-10-16)
+
+1. **API: option A.** `PipelineOptions.Models` (processor → model, `Processor` keys), and `--model ner=i2b2`
+   (repeatable) on the tool's download, compare and benchmark and the Cli sample.
+2. **Keys add processors**, as in Stanza's dict form. With `Processors` null, the set is the package's processors plus
+   the keys of `Models`, and requirements are added as usual. With `Processors` set, a key outside it throws.
+   Unknown, transformer and unported names throw `ArgumentException` naming the supported choices, and so do two
+   charlm pairs.
+3. **First PR:** the API plus the drop-in set, **without** the treebank `_nocharlm` taggers and parsers (CI cache):
+   - constituency `ptb3_charlm`
+   - ner `ontonotes_charlm`, `ontonotes_nocharlm` (+ fasttextcrawl) and `combined_charlm`
+   - German ner `conll03`
+   - plus `i2b2`, with `Package = "mimic"` (the delta-vocabulary check fix)
+
+   The other domain NER models and multiple charlm pairs come in a later PR.
+4. Byte-exact against Stanza on both backends, with golden data per model (`make_golden.py --models-only`, a
+   hand-written clinical text for i2b2), the Linux golden shards' cache, and docs.
+
+Built in the same PR as this plan. The selection lives in `Pipeline.SelectModels`, the table in `Pipeline.Alternatives`,
+and the tests in `ModelChoiceTests`. The CI cache grows by 501 MB (English, in `models-en-treebanks`) and 51 MB (German
+`conll03`, in `models-de-treebanks`).
+
+The research below (2026-10-16) predates the build. The inventory comes from
 `src/StanzaSharp.Tool/stanza_resources_en.json` and `_de.json` (Stanza 1.15.0). Checkpoint sizes come from the Hugging
 Face tree API (`stanfordnlp/stanza-<lang>`, revision `v1.15.0`).
 

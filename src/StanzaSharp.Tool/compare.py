@@ -2,6 +2,9 @@
 
   python compare.py TEXT OUT MODELS LANG PACKAGE PROCESSORS VERSION
 
+PROCESSORS is a comma-separated list (each processor's model from PACKAGE), or a JSON object processor -> model (stanzasharp's
+--model), passed as Stanza's processors dict with package None, so Stanza loads exactly those models.
+
 Runs Stanza's LANG pipeline on TEXT (UTF-8 bytes, decoded like tools/make_golden.py) with the models in MODELS (Stanza's
 <processor>/<name>.pt files, in a folder of any name) and writes JSON to OUT: the CoNLL-U as make_golden.py writes it
 ("{:C}\\n"), the processors Stanza ran, the model files it loaded (<processor>/<name>.pt) and the load and processing
@@ -33,6 +36,8 @@ def load_stanza(models, lang, package, processors):
     Stanza reads <dir>/<lang>/<processor>/<name>.pt, so a folder not named after the language is linked under that name
     in this script's (temporary) folder while Stanza loads."""
     import stanza
+    if processors.startswith("{"):
+        processors, package = json.loads(processors), None
     here = os.path.dirname(os.path.abspath(__file__))
     models = os.path.abspath(models)
     link = None

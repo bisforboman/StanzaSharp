@@ -52,6 +52,19 @@ doesn't: a tokenizer without MWT heads, composite XPOS tags (`lines`, `partut`: 
 a caseless lemmatizer (`atis`), an MWT seq2seq model (`partut`), which Stanza decodes with a beam search of 5, a
 lemmatizer without a copy gate, and the parser's repair of heads with two subjects or objects (the biomedical ones).
 
+**One model per processor.** Each model `PipelineOptions.Models` can choose beyond the packages' runs against its own
+folder of `tests/golden/models/<processor>=<model>/` (`make_golden.py --models-only`; Stanza with the same
+processors dict). The texts are `corpus.txt`, `validation.txt` and a hand-written clinical note (`models/clinical.txt`,
+31 sentences). The models:
+
+- English constituency `ptb3_charlm` (tokenize, mwt, pos, constituency);
+- English ner `ontonotes_charlm`, `ontonotes_nocharlm` and `combined_charlm` (tokenize, mwt, ner);
+- English ner `i2b2` on the `mimic` package (tokenize, pos, lemma, depparse, ner; also with the charlm cache off);
+- German ner `conll03` (on German's `corpus.txt` and `validation.txt`).
+
+They exercise what the packages don't: a second pretrain next to conll17 (fastText crawl, 300-dimensional), a tag
+vocabulary with three tag sets, and the old NER checkpoint format with a fine-tuned delta embedding (`i2b2`).
+
 Every test above runs on both backends (the JSON comparison on the managed one: the writer does not depend on the backend): the managed backend (the default) and the TorchSharp backend
 (`StanzaSharp.Cuda`). The managed backend's kernels are also tested on each SIMD path a CPU can take (Vector512 with
 AVX-512, Vector256 with AVX2, Vector128, Scalar), so a machine without AVX2 or an Arm64 machine runs code that was
@@ -124,7 +137,7 @@ Test counts are passed xUnit test cases (each case of a theory counts, summed ov
 
 Every job that runs the model tests fails if any of them was skipped. The only exceptions are the tests that run
 `stanzasharp compare` and `benchmark` against Python Stanza (`Run_PythonStanza_*`, English and German), which only
-golden shard 2 installs and runs, and the German tests and the English treebank packages' tests outside `golden`: only
+golden shard 2 installs and runs, and the German tests, the English treebank packages' and the chosen models' tests outside `golden`: only
 the golden shards have those models (Stanza's `.pt` files, cached), so `cross-os` and `linux-arm64` run the English
 default packages only.
 
