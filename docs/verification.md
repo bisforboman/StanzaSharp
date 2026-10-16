@@ -69,6 +69,11 @@ processors dict). The texts are `corpus.txt`, `validation.txt` and a hand-writte
 - English ner `i2b2` on the `mimic` package (tokenize, pos, lemma, depparse, ner; also with the charlm cache off),
   and on the default package (all eight processors), where the pipeline loads two pairs of character language models
   (1billion, and mimic for ner): also with the cache off, and one-sentence calls against the uncached pipeline;
+- English ner `radiology` on the `mimic` package (its charlm reads lowercased characters, so it shares nothing with the
+  tagger) on a hand-written radiology report, `conll03_charlm` (GloVe vectors), and the eight biomedical models
+  (`anatem`, `bc4chemd`, `bc5cdr`, `bionlp13cg`, `jnlpba`, `linnaeus`, `ncbi_disease`, `s800`: cased word vectors,
+  PubMed charlms) with the `craft` package's tokenizer on a hand-written abstract (`models/biomedical.txt`), and
+  `bc5cdr` on the default package (two charlm pairs);
 - German ner `conll03` (on German's `corpus.txt` and `validation.txt`).
 
 They exercise what the packages don't: a second pretrain next to conll17 (fastText crawl, 300-dimensional), a tag

@@ -59,8 +59,14 @@ default from 0.5) or through TorchSharp (see "Managed backend").
   --models-only`, `MODEL_CHOICES`; i2b2 on the mimic package also on a hand-written `models/clinical.txt`). A new
   alternative needs `Alternatives`, `Dependencies`, `ModelDownloader.Files`, a `MODEL_CHOICES` row and a
   `ModelChoiceTests` row (`EveryAlternative_HasItsFilesAndDependencies`, `EmbeddedResources_MatchModelDownloader`
-  check the tables). Later (not yet): the treebank `_nocharlm` pos/depparse (CI cache), the other domain NER models,
-  the `_charlm` tokenizers and lemmatizers.
+  check the tables). The domain NER models (owner's decision, 2026-10-16, part 2): `conll03_charlm` (glove pretrain),
+  `radiology` (mimic) and the biomedical anatem, bc4chemd, bc5cdr, bionlp13cg, jnlpba, linnaeus, ncbi_disease, s800
+  (biomed pretrain, pubmed charlms; `lowercase: false`). `NerTagger` reads `lowercase` (the word as written for both
+  vocabs when off) and `char_lowercase` (radiology: each character lowercased alone, `LowerChars`, a multi-character
+  result being one unknown unit like Python's; then neither cache reads nor writes, since its charlm input differs from
+  the tagger's). Golden on hand-written `models/biomedical.txt` / `radiology.txt` (craft + each biomedical model,
+  default + bc5cdr, mimic + radiology). Later (not yet): the treebank `_nocharlm` pos/depparse (CI cache), the `_charlm`
+  tokenizers and lemmatizers.
 - **Shared dependencies:** `pos`, `constituency`, `depparse`, `ner` and `sentiment` all depend on the
   pretrained word-vector file (pretrain). Every `_charlm` model also depends on the forward and backward
   character LMs (charlm); the `_nocharlm` ones have their own character LSTM (`Nn.CharacterModel`) instead.

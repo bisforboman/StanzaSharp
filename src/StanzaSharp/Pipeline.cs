@@ -125,7 +125,13 @@ public sealed class Pipeline : IDisposable
         [English] = new()
         {
             ["constituency"] = ["ptb3_charlm"],
-            ["ner"] = ["ontonotes_charlm", "ontonotes_nocharlm", "combined_charlm", "i2b2"],
+            ["ner"] =
+            [
+                "ontonotes_charlm", "ontonotes_nocharlm", "combined_charlm", "conll03_charlm",
+
+                // clinical (mimic's vectors and charlms) and biomedical (biomed's vectors, pubmed's charlms)
+                "i2b2", "radiology", "anatem", "bc4chemd", "bc5cdr", "bionlp13cg", "jnlpba", "linnaeus", "ncbi_disease", "s800",
+            ],
         },
         ["de"] = new()
         {
@@ -163,6 +169,7 @@ public sealed class Pipeline : IDisposable
 
     private static readonly string[] Conll17 = ["pretrain/conll17"],
         EnglishCharlm = ["pretrain/conll17", "forward_charlm/1billion", "backward_charlm/1billion"],
+        Pubmed = ["pretrain/biomed", "forward_charlm/pubmed", "backward_charlm/pubmed"],
         GermanCharlm = ["pretrain/conll17", "forward_charlm/newswiki", "backward_charlm/newswiki"];
 
     // The shared files (pretrains, charlms) each model reads, by "<processor>/<model>": resources.json's "dependencies",
@@ -207,6 +214,16 @@ public sealed class Pipeline : IDisposable
             ["ner/ontonotes_nocharlm"] = ["pretrain/fasttextcrawl"],
             ["ner/combined_charlm"] = EnglishCharlm,
             ["ner/i2b2"] = ["pretrain/mimic", "forward_charlm/mimic", "backward_charlm/mimic"],
+            ["ner/radiology"] = ["pretrain/mimic", "forward_charlm/mimic", "backward_charlm/mimic"],
+            ["ner/conll03_charlm"] = ["pretrain/glove", "forward_charlm/1billion", "backward_charlm/1billion"],
+            ["ner/anatem"] = Pubmed,
+            ["ner/bc4chemd"] = Pubmed,
+            ["ner/bc5cdr"] = Pubmed,
+            ["ner/bionlp13cg"] = Pubmed,
+            ["ner/jnlpba"] = Pubmed,
+            ["ner/linnaeus"] = Pubmed,
+            ["ner/ncbi_disease"] = Pubmed,
+            ["ner/s800"] = Pubmed,
         },
         ["de"] = new()
         {

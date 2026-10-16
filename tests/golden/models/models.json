@@ -52,6 +52,18 @@
   ]
  },
  {
+  "name": "ner=conll03_charlm",
+  "package": "default",
+  "processors": "tokenize,mwt,ner",
+  "models": {
+   "ner": "conll03_charlm"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt"
+  ]
+ },
+ {
   "name": "ner=i2b2",
   "package": "mimic",
   "processors": "tokenize,pos,lemma,depparse,ner",
@@ -65,6 +77,19 @@
   ]
  },
  {
+  "name": "ner=radiology",
+  "package": "mimic",
+  "processors": "tokenize,pos,lemma,depparse,ner",
+  "models": {
+   "ner": "radiology"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "models/radiology.txt"
+  ]
+ },
+ {
   "name": "default+ner=i2b2",
   "package": "default",
   "processors": "tokenize,mwt,pos,lemma,constituency,depparse,sentiment,ner",
@@ -75,6 +100,123 @@
    "corpus.txt",
    "validation.txt",
    "models/clinical.txt"
+  ]
+ },
+ {
+  "name": "default+ner=bc5cdr",
+  "package": "default",
+  "processors": "tokenize,mwt,pos,lemma,constituency,depparse,sentiment,ner",
+  "models": {
+   "ner": "bc5cdr"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "models/biomedical.txt"
+  ]
+ },
+ {
+  "name": "ner=anatem",
+  "package": "craft",
+  "processors": "tokenize,ner",
+  "models": {
+   "ner": "anatem"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "models/biomedical.txt"
+  ]
+ },
+ {
+  "name": "ner=bc4chemd",
+  "package": "craft",
+  "processors": "tokenize,ner",
+  "models": {
+   "ner": "bc4chemd"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "models/biomedical.txt"
+  ]
+ },
+ {
+  "name": "ner=bc5cdr",
+  "package": "craft",
+  "processors": "tokenize,ner",
+  "models": {
+   "ner": "bc5cdr"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "models/biomedical.txt"
+  ]
+ },
+ {
+  "name": "ner=bionlp13cg",
+  "package": "craft",
+  "processors": "tokenize,ner",
+  "models": {
+   "ner": "bionlp13cg"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "models/biomedical.txt"
+  ]
+ },
+ {
+  "name": "ner=jnlpba",
+  "package": "craft",
+  "processors": "tokenize,ner",
+  "models": {
+   "ner": "jnlpba"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "models/biomedical.txt"
+  ]
+ },
+ {
+  "name": "ner=linnaeus",
+  "package": "craft",
+  "processors": "tokenize,ner",
+  "models": {
+   "ner": "linnaeus"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "models/biomedical.txt"
+  ]
+ },
+ {
+  "name": "ner=ncbi_disease",
+  "package": "craft",
+  "processors": "tokenize,ner",
+  "models": {
+   "ner": "ncbi_disease"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "models/biomedical.txt"
+  ]
+ },
+ {
+  "name": "ner=s800",
+  "package": "craft",
+  "processors": "tokenize,ner",
+  "models": {
+   "ner": "s800"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "models/biomedical.txt"
   ]
  }
 ]

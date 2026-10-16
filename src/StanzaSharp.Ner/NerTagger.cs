@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Text;
 using System.Text.Json.Nodes;
 using StanzaSharp.Nn;
 using StanzaSharp.Nn.Managed;
@@ -24,7 +25,7 @@ internal sealed class NerTagger : IDisposable
 
     private readonly Pretrain _pretrain;
     private readonly Dictionary<string, int>? _deltaVocab;
-    private readonly bool _deltaSpaces;
+    private readonly bool _deltaSpaces, _lowercase, _charLowercase;
     private readonly string[] _tags;
     private readonly float[] _transitions;
     private readonly int _batchSize;
@@ -40,6 +41,10 @@ internal sealed class NerTagger : IDisposable
 
         // The old format's delta (i2b2) is a PretrainedWordVocab, whose normalize_unit stores spaces as U+00A0.
         _deltaSpaces = vocab["_key2class"]?["delta"]?.GetValue<string>() == "PretrainedWordVocab";
+
+        // lowercase: the word for both vocabs (off in the biomedical models); char_lowercase: the characters (radiology).
+        _lowercase = config["lowercase"]?.GetValue<bool>() ?? true;
+        _charLowercase = config["char_lowercase"]?.GetValue<bool>() == true;
         _batchSize = config["batch_size"]!.GetValue<int>();
 
         // The tag vocab has one column per tag set ("multi" NER: OntoNotes and WorldWide here). Stanza
@@ -118,26 +123,34 @@ internal sealed class NerTagger : IDisposable
     {
         int batch = sentences.Count, width = sentences.Max(s => s.Count);
 
-        // extract_static_embeddings: the word is lowercased for both vocabs. A word the pretrain knows
-        // but the delta vocab doesn't gets the delta's zero PAD row rather than its UNK row.
+        // extract_static_embeddings: the word, lowercased if the model's lowercase is on, for both vocabs. A word the
+        // pretrain knows but the delta vocab doesn't gets the delta's zero PAD row rather than its UNK row.
         var wordIds = new long[batch * width];
         var deltaIds = new long[batch * width];
         for (int i = 0; i < batch; i++)
         {
             for (int j = 0; j < sentences[i].Count; j++)
             {
-                var lower = PyString.Lower(sentences[i][j]);
-                int word = _pretrain.UnitToId(lower);
+                var key = _lowercase ? PyString.Lower(sentences[i][j]) : sentences[i][j];
+                int word = _pretrain.UnitToId(key);
                 wordIds[i * width + j] = word;
                 if (_deltaVocab != null)
                 {
-                    int delta = _deltaVocab.GetValueOrDefault(_deltaSpaces ? lower.Replace(' ', ' ') : lower, UnkId);
+                    int delta = _deltaVocab.GetValueOrDefault(_deltaSpaces ? key.Replace(' ', '\u00A0') : key, UnkId);
                     deltaIds[i * width + j] = delta == UnkId && word != _pretrain.UnkId ? PadId : delta;
                 }
             }
         }
 
         // Rented (LOH-sized per batch): only the rows of each sentence's own tokens are written and read.
+        // DataLoader.preprocess: with char_lowercase the character model or charlms read lowercased characters, which
+        // differ from the tagger's charlm input, so nothing comes from or goes to the cache.
+        if (_charLowercase)
+        {
+            sentences = [.. sentences.Select(s => (IReadOnlyList<string>)[.. s.Select(LowerChars)])];
+            (charlms, cacheKeys) = (null, null);
+        }
+
         int nTags = _tags.Length;
         var logits = ArrayPool<float>.Shared.Rent(batch * width * nTags);
         try
@@ -271,8 +284,6 @@ internal sealed class NerTagger : IDisposable
 
         Require(config["bert_model"] == null && config["use_peft"]?.GetValue<bool>() != true, "a transformer");
         Require(config["char"]?.GetValue<bool>() == true && config["char_emb_dim"]?.GetValue<int>() > 0, "a configuration without character features");
-        Require(config["char_lowercase"]?.GetValue<bool>() != true, "char_lowercase");
-        Require(config["lowercase"]?.GetValue<bool>() != false, "a cased word embedding");
         Require(config["word_emb_dim"]?.GetValue<int>() == pretrain.Dim, "a word embedding not matching the pretrain");
         Require(config["input_transform"]?.GetValue<bool>() == true, "a configuration without input_transform");
         Require(config["connect_output_layers"]?.GetValue<bool>() != true, "connect_output_layers");
@@ -281,10 +292,29 @@ internal sealed class NerTagger : IDisposable
         // The word embedding is the pretrain's matrix (not saved in the checkpoint), indexed by this vocab.
         Require(vocab["word"]!["_id2unit"] is { } words && Checkpoint.Strings(words).Length == pretrain.Count, "a word vocab other than the pretrain's");
 
-        // extract_static_embeddings lowercases the word (lowercase, checked above) before either vocab's map, so a delta
-        // vocab's own lower flag changes nothing (the old format's PretrainedWordVocab has it off).
+        // extract_static_embeddings applies the model's lowercase before either vocab's map; a delta vocab's own lower
+        // flag would lowercase again, which only matters (and isn't ported) for a cased model.
         if (vocab["delta"] is { } delta)
+        {
             Require(delta["ignore"]?.AsArray().Count is null or 0, "emb_finetune_known_only (a delta vocab with ignored words)");
+            Require(config["lowercase"]?.GetValue<bool>() != false || delta["lower"]?.GetValue<bool>() != true, "a lowercasing delta vocab in a cased model");
+        }
+    }
+
+    /// <summary>
+    /// <c>char_lowercase</c>'s characters: Python lowercases each one on its own, and maps the result as one unit, so a
+    /// character whose lowercase is longer (İ) becomes the unknown character.
+    /// </summary>
+    internal static string LowerChars(string word)
+    {
+        var lowered = new StringBuilder(word.Length);
+        foreach (var rune in word.EnumerateRunes())
+        {
+            var lower = PyString.Lower(rune.ToString());
+            lowered.Append(lower.EnumerateRunes().Skip(1).Any() ? "\uFFFF" : lower);
+        }
+
+        return lowered.ToString();
     }
 
     /// <summary>Whether a checkpoint reads the shared charlms (<c>_charlm</c>) rather than its own character model (<c>_nocharlm</c>).</summary>
