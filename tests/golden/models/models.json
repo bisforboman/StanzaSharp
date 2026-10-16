@@ -85,7 +85,6 @@
   },
   "texts": [
    "corpus.txt",
-   "validation.txt",
    "models/radiology.txt"
   ]
  },
@@ -111,7 +110,6 @@
   },
   "texts": [
    "corpus.txt",
-   "validation.txt",
    "models/biomedical.txt"
   ]
  },
@@ -124,7 +122,6 @@
   },
   "texts": [
    "corpus.txt",
-   "validation.txt",
    "models/biomedical.txt"
   ]
  },
@@ -137,7 +134,6 @@
   },
   "texts": [
    "corpus.txt",
-   "validation.txt",
    "models/biomedical.txt"
   ]
  },
@@ -150,7 +146,6 @@
   },
   "texts": [
    "corpus.txt",
-   "validation.txt",
    "models/biomedical.txt"
   ]
  },
@@ -163,7 +158,6 @@
   },
   "texts": [
    "corpus.txt",
-   "validation.txt",
    "models/biomedical.txt"
   ]
  },
@@ -176,7 +170,6 @@
   },
   "texts": [
    "corpus.txt",
-   "validation.txt",
    "models/biomedical.txt"
   ]
  },
@@ -189,7 +182,6 @@
   },
   "texts": [
    "corpus.txt",
-   "validation.txt",
    "models/biomedical.txt"
   ]
  },
@@ -202,7 +194,6 @@
   },
   "texts": [
    "corpus.txt",
-   "validation.txt",
    "models/biomedical.txt"
   ]
  },
@@ -215,7 +206,6 @@
   },
   "texts": [
    "corpus.txt",
-   "validation.txt",
    "models/biomedical.txt"
   ]
  }
