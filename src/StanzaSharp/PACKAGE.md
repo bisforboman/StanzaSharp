@@ -59,6 +59,23 @@ The managed backend runs wherever .NET 10 runs. CI runs it against the golden da
 the models read-only rather than copying them into the image. A sample Dockerfile is in the repository's
 [samples/docker](https://github.com/bisforboman/StanzaSharp/tree/main/samples/docker).
 
+## Native AOT and trimming
+
+On the managed backend, apps can be published with Native AOT or trimmed (`PublishTrimmed`, self-contained): no trim or
+AOT warning, byte-identical output. `StanzaSharp.Cuda` is not supported there (TorchSharp isn't AOT-safe).
+
+```xml
+<PropertyGroup>
+  <PublishAot>true</PublishAot>
+  <!-- AVX2/FMA: the 256-bit kernels. Without it AOT runs the 128-bit ones, ~2x slower. -->
+  <IlcInstructionSet>x86-64-v3</IlcInstructionSet>
+</PropertyGroup>
+```
+
+Without `IlcInstructionSet` AOT runs the 128-bit kernels, about 2x slower; `x86-64-v3` needs AVX2/FMA (Intel from Haswell,
+AMD from Excavator), `x86-64-v4` gives the AVX-512 kernels on AVX-512 CPUs only. Arm64 needs nothing: NEON is its baseline. AOT
+needs `clang` and `zlib1g-dev` on Linux, Visual Studio's C++ workload on Windows.
+
 ## Download the models
 
 The models (about 600 MB) come from Stanza's Hugging Face repository. Download them once:

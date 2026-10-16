@@ -38,6 +38,9 @@
   <PropertyGroup Condition="'$([System.IO.Path]::GetFileName($([System.IO.Path]::GetDirectoryName($(MSBuildProjectDirectory)))))' == 'src'">
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <WarningsAsErrors>$(WarningsAsErrors);CS1591</WarningsAsErrors>
+    <!-- Trimming and Native AOT (docs/aot.md): the trim/AOT analyzers on every assembly of the StanzaSharp package, and
+         the assemblies marked trimmable. Not StanzaSharp.Cuda (TorchSharp isn't AOT-safe) or the Tool (a .NET tool). -->
+    <IsAotCompatible Condition="'$(MSBuildProjectName)' != 'StanzaSharp.Cuda' And '$(MSBuildProjectName)' != 'StanzaSharp.Tool'">true</IsAotCompatible>
   </PropertyGroup>
   <ItemGroup Condition="'$([System.IO.Path]::GetFileName($([System.IO.Path]::GetDirectoryName($(MSBuildProjectDirectory)))))' == 'src'">
     <InternalsVisibleTo Include="StanzaSharp;StanzaSharp.Cuda;StanzaSharp.Nn;StanzaSharp.Tokenize;StanzaSharp.Mwt;StanzaSharp.Pos;StanzaSharp.Lemma;StanzaSharp.Constituency;StanzaSharp.Depparse;StanzaSharp.Ner;StanzaSharp.Sentiment;StanzaSharp.Tool"

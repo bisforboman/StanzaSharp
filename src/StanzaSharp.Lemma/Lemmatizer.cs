@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using StanzaSharp.Nn;
 
 namespace StanzaSharp.Lemma;
@@ -50,7 +51,7 @@ internal sealed class Lemmatizer : IDisposable
 
         // trainer._unpack_pos_dict: {pos: {word: lemma}}, "*" holding the POS-independent entries.
         using (var gz = new GZipStream(new MemoryStream(Convert.FromBase64String(root["dicts"]!["$bytes"]!.GetValue<string>())), CompressionMode.Decompress))
-            _posDict = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string?>>>(gz)!;
+            _posDict = JsonSerializer.Deserialize(gz, LemmaJson.Default.DictionaryStringDictionaryStringString)!;
 
         var vocab = root["vocab"]!;
         _charToId = Checkpoint.UnitToId(vocab["char"]);
@@ -203,3 +204,7 @@ internal sealed class Lemmatizer : IDisposable
 
     public void Dispose() => _net.Dispose();
 }
+
+/// <summary>The dictionary's JSON, source-generated so that trimmed and Native AOT apps can read it (docs/aot.md).</summary>
+[JsonSerializable(typeof(Dictionary<string, Dictionary<string, string?>>))]
+internal sealed partial class LemmaJson : JsonSerializerContext;
