@@ -83,7 +83,7 @@ Reads <out>/corpus.txt and writes:
   models/<name>/<text>.conllu + models/models.json
                         single models chosen per processor (MODEL_CHOICES, Stanza's processors dict; StanzaSharp's
                         PipelineOptions.Models), e.g. models/ner=i2b2/, on corpus.txt (as corpus.conllu), validation.txt
-                        and models/*.txt (English: clinical.txt) (`--models-only`)
+                        and each choice's hand-written texts in models/ (clinical.txt, biomedical.txt, radiology.txt) (`--models-only`)
   pt/tiny_{legacy,zip}.pt + their stanza_convert.py output (.json/.safetensors)
                         small checkpoints in both torch.save formats for the C# .pt loader tests;
                         `python tools/make_golden.py --pt-only` regenerates just these
