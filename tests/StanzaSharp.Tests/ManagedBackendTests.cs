@@ -465,10 +465,24 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
                 Assert.ThrowsAny<OperationCanceledException>(() => lstm.Run(canceled.Token));
             }
 
-            var watch = Stopwatch.StartNew();
-            using (var later = new CancellationTokenSource(TimeSpan.FromMilliseconds(30)))
-                Assert.ThrowsAny<OperationCanceledException>(() => lstm.Run(later.Token));
-            output.WriteLine($"canceled after {watch.ElapsedMilliseconds} ms");
+            // Canceled from inside the run once step 100 of 3000 starts: the check before that step throws, so no later
+            // step runs (no timer, so a fast machine can't finish first).
+            const int stopAt = 100;
+            int last = -1;
+            using (var later = new CancellationTokenSource())
+            {
+                PackedLstm.OnStep = s => { last = s; if (s == stopAt) later.Cancel(); };
+                try
+                {
+                    Assert.ThrowsAny<OperationCanceledException>(() => lstm.Run(later.Token));
+                }
+                finally
+                {
+                    PackedLstm.OnStep = null;
+                }
+            }
+
+            Assert.Equal(stopAt, last);
             TokenizerTests.AssertClose(lstm.Expected, lstm.Run(), 1e-4f, "after cancel");
             return 0;
         });
