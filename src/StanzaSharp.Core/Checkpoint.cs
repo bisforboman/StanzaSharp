@@ -48,8 +48,7 @@ internal sealed class Checkpoint
             var text = bytes.AsSpan();
             if (text.StartsWith("﻿"u8))
                 text = text[3..];
-            ValidateStrings(text, basePath + ".json");
-            json = JsonNode.Parse(text) ?? throw new InvalidDataException($"{basePath}.json is null");
+            json = Parse(text, basePath + ".json");
         }
         catch (JsonException e)
         {
@@ -107,27 +106,130 @@ internal sealed class Checkpoint
     }
 
     /// <summary>
-    /// Throws for invalid UTF-8 or an escaped lone surrogate. <see cref="JsonNode"/> decodes strings lazily, so either
-    /// would otherwise throw <see cref="InvalidOperationException"/> later, wherever a model reads that name or value.
+    /// Parses a converted checkpoint's JSON like a <c>.pt</c> file's (round 36): its large flat containers (a str → int
+    /// object or a list of str, <see cref="PyContainer.IsLarge"/>) become <see cref="PyContainer"/> nodes, read in the
+    /// same pass that validates the strings, and the rest is parsed into nodes with those left out. Throws for invalid
+    /// UTF-8 or an escaped lone surrogate: <see cref="JsonNode"/> decodes strings lazily, so either would otherwise throw
+    /// <see cref="InvalidOperationException"/> later, wherever a model reads that name or value.
     /// </summary>
-    private static void ValidateStrings(ReadOnlySpan<byte> json, string path)
+    private static JsonNode Parse(ReadOnlySpan<byte> json, string path)
     {
         if (!Utf8.IsValid(json))
             throw new InvalidDataException($"{path} is not valid UTF-8");
+
+        // Each open container's path step (an index, or the current property name), and the innermost one's items while
+        // it may still be a large container (a container in it, or another kind of value, rules it out).
+        var steps = new List<object>();
+        var arrays = new List<bool>();
+        var large = new List<(object[] Steps, int Start, int End, object Value)>();
+        object? items = null;
+        string? key = null;
+        int start = 0;
         var reader = new Utf8JsonReader(json);
-        while (reader.Read())
+        try
         {
-            if (reader.TokenType is JsonTokenType.PropertyName or JsonTokenType.String && reader.ValueIsEscaped)
+            while (reader.Read())
             {
-                try
+                switch (reader.TokenType)
                 {
-                    reader.GetString();
-                }
-                catch (InvalidOperationException e)
-                {
-                    throw new InvalidDataException($"{path}: {e.Message}", e);
+                    case JsonTokenType.PropertyName:
+                        key = reader.GetString()!;
+                        steps[^1] = key;
+                        break;
+                    case JsonTokenType.StartObject or JsonTokenType.StartArray:
+                        bool tagged = arrays.Count > 0 && !arrays[^1] && key!.StartsWith('$'); // {"$tuple": [...]} and the like
+                        Value();
+                        bool array = reader.TokenType == JsonTokenType.StartArray;
+                        items = arrays.Count == 0 || tagged ? null : array ? new List<object?>() : new PyDict();
+                        start = (int)reader.TokenStartIndex;
+                        steps.Add(-1);
+                        arrays.Add(array);
+                        break;
+                    case JsonTokenType.EndObject or JsonTokenType.EndArray:
+                        if (items is PyDict { Count: >= PyContainer.MinCount } or List<object?> { Count: >= PyContainer.MinCount })
+                        {
+                            large.Add((steps[..^1].ToArray(), start, (int)reader.BytesConsumed, items));
+                        }
+
+                        items = null;
+                        steps.RemoveAt(steps.Count - 1);
+                        arrays.RemoveAt(arrays.Count - 1);
+                        break;
+                    case JsonTokenType.String:
+                        if (items is List<object?> strings)
+                        {
+                            strings.Add(reader.GetString());
+                            Count();
+                        }
+                        else
+                        {
+                            if (reader.ValueIsEscaped)
+                                reader.GetString();
+                            Value();
+                        }
+
+                        break;
+                    case JsonTokenType.Number:
+                        if (items is PyDict dict && reader.TryGetInt64(out long id) && dict.TryAdd(key!, id))
+                            Count();
+                        else
+                            Value();
+                        break;
+                    default:
+                        Value();
+                        break;
                 }
             }
+        }
+        catch (InvalidOperationException e)
+        {
+            throw new InvalidDataException($"{path}: {e.Message}", e);
+        }
+
+        JsonNode root;
+        if (large.Count == 0)
+        {
+            root = JsonNode.Parse(json) ?? throw new InvalidDataException($"{path} is null");
+        }
+        else
+        {
+            var rest = new ArrayBufferWriter<byte>(json.Length);
+            int at = 0;
+            foreach (var (_, from, end, _) in large)
+            {
+                rest.Write(json[at..from]);
+                rest.Write("null"u8);
+                at = end;
+            }
+
+            rest.Write(json[at..]);
+            root = JsonNode.Parse(rest.WrittenSpan) ?? throw new InvalidDataException($"{path} is null");
+            foreach (var (where, _, _, value) in large)
+            {
+                var parent = root;
+                foreach (var step in where.AsSpan(0, where.Length - 1))
+                    parent = (step is string name ? parent.AsObject()[name] : parent.AsArray()[(int)step])!;
+                if (where[^1] is string last)
+                    parent.AsObject()[last] = PyContainer.Node(value);
+                else
+                    parent.AsArray()[(int)where[^1]] = PyContainer.Node(value);
+            }
+        }
+
+        return root;
+
+        // A value (or a container's start) in the innermost container: its index there, and it rules that one out.
+        void Value()
+        {
+            if (arrays.Count > 0 && arrays[^1])
+                steps[^1] = (int)steps[^1] + 1;
+            items = null;
+        }
+
+        void Count()
+        {
+            if (arrays[^1])
+                steps[^1] = (int)steps[^1] + 1;
         }
     }
 

@@ -23,6 +23,9 @@ def main():
     p.add_argument('--text', default='one')
     p.add_argument('--calls', type=int, default=6)
     p.add_argument('--threads', type=int)
+    p.add_argument('--lang')
+    p.add_argument('--package')
+    p.add_argument('--hash', action='store_true', help='each process hashes every golden text instead of timing calls')
     p.add_argument('settings', nargs='+')
     a = p.parse_args()
 
@@ -39,11 +42,16 @@ def main():
                    '--text', a.text, '--calls', str(a.calls)]
             if a.threads:
                 cmd += ['--threads', str(a.threads)]
+            for opt in ('lang', 'package'):
+                if getattr(a, opt):
+                    cmd += [f'--{opt}', getattr(a, opt)]
+            if a.hash:
+                cmd += ['--hash']
             out = subprocess.run(cmd, capture_output=True, text=True, env={**os.environ, **env})
-            m = re.search(r'load=(\S+) jit=(\d+)/(\S+) cpu=(\S+) peak=(\S+) calls=(\S+) hash=(\w+)', out.stdout)
+            m = re.search(r'load=(\S+) jit=(\d+)/(\S+) cpu=(\S+) peak=(\S+)(?: calls=(\S+))? hash=(\w+)', out.stdout)
             if not m:
                 sys.exit(f'{name}: {out.stdout}{out.stderr}')
-            calls = [tuple(float(x) for x in c.split('/')) for c in m.group(6).split(',')]
+            calls = [tuple(float(x) for x in c.split('/')) for c in m.group(6).split(',')] if m.group(6) else []
             results[name].append(dict(load=float(m.group(1)), jm=int(m.group(2)), jt=float(m.group(3)), cpu=float(m.group(4)),
                                       peak=float(m.group(5)), calls=calls, hash=m.group(7)))
             print(f'round {r + 1} {name}: {out.stdout.strip()}', file=sys.stderr, flush=True)
