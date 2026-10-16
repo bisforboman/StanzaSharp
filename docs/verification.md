@@ -52,6 +52,13 @@ doesn't: a tokenizer without MWT heads, composite XPOS tags (`lines`, `partut`: 
 a caseless lemmatizer (`atis`), an MWT seq2seq model (`partut`), which Stanza decodes with a beam search of 5, a
 lemmatizer without a copy gate, and the parser's repair of heads with two subjects or objects (the biomedical ones).
 
+**Fuzzing.** `tools/text_fuzz.py` generates seeded adversarial texts (control and zero-width characters, every
+newline and space, emoji sequences, bidi marks, combining and decomposed forms, scripts outside the BMP, URLs and
+e-mails, tokens around `max_seqlen`, paragraphs past the 1,000-unit window, punctuation runs, contractions) and
+compares Stanza's CoNLL-U with StanzaSharp's on each, byte for byte, offsets included. Its findings, shrunk to small
+texts, are kept in `tests/golden/fuzz.json` (and `de/fuzz.json`) and checked for both packages:
+[Differential text fuzzing](text-fuzzing.md) has the method, the runs and the results.
+
 Every test above runs on both backends (the JSON comparison on the managed one: the writer does not depend on the backend): the managed backend (the default) and the TorchSharp backend
 (`StanzaSharp.Cuda`). The managed backend's kernels are also tested on each SIMD path a CPU can take (Vector512 with
 AVX-512, Vector256 with AVX2, Vector128, Scalar), so a machine without AVX2 or an Arm64 machine runs code that was

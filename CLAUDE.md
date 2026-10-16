@@ -263,6 +263,9 @@ Tokenizer notes:
 - `FixLabels` runs the e-mail/URL regex (`MaskRe`) only on paragraphs containing one of `MaskLiterals` (`@`, `://`,
   `www.`, `.gov` ... read off the pattern's alternatives; round 16). If the pattern changes, re-derive them; the
   `MaskLiterals_*` tests check every alternative and a fuzz.
+- Regexes Stanza runs over a paragraph's code points (`STRUCTURAL_FEATURES`, `MASK_RE`) run on `Paragraph.CodePoints`,
+  one char per unit (a non-BMP digit → `٠`, letter/number → `ª`, else U+FFFD), so match indices are unit indices; on
+  the UTF-16 text a surrogate pair broke `\b` and counted twice in `{2,}` (found by `tools/text_fuzz.py`).
 - Model units are code points, like Python. Offsets are UTF-16 indices, so they differ from
   Stanza's only after non-BMP characters.
 - MWT-flagged tokens (`Token.IsMwtCandidate`) carry a single word until the MWT stage runs.
@@ -658,6 +661,9 @@ What the English treebank packages' checkpoints add to the default package's pat
   - `process_document/` (`--process-document-only`): `input.conllu` (tokenize,mwt on corpus.txt with every annotation
     wrong and a `(ROOT (X wrong))` tree), `corpus.conllu` / `corpus.fast.conllu` = `nlp.process(CoNLL.conll2doc(...),
     processors=` all loaded but tokenize, mwt`)`. The default output equals `pipeline.conllu`.
+  - `fuzz.json` (`--fuzz-only`): `FUZZ_TEXTS` (German: `GERMAN["FUZZ_TEXTS"]`), the minimized differences
+    `tools/text_fuzz.py` found (docs/text-fuzzing.md), each processed alone by both packages; compared with code-point
+    offsets (`TokenizerTests.Pipeline_FuzzFindings_MatchGolden`). Add a new finding's shrunk text there.
   - `pretokenized/` (`--pretokenized-only`): `inputs.json` (cases of token lists, plus `corpus`: corpus.txt's
     Stanza tokens) and `<name>.conllu` / `<name>.fast.conllu` for both packages.
   - `bulk/<package>.json` (`--bulk-only`): one `bulk_process` call over `BULK_TEXTS` (tiny, empty and
