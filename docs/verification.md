@@ -21,7 +21,7 @@ The tests compare StanzaSharp's output with it **byte for byte**, with no tolera
 | Annotating a document (`Process(Document)`, Stanza's `process_conllu`), both packages | `corpus.txt` after tokenize and mwt, read from CoNLL-U with every annotation wrong (tags, lemmas, features, heads, relations, NER, a tree): 10 sentences | the CoNLL-U |
 | Tokenizer edge cases | a paragraph over 1,000 characters, more paragraphs than one batch | tokens, sentences and offsets |
 | Parts | MWT expansions of a word list (dictionary and classifier); the dependency parser's tree decoding on tie-heavy score matrices | the expansions and trees |
-| Model loading | Stanza's 14 `.pt` checkpoints, read by StanzaSharp's own unpickler | every tensor byte-identical to torch's |
+| Model loading | the 14 `.pt` checkpoints of the English `default` and `default_fast` packages, read by StanzaSharp's own unpickler | every tensor byte-identical to torch's |
 
 The validation texts are news, academic writing, instructions, social media, dialogue and poetry, technical text,
 multilingual names and quotes, contractions, long sentences, unusual whitespace (CRLF, tabs) and characters outside
@@ -98,7 +98,9 @@ sentence) with a tolerance. Largest differences from Python Stanza measured on t
   under 3× the drift. German: smallest margin 1.2e-2 over 4,575 steps, drift 7.6e-5. German MWT's seq2seq: smallest
   margin 0.14 between the best and second-best character, drift 6.0e-5 (`MwtTests.Seq2Seq_German_ManagedMatchesTorchSharp`,
   which also fails under 3×). On UD English EWT (254,589 words, 684,407 parser decisions; not in the repository) no tree and no
-  lemma differed between Python Stanza, the TorchSharp backend and the managed backend.
+  lemma differed between Python Stanza, the TorchSharp backend and the managed backend. On UD German GSD and HDT test
+  (652,046 words, both packages, every processor) no output differed among the three either; the smallest ratio of a
+  parser margin to the backends' margin difference is 11 (EWT: 15) ([german-divergence.md](german-divergence.md)).
 
 Per-processor details: [backends.md](backends.md#phase-2-progress). On a GPU the output is identical with TF32 turned
 off (`disableTf32: true`); with TF32 on, 3 of 845 golden sentences differed on an RTX 3080 ([gpu.md](gpu.md)).
@@ -106,16 +108,17 @@ off (`disableTf32: true`); with TF32 on, 3 of 845 golden sentences differed on a
 ## Where it is checked
 
 [CI](../.github/workflows/ci.yml) runs on free GitHub-hosted runners. All eight jobs are required checks on `main`.
-Test counts are passed xUnit test cases (each case of a theory counts) in `main`'s run of 2026-10-11:
+Test counts are passed xUnit test cases (each case of a theory counts, summed over a job's shards) in `main`'s run
+[38833187727](https://github.com/bisforboman/StanzaSharp/actions/runs/38833187727) of 2026-10-16:
 
 | Job | Runner | What it checks |
 |---|---|---|
-| `build-test` | ubuntu-26.04 (x64) | builds with warnings as errors, checks the code style, runs the 196 tests that need no models |
-| `golden` (3 shards) | ubuntu-26.04 (x64) | the whole suite on both backends against downloaded models, original and converted (377 tests); then packs the packages and builds fresh apps from them: `StanzaSharp` alone must reproduce the golden CoNLL-U with nothing of TorchSharp loaded, and `StanzaSharp.Cuda` with `TorchSharp-cpu` must too; then installs the `stanzasharp` tool and downloads models with it |
-| `cross-os (windows-2025)` | Windows x64 | the whole suite on both backends, reading Stanza's `.pt` files directly (377 tests), and both package checks |
-| `cross-os (macos-26)` | macOS, Apple Silicon | the same (355 tests: Arm64 has no Vector256 path) |
-| `cross-os (windows-11-arm)` | Windows on Arm64 | the same suite (355 tests) and only the managed package check (`TorchSharp-cpu` has no Arm64 libtorch) |
-| `linux-arm64` | ubuntu-26.04-arm | every managed-backend test (235; there is no libtorch for Linux Arm64) and the managed package check |
+| `build-test` | ubuntu-26.04 (x64) | builds with warnings as errors, checks the code style, runs the 263 tests that need no models |
+| `golden` (3 shards) | ubuntu-26.04 (x64) | the whole suite on both backends against downloaded models, original and converted, English and German, every package (590 tests); then packs the packages and builds fresh apps from them: `StanzaSharp` alone must reproduce the golden CoNLL-U with nothing of TorchSharp loaded, and `StanzaSharp.Cuda` with `TorchSharp-cpu` must too; then installs the `stanzasharp` tool and downloads models with it |
+| `cross-os (windows-2025)` | Windows x64 | the whole suite on both backends, reading Stanza's `.pt` files directly (447 tests; the English default packages), and both package checks |
+| `cross-os (macos-26)` | macOS, Apple Silicon | the same (422 tests: Arm64 has no Vector256 path) |
+| `cross-os (windows-11-arm)` | Windows on Arm64 | the same suite (422 tests) and only the managed package check (`TorchSharp-cpu` has no Arm64 libtorch) |
+| `linux-arm64` | ubuntu-26.04-arm | every managed-backend test (260; there is no libtorch for Linux Arm64) and the managed package check |
 | `docker` | ubuntu-26.04 | the [Docker sample](../samples/docker/Dockerfile) on `runtime:10.0` and `runtime:10.0-noble-chiseled`: no libtorch in the image, and the container turns `corpus.txt` into the golden CoNLL-U byte for byte |
 | `alpine` | ubuntu-26.04 | the same on `runtime:10.0-alpine` (musl) |
 
@@ -149,22 +152,34 @@ stanzasharp compare my-text.txt --lang de
 It checks the model files' MD5s on both sides and converts the offsets after non-BMP characters before comparing.
 Exit code 0 means identical. More: [the tool's README](../src/StanzaSharp.Tool/README.md#check-it-yourself).
 
+Before 1.9.0 (2026-10-16, main d5deefe, managed backend), `compare` ran on five short texts written for it, none in
+the golden data ([`docs/spot-check/`](spot-check)). Every one gave identical CoNLL-U, byte for byte:
+
+| Text | Package | Sentences, words | What it tries |
+|---|---|---:|---|
+| [`ewt.txt`](spot-check/ewt.txt) | `ewt` | 7, 109 | everyday English: chores, brunch, a flight at 6:15 |
+| [`partut.txt`](spot-check/partut.txt) | `partut` | 7, 120 | contractions, `'90s`, `'98`, 15%, 4:30 p.m., quotes: the seq2seq MWT with beam search |
+| [`mimic.txt`](spot-check/mimic.txt) | `mimic` | 8, 130 | clinical abbreviations (`h/o`, `s/p`, `SpO2`, `N/V`, doses): its own charlms and word vectors |
+| [`default.txt`](spot-check/default.txt) | `default` | 5, 80 | news with money, a hyphenated compound and a quote, all eight processors |
+| [`de.txt`](spot-check/de.txt) | German `default` | 5, 82 | German news with „…“ quotes and umlauts, all eight processors |
+
 ## Speed on the free runners
 
 `stanzasharp benchmark` times StanzaSharp and Python Stanza on the same text with the same models, on your machine. The
 manual [Benchmark workflow](../.github/workflows/benchmark.yml) runs it on every free GitHub-hosted runner. Run
-[38203172080](https://github.com/bisforboman/StanzaSharp/actions/runs/38203172080) (2026-10-12, all eight processors on 2,009 words, each side's default threads) gave
-identical CoNLL-U on every runner with Python Stanza, and:
+[38735518300](https://github.com/bisforboman/StanzaSharp/actions/runs/38735518300) (2026-10-15, StanzaSharp
+1.7.0-12-g873f8c9, English `default`, all eight processors on 2,009 words, each side's default threads) gave identical
+CoNLL-U on every runner, and:
 
 | Runner | StanzaSharp words/s | Python Stanza words/s | Speed-up | Per call (one sentence), median | Peak memory |
 |---|---:|---:|---:|---:|---:|
-| ubuntu-26.04 (Intel Xeon, 2 cores) | 217 | 105 | 2.1× | 131 / 285 ms | 1,140 / 3,557 MB |
-| ubuntu-26.04-arm (4 cores) | 219 | 80 | 2.7× | 91 / 640 ms | 1,145 / 3,708 MB |
-| windows-2025 (AMD EPYC, 2 cores) | 238 | 63 | 3.8× | 73 / 323 ms | 1,065 / 3,594 MB |
-| windows-11-arm (4 cores) | 219 | (no Python Stanza) | | 91 ms | 1,023 MB |
-| macos-26 (Apple M1, 3 vCPUs) | 203 | 62 | 3.3× | 118 / 397 ms | 865 / 2,226 MB |
+| ubuntu-26.04 (AMD EPYC 7763, 2 cores) | 274 | 68 | 4.1× | 93 / 276 ms | 1,031 / 3,549 MB |
+| ubuntu-26.04-arm (4 cores) | 257 | 79 | 3.2× | 89 / 661 ms | 1,160 / 3,704 MB |
+| windows-2025 (AMD EPYC 7763, 2 cores) | 273 | 59 | 4.7× | 122 / 352 ms | 981 / 3,606 MB |
+| windows-11-arm (4 cores) | 257 | 29 | 8.9× | 87 / 553 ms | 925 / 3,509 MB |
+| macos-26 (Apple M1, 3 vCPUs) | 214 | 53 | 4.0× | 150 / 520 ms | 806 / 2,785 MB |
 
-The workflow's Python Stanza install fails on windows-11-arm, so that row is StanzaSharp only. The runners are
-shared virtual machines whose CPU model can change between runs (ubuntu-26.04 was an AMD EPYC in an earlier run), so
-compare numbers within one run. More, including how to run it yourself:
+German `default` is 2.4–7.4× faster than Python Stanza on the same runners, `default_fast` 1.8–4.4×, with identical
+CoNLL-U ([round 33](performance/round-33-german-benchmark.md)). The runners are shared virtual machines whose CPU model
+can change between runs (ubuntu-26.04 was an Intel Xeon in an earlier run), so compare numbers within one run. More, including how to run it yourself:
 [performance.md](performance.md#run-it-yourself).
