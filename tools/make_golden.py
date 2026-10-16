@@ -78,6 +78,8 @@ Reads <out>/corpus.txt and writes:
                         package=<package> (all its processors, tokenize to depparse) on corpus.txt (as corpus.conllu)
                         and each validation*.txt, plus mwt.json where the package has mwt (`--treebank-only`, some of
                         them with `--packages`)
+  fuzz.json             both packages on FUZZ_TEXTS, each processed alone: minimized texts on which tools/text_fuzz.py
+                        found StanzaSharp's output differing from Stanza's (`--fuzz-only`; see write_fuzz_golden)
   pt/tiny_{legacy,zip}.pt + their stanza_convert.py output (.json/.safetensors)
                         small checkpoints in both torch.save formats for the C# .pt loader tests;
                         `python tools/make_golden.py --pt-only` regenerates just these
@@ -782,6 +784,30 @@ def write_long_token_golden(models, out):
     assert pre([["see", long_url(MAX_SEQLEN + 100)]]).sentences[0].tokens[1].text == long_url(MAX_SEQLEN + 100)
 
 
+# Minimized differences found by tools/text_fuzz.py (docs/text-fuzzing.md): characters outside the BMP in the regexes
+# Stanza runs over code points, a CJK Extension B letter before "C:" (labeled_field's \b) and an emoji as a URL's
+# [^\s"]{2,} tail (MASK_RE).
+FUZZ_TEXTS = [
+    "\U00020001C:",
+    "Go to example.com.\U0001F600 now",
+    "Open https://a.\U0001F600 please",
+    "the end.\U0001F600 Next www.a.\U0001F600 Then",
+]
+
+
+def write_fuzz_golden(models, out):
+    """fuzz.json: {"texts": FUZZ_TEXTS, <package>: [the CoNLL-U of each text processed alone]} for both packages."""
+    result = {"texts": FUZZ_TEXTS}
+    for package in PACKAGES:
+        nlp = stanza.Pipeline(LANG, dir=models, package=package, download_method=None, use_gpu=False,
+                              logging_level="WARN")
+        with torch.no_grad():
+            result[package] = ["{:C}\n".format(nlp(t)) for t in FUZZ_TEXTS]
+    (out / "fuzz.json").write_text(json.dumps(result, ensure_ascii=False, indent=1) + "\n", encoding="utf-8",
+                                   newline="\n")
+    print(f"fuzz.json: {len(FUZZ_TEXTS)} texts")
+
+
 JSON_TEXT = ('  "Hello," she said. I don\'t.\tIt\'s Barack Obama\'s café in New York\u00a0City, see C:\\temp\\x!\r\n\r\n'
              'We can\'t\x1cgo (won\'t)  ')
 JSON_OUTPUTS = {"default": None, "default_fast": None, "pos": "tokenize,mwt,pos"}  # file name -> processors
@@ -872,6 +898,11 @@ GERMAN = {
     # German's tokenizer has max_seqlen 400.
     "JSON_TEXT": ('  „Hallo“, sagte sie. Wir gehen zum.\tAngela Merkel wohnt im Haus in Berlin\u00a0Mitte, siehe C:\\temp\\x!\r\n\r\n'
                   'Das "ist"\x1cgut (am Ende)  '),
+    "FUZZ_TEXTS": [
+        "Go to example.com.\U0001F600 now",
+        "Open https://a.\U0001F600 please",
+        "the end.\U0001F600 Next www.a.\U0001F600 Then",
+    ],
     "MAX_SEQLEN": 400,
     "LONG_TOKEN_TEXT": "\n\n".join([
         f"Die Studie nannte {long_url(500)} als Quelle. Später wurde sie gelöscht.",
@@ -898,6 +929,7 @@ def main():
     p.add_argument("--pretokenized-only", action="store_true", help="only regenerate pretokenized/")
     p.add_argument("--bulk-only", action="store_true", help="only regenerate bulk/")
     p.add_argument("--no-ssplit-only", action="store_true", help="only regenerate no_ssplit/ (tokenize_no_ssplit)")
+    p.add_argument("--fuzz-only", action="store_true", help="only regenerate fuzz.json")
     p.add_argument("--long-token-only", action="store_true", help="only regenerate long_token.*")
     p.add_argument("--upos64-only", action="store_true", help="only add the float64 UPOS logits to the intermediates")
     p.add_argument("--json-only", action="store_true", help="only regenerate json/ (str(doc))")
@@ -914,6 +946,9 @@ def main():
         return
     if args.long_token_only:
         write_long_token_golden(args.models, out)
+        return
+    if args.fuzz_only:
+        write_fuzz_golden(args.models, out)
         return
     if args.treebank_only:
         write_treebank_golden(args.models, out, args.packages and args.packages.split(","))
@@ -1019,6 +1054,7 @@ def main():
     write_bulk_golden(args.models, out)
     write_no_ssplit_golden(args.models, out)
     write_long_token_golden(args.models, out)
+    write_fuzz_golden(args.models, out)
     write_json_golden(args.models, out)
     write_process_document_golden(args.models, out)
     write_treebank_golden(args.models, out)

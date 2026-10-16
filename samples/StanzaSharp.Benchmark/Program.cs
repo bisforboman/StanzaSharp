@@ -49,6 +49,8 @@ if (args is ["lemma-divergence", ..])
     return LemmaDivergence.Run(args[1..]); // tools/lemma_divergence.py; docs/backends.md, "lemma"
 if (args is ["constituency-divergence", ..])
     return ConstituencyDivergence.Run(args[1..]); // tools/constituency_divergence.py; docs/backends.md, "constituency"
+if (args is ["text-fuzz", ..])
+    return TextFuzz.Run(args[1..]); // tools/text_fuzz.py; docs/text-fuzzing.md
 if (args is ["startup", ..])
     return Startup.Run(args[1..], FindRepoRoot()); // tools/startup.py; docs/performance/round-17-startup.md
 if (args is ["managed-spike", ..])

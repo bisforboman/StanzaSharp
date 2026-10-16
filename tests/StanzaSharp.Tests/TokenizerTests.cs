@@ -100,6 +100,32 @@ public class TokenizerTests(ITestOutputHelper output, SharedPipelines pipelines)
         Assert.Equal(url, nlp.Process([["see", url]]).Sentences[0].Tokens[1].Text);
     }
 
+    /// <summary>
+    /// tests/golden/fuzz.json: the texts tools/text_fuzz.py found differing from Stanza, minimized, each processed alone
+    /// and compared byte for byte (offsets as code points, like Stanza's).
+    /// </summary>
+    [ModelTheory]
+    [InlineData("default", false, "en")]
+    [InlineData("default_fast", false, "en")]
+    [InlineData("default", true, "en")]
+    [InlineData("default_fast", true, "en")]
+    [German("default", false)]
+    [German("default_fast", false)]
+    [German("default", true)]
+    [German("default_fast", true)]
+    public void Pipeline_FuzzFindings_MatchGolden(string package, bool managed, string lang)
+    {
+        var nlp = pipelines.Get(package, managed, lang: lang);
+        var golden = JsonNode.Parse(File.ReadAllText(Path.Combine(Repo.GoldenFor(lang), "fuzz.json")))!;
+        var texts = golden["texts"]!.AsArray();
+        var expected = golden[package]!.AsArray();
+        for (int i = 0; i < texts.Count; i++)
+        {
+            var text = texts[i]!.GetValue<string>();
+            Assert.Equal(expected[i]!.GetValue<string>(), Tool.ConlluDiff.ToCodePointOffsets(Conllu.Write(nlp.Process(text)), text));
+        }
+    }
+
     [ModelTheory]
     [InlineData(false)]
     [InlineData(true)]
