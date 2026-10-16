@@ -125,6 +125,14 @@ public sealed class Pipeline : IDisposable
         [English] = new()
         {
             ["constituency"] = ["ptb3_charlm"],
+
+            // the treebanks' own _nocharlm taggers and parsers (mimic has only a parser); combined's are default_fast's
+            ["pos"] = ["ewt_nocharlm", "gum_nocharlm", "lines_nocharlm", "partut_nocharlm", "atis_nocharlm", "childes_nocharlm", "eslspok_nocharlm"],
+            ["depparse"] =
+            [
+                "ewt_nocharlm", "gum_nocharlm", "lines_nocharlm", "partut_nocharlm", "atis_nocharlm", "childes_nocharlm", "eslspok_nocharlm",
+                "mimic_nocharlm",
+            ],
             ["ner"] =
             [
                 "ontonotes_charlm", "ontonotes_nocharlm", "combined_charlm", "conll03_charlm",
@@ -135,6 +143,8 @@ public sealed class Pipeline : IDisposable
         },
         ["de"] = new()
         {
+            ["pos"] = ["gsd_nocharlm", "hdt_nocharlm"],
+            ["depparse"] = ["gsd_nocharlm", "hdt_nocharlm"],
             ["ner"] = ["conll03"],
         },
     };
@@ -210,6 +220,21 @@ public sealed class Pipeline : IDisposable
 
             // Alternatives
             ["constituency/ptb3_charlm"] = EnglishCharlm,
+            ["pos/ewt_nocharlm"] = Conll17,
+            ["depparse/ewt_nocharlm"] = Conll17,
+            ["pos/gum_nocharlm"] = Conll17,
+            ["depparse/gum_nocharlm"] = Conll17,
+            ["pos/lines_nocharlm"] = Conll17,
+            ["depparse/lines_nocharlm"] = Conll17,
+            ["pos/partut_nocharlm"] = Conll17,
+            ["depparse/partut_nocharlm"] = Conll17,
+            ["pos/atis_nocharlm"] = Conll17,
+            ["depparse/atis_nocharlm"] = Conll17,
+            ["pos/childes_nocharlm"] = Conll17,
+            ["depparse/childes_nocharlm"] = Conll17,
+            ["pos/eslspok_nocharlm"] = Conll17,
+            ["depparse/eslspok_nocharlm"] = Conll17,
+            ["depparse/mimic_nocharlm"] = ["pretrain/mimic"],
             ["ner/ontonotes_charlm"] = ["pretrain/fasttextcrawl", "forward_charlm/1billion", "backward_charlm/1billion"],
             ["ner/ontonotes_nocharlm"] = ["pretrain/fasttextcrawl"],
             ["ner/combined_charlm"] = EnglishCharlm,
@@ -240,6 +265,10 @@ public sealed class Pipeline : IDisposable
             ["depparse/hdt_charlm"] = GermanCharlm,
 
             // Alternatives
+            ["pos/gsd_nocharlm"] = Conll17,
+            ["depparse/gsd_nocharlm"] = Conll17,
+            ["pos/hdt_nocharlm"] = Conll17,
+            ["depparse/hdt_nocharlm"] = Conll17,
             ["ner/conll03"] = ["pretrain/fasttextwiki", "forward_charlm/newswiki", "backward_charlm/newswiki"],
         },
     };

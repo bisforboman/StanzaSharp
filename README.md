@@ -324,6 +324,11 @@ The models beyond the packages':
   genetics, 16 types), `jnlpba` (proteins, DNA, RNA, cell lines and types), `linnaeus` and `s800` (species) and
   `ncbi_disease` (diseases), which read biomedical word vectors and PubMed character models (about 470 MB together).
 - German ner: `conll03` (PER, LOC, ORG, MISC).
+- The treebanks' taggers and parsers without character language models (their own character LSTM, like
+  `default_fast`'s): English pos and depparse `ewt_nocharlm`, `gum_nocharlm`, `lines_nocharlm`, `partut_nocharlm`,
+  `atis_nocharlm`, `childes_nocharlm`, `eslspok_nocharlm`, depparse `mimic_nocharlm`; German pos and depparse
+  `gsd_nocharlm`, `hdt_nocharlm` (e.g. `Package = "ewt"` with `[Processor.Pos] = "ewt_nocharlm"` and
+  `[Processor.Depparse] = "ewt_nocharlm"`).
 
 Their output is byte-identical to Python Stanza's on both backends. Names are exact, as in Stanza (`ptb3` is not
 `ptb3_charlm`). An unknown, transformer or not yet supported name throws. A model may read other character language

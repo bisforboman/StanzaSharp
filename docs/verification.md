@@ -75,6 +75,10 @@ processors dict). The texts are `corpus.txt`, `validation.txt` and a hand-writte
   PubMed charlms) with the `craft` package's tokenizer on a hand-written abstract (`models/biomedical.txt`), and
   `bc5cdr` on the default package (two charlm pairs);
 - German ner `conll03` (on German's `corpus.txt` and `validation.txt`).
+- the treebanks' taggers and parsers without character language models, on their package's tokenizer, mwt and lemmatizer
+  (tokenize to depparse, `corpus.txt` only): English pos and depparse `ewt_nocharlm`, `gum_nocharlm`, `lines_nocharlm`,
+  `partut_nocharlm`, `atis_nocharlm`, `childes_nocharlm`, `eslspok_nocharlm`, depparse `mimic_nocharlm` (with mimic's
+  tagger), and German pos and depparse `gsd_nocharlm` and `hdt_nocharlm`.
 
 They exercise what the packages don't: a second pretrain next to conll17 (fastText crawl, 300-dimensional), a tag
 vocabulary with three tag sets, and the old NER checkpoint format with a fine-tuned delta embedding (`i2b2`).
