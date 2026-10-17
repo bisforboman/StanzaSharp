@@ -1319,7 +1319,10 @@ What the English treebank packages' checkpoints add to the default package's pat
     callers (busy threads − awake workers > 1) reset `_shed` to 0 and void the window: shedding there starved long calls
     (owner's tuning request). `Work` lowers `_busy` before raising `_sleepers` and vice versa so that count never
     over-counts. Only who runs items changes, never the split. Internal, no option (a public one would be the owner's
-    decision).
+    decision). `ParallelFor_ShedsWorkersWhileJoinsStallAndBringsThemBack` asserts that a shed worker comes back, not
+    that all do (2026-10-17): with fewer free cores than its 4 threads (taskset 2 cores, the 3-core macOS runner at
+    times) the pool's own threads stall for real and it settles at 1–2 shed by design; requiring 0 failed about one
+    run in three there. Don't tighten it back.
   - `PackedLstm.Step` runs 4 tasks per thread (`TasksPerThread`; round 16): a late thread then holds a quarter of its
     share. Tried and dropped: fewer tasks for small steps (a work threshold, or timing each size class: biased by
     asleep workers, 25–50% slower on the Arm runners). A panel's arithmetic doesn't depend on its task.
