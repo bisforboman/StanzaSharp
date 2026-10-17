@@ -502,7 +502,7 @@ public sealed class Pipeline : IDisposable
         options ??= new PipelineOptions();
         if (!Directory.Exists(modelDir))
             throw new DirectoryNotFoundException($"Model directory not found: {modelDir} (download them with ModelDownloader.DownloadAsync or \"stanzasharp download\")");
-        var models = SelectModels(options.Package, options.Processors, addRequired: false, nameof(options), options.Language, options.Models);
+        var models = SelectModels(options.Package, options.Processors, addRequired: false, nameof(options), options.Language, options.Models, options.Pretagged);
         if (options.CharlmCache.IsEnabled && options.CharlmCache.MaxWords <= 0)
             throw new ArgumentOutOfRangeException(nameof(options), "CharlmCache.MaxWords must be positive; set IsEnabled = false to turn the cache off");
         if (options.Threads < 1)
@@ -569,7 +569,7 @@ public sealed class Pipeline : IDisposable
     /// <paramref name="processors"/> is null.
     /// </summary>
     internal static Dictionary<string, string> SelectModels(string package, string? processors, bool addRequired, string paramName, string language = English,
-        IReadOnlyDictionary<string, string>? chosen = null)
+        IReadOnlyDictionary<string, string>? chosen = null, bool pretagged = false)
     {
         if (!Packages.TryGetValue(language ?? "", out var packages))
             throw new ArgumentException($"Unknown language '{language}'. Available: {string.Join(", ", Packages.Keys)}", paramName);
@@ -595,13 +595,20 @@ public sealed class Pipeline : IDisposable
         if (processors != null && overrides.Keys.FirstOrDefault(p => !set.Contains(p)) is { } unlisted)
             throw new ArgumentException($"Models names {unlisted}, which Processors ({processors}) doesn't list", paramName);
 
+        // Pretagged (Stanza's pretagged): lemma, depparse and constituency need nothing; the tokenizer always loads, so the
+        // text overloads keep working (owner's decision, 2026-10-17).
+        if (pretagged)
+            set.Add("tokenize");
+
         // Stanza's add_mwt: tokenize brings the package's mwt along (tokenize,ner expands "don't" too).
         if (set.Contains("tokenize") && models.ContainsKey("mwt"))
             set.Add("mwt");
         foreach (var p in set.ToList())
         {
             // What the package lacks isn't required (eslspok has no mwt); the identity lemmatizer reads no UPOS.
-            var needs = p == "lemma" && models.GetValueOrDefault(p) == IdentityLemma ? ["tokenize"] : Requires[p];
+            var needs = pretagged && p is "lemma" or "depparse" or "constituency" ? []
+                : p == "lemma" && models.GetValueOrDefault(p) == IdentityLemma ? ["tokenize"]
+                : Requires[p];
             var missing = needs.Where(n => !set.Contains(n) && models.ContainsKey(n)).ToList();
             if (missing.Count > 0 && !addRequired && processors != null)
                 throw new ArgumentException($"Processor '{p}' requires {string.Join(", ", missing)}", paramName);

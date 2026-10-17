@@ -161,6 +161,8 @@ foreach (var sentence in doc.Sentences)
     else all logical processors (managed), or libtorch's own default (TorchSharp); never more than
     `Environment.ProcessorCount`, which respects a container's CPU quota.
   - `SplitSentences = false`: one sentence per paragraph (Stanza's `tokenize_no_ssplit`).
+  - `Pretagged`: lemma, depparse and constituency load without the tagger (Stanza's `pretagged`), for
+    `Process(Document)` on documents that already carry tags.
   - `VerifyChecksums`: checks the `.pt` model files against Stanza's MD5s before loading.
   - `Logger`: an `ILogger` for load and processing times.
 - `Processor.Tokenize`, ..., `Processor.Ner` are constants for the processor list.

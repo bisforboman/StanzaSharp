@@ -74,6 +74,9 @@ Reads <out>/corpus.txt and writes:
                         Pipeline.process on CoNLL.conll2doc of tokenize,mwt's output for corpus.txt with wrong
                         annotations, running every processor but tokenize and mwt (`--process-document-only`; see
                         write_process_document_golden)
+  pretagged/<name>.conllu
+                        pretagged=True pipelines (only lemma, depparse and/or constituency loaded) on golden CoNLL-U
+                        files that already carry tags, some with fields removed (PRETAGGED_CASES, `--pretagged-only`)
   <package>/            the treebank packages (TREEBANK_PACKAGES: English ewt/, gum/, ..., German de/gsd/, de/hdt/):
                         package=<package> (all its processors, tokenize to depparse) on corpus.txt (as corpus.conllu)
                         and each validation*.txt, plus mwt.json where the package has mwt (`--treebank-only`, some of
@@ -992,6 +995,54 @@ def write_process_document_golden(models, out):
         print(f"process_document/corpus{suffix}.conllu: {','.join(processors)}, {len(result.sentences)} sentences")
 
 
+# pretagged/<name>.conllu: (input, processors, package, fields removed from every word). Inputs are golden files:
+# fast/ has default_fast's tags and lemmas (another tagger's, as a user's would be), process_document/input.conllu
+# every annotation wrong. Run with Pipeline(processors=..., pretagged=True), which loads only those processors.
+# "sentiment" drops the `# sentiment` comments: Stanza keeps comments in input order, so a new `# constituency` would
+# follow them, while Conllu.Write always writes it first (CLAUDE.md, Process(Document)).
+PRETAGGED_CASES = {
+    "depparse": ("fast/corpus.conllu", "depparse", "default", ()),
+    "constituency": ("fast/corpus.conllu", "constituency", "default", ("sentiment",)),
+    "lemma": ("process_document/input.conllu", "lemma", "default", ()),
+    "all": ("process_document/input.conllu", "lemma,depparse,constituency", "default", ()),
+    "all.fast": ("process_document/input.conllu", "lemma,depparse", "default_fast", ()),
+    "validation": ("fast/validation.conllu", "lemma,depparse,constituency", "default", ("sentiment",)),
+    "depparse_nolemma": ("fast/corpus.conllu", "depparse", "default", ("lemma",)),
+    "depparse_noxpos": ("fast/corpus.conllu", "depparse", "default", ("xpos",)),
+    "lemma_noupos": ("fast/corpus.conllu", "lemma", "default", ("upos", "lemma")),
+}
+
+
+def write_pretagged_golden(models, out):
+    """
+    pretagged/: Stanza's pretagged=True pipelines (lemma, depparse, constituency without the processors they require)
+    on documents read with CoNLL.conll2doc that already carry tags, run by nlp.process(doc). PRETAGGED_CASES lists them.
+    """
+    folder = out / "pretagged"
+    folder.mkdir(exist_ok=True)
+    pipelines = {}
+    for name, (source, processors, package, strip) in PRETAGGED_CASES.items():
+        key = (processors, package)
+        if key not in pipelines:
+            pipelines[key] = stanza.Pipeline(LANG, dir=models, package=package, processors=processors, pretagged=True,
+                                             download_method=None, use_gpu=False, logging_level="WARN")
+        nlp = pipelines[key]
+        assert set(nlp.processors) == set(processors.split(",")), (name, list(nlp.processors))
+        text = (out / source).read_text(encoding="utf-8")
+        if "sentiment" in strip:
+            text = "".join(line for line in text.splitlines(keepends=True) if not line.startswith("# sentiment = "))
+        doc = CoNLL.conll2doc(input_str=text)
+        for sentence in doc.sentences:
+            for word in sentence.words:
+                for field in strip:
+                    if field != "sentiment":
+                        setattr(word, field, None)
+        with torch.no_grad():
+            result = nlp.process(doc)
+        (folder / f"{name}.conllu").write_text("{:C}\n".format(result), encoding="utf-8", newline="\n")
+        print(f"pretagged/{name}.conllu: {processors} ({package}) on {source}, {len(result.sentences)} sentences")
+
+
 # --lang de: the German word lists, replacing the English ones above. The German texts are hand-written for
 # tests/golden/de (no copyrighted text); the MST cases and the pt/ fixtures are language-independent, so English only.
 GERMAN = {
@@ -1059,6 +1110,7 @@ def main():
     p.add_argument("--upos64-only", action="store_true", help="only add the float64 UPOS logits to the intermediates")
     p.add_argument("--json-only", action="store_true", help="only regenerate json/ (str(doc))")
     p.add_argument("--process-document-only", action="store_true", help="only regenerate process_document/")
+    p.add_argument("--pretagged-only", action="store_true", help="only regenerate pretagged/ (pretagged=True pipelines)")
     p.add_argument("--treebank-only", action="store_true", help="only regenerate the treebank packages' folders (ewt/, ..., de/gsd/, de/hdt/)")
     p.add_argument("--packages", default=None, help="with --treebank-only: only these treebank packages (comma-separated)")
     p.add_argument("--models-only", action="store_true", help="only regenerate models/ (MODEL_CHOICES: single models chosen per processor)")
@@ -1088,6 +1140,9 @@ def main():
         return
     if args.process_document_only:
         write_process_document_golden(args.models, out)
+        return
+    if args.pretagged_only:
+        write_pretagged_golden(args.models, out)
         return
     if args.pretokenized_only:
         write_pretokenized_golden(args.models, out)
@@ -1187,6 +1242,8 @@ def main():
     write_fuzz_golden(args.models, out)
     write_json_golden(args.models, out)
     write_process_document_golden(args.models, out)
+    if LANG == "en":
+        write_pretagged_golden(args.models, out)
     write_treebank_golden(args.models, out)
     write_models_golden(args.models, out)
 
