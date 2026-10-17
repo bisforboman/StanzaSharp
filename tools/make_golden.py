@@ -1136,7 +1136,8 @@ TRANSFORMER = "google/electra-large-discriminator"
 # Words that exercise the tokenizer's normalizer, pre-tokenizer and WordPiece (docs/transformer-plan.md): accents
 # composed and decomposed, İ, soft hyphens and zero-width characters (alone they vanish: fix_blank_tokens), controls,
 # private use and unassigned characters, non-BMP letters and emoji, CJK, Hangul, other scripts, Unicode punctuation,
-# words of 100 and 101 characters (max_input_chars_per_word), words with spaces inside, and the special tokens' texts.
+# words of 100 and 101 characters (max_input_chars_per_word), words with spaces inside, the special tokens' texts, a
+# sentence of blank words only, and one of over 512 pieces.
 TRANSFORMER_TOKENIZER_CASES = [
     ["İstanbul", "naïve", "café", "café", "Ångström", "ﬁnance", "Straße", "ΣΟΦΙΑΣ", "Ὀδυσσεύς", "Москва", "ǅungla"],
     ["co­op", "­", "a​b", "​", "‍", "﻿", "x\u0007y", "\u0085", "", "\U000e0001", "͸", "ok"],
@@ -1145,6 +1146,9 @@ TRANSFORMER_TOKENIZER_CASES = [
     ["a" * 100, "b" * 101, "x" * 99 + "é", "supercalifragilisticexpialidocious", "antidisestablishmentarianism"],
     ["New York", "x y", "a\tb", "tab\t", "　", "[CLS]", "[SEP]", "[UNK]", "[PAD]", "[MASK]", "##ing"],
     ["???", "?!?", "!!!", "!?", "??", "...", "--", "'''", '""', "(", ")", "[", "]", "{", "}"],
+    ["\u00ad", "\u200b", "\ufe0f"],  # every word blank: all become "-"
+    # Over the model's 512 positions (the tokenizer doesn't truncate; Stanza's build_cloned_features windows it).
+    ("Unbelievably, antidisestablishmentarianism reappeared " * 60).split(),
 ]
 
 

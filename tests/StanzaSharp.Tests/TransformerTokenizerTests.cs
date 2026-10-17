@@ -43,6 +43,7 @@ public class TransformerTokenizerTests(ITestOutputHelper output)
 
         output.WriteLine($"{cases} cases, {failures} differ");
         Assert.True(cases > 1000);
+        Assert.Contains(golden.RootElement.GetProperty("cases").EnumerateArray(), c => c.GetProperty("ids").GetArrayLength() > 512);
         Assert.Equal(0, failures);
     }
 
@@ -53,6 +54,15 @@ public class TransformerTokenizerTests(ITestOutputHelper output)
         Assert.Equal([tokenizer.Cls, tokenizer.Cls, tokenizer.Pad, tokenizer.Sep], tokenizer.Encode(["[CLS][PAD]"]).Ids);
         Assert.Equal([tokenizer.Cls, tokenizer.Unk, tokenizer.Sep], tokenizer.Encode(["[UNK]"]).Ids);
         Assert.Equal([-1, 0, 0, 0, -1], tokenizer.Encode(["a[SEP]b"]).Words);
+    }
+
+    [TransformerFact("tokenizer.json")]
+    public void AnEmptySentenceIsClsAndSep()
+    {
+        // Python: tokenizer([[]], is_split_into_words=True) is [101, 102]; convert_to_position_list gives [0, 1].
+        var input = TransformerInput.Build(WordPiece.Load(TokenizerJson), []);
+        Assert.Equal([101, 102], input.Ids);
+        Assert.Equal([0, 1], input.Positions);
     }
 
     private static string Escape(string s) => string.Concat(s.Select(c => c < ' ' || c > '~' ? $"\\u{(int)c:x4}" : c.ToString()));
