@@ -29,6 +29,7 @@ The seam sits at each processor's **network**: one small interface per processor
 | depparse | `IDepparseNet.Forward(DepparseBatch, labelScores, ct)` → `DepparseScores` (arc log-probs, label argmax, optional label scores) | `DepparseNet` | `ManagedDepparseNet` |
 | sentiment | `ISentimentNet.Forward(batch, ids, extraIds, width, charlms, cacheKeys, ct)` → [batch, classes] logits | `SentimentNet` | `ManagedSentimentNet` |
 | lemma, German mwt | `ISeq2SeqNet.Encode(ids, batch, width, posIds, lengths, ct, beam, contextual)` (contextual: a `_charlm` lemmatizer's per-step charlm states) → `ISeq2SeqDecoder` (edit logits; `Step(previous, ct)` → [batch, columns] log-probs) | `Seq2SeqNet` | `ManagedSeq2SeqNet` |
+| lemma `combined_charlm`'s contextual classifiers | `ILemmaClassifierNet.Forward(sentences, ids, deltaIds, uposIds, width, positions, ct)` → [targets, labels] logits | `LemmaClassifierNet` | `ManagedLemmaClassifierNet` |
 | constituency | `IConstituencyNet`: `EncodeWords`, `Word`, `Score` → [states, transitions] scores, `Open`, `Compose`, `PushTransitions`, `PushConstituents` over opaque handles | `ConstituencyNet` | `ManagedConstituencyNet` |
 
 - **Shared:** everything around the network stays in the processor and serves both backends. That covers paragraph

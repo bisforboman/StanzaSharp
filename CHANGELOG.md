@@ -8,6 +8,39 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 Unreleased changes are one file each under [`changes/`](changes/README.md), so pull requests don't conflict here;
 a release folds them in (`python tools/changelog.py release X.Y.Z`).
 
+## [1.11.0] - 2026-10-17
+
+1.11: every remaining non-transformer treebank model for `PipelineOptions.Models` (including the contextual lemma
+classifiers), `PipelineOptions.Pretagged`, faster German and converted-model loads, and less garbage on long texts.
+Additive; no behaviour change.
+
+### Added
+- The treebanks' tokenizers and lemmatizers with character language models for `PipelineOptions.Models`
+  (`--model tokenize=NAME,lemma=NAME`): English tokenize `combined_charlm`, `ewt_charlm`, `gum_charlm`, `lines_charlm`,
+  `partut_charlm`, `atis_charlm`, `childes_charlm` and `eslspok_charlm`, lemma `ewt_charlm`, `gum_charlm`,
+  `lines_charlm`, `partut_charlm`, `atis_charlm` and `childes_charlm`, German tokenize and lemma `combined_charlm`,
+  `gsd_charlm` and `hdt_charlm`, byte-identical to Python Stanza on both backends.
+- English lemma `combined_charlm` for `PipelineOptions.Models` (`--model lemma=combined_charlm`), with its contextual
+  lemma classifiers: from the whole sentence they choose the lemma of `'s` (AUX: be or have) and `her` (PRON: she or
+  her). It also reads the pretrained word vectors, which the download fetches. Byte-identical to Python Stanza on both
+  backends.
+- The treebanks' taggers and parsers without character language models for `PipelineOptions.Models`
+  (`--model pos=NAME,depparse=NAME`): English pos and depparse `ewt_nocharlm`, `gum_nocharlm`, `lines_nocharlm`,
+  `partut_nocharlm`, `atis_nocharlm`, `childes_nocharlm`, `eslspok_nocharlm` and depparse `mimic_nocharlm`, German pos
+  and depparse `gsd_nocharlm` and `hdt_nocharlm`, byte-identical to Python Stanza on both backends.
+- `PipelineOptions.Pretagged`, Stanza's `pretagged=True`: lemma, depparse and constituency load without the processors
+  they require (`Processors = "depparse"` loads the parser without the tagger), for `Process(Document)` on documents
+  that already carry tags and lemmas. The downloader follows it. Byte-identical to Python Stanza on both backends.
+
+### Changed
+- Converted models (`tools/stanza_convert.py`'s `.json` + `.safetensors`) load 15-25% faster: their large
+  vocabularies are read straight into lookup tables, as the `.pt` files' have been since 1.5.0, instead of through JSON
+  nodes.
+- German `Pipeline.Load` is about 15% faster: the lemmatizer keeps its 524,460-entry dictionary as the JSON's bytes
+  with a hash table over them, instead of half a million strings (English unchanged).
+- Long texts allocate less garbage (managed backend): the dependency parser's Chu-Liu/Edmonds decoding works in rented
+  buffers, and the constituency parser reuses its per-step score buffer and lists. Outputs are unchanged bit for bit.
+
 ## [1.10.0] - 2026-10-16
 
 1.10: ten more NER models and several character-model pairs in one pipeline, both through `PipelineOptions.Models`,

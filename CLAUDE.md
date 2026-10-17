@@ -72,8 +72,10 @@ default from 0.5) or through TorchSharp (see "Managed backend").
   package (`depparse=mimic_nocharlm` on mimic), corpus.txt only; their own CI cache (`models-treebank-choices`, about 1.2 GB,
   tools/ci-models.sh `en-treebank-choices` + `de-treebank-choices`). The `_charlm` tokenizers and lemmatizers (owner's
   decision, 2026-10-16, part 4): English tokenize `{combined,ewt,gum,lines,partut,atis,childes,eslspok}_charlm`, lemma
-  `{ewt,gum,lines,partut,atis,childes}_charlm`, German tokenize and lemma `{combined,gsd,hdt}_charlm`; English lemma
-  `combined_charlm` stays unsupported (its contextual `LemmaClassifier`s; the error says so). They read per-character charlm
+  `{ewt,gum,lines,partut,atis,childes}_charlm`, German tokenize and lemma `{combined,gsd,hdt}_charlm`, and (owner's
+  decision, 2026-10-17) English lemma `combined_charlm` with its contextual `LemmaClassifier`s ("Checkpoint findings",
+  lemma; golden row `lemma=combined_charlm` on the default package, corpus + validation + validation_contractions: 33
+  decisions, 4 changing the lemma, `contextual.json` logits, `ContextualLemmaClassifiers_MatchGoldenLogits`). They read per-character charlm
   states (`Nn.IPerCharLanguageModel`, "Checkpoint findings (English treebank packages)"); golden rows
   `tokenize+lemma=<tb>_charlm` (tokenize only for eslspok and `combined`, which also runs `tokenize_stress.txt`), each lemma
   row with `seq2seq.json` (the model alone on every corpus.txt word, `CharlmLemmatizer_Seq2Seq_MatchesGolden`); the same
@@ -493,6 +495,18 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
   - Seq2seq: char embedding 50 (vocab 234), UPOS embedding 50 prepended as an extra encoder step,
     1-layer biLSTM 2×100, `LSTMCell` decoder 200 with `soft` (dot) attention, greedy (`beam_size` 1),
     `max_dec_len` 50. No charlm, not caseless, no contextual lemmatizers.
+  - The alternative `combined_charlm` (`Lemma.LemmaClassifier`): the `_charlm` seq2seq (below) plus two `contextual`
+    `LemmaClassifierLSTM`s (stanza/models/lemma_classifier/lstm_model.py, trainer.predict_contextual), applied last
+    first after the dictionary/seq2seq lemmas: `'s` AUX → be/have, `her` PRON → she/her (`target_words` matched
+    lowercased, `target_upos`). Each runs **once per document**, every target word a row with its whole sentence,
+    padded (ids 0) to the longest; argmax replaces the lemma. Per word [conll17 row of the lowercased word +
+    `delta_embedding` row | `upos_emb` 20 | forward charlm | backward charlm] (2168; build_char_representation over the
+    word texts, no simplify_punct), a 1-layer biLSTM 2×128 **unpacked** (Stanza packs every row at the padded width:
+    `lengths` iterates the padded tensor), the output at the target, MLP 256 → 64 → ReLU → 2. Delta ids are 0-based
+    (`enumerate(known_words)`, so the first word shares the padding row with unknowns; a repeated word's last index
+    wins). The lemma model's resources.json dependencies add conll17, so `BackendModels.Lemma` takes a pretrain. Net
+    seam `ILemmaClassifierNet` (`LemmaClassifierNet` / `ManagedLemmaClassifierNet`: `ManagedLstm.ForwardUnpacked`,
+    `Gemm`; no new kernel). Not ported (unused): attention (`num_heads` > 0), no-charlm, the transformer variant.
   - `copy`: a copy gate mixes the vocab distribution with attention over the source chars (minus the
     POS step), scattered onto char ids. Characters missing from the vocab get ids past it (DeltaVocab,
     built per document over the model's words in code point order), so they can be copied.

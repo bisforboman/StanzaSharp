@@ -87,6 +87,8 @@ public class ModelChoiceTests
     [ModelChoice("en", "tokenize=eslspok_charlm", true)]
     [ModelChoice("en", "tokenize=combined_charlm", false)]
     [ModelChoice("en", "tokenize=combined_charlm", true)]
+    [ModelChoice("en", "lemma=combined_charlm", false)]
+    [ModelChoice("en", "lemma=combined_charlm", true)]
     [ModelChoice("de", "tokenize+lemma=combined_charlm", false)]
     [ModelChoice("de", "tokenize+lemma=combined_charlm", true)]
     [ModelChoice("de", "tokenize+lemma=gsd_charlm", false)]
@@ -119,6 +121,8 @@ public class ModelChoiceTests
     [ModelChoice("en", "tokenize+lemma=atis_charlm", true)]
     [ModelChoice("en", "tokenize+lemma=childes_charlm", false)]
     [ModelChoice("en", "tokenize+lemma=childes_charlm", true)]
+    [ModelChoice("en", "lemma=combined_charlm", false)]
+    [ModelChoice("en", "lemma=combined_charlm", true)]
     [ModelChoice("de", "tokenize+lemma=combined_charlm", false)]
     [ModelChoice("de", "tokenize+lemma=combined_charlm", true)]
     [ModelChoice("de", "tokenize+lemma=gsd_charlm", false)]
@@ -127,28 +131,94 @@ public class ModelChoiceTests
     [ModelChoice("de", "tokenize+lemma=hdt_charlm", true)]
     public void CharlmLemmatizer_Seq2Seq_MatchesGolden(string name, bool managed, string lang)
     {
-        var dir = ModelChoiceAttribute.ModelsFor(lang);
-        var model = ModelChoiceAttribute.Options(ModelChoiceAttribute.Choice(lang, name), lang).Models["lemma"];
-        var charlms = Pipeline.Dependencies[lang][$"lemma/{model}"].Select(p => Path.Combine(dir, p)).ToArray();
-        var basePath = Path.Combine(dir, "lemma", model);
         var golden = JsonNode.Parse(File.ReadAllText(Path.Combine(Repo.GoldenFor(lang), "models", name, "seq2seq.json")))!.AsArray();
         var words = golden.Select(g => new Word { Text = (string)g!["word"]!, Upos = (string?)g["upos"] }).ToList();
-        (List<string> Decoded, List<int> Edits) actual;
-        if (managed)
-        {
-            using var lemmatizer = Lemmatizer.LoadManaged(basePath, ManagedCharLanguageModel.Load(charlms[0]), ManagedCharLanguageModel.Load(charlms[1]));
-            actual = lemmatizer.Predict(words);
-        }
-        else
-        {
-            using var forward = CharLanguageModel.Load(charlms[0]);
-            using var backward = CharLanguageModel.Load(charlms[1]);
-            using var lemmatizer = Lemmatizer.Load(basePath, forward: forward, backward: backward);
-            actual = lemmatizer.Predict(words);
-        }
-
+        using var models = new ChosenLemmatizer(name, managed, lang);
+        var actual = models.Lemmatizer.Predict(words);
         Assert.Equal(golden.Select(g => (string)g!["seq2seq"]!), actual.Decoded);
         Assert.Equal(golden.Select(g => (int)g!["edit"]!), actual.Edits);
+    }
+
+    /// <summary>
+    /// lemma combined_charlm's contextual classifiers ('s AUX: be/have, her PRON: she/her) on each golden file read back
+    /// (Stanza's words and tags): the same target words, in Stanza's order, with the same labels and logits within 1e-4
+    /// (contextual.json). Each classifier runs once per document, every target word a row of one padded batch.
+    /// </summary>
+    [ModelTheory]
+    [ModelChoice("en", "lemma=combined_charlm", false)]
+    [ModelChoice("en", "lemma=combined_charlm", true)]
+    public void ContextualLemmaClassifiers_MatchGoldenLogits(string name, bool managed, string lang)
+    {
+        var folder = Path.Combine(Repo.GoldenFor(lang), "models", name);
+        var golden = JsonNode.Parse(File.ReadAllText(Path.Combine(folder, "contextual.json")))!.AsObject();
+        using var models = new ChosenLemmatizer(name, managed, lang);
+        int decided = 0;
+        foreach (var (stem, rows) in golden)
+        {
+            var expected = rows!.AsArray();
+            var doc = Conllu.Read(File.ReadAllText(Path.Combine(folder, stem + ".conllu")));
+            var labels = new List<string>();
+            var logits = new List<float>();
+            models.Lemmatizer.Process(doc, onContextual: (names, values) =>
+            {
+                for (int r = 0; r < values.Length / names.Length; r++)
+                {
+                    var row = values.AsSpan(r * names.Length, names.Length);
+                    int best = 0;
+                    for (int k = 1; k < row.Length; k++)
+                        best = row[k] > row[best] ? k : best;
+                    labels.Add(names[best]);
+                }
+
+                logits.AddRange(values);
+            });
+            Assert.Equal(expected.Select(e => (string)e!["label"]!), labels);
+            TokenizerTests.AssertClose([.. expected.SelectMany(e => e!["logits"]!.AsArray().Select(x => (float)x!))], [.. logits], 1e-4f, $"{stem} logits");
+            decided += labels.Count;
+        }
+
+        Assert.True(decided >= 30, $"only {decided} contextual decisions");
+    }
+
+    /// <summary>A golden choice's lemmatizer, alone, with the pretrain and charlms its model reads (Pipeline.Dependencies), on one backend.</summary>
+    private sealed class ChosenLemmatizer : IDisposable
+    {
+        private readonly List<IDisposable> _owned = [];
+
+        public ChosenLemmatizer(string name, bool managed, string lang)
+        {
+            var dir = ModelChoiceAttribute.ModelsFor(lang);
+            var model = ModelChoiceAttribute.Options(ModelChoiceAttribute.Choice(lang, name), lang).Models["lemma"];
+            var shared = Pipeline.Dependencies[lang][$"lemma/{model}"];
+            string? Of(string kind) => shared.SingleOrDefault(p => p.StartsWith(kind + "/", StringComparison.Ordinal)) is { } p ? Path.Combine(dir, p) : null;
+            var basePath = Path.Combine(dir, "lemma", model);
+            if (managed)
+            {
+                var pretrain = Of("pretrain") is { } p ? Own(Pretrain.LoadManaged(p)) : null;
+                Lemmatizer = Own(Lemmatizer.LoadManaged(basePath, ManagedCharLanguageModel.Load(Of("forward_charlm")!), ManagedCharLanguageModel.Load(Of("backward_charlm")!), pretrain));
+            }
+            else
+            {
+                var pretrain = Of("pretrain") is { } p ? Own(Pretrain.Load(p)) : null;
+                var forward = Own(CharLanguageModel.Load(Of("forward_charlm")!));
+                var backward = Own(CharLanguageModel.Load(Of("backward_charlm")!));
+                Lemmatizer = Own(Lemmatizer.Load(basePath, forward: forward, backward: backward, pretrain: pretrain));
+            }
+        }
+
+        public Lemmatizer Lemmatizer { get; }
+
+        private T Own<T>(T item) where T : IDisposable
+        {
+            _owned.Add(item);
+            return item;
+        }
+
+        public void Dispose()
+        {
+            for (int i = _owned.Count - 1; i >= 0; i--)
+                _owned[i].Dispose();
+        }
     }
 
     private static void AssertGolden(string name, bool managed, string lang, bool cache)
@@ -235,7 +305,6 @@ public class ModelChoiceTests
     [Theory]
     [InlineData("nerr=i2b2", "Unknown processor 'nerr'")]
     [InlineData("ner=ontonotes", "Unknown or unsupported ner model 'ontonotes'")]
-    [InlineData("lemma=combined_charlm", "Unknown or unsupported lemma model 'combined_charlm' for language 'en' (its contextual lemma classifiers are not ported)")]
     [InlineData("pos=combined_electra-large", "a transformer model")]
     [InlineData("constituency=ptb3", "Supported: ptb3-revised_charlm, ptb3_charlm")]
     [InlineData("ner=", "Unknown or unsupported ner model ''")]

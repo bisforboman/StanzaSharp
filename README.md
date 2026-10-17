@@ -342,7 +342,9 @@ The models beyond the packages':
   character): English tokenize `combined_charlm`, `ewt_charlm`, `gum_charlm`, `lines_charlm`, `partut_charlm`,
   `atis_charlm`, `childes_charlm`, `eslspok_charlm` and lemma `ewt_charlm`, `gum_charlm`, `lines_charlm`,
   `partut_charlm`, `atis_charlm`, `childes_charlm`; German tokenize and lemma `combined_charlm`, `gsd_charlm`,
-  `hdt_charlm`. English lemma `combined_charlm` is not supported (its contextual lemma classifiers are not ported).
+  `hdt_charlm`.
+- English lemma `combined_charlm`, whose contextual classifiers choose the lemma of `'s` (be or have) and `her` (she or
+  her) from the whole sentence.
 
 Their output is byte-identical to Python Stanza's on both backends. Names are exact, as in Stanza (`ptb3` is not
 `ptb3_charlm`). An unknown, transformer or not yet supported name throws. A model may read other character language

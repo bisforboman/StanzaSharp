@@ -305,6 +305,19 @@
   ]
  },
  {
+  "name": "lemma=combined_charlm",
+  "package": "default",
+  "processors": "tokenize,mwt,pos,lemma",
+  "models": {
+   "lemma": "combined_charlm"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "validation_contractions.txt"
+  ]
+ },
+ {
   "name": "tokenize+lemma=ewt_charlm",
   "package": "ewt",
   "processors": "tokenize,mwt,pos,lemma",

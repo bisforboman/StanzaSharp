@@ -253,7 +253,9 @@ MODEL_CHOICES = {
         ("pos+depparse=eslspok_nocharlm", "eslspok", "tokenize,pos,lemma,depparse", {"pos": "eslspok_nocharlm", "depparse": "eslspok_nocharlm"}, []),
         ("depparse=mimic_nocharlm", "mimic", "tokenize,pos,lemma,depparse", {"depparse": "mimic_nocharlm"}, []),
         # the _charlm tokenizers and lemmatizers (per-character charlm states), on their package; combined's tokenizer
-        # also on tokenize_stress.txt (windows); English lemma combined_charlm is not ported (contextual classifiers)
+        # also on tokenize_stress.txt (windows); lemma combined_charlm's contextual classifiers ('s: be/have, her: she/her)
+        # decide words of validation.txt and validation_contractions.txt
+        ("lemma=combined_charlm", "default", "tokenize,mwt,pos,lemma", {"lemma": "combined_charlm"}, ["validation.txt", "validation_contractions.txt"]),
         ("tokenize+lemma=ewt_charlm", "ewt", "tokenize,mwt,pos,lemma", {"tokenize": "ewt_charlm", "lemma": "ewt_charlm"}, []),
         ("tokenize+lemma=gum_charlm", "gum", "tokenize,mwt,pos,lemma", {"tokenize": "gum_charlm", "lemma": "gum_charlm"}, []),
         ("tokenize+lemma=lines_charlm", "lines", "tokenize,mwt,pos,lemma", {"tokenize": "lines_charlm", "lemma": "lines_charlm"}, []),
@@ -298,6 +300,33 @@ def write_seq2seq_golden(nlp, doc, path):
     print(f"{path.parent.name}/seq2seq.json: {len(result)} words")
 
 
+class RecordContextual:
+    """
+    Records each contextual lemma classifier decision into `rows`, in call order (LemmaClassifier.predict, called once per
+    classifier and document with every target word, the last classifier first): the word, its index in its sentence, the
+    label and the logits.
+    """
+    def __init__(self, rows):
+        self.rows = rows
+
+    def __enter__(self):
+        from stanza.models.lemma_classifier.base_model import LemmaClassifier
+        self.original = original = LemmaClassifier.predict
+        rows = self.rows
+
+        def predict(model, position_indices, sentences, upos_tags=[]):
+            logits = model.forward(position_indices, sentences, model.convert_tags(upos_tags))
+            labels = original(model, position_indices, sentences, upos_tags)
+            rows.extend({"word": s[i], "position": i, "label": label, "logits": l.tolist()}
+                        for i, s, label, l in zip(position_indices, sentences, labels, logits))
+            return labels
+        LemmaClassifier.predict = predict
+
+    def __exit__(self, *exc):
+        from stanza.models.lemma_classifier.base_model import LemmaClassifier
+        LemmaClassifier.predict = self.original
+
+
 def write_models_golden(models, out, only=None):
     """
     models/<name>/ for each of MODEL_CHOICES (or only those named in `only`): Stanza with processors={p: model, other p:
@@ -324,14 +353,19 @@ def write_models_golden(models, out, only=None):
         assert loaded == chosen, (name, loaded)
         target = folder / name
         target.mkdir(exist_ok=True)
+        contextual = {}
         for path in texts:
-            with torch.no_grad():
-                doc = nlp(path.read_bytes().decode("utf-8"))
             stem = "corpus" if path.name == "corpus.txt" else path.stem
+            with torch.no_grad(), RecordContextual(contextual.setdefault(stem, [])):
+                doc = nlp(path.read_bytes().decode("utf-8"))
             (target / f"{stem}.conllu").write_text("{:C}\n".format(doc), encoding="utf-8", newline="\n")
             print(f"models/{name}/{stem}.conllu: {len(doc.sentences)} sentences, {len(doc.ents)} entities")
             if "lemma" in chosen and path.name == "corpus.txt":
                 write_seq2seq_golden(nlp, doc, target / "seq2seq.json")
+        if any(contextual.values()):
+            with open(target / "contextual.json", "w", encoding="utf-8", newline="\n") as f:
+                json.dump(contextual, f, indent=1, ensure_ascii=False)
+            print(f"models/{name}/contextual.json: {sum(map(len, contextual.values()))} words")
     with open(folder / "models.json", "w", encoding="utf-8", newline="\n") as f:
         json.dump(index, f, indent=1, ensure_ascii=False)
         f.write("\n")
