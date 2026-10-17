@@ -54,9 +54,9 @@ check it:
 
 - SHA-256 of the all-eight CoNLL-U, main vs this round: `CD3C66EC…` for the 201,313-word text (also equal to main's
   run in a separate process) and `B1FB6B1E…` for a 54,056-word one (`--memory 40000`).
-- `DepparseTests` (`mst.json`'s tie-heavy matrices, every golden depparse file, German and the treebank rows that
-  resolve head constraints), `ConstituencyTests` (golden trees and per-step scores, near-ties) and
-  `ManagedBackendTests.ConstituencyParser_ManagedMatchesTorchSharpAndGolden` on every kernel path (33 tests, all pass).
+- `DepparseTests` (`mst.json`'s tie-heavy matrices, every golden depparse file, the German rows), `ConstituencyTests` (golden trees and per-step scores, near-ties) and
+  `ManagedBackendTests.ConstituencyParser_ManagedMatchesTorchSharpAndGolden` on every kernel path (33 tests, all pass). The biomedical packages, whose head-constraint repair also calls
+  Chu-Liu/Edmonds, are checked by `TreebankPackageTests` in CI.
 
 ## Measured
 
