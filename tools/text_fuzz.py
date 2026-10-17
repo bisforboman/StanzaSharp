@@ -282,9 +282,12 @@ class Sharp:
         self.proc.wait()
 
 
+CONVERT_OFFSETS = [True]  # --pretagged: offsets come from the input CoNLL-U (Stanza's code points), unconverted
+
+
 def code_point_offsets(conllu, text):
     """C#'s start_char/end_char are UTF-16 indices; Stanza's are code points."""
-    if all(ord(c) <= 0xFFFF for c in text):
+    if not CONVERT_OFFSETS[0] or all(ord(c) <= 0xFFFF for c in text):
         return conllu
     to_cp, units = {}, 0
     for i, c in enumerate(text):
@@ -422,6 +425,7 @@ def run(args, texts):
     stanza = Stanza(args.models, args.lang, args.package, chosen if args.model else processors, args.threads,
                     args.pretagged)
     if args.pretagged:  # the texts become documents; the shrinking still works on the text
+        CONVERT_OFFSETS[0] = False
         tag, side_stanza, side_sharp = Pretagger(args.models, args.lang), stanza, sharp
         stanza, sharp = (lambda t: side_stanza(tag(t))), (lambda t: side_sharp(tag(t)))
     clock, found = time.perf_counter(), []
