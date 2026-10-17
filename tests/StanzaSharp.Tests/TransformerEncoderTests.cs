@@ -140,6 +140,37 @@ public class TransformerKernelTests(TransformerModels models, ITestOutputHelper 
         }
     }
 
+    /// <summary>Sentiment's checkpoint, relative to the transformer directory (TransformerFact's files).</summary>
+    private const string SentimentModel = "../../../sentiment/sstplus_electra-large.pt";
+
+    private ITransformerNet LoraNet()
+    {
+        var ckpt = Checkpoint.Load(Path.Combine(Repo.StanzaModels, "sentiment", "sstplus_electra-large"));
+        var p = ckpt.Root["params"]!;
+        return models.Embedder(managed: true).Net.WithLora(LoraWeights.Read(ckpt, p["bert_lora"]!, p["config"]!));
+    }
+
+    [TransformerTheory("config.json", "tokenizer.json", "tokenizer_config.json", "pytorch_model.bin", SentimentModel)]
+    [MemberData(nameof(Paths))]
+    public void WithLora_ASentence_HasTheSameBitsAloneInABatchAndOnAnyThreadCount(string path)
+    {
+        var kernel = Enum.Parse<KernelPath>(path);
+        using var net = LoraNet();
+        var ids = Ids(TransformerEncoderTests.ReadGolden().Sentences[..3]);
+        var batched = With(kernel, 4, () => net.Encode(ids, 4));
+        var frozen = With(kernel, 4, () => models.Embedder(managed: true).Net.Encode(ids, 4));
+        for (int s = 0; s < ids.Length; s++)
+        {
+            Assert.True(With(kernel, 4, () => net.Encode([ids[s]], 4))[0].AsSpan().SequenceEqual(batched[s]), $"{path}: sentence {s} alone differs from the batch");
+            Assert.True(With(kernel, 1, () => net.Encode([ids[s]], 4))[0].AsSpan().SequenceEqual(batched[s]), $"{path}: sentence {s} on 1 thread differs");
+            Assert.False(frozen[s].AsSpan().SequenceEqual(batched[s]), $"{path}: the adapters changed nothing in sentence {s}");
+        }
+
+        // Vector512 must keep Vector256's bits, so a runner's CPU can't change a result.
+        if (kernel == KernelPath.Vector512)
+            Assert.True(With(KernelPath.Vector256, 4, () => net.Encode(ids, 4)).Zip(batched).All(x => x.First.AsSpan().SequenceEqual(x.Second)));
+    }
+
     [TransformerTheory("config.json", "tokenizer.json", "tokenizer_config.json", "pytorch_model.bin")]
     [MemberData(nameof(Paths))]
     public void EveryPath_MeetsTheTolerance(string path)

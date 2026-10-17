@@ -32,16 +32,21 @@ internal sealed class ConstituencyParser : IDisposable
     private readonly IConstituencyNet _net;
     private readonly StackNode<Transition?> _initialTransitions;
     private readonly StackNode<Constituent> _initialConstituents;
+    private readonly TransformerEmbedder? _transformer;
+    private readonly float[]? _layerMix;
 
     /// <summary>Whether the parser reads XPOS (<c>retag_method: xpos</c>, English) rather than UPOS (German).</summary>
     internal bool UsesXpos { get; }
 
-    internal ConstituencyParser(Checkpoint ckpt, Pretrain pretrain, Func<IConstituencyNet> net)
+    /// <param name="transformer">The transformer a <c>_electra-large</c> parser reads (the pipeline's, shared); else ignored.</param>
+    internal ConstituencyParser(Checkpoint ckpt, Pretrain pretrain, Func<IConstituencyNet> net, TransformerEmbedder? transformer = null)
     {
         _pretrain = pretrain;
         var p = ckpt.Root["params"]!;
         var config = p["config"]!;
         CheckSupported(p, config);
+        _layerMix = TransformerEmbedder.LayerMix(ckpt, config, p["model"]!, transformer, "constituency");
+        _transformer = config["bert_model"] == null ? null : transformer;
 
         // LSTMModel maps words and tags to i + 2 (0 = PAD, 1 = UNK) over sorted lists; the saved lists are sorted.
         _deltaMap = Strings(p["words"]).Select((w, i) => (w, i)).ToDictionary(x => x.w, x => x.i + 2);
@@ -58,22 +63,33 @@ internal sealed class ConstituencyParser : IDisposable
     }
 
     /// <summary><c>Load</c> (StanzaSharp.Cuda) on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
-    public static ConstituencyParser LoadManaged(string basePath, Pretrain pretrain, ManagedCharLanguageModel charlmForward, ManagedCharLanguageModel charlmBackward)
+    public static ConstituencyParser LoadManaged(string basePath, Pretrain pretrain, ManagedCharLanguageModel charlmForward, ManagedCharLanguageModel charlmBackward,
+        TransformerEmbedder? transformer = null)
     {
         if (!charlmForward.IsForward || charlmBackward.IsForward)
             throw new ArgumentException("Pass the forward charlm first, then the backward one");
         var ckpt = Checkpoint.Load(basePath);
-        return new ConstituencyParser(ckpt, pretrain, () => new ManagedConstituencyNet(ckpt, pretrain, charlmForward, charlmBackward));
+        int transformerDim = TransformerDim(ckpt, transformer);
+        return new ConstituencyParser(ckpt, pretrain, () => new ManagedConstituencyNet(ckpt, pretrain, charlmForward, charlmBackward, transformerDim), transformer);
     }
+
+    /// <summary>The input columns a parser gives <paramref name="transformer"/>'s vectors: its hidden size for a <c>_electra-large</c> parser, else 0.</summary>
+    internal static int TransformerDim(Checkpoint ckpt, TransformerEmbedder? transformer) =>
+        ckpt.Root["params"]!["config"]!["bert_model"] == null ? 0 : transformer?.Net.Config.Hidden ?? 0;
+
+    /// <summary>Whether this parser reads a transformer (<c>_electra-large</c>).</summary>
+    internal bool UsesTransformer => _transformer != null;
 
     /// <summary>Sets <see cref="Sentence.Constituency"/> on every sentence. Needs XPOS (or UPOS) tags from the tagger.</summary>
     /// <param name="charlms">Charlm representations the tagger kept, if any; sentences missing from it are computed.</param>
-    public void Process(Document doc, CharlmCache? charlms = null, CancellationToken cancellationToken = default)
+    /// <param name="transformers">The call's transformer states (a <c>_electra-large</c> parser), shared with the other readers.</param>
+    public void Process(Document doc, CharlmCache? charlms = null, CancellationToken cancellationToken = default, TransformerCache? transformers = null)
     {
         var sentences = doc.Sentences.Where(s => s.Tokens.Count > 0).ToList();
         var tagged = sentences.Select(s => (IReadOnlyList<(string, string)>)s.Words.Select(w =>
             (w.Text, (UsesXpos ? w.Xpos : w.Upos) ?? throw new InvalidOperationException("Run the POS tagger before the parser"))).ToList()).ToList();
-        var trees = Parse(tagged, charlms: charlms, cacheKeys: charlms == null ? null : sentences, cancellationToken: cancellationToken);
+        var trees = Parse(tagged, charlms: charlms, cacheKeys: charlms == null ? null : sentences, cancellationToken: cancellationToken,
+            transformers: transformers);
         for (int i = 0; i < sentences.Count; i++)
             sentences[i].Constituency = trees[i];
     }
@@ -93,7 +109,7 @@ internal sealed class ConstituencyParser : IDisposable
     /// </remarks>
     internal List<Tree?> Parse(IReadOnlyList<IReadOnlyList<(string Word, string Tag)>> sentences, List<List<float[]>>? scores = null,
         CharlmCache? charlms = null, IReadOnlyList<Sentence>? cacheKeys = null, CancellationToken cancellationToken = default,
-        Action<int, float[], bool[]>? onStep = null)
+        Action<int, float[], bool[]>? onStep = null, TransformerCache? transformers = null)
     {
         var order = Enumerable.Range(0, sentences.Count).OrderByDescending(i => sentences[i].Count).ToArray();
         scores?.AddRange(sentences.Select(_ => new List<float[]>()));
@@ -120,7 +136,7 @@ internal sealed class ConstituencyParser : IDisposable
                             break;
                         var chunk = order[built..Math.Min(built + BatchSize, order.Length)];
                         built += chunk.Length;
-                        foreach (var s in InitialStates(chunk, sentences, charlms, cacheKeys, cancellationToken))
+                        foreach (var s in InitialStates(chunk, sentences, charlms, cacheKeys, cancellationToken, transformers))
                             horizon.Enqueue(s);
                     }
 
@@ -168,9 +184,14 @@ internal sealed class ConstituencyParser : IDisposable
 
     // ----- initial state: the word queue (initial_word_queues) -----
     private List<ParserState> InitialStates(int[] indices, IReadOnlyList<IReadOnlyList<(string Word, string Tag)>> all,
-        CharlmCache? charlms, IReadOnlyList<Sentence>? cacheKeys, CancellationToken ct)
+        CharlmCache? charlms, IReadOnlyList<Sentence>? cacheKeys, CancellationToken ct, TransformerCache? transformers = null)
     {
         var sentences = indices.Select(i => all[i]).ToList();
+
+        // initial_word_queues: extract_bert_embeddings over the words as written, with the endpoints ([CLS] next to the start
+        // sentinel, [SEP] next to the end one).
+        var transformer = _transformer?.Embed([.. sentences.Select(s => (IReadOnlyList<string>)[.. s.Select(x => x.Word)])], keepEndpoints: true,
+            _layerMix, transformers, ct);
         var inputs = sentences.Select((s, k) => new WordInput(
             s.Select(x => x.Word).ToList(),
             s.Select(x =>
@@ -180,7 +201,7 @@ internal sealed class ConstituencyParser : IDisposable
             }).ToArray(),
             s.Select(x => (long)_deltaMap.GetValueOrDefault(x.Word, 1)).ToArray(),
             s.Select(x => (long)_tagMap.GetValueOrDefault(x.Tag, 1)).ToArray(),
-            cacheKeys?[indices[k]])).ToList();
+            cacheKeys?[indices[k]], transformer?[k])).ToList();
         var words = _net.EncodeWords(inputs, charlms, ct);
 
         return sentences.Select((s, i) => new ParserState
@@ -377,8 +398,6 @@ internal sealed class ConstituencyParser : IDisposable
         Require("nonlinearity", "relu");
         Require("num_tree_lstm_layers", "1");
         Require("reversed", "false");
-        if (config["bert_model"] != null)
-            throw new NotSupportedException("Parser checkpoints with a transformer are not ported");
         if (config["pattn_num_layers"]?.GetValue<int>() > 0 && config["pattn_num_heads"]?.GetValue<int>() > 0)
             throw new NotSupportedException("Partitioned attention is not ported");
         if (config["use_lattn"]?.GetValue<bool>() == true && config["lattn_d_proj"]?.GetValue<int>() > 0)

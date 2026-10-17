@@ -33,21 +33,33 @@ internal sealed class TransformerEmbedder(ITransformerNet net, WordPiece tokeniz
     /// <c>bert_model</c> gives null and needs no transformer.
     /// </summary>
     /// <exception cref="ArgumentException">The model reads a transformer other than <paramref name="transformer"/> (or none was given).</exception>
-    /// <exception cref="NotSupportedException">A fine-tuned or LoRA transformer, which these readers don't port.</exception>
-    public static float[]? LayerMix(Checkpoint ckpt, TransformerEmbedder? transformer, string processor)
+    /// <exception cref="NotSupportedException">A fine-tuned transformer (or a LoRA one, which only the overload with
+    /// <c>lora</c> allows), which these readers don't port.</exception>
+    public static float[]? LayerMix(Checkpoint ckpt, TransformerEmbedder? transformer, string processor) =>
+        LayerMix(ckpt, ckpt.Root["config"]!, ckpt.Root["model"]!, transformer, processor);
+
+    /// <summary>
+    /// <see cref="LayerMix(Checkpoint, TransformerEmbedder?, string)"/> for a checkpoint whose config and weights are
+    /// elsewhere (the constituency parser's and the classifier's <see langword="params"/>).
+    /// </summary>
+    /// <param name="lora">Whether the model's LoRA adapters (<c>bert_lora</c>) are applied: then <c>use_peft</c> and
+    /// <c>bert_finetune</c> are allowed, as long as the transformer's own weights aren't in the checkpoint.</param>
+    public static float[]? LayerMix(Checkpoint ckpt, System.Text.Json.Nodes.JsonNode config, System.Text.Json.Nodes.JsonNode model,
+        TransformerEmbedder? transformer, string processor, bool lora = false)
     {
-        var config = ckpt.Root["config"]!;
         var name = config["bert_model"]?.GetValue<string>();
         if (name == null)
             return null;
         if (transformer?.Name != name)
             throw new ArgumentException($"This {processor} model reads the transformer {name}, but {(transformer == null ? "none was loaded" : $"{transformer.Name} was")}");
-        if (config["bert_finetune"]?.GetValue<bool>() == true || config["use_peft"]?.GetValue<bool>() == true)
+        bool tuned = config["bert_finetune"]?.GetValue<bool>() == true || config["use_peft"]?.GetValue<bool>() == true;
+        bool ownWeights = model.AsObject().Any(kv => kv.Key.StartsWith("bert_model.", StringComparison.Ordinal));
+        if (ownWeights || (tuned && !lora))
             throw new NotSupportedException($"The {processor} checkpoint uses a fine-tuned transformer, which is not ported");
         int layers = config["bert_hidden_layers"]?.GetValue<int>() ?? 0;
         if (layers == 0)
             return null;
-        var mix = ckpt.Tensor<float>(ckpt.Root["model"]!["bert_layer_mix.weight"] ?? throw new InvalidDataException("No bert_layer_mix.weight"));
+        var mix = ckpt.Tensor<float>(model["bert_layer_mix.weight"] ?? throw new InvalidDataException("No bert_layer_mix.weight"));
         return mix.Length == layers ? mix : throw new InvalidDataException($"bert_layer_mix has {mix.Length} weights for {layers} layers");
     }
 
@@ -88,7 +100,7 @@ internal sealed class TransformerEmbedder(ITransformerNet net, WordPiece tokeniz
         CancellationToken ct = default)
     {
         int h = Net.Config.Hidden, lastLayers = layerMix?.Length ?? 4;
-        if (lastLayers != TransformerCache.Layers)
+        if (lastLayers != TransformerCache.Layers || cache?.Net != Net)
             cache = null;
         var inputs = sentences.Select(s => TransformerInput.Build(Tokenizer, s)).ToArray();
         var states = new float[inputs.Length][]; // per sentence [lastLayers, pieces, h]

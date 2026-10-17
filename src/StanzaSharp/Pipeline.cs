@@ -124,7 +124,8 @@ public sealed class Pipeline : IDisposable
     {
         [English] = new()
         {
-            ["constituency"] = ["ptb3_charlm"],
+            ["constituency"] = ["ptb3_charlm", "ptb3-revised_electra-large"],
+            ["sentiment"] = ["sstplus_electra-large"],
 
             // the treebanks' _charlm tokenizers and lemmatizers (per-character charlm states); lemma combined_charlm also has
             // contextual lemma classifiers ('s, her), which read the pretrain too
@@ -212,6 +213,7 @@ public sealed class Pipeline : IDisposable
             ["constituency/ptb3-revised_charlm"] = EnglishCharlm,
             ["depparse/combined_charlm"] = EnglishCharlm,
             ["sentiment/sstplus_charlm"] = EnglishCharlm,
+            ["sentiment/sstplus_electra-large"] = EnglishCharlm, // resources.json lists the charlms, which the model doesn't read
             ["ner/ontonotes-ww-multi_charlm"] = EnglishCharlm,
             ["pos/combined_nocharlm"] = Conll17,
             ["depparse/combined_nocharlm"] = Conll17,
@@ -286,6 +288,7 @@ public sealed class Pipeline : IDisposable
             ["pos/combined_electra-large"] = EnglishCharlm,
             ["depparse/combined_electra-large"] = EnglishCharlm,
             ["ner/ontonotes-ww-multi_electra-large"] = EnglishCharlm,
+            ["constituency/ptb3-revised_electra-large"] = EnglishCharlm,
         },
         ["de"] = new()
         {
@@ -326,6 +329,8 @@ public sealed class Pipeline : IDisposable
             ["pos/combined_electra-large"] = Electra,
             ["depparse/combined_electra-large"] = Electra,
             ["ner/ontonotes-ww-multi_electra-large"] = Electra,
+            ["constituency/ptb3-revised_electra-large"] = Electra,
+            ["sentiment/sstplus_electra-large"] = Electra, // with its LoRA adapters: a pass of its own
         },
         ["de"] = [],
     };
@@ -488,10 +493,10 @@ public sealed class Pipeline : IDisposable
                 : null;
             var ner = models.ContainsKey("ner") ? Start(Name("ner"), () => backend.Ner(Model("ner"), PretrainOf("ner"), CharlmsOf("ner"), TransformerOf("ner"))) : null;
             var parser = models.ContainsKey("constituency")
-                ? Start(Name("constituency"), () => backend.Constituency(Model("constituency"), PretrainOf("constituency"), CharlmsOf("constituency")))
+                ? Start(Name("constituency"), () => backend.Constituency(Model("constituency"), PretrainOf("constituency"), CharlmsOf("constituency"), TransformerOf("constituency")))
                 : null;
             var sentiment = models.ContainsKey("sentiment")
-                ? Start(Name("sentiment"), () => backend.Sentiment(Model("sentiment"), PretrainOf("sentiment"), CharlmsOf("sentiment")))
+                ? Start(Name("sentiment"), () => backend.Sentiment(Model("sentiment"), PretrainOf("sentiment"), CharlmsOf("sentiment"), TransformerOf("sentiment")))
                 : null;
             Task.WaitAll(started);
             _tokenizer = tokenizer!.Result;
@@ -972,8 +977,9 @@ public sealed class Pipeline : IDisposable
         CharlmCache? CacheFor(string processor) => Shares(processor) ? charlms : null;
 
         // The transformer states, for the processors after the first that reads them (Stanza runs it once per processor).
-        int transformerReaders = (_pos?.UsesTransformer == true ? 1 : 0) + (_depparse?.UsesTransformer == true ? 1 : 0) + (_ner?.UsesTransformer == true ? 1 : 0);
-        var transformers = transformerReaders > 1 ? new TransformerCache() : null;
+        int transformerReaders = (_pos?.UsesTransformer == true ? 1 : 0) + (_parser?.UsesTransformer == true ? 1 : 0) + (_depparse?.UsesTransformer == true ? 1 : 0)
+            + (_ner?.UsesTransformer == true ? 1 : 0);
+        var transformers = transformerReaders > 1 ? new TransformerCache(_transformer!.Net) : null;
         if (_pos != null)
             Step("pos", () => _pos.Process(doc, charlms, ct, transformers), ct);
         if (_lemma != null)
@@ -983,7 +989,7 @@ public sealed class Pipeline : IDisposable
 
         // Stanza's order (PIPELINE_NAMES). Only the CoNLL-U comment order shows it, and Conllu.Write fixes that.
         if (_parser != null)
-            Step("constituency", () => _parser.Process(doc, CacheFor("constituency"), ct), ct);
+            Step("constituency", () => _parser.Process(doc, CacheFor("constituency"), ct, transformers), ct);
 
         // Depparse runs the charlms with a ROOT word in front, so of the tagger's outputs only the backward ones apply, with
         // ROOT run on from the tagger's final state (managed; DependencyParser.Process).

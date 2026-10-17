@@ -209,7 +209,12 @@ internal sealed class ConstituencyNet : IConstituencyNet
                 charsForward[i]!,
                 charsBackward[i]!,
             ], 1);
-            inputs.Add(cat([_wordStart.unsqueeze(0), wordInput, _wordEnd.unsqueeze(0)], 0));
+            var sentence = cat([_wordStart.unsqueeze(0), wordInput, _wordEnd.unsqueeze(0)], 0);
+
+            // A _electra-large parser's transformer vectors ([CLS], the words, [SEP]) go after every row's own columns.
+            if (sentences[i].Transformer is { } transformer)
+                sentence = cat([sentence, torch.tensor(transformer, [sentence.shape[0], transformer.Length / sentence.shape[0]], device: _device)], 1);
+            inputs.Add(sentence);
         }
 
         var lengths = sentences.Select(s => (long)s.Words.Count + 2).ToArray();
@@ -347,13 +352,15 @@ internal static class ConstituencyParserLoad
         /// are shared with the tagger, so the caller owns them.
         /// </summary>
         /// <param name="device">Where the model runs; CPU by default. Load the pretrain and charlms on the same device.</param>
-        public static ConstituencyParser Load(string basePath, Pretrain pretrain, CharLanguageModel charlmForward, CharLanguageModel charlmBackward, Device? device = null) =>
+        /// <param name="transformer">The transformer a <c>_electra-large</c> parser reads (shared, the caller owns it).</param>
+        public static ConstituencyParser Load(string basePath, Pretrain pretrain, CharLanguageModel charlmForward, CharLanguageModel charlmBackward, Device? device = null,
+            TransformerEmbedder? transformer = null) =>
             Weights.On(device, () =>
             {
                 if (!charlmForward.IsForward || charlmBackward.IsForward)
                     throw new ArgumentException("Pass the forward charlm first, then the backward one");
                 var ckpt = Checkpoint.Load(basePath);
-                return new ConstituencyParser(ckpt, pretrain, () => new ConstituencyNet(ckpt, pretrain, charlmForward, charlmBackward));
+                return new ConstituencyParser(ckpt, pretrain, () => new ConstituencyNet(ckpt, pretrain, charlmForward, charlmBackward), transformer);
             });
     }
 }

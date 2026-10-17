@@ -54,11 +54,11 @@ internal sealed class TorchSharpModels(torch.Device? device, bool disableTf32) :
     public override NerTagger Ner(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer) =>
         NerTagger.Load(basePath, pretrain, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward), transformer: transformer);
 
-    public override ConstituencyParser Constituency(string basePath, Pretrain pretrain, Charlms charlms) =>
-        ConstituencyParser.Load(basePath, pretrain, Find(_charlms, charlms.Forward)!, Find(_charlms, charlms.Backward)!);
+    public override ConstituencyParser Constituency(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer) =>
+        ConstituencyParser.Load(basePath, pretrain, Find(_charlms, charlms.Forward)!, Find(_charlms, charlms.Backward)!, transformer: transformer);
 
-    public override SentimentClassifier Sentiment(string basePath, Pretrain pretrain, Charlms charlms) =>
-        SentimentClassifier.Load(basePath, pretrain, Find(_charlms, charlms.Forward)!, Find(_charlms, charlms.Backward)!);
+    public override SentimentClassifier Sentiment(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer) =>
+        SentimentClassifier.Load(basePath, pretrain, Find(_charlms, charlms.Forward)!, Find(_charlms, charlms.Backward)!, transformer: transformer);
 
     public override void Dispose()
     {

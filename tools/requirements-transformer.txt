@@ -4,3 +4,5 @@
 transformers==5.20.1
 tokenizers==0.23.3
 safetensors==0.8.0
+# sentiment=sstplus_electra-large: Stanza applies its LoRA adapters through peft.
+peft==0.21.2

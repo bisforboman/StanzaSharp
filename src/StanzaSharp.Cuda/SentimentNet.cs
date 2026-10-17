@@ -12,7 +12,8 @@ namespace StanzaSharp.Sentiment;
 internal sealed class SentimentNet : ISentimentNet
 {
     private readonly Pretrain _pretrain;
-    private readonly CharLanguageModel _charlmForward, _charlmBackward;
+    private readonly CharLanguageModel? _charlmForward, _charlmBackward; // null for a model without them (sstplus_electra-large)
+    private readonly int _transformerDim;
     private readonly Tensor _unk;
     private readonly Embedding _extraEmb;
     private readonly LSTM _bilstm;
@@ -20,7 +21,9 @@ internal sealed class SentimentNet : ISentimentNet
     private readonly Linear[] _fc;
     private readonly Device _device = Weights.Device; // the device the model was loaded on
 
-    public SentimentNet(Checkpoint ckpt, Filter[] filters, Pretrain pretrain, CharLanguageModel charlmForward, CharLanguageModel charlmBackward)
+    /// <param name="transformerDim">The transformer's hidden size for a <c>_electra-large</c> classifier (the last input columns), else 0.</param>
+    public SentimentNet(Checkpoint ckpt, Filter[] filters, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward,
+        int transformerDim = 0)
     {
         _pretrain = pretrain;
         (_charlmForward, _charlmBackward) = (charlmForward, charlmBackward);
@@ -32,7 +35,8 @@ internal sealed class SentimentNet : ISentimentNet
         var extraShape = ckpt.Shape(model["extra_embedding.weight"]);
         _extraEmb = nn.Embedding(extraShape[0], extraShape[1]).LoadFrom(ckpt, model, "extra_embedding.");
 
-        int inputSize = pretrain.Dim + charlmForward.HiddenDim + charlmBackward.HiddenDim;
+        _transformerDim = transformerDim;
+        int inputSize = pretrain.Dim + (charlmForward?.HiddenDim ?? 0) + (charlmBackward?.HiddenDim ?? 0) + transformerDim;
         int hidden = config["bilstm_hidden_dim"]!.GetValue<int>();
         _bilstm = nn.LSTM(inputSize, hidden, numLayers: 2, bidirectional: true, batchFirst: true).LoadFrom(ckpt, model, "bilstm.");
 
@@ -52,7 +56,7 @@ internal sealed class SentimentNet : ISentimentNet
     }
 
     public float[] Forward(IReadOnlyList<IReadOnlyList<string>> batch, long[] ids, long[] extraIds, int width,
-        CharlmCache? charlms, IReadOnlyList<Sentence?>? cacheKeys, CancellationToken ct)
+        CharlmCache? charlms, IReadOnlyList<Sentence?>? cacheKeys, CancellationToken ct, float[][]? transformer = null)
     {
         using var noGrad = torch.no_grad();
         using var scope = NewDisposeScope();
@@ -64,12 +68,30 @@ internal sealed class SentimentNet : ISentimentNet
         var mask = torch.tensor(unknown, [n, width, 1], device: _device);
         var words = torch.where(mask, _unk, pretrained).add(_extraEmb.forward(torch.tensor(extraIds, [n, width], device: _device)), Scalars.One);
 
-        var cached = cacheKeys?.Select(key => key != null && charlms!.TryGet(key, out var reps, _device) ? reps : ((Tensor, Tensor)?)null).ToList();
-        var forward = CharReps(_charlmForward, batch, width, cached?.Select(c => c?.Item1).ToList());
-        ct.ThrowIfCancellationRequested();
-        var backward = CharReps(_charlmBackward, batch, width, cached?.Select(c => c?.Item2).ToList());
-        ct.ThrowIfCancellationRequested();
-        var input = cat([words, forward, backward], 2);
+        var inputs = new List<Tensor> { words };
+        if (_charlmForward != null)
+        {
+            var cached = cacheKeys?.Select(key => key != null && charlms!.TryGet(key, out var reps, _device) ? reps : ((Tensor, Tensor)?)null).ToList();
+            inputs.Add(CharReps(_charlmForward, batch, width, cached?.Select(c => c?.Item1).ToList()));
+            ct.ThrowIfCancellationRequested();
+            inputs.Add(CharReps(_charlmBackward!, batch, width, cached?.Select(c => c?.Item2).ToList()));
+            ct.ThrowIfCancellationRequested();
+        }
+
+        // extract_bert_embeddings into a zero [batch, width, hidden] tensor, each sentence's rows at its start.
+        if (transformer != null)
+        {
+            var bert = torch.zeros([n, width, _transformerDim], device: _device);
+            for (int i = 0; i < n; i++)
+            {
+                if (batch[i].Count > 0)
+                    bert[i].narrow(0, 0, batch[i].Count).copy_(torch.tensor(transformer[i], [batch[i].Count, _transformerDim], device: _device));
+            }
+
+            inputs.Add(bert);
+        }
+
+        var input = cat(inputs, 2);
         var (output, _, _) = _bilstm.call(input); // not packed: like Stanza, the padding reaches the LSTM
         var x = output.unsqueeze(1);
 
@@ -126,13 +148,18 @@ internal static class SentimentClassifierLoad
         /// shared with the tagger and parsers, so the caller owns them.
         /// </summary>
         /// <param name="device">Where the model runs; CPU by default. Load the pretrain and charlms on the same device.</param>
-        public static SentimentClassifier Load(string basePath, Pretrain pretrain, CharLanguageModel charlmForward, CharLanguageModel charlmBackward, Device? device = null) =>
+        /// <param name="transformer">The transformer a <c>_electra-large</c> classifier reads (shared, the caller owns it; the classifier
+        /// adds its LoRA adapters to a copy that shares its weights).</param>
+        public static SentimentClassifier Load(string basePath, Pretrain pretrain, CharLanguageModel charlmForward, CharLanguageModel charlmBackward, Device? device = null,
+            TransformerEmbedder? transformer = null) =>
             Weights.On(device, () =>
             {
                 if (!charlmForward.IsForward || charlmBackward.IsForward)
                     throw new ArgumentException("Pass the forward charlm first, then the backward one");
                 var ckpt = Checkpoint.Load(basePath);
-                return new SentimentClassifier(ckpt, pretrain, filters => new SentimentNet(ckpt, filters, pretrain, charlmForward, charlmBackward));
+                var (charlm, transformerDim) = SentimentClassifier.Inputs(ckpt, transformer);
+                return new SentimentClassifier(ckpt, pretrain, filters => new SentimentNet(ckpt, filters, pretrain, charlm ? charlmForward : null,
+                    charlm ? charlmBackward : null, transformerDim), transformer);
             });
     }
 }

@@ -66,9 +66,11 @@ internal abstract class BackendModels : IDisposable
     /// <param name="transformer">The transformer a <c>_electra-large</c> model reads; null for the others.</param>
     public abstract NerTagger Ner(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer);
 
-    public abstract ConstituencyParser Constituency(string basePath, Pretrain pretrain, Charlms charlms);
+    /// <param name="transformer">The transformer a <c>_electra-large</c> model reads; null for the others.</param>
+    public abstract ConstituencyParser Constituency(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer);
 
-    public abstract SentimentClassifier Sentiment(string basePath, Pretrain pretrain, Charlms charlms);
+    /// <param name="transformer">The transformer a <c>_electra-large</c> model reads; null for the others.</param>
+    public abstract SentimentClassifier Sentiment(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer);
 
     /// <summary>The charlm loaded as <paramref name="path"/> into <paramref name="loaded"/>, or null for none.</summary>
     protected static T? Find<T>(Dictionary<string, T> loaded, string? path) where T : class
@@ -141,11 +143,11 @@ internal sealed class ManagedModels : BackendModels
     public override NerTagger Ner(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer) =>
         NerTagger.LoadManaged(basePath, pretrain, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward), transformer);
 
-    public override ConstituencyParser Constituency(string basePath, Pretrain pretrain, Charlms charlms) =>
-        ConstituencyParser.LoadManaged(basePath, pretrain, Find(_charlms, charlms.Forward)!, Find(_charlms, charlms.Backward)!);
+    public override ConstituencyParser Constituency(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer) =>
+        ConstituencyParser.LoadManaged(basePath, pretrain, Find(_charlms, charlms.Forward)!, Find(_charlms, charlms.Backward)!, transformer);
 
-    public override SentimentClassifier Sentiment(string basePath, Pretrain pretrain, Charlms charlms) =>
-        SentimentClassifier.LoadManaged(basePath, pretrain, Find(_charlms, charlms.Forward)!, Find(_charlms, charlms.Backward)!);
+    public override SentimentClassifier Sentiment(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer) =>
+        SentimentClassifier.LoadManaged(basePath, pretrain, Find(_charlms, charlms.Forward)!, Find(_charlms, charlms.Backward)!, transformer);
 }
 
 /// <summary>

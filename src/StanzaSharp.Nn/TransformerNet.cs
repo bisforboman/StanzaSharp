@@ -43,4 +43,10 @@ internal interface ITransformerNet : IDisposable
     /// one array [lastLayers, pieces, Hidden], the earliest layer first.
     /// </summary>
     float[][] Encode(IReadOnlyList<int[]> sentences, int lastLayers, CancellationToken ct = default);
+
+    /// <summary>
+    /// This encoder with <paramref name="lora"/>'s adapters added at run time. It shares this net's weights, so it must not
+    /// outlive it; disposing it frees only the adapters.
+    /// </summary>
+    ITransformerNet WithLora(LoraWeights lora);
 }

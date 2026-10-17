@@ -14,15 +14,48 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
     private sealed record Layer(PackedMatrix Qkv, float[] QkvBias, PackedMatrix Out, float[] OutBias, float[] Ln1G, float[] Ln1B,
         PackedMatrix Up, float[] UpBias, PackedMatrix Down, float[] DownBias, float[] Ln2G, float[] Ln2B);
 
+    // A LoRA adapter (LoraWeights): A [rank, in], B [out, rank], added to the output's columns from Column on.
+    private sealed record Adapter(PackedMatrix A, PackedMatrix B, int Column);
+
+    // Per layer, the adapters on the fused QKV (query, value), the attention output, the intermediate and the output dense.
+    private sealed record LayerAdapters(Adapter[] Qkv, Adapter? Out, Adapter? Up, Adapter? Down);
+
     private readonly float[] _words, _positions, _type0, _embG, _embB;
     private readonly Layer[] _layers;
+    private readonly LayerAdapters[]? _adapters;
+    private readonly float _scaling;
 
     public TransformerConfig Config { get; }
 
-    private ManagedTransformer(TransformerConfig config, float[] words, float[] positions, float[] type0, float[] embG, float[] embB, Layer[] layers)
+    private ManagedTransformer(TransformerConfig config, float[] words, float[] positions, float[] type0, float[] embG, float[] embB, Layer[] layers,
+        LayerAdapters[]? adapters = null, float scaling = 0)
     {
         Config = config;
         (_words, _positions, _type0, _embG, _embB, _layers) = (words, positions, type0, embG, embB, layers);
+        (_adapters, _scaling) = (adapters, scaling);
+    }
+
+    public ITransformerNet WithLora(LoraWeights lora)
+    {
+        int h = Config.Hidden, inter = Config.Intermediate;
+        Adapter? Make(int layer, string module, int input, int output, int column)
+        {
+            if (lora.Of(layer, module) is not { } w)
+                return null;
+            if (w.A.Length != w.Rank * input || w.B.Length != output * w.Rank)
+                throw new InvalidDataException($"LoRA adapter on layer {layer} {module} has the wrong shape");
+            return new Adapter(new PackedMatrix(w.A, w.Rank, input), new PackedMatrix(w.B, output, w.Rank), column);
+        }
+
+        var adapters = new LayerAdapters[_layers.Length];
+        for (int l = 0; l < _layers.Length; l++)
+        {
+            adapters[l] = new LayerAdapters(
+                [.. new[] { Make(l, "attention.self.query", h, h, 0), Make(l, "attention.self.value", h, h, 2 * h) }.OfType<Adapter>()],
+                Make(l, "attention.output.dense", h, h, 0), Make(l, "intermediate.dense", h, inter, 0), Make(l, "output.dense", inter, h, 0));
+        }
+
+        return new ManagedTransformer(Config, _words, _positions, _type0, _embG, _embB, _layers, adapters, lora.Scaling);
     }
 
     /// <summary>Loads a transformer directory (<c>config.json</c>, <c>pytorch_model.bin</c>; ModelDownloader.TransformerDirectory).</summary>
@@ -96,6 +129,8 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
 
         var pool = ArrayPool<float>.Shared;
         float[] x = pool.Rent(rows * h), qkv = pool.Rent(rows * 3 * h), context = pool.Rent(rows * h), tmp = pool.Rent(rows * h), up = pool.Rent(rows * inter);
+        int rank = _adapters?.SelectMany(a => a.Qkv.Concat([a.Out, a.Up, a.Down])).OfType<Adapter>().Max(a => a.A.PaddedN) ?? 0;
+        float[]? low = _adapters == null ? null : pool.Rent(rows * rank), delta = _adapters == null ? null : pool.Rent(rows * inter);
         try
         {
             for (int s = 0; s < sentences.Count; s++)
@@ -119,15 +154,21 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
                 {
                     ct.ThrowIfCancellationRequested();
                     var layer = _layers[l];
+                    var adapters = _adapters?[l];
                     fixed (float* b1 = layer.QkvBias, b2 = layer.OutBias, b3 = layer.UpBias, b4 = layer.DownBias)
                     {
                         Gemm.Run(px, rows, h, layer.Qkv, b1, pq, 3 * h, ct, rowInvariant: true);
+                        foreach (var a in adapters?.Qkv ?? [])
+                            AddLora(a, px, rows, h, pq, 3 * h, low!, delta!, ct);
                         Attention(pq, pc, starts);
                         Gemm.Run(pc, rows, h, layer.Out, b2, pt, h, ct, rowInvariant: true);
+                        AddLora(adapters?.Out, pc, rows, h, pt, h, low, delta, ct);
                         LayerNorm(px, pt, rows, layer.Ln1G, layer.Ln1B);
                         Gemm.Run(px, rows, h, layer.Up, b3, pu, inter, ct, rowInvariant: true);
+                        AddLora(adapters?.Up, px, rows, h, pu, inter, low, delta, ct);
                         Gelu(pu, rows * inter);
                         Gemm.Run(pu, rows, inter, layer.Down, b4, pt, h, ct, rowInvariant: true);
+                        AddLora(adapters?.Down, pu, rows, inter, pt, h, low, delta, ct);
                         LayerNorm(px, pt, rows, layer.Ln2G, layer.Ln2B);
                     }
 
@@ -137,8 +178,11 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
         }
         finally
         {
-            foreach (var buffer in new[] { x, qkv, context, tmp, up })
-                pool.Return(buffer);
+            foreach (var buffer in new[] { x, qkv, context, tmp, up, low, delta })
+            {
+                if (buffer != null)
+                    pool.Return(buffer);
+            }
         }
 
         return result;
@@ -154,6 +198,32 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
                 int n = starts[s + 1] - starts[s];
                 new ReadOnlySpan<float>(states + ((long)starts[s] * h), n * h).CopyTo(result[s].AsSpan(k * n * h, n * h));
             }
+        }
+    }
+
+    // peft's LoRA Linear in eval mode: output += B(A(input))·scaling, after the base layer's bias (float32, B's product
+    // scaled, then added, as torch does). Both GEMMs are row-invariant like the base layers.
+    private void AddLora(Adapter? adapter, float* input, int rows, int k, float* output, int ldOutput, float[]? low, float[]? delta, CancellationToken ct)
+    {
+        if (adapter == null)
+            return;
+        int rank = adapter.A.PaddedN, ld = adapter.B.PaddedN, n = adapter.B.N, column = adapter.Column;
+        float scaling = _scaling;
+        fixed (float* pl = low, pd = delta)
+        {
+            Gemm.Run(input, rows, k, adapter.A, null, pl, rank, ct, rowInvariant: true);
+            Gemm.Run(pl, rows, adapter.A.N, adapter.B, null, pd, ld, ct, rowInvariant: true);
+            nint po = (nint)output, pdd = (nint)pd;
+            ManagedThreads.For((rows + 63) / 64, block =>
+            {
+                for (int r = block * 64; r < Math.Min(rows, (block * 64) + 64); r++)
+                {
+                    var o = (float*)po + ((long)r * ldOutput) + column;
+                    var d = (float*)pdd + ((long)r * ld);
+                    for (int j = 0; j < n; j++)
+                        o[j] += d[j] * scaling;
+                }
+            });
         }
     }
 

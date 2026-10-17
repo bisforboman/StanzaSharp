@@ -113,6 +113,12 @@ contractions, social and tech texts and `models/transformer_long.txt` (a 633-wor
 transformer's 512 positions, so in Stanza's windows), 413 sentences with tags, lemmas, heads, relations and entities
 (`TransformerModelTests`). The pipeline runs the transformer once per sentence for all three (Stanza once per processor):
 the parser reads the tagger's states, ner those of sentences whose tokens are the words (`TransformerCacheTests`).
+The constituency parser `ptb3-revised_electra-large` (frozen, its own `bert_layer_mix`, [CLS] and [SEP] next to the
+learned sentence boundary vectors) and the sentiment classifier `sstplus_electra-large` (LoRA rank 64 on the
+transformer, applied at run time) match too: `models/constituency=ptb3-revised_electra-large/` (274 sentences, trees),
+`models/sentiment=sstplus_electra-large/` (315 sentences, with sentiment/reviews.txt, labels) and `models/electra-large/`
+(all five transformer models in one pipeline, 274 sentences). With adapters a sentence's states keep the same bits alone,
+in a batch and on any thread count on every SIMD path (`TransformerKernelTests`).
 
 They exercise what the packages don't: a second pretrain next to conll17 (fastText crawl, 300-dimensional), a tag
 vocabulary with three tag sets, and the old NER checkpoint format with a fine-tuned delta embedding (`i2b2`).

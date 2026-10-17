@@ -18,9 +18,11 @@ internal interface ISentimentNet : IDisposable
     /// <param name="extraIds">[batch, width] delta ids, padded with 0.</param>
     /// <param name="charlms">With <paramref name="cacheKeys"/>: charlm outputs to reuse; row i's key, if not null, is looked up.</param>
     /// <param name="ct">Checked after each charlm pass, inside the LSTM and between the convolutions.</param>
+    /// <param name="transformer">A <c>_electra-large</c> classifier's transformer vectors, per sentence [tokens, hidden]: the last
+    /// input columns (zeros for padding, as Stanza's bert_inputs).</param>
     /// <returns>[batch, classes] logits, row-major.</returns>
     float[] Forward(IReadOnlyList<IReadOnlyList<string>> batch, long[] ids, long[] extraIds, int width,
-        CharlmCache? charlms, IReadOnlyList<Sentence?>? cacheKeys, CancellationToken ct);
+        CharlmCache? charlms, IReadOnlyList<Sentence?>? cacheKeys, CancellationToken ct, float[][]? transformer = null);
 }
 
 /// <summary>
@@ -32,9 +34,9 @@ internal interface ISentimentNet : IDisposable
 internal sealed unsafe class ManagedSentimentNet : ISentimentNet
 {
     private readonly Pretrain _pretrain;
-    private readonly ManagedCharLanguageModel _charlmForward, _charlmBackward;
+    private readonly ManagedCharLanguageModel? _charlmForward, _charlmBackward; // null for a model without them (sstplus_electra-large)
     private readonly float[] _unk, _extraEmb;
-    private readonly int _dim, _inSize, _pooledSize;
+    private readonly int _dim, _transformerCol, _inSize, _pooledSize;
     private readonly ManagedLstm _lstm;
     private readonly Conv[] _convs;
     private readonly (PackedMatrix W, float[] Bias)[] _fc;
@@ -49,7 +51,9 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
         public float[] Transposed { get; } = [.. Enumerable.Range(0, Weights.Length).Select(k => Weights[k % Channels * (Weights.Length / Channels) + k / Channels])];
     }
 
-    public ManagedSentimentNet(Checkpoint ckpt, Filter[] filters, Pretrain pretrain, ManagedCharLanguageModel charlmForward, ManagedCharLanguageModel charlmBackward)
+    /// <param name="transformerDim">The transformer's hidden size for a <c>_electra-large</c> classifier (the last input columns), else 0.</param>
+    public ManagedSentimentNet(Checkpoint ckpt, Filter[] filters, Pretrain pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward,
+        int transformerDim = 0)
     {
         _pretrain = pretrain;
         (_charlmForward, _charlmBackward) = (charlmForward, charlmBackward);
@@ -61,7 +65,8 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
         _dim = pretrain.Dim;
         _unk = T("unk");
         _extraEmb = T("extra_embedding.weight");
-        _inSize = _dim + charlmForward.HiddenDim + charlmBackward.HiddenDim;
+        _transformerCol = _dim + (charlmForward?.HiddenDim ?? 0) + (charlmBackward?.HiddenDim ?? 0);
+        _inSize = _transformerCol + transformerDim;
         int hidden = config["bilstm_hidden_dim"]!.GetValue<int>();
         _lstm = new ManagedLstm(ckpt, model, "bilstm.", _inSize, hidden, 2, bidirectional: true);
 
@@ -104,15 +109,16 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
     }
 
     public float[] Forward(IReadOnlyList<IReadOnlyList<string>> batch, long[] ids, long[] extraIds, int width,
-        CharlmCache? charlms, IReadOnlyList<Sentence?>? cacheKeys, CancellationToken ct)
+        CharlmCache? charlms, IReadOnlyList<Sentence?>? cacheKeys, CancellationToken ct, float[][]? transformer = null)
     {
-        int n = batch.Count, rows = n * width, h2 = _lstm.OutputSize, inSize = _inSize, dim = _charlmForward.HiddenDim;
+        int n = batch.Count, rows = n * width, h2 = _lstm.OutputSize, inSize = _inSize, dim = _charlmForward?.HiddenDim ?? 0;
+        int td = inSize - _transformerCol;
         var z = ArrayPool<float>.Shared.Rent(rows * h2); // the LSTM output, batch-major: row i·width + t
         var pooled = ArrayPool<float>.Shared.Rent(n * _pooledSize); // every element written: the convolutions tile it
         var rented = new List<float[]> { z, pooled };
         try
         {
-            var reps = CharlmFeatures(batch, charlms, cacheKeys, rented, ct);
+            var reps = _charlmForward == null ? null : CharlmFeatures(batch, charlms, cacheKeys, rented, ct);
 
             // The input rows (time-major: token (i, t) is row t·n + i), a chunk at a time: the pretrain vector (unk's
             // for unknown words; PAD's row for padding) + the delta embedding, then the charlms (zeros for padding, as
@@ -130,9 +136,14 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
                         dst[d] = pre[d] + delta[d];
                     if (t < batch[i].Count)
                     {
-                        var (forward, backward, offset) = reps[i];
-                        forward.AsSpan((offset + t) * dim, dim).CopyTo(dst[_dim..]);
-                        backward.AsSpan((offset + t) * dim, dim).CopyTo(dst[(_dim + dim)..]);
+                        if (reps != null)
+                        {
+                            var (forward, backward, offset) = reps[i];
+                            forward.AsSpan((offset + t) * dim, dim).CopyTo(dst[_dim..]);
+                            backward.AsSpan((offset + t) * dim, dim).CopyTo(dst[(_dim + dim)..]);
+                        }
+
+                        transformer?[i].AsSpan(t * td, td).CopyTo(dst[_transformerCol..]);
                     }
                     else
                     {
@@ -302,7 +313,7 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
     private (float[] Forward, float[] Backward, int Offset)[] CharlmFeatures(IReadOnlyList<IReadOnlyList<string>> batch, CharlmCache? charlms,
         IReadOnlyList<Sentence?>? cacheKeys, List<float[]> rented, CancellationToken ct)
     {
-        int dim = _charlmForward.HiddenDim;
+        int dim = _charlmForward!.HiddenDim;
         var reps = new (float[], float[], int)[batch.Count];
         var missing = new List<int>();
         for (int i = 0; i < batch.Count; i++)
@@ -324,7 +335,7 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
         rented.Add(backwardReps);
 
         // A single sentence (with multi-word tokens, say) is kept for NER, which reads the same tokens.
-        ManagedCharLanguageModel.BuildBoth(_charlmForward, _charlmBackward, texts, forwardReps, backwardReps, charlms, ct);
+        ManagedCharLanguageModel.BuildBoth(_charlmForward, _charlmBackward!, texts, forwardReps, backwardReps, charlms, ct);
         ct.ThrowIfCancellationRequested();
         int offset = 0;
         foreach (int i in missing)

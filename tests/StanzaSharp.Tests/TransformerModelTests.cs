@@ -4,16 +4,25 @@ namespace StanzaSharp.Tests;
 
 /// <summary>
 /// default_accurate's frozen-transformer models as <see cref="PipelineOptions.Models"/> (docs/transformer-plan.md, PR 2):
-/// pos, depparse and ner <c>_electra-large</c> against tests/golden/models/pos+depparse+ner=electra-large, byte for byte on
-/// both backends. Named Transformer* so that only golden shard 1, which downloads the transformer, runs it in CI.
+/// pos, depparse, ner, constituency and sentiment (LoRA) <c>_electra-large</c> against their tests/golden/models/ rows, byte
+/// for byte on both backends. Named Transformer* so that only golden shard 1, which downloads the transformer, runs it in CI.
 /// </summary>
 public class TransformerModelTests
 {
     private const string Electra = "pos+depparse+ner=electra-large";
+    private const string Constituency = "constituency=ptb3-revised_electra-large";
+    private const string Sentiment = "sentiment=sstplus_electra-large";
+    private const string AllFive = "electra-large";
 
     [ModelTheory]
     [ModelChoice("en", Electra, false)]
     [ModelChoice("en", Electra, true)]
+    [ModelChoice("en", Constituency, false)]
+    [ModelChoice("en", Constituency, true)]
+    [ModelChoice("en", Sentiment, false)]
+    [ModelChoice("en", Sentiment, true)]
+    [ModelChoice("en", AllFive, false)]
+    [ModelChoice("en", AllFive, true)]
     public void Process_MatchesGolden(string name, bool managed, string lang) => ModelChoiceTests.AssertGolden(name, managed, lang, cache: true);
 
     [Fact]
@@ -84,6 +93,8 @@ public class TransformerCacheTests
             })];
         }
 
+        public ITransformerNet WithLora(LoraWeights lora) => new FakeNet();
+
         public void Dispose()
         {
         }
@@ -122,7 +133,7 @@ public class TransformerCacheTests
     public void SecondReader_GetsTheFirstsStates_AndMixesThemItsOwnWay()
     {
         var (embedder, net) = Embedder();
-        var cache = new TransformerCache();
+        var cache = new TransformerCache(net);
         var legacy = embedder.Embed(Sentences, keepEndpoints: false, layerMix: null, cache);
         Assert.Equal(2, net.Sentences);
         var mixed = embedder.Embed(Sentences, keepEndpoints: true, layerMix: [0.5f, 0, 0, 0], cache);
@@ -138,7 +149,7 @@ public class TransformerCacheTests
     public void Cache_KeepsAtMostMaxPieces_AndOnlyFourLayers()
     {
         var (embedder, net) = Embedder();
-        var cache = new TransformerCache(maxPieces: 7); // "The cat sat ." is 6 pieces with [CLS] and [SEP]; "Hello world" 4
+        var cache = new TransformerCache(net, maxPieces: 7); // "The cat sat ." is 6 pieces with [CLS] and [SEP]; "Hello world" 4
         embedder.Embed(Sentences, false, null, cache);
         embedder.Embed(Sentences, false, null, cache);
         Assert.Equal(3, net.Sentences); // only the first sentence fit
@@ -146,5 +157,18 @@ public class TransformerCacheTests
         // A mix of other than 4 layers neither reads nor fills it.
         embedder.Embed(Sentences, false, [1f, 1f], cache);
         Assert.Equal(5, net.Sentences);
+    }
+
+    [Fact]
+    public void Cache_OfAnotherNet_IsIgnored()
+    {
+        // Sentiment's LoRA encoder gives other states for the same ids: it must neither read nor fill the frozen one's cache.
+        var (embedder, net) = Embedder();
+        var cache = new TransformerCache(net);
+        embedder.Embed(Sentences, false, null, cache);
+        var lora = (FakeNet)net.WithLora(new LoraWeights(new Dictionary<string, (float[], float[], int)>(), 2));
+        var other = new TransformerEmbedder(lora, embedder.Tokenizer, 512, TransformerFactAttribute.Electra);
+        other.Embed(Sentences, false, null, cache);
+        Assert.Equal(2, lora.Sentences);
     }
 }
