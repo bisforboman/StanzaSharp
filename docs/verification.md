@@ -85,7 +85,11 @@ processors dict). The texts are `corpus.txt`, `validation.txt` and a hand-writte
   paragraph runs in windows): English tokenize `combined`, `ewt`, `gum`, `lines`, `partut`, `atis`, `childes`, `eslspok`
   and lemma `ewt`, `gum`, `lines`, `partut`, `atis`, `childes` (each `_charlm`), German tokenize and lemma `combined`,
   `gsd`, `hdt`. Each lemmatizer's seq2seq model also runs alone on every word of `corpus.txt` and the lemma word list
-  (`seq2seq.json`: Stanza's decoded strings and edit classes), on both backends and, for ewt's, on every SIMD path.
+  (`seq2seq.json`: Stanza's decoded strings and edit classes), on both backends and, for ewt's, on every SIMD path;
+- English lemma `combined_charlm` (default package, tokenize to lemma) on `corpus.txt`, `validation.txt` and
+  `validation_contractions.txt`, where its contextual classifiers decide 33 words (`'s` be/have, `her` she/her; 4 of
+  them differ from the dictionary and seq2seq lemma): the lemmas byte for byte, and each decision's label and logits
+  within 1e-4 of Stanza's (`contextual.json`).
 
 They exercise what the packages don't: a second pretrain next to conll17 (fastText crawl, 300-dimensional), a tag
 vocabulary with three tag sets, and the old NER checkpoint format with a fine-tuned delta embedding (`i2b2`).
@@ -151,8 +155,8 @@ Test counts are passed xUnit test cases (each case of a theory counts, summed ov
 
 | Job | Runner | What it checks |
 |---|---|---|
-| `build-test` | ubuntu-26.04 (x64) | builds with warnings as errors, checks the code style, runs the 266 tests that need no models |
-| `golden` (3 shards) | ubuntu-26.04 (x64) | the whole suite on both backends against downloaded models, original and converted, English and German, every package (620 tests); then packs the packages and builds fresh apps from them: `StanzaSharp` alone must reproduce the golden CoNLL-U with nothing of TorchSharp loaded, and `StanzaSharp.Cuda` with `TorchSharp-cpu` must too; then installs the `stanzasharp` tool and downloads models with it; then publishes the [managed check](../tests/StanzaSharp.ManagedCheck/Program.cs) with Native AOT (`x86-64-v3`) and trimmed, with no trim/AOT warning and no torch file allowed, and both binaries must reproduce the golden CoNLL-U ([tools/verify-aot.sh](../tools/verify-aot.sh)) |
+| `build-test` | ubuntu-26.04 (x64) | builds with warnings as errors, checks the code style, runs the 265 tests that need no models |
+| `golden` (3 shards) | ubuntu-26.04 (x64) | the whole suite on both backends against downloaded models, original and converted, English and German, every package (625 tests); then packs the packages and builds fresh apps from them: `StanzaSharp` alone must reproduce the golden CoNLL-U with nothing of TorchSharp loaded, and `StanzaSharp.Cuda` with `TorchSharp-cpu` must too; then installs the `stanzasharp` tool and downloads models with it; then publishes the [managed check](../tests/StanzaSharp.ManagedCheck/Program.cs) with Native AOT (`x86-64-v3`) and trimmed, with no trim/AOT warning and no torch file allowed, and both binaries must reproduce the golden CoNLL-U ([tools/verify-aot.sh](../tools/verify-aot.sh)) |
 | `cross-os (windows-2025)` | Windows x64 | the whole suite on both backends, reading Stanza's `.pt` files directly (476 tests; the English default packages), both package checks, and the Native AOT and trimming check |
 | `cross-os (macos-26)` | macOS, Apple Silicon | the same (451 tests: Arm64 has no Vector256 path) |
 | `cross-os (windows-11-arm)` | Windows on Arm64 | the same suite (451 tests) and only the managed package check (`TorchSharp-cpu` has no Arm64 libtorch) |

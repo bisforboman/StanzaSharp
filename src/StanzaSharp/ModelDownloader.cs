@@ -108,6 +108,7 @@ public static class ModelDownloader
             ("tokenize/atis_charlm.pt", "5a54394b7800d08cd0708ca11d5b9f60"),
             ("tokenize/childes_charlm.pt", "a964dbbbfe7107a6d866ff5f610e73e9"),
             ("tokenize/eslspok_charlm.pt", "41f8fa611e1aeaf0ec7fdec4b968c878"),
+            ("lemma/combined_charlm.pt", "a3efc57724b629fabf427ce59d410f7e"),
             ("lemma/ewt_charlm.pt", "fb22142bdc178161966291ca017c7f34"),
             ("lemma/gum_charlm.pt", "c2c3eac4e7d2bd494cc03cfaea144a66"),
             ("lemma/lines_charlm.pt", "ef652b9b807a80467e0260684069e9ef"),

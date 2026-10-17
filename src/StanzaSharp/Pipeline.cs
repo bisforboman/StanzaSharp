@@ -126,13 +126,13 @@ public sealed class Pipeline : IDisposable
         {
             ["constituency"] = ["ptb3_charlm"],
 
-            // the treebanks' _charlm tokenizers and lemmatizers (per-character charlm states); not lemma combined_charlm,
-            // whose contextual lemma classifiers are not ported
+            // the treebanks' _charlm tokenizers and lemmatizers (per-character charlm states); lemma combined_charlm also has
+            // contextual lemma classifiers ('s, her), which read the pretrain too
             ["tokenize"] =
             [
                 "combined_charlm", "ewt_charlm", "gum_charlm", "lines_charlm", "partut_charlm", "atis_charlm", "childes_charlm", "eslspok_charlm",
             ],
-            ["lemma"] = ["ewt_charlm", "gum_charlm", "lines_charlm", "partut_charlm", "atis_charlm", "childes_charlm"],
+            ["lemma"] = ["combined_charlm", "ewt_charlm", "gum_charlm", "lines_charlm", "partut_charlm", "atis_charlm", "childes_charlm"],
 
             // the treebanks' own _nocharlm taggers and parsers (mimic has only a parser); combined's are default_fast's
             ["pos"] = ["ewt_nocharlm", "gum_nocharlm", "lines_nocharlm", "partut_nocharlm", "atis_nocharlm", "childes_nocharlm", "eslspok_nocharlm"],
@@ -242,6 +242,7 @@ public sealed class Pipeline : IDisposable
             ["tokenize/atis_charlm"] = EnglishForward,
             ["tokenize/childes_charlm"] = EnglishForward,
             ["tokenize/eslspok_charlm"] = EnglishForward,
+            ["lemma/combined_charlm"] = EnglishCharlm,
             ["lemma/ewt_charlm"] = EnglishPair,
             ["lemma/gum_charlm"] = EnglishPair,
             ["lemma/lines_charlm"] = EnglishPair,
@@ -414,6 +415,7 @@ public sealed class Pipeline : IDisposable
         // The pretrain and the charlms a processor's model reads (Dependencies), once loaded.
         string[] DependenciesOf(string processor) => Dependencies[options.Language].GetValueOrDefault(Name(processor), []);
         Pretrain PretrainOf(string processor) => pretrains[DependenciesOf(processor).Single(p => p.StartsWith("pretrain/", StringComparison.Ordinal))].Result;
+        Pretrain? PretrainIfAny(string processor) => DependenciesOf(processor).Any(p => p.StartsWith("pretrain/", StringComparison.Ordinal)) ? PretrainOf(processor) : null;
         Charlms CharlmsOf(string processor) => new(
             DependenciesOf(processor).SingleOrDefault(p => p.StartsWith("forward_charlm/", StringComparison.Ordinal)),
             DependenciesOf(processor).SingleOrDefault(p => p.StartsWith("backward_charlm/", StringComparison.Ordinal)));
@@ -430,7 +432,7 @@ public sealed class Pipeline : IDisposable
             if (tokenizer == null && CharlmsOf("tokenize").Forward != null == ofCharlms)
                 tokenizer = Start(Name("tokenize"), () => backend.Tokenizer(Model("tokenize"), CharlmsOf("tokenize")));
             if (hasLemma && lemma == null && CharlmsOf("lemma").Forward != null == ofCharlms)
-                lemma = Start(Name("lemma"), () => backend.Lemma(Model("lemma"), CharlmsOf("lemma")));
+                lemma = Start(Name("lemma"), () => backend.Lemma(Model("lemma"), CharlmsOf("lemma"), PretrainIfAny("lemma")));
         }
 
         StartReaders(ofCharlms: false);
@@ -657,9 +659,7 @@ public sealed class Pipeline : IDisposable
             {
                 string why = name.Contains("electra", StringComparison.Ordinal) || name.Contains("bert", StringComparison.Ordinal)
                     ? " (a transformer model, which StanzaSharp doesn't run)"
-                    : (language, p, name) == (English, "lemma", "combined_charlm")
-                        ? " (its contextual lemma classifiers are not ported)"
-                        : "";
+                    : "";
                 var packagesWith = Packages[language].Where(kv => kv.Value.ContainsKey(p)).Select(kv => kv.Key);
                 throw new ArgumentException($"Unknown or unsupported {p} model '{value}' for language '{language}'{why}. Supported: "
                     + $"{string.Join(", ", supported)}; or a package's name ({string.Join(", ", packagesWith)})", paramName);

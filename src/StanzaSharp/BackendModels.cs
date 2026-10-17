@@ -48,7 +48,8 @@ internal abstract class BackendModels : IDisposable
     public abstract MwtExpander Mwt(string basePath);
 
     /// <param name="charlms">The charlms a <c>_charlm</c> lemmatizer reads; both null for the others.</param>
-    public abstract Lemmatizer Lemma(string basePath, Charlms charlms);
+    /// <param name="pretrain">The pretrain its contextual classifiers read (English <c>combined_charlm</c>); else null.</param>
+    public abstract Lemmatizer Lemma(string basePath, Charlms charlms, Pretrain? pretrain);
 
     public abstract PosTagger Pos(string basePath, Pretrain pretrain, Charlms charlms);
 
@@ -116,8 +117,8 @@ internal sealed class ManagedModels : BackendModels
 
     public override MwtExpander Mwt(string basePath) => MwtExpander.LoadManaged(basePath);
 
-    public override Lemmatizer Lemma(string basePath, Charlms charlms) =>
-        Lemmatizer.LoadManaged(basePath, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward));
+    public override Lemmatizer Lemma(string basePath, Charlms charlms, Pretrain? pretrain) =>
+        Lemmatizer.LoadManaged(basePath, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward), pretrain);
 
     public override PosTagger Pos(string basePath, Pretrain pretrain, Charlms charlms) =>
         PosTagger.LoadManaged(basePath, pretrain, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward));

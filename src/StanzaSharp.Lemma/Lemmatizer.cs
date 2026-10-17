@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using System.Text.Json.Nodes;
 using StanzaSharp.Nn;
 using StanzaSharp.Nn.Managed;
 
@@ -13,7 +14,8 @@ namespace StanzaSharp.Lemma;
 /// model also feeds the encoder both charlms' states over <c>"\n" + word + " "</c> (seq2seq_model.py embed). A <c>caseless</c>
 /// model (English atis) sees the words lowercased, in the dictionary too; the edits and the fallback keep their case.
 /// The network is an <see cref="ISeq2SeqNet"/> (per backend, shared with German MWT); the dictionary, DeltaVocab,
-/// batching and the edits are here.
+/// batching and the edits are here. A checkpoint's <c>contextual</c> models (<see cref="LemmaClassifier"/>, English
+/// <c>combined_charlm</c>) then replace the lemmas of their target words.
 /// </summary>
 internal sealed class Lemmatizer : IDisposable
 {
@@ -27,12 +29,15 @@ internal sealed class Lemmatizer : IDisposable
     private readonly bool _caseless;
     private readonly ISeq2SeqNet _net;
     private readonly IPerCharLanguageModel? _forward, _backward; // a _charlm model's charlms
+    private readonly LemmaClassifier[] _contextual;
 
     /// <param name="net">Builds the network from the checkpoint and its sizes (a backend's).</param>
     /// <param name="forward">The forward charlm a <c>_charlm</c> model reads (config <c>charlm</c>); else null.</param>
     /// <param name="backward">Its backward charlm.</param>
+    /// <param name="pretrain">The pretrain the checkpoint's contextual classifiers read (resources.json's dependency); else null.</param>
+    /// <param name="classifierNet">Builds a contextual classifier's network from the checkpoint and its state dict.</param>
     internal Lemmatizer(Checkpoint ckpt, Func<Checkpoint, Seq2SeqConfig, ISeq2SeqNet> net, IPerCharLanguageModel? forward = null,
-        IPerCharLanguageModel? backward = null)
+        IPerCharLanguageModel? backward = null, Pretrain? pretrain = null, Func<Checkpoint, JsonNode, ILemmaClassifierNet>? classifierNet = null)
     {
         var root = ckpt.Root;
         var config = root["config"]!;
@@ -49,7 +54,6 @@ internal sealed class Lemmatizer : IDisposable
         Require(Flag("edit") && config["num_edit"]?.GetValue<int>() == 3, "edit off or num_edit != 3");
         Require(Flag("pos") && config["pos_dim"]?.GetValue<int>() > 0, "POS input off");
         Require(config["num_layers"]?.GetValue<int>() == 1, "more than one encoder layer");
-        Require(root["contextual"]?.AsArray().Count is null or 0, "contextual lemmatizers");
         Require(root["dicts_version"]?.GetValue<int>() == 3, "a dictionary format other than v3 (gzip + JSON)");
 
         // trainer._unpack_pos_dict: {pos: {word: lemma}}, "*" holding the POS-independent entries.
@@ -85,19 +89,43 @@ internal sealed class Lemmatizer : IDisposable
 
         var sizes = Seq2SeqConfig.From(config, contextual);
         _net = net(ckpt, sizes);
+
+        // trainer.load: LemmaClassifier.from_checkpoint for each, reading the pipeline's pretrain and charlms.
+        var classifiers = root["contextual"]?.AsArray() ?? [];
+        if (classifiers.Count > 0 && (pretrain == null || classifierNet == null))
+            throw new ArgumentException("This lemmatizer's contextual classifiers read the pretrain; give it", nameof(pretrain));
+        _contextual = [.. classifiers.Select(node => new LemmaClassifier(ckpt, node!, pretrain!, classifierNet!))];
     }
 
     /// <summary>Loads <c>basePath.json</c> + <c>.safetensors</c> (or <c>basePath.pt</c>), e.g. <c>models/converted/en/lemma/combined_nocharlm</c>, on the managed backend.</summary>
     /// <param name="forward">The forward charlm of a <c>_charlm</c> model; null for the others.</param>
     /// <param name="backward">Its backward charlm.</param>
-    public static Lemmatizer LoadManaged(string basePath, ManagedCharLanguageModel? forward = null, ManagedCharLanguageModel? backward = null) =>
-        new(Checkpoint.Load(basePath), (ckpt, sizes) => new ManagedSeq2SeqNet(ckpt, sizes), forward, backward);
+    /// <param name="pretrain">The pretrain of a model with contextual classifiers (English <c>combined_charlm</c>); null for the others.</param>
+    public static Lemmatizer LoadManaged(string basePath, ManagedCharLanguageModel? forward = null, ManagedCharLanguageModel? backward = null,
+        Pretrain? pretrain = null) =>
+        new(Checkpoint.Load(basePath), (ckpt, sizes) => new ManagedSeq2SeqNet(ckpt, sizes), forward, backward, pretrain,
+            (ckpt, model) => new ManagedLemmaClassifierNet(ckpt, model, pretrain!,
+                forward ?? throw new ArgumentException("The contextual classifiers read both charlms", nameof(forward)),
+                backward ?? throw new ArgumentException("The contextual classifiers read both charlms", nameof(backward))));
 
     /// <summary>Sets the lemma of every word in <paramref name="doc"/>; needs UPOS from the tagger.</summary>
-    public void Process(Document doc, CancellationToken cancellationToken = default)
+    /// <param name="onContextual">For tests: each contextual classifier's labels and [targets, labels] logits, in Stanza's order.</param>
+    public void Process(Document doc, CancellationToken cancellationToken = default, Action<string[], float[]>? onContextual = null)
     {
         var words = doc.Sentences.SelectMany(s => s.Words).ToList();
         var lemmas = Lemmatize(words, cancellationToken);
+
+        // trainer.update_contextual_preds, reversed so that the first classifier has priority.
+        if (_contextual.Length > 0)
+        {
+            var sentences = doc.Sentences.Select(s => (IReadOnlyList<Word>)[.. s.Words]).ToList();
+            for (int i = _contextual.Length - 1; i >= 0; i--)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                _contextual[i].Apply(sentences, lemmas, cancellationToken, onContextual);
+            }
+        }
+
         for (int i = 0; i < words.Count; i++)
 
             // Stanza's Word.lemma setter stores "_" as None unless the word itself is "_".
@@ -255,5 +283,10 @@ internal sealed class Lemmatizer : IDisposable
         return contextual;
     }
 
-    public void Dispose() => _net.Dispose();
+    public void Dispose()
+    {
+        _net.Dispose();
+        foreach (var classifier in _contextual)
+            classifier.Dispose();
+    }
 }
