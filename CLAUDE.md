@@ -325,6 +325,14 @@ Tokenizer notes:
   and word text only, offsets and MWT flag kept; bulk too, never pretokenized). `tests/golden/long_token*`
   (`make_golden.py --long-token-only`), both packages.
 
+## Working on this repository
+
+- **Advisor**: when an advisor tool is available, call it before design decisions or recommendations, before splitting
+  work across agents or sessions, and before declaring a larger task done.
+- **Where work runs**: long work (multi-step tasks, PRs, CI waits, releases) runs as cloud sessions; the owner's
+  computer must stay free to restart or turn off. Work that needs it (local timings, Windows-only checks) is asked for,
+  never started unasked; a cloud session that needs such a step says so in its PR.
+
 ## Layout
 
 ```
