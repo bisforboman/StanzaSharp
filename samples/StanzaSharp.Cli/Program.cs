@@ -9,7 +9,7 @@ const string Usage = """
     "download" fetches Stanza's models of --lang (en, the default, or de) into DIR (default: models/stanza/<lang>):
     all of the package's, or only what LIST needs. "download-transformer" fetches a transformer's files (all, or the FILEs)
     from Hugging Face at their pinned revision into DIR/transformer/NAME (google/electra-large-discriminator: tokenizer.json,
-    pytorch_model.bin; docs/transformer-plan.md), for tests and tools; nothing uses them yet.
+    pytorch_model.bin; docs/transformer-plan.md), for tests and tools; "download" fetches them too for a model that reads them.
 
       --lang CODE         the language: en (default) or de
       --models DIR        models (default: models/converted/<lang> if present, else models/stanza/<lang>)
@@ -22,7 +22,9 @@ const string Usage = """
       --model P=NAME      a model for processor P instead of the package's (repeatable, or P=NAME,P=NAME), as Stanza's
                           processors dict: English constituency=ptb3_charlm; ner=ontonotes_charlm, ontonotes_nocharlm,
                           combined_charlm, conll03_charlm, i2b2, radiology (clinical),
-                          anatem, bc4chemd, bc5cdr, bionlp13cg, jnlpba, linnaeus, ncbi_disease, s800 (biomedical); German ner=conll03.
+                          anatem, bc4chemd, bc5cdr, bionlp13cg, jnlpba, linnaeus, ncbi_disease, s800 (biomedical),
+                          ontonotes-ww-multi_electra-large; pos and depparse=combined_electra-large (these three read the
+                          1.3 GB google/electra-large-discriminator, which download fetches too); German ner=conll03.
                           Its processor is added if needed
       --list              download: print each file and its MD5 instead of downloading
       --backend NAME      managed (default; no native code) or torch (TorchSharp, with this sample's TorchSharp-cpu)

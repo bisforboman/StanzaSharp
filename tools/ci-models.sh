@@ -4,9 +4,9 @@
 #
 #   tools/ci-models.sh download GROUP   download the group's models (on a cache miss)
 #   tools/ci-models.sh files GROUP      the group's files and MD5s (`download --list`), sorted
-#   tools/ci-models.sh transformer FILE...  downloads FILEs of google/electra-large-discriminator (the transformer of
-#                                       default_accurate, docs/transformer-plan.md) into models/stanza/en/transformer/, with
-#                                       retries; never cached (owner's decision, 2026-10-17)
+#   tools/ci-models.sh transformer      downloads the transformer models (Pipeline.Transformers: default_accurate's, PR 2 of
+#                                       docs/transformer-plan.md) and google/electra-large-discriminator's files (into
+#                                       models/stanza/en/transformer/), with retries; never cached (owner's decision, 2026-10-17)
 #   tools/ci-models.sh keys             writes en, en_treebanks, de, treebank_choices, en_treebanks_paths and treebank_choices_paths
 #                                       to $GITHUB_OUTPUT
 #
@@ -97,9 +97,9 @@ case ${1:-} in
     files "$2"
     ;;
   transformer)
-    shift
+    models=pos=combined_electra-large,depparse=combined_electra-large,ner=ontonotes-ww-multi_electra-large
     for attempt in 1 2 3; do
-      "${cli[@]}" download-transformer models/stanza/en google/electra-large-discriminator "$@" < /dev/null && exit 0
+      "${cli[@]}" download models/stanza/en --processors tokenize,mwt,pos,lemma,depparse,ner --model $models < /dev/null && exit 0
       echo "download failed (attempt $attempt)" >&2
       sleep $((attempt * 15))
     done
@@ -122,7 +122,7 @@ case ${1:-} in
     } >> "$out"
     ;;
   *)
-    echo "usage: $0 download GROUP | files GROUP | transformer FILE... | keys" >&2
+    echo "usage: $0 download GROUP | files GROUP | transformer | keys" >&2
     exit 2
     ;;
 esac

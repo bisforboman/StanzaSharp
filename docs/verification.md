@@ -104,7 +104,15 @@ layer mix and with the dependency parser's learned one; a 180-word sentence over
 overlapping windows, within 4e-6; and three short sentences on which ELECTRA is badly conditioned in float32 (Stanza's
 own float32 is up to 7.6e-3 from float64 there), listed in the golden data with a bound of 1e-2, within 1.5e-3. On the
 managed backend a sentence gives the same bits alone, in a batch and on any thread count, and every SIMD path meets the
-tolerance. Nothing in the pipeline uses it yet.
+tolerance.
+
+**Transformer models.** `default_accurate`'s tagger, parser and NER model (pos and depparse `combined_electra-large`, ner
+`ontonotes-ww-multi_electra-large`, chosen with `PipelineOptions.Models`) reproduce Stanza's output byte for byte on both
+backends: `models/pos+depparse+ner=electra-large/` (`make_golden.py --models-only`), corpus.txt, the validation,
+contractions, social and tech texts and `models/transformer_long.txt` (a 633-word sentence of 706 pieces, over the
+transformer's 512 positions, so in Stanza's windows), 413 sentences with tags, lemmas, heads, relations and entities
+(`TransformerModelTests`). The pipeline runs the transformer once per sentence for all three (Stanza once per processor):
+the parser reads the tagger's states, ner those of sentences whose tokens are the words (`TransformerCacheTests`).
 
 They exercise what the packages don't: a second pretrain next to conll17 (fastText crawl, 300-dimensional), a tag
 vocabulary with three tag sets, and the old NER checkpoint format with a fine-tuned delta embedding (`i2b2`).
@@ -184,7 +192,8 @@ Every job that runs the model tests fails if any of them was skipped. The only e
 golden shard 2 installs and runs, and the German tests, the English treebank packages' and the chosen models' tests outside `golden`: only
 the golden shards have those models (Stanza's `.pt` files, cached), so `cross-os` and `linux-arm64` run the English
 default packages only. The transformer tests (`Transformer*`) run in golden shard 1, which downloads the transformer's
-files from Hugging Face on every run (no cache: the model caches are near GitHub's 10 GB limit).
+files from Hugging Face and the transformer models from Stanza's repository on every run (no cache: the model caches are
+near GitHub's 10 GB limit).
 
 On x64 runners the test steps set `ATEN_CPU_CAPABILITY=default` and `MKL_CBWR=COMPATIBLE,STRICT`, so libtorch picks
 the same kernels on every CPU the runner draws (Intel or AMD) and the TorchSharp backend gives the same bits on all of

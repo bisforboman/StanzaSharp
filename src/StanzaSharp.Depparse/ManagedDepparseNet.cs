@@ -23,7 +23,7 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
     private readonly PackedMatrix? _transChar;
     private readonly float[] _wordEmb, _lemmaEmb, _uposEmb;
     private readonly float[][] _xposEmb; // one table per part of a composite XPOS vocabulary
-    private readonly int _wordDim, _tagDim, _transformed, _inputSize, _biaff;
+    private readonly int _wordDim, _tagDim, _transformed, _inputSize, _transformerCol, _biaff;
     private readonly PackedMatrix _transPretrained;
     private readonly ManagedHighwayLstm _lstm;
     private readonly Scorer _unlabeled, _deprel;
@@ -49,7 +49,10 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
         public required float[] Pad2;        // in2 of a padding word: ReLU(W2's bias)
     }
 
-    public ManagedDepparseNet(Checkpoint ckpt, Pretrain pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward)
+    /// <param name="transformerDim">The transformer's hidden size for a <c>_electra-large</c> parser (its vectors are the last
+    /// input columns, <see cref="DepparseBatch.Transformer"/>), else 0.</param>
+    public ManagedDepparseNet(Checkpoint ckpt, Pretrain pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward,
+        int transformerDim = 0)
     {
         var config = ckpt.Root["config"]!;
         var model = ckpt.Root["model"]!;
@@ -75,6 +78,8 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
             _inputSize += _transformed;
         }
 
+        _transformerCol = _inputSize;
+        _inputSize += transformerDim;
         (_wordEmb, _lemmaEmb, _uposEmb) = (T("word_emb.weight"), T("lemma_emb.weight"), T("upos_emb.weight"));
         var xpos = XposVocab.Read(ckpt.Root["vocab"]!);
         _xposEmb = xpos.IsComposite ? [.. xpos.Sizes.Select((_, i) => T($"xpos_emb.{i}.weight"))] : [T("xpos_emb.weight")];
@@ -253,6 +258,16 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
             else
             {
                 CharlmFeatures(batch, packedRow, x, charCol, ct);
+            }
+
+            if (batch.Transformer != null)
+            {
+                int td = inSize - _transformerCol;
+                for (int b = 0; b < size; b++)
+                {
+                    for (int k = offset[b]; k < offset[b + 1]; k++)
+                        batch.Transformer[b].AsSpan((k - offset[b]) * td, td).CopyTo(x.AsSpan(packedRow[k] * inSize + _transformerCol));
+                }
             }
 
             ct.ThrowIfCancellationRequested();

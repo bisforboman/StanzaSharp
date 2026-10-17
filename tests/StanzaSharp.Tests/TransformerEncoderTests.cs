@@ -13,7 +13,7 @@ public sealed class TransformerModels : IDisposable
     private readonly Lazy<WordPiece> _tokenizer = new(() => WordPiece.Load(Path.Combine(TransformerFactAttribute.Directory, "tokenizer.json")));
 
     internal TransformerEmbedder Embedder(bool managed) =>
-        new(managed ? _managed.Value : _torch.Value, _tokenizer.Value, TransformerEmbedder.ReadMaxLength(TransformerFactAttribute.Directory));
+        new(managed ? _managed.Value : _torch.Value, _tokenizer.Value, TransformerEmbedder.ReadMaxLength(TransformerFactAttribute.Directory), "google/electra-large-discriminator");
 
     public void Dispose()
     {

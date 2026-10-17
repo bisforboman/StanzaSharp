@@ -19,8 +19,9 @@ internal interface IPosNet : IDisposable
     /// <param name="pretrainIds">Pretrain id of each word (lowercased), sentences in order.</param>
     /// <param name="charlms">With <paramref name="cacheKeys"/>: receives sentence i's charlm outputs under its key if not null.</param>
     /// <param name="ct">Checked after each charlm pass (or the character model), between LSTM layers and between the heads.</param>
+    /// <param name="transformer">A <c>_electra-large</c> tagger's transformer vectors, per sentence [words, hidden]: the last input columns.</param>
     PosOutput Forward(IReadOnlyList<IReadOnlyList<string>> sentences, long[] wordIds, long[] pretrainIds,
-        CharlmCache? charlms, IReadOnlyList<Sentence?>? cacheKeys, CancellationToken ct);
+        CharlmCache? charlms, IReadOnlyList<Sentence?>? cacheKeys, CancellationToken ct, float[][]? transformer = null);
 }
 
 /// <summary>
@@ -35,14 +36,16 @@ internal sealed unsafe class ManagedPosNet : IPosNet
     private readonly ManagedCharacterModel? _charModel;
     private readonly PackedMatrix? _transChar;
     private readonly float[] _wordEmb; // [words, wordDim]
-    private readonly int _wordDim, _transformed, _inputSize, _biaff, _xposHid, _upos;
+    private readonly int _wordDim, _transformed, _inputSize, _transformerCol, _biaff, _xposHid, _upos;
     private readonly int[] _xpos, _xposOffsets, _feats, _featOffsets;
     private readonly PackedMatrix _transPretrained, _hid, _xposClf, _featsClf;
     private readonly float[] _hidBias, _xposBias, _featsBias;
     private readonly float[] _uposClf, _uposBias; // [upos, biaff], [upos]: dot products in double (see Heads)
     private readonly ManagedHighwayLstm _lstm;
 
-    public ManagedPosNet(Checkpoint ckpt, int upos, XposVocab xpos, int[] feats, Pretrain pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward)
+    /// <param name="transformerDim">The transformer's hidden size for a <c>_electra-large</c> tagger (the last input columns), else 0.</param>
+    public ManagedPosNet(Checkpoint ckpt, int upos, XposVocab xpos, int[] feats, Pretrain pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward,
+        int transformerDim = 0)
     {
         var config = ckpt.Root["config"]!;
         var model = ckpt.Root["model"]!;
@@ -71,6 +74,8 @@ internal sealed unsafe class ManagedPosNet : IPosNet
             _inputSize += _transformed;
         }
 
+        _transformerCol = _inputSize;
+        _inputSize += transformerDim;
         _wordEmb = T("word_emb.weight");
         _transPretrained = new PackedMatrix(T("trans_pretrained.weight"), _transformed, pretrain.Dim);
         _lstm = new ManagedHighwayLstm(ckpt, model, "taggerlstm", _inputSize, hidden, config["num_layers"]!.GetValue<int>());
@@ -138,7 +143,7 @@ internal sealed unsafe class ManagedPosNet : IPosNet
     }
 
     public PosOutput Forward(IReadOnlyList<IReadOnlyList<string>> sentences, long[] wordIds, long[] pretrainIds,
-        CharlmCache? charlms, IReadOnlyList<Sentence?>? cacheKeys, CancellationToken ct)
+        CharlmCache? charlms, IReadOnlyList<Sentence?>? cacheKeys, CancellationToken ct, float[][]? transformer = null)
     {
         int batch = sentences.Count, inSize = _inputSize;
         var lengths = sentences.Select(s => (long)s.Count).ToArray();
@@ -208,6 +213,16 @@ internal sealed unsafe class ManagedPosNet : IPosNet
             else
             {
                 CharlmFeatures(sentences, packedRow, x, charCol, charlms, cacheKeys, ct);
+            }
+
+            if (transformer != null)
+            {
+                int td = inSize - _transformerCol;
+                for (int i = 0, k = 0; i < batch; i++)
+                {
+                    for (int j = 0; j < lengths[i]; j++, k++)
+                        transformer[i].AsSpan(j * td, td).CopyTo(x.AsSpan(packedRow[k] * inSize + _transformerCol));
+                }
             }
 
             ct.ThrowIfCancellationRequested();

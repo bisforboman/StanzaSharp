@@ -13,8 +13,10 @@ internal interface INerNet : IDisposable
     /// <param name="deltaIds">[batch, width] delta ids, padded; unused without a delta embedding.</param>
     /// <param name="logits">Gets the [batch, width, tags] emission scores, row-major; rows past a sentence's end are unspecified.</param>
     /// <param name="charlms">With <paramref name="cacheKeys"/>: charlm outputs to reuse; row i's key, if not null, is looked up.</param>
+    /// <param name="transformer">A <c>_electra-large</c> model's transformer vectors, per sentence [tokens, hidden]: the input
+    /// columns after the word vector, before the character features.</param>
     void Forward(IReadOnlyList<IReadOnlyList<string>> sentences, long[] wordIds, long[] deltaIds, int width, Span<float> logits,
-        CharlmCache? charlms, IReadOnlyList<Sentence?>? cacheKeys, CancellationToken ct);
+        CharlmCache? charlms, IReadOnlyList<Sentence?>? cacheKeys, CancellationToken ct, float[][]? transformer = null);
 }
 
 /// <summary>
@@ -27,12 +29,14 @@ internal sealed unsafe class ManagedNerNet : INerNet
     private readonly ManagedCharLanguageModel? _charlmForward, _charlmBackward;
     private readonly ManagedCharacterModel? _charModel;
     private readonly float[]? _deltaEmb; // [delta vocab, wordDim], if any
-    private readonly int _wordDim, _inputSize, _tags;
+    private readonly int _wordDim, _transformerDim, _charCol, _inputSize, _tags;
     private readonly PackedMatrix _inputTransform, _tagClf;
     private readonly float[] _inputBias, _tagBias;
     private readonly ManagedLstm _lstm;
 
-    public ManagedNerNet(Checkpoint ckpt, int tags, int tagset, Pretrain pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward)
+    /// <param name="transformerDim">The transformer's hidden size for a <c>_electra-large</c> model, else 0.</param>
+    public ManagedNerNet(Checkpoint ckpt, int tags, int tagset, Pretrain pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward,
+        int transformerDim = 0)
     {
         var config = ckpt.Root["config"]!;
         var model = ckpt.Root["model"]!;
@@ -45,7 +49,10 @@ internal sealed unsafe class ManagedNerNet : INerNet
         _wordDim = config["word_emb_dim"]!.GetValue<int>();
         int hidden = config["hidden_dim"]!.GetValue<int>();
         int layers = config["num_layers"]!.GetValue<int>();
-        _inputSize = _wordDim + (_charModel?.OutputDim ?? _charlmForward!.HiddenDim + _charlmBackward!.HiddenDim);
+
+        // model.py: the word vector, the transformer's (if any), then the character features.
+        (_transformerDim, _charCol) = (transformerDim, _wordDim + transformerDim);
+        _inputSize = _charCol + (_charModel?.OutputDim ?? _charlmForward!.HiddenDim + _charlmBackward!.HiddenDim);
         _tags = tags;
         _deltaEmb = model["delta_emb.weight"] != null ? T("delta_emb.weight") : null;
         (_inputTransform, _inputBias) = Linear(T("input_transform.weight"), T("input_transform.bias"), _inputSize, _inputSize);
@@ -63,7 +70,7 @@ internal sealed unsafe class ManagedNerNet : INerNet
     }
 
     public void Forward(IReadOnlyList<IReadOnlyList<string>> sentences, long[] wordIds, long[] deltaIds, int width, Span<float> logits,
-        CharlmCache? charlms, IReadOnlyList<Sentence?>? cacheKeys, CancellationToken ct)
+        CharlmCache? charlms, IReadOnlyList<Sentence?>? cacheKeys, CancellationToken ct, float[][]? transformer = null)
     {
         int batch = sentences.Count, inSize = _inputSize, ldt = _inputTransform.PaddedN, ldc = _tagClf.PaddedN;
         var lengths = sentences.Select(s => (long)s.Count).ToArray();
@@ -106,6 +113,12 @@ internal sealed unsafe class ManagedNerNet : INerNet
                 }
             }
 
+            for (int i = 0; i < batch && transformer != null; i++)
+            {
+                for (int j = 0; j < lengths[i]; j++)
+                    transformer[i].AsSpan(j * _transformerDim, _transformerDim).CopyTo(x.AsSpan(Row(i, j) * inSize + _wordDim));
+            }
+
             fixed (float* px = x)
             {
                 if (_charModel != null)
@@ -118,7 +131,7 @@ internal sealed unsafe class ManagedNerNet : INerNet
                             words[Row(i, j)] = _charModel.CharIds(sentences[i][j]);
                     }
 
-                    _charModel.Forward(words, px + _wordDim, inSize, ct);
+                    _charModel.Forward(words, px + _charCol, inSize, ct);
                 }
                 else
                 {
@@ -152,7 +165,7 @@ internal sealed unsafe class ManagedNerNet : INerNet
     private void CharlmFeatures(IReadOnlyList<IReadOnlyList<string>> sentences, CharlmCache? charlms, IReadOnlyList<Sentence?>? cacheKeys,
         float[] x, Func<int, int, int> row, CancellationToken ct)
     {
-        int dim = _charlmForward!.HiddenDim, forwardCol = _wordDim, backwardCol = _wordDim + dim;
+        int dim = _charlmForward!.HiddenDim, forwardCol = _charCol, backwardCol = _charCol + dim;
         void Put(int i, ReadOnlySpan<float> forward, ReadOnlySpan<float> backward)
         {
             for (int j = 0; j < sentences[i].Count; j++)

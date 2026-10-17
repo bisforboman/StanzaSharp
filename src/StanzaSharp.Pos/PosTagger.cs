@@ -26,12 +26,17 @@ internal sealed class PosTagger : IDisposable
     private readonly (string Key, string[] Values)[] _feats;
     private readonly int _wordUnk, _batchSize;
     private readonly IPosNet _net;
+    private readonly TransformerEmbedder? _transformer;
+    private readonly float[]? _layerMix;
 
-    internal PosTagger(Checkpoint ckpt, Pretrain pretrain, Func<bool, int[], IPosNet> net)
+    /// <param name="transformer">The transformer a <c>_electra-large</c> tagger reads (the pipeline's, shared); else ignored.</param>
+    internal PosTagger(Checkpoint ckpt, Pretrain pretrain, Func<bool, int[], IPosNet> net, TransformerEmbedder? transformer = null)
     {
         _pretrain = pretrain;
         var config = ckpt.Root["config"]!;
         CheckSupported(config);
+        _layerMix = TransformerEmbedder.LayerMix(ckpt, transformer, "pos");
+        _transformer = config["bert_model"] == null ? null : transformer;
         RemapLegacyHeads(ckpt.Root["model"]!.AsObject());
         var vocab = ckpt.Root["vocab"]!;
         _wordVocab = Checkpoint.UnitToId(vocab["word"]);
@@ -45,17 +50,22 @@ internal sealed class PosTagger : IDisposable
     }
 
     /// <summary><c>Load</c> (StanzaSharp.Cuda) on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
-    public static PosTagger LoadManaged(string basePath, Pretrain pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward)
+    public static PosTagger LoadManaged(string basePath, Pretrain pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward,
+        TransformerEmbedder? transformer = null)
     {
         var ckpt = Checkpoint.Load(basePath);
+        int transformerDim = ckpt.Root["config"]!["bert_model"] == null ? 0 : transformer?.Net.Config.Hidden ?? 0;
         return new PosTagger(ckpt, pretrain, (charlm, feats) =>
         {
             if (charlm && (charlmForward == null || charlmBackward == null || !charlmForward.IsForward || charlmBackward.IsForward))
                 throw new ArgumentException("This tagger needs the forward charlm, then the backward one");
             var (_, upos, xpos) = Counts(ckpt);
-            return new ManagedPosNet(ckpt, upos, xpos, feats, pretrain, charlm ? charlmForward : null, charlm ? charlmBackward : null);
-        });
+            return new ManagedPosNet(ckpt, upos, xpos, feats, pretrain, charlm ? charlmForward : null, charlm ? charlmBackward : null, transformerDim);
+        }, transformer);
     }
+
+    /// <summary>Whether this tagger reads a transformer (<c>_electra-large</c>).</summary>
+    internal bool UsesTransformer => _transformer != null;
 
     /// <summary>The vocabularies' sizes: words, UPOS, and the XPOS vocabulary (a scorer per part if composite).</summary>
     internal static (int Words, int Upos, XposVocab Xpos) Counts(Checkpoint ckpt)
@@ -66,7 +76,8 @@ internal sealed class PosTagger : IDisposable
 
     /// <summary>Sets Upos, Xpos and Feats on every word of the document.</summary>
     /// <param name="charlms">If given, receives each sentence's charlm representations for the processors after the tagger.</param>
-    public void Process(Document doc, CharlmCache? charlms = null, CancellationToken cancellationToken = default)
+    /// <param name="transformers">The call's transformer states (a <c>_electra-large</c> tagger), for the processors after it.</param>
+    public void Process(Document doc, CharlmCache? charlms = null, CancellationToken cancellationToken = default, TransformerCache? transformers = null)
     {
         // Batched like Stanza's LengthLimitedBatchSampler: in document order, at most _batchSize sentences
         // and MaximumTokens words per batch, and a longer sentence alone.
@@ -80,7 +91,7 @@ internal sealed class PosTagger : IDisposable
                 words += sentences[end].Words.Count;
             var batch = sentences.GetRange(b, end - b);
             var tags = Predict(batch.Select(x => (IReadOnlyList<string>)x.Words.Select(w => w.Text).ToList()).ToList(), out _,
-                charlms, charlms == null ? null : batch.Select(x => (Sentence?)x.Sentence).ToList(), cancellationToken, featStrings);
+                charlms, charlms == null ? null : batch.Select(x => (Sentence?)x.Sentence).ToList(), cancellationToken, featStrings, transformers);
             for (int i = 0; i < batch.Count; i++)
             {
                 for (int j = 0; j < batch[i].Words.Count; j++)
@@ -95,9 +106,10 @@ internal sealed class PosTagger : IDisposable
     /// <param name="cancellationToken">A batch is up to 5000 words (seconds on a slow CPU), so this is checked after each
     /// charlm pass (or the character model), between LSTM layers and between the heads.</param>
     /// <param name="featStrings">If given, equal feats strings are shared through it (memory on large documents).</param>
+    /// <param name="transformers">The call's transformer states (a <c>_electra-large</c> tagger).</param>
     internal List<(string Upos, string? Xpos, string? Feats)[]> Predict(IReadOnlyList<IReadOnlyList<string>> sentences, out List<float[]> uposLogits,
         CharlmCache? charlms = null, IReadOnlyList<Sentence?>? cacheKeys = null, CancellationToken cancellationToken = default,
-        Dictionary<string, string>? featStrings = null)
+        Dictionary<string, string>? featStrings = null, TransformerCache? transformers = null)
     {
         var original = sentences;
         sentences = sentences.Select(s => (IReadOnlyList<string>)s.Select(Punct.Simplify).ToList()).ToList();
@@ -116,7 +128,9 @@ internal sealed class PosTagger : IDisposable
             pretrainIds[k] = _pretrain.UnitToId(lower);
         }
 
-        var output = _net.Forward(sentences, wordIds, pretrainIds, keys == null ? null : charlms, keys, cancellationToken);
+        // extract_bert_embeddings over the simplify_punct'ed words (data.py's text), without the endpoints.
+        var transformer = _transformer?.Embed(sentences, keepEndpoints: false, _layerMix, transformers, cancellationToken);
+        var output = _net.Forward(sentences, wordIds, pretrainIds, keys == null ? null : charlms, keys, cancellationToken, transformer);
 
         int nUpos = _upos.Length;
         uposLogits = [];
@@ -187,7 +201,6 @@ internal sealed class PosTagger : IDisposable
         Require(config["char"]?.GetValue<bool>() == true && config["char_emb_dim"]?.GetValue<int>() > 0, "a configuration without character features");
         Require(config["charlm_transform_dim"] == null, "charlm_transform_dim");
         Require(config["pretrain"]?.GetValue<bool>() == true, "a configuration without pretrain");
-        Require(config["bert_model"] == null, "a transformer");
         Require(config["share_hid"]?.GetValue<bool>() != true, "share_hid");
 
         // Older taggers (German gsd/hdt) have neither entry: Stanza's defaults, tag_emb and the three native columns.

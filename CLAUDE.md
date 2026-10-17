@@ -57,7 +57,7 @@ default from 0.5) or through TorchSharp (see "Managed backend").
   word looked up as is, spaces as U+00A0; mimic pretrain and charlms); German ner `conll03` (germeval2014's format).
   Byte for byte on both backends (`ModelChoiceTests` against `tests/golden/models/<name>/`, `make_golden.py
   --models-only`, `MODEL_CHOICES`; i2b2 on the mimic package also on a hand-written `models/clinical.txt`). A new
-  alternative needs `Alternatives`, `Dependencies`, `ModelDownloader.Files`, a `MODEL_CHOICES` row and a
+  alternative needs `Alternatives`, `Dependencies` (a transformer model also `Transformers`), `ModelDownloader.Files`, a `MODEL_CHOICES` row and a
   `ModelChoiceTests` row (`EveryAlternative_HasItsFilesAndDependencies`, `EmbeddedResources_MatchModelDownloader`
   check the tables). The domain NER models (owner's decision, 2026-10-16, part 2): `conll03_charlm` (glove pretrain),
   `radiology` (mimic) and the biomedical anatem, bc4chemd, bc5cdr, bionlp13cg, jnlpba, linnaeus, ncbi_disease, s800
@@ -87,8 +87,9 @@ default from 0.5) or through TorchSharp (see "Managed backend").
   selected models read (`Pipeline.SharedModels`): in `default_fast` the charlms only with sentiment.
 - **Transformers (in progress: `default_accurate`, owner's decisions 2026-10-17; docs/transformer-plan.md):** its pos,
   depparse, ner and constituency read the stock, frozen `google/electra-large-discriminator`, sentiment the same with
-  LoRA adapters (applied at run time). The plan: PR 1a (done) the input side, 1b (done) the encoder nets, 2 pos/depparse/ner
-  with one shared encoder pass (exact only with `Gemm.Run(rowInvariant: true)`), 3 constituency/sentiment, 4 the package.
+  LoRA adapters (applied at run time). The plan: PR 1a (done) the input side, 1b (done) the encoder nets, 2 (done)
+  pos/depparse/ner with one shared encoder pass (exact only with `Gemm.Run(rowInvariant: true)`), 3 constituency/sentiment,
+  4 the package.
   - Files: not Stanza resources, so `ModelDownloader.Transformers` (repository → pinned revision, files, sha256),
     `DownloadTransformerAsync` (internal; the Cli sample's `download-transformer DIR NAME [FILE]...`) into
     `<model dir>/transformer/<repository>/` (`TransformerDirectory`); `Checkpoint.Load` reads the `pytorch_model.bin`
@@ -113,9 +114,25 @@ default from 0.5) or through TorchSharp (see "Managed backend").
     `transformer/hidden.safetensors` (+ `.json`: the sentences, the long one, the mix weights, each sentence's bound):
     Stanza's own extract_bert_embeddings in one batch, float32 and float64 (stored rounded to float32), checked by
     `TransformerEncoderTests` on both backends.
-  - CI: no cache (the model caches are near GitHub's 10 GB; owner's decision): golden shard 1 downloads the files on
-    every run (`tools/ci-models.sh transformer FILE...`, with retries); the `Transformer*` classes run only there (in
-    neither SHARD_TWO nor SHARD_THREE), and the other jobs' no-skip checks exempt `Transformer`.
+  - The models (PR 2): `Pipeline.Alternatives` pos `combined_electra-large`, depparse `combined_electra-large`, ner
+    `ontonotes-ww-multi_electra-large` (`--model pos=combined_electra-large`, ...): the `_charlm` twins' configs and
+    weights plus 1,024 input columns, the transformer's per word (last for pos and depparse; ner: word | transformer |
+    charlm). pos and ner use the legacy mix, depparse its `bert_layer_mix` (all zero weights: the mean of h21–h24), with
+    the endpoints ([CLS] is ROOT's row, [SEP] dropped). pos and depparse send the simplify_punct'ed words (both data.py's),
+    ner the token texts. `TransformerEmbedder.LayerMix` reads a model's settings (fine-tuned or LoRA transformers throw).
+    `Pipeline.Transformers` (`<processor>/<model>` → repository) is apart from `Dependencies`, `ModelDownloader.Files` and
+    the CI caches (`FilesFor` and `download --list` leave it out); the pipeline loads it once (`BackendModels.Transformer`),
+    `ModelDownloader.DownloadAsync(dir, options)` fetches it (`DownloadTransformerAsync`), and `Load` names a missing file.
+    Per call, a `TransformerCache` (by id sequence, h21–h24 of every piece, at most 16,384 pieces ≈ 256 MB; internal) when
+    two or more processors read it: depparse reuses pos's states, ner those of sentences whose tokens are the words.
+    Golden row `pos+depparse+ner=electra-large` (`MODEL_CHOICES`, corpus + validation, contractions, social, tech and
+    `models/transformer_long.txt`, a sentence of 706 pieces in two windows;
+    make_golden's `electra_locally` has Stanza read `<models>/en/transformer/`), `TransformerModelTests` (both backends),
+    `TransformerCacheTests` (a fake encoder, no models).
+  - CI: no cache (the model caches are near GitHub's 10 GB; owner's decision): golden shard 1 downloads the transformer
+    models and the transformer's files on every run (`tools/ci-models.sh transformer`: `download` with their `--model`s,
+    with retries); the `Transformer*` classes run only there (in neither SHARD_TWO nor SHARD_THREE), and the other jobs'
+    no-skip checks exempt `Transformer`.
 
 ## Status
 

@@ -411,5 +411,23 @@
    "corpus.txt",
    "tokenize_stress.txt"
   ]
+ },
+ {
+  "name": "pos+depparse+ner=electra-large",
+  "package": "default",
+  "processors": "tokenize,mwt,pos,lemma,depparse,ner",
+  "models": {
+   "pos": "combined_electra-large",
+   "depparse": "combined_electra-large",
+   "ner": "ontonotes-ww-multi_electra-large"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "validation_contractions.txt",
+   "validation_social.txt",
+   "validation_tech.txt",
+   "models/transformer_long.txt"
+  ]
  }
 ]

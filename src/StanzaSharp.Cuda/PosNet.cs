@@ -22,8 +22,11 @@ internal sealed class PosNet : IPosNet
     private readonly Biaffine[] _xposClf; // one per part of a composite XPOS vocabulary
     private readonly Biaffine[] _featsClf;
     private readonly Device _device = Weights.Device; // the device the model was loaded on
+    private readonly int _transformerDim;
 
-    public PosNet(Checkpoint ckpt, int words, int upos, XposVocab xpos, int[] feats, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward)
+    /// <param name="transformerDim">The transformer's hidden size for a <c>_electra-large</c> tagger (the last input columns), else 0.</param>
+    public PosNet(Checkpoint ckpt, int words, int upos, XposVocab xpos, int[] feats, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward,
+        int transformerDim = 0)
     {
         var config = ckpt.Root["config"]!;
         var model = ckpt.Root["model"]!;
@@ -51,6 +54,8 @@ internal sealed class PosNet : IPosNet
         _wordEmb = nn.Embedding(words, wordEmb, padding_idx: 0).LoadFrom(ckpt, model, "word_emb.");
         _uposEmb = nn.Embedding(upos, tagEmb, padding_idx: 0).LoadFrom(ckpt, model, "upos_emb.");
         _transPretrained = nn.Linear(pretrain.Dim, transformed, hasBias: false).LoadFrom(ckpt, model, "trans_pretrained.");
+        _transformerDim = transformerDim;
+        inputSize += transformerDim;
         _lstm = new HighwayLstm(ckpt, model, "taggerlstm", inputSize, hidden, config["num_layers"]!.GetValue<int>());
 
         _uposHid = nn.Linear(hidden * 2, biaff).LoadFrom(ckpt, model, "upos_hid.");
@@ -67,7 +72,7 @@ internal sealed class PosNet : IPosNet
     }
 
     public PosOutput Forward(IReadOnlyList<IReadOnlyList<string>> sentences, long[] wordIds, long[] pretrainIds,
-        CharlmCache? charlms, IReadOnlyList<Sentence?>? cacheKeys, CancellationToken ct)
+        CharlmCache? charlms, IReadOnlyList<Sentence?>? cacheKeys, CancellationToken ct, float[][]? transformer = null)
     {
         using var _ = torch.no_grad();
         using var scope = NewDisposeScope();
@@ -116,6 +121,8 @@ internal sealed class PosNet : IPosNet
         }
 
         ct.ThrowIfCancellationRequested();
+        if (transformer != null)
+            chars = [.. chars, Packed(TransformerRows.Tensor(transformer, _transformerDim, _device))];
         var input = cat([words, pretrained, .. chars], 1);
         foreach (var t in (Tensor[])[words, pretrained, .. chars])
             t.Dispose();
@@ -164,7 +171,9 @@ internal static class PosTaggerLoad
         /// shared with the other processors, so the caller owns them. A <c>_nocharlm</c> model takes none.
         /// </summary>
         /// <param name="device">Where the model runs; CPU by default. Load the pretrain and charlms on the same device.</param>
-        public static PosTagger Load(string basePath, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward, Device? device = null) =>
+        /// <param name="transformer">The transformer a <c>_electra-large</c> tagger reads (shared, the caller owns it).</param>
+        public static PosTagger Load(string basePath, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward, Device? device = null,
+            TransformerEmbedder? transformer = null) =>
             Weights.On(device, () =>
             {
                 var ckpt = Checkpoint.Load(basePath);
@@ -173,8 +182,9 @@ internal static class PosTaggerLoad
                     if (charlm && (charlmForward == null || charlmBackward == null || !charlmForward.IsForward || charlmBackward.IsForward))
                         throw new ArgumentException("This tagger needs the forward charlm, then the backward one");
                     var (words, upos, xpos) = PosTagger.Counts(ckpt);
-                    return new PosNet(ckpt, words, upos, xpos, feats, pretrain, charlm ? charlmForward : null, charlm ? charlmBackward : null);
-                });
+                    return new PosNet(ckpt, words, upos, xpos, feats, pretrain, charlm ? charlmForward : null, charlm ? charlmBackward : null,
+                        ckpt.Root["config"]!["bert_model"] == null ? 0 : transformer?.Net.Config.Hidden ?? 0);
+                }, transformer);
             });
     }
 }

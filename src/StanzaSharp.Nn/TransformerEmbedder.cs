@@ -8,8 +8,49 @@ namespace StanzaSharp.Nn;
 /// </summary>
 /// <param name="maxLength">The tokenizer's <c>model_max_length</c> (tokenizer_config.json, 512 for ELECTRA): longer inputs
 /// run in windows, as Stanza's build_cloned_features does.</param>
-internal sealed class TransformerEmbedder(ITransformerNet net, WordPiece tokenizer, int maxLength)
+/// <param name="name">The Hugging Face repository, e.g. <c>google/electra-large-discriminator</c>: what a model's
+/// <c>bert_model</c> names.</param>
+internal sealed class TransformerEmbedder(ITransformerNet net, WordPiece tokenizer, int maxLength, string name)
 {
+    public string Name { get; } = name;
+
+    /// <summary>
+    /// Loads the tokenizer and the encoder <paramref name="net"/> makes from a transformer directory
+    /// (<c>config.json</c>, <c>tokenizer.json</c>, <c>tokenizer_config.json</c>, <c>pytorch_model.bin</c>).
+    /// </summary>
+    public static TransformerEmbedder Load(string directory, string name, Func<TransformerConfig, Checkpoint, ITransformerNet> net)
+    {
+        var config = TransformerConfig.Load(Path.Combine(directory, "config.json"));
+        var tokenizer = WordPiece.Load(Path.Combine(directory, "tokenizer.json"));
+        int maxLength = ReadMaxLength(directory);
+        var encoder = net(config, Checkpoint.Load(Path.Combine(directory, "pytorch_model.bin")));
+        return new TransformerEmbedder(encoder, tokenizer, maxLength, name);
+    }
+
+    /// <summary>
+    /// How a frozen-transformer model of <paramref name="processor"/> reads <paramref name="transformer"/>: its
+    /// <c>bert_layer_mix.weight</c> when its config sets <c>bert_hidden_layers</c>, else null (the legacy mix). A model without
+    /// <c>bert_model</c> gives null and needs no transformer.
+    /// </summary>
+    /// <exception cref="ArgumentException">The model reads a transformer other than <paramref name="transformer"/> (or none was given).</exception>
+    /// <exception cref="NotSupportedException">A fine-tuned or LoRA transformer, which these readers don't port.</exception>
+    public static float[]? LayerMix(Checkpoint ckpt, TransformerEmbedder? transformer, string processor)
+    {
+        var config = ckpt.Root["config"]!;
+        var name = config["bert_model"]?.GetValue<string>();
+        if (name == null)
+            return null;
+        if (transformer?.Name != name)
+            throw new ArgumentException($"This {processor} model reads the transformer {name}, but {(transformer == null ? "none was loaded" : $"{transformer.Name} was")}");
+        if (config["bert_finetune"]?.GetValue<bool>() == true || config["use_peft"]?.GetValue<bool>() == true)
+            throw new NotSupportedException($"The {processor} checkpoint uses a fine-tuned transformer, which is not ported");
+        int layers = config["bert_hidden_layers"]?.GetValue<int>() ?? 0;
+        if (layers == 0)
+            return null;
+        var mix = ckpt.Tensor<float>(ckpt.Root["model"]!["bert_layer_mix.weight"] ?? throw new InvalidDataException("No bert_layer_mix.weight"));
+        return mix.Length == layers ? mix : throw new InvalidDataException($"bert_layer_mix has {mix.Length} weights for {layers} layers");
+    }
+
     /// <summary>Sentences per encoder call, Stanza's 128 (the managed results don't depend on it).</summary>
     public const int BatchSize = 128;
 
@@ -41,12 +82,19 @@ internal sealed class TransformerEmbedder(ITransformerNet net, WordPiece tokeniz
     /// </summary>
     /// <param name="layerMix">A model's <c>bert_layer_mix.weight</c> (N weights): the mean of the last N layers plus their
     /// weighted sum. Null: Stanza's legacy mix, (h[-4] + h[-3] + h[-2]) / 4.</param>
-    public float[][] Embed(IReadOnlyList<IReadOnlyList<string>> sentences, bool keepEndpoints, float[]? layerMix, CancellationToken ct = default)
+    /// <param name="cache">If given, a sentence whose ids it holds isn't run again, and the others are kept in it (when they
+    /// fit), for the next reader of the same call; only for a mix of <see cref="TransformerCache.Layers"/> layers.</param>
+    public float[][] Embed(IReadOnlyList<IReadOnlyList<string>> sentences, bool keepEndpoints, float[]? layerMix, TransformerCache? cache = null,
+        CancellationToken ct = default)
     {
         int h = Net.Config.Hidden, lastLayers = layerMix?.Length ?? 4;
+        if (lastLayers != TransformerCache.Layers)
+            cache = null;
         var inputs = sentences.Select(s => TransformerInput.Build(Tokenizer, s)).ToArray();
         var states = new float[inputs.Length][]; // per sentence [lastLayers, pieces, h]
-        var short_ = Enumerable.Range(0, inputs.Length).Where(s => inputs[s].Ids.Length <= MaxLength).ToList();
+        for (int s = 0; s < inputs.Length && cache != null; s++)
+            states[s] = cache.TryGet(inputs[s].Ids, out var cached) ? cached : null!;
+        var short_ = Enumerable.Range(0, inputs.Length).Where(s => states[s] == null && inputs[s].Ids.Length <= MaxLength).ToList();
         for (int b = 0; b < short_.Count;)
         {
             int count = 0, pieces = 0;
@@ -55,12 +103,21 @@ internal sealed class TransformerEmbedder(ITransformerNet net, WordPiece tokeniz
             var batch = short_.GetRange(b, count);
             var encoded = Net.Encode([.. batch.Select(s => inputs[s].Ids)], lastLayers, ct);
             for (int i = 0; i < batch.Count; i++)
+            {
                 states[batch[i]] = encoded[i];
+                cache?.TryAdd(inputs[batch[i]].Ids, encoded[i]);
+            }
+
             b += count;
         }
 
         for (int s = 0; s < inputs.Length; s++)
-            states[s] ??= Windowed(inputs[s].Ids, lastLayers, ct);
+        {
+            if (states[s] != null)
+                continue;
+            states[s] = Windowed(inputs[s].Ids, lastLayers, ct);
+            cache?.TryAdd(inputs[s].Ids, states[s]);
+        }
 
         var result = new float[inputs.Length][];
         for (int s = 0; s < inputs.Length; s++)

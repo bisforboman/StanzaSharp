@@ -221,7 +221,7 @@ public class ModelChoiceTests
         }
     }
 
-    private static void AssertGolden(string name, bool managed, string lang, bool cache)
+    internal static void AssertGolden(string name, bool managed, string lang, bool cache)
     {
         var choice = ModelChoiceAttribute.Choice(lang, name);
         var options = ModelChoiceAttribute.Options(choice, lang);
@@ -305,7 +305,7 @@ public class ModelChoiceTests
     [Theory]
     [InlineData("nerr=i2b2", "Unknown processor 'nerr'")]
     [InlineData("ner=ontonotes", "Unknown or unsupported ner model 'ontonotes'")]
-    [InlineData("pos=combined_electra-large", "a transformer model")]
+    [InlineData("sentiment=sstplus_electra-large", "a transformer model")]
     [InlineData("constituency=ptb3", "Supported: ptb3-revised_charlm, ptb3_charlm")]
     [InlineData("ner=", "Unknown or unsupported ner model ''")]
     public void Models_ThrowForUnknownAndUnsupportedNames(string pair, string message)
@@ -468,7 +468,11 @@ public sealed class ModelChoiceAttribute : DataAttribute
         _data = [name, managed, lang];
         var (package, processors, models) = Options(Choice(lang, name), lang);
         var dir = ModelsFor(lang);
-        var missing = ModelDownloader.FilesFor(processors, package, "options", lang, models).Select(f => f.Path).Where(f => !File.Exists(Path.Combine(dir, f))).ToList();
+        var selected = Pipeline.SelectModels(package, processors, addRequired: true, "options", lang, models);
+        var transformerFiles = Pipeline.TransformersOf(selected, lang)
+            .SelectMany(t => ModelDownloader.Transformers[t].Files.Select(f => Path.GetRelativePath(dir, Path.Combine(ModelDownloader.TransformerDirectory(dir, t), f.File))));
+        var missing = ModelDownloader.FilesFor(processors, package, "options", lang, models).Select(f => f.Path).Concat(transformerFiles)
+            .Where(f => !File.Exists(Path.Combine(dir, f))).ToList();
         if (missing.Count > 0)
         {
             Skip = $"{name}'s models not found in {dir} ({missing[0]}); run stanzasharp download {dir} --lang {lang} --package {package} "

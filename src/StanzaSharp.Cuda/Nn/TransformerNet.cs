@@ -86,14 +86,25 @@ internal sealed class TransformerNet : ITransformerNet
         {
             ct.ThrowIfCancellationRequested();
             var layer = _layers[l];
-            Tensor Heads(Tensor t) => t.view(batch, width, heads, d).transpose(1, 2);
-            var q = Heads(F.linear(x, layer.Query, layer.QueryBias));
-            var k = Heads(F.linear(x, layer.Key, layer.KeyBias));
-            var v = Heads(F.linear(x, layer.Value, layer.ValueBias));
-            var attention = F.scaled_dot_product_attention(q, k, v, additive).transpose(1, 2).reshape(batch, width, h);
-            x = F.layer_norm(F.linear(attention, layer.Out, layer.OutBias).add(x, Scalars.One), [h], layer.Ln1G, layer.Ln1B, Config.LayerNormEps);
-            var up = F.gelu(F.linear(x, layer.Up, layer.UpBias));
-            x = F.layer_norm(F.linear(up, layer.Down, layer.DownBias).add(x, Scalars.One), [h], layer.Ln2G, layer.Ln2B, Config.LayerNormEps);
+            var previous = x;
+
+            // A scope per layer: a batch's intermediates are hundreds of MB (the FFN's up projection alone is 4096 floats a
+            // piece), so only the layer's output outlives it, and the previous one only if it is kept.
+            using (NewDisposeScope())
+            {
+                Tensor Heads(Tensor t) => t.view(batch, width, heads, d).transpose(1, 2);
+                var q = Heads(F.linear(x, layer.Query, layer.QueryBias));
+                var k = Heads(F.linear(x, layer.Key, layer.KeyBias));
+                var v = Heads(F.linear(x, layer.Value, layer.ValueBias));
+                var attention = F.scaled_dot_product_attention(q, k, v, additive).transpose(1, 2).reshape(batch, width, h);
+                var mid = F.layer_norm(F.linear(attention, layer.Out, layer.OutBias).add(x, Scalars.One), [h], layer.Ln1G, layer.Ln1B, Config.LayerNormEps);
+                var up = F.gelu(F.linear(mid, layer.Up, layer.UpBias));
+                x = F.layer_norm(F.linear(up, layer.Down, layer.DownBias).add(mid, Scalars.One), [h], layer.Ln2G, layer.Ln2B, Config.LayerNormEps)
+                    .MoveToOuterDisposeScope();
+            }
+
+            if (!kept.Contains(previous))
+                previous.Dispose();
             if (l + 1 >= _layers.Length + 1 - lastLayers)
                 kept.Add(x);
         }

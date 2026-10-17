@@ -100,6 +100,9 @@ public static class ModelDownloader
 
             // Pipeline.Alternatives (PipelineOptions.Models)
             ("constituency/ptb3_charlm.pt", "45d737c2172a5f8cb9324cc25af335f6"),
+            ("pos/combined_electra-large.pt", "f7e65d440e6653ff3f5b4ae15655c154"),
+            ("depparse/combined_electra-large.pt", "fffeab3811c9503ee6c0db06b3cf6b45"),
+            ("ner/ontonotes-ww-multi_electra-large.pt", "5a6cd3ea92ff6cf0683de9c0914346b8"),
             ("tokenize/combined_charlm.pt", "1e2acd7f1340961385442a106c94950d"),
             ("tokenize/ewt_charlm.pt", "08e17410ba853cf519019d4ea17ec313"),
             ("tokenize/gum_charlm.pt", "5e797c73ecd132555f9769dddb694458"),
@@ -198,7 +201,8 @@ public static class ModelDownloader
     /// <summary>
     /// The files <paramref name="processors"/> (null: all) of <paramref name="package"/> of <paramref name="language"/>
     /// need: their own models, those of the processors they require (e.g. pos needs tokenize and mwt), and the shared
-    /// pretrains and charlms they read. Exactly what <see cref="Pipeline.Load"/> reads for the same options.
+    /// pretrains and charlms they read. Exactly what <see cref="Pipeline.Load"/> reads for the same options, but the
+    /// transformers (<see cref="Pipeline.TransformersOf"/>), which come from Hugging Face.
     /// </summary>
     internal static IEnumerable<(string Path, string Md5)> FilesFor(string? processors, string package = Pipeline.DefaultPackage, string paramName = "processors",
         string language = Pipeline.English, IReadOnlyDictionary<string, string>? models = null, bool pretagged = false)
@@ -236,7 +240,9 @@ public static class ModelDownloader
     /// of its <see cref="PipelineOptions.Language"/> and <see cref="PipelineOptions.Package"/> for its
     /// <see cref="PipelineOptions.Processors"/> (all of the package's when null) and the processors they require, with
     /// the models <see cref="PipelineOptions.Models"/> chooses (with <see cref="PipelineOptions.Pretagged"/>, lemma,
-    /// depparse and constituency require none). The other options are ignored. Otherwise like <see cref="DownloadAsync(string, IProgress{string}?, CancellationToken)"/>.
+    /// depparse and constituency require none), and the transformer a transformer model reads (from Hugging Face, e.g.
+    /// google/electra-large-discriminator's 1.3 GB, into <c>transformer/</c>). The other options are ignored. Otherwise like
+    /// <see cref="DownloadAsync(string, IProgress{string}?, CancellationToken)"/>.
     /// </summary>
     /// <exception cref="ArgumentException">An unknown language, package or processor, a processor the package lacks, or an
     /// unknown or unsupported model in <see cref="PipelineOptions.Models"/>.</exception>
@@ -247,9 +253,14 @@ public static class ModelDownloader
     /// using var nlp = Pipeline.Load("models/stanza/en", options);
     /// </code>
     /// </example>
-    public static Task DownloadAsync(string modelDir, PipelineOptions options, IProgress<string>? progress = null, CancellationToken cancellationToken = default) =>
-        DownloadAsync(modelDir, FilesFor(options.Processors, options.Package, nameof(options), options.Language, options.Models, options.Pretagged), Http, progress, cancellationToken,
-            options.Language);
+    public static async Task DownloadAsync(string modelDir, PipelineOptions options, IProgress<string>? progress = null, CancellationToken cancellationToken = default)
+    {
+        var files = FilesFor(options.Processors, options.Package, nameof(options), options.Language, options.Models, options.Pretagged);
+        var selected = Pipeline.SelectModels(options.Package, options.Processors, addRequired: true, nameof(options), options.Language, options.Models, options.Pretagged);
+        await DownloadAsync(modelDir, files, Http, progress, cancellationToken, options.Language);
+        foreach (var name in Pipeline.TransformersOf(selected, options.Language))
+            await DownloadTransformerAsync(modelDir, name, progress: progress, cancellationToken: cancellationToken);
+    }
 
     internal static async Task DownloadAsync(string modelDir, IEnumerable<(string Path, string Md5)> files, HttpClient http,
         IProgress<string>? progress, CancellationToken cancellationToken, string language = Pipeline.English)
