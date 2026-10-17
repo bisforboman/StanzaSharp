@@ -3,6 +3,11 @@
 > **Owner's decisions (2026-10-17):** spike the managed encoder on **ELECTRA-large first** (it unlocks English
 > `default_accurate`; XLM-R and coref reuse the engine later, see [coref-plan.md](coref-plan.md)). Research and a
 > measured prototype only: nothing in the pipeline uses it yet.
+>
+> **Owner's decisions after the spike (2026-10-17):** **go** on `default_accurate`, all five processors, in the four
+> PRs below. Hidden states are tested within 1e-4 of Stanza's float32 **or** float64 value (the golden data keeps both),
+> the badly conditioned sentences bounded at 1e-2, discrete outputs byte-identical. Sentiment's LoRA adapters are
+> applied **at run time**. pos, depparse, ner and constituency **share** one frozen-encoder pass.
 
 Spike code (all internal, unused by `Pipeline`):
 
@@ -198,15 +203,9 @@ downstream outputs exact. That is the owner's call (question 3 below).
 - **Test time:** one shared frozen pass plus one LoRA pass over the golden texts takes about 70 s on these 4 cores,
   per backend. TorchSharp would be slower.
 
-## Open questions for the owner
+## Decided
 
-1. **Go/no-go** on `default_accurate`, and in which order (the table above, or pos and depparse first).
-2. **LoRA for sentiment:** at run time (recommended: +100 MB, +8% on its pass) or merged at load (+1.35 GB).
-3. **Tolerance for hidden states:** 1e-4 against the nearer of Stanza's float32 or float64 values, plus exact
-   downstream outputs, with a 1e-2 bound for the badly conditioned sentences (recommended). Or test the discrete
-   outputs alone, as the owner chose for lemma log-probs.
-4. **Sharing the encoder pass** between processors: recommended. It is exact with a row-invariant encoder, and needs one
-   pass where Stanza runs four.
-5. **The CI cache:** +1.9 GB in the golden shards' caches only.
-6. **Precision options** for later: bfloat16 or int8 weights would halve or quarter the 1.35 GB but not be exact.
-   Not proposed now.
+The questions the spike raised were answered on 2026-10-17 (see the top). Still open, for later:
+
+- **The CI cache:** +1.9 GB in the golden shards' caches only (to confirm with PR 1).
+- **Precision options:** bfloat16 or int8 weights would halve or quarter the 1.35 GB but not be exact. Not proposed now.
