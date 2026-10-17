@@ -235,7 +235,7 @@ internal sealed class ConstituencyNet : IConstituencyNet
 
     public object Word(object words, int position) => new Row(((WordRows)words).Slots[position]);
 
-    public float[] Score(IReadOnlyList<(object Words, int Position, object Transition, object Constituent)> states, CancellationToken ct)
+    public void Score(IReadOnlyList<(object Words, int Position, object Transition, object Constituent)> states, Span<float> output, CancellationToken ct)
     {
         using var noGrad = torch.no_grad();
         using var scope = NewDisposeScope();
@@ -244,7 +244,7 @@ internal sealed class ConstituencyNet : IConstituencyNet
         var hx = cat([word, Top(banks.Transitions, states.Select(s => s.Transition)), Top(banks.Constituents, states.Select(s => s.Constituent))], 1);
         foreach (var layer in _outputLayers)
             hx = layer.forward(F.relu(hx)); // nonlinearity before every layer, including the first
-        return hx.ToArray<float>();
+        hx.ToArray<float>().CopyTo(output);
     }
 
     public object[] Open(int[] openIndices)

@@ -97,4 +97,4 @@ then again only after the pool trims buffers left idle for a minute (round 6).
 
 Round 22's "11 KB/word" includes this first fill. A long call allocates about 8 KB per word in a process that has already
 processed a long text. What is left is in
-[ideas/long-text-garbage-left.md](ideas/long-text-garbage-left.md).
+[round 38](round-38-long-text-garbage-left.md).
