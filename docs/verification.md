@@ -108,8 +108,9 @@ tolerance.
 
 **Transformer models.** `default_accurate`'s tagger, parser and NER model (pos and depparse `combined_electra-large`, ner
 `ontonotes-ww-multi_electra-large`, chosen with `PipelineOptions.Models`) reproduce Stanza's output byte for byte on both
-backends: `models/pos+depparse+ner=electra-large/` (`make_golden.py --models-only`), corpus.txt and the validation,
-contractions, social and tech texts, 411 sentences with tags, lemmas, heads, relations and entities
+backends: `models/pos+depparse+ner=electra-large/` (`make_golden.py --models-only`), corpus.txt, the validation,
+contractions, social and tech texts and `models/transformer_long.txt` (a 633-word sentence of 706 pieces, over the
+transformer's 512 positions, so in Stanza's windows), 413 sentences with tags, lemmas, heads, relations and entities
 (`TransformerModelTests`). The pipeline runs the transformer once per sentence for all three (Stanza once per processor):
 the parser reads the tagger's states, ner those of sentences whose tokens are the words (`TransformerCacheTests`).
 

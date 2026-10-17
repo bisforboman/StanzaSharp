@@ -125,7 +125,8 @@ default from 0.5) or through TorchSharp (see "Managed backend").
     `ModelDownloader.DownloadAsync(dir, options)` fetches it (`DownloadTransformerAsync`), and `Load` names a missing file.
     Per call, a `TransformerCache` (by id sequence, h21–h24 of every piece, at most 16,384 pieces ≈ 256 MB; internal) when
     two or more processors read it: depparse reuses pos's states, ner those of sentences whose tokens are the words.
-    Golden row `pos+depparse+ner=electra-large` (`MODEL_CHOICES`, corpus + validation, contractions, social, tech;
+    Golden row `pos+depparse+ner=electra-large` (`MODEL_CHOICES`, corpus + validation, contractions, social, tech and
+    `models/transformer_long.txt`, a sentence of 706 pieces in two windows;
     make_golden's `electra_locally` has Stanza read `<models>/en/transformer/`), `TransformerModelTests` (both backends),
     `TransformerCacheTests` (a fake encoder, no models).
   - CI: no cache (the model caches are near GitHub's 10 GB; owner's decision): golden shard 1 downloads the transformer

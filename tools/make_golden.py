@@ -277,10 +277,11 @@ MODEL_CHOICES = {
         ("tokenize=eslspok_charlm", "eslspok", "tokenize", {"tokenize": "eslspok_charlm"}, []),
         ("tokenize=combined_charlm", "default", "tokenize,mwt", {"tokenize": "combined_charlm"}, ["tokenize_stress.txt"]),
         # default_accurate's frozen-transformer tagger, parser and NER model (google/electra-large-discriminator, read from
-        # <models>/en/transformer/, electra_locally); ner reads token texts, so contractions' sentences miss the tagger's states
+        # <models>/en/transformer/, electra_locally); ner reads token texts, so contractions' sentences miss the tagger's states;
+        # transformer_long.txt has a sentence of 706 pieces (two 512-piece windows)
         ("pos+depparse+ner=electra-large", "default", "tokenize,mwt,pos,lemma,depparse,ner",
          {"pos": "combined_electra-large", "depparse": "combined_electra-large", "ner": "ontonotes-ww-multi_electra-large"},
-         ["validation.txt", "validation_contractions.txt", "validation_social.txt", "validation_tech.txt"]),
+         ["validation.txt", "validation_contractions.txt", "validation_social.txt", "validation_tech.txt", "models/transformer_long.txt"]),
     ],
     "de": [
         ("ner=conll03", "default", "tokenize,mwt,ner", {"ner": "conll03"}, ["validation.txt"]),

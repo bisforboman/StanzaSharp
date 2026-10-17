@@ -607,7 +607,7 @@ public sealed class Pipeline : IDisposable
             : "";
         string processors = options.Processors == null ? "" : $" --processors {options.Processors}";
         throw new FileNotFoundException($"Model file not found: {file}{why}. Run \"stanzasharp download {modelDir} --lang {options.Language} "
-            + $"--package {options.Package}{processors}\" or ModelDownloader.DownloadAsync(dir, options) again; it fetches only the missing files.", file);
+            + $"--package {options.Package}{processors}{chosen}\" or ModelDownloader.DownloadAsync(dir, options) again; it fetches only the missing files.", file);
     }
 
     // How many models a managed pipeline loads at a time (round 17).

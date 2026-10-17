@@ -426,7 +426,8 @@
    "validation.txt",
    "validation_contractions.txt",
    "validation_social.txt",
-   "validation_tech.txt"
+   "validation_tech.txt",
+   "models/transformer_long.txt"
   ]
  }
 ]
