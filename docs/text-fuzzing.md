@@ -101,9 +101,61 @@ has a new seed. The domain NER models ran tokenize, mwt and ner (ner reads only 
 treebank's `_charlm` tokenizer too, and `lemma=combined_charlm` ran with `--words` (`'s`, `'S`, `’s`, `her`, `Her`,
 `HER`, `She's`, `her's`, `it's`: about 2,900 `'s` and 830 `her` in its 400 texts, for the contextual classifiers).
 
-TABLE
+| Model | Processors | Backend | Seed | Texts | Characters | Differences |
+|---|---|---|---|---|---|---|
+| English `default` + `ner=conll03_charlm` | tokenize, mwt, ner | managed | 101 | 200 | 0.21 M | 0 |
+| English `default` + `ner=radiology` | tokenize, mwt, ner | managed | 102 | 200 | 0.22 M | 0 |
+| English `default` + `ner=anatem` | tokenize, mwt, ner | managed | 103 | 200 | 0.24 M | 0 |
+| English `default` + `ner=bc4chemd` | tokenize, mwt, ner | managed | 104 | 200 | 0.24 M | 0 |
+| English `default` + `ner=bc5cdr` | tokenize, mwt, ner | managed | 105 | 200 | 0.22 M | 0 |
+| English `default` + `ner=bionlp13cg` | tokenize, mwt, ner | managed | 106 | 200 | 0.19 M | 0 |
+| English `default` + `ner=jnlpba` | tokenize, mwt, ner | managed | 107 | 200 | 0.20 M | 0 |
+| English `default` + `ner=linnaeus` | tokenize, mwt, ner | managed | 108 | 200 | 0.24 M | 0 |
+| English `default` + `ner=ncbi_disease` | tokenize, mwt, ner | managed | 109 | 200 | 0.21 M | 0 |
+| English `default` + `ner=s800` | tokenize, mwt, ner | managed | 110 | 200 | 0.20 M | 0 |
+| English `default` + `ner=i2b2` | tokenize, mwt, pos, lemma, constituency, depparse, sentiment, ner | managed | 111 | 100 | 0.12 M | 0 |
+| English `default` + `tokenize=combined_charlm` | tokenize, mwt | managed | 121 | 600 | 0.65 M | 0 |
+| English `ewt` + `tokenize=ewt_charlm` | tokenize, mwt | managed | 122 | 500 | 0.52 M | 0 |
+| English `gum` + `tokenize=gum_charlm` | tokenize, mwt | managed | 123 | 500 | 0.54 M | 0 |
+| English `lines` + `tokenize=lines_charlm` | tokenize, mwt | managed | 124 | 500 | 0.50 M | 0 |
+| English `partut` + `tokenize=partut_charlm` | tokenize, mwt | managed | 125 | 500 | 0.54 M | 0 |
+| English `atis` + `tokenize=atis_charlm` | tokenize, mwt | managed | 126 | 500 | 0.51 M | 0 |
+| English `childes` + `tokenize=childes_charlm` | tokenize, mwt | managed | 127 | 500 | 0.59 M | 0 |
+| English `eslspok` + `tokenize=eslspok_charlm` | tokenize | managed | 128 | 500 | 0.53 M | 0 |
+| English `default` + `lemma=combined_charlm` | tokenize, mwt, pos, lemma | managed | 131 | 400 | 0.43 M | 0 |
+| English `ewt` + `tokenize=ewt_charlm,lemma=ewt_charlm` | tokenize, mwt, pos, lemma | managed | 132 | 200 | 0.25 M | 0 |
+| English `gum` + `tokenize=gum_charlm,lemma=gum_charlm` | tokenize, mwt, pos, lemma | managed | 133 | 200 | 0.20 M | 0 |
+| English `lines` + `tokenize=lines_charlm,lemma=lines_charlm` | tokenize, mwt, pos, lemma | managed | 134 | 200 | 0.22 M | 0 |
+| English `partut` + `tokenize=partut_charlm,lemma=partut_charlm` | tokenize, mwt, pos, lemma | managed | 135 | 200 | 0.21 M | 0 |
+| English `atis` + `tokenize=atis_charlm,lemma=atis_charlm` | tokenize, mwt, pos, lemma | managed | 136 | 200 | 0.22 M | 0 |
+| English `childes` + `tokenize=childes_charlm,lemma=childes_charlm` | tokenize, mwt, pos, lemma | managed | 137 | 200 | 0.22 M | 0 |
+| English `ewt` + `pos=ewt_nocharlm,depparse=ewt_nocharlm` | tokenize, mwt, pos, lemma, depparse | managed | 141 | 150 | 0.18 M | 0 |
+| English `gum` + `pos=gum_nocharlm,depparse=gum_nocharlm` | tokenize, mwt, pos, lemma, depparse | managed | 142 | 150 | 0.16 M | 0 |
+| English `lines` + `pos=lines_nocharlm,depparse=lines_nocharlm` | tokenize, mwt, pos, lemma, depparse | managed | 143 | 150 | 0.16 M | 0 |
+| English `partut` + `pos=partut_nocharlm,depparse=partut_nocharlm` | tokenize, mwt, pos, lemma, depparse | managed | 144 | 150 | 0.16 M | 0 |
+| English `atis` + `pos=atis_nocharlm,depparse=atis_nocharlm` | tokenize, mwt, pos, lemma, depparse | managed | 145 | 150 | 0.15 M | 0 |
+| English `childes` + `pos=childes_nocharlm,depparse=childes_nocharlm` | tokenize, mwt, pos, lemma, depparse | managed | 146 | 150 | 0.16 M | 0 |
+| English `eslspok` + `pos=eslspok_nocharlm,depparse=eslspok_nocharlm` | tokenize, pos, lemma, depparse | managed | 147 | 150 | 0.15 M | 0 |
+| English `mimic` + `depparse=mimic_nocharlm` | tokenize, pos, lemma, depparse | managed | 148 | 150 | 0.15 M | 1: finding 5 |
+| German `default` + `ner=conll03` | tokenize, mwt, ner | managed | 151 | 200 | 0.24 M | 0 |
+| German `default` + `tokenize=combined_charlm` | tokenize, mwt | managed | 152 | 500 | 0.60 M | 0 |
+| German `gsd` + `tokenize=gsd_charlm` | tokenize, mwt | managed | 153 | 500 | 0.57 M | 0 |
+| German `hdt` + `tokenize=hdt_charlm` | tokenize, mwt | managed | 154 | 500 | 0.62 M | 0 |
+| German `combined` + `tokenize=combined_charlm,lemma=combined_charlm` | tokenize, mwt, pos, lemma | managed | 155 | 200 | 0.24 M | 0 |
+| German `gsd` + `tokenize=gsd_charlm,lemma=gsd_charlm` | tokenize, mwt, pos, lemma | managed | 156 | 200 | 0.25 M | 0 |
+| German `hdt` + `tokenize=hdt_charlm,lemma=hdt_charlm` | tokenize, mwt, pos, lemma | managed | 157 | 200 | 0.25 M | 0 |
+| German `gsd` + `pos=gsd_nocharlm,depparse=gsd_nocharlm` | tokenize, mwt, pos, lemma, depparse | managed | 158 | 150 | 0.17 M | 1: finding 4 |
+| German `hdt` + `pos=hdt_nocharlm,depparse=hdt_nocharlm` | tokenize, mwt, pos, lemma, depparse | managed | 159 | 150 | 0.21 M | 0 |
+| English `default` (pretagged) | depparse | managed | 161 | 100 | 0.11 M | 0 |
+| English `default` (pretagged) | lemma, depparse, constituency | managed | 162 | 100 | 0.11 M | 0 |
+| English `default_fast` (pretagged) | lemma, depparse | managed | 163 | 100 | 0.12 M | 0 |
+| German `default` (pretagged) | lemma, depparse, constituency | managed | 164 | 60 | 0.07 M | 0 |
+| English `default` + `ner=bc5cdr` | tokenize, mwt, ner | TorchSharp | 171 | 60 | 0.06 M | 0 |
+| English `ewt` + `tokenize=ewt_charlm` | tokenize, mwt | TorchSharp | 172 | 150 | 0.18 M | 0 |
+| English `default` + `lemma=combined_charlm` | tokenize, mwt, pos, lemma | TorchSharp | 173 | 80 | 0.10 M | 0 |
+| German `gsd` + `pos=gsd_nocharlm,depparse=gsd_nocharlm` | tokenize, mwt, pos, lemma, depparse | TorchSharp | 174 | 40 | 0.05 M | 0 |
 
-ROWCOUNT. Neither side crashed or threw on any text. Two texts differ, both float32 noise on degenerate input
+51 runs, 12,290 texts, 13.6 million characters. Neither side crashed or threw on any text. Two texts differ, both float32 noise on degenerate input
 (findings 4 and 5). Three harness bugs, all in the new options or package defaults, were fixed along the way:
 mwt-less packages (`eslspok`, `craft`, `genia`, `mimic`) got mwt in their default processor list, `--pretagged`
 converted the input document's offsets (already code points) as if they were UTF-16, and `--pretagged` dropped XPOS
