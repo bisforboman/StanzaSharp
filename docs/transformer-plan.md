@@ -189,7 +189,7 @@ PR 1 is split in two (advisor's suggestion, 2026-10-17), so the tokenizer half l
 | 1b (done) | `ITransformerNet`: the managed encoder (row-invariant, pooled buffers, scalar double attention/LayerNorm/GELU: one version for every CPU) + TorchSharp twin; the 512-piece windows and the layer mixes; golden hidden states for a few sentences (float32 + float64, the badly conditioned ones listed with their bound); bitwise batch- and thread-count invariance tests; CI downloads `pytorch_model.bin` | **L** |
 | 2 (done) | pos, depparse, ner (frozen, layer mixes) as `Pipeline.Alternatives` (`--model pos=combined_electra-large`), the shared encoder cache (`TransformerCache`), golden row `pos+depparse+ner=electra-large`; as alternatives they already need the transformer loaded and downloaded, so `Pipeline.Transformers` (apart from `Dependencies`: not a Stanza file), `BackendModels.Transformer` and `DownloadAsync(dir, options)` fetching it came here from PR 4 | **M** |
 | 3 (done) | constituency (`bert_layer_mix`, and its sentence boundary vectors: see below), sentiment (LoRA at run time: `LoraWeights`, `ITransformerNet.WithLora`, sharing the base weights); golden rows `constituency=ptb3-revised_electra-large`, `sentiment=sstplus_electra-large` and `electra-large` (all five); `peft` pinned in requirements-transformer.txt | **M–L** |
-| 4 | the `default_accurate` package: `Pipeline.Packages`, golden for all eight processors, benchmark rows | **S–M** |
+| 4 (done) | the `default_accurate` package: `Pipeline.Packages`, golden for all eight processors, benchmark rows | **S–M** |
 
 ### Testing
 

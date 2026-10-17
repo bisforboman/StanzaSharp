@@ -299,6 +299,14 @@ await ModelDownloader.DownloadAsync("models/stanza/en", options);
 using var fast = Pipeline.Load("models/stanza/en", options);
 ```
 
+- `"default_accurate"`: all eight processors, with Stanza's most accurate English models. Its pos, constituency,
+  depparse and ner read the transformer `google/electra-large-discriminator` (1.3 GB from Hugging Face, which
+  `DownloadAsync(dir, options)` fetches into `transformer/` next to the models), frozen and run once per sentence for all
+  four; sentiment applies its own LoRA adapters to the same transformer, a second pass. tokenize and lemma are the
+  `combined_charlm` models. Output is byte-identical to Python Stanza's `package='default_accurate'`. It is about 5.5 times
+  slower than `default` and peaks at about 4.2 GB instead of 1.1 GB (4 cores;
+  [round 43](docs/performance/round-43-default-accurate.md)).
+
 - The treebank packages, each trained on one English treebank: `"combined"` (the default package's models), `"ewt"`,
   `"gum"`, `"lines"`, `"partut"`, `"atis"`, `"childes"` and `"eslspok"`, and the biomedical `"craft"`, `"genia"` and
   `"mimic"` (clinical notes). They have tokenize, mwt, pos, lemma and depparse only; `eslspok` and the biomedical ones

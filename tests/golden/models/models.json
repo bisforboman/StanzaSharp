@@ -476,5 +476,19 @@
    "validation_contractions.txt",
    "models/transformer_long.txt"
   ]
+ },
+ {
+  "name": "default_accurate",
+  "package": "default_accurate",
+  "processors": "tokenize,mwt,pos,lemma,constituency,depparse,sentiment,ner",
+  "models": {},
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "validation_contractions.txt",
+   "validation_social.txt",
+   "validation_tech.txt",
+   "models/transformer_long.txt"
+  ]
  }
 ]

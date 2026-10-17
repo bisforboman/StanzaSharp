@@ -295,6 +295,9 @@ MODEL_CHOICES = {
          {"pos": "combined_electra-large", "constituency": "ptb3-revised_electra-large", "depparse": "combined_electra-large",
           "sentiment": "sstplus_electra-large", "ner": "ontonotes-ww-multi_electra-large"},
          ["validation.txt", "validation_contractions.txt", "models/transformer_long.txt"]),
+        # the default_accurate package itself (no models chosen: package=default_accurate), all eight processors
+        ("default_accurate", "default_accurate", PROCESSORS, {},
+         ["validation.txt", "validation_contractions.txt", "validation_social.txt", "validation_tech.txt", "models/transformer_long.txt"]),
     ],
     "de": [
         ("ner=conll03", "default", "tokenize,mwt,ner", {"ner": "conll03"}, ["validation.txt"]),
@@ -391,9 +394,13 @@ def write_models_golden(models, out, only=None):
                       "texts": [path.relative_to(out).as_posix() for path in texts]})
         if only and name not in only:
             continue
-        spec = {p: chosen.get(p, package) for p in processors.split(",")}
-        nlp = stanza.Pipeline(LANG, dir=models, package=None, processors=spec, download_method=None, use_gpu=False,
-                              logging_level="WARN")
+        if chosen:
+            spec = {p: chosen.get(p, package) for p in processors.split(",")}
+            nlp = stanza.Pipeline(LANG, dir=models, package=None, processors=spec, download_method=None, use_gpu=False,
+                                  logging_level="WARN")
+        else:  # a package as it is
+            nlp = stanza.Pipeline(LANG, dir=models, package=package, processors=processors, download_method=None, use_gpu=False,
+                                  logging_level="WARN")
         def model_of(processor):
             path = nlp.processors[processor].config["model_path"]
             path = path[0] if isinstance(path, (list, tuple)) else path.split(";")[0]

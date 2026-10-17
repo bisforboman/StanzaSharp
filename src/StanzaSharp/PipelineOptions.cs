@@ -26,13 +26,15 @@ public sealed class PipelineOptions
     /// <summary>
     /// Stanza's name for the set of models to use. English: <c>"default"</c> (<see cref="Pipeline.DefaultPackage"/>,
     /// all eight processors) or <c>"default_fast"</c> (no constituency; pos, depparse and ner use their own small
-    /// character models instead of the large character language models, which makes them faster and smaller), and the
+    /// character models instead of the large character language models, which makes them faster and smaller),
+    /// <c>"default_accurate"</c> (all eight; pos, constituency, depparse, ner and sentiment read the transformer
+    /// <c>google/electra-large-discriminator</c>, 1.3 GB, which the downloader fetches too: slower, more accurate), and the
     /// treebank packages <c>"combined"</c>, <c>"ewt"</c>, <c>"gum"</c>, <c>"lines"</c>, <c>"partut"</c>, <c>"atis"</c>,
     /// <c>"childes"</c>, <c>"eslspok"</c> and the biomedical <c>"craft"</c>, <c>"genia"</c> and <c>"mimic"</c> (tokenize to
     /// depparse only; eslspok and the biomedical ones have no mwt, and eslspok's lemma is the word).
     /// German: <c>"default"</c>, <c>"default_fast"</c> (pos and depparse as in English; ner and sentiment unchanged), and
     /// the treebank packages <c>"combined"</c>, <c>"gsd"</c> and <c>"hdt"</c> (tokenize to depparse only). Any other name
-    /// throws, including <c>"default_accurate"</c>, whose transformer models StanzaSharp doesn't run.
+    /// throws, including German's <c>"default_accurate"</c>, whose transformer StanzaSharp doesn't run.
     /// </summary>
     public string Package { get; init; } = Pipeline.DefaultPackage;
 

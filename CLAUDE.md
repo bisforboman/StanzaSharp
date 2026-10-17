@@ -30,6 +30,11 @@ default from 0.5) or through TorchSharp (see "Managed backend").
   `PipelineOptions.Package`): tokenize, mwt and lemma as above; pos `combined_nocharlm`, depparse
   `combined_nocharlm`, ner `ontonotes-ww-multi_nocharlm`; sentiment `sstplus_charlm`; no constituency.
   Its default processors are those seven. `Pipeline.Packages` maps package → processor → model.
+- **Package `default_accurate`** (owner's decision, 2026-10-17; docs/transformer-plan.md, PR 4; English only, German's
+  reads `german-nlp-electra` and throws): tokenize and lemma `combined_charlm`, mwt `combined`, pos and depparse
+  `combined_electra-large`, constituency `ptb3-revised_electra-large`, ner `ontonotes-ww-multi_electra-large`, sentiment
+  `sstplus_electra-large`; all eight processors (see "Transformers"). Golden row `default_accurate` of `MODEL_CHOICES`
+  (no models chosen: `package=default_accurate`), `TransformerModelTests`.
 - **English treebank packages** (owner's decision, 2026-10-15; no new API, `PipelineOptions.Package`): `combined` (the
   default package's models), `ewt`, `gum`, `lines`, `partut`, `atis`, `childes`, `eslspok` (no mwt; lemma `identity`)
   and the biomedical `craft`, `genia`, `mimic` (no mwt; own pretrains, mimic own charlms):
@@ -85,11 +90,11 @@ default from 0.5) or through TorchSharp (see "Managed backend").
   character LMs (charlm); the `_nocharlm` ones have their own character LSTM (`Nn.CharacterModel`) instead.
   The charlm is shared infrastructure and lives in `StanzaSharp.Nn`. The pipeline loads only what the
   selected models read (`Pipeline.SharedModels`): in `default_fast` the charlms only with sentiment.
-- **Transformers (in progress: `default_accurate`, owner's decisions 2026-10-17; docs/transformer-plan.md):** its pos,
+- **Transformers (`default_accurate`, owner's decisions 2026-10-17; docs/transformer-plan.md):** its pos,
   depparse, ner and constituency read the stock, frozen `google/electra-large-discriminator`, sentiment the same with
   LoRA adapters (applied at run time). The plan: PR 1a (done) the input side, 1b (done) the encoder nets, 2 (done)
   pos/depparse/ner with one shared encoder pass (exact only with `Gemm.Run(rowInvariant: true)`), 3 (done)
-  constituency/sentiment, 4 the package.
+  constituency/sentiment, 4 (done) the package.
   - Files: not Stanza resources, so `ModelDownloader.Transformers` (repository → pinned revision, files, sha256),
     `DownloadTransformerAsync` (internal; the Cli sample's `download-transformer DIR NAME [FILE]...`) into
     `<model dir>/transformer/<repository>/` (`TransformerDirectory`); `Checkpoint.Load` reads the `pytorch_model.bin`
@@ -1119,7 +1124,7 @@ What the English treebank packages' checkpoints add to the default package's pat
     `"en"`; `Load` still takes the language folder); `DownloadAsync(dir, options)` honours it, `download --lang de`
     defaults to `models/stanza/<lang>`. German (`de`): `default`, `default_fast`, `combined`, `gsd`, `hdt` download and
     load. English also has the treebank packages (`combined`, `ewt`, ..., `eslspok`, `craft`, `genia`, `mimic`; 2026-10-15). Unknown languages
-    and packages (`default_accurate`: transformers) throw `ArgumentException` with the supported list.
+    and packages (German `default_accurate`: another transformer) throw `ArgumentException` with the supported list.
   - `Pipeline.SelectModels` (language + package + processors → processor → model) and `Pipeline.SharedModels`
     (from `Pipeline.Dependencies`: each model's resources.json `dependencies`, since names don't tell them; German
     NER reads `fasttextwiki` + the charlms) are what both `Pipeline`'s constructor and `ModelDownloader.FilesFor` use,
