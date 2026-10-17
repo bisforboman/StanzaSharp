@@ -37,6 +37,12 @@ round. Runs 39029617599 (English) and 39029619310 (German), 2026-10-17; StanzaSh
 
 ## Reading it
 
+- Against the last English runner run (38293654596, 2026-10-12, performance.md), on the same CPUs: StanzaSharp
+  250 → 297 words/s (ubuntu EPYC 7763), 240 → 281 (Neoverse-N2), 249 → 307 (windows EPYC 7763), 228 → 286 (Cobalt 100),
+  218 → 284 (macOS): 17–30% faster, while Stanza stayed at 29–81 words/s. Load was 1.7–4.3 s, now 0.66–3.28 s. That is
+  rounds 17–32's work (startup, kernels, depparse, sentiment, constituency, the pool), not 1.11 alone.
+- German against round 33 (2026-10-14), same CPUs: 316 → 326 (EPYC 7763), 294 → 299 (Neoverse-N2), 295 → 290
+  (Cobalt 100), 805 → 813 (EPYC 9V45): unchanged within runner noise.
 - StanzaSharp is 3.0–9.9x faster than Python Stanza on English and 2.6–7.3x on German, with 2.1–3.6x less peak memory.
 - The German windows-2025 job drew an AMD EPYC 9V45 (Zen 5, Vector512): 813 words/s, 2.5x the EPYC 7763 jobs.
   Runners are shared virtual machines, so compare jobs of the same CPU and day only.
