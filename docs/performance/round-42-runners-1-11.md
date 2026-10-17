@@ -37,7 +37,7 @@ round. Runs 39029617599 (English) and 39029619310 (German), 2026-10-17; StanzaSh
 
 ## Reading it
 
-- StanzaSharp is 3.0–9.9x faster than Python Stanza on English and 2.6–7.3x on German, with 2.1–3.5x less peak memory.
+- StanzaSharp is 3.0–9.9x faster than Python Stanza on English and 2.6–7.3x on German, with 2.1–3.6x less peak memory.
 - The German windows-2025 job drew an AMD EPYC 9V45 (Zen 5, Vector512): 813 words/s, 2.5x the EPYC 7763 jobs.
   Runners are shared virtual machines, so compare jobs of the same CPU and day only.
 - macOS loads are slow on both sides (German 10.8 s vs 0.7–1.3 s elsewhere; Stanza 21.3 s): the virtualized runner reads
