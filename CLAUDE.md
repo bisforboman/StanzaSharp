@@ -87,7 +87,7 @@ default from 0.5) or through TorchSharp (see "Managed backend").
   selected models read (`Pipeline.SharedModels`): in `default_fast` the charlms only with sentiment.
 - **Transformers (in progress: `default_accurate`, owner's decisions 2026-10-17; docs/transformer-plan.md):** its pos,
   depparse, ner and constituency read the stock, frozen `google/electra-large-discriminator`, sentiment the same with
-  LoRA adapters (applied at run time). The plan: PR 1a (done) the input side, 1b the encoder nets, 2 pos/depparse/ner
+  LoRA adapters (applied at run time). The plan: PR 1a (done) the input side, 1b (done) the encoder nets, 2 pos/depparse/ner
   with one shared encoder pass (exact only with `Gemm.Run(rowInvariant: true)`), 3 constituency/sentiment, 4 the package.
   - Files: not Stanza resources, so `ModelDownloader.Transformers` (repository → pinned revision, files, sha256),
     `DownloadTransformerAsync` (internal; the Cli sample's `download-transformer DIR NAME [FILE]...`) into
@@ -100,6 +100,19 @@ default from 0.5) or through TorchSharp (see "Managed backend").
     `tests/golden/transformer/tokenizer.json` (`make_golden.py --transformer-only`, `TRANSFORMER_TOKENIZER_CASES`;
     `tools/requirements-transformer.txt` pins transformers/tokenizers, apart from requirements.txt, which the cache keys
     hash), `TransformerTokenizerTests`.
+  - The encoder (PR 1b): `Nn.ITransformerNet` (`Encode(ids, lastLayers)` → per sentence [lastLayers, pieces, hidden]),
+    `TransformerConfig` from the transformer's `config.json` (ElectraModel only; anything else throws).
+    `Nn.Managed.ManagedTransformer`: the dense layers as row-invariant `Gemm.Run` over every sentence's pieces, attention
+    per sentence and head without padding, attention/LayerNorm/GELU scalar in double (one version for every path; GELU's
+    erf from Numerical Recipes' erfc, 1.2e-7 relative), pooled buffers, a cancellation check per layer; so a sentence's
+    states have the same bits alone, batched and on any thread count (`TransformerKernelTests`). `TransformerNet`
+    (StanzaSharp.Cuda) pads each call like Stanza, with transformers' additive mask and `scaled_dot_product_attention`.
+    `Nn.TransformerEmbedder` = extract_bert_embeddings: the windows over `model_max_length` (tokenizer_config.json, 512;
+    stride 492, later windows from row 20), the legacy mix ((h[-4] + h[-3] + h[-2]) / 4) or a `bert_layer_mix` (mean of
+    the last N plus their weighted sum; float32 in Python's order), each word's last piece, endpoints optional.
+    `transformer/hidden.safetensors` (+ `.json`: the sentences, the long one, the mix weights, each sentence's bound):
+    Stanza's own extract_bert_embeddings in one batch, float32 and float64 (stored rounded to float32), checked by
+    `TransformerEncoderTests` on both backends.
   - CI: no cache (the model caches are near GitHub's 10 GB; owner's decision): golden shard 1 downloads the files on
     every run (`tools/ci-models.sh transformer FILE...`, with retries); the `Transformer*` classes run only there (in
     neither SHARD_TWO nor SHARD_THREE), and the other jobs' no-skip checks exempt `Transformer`.

@@ -97,7 +97,14 @@ transformers' ids and word ids, and Stanza's blank-word fix and word positions, 
 (`transformer/tokenizer.json`, `make_golden.py --transformer-only`): every golden sentence's words, its
 `simplify_punct`ed words (what the tagger and parser send) and its token texts (what ner and sentiment send), and a list
 of edge cases (accents composed and decomposed, soft hyphens and zero-width characters, controls, emoji, CJK, Hangul,
-words of 100 and 101 characters, the special tokens' texts). Nothing in the pipeline uses it yet.
+words of 100 and 101 characters, the special tokens' texts). The encoder, on both backends, gives the word vectors
+Stanza's `extract_bert_embeddings` gives (`transformer/hidden.safetensors`): the first three golden sentences within
+2e-5 (managed) and 5e-6 (TorchSharp) of Stanza's float32 or float64 values, under the 1e-4 tolerance, with the legacy
+layer mix and with the dependency parser's learned one; a 180-word sentence over the model's 512 positions, in Stanza's
+overlapping windows, within 4e-6; and three short sentences on which ELECTRA is badly conditioned in float32 (Stanza's
+own float32 is up to 7.6e-3 from float64 there), listed in the golden data with a bound of 1e-2, within 1.5e-3. On the
+managed backend a sentence gives the same bits alone, in a batch and on any thread count, and every SIMD path meets the
+tolerance. Nothing in the pipeline uses it yet.
 
 They exercise what the packages don't: a second pretrain next to conll17 (fastText crawl, 300-dimensional), a tag
 vocabulary with three tag sets, and the old NER checkpoint format with a fine-tuned delta embedding (`i2b2`).

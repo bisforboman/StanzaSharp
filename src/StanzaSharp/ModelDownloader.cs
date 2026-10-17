@@ -267,7 +267,9 @@ public static class ModelDownloader
     {
         ["google/electra-large-discriminator"] = ("c13c3df7efadc2162f42588bd28eb4e187d602a5",
         [
+            ("config.json", "9df6e6aeb17dbb95a44b31c3ba081dc84478f168ec0d56d1e94e397a8d876ac6"),
             ("tokenizer.json", "a23e7b62fb92e2cacc11087144ff99699f5575758cec85318a31f5295ae02f3b"),
+            ("tokenizer_config.json", "a025160ef0431f1a392f6f050c1310f4c5d9fb6f275932dbccba73c4d214bf10"),
             ("pytorch_model.bin", "070894f07d07a499d73946378afa5548d64aca2418d17e67d398233692497e63"),
         ]),
     };

@@ -12,7 +12,7 @@ namespace StanzaSharp.Tests;
 [Trait("Backend", "Managed")]
 public class TransformerTokenizerTests(ITestOutputHelper output)
 {
-    private static string TokenizerJson => Path.Combine(ModelDownloader.TransformerDirectory(Repo.StanzaModels, TransformerFactAttribute.Electra), "tokenizer.json");
+    private static string TokenizerJson => Path.Combine(TransformerFactAttribute.Directory, "tokenizer.json");
 
     [TransformerFact("tokenizer.json")]
     public void MatchesTransformersAndStanzaOnEveryGoldenCase()

@@ -64,9 +64,9 @@ internal static class TransformerSpike
         var load = Stopwatch.StartNew();
         var tokenizer = WordPiece.Load(Path.Combine(modelDir, "tokenizer.json"));
         var weights = Path.Combine(modelDir, "pytorch_model.bin");
-        var encoder = ManagedElectra.Load(Checkpoint.Load(weights), heads: 16);
+        var encoder = ManagedTransformer.Load(TransformerConfig.Load(Path.Combine(modelDir, "config.json")), Checkpoint.Load(weights));
         GC.Collect();
-        Console.WriteLine($"Load: {load.Elapsed.TotalSeconds:F1} s, {encoder.Layers} layers, hidden {encoder.Hidden}, "
+        Console.WriteLine($"Load: {load.Elapsed.TotalSeconds:F1} s, {encoder.Config.Layers} layers, hidden {encoder.Config.Hidden}, "
             + $"working set {Environment.WorkingSet / 1e6:F0} MB, managed threads {ManagedThreads.Count}, {Gemm.Path}");
 
         sentences = [.. sentences.Take(limit)];
@@ -79,22 +79,17 @@ internal static class TransformerSpike
 
         if (args.Contains("--invariance"))
         {
-            // Bits of each of the first 64 sentences alone vs inside one 64-sentence batch, with and without rowInvariant.
+            // Bits of each of the first 64 sentences alone vs inside one 64-sentence batch (the encoder is row-invariant).
             var first = encoded.Take(64).Select(e => e.Ids).ToList();
-            foreach (bool invariant in new[] { false, true })
+            var together = encoder.Encode(first, 1);
+            int differ = 0;
+            for (int s = 0; s < first.Count; s++)
             {
-                var together = encoder.Forward(first, [24], rowInvariant: invariant);
-                int differ = 0;
-                for (int s = 0; s < first.Count; s++)
-                {
-                    var alone = encoder.Forward([first[s]], [24], rowInvariant: invariant)[0][0];
-                    if (!alone.AsSpan().SequenceEqual(together[s][0]))
-                        differ++;
-                }
-
-                Console.WriteLine($"rowInvariant {invariant}: {differ} of {first.Count} sentences differ in some bit alone vs batched");
+                if (!encoder.Encode([first[s]], 1)[0].AsSpan().SequenceEqual(together[s]))
+                    differ++;
             }
 
+            Console.WriteLine($"{differ} of {first.Count} sentences differ in some bit alone vs batched");
             return 0;
         }
 
@@ -103,7 +98,7 @@ internal static class TransformerSpike
         {
             var dumpOnly = Forward(encoder, encoded, [21, 22, 23, 24], batch);
             WriteSafetensors(dump!, encoded.Select((e, s) => (s, e)).SelectMany(t => new[] { 21, 22, 23, 24 }.Select((l, k) => ($"s{t.s}.h{l}", "F32",
-                new long[] { t.e.Ids.Length, encoder.Hidden }, System.Runtime.InteropServices.MemoryMarshal.AsBytes(dumpOnly[t.s][k].AsSpan()).ToArray()))
+                new long[] { t.e.Ids.Length, encoder.Config.Hidden }, System.Runtime.InteropServices.MemoryMarshal.AsBytes(dumpOnly[t.s][k].AsSpan()).ToArray()))
                 .Prepend(($"s{t.s}.ids", "I64", new long[] { t.e.Ids.Length },
                     System.Runtime.InteropServices.MemoryMarshal.AsBytes(t.e.Ids.Select(v => (long)v).ToArray().AsSpan()).ToArray()))));
             Console.WriteLine($"Dumped {encoded.Count} sequences to {dump}");
@@ -131,7 +126,7 @@ internal static class TransformerSpike
         if (dump != null)
         {
             WriteSafetensors(dump, encoded.Select((e, s) => (s, e)).SelectMany(t => keep.Select((l, k) => ($"s{t.s}.h{l}", "F32",
-                new long[] { t.e.Ids.Length, encoder.Hidden }, System.Runtime.InteropServices.MemoryMarshal.AsBytes(outputs[t.s][k].AsSpan()).ToArray()))
+                new long[] { t.e.Ids.Length, encoder.Config.Hidden }, System.Runtime.InteropServices.MemoryMarshal.AsBytes(outputs[t.s][k].AsSpan()).ToArray()))
                 .Prepend(($"s{t.s}.ids", "I64", new long[] { t.e.Ids.Length },
                     System.Runtime.InteropServices.MemoryMarshal.AsBytes(t.e.Ids.Select(v => (long)v).ToArray().AsSpan()).ToArray()))));
         }
@@ -202,11 +197,19 @@ internal static class TransformerSpike
         return mix;
     }
 
-    private static float[][][] Forward(ManagedElectra encoder, List<(int[] Ids, int[] Words)> encoded, int[] keep, int batch)
+    // Per sentence, the kept layers (the last keep.Length) as one [pieces, Hidden] array each.
+    private static float[][][] Forward(ManagedTransformer encoder, List<(int[] Ids, int[] Words)> encoded, int[] keep, int batch)
     {
         var all = new List<float[][]>();
         for (int b = 0; b < encoded.Count; b += batch)
-            all.AddRange(encoder.Forward(encoded.Skip(b).Take(batch).Select(e => e.Ids).ToList(), keep));
+        {
+            foreach (var states in encoder.Encode(encoded.Skip(b).Take(batch).Select(e => e.Ids).ToList(), keep.Length))
+            {
+                int size = states.Length / keep.Length;
+                all.Add([.. Enumerable.Range(0, keep.Length).Select(k => states[(k * size)..((k + 1) * size)])]);
+            }
+        }
+
         return [.. all];
     }
 
