@@ -120,8 +120,10 @@ public class DepparseTests(ITestOutputHelper output, DepparseTests.Fixture fixtu
         double ninf = double.NegativeInfinity;
         var scores = new double[,] { { 0, ninf, ninf }, { -5, ninf, -1 }, { -3, -1, ninf } };
         Assert.Equal([0, 2, 0], ChuLiuEdmonds.OneRoot(scores));
-        Assert.Single(ChuLiuEdmonds.Tarjan([0, 2, 1]));
-        Assert.Empty(ChuLiuEdmonds.Tarjan([0, 0, 1]));
+        var cycle = new bool[3];
+        Assert.Equal(1, ChuLiuEdmonds.Tarjan([0, 2, 1], cycle));
+        Assert.Equal([false, true, true], cycle);
+        Assert.Equal(0, ChuLiuEdmonds.Tarjan([0, 0, 1], new bool[3]));
     }
 
     [Fact]

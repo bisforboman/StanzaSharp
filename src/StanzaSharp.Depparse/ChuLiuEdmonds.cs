@@ -53,43 +53,58 @@ internal static class ChuLiuEdmonds
         return tree;
     }
 
+    /// <summary>One contraction: the graph's tree and size before it, and process_cycle's index arrays (rented, longer than used).</summary>
+    private readonly record struct Contraction(int[] Tree, int Size, int[] CycleLocs, int C, int[] NoncycleLocs, int[] MetanodeHeads, int[] MetanodeDeps)
+    {
+        public int N => Size - C;
+    }
+
     /// <summary>
     /// chuliu_edmonds: contracts cycles one at a time (the last one Tarjan finds first), then expands. Each contracted
-    /// graph is smaller than the one before, so it goes into a second n × n buffer, and the two take turns.
+    /// graph is smaller than the one before, so it goes into a second n × n buffer, and the two take turns. Everything but
+    /// the returned tree is rented.
     /// </summary>
     internal static int[] Solve(double[] scores, int n)
     {
-        Stack<(int[] Tree, int[] CycleLocs, int[] NoncycleLocs, int[] MetanodeHeads, int[] MetanodeDeps)>? contractions = null; // most trees have no cycle
+        Stack<Contraction>? contractions = null; // most trees have no cycle
         var rented = ArrayPool<double>.Shared.Rent(n * n);
         var other = rented;
+        var cycle = ArrayPool<bool>.Shared.Rent(n);
         try
         {
+            var result = new int[n];
+            var (tree, size) = (result, n);
             Prepare(scores, n);
-            var tree = ArgmaxRows(scores, n);
-            var cycles = Tarjan(tree);
-            while (cycles.Count > 0)
+            ArgmaxRows(scores, n, tree);
+            while (Tarjan(tree.AsSpan(0, size), cycle.AsSpan(0, size)) > 0)
             {
-                var cycle = cycles[^1];
-                var (cycleLocs, noncycleLocs, heads, deps) = ProcessCycle(tree, cycle, scores, other);
-                (contractions ??= new()).Push((tree, cycleLocs, noncycleLocs, heads, deps));
+                var contraction = ProcessCycle(tree, size, cycle, scores, other);
+                (contractions ??= new()).Push(contraction);
                 (scores, other) = (other, scores);
-                n = noncycleLocs.Length + 1;
-                Prepare(scores, n);
-                tree = ArgmaxRows(scores, n);
-                cycles = Tarjan(tree);
+                size = contraction.N + 1;
+                Prepare(scores, size);
+                tree = ArrayPool<int>.Shared.Rent(size);
+                ArgmaxRows(scores, size, tree);
             }
 
             while (contractions?.Count > 0)
             {
-                var (outer, cycleLocs, noncycleLocs, heads, deps) = contractions!.Pop();
-                tree = Expand(outer, tree, cycleLocs, noncycleLocs, heads, deps);
+                var c = contractions.Pop();
+                Expand(c, tree);
+                ArrayPool<int>.Shared.Return(tree); // a contracted graph's tree, never result (the outermost)
+                ArrayPool<int>.Shared.Return(c.CycleLocs);
+                ArrayPool<int>.Shared.Return(c.NoncycleLocs);
+                ArrayPool<int>.Shared.Return(c.MetanodeHeads);
+                ArrayPool<int>.Shared.Return(c.MetanodeDeps);
+                tree = c.Tree;
             }
 
-            return tree;
+            return result;
         }
         finally
         {
             ArrayPool<double>.Shared.Return(rented);
+            ArrayPool<bool>.Shared.Return(cycle);
         }
     }
 
@@ -105,23 +120,25 @@ internal static class ChuLiuEdmonds
         scores[0] = 0;
     }
 
-    private static int[] ArgmaxRows(double[] scores, int n)
+    /// <summary>Each row's first maximum into <paramref name="result"/>[..n] (rented: every element is written).</summary>
+    private static void ArgmaxRows(double[] scores, int n, int[] result)
     {
-        var result = new int[n];
         for (int i = 0; i < n; i++)
         {
+            result[i] = 0;
             for (int j = 1; j < n; j++)
             {
                 if (scores[i * n + j] > scores[i * n + result[i]])
                     result[i] = j;
             }
         }
-
-        return result;
     }
 
-    /// <summary>tarjan: the cycles (strongly connected components of more than one node), in the order found.</summary>
-    internal static IReadOnlyList<bool[]> Tarjan(int[] tree)
+    /// <summary>
+    /// tarjan: how many cycles (strongly connected components of more than one node) <paramref name="tree"/> has. The last
+    /// one found, which chuliu_edmonds contracts, is left in <paramref name="lastCycle"/> (as long as the tree).
+    /// </summary>
+    internal static int Tarjan(ReadOnlySpan<int> tree, Span<bool> lastCycle)
     {
         int n = tree.Length;
 
@@ -151,8 +168,7 @@ internal static class ChuLiuEdmonds
             for (int d = 0; d < n; d++)
                 children[fill[tree[d]]++] = d;
 
-            List<bool[]>? cycles = null;
-            int next = 0, depth = 0, calling = 0;
+            int cycles = 0, next = 0, depth = 0, calling = 0;
 
             // Stanza's explicit call stack: (node, whether it was entered, how many dependents were visited, the one being
             // visited). Each node is pushed unentered once and entered at most once per dependent left pending: under 2n.
@@ -194,24 +210,27 @@ internal static class ChuLiuEdmonds
                     if (descended || lowlinks[i] != indices[i])
                         continue;
 
-                    // The root of a strongly connected component: pop it. Only a component of more than one node gets an
-                    // array (most are single nodes: one n-element array each was O(n²) per sentence).
+                    // The root of a strongly connected component: pop it. Only one of more than one node is a cycle.
                     int top = stack[..depth].LastIndexOf(i);
-                    var cycle = top < depth - 1 ? new bool[n] : null;
+                    bool isCycle = top < depth - 1;
+                    if (isCycle)
+                    {
+                        cycles++;
+                        lastCycle.Clear();
+                    }
+
                     for (int p = top; p < depth; p++)
                     {
                         onStack[stack[p]] = 0;
-                        if (cycle != null)
-                            cycle[stack[p]] = true;
+                        if (isCycle)
+                            lastCycle[stack[p]] = true;
                     }
 
                     depth = top;
-                    if (cycle != null)
-                        (cycles ??= []).Add(cycle);
                 }
             }
 
-            return (IReadOnlyList<bool[]>?)cycles ?? [];
+            return cycles;
         }
         finally
         {
@@ -224,12 +243,11 @@ internal static class ChuLiuEdmonds
     /// process_cycle: writes the scores of the graph with the cycle contracted into one last node to <paramref name="sub"/>
     /// ((noncycle nodes + 1)² row-major).
     /// </summary>
-    private static (int[] CycleLocs, int[] NoncycleLocs, int[] MetanodeHeads, int[] MetanodeDeps) ProcessCycle(
-        int[] tree, bool[] cycle, double[] scores, double[] sub)
+    private static Contraction ProcessCycle(int[] tree, int size, bool[] cycle, double[] scores, double[] sub)
     {
-        int size = tree.Length, c = cycle.Count(x => x), n = size - c;
-        var cycleLocs = new int[c];
-        var noncycleLocs = new int[n];
+        int c = cycle.AsSpan(0, size).Count(true), n = size - c;
+        var cycleLocs = ArrayPool<int>.Shared.Rent(c);
+        var noncycleLocs = ArrayPool<int>.Shared.Rent(n);
         for (int i = 0, a = 0, b = 0; i < size; i++)
         {
             if (cycle[i])
@@ -238,16 +256,17 @@ internal static class ChuLiuEdmonds
                 noncycleLocs[b++] = i;
         }
 
-        var cycleScores = new double[c];
+        var cycleScores = ArrayPool<double>.Shared.Rent(c);
         for (int k = 0; k < c; k++)
             cycleScores[k] = scores[cycleLocs[k] * size + tree[cycleLocs[k]]];
         double cycleScore = PairwiseSum(cycleScores, 0, c);
 
         // metanode_head_scores (c x n): the cycle node k taking noncycle head h instead of its cycle head.
         double HeadScore(int k, int h) => scores[cycleLocs[k] * size + noncycleLocs[h]] - cycleScores[k] + cycleScore;
-        var metanodeHeads = new int[n];
+        var metanodeHeads = ArrayPool<int>.Shared.Rent(n);
         for (int h = 0; h < n; h++)
         {
+            metanodeHeads[h] = 0;
             for (int k = 1; k < c; k++)
             {
                 if (HeadScore(k, h) > HeadScore(metanodeHeads[h], h))
@@ -256,9 +275,10 @@ internal static class ChuLiuEdmonds
         }
 
         // metanode_dep_scores (n x c): noncycle node d taking cycle node k as its head.
-        var metanodeDeps = new int[n];
+        var metanodeDeps = ArrayPool<int>.Shared.Rent(n);
         for (int d = 0; d < n; d++)
         {
+            metanodeDeps[d] = 0;
             for (int k = 1; k < c; k++)
             {
                 if (scores[noncycleLocs[d] * size + cycleLocs[k]] > scores[noncycleLocs[d] * size + cycleLocs[metanodeDeps[d]]])
@@ -276,25 +296,25 @@ internal static class ChuLiuEdmonds
         }
 
         sub[n * m + n] = 0; // new double[,] left it 0; Prepare sets it to -inf anyway
-        return (cycleLocs, noncycleLocs, metanodeHeads, metanodeDeps);
+        ArrayPool<double>.Shared.Return(cycleScores);
+        return new(tree, size, cycleLocs, c, noncycleLocs, metanodeHeads, metanodeDeps);
     }
 
-    /// <summary>expand_contracted_tree: puts the solved contracted graph back around the cycle.</summary>
-    private static int[] Expand(int[] tree, int[] contracted, int[] cycleLocs, int[] noncycleLocs, int[] metanodeHeads, int[] metanodeDeps)
+    /// <summary>
+    /// expand_contracted_tree: puts the solved contracted graph back around the cycle, in place in the contraction's tree:
+    /// its cycle nodes keep their heads but one, every other node gets its head from <paramref name="contracted"/>.
+    /// </summary>
+    private static void Expand(Contraction c, int[] contracted)
     {
-        int n = contracted.Length - 1;
+        var (tree, n) = (c.Tree, c.N);
         int cycleHead = contracted[n];
-        var result = Enumerable.Repeat(-1, tree.Length).ToArray();
         for (int i = 0; i < n; i++)
-            result[noncycleLocs[i]] = contracted[i] < n ? noncycleLocs[contracted[i]] : cycleLocs[metanodeDeps[i]];
-        foreach (var i in cycleLocs)
-            result[i] = tree[i];
-        result[cycleLocs[metanodeHeads[cycleHead]]] = noncycleLocs[cycleHead];
-        return result;
+            tree[c.NoncycleLocs[i]] = contracted[i] < n ? c.NoncycleLocs[contracted[i]] : c.CycleLocs[c.MetanodeDeps[i]];
+        tree[c.CycleLocs[c.MetanodeHeads[cycleHead]]] = c.NoncycleLocs[cycleHead];
     }
 
     /// <summary>NumPy's float64 np.sum (pairwise summation, 8 accumulators below 128 elements).</summary>
-    internal static double PairwiseSum(double[] a, int start, int n)
+    internal static double PairwiseSum(ReadOnlySpan<double> a, int start, int n)
     {
         if (n < 8)
         {
@@ -306,8 +326,8 @@ internal static class ChuLiuEdmonds
 
         if (n <= 128)
         {
-            var r = new double[8];
-            Array.Copy(a, start, r, 0, 8);
+            Span<double> r = stackalloc double[8];
+            a.Slice(start, 8).CopyTo(r);
             int i = 8;
             for (; i < n - n % 8; i += 8)
             {

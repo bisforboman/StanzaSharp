@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using StanzaSharp.Nn;
@@ -100,6 +101,9 @@ internal sealed class ConstituencyParser : IDisposable
         var batch = new List<ParserState>();
         var horizon = new Queue<ParserState>();
         var scoreInputs = new List<(object, int, object, object)>(BatchSize); // refilled every step
+        var steps = new StepBuffers();
+        int n = _transitions.Length;
+        var logits = ArrayPool<float>.Shared.Rent(BatchSize * n); // [batch, transitions], written by Score each step
         int built = 0;
         try
         {
@@ -129,9 +133,8 @@ internal sealed class ConstituencyParser : IDisposable
                 scoreInputs.Clear();
                 foreach (var s in batch)
                     scoreInputs.Add((s.WordHx, s.WordPosition + 1, s.Transitions.State, s.Constituents.State));
-                var logits = _net.Score(scoreInputs, cancellationToken);
-                int n = _transitions.Length;
-                var chosen = new Transition?[batch.Count];
+                _net.Score(scoreInputs, logits.AsSpan(0, batch.Count * n), cancellationToken);
+                var chosen = steps.Chosen;
                 for (int k = 0; k < batch.Count; k++)
                 {
                     var row = logits.AsSpan(k * n, n);
@@ -140,7 +143,7 @@ internal sealed class ConstituencyParser : IDisposable
                     chosen[k] = Choose(batch[k], row);
                 }
 
-                Apply(batch, chosen, cancellationToken);
+                Apply(batch, chosen, steps, cancellationToken);
 
                 batch.RemoveAll(s =>
                 {
@@ -157,6 +160,7 @@ internal sealed class ConstituencyParser : IDisposable
         {
             foreach (var s in batch.Concat(horizon))
                 s.Dispose();
+            ArrayPool<float>.Shared.Return(logits);
         }
 
         return result.ToList();
@@ -212,12 +216,25 @@ internal sealed class ConstituencyParser : IDisposable
             .FirstOrDefault(t => state.IsLegal(t, _rootLabels, _unaryLimit));
 
     // ----- applying transitions (bulk_apply) -----
-    private void Apply(List<ParserState> states, Transition?[] transitions, CancellationToken ct)
+
+    /// <summary>One <see cref="Parse"/> call's per-step lists, cleared and refilled each step instead of made anew.</summary>
+    private sealed class StepBuffers
     {
-        var applied = new List<(ParserState State, Transition Transition, StackNode<Constituent> Base)>(states.Count);
-        var newConstituents = new List<Constituent>(states.Count);
-        var opens = new List<(int Slot, string Label, int OpenIndex)>();
-        var closes = new List<(int Slot, string Label, List<Constituent> Children)>();
+        public readonly Transition?[] Chosen = new Transition?[BatchSize];
+        public readonly List<(ParserState State, Transition Transition, StackNode<Constituent> Base)> Applied = new(BatchSize);
+        public readonly List<Constituent> NewConstituents = new(BatchSize);
+        public readonly List<(int Slot, string Label, int OpenIndex)> Opens = new(BatchSize);
+        public readonly List<(int Slot, string Label, List<Constituent> Children)> Closes = new(BatchSize);
+        public readonly List<object> Parents = new(BatchSize), Inputs = new(BatchSize), Bases = new(BatchSize);
+    }
+
+    private void Apply(List<ParserState> states, Transition?[] transitions, StepBuffers steps, CancellationToken ct)
+    {
+        var (applied, newConstituents, opens, closes) = (steps.Applied, steps.NewConstituents, steps.Opens, steps.Closes);
+        applied.Clear();
+        newConstituents.Clear();
+        opens.Clear();
+        closes.Clear();
 
         for (int k = 0; k < states.Count; k++)
         {
@@ -290,20 +307,20 @@ internal sealed class ConstituencyParser : IDisposable
         }
 
         int count = applied.Count;
-        var parents = new object[count];
+        var (parents, inputs, bases) = (steps.Parents, steps.Inputs, steps.Bases);
+        parents.Clear();
+        inputs.Clear();
+        bases.Clear();
         var indices = new int[count];
-        var inputs = new object[count];
         for (int i = 0; i < count; i++)
         {
-            parents[i] = applied[i].State.Transitions.State;
+            parents.Add(applied[i].State.Transitions.State);
             indices[i] = applied[i].Transition.Index;
-            inputs[i] = newConstituents[i].Hx!;
+            inputs.Add(newConstituents[i].Hx!);
+            bases.Add(applied[i].Base.State);
         }
 
         var newTransitions = _net.PushTransitions(parents, indices, ct);
-        var bases = new object[count];
-        for (int i = 0; i < count; i++)
-            bases[i] = applied[i].Base.State;
         var newStacks = _net.PushConstituents(bases, inputs, ct);
 
         for (int i = 0; i < applied.Count; i++)

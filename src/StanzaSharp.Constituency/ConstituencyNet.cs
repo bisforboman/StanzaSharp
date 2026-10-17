@@ -33,9 +33,10 @@ internal interface IConstituencyNet : IDisposable
 
     /// <summary>
     /// LSTMModel.forward: [states, transitions] scores from each state's word vector at its position and the tops of
-    /// its transition and constituent stacks; ReLU before every output layer, including the first.
+    /// its transition and constituent stacks; ReLU before every output layer, including the first. Written to
+    /// <paramref name="output"/> ([states, transitions]).
     /// </summary>
-    float[] Score(IReadOnlyList<(object Words, int Position, object Transition, object Constituent)> states, CancellationToken ct);
+    void Score(IReadOnlyList<(object Words, int Position, object Transition, object Constituent)> states, Span<float> output, CancellationToken ct);
 
     /// <summary>The Open markers' vectors: rows of the dummy (constituent open) embedding.</summary>
     object[] Open(int[] openIndices);
@@ -542,7 +543,7 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
 
     public object Word(object words, int position) => ((Words)words).Rows[position];
 
-    public float[] Score(IReadOnlyList<(object Words, int Position, object Transition, object Constituent)> states, CancellationToken ct)
+    public void Score(IReadOnlyList<(object Words, int Position, object Transition, object Constituent)> states, Span<float> output, CancellationToken ct)
     {
         int n = states.Count, th = _transitionLstm.Hidden, ch = _constituentLstm.Hidden;
         int k0 = _hidden + th + ch;
@@ -578,10 +579,8 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
                 k = w.N;
             }
 
-            var result = new float[n * k];
             for (int r = 0; r < n; r++)
-                a.AsSpan(r * ld, k).CopyTo(result.AsSpan(r * k));
-            return result;
+                a.AsSpan(r * ld, k).CopyTo(output[(r * k)..]);
         }
         finally
         {
