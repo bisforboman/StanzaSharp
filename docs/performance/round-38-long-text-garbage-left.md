@@ -78,5 +78,5 @@ call 2; all eight about 1,830 MB after call 1 in both. Times are within the load
 
 - The constituency stack-state fill (above), kept by design.
 - The tagger's `CharlmCache` copies, 256 MB per long call: renting them would also keep them past the call, so it is a
-  new idea, [ideas/charlm-cache-rented-copies.md](ideas/charlm-cache-rented-copies.md).
+  new idea; measured and dropped in [round 41](round-41-charlm-cache-rented-copies.md).
 - The document itself (510 bytes per word) and many sites under 0.2 KB/word each.
