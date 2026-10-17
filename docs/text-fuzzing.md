@@ -108,7 +108,23 @@ tools/.venv/Scripts/python tools/text_fuzz.py run --lang de --package default --
 tools/.venv/Scripts/python tools/text_fuzz.py run --package ewt --seed 3 --count 100 --backend torch
 tools/.venv/Scripts/python tools/text_fuzz.py generate --seed 1 --count 5        # look at the texts only
 tools/.venv/Scripts/python tools/text_fuzz.py texts cases.json --no-shrink       # a JSON list of your own texts
+tools/.venv/Scripts/python tools/text_fuzz.py run --processors tokenize,ner --model ner=bc5cdr --seed 4 --count 100
+tools/.venv/Scripts/python tools/text_fuzz.py run --processors tokenize,mwt,pos,lemma --model lemma=combined_charlm --words "'s,'S,her,Her,HER"
+tools/.venv/Scripts/python tools/text_fuzz.py run --pretagged --processors lemma,depparse,constituency --seed 5 --count 50
 ```
+
+On Linux and macOS the venv's Python is `tools/.venv/bin/python`. The Stanza side reads `resources.json` from the
+models folder when Stanza downloaded it, else the copy `stanzasharp compare` ships
+(`src/StanzaSharp.Tool/stanza_resources_<lang>.json`), so files fetched by `stanzasharp download` are enough.
+
+- `--model P=NAME` (repeatable or comma-separated) replaces a processor's model, as `PipelineOptions.Models` and
+  `stanzasharp compare --model` do: Stanza gets the processor → model map StanzaSharp loaded as its processors dict.
+- `--words W,W,...` splices these words in as about four fragments in ten (for a model that decides on particular
+  words, such as `lemma=combined_charlm`'s `'s` and `her`). Without it a seed gives the texts it always gave.
+- `--pretagged` fuzzes `PipelineOptions.Pretagged` (Stanza's `pretagged=True`): each text is tagged by Stanza's
+  tokenize, mwt, pos and lemma (the language's `default` package). About one word in ten then loses its lemma and one
+  in twenty its XPOS (seeded by the text; UPOS stays). Both sides then annotate that CoNLL-U document with
+  `--processors` (Stanza: `CoNLL.conll2doc` and `nlp.process`; StanzaSharp: `Conllu.Read` and `Process(Document)`).
 
 `--processors` defaults to the package's processors (all eight for `default`). Each side uses 4 threads
 (`--threads`; 0 for their defaults). The exit code is 1 if anything differed; `--report` writes every finding with its

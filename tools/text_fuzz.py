@@ -6,10 +6,17 @@ process), both loaded once; the CoNLL-U must be byte-identical (C#'s UTF-16 offs
 difference or crash is shrunk (ddmin over code points, keeping the first differing field) and written to the report.
 
   python tools/text_fuzz.py run [--lang en] [--package default] [--processors LIST] [--seed 1] [--count 200]
-                                [--models models/stanza] [--benchmark EXE] [--backend managed|torch] [--threads N]
-                                [--report OUT.json] [--no-shrink]
-  python tools/text_fuzz.py generate [--lang en] [--seed 1] [--count 20]    # print the texts (repr), nothing run
+                                [--model P=NAME]... [--pretagged] [--models models/stanza] [--benchmark EXE]
+                                [--backend managed|torch] [--threads N] [--report OUT.json] [--no-shrink]
+  python tools/text_fuzz.py generate [--lang en] [--seed 1] [--count 20] [--words W,W]  # print the texts, nothing run
   python tools/text_fuzz.py texts TEXTS.json [--lang ...] [--package ...] [--no-shrink]  # a JSON list of texts
+
+--model P=NAME (repeatable or comma-separated) replaces a processor's model (PipelineOptions.Models); Stanza then gets the
+processor -> model map StanzaSharp loaded as its processors dict (package None), like `stanzasharp compare --model`.
+--pretagged (PipelineOptions.Pretagged, Stanza's pretagged=True) annotates documents instead of texts: each text is tagged
+by Stanza's tokenize,mwt,pos,lemma of the language's default package, some lemmas and XPOS removed (seeded by the text),
+and the CoNLL-U goes to both sides (CoNLL.conll2doc + nlp.process / Conllu.Read + Process(Document)); --processors is
+then e.g. depparse or lemma,depparse,constituency.
 
 Build the C# side first: dotnet build samples/StanzaSharp.Benchmark -c Release.
 """
@@ -114,7 +121,12 @@ def long_token(rng, length):
     return "-".join("ab" for _ in range(length // 3 + 1))[:length]
 
 
+WORDS = []  # --words: extra fragments, about four in ten when given (seeds without it give the texts they always gave)
+
+
 def fragment(rng, lang):
+    if WORDS and rng.random() < 0.4:
+        return rng.choice(WORDS)
     kind = rng.randrange(22)
     if kind < len(FRAGMENT_SETS):
         return rng.choice(list(FRAGMENT_SETS.values())[kind])
@@ -196,29 +208,50 @@ def processors_for(lang, package):
     return "tokenize,mwt,pos,lemma,depparse"
 
 
+def resources(models, lang):
+    """Stanza's resources.json in the models folder (Stanza's own download), else the one stanzasharp compare ships
+    (the C# downloader writes none)."""
+    path = Path(models) / "resources.json"
+    return str(path if path.exists() else ROOT / "src" / "StanzaSharp.Tool" / f"stanza_resources_{lang}.json")
+
+
+def stanza_pipeline(models, lang, package, processors, **kwargs):
+    import stanza
+    return stanza.Pipeline(lang, dir=str(models), package=package, processors=processors, download_method=None,
+                           resources_filepath=resources(models, lang), use_gpu=False, logging_level="WARN", **kwargs)
+
+
 class Stanza:
-    def __init__(self, models, lang, package, processors, threads):
-        import stanza
+    def __init__(self, models, lang, package, processors, threads, pretagged=False):
         import torch
         self.torch = torch
         if threads:
             torch.set_num_threads(threads)
-        self.nlp = stanza.Pipeline(lang, dir=str(models), package=package, processors=processors,
-                                   download_method=None, use_gpu=False, logging_level="WARN")
+        if isinstance(processors, dict):  # --model: exactly StanzaSharp's models
+            package = None
+        self.nlp = stanza_pipeline(models, lang, package, processors, **({"pretagged": True} if pretagged else {}))
+        self.pretagged = pretagged
 
     def __call__(self, text):
         try:
             with self.torch.no_grad():
-                conllu = "{:C}".format(self.nlp(text))
+                if self.pretagged:
+                    from stanza.utils.conll import CoNLL
+                    doc = self.nlp.process(CoNLL.conll2doc(input_str=text))
+                else:
+                    doc = self.nlp(text)
+                conllu = "{:C}".format(doc)
                 return {"conllu": conllu + "\n" if conllu else ""}  # as compare.py: "" without sentences
         except Exception as e:  # noqa: BLE001 - Stanza's failures are results here
             return {"error": f"{type(e).__name__}: {e}"}
 
 
 class Sharp:
-    def __init__(self, exe, models, lang, package, processors, backend, threads):
-        self.cmd = [str(exe), "text-fuzz", "--models", str(Path(models) / lang), "--lang", lang, "--package", package,
-                    "--processors", processors, "--backend", backend] + (["--threads", str(threads)] if threads else [])
+    def __init__(self, exe, models, lang, package, processors, backend, threads, chosen=(), pretagged=False):
+        self.cmd = ([str(exe), "text-fuzz", "--models", str(Path(models) / lang), "--lang", lang, "--package", package,
+                     "--processors", processors, "--backend", backend] + (["--threads", str(threads)] if threads else [])
+                    + [a for m in chosen for a in ("--model", m)] + (["--pretagged"] if pretagged else []))
+        self.models = None
         self.start()
 
     def start(self):
@@ -227,6 +260,7 @@ class Sharp:
         line = self.proc.stdout.readline()
         if not line.startswith('{"ready"'):
             raise RuntimeError(f"text-fuzz did not start: {line!r}")
+        self.models = json.loads(line).get("models")  # processor -> model, Stanza's order
 
     def __call__(self, text):
         try:
@@ -341,14 +375,53 @@ def shrink(text, still_fails, budget):
     return "".join(chars)
 
 
+class Pretagger:
+    """--pretagged: a text as the CoNLL-U document both sides annotate. Stanza's tokenize,mwt,pos,lemma (the language's
+    default package) tag it; then, seeded by the text, about one word in ten loses its lemma and one in twenty its XPOS
+    (never UPOS: depparse needs one of the two), as PRETAGGED_CASES strips whole fields."""
+
+    def __init__(self, models, lang):
+        import torch
+        self.torch = torch
+        self.nlp = stanza_pipeline(models, lang, "default", "tokenize,mwt,pos,lemma")
+        self.last = (None, None)  # both sides ask for the same text in turn
+
+    def __call__(self, text):
+        if self.last[0] == text:
+            return self.last[1]
+        self.last = (text, self.tag(text))
+        return self.last[1]
+
+    def tag(self, text):
+        with self.torch.no_grad():
+            doc = self.nlp(text)
+        rng = random.Random(text)
+        for sentence in doc.sentences:
+            for word in sentence.words:
+                if rng.random() < 0.1:
+                    word.lemma = None
+                if rng.random() < 0.05:
+                    word.xpos = None
+        conllu = "{:C}".format(doc)
+        return conllu + "\n" if conllu else ""
+
+
 def run(args, texts):
     processors = args.processors or processors_for(args.lang, args.package)
     exe = args.benchmark or next(iter(sorted((ROOT / "samples" / "StanzaSharp.Benchmark" / "bin" / "Release").glob(
         "net*/StanzaSharp.Benchmark.exe" if sys.platform == "win32" else "net*/StanzaSharp.Benchmark"))), None)
     if exe is None:
         sys.exit("build samples/StanzaSharp.Benchmark -c Release first, or pass --benchmark")
-    stanza = Stanza(args.models, args.lang, args.package, processors, args.threads)
-    sharp = Sharp(exe, args.models, args.lang, args.package, processors, args.backend, args.threads)
+    sharp = Sharp(exe, args.models, args.lang, args.package, processors, args.backend, args.threads, args.model,
+                  args.pretagged)
+    chosen = sharp.models
+    if args.pretagged:  # StanzaSharp always loads tokenize and mwt; Stanza processes the document without them
+        chosen = {p: m for p, m in chosen.items() if p in processors.split(",")}
+    stanza = Stanza(args.models, args.lang, args.package, chosen if args.model else processors, args.threads,
+                    args.pretagged)
+    if args.pretagged:  # the texts become documents; the shrinking still works on the text
+        tag, side_stanza, side_sharp = Pretagger(args.models, args.lang), stanza, sharp
+        stanza, sharp = (lambda t: side_stanza(tag(t))), (lambda t: side_sharp(tag(t)))
     clock, found = time.perf_counter(), []
     for i, t in enumerate(texts):
         if i and i % 50 == 0:
@@ -365,8 +438,9 @@ def run(args, texts):
             print(f"  shrunk to {small!r}: {check(stanza, sharp, small)}", file=sys.stderr)
         found.append({"index": i, "kind": kind, "details": details, "text": t, "minimal": small,
                       "minimal_details": check(stanza, sharp, small)})
-    sharp.close()
-    meta = {"lang": args.lang, "package": args.package, "processors": processors, "seed": args.seed,
+    (side_sharp if args.pretagged else sharp).close()
+    meta = {"lang": args.lang, "package": args.package, "processors": processors, "models": args.model,
+            "pretagged": args.pretagged, "seed": args.seed,
             "texts": len(texts), "characters": sum(len(t) for t in texts), "seconds": time.perf_counter() - clock,
             "differences": len(found), "backend": args.backend,
             "stanza_seconds": SECONDS["stanza"], "csharp_seconds": SECONDS["csharp"]}
@@ -389,6 +463,9 @@ def main():
         s.add_argument("--count", type=int, default=200 if name == "run" else 20)
         s.add_argument("--package", default="default")
         s.add_argument("--processors")
+        s.add_argument("--model", action="append", default=[], help="P=NAME: processor P's model (repeatable)")
+        s.add_argument("--pretagged", action="store_true", help="annotate tagged documents (Stanza's pretagged=True)")
+        s.add_argument("--words", help="extra fragments, comma-separated, spliced in about four times in ten")
         s.add_argument("--models", default=str(ROOT / "models" / "stanza"))
         s.add_argument("--benchmark", help="the built StanzaSharp.Benchmark executable")
         s.add_argument("--backend", default="managed", choices=["managed", "torch"])
@@ -397,6 +474,7 @@ def main():
         s.add_argument("--no-shrink", action="store_true")
         s.add_argument("--shrink-budget", type=int, default=300, help="candidates tried per shrink")
     args = p.parse_args()
+    WORDS.extend(w for w in (args.words or "").split(",") if w)
     if args.cmd == "generate":
         for t in generate(args.lang, args.seed, args.count):
             print(ascii(t))
