@@ -329,6 +329,13 @@ Tokenizer notes:
 
 - **Advisor**: when an advisor tool is available, call it before design decisions or recommendations, before splitting
   work across agents or sessions, and before declaring a larger task done.
+- **Asking the owner** (owner's decision, 2026-10-17): whenever a decision or any input from the owner is needed, ask
+  with the question prompt (`AskUserQuestion`: options, the recommended one first), not only as a question in the reply
+  text.
+- **Cloud sessions**: `.claude/hooks/session-start.sh` (SessionStart, cloud only) installs Ubuntu's `dotnet-sdk-10.0`
+  (the network policy blocks `dotnet-install.sh`'s host), `stylebro-migrate`, restores, builds the Cli and downloads
+  `tools/ci-models.sh en` into `models/stanza/en`, with `STANZASHARP_MODELS` pointing there (no Python, no German or
+  treebank models: download those with `tools/ci-models.sh download GROUP` when a task needs them).
 - **Where work runs**: long work (multi-step tasks, PRs, CI waits, releases) runs as cloud sessions; the owner's
   computer must stay free to restart or turn off. Work that needs it (local timings, Windows-only checks) is asked for,
   never started unasked; a cloud session that needs such a step says so in its PR.
