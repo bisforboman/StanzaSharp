@@ -14,8 +14,17 @@ internal sealed class TransformerNet : ITransformerNet
     private sealed record Layer(Tensor Query, Tensor QueryBias, Tensor Key, Tensor KeyBias, Tensor Value, Tensor ValueBias, Tensor Out, Tensor OutBias,
         Tensor Ln1G, Tensor Ln1B, Tensor Up, Tensor UpBias, Tensor Down, Tensor DownBias, Tensor Ln2G, Tensor Ln2B);
 
+    // A LoRA adapter: A [rank, in], B [out, rank] (LoraWeights).
+    private sealed record Adapter(Tensor A, Tensor B);
+
+    // Per layer, the adapters on query, value, the attention output, the intermediate and the output dense (null: none).
+    private sealed record LayerAdapters(Adapter? Query, Adapter? Value, Adapter? Out, Adapter? Up, Adapter? Down);
+
     private readonly Tensor _words, _positions, _type0, _embG, _embB;
     private readonly Layer[] _layers;
+    private readonly LayerAdapters[]? _adapters;
+    private readonly Scalar? _scaling;
+    private readonly bool _sharesWeights; // a WithLora net: the weights are the base net's
     private readonly Device _device = Weights.Device; // the device the model was loaded on
 
     public TransformerConfig Config { get; }
@@ -40,6 +49,39 @@ internal sealed class TransformerNet : ITransformerNet
                 T(p + "attention.output.LayerNorm.bias"), T(p + "intermediate.dense.weight"), T(p + "intermediate.dense.bias"),
                 T(p + "output.dense.weight"), T(p + "output.dense.bias"), T(p + "output.LayerNorm.weight"), T(p + "output.LayerNorm.bias"));
         })];
+    }
+
+    // WithLora: the base's weights, shared (not disposed by this net), plus adapters.
+    private TransformerNet(TransformerNet base_, LayerAdapters[] adapters, float scaling)
+    {
+        Config = base_.Config;
+        (_words, _positions, _type0, _embG, _embB, _layers, _device) = (base_._words, base_._positions, base_._type0, base_._embG, base_._embB, base_._layers, base_._device);
+        (_adapters, _scaling, _sharesWeights) = (adapters, scaling.ToScalar(), true);
+    }
+
+    public ITransformerNet WithLora(LoraWeights lora)
+    {
+        int h = Config.Hidden, inter = Config.Intermediate;
+        Adapter? Make(int layer, string module, int input, int output)
+        {
+            if (lora.Of(layer, module) is not { } w)
+                return null;
+            if (w.A.Length != w.Rank * input || w.B.Length != output * w.Rank)
+                throw new InvalidDataException($"LoRA adapter on layer {layer} {module} has the wrong shape");
+            return new Adapter(torch.tensor(w.A, [w.Rank, input], device: _device), torch.tensor(w.B, [output, w.Rank], device: _device));
+        }
+
+        var adapters = Enumerable.Range(0, _layers.Length).Select(l => new LayerAdapters(Make(l, "attention.self.query", h, h),
+            Make(l, "attention.self.value", h, h), Make(l, "attention.output.dense", h, h), Make(l, "intermediate.dense", h, inter),
+            Make(l, "output.dense", inter, h))).ToArray();
+        return new TransformerNet(this, adapters, lora.Scaling);
+    }
+
+    // peft's LoRA Linear in eval mode: base + B(A(x))·scaling.
+    private Tensor Linear(Tensor x, Tensor weight, Tensor bias, Adapter? adapter)
+    {
+        var y = F.linear(x, weight, bias);
+        return adapter == null ? y : y.add(F.linear(F.linear(x, adapter.A), adapter.B).mul(_scaling!), Scalars.One);
     }
 
     /// <summary>Loads a transformer directory (<c>config.json</c>, <c>pytorch_model.bin</c>) on <see cref="Weights.Device"/>.</summary>
@@ -93,13 +135,15 @@ internal sealed class TransformerNet : ITransformerNet
             using (NewDisposeScope())
             {
                 Tensor Heads(Tensor t) => t.view(batch, width, heads, d).transpose(1, 2);
-                var q = Heads(F.linear(x, layer.Query, layer.QueryBias));
+                var adapters = _adapters?[l];
+                var q = Heads(Linear(x, layer.Query, layer.QueryBias, adapters?.Query));
                 var k = Heads(F.linear(x, layer.Key, layer.KeyBias));
-                var v = Heads(F.linear(x, layer.Value, layer.ValueBias));
+                var v = Heads(Linear(x, layer.Value, layer.ValueBias, adapters?.Value));
                 var attention = F.scaled_dot_product_attention(q, k, v, additive).transpose(1, 2).reshape(batch, width, h);
-                var mid = F.layer_norm(F.linear(attention, layer.Out, layer.OutBias).add(x, Scalars.One), [h], layer.Ln1G, layer.Ln1B, Config.LayerNormEps);
-                var up = F.gelu(F.linear(mid, layer.Up, layer.UpBias));
-                x = F.layer_norm(F.linear(up, layer.Down, layer.DownBias).add(mid, Scalars.One), [h], layer.Ln2G, layer.Ln2B, Config.LayerNormEps)
+                var mid = F.layer_norm(Linear(attention, layer.Out, layer.OutBias, adapters?.Out).add(x, Scalars.One), [h], layer.Ln1G, layer.Ln1B,
+                    Config.LayerNormEps);
+                var up = F.gelu(Linear(mid, layer.Up, layer.UpBias, adapters?.Up));
+                x = F.layer_norm(Linear(up, layer.Down, layer.DownBias, adapters?.Down).add(mid, Scalars.One), [h], layer.Ln2G, layer.Ln2B, Config.LayerNormEps)
                     .MoveToOuterDisposeScope();
             }
 
@@ -123,6 +167,18 @@ internal sealed class TransformerNet : ITransformerNet
 
     public void Dispose()
     {
+        foreach (var a in _adapters ?? [])
+        {
+            foreach (var adapter in new[] { a.Query, a.Value, a.Out, a.Up, a.Down }.OfType<Adapter>())
+            {
+                adapter.A.Dispose();
+                adapter.B.Dispose();
+            }
+        }
+
+        _scaling?.Dispose();
+        if (_sharesWeights)
+            return;
         foreach (var t in new[] { _words, _positions, _type0, _embG, _embB })
             t.Dispose();
         foreach (var layer in _layers)

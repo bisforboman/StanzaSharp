@@ -6,7 +6,10 @@ namespace StanzaSharp.Constituency;
 
 /// <summary>One sentence's input to <see cref="IConstituencyNet.EncodeWords"/>: its words and their vocab ids.</summary>
 /// <param name="CacheKey">The sentence whose charlm outputs a <see cref="CharlmCache"/> may hold, or null.</param>
-internal sealed record WordInput(IReadOnlyList<string> Words, long[] PretrainIds, long[] DeltaIds, long[] TagIds, Sentence? CacheKey);
+/// <param name="Transformer">A <c>_electra-large</c> parser's transformer vectors, [words + 2, hidden] ([CLS], the words,
+/// [SEP]): the last columns of every row, the start and end sentinels' included.</param>
+internal sealed record WordInput(IReadOnlyList<string> Words, long[] PretrainIds, long[] DeltaIds, long[] TagIds, Sentence? CacheKey,
+    float[]? Transformer = null);
 
 /// <summary>
 /// The parser's network, per <see cref="Backend"/>: <c>ConstituencyNet</c> or <see cref="ManagedConstituencyNet"/>.
@@ -366,7 +369,7 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
     private readonly ManagedCharLanguageModel _charlmForward, _charlmBackward;
     private readonly float[] _deltaEmb, _tagEmb, _transitionEmb, _wordStart, _wordEnd;
     private readonly float[][] _dummy; // the Open markers' vectors, shared (read-only)
-    private readonly int _deltaDim, _tagDim, _transitionDim, _inSize, _hidden;
+    private readonly int _deltaDim, _tagDim, _transitionDim, _wordInput, _inSize, _hidden;
     private readonly ManagedLstm _wordLstm;
     private readonly PackedMatrix _wordToConstituent, _reduce;
     private readonly float[] _wordToConstituentBias, _reduceBias;
@@ -379,7 +382,9 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
     public object TransitionStart => _transitionStart;
     public object ConstituentStart => _constituentStart;
 
-    public ManagedConstituencyNet(Checkpoint ckpt, Pretrain pretrain, ManagedCharLanguageModel charlmForward, ManagedCharLanguageModel charlmBackward)
+    /// <param name="transformerDim">The transformer's hidden size for a <c>_electra-large</c> parser (the last input columns), else 0.</param>
+    public ManagedConstituencyNet(Checkpoint ckpt, Pretrain pretrain, ManagedCharLanguageModel charlmForward, ManagedCharLanguageModel charlmBackward,
+        int transformerDim = 0)
     {
         _pretrain = pretrain;
         (_charlmForward, _charlmBackward) = (charlmForward, charlmBackward);
@@ -398,9 +403,11 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
         var dummy = T("dummy_embedding.weight");
         _dummy = Enumerable.Range(0, dummy.Length / hidden).Select(i => dummy.AsSpan(i * hidden, hidden).ToArray()).ToArray();
 
-        _inSize = pretrain.Dim + _deltaDim + _tagDim + charlmForward.HiddenDim + charlmBackward.HiddenDim;
+        // word_start/word_end cover the columns before the transformer's ([CLS]'s and [SEP]'s vectors go after them).
+        _wordInput = pretrain.Dim + _deltaDim + _tagDim + charlmForward.HiddenDim + charlmBackward.HiddenDim;
+        _inSize = _wordInput + transformerDim;
         if (_inSize != Dim("word_lstm.weight_ih_l0"))
-            throw new NotSupportedException("The parser's word input isn't pretrain + delta + tag + both charlms");
+            throw new NotSupportedException("The parser's word input isn't pretrain + delta + tag + both charlms (+ the transformer)");
         _wordLstm = new ManagedLstm(ckpt, model, "word_lstm.", _inSize, hidden, layers, bidirectional: true);
         _wordStart = T("word_start_embedding");
         _wordEnd = T("word_end_embedding");
@@ -455,8 +462,15 @@ internal sealed unsafe class ManagedConstituencyNet : IConstituencyNet
             {
                 var s = sentences[i];
                 int len = s.Words.Count;
-                _wordStart.CopyTo(x.AsSpan(i * width * inSize, inSize));
-                _wordEnd.CopyTo(x.AsSpan((i * width + len + 1) * inSize, inSize));
+                _wordStart.CopyTo(x.AsSpan(i * width * inSize, _wordInput));
+                _wordEnd.CopyTo(x.AsSpan((i * width + len + 1) * inSize, _wordInput));
+                if (s.Transformer != null)
+                {
+                    int td = inSize - _wordInput;
+                    for (int t = 0; t < len + 2; t++)
+                        s.Transformer.AsSpan(t * td, td).CopyTo(x.AsSpan((i * width + t) * inSize + _wordInput, td));
+                }
+
                 for (int t = 0; t < len; t++)
                 {
                     var row = x.AsSpan((i * width + t + 1) * inSize, inSize);

@@ -88,8 +88,8 @@ default from 0.5) or through TorchSharp (see "Managed backend").
 - **Transformers (in progress: `default_accurate`, owner's decisions 2026-10-17; docs/transformer-plan.md):** its pos,
   depparse, ner and constituency read the stock, frozen `google/electra-large-discriminator`, sentiment the same with
   LoRA adapters (applied at run time). The plan: PR 1a (done) the input side, 1b (done) the encoder nets, 2 (done)
-  pos/depparse/ner with one shared encoder pass (exact only with `Gemm.Run(rowInvariant: true)`), 3 constituency/sentiment,
-  4 the package.
+  pos/depparse/ner with one shared encoder pass (exact only with `Gemm.Run(rowInvariant: true)`), 3 (done)
+  constituency/sentiment, 4 the package.
   - Files: not Stanza resources, so `ModelDownloader.Transformers` (repository → pinned revision, files, sha256),
     `DownloadTransformerAsync` (internal; the Cli sample's `download-transformer DIR NAME [FILE]...`) into
     `<model dir>/transformer/<repository>/` (`TransformerDirectory`); `Checkpoint.Load` reads the `pytorch_model.bin`
@@ -129,6 +129,18 @@ default from 0.5) or through TorchSharp (see "Managed backend").
     `models/transformer_long.txt`, a sentence of 706 pieces in two windows;
     make_golden's `electra_locally` has Stanza read `<models>/en/transformer/`), `TransformerModelTests` (both backends),
     `TransformerCacheTests` (a fake encoder, no models).
+  - The models (PR 3): constituency `ptb3-revised_electra-large` (frozen, raw words, its `bert_layer_mix` of 4 layers,
+    endpoints: each sentence's rows are [word_start | CLS], words, [word_end | SEP], the transformer columns last; it
+    shares the call's `TransformerCache`) and sentiment `sstplus_electra-large` (no charlms although resources.json lists
+    them, `UsesCharlm` false; word 100 + transformer 1,024; filters 3, 4, 5; the legacy mix over token texts, no
+    endpoints). Sentiment's LoRA (`bert_lora`, peft's eval forward: base(x) + B(A(x))·alpha/rank after the bias, on query,
+    value, attention.output.dense, intermediate.dense before GELU, output.dense before the LayerNorm): `Nn.LoraWeights`,
+    `ITransformerNet.WithLora` = a net sharing the base's weights plus adapters (managed: two row-invariant `Gemm.Run`s
+    per adapter, so the invariances hold; TorchSharp: `F.linear` twice). A `TransformerCache` belongs to one net
+    (`Net`): `Embed` ignores it for any other, so the LoRA pass never reads or fills the frozen states.
+    `TransformerEmbedder.LayerMix(..., lora: true)` allows `use_peft`/`bert_finetune` when no `bert_model.*` weights are in
+    the checkpoint. Golden rows `constituency=ptb3-revised_electra-large`, `sentiment=sstplus_electra-large` (+ reviews.txt)
+    and `electra-large` (all five, `PROCESSORS`); make_golden needs `peft` (requirements-transformer.txt).
   - CI: no cache (the model caches are near GitHub's 10 GB; owner's decision): golden shard 1 downloads the transformer
     models and the transformer's files on every run (`tools/ci-models.sh transformer`: `download` with their `--model`s,
     with retries); the `Transformer*` classes run only there (in neither SHARD_TWO nor SHARD_THREE), and the other jobs'

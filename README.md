@@ -332,11 +332,11 @@ The models beyond the packages':
   and the biomedical `anatem` (anatomy), `bc4chemd` (chemicals), `bc5cdr` (chemicals, diseases), `bionlp13cg` (cancer
   genetics, 16 types), `jnlpba` (proteins, DNA, RNA, cell lines and types), `linnaeus` and `s800` (species) and
   `ncbi_disease` (diseases), which read biomedical word vectors and PubMed character models (about 470 MB together).
-- English pos, depparse and ner with a transformer: pos and depparse `combined_electra-large`, ner
-  `ontonotes-ww-multi_electra-large` (Stanza's `default_accurate` models; they read the frozen
-  `google/electra-large-discriminator`, 1.3 GB from Hugging Face, which `DownloadAsync(dir, options)` fetches into
-  `transformer/`, and run it once per sentence for all three); the transformer pass adds about 70 ms to a short
-  sentence on 4 cores.
+- English models with a transformer (Stanza's `default_accurate` models): pos and depparse `combined_electra-large`, ner
+  `ontonotes-ww-multi_electra-large`, constituency `ptb3-revised_electra-large` and sentiment `sstplus_electra-large`.
+  They read `google/electra-large-discriminator`, 1.3 GB from Hugging Face, which `DownloadAsync(dir, options)` fetches
+  into `transformer/`. The first four read it frozen and share one pass per sentence; sentiment applies its LoRA
+  adapters at run time, a second pass. A pass adds about 70 ms to a short sentence on 4 cores.
 - German ner: `conll03` (PER, LOC, ORG, MISC).
 - The treebanks' taggers and parsers without character language models (their own character LSTM, like
   `default_fast`'s): English pos and depparse `ewt_nocharlm`, `gum_nocharlm`, `lines_nocharlm`, `partut_nocharlm`,

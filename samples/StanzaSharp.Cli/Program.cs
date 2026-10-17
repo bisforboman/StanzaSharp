@@ -23,7 +23,8 @@ const string Usage = """
                           processors dict: English constituency=ptb3_charlm; ner=ontonotes_charlm, ontonotes_nocharlm,
                           combined_charlm, conll03_charlm, i2b2, radiology (clinical),
                           anatem, bc4chemd, bc5cdr, bionlp13cg, jnlpba, linnaeus, ncbi_disease, s800 (biomedical),
-                          ontonotes-ww-multi_electra-large; pos and depparse=combined_electra-large (these three read the
+                          ontonotes-ww-multi_electra-large; pos and depparse=combined_electra-large;
+                          constituency=ptb3-revised_electra-large; sentiment=sstplus_electra-large (these five read the
                           1.3 GB google/electra-large-discriminator, which download fetches too); German ner=conll03.
                           Its processor is added if needed
       --list              download: print each file and its MD5 instead of downloading

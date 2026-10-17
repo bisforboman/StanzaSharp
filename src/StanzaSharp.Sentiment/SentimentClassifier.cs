@@ -24,13 +24,28 @@ internal sealed class SentimentClassifier : IDisposable
     private readonly Dictionary<string, int> _extraVocab = [];
     private readonly int _maxWindow;
     private readonly ISentimentNet _net;
+    private readonly TransformerEmbedder? _transformer; // its own, with the model's LoRA adapters (sstplus_electra-large)
+    private readonly ITransformerNet? _loraNet;
+    private readonly float[]? _layerMix;
 
-    internal SentimentClassifier(Checkpoint ckpt, Pretrain pretrain, Func<Filter[], ISentimentNet> net)
+    /// <param name="transformer">The pipeline's transformer, for a <c>_electra-large</c> classifier: its LoRA adapters go onto a
+    /// copy that shares the transformer's weights (applied at run time, owner's decision 2026-10-17); else ignored.</param>
+    internal SentimentClassifier(Checkpoint ckpt, Pretrain pretrain, Func<Filter[], ISentimentNet> net, TransformerEmbedder? transformer = null)
     {
         _pretrain = pretrain;
         var p = ckpt.Root["params"]!;
         var config = p["config"]!;
         CheckSupported(config);
+        UsesCharlm = config["has_charlm_forward"]?.GetValue<bool>() == true;
+        bool lora = config["use_peft"]?.GetValue<bool>() == true;
+        _layerMix = TransformerEmbedder.LayerMix(ckpt, config, p["model"]!, transformer, "sentiment", lora);
+        if (config["bert_model"] != null)
+        {
+            _loraNet = lora
+                ? transformer!.Net.WithLora(LoraWeights.Read(ckpt, p["bert_lora"] ?? throw new InvalidDataException("A LoRA classifier without bert_lora"), config))
+                : null;
+            _transformer = _loraNet == null ? transformer : new TransformerEmbedder(_loraNet, transformer!.Tokenizer, transformer.MaxLength, transformer.Name);
+        }
 
         // { word: i for i, word in enumerate(extra_vocab) }: a repeated word keeps its last index.
         var extra = Checkpoint.Strings(p["extra_vocab"]);
@@ -50,19 +65,34 @@ internal sealed class SentimentClassifier : IDisposable
     internal readonly record struct Filter(int Height, int Width);
 
     /// <summary><c>Load</c> (StanzaSharp.Cuda) on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
-    public static SentimentClassifier LoadManaged(string basePath, Pretrain pretrain, ManagedCharLanguageModel charlmForward, ManagedCharLanguageModel charlmBackward)
+    public static SentimentClassifier LoadManaged(string basePath, Pretrain pretrain, ManagedCharLanguageModel charlmForward, ManagedCharLanguageModel charlmBackward,
+        TransformerEmbedder? transformer = null)
     {
         if (!charlmForward.IsForward || charlmBackward.IsForward)
             throw new ArgumentException("Pass the forward charlm first, then the backward one");
         var ckpt = Checkpoint.Load(basePath);
-        return new SentimentClassifier(ckpt, pretrain, filters => new ManagedSentimentNet(ckpt, filters, pretrain, charlmForward, charlmBackward));
+        var (charlm, transformerDim) = Inputs(ckpt, transformer);
+        return new SentimentClassifier(ckpt, pretrain, filters => new ManagedSentimentNet(ckpt, filters, pretrain, charlm ? charlmForward : null,
+            charlm ? charlmBackward : null, transformerDim), transformer);
     }
+
+    /// <summary>What the model reads besides its word vectors: the charlms (has_charlm_forward), and the transformer's columns (its hidden size, else 0).</summary>
+    internal static (bool Charlm, int TransformerDim) Inputs(Checkpoint ckpt, TransformerEmbedder? transformer)
+    {
+        var config = ckpt.Root["params"]!["config"]!;
+        return (config["has_charlm_forward"]?.GetValue<bool>() == true, config["bert_model"] == null ? 0 : transformer?.Net.Config.Hidden ?? 0);
+    }
+
+    /// <summary>Whether this classifier reads the charlms (and so the tagger's <see cref="CharlmCache"/>); sstplus_electra-large doesn't.</summary>
+    internal bool UsesCharlm { get; }
 
     /// <summary>Sets <see cref="Sentence.Sentiment"/> on every sentence. Reads only the tokens' text.</summary>
     /// <param name="charlms">Charlm representations the tagger kept, if any. They are used for sentences
     /// whose tokens are exactly the tagger's words (no multi-word tokens); the rest are computed.</param>
     public void Process(Document doc, CharlmCache? charlms = null, CancellationToken cancellationToken = default)
     {
+        if (!UsesCharlm)
+            charlms = null;
         var sentences = doc.Sentences.Select(s => (IReadOnlyList<string>)s.Tokens.Select(t => t.Text).ToList()).ToList();
         var keys = charlms == null ? null : doc.Sentences.Select(CacheKey).ToList();
         var labels = Classify(sentences, out _, charlms, keys, cancellationToken);
@@ -166,7 +196,10 @@ internal sealed class SentimentClassifier : IDisposable
             }
         }
 
-        var scores = _net.Forward(batch, ids, extraIds, width, charlms, cacheKeys, cancellationToken);
+        // extract_bert_embeddings over the token texts, without the endpoints, through the LoRA encoder: never the frozen
+        // transformer's cache, whose states differ.
+        var transformer = _transformer?.Embed(batch, keepEndpoints: false, _layerMix, cache: null, cancellationToken);
+        var scores = _net.Forward(batch, ids, extraIds, width, UsesCharlm ? charlms : null, UsesCharlm ? cacheKeys : null, cancellationToken, transformer);
         int classes = scores.Length / n;
         return Enumerable.Range(0, n).Select(i => scores[(i * classes)..((i + 1) * classes)]).ToArray();
     }
@@ -181,14 +214,18 @@ internal sealed class SentimentClassifier : IDisposable
         Require(config["model_type"]?.GetValue<string>() == "CNN", $"model type {config["model_type"]}");
         Require(config["extra_wordvec_method"]?.GetValue<string>() == "SUM", $"extra_wordvec_method {config["extra_wordvec_method"]}");
         Require(config["extra_wordvec_max_norm"] == null, "extra_wordvec_max_norm");
-        Require(config["has_charlm_forward"]?.GetValue<bool>() == true && config["has_charlm_backward"]?.GetValue<bool>() == true, "a configuration without both charlms");
+        Require(config["has_charlm_forward"]?.GetValue<bool>() == config["has_charlm_backward"]?.GetValue<bool>(), "one charlm without the other");
+        Require(config["has_charlm_forward"]?.GetValue<bool>() == true || config["bert_model"] != null, "a configuration without charlms or a transformer");
         Require(config["charlm_projection"] == null, "charlm_projection");
         Require(config["use_elmo"]?.GetValue<bool>() != true, "ELMo");
-        Require(config["bert_model"] == null, "a transformer");
         Require(config["bilstm"]?.GetValue<bool>() == true, "a configuration without the biLSTM");
         Require(config["maxpool_width"]?.GetValue<int>() == 1, $"maxpool_width {config["maxpool_width"]}");
         Require(config["filter_channels"] is JsonValue, "per-filter channel counts");
     }
 
-    public void Dispose() => _net.Dispose();
+    public void Dispose()
+    {
+        _net.Dispose();
+        _loraNet?.Dispose();
+    }
 }

@@ -7,13 +7,17 @@ namespace StanzaSharp.Nn;
 /// punctuation run. Stanza runs the encoder once per processor; sharing is exact because a sentence's states don't depend
 /// on its batch (bitwise on the managed backend; TorchSharp pads, which moves only the last bits).
 /// </summary>
+/// <param name="net">The encoder whose states it holds: <see cref="TransformerEmbedder.Embed"/> ignores the cache for any other
+/// (sentiment's LoRA encoder gives other states for the same ids).</param>
 /// <remarks>
 /// An entry is the last <see cref="Layers"/> layers of every piece, [Layers, pieces, hidden] (16 KB a piece with ELECTRA-large),
 /// so each reader mixes them its own way. At most <see cref="MaxPieces"/> pieces are kept (sentences past that are not, and
 /// their readers run the encoder again), so a long document can't hold gigabytes between the processors.
 /// </remarks>
-internal sealed class TransformerCache(int maxPieces = TransformerCache.DefaultMaxPieces)
+internal sealed class TransformerCache(ITransformerNet net, int maxPieces = TransformerCache.DefaultMaxPieces)
 {
+    public ITransformerNet Net { get; } = net;
+
     /// <summary>Every reader's mix reads at most the last 4 layers (the legacy mix three of them).</summary>
     public const int Layers = 4;
 

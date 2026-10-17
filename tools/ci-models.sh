@@ -98,8 +98,9 @@ case ${1:-} in
     ;;
   transformer)
     models=pos=combined_electra-large,depparse=combined_electra-large,ner=ontonotes-ww-multi_electra-large
+    models+=,constituency=ptb3-revised_electra-large,sentiment=sstplus_electra-large
     for attempt in 1 2 3; do
-      "${cli[@]}" download models/stanza/en --processors tokenize,mwt,pos,lemma,depparse,ner --model $models < /dev/null && exit 0
+      "${cli[@]}" download models/stanza/en --processors tokenize,mwt,pos,lemma,constituency,depparse,sentiment,ner --model $models < /dev/null && exit 0
       echo "download failed (attempt $attempt)" >&2
       sleep $((attempt * 15))
     done

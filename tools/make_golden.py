@@ -282,6 +282,19 @@ MODEL_CHOICES = {
         ("pos+depparse+ner=electra-large", "default", "tokenize,mwt,pos,lemma,depparse,ner",
          {"pos": "combined_electra-large", "depparse": "combined_electra-large", "ner": "ontonotes-ww-multi_electra-large"},
          ["validation.txt", "validation_contractions.txt", "validation_social.txt", "validation_tech.txt", "models/transformer_long.txt"]),
+        # constituency's frozen transformer (its bert_layer_mix is not zero) with the boundary vectors: [CLS] and [SEP] next
+        # to word_start and word_end
+        ("constituency=ptb3-revised_electra-large", "default", "tokenize,mwt,pos,constituency", {"constituency": "ptb3-revised_electra-large"},
+         ["validation.txt", "validation_contractions.txt", "models/transformer_long.txt"]),
+        # sentiment's LoRA-adapted transformer (no charlms, filters 3, 4 and 5 only): a pass of its own
+        ("sentiment=sstplus_electra-large", "default", "tokenize,mwt,sentiment", {"sentiment": "sstplus_electra-large"},
+         ["validation.txt", "validation_contractions.txt", "sentiment/reviews.txt", "models/transformer_long.txt"]),
+        # all five transformer models in one pipeline: the frozen states shared four ways (raw words for constituency,
+        # simplify_punct'ed for pos and depparse, tokens for ner), sentiment's LoRA pass apart
+        ("electra-large", "default", PROCESSORS,
+         {"pos": "combined_electra-large", "constituency": "ptb3-revised_electra-large", "depparse": "combined_electra-large",
+          "sentiment": "sstplus_electra-large", "ner": "ontonotes-ww-multi_electra-large"},
+         ["validation.txt", "validation_contractions.txt", "models/transformer_long.txt"]),
     ],
     "de": [
         ("ner=conll03", "default", "tokenize,mwt,ner", {"ner": "conll03"}, ["validation.txt"]),
