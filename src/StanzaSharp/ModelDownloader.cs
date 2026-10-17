@@ -255,35 +255,88 @@ public static class ModelDownloader
         IProgress<string>? progress, CancellationToken cancellationToken, string language = Pipeline.English)
     {
         foreach (var (path, md5) in files)
+            await FetchAsync(Path.Combine(modelDir, path), path, BaseUrl(language) + path, md5, Md5Async, http, progress, cancellationToken);
+    }
+
+    /// <summary>
+    /// The transformers that Stanza's transformer models read, which transformers downloads from Hugging Face rather than
+    /// Stanza (docs/transformer-plan.md): each repository's pinned revision and the files StanzaSharp reads, with their
+    /// sha256 (Hugging Face's own checksum; these files are not in Stanza's resources.json).
+    /// </summary>
+    internal static readonly Dictionary<string, (string Revision, (string File, string Sha256)[] Files)> Transformers = new()
+    {
+        ["google/electra-large-discriminator"] = ("c13c3df7efadc2162f42588bd28eb4e187d602a5",
+        [
+            ("tokenizer.json", "a23e7b62fb92e2cacc11087144ff99699f5575758cec85318a31f5295ae02f3b"),
+            ("pytorch_model.bin", "070894f07d07a499d73946378afa5548d64aca2418d17e67d398233692497e63"),
+        ]),
+    };
+
+    /// <summary>
+    /// Where a transformer's files go in a model directory: <c>transformer/&lt;repository&gt;/</c>, e.g.
+    /// <c>models/stanza/en/transformer/google/electra-large-discriminator/</c>.
+    /// </summary>
+    internal static string TransformerDirectory(string modelDir, string name) => Path.Combine(modelDir, "transformer", Path.Combine(name.Split('/')));
+
+    /// <summary>
+    /// Downloads <paramref name="files"/> (null: all of them) of the transformer <paramref name="name"/> (a key of
+    /// <see cref="Transformers"/>) at its pinned revision into <see cref="TransformerDirectory"/>, checking each against
+    /// its sha256 and keeping files that already match.
+    /// </summary>
+    internal static async Task DownloadTransformerAsync(string modelDir, string name, IReadOnlyCollection<string>? files = null,
+        IProgress<string>? progress = null, CancellationToken cancellationToken = default)
+    {
+        if (!Transformers.TryGetValue(name, out var transformer))
+            throw new ArgumentException($"Unknown transformer '{name}'; supported: {string.Join(", ", Transformers.Keys)}", nameof(name));
+        var unknown = files?.Except(transformer.Files.Select(f => f.File)).ToList();
+        if (unknown is { Count: > 0 })
+            throw new ArgumentException($"{name} has no file {string.Join(", ", unknown)}", nameof(files));
+        var selected = transformer.Files.Where(f => files == null || files.Contains(f.File)).ToList();
+        await DownloadTransformerAsync(modelDir, name, transformer.Revision, selected, Http, progress, cancellationToken);
+    }
+
+    internal static async Task DownloadTransformerAsync(string modelDir, string name, string revision, IEnumerable<(string File, string Sha256)> files,
+        HttpClient http, IProgress<string>? progress, CancellationToken cancellationToken)
+    {
+        var directory = TransformerDirectory(modelDir, name);
+        foreach (var (file, sha256) in files)
         {
-            var target = Path.Combine(modelDir, path);
-            if (File.Exists(target) && await Md5Async(target, cancellationToken) == md5)
+            await FetchAsync(Path.Combine(directory, file), $"{name}/{file}", $"https://huggingface.co/{name}/resolve/{revision}/{file}", sha256,
+                Sha256Async, http, progress, cancellationToken);
+        }
+    }
+
+    // Downloads url to target unless target already has the expected checksum; a new file is checked before it is put
+    // in place, so a failed or wrong download never replaces a good one.
+    private static async Task FetchAsync(string target, string name, string url, string expected, Func<string, CancellationToken, Task<string>> checksum,
+        HttpClient http, IProgress<string>? progress, CancellationToken cancellationToken)
+    {
+        if (File.Exists(target) && await checksum(target, cancellationToken) == expected)
+        {
+            progress?.Report($"{name}: up to date");
+            return;
+        }
+
+        progress?.Report($"{name}: downloading");
+        Directory.CreateDirectory(Path.GetDirectoryName(target)!);
+        var partial = target + ".download";
+        try
+        {
+            using (var response = await http.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
             {
-                progress?.Report($"{path}: up to date");
-                continue;
+                response.EnsureSuccessStatusCode();
+                await using var file = File.Create(partial);
+                await response.Content.CopyToAsync(file, cancellationToken);
             }
 
-            progress?.Report($"{path}: downloading");
-            Directory.CreateDirectory(Path.GetDirectoryName(target)!);
-            var partial = target + ".download";
-            try
-            {
-                using (var response = await http.GetAsync(BaseUrl(language) + path, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
-                {
-                    response.EnsureSuccessStatusCode();
-                    await using var file = File.Create(partial);
-                    await response.Content.CopyToAsync(file, cancellationToken);
-                }
-
-                var actual = await Md5Async(partial, cancellationToken);
-                if (actual != md5)
-                    throw new InvalidDataException($"{path}: checksum {actual} does not match the expected {md5}");
-                File.Move(partial, target, overwrite: true);
-            }
-            finally
-            {
-                File.Delete(partial);
-            }
+            var actual = await checksum(partial, cancellationToken);
+            if (actual != expected)
+                throw new InvalidDataException($"{name}: checksum {actual} does not match the expected {expected}");
+            File.Move(partial, target, overwrite: true);
+        }
+        finally
+        {
+            File.Delete(partial);
         }
     }
 
@@ -322,5 +375,11 @@ public static class ModelDownloader
     {
         await using var file = File.OpenRead(path);
         return Convert.ToHexStringLower(await MD5.HashDataAsync(file, cancellationToken));
+    }
+
+    private static async Task<string> Sha256Async(string path, CancellationToken cancellationToken)
+    {
+        await using var file = File.OpenRead(path);
+        return Convert.ToHexStringLower(await SHA256.HashDataAsync(file, cancellationToken));
     }
 }

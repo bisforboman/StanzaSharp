@@ -3,10 +3,13 @@ using StanzaSharp;
 const string Usage = """
     Usage: StanzaSharp.Cli [--lang CODE] [--models DIR] [--package NAME] [--processors LIST] [--model P=NAME]... [FILE]
            StanzaSharp.Cli download [DIR] [--lang CODE] [--package NAME] [--processors LIST] [--model P=NAME]... [--list]
+           StanzaSharp.Cli download-transformer DIR NAME [FILE]...
 
     Runs the pipeline of --lang (en, the default, or de) on FILE (or standard input) and writes CoNLL-U to standard output.
     "download" fetches Stanza's models of --lang (en, the default, or de) into DIR (default: models/stanza/<lang>):
-    all of the package's, or only what LIST needs.
+    all of the package's, or only what LIST needs. "download-transformer" fetches a transformer's files (all, or the FILEs)
+    from Hugging Face at their pinned revision into DIR/transformer/NAME (google/electra-large-discriminator: tokenizer.json,
+    pytorch_model.bin; docs/transformer-plan.md), for tests and tools; nothing uses them yet.
 
       --lang CODE         the language: en (default) or de
       --models DIR        models (default: models/converted/<lang> if present, else models/stanza/<lang>)
@@ -24,6 +27,13 @@ const string Usage = """
       --list              download: print each file and its MD5 instead of downloading
       --backend NAME      managed (default; no native code) or torch (TorchSharp, with this sample's TorchSharp-cpu)
     """;
+
+if (args is ["download-transformer", var transformerDir, var transformerName, .. var transformerFiles])
+{
+    await ModelDownloader.DownloadTransformerAsync(transformerDir, transformerName, transformerFiles.Length > 0 ? transformerFiles : null,
+        new Progress<string>(Console.WriteLine));
+    return 0;
+}
 
 if (args is ["download", .. var downloadArgs])
     return await StanzaSharp.Tool.DownloadCommand.RunAsync(downloadArgs, Usage);

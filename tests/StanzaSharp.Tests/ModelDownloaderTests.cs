@@ -76,6 +76,57 @@ public class ModelDownloaderTests : IDisposable
         Assert.Single(Directory.GetFiles(_dir, "*", SearchOption.AllDirectories));
     }
 
+    /// <summary>Serves fixed bytes for exact URL paths.</summary>
+    private sealed class PathServer(Dictionary<string, byte[]> files) : HttpMessageHandler
+    {
+        public List<string> Requested { get; } = [];
+
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            var path = request.RequestUri!.AbsolutePath;
+            Requested.Add(path);
+            return Task.FromResult(files.TryGetValue(path, out var bytes)
+                ? new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(bytes) }
+                : new HttpResponseMessage(HttpStatusCode.NotFound));
+        }
+    }
+
+    [Fact]
+    public async Task DownloadsATransformerAtItsRevisionAndChecksItsSha256()
+    {
+        byte[] good = [1, 2, 3];
+        var server = new PathServer(new()
+        {
+            ["/org/model/resolve/abc123/tokenizer.json"] = good,
+            ["/org/model/resolve/abc123/weights.bin"] = [9],
+        });
+        var sha = Convert.ToHexStringLower(SHA256.HashData(good));
+        await ModelDownloader.DownloadTransformerAsync(_dir, "org/model", "abc123", [("tokenizer.json", sha)], new HttpClient(server), null, default);
+        var directory = ModelDownloader.TransformerDirectory(_dir, "org/model");
+        Assert.Equal(Path.Combine(_dir, "transformer", "org", "model"), directory);
+        Assert.Equal(good, File.ReadAllBytes(Path.Combine(directory, "tokenizer.json")));
+
+        // Up to date: nothing is requested again. A wrong checksum leaves no file.
+        await ModelDownloader.DownloadTransformerAsync(_dir, "org/model", "abc123", [("tokenizer.json", sha)], new HttpClient(server), null, default);
+        Assert.Single(server.Requested);
+        var ex = await Assert.ThrowsAsync<InvalidDataException>(() =>
+            ModelDownloader.DownloadTransformerAsync(_dir, "org/model", "abc123", [("weights.bin", sha)], new HttpClient(server), null, default));
+        Assert.Contains("org/model/weights.bin", ex.Message);
+        Assert.False(File.Exists(Path.Combine(directory, "weights.bin")));
+    }
+
+    [Fact]
+    public async Task UnknownTransformersAndFilesThrow()
+    {
+        await Assert.ThrowsAsync<ArgumentException>(() => ModelDownloader.DownloadTransformerAsync(_dir, "org/nothing"));
+        await Assert.ThrowsAsync<ArgumentException>(() => ModelDownloader.DownloadTransformerAsync(_dir, "google/electra-large-discriminator", ["vocab.txt"]));
+        Assert.All(ModelDownloader.Transformers.Values, t =>
+        {
+            Assert.Matches("^[0-9a-f]{40}$", t.Revision);
+            Assert.All(t.Files, f => Assert.Matches("^[0-9a-f]{64}$", f.Sha256));
+        });
+    }
+
     [Fact]
     public void FileTableCoversEveryModelThePipelineLoads()
     {

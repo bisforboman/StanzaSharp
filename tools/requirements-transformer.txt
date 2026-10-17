@@ -1,0 +1,6 @@
+# The transformer golden data (make_golden.py --transformer-only, tools/transformer_spike*.py) on top of requirements.txt.
+# Kept apart so that requirements.txt, which CI's model cache keys hash, doesn't change; tests/golden/transformer depends
+# on these exact versions (the tokenizer's normalization comes from tokenizers).
+transformers==5.20.1
+tokenizers==0.23.3
+safetensors==0.8.0

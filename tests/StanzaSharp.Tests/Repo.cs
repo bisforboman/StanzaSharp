@@ -183,3 +183,20 @@ public sealed class PtModelFactAttribute : FactAttribute
             Skip = "models/stanza/en not found; run setup.ps1 -Models";
     }
 }
+
+/// <summary>
+/// A fact that is skipped, not failed, when a transformer's file is missing from
+/// <c>models/stanza/en/transformer/&lt;name&gt;/</c> (golden shard 1 downloads it; ci.yml's no-skip checks elsewhere exempt
+/// the tests by name: <c>Transformer</c>).
+/// </summary>
+public sealed class TransformerFactAttribute : FactAttribute
+{
+    public const string Electra = "google/electra-large-discriminator";
+
+    public TransformerFactAttribute(string file)
+    {
+        var path = Path.Combine(ModelDownloader.TransformerDirectory(Repo.StanzaModels, Electra), file);
+        if (!File.Exists(path))
+            Skip = $"{path} not found; run StanzaSharp.Cli download-transformer models/stanza/en {Electra} {file}";
+    }
+}

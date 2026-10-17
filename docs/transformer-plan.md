@@ -7,7 +7,8 @@
 > **Owner's decisions after the spike (2026-10-17):** **go** on `default_accurate`, all five processors, in the four
 > PRs below. Hidden states are tested within 1e-4 of Stanza's float32 **or** float64 value (the golden data keeps both),
 > the badly conditioned sentences bounded at 1e-2, discrete outputs byte-identical. Sentiment's LoRA adapters are
-> applied **at run time**. pos, depparse, ner and constituency **share** one frozen-encoder pass.
+> applied **at run time**. pos, depparse, ner and constituency **share** one frozen-encoder pass. CI downloads the
+> transformer and the five models on every golden run instead of caching them (the caches are near GitHub's 10 GB).
 
 Spike code (all internal, unused by `Pipeline`):
 
@@ -32,8 +33,8 @@ Spike code (all internal, unused by `Pipeline`):
 - **Memory:** the packed float32 encoder is about 1.35 GB. The process peaks at 2.6 GB with the weights loaded and
   one 128-sentence batch.
 - **Tokenizer:** the C# WordPiece gives transformers' ids exactly on all 845 golden sentences (11,958 pieces).
-- **Recommendation:** go for `default_accurate`. Port it in four PRs (below), the encoder first. The cost is CI cache
-  space (+1.9 GB) and test time, not risk.
+- **Recommendation:** go for `default_accurate`. Port it in four PRs (below), the encoder first. The cost is CI
+  download time (+1.9 GB per golden run) and test time, not risk.
 
 ## What `default_accurate` needs
 
@@ -180,32 +181,66 @@ All on this cloud machine: 4 cores, Intel Xeon at 2.1 GHz with AVX-512 (`Gemm.Pa
 
 ### PRs
 
+PR 1 is split in two (advisor's suggestion, 2026-10-17), so the tokenizer half lands while the nets are reviewed:
+
 | PR | content | effort |
 |---|---|---|
-| 1 | `ManagedTransformer` + TorchSharp twin, `WordPiece`, the encoder cache; golden hidden states (a `make_golden.py --transformer-only` like this spike's reference, float32 and float64 for a subset); per-path kernel tests | **L** |
-| 2 | pos, depparse, ner (frozen, layer mixes) as `Pipeline.Alternatives` (`--model pos=combined_electra-large`), golden rows | **M** |
-| 3 | constituency (`bert_layer_mix`), sentiment (LoRA) | **M** |
-| 4 | the `default_accurate` package: `Pipeline.Packages`, download, golden for all eight processors, benchmark rows | **S–M** |
+| 1a | `WordPiece` (with the added tokens), `TransformerInput` (fix_blank_tokens, convert_to_position_list), `Checkpoint.Load` of a `.bin`, the Hugging Face file table and `ModelDownloader.DownloadTransformerAsync` (internal; the Cli sample's `download-transformer`), `make_golden.py --transformer-only` → `tests/golden/transformer/tokenizer.json`, `TransformerTokenizerTests`; CI downloads `tokenizer.json` (466 KB) | **M** |
+| 1b | `ITransformerNet`: the managed encoder (row-invariant, pooled buffers, scalar double attention/LayerNorm/GELU: one version for every CPU) + TorchSharp twin; the 512-piece windows and the layer mixes; golden hidden states for a few sentences (float32 + float64, the badly conditioned ones listed with their bound); bitwise batch- and thread-count invariance tests; CI downloads `pytorch_model.bin` | **L** |
+| 2 | pos, depparse, ner (frozen, layer mixes) as `Pipeline.Alternatives` (`--model pos=combined_electra-large`), the shared encoder cache, golden rows | **M** |
+| 3 | constituency (`bert_layer_mix`, and its sentence boundary vectors: see below), sentiment (LoRA at run time) | **M–L** |
+| 4 | the `default_accurate` package: `Pipeline.Packages`, the transformer in `Pipeline.Dependencies` and the downloader, golden for all eight processors, benchmark rows | **S–M** |
 
 ### Testing
 
-Discrete outputs stay byte-identical with Stanza on every golden text, on both backends, as everywhere else.
+Discrete outputs stay byte-identical with Stanza on every golden text, on both backends, as everywhere else. Hidden
+states pass within 1e-4 of Stanza's float32 **or** float64 value (the golden data keeps both); the badly conditioned
+sentences are an explicit list in the golden data with their bound (1e-2), and their downstream outputs must be exact
+(owner's decision, 2026-10-17).
 
-The hidden states can't meet 1e-4 against torch float32 on every sentence: torch float32 can't either. Proposed:
-like sentiment, the golden data also keeps float64 hidden states, and a value passes within 1e-4 of either. The 23
-badly conditioned sentences would still miss; for them, the test bounds the drift at 1e-2 and requires the
-downstream outputs exact. That is the owner's call (question 3 below).
+On ordinary sentences every kernel path meets that: the first 40 golden sentences, h24, max \|C# − torch f32\| 4.8e-5
+on Vector512, Vector256 and Vector128 (the same bits) and 4.3e-5 on Scalar (`transformer-spike --path`).
 
 ### CI
 
-- **Cache:** about +1.9 GB: ELECTRA 1.35 GB, plus the five Stanza models at about 0.55 GB. Kept in golden shards
-  only, like the treebank caches, with an exemption from the no-skip checks elsewhere.
+- **Download, no cache** (owner's decision, 2026-10-17): the model caches are already about 9.2 GB of GitHub's 10 GB
+  (estimated from their recorded sizes; the session could not list them), so the transformer's files and the five
+  Stanza models (~1.9 GB) are downloaded on every golden run (`tools/ci-models.sh transformer FILE...`, with retries), by
+  golden shard 1 only: the `Transformer*` test classes run there (they are in neither `SHARD_TWO` nor `SHARD_THREE`),
+  and the other jobs' no-skip checks exempt them.
+- `transformers` is pinned in its own `tools/requirements-transformer.txt`, not `requirements.txt`, whose hash the
+  model cache keys include: CI never needs it (the `.bin` loads without conversion; the golden data is made locally).
 - **Test time:** one shared frozen pass plus one LoRA pass over the golden texts takes about 70 s on these 4 cores,
   per backend. TorchSharp would be slower.
+
+## After the spike (2026-10-17)
+
+- **NER:** `ontonotes-ww-multi_electra-large` with the C# features: 0 tag differences on the 8,401 golden words (850 id
+  sequences recorded with pos, lemma, depparse and ner), and still 0 in pos, lemma and depparse.
+- **Sharing is exact with a row-invariant encoder:** each of 64 sentences alone vs inside one 64-sentence batch
+  (`transformer-spike --invariance`): 16 differ in some bit with `Gemm.Run`'s default, 0 with `rowInvariant: true`.
+- **One short sentence** (7 words, 9 pieces), median / p90:
+
+  | | 4 threads | 1 thread |
+  |---|---|---|
+  | C# encoder | 68.4 / 81.6 ms | 175.7 / 191.7 ms |
+  | Python transformers | 128.3 / 141.2 ms | 338.4 / 363.8 ms |
+
+  `default_accurate` would cost about two passes (the shared one and sentiment's LoRA one) plus the default package's
+  28 ms: about 165 ms per short sentence on 4 cores.
+- **The five consumers** read only hidden_states[-4:] (the legacy (h21 + h22 + h23) / 4, or `bert_layer_mix` over
+  h21–h24: the uniform mean plus the weighted sum), so the shared cache keeps h21–h24 per id sequence:
+  - depparse: `keep_endpoints`, then `x[:-1]` (drops [SEP]; [CLS] is ROOT's vector);
+  - constituency: `sentence_boundary_vectors` EVERYTHING, so `keep_endpoints` and learned `word_start`/`word_end`
+    embeddings around each sentence, a path the default package's parser doesn't have; words without simplify_punct;
+  - sentiment: LoRA rank 64, alpha 128 (scale 2) on query, value, attention.output.dense, intermediate.dense and
+    output.dense (240 tensors); the legacy mix; no endpoints.
+- **The tokenizer** (PR 1a) gives transformers' ids, word ids and Stanza's positions on all 1,086 golden cases. Two
+  rules the spike's version missed: the added tokens' texts ("[CLS]", "[PAD]", ...) are matched in the raw word, and
+  unassigned code points (Cn) are kept (they become [UNK]) though tokenizers' `is_other` lists them.
 
 ## Decided
 
 The questions the spike raised were answered on 2026-10-17 (see the top). Still open, for later:
 
-- **The CI cache:** +1.9 GB in the golden shards' caches only (to confirm with PR 1).
 - **Precision options:** bfloat16 or int8 weights would halve or quarter the 1.35 GB but not be exact. Not proposed now.

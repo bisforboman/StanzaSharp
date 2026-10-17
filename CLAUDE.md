@@ -85,6 +85,24 @@ default from 0.5) or through TorchSharp (see "Managed backend").
   character LMs (charlm); the `_nocharlm` ones have their own character LSTM (`Nn.CharacterModel`) instead.
   The charlm is shared infrastructure and lives in `StanzaSharp.Nn`. The pipeline loads only what the
   selected models read (`Pipeline.SharedModels`): in `default_fast` the charlms only with sentiment.
+- **Transformers (in progress: `default_accurate`, owner's decisions 2026-10-17; docs/transformer-plan.md):** its pos,
+  depparse, ner and constituency read the stock, frozen `google/electra-large-discriminator`, sentiment the same with
+  LoRA adapters (applied at run time). The plan: PR 1a (done) the input side, 1b the encoder nets, 2 pos/depparse/ner
+  with one shared encoder pass (exact only with `Gemm.Run(rowInvariant: true)`), 3 constituency/sentiment, 4 the package.
+  - Files: not Stanza resources, so `ModelDownloader.Transformers` (repository → pinned revision, files, sha256),
+    `DownloadTransformerAsync` (internal; the Cli sample's `download-transformer DIR NAME [FILE]...`) into
+    `<model dir>/transformer/<repository>/` (`TransformerDirectory`); `Checkpoint.Load` reads the `pytorch_model.bin`
+    (torch's zip format) by that name. Kept out of `Files`, `FilesFor` and every `tools/ci-models.sh` group.
+  - `Nn.WordPiece` = tokenizer.json's BertNormalizer + BertPreTokenizer + WordPiece per word (`is_split_into_words`): the
+    added tokens' texts matched first in the raw word (leftmost, longest), control = Cc/Cf/Co/Cs but tab/newline/CR
+    removed (unassigned Cn kept: tokenizers gives [UNK]), White_Space → space, NFD minus Mn, lowercase.
+    `Nn.TransformerInput` = Stanza's fix_blank_tokens (a word without pieces → "-") + convert_to_position_list.
+    `tests/golden/transformer/tokenizer.json` (`make_golden.py --transformer-only`, `TRANSFORMER_TOKENIZER_CASES`;
+    `tools/requirements-transformer.txt` pins transformers/tokenizers, apart from requirements.txt, which the cache keys
+    hash), `TransformerTokenizerTests`.
+  - CI: no cache (the model caches are near GitHub's 10 GB; owner's decision): golden shard 1 downloads the files on
+    every run (`tools/ci-models.sh transformer FILE...`, with retries); the `Transformer*` classes run only there (in
+    neither SHARD_TWO nor SHARD_THREE), and the other jobs' no-skip checks exempt `Transformer`.
 
 ## Status
 

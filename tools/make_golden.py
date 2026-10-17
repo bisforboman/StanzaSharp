@@ -88,6 +88,13 @@ Reads <out>/corpus.txt and writes:
                         PipelineOptions.Models), e.g. models/ner=i2b2/, on corpus.txt (as corpus.conllu), validation.txt
                         and each choice's hand-written texts in models/ (clinical.txt, biomedical.txt, radiology.txt) (`--models-only`);
                         a chosen lemmatizer's folder also has seq2seq.json (its model alone on corpus.txt's words)
+  transformer/tokenizer.json
+                        the transformer input Stanza builds (bert_embedding.py: the tokenizer with is_split_into_words,
+                        fix_blank_tokens, convert_to_position_list) for google/electra-large-discriminator, on every golden
+                        sentence's words, simplify_punct'ed words and token texts, and on TRANSFORMER_TOKENIZER_CASES;
+                        "positions" only where not 0..n+1, "fixed" (the words after fix_blank_tokens) only where it changed any
+                        (`--transformer-only`; needs tools/requirements-transformer.txt and the transformer's tokenizer.json in
+                        <models>/en/transformer/google/electra-large-discriminator)
   pt/tiny_{legacy,zip}.pt + their stanza_convert.py output (.json/.safetensors)
                         small checkpoints in both torch.save formats for the C# .pt loader tests;
                         `python tools/make_golden.py --pt-only` regenerates just these
@@ -1124,6 +1131,78 @@ GERMAN = {
 }
 
 
+TRANSFORMER = "google/electra-large-discriminator"
+
+# Words that exercise the tokenizer's normalizer, pre-tokenizer and WordPiece (docs/transformer-plan.md): accents
+# composed and decomposed, İ, soft hyphens and zero-width characters (alone they vanish: fix_blank_tokens), controls,
+# private use and unassigned characters, non-BMP letters and emoji, CJK, Hangul, other scripts, Unicode punctuation,
+# words of 100 and 101 characters (max_input_chars_per_word), words with spaces inside, and the special tokens' texts.
+TRANSFORMER_TOKENIZER_CASES = [
+    ["İstanbul", "naïve", "café", "café", "Ångström", "ﬁnance", "Straße", "ΣΟΦΙΑΣ", "Ὀδυσσεύς", "Москва", "ǅungla"],
+    ["co­op", "­", "a​b", "​", "‍", "﻿", "x\u0007y", "\u0085", "", "\U000e0001", "͸", "ok"],
+    ["𝒳", "𝔘𝔫𝔦𝔠𝔬𝔡𝔢", "👍🏽", "🇸🇪", "東京", "日本語テキスト", "한국어", "ﾊﾝｶｸ", "العربية", "עברית", "हिन्दी", "ไทย"],
+    ["—", "…", "«", "»", "¿", "¡", "§", "¶", "$", "^", "`", "~", "°", "™", "€", "‰", "‽", "⁂", "「", "」", "_", "'s", "n't"],
+    ["a" * 100, "b" * 101, "x" * 99 + "é", "supercalifragilisticexpialidocious", "antidisestablishmentarianism"],
+    ["New York", "x y", "a\tb", "tab\t", "　", "[CLS]", "[SEP]", "[UNK]", "[PAD]", "[MASK]", "##ing"],
+    ["???", "?!?", "!!!", "!?", "??", "...", "--", "'''", '""', "(", ")", "[", "]", "{", "}"],
+]
+
+
+def write_transformer_golden(models, out):
+    """transformer/tokenizer.json: Stanza's transformer input stage (extract_base_embeddings up to the model call)."""
+    from stanza.models.common.bert_embedding import convert_to_position_list, fix_blank_tokens, load_tokenizer
+    from stanza.models.common.utils import EXCLAM_RE, QUESTION_RE
+    import tokenizers
+    import transformers
+
+    tokenizer = load_tokenizer(str(Path(models) / "en" / "transformer" / TRANSFORMER), local_files_only=True)
+    golden = Path(out)
+    cases, seen = [], set()
+
+    def add(words, source):
+        key = tuple(words)
+        if not words or key in seen:
+            return
+        seen.add(key)
+        data = [list(words)]
+        tok = tokenizer(data, is_split_into_words=True)
+        positions = convert_to_position_list(data[0], tok.word_ids(batch_index=0))
+        fixed = None
+        if any(x is None for x in positions):
+            data = fix_blank_tokens(tokenizer, data)
+            fixed = data[0]
+            tok = tokenizer(data, is_split_into_words=True)
+            positions = convert_to_position_list(data[0], tok.word_ids(batch_index=0))
+        case = {"words": list(words), "ids": tok["input_ids"][0], "word_ids": [-1 if w is None else w for w in tok.word_ids(batch_index=0)]}
+        if positions != list(range(len(words) + 2)):  # the usual case: one piece per word
+            case["positions"] = positions
+        if fixed is not None:
+            case["fixed"] = fixed
+        if source:
+            case["source"] = source
+        cases.append(case)
+
+    for path in [golden / "pipeline.conllu"] + sorted(golden.glob("validation*.conllu")):
+        doc = CoNLL.conll2doc(input_file=str(path))
+        for sent in doc.sentences:
+            words = [w.text for w in sent.words]
+            add(words, None)  # the golden words, then pos/depparse's simplify_punct'ed words, then ner/sentiment's tokens
+            add([EXCLAM_RE.sub("!", QUESTION_RE.sub("?", w)) for w in words], None)
+            add([t.text for t in sent.tokens], None)
+    for words in TRANSFORMER_TOKENIZER_CASES:
+        add(words, "TRANSFORMER_TOKENIZER_CASES")
+
+    (golden / "transformer").mkdir(exist_ok=True)
+    with open(golden / "transformer" / "tokenizer.json", "w", encoding="utf-8", newline="\n") as f:
+        meta = {"transformer": TRANSFORMER, "transformers": transformers.__version__, "tokenizers": tokenizers.__version__,
+                "stanza": stanza.__version__}
+        f.write(json.dumps(meta, ensure_ascii=False)[:-1] + ', "cases": [\n')
+        f.write(",\n".join(json.dumps(c, ensure_ascii=False, separators=(",", ":")) for c in cases))
+        f.write("\n]}\n")
+    fixed = sum("fixed" in c for c in cases)
+    print(f"transformer/tokenizer.json: {len(cases)} cases, {sum(len(c['ids']) for c in cases)} ids, {fixed} with fix_blank_tokens")
+
+
 def main():
     global LANG
     p = argparse.ArgumentParser()
@@ -1148,6 +1227,7 @@ def main():
     p.add_argument("--treebank-only", action="store_true", help="only regenerate the treebank packages' folders (ewt/, ..., de/gsd/, de/hdt/)")
     p.add_argument("--packages", default=None, help="with --treebank-only: only these treebank packages (comma-separated)")
     p.add_argument("--models-only", action="store_true", help="only regenerate models/ (MODEL_CHOICES: single models chosen per processor)")
+    p.add_argument("--transformer-only", action="store_true", help="only regenerate transformer/ (needs tools/requirements-transformer.txt)")
     p.add_argument("--choices", default=None, help="with --models-only: only these MODEL_CHOICES names (comma-separated)")
     args = p.parse_args()
     LANG = args.lang
@@ -1156,6 +1236,9 @@ def main():
         globals().update(GERMAN)
     if args.upos64_only:
         write_upos64_golden(args.models, out)
+        return
+    if args.transformer_only:
+        write_transformer_golden(args.models, out)
         return
     if args.long_token_only:
         write_long_token_golden(args.models, out)

@@ -91,6 +91,14 @@ processors dict). The texts are `corpus.txt`, `validation.txt` and a hand-writte
   them differ from the dictionary and seq2seq lemma): the lemmas byte for byte, and each decision's label and logits
   within 1e-4 of Stanza's (`contextual.json`).
 
+**Transformer input (work in progress: `default_accurate`, [transformer-plan.md](transformer-plan.md)).** The
+tokenizer of `google/electra-large-discriminator`, the transformer of Stanza's `default_accurate` package, gives
+transformers' ids and word ids, and Stanza's blank-word fix and word positions, on 1,086 golden cases
+(`transformer/tokenizer.json`, `make_golden.py --transformer-only`): every golden sentence's words, its
+`simplify_punct`ed words (what the tagger and parser send) and its token texts (what ner and sentiment send), and a list
+of edge cases (accents composed and decomposed, soft hyphens and zero-width characters, controls, emoji, CJK, Hangul,
+words of 100 and 101 characters, the special tokens' texts). Nothing in the pipeline uses it yet.
+
 They exercise what the packages don't: a second pretrain next to conll17 (fastText crawl, 300-dimensional), a tag
 vocabulary with three tag sets, and the old NER checkpoint format with a fine-tuned delta embedding (`i2b2`).
 
@@ -168,7 +176,8 @@ Every job that runs the model tests fails if any of them was skipped. The only e
 `stanzasharp compare` and `benchmark` against Python Stanza (`Run_PythonStanza_*`, English and German), which only
 golden shard 2 installs and runs, and the German tests, the English treebank packages' and the chosen models' tests outside `golden`: only
 the golden shards have those models (Stanza's `.pt` files, cached), so `cross-os` and `linux-arm64` run the English
-default packages only.
+default packages only. The transformer tests (`Transformer*`) run in golden shard 1, which downloads the transformer's
+files from Hugging Face on every run (no cache: the model caches are near GitHub's 10 GB limit).
 
 On x64 runners the test steps set `ATEN_CPU_CAPABILITY=default` and `MKL_CBWR=COMPATIBLE,STRICT`, so libtorch picks
 the same kernels on every CPU the runner draws (Intel or AMD) and the TorchSharp backend gives the same bits on all of

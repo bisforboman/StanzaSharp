@@ -24,7 +24,8 @@ internal sealed class Checkpoint
 
     /// <summary>
     /// Loads <c>basePath.json</c> and <c>basePath.safetensors</c> if they exist, else the original
-    /// <c>basePath.pt</c>. A path ending in <c>.pt</c> loads that file.
+    /// <c>basePath.pt</c>. A path ending in <c>.pt</c> loads that file, and so does one ending in <c>.bin</c> (a Hugging
+    /// Face <c>pytorch_model.bin</c>: torch.save's zip format, like a newer <c>.pt</c>).
     /// </summary>
     /// <exception cref="InvalidDataException">
     /// The file is malformed, truncated or hostile (also thrown by later tensor reads and lookups). Loading takes time,
@@ -34,7 +35,9 @@ internal sealed class Checkpoint
     /// <exception cref="IOException">The operating system's errors (a missing or unreadable file) pass through.</exception>
     public static Checkpoint Load(string basePath)
     {
-        var pt = basePath.EndsWith(".pt", StringComparison.OrdinalIgnoreCase) ? basePath : basePath + ".pt";
+        var pt = basePath.EndsWith(".pt", StringComparison.OrdinalIgnoreCase) || basePath.EndsWith(".bin", StringComparison.OrdinalIgnoreCase)
+            ? basePath
+            : basePath + ".pt";
         if (pt == basePath || (!File.Exists(basePath + ".json") && File.Exists(pt)))
         {
             var (root, tensors) = TorchCheckpoint.Load(pt);

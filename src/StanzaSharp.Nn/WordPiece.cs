@@ -7,21 +7,27 @@ namespace StanzaSharp.Nn;
 /// <summary>
 /// The BERT/ELECTRA tokenizer of Hugging Face's <c>tokenizer.json</c> (BertNormalizer, BertPreTokenizer, WordPiece)
 /// for words already split, like transformers' <c>is_split_into_words=True</c>: every word is normalized and
-/// pre-tokenized alone, so its pieces never join a neighbour's. Spike code (docs/transformer-plan.md): only the
-/// options google/electra-large-discriminator uses (lowercase, accents stripped, Chinese characters split).
+/// pre-tokenized alone, so its pieces never join a neighbour's. Only the options google/electra-large-discriminator
+/// uses (lowercase, accents stripped, Chinese characters split; docs/transformer-plan.md), with the character classes of
+/// the tokenizers library (Rust): control = Cc, Cf, Co, Cs but tab, newline and carriage return (removed), whitespace =
+/// Unicode White_Space (a space), punctuation = ASCII punctuation or any P* category (a piece of its own). The added
+/// (special) tokens' texts are matched first in the raw word, leftmost and longest, like the library's added
+/// vocabulary: a word "[CLS]" is id 101, not "[", "cl", "##s", "]".
 /// </summary>
 internal sealed class WordPiece
 {
     private readonly Dictionary<string, int>.AlternateLookup<ReadOnlySpan<char>> _lookup;
     private readonly int _maxChars;
+    private readonly (string Content, int Id)[] _added; // longest first
 
     public int Cls { get; }
     public int Sep { get; }
     public int Unk { get; }
     public int Pad { get; }
 
-    private WordPiece(Dictionary<string, int> vocab, int maxChars)
+    private WordPiece(Dictionary<string, int> vocab, int maxChars, (string Content, int Id)[] added)
     {
+        _added = [.. added.OrderByDescending(a => a.Content.Length)];
         _lookup = vocab.GetAlternateLookup<ReadOnlySpan<char>>();
         _maxChars = maxChars;
         Cls = vocab["[CLS]"];
@@ -39,7 +45,19 @@ internal sealed class WordPiece
         var vocab = new Dictionary<string, int>();
         foreach (var entry in model.GetProperty("vocab").EnumerateObject())
             vocab[entry.Name] = entry.Value.GetInt32();
-        return new WordPiece(vocab, model.GetProperty("max_input_chars_per_word").GetInt32());
+        var added = new List<(string, int)>();
+        foreach (var token in doc.RootElement.GetProperty("added_tokens").EnumerateArray())
+        {
+            if (token.GetProperty("normalized").GetBoolean() || token.GetProperty("lstrip").GetBoolean() || token.GetProperty("rstrip").GetBoolean()
+                || token.GetProperty("single_word").GetBoolean())
+            {
+                throw new InvalidDataException($"{tokenizerJson}: added token {token.GetProperty("content")} uses options StanzaSharp doesn't support");
+            }
+
+            added.Add((token.GetProperty("content").GetString()!, token.GetProperty("id").GetInt32()));
+        }
+
+        return new WordPiece(vocab, model.GetProperty("max_input_chars_per_word").GetInt32(), [.. added]);
     }
 
     /// <summary>
@@ -53,19 +71,50 @@ internal sealed class WordPiece
         var normalized = new StringBuilder();
         for (int w = 0; w < words.Count; w++)
         {
-            Normalize(words[w], normalized);
-            foreach (var piece in PreTokenize(normalized.ToString()))
+            var word = words[w];
+            int start = 0;
+            while (start <= word.Length)
             {
-                int before = ids.Count;
-                AddPieces(piece, ids);
-                for (int i = before; i < ids.Count; i++)
-                    owners.Add(w);
+                var (at, added) = FindAdded(word, start);
+                int end = at < 0 ? word.Length : at;
+                if (end > start)
+                {
+                    Normalize(word[start..end], normalized);
+                    foreach (var piece in PreTokenize(normalized.ToString()))
+                    {
+                        int before = ids.Count;
+                        AddPieces(piece, ids);
+                        for (int i = before; i < ids.Count; i++)
+                            owners.Add(w);
+                    }
+                }
+
+                if (at < 0)
+                    break;
+                ids.Add(added.Id);
+                owners.Add(w);
+                start = at + added.Content.Length;
             }
         }
 
         ids.Add(Sep);
         owners.Add(-1);
         return (ids.ToArray(), owners.ToArray());
+    }
+
+    // The leftmost added token at or after start (the longest one there), or -1.
+    private (int At, (string Content, int Id) Token) FindAdded(string word, int start)
+    {
+        int best = -1;
+        (string, int) token = default;
+        foreach (var added in _added)
+        {
+            int at = word.IndexOf(added.Content, start, StringComparison.Ordinal);
+            if (at >= 0 && (best < 0 || at < best))
+                (best, token) = (at, added);
+        }
+
+        return (best, token);
     }
 
     // BertNormalizer: clean_text, handle_chinese_chars, strip_accents (follows lowercase), lowercase.
@@ -158,11 +207,13 @@ internal sealed class WordPiece
         }
     }
 
-    private static bool IsWhitespace(Rune r) => r.Value is ' ' or '\t' or '\n' or '\r' || Rune.GetUnicodeCategory(r) == UnicodeCategory.SpaceSeparator;
+    private static bool IsWhitespace(Rune r) => Rune.IsWhiteSpace(r);
 
+    // tokenizers' is_control: Cc, Cf, Co, Cs except '\t', '\n', '\r'. Its is_other names Cn too, but unassigned code
+    // points come out as [UNK] there (U+0378 in the golden cases), so they are kept.
     private static bool IsControl(Rune r) =>
         r.Value is not ('\t' or '\n' or '\r')
-        && Rune.GetUnicodeCategory(r) is UnicodeCategory.Control or UnicodeCategory.Format;
+        && Rune.GetUnicodeCategory(r) is UnicodeCategory.Control or UnicodeCategory.Format or UnicodeCategory.PrivateUse or UnicodeCategory.Surrogate;
 
     private static bool IsPunctuation(Rune r) =>
         r.Value is (>= 33 and <= 47) or (>= 58 and <= 64) or (>= 91 and <= 96) or (>= 123 and <= 126)

@@ -12,9 +12,12 @@ internal static class TransformerSpike
     private const string Usage = """
         Usage: StanzaSharp.Benchmark transformer-spike MODEL_DIR REFERENCE [--threads N] [--batch N] [--runs N] [--dump FILE] [--ids FILE]
 
-          MODEL_DIR   google/electra-large-discriminator's files (tokenizer.json, pytorch_model.bin)
+          MODEL_DIR   google/electra-large-discriminator's files (tokenizer.json, pytorch_model.bin), e.g.
+                      models/stanza/en/transformer/google/electra-large-discriminator (StanzaSharp.Cli download-transformer)
           REFERENCE   tools/transformer_spike.py's output, without .safetensors/.json
           --batch N   sentences per forward call, like Stanza's 128 (default)
+          --path P    Gemm.Path: Vector512, Vector256, Vector128 or Scalar (default: the CPU's)
+          --limit N   only the first N golden sentences
           --runs N    timed runs over all sentences after one warm-up (default: 1)
           --dump FILE write every sentence's ids and kept layers (s{i}.ids, s{i}.h{L}) as safetensors, for
                       tools/transformer_spike_tags.py
@@ -33,6 +36,7 @@ internal static class TransformerSpike
         string modelDir = args[0], reference = args[1];
         int batch = 128, runs = 1;
         string? dump = null, idsFile = null;
+        int limit = int.MaxValue;
         for (int i = 2; i < args.Length; i++)
         {
             switch (args[i])
@@ -41,6 +45,8 @@ internal static class TransformerSpike
                 case "--batch" when i + 1 < args.Length: batch = int.Parse(args[++i]); break;
                 case "--runs" when i + 1 < args.Length: runs = int.Parse(args[++i]); break;
                 case "--invariance": break;
+                case "--path" when i + 1 < args.Length: Gemm.Path = Enum.Parse<KernelPath>(args[++i]); break;
+                case "--limit" when i + 1 < args.Length: limit = int.Parse(args[++i]); break;
                 case "--dump" when i + 1 < args.Length: dump = args[++i]; break;
                 case "--ids" when i + 1 < args.Length: idsFile = args[++i]; break;
                 default: Console.Error.WriteLine(Usage); return 2;
@@ -57,14 +63,13 @@ internal static class TransformerSpike
 
         var load = Stopwatch.StartNew();
         var tokenizer = WordPiece.Load(Path.Combine(modelDir, "tokenizer.json"));
-        var weights = Path.Combine(modelDir, "pytorch_model.pt");
-        if (!File.Exists(weights))
-            File.CreateSymbolicLink(weights, "pytorch_model.bin");
+        var weights = Path.Combine(modelDir, "pytorch_model.bin");
         var encoder = ManagedElectra.Load(Checkpoint.Load(weights), heads: 16);
         GC.Collect();
         Console.WriteLine($"Load: {load.Elapsed.TotalSeconds:F1} s, {encoder.Layers} layers, hidden {encoder.Hidden}, "
             + $"working set {Environment.WorkingSet / 1e6:F0} MB, managed threads {ManagedThreads.Count}, {Gemm.Path}");
 
+        sentences = [.. sentences.Take(limit)];
         var encoded = sentences.Select(tokenizer.Encode).ToList();
         if (idsFile != null)
         {
@@ -106,7 +111,7 @@ internal static class TransformerSpike
         }
 
         int compared = 0, idMismatches = 0;
-        for (int s = 0; refFile.Tensors.ContainsKey($"s{s}.ids"); s++, compared++)
+        for (int s = 0; s < sentences.Count && refFile.Tensors.ContainsKey($"s{s}.ids"); s++, compared++)
         {
             var ids = refFile.Read<long>($"s{s}.ids");
             var words = refFile.Read<long>($"s{s}.words");
