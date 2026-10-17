@@ -1,17 +1,29 @@
 # Pretagged input (Stanza's `*_pretagged`): research and plan
 
-> **Owner's choice (2026-10-17):** look at porting Stanza's `*_pretagged` options, which CLAUDE.md lists as not ported
-> ("depparse without pos in the pipeline"). This file is phase 1: research and a proposal. Nothing is built yet; the
-> public API is the owner's decision.
+> **Owner's choice (2026-10-17):** port Stanza's `*_pretagged` options, which CLAUDE.md listed as not ported
+> ("depparse without pos in the pipeline"). This file was phase 1, research and a proposal. The decisions below were
+> built in the same PR (#149).
 
-## Questions for the owner
+## Owner's decisions (2026-10-17)
 
-1. **API:** alternative **A** (one `PipelineOptions.Pretagged` bool, recommended), **B** (`CheckRequirements = false`)
-   or **C** (`Process(Document, processors)`)? See "Alternatives".
-2. **Tokenizer:** with A, does a pretagged pipeline still load tokenize (and the package's mwt), as recommended (1.2 MB,
-   and the text overloads keep working), or does tokenize become optional, so text overloads throw without it?
-3. **Constituency on a word without its tag:** keep throwing `InvalidOperationException` (recommended), or port
-   Stanza, which parses with an empty tag and prints trees like `(NP ( The) ( quick))`?
+1. **API: alternative A**, one `PipelineOptions.Pretagged` bool (Stanza's global `pretagged=True`): lemma, depparse
+   and constituency need no processor at Load; pos, ner and sentiment keep their requirements. The downloader
+   (`FilesFor`, `DownloadAsync(dir, options)`) follows it through `SelectModels`.
+2. **Tokenize and the package's mwt always load** with `Pretagged`, so the text overloads keep running. They tokenize,
+   and then a parser without tags throws, as in Stanza's `tokenize,depparse` pretagged pipeline.
+3. **Constituency on an untagged word keeps throwing** `InvalidOperationException`. Stanza parses it with an empty tag.
+
+What was built:
+- `Pretagged` and its XML doc; one condition in `Pipeline.SelectModels` (`pretagged`).
+- `make_golden.py --pretagged-only`, which writes `tests/golden/pretagged/` (9 files, 256 KB; the cases are in
+  `PRETAGGED_CASES`).
+- `PretaggedTests` (27 tests, both backends).
+- The lemmatizer with a null UPOS matches Stanza byte for byte (`lemma_noupos`), so no fix was needed.
+
+The golden cases are `PRETAGGED_CASES`. The plan below was a first sketch: the built cases also use `default_fast`'s
+tagged `fast/corpus.conllu` and `fast/validation.conllu` as realistic input from another tagger. Where constituency
+runs, the input's `# sentiment` comments are dropped: Stanza keeps comments in input order, so the new `# constituency` would come after them, while
+`Conllu.Write` always writes it first.
 
 ## What Stanza 1.15.0 does
 

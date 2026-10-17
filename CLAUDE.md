@@ -248,11 +248,18 @@ since 1.0, and every processor also has a managed net (see "Managed backend"), t
   - `Process(Document)` (owner's decision, 2026-10-14) = Stanza's `process_conllu`: `nlp.process(doc, processors=` the
     loaded ones minus tokenize and mwt`)`. Same `Annotate` as the other overloads with `mwt: false`, gated and cancelable
     like them; the document is changed in place and returned. Each processor overwrites what it sets (Stanza does too);
-    the rest is kept (a tree in default_fast). Stanza's `*_pretagged` options (depparse without pos in the pipeline) are
-    not ported: Load still requires each processor's requirements. Stanza keeps comments in input order, so a document
+    the rest is kept (a tree in default_fast). Stanza keeps comments in input order, so a document
     whose CoNLL-U had `# sentiment` before a new `# constituency` writes them the other way round there; `Conllu.Write`
     always writes constituency first. `Process(null)` stays ambiguous; `Document` is no collection type, so collection
     expressions never pick it.
+  - `PipelineOptions.Pretagged` (owner's decisions, 2026-10-17; docs/pretagged-plan.md) = Stanza's `pretagged=True`:
+    lemma, depparse and constituency need no processor at Load (`SelectModels`' `pretagged`; `FilesFor` follows), so
+    `Processors = "depparse"` loads the parser without the tagger and parses a `Process(Document)` document's own tags.
+    Tokenize and the package's mwt always load (1.2 MB), so the text overloads run and fail in the parsers like Stanza's
+    `tokenize,depparse` pretagged pipeline; pos, ner and sentiment keep their requirements. Missing annotations as in
+    Stanza (depparse throws for a word with neither UPOS nor XPOS, reads a missing XPOS or lemma as `_`; the lemmatizer
+    a missing UPOS as `_`), except that constituency throws for a word without its tag (Stanza parses an empty tag).
+    `tests/golden/pretagged/` (`make_golden.py --pretagged-only`, `PRETAGGED_CASES`), `PretaggedTests`.
 - 0.4 API (issue #12, items chosen by the owner, 2026-10-06):
   - `PipelineOptions.Threads` (int?): at Load, process-wide, `ManagedThreads.Count` on the managed backend and
     `torch.set_num_threads` on TorchSharp. Managed null = min(current count, `ManagedThreads.Default`), the pool's initial
@@ -718,6 +725,9 @@ What the English treebank packages' checkpoints add to the default package's pat
   - `process_document/` (`--process-document-only`): `input.conllu` (tokenize,mwt on corpus.txt with every annotation
     wrong and a `(ROOT (X wrong))` tree), `corpus.conllu` / `corpus.fast.conllu` = `nlp.process(CoNLL.conll2doc(...),
     processors=` all loaded but tokenize, mwt`)`. The default output equals `pipeline.conllu`.
+  - `pretagged/` (`--pretagged-only`): `PRETAGGED_CASES`, `stanza.Pipeline(processors=..., pretagged=True)` on
+    fast/corpus.conllu, fast/validation.conllu and process_document/input.conllu, some with lemma/XPOS/UPOS removed (and
+    `# sentiment` comments dropped where constituency runs: Stanza would keep them first).
   - `fuzz.json` (`--fuzz-only`): `FUZZ_TEXTS` (German: `GERMAN["FUZZ_TEXTS"]`), the minimized differences
     `tools/text_fuzz.py` found (docs/text-fuzzing.md), each processed alone by both packages; compared with code-point
     offsets (`TokenizerTests.Pipeline_FuzzFindings_MatchGolden`). Add a new finding's shrunk text there.

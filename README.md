@@ -265,6 +265,15 @@ var doc = nlp.Process(new[] { new[] { "Hello", "world", "." }, new[] { "Bye", ".
 var annotated = nlp.Process(Conllu.Read(File.ReadAllText("tokens.conllu")));
 ```
 
+Documents that already carry tags: `Pretagged = true` is Stanza's `pretagged=True`. Lemma, depparse and constituency
+then load without the processors they require, so a pipeline with `Processors = "depparse"` parses your own UPOS, XPOS
+and lemmas without loading the tagger (tokenize and mwt still load, about 1 MB):
+
+```csharp
+using var parser = Pipeline.Load("models/stanza/en", new PipelineOptions { Processors = "depparse", Pretagged = true });
+var parsed = parser.Process(Conllu.Read(File.ReadAllText("tagged.conllu")));
+```
+
 Both match Python Stanza byte for byte. Bulk is much faster than one call per text for short texts: 7.7× on
 2,000 one-sentence texts ([docs/performance/bulk-processing.md](docs/performance/bulk-processing.md)). One call per
 text costs about 28 ms for a short sentence on 8 threads (`default_fast`: 14 ms; Python Stanza: 189 and 73 ms), mostly

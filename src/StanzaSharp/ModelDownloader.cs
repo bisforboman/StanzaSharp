@@ -200,9 +200,9 @@ public static class ModelDownloader
     /// pretrains and charlms they read. Exactly what <see cref="Pipeline.Load"/> reads for the same options.
     /// </summary>
     internal static IEnumerable<(string Path, string Md5)> FilesFor(string? processors, string package = Pipeline.DefaultPackage, string paramName = "processors",
-        string language = Pipeline.English, IReadOnlyDictionary<string, string>? models = null)
+        string language = Pipeline.English, IReadOnlyDictionary<string, string>? models = null, bool pretagged = false)
     {
-        var selected = Pipeline.SelectModels(package, processors, addRequired: true, paramName, language, models);
+        var selected = Pipeline.SelectModels(package, processors, addRequired: true, paramName, language, models, pretagged);
         var paths = Pipeline.ModelFiles(selected, language).Select(p => p + ".pt").ToHashSet();
         var files = Files[language].Where(f => paths.Contains(f.Path)).ToList();
         if (files.Count != paths.Count)
@@ -234,8 +234,8 @@ public static class ModelDownloader
     /// Downloads exactly the models <see cref="Pipeline.Load"/> reads with the same <paramref name="options"/>: those
     /// of its <see cref="PipelineOptions.Language"/> and <see cref="PipelineOptions.Package"/> for its
     /// <see cref="PipelineOptions.Processors"/> (all of the package's when null) and the processors they require, with
-    /// the models <see cref="PipelineOptions.Models"/> chooses. The
-    /// other options are ignored. Otherwise like <see cref="DownloadAsync(string, IProgress{string}?, CancellationToken)"/>.
+    /// the models <see cref="PipelineOptions.Models"/> chooses (with <see cref="PipelineOptions.Pretagged"/>, lemma,
+    /// depparse and constituency require none). The other options are ignored. Otherwise like <see cref="DownloadAsync(string, IProgress{string}?, CancellationToken)"/>.
     /// </summary>
     /// <exception cref="ArgumentException">An unknown language, package or processor, a processor the package lacks, or an
     /// unknown or unsupported model in <see cref="PipelineOptions.Models"/>.</exception>
@@ -247,7 +247,7 @@ public static class ModelDownloader
     /// </code>
     /// </example>
     public static Task DownloadAsync(string modelDir, PipelineOptions options, IProgress<string>? progress = null, CancellationToken cancellationToken = default) =>
-        DownloadAsync(modelDir, FilesFor(options.Processors, options.Package, nameof(options), options.Language, options.Models), Http, progress, cancellationToken,
+        DownloadAsync(modelDir, FilesFor(options.Processors, options.Package, nameof(options), options.Language, options.Models, options.Pretagged), Http, progress, cancellationToken,
             options.Language);
 
     internal static async Task DownloadAsync(string modelDir, IEnumerable<(string Path, string Md5)> files, HttpClient http,

@@ -144,6 +144,29 @@ public sealed class PipelineOptions
     public bool SplitSentences { get; init; } = true;
 
     /// <summary>
+    /// Stanza's <c>pretagged</c>: lemma, depparse and constituency load without the processors they require, for
+    /// documents that already carry tags (and lemmas), annotated with <see cref="Pipeline.Process(Document)"/>. With
+    /// <c>Processors = "depparse"</c> the pipeline loads the dependency parser and what it reads, not the tagger or the
+    /// lemmatizer, and parses the given UPOS, XPOS and lemmas. Tokenize and the package's mwt are always loaded (about
+    /// 1 MB), so the text overloads still run; without pos, depparse and constituency then throw for the untagged
+    /// words. pos, ner and sentiment keep their requirements, as in Stanza. Off by default.
+    /// </summary>
+    /// <remarks>
+    /// What the processors read when a word lacks it: depparse throws <see cref="InvalidOperationException"/> for a word
+    /// with neither UPOS nor XPOS, and reads a missing XPOS or lemma as <c>_</c> (parses then get worse without lemmas,
+    /// in Stanza too); the lemmatizer reads a missing UPOS as <c>_</c>; constituency throws
+    /// <see cref="InvalidOperationException"/> for a word without the tag it reads (XPOS for English, UPOS for German;
+    /// Stanza parses it with an empty tag).
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// using var nlp = Pipeline.Load(dir, new PipelineOptions { Processors = "depparse", Pretagged = true });
+    /// var doc = nlp.Process(Conllu.Read(File.ReadAllText("tagged.conllu")));
+    /// </code>
+    /// </example>
+    public bool Pretagged { get; init; }
+
+    /// <summary>
     /// Checks every model file <see cref="Pipeline.Load"/> reads against the MD5 that Stanza publishes for it (the
     /// checksums <see cref="ModelDownloader"/> verifies downloads with) before loading, which catches corrupted files
     /// or files from another Stanza version. It reads every file once more, which takes a second or two for the
