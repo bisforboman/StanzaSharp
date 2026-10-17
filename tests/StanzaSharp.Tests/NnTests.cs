@@ -97,7 +97,7 @@ public class NnTests(ITestOutputHelper output)
         Assert.Equal(f, arrays.Forward.ToArray());
         Assert.Equal(b, arrays.Backward.ToArray());
         Assert.False(cache.TryAdd(managedMade, f, b, 3)); // 6 words: managed entries count the same
-        Assert.True(cache.TryAdd(managedMade, new(f, 2, 4), new(b, 2, 4), 2)); // a slice of a batch's buffers
+        Assert.True(cache.TryAdd(managedMade, f.AsSpan(2, 4), b.AsSpan(2, 4), 2)); // copied into the cache's chunks
         Assert.True(cache.TryGetArrays(managedMade, out arrays));
         Assert.Same(arrays.Forward.Array, cache.TryGetArrays(managedMade, out var again) ? again.Forward.Array : null);
         Assert.True(cache.TryGet(managedMade, out var tensors)); // converted once, kept with the entry
