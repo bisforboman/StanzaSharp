@@ -276,6 +276,11 @@ MODEL_CHOICES = {
         ("tokenize+lemma=childes_charlm", "childes", "tokenize,mwt,pos,lemma", {"tokenize": "childes_charlm", "lemma": "childes_charlm"}, []),
         ("tokenize=eslspok_charlm", "eslspok", "tokenize", {"tokenize": "eslspok_charlm"}, []),
         ("tokenize=combined_charlm", "default", "tokenize,mwt", {"tokenize": "combined_charlm"}, ["tokenize_stress.txt"]),
+        # default_accurate's frozen-transformer tagger, parser and NER model (google/electra-large-discriminator, read from
+        # <models>/en/transformer/, electra_locally); ner reads token texts, so contractions' sentences miss the tagger's states
+        ("pos+depparse+ner=electra-large", "default", "tokenize,mwt,pos,lemma,depparse,ner",
+         {"pos": "combined_electra-large", "depparse": "combined_electra-large", "ner": "ontonotes-ww-multi_electra-large"},
+         ["validation.txt", "validation_contractions.txt", "validation_social.txt", "validation_tech.txt"]),
     ],
     "de": [
         ("ner=conll03", "default", "tokenize,mwt,ner", {"ner": "conll03"}, ["validation.txt"]),
@@ -339,6 +344,23 @@ class RecordContextual:
         LemmaClassifier.predict = self.original
 
 
+def electra_locally(models):
+    """
+    Has Stanza's load_bert read TRANSFORMER from <models>/en/transformer/ (the files ModelDownloader fetches at the pinned
+    revision) instead of Hugging Face's cache.
+    """
+    from stanza.models.common import bert_embedding
+    load = bert_embedding.load_bert
+    local = str(Path(models) / "en" / "transformer" / TRANSFORMER)
+
+    def load_bert(model_name, *args, **kwargs):
+        if model_name == TRANSFORMER:
+            return load(local, *args, **{**kwargs, "local_files_only": True})
+        return load(model_name, *args, **kwargs)
+
+    bert_embedding.load_bert = load_bert
+
+
 def write_models_golden(models, out, only=None):
     """
     models/<name>/ for each of MODEL_CHOICES (or only those named in `only`): Stanza with processors={p: model, other p:
@@ -348,6 +370,7 @@ def write_models_golden(models, out, only=None):
     folder = out / "models"
     folder.mkdir(exist_ok=True)
     index = []
+    electra_locally(models)
     for name, package, processors, chosen, extra in MODEL_CHOICES[LANG]:
         texts = [out / "corpus.txt"] + [out / t for t in extra]
         index.append({"name": name, "package": package, "processors": processors, "models": chosen,

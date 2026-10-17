@@ -22,7 +22,8 @@ internal sealed class DepparseNet : IDepparseNet
     private readonly DeepBiaffine? _linearizationScorer, _distanceScorer;
     private readonly Device _device = Weights.Device; // the device the model was loaded on
 
-    public DepparseNet(Checkpoint ckpt, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward)
+    /// <param name="transformerDim">The transformer's hidden size for a <c>_electra-large</c> parser (the last input columns), else 0.</param>
+    public DepparseNet(Checkpoint ckpt, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward, int transformerDim = 0)
     {
         _pretrain = pretrain;
         (_charlmForward, _charlmBackward) = (charlmForward, charlmBackward);
@@ -58,6 +59,7 @@ internal sealed class DepparseNet : IDepparseNet
             ? [.. xpos.Sizes.Select((n, i) => nn.Embedding(n, tagEmb, padding_idx: 0).LoadFrom(ckpt, model, $"xpos_emb.{i}."))]
             : [nn.Embedding(Count("xpos"), tagEmb, padding_idx: 0).LoadFrom(ckpt, model, "xpos_emb.")];
         _transPretrained = nn.Linear(pretrain.Dim, transformed, hasBias: false).LoadFrom(ckpt, model, "trans_pretrained.");
+        inputSize += transformerDim;
         _lstm = new HighwayLstm(ckpt, model, "parserlstm", inputSize, hidden, config["num_layers"]!.GetValue<int>());
 
         int relations = vocab["deprel"]!["_id2unit"]!.AsArray().Count - DependencyParser.VocabPrefixSize;
@@ -129,6 +131,10 @@ internal sealed class DepparseNet : IDepparseNet
             cancellationToken.ThrowIfCancellationRequested();
             chars = [forward, Packed(cat(_charlmBackward!.BuildCharRepresentation(charlmText), 0))];
         }
+
+        // A _electra-large parser's transformer vectors (per sentence, ROOT first) come last.
+        if (batch.Transformer != null)
+            chars = [.. chars, Packed(TransformerRows.Tensor(batch.Transformer, batch.TransformerDim, _device))];
 
         var input = cat([
             _transPretrained.forward(_pretrain.Embeddings[Ids(batch.Pretrained)]),
@@ -271,15 +277,18 @@ internal static class DependencyParserLoad
         /// shared with the tagger and the constituency parser, so the caller owns them. A <c>_nocharlm</c> model takes none.
         /// </summary>
         /// <param name="device">Where the model runs; CPU by default. Load the pretrain and charlms on the same device.</param>
-        public static DependencyParser Load(string basePath, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward, Device? device = null) =>
+        /// <param name="transformer">The transformer a <c>_electra-large</c> parser reads (shared, the caller owns it).</param>
+        public static DependencyParser Load(string basePath, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward, Device? device = null,
+            TransformerEmbedder? transformer = null) =>
             Weights.On(device, () =>
             {
                 var ckpt = Checkpoint.Load(basePath);
                 return new DependencyParser(ckpt, pretrain, charlm =>
                 {
                     DependencyParser.CheckCharlms(charlm, charlmForward?.IsForward, charlmBackward?.IsForward);
-                    return new DepparseNet(ckpt, pretrain, charlm ? charlmForward : null, charlm ? charlmBackward : null);
-                });
+                    return new DepparseNet(ckpt, pretrain, charlm ? charlmForward : null, charlm ? charlmBackward : null,
+                        ckpt.Root["config"]!["bert_model"] == null ? 0 : transformer?.Net.Config.Hidden ?? 0);
+                }, transformer);
             });
     }
 }

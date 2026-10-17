@@ -29,12 +29,17 @@ internal sealed class DependencyParser : IDisposable
     private readonly int _batchSize;
     private readonly bool _resolveHeadConstraints;
     private readonly IDepparseNet _net;
+    private readonly TransformerEmbedder? _transformer;
+    private readonly float[]? _layerMix;
 
-    internal DependencyParser(Checkpoint ckpt, Pretrain pretrain, Func<bool, IDepparseNet> net)
+    /// <param name="transformer">The transformer a <c>_electra-large</c> parser reads (the pipeline's, shared); else ignored.</param>
+    internal DependencyParser(Checkpoint ckpt, Pretrain pretrain, Func<bool, IDepparseNet> net, TransformerEmbedder? transformer = null)
     {
         _pretrain = pretrain;
         var config = ckpt.Root["config"]!;
         CheckSupported(ckpt.Root, config);
+        _layerMix = TransformerEmbedder.LayerMix(ckpt, transformer, "depparse");
+        _transformer = config["bert_model"] == null ? null : transformer;
         var vocab = ckpt.Root["vocab"]!;
         _wordVocab = Checkpoint.UnitToId(vocab["word"]);
         _lemmaVocab = Checkpoint.UnitToId(vocab["lemma"]);
@@ -50,15 +55,20 @@ internal sealed class DependencyParser : IDisposable
     }
 
     /// <summary><c>Load</c> (StanzaSharp.Cuda) on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
-    public static DependencyParser LoadManaged(string basePath, Pretrain pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward)
+    public static DependencyParser LoadManaged(string basePath, Pretrain pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward,
+        TransformerEmbedder? transformer = null)
     {
         var ckpt = Checkpoint.Load(basePath);
+        int transformerDim = ckpt.Root["config"]!["bert_model"] == null ? 0 : transformer?.Net.Config.Hidden ?? 0;
         return new DependencyParser(ckpt, pretrain, charlm =>
         {
             CheckCharlms(charlm, charlmForward?.IsForward, charlmBackward?.IsForward);
-            return new ManagedDepparseNet(ckpt, pretrain, charlm ? charlmForward : null, charlm ? charlmBackward : null);
-        });
+            return new ManagedDepparseNet(ckpt, pretrain, charlm ? charlmForward : null, charlm ? charlmBackward : null, transformerDim);
+        }, transformer);
     }
+
+    /// <summary>Whether this parser reads a transformer (<c>_electra-large</c>).</summary>
+    internal bool UsesTransformer => _transformer != null;
 
     internal static void CheckCharlms(bool charlm, bool? forward, bool? backward)
     {
@@ -70,6 +80,7 @@ internal sealed class DependencyParser : IDisposable
     /// Sets Head and Deprel on every word. Needs UPOS/XPOS from the tagger and lemmas from the lemmatizer
     /// (a missing lemma is read as "_", as Stanza does).
     /// </summary>
+    /// <param name="transformers">The call's transformer states, which the tagger may have filled (same words, so the same ids).</param>
     /// <remarks>
     /// The parser runs the charlms over the words with a "\n" ROOT word in front, which changes every forward state and
     /// the backward ROOT state. Backward, though, ROOT comes last: the tagger's backward pass is this one's prefix, then
@@ -77,7 +88,7 @@ internal sealed class DependencyParser : IDisposable
     /// <paramref name="charlms"/> and runs on from the tagger's final state over ROOT only (<see cref="CharlmCache.TryGetBackward"/>).
     /// A managed charlm step gives a row the same arithmetic in any batch, so that is the same bits as running it again.
     /// </remarks>
-    public void Process(Document doc, CharlmCache? charlms = null, CancellationToken cancellationToken = default)
+    public void Process(Document doc, CharlmCache? charlms = null, CancellationToken cancellationToken = default, TransformerCache? transformers = null)
     {
         var keys = doc.Sentences.Where(s => s.Words.Any()).ToList();
         var sentences = keys.Select(s => s.Words.ToList()).ToList();
@@ -88,7 +99,7 @@ internal sealed class DependencyParser : IDisposable
         {
             cancellationToken.ThrowIfCancellationRequested();
             var parsed = Parse(batch.Select(i => (IReadOnlyList<Word>)sentences[i]).ToList(), cancellationToken, charlms,
-                batch.Select(i => (Sentence?)keys[i]).ToList());
+                batch.Select(i => (Sentence?)keys[i]).ToList(), transformers);
             for (int b = 0; b < batch.Count; b++)
             {
                 for (int j = 0; j < sentences[batch[b]].Count; j++)
@@ -144,9 +155,9 @@ internal sealed class DependencyParser : IDisposable
     /// it: in the network and between the sentences' tree decodes.
     /// </remarks>
     internal List<(int Head, string Deprel)[]> Parse(IReadOnlyList<IReadOnlyList<Word>> batch, CancellationToken cancellationToken = default,
-        CharlmCache? charlms = null, IReadOnlyList<Sentence?>? keys = null)
+        CharlmCache? charlms = null, IReadOnlyList<Sentence?>? keys = null, TransformerCache? transformers = null)
     {
-        var output = Scores(batch, labelScores: _resolveHeadConstraints, cancellationToken, charlms, rentScores: true, keys);
+        var output = Scores(batch, labelScores: _resolveHeadConstraints, cancellationToken, charlms, rentScores: true, keys, transformers);
         int width = output.Width;
         var result = new List<(int, string)[]>(batch.Count);
         var scores = ArrayPool<double>.Shared.Rent(width * width); // each sentence's n × n block, written before it is read
@@ -345,15 +356,27 @@ internal sealed class DependencyParser : IDisposable
     /// <param name="charlms">The tagger's charlm outputs (see <see cref="Process"/>).</param>
     /// <param name="rentScores">Let the net return <see cref="DepparseScores.Rented"/> scores, which the caller gives back.</param>
     /// <param name="keys">Each sentence of <paramref name="batch"/>, to find its entry in <paramref name="charlms"/>.</param>
+    /// <param name="transformers">The call's transformer states (a <c>_electra-large</c> parser).</param>
     internal DepparseScores Scores(IReadOnlyList<IReadOnlyList<Word>> batch, bool labelScores = false, CancellationToken cancellationToken = default,
-        CharlmCache? charlms = null, bool rentScores = false, IReadOnlyList<Sentence?>? keys = null)
+        CharlmCache? charlms = null, bool rentScores = false, IReadOnlyList<Sentence?>? keys = null, TransformerCache? transformers = null)
     {
-        // data.py load_doc: simplify_punct changes the words the parser sees (vocab and charlm alike).
+        // data.py load_doc: simplify_punct changes the words the parser sees (vocab, charlm and transformer alike).
         var texts = batch.Select(s => (IReadOnlyList<string>)s.Select(w => Punct.Simplify(w.Text)).ToList()).ToList();
         int size = batch.Count, width = batch.Max(s => s.Count) + 1, parts = _xposVocab.Sizes.Length;
+
+        // extract_bert_embeddings with keep_endpoints, then x[:-1]: [CLS] is ROOT's vector, [SEP]'s is dropped.
+        float[][]? transformer = null;
+        if (_transformer != null)
+        {
+            int hidden = _transformer.Net.Config.Hidden;
+            transformer = _transformer.Embed(texts, keepEndpoints: true, _layerMix, transformers, cancellationToken);
+            for (int b = 0; b < size; b++)
+                transformer[b] = transformer[b][..((batch[b].Count + 1) * hidden)];
+        }
+
         var input = new DepparseBatch(texts, width, batch.Select(s => (long)s.Count + 1).ToArray(),
             new long[size * width], new long[size * width], new long[size * width], new long[size * width * parts], new long[size * width], charlms, rentScores, keys,
-            parts);
+            parts, transformer, _transformer?.Net.Config.Hidden ?? 0);
         for (int b = 0; b < size; b++)
         {
             int row = b * width;
@@ -386,7 +409,6 @@ internal sealed class DependencyParser : IDisposable
         Require(!Flag("use_arc_embedding", false), "use_arc_embedding");
         Require(Flag("char", false) && config["char_emb_dim"]!.GetValue<int>() > 0, "a configuration without character features");
         Require(Flag("pretrain", false), "a configuration without pretrain");
-        Require(config["bert_model"] == null, "a transformer");
         Require(config["word_emb_dim"]!.GetValue<int>() > 0 && config["tag_emb_dim"]!.GetValue<int>() > 0, "disabled word or tag embeddings");
         Require(Flag("use_upos", true) && Flag("use_xpos", true) && Flag("use_ufeats", true), "a subset of UPOS/XPOS/UFeats");
         Require(!Flag("reversed", false), "reversed sentences");

@@ -30,13 +30,18 @@ internal sealed class NerTagger : IDisposable
     private readonly float[] _transitions;
     private readonly int _batchSize;
     private readonly INerNet _net;
+    private readonly TransformerEmbedder? _transformer;
+    private readonly float[]? _layerMix;
 
-    internal NerTagger(Checkpoint ckpt, Pretrain pretrain, Func<int, int, bool, INerNet> net)
+    /// <param name="transformer">The transformer a <c>_electra-large</c> model reads (the pipeline's, shared); else ignored.</param>
+    internal NerTagger(Checkpoint ckpt, Pretrain pretrain, Func<int, int, bool, INerNet> net, TransformerEmbedder? transformer = null)
     {
         _pretrain = pretrain;
         var config = ckpt.Root["config"]!;
         var vocab = ckpt.Root["vocab"]!;
         CheckSupported(config, vocab, pretrain);
+        _layerMix = TransformerEmbedder.LayerMix(ckpt, transformer, "ner");
+        _transformer = config["bert_model"] == null ? null : transformer;
         _deltaVocab = vocab["delta"] is { } delta ? Checkpoint.UnitToId(delta) : null;
 
         // The old format's delta (i2b2) is a PretrainedWordVocab, whose normalize_unit stores spaces as U+00A0.
@@ -59,18 +64,27 @@ internal sealed class NerTagger : IDisposable
     }
 
     /// <summary><c>Load</c> (StanzaSharp.Cuda) on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
-    public static NerTagger LoadManaged(string basePath, Pretrain pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward)
+    public static NerTagger LoadManaged(string basePath, Pretrain pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward,
+        TransformerEmbedder? transformer = null)
     {
         var ckpt = Checkpoint.Load(basePath);
+        int transformerDim = TransformerDim(ckpt, transformer);
         return new NerTagger(ckpt, pretrain, (tags, tagset, charlm) =>
         {
             if (charlm && (charlmForward == null || charlmBackward == null || !charlmForward.IsForward || charlmBackward.IsForward))
                 throw new ArgumentException("This NER model needs the forward charlm, then the backward one");
             return charlm
-                ? new ManagedNerNet(ckpt, tags, tagset, pretrain, charlmForward, charlmBackward)
-                : new ManagedNerNet(ckpt, tags, tagset, pretrain, null, null);
-        });
+                ? new ManagedNerNet(ckpt, tags, tagset, pretrain, charlmForward, charlmBackward, transformerDim)
+                : new ManagedNerNet(ckpt, tags, tagset, pretrain, null, null, transformerDim);
+        }, transformer);
     }
+
+    /// <summary>The input columns a model gives <paramref name="transformer"/>'s vectors: its hidden size for a <c>_electra-large</c> model, else 0.</summary>
+    internal static int TransformerDim(Checkpoint ckpt, TransformerEmbedder? transformer) =>
+        ckpt.Root["config"]!["bert_model"] == null ? 0 : transformer?.Net.Config.Hidden ?? 0;
+
+    /// <summary>Whether this model reads a transformer (<c>_electra-large</c>).</summary>
+    internal bool UsesTransformer => _transformer != null;
 
     /// <summary>The delta vocabulary's size, or 0 for a model without a delta embedding (German <c>germeval2014</c>).</summary>
     internal static int DeltaCount(Checkpoint ckpt) => ckpt.Root["vocab"]!["delta"] is { } delta ? Checkpoint.UnitToId(delta).Count : 0;
@@ -84,7 +98,8 @@ internal sealed class NerTagger : IDisposable
 
     /// <summary>Sets <see cref="Token.Ner"/> on every token and rebuilds every sentence's <see cref="Sentence.Entities"/>.</summary>
     /// <param name="charlms">The tagger's charlm outputs, reused for sentences whose tokens are exactly its words (no MWT); each batch's entries are released after use, as NER is the last reader.</param>
-    public void Process(Document doc, CharlmCache? charlms = null, CancellationToken cancellationToken = default)
+    /// <param name="transformers">The call's transformer states: the tagger's, for sentences whose token texts are its words.</param>
+    public void Process(Document doc, CharlmCache? charlms = null, CancellationToken cancellationToken = default, TransformerCache? transformers = null)
     {
         // ner/data.py: batches of batch_size sentences in document order.
         var sentences = doc.Sentences.Where(s => s.Tokens.Count > 0).ToList();
@@ -95,7 +110,7 @@ internal sealed class NerTagger : IDisposable
             var keys = charlms == null
                 ? null
                 : batch.Select((s, i) => s.Words.Select(w => w.Text).SequenceEqual(texts[i]) ? s : null).ToList();
-            var tags = Predict(texts, out _, charlms, keys, cancellationToken, keepEmissions: false);
+            var tags = Predict(texts, out _, charlms, keys, cancellationToken, keepEmissions: false, transformers);
 
             // NER runs last, so nothing reads these sentences' cached charlm outputs again.
             if (charlms != null)
@@ -119,9 +134,12 @@ internal sealed class NerTagger : IDisposable
     /// <param name="keepEmissions">Fill <paramref name="emissions"/> (else it stays empty).</param>
     internal List<string[]> Predict(IReadOnlyList<IReadOnlyList<string>> sentences, out List<float[]> emissions,
         CharlmCache? charlms = null, IReadOnlyList<Sentence?>? cacheKeys = null, CancellationToken cancellationToken = default,
-        bool keepEmissions = true)
+        bool keepEmissions = true, TransformerCache? transformers = null)
     {
         int batch = sentences.Count, width = sentences.Max(s => s.Count);
+
+        // extract_bert_embeddings over the token texts as written, without the endpoints.
+        var transformer = _transformer?.Embed(sentences, keepEndpoints: false, _layerMix, transformers, cancellationToken);
 
         // extract_static_embeddings: the word, lowercased if the model's lowercase is on, for both vocabs. A word the
         // pretrain knows but the delta vocab doesn't gets the delta's zero PAD row rather than its UNK row.
@@ -155,7 +173,7 @@ internal sealed class NerTagger : IDisposable
         var logits = ArrayPool<float>.Shared.Rent(batch * width * nTags);
         try
         {
-            _net.Forward(sentences, wordIds, deltaIds, width, logits.AsSpan(0, batch * width * nTags), charlms, cacheKeys, cancellationToken);
+            _net.Forward(sentences, wordIds, deltaIds, width, logits.AsSpan(0, batch * width * nTags), charlms, cacheKeys, cancellationToken, transformer);
             emissions = [];
             var result = new List<string[]>(batch);
             for (int i = 0; i < batch; i++)
@@ -282,7 +300,7 @@ internal sealed class NerTagger : IDisposable
             if (!ok) throw new NotSupportedException($"NER checkpoint uses {what}, which is not ported");
         }
 
-        Require(config["bert_model"] == null && config["use_peft"]?.GetValue<bool>() != true, "a transformer");
+        Require(config["use_peft"]?.GetValue<bool>() != true, "a LoRA transformer");
         Require(config["char"]?.GetValue<bool>() == true && config["char_emb_dim"]?.GetValue<int>() > 0, "a configuration without character features");
         Require(config["word_emb_dim"]?.GetValue<int>() == pretrain.Dim, "a word embedding not matching the pretrain");
         Require(config["input_transform"]?.GetValue<bool>() == true, "a configuration without input_transform");

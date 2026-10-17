@@ -290,7 +290,7 @@ jobs:
       # jobs' no-skip checks exempt them.
       - name: Download the transformer files
         if: needs.changes.outputs.code != 'false' && matrix.shard == 1
-        run: tools/ci-models.sh transformer config.json tokenizer.json tokenizer_config.json pytorch_model.bin
+        run: tools/ci-models.sh transformer
 
       - name: Test
         if: needs.changes.outputs.code != 'false'

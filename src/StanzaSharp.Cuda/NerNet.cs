@@ -18,7 +18,9 @@ internal sealed class NerNet : INerNet
     private readonly Tensor _hInit, _cInit;
     private readonly Device _device = Weights.Device; // the device the model was loaded on
 
-    public NerNet(Checkpoint ckpt, int deltaCount, int tags, int tagset, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward)
+    /// <param name="transformerDim">The transformer's hidden size for a <c>_electra-large</c> model, else 0.</param>
+    public NerNet(Checkpoint ckpt, int deltaCount, int tags, int tagset, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward,
+        int transformerDim = 0)
     {
         var config = ckpt.Root["config"]!;
         var model = ckpt.Root["model"]!;
@@ -30,7 +32,7 @@ internal sealed class NerNet : INerNet
         int wordDim = config["word_emb_dim"]!.GetValue<int>();
         int hidden = config["hidden_dim"]!.GetValue<int>();
         int layers = config["num_layers"]!.GetValue<int>();
-        int inputSize = wordDim + (_charModel?.OutputDim ?? _charlmForward!.HiddenDim + _charlmBackward!.HiddenDim);
+        int inputSize = wordDim + transformerDim + (_charModel?.OutputDim ?? _charlmForward!.HiddenDim + _charlmBackward!.HiddenDim);
 
         _deltaEmb = deltaCount > 0 ? nn.Embedding(deltaCount, wordDim, padding_idx: NerTagger.PadId).LoadFrom(ckpt, model, "delta_emb.") : null;
         _inputTransform = nn.Linear(inputSize, inputSize).LoadFrom(ckpt, model, "input_transform.");
@@ -41,7 +43,7 @@ internal sealed class NerNet : INerNet
     }
 
     public void Forward(IReadOnlyList<IReadOnlyList<string>> sentences, long[] wordIds, long[] deltaIds, int width, Span<float> logits,
-        CharlmCache? charlms, IReadOnlyList<Sentence?>? cacheKeys, CancellationToken ct)
+        CharlmCache? charlms, IReadOnlyList<Sentence?>? cacheKeys, CancellationToken ct, float[][]? transformer = null)
     {
         using var _ = torch.no_grad();
         using var scope = NewDisposeScope();
@@ -68,7 +70,11 @@ internal sealed class NerNet : INerNet
             chars = [Rnn.PadSequence(cached.Select(c => c!.Value.Item1).ToList()), Rnn.PadSequence(cached.Select(c => c!.Value.Item2).ToList())];
         }
 
-        var input = _inputTransform.forward(cat([words, .. chars], 2));
+        // model.py: the word vector, the transformer's (if any), then the character features.
+        Tensor[] bert = transformer == null
+            ? []
+            : [Rnn.PadSequence([.. transformer.Select((t, i) => torch.tensor(t, [lengths[i], t.Length / lengths[i]], device: _device))])];
+        var input = _inputTransform.forward(cat([words, .. bert, .. chars], 2));
         var h0 = _hInit.expand(_hInit.shape[0], batch, _hInit.shape[2]).contiguous();
         var c0 = _cInit.expand(_cInit.shape[0], batch, _cInit.shape[2]).contiguous();
         var output = Rnn.RunPacked(_lstm, input, lengths, (h0, c0));
@@ -95,18 +101,21 @@ internal static class NerTaggerLoad
         /// shared with the other processors, so the caller owns them. A <c>_nocharlm</c> model takes none.
         /// </summary>
         /// <param name="device">Where the model runs; CPU by default. Load the pretrain and charlms on the same device.</param>
-        public static NerTagger Load(string basePath, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward, Device? device = null) =>
+        /// <param name="transformer">The transformer a <c>_electra-large</c> model reads (shared, the caller owns it).</param>
+        public static NerTagger Load(string basePath, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward, Device? device = null,
+            TransformerEmbedder? transformer = null) =>
             Weights.On(device, () =>
             {
                 var ckpt = Checkpoint.Load(basePath);
+                int transformerDim = NerTagger.TransformerDim(ckpt, transformer);
                 return new NerTagger(ckpt, pretrain, (tags, tagset, charlm) =>
                 {
                     if (charlm && (charlmForward == null || charlmBackward == null || !charlmForward.IsForward || charlmBackward.IsForward))
                         throw new ArgumentException("This NER model needs the forward charlm, then the backward one");
                     return charlm
-                        ? new NerNet(ckpt, NerTagger.DeltaCount(ckpt), tags, tagset, pretrain, charlmForward, charlmBackward)
-                        : new NerNet(ckpt, NerTagger.DeltaCount(ckpt), tags, tagset, pretrain, null, null);
-                });
+                        ? new NerNet(ckpt, NerTagger.DeltaCount(ckpt), tags, tagset, pretrain, charlmForward, charlmBackward, transformerDim)
+                        : new NerNet(ckpt, NerTagger.DeltaCount(ckpt), tags, tagset, pretrain, null, null, transformerDim);
+                }, transformer);
             });
     }
 }

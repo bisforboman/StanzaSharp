@@ -135,15 +135,20 @@ public sealed class Pipeline : IDisposable
             ["lemma"] = ["combined_charlm", "ewt_charlm", "gum_charlm", "lines_charlm", "partut_charlm", "atis_charlm", "childes_charlm"],
 
             // the treebanks' own _nocharlm taggers and parsers (mimic has only a parser); combined's are default_fast's
-            ["pos"] = ["ewt_nocharlm", "gum_nocharlm", "lines_nocharlm", "partut_nocharlm", "atis_nocharlm", "childes_nocharlm", "eslspok_nocharlm"],
+            // and default_accurate's frozen-transformer tagger, parser and NER model (Transformers)
+            ["pos"] =
+            [
+                "ewt_nocharlm", "gum_nocharlm", "lines_nocharlm", "partut_nocharlm", "atis_nocharlm", "childes_nocharlm", "eslspok_nocharlm",
+                "combined_electra-large",
+            ],
             ["depparse"] =
             [
                 "ewt_nocharlm", "gum_nocharlm", "lines_nocharlm", "partut_nocharlm", "atis_nocharlm", "childes_nocharlm", "eslspok_nocharlm",
-                "mimic_nocharlm",
+                "mimic_nocharlm", "combined_electra-large",
             ],
             ["ner"] =
             [
-                "ontonotes_charlm", "ontonotes_nocharlm", "combined_charlm", "conll03_charlm",
+                "ontonotes_charlm", "ontonotes_nocharlm", "combined_charlm", "conll03_charlm", "ontonotes-ww-multi_electra-large",
 
                 // clinical (mimic's vectors and charlms) and biomedical (biomed's vectors, pubmed's charlms)
                 "i2b2", "radiology", "anatem", "bc4chemd", "bc5cdr", "bionlp13cg", "jnlpba", "linnaeus", "ncbi_disease", "s800",
@@ -278,6 +283,9 @@ public sealed class Pipeline : IDisposable
             ["ner/linnaeus"] = Pubmed,
             ["ner/ncbi_disease"] = Pubmed,
             ["ner/s800"] = Pubmed,
+            ["pos/combined_electra-large"] = EnglishCharlm,
+            ["depparse/combined_electra-large"] = EnglishCharlm,
+            ["ner/ontonotes-ww-multi_electra-large"] = EnglishCharlm,
         },
         ["de"] = new()
         {
@@ -308,6 +316,26 @@ public sealed class Pipeline : IDisposable
         },
     };
 
+    // The transformer each transformer model reads, by "<processor>/<model>": the model config's bert_model, a Hugging Face
+    // repository (ModelDownloader.Transformers has its files), not a Stanza resource, so it is kept out of Dependencies,
+    // ModelDownloader.Files and CI's model caches (docs/transformer-plan.md). The pipeline loads each one once.
+    internal static readonly Dictionary<string, Dictionary<string, string>> Transformers = new()
+    {
+        [English] = new()
+        {
+            ["pos/combined_electra-large"] = Electra,
+            ["depparse/combined_electra-large"] = Electra,
+            ["ner/ontonotes-ww-multi_electra-large"] = Electra,
+        },
+        ["de"] = [],
+    };
+
+    private const string Electra = "google/electra-large-discriminator";
+
+    /// <summary>The transformers <paramref name="models"/> of <paramref name="language"/> read (<see cref="Transformers"/>), each once.</summary>
+    internal static List<string> TransformersOf(IReadOnlyDictionary<string, string> models, string language) =>
+        [.. models.Select(m => Transformers[language].GetValueOrDefault($"{m.Key}/{m.Value}")).OfType<string>().Distinct()];
+
     // Stanza's processor dependencies (REQUIRES_DEFAULT); English pos also needs mwt to have run.
     internal static readonly Dictionary<string, string[]> Requires = new()
     {
@@ -333,6 +361,7 @@ public sealed class Pipeline : IDisposable
     internal ConstituencyParser? Parser => _parser;
 
     private readonly SentimentClassifier? _sentiment;
+    private readonly TransformerEmbedder? _transformer; // the one transformer the models read (Transformers), if any
     private readonly Pretrain[] _pretrains = [];
     private readonly BackendModels _models;
     private readonly CharlmCacheOptions _cacheOptions;
@@ -412,6 +441,14 @@ public sealed class Pipeline : IDisposable
             }))
             .ToList();
 
+        // The transformer, with the shared models: its readers need it to load. One per pipeline (only ELECTRA-large so far).
+        var transformerName = TransformersOf(models, options.Language).SingleOrDefault();
+        var transformer = transformerName == null
+            ? null
+            : Start($"transformer/{transformerName}", () => backend.Transformer(ModelDownloader.TransformerDirectory(modelDir, transformerName), transformerName));
+        TransformerEmbedder? TransformerOf(string processor) =>
+            Transformers[options.Language].ContainsKey(Name(processor)) ? transformer!.Result : null;
+
         // The pretrain and the charlms a processor's model reads (Dependencies), once loaded.
         string[] DependenciesOf(string processor) => Dependencies[options.Language].GetValueOrDefault(Name(processor), []);
         Pretrain PretrainOf(string processor) => pretrains[DependenciesOf(processor).Single(p => p.StartsWith("pretrain/", StringComparison.Ordinal))].Result;
@@ -443,12 +480,13 @@ public sealed class Pipeline : IDisposable
                 c.GetAwaiter().GetResult();
             foreach (var p in pretrains.Values)
                 p.GetAwaiter().GetResult();
+            transformer?.GetAwaiter().GetResult();
             StartReaders(ofCharlms: true);
-            var pos = models.ContainsKey("pos") ? Start(Name("pos"), () => backend.Pos(Model("pos"), PretrainOf("pos"), CharlmsOf("pos"))) : null;
+            var pos = models.ContainsKey("pos") ? Start(Name("pos"), () => backend.Pos(Model("pos"), PretrainOf("pos"), CharlmsOf("pos"), TransformerOf("pos"))) : null;
             var depparse = models.ContainsKey("depparse")
-                ? Start(Name("depparse"), () => backend.Depparse(Model("depparse"), PretrainOf("depparse"), CharlmsOf("depparse")))
+                ? Start(Name("depparse"), () => backend.Depparse(Model("depparse"), PretrainOf("depparse"), CharlmsOf("depparse"), TransformerOf("depparse")))
                 : null;
-            var ner = models.ContainsKey("ner") ? Start(Name("ner"), () => backend.Ner(Model("ner"), PretrainOf("ner"), CharlmsOf("ner"))) : null;
+            var ner = models.ContainsKey("ner") ? Start(Name("ner"), () => backend.Ner(Model("ner"), PretrainOf("ner"), CharlmsOf("ner"), TransformerOf("ner"))) : null;
             var parser = models.ContainsKey("constituency")
                 ? Start(Name("constituency"), () => backend.Constituency(Model("constituency"), PretrainOf("constituency"), CharlmsOf("constituency")))
                 : null;
@@ -465,6 +503,7 @@ public sealed class Pipeline : IDisposable
             _parser = parser?.Result;
             _sentiment = sentiment?.Result;
             _pretrains = [.. pretrains.Values.Select(p => p.Result)];
+            _transformer = transformer?.Result;
         }
         catch (Exception e)
         {
@@ -545,8 +584,23 @@ public sealed class Pipeline : IDisposable
     {
         var missing = ModelFiles(models, options.Language)
             .FirstOrDefault(p => !File.Exists(Path.Combine(modelDir, p + ".pt")) && !File.Exists(Path.Combine(modelDir, p + ".json")));
+        string chosen = options.Models == null ? "" : $" --model {string.Join(',', options.Models.Select(m => $"{m.Key}={m.Value}"))}";
         if (missing == null)
+        {
+            foreach (var name in TransformersOf(models, options.Language))
+            {
+                var directory = ModelDownloader.TransformerDirectory(modelDir, name);
+                var absent = ModelDownloader.Transformers[name].Files.Select(f => Path.Combine(directory, f.File)).FirstOrDefault(f => !File.Exists(f));
+                if (absent != null)
+                {
+                    throw new FileNotFoundException($"Transformer file not found: {absent}. Run \"stanzasharp download {modelDir} --lang {options.Language} "
+                        + $"--package {options.Package}{chosen}\" or ModelDownloader.DownloadAsync(dir, options) again; it fetches only the missing files.", absent);
+                }
+            }
+
             return;
+        }
+
         var file = Path.Combine([modelDir, .. (missing + ".pt").Split('/')]);
         string why = missing.StartsWith("mwt/", StringComparison.Ordinal) && options.Processors != null && !ParseProcessors(options.Processors, nameof(options)).Contains("mwt")
             ? " (tokenize loads the package's mwt too, as Stanza does)"
@@ -658,7 +712,7 @@ public sealed class Pipeline : IDisposable
             else
             {
                 string why = name.Contains("electra", StringComparison.Ordinal) || name.Contains("bert", StringComparison.Ordinal)
-                    ? " (a transformer model, which StanzaSharp doesn't run)"
+                    ? " (a transformer model StanzaSharp doesn't run yet)"
                     : "";
                 var packagesWith = Packages[language].Where(kv => kv.Value.ContainsKey(p)).Select(kv => kv.Key);
                 throw new ArgumentException($"Unknown or unsupported {p} model '{value}' for language '{language}'{why}. Supported: "
@@ -916,8 +970,12 @@ public sealed class Pipeline : IDisposable
         using var charlms = tagger != null && (Shares("ner") || Shares("constituency") || Shares("sentiment") || (Shares("depparse") && _depparseReadsCache))
             && _cacheOptions.IsEnabled ? new CharlmCache(_cacheOptions.MaxWords) : null;
         CharlmCache? CacheFor(string processor) => Shares(processor) ? charlms : null;
+
+        // The transformer states, for the processors after the first that reads them (Stanza runs it once per processor).
+        int transformerReaders = (_pos?.UsesTransformer == true ? 1 : 0) + (_depparse?.UsesTransformer == true ? 1 : 0) + (_ner?.UsesTransformer == true ? 1 : 0);
+        var transformers = transformerReaders > 1 ? new TransformerCache() : null;
         if (_pos != null)
-            Step("pos", () => _pos.Process(doc, charlms, ct), ct);
+            Step("pos", () => _pos.Process(doc, charlms, ct, transformers), ct);
         if (_lemma != null)
             Step("lemma", () => _lemma.Process(doc, ct), ct);
         else if (_identityLemma)
@@ -930,11 +988,11 @@ public sealed class Pipeline : IDisposable
         // Depparse runs the charlms with a ROOT word in front, so of the tagger's outputs only the backward ones apply, with
         // ROOT run on from the tagger's final state (managed; DependencyParser.Process).
         if (_depparse != null)
-            Step("depparse", () => _depparse.Process(doc, CacheFor("depparse"), ct), ct);
+            Step("depparse", () => _depparse.Process(doc, CacheFor("depparse"), ct, transformers), ct);
         if (_sentiment != null)
             Step("sentiment", () => _sentiment.Process(doc, CacheFor("sentiment"), ct), ct);
         if (_ner != null)
-            Step("ner", () => _ner.Process(doc, CacheFor("ner"), ct), ct);
+            Step("ner", () => _ner.Process(doc, CacheFor("ner"), ct, transformers), ct);
         return doc;
     }
 
@@ -963,6 +1021,7 @@ public sealed class Pipeline : IDisposable
         _lemma?.Dispose();
         _mwt?.Dispose();
         _tokenizer.Dispose();
+        _transformer?.Net.Dispose();
         _models.Dispose();
         foreach (var pretrain in _pretrains)
             pretrain.Dispose();

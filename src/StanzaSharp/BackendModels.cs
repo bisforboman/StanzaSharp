@@ -51,11 +51,20 @@ internal abstract class BackendModels : IDisposable
     /// <param name="pretrain">The pretrain its contextual classifiers read (English <c>combined_charlm</c>); else null.</param>
     public abstract Lemmatizer Lemma(string basePath, Charlms charlms, Pretrain? pretrain);
 
-    public abstract PosTagger Pos(string basePath, Pretrain pretrain, Charlms charlms);
+    /// <summary>
+    /// Loads the transformer <paramref name="name"/> (a Hugging Face repository) from its <paramref name="directory"/>; the
+    /// pipeline owns it and gives it to every model that reads it (<see cref="Pipeline.Transformers"/>).
+    /// </summary>
+    public abstract TransformerEmbedder Transformer(string directory, string name);
 
-    public abstract DependencyParser Depparse(string basePath, Pretrain pretrain, Charlms charlms);
+    /// <param name="transformer">The transformer a <c>_electra-large</c> model reads; null for the others.</param>
+    public abstract PosTagger Pos(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer);
 
-    public abstract NerTagger Ner(string basePath, Pretrain pretrain, Charlms charlms);
+    /// <param name="transformer">The transformer a <c>_electra-large</c> model reads; null for the others.</param>
+    public abstract DependencyParser Depparse(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer);
+
+    /// <param name="transformer">The transformer a <c>_electra-large</c> model reads; null for the others.</param>
+    public abstract NerTagger Ner(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer);
 
     public abstract ConstituencyParser Constituency(string basePath, Pretrain pretrain, Charlms charlms);
 
@@ -120,14 +129,17 @@ internal sealed class ManagedModels : BackendModels
     public override Lemmatizer Lemma(string basePath, Charlms charlms, Pretrain? pretrain) =>
         Lemmatizer.LoadManaged(basePath, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward), pretrain);
 
-    public override PosTagger Pos(string basePath, Pretrain pretrain, Charlms charlms) =>
-        PosTagger.LoadManaged(basePath, pretrain, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward));
+    public override TransformerEmbedder Transformer(string directory, string name) =>
+        TransformerEmbedder.Load(directory, name, (config, ckpt) => ManagedTransformer.Load(config, ckpt));
 
-    public override DependencyParser Depparse(string basePath, Pretrain pretrain, Charlms charlms) =>
-        DependencyParser.LoadManaged(basePath, pretrain, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward));
+    public override PosTagger Pos(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer) =>
+        PosTagger.LoadManaged(basePath, pretrain, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward), transformer);
 
-    public override NerTagger Ner(string basePath, Pretrain pretrain, Charlms charlms) =>
-        NerTagger.LoadManaged(basePath, pretrain, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward));
+    public override DependencyParser Depparse(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer) =>
+        DependencyParser.LoadManaged(basePath, pretrain, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward), transformer);
+
+    public override NerTagger Ner(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer) =>
+        NerTagger.LoadManaged(basePath, pretrain, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward), transformer);
 
     public override ConstituencyParser Constituency(string basePath, Pretrain pretrain, Charlms charlms) =>
         ConstituencyParser.LoadManaged(basePath, pretrain, Find(_charlms, charlms.Forward)!, Find(_charlms, charlms.Backward)!);
