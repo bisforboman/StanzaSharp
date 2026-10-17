@@ -238,9 +238,9 @@ if (memoryWords > 0)
         if (concurrent > 1)
         {
             // Several long calls in flight at once, each with its own CharlmCache (round 41).
-            string text = string.Join("\n\n", paragraphs);
+            string joined = string.Join("\n\n", paragraphs);
             var results = new Document[concurrent];
-            var workers = Enumerable.Range(0, concurrent).Select(t => new Thread(() => results[t] = nlp.Process(text))).ToList();
+            var workers = Enumerable.Range(0, concurrent).Select(t => new Thread(() => results[t] = nlp.Process(joined))).ToList();
             workers.ForEach(w => w.Start());
             workers.ForEach(w => w.Join());
             docs = [results[0]];
