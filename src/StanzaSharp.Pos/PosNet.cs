@@ -235,6 +235,7 @@ internal sealed unsafe class ManagedPosNet : IPosNet
         var forward = ArrayPool<float>.Shared.Rent(words * dim);
         var backward = ArrayPool<float>.Shared.Rent(words * dim);
         var finalC = cacheKeys != null ? ArrayPool<float>.Shared.Rent(sentences.Count * dim) : null;
+        bool owned = false; // by the cache, which then returns them: exactly one of the two may
         try
         {
             // A sentence alone (a one-sentence document) is also kept for the dependency parser (DependencyParser.Process).
@@ -253,18 +254,27 @@ internal sealed unsafe class ManagedPosNet : IPosNet
                     int n = sentences[i].Count;
                     if (cacheKeys[i] is { } key && charlms!.HasRoom(n))
                     {
-                        charlms.TryAdd(key, forward.AsSpan(k * dim, n * dim).ToArray(), backward.AsSpan(k * dim, n * dim).ToArray(), n,
-                            finalC.AsSpan(i * dim, dim).ToArray());
+                        // The entries are slices of this batch's buffers, which the cache then keeps (round 41).
+                        if (!owned)
+                        {
+                            charlms.Own(forward, backward, finalC!);
+                            owned = true;
+                        }
+
+                        charlms.TryAdd(key, new(forward, k * dim, n * dim), new(backward, k * dim, n * dim), n, new(finalC!, i * dim, dim));
                     }
                 }
             }
         }
         finally
         {
-            ArrayPool<float>.Shared.Return(forward);
-            ArrayPool<float>.Shared.Return(backward);
-            if (finalC != null)
-                ArrayPool<float>.Shared.Return(finalC);
+            if (!owned)
+            {
+                ArrayPool<float>.Shared.Return(forward);
+                ArrayPool<float>.Shared.Return(backward);
+                if (finalC != null)
+                    ArrayPool<float>.Shared.Return(finalC);
+            }
         }
     }
 

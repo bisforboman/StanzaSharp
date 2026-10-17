@@ -76,13 +76,13 @@ internal static class TensorForms
 
             if (e.Native == null)
             {
-                Tensor Convert(float[] data)
+                Tensor Convert(ArraySegment<float> data)
                 {
-                    using var cpu = torch.tensor(data, [e.Words, data.Length / e.Words]);
+                    using var cpu = torch.tensor(data.ToArray(), [e.Words, data.Count / e.Words]);
                     return (device == null || device.type == DeviceType.CPU ? cpu.clone() : cpu.to(device)).DetachFromDisposeScope();
                 }
 
-                e.Native = new CharlmTensors(Convert(e.ForwardData!), Convert(e.BackwardData!));
+                e.Native = new CharlmTensors(Convert(e.ForwardData), Convert(e.BackwardData));
             }
 
             var t = (CharlmTensors)e.Native;

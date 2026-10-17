@@ -880,8 +880,8 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
                 Assert.Equal(charlm && i < sentences.Count - 1, kept); // not the one simplify_punct changed
                 if (kept)
                 {
-                    cacheDiff = Math.Max(cacheDiff, Math.Max(TokenizerTests.AssertClose(r.Forward, m.Forward, 1e-4f, $"{path} s{i} forward"),
-                        TokenizerTests.AssertClose(r.Backward, m.Backward, 1e-4f, $"{path} s{i} backward")));
+                    cacheDiff = Math.Max(cacheDiff, Math.Max(TokenizerTests.AssertClose(r.Forward.ToArray(), m.Forward.ToArray(), 1e-4f, $"{path} s{i} forward"),
+                        TokenizerTests.AssertClose(r.Backward.ToArray(), m.Backward.ToArray(), 1e-4f, $"{path} s{i} backward")));
                 }
             }
 

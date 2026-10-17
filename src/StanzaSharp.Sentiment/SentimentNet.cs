@@ -308,7 +308,7 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
         for (int i = 0; i < batch.Count; i++)
         {
             if (cacheKeys?[i] is { } key && charlms!.TryGetArrays(key, out var cached))
-                reps[i] = (cached.Forward, cached.Backward, 0);
+                reps[i] = (cached.Forward.Array!, cached.Backward.Array!, cached.Forward.Offset / dim); // both at the same rows
             else
                 missing.Add(i);
         }

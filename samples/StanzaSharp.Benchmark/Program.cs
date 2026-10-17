@@ -39,7 +39,8 @@ const string Usage = """
       --idle-gc       --memory: then an aggressive GC at once, and another after 61 s idle, reporting the memory
       --per-call N    instead: N Process calls on one short sentence each (5-25 words) after a warm-up, reporting the
                       median and p90 ms per call and per stage
-      --concurrent T  --per-call: T threads each make N calls on one shared pipeline; reports calls/s
+      --concurrent T  --per-call: T threads each make N calls on one shared pipeline; reports calls/s;
+                      --memory: T threads make each Process call at once (words and --out: the first's)
       --text T        --per-call: every call on this text instead (e.g. "Hi." for the cost of a minimal call)
       --with-long     --concurrent: one more thread processes one copy of the golden texts in a loop meanwhile, to
                       see whether a long call slows the short ones down
@@ -234,7 +235,17 @@ if (memoryWords > 0)
     {
         long allocatedBefore = GC.GetTotalAllocatedBytes(true);
         clockLoad.Restart();
-        if (chunkWords <= 0)
+        if (concurrent > 1)
+        {
+            // Several long calls in flight at once, each with its own CharlmCache (round 41).
+            string text = string.Join("\n\n", paragraphs);
+            var results = new Document[concurrent];
+            var workers = Enumerable.Range(0, concurrent).Select(t => new Thread(() => results[t] = nlp.Process(text))).ToList();
+            workers.ForEach(w => w.Start());
+            workers.ForEach(w => w.Join());
+            docs = [results[0]];
+        }
+        else if (chunkWords <= 0)
         {
             docs = [nlp.Process(string.Join("\n\n", paragraphs))];
         }

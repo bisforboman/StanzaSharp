@@ -11,6 +11,11 @@ namespace StanzaSharp.Nn;
 /// <see cref="MaxWords"/>. To bound that on large documents the cache keeps at most <see cref="MaxWords"/> words; sentences
 /// past that are not kept, and consumers compute them again as they do for any missing sentence.
 /// <para>
+/// A managed tagger hands over its whole batch buffers, rented from <c>ArrayPool&lt;float&gt;.Shared</c>
+/// (<see cref="Own"/>), and its entries are slices of them; <see cref="Dispose"/> gives them back (round 41: no
+/// 8 KB/word copies). So the pool keeps them after the call until it trims them.
+/// </para>
+/// <para>
 /// Backend-neutral (issue #29): an entry holds what its producer made, TorchSharp tensors or float arrays, and each
 /// consumer reads the form its backend uses. Tensors read as arrays are copied per read (the caller owns the copy);
 /// arrays read as tensors are converted once, on the reader's device, and kept with the entry. A pipeline whose
@@ -27,11 +32,12 @@ internal sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords) : 
     {
         public int Words;
         public ICharlmReps? Native;                // TorchSharp producer, or converted for a TorchSharp consumer
-        public float[]? ForwardData, BackwardData; // managed producer: [words, dim] row-major
-        public float[]? BackwardFinalC;            // managed producer: the backward pass's final cell state, [dim]
+        public ArraySegment<float> ForwardData, BackwardData; // managed producer: [words, dim] row-major
+        public ArraySegment<float> BackwardFinalC;            // managed producer: the backward pass's final cell state, [dim]
     }
 
     private readonly Dictionary<Sentence, Entry> _reps = [];
+    private readonly List<float[]> _rented = [];
     private long _words;
 
     public int MaxWords { get; } = maxWords;
@@ -54,7 +60,7 @@ internal sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords) : 
     /// which the cache keeps (the caller must not change them afterwards).
     /// </summary>
     /// <param name="backwardFinalC">Optional: the backward pass's final cell state (see <see cref="TryGetBackward"/>).</param>
-    public bool TryAdd(Sentence sentence, float[] forward, float[] backward, int words, float[]? backwardFinalC = null)
+    public bool TryAdd(Sentence sentence, ArraySegment<float> forward, ArraySegment<float> backward, int words, ArraySegment<float> backwardFinalC = default)
     {
         if (!Reserve(sentence, words))
             return false;
@@ -72,6 +78,16 @@ internal sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords) : 
     // the outputs depend on the texts only: any other call on the same texts computes the same bits. (A TorchSharp
     // producer's entries above are not exact: there a row's kernel depends on its batch.)
     private readonly Dictionary<string, Alone> _alone = [];
+
+    /// <summary>
+    /// Takes <paramref name="arrays"/>, rented from <c>ArrayPool&lt;float&gt;.Shared</c>, and returns them when it is
+    /// disposed, so entries may be slices of them. The caller must not return them itself.
+    /// </summary>
+    public void Own(params ReadOnlySpan<float[]> arrays)
+    {
+        foreach (var a in arrays)
+            _rented.Add(a);
+    }
 
     /// <summary>Keeps a single-sentence call's outputs (<see cref="TryGetAlone"/>) if they fit under <see cref="MaxWords"/>.</summary>
     public void AddAlone(IReadOnlyList<string> texts, Alone outputs)
@@ -93,12 +109,11 @@ internal sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords) : 
     /// producer: <paramref name="sentence"/>'s entry (kept with words as written, which are then its texts) or a
     /// single-sentence call on the texts. Exactly what a managed charlm call on the texts computes, in any batch.
     /// </summary>
-    public bool TryGetBackward(Sentence? sentence, IReadOnlyList<string> texts, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)] out float[] backward,
-        [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)] out float[] finalC)
+    public bool TryGetBackward(Sentence? sentence, IReadOnlyList<string> texts, out ArraySegment<float> backward, out ArraySegment<float> finalC)
     {
-        if (sentence != null && _reps.TryGetValue(sentence, out var e) && e.BackwardFinalC != null && e.Words == texts.Count)
+        if (sentence != null && _reps.TryGetValue(sentence, out var e) && e.BackwardFinalC.Array != null && e.Words == texts.Count)
         {
-            (backward, finalC) = (e.BackwardData!, e.BackwardFinalC);
+            (backward, finalC) = (e.BackwardData, e.BackwardFinalC);
             return true;
         }
 
@@ -108,7 +123,7 @@ internal sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords) : 
             return true;
         }
 
-        (backward, finalC) = (null, null);
+        (backward, finalC) = (default, default);
         return false;
     }
 
@@ -136,7 +151,7 @@ internal sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords) : 
     internal bool TryGetEntry(Sentence sentence, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out Entry? entry) => _reps.TryGetValue(sentence, out entry);
 
     /// <summary>A sentence's representations as [words, dim] row-major arrays, for the managed backend (don't change them).</summary>
-    public bool TryGetArrays(Sentence sentence, out (float[] Forward, float[] Backward) reps)
+    public bool TryGetArrays(Sentence sentence, out (ArraySegment<float> Forward, ArraySegment<float> Backward) reps)
     {
         if (!_reps.TryGetValue(sentence, out var e))
         {
@@ -144,13 +159,14 @@ internal sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords) : 
             return false;
         }
 
-        reps = e.ForwardData != null ? (e.ForwardData, e.BackwardData!) : e.Native!.ToArrays();
+        reps = e.ForwardData.Array != null ? (e.ForwardData, e.BackwardData) : e.Native!.ToArrays();
         return true;
     }
 
     /// <summary>
     /// Drops <paramref name="sentence"/>'s entry once its last reader is done with it (NER, the pipeline's last
-    /// processor), so a large document doesn't hold all of it to the end of the call. It doesn't make room for new ones.
+    /// processor): a TorchSharp entry's tensors are freed at once, a managed entry's rented buffers only at
+    /// <see cref="Dispose"/> (they hold a whole batch). It doesn't make room for new ones.
     /// </summary>
     public void Release(Sentence sentence)
     {
@@ -166,6 +182,9 @@ internal sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords) : 
             Dispose(e);
         _reps.Clear();
         _alone.Clear();
+        foreach (var a in _rented)
+            System.Buffers.ArrayPool<float>.Shared.Return(a);
+        _rented.Clear();
         _words = 0;
     }
 }

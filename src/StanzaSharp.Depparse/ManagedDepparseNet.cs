@@ -305,7 +305,7 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
         var first = new int[n]; // each sentence's first row (ROOT)
         for (int i = 1; i < n; i++)
             first[i] = first[i - 1] + sentences[i - 1].Count;
-        var tagger = new (float[] Backward, float[] FinalC)[n];
+        var tagger = new (ArraySegment<float> Backward, ArraySegment<float> FinalC)[n];
         var reused = new List<int>();
         var rest = new List<int>();
         for (int i = 0; i < n; i++)
@@ -343,8 +343,8 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
             {
                 var (backward, finalC) = tagger[reused[j]];
                 backward.AsSpan(0, dim).CopyTo(scratch.AsSpan(j * dim));
-                finalC.CopyTo(scratch.AsSpan((m + j) * dim));
-                backward.CopyTo(reps.AsSpan((first[reused[j]] + 1) * dim));
+                finalC.AsSpan().CopyTo(scratch.AsSpan((m + j) * dim));
+                backward.AsSpan().CopyTo(reps.AsSpan((first[reused[j]] + 1) * dim));
             }
 
             fixed (float* ps = scratch)
