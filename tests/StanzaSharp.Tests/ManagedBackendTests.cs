@@ -501,6 +501,13 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
     /// Round 32: when workers hold items far longer than the caller's (a preempted worker, simulated by a sleep), the pool
     /// puts workers to sleep; once regions run without such stalls, they come back. Every item runs either way.
     /// </summary>
+    /// <remarks>
+    /// The second half asserts that a worker comes back, not that all do: on a machine with fewer free cores than the
+    /// region's 4 threads (2 here under taskset, the 3-core macOS runner at times), the pool's own threads keep being
+    /// preempted, which is a real stall, so the pool settles at one shed worker or oscillates (1, 2, 1, ...) by design.
+    /// Requiring 0 failed there about one run in three after 5 s and took up to 21 s when allowed 30. With enough cores
+    /// the first half hands over 1, so "below the peak" is still 0.
+    /// </remarks>
     [Fact]
     [Trait("Backend", "Managed")]
     public void ParallelFor_ShedsWorkersWhileJoinsStallAndBringsThemBack()
@@ -522,9 +529,22 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
             Assert.True(ManagedThreads.Shed > 0, "no worker was shed");
             Assert.All(runs, r => Assert.Equal(runs[0], r));
             watch.Restart();
-            while (ManagedThreads.Shed > 0 && watch.ElapsedMilliseconds < 5000)
+            int peak = ManagedThreads.Shed;
+            while (ManagedThreads.Shed >= peak && watch.ElapsedMilliseconds < 20_000)
+            {
                 ManagedThreads.For(8, _ => Thread.SpinWait(100));
-            Assert.Equal(0, ManagedThreads.Shed);
+                peak = Math.Max(peak, ManagedThreads.Shed);
+            }
+
+            Assert.True(ManagedThreads.Shed < peak, $"no worker came back: {ManagedThreads.Shed} shed, {peak} at most");
+            return 0;
+        });
+
+        // The pool keeps its shed workers until it is replaced, which a region at another thread count does, so the tests
+        // after this one start with every worker awake.
+        With(Gemm.Path, 3, () =>
+        {
+            ManagedThreads.For(2, _ => { });
             return 0;
         });
     }
