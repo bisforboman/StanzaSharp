@@ -205,6 +205,8 @@ def processors_for(lang, package):
         return "tokenize,mwt,pos,lemma,constituency,depparse,sentiment,ner"
     if package == "default_fast":
         return "tokenize,mwt,pos,lemma,depparse,sentiment,ner"
+    if package in ("eslspok", "craft", "genia", "mimic"):  # no mwt
+        return "tokenize,pos,lemma,depparse"
     return "tokenize,mwt,pos,lemma,depparse"
 
 
