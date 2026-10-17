@@ -24,6 +24,23 @@ public class TorchCheckpointTests(ITestOutputHelper output)
         AssertSameAsConverted(Checkpoint.Load(basePath + ".pt"), Checkpoint.Load(basePath));
     }
 
+    [Fact]
+    public void LoadsBinFileLikeAPtFile()
+    {
+        // A Hugging Face pytorch_model.bin is torch.save's zip format; Checkpoint.Load reads it by that name.
+        var basePath = Path.Combine(Repo.Golden, "pt", "tiny_zip");
+        var bin = Path.Combine(Path.GetTempPath(), $"stanzasharp-{Guid.NewGuid():N}.bin");
+        File.Copy(basePath + ".pt", bin);
+        try
+        {
+            AssertSameAsConverted(Checkpoint.Load(bin), Checkpoint.Load(basePath));
+        }
+        finally
+        {
+            File.Delete(bin);
+        }
+    }
+
     [PtModelTheory]
     [MemberData(nameof(StanzaCheckpoints))]
     public void LoadsStanzaCheckpointLikeTheConverter(string name)
