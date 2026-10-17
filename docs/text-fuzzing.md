@@ -92,6 +92,47 @@ Managed backend, after the fixes below (the first tokenizer run, before them, fo
    Owner's decision (2026-10-16): accepted and documented, nothing changed; the fuzzer stays local (no CI run), its
    findings live in `fuzz.json`, which every golden run checks.
 
+## Results (2026-10-17): the models of 1.10 and 1.11
+
+Every model 1.10 and 1.11 added through `PipelineOptions.Models` (`--model`), plus `PipelineOptions.Pretagged`
+(`--pretagged`), on a 4-core cloud Linux container (Intel Xeon with AVX-512, so the managed backend ran Vector512),
+two runs side by side with 2 threads each. Stanza's torch was PyPI's 2.14.1 build (CUDA, run on the CPU). Each row
+has a new seed. The domain NER models ran tokenize, mwt and ner (ner reads only tokens). The lemmatizer rows used their
+treebank's `_charlm` tokenizer too, and `lemma=combined_charlm` ran with `--words` (`'s`, `'S`, `’s`, `her`, `Her`,
+`HER`, `She's`, `her's`, `it's`: about 2,900 `'s` and 830 `her` in its 400 texts, for the contextual classifiers).
+
+TABLE
+
+ROWCOUNT. Neither side crashed or threw on any text. Two texts differ, both float32 noise on degenerate input
+(findings 4 and 5). Three harness bugs, all in the new options or package defaults, were fixed along the way:
+mwt-less packages (`eslspok`, `craft`, `genia`, `mimic`) got mwt in their default processor list, `--pretagged`
+converted the input document's offsets (already code points) as if they were UTF-16, and `--pretagged` dropped XPOS
+where the constituency parser reads it. StanzaSharp throws for a missing tag there where Stanza parses an empty one, a
+deliberate difference (CLAUDE.md, "Pretagged"); the generator now keeps XPOS when constituency runs.
+
+4. **German `gsd` + `pos=gsd_nocharlm` (float32 noise; not a port bug, nothing changed).** One text of 150: a
+   sentence starting with a 97-letter random word (the long-token generator's letters). Its FEATS `Number` is `Plur`
+   in Stanza and TorchSharp, `Sing` in the managed backend. Shrunk:
+   `arfyordihepegvuujnueiarradbquujtpfyybmsjgyllchutzgystzvjyeawbczmvzgekvgbabdwdahmmtltdxpcznnxterss, unProtokoll:
+   sagt man oft so.` The tagger's character LSTM (`Nn.CharacterModel`, unidirectional, hidden 400) runs 97 steps
+   over that word, and its output is 0.58 away from float64 in Stanza's own float32 (ordinary words: under 1e-4).
+   That error reaches the feats logits: Stanza float32 vs float64 differ by 2.2 there, while the `Plur`/`Sing`
+   margin is 0.39 (float64) to 0.67 (float32). Any other summation order can flip it. On the unshrunk text the
+   managed result (`Hinters`: `Case=Nom|Number=Sing`, no `Gender`) is Stanza's own float64 result, and Stanza's
+   float32 `Gender=Neut` has a margin of 0.07. Same class as finding 3, on the same treebank.
+5. **English `mimic` (float32 noise; not a port bug, nothing changed).** One text of 150: a sentence around a
+   300-character token (`https://example.com/aaa…`), whose UPOS is `X` in Stanza and `PROPN` here. It comes from
+   `mimic`'s own `_charlm` tagger (in the package since 1.10, fuzzed here for the first time), not from the new
+   `mimic_nocharlm` parser. The mimic charlms (1024 hidden, 101 characters) run over a run of a hundred and more
+   `a`s. On that sentence Stanza's float32 UPOS logits are 4.0 to 5.8 from float64 (median over ordinary words:
+   7e-6), and Stanza's own float64 tags it `PROPN`, as the managed backend does. On the shrunk text
+   (`ro tpsec` + 150 `a`s) TorchSharp differs from Stanza too, at the other word; float64 differs from float32 at a
+   third place.
+
+The four TorchSharp runs, the four pretagged runs and every `_charlm` tokenizer and lemmatizer found nothing.
+Pretagged input is only Stanza-tagged text with some fields removed: documents a person wrote by hand (odd tags,
+empty sentences) are not generated.
+
 Not a port difference, and not seen in these runs, but possible with random code points: Python 3.10's `unicodedata`
 is Unicode 13, .NET 10's is newer, so a character assigned since then is a letter (or upper case, or a space) on one
 side only. Such a difference would be the platform's, not the port's.
