@@ -383,9 +383,12 @@ def shrink(text, still_fails, budget):
 class Pretagger:
     """--pretagged: a text as the CoNLL-U document both sides annotate. Stanza's tokenize,mwt,pos,lemma (the language's
     default package) tag it; then, seeded by the text, about one word in ten loses its lemma and one in twenty its XPOS
-    (never UPOS: depparse needs one of the two), as PRETAGGED_CASES strips whole fields."""
+    (never UPOS: depparse needs one of the two), as PRETAGGED_CASES strips whole fields. XPOS stays when the
+    constituency parser runs: it reads XPOS (English), and StanzaSharp throws for a word without its tag where Stanza
+    parses an empty one (a deliberate difference, CLAUDE.md "Pretagged")."""
 
-    def __init__(self, models, lang):
+    def __init__(self, models, lang, keep_xpos=False):
+        self.keep_xpos = keep_xpos
         import torch
         self.torch = torch
         self.nlp = stanza_pipeline(models, lang, "default", "tokenize,mwt,pos,lemma")
@@ -405,7 +408,7 @@ class Pretagger:
             for word in sentence.words:
                 if rng.random() < 0.1:
                     word.lemma = None
-                if rng.random() < 0.05:
+                if rng.random() < 0.05 and not self.keep_xpos:
                     word.xpos = None
         conllu = "{:C}".format(doc)
         return conllu + "\n" if conllu else ""
@@ -426,7 +429,7 @@ def run(args, texts):
                     args.pretagged)
     if args.pretagged:  # the texts become documents; the shrinking still works on the text
         CONVERT_OFFSETS[0] = False
-        tag, side_stanza, side_sharp = Pretagger(args.models, args.lang), stanza, sharp
+        tag, side_stanza, side_sharp = Pretagger(args.models, args.lang, "constituency" in processors.split(",")), stanza, sharp
         stanza, sharp = (lambda t: side_stanza(tag(t))), (lambda t: side_sharp(tag(t)))
     clock, found = time.perf_counter(), []
     for i, t in enumerate(texts):
