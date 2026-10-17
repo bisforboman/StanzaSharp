@@ -185,8 +185,8 @@ PR 1 is split in two (advisor's suggestion, 2026-10-17), so the tokenizer half l
 
 | PR | content | effort |
 |---|---|---|
-| 1a | `WordPiece` (with the added tokens), `TransformerInput` (fix_blank_tokens, convert_to_position_list), `Checkpoint.Load` of a `.bin`, the Hugging Face file table and `ModelDownloader.DownloadTransformerAsync` (internal; the Cli sample's `download-transformer`), `make_golden.py --transformer-only` → `tests/golden/transformer/tokenizer.json`, `TransformerTokenizerTests`; CI downloads `tokenizer.json` (466 KB) | **M** |
-| 1b | `ITransformerNet`: the managed encoder (row-invariant, pooled buffers, scalar double attention/LayerNorm/GELU: one version for every CPU) + TorchSharp twin; the 512-piece windows and the layer mixes; golden hidden states for a few sentences (float32 + float64, the badly conditioned ones listed with their bound); bitwise batch- and thread-count invariance tests; CI downloads `pytorch_model.bin` | **L** |
+| 1a (done) | `WordPiece` (with the added tokens), `TransformerInput` (fix_blank_tokens, convert_to_position_list), `Checkpoint.Load` of a `.bin`, the Hugging Face file table and `ModelDownloader.DownloadTransformerAsync` (internal; the Cli sample's `download-transformer`), `make_golden.py --transformer-only` → `tests/golden/transformer/tokenizer.json`, `TransformerTokenizerTests`; CI downloads `tokenizer.json` (466 KB) | **M** |
+| 1b (done) | `ITransformerNet`: the managed encoder (row-invariant, pooled buffers, scalar double attention/LayerNorm/GELU: one version for every CPU) + TorchSharp twin; the 512-piece windows and the layer mixes; golden hidden states for a few sentences (float32 + float64, the badly conditioned ones listed with their bound); bitwise batch- and thread-count invariance tests; CI downloads `pytorch_model.bin` | **L** |
 | 2 | pos, depparse, ner (frozen, layer mixes) as `Pipeline.Alternatives` (`--model pos=combined_electra-large`), the shared encoder cache, golden rows | **M** |
 | 3 | constituency (`bert_layer_mix`, and its sentence boundary vectors: see below), sentiment (LoRA at run time) | **M–L** |
 | 4 | the `default_accurate` package: `Pipeline.Packages`, the transformer in `Pipeline.Dependencies` and the downloader, golden for all eight processors, benchmark rows | **S–M** |
@@ -238,6 +238,12 @@ on Vector512, Vector256 and Vector128 (the same bits) and 4.3e-5 on Scalar (`tra
 - **The tokenizer** (PR 1a) gives transformers' ids, word ids and Stanza's positions on all 1,086 golden cases. Two
   rules the spike's version missed: the added tokens' texts ("[CLS]", "[PAD]", ...) are matched in the raw word, and
   unassigned code points (Cn) are kept (they become [UNK]) though tokenizers' `is_other` lists them.
+- **The encoder** (PR 1b) against Stanza's own `extract_bert_embeddings` on the golden sentences (managed /
+  TorchSharp, the largest distance to the nearer of float32 and float64): ordinary sentences 1.9e-5 / 4.4e-6, the badly
+  conditioned ones 9.9e-4 / 1.5e-3 (bound 1e-2), a 180-word sentence in 512-piece windows 3.9e-6 / 2.9e-6; every SIMD
+  path within 5.5e-6 on the first three sentences. Stanza windows only when the tokenizer's `model_max_length`
+  (tokenizer_config.json) says 512, so that file and `config.json` (the heads, the LayerNorm eps) are in the pinned
+  table too.
 
 ## Decided
 

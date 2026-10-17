@@ -185,18 +185,27 @@ public sealed class PtModelFactAttribute : FactAttribute
 }
 
 /// <summary>
-/// A fact that is skipped, not failed, when a transformer's file is missing from
-/// <c>models/stanza/en/transformer/&lt;name&gt;/</c> (golden shard 1 downloads it; ci.yml's no-skip checks elsewhere exempt
+/// A fact that is skipped, not failed, when one of a transformer's files is missing from
+/// <c>models/stanza/en/transformer/&lt;name&gt;/</c> (golden shard 1 downloads them; ci.yml's no-skip checks elsewhere exempt
 /// the tests by name: <c>Transformer</c>).
 /// </summary>
 public sealed class TransformerFactAttribute : FactAttribute
 {
     public const string Electra = "google/electra-large-discriminator";
 
-    public TransformerFactAttribute(string file)
+    public static string Directory => ModelDownloader.TransformerDirectory(Repo.StanzaModels, Electra);
+
+    public TransformerFactAttribute(params string[] files) => Skip = SkipReason(files);
+
+    internal static string? SkipReason(string[] files)
     {
-        var path = Path.Combine(ModelDownloader.TransformerDirectory(Repo.StanzaModels, Electra), file);
-        if (!File.Exists(path))
-            Skip = $"{path} not found; run StanzaSharp.Cli download-transformer models/stanza/en {Electra} {file}";
+        var missing = files.FirstOrDefault(f => !File.Exists(Path.Combine(Directory, f)));
+        return missing == null ? null : $"{Path.Combine(Directory, missing)} not found; run StanzaSharp.Cli download-transformer models/stanza/en {Electra}";
     }
+}
+
+/// <summary>A theory skipped like <see cref="TransformerFactAttribute"/>.</summary>
+public sealed class TransformerTheoryAttribute : TheoryAttribute
+{
+    public TransformerTheoryAttribute(params string[] files) => Skip = TransformerFactAttribute.SkipReason(files);
 }

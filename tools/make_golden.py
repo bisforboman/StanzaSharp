@@ -93,8 +93,13 @@ Reads <out>/corpus.txt and writes:
                         fix_blank_tokens, convert_to_position_list) for google/electra-large-discriminator, on every golden
                         sentence's words, simplify_punct'ed words and token texts, and on TRANSFORMER_TOKENIZER_CASES;
                         "positions" only where not 0..n+1, "fixed" (the words after fix_blank_tokens) only where it changed any
-                        (`--transformer-only`; needs tools/requirements-transformer.txt and the transformer's tokenizer.json in
-                        <models>/en/transformer/google/electra-large-discriminator)
+                        (`--transformer-only`; needs tools/requirements-transformer.txt and the transformer's files in
+                        <models>/en/transformer/google/electra-large-discriminator, and depparse/combined_electra-large.pt)
+  transformer/hidden.safetensors + hidden.json
+                        Stanza's extract_bert_embeddings on the first INTERMEDIATE_SENTENCES golden sentences and
+                        TRANSFORMER_ILL_CONDITIONED's, in one batch with a sentence of over 512 pieces, float32 and float64
+                        (.f64, rounded to float32): s{i}.legacy (the legacy mix, no endpoints), s{i}.mix (depparse's
+                        bert_layer_mix, with endpoints), long.legacy (every TRANSFORMER_LONG_STRIDE-th word)
   pt/tiny_{legacy,zip}.pt + their stanza_convert.py output (.json/.safetensors)
                         small checkpoints in both torch.save formats for the C# .pt loader tests;
                         `python tools/make_golden.py --pt-only` regenerates just these
@@ -1152,6 +1157,57 @@ TRANSFORMER_TOKENIZER_CASES = [
 ]
 
 
+# Sentences whose hidden states the golden data keeps (TRANSFORMER_HIDDEN): the first golden sentences, and short ones on
+# which ELECTRA-large is badly conditioned in float32 (torch's float32 is up to 7.6e-3 from float64 there,
+# docs/transformer-plan.md), each with the bound its values must meet; the others meet 1e-4 of float32 or float64.
+TRANSFORMER_ILL_CONDITIONED = {"GO TEAM GO": 1e-2, "So does this one .": 1e-2, "Proof .": 1e-2}
+TRANSFORMER_LONG_STRIDE = 10  # the long sentence keeps every 10th word's vector
+
+
+def write_transformer_hidden_golden(models, out, tokenizer):
+    """transformer/hidden.safetensors + hidden.json: Stanza's extract_bert_embeddings on a few sentences, float32 and float64."""
+    from stanza.models.common.bert_embedding import extract_bert_embeddings, load_bert
+
+    golden = Path(out)
+    model, _ = load_bert(str(Path(models) / "en" / "transformer" / TRANSFORMER), local_files_only=True)
+    model.eval()
+    words = []
+    for path in [golden / "pipeline.conllu"] + sorted(golden.glob("validation*.conllu")):
+        for sent in CoNLL.conll2doc(input_file=str(path)).sentences:
+            text = [w.text for w in sent.words]
+            if (path.name == "pipeline.conllu" and len(words) < INTERMEDIATE_SENTENCES) or " ".join(text) in TRANSFORMER_ILL_CONDITIONED:
+                if text not in words:
+                    words.append(text)
+    assert len(words) == INTERMEDIATE_SENTENCES + len(TRANSFORMER_ILL_CONDITIONED), [" ".join(w) for w in words]
+    long_words = TRANSFORMER_TOKENIZER_CASES[-1]
+    depparse = torch.load(str(Path(models) / "en" / "depparse" / "combined_electra-large.pt"), map_location="cpu", weights_only=True)
+    mix_weight = depparse["model"]["bert_layer_mix.weight"]  # [1, 4]
+
+    tensors, index = {}, []
+    with torch.no_grad():
+        for dtype, suffix in ((torch.float32, ""), (torch.float64, ".f64")):
+            m = model.to(dtype)
+            mix = torch.nn.Linear(4, 1, bias=False).to(dtype)
+            mix.weight.copy_(mix_weight.to(dtype))
+            # One batch, as a processor would send it: padded to the longest, the long sentence's windows included.
+            data = words + [long_words]
+            legacy = extract_bert_embeddings(TRANSFORMER, tokenizer, m, data, "cpu", keep_endpoints=False)
+            mixed = extract_bert_embeddings(TRANSFORMER, tokenizer, m, data, "cpu", keep_endpoints=True, bert_layer_mix=mix)
+            for i, w in enumerate(words):  # float64 stored rounded to float32: 6e-8 relative, far under the tolerances
+                tensors[f"s{i}.legacy{suffix}"] = legacy[i].float().numpy()
+                tensors[f"s{i}.mix{suffix}"] = mixed[i].float().numpy()
+            tensors[f"long.legacy{suffix}"] = legacy[-1][::TRANSFORMER_LONG_STRIDE].float().numpy()
+        model.float()
+    for i, w in enumerate(words):
+        index.append({"sentence": i, "words": w, "bound": TRANSFORMER_ILL_CONDITIONED.get(" ".join(w))})
+    write_safetensors(tensors, golden / "transformer" / "hidden.safetensors", {"stanza": stanza.__version__})
+    with open(golden / "transformer" / "hidden.json", "w", encoding="utf-8", newline="\n") as f:
+        json.dump({"transformer": TRANSFORMER, "stanza": stanza.__version__, "sentences": index, "long": long_words,
+                   "long_stride": TRANSFORMER_LONG_STRIDE, "mix": "depparse/combined_electra-large bert_layer_mix.weight",
+                   "mix_weight": mix_weight[0].tolist()}, f, indent=1, ensure_ascii=False)
+    print(f"transformer/hidden.safetensors: {', '.join(f'{k} {list(v.shape)}' for k, v in tensors.items() if not k.endswith('.f64'))}")
+
+
 def write_transformer_golden(models, out):
     """transformer/tokenizer.json: Stanza's transformer input stage (extract_base_embeddings up to the model call)."""
     from stanza.models.common.bert_embedding import convert_to_position_list, fix_blank_tokens, load_tokenizer
@@ -1205,6 +1261,7 @@ def write_transformer_golden(models, out):
         f.write("\n]}\n")
     fixed = sum("fixed" in c for c in cases)
     print(f"transformer/tokenizer.json: {len(cases)} cases, {sum(len(c['ids']) for c in cases)} ids, {fixed} with fix_blank_tokens")
+    write_transformer_hidden_golden(models, out, tokenizer)
 
 
 def main():
