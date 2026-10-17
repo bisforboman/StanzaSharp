@@ -46,6 +46,7 @@ group() {
       done
       echo "models/stanza/en --package eslspok --model tokenize=eslspok_charlm"
       echo "models/stanza/en --processors tokenize,mwt --model tokenize=combined_charlm"
+      echo "models/stanza/en --processors tokenize,mwt,pos,lemma --model lemma=combined_charlm"
       ;;
     de-treebank-choices)
       for package in gsd hdt; do

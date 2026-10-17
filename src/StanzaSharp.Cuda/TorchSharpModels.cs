@@ -39,8 +39,8 @@ internal sealed class TorchSharpModels(torch.Device? device, bool disableTf32) :
 
     public override MwtExpander Mwt(string basePath) => MwtExpander.Load(basePath);
 
-    public override Lemmatizer Lemma(string basePath, Charlms charlms) =>
-        Lemmatizer.Load(basePath, forward: Find(_charlms, charlms.Forward), backward: Find(_charlms, charlms.Backward));
+    public override Lemmatizer Lemma(string basePath, Charlms charlms, Pretrain? pretrain) =>
+        Lemmatizer.Load(basePath, forward: Find(_charlms, charlms.Forward), backward: Find(_charlms, charlms.Backward), pretrain: pretrain);
 
     public override PosTagger Pos(string basePath, Pretrain pretrain, Charlms charlms) =>
         PosTagger.Load(basePath, pretrain, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward));
