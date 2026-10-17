@@ -130,9 +130,9 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
                         dst[d] = pre[d] + delta[d];
                     if (t < batch[i].Count)
                     {
-                        var (forward, backward, offset) = reps[i];
-                        forward.AsSpan((offset + t) * dim, dim).CopyTo(dst[_dim..]);
-                        backward.AsSpan((offset + t) * dim, dim).CopyTo(dst[(_dim + dim)..]);
+                        var (forward, backward) = reps[i];
+                        forward.AsSpan(t * dim, dim).CopyTo(dst[_dim..]);
+                        backward.AsSpan(t * dim, dim).CopyTo(dst[(_dim + dim)..]);
                     }
                     else
                     {
@@ -296,19 +296,19 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
     }
 
     /// <summary>
-    /// Each sentence's forward and backward charlm rows (token t at row offset + t of the arrays): from the cache where
+    /// Each sentence's forward and backward charlm rows (token t at row t of the segments): from the cache where
     /// it has them, else computed into arrays rented here and added to <paramref name="rented"/>.
     /// </summary>
-    private (float[] Forward, float[] Backward, int Offset)[] CharlmFeatures(IReadOnlyList<IReadOnlyList<string>> batch, CharlmCache? charlms,
+    private (ArraySegment<float> Forward, ArraySegment<float> Backward)[] CharlmFeatures(IReadOnlyList<IReadOnlyList<string>> batch, CharlmCache? charlms,
         IReadOnlyList<Sentence?>? cacheKeys, List<float[]> rented, CancellationToken ct)
     {
         int dim = _charlmForward.HiddenDim;
-        var reps = new (float[], float[], int)[batch.Count];
+        var reps = new (ArraySegment<float>, ArraySegment<float>)[batch.Count];
         var missing = new List<int>();
         for (int i = 0; i < batch.Count; i++)
         {
             if (cacheKeys?[i] is { } key && charlms!.TryGetArrays(key, out var cached))
-                reps[i] = (cached.Forward.Array!, cached.Backward.Array!, cached.Forward.Offset / dim); // both at the same rows
+                reps[i] = cached;
             else
                 missing.Add(i);
         }
@@ -329,8 +329,9 @@ internal sealed unsafe class ManagedSentimentNet : ISentimentNet
         int offset = 0;
         foreach (int i in missing)
         {
-            reps[i] = (forwardReps, backwardReps, offset);
-            offset += batch[i].Count;
+            int n = batch[i].Count * dim;
+            reps[i] = (new(forwardReps, offset, n), new(backwardReps, offset, n));
+            offset += n;
         }
 
         return reps;
