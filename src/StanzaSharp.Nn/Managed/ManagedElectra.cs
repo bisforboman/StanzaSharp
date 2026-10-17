@@ -72,7 +72,7 @@ internal sealed unsafe class ManagedElectra
     /// Runs every sentence's ids (at most <see cref="MaxPositions"/>) and returns, per sentence, hidden_states[L] for each L
     /// in <paramref name="keep"/> (0 = the embeddings, L = after layer L), each [pieces, Hidden].
     /// </summary>
-    public float[][][] Forward(IReadOnlyList<int[]> sentences, IReadOnlyList<int> keep, CancellationToken ct = default)
+    public float[][][] Forward(IReadOnlyList<int[]> sentences, IReadOnlyList<int> keep, CancellationToken ct = default, bool rowInvariant = false)
     {
         int h = Hidden, rows = 0;
         var starts = new int[sentences.Count + 1];
@@ -117,13 +117,13 @@ internal sealed unsafe class ManagedElectra
                 var layer = _layers[l];
                 fixed (float* b1 = layer.QkvBias, b2 = layer.OutBias, b3 = layer.UpBias, b4 = layer.DownBias)
                 {
-                    Gemm.Run(px, rows, h, layer.Qkv, b1, pq, 3 * h, ct);
+                    Gemm.Run(px, rows, h, layer.Qkv, b1, pq, 3 * h, ct, rowInvariant);
                     Attention(pq, pc, starts);
-                    Gemm.Run(pc, rows, h, layer.Out, b2, pt, h, ct);
+                    Gemm.Run(pc, rows, h, layer.Out, b2, pt, h, ct, rowInvariant);
                     LayerNorm(x, tmp, rows, layer.Ln1G, layer.Ln1B);
-                    Gemm.Run(px, rows, h, layer.Up, b3, pu, inter, ct);
+                    Gemm.Run(px, rows, h, layer.Up, b3, pu, inter, ct, rowInvariant);
                     Gelu(up, rows * inter);
-                    Gemm.Run(pu, rows, inter, layer.Down, b4, pt, h, ct);
+                    Gemm.Run(pu, rows, inter, layer.Down, b4, pt, h, ct, rowInvariant);
                     LayerNorm(x, tmp, rows, layer.Ln2G, layer.Ln2B);
                 }
 

@@ -40,6 +40,7 @@ internal static class TransformerSpike
                 case "--threads" when i + 1 < args.Length: ManagedThreads.Count = int.Parse(args[++i]); break;
                 case "--batch" when i + 1 < args.Length: batch = int.Parse(args[++i]); break;
                 case "--runs" when i + 1 < args.Length: runs = int.Parse(args[++i]); break;
+                case "--invariance": break;
                 case "--dump" when i + 1 < args.Length: dump = args[++i]; break;
                 case "--ids" when i + 1 < args.Length: idsFile = args[++i]; break;
                 default: Console.Error.WriteLine(Usage); return 2;
@@ -69,6 +70,27 @@ internal static class TransformerSpike
         {
             var given = SafeTensorFile.Load(idsFile);
             encoded = [.. Enumerable.Range(0, given.Tensors.Count).Select(s => (given.Read<long>($"s{s}.ids").Select(v => (int)v).ToArray(), Array.Empty<int>()))];
+        }
+
+        if (args.Contains("--invariance"))
+        {
+            // Bits of each of the first 64 sentences alone vs inside one 64-sentence batch, with and without rowInvariant.
+            var first = encoded.Take(64).Select(e => e.Ids).ToList();
+            foreach (bool invariant in new[] { false, true })
+            {
+                var together = encoder.Forward(first, [24], rowInvariant: invariant);
+                int differ = 0;
+                for (int s = 0; s < first.Count; s++)
+                {
+                    var alone = encoder.Forward([first[s]], [24], rowInvariant: invariant)[0][0];
+                    if (!alone.AsSpan().SequenceEqual(together[s][0]))
+                        differ++;
+                }
+
+                Console.WriteLine($"rowInvariant {invariant}: {differ} of {first.Count} sentences differ in some bit alone vs batched");
+            }
+
+            return 0;
         }
 
         var refFile = SafeTensorFile.Load(reference + ".safetensors");

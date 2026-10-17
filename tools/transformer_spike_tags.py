@@ -39,13 +39,15 @@ def main():
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     nlp = stanza.Pipeline("en", dir=os.path.join(root, "models", "stanza"), package=None,
                           processors={"tokenize": "combined", "pos": "combined_electra-large",
-                                      "lemma": "combined_nocharlm", "depparse": "combined_electra-large"},
+                                      "lemma": "combined_nocharlm", "depparse": "combined_electra-large",
+                                      "ner": "ontonotes-ww-multi_electra-large"},
                           tokenize_pretokenized=True, download_method=None,
                           resources_filepath=os.path.join(root, "src", "StanzaSharp.Tool", "stanza_resources_en.json"))
     paths = [os.path.join(root, "tests", "golden", "pipeline.conllu")] + sorted(glob.glob(os.path.join(root, "tests", "golden", "validation*.conllu")))
     data = [s for p in paths for s in golden_sentences(p)]
     bert = nlp.processors["pos"].trainer.model.bert_model
     assert nlp.processors["depparse"].trainer.model.bert_model is bert, "pos and depparse share one transformer"
+    assert nlp.processors["ner"].trainers[0].model.bert_model is bert, "ner shares it too"
     if args.mode == "record":
         seen = {}
         call = bert.forward
@@ -102,7 +104,8 @@ def main():
                     diffs[f] += 1
                     if sum(diffs.values()) <= 10:
                         print(f"  {f}: {wa.text!r} {getattr(wa, f)} -> {getattr(wb, f)}")
-    print({"words": words, "differences": diffs})
+    ner = sum(ta.ner != tb.ner for a, b in zip(reference.sentences, managed.sentences) for ta, tb in zip(a.tokens, b.tokens))
+    print({"words": words, "differences": diffs, "ner tags": ner})
     open(args.prefix + ".managed.conllu", "w", encoding="utf-8").write("{:C}\n".format(managed))
 
 
