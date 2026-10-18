@@ -125,6 +125,11 @@ contractions, social and tech texts and the long sentence: `models/default_accur
 The treebanks' transformer taggers and parsers (pos and depparse `ewt`, `gum`, `lines`, `partut`, `atis`, `childes`,
 `eslspok` + `_electra-large`, each on its package, corpus.txt) and ner `ontonotes_electra-large` (corpus.txt and
 validation.txt, 131 entities) match too: `models/pos+depparse=<treebank>_electra-large/`, `models/ner=ontonotes_electra-large/`.
+On the managed backend a short call runs the frozen transformer and the LoRA adapters' nets in one sweep over the weights
+([round 48](performance/round-48-joint-encoder-pass.md)); every row above runs that path, and
+`TransformerKernelTests.JointPass_GivesEachGroupItsOwnNetsBits` checks that each sentence keeps the bits its own net gives
+it alone (every native path, 1 and 4 threads, either order), with `TransformerCacheTests`' fake-net `Prefill` tests in
+build-test.
 
 German's `default_accurate` (`german-nlp-group/electra-base-german-uncased`, a base ELECTRA) matches the same way, in
 `tests/golden/de/models/`: pos and depparse `combined_german-nlp-electra` sharing one frozen pass (79 sentences, with

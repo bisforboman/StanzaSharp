@@ -56,7 +56,7 @@ internal sealed class TransformerCache(ITransformerNet net, int maxPieces = Tran
         _pieces = 0;
     }
 
-    private sealed class IdsComparer : IEqualityComparer<int[]>
+    internal sealed class IdsComparer : IEqualityComparer<int[]>
     {
         public static readonly IdsComparer Instance = new();
 

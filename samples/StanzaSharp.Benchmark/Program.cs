@@ -53,6 +53,8 @@ if (args is ["text-fuzz", ..])
     return TextFuzz.Run(args[1..]); // tools/text_fuzz.py; docs/text-fuzzing.md
 if (args is ["startup", ..])
     return Startup.Run(args[1..], FindRepoRoot()); // tools/startup.py; docs/performance/round-17-startup.md
+if (args is ["encoder-scaling", ..])
+    return EncoderScaling.Run(args[1..]); // #169: docs/performance/round-48-joint-encoder-pass.md
 if (args is ["transformer-spike", ..])
     return TransformerSpike.Run(args[1..], FindRepoRoot()); // tools/transformer_spike.py; docs/transformer-plan.md
 if (args is ["managed-spike", ..])

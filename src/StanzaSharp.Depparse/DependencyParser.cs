@@ -70,6 +70,11 @@ internal sealed class DependencyParser : IDisposable
     /// <summary>Whether this parser reads a transformer (<c>_electra-large</c>).</summary>
     internal bool UsesTransformer => _transformer != null;
 
+    /// <summary>The sentences this parser will send its transformer in <paramref name="doc"/>, for <see cref="TransformerEmbedder.Prefill"/> (null without one).</summary>
+    internal TransformerReader? TransformerReader(Document doc) => _transformer == null
+        ? null
+        : new TransformerReader(_transformer, _layerMix, [.. doc.Sentences.Where(s => s.Words.Any()).Select(s => (IReadOnlyList<string>)[.. s.Words.Select(w => Punct.Simplify(w.Text))])]);
+
     internal static void CheckCharlms(bool charlm, bool? forward, bool? backward)
     {
         if (charlm && (forward != true || backward != false))

@@ -110,10 +110,28 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
 
     private static float[] Padded(float[] bias) => bias.Length % PackedMatrix.NR == 0 ? bias : [.. bias, .. new float[PackedMatrix.NR - (bias.Length % PackedMatrix.NR)]];
 
-    public float[][] Encode(IReadOnlyList<int[]> sentences, int lastLayers, CancellationToken ct = default)
+    public float[][] Encode(IReadOnlyList<int[]> sentences, int lastLayers, CancellationToken ct = default) =>
+        EncodeGroups([(this, sentences)], lastLayers, ct)[0];
+
+    /// <summary>Every net made from one loaded transformer (it and its <see cref="WithLora"/> nets) encodes in one sweep.</summary>
+    public bool EncodesJointly => true;
+
+    public float[][][]? EncodeJoint(IReadOnlyList<(ITransformerNet Net, IReadOnlyList<int[]> Sentences)> groups, int lastLayers, CancellationToken ct = default)
+    {
+        var nets = groups.Select(g => g.Net as ManagedTransformer).ToList();
+        return nets.All(n => n != null && ReferenceEquals(n._layers, _layers))
+            ? EncodeGroups([.. groups.Select((g, i) => (nets[i]!, g.Sentences))], lastLayers, ct)
+            : null;
+    }
+
+    // One sweep over the layers for every group's sentences: the base layers run over all rows (row-invariant, so a row's
+    // bits don't depend on the others), and each group's adapters over its own rows only, in WithLora's order (base and
+    // bias, then the adapter), so each sentence gets the bits its own net gives it alone.
+    private float[][][] EncodeGroups(IReadOnlyList<(ManagedTransformer Net, IReadOnlyList<int[]> Sentences)> groups, int lastLayers, CancellationToken ct)
     {
         if (lastLayers < 1 || lastLayers > _layers.Length + 1)
             throw new ArgumentOutOfRangeException(nameof(lastLayers));
+        var sentences = groups.SelectMany(g => g.Sentences).ToList();
         int h = Config.Hidden, inter = _layers[0].Up.PaddedN, rows = 0, vocab = _words.Length / h;
         var starts = new int[sentences.Count + 1];
         for (int s = 0; s < sentences.Count; s++)
@@ -127,16 +145,31 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
         }
 
         starts[^1] = rows;
+
+        // Each group's first row and row count, and its sentences' place in the flat list.
+        var firstRow = new int[groups.Count];
+        var groupRows = new int[groups.Count];
+        for (int g = 0, first = 0; g < groups.Count; first += groups[g++].Sentences.Count)
+        {
+            firstRow[g] = starts[first];
+            groupRows[g] = starts[first + groups[g].Sentences.Count] - starts[first];
+        }
+
         var pool = ArrayPool<float>.Shared;
-        var result = new float[sentences.Count][];
+        var flat = new float[sentences.Count][];
         for (int s = 0; s < sentences.Count; s++)
-            result[s] = pool.Rent(lastLayers * (starts[s + 1] - starts[s]) * h);
+            flat[s] = pool.Rent(lastLayers * (starts[s + 1] - starts[s]) * h);
+        var result = new float[groups.Count][][];
+        for (int g = 0, first = 0; g < groups.Count; first += groups[g++].Sentences.Count)
+            result[g] = flat[first..(first + groups[g].Sentences.Count)];
         if (rows == 0)
             return result;
 
         float[] x = pool.Rent(rows * h), qkv = pool.Rent(rows * 3 * h), context = pool.Rent(rows * h), tmp = pool.Rent(rows * h), up = pool.Rent(rows * inter);
-        int rank = _adapters?.SelectMany(a => a.Qkv.Concat([a.Out, a.Up, a.Down])).OfType<Adapter>().Max(a => a.A.PaddedN) ?? 0;
-        float[]? low = _adapters == null ? null : pool.Rent(rows * rank), delta = _adapters == null ? null : pool.Rent(rows * inter);
+        int rank = groups.SelectMany(g => g.Net._adapters ?? []).SelectMany(a => a.Qkv.Concat([a.Out, a.Up, a.Down])).OfType<Adapter>()
+            .Select(a => a.A.PaddedN).DefaultIfEmpty(0).Max();
+        bool lora = rank > 0;
+        float[]? low = lora ? pool.Rent(rows * rank) : null, delta = lora ? pool.Rent(rows * inter) : null;
         try
         {
             for (int s = 0; s < sentences.Count; s++)
@@ -160,21 +193,34 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
                 {
                     ct.ThrowIfCancellationRequested();
                     var layer = _layers[l];
-                    var adapters = _adapters?[l];
+
+                    // adapter(input, its row stride, output, its row stride) for every group that has one at this point.
+                    void Adapt(Func<LayerAdapters, Adapter?> pick, float* input, int k, float* output, int ldOutput)
+                    {
+                        for (int g = 0; g < groups.Count; g++)
+                        {
+                            if (groups[g].Net._adapters?[l] is { } adapters && groupRows[g] > 0)
+                            {
+                                AddLora(pick(adapters), input + ((long)firstRow[g] * k), groupRows[g], k, output + ((long)firstRow[g] * ldOutput), ldOutput,
+                                    groups[g].Net._scaling, low, delta, ct);
+                            }
+                        }
+                    }
+
                     fixed (float* b1 = layer.QkvBias, b2 = layer.OutBias, b3 = layer.UpBias, b4 = layer.DownBias)
                     {
                         Gemm.Run(px, rows, h, layer.Qkv, b1, pq, 3 * h, ct, rowInvariant: true);
-                        foreach (var a in adapters?.Qkv ?? [])
-                            AddLora(a, px, rows, h, pq, 3 * h, low!, delta!, ct);
+                        for (int q = 0; q < 2; q++)
+                            Adapt(a => q < a.Qkv.Length ? a.Qkv[q] : null, px, h, pq, 3 * h);
                         Attention(pq, pc, starts);
                         Gemm.Run(pc, rows, h, layer.Out, b2, pt, h, ct, rowInvariant: true);
-                        AddLora(adapters?.Out, pc, rows, h, pt, h, low, delta, ct);
+                        Adapt(a => a.Out, pc, h, pt, h);
                         LayerNorm(px, pt, rows, layer.Ln1G, layer.Ln1B);
                         Gemm.Run(px, rows, h, layer.Up, b3, pu, inter, ct, rowInvariant: true);
-                        AddLora(adapters?.Up, px, rows, h, pu, inter, low, delta, ct);
+                        Adapt(a => a.Up, px, h, pu, inter);
                         Gelu(pu, rows * inter);
                         Gemm.Run(pu, rows, inter, layer.Down, b4, pt, h, ct, rowInvariant: true);
-                        AddLora(adapters?.Down, pu, rows, inter, pt, h, low, delta, ct);
+                        Adapt(a => a.Down, pu, inter, pt, h);
                         LayerNorm(px, pt, rows, layer.Ln2G, layer.Ln2B);
                     }
 
@@ -202,19 +248,19 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
             for (int s = 0; s < sentences.Count; s++)
             {
                 int n = starts[s + 1] - starts[s];
-                new ReadOnlySpan<float>(states + ((long)starts[s] * h), n * h).CopyTo(result[s].AsSpan(k * n * h, n * h));
+                new ReadOnlySpan<float>(states + ((long)starts[s] * h), n * h).CopyTo(flat[s].AsSpan(k * n * h, n * h));
             }
         }
     }
 
     // peft's LoRA Linear in eval mode: output += B(A(input))·scaling, after the base layer's bias (float32, B's product
     // scaled, then added, as torch does). Both GEMMs are row-invariant like the base layers.
-    private void AddLora(Adapter? adapter, float* input, int rows, int k, float* output, int ldOutput, float[]? low, float[]? delta, CancellationToken ct)
+    private static void AddLora(Adapter? adapter, float* input, int rows, int k, float* output, int ldOutput, float scaling, float[]? low, float[]? delta,
+        CancellationToken ct)
     {
         if (adapter == null)
             return;
         int rank = adapter.A.PaddedN, ld = adapter.B.PaddedN, n = adapter.B.N, column = adapter.Column;
-        float scaling = _scaling;
         fixed (float* pl = low, pd = delta)
         {
             Gemm.Run(input, rows, k, adapter.A, null, pl, rank, ct, rowInvariant: true);

@@ -170,6 +170,24 @@ public class TransformerCacheTests
 
         public int Sentences { get; private set; }
 
+        public int JointCalls { get; private set; }
+
+        // A LoRA net's states are offset by this, so they differ from the frozen net's for the same ids.
+        public float Offset { get; init; }
+
+        public FakeNet? Base { get; init; }
+
+        public bool EncodesJointly { get; init; } = true;
+
+        public float[][][]? EncodeJoint(IReadOnlyList<(ITransformerNet Net, IReadOnlyList<int[]> Sentences)> groups, int lastLayers, CancellationToken ct = default)
+        {
+            var root = Base ?? this;
+            if (groups.Any(g => g.Net is not FakeNet f || (f.Base ?? f) != root))
+                return null;
+            root.JointCalls++;
+            return [.. groups.Select(g => ((FakeNet)g.Net).Encode(g.Sentences, lastLayers, ct))];
+        }
+
         public float[][] Encode(IReadOnlyList<int[]> sentences, int lastLayers, CancellationToken ct = default)
         {
             Sentences += sentences.Count;
@@ -181,7 +199,7 @@ public class TransformerCacheTests
                     for (int p = 0; p < ids.Length; p++)
                     {
                         for (int c = 0; c < 2; c++)
-                            states[((k * ids.Length) + p) * 2 + c] = ids[p] * 1000 + k * 100 + c;
+                            states[((k * ids.Length) + p) * 2 + c] = ids[p] * 1000 + k * 100 + c + Offset;
                     }
                 }
 
@@ -189,7 +207,7 @@ public class TransformerCacheTests
             })];
         }
 
-        public ITransformerNet WithLora(LoraWeights lora) => new FakeNet();
+        public ITransformerNet WithLora(LoraWeights lora) => new FakeNet { Base = this, Offset = 0.5f };
 
         public void Dispose()
         {
@@ -267,5 +285,63 @@ public class TransformerCacheTests
         var other = new TransformerEmbedder(lora, embedder.Tokenizer, 512, TransformerFactAttribute.Electra);
         other.Embed(Sentences, false, null, cache);
         Assert.Equal(2, lora.Sentences);
+    }
+
+    private static TransformerEmbedder Lora(TransformerEmbedder embedder) =>
+        new((FakeNet)embedder.Net.WithLora(new LoraWeights(new Dictionary<string, (float[], float[], int)>(), 2)), embedder.Tokenizer, 512,
+            TransformerFactAttribute.Electra);
+
+    [Fact]
+    public void Prefill_EncodesEveryReaderInOneSweep_IntoItsOwnNetsCache()
+    {
+        var (embedder, net) = Embedder();
+        var lora = Lora(embedder);
+        var caches = new Dictionary<ITransformerNet, TransformerCache>();
+        TransformerCache CacheOf(ITransformerNet n) => caches.TryGetValue(n, out var c) ? c : caches[n] = new TransformerCache(n);
+
+        // pos and ner on the frozen net (the same sentences, so encoded once), sentiment on its LoRA net.
+        Assert.True(TransformerEmbedder.Prefill(
+            [new(embedder, null, Sentences), new(embedder, [1f, 0, 0, 0], Sentences), new(lora, null, [Sentences[1]])], CacheOf));
+        Assert.Equal(1, net.JointCalls);
+        Assert.Equal(2, net.Sentences);
+        Assert.Equal(1, ((FakeNet)lora.Net).Sentences);
+
+        // Each reader now finds its states, mixed as without the prefill.
+        var (fresh, _) = Embedder();
+        Assert.Equal(fresh.Embed(Sentences, false, null), embedder.Embed(Sentences, false, null, caches[net]));
+        Assert.Equal(Lora(fresh).Embed([Sentences[1]], false, null), lora.Embed([Sentences[1]], false, null, caches[lora.Net]));
+        Assert.Equal(2, net.Sentences);
+        Assert.Equal(1, ((FakeNet)lora.Net).Sentences);
+
+        // The frozen cache never holds the LoRA states and vice versa.
+        Assert.Equal(2, caches.Count);
+        foreach (var cache in caches.Values)
+            cache.Dispose();
+    }
+
+    [Fact]
+    public void Prefill_DoesNothing_ForOneReader_OtherMixes_OrANetThatCant()
+    {
+        var (embedder, net) = Embedder();
+        TransformerCache Fail(ITransformerNet n) => throw new InvalidOperationException("no cache should be made");
+        Assert.False(TransformerEmbedder.Prefill([new(embedder, null, Sentences)], Fail));
+        Assert.False(TransformerEmbedder.Prefill([new(embedder, null, Sentences), new(embedder, [1f, 1f], Sentences)], Fail)); // a 2-layer mix isn't cached
+
+        var torch = new TransformerEmbedder(new FakeNet { EncodesJointly = false }, embedder.Tokenizer, 512, TransformerFactAttribute.Electra);
+        Assert.False(TransformerEmbedder.Prefill([new(torch, null, Sentences), new(torch, null, Sentences)], Fail));
+        Assert.Equal(0, net.JointCalls);
+        Assert.Equal(0, net.Sentences);
+    }
+
+    [Fact]
+    public void Prefill_DoesNothing_PastOneEncoderCall()
+    {
+        var (embedder, net) = Embedder();
+
+        // 200 sentences of distinct lengths (so distinct ids), over 20,000 pieces: more than one call's BatchPieces.
+        List<IReadOnlyList<string>> many = [.. Enumerable.Range(1, 200).Select(n => (IReadOnlyList<string>)[.. Enumerable.Repeat("cat", n)])];
+        TransformerCache Fail(ITransformerNet n) => throw new InvalidOperationException("no cache should be made");
+        Assert.False(TransformerEmbedder.Prefill([new(embedder, null, many), new(embedder, null, many)], Fail));
+        Assert.Equal(0, net.Sentences);
     }
 }

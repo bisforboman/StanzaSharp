@@ -67,6 +67,11 @@ internal sealed class PosTagger : IDisposable
     /// <summary>Whether this tagger reads a transformer (<c>_electra-large</c>).</summary>
     internal bool UsesTransformer => _transformer != null;
 
+    /// <summary>The sentences this tagger will send its transformer in <paramref name="doc"/>, for <see cref="TransformerEmbedder.Prefill"/> (null without one).</summary>
+    internal TransformerReader? TransformerReader(Document doc) => _transformer == null
+        ? null
+        : new TransformerReader(_transformer, _layerMix, [.. doc.Sentences.Where(s => s.Words.Any()).Select(s => (IReadOnlyList<string>)[.. s.Words.Select(w => Punct.Simplify(w.Text))])]);
+
     /// <summary>The vocabularies' sizes: words, UPOS, and the XPOS vocabulary (a scorer per part if composite).</summary>
     internal static (int Words, int Upos, XposVocab Xpos) Counts(Checkpoint ckpt)
     {

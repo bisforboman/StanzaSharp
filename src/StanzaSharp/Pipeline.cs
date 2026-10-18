@@ -1069,12 +1069,35 @@ public sealed class Pipeline : IDisposable
             && _cacheOptions.IsEnabled ? new CharlmCache(_cacheOptions.MaxWords) : null;
         CharlmCache? CacheFor(string processor) => Shares(processor) ? charlms : null;
 
-        // The transformer states, for the processors after the first that reads them (Stanza runs it once per processor).
-        int transformerReaders = (_pos?.UsesTransformer == true ? 1 : 0) + (_parser?.UsesTransformer == true ? 1 : 0) + (_depparse?.UsesTransformer == true ? 1 : 0)
-            + (_ner?.UsesTransformer == true ? 1 : 0);
-        using var transformers = transformerReaders > 1 ? new TransformerCache(_transformer!.Net) : null;
+        // The transformer states, for the processors after the first that reads them (Stanza runs it once per processor):
+        // one cache per net (the frozen transformer, each LoRA reader's own). On a short call (managed) every reader's
+        // sentences are encoded up front in one sweep over the layers (#169), else each net runs as its readers ask.
+        var caches = new Dictionary<ITransformerNet, TransformerCache>();
+        TransformerCache CacheOf(ITransformerNet net) => caches.TryGetValue(net, out var cache) ? cache : caches[net] = new TransformerCache(net);
+        TransformerCache? TransformersFor(TransformerReader? reader) => reader == null ? null : caches.GetValueOrDefault(reader.Embedder.Net);
+        try
+        {
+            var readers = new[] { _pos?.TransformerReader(doc), _parser?.TransformerReader(doc), _depparse?.TransformerReader(doc),
+                _sentiment?.TransformerReader(doc), _ner?.TransformerReader(doc), };
+            bool joint = _transformer != null && Step("transformer", () => TransformerEmbedder.Prefill([.. readers.OfType<TransformerReader>()], CacheOf, ct), ct);
+            if (!joint && _transformer != null && readers.Count(r => r != null && r.Embedder.Net == _transformer.Net) > 1)
+                CacheOf(_transformer.Net);
+            return Annotate(doc, charlms, CacheFor, readers, TransformersFor, ct);
+        }
+        finally
+        {
+            foreach (var cache in caches.Values)
+                cache.Dispose();
+        }
+    }
+
+    // The processors after mwt, in Stanza's order; readers[i] is the transformer reader of pos, constituency, depparse,
+    // sentiment and ner (null without one).
+    private Document Annotate(Document doc, CharlmCache? charlms, Func<string, CharlmCache?> cacheFor, TransformerReader?[] readers,
+        Func<TransformerReader?, TransformerCache?> transformersFor, CancellationToken ct)
+    {
         if (_pos != null)
-            Step("pos", () => _pos.Process(doc, charlms, ct, transformers), ct);
+            Step("pos", () => _pos.Process(doc, charlms, ct, transformersFor(readers[0])), ct);
         if (_lemma != null)
             Step("lemma", () => _lemma.Process(doc, ct), ct);
         else if (_identityLemma)
@@ -1082,16 +1105,16 @@ public sealed class Pipeline : IDisposable
 
         // Stanza's order (PIPELINE_NAMES). Only the CoNLL-U comment order shows it, and Conllu.Write fixes that.
         if (_parser != null)
-            Step("constituency", () => _parser.Process(doc, CacheFor("constituency"), ct, transformers), ct);
+            Step("constituency", () => _parser.Process(doc, cacheFor("constituency"), ct, transformersFor(readers[1])), ct);
 
         // Depparse runs the charlms with a ROOT word in front, so of the tagger's outputs only the backward ones apply, with
         // ROOT run on from the tagger's final state (managed; DependencyParser.Process).
         if (_depparse != null)
-            Step("depparse", () => _depparse.Process(doc, CacheFor("depparse"), ct, transformers), ct);
+            Step("depparse", () => _depparse.Process(doc, cacheFor("depparse"), ct, transformersFor(readers[2])), ct);
         if (_sentiment != null)
-            Step("sentiment", () => _sentiment.Process(doc, CacheFor("sentiment"), ct), ct);
+            Step("sentiment", () => _sentiment.Process(doc, cacheFor("sentiment"), ct, transformersFor(readers[3])), ct);
         if (_ner != null)
-            Step("ner", () => _ner.Process(doc, CacheFor("ner"), ct, transformers), ct);
+            Step("ner", () => _ner.Process(doc, cacheFor("ner"), ct, transformersFor(readers[4])), ct);
         return doc;
     }
 

@@ -310,7 +310,8 @@ using var fast = Pipeline.Load("models/stanza/en", options);
 - `"default_accurate"`: all eight processors, with Stanza's most accurate English models. Its pos, constituency,
   depparse and ner read the transformer `google/electra-large-discriminator` (1.3 GB from Hugging Face, which
   `DownloadAsync(dir, options)` fetches into `transformer/` next to the models), frozen and run once per sentence for all
-  four; sentiment applies its own LoRA adapters to the same transformer, a second pass. tokenize and lemma are the
+  four; sentiment applies its own LoRA adapters to the same transformer, a second pass (on the managed backend a short call
+  runs both in one sweep). tokenize and lemma are the
   `combined_charlm` models. Output is byte-identical to Python Stanza's `package='default_accurate'`. It is about 5.5 times
   slower than `default` and peaks at about 4.2 GB instead of 1.1 GB (4 cores;
   [round 43](docs/performance/round-43-default-accurate.md)). German's (`Language = "de"`) reads
@@ -354,7 +355,8 @@ The models beyond the packages':
   `ontonotes-ww-multi_electra-large`, constituency `ptb3-revised_electra-large` and sentiment `sstplus_electra-large`.
   They read `google/electra-large-discriminator`, 1.3 GB from Hugging Face, which `DownloadAsync(dir, options)` fetches
   into `transformer/`. The first four read it frozen and share one pass per sentence; sentiment applies its LoRA
-  adapters at run time, a second pass. A pass adds about 70 ms to a short sentence on 4 cores. The treebanks' taggers
+  adapters at run time, a second pass. A pass adds about 70 ms to a short sentence on 4 cores; on the managed backend a
+  short call runs both in one sweep over the weights ([round 48](docs/performance/round-48-joint-encoder-pass.md)). The treebanks' taggers
   and parsers on the same transformer: pos and depparse `ewt_electra-large`, `gum_electra-large`, `lines_electra-large`,
   `partut_electra-large`, `atis_electra-large`, `childes_electra-large`, `eslspok_electra-large`, and ner
   `ontonotes_electra-large` (18 OntoNotes types, FastText Crawl vectors).

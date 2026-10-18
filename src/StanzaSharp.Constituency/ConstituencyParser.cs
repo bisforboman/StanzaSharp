@@ -90,6 +90,11 @@ internal sealed class ConstituencyParser : IDisposable
     /// <summary>Whether this parser reads a transformer (<c>_electra-large</c>).</summary>
     internal bool UsesTransformer => _transformer != null;
 
+    /// <summary>The sentences this parser will send its transformer in <paramref name="doc"/>, for <see cref="TransformerEmbedder.Prefill"/> (null without one).</summary>
+    internal TransformerReader? TransformerReader(Document doc) => _transformer == null
+        ? null
+        : new TransformerReader(_transformer, _layerMix, [.. doc.Sentences.Where(s => s.Tokens.Count > 0).Select(s => (IReadOnlyList<string>)[.. s.Words.Select(w => w.Text)])]);
+
     /// <summary>Sets <see cref="Sentence.Constituency"/> on every sentence. Needs XPOS (or UPOS) tags from the tagger.</summary>
     /// <param name="charlms">Charlm representations the tagger kept, if any; sentences missing from it are computed.</param>
     /// <param name="transformers">The call's transformer states (a <c>_electra-large</c> parser), shared with the other readers.</param>

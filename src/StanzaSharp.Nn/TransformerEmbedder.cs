@@ -157,6 +157,64 @@ internal sealed class TransformerEmbedder(ITransformerNet net, WordPiece tokeniz
         return result;
     }
 
+    /// <summary>
+    /// Encodes every reader's sentences of a call in one sweep over the layers (<see cref="ITransformerNet.EncodeJoint"/>,
+    /// #169) and keeps the states in each reader's net's cache, so each reader's <see cref="Embed"/> then finds them: on a
+    /// short call the transformer's weights are read once, not once per net (the frozen one and each LoRA one). Only when the
+    /// net can, at least two readers read a 4-layer mix, and every distinct sentence fits one encoder call
+    /// (<see cref="BatchPieces"/>), so the caches hold at most that much; otherwise nothing is done and each reader runs its
+    /// own passes as before. The states are the ones each net gives alone, so nothing a reader sees changes.
+    /// </summary>
+    /// <param name="cacheOf">The call's cache of a net, made on first use.</param>
+    /// <returns>Whether the sentences were encoded.</returns>
+    public static bool Prefill(IReadOnlyList<TransformerReader> readers, Func<ITransformerNet, TransformerCache> cacheOf, CancellationToken ct = default)
+    {
+        readers = [.. readers.Where(r => (r.LayerMix?.Length ?? 4) == TransformerCache.Layers)];
+        if (readers.Count < 2 || !readers[0].Embedder.Net.EncodesJointly)
+            return false;
+
+        // Per net, its readers' distinct id sequences that fit one window.
+        var groups = new List<(ITransformerNet Net, List<int[]> Ids)>();
+        var seen = new Dictionary<ITransformerNet, HashSet<int[]>>();
+        int pieces = 0;
+        foreach (var reader in readers)
+        {
+            var embedder = reader.Embedder;
+            if (!seen.TryGetValue(embedder.Net, out var ids))
+            {
+                seen[embedder.Net] = ids = new HashSet<int[]>(TransformerCache.IdsComparer.Instance);
+                groups.Add((embedder.Net, []));
+            }
+
+            var group = groups.First(g => g.Net == embedder.Net).Ids;
+            foreach (var sentence in reader.Sentences)
+            {
+                var input = TransformerInput.Build(embedder.Tokenizer, sentence).Ids;
+                if (input.Length > embedder.MaxLength || !ids.Add(input))
+                    continue;
+                group.Add(input);
+                pieces += input.Length;
+                if (pieces > BatchPieces)
+                    return false;
+            }
+        }
+
+        var encoded = readers[0].Embedder.Net.EncodeJoint([.. groups.Select(g => (g.Net, (IReadOnlyList<int[]>)g.Ids))], TransformerCache.Layers, ct);
+        if (encoded == null)
+            return false;
+        for (int g = 0; g < groups.Count; g++)
+        {
+            var cache = cacheOf(groups[g].Net);
+            for (int s = 0; s < encoded[g].Length; s++)
+            {
+                if (!cache.TryAdd(groups[g].Ids[s], encoded[g][s]) && groups[g].Net.RentsOutputs)
+                    ArrayPool<float>.Shared.Return(encoded[g][s]);
+            }
+        }
+
+        return true;
+    }
+
     // build_cloned_features over MaxLength: windows of MaxLength pieces starting every sliceLen pieces (each with
     // positions from 0 and attention within the window), each later window's rows from prefixLen on.
     private float[] Windowed(int[] ids, int lastLayers, CancellationToken ct)
@@ -220,3 +278,10 @@ internal sealed class TransformerEmbedder(ITransformerNet net, WordPiece tokeniz
         return mixed;
     }
 }
+
+/// <summary>
+/// What a processor will send <see cref="TransformerEmbedder.Embed"/> in a call: its embedder (the pipeline's frozen one, or
+/// its own with LoRA adapters), its layer mix and every sentence's words, as it will pass them
+/// (<see cref="TransformerEmbedder.Prefill"/>).
+/// </summary>
+internal sealed record TransformerReader(TransformerEmbedder Embedder, float[]? LayerMix, IReadOnlyList<IReadOnlyList<string>> Sentences);
