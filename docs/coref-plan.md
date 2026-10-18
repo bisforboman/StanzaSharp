@@ -408,25 +408,25 @@ call).
 
 ## Smaller missing features
 
-| feature | Stanza | StanzaSharp today | effort |
-|---|---|---|---|
-| JSON output | `Document.to_dict()` (list of sentences of word/token dicts), `repr(doc)` = `json.dumps(indent=2, ensure_ascii=False)`, `to_serialized()`/`from_serialized()` = JSON `{text, sentences, comments}` (`models/common/doc.py`) | none | **S** (writer; byte-identical with Python's `json.dumps` is feasible with a golden file); **S–M** with the reader |
-| `process_conllu` / `*_pretagged` | run later processors on a parsed CoNLL-U (`depparse_pretagged`, `lemma_pretagged`, `constituency_pretagged`) | `Conllu.Read` exists, no pipeline entry | **M** |
-| English treebank packages | `ewt`, `gum`, `atis`, `childes`, `craft`, `eslspok`, `genia`, `lines`, `mimic`, `partut`, `combined` (`en.packages`) | `default`, `default_fast` (German has `gsd`, `hdt`) | **S–M** each (same architectures; golden data per package) |
-| Other NER models | `ontonotes_charlm`/`_nocharlm`, `conll03_charlm`, biomedical/clinical (`anatem`, `bc5cdr`, `i2b2`, `ncbi_disease`, `radiology`, ...) via `processors={'ner': ...}` | the package's NER only | **S–M** (old-format checkpoints like German's `germeval2014`) |
-| `ner_predict_tagset` | choose the WorldWide head (column 1) of `ontonotes-ww-multi` | head 0 only | **S** |
-| `{processor}_model_path` | load a custom-trained checkpoint | fixed package models | **M** (config differences need checking per model) |
-| `mwt_dict_only`, `lemma_dict_only`, `lemma_ensemble_dict` | dictionary-only modes | no | **S** |
-| `lemma_beam_size` > 1 | beam search in the seq2seq | greedy only (the checkpoint's `beam_size` 1) | **M** |
-| `{processor}_batch_size`, `pos_batch_maximum_tokens`, `depparse_min_length_to_batch_separately`, `depparse_sort_during_eval`, `sentiment_batch_size`, `constituency_batch_size` | batching knobs; for depparse and sentiment they change results | fixed at Stanza's defaults | **S** (but each changes golden behaviour; low value) |
-| `tokenize_postprocessor` | a callable that edits the tokenizer's output | no | **S** (a delegate) |
-| `tokenize_speaker_delim` | marks speakers (`sentence.speaker`) for coref | no | **S** (only matters with coref) |
-| `tokenize_combined_charlm` | the charlm tokenizer (`default_accurate`'s) | no | **M** |
-| `default_accurate` | electra-large models for pos, depparse, ner, sentiment, constituency | no | **XL** (transformer; shares the coref encoder spike) |
-| langid | `multilingual/langid/ud.pt` (MD5 `84cd508b…`): char biLSTM + Linear (`models/langid/model.py`), `MultilingualPipeline` routing per language | no | **M**; low value with only en/de models |
-| morphseg | `pipeline/morphseg_processor.py` wraps the external `morphseg` pip package (its own models, not in resources.json); CoNLL-U `Morphemes=` | no | **L**, and outside Stanza's own models: skip |
-| `Pipeline.stream` / `process_many` | generator over many documents | `Process(IEnumerable<string>)` (bulk) | **S** (an `IEnumerable` wrapper), if wanted |
-| Document helpers | `sentence.dependencies`, `print_dependencies()`, `doc.iter_words()`, `num_tokens`, `num_words` | partly via LINQ | **S** |
+| feature | Stanza | StanzaSharp today | effort | status (2026-10-18) |
+|---|---|---|---|---|
+| JSON output | `Document.to_dict()` (list of sentences of word/token dicts), `repr(doc)` = `json.dumps(indent=2, ensure_ascii=False)`, `to_serialized()`/`from_serialized()` = JSON `{text, sentences, comments}` (`models/common/doc.py`) | none | **S** (writer; byte-identical with Python's `json.dumps` is feasible with a golden file); **S–M** with the reader | done (`Json`, 2026-10-14) |
+| `process_conllu` / `*_pretagged` | run later processors on a parsed CoNLL-U (`depparse_pretagged`, `lemma_pretagged`, `constituency_pretagged`) | `Conllu.Read` exists, no pipeline entry | **M** | done (`Process(Document)`, `Pretagged`; 2026-10-14, 2026-10-17) |
+| English treebank packages | `ewt`, `gum`, `atis`, `childes`, `craft`, `eslspok`, `genia`, `lines`, `mimic`, `partut`, `combined` (`en.packages`) | `default`, `default_fast` (German has `gsd`, `hdt`) | **S–M** each (same architectures; golden data per package) | done (2026-10-15) |
+| Other NER models | `ontonotes_charlm`/`_nocharlm`, `conll03_charlm`, biomedical/clinical (`anatem`, `bc5cdr`, `i2b2`, `ncbi_disease`, `radiology`, ...) via `processors={'ner': ...}` | the package's NER only | **S–M** (old-format checkpoints like German's `germeval2014`) | done (`Models`, 2026-10-16) |
+| `ner_predict_tagset` | choose the WorldWide head (column 1) of `ontonotes-ww-multi` | head 0 only | **S** | done (`NerTagSet`, 2026-10-18) |
+| `{processor}_model_path` | load a custom-trained checkpoint | fixed package models | **M** (config differences need checking per model) | open (#174) |
+| `mwt_dict_only`, `lemma_dict_only`, `lemma_ensemble_dict` | dictionary-only modes | no | **S** | done for `mwt_dict_only`, `lemma_dict_only` (2026-10-18) |
+| `lemma_beam_size` > 1 | beam search in the seq2seq | greedy only (the checkpoint's `beam_size` 1) | **M** | open (#174) |
+| `{processor}_batch_size`, `pos_batch_maximum_tokens`, `depparse_min_length_to_batch_separately`, `depparse_sort_during_eval`, `sentiment_batch_size`, `constituency_batch_size` | batching knobs; for depparse and sentiment they change results | fixed at Stanza's defaults | **S** (but each changes golden behaviour; low value) | open (#174) |
+| `tokenize_postprocessor` | a callable that edits the tokenizer's output | no | **S** (a delegate) | open (#174) |
+| `tokenize_speaker_delim` | marks speakers (`sentence.speaker`) for coref | no | **S** (only matters with coref) | with coref (#176) |
+| `tokenize_combined_charlm` | the charlm tokenizer (`default_accurate`'s) | no | **M** | done (`Models`, 2026-10-16) |
+| `default_accurate` | electra-large models for pos, depparse, ner, sentiment, constituency | no | **XL** (transformer; shares the coref encoder spike) | done (2026-10-17) |
+| langid | `multilingual/langid/ud.pt` (MD5 `84cd508b…`): char biLSTM + Linear (`models/langid/model.py`), `MultilingualPipeline` routing per language | no | **M**; low value with only en/de models | open (#174) |
+| morphseg | `pipeline/morphseg_processor.py` wraps the external `morphseg` pip package (its own models, not in resources.json); CoNLL-U `Morphemes=` | no | **L**, and outside Stanza's own models: skip | skipped |
+| `Pipeline.stream` / `process_many` | generator over many documents | `Process(IEnumerable<string>)` (bulk) | **S** (an `IEnumerable` wrapper), if wanted | open (#174) |
+| Document helpers | `sentence.dependencies`, `print_dependencies()`, `doc.iter_words()`, `num_tokens`, `num_words` | partly via LINQ | **S** | open (#174) |
 
 Not applicable: `use_gpu`/`device` (`PipelineOptions.Backend`), `download_method`/`resources_*`/`proxies` (downloads are
 explicit), `foundation_cache`, `logging_level` (`Logger`).
@@ -437,3 +437,5 @@ explicit), `foundation_cache`, `logging_level` (`Logger`).
 2. `process_conllu`/pretagged input (M).
 3. The English treebank packages (S–M each; German's took the same route).
 4. `ner_predict_tagset` and the other English NER models (S–M).
+
+All four are done as of 2026-10-18 (the status column above); what is left is tracked in #174.

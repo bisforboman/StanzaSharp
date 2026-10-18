@@ -1129,7 +1129,7 @@ What the English treebank packages' checkpoints add to the default package's pat
   - Selective download (user's decision, 2026-10-06): `DownloadAsync(dir, processors)` / `download
     --processors LIST`.
   - Packages (user's decision, 2026-10-06: Stanza's package names as strings, so more can be added without
-    API changes): `PipelineOptions.Package` (`"default"` or `"default_fast"`; anything else throws) and
+    API changes): `PipelineOptions.Package` (a package of `Pipeline.Packages[lang]`: `"default"`, `"default_fast"`, `"default_accurate"`, the treebank packages; anything else throws) and
     `DownloadAsync(dir, PipelineOptions)` / `download --package NAME`. The downloader takes the same options
     object as `Load`, so one object downloads and loads the same files; it ignores the other options.
     `Processors` is null by default: all the package's processors. A processor the package lacks throws.
@@ -1146,7 +1146,7 @@ What the English treebank packages' checkpoints add to the default package's pat
     `Pipeline.Dependencies[lang]` and its files' MD5s in `ModelDownloader.Files[lang]`;
     `CompareCommandTests.EmbeddedResources_MatchModelDownloader` checks all three against the tool's embedded
     `stanza_resources_<lang>.json`, and `FilesFor_AreEnoughToLoadThePipeline`, `FileTableCoversEveryModelThePipelineLoads`
-    and `LanguageTests` the file sets. CI downloads both English packages.
+    and `LanguageTests` the file sets. CI downloads the packages per `tools/ci-models.sh` group (see "Model cache keys").
   - It fetches the `.pt` files from `huggingface.co/stanfordnlp/stanza-<lang>/resolve/v1.15.0/models/`
     and checks each against the MD5 from Stanza 1.15.0's resources.json, kept in
     `ModelDownloader.Files`.
