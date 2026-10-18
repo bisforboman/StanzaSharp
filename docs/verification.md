@@ -202,7 +202,13 @@ golden shard 2 installs and runs, and the German tests, the English treebank pac
 the golden shards have those models (Stanza's `.pt` files, cached), so `cross-os` and `linux-arm64` run the English
 default packages only. The transformer tests (`Transformer*`) run in golden shard 4, their own, which downloads the transformer's
 files from Hugging Face and the transformer models from Stanza's repository on every run (no cache: the model caches are
-near GitHub's 10 GB limit).
+near GitHub's 10 GB limit). A pull request runs that shard only when it changes what those tests read (the shared
+kernels, the TorchSharp backend, the downloader, CI, the transformer's golden data or tests); every push to main runs it.
+
+The [nightly workflow](../.github/workflows/nightly.yml) runs on main every night: golden shard 4, the checkpoint fuzz
+over every Stanza checkpoint with ten times CI's iterations and a new seed, [text fuzzing](text-fuzzing.md) against
+Python Stanza (1,000 texts through tokenize and mwt, 60 through each default package), and the Benchmark workflow's
+quick run. A failed night comments on the open issue "Nightly run failed".
 
 On x64 runners the test steps set `ATEN_CPU_CAPABILITY=default` and `MKL_CBWR=COMPATIBLE,STRICT`, so libtorch picks
 the same kernels on every CPU the runner draws (Intel or AMD) and the TorchSharp backend gives the same bits on all of
@@ -242,7 +248,7 @@ the golden data ([`docs/spot-check/`](spot-check)). Every one gave identical CoN
 ## Speed on the free runners
 
 `stanzasharp benchmark` times StanzaSharp and Python Stanza on the same text with the same models, on your machine. The
-manual [Benchmark workflow](../.github/workflows/benchmark.yml) runs it on every free GitHub-hosted runner. Run
+[Benchmark workflow](../.github/workflows/benchmark.yml) (manual, and quick every night) runs it on every free GitHub-hosted runner. Run
 [38735518300](https://github.com/bisforboman/StanzaSharp/actions/runs/38735518300) (2026-10-15, StanzaSharp
 1.7.0-12-g873f8c9, English `default`, all eight processors on 2,009 words, each side's default threads) gave identical
 CoNLL-U on every runner, and:

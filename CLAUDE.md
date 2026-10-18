@@ -160,7 +160,9 @@ default from 0.5) or through TorchSharp (see "Managed backend").
     `default_accurate` package and the transformer's files on every run (`tools/ci-models.sh transformer`: `download
     --package default_accurate`, with retries); the `Transformer*` classes (`SHARD_FOUR`, `.Transformer`) run only there
     (owner's decision, 2026-10-18: in shard 1 they had made its job 82 min), and the other jobs' no-skip checks exempt
-    `Transformer`.
+    `Transformer`. A pull request runs shard 4 only when it touches the torch=full files, `ModelDownloader.cs`,
+    `tools/ci-models.sh`, `tests/golden/**/transformer/` or `Transformer*.cs` tests (`changes`' `shards` output); pushes
+    to main and the nightly always run it (owner's decision, 2026-10-18).
 
 ## Status
 
@@ -922,7 +924,9 @@ What the English treebank packages' checkpoints add to the default package's pat
       plus CompareCommand and BenchmarkCommand (2026-10-12: the shard that finished first), with Python Stanza
       (`STANZASHARP_PYTHON` from setup-python; installing tools/requirements.txt adds ~40 s, the Python runs ~1 min).
     - 3: Pipeline, Ner, Sentiment, InputMode, Depparse, NoSsplit: 72 tests, 45.5 min (parallel; Pipeline 10.3 alone).
-    - 4 (2026-10-18): the `Transformer*` classes (`SHARD_FOUR`), the only shard that downloads the transformer.
+    - 4 (2026-10-18): the `Transformer*` classes (`SHARD_FOUR`), the only shard that downloads the transformer. On a
+      pull request only with the transformer's paths (above); the matrix is `fromJSON(needs.changes.outputs.shards)`, so
+      a shard left out is absent, not skipped (a skipped shard would fail `golden`).
     - 1: the complement of 2, 3 and 4 (ConcurrencyTests' cancellation cases and every other class, new ones too):
       123 tests, 14.6 min. So the union is always the whole suite, each test once (checked with `--list-tests`).
     - Expected wall per shard on full: ~12–15 min (was 38–44 for one job); light: ~4–6 min.
@@ -1000,8 +1004,14 @@ What the English treebank packages' checkpoints add to the default package's pat
     the managed cases of the both-backend theories plus tests marked `[Trait("Backend", "Managed")]` (they must need
     no libtorch: check with that build and an empty `NUGET_PACKAGES` locally). Then the no-skip check and
     `verify-package.ps1 -Managed`. Models cached like cross-os (`models-pt-Linux-…`).
-  - `benchmark.yml` (owner's decision 2026-10-10): `workflow_dispatch` only (inputs `lang`, `package`, `quick`), never on
-    pushes/PRs, never required; free standard runners only (ubuntu-26.04, ubuntu-26.04-arm, windows-2025,
+  - `nightly.yml` (owner's decision, 2026-10-18): 01:00 UTC on main, and `workflow_dispatch`. `transformer` calls ci.yml
+    with `golden_shards: '[4]'` (every other ci.yml job skips on that input); `fuzz` runs `CheckpointFuzzTests` with
+    `STANZASHARP_FUZZ_MODELS=all`, 3,000 iterations and the run number as seed, then `tools/text_fuzz.py run` (tokenize,mwt
+    1,000 texts; default and default_fast 60 each) with Python Stanza; `benchmark` calls benchmark.yml `quick` without
+    the avx512 jobs (`no_avx512`). Any failure comments on the open issue "Nightly run failed" (`report`, created if
+    missing; closed by a person). Never required; release.yml waits for main's push run only, so it never sees these.
+  - `benchmark.yml` (owner's decision 2026-10-10): `workflow_dispatch` (inputs `lang`, `package`, `quick`) and
+    `workflow_call` (nightly.yml), never on pushes/PRs, never required; free standard runners only (ubuntu-26.04, ubuntu-26.04-arm, windows-2025,
     windows-11-arm, macos-26). Each job builds the tool, restores the `models-pt-<os>` cache (`lang=de`: golden-shard 1's
     `models-de-treebanks-…`, Linux only; restore only; downloads the package on a miss), installs Python 3.12 + `tools/requirements.txt` from the CPU wheel index (continue-on-error: without it the
     block has StanzaSharp only), runs `stanzasharp benchmark --json`, writes the block to its summary and artifact
