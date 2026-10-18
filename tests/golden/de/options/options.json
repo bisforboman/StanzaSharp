@@ -1,0 +1,28 @@
+[
+ {
+  "name": "mwt_dict_only",
+  "package": "default",
+  "processors": "tokenize,mwt,pos",
+  "models": {},
+  "options": {
+   "mwt_dict_only": true
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt"
+  ]
+ },
+ {
+  "name": "lemma_dict_only",
+  "package": "default",
+  "processors": "tokenize,mwt,pos,lemma",
+  "models": {},
+  "options": {
+   "lemma_dict_only": true
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt"
+  ]
+ }
+]

@@ -19,13 +19,13 @@ internal static class LemmatizerLoad
         /// <param name="backward">Its backward charlm.</param>
         /// <param name="pretrain">The pretrain of a model with contextual classifiers (English <c>combined_charlm</c>); null for the others.</param>
         public static Lemmatizer Load(string basePath, Device? device = null, Backend backend = Backend.TorchSharp, CharLanguageModel? forward = null,
-            CharLanguageModel? backward = null, Pretrain? pretrain = null) =>
+            CharLanguageModel? backward = null, Pretrain? pretrain = null, bool dictOnly = false) =>
             backend == Backend.Managed
-                ? Lemmatizer.LoadManaged(basePath)
+                ? Lemmatizer.LoadManaged(basePath, dictOnly: dictOnly)
                 : Weights.On(device, () => new Lemmatizer(Checkpoint.Load(basePath), (ckpt, sizes) => new Seq2SeqNet(ckpt, sizes), forward, backward,
                     pretrain, (ckpt, model) => new LemmaClassifierNet(ckpt, model, pretrain!,
                         forward ?? throw new ArgumentException("The contextual classifiers read both charlms", nameof(forward)),
-                        backward ?? throw new ArgumentException("The contextual classifiers read both charlms", nameof(backward)))));
+                        backward ?? throw new ArgumentException("The contextual classifiers read both charlms", nameof(backward))), dictOnly));
     }
 }
 

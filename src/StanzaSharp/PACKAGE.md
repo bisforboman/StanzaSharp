@@ -163,6 +163,8 @@ foreach (var sentence in doc.Sentences)
   - `SplitSentences = false`: one sentence per paragraph (Stanza's `tokenize_no_ssplit`).
   - `Pretagged`: lemma, depparse and constituency load without the tagger (Stanza's `pretagged`), for
     `Process(Document)` on documents that already carry tags.
+  - `NerTagSet`, `LemmaDictionaryOnly`, `MwtDictionaryOnly`: Stanza's `ner_predict_tagset`, `lemma_dict_only` and
+    `mwt_dict_only`.
   - `VerifyChecksums`: checks the `.pt` model files against Stanza's MD5s before loading.
   - `Logger`: an `ILogger` for load and processing times.
 - `Processor.Tokenize`, ..., `Processor.Ner` are constants for the processor list.

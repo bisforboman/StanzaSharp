@@ -57,7 +57,9 @@ jobs:
       matrix:
         os: [ubuntu-26.04, ubuntu-26.04-arm, windows-2025, windows-11-arm, macos-26]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 60
+    # default_accurate: Python Stanza takes about 150 s a run on 4 cores (round 44), and the warm-up and timed runs are
+    # up to 8 of them.
+    timeout-minutes: ${{ inputs.package == 'default_accurate' && 150 || 60 }}
     defaults:
       run:
         shell: bash
@@ -127,6 +129,10 @@ jobs:
             sed 's/^numpy==.*/numpy==2.3.5/' tools/requirements.txt > "$requirements"
           fi
           python -m pip install -r "$requirements" --extra-index-url https://download.pytorch.org/whl/cpu
+          # default_accurate: Stanza's transformer models need transformers, tokenizers, safetensors and peft.
+          if [ "${{ inputs.package }}" = default_accurate ]; then
+            python -m pip install -r tools/requirements-transformer.txt
+          fi
           python -c "import platform, stanza, torch, numpy; print(platform.machine(), 'stanza', stanza.__version__, 'torch', torch.__version__, 'numpy', numpy.__version__)"
 
       - name: Benchmark
@@ -165,7 +171,7 @@ jobs:
           - { os: windows-2025, attempt: 2 }
           - { os: windows-2025, attempt: 3 }
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 60
+    timeout-minutes: ${{ inputs.package == 'default_accurate' && 150 || 60 }}
     defaults:
       run:
         shell: bash
@@ -205,11 +211,15 @@ jobs:
           dotnet build StanzaSharp.slnx -c Release
           dotnet build src/StanzaSharp.Tool -c Release -p:Version="${version#v}" -p:IncludeSourceRevisionInInformationalVersion=false
 
+      # default_accurate's models are in no cache (see the benchmark job): always downloaded.
       - name: Download the models
-        if: steps.cpu.outputs.avx512 == 'yes' && steps.models.outputs.cache-hit != 'true'
+        if: steps.cpu.outputs.avx512 == 'yes' && (steps.models.outputs.cache-hit != 'true' || inputs.package == 'default_accurate')
         run: |
           dotnet src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll download models/stanza/en
           dotnet src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll download models/stanza/en --package default_fast
+          if [ "${{ inputs.package }}" = default_accurate ]; then
+            dotnet src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll download models/stanza/en --package default_accurate
+          fi
 
       - name: Benchmark Vector512 against Vector256
         if: steps.cpu.outputs.avx512 == 'yes'

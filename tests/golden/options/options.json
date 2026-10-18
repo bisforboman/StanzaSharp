@@ -1,0 +1,76 @@
+[
+ {
+  "name": "ner_predict_tagset=1",
+  "package": "default",
+  "processors": "tokenize,mwt,ner",
+  "models": {},
+  "options": {
+   "ner_predict_tagset": 1
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "validation_tech.txt",
+   "validation_social.txt"
+  ]
+ },
+ {
+  "name": "ner=combined_charlm+ner_predict_tagset=2",
+  "package": "default",
+  "processors": "tokenize,mwt,ner",
+  "models": {
+   "ner": "combined_charlm"
+  },
+  "options": {
+   "ner_predict_tagset": 2
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt"
+  ]
+ },
+ {
+  "name": "lemma_dict_only",
+  "package": "default",
+  "processors": "tokenize,mwt,pos,lemma",
+  "models": {},
+  "options": {
+   "lemma_dict_only": true
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "validation_contractions.txt",
+   "validation_nonbmp.txt"
+  ]
+ },
+ {
+  "name": "lemma=combined_charlm+lemma_dict_only",
+  "package": "default",
+  "processors": "tokenize,mwt,pos,lemma",
+  "models": {
+   "lemma": "combined_charlm"
+  },
+  "options": {
+   "lemma_dict_only": true
+  },
+  "texts": [
+   "corpus.txt",
+   "validation_contractions.txt"
+  ]
+ },
+ {
+  "name": "mwt_dict_only",
+  "package": "default",
+  "processors": "tokenize,mwt,pos",
+  "models": {},
+  "options": {
+   "mwt_dict_only": true
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "validation_contractions.txt"
+  ]
+ }
+]

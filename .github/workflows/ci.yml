@@ -525,10 +525,10 @@ jobs:
         run: |
           ls TestResults/*.trx
           # Run_PythonStanza_* needs Python Stanza, which this job doesn't install (golden-shard 2 runs them). German tests
-          # (rows with lang "de", names with German) need the German models, and TreebankPackageTests', ModelChoiceTests' English rows and CharlmInputTests the
+          # (rows with lang "de", names with German) need the German models, and TreebankPackageTests', ModelChoiceTests' and OptionTests' English rows and CharlmInputTests the
           # English treebank and alternative models, which only golden-shard has, and the Transformer* classes the transformer files
           # golden-shard 4 downloads.
-          if grep -h 'outcome="NotExecuted"' TestResults/*.trx | grep -v 'Run_PythonStanza_' | grep -qvE 'lang: (&quot;|")de|German|TreebankPackageTests|ModelChoiceTests|CharlmInputTests|Transformer'; then
+          if grep -h 'outcome="NotExecuted"' TestResults/*.trx | grep -v 'Run_PythonStanza_' | grep -qvE 'lang: (&quot;|")de|German|TreebankPackageTests|ModelChoiceTests|OptionTests|CharlmInputTests|Transformer'; then
             echo "::error::Tests were skipped; the models in models/stanza/en were not found."
             exit 1
           fi
@@ -648,10 +648,10 @@ jobs:
         run: |
           ls TestResults/*.trx
           # Run_PythonStanza_* needs Python Stanza, which this job doesn't install (golden-shard 2 runs them). German tests
-          # (rows with lang "de", names with German) need the German models, and TreebankPackageTests', ModelChoiceTests' English rows and CharlmInputTests the
+          # (rows with lang "de", names with German) need the German models, and TreebankPackageTests', ModelChoiceTests' and OptionTests' English rows and CharlmInputTests the
           # English treebank and alternative models, which only golden-shard has, and the Transformer* classes the transformer files
           # golden-shard 4 downloads.
-          if grep -h 'outcome="NotExecuted"' TestResults/*.trx | grep -v 'Run_PythonStanza_' | grep -qvE 'lang: (&quot;|")de|German|TreebankPackageTests|ModelChoiceTests|CharlmInputTests|Transformer'; then
+          if grep -h 'outcome="NotExecuted"' TestResults/*.trx | grep -v 'Run_PythonStanza_' | grep -qvE 'lang: (&quot;|")de|German|TreebankPackageTests|ModelChoiceTests|OptionTests|CharlmInputTests|Transformer'; then
             echo "::error::Tests were skipped; the models in models/stanza/en were not found."
             exit 1
           fi

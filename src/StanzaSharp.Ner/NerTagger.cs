@@ -34,7 +34,9 @@ internal sealed class NerTagger : IDisposable
     private readonly float[]? _layerMix;
 
     /// <param name="transformer">The transformer a <c>_electra-large</c> model reads (the pipeline's, shared); else ignored.</param>
-    internal NerTagger(Checkpoint ckpt, Pretrain pretrain, Func<int, int, bool, INerNet> net, TransformerEmbedder? transformer = null)
+    /// <param name="tagSet">Stanza's <c>ner_predict_tagset</c>: which of the model's tag sets to decode (null: the checkpoint's
+    /// <c>predict_tagset</c>, else 0).</param>
+    internal NerTagger(Checkpoint ckpt, Pretrain pretrain, Func<int, int, bool, INerNet> net, TransformerEmbedder? transformer = null, int? tagSet = null)
     {
         _pretrain = pretrain;
         var config = ckpt.Root["config"]!;
@@ -55,8 +57,11 @@ internal sealed class NerTagger : IDisposable
         // The tag vocab has one column per tag set ("multi" NER: OntoNotes and WorldWide here). Stanza
         // decodes every column but keeps only predict_tagset's, so that is the only head we run.
         // The old format has one plain tag list and unnumbered heads (trainer.load renames them to column 0).
-        int tagset = config["predict_tagset"]?.GetValue<int>() ?? 0;
+        int tagset = tagSet ?? config["predict_tagset"]?.GetValue<int>() ?? 0;
         var id2unit = vocab["tag"]!["_id2unit"]!;
+        var columns = id2unit is JsonArray ? [0] : id2unit["$dict"]!.AsArray().Select(c => c![0]!.GetValue<int>()).ToList();
+        if (!columns.Contains(tagset))
+            throw new ArgumentException($"This NER model has {columns.Count} tag set{(columns.Count == 1 ? "" : "s")} ({string.Join(", ", columns)}), not {tagset}", nameof(tagSet));
         var tags = id2unit is JsonArray single ? single : id2unit["$dict"]!.AsArray().Single(c => c![0]!.GetValue<int>() == tagset)![1]!.AsArray();
         _tags = tags.Select(x => x!.GetValue<string>()).ToArray();
         _transitions = ckpt.Tensor<float>(ckpt.Root["model"]![HeadPrefix(ckpt, "crit", tagset) + "_transitions"]);
@@ -65,7 +70,7 @@ internal sealed class NerTagger : IDisposable
 
     /// <summary><c>Load</c> (StanzaSharp.Cuda) on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
     public static NerTagger LoadManaged(string basePath, Pretrain pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward,
-        TransformerEmbedder? transformer = null)
+        TransformerEmbedder? transformer = null, int? tagSet = null)
     {
         var ckpt = Checkpoint.Load(basePath);
         int transformerDim = TransformerDim(ckpt, transformer);
@@ -76,7 +81,7 @@ internal sealed class NerTagger : IDisposable
             return charlm
                 ? new ManagedNerNet(ckpt, tags, tagset, pretrain, charlmForward, charlmBackward, transformerDim)
                 : new ManagedNerNet(ckpt, tags, tagset, pretrain, null, null, transformerDim);
-        }, transformer);
+        }, transformer, tagSet);
     }
 
     /// <summary>The input columns a model gives <paramref name="transformer"/>'s vectors: its hidden size for a <c>_electra-large</c> model, else 0.</summary>

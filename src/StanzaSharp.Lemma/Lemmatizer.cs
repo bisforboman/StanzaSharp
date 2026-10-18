@@ -26,7 +26,7 @@ internal sealed class Lemmatizer : IDisposable
     private readonly Dictionary<string, int> _charToId, _posToId;
     private readonly string[] _idToChar;
     private readonly int _batchSize, _maxDecLen;
-    private readonly bool _caseless;
+    private readonly bool _caseless, _dictOnly;
     private readonly ISeq2SeqNet _net;
     private readonly IPerCharLanguageModel? _forward, _backward; // a _charlm model's charlms
     private readonly LemmaClassifier[] _contextual;
@@ -36,9 +36,13 @@ internal sealed class Lemmatizer : IDisposable
     /// <param name="backward">Its backward charlm.</param>
     /// <param name="pretrain">The pretrain the checkpoint's contextual classifiers read (resources.json's dependency); else null.</param>
     /// <param name="classifierNet">Builds a contextual classifier's network from the checkpoint and its state dict.</param>
+    /// <param name="dictOnly">Stanza's <c>lemma_dict_only</c>: the dictionary alone, the word where it has no entry; neither
+    /// the seq2seq model nor the contextual classifiers run.</param>
     internal Lemmatizer(Checkpoint ckpt, Func<Checkpoint, Seq2SeqConfig, ISeq2SeqNet> net, IPerCharLanguageModel? forward = null,
-        IPerCharLanguageModel? backward = null, Pretrain? pretrain = null, Func<Checkpoint, JsonNode, ILemmaClassifierNet>? classifierNet = null)
+        IPerCharLanguageModel? backward = null, Pretrain? pretrain = null, Func<Checkpoint, JsonNode, ILemmaClassifierNet>? classifierNet = null,
+        bool dictOnly = false)
     {
+        _dictOnly = dictOnly;
         var root = ckpt.Root;
         var config = root["config"]!;
         bool Flag(string key) => config[key]?.GetValue<bool>() == true;
@@ -101,22 +105,23 @@ internal sealed class Lemmatizer : IDisposable
     /// <param name="forward">The forward charlm of a <c>_charlm</c> model; null for the others.</param>
     /// <param name="backward">Its backward charlm.</param>
     /// <param name="pretrain">The pretrain of a model with contextual classifiers (English <c>combined_charlm</c>); null for the others.</param>
+    /// <param name="dictOnly">Stanza's <c>lemma_dict_only</c>: the dictionary alone.</param>
     public static Lemmatizer LoadManaged(string basePath, ManagedCharLanguageModel? forward = null, ManagedCharLanguageModel? backward = null,
-        Pretrain? pretrain = null) =>
+        Pretrain? pretrain = null, bool dictOnly = false) =>
         new(Checkpoint.Load(basePath), (ckpt, sizes) => new ManagedSeq2SeqNet(ckpt, sizes), forward, backward, pretrain,
             (ckpt, model) => new ManagedLemmaClassifierNet(ckpt, model, pretrain!,
                 forward ?? throw new ArgumentException("The contextual classifiers read both charlms", nameof(forward)),
-                backward ?? throw new ArgumentException("The contextual classifiers read both charlms", nameof(backward))));
+                backward ?? throw new ArgumentException("The contextual classifiers read both charlms", nameof(backward))), dictOnly);
 
     /// <summary>Sets the lemma of every word in <paramref name="doc"/>; needs UPOS from the tagger.</summary>
     /// <param name="onContextual">For tests: each contextual classifier's labels and [targets, labels] logits, in Stanza's order.</param>
     public void Process(Document doc, CancellationToken cancellationToken = default, Action<string[], float[]>? onContextual = null)
     {
         var words = doc.Sentences.SelectMany(s => s.Words).ToList();
-        var lemmas = Lemmatize(words, cancellationToken);
+        var lemmas = _dictOnly ? LemmatizeByDictionary(words) : Lemmatize(words, cancellationToken);
 
-        // trainer.update_contextual_preds, reversed so that the first classifier has priority.
-        if (_contextual.Length > 0)
+        // trainer.update_contextual_preds, reversed so that the first classifier has priority (not with dict_only).
+        if (_contextual.Length > 0 && !_dictOnly)
         {
             var sentences = doc.Sentences.Select(s => (IReadOnlyList<Word>)[.. s.Words]).ToList();
             for (int i = _contextual.Length - 1; i >= 0; i--)
@@ -149,6 +154,10 @@ internal sealed class Lemmatizer : IDisposable
             lemmas[misses[k]] = predicted[k];
         return lemmas.Select(l => l!.Length == 0 ? "_" : l).ToList();
     }
+
+    /// <summary>trainer.predict_dict (<c>lemma_dict_only</c>): the dictionary's lemma, else the word as the dictionary saw it; "_" for an empty one.</summary>
+    internal List<string> LemmatizeByDictionary(IReadOnlyList<Word> words) =>
+        [.. words.Select(w => Lookup(Input(w), w.Upos) ?? Input(w)).Select(l => l.Length == 0 ? "_" : l)];
 
     /// <summary>The text the model and the dictionary see: lowercased for a caseless model (data.lowercase_data).</summary>
     private string Input(Word word) => _caseless ? PyString.Lower(word.Text) : word.Text;

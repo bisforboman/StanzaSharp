@@ -824,6 +824,12 @@ What the English treebank packages' checkpoints add to the default package's pat
   - `pretagged/` (`--pretagged-only`): `PRETAGGED_CASES`, `stanza.Pipeline(processors=..., pretagged=True)` on
     fast/corpus.conllu, fast/validation.conllu and process_document/input.conllu, some with lemma/XPOS/UPOS removed (and
     `# sentiment` comments dropped where constituency runs: Stanza would keep them first).
+  - `options/` (`--options-only`, both languages): `OPTION_CASES`, Stanza with `ner_predict_tagset`, `lemma_dict_only` or
+    `mwt_dict_only` (owner's decision, 2026-10-18: typed `PipelineOptions.NerTagSet`, `LemmaDictionaryOnly`,
+    `MwtDictionaryOnly`), `options.json` maps them; `OptionTests` (shard 1; exempt from the no-skip checks elsewhere,
+    whose rows lack the chosen models). NER decodes the chosen tag set's head (a missing one throws at Load), the
+    lemmatizer's `LemmatizeByDictionary` is trainer.predict_dict (no seq2seq, no contextual classifiers), MWT's
+    `dictOnly` loads no net.
   - `fuzz.json` (`--fuzz-only`): `FUZZ_TEXTS` (German: `GERMAN["FUZZ_TEXTS"]`), the minimized differences
     `tools/text_fuzz.py` found (docs/text-fuzzing.md), each processed alone by both packages; compared with code-point
     offsets (`TokenizerTests.Pipeline_FuzzFindings_MatchGolden`). Add a new finding's shrunk text there.

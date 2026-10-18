@@ -277,6 +277,11 @@ using var parser = Pipeline.Load("models/stanza/en", new PipelineOptions { Proce
 var parsed = parser.Process(Conllu.Read(File.ReadAllText("tagged.conllu")));
 ```
 
+Three of Stanza's processor options are `PipelineOptions` properties: `NerTagSet` (`ner_predict_tagset`: 1 decodes the
+`ontonotes-ww-multi` models' WorldWide tag set instead of OntoNotes), `LemmaDictionaryOnly` (`lemma_dict_only`: lemmas
+from the dictionary alone, faster, unseen words keep their text) and `MwtDictionaryOnly` (`mwt_dict_only`: only the
+dictionary's multi-word tokens are split).
+
 Both match Python Stanza byte for byte. Bulk is much faster than one call per text for short texts: 7.7× on
 2,000 one-sentence texts ([docs/performance/bulk-processing.md](docs/performance/bulk-processing.md)). One call per
 text costs about 28 ms for a short sentence on 8 threads (`default_fast`: 14 ms; Python Stanza: 189 and 73 ms), mostly

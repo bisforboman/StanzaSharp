@@ -37,10 +37,10 @@ internal sealed class TorchSharpModels(torch.Device? device, bool disableTf32) :
 
     public override Tokenizer Tokenizer(string basePath, Charlms charlms) => Tokenize.Tokenizer.Load(basePath, charlm: Find(_charlms, charlms.Forward));
 
-    public override MwtExpander Mwt(string basePath) => MwtExpander.Load(basePath);
+    public override MwtExpander Mwt(string basePath, bool dictOnly) => MwtExpander.Load(basePath, dictOnly: dictOnly);
 
-    public override Lemmatizer Lemma(string basePath, Charlms charlms, Pretrain? pretrain) =>
-        Lemmatizer.Load(basePath, forward: Find(_charlms, charlms.Forward), backward: Find(_charlms, charlms.Backward), pretrain: pretrain);
+    public override Lemmatizer Lemma(string basePath, Charlms charlms, Pretrain? pretrain, bool dictOnly) =>
+        Lemmatizer.Load(basePath, forward: Find(_charlms, charlms.Forward), backward: Find(_charlms, charlms.Backward), pretrain: pretrain, dictOnly: dictOnly);
 
     public override TransformerEmbedder Transformer(string directory, string name) =>
         TransformerEmbedder.Load(directory, name, (config, ckpt) => new TransformerNet(config, ckpt));
@@ -51,8 +51,8 @@ internal sealed class TorchSharpModels(torch.Device? device, bool disableTf32) :
     public override DependencyParser Depparse(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer) =>
         DependencyParser.Load(basePath, pretrain, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward), transformer: transformer);
 
-    public override NerTagger Ner(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer) =>
-        NerTagger.Load(basePath, pretrain, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward), transformer: transformer);
+    public override NerTagger Ner(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer, int? tagSet) =>
+        NerTagger.Load(basePath, pretrain, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward), transformer: transformer, tagSet: tagSet);
 
     public override ConstituencyParser Constituency(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer) =>
         ConstituencyParser.Load(basePath, pretrain, Find(_charlms, charlms.Forward)!, Find(_charlms, charlms.Backward)!, transformer: transformer);

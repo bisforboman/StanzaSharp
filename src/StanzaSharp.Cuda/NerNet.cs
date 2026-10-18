@@ -103,7 +103,7 @@ internal static class NerTaggerLoad
         /// <param name="device">Where the model runs; CPU by default. Load the pretrain and charlms on the same device.</param>
         /// <param name="transformer">The transformer a <c>_electra-large</c> model reads (shared, the caller owns it).</param>
         public static NerTagger Load(string basePath, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward, Device? device = null,
-            TransformerEmbedder? transformer = null) =>
+            TransformerEmbedder? transformer = null, int? tagSet = null) =>
             Weights.On(device, () =>
             {
                 var ckpt = Checkpoint.Load(basePath);
@@ -115,7 +115,7 @@ internal static class NerTaggerLoad
                     return charlm
                         ? new NerNet(ckpt, NerTagger.DeltaCount(ckpt), tags, tagset, pretrain, charlmForward, charlmBackward, transformerDim)
                         : new NerNet(ckpt, NerTagger.DeltaCount(ckpt), tags, tagset, pretrain, null, null, transformerDim);
-                }, transformer);
+                }, transformer, tagSet);
             });
     }
 }
