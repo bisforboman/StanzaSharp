@@ -127,16 +127,20 @@ public class TransformerKernelTests(TransformerModels models, ITestOutputHelper 
         return [.. sentences.Select(s => TransformerInput.Build(tokenizer, s).Ids)];
     }
 
+    // The managed encoder rents its outputs, so an array can be longer than its sentence's states: compare those only.
+    private static float[][] Encode(ITransformerNet net, IReadOnlyList<int[]> ids, int lastLayers) =>
+        [.. net.Encode(ids, lastLayers).Select((a, i) => a[..(lastLayers * ids[i].Length * net.Config.Hidden)])];
+
     [TransformerFact("config.json", "tokenizer.json", "tokenizer_config.json", "pytorch_model.bin")]
     public void ASentence_HasTheSameBitsAloneInABatchAndOnAnyThreadCount()
     {
         var net = models.Embedder(managed: true).Net;
         var ids = Ids(TransformerEncoderTests.ReadGolden().Sentences);
-        var batched = With(Gemm.Path, 4, () => net.Encode(ids, 4));
+        var batched = With(Gemm.Path, 4, () => Encode(net, ids, 4));
         for (int s = 0; s < ids.Length; s++)
         {
-            Assert.True(net.Encode([ids[s]], 4)[0].AsSpan().SequenceEqual(batched[s]), $"sentence {s} alone differs from the batch");
-            Assert.True(With(Gemm.Path, 1, () => net.Encode([ids[s]], 4))[0].AsSpan().SequenceEqual(batched[s]), $"sentence {s} on 1 thread differs");
+            Assert.True(Encode(net, [ids[s]], 4)[0].AsSpan().SequenceEqual(batched[s]), $"sentence {s} alone differs from the batch");
+            Assert.True(With(Gemm.Path, 1, () => Encode(net, [ids[s]], 4))[0].AsSpan().SequenceEqual(batched[s]), $"sentence {s} on 1 thread differs");
         }
     }
 
@@ -157,18 +161,18 @@ public class TransformerKernelTests(TransformerModels models, ITestOutputHelper 
         var kernel = Enum.Parse<KernelPath>(path);
         using var net = LoraNet();
         var ids = Ids(TransformerEncoderTests.ReadGolden().Sentences[..3]);
-        var batched = With(kernel, 4, () => net.Encode(ids, 4));
-        var frozen = With(kernel, 4, () => models.Embedder(managed: true).Net.Encode(ids, 4));
+        var batched = With(kernel, 4, () => Encode(net, ids, 4));
+        var frozen = With(kernel, 4, () => Encode(models.Embedder(managed: true).Net, ids, 4));
         for (int s = 0; s < ids.Length; s++)
         {
-            Assert.True(With(kernel, 4, () => net.Encode([ids[s]], 4))[0].AsSpan().SequenceEqual(batched[s]), $"{path}: sentence {s} alone differs from the batch");
-            Assert.True(With(kernel, 1, () => net.Encode([ids[s]], 4))[0].AsSpan().SequenceEqual(batched[s]), $"{path}: sentence {s} on 1 thread differs");
+            Assert.True(With(kernel, 4, () => Encode(net, [ids[s]], 4))[0].AsSpan().SequenceEqual(batched[s]), $"{path}: sentence {s} alone differs from the batch");
+            Assert.True(With(kernel, 1, () => Encode(net, [ids[s]], 4))[0].AsSpan().SequenceEqual(batched[s]), $"{path}: sentence {s} on 1 thread differs");
             Assert.False(frozen[s].AsSpan().SequenceEqual(batched[s]), $"{path}: the adapters changed nothing in sentence {s}");
         }
 
         // Vector512 must keep Vector256's bits, so a runner's CPU can't change a result.
         if (kernel == KernelPath.Vector512)
-            Assert.True(With(KernelPath.Vector256, 4, () => net.Encode(ids, 4)).Zip(batched).All(x => x.First.AsSpan().SequenceEqual(x.Second)));
+            Assert.True(With(KernelPath.Vector256, 4, () => Encode(net, ids, 4)).Zip(batched).All(x => x.First.AsSpan().SequenceEqual(x.Second)));
     }
 
     [TransformerFact("config.json", "tokenizer.json", "tokenizer_config.json", "pytorch_model.bin")]
@@ -178,8 +182,8 @@ public class TransformerKernelTests(TransformerModels models, ITestOutputHelper 
             return; // nothing to compare on this CPU; ManagedBackendTests' kernel tests cover what it runs
         var net = models.Embedder(managed: true).Net;
         var ids = Ids(TransformerEncoderTests.ReadGolden().Sentences[..3]);
-        var wide = With(KernelPath.Vector512, 4, () => net.Encode(ids, 4));
-        var narrow = With(KernelPath.Vector256, 4, () => net.Encode(ids, 4));
+        var wide = With(KernelPath.Vector512, 4, () => Encode(net, ids, 4));
+        var narrow = With(KernelPath.Vector256, 4, () => Encode(net, ids, 4));
         Assert.True(wide.Zip(narrow).All(x => x.First.AsSpan().SequenceEqual(x.Second)));
     }
 

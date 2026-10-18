@@ -1,3 +1,5 @@
+using System.Buffers;
+
 namespace StanzaSharp.Nn;
 
 /// <summary>
@@ -14,7 +16,7 @@ namespace StanzaSharp.Nn;
 /// so each reader mixes them its own way. At most <see cref="MaxPieces"/> pieces are kept (sentences past that are not, and
 /// their readers run the encoder again), so a long document can't hold gigabytes between the processors.
 /// </remarks>
-internal sealed class TransformerCache(ITransformerNet net, int maxPieces = TransformerCache.DefaultMaxPieces)
+internal sealed class TransformerCache(ITransformerNet net, int maxPieces = TransformerCache.DefaultMaxPieces) : IDisposable
 {
     public ITransformerNet Net { get; } = net;
 
@@ -39,6 +41,19 @@ internal sealed class TransformerCache(ITransformerNet net, int maxPieces = Tran
         _states[ids] = states;
         _pieces += ids.Length;
         return true;
+    }
+
+    /// <summary>Gives the states back to the pool when <see cref="Net"/> rented them (<see cref="ITransformerNet.RentsOutputs"/>); the call is over.</summary>
+    public void Dispose()
+    {
+        if (Net.RentsOutputs)
+        {
+            foreach (var states in _states.Values)
+                ArrayPool<float>.Shared.Return(states);
+        }
+
+        _states.Clear();
+        _pieces = 0;
     }
 
     private sealed class IdsComparer : IEqualityComparer<int[]>

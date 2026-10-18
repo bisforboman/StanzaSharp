@@ -1010,7 +1010,7 @@ public sealed class Pipeline : IDisposable
         // The transformer states, for the processors after the first that reads them (Stanza runs it once per processor).
         int transformerReaders = (_pos?.UsesTransformer == true ? 1 : 0) + (_parser?.UsesTransformer == true ? 1 : 0) + (_depparse?.UsesTransformer == true ? 1 : 0)
             + (_ner?.UsesTransformer == true ? 1 : 0);
-        var transformers = transformerReaders > 1 ? new TransformerCache(_transformer!.Net) : null;
+        using var transformers = transformerReaders > 1 ? new TransformerCache(_transformer!.Net) : null;
         if (_pos != null)
             Step("pos", () => _pos.Process(doc, charlms, ct, transformers), ct);
         if (_lemma != null)
