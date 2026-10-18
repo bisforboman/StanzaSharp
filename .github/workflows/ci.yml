@@ -5,7 +5,14 @@ on:
     branches: [main]
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
-  workflow_call: # release.yml waits for main's run of the commit; only without one does it call this
+  # release.yml waits for main's run of the commit; only without one does it call this (no inputs: everything runs).
+  # nightly.yml calls it with golden_shards '[4]': only golden shard 4 (the Transformer* classes) and the golden check.
+  workflow_call:
+    inputs:
+      golden_shards:
+        description: The golden shards to run, a JSON array; set, every other job is skipped
+        type: string
+        default: ''
 
 # A newer push to the same pull request or to main cancels the run still going (GitHub-hosted runners allow 20
 # concurrent jobs, 5 on macOS, and back-to-back merges each start the full suite). A release whose main run was cancelled
@@ -50,11 +57,13 @@ jobs:
       code: ${{ steps.files.outputs.code }}
       level: ${{ steps.files.outputs.level }}
       torch: ${{ steps.files.outputs.torch }}
+      shards: ${{ steps.files.outputs.shards }}
     steps:
       - id: files
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          if [ -n "${{ inputs.golden_shards }}" ]; then echo "shards=${{ inputs.golden_shards }}" >> "$GITHUB_OUTPUT"; else echo 'shards=[1, 2, 3, 4]' >> "$GITHUB_OUTPUT"; fi
           if [ "${{ github.event_name }}" != pull_request ]; then echo code=true >> "$GITHUB_OUTPUT"; echo level=full >> "$GITHUB_OUTPUT"; echo torch=full >> "$GITHUB_OUTPUT"; exit 0; fi
           echo level=light >> "$GITHUB_OUTPUT"
           if [ "${{ github.event.pull_request.draft }}" = true ]; then echo "Draft: nothing to check until it is ready."; echo code=false >> "$GITHUB_OUTPUT"; exit 0; fi
@@ -65,9 +74,15 @@ jobs:
           # The TorchSharp backend (StanzaSharp.Cuda), the seam both backends share (Nn: Backend, CharlmCache, Pretrain;
           # BackendModels, PipelineBackend), the TorchSharp/libtorch versions (Directory.Build.props) and CI itself.
           if [ -s files.txt ] && ! grep -qE '^src/StanzaSharp\.Cuda/|^src/StanzaSharp\.Nn/|^src/StanzaSharp/(BackendModels|PipelineBackend)\.cs$|^Directory\.Build\.props$|^\.github/workflows/' files.txt; then echo torch=smoke; else echo torch=full; fi >> "$GITHUB_OUTPUT"
+          # Golden shard 4 (the Transformer* classes, about 30 min with the transformer's download) runs on a pull request
+          # only when it touches what they read: the torch=full files above, the downloader and CI's model lists, the
+          # transformer golden data and the Transformer* tests. A processor-only change skips it; the nightly run
+          # (nightly.yml) and every push to main still run it (owner's decision, 2026-10-18). The last write wins.
+          if [ -s files.txt ] && ! grep -qE '^src/StanzaSharp\.Cuda/|^src/StanzaSharp\.Nn/|^src/StanzaSharp/(BackendModels|PipelineBackend|ModelDownloader)\.cs$|^Directory\.Build\.props$|^\.github/workflows/|^tools/ci-models\.sh$|^tests/golden/(.*/)?transformer/|^tests/StanzaSharp\.Tests/Transformer[^/]*\.cs$' files.txt; then echo 'shards=[1, 2, 3]' >> "$GITHUB_OUTPUT"; fi
 
   # Build and the tests that need no model files (the model tests skip).
   build-test:
+    if: inputs.golden_shards == ''
     timeout-minutes: 90
     runs-on: ubuntu-26.04
     steps:
@@ -118,7 +133,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4]
+        # Every shard unless changes says otherwise (an empty output, changes failing, runs all four).
+        shard: ${{ fromJSON(needs.changes.outputs.shards || '[1, 2, 3, 4]') }}
     timeout-minutes: 90
     runs-on: ubuntu-26.04
     steps:
@@ -385,7 +401,7 @@ jobs:
   # No Docker layer cache: it would cost about 700 MB of the 10 GB cache budget to save a minute.
   docker:
     needs: changes
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && inputs.golden_shards == '' }}
     timeout-minutes: 90
     runs-on: ubuntu-26.04
     steps:
@@ -430,7 +446,7 @@ jobs:
   # libtorch has no musl build, so only the managed backend runs there. A required check on main.
   alpine:
     needs: changes
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && inputs.golden_shards == '' }}
     timeout-minutes: 90
     runs-on: ubuntu-26.04
     steps:
@@ -475,7 +491,7 @@ jobs:
   # Models are cached like cross-os's. A required check on main.
   linux-arm64:
     needs: changes
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && inputs.golden_shards == '' }}
     timeout-minutes: 90
     runs-on: ubuntu-26.04-arm
     env:
@@ -557,7 +573,7 @@ jobs:
   # concurrent macOS jobs of free runners.
   cross-os-shard:
     needs: changes
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && inputs.golden_shards == '' }}
     strategy:
       fail-fast: false
       matrix:
@@ -687,7 +703,7 @@ jobs:
   # job's latest attempt): a failure on one OS fails only that OS's check. No shard found fails too.
   cross-os:
     needs: cross-os-shard
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() && inputs.golden_shards == '' }}
     strategy:
       fail-fast: false
       matrix:

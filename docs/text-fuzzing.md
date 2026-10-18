@@ -226,5 +226,7 @@ whole pipeline costs seconds a candidate). Speed on a Ryzen 7 5800X with another
 12 texts (9,000 to 14,000 characters) a second, Stanza taking 90% of the time; the treebank packages about 3 s a text,
 `default_fast` 1.6 s, all eight processors about 5 s, mostly Stanza's.
 
-A short seeded run is not in CI: Python Stanza runs only in golden-shard 2, and a run long enough to find anything
-new costs minutes there. Findings go into `fuzz.json` instead, which every golden run checks.
+No run is in the pull-request CI: Python Stanza runs only in golden-shard 2, and a run long enough to find anything
+new costs minutes there. The nightly workflow (`.github/workflows/nightly.yml`) runs it on main with the run number as
+seed: 1,000 texts through tokenize and mwt, 60 through `default` and 60 through `default_fast`; a difference fails the
+night, and its reports are the `fuzz` artifact. Findings go into `fuzz.json`, which every golden run checks.

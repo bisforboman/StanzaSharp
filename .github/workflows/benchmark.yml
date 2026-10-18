@@ -1,8 +1,9 @@
 name: Benchmark
 
 # StanzaSharp vs Python Stanza on every free GitHub-hosted runner: `stanzasharp benchmark` (built from the checked-out
-# commit) with Python Stanza 1.15.0 next to it. Manual only (Actions > Benchmark > Run workflow, or
-# `gh workflow run benchmark.yml [-f lang=de]`); never on pushes or pull requests, and never a required check.
+# commit) with Python Stanza 1.15.0 next to it. Manual (Actions > Benchmark > Run workflow, or
+# `gh workflow run benchmark.yml [-f lang=de]`), and nightly.yml's quick run of the runner matrix every night (owner's
+# decision, 2026-10-18); never on pushes or pull requests, and never a required check.
 # Free standard runners only (owner's rule): no larger or paid runners.
 # Each job writes its Markdown block to the job summary and the artifact benchmark-<runner> (benchmark.md + .json);
 # the last job puts them into one table (its summary and the artifact benchmarks, benchmarks.md).
@@ -41,6 +42,34 @@ on:
         description: "startup: instead of the default settings, NAME=out/jit|out/r2r[@VAR=VALUE,...] separated by ;"
         type: string
         default: ''
+  # nightly.yml: the runner matrix in quick mode, without the avx512 jobs.
+  workflow_call:
+    inputs:
+      lang:
+        type: string
+        default: en
+      package:
+        type: string
+        default: default
+      quick:
+        type: boolean
+        default: false
+      avx512_only:
+        type: boolean
+        default: false
+      startup_only:
+        type: boolean
+        default: false
+      startup_base:
+        type: string
+        default: ''
+      startup_settings:
+        type: string
+        default: ''
+      no_avx512:
+        description: Leave out the avx512 jobs
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -162,7 +191,7 @@ jobs:
   # `stanzasharp benchmark` without Python, alternating DOTNET_PreferredVectorBitWidth=256 (Vector256) and the default
   # (Vector512), at the default threads and at 1. Its blocks go to the summary and the artifact avx512-<os>-<attempt>.
   avx512:
-    if: ${{ !inputs.startup_only }}
+    if: ${{ !inputs.startup_only && !inputs.no_avx512 }}
     strategy:
       fail-fast: false
       matrix:
