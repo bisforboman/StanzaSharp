@@ -307,7 +307,7 @@ public class ModelChoiceTests
     [Theory]
     [InlineData("nerr=i2b2", "Unknown processor 'nerr'")]
     [InlineData("ner=ontonotes", "Unknown or unsupported ner model 'ontonotes'")]
-    [InlineData("pos=ewt_electra-large", "a transformer model")]
+    [InlineData("constituency=ptb3_electra-large", "a transformer model")]
     [InlineData("constituency=ptb3", "Supported: ptb3-revised_charlm, ptb3-revised_electra-large, ptb3_charlm")]
     [InlineData("ner=", "Unknown or unsupported ner model ''")]
     public void Models_ThrowForUnknownAndUnsupportedNames(string pair, string message)
