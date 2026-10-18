@@ -1080,8 +1080,8 @@ public sealed class Pipeline : IDisposable
             var readers = new[] { _pos?.TransformerReader(doc), _parser?.TransformerReader(doc), _depparse?.TransformerReader(doc),
                 _sentiment?.TransformerReader(doc), _ner?.TransformerReader(doc), };
             bool joint = _transformer != null && Step("transformer", () => TransformerEmbedder.Prefill([.. readers.OfType<TransformerReader>()], CacheOf, ct), ct);
-            if (!joint && readers.Count(r => r?.Embedder.Net == _transformer?.Net) > 1)
-                CacheOf(_transformer!.Net);
+            if (!joint && _transformer != null && readers.Count(r => r != null && r.Embedder.Net == _transformer.Net) > 1)
+                CacheOf(_transformer.Net);
             return Annotate(doc, charlms, CacheFor, readers, TransformersFor, ct);
         }
         finally
