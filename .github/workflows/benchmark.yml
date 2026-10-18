@@ -171,7 +171,7 @@ jobs:
           - { os: windows-2025, attempt: 2 }
           - { os: windows-2025, attempt: 3 }
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 60
+    timeout-minutes: ${{ inputs.package == 'default_accurate' && 150 || 60 }}
     defaults:
       run:
         shell: bash
@@ -211,11 +211,15 @@ jobs:
           dotnet build StanzaSharp.slnx -c Release
           dotnet build src/StanzaSharp.Tool -c Release -p:Version="${version#v}" -p:IncludeSourceRevisionInInformationalVersion=false
 
+      # default_accurate's models are in no cache (see the benchmark job): always downloaded.
       - name: Download the models
-        if: steps.cpu.outputs.avx512 == 'yes' && steps.models.outputs.cache-hit != 'true'
+        if: steps.cpu.outputs.avx512 == 'yes' && (steps.models.outputs.cache-hit != 'true' || inputs.package == 'default_accurate')
         run: |
           dotnet src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll download models/stanza/en
           dotnet src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll download models/stanza/en --package default_fast
+          if [ "${{ inputs.package }}" = default_accurate ]; then
+            dotnet src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll download models/stanza/en --package default_accurate
+          fi
 
       - name: Benchmark Vector512 against Vector256
         if: steps.cpu.outputs.avx512 == 'yes'
