@@ -5,7 +5,9 @@ namespace StanzaSharp.Tests;
 /// <summary>
 /// default_accurate's frozen-transformer models as <see cref="PipelineOptions.Models"/> (docs/transformer-plan.md, PR 2):
 /// pos, depparse, ner, constituency and sentiment (LoRA) <c>_electra-large</c> and the <c>default_accurate</c> package against
-/// their tests/golden/models/ rows, byte for byte on both backends. Named Transformer* so that only golden shard 1, which downloads the transformer, runs it in CI.
+/// their tests/golden/models/ rows, byte for byte on both backends; German's (german-nlp-group/electra-base-german-uncased:
+/// pos and depparse frozen, constituency and sentiment with their LoRA adapters) against tests/golden/de/models/. Named
+/// Transformer* so that only golden shard 4, which downloads the transformers, runs it in CI.
 /// </summary>
 public class TransformerModelTests
 {
@@ -13,6 +15,9 @@ public class TransformerModelTests
     private const string Constituency = "constituency=ptb3-revised_electra-large";
     private const string Sentiment = "sentiment=sstplus_electra-large";
     private const string AllFive = "electra-large";
+    private const string GermanFrozen = "pos+depparse=german-nlp-electra";
+    private const string GermanConstituency = "constituency=spmrl_german-nlp-electra";
+    private const string GermanSentiment = "sentiment=sb10k_german-nlp-electra";
 
     [ModelTheory]
     [ModelChoice("en", Electra, false)]
@@ -25,6 +30,14 @@ public class TransformerModelTests
     [ModelChoice("en", AllFive, true)]
     [ModelChoice("en", "default_accurate", false)]
     [ModelChoice("en", "default_accurate", true)]
+    [ModelChoice("de", GermanFrozen, false)]
+    [ModelChoice("de", GermanFrozen, true)]
+    [ModelChoice("de", GermanConstituency, false)]
+    [ModelChoice("de", GermanConstituency, true)]
+    [ModelChoice("de", GermanSentiment, false)]
+    [ModelChoice("de", GermanSentiment, true)]
+    [ModelChoice("de", "default_accurate", false)]
+    [ModelChoice("de", "default_accurate", true)]
     public void Process_MatchesGolden(string name, bool managed, string lang) => ModelChoiceTests.AssertGolden(name, managed, lang, cache: true);
 
     [Fact]
@@ -97,9 +110,14 @@ public class TransformerModelTests
         Assert.Contains("tokenize/combined_charlm.pt", files);
         Assert.DoesNotContain(files, f => f.StartsWith("transformer/", StringComparison.Ordinal));
 
-        // German's reads another transformer (german-nlp-electra), not ported.
-        var e = Assert.Throws<ArgumentException>(() => Pipeline.SelectModels("default_accurate", null, addRequired: true, "options", "de"));
-        Assert.Contains("transformer", e.Message);
+        // German's reads german-nlp-group's base ELECTRA under four processors (ner is default's germeval2014).
+        var german = Pipeline.SelectModels("default_accurate", null, addRequired: true, "options", "de");
+        Assert.Equal(Pipeline.AllProcessors.Split(',').Order(), german.Keys.Order());
+        Assert.Equal([GermanTransformerFactAttribute.Electra], Pipeline.TransformersOf(german, "de"));
+        Assert.Equal("germeval2014", german["ner"]);
+        var germanFiles = ModelDownloader.FilesFor(null, "default_accurate", language: "de").Select(f => f.Path).ToList();
+        Assert.Contains("constituency/spmrl_german-nlp-electra.pt", germanFiles);
+        Assert.Contains("lemma/combined_charlm.pt", germanFiles);
     }
 
     [Fact]

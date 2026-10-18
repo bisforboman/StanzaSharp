@@ -6,8 +6,9 @@
 #   tools/ci-models.sh files GROUP      the group's files and MD5s (`download --list`), sorted
 #   tools/ci-models.sh transformer      downloads the transformer models (Pipeline.Transformers: default_accurate's, PR 2 of
 #                                       docs/transformer-plan.md) and google/electra-large-discriminator's files (into
-#                                       models/stanza/en/transformer/), and german-nlp-group/electra-base-german-uncased's tokenizer
-#                                       files (models/stanza/de/transformer/), with retries; never cached (owner's decision, 2026-10-17)
+#                                       models/stanza/en/transformer/), and German default_accurate's (its four transformer models
+#                                       and german-nlp-group/electra-base-german-uncased, models/stanza/de/transformer/), with
+#                                       retries; never cached (owner's decisions, 2026-10-17 and 2026-10-18)
 #   tools/ci-models.sh keys             writes en, en_treebanks, de, treebank_choices, en_treebanks_paths and treebank_choices_paths
 #                                       to $GITHUB_OUTPUT
 #
@@ -100,11 +101,10 @@ case ${1:-} in
   transformer)
     # the default_accurate package: its five transformer models, the transformer, and its _charlm tokenizer and lemmatizer
     # (also in the treebank-choices cache; files that match are kept)
-    # and the German transformer's tokenizer files (#170: its models come with German default_accurate)
+    # and German's (#170: four transformer models, german-nlp-group's ELECTRA; the rest is in the de caches)
     for attempt in 1 2 3; do
       "${cli[@]}" download models/stanza/en --package default_accurate < /dev/null \
-        && "${cli[@]}" download-transformer models/stanza/de german-nlp-group/electra-base-german-uncased config.json vocab.txt \
-          tokenizer_config.json < /dev/null \
+        && "${cli[@]}" download models/stanza/de --lang de --package default_accurate < /dev/null \
         && exit 0
       echo "download failed (attempt $attempt)" >&2
       sleep $((attempt * 15))

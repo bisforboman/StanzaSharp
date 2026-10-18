@@ -242,6 +242,8 @@ public class ModelChoiceTests
             var stem = Path.GetFileName(file) == "corpus.txt" ? "corpus" : Path.GetFileNameWithoutExtension(file);
             var actual = Conllu.Write(nlp.Process(text));
             var expected = File.ReadAllText(Path.Combine(golden, "models", name, stem + ".conllu"));
+            if (PipelineTests.HasNonBmp(text)) // offsets differ by design after characters outside the BMP (German validation_social)
+                (actual, expected) = (PipelineTests.StripOffsets(actual), PipelineTests.StripOffsets(expected));
             var e = expected.Split("\n\n");
             var g = actual.Split("\n\n");
             int i = 0;

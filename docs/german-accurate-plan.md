@@ -34,7 +34,7 @@ sentiment's LoRA pass.
 ## The transformer: `german-nlp-group/electra-base-german-uncased`
 
 Revision `16e66fe6c6d52b459b7de7330bc9db2c62f3620d`; files `config.json` (467 B), `tokenizer_config.json` (103 B),
-`vocab.txt` (275,501 B), `pytorch_model.bin` (444,916,553 B, sha256 `e6d01cf9f43f7e1e2ce18cf7dfb68a248985b822934632eaf16d95fb117c833f`).
+`vocab.txt` (275,501 B), `pytorch_model.bin` (444,916,553 B, sha256 `a13cf267dfad08dd5c889af59f2e7f74120ff28107619d6c81904c3250efe76e`).
 There is no `tokenizer.json`.
 
 - **Architecture:** `ElectraForPreTraining`, `model_type` electra, hidden 768, 12 layers, 12 heads, intermediate 3,072,

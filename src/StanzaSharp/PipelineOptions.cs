@@ -32,9 +32,10 @@ public sealed class PipelineOptions
     /// treebank packages <c>"combined"</c>, <c>"ewt"</c>, <c>"gum"</c>, <c>"lines"</c>, <c>"partut"</c>, <c>"atis"</c>,
     /// <c>"childes"</c>, <c>"eslspok"</c> and the biomedical <c>"craft"</c>, <c>"genia"</c> and <c>"mimic"</c> (tokenize to
     /// depparse only; eslspok and the biomedical ones have no mwt, and eslspok's lemma is the word).
-    /// German: <c>"default"</c>, <c>"default_fast"</c> (pos and depparse as in English; ner and sentiment unchanged), and
-    /// the treebank packages <c>"combined"</c>, <c>"gsd"</c> and <c>"hdt"</c> (tokenize to depparse only). Any other name
-    /// throws, including German's <c>"default_accurate"</c>, whose transformer StanzaSharp doesn't run.
+    /// German: <c>"default"</c>, <c>"default_fast"</c> (pos and depparse as in English; ner and sentiment unchanged),
+    /// <c>"default_accurate"</c> (pos, constituency, depparse and sentiment read the transformer
+    /// <c>german-nlp-group/electra-base-german-uncased</c>, 445 MB, which the downloader fetches too) and the treebank
+    /// packages <c>"combined"</c>, <c>"gsd"</c> and <c>"hdt"</c> (tokenize to depparse only). Any other name throws.
     /// </summary>
     public string Package { get; init; } = Pipeline.DefaultPackage;
 

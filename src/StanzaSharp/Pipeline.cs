@@ -125,6 +125,20 @@ public sealed class Pipeline : IDisposable
                 ["ner"] = "germeval2014",
             },
 
+            // The most accurate: the _charlm tokenizer and lemmatizer, and german-nlp-group/electra-base-german-uncased under
+            // pos and depparse (frozen, one shared pass), constituency and sentiment (each with its LoRA adapters). ner as default.
+            ["default_accurate"] = new()
+            {
+                ["tokenize"] = "combined_charlm",
+                ["mwt"] = "combined",
+                ["pos"] = "combined_german-nlp-electra",
+                ["lemma"] = "combined_charlm",
+                ["constituency"] = "spmrl_german-nlp-electra",
+                ["depparse"] = "combined_german-nlp-electra",
+                ["sentiment"] = "sb10k_german-nlp-electra",
+                ["ner"] = "germeval2014",
+            },
+
             // The treebank packages: tokenize to depparse only.
             ["combined"] = Treebank("combined"),
             ["gsd"] = Treebank("gsd"),
@@ -312,6 +326,12 @@ public sealed class Pipeline : IDisposable
             ["sentiment/sb10k_charlm"] = GermanCharlm,
             ["ner/germeval2014"] = ["pretrain/fasttextwiki", "forward_charlm/newswiki", "backward_charlm/newswiki"],
             ["pos/combined_nocharlm"] = Conll17,
+
+            // default_accurate's transformer models: resources.json lists conll17 and the charlms for each
+            ["pos/combined_german-nlp-electra"] = GermanCharlm,
+            ["depparse/combined_german-nlp-electra"] = GermanCharlm,
+            ["constituency/spmrl_german-nlp-electra"] = GermanCharlm,
+            ["sentiment/sb10k_german-nlp-electra"] = GermanCharlm,
             ["depparse/combined_nocharlm"] = Conll17,
             ["pos/gsd_charlm"] = GermanCharlm,
             ["depparse/gsd_charlm"] = GermanCharlm,
@@ -360,10 +380,16 @@ public sealed class Pipeline : IDisposable
             ["constituency/ptb3-revised_electra-large"] = Electra,
             ["sentiment/sstplus_electra-large"] = Electra, // with its LoRA adapters: a pass of its own
         },
-        ["de"] = [],
+        ["de"] = new()
+        {
+            ["pos/combined_german-nlp-electra"] = GermanElectra,
+            ["depparse/combined_german-nlp-electra"] = GermanElectra,
+            ["constituency/spmrl_german-nlp-electra"] = GermanElectra, // LoRA adapters: a pass of its own
+            ["sentiment/sb10k_german-nlp-electra"] = GermanElectra, // LoRA adapters: a pass of its own
+        },
     };
 
-    private const string Electra = "google/electra-large-discriminator";
+    private const string Electra = "google/electra-large-discriminator", GermanElectra = "german-nlp-group/electra-base-german-uncased";
 
     /// <summary>The transformers <paramref name="models"/> of <paramref name="language"/> read (<see cref="Transformers"/>), each once.</summary>
     internal static List<string> TransformersOf(IReadOnlyDictionary<string, string> models, string language) =>

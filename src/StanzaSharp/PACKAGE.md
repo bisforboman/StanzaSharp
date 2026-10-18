@@ -171,11 +171,13 @@ foreach (var sentence in doc.Sentences)
 
 ## More accurate: the default_accurate package
 
-`new PipelineOptions { Package = "default_accurate" }` selects Stanza's `default_accurate` package (English): all eight
+`new PipelineOptions { Package = "default_accurate" }` selects Stanza's `default_accurate` package: all eight
 processors, with pos, constituency, depparse, ner and sentiment reading the transformer
 `google/electra-large-discriminator` (1.3 GB from Hugging Face, fetched by `DownloadAsync(dir, options)`; sentiment
 through its LoRA adapters). Its output is identical to Python Stanza's `package='default_accurate'`; it is about 5.5 times
-slower than `default` and needs about 4.2 GB of memory instead of 1.1 GB.
+slower than `default` and needs about 4.2 GB of memory instead of 1.1 GB. German's (`Language = "de"`) reads
+`german-nlp-group/electra-base-german-uncased` (445 MB) under pos, depparse, constituency and sentiment (the last two
+through their LoRA adapters).
 
 ## Faster: the default_fast package
 

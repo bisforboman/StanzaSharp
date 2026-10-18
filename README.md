@@ -241,8 +241,8 @@ var doc = nlp.Process("Angela Merkel wurde in Hamburg geboren. Sie zog im Jahr 1
 ```
 
 The same eight processors and both packages (`default`, `default_fast`) as English, plus Stanza's German treebank packages
-`combined`, `gsd` and `hdt` (tokenize, mwt, pos, lemma and depparse only); `default_accurate` needs transformers and
-throws. German differs from English in its models, not in the API:
+`combined`, `gsd` and `hdt` (tokenize, mwt, pos, lemma and depparse only), and `default_accurate` (below). German differs
+from English in its models, not in the API:
 
 - MWT is a character seq2seq model (contractions such as `zum` → `zu dem`, `ins` → `in das`), after Stanza's dictionary.
 - The constituency parser reads UPOS and writes the SPMRL labels (`(ROOT (VROOT (S ...)))`).
@@ -313,7 +313,9 @@ using var fast = Pipeline.Load("models/stanza/en", options);
   four; sentiment applies its own LoRA adapters to the same transformer, a second pass. tokenize and lemma are the
   `combined_charlm` models. Output is byte-identical to Python Stanza's `package='default_accurate'`. It is about 5.5 times
   slower than `default` and peaks at about 4.2 GB instead of 1.1 GB (4 cores;
-  [round 43](docs/performance/round-43-default-accurate.md)).
+  [round 43](docs/performance/round-43-default-accurate.md)). German's (`Language = "de"`) reads
+  `german-nlp-group/electra-base-german-uncased` (445 MB): pos and depparse frozen, one shared pass; constituency and
+  sentiment each through their own LoRA adapters, a pass each; ner is `default`'s `germeval2014`.
 
 - The treebank packages, each trained on one English treebank: `"combined"` (the default package's models), `"ewt"`,
   `"gum"`, `"lines"`, `"partut"`, `"atis"`, `"childes"` and `"eslspok"`, and the biomedical `"craft"`, `"genia"` and

@@ -1,0 +1,256 @@
+# text = Ich gehe zum Bäcker und danach zur Post.
+# sent_id = 0
+1	Ich	ich	PRON	PPER	Case=Nom|Number=Sing|Person=1|PronType=Prs	2	nsubj	_	start_char=0|end_char=3
+2	gehe	gehen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	0	root	_	start_char=4|end_char=8
+3-4	zum	_	_	_	_	_	_	_	start_char=9|end_char=12
+3	zu	zu	ADP	APPR	_	5	case	_	_
+4	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	5	det	_	_
+5	Bäcker	Bäcker	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	2	obl	_	start_char=13|end_char=19
+6	und	und	CCONJ	KON	_	10	cc	_	start_char=20|end_char=23
+7	danach	danach	ADV	PAV	_	10	advmod	_	start_char=24|end_char=30
+8-9	zur	_	_	_	_	_	_	_	start_char=31|end_char=34
+8	zu	zu	ADP	APPR	_	10	case	_	_
+9	der	der	DET	ART	Case=Dat|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	10	det	_	_
+10	Post	Post	NOUN	NN	Case=Dat|Gender=Fem|Number=Sing	5	conj	_	SpaceAfter=No|start_char=35|end_char=39
+11	.	.	PUNCT	$.	_	2	punct	_	start_char=39|end_char=40
+
+# text = Im Sommer fahren wir ans Meer.
+# sent_id = 1
+1-2	Im	_	_	_	_	_	_	_	start_char=41|end_char=43
+1	In	in	ADP	APPR	_	3	case	_	_
+2	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	3	det	_	_
+3	Sommer	Sommer	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	4	obl	_	start_char=44|end_char=50
+4	fahren	fahren	VERB	VVFIN	Mood=Ind|Number=Plur|Person=1|Tense=Pres|VerbForm=Fin	0	root	_	start_char=51|end_char=57
+5	wir	wir	PRON	PPER	Case=Nom|Number=Plur|Person=1|PronType=Prs	4	nsubj	_	start_char=58|end_char=61
+6-7	ans	_	_	_	_	_	_	_	start_char=62|end_char=65
+6	an	an	ADP	APPR	_	8	case	_	_
+7	das	der	DET	ART	Case=Acc|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	8	det	_	_
+8	Meer	Meer	NOUN	NN	Case=Acc|Gender=Neut|Number=Sing	4	obl	_	SpaceAfter=No|start_char=66|end_char=70
+9	.	.	PUNCT	$.	_	4	punct	_	SpacesAfter=\n\n|start_char=70|end_char=71
+
+# text = Am Abend sitzen wir beim Italiener.
+# sent_id = 2
+1-2	Am	_	_	_	_	_	_	_	start_char=73|end_char=75
+1	An	an	ADP	APPR	_	3	case	_	_
+2	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	3	det	_	_
+3	Abend	Abend	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	4	obl	_	start_char=76|end_char=81
+4	sitzen	sitzen	VERB	VVFIN	Mood=Ind|Number=Plur|Person=1|Tense=Pres|VerbForm=Fin	0	root	_	start_char=82|end_char=88
+5	wir	wir	PRON	PPER	Case=Nom|Number=Plur|Person=1|PronType=Prs	4	nsubj	_	start_char=89|end_char=92
+6-7	beim	_	_	_	_	_	_	_	start_char=93|end_char=97
+6	bei	bei	ADP	APPR	_	8	case	_	_
+7	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	8	det	_	_
+8	Italiener	Italiener	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	4	obl	_	SpaceAfter=No|start_char=98|end_char=107
+9	.	.	PUNCT	$.	_	4	punct	_	start_char=107|end_char=108
+
+# text = Vom Fenster aus sieht man ins Tal.
+# sent_id = 3
+1-2	Vom	_	_	_	_	_	_	_	start_char=109|end_char=112
+1	Von	von	ADP	APPR	_	3	case	_	_
+2	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	3	det	_	_
+3	Fenster	Fenster	NOUN	NN	Case=Dat|Gender=Neut|Number=Sing	5	obl	_	start_char=113|end_char=120
+4	aus	aus	ADP	APZR	_	3	case	_	start_char=121|end_char=124
+5	sieht	sehen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=125|end_char=130
+6	man	man	PRON	PIS	Case=Nom|Number=Sing|PronType=Ind	5	nsubj	_	start_char=131|end_char=134
+7-8	ins	_	_	_	_	_	_	_	start_char=135|end_char=138
+7	in	in	ADP	APPR	_	9	case	_	_
+8	das	der	DET	ART	Case=Acc|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	9	det	_	_
+9	Tal	Tal	NOUN	NN	Case=Acc|Gender=Neut|Number=Sing	5	obl	_	SpaceAfter=No|start_char=139|end_char=142
+10	.	.	PUNCT	$.	_	5	punct	_	SpacesAfter=\n\n|start_char=142|end_char=143
+
+# text = Er sprang übers Geländer und lief ums Haus herum.
+# sent_id = 4
+1	Er	er	PRON	PPER	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=145|end_char=147
+2	sprang	springen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=148|end_char=154
+3-4	übers	_	_	_	_	_	_	_	start_char=155|end_char=160
+3	über	über	ADP	APPR	_	5	case	_	_
+4	das	der	DET	ART	Case=Acc|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	5	det	_	_
+5	Geländer	Geländer	NOUN	NN	Case=Acc|Gender=Neut|Number=Sing	2	obl	_	start_char=161|end_char=169
+6	und	und	CCONJ	KON	_	7	cc	_	start_char=170|end_char=173
+7	lief	laufen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	2	conj	_	start_char=174|end_char=178
+8-9	ums	_	_	_	_	_	_	_	start_char=179|end_char=182
+8	um	um	ADP	APPR	_	10	case	_	_
+9	das	der	DET	ART	Case=Acc|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	10	det	_	_
+10	Haus	Haus	NOUN	NN	Case=Acc|Gender=Neut|Number=Sing	7	obl	_	start_char=183|end_char=187
+11	herum	herum	ADV	PTKVZ	_	7	compound:prt	_	SpaceAfter=No|start_char=188|end_char=193
+12	.	.	PUNCT	$.	_	2	punct	_	start_char=193|end_char=194
+
+# text = Sie stieg aufs Dach.
+# sent_id = 5
+1	Sie	sie	PRON	PPER	Case=Nom|Gender=Fem|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=195|end_char=198
+2	stieg	steigen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=199|end_char=204
+3-4	aufs	_	_	_	_	_	_	_	start_char=205|end_char=209
+3	auf	auf	ADP	APPR	_	5	case	_	_
+4	das	der	DET	ART	Case=Acc|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	5	det	_	_
+5	Dach	Dach	NOUN	NN	Case=Acc|Gender=Neut|Number=Sing	2	obl	_	SpaceAfter=No|start_char=210|end_char=214
+6	.	.	PUNCT	$.	_	2	punct	_	SpacesAfter=\n\n|start_char=214|end_char=215
+
+# text = Zum Glück war am Bahnhof noch ein Taxi frei.
+# sent_id = 6
+1-2	Zum	_	_	_	_	_	_	_	start_char=217|end_char=220
+1	Zu	zu	ADP	APPR	_	3	case	_	_
+2	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	3	det	_	_
+3	Glück	Glück	NOUN	NN	Case=Dat|Gender=Neut|Number=Sing	11	nmod	_	start_char=221|end_char=226
+4	war	sein	VERB	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	11	cop	_	start_char=227|end_char=230
+5-6	am	_	_	_	_	_	_	_	start_char=231|end_char=233
+5	an	an	ADP	APPR	_	7	case	_	_
+6	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	7	det	_	_
+7	Bahnhof	Bahnhof	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	11	nmod	_	start_char=234|end_char=241
+8	noch	noch	ADV	ADV	_	11	advmod	_	start_char=242|end_char=246
+9	ein	ein	DET	ART	Case=Nom|Definite=Ind|Gender=Neut|Number=Sing|NumType=Card|PronType=Art	10	det	_	start_char=247|end_char=250
+10	Taxi	Taxi	NOUN	NN	Case=Nom|Gender=Neut|Number=Sing	11	nsubj	_	start_char=251|end_char=255
+11	frei	frei	ADJ	ADJD	Degree=Pos	0	root	_	SpaceAfter=No|start_char=256|end_char=260
+12	.	.	PUNCT	$.	_	11	punct	_	start_char=260|end_char=261
+
+# text = Beim nächsten Mal nehmen wir den Bus.
+# sent_id = 7
+1-2	Beim	_	_	_	_	_	_	_	start_char=262|end_char=266
+1	Bei	bei	ADP	APPR	_	4	case	_	_
+2	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	4	det	_	_
+3	nächsten	nah	ADJ	ADJA	Case=Dat|Degree=Sup|Gender=Neut|Number=Sing	4	amod	_	start_char=267|end_char=275
+4	Mal	Mal	NOUN	NN	Case=Dat|Gender=Neut|Number=Sing	5	obl	_	start_char=276|end_char=279
+5	nehmen	nehmen	VERB	VVFIN	Mood=Ind|Number=Plur|Person=1|Tense=Pres|VerbForm=Fin	0	root	_	start_char=280|end_char=286
+6	wir	wir	PRON	PPER	Case=Nom|Number=Plur|Person=1|PronType=Prs	5	nsubj	_	start_char=287|end_char=290
+7	den	der	DET	ART	Case=Acc|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	8	det	_	start_char=291|end_char=294
+8	Bus	Bus	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	5	obj	_	SpaceAfter=No|start_char=295|end_char=298
+9	.	.	PUNCT	$.	_	5	punct	_	SpacesAfter=\n\n|start_char=298|end_char=299
+
+# text = ZUM VERKAUF: Fahrrad, kaum benutzt.
+# sent_id = 8
+1	ZUM	ZUM	ADJ	ADJA	Case=Nom|Degree=Pos|Gender=Masc|Number=Sing	2	amod	_	start_char=301|end_char=304
+2	VERKAUF	VERKAUF	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	0	root	_	SpaceAfter=No|start_char=305|end_char=312
+3	:	:	PUNCT	$.	_	4	punct	_	start_char=312|end_char=313
+4	Fahrrad	Fahrrad	NOUN	NN	Case=Nom|Gender=Neut|Number=Sing	2	appos	_	SpaceAfter=No|start_char=314|end_char=321
+5	,	,	PUNCT	$,	_	7	punct	_	start_char=321|end_char=322
+6	kaum	kaum	ADV	ADV	_	7	advmod	_	start_char=323|end_char=327
+7	benutzt	benutzen	ADJ	VVPP	Degree=Pos|VerbForm=Part	4	acl	_	SpaceAfter=No|start_char=328|end_char=335
+8	.	.	PUNCT	$.	_	4	punct	_	start_char=335|end_char=336
+
+# text = AM BESTEN SOFORT ANRUFEN! IM ANGEBOT: ZWEI HELME.
+# sent_id = 9
+1	AM	am	ADP	APPR	_	2	case	_	start_char=337|end_char=339
+2	BESTEN	BESTEN	PROPN	NE	Case=Nom|Gender=Masc|Number=Sing	4	obl	_	start_char=340|end_char=346
+3	SOFORT	sofort	ADV	ADV	_	4	advmod	_	start_char=347|end_char=353
+4	ANRUFEN	ANRUFEN	PROPN	NE	Case=Dat|Gender=Neut|Number=Sing	0	root	_	SpaceAfter=No|start_char=354|end_char=361
+5	!	!	PUNCT	$.	_	4	punct	_	start_char=361|end_char=362
+6	IM	IM	PROPN	NE	Case=Nom|Gender=Masc|Number=Sing	10	compound	_	start_char=363|end_char=365
+7	ANGEBOT	ANGEBOT	NOUN	NN	Case=Nom|Gender=Neut|Number=Sing	4	appos	_	SpaceAfter=No|start_char=366|end_char=373
+8	:	:	PUNCT	$.	_	10	punct	_	start_char=373|end_char=374
+9	ZWEI	ZWEI	NUM	CARD	NumType=Card	10	nummod	_	start_char=375|end_char=379
+10	HELME	HELME	NOUN	NN	Case=Nom|Gender=Masc|Number=Plur	4	appos	_	SpaceAfter=No|start_char=380|end_char=385
+11	.	.	PUNCT	$.	_	4	punct	_	SpacesAfter=\n\n|start_char=385|end_char=386
+
+# text = Im Großen und Ganzen bin ich zufrieden.
+# sent_id = 10
+1-2	Im	_	_	_	_	_	_	_	start_char=388|end_char=390
+1	In	in	ADP	APPR	_	3	case	_	_
+2	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	3	det	_	_
+3	Großen	groß	NOUN	NN	Case=Dat|Gender=Neut|Number=Sing	8	nmod	_	start_char=391|end_char=397
+4	und	und	CCONJ	KON	_	5	cc	_	start_char=398|end_char=401
+5	Ganzen	Ganze	NOUN	NN	Case=Dat|Gender=Neut|Number=Sing	3	conj	_	start_char=402|end_char=408
+6	bin	sein	AUX	VAFIN	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	8	cop	_	start_char=409|end_char=412
+7	ich	ich	PRON	PPER	Case=Nom|Number=Sing|Person=1|PronType=Prs	8	nsubj	_	start_char=413|end_char=416
+8	zufrieden	zufrieden	ADJ	ADJD	Degree=Pos	0	root	_	SpaceAfter=No|start_char=417|end_char=426
+9	.	.	PUNCT	$.	_	8	punct	_	start_char=426|end_char=427
+
+# text = Zur Not geht's auch ohne.
+# sent_id = 11
+1-2	Zur	_	_	_	_	_	_	_	start_char=428|end_char=431
+1	Zu	zu	ADP	APPR	_	3	case	_	_
+2	der	der	DET	ART	Case=Dat|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	3	det	_	_
+3	Not	Not	NOUN	NN	Case=Dat|Gender=Fem|Number=Sing	4	obl	_	start_char=432|end_char=435
+4	geht	gehen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=436|end_char=440
+5	's	es	PRON	PPER	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	4	nsubj	_	start_char=440|end_char=442
+6	auch	auch	ADV	ADV	_	4	advmod	_	start_char=443|end_char=447
+7	ohne	ohne	ADP	PTKVZ	_	4	advmod	_	SpaceAfter=No|start_char=448|end_char=452
+8	.	.	PUNCT	$.	_	4	punct	_	SpacesAfter=\n\n|start_char=452|end_char=453
+
+# text = Hinters Haus, unterm Tisch, vorm Kino und fürs Protokoll: das sagt man oft so.
+# sent_id = 12
+1	Hinters	Hinters	PROPN	ADJA	Case=Nom|Gender=Neut|Number=Sing	2	amod	_	start_char=455|end_char=462
+2	Haus	Haus	NOUN	NN	Case=Nom|Gender=Neut|Number=Sing	14	obl	_	SpaceAfter=No|start_char=463|end_char=467
+3	,	,	PUNCT	$,	_	5	punct	_	start_char=467|end_char=468
+4	unterm	unterm	ADP	APPR	_	5	case	_	start_char=469|end_char=475
+5	Tisch	Tisch	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	2	conj	_	SpaceAfter=No|start_char=476|end_char=481
+6	,	,	PUNCT	$,	_	8	punct	_	start_char=481|end_char=482
+7	vorm	vorm	DET	ART	Case=Dat|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	8	det	_	start_char=483|end_char=487
+8	Kino	Kino	NOUN	NN	Case=Dat|Gender=Neut|Number=Sing	2	conj	_	start_char=488|end_char=492
+9	und	und	CCONJ	KON	_	11	cc	_	start_char=493|end_char=496
+10	fürs	fürs	ADP	APPR	_	11	case	_	start_char=497|end_char=501
+11	Protokoll	Protokoll	NOUN	NN	Case=Acc|Gender=Neut|Number=Sing	2	conj	_	SpaceAfter=No|start_char=502|end_char=511
+12	:	:	PUNCT	$.	_	2	punct	_	start_char=511|end_char=512
+13	das	der	PRON	PDS	Case=Acc|Gender=Neut|Number=Sing|PronType=Dem,Rel	14	obj	_	start_char=513|end_char=516
+14	sagt	sagen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=517|end_char=521
+15	man	man	PRON	PIS	Case=Nom|Number=Sing|PronType=Ind	14	nsubj	_	start_char=522|end_char=525
+16	oft	oft	ADV	ADV	_	14	advmod	_	start_char=526|end_char=529
+17	so	so	ADV	ADV	_	14	advmod	_	SpaceAfter=No|start_char=530|end_char=532
+18	.	.	PUNCT	$.	_	14	punct	_	SpacesAfter=\n\n|start_char=532|end_char=533
+
+# text = Wir treffen uns am 3. Mai im Café am Markt, gleich neben dem Rathaus.
+# sent_id = 13
+1	Wir	wir	PRON	PPER	Case=Nom|Number=Plur|Person=1|PronType=Prs	2	nsubj	_	start_char=535|end_char=538
+2	treffen	treffen	VERB	VVFIN	Mood=Ind|Number=Plur|Person=1|Tense=Pres|VerbForm=Fin	0	root	_	start_char=539|end_char=546
+3	uns	wir	PRON	PRF	Case=Acc|Number=Plur|Person=1|PronType=Prs|Reflex=Yes	2	obj	_	start_char=547|end_char=550
+4-5	am	_	_	_	_	_	_	_	start_char=551|end_char=553
+4	an	an	ADP	APPR	_	7	case	_	_
+5	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	7	det	_	_
+6	3.	3.	ADJ	ADJA	Case=Dat|Degree=Pos|NumType=Ord	7	amod	_	start_char=554|end_char=556
+7	Mai	Mai	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	2	obl	_	start_char=557|end_char=560
+8-9	im	_	_	_	_	_	_	_	start_char=561|end_char=563
+8	in	in	ADP	APPR	_	10	case	_	_
+9	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	10	det	_	_
+10	Café	Café	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	2	obl	_	start_char=564|end_char=568
+11-12	am	_	_	_	_	_	_	_	start_char=569|end_char=571
+11	an	an	ADP	APPR	_	13	case	_	_
+12	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	13	det	_	_
+13	Markt	Markt	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	10	nmod	_	SpaceAfter=No|start_char=572|end_char=577
+14	,	,	PUNCT	$,	_	18	punct	_	start_char=577|end_char=578
+15	gleich	gleich	ADV	ADV	_	18	advmod	_	start_char=579|end_char=585
+16	neben	neben	ADP	APPR	_	18	case	_	start_char=586|end_char=591
+17	dem	der	DET	ART	Case=Dat|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	18	det	_	start_char=592|end_char=595
+18	Rathaus	Rathaus	NOUN	NN	Case=Dat|Gender=Neut|Number=Sing	2	obl	_	SpaceAfter=No|start_char=596|end_char=603
+19	.	.	PUNCT	$.	_	2	punct	_	SpacesAfter=\n\n|start_char=603|end_char=604
+
+# text = Gibt's noch Kaffee?
+# sent_id = 14
+1	Gibt	geben	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=606|end_char=610
+2	's	es	PRON	PPER	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	1	nsubj	_	start_char=610|end_char=612
+3	noch	noch	ADV	ADV	_	1	advmod	_	start_char=613|end_char=617
+4	Kaffee	Kaffee	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	1	obj	_	SpaceAfter=No|start_char=618|end_char=624
+5	?	?	PUNCT	$.	_	1	punct	_	start_char=624|end_char=625
+
+# text = Wie geht's dir?
+# sent_id = 15
+1	Wie	wie	ADV	PWAV	PronType=Int	2	advmod	_	start_char=626|end_char=629
+2	geht	gehen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=630|end_char=634
+3	's	es	PRON	PPER	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=634|end_char=636
+4	dir	ich	PRON	PPER	Case=Dat|Number=Sing|Person=2|PronType=Prs	2	obl:arg	_	SpaceAfter=No|start_char=637|end_char=640
+5	?	?	PUNCT	$.	_	2	punct	_	start_char=640|end_char=641
+
+# text = Ich hab's dir doch gesagt!
+# sent_id = 16
+1	Ich	ich	PRON	PPER	Case=Nom|Number=Sing|Person=1|PronType=Prs	6	nsubj	_	start_char=642|end_char=645
+2	hab	haben	AUX	VAFIN	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	6	aux	_	SpaceAfter=No|start_char=646|end_char=649
+3	's	es	PRON	PPER	Case=Acc|Gender=Neut|Number=Sing|Person=3|PronType=Prs	6	obj	_	start_char=649|end_char=651
+4	dir	ich	PRON	PPER	Case=Dat|Number=Sing|Person=1|PronType=Prs	6	obl:arg	_	start_char=652|end_char=655
+5	doch	doch	ADV	ADV	_	6	advmod	_	start_char=656|end_char=660
+6	gesagt	sagen	VERB	VVPP	VerbForm=Part	0	root	_	SpaceAfter=No|start_char=661|end_char=667
+7	!	!	PUNCT	$.	_	6	punct	_	SpacesAfter=\n\n|start_char=667|end_char=668
+
+# text = Durchs Fenster fiel Licht ins Zimmer, und übers Wochenende blieb alles ruhig.
+# sent_id = 17
+1	Durchs	durchs	ADP	APPR	_	2	case	_	start_char=670|end_char=676
+2	Fenster	Fenster	NOUN	NN	Case=Acc|Gender=Neut|Number=Sing	3	obl	_	start_char=677|end_char=684
+3	fiel	fallen	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=685|end_char=689
+4	Licht	Licht	NOUN	NN	Case=Nom|Gender=Neut|Number=Sing	3	nsubj	_	start_char=690|end_char=695
+5-6	ins	_	_	_	_	_	_	_	start_char=696|end_char=699
+5	in	in	ADP	APPR	_	7	case	_	_
+6	das	der	DET	ART	Case=Acc|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	7	det	_	_
+7	Zimmer	Zimmer	NOUN	NN	Case=Acc|Gender=Neut|Number=Sing	3	obl	_	SpaceAfter=No|start_char=700|end_char=706
+8	,	,	PUNCT	$,	_	12	punct	_	start_char=706|end_char=707
+9	und	und	CCONJ	KON	_	12	cc	_	start_char=708|end_char=711
+10	übers	übers	ADP	APPR	_	11	case	_	start_char=712|end_char=717
+11	Wochenende	Wochenende	NOUN	NN	Case=Acc|Gender=Neut|Number=Sing	14	nmod	_	start_char=718|end_char=728
+12	blieb	bleiben	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	3	conj	_	start_char=729|end_char=734
+13	alles	alle	DET	PIS	Case=Nom|Gender=Neut|Number=Sing|PronType=Tot	12	nsubj	_	start_char=735|end_char=740
+14	ruhig	ruhig	ADJ	ADJD	Degree=Pos	12	xcomp	_	SpaceAfter=No|start_char=741|end_char=746
+15	.	.	PUNCT	$.	_	3	punct	_	SpacesAfter=\n|start_char=746|end_char=747

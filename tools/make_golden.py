@@ -306,6 +306,20 @@ MODEL_CHOICES = {
         ("tokenize+lemma=combined_charlm", "combined", "tokenize,mwt,pos,lemma", {"tokenize": "combined_charlm", "lemma": "combined_charlm"}, []),
         ("tokenize+lemma=gsd_charlm", "gsd", "tokenize,mwt,pos,lemma", {"tokenize": "gsd_charlm", "lemma": "gsd_charlm"}, []),
         ("tokenize+lemma=hdt_charlm", "hdt", "tokenize,mwt,pos,lemma", {"tokenize": "hdt_charlm", "lemma": "hdt_charlm"}, []),
+        # default_accurate's frozen-transformer tagger and parser (german-nlp-group/electra-base-german-uncased, read from
+        # <models>/de/transformer/, electra_locally): one shared pass; transformer_long.txt is one sentence of 558 pieces
+        ("pos+depparse=german-nlp-electra", "default", "tokenize,mwt,pos,lemma,depparse",
+         {"pos": "combined_german-nlp-electra", "depparse": "combined_german-nlp-electra"},
+         ["validation.txt", "validation_contractions.txt", "validation_umlauts.txt", "validation_social.txt", "models/transformer_long.txt"]),
+        # the constituency parser's LoRA-adapted transformer (its top-level bert_lora): a pass of its own
+        ("constituency=spmrl_german-nlp-electra", "default", "tokenize,mwt,pos,constituency", {"constituency": "spmrl_german-nlp-electra"},
+         ["validation.txt", "validation_umlauts.txt", "models/transformer_long.txt"]),
+        # sentiment's LoRA-adapted transformer: another pass of its own
+        ("sentiment=sb10k_german-nlp-electra", "default", "tokenize,mwt,sentiment", {"sentiment": "sb10k_german-nlp-electra"},
+         ["validation.txt", "validation_social.txt", "models/transformer_long.txt"]),
+        # the default_accurate package itself, all eight processors: three passes (frozen, constituency's, sentiment's)
+        ("default_accurate", "default_accurate", PROCESSORS, {},
+         ["validation.txt", "validation_contractions.txt", "validation_umlauts.txt", "validation_social.txt", "models/transformer_long.txt"]),
     ],
 }
 
@@ -417,16 +431,17 @@ class RecordContextual:
 
 def electra_locally(models):
     """
-    Has Stanza's load_bert read TRANSFORMER from <models>/en/transformer/ (the files ModelDownloader fetches at the pinned
-    revision) instead of Hugging Face's cache.
+    Has Stanza's load_bert read TRANSFORMER (English) and GERMAN["TRANSFORMER"] from <models>/<lang>/transformer/ (the
+    files ModelDownloader fetches at the pinned revision) instead of Hugging Face's cache.
     """
     from stanza.models.common import bert_embedding
     load = bert_embedding.load_bert
-    local = str(Path(models) / "en" / "transformer" / TRANSFORMER)
+    local = {TRANSFORMER: Path(models) / "en" / "transformer" / TRANSFORMER,
+             GERMAN["TRANSFORMER"]: Path(models) / "de" / "transformer" / GERMAN["TRANSFORMER"]}
 
     def load_bert(model_name, *args, **kwargs):
-        if model_name == TRANSFORMER:
-            return load(local, *args, **{**kwargs, "local_files_only": True})
+        if model_name in local:
+            return load(str(local[model_name]), *args, **{**kwargs, "local_files_only": True})
         return load(model_name, *args, **kwargs)
 
     bert_embedding.load_bert = load_bert

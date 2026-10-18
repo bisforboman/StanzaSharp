@@ -30,11 +30,17 @@ default from 0.5) or through TorchSharp (see "Managed backend").
   `PipelineOptions.Package`): tokenize, mwt and lemma as above; pos `combined_nocharlm`, depparse
   `combined_nocharlm`, ner `ontonotes-ww-multi_nocharlm`; sentiment `sstplus_charlm`; no constituency.
   Its default processors are those seven. `Pipeline.Packages` maps package → processor → model.
-- **Package `default_accurate`** (owner's decision, 2026-10-17; docs/transformer-plan.md, PR 4; English only, German's
-  reads `german-nlp-electra` and throws): tokenize and lemma `combined_charlm`, mwt `combined`, pos and depparse
+- **Package `default_accurate`** (owner's decision, 2026-10-17; docs/transformer-plan.md, PR 4; German below): tokenize and lemma `combined_charlm`, mwt `combined`, pos and depparse
   `combined_electra-large`, constituency `ptb3-revised_electra-large`, ner `ontonotes-ww-multi_electra-large`, sentiment
   `sstplus_electra-large`; all eight processors (see "Transformers"). Golden row `default_accurate` of `MODEL_CHOICES`
-  (no models chosen: `package=default_accurate`), `TransformerModelTests`.
+  (no models chosen: `package=default_accurate`), `TransformerModelTests`. German's (#170, 2026-10-18;
+  docs/german-accurate-plan.md): tokenize and lemma `combined_charlm`, mwt `combined`, pos and depparse
+  `combined_german-nlp-electra` (frozen, one shared pass), constituency `spmrl_german-nlp-electra` and sentiment
+  `sb10k_german-nlp-electra` (each with its LoRA adapters, a pass each; constituency's `bert_lora` is a top-level key of
+  the checkpoint, `ConstituencyParser` builds its `WithLora` net like the classifier), ner `germeval2014`; transformer
+  `german-nlp-group/electra-base-german-uncased`. Golden rows `pos+depparse=german-nlp-electra`,
+  `constituency=spmrl_german-nlp-electra`, `sentiment=sb10k_german-nlp-electra` and `default_accurate` in
+  `tests/golden/de/models/` (`de/models/transformer_long.txt`: one sentence of 558 pieces, two windows).
 - **English treebank packages** (owner's decision, 2026-10-15; no new API, `PipelineOptions.Package`): `combined` (the
   default package's models), `ewt`, `gum`, `lines`, `partut`, `atis`, `childes`, `eslspok` (no mwt; lemma `identity`)
   and the biomedical `craft`, `genia`, `mimic` (no mwt; own pretrains, mimic own charlms):

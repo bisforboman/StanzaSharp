@@ -26,6 +26,11 @@ public class LanguageTests
     [InlineData("default_fast", null, "tokenize/combined_nocharlm.pt mwt/combined.pt pos/combined_nocharlm.pt lemma/combined_nocharlm.pt depparse/combined_nocharlm.pt "
         + "sentiment/sb10k_charlm.pt ner/germeval2014.pt pretrain/fasttextwiki.pt " + GermanShared)]
     [InlineData("default_fast", "depparse", "tokenize/combined_nocharlm.pt mwt/combined.pt pos/combined_nocharlm.pt lemma/combined_nocharlm.pt depparse/combined_nocharlm.pt pretrain/conll17.pt")]
+
+    // default_accurate: the transformer models list conll17 and the charlms (the transformer itself comes from Hugging Face)
+    [InlineData("default_accurate", null, "tokenize/combined_charlm.pt mwt/combined.pt pos/combined_german-nlp-electra.pt lemma/combined_charlm.pt "
+        + "constituency/spmrl_german-nlp-electra.pt depparse/combined_german-nlp-electra.pt sentiment/sb10k_german-nlp-electra.pt "
+        + "ner/germeval2014.pt pretrain/fasttextwiki.pt " + GermanShared)]
     [InlineData("combined", null, "tokenize/combined_nocharlm.pt mwt/combined.pt pos/combined_charlm.pt lemma/combined_nocharlm.pt depparse/combined_charlm.pt " + GermanShared)]
     [InlineData("gsd", null, "tokenize/gsd_nocharlm.pt mwt/gsd.pt pos/gsd_charlm.pt lemma/gsd_nocharlm.pt depparse/gsd_charlm.pt " + GermanShared)]
     [InlineData("hdt", null, "tokenize/hdt_nocharlm.pt mwt/hdt.pt pos/hdt_charlm.pt lemma/hdt_nocharlm.pt depparse/hdt_charlm.pt " + GermanShared)]
@@ -36,7 +41,7 @@ public class LanguageTests
     [Fact]
     public void FileTable_IsEveryGermanPackagesFiles()
     {
-        Assert.Equal(35, ModelDownloader.Files["de"].Length);
+        Assert.Equal(39, ModelDownloader.Files["de"].Length);
         Assert.Equal(ModelDownloader.Files["de"].Select(f => f.Path).Order(),
             Pipeline.Packages["de"].Keys.SelectMany(p => ModelDownloader.FilesFor(null, p, "options", "de")).Select(f => f.Path)
                 .Concat(ModelDownloaderTests.AlternativesFiles("de")).Distinct().Order());
@@ -62,9 +67,8 @@ public class LanguageTests
         Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor(null, "default", "options", "DE"));
         Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor(null, "default", "options", null!));
 
-        ex = Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor(null, "default_accurate", "options", "de"));
-        Assert.Contains("transformer", ex.Message);
-        Assert.Contains("default, default_fast, combined, gsd, hdt", ex.Message);
+        ex = Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor(null, "ewt", "options", "de"));
+        Assert.Contains("default, default_fast, default_accurate, combined, gsd, hdt", ex.Message);
 
         // The treebank packages are German only, and have no ner; the error names the packages that do.
         Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor(null, "gsd"));
@@ -76,7 +80,7 @@ public class LanguageTests
     public void Load_RejectsUnknownLanguagesAndPackages()
     {
         // Options are checked before anything loads, as for English.
-        Assert.Throws<ArgumentException>(() => Pipeline.Load(Repo.Root, new PipelineOptions { Language = "de", Package = "default_accurate" }));
+        Assert.Throws<ArgumentException>(() => Pipeline.Load(Repo.Root, new PipelineOptions { Language = "de", Package = "ewt" }));
         Assert.Throws<ArgumentException>(() => Pipeline.Load(Repo.Root, new PipelineOptions { Language = "fr" }));
         Assert.Throws<ArgumentException>(() => Pipeline.Load(Repo.Root, new PipelineOptions { Language = "de", Package = "gsd", Processors = "tokenize,ner" }));
     }
