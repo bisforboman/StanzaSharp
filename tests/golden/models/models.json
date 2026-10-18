@@ -478,6 +478,102 @@
   ]
  },
  {
+  "name": "pos+depparse=ewt_electra-large",
+  "package": "ewt",
+  "processors": "tokenize,mwt,pos,lemma,depparse",
+  "models": {
+   "pos": "ewt_electra-large",
+   "depparse": "ewt_electra-large"
+  },
+  "texts": [
+   "corpus.txt"
+  ]
+ },
+ {
+  "name": "pos+depparse=gum_electra-large",
+  "package": "gum",
+  "processors": "tokenize,mwt,pos,lemma,depparse",
+  "models": {
+   "pos": "gum_electra-large",
+   "depparse": "gum_electra-large"
+  },
+  "texts": [
+   "corpus.txt"
+  ]
+ },
+ {
+  "name": "pos+depparse=lines_electra-large",
+  "package": "lines",
+  "processors": "tokenize,mwt,pos,lemma,depparse",
+  "models": {
+   "pos": "lines_electra-large",
+   "depparse": "lines_electra-large"
+  },
+  "texts": [
+   "corpus.txt"
+  ]
+ },
+ {
+  "name": "pos+depparse=partut_electra-large",
+  "package": "partut",
+  "processors": "tokenize,mwt,pos,lemma,depparse",
+  "models": {
+   "pos": "partut_electra-large",
+   "depparse": "partut_electra-large"
+  },
+  "texts": [
+   "corpus.txt"
+  ]
+ },
+ {
+  "name": "pos+depparse=atis_electra-large",
+  "package": "atis",
+  "processors": "tokenize,mwt,pos,lemma,depparse",
+  "models": {
+   "pos": "atis_electra-large",
+   "depparse": "atis_electra-large"
+  },
+  "texts": [
+   "corpus.txt"
+  ]
+ },
+ {
+  "name": "pos+depparse=childes_electra-large",
+  "package": "childes",
+  "processors": "tokenize,mwt,pos,lemma,depparse",
+  "models": {
+   "pos": "childes_electra-large",
+   "depparse": "childes_electra-large"
+  },
+  "texts": [
+   "corpus.txt"
+  ]
+ },
+ {
+  "name": "pos+depparse=eslspok_electra-large",
+  "package": "eslspok",
+  "processors": "tokenize,pos,lemma,depparse",
+  "models": {
+   "pos": "eslspok_electra-large",
+   "depparse": "eslspok_electra-large"
+  },
+  "texts": [
+   "corpus.txt"
+  ]
+ },
+ {
+  "name": "ner=ontonotes_electra-large",
+  "package": "default",
+  "processors": "tokenize,mwt,ner",
+  "models": {
+   "ner": "ontonotes_electra-large"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt"
+  ]
+ },
+ {
   "name": "default_accurate",
   "package": "default_accurate",
   "processors": "tokenize,mwt,pos,lemma,constituency,depparse,sentiment,ner",

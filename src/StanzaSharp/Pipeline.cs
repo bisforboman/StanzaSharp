@@ -164,20 +164,21 @@ public sealed class Pipeline : IDisposable
             ["lemma"] = ["combined_charlm", "ewt_charlm", "gum_charlm", "lines_charlm", "partut_charlm", "atis_charlm", "childes_charlm"],
 
             // the treebanks' own _nocharlm taggers and parsers (mimic has only a parser); combined's are default_fast's
-            // and default_accurate's frozen-transformer tagger, parser and NER model (Transformers)
+            // and default_accurate's frozen-transformer tagger, parser and NER model (Transformers), with the treebanks' own
             ["pos"] =
             [
                 "ewt_nocharlm", "gum_nocharlm", "lines_nocharlm", "partut_nocharlm", "atis_nocharlm", "childes_nocharlm", "eslspok_nocharlm",
-                "combined_electra-large",
+                "combined_electra-large", .. TreebankElectra,
             ],
             ["depparse"] =
             [
                 "ewt_nocharlm", "gum_nocharlm", "lines_nocharlm", "partut_nocharlm", "atis_nocharlm", "childes_nocharlm", "eslspok_nocharlm",
-                "mimic_nocharlm", "combined_electra-large",
+                "mimic_nocharlm", "combined_electra-large", .. TreebankElectra,
             ],
             ["ner"] =
             [
                 "ontonotes_charlm", "ontonotes_nocharlm", "combined_charlm", "conll03_charlm", "ontonotes-ww-multi_electra-large",
+                "ontonotes_electra-large",
 
                 // clinical (mimic's vectors and charlms) and biomedical (biomed's vectors, pubmed's charlms)
                 "i2b2", "radiology", "anatem", "bc4chemd", "bc5cdr", "bionlp13cg", "jnlpba", "linnaeus", "ncbi_disease", "s800",
@@ -192,6 +193,11 @@ public sealed class Pipeline : IDisposable
             ["ner"] = ["conll03"],
         },
     };
+
+    // The treebanks' frozen-transformer taggers and parsers (#168): combined_electra-large's architecture on each treebank's
+    // vocabularies and heads (legacy tag heads; lines and partut composite XPOS), as their _charlm twins.
+    private static string[] TreebankElectra =>
+        ["ewt_electra-large", "gum_electra-large", "lines_electra-large", "partut_electra-large", "atis_electra-large", "childes_electra-large", "eslspok_electra-large"];
 
     /// <summary>Every model <paramref name="processor"/> of <paramref name="language"/> can run: its packages' and <see cref="Alternatives"/>.</summary>
     internal static IEnumerable<string> ModelsOf(string language, string processor) =>
@@ -317,6 +323,21 @@ public sealed class Pipeline : IDisposable
             ["depparse/combined_electra-large"] = EnglishCharlm,
             ["ner/ontonotes-ww-multi_electra-large"] = EnglishCharlm,
             ["constituency/ptb3-revised_electra-large"] = EnglishCharlm,
+            ["pos/ewt_electra-large"] = EnglishCharlm,
+            ["depparse/ewt_electra-large"] = EnglishCharlm,
+            ["pos/gum_electra-large"] = EnglishCharlm,
+            ["depparse/gum_electra-large"] = EnglishCharlm,
+            ["pos/lines_electra-large"] = EnglishCharlm,
+            ["depparse/lines_electra-large"] = EnglishCharlm,
+            ["pos/partut_electra-large"] = EnglishCharlm,
+            ["depparse/partut_electra-large"] = EnglishCharlm,
+            ["pos/atis_electra-large"] = EnglishCharlm,
+            ["depparse/atis_electra-large"] = EnglishCharlm,
+            ["pos/childes_electra-large"] = EnglishCharlm,
+            ["depparse/childes_electra-large"] = EnglishCharlm,
+            ["pos/eslspok_electra-large"] = EnglishCharlm,
+            ["depparse/eslspok_electra-large"] = EnglishCharlm,
+            ["ner/ontonotes_electra-large"] = ["pretrain/fasttextcrawl", "forward_charlm/1billion", "backward_charlm/1billion"],
         },
         ["de"] = new()
         {
@@ -379,6 +400,21 @@ public sealed class Pipeline : IDisposable
             ["ner/ontonotes-ww-multi_electra-large"] = Electra,
             ["constituency/ptb3-revised_electra-large"] = Electra,
             ["sentiment/sstplus_electra-large"] = Electra, // with its LoRA adapters: a pass of its own
+            ["pos/ewt_electra-large"] = Electra,
+            ["depparse/ewt_electra-large"] = Electra,
+            ["pos/gum_electra-large"] = Electra,
+            ["depparse/gum_electra-large"] = Electra,
+            ["pos/lines_electra-large"] = Electra,
+            ["depparse/lines_electra-large"] = Electra,
+            ["pos/partut_electra-large"] = Electra,
+            ["depparse/partut_electra-large"] = Electra,
+            ["pos/atis_electra-large"] = Electra,
+            ["depparse/atis_electra-large"] = Electra,
+            ["pos/childes_electra-large"] = Electra,
+            ["depparse/childes_electra-large"] = Electra,
+            ["pos/eslspok_electra-large"] = Electra,
+            ["depparse/eslspok_electra-large"] = Electra,
+            ["ner/ontonotes_electra-large"] = Electra,
         },
         ["de"] = new()
         {
