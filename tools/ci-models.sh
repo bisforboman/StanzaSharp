@@ -100,12 +100,20 @@ case ${1:-} in
     ;;
   transformer)
     # the default_accurate package: its five transformer models, the transformer, and its _charlm tokenizer and lemmatizer
-    # (also in the treebank-choices cache; files that match are kept)
+    # (also in the treebank-choices cache; files that match are kept); the treebanks' and ontonotes' (#168: their packages'
+    # other files are in the en-treebanks cache)
     # and German's (#170: four transformer models, german-nlp-group's ELECTRA; the rest is in the de caches)
+    transformers() {
+      "${cli[@]}" download models/stanza/en --package default_accurate < /dev/null || return 1
+      for package in ewt gum lines partut atis childes eslspok; do
+        "${cli[@]}" download models/stanza/en --package "$package" \
+          --model "pos=${package}_electra-large,depparse=${package}_electra-large" < /dev/null || return 1
+      done
+      "${cli[@]}" download models/stanza/en --processors tokenize,ner --model ner=ontonotes_electra-large < /dev/null \
+        && "${cli[@]}" download models/stanza/de --lang de --package default_accurate < /dev/null
+    }
     for attempt in 1 2 3; do
-      "${cli[@]}" download models/stanza/en --package default_accurate < /dev/null \
-        && "${cli[@]}" download models/stanza/de --lang de --package default_accurate < /dev/null \
-        && exit 0
+      transformers && exit 0
       echo "download failed (attempt $attempt)" >&2
       sleep $((attempt * 15))
     done

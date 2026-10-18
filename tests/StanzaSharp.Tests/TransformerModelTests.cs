@@ -4,8 +4,8 @@ namespace StanzaSharp.Tests;
 
 /// <summary>
 /// default_accurate's frozen-transformer models as <see cref="PipelineOptions.Models"/> (docs/transformer-plan.md, PR 2):
-/// pos, depparse, ner, constituency and sentiment (LoRA) <c>_electra-large</c> and the <c>default_accurate</c> package against
-/// their tests/golden/models/ rows, byte for byte on both backends; German's (german-nlp-group/electra-base-german-uncased:
+/// pos, depparse, ner, constituency and sentiment (LoRA) <c>_electra-large</c>, the treebanks' pos and depparse and ontonotes' ner
+/// <c>_electra-large</c> (#168) and the <c>default_accurate</c> package against their tests/golden/models/ rows, byte for byte on both backends; German's (german-nlp-group/electra-base-german-uncased:
 /// pos and depparse frozen, constituency and sentiment with their LoRA adapters) against tests/golden/de/models/. Named
 /// Transformer* so that only golden shard 4, which downloads the transformers, runs it in CI.
 /// </summary>
@@ -30,6 +30,22 @@ public class TransformerModelTests
     [ModelChoice("en", AllFive, true)]
     [ModelChoice("en", "default_accurate", false)]
     [ModelChoice("en", "default_accurate", true)]
+    [ModelChoice("en", "pos+depparse=ewt_electra-large", false)]
+    [ModelChoice("en", "pos+depparse=ewt_electra-large", true)]
+    [ModelChoice("en", "pos+depparse=gum_electra-large", false)]
+    [ModelChoice("en", "pos+depparse=gum_electra-large", true)]
+    [ModelChoice("en", "pos+depparse=lines_electra-large", false)]
+    [ModelChoice("en", "pos+depparse=lines_electra-large", true)]
+    [ModelChoice("en", "pos+depparse=partut_electra-large", false)]
+    [ModelChoice("en", "pos+depparse=partut_electra-large", true)]
+    [ModelChoice("en", "pos+depparse=atis_electra-large", false)]
+    [ModelChoice("en", "pos+depparse=atis_electra-large", true)]
+    [ModelChoice("en", "pos+depparse=childes_electra-large", false)]
+    [ModelChoice("en", "pos+depparse=childes_electra-large", true)]
+    [ModelChoice("en", "pos+depparse=eslspok_electra-large", false)]
+    [ModelChoice("en", "pos+depparse=eslspok_electra-large", true)]
+    [ModelChoice("en", "ner=ontonotes_electra-large", false)]
+    [ModelChoice("en", "ner=ontonotes_electra-large", true)]
     [ModelChoice("de", GermanFrozen, false)]
     [ModelChoice("de", GermanFrozen, true)]
     [ModelChoice("de", GermanConstituency, false)]

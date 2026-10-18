@@ -122,6 +122,9 @@ transformer, applied at run time) match too: `models/constituency=ptb3-revised_e
 in a batch and on any thread count on every SIMD path (`TransformerKernelTests`). The `default_accurate` package itself
 (its `combined_charlm` tokenizer and lemmatizer with the five transformer models) matches on corpus.txt, the validation,
 contractions, social and tech texts and the long sentence: `models/default_accurate/`, 419 sentences.
+The treebanks' transformer taggers and parsers (pos and depparse `ewt`, `gum`, `lines`, `partut`, `atis`, `childes`,
+`eslspok` + `_electra-large`, each on its package, corpus.txt) and ner `ontonotes_electra-large` (corpus.txt and
+validation.txt, 131 entities) match too: `models/pos+depparse=<treebank>_electra-large/`, `models/ner=ontonotes_electra-large/`.
 
 German's `default_accurate` (`german-nlp-group/electra-base-german-uncased`, a base ELECTRA) matches the same way, in
 `tests/golden/de/models/`: pos and depparse `combined_german-nlp-electra` sharing one frozen pass (79 sentences, with

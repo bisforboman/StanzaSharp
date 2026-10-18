@@ -1,0 +1,152 @@
+# text = Barack Obama was born in Hawaii.
+# sent_id = 0
+1	Barack	Barack	PROPN	NNP	_	4	nsubj:pass	_	start_char=0|end_char=6
+2	Obama	Obama	PROPN	NNP	_	1	flat	_	start_char=7|end_char=12
+3	was	was	AUX	VBD	_	4	aux:pass	_	start_char=13|end_char=16
+4	born	born	VERB	VBN	_	0	root	_	start_char=17|end_char=21
+5	in	in	ADP	IN	_	6	case	_	start_char=22|end_char=24
+6	Hawaii.	Hawaii.	PROPN	NNP	_	4	obl	_	start_char=25|end_char=32
+
+# text = He was elected president in 2008.
+# sent_id = 1
+1	He	He	PRON	PRP	_	3	nsubj:pass	_	start_char=33|end_char=35
+2	was	was	AUX	VBD	_	3	aux:pass	_	start_char=36|end_char=39
+3	elected	elected	VERB	VBN	_	0	root	_	start_char=40|end_char=47
+4	president	president	NOUN	NN	_	3	obj	_	start_char=48|end_char=57
+5	in	in	ADP	IN	_	7	case	_	start_char=58|end_char=60
+6	200	200	NUM	CD	_	7	compound	_	SpaceAfter=No|start_char=61|end_char=64
+7	8.	8.	X	:	_	3	obl	_	SpacesAfter=\n\n|start_char=64|end_char=66
+
+# text = I don't think it's going to rain today, but we'll see.
+# sent_id = 2
+1	I	I	PRON	PRP	_	3	nsubj	_	start_char=68|end_char=69
+2	don't	don't	AUX	VBP	_	3	aux	_	start_char=70|end_char=75
+3	think	think	VERB	VBP	_	0	root	_	start_char=76|end_char=81
+4	it's	it's	AUX	VBZ	_	5	aux	_	start_char=82|end_char=86
+5	going	going	VERB	VBG	_	3	ccomp	_	start_char=87|end_char=92
+6	to	to	PART	TO	_	7	mark	_	start_char=93|end_char=95
+7	rain	rain	VERB	VB	_	5	xcomp	_	start_char=96|end_char=100
+8	today	today	NOUN	NN	_	7	advmod	_	SpaceAfter=No|start_char=101|end_char=106
+9	,	,	PUNCT	,	_	12	punct	_	start_char=106|end_char=107
+10	but	but	CCONJ	CC	_	12	cc	_	start_char=108|end_char=111
+11	we'll	we'll	ADV	RB	_	12	advmod	_	start_char=112|end_char=117
+12	see.	see.	VERB	VBP	_	3	conj	_	start_char=118|end_char=122
+
+# text = Can't you hear the thunder?
+# sent_id = 3
+1	Can't	Can't	AUX	MD	_	3	aux	_	start_char=123|end_char=128
+2	you	you	PRON	PRP	_	3	nsubj	_	start_char=129|end_char=132
+3	hear	hear	VERB	VB	_	0	root	_	start_char=133|end_char=137
+4	the	the	DET	DT	_	5	det	_	start_char=138|end_char=141
+5	thunder?	thunder?	PUNCT	.	_	3	obj	_	SpacesAfter=\n|start_char=142|end_char=150
+
+# text = Dr. Smith moved to the U.S. in Jan. 1999 and paid $4.50 for a cup of coffee at 7:30 a.m.
+# sent_id = 4
+1	Dr.	Dr.	PROPN	NNP	_	2	compound	_	start_char=151|end_char=154
+2	Smith	Smith	PROPN	NNP	_	3	nsubj	_	start_char=155|end_char=160
+3	moved	moved	VERB	VBD	_	0	root	_	start_char=161|end_char=166
+4	to	to	PART	TO	_	6	case	_	start_char=167|end_char=169
+5	the	the	DET	DT	_	6	det	_	start_char=170|end_char=173
+6	U.S.	U.S.	PROPN	NNP	_	3	obl	_	start_char=174|end_char=178
+7	in	in	ADP	IN	_	9	case	_	start_char=179|end_char=181
+8	Jan.	Jan.	PROPN	NNP	_	9	compound	_	start_char=182|end_char=186
+9	1999	1999	PROPN	NNP	_	3	obl	_	start_char=187|end_char=191
+10	and	and	CCONJ	CC	_	11	cc	_	start_char=192|end_char=195
+11	paid	paid	VERB	VBD	_	3	conj	_	start_char=196|end_char=200
+12	$4.50	$4.50	NUM	CD	_	11	obj	_	start_char=201|end_char=206
+13	for	for	ADP	IN	_	15	case	_	start_char=207|end_char=210
+14	a	a	DET	DT	_	15	det	_	start_char=211|end_char=212
+15	cup	cup	NOUN	NN	_	11	obl	_	start_char=213|end_char=216
+16	of	of	ADP	IN	_	17	case	_	start_char=217|end_char=219
+17	coffee	coffee	NOUN	NN	_	15	nmod	_	start_char=220|end_char=226
+18	at	at	ADP	IN	_	20	case	_	start_char=227|end_char=229
+19	7:30	7:30	PROPN	NNP	_	20	compound	_	start_char=230|end_char=234
+20	a.m.	a.m.	NOUN	NN	_	11	obl	_	SpacesAfter=\n\n|start_char=235|end_char=239
+
+# text = "Where are you going?"
+# sent_id = 5
+1	"Where	"Where	ADV	WRB	_	4	advmod	_	start_char=241|end_char=247
+2	are	are	AUX	VBP	_	1	cop	_	start_char=248|end_char=251
+3	you	you	PRON	PRP	_	4	nsubj	_	start_char=252|end_char=255
+4	going	going	VERB	VBG	_	0	root	_	SpaceAfter=No|start_char=256|end_char=261
+5	?	?	PUNCT	.	_	4	punct	_	SpaceAfter=No|start_char=261|end_char=262
+6	"	"	PUNCT	"	_	1	punct	_	start_char=262|end_char=263
+
+# text = she asked.
+# sent_id = 6
+1	she	she	PRON	PRP	_	2	nsubj	_	start_char=264|end_char=267
+2	asked.	asked.	VERB	VB	_	0	root	_	start_char=268|end_char=274
+
+# text = The children's toys (all 23 of them) were scattered across the room!
+# sent_id = 7
+1	The	The	DET	DT	_	3	det	_	start_char=275|end_char=278
+2	children's	children's	NOUN	NNS	_	3	nmod:poss	_	start_char=279|end_char=289
+3	toys	toys	NOUN	NNS	_	9	nsubj	_	start_char=290|end_char=294
+4	(all	(all	DET	PDT	_	5	cop	_	start_char=295|end_char=299
+5	23	23	NUM	CD	_	3	conj	_	start_char=300|end_char=302
+6	of	of	ADP	IN	_	7	case	_	start_char=303|end_char=305
+7	them)	them)	NOUN	NN	_	3	nmod	_	start_char=306|end_char=311
+8	were	were	AUX	VBD	_	9	aux:pass	_	start_char=312|end_char=316
+9	scattered	scattered	VERB	VBN	_	0	root	_	start_char=317|end_char=326
+10	across	across	ADP	IN	_	12	case	_	start_char=327|end_char=333
+11	the	the	DET	DT	_	12	det	_	start_char=334|end_char=337
+12	room!	room!	NOUN	NN	_	9	obl	_	SpacesAfter=\n|start_char=338|end_char=343
+
+# text = The well-known author, who had written e-mails to info@example.com, visited https://www.example.org/about yesterday.
+# sent_id = 8
+1	The	The	DET	DT	_	4	det	_	start_char=344|end_char=347
+2	well-	well-	ADJ	JJ	_	4	amod	_	SpaceAfter=No|start_char=348|end_char=353
+3	known	known	ADJ	JJ	_	4	amod	_	start_char=353|end_char=358
+4	author	author	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=359|end_char=365
+5	,	,	PUNCT	,	_	7	punct	_	start_char=365|end_char=366
+6	who	who	PRON	WP	_	7	nsubj	_	start_char=367|end_char=370
+7	had	had	VERB	VBD	_	4	acl:relcl	_	start_char=371|end_char=374
+8	written	written	VERB	VBN	_	7	xcomp	_	start_char=375|end_char=382
+9	e-mails	e-mails	NOUN	NNS	_	8	obj	_	start_char=383|end_char=390
+10	to	to	PART	TO	_	11	case	_	start_char=391|end_char=393
+11	info@example.com	info@example.com	PROPN	NNP	_	8	obl	_	SpaceAfter=No|start_char=394|end_char=410
+12	,	,	PUNCT	,	_	13	punct	_	start_char=410|end_char=411
+13	visited	visited	VERB	VBD	_	7	conj	_	start_char=412|end_char=419
+14	https://www.example.org/about	https://www.example.org/about	X	FW	_	13	obj	_	start_char=420|end_char=449
+15	yesterday	yesterday	NOUN	NN	_	13	obl:tmod	_	SpaceAfter=No|start_char=450|end_char=459
+16	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=459|end_char=460
+
+# text = Mary's sister wouldn't have gone if she'd known that the meeting, which was scheduled for 3 p.m.
+# sent_id = 9
+1	Mary's	Mary's	PROPN	NNP	_	2	compound	_	start_char=462|end_char=468
+2	sister	sister	NOUN	NN	_	5	nsubj	_	start_char=469|end_char=475
+3	wouldn't	wouldn't	PART	RB	_	5	advmod	_	start_char=476|end_char=484
+4	have	have	AUX	VB	_	5	aux	_	start_char=485|end_char=489
+5	gone	gone	VERB	VBN	_	0	root	_	start_char=490|end_char=494
+6	if	if	SCONJ	IN	_	8	mark	_	start_char=495|end_char=497
+7	she'd	she'd	AUX	VBD	_	8	aux	_	start_char=498|end_char=503
+8	known	known	VERB	VBN	_	5	advcl	_	start_char=504|end_char=509
+9	that	that	SCONJ	IN	_	15	mark	_	start_char=510|end_char=514
+10	the	the	DET	DT	_	11	det	_	start_char=515|end_char=518
+11	meeting	meeting	NOUN	NN	_	8	obj	_	SpaceAfter=No|start_char=519|end_char=526
+12	,	,	PUNCT	,	_	15	punct	_	start_char=526|end_char=527
+13	which	which	PRON	WDT	_	15	nsubj:pass	_	start_char=528|end_char=533
+14	was	was	AUX	VBD	_	15	aux:pass	_	start_char=534|end_char=537
+15	scheduled	scheduled	VERB	VBN	_	11	acl:relcl	_	start_char=538|end_char=547
+16	for	for	ADP	IN	_	18	case	_	start_char=548|end_char=551
+17	3	3	NUM	CD	_	18	nummod	_	start_char=552|end_char=553
+18	p.m.	p.m.	NOUN	NN	_	15	obl	_	start_char=554|end_char=558
+
+# text = on Friday, had been cancelled; nobody told her. Wow...
+# sent_id = 10
+1	on	on	ADP	IN	_	2	case	_	start_char=559|end_char=561
+2	Friday	Friday	PROPN	NNP	_	8	obl	_	SpaceAfter=No|start_char=562|end_char=568
+3	,	,	PUNCT	,	_	2	punct	_	start_char=568|end_char=569
+4	had	had	AUX	VBD	_	8	aux	_	start_char=570|end_char=573
+5	been	been	AUX	VBN	_	8	aux	_	start_char=574|end_char=578
+6	cancelled;	cancelled;	ADV	RB	_	8	advmod	_	start_char=579|end_char=589
+7	nobody	nobody	NOUN	NN	_	8	nsubj	_	start_char=590|end_char=596
+8	told	told	VERB	VBD	_	0	root	_	start_char=597|end_char=601
+9	her.	her.	PRON	PRP	_	8	obj	_	SpacesAfter=\n|start_char=602|end_char=606
+10	Wow...	Wow...	PUNCT	:	_	8	punct	_	start_char=607|end_char=613
+
+# text = that's amazing!!
+# sent_id = 11
+1	that's	that's	AUX	VBZ	_	2	cop	_	start_char=614|end_char=620
+2	amazing!	amazing!	ADJ	JJ	_	0	root	_	SpaceAfter=No|start_char=621|end_char=629
+3	!	!	PUNCT	:	_	2	punct	_	SpacesAfter=\n|start_char=629|end_char=630

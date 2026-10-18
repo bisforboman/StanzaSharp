@@ -165,9 +165,15 @@ default from 0.5) or through TorchSharp (see "Managed backend").
     `TransformerEmbedder.LayerMix(..., lora: true)` allows `use_peft`/`bert_finetune` when no `bert_model.*` weights are in
     the checkpoint. Golden rows `constituency=ptb3-revised_electra-large`, `sentiment=sstplus_electra-large` (+ reviews.txt)
     and `electra-large` (all five, `PROCESSORS`); make_golden needs `peft` (requirements-transformer.txt).
+  - The treebanks' (#168, owner's decision 2026-10-18): pos and depparse `{ewt,gum,lines,partut,atis,childes,eslspok}_electra-large`
+    and ner `ontonotes_electra-large` (fasttextcrawl, word 300): `combined_electra-large`'s / `ontonotes-ww-multi_electra-large`'s
+    configs on the `_charlm` twins' vocabularies and heads (legacy tag heads, lines/partut composite XPOS); no new code. Golden
+    rows `pos+depparse=<tb>_electra-large` on their package (corpus.txt only) and `ner=ontonotes_electra-large` (+ validation).
+    Constituency `ptb3_electra-large` (#171) is not ported: `transition_scheme` TOP_DOWN (the parser has only IN_ORDER) and LoRA.
   - CI: no cache (the model caches are near GitHub's 10 GB; owner's decision): golden shard 4 downloads the
-    `default_accurate` package and the transformer's files on every run (`tools/ci-models.sh transformer`: `download
-    --package default_accurate`, with retries); the `Transformer*` classes (`SHARD_FOUR`, `.Transformer`) run only there
+    `default_accurate` package, the treebanks' transformer models (their packages' other files from the en-treebanks cache)
+    and the transformer's files on every run (`tools/ci-models.sh transformer`: `download --package default_accurate`, ...,
+    with retries); the `Transformer*` classes (`SHARD_FOUR`, `.Transformer`) run only there
     (owner's decision, 2026-10-18: in shard 1 they had made its job 82 min), and the other jobs' no-skip checks exempt
     `Transformer`. A pull request runs shard 4 only when it touches the torch=full files, `ModelDownloader.cs`,
     `tools/ci-models.sh`, `tests/golden/**/transformer/` or `Transformer*.cs` tests (`changes`' `shards` output); pushes

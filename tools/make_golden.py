@@ -295,6 +295,16 @@ MODEL_CHOICES = {
          {"pos": "combined_electra-large", "constituency": "ptb3-revised_electra-large", "depparse": "combined_electra-large",
           "sentiment": "sstplus_electra-large", "ner": "ontonotes-ww-multi_electra-large"},
          ["validation.txt", "validation_contractions.txt", "models/transformer_long.txt"]),
+        # the treebanks' frozen-transformer taggers and parsers (#168) on their package (corpus.txt only, like the _nocharlm
+        # rows), and ontonotes' NER model (fasttextcrawl vectors | transformer | charlms)
+        ("pos+depparse=ewt_electra-large", "ewt", "tokenize,mwt,pos,lemma,depparse", {"pos": "ewt_electra-large", "depparse": "ewt_electra-large"}, []),
+        ("pos+depparse=gum_electra-large", "gum", "tokenize,mwt,pos,lemma,depparse", {"pos": "gum_electra-large", "depparse": "gum_electra-large"}, []),
+        ("pos+depparse=lines_electra-large", "lines", "tokenize,mwt,pos,lemma,depparse", {"pos": "lines_electra-large", "depparse": "lines_electra-large"}, []),
+        ("pos+depparse=partut_electra-large", "partut", "tokenize,mwt,pos,lemma,depparse", {"pos": "partut_electra-large", "depparse": "partut_electra-large"}, []),
+        ("pos+depparse=atis_electra-large", "atis", "tokenize,mwt,pos,lemma,depparse", {"pos": "atis_electra-large", "depparse": "atis_electra-large"}, []),
+        ("pos+depparse=childes_electra-large", "childes", "tokenize,mwt,pos,lemma,depparse", {"pos": "childes_electra-large", "depparse": "childes_electra-large"}, []),
+        ("pos+depparse=eslspok_electra-large", "eslspok", "tokenize,pos,lemma,depparse", {"pos": "eslspok_electra-large", "depparse": "eslspok_electra-large"}, []),
+        ("ner=ontonotes_electra-large", "default", "tokenize,mwt,ner", {"ner": "ontonotes_electra-large"}, ["validation.txt"]),
         # the default_accurate package itself (no models chosen: package=default_accurate), all eight processors
         ("default_accurate", "default_accurate", PROCESSORS, {},
          ["validation.txt", "validation_contractions.txt", "validation_social.txt", "validation_tech.txt", "models/transformer_long.txt"]),
