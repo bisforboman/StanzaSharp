@@ -227,7 +227,7 @@ public sealed class Pipeline : IDisposable
             ["constituency/ptb3-revised_charlm"] = EnglishCharlm,
             ["depparse/combined_charlm"] = EnglishCharlm,
             ["sentiment/sstplus_charlm"] = EnglishCharlm,
-            ["sentiment/sstplus_electra-large"] = EnglishCharlm, // resources.json lists the charlms, which the model doesn't read
+            ["sentiment/sstplus_electra-large"] = EnglishCharlm, // resources.json lists the charlms, which the model doesn't read (Unread)
             ["ner/ontonotes-ww-multi_charlm"] = EnglishCharlm,
             ["pos/combined_nocharlm"] = Conll17,
             ["depparse/combined_nocharlm"] = Conll17,
@@ -332,6 +332,20 @@ public sealed class Pipeline : IDisposable
             ["ner/conll03"] = ["pretrain/fasttextwiki", "forward_charlm/newswiki", "backward_charlm/newswiki"],
         },
     };
+
+    // Dependencies resources.json lists but the model never reads (owner's decision, 2026-10-18, #173): downloaded like
+    // Stanza (FilesFor), but Load neither needs nor loads them.
+    internal static readonly Dictionary<string, Dictionary<string, string[]>> Unread = new()
+    {
+        [English] = new()
+        {
+            ["sentiment/sstplus_electra-large"] = ["forward_charlm/1billion", "backward_charlm/1billion"],
+        },
+    };
+
+    /// <summary>The shared files the model <paramref name="name"/> (<c>processor/model</c>) reads: its <see cref="Dependencies"/> minus <see cref="Unread"/>.</summary>
+    internal static string[] ReadDependencies(string name, string language) =>
+        [.. Dependencies[language].GetValueOrDefault(name, []).Except(Unread.GetValueOrDefault(language)?.GetValueOrDefault(name) ?? [])];
 
     // The transformer each transformer model reads, by "<processor>/<model>": the model config's bert_model, a Hugging Face
     // repository (ModelDownloader.Transformers has its files), not a Stanza resource, so it is kept out of Dependencies,
@@ -449,7 +463,7 @@ public sealed class Pipeline : IDisposable
 
         // Every pretrain the models read (German NER has its own), and every charlm (each pair once: default's 1billion,
         // and mimic's for ner i2b2).
-        var shared = SharedModels(models, options.Language);
+        var shared = SharedModels(models, options.Language, readOnly: true);
         var pretrains = shared.Where(p => p.StartsWith("pretrain/", StringComparison.Ordinal))
             .ToDictionary(p => p, p => Start(p, () => backend.Pretrain(Path.Combine(modelDir, p))));
         var charlms = shared.Where(p => !p.StartsWith("pretrain/", StringComparison.Ordinal))
@@ -469,7 +483,7 @@ public sealed class Pipeline : IDisposable
             Transformers[options.Language].ContainsKey(Name(processor)) ? transformer!.Result : null;
 
         // The pretrain and the charlms a processor's model reads (Dependencies), once loaded.
-        string[] DependenciesOf(string processor) => Dependencies[options.Language].GetValueOrDefault(Name(processor), []);
+        string[] DependenciesOf(string processor) => ReadDependencies(Name(processor), options.Language);
         Pretrain PretrainOf(string processor) => pretrains[DependenciesOf(processor).Single(p => p.StartsWith("pretrain/", StringComparison.Ordinal))].Result;
         Pretrain? PretrainIfAny(string processor) => DependenciesOf(processor).Any(p => p.StartsWith("pretrain/", StringComparison.Ordinal)) ? PretrainOf(processor) : null;
         Charlms CharlmsOf(string processor) => new(
@@ -601,7 +615,7 @@ public sealed class Pipeline : IDisposable
     // and how to fetch them, instead of the FileNotFoundException of whichever model reads it first.
     private static void ThrowIfMissing(string modelDir, Dictionary<string, string> models, PipelineOptions options)
     {
-        var missing = ModelFiles(models, options.Language)
+        var missing = ModelFiles(models, options.Language, readOnly: true)
             .FirstOrDefault(p => !File.Exists(Path.Combine(modelDir, p + ".pt")) && !File.Exists(Path.Combine(modelDir, p + ".json")));
         string chosen = options.Models == null ? "" : $" --model {string.Join(',', options.Models.Select(m => $"{m.Key}={m.Value}"))}";
         if (missing == null)
@@ -758,16 +772,19 @@ public sealed class Pipeline : IDisposable
     /// The shared files <paramref name="models"/> of <paramref name="language"/> read (paths without extension), from
     /// <see cref="Dependencies"/>: pretrains first, then the forward and the backward charlm.
     /// </summary>
-    internal static List<string> SharedModels(IReadOnlyDictionary<string, string> models, string language = English) =>
-        models.SelectMany(m => Dependencies[language].GetValueOrDefault($"{m.Key}/{m.Value}", []))
+    internal static List<string> SharedModels(IReadOnlyDictionary<string, string> models, string language = English, bool readOnly = false) =>
+        models.SelectMany(m => readOnly ? ReadDependencies($"{m.Key}/{m.Value}", language) : Dependencies[language].GetValueOrDefault($"{m.Key}/{m.Value}", []))
             .Distinct()
             .OrderBy(p => p.StartsWith("pretrain/", StringComparison.Ordinal) ? 0 : p.StartsWith("forward_charlm/", StringComparison.Ordinal) ? 1 : 2)
             .ThenBy(p => p, StringComparer.Ordinal)
             .ToList();
 
-    /// <summary>Every file <paramref name="models"/> read (paths without extension): their own, but none for the identity lemmatizer, then <see cref="SharedModels"/>.</summary>
-    internal static IEnumerable<string> ModelFiles(IReadOnlyDictionary<string, string> models, string language) =>
-        models.Where(m => m.Value != IdentityLemma).Select(m => $"{m.Key}/{m.Value}").Concat(SharedModels(models, language));
+    /// <summary>
+    /// Every file <paramref name="models"/> read (paths without extension): their own, but none for the identity lemmatizer, then
+    /// <see cref="SharedModels"/> (<paramref name="readOnly"/>: without the <see cref="Unread"/> ones, which Load skips).
+    /// </summary>
+    internal static IEnumerable<string> ModelFiles(IReadOnlyDictionary<string, string> models, string language, bool readOnly = false) =>
+        models.Where(m => m.Value != IdentityLemma).Select(m => $"{m.Key}/{m.Value}").Concat(SharedModels(models, language, readOnly));
 
     /// <summary>A comma-separated processor list as a set, checking every name.</summary>
     internal static HashSet<string> ParseProcessors(string processors, string paramName)
