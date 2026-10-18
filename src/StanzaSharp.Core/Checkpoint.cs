@@ -112,8 +112,9 @@ internal sealed class Checkpoint
     /// Parses a converted checkpoint's JSON like a <c>.pt</c> file's (round 36): its large flat containers (a str → int
     /// object or a list of str, <see cref="PyContainer.IsLarge"/>) become <see cref="PyContainer"/> nodes, read in the
     /// same pass that validates the strings, and the rest is parsed into nodes with those left out. Throws for invalid
-    /// UTF-8 or an escaped lone surrogate: <see cref="JsonNode"/> decodes strings lazily, so either would otherwise throw
-    /// <see cref="InvalidOperationException"/> later, wherever a model reads that name or value.
+    /// UTF-8, an escaped lone surrogate or a property name repeated in one object: <see cref="JsonNode"/> decodes strings and
+    /// builds an object's dictionary lazily, so these would otherwise throw <see cref="InvalidOperationException"/> or
+    /// <see cref="ArgumentException"/> later, wherever a model reads that name or value.
     /// </summary>
     private static JsonNode Parse(ReadOnlySpan<byte> json, string path)
     {
@@ -124,6 +125,7 @@ internal sealed class Checkpoint
         // it may still be a large container (a container in it, or another kind of value, rules it out).
         var steps = new List<object>();
         var arrays = new List<bool>();
+        var names = new List<HashSet<string>?>(); // each open object's property names (null for an array)
         var large = new List<(object[] Steps, int Start, int End, object Value)>();
         object? items = null;
         string? key = null;
@@ -137,6 +139,8 @@ internal sealed class Checkpoint
                 {
                     case JsonTokenType.PropertyName:
                         key = reader.GetString()!;
+                        if (!names[^1]!.Add(key))
+                            throw new InvalidDataException($"{path}: the property name '{key}' is repeated in one object");
                         steps[^1] = key;
                         break;
                     case JsonTokenType.StartObject or JsonTokenType.StartArray:
@@ -147,6 +151,7 @@ internal sealed class Checkpoint
                         start = (int)reader.TokenStartIndex;
                         steps.Add(-1);
                         arrays.Add(array);
+                        names.Add(array ? null : new HashSet<string>(StringComparer.Ordinal));
                         break;
                     case JsonTokenType.EndObject or JsonTokenType.EndArray:
                         if (items is PyDict { Count: >= PyContainer.MinCount } or List<object?> { Count: >= PyContainer.MinCount })
@@ -157,6 +162,7 @@ internal sealed class Checkpoint
                         items = null;
                         steps.RemoveAt(steps.Count - 1);
                         arrays.RemoveAt(arrays.Count - 1);
+                        names.RemoveAt(names.Count - 1);
                         break;
                     case JsonTokenType.String:
                         if (items is List<object?> strings)

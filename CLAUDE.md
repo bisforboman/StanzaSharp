@@ -104,7 +104,10 @@ default from 0.5) or through TorchSharp (see "Managed backend").
   - Files: not Stanza resources, so `ModelDownloader.Transformers` (repository → pinned revision, files, sha256),
     `DownloadTransformerAsync` (internal; the Cli sample's `download-transformer DIR NAME [FILE]...`) into
     `<model dir>/transformer/<repository>/` (`TransformerDirectory`); `Checkpoint.Load` reads the `pytorch_model.bin`
-    (torch's zip format) by that name. Kept out of `Files`, `FilesFor` and every `tools/ci-models.sh` group.
+    (torch's zip format) by that name. Kept out of `Files`, `FilesFor` and every `tools/ci-models.sh` group. A file's
+    sha256 is Hugging Face's LFS hash, the `x-linked-etag` header of `resolve/<revision>/<file>` (or `sha256sum` of the
+    download), not the `etag` of the CDN response the redirect ends at: #182 stored that one for German's
+    `pytorch_model.bin`, and the download failed its check (fixed in #184).
   - `Nn.WordPiece` = tokenizer.json's BertNormalizer + BertPreTokenizer + WordPiece per word (`is_split_into_words`): the
     added tokens' texts matched first in the raw word (leftmost, longest), control = Cc/Cf/Co/Cs but tab/newline/CR
     removed (unassigned Cn kept: tokenizers gives [UNK]), White_Space → space, NFD minus Mn (`strip_accents`; null follows
@@ -557,8 +560,10 @@ bounded by the file's size. The limits that make it so:
   the file, so no claimed size is allocated.
 - safetensors: header ≤ 100 MB (the library's limit), known dtype, `numel × size == end - begin`, and the tensors tile
   the data section exactly (no gaps, overlaps or trailing bytes), as the safetensors library checks.
-- Converted `.json`: valid UTF-8 and no escaped lone surrogate, checked before parsing (`JsonNode` decodes strings
-  lazily, so either would throw `InvalidOperationException` wherever a model first read it).
+- Converted `.json`: valid UTF-8, no escaped lone surrogate and no property name twice in one object, checked in the
+  validating pass (`JsonNode` decodes strings and builds an object's dictionary lazily, so these would throw
+  `InvalidOperationException` or `ArgumentException` wherever a model first read them; the duplicate names were found by
+  the first nightly fuzz, 2026-10-18, about 10 ms on conll17's 250k-word JSON).
 - `CheckpointFuzzTests`: seeded mutations (bit flips, truncations, extreme ints, inserted/deleted spans) of the fixtures
   and three small Stanza checkpoints in CI (their `.pt` files, and their converted `.json` where present; ~10 s), plus
   crafted inputs for each bug. Each load also reads every property name, string and vocabulary (`ReadNodes`). Longer runs:
@@ -1018,7 +1023,7 @@ What the English treebank packages' checkpoints add to the default package's pat
     missing; closed by a person). Never required; release.yml waits for main's push run only, so it never sees these.
   - `benchmark.yml` (owner's decision 2026-10-10): `workflow_dispatch` (inputs `lang`, `package`, `quick`) and
     `workflow_call` (nightly.yml), never on pushes/PRs, never required; free standard runners only (ubuntu-26.04, ubuntu-26.04-arm, windows-2025,
-    windows-11-arm, macos-26). Each job builds the tool, restores the `models-pt-<os>` cache (`lang=de`: golden-shard 1's
+    windows-11-arm, macos-26). Each job builds the tool, restores the `models-pt-<os>` cache (keyed like ci.yml's, by `tools/ci-models.sh keys`) (`lang=de`: golden-shard 1's
     `models-de-treebanks-…`, Linux only; restore only; downloads the package on a miss), installs Python 3.12 + `tools/requirements.txt` from the CPU wheel index (continue-on-error: without it the
     block has StanzaSharp only), runs `stanzasharp benchmark --json`, writes the block to its summary and artifact
     `benchmark-<os>`. `summary` combines them with `tools/benchmark_table.py` into `benchmarks.md` (summary + artifact).
