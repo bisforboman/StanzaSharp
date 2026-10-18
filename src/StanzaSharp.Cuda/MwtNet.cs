@@ -53,10 +53,10 @@ internal static class MwtExpanderLoad
         /// <summary>Loads <c>basePath.json</c> + <c>.safetensors</c> (or <c>basePath.pt</c>), e.g. <c>models/converted/en/mwt/combined</c>.</summary>
         /// <param name="device">Where the model runs on TorchSharp; CPU by default.</param>
         /// <param name="backend">The network's backend; the managed one ignores <paramref name="device"/>.</param>
-        public static MwtExpander Load(string basePath, Device? device = null, Backend backend = Backend.TorchSharp) =>
+        public static MwtExpander Load(string basePath, Device? device = null, Backend backend = Backend.TorchSharp, bool dictOnly = false) =>
             backend == Backend.Managed
-                ? MwtExpander.LoadManaged(basePath)
+                ? MwtExpander.LoadManaged(basePath, dictOnly)
                 : Weights.On(device, () => new MwtExpander(Checkpoint.Load(basePath), (ckpt, config, padId) => new MwtNet(ckpt, config, padId),
-                    (ckpt, sizes) => new Seq2SeqNet(ckpt, sizes)));
+                    (ckpt, sizes) => new Seq2SeqNet(ckpt, sizes), dictOnly));
     }
 }

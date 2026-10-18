@@ -488,11 +488,11 @@ public sealed class Pipeline : IDisposable
             if (tokenizer == null && CharlmsOf("tokenize").Forward != null == ofCharlms)
                 tokenizer = Start(Name("tokenize"), () => backend.Tokenizer(Model("tokenize"), CharlmsOf("tokenize")));
             if (hasLemma && lemma == null && CharlmsOf("lemma").Forward != null == ofCharlms)
-                lemma = Start(Name("lemma"), () => backend.Lemma(Model("lemma"), CharlmsOf("lemma"), PretrainIfAny("lemma")));
+                lemma = Start(Name("lemma"), () => backend.Lemma(Model("lemma"), CharlmsOf("lemma"), PretrainIfAny("lemma"), options.LemmaDictionaryOnly));
         }
 
         StartReaders(ofCharlms: false);
-        var mwt = models.ContainsKey("mwt") ? Start(Name("mwt"), () => backend.Mwt(Model("mwt"))) : null;
+        var mwt = models.ContainsKey("mwt") ? Start(Name("mwt"), () => backend.Mwt(Model("mwt"), options.MwtDictionaryOnly)) : null;
         try
         {
             foreach (var c in charlms)
@@ -505,7 +505,7 @@ public sealed class Pipeline : IDisposable
             var depparse = models.ContainsKey("depparse")
                 ? Start(Name("depparse"), () => backend.Depparse(Model("depparse"), PretrainOf("depparse"), CharlmsOf("depparse"), TransformerOf("depparse")))
                 : null;
-            var ner = models.ContainsKey("ner") ? Start(Name("ner"), () => backend.Ner(Model("ner"), PretrainOf("ner"), CharlmsOf("ner"), TransformerOf("ner"))) : null;
+            var ner = models.ContainsKey("ner") ? Start(Name("ner"), () => backend.Ner(Model("ner"), PretrainOf("ner"), CharlmsOf("ner"), TransformerOf("ner"), options.NerTagSet)) : null;
             var parser = models.ContainsKey("constituency")
                 ? Start(Name("constituency"), () => backend.Constituency(Model("constituency"), PretrainOf("constituency"), CharlmsOf("constituency"), TransformerOf("constituency")))
                 : null;

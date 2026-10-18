@@ -310,6 +310,60 @@ MODEL_CHOICES = {
 }
 
 
+# Stanza options with a PipelineOptions property (owner's choice, 2026-10-18): (name, package, processors, models,
+# Stanza's keyword arguments, texts besides corpus.txt). The C# tests map the arguments to PipelineOptions (options.json).
+OPTION_CASES = {
+    "en": [
+        ("ner_predict_tagset=1", "default", "tokenize,mwt,ner", {}, {"ner_predict_tagset": 1},
+         ["validation.txt", "validation_tech.txt", "validation_social.txt"]),
+        ("ner=combined_charlm+ner_predict_tagset=2", "default", "tokenize,mwt,ner", {"ner": "combined_charlm"}, {"ner_predict_tagset": 2},
+         ["validation.txt"]),
+        ("lemma_dict_only", "default", "tokenize,mwt,pos,lemma", {}, {"lemma_dict_only": True},
+         ["validation.txt", "validation_contractions.txt", "validation_nonbmp.txt"]),
+        ("lemma=combined_charlm+lemma_dict_only", "default", "tokenize,mwt,pos,lemma", {"lemma": "combined_charlm"}, {"lemma_dict_only": True},
+         ["validation_contractions.txt"]),
+        ("mwt_dict_only", "default", "tokenize,mwt,pos", {}, {"mwt_dict_only": True},
+         ["validation.txt", "validation_contractions.txt"]),
+    ],
+    "de": [
+        ("mwt_dict_only", "default", "tokenize,mwt,pos", {}, {"mwt_dict_only": True}, ["validation.txt"]),
+        ("lemma_dict_only", "default", "tokenize,mwt,pos,lemma", {}, {"lemma_dict_only": True}, ["validation.txt"]),
+    ],
+}
+
+
+def write_options_golden(models, out):
+    """
+    options/<name>/<text>.conllu + options/options.json: OPTION_CASES, Stanza with the option on corpus.txt (as
+    corpus.conllu) and the case's texts.
+    """
+    folder = out / "options"
+    folder.mkdir(exist_ok=True)
+    index = []
+    for name, package, processors, chosen, kwargs, extra in OPTION_CASES[LANG]:
+        texts = [out / "corpus.txt"] + [out / t for t in extra]
+        index.append({"name": name, "package": package, "processors": processors, "models": chosen, "options": kwargs,
+                      "texts": [path.relative_to(out).as_posix() for path in texts]})
+        if chosen:
+            spec = {p: chosen.get(p, package) for p in processors.split(",")}
+            nlp = stanza.Pipeline(LANG, dir=models, package=None, processors=spec, download_method=None, use_gpu=False,
+                                  logging_level="WARN", **kwargs)
+        else:
+            nlp = stanza.Pipeline(LANG, dir=models, package=package, processors=processors, download_method=None,
+                                  use_gpu=False, logging_level="WARN", **kwargs)
+        target = folder / name
+        target.mkdir(exist_ok=True)
+        for path in texts:
+            stem = "corpus" if path.name == "corpus.txt" else path.stem
+            with torch.no_grad():
+                doc = nlp(path.read_bytes().decode("utf-8"))
+            (target / f"{stem}.conllu").write_text("{:C}\n".format(doc), encoding="utf-8", newline="\n")
+            print(f"options/{name}/{stem}.conllu: {len(doc.sentences)} sentences")
+    with open(folder / "options.json", "w", encoding="utf-8", newline="\n") as f:
+        json.dump(index, f, indent=1, ensure_ascii=False)
+        f.write("\n")
+
+
 def write_seq2seq_golden(nlp, doc, path):
     """
     seq2seq.json: the lemmatizer's seq2seq model alone (no dictionary), as in words.json, on every word of `doc` (with
@@ -1333,6 +1387,7 @@ def main():
     p.add_argument("--packages", default=None, help="with --treebank-only: only these treebank packages (comma-separated)")
     p.add_argument("--models-only", action="store_true", help="only regenerate models/ (MODEL_CHOICES: single models chosen per processor)")
     p.add_argument("--transformer-only", action="store_true", help="only regenerate transformer/ (needs tools/requirements-transformer.txt)")
+    p.add_argument("--options-only", action="store_true", help="only regenerate options/ (OPTION_CASES: Stanza options with a PipelineOptions property)")
     p.add_argument("--choices", default=None, help="with --models-only: only these MODEL_CHOICES names (comma-separated)")
     args = p.parse_args()
     LANG = args.lang
@@ -1353,6 +1408,9 @@ def main():
         return
     if args.treebank_only:
         write_treebank_golden(args.models, out, args.packages and args.packages.split(","))
+        return
+    if args.options_only:
+        write_options_golden(args.models, out)
         return
     if args.models_only:
         write_models_golden(args.models, out, args.choices and args.choices.split(","))

@@ -169,6 +169,28 @@ public sealed class PipelineOptions
     public bool Pretagged { get; init; }
 
     /// <summary>
+    /// Which of the NER model's tag sets to decode, Stanza's <c>ner_predict_tagset</c>. English's
+    /// <c>ontonotes-ww-multi</c> models have two: 0 is OntoNotes (18 entity types, the model's own choice) and 1 WorldWide
+    /// (<c>ner=combined_charlm</c> has three). Null (the default): the model's own choice. A tag set the model doesn't have
+    /// throws <see cref="ArgumentException"/> at <see cref="Pipeline.Load"/>; without ner it is ignored, as in Stanza.
+    /// </summary>
+    public int? NerTagSet { get; init; }
+
+    /// <summary>
+    /// Stanza's <c>lemma_dict_only</c>: each word's lemma comes from the lemmatizer's dictionary alone (by UPOS and word,
+    /// then by word), and a word it lacks keeps its text as the lemma. The character model and the contextual lemma
+    /// classifiers don't run, so lemmatizing is faster and the lemmas of unseen words are not guessed.
+    /// </summary>
+    public bool LemmaDictionaryOnly { get; init; }
+
+    /// <summary>
+    /// Stanza's <c>mwt_dict_only</c>: multi-word tokens are split only where the MWT model's dictionary has the token (as
+    /// written, or an all-caps or capitalized token by its lowercase entry); every other token stays one word. The model
+    /// is not loaded.
+    /// </summary>
+    public bool MwtDictionaryOnly { get; init; }
+
+    /// <summary>
     /// Checks every model file <see cref="Pipeline.Load"/> reads against the MD5 that Stanza publishes for it (the
     /// checksums <see cref="ModelDownloader"/> verifies downloads with) before loading, which catches corrupted files
     /// or files from another Stanza version. It reads every file once more, which takes a second or two for the

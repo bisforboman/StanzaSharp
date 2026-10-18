@@ -29,10 +29,11 @@ internal sealed class MwtExpander : IDisposable
 
     /// <param name="net">Builds the classifier from the checkpoint, its config and the PAD id (a backend's).</param>
     /// <param name="seq2seq">Builds the seq2seq network from the checkpoint and its sizes (a backend's).</param>
-    internal MwtExpander(Checkpoint ckpt, Func<Checkpoint, JsonNode, int, IMwtNet> net, Func<Checkpoint, Seq2SeqConfig, ISeq2SeqNet> seq2seq)
+    /// <param name="dictOnly">Stanza's <c>mwt_dict_only</c>: the dictionary alone (a token it lacks stays one word); the model doesn't load.</param>
+    internal MwtExpander(Checkpoint ckpt, Func<Checkpoint, JsonNode, int, IMwtNet> net, Func<Checkpoint, Seq2SeqConfig, ISeq2SeqNet> seq2seq, bool dictOnly = false)
     {
         var config = ckpt.Root["config"]!;
-        bool dictOnly = config["dict_only"]!.GetValue<bool>();
+        dictOnly |= config["dict_only"]!.GetValue<bool>();
         _useModel = !dictOnly;
         _useDict = dictOnly || config["ensemble_dict"]?.GetValue<bool>() == true;
         _dict = ckpt.Root["dict"]!.AsObject().ToDictionary(kv => kv.Key, kv => kv.Value!.GetValue<string>());
@@ -67,8 +68,8 @@ internal sealed class MwtExpander : IDisposable
     }
 
     /// <summary>Loads <c>basePath.json</c> + <c>basePath.safetensors</c> (or <c>basePath.pt</c>), e.g. <c>models/converted/en/mwt/combined</c>, on the managed backend.</summary>
-    public static MwtExpander LoadManaged(string basePath) =>
-        new(Checkpoint.Load(basePath), (ckpt, config, _) => new ManagedMwtNet(ckpt, config), (ckpt, sizes) => new ManagedSeq2SeqNet(ckpt, sizes));
+    public static MwtExpander LoadManaged(string basePath, bool dictOnly = false) =>
+        new(Checkpoint.Load(basePath), (ckpt, config, _) => new ManagedMwtNet(ckpt, config), (ckpt, sizes) => new ManagedSeq2SeqNet(ckpt, sizes), dictOnly);
 
     /// <summary>Expands marked tokens in place and renumbers each sentence's words.</summary>
     public void Process(Document doc)
