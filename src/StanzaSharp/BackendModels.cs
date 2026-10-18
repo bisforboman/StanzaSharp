@@ -147,7 +147,7 @@ internal sealed class ManagedModels : BackendModels
         ConstituencyParser.LoadManaged(basePath, pretrain, Find(_charlms, charlms.Forward)!, Find(_charlms, charlms.Backward)!, transformer);
 
     public override SentimentClassifier Sentiment(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer) =>
-        SentimentClassifier.LoadManaged(basePath, pretrain, Find(_charlms, charlms.Forward)!, Find(_charlms, charlms.Backward)!, transformer);
+        SentimentClassifier.LoadManaged(basePath, pretrain, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward), transformer);
 }
 
 /// <summary>

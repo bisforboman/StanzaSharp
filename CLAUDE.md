@@ -111,7 +111,8 @@ default from 0.5) or through TorchSharp (see "Managed backend").
     `Nn.Managed.ManagedTransformer`: the dense layers as row-invariant `Gemm.Run` over every sentence's pieces, attention
     per sentence and head without padding, attention/LayerNorm/GELU in double (round 45: lane-wise vectors, the same bits
     on every path and width; GELU's erf from Numerical Recipes' erfc, 1.2e-7 relative, with its own mul/add-only `Exp`;
-    LayerNorm's sums `Act.Dot`'s four accumulators), pooled buffers, a cancellation check per layer; so a sentence's
+    LayerNorm's sums `Act.Dot`'s four accumulators), pooled buffers, rented outputs (round 47, `RentsOutputs`: the call's
+    `TransformerCache` returns those it keeps when the call ends, `Embed` the others once mixed), a cancellation check per layer; so a sentence's
     states have the same bits alone, batched and on any thread count (`TransformerKernelTests`). `TransformerNet`
     (StanzaSharp.Cuda) pads each call like Stanza, with transformers' additive mask and `scaled_dot_product_attention`.
     `Nn.TransformerEmbedder` = extract_bert_embeddings: the windows over `model_max_length` (tokenizer_config.json, 512;
@@ -138,7 +139,8 @@ default from 0.5) or through TorchSharp (see "Managed backend").
   - The models (PR 3): constituency `ptb3-revised_electra-large` (frozen, raw words, its `bert_layer_mix` of 4 layers,
     endpoints: each sentence's rows are [word_start | CLS], words, [word_end | SEP], the transformer columns last; it
     shares the call's `TransformerCache`) and sentiment `sstplus_electra-large` (no charlms although resources.json lists
-    them, `UsesCharlm` false; word 100 + transformer 1,024; filters 3, 4, 5; the legacy mix over token texts, no
+    them, `UsesCharlm` false; `Pipeline.Unread` drops them from what Load loads and checks, `ReadDependencies`, while
+    downloads keep them, owner's decision 2026-10-18; word 100 + transformer 1,024; filters 3, 4, 5; the legacy mix over token texts, no
     endpoints). Sentiment's LoRA (`bert_lora`, peft's eval forward: base(x) + B(A(x))·alpha/rank after the bias, on query,
     value, attention.output.dense, intermediate.dense before GELU, output.dense before the LayerNorm): `Nn.LoraWeights`,
     `ITransformerNet.WithLora` = a net sharing the base's weights plus adapters (managed: two row-invariant `Gemm.Run`s
@@ -364,8 +366,8 @@ since 1.0, and every processor also has a managed net (see "Managed backend"), t
   - `MaxConcurrentCalls` (int?, owner's decision 2026-10-09: opt-in, null = no limit): a `SemaphoreSlim` in `Pipeline`
     around each Process overload's work (`Gated`); the wait honours the call's token. Managed throughput peaks at ~2 calls
     in flight (cache eviction of the charlm weights; docs/performance/round-07-per-call-short-texts.md).
-  - `Processor` constants; `VerifyChecksums` (MD5 of each `.pt` Load reads, `ModelDownloader.Verify`; throws for
-    converted models, which have no published MD5); `Logger` (`Microsoft.Extensions.Logging.Abstractions` 10.0.0,
+  - `Processor` constants; `VerifyChecksums` (MD5 of each `.pt` Load reads, `ModelDownloader.Verify`, and the sha256 of each
+    transformer file, 2026-10-18; throws for converted models, which have no published MD5); `Logger` (`Microsoft.Extensions.Logging.Abstractions` 10.0.0,
     since 1.0 the StanzaSharp package's only dependency): load times at Information, per-processor times at Debug, nothing measured
     without a logger.
 

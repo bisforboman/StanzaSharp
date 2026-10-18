@@ -150,14 +150,16 @@ internal static class SentimentClassifierLoad
         /// <param name="device">Where the model runs; CPU by default. Load the pretrain and charlms on the same device.</param>
         /// <param name="transformer">The transformer a <c>_electra-large</c> classifier reads (shared, the caller owns it; the classifier
         /// adds its LoRA adapters to a copy that shares its weights).</param>
-        public static SentimentClassifier Load(string basePath, Pretrain pretrain, CharLanguageModel charlmForward, CharLanguageModel charlmBackward, Device? device = null,
+        public static SentimentClassifier Load(string basePath, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward, Device? device = null,
             TransformerEmbedder? transformer = null) =>
             Weights.On(device, () =>
             {
-                if (!charlmForward.IsForward || charlmBackward.IsForward)
+                if (charlmForward is { IsForward: false } || charlmBackward is { IsForward: true })
                     throw new ArgumentException("Pass the forward charlm first, then the backward one");
                 var ckpt = Checkpoint.Load(basePath);
                 var (charlm, transformerDim) = SentimentClassifier.Inputs(ckpt, transformer);
+                if (charlm && (charlmForward == null || charlmBackward == null))
+                    throw new ArgumentException($"{basePath} reads the charlms; pass both");
                 return new SentimentClassifier(ckpt, pretrain, filters => new SentimentNet(ckpt, filters, pretrain, charlm ? charlmForward : null,
                     charlm ? charlmBackward : null, transformerDim), transformer);
             });

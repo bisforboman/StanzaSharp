@@ -357,12 +357,12 @@ public static class ModelDownloader
 
     /// <summary>
     /// <see cref="PipelineOptions.VerifyChecksums"/>: checks each file <see cref="Pipeline.Load"/> reads for
-    /// <paramref name="models"/> of <paramref name="language"/> against its MD5. Converted models, which have no
-    /// published checksum, throw.
+    /// <paramref name="models"/> of <paramref name="language"/> against its MD5, and each transformer file against its
+    /// sha256 (<see cref="Transformers"/>). Converted models, which have no published checksum, throw.
     /// </summary>
     internal static void Verify(string modelDir, IReadOnlyDictionary<string, string> models, string language)
     {
-        foreach (var path in Pipeline.ModelFiles(models, language))
+        foreach (var path in Pipeline.ModelFiles(models, language, readOnly: true))
         {
             var basePath = Path.Combine(modelDir, path);
 
@@ -382,6 +382,22 @@ public static class ModelDownloader
             {
                 throw new InvalidDataException($"{file}: checksum {actual} does not match Stanza {StanzaVersion}'s {expected}. "
                     + "The file is corrupted or from another Stanza version; download it again with ModelDownloader.DownloadAsync.");
+            }
+        }
+
+        foreach (var name in Pipeline.TransformersOf(models, language))
+        {
+            foreach (var (fileName, expected) in Transformers[name].Files)
+            {
+                var file = Path.Combine(TransformerDirectory(modelDir, name), fileName); // Load checked that it exists
+                string actual;
+                using (var stream = File.OpenRead(file))
+                    actual = Convert.ToHexStringLower(SHA256.HashData(stream));
+                if (actual != expected)
+                {
+                    throw new InvalidDataException($"{file}: sha256 {actual} does not match {name}@{Transformers[name].Revision}'s {expected}. "
+                        + "The file is corrupted or of another revision; download it again with ModelDownloader.DownloadAsync.");
+                }
             }
         }
     }

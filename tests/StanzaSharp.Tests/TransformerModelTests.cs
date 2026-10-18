@@ -28,6 +28,50 @@ public class TransformerModelTests
     public void Process_MatchesGolden(string name, bool managed, string lang) => ModelChoiceTests.AssertGolden(name, managed, lang, cache: true);
 
     [Fact]
+    public void SstplusElectra_DownloadsButDoesNotLoadTheCharlms()
+    {
+        var models = new Dictionary<string, string> { ["sentiment"] = "sstplus_electra-large" };
+        Assert.Equal(["pretrain/conll17", "forward_charlm/1billion", "backward_charlm/1billion"], Pipeline.SharedModels(models, "en"));
+        Assert.Equal(["pretrain/conll17"], Pipeline.SharedModels(models, "en", readOnly: true));
+        Assert.Contains("forward_charlm/1billion.pt", ModelDownloader.FilesFor("tokenize,sentiment", "default", "options", "en",
+            new Dictionary<string, string> { ["sentiment"] = "sstplus_electra-large" }).Select(f => f.Path));
+    }
+
+    [TransformerFact("config.json", "tokenizer.json", "tokenizer_config.json", "pytorch_model.bin")]
+    public void VerifyChecksums_ChecksTheTransformersSha256()
+    {
+        var models = new Dictionary<string, string> { ["sentiment"] = "sstplus_electra-large" };
+        ModelDownloader.Verify(Repo.StanzaModels, models, "en");
+
+        // The same files, linked into a folder whose config.json has one byte changed.
+        var dir = Directory.CreateTempSubdirectory("stanzasharp-sha256-").FullName;
+        try
+        {
+            foreach (var path in Pipeline.ModelFiles(models, "en", readOnly: true).Select(p => p + ".pt"))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(dir, path))!);
+                File.CreateSymbolicLink(Path.Combine(dir, path), Path.Combine(Repo.StanzaModels, path));
+            }
+
+            var transformer = ModelDownloader.TransformerDirectory(dir, TransformerFactAttribute.Electra);
+            Directory.CreateDirectory(transformer);
+            foreach (var (file, _) in ModelDownloader.Transformers[TransformerFactAttribute.Electra].Files)
+            {
+                if (file != "config.json")
+                    File.CreateSymbolicLink(Path.Combine(transformer, file), Path.Combine(TransformerFactAttribute.Directory, file));
+            }
+
+            File.WriteAllText(Path.Combine(transformer, "config.json"), File.ReadAllText(Path.Combine(TransformerFactAttribute.Directory, "config.json")) + " ");
+            var e = Assert.Throws<InvalidDataException>(() => ModelDownloader.Verify(dir, models, "en"));
+            Assert.Contains("config.json", e.Message);
+        }
+        finally
+        {
+            Directory.Delete(dir, recursive: true);
+        }
+    }
+
+    [Fact]
     public void ElectraModels_ReadTheTransformerAndTheCharlms()
     {
         var chosen = new Dictionary<string, string> { ["pos"] = "combined_electra-large", ["depparse"] = "combined_electra-large", ["ner"] = "ontonotes-ww-multi_electra-large" };

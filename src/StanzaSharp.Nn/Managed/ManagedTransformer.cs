@@ -30,6 +30,9 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
 
     public TransformerConfig Config { get; }
 
+    /// <summary>The outputs are rented (round 47): 16 KB a piece with ELECTRA-large, per call.</summary>
+    public bool RentsOutputs => true;
+
     private ManagedTransformer(TransformerConfig config, float[] words, float[] positions, float[] type0, float[] embG, float[] embB, Layer[] layers,
         LayerAdapters[]? adapters = null, float scaling = 0)
     {
@@ -124,13 +127,13 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
         }
 
         starts[^1] = rows;
+        var pool = ArrayPool<float>.Shared;
         var result = new float[sentences.Count][];
         for (int s = 0; s < sentences.Count; s++)
-            result[s] = new float[lastLayers * (starts[s + 1] - starts[s]) * h];
+            result[s] = pool.Rent(lastLayers * (starts[s + 1] - starts[s]) * h);
         if (rows == 0)
             return result;
 
-        var pool = ArrayPool<float>.Shared;
         float[] x = pool.Rent(rows * h), qkv = pool.Rent(rows * 3 * h), context = pool.Rent(rows * h), tmp = pool.Rent(rows * h), up = pool.Rent(rows * inter);
         int rank = _adapters?.SelectMany(a => a.Qkv.Concat([a.Out, a.Up, a.Down])).OfType<Adapter>().Max(a => a.A.PaddedN) ?? 0;
         float[]? low = _adapters == null ? null : pool.Rent(rows * rank), delta = _adapters == null ? null : pool.Rent(rows * inter);

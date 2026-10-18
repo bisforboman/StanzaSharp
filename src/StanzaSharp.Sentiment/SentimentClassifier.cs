@@ -65,13 +65,15 @@ internal sealed class SentimentClassifier : IDisposable
     internal readonly record struct Filter(int Height, int Width);
 
     /// <summary><c>Load</c> (StanzaSharp.Cuda) on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
-    public static SentimentClassifier LoadManaged(string basePath, Pretrain pretrain, ManagedCharLanguageModel charlmForward, ManagedCharLanguageModel charlmBackward,
+    public static SentimentClassifier LoadManaged(string basePath, Pretrain pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward,
         TransformerEmbedder? transformer = null)
     {
-        if (!charlmForward.IsForward || charlmBackward.IsForward)
+        if (charlmForward is { IsForward: false } || charlmBackward is { IsForward: true })
             throw new ArgumentException("Pass the forward charlm first, then the backward one");
         var ckpt = Checkpoint.Load(basePath);
         var (charlm, transformerDim) = Inputs(ckpt, transformer);
+        if (charlm && (charlmForward == null || charlmBackward == null))
+            throw new ArgumentException($"{basePath} reads the charlms; pass both");
         return new SentimentClassifier(ckpt, pretrain, filters => new ManagedSentimentNet(ckpt, filters, pretrain, charlm ? charlmForward : null,
             charlm ? charlmBackward : null, transformerDim), transformer);
     }

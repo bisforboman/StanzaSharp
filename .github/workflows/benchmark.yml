@@ -145,6 +145,8 @@ jobs:
           dotnet src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll benchmark --lang ${{ inputs.lang }} --package ${{ inputs.package }} \
             --models models/stanza/${{ inputs.lang }} --python "$python" --json benchmark.json ${{ inputs.quick && '--quick' || '' }} > benchmark.md
           { echo "## ${{ matrix.os }}"; echo; cat benchmark.md; } >> "$GITHUB_STEP_SUMMARY"
+          # Also in the log, which can be read where the summary and the artifacts can't (a cloud session).
+          cat benchmark.md
 
       - uses: actions/upload-artifact@v7
         with:

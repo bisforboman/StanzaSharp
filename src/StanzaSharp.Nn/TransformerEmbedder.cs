@@ -1,3 +1,5 @@
+using System.Buffers;
+
 namespace StanzaSharp.Nn;
 
 /// <summary>
@@ -104,6 +106,8 @@ internal sealed class TransformerEmbedder(ITransformerNet net, WordPiece tokeniz
             cache = null;
         var inputs = sentences.Select(s => TransformerInput.Build(Tokenizer, s)).ToArray();
         var states = new float[inputs.Length][]; // per sentence [lastLayers, pieces, h]
+        var owned = new bool[inputs.Length]; // rented by the encoder and not kept by the cache: returned once mixed
+        bool rents = Net.RentsOutputs;
         for (int s = 0; s < inputs.Length && cache != null; s++)
             states[s] = cache.TryGet(inputs[s].Ids, out var cached) ? cached : null!;
         var short_ = Enumerable.Range(0, inputs.Length).Where(s => states[s] == null && inputs[s].Ids.Length <= MaxLength).ToList();
@@ -117,7 +121,7 @@ internal sealed class TransformerEmbedder(ITransformerNet net, WordPiece tokeniz
             for (int i = 0; i < batch.Count; i++)
             {
                 states[batch[i]] = encoded[i];
-                cache?.TryAdd(inputs[batch[i]].Ids, encoded[i]);
+                owned[batch[i]] = cache?.TryAdd(inputs[batch[i]].Ids, encoded[i]) != true && rents;
             }
 
             b += count;
@@ -128,18 +132,22 @@ internal sealed class TransformerEmbedder(ITransformerNet net, WordPiece tokeniz
             if (states[s] != null)
                 continue;
             states[s] = Windowed(inputs[s].Ids, lastLayers, ct);
-            cache?.TryAdd(inputs[s].Ids, states[s]);
+            owned[s] = cache?.TryAdd(inputs[s].Ids, states[s]) != true && rents;
         }
 
+        var pool = ArrayPool<float>.Shared;
         var result = new float[inputs.Length][];
         for (int s = 0; s < inputs.Length; s++)
         {
             var positions = inputs[s].Positions;
             int pieces = inputs[s].Ids.Length, first = keepEndpoints ? 0 : 1, rows = positions.Length - (keepEndpoints ? 0 : 2);
             var mixed = Mix(states[s], pieces, h, layerMix);
+            if (owned[s])
+                pool.Return(states[s]);
             result[s] = new float[rows * h];
             for (int r = 0; r < rows; r++)
                 Array.Copy(mixed, positions[first + r] * h, result[s], r * h, h);
+            pool.Return(mixed);
         }
 
         return result;
@@ -160,7 +168,7 @@ internal sealed class TransformerEmbedder(ITransformerNet net, WordPiece tokeniz
         }
 
         var encoded = Net.Encode(windows, lastLayers, ct);
-        var states = new float[lastLayers * n * h];
+        var states = Net.RentsOutputs ? ArrayPool<float>.Shared.Rent(lastLayers * n * h) : new float[lastLayers * n * h];
         for (int k = 0; k < lastLayers; k++)
         {
             int row = 0;
@@ -172,14 +180,21 @@ internal sealed class TransformerEmbedder(ITransformerNet net, WordPiece tokeniz
             }
         }
 
+        if (Net.RentsOutputs)
+        {
+            foreach (var window in encoded)
+                ArrayPool<float>.Shared.Return(window);
+        }
+
         return states;
     }
 
     // cloned_feature, elementwise in float32 in Python's order: sum(...) starts from 0 and adds left to right.
+    // Rented: the caller returns it.
     private static float[] Mix(float[] states, int pieces, int h, float[]? weights)
     {
         int size = pieces * h, layers = weights?.Length ?? 4;
-        var mixed = new float[size];
+        var mixed = ArrayPool<float>.Shared.Rent(size);
         for (int i = 0; i < size; i++)
         {
             if (weights == null)

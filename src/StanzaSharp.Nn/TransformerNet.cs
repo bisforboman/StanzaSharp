@@ -45,6 +45,13 @@ internal interface ITransformerNet : IDisposable
     float[][] Encode(IReadOnlyList<int[]> sentences, int lastLayers, CancellationToken ct = default);
 
     /// <summary>
+    /// Whether <see cref="Encode"/>'s arrays come from <see cref="System.Buffers.ArrayPool{T}.Shared"/> (and may be longer than
+    /// they need to be). Their reader returns them: <see cref="TransformerEmbedder.Embed"/> once mixed, or the call's
+    /// <see cref="TransformerCache"/> when it ends.
+    /// </summary>
+    bool RentsOutputs => false;
+
+    /// <summary>
     /// This encoder with <paramref name="lora"/>'s adapters added at run time. It shares this net's weights, so it must not
     /// outlive it; disposing it frees only the adapters.
     /// </summary>
