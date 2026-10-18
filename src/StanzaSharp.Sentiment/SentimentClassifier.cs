@@ -18,6 +18,7 @@ internal sealed class SentimentClassifier : IDisposable
 {
     // sentiment_processor.py DEFAULT_BATCH_SIZE, counted in tokens.
     internal const int BatchSize = 5000;
+    private int _batchSize = BatchSize; // set once: WithBatchSize's copy
     private const int UnkId = 1; // vocab.UNK_ID; padding is PAD_ID 0 in both vocabs
 
     private readonly Pretrain _pretrain;
@@ -115,7 +116,7 @@ internal sealed class SentimentClassifier : IDisposable
 
     /// <summary>
     /// BaseClassifier.label_sentences: sentences sorted longest first (stably), cut into batches of at most
-    /// <see cref="BatchSize"/> tokens, each padded to its longest sentence. Padding changes the results
+    /// <c>batch_size</c> tokens (<see cref="BatchSize"/> unless set), each padded to its longest sentence. Padding changes the results
     /// (the LSTM and convolutions run over it), so batches must be Stanza's.
     /// </summary>
     /// <param name="charlms">With <paramref name="cacheKeys"/>: charlm outputs already computed; sentence i's are looked up
@@ -126,7 +127,7 @@ internal sealed class SentimentClassifier : IDisposable
         var order = Enumerable.Range(0, sentences.Count).OrderByDescending(i => sentences[i].Count).ToArray();
         var labels = new int[sentences.Count];
         logits = new float[sentences.Count][];
-        foreach (var (start, end) in Batches(order.Select(i => sentences[i].Count).ToArray()))
+        foreach (var (start, end) in Batches(order.Select(i => sentences[i].Count).ToArray(), _batchSize))
         {
             cancellationToken.ThrowIfCancellationRequested();
             var batch = order[start..end];
@@ -143,20 +144,20 @@ internal sealed class SentimentClassifier : IDisposable
     }
 
     /// <summary>common/utils.py split_into_batches over sorted lengths: [start, end) intervals.</summary>
-    internal static List<(int Start, int End)> Batches(int[] lengths)
+    internal static List<(int Start, int End)> Batches(int[] lengths, int batchSize = BatchSize)
     {
         var intervals = new List<(int, int)>();
         int start = 0, size = 0;
         for (int i = 0; i < lengths.Length; i++)
         {
-            if (lengths[i] > BatchSize)
+            if (lengths[i] > batchSize)
             {
                 if (size > 0)
                     intervals.Add((start, i));
                 intervals.Add((i, i + 1));
                 (start, size) = (i + 1, 0);
             }
-            else if (lengths[i] + size > BatchSize)
+            else if (lengths[i] + size > batchSize)
             {
                 intervals.Add((start, i));
                 (start, size) = (i, lengths[i]);
@@ -231,6 +232,17 @@ internal sealed class SentimentClassifier : IDisposable
         Require(config["bilstm"]?.GetValue<bool>() == true, "a configuration without the biLSTM");
         Require(config["maxpool_width"]?.GetValue<int>() == 1, $"maxpool_width {config["maxpool_width"]}");
         Require(config["filter_channels"] is JsonValue, "per-filter channel counts");
+    }
+
+    /// <summary>
+    /// A copy batching <paramref name="batchSize"/> tokens per batch (Stanza's <c>sentiment_batch_size</c>). It shares
+    /// the networks (the pipeline keeps only the copy), so it is made at Load, before any call.
+    /// </summary>
+    internal SentimentClassifier WithBatchSize(int batchSize)
+    {
+        var copy = (SentimentClassifier)MemberwiseClone();
+        copy._batchSize = batchSize;
+        return copy;
     }
 
     public void Dispose()

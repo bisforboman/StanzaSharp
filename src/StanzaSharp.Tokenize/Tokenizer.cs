@@ -77,7 +77,8 @@ internal sealed partial class Tokenizer : IDisposable
     private readonly ITokenizerNet _net;
     private readonly Dictionary<string, int> _vocab;
     private readonly Dictionary<string, int>.AlternateLookup<ReadOnlySpan<char>> _vocabBySpan;
-    private readonly int _unkId, _padId, _batchSize, _featDim, _maxSeqLen, _window;
+    private readonly int _unkId, _padId, _featDim, _maxSeqLen, _window;
+    private int _batchSize; // set once: the constructor or WithBatchSize's copy
     private readonly string[] _featFuncs;
     private readonly Regex?[] _featRes; // per feature: its structural pattern, or null for a per-unit one
     private readonly IPerCharLanguageModel? _charlm; // a _charlm model's forward charlm, run over the raw units
@@ -737,6 +738,18 @@ internal sealed partial class Tokenizer : IDisposable
 
     private static void FinishSentence(Sentence sent, Document doc) =>
         sent.Text = doc.Text![sent.Tokens[0].StartChar!.Value..sent.Tokens[^1].EndChar!.Value];
+
+    /// <summary>
+    /// A copy batching <paramref name="batchSize"/> paragraphs per batch (the checkpoint's <c>batch_size</c> otherwise;
+    /// Stanza ignores <c>tokenize_batch_size</c>). It shares the networks (the pipeline keeps only the copy), so it is
+    /// made at Load, before any call.
+    /// </summary>
+    internal Tokenizer WithBatchSize(int batchSize)
+    {
+        var copy = (Tokenizer)MemberwiseClone();
+        copy._batchSize = batchSize;
+        return copy;
+    }
 
     public void Dispose() => _net.Dispose();
 }

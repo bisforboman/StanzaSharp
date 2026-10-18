@@ -28,7 +28,7 @@ internal sealed class NerTagger : IDisposable
     private readonly bool _deltaSpaces, _lowercase, _charLowercase;
     private readonly string[] _tags;
     private readonly float[] _transitions;
-    private readonly int _batchSize;
+    private int _batchSize; // set once: the constructor or WithBatchSize's copy
     private readonly INerNet _net;
     private readonly TransformerEmbedder? _transformer;
     private readonly float[]? _layerMix;
@@ -347,6 +347,17 @@ internal sealed class NerTagger : IDisposable
 
     /// <summary>Whether a checkpoint reads the shared charlms (<c>_charlm</c>) rather than its own character model (<c>_nocharlm</c>).</summary>
     private static bool NeedsCharlm(Checkpoint ckpt) => ckpt.Root["config"]!["charlm"]?.GetValue<bool>() == true;
+
+    /// <summary>
+    /// A copy batching <paramref name="batchSize"/> sentences per batch (Stanza's <c>ner_batch_size</c>). It shares the
+    /// networks (the pipeline keeps only the copy), so it is made at Load, before any call.
+    /// </summary>
+    internal NerTagger WithBatchSize(int batchSize)
+    {
+        var copy = (NerTagger)MemberwiseClone();
+        copy._batchSize = batchSize;
+        return copy;
+    }
 
     public void Dispose() => _net.Dispose();
 }

@@ -228,6 +228,59 @@ public sealed class PipelineOptions
     public bool MwtDictionaryOnly { get; init; }
 
     /// <summary>
+    /// Paragraphs per tokenizer batch; null (the default) uses the model's own (32). Unlike the other batch sizes this has no
+    /// Stanza twin that works: Stanza's tokenizer ignores <c>tokenize_batch_size</c> and always reads its model's value. The
+    /// tokens stay the same (at most a score's last bits move); only speed and memory change.
+    /// </summary>
+    public int? TokenizeBatchSize { get; init; }
+
+    /// <summary>Tokens per MWT batch, Stanza's <c>mwt_batch_size</c>; null uses the model's own. Results stay the same.</summary>
+    public int? MwtBatchSize { get; init; }
+
+    /// <summary>
+    /// Sentences per POS batch, Stanza's <c>pos_batch_size</c>; null uses the model's own. A batch also stops at
+    /// <see cref="PosBatchMaximumTokens"/> words. Results stay the same (at most a score's last bits move); only speed and memory change.
+    /// </summary>
+    public int? PosBatchSize { get; init; }
+
+    /// <summary>
+    /// Words per POS batch, Stanza's <c>pos_batch_maximum_tokens</c>; null uses 5,000, as Stanza does. A longer sentence is a
+    /// batch of its own.
+    /// </summary>
+    public int? PosBatchMaximumTokens { get; init; }
+
+    /// <summary>Words per batch of the lemmatizer's character model, Stanza's <c>lemma_batch_size</c>; null uses the model's own. Results stay the same.</summary>
+    public int? LemmaBatchSize { get; init; }
+
+    /// <summary>
+    /// Sentences the constituency parser keeps in flight, Stanza's <c>constituency_batch_size</c>; null uses 50, as Stanza
+    /// does. Results stay the same.
+    /// </summary>
+    public int? ConstituencyBatchSize { get; init; }
+
+    /// <summary>
+    /// Words per dependency-parser batch, Stanza's <c>depparse_batch_size</c>; null uses the model's own (5,000 for most).
+    /// <b>The parses can change with it, as in Stanza:</b> the head scores are normalized over the batch's padded width.
+    /// </summary>
+    public int? DepparseBatchSize { get; init; }
+
+    /// <summary>
+    /// Sentences longer than this many words get a dependency-parser batch of their own, Stanza's
+    /// <c>depparse_min_length_to_batch_separately</c>; null uses 150, as Stanza does. Like
+    /// <see cref="DepparseBatchSize"/>, it can change the parses.
+    /// </summary>
+    public int? DepparseMinLengthToBatchSeparately { get; init; }
+
+    /// <summary>
+    /// Tokens per sentiment batch, Stanza's <c>sentiment_batch_size</c>; null uses 5,000, as Stanza does. <b>The labels
+    /// change with it, as in Stanza:</b> each batch is padded to its longest sentence, and the classifier reads the padding.
+    /// </summary>
+    public int? SentimentBatchSize { get; init; }
+
+    /// <summary>Sentences per NER batch, Stanza's <c>ner_batch_size</c>; null uses the model's own. Results stay the same.</summary>
+    public int? NerBatchSize { get; init; }
+
+    /// <summary>
     /// Checks every model file <see cref="Pipeline.Load"/> reads against the MD5 that Stanza publishes for it (the
     /// checksums <see cref="ModelDownloader"/> verifies downloads with) before loading, which catches corrupted files
     /// or files from another Stanza version. It reads every file once more, which takes a second or two for the

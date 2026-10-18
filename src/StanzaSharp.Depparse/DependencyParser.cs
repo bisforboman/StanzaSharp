@@ -26,7 +26,7 @@ internal sealed class DependencyParser : IDisposable
     private readonly Dictionary<string, int> _wordVocab, _lemmaVocab, _uposVocab;
     private readonly XposVocab _xposVocab;
     private readonly string[] _deprels;
-    private readonly int _batchSize;
+    private int _batchSize, _separateBatchLength = SeparateBatchLength; // set once: the constructor or WithBatchSize's copy
     private readonly bool _resolveHeadConstraints;
     private readonly IDepparseNet _net;
     private readonly TransformerEmbedder? _transformer;
@@ -127,7 +127,7 @@ internal sealed class DependencyParser : IDisposable
         int currentLen = 0;
         foreach (var i in order)
         {
-            if (lengths[i] > SeparateBatchLength)
+            if (lengths[i] > _separateBatchLength)
             {
                 if (currentLen > 0)
                     batches.Add(current);
@@ -421,6 +421,20 @@ internal sealed class DependencyParser : IDisposable
             Require(root["vocab"]![key]!["lower"]!.GetValue<bool>(), $"a cased {key} vocab");
         foreach (var key in new[] { "upos", "xpos" })
             Require(!root["vocab"]![key]!["lower"]!.GetValue<bool>(), $"a lowercased {key} vocab");
+    }
+
+    /// <summary>
+    /// A copy batching <paramref name="batchSize"/> words per batch, a sentence over <paramref name="separateLength"/>
+    /// words alone (Stanza's <c>depparse_batch_size</c>, <c>depparse_min_length_to_batch_separately</c>); null keeps
+    /// the current value. It shares the networks (the pipeline keeps only the copy), so it is made at Load, before any
+    /// call.
+    /// </summary>
+    internal DependencyParser WithBatchSize(int? batchSize, int? separateLength)
+    {
+        var copy = (DependencyParser)MemberwiseClone();
+        copy._batchSize = batchSize ?? _batchSize;
+        copy._separateBatchLength = separateLength ?? _separateBatchLength;
+        return copy;
     }
 
     public void Dispose() => _net.Dispose();

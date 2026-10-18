@@ -390,7 +390,8 @@ since 1.0, and every processor also has a managed net (see "Managed backend"), t
   - Thread safety: Process keeps all mutable state per call (the Document, `CharlmCache`, the lemmatizer's
     DeltaVocab copy, the parser states); the models are read-only after Load; TorchSharp's dispose scopes are
     thread-static and libtorch's grad mode thread-local. The stress test (8 threads, mixed modes, both packages)
-    needed no code change. Keep it that way: never add mutable fields to a processor.
+    needed no code change. Keep it that way: never add mutable fields to a processor (the one exception: the batch sizes,
+    set only on `WithBatchSize`'s fresh `MemberwiseClone` inside Load, before the pipeline is returned).
   - TorchSharp counts the two undefined index tensors of `pack_padded_sequence(enforce_sorted: true)` (lemmatizer)
     as live forever (`DisposeScopeManager.Statistics`); they hold no memory. Leak tests leave lemma out.
   - `SplitSentences = false` = `tokenize_no_ssplit`: `Tokenizer.Decode` ends sentences only at paragraph ends.
@@ -865,7 +866,15 @@ What the English treebank packages' checkpoints add to the default package's pat
     `MwtDictionaryOnly`), `options.json` maps them; `OptionTests` (shard 1; exempt from the no-skip checks elsewhere,
     whose rows lack the chosen models). NER decodes the chosen tag set's head (a missing one throws at Load), the
     lemmatizer's `LemmatizeByDictionary` is trainer.predict_dict (no seq2seq, no contextual classifiers), MWT's
-    `dictOnly` loads no net.
+    `dictOnly` loads no net. The batch sizes (#174, owner's decision 2026-10-18: typed properties `MwtBatchSize`,
+    `PosBatchSize`, `PosBatchMaximumTokens`, `LemmaBatchSize`, `ConstituencyBatchSize`, `DepparseBatchSize`,
+    `DepparseMinLengthToBatchSeparately`, `SentimentBatchSize`, `NerBatchSize`; null = the checkpoint's `batch_size`,
+    or Stanza's processor default where it has its own: pos 5,000 tokens, constituency 50, depparse 150, sentiment 5,000)
+    are rows `sentiment_batch_size=20`, `batch_sizes` (every one small, `SMALL_BATCHES`) and `default_fast+batch_sizes`;
+    only sentiment's changes the golden texts (depparse's moved no head at any size tried). Each processor's internal
+    `WithBatchSize` returns a copy sharing its nets, made in Load, so nothing changes after Load. `TokenizeBatchSize`
+    (owner's choice) has no working Stanza twin: TokenizeProcessor reads `trainer.args['batch_size']`, the checkpoint's,
+    whatever `tokenize_batch_size` says; `TokenizeBatchSize_GivesTheSameTokens` checks it against the default tokens.
   - `postprocess/postprocess.json` (`--postprocess-only`): `tokenize_postprocessor=postprocess` (merges "New York", splits
     "cannot", hand-expands "gonna", flags "wanna", merges the last two sentences; `PostprocessorTests.Postprocess` is the
     same in C#) on `POSTPROCESS_TEXTS` alone, in one bulk call and with `tokenize_no_ssplit` (#174:

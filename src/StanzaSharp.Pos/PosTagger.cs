@@ -24,7 +24,8 @@ internal sealed class PosTagger : IDisposable
     private readonly string[] _upos;
     private readonly XposVocab _xpos;
     private readonly (string Key, string[] Values)[] _feats;
-    private readonly int _wordUnk, _batchSize;
+    private readonly int _wordUnk;
+    private int _batchSize, _maximumTokens = MaximumTokens; // set once: the constructor or WithBatchSize's copy
     private readonly IPosNet _net;
     private readonly TransformerEmbedder? _transformer;
     private readonly float[]? _layerMix;
@@ -85,14 +86,14 @@ internal sealed class PosTagger : IDisposable
     public void Process(Document doc, CharlmCache? charlms = null, CancellationToken cancellationToken = default, TransformerCache? transformers = null)
     {
         // Batched like Stanza's LengthLimitedBatchSampler: in document order, at most _batchSize sentences
-        // and MaximumTokens words per batch, and a longer sentence alone.
+        // and _maximumTokens words per batch, and a longer sentence alone.
         var sentences = doc.Sentences.Select(s => (Sentence: s, Words: s.Words.ToList())).Where(x => x.Words.Count > 0).ToList();
         var featStrings = new Dictionary<string, string>(); // one string per distinct feats value, not one per word
         for (int b = 0, end; b < sentences.Count; b = end)
         {
             cancellationToken.ThrowIfCancellationRequested();
             int words = 0;
-            for (end = b; end < sentences.Count && end - b < _batchSize && (end == b || words + sentences[end].Words.Count <= MaximumTokens); end++)
+            for (end = b; end < sentences.Count && end - b < _batchSize && (end == b || words + sentences[end].Words.Count <= _maximumTokens); end++)
                 words += sentences[end].Words.Count;
             var batch = sentences.GetRange(b, end - b);
             var tags = Predict(batch.Select(x => (IReadOnlyList<string>)x.Words.Select(w => w.Text).ToList()).ToList(), out _,
@@ -219,6 +220,19 @@ internal sealed class PosTagger : IDisposable
     internal bool UsesCharlm { get; }
 
     private static string[] Strings(JsonNode? array) => array!.AsArray().Select(x => x!.GetValue<string>()).ToArray();
+
+    /// <summary>
+    /// A copy batching <paramref name="batchSize"/> sentences and at most <paramref name="maximumTokens"/> words per
+    /// batch (Stanza's <c>pos_batch_size</c>, <c>pos_batch_maximum_tokens</c>); null keeps the current value. It shares
+    /// the networks (the pipeline keeps only the copy), so it is made at Load, before any call.
+    /// </summary>
+    internal PosTagger WithBatchSize(int? batchSize, int? maximumTokens)
+    {
+        var copy = (PosTagger)MemberwiseClone();
+        copy._batchSize = batchSize ?? _batchSize;
+        copy._maximumTokens = maximumTokens ?? _maximumTokens;
+        return copy;
+    }
 
     public void Dispose() => _net.Dispose();
 }

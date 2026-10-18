@@ -592,14 +592,20 @@ public sealed class Pipeline : IDisposable
                 ? Start(Name("sentiment"), () => backend.Sentiment(Model("sentiment"), PretrainOf("sentiment"), CharlmsOf("sentiment"), TransformerOf("sentiment")))
                 : null;
             Task.WaitAll(started);
-            _tokenizer = tokenizer!.Result;
-            _mwt = mwt?.Result;
-            _lemma = lemma?.Result;
-            _pos = pos?.Result;
-            _depparse = depparse?.Result;
-            _ner = ner?.Result;
-            _parser = parser?.Result;
-            _sentiment = sentiment?.Result;
+
+            // The batch-size options: each a copy of its processor sharing the nets, made before any call.
+            _tokenizer = options.TokenizeBatchSize is int t ? tokenizer!.Result.WithBatchSize(t) : tokenizer!.Result;
+            _mwt = options.MwtBatchSize is int m ? mwt?.Result.WithBatchSize(m) : mwt?.Result;
+            _lemma = options.LemmaBatchSize is int l ? lemma?.Result.WithBatchSize(l) : lemma?.Result;
+            _pos = options.PosBatchSize != null || options.PosBatchMaximumTokens != null
+                ? pos?.Result.WithBatchSize(options.PosBatchSize, options.PosBatchMaximumTokens)
+                : pos?.Result;
+            _depparse = options.DepparseBatchSize != null || options.DepparseMinLengthToBatchSeparately != null
+                ? depparse?.Result.WithBatchSize(options.DepparseBatchSize, options.DepparseMinLengthToBatchSeparately)
+                : depparse?.Result;
+            _ner = options.NerBatchSize is int n ? ner?.Result.WithBatchSize(n) : ner?.Result;
+            _parser = options.ConstituencyBatchSize is int cp ? parser?.Result.WithBatchSize(cp) : parser?.Result;
+            _sentiment = options.SentimentBatchSize is int b ? sentiment?.Result.WithBatchSize(b) : sentiment?.Result;
             _pretrains = [.. pretrains.Values.Select(p => p.Result)];
             _transformer = transformer?.Result;
         }
@@ -628,8 +634,9 @@ public sealed class Pipeline : IDisposable
     /// <exception cref="ArgumentException">An unknown language, package or processor, a processor the package lacks
     /// (e.g. constituency in <c>default_fast</c>), a processor without the ones it requires, or an unknown or
     /// unsupported model in <see cref="PipelineOptions.Models"/>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><see cref="PipelineOptions.Threads"/> below 1, or a
-    /// non-positive <see cref="CharlmCacheOptions.MaxWords"/>.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><see cref="PipelineOptions.Threads"/>, <see cref="PipelineOptions.MaxConcurrentCalls"/>
+    /// or a batch size (<see cref="PipelineOptions.PosBatchSize"/> and the others) below 1, or a non-positive
+    /// <see cref="CharlmCacheOptions.MaxWords"/>.</exception>
     /// <exception cref="FileNotFoundException">A model file the processors read is missing from
     /// <paramref name="modelDir"/>; download it with <see cref="ModelDownloader.DownloadAsync(string, PipelineOptions, IProgress{string}, CancellationToken)"/>.</exception>
     /// <exception cref="InvalidDataException">With <see cref="PipelineOptions.VerifyChecksums"/>: a model file whose
@@ -648,6 +655,12 @@ public sealed class Pipeline : IDisposable
             throw new ArgumentOutOfRangeException(nameof(options), "Threads must be at least 1, or null for the default");
         if (options.MaxConcurrentCalls < 1)
             throw new ArgumentOutOfRangeException(nameof(options), "MaxConcurrentCalls must be at least 1, or null for no limit");
+        foreach (var (name, size) in BatchSizes(options))
+        {
+            if (size < 1)
+                throw new ArgumentOutOfRangeException(nameof(options), $"{name} must be at least 1, or null for the model's own");
+        }
+
         ThrowIfMissing(modelDir, models, options);
         var logger = options.Logger;
         long start = Stopwatch.GetTimestamp();
@@ -675,6 +688,21 @@ public sealed class Pipeline : IDisposable
             Stopwatch.GetElapsedTime(start).TotalMilliseconds);
         return pipeline;
     }
+
+    /// <summary>The batch-size options by name, for <see cref="Load"/>'s checks.</summary>
+    private static IEnumerable<(string Name, int? Size)> BatchSizes(PipelineOptions options) =>
+    [
+        (nameof(options.TokenizeBatchSize), options.TokenizeBatchSize),
+        (nameof(options.MwtBatchSize), options.MwtBatchSize),
+        (nameof(options.PosBatchSize), options.PosBatchSize),
+        (nameof(options.PosBatchMaximumTokens), options.PosBatchMaximumTokens),
+        (nameof(options.LemmaBatchSize), options.LemmaBatchSize),
+        (nameof(options.ConstituencyBatchSize), options.ConstituencyBatchSize),
+        (nameof(options.DepparseBatchSize), options.DepparseBatchSize),
+        (nameof(options.DepparseMinLengthToBatchSeparately), options.DepparseMinLengthToBatchSeparately),
+        (nameof(options.SentimentBatchSize), options.SentimentBatchSize),
+        (nameof(options.NerBatchSize), options.NerBatchSize),
+    ];
 
     // A folder downloaded for fewer processors (or before tokenize brought mwt along, 1.x) lacks some files: say which
     // and how to fetch them, instead of the FileNotFoundException of whichever model reads it first.
