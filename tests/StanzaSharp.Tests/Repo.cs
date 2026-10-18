@@ -204,6 +204,24 @@ public sealed class TransformerFactAttribute : FactAttribute
     }
 }
 
+/// <summary>
+/// A test of German's transformer (german-nlp-group/electra-base-german-uncased, #170), skipped without its files in
+/// models/stanza/de/transformer/ (golden shard 4 downloads them; tools/ci-models.sh transformer).
+/// </summary>
+public sealed class GermanTransformerFactAttribute : FactAttribute
+{
+    public const string Electra = "german-nlp-group/electra-base-german-uncased";
+
+    public static string Directory => ModelDownloader.TransformerDirectory(Path.GetFullPath(Path.Combine(Repo.StanzaModels, "..", "de")), Electra);
+
+    public GermanTransformerFactAttribute(params string[] files)
+    {
+        var missing = files.FirstOrDefault(f => !File.Exists(Path.Combine(Directory, f)));
+        if (missing != null)
+            Skip = $"{Path.Combine(Directory, missing)} not found; run StanzaSharp.Cli download-transformer models/stanza/de {Electra}";
+    }
+}
+
 /// <summary>A theory skipped like <see cref="TransformerFactAttribute"/>.</summary>
 public sealed class TransformerTheoryAttribute : TheoryAttribute
 {

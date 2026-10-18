@@ -1190,6 +1190,8 @@ def write_pretagged_golden(models, out):
 # --lang de: the German word lists, replacing the English ones above. The German texts are hand-written for
 # tests/golden/de (no copyrighted text); the MST cases and the pt/ fixtures are language-independent, so English only.
 GERMAN = {
+    # German default_accurate's transformer (docs/german-accurate-plan.md): a vocab.txt tokenizer, lowercase, accents kept.
+    "TRANSFORMER": "german-nlp-group/electra-base-german-uncased",
     # Dictionary contractions, their capitals, forms the dictionary lacks (the seq2seq decides them), unknown characters.
     "MWT_WORDS": [
         "zum", "Zum", "ZUM", "zur", "Zur", "ZUR", "im", "Im", "IM", "am", "Am", "AM", "ins", "Ins", "beim", "Beim", "vom",
@@ -1255,6 +1257,15 @@ TRANSFORMER_TOKENIZER_CASES = [
 ]
 
 
+# German's transformer keeps accents (strip_accents false), so umlauts, ß, decomposed and precomposed letters and İ reach
+# its lowercasing as written; on top of TRANSFORMER_TOKENIZER_CASES and the German golden words.
+GERMAN_TRANSFORMER_TOKENIZER_CASES = [
+    ["Größe", "GRÖSSE", "größe", "Straße", "STRASSE", "Maß", "ẞ", "Äpfel", "Öl", "Übung", "ÄÖÜ", "äöü"],
+    ["Mädchen", "Ma\u0308dchen", "Fu\u0308ße", "Cafe\u0301", "Café", "naïve", "İstanbul", "IJssel", "Œuvre", "Ærø"],
+    ["z.B.", "u.a.", "d.h.", "usw.", "Nr.", "§", "€", "„Hallo“", "‚ja‘", "»Buch«", "Donaudampfschifffahrtsgesellschaft"],
+]
+
+
 # Sentences whose hidden states the golden data keeps (TRANSFORMER_HIDDEN): the first golden sentences, and short ones on
 # which ELECTRA-large is badly conditioned in float32 (torch's float32 is up to 7.6e-3 from float64 there,
 # docs/transformer-plan.md), each with the bound its values must meet; the others meet 1e-4 of float32 or float64.
@@ -1313,7 +1324,7 @@ def write_transformer_golden(models, out):
     import tokenizers
     import transformers
 
-    tokenizer = load_tokenizer(str(Path(models) / "en" / "transformer" / TRANSFORMER), local_files_only=True)
+    tokenizer = load_tokenizer(str(Path(models) / LANG / "transformer" / TRANSFORMER), local_files_only=True)
     golden = Path(out)
     cases, seen = [], set()
 
@@ -1349,6 +1360,8 @@ def write_transformer_golden(models, out):
             add([t.text for t in sent.tokens], None)
     for words in TRANSFORMER_TOKENIZER_CASES:
         add(words, "TRANSFORMER_TOKENIZER_CASES")
+    for words in GERMAN_TRANSFORMER_TOKENIZER_CASES if LANG == "de" else []:
+        add(words, "GERMAN_TRANSFORMER_TOKENIZER_CASES")
 
     (golden / "transformer").mkdir(exist_ok=True)
     with open(golden / "transformer" / "tokenizer.json", "w", encoding="utf-8", newline="\n") as f:
@@ -1359,7 +1372,8 @@ def write_transformer_golden(models, out):
         f.write("\n]}\n")
     fixed = sum("fixed" in c for c in cases)
     print(f"transformer/tokenizer.json: {len(cases)} cases, {sum(len(c['ids']) for c in cases)} ids, {fixed} with fix_blank_tokens")
-    write_transformer_hidden_golden(models, out, tokenizer)
+    if LANG == "en":  # German's hidden states come with its models (#170's second PR)
+        write_transformer_hidden_golden(models, out, tokenizer)
 
 
 def main():

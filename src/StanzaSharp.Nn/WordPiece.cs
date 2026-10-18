@@ -5,10 +5,11 @@ using System.Text.Json;
 namespace StanzaSharp.Nn;
 
 /// <summary>
-/// The BERT/ELECTRA tokenizer of Hugging Face's <c>tokenizer.json</c> (BertNormalizer, BertPreTokenizer, WordPiece)
-/// for words already split, like transformers' <c>is_split_into_words=True</c>: every word is normalized and
-/// pre-tokenized alone, so its pieces never join a neighbour's. Only the options google/electra-large-discriminator
-/// uses (lowercase, accents stripped, Chinese characters split; docs/transformer-plan.md), with the character classes of
+/// The BERT/ELECTRA tokenizer of Hugging Face's <c>tokenizer.json</c> (BertNormalizer, BertPreTokenizer, WordPiece), or
+/// the one transformers builds from a <c>vocab.txt</c> and <c>tokenizer_config.json</c> (german-nlp-group's ELECTRA), for
+/// words already split, like transformers' <c>is_split_into_words=True</c>: every word is normalized and
+/// pre-tokenized alone, so its pieces never join a neighbour's. The normalizer's options are the file's (lowercase,
+/// accents stripped or not, Chinese characters split; docs/transformer-plan.md, docs/german-accurate-plan.md), with the character classes of
 /// the tokenizers library (Rust): control = Cc, Cf, Co, Cs but tab, newline and carriage return (removed), whitespace =
 /// Unicode White_Space (a space), punctuation = ASCII punctuation or any P* category (a piece of its own). The added
 /// (special) tokens' texts are matched first in the raw word, leftmost and longest, like the library's added
@@ -19,14 +20,16 @@ internal sealed class WordPiece
     private readonly Dictionary<string, int>.AlternateLookup<ReadOnlySpan<char>> _lookup;
     private readonly int _maxChars;
     private readonly (string Content, int Id)[] _added; // longest first
+    private readonly bool _lowercase, _stripAccents, _chinese;
 
     public int Cls { get; }
     public int Sep { get; }
     public int Unk { get; }
     public int Pad { get; }
 
-    private WordPiece(Dictionary<string, int> vocab, int maxChars, (string Content, int Id)[] added)
+    private WordPiece(Dictionary<string, int> vocab, int maxChars, (string Content, int Id)[] added, bool lowercase, bool stripAccents, bool chinese)
     {
+        (_lowercase, _stripAccents, _chinese) = (lowercase, stripAccents, chinese);
         _added = [.. added.OrderByDescending(a => a.Content.Length)];
         _lookup = vocab.GetAlternateLookup<ReadOnlySpan<char>>();
         _maxChars = maxChars;
@@ -57,7 +60,46 @@ internal sealed class WordPiece
             added.Add((token.GetProperty("content").GetString()!, token.GetProperty("id").GetInt32()));
         }
 
-        return new WordPiece(vocab, model.GetProperty("max_input_chars_per_word").GetInt32(), [.. added]);
+        var normalizer = doc.RootElement.GetProperty("normalizer");
+        if (normalizer.GetProperty("type").GetString() != "BertNormalizer" || !normalizer.GetProperty("clean_text").GetBoolean()
+            || doc.RootElement.GetProperty("pre_tokenizer").GetProperty("type").GetString() != "BertPreTokenizer")
+        {
+            throw new InvalidDataException($"{tokenizerJson}: a normalizer or pre-tokenizer StanzaSharp doesn't support (BertNormalizer with clean_text, BertPreTokenizer)");
+        }
+
+        bool lowercase = normalizer.GetProperty("lowercase").GetBoolean();
+        var strip = normalizer.GetProperty("strip_accents");
+        return new WordPiece(vocab, model.GetProperty("max_input_chars_per_word").GetInt32(), [.. added], lowercase,
+            strip.ValueKind == JsonValueKind.Null ? lowercase : strip.GetBoolean(), normalizer.GetProperty("handle_chinese_chars").GetBoolean());
+    }
+
+    /// <summary>
+    /// The tokenizer of a transformer directory: its <c>tokenizer.json</c>, else what transformers' BertTokenizer converter
+    /// builds from <c>vocab.txt</c> (line i is id i, a repeated line keeping the last) and <c>tokenizer_config.json</c>
+    /// (<c>do_lower_case</c> and <c>tokenize_chinese_chars</c> true unless set, <c>strip_accents</c> following the
+    /// lowercasing unless set), with the special tokens [PAD], [UNK], [CLS], [SEP] and [MASK] as added tokens and at most
+    /// 100 characters per word.
+    /// </summary>
+    public static WordPiece LoadDirectory(string directory)
+    {
+        var json = Path.Combine(directory, "tokenizer.json");
+        if (File.Exists(json))
+            return Load(json);
+        var vocabTxt = Path.Combine(directory, "vocab.txt");
+        var vocab = new Dictionary<string, int>();
+        int id = 0;
+        foreach (var line in File.ReadLines(vocabTxt))
+            vocab[line] = id++;
+        var configPath = Path.Combine(directory, "tokenizer_config.json");
+        using var config = JsonDocument.Parse(File.ReadAllBytes(configPath));
+        bool? Flag(string key) => config.RootElement.TryGetProperty(key, out var v) && v.ValueKind != JsonValueKind.Null ? v.GetBoolean() : null;
+        bool lowercase = Flag("do_lower_case") ?? true;
+        string[] specials = ["[PAD]", "[UNK]", "[CLS]", "[SEP]", "[MASK]"];
+        var missing = specials.FirstOrDefault(t => !vocab.ContainsKey(t));
+        if (missing != null)
+            throw new InvalidDataException($"{vocabTxt}: no {missing}");
+        return new WordPiece(vocab, 100, [.. specials.Select(t => (t, vocab[t]))], lowercase, Flag("strip_accents") ?? lowercase,
+            Flag("tokenize_chinese_chars") ?? true);
     }
 
     /// <summary>
@@ -117,8 +159,10 @@ internal sealed class WordPiece
         return (best, token);
     }
 
-    // BertNormalizer: clean_text, handle_chinese_chars, strip_accents (follows lowercase), lowercase.
-    private static void Normalize(string text, StringBuilder output)
+    // BertNormalizer: clean_text, handle_chinese_chars, strip_accents, lowercase (Rust's char::to_lowercase, one character at
+    // a time: like .NET's simple mapping but for U+0130 İ, whose lowercase is i + U+0307; NFD has split it before when
+    // accents are stripped).
+    private void Normalize(string text, StringBuilder output)
     {
         output.Clear();
         var cleaned = new StringBuilder(text.Length);
@@ -129,17 +173,23 @@ internal sealed class WordPiece
                 continue;
             if (IsWhitespace(rune))
                 cleaned.Append(' ');
-            else if (IsChinese(c))
+            else if (_chinese && IsChinese(c))
                 cleaned.Append(' ').Append(rune.ToString()).Append(' ');
             else
                 cleaned.Append(rune.ToString());
         }
 
-        foreach (var rune in cleaned.ToString().Normalize(NormalizationForm.FormD).EnumerateRunes())
+        var text2 = _stripAccents ? cleaned.ToString().Normalize(NormalizationForm.FormD) : cleaned.ToString();
+        foreach (var rune in text2.EnumerateRunes())
         {
-            if (Rune.GetUnicodeCategory(rune) == UnicodeCategory.NonSpacingMark)
+            if (_stripAccents && Rune.GetUnicodeCategory(rune) == UnicodeCategory.NonSpacingMark)
                 continue;
-            output.Append(Rune.ToLowerInvariant(rune).ToString());
+            if (!_lowercase)
+                output.Append(rune.ToString());
+            else if (rune.Value == 0x130)
+                output.Append("i\u0307");
+            else
+                output.Append(Rune.ToLowerInvariant(rune).ToString());
         }
     }
 

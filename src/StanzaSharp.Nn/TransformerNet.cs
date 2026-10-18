@@ -14,7 +14,9 @@ internal sealed record TransformerConfig(int Hidden, int Heads, int Layers, int 
         var c = JsonNode.Parse(File.ReadAllText(configJson)) ?? throw new InvalidDataException($"{configJson} is empty");
         string Text(string key) => c[key]?.GetValue<string>() ?? throw new InvalidDataException($"{configJson}: no {key}");
         int Int(string key) => c[key]?.GetValue<int>() ?? throw new InvalidDataException($"{configJson}: no {key}");
-        if (Text("model_type") != "electra" || Text("hidden_act") != "gelu" || Text("position_embedding_type") != "absolute"
+
+        // transformers' ElectraConfig defaults position_embedding_type to absolute (german-nlp-group's config has none).
+        if (Text("model_type") != "electra" || Text("hidden_act") != "gelu" || (c["position_embedding_type"]?.GetValue<string>() ?? "absolute") != "absolute"
             || Int("embedding_size") != Int("hidden_size"))
         {
             throw new InvalidDataException($"{configJson}: an architecture StanzaSharp doesn't support (ElectraModel with exact GELU, absolute positions, embedding_size = hidden_size)");

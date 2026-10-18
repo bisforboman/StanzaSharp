@@ -15,10 +15,27 @@ public class TransformerTokenizerTests(ITestOutputHelper output)
     private static string TokenizerJson => Path.Combine(TransformerFactAttribute.Directory, "tokenizer.json");
 
     [TransformerFact("tokenizer.json")]
-    public void MatchesTransformersAndStanzaOnEveryGoldenCase()
+    public void MatchesTransformersAndStanzaOnEveryGoldenCase() =>
+        AssertGolden(WordPiece.LoadDirectory(TransformerFactAttribute.Directory), Path.Combine(Repo.Golden, "transformer", "tokenizer.json"), minCases: 1000);
+
+    /// <summary>German's transformer: a vocab.txt tokenizer that lowercases but keeps accents (docs/german-accurate-plan.md).</summary>
+    [GermanTransformerFact("vocab.txt", "tokenizer_config.json")]
+    public void German_MatchesTransformersAndStanzaOnEveryGoldenCase() =>
+        AssertGolden(WordPiece.LoadDirectory(GermanTransformerFactAttribute.Directory), Path.Combine(Repo.GoldenFor("de"), "transformer", "tokenizer.json"),
+            minCases: 200);
+
+    [GermanTransformerFact("config.json", "tokenizer_config.json")]
+    public void German_ConfigAndMaxLengthFromTheOlderKeys()
     {
-        var tokenizer = WordPiece.Load(TokenizerJson);
-        using var golden = JsonDocument.Parse(File.ReadAllBytes(Path.Combine(Repo.Golden, "transformer", "tokenizer.json")));
+        // No position_embedding_type (transformers' default: absolute) and max_len instead of model_max_length.
+        var config = TransformerConfig.Load(Path.Combine(GermanTransformerFactAttribute.Directory, "config.json"));
+        Assert.Equal((768, 12, 12, 3072), (config.Hidden, config.Heads, config.Layers, config.Intermediate));
+        Assert.Equal(512, TransformerEmbedder.ReadMaxLength(GermanTransformerFactAttribute.Directory));
+    }
+
+    private void AssertGolden(WordPiece tokenizer, string goldenPath, int minCases)
+    {
+        using var golden = JsonDocument.Parse(File.ReadAllBytes(goldenPath));
         int cases = 0, failures = 0;
         foreach (var c in golden.RootElement.GetProperty("cases").EnumerateArray())
         {
@@ -42,7 +59,7 @@ public class TransformerTokenizerTests(ITestOutputHelper output)
         }
 
         output.WriteLine($"{cases} cases, {failures} differ");
-        Assert.True(cases > 1000);
+        Assert.True(cases > minCases);
         Assert.Contains(golden.RootElement.GetProperty("cases").EnumerateArray(), c => c.GetProperty("ids").GetArrayLength() > 512);
         Assert.Equal(0, failures);
     }

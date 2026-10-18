@@ -169,7 +169,8 @@ public class TransformerCacheTests
         var added = string.Join(",", vocab[..4].Select((t, i) =>
             "{\"id\":" + i + ",\"content\":\"" + t + "\",\"single_word\":false,\"lstrip\":false,\"rstrip\":false,\"normalized\":false,\"special\":true}"));
         var ids = string.Join(",", vocab.Select((t, i) => "\"" + t + "\":" + i));
-        var json = "{\"added_tokens\":[" + added + "],\"model\":{\"type\":\"WordPiece\",\"unk_token\":\"[UNK]\",\"continuing_subword_prefix\":\"##\","
+        var json = "{\"added_tokens\":[" + added + "],\"normalizer\":{\"type\":\"BertNormalizer\",\"clean_text\":true,\"handle_chinese_chars\":true,"
+            + "\"strip_accents\":null,\"lowercase\":true},\"pre_tokenizer\":{\"type\":\"BertPreTokenizer\"},\"model\":{\"type\":\"WordPiece\",\"unk_token\":\"[UNK]\",\"continuing_subword_prefix\":\"##\","
             + "\"max_input_chars_per_word\":100,\"vocab\":{" + ids + "}}}";
         var path = Path.GetTempFileName();
         try

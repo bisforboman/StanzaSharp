@@ -285,6 +285,15 @@ public static class ModelDownloader
             ("tokenizer_config.json", "a025160ef0431f1a392f6f050c1310f4c5d9fb6f275932dbccba73c4d214bf10"),
             ("pytorch_model.bin", "070894f07d07a499d73946378afa5548d64aca2418d17e67d398233692497e63"),
         ]),
+
+        // German default_accurate's (docs/german-accurate-plan.md): a vocab.txt tokenizer, no tokenizer.json.
+        ["german-nlp-group/electra-base-german-uncased"] = ("16e66fe6c6d52b459b7de7330bc9db2c62f3620d",
+        [
+            ("config.json", "e1a432c5209b9f72d53088b972d7a8dc0645859bfcdf2e33a153286c8e7a1955"),
+            ("vocab.txt", "ffcfe163e0a45a6c112822fcd026e82dd23065861f1c3f7a71fdd653106a51ba"),
+            ("tokenizer_config.json", "3888c4068947ecd386bfac973ec5e348e8503d05699427900698e74d4fdc2889"),
+            ("pytorch_model.bin", "e6d01cf9f43f7e1e2ce18cf7dfb68a248985b822934632eaf16d95fb117c833f"),
+        ]),
     };
 
     /// <summary>

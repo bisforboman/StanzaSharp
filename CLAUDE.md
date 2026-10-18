@@ -101,7 +101,14 @@ default from 0.5) or through TorchSharp (see "Managed backend").
     (torch's zip format) by that name. Kept out of `Files`, `FilesFor` and every `tools/ci-models.sh` group.
   - `Nn.WordPiece` = tokenizer.json's BertNormalizer + BertPreTokenizer + WordPiece per word (`is_split_into_words`): the
     added tokens' texts matched first in the raw word (leftmost, longest), control = Cc/Cf/Co/Cs but tab/newline/CR
-    removed (unassigned Cn kept: tokenizers gives [UNK]), White_Space → space, NFD minus Mn, lowercase.
+    removed (unassigned Cn kept: tokenizers gives [UNK]), White_Space → space, NFD minus Mn (`strip_accents`; null follows
+    lowercase), lowercase (Rust's per-character `to_lowercase`: İ → i + U+0307). `LoadDirectory` takes a directory's
+    tokenizer.json, else (German's `german-nlp-group/electra-base-german-uncased`, #170 PR a, 2026-10-18) what
+    transformers' converter builds from `vocab.txt` + tokenizer_config.json (`do_lower_case`/`tokenize_chinese_chars` true
+    unless set, `strip_accents` false there; the five special tokens added; 100 characters per word); `ReadMaxLength`
+    reads `model_max_length` or the older `max_len`, `TransformerConfig` defaults `position_embedding_type` to absolute.
+    `tests/golden/de/transformer/tokenizer.json` (`make_golden.py --lang de --transformer-only`, plus
+    `GERMAN_TRANSFORMER_TOKENIZER_CASES`); golden shard 4 downloads its tokenizer files (`tools/ci-models.sh transformer`).
     `Nn.TransformerInput` = Stanza's fix_blank_tokens (a word without pieces → "-") + convert_to_position_list.
     `tests/golden/transformer/tokenizer.json` (`make_golden.py --transformer-only`, `TRANSFORMER_TOKENIZER_CASES`;
     `tools/requirements-transformer.txt` pins transformers/tokenizers, apart from requirements.txt, which the cache keys
