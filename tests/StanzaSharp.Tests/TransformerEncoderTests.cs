@@ -175,6 +175,33 @@ public class TransformerKernelTests(TransformerModels models, ITestOutputHelper 
             Assert.True(With(KernelPath.Vector256, 4, () => Encode(net, ids, 4)).Zip(batched).All(x => x.First.AsSpan().SequenceEqual(x.Second)));
     }
 
+    // #169: the frozen net's and the LoRA net's sentences in one sweep (EncodeJoint), in either order, give each sentence
+    // the bits its own net gives it alone.
+    [TransformerTheory("config.json", "tokenizer.json", "tokenizer_config.json", "pytorch_model.bin", SentimentModel)]
+    [MemberData(nameof(Paths))]
+    public void JointPass_GivesEachGroupItsOwnNetsBits(string path)
+    {
+        var kernel = Enum.Parse<KernelPath>(path);
+        using var lora = LoraNet();
+        var frozen = models.Embedder(managed: true).Net;
+        var ids = Ids(TransformerEncoderTests.ReadGolden().Sentences[..3]);
+        int[][] first = ids[..2], second = ids[1..];
+        var alone = (Frozen: With(kernel, 4, () => Encode(frozen, first, 4)), Lora: With(kernel, 4, () => Encode(lora, second, 4)));
+        foreach (var threads in new[] { 4, 1 })
+        {
+            foreach (var loraFirst in new[] { false, true })
+            {
+                (ITransformerNet, IReadOnlyList<int[]>)[] groups = loraFirst ? [(lora, second), (frozen, first)] : [(frozen, first), (lora, second)];
+                var joint = With(kernel, threads, () => frozen.EncodeJoint(groups, 4))!;
+                var (f, l) = loraFirst ? (joint[1], joint[0]) : (joint[0], joint[1]);
+                for (int s = 0; s < first.Length; s++)
+                    Assert.True(f[s].AsSpan(0, alone.Frozen[s].Length).SequenceEqual(alone.Frozen[s]), $"{path}, {threads} threads: frozen sentence {s} differs");
+                for (int s = 0; s < second.Length; s++)
+                    Assert.True(l[s].AsSpan(0, alone.Lora[s].Length).SequenceEqual(alone.Lora[s]), $"{path}, {threads} threads: LoRA sentence {s} differs");
+            }
+        }
+    }
+
     [TransformerFact("config.json", "tokenizer.json", "tokenizer_config.json", "pytorch_model.bin")]
     public void Vector512_GivesVector256sBits()
     {

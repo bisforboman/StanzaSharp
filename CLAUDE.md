@@ -148,6 +148,13 @@ default from 0.5) or through TorchSharp (see "Managed backend").
     `ModelDownloader.DownloadAsync(dir, options)` fetches it (`DownloadTransformerAsync`), and `Load` names a missing file.
     Per call, a `TransformerCache` (by id sequence, h21–h24 of every piece, at most 16,384 pieces ≈ 256 MB; internal) when
     two or more processors read it: depparse reuses pos's states, ner those of sentences whose tokens are the words.
+    Joint pass (#169, round 48, managed only): `ITransformerNet.EncodeJoint` runs groups of (net, sentences), the frozen net
+    and its `WithLora` nets, in one sweep over the layers (base GEMMs over all rows, each group's adapters over its rows, in
+    `WithLora`'s order, so every sentence keeps its own net's bits; `JointPass_GivesEachGroupItsOwnNetsBits`). After mwt the
+    pipeline asks every reader for its sentences (`TransformerReader(doc)`: pos/depparse the simplify_punct'ed words,
+    constituency the words, ner/sentiment the token texts) and `TransformerEmbedder.Prefill` encodes them into one cache per
+    net, only when 2+ readers read a 4-layer mix and every distinct sentence fits one call (`BatchPieces`, 8,192 pieces);
+    otherwise nothing changes. Logged as the `transformer` stage. TorchSharp (`EncodesJointly` false) keeps a pass per net.
     Golden row `pos+depparse+ner=electra-large` (`MODEL_CHOICES`, corpus + validation, contractions, social, tech and
     `models/transformer_long.txt`, a sentence of 706 pieces in two windows;
     make_golden's `electra_locally` has Stanza read `<models>/en/transformer/`), `TransformerModelTests` (both backends),
@@ -169,7 +176,8 @@ default from 0.5) or through TorchSharp (see "Managed backend").
     and ner `ontonotes_electra-large` (fasttextcrawl, word 300): `combined_electra-large`'s / `ontonotes-ww-multi_electra-large`'s
     configs on the `_charlm` twins' vocabularies and heads (legacy tag heads, lines/partut composite XPOS); no new code. Golden
     rows `pos+depparse=<tb>_electra-large` on their package (corpus.txt only) and `ner=ontonotes_electra-large` (+ validation).
-    Constituency `ptb3_electra-large` (#171) is not ported: `transition_scheme` TOP_DOWN (the parser has only IN_ORDER) and LoRA.
+    Constituency `ptb3_electra-large` (#171) is parked (owner, 2026-10-18): `transition_scheme` TOP_DOWN (the parser has only
+    IN_ORDER).
   - CI: no cache (the model caches are near GitHub's 10 GB; owner's decision): golden shard 4 downloads the
     `default_accurate` package, the treebanks' transformer models (their packages' other files from the en-treebanks cache)
     and the transformer's files on every run (`tools/ci-models.sh transformer`: `download --package default_accurate`, ...,
