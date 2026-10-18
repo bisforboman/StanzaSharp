@@ -187,7 +187,7 @@ Test counts are passed xUnit test cases (each case of a theory counts, summed ov
 | Job | Runner | What it checks |
 |---|---|---|
 | `build-test` | ubuntu-26.04 (x64) | builds with warnings as errors, checks the code style, runs the 265 tests that need no models |
-| `golden` (3 shards) | ubuntu-26.04 (x64) | the whole suite on both backends against downloaded models, original and converted, English and German, every package (625 tests); then packs the packages and builds fresh apps from them: `StanzaSharp` alone must reproduce the golden CoNLL-U with nothing of TorchSharp loaded, and `StanzaSharp.Cuda` with `TorchSharp-cpu` must too; then installs the `stanzasharp` tool and downloads models with it; then publishes the [managed check](../tests/StanzaSharp.ManagedCheck/Program.cs) with Native AOT (`x86-64-v3`) and trimmed, with no trim/AOT warning and no torch file allowed, and both binaries must reproduce the golden CoNLL-U ([tools/verify-aot.sh](../tools/verify-aot.sh)) |
+| `golden` (4 shards) | ubuntu-26.04 (x64) | the whole suite on both backends against downloaded models, original and converted, English and German, every package (625 tests); then packs the packages and builds fresh apps from them: `StanzaSharp` alone must reproduce the golden CoNLL-U with nothing of TorchSharp loaded, and `StanzaSharp.Cuda` with `TorchSharp-cpu` must too; then installs the `stanzasharp` tool and downloads models with it; then publishes the [managed check](../tests/StanzaSharp.ManagedCheck/Program.cs) with Native AOT (`x86-64-v3`) and trimmed, with no trim/AOT warning and no torch file allowed, and both binaries must reproduce the golden CoNLL-U ([tools/verify-aot.sh](../tools/verify-aot.sh)) |
 | `cross-os (windows-2025)` | Windows x64 | the whole suite on both backends, reading Stanza's `.pt` files directly (476 tests; the English default packages), both package checks, and the Native AOT and trimming check |
 | `cross-os (macos-26)` | macOS, Apple Silicon | the same (451 tests: Arm64 has no Vector256 path) |
 | `cross-os (windows-11-arm)` | Windows on Arm64 | the same suite (451 tests) and only the managed package check (`TorchSharp-cpu` has no Arm64 libtorch) |
@@ -199,7 +199,7 @@ Every job that runs the model tests fails if any of them was skipped. The only e
 `stanzasharp compare` and `benchmark` against Python Stanza (`Run_PythonStanza_*`, English and German), which only
 golden shard 2 installs and runs, and the German tests, the English treebank packages' and the chosen models' tests outside `golden`: only
 the golden shards have those models (Stanza's `.pt` files, cached), so `cross-os` and `linux-arm64` run the English
-default packages only. The transformer tests (`Transformer*`) run in golden shard 1, which downloads the transformer's
+default packages only. The transformer tests (`Transformer*`) run in golden shard 4, their own, which downloads the transformer's
 files from Hugging Face and the transformer models from Stanza's repository on every run (no cache: the model caches are
 near GitHub's 10 GB limit).
 
