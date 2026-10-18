@@ -833,12 +833,22 @@ public class CheckpointFuzzTests(ITestOutputHelper output)
                 [.. "{\"a\":[\""u8, 0xc3, .. "\"]}"u8],
                 [.. """{"\ud800":1}"""u8],
                 [.. """{"a":"x\udc00"}"""u8],
+
+                // A property name twice in one object (also escaped, and in a vocabulary large enough to skip JsonNode):
+                // JsonObject would throw ArgumentException once the model read the object (found by the nightly fuzz).
+                [.. """{"a":1,"a":2}"""u8],
+                [.. """{"o":{"$tensor":"w","\u0024tensor":"w"}}"""u8],
+                [.. Encoding.UTF8.GetBytes("{\"_unit2id\":{" + string.Join(",", Enumerable.Range(0, 2000).Select(i => $"\"w{i % 1500}\":{i}")) + "}}")],
             ];
             foreach (var json in bad)
             {
                 File.WriteAllBytes(basePath + ".json", json);
                 Assert.Throws<InvalidDataException>(() => Checkpoint.Load(basePath));
             }
+
+            // The same name in two objects is fine.
+            File.WriteAllBytes(basePath + ".json", """{"a":{"x":1},"b":{"x":2}}"""u8.ToArray());
+            Assert.Equal(2, (int)Checkpoint.Load(basePath).Root["b"]!["x"]!);
 
             // A byte order mark and an escaped surrogate pair are fine.
             File.WriteAllBytes(basePath + ".json", [0xef, 0xbb, 0xbf, .. """{"\ud83d\ude00":1}"""u8]);

@@ -560,8 +560,10 @@ bounded by the file's size. The limits that make it so:
   the file, so no claimed size is allocated.
 - safetensors: header ≤ 100 MB (the library's limit), known dtype, `numel × size == end - begin`, and the tensors tile
   the data section exactly (no gaps, overlaps or trailing bytes), as the safetensors library checks.
-- Converted `.json`: valid UTF-8 and no escaped lone surrogate, checked before parsing (`JsonNode` decodes strings
-  lazily, so either would throw `InvalidOperationException` wherever a model first read it).
+- Converted `.json`: valid UTF-8, no escaped lone surrogate and no property name twice in one object, checked in the
+  validating pass (`JsonNode` decodes strings and builds an object's dictionary lazily, so these would throw
+  `InvalidOperationException` or `ArgumentException` wherever a model first read them; the duplicate names were found by
+  the first nightly fuzz, 2026-10-18, about 10 ms on conll17's 250k-word JSON).
 - `CheckpointFuzzTests`: seeded mutations (bit flips, truncations, extreme ints, inserted/deleted spans) of the fixtures
   and three small Stanza checkpoints in CI (their `.pt` files, and their converted `.json` where present; ~10 s), plus
   crafted inputs for each bug. Each load also reads every property name, string and vocabulary (`ReadNodes`). Longer runs:
