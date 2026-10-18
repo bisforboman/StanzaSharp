@@ -212,6 +212,11 @@ foreach (var sentence in doc.Sentences)
 }
 ```
 
+Stanza's document helpers are there too: `doc.TokenCount` and `doc.WordCount` (`num_tokens`, `num_words`),
+`sentence.Dependencies` (each word's `(Head, Relation, Dependent)`, the head word null for the root), and
+`sentence.DependenciesString()`, `TokensString()` and `WordsString()`, which print what Stanza's `dependencies_string()`,
+`tokens_string()` and `words_string()` do (a `Token`'s and a `Word`'s `ToString()` is Stanza's `pretty_print()`).
+
 `Pipeline.Load(dir, new PipelineOptions { Processors = "tokenize,mwt" })` runs only the listed processors; each
 needs the ones before it. `PipelineOptions` also holds `Backend` (`PipelineBackend.Managed`, the default, or
 `CudaBackend.Create()` / `CudaBackend.Cpu` from `StanzaSharp.Cuda`; see [Install](#install)) and `CharlmCache`

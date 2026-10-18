@@ -1,0 +1,17 @@
+# sent_id = 0
+1	it's	it's	X	_	_	0	root	_	_
+2	say "hi"	say "hi"	X	_	_	1	dep	_	_
+3	both '"	both '"	X	_	_	1	dep	_	_
+4	back\slash	back\slash	X	_	_	1	dep	_	_
+5	no break	no break	X	_	_	1	dep	_	_
+6	zero​width	zero​width	X	_	_	1	dep	_	_
+7	soft­hyphen	soft­hyphen	X	_	_	1	dep	_	_
+8	😀	😀	X	_	_	1	dep	_	_
+9	é	é	X	_	_	1	dep	_	_
+10	plain	plain	X	_	_	1	dep	_	_
+
+# sent_id = 1
+1-2	don't	_	_	_	_	_	_	_	_
+1	do	do	AUX	_	_	_	_	_	_
+2	n't	not	PART	_	_	_	_	_	_
+

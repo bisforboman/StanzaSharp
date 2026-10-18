@@ -866,6 +866,11 @@ What the English treebank packages' checkpoints add to the default package's pat
     whose rows lack the chosen models). NER decodes the chosen tag set's head (a missing one throws at Load), the
     lemmatizer's `LemmatizeByDictionary` is trainer.predict_dict (no seq2seq, no contextual classifiers), MWT's
     `dictOnly` loads no net.
+  - `helpers/` (`--helpers-only`, no models): Stanza's document helpers (`num_tokens`, `num_words`, `dependencies_string()`,
+    `tokens_string()`, `words_string()`) on `CoNLL.conll2doc` of `HELPER_FILES` and a generated `crafted.conllu` (texts whose
+    Python `repr` needs quotes or escapes, a sentence without heads); `DocumentHelperTests` (#174, owner's decision
+    2026-10-18: `Document.TokenCount`/`WordCount`, `Sentence.Dependencies`/`DependenciesString()`/`TokensString()`/
+    `WordsString()`, `Token`/`Word.ToString()` = `pretty_print()`; `PyString.Repr` is Python's `repr(str)`).
   - `fuzz.json` (`--fuzz-only`): `FUZZ_TEXTS` (German: `GERMAN["FUZZ_TEXTS"]`), the minimized differences
     `tools/text_fuzz.py` found (docs/text-fuzzing.md), each processed alone by both packages; compared with code-point
     offsets (`TokenizerTests.Pipeline_FuzzFindings_MatchGolden`). Add a new finding's shrunk text there.
@@ -1063,7 +1068,7 @@ What the English treebank packages' checkpoints add to the default package's pat
     `PipelineBackend` (0.5);
   - StanzaSharp.Cuda's `CudaBackend` (1.0);
   - Core's results: `Document`, `Sentence`, `Token`, `Word`, `Entity`, `Tree`, `Conllu`, `Json` (owner's decision,
-    2026-10-14).
+    2026-10-14), `Dependency` (#174, 2026-10-18).
 
   Everything else is `internal`.
   - Directory.Build.props gives every `src/*` assembly `InternalsVisibleTo` for the other StanzaSharp

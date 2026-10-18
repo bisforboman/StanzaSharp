@@ -48,13 +48,10 @@ foreach (var sentence in doc.Sentences)
     foreach (var token in sentence.Tokens.Where(t => t.IsMultiWord))
         Console.WriteLine($"MWT:       {token.Text} -> {string.Join(" + ", token.Words.Select(w => w.Text))}");
 
-    // Words carry the lemma, tags, morphological features and the dependency tree (Head is a word Id, 0 = root).
-    var words = sentence.Words.ToList();
-    foreach (var word in words)
-    {
-        var head = word.Head is > 0 ? words[word.Head.Value - 1].Text : "ROOT";
-        Console.WriteLine($"  {word.Id,2} {word.Text,-10} lemma={word.Lemma,-8} {word.Upos,-6} {word.Xpos,-4} {word.Deprel,-11} -> {head}");
-    }
+    // Words carry the lemma, tags, morphological features and the dependency tree (Head is a word Id, 0 = root);
+    // sentence.Dependencies gives each word's arc with the head word itself (null for the root).
+    foreach (var (head, relation, word) in sentence.Dependencies)
+        Console.WriteLine($"  {word.Id,2} {word.Text,-10} lemma={word.Lemma,-8} {word.Upos,-6} {word.Xpos,-4} {relation,-11} -> {head?.Text ?? "ROOT"}");
 
     Console.WriteLine();
 }
