@@ -18,12 +18,12 @@ internal sealed class TransformerEmbedder(ITransformerNet net, WordPiece tokeniz
 
     /// <summary>
     /// Loads the tokenizer and the encoder <paramref name="net"/> makes from a transformer directory
-    /// (<c>config.json</c>, <c>tokenizer.json</c>, <c>tokenizer_config.json</c>, <c>pytorch_model.bin</c>).
+    /// (<c>config.json</c>, <c>tokenizer.json</c> or <c>vocab.txt</c>, <c>tokenizer_config.json</c>, <c>pytorch_model.bin</c>).
     /// </summary>
     public static TransformerEmbedder Load(string directory, string name, Func<TransformerConfig, Checkpoint, ITransformerNet> net)
     {
         var config = TransformerConfig.Load(Path.Combine(directory, "config.json"));
-        var tokenizer = WordPiece.Load(Path.Combine(directory, "tokenizer.json"));
+        var tokenizer = WordPiece.LoadDirectory(directory);
         int maxLength = ReadMaxLength(directory);
         var encoder = net(config, Checkpoint.Load(Path.Combine(directory, "pytorch_model.bin")));
         return new TransformerEmbedder(encoder, tokenizer, maxLength, name);
@@ -82,11 +82,15 @@ internal sealed class TransformerEmbedder(ITransformerNet net, WordPiece tokeniz
         ? maxLength
         : throw new ArgumentException($"model_max_length {maxLength} is over the model's {net.Config.MaxPositions} positions", nameof(maxLength));
 
-    /// <summary>Reads <c>model_max_length</c> from a transformer directory's <c>tokenizer_config.json</c>.</summary>
+    /// <summary>
+    /// Reads <c>model_max_length</c> from a transformer directory's <c>tokenizer_config.json</c>, or the older <c>max_len</c>
+    /// (german-nlp-group's ELECTRA), which transformers reads the same way.
+    /// </summary>
     public static int ReadMaxLength(string directory)
     {
         var path = Path.Combine(directory, "tokenizer_config.json");
-        var node = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(path))?["model_max_length"];
+        var config = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(path));
+        var node = config?["model_max_length"] ?? config?["max_len"];
         return node?.GetValue<int>() ?? throw new InvalidDataException($"{path}: no model_max_length");
     }
 
