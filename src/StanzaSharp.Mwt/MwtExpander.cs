@@ -18,7 +18,8 @@ internal sealed class MwtExpander : IDisposable
     private readonly Dictionary<string, string> _dict;
     private readonly Dictionary<string, int> _vocab;
     private readonly bool _useDict, _useModel;
-    private readonly int _padId, _unkId, _sosId, _eosId, _batchSize, _maxDecLen;
+    private readonly int _padId, _unkId, _sosId, _eosId, _maxDecLen;
+    private int _batchSize; // set once: the constructor or WithBatchSize's copy
 
     // trainer.predict passes its beam_size (1) where Seq2SeqModel.predict takes pos, so Stanza always searches the default 5 beams.
     private const int BeamSize = 5;
@@ -215,6 +216,17 @@ internal sealed class MwtExpander : IDisposable
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// A copy batching <paramref name="batchSize"/> tokens per seq2seq batch (Stanza's <c>mwt_batch_size</c>). It
+    /// shares the networks (the pipeline keeps only the copy), so it is made at Load, before any call.
+    /// </summary>
+    internal MwtExpander WithBatchSize(int batchSize)
+    {
+        var copy = (MwtExpander)MemberwiseClone();
+        copy._batchSize = batchSize;
+        return copy;
     }
 
     public void Dispose()

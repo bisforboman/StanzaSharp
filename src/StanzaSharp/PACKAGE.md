@@ -165,6 +165,8 @@ foreach (var sentence in doc.Sentences)
     `Process(Document)` on documents that already carry tags.
   - `NerTagSet`, `LemmaDictionaryOnly`, `MwtDictionaryOnly`: Stanza's `ner_predict_tagset`, `lemma_dict_only` and
     `mwt_dict_only`.
+  - `PosBatchSize`, `DepparseBatchSize`, `SentimentBatchSize` and the other batch sizes: Stanza's
+    `{processor}_batch_size` options. Sentiment's (and in principle depparse's) changes results, as in Stanza.
   - `VerifyChecksums`: checks the `.pt` model files against Stanza's MD5s before loading.
   - `Logger`: an `ILogger` for load and processing times.
 - `Processor.Tokenize`, ..., `Processor.Ner` are constants for the processor list.

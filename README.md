@@ -294,6 +294,14 @@ Three of Stanza's processor options are `PipelineOptions` properties: `NerTagSet
 from the dictionary alone, faster, unseen words keep their text) and `MwtDictionaryOnly` (`mwt_dict_only`: only the
 dictionary's multi-word tokens are split).
 
+So are Stanza's batch sizes: `MwtBatchSize`, `PosBatchSize` and `PosBatchMaximumTokens`, `LemmaBatchSize`,
+`ConstituencyBatchSize`, `DepparseBatchSize` and `DepparseMinLengthToBatchSeparately`, `SentimentBatchSize` and
+`NerBatchSize` (`mwt_batch_size`, ..., `ner_batch_size`; null is the model's or Stanza's own). They trade speed against
+memory, but two of them can change results, as they do in Stanza: sentiment labels depend on the batch (each is padded
+to its longest sentence, and the classifier reads the padding), and so can parses (the head scores are normalized over a
+batch's padded width). `TokenizeBatchSize` works too, though Stanza ignores `tokenize_batch_size`; the tokens are the
+same at any size.
+
 Both match Python Stanza byte for byte. Bulk is much faster than one call per text for short texts: 7.7× on
 2,000 one-sentence texts ([docs/performance/bulk-processing.md](docs/performance/bulk-processing.md)). One call per
 text costs about 28 ms for a short sentence on 8 threads (`default_fast`: 14 ms; Python Stanza: 189 and 73 ms), mostly

@@ -6,9 +6,9 @@ namespace StanzaSharp.Tests;
 
 /// <summary>
 /// The Stanza options with a <see cref="PipelineOptions"/> property (<see cref="PipelineOptions.NerTagSet"/>,
-/// <see cref="PipelineOptions.LemmaDictionaryOnly"/>, <see cref="PipelineOptions.MwtDictionaryOnly"/>) against
-/// tests/golden/options/ (and de/options), Stanza run with ner_predict_tagset, lemma_dict_only and mwt_dict_only; byte for
-/// byte on both backends.
+/// <see cref="PipelineOptions.LemmaDictionaryOnly"/>, <see cref="PipelineOptions.MwtDictionaryOnly"/>, the batch sizes)
+/// against tests/golden/options/ (and de/options), Stanza run with ner_predict_tagset, lemma_dict_only, mwt_dict_only and
+/// the <c>{processor}_batch_size</c> options; byte for byte on both backends.
 /// </summary>
 public class OptionTests
 {
@@ -27,6 +27,14 @@ public class OptionTests
     [OptionCase("de", "mwt_dict_only", true)]
     [OptionCase("de", "lemma_dict_only", false)]
     [OptionCase("de", "lemma_dict_only", true)]
+    [OptionCase("en", "sentiment_batch_size=20", false)]
+    [OptionCase("en", "sentiment_batch_size=20", true)]
+    [OptionCase("en", "batch_sizes", false)]
+    [OptionCase("en", "batch_sizes", true)]
+    [OptionCase("en", "default_fast+batch_sizes", false)]
+    [OptionCase("en", "default_fast+batch_sizes", true)]
+    [OptionCase("de", "batch_sizes", false)]
+    [OptionCase("de", "batch_sizes", true)]
     public void Process_MatchesGolden(string name, bool managed, string lang)
     {
         var golden = Repo.GoldenFor(lang);
@@ -60,6 +68,50 @@ public class OptionTests
         var e = Assert.Throws<ArgumentException>(() => Pipeline.Load(Repo.StanzaModels, new PipelineOptions { Processors = "tokenize,ner", NerTagSet = 2 }));
         Assert.Contains("2 tag sets (0, 1), not 2", e.Message);
     }
+
+    [ModelTheory]
+    [InlineData(1, false)]
+    [InlineData(1, true)]
+    [InlineData(5, true)]
+    public void TokenizeBatchSize_GivesTheSameTokens(int size, bool managed)
+    {
+        // Stanza's tokenizer ignores tokenize_batch_size, so there is no golden of its own: any size gives the tokens of
+        // the model's 32 (pipeline.conllu, and tokenize_stress's paragraph over one window and its many paragraphs).
+        using var nlp = Pipeline.Load(Repo.StanzaModels, new PipelineOptions
+        {
+            Processors = "tokenize,mwt",
+            TokenizeBatchSize = size,
+            Backend = Repo.PipelineBackendFor(managed),
+        });
+        foreach (var name in new[] { "tokenize_stress", "validation" })
+        {
+            var text = File.ReadAllText(Path.Combine(Repo.Golden, name + ".txt"));
+            var expected = Tokens(Conllu.Read(File.ReadAllText(Path.Combine(Repo.Golden, name + ".conllu"))));
+            Assert.Equal(expected, Tokens(nlp.Process(text)));
+        }
+
+        static List<string> Tokens(Document doc) =>
+            [.. doc.Sentences.Select(s => string.Join(" ", s.Tokens.Select(t => $"{t.Text}|{t.StartChar}|{t.EndChar}")))];
+    }
+
+    [Theory]
+    [InlineData(nameof(PipelineOptions.TokenizeBatchSize))]
+    [InlineData(nameof(PipelineOptions.PosBatchMaximumTokens))]
+    [InlineData(nameof(PipelineOptions.DepparseMinLengthToBatchSeparately))]
+    [InlineData(nameof(PipelineOptions.SentimentBatchSize))]
+    public void BatchSize_BelowOne_Throws(string option)
+    {
+        // Checked before any model file is looked for.
+        var options = option switch
+        {
+            nameof(PipelineOptions.TokenizeBatchSize) => new PipelineOptions { TokenizeBatchSize = 0 },
+            nameof(PipelineOptions.PosBatchMaximumTokens) => new PipelineOptions { PosBatchMaximumTokens = -1 },
+            nameof(PipelineOptions.DepparseMinLengthToBatchSeparately) => new PipelineOptions { DepparseMinLengthToBatchSeparately = 0 },
+            _ => new PipelineOptions { SentimentBatchSize = 0 },
+        };
+        var e = Assert.Throws<ArgumentOutOfRangeException>(() => Pipeline.Load(Path.GetTempPath(), options));
+        Assert.Contains(option, e.Message);
+    }
 }
 
 /// <summary>A row of <see cref="OptionTests"/>: a case of tests/golden/options/options.json, skipped where its models are missing.</summary>
@@ -85,13 +137,20 @@ public sealed class OptionCaseAttribute : DataAttribute
     internal static JsonNode Case(string lang, string name) =>
         JsonNode.Parse(File.ReadAllText(Path.Combine(Repo.GoldenFor(lang), "options", "options.json")))!.AsArray().Single(c => c!["name"]!.GetValue<string>() == name)!;
 
+    /// <summary>Stanza's batch-size keyword arguments (each <see cref="Options"/> maps to its property).</summary>
+    private static readonly HashSet<string> BatchSizeKeys =
+    [
+        "mwt_batch_size", "pos_batch_size", "pos_batch_maximum_tokens", "lemma_batch_size", "constituency_batch_size",
+        "depparse_batch_size", "depparse_min_length_to_batch_separately", "sentiment_batch_size", "ner_batch_size",
+    ];
+
     /// <summary>The case's PipelineOptions: Stanza's keyword arguments mapped to their properties.</summary>
     internal static PipelineOptions Options(JsonNode choice, string lang, bool managed)
     {
         var stanza = choice["options"]!.AsObject();
         foreach (var key in stanza.Select(kv => kv.Key))
         {
-            if (key is not ("ner_predict_tagset" or "lemma_dict_only" or "mwt_dict_only"))
+            if (key is not ("ner_predict_tagset" or "lemma_dict_only" or "mwt_dict_only") && !BatchSizeKeys.Contains(key))
                 throw new InvalidDataException($"options.json: no PipelineOptions property for Stanza's {key}");
         }
 
@@ -105,6 +164,17 @@ public sealed class OptionCaseAttribute : DataAttribute
             NerTagSet = stanza["ner_predict_tagset"]?.GetValue<int>(),
             LemmaDictionaryOnly = stanza["lemma_dict_only"]?.GetValue<bool>() ?? false,
             MwtDictionaryOnly = stanza["mwt_dict_only"]?.GetValue<bool>() ?? false,
+            MwtBatchSize = Size("mwt_batch_size"),
+            PosBatchSize = Size("pos_batch_size"),
+            PosBatchMaximumTokens = Size("pos_batch_maximum_tokens"),
+            LemmaBatchSize = Size("lemma_batch_size"),
+            ConstituencyBatchSize = Size("constituency_batch_size"),
+            DepparseBatchSize = Size("depparse_batch_size"),
+            DepparseMinLengthToBatchSeparately = Size("depparse_min_length_to_batch_separately"),
+            SentimentBatchSize = Size("sentiment_batch_size"),
+            NerBatchSize = Size("ner_batch_size"),
         };
+
+        int? Size(string key) => stanza[key]?.GetValue<int>();
     }
 }

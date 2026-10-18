@@ -334,6 +334,11 @@ MODEL_CHOICES = {
 }
 
 
+# Every {processor}_batch_size Stanza honours (it ignores tokenize_batch_size), small: many batches on short texts.
+SMALL_BATCHES = {"mwt_batch_size": 1, "pos_batch_size": 1, "pos_batch_maximum_tokens": 50, "lemma_batch_size": 3,
+                 "constituency_batch_size": 2, "depparse_batch_size": 100, "depparse_min_length_to_batch_separately": 5,
+                 "sentiment_batch_size": 20, "ner_batch_size": 1}
+
 # Stanza options with a PipelineOptions property (owner's choice, 2026-10-18): (name, package, processors, models,
 # Stanza's keyword arguments, texts besides corpus.txt). The C# tests map the arguments to PipelineOptions (options.json).
 OPTION_CASES = {
@@ -348,10 +353,18 @@ OPTION_CASES = {
          ["validation_contractions.txt"]),
         ("mwt_dict_only", "default", "tokenize,mwt,pos", {}, {"mwt_dict_only": True},
          ["validation.txt", "validation_contractions.txt"]),
+        # The batch sizes (#174): only sentiment's changes these texts' results (depparse's could, through its padded
+        # log-softmax, but no head moved at any size tried).
+        ("sentiment_batch_size=20", "default", "tokenize,mwt,sentiment", {}, {"sentiment_batch_size": 20},
+         ["validation.txt", "validation_social.txt"]),
+        ("batch_sizes", "default", PROCESSORS, {}, SMALL_BATCHES, ["validation.txt"]),
+        ("default_fast+batch_sizes", "default_fast", "tokenize,mwt,pos,lemma,depparse,sentiment,ner", {},
+         {k: v for k, v in SMALL_BATCHES.items() if not k.startswith("constituency")}, ["validation.txt"]),
     ],
     "de": [
         ("mwt_dict_only", "default", "tokenize,mwt,pos", {}, {"mwt_dict_only": True}, ["validation.txt"]),
         ("lemma_dict_only", "default", "tokenize,mwt,pos,lemma", {}, {"lemma_dict_only": True}, ["validation.txt"]),
+        ("batch_sizes", "default", PROCESSORS, {}, SMALL_BATCHES, ["validation.txt"]),
     ],
 }
 

@@ -20,6 +20,7 @@ namespace StanzaSharp.Constituency;
 internal sealed class ConstituencyParser : IDisposable
 {
     private const int BatchSize = 50;
+    private int _batchSize = BatchSize; // set once: WithBatchSize's copy
 
     /// <summary>The model's transitions, in score column order.</summary>
     internal IReadOnlyList<Transition> Transitions => _transitions;
@@ -118,8 +119,8 @@ internal sealed class ConstituencyParser : IDisposable
     /// under its key.</param>
     /// <remarks>
     /// Scheduled like Stanza (ConstituencyProcessor + parse_sentences): sentences sorted longest first,
-    /// <see cref="BatchSize"/> states in flight, and each finished state replaced by the next one, whose
-    /// word queues are built <see cref="BatchSize"/> sentences at a time. Every state is computed
+    /// <c>batch_size</c> (50) states in flight, and each finished state replaced by the next one, whose
+    /// word queues are built that many sentences at a time. Every state is computed
     /// independently, so this only decides how much work each step does.
     /// </remarks>
     internal List<Tree?> Parse(IReadOnlyList<IReadOnlyList<(string Word, string Tag)>> sentences, List<List<float[]>>? scores = null,
@@ -131,10 +132,10 @@ internal sealed class ConstituencyParser : IDisposable
         var result = new Tree?[sentences.Count];
         var batch = new List<ParserState>();
         var horizon = new Queue<ParserState>();
-        var scoreInputs = new List<(object, int, object, object)>(BatchSize); // refilled every step
-        var steps = new StepBuffers();
+        var scoreInputs = new List<(object, int, object, object)>(_batchSize); // refilled every step
+        var steps = new StepBuffers(_batchSize);
         int n = _transitions.Length;
-        var logits = ArrayPool<float>.Shared.Rent(BatchSize * n); // [batch, transitions], written by Score each step
+        var logits = ArrayPool<float>.Shared.Rent(_batchSize * n); // [batch, transitions], written by Score each step
         int built = 0;
         try
         {
@@ -143,13 +144,13 @@ internal sealed class ConstituencyParser : IDisposable
                 // Every step: a parse takes about two steps per word, each one forward pass over the batch.
                 // The finally below disposes the states in flight.
                 cancellationToken.ThrowIfCancellationRequested();
-                while (batch.Count < BatchSize)
+                while (batch.Count < _batchSize)
                 {
                     if (horizon.Count == 0)
                     {
                         if (built == order.Length)
                             break;
-                        var chunk = order[built..Math.Min(built + BatchSize, order.Length)];
+                        var chunk = order[built..Math.Min(built + _batchSize, order.Length)];
                         built += chunk.Length;
                         foreach (var s in InitialStates(chunk, sentences, charlms, cacheKeys, cancellationToken, transformers))
                             horizon.Enqueue(s);
@@ -254,14 +255,14 @@ internal sealed class ConstituencyParser : IDisposable
     // ----- applying transitions (bulk_apply) -----
 
     /// <summary>One <see cref="Parse"/> call's per-step lists, cleared and refilled each step instead of made anew.</summary>
-    private sealed class StepBuffers
+    private sealed class StepBuffers(int batchSize)
     {
-        public readonly Transition?[] Chosen = new Transition?[BatchSize];
-        public readonly List<(ParserState State, Transition Transition, StackNode<Constituent> Base)> Applied = new(BatchSize);
-        public readonly List<Constituent> NewConstituents = new(BatchSize);
-        public readonly List<(int Slot, string Label, int OpenIndex)> Opens = new(BatchSize);
-        public readonly List<(int Slot, string Label, List<Constituent> Children)> Closes = new(BatchSize);
-        public readonly List<object> Parents = new(BatchSize), Inputs = new(BatchSize), Bases = new(BatchSize);
+        public readonly Transition?[] Chosen = new Transition?[batchSize];
+        public readonly List<(ParserState State, Transition Transition, StackNode<Constituent> Base)> Applied = new(batchSize);
+        public readonly List<Constituent> NewConstituents = new(batchSize);
+        public readonly List<(int Slot, string Label, int OpenIndex)> Opens = new(batchSize);
+        public readonly List<(int Slot, string Label, List<Constituent> Children)> Closes = new(batchSize);
+        public readonly List<object> Parents = new(batchSize), Inputs = new(batchSize), Bases = new(batchSize);
     }
 
     private void Apply(List<ParserState> states, Transition?[] transitions, StepBuffers steps, CancellationToken ct)
@@ -424,6 +425,17 @@ internal sealed class ConstituencyParser : IDisposable
     }
 
     private static string[] Strings(JsonNode? array) => Checkpoint.Strings(array); // "words" is long: a JsonValue in a .pt
+
+    /// <summary>
+    /// A copy batching <paramref name="batchSize"/> states in flight (Stanza's <c>constituency_batch_size</c>). It
+    /// shares the networks (the pipeline keeps only the copy), so it is made at Load, before any call.
+    /// </summary>
+    internal ConstituencyParser WithBatchSize(int batchSize)
+    {
+        var copy = (ConstituencyParser)MemberwiseClone();
+        copy._batchSize = batchSize;
+        return copy;
+    }
 
     public void Dispose()
     {

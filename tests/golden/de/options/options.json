@@ -24,5 +24,26 @@
    "corpus.txt",
    "validation.txt"
   ]
+ },
+ {
+  "name": "batch_sizes",
+  "package": "default",
+  "processors": "tokenize,mwt,pos,lemma,constituency,depparse,sentiment,ner",
+  "models": {},
+  "options": {
+   "mwt_batch_size": 1,
+   "pos_batch_size": 1,
+   "pos_batch_maximum_tokens": 50,
+   "lemma_batch_size": 3,
+   "constituency_batch_size": 2,
+   "depparse_batch_size": 100,
+   "depparse_min_length_to_batch_separately": 5,
+   "sentiment_batch_size": 20,
+   "ner_batch_size": 1
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt"
+  ]
  }
 ]

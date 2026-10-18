@@ -25,7 +25,8 @@ internal sealed class Lemmatizer : IDisposable
     private readonly LemmaDictionary _dict;
     private readonly Dictionary<string, int> _charToId, _posToId;
     private readonly string[] _idToChar;
-    private readonly int _batchSize, _maxDecLen;
+    private readonly int _maxDecLen;
+    private int _batchSize; // set once: the constructor or WithBatchSize's copy
     private readonly bool _caseless, _dictOnly;
     private readonly ISeq2SeqNet _net;
     private readonly IPerCharLanguageModel? _forward, _backward; // a _charlm model's charlms
@@ -290,6 +291,17 @@ internal sealed class Lemmatizer : IDisposable
         _forward.PerChar(forward, firstRow, contextual, dim, ct);
         _backward.PerChar(backward, firstRow, contextual.AsSpan(f), dim, ct);
         return contextual;
+    }
+
+    /// <summary>
+    /// A copy batching <paramref name="batchSize"/> words per seq2seq batch (Stanza's <c>lemma_batch_size</c>). It
+    /// shares the networks (the pipeline keeps only the copy), so it is made at Load, before any call.
+    /// </summary>
+    internal Lemmatizer WithBatchSize(int batchSize)
+    {
+        var copy = (Lemmatizer)MemberwiseClone();
+        copy._batchSize = batchSize;
+        return copy;
     }
 
     public void Dispose()
