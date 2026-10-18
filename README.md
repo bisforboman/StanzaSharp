@@ -212,6 +212,10 @@ foreach (var sentence in doc.Sentences)
 }
 ```
 
+`PipelineOptions.TokenizePostprocessor` is Stanza's `tokenize_postprocessor`: a function from the tokenizer's sentences
+(`PostprocessorToken`: text, multi-word flag, optional hand-given words) to the sentences and tokens the pipeline goes on
+with, for example to keep a multi-word name one token.
+
 `nlp.Stream(texts, batchSize: 50)` is Stanza's `stream`: a lazy `IEnumerable<Document>` over any number of texts, run as
 `Process(IEnumerable<string>)` batches, with sentence ids counted across the stream.
 

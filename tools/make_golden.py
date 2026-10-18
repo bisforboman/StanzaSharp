@@ -1008,6 +1008,71 @@ def write_bulk_golden(models, out):
         print(f"bulk/{package}.json: {len(docs)} documents, {offset} sentences, {changed} differ from processing alone")
 
 
+# A manual expansion ("gonna") comes before every automatic one in each document, bulk included: Stanza shifts a manual
+# expansion's word ids by the automatic expansions before it in the whole document (set_mwt_expansions' SKIP branch adds
+# idx_e), which breaks its trees ("Dependency tree is incorrectly constructed"); StanzaSharp numbers them as written.
+POSTPROCESS_TEXTS = [
+    "It is gonna rain. I wanna see New York, but I cannot go. I can't say. Bye now.",
+    "Short one.",
+    "We cannot stay in New York City.\n\nShe's here. They don't know it.",
+]
+
+
+def postprocess(sentences):
+    """
+    The tokenize_postprocessor of postprocess/ (PostprocessorTests has the same in C#): merges "New" "York" into
+    "New York", splits "cannot" into "can" "not", expands "gonna" by hand into "gon" "na", flags "wanna" for the MWT model,
+    keeps the tokenizer's MWT flags, and merges each text's last two sentences.
+    """
+    result = []
+    for sentence in sentences:
+        tokens, i = [], 0
+        while i < len(sentence):
+            token = sentence[i]
+            text = token[0] if isinstance(token, tuple) else token
+            nxt = sentence[i + 1] if i + 1 < len(sentence) else None
+            if text == "New" and nxt == "York":
+                tokens.append("New York")
+                i += 2
+                continue
+            if text == "cannot":
+                tokens += ["can", "not"]
+            elif text == "gonna":
+                tokens.append(("gonna", ["gon", "na"]))
+            elif text == "wanna":
+                tokens.append(("wanna", True))
+            else:
+                tokens.append(token)
+            i += 1
+        result.append(tokens)
+    if len(result) >= 2:
+        result[-2:] = [result[-2] + result[-1]]
+    return result
+
+
+def write_postprocess_golden(models, out):
+    """
+    postprocess/: the default package with tokenize_postprocessor=postprocess (and once with tokenize_no_ssplit):
+    each of POSTPROCESS_TEXTS alone, all of them in one bulk_process call, and the first with no_ssplit; "{:C}" each.
+    """
+    folder = out / "postprocess"
+    folder.mkdir(exist_ok=True)
+    result = {"texts": POSTPROCESS_TEXTS}
+    for name, extra in [("default", {}), ("no_ssplit", {"tokenize_no_ssplit": True})]:
+        nlp = stanza.Pipeline(LANG, dir=models, download_method=None, use_gpu=False, logging_level="WARN",
+                              tokenize_postprocessor=postprocess, **extra)
+        with torch.no_grad():
+            if name == "default":
+                result["alone"] = ["{:C}".format(nlp(t)) for t in POSTPROCESS_TEXTS]
+                result["bulk"] = ["{:C}".format(d) for d in nlp.bulk_process(POSTPROCESS_TEXTS)]
+            else:
+                result["no_ssplit"] = "{:C}".format(nlp(POSTPROCESS_TEXTS[0]))
+    with open(folder / "postprocess.json", "w", encoding="utf-8", newline="\n") as f:
+        json.dump(result, f, indent=1, ensure_ascii=False)
+        f.write("\n")
+    print(f"postprocess/postprocess.json: {len(POSTPROCESS_TEXTS)} texts")
+
+
 STREAM_BATCH_SIZE = 4
 
 
@@ -1481,6 +1546,7 @@ def main():
     p.add_argument("--json-only", action="store_true", help="only regenerate json/ (str(doc))")
     p.add_argument("--helpers-only", action="store_true", help="only regenerate helpers/ (document helpers, no models)")
     p.add_argument("--stream-only", action="store_true", help="only regenerate stream/ (Pipeline.stream)")
+    p.add_argument("--postprocess-only", action="store_true", help="only regenerate postprocess/ (tokenize_postprocessor)")
     p.add_argument("--process-document-only", action="store_true", help="only regenerate process_document/")
     p.add_argument("--pretagged-only", action="store_true", help="only regenerate pretagged/ (pretagged=True pipelines)")
     p.add_argument("--treebank-only", action="store_true", help="only regenerate the treebank packages' folders (ewt/, ..., de/gsd/, de/hdt/)")
@@ -1514,6 +1580,9 @@ def main():
         return
     if args.models_only:
         write_models_golden(args.models, out, args.choices and args.choices.split(","))
+        return
+    if args.postprocess_only:
+        write_postprocess_golden(args.models, out)
         return
     if args.stream_only:
         write_stream_golden(args.models, out)

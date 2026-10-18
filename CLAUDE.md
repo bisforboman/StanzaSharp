@@ -866,6 +866,15 @@ What the English treebank packages' checkpoints add to the default package's pat
     whose rows lack the chosen models). NER decodes the chosen tag set's head (a missing one throws at Load), the
     lemmatizer's `LemmatizeByDictionary` is trainer.predict_dict (no seq2seq, no contextual classifiers), MWT's
     `dictOnly` loads no net.
+  - `postprocess/postprocess.json` (`--postprocess-only`): `tokenize_postprocessor=postprocess` (merges "New York", splits
+    "cannot", hand-expands "gonna", flags "wanna", merges the last two sentences; `PostprocessorTests.Postprocess` is the
+    same in C#) on `POSTPROCESS_TEXTS` alone, in one bulk call and with `tokenize_no_ssplit` (#174:
+    `PipelineOptions.TokenizePostprocessor`, `PostprocessorToken(Text, IsMultiWord, Expansion)`). `Tokenizer.Postprocess` is
+    utils.postprocess_doc: after `Decode` (long tokens replaced only after it, as TokenizeProcessor.process does), before
+    bulk's `Split`; offsets by `IndexOf` after the previous token; a hand expansion through `Token.SetWords` (MWT's
+    set_mwt_expansions, moved to Core). Stanza shifts a hand-expanded token's word ids by the automatic MWT expansions
+    earlier in the whole document (SKIP branch, `+ idx_e`) and then crashes building dependencies; we number them as
+    written, so the golden texts put every hand expansion before any automatic one.
   - `stream/<package>.json` (`--stream-only`): Stanza's `Pipeline.stream` over `BULK_TEXTS` and validation.txt's first 20
     paragraphs with `batch_size` 4, each document's `"{:C}"`; `InputModeTests.Stream_MatchesStanzasStream` (#174:
     `Pipeline.Stream(texts, batchSize = 50, ct)`, lazy, one bulk `Process` per batch, sent_ids counted across the stream).

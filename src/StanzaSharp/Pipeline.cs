@@ -462,6 +462,7 @@ public sealed class Pipeline : IDisposable
     private readonly BackendModels _models;
     private readonly CharlmCacheOptions _cacheOptions;
     private readonly bool _splitSentences, _trimNativeHeap, _depparseReadsCache, _identityLemma;
+    private readonly Func<IReadOnlyList<IReadOnlyList<PostprocessorToken>>, IEnumerable<IEnumerable<PostprocessorToken>>>? _postprocessor;
 
     // Each processor's forward charlm (Dependencies), or none: a call's CharlmCache serves the tagger's pair only.
     private readonly Dictionary<string, string?> _charlmOf = [];
@@ -473,6 +474,7 @@ public sealed class Pipeline : IDisposable
         _models = backend;
         _cacheOptions = options.CharlmCache;
         _splitSentences = options.SplitSentences;
+        _postprocessor = options.TokenizePostprocessor;
         _depparseReadsCache = backend.DepparseReadsCache;
         _trimNativeHeap = options.TrimNativeHeap && NativeHeap.CanTrim;
         _logger = options.Logger;
@@ -891,7 +893,7 @@ public sealed class Pipeline : IDisposable
         ArgumentNullException.ThrowIfNull(text);
         return Gated(() =>
         {
-            var doc = Step("tokenize", () => _tokenizer.Process(text, _splitSentences, cancellationToken), cancellationToken);
+            var doc = Step("tokenize", () => _tokenizer.Process(text, _splitSentences, cancellationToken, _postprocessor), cancellationToken);
             return Annotate(doc, mwt: true, cancellationToken);
         }, cancellationToken);
     }
@@ -1011,7 +1013,7 @@ public sealed class Pipeline : IDisposable
             return [];
         var docs = Gated(() =>
         {
-            var docs = Step("tokenize", () => _tokenizer.Process(list, _splitSentences, cancellationToken), cancellationToken);
+            var docs = Step("tokenize", () => _tokenizer.Process(list, _splitSentences, cancellationToken, _postprocessor), cancellationToken);
 
             // The other processors run on all sentences as one document (UDProcessor.bulk_process).
             var combined = new Document();

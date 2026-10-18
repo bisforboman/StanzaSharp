@@ -1,6 +1,5 @@
 using System.Text;
 using System.Text.Json.Nodes;
-using System.Text.RegularExpressions;
 using StanzaSharp.Nn;
 
 namespace StanzaSharp.Mwt;
@@ -77,7 +76,7 @@ internal sealed class MwtExpander : IDisposable
         var candidates = doc.Sentences.SelectMany(s => s.Tokens).Where(t => t.IsMwtCandidate).ToList();
         var expansions = Expand(candidates.Select(t => t.Text).ToList());
         for (int i = 0; i < candidates.Count; i++)
-            SetWords(candidates[i], expansions[i]);
+            candidates[i].SetWords(expansions[i]);
 
         foreach (var sent in doc.Sentences)
         {
@@ -216,36 +215,6 @@ internal sealed class MwtExpander : IDisposable
         }
 
         return result;
-    }
-
-    /// <summary>Document.set_mwt_expansions for one token: new words, offsets found by matching them in the token.</summary>
-    private static void SetWords(Token token, string expansion)
-    {
-        var words = expansion.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        if (words.Length <= 1)
-            words = [token.Text];
-
-        token.IsMwtCandidate = false;
-        token.Words.Clear();
-        foreach (var w in words)
-            token.Words.Add(new Word { Text = w });
-
-        if (words.Length == 1)
-        {
-            (token.Words[0].StartChar, token.Words[0].EndChar) = (token.StartChar, token.EndChar);
-            return;
-        }
-
-        if (token.StartChar is not int start)
-            return;
-        var match = Regex.Match(token.Text, "^" + string.Join(@"\s*", words.Select(w => $"({Regex.Escape(w)})")) + "$");
-        if (!match.Success)
-            return;
-        for (int i = 0; i < words.Length; i++)
-        {
-            var g = match.Groups[i + 1];
-            (token.Words[i].StartChar, token.Words[i].EndChar) = (start + g.Index, start + g.Index + g.Length);
-        }
     }
 
     public void Dispose()

@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace StanzaSharp;
 
 /// <summary>
@@ -85,6 +87,23 @@ public sealed class Sentence
     public string WordsString() => string.Join("\n", Words);
 }
 
+/// <summary>
+/// A token as a <c>PipelineOptions.TokenizePostprocessor</c> sees and returns it (Stanza's <c>tokenize_postprocessor</c>):
+/// its text, and whether it is a multi-word token. Stanza's forms map to it: <c>"text"</c> is <c>new("text")</c> (a string
+/// converts implicitly), <c>("text", True)</c> is <c>new("text", IsMultiWord: true)</c> and <c>("text", ["a", "b"])</c> is
+/// <c>new("text", Expansion: ["a", "b"])</c>.
+/// </summary>
+/// <param name="Text">The token's text. A returned token must be found in the original text after the one before it, so the
+/// postprocessor can merge, split or regroup tokens and sentences but not change their characters.</param>
+/// <param name="IsMultiWord">The tokenizer's multi-word flag (Stanza's <c>MWT=Yes</c>); returned true without an
+/// <see cref="Expansion"/>, the MWT model expands the token.</param>
+/// <param name="Expansion">The token's words, given by hand: the MWT model leaves it alone.</param>
+public sealed record PostprocessorToken(string Text, bool IsMultiWord = false, IReadOnlyList<string>? Expansion = null)
+{
+    /// <summary>A token that is not multi-word.</summary>
+    public static implicit operator PostprocessorToken(string text) => new(text);
+}
+
 /// <summary>A dependency arc (Stanza's <c>(head, deprel, word)</c> entries of <c>sentence.dependencies</c>).</summary>
 /// <param name="Head">The head word; null for the root (Stanza's word <c>ROOT</c>, id 0).</param>
 /// <param name="Relation">The universal dependency relation, e.g. <c>nsubj</c>.</param>
@@ -120,6 +139,36 @@ public sealed class Token
 
     /// <summary>The token's named-entity tag in BIOES form, e.g. <c>B-ORG</c> or <c>O</c>; null if NER has not run.</summary>
     public string? Ner { get; set; }
+
+    /// <summary>Document.set_mwt_expansions for one token: new words, offsets found by matching them in the token.</summary>
+    internal void SetWords(string expansion)
+    {
+        var words = expansion.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (words.Length <= 1)
+            words = [Text];
+
+        IsMwtCandidate = false;
+        Words.Clear();
+        foreach (var w in words)
+            Words.Add(new Word { Text = w });
+
+        if (words.Length == 1)
+        {
+            (Words[0].StartChar, Words[0].EndChar) = (StartChar, EndChar);
+            return;
+        }
+
+        if (StartChar is not int start)
+            return;
+        var match = Regex.Match(Text, "^" + string.Join(@"\s*", words.Select(w => $"({Regex.Escape(w)})")) + "$");
+        if (!match.Success)
+            return;
+        for (int i = 0; i < words.Length; i++)
+        {
+            var g = match.Groups[i + 1];
+            (Words[i].StartChar, Words[i].EndChar) = (start + g.Index, start + g.Index + g.Length);
+        }
+    }
 
     /// <summary>The token and its words on one line, as Stanza's <c>pretty_print()</c>, e.g. <c>&lt;Token id=1-2;words=[...]&gt;</c>.</summary>
     public override string ToString()
