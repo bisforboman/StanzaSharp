@@ -114,7 +114,8 @@ jobs:
       fail-fast: false
       matrix:
         shard: [1, 2, 3]
-    timeout-minutes: 90
+    # 120: shard 1 runs the Transformer* classes (the encoder on both backends); its job took 72 min with PR 3's rows
+    timeout-minutes: 120
     runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7

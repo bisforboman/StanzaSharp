@@ -13,7 +13,8 @@ const string Usage = """
 
       --lang CODE         the language: en (default) or de
       --models DIR        models (default: models/converted/<lang> if present, else models/stanza/<lang>)
-      --package NAME      Stanza's package: default, or default_fast (faster, no constituency); the treebank
+      --package NAME      Stanza's package: default, default_fast (faster, no constituency), English default_accurate
+                          (transformer models: slower, more accurate); the treebank
                           packages (tokenize to depparse): English combined, ewt, gum, lines, partut, atis, childes, eslspok,
                           craft, genia, mimic;
                           German combined, gsd, hdt

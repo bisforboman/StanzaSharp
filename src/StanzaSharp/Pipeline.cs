@@ -64,6 +64,20 @@ public sealed class Pipeline : IDisposable
                 ["ner"] = "ontonotes-ww-multi_nocharlm",
             },
 
+            // The most accurate: the _charlm tokenizer and lemmatizer, and google/electra-large-discriminator (Transformers)
+            // under pos, constituency, depparse and ner (frozen, one shared pass) and sentiment (its LoRA adapters).
+            ["default_accurate"] = new()
+            {
+                ["tokenize"] = "combined_charlm",
+                ["mwt"] = "combined",
+                ["pos"] = "combined_electra-large",
+                ["lemma"] = "combined_charlm",
+                ["constituency"] = "ptb3-revised_electra-large",
+                ["depparse"] = "combined_electra-large",
+                ["sentiment"] = "sstplus_electra-large",
+                ["ner"] = "ontonotes-ww-multi_electra-large",
+            },
+
             // The treebank packages: tokenize to depparse only. combined has default's models; eslspok has no mwt and
             // Stanza's identity lemmatizer (no model); the biomedical craft, genia and mimic have no mwt and their own
             // word vectors (mimic also its own charlms).
@@ -636,7 +650,7 @@ public sealed class Pipeline : IDisposable
             throw new ArgumentException($"Unknown language '{language}'. Available: {string.Join(", ", Packages.Keys)}", paramName);
         if (!packages.TryGetValue(package ?? "", out var packageModels))
         {
-            string why = package == "default_accurate" ? " (default_accurate needs transformer models, which StanzaSharp doesn't run)" : "";
+            string why = package == "default_accurate" ? $" ({language}'s default_accurate needs a transformer StanzaSharp doesn't run)" : "";
             throw new ArgumentException($"Unknown package '{package}' for language '{language}'{why}. Available: {string.Join(", ", packages.Keys)}", paramName);
         }
 

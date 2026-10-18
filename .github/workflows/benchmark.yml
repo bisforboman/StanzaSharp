@@ -17,9 +17,9 @@ on:
         options: [en, de]
         default: en
       package:
-        description: Stanza's package (gsd and hdt are German only; ewt to mimic English only)
+        description: Stanza's package (gsd and hdt are German only; default_accurate and ewt to mimic English only)
         type: choice
-        options: [default, default_fast, combined, gsd, hdt, ewt, gum, lines, partut, atis, childes, eslspok, craft, genia, mimic]
+        options: [default, default_fast, default_accurate, combined, gsd, hdt, ewt, gum, lines, partut, atis, childes, eslspok, craft, genia, mimic]
         default: default
       quick:
         description: Smoke run (300 words, one run, 10 calls)
@@ -94,8 +94,10 @@ jobs:
           version=$(git describe --tags --match 'v*')
           dotnet build src/StanzaSharp.Tool -c Release -p:Version="${version#v}" -p:IncludeSourceRevisionInInformationalVersion=false
 
+      # default_accurate's transformer models and google/electra-large-discriminator are in no cache (1.9 GB): always
+      # downloaded (files that already match are kept).
       - name: Download the models
-        if: steps.models.outputs.cache-hit != 'true'
+        if: steps.models.outputs.cache-hit != 'true' || inputs.package == 'default_accurate'
         run: >
           dotnet src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll download models/stanza/${{ inputs.lang }}
           --lang ${{ inputs.lang }} --package ${{ inputs.package }}

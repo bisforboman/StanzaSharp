@@ -4,8 +4,8 @@ namespace StanzaSharp.Tests;
 
 /// <summary>
 /// default_accurate's frozen-transformer models as <see cref="PipelineOptions.Models"/> (docs/transformer-plan.md, PR 2):
-/// pos, depparse, ner, constituency and sentiment (LoRA) <c>_electra-large</c> against their tests/golden/models/ rows, byte
-/// for byte on both backends. Named Transformer* so that only golden shard 1, which downloads the transformer, runs it in CI.
+/// pos, depparse, ner, constituency and sentiment (LoRA) <c>_electra-large</c> and the <c>default_accurate</c> package against
+/// their tests/golden/models/ rows, byte for byte on both backends. Named Transformer* so that only golden shard 1, which downloads the transformer, runs it in CI.
 /// </summary>
 public class TransformerModelTests
 {
@@ -23,6 +23,8 @@ public class TransformerModelTests
     [ModelChoice("en", Sentiment, true)]
     [ModelChoice("en", AllFive, false)]
     [ModelChoice("en", AllFive, true)]
+    [ModelChoice("en", "default_accurate", false)]
+    [ModelChoice("en", "default_accurate", true)]
     public void Process_MatchesGolden(string name, bool managed, string lang) => ModelChoiceTests.AssertGolden(name, managed, lang, cache: true);
 
     [Fact]
@@ -38,6 +40,22 @@ public class TransformerModelTests
         Assert.Contains("pos/combined_electra-large.pt", files);
         Assert.DoesNotContain(files, f => f.StartsWith("transformer/", StringComparison.Ordinal));
         Assert.Empty(Pipeline.TransformersOf(Pipeline.SelectModels("default", null, addRequired: true, "options"), "en"));
+    }
+
+    [Fact]
+    public void DefaultAccurate_ReadsTheTransformerWithAllEightProcessors()
+    {
+        var models = Pipeline.SelectModels("default_accurate", null, addRequired: true, "options");
+        Assert.Equal(Pipeline.AllProcessors.Split(',').Order(), models.Keys.Order());
+        Assert.Equal([TransformerFactAttribute.Electra], Pipeline.TransformersOf(models, "en"));
+        var files = ModelDownloader.FilesFor(null, "default_accurate").Select(f => f.Path).ToList();
+        Assert.Contains("sentiment/sstplus_electra-large.pt", files);
+        Assert.Contains("tokenize/combined_charlm.pt", files);
+        Assert.DoesNotContain(files, f => f.StartsWith("transformer/", StringComparison.Ordinal));
+
+        // German's reads another transformer (german-nlp-electra), not ported.
+        var e = Assert.Throws<ArgumentException>(() => Pipeline.SelectModels("default_accurate", null, addRequired: true, "options", "de"));
+        Assert.Contains("transformer", e.Message);
     }
 
     [Fact]

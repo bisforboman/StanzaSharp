@@ -118,7 +118,9 @@ learned sentence boundary vectors) and the sentiment classifier `sstplus_electra
 transformer, applied at run time) match too: `models/constituency=ptb3-revised_electra-large/` (274 sentences, trees),
 `models/sentiment=sstplus_electra-large/` (315 sentences, with sentiment/reviews.txt, labels) and `models/electra-large/`
 (all five transformer models in one pipeline, 274 sentences). With adapters a sentence's states keep the same bits alone,
-in a batch and on any thread count on every SIMD path (`TransformerKernelTests`).
+in a batch and on any thread count on every SIMD path (`TransformerKernelTests`). The `default_accurate` package itself
+(its `combined_charlm` tokenizer and lemmatizer with the five transformer models) matches on corpus.txt, the validation,
+contractions, social and tech texts and the long sentence: `models/default_accurate/`, 419 sentences.
 
 They exercise what the packages don't: a second pretrain next to conll17 (fastText crawl, 300-dimensional), a tag
 vocabulary with three tag sets, and the old NER checkpoint format with a fine-tuned delta embedding (`i2b2`).
