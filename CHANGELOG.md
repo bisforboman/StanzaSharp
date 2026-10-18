@@ -8,6 +8,41 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 Unreleased changes are one file each under [`changes/`](changes/README.md), so pull requests don't conflict here;
 a release folds them in (`python tools/changelog.py release X.Y.Z`).
 
+## [1.12.0] - 2026-10-18
+
+### Added
+- `PipelineOptions.Package = "default_accurate"` (and `stanzasharp download --package default_accurate`): Stanza's most
+  accurate package, all eight processors, byte for byte with Stanza on both backends. English: pos, constituency,
+  depparse, ner and sentiment on `google/electra-large-discriminator`. German (`Language = "de"`): pos and depparse on
+  `german-nlp-group/electra-base-german-uncased`, constituency and sentiment on the same with their LoRA adapters.
+- `PipelineOptions.Models`: the rest of Stanza's `default_accurate` models, constituency `ptb3-revised_electra-large`
+  and sentiment `sstplus_electra-large`, byte for byte with Stanza on both backends. The parser reads the frozen
+  `google/electra-large-discriminator` (sharing the tagger's encoder pass); the sentiment classifier applies its LoRA
+  adapters to that transformer at run time, so no second 1.3 GB file is needed.
+- `PipelineOptions.Models`: Stanza's `default_accurate` tagger, parser and NER model, pos and depparse
+  `combined_electra-large` and ner `ontonotes-ww-multi_electra-large`, byte for byte with Stanza on both backends. They
+  read the frozen transformer `google/electra-large-discriminator` (1.3 GB, from Hugging Face at a pinned revision, checked
+  by sha256), which `ModelDownloader.DownloadAsync(dir, options)` and `stanzasharp download --model ...` fetch into
+  `transformer/` next to the models; a pipeline runs it once per sentence for all three.
+- `PipelineOptions.NerTagSet`, `LemmaDictionaryOnly` and `MwtDictionaryOnly`: Stanza's `ner_predict_tagset` (for example
+  the WorldWide tag set of the `ontonotes-ww-multi` NER models), `lemma_dict_only` and `mwt_dict_only`, byte for byte
+  with Stanza on both backends.
+
+### Changed
+- The `default_accurate` package (and the `_electra-large` models) runs about 1.5x faster on the managed backend: the
+  transformer encoder's GELU, attention sum and LayerNorm are vectorized, with byte-identical results on the golden texts.
+- `Pipeline.Load` no longer loads (or requires) the character language models for `sentiment=sstplus_electra-large`, which
+  never reads them; `ModelDownloader` still downloads them, as Stanza does.
+- The managed transformer encoder rents its per-piece states, so a `default_accurate` call allocates about 86 KB per word
+  instead of 150, and peaks about 200 MB lower.
+- `PipelineOptions.VerifyChecksums` also checks the transformer files of `default_accurate`'s models against their sha256
+  (about 3–5 s more for the 1.3 GB ELECTRA-large).
+
+### Fixed
+- `Pipeline.Load` and the model loaders throw `InvalidDataException` for a converted `.json` checkpoint that repeats a
+  property name in one object; before, it loaded, and reading that object later threw `ArgumentException` (found by the
+  nightly checkpoint fuzz).
+
 ## [1.11.0] - 2026-10-17
 
 1.11: every remaining non-transformer treebank model for `PipelineOptions.Models` (including the contextual lemma
