@@ -197,6 +197,12 @@ public static class ModelDownloader
             ("pos/hdt_nocharlm.pt", "30eebbd85b15369b9fd435397bb0ca94"),
             ("depparse/hdt_nocharlm.pt", "bb25421e576ecc48fffbfe01b8bf235b"),
             ("ner/conll03.pt", "9ff9b34529a43b72fabd71626795952a"),
+
+            // default_accurate's transformer models (Pipeline.Transformers: german-nlp-group/electra-base-german-uncased)
+            ("pos/combined_german-nlp-electra.pt", "b63a58fe066df20895c218b3af8915a7"),
+            ("depparse/combined_german-nlp-electra.pt", "e1070166afcca8e4fe8c30a50deac64d"),
+            ("constituency/spmrl_german-nlp-electra.pt", "ecfa0aa508c6bf878929db97786deedf"),
+            ("sentiment/sb10k_german-nlp-electra.pt", "36125922117da581c38e45545ed5a41e"),
         ],
     };
 
@@ -292,7 +298,7 @@ public static class ModelDownloader
             ("config.json", "e1a432c5209b9f72d53088b972d7a8dc0645859bfcdf2e33a153286c8e7a1955"),
             ("vocab.txt", "ffcfe163e0a45a6c112822fcd026e82dd23065861f1c3f7a71fdd653106a51ba"),
             ("tokenizer_config.json", "3888c4068947ecd386bfac973ec5e348e8503d05699427900698e74d4fdc2889"),
-            ("pytorch_model.bin", "e6d01cf9f43f7e1e2ce18cf7dfb68a248985b822934632eaf16d95fb117c833f"),
+            ("pytorch_model.bin", "a13cf267dfad08dd5c889af59f2e7f74120ff28107619d6c81904c3250efe76e"),
         ]),
     };
 

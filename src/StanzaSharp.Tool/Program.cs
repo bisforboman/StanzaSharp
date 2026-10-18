@@ -23,7 +23,7 @@ const string Usage = $"""
     Takes about 2 minutes with Python on 4 cores; --quick runs a short smoke test.
 
       --lang CODE         the language: en (default) or de (German)
-      --package NAME      Stanza's package: default, default_fast (faster, no constituency), English default_accurate
+      --package NAME      Stanza's package: default, default_fast (faster, no constituency), default_accurate
                           (transformer models: slower, more accurate); the treebank
                           packages (tokenize to depparse only): English combined, ewt, gum, lines, partut, atis, childes, eslspok,
                           craft, genia, mimic;

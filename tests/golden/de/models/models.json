@@ -70,5 +70,64 @@
   "texts": [
    "corpus.txt"
   ]
+ },
+ {
+  "name": "pos+depparse=german-nlp-electra",
+  "package": "default",
+  "processors": "tokenize,mwt,pos,lemma,depparse",
+  "models": {
+   "pos": "combined_german-nlp-electra",
+   "depparse": "combined_german-nlp-electra"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "validation_contractions.txt",
+   "validation_umlauts.txt",
+   "validation_social.txt",
+   "models/transformer_long.txt"
+  ]
+ },
+ {
+  "name": "constituency=spmrl_german-nlp-electra",
+  "package": "default",
+  "processors": "tokenize,mwt,pos,constituency",
+  "models": {
+   "constituency": "spmrl_german-nlp-electra"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "validation_umlauts.txt",
+   "models/transformer_long.txt"
+  ]
+ },
+ {
+  "name": "sentiment=sb10k_german-nlp-electra",
+  "package": "default",
+  "processors": "tokenize,mwt,sentiment",
+  "models": {
+   "sentiment": "sb10k_german-nlp-electra"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "validation_social.txt",
+   "models/transformer_long.txt"
+  ]
+ },
+ {
+  "name": "default_accurate",
+  "package": "default_accurate",
+  "processors": "tokenize,mwt,pos,lemma,constituency,depparse,sentiment,ner",
+  "models": {},
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "validation_contractions.txt",
+   "validation_umlauts.txt",
+   "validation_social.txt",
+   "models/transformer_long.txt"
+  ]
  }
 ]

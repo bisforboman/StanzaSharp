@@ -32,21 +32,31 @@ internal sealed class ConstituencyParser : IDisposable
     private readonly IConstituencyNet _net;
     private readonly StackNode<Transition?> _initialTransitions;
     private readonly StackNode<Constituent> _initialConstituents;
-    private readonly TransformerEmbedder? _transformer;
+    private readonly TransformerEmbedder? _transformer; // a LoRA parser's own (spmrl_german-nlp-electra), else the pipeline's
+    private readonly ITransformerNet? _loraNet;
     private readonly float[]? _layerMix;
 
     /// <summary>Whether the parser reads XPOS (<c>retag_method: xpos</c>, English) rather than UPOS (German).</summary>
     internal bool UsesXpos { get; }
 
-    /// <param name="transformer">The transformer a <c>_electra-large</c> parser reads (the pipeline's, shared); else ignored.</param>
+    /// <param name="transformer">The transformer a transformer parser reads (the pipeline's, shared); else ignored. A
+    /// LoRA-adapted parser (<c>use_peft</c>, German <c>spmrl_german-nlp-electra</c>) puts its adapters (the checkpoint's
+    /// top-level <c>bert_lora</c>) onto a copy that shares the transformer's weights, like the sentiment classifier.</param>
     internal ConstituencyParser(Checkpoint ckpt, Pretrain pretrain, Func<IConstituencyNet> net, TransformerEmbedder? transformer = null)
     {
         _pretrain = pretrain;
         var p = ckpt.Root["params"]!;
         var config = p["config"]!;
         CheckSupported(p, config);
-        _layerMix = TransformerEmbedder.LayerMix(ckpt, config, p["model"]!, transformer, "constituency");
-        _transformer = config["bert_model"] == null ? null : transformer;
+        bool lora = config["use_peft"]?.GetValue<bool>() == true;
+        _layerMix = TransformerEmbedder.LayerMix(ckpt, config, p["model"]!, transformer, "constituency", lora);
+        if (config["bert_model"] != null)
+        {
+            _loraNet = lora
+                ? transformer!.Net.WithLora(LoraWeights.Read(ckpt, ckpt.Root["bert_lora"] ?? throw new InvalidDataException("A LoRA parser without bert_lora"), config))
+                : null;
+            _transformer = _loraNet == null ? transformer : new TransformerEmbedder(_loraNet, transformer!.Tokenizer, transformer.MaxLength, transformer.Name);
+        }
 
         // LSTMModel maps words and tags to i + 2 (0 = PAD, 1 = UNK) over sorted lists; the saved lists are sorted.
         _deltaMap = Strings(p["words"]).Select((w, i) => (w, i)).ToDictionary(x => x.w, x => x.i + 2);
@@ -410,5 +420,9 @@ internal sealed class ConstituencyParser : IDisposable
 
     private static string[] Strings(JsonNode? array) => Checkpoint.Strings(array); // "words" is long: a JsonValue in a .pt
 
-    public void Dispose() => _net.Dispose();
+    public void Dispose()
+    {
+        _net.Dispose();
+        _loraNet?.Dispose();
+    }
 }
