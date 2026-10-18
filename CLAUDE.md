@@ -866,6 +866,9 @@ What the English treebank packages' checkpoints add to the default package's pat
     whose rows lack the chosen models). NER decodes the chosen tag set's head (a missing one throws at Load), the
     lemmatizer's `LemmatizeByDictionary` is trainer.predict_dict (no seq2seq, no contextual classifiers), MWT's
     `dictOnly` loads no net.
+  - `stream/<package>.json` (`--stream-only`): Stanza's `Pipeline.stream` over `BULK_TEXTS` and validation.txt's first 20
+    paragraphs with `batch_size` 4, each document's `"{:C}"`; `InputModeTests.Stream_MatchesStanzasStream` (#174:
+    `Pipeline.Stream(texts, batchSize = 50, ct)`, lazy, one bulk `Process` per batch, sent_ids counted across the stream).
   - `helpers/` (`--helpers-only`, no models): Stanza's document helpers (`num_tokens`, `num_words`, `dependencies_string()`,
     `tokens_string()`, `words_string()`) on `CoNLL.conll2doc` of `HELPER_FILES` and a generated `crafted.conllu` (texts whose
     Python `repr` needs quotes or escapes, a sentence without heads); `DocumentHelperTests` (#174, owner's decision

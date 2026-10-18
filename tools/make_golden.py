@@ -1008,6 +1008,29 @@ def write_bulk_golden(models, out):
         print(f"bulk/{package}.json: {len(docs)} documents, {offset} sentences, {changed} differ from processing alone")
 
 
+STREAM_BATCH_SIZE = 4
+
+
+def write_stream_golden(models, out):
+    """
+    stream/<package>.json: Pipeline.stream over BULK_TEXTS and validation.txt's paragraphs with batch_size
+    STREAM_BATCH_SIZE (each batch one bulk_process call, sentence ids counted across the stream), each document's
+    "{:C}" CoNLL-U.
+    """
+    folder = out / "stream"
+    folder.mkdir(exist_ok=True)
+    paragraphs = [p for p in (out / "validation.txt").read_bytes().decode("utf-8").split("\n\n") if p.strip()][:20]
+    texts = BULK_TEXTS + paragraphs
+    for package in PACKAGES:
+        nlp = stanza.Pipeline(LANG, dir=models, package=package, download_method=None, use_gpu=False, logging_level="WARN")
+        with torch.no_grad():
+            docs = [{"text": t, "conllu": "{:C}".format(d)} for t, d in zip(texts, nlp.stream(texts, batch_size=STREAM_BATCH_SIZE))]
+        with open(folder / f"{package}.json", "w", encoding="utf-8", newline="\n") as f:
+            json.dump({"batch_size": STREAM_BATCH_SIZE, "documents": docs}, f, indent=1, ensure_ascii=False)
+            f.write("\n")
+        print(f"stream/{package}.json: {len(docs)} documents")
+
+
 NO_SSPLIT_FILES = ["corpus.txt", "validation.txt", "validation_contractions.txt", "validation_dialogue.txt",
                    "validation_long.txt", "validation_nonbmp.txt", "validation_whitespace.txt"]
 
@@ -1457,6 +1480,7 @@ def main():
     p.add_argument("--upos64-only", action="store_true", help="only add the float64 UPOS logits to the intermediates")
     p.add_argument("--json-only", action="store_true", help="only regenerate json/ (str(doc))")
     p.add_argument("--helpers-only", action="store_true", help="only regenerate helpers/ (document helpers, no models)")
+    p.add_argument("--stream-only", action="store_true", help="only regenerate stream/ (Pipeline.stream)")
     p.add_argument("--process-document-only", action="store_true", help="only regenerate process_document/")
     p.add_argument("--pretagged-only", action="store_true", help="only regenerate pretagged/ (pretagged=True pipelines)")
     p.add_argument("--treebank-only", action="store_true", help="only regenerate the treebank packages' folders (ewt/, ..., de/gsd/, de/hdt/)")
@@ -1490,6 +1514,9 @@ def main():
         return
     if args.models_only:
         write_models_golden(args.models, out, args.choices and args.choices.split(","))
+        return
+    if args.stream_only:
+        write_stream_golden(args.models, out)
         return
     if args.helpers_only:
         write_helpers_golden(out)

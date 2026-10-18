@@ -212,6 +212,9 @@ foreach (var sentence in doc.Sentences)
 }
 ```
 
+`nlp.Stream(texts, batchSize: 50)` is Stanza's `stream`: a lazy `IEnumerable<Document>` over any number of texts, run as
+`Process(IEnumerable<string>)` batches, with sentence ids counted across the stream.
+
 Stanza's document helpers are there too: `doc.TokenCount` and `doc.WordCount` (`num_tokens`, `num_words`),
 `sentence.Dependencies` (each word's `(Head, Relation, Dependent)`, the head word null for the root), and
 `sentence.DependenciesString()`, `TokensString()` and `WordsString()`, which print what Stanza's `dependencies_string()`,
