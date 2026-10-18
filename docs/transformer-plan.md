@@ -206,8 +206,8 @@ on Vector512, Vector256 and Vector128 (the same bits) and 4.3e-5 on Scalar (`tra
 - **Download, no cache** (owner's decision, 2026-10-17): the model caches are already about 9.2 GB of GitHub's 10 GB
   (estimated from their recorded sizes; the session could not list them), so the transformer's files and the five
   Stanza models (~1.9 GB) are downloaded on every golden run (`tools/ci-models.sh transformer FILE...`, with retries), by
-  golden shard 1 only: the `Transformer*` test classes run there (they are in neither `SHARD_TWO` nor `SHARD_THREE`),
-  and the other jobs' no-skip checks exempt them.
+  golden shard 4 only (shard 1 until 2026-10-18, when they had made its job 82 min): the `Transformer*` test classes
+  run there (`SHARD_FOUR`), and the other jobs' no-skip checks exempt them.
 - `transformers` is pinned in its own `tools/requirements-transformer.txt`, not `requirements.txt`, whose hash the
   model cache keys include: CI never needs it (the `.bin` loads without conversion; the golden data is made locally).
 - **Test time:** one shared frozen pass plus one LoRA pass over the golden texts takes about 70 s on these 4 cores,

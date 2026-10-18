@@ -146,10 +146,11 @@ default from 0.5) or through TorchSharp (see "Managed backend").
     `TransformerEmbedder.LayerMix(..., lora: true)` allows `use_peft`/`bert_finetune` when no `bert_model.*` weights are in
     the checkpoint. Golden rows `constituency=ptb3-revised_electra-large`, `sentiment=sstplus_electra-large` (+ reviews.txt)
     and `electra-large` (all five, `PROCESSORS`); make_golden needs `peft` (requirements-transformer.txt).
-  - CI: no cache (the model caches are near GitHub's 10 GB; owner's decision): golden shard 1 downloads the transformer
-    models and the transformer's files on every run (`tools/ci-models.sh transformer`: `download` with their `--model`s,
-    with retries); the `Transformer*` classes run only there (in neither SHARD_TWO nor SHARD_THREE), and the other jobs'
-    no-skip checks exempt `Transformer`.
+  - CI: no cache (the model caches are near GitHub's 10 GB; owner's decision): golden shard 4 downloads the
+    `default_accurate` package and the transformer's files on every run (`tools/ci-models.sh transformer`: `download
+    --package default_accurate`, with retries); the `Transformer*` classes (`SHARD_FOUR`, `.Transformer`) run only there
+    (owner's decision, 2026-10-18: in shard 1 they had made its job 82 min), and the other jobs' no-skip checks exempt
+    `Transformer`.
 
 ## Status
 
@@ -889,15 +890,15 @@ What the English treebank packages' checkpoints add to the default package's pat
     |---|---|---|---|---|
     | draft PR | false | light | – | steps skipped, passes in ~1 min |
     | docs-only ready PR | false | light | smoke | steps skipped, passes in ~1 min |
-    | ready PR, only `src/StanzaSharp.Pos/**` | true | light | smoke | managed + smoke, 3 shards |
-    | ready PR touching `src/StanzaSharp.Cuda/**` | true | light | full | everything, 3 shards |
-    | push to main, release fallback (`workflow_call`) | true | full | full | everything, 3 shards |
+    | ready PR, only `src/StanzaSharp.Pos/**` | true | light | smoke | managed + smoke, 4 shards |
+    | ready PR touching `src/StanzaSharp.Cuda/**` | true | light | full | everything, 4 shards |
+    | push to main, release fallback (`workflow_call`) | true | full | full | everything, 4 shards |
     | `changes` failed | (empty) | (empty) | (empty) | everything (anything not clearly false/smoke) |
   - `concurrency` (`${{ github.workflow }}-${{ github.ref }}`): a newer push to the same PR or to main cancels the older
     CI run (a release waiting on that run then fails; see Packaging and releases). release.yml's fallback call gets the
     group `Release-refs/heads/main` (`github.workflow` is the caller's name), so it and main's own CI run don't cancel
     each other, and it is never cancelled.
-  - `golden` (owner's decision, 2026-10-10) is an aggregate: it `needs` the matrix job `golden-shard` (1, 2, 3), runs
+  - `golden` (owner's decision, 2026-10-10) is an aggregate: it `needs` the matrix job `golden-shard` (1, 2, 3, 4), runs
     `if: !cancelled()` and fails unless `needs.golden-shard.result` is `success` (a skipped or failed shard fails it),
     so the required check keeps its name. The shards split the test project by class, balanced on the golden trx
     (full run, minutes summed; xunit runs a class's tests one at a time and ConcurrencyTests after everything else):
@@ -905,7 +906,8 @@ What the English treebank packages' checkpoints add to the default package's pat
       plus CompareCommand and BenchmarkCommand (2026-10-12: the shard that finished first), with Python Stanza
       (`STANZASHARP_PYTHON` from setup-python; installing tools/requirements.txt adds ~40 s, the Python runs ~1 min).
     - 3: Pipeline, Ner, Sentiment, InputMode, Depparse, NoSsplit: 72 tests, 45.5 min (parallel; Pipeline 10.3 alone).
-    - 1: the complement of 2 and 3 (ConcurrencyTests' cancellation cases and every other class, new ones too):
+    - 4 (2026-10-18): the `Transformer*` classes (`SHARD_FOUR`), the only shard that downloads the transformer.
+    - 1: the complement of 2, 3 and 4 (ConcurrencyTests' cancellation cases and every other class, new ones too):
       123 tests, 14.6 min. So the union is always the whole suite, each test once (checked with `--list-tests`).
     - Expected wall per shard on full: ~12–15 min (was 38–44 for one job); light: ~4–6 min.
     Each shard, on a model-cache miss, downloads the models with the C# `ModelDownloader` (via the
@@ -951,7 +953,8 @@ What the English treebank packages' checkpoints add to the default package's pat
     `.pt` files, no Python or conversion), the same no-skip check, and both `verify-package.ps1` runs. Models are
     cached per OS on the en group's file list only; no NuGet cache, to stay inside the 10 GB cache budget.
     - Sharded like golden (owner's decision, 2026-10-13): the matrix job `cross-os-shard` (os × shard 1–3) uses golden's
-      three filters (`SHARD_TWO`/`SHARD_THREE` in the workflow `env`; shard 1 the complement). As one job the tests took
+      first three filters (`SHARD_TWO`/`SHARD_THREE` in the workflow `env`; shard 1 the complement, without `SHARD_FOUR`'s
+      `Transformer*` classes, which only golden shard 4 can run). As one job the tests took
       29 / 40 / 61 min (windows-2025 / macos-26 / windows-11-arm), mostly ConcurrencyTests' two halves running alone
       at the end (7.6+7.6, 11.8+11.4, 25.4+17.6 min); the shards run them side by side. Each shard has every step
       (libomp, model cache, no-skip check, trx `test-results-<os>-<shard>`); the package checks run only in shard 3.

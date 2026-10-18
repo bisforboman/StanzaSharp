@@ -19,11 +19,14 @@ concurrency:
 env:
   DOTNET_NOLOGO: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
-  # The test classes of shards 2 and 3 (golden-shard and cross-os-shard); shard 1 runs the complement. See golden-shard.
+  # The test classes of shards 2, 3 and 4 (golden-shard; cross-os-shard has no shard 4); shard 1 runs the complement.
+  # See golden-shard.
   SHARD_TWO: >-
     .ConcurrencyTests.ConcurrentCalls_ .FastPackageTests. .GcPressureTests. .ManagedBackendTests. .TokenizerTests.
     .CompareCommandTests. .BenchmarkCommandTests.
   SHARD_THREE: .PipelineTests. .NerTests. .SentimentTests. .InputModeTests. .DepparseTests. .NoSsplitTests.
+  # The Transformer* classes (TransformerModelTests, ...): only golden-shard 4 downloads the transformer they read.
+  SHARD_FOUR: .Transformer
 
 jobs:
   # Everything builds and tests in Release: the managed backend's kernels are many times slower in Debug, which once
@@ -105,7 +108,9 @@ jobs:
   # named below (~15 in all); 2 = ConcurrencyTests' concurrent calls (11.5, one at a time) + FastPackage, GcPressure,
   # ManagedBackend, Tokenizer, and CompareCommand + BenchmarkCommand with Python Stanza (~20; the shard that finished
   # first); 3 = Pipeline, Ner, Sentiment, InputMode, Depparse, NoSsplit (~45, in parallel).
-  # Shard 1's filter is the complement of the other two, so together they run every test exactly once, new classes too.
+  # 4 = the Transformer* classes (default_accurate's encoder on both backends; in shard 1 they made its job 82 min).
+  # Shard 1's filter is the complement of the others, so together they run every test exactly once, new
+  # classes too.
   # With torch=smoke, each shard leaves out the TorchSharp-backend cases not marked [Trait("Smoke", "TorchSharp")].
   golden-shard:
     needs: changes
@@ -113,9 +118,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3]
-    # 120: shard 1 runs the Transformer* classes (the encoder on both backends); its job took 72 min with PR 3's rows
-    timeout-minutes: 120
+        shard: [1, 2, 3, 4]
+    timeout-minutes: 90
     runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
@@ -287,10 +291,10 @@ jobs:
 
       # The transformers that default_accurate's models read (docs/transformer-plan.md), from Hugging Face at their pinned
       # revision: downloaded on every run, never cached (owner's decision, 2026-10-17: the model caches are near GitHub's
-      # 10 GB). Only shard 1 runs the Transformer* test classes (they are in neither SHARD_TWO nor SHARD_THREE); the other
-      # jobs' no-skip checks exempt them.
+      # 10 GB). Only shard 4 runs the Transformer* test classes (SHARD_FOUR); the other jobs' no-skip checks exempt
+      # them.
       - name: Download the transformer files
-        if: needs.changes.outputs.code != 'false' && matrix.shard == 1
+        if: needs.changes.outputs.code != 'false' && matrix.shard == 4
         run: tools/ci-models.sh transformer
 
       - name: Test
@@ -300,7 +304,10 @@ jobs:
         run: |
           any() { printf 'FullyQualifiedName~%s|' $1 | sed 's/|$//'; }
           none() { printf 'FullyQualifiedName!~%s&' $1 | sed 's/&$//'; }
-          case ${{ matrix.shard }} in 1) filter=$(none "$SHARD_TWO $SHARD_THREE");; 2) filter=$(any "$SHARD_TWO");; 3) filter=$(any "$SHARD_THREE");; esac
+          case ${{ matrix.shard }} in
+            1) filter=$(none "$SHARD_TWO $SHARD_THREE $SHARD_FOUR");; 2) filter=$(any "$SHARD_TWO");; 3) filter=$(any "$SHARD_THREE");;
+            4) filter=$(any "$SHARD_FOUR");;
+          esac
           if [ "${{ needs.changes.outputs.torch }}" = smoke ]; then
             filter="($filter)&((DisplayName!~managed: False&Backend!=TorchSharp)|Smoke=TorchSharp)"
           fi
@@ -520,7 +527,7 @@ jobs:
           # Run_PythonStanza_* needs Python Stanza, which this job doesn't install (golden-shard 2 runs them). German tests
           # (rows with lang "de", names with German) need the German models, and TreebankPackageTests', ModelChoiceTests' English rows and CharlmInputTests the
           # English treebank and alternative models, which only golden-shard has, and the Transformer* classes the transformer files
-          # golden-shard 1 downloads.
+          # golden-shard 4 downloads.
           if grep -h 'outcome="NotExecuted"' TestResults/*.trx | grep -v 'Run_PythonStanza_' | grep -qvE 'lang: (&quot;|")de|German|TreebankPackageTests|ModelChoiceTests|CharlmInputTests|Transformer'; then
             echo "::error::Tests were skipped; the models in models/stanza/en were not found."
             exit 1
@@ -624,7 +631,7 @@ jobs:
         run: |
           any() { printf 'FullyQualifiedName~%s|' $1 | sed 's/|$//'; }
           none() { printf 'FullyQualifiedName!~%s&' $1 | sed 's/&$//'; }
-          case ${{ matrix.shard }} in 1) filter=$(none "$SHARD_TWO $SHARD_THREE");; 2) filter=$(any "$SHARD_TWO");; 3) filter=$(any "$SHARD_THREE");; esac
+          case ${{ matrix.shard }} in 1) filter=$(none "$SHARD_TWO $SHARD_THREE $SHARD_FOUR");; 2) filter=$(any "$SHARD_TWO");; 3) filter=$(any "$SHARD_THREE");; esac
           if [ "${{ needs.changes.outputs.level }}" = light ]; then
             filter='FullyQualifiedName~PipelineTests|FullyQualifiedName~ManagedBackendTests|FullyQualifiedName~ManagedCheckTests'
           fi
@@ -643,7 +650,7 @@ jobs:
           # Run_PythonStanza_* needs Python Stanza, which this job doesn't install (golden-shard 2 runs them). German tests
           # (rows with lang "de", names with German) need the German models, and TreebankPackageTests', ModelChoiceTests' English rows and CharlmInputTests the
           # English treebank and alternative models, which only golden-shard has, and the Transformer* classes the transformer files
-          # golden-shard 1 downloads.
+          # golden-shard 4 downloads.
           if grep -h 'outcome="NotExecuted"' TestResults/*.trx | grep -v 'Run_PythonStanza_' | grep -qvE 'lang: (&quot;|")de|German|TreebankPackageTests|ModelChoiceTests|CharlmInputTests|Transformer'; then
             echo "::error::Tests were skipped; the models in models/stanza/en were not found."
             exit 1
