@@ -91,6 +91,11 @@ internal sealed class NerTagger : IDisposable
     /// <summary>Whether this model reads a transformer (<c>_electra-large</c>).</summary>
     internal bool UsesTransformer => _transformer != null;
 
+    /// <summary>The sentences this tagger will send its transformer in <paramref name="doc"/>, for <see cref="TransformerEmbedder.Prefill"/> (null without one).</summary>
+    internal TransformerReader? TransformerReader(Document doc) => _transformer == null
+        ? null
+        : new TransformerReader(_transformer, _layerMix, [.. doc.Sentences.Where(s => s.Tokens.Count > 0).Select(s => (IReadOnlyList<string>)[.. s.Tokens.Select(t => t.Text)])]);
+
     /// <summary>The delta vocabulary's size, or 0 for a model without a delta embedding (German <c>germeval2014</c>).</summary>
     internal static int DeltaCount(Checkpoint ckpt) => ckpt.Root["vocab"]!["delta"] is { } delta ? Checkpoint.UnitToId(delta).Count : 0;
 

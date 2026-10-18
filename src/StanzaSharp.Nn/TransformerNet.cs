@@ -54,6 +54,20 @@ internal interface ITransformerNet : IDisposable
     bool RentsOutputs => false;
 
     /// <summary>
+    /// Whether <see cref="EncodeJoint"/> can encode this net's sentences together with those of the nets made from it by
+    /// <see cref="WithLora"/> (the managed net); otherwise each net runs its own passes.
+    /// </summary>
+    bool EncodesJointly => false;
+
+    /// <summary>
+    /// <see cref="Encode"/> for several groups in one sweep over the layers (#169): each group is a net sharing this one's
+    /// weights (this net or one of its <see cref="WithLora"/> nets) and its sentences, and gets exactly the states that net's
+    /// own <see cref="Encode"/> gives them. A short call reads the weights once instead of once per net. Null if this net
+    /// can't (<see cref="EncodesJointly"/> false, or a net of another transformer).
+    /// </summary>
+    float[][][]? EncodeJoint(IReadOnlyList<(ITransformerNet Net, IReadOnlyList<int[]> Sentences)> groups, int lastLayers, CancellationToken ct = default) => null;
+
+    /// <summary>
     /// This encoder with <paramref name="lora"/>'s adapters added at run time. It shares this net's weights, so it must not
     /// outlive it; disposing it frees only the adapters.
     /// </summary>

@@ -88,16 +88,23 @@ internal sealed class SentimentClassifier : IDisposable
     /// <summary>Whether this classifier reads the charlms (and so the tagger's <see cref="CharlmCache"/>); sstplus_electra-large doesn't.</summary>
     internal bool UsesCharlm { get; }
 
+    /// <summary>The sentences this classifier will send its transformer in <paramref name="doc"/>, for <see cref="TransformerEmbedder.Prefill"/> (null without one).</summary>
+    internal TransformerReader? TransformerReader(Document doc) => _transformer == null
+        ? null
+        : new TransformerReader(_transformer, _layerMix, [.. doc.Sentences.Select(s => (IReadOnlyList<string>)[.. s.Tokens.Select(t => t.Text)])]);
+
     /// <summary>Sets <see cref="Sentence.Sentiment"/> on every sentence. Reads only the tokens' text.</summary>
     /// <param name="charlms">Charlm representations the tagger kept, if any. They are used for sentences
     /// whose tokens are exactly the tagger's words (no multi-word tokens); the rest are computed.</param>
-    public void Process(Document doc, CharlmCache? charlms = null, CancellationToken cancellationToken = default)
+    /// <param name="transformers">The call's transformer states of this classifier's LoRA encoder
+    /// (<see cref="TransformerEmbedder.Prefill"/>), if any.</param>
+    public void Process(Document doc, CharlmCache? charlms = null, CancellationToken cancellationToken = default, TransformerCache? transformers = null)
     {
         if (!UsesCharlm)
             charlms = null;
         var sentences = doc.Sentences.Select(s => (IReadOnlyList<string>)s.Tokens.Select(t => t.Text).ToList()).ToList();
         var keys = charlms == null ? null : doc.Sentences.Select(CacheKey).ToList();
-        var labels = Classify(sentences, out _, charlms, keys, cancellationToken);
+        var labels = Classify(sentences, out _, charlms, keys, cancellationToken, transformers);
         for (int i = 0; i < labels.Length; i++)
             doc.Sentences[i].Sentiment = labels[i];
     }
@@ -114,7 +121,7 @@ internal sealed class SentimentClassifier : IDisposable
     /// <param name="charlms">With <paramref name="cacheKeys"/>: charlm outputs already computed; sentence i's are looked up
     /// under its key if not null.</param>
     internal int[] Classify(IReadOnlyList<IReadOnlyList<string>> sentences, out float[][] logits, CharlmCache? charlms = null,
-        IReadOnlyList<Sentence?>? cacheKeys = null, CancellationToken cancellationToken = default)
+        IReadOnlyList<Sentence?>? cacheKeys = null, CancellationToken cancellationToken = default, TransformerCache? transformers = null)
     {
         var order = Enumerable.Range(0, sentences.Count).OrderByDescending(i => sentences[i].Count).ToArray();
         var labels = new int[sentences.Count];
@@ -123,7 +130,8 @@ internal sealed class SentimentClassifier : IDisposable
         {
             cancellationToken.ThrowIfCancellationRequested();
             var batch = order[start..end];
-            var scores = Forward(batch.Select(i => sentences[i]).ToList(), charlms, cacheKeys == null ? null : batch.Select(i => cacheKeys[i]).ToList(), cancellationToken);
+            var scores = Forward(batch.Select(i => sentences[i]).ToList(), charlms, cacheKeys == null ? null : batch.Select(i => cacheKeys[i]).ToList(), cancellationToken,
+                transformers);
             for (int k = 0; k < batch.Length; k++)
             {
                 logits[batch[k]] = scores[k];
@@ -183,7 +191,7 @@ internal sealed class SentimentClassifier : IDisposable
     /// <summary>CNNClassifier.forward in eval mode: one batch, padded at the end to its longest sentence (at least the widest filter).</summary>
     /// <returns>The class logits of each sentence.</returns>
     internal float[][] Forward(IReadOnlyList<IReadOnlyList<string>> batch, CharlmCache? charlms = null, IReadOnlyList<Sentence?>? cacheKeys = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default, TransformerCache? transformers = null)
     {
         int n = batch.Count, width = Math.Max(_maxWindow, batch.Max(s => s.Count));
         var ids = new long[n * width]; // padding: PAD (0) in both vocabs
@@ -198,9 +206,9 @@ internal sealed class SentimentClassifier : IDisposable
             }
         }
 
-        // extract_bert_embeddings over the token texts, without the endpoints, through the LoRA encoder: never the frozen
-        // transformer's cache, whose states differ.
-        var transformer = _transformer?.Embed(batch, keepEndpoints: false, _layerMix, cache: null, cancellationToken);
+        // extract_bert_embeddings over the token texts, without the endpoints, through the LoRA encoder: Embed reads a cache
+        // only for its own net, never the frozen transformer's, whose states differ.
+        var transformer = _transformer?.Embed(batch, keepEndpoints: false, _layerMix, transformers, cancellationToken);
         var scores = _net.Forward(batch, ids, extraIds, width, UsesCharlm ? charlms : null, UsesCharlm ? cacheKeys : null, cancellationToken, transformer);
         int classes = scores.Length / n;
         return Enumerable.Range(0, n).Select(i => scores[(i * classes)..((i + 1) * classes)]).ToArray();
