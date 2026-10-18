@@ -52,15 +52,16 @@ public sealed class Sentence
 
     /// <summary>
     /// The dependency arcs, one per word in order (Stanza's <c>sentence.dependencies</c>); empty unless every word has a
-    /// <see cref="Word.Head"/> and a <see cref="Word.Deprel"/>, as when the dependency parser ran.
+    /// <see cref="Word.Head"/> and a <see cref="Word.Deprel"/> and the ids run 1 to n, as when the dependency parser ran.
     /// </summary>
     /// <exception cref="InvalidOperationException">A word's head is not a word of the sentence.</exception>
     public IReadOnlyList<Dependency> Dependencies
     {
         get
         {
+            // Stanza builds them only when every word has a head and a relation and the ids run 1..n (is_complete_words).
             var words = Words.ToList();
-            if (words.Count == 0 || words.Any(w => w.Head == null || w.Deprel == null))
+            if (words.Count == 0 || words.Any(w => w.Head == null || w.Deprel == null) || words[^1].Id != words.Count || words.Count < Tokens.Count)
                 return [];
             return [.. words.Select(w => new Dependency(
                 w.Head == 0 ? null : w.Head > 0 && w.Head <= words.Count && words[w.Head!.Value - 1].Id == w.Head

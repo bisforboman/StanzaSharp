@@ -59,6 +59,10 @@ public class DocumentHelperTests
 
         (token.Words[0].Head, token.Words[0].Deprel) = (2, "dep");
         Assert.Throws<InvalidOperationException>(() => sentence.Dependencies);
+
+        // Ids that don't run 1..n: none, as Stanza's is_complete_words leaves them.
+        (token.Words[0].Id, token.Words[0].Head) = (3, 0);
+        Assert.Empty(sentence.Dependencies);
     }
 
     [Theory]
