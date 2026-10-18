@@ -1,5 +1,7 @@
 using System.Buffers;
+using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.Intrinsics;
 
 namespace StanzaSharp.Nn.Managed;
 
@@ -7,7 +9,8 @@ namespace StanzaSharp.Nn.Managed;
 /// <see cref="ITransformerNet"/> on the managed kernels (docs/transformer-plan.md). The dense layers are float32
 /// <see cref="Gemm"/> runs over every sentence's pieces at once, row-invariant (no single-row kernel), so a sentence's
 /// states have the same bits in any call; attention runs per sentence and head without padding. Attention, LayerNorm
-/// and GELU are scalar code in double (one version for every <see cref="KernelPath"/>; only the GEMMs differ by path).
+/// and GELU are in double and vectorized lane by lane (round 45), so every <see cref="KernelPath"/> and vector width
+/// gives them the same bits; only the GEMMs differ by path.
 /// </summary>
 internal sealed unsafe class ManagedTransformer : ITransformerNet
 {
@@ -259,12 +262,7 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
                         sum += p[j] = Math.Exp(p[j] - max);
                     acc.Clear();
                     for (int j = 0; j < n; j++)
-                    {
-                        var vj = q_ + ((long)(r0 + j) * 3 * h) + (2 * h) + (head * d);
-                        double pj = p[j];
-                        for (int e = 0; e < d; e++)
-                            acc[e] += pj * vj[e];
-                    }
+                        WeightedAdd(acc, p[j], q_ + ((long)(r0 + j) * 3 * h) + (2 * h) + (head * d));
 
                     var ci = c_ + ((long)(r0 + i) * h) + (head * d);
                     for (int e = 0; e < d; e++)
@@ -278,7 +276,34 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
         });
     }
 
-    // x = LayerNorm(x + residual) per row (residual null: x alone), statistics in double.
+    // acc[e] += weight · v[e] for e < acc.Length, in double: a multiply then an add per lane (never fused), so every
+    // vector width gives the scalar loop's bits.
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    internal static void WeightedAdd(Span<double> acc, double weight, float* v)
+    {
+        int e = 0;
+        if (Vector.IsHardwareAccelerated)
+        {
+            int lanes = Vector<float>.Count;
+            var w = new Vector<double>(weight);
+            ref double a0 = ref System.Runtime.InteropServices.MemoryMarshal.GetReference(acc);
+            for (; e + lanes <= acc.Length; e += lanes)
+            {
+                Vector.Widen(Vector.Load(v + e), out var lo, out var hi);
+                ref double a = ref Unsafe.Add(ref a0, e);
+                var accLo = Vector.LoadUnsafe(ref a);
+                var accHi = Vector.LoadUnsafe(ref a, (nuint)Vector<double>.Count);
+                Vector.StoreUnsafe(accLo + (w * lo), ref a);
+                Vector.StoreUnsafe(accHi + (w * hi), ref a, (nuint)Vector<double>.Count);
+            }
+        }
+
+        for (; e < acc.Length; e++)
+            acc[e] += weight * v[e];
+    }
+
+    // x = LayerNorm(x + residual) per row (residual null: x alone), statistics in double with four accumulators each
+    // (LayerNormRow), so every path gives the same bits.
     private void LayerNorm(float* x, float* residual, int rows, float[] gamma, float[] beta)
     {
         int h = Config.Hidden;
@@ -286,46 +311,176 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
         nint px = (nint)x, pr = (nint)residual;
         ManagedThreads.For((rows + 63) / 64, block =>
         {
-            for (int r = block * 64; r < Math.Min(rows, (block * 64) + 64); r++)
+            fixed (float* g = gamma, b = beta)
             {
-                var row = new Span<float>((float*)px + ((long)r * h), h);
-                if (pr != 0)
-                {
-                    var add = new ReadOnlySpan<float>((float*)pr + ((long)r * h), h);
-                    for (int j = 0; j < h; j++)
-                        row[j] = add[j] + row[j];
-                }
-
-                double mean = 0, variance = 0;
-                for (int j = 0; j < h; j++)
-                    mean += row[j];
-                mean /= h;
-                for (int j = 0; j < h; j++)
-                    variance += (row[j] - mean) * (row[j] - mean);
-                double inv = 1 / Math.Sqrt((variance / h) + eps);
-                for (int j = 0; j < h; j++)
-                    row[j] = ((float)((row[j] - mean) * inv) * gamma[j]) + beta[j];
+                for (int r = block * 64; r < Math.Min(rows, (block * 64) + 64); r++)
+                    LayerNormRow((float*)px + ((long)r * h), pr == 0 ? null : (float*)pr + ((long)r * h), h, g, b, eps);
             }
         });
     }
 
-    // Exact GELU, x·Φ(x) = x/2·(1 + erf(x/√2)).
+    // One row: row += add (float), mean = Σ row / n and variance = Σ (row − mean)² / n in double, each sum over four
+    // accumulators s0..s3 (q mod 4, the tail into s0, then (s0 + s1) + (s2 + s3), as Act.Dot), whose SIMD lanes are the
+    // accumulators; then row = (float)((row − mean)·inv)·γ + β. Every step is the same per lane on every path.
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    internal static void LayerNormRow(float* row, float* add, int n, float* gamma, float* beta, double eps)
+    {
+        bool wide = Gemm.Path is KernelPath.Vector512 or KernelPath.Vector256, narrow = Gemm.Path == KernelPath.Vector128;
+        int q = 0;
+        if (add != null)
+        {
+            if (wide || narrow)
+            {
+                for (; q <= n - 4; q += 4)
+                    (Vector128.Load(add + q) + Vector128.Load(row + q)).Store(row + q);
+            }
+
+            for (; q < n; q++)
+                row[q] = add[q] + row[q];
+        }
+
+        double s0 = 0, s1 = 0, s2 = 0, s3 = 0;
+        q = 0;
+        if (wide)
+        {
+            var s = Vector256<double>.Zero;
+            for (; q <= n - 4; q += 4)
+                s += Vector256.WidenLower(Vector128.Load(row + q).ToVector256Unsafe());
+            (s0, s1, s2, s3) = (s[0], s[1], s[2], s[3]);
+        }
+        else if (narrow)
+        {
+            Vector128<double> s01 = Vector128<double>.Zero, s23 = Vector128<double>.Zero;
+            for (; q <= n - 4; q += 4)
+            {
+                var x = Vector128.Load(row + q);
+                s01 += Vector128.WidenLower(x);
+                s23 += Vector128.WidenUpper(x);
+            }
+
+            (s0, s1, s2, s3) = (s01[0], s01[1], s23[0], s23[1]);
+        }
+        else
+        {
+            for (; q <= n - 4; q += 4)
+            {
+                s0 += row[q];
+                s1 += row[q + 1];
+                s2 += row[q + 2];
+                s3 += row[q + 3];
+            }
+        }
+
+        for (; q < n; q++)
+            s0 += row[q];
+        double mean = ((s0 + s1) + (s2 + s3)) / n;
+
+        (s0, s1, s2, s3) = (0, 0, 0, 0);
+        q = 0;
+        if (wide)
+        {
+            Vector256<double> s = Vector256<double>.Zero, m = Vector256.Create(mean);
+            for (; q <= n - 4; q += 4)
+            {
+                var d = Vector256.WidenLower(Vector128.Load(row + q).ToVector256Unsafe()) - m;
+                s += d * d;
+            }
+
+            (s0, s1, s2, s3) = (s[0], s[1], s[2], s[3]);
+        }
+        else if (narrow)
+        {
+            Vector128<double> s01 = Vector128<double>.Zero, s23 = Vector128<double>.Zero, m = Vector128.Create(mean);
+            for (; q <= n - 4; q += 4)
+            {
+                var x = Vector128.Load(row + q);
+                var (lo, hi) = (Vector128.WidenLower(x) - m, Vector128.WidenUpper(x) - m);
+                s01 += lo * lo;
+                s23 += hi * hi;
+            }
+
+            (s0, s1, s2, s3) = (s01[0], s01[1], s23[0], s23[1]);
+        }
+        else
+        {
+            for (; q <= n - 4; q += 4)
+            {
+                double d0 = row[q] - mean, d1 = row[q + 1] - mean, d2 = row[q + 2] - mean, d3 = row[q + 3] - mean;
+                s0 += d0 * d0;
+                s1 += d1 * d1;
+                s2 += d2 * d2;
+                s3 += d3 * d3;
+            }
+        }
+
+        for (; q < n; q++)
+            s0 += (row[q] - mean) * (row[q] - mean);
+        double inv = 1 / Math.Sqrt((((s0 + s1) + (s2 + s3)) / n) + eps);
+
+        q = 0;
+        if (wide || narrow)
+        {
+            Vector128<double> m = Vector128.Create(mean), iv = Vector128.Create(inv);
+            for (; q <= n - 4; q += 4)
+            {
+                var x = Vector128.Load(row + q);
+                var y = Vector128.Narrow((Vector128.WidenLower(x) - m) * iv, (Vector128.WidenUpper(x) - m) * iv);
+                ((y * Vector128.Load(gamma + q)) + Vector128.Load(beta + q)).Store(row + q);
+            }
+        }
+
+        for (; q < n; q++)
+            row[q] = ((float)((row[q] - mean) * inv) * gamma[q]) + beta[q];
+    }
+
+    // Exact GELU, x·Φ(x) = x/2·(1 + erf(x/√2)), in double; lanes of every vector width and the scalar tail run the same
+    // operations (GeluLanes / Gelu(double)), so a value's result doesn't depend on the CPU.
     private static void Gelu(float* x, int n)
     {
         nint px = (nint)x;
-        ManagedThreads.For((n + 4095) / 4096, block =>
-        {
-            var v = (float*)px;
-            for (int i = block * 4096; i < Math.Min(n, (block * 4096) + 4096); i++)
-                v[i] = (float)(0.5 * v[i] * (1 + Erf(v[i] * 0.70710678118654752)));
-        });
+        ManagedThreads.For((n + 4095) / 4096, block => GeluBlock((float*)px + (block * 4096), Math.Min(4096, n - (block * 4096))));
     }
 
-    /// <summary>erf in double from Numerical Recipes' erfc (relative error under 1.2e-7, the order of a float ulp).</summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static double Erf(double x)
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    internal static void GeluBlock(float* v, int n)
     {
-        double z = Math.Abs(x), t = 1 / (1 + (0.5 * z));
+        int i = 0;
+        if (Vector.IsHardwareAccelerated)
+        {
+            for (; i + Vector<float>.Count <= n; i += Vector<float>.Count)
+            {
+                Vector.Widen(Vector.Load(v + i), out var lo, out var hi);
+                Vector.Narrow(GeluLanes(lo), GeluLanes(hi)).Store(v + i);
+            }
+        }
+
+        for (; i < n; i++)
+            v[i] = (float)Gelu((double)v[i]);
+    }
+
+    /// <summary>GELU of one value: <see cref="GeluLanes"/>'s operations on a scalar.</summary>
+    internal static double Gelu(double x)
+    {
+        double z = Math.Abs(x * 0.70710678118654752), t = 1 / (1 + (0.5 * z));
+        double erfc = t * Exp((-z * z) - 1.26551223 + (t * ErfPoly(t)));
+        double erf = x >= 0 ? 1 - erfc : erfc - 1;
+        return 0.5 * x * (1 + erf);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static Vector<double> GeluLanes(Vector<double> x)
+    {
+        var z = Vector.Abs(x * new Vector<double>(0.70710678118654752));
+        var t = Vector<double>.One / (Vector<double>.One + (new Vector<double>(0.5) * z));
+        var erfc = t * Exp((-z * z) - new Vector<double>(1.26551223) + (t * ErfPoly(t)));
+        var erf = Vector.ConditionalSelect(Vector.GreaterThanOrEqual(x, Vector<double>.Zero), Vector<double>.One - erfc, erfc - Vector<double>.One);
+        return new Vector<double>(0.5) * x * (Vector<double>.One + erf);
+    }
+
+    // Numerical Recipes' erfc polynomial (relative error under 1.2e-7, the order of a float ulp), Horner in t.
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static double ErfPoly(double t)
+    {
         double poly = -0.82215223 + (t * 0.17087277);
         poly = 1.48851587 + (t * poly);
         poly = -1.13520398 + (t * poly);
@@ -333,9 +488,53 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
         poly = -0.18628806 + (t * poly);
         poly = 0.09678418 + (t * poly);
         poly = 0.37409196 + (t * poly);
-        poly = 1.00002368 + (t * poly);
-        double erfc = t * Math.Exp((-z * z) - 1.26551223 + (t * poly));
-        return x >= 0 ? 1 - erfc : erfc - 1;
+        return 1.00002368 + (t * poly);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static Vector<double> ErfPoly(Vector<double> t)
+    {
+        var poly = new Vector<double>(-0.82215223) + (t * new Vector<double>(0.17087277));
+        poly = new Vector<double>(1.48851587) + (t * poly);
+        poly = new Vector<double>(-1.13520398) + (t * poly);
+        poly = new Vector<double>(0.27886807) + (t * poly);
+        poly = new Vector<double>(-0.18628806) + (t * poly);
+        poly = new Vector<double>(0.09678418) + (t * poly);
+        poly = new Vector<double>(0.37409196) + (t * poly);
+        return new Vector<double>(1.00002368) + (t * poly);
+    }
+
+    // e^x for x ≤ 0 (the erfc argument; below -708 it is clamped, giving about 1e-308): x = n·ln 2 + r with n rounded to
+    // nearest by adding and subtracting 1.5·2^52, then a degree-12 Taylor polynomial in |r| ≤ ln 2 / 2 (truncation under
+    // 1e-16) times 2^n. Only multiplies and adds, never fused, so the scalar and every vector width give the same bits.
+    private const double Log2E = 1.4426950408889634, Ln2Hi = 0.693147180369123816490, Ln2Lo = 1.90821492927058770002e-10,
+        RoundMagic = 6755399441055744.0;
+
+    private static readonly double[] ExpCoefficients = [1.0, 1.0, 0.5, 0.16666666666666666, 0.041666666666666664, 0.008333333333333333, 0.001388888888888889, 0.0001984126984126984, 2.48015873015873e-05, 2.7557319223985893e-06, 2.755731922398589e-07, 2.505210838544172e-08, 2.08767569878681e-09];
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static double Exp(double x)
+    {
+        x = Math.Max(x, -708.0);
+        double n = ((x * Log2E) + RoundMagic) - RoundMagic;
+        double r = (x - (n * Ln2Hi)) - (n * Ln2Lo);
+        double p = ExpCoefficients[12];
+        for (int i = 11; i >= 0; i--)
+            p = ExpCoefficients[i] + (r * p);
+        return p * BitConverter.Int64BitsToDouble(((long)n + 1023) << 52);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static Vector<double> Exp(Vector<double> x)
+    {
+        x = Vector.Max(x, new Vector<double>(-708.0));
+        var n = ((x * new Vector<double>(Log2E)) + new Vector<double>(RoundMagic)) - new Vector<double>(RoundMagic);
+        var r = (x - (n * new Vector<double>(Ln2Hi))) - (n * new Vector<double>(Ln2Lo));
+        var p = new Vector<double>(ExpCoefficients[12]);
+        for (int i = 11; i >= 0; i--)
+            p = new Vector<double>(ExpCoefficients[i]) + (r * p);
+        var scale = Vector.ShiftLeft(Vector.ConvertToInt64(n) + new Vector<long>(1023), 52);
+        return p * Vector.AsVectorDouble(scale);
     }
 
     public void Dispose()

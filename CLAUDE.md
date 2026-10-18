@@ -109,8 +109,9 @@ default from 0.5) or through TorchSharp (see "Managed backend").
   - The encoder (PR 1b): `Nn.ITransformerNet` (`Encode(ids, lastLayers)` → per sentence [lastLayers, pieces, hidden]),
     `TransformerConfig` from the transformer's `config.json` (ElectraModel only; anything else throws).
     `Nn.Managed.ManagedTransformer`: the dense layers as row-invariant `Gemm.Run` over every sentence's pieces, attention
-    per sentence and head without padding, attention/LayerNorm/GELU scalar in double (one version for every path; GELU's
-    erf from Numerical Recipes' erfc, 1.2e-7 relative), pooled buffers, a cancellation check per layer; so a sentence's
+    per sentence and head without padding, attention/LayerNorm/GELU in double (round 45: lane-wise vectors, the same bits
+    on every path and width; GELU's erf from Numerical Recipes' erfc, 1.2e-7 relative, with its own mul/add-only `Exp`;
+    LayerNorm's sums `Act.Dot`'s four accumulators), pooled buffers, a cancellation check per layer; so a sentence's
     states have the same bits alone, batched and on any thread count (`TransformerKernelTests`). `TransformerNet`
     (StanzaSharp.Cuda) pads each call like Stanza, with transformers' additive mask and `scaled_dot_product_attention`.
     `Nn.TransformerEmbedder` = extract_bert_embeddings: the windows over `model_max_length` (tokenizer_config.json, 512;

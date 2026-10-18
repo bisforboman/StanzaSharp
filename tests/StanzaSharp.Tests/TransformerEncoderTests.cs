@@ -171,6 +171,111 @@ public class TransformerKernelTests(TransformerModels models, ITestOutputHelper 
             Assert.True(With(KernelPath.Vector256, 4, () => net.Encode(ids, 4)).Zip(batched).All(x => x.First.AsSpan().SequenceEqual(x.Second)));
     }
 
+    [TransformerFact("config.json", "tokenizer.json", "tokenizer_config.json", "pytorch_model.bin")]
+    public void Vector512_GivesVector256sBits()
+    {
+        if (!NativePaths.Contains(KernelPath.Vector512))
+            return; // nothing to compare on this CPU; ManagedBackendTests' kernel tests cover what it runs
+        var net = models.Embedder(managed: true).Net;
+        var ids = Ids(TransformerEncoderTests.ReadGolden().Sentences[..3]);
+        var wide = With(KernelPath.Vector512, 4, () => net.Encode(ids, 4));
+        var narrow = With(KernelPath.Vector256, 4, () => net.Encode(ids, 4));
+        Assert.True(wide.Zip(narrow).All(x => x.First.AsSpan().SequenceEqual(x.Second)));
+    }
+
+    // Values GELU and LayerNorm see, and the extremes: zeros, tiny, huge, past erf's saturation.
+    private static float[] Values(int n, int seed)
+    {
+        var random = new Random(seed);
+        var values = new float[n];
+        for (int i = 0; i < n; i++)
+            values[i] = (float)(random.NextDouble() * 12 - 6) * (i % 7 == 0 ? 8 : 1);
+        float[] extremes = [0, -0f, 1e-30f, -1e-30f, 5, -5, 10, -10, 40, -40, 1e30f, -1e30f, float.MaxValue, float.MinValue, float.Epsilon];
+        extremes.CopyTo(values, 0);
+        return values;
+    }
+
+    [Fact]
+    public unsafe void Gelu_EveryVectorWidthGivesTheScalarsBits_AndStaysWithinAFloatUlpOfTheReference()
+    {
+        var values = Values(4096 + 7, 1);
+        var blocked = (float[])values.Clone();
+        fixed (float* p = blocked)
+            ManagedTransformer.GeluBlock(p, blocked.Length);
+        int differ = 0;
+        for (int i = 0; i < values.Length; i++)
+        {
+            float scalar = (float)ManagedTransformer.Gelu((double)values[i]);
+            Assert.True(BitConverter.SingleToInt32Bits(scalar) == BitConverter.SingleToInt32Bits(blocked[i]), $"GELU({values[i]}): vector {blocked[i]}, scalar {scalar}");
+
+            // The reference: the same erfc polynomial with Math.Exp (the encoder's GELU before round 45).
+            double x = values[i], z = Math.Abs(x * 0.70710678118654752), t = 1 / (1 + (0.5 * z));
+            double poly = -0.82215223 + (t * 0.17087277);
+            foreach (var c in new[] { 1.48851587, -1.13520398, 0.27886807, -0.18628806, 0.09678418, 0.37409196, 1.00002368 })
+                poly = c + (t * poly);
+            double erfc = t * Math.Exp((-z * z) - 1.26551223 + (t * poly));
+            float reference = (float)(0.5 * x * (1 + (x >= 0 ? 1 - erfc : erfc - 1)));
+            if (scalar != reference)
+            {
+                differ++;
+                Assert.True(Math.Abs(BitConverter.SingleToInt32Bits(scalar) - BitConverter.SingleToInt32Bits(reference)) <= 1, $"GELU({x}): {scalar}, reference {reference}");
+            }
+        }
+
+        output.WriteLine($"{differ} of {values.Length} values one float ulp from the reference");
+    }
+
+    [Fact]
+    public void Exp_IsWithin1e15OfMathExp()
+    {
+        for (double x = -708; x <= 0; x += 0.0137)
+        {
+            double e = ManagedTransformer.Exp(x), reference = Math.Exp(x);
+            Assert.True(Math.Abs((e / reference) - 1) <= 1e-15, $"exp({x}): {e}, Math.Exp {reference}");
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(Paths))]
+    public unsafe void LayerNormRow_EveryPathGivesTheScalarsBits(string path)
+    {
+        foreach (int n in new[] { 1024, 1027 })
+        {
+            var row = Values(n, 2);
+            var add = Values(n, 3);
+            var gamma = Values(n, 4);
+            var beta = Values(n, 5);
+            for (int i = 0; i < n; i++)
+                (row[i], add[i], gamma[i], beta[i]) = (row[i] / 64, add[i] / 64, gamma[i] / 64, beta[i] / 64); // finite sums
+            float[] Run(KernelPath p, bool residual)
+            {
+                var copy = (float[])row.Clone();
+                With(p, 1, () =>
+                {
+                    fixed (float* r = copy, a = add, g = gamma, b = beta)
+                        ManagedTransformer.LayerNormRow(r, residual ? a : null, n, g, b, 1e-12);
+                    return 0;
+                });
+                return copy;
+            }
+
+            foreach (bool residual in new[] { false, true })
+                Assert.True(Run(Enum.Parse<KernelPath>(path), residual).AsSpan().SequenceEqual(Run(KernelPath.Scalar, residual)), $"{path}, n {n}, residual {residual}");
+        }
+    }
+
+    [Fact]
+    public unsafe void WeightedAdd_GivesTheScalarLoopsBits()
+    {
+        var v = Values(67, 6);
+        double[] acc = [.. Values(67, 7).Select(x => (double)x)], expected = (double[])acc.Clone();
+        for (int e = 0; e < expected.Length; e++)
+            expected[e] += 0.37 * v[e];
+        fixed (float* pv = v)
+            ManagedTransformer.WeightedAdd(acc, 0.37, pv);
+        Assert.Equal(expected, acc);
+    }
+
     [TransformerTheory("config.json", "tokenizer.json", "tokenizer_config.json", "pytorch_model.bin")]
     [MemberData(nameof(Paths))]
     public void EveryPath_MeetsTheTolerance(string path)
