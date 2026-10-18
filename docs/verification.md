@@ -189,16 +189,16 @@ off (`disableTf32: true`); with TF32 on, 3 of 845 golden sentences differed on a
 
 [CI](../.github/workflows/ci.yml) runs on free GitHub-hosted runners. All eight jobs are required checks on `main`.
 Test counts are passed xUnit test cases (each case of a theory counts, summed over a job's shards) in `main`'s run
-[38833187727](https://github.com/bisforboman/StanzaSharp/actions/runs/38833187727) of 2026-10-16:
+[39135862100](https://github.com/bisforboman/StanzaSharp/actions/runs/39135862100) of 2026-10-18:
 
 | Job | Runner | What it checks |
 |---|---|---|
-| `build-test` | ubuntu-26.04 (x64) | builds with warnings as errors, checks the code style, runs the 265 tests that need no models |
-| `golden` (4 shards) | ubuntu-26.04 (x64) | the whole suite on both backends against downloaded models, original and converted, English and German, every package (625 tests); then packs the packages and builds fresh apps from them: `StanzaSharp` alone must reproduce the golden CoNLL-U with nothing of TorchSharp loaded, and `StanzaSharp.Cuda` with `TorchSharp-cpu` must too; then installs the `stanzasharp` tool and downloads models with it; then publishes the [managed check](../tests/StanzaSharp.ManagedCheck/Program.cs) with Native AOT (`x86-64-v3`) and trimmed, with no trim/AOT warning and no torch file allowed, and both binaries must reproduce the golden CoNLL-U ([tools/verify-aot.sh](../tools/verify-aot.sh)) |
-| `cross-os (windows-2025)` | Windows x64 | the whole suite on both backends, reading Stanza's `.pt` files directly (476 tests; the English default packages), both package checks, and the Native AOT and trimming check |
-| `cross-os (macos-26)` | macOS, Apple Silicon | the same (451 tests: Arm64 has no Vector256 path) |
-| `cross-os (windows-11-arm)` | Windows on Arm64 | the same suite (451 tests) and only the managed package check (`TorchSharp-cpu` has no Arm64 libtorch) |
-| `linux-arm64` | ubuntu-26.04-arm | every managed-backend test (260; there is no libtorch for Linux Arm64) and the managed package check |
+| `build-test` | ubuntu-26.04 (x64) | builds with warnings as errors, checks the code style, runs the 317 tests that need no models |
+| `golden` (4 shards) | ubuntu-26.04 (x64) | the whole suite on both backends against downloaded models, original and converted, English and German, every package, the transformer models included (872 tests); then packs the packages and builds fresh apps from them: `StanzaSharp` alone must reproduce the golden CoNLL-U with nothing of TorchSharp loaded, and `StanzaSharp.Cuda` with `TorchSharp-cpu` must too; then installs the `stanzasharp` tool and downloads models with it; then publishes the [managed check](../tests/StanzaSharp.ManagedCheck/Program.cs) with Native AOT (`x86-64-v3`) and trimmed, with no trim/AOT warning and no torch file allowed, and both binaries must reproduce the golden CoNLL-U ([tools/verify-aot.sh](../tools/verify-aot.sh)) |
+| `cross-os (windows-2025)` | Windows x64 | the whole suite on both backends, reading Stanza's `.pt` files directly (527 tests; the English default packages), both package checks, and the Native AOT and trimming check |
+| `cross-os (macos-26)` | macOS, Apple Silicon | the same (501 tests: Arm64 has no Vector256 path) |
+| `cross-os (windows-11-arm)` | Windows on Arm64 | the same suite (501 tests) and only the managed package check (`TorchSharp-cpu` has no Arm64 libtorch) |
+| `linux-arm64` | ubuntu-26.04-arm | every managed-backend test (287; there is no libtorch for Linux Arm64) and the managed package check |
 | `docker` | ubuntu-26.04 | the [Docker sample](../samples/docker/Dockerfile) on `runtime:10.0` and `runtime:10.0-noble-chiseled`: no libtorch in the image, and the container turns `corpus.txt` into the golden CoNLL-U byte for byte |
 | `alpine` | ubuntu-26.04 | the same on `runtime:10.0-alpine` (musl) |
 
