@@ -38,6 +38,38 @@ public class InputModeTests(SharedPipelines pipelines) : IClassFixture<SharedPip
         }
     }
 
+    // stream/<package>.json: Stanza's Pipeline.stream with a small batch size, so sentence ids continue across batches.
+    [ModelTheory]
+    [InlineData("default", false)]
+    [InlineData("default_fast", false)]
+    [InlineData("default", true)]
+    [InlineData("default_fast", true)]
+    public void Stream_MatchesStanzasStream(string package, bool managed)
+    {
+        var golden = JsonNode.Parse(File.ReadAllText(Path.Combine(Repo.Golden, "stream", package + ".json")))!;
+        var docs = golden["documents"]!.AsArray();
+        var texts = docs.Select(d => d!["text"]!.GetValue<string>()).ToList();
+        int enumerated = 0, batchSize = golden["batch_size"]!.GetValue<int>();
+        var stream = pipelines.Get(package, managed).Stream(texts.Select(t => { enumerated++; return t; }), batchSize);
+        Assert.Equal(0, enumerated); // lazy: nothing runs before the first document is asked for
+
+        int i = 0;
+        foreach (var doc in stream)
+        {
+            Assert.True(enumerated <= ((i / batchSize) + 1) * batchSize, $"document {i}: {enumerated} texts read, more than its batch");
+
+            // Stanza's "{:C}": Conllu.Write adds a final newline, except to an empty document.
+            var expected = docs[i]!["conllu"]!.GetValue<string>();
+            if (expected.Length > 0)
+                expected += "\n";
+            Assert.Equal(expected, Conllu.Write(doc));
+            i++;
+        }
+
+        Assert.Equal(docs.Count, i);
+        Assert.Throws<ArgumentOutOfRangeException>(() => pipelines.Get(package, managed).Stream(texts, 0));
+    }
+
     [ModelTheory]
     [InlineData("default", false, "en")]
     [InlineData("default_fast", false, "en")]

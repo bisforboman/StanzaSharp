@@ -3,6 +3,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using StanzaSharp.Nn;
 using StanzaSharp.Nn.Managed;
+using Postprocessor = System.Func<
+    System.Collections.Generic.IReadOnlyList<System.Collections.Generic.IReadOnlyList<StanzaSharp.PostprocessorToken>>,
+    System.Collections.Generic.IEnumerable<System.Collections.Generic.IEnumerable<StanzaSharp.PostprocessorToken>>>;
 
 namespace StanzaSharp.Tokenize;
 
@@ -123,24 +126,99 @@ internal sealed partial class Tokenizer : IDisposable
         new(Checkpoint.Load(basePath), ckpt => new ManagedTokenizerNet(ckpt), charlm);
 
     /// <param name="splitSentences">False is Stanza's <c>tokenize_no_ssplit</c>: each paragraph is one sentence.</param>
-    public Document Process(string text, bool splitSentences = true, CancellationToken cancellationToken = default)
+    /// <param name="postprocessor">Stanza's <c>tokenize_postprocessor</c> (see <see cref="Postprocess"/>), or null.</param>
+    public Document Process(string text, bool splitSentences = true, CancellationToken cancellationToken = default,
+        Postprocessor? postprocessor = null)
     {
         var paragraphs = SplitParagraphs(text);
         var preds = Predict(paragraphs, cancellationToken);
 
         var doc = new Document { Text = text };
         for (int i = 0; i < paragraphs.Count; i++)
-            Decode(paragraphs[i], preds[i], doc, splitSentences);
+            Decode(paragraphs[i], preds[i], doc, splitSentences, keepLongTokens: postprocessor != null);
+        if (postprocessor != null)
+            doc = Postprocess(doc, postprocessor);
         MarkWhitespace(doc);
         return doc;
+    }
+
+    /// <summary>
+    /// utils.postprocess_doc: <paramref name="postprocessor"/> gets every sentence's token texts with their multi-word flags
+    /// and returns the sentences it wants; each token is found in the text after the previous one
+    /// (reassemble_doc_from_tokens), a hand-given expansion becomes the token's words, and only then are tokens over
+    /// <c>max_seqlen</c> replaced, as TokenizeProcessor.process does.
+    /// </summary>
+    /// <remarks>
+    /// Stanza shifts a hand-expanded token's word ids by the number of automatic MWT expansions earlier in the whole
+    /// document (set_mwt_expansions' SKIP branch adds idx_e), which breaks its dependency trees; here the words are
+    /// numbered as written.
+    /// </remarks>
+    internal Document Postprocess(Document doc, Postprocessor postprocessor)
+    {
+        var text = doc.Text!;
+        List<IReadOnlyList<PostprocessorToken>> input =
+            [.. doc.Sentences.Select(s => (IReadOnlyList<PostprocessorToken>)[.. s.Tokens.Select(t => new PostprocessorToken(t.Text, t.IsMwtCandidate))])];
+        var output = postprocessor(input) ?? throw new InvalidOperationException("The tokenize postprocessor returned null");
+        var result = new Document { Text = text };
+        int offset = 0;
+        foreach (var tokens in output)
+        {
+            var sent = NewSentence(result);
+            foreach (var given in tokens ?? throw new InvalidOperationException("The tokenize postprocessor returned a null sentence"))
+            {
+                var word = given?.Text ?? throw new InvalidOperationException("The tokenize postprocessor returned a null token");
+                int start = word.Length == 0 ? -1 : text.IndexOf(word, offset, StringComparison.Ordinal);
+                if (start < 0)
+                {
+                    int from = Math.Max(0, offset - 20), to = Math.Min(text.Length, offset + 20);
+                    throw new InvalidOperationException($"Could not find word |{word}| starting from char_offset {offset}. Surrounding text: |{text[from..to]}|. "
+                        + "Did the tokenize postprocessor add or remove a character such as a space when combining tokens?");
+                }
+
+                int end = start + word.Length;
+                var token = new Token { Text = word, StartChar = start, EndChar = end, IsMwtCandidate = given.IsMultiWord && given.Expansion == null };
+                if (given.Expansion != null)
+                {
+                    token.SetWords(string.Join(" ", given.Expansion));
+                }
+                else
+                {
+                    token.Words.Add(new Word { Text = word, StartChar = start, EndChar = end });
+                }
+
+                sent.Tokens.Add(token);
+                offset = end;
+            }
+
+            if (sent.Tokens.Count == 0)
+                throw new InvalidOperationException("The tokenize postprocessor returned an empty sentence");
+            int id = 1;
+            foreach (var w in sent.Words)
+                w.Id = id++;
+            FinishSentence(sent, result);
+        }
+
+        // TokenizeProcessor.process: len(token['text']) > max_seqlen, in code points.
+        foreach (var token in result.Sentences.SelectMany(s => s.Tokens))
+        {
+            if (token.Text.EnumerateRunes().Count() > _maxSeqLen)
+            {
+                token.Text = LongTokenReplacement;
+                if (token.Words.Count == 1)
+                    token.Words[0].Text = LongTokenReplacement;
+            }
+        }
+
+        return result;
     }
 
     /// <summary>
     /// TokenizeProcessor.bulk_process: tokenizes <paramref name="texts"/> joined by <c>"\n\n"</c> in one call, then
     /// gives each text its own document, with offsets relative to that text.
     /// </summary>
-    public List<Document> Process(IReadOnlyList<string> texts, bool splitSentences = true, CancellationToken cancellationToken = default) =>
-        Split(Process(string.Join("\n\n", texts), splitSentences, cancellationToken), texts);
+    public List<Document> Process(IReadOnlyList<string> texts, bool splitSentences = true, CancellationToken cancellationToken = default,
+        Postprocessor? postprocessor = null) =>
+        Split(Process(string.Join("\n\n", texts), splitSentences, cancellationToken, postprocessor), texts);
 
     /// <summary>
     /// The second half of bulk_process: deals out <paramref name="combined"/>'s sentences (tokenized from
@@ -606,7 +684,8 @@ internal sealed partial class Tokenizer : IDisposable
     }
 
     // ----- output: utils.decode_predictions -----
-    private void Decode(Paragraph para, int[] pred, Document doc, bool splitSentences)
+    // keepLongTokens: a postprocessor sees the tokens as written, so Postprocess replaces the long ones after it.
+    private void Decode(Paragraph para, int[] pred, Document doc, bool splitSentences, bool keepLongTokens = false)
     {
         Sentence? sent = null;
         int tokStart = 0;
@@ -628,7 +707,7 @@ internal sealed partial class Tokenizer : IDisposable
 
             // TokenizeProcessor.process: len(token['text']) > max_seqlen, in code points (one per unit). Only the
             // text changes; offsets and the MWT flag stay.
-            if (i + 1 - first > _maxSeqLen)
+            if (i + 1 - first > _maxSeqLen && !keepLongTokens)
                 text = LongTokenReplacement;
             int start = para.Starts[first], end = para.End(i);
 

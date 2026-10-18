@@ -170,6 +170,42 @@ public sealed class PipelineOptions
     public bool Pretagged { get; init; }
 
     /// <summary>
+    /// Stanza's <c>tokenize_postprocessor</c>: called after the tokenizer with every sentence's tokens (their text and
+    /// multi-word flag), it returns the sentences and tokens the pipeline goes on with. It can merge, split or regroup
+    /// tokens and sentences, flag a token for the MWT model (<see cref="PostprocessorToken.IsMultiWord"/>) or give its words
+    /// itself (<see cref="PostprocessorToken.Expansion"/>), as long as each token's text is found in the text after the one
+    /// before. Null (the default) runs none. It applies to text and bulk input (once over the joined texts, as in Stanza), not
+    /// to pretokenized input or <see cref="Pipeline.Process(Document)"/>.
+    /// </summary>
+    /// <remarks>
+    /// The output equals Stanza's for the same function, with one difference: Stanza shifts a hand-expanded token's word ids
+    /// by the automatic MWT expansions earlier in the document, which breaks its dependency trees; here they are numbered
+    /// as written. A token not found in the text makes <c>Process</c> throw <see cref="InvalidOperationException"/>.
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// // Keep "New York" one token.
+    /// var options = new PipelineOptions
+    /// {
+    ///     TokenizePostprocessor = sentences => sentences.Select(tokens =>
+    ///     {
+    ///         var merged = new List&lt;PostprocessorToken&gt;();
+    ///         foreach (var token in tokens)
+    ///         {
+    ///             if (token.Text == "York" &amp;&amp; merged.Count &gt; 0 &amp;&amp; merged[^1].Text == "New")
+    ///                 merged[^1] = "New York";
+    ///             else
+    ///                 merged.Add(token);
+    ///         }
+    ///
+    ///         return (IEnumerable&lt;PostprocessorToken&gt;)merged;
+    ///     }),
+    /// };
+    /// </code>
+    /// </example>
+    public Func<IReadOnlyList<IReadOnlyList<PostprocessorToken>>, IEnumerable<IEnumerable<PostprocessorToken>>>? TokenizePostprocessor { get; init; }
+
+    /// <summary>
     /// Which of the NER model's tag sets to decode, Stanza's <c>ner_predict_tagset</c>. English's
     /// <c>ontonotes-ww-multi</c> models have two: 0 is OntoNotes (18 entity types, the model's own choice) and 1 WorldWide
     /// (<c>ner=combined_charlm</c> has three). Null (the default): the model's own choice. A tag set the model doesn't have

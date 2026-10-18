@@ -116,4 +116,50 @@ internal static class PyString
             or UnicodeCategory.Format or UnicodeCategory.ModifierLetter or UnicodeCategory.ModifierSymbol
         || r.Value is '\'' or '.' or ':' or '·' or '‘' or '’' or '․' or '‧' or 0x387 or 0x55F or 0x5F4
             or 0xFE13 or 0xFE52 or 0xFE55 or 0xFF07 or 0xFF0E or 0xFF1A;
+
+    /// <summary>
+    /// <c>repr(str)</c>: in single quotes, or double ones if the text has a single quote and no double one; backslash, the
+    /// quote, tab, newline and carriage return escaped; any other character <c>str.isprintable()</c> rejects (categories
+    /// Cc, Cf, Cs, Co, Cn, Zl, Zp and Zs but the space) as <c>\xhh</c>, <c>\uhhhh</c> or <c>\Uhhhhhhhh</c>.
+    /// </summary>
+    public static string Repr(string s)
+    {
+        char quote = s.Contains('\'') && !s.Contains('"') ? '"' : '\'';
+        var sb = new StringBuilder(s.Length + 2).Append(quote);
+        for (int i = 0; i < s.Length;)
+        {
+            int cp = char.IsSurrogatePair(s, i) ? char.ConvertToUtf32(s, i) : s[i];
+            int width = cp > 0xFFFF ? 2 : 1;
+            if (cp == quote || cp == '\\')
+            {
+                sb.Append('\\').Append((char)cp);
+            }
+            else if (cp is '\t' or '\n' or '\r')
+            {
+                sb.Append(cp switch { '\t' => "\\t", '\n' => "\\n", _ => "\\r" });
+            }
+            else if (IsPrintable(cp))
+            {
+                sb.Append(s, i, width);
+            }
+            else
+            {
+                sb.Append(cp < 0x100 ? $"\\x{cp:x2}" : cp < 0x10000 ? $"\\u{cp:x4}" : $"\\U{cp:x8}");
+            }
+
+            i += width;
+        }
+
+        return sb.Append(quote).ToString();
+    }
+
+    // str.isprintable() for one code point (a lone surrogate is Cs).
+    private static bool IsPrintable(int cp)
+    {
+        if (cp == ' ')
+            return true;
+        var category = cp is >= 0xD800 and <= 0xDFFF ? UnicodeCategory.Surrogate : CharUnicodeInfo.GetUnicodeCategory(cp);
+        return category is not (UnicodeCategory.Control or UnicodeCategory.Format or UnicodeCategory.Surrogate or UnicodeCategory.PrivateUse
+            or UnicodeCategory.OtherNotAssigned or UnicodeCategory.LineSeparator or UnicodeCategory.ParagraphSeparator or UnicodeCategory.SpaceSeparator);
+    }
 }

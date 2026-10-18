@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.Runtime.ExceptionServices;
 using Microsoft.Extensions.Logging;
 using StanzaSharp.Constituency;
@@ -461,6 +462,7 @@ public sealed class Pipeline : IDisposable
     private readonly BackendModels _models;
     private readonly CharlmCacheOptions _cacheOptions;
     private readonly bool _splitSentences, _trimNativeHeap, _depparseReadsCache, _identityLemma;
+    private readonly Func<IReadOnlyList<IReadOnlyList<PostprocessorToken>>, IEnumerable<IEnumerable<PostprocessorToken>>>? _postprocessor;
 
     // Each processor's forward charlm (Dependencies), or none: a call's CharlmCache serves the tagger's pair only.
     private readonly Dictionary<string, string?> _charlmOf = [];
@@ -472,6 +474,7 @@ public sealed class Pipeline : IDisposable
         _models = backend;
         _cacheOptions = options.CharlmCache;
         _splitSentences = options.SplitSentences;
+        _postprocessor = options.TokenizePostprocessor;
         _depparseReadsCache = backend.DepparseReadsCache;
         _trimNativeHeap = options.TrimNativeHeap && NativeHeap.CanTrim;
         _logger = options.Logger;
@@ -890,7 +893,7 @@ public sealed class Pipeline : IDisposable
         ArgumentNullException.ThrowIfNull(text);
         return Gated(() =>
         {
-            var doc = Step("tokenize", () => _tokenizer.Process(text, _splitSentences, cancellationToken), cancellationToken);
+            var doc = Step("tokenize", () => _tokenizer.Process(text, _splitSentences, cancellationToken, _postprocessor), cancellationToken);
             return Annotate(doc, mwt: true, cancellationToken);
         }, cancellationToken);
     }
@@ -955,6 +958,49 @@ public sealed class Pipeline : IDisposable
     /// </example>
     public List<Document> Process(IEnumerable<string> texts) => Process(texts, CancellationToken.None);
 
+    /// <summary>
+    /// Processes <paramref name="texts"/> lazily, <paramref name="batchSize"/> at a time, like Stanza's <c>Pipeline.stream</c>:
+    /// each batch is one <see cref="Process(IEnumerable{string})"/> call, and its documents are yielded once it is done, so a
+    /// long or unbounded sequence never has to be in memory at once. Sentence ids (<see cref="Sentence.SentId"/>) count across
+    /// the whole stream.
+    /// </summary>
+    /// <param name="texts">The texts, read as the stream is enumerated; a null text throws when its batch is reached.</param>
+    /// <param name="batchSize">Texts per batch, Stanza's <c>batch_size</c> (50 by default).</param>
+    /// <param name="cancellationToken">Checked like <see cref="Process(IEnumerable{string}, CancellationToken)"/>'s, in the batch running.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="texts"/> is null.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="batchSize"/> is less than 1.</exception>
+    /// <remarks>
+    /// The output equals Stanza's <c>stream</c> with the same batch size. Within a batch the documents are processed as by
+    /// <see cref="Process(IEnumerable{string})"/>, so the sentiment labels and the parser's scores can depend on the batch
+    /// they share (see there); a larger batch is faster, a batch of 1 gives each text's own output.
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// foreach (var doc in nlp.Stream(File.ReadLines("reviews.txt")))
+    ///     Console.WriteLine(doc.Sentences[0].Sentiment);
+    /// </code>
+    /// </example>
+    public IEnumerable<Document> Stream(IEnumerable<string> texts, int batchSize = 50, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(texts);
+        ArgumentOutOfRangeException.ThrowIfLessThan(batchSize, 1);
+        return Batches();
+
+        IEnumerable<Document> Batches()
+        {
+            int sentences = 0;
+            foreach (var batch in texts.Chunk(batchSize))
+            {
+                foreach (var doc in Process(batch, cancellationToken))
+                {
+                    foreach (var sentence in doc.Sentences)
+                        sentence.SentId = (sentences++).ToString(CultureInfo.InvariantCulture);
+                    yield return doc;
+                }
+            }
+        }
+    }
+
     /// <summary><see cref="Process(IEnumerable{string})"/> that can be canceled, like <see cref="Process(string, CancellationToken)"/>.</summary>
     /// <exception cref="OperationCanceledException">The token was canceled; no documents are returned.</exception>
     public List<Document> Process(IEnumerable<string> texts, CancellationToken cancellationToken)
@@ -967,7 +1013,7 @@ public sealed class Pipeline : IDisposable
             return [];
         var docs = Gated(() =>
         {
-            var docs = Step("tokenize", () => _tokenizer.Process(list, _splitSentences, cancellationToken), cancellationToken);
+            var docs = Step("tokenize", () => _tokenizer.Process(list, _splitSentences, cancellationToken, _postprocessor), cancellationToken);
 
             // The other processors run on all sentences as one document (UDProcessor.bulk_process).
             var combined = new Document();

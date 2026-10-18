@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace StanzaSharp;
 
 /// <summary>
@@ -14,6 +16,12 @@ public sealed class Document
 
     /// <summary>Named entities of every sentence, in order (Stanza's <c>doc.ents</c>).</summary>
     public IEnumerable<Entity> Entities => Sentences.SelectMany(s => s.Entities);
+
+    /// <summary>The number of tokens in all sentences (Stanza's <c>doc.num_tokens</c>).</summary>
+    public int TokenCount => Sentences.Sum(s => s.Tokens.Count);
+
+    /// <summary>The number of words in all sentences, after multi-word token expansion (Stanza's <c>doc.num_words</c>).</summary>
+    public int WordCount => Sentences.Sum(s => s.Tokens.Sum(t => t.Words.Count));
 }
 
 /// <summary>One sentence: its tokens, and the sentence-level results (parse tree, sentiment, entities).</summary>
@@ -43,7 +51,64 @@ public sealed class Sentence
 
     /// <summary>Syntactic words (after MWT expansion), which POS and the parser operate on.</summary>
     public IEnumerable<Word> Words => Tokens.SelectMany(t => t.Words);
+
+    /// <summary>
+    /// The dependency arcs, one per word in order (Stanza's <c>sentence.dependencies</c>); empty unless every word has a
+    /// <see cref="Word.Head"/> and a <see cref="Word.Deprel"/> and the ids run 1 to n, as when the dependency parser ran.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">A word's head is not a word of the sentence.</exception>
+    public IReadOnlyList<Dependency> Dependencies
+    {
+        get
+        {
+            // Stanza builds them only when every word has a head and a relation and the ids run 1..n (is_complete_words).
+            var words = Words.ToList();
+            if (words.Count == 0 || words.Any(w => w.Head == null || w.Deprel == null) || words[^1].Id != words.Count || words.Count < Tokens.Count)
+                return [];
+            return [.. words.Select(w => new Dependency(
+                w.Head == 0 ? null : w.Head > 0 && w.Head <= words.Count && words[w.Head!.Value - 1].Id == w.Head
+                    ? words[w.Head!.Value - 1]
+                    : throw new InvalidOperationException($"Word {w.Id}'s head {w.Head} is not a word of the sentence"),
+                w.Deprel!, w))];
+        }
+    }
+
+    /// <summary>
+    /// The dependencies one per line as Stanza's <c>dependencies_string()</c> prints them: (word text, head id, relation) as
+    /// a Python tuple, e.g. <c>('born', 0, 'root')</c>; empty when there are none.
+    /// </summary>
+    public string DependenciesString() =>
+        string.Join("\n", Dependencies.Select(d => $"({PyString.Repr(d.Dependent.Text)}, {d.Head?.Id ?? 0}, {PyString.Repr(d.Relation)})"));
+
+    /// <summary>Each token's <see cref="Token.ToString"/>, one per line (Stanza's <c>tokens_string()</c>).</summary>
+    public string TokensString() => string.Join("\n", Tokens);
+
+    /// <summary>Each word's <see cref="Word.ToString"/>, one per line (Stanza's <c>words_string()</c>).</summary>
+    public string WordsString() => string.Join("\n", Words);
 }
+
+/// <summary>
+/// A token as a <c>PipelineOptions.TokenizePostprocessor</c> sees and returns it (Stanza's <c>tokenize_postprocessor</c>):
+/// its text, and whether it is a multi-word token. Stanza's forms map to it: <c>"text"</c> is <c>new("text")</c> (a string
+/// converts implicitly), <c>("text", True)</c> is <c>new("text", IsMultiWord: true)</c> and <c>("text", ["a", "b"])</c> is
+/// <c>new("text", Expansion: ["a", "b"])</c>.
+/// </summary>
+/// <param name="Text">The token's text. A returned token must be found in the original text after the one before it, so the
+/// postprocessor can merge, split or regroup tokens and sentences but not change their characters.</param>
+/// <param name="IsMultiWord">The tokenizer's multi-word flag (Stanza's <c>MWT=Yes</c>); returned true without an
+/// <see cref="Expansion"/>, the MWT model expands the token.</param>
+/// <param name="Expansion">The token's words, given by hand: the MWT model leaves it alone.</param>
+public sealed record PostprocessorToken(string Text, bool IsMultiWord = false, IReadOnlyList<string>? Expansion = null)
+{
+    /// <summary>A token that is not multi-word.</summary>
+    public static implicit operator PostprocessorToken(string text) => new(text);
+}
+
+/// <summary>A dependency arc (Stanza's <c>(head, deprel, word)</c> entries of <c>sentence.dependencies</c>).</summary>
+/// <param name="Head">The head word; null for the root (Stanza's word <c>ROOT</c>, id 0).</param>
+/// <param name="Relation">The universal dependency relation, e.g. <c>nsubj</c>.</param>
+/// <param name="Dependent">The dependent word.</param>
+public sealed record Dependency(Word? Head, string Relation, Word Dependent);
 
 /// <summary>A surface token from the tokenizer. A multi-word token ("don't") has several words.</summary>
 public sealed class Token
@@ -74,6 +139,43 @@ public sealed class Token
 
     /// <summary>The token's named-entity tag in BIOES form, e.g. <c>B-ORG</c> or <c>O</c>; null if NER has not run.</summary>
     public string? Ner { get; set; }
+
+    /// <summary>Document.set_mwt_expansions for one token: new words, offsets found by matching them in the token.</summary>
+    internal void SetWords(string expansion)
+    {
+        var words = expansion.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (words.Length <= 1)
+            words = [Text];
+
+        IsMwtCandidate = false;
+        Words.Clear();
+        foreach (var w in words)
+            Words.Add(new Word { Text = w });
+
+        if (words.Length == 1)
+        {
+            (Words[0].StartChar, Words[0].EndChar) = (StartChar, EndChar);
+            return;
+        }
+
+        if (StartChar is not int start)
+            return;
+        var match = Regex.Match(Text, "^" + string.Join(@"\s*", words.Select(w => $"({Regex.Escape(w)})")) + "$");
+        if (!match.Success)
+            return;
+        for (int i = 0; i < words.Length; i++)
+        {
+            var g = match.Groups[i + 1];
+            (Words[i].StartChar, Words[i].EndChar) = (start + g.Index, start + g.Index + g.Length);
+        }
+    }
+
+    /// <summary>The token and its words on one line, as Stanza's <c>pretty_print()</c>, e.g. <c>&lt;Token id=1-2;words=[...]&gt;</c>.</summary>
+    public override string ToString()
+    {
+        var id = Words.Count switch { 0 => "", 1 => $"{Words[0].Id}", _ => $"{Words[0].Id}-{Words[^1].Id}" };
+        return $"<Token id={id};words=[{string.Join(", ", Words)}]>";
+    }
 }
 
 /// <summary>A named entity: a span of tokens with a type such as <c>PERSON</c> (Stanza's <c>Span</c>).</summary>
@@ -171,4 +273,17 @@ public sealed class Word
 
     /// <summary>Offset just past the word's last character in <see cref="Document.Text"/>, when it can be located.</summary>
     public int? EndChar { get; set; }
+
+    /// <summary>
+    /// The word on one line, as Stanza's <c>pretty_print()</c>: its id, text, lemma, UPOS, XPOS, feats, head and relation,
+    /// those that are set, e.g. <c>&lt;Word id=4;text=born;lemma=bear;upos=VERB;...;head=0;deprel=root&gt;</c>.
+    /// </summary>
+    public override string ToString()
+    {
+        var fields = new (string Key, object? Value)[]
+        {
+            ("id", Id), ("text", Text), ("lemma", Lemma), ("upos", Upos), ("xpos", Xpos), ("feats", Feats), ("head", Head), ("deprel", Deprel),
+        };
+        return $"<Word {string.Join(";", fields.Where(f => f.Value != null).Select(f => $"{f.Key}={f.Value}"))}>";
+    }
 }

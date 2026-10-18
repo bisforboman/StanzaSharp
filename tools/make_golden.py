@@ -1008,6 +1008,94 @@ def write_bulk_golden(models, out):
         print(f"bulk/{package}.json: {len(docs)} documents, {offset} sentences, {changed} differ from processing alone")
 
 
+# A manual expansion ("gonna") comes before every automatic one in each document, bulk included: Stanza shifts a manual
+# expansion's word ids by the automatic expansions before it in the whole document (set_mwt_expansions' SKIP branch adds
+# idx_e), which breaks its trees ("Dependency tree is incorrectly constructed"); StanzaSharp numbers them as written.
+POSTPROCESS_TEXTS = [
+    "It is gonna rain. I wanna see New York, but I cannot go. I can't say. Bye now.",
+    "Short one.",
+    "We cannot stay in New York City.\n\nShe's here. They don't know it.",
+]
+
+
+def postprocess(sentences):
+    """
+    The tokenize_postprocessor of postprocess/ (PostprocessorTests has the same in C#): merges "New" "York" into
+    "New York", splits "cannot" into "can" "not", expands "gonna" by hand into "gon" "na", flags "wanna" for the MWT model,
+    keeps the tokenizer's MWT flags, and merges each text's last two sentences.
+    """
+    result = []
+    for sentence in sentences:
+        tokens, i = [], 0
+        while i < len(sentence):
+            token = sentence[i]
+            text = token[0] if isinstance(token, tuple) else token
+            nxt = sentence[i + 1] if i + 1 < len(sentence) else None
+            if text == "New" and nxt == "York":
+                tokens.append("New York")
+                i += 2
+                continue
+            if text == "cannot":
+                tokens += ["can", "not"]
+            elif text == "gonna":
+                tokens.append(("gonna", ["gon", "na"]))
+            elif text == "wanna":
+                tokens.append(("wanna", True))
+            else:
+                tokens.append(token)
+            i += 1
+        result.append(tokens)
+    if len(result) >= 2:
+        result[-2:] = [result[-2] + result[-1]]
+    return result
+
+
+def write_postprocess_golden(models, out):
+    """
+    postprocess/: the default package with tokenize_postprocessor=postprocess (and once with tokenize_no_ssplit):
+    each of POSTPROCESS_TEXTS alone, all of them in one bulk_process call, and the first with no_ssplit; "{:C}" each.
+    """
+    folder = out / "postprocess"
+    folder.mkdir(exist_ok=True)
+    result = {"texts": POSTPROCESS_TEXTS}
+    for name, extra in [("default", {}), ("no_ssplit", {"tokenize_no_ssplit": True})]:
+        nlp = stanza.Pipeline(LANG, dir=models, download_method=None, use_gpu=False, logging_level="WARN",
+                              tokenize_postprocessor=postprocess, **extra)
+        with torch.no_grad():
+            if name == "default":
+                result["alone"] = ["{:C}".format(nlp(t)) for t in POSTPROCESS_TEXTS]
+                result["bulk"] = ["{:C}".format(d) for d in nlp.bulk_process(POSTPROCESS_TEXTS)]
+            else:
+                result["no_ssplit"] = "{:C}".format(nlp(POSTPROCESS_TEXTS[0]))
+    with open(folder / "postprocess.json", "w", encoding="utf-8", newline="\n") as f:
+        json.dump(result, f, indent=1, ensure_ascii=False)
+        f.write("\n")
+    print(f"postprocess/postprocess.json: {len(POSTPROCESS_TEXTS)} texts")
+
+
+STREAM_BATCH_SIZE = 4
+
+
+def write_stream_golden(models, out):
+    """
+    stream/<package>.json: Pipeline.stream over BULK_TEXTS and validation.txt's paragraphs with batch_size
+    STREAM_BATCH_SIZE (each batch one bulk_process call, sentence ids counted across the stream), each document's
+    "{:C}" CoNLL-U.
+    """
+    folder = out / "stream"
+    folder.mkdir(exist_ok=True)
+    paragraphs = [p for p in (out / "validation.txt").read_bytes().decode("utf-8").split("\n\n") if p.strip()][:20]
+    texts = BULK_TEXTS + paragraphs
+    for package in PACKAGES:
+        nlp = stanza.Pipeline(LANG, dir=models, package=package, download_method=None, use_gpu=False, logging_level="WARN")
+        with torch.no_grad():
+            docs = [{"text": t, "conllu": "{:C}".format(d)} for t, d in zip(texts, nlp.stream(texts, batch_size=STREAM_BATCH_SIZE))]
+        with open(folder / f"{package}.json", "w", encoding="utf-8", newline="\n") as f:
+            json.dump({"batch_size": STREAM_BATCH_SIZE, "documents": docs}, f, indent=1, ensure_ascii=False)
+            f.write("\n")
+        print(f"stream/{package}.json: {len(docs)} documents")
+
+
 NO_SSPLIT_FILES = ["corpus.txt", "validation.txt", "validation_contractions.txt", "validation_dialogue.txt",
                    "validation_long.txt", "validation_nonbmp.txt", "validation_whitespace.txt"]
 
@@ -1128,6 +1216,42 @@ def write_json_golden(models, out):
             doc = nlp(JSON_TEXT)
         (folder / f"{name}.json").write_text(str(doc), encoding="utf-8", newline="\n")
         print(f"json/{name}.json: {len(doc.sentences)} sentences, {doc.num_words} words")
+
+
+HELPER_FILES = ["pipeline.conllu", "validation_contractions.conllu", "validation_multilingual.conllu", "validation_nonbmp.conllu"]
+
+# Word texts whose repr() is not just the text in single quotes: quotes of both kinds, a backslash, a no-break space and a
+# zero-width space (not printable: \xa0, \u200b), a soft hyphen (\xad), an emoji and a combining accent (printable).
+HELPER_WORDS = ["it's", 'say "hi"', "both '\"", "back\\slash", "no\u00a0break", "zero\u200bwidth", "soft\u00adhyphen", "\U0001F600",
+                "e\u0301", "plain"]
+
+
+def write_helpers_golden(out):
+    """
+    helpers/: Stanza's document helpers on documents read with CoNLL.conll2doc (no models): num_tokens, num_words and,
+    per sentence, dependencies_string(), tokens_string() and words_string(), for HELPER_FILES and crafted.conllu, a
+    sentence of HELPER_WORDS (with heads and relations) plus one without heads.
+    """
+    from stanza.utils.conll import CoNLL
+    folder = out / "helpers"
+    folder.mkdir(exist_ok=True)
+    lines = ["# sent_id = 0"]
+    for i, word in enumerate(HELPER_WORDS, 1):
+        lines.append(f"{i}\t{word}\t{word}\tX\t_\t_\t{0 if i == 1 else 1}\t{'root' if i == 1 else 'dep'}\t_\t_")
+    lines += ["", "# sent_id = 1", "1-2\tdon't\t_\t_\t_\t_\t_\t_\t_\t_", "1\tdo\tdo\tAUX\t_\t_\t_\t_\t_\t_",
+              "2\tn't\tnot\tPART\t_\t_\t_\t_\t_\t_", "", ""]
+    (folder / "crafted.conllu").write_text("\n".join(lines), encoding="utf-8", newline="\n")
+    result = {}
+    for path in [out / name for name in HELPER_FILES] + [folder / "crafted.conllu"]:
+        doc = CoNLL.conll2doc(input_file=str(path))
+        result[path.relative_to(out).as_posix()] = {
+            "num_tokens": doc.num_tokens, "num_words": doc.num_words,
+            "sentences": [{"dependencies": s.dependencies_string(), "tokens": s.tokens_string(), "words": s.words_string()}
+                          for s in doc.sentences]}
+    with open(folder / "helpers.json", "w", encoding="utf-8", newline="\n") as f:
+        json.dump(result, f, indent=1, ensure_ascii=False)
+        f.write("\n")
+    print(f"helpers/helpers.json: {len(result)} documents")
 
 
 WRONG_TREE = "(ROOT (X wrong))"
@@ -1420,6 +1544,9 @@ def main():
     p.add_argument("--long-token-only", action="store_true", help="only regenerate long_token.*")
     p.add_argument("--upos64-only", action="store_true", help="only add the float64 UPOS logits to the intermediates")
     p.add_argument("--json-only", action="store_true", help="only regenerate json/ (str(doc))")
+    p.add_argument("--helpers-only", action="store_true", help="only regenerate helpers/ (document helpers, no models)")
+    p.add_argument("--stream-only", action="store_true", help="only regenerate stream/ (Pipeline.stream)")
+    p.add_argument("--postprocess-only", action="store_true", help="only regenerate postprocess/ (tokenize_postprocessor)")
     p.add_argument("--process-document-only", action="store_true", help="only regenerate process_document/")
     p.add_argument("--pretagged-only", action="store_true", help="only regenerate pretagged/ (pretagged=True pipelines)")
     p.add_argument("--treebank-only", action="store_true", help="only regenerate the treebank packages' folders (ewt/, ..., de/gsd/, de/hdt/)")
@@ -1453,6 +1580,15 @@ def main():
         return
     if args.models_only:
         write_models_golden(args.models, out, args.choices and args.choices.split(","))
+        return
+    if args.postprocess_only:
+        write_postprocess_golden(args.models, out)
+        return
+    if args.stream_only:
+        write_stream_golden(args.models, out)
+        return
+    if args.helpers_only:
+        write_helpers_golden(out)
         return
     if args.json_only:
         write_json_golden(args.models, out)
