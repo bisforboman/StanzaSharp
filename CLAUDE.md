@@ -104,7 +104,10 @@ default from 0.5) or through TorchSharp (see "Managed backend").
   - Files: not Stanza resources, so `ModelDownloader.Transformers` (repository → pinned revision, files, sha256),
     `DownloadTransformerAsync` (internal; the Cli sample's `download-transformer DIR NAME [FILE]...`) into
     `<model dir>/transformer/<repository>/` (`TransformerDirectory`); `Checkpoint.Load` reads the `pytorch_model.bin`
-    (torch's zip format) by that name. Kept out of `Files`, `FilesFor` and every `tools/ci-models.sh` group.
+    (torch's zip format) by that name. Kept out of `Files`, `FilesFor` and every `tools/ci-models.sh` group. A file's
+    sha256 is Hugging Face's LFS hash, the `x-linked-etag` header of `resolve/<revision>/<file>` (or `sha256sum` of the
+    download), not the `etag` of the CDN response the redirect ends at: #182 stored that one for German's
+    `pytorch_model.bin`, and the download failed its check (fixed in #184).
   - `Nn.WordPiece` = tokenizer.json's BertNormalizer + BertPreTokenizer + WordPiece per word (`is_split_into_words`): the
     added tokens' texts matched first in the raw word (leftmost, longest), control = Cc/Cf/Co/Cs but tab/newline/CR
     removed (unassigned Cn kept: tokenizers gives [UNK]), White_Space → space, NFD minus Mn (`strip_accents`; null follows
@@ -1018,7 +1021,7 @@ What the English treebank packages' checkpoints add to the default package's pat
     missing; closed by a person). Never required; release.yml waits for main's push run only, so it never sees these.
   - `benchmark.yml` (owner's decision 2026-10-10): `workflow_dispatch` (inputs `lang`, `package`, `quick`) and
     `workflow_call` (nightly.yml), never on pushes/PRs, never required; free standard runners only (ubuntu-26.04, ubuntu-26.04-arm, windows-2025,
-    windows-11-arm, macos-26). Each job builds the tool, restores the `models-pt-<os>` cache (`lang=de`: golden-shard 1's
+    windows-11-arm, macos-26). Each job builds the tool, restores the `models-pt-<os>` cache (keyed like ci.yml's, by `tools/ci-models.sh keys`) (`lang=de`: golden-shard 1's
     `models-de-treebanks-…`, Linux only; restore only; downloads the package on a miss), installs Python 3.12 + `tools/requirements.txt` from the CPU wheel index (continue-on-error: without it the
     block has StanzaSharp only), runs `stanzasharp benchmark --json`, writes the block to its summary and artifact
     `benchmark-<os>`. `summary` combines them with `tools/benchmark_table.py` into `benchmarks.md` (summary + artifact).

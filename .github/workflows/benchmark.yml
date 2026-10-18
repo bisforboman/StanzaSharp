@@ -112,11 +112,18 @@ jobs:
       # Stanza's .pt files, which both sides read: English's from the cache ci.yml's cross-os and linux-arm64 jobs write,
       # German's (all its packages, fastText vectors included) from the one golden-shard 1 writes on Linux (a Linux cache
       # isn't restored on Windows or macOS). Restore only, no new entry; on a miss the tool downloads the package's files.
+      # The model caches' keys hash their file lists (tools/ci-models.sh keys), as in ci.yml.
+      - name: Model cache keys
+        id: keys
+        run: |
+          dotnet build samples/StanzaSharp.Cli -c Release
+          tools/ci-models.sh keys
+
       - uses: actions/cache/restore@v6
         id: models
         with:
           path: models/stanza/${{ inputs.lang }}
-          key: ${{ inputs.lang == 'de' && format('models-de-treebanks-{0}', hashFiles('src/StanzaSharp/ModelDownloader.cs')) || format('models-pt-{0}-{1}', runner.os, hashFiles('src/StanzaSharp/ModelDownloader.cs')) }}
+          key: ${{ inputs.lang == 'de' && format('models-de-treebanks-{0}', steps.keys.outputs.de) || format('models-pt-{0}-{1}', runner.os, steps.keys.outputs.en) }}
 
       # The block's StanzaSharp version is git describe's (1.0.0 on the release commit, 1.0.0-67-g97089bb 67 commits
       # after it) instead of Directory.Build.props' placeholder 0.1.0-dev.
@@ -228,12 +235,20 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
+      # The model caches' keys hash their file lists (tools/ci-models.sh keys), as in ci.yml.
+      - name: Model cache keys
+        if: steps.cpu.outputs.avx512 == 'yes'
+        id: keys
+        run: |
+          dotnet build samples/StanzaSharp.Cli -c Release
+          tools/ci-models.sh keys
+
       - uses: actions/cache/restore@v6
         if: steps.cpu.outputs.avx512 == 'yes'
         id: models
         with:
           path: models/stanza/en
-          key: models-pt-${{ runner.os }}-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs') }}
+          key: models-pt-${{ runner.os }}-${{ steps.keys.outputs.en }}
 
       - name: Build
         if: steps.cpu.outputs.avx512 == 'yes'
@@ -345,11 +360,18 @@ jobs:
         with:
           python-version: '3.12'
 
+      # The model caches' keys hash their file lists (tools/ci-models.sh keys), as in ci.yml.
+      - name: Model cache keys
+        id: keys
+        run: |
+          dotnet build samples/StanzaSharp.Cli -c Release
+          tools/ci-models.sh keys
+
       - uses: actions/cache/restore@v6
         id: models
         with:
           path: models/stanza/en
-          key: models-pt-${{ runner.os }}-${{ hashFiles('src/StanzaSharp/ModelDownloader.cs') }}
+          key: models-pt-${{ runner.os }}-${{ steps.keys.outputs.en }}
 
       - name: Download the models
         if: steps.models.outputs.cache-hit != 'true'
