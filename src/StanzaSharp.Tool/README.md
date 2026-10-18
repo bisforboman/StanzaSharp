@@ -57,7 +57,10 @@ Different: 1 of 68 sentences differ. The first difference, line 384 of the CoNLL
 - `--models DIR`: Stanza's `.pt` files as `download` writes them (default `models/stanza/<lang>`), in a folder of any
   name. Both sides load the same files, and
   StanzaSharp checks each against Stanza 1.15.0's MD5.
-- `--python PATH`: the Python with Stanza installed (default `python`).
+- `--python PATH`: the Python with Stanza installed (default `python`). The transformer models (`--package
+  default_accurate`, the `_electra-large` models) also need `pip install transformers==5.20.1 tokenizers==0.23.3
+  safetensors==0.8.0 peft==0.21.2`; Stanza reads the transformer from `DIR/transformer/`, where `download` puts it.
+  Without them `compare` says what to install (exit code 2) and `benchmark` runs StanzaSharp alone.
 - Both sides read the file as the same string (UTF-8, or the encoding its byte order mark names) and process it as one
   document.
 - After characters outside the BMP (emoji, for example), StanzaSharp's `start_char`/`end_char` count UTF-16 code units

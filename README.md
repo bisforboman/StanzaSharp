@@ -186,6 +186,9 @@ problem (no Python, wrong Stanza version, missing models).
 After characters outside the BMP (emoji, for example), StanzaSharp's `start_char`/`end_char` count UTF-16 code units
 and Stanza's count code points. `compare` converts StanzaSharp's offsets to code points before comparing and says
 that it did.
+The transformer models (`--package default_accurate`, the `_electra-large` models) also need
+`pip install transformers==5.20.1 tokenizers==0.23.3 safetensors==0.8.0 peft==0.21.2`; Stanza then reads the
+transformer from `DIR/transformer/`, where `download` puts it, so nothing is downloaded.
 
 `stanzasharp benchmark` measures speed on your machine: load time, each processor, words/s, one-sentence calls (median
 and p90) and peak memory on a built-in English text (2,009 words; `--lang de`: a German one), and, if Python Stanza 1.15.0 is installed, Stanza on the same text

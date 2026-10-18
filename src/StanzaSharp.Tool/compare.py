@@ -30,11 +30,33 @@ def model_files(value):
             yield from model_files(v)
 
 
+# What Stanza's transformer models (default_accurate, the _electra-large models) need on top of Stanza, at the versions the
+# golden data was made with (tools/requirements-transformer.txt; CompareCommandTests checks they agree).
+TRANSFORMER_REQUIREMENTS = "transformers==5.20.1 tokenizers==0.23.3 safetensors==0.8.0 peft==0.21.2"
+
+
+def transformers_locally(models):
+    """Has Stanza's load_bert read a transformer from MODELS/transformer/<name>/ (where stanzasharp download puts it, at
+    its pinned revision) instead of Hugging Face's cache, so nothing is downloaded (tools/make_golden.py's electra_locally)."""
+    from stanza.models.common import bert_embedding
+    load = getattr(bert_embedding.load_bert, "stanzasharp_original", bert_embedding.load_bert)
+
+    def load_bert(model_name, *args, **kwargs):
+        local = os.path.join(models, "transformer", *model_name.split("/")) if model_name else None
+        if local and os.path.isdir(local):
+            return load(local, *args, **{**kwargs, "local_files_only": True})
+        return load(model_name, *args, **kwargs)
+
+    load_bert.stanzasharp_original = load
+    bert_embedding.load_bert = load_bert
+
+
 def load_stanza(models, lang, package, processors):
     """stanza.Pipeline(lang) on the .pt files in MODELS, a folder of any name, with the language's entry of Stanza's
     resources.json shipped with the tool (stanza_resources_<lang>.json); download_method=None: nothing is downloaded.
     Stanza reads <dir>/<lang>/<processor>/<name>.pt, so a folder not named after the language is linked under that name
-    in this script's (temporary) folder while Stanza loads."""
+    in this script's (temporary) folder while Stanza loads. A transformer is read from MODELS/transformer/ (exit code 3 if
+    its Python libraries are missing)."""
     import stanza
     if processors.startswith("{"):
         processors, package = json.loads(processors), None
@@ -49,9 +71,17 @@ def load_stanza(models, lang, package, processors):
         else:
             os.symlink(models, link)
     try:
-        return stanza.Pipeline(lang, dir=os.path.dirname(link or models), package=package, processors=processors,
-                               download_method=None, resources_filepath=os.path.join(here, f"stanza_resources_{lang}.json"),
-                               use_gpu=False, logging_level="WARN")
+        try:
+            transformers_locally(models)
+            return stanza.Pipeline(lang, dir=os.path.dirname(link or models), package=package, processors=processors,
+                                   download_method=None, resources_filepath=os.path.join(here, f"stanza_resources_{lang}.json"),
+                                   use_gpu=False, logging_level="WARN")
+        except ModuleNotFoundError as e:
+            if e.name not in ("transformers", "tokenizers", "safetensors", "peft"):
+                raise
+            print(f"These models read a transformer, which needs {e.name} for {sys.executable}. Install it with: "
+                  f"{sys.executable} -m pip install {TRANSFORMER_REQUIREMENTS}", file=sys.stderr)
+            sys.exit(3)
     finally:
         if link:
             os.unlink(link)  # the link only: its target stays

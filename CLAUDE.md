@@ -1078,7 +1078,11 @@ What the English treebank packages' checkpoints add to the default package's pat
     Windows, which needs no privilege; a symlink elsewhere) while Stanza loads, then unlinks it itself (.NET's
     `Directory.Delete(recursive)` throws UnauthorizedAccessException on such a junction). Both sides
     get the full processor list (requirements added); Stanza's loaded `.pt` set must equal `ModelDownloader.FilesFor`,
-    and C# loads with `VerifyChecksums`. C# offsets are converted to code points when the text has non-BMP characters
+    and C# loads with `VerifyChecksums`. Transformer models (2026-10-18, owner's choice): `load_stanza`'s
+    `transformers_locally` has Stanza's `load_bert` read `<DIR>/transformer/<name>/` (local_files_only, like make_golden's
+    `electra_locally`); a missing transformers/tokenizers/safetensors/peft exits 3 with `TRANSFORMER_REQUIREMENTS` (the
+    pins of tools/requirements-transformer.txt, `ComparePy_TransformerRequirements_MatchRequirementsTransformerTxt`). Local
+    only: CI's Python has none of them, so no test runs Stanza on these models. C# offsets are converted to code points when the text has non-BMP characters
     (`ConlluDiff.ToCodePointOffsets`). Exit 0/1/2. `stanza_resources_en.json` is `{"stanza_version", "en": resources.json["en"]}`
     of Stanza 1.15.0 (`stanza_resources_de.json` likewise with `de`); `CompareCommandTests.EmbeddedResources_MatchModelDownloader` fails when its version or an MD5 of
     `ModelDownloader.Files` disagrees. Regenerate it after a Stanza version change (Stanza's own downloader, run from

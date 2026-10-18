@@ -154,6 +154,24 @@ public class CompareCommandTests
     }
 
     /// <summary>
+    /// compare.py's install hint for the transformer models names the versions tools/requirements-transformer.txt pins (the
+    /// ones the golden data was made with).
+    /// </summary>
+    [Fact]
+    public void ComparePy_TransformerRequirements_MatchRequirementsTransformerTxt()
+    {
+        using var resource = typeof(CompareCommand).Assembly.GetManifestResourceStream("compare.py")!;
+        var script = new StreamReader(resource).ReadToEnd();
+        var line = script.Split('\n').Single(l => l.StartsWith("TRANSFORMER_REQUIREMENTS = ", StringComparison.Ordinal));
+        var hint = line[(line.IndexOf('"') + 1)..line.LastIndexOf('"')].Split(' ').Order();
+        var pinned = File.ReadAllLines(Path.Combine(Repo.Root, "tools", "requirements-transformer.txt"))
+            .Select(l => l.Trim())
+            .Where(l => l.Length > 0 && !l.StartsWith('#'))
+            .Order();
+        Assert.Equal(pinned, hint);
+    }
+
+    /// <summary>
     /// compare.py's resources.json entry must be the Stanza release whose models ModelDownloader pins. After a Stanza
     /// version change, regenerate it as CLAUDE.md says (StanzaSharp.Tool, compare).
     /// </summary>
