@@ -121,7 +121,7 @@ internal sealed class TransformerEmbedder(ITransformerNet net, WordPiece tokeniz
             for (int i = 0; i < batch.Count; i++)
             {
                 states[batch[i]] = encoded[i];
-                owned[batch[i]] = rents && cache?.TryAdd(inputs[batch[i]].Ids, encoded[i]) != true;
+                owned[batch[i]] = cache?.TryAdd(inputs[batch[i]].Ids, encoded[i]) != true && rents;
             }
 
             b += count;
@@ -132,7 +132,7 @@ internal sealed class TransformerEmbedder(ITransformerNet net, WordPiece tokeniz
             if (states[s] != null)
                 continue;
             states[s] = Windowed(inputs[s].Ids, lastLayers, ct);
-            owned[s] = rents && cache?.TryAdd(inputs[s].Ids, states[s]) != true;
+            owned[s] = cache?.TryAdd(inputs[s].Ids, states[s]) != true && rents;
         }
 
         var pool = ArrayPool<float>.Shared;
