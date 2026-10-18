@@ -390,7 +390,8 @@ since 1.0, and every processor also has a managed net (see "Managed backend"), t
   - Thread safety: Process keeps all mutable state per call (the Document, `CharlmCache`, the lemmatizer's
     DeltaVocab copy, the parser states); the models are read-only after Load; TorchSharp's dispose scopes are
     thread-static and libtorch's grad mode thread-local. The stress test (8 threads, mixed modes, both packages)
-    needed no code change. Keep it that way: never add mutable fields to a processor.
+    needed no code change. Keep it that way: never add mutable fields to a processor (the one exception: the batch sizes,
+    set only on `WithBatchSize`'s fresh `MemberwiseClone` inside Load, before the pipeline is returned).
   - TorchSharp counts the two undefined index tensors of `pack_padded_sequence(enforce_sorted: true)` (lemmatizer)
     as live forever (`DisposeScopeManager.Statistics`); they hold no memory. Leak tests leave lemma out.
   - `SplitSentences = false` = `tokenize_no_ssplit`: `Tokenizer.Decode` ends sentences only at paragraph ends.

@@ -230,7 +230,7 @@ public sealed class PipelineOptions
     /// <summary>
     /// Paragraphs per tokenizer batch; null (the default) uses the model's own (32). Unlike the other batch sizes this has no
     /// Stanza twin that works: Stanza's tokenizer ignores <c>tokenize_batch_size</c> and always reads its model's value. The
-    /// tokens are the same at any size; only speed and memory change.
+    /// tokens stay the same (at most a score's last bits move); only speed and memory change.
     /// </summary>
     public int? TokenizeBatchSize { get; init; }
 
