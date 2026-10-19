@@ -302,6 +302,21 @@ to its longest sentence, and the classifier reads the padding), and so can parse
 batch's padded width). `TokenizeBatchSize` works too, though Stanza ignores `tokenize_batch_size`; the tokens stay the
 same (at most a score's last bits move).
 
+Models of your own (Stanza's `{processor}_model_path`, trained with Stanza's code for one of the supported architectures)
+load by file with `ModelPaths`. A model reads the word vectors and character models of the one it replaces unless its
+`ModelPath` names others; a processor the package lacks is added, reading only what its `ModelPath` names:
+
+```csharp
+using var nlp = Pipeline.Load("models/stanza/en", new PipelineOptions
+{
+    ModelPaths = new Dictionary<string, ModelPath>
+    {
+        [Processor.Ner] = "my_models/ner.pt",
+        [Processor.Pos] = new("my_models/pos.pt", Pretrain: "my_models/vectors.pt"),
+    },
+});
+```
+
 Both match Python Stanza byte for byte. Bulk is much faster than one call per text for short texts: 7.7× on
 2,000 one-sentence texts ([docs/performance/bulk-processing.md](docs/performance/bulk-processing.md)). One call per
 text costs about 28 ms for a short sentence on 8 threads (`default_fast`: 14 ms; Python Stanza: 189 and 73 ms), mostly

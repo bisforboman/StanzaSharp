@@ -76,6 +76,7 @@ internal sealed class Lemmatizer : IDisposable
         _caseless = Flag("caseless");
 
         // trainer.build_seq2seq: with charlm, CharacterLanguageModelWordAdapter([forward, backward]) after the embedding.
+        // Charlms given to a model without them are ignored, as the tagger and the parsers do (PipelineOptions.ModelPaths).
         int contextual = 0;
         if (Flag("charlm"))
         {
@@ -86,10 +87,6 @@ internal sealed class Lemmatizer : IDisposable
             if (encoderInput != config["emb_dim"]!.GetValue<int>() + contextual)
                 throw new InvalidDataException($"The encoder reads {encoderInput} inputs, not the embedding + both charlms' {contextual}");
             (_forward, _backward) = (forward, backward);
-        }
-        else if (forward != null || backward != null)
-        {
-            throw new ArgumentException("This lemmatizer reads no charlm", nameof(forward));
         }
 
         var sizes = Seq2SeqConfig.From(config, contextual);

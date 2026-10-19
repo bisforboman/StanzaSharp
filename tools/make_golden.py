@@ -360,6 +360,19 @@ OPTION_CASES = {
         ("batch_sizes", "default", PROCESSORS, {}, SMALL_BATCHES, ["validation.txt"]),
         ("default_fast+batch_sizes", "default_fast", "tokenize,mwt,pos,lemma,depparse,sentiment,ner", {},
          {k: v for k, v in SMALL_BATCHES.items() if not k.startswith("constituency")}, ["validation.txt"]),
+
+        # Model files of one's own (#174, {processor}_model_path): "{lang_dir}" is the language's model folder. A nocharlm
+        # tagger and NER model in place of the package's charlm ones (the charlms they are given go unread), and a processor
+        # default_fast lacks, with the shared files it reads.
+        ("pos_model_path", "default", "tokenize,mwt,pos", {}, {"pos_model_path": "{lang_dir}/pos/combined_nocharlm.pt"},
+         ["validation.txt"]),
+        ("ner_model_path", "default", "tokenize,mwt,ner", {}, {"ner_model_path": "{lang_dir}/ner/ontonotes-ww-multi_nocharlm.pt"},
+         ["validation.txt"]),
+        ("default_fast+constituency_model_path", "default_fast", "tokenize,mwt,pos,constituency", {},
+         {"constituency_model_path": "{lang_dir}/constituency/ptb3-revised_charlm.pt",
+          "constituency_pretrain_path": "{lang_dir}/pretrain/conll17.pt",
+          "constituency_forward_charlm_path": "{lang_dir}/forward_charlm/1billion.pt",
+          "constituency_backward_charlm_path": "{lang_dir}/backward_charlm/1billion.pt"}, ["validation.txt"]),
     ],
     "de": [
         ("mwt_dict_only", "default", "tokenize,mwt,pos", {}, {"mwt_dict_only": True}, ["validation.txt"]),
@@ -381,6 +394,7 @@ def write_options_golden(models, out):
         texts = [out / "corpus.txt"] + [out / t for t in extra]
         index.append({"name": name, "package": package, "processors": processors, "models": chosen, "options": kwargs,
                       "texts": [path.relative_to(out).as_posix() for path in texts]})
+        kwargs = {k: v.replace("{lang_dir}", str(Path(models) / LANG)) if isinstance(v, str) else v for k, v in kwargs.items()}
         if chosen:
             spec = {p: chosen.get(p, package) for p in processors.split(",")}
             nlp = stanza.Pipeline(LANG, dir=models, package=None, processors=spec, download_method=None, use_gpu=False,

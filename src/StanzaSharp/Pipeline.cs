@@ -479,7 +479,8 @@ public sealed class Pipeline : IDisposable
         _trimNativeHeap = options.TrimNativeHeap && NativeHeap.CanTrim;
         _logger = options.Logger;
         _gate = options.MaxConcurrentCalls is int max ? new SemaphoreSlim(max, max) : null;
-        string Model(string processor) => Path.Combine(modelDir, processor, models[processor]);
+        var custom = CustomPaths(options.ModelPaths, nameof(options));
+        string Model(string processor) => custom.TryGetValue(processor, out var path) ? path.Model : Path.Combine(modelDir, processor, models[processor]);
         string Name(string processor) => $"{processor}/{models[processor]}";
 
         // Managed: two models load at a time, on the thread pool (round 17: the load took 23-40% less time on the
@@ -508,6 +509,25 @@ public sealed class Pipeline : IDisposable
         var started = new List<Task>();
         Task<T> Start<T>(string name, Func<T> load)
         {
+            // A model of the caller's own that doesn't fit what it was given (a _charlm model without charlms, ...) names its ModelPath.
+            int slash = name.IndexOf('/');
+            if (slash > 0 && custom.TryGetValue(name[..slash], out var path))
+            {
+                var inner = load;
+                load = () =>
+                {
+                    try
+                    {
+                        return inner();
+                    }
+                    catch (ArgumentException e)
+                    {
+                        throw new ArgumentException($"ModelPaths[\"{name[..slash]}\"] ({path.Model}): {e.Message}. Name the shared files it reads in its ModelPath "
+                            + "(Pretrain, ForwardCharlm, BackwardCharlm); it must be a model of an architecture StanzaSharp runs.", nameof(options), e);
+                    }
+                };
+            }
+
             var task = parallel ? Task.Run(() => Laned(name, load)) : Task.FromResult(Timed(name, load));
             started.Add(task);
             return task;
@@ -526,16 +546,41 @@ public sealed class Pipeline : IDisposable
             }
         }
 
+        // The shared files each processor's model reads, as (kind, key, file): its Dependencies, each replaced by the file its
+        // ModelPath names, if any. The key is the dependency's name (pretrain/conll17) or a custom file's full path, so a
+        // custom charlm pair is loaded apart from the package's and gets no CharlmCache it would share with another pair.
+        List<(string Kind, string Key, string File)> DependenciesOf(string processor)
+        {
+            var path = custom.GetValueOrDefault(processor);
+            var list = ReadDependencies(Name(processor), options.Language).Where(d => path == null || Override(path, d) == null)
+                .Select(d => (d[..d.IndexOf('/')], d, Path.Combine(modelDir, d)))
+                .ToList();
+            if (path != null)
+            {
+                foreach (var (kind, file) in new[] { ("pretrain", path.Pretrain), ("forward_charlm", path.ForwardCharlm), ("backward_charlm", path.BackwardCharlm) })
+                {
+                    if (file != null)
+                        list.Add((kind, file, file));
+                }
+            }
+
+            return list;
+        }
+
+        var dependencies = models.Keys.ToDictionary(p => p, DependenciesOf);
+
         // Every pretrain the models read (German NER has its own), and every charlm (each pair once: default's 1billion,
         // and mimic's for ner i2b2).
-        var shared = SharedModels(models, options.Language, readOnly: true);
-        var pretrains = shared.Where(p => p.StartsWith("pretrain/", StringComparison.Ordinal))
-            .ToDictionary(p => p, p => Start(p, () => backend.Pretrain(Path.Combine(modelDir, p))));
-        var charlms = shared.Where(p => !p.StartsWith("pretrain/", StringComparison.Ordinal))
-            .Select(p => Start(p, () =>
+        var shared = dependencies.Values.SelectMany(d => d).DistinctBy(d => d.Key)
+            .OrderBy(d => d.Kind switch { "pretrain" => 0, "forward_charlm" => 1, _ => 2 })
+            .ThenBy(d => d.Key, StringComparer.Ordinal)
+            .ToList();
+        var pretrains = shared.Where(d => d.Kind == "pretrain").ToDictionary(d => d.Key, d => Start(d.Key, () => backend.Pretrain(d.File)));
+        var charlms = shared.Where(d => d.Kind != "pretrain")
+            .Select(d => Start(d.Key, () =>
             {
-                backend.Charlm(p, Path.Combine(modelDir, p));
-                return p;
+                backend.Charlm(d.Key, d.File);
+                return d.Key;
             }))
             .ToList();
 
@@ -547,13 +592,13 @@ public sealed class Pipeline : IDisposable
         TransformerEmbedder? TransformerOf(string processor) =>
             Transformers[options.Language].ContainsKey(Name(processor)) ? transformer!.Result : null;
 
-        // The pretrain and the charlms a processor's model reads (Dependencies), once loaded.
-        string[] DependenciesOf(string processor) => ReadDependencies(Name(processor), options.Language);
-        Pretrain PretrainOf(string processor) => pretrains[DependenciesOf(processor).Single(p => p.StartsWith("pretrain/", StringComparison.Ordinal))].Result;
-        Pretrain? PretrainIfAny(string processor) => DependenciesOf(processor).Any(p => p.StartsWith("pretrain/", StringComparison.Ordinal)) ? PretrainOf(processor) : null;
+        // The pretrain and the charlms a processor's model reads, once loaded.
+        Pretrain? PretrainIfAny(string processor) => dependencies[processor].Where(d => d.Kind == "pretrain").Select(d => pretrains[d.Key].Result).SingleOrDefault();
+        Pretrain PretrainOf(string processor) => PretrainIfAny(processor)
+            ?? throw new ArgumentException($"The {processor} model {Model(processor)} reads word vectors: name them in its ModelPath (Pretrain)", nameof(options));
         Charlms CharlmsOf(string processor) => new(
-            DependenciesOf(processor).SingleOrDefault(p => p.StartsWith("forward_charlm/", StringComparison.Ordinal)),
-            DependenciesOf(processor).SingleOrDefault(p => p.StartsWith("backward_charlm/", StringComparison.Ordinal)));
+            dependencies[processor].Where(d => d.Kind == "forward_charlm").Select(d => d.Key).SingleOrDefault(),
+            dependencies[processor].Where(d => d.Kind == "backward_charlm").Select(d => d.Key).SingleOrDefault());
         foreach (var processor in models.Keys)
             _charlmOf[processor] = CharlmsOf(processor).Forward;
 
@@ -648,7 +693,8 @@ public sealed class Pipeline : IDisposable
         options ??= new PipelineOptions();
         if (!Directory.Exists(modelDir))
             throw new DirectoryNotFoundException($"Model directory not found: {modelDir} (download them with ModelDownloader.DownloadAsync or \"stanzasharp download\")");
-        var models = SelectModels(options.Package, options.Processors, addRequired: false, nameof(options), options.Language, options.Models, options.Pretagged);
+        var models = SelectModels(options.Package, options.Processors, addRequired: false, nameof(options), options.Language, options.Models, options.Pretagged,
+            options.ModelPaths);
         if (options.CharlmCache.IsEnabled && options.CharlmCache.MaxWords <= 0)
             throw new ArgumentOutOfRangeException(nameof(options), "CharlmCache.MaxWords must be positive; set IsEnabled = false to turn the cache off");
         if (options.Threads < 1)
@@ -666,7 +712,7 @@ public sealed class Pipeline : IDisposable
         long start = Stopwatch.GetTimestamp();
         if (options.VerifyChecksums)
         {
-            ModelDownloader.Verify(modelDir, models, options.Language);
+            ModelDownloader.Verify(modelDir, models, options.Language, CustomPaths(options.ModelPaths, nameof(options)));
             logger?.LogInformation("Verified the model checksums in {Milliseconds:F0} ms", Stopwatch.GetElapsedTime(start).TotalMilliseconds);
         }
 
@@ -708,7 +754,17 @@ public sealed class Pipeline : IDisposable
     // and how to fetch them, instead of the FileNotFoundException of whichever model reads it first.
     private static void ThrowIfMissing(string modelDir, Dictionary<string, string> models, PipelineOptions options)
     {
-        var missing = ModelFiles(models, options.Language, readOnly: true)
+        // The caller's own files first: no download brings them.
+        foreach (var (processor, path) in CustomPaths(options.ModelPaths, nameof(options)))
+        {
+            foreach (var (what, own) in new[] { ("Model", path.Model), ("Pretrain", path.Pretrain), ("ForwardCharlm", path.ForwardCharlm), ("BackwardCharlm", path.BackwardCharlm) })
+            {
+                if (own != null && !File.Exists(own + ".pt") && !File.Exists(own + ".json"))
+                    throw new FileNotFoundException($"Model file not found: {own}.pt (ModelPaths[\"{processor}\"].{what})", own + ".pt");
+            }
+        }
+
+        var missing = ModelFiles(models, options.Language, readOnly: true, CustomPaths(options.ModelPaths, nameof(options)))
             .FirstOrDefault(p => !File.Exists(Path.Combine(modelDir, p + ".pt")) && !File.Exists(Path.Combine(modelDir, p + ".json")));
         string chosen = options.Models == null ? "" : $" --model {string.Join(',', options.Models.Select(m => $"{m.Key}={m.Value}"))}";
         if (missing == null)
@@ -751,7 +807,7 @@ public sealed class Pipeline : IDisposable
     /// <paramref name="processors"/> is null.
     /// </summary>
     internal static Dictionary<string, string> SelectModels(string package, string? processors, bool addRequired, string paramName, string language = English,
-        IReadOnlyDictionary<string, string>? chosen = null, bool pretagged = false)
+        IReadOnlyDictionary<string, string>? chosen = null, bool pretagged = false, IReadOnlyDictionary<string, ModelPath>? paths = null)
     {
         if (!Packages.TryGetValue(language ?? "", out var packages))
             throw new ArgumentException($"Unknown language '{language}'. Available: {string.Join(", ", Packages.Keys)}", paramName);
@@ -766,6 +822,17 @@ public sealed class Pipeline : IDisposable
         foreach (var (p, model) in overrides)
             models[p] = model;
 
+        // A path of the caller's own keeps the replaced model's name, which says what it reads; one for a processor the
+        // package lacks (or for the identity lemmatizer) reads only what its ModelPath names (CustomModel).
+        var custom = CustomPaths(paths, paramName);
+        if (custom.Keys.FirstOrDefault(overrides.ContainsKey) is { } both)
+            throw new ArgumentException($"Both Models and ModelPaths name {both}", paramName);
+        foreach (var p in custom.Keys)
+        {
+            if (!models.ContainsKey(p) || models[p] == IdentityLemma)
+                models[p] = CustomModel;
+        }
+
         // Stanza's add_mwt: a replaced tokenizer brings the mwt of its own treebank, if there is one.
         if (chosen != null && overrides.ContainsKey("tokenize") && !overrides.ContainsKey("mwt") && models.ContainsKey("mwt")
             && MwtFor(chosen.First(kv => kv.Key.Trim().Equals("tokenize", StringComparison.OrdinalIgnoreCase)).Value.Trim().ToLowerInvariant(), language!) is { } mwt)
@@ -776,6 +843,8 @@ public sealed class Pipeline : IDisposable
         var set = processors == null ? models.Keys.ToHashSet() : ParseProcessors(processors, paramName);
         if (processors != null && overrides.Keys.FirstOrDefault(p => !set.Contains(p)) is { } unlisted)
             throw new ArgumentException($"Models names {unlisted}, which Processors ({processors}) doesn't list", paramName);
+        if (processors != null && custom.Keys.FirstOrDefault(p => !set.Contains(p)) is { } unlistedPath)
+            throw new ArgumentException($"ModelPaths names {unlistedPath}, which Processors ({processors}) doesn't list", paramName);
 
         // Pretagged (Stanza's pretagged): lemma, depparse and constituency need nothing; the tokenizer always loads, so the
         // text overloads keep working (owner's decision, 2026-10-17).
@@ -865,19 +934,76 @@ public sealed class Pipeline : IDisposable
     /// The shared files <paramref name="models"/> of <paramref name="language"/> read (paths without extension), from
     /// <see cref="Dependencies"/>: pretrains first, then the forward and the backward charlm.
     /// </summary>
-    internal static List<string> SharedModels(IReadOnlyDictionary<string, string> models, string language = English, bool readOnly = false) =>
-        models.SelectMany(m => readOnly ? ReadDependencies($"{m.Key}/{m.Value}", language) : Dependencies[language].GetValueOrDefault($"{m.Key}/{m.Value}", []))
+    internal static List<string> SharedModels(IReadOnlyDictionary<string, string> models, string language = English, bool readOnly = false,
+        IReadOnlyDictionary<string, ModelPath>? custom = null) =>
+        models.SelectMany(m => (readOnly ? ReadDependencies($"{m.Key}/{m.Value}", language) : Dependencies[language].GetValueOrDefault($"{m.Key}/{m.Value}", []))
+                .Where(d => custom?.GetValueOrDefault(m.Key) is not { } c || Override(c, d) == null))
             .Distinct()
             .OrderBy(p => p.StartsWith("pretrain/", StringComparison.Ordinal) ? 0 : p.StartsWith("forward_charlm/", StringComparison.Ordinal) ? 1 : 2)
             .ThenBy(p => p, StringComparer.Ordinal)
             .ToList();
 
     /// <summary>
-    /// Every file <paramref name="models"/> read (paths without extension): their own, but none for the identity lemmatizer, then
-    /// <see cref="SharedModels"/> (<paramref name="readOnly"/>: without the <see cref="Unread"/> ones, which Load skips).
+    /// Every package file <paramref name="models"/> read (paths without extension): their own, but none for the identity
+    /// lemmatizer or a processor with a <paramref name="custom"/> path, then <see cref="SharedModels"/> (<paramref name="readOnly"/>:
+    /// without the <see cref="Unread"/> ones, which Load skips; none a custom path replaces).
     /// </summary>
-    internal static IEnumerable<string> ModelFiles(IReadOnlyDictionary<string, string> models, string language, bool readOnly = false) =>
-        models.Where(m => m.Value != IdentityLemma).Select(m => $"{m.Key}/{m.Value}").Concat(SharedModels(models, language, readOnly));
+    internal static IEnumerable<string> ModelFiles(IReadOnlyDictionary<string, string> models, string language, bool readOnly = false,
+        IReadOnlyDictionary<string, ModelPath>? custom = null) =>
+        models.Where(m => m.Value != IdentityLemma && m.Value != CustomModel && custom?.ContainsKey(m.Key) != true)
+            .Select(m => $"{m.Key}/{m.Value}")
+            .Concat(SharedModels(models, language, readOnly, custom));
+
+    /// <summary>
+    /// The model name of a processor whose <see cref="PipelineOptions.ModelPaths"/> path the package has no model for: it
+    /// reads only the shared files its <see cref="ModelPath"/> names.
+    /// </summary>
+    internal const string CustomModel = "(custom)";
+
+    /// <summary>
+    /// <see cref="PipelineOptions.ModelPaths"/> by processor (trimmed and lowercased, like <see cref="PipelineOptions.Models"/>),
+    /// each path made a full base path (without <c>.pt</c>, <c>.json</c> or <c>.safetensors</c>).
+    /// </summary>
+    internal static Dictionary<string, ModelPath> CustomPaths(IReadOnlyDictionary<string, ModelPath>? paths, string paramName)
+    {
+        var resolved = new Dictionary<string, ModelPath>();
+        foreach (var (key, value) in paths ?? new Dictionary<string, ModelPath>())
+        {
+            var p = key?.Trim().ToLowerInvariant() ?? "";
+            if (!Requires.ContainsKey(p))
+                throw new ArgumentException($"Unknown processor '{key}' in ModelPaths. Available: {AllProcessors}", paramName);
+            if (resolved.ContainsKey(p))
+                throw new ArgumentException($"ModelPaths names {p} twice", paramName);
+            if (string.IsNullOrWhiteSpace(value?.Model))
+                throw new ArgumentException($"ModelPaths[\"{p}\"] has no Model", paramName);
+            resolved[p] = new ModelPath(BasePath(value.Model)!, BasePath(value.Pretrain), BasePath(value.ForwardCharlm), BasePath(value.BackwardCharlm));
+        }
+
+        return resolved;
+
+        static string? BasePath(string? path)
+        {
+            if (path == null)
+                return null;
+            var full = Path.GetFullPath(path);
+            foreach (var extension in new[] { ".pt", ".json", ".safetensors" })
+            {
+                if (full.EndsWith(extension, StringComparison.Ordinal))
+                    return full[..^extension.Length];
+            }
+
+            return full;
+        }
+    }
+
+    /// <summary>The file <paramref name="custom"/> names instead of the shared file <paramref name="dependency"/> (<c>pretrain/conll17</c>), or null.</summary>
+    internal static string? Override(ModelPath custom, string dependency) => dependency[..dependency.IndexOf('/')] switch
+    {
+        "pretrain" => custom.Pretrain,
+        "forward_charlm" => custom.ForwardCharlm,
+        "backward_charlm" => custom.BackwardCharlm,
+        _ => null,
+    };
 
     /// <summary>A comma-separated processor list as a set, checking every name.</summary>
     internal static HashSet<string> ParseProcessors(string processors, string paramName)

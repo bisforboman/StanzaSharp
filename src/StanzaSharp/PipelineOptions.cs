@@ -80,6 +80,29 @@ public sealed class PipelineOptions
     public IReadOnlyDictionary<string, string>? Models { get; init; }
 
     /// <summary>
+    /// Model files of your own, by processor (<see cref="Processor"/> keys), Stanza's <c>{processor}_model_path</c> and
+    /// the dependency paths beside it. A path replaces the package's model for that processor; the word vectors and
+    /// character models it reads stay those of the model it replaces unless the <see cref="ModelPath"/> names others. A
+    /// path for a processor the package lacks adds it, reading only what its <see cref="ModelPath"/> names (as in Stanza).
+    /// A processor in both <see cref="Models"/> and here throws <see cref="ArgumentException"/>, and so does one outside a
+    /// set <see cref="Processors"/>. <see cref="ModelDownloader"/> skips these files, and <see cref="VerifyChecksums"/>
+    /// checks only the package's (yours have no published checksum).
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// using var nlp = Pipeline.Load("models/stanza/en", new PipelineOptions
+    /// {
+    ///     ModelPaths = new Dictionary&lt;string, ModelPath&gt;
+    ///     {
+    ///         [Processor.Ner] = "my_models/ner.pt", // reads the default model's word vectors and character models
+    ///         [Processor.Pos] = new("my_models/pos.pt", Pretrain: "my_models/vectors.pt"),
+    ///     },
+    /// });
+    /// </code>
+    /// </example>
+    public IReadOnlyDictionary<string, ModelPath>? ModelPaths { get; init; }
+
+    /// <summary>
     /// The implementation that runs the models: <see cref="PipelineBackend.Managed"/> (the default; no native
     /// dependencies), or TorchSharp (libtorch) on a GPU or the CPU from the <c>StanzaSharp.Cuda</c> package
     /// (<c>CudaBackend.Create()</c>, <c>CudaBackend.Cpu</c>). Output is the same on all of them (on a GPU, with TF32

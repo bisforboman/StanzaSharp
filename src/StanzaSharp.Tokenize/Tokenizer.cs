@@ -89,9 +89,13 @@ internal sealed partial class Tokenizer : IDisposable
     internal Tokenizer(Checkpoint ckpt, Func<Checkpoint, ITokenizerNet> net, IPerCharLanguageModel? charlm = null)
     {
         var config = ckpt.Root["config"]!;
-        if ((config["charlm"]?.GetValue<bool>() == true) != (charlm != null))
-            throw new ArgumentException(charlm == null ? "This tokenizer reads a forward charlm; none was given" : "This tokenizer reads no charlm", nameof(charlm));
-        _charlm = charlm;
+
+        // A charlm the model doesn't read is ignored, as the tagger and the parsers do (a model of the caller's own may
+        // replace a _charlm one: PipelineOptions.ModelPaths).
+        bool readsCharlm = config["charlm"]?.GetValue<bool>() == true;
+        if (readsCharlm && charlm == null)
+            throw new ArgumentException("This tokenizer reads a forward charlm; none was given", nameof(charlm));
+        _charlm = readsCharlm ? charlm : null;
         _charlmPad = charlm?.Id("<PAD>") ?? 0;
         _net = net(ckpt);
         _vocab = Checkpoint.UnitToId(ckpt.Root["vocab"]);
