@@ -225,6 +225,8 @@ public static class ModelDownloader
             ("pos/hdt_german-nlp-electra.pt", "276a4063c1c4a00b7bd27a3dc9dd67ba"),
             ("depparse/hdt_german-nlp-electra.pt", "91ecaa874d4217dd1cac9c84e667f377"),
             ("ner/germeval2014_german-nlp-electra.pt", "35be8dec3ab2dbed9b6faabe84d342c8"),
+            ("ner/germeval2014_dbmdz-bert-german-cased.pt", "d496675af4b1ee6ea610a97fcfce6caf"),
+            ("sentiment/sb10k_dbmdz-bert-german-cased.pt", "55ec000d9d899dbac0621536ffac27df"),
         ],
     };
 
@@ -358,6 +360,16 @@ public static class ModelDownloader
             ("vocab.txt", "ffcfe163e0a45a6c112822fcd026e82dd23065861f1c3f7a71fdd653106a51ba"),
             ("tokenizer_config.json", "3888c4068947ecd386bfac973ec5e348e8503d05699427900698e74d4fdc2889"),
             ("pytorch_model.bin", "a13cf267dfad08dd5c889af59f2e7f74120ff28107619d6c81904c3250efe76e"),
+        ]),
+
+        // German ner germeval2014_dbmdz-bert-german-cased's and sentiment sb10k_dbmdz-bert-german-cased's: BERT (cased) with a
+        // vocab.txt WordPiece, like german-nlp-group's.
+        ["dbmdz/bert-base-german-cased"] = ("43cce138f63f8bd34b42d8a77321e3262fd7bbba",
+        [
+            ("config.json", "2b6e682bc4c25157c68b7ce4f2b7305255aaa528203d357ccce0d54e4ee3d984"),
+            ("vocab.txt", "bf186f7fb9cb667d811c08b45ce64d1e8e262277bb053f05d1aef3e9f13039a3"),
+            ("tokenizer_config.json", "4c052d60b505817149a29e88c5292d7779ddecfadbfc6208729e61403ec558ba"),
+            ("pytorch_model.bin", "e482d0e2a09cef20bed85c86d7df9d2f1f5d090e7e53c772ab94ced0e3eafee3"),
         ]),
 
         // English ner conll03_electra-large's, despite the name (#172): RoBERTa with a byte-level BPE tokenizer.json. Stanza's

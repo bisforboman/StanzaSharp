@@ -350,6 +350,11 @@ MODEL_CHOICES = {
          {"pos": "hdt_german-nlp-electra", "depparse": "hdt_german-nlp-electra"}, []),
         ("ner=germeval2014_german-nlp-electra", "default", "tokenize,mwt,ner", {"ner": "germeval2014_german-nlp-electra"},
          ["validation.txt", "models/transformer_long.txt"]),
+        # dbmdz/bert-base-german-cased's: ner (conll17's vectors, PRETRAIN_FIXES | BERT | charlms) and sentiment (LoRA, no charlms)
+        ("ner=germeval2014_dbmdz-bert-german-cased", "default", "tokenize,mwt,ner", {"ner": "germeval2014_dbmdz-bert-german-cased"},
+         ["validation.txt", "models/transformer_long.txt"]),
+        ("sentiment=sb10k_dbmdz-bert-german-cased", "default", "tokenize,mwt,sentiment", {"sentiment": "sb10k_dbmdz-bert-german-cased"},
+         ["validation.txt", "validation_social.txt", "models/transformer_long.txt"]),
     ],
 }
 
@@ -495,14 +500,15 @@ class RecordContextual:
 
 def electra_locally(models):
     """
-    Has Stanza's load_bert read TRANSFORMER and ROBERTA (English) and GERMAN["TRANSFORMER"] from <models>/<lang>/transformer/
+    Has Stanza's load_bert read TRANSFORMER and ROBERTA (English) and GERMAN["TRANSFORMER"] and DBMDZ from <models>/<lang>/transformer/
     (the files ModelDownloader fetches at the pinned revision) instead of Hugging Face's cache.
     """
     from stanza.models.common import bert_embedding
     load = bert_embedding.load_bert
     local = {TRANSFORMER: Path(models) / "en" / "transformer" / TRANSFORMER,
              ROBERTA: Path(models) / "en" / "transformer" / ROBERTA,
-             GERMAN["TRANSFORMER"]: Path(models) / "de" / "transformer" / GERMAN["TRANSFORMER"]}
+             GERMAN["TRANSFORMER"]: Path(models) / "de" / "transformer" / GERMAN["TRANSFORMER"],
+             DBMDZ: Path(models) / "de" / "transformer" / DBMDZ}
 
     def load_bert(model_name, *args, **kwargs):
         if model_name in local:
@@ -512,7 +518,7 @@ def electra_locally(models):
     bert_embedding.load_bert = load_bert
 
 
-PRETRAIN_FIXES = {("en", "ner", "conll03_electra-large"): "conll17"}
+PRETRAIN_FIXES = {("en", "ner", "conll03_electra-large"): "conll17", ("de", "ner", "germeval2014_dbmdz-bert-german-cased"): "conll17"}
 
 
 def write_models_golden(models, out, only=None):
@@ -1679,8 +1685,18 @@ def write_transformer_hidden_golden(models, out, tokenizer, transformer=TRANSFOR
 
 ROBERTA = "roberta-base"
 
+# German's dbmdz/bert-base-german-cased (ner germeval2014_dbmdz-bert-german-cased, sentiment sb10k_dbmdz-bert-german-cased): a
+# cased vocab.txt WordPiece (do_lower_case false, so strip_accents follows it: accents kept), on top of the German cases
+DBMDZ = "dbmdz/bert-base-german-cased"
+DBMDZ_TOKENIZER_CASES = [
+    ["Über", "ÜBER", "über", "Ärger", "ÄRGER", "Öl", "Straße", "STRASSE", "ẞ"],
+    ["café", "Café", "naïve", "Noël", "Ångström", "İstanbul", "ǅ"],
+    ["Ue\u0308bel", "Cafe\u0301", "ﬁnden", "Ⅻ", "½"],
+    ["McDonald's", "iPhone", "E-Mail", "GmbH", "BMW-Werk", "3.500,00", "€", "§§"],
+]
 
-def write_transformer_golden(models, out, transformer=TRANSFORMER):
+
+def write_transformer_golden(models, out, transformer=None):
     """
     transformer/tokenizer.json (ELECTRA-large) or tokenizer_roberta-base.json: Stanza's transformer input stage
     (extract_base_embeddings up to the model call); then the hidden states.
@@ -1690,6 +1706,7 @@ def write_transformer_golden(models, out, transformer=TRANSFORMER):
     import tokenizers
     import transformers
 
+    transformer = transformer or TRANSFORMER  # the language's (GERMAN replaces the global), not the one bound at definition
     tokenizer = load_tokenizer(str(Path(models) / LANG / "transformer" / transformer), local_files_only=True)
     suffix = "" if transformer == TRANSFORMER else "_" + transformer.replace("/", "_")
     golden = Path(out)
@@ -1731,6 +1748,8 @@ def write_transformer_golden(models, out, transformer=TRANSFORMER):
         add(words, "GERMAN_TRANSFORMER_TOKENIZER_CASES")
     for words in ROBERTA_TOKENIZER_CASES if transformer == ROBERTA else []:
         add(words, "ROBERTA_TOKENIZER_CASES")
+    for words in DBMDZ_TOKENIZER_CASES if transformer == DBMDZ else []:
+        add(words, "DBMDZ_TOKENIZER_CASES")
 
     (golden / "transformer").mkdir(exist_ok=True)
     with open(golden / "transformer" / f"tokenizer{suffix}.json", "w", encoding="utf-8", newline="\n") as f:
@@ -1786,8 +1805,7 @@ def main():
         return
     if args.transformer_only:
         write_transformer_golden(args.models, out)
-        if LANG == "en":
-            write_transformer_golden(args.models, out, ROBERTA)
+        write_transformer_golden(args.models, out, ROBERTA if LANG == "en" else DBMDZ)
         return
     if args.long_token_only:
         write_long_token_golden(args.models, out)

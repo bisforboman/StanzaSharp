@@ -24,6 +24,22 @@ public class TransformerTokenizerTests(ITestOutputHelper output)
         AssertGolden(WordPiece.LoadDirectory(GermanTransformerFactAttribute.Directory), Path.Combine(Repo.GoldenFor("de"), "transformer", "tokenizer.json"),
             minCases: 200);
 
+    /// <summary>dbmdz/bert-base-german-cased: a cased vocab.txt tokenizer (accents kept), on make_golden's DBMDZ_TOKENIZER_CASES too.</summary>
+    [DbmdzFact("vocab.txt", "tokenizer_config.json")]
+    public void Dbmdz_MatchesTransformersAndStanzaOnEveryGoldenCase() =>
+        AssertGolden(WordPiece.LoadDirectory(DbmdzFactAttribute.Directory),
+            Path.Combine(Repo.GoldenFor("de"), "transformer", "tokenizer_dbmdz_bert-base-german-cased.json"), minCases: 200);
+
+    [DbmdzFact("config.json", "tokenizer_config.json")]
+    public void Dbmdz_ConfigReadsBert()
+    {
+        // BertForMaskedLM: the weights under bert., positions from 0, max_len instead of model_max_length.
+        var config = TransformerConfig.Load(Path.Combine(DbmdzFactAttribute.Directory, "config.json"));
+        Assert.Equal((768, 12, 12, 3072, 512, 0, "bert."), (config.Hidden, config.Heads, config.Layers, config.Intermediate, config.MaxPositions,
+            config.PositionOffset, config.Prefix));
+        Assert.Equal(512, TransformerEmbedder.ReadMaxLength(DbmdzFactAttribute.Directory));
+    }
+
     /// <summary>roberta-base's byte-level BPE (#172), as Stanza loads it (add_prefix_space=True), on make_golden's ROBERTA_TOKENIZER_CASES too.</summary>
     [RobertaFact("tokenizer.json")]
     public void Roberta_MatchesTransformersAndStanzaOnEveryGoldenCase() =>

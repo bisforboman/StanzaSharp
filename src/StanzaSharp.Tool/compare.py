@@ -53,7 +53,7 @@ def transformers_locally(models):
 
 # Models whose resources.json entry lists another pretrain than the one they were trained on (Pipeline.ListedPretrains):
 # Stanza gets the right file as {processor}_pretrain_path, else it fails its embedding check at load.
-PRETRAIN_FIXES = {"en": {"ner/conll03_electra-large": "conll17"}}
+PRETRAIN_FIXES = {"en": {"ner/conll03_electra-large": "conll17"}, "de": {"ner/germeval2014_dbmdz-bert-german-cased": "conll17"}}
 
 
 def load_stanza(models, lang, package, processors):

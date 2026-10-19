@@ -239,6 +239,24 @@ public sealed class GermanTransformerFactAttribute : FactAttribute
     }
 }
 
+/// <summary>
+/// A fact that is skipped without German's dbmdz/bert-base-german-cased files (models/stanza/de/transformer/, next to the
+/// English models, like <see cref="GermanTransformerFactAttribute"/>).
+/// </summary>
+public sealed class DbmdzFactAttribute : FactAttribute
+{
+    public const string Bert = "dbmdz/bert-base-german-cased";
+
+    public static string Directory => ModelDownloader.TransformerDirectory(Path.GetFullPath(Path.Combine(Repo.StanzaModels, "..", "de")), Bert);
+
+    public DbmdzFactAttribute(params string[] files)
+    {
+        var missing = files.FirstOrDefault(f => !File.Exists(Path.Combine(Directory, f)));
+        if (missing != null)
+            Skip = $"{Path.Combine(Directory, missing)} not found; run StanzaSharp.Cli download-transformer models/stanza/de {Bert}";
+    }
+}
+
 /// <summary>A theory skipped like <see cref="RobertaFactAttribute"/>.</summary>
 public sealed class RobertaTheoryAttribute : TheoryAttribute
 {

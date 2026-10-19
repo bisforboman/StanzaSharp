@@ -166,5 +166,32 @@
    "validation.txt",
    "models/transformer_long.txt"
   ]
+ },
+ {
+  "name": "ner=germeval2014_dbmdz-bert-german-cased",
+  "package": "default",
+  "processors": "tokenize,mwt,ner",
+  "models": {
+   "ner": "germeval2014_dbmdz-bert-german-cased"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "models/transformer_long.txt"
+  ]
+ },
+ {
+  "name": "sentiment=sb10k_dbmdz-bert-german-cased",
+  "package": "default",
+  "processors": "tokenize,mwt,sentiment",
+  "models": {
+   "sentiment": "sb10k_dbmdz-bert-german-cased"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "validation_social.txt",
+   "models/transformer_long.txt"
+  ]
  }
 ]
