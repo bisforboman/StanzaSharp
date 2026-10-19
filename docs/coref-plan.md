@@ -2,6 +2,65 @@
 
 > **Owner's decision (2026-10-14): not now.** Coref needs a 24-layer transformer; the smaller gaps (JSON output,
 > processing pretagged CoNLL-U) come first. This report is kept as the record for a later decision.
+>
+> **Gap re-check (2026-10-19, owner's request; docs only):** the managed transformer encoder, this plan's biggest item,
+> has landed with `default_accurate` and its follow-ups. What is left is smaller: effort **L**, down from XL. See
+> [Gap re-check](#gap-re-check-2026-10-19) below; the rest of the report is the 2026-10-14 research, unchanged where
+> the re-check doesn't say otherwise.
+
+## Gap re-check (2026-10-19)
+
+Since 2026-10-14, `default_accurate` (docs/transformer-plan.md) and its follow-ups (#168–#172, #200, #201) built most of
+what this plan called new. Checked against `FacebookAI/xlm-roberta-large` at the revision below (its `config.json` and
+`tokenizer.json`, Hugging Face API, 2026-10-19) and today's code:
+
+| piece (2026-10-14) | status now | what is left | effort |
+|---|---|---|---|
+| Transformer encoder | **Done.** `Nn.ITransformerNet`: `ManagedTransformer` (row-invariant GEMMs, attention per sentence without padding, double LayerNorm/GELU/softmax, the same bits alone, batched and on any thread count) and the TorchSharp `TransformerNet`; ELECTRA, BERT (#201) and RoBERTa (#198: positions from `pad_token_id` + 1, one token-type row). XLM-R is RoBERTa's architecture (`XLMRobertaModel`); its config (24 layers, hidden 1024, 16 heads, FFN 4096, eps 1e-5, `max_position_embeddings` 514, `pad_token_id` 1, one token type) is ELECTRA-large's shape with RoBERTa's positions. | `TransformerConfig` to accept `model_type` `xlm-roberta` (prefix `roberta.`, offset 2); a 250,002 × 1,024 embedding table (1 GB, a row lookup, not packed). | **S** |
+| LoRA | **Done.** `Nn.LoraWeights`, `ITransformerNet.WithLora`: peft's eval forward on `query`, `value`, `attention.output.dense`, `intermediate.dense` and `output.dense`, coref's exact targets (sentiment's, German constituency's). The joint frozen + LoRA pass (#169) doesn't apply: coref is the only reader of XLM-R. | coref's `bert_lora` key layout (a top-level key of the `.pt`, like German constituency's). | **S** |
+| Files | **Pattern done.** `ModelDownloader.Transformers` (pinned revision, per-file sha256: Hugging Face's LFS hash for the weights), `DownloadAsync(dir, options)`, `VerifyChecksums`; `pytorch_model.bin` (2,244,861,551 bytes) is in the repository, so `Checkpoint.Load` reads it as it reads ELECTRA's. | the table entry (revision `c23d21b0620b635a76227c604d44e43a9f0ee389`); the coref `.pt` MD5s in `ModelDownloader.Files`. | **S** |
+| Several transformers per pipeline | **Done** (#199): every transformer the models read loads once by name. Coref next to `default_accurate` loads ELECTRA-large and XLM-R. | none. | – |
+| Unigram tokenizer | **Not started.** `tokenizer.json` is a `Unigram` model (250,002 pieces with scores, `unk_id`), normalizer `Precompiled` (its charsmap is a base64 double-array trie in the file, 316,720 characters, so no `.model` protobuf is needed), pre-tokenizer `WhitespaceSplit` + `Metaspace` (`▁`, `add_prefix_space`), `TemplateProcessing` `<s>` … `</s>`. It fits `ITransformerTokenizer` next to `WordPiece` and `ByteLevelBpe`, and the golden approach is theirs (transformers' ids on every golden word, plus hand-picked cases: NFKC-like folding `Ｆｕｌｌ` → `▁Full`, `n't` → `▁n` `'` `t`, blank words). | the charsmap trie walk (sentencepiece's `normalizer.cc`), Viterbi over piece scores, Metaspace. No package (`Microsoft.ML.Tokenizers` would be the main package's second dependency). | **M** |
+| Windowing | **Different from what exists.** `TransformerEmbedder` is extract_bert_embeddings (overlapping 512 windows per sentence); coref's `get_subwords_batches` cuts the whole document into 510-subword windows at sentence boundaries, without overlap, and batches them with a mask. The managed attention needs no mask (per sequence, no padding), so each window is one sequence. | a coref-only windowing function, with golden subword ids per window. | **S** |
+| Coref head | Not started; unchanged. `Gemm`, `Act` (ReLU, LeakyReLU) and the pooled-buffer rules cover it; Conv1d (kernel 3) is new but small, like sentiment's convolutions. | word encoder, rough scorer + topk, pairwise, anaphoricity, clusterize, span predictor, zeros predictor. | **M** |
+| Document model | Not started; unchanged. | `Document.Coref`, `Word.CorefChains`, empty words (`N.M`) in `Sentence`, `Conllu` and `Json`. | **M** |
+| Golden data and tests | The transformer goldens' pattern exists (`make_golden.py --transformer-only`, `hidden*.safetensors`, `tests/golden/**/transformer/`, `Transformer*` tests in golden shard 4); the pinned `transformers`/`peft` live in `tools/requirements-transformer.txt`. | `--coref-only`, chains and mentions JSON, intermediates (subword ids, encoder output for one window, rough/anaphoricity/span scores), a margins test. | **M** |
+
+**Revised total: L**: the tokenizer, the head, the document model and the golden data, each M; the encoder side S. The risks have moved too:
+
+- **Encoder drift** is no longer a guess. The managed encoder matches Stanza's hidden states within 1.2e-5 on both
+  backends (roberta-base, #198; `TransformerEncoderTests`), and every ELECTRA-large golden row downstream (24 layers) is
+  byte-identical. 1.2e-5 is 40x inside coref's smallest golden margin (4.9e-4); (a) below measures XLM-R itself.
+- **Speed** is measured: one ELECTRA-large pass over 6,044 words took 24.5 s on a 4-core Xeon (round 45), about 250
+  words/s. XLM-R-large costs the same per piece, plus coref's head (about 30% more, by this report's FLOP count) and the
+  LoRA adapters (about 6%). That is the 2026-10-14 estimate, now with a number under it.
+- **Memory:** XLM-R's 2.24 GB of float32 weights, with 1 GB of it the embedding table. That is about 3.3–3.6 GB with the
+  default package, and about 4.6 GB next to `default_accurate`'s ELECTRA-large (round 44: 4.1 GB peak without coref).
+- **Unchanged:** the `topk(sorted=False)` order (Precision, below) and empty words. These are the two decisions only
+  the owner can make.
+
+**What the re-check changes in the owner's questions (below):**
+
+- **Q1 (package):** the transformer code now lives in the main package (`Nn`, the facade), and its weights download
+  only on request. A separate `StanzaSharp.Coref` package would split code that `default_accurate` already ships. The
+  recommendation becomes: in the main package, opt-in as a processor (Q2).
+- **Q6 (models):** `roberta-large`'s byte-level BPE exists now (#198). The three English-only coref models would add a
+  1.4 GB transformer but no new tokenizer code: S once the default model works.
+- **Q7 (CI):** the transformers are no longer cached (owner's decision, 2026-10-18). Golden shard 4 downloads them on
+  every run, so coref adds about 2.4 GB of download per shard-4 run (XLM-R and the `.pt`), not cache space.
+- **Q3–Q5 and Q8 (API, CoNLL-U, exactness, precision)** are unchanged.
+
+**Recommendation now:** unpark only with Q3–Q5 decided, and only as these PRs:
+
+1. **(a) The Unigram tokenizer and XLM-R in `TransformerConfig`.** Golden tokenizer ids and hidden states for the
+   golden sentences, like #198. This PR alone settles the encoder exactness for XLM-R.
+2. **(b) The document model.** Coref chains, attachments and empty words in `Document`, `Conllu` and `Json`, with
+   CoNLL-U goldens written by Stanza.
+3. **(c) The head and the processor** (`Processor.Coref`, opt-in), with golden chains on the corpus and validation
+   texts and the margins test.
+
+(a) is useful by itself, as the encoder spike this report recommended: it measures XLM-R's drift before the owner
+commits to the rest.
 
 Research only (2026-10-14): nothing in `src/`, `tests/` or the workflows has changed. Stanza 1.15.0's English coref
 models are in `models/stanza/en/coref` (gitignored), from
@@ -408,25 +467,25 @@ call).
 
 ## Smaller missing features
 
-| feature | Stanza | StanzaSharp today | effort | status (2026-10-18) |
+| feature | Stanza | StanzaSharp today | effort | status (2026-10-19) |
 |---|---|---|---|---|
 | JSON output | `Document.to_dict()` (list of sentences of word/token dicts), `repr(doc)` = `json.dumps(indent=2, ensure_ascii=False)`, `to_serialized()`/`from_serialized()` = JSON `{text, sentences, comments}` (`models/common/doc.py`) | none | **S** (writer; byte-identical with Python's `json.dumps` is feasible with a golden file); **S–M** with the reader | done (`Json`, 2026-10-14) |
 | `process_conllu` / `*_pretagged` | run later processors on a parsed CoNLL-U (`depparse_pretagged`, `lemma_pretagged`, `constituency_pretagged`) | `Conllu.Read` exists, no pipeline entry | **M** | done (`Process(Document)`, `Pretagged`; 2026-10-14, 2026-10-17) |
 | English treebank packages | `ewt`, `gum`, `atis`, `childes`, `craft`, `eslspok`, `genia`, `lines`, `mimic`, `partut`, `combined` (`en.packages`) | `default`, `default_fast` (German has `gsd`, `hdt`) | **S–M** each (same architectures; golden data per package) | done (2026-10-15) |
 | Other NER models | `ontonotes_charlm`/`_nocharlm`, `conll03_charlm`, biomedical/clinical (`anatem`, `bc5cdr`, `i2b2`, `ncbi_disease`, `radiology`, ...) via `processors={'ner': ...}` | the package's NER only | **S–M** (old-format checkpoints like German's `germeval2014`) | done (`Models`, 2026-10-16) |
 | `ner_predict_tagset` | choose the WorldWide head (column 1) of `ontonotes-ww-multi` | head 0 only | **S** | done (`NerTagSet`, 2026-10-18) |
-| `{processor}_model_path` | load a custom-trained checkpoint | fixed package models | **M** (config differences need checking per model) | open (#174) |
+| `{processor}_model_path` | load a custom-trained checkpoint | fixed package models | **M** (config differences need checking per model) | done (`ModelPaths`, 2026-10-19) |
 | `mwt_dict_only`, `lemma_dict_only`, `lemma_ensemble_dict` | dictionary-only modes | no | **S** | done for `mwt_dict_only`, `lemma_dict_only` (2026-10-18) |
-| `lemma_beam_size` > 1 | beam search in the seq2seq | greedy only (the checkpoint's `beam_size` 1) | **M** | open (#174) |
-| `{processor}_batch_size`, `pos_batch_maximum_tokens`, `depparse_min_length_to_batch_separately`, `depparse_sort_during_eval`, `sentiment_batch_size`, `constituency_batch_size` | batching knobs; for depparse and sentiment they change results | fixed at Stanza's defaults | **S** (but each changes golden behaviour; low value) | open (#174) |
-| `tokenize_postprocessor` | a callable that edits the tokenizer's output | no | **S** (a delegate) | open (#174) |
+| `lemma_beam_size` > 1 | beam search in the seq2seq | greedy only (the checkpoint's `beam_size` 1) | **M** | done (`LemmaBeamSize`, 2026-10-19) |
+| `{processor}_batch_size`, `pos_batch_maximum_tokens`, `depparse_min_length_to_batch_separately`, `depparse_sort_during_eval`, `sentiment_batch_size`, `constituency_batch_size` | batching knobs; for depparse and sentiment they change results | fixed at Stanza's defaults | **S** (but each changes golden behaviour; low value) | done (typed batch sizes, 2026-10-18) |
+| `tokenize_postprocessor` | a callable that edits the tokenizer's output | no | **S** (a delegate) | done (`TokenizePostprocessor`, 2026-10-18) |
 | `tokenize_speaker_delim` | marks speakers (`sentence.speaker`) for coref | no | **S** (only matters with coref) | with coref (#176) |
 | `tokenize_combined_charlm` | the charlm tokenizer (`default_accurate`'s) | no | **M** | done (`Models`, 2026-10-16) |
 | `default_accurate` | electra-large models for pos, depparse, ner, sentiment, constituency | no | **XL** (transformer; shares the coref encoder spike) | done (2026-10-17) |
-| langid | `multilingual/langid/ud.pt` (MD5 `84cd508b…`): char biLSTM + Linear (`models/langid/model.py`), `MultilingualPipeline` routing per language | no | **M**; low value with only en/de models | open (#174) |
+| langid | `multilingual/langid/ud.pt` (MD5 `84cd508b…`): char biLSTM + Linear (`models/langid/model.py`), `MultilingualPipeline` routing per language | no | **M**; low value with only en/de models | done (`LanguageIdentifier`, `MultilingualPipeline`, 2026-10-19) |
 | morphseg | `pipeline/morphseg_processor.py` wraps the external `morphseg` pip package (its own models, not in resources.json); CoNLL-U `Morphemes=` | no | **L**, and outside Stanza's own models: skip | skipped |
-| `Pipeline.stream` / `process_many` | generator over many documents | `Process(IEnumerable<string>)` (bulk) | **S** (an `IEnumerable` wrapper), if wanted | open (#174) |
-| Document helpers | `sentence.dependencies`, `print_dependencies()`, `doc.iter_words()`, `num_tokens`, `num_words` | partly via LINQ | **S** | open (#174) |
+| `Pipeline.stream` / `process_many` | generator over many documents | `Process(IEnumerable<string>)` (bulk) | **S** (an `IEnumerable` wrapper), if wanted | done (`Pipeline.Stream`, 2026-10-18) |
+| Document helpers | `sentence.dependencies`, `print_dependencies()`, `doc.iter_words()`, `num_tokens`, `num_words` | partly via LINQ | **S** | done (`Document.TokenCount`, `Sentence.Dependencies`, ..., 2026-10-18) |
 
 Not applicable: `use_gpu`/`device` (`PipelineOptions.Backend`), `download_method`/`resources_*`/`proxies` (downloads are
 explicit), `foundation_cache`, `logging_level` (`Logger`).
@@ -438,4 +497,4 @@ explicit), `foundation_cache`, `logging_level` (`Logger`).
 3. The English treebank packages (S–M each; German's took the same route).
 4. `ner_predict_tagset` and the other English NER models (S–M).
 
-All four are done as of 2026-10-18 (the status column above); what is left is tracked in #174.
+All four are done as of 2026-10-18, and so is the rest of #174 (closed) as of 2026-10-19: the status column above.
