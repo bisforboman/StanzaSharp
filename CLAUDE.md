@@ -202,7 +202,12 @@ default from 0.5) or through TorchSharp (see "Managed backend").
     `germeval2014_german-nlp-electra` (fasttextwiki, word 300): `combined_german-nlp-electra`'s / germeval2014's configs on
     their twins' vocabularies and heads (gsd/hdt legacy tag heads; depparse's 4-layer `bert_layer_mix`); no new code. Golden
     rows `pos+depparse=<tb>_german-nlp-electra` on their package (corpus.txt) and `ner=germeval2014_german-nlp-electra`
-    (+ validation, transformer_long) in `tests/golden/de/models/`; golden shard 4 downloads them.
+    (+ validation, transformer_long) in `tests/golden/de/models/`; golden shard 4 downloads them. On a third transformer,
+    `dbmdz/bert-base-german-cased` (BERT: `TransformerConfig` reads `model_type` bert, `Prefix` `bert.`; a cased vocab.txt
+    WordPiece; `de/transformer/tokenizer_dbmdz_bert-base-german-cased.json`, `DBMDZ_TOKENIZER_CASES`, `DbmdzFact`): ner
+    `germeval2014_dbmdz-bert-german-cased` (conll17, not the listed fasttextwiki: `ListedPretrains`, `PRETRAIN_FIXES`) and
+    sentiment `sb10k_dbmdz-bert-german-cased` (LoRA; no charlms although listed: `Unread`). Golden rows
+    `ner=germeval2014_dbmdz-bert-german-cased`, `sentiment=sb10k_dbmdz-bert-german-cased`.
   - CI: no cache (the model caches are near GitHub's 10 GB; owner's decision): golden shard 4 downloads the
     `default_accurate` package, the treebanks' transformer models (their packages' other files from the en-treebanks cache)
     and the transformer's files on every run (`tools/ci-models.sh transformer`: `download --package default_accurate`, ...,

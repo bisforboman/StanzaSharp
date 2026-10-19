@@ -191,7 +191,8 @@ public sealed class Pipeline : IDisposable
             ["lemma"] = ["combined_charlm", "gsd_charlm", "hdt_charlm"],
             ["pos"] = ["gsd_nocharlm", "hdt_nocharlm", "gsd_german-nlp-electra", "hdt_german-nlp-electra"],
             ["depparse"] = ["gsd_nocharlm", "hdt_nocharlm", "gsd_german-nlp-electra", "hdt_german-nlp-electra"],
-            ["ner"] = ["conll03", "germeval2014_german-nlp-electra"],
+            ["ner"] = ["conll03", "germeval2014_german-nlp-electra", "germeval2014_dbmdz-bert-german-cased"],
+            ["sentiment"] = ["sb10k_dbmdz-bert-german-cased"],
         },
     };
 
@@ -232,13 +233,14 @@ public sealed class Pipeline : IDisposable
     /// Models whose resources.json entry lists another pretrain than the one they were trained on (Stanza 1.15.0), which
     /// <see cref="Dependencies"/> names instead (owner's decision, 2026-10-19, #172): processor/model → the listed one.
     /// ner conll03_electra-large's word vocabulary is conll17's 250,000 words, and Stanza with the listed glove (100,000)
-    /// fails its embedding check at load; tools/make_golden.py and the tool's compare.py pass Stanza the conll17 file
+    /// fails its embedding check at load; so does German ner germeval2014_dbmdz-bert-german-cased (conll17's vocabulary,
+    /// fasttextwiki listed). tools/make_golden.py and the tool's compare.py pass Stanza the conll17 file
     /// (<c>ner_pretrain_path</c>, their <c>PRETRAIN_FIXES</c>).
     /// </summary>
     internal static readonly Dictionary<string, Dictionary<string, string>> ListedPretrains = new()
     {
         ["en"] = new() { ["ner/conll03_electra-large"] = "pretrain/glove" },
-        ["de"] = [],
+        ["de"] = new() { ["ner/germeval2014_dbmdz-bert-german-cased"] = "pretrain/fasttextwiki" },
     };
 
     private static readonly string[] Conll17 = ["pretrain/conll17"],
@@ -376,6 +378,11 @@ public sealed class Pipeline : IDisposable
             ["pos/hdt_german-nlp-electra"] = GermanCharlm,
             ["depparse/hdt_german-nlp-electra"] = GermanCharlm,
             ["ner/germeval2014_german-nlp-electra"] = ["pretrain/fasttextwiki", "forward_charlm/newswiki", "backward_charlm/newswiki"],
+
+            // on dbmdz/bert-base-german-cased: ner reads conll17, not the fasttextwiki resources.json lists (ListedPretrains);
+            // sentiment reads no charlms although resources.json lists them (Unread)
+            ["ner/germeval2014_dbmdz-bert-german-cased"] = GermanCharlm,
+            ["sentiment/sb10k_dbmdz-bert-german-cased"] = GermanCharlm,
             ["depparse/combined_nocharlm"] = Conll17,
             ["pos/gsd_charlm"] = GermanCharlm,
             ["depparse/gsd_charlm"] = GermanCharlm,
@@ -404,6 +411,10 @@ public sealed class Pipeline : IDisposable
         [English] = new()
         {
             ["sentiment/sstplus_electra-large"] = ["forward_charlm/1billion", "backward_charlm/1billion"],
+        },
+        ["de"] = new()
+        {
+            ["sentiment/sb10k_dbmdz-bert-german-cased"] = ["forward_charlm/newswiki", "backward_charlm/newswiki"],
         },
     };
 
@@ -452,6 +463,8 @@ public sealed class Pipeline : IDisposable
             ["pos/hdt_german-nlp-electra"] = GermanElectra,
             ["depparse/hdt_german-nlp-electra"] = GermanElectra,
             ["ner/germeval2014_german-nlp-electra"] = GermanElectra,
+            ["ner/germeval2014_dbmdz-bert-german-cased"] = "dbmdz/bert-base-german-cased",
+            ["sentiment/sb10k_dbmdz-bert-german-cased"] = "dbmdz/bert-base-german-cased", // LoRA adapters
         },
     };
 

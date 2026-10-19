@@ -150,6 +150,11 @@ LoRA adapters (46 and 47 sentences), and the package itself (80 sentences): thre
 hdt taggers and parsers on that transformer, each on its package (`models/pos+depparse=<treebank>_german-nlp-electra/`,
 corpus.txt), and the NER model `germeval2014_german-nlp-electra` (corpus.txt, validation.txt and the long sentence, 12
 entities: `models/ner=germeval2014_german-nlp-electra/`).
+The two models on `dbmdz/bert-base-german-cased`, a cased BERT, match too: ner `germeval2014_dbmdz-bert-german-cased`
+(13 entities; Stanza given conll17's vectors, which it was trained on, as resources.json's fasttextwiki fails Stanza's own
+load) and sentiment `sb10k_dbmdz-bert-german-cased` with its LoRA adapters (47 sentences). Its tokenizer matches
+transformers' ids on 243 cases (`de/transformer/tokenizer_dbmdz_bert-base-german-cased.json`: the German golden words and
+`DBMDZ_TOKENIZER_CASES`, cased words, accents, ligatures and composed and decomposed umlauts).
 
 They exercise what the packages don't: a second pretrain next to conll17 (fastText crawl, 300-dimensional), a tag
 vocabulary with three tag sets, and the old NER checkpoint format with a fine-tuned delta embedding (`i2b2`).

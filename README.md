@@ -403,6 +403,8 @@ The models beyond the packages':
 - German ner: `conll03` (PER, LOC, ORG, MISC).
 - German models on `default_accurate`'s transformer (`german-nlp-group/electra-base-german-uncased`): pos and depparse
   `gsd_german-nlp-electra` and `hdt_german-nlp-electra` (with their treebank packages), ner `germeval2014_german-nlp-electra`.
+  And on `dbmdz/bert-base-german-cased` (about 440 MB): ner `germeval2014_dbmdz-bert-german-cased` and sentiment
+  `sb10k_dbmdz-bert-german-cased`.
 - The treebanks' taggers and parsers without character language models (their own character LSTM, like
   `default_fast`'s): English pos and depparse `ewt_nocharlm`, `gum_nocharlm`, `lines_nocharlm`, `partut_nocharlm`,
   `atis_nocharlm`, `childes_nocharlm`, `eslspok_nocharlm`, depparse `mimic_nocharlm`; German pos and depparse
