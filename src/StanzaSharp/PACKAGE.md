@@ -215,8 +215,8 @@ Beyond the packages' models: English constituency `ptb3_charlm`; English ner `on
 `combined_charlm`, `conll03_charlm`, the clinical `i2b2` and `radiology` and the biomedical `anatem`, `bc4chemd`, `bc5cdr`, `bionlp13cg`, `jnlpba`, `linnaeus`, `ncbi_disease`, `s800`
 (they read their own character language models, loaded next to the package's when they differ); English pos and depparse
 `combined_electra-large` (and the treebanks' `ewt`, `gum`, `lines`, `partut`, `atis`, `childes`, `eslspok` +
-`_electra-large`), ner `ontonotes-ww-multi_electra-large` and `ontonotes_electra-large`, constituency `ptb3-revised_electra-large` and sentiment
-`sstplus_electra-large` (LoRA adapters, applied at run time), which read the transformer
+`_electra-large`), ner `ontonotes-ww-multi_electra-large` and `ontonotes_electra-large`, constituency `ptb3-revised_electra-large`, constituency `ptb3_electra-large` (top-down transitions) and sentiment
+`sstplus_electra-large` (both with LoRA adapters, applied at run time), which read the transformer
 `google/electra-large-discriminator` (1.3 GB from Hugging Face; `DownloadAsync(dir, options)` fetches it); German ner `conll03`;
 the treebanks' `_nocharlm` taggers and parsers: English pos and depparse `ewt`, `gum`, `lines`, `partut`, `atis`,
 `childes`, `eslspok` + `_nocharlm`, depparse `mimic_nocharlm`, German pos and depparse `gsd_nocharlm`, `hdt_nocharlm`;

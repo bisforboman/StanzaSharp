@@ -104,6 +104,7 @@ public static class ModelDownloader
             ("depparse/combined_electra-large.pt", "fffeab3811c9503ee6c0db06b3cf6b45"),
             ("ner/ontonotes-ww-multi_electra-large.pt", "5a6cd3ea92ff6cf0683de9c0914346b8"),
             ("constituency/ptb3-revised_electra-large.pt", "d17d7ebf61a9e6eff02b9db53a5dd293"),
+            ("constituency/ptb3_electra-large.pt", "caaf016de94948f50fcab2c6ff21d838"),
             ("sentiment/sstplus_electra-large.pt", "1b16d4998d0e804fabbcc56ce5f29d8b"),
             ("pos/ewt_electra-large.pt", "a54dfc8c06fb522904a3ec8e1cb71291"),
             ("depparse/ewt_electra-large.pt", "42b1c423ed31df8f7dccde0ecaaab7f7"),

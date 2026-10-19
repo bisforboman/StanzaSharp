@@ -176,8 +176,12 @@ default from 0.5) or through TorchSharp (see "Managed backend").
     and ner `ontonotes_electra-large` (fasttextcrawl, word 300): `combined_electra-large`'s / `ontonotes-ww-multi_electra-large`'s
     configs on the `_charlm` twins' vocabularies and heads (legacy tag heads, lines/partut composite XPOS); no new code. Golden
     rows `pos+depparse=<tb>_electra-large` on their package (corpus.txt only) and `ner=ontonotes_electra-large` (+ validation).
-    Constituency `ptb3_electra-large` (#171) is parked (owner, 2026-10-18): `transition_scheme` TOP_DOWN (the parser has only
-    IN_ORDER).
+    Constituency `ptb3_electra-large` (#171, owner's choice 2026-10-19): LoRA-adapted like German's spmrl parser, and
+    `transition_scheme` TOP_DOWN (plain: no compound or unary transitions), so `ParserState.IsLegalTopDown` (parse_transitions.py's
+    top-down branches: Open(ROOT) only first, no Shift into the root's Open alone, no Close right after an Open, the last two
+    closes only at the end) and a Close that takes only the children above the open marker; scores, composition, nets and
+    scheduling as IN_ORDER. Golden row `constituency=ptb3_electra-large` (corpus, validation, contractions,
+    transformer_long.txt; 45 of validation's 104 trees differ from ptb3-revised_electra-large's), downloaded by golden shard 4.
   - CI: no cache (the model caches are near GitHub's 10 GB; owner's decision): golden shard 4 downloads the
     `default_accurate` package, the treebanks' transformer models (their packages' other files from the en-treebanks cache)
     and the transformer's files on every run (`tools/ci-models.sh transformer`: `download --package default_accurate`, ...,

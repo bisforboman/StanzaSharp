@@ -288,6 +288,9 @@ MODEL_CHOICES = {
         # to word_start and word_end
         ("constituency=ptb3-revised_electra-large", "default", "tokenize,mwt,pos,constituency", {"constituency": "ptb3-revised_electra-large"},
          ["validation.txt", "validation_contractions.txt", "models/transformer_long.txt"]),
+        # the LoRA-adapted TOP_DOWN parser (#171): Open(ROOT) first, Close builds from the children above the open marker
+        ("constituency=ptb3_electra-large", "default", "tokenize,mwt,pos,constituency", {"constituency": "ptb3_electra-large"},
+         ["validation.txt", "validation_contractions.txt", "models/transformer_long.txt"]),
         # sentiment's LoRA-adapted transformer (no charlms, filters 3, 4 and 5 only): a pass of its own
         ("sentiment=sstplus_electra-large", "default", "tokenize,mwt,sentiment", {"sentiment": "sstplus_electra-large"},
          ["validation.txt", "validation_contractions.txt", "sentiment/reviews.txt", "models/transformer_long.txt"]),
