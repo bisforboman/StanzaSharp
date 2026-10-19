@@ -1,7 +1,8 @@
 # Language identification and a multilingual pipeline (#174)
 
 Stanza's `langid` processor and `MultilingualPipeline`, the last item of #174 the owner chose (2026-10-18). This is the
-plan; the decisions marked **(owner)** are open.
+plan; the owner's decisions are at the end. Done: PR 1 `LanguageIdentifier`, PR 2 `MultilingualPipeline` (per-language
+`PipelineOptions` as a list, each keyed by its `Language`; `Restrict` off by default, as in Stanza; no shared default `Processors`).
 
 ## What Stanza does (1.15.0)
 

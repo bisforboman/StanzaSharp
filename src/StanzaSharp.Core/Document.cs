@@ -11,6 +11,13 @@ public sealed class Document
     /// <summary>The original text the document was made from; null for a document read from CoNLL-U.</summary>
     public string? Text { get; set; }
 
+    /// <summary>
+    /// The text's language as the language identifier saw it, a UD code such as <c>en</c> or <c>de</c> (Stanza's
+    /// <c>doc.lang</c>). Set by <c>MultilingualPipeline.Process</c>; null otherwise. Neither <see cref="Conllu"/> nor
+    /// <see cref="Json"/> writes or reads it, as in Stanza.
+    /// </summary>
+    public string? Lang { get; set; }
+
     /// <summary>The sentences, in text order.</summary>
     public List<Sentence> Sentences { get; } = [];
 

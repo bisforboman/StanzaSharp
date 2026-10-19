@@ -1313,6 +1313,15 @@ LANGID_TEXTS = [
 ]
 
 
+def langid_resources():
+    """Stanza 1.15.0's resources.json entry for the langid model, so no resources.json with it has to be downloaded."""
+    resources = Path(tempfile.mkdtemp()) / "resources.json"
+    resources.write_text(json.dumps({"multilingual": {"langid": {"ud": {"md5": "84cd508b9702b31cc236ba2b6d94e41a"}},
+                                                      "default_processors": {"langid": "ud"},
+                                                      "packages": {"default": {"langid": "ud"}}}}), encoding="utf-8")
+    return resources
+
+
 def write_langid_golden(models, out):
     """
     langid/langid.json: LANGID_TEXTS plus validation.txt's first paragraph (a long text) through Stanza's langid
@@ -1324,11 +1333,7 @@ def write_langid_golden(models, out):
     folder.mkdir(exist_ok=True)
     long_text = (out / "validation.txt").read_bytes().decode("utf-8").split("\n\n")[0].strip()
     texts = LANGID_TEXTS + [long_text]
-    # Stanza 1.15.0's resources.json entry for the langid model, so no resources.json with it has to be downloaded.
-    resources = Path(tempfile.mkdtemp()) / "resources.json"
-    resources.write_text(json.dumps({"multilingual": {"langid": {"ud": {"md5": "84cd508b9702b31cc236ba2b6d94e41a"}},
-                                                      "default_processors": {"langid": "ud"},
-                                                      "packages": {"default": {"langid": "ud"}}}}), encoding="utf-8")
+    resources = langid_resources()
     def pipeline(**kwargs):
         return stanza.Pipeline(lang="multilingual", dir=models, processors="langid", download_method=None, use_gpu=False,
                                logging_level="WARN", resources_filepath=str(resources), **kwargs)
@@ -1352,6 +1357,38 @@ def write_langid_golden(models, out):
         json.dump({"languages": list(model.idx_to_tag), "cases": cases}, f, indent=1, ensure_ascii=False)
         f.write("\n")
     print(f"langid/langid.json: {len(cases)} texts, {len({c['lang'] for c in cases})} languages")
+
+
+# MultilingualPipeline (#174): English and German texts, mixed in order, plus texts the en,de subset decides (French,
+# Dutch, a mixed one), so each language's documents go through one bulk call.
+MULTILINGUAL_TEXTS = [
+    "The weather in Berlin was lovely yesterday. We walked along the river.",
+    "Das Wetter in Berlin war gestern schön. Wir sind am Fluss entlang gegangen.",
+    "I don't think she's coming to the meeting.",
+    "Ich glaube nicht, dass sie zum Treffen kommt. Sie ist im Urlaub.",
+    "Apple is looking at buying a U.K. startup for $1 billion.",
+    "Die Bundesregierung hat am Mittwoch neue Regeln beschlossen.",
+    "Ceci est une phrase française sur la météo.",
+    "Dit is een Nederlandse zin over het weer.",
+    "Hello, wie geht's?",
+]
+
+
+def write_multilingual_golden(models, out):
+    """
+    langid/multilingual.json: MULTILINGUAL_TEXTS through Stanza's MultilingualPipeline(restrict=True) with English and
+    German (each language's default package, all processors): each document's language and "{:C}" CoNLL-U.
+    """
+    nlp = stanza.MultilingualPipeline(model_dir=str(models), lang_configs={"en": {"logging_level": "WARN"}, "de": {"logging_level": "WARN"}},
+                                      restrict=True, download_method=None, use_gpu=False,
+                                      lang_id_config={"logging_level": "WARN", "resources_filepath": str(langid_resources())})
+    with torch.no_grad():
+        docs = nlp.process(list(MULTILINGUAL_TEXTS))
+    result = [{"text": t, "lang": d.lang, "conllu": "{:C}".format(d)} for t, d in zip(MULTILINGUAL_TEXTS, docs)]
+    with open(out / "langid" / "multilingual.json", "w", encoding="utf-8", newline="\n") as f:
+        json.dump({"documents": result}, f, indent=1, ensure_ascii=False)
+        f.write("\n")
+    print(f"langid/multilingual.json: {len(result)} documents, " + ", ".join(f"{d['lang']}" for d in result))
 
 
 def write_helpers_golden(out):
@@ -1672,7 +1709,7 @@ def main():
     p.add_argument("--long-token-only", action="store_true", help="only regenerate long_token.*")
     p.add_argument("--upos64-only", action="store_true", help="only add the float64 UPOS logits to the intermediates")
     p.add_argument("--json-only", action="store_true", help="only regenerate json/ (str(doc))")
-    p.add_argument("--langid-only", action="store_true", help="only regenerate langid/ (the language identifier; needs <models>/multilingual)")
+    p.add_argument("--langid-only", action="store_true", help="only regenerate langid/ (the language identifier and MultilingualPipeline; needs <models>/multilingual, en and de)")
     p.add_argument("--helpers-only", action="store_true", help="only regenerate helpers/ (document helpers, no models)")
     p.add_argument("--stream-only", action="store_true", help="only regenerate stream/ (Pipeline.stream)")
     p.add_argument("--postprocess-only", action="store_true", help="only regenerate postprocess/ (tokenize_postprocessor)")
@@ -1718,6 +1755,7 @@ def main():
         return
     if args.langid_only:
         write_langid_golden(args.models, out)
+        write_multilingual_golden(args.models, out)
         return
     if args.helpers_only:
         write_helpers_golden(out)
