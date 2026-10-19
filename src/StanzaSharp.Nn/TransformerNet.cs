@@ -3,11 +3,18 @@ using System.Text.Json.Nodes;
 namespace StanzaSharp.Nn;
 
 /// <summary>
-/// A BERT-style transformer encoder's settings from its Hugging Face <c>config.json</c>: the architecture
-/// google/electra-large-discriminator uses (transformers' ElectraModel with embedding_size = hidden_size, absolute
-/// positions, exact GELU, post-LayerNorm). Anything else throws, so a new transformer can't load into the wrong maths.
+/// A BERT-style transformer encoder's settings from its Hugging Face <c>config.json</c>: transformers' ElectraModel with
+/// embedding_size = hidden_size (google/electra-large-discriminator, german-nlp-group's ELECTRA) or RobertaModel
+/// (roberta-base), both with absolute positions, exact GELU and post-LayerNorm. Anything else throws, so a new transformer
+/// can't load into the wrong maths.
 /// </summary>
-internal sealed record TransformerConfig(int Hidden, int Heads, int Layers, int Intermediate, int MaxPositions, double LayerNormEps)
+/// <param name="MaxPositions">The pieces a sentence can have: <c>max_position_embeddings</c> less <paramref name="PositionOffset"/>.</param>
+/// <param name="Prefix">The encoder's prefix in <c>pytorch_model.bin</c>'s state dict: <c>electra.</c> (ElectraForPreTraining)
+/// or <c>roberta.</c> (RobertaForMaskedLM).</param>
+/// <param name="PositionOffset">The first position row a sentence uses: 0, or RoBERTa's <c>pad_token_id</c> + 1 (2), since
+/// its create_position_ids_from_input_ids numbers the pieces from there.</param>
+internal sealed record TransformerConfig(int Hidden, int Heads, int Layers, int Intermediate, int MaxPositions, double LayerNormEps, string Prefix = "electra.",
+    int PositionOffset = 0)
 {
     public static TransformerConfig Load(string configJson)
     {
@@ -15,18 +22,23 @@ internal sealed record TransformerConfig(int Hidden, int Heads, int Layers, int 
         string Text(string key) => c[key]?.GetValue<string>() ?? throw new InvalidDataException($"{configJson}: no {key}");
         int Int(string key) => c[key]?.GetValue<int>() ?? throw new InvalidDataException($"{configJson}: no {key}");
 
-        // transformers' ElectraConfig defaults position_embedding_type to absolute (german-nlp-group's config has none).
-        if (Text("model_type") != "electra" || Text("hidden_act") != "gelu" || (c["position_embedding_type"]?.GetValue<string>() ?? "absolute") != "absolute"
-            || Int("embedding_size") != Int("hidden_size"))
+        // transformers' ElectraConfig and RobertaConfig default position_embedding_type to absolute (german-nlp-group's
+        // config has none); RobertaConfig has no embedding_size (it is hidden_size).
+        var type = Text("model_type");
+        bool roberta = type == "roberta";
+        if (type is not ("electra" or "roberta") || Text("hidden_act") != "gelu" || (c["position_embedding_type"]?.GetValue<string>() ?? "absolute") != "absolute"
+            || (!roberta && Int("embedding_size") != Int("hidden_size")))
         {
-            throw new InvalidDataException($"{configJson}: an architecture StanzaSharp doesn't support (ElectraModel with exact GELU, absolute positions, embedding_size = hidden_size)");
+            throw new InvalidDataException($"{configJson}: an architecture StanzaSharp doesn't support (ElectraModel with embedding_size = hidden_size, or RobertaModel; "
+                + "exact GELU, absolute positions)");
         }
 
         int hidden = Int("hidden_size"), heads = Int("num_attention_heads");
         if (hidden % heads != 0)
             throw new InvalidDataException($"{configJson}: hidden_size {hidden} is not a multiple of num_attention_heads {heads}");
-        return new TransformerConfig(hidden, heads, Int("num_hidden_layers"), Int("intermediate_size"), Int("max_position_embeddings"),
-            c["layer_norm_eps"]?.GetValue<double>() ?? throw new InvalidDataException($"{configJson}: no layer_norm_eps"));
+        int offset = roberta ? Int("pad_token_id") + 1 : 0;
+        return new TransformerConfig(hidden, heads, Int("num_hidden_layers"), Int("intermediate_size"), Int("max_position_embeddings") - offset,
+            c["layer_norm_eps"]?.GetValue<double>() ?? throw new InvalidDataException($"{configJson}: no layer_norm_eps"), roberta ? "roberta." : "electra.", offset);
     }
 }
 

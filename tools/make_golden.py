@@ -1574,6 +1574,19 @@ TRANSFORMER_TOKENIZER_CASES = [
 ]
 
 
+# roberta-base's byte-level BPE (#172; ner conll03_electra-large reads it): Stanza's add_prefix_space=True before every
+# piece of a word that doesn't start with U+0020, GPT-2's split pattern (contractions in lowercase only, letter, number and
+# other runs, whitespace runs giving up their last character before a non-space), the added tokens (<mask> takes the
+# whitespace before it), and the whitespace classes: tab, NBSP, NEL, ideographic space, line separator, the C0 separators.
+ROBERTA_TOKENIZER_CASES = [
+    ["don't", "it's", "IT'S", "we're", "they've", "I'm", "you'll", "he'd", "''s", "?'s", "x's", "'"],
+    ["\ttab", "a\tb", "\t", "x  y", "   leading", "trailing  ", " ", "a\u00a0b", "\u0085x", "\u3000", "a\u2028b", "a\u001cb", "x\r\ny"],
+    ["<s>", "</s>", "<pad>", "<unk>", "<mask>", "a <mask> b", "x<mask>", "<mask>y", " <mask>", "<mask> ", "<s><s>", "<<s>>"],
+    ["abc123def", "3.14", "123456", "٣٤", "Ⅻ", "½", "x²", "e\u0301", "é", "Ö", "ﬁ", "Ⅸvii"],
+    ["𝒳", "👍🏽", "東京", "a👍b", "🇸🇪", "\U000e0001", "\u200b", "\u00ad", "\ufeff", "", "a" * 300],
+]
+
+
 # German's transformer keeps accents (strip_accents false), so umlauts, ß, decomposed and precomposed letters and İ reach
 # its lowercasing as written; on top of TRANSFORMER_TOKENIZER_CASES and the German golden words.
 GERMAN_TRANSFORMER_TOKENIZER_CASES = [
@@ -1590,12 +1603,16 @@ TRANSFORMER_ILL_CONDITIONED = {"GO TEAM GO": 1e-2, "So does this one .": 1e-2, "
 TRANSFORMER_LONG_STRIDE = 10  # the long sentence keeps every 10th word's vector
 
 
-def write_transformer_hidden_golden(models, out, tokenizer):
-    """transformer/hidden.safetensors + hidden.json: Stanza's extract_bert_embeddings on a few sentences, float32 and float64."""
+def write_transformer_hidden_golden(models, out, tokenizer, transformer=TRANSFORMER, file_suffix=""):
+    """
+    transformer/hidden<file_suffix>.safetensors + .json: Stanza's extract_bert_embeddings on a few sentences, float32 and
+    float64. ELECTRA-large's mix is depparse/combined_electra-large's bert_layer_mix; roberta-base's a fixed one of 4 layers
+    (no roberta-base model has a mix of its own), and its hard sentences are ELECTRA's ill-conditioned ones too.
+    """
     from stanza.models.common.bert_embedding import extract_bert_embeddings, load_bert
 
     golden = Path(out)
-    model, _ = load_bert(str(Path(models) / "en" / "transformer" / TRANSFORMER), local_files_only=True)
+    model, _ = load_bert(str(Path(models) / "en" / "transformer" / transformer), local_files_only=True)
     model.eval()
     words = []
     for path in [golden / "pipeline.conllu"] + sorted(golden.glob("validation*.conllu")):
@@ -1606,8 +1623,12 @@ def write_transformer_hidden_golden(models, out, tokenizer):
                     words.append(text)
     assert len(words) == INTERMEDIATE_SENTENCES + len(TRANSFORMER_ILL_CONDITIONED), [" ".join(w) for w in words]
     long_words = TRANSFORMER_TOKENIZER_CASES[-1]
-    depparse = torch.load(str(Path(models) / "en" / "depparse" / "combined_electra-large.pt"), map_location="cpu", weights_only=True)
-    mix_weight = depparse["model"]["bert_layer_mix.weight"]  # [1, 4]
+    if transformer == TRANSFORMER:
+        depparse = torch.load(str(Path(models) / "en" / "depparse" / "combined_electra-large.pt"), map_location="cpu", weights_only=True)
+        mix_weight, mix_name = depparse["model"]["bert_layer_mix.weight"], "depparse/combined_electra-large bert_layer_mix.weight"  # [1, 4]
+    else:
+        mix_weight, mix_name = torch.tensor([[0.4, -0.3, 0.2, 0.1]]), "fixed"
+    bounds = TRANSFORMER_ILL_CONDITIONED if transformer == TRANSFORMER else {}
 
     tensors, index = {}, []
     with torch.no_grad():
@@ -1617,31 +1638,38 @@ def write_transformer_hidden_golden(models, out, tokenizer):
             mix.weight.copy_(mix_weight.to(dtype))
             # One batch, as a processor would send it: padded to the longest, the long sentence's windows included.
             data = words + [long_words]
-            legacy = extract_bert_embeddings(TRANSFORMER, tokenizer, m, data, "cpu", keep_endpoints=False)
-            mixed = extract_bert_embeddings(TRANSFORMER, tokenizer, m, data, "cpu", keep_endpoints=True, bert_layer_mix=mix)
+            legacy = extract_bert_embeddings(transformer, tokenizer, m, data, "cpu", keep_endpoints=False)
+            mixed = extract_bert_embeddings(transformer, tokenizer, m, data, "cpu", keep_endpoints=True, bert_layer_mix=mix)
             for i, w in enumerate(words):  # float64 stored rounded to float32: 6e-8 relative, far under the tolerances
                 tensors[f"s{i}.legacy{suffix}"] = legacy[i].float().numpy()
                 tensors[f"s{i}.mix{suffix}"] = mixed[i].float().numpy()
             tensors[f"long.legacy{suffix}"] = legacy[-1][::TRANSFORMER_LONG_STRIDE].float().numpy()
         model.float()
     for i, w in enumerate(words):
-        index.append({"sentence": i, "words": w, "bound": TRANSFORMER_ILL_CONDITIONED.get(" ".join(w))})
-    write_safetensors(tensors, golden / "transformer" / "hidden.safetensors", {"stanza": stanza.__version__})
-    with open(golden / "transformer" / "hidden.json", "w", encoding="utf-8", newline="\n") as f:
-        json.dump({"transformer": TRANSFORMER, "stanza": stanza.__version__, "sentences": index, "long": long_words,
-                   "long_stride": TRANSFORMER_LONG_STRIDE, "mix": "depparse/combined_electra-large bert_layer_mix.weight",
+        index.append({"sentence": i, "words": w, "bound": bounds.get(" ".join(w))})
+    write_safetensors(tensors, golden / "transformer" / f"hidden{file_suffix}.safetensors", {"stanza": stanza.__version__})
+    with open(golden / "transformer" / f"hidden{file_suffix}.json", "w", encoding="utf-8", newline="\n") as f:
+        json.dump({"transformer": transformer, "stanza": stanza.__version__, "sentences": index, "long": long_words,
+                   "long_stride": TRANSFORMER_LONG_STRIDE, "mix": mix_name,
                    "mix_weight": mix_weight[0].tolist()}, f, indent=1, ensure_ascii=False)
-    print(f"transformer/hidden.safetensors: {', '.join(f'{k} {list(v.shape)}' for k, v in tensors.items() if not k.endswith('.f64'))}")
+    print(f"transformer/hidden{file_suffix}.safetensors: {', '.join(f'{k} {list(v.shape)}' for k, v in tensors.items() if not k.endswith('.f64'))}")
 
 
-def write_transformer_golden(models, out):
-    """transformer/tokenizer.json: Stanza's transformer input stage (extract_base_embeddings up to the model call)."""
+ROBERTA = "roberta-base"
+
+
+def write_transformer_golden(models, out, transformer=TRANSFORMER):
+    """
+    transformer/tokenizer.json (ELECTRA-large) or tokenizer_roberta-base.json: Stanza's transformer input stage
+    (extract_base_embeddings up to the model call); then the hidden states.
+    """
     from stanza.models.common.bert_embedding import convert_to_position_list, fix_blank_tokens, load_tokenizer
     from stanza.models.common.utils import EXCLAM_RE, QUESTION_RE
     import tokenizers
     import transformers
 
-    tokenizer = load_tokenizer(str(Path(models) / LANG / "transformer" / TRANSFORMER), local_files_only=True)
+    tokenizer = load_tokenizer(str(Path(models) / LANG / "transformer" / transformer), local_files_only=True)
+    suffix = "" if transformer == TRANSFORMER else "_" + transformer.replace("/", "_")
     golden = Path(out)
     cases, seen = [], set()
 
@@ -1679,18 +1707,20 @@ def write_transformer_golden(models, out):
         add(words, "TRANSFORMER_TOKENIZER_CASES")
     for words in GERMAN_TRANSFORMER_TOKENIZER_CASES if LANG == "de" else []:
         add(words, "GERMAN_TRANSFORMER_TOKENIZER_CASES")
+    for words in ROBERTA_TOKENIZER_CASES if transformer == ROBERTA else []:
+        add(words, "ROBERTA_TOKENIZER_CASES")
 
     (golden / "transformer").mkdir(exist_ok=True)
-    with open(golden / "transformer" / "tokenizer.json", "w", encoding="utf-8", newline="\n") as f:
-        meta = {"transformer": TRANSFORMER, "transformers": transformers.__version__, "tokenizers": tokenizers.__version__,
+    with open(golden / "transformer" / f"tokenizer{suffix}.json", "w", encoding="utf-8", newline="\n") as f:
+        meta = {"transformer": transformer, "transformers": transformers.__version__, "tokenizers": tokenizers.__version__,
                 "stanza": stanza.__version__}
         f.write(json.dumps(meta, ensure_ascii=False)[:-1] + ', "cases": [\n')
         f.write(",\n".join(json.dumps(c, ensure_ascii=False, separators=(",", ":")) for c in cases))
         f.write("\n]}\n")
     fixed = sum("fixed" in c for c in cases)
-    print(f"transformer/tokenizer.json: {len(cases)} cases, {sum(len(c['ids']) for c in cases)} ids, {fixed} with fix_blank_tokens")
+    print(f"transformer/tokenizer{suffix}.json: {len(cases)} cases, {sum(len(c['ids']) for c in cases)} ids, {fixed} with fix_blank_tokens")
     if LANG == "en":  # German's hidden states come with its models (#170's second PR)
-        write_transformer_hidden_golden(models, out, tokenizer)
+        write_transformer_hidden_golden(models, out, tokenizer, transformer, suffix)
 
 
 def main():
@@ -1734,6 +1764,8 @@ def main():
         return
     if args.transformer_only:
         write_transformer_golden(args.models, out)
+        if LANG == "en":
+            write_transformer_golden(args.models, out, ROBERTA)
         return
     if args.long_token_only:
         write_long_token_golden(args.models, out)

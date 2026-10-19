@@ -107,7 +107,10 @@ layer mix and with the dependency parser's learned one; a 180-word sentence over
 overlapping windows, within 4e-6; and three short sentences on which ELECTRA is badly conditioned in float32 (Stanza's
 own float32 is up to 7.6e-3 from float64 there), listed in the golden data with a bound of 1e-2, within 1.5e-3. On the
 managed backend a sentence gives the same bits alone, in a batch and on any thread count, and every SIMD path meets the
-tolerance.
+tolerance. `roberta-base` (#172, for ner `conll03_electra-large`), a byte-level BPE tokenizer and a RoBERTa encoder, does
+the same: transformers' ids on 1,093 cases (`transformer/tokenizer_roberta-base.json`: the golden words plus the BPE's
+edges, such as prefix spaces, contractions, whitespace kinds, `<mask>` and non-BMP characters), and Stanza's word vectors on
+the same sentences and the long one (`transformer/hidden_roberta-base.safetensors`) within 1.2e-5 on both backends.
 
 **Transformer models.** `default_accurate`'s tagger, parser and NER model (pos and depparse `combined_electra-large`, ner
 `ontonotes-ww-multi_electra-large`, chosen with `PipelineOptions.Models`) reproduce Stanza's output byte for byte on both

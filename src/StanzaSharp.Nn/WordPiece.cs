@@ -15,7 +15,7 @@ namespace StanzaSharp.Nn;
 /// (special) tokens' texts are matched first in the raw word, leftmost and longest, like the library's added
 /// vocabulary: a word "[CLS]" is id 101, not "[", "cl", "##s", "]".
 /// </summary>
-internal sealed class WordPiece
+internal sealed class WordPiece : ITransformerTokenizer
 {
     private readonly Dictionary<string, int>.AlternateLookup<ReadOnlySpan<char>> _lookup;
     private readonly int _maxChars;
