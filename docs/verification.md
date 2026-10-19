@@ -111,6 +111,11 @@ tolerance. `roberta-base` (#172, for ner `conll03_electra-large`), a byte-level 
 the same: transformers' ids on 1,093 cases (`transformer/tokenizer_roberta-base.json`: the golden words plus the BPE's
 edges, such as prefix spaces, contractions, whitespace kinds, `<mask>` and non-BMP characters), and Stanza's word vectors on
 the same sentences and the long one (`transformer/hidden_roberta-base.safetensors`) within 1.2e-5 on both backends.
+So does coref's `FacebookAI/xlm-roberta-large` (docs/coref-plan.md, PR a; no model reads it yet), a SentencePiece Unigram
+tokenizer and a 24-layer XLM-RoBERTa encoder: transformers' ids on 1,095 cases (`transformer/tokenizer_FacebookAI_xlm-roberta-large.json`:
+the golden words plus the Precompiled normalizer's and Unigram's edges, such as NFKC-like folding, grapheme clusters,
+Indic conjuncts, emoji sequences, fused unknowns and blank words), and Stanza's word vectors within 2.8e-5 on the golden
+sentences and 4.3e-5 on the long one, on both backends (`transformer/hidden_FacebookAI_xlm-roberta-large.safetensors`).
 
 **Transformer models.** `default_accurate`'s tagger, parser and NER model (pos and depparse `combined_electra-large`, ner
 `ontonotes-ww-multi_electra-large`, chosen with `PipelineOptions.Models`) reproduce Stanza's output byte for byte on both
@@ -221,7 +226,7 @@ Test counts are passed xUnit test cases (each case of a theory counts, summed ov
 | Job | Runner | What it checks |
 |---|---|---|
 | `build-test` | ubuntu-26.04 (x64) | builds with warnings as errors, checks the code style, runs the 317 tests that need no models |
-| `golden` (4 shards) | ubuntu-26.04 (x64) | the whole suite on both backends against downloaded models, original and converted, English and German, every package, the transformer models included (872 tests); then packs the packages and builds fresh apps from them: `StanzaSharp` alone must reproduce the golden CoNLL-U with nothing of TorchSharp loaded, and `StanzaSharp.Cuda` with `TorchSharp-cpu` must too; then installs the `stanzasharp` tool and downloads models with it; then publishes the [managed check](../tests/StanzaSharp.ManagedCheck/Program.cs) with Native AOT (`x86-64-v3`) and trimmed, with no trim/AOT warning and no torch file allowed, and both binaries must reproduce the golden CoNLL-U ([tools/verify-aot.sh](../tools/verify-aot.sh)) |
+| `golden` (4 shards) | ubuntu-26.04 (x64) | the whole suite on both backends against downloaded models, original and converted, English and German, every package, the transformer models included (998 tests on an AVX-512 runner; the kernel-path theories vary with the CPU); then packs the packages and builds fresh apps from them: `StanzaSharp` alone must reproduce the golden CoNLL-U with nothing of TorchSharp loaded, and `StanzaSharp.Cuda` with `TorchSharp-cpu` must too; then installs the `stanzasharp` tool and downloads models with it; then publishes the [managed check](../tests/StanzaSharp.ManagedCheck/Program.cs) with Native AOT (`x86-64-v3`) and trimmed, with no trim/AOT warning and no torch file allowed, and both binaries must reproduce the golden CoNLL-U ([tools/verify-aot.sh](../tools/verify-aot.sh)) |
 | `cross-os (windows-2025)` | Windows x64 | the whole suite on both backends, reading Stanza's `.pt` files directly (527 tests; the English default packages), both package checks, and the Native AOT and trimming check |
 | `cross-os (macos-26)` | macOS, Apple Silicon | the same (501 tests: Arm64 has no Vector256 path) |
 | `cross-os (windows-11-arm)` | Windows on Arm64 | the same suite (501 tests) and only the managed package check (`TorchSharp-cpu` has no Arm64 libtorch) |

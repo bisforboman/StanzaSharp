@@ -257,6 +257,29 @@ public sealed class DbmdzFactAttribute : FactAttribute
     }
 }
 
+/// <summary>
+/// A test of FacebookAI/xlm-roberta-large (coref's transformer, docs/coref-plan.md), skipped without its files in
+/// models/stanza/en/transformer/FacebookAI/xlm-roberta-large/ (golden shard 4 downloads them; tools/ci-models.sh transformer).
+/// </summary>
+public sealed class XlmRobertaFactAttribute : FactAttribute
+{
+    public const string XlmRoberta = "FacebookAI/xlm-roberta-large";
+
+    public static string Directory => ModelDownloader.TransformerDirectory(Repo.StanzaModels, XlmRoberta);
+
+    public XlmRobertaFactAttribute(params string[] files)
+    {
+        var missing = files.FirstOrDefault(f => !File.Exists(Path.Combine(Directory, f)));
+        Skip = missing == null ? null : $"{Path.Combine(Directory, missing)} not found; run StanzaSharp.Cli download-transformer models/stanza/en {XlmRoberta}";
+    }
+}
+
+/// <summary>A theory skipped like <see cref="XlmRobertaFactAttribute"/>.</summary>
+public sealed class XlmRobertaTheoryAttribute : TheoryAttribute
+{
+    public XlmRobertaTheoryAttribute(params string[] files) => Skip = new XlmRobertaFactAttribute(files).Skip;
+}
+
 /// <summary>A theory skipped like <see cref="RobertaFactAttribute"/>.</summary>
 public sealed class RobertaTheoryAttribute : TheoryAttribute
 {

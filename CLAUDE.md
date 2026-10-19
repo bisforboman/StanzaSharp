@@ -209,6 +209,15 @@ default from 0.5) or through TorchSharp (see "Managed backend").
     `germeval2014_dbmdz-bert-german-cased` (conll17, not the listed fasttextwiki: `ListedPretrains`, `PRETRAIN_FIXES`) and
     sentiment `sb10k_dbmdz-bert-german-cased` (LoRA; no charlms although listed: `Unread`). Golden rows
     `ner=germeval2014_dbmdz-bert-german-cased`, `sentiment=sb10k_dbmdz-bert-german-cased`.
+  - Coref's XLM-R (docs/coref-plan.md, PR a; owner's choice 2026-10-19; #176 stays parked for b and c): `Nn.Unigram`
+    (tokenizers' Precompiled normalizer: per extended grapheme cluster via `StringInfo`, a cluster under 6 UTF-8 bytes
+    replaced whole by its *shortest* trie match, else per character; WhitespaceSplit + Metaspace prepend always + split;
+    Unigram best path, unknown = min score − 10, a later start wins only when strictly better, adjacent unknowns fused),
+    picked by `TransformerEmbedder.Load` (`IsUnigram`: `type`, else a vocab array); `TransformerConfig` reads
+    `xlm-roberta` (prefix `roberta.`, offset 2); `ModelDownloader.Transformers["FacebookAI/xlm-roberta-large"]` (legacy-format
+    `pytorch_model.bin`, 2.24 GB). Goldens `transformer/tokenizer_FacebookAI_xlm-roberta-large.json` (1,095 cases,
+    `XLMR_TOKENIZER_CASES`) and `hidden_FacebookAI_xlm-roberta-large.*`; tests `XlmRoberta_*` (`XlmRobertaFact`); golden
+    shard 4 downloads it (`tools/ci-models.sh transformer`).
   - CI: no cache (the model caches are near GitHub's 10 GB; owner's decision): golden shard 4 downloads the
     `default_accurate` package, the treebanks' transformer models (their packages' other files from the en-treebanks cache)
     and the transformer's files on every run (`tools/ci-models.sh transformer`: `download --package default_accurate`, ...,

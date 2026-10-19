@@ -1687,6 +1687,19 @@ def write_transformer_hidden_golden(models, out, tokenizer, transformer=TRANSFOR
 
 ROBERTA = "roberta-base"
 
+# Coref's FacebookAI/xlm-roberta-large (docs/coref-plan.md, PR a): SentencePiece Unigram with the Precompiled normalizer
+# (per grapheme cluster, shortest trie match), WhitespaceSplit + Metaspace, fused unknowns
+XLMR = "FacebookAI/xlm-roberta-large"
+XLMR_TOKENIZER_CASES = [
+    ["Obama", "n't", ".", "Ｆｕｌｌ", "naïve", "\u200b", "™", "ﬁnden", "Ⅻ", "½", "①", "ｶﾞ", "㍻"],
+    ["a b", "a\u00a0b", "a\u3000b", "\u2581x", "x\u2581y", "\u2581", "\u2581\u2581"],
+    ["<mask>x", "x<mask>", "x <mask>", "<s>", "</s>x", "<unk>", "<pad>"],
+    ["क्ष", "क्षत्रिय", "हिन्दी", "ক্ত", "த்", "한국어", "\u1100\u1161\u11a8", "ภาษาไทย", "العربية", "עברית"],
+    ["👨\u200d👩\u200d👧", "👍🏽", "🇸🇪", "🏳️\u200d🌈", "e\u0301", "\u0301", "a\u0301\u0302\u0303\u0304"],
+    ["\ue000\ue001", "x\ue000\ue001y", "\U0010fffd", "\u0378", "\ufeffword", "\u00adsoft", "zero\u200cwidth"],
+    ["ǅ", "ẞ", "İstanbul", "ß", "ﬀ", "Å", "Å", "ｱｲｳ", "１２３", "\uff0e", "…", "\u2028", "\t"],
+]
+
 # German's dbmdz/bert-base-german-cased (ner germeval2014_dbmdz-bert-german-cased, sentiment sb10k_dbmdz-bert-german-cased): a
 # cased vocab.txt WordPiece (do_lower_case false, so strip_accents follows it: accents kept), on top of the German cases
 DBMDZ = "dbmdz/bert-base-german-cased"
@@ -1752,6 +1765,8 @@ def write_transformer_golden(models, out, transformer=None):
         add(words, "ROBERTA_TOKENIZER_CASES")
     for words in DBMDZ_TOKENIZER_CASES if transformer == DBMDZ else []:
         add(words, "DBMDZ_TOKENIZER_CASES")
+    for words in XLMR_TOKENIZER_CASES if transformer == XLMR else []:
+        add(words, "XLMR_TOKENIZER_CASES")
 
     (golden / "transformer").mkdir(exist_ok=True)
     with open(golden / "transformer" / f"tokenizer{suffix}.json", "w", encoding="utf-8", newline="\n") as f:
@@ -1808,6 +1823,8 @@ def main():
     if args.transformer_only:
         write_transformer_golden(args.models, out)
         write_transformer_golden(args.models, out, ROBERTA if LANG == "en" else DBMDZ)
+        if LANG == "en":
+            write_transformer_golden(args.models, out, XLMR)
         return
     if args.long_token_only:
         write_long_token_golden(args.models, out)

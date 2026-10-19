@@ -40,6 +40,25 @@ public class TransformerTokenizerTests(ITestOutputHelper output)
         Assert.Equal(512, TransformerEmbedder.ReadMaxLength(DbmdzFactAttribute.Directory));
     }
 
+    /// <summary>
+    /// FacebookAI/xlm-roberta-large's SentencePiece Unigram (coref's): the Precompiled normalizer per grapheme cluster,
+    /// Metaspace, fused unknowns; on make_golden's XLMR_TOKENIZER_CASES too.
+    /// </summary>
+    [XlmRobertaFact("tokenizer.json")]
+    public void XlmRoberta_MatchesTransformersAndStanzaOnEveryGoldenCase() =>
+        AssertGolden(Unigram.Load(Path.Combine(XlmRobertaFactAttribute.Directory, "tokenizer.json")),
+            Path.Combine(Repo.Golden, "transformer", "tokenizer_FacebookAI_xlm-roberta-large.json"), minCases: 1000);
+
+    [XlmRobertaFact("config.json", "tokenizer_config.json")]
+    public void XlmRoberta_ConfigReadsRobertasPositions()
+    {
+        // XLMRobertaForMaskedLM: the weights under roberta., positions from pad_token_id + 1 = 2, 512 pieces.
+        var config = TransformerConfig.Load(Path.Combine(XlmRobertaFactAttribute.Directory, "config.json"));
+        Assert.Equal((1024, 16, 24, 4096, 512, 2, "roberta."), (config.Hidden, config.Heads, config.Layers, config.Intermediate, config.MaxPositions,
+            config.PositionOffset, config.Prefix));
+        Assert.Equal(512, TransformerEmbedder.ReadMaxLength(XlmRobertaFactAttribute.Directory));
+    }
+
     /// <summary>roberta-base's byte-level BPE (#172), as Stanza loads it (add_prefix_space=True), on make_golden's ROBERTA_TOKENIZER_CASES too.</summary>
     [RobertaFact("tokenizer.json")]
     public void Roberta_MatchesTransformersAndStanzaOnEveryGoldenCase() =>

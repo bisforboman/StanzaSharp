@@ -19,13 +19,17 @@ internal sealed class TransformerEmbedder(ITransformerNet net, ITransformerToken
     /// <summary>
     /// Loads the tokenizer and the encoder <paramref name="net"/> makes from a transformer directory
     /// (<c>config.json</c>, <c>tokenizer.json</c> or <c>vocab.txt</c>, <c>tokenizer_config.json</c>, <c>pytorch_model.bin</c>): a
-    /// <see cref="ByteLevelBpe"/> when tokenizer.json holds a BPE model (RoBERTa), else a <see cref="WordPiece"/>.
+    /// <see cref="Unigram"/> when tokenizer.json holds a Unigram model (XLM-RoBERTa), a <see cref="ByteLevelBpe"/> when a BPE one
+    /// (RoBERTa), else a <see cref="WordPiece"/>.
     /// </summary>
     public static TransformerEmbedder Load(string directory, string name, Func<TransformerConfig, Checkpoint, ITransformerNet> net)
     {
         var config = TransformerConfig.Load(Path.Combine(directory, "config.json"));
         var json = Path.Combine(directory, "tokenizer.json");
-        ITransformerTokenizer tokenizer = File.Exists(json) && ByteLevelBpe.IsBpe(json) ? ByteLevelBpe.Load(json) : WordPiece.LoadDirectory(directory);
+        ITransformerTokenizer tokenizer = !File.Exists(json) ? WordPiece.LoadDirectory(directory)
+            : Unigram.IsUnigram(json) ? Unigram.Load(json)
+            : ByteLevelBpe.IsBpe(json) ? ByteLevelBpe.Load(json)
+            : WordPiece.LoadDirectory(directory);
         int maxLength = ReadMaxLength(directory);
         var encoder = net(config, Checkpoint.Load(Path.Combine(directory, "pytorch_model.bin")));
         return new TransformerEmbedder(encoder, tokenizer, maxLength, name);
