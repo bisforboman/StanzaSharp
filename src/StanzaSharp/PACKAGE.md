@@ -224,6 +224,16 @@ the treebanks' `_charlm` tokenizers (English `combined`, `ewt`, `gum`, `lines`, 
 German `combined`, `gsd`, `hdt`) and lemmatizers (English `ewt`, `gum`, `lines`, `partut`, `atis`, `childes`; German
 `combined`, `gsd`, `hdt`). Unknown or unsupported names throw `ArgumentException`.
 
+## Language identification
+
+`LanguageIdentifier` is Stanza's language identifier (68 languages, a 9 MB model in Stanza's `multilingual` folder):
+
+```csharp
+await ModelDownloader.DownloadLanguageIdentifierAsync("models/stanza/multilingual");
+using var identifier = LanguageIdentifier.Load("models/stanza/multilingual");
+string language = identifier.Identify("Das ist ein deutscher Satz."); // "de"
+```
+
 ## German
 
 `Language = "de"` selects Stanza's German models: the same processors and packages as English (`default`,

@@ -523,6 +523,22 @@ for `default_fast`), and each call in flight adds
 
 `samples/StanzaSharp.Example` is a commented tour of the whole API: `dotnet run --project samples/StanzaSharp.Example`.
 
+### Language identification
+
+Stanza's language identifier tells which of 68 languages a text is in (UD codes: `en`, `de`, `fr`, `zh-hans`, ...). Its
+model (9 MB) lives in Stanza's `multilingual` folder:
+
+```csharp
+await ModelDownloader.DownloadLanguageIdentifierAsync("models/stanza/multilingual"); // or: stanzasharp download models/stanza/multilingual --lang multilingual
+using var identifier = LanguageIdentifier.Load("models/stanza/multilingual");
+string language = identifier.Identify("Das ist ein deutscher Satz."); // "de"
+var languages = identifier.Identify(["Hello there.", "Ceci est une phrase française sur la météo."]); // ["en", "fr"]
+```
+
+`LanguageIdentifierOptions.Languages` restricts the answers (Stanza's `langid_lang_subset`): with `["en", "de"]` every
+text comes out as English or German. It reads characters only, so give it sentences or documents rather than single
+words; Stanza's `langid_clean_text` (stripping URLs, hashtags and emoji first) is not ported.
+
 From the command line, this writes CoNLL-U for a file (or standard input):
 
 ```powershell

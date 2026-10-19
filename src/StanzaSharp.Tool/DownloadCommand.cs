@@ -73,6 +73,26 @@ internal static class DownloadCommand
         target ??= DirFor(language);
         try
         {
+            // --lang multilingual: the language identifier's model (LanguageIdentifier), Stanza's only multilingual resource.
+            if (language == ModelDownloader.Multilingual)
+            {
+                if (only != null || models.Count > 0 || package != Pipeline.DefaultPackage)
+                {
+                    Console.Error.WriteLine("--lang multilingual downloads the language identifier only; it takes no --package, --processors or --model");
+                    return 2;
+                }
+
+                if (list)
+                {
+                    Console.WriteLine($"{ModelDownloader.LanguageIdentifierFile.Path} {ModelDownloader.LanguageIdentifierFile.Md5}");
+                    return 0;
+                }
+
+                await ModelDownloader.DownloadLanguageIdentifierAsync(target, new Progress<string>(Console.Error.WriteLine));
+                Console.Error.WriteLine($"The language identifier is in {target}");
+                return 0;
+            }
+
             // --list (for CI's cache keys, tools/ci-models.sh): each file and its MD5, what a download would fetch; no network.
             if (list)
             {

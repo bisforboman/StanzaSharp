@@ -894,6 +894,17 @@ What the English treebank packages' checkpoints add to the default package's pat
     unrepeated encoding, only the first batch rows mixing in the copy distribution, as in Stanza); dictionary and contextual
     classifiers unchanged. Rows `lemma_beam_size=5` (English, with `options/lemma_rare.txt`, and German) and
     `lemma=combined_charlm+lemma_beam_size=3`; the beam changes 4 lemmas, all in validation_multilingual.
+  - `langid/langid.json` (`--langid-only`; #174, owner's decisions 2026-10-19, docs/langid-plan.md): `LANGID_TEXTS` (47
+    texts, 36 languages, edges) + validation.txt's first paragraph through Stanza's langid processor (a minimal
+    resources.json of its own), alone and in bulk, unrestricted and with `langid_lang_subset` en,de, with
+    `LangIDBiLSTM.forward`'s sums in float32 and float64; `LanguageIdentifierTests`. `LanguageIdentifier` (public, in the
+    facade: `LangIdModel` groups texts by code-point length so no row is padded, `UNK` for unknown characters, the subset as a
+    mask, argmax; an empty text throws, Stanza crashes) over `ILangIdNet` (`ManagedLangIdNet`: embedding, `ManagedLstm`
+    2 × 150 bi, Linear per position, summed in double; `LangIdNet` in StanzaSharp.Cuda), `BackendModels.LangId`. The model is
+    `multilingual/langid/ud.pt` (`ModelDownloader.LanguageIdentifierFile`, `DownloadLanguageIdentifierAsync`, the tool's
+    `download DIR --lang multilingual`), not in `Files`; CI downloads it in golden shard 1 on every run (`tools/ci-models.sh
+    langid`), and the other jobs' no-skip checks exempt `LanguageIdentifierTests`. `clean_text` is not ported. PR 2:
+    `MultilingualPipeline` (all configured languages loaded at Load; a text in another language comes back with only `Lang`).
   - `postprocess/postprocess.json` (`--postprocess-only`): `tokenize_postprocessor=postprocess` (merges "New York", splits
     "cannot", hand-expands "gonna", flags "wanna", merges the last two sentences; `PostprocessorTests.Postprocess` is the
     same in C#) on `POSTPROCESS_TEXTS` alone, in one bulk call and with `tokenize_no_ssplit` (#174:
@@ -1109,7 +1120,7 @@ What the English treebank packages' checkpoints add to the default package's pat
   - StanzaSharp.Cuda's `CudaBackend` (1.0);
   - Core's results: `Document`, `Sentence`, `Token`, `Word`, `Entity`, `Tree`, `Conllu`, `Json` (owner's decision,
     2026-10-14), `Dependency` (#174, 2026-10-18);
-  - the facade's `ModelPath` (#174, 2026-10-19).
+  - the facade's `ModelPath`, `LanguageIdentifier`, `LanguageIdentifierOptions` (#174, 2026-10-19).
 
   Everything else is `internal`.
   - Directory.Build.props gives every `src/*` assembly `InternalsVisibleTo` for the other StanzaSharp
@@ -1467,7 +1478,7 @@ What the English treebank packages' checkpoints add to the default package's pat
     a GEMM's input and output a chunk of rows at a time (`ManagedLstm.ForwardUnpacked`, sentiment's convolutions) and
     keep only what a later stage reads whole; round 10 cut sentiment's +1.1 GB to +0.18 GB that way.
   - Check the `CancellationToken` per time step and per GEMM block.
-  - `Gemm.Path` and `ManagedThreads.Count` are process-wide. Only `Pipeline.Load` (managed backend: the count) and tests
+  - `Gemm.Path` and `ManagedThreads.Count` are process-wide. Only `Pipeline.Load` and `LanguageIdentifier.Load` (managed backend: the count) and tests
     in `ManagedKernelsCollection` (parallelization off, so other classes never see a switched path) may set them.
 
 ## Native AOT and trimming

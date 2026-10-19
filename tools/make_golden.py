@@ -105,7 +105,9 @@ Reads <out>/corpus.txt and writes:
                         `python tools/make_golden.py --pt-only` regenerates just these
 """
 import argparse
+import copy
 import json
+import tempfile
 import sys
 from pathlib import Path
 
@@ -1260,6 +1262,98 @@ HELPER_WORDS = ["it's", 'say "hi"', "both '\"", "back\\slash", "no\u00a0break", 
                 "e\u0301", "plain"]
 
 
+# Language identification (#174, docs/langid-plan.md): short texts in many languages and scripts, and the edges Stanza
+# handles oddly (whitespace, one character, digits, mixed scripts, a long text). The empty text crashes Stanza.
+LANGID_TEXTS = [
+    "This is an English sentence about the weather.",
+    "Das ist ein deutscher Satz über das Wetter.",
+    "Ceci est une phrase française sur la météo.",
+    "Esta es una frase en español sobre el tiempo.",
+    "Questa è una frase italiana sul tempo.",
+    "Dit is een Nederlandse zin over het weer.",
+    "Det här är en svensk mening om vädret.",
+    "Dette er en dansk sætning om vejret.",
+    "Tämä on suomenkielinen lause säästä.",
+    "Ez egy magyar mondat az időjárásról.",
+    "To jest polskie zdanie o pogodzie.",
+    "Toto je česká věta o počasí.",
+    "Aceasta este o propoziție românească despre vreme.",
+    "Esta é uma frase em português sobre o tempo.",
+    "Això és una frase catalana sobre el temps.",
+    "Hau euskarazko esaldi bat da eguraldiari buruz.",
+    "Is abairt Ghaeilge í seo faoin aimsir.",
+    "Bu hava durumu hakkında Türkçe bir cümledir.",
+    "Это русское предложение о погоде.",
+    "Це українське речення про погоду.",
+    "Това е българско изречение за времето.",
+    "Ово је српска реченица о времену.",
+    "Αυτή είναι μια ελληνική πρόταση για τον καιρό.",
+    "זהו משפט בעברית על מזג האוויר.",
+    "هذه جملة عربية عن الطقس.",
+    "این یک جمله فارسی درباره آب و هوا است.",
+    "यह मौसम के बारे में एक हिंदी वाक्य है।",
+    "இது வானிலை பற்றிய ஒரு தமிழ் வாக்கியம்.",
+    "これは天気についての日本語の文です。",
+    "这是一个关于天气的中文句子。",
+    "這是一個關於天氣的中文句子。",
+    "이것은 날씨에 관한 한국어 문장입니다.",
+    "Đây là một câu tiếng Việt về thời tiết.",
+    "Ini adalah kalimat bahasa Indonesia tentang cuaca.",
+    "Gallia est omnis divisa in partes tres.",
+    "ἐν ἀρχῇ ἦν ὁ λόγος",
+    "Hello",
+    "Hallo Welt",
+    "   ",
+    "a",
+    "12345",
+    "Hello мир, wie geht's?",
+    "I love 🍕 and 🍣!",
+    "𝕳𝖊𝖑𝖑𝖔 𝖜𝖔𝖗𝖑𝖉",
+    "Hello there.", "Hallo du da.",  # the same length: one batch (as "Hello" and "12345")
+]
+
+
+def write_langid_golden(models, out):
+    """
+    langid/langid.json: LANGID_TEXTS plus validation.txt's first paragraph (a long text) through Stanza's langid
+    processor, alone and as one bulk call, unrestricted and with langid_lang_subset en,de, and each text's summed scores
+    (LangIDBiLSTM.forward) in float32 and float64.
+    """
+    from stanza.models.common.doc import Document
+    folder = out / "langid"
+    folder.mkdir(exist_ok=True)
+    long_text = (out / "validation.txt").read_bytes().decode("utf-8").split("\n\n")[0].strip()
+    texts = LANGID_TEXTS + [long_text]
+    # Stanza 1.15.0's resources.json entry for the langid model, so no resources.json with it has to be downloaded.
+    resources = Path(tempfile.mkdtemp()) / "resources.json"
+    resources.write_text(json.dumps({"multilingual": {"langid": {"ud": {"md5": "84cd508b9702b31cc236ba2b6d94e41a"}},
+                                                      "default_processors": {"langid": "ud"},
+                                                      "packages": {"default": {"langid": "ud"}}}}), encoding="utf-8")
+    def pipeline(**kwargs):
+        return stanza.Pipeline(lang="multilingual", dir=models, processors="langid", download_method=None, use_gpu=False,
+                               logging_level="WARN", resources_filepath=str(resources), **kwargs)
+    plain, subset = pipeline(), pipeline(langid_lang_subset=["en", "de"])
+    model = plain.processors["langid"]._model
+    def ids(text):
+        index = model.char_to_idx
+        return torch.tensor([[index.get(c, index["UNK"]) for c in text]], dtype=torch.long)
+    cases = []
+    with torch.no_grad():
+        model64 = copy.deepcopy(model).double()
+        for text in texts:
+            alone = plain.process(Document([], text=text)).lang
+            cases.append({"text": text, "lang": alone, "lang_en_de": subset.process(Document([], text=text)).lang,
+                          "scores": model(ids(text))[0].tolist(), "scores64": model64(ids(text))[0].tolist()})
+        bulk = plain.bulk_process([Document([], text=t) for t in texts])
+        bulk_subset = subset.bulk_process([Document([], text=t) for t in texts])
+    assert [d.lang for d in bulk] == [c["lang"] for c in cases], "bulk changed a language"
+    assert [d.lang for d in bulk_subset] == [c["lang_en_de"] for c in cases], "bulk changed a language"
+    with open(folder / "langid.json", "w", encoding="utf-8", newline="\n") as f:
+        json.dump({"languages": list(model.idx_to_tag), "cases": cases}, f, indent=1, ensure_ascii=False)
+        f.write("\n")
+    print(f"langid/langid.json: {len(cases)} texts, {len({c['lang'] for c in cases})} languages")
+
+
 def write_helpers_golden(out):
     """
     helpers/: Stanza's document helpers on documents read with CoNLL.conll2doc (no models): num_tokens, num_words and,
@@ -1578,6 +1672,7 @@ def main():
     p.add_argument("--long-token-only", action="store_true", help="only regenerate long_token.*")
     p.add_argument("--upos64-only", action="store_true", help="only add the float64 UPOS logits to the intermediates")
     p.add_argument("--json-only", action="store_true", help="only regenerate json/ (str(doc))")
+    p.add_argument("--langid-only", action="store_true", help="only regenerate langid/ (the language identifier; needs <models>/multilingual)")
     p.add_argument("--helpers-only", action="store_true", help="only regenerate helpers/ (document helpers, no models)")
     p.add_argument("--stream-only", action="store_true", help="only regenerate stream/ (Pipeline.stream)")
     p.add_argument("--postprocess-only", action="store_true", help="only regenerate postprocess/ (tokenize_postprocessor)")
@@ -1620,6 +1715,9 @@ def main():
         return
     if args.stream_only:
         write_stream_golden(args.models, out)
+        return
+    if args.langid_only:
+        write_langid_golden(args.models, out)
         return
     if args.helpers_only:
         write_helpers_golden(out)

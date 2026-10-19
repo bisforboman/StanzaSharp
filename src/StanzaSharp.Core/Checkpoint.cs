@@ -71,9 +71,12 @@ internal sealed class Checkpoint
     /// Reads the map as JSON text rather than enumerating the <see cref="JsonObject"/>, which would build
     /// a node per entry: the pretrain vocabulary has 250k of them.
     /// </remarks>
-    public static Dictionary<string, int> UnitToId(JsonNode? vocab)
+    public static Dictionary<string, int> UnitToId(JsonNode? vocab) =>
+        StringToId((vocab as JsonObject)?["_unit2id"] ?? throw new InvalidDataException("Not a vocab node: no _unit2id"));
+
+    /// <summary>Reads a str → int map (a vocab's <c>_unit2id</c>, langid's <c>char_to_idx</c>), as <see cref="UnitToId"/> does.</summary>
+    public static Dictionary<string, int> StringToId(JsonNode map)
     {
-        var map = (vocab as JsonObject)?["_unit2id"] ?? throw new InvalidDataException("Not a vocab node: no _unit2id");
         if (map is JsonValue v && v.TryGetValue(out PyContainer? large))
         {
             if (large.Value is not PyDict dict)
