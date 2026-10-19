@@ -195,7 +195,8 @@ default from 0.5) or through TorchSharp (see "Managed backend").
     read loaded once by name (`Pipeline._transformers`; the shared pass per transformer, its readers found by tokenizer);
     it reads conll17 although resources.json lists glove (owner's decision 2026-10-19: its word vocabulary is conll17's,
     and Stanza fails its embedding check with glove): `Pipeline.ListedPretrains` (EmbeddedResources_MatchModelDownloader's
-    exception), make_golden's and compare.py's `PRETRAIN_FIXES` (Stanza's `ner_pretrain_path`; `PretrainFixes_MatchListedPretrains`).
+    exception), make_golden's and compare.py's `PRETRAIN_FIXES` (Stanza's `ner_pretrain_path`; `PretrainFixes_MatchListedPretrains`);
+    reported upstream as stanfordnlp/stanza#1698 (owner, 2026-10-19): drop the entries once a Stanza version's resources.json is fixed.
     Golden rows `ner=conll03_electra-large` (+ validation, validation_social) and `electra-large+ner=conll03_electra-large`
     (two transformers), `TransformerModelTests`; golden shard 4 downloads it (`tools/ci-models.sh transformer`).
   - German's on the same transformer (owner's choice 2026-10-19): pos and depparse `{gsd,hdt}_german-nlp-electra` and ner

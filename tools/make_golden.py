@@ -518,6 +518,8 @@ def electra_locally(models):
     bert_embedding.load_bert = load_bert
 
 
+# Models trained on another pretrain than resources.json lists (Pipeline.ListedPretrains,
+# https://github.com/stanfordnlp/stanza/issues/1698): Stanza gets this one as {processor}_pretrain_path.
 PRETRAIN_FIXES = {("en", "ner", "conll03_electra-large"): "conll17", ("de", "ner", "germeval2014_dbmdz-bert-german-cased"): "conll17"}
 
 
