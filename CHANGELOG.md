@@ -8,6 +8,49 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 Unreleased changes are one file each under [`changes/`](changes/README.md), so pull requests don't conflict here;
 a release folds them in (`python tools/changelog.py release X.Y.Z`).
 
+## [1.13.0] - 2026-10-19
+
+### Added
+- Stanza's batch sizes as `PipelineOptions` properties: `TokenizeBatchSize`, `MwtBatchSize`, `PosBatchSize` and
+  `PosBatchMaximumTokens`, `LemmaBatchSize`, `ConstituencyBatchSize`, `DepparseBatchSize` and
+  `DepparseMinLengthToBatchSeparately`, `SentimentBatchSize`, `NerBatchSize` (Stanza's `{processor}_batch_size`,
+  `pos_batch_maximum_tokens`, `depparse_min_length_to_batch_separately`). As in Stanza, sentiment labels change with
+  `SentimentBatchSize`, and parses can change with the depparse sizes; the others trade only speed against memory.
+  `TokenizeBatchSize` works although Stanza ignores `tokenize_batch_size`.
+- Stanza's document helpers: `Document.TokenCount` and `WordCount`, `Sentence.Dependencies` (a list of `Dependency`:
+  head word, relation, dependent; the head null for the root), `Sentence.DependenciesString()`, `TokensString()` and
+  `WordsString()`, and `Token.ToString()` / `Word.ToString()`, each giving exactly what Stanza's `num_tokens`,
+  `num_words`, `dependencies`, `dependencies_string()`, `tokens_string()`, `words_string()` and `pretty_print()` give.
+- `LanguageIdentifier`: Stanza's language identifier (68 languages, the `multilingual/langid/ud.pt` model), with
+  `LanguageIdentifierOptions.Languages` for Stanza's `langid_lang_subset`. `ModelDownloader.DownloadLanguageIdentifierAsync`
+  and `stanzasharp download DIR --lang multilingual` fetch the model.
+- `PipelineOptions.LemmaBeamSize`: Stanza's `lemma_beam_size`, a beam search over the lemmatizer's character model
+  instead of greedy decoding.
+- `PipelineOptions.ModelPaths` and `ModelPath`: models of your own by file, Stanza's `{processor}_model_path` with
+  `_pretrain_path`, `_forward_charlm_path` and `_backward_charlm_path`. A model reads the shared files of the one it
+  replaces unless its `ModelPath` names others; a processor the package lacks is added. `ModelDownloader` and
+  `VerifyChecksums` leave these files out.
+- `MultilingualPipeline`: Stanza's `MultilingualPipeline`. The language identifier routes each text to its language's
+  pipeline (English and German by default, all loaded at `Load`), each language's texts in one bulk call, and sets the new
+  `Document.Lang`. A text in a language without a configured pipeline comes back with only `Text` and `Lang`;
+  `MultilingualOptions.Restrict` (Stanza's `restrict`) has the identifier answer only the configured languages.
+- `Pipeline.Stream(texts, batchSize = 50, cancellationToken)`: Stanza's `Pipeline.stream`, a lazy sequence of documents
+  over any number of texts, processed `batchSize` at a time like `Process(IEnumerable<string>)`, with sentence ids
+  counted across the stream; byte for byte with Stanza's `stream` on both backends.
+- `PipelineOptions.TokenizePostprocessor`: Stanza's `tokenize_postprocessor`, a function that gets the tokenizer's
+  sentences (each token's text and multi-word flag, `PostprocessorToken`) and returns the sentences and tokens to go on
+  with: merged, split or regrouped, flagged for the MWT model or expanded by hand. Byte for byte with Stanza on text and
+  bulk input, with and without sentence splitting, on both backends.
+- `PipelineOptions.Models`: Stanza's treebank transformer taggers and parsers, pos and depparse `ewt_electra-large`,
+  `gum_electra-large`, `lines_electra-large`, `partut_electra-large`, `atis_electra-large`, `childes_electra-large` and
+  `eslspok_electra-large`, and ner `ontonotes_electra-large`, byte for byte with Stanza on both backends. They read the
+  same frozen `google/electra-large-discriminator` as `default_accurate`.
+
+### Changed
+- `default_accurate` (and other combinations of a frozen transformer model with a LoRA one, such as `sstplus_electra-large`)
+  runs short calls about 15% faster on the managed backend: the frozen transformer and the LoRA adapters' pass share one
+  sweep over the transformer's weights. Results are byte-identical.
+
 ## [1.12.0] - 2026-10-18
 
 ### Added
