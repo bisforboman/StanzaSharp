@@ -153,7 +153,7 @@ public sealed class Pipeline : IDisposable
     {
         [English] = new()
         {
-            ["constituency"] = ["ptb3_charlm", "ptb3-revised_electra-large"],
+            ["constituency"] = ["ptb3_charlm", "ptb3-revised_electra-large", "ptb3_electra-large"],
             ["sentiment"] = ["sstplus_electra-large"],
 
             // the treebanks' _charlm tokenizers and lemmatizers (per-character charlm states); lemma combined_charlm also has
@@ -324,6 +324,7 @@ public sealed class Pipeline : IDisposable
             ["depparse/combined_electra-large"] = EnglishCharlm,
             ["ner/ontonotes-ww-multi_electra-large"] = EnglishCharlm,
             ["constituency/ptb3-revised_electra-large"] = EnglishCharlm,
+            ["constituency/ptb3_electra-large"] = EnglishCharlm,
             ["pos/ewt_electra-large"] = EnglishCharlm,
             ["depparse/ewt_electra-large"] = EnglishCharlm,
             ["pos/gum_electra-large"] = EnglishCharlm,
@@ -400,6 +401,7 @@ public sealed class Pipeline : IDisposable
             ["depparse/combined_electra-large"] = Electra,
             ["ner/ontonotes-ww-multi_electra-large"] = Electra,
             ["constituency/ptb3-revised_electra-large"] = Electra,
+            ["constituency/ptb3_electra-large"] = Electra, // TOP_DOWN, with its LoRA adapters: a pass of its own
             ["sentiment/sstplus_electra-large"] = Electra, // with its LoRA adapters: a pass of its own
             ["pos/ewt_electra-large"] = Electra,
             ["depparse/ewt_electra-large"] = Electra,

@@ -26,7 +26,7 @@ const string Usage = """
                           anatem, bc4chemd, bc5cdr, bionlp13cg, jnlpba, linnaeus, ncbi_disease, s800 (biomedical),
                           ontonotes-ww-multi_electra-large, ontonotes_electra-large; pos and depparse=combined_electra-large,
                           ewt, gum, lines, partut, atis, childes, eslspok + _electra-large;
-                          constituency=ptb3-revised_electra-large; sentiment=sstplus_electra-large (these read the
+                          constituency=ptb3-revised_electra-large, ptb3_electra-large; sentiment=sstplus_electra-large (these read the
                           1.3 GB google/electra-large-discriminator, which download fetches too); German ner=conll03.
                           Its processor is added if needed
       --list              download: print each file and its MD5 instead of downloading

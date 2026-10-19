@@ -79,9 +79,14 @@ internal sealed class ParserState : IDisposable
     public bool Finished(IReadOnlySet<string> rootLabels) =>
         EmptyWordQueue && HasOneConstituent && Constituents.Value.Tree is { } tree && rootLabels.Contains(tree.Label);
 
-    /// <summary>The IN_ORDER rules of Shift/OpenConstituent/CloseConstituent.is_legal in parse_transitions.py.</summary>
-    public bool IsLegal(Transition t, IReadOnlySet<string> rootLabels, int unaryLimit)
+    /// <summary>
+    /// Shift/OpenConstituent/CloseConstituent.is_legal in parse_transitions.py: the IN_ORDER rules, or with
+    /// <paramref name="topDown"/> the TOP_DOWN ones (plain TOP_DOWN: no compound or unary transitions).
+    /// </summary>
+    public bool IsLegal(Transition t, IReadOnlySet<string> rootLabels, int unaryLimit, bool topDown = false)
     {
+        if (topDown)
+            return IsLegalTopDown(t, rootLabels);
         switch (t.Kind)
         {
             case TransitionKind.Shift:
@@ -100,6 +105,29 @@ internal sealed class ParserState : IDisposable
                 if (TopTransition?.Kind != TransitionKind.Open || NumOpens > 1 || EmptyWordQueue)
                     return true;
                 return !TooManyUnaryNodes(Constituents.Parent!.Value.Tree, unaryLimit);
+            default:
+                throw new ArgumentOutOfRangeException(nameof(t));
+        }
+    }
+
+    private bool IsLegalTopDown(Transition t, IReadOnlySet<string> rootLabels)
+    {
+        switch (t.Kind)
+        {
+            case TransitionKind.Shift:
+                // Every word needs an open constituent to go into, and the root's Open alone can't take one: its child comes first.
+                if (EmptyWordQueue || NumOpens == 0)
+                    return false;
+                return !(NumOpens == 1 && NumTransitions == 1 && rootLabels.Contains(TopTransition!.Label!));
+            case TransitionKind.Open:
+                if (NumOpens > SentenceLength + 10 || EmptyWordQueue)
+                    return false;
+                return rootLabels.Contains(t.Label!) ? NumTransitions == 0 : NumTransitions > 0;
+            case TransitionKind.Close:
+                // Nothing to close right after an Open, and the root (with the constituent under it) closes only at the end.
+                if (NumOpens <= 0 || TopTransition?.Kind == TransitionKind.Open)
+                    return false;
+                return EmptyWordQueue || NumOpens > 2;
             default:
                 throw new ArgumentOutOfRangeException(nameof(t));
         }

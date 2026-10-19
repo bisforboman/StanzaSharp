@@ -445,6 +445,20 @@
   ]
  },
  {
+  "name": "constituency=ptb3_electra-large",
+  "package": "default",
+  "processors": "tokenize,mwt,pos,constituency",
+  "models": {
+   "constituency": "ptb3_electra-large"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "validation_contractions.txt",
+   "models/transformer_long.txt"
+  ]
+ },
+ {
   "name": "sentiment=sstplus_electra-large",
   "package": "default",
   "processors": "tokenize,mwt,sentiment",

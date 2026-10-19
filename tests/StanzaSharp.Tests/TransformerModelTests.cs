@@ -13,6 +13,7 @@ public class TransformerModelTests
 {
     private const string Electra = "pos+depparse+ner=electra-large";
     private const string Constituency = "constituency=ptb3-revised_electra-large";
+    private const string TopDown = "constituency=ptb3_electra-large";
     private const string Sentiment = "sentiment=sstplus_electra-large";
     private const string AllFive = "electra-large";
     private const string GermanFrozen = "pos+depparse=german-nlp-electra";
@@ -24,6 +25,8 @@ public class TransformerModelTests
     [ModelChoice("en", Electra, true)]
     [ModelChoice("en", Constituency, false)]
     [ModelChoice("en", Constituency, true)]
+    [ModelChoice("en", TopDown, false)]
+    [ModelChoice("en", TopDown, true)]
     [ModelChoice("en", Sentiment, false)]
     [ModelChoice("en", Sentiment, true)]
     [ModelChoice("en", AllFive, false)]

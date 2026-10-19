@@ -10,7 +10,7 @@ namespace StanzaSharp.Constituency;
 /// Constituency parser: an in-order transition parser scored by LSTMs, ported from
 /// stanza/models/constituency/lstm_model.py <c>LSTMModel</c> and base_model.py for the English
 /// configuration:
-/// - IN_ORDER transitions
+/// - IN_ORDER transitions, or TOP_DOWN (<c>ptb3_electra-large</c>)
 /// - LSTM transition and constituent stacks
 /// - MAX composition
 /// - charlm, no attention, no transformer
@@ -30,6 +30,7 @@ internal sealed class ConstituencyParser : IDisposable
     private readonly Transition[] _transitions;
     private readonly HashSet<string> _rootLabels;
     private readonly int _unaryLimit;
+    private readonly bool _topDown; // transition_scheme TOP_DOWN, else IN_ORDER
     private readonly IConstituencyNet _net;
     private readonly StackNode<Transition?> _initialTransitions;
     private readonly StackNode<Constituent> _initialConstituents;
@@ -64,6 +65,7 @@ internal sealed class ConstituencyParser : IDisposable
         _tagMap = Strings(p["tags"]).Select((t, i) => (t, i)).ToDictionary(x => x.t, x => x.i + 2);
         _rootLabels = Strings(p["root_labels"]).ToHashSet();
         _unaryLimit = p["unary_limit"]!.GetValue<int>();
+        _topDown = config["transition_scheme"]!.ToString() == "TOP_DOWN";
         UsesXpos = config["retag_method"]?.GetValue<string>() == "xpos";
         var opens = p["constituent_opens"]!.AsArray().Select(OpenLabel).ToList();
         _transitions = Strings(p["transitions"]).Select((t, i) => ParseTransition(t, i, opens)).ToArray();
@@ -171,7 +173,7 @@ internal sealed class ConstituencyParser : IDisposable
                 {
                     var row = logits.AsSpan(k * n, n);
                     scores?[batch[k].Index].Add(row.ToArray());
-                    onStep?.Invoke(batch[k].Index, row.ToArray(), _transitions.Select(t => batch[k].IsLegal(t, _rootLabels, _unaryLimit)).ToArray());
+                    onStep?.Invoke(batch[k].Index, row.ToArray(), _transitions.Select(t => batch[k].IsLegal(t, _rootLabels, _unaryLimit, _topDown)).ToArray());
                     chosen[k] = Choose(batch[k], row);
                 }
 
@@ -243,14 +245,14 @@ internal sealed class ConstituencyParser : IDisposable
                 best = j;
         }
 
-        return state.IsLegal(_transitions[best], _rootLabels, _unaryLimit) ? _transitions[best] : BestLegal(state, scores.ToArray());
+        return state.IsLegal(_transitions[best], _rootLabels, _unaryLimit, _topDown) ? _transitions[best] : BestLegal(state, scores.ToArray());
     }
 
     /// <summary>The best legal transition (separate from <see cref="Choose"/>, so the common path allocates no closure).</summary>
     private Transition? BestLegal(ParserState state, float[] row) =>
         Enumerable.Range(0, row.Length).OrderByDescending(j => row[j])
             .Select(j => _transitions[j])
-            .FirstOrDefault(t => state.IsLegal(t, _rootLabels, _unaryLimit));
+            .FirstOrDefault(t => state.IsLegal(t, _rootLabels, _unaryLimit, _topDown));
 
     // ----- applying transitions (bulk_apply) -----
 
@@ -300,7 +302,7 @@ internal sealed class ConstituencyParser : IDisposable
                     s.NumOpens++;
                     break;
                 case TransitionKind.Close:
-                    // In-order: children above the open marker, the marker, then the first child below it.
+                    // The children above the open marker, the marker, then (in-order only) the first child below it.
                     var children = new List<Constituent>();
                     var node = s.Constituents;
                     while (!node.Value.IsOpenMarker)
@@ -311,8 +313,12 @@ internal sealed class ConstituencyParser : IDisposable
 
                     var label = node.Value.OpenLabel!;
                     node = node.Parent!;
-                    children.Add(node.Value);
-                    node = node.Parent!;
+                    if (!_topDown)
+                    {
+                        children.Add(node.Value);
+                        node = node.Parent!;
+                    }
+
                     children.Reverse();
                     newConstituents.Add(null!);
                     closes.Add((slot, label, children));
@@ -406,7 +412,8 @@ internal sealed class ConstituencyParser : IDisposable
 
         if (p["model_type"]?.GetValue<string>() != "LSTM")
             throw new NotSupportedException("Only LSTM parser models are ported");
-        Require("transition_scheme", "IN_ORDER");
+        if (config["transition_scheme"]?.ToString() is not ("IN_ORDER" or "TOP_DOWN"))
+            throw new NotSupportedException($"Parser checkpoint has transition_scheme = {config["transition_scheme"]?.ToString() ?? "null"}; only IN_ORDER and TOP_DOWN are ported");
         Require("constituency_composition", "MAX");
         Require("transition_stack", "LSTM");
         Require("constituent_stack", "LSTM");
