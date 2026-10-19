@@ -235,7 +235,8 @@ public sealed class Pipeline : IDisposable
     /// ner conll03_electra-large's word vocabulary is conll17's 250,000 words, and Stanza with the listed glove (100,000)
     /// fails its embedding check at load; so does German ner germeval2014_dbmdz-bert-german-cased (conll17's vocabulary,
     /// fasttextwiki listed). tools/make_golden.py and the tool's compare.py pass Stanza the conll17 file
-    /// (<c>ner_pretrain_path</c>, their <c>PRETRAIN_FIXES</c>).
+    /// (<c>ner_pretrain_path</c>, their <c>PRETRAIN_FIXES</c>). Reported upstream as stanfordnlp/stanza#1698
+    /// (https://github.com/stanfordnlp/stanza/issues/1698): drop an entry once a Stanza version's resources.json lists conll17.
     /// </summary>
     internal static readonly Dictionary<string, Dictionary<string, string>> ListedPretrains = new()
     {
