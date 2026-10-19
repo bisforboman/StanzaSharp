@@ -36,6 +36,9 @@ internal abstract class BackendModels : IDisposable
 
     public abstract Pretrain Pretrain(string basePath);
 
+    /// <summary>The language identifier's network (<see cref="LanguageIdentifier"/>) from its checkpoint.</summary>
+    public abstract ILangIdNet LangId(Checkpoint ckpt);
+
     /// <summary>
     /// Loads the charlm at <paramref name="basePath"/> as <paramref name="path"/> (e.g. <c>forward_charlm/1billion</c>), the
     /// name a processor's <see cref="Charlms"/> give: a pipeline loads every charlm its models read (Pipeline.Dependencies).
@@ -121,6 +124,8 @@ internal sealed class ManagedModels : BackendModels
     public override bool LoadInParallel => true;
 
     public override Pretrain Pretrain(string basePath) => Nn.Pretrain.LoadManaged(basePath);
+
+    public override ILangIdNet LangId(Checkpoint ckpt) => new ManagedLangIdNet(ckpt);
 
     public override void Charlm(string path, string basePath) => Add(_charlms, path, ManagedCharLanguageModel.Load(basePath));
 

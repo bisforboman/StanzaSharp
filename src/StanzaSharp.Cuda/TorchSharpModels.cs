@@ -33,6 +33,8 @@ internal sealed class TorchSharpModels(torch.Device? device, bool disableTf32) :
 
     public override Pretrain Pretrain(string basePath) => Nn.Pretrain.Load(basePath);
 
+    public override ILangIdNet LangId(Checkpoint ckpt) => new LangIdNet(ckpt);
+
     public override void Charlm(string path, string basePath) => Add(_charlms, path, CharLanguageModel.Load(basePath));
 
     public override Tokenizer Tokenizer(string basePath, Charlms charlms) => Tokenize.Tokenizer.Load(basePath, charlm: Find(_charlms, charlms.Forward));

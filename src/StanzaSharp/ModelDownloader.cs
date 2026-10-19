@@ -294,6 +294,41 @@ public static class ModelDownloader
             await FetchAsync(Path.Combine(modelDir, path), path, BaseUrl(language) + path, md5, Md5Async, http, progress, cancellationToken);
     }
 
+    /// <summary>The language identifier's file in Stanza's <c>multilingual</c> folder (<see cref="LanguageIdentifier"/>) and its MD5 (Stanza 1.15.0's resources.json).</summary>
+    internal static readonly (string Path, string Md5) LanguageIdentifierFile = (LanguageIdentifier.ModelPath + ".pt", "84cd508b9702b31cc236ba2b6d94e41a");
+
+    /// <summary>
+    /// Downloads the language identifier's model (9 MB) into <paramref name="modelDir"/>, Stanza's <c>multilingual</c>
+    /// folder (e.g. <c>models/stanza/multilingual</c>), as <c>langid/ud.pt</c>, for <see cref="LanguageIdentifier.Load"/>.
+    /// A file already there with the right checksum is kept; a new one is checked against its MD5.
+    /// </summary>
+    /// <param name="progress">Receives one line per file, e.g. for a console.</param>
+    public static Task DownloadLanguageIdentifierAsync(string modelDir, IProgress<string>? progress = null, CancellationToken cancellationToken = default) =>
+        DownloadAsync(modelDir, [LanguageIdentifierFile], Http, progress, cancellationToken, Multilingual);
+
+    // Stanza's code for the language identifier's resources (stanza-multilingual on Hugging Face).
+    internal const string Multilingual = "multilingual";
+
+    /// <summary><see cref="LanguageIdentifierOptions.VerifyChecksums"/>: the model file against its MD5, as <see cref="Verify"/>.</summary>
+    internal static void VerifyLanguageIdentifier(string modelDir)
+    {
+        var basePath = Path.Combine(modelDir, LanguageIdentifier.ModelPath);
+        if (File.Exists(basePath + ".json"))
+        {
+            throw new InvalidOperationException($"VerifyChecksums: {basePath}.json is a converted model, which has no published checksum. "
+                + "Load Stanza's .pt file or turn VerifyChecksums off.");
+        }
+
+        string actual;
+        using (var stream = File.OpenRead(basePath + ".pt"))
+            actual = Convert.ToHexStringLower(MD5.HashData(stream));
+        if (actual != LanguageIdentifierFile.Md5)
+        {
+            throw new InvalidDataException($"{basePath}.pt: checksum {actual} does not match Stanza {StanzaVersion}'s {LanguageIdentifierFile.Md5}. "
+                + "The file is corrupted or from another Stanza version; download it again with ModelDownloader.DownloadLanguageIdentifierAsync.");
+        }
+    }
+
     /// <summary>
     /// The transformers that Stanza's transformer models read, which transformers downloads from Hugging Face rather than
     /// Stanza (docs/transformer-plan.md): each repository's pinned revision and the files StanzaSharp reads, with their

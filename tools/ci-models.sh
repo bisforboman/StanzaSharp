@@ -9,6 +9,8 @@
 #                                       models/stanza/en/transformer/), and German default_accurate's (its four transformer models
 #                                       and german-nlp-group/electra-base-german-uncased, models/stanza/de/transformer/), with
 #                                       retries; never cached (owner's decisions, 2026-10-17 and 2026-10-18)
+#   tools/ci-models.sh langid           downloads the language identifier (models/stanza/multilingual/langid/ud.pt, 9 MB), with
+#                                       retries; never cached
 #   tools/ci-models.sh keys             writes en, en_treebanks, de, treebank_choices, en_treebanks_paths and treebank_choices_paths
 #                                       to $GITHUB_OUTPUT
 #
@@ -119,6 +121,14 @@ case ${1:-} in
     done
     exit 1
     ;;
+  langid)
+    for attempt in 1 2 3; do
+      "${cli[@]}" download models/stanza/multilingual --lang multilingual < /dev/null && exit 0
+      echo "download failed (attempt $attempt)" >&2
+      sleep $((attempt * 15))
+    done
+    exit 1
+    ;;
   keys)
     out=${GITHUB_OUTPUT:-/dev/stdout}
     for g in en en-treebanks de; do
@@ -136,7 +146,7 @@ case ${1:-} in
     } >> "$out"
     ;;
   *)
-    echo "usage: $0 download GROUP | files GROUP | transformer | keys" >&2
+    echo "usage: $0 download GROUP | files GROUP | transformer | langid | keys" >&2
     exit 2
     ;;
 esac
