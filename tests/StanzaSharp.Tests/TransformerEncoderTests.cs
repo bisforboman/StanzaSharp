@@ -86,6 +86,22 @@ public class TransformerEncoderTests(TransformerModels models, ITestOutputHelper
         AssertEmbeddings(embedder.Value, ReadGolden("hidden_roberta-base"), output);
     }
 
+    /// <summary>
+    /// The same sentences and the long one through FacebookAI/xlm-roberta-large (coref's, docs/coref-plan.md PR a): RoBERTa's
+    /// architecture at ELECTRA-large's size, a 250,002-row embedding table, the Unigram input.
+    /// </summary>
+    [XlmRobertaTheory("config.json", "tokenizer.json", "tokenizer_config.json", "pytorch_model.bin")]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void XlmRoberta_Embeddings_MatchStanza(bool managed)
+    {
+        using var embedder = XlmRobertaEmbedder(managed);
+        AssertEmbeddings(embedder.Value, ReadGolden("hidden_FacebookAI_xlm-roberta-large"), output);
+    }
+
+    internal static Owned XlmRobertaEmbedder(bool managed) => new(TransformerEmbedder.Load(XlmRobertaFactAttribute.Directory,
+        XlmRobertaFactAttribute.XlmRoberta, managed ? (config, ckpt) => ManagedTransformer.Load(config, ckpt) : (config, ckpt) => new TransformerNet(config, ckpt)));
+
     /// <summary>roberta-base loaded as the pipeline loads a transformer (BackendModels.Transformer), to dispose after the test.</summary>
     internal static Owned RobertaEmbedder(bool managed) => new(TransformerEmbedder.Load(RobertaFactAttribute.Directory, RobertaFactAttribute.Roberta,
         managed ? (config, ckpt) => ManagedTransformer.Load(config, ckpt) : (config, ckpt) => new TransformerNet(config, ckpt)));
@@ -175,6 +191,20 @@ public class TransformerKernelTests(TransformerModels models, ITestOutputHelper 
         using var embedder = TransformerEncoderTests.RobertaEmbedder(managed: true);
         var net = embedder.Value.Net;
         int[][] ids = [.. TransformerEncoderTests.ReadGolden("hidden_roberta-base").Sentences.Select(s => TransformerInput.Build(embedder.Value.Tokenizer, s).Ids)];
+        var batched = With(Gemm.Path, 4, () => Encode(net, ids, 4));
+        for (int s = 0; s < ids.Length; s++)
+        {
+            Assert.True(Encode(net, [ids[s]], 4)[0].AsSpan().SequenceEqual(batched[s]), $"sentence {s} alone differs from the batch");
+            Assert.True(With(Gemm.Path, 1, () => Encode(net, [ids[s]], 4))[0].AsSpan().SequenceEqual(batched[s]), $"sentence {s} on 1 thread differs");
+        }
+    }
+
+    [XlmRobertaFact("config.json", "tokenizer.json", "tokenizer_config.json", "pytorch_model.bin")]
+    public void XlmRoberta_ASentence_HasTheSameBitsAloneInABatchAndOnAnyThreadCount()
+    {
+        using var embedder = TransformerEncoderTests.XlmRobertaEmbedder(managed: true);
+        var net = embedder.Value.Net;
+        int[][] ids = [.. TransformerEncoderTests.ReadGolden("hidden_FacebookAI_xlm-roberta-large").Sentences.Select(s => TransformerInput.Build(embedder.Value.Tokenizer, s).Ids)];
         var batched = With(Gemm.Path, 4, () => Encode(net, ids, 4));
         for (int s = 0; s < ids.Length; s++)
         {

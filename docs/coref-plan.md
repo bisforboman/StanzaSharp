@@ -62,6 +62,16 @@ what this plan called new. Checked against `FacebookAI/xlm-roberta-large` at the
 (a) is useful by itself, as the encoder spike this report recommended: it measures XLM-R's drift before the owner
 commits to the rest.
 
+**(a) done (2026-10-19, owner's choice):** `Nn.Unigram` (the Precompiled normalizer per grapheme cluster with the
+shortest trie match, WhitespaceSplit + Metaspace, the Unigram best path with fused unknowns; picked by
+`TransformerEmbedder.Load` when tokenizer.json's model is Unigram, which xlm-roberta-large's file infers from its vocab),
+`TransformerConfig` reading `xlm-roberta`, `ModelDownloader.Transformers["FacebookAI/xlm-roberta-large"]`. Measured:
+transformers' ids exact on all 1,095 golden cases on the first run (.NET's grapheme clusters agreed with
+unicode-segmentation on every case, Devanagari, Bengali and Tamil conjuncts, Hangul jamo and ZWJ emoji included); hidden
+states within 2.8e-5 of Stanza on the golden sentences and 4.3e-5 on the 180-word one, on both backends, so about 11x
+inside coref's smallest golden margin (4.9e-4); a sentence's states have the same bits alone, batched and on any thread
+count. The encoder side of the plan is settled: (b) and (c) wait on Q3–Q5.
+
 Research only (2026-10-14): nothing in `src/`, `tests/` or the workflows has changed. Stanza 1.15.0's English coref
 models are in `models/stanza/en/coref` (gitignored), from
 `stanza.download('en', model_dir=r'models\stanza', processors='coref')` and again with each other coref package. The

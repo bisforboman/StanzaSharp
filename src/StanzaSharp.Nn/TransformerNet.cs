@@ -5,12 +5,13 @@ namespace StanzaSharp.Nn;
 /// <summary>
 /// A BERT-style transformer encoder's settings from its Hugging Face <c>config.json</c>: transformers' ElectraModel with
 /// embedding_size = hidden_size (google/electra-large-discriminator, german-nlp-group's ELECTRA), BertModel
-/// (dbmdz/bert-base-german-cased) or RobertaModel (roberta-base), all with absolute positions, exact GELU and post-LayerNorm. Anything else throws, so a new transformer
+/// (dbmdz/bert-base-german-cased), RobertaModel (roberta-base) or XLMRobertaModel (FacebookAI/xlm-roberta-large, coref's), all
+/// with absolute positions, exact GELU and post-LayerNorm. Anything else throws, so a new transformer
 /// can't load into the wrong maths.
 /// </summary>
 /// <param name="MaxPositions">The pieces a sentence can have: <c>max_position_embeddings</c> less <paramref name="PositionOffset"/>.</param>
 /// <param name="Prefix">The encoder's prefix in <c>pytorch_model.bin</c>'s state dict: <c>electra.</c> (ElectraForPreTraining),
-/// <c>bert.</c> (BertForMaskedLM) or <c>roberta.</c> (RobertaForMaskedLM).</param>
+/// <c>bert.</c> (BertForMaskedLM) or <c>roberta.</c> (RobertaForMaskedLM and XLMRobertaForMaskedLM).</param>
 /// <param name="PositionOffset">The first position row a sentence uses: 0, or RoBERTa's <c>pad_token_id</c> + 1 (2), since
 /// its create_position_ids_from_input_ids numbers the pieces from there.</param>
 internal sealed record TransformerConfig(int Hidden, int Heads, int Layers, int Intermediate, int MaxPositions, double LayerNormEps, string Prefix = "electra.",
@@ -25,13 +26,13 @@ internal sealed record TransformerConfig(int Hidden, int Heads, int Layers, int 
         // transformers' configs default position_embedding_type to absolute (german-nlp-group's and dbmdz's have none);
         // only ElectraConfig has an embedding_size (BERT's and RoBERTa's embeddings are hidden_size wide).
         var type = Text("model_type");
-        bool roberta = type == "roberta";
-        if (type is not ("electra" or "bert" or "roberta") || Text("hidden_act") != "gelu"
+        bool roberta = type is "roberta" or "xlm-roberta"; // XLMRobertaModel is RobertaModel with another vocabulary
+        if (type is not ("electra" or "bert" or "roberta" or "xlm-roberta") || Text("hidden_act") != "gelu"
             || (c["position_embedding_type"]?.GetValue<string>() ?? "absolute") != "absolute"
             || (type == "electra" && Int("embedding_size") != Int("hidden_size")))
         {
             throw new InvalidDataException($"{configJson}: an architecture StanzaSharp doesn't support (ElectraModel with embedding_size = hidden_size, "
-                + "BertModel or RobertaModel; exact GELU, absolute positions)");
+                + "BertModel, RobertaModel or XLMRobertaModel; exact GELU, absolute positions)");
         }
 
         int hidden = Int("hidden_size"), heads = Int("num_attention_heads");
@@ -39,7 +40,7 @@ internal sealed record TransformerConfig(int Hidden, int Heads, int Layers, int 
             throw new InvalidDataException($"{configJson}: hidden_size {hidden} is not a multiple of num_attention_heads {heads}");
         int offset = roberta ? Int("pad_token_id") + 1 : 0;
         return new TransformerConfig(hidden, heads, Int("num_hidden_layers"), Int("intermediate_size"), Int("max_position_embeddings") - offset,
-            c["layer_norm_eps"]?.GetValue<double>() ?? throw new InvalidDataException($"{configJson}: no layer_norm_eps"), type + ".", offset);
+            c["layer_norm_eps"]?.GetValue<double>() ?? throw new InvalidDataException($"{configJson}: no layer_norm_eps"), roberta ? "roberta." : type + ".", offset);
     }
 }
 

@@ -372,6 +372,16 @@ public static class ModelDownloader
             ("pytorch_model.bin", "e482d0e2a09cef20bed85c86d7df9d2f1f5d090e7e53c772ab94ced0e3eafee3"),
         ]),
 
+        // Coref's (docs/coref-plan.md, #176; no coref model reads it yet): XLM-RoBERTa with a SentencePiece Unigram tokenizer.json.
+        // pytorch_model.bin is torch's legacy format, as Stanza's own checkpoints.
+        ["FacebookAI/xlm-roberta-large"] = ("c23d21b0620b635a76227c604d44e43a9f0ee389",
+        [
+            ("config.json", "ec7c3a99c58a38ebb702a2297f1c4586944e841b5eb29d201ff87e0f9c9abe0e"),
+            ("tokenizer.json", "a898ea75433890f6610f4e470b8ebeb0c21dce5c8dd61f892eb09eb5919d2e2c"),
+            ("tokenizer_config.json", "994f46754c5bf4014f1aa92d34b1374319c3a6b3f702105cd5b742beaecd18ce"),
+            ("pytorch_model.bin", "01e55aa45dbb9164fee19aef60007a1c91d175051c01be1fb15056cfa60f3e53"),
+        ]),
+
         // English ner conll03_electra-large's, despite the name (#172): RoBERTa with a byte-level BPE tokenizer.json. Stanza's
         // bert_model names it by the old alias; Hugging Face serves FacebookAI/roberta-base under it.
         ["roberta-base"] = ("e2da8e2f811d1448a5b465c236feacd80ffbac7b",
