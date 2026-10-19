@@ -903,8 +903,17 @@ What the English treebank packages' checkpoints add to the default package's pat
     2 × 150 bi, Linear per position, summed in double; `LangIdNet` in StanzaSharp.Cuda), `BackendModels.LangId`. The model is
     `multilingual/langid/ud.pt` (`ModelDownloader.LanguageIdentifierFile`, `DownloadLanguageIdentifierAsync`, the tool's
     `download DIR --lang multilingual`), not in `Files`; CI downloads it in golden shard 1 on every run (`tools/ci-models.sh
-    langid`), and the other jobs' no-skip checks exempt `LanguageIdentifierTests`. `clean_text` is not ported. PR 2:
-    `MultilingualPipeline` (all configured languages loaded at Load; a text in another language comes back with only `Lang`).
+    langid`), and the other jobs' no-skip checks exempt `LanguageIdentifierTests`. `clean_text` is not ported.
+  - `langid/multilingual.json` (`--langid-only` too, `MULTILINGUAL_TEXTS`): Stanza's `MultilingualPipeline(restrict=True)`
+    with en and de (default packages, all processors), each document's lang and `"{:C}"`. `MultilingualPipeline` (public,
+    PR 2; owner's decisions 2026-10-19): `Load(modelRoot, MultilingualOptions)` loads the identifier from
+    `<root>/multilingual` and every configured language's `Pipeline` from `<root>/<lang>` up front
+    (`MultilingualOptions.Languages`: a list of `PipelineOptions`, each keyed by its `Language`, duplicates throw; null = en
+    and de; no shared default processors, unlike Stanza's `processors=`); `Restrict` (default false, as Stanza) sets the
+    identifier's subset to them unless `LanguageIdentifier.Languages` names one. `Process` identifies all texts, then one
+    bulk `Pipeline.Process` per language (a single text too: Stanza wraps it in a list), `Document.Lang` set (Core; not in
+    CoNLL-U or JSON); a language without a pipeline gives a document with only `Text` and `Lang`. `MultilingualPipelineTests`
+    (en, de and multilingual next to `Repo.StanzaModels`: golden shard 1; exempt from the other jobs' no-skip checks).
   - `postprocess/postprocess.json` (`--postprocess-only`): `tokenize_postprocessor=postprocess` (merges "New York", splits
     "cannot", hand-expands "gonna", flags "wanna", merges the last two sentences; `PostprocessorTests.Postprocess` is the
     same in C#) on `POSTPROCESS_TEXTS` alone, in one bulk call and with `tokenize_no_ssplit` (#174:
@@ -1120,7 +1129,7 @@ What the English treebank packages' checkpoints add to the default package's pat
   - StanzaSharp.Cuda's `CudaBackend` (1.0);
   - Core's results: `Document`, `Sentence`, `Token`, `Word`, `Entity`, `Tree`, `Conllu`, `Json` (owner's decision,
     2026-10-14), `Dependency` (#174, 2026-10-18);
-  - the facade's `ModelPath`, `LanguageIdentifier`, `LanguageIdentifierOptions` (#174, 2026-10-19).
+  - the facade's `ModelPath`, `LanguageIdentifier`, `LanguageIdentifierOptions`, `MultilingualPipeline`, `MultilingualOptions` (#174, 2026-10-19).
 
   Everything else is `internal`.
   - Directory.Build.props gives every `src/*` assembly `InternalsVisibleTo` for the other StanzaSharp

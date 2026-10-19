@@ -234,6 +234,16 @@ using var identifier = LanguageIdentifier.Load("models/stanza/multilingual");
 string language = identifier.Identify("Das ist ein deutscher Satz."); // "de"
 ```
 
+`MultilingualPipeline` routes each text to its language's pipeline (English and German by default, loaded at `Load` from
+`en/`, `de/` and `multilingual/` under one folder) and sets `Document.Lang`; a text in another language comes back with
+only `Text` and `Lang` (or, with `Restrict = true`, is processed as one of the configured languages):
+
+```csharp
+using var nlp = MultilingualPipeline.Load("models/stanza");
+var docs = nlp.Process(["I don't think she's coming to the meeting.",
+    "Die Bundesregierung hat am Mittwoch neue Regeln beschlossen."]); // Lang "en", "de"
+```
+
 ## German
 
 `Language = "de"` selects Stanza's German models: the same processors and packages as English (`default`,

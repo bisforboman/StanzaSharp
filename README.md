@@ -539,6 +539,25 @@ var languages = identifier.Identify(["Hello there.", "Ceci est une phrase franç
 text comes out as English or German. It reads characters only, so give it sentences or documents rather than single
 words; Stanza's `langid_clean_text` (stripping URLs, hashtags and emoji first) is not ported.
 
+`MultilingualPipeline` (Stanza's) routes each text to its language's pipeline. It loads the identifier and every
+configured language's pipeline at `Load` (English and German by default, from `en/`, `de/` and `multilingual/` under one
+folder), and each language's texts go through one bulk call:
+
+```csharp
+using var nlp = MultilingualPipeline.Load("models/stanza", new MultilingualOptions
+{
+    Languages = [new() { Language = "en" }, new() { Language = "de", Processors = "tokenize,mwt,pos,lemma" }],
+});
+var docs = nlp.Process(["The weather in Berlin was lovely yesterday. We walked along the river.",
+    "Das Wetter in Berlin war gestern schön. Wir sind am Fluss entlang gegangen.",
+    "Ceci est une phrase française sur la météo."]);
+foreach (var doc in docs)
+    Console.WriteLine($"{doc.Lang}: {doc.Sentences.Count} sentences"); // en: 2, de: 2, fr: 0
+```
+
+A text in a language without a configured pipeline comes back with only `Text` and `Lang` set, so it can be routed
+elsewhere; `Restrict = true` (Stanza's `restrict`) lets the identifier answer only the configured languages instead.
+
 From the command line, this writes CoNLL-U for a file (or standard input):
 
 ```powershell
