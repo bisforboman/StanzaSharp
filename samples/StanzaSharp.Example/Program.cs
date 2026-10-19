@@ -66,3 +66,14 @@ Console.WriteLine();
 Console.WriteLine(conllu.Split('\n').Take(8).Aggregate((a, b) => a + "\n" + b));
 var roundTrip = Conllu.Read(conllu);
 Console.WriteLine($"... round trip: {roundTrip.Sentences.Count} sentences, {roundTrip.Entities.Count()} entities");
+
+// 6. Other languages. Language identification (a 9 MB model in Stanza's multilingual folder, next to en/):
+//    await ModelDownloader.DownloadLanguageIdentifierAsync("models/stanza/multilingual");
+//    using var identifier = LanguageIdentifier.Load("models/stanza/multilingual");
+//    identifier.Identify("Das ist ein deutscher Satz."); // "de"
+//    MultilingualPipeline routes each text to its language's pipeline and sets Document.Lang. It loads English and
+//    German by default (download German with new PipelineOptions { Language = "de" } into models/stanza/de); a text in
+//    another language comes back with only Text and Lang, unless Restrict = true:
+//    using var multi = MultilingualPipeline.Load("models/stanza");
+//    foreach (var d in multi.Process(["I don't think she's coming to the meeting.", "Die Bundesregierung hat am Mittwoch neue Regeln beschlossen."]))
+//        Console.WriteLine($"{d.Lang}: {d.Sentences[0].Text}"); // en: ..., de: ...

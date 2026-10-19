@@ -24,9 +24,10 @@ public sealed class MultilingualPipeline : IDisposable
 {
     private readonly LanguageIdentifier _identifier;
     private readonly Dictionary<string, Pipeline> _pipelines;
+    private readonly string[] _languages;
 
-    private MultilingualPipeline(LanguageIdentifier identifier, Dictionary<string, Pipeline> pipelines) =>
-        (_identifier, _pipelines) = (identifier, pipelines);
+    private MultilingualPipeline(LanguageIdentifier identifier, Dictionary<string, Pipeline> pipelines, string[] languages) =>
+        (_identifier, _pipelines, _languages) = (identifier, pipelines, languages);
 
     /// <summary>
     /// Loads the language identifier from <c>multilingual/</c> under <paramref name="modelRoot"/> and each configured
@@ -65,7 +66,7 @@ public sealed class MultilingualPipeline : IDisposable
         {
             foreach (var language in languages)
                 pipelines.Add(language.Language, Pipeline.Load(Path.Combine(modelRoot, language.Language), language));
-            return new MultilingualPipeline(identifier, pipelines);
+            return new MultilingualPipeline(identifier, pipelines, [.. languages.Select(l => l.Language)]);
         }
         catch
         {
@@ -77,7 +78,7 @@ public sealed class MultilingualPipeline : IDisposable
     }
 
     /// <summary>The configured languages, whose texts are processed, in <see cref="MultilingualOptions.Languages"/>' order.</summary>
-    public IReadOnlyList<string> Languages => [.. _pipelines.Keys];
+    public IReadOnlyList<string> Languages => Array.AsReadOnly(_languages);
 
     /// <summary>The language identifier the pipeline routes with.</summary>
     public LanguageIdentifier LanguageIdentifier => _identifier;
