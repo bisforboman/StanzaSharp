@@ -289,10 +289,11 @@ using var parser = Pipeline.Load("models/stanza/en", new PipelineOptions { Proce
 var parsed = parser.Process(Conllu.Read(File.ReadAllText("tagged.conllu")));
 ```
 
-Three of Stanza's processor options are `PipelineOptions` properties: `NerTagSet` (`ner_predict_tagset`: 1 decodes the
+Four of Stanza's processor options are `PipelineOptions` properties: `NerTagSet` (`ner_predict_tagset`: 1 decodes the
 `ontonotes-ww-multi` models' WorldWide tag set instead of OntoNotes), `LemmaDictionaryOnly` (`lemma_dict_only`: lemmas
 from the dictionary alone, faster, unseen words keep their text) and `MwtDictionaryOnly` (`mwt_dict_only`: only the
-dictionary's multi-word tokens are split).
+dictionary's multi-word tokens are split), and `LemmaBeamSize` (`lemma_beam_size`: a beam search over the
+lemmatizer's character model instead of greedy decoding; it rarely changes a lemma, at a cost in speed).
 
 So are Stanza's batch sizes: `MwtBatchSize`, `PosBatchSize` and `PosBatchMaximumTokens`, `LemmaBatchSize`,
 `ConstituencyBatchSize`, `DepparseBatchSize` and `DepparseMinLengthToBatchSeparately`, `SentimentBatchSize` and

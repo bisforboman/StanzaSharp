@@ -642,6 +642,7 @@ public sealed class Pipeline : IDisposable
             _tokenizer = options.TokenizeBatchSize is int t ? tokenizer!.Result.WithBatchSize(t) : tokenizer!.Result;
             _mwt = options.MwtBatchSize is int m ? mwt?.Result.WithBatchSize(m) : mwt?.Result;
             _lemma = options.LemmaBatchSize is int l ? lemma?.Result.WithBatchSize(l) : lemma?.Result;
+            _lemma = options.LemmaBeamSize is int beam ? _lemma?.WithBeamSize(beam) : _lemma;
             _pos = options.PosBatchSize != null || options.PosBatchMaximumTokens != null
                 ? pos?.Result.WithBatchSize(options.PosBatchSize, options.PosBatchMaximumTokens)
                 : pos?.Result;
@@ -743,6 +744,7 @@ public sealed class Pipeline : IDisposable
         (nameof(options.PosBatchSize), options.PosBatchSize),
         (nameof(options.PosBatchMaximumTokens), options.PosBatchMaximumTokens),
         (nameof(options.LemmaBatchSize), options.LemmaBatchSize),
+        (nameof(options.LemmaBeamSize), options.LemmaBeamSize),
         (nameof(options.ConstituencyBatchSize), options.ConstituencyBatchSize),
         (nameof(options.DepparseBatchSize), options.DepparseBatchSize),
         (nameof(options.DepparseMinLengthToBatchSeparately), options.DepparseMinLengthToBatchSeparately),

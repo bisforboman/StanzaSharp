@@ -163,8 +163,8 @@ foreach (var sentence in doc.Sentences)
   - `SplitSentences = false`: one sentence per paragraph (Stanza's `tokenize_no_ssplit`).
   - `Pretagged`: lemma, depparse and constituency load without the tagger (Stanza's `pretagged`), for
     `Process(Document)` on documents that already carry tags.
-  - `NerTagSet`, `LemmaDictionaryOnly`, `MwtDictionaryOnly`: Stanza's `ner_predict_tagset`, `lemma_dict_only` and
-    `mwt_dict_only`.
+  - `NerTagSet`, `LemmaDictionaryOnly`, `MwtDictionaryOnly`, `LemmaBeamSize`: Stanza's `ner_predict_tagset`,
+    `lemma_dict_only`, `mwt_dict_only` and `lemma_beam_size`.
   - `PosBatchSize`, `DepparseBatchSize`, `SentimentBatchSize` and the other batch sizes: Stanza's
     `{processor}_batch_size` options. Sentiment's (and in principle depparse's) changes results, as in Stanza.
   - `ModelPaths`: models of your own by file (`ModelPath`: the model, and optionally the word vectors and character

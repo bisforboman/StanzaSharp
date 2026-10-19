@@ -26,7 +26,7 @@ internal sealed class Lemmatizer : IDisposable
     private readonly Dictionary<string, int> _charToId, _posToId;
     private readonly string[] _idToChar;
     private readonly int _maxDecLen;
-    private int _batchSize; // set once: the constructor or WithBatchSize's copy
+    private int _batchSize, _beamSize; // set once: the constructor or WithBatchSize's / WithBeamSize's copy
     private readonly bool _caseless, _dictOnly;
     private readonly ISeq2SeqNet _net;
     private readonly IPerCharLanguageModel? _forward, _backward; // a _charlm model's charlms
@@ -72,6 +72,7 @@ internal sealed class Lemmatizer : IDisposable
         _posToId = Checkpoint.UnitToId(vocab["pos"]);
         _idToChar = vocab["char"]!["_id2unit"]!.AsArray().Select(n => n!.GetValue<string>()).ToArray();
         _batchSize = config["batch_size"]!.GetValue<int>();
+        _beamSize = config["beam_size"]?.GetValue<int>() ?? 1;
         _maxDecLen = config["max_dec_len"]!.GetValue<int>();
         _caseless = Flag("caseless");
 
@@ -239,8 +240,10 @@ internal sealed class Lemmatizer : IDisposable
         var posIds = order.Select(i => (long)_posToId.GetValueOrDefault(words[i].Upos ?? "_", UnkId)).ToArray();
 
         var contextual = Contextual(words, order, width + 1, ct);
-        using var decoder = _net.Encode(ids, batch, width, posIds, order.Select(i => (long)src[i].Length + 1).ToArray(), ct, contextual: contextual);
-        var output = Seq2SeqConfig.Greedy(decoder, batch, _maxDecLen, neverDecodeUnk: false, ct, onStep);
+        using var decoder = _net.Encode(ids, batch, width, posIds, order.Select(i => (long)src[i].Length + 1).ToArray(), ct, _beamSize, contextual);
+        var output = _beamSize == 1
+            ? Seq2SeqConfig.Greedy(decoder, batch, _maxDecLen, neverDecodeUnk: false, ct, onStep)
+            : Seq2SeqConfig.Beam(decoder, batch, _beamSize, _maxDecLen, neverDecodeUnk: false, ct, onStep);
 
         var editValues = decoder.EditLogits;
         onEdit?.Invoke(editValues);
@@ -288,6 +291,17 @@ internal sealed class Lemmatizer : IDisposable
         _forward.PerChar(forward, firstRow, contextual, dim, ct);
         _backward.PerChar(backward, firstRow, contextual.AsSpan(f), dim, ct);
         return contextual;
+    }
+
+    /// <summary>
+    /// A copy decoding with a beam of <paramref name="beamSize"/> (Stanza's <c>lemma_beam_size</c>; 1 is greedy, the
+    /// model's own). It shares the networks (the pipeline keeps only the copy), so it is made at Load, before any call.
+    /// </summary>
+    internal Lemmatizer WithBeamSize(int beamSize)
+    {
+        var copy = (Lemmatizer)MemberwiseClone();
+        copy._beamSize = beamSize;
+        return copy;
     }
 
     /// <summary>

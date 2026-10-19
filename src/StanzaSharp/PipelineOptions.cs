@@ -276,6 +276,13 @@ public sealed class PipelineOptions
     public int? LemmaBatchSize { get; init; }
 
     /// <summary>
+    /// The beam of the lemmatizer's character model, Stanza's <c>lemma_beam_size</c>; null uses the model's own (1: greedy,
+    /// one candidate per step). A wider beam keeps that many candidate lemmas per word, which can change the lemmas of
+    /// words the dictionary lacks, at a cost in speed. The dictionary and the contextual classifiers are unaffected.
+    /// </summary>
+    public int? LemmaBeamSize { get; init; }
+
+    /// <summary>
     /// Sentences the constituency parser keeps in flight, Stanza's <c>constituency_batch_size</c>; null uses 50, as Stanza
     /// does. Results stay the same.
     /// </summary>
