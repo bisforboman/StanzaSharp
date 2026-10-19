@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 using Xunit.Sdk;
 
 namespace StanzaSharp.Tests;
@@ -35,6 +36,12 @@ public class OptionTests
     [OptionCase("en", "default_fast+batch_sizes", true)]
     [OptionCase("de", "batch_sizes", false)]
     [OptionCase("de", "batch_sizes", true)]
+    [OptionCase("en", "pos_model_path", false)]
+    [OptionCase("en", "pos_model_path", true)]
+    [OptionCase("en", "ner_model_path", false)]
+    [OptionCase("en", "ner_model_path", true)]
+    [OptionCase("en", "default_fast+constituency_model_path", false)]
+    [OptionCase("en", "default_fast+constituency_model_path", true)]
     public void Process_MatchesGolden(string name, bool managed, string lang)
     {
         var golden = Repo.GoldenFor(lang);
@@ -116,8 +123,11 @@ public class OptionTests
 
 /// <summary>A row of <see cref="OptionTests"/>: a case of tests/golden/options/options.json, skipped where its models are missing.</summary>
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-public sealed class OptionCaseAttribute : DataAttribute
+public sealed partial class OptionCaseAttribute : DataAttribute
 {
+    [GeneratedRegex("^([a-z]+)_(model|pretrain|forward_charlm|backward_charlm)_path$")]
+    private static partial Regex PathKey();
+
     private readonly object?[] _data;
 
     public OptionCaseAttribute(string lang, string name, bool managed)
@@ -125,7 +135,7 @@ public sealed class OptionCaseAttribute : DataAttribute
         _data = [name, managed, lang];
         var options = Options(Case(lang, name), lang, managed);
         var dir = ModelChoiceAttribute.ModelsFor(lang);
-        var missing = ModelDownloader.FilesFor(options.Processors, options.Package, "options", lang, options.Models).Select(f => f.Path)
+        var missing = ModelDownloader.FilesFor(options.Processors, options.Package, "options", lang, options.Models, modelPaths: options.ModelPaths).Select(f => f.Path)
             .Where(f => !File.Exists(Path.Combine(dir, f)))
             .ToList();
         if (missing.Count > 0)
@@ -150,7 +160,7 @@ public sealed class OptionCaseAttribute : DataAttribute
         var stanza = choice["options"]!.AsObject();
         foreach (var key in stanza.Select(kv => kv.Key))
         {
-            if (key is not ("ner_predict_tagset" or "lemma_dict_only" or "mwt_dict_only") && !BatchSizeKeys.Contains(key))
+            if (key is not ("ner_predict_tagset" or "lemma_dict_only" or "mwt_dict_only") && !BatchSizeKeys.Contains(key) && !PathKey().IsMatch(key))
                 throw new InvalidDataException($"options.json: no PipelineOptions property for Stanza's {key}");
         }
 
@@ -173,8 +183,24 @@ public sealed class OptionCaseAttribute : DataAttribute
             DepparseMinLengthToBatchSeparately = Size("depparse_min_length_to_batch_separately"),
             SentimentBatchSize = Size("sentiment_batch_size"),
             NerBatchSize = Size("ner_batch_size"),
+            ModelPaths = Paths(),
         };
 
         int? Size(string key) => stanza[key]?.GetValue<int>();
+
+        // {processor}_model_path and the dependency paths beside it, "{lang_dir}" being the folder the models load from.
+        Dictionary<string, ModelPath>? Paths()
+        {
+            var paths = stanza.Select(kv => (Match: PathKey().Match(kv.Key), kv.Value))
+                .Where(x => x.Match.Success)
+                .Select(x => (x.Match, Value: x.Value!.GetValue<string>().Replace("{lang_dir}", Path.GetFullPath(ModelChoiceAttribute.ModelsFor(lang)))))
+                .GroupBy(x => x.Match.Groups[1].Value)
+                .ToDictionary(g => g.Key, g =>
+                {
+                    string? Of(string kind) => g.SingleOrDefault(x => x.Match.Groups[2].Value == kind).Value;
+                    return new ModelPath(Of("model")!, Of("pretrain"), Of("forward_charlm"), Of("backward_charlm"));
+                });
+            return paths.Count == 0 ? null : paths;
+        }
     }
 }

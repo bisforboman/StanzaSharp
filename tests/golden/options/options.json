@@ -127,5 +127,47 @@
    "corpus.txt",
    "validation.txt"
   ]
+ },
+ {
+  "name": "pos_model_path",
+  "package": "default",
+  "processors": "tokenize,mwt,pos",
+  "models": {},
+  "options": {
+   "pos_model_path": "{lang_dir}/pos/combined_nocharlm.pt"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt"
+  ]
+ },
+ {
+  "name": "ner_model_path",
+  "package": "default",
+  "processors": "tokenize,mwt,ner",
+  "models": {},
+  "options": {
+   "ner_model_path": "{lang_dir}/ner/ontonotes-ww-multi_nocharlm.pt"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt"
+  ]
+ },
+ {
+  "name": "default_fast+constituency_model_path",
+  "package": "default_fast",
+  "processors": "tokenize,mwt,pos,constituency",
+  "models": {},
+  "options": {
+   "constituency_model_path": "{lang_dir}/constituency/ptb3-revised_charlm.pt",
+   "constituency_pretrain_path": "{lang_dir}/pretrain/conll17.pt",
+   "constituency_forward_charlm_path": "{lang_dir}/forward_charlm/1billion.pt",
+   "constituency_backward_charlm_path": "{lang_dir}/backward_charlm/1billion.pt"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt"
+  ]
  }
 ]

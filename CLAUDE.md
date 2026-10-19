@@ -875,6 +875,21 @@ What the English treebank packages' checkpoints add to the default package's pat
     `WithBatchSize` returns a copy sharing its nets, made in Load, so nothing changes after Load. `TokenizeBatchSize`
     (owner's choice) has no working Stanza twin: TokenizeProcessor reads `trainer.args['batch_size']`, the checkpoint's,
     whatever `tokenize_batch_size` says; `TokenizeBatchSize_GivesTheSameTokens` checks it against the default tokens.
+    Model files of one's own (#174, owner's decisions 2026-10-19): `PipelineOptions.ModelPaths`
+    (`IReadOnlyDictionary<string, ModelPath>`, `Processor` keys; `ModelPath(Model, Pretrain, ForwardCharlm, BackwardCharlm)`,
+    implicit from a string) = Stanza's `{processor}_model_path` / `_pretrain_path` / `_forward_charlm_path` /
+    `_backward_charlm_path`. `Pipeline.CustomPaths` normalizes them (full base paths without `.pt`/`.json`/`.safetensors`).
+    The processor keeps the replaced model's name, so every name-keyed table (`Dependencies`, `Transformers`, `Unread`)
+    still says what it reads; only the file changes, and each named dependency replaces the one of its kind. A path for
+    a processor the package lacks (or for the identity lemmatizer) gets `Pipeline.CustomModel` and reads only what its
+    ModelPath names (as Stanza). Pretrains and charlms are keyed by dependency name or a custom file's full path, so a
+    custom pair loads apart and gets its own `CharlmCache` scope. Both Models and ModelPaths naming one processor throws;
+    `FilesFor`/`ModelFiles`/`Verify` leave the custom files out (VerifyChecksums skips them); a missing custom file names
+    its ModelPath; a custom model's ArgumentException at load is rethrown naming its ModelPath. The tokenizer and the
+    lemmatizer now ignore charlms they don't read, like the tagger and parsers. Rows `pos_model_path`, `ner_model_path`
+    (nocharlm models in the default package) and `default_fast+constituency_model_path` (`{lang_dir}` in options.json);
+    `ModelPathTests` (renamed copies, default_fast + a `_charlm` tagger, the throws, `FilesFor`). compare/benchmark take no
+    paths.
   - `postprocess/postprocess.json` (`--postprocess-only`): `tokenize_postprocessor=postprocess` (merges "New York", splits
     "cannot", hand-expands "gonna", flags "wanna", merges the last two sentences; `PostprocessorTests.Postprocess` is the
     same in C#) on `POSTPROCESS_TEXTS` alone, in one bulk call and with `tokenize_no_ssplit` (#174:
@@ -1089,7 +1104,8 @@ What the English treebank packages' checkpoints add to the default package's pat
     `PipelineBackend` (0.5);
   - StanzaSharp.Cuda's `CudaBackend` (1.0);
   - Core's results: `Document`, `Sentence`, `Token`, `Word`, `Entity`, `Tree`, `Conllu`, `Json` (owner's decision,
-    2026-10-14), `Dependency` (#174, 2026-10-18).
+    2026-10-14), `Dependency` (#174, 2026-10-18);
+  - the facade's `ModelPath` (#174, 2026-10-19).
 
   Everything else is `internal`.
   - Directory.Build.props gives every `src/*` assembly `InternalsVisibleTo` for the other StanzaSharp

@@ -228,10 +228,11 @@ public static class ModelDownloader
     /// transformers (<see cref="Pipeline.TransformersOf"/>), which come from Hugging Face.
     /// </summary>
     internal static IEnumerable<(string Path, string Md5)> FilesFor(string? processors, string package = Pipeline.DefaultPackage, string paramName = "processors",
-        string language = Pipeline.English, IReadOnlyDictionary<string, string>? models = null, bool pretagged = false)
+        string language = Pipeline.English, IReadOnlyDictionary<string, string>? models = null, bool pretagged = false,
+        IReadOnlyDictionary<string, ModelPath>? modelPaths = null)
     {
-        var selected = Pipeline.SelectModels(package, processors, addRequired: true, paramName, language, models, pretagged);
-        var paths = Pipeline.ModelFiles(selected, language).Select(p => p + ".pt").ToHashSet();
+        var selected = Pipeline.SelectModels(package, processors, addRequired: true, paramName, language, models, pretagged, modelPaths);
+        var paths = Pipeline.ModelFiles(selected, language, custom: Pipeline.CustomPaths(modelPaths, paramName)).Select(p => p + ".pt").ToHashSet();
         var files = Files[language].Where(f => paths.Contains(f.Path)).ToList();
         if (files.Count != paths.Count)
             throw new InvalidOperationException($"No checksum for {string.Join(", ", paths.Except(files.Select(f => f.Path)))}");
@@ -278,8 +279,9 @@ public static class ModelDownloader
     /// </example>
     public static async Task DownloadAsync(string modelDir, PipelineOptions options, IProgress<string>? progress = null, CancellationToken cancellationToken = default)
     {
-        var files = FilesFor(options.Processors, options.Package, nameof(options), options.Language, options.Models, options.Pretagged);
-        var selected = Pipeline.SelectModels(options.Package, options.Processors, addRequired: true, nameof(options), options.Language, options.Models, options.Pretagged);
+        var files = FilesFor(options.Processors, options.Package, nameof(options), options.Language, options.Models, options.Pretagged, options.ModelPaths);
+        var selected = Pipeline.SelectModels(options.Package, options.Processors, addRequired: true, nameof(options), options.Language, options.Models, options.Pretagged,
+            options.ModelPaths);
         await DownloadAsync(modelDir, files, Http, progress, cancellationToken, options.Language);
         foreach (var name in Pipeline.TransformersOf(selected, options.Language))
             await DownloadTransformerAsync(modelDir, name, progress: progress, cancellationToken: cancellationToken);
@@ -388,11 +390,12 @@ public static class ModelDownloader
     /// <summary>
     /// <see cref="PipelineOptions.VerifyChecksums"/>: checks each file <see cref="Pipeline.Load"/> reads for
     /// <paramref name="models"/> of <paramref name="language"/> against its MD5, and each transformer file against its
-    /// sha256 (<see cref="Transformers"/>). Converted models, which have no published checksum, throw.
+    /// sha256 (<see cref="Transformers"/>). Converted models, which have no published checksum, throw; the caller's own
+    /// files (<paramref name="custom"/>) are left out.
     /// </summary>
-    internal static void Verify(string modelDir, IReadOnlyDictionary<string, string> models, string language)
+    internal static void Verify(string modelDir, IReadOnlyDictionary<string, string> models, string language, IReadOnlyDictionary<string, ModelPath>? custom = null)
     {
-        foreach (var path in Pipeline.ModelFiles(models, language, readOnly: true))
+        foreach (var path in Pipeline.ModelFiles(models, language, readOnly: true, custom))
         {
             var basePath = Path.Combine(modelDir, path);
 
