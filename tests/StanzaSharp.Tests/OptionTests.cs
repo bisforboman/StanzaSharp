@@ -36,6 +36,12 @@ public class OptionTests
     [OptionCase("en", "default_fast+batch_sizes", true)]
     [OptionCase("de", "batch_sizes", false)]
     [OptionCase("de", "batch_sizes", true)]
+    [OptionCase("en", "lemma_beam_size=5", false)]
+    [OptionCase("en", "lemma_beam_size=5", true)]
+    [OptionCase("en", "lemma=combined_charlm+lemma_beam_size=3", false)]
+    [OptionCase("en", "lemma=combined_charlm+lemma_beam_size=3", true)]
+    [OptionCase("de", "lemma_beam_size=5", false)]
+    [OptionCase("de", "lemma_beam_size=5", true)]
     [OptionCase("en", "pos_model_path", false)]
     [OptionCase("en", "pos_model_path", true)]
     [OptionCase("en", "ner_model_path", false)]
@@ -160,7 +166,7 @@ public sealed partial class OptionCaseAttribute : DataAttribute
         var stanza = choice["options"]!.AsObject();
         foreach (var key in stanza.Select(kv => kv.Key))
         {
-            if (key is not ("ner_predict_tagset" or "lemma_dict_only" or "mwt_dict_only") && !BatchSizeKeys.Contains(key) && !PathKey().IsMatch(key))
+            if (key is not ("ner_predict_tagset" or "lemma_dict_only" or "mwt_dict_only" or "lemma_beam_size") && !BatchSizeKeys.Contains(key) && !PathKey().IsMatch(key))
                 throw new InvalidDataException($"options.json: no PipelineOptions property for Stanza's {key}");
         }
 
@@ -178,6 +184,7 @@ public sealed partial class OptionCaseAttribute : DataAttribute
             PosBatchSize = Size("pos_batch_size"),
             PosBatchMaximumTokens = Size("pos_batch_maximum_tokens"),
             LemmaBatchSize = Size("lemma_batch_size"),
+            LemmaBeamSize = Size("lemma_beam_size"),
             ConstituencyBatchSize = Size("constituency_batch_size"),
             DepparseBatchSize = Size("depparse_batch_size"),
             DepparseMinLengthToBatchSeparately = Size("depparse_min_length_to_batch_separately"),

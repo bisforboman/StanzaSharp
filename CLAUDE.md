@@ -889,7 +889,11 @@ What the English treebank packages' checkpoints add to the default package's pat
     lemmatizer now ignore charlms they don't read, like the tagger and parsers. Rows `pos_model_path`, `ner_model_path`
     (nocharlm models in the default package) and `default_fast+constituency_model_path` (`{lang_dir}` in options.json);
     `ModelPathTests` (renamed copies, default_fast + a `_charlm` tagger, the throws, `FilesFor`). compare/benchmark take no
-    paths.
+    paths. `LemmaBeamSize` (#174, 2026-10-19) = Stanza's `lemma_beam_size` (overrides the checkpoint's `beam_size`, 1):
+    the lemmatizer's `WithBeamSize` copy decodes with `Seq2SeqConfig.Beam` (MWT's beam search: the edit logits from the
+    unrepeated encoding, only the first batch rows mixing in the copy distribution, as in Stanza); dictionary and contextual
+    classifiers unchanged. Rows `lemma_beam_size=5` (English, with `options/lemma_rare.txt`, and German) and
+    `lemma=combined_charlm+lemma_beam_size=3`; the beam changes 4 lemmas, all in validation_multilingual.
   - `postprocess/postprocess.json` (`--postprocess-only`): `tokenize_postprocessor=postprocess` (merges "New York", splits
     "cannot", hand-expands "gonna", flags "wanna", merges the last two sentences; `PostprocessorTests.Postprocess` is the
     same in C#) on `POSTPROCESS_TEXTS` alone, in one bulk call and with `tokenize_no_ssplit` (#174:

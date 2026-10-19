@@ -129,6 +129,41 @@
   ]
  },
  {
+  "name": "lemma_beam_size=5",
+  "package": "default",
+  "processors": "tokenize,mwt,pos,lemma",
+  "models": {},
+  "options": {
+   "lemma_beam_size": 5
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "validation_contractions.txt",
+   "validation_nonbmp.txt",
+   "validation_tech.txt",
+   "validation_multilingual.txt",
+   "options/lemma_rare.txt"
+  ]
+ },
+ {
+  "name": "lemma=combined_charlm+lemma_beam_size=3",
+  "package": "default",
+  "processors": "tokenize,mwt,pos,lemma",
+  "models": {
+   "lemma": "combined_charlm"
+  },
+  "options": {
+   "lemma_beam_size": 3
+  },
+  "texts": [
+   "corpus.txt",
+   "validation_contractions.txt",
+   "validation_multilingual.txt",
+   "options/lemma_rare.txt"
+  ]
+ },
+ {
   "name": "pos_model_path",
   "package": "default",
   "processors": "tokenize,mwt,pos",

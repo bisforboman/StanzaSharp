@@ -45,5 +45,18 @@
    "corpus.txt",
    "validation.txt"
   ]
+ },
+ {
+  "name": "lemma_beam_size=5",
+  "package": "default",
+  "processors": "tokenize,mwt,pos,lemma",
+  "models": {},
+  "options": {
+   "lemma_beam_size": 5
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt"
+  ]
  }
 ]

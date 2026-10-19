@@ -361,6 +361,12 @@ OPTION_CASES = {
         ("default_fast+batch_sizes", "default_fast", "tokenize,mwt,pos,lemma,depparse,sentiment,ner", {},
          {k: v for k, v in SMALL_BATCHES.items() if not k.startswith("constituency")}, ["validation.txt"]),
 
+        # The lemmatizer's beam (#174, lemma_beam_size), on the texts sending the most words through its model.
+        ("lemma_beam_size=5", "default", "tokenize,mwt,pos,lemma", {}, {"lemma_beam_size": 5},
+         ["validation.txt", "validation_contractions.txt", "validation_nonbmp.txt", "validation_tech.txt", "validation_multilingual.txt",
+          "options/lemma_rare.txt"]),
+        ("lemma=combined_charlm+lemma_beam_size=3", "default", "tokenize,mwt,pos,lemma", {"lemma": "combined_charlm"},
+         {"lemma_beam_size": 3}, ["validation_contractions.txt", "validation_multilingual.txt", "options/lemma_rare.txt"]),
         # Model files of one's own (#174, {processor}_model_path): "{lang_dir}" is the language's model folder. A nocharlm
         # tagger and NER model in place of the package's charlm ones (the charlms they are given go unread), and a processor
         # default_fast lacks, with the shared files it reads.
@@ -378,6 +384,7 @@ OPTION_CASES = {
         ("mwt_dict_only", "default", "tokenize,mwt,pos", {}, {"mwt_dict_only": True}, ["validation.txt"]),
         ("lemma_dict_only", "default", "tokenize,mwt,pos,lemma", {}, {"lemma_dict_only": True}, ["validation.txt"]),
         ("batch_sizes", "default", PROCESSORS, {}, SMALL_BATCHES, ["validation.txt"]),
+        ("lemma_beam_size=5", "default", "tokenize,mwt,pos,lemma", {}, {"lemma_beam_size": 5}, ["validation.txt"]),
     ],
 }
 
