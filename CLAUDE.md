@@ -190,7 +190,14 @@ default from 0.5) or through TorchSharp (see "Managed backend").
     `PositionOffset` 2 = pad + 1, `MaxPositions` 512; the nets slice the position table at load, one token-type row);
     `ModelDownloader.Transformers["roberta-base"]`; goldens `transformer/tokenizer_roberta-base.json` (1,093 cases,
     `ROBERTA_TOKENIZER_CASES`) and `hidden_roberta-base.*` (`--transformer-only`); `TransformerTokenizerTests`,
-    `TransformerEncoderTests.Roberta_*`, `TransformerKernelTests.Roberta_*`. PR (b): the NER model, two transformers per pipeline.
+    `TransformerEncoderTests.Roberta_*`, `TransformerKernelTests.Roberta_*`. PR (b): the NER model (old checkpoint format like
+    germeval2014's, input word 100 | roberta 768 | charlm 2048, legacy mix over token texts) and every transformer the models
+    read loaded once by name (`Pipeline._transformers`; the shared pass per transformer, its readers found by tokenizer);
+    it reads conll17 although resources.json lists glove (owner's decision 2026-10-19: its word vocabulary is conll17's,
+    and Stanza fails its embedding check with glove): `Pipeline.ListedPretrains` (EmbeddedResources_MatchModelDownloader's
+    exception), make_golden's and compare.py's `PRETRAIN_FIXES` (Stanza's `ner_pretrain_path`; `PretrainFixes_MatchListedPretrains`).
+    Golden rows `ner=conll03_electra-large` (+ validation, validation_social) and `electra-large+ner=conll03_electra-large`
+    (two transformers), `TransformerModelTests`; golden shard 4 downloads it (`tools/ci-models.sh transformer`).
   - CI: no cache (the model caches are near GitHub's 10 GB; owner's decision): golden shard 4 downloads the
     `default_accurate` package, the treebanks' transformer models (their packages' other files from the en-treebanks cache)
     and the transformer's files on every run (`tools/ci-models.sh transformer`: `download --package default_accurate`, ...,

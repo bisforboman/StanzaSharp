@@ -310,6 +310,13 @@ MODEL_CHOICES = {
         ("pos+depparse=childes_electra-large", "childes", "tokenize,mwt,pos,lemma,depparse", {"pos": "childes_electra-large", "depparse": "childes_electra-large"}, []),
         ("pos+depparse=eslspok_electra-large", "eslspok", "tokenize,pos,lemma,depparse", {"pos": "eslspok_electra-large", "depparse": "eslspok_electra-large"}, []),
         ("ner=ontonotes_electra-large", "default", "tokenize,mwt,ner", {"ner": "ontonotes_electra-large"}, ["validation.txt"]),
+        # conll03's NER model reads roberta-base despite its name (#172: glove vectors | roberta-base | charlms), and with
+        # electra-large's other four models a pipeline holds two transformers
+        ("ner=conll03_electra-large", "default", "tokenize,mwt,ner", {"ner": "conll03_electra-large"}, ["validation.txt", "validation_social.txt"]),
+        ("electra-large+ner=conll03_electra-large", "default", PROCESSORS,
+         {"pos": "combined_electra-large", "constituency": "ptb3-revised_electra-large", "depparse": "combined_electra-large",
+          "sentiment": "sstplus_electra-large", "ner": "conll03_electra-large"},
+         ["validation.txt"]),
         # the default_accurate package itself (no models chosen: package=default_accurate), all eight processors
         ("default_accurate", "default_accurate", PROCESSORS, {},
          ["validation.txt", "validation_contractions.txt", "validation_social.txt", "validation_tech.txt", "models/transformer_long.txt"]),
@@ -480,12 +487,13 @@ class RecordContextual:
 
 def electra_locally(models):
     """
-    Has Stanza's load_bert read TRANSFORMER (English) and GERMAN["TRANSFORMER"] from <models>/<lang>/transformer/ (the
-    files ModelDownloader fetches at the pinned revision) instead of Hugging Face's cache.
+    Has Stanza's load_bert read TRANSFORMER and ROBERTA (English) and GERMAN["TRANSFORMER"] from <models>/<lang>/transformer/
+    (the files ModelDownloader fetches at the pinned revision) instead of Hugging Face's cache.
     """
     from stanza.models.common import bert_embedding
     load = bert_embedding.load_bert
     local = {TRANSFORMER: Path(models) / "en" / "transformer" / TRANSFORMER,
+             ROBERTA: Path(models) / "en" / "transformer" / ROBERTA,
              GERMAN["TRANSFORMER"]: Path(models) / "de" / "transformer" / GERMAN["TRANSFORMER"]}
 
     def load_bert(model_name, *args, **kwargs):
@@ -494,6 +502,9 @@ def electra_locally(models):
         return load(model_name, *args, **kwargs)
 
     bert_embedding.load_bert = load_bert
+
+
+PRETRAIN_FIXES = {("en", "ner", "conll03_electra-large"): "conll17"}
 
 
 def write_models_golden(models, out, only=None):
@@ -514,8 +525,11 @@ def write_models_golden(models, out, only=None):
             continue
         if chosen:
             spec = {p: chosen.get(p, package) for p in processors.split(",")}
+            # a model trained on another pretrain than resources.json lists (Pipeline.ListedPretrains, compare.py's PRETRAIN_FIXES)
+            fixes = {f"{p}_pretrain_path": str(Path(models) / LANG / "pretrain" / f"{PRETRAIN_FIXES[(LANG, p, m)]}.pt")
+                     for p, m in chosen.items() if (LANG, p, m) in PRETRAIN_FIXES}
             nlp = stanza.Pipeline(LANG, dir=models, package=None, processors=spec, download_method=None, use_gpu=False,
-                                  logging_level="WARN")
+                                  logging_level="WARN", **fixes)
         else:  # a package as it is
             nlp = stanza.Pipeline(LANG, dir=models, package=package, processors=processors, download_method=None, use_gpu=False,
                                   logging_level="WARN")

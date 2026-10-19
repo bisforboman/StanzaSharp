@@ -121,6 +121,7 @@ public static class ModelDownloader
             ("pos/eslspok_electra-large.pt", "11b6e2b1104e1f9a6d6466b599278e92"),
             ("depparse/eslspok_electra-large.pt", "34610290258e888dc505ec6e16b2c750"),
             ("ner/ontonotes_electra-large.pt", "5b59497b9e76cb646690825bc4fed43f"),
+            ("ner/conll03_electra-large.pt", "892891610a5d66635904081fd6376178"),
             ("tokenize/combined_charlm.pt", "1e2acd7f1340961385442a106c94950d"),
             ("tokenize/ewt_charlm.pt", "08e17410ba853cf519019d4ea17ec313"),
             ("tokenize/gum_charlm.pt", "5e797c73ecd132555f9769dddb694458"),

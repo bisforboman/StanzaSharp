@@ -130,6 +130,10 @@ contractions, social and tech texts and the long sentence: `models/default_accur
 The treebanks' transformer taggers and parsers (pos and depparse `ewt`, `gum`, `lines`, `partut`, `atis`, `childes`,
 `eslspok` + `_electra-large`, each on its package, corpus.txt) and ner `ontonotes_electra-large` (corpus.txt and
 validation.txt, 131 entities) match too: `models/pos+depparse=<treebank>_electra-large/`, `models/ner=ontonotes_electra-large/`.
+So does ner `conll03_electra-large` on `roberta-base` (corpus.txt, validation.txt and validation_social.txt, 55 entities;
+Stanza given conll17's vectors, which the model was trained on, as resources.json's GloVe fails Stanza's own load), alone and
+next to the other four ELECTRA-large models, a pipeline with two transformers: `models/ner=conll03_electra-large/`,
+`models/electra-large+ner=conll03_electra-large/`.
 So does the LoRA-adapted parser `ptb3_electra-large`, the one with TOP_DOWN transitions (its trees differ from the IN_ORDER
 parser's in 45 of validation.txt's 104 sentences): `models/constituency=ptb3_electra-large/`, 274 sentences.
 On the managed backend a short call runs the frozen transformer and the LoRA adapters' nets in one sweep over the weights
