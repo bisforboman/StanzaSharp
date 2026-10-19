@@ -1478,7 +1478,7 @@ What the English treebank packages' checkpoints add to the default package's pat
     a GEMM's input and output a chunk of rows at a time (`ManagedLstm.ForwardUnpacked`, sentiment's convolutions) and
     keep only what a later stage reads whole; round 10 cut sentiment's +1.1 GB to +0.18 GB that way.
   - Check the `CancellationToken` per time step and per GEMM block.
-  - `Gemm.Path` and `ManagedThreads.Count` are process-wide. Only `Pipeline.Load` (managed backend: the count) and tests
+  - `Gemm.Path` and `ManagedThreads.Count` are process-wide. Only `Pipeline.Load` and `LanguageIdentifier.Load` (managed backend: the count) and tests
     in `ManagedKernelsCollection` (parallelization off, so other classes never see a switched path) may set them.
 
 ## Native AOT and trimming

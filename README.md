@@ -532,7 +532,7 @@ model (9 MB) lives in Stanza's `multilingual` folder:
 await ModelDownloader.DownloadLanguageIdentifierAsync("models/stanza/multilingual"); // or: stanzasharp download models/stanza/multilingual --lang multilingual
 using var identifier = LanguageIdentifier.Load("models/stanza/multilingual");
 string language = identifier.Identify("Das ist ein deutscher Satz."); // "de"
-var languages = identifier.Identify(["Hello there.", "Ceci est une phrase."]); // ["en", "fr"]
+var languages = identifier.Identify(["Hello there.", "Ceci est une phrase française sur la météo."]); // ["en", "fr"]
 ```
 
 `LanguageIdentifierOptions.Languages` restricts the answers (Stanza's `langid_lang_subset`): with `["en", "de"]` every

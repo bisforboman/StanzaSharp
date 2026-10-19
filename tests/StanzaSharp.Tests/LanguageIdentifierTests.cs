@@ -22,7 +22,8 @@ public sealed class LanguageIdentifierTests
         using var identifier = LanguageIdentifier.Load(LangIdTheoryAttribute.Directory, new() { Backend = Repo.PipelineBackendFor(managed) });
         Assert.Equal(Golden["languages"]!.AsArray().Select(l => l!.GetValue<string>()), identifier.Languages);
         Assert.Equal(Cases.Select(c => c["lang"]!.GetValue<string>()), identifier.Identify(texts));
-        Assert.Equal(Cases.First()["lang"]!.GetValue<string>(), identifier.Identify(texts[0])); // alone, as one batch of its own
+        foreach (var c in Cases) // each alone, a batch of one, as Stanza's process gives (make_golden checks bulk equals it)
+            Assert.Equal(c["lang"]!.GetValue<string>(), identifier.Identify(c["text"]!.GetValue<string>()));
 
         using var subset = LanguageIdentifier.Load(LangIdTheoryAttribute.Directory, new() { Backend = Repo.PipelineBackendFor(managed), Languages = ["en", "de"] });
         Assert.Equal(Cases.Select(c => c["lang_en_de"]!.GetValue<string>()), subset.Identify(texts));

@@ -1309,7 +1309,7 @@ LANGID_TEXTS = [
     "Hello мир, wie geht's?",
     "I love 🍕 and 🍣!",
     "𝕳𝖊𝖑𝖑𝖔 𝖜𝖔𝖗𝖑𝖉",
-    "Hello there.", "Hallo du.",  # the same length: one batch
+    "Hello there.", "Hallo du da.",  # the same length: one batch (as "Hello" and "12345")
 ]
 
 

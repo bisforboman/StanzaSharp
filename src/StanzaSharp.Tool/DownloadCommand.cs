@@ -76,6 +76,12 @@ internal static class DownloadCommand
             // --lang multilingual: the language identifier's model (LanguageIdentifier), Stanza's only multilingual resource.
             if (language == ModelDownloader.Multilingual)
             {
+                if (only != null || models.Count > 0 || package != Pipeline.DefaultPackage)
+                {
+                    Console.Error.WriteLine("--lang multilingual downloads the language identifier only; it takes no --package, --processors or --model");
+                    return 2;
+                }
+
                 if (list)
                 {
                     Console.WriteLine($"{ModelDownloader.LanguageIdentifierFile.Path} {ModelDownloader.LanguageIdentifierFile.Md5}");
