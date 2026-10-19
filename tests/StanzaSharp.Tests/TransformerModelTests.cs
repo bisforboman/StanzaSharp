@@ -5,7 +5,8 @@ namespace StanzaSharp.Tests;
 /// <summary>
 /// default_accurate's frozen-transformer models as <see cref="PipelineOptions.Models"/> (docs/transformer-plan.md, PR 2):
 /// pos, depparse, ner, constituency and sentiment (LoRA) <c>_electra-large</c>, the treebanks' pos and depparse and ontonotes' ner
-/// <c>_electra-large</c> (#168) and the <c>default_accurate</c> package against their tests/golden/models/ rows, byte for byte on both backends; German's (german-nlp-group/electra-base-german-uncased:
+/// <c>_electra-large</c> (#168), conll03's roberta-base ner (#172, also next to the other four: two transformers) and the
+/// <c>default_accurate</c> package against their tests/golden/models/ rows, byte for byte on both backends; German's (german-nlp-group/electra-base-german-uncased:
 /// pos and depparse frozen, constituency and sentiment with their LoRA adapters) against tests/golden/de/models/. Named
 /// Transformer* so that only golden shard 4, which downloads the transformers, runs it in CI.
 /// </summary>
@@ -16,6 +17,8 @@ public class TransformerModelTests
     private const string TopDown = "constituency=ptb3_electra-large";
     private const string Sentiment = "sentiment=sstplus_electra-large";
     private const string AllFive = "electra-large";
+    private const string Roberta = "ner=conll03_electra-large";
+    private const string TwoTransformers = "electra-large+ner=conll03_electra-large";
     private const string GermanFrozen = "pos+depparse=german-nlp-electra";
     private const string GermanConstituency = "constituency=spmrl_german-nlp-electra";
     private const string GermanSentiment = "sentiment=sb10k_german-nlp-electra";
@@ -49,6 +52,10 @@ public class TransformerModelTests
     [ModelChoice("en", "pos+depparse=eslspok_electra-large", true)]
     [ModelChoice("en", "ner=ontonotes_electra-large", false)]
     [ModelChoice("en", "ner=ontonotes_electra-large", true)]
+    [ModelChoice("en", Roberta, false)]
+    [ModelChoice("en", Roberta, true)]
+    [ModelChoice("en", TwoTransformers, false)]
+    [ModelChoice("en", TwoTransformers, true)]
     [ModelChoice("de", GermanFrozen, false)]
     [ModelChoice("de", GermanFrozen, true)]
     [ModelChoice("de", GermanConstituency, false)]

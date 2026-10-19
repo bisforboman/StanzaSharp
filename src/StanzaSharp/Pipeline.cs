@@ -179,7 +179,7 @@ public sealed class Pipeline : IDisposable
             ["ner"] =
             [
                 "ontonotes_charlm", "ontonotes_nocharlm", "combined_charlm", "conll03_charlm", "ontonotes-ww-multi_electra-large",
-                "ontonotes_electra-large",
+                "ontonotes_electra-large", "conll03_electra-large",
 
                 // clinical (mimic's vectors and charlms) and biomedical (biomed's vectors, pubmed's charlms)
                 "i2b2", "radiology", "anatem", "bc4chemd", "bc5cdr", "bionlp13cg", "jnlpba", "linnaeus", "ncbi_disease", "s800",
@@ -226,6 +226,19 @@ public sealed class Pipeline : IDisposable
         ["pos"] = $"{name}_{kind}",
         ["lemma"] = $"{name}_nocharlm",
         ["depparse"] = $"{name}_{kind}",
+    };
+
+    /// <summary>
+    /// Models whose resources.json entry lists another pretrain than the one they were trained on (Stanza 1.15.0), which
+    /// <see cref="Dependencies"/> names instead (owner's decision, 2026-10-19, #172): processor/model → the listed one.
+    /// ner conll03_electra-large's word vocabulary is conll17's 250,000 words, and Stanza with the listed glove (100,000)
+    /// fails its embedding check at load; tools/make_golden.py and the tool's compare.py pass Stanza the conll17 file
+    /// (<c>ner_pretrain_path</c>, their <c>PRETRAIN_FIXES</c>).
+    /// </summary>
+    internal static readonly Dictionary<string, Dictionary<string, string>> ListedPretrains = new()
+    {
+        ["en"] = new() { ["ner/conll03_electra-large"] = "pretrain/glove" },
+        ["de"] = [],
     };
 
     private static readonly string[] Conll17 = ["pretrain/conll17"],
@@ -340,6 +353,7 @@ public sealed class Pipeline : IDisposable
             ["pos/eslspok_electra-large"] = EnglishCharlm,
             ["depparse/eslspok_electra-large"] = EnglishCharlm,
             ["ner/ontonotes_electra-large"] = ["pretrain/fasttextcrawl", "forward_charlm/1billion", "backward_charlm/1billion"],
+            ["ner/conll03_electra-large"] = EnglishCharlm, // not glove, which resources.json lists (ListedPretrains)
         },
         ["de"] = new()
         {
@@ -418,6 +432,7 @@ public sealed class Pipeline : IDisposable
             ["pos/eslspok_electra-large"] = Electra,
             ["depparse/eslspok_electra-large"] = Electra,
             ["ner/ontonotes_electra-large"] = Electra,
+            ["ner/conll03_electra-large"] = "roberta-base", // despite its name (#172)
         },
         ["de"] = new()
         {
@@ -459,7 +474,7 @@ public sealed class Pipeline : IDisposable
     internal ConstituencyParser? Parser => _parser;
 
     private readonly SentimentClassifier? _sentiment;
-    private readonly TransformerEmbedder? _transformer; // the one transformer the models read (Transformers), if any
+    private readonly TransformerEmbedder[] _transformers = []; // every transformer the models read (Transformers), once each
     private readonly Pretrain[] _pretrains = [];
     private readonly BackendModels _models;
     private readonly CharlmCacheOptions _cacheOptions;
@@ -586,13 +601,12 @@ public sealed class Pipeline : IDisposable
             }))
             .ToList();
 
-        // The transformer, with the shared models: its readers need it to load. One per pipeline (only ELECTRA-large so far).
-        var transformerName = TransformersOf(models, options.Language).SingleOrDefault();
-        var transformer = transformerName == null
-            ? null
-            : Start($"transformer/{transformerName}", () => backend.Transformer(ModelDownloader.TransformerDirectory(modelDir, transformerName), transformerName));
+        // The transformers, with the shared models: their readers need them to load. Each one once, by name, like the pretrains
+        // (default_accurate's ELECTRA-large next to ner conll03_electra-large's roberta-base, #172).
+        var transformers = TransformersOf(models, options.Language).ToDictionary(name => name,
+            name => Start($"transformer/{name}", () => backend.Transformer(ModelDownloader.TransformerDirectory(modelDir, name), name)));
         TransformerEmbedder? TransformerOf(string processor) =>
-            Transformers[options.Language].ContainsKey(Name(processor)) ? transformer!.Result : null;
+            Transformers[options.Language].TryGetValue(Name(processor), out var name) ? transformers[name].Result : null;
 
         // The pretrain and the charlms a processor's model reads, once loaded.
         Pretrain? PretrainIfAny(string processor) => dependencies[processor].Where(d => d.Kind == "pretrain").Select(d => pretrains[d.Key].Result).SingleOrDefault();
@@ -625,7 +639,8 @@ public sealed class Pipeline : IDisposable
                 c.GetAwaiter().GetResult();
             foreach (var p in pretrains.Values)
                 p.GetAwaiter().GetResult();
-            transformer?.GetAwaiter().GetResult();
+            foreach (var loading in transformers.Values)
+                loading.GetAwaiter().GetResult();
             StartReaders(ofCharlms: true);
             var pos = models.ContainsKey("pos") ? Start(Name("pos"), () => backend.Pos(Model("pos"), PretrainOf("pos"), CharlmsOf("pos"), TransformerOf("pos"))) : null;
             var depparse = models.ContainsKey("depparse")
@@ -655,7 +670,7 @@ public sealed class Pipeline : IDisposable
             _parser = options.ConstituencyBatchSize is int cp ? parser?.Result.WithBatchSize(cp) : parser?.Result;
             _sentiment = options.SentimentBatchSize is int b ? sentiment?.Result.WithBatchSize(b) : sentiment?.Result;
             _pretrains = [.. pretrains.Values.Select(p => p.Result)];
-            _transformer = transformer?.Result;
+            _transformers = [.. transformers.Values.Select(t => t.Result)];
         }
         catch (Exception e)
         {
@@ -1283,9 +1298,16 @@ public sealed class Pipeline : IDisposable
         {
             var readers = new[] { _pos?.TransformerReader(doc), _parser?.TransformerReader(doc), _depparse?.TransformerReader(doc),
                 _sentiment?.TransformerReader(doc), _ner?.TransformerReader(doc), };
-            bool joint = _transformer != null && Step("transformer", () => TransformerEmbedder.Prefill([.. readers.OfType<TransformerReader>()], CacheOf, ct), ct);
-            if (!joint && _transformer != null && readers.Count(r => r != null && r.Embedder.Net == _transformer.Net) > 1)
-                CacheOf(_transformer.Net);
+
+            // Per transformer: its frozen readers and its LoRA ones share its tokenizer (a LoRA embedder copies the frozen one's).
+            foreach (var transformer in _transformers)
+            {
+                var own = readers.OfType<TransformerReader>().Where(r => r.Embedder.Tokenizer == transformer.Tokenizer).ToList();
+                bool joint = Step("transformer", () => TransformerEmbedder.Prefill(own, CacheOf, ct), ct);
+                if (!joint && own.Count(r => r.Embedder.Net == transformer.Net) > 1)
+                    CacheOf(transformer.Net);
+            }
+
             return Annotate(doc, charlms, CacheFor, readers, TransformersFor, ct);
         }
         finally
@@ -1347,7 +1369,8 @@ public sealed class Pipeline : IDisposable
         _lemma?.Dispose();
         _mwt?.Dispose();
         _tokenizer.Dispose();
-        _transformer?.Net.Dispose();
+        foreach (var transformer in _transformers)
+            transformer.Net.Dispose();
         _models.Dispose();
         foreach (var pretrain in _pretrains)
             pretrain.Dispose();

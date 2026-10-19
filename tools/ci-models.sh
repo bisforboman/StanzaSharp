@@ -113,7 +113,7 @@ case ${1:-} in
       done
       "${cli[@]}" download models/stanza/en --processors tokenize,mwt,pos,constituency --model constituency=ptb3_electra-large < /dev/null \
         || return 1
-      "${cli[@]}" download-transformer models/stanza/en roberta-base < /dev/null || return 1
+      "${cli[@]}" download models/stanza/en --processors tokenize,ner --model ner=conll03_electra-large < /dev/null || return 1
       "${cli[@]}" download models/stanza/en --processors tokenize,ner --model ner=ontonotes_electra-large < /dev/null \
         && "${cli[@]}" download models/stanza/de --lang de --package default_accurate < /dev/null
     }

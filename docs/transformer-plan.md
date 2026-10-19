@@ -265,6 +265,8 @@ is already ported (germeval2014's old checkpoint format, glove + 1billion, the l
   (`make_golden.py --transformer-only` writes `tokenizer_roberta-base.json` and `hidden_roberta-base.*` next to ELECTRA's),
   then (b) the NER model; a pipeline may load two transformers (ELECTRA-large for `default_accurate` and roberta-base for
   this NER model), keyed by name like the pretrains; roberta-base's ~500 MB is downloaded per CI run like the others.
+- **Done (PR b):** the NER model (glove listed, conll17 read: `Pipeline.ListedPretrains`, owner's decision) and two
+  transformers per pipeline, golden rows `ner=conll03_electra-large` and `electra-large+ner=conll03_electra-large`.
 - **Coref (#176):** the encoder change serves XLM-RoBERTa too (the same architecture, 24 layers); the byte-level BPE only the
   `roberta-large` coref models, since the default `udcoref` model reads SentencePiece Unigram (docs/coref-plan.md).
 

@@ -51,6 +51,11 @@ def transformers_locally(models):
     bert_embedding.load_bert = load_bert
 
 
+# Models whose resources.json entry lists another pretrain than the one they were trained on (Pipeline.ListedPretrains):
+# Stanza gets the right file as {processor}_pretrain_path, else it fails its embedding check at load.
+PRETRAIN_FIXES = {"en": {"ner/conll03_electra-large": "conll17"}}
+
+
 def load_stanza(models, lang, package, processors):
     """stanza.Pipeline(lang) on the .pt files in MODELS, a folder of any name, with the language's entry of Stanza's
     resources.json shipped with the tool (stanza_resources_<lang>.json); download_method=None: nothing is downloaded.
@@ -62,6 +67,11 @@ def load_stanza(models, lang, package, processors):
         processors, package = json.loads(processors), None
     here = os.path.dirname(os.path.abspath(__file__))
     models = os.path.abspath(models)
+    fixes = {}
+    for processor, name in (processors.items() if isinstance(processors, dict) else []):
+        pretrain = PRETRAIN_FIXES.get(lang, {}).get(f"{processor}/{name}")
+        if pretrain:
+            fixes[f"{processor}_pretrain_path"] = os.path.join(models, "pretrain", pretrain + ".pt")
     link = None
     if os.path.basename(models) != lang:
         link = os.path.join(here, lang)
@@ -73,9 +83,14 @@ def load_stanza(models, lang, package, processors):
     try:
         try:
             transformers_locally(models)
-            return stanza.Pipeline(lang, dir=os.path.dirname(link or models), package=package, processors=processors,
-                                   download_method=None, resources_filepath=os.path.join(here, f"stanza_resources_{lang}.json"),
-                                   use_gpu=False, logging_level="WARN")
+            nlp = stanza.Pipeline(lang, dir=os.path.dirname(link or models), package=package, processors=processors,
+                                  download_method=None, resources_filepath=os.path.join(here, f"stanza_resources_{lang}.json"),
+                                  use_gpu=False, logging_level="WARN", **fixes)
+            # the listed pretrain stays in {processor}_dependencies, unread: report the file Stanza read
+            for key, path in fixes.items():
+                for dependency in nlp.config.get(key.replace("_pretrain_path", "_dependencies")) or []:
+                    dependency["pretrain_path"] = path
+            return nlp
         except ModuleNotFoundError as e:
             if e.name not in ("transformers", "tokenizers", "safetensors", "peft"):
                 raise
