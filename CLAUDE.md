@@ -198,6 +198,11 @@ default from 0.5) or through TorchSharp (see "Managed backend").
     exception), make_golden's and compare.py's `PRETRAIN_FIXES` (Stanza's `ner_pretrain_path`; `PretrainFixes_MatchListedPretrains`).
     Golden rows `ner=conll03_electra-large` (+ validation, validation_social) and `electra-large+ner=conll03_electra-large`
     (two transformers), `TransformerModelTests`; golden shard 4 downloads it (`tools/ci-models.sh transformer`).
+  - German's on the same transformer (owner's choice 2026-10-19): pos and depparse `{gsd,hdt}_german-nlp-electra` and ner
+    `germeval2014_german-nlp-electra` (fasttextwiki, word 300): `combined_german-nlp-electra`'s / germeval2014's configs on
+    their twins' vocabularies and heads (gsd/hdt legacy tag heads; depparse's 4-layer `bert_layer_mix`); no new code. Golden
+    rows `pos+depparse=<tb>_german-nlp-electra` on their package (corpus.txt) and `ner=germeval2014_german-nlp-electra`
+    (+ validation, transformer_long) in `tests/golden/de/models/`; golden shard 4 downloads them.
   - CI: no cache (the model caches are near GitHub's 10 GB; owner's decision): golden shard 4 downloads the
     `default_accurate` package, the treebanks' transformer models (their packages' other files from the en-treebanks cache)
     and the transformer's files on every run (`tools/ci-models.sh transformer`: `download --package default_accurate`, ...,

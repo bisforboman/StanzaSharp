@@ -129,5 +129,42 @@
    "validation_social.txt",
    "models/transformer_long.txt"
   ]
+ },
+ {
+  "name": "pos+depparse=gsd_german-nlp-electra",
+  "package": "gsd",
+  "processors": "tokenize,mwt,pos,lemma,depparse",
+  "models": {
+   "pos": "gsd_german-nlp-electra",
+   "depparse": "gsd_german-nlp-electra"
+  },
+  "texts": [
+   "corpus.txt"
+  ]
+ },
+ {
+  "name": "pos+depparse=hdt_german-nlp-electra",
+  "package": "hdt",
+  "processors": "tokenize,mwt,pos,lemma,depparse",
+  "models": {
+   "pos": "hdt_german-nlp-electra",
+   "depparse": "hdt_german-nlp-electra"
+  },
+  "texts": [
+   "corpus.txt"
+  ]
+ },
+ {
+  "name": "ner=germeval2014_german-nlp-electra",
+  "package": "default",
+  "processors": "tokenize,mwt,ner",
+  "models": {
+   "ner": "germeval2014_german-nlp-electra"
+  },
+  "texts": [
+   "corpus.txt",
+   "validation.txt",
+   "models/transformer_long.txt"
+  ]
  }
 ]

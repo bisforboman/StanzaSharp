@@ -342,6 +342,14 @@ MODEL_CHOICES = {
         # the default_accurate package itself, all eight processors: three passes (frozen, constituency's, sentiment's)
         ("default_accurate", "default_accurate", PROCESSORS, {},
          ["validation.txt", "validation_contractions.txt", "validation_umlauts.txt", "validation_social.txt", "models/transformer_long.txt"]),
+        # the treebanks' frozen-transformer taggers and parsers on their package (corpus.txt only, like English's), and
+        # germeval2014's NER model on the same transformer (fasttextwiki vectors | transformer | charlms)
+        ("pos+depparse=gsd_german-nlp-electra", "gsd", "tokenize,mwt,pos,lemma,depparse",
+         {"pos": "gsd_german-nlp-electra", "depparse": "gsd_german-nlp-electra"}, []),
+        ("pos+depparse=hdt_german-nlp-electra", "hdt", "tokenize,mwt,pos,lemma,depparse",
+         {"pos": "hdt_german-nlp-electra", "depparse": "hdt_german-nlp-electra"}, []),
+        ("ner=germeval2014_german-nlp-electra", "default", "tokenize,mwt,ner", {"ner": "germeval2014_german-nlp-electra"},
+         ["validation.txt", "models/transformer_long.txt"]),
     ],
 }
 

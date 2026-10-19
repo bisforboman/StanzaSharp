@@ -146,7 +146,10 @@ German's `default_accurate` (`german-nlp-group/electra-base-german-uncased`, a b
 `tests/golden/de/models/`: pos and depparse `combined_german-nlp-electra` sharing one frozen pass (79 sentences, with
 the umlauts, social and contractions texts and `de/models/transformer_long.txt`, one sentence of 558 pieces), the
 constituency parser `spmrl_german-nlp-electra` and the sentiment classifier `sb10k_german-nlp-electra`, each with its own
-LoRA adapters (46 and 47 sentences), and the package itself (80 sentences): three passes per sentence.
+LoRA adapters (46 and 47 sentences), and the package itself (80 sentences): three passes per sentence. So do the gsd and
+hdt taggers and parsers on that transformer, each on its package (`models/pos+depparse=<treebank>_german-nlp-electra/`,
+corpus.txt), and the NER model `germeval2014_german-nlp-electra` (corpus.txt, validation.txt and the long sentence, 12
+entities: `models/ner=germeval2014_german-nlp-electra/`).
 
 They exercise what the packages don't: a second pretrain next to conll17 (fastText crawl, 300-dimensional), a tag
 vocabulary with three tag sets, and the old NER checkpoint format with a fine-tuned delta embedding (`i2b2`).

@@ -189,9 +189,9 @@ public sealed class Pipeline : IDisposable
         {
             ["tokenize"] = ["combined_charlm", "gsd_charlm", "hdt_charlm"],
             ["lemma"] = ["combined_charlm", "gsd_charlm", "hdt_charlm"],
-            ["pos"] = ["gsd_nocharlm", "hdt_nocharlm"],
-            ["depparse"] = ["gsd_nocharlm", "hdt_nocharlm"],
-            ["ner"] = ["conll03"],
+            ["pos"] = ["gsd_nocharlm", "hdt_nocharlm", "gsd_german-nlp-electra", "hdt_german-nlp-electra"],
+            ["depparse"] = ["gsd_nocharlm", "hdt_nocharlm", "gsd_german-nlp-electra", "hdt_german-nlp-electra"],
+            ["ner"] = ["conll03", "germeval2014_german-nlp-electra"],
         },
     };
 
@@ -369,6 +369,13 @@ public sealed class Pipeline : IDisposable
             ["depparse/combined_german-nlp-electra"] = GermanCharlm,
             ["constituency/spmrl_german-nlp-electra"] = GermanCharlm,
             ["sentiment/sb10k_german-nlp-electra"] = GermanCharlm,
+
+            // the treebanks' and germeval2014's on the same transformer (Alternatives)
+            ["pos/gsd_german-nlp-electra"] = GermanCharlm,
+            ["depparse/gsd_german-nlp-electra"] = GermanCharlm,
+            ["pos/hdt_german-nlp-electra"] = GermanCharlm,
+            ["depparse/hdt_german-nlp-electra"] = GermanCharlm,
+            ["ner/germeval2014_german-nlp-electra"] = ["pretrain/fasttextwiki", "forward_charlm/newswiki", "backward_charlm/newswiki"],
             ["depparse/combined_nocharlm"] = Conll17,
             ["pos/gsd_charlm"] = GermanCharlm,
             ["depparse/gsd_charlm"] = GermanCharlm,
@@ -440,6 +447,11 @@ public sealed class Pipeline : IDisposable
             ["depparse/combined_german-nlp-electra"] = GermanElectra,
             ["constituency/spmrl_german-nlp-electra"] = GermanElectra, // LoRA adapters: a pass of its own
             ["sentiment/sb10k_german-nlp-electra"] = GermanElectra, // LoRA adapters: a pass of its own
+            ["pos/gsd_german-nlp-electra"] = GermanElectra,
+            ["depparse/gsd_german-nlp-electra"] = GermanElectra,
+            ["pos/hdt_german-nlp-electra"] = GermanElectra,
+            ["depparse/hdt_german-nlp-electra"] = GermanElectra,
+            ["ner/germeval2014_german-nlp-electra"] = GermanElectra,
         },
     };
 

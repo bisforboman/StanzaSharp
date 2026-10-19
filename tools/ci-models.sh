@@ -104,7 +104,8 @@ case ${1:-} in
     # the default_accurate package: its five transformer models, the transformer, and its _charlm tokenizer and lemmatizer
     # (also in the treebank-choices cache; files that match are kept); the treebanks' and ontonotes' (#168: their packages'
     # other files are in the en-treebanks cache), constituency ptb3_electra-large (#171) and roberta-base (#172)
-    # and German's (#170: four transformer models, german-nlp-group's ELECTRA; the rest is in the de caches)
+    # and German's (#170: four transformer models, german-nlp-group's ELECTRA; the rest is in the de caches; gsd's, hdt's and
+    # germeval2014's on it, their packages' other files from the de cache)
     transformers() {
       "${cli[@]}" download models/stanza/en --package default_accurate < /dev/null || return 1
       for package in ewt gum lines partut atis childes eslspok; do
@@ -114,8 +115,13 @@ case ${1:-} in
       "${cli[@]}" download models/stanza/en --processors tokenize,mwt,pos,constituency --model constituency=ptb3_electra-large < /dev/null \
         || return 1
       "${cli[@]}" download models/stanza/en --processors tokenize,ner --model ner=conll03_electra-large < /dev/null || return 1
-      "${cli[@]}" download models/stanza/en --processors tokenize,ner --model ner=ontonotes_electra-large < /dev/null \
-        && "${cli[@]}" download models/stanza/de --lang de --package default_accurate < /dev/null
+      "${cli[@]}" download models/stanza/en --processors tokenize,ner --model ner=ontonotes_electra-large < /dev/null || return 1
+      "${cli[@]}" download models/stanza/de --lang de --package default_accurate < /dev/null || return 1
+      for package in gsd hdt; do
+        "${cli[@]}" download models/stanza/de --lang de --package "$package" \
+          --model "pos=${package}_german-nlp-electra,depparse=${package}_german-nlp-electra" < /dev/null || return 1
+      done
+      "${cli[@]}" download models/stanza/de --lang de --processors tokenize,ner --model ner=germeval2014_german-nlp-electra < /dev/null
     }
     for attempt in 1 2 3; do
       transformers && exit 0

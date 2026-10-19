@@ -220,6 +220,11 @@ public static class ModelDownloader
             ("depparse/combined_german-nlp-electra.pt", "e1070166afcca8e4fe8c30a50deac64d"),
             ("constituency/spmrl_german-nlp-electra.pt", "ecfa0aa508c6bf878929db97786deedf"),
             ("sentiment/sb10k_german-nlp-electra.pt", "36125922117da581c38e45545ed5a41e"),
+            ("pos/gsd_german-nlp-electra.pt", "b75ba715175061141842a09e480f7d86"),
+            ("depparse/gsd_german-nlp-electra.pt", "29d6aad732f21eff57e6dcbe51a0a77f"),
+            ("pos/hdt_german-nlp-electra.pt", "276a4063c1c4a00b7bd27a3dc9dd67ba"),
+            ("depparse/hdt_german-nlp-electra.pt", "91ecaa874d4217dd1cac9c84e667f377"),
+            ("ner/germeval2014_german-nlp-electra.pt", "35be8dec3ab2dbed9b6faabe84d342c8"),
         ],
     };
 
