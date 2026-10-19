@@ -182,6 +182,15 @@ default from 0.5) or through TorchSharp (see "Managed backend").
     closes only at the end) and a Close that takes only the children above the open marker; scores, composition, nets and
     scheduling as IN_ORDER. Golden row `constituency=ptb3_electra-large` (corpus, validation, contractions,
     transformer_long.txt; 45 of validation's 104 trees differ from ptb3-revised_electra-large's), downloaded by golden shard 4.
+  - RoBERTa (#172, owner's decisions 2026-10-19: two PRs, two transformers per pipeline, download per run; docs/transformer-plan.md
+    "RoBERTa"): ner `conll03_electra-large` reads `roberta-base`. PR (a): `Nn.ByteLevelBpe` (GPT-2's byte-level BPE with Stanza's
+    `add_prefix_space=True`: added tokens first, `<mask>` lstrip; a space before every other piece not starting with U+0020;
+    the split pattern scanned by code point; merges by rank) behind `ITransformerTokenizer` with `WordPiece`, picked when
+    tokenizer.json's model is BPE (`type` may be absent); `TransformerConfig` reads roberta (`Prefix` `roberta.`,
+    `PositionOffset` 2 = pad + 1, `MaxPositions` 512; the nets slice the position table at load, one token-type row);
+    `ModelDownloader.Transformers["roberta-base"]`; goldens `transformer/tokenizer_roberta-base.json` (1,093 cases,
+    `ROBERTA_TOKENIZER_CASES`) and `hidden_roberta-base.*` (`--transformer-only`); `TransformerTokenizerTests`,
+    `TransformerEncoderTests.Roberta_*`, `TransformerKernelTests.Roberta_*`. PR (b): the NER model, two transformers per pipeline.
   - CI: no cache (the model caches are near GitHub's 10 GB; owner's decision): golden shard 4 downloads the
     `default_accurate` package, the treebanks' transformer models (their packages' other files from the en-treebanks cache)
     and the transformer's files on every run (`tools/ci-models.sh transformer`: `download --package default_accurate`, ...,

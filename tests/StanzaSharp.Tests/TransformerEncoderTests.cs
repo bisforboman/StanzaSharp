@@ -36,9 +36,10 @@ public class TransformerEncoderTests(TransformerModels models, ITestOutputHelper
 
     internal sealed record Golden(string[][] Sentences, double?[] Bounds, string[] Long, int LongStride, float[] MixWeight, SafeTensorFile Tensors);
 
-    internal static Golden ReadGolden()
+    /// <param name="name">hidden (ELECTRA-large) or hidden_roberta-base.</param>
+    internal static Golden ReadGolden(string name = "hidden")
     {
-        using var json = JsonDocument.Parse(File.ReadAllBytes(Path.Combine(Repo.Golden, "transformer", "hidden.json")));
+        using var json = JsonDocument.Parse(File.ReadAllBytes(Path.Combine(Repo.Golden, "transformer", name + ".json")));
         var root = json.RootElement;
         var sentences = root.GetProperty("sentences").EnumerateArray().ToArray();
         return new Golden(
@@ -46,7 +47,7 @@ public class TransformerEncoderTests(TransformerModels models, ITestOutputHelper
             [.. sentences.Select(s => s.GetProperty("bound").ValueKind == JsonValueKind.Null ? (double?)null : s.GetProperty("bound").GetDouble())],
             [.. root.GetProperty("long").EnumerateArray().Select(w => w.GetString()!)], root.GetProperty("long_stride").GetInt32(),
             [.. root.GetProperty("mix_weight").EnumerateArray().Select(w => (float)w.GetDouble())],
-            SafeTensorFile.Load(Path.Combine(Repo.Golden, "transformer", "hidden.safetensors")));
+            SafeTensorFile.Load(Path.Combine(Repo.Golden, "transformer", name + ".safetensors")));
     }
 
     /// <summary>Each value within <paramref name="bound"/> (null: 1e-4, relative above |100|) of the float32 or float64 reference.</summary>
@@ -70,10 +71,34 @@ public class TransformerEncoderTests(TransformerModels models, ITestOutputHelper
     [TransformerTheory("config.json", "tokenizer.json", "tokenizer_config.json", "pytorch_model.bin")]
     [InlineData(true)]
     [InlineData(false)]
-    public void Embeddings_MatchStanza(bool managed)
+    public void Embeddings_MatchStanza(bool managed) => AssertEmbeddings(models.Embedder(managed), ReadGolden(), output);
+
+    /// <summary>
+    /// The same sentences and the long one through roberta-base (#172): RoBERTa's positions from 2, one token type, its
+    /// weights under roberta., the byte-level BPE input.
+    /// </summary>
+    [RobertaTheory("config.json", "tokenizer.json", "tokenizer_config.json", "pytorch_model.bin")]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void Roberta_Embeddings_MatchStanza(bool managed)
     {
-        var golden = ReadGolden();
-        var embedder = models.Embedder(managed);
+        using var embedder = RobertaEmbedder(managed);
+        AssertEmbeddings(embedder.Value, ReadGolden("hidden_roberta-base"), output);
+    }
+
+    /// <summary>roberta-base loaded as the pipeline loads a transformer (BackendModels.Transformer), to dispose after the test.</summary>
+    internal static Owned RobertaEmbedder(bool managed) => new(TransformerEmbedder.Load(RobertaFactAttribute.Directory, RobertaFactAttribute.Roberta,
+        managed ? (config, ckpt) => ManagedTransformer.Load(config, ckpt) : (config, ckpt) => new TransformerNet(config, ckpt)));
+
+    internal sealed class Owned(TransformerEmbedder value) : IDisposable
+    {
+        public TransformerEmbedder Value { get; } = value;
+
+        public void Dispose() => Value.Net.Dispose();
+    }
+
+    private static void AssertEmbeddings(TransformerEmbedder embedder, Golden golden, ITestOutputHelper output)
+    {
         string[][] batch = [.. golden.Sentences, golden.Long];
         var legacy = embedder.Embed(batch, keepEndpoints: false, layerMix: null);
         var mixed = embedder.Embed(batch, keepEndpoints: true, layerMix: golden.MixWeight);
@@ -136,6 +161,20 @@ public class TransformerKernelTests(TransformerModels models, ITestOutputHelper 
     {
         var net = models.Embedder(managed: true).Net;
         var ids = Ids(TransformerEncoderTests.ReadGolden().Sentences);
+        var batched = With(Gemm.Path, 4, () => Encode(net, ids, 4));
+        for (int s = 0; s < ids.Length; s++)
+        {
+            Assert.True(Encode(net, [ids[s]], 4)[0].AsSpan().SequenceEqual(batched[s]), $"sentence {s} alone differs from the batch");
+            Assert.True(With(Gemm.Path, 1, () => Encode(net, [ids[s]], 4))[0].AsSpan().SequenceEqual(batched[s]), $"sentence {s} on 1 thread differs");
+        }
+    }
+
+    [RobertaFact("config.json", "tokenizer.json", "tokenizer_config.json", "pytorch_model.bin")]
+    public void Roberta_ASentence_HasTheSameBitsAloneInABatchAndOnAnyThreadCount()
+    {
+        using var embedder = TransformerEncoderTests.RobertaEmbedder(managed: true);
+        var net = embedder.Value.Net;
+        int[][] ids = [.. TransformerEncoderTests.ReadGolden("hidden_roberta-base").Sentences.Select(s => TransformerInput.Build(embedder.Value.Tokenizer, s).Ids)];
         var batched = With(Gemm.Path, 4, () => Encode(net, ids, 4));
         for (int s = 0; s < ids.Length; s++)
         {

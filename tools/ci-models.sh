@@ -103,7 +103,7 @@ case ${1:-} in
   transformer)
     # the default_accurate package: its five transformer models, the transformer, and its _charlm tokenizer and lemmatizer
     # (also in the treebank-choices cache; files that match are kept); the treebanks' and ontonotes' (#168: their packages'
-    # other files are in the en-treebanks cache), and constituency ptb3_electra-large (#171)
+    # other files are in the en-treebanks cache), constituency ptb3_electra-large (#171) and roberta-base (#172)
     # and German's (#170: four transformer models, german-nlp-group's ELECTRA; the rest is in the de caches)
     transformers() {
       "${cli[@]}" download models/stanza/en --package default_accurate < /dev/null || return 1
@@ -113,6 +113,7 @@ case ${1:-} in
       done
       "${cli[@]}" download models/stanza/en --processors tokenize,mwt,pos,constituency --model constituency=ptb3_electra-large < /dev/null \
         || return 1
+      "${cli[@]}" download-transformer models/stanza/en roberta-base < /dev/null || return 1
       "${cli[@]}" download models/stanza/en --processors tokenize,ner --model ner=ontonotes_electra-large < /dev/null \
         && "${cli[@]}" download models/stanza/de --lang de --package default_accurate < /dev/null
     }

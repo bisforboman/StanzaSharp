@@ -71,10 +71,11 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
         return Load(config, Checkpoint.Load(Path.Combine(directory, "pytorch_model.bin")));
     }
 
-    /// <param name="prefix">The state dict's prefix of the encoder (transformers' ElectraForPreTraining: <c>electra.</c>).</param>
-    public static ManagedTransformer Load(TransformerConfig config, Checkpoint checkpoint, string prefix = "electra.")
+    /// <summary>Loads the encoder from a transformer's state dict, its weights under <see cref="TransformerConfig.Prefix"/>.</summary>
+    public static ManagedTransformer Load(TransformerConfig config, Checkpoint checkpoint)
     {
         var root = checkpoint.Root;
+        var prefix = config.Prefix;
         float[] T(string name, params long[] shape)
         {
             var node = root[prefix + name] ?? throw new InvalidDataException($"No tensor {prefix}{name}");
@@ -102,10 +103,13 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
                 T(p + "output.LayerNorm.weight", h), T(p + "output.LayerNorm.bias", h));
         }
 
-        var words = root[prefix + "embeddings.word_embeddings.weight"] ?? throw new InvalidDataException($"No tensor {prefix}embeddings.word_embeddings.weight");
-        var vocab = checkpoint.Shape(words)[0];
-        return new ManagedTransformer(config, T("embeddings.word_embeddings.weight", vocab, h), T("embeddings.position_embeddings.weight", config.MaxPositions, h),
-            T("embeddings.token_type_embeddings.weight", 2, h)[..h], T("embeddings.LayerNorm.weight", h), T("embeddings.LayerNorm.bias", h), layers);
+        long Rows(string name) => checkpoint.Shape(root[prefix + name] ?? throw new InvalidDataException($"No tensor {prefix}{name}"))[0];
+
+        // Position rows from PositionOffset on (RoBERTa numbers a sentence's pieces from 2), token type 0 only.
+        var positions = T("embeddings.position_embeddings.weight", config.MaxPositions + config.PositionOffset, h)[(config.PositionOffset * h)..];
+        return new ManagedTransformer(config, T("embeddings.word_embeddings.weight", Rows("embeddings.word_embeddings.weight"), h), positions,
+            T("embeddings.token_type_embeddings.weight", Rows("embeddings.token_type_embeddings.weight"), h)[..h], T("embeddings.LayerNorm.weight", h),
+            T("embeddings.LayerNorm.bias", h), layers);
     }
 
     private static float[] Padded(float[] bias) => bias.Length % PackedMatrix.NR == 0 ? bias : [.. bias, .. new float[PackedMatrix.NR - (bias.Length % PackedMatrix.NR)]];

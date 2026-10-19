@@ -2,7 +2,7 @@ namespace StanzaSharp.Nn;
 
 /// <summary>
 /// One sentence's transformer input as Stanza builds it (stanza/models/common/bert_embedding.py,
-/// extract_base_embeddings): the words through <see cref="WordPiece"/>, a word that yields no piece replaced by "-"
+/// extract_base_embeddings): the words through the transformer's tokenizer (<see cref="WordPiece"/>, <see cref="ByteLevelBpe"/>), a word that yields no piece replaced by "-"
 /// (fix_blank_tokens), and convert_to_position_list's positions. Like Stanza's tokenizer call it doesn't truncate:
 /// <see cref="Ids"/> can be longer than the model's 512 positions, and the encoder then runs overlapping windows
 /// (build_cloned_features).
@@ -10,7 +10,7 @@ namespace StanzaSharp.Nn;
 internal sealed record TransformerInput(string[] Words, int[] Ids, int[] Positions)
 {
     /// <param name="words">The words a processor sends (pos and depparse: simplify_punct'ed; ner and sentiment: token texts).</param>
-    public static TransformerInput Build(WordPiece tokenizer, IReadOnlyList<string> words)
+    public static TransformerInput Build(ITransformerTokenizer tokenizer, IReadOnlyList<string> words)
     {
         var (ids, owners) = tokenizer.Encode(words);
         string[] text = [.. words];

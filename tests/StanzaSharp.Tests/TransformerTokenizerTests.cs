@@ -24,6 +24,22 @@ public class TransformerTokenizerTests(ITestOutputHelper output)
         AssertGolden(WordPiece.LoadDirectory(GermanTransformerFactAttribute.Directory), Path.Combine(Repo.GoldenFor("de"), "transformer", "tokenizer.json"),
             minCases: 200);
 
+    /// <summary>roberta-base's byte-level BPE (#172), as Stanza loads it (add_prefix_space=True), on make_golden's ROBERTA_TOKENIZER_CASES too.</summary>
+    [RobertaFact("tokenizer.json")]
+    public void Roberta_MatchesTransformersAndStanzaOnEveryGoldenCase() =>
+        AssertGolden(ByteLevelBpe.Load(Path.Combine(RobertaFactAttribute.Directory, "tokenizer.json")),
+            Path.Combine(Repo.Golden, "transformer", "tokenizer_roberta-base.json"), minCases: 1000);
+
+    [RobertaFact("config.json", "tokenizer_config.json")]
+    public void Roberta_ConfigReadsPositionsFromTwo()
+    {
+        // max_position_embeddings 514 less RoBERTa's offset (pad_token_id + 1): 512 pieces, the weights under roberta.
+        var config = TransformerConfig.Load(Path.Combine(RobertaFactAttribute.Directory, "config.json"));
+        Assert.Equal((768, 12, 12, 3072, 512, 2, "roberta."), (config.Hidden, config.Heads, config.Layers, config.Intermediate, config.MaxPositions,
+            config.PositionOffset, config.Prefix));
+        Assert.Equal(512, TransformerEmbedder.ReadMaxLength(RobertaFactAttribute.Directory));
+    }
+
     [GermanTransformerFact("config.json", "tokenizer_config.json")]
     public void German_ConfigAndMaxLengthFromTheOlderKeys()
     {
@@ -33,7 +49,7 @@ public class TransformerTokenizerTests(ITestOutputHelper output)
         Assert.Equal(512, TransformerEmbedder.ReadMaxLength(GermanTransformerFactAttribute.Directory));
     }
 
-    private void AssertGolden(WordPiece tokenizer, string goldenPath, int minCases)
+    private void AssertGolden(ITransformerTokenizer tokenizer, string goldenPath, int minCases)
     {
         using var golden = JsonDocument.Parse(File.ReadAllBytes(goldenPath));
         int cases = 0, failures = 0;

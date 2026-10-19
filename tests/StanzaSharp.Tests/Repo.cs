@@ -205,6 +205,23 @@ public sealed class TransformerFactAttribute : FactAttribute
 }
 
 /// <summary>
+/// A test of roberta-base (#172: ner conll03_electra-large reads it), skipped without its files in
+/// models/stanza/en/transformer/roberta-base/ (golden shard 4 downloads them; tools/ci-models.sh transformer).
+/// </summary>
+public sealed class RobertaFactAttribute : FactAttribute
+{
+    public const string Roberta = "roberta-base";
+
+    public static string Directory => ModelDownloader.TransformerDirectory(Repo.StanzaModels, Roberta);
+
+    public RobertaFactAttribute(params string[] files)
+    {
+        var missing = files.FirstOrDefault(f => !File.Exists(Path.Combine(Directory, f)));
+        Skip = missing == null ? null : $"{Path.Combine(Directory, missing)} not found; run StanzaSharp.Cli download-transformer models/stanza/en {Roberta}";
+    }
+}
+
+/// <summary>
 /// A test of German's transformer (german-nlp-group/electra-base-german-uncased, #170), skipped without its files in
 /// models/stanza/de/transformer/ (golden shard 4 downloads them; tools/ci-models.sh transformer).
 /// </summary>
@@ -220,6 +237,12 @@ public sealed class GermanTransformerFactAttribute : FactAttribute
         if (missing != null)
             Skip = $"{Path.Combine(Directory, missing)} not found; run StanzaSharp.Cli download-transformer models/stanza/de {Electra}";
     }
+}
+
+/// <summary>A theory skipped like <see cref="RobertaFactAttribute"/>.</summary>
+public sealed class RobertaTheoryAttribute : TheoryAttribute
+{
+    public RobertaTheoryAttribute(params string[] files) => Skip = new RobertaFactAttribute(files).Skip;
 }
 
 /// <summary>A theory skipped like <see cref="TransformerFactAttribute"/>.</summary>

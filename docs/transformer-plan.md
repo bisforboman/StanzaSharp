@@ -245,6 +245,29 @@ on Vector512, Vector256 and Vector128 (the same bits) and 4.3e-5 on Scalar (`tra
   (tokenizer_config.json) says 512, so that file and `config.json` (the heads, the LayerNorm eps) are in the pinned
   table too.
 
+## RoBERTa (#172, 2026-10-19)
+
+English ner `conll03_electra-large` reads `roberta-base`, not ELECTRA (its `bert_model`; Stanza 1.15.0). The tagger side
+is already ported (germeval2014's old checkpoint format, glove + 1billion, the legacy mix over token texts); what it adds:
+
+- **The tokenizer** (`Nn.ByteLevelBpe`, behind `ITransformerTokenizer` with `WordPiece`; `TransformerEmbedder.Load` picks it
+  when tokenizer.json's model is BPE, a file that may leave `type` out): GPT-2's byte-level BPE as Stanza's load_tokenizer
+  sets it up, `add_prefix_space=True` whatever the file says. Per word, the added tokens first (`<mask>` takes the
+  whitespace before it), a space in front of every other piece that doesn't start with U+0020, GPT-2's split pattern
+  scanned by code point (no .NET regex: it would split a non-BMP letter's surrogates), bytes to unicode, merges by rank.
+- **The encoder:** RoBERTa is BERT's post-LayerNorm architecture; `TransformerConfig` reads `model_type` roberta, its
+  weights under `roberta.` (`Prefix`), one token-type row, and positions from `pad_token_id` + 1 = 2
+  (`PositionOffset`: create_position_ids_from_input_ids), so `MaxPositions` is 514 − 2 = 512 and both nets slice the
+  position table at load; nothing in their forward passes changes.
+- **Files:** `ModelDownloader.Transformers["roberta-base"]` (Stanza's alias; Hugging Face serves FacebookAI/roberta-base under
+  it), pinned to `e2da8e2f`; golden shard 4 downloads it on every run (`tools/ci-models.sh transformer`).
+- **Owner's decisions:** two PRs, (a) the tokenizer, the encoder and the files with goldens
+  (`make_golden.py --transformer-only` writes `tokenizer_roberta-base.json` and `hidden_roberta-base.*` next to ELECTRA's),
+  then (b) the NER model; a pipeline may load two transformers (ELECTRA-large for `default_accurate` and roberta-base for
+  this NER model), keyed by name like the pretrains; roberta-base's ~500 MB is downloaded per CI run like the others.
+- **Coref (#176):** the encoder change serves XLM-RoBERTa too (the same architecture, 24 layers); the byte-level BPE only the
+  `roberta-large` coref models, since the default `udcoref` model reads SentencePiece Unigram (docs/coref-plan.md).
+
 ## Decided
 
 The questions the spike raised were answered on 2026-10-17 (see the top). Still open, for later:

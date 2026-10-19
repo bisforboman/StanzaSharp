@@ -29,13 +29,16 @@ internal sealed class TransformerNet : ITransformerNet
 
     public TransformerConfig Config { get; }
 
-    public TransformerNet(TransformerConfig config, Checkpoint ckpt, string prefix = "electra.")
+    /// <summary>The encoder from a transformer's state dict, its weights under <see cref="TransformerConfig.Prefix"/>.</summary>
+    public TransformerNet(TransformerConfig config, Checkpoint ckpt)
     {
         Config = config;
         var root = ckpt.Root;
+        var prefix = config.Prefix;
         Tensor T(string name) => ckpt.ToTensor(root[prefix + name] ?? throw new InvalidDataException($"No tensor {prefix}{name}"));
         _words = T("embeddings.word_embeddings.weight");
-        _positions = T("embeddings.position_embeddings.weight");
+        using (var positions = T("embeddings.position_embeddings.weight"))
+            _positions = positions[config.PositionOffset..].clone(); // RoBERTa numbers a sentence's pieces from 2
         using (var types = T("embeddings.token_type_embeddings.weight"))
             _type0 = types[0].clone();
         _embG = T("embeddings.LayerNorm.weight");

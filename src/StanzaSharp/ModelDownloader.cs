@@ -353,6 +353,16 @@ public static class ModelDownloader
             ("tokenizer_config.json", "3888c4068947ecd386bfac973ec5e348e8503d05699427900698e74d4fdc2889"),
             ("pytorch_model.bin", "a13cf267dfad08dd5c889af59f2e7f74120ff28107619d6c81904c3250efe76e"),
         ]),
+
+        // English ner conll03_electra-large's, despite the name (#172): RoBERTa with a byte-level BPE tokenizer.json. Stanza's
+        // bert_model names it by the old alias; Hugging Face serves FacebookAI/roberta-base under it.
+        ["roberta-base"] = ("e2da8e2f811d1448a5b465c236feacd80ffbac7b",
+        [
+            ("config.json", "ef0185e2aae6e06c5f105a285006952c340e20c7dbf43c86ec82601b13fc45e9"),
+            ("tokenizer.json", "847bbeab6174d66a88898f729d52fa8d355fafe1bea101cf960dd404581df70e"),
+            ("tokenizer_config.json", "994f46754c5bf4014f1aa92d34b1374319c3a6b3f702105cd5b742beaecd18ce"),
+            ("pytorch_model.bin", "278b7a95739c4392fae9b818bb5343dde20be1b89318f37a6d939e1e1b9e461b"),
+        ]),
     };
 
     /// <summary>

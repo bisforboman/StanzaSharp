@@ -12,18 +12,20 @@ namespace StanzaSharp.Nn;
 /// run in windows, as Stanza's build_cloned_features does.</param>
 /// <param name="name">The Hugging Face repository, e.g. <c>google/electra-large-discriminator</c>: what a model's
 /// <c>bert_model</c> names.</param>
-internal sealed class TransformerEmbedder(ITransformerNet net, WordPiece tokenizer, int maxLength, string name)
+internal sealed class TransformerEmbedder(ITransformerNet net, ITransformerTokenizer tokenizer, int maxLength, string name)
 {
     public string Name { get; } = name;
 
     /// <summary>
     /// Loads the tokenizer and the encoder <paramref name="net"/> makes from a transformer directory
-    /// (<c>config.json</c>, <c>tokenizer.json</c> or <c>vocab.txt</c>, <c>tokenizer_config.json</c>, <c>pytorch_model.bin</c>).
+    /// (<c>config.json</c>, <c>tokenizer.json</c> or <c>vocab.txt</c>, <c>tokenizer_config.json</c>, <c>pytorch_model.bin</c>): a
+    /// <see cref="ByteLevelBpe"/> when tokenizer.json holds a BPE model (RoBERTa), else a <see cref="WordPiece"/>.
     /// </summary>
     public static TransformerEmbedder Load(string directory, string name, Func<TransformerConfig, Checkpoint, ITransformerNet> net)
     {
         var config = TransformerConfig.Load(Path.Combine(directory, "config.json"));
-        var tokenizer = WordPiece.LoadDirectory(directory);
+        var json = Path.Combine(directory, "tokenizer.json");
+        ITransformerTokenizer tokenizer = File.Exists(json) && ByteLevelBpe.IsBpe(json) ? ByteLevelBpe.Load(json) : WordPiece.LoadDirectory(directory);
         int maxLength = ReadMaxLength(directory);
         var encoder = net(config, Checkpoint.Load(Path.Combine(directory, "pytorch_model.bin")));
         return new TransformerEmbedder(encoder, tokenizer, maxLength, name);
@@ -76,7 +78,7 @@ internal sealed class TransformerEmbedder(ITransformerNet net, WordPiece tokeniz
 
     public ITransformerNet Net { get; } = net;
 
-    public WordPiece Tokenizer { get; } = tokenizer;
+    public ITransformerTokenizer Tokenizer { get; } = tokenizer;
 
     public int MaxLength { get; } = maxLength <= net.Config.MaxPositions
         ? maxLength
