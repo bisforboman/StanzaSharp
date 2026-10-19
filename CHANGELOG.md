@@ -8,6 +8,22 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 Unreleased changes are one file each under [`changes/`](changes/README.md), so pull requests don't conflict here;
 a release folds them in (`python tools/changelog.py release X.Y.Z`).
 
+## [1.14.0] - 2026-10-19
+
+### Added
+- `PipelineOptions.Models`: Stanza's NER model `conll03_electra-large` (PER, LOC, ORG, MISC), which reads `roberta-base`
+  (a byte-level BPE tokenizer and a RoBERTa encoder, downloaded by `DownloadAsync(dir, options)`), byte for byte with Stanza on
+  both backends. A pipeline may now read two transformers, e.g. with the `default_accurate` package's models. It reads
+  conll17's word vectors, which it was trained on: Stanza 1.15.0's resources.json lists GloVe, with which Stanza fails to load it.
+- `PipelineOptions.Models` (German): ner `germeval2014_dbmdz-bert-german-cased` and sentiment `sb10k_dbmdz-bert-german-cased`,
+  on `dbmdz/bert-base-german-cased` (a BERT, downloaded by `DownloadAsync(dir, options)`), byte for byte with Stanza on both
+  backends. The NER model reads conll17's word vectors, which it was trained on: Stanza 1.15.0's resources.json lists
+  fasttextwiki, with which Stanza fails to load it.
+- `PipelineOptions.Models` (German): pos and depparse `gsd_german-nlp-electra` and `hdt_german-nlp-electra` and ner
+  `germeval2014_german-nlp-electra`, on `default_accurate`'s transformer, byte for byte with Stanza on both backends.
+- `PipelineOptions.Models`: Stanza's constituency parser `ptb3_electra-large`, which builds trees top down (Stanza's
+  `TOP_DOWN` transitions) over a LoRA-adapted `google/electra-large-discriminator`, byte for byte with Stanza on both backends.
+
 ## [1.13.0] - 2026-10-19
 
 ### Added
