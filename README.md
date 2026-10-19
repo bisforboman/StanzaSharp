@@ -401,6 +401,8 @@ The models beyond the packages':
   And constituency `ptb3_electra-large`, Stanza's top-down parser (the others build trees in order), with LoRA adapters
   like sentiment's.
 - German ner: `conll03` (PER, LOC, ORG, MISC).
+- German models on `default_accurate`'s transformer (`german-nlp-group/electra-base-german-uncased`): pos and depparse
+  `gsd_german-nlp-electra` and `hdt_german-nlp-electra` (with their treebank packages), ner `germeval2014_german-nlp-electra`.
 - The treebanks' taggers and parsers without character language models (their own character LSTM, like
   `default_fast`'s): English pos and depparse `ewt_nocharlm`, `gum_nocharlm`, `lines_nocharlm`, `partut_nocharlm`,
   `atis_nocharlm`, `childes_nocharlm`, `eslspok_nocharlm`, depparse `mimic_nocharlm`; German pos and depparse

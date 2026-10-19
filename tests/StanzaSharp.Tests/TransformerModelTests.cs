@@ -62,6 +62,12 @@ public class TransformerModelTests
     [ModelChoice("de", GermanConstituency, true)]
     [ModelChoice("de", GermanSentiment, false)]
     [ModelChoice("de", GermanSentiment, true)]
+    [ModelChoice("de", "pos+depparse=gsd_german-nlp-electra", false)]
+    [ModelChoice("de", "pos+depparse=gsd_german-nlp-electra", true)]
+    [ModelChoice("de", "pos+depparse=hdt_german-nlp-electra", false)]
+    [ModelChoice("de", "pos+depparse=hdt_german-nlp-electra", true)]
+    [ModelChoice("de", "ner=germeval2014_german-nlp-electra", false)]
+    [ModelChoice("de", "ner=germeval2014_german-nlp-electra", true)]
     [ModelChoice("de", "default_accurate", false)]
     [ModelChoice("de", "default_accurate", true)]
     public void Process_MatchesGolden(string name, bool managed, string lang) => ModelChoiceTests.AssertGolden(name, managed, lang, cache: true);

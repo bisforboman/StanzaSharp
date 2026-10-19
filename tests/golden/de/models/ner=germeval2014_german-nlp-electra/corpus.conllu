@@ -1,0 +1,175 @@
+# text = Angela Merkel wurde in Hamburg geboren.
+# sent_id = 0
+1	Angela	_	_	_	_	0	_	_	start_char=0|end_char=6|ner=B-PER
+2	Merkel	_	_	_	_	1	_	_	start_char=7|end_char=13|ner=E-PER
+3	wurde	_	_	_	_	2	_	_	start_char=14|end_char=19|ner=O
+4	in	_	_	_	_	3	_	_	start_char=20|end_char=22|ner=O
+5	Hamburg	_	_	_	_	4	_	_	start_char=23|end_char=30|ner=S-LOC
+6	geboren	_	_	_	_	5	_	_	SpaceAfter=No|start_char=31|end_char=38|ner=O
+7	.	_	_	_	_	6	_	_	start_char=38|end_char=39|ner=O
+
+# text = Sie war von 2005 bis 2021 Bundeskanzlerin.
+# sent_id = 1
+1	Sie	_	_	_	_	0	_	_	start_char=40|end_char=43|ner=O
+2	war	_	_	_	_	1	_	_	start_char=44|end_char=47|ner=O
+3	von	_	_	_	_	2	_	_	start_char=48|end_char=51|ner=O
+4	2005	_	_	_	_	3	_	_	start_char=52|end_char=56|ner=O
+5	bis	_	_	_	_	4	_	_	start_char=57|end_char=60|ner=O
+6	2021	_	_	_	_	5	_	_	start_char=61|end_char=65|ner=O
+7	Bundeskanzlerin	_	_	_	_	6	_	_	SpaceAfter=No|start_char=66|end_char=81|ner=O
+8	.	_	_	_	_	7	_	_	SpacesAfter=\n\n|start_char=81|end_char=82|ner=O
+
+# text = Ich glaube nicht, dass es heute regnet, aber wir werden sehen.
+# sent_id = 2
+1	Ich	_	_	_	_	0	_	_	start_char=84|end_char=87|ner=O
+2	glaube	_	_	_	_	1	_	_	start_char=88|end_char=94|ner=O
+3	nicht	_	_	_	_	2	_	_	SpaceAfter=No|start_char=95|end_char=100|ner=O
+4	,	_	_	_	_	3	_	_	start_char=100|end_char=101|ner=O
+5	dass	_	_	_	_	4	_	_	start_char=102|end_char=106|ner=O
+6	es	_	_	_	_	5	_	_	start_char=107|end_char=109|ner=O
+7	heute	_	_	_	_	6	_	_	start_char=110|end_char=115|ner=O
+8	regnet	_	_	_	_	7	_	_	SpaceAfter=No|start_char=116|end_char=122|ner=O
+9	,	_	_	_	_	8	_	_	start_char=122|end_char=123|ner=O
+10	aber	_	_	_	_	9	_	_	start_char=124|end_char=128|ner=O
+11	wir	_	_	_	_	10	_	_	start_char=129|end_char=132|ner=O
+12	werden	_	_	_	_	11	_	_	start_char=133|end_char=139|ner=O
+13	sehen	_	_	_	_	12	_	_	SpaceAfter=No|start_char=140|end_char=145|ner=O
+14	.	_	_	_	_	13	_	_	start_char=145|end_char=146|ner=O
+
+# text = Hörst du den Donner nicht?
+# sent_id = 3
+1	Hörst	_	_	_	_	0	_	_	start_char=147|end_char=152|ner=O
+2	du	_	_	_	_	1	_	_	start_char=153|end_char=155|ner=O
+3	den	_	_	_	_	2	_	_	start_char=156|end_char=159|ner=O
+4	Donner	_	_	_	_	3	_	_	start_char=160|end_char=166|ner=O
+5	nicht	_	_	_	_	4	_	_	SpaceAfter=No|start_char=167|end_char=172|ner=O
+6	?	_	_	_	_	5	_	_	SpacesAfter=\n|start_char=172|end_char=173|ner=O
+
+# text = Dr. Müller zog im Jan.
+# sent_id = 4
+1	Dr.	_	_	_	_	0	_	_	start_char=174|end_char=177|ner=O
+2	Müller	_	_	_	_	1	_	_	start_char=178|end_char=184|ner=S-PER
+3	zog	_	_	_	_	2	_	_	start_char=185|end_char=188|ner=O
+4-5	im	_	_	_	_	_	_	_	start_char=189|end_char=191|ner=O
+4	in	_	_	_	_	3	_	_	_
+5	dem	_	_	_	_	4	_	_	_
+6	Jan	_	_	_	_	5	_	_	SpaceAfter=No|start_char=192|end_char=195|ner=O
+7	.	_	_	_	_	6	_	_	start_char=195|end_char=196|ner=O
+
+# text = 1999 nach Berlin und zahlte 4,50 € für einen Kaffee um 7:30 Uhr.
+# sent_id = 5
+1	1999	_	_	_	_	0	_	_	start_char=197|end_char=201|ner=O
+2	nach	_	_	_	_	1	_	_	start_char=202|end_char=206|ner=O
+3	Berlin	_	_	_	_	2	_	_	start_char=207|end_char=213|ner=S-LOC
+4	und	_	_	_	_	3	_	_	start_char=214|end_char=217|ner=O
+5	zahlte	_	_	_	_	4	_	_	start_char=218|end_char=224|ner=O
+6	4,50	_	_	_	_	5	_	_	start_char=225|end_char=229|ner=O
+7	€	_	_	_	_	6	_	_	start_char=230|end_char=231|ner=S-MISC
+8	für	_	_	_	_	7	_	_	start_char=232|end_char=235|ner=O
+9	einen	_	_	_	_	8	_	_	start_char=236|end_char=241|ner=O
+10	Kaffee	_	_	_	_	9	_	_	start_char=242|end_char=248|ner=O
+11	um	_	_	_	_	10	_	_	start_char=249|end_char=251|ner=O
+12	7:30	_	_	_	_	11	_	_	start_char=252|end_char=256|ner=O
+13	Uhr	_	_	_	_	12	_	_	SpaceAfter=No|start_char=257|end_char=260|ner=O
+14	.	_	_	_	_	13	_	_	SpacesAfter=\n\n|start_char=260|end_char=261|ner=O
+
+# text = „Wohin gehst du?“, fragte sie.
+# sent_id = 6
+1	„	_	_	_	_	0	_	_	SpaceAfter=No|start_char=263|end_char=264|ner=O
+2	Wohin	_	_	_	_	1	_	_	start_char=264|end_char=269|ner=O
+3	gehst	_	_	_	_	2	_	_	start_char=270|end_char=275|ner=O
+4	du?	_	_	_	_	3	_	_	SpaceAfter=No|start_char=276|end_char=279|ner=O
+5	“	_	_	_	_	4	_	_	SpaceAfter=No|start_char=279|end_char=280|ner=O
+6	,	_	_	_	_	5	_	_	start_char=280|end_char=281|ner=O
+7	fragte	_	_	_	_	6	_	_	start_char=282|end_char=288|ner=O
+8	sie	_	_	_	_	7	_	_	SpaceAfter=No|start_char=289|end_char=292|ner=O
+9	.	_	_	_	_	8	_	_	start_char=292|end_char=293|ner=O
+
+# text = Die Spielsachen der Kinder (alle 23 Stück) lagen im ganzen Zimmer verstreut!
+# sent_id = 7
+1	Die	_	_	_	_	0	_	_	start_char=294|end_char=297|ner=O
+2	Spielsachen	_	_	_	_	1	_	_	start_char=298|end_char=309|ner=O
+3	der	_	_	_	_	2	_	_	start_char=310|end_char=313|ner=O
+4	Kinder	_	_	_	_	3	_	_	start_char=314|end_char=320|ner=O
+5	(	_	_	_	_	4	_	_	SpaceAfter=No|start_char=321|end_char=322|ner=O
+6	alle	_	_	_	_	5	_	_	start_char=322|end_char=326|ner=O
+7	23	_	_	_	_	6	_	_	start_char=327|end_char=329|ner=O
+8	Stück	_	_	_	_	7	_	_	SpaceAfter=No|start_char=330|end_char=335|ner=O
+9	)	_	_	_	_	8	_	_	start_char=335|end_char=336|ner=O
+10	lagen	_	_	_	_	9	_	_	start_char=337|end_char=342|ner=O
+11-12	im	_	_	_	_	_	_	_	start_char=343|end_char=345|ner=O
+11	in	_	_	_	_	10	_	_	_
+12	dem	_	_	_	_	11	_	_	_
+13	ganzen	_	_	_	_	12	_	_	start_char=346|end_char=352|ner=O
+14	Zimmer	_	_	_	_	13	_	_	start_char=353|end_char=359|ner=O
+15	verstreut	_	_	_	_	14	_	_	SpaceAfter=No|start_char=360|end_char=369|ner=O
+16	!	_	_	_	_	15	_	_	SpacesAfter=\n|start_char=369|end_char=370|ner=O
+
+# text = Der bekannte Autor, der E-Mails an info@beispiel.de geschrieben hatte, besuchte gestern https://www.beispiel.de/ueber-uns.
+# sent_id = 8
+1	Der	_	_	_	_	0	_	_	start_char=371|end_char=374|ner=O
+2	bekannte	_	_	_	_	1	_	_	start_char=375|end_char=383|ner=O
+3	Autor	_	_	_	_	2	_	_	SpaceAfter=No|start_char=384|end_char=389|ner=O
+4	,	_	_	_	_	3	_	_	start_char=389|end_char=390|ner=O
+5	der	_	_	_	_	4	_	_	start_char=391|end_char=394|ner=O
+6	E	_	_	_	_	5	_	_	SpaceAfter=No|start_char=395|end_char=396|ner=O
+7	-	_	_	_	_	6	_	_	SpaceAfter=No|start_char=396|end_char=397|ner=O
+8	Mails	_	_	_	_	7	_	_	start_char=397|end_char=402|ner=O
+9	an	_	_	_	_	8	_	_	start_char=403|end_char=405|ner=O
+10	info@beispiel.de	_	_	_	_	9	_	_	start_char=406|end_char=422|ner=S-MISC
+11	geschrieben	_	_	_	_	10	_	_	start_char=423|end_char=434|ner=O
+12	hatte	_	_	_	_	11	_	_	SpaceAfter=No|start_char=435|end_char=440|ner=O
+13	,	_	_	_	_	12	_	_	start_char=440|end_char=441|ner=O
+14	besuchte	_	_	_	_	13	_	_	start_char=442|end_char=450|ner=O
+15	gestern	_	_	_	_	14	_	_	start_char=451|end_char=458|ner=O
+16	https://www.beispiel.de/ueber-uns.	_	_	_	_	15	_	_	SpacesAfter=\n\n|start_char=459|end_char=493|ner=O
+
+# text = Marias Schwester wäre nicht zum Treffen gegangen, wenn sie gewusst hätte, dass es am Freitag um 15 Uhr abgesagt worden war;
+# sent_id = 9
+1	Marias	_	_	_	_	0	_	_	start_char=495|end_char=501|ner=S-PER
+2	Schwester	_	_	_	_	1	_	_	start_char=502|end_char=511|ner=O
+3	wäre	_	_	_	_	2	_	_	start_char=512|end_char=516|ner=O
+4	nicht	_	_	_	_	3	_	_	start_char=517|end_char=522|ner=O
+5-6	zum	_	_	_	_	_	_	_	start_char=523|end_char=526|ner=O
+5	zu	_	_	_	_	4	_	_	_
+6	dem	_	_	_	_	5	_	_	_
+7	Treffen	_	_	_	_	6	_	_	start_char=527|end_char=534|ner=O
+8	gegangen	_	_	_	_	7	_	_	SpaceAfter=No|start_char=535|end_char=543|ner=O
+9	,	_	_	_	_	8	_	_	start_char=543|end_char=544|ner=O
+10	wenn	_	_	_	_	9	_	_	start_char=545|end_char=549|ner=O
+11	sie	_	_	_	_	10	_	_	start_char=550|end_char=553|ner=O
+12	gewusst	_	_	_	_	11	_	_	start_char=554|end_char=561|ner=O
+13	hätte	_	_	_	_	12	_	_	SpaceAfter=No|start_char=562|end_char=567|ner=O
+14	,	_	_	_	_	13	_	_	start_char=567|end_char=568|ner=O
+15	dass	_	_	_	_	14	_	_	start_char=569|end_char=573|ner=O
+16	es	_	_	_	_	15	_	_	start_char=574|end_char=576|ner=O
+17-18	am	_	_	_	_	_	_	_	start_char=577|end_char=579|ner=O
+17	an	_	_	_	_	16	_	_	_
+18	dem	_	_	_	_	17	_	_	_
+19	Freitag	_	_	_	_	18	_	_	start_char=580|end_char=587|ner=O
+20	um	_	_	_	_	19	_	_	start_char=588|end_char=590|ner=O
+21	15	_	_	_	_	20	_	_	start_char=591|end_char=593|ner=O
+22	Uhr	_	_	_	_	21	_	_	start_char=594|end_char=597|ner=O
+23	abgesagt	_	_	_	_	22	_	_	start_char=598|end_char=606|ner=O
+24	worden	_	_	_	_	23	_	_	start_char=607|end_char=613|ner=O
+25	war	_	_	_	_	24	_	_	SpaceAfter=No|start_char=614|end_char=617|ner=O
+26	;	_	_	_	_	25	_	_	start_char=617|end_char=618|ner=O
+
+# text = niemand sagte es ihr.
+# sent_id = 10
+1	niemand	_	_	_	_	0	_	_	start_char=619|end_char=626|ner=O
+2	sagte	_	_	_	_	1	_	_	start_char=627|end_char=632|ner=O
+3	es	_	_	_	_	2	_	_	start_char=633|end_char=635|ner=O
+4	ihr	_	_	_	_	3	_	_	SpaceAfter=No|start_char=636|end_char=639|ner=O
+5	.	_	_	_	_	4	_	_	SpacesAfter=\n|start_char=639|end_char=640|ner=O
+
+# text = Wow... das ist ja großartig!!
+# sent_id = 11
+1	Wow	_	_	_	_	0	_	_	SpaceAfter=No|start_char=641|end_char=644|ner=O
+2	...	_	_	_	_	1	_	_	start_char=644|end_char=647|ner=O
+3	das	_	_	_	_	2	_	_	start_char=648|end_char=651|ner=O
+4	ist	_	_	_	_	3	_	_	start_char=652|end_char=655|ner=O
+5	ja	_	_	_	_	4	_	_	start_char=656|end_char=658|ner=O
+6	großartig	_	_	_	_	5	_	_	SpaceAfter=No|start_char=659|end_char=668|ner=O
+7	!	_	_	_	_	6	_	_	SpaceAfter=No|start_char=668|end_char=669|ner=O
+8	!	_	_	_	_	7	_	_	SpacesAfter=\n|start_char=669|end_char=670|ner=O

@@ -1,0 +1,302 @@
+# text = Der Zug nach München fährt heute um 14:05 Uhr von Gleis 7 ab.
+# sent_id = 0
+1	Der	_	_	_	_	0	_	_	start_char=0|end_char=3|ner=O
+2	Zug	_	_	_	_	1	_	_	start_char=4|end_char=7|ner=O
+3	nach	_	_	_	_	2	_	_	start_char=8|end_char=12|ner=O
+4	München	_	_	_	_	3	_	_	start_char=13|end_char=20|ner=S-LOC
+5	fährt	_	_	_	_	4	_	_	start_char=21|end_char=26|ner=O
+6	heute	_	_	_	_	5	_	_	start_char=27|end_char=32|ner=O
+7	um	_	_	_	_	6	_	_	start_char=33|end_char=35|ner=O
+8	14:05	_	_	_	_	7	_	_	start_char=36|end_char=41|ner=O
+9	Uhr	_	_	_	_	8	_	_	start_char=42|end_char=45|ner=O
+10	von	_	_	_	_	9	_	_	start_char=46|end_char=49|ner=O
+11	Gleis	_	_	_	_	10	_	_	start_char=50|end_char=55|ner=O
+12	7	_	_	_	_	11	_	_	start_char=56|end_char=57|ner=O
+13	ab	_	_	_	_	12	_	_	SpaceAfter=No|start_char=58|end_char=60|ner=O
+14	.	_	_	_	_	13	_	_	start_char=60|end_char=61|ner=O
+
+# text = Bitte beachten Sie die geänderte Wagenreihung.
+# sent_id = 1
+1	Bitte	_	_	_	_	0	_	_	start_char=62|end_char=67|ner=O
+2	beachten	_	_	_	_	1	_	_	start_char=68|end_char=76|ner=O
+3	Sie	_	_	_	_	2	_	_	start_char=77|end_char=80|ner=O
+4	die	_	_	_	_	3	_	_	start_char=81|end_char=84|ner=O
+5	geänderte	_	_	_	_	4	_	_	start_char=85|end_char=94|ner=O
+6	Wagenreihung	_	_	_	_	5	_	_	SpaceAfter=No|start_char=95|end_char=107|ner=O
+7	.	_	_	_	_	6	_	_	SpacesAfter=\n\n|start_char=107|end_char=108|ner=O
+
+# text = Unsere Nachbarin, Frau Schröder, hat im Garten Tomaten, Gurken und Kürbisse angebaut.
+# sent_id = 2
+1	Unsere	_	_	_	_	0	_	_	start_char=110|end_char=116|ner=O
+2	Nachbarin	_	_	_	_	1	_	_	SpaceAfter=No|start_char=117|end_char=126|ner=O
+3	,	_	_	_	_	2	_	_	start_char=126|end_char=127|ner=O
+4	Frau	_	_	_	_	3	_	_	start_char=128|end_char=132|ner=O
+5	Schröder	_	_	_	_	4	_	_	SpaceAfter=No|start_char=133|end_char=141|ner=S-PER
+6	,	_	_	_	_	5	_	_	start_char=141|end_char=142|ner=O
+7	hat	_	_	_	_	6	_	_	start_char=143|end_char=146|ner=O
+8-9	im	_	_	_	_	_	_	_	start_char=147|end_char=149|ner=O
+8	in	_	_	_	_	7	_	_	_
+9	dem	_	_	_	_	8	_	_	_
+10	Garten	_	_	_	_	9	_	_	start_char=150|end_char=156|ner=O
+11	Tomaten	_	_	_	_	10	_	_	SpaceAfter=No|start_char=157|end_char=164|ner=O
+12	,	_	_	_	_	11	_	_	start_char=164|end_char=165|ner=O
+13	Gurken	_	_	_	_	12	_	_	start_char=166|end_char=172|ner=O
+14	und	_	_	_	_	13	_	_	start_char=173|end_char=176|ner=O
+15	Kürbisse	_	_	_	_	14	_	_	start_char=177|end_char=185|ner=O
+16	angebaut	_	_	_	_	15	_	_	SpaceAfter=No|start_char=186|end_char=194|ner=O
+17	.	_	_	_	_	16	_	_	start_char=194|end_char=195|ner=O
+
+# text = Im Herbst verschenkt sie die Hälfte an die Leute aus dem Haus.
+# sent_id = 3
+1-2	Im	_	_	_	_	_	_	_	start_char=196|end_char=198|ner=O
+1	In	_	_	_	_	0	_	_	_
+2	dem	_	_	_	_	1	_	_	_
+3	Herbst	_	_	_	_	2	_	_	start_char=199|end_char=205|ner=O
+4	verschenkt	_	_	_	_	3	_	_	start_char=206|end_char=216|ner=O
+5	sie	_	_	_	_	4	_	_	start_char=217|end_char=220|ner=O
+6	die	_	_	_	_	5	_	_	start_char=221|end_char=224|ner=O
+7	Hälfte	_	_	_	_	6	_	_	start_char=225|end_char=231|ner=O
+8	an	_	_	_	_	7	_	_	start_char=232|end_char=234|ner=O
+9	die	_	_	_	_	8	_	_	start_char=235|end_char=238|ner=O
+10	Leute	_	_	_	_	9	_	_	start_char=239|end_char=244|ner=O
+11	aus	_	_	_	_	10	_	_	start_char=245|end_char=248|ner=O
+12	dem	_	_	_	_	11	_	_	start_char=249|end_char=252|ner=O
+13	Haus	_	_	_	_	12	_	_	SpaceAfter=No|start_char=253|end_char=257|ner=O
+14	.	_	_	_	_	13	_	_	SpacesAfter=\n\n|start_char=257|end_char=258|ner=O
+
+# text = Am Montag beginnt die Schule wieder.
+# sent_id = 4
+1-2	Am	_	_	_	_	_	_	_	start_char=260|end_char=262|ner=O
+1	An	_	_	_	_	0	_	_	_
+2	dem	_	_	_	_	1	_	_	_
+3	Montag	_	_	_	_	2	_	_	start_char=263|end_char=269|ner=O
+4	beginnt	_	_	_	_	3	_	_	start_char=270|end_char=277|ner=O
+5	die	_	_	_	_	4	_	_	start_char=278|end_char=281|ner=O
+6	Schule	_	_	_	_	5	_	_	start_char=282|end_char=288|ner=O
+7	wieder	_	_	_	_	6	_	_	SpaceAfter=No|start_char=289|end_char=295|ner=O
+8	.	_	_	_	_	7	_	_	start_char=295|end_char=296|ner=O
+
+# text = Viele Kinder freuen sich darauf, ihre Freunde wiederzusehen, andere hätten lieber noch eine Woche Ferien gehabt.
+# sent_id = 5
+1	Viele	_	_	_	_	0	_	_	start_char=297|end_char=302|ner=O
+2	Kinder	_	_	_	_	1	_	_	start_char=303|end_char=309|ner=O
+3	freuen	_	_	_	_	2	_	_	start_char=310|end_char=316|ner=O
+4	sich	_	_	_	_	3	_	_	start_char=317|end_char=321|ner=O
+5	darauf	_	_	_	_	4	_	_	SpaceAfter=No|start_char=322|end_char=328|ner=O
+6	,	_	_	_	_	5	_	_	start_char=328|end_char=329|ner=O
+7	ihre	_	_	_	_	6	_	_	start_char=330|end_char=334|ner=O
+8	Freunde	_	_	_	_	7	_	_	start_char=335|end_char=342|ner=O
+9	wiederzusehen	_	_	_	_	8	_	_	SpaceAfter=No|start_char=343|end_char=356|ner=O
+10	,	_	_	_	_	9	_	_	start_char=356|end_char=357|ner=O
+11	andere	_	_	_	_	10	_	_	start_char=358|end_char=364|ner=O
+12	hätten	_	_	_	_	11	_	_	start_char=365|end_char=371|ner=O
+13	lieber	_	_	_	_	12	_	_	start_char=372|end_char=378|ner=O
+14	noch	_	_	_	_	13	_	_	start_char=379|end_char=383|ner=O
+15	eine	_	_	_	_	14	_	_	start_char=384|end_char=388|ner=O
+16	Woche	_	_	_	_	15	_	_	start_char=389|end_char=394|ner=O
+17	Ferien	_	_	_	_	16	_	_	start_char=395|end_char=401|ner=O
+18	gehabt	_	_	_	_	17	_	_	SpaceAfter=No|start_char=402|end_char=408|ner=O
+19	.	_	_	_	_	18	_	_	SpacesAfter=\n\n|start_char=408|end_char=409|ner=O
+
+# text = Die Stadtbibliothek ist vom 1. bis zum 15. August wegen Umbauarbeiten geschlossen.
+# sent_id = 6
+1	Die	_	_	_	_	0	_	_	start_char=411|end_char=414|ner=O
+2	Stadtbibliothek	_	_	_	_	1	_	_	start_char=415|end_char=430|ner=O
+3	ist	_	_	_	_	2	_	_	start_char=431|end_char=434|ner=O
+4-5	vom	_	_	_	_	_	_	_	start_char=435|end_char=438|ner=O
+4	von	_	_	_	_	3	_	_	_
+5	dem	_	_	_	_	4	_	_	_
+6	1.	_	_	_	_	5	_	_	start_char=439|end_char=441|ner=O
+7	bis	_	_	_	_	6	_	_	start_char=442|end_char=445|ner=O
+8-9	zum	_	_	_	_	_	_	_	start_char=446|end_char=449|ner=O
+8	zu	_	_	_	_	7	_	_	_
+9	dem	_	_	_	_	8	_	_	_
+10	15.	_	_	_	_	9	_	_	start_char=450|end_char=453|ner=O
+11	August	_	_	_	_	10	_	_	start_char=454|end_char=460|ner=O
+12	wegen	_	_	_	_	11	_	_	start_char=461|end_char=466|ner=O
+13	Umbauarbeiten	_	_	_	_	12	_	_	start_char=467|end_char=480|ner=O
+14	geschlossen	_	_	_	_	13	_	_	SpaceAfter=No|start_char=481|end_char=492|ner=O
+15	.	_	_	_	_	14	_	_	start_char=492|end_char=493|ner=O
+
+# text = Ausgeliehene Bücher können in dieser Zeit am Rathaus zurückgegeben werden.
+# sent_id = 7
+1	Ausgeliehene	_	_	_	_	0	_	_	start_char=494|end_char=506|ner=O
+2	Bücher	_	_	_	_	1	_	_	start_char=507|end_char=513|ner=O
+3	können	_	_	_	_	2	_	_	start_char=514|end_char=520|ner=O
+4	in	_	_	_	_	3	_	_	start_char=521|end_char=523|ner=O
+5	dieser	_	_	_	_	4	_	_	start_char=524|end_char=530|ner=O
+6	Zeit	_	_	_	_	5	_	_	start_char=531|end_char=535|ner=O
+7-8	am	_	_	_	_	_	_	_	start_char=536|end_char=538|ner=O
+7	an	_	_	_	_	6	_	_	_
+8	dem	_	_	_	_	7	_	_	_
+9	Rathaus	_	_	_	_	8	_	_	start_char=539|end_char=546|ner=O
+10	zurückgegeben	_	_	_	_	9	_	_	start_char=547|end_char=560|ner=O
+11	werden	_	_	_	_	10	_	_	SpaceAfter=No|start_char=561|end_char=567|ner=O
+12	.	_	_	_	_	11	_	_	SpacesAfter=\n\n|start_char=567|end_char=568|ner=O
+
+# text = Er stand früh auf, trank einen Tee und ging zu Fuß ins Büro.
+# sent_id = 8
+1	Er	_	_	_	_	0	_	_	start_char=570|end_char=572|ner=O
+2	stand	_	_	_	_	1	_	_	start_char=573|end_char=578|ner=O
+3	früh	_	_	_	_	2	_	_	start_char=579|end_char=583|ner=O
+4	auf	_	_	_	_	3	_	_	SpaceAfter=No|start_char=584|end_char=587|ner=O
+5	,	_	_	_	_	4	_	_	start_char=587|end_char=588|ner=O
+6	trank	_	_	_	_	5	_	_	start_char=589|end_char=594|ner=O
+7	einen	_	_	_	_	6	_	_	start_char=595|end_char=600|ner=O
+8	Tee	_	_	_	_	7	_	_	start_char=601|end_char=604|ner=O
+9	und	_	_	_	_	8	_	_	start_char=605|end_char=608|ner=O
+10	ging	_	_	_	_	9	_	_	start_char=609|end_char=613|ner=O
+11	zu	_	_	_	_	10	_	_	start_char=614|end_char=616|ner=O
+12	Fuß	_	_	_	_	11	_	_	start_char=617|end_char=620|ner=O
+13-14	ins	_	_	_	_	_	_	_	start_char=621|end_char=624|ner=O
+13	in	_	_	_	_	12	_	_	_
+14	das	_	_	_	_	13	_	_	_
+15	Büro	_	_	_	_	14	_	_	SpaceAfter=No|start_char=625|end_char=629|ner=O
+16	.	_	_	_	_	15	_	_	start_char=629|end_char=630|ner=O
+
+# text = Unterwegs traf er einen alten Schulfreund, den er seit zwanzig Jahren nicht gesehen hatte.
+# sent_id = 9
+1	Unterwegs	_	_	_	_	0	_	_	start_char=631|end_char=640|ner=O
+2	traf	_	_	_	_	1	_	_	start_char=641|end_char=645|ner=O
+3	er	_	_	_	_	2	_	_	start_char=646|end_char=648|ner=O
+4	einen	_	_	_	_	3	_	_	start_char=649|end_char=654|ner=O
+5	alten	_	_	_	_	4	_	_	start_char=655|end_char=660|ner=O
+6	Schulfreund	_	_	_	_	5	_	_	SpaceAfter=No|start_char=661|end_char=672|ner=O
+7	,	_	_	_	_	6	_	_	start_char=672|end_char=673|ner=O
+8	den	_	_	_	_	7	_	_	start_char=674|end_char=677|ner=O
+9	er	_	_	_	_	8	_	_	start_char=678|end_char=680|ner=O
+10	seit	_	_	_	_	9	_	_	start_char=681|end_char=685|ner=O
+11	zwanzig	_	_	_	_	10	_	_	start_char=686|end_char=693|ner=O
+12	Jahren	_	_	_	_	11	_	_	start_char=694|end_char=700|ner=O
+13	nicht	_	_	_	_	12	_	_	start_char=701|end_char=706|ner=O
+14	gesehen	_	_	_	_	13	_	_	start_char=707|end_char=714|ner=O
+15	hatte	_	_	_	_	14	_	_	SpaceAfter=No|start_char=715|end_char=720|ner=O
+16	.	_	_	_	_	15	_	_	SpacesAfter=\n\n|start_char=720|end_char=721|ner=O
+
+# text = Wie viel kostet eigentlich ein Ticket für das Konzert am Samstag?
+# sent_id = 10
+1	Wie	_	_	_	_	0	_	_	start_char=723|end_char=726|ner=O
+2	viel	_	_	_	_	1	_	_	start_char=727|end_char=731|ner=O
+3	kostet	_	_	_	_	2	_	_	start_char=732|end_char=738|ner=O
+4	eigentlich	_	_	_	_	3	_	_	start_char=739|end_char=749|ner=O
+5	ein	_	_	_	_	4	_	_	start_char=750|end_char=753|ner=O
+6	Ticket	_	_	_	_	5	_	_	start_char=754|end_char=760|ner=O
+7	für	_	_	_	_	6	_	_	start_char=761|end_char=764|ner=O
+8	das	_	_	_	_	7	_	_	start_char=765|end_char=768|ner=O
+9	Konzert	_	_	_	_	8	_	_	start_char=769|end_char=776|ner=O
+10-11	am	_	_	_	_	_	_	_	start_char=777|end_char=779|ner=O
+10	an	_	_	_	_	9	_	_	_
+11	dem	_	_	_	_	10	_	_	_
+12	Samstag	_	_	_	_	11	_	_	SpaceAfter=No|start_char=780|end_char=787|ner=O
+13	?	_	_	_	_	12	_	_	start_char=787|end_char=788|ner=O
+
+# text = Ich habe gehört, dass es fast ausverkauft ist.
+# sent_id = 11
+1	Ich	_	_	_	_	0	_	_	start_char=789|end_char=792|ner=O
+2	habe	_	_	_	_	1	_	_	start_char=793|end_char=797|ner=O
+3	gehört	_	_	_	_	2	_	_	SpaceAfter=No|start_char=798|end_char=804|ner=O
+4	,	_	_	_	_	3	_	_	start_char=804|end_char=805|ner=O
+5	dass	_	_	_	_	4	_	_	start_char=806|end_char=810|ner=O
+6	es	_	_	_	_	5	_	_	start_char=811|end_char=813|ner=O
+7	fast	_	_	_	_	6	_	_	start_char=814|end_char=818|ner=O
+8	ausverkauft	_	_	_	_	7	_	_	start_char=819|end_char=830|ner=O
+9	ist	_	_	_	_	8	_	_	SpaceAfter=No|start_char=831|end_char=834|ner=O
+10	.	_	_	_	_	9	_	_	SpacesAfter=\n\n|start_char=834|end_char=835|ner=O
+
+# text = Laut Wetterbericht wird es morgen bis zu 31 °C warm.
+# sent_id = 12
+1	Laut	_	_	_	_	0	_	_	start_char=837|end_char=841|ner=O
+2	Wetterbericht	_	_	_	_	1	_	_	start_char=842|end_char=855|ner=O
+3	wird	_	_	_	_	2	_	_	start_char=856|end_char=860|ner=O
+4	es	_	_	_	_	3	_	_	start_char=861|end_char=863|ner=O
+5	morgen	_	_	_	_	4	_	_	start_char=864|end_char=870|ner=O
+6	bis	_	_	_	_	5	_	_	start_char=871|end_char=874|ner=O
+7	zu	_	_	_	_	6	_	_	start_char=875|end_char=877|ner=O
+8	31	_	_	_	_	7	_	_	start_char=878|end_char=880|ner=O
+9	°C	_	_	_	_	8	_	_	start_char=881|end_char=883|ner=O
+10	warm	_	_	_	_	9	_	_	SpaceAfter=No|start_char=884|end_char=888|ner=O
+11	.	_	_	_	_	10	_	_	start_char=888|end_char=889|ner=O
+
+# text = Am Abend sind Gewitter mit Starkregen möglich.
+# sent_id = 13
+1-2	Am	_	_	_	_	_	_	_	start_char=890|end_char=892|ner=O
+1	An	_	_	_	_	0	_	_	_
+2	dem	_	_	_	_	1	_	_	_
+3	Abend	_	_	_	_	2	_	_	start_char=893|end_char=898|ner=O
+4	sind	_	_	_	_	3	_	_	start_char=899|end_char=903|ner=O
+5	Gewitter	_	_	_	_	4	_	_	start_char=904|end_char=912|ner=O
+6	mit	_	_	_	_	5	_	_	start_char=913|end_char=916|ner=O
+7	Starkregen	_	_	_	_	6	_	_	start_char=917|end_char=927|ner=O
+8	möglich	_	_	_	_	7	_	_	SpaceAfter=No|start_char=928|end_char=935|ner=O
+9	.	_	_	_	_	8	_	_	SpacesAfter=\n\n|start_char=935|end_char=936|ner=O
+
+# text = Die Firma meldete für das dritte Quartal einen Umsatz von 12,4 Mio.
+# sent_id = 14
+1	Die	_	_	_	_	0	_	_	start_char=938|end_char=941|ner=O
+2	Firma	_	_	_	_	1	_	_	start_char=942|end_char=947|ner=O
+3	meldete	_	_	_	_	2	_	_	start_char=948|end_char=955|ner=O
+4	für	_	_	_	_	3	_	_	start_char=956|end_char=959|ner=O
+5	das	_	_	_	_	4	_	_	start_char=960|end_char=963|ner=O
+6	dritte	_	_	_	_	5	_	_	start_char=964|end_char=970|ner=O
+7	Quartal	_	_	_	_	6	_	_	start_char=971|end_char=978|ner=O
+8	einen	_	_	_	_	7	_	_	start_char=979|end_char=984|ner=O
+9	Umsatz	_	_	_	_	8	_	_	start_char=985|end_char=991|ner=O
+10	von	_	_	_	_	9	_	_	start_char=992|end_char=995|ner=O
+11	12,4	_	_	_	_	10	_	_	start_char=996|end_char=1000|ner=O
+12	Mio	_	_	_	_	11	_	_	SpaceAfter=No|start_char=1001|end_char=1004|ner=O
+13	.	_	_	_	_	12	_	_	start_char=1004|end_char=1005|ner=O
+
+# text = Euro, das sind etwa 8 % mehr als im Vorjahr.
+# sent_id = 15
+1	Euro	_	_	_	_	0	_	_	SpaceAfter=No|start_char=1006|end_char=1010|ner=S-MISC
+2	,	_	_	_	_	1	_	_	start_char=1010|end_char=1011|ner=O
+3	das	_	_	_	_	2	_	_	start_char=1012|end_char=1015|ner=O
+4	sind	_	_	_	_	3	_	_	start_char=1016|end_char=1020|ner=O
+5	etwa	_	_	_	_	4	_	_	start_char=1021|end_char=1025|ner=O
+6	8	_	_	_	_	5	_	_	start_char=1026|end_char=1027|ner=O
+7	%	_	_	_	_	6	_	_	start_char=1028|end_char=1029|ner=O
+8	mehr	_	_	_	_	7	_	_	start_char=1030|end_char=1034|ner=O
+9	als	_	_	_	_	8	_	_	start_char=1035|end_char=1038|ner=O
+10-11	im	_	_	_	_	_	_	_	start_char=1039|end_char=1041|ner=O
+10	in	_	_	_	_	9	_	_	_
+11	dem	_	_	_	_	10	_	_	_
+12	Vorjahr	_	_	_	_	11	_	_	SpaceAfter=No|start_char=1042|end_char=1049|ner=O
+13	.	_	_	_	_	12	_	_	SpacesAfter=\n\n|start_char=1049|end_char=1050|ner=O
+
+# text = Wir haben uns für das kleinere Auto entschieden, weil es weniger verbraucht und leichter zu parken ist.
+# sent_id = 16
+1	Wir	_	_	_	_	0	_	_	start_char=1052|end_char=1055|ner=O
+2	haben	_	_	_	_	1	_	_	start_char=1056|end_char=1061|ner=O
+3	uns	_	_	_	_	2	_	_	start_char=1062|end_char=1065|ner=O
+4	für	_	_	_	_	3	_	_	start_char=1066|end_char=1069|ner=O
+5	das	_	_	_	_	4	_	_	start_char=1070|end_char=1073|ner=O
+6	kleinere	_	_	_	_	5	_	_	start_char=1074|end_char=1082|ner=O
+7	Auto	_	_	_	_	6	_	_	start_char=1083|end_char=1087|ner=O
+8	entschieden	_	_	_	_	7	_	_	SpaceAfter=No|start_char=1088|end_char=1099|ner=O
+9	,	_	_	_	_	8	_	_	start_char=1099|end_char=1100|ner=O
+10	weil	_	_	_	_	9	_	_	start_char=1101|end_char=1105|ner=O
+11	es	_	_	_	_	10	_	_	start_char=1106|end_char=1108|ner=O
+12	weniger	_	_	_	_	11	_	_	start_char=1109|end_char=1116|ner=O
+13	verbraucht	_	_	_	_	12	_	_	start_char=1117|end_char=1127|ner=O
+14	und	_	_	_	_	13	_	_	start_char=1128|end_char=1131|ner=O
+15	leichter	_	_	_	_	14	_	_	start_char=1132|end_char=1140|ner=O
+16	zu	_	_	_	_	15	_	_	start_char=1141|end_char=1143|ner=O
+17	parken	_	_	_	_	16	_	_	start_char=1144|end_char=1150|ner=O
+18	ist	_	_	_	_	17	_	_	SpaceAfter=No|start_char=1151|end_char=1154|ner=O
+19	.	_	_	_	_	18	_	_	SpacesAfter=\n\n|start_char=1154|end_char=1155|ner=O
+
+# text = Kannst du mir bitte das Salz geben?
+# sent_id = 17
+1	Kannst	_	_	_	_	0	_	_	start_char=1157|end_char=1163|ner=O
+2	du	_	_	_	_	1	_	_	start_char=1164|end_char=1166|ner=O
+3	mir	_	_	_	_	2	_	_	start_char=1167|end_char=1170|ner=O
+4	bitte	_	_	_	_	3	_	_	start_char=1171|end_char=1176|ner=O
+5	das	_	_	_	_	4	_	_	start_char=1177|end_char=1180|ner=O
+6	Salz	_	_	_	_	5	_	_	start_char=1181|end_char=1185|ner=O
+7	geben	_	_	_	_	6	_	_	SpaceAfter=No|start_char=1186|end_char=1191|ner=O
+8	?	_	_	_	_	7	_	_	start_char=1191|end_char=1192|ner=O
+
+# text = Danke!
+# sent_id = 18
+1	Danke	_	_	_	_	0	_	_	SpaceAfter=No|start_char=1193|end_char=1198|ner=O
+2	!	_	_	_	_	1	_	_	SpacesAfter=\n|start_char=1198|end_char=1199|ner=O
