@@ -1,0 +1,1757 @@
+[
+ {
+  "index": 0,
+  "mentions": [
+   [
+    0,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "Lemon Ricotta Pancakes",
+  "representative_index": 0
+ },
+ {
+  "index": 1,
+  "mentions": [
+   [
+    1,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Prep",
+  "representative_index": 0
+ },
+ {
+  "index": 2,
+  "mentions": [
+   [
+    1,
+    0,
+    2
+   ],
+   [
+    1,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "Prep time",
+  "representative_index": 0
+ },
+ {
+  "index": 3,
+  "mentions": [
+   [
+    2,
+    0,
+    2
+   ],
+   [
+    2,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "Cook time",
+  "representative_index": 0
+ },
+ {
+  "index": 4,
+  "mentions": [
+   [
+    3,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Ingredients",
+  "representative_index": 0
+ },
+ {
+  "index": 5,
+  "mentions": [
+   [
+    3,
+    3,
+    10
+   ]
+  ],
+  "representative_text": "1 ½ cups all - purpose flour",
+  "representative_index": 0
+ },
+ {
+  "index": 6,
+  "mentions": [
+   [
+    3,
+    11,
+    14
+   ]
+  ],
+  "representative_text": "2 tbsp sugar",
+  "representative_index": 0
+ },
+ {
+  "index": 7,
+  "mentions": [
+   [
+    3,
+    15,
+    19
+   ]
+  ],
+  "representative_text": "1 tsp baking powder",
+  "representative_index": 0
+ },
+ {
+  "index": 8,
+  "mentions": [
+   [
+    3,
+    20,
+    24
+   ]
+  ],
+  "representative_text": "½ tsp baking soda",
+  "representative_index": 0
+ },
+ {
+  "index": 9,
+  "mentions": [
+   [
+    3,
+    25,
+    28
+   ]
+  ],
+  "representative_text": "¼ tsp salt",
+  "representative_index": 0
+ },
+ {
+  "index": 10,
+  "mentions": [
+   [
+    3,
+    29,
+    33
+   ],
+   [
+    7,
+    8,
+    10
+   ]
+  ],
+  "representative_text": "1 cup ricotta cheese",
+  "representative_index": 0
+ },
+ {
+  "index": 11,
+  "mentions": [
+   [
+    3,
+    34,
+    37
+   ],
+   [
+    7,
+    11,
+    12
+   ]
+  ],
+  "representative_text": "¾ cup milk",
+  "representative_index": 0
+ },
+ {
+  "index": 12,
+  "mentions": [
+   [
+    3,
+    38,
+    41
+   ]
+  ],
+  "representative_text": "2 large eggs",
+  "representative_index": 0
+ },
+ {
+  "index": 13,
+  "mentions": [
+   [
+    3,
+    44,
+    48
+   ],
+   [
+    7,
+    16,
+    18
+   ]
+  ],
+  "representative_text": "zest of 1 lemon",
+  "representative_index": 0
+ },
+ {
+  "index": 14,
+  "mentions": [
+   [
+    3,
+    46,
+    48
+   ],
+   [
+    7,
+    16,
+    17
+   ]
+  ],
+  "representative_text": "1 lemon",
+  "representative_index": 0
+ },
+ {
+  "index": 15,
+  "mentions": [
+   [
+    4,
+    0,
+    3
+   ],
+   [
+    7,
+    19,
+    21
+   ]
+  ],
+  "representative_text": "butter , melted",
+  "representative_index": 0
+ },
+ {
+  "index": 16,
+  "mentions": [
+   [
+    4,
+    5,
+    9
+   ]
+  ],
+  "representative_text": "more for the pan",
+  "representative_index": 0
+ },
+ {
+  "index": 17,
+  "mentions": [
+   [
+    4,
+    7,
+    9
+   ]
+  ],
+  "representative_text": "the pan",
+  "representative_index": 0
+ },
+ {
+  "index": 18,
+  "mentions": [
+   [
+    5,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Directions",
+  "representative_index": 0
+ },
+ {
+  "index": 19,
+  "mentions": [
+   [
+    6,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "1",
+  "representative_index": 0
+ },
+ {
+  "index": 20,
+  "mentions": [
+   [
+    6,
+    3,
+    6
+   ],
+   [
+    9,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "the dry ingredients",
+  "representative_index": 0
+ },
+ {
+  "index": 21,
+  "mentions": [
+   [
+    6,
+    8,
+    11
+   ]
+  ],
+  "representative_text": "a medium bowl",
+  "representative_index": 0
+ },
+ {
+  "index": 22,
+  "mentions": [
+   [
+    7,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "2",
+  "representative_index": 0
+ },
+ {
+  "index": 23,
+  "mentions": [
+   [
+    7,
+    3,
+    6
+   ]
+  ],
+  "representative_text": "a second bowl",
+  "representative_index": 0
+ },
+ {
+  "index": 24,
+  "mentions": [
+   [
+    7,
+    13,
+    15
+   ]
+  ],
+  "representative_text": "egg yolks",
+  "representative_index": 0
+ },
+ {
+  "index": 25,
+  "mentions": [
+   [
+    8,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "3",
+  "representative_index": 0
+ },
+ {
+  "index": 26,
+  "mentions": [
+   [
+    8,
+    3,
+    6
+   ]
+  ],
+  "representative_text": "the egg whites",
+  "representative_index": 0
+ },
+ {
+  "index": 27,
+  "mentions": [
+   [
+    8,
+    7,
+    9
+   ]
+  ],
+  "representative_text": "stiff peaks",
+  "representative_index": 0
+ },
+ {
+  "index": 28,
+  "mentions": [
+   [
+    8,
+    11,
+    16
+   ]
+  ],
+  "representative_text": "about 2 – 3 minutes",
+  "representative_index": 0
+ },
+ {
+  "index": 29,
+  "mentions": [
+   [
+    11,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "a skillet",
+  "representative_index": 0
+ },
+ {
+  "index": 30,
+  "mentions": [
+   [
+    11,
+    6,
+    10
+   ]
+  ],
+  "representative_text": "medium - low heat",
+  "representative_index": 0
+ },
+ {
+  "index": 31,
+  "mentions": [
+   [
+    12,
+    1,
+    3
+   ]
+  ],
+  "representative_text": "¼-cup portions",
+  "representative_index": 0
+ },
+ {
+  "index": 32,
+  "mentions": [
+   [
+    12,
+    4,
+    6
+   ]
+  ],
+  "representative_text": "2 min",
+  "representative_index": 0
+ },
+ {
+  "index": 33,
+  "mentions": [
+   [
+    12,
+    7,
+    8
+   ]
+  ],
+  "representative_text": "side",
+  "representative_index": 0
+ },
+ {
+  "index": 34,
+  "mentions": [
+   [
+    13,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Tip",
+  "representative_index": 0
+ },
+ {
+  "index": 35,
+  "mentions": [
+   [
+    13,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "the batter",
+  "representative_index": 0
+ },
+ {
+  "index": 36,
+  "mentions": [
+   [
+    13,
+    10,
+    16
+   ]
+  ],
+  "representative_text": "another tablespoon or two of milk",
+  "representative_index": 0
+ },
+ {
+  "index": 37,
+  "mentions": [
+   [
+    14,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Leftovers",
+  "representative_index": 0
+ },
+ {
+  "index": 38,
+  "mentions": [
+   [
+    14,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "the fridge",
+  "representative_index": 0
+ },
+ {
+  "index": 39,
+  "mentions": [
+   [
+    14,
+    6,
+    10
+   ]
+  ],
+  "representative_text": "up to 3 days",
+  "representative_index": 0
+ },
+ {
+  "index": 40,
+  "mentions": [
+   [
+    15,
+    2,
+    4
+   ],
+   [
+    20,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "the shelf",
+  "representative_index": 0
+ },
+ {
+  "index": 41,
+  "mentions": [
+   [
+    16,
+    1,
+    3
+   ],
+   [
+    16,
+    8,
+    9
+   ]
+  ],
+  "representative_text": "all parts",
+  "representative_index": 0
+ },
+ {
+  "index": 42,
+  "mentions": [
+   [
+    16,
+    4,
+    6
+   ]
+  ],
+  "representative_text": "the box",
+  "representative_index": 0
+ },
+ {
+  "index": 43,
+  "mentions": [
+   [
+    16,
+    11,
+    12
+   ]
+  ],
+  "representative_text": "parts",
+  "representative_index": 0
+ },
+ {
+  "index": 44,
+  "mentions": [
+   [
+    16,
+    10,
+    13
+   ]
+  ],
+  "representative_text": "the parts list",
+  "representative_index": 0
+ },
+ {
+  "index": 45,
+  "mentions": [
+   [
+    18,
+    1,
+    3
+   ],
+   [
+    18,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "side panel",
+  "representative_index": 0
+ },
+ {
+  "index": 46,
+  "mentions": [
+   [
+    18,
+    7,
+    8
+   ],
+   [
+    18,
+    9,
+    10
+   ]
+  ],
+  "representative_text": "base",
+  "representative_index": 0
+ },
+ {
+  "index": 47,
+  "mentions": [
+   [
+    18,
+    13,
+    14
+   ]
+  ],
+  "representative_text": "M6",
+  "representative_index": 0
+ },
+ {
+  "index": 48,
+  "mentions": [
+   [
+    18,
+    13,
+    17
+   ]
+  ],
+  "representative_text": "M6 × 30 mm",
+  "representative_index": 0
+ },
+ {
+  "index": 49,
+  "mentions": [
+   [
+    18,
+    12,
+    18
+   ],
+   [
+    20,
+    1,
+    4
+   ]
+  ],
+  "representative_text": "four M6 × 30 mm screws",
+  "representative_index": 0
+ },
+ {
+  "index": 50,
+  "mentions": [
+   [
+    20,
+    5,
+    9
+   ]
+  ],
+  "representative_text": "holes 3 and 7",
+  "representative_index": 0
+ },
+ {
+  "index": 51,
+  "mentions": [
+   [
+    20,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "3",
+  "representative_index": 0
+ },
+ {
+  "index": 52,
+  "mentions": [
+   [
+    20,
+    8,
+    9
+   ]
+  ],
+  "representative_text": "7",
+  "representative_index": 0
+ },
+ {
+  "index": 53,
+  "mentions": [
+   [
+    21,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "cam",
+  "representative_index": 0
+ },
+ {
+  "index": 54,
+  "mentions": [
+   [
+    21,
+    3,
+    6
+   ]
+  ],
+  "representative_text": "the cam locks",
+  "representative_index": 0
+ },
+ {
+  "index": 55,
+  "mentions": [
+   [
+    22,
+    2,
+    5
+   ],
+   [
+    22,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "the top panel",
+  "representative_index": 0
+ },
+ {
+  "index": 56,
+  "mentions": [
+   [
+    22,
+    11,
+    14
+   ]
+  ],
+  "representative_text": "the remaining screws",
+  "representative_index": 0
+ },
+ {
+  "index": 57,
+  "mentions": [
+   [
+    23,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "WARNING",
+  "representative_index": 0
+ },
+ {
+  "index": 58,
+  "mentions": [
+   [
+    23,
+    2,
+    6
+   ]
+  ],
+  "representative_text": "Risk of tip- over",
+  "representative_index": 0
+ },
+ {
+  "index": 59,
+  "mentions": [
+   [
+    24,
+    2,
+    4
+   ],
+   [
+    25,
+    4,
+    6
+   ],
+   [
+    27,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "the unit",
+  "representative_index": 0
+ },
+ {
+  "index": 60,
+  "mentions": [
+   [
+    24,
+    5,
+    7
+   ]
+  ],
+  "representative_text": "the wall",
+  "representative_index": 0
+ },
+ {
+  "index": 61,
+  "mentions": [
+   [
+    25,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Step 1",
+  "representative_index": 0
+ },
+ {
+  "index": 62,
+  "mentions": [
+   [
+    26,
+    0,
+    2
+   ],
+   [
+    27,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Step 2",
+  "representative_index": 0
+ },
+ {
+  "index": 63,
+  "mentions": [
+   [
+    26,
+    4,
+    6
+   ]
+  ],
+  "representative_text": "30 seconds",
+  "representative_index": 0
+ },
+ {
+  "index": 64,
+  "mentions": [
+   [
+    27,
+    10,
+    12
+   ]
+  ],
+  "representative_text": "the light",
+  "representative_index": 0
+ },
+ {
+  "index": 65,
+  "mentions": [
+   [
+    28,
+    1,
+    2
+   ],
+   [
+    28,
+    6,
+    7
+   ],
+   [
+    37,
+    14,
+    15
+   ],
+   [
+    41,
+    1,
+    2
+   ],
+   [
+    41,
+    4,
+    5
+   ],
+   [
+    43,
+    3,
+    4
+   ],
+   [
+    46,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "you",
+  "representative_index": 0
+ },
+ {
+  "index": 66,
+  "mentions": [
+   [
+    28,
+    10,
+    15
+   ]
+  ],
+  "representative_text": "a Phillips - head screwdriver",
+  "representative_index": 0
+ },
+ {
+  "index": 67,
+  "mentions": [
+   [
+    28,
+    16,
+    18
+   ]
+  ],
+  "representative_text": "# 2",
+  "representative_index": 0
+ },
+ {
+  "index": 68,
+  "mentions": [
+   [
+    28,
+    21,
+    23
+   ]
+  ],
+  "representative_text": "10 mm",
+  "representative_index": 0
+ },
+ {
+  "index": 69,
+  "mentions": [
+   [
+    28,
+    20,
+    24
+   ]
+  ],
+  "representative_text": "a 10 mm wrench",
+  "representative_index": 0
+ },
+ {
+  "index": 70,
+  "mentions": [
+   [
+    28,
+    25,
+    27
+   ]
+  ],
+  "representative_text": "safety glasses",
+  "representative_index": 0
+ },
+ {
+  "index": 71,
+  "mentions": [
+   [
+    29,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "Item",
+  "representative_index": 0
+ },
+ {
+  "index": 72,
+  "mentions": [
+   [
+    29,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "Qty",
+  "representative_index": 0
+ },
+ {
+  "index": 73,
+  "mentions": [
+   [
+    29,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "Price",
+  "representative_index": 0
+ },
+ {
+  "index": 74,
+  "mentions": [
+   [
+    29,
+    9,
+    10
+   ]
+  ],
+  "representative_text": "Widget",
+  "representative_index": 0
+ },
+ {
+  "index": 75,
+  "mentions": [
+   [
+    29,
+    13,
+    15
+   ]
+  ],
+  "representative_text": "$ 4.99",
+  "representative_index": 0
+ },
+ {
+  "index": 76,
+  "mentions": [
+   [
+    29,
+    17,
+    18
+   ]
+  ],
+  "representative_text": "Gadget",
+  "representative_index": 0
+ },
+ {
+  "index": 77,
+  "mentions": [
+   [
+    29,
+    19,
+    20
+   ]
+  ],
+  "representative_text": "1",
+  "representative_index": 0
+ },
+ {
+  "index": 78,
+  "mentions": [
+   [
+    29,
+    21,
+    23
+   ]
+  ],
+  "representative_text": "$ 12.50",
+  "representative_index": 0
+ },
+ {
+  "index": 79,
+  "mentions": [
+   [
+    29,
+    25,
+    26
+   ]
+  ],
+  "representative_text": "Total",
+  "representative_index": 0
+ },
+ {
+  "index": 80,
+  "mentions": [
+   [
+    29,
+    29,
+    31
+   ]
+  ],
+  "representative_text": "$ 27.47",
+  "representative_index": 0
+ },
+ {
+  "index": 81,
+  "mentions": [
+   [
+    30,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Name",
+  "representative_index": 0
+ },
+ {
+  "index": 82,
+  "mentions": [
+   [
+    30,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "Age",
+  "representative_index": 0
+ },
+ {
+  "index": 83,
+  "mentions": [
+   [
+    30,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "City",
+  "representative_index": 0
+ },
+ {
+  "index": 84,
+  "mentions": [
+   [
+    30,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "Anna 34",
+  "representative_index": 0
+ },
+ {
+  "index": 85,
+  "mentions": [
+   [
+    30,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "Lisbon",
+  "representative_index": 0
+ },
+ {
+  "index": 86,
+  "mentions": [
+   [
+    30,
+    6,
+    8
+   ]
+  ],
+  "representative_text": "Ravi 29",
+  "representative_index": 0
+ },
+ {
+  "index": 87,
+  "mentions": [
+   [
+    30,
+    8,
+    9
+   ]
+  ],
+  "representative_text": "Pune",
+  "representative_index": 0
+ },
+ {
+  "index": 88,
+  "mentions": [
+   [
+    30,
+    9,
+    10
+   ]
+  ],
+  "representative_text": "Kofi",
+  "representative_index": 0
+ },
+ {
+  "index": 89,
+  "mentions": [
+   [
+    30,
+    11,
+    12
+   ]
+  ],
+  "representative_text": "Accra",
+  "representative_index": 0
+ },
+ {
+  "index": 90,
+  "mentions": [
+   [
+    34,
+    1,
+    2
+   ],
+   [
+    37,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "oven",
+  "representative_index": 0
+ },
+ {
+  "index": 91,
+  "mentions": [
+   [
+    34,
+    3,
+    6
+   ],
+   [
+    34,
+    7,
+    10
+   ]
+  ],
+  "representative_text": "350 ° F",
+  "representative_index": 0
+ },
+ {
+  "index": 92,
+  "mentions": [
+   [
+    35,
+    1,
+    6
+   ]
+  ],
+  "representative_text": "a 9x13 - inch pan",
+  "representative_index": 0
+ },
+ {
+  "index": 93,
+  "mentions": [
+   [
+    36,
+    1,
+    5
+   ]
+  ],
+  "representative_text": "35 – 40 min",
+  "representative_index": 0
+ },
+ {
+  "index": 94,
+  "mentions": [
+   [
+    36,
+    7,
+    9
+   ]
+  ],
+  "representative_text": "a toothpick",
+  "representative_index": 0
+ },
+ {
+  "index": 95,
+  "mentions": [
+   [
+    37,
+    6,
+    8
+   ]
+  ],
+  "representative_text": "the vanilla",
+  "representative_index": 0
+ },
+ {
+  "index": 96,
+  "mentions": [
+   [
+    37,
+    10,
+    11
+   ]
+  ],
+  "representative_text": "almond",
+  "representative_index": 0
+ },
+ {
+  "index": 97,
+  "mentions": [
+   [
+    37,
+    10,
+    12
+   ]
+  ],
+  "representative_text": "almond extract",
+  "representative_index": 0
+ },
+ {
+  "index": 98,
+  "mentions": [
+   [
+    38,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "frosting",
+  "representative_index": 0
+ },
+ {
+  "index": 99,
+  "mentions": [
+   [
+    39,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "hands",
+  "representative_index": 0
+ },
+ {
+  "index": 100,
+  "mentions": [
+   [
+    39,
+    6,
+    8
+   ]
+  ],
+  "representative_text": "20 seconds",
+  "representative_index": 0
+ },
+ {
+  "index": 101,
+  "mentions": [
+   [
+    41,
+    1,
+    3
+   ]
+  ],
+  "representative_text": "your mouth",
+  "representative_index": 0
+ },
+ {
+  "index": 102,
+  "mentions": [
+   [
+    43,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "home",
+  "representative_index": 0
+ },
+ {
+  "index": 103,
+  "mentions": [
+   [
+    44,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "FAQ",
+  "representative_index": 0
+ },
+ {
+  "index": 104,
+  "mentions": [
+   [
+    44,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "shipping",
+  "representative_index": 0
+ },
+ {
+  "index": 105,
+  "mentions": [
+   [
+    45,
+    2,
+    7
+   ]
+  ],
+  "representative_text": "3 – 5 business days",
+  "representative_index": 0
+ },
+ {
+  "index": 106,
+  "mentions": [
+   [
+    46,
+    4,
+    6
+   ]
+  ],
+  "representative_text": "an item",
+  "representative_index": 0
+ },
+ {
+  "index": 107,
+  "mentions": [
+   [
+    47,
+    4,
+    8
+   ]
+  ],
+  "representative_text": "30 days of delivery",
+  "representative_index": 0
+ },
+ {
+  "index": 108,
+  "mentions": [
+   [
+    47,
+    7,
+    8
+   ]
+  ],
+  "representative_text": "delivery",
+  "representative_index": 0
+ },
+ {
+  "index": 109,
+  "mentions": [
+   [
+    48,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Chapter 1",
+  "representative_index": 0
+ },
+ {
+  "index": 110,
+  "mentions": [
+   [
+    48,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "Installation",
+  "representative_index": 0
+ },
+ {
+  "index": 111,
+  "mentions": [
+   [
+    48,
+    8,
+    9
+   ]
+  ],
+  "representative_text": "Configuration",
+  "representative_index": 0
+ },
+ {
+  "index": 112,
+  "mentions": [
+   [
+    49,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "First steps",
+  "representative_index": 0
+ },
+ {
+  "index": 113,
+  "mentions": [
+   [
+    50,
+    1,
+    4
+   ]
+  ],
+  "representative_text": "2/3 cup water",
+  "representative_index": 0
+ },
+ {
+  "index": 114,
+  "mentions": [
+   [
+    50,
+    5,
+    8
+   ]
+  ],
+  "representative_text": "1/2 cup vinegar",
+  "representative_index": 0
+ },
+ {
+  "index": 115,
+  "mentions": [
+   [
+    50,
+    9,
+    12
+   ]
+  ],
+  "representative_text": "1 Tbsp honey",
+  "representative_index": 0
+ },
+ {
+  "index": 116,
+  "mentions": [
+   [
+    51,
+    2,
+    6
+   ]
+  ],
+  "representative_text": "5 - 7 min",
+  "representative_index": 0
+ },
+ {
+  "index": 117,
+  "mentions": [
+   [
+    52,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "salt",
+  "representative_index": 0
+ },
+ {
+  "index": 118,
+  "mentions": [
+   [
+    52,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "pepper",
+  "representative_index": 0
+ },
+ {
+  "index": 119,
+  "mentions": [
+   [
+    53,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "left",
+  "representative_index": 0
+ },
+ {
+  "index": 120,
+  "mentions": [
+   [
+    53,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "the light",
+  "representative_index": 0
+ },
+ {
+  "index": 121,
+  "mentions": [
+   [
+    53,
+    9,
+    11
+   ]
+  ],
+  "representative_text": "Elm St.",
+  "representative_index": 0
+ },
+ {
+  "index": 122,
+  "mentions": [
+   [
+    53,
+    11,
+    12
+   ],
+   [
+    59,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "Our",
+  "representative_index": 0
+ },
+ {
+  "index": 123,
+  "mentions": [
+   [
+    53,
+    11,
+    13
+   ],
+   [
+    53,
+    14,
+    20
+   ]
+  ],
+  "representative_text": "the 2nd building on the left",
+  "representative_index": 1
+ },
+ {
+  "index": 124,
+  "mentions": [
+   [
+    53,
+    18,
+    20
+   ]
+  ],
+  "representative_text": "the left",
+  "representative_index": 0
+ },
+ {
+  "index": 125,
+  "mentions": [
+   [
+    53,
+    21,
+    24
+   ]
+  ],
+  "representative_text": "No . 48",
+  "representative_index": 0
+ },
+ {
+  "index": 126,
+  "mentions": [
+   [
+    54,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Parking",
+  "representative_index": 0
+ },
+ {
+  "index": 127,
+  "mentions": [
+   [
+    54,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "the rear",
+  "representative_index": 0
+ },
+ {
+  "index": 128,
+  "mentions": [
+   [
+    55,
+    2,
+    4
+   ]
+  ],
+  "representative_text": "this recipe",
+  "representative_index": 0
+ },
+ {
+  "index": 129,
+  "mentions": [
+   [
+    55,
+    7,
+    9
+   ]
+  ],
+  "representative_text": "sea level",
+  "representative_index": 0
+ },
+ {
+  "index": 130,
+  "mentions": [
+   [
+    56,
+    1,
+    3
+   ]
+  ],
+  "representative_text": "high altitude",
+  "representative_index": 0
+ },
+ {
+  "index": 131,
+  "mentions": [
+   [
+    56,
+    5,
+    8
+   ]
+  ],
+  "representative_text": "the baking powder",
+  "representative_index": 0
+ },
+ {
+  "index": 132,
+  "mentions": [
+   [
+    56,
+    9,
+    11
+   ]
+  ],
+  "representative_text": "⅛ tsp",
+  "representative_index": 0
+ },
+ {
+  "index": 133,
+  "mentions": [
+   [
+    57,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Questions",
+  "representative_index": 0
+ },
+ {
+  "index": 134,
+  "mentions": [
+   [
+    58,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Comments",
+  "representative_index": 0
+ }
+]

@@ -27,8 +27,30 @@ public sealed class Document
     /// <summary>The number of tokens in all sentences (Stanza's <c>doc.num_tokens</c>).</summary>
     public int TokenCount => Sentences.Sum(s => s.Tokens.Count);
 
-    /// <summary>The number of words in all sentences, after multi-word token expansion (Stanza's <c>doc.num_words</c>).</summary>
+    /// <summary>
+    /// The number of words in all sentences, after multi-word token expansion (Stanza's <c>doc.num_words</c>). Empty words
+    /// are not counted.
+    /// </summary>
     public int WordCount => Sentences.Sum(s => s.Tokens.Sum(t => t.Words.Count));
+
+    /// <summary>
+    /// The coreference chains, in index order (Stanza's <c>doc.coref</c>); empty unless coreference ran or the document was
+    /// read with <c>coref_chains</c>. Setting it, as Stanza's setter does, gives every word and empty word its
+    /// <see cref="Word.CorefChains"/>: an attachment per mention of a chain that covers it.
+    /// </summary>
+    /// <exception cref="ArgumentException">A mention is not in the document: its sentence, words or empty word is missing.</exception>
+    public IReadOnlyList<CorefChain> Coref
+    {
+        get => _coref;
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+            CorefLinks.Attach(this, value);
+            _coref = value;
+        }
+    }
+
+    private IReadOnlyList<CorefChain> _coref = [];
 }
 
 /// <summary>One sentence: its tokens, and the sentence-level results (parse tree, sentiment, entities).</summary>
@@ -56,8 +78,15 @@ public sealed class Sentence
     /// <summary>Named entities built from the tokens' <see cref="Token.Ner"/> tags (Stanza's <c>sentence.ents</c>).</summary>
     public List<Entity> Entities { get; } = [];
 
-    /// <summary>Syntactic words (after MWT expansion), which POS and the parser operate on.</summary>
+    /// <summary>Syntactic words (after MWT expansion), which POS and the parser operate on. Empty words are not among them.</summary>
     public IEnumerable<Word> Words => Tokens.SelectMany(t => t.Words);
+
+    /// <summary>
+    /// The empty words (CoNLL-U's empty nodes <c>i.m</c>, Stanza's <c>sentence.empty_words</c>): the nodes coreference adds for a
+    /// zero mention, or those read from CoNLL-U or JSON. Each has its <see cref="Word.EmptyIndex"/> set and, as
+    /// <see cref="Word.Id"/>, the id of the word it follows (0 before the first).
+    /// </summary>
+    public List<Word> EmptyWords { get; } = [];
 
     /// <summary>
     /// The dependency arcs, one per word in order (Stanza's <c>sentence.dependencies</c>); empty unless every word has a
@@ -251,8 +280,23 @@ public sealed record Entity(string Text, string Type, int? StartChar, int? EndCh
 /// <summary>A syntactic word, with the annotations the processors add (CoNLL-U's word lines).</summary>
 public sealed class Word
 {
-    /// <summary>1-based index within the sentence.</summary>
+    /// <summary>1-based index within the sentence; for an empty word, the id of the word it follows (0 before the first).</summary>
     public int Id { get; set; }
+
+    /// <summary>
+    /// For an empty word (CoNLL-U's <c>i.m</c>, an item of <see cref="Sentence.EmptyWords"/>), its <c>m</c>, from 1; null for
+    /// every other word.
+    /// </summary>
+    public int? EmptyIndex { get; set; }
+
+    /// <summary>Whether the word is an empty word, an item of <see cref="Sentence.EmptyWords"/>.</summary>
+    public bool IsEmpty => EmptyIndex != null;
+
+    /// <summary>
+    /// The word's places in coreference chains (Stanza's <c>word.coref_chains</c>), one per mention covering it, in chain
+    /// order; set by <see cref="Document.Coref"/> (empty for a word in no mention), null until then.
+    /// </summary>
+    public IReadOnlyList<CorefAttachment>? CorefChains { get; internal set; }
 
     /// <summary>The word's text; for a word of a multi-word token, its expanded form (e.g. <c>n't</c>).</summary>
     public required string Text { get; set; }
@@ -289,7 +333,7 @@ public sealed class Word
     {
         var fields = new (string Key, object? Value)[]
         {
-            ("id", Id), ("text", Text), ("lemma", Lemma), ("upos", Upos), ("xpos", Xpos), ("feats", Feats), ("head", Head), ("deprel", Deprel),
+            ("id", EmptyIndex is int m ? $"({Id}, {m})" : Id), ("text", Text), ("lemma", Lemma), ("upos", Upos), ("xpos", Xpos), ("feats", Feats), ("head", Head), ("deprel", Deprel),
         };
         return $"<Word {string.Join(";", fields.Where(f => f.Value != null).Select(f => $"{f.Key}={f.Value}"))}>";
     }

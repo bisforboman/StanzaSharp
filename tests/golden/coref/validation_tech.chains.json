@@ -1,0 +1,2649 @@
+[
+ {
+  "index": 0,
+  "mentions": [
+   [
+    0,
+    0,
+    14
+   ],
+   [
+    1,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "Run ` pip install -r requirements.txt ` and then ` python manage.py migrate `",
+  "representative_index": 0
+ },
+ {
+  "index": 1,
+  "mentions": [
+   [
+    0,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "pip",
+  "representative_index": 0
+ },
+ {
+  "index": 2,
+  "mentions": [
+   [
+    0,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "requirements.txt",
+  "representative_index": 0
+ },
+ {
+  "index": 3,
+  "mentions": [
+   [
+    0,
+    10,
+    11
+   ]
+  ],
+  "representative_text": "python",
+  "representative_index": 0
+ },
+ {
+  "index": 4,
+  "mentions": [
+   [
+    0,
+    10,
+    12
+   ]
+  ],
+  "representative_text": "python manage.py",
+  "representative_index": 0
+ },
+ {
+  "index": 5,
+  "mentions": [
+   [
+    1,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "C",
+  "representative_index": 0
+ },
+ {
+  "index": 6,
+  "mentions": [
+   [
+    1,
+    7,
+    9
+   ]
+  ],
+  "representative_text": "\\Program Files",
+  "representative_index": 0
+ },
+ {
+  "index": 7,
+  "mentions": [
+   [
+    1,
+    9,
+    10
+   ]
+  ],
+  "representative_text": "\\Python312\\python.exe",
+  "representative_index": 0
+ },
+ {
+  "index": 8,
+  "mentions": [
+   [
+    1,
+    11,
+    12
+   ],
+   [
+    12,
+    2,
+    3
+   ],
+   [
+    13,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "your",
+  "representative_index": 0
+ },
+ {
+  "index": 9,
+  "mentions": [
+   [
+    1,
+    11,
+    13
+   ]
+  ],
+  "representative_text": "your PATH",
+  "representative_index": 0
+ },
+ {
+  "index": 10,
+  "mentions": [
+   [
+    2,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "The config",
+  "representative_index": 0
+ },
+ {
+  "index": 11,
+  "mentions": [
+   [
+    2,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "~/.config/app/settings.yaml",
+  "representative_index": 0
+ },
+ {
+  "index": 12,
+  "mentions": [
+   [
+    2,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "Linux",
+  "representative_index": 0
+ },
+ {
+  "index": 13,
+  "mentions": [
+   [
+    2,
+    8,
+    9
+   ]
+  ],
+  "representative_text": "%APPDATA",
+  "representative_index": 0
+ },
+ {
+  "index": 14,
+  "mentions": [
+   [
+    2,
+    8,
+    11
+   ]
+  ],
+  "representative_text": "%APPDATA % \\App\\settings.yaml",
+  "representative_index": 0
+ },
+ {
+  "index": 15,
+  "mentions": [
+   [
+    2,
+    12,
+    13
+   ]
+  ],
+  "representative_text": "Windows",
+  "representative_index": 0
+ },
+ {
+  "index": 16,
+  "mentions": [
+   [
+    3,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "/var/cache/app/*.tmp",
+  "representative_index": 0
+ },
+ {
+  "index": 17,
+  "mentions": [
+   [
+    4,
+    1,
+    3
+   ],
+   [
+    5,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "foo. bar",
+  "representative_index": 0
+ },
+ {
+  "index": 18,
+  "mentions": [
+   [
+    4,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "baz",
+  "representative_index": 0
+ },
+ {
+  "index": 19,
+  "mentions": [
+   [
+    4,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "42",
+  "representative_index": 0
+ },
+ {
+  "index": 20,
+  "mentions": [
+   [
+    4,
+    10,
+    12
+   ]
+  ],
+  "representative_text": "a list",
+  "representative_index": 0
+ },
+ {
+  "index": 21,
+  "mentions": [
+   [
+    4,
+    13,
+    14
+   ]
+  ],
+  "representative_text": "int",
+  "representative_index": 0
+ },
+ {
+  "index": 22,
+  "mentions": [
+   [
+    5,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "None",
+  "representative_index": 0
+ },
+ {
+  "index": 23,
+  "mentions": [
+   [
+    5,
+    5,
+    6
+   ],
+   [
+    21,
+    0,
+    1
+   ],
+   [
+    21,
+    14,
+    15
+   ],
+   [
+    21,
+    16,
+    17
+   ],
+   [
+    21,
+    20,
+    21
+   ]
+  ],
+  "representative_text": "x",
+  "representative_index": 0
+ },
+ {
+  "index": 24,
+  "mentions": [
+   [
+    5,
+    7,
+    8
+   ]
+  ],
+  "representative_text": "0",
+  "representative_index": 0
+ },
+ {
+  "index": 25,
+  "mentions": [
+   [
+    5,
+    9,
+    10
+   ]
+  ],
+  "representative_text": "y",
+  "representative_index": 0
+ },
+ {
+  "index": 26,
+  "mentions": [
+   [
+    6,
+    0,
+    1
+   ],
+   [
+    21,
+    27,
+    28
+   ],
+   [
+    58,
+    9,
+    10
+   ]
+  ],
+  "representative_text": "1",
+  "representative_index": 0
+ },
+ {
+  "index": 27,
+  "mentions": [
+   [
+    7,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "MAX_RETRIES=5",
+  "representative_index": 0
+ },
+ {
+  "index": 28,
+  "mentions": [
+   [
+    7,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "TIMEOUT_MS=3000",
+  "representative_index": 0
+ },
+ {
+  "index": 29,
+  "mentions": [
+   [
+    7,
+    5,
+    8
+   ]
+  ],
+  "representative_text": "the .env file",
+  "representative_index": 0
+ },
+ {
+  "index": 30,
+  "mentions": [
+   [
+    8,
+    2,
+    3
+   ],
+   [
+    8,
+    7,
+    10
+   ]
+  ],
+  "representative_text": "nginx . service",
+  "representative_index": 1
+ },
+ {
+  "index": 31,
+  "mentions": [
+   [
+    8,
+    4,
+    6
+   ]
+  ],
+  "representative_text": "sudo systemctl",
+  "representative_index": 0
+ },
+ {
+  "index": 32,
+  "mentions": [
+   [
+    8,
+    4,
+    6
+   ]
+  ],
+  "representative_text": "sudo systemctl",
+  "representative_index": 0
+ },
+ {
+  "index": 33,
+  "mentions": [
+   [
+    8,
+    7,
+    10
+   ]
+  ],
+  "representative_text": "nginx . service",
+  "representative_index": 0
+ },
+ {
+  "index": 34,
+  "mentions": [
+   [
+    9,
+    0,
+    2
+   ],
+   [
+    9,
+    4,
+    5
+   ],
+   [
+    10,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "The error",
+  "representative_index": 0
+ },
+ {
+  "index": 35,
+  "mentions": [
+   [
+    9,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "Object",
+  "representative_index": 0
+ },
+ {
+  "index": 36,
+  "mentions": [
+   [
+    9,
+    6,
+    8
+   ]
+  ],
+  "representative_text": "Object reference",
+  "representative_index": 0
+ },
+ {
+  "index": 37,
+  "mentions": [
+   [
+    9,
+    11,
+    16
+   ]
+  ],
+  "representative_text": "an instance of an object",
+  "representative_index": 0
+ },
+ {
+  "index": 38,
+  "mentions": [
+   [
+    9,
+    14,
+    16
+   ]
+  ],
+  "representative_text": "an object",
+  "representative_index": 0
+ },
+ {
+  "index": 39,
+  "mentions": [
+   [
+    10,
+    3,
+    7
+   ]
+  ],
+  "representative_text": "line 217 of Parser.cs",
+  "representative_index": 0
+ },
+ {
+  "index": 40,
+  "mentions": [
+   [
+    10,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "Parser.cs",
+  "representative_index": 0
+ },
+ {
+  "index": 41,
+  "mentions": [
+   [
+    12,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "http://localhost:8080/api/v2/users?id=17&sort=desc",
+  "representative_index": 0
+ },
+ {
+  "index": 42,
+  "mentions": [
+   [
+    12,
+    2,
+    4
+   ]
+  ],
+  "representative_text": "your browser",
+  "representative_index": 0
+ },
+ {
+  "index": 43,
+  "mentions": [
+   [
+    13,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "JSON",
+  "representative_index": 0
+ },
+ {
+  "index": 44,
+  "mentions": [
+   [
+    13,
+    3,
+    6
+   ]
+  ],
+  "representative_text": "a JSON array",
+  "representative_index": 0
+ },
+ {
+  "index": 45,
+  "mentions": [
+   [
+    13,
+    10,
+    11
+   ],
+   [
+    13,
+    13,
+    14
+   ]
+  ],
+  "representative_text": "id",
+  "representative_index": 0
+ },
+ {
+  "index": 46,
+  "mentions": [
+   [
+    13,
+    16,
+    17
+   ]
+  ],
+  "representative_text": "name",
+  "representative_index": 0
+ },
+ {
+  "index": 47,
+  "mentions": [
+   [
+    13,
+    20,
+    21
+   ],
+   [
+    14,
+    0,
+    1
+   ],
+   [
+    14,
+    6,
+    7
+   ],
+   [
+    15,
+    0,
+    1
+   ],
+   [
+    30,
+    10,
+    11
+   ]
+  ],
+  "representative_text": "Ana",
+  "representative_index": 0
+ },
+ {
+  "index": 48,
+  "mentions": [
+   [
+    14,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "My email",
+  "representative_index": 0
+ },
+ {
+  "index": 49,
+  "mentions": [
+   [
+    14,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "j.doe+news@mail.example.org",
+  "representative_index": 0
+ },
+ {
+  "index": 50,
+  "mentions": [
+   [
+    14,
+    6,
+    8
+   ],
+   [
+    14,
+    9,
+    10
+   ]
+  ],
+  "representative_text": "my handle",
+  "representative_index": 0
+ },
+ {
+  "index": 51,
+  "mentions": [
+   [
+    15,
+    0,
+    2
+   ],
+   [
+    15,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "My IP",
+  "representative_index": 0
+ },
+ {
+  "index": 52,
+  "mentions": [
+   [
+    15,
+    5,
+    7
+   ]
+  ],
+  "representative_text": "the time",
+  "representative_index": 0
+ },
+ {
+  "index": 53,
+  "mentions": [
+   [
+    16,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Version 3.10.2",
+  "representative_index": 0
+ },
+ {
+  "index": 54,
+  "mentions": [
+   [
+    16,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "2023",
+  "representative_index": 0
+ },
+ {
+  "index": 55,
+  "mentions": [
+   [
+    16,
+    5,
+    10
+   ]
+  ],
+  "representative_text": "2023 - 10 - 02",
+  "representative_index": 0
+ },
+ {
+  "index": 56,
+  "mentions": [
+   [
+    17,
+    0,
+    5
+   ]
+  ],
+  "representative_text": "Upgrade from v 3.9. x",
+  "representative_index": 0
+ },
+ {
+  "index": 57,
+  "mentions": [
+   [
+    17,
+    2,
+    5
+   ],
+   [
+    17,
+    8,
+    11
+   ]
+  ],
+  "representative_text": "v 3.9. x",
+  "representative_index": 0
+ },
+ {
+  "index": 58,
+  "mentions": [
+   [
+    17,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "x",
+  "representative_index": 0
+ },
+ {
+  "index": 59,
+  "mentions": [
+   [
+    18,
+    1,
+    2
+   ],
+   [
+    18,
+    12,
+    13
+   ]
+  ],
+  "representative_text": "git",
+  "representative_index": 0
+ },
+ {
+  "index": 60,
+  "mentions": [
+   [
+    18,
+    1,
+    4
+   ]
+  ],
+  "representative_text": "git commit -m",
+  "representative_index": 0
+ },
+ {
+  "index": 61,
+  "mentions": [
+   [
+    18,
+    8,
+    10
+   ]
+  ],
+  "representative_text": "empty input",
+  "representative_index": 0
+ },
+ {
+  "index": 62,
+  "mentions": [
+   [
+    18,
+    14,
+    15
+   ]
+  ],
+  "representative_text": "origin",
+  "representative_index": 0
+ },
+ {
+  "index": 63,
+  "mentions": [
+   [
+    18,
+    14,
+    16
+   ]
+  ],
+  "representative_text": "origin main",
+  "representative_index": 0
+ },
+ {
+  "index": 64,
+  "mentions": [
+   [
+    19,
+    0,
+    4
+   ]
+  ],
+  "representative_text": "Hash a 1 b2c3d",
+  "representative_index": 0
+ },
+ {
+  "index": 65,
+  "mentions": [
+   [
+    19,
+    1,
+    3
+   ]
+  ],
+  "representative_text": "a 1",
+  "representative_index": 0
+ },
+ {
+  "index": 66,
+  "mentions": [
+   [
+    19,
+    1,
+    4
+   ]
+  ],
+  "representative_text": "a 1 b2c3d",
+  "representative_index": 0
+ },
+ {
+  "index": 67,
+  "mentions": [
+   [
+    19,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "b2c3d",
+  "representative_index": 0
+ },
+ {
+  "index": 68,
+  "mentions": [
+   [
+    19,
+    5,
+    7
+   ]
+  ],
+  "representative_text": "the regression",
+  "representative_index": 0
+ },
+ {
+  "index": 69,
+  "mentions": [
+   [
+    20,
+    0,
+    2
+   ],
+   [
+    20,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "The file",
+  "representative_index": 0
+ },
+ {
+  "index": 70,
+  "mentions": [
+   [
+    20,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "Node",
+  "representative_index": 0
+ },
+ {
+  "index": 71,
+  "mentions": [
+   [
+    20,
+    8,
+    9
+   ]
+  ],
+  "representative_text": "18",
+  "representative_index": 0
+ },
+ {
+  "index": 72,
+  "mentions": [
+   [
+    20,
+    10,
+    11
+   ]
+  ],
+  "representative_text": "package.json",
+  "representative_index": 0
+ },
+ {
+  "index": 73,
+  "mentions": [
+   [
+    20,
+    13,
+    15
+   ]
+  ],
+  "representative_text": "typescript \"",
+  "representative_index": 0
+ },
+ {
+  "index": 74,
+  "mentions": [
+   [
+    20,
+    17,
+    18
+   ]
+  ],
+  "representative_text": "^5.4.0",
+  "representative_index": 0
+ },
+ {
+  "index": 75,
+  "mentions": [
+   [
+    21,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "a",
+  "representative_index": 0
+ },
+ {
+  "index": 76,
+  "mentions": [
+   [
+    21,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "b",
+  "representative_index": 0
+ },
+ {
+  "index": 77,
+  "mentions": [
+   [
+    21,
+    8,
+    9
+   ]
+  ],
+  "representative_text": "c",
+  "representative_index": 0
+ },
+ {
+  "index": 78,
+  "mentions": [
+   [
+    21,
+    10,
+    11
+   ]
+  ],
+  "representative_text": "2",
+  "representative_index": 0
+ },
+ {
+  "index": 79,
+  "mentions": [
+   [
+    22,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "The meeting",
+  "representative_index": 0
+ },
+ {
+  "index": 80,
+  "mentions": [
+   [
+    22,
+    4,
+    6
+   ],
+   [
+    23,
+    2,
+    3
+   ],
+   [
+    23,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "9:30 a.m.",
+  "representative_index": 0
+ },
+ {
+  "index": 81,
+  "mentions": [
+   [
+    22,
+    7,
+    8
+   ],
+   [
+    22,
+    9,
+    13
+   ],
+   [
+    43,
+    0,
+    1
+   ],
+   [
+    43,
+    2,
+    14
+   ],
+   [
+    43,
+    2,
+    14
+   ],
+   [
+    64,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "the twenty - first of September , two thousand twenty - three",
+  "representative_index": 3
+ },
+ {
+  "index": 82,
+  "mentions": [
+   [
+    22,
+    12,
+    13
+   ]
+  ],
+  "representative_text": "2024",
+  "representative_index": 0
+ },
+ {
+  "index": 83,
+  "mentions": [
+   [
+    23,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "08/01/2024",
+  "representative_index": 0
+ },
+ {
+  "index": 84,
+  "mentions": [
+   [
+    24,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "ISO",
+  "representative_index": 0
+ },
+ {
+  "index": 85,
+  "mentions": [
+   [
+    24,
+    1,
+    3
+   ]
+  ],
+  "representative_text": "ISO format",
+  "representative_index": 0
+ },
+ {
+  "index": 86,
+  "mentions": [
+   [
+    24,
+    4,
+    6
+   ]
+  ],
+  "representative_text": "2024-01-08T09:30:00 Z",
+  "representative_index": 0
+ },
+ {
+  "index": 87,
+  "mentions": [
+   [
+    25,
+    0,
+    1
+   ],
+   [
+    37,
+    10,
+    12
+   ]
+  ],
+  "representative_text": "the office",
+  "representative_index": 1
+ },
+ {
+  "index": 88,
+  "mentions": [
+   [
+    25,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "9 am",
+  "representative_index": 0
+ },
+ {
+  "index": 89,
+  "mentions": [
+   [
+    25,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "9 am",
+  "representative_index": 0
+ },
+ {
+  "index": 90,
+  "mentions": [
+   [
+    25,
+    6,
+    8
+   ]
+  ],
+  "representative_text": "5 pm",
+  "representative_index": 0
+ },
+ {
+  "index": 91,
+  "mentions": [
+   [
+    25,
+    9,
+    10
+   ]
+  ],
+  "representative_text": "Mon–Fri",
+  "representative_index": 0
+ },
+ {
+  "index": 92,
+  "mentions": [
+   [
+    25,
+    12,
+    15
+   ]
+  ],
+  "representative_text": "10:00 – 14:00",
+  "representative_index": 0
+ },
+ {
+  "index": 93,
+  "mentions": [
+   [
+    25,
+    14,
+    15
+   ]
+  ],
+  "representative_text": "14:00",
+  "representative_index": 0
+ },
+ {
+  "index": 94,
+  "mentions": [
+   [
+    25,
+    16,
+    17
+   ]
+  ],
+  "representative_text": "Saturdays",
+  "representative_index": 0
+ },
+ {
+  "index": 95,
+  "mentions": [
+   [
+    26,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "Dec",
+  "representative_index": 0
+ },
+ {
+  "index": 96,
+  "mentions": [
+   [
+    26,
+    1,
+    5
+   ]
+  ],
+  "representative_text": "Dec 24 – 26",
+  "representative_index": 0
+ },
+ {
+  "index": 97,
+  "mentions": [
+   [
+    26,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "26",
+  "representative_index": 0
+ },
+ {
+  "index": 98,
+  "mentions": [
+   [
+    27,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "The war",
+  "representative_index": 0
+ },
+ {
+  "index": 99,
+  "mentions": [
+   [
+    27,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "1914",
+  "representative_index": 0
+ },
+ {
+  "index": 100,
+  "mentions": [
+   [
+    27,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "1918",
+  "representative_index": 0
+ },
+ {
+  "index": 101,
+  "mentions": [
+   [
+    28,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "The 1990s",
+  "representative_index": 0
+ },
+ {
+  "index": 102,
+  "mentions": [
+   [
+    28,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "rapid growth",
+  "representative_index": 0
+ },
+ {
+  "index": 103,
+  "mentions": [
+   [
+    28,
+    6,
+    9
+   ]
+  ],
+  "representative_text": "the ' 80s",
+  "representative_index": 0
+ },
+ {
+  "index": 104,
+  "mentions": [
+   [
+    29,
+    0,
+    1
+   ],
+   [
+    30,
+    0,
+    1
+   ],
+   [
+    30,
+    4,
+    5
+   ],
+   [
+    32,
+    2,
+    3
+   ],
+   [
+    57,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "She",
+  "representative_index": 0
+ },
+ {
+  "index": 105,
+  "mentions": [
+   [
+    29,
+    4,
+    6
+   ]
+  ],
+  "representative_text": "the mid-'60s",
+  "representative_index": 0
+ },
+ {
+  "index": 106,
+  "mentions": [
+   [
+    30,
+    7,
+    8
+   ]
+  ],
+  "representative_text": "2nd",
+  "representative_index": 0
+ },
+ {
+  "index": 107,
+  "mentions": [
+   [
+    31,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "The 21st century",
+  "representative_index": 0
+ },
+ {
+  "index": 108,
+  "mentions": [
+   [
+    31,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "1/1/2001",
+  "representative_index": 0
+ },
+ {
+  "index": 109,
+  "mentions": [
+   [
+    31,
+    8,
+    9
+   ]
+  ],
+  "representative_text": "1/1/2000",
+  "representative_index": 0
+ },
+ {
+  "index": 110,
+  "mentions": [
+   [
+    32,
+    0,
+    1
+   ],
+   [
+    32,
+    2,
+    5
+   ]
+  ],
+  "representative_text": "his 102nd birthday",
+  "representative_index": 1
+ },
+ {
+  "index": 111,
+  "mentions": [
+   [
+    33,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "½",
+  "representative_index": 0
+ },
+ {
+  "index": 112,
+  "mentions": [
+   [
+    33,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "¾",
+  "representative_index": 0
+ },
+ {
+  "index": 113,
+  "mentions": [
+   [
+    33,
+    10,
+    11
+   ]
+  ],
+  "representative_text": "3/8",
+  "representative_index": 0
+ },
+ {
+  "index": 114,
+  "mentions": [
+   [
+    34,
+    0,
+    6
+   ]
+  ],
+  "representative_text": "About 2 / 3 of respondents",
+  "representative_index": 0
+ },
+ {
+  "index": 115,
+  "mentions": [
+   [
+    34,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "respondents",
+  "representative_index": 0
+ },
+ {
+  "index": 116,
+  "mentions": [
+   [
+    34,
+    8,
+    11
+   ]
+  ],
+  "representative_text": "1 in 5",
+  "representative_index": 0
+ },
+ {
+  "index": 117,
+  "mentions": [
+   [
+    35,
+    0,
+    2
+   ],
+   [
+    35,
+    3,
+    6
+   ]
+  ],
+  "representative_text": "11:59 PM EST",
+  "representative_index": 1
+ },
+ {
+  "index": 118,
+  "mentions": [
+   [
+    35,
+    3,
+    6
+   ]
+  ],
+  "representative_text": "11:59 PM EST",
+  "representative_index": 0
+ },
+ {
+  "index": 119,
+  "mentions": [
+   [
+    35,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "EST",
+  "representative_index": 0
+ },
+ {
+  "index": 120,
+  "mentions": [
+   [
+    35,
+    7,
+    9
+   ]
+  ],
+  "representative_text": "March 3rd",
+  "representative_index": 0
+ },
+ {
+  "index": 121,
+  "mentions": [
+   [
+    36,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Late submissions",
+  "representative_index": 0
+ },
+ {
+  "index": 122,
+  "mentions": [
+   [
+    36,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "10 %",
+  "representative_index": 0
+ },
+ {
+  "index": 123,
+  "mentions": [
+   [
+    36,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "day",
+  "representative_index": 0
+ },
+ {
+  "index": 124,
+  "mentions": [
+   [
+    37,
+    1,
+    5
+   ]
+  ],
+  "representative_text": "1 – 3 June",
+  "representative_index": 0
+ },
+ {
+  "index": 125,
+  "mentions": [
+   [
+    37,
+    1,
+    5
+   ]
+  ],
+  "representative_text": "1 – 3 June",
+  "representative_index": 0
+ },
+ {
+  "index": 126,
+  "mentions": [
+   [
+    37,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "June",
+  "representative_index": 0
+ },
+ {
+  "index": 127,
+  "mentions": [
+   [
+    37,
+    6,
+    10
+   ]
+  ],
+  "representative_text": "5 – 7 July",
+  "representative_index": 0
+ },
+ {
+  "index": 128,
+  "mentions": [
+   [
+    37,
+    6,
+    10
+   ]
+  ],
+  "representative_text": "5 – 7 July",
+  "representative_index": 0
+ },
+ {
+  "index": 129,
+  "mentions": [
+   [
+    37,
+    9,
+    10
+   ]
+  ],
+  "representative_text": "July",
+  "representative_index": 0
+ },
+ {
+  "index": 130,
+  "mentions": [
+   [
+    38,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "2",
+  "representative_index": 0
+ },
+ {
+  "index": 131,
+  "mentions": [
+   [
+    38,
+    4,
+    6
+   ]
+  ],
+  "representative_text": "4 p.m.",
+  "representative_index": 0
+ },
+ {
+  "index": 132,
+  "mentions": [
+   [
+    38,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "weekdays",
+  "representative_index": 0
+ },
+ {
+  "index": 133,
+  "mentions": [
+   [
+    39,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "It",
+  "representative_index": 0
+ },
+ {
+  "index": 134,
+  "mentions": [
+   [
+    39,
+    2,
+    6
+   ]
+  ],
+  "representative_text": "1h 23 m 45s",
+  "representative_index": 0
+ },
+ {
+  "index": 135,
+  "mentions": [
+   [
+    39,
+    2,
+    6
+   ]
+  ],
+  "representative_text": "1h 23 m 45s",
+  "representative_index": 0
+ },
+ {
+  "index": 136,
+  "mentions": [
+   [
+    40,
+    0,
+    2
+   ],
+   [
+    40,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "The record",
+  "representative_index": 0
+ },
+ {
+  "index": 137,
+  "mentions": [
+   [
+    41,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "The appointment",
+  "representative_index": 0
+ },
+ {
+  "index": 138,
+  "mentions": [
+   [
+    41,
+    4,
+    8
+   ]
+  ],
+  "representative_text": "Tues 12 / 5",
+  "representative_index": 0
+ },
+ {
+  "index": 139,
+  "mentions": [
+   [
+    41,
+    9,
+    11
+   ]
+  ],
+  "representative_text": "3:15 pm",
+  "representative_index": 0
+ },
+ {
+  "index": 140,
+  "mentions": [
+   [
+    42,
+    2,
+    4
+   ]
+  ],
+  "representative_text": "15 min",
+  "representative_index": 0
+ },
+ {
+  "index": 141,
+  "mentions": [
+   [
+    43,
+    7,
+    8
+   ]
+  ],
+  "representative_text": "September",
+  "representative_index": 0
+ },
+ {
+  "index": 142,
+  "mentions": [
+   [
+    43,
+    9,
+    14
+   ]
+  ],
+  "representative_text": "two thousand twenty - three",
+  "representative_index": 0
+ },
+ {
+  "index": 143,
+  "mentions": [
+   [
+    44,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "FY2022 - 23",
+  "representative_index": 0
+ },
+ {
+  "index": 144,
+  "mentions": [
+   [
+    44,
+    0,
+    4
+   ]
+  ],
+  "representative_text": "FY2022 - 23 revenue",
+  "representative_index": 0
+ },
+ {
+  "index": 145,
+  "mentions": [
+   [
+    45,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "FY24",
+  "representative_index": 0
+ },
+ {
+  "index": 146,
+  "mentions": [
+   [
+    46,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "int main",
+  "representative_index": 0
+ },
+ {
+  "index": 147,
+  "mentions": [
+   [
+    46,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "main",
+  "representative_index": 0
+ },
+ {
+  "index": 148,
+  "mentions": [
+   [
+    46,
+    3,
+    5
+   ],
+   [
+    46,
+    4,
+    5
+   ],
+   [
+    46,
+    8,
+    9
+   ]
+  ],
+  "representative_text": "int argc",
+  "representative_index": 0
+ },
+ {
+  "index": 149,
+  "mentions": [
+   [
+    46,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "char",
+  "representative_index": 0
+ },
+ {
+  "index": 150,
+  "mentions": [
+   [
+    46,
+    11,
+    12
+   ]
+  ],
+  "representative_text": "printf",
+  "representative_index": 0
+ },
+ {
+  "index": 151,
+  "mentions": [
+   [
+    46,
+    16,
+    17
+   ]
+  ],
+  "representative_text": "world\\n",
+  "representative_index": 0
+ },
+ {
+  "index": 152,
+  "mentions": [
+   [
+    46,
+    21,
+    22
+   ]
+  ],
+  "representative_text": "0",
+  "representative_index": 0
+ },
+ {
+  "index": 153,
+  "mentions": [
+   [
+    47,
+    0,
+    2
+   ],
+   [
+    47,
+    4,
+    5
+   ],
+   [
+    47,
+    7,
+    8
+   ],
+   [
+    47,
+    9,
+    10
+   ]
+  ],
+  "representative_text": "The variable",
+  "representative_index": 0
+ },
+ {
+  "index": 154,
+  "mentions": [
+   [
+    48,
+    1,
+    2
+   ],
+   [
+    49,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "snake_case",
+  "representative_index": 0
+ },
+ {
+  "index": 155,
+  "mentions": [
+   [
+    48,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "Python",
+  "representative_index": 0
+ },
+ {
+  "index": 156,
+  "mentions": [
+   [
+    48,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "camelCase",
+  "representative_index": 0
+ },
+ {
+  "index": 157,
+  "mentions": [
+   [
+    48,
+    7,
+    8
+   ]
+  ],
+  "representative_text": "JavaScript",
+  "representative_index": 0
+ },
+ {
+  "index": 158,
+  "mentions": [
+   [
+    49,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Ctrl",
+  "representative_index": 0
+ },
+ {
+  "index": 159,
+  "mentions": [
+   [
+    49,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "Alt",
+  "representative_index": 0
+ },
+ {
+  "index": 160,
+  "mentions": [
+   [
+    49,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "Del",
+  "representative_index": 0
+ },
+ {
+  "index": 161,
+  "mentions": [
+   [
+    50,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "Cmd",
+  "representative_index": 0
+ },
+ {
+  "index": 162,
+  "mentions": [
+   [
+    50,
+    7,
+    9
+   ]
+  ],
+  "representative_text": "a screenshot",
+  "representative_index": 0
+ },
+ {
+  "index": 163,
+  "mentions": [
+   [
+    51,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "The ratio",
+  "representative_index": 0
+ },
+ {
+  "index": 164,
+  "mentions": [
+   [
+    52,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "The score",
+  "representative_index": 0
+ },
+ {
+  "index": 165,
+  "mentions": [
+   [
+    52,
+    7,
+    9
+   ]
+  ],
+  "representative_text": "extra time",
+  "representative_index": 0
+ },
+ {
+  "index": 166,
+  "mentions": [
+   [
+    53,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Gate B12",
+  "representative_index": 0
+ },
+ {
+  "index": 167,
+  "mentions": [
+   [
+    53,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "B12",
+  "representative_index": 0
+ },
+ {
+  "index": 168,
+  "mentions": [
+   [
+    53,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "seat 14C",
+  "representative_index": 0
+ },
+ {
+  "index": 169,
+  "mentions": [
+   [
+    54,
+    1,
+    5
+   ],
+   [
+    54,
+    9,
+    10
+   ]
+  ],
+  "representative_text": "the 2.4 GB ISO",
+  "representative_index": 0
+ },
+ {
+  "index": 170,
+  "mentions": [
+   [
+    54,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "ftp://mirror.example.net/pub/linux/",
+  "representative_index": 0
+ },
+ {
+  "index": 171,
+  "mentions": [
+   [
+    54,
+    10,
+    13
+   ]
+  ],
+  "representative_text": "SHA - 256",
+  "representative_index": 0
+ },
+ {
+  "index": 172,
+  "mentions": [
+   [
+    54,
+    9,
+    14
+   ]
+  ],
+  "representative_text": "its SHA - 256 checksum",
+  "representative_index": 0
+ },
+ {
+  "index": 173,
+  "mentions": [
+   [
+    55,
+    1,
+    5
+   ]
+  ],
+  "representative_text": "the - v flag",
+  "representative_index": 0
+ },
+ {
+  "index": 174,
+  "mentions": [
+   [
+    55,
+    11,
+    13
+   ]
+  ],
+  "representative_text": "more output",
+  "representative_index": 0
+ },
+ {
+  "index": 175,
+  "mentions": [
+   [
+    56,
+    0,
+    6
+   ]
+  ],
+  "representative_text": "The -- dry - run option",
+  "representative_index": 0
+ },
+ {
+  "index": 176,
+  "mentions": [
+   [
+    56,
+    7,
+    8
+   ],
+   [
+    56,
+    10,
+    11
+   ]
+  ],
+  "representative_text": "commands",
+  "representative_index": 0
+ },
+ {
+  "index": 177,
+  "mentions": [
+   [
+    57,
+    2,
+    5
+   ]
+  ],
+  "representative_text": "$ 1.5 M",
+  "representative_index": 0
+ },
+ {
+  "index": 178,
+  "mentions": [
+   [
+    57,
+    9,
+    11
+   ]
+  ],
+  "representative_text": "2 BA",
+  "representative_index": 0
+ },
+ {
+  "index": 179,
+  "mentions": [
+   [
+    57,
+    6,
+    15
+   ]
+  ],
+  "representative_text": "a 3BR / 2 BA house built c. 1925",
+  "representative_index": 0
+ },
+ {
+  "index": 180,
+  "mentions": [
+   [
+    57,
+    14,
+    15
+   ]
+  ],
+  "representative_text": "1925",
+  "representative_index": 0
+ },
+ {
+  "index": 181,
+  "mentions": [
+   [
+    58,
+    0,
+    2
+   ],
+   [
+    58,
+    2,
+    4
+   ]
+  ],
+  "representative_text": "The function",
+  "representative_index": 0
+ },
+ {
+  "index": 182,
+  "mentions": [
+   [
+    58,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "x",
+  "representative_index": 0
+ },
+ {
+  "index": 183,
+  "mentions": [
+   [
+    58,
+    6,
+    8
+   ]
+  ],
+  "representative_text": "2 x",
+  "representative_index": 0
+ },
+ {
+  "index": 184,
+  "mentions": [
+   [
+    58,
+    11,
+    12
+   ]
+  ],
+  "representative_text": "3",
+  "representative_index": 0
+ },
+ {
+  "index": 185,
+  "mentions": [
+   [
+    58,
+    13,
+    14
+   ]
+  ],
+  "representative_text": "7",
+  "representative_index": 0
+ },
+ {
+  "index": 186,
+  "mentions": [
+   [
+    59,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "n",
+  "representative_index": 0
+ },
+ {
+  "index": 187,
+  "mentions": [
+   [
+    59,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "1",
+  "representative_index": 0
+ },
+ {
+  "index": 188,
+  "mentions": [
+   [
+    60,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Temperatures",
+  "representative_index": 0
+ },
+ {
+  "index": 189,
+  "mentions": [
+   [
+    60,
+    6,
+    9
+   ]
+  ],
+  "representative_text": "+ 12 degrees",
+  "representative_index": 0
+ },
+ {
+  "index": 190,
+  "mentions": [
+   [
+    61,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "The wind",
+  "representative_index": 0
+ },
+ {
+  "index": 191,
+  "mentions": [
+   [
+    61,
+    3,
+    7
+   ]
+  ],
+  "representative_text": "15 - 20 mph",
+  "representative_index": 0
+ },
+ {
+  "index": 192,
+  "mentions": [
+   [
+    61,
+    10,
+    11
+   ]
+  ],
+  "representative_text": "35",
+  "representative_index": 0
+ },
+ {
+  "index": 193,
+  "mentions": [
+   [
+    62,
+    1,
+    4
+   ]
+  ],
+  "representative_text": "1-800-555-0100 ext. 42",
+  "representative_index": 0
+ },
+ {
+  "index": 194,
+  "mentions": [
+   [
+    62,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "Fax",
+  "representative_index": 0
+ },
+ {
+  "index": 195,
+  "mentions": [
+   [
+    62,
+    7,
+    11
+   ]
+  ],
+  "representative_text": "( 212 ) 555-0188",
+  "representative_index": 0
+ },
+ {
+  "index": 196,
+  "mentions": [
+   [
+    63,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Room 4B",
+  "representative_index": 0
+ },
+ {
+  "index": 197,
+  "mentions": [
+   [
+    63,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "2nd fl.",
+  "representative_index": 0
+ },
+ {
+  "index": 198,
+  "mentions": [
+   [
+    63,
+    11,
+    14
+   ]
+  ],
+  "representative_text": "Washington , DC",
+  "representative_index": 0
+ },
+ {
+  "index": 199,
+  "mentions": [
+   [
+    64,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "2023",
+  "representative_index": 0
+ },
+ {
+  "index": 200,
+  "mentions": [
+   [
+    64,
+    4,
+    7
+   ]
+  ],
+  "representative_text": "14:05:59 + 0200",
+  "representative_index": 0
+ }
+]

@@ -1,0 +1,351 @@
+[
+  [
+    {
+      "id": 1,
+      "text": "Barack",
+      "upos": "PROPN",
+      "xpos": "NNP",
+      "feats": "Number=Sing",
+      "start_char": 0,
+      "end_char": 6,
+      "coref_chains": [
+        {
+          "index": 0,
+          "representative_text": "Barack Obama",
+          "is_start": true,
+          "is_representative": true
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "text": "Obama",
+      "upos": "PROPN",
+      "xpos": "NNP",
+      "feats": "Number=Sing",
+      "start_char": 7,
+      "end_char": 12,
+      "coref_chains": [
+        {
+          "index": 0,
+          "representative_text": "Barack Obama",
+          "is_end": true,
+          "is_representative": true
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "text": "said",
+      "upos": "VERB",
+      "xpos": "VBD",
+      "feats": "Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin",
+      "start_char": 13,
+      "end_char": 17,
+      "coref_chains": []
+    },
+    {
+      "id": 4,
+      "text": "he",
+      "upos": "PRON",
+      "xpos": "PRP",
+      "feats": "Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs",
+      "start_char": 18,
+      "end_char": 20,
+      "coref_chains": [
+        {
+          "index": 0,
+          "representative_text": "Barack Obama",
+          "is_start": true,
+          "is_end": true
+        }
+      ]
+    },
+    {
+      "id": [
+        5,
+        6
+      ],
+      "text": "can't",
+      "start_char": 21,
+      "end_char": 26
+    },
+    {
+      "id": 5,
+      "text": "ca",
+      "upos": "AUX",
+      "xpos": "MD",
+      "feats": "VerbForm=Fin",
+      "start_char": 21,
+      "end_char": 23,
+      "coref_chains": [
+        {
+          "index": 3,
+          "representative_text": "Smiths did",
+          "is_start": true,
+          "is_end": true
+        },
+        {
+          "index": 3,
+          "representative_text": "Smiths did",
+          "is_start": true
+        }
+      ]
+    },
+    {
+      "id": [
+        5,
+        1
+      ],
+      "text": "_",
+      "lemma": "_",
+      "coref_chains": [
+        {
+          "index": 0,
+          "representative_text": "Barack Obama",
+          "is_start": true,
+          "is_end": true
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "text": "n't",
+      "upos": "PART",
+      "xpos": "RB",
+      "feats": "Polarity=Neg",
+      "start_char": 23,
+      "end_char": 26,
+      "coref_chains": [
+        {
+          "index": 3,
+          "representative_text": "Smiths did",
+          "is_end": true
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "text": "come",
+      "upos": "VERB",
+      "xpos": "VB",
+      "feats": "VerbForm=Inf",
+      "start_char": 27,
+      "end_char": 31,
+      "coref_chains": [],
+      "misc": "SpaceAfter=No"
+    },
+    {
+      "id": 8,
+      "text": ".",
+      "upos": "PUNCT",
+      "xpos": ".",
+      "start_char": 31,
+      "end_char": 32,
+      "coref_chains": []
+    }
+  ],
+  [
+    {
+      "id": 1,
+      "text": "The",
+      "upos": "DET",
+      "xpos": "DT",
+      "feats": "Definite=Def|PronType=Art",
+      "start_char": 33,
+      "end_char": 36,
+      "coref_chains": [
+        {
+          "index": 1,
+          "representative_text": "The Smiths",
+          "is_start": true,
+          "is_end": true
+        },
+        {
+          "index": 1,
+          "representative_text": "The Smiths",
+          "is_start": true,
+          "is_representative": true
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "text": "Smiths",
+      "upos": "PROPN",
+      "xpos": "NNPS",
+      "feats": "Number=Plur",
+      "start_char": 37,
+      "end_char": 43,
+      "coref_chains": [
+        {
+          "index": 1,
+          "representative_text": "The Smiths",
+          "is_end": true,
+          "is_representative": true
+        },
+        {
+          "index": 3,
+          "representative_text": "Smiths did",
+          "is_start": true,
+          "is_representative": true
+        }
+      ]
+    },
+    {
+      "id": [
+        3,
+        4
+      ],
+      "text": "didn't",
+      "start_char": 44,
+      "end_char": 50
+    },
+    {
+      "id": 3,
+      "text": "did",
+      "upos": "AUX",
+      "xpos": "VBD",
+      "feats": "Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin",
+      "start_char": 44,
+      "end_char": 47,
+      "coref_chains": [
+        {
+          "index": 3,
+          "representative_text": "Smiths did",
+          "is_end": true,
+          "is_representative": true
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "text": "n't",
+      "upos": "PART",
+      "xpos": "RB",
+      "feats": "Polarity=Neg",
+      "start_char": 47,
+      "end_char": 50,
+      "coref_chains": []
+    },
+    {
+      "id": 5,
+      "text": "call",
+      "upos": "VERB",
+      "xpos": "VB",
+      "feats": "VerbForm=Inf",
+      "start_char": 51,
+      "end_char": 55,
+      "coref_chains": []
+    },
+    {
+      "id": 6,
+      "text": "them",
+      "upos": "PRON",
+      "xpos": "PRP",
+      "feats": "Case=Acc|Number=Plur|Person=3|PronType=Prs",
+      "start_char": 56,
+      "end_char": 60,
+      "coref_chains": [
+        {
+          "index": 1,
+          "representative_text": "The Smiths",
+          "is_start": true,
+          "is_end": true
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "text": "back",
+      "upos": "ADV",
+      "xpos": "RB",
+      "start_char": 61,
+      "end_char": 65,
+      "coref_chains": [],
+      "misc": "SpaceAfter=No"
+    },
+    {
+      "id": 8,
+      "text": ".",
+      "upos": "PUNCT",
+      "xpos": ".",
+      "start_char": 65,
+      "end_char": 66,
+      "coref_chains": []
+    }
+  ],
+  [
+    {
+      "id": [
+        0,
+        1
+      ],
+      "text": "_",
+      "lemma": "_",
+      "coref_chains": [
+        {
+          "index": 2,
+          "representative_text": "_",
+          "is_start": true,
+          "is_end": true
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "text": "Rain",
+      "upos": "NOUN",
+      "xpos": "NN",
+      "feats": "Number=Sing",
+      "start_char": 67,
+      "end_char": 71,
+      "coref_chains": [
+        {
+          "index": 4,
+          "representative_text": "Rain",
+          "is_start": true,
+          "is_end": true,
+          "is_representative": true
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "text": "fell",
+      "upos": "VERB",
+      "xpos": "VBD",
+      "feats": "Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin",
+      "start_char": 72,
+      "end_char": 76,
+      "coref_chains": [],
+      "misc": "SpaceAfter=No"
+    },
+    {
+      "id": 3,
+      "text": ".",
+      "upos": "PUNCT",
+      "xpos": ".",
+      "start_char": 76,
+      "end_char": 77,
+      "coref_chains": [],
+      "misc": "SpaceAfter=No"
+    },
+    {
+      "id": [
+        3,
+        2
+      ],
+      "text": "_",
+      "lemma": "_",
+      "coref_chains": [
+        {
+          "index": 2,
+          "representative_text": "_",
+          "is_start": true,
+          "is_end": true
+        }
+      ]
+    }
+  ]
+]

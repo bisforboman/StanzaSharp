@@ -1,0 +1,1714 @@
+[
+ {
+  "index": 0,
+  "mentions": [
+   [
+    0,
+    0,
+    2
+   ],
+   [
+    1,
+    0,
+    3
+   ],
+   [
+    2,
+    0,
+    2
+   ],
+   [
+    37,
+    0,
+    3
+   ],
+   [
+    38,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Gabriel García Márquez",
+  "representative_index": 1
+ },
+ {
+  "index": 1,
+  "mentions": [
+   [
+    0,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "Copenhagen",
+  "representative_index": 0
+ },
+ {
+  "index": 2,
+  "mentions": [
+   [
+    1,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "Spanish",
+  "representative_index": 0
+ },
+ {
+  "index": 3,
+  "mentions": [
+   [
+    2,
+    3,
+    7
+   ]
+  ],
+  "representative_text": "the New World Symphony",
+  "representative_index": 0
+ },
+ {
+  "index": 4,
+  "mentions": [
+   [
+    3,
+    0,
+    1
+   ],
+   [
+    4,
+    1,
+    2
+   ],
+   [
+    4,
+    10,
+    11
+   ]
+  ],
+  "representative_text": "We",
+  "representative_index": 0
+ },
+ {
+  "index": 5,
+  "mentions": [
+   [
+    3,
+    2,
+    4
+   ]
+  ],
+  "representative_text": "Łukasz Wiśniewski",
+  "representative_index": 0
+ },
+ {
+  "index": 6,
+  "mentions": [
+   [
+    3,
+    5,
+    7
+   ]
+  ],
+  "representative_text": "Ágnes Szabó",
+  "representative_index": 0
+ },
+ {
+  "index": 7,
+  "mentions": [
+   [
+    3,
+    8,
+    12
+   ]
+  ],
+  "representative_text": "the conference in Kraków",
+  "representative_index": 0
+ },
+ {
+  "index": 8,
+  "mentions": [
+   [
+    3,
+    11,
+    12
+   ]
+  ],
+  "representative_text": "Kraków",
+  "representative_index": 0
+ },
+ {
+  "index": 9,
+  "mentions": [
+   [
+    4,
+    4,
+    12
+   ]
+  ],
+  "representative_text": "Reykjavík , where Guðrún Ólafsdóttir showed us around",
+  "representative_index": 0
+ },
+ {
+  "index": 10,
+  "mentions": [
+   [
+    4,
+    7,
+    9
+   ]
+  ],
+  "representative_text": "Guðrún Ólafsdóttir",
+  "representative_index": 0
+ },
+ {
+  "index": 11,
+  "mentions": [
+   [
+    5,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "The menu",
+  "representative_index": 0
+ },
+ {
+  "index": 12,
+  "mentions": [
+   [
+    5,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "jalapeño poppers",
+  "representative_index": 0
+ },
+ {
+  "index": 13,
+  "mentions": [
+   [
+    5,
+    6,
+    11
+   ]
+  ],
+  "representative_text": "a soupçon of crème fraîche",
+  "representative_index": 0
+ },
+ {
+  "index": 14,
+  "mentions": [
+   [
+    5,
+    13,
+    14
+   ]
+  ],
+  "representative_text": "smørrebrød",
+  "representative_index": 0
+ },
+ {
+  "index": 15,
+  "mentions": [
+   [
+    6,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "The sommelier",
+  "representative_index": 0
+ },
+ {
+  "index": 16,
+  "mentions": [
+   [
+    6,
+    3,
+    6
+   ]
+  ],
+  "representative_text": "a Grüner Veltliner",
+  "representative_index": 0
+ },
+ {
+  "index": 17,
+  "mentions": [
+   [
+    7,
+    0,
+    1
+   ],
+   [
+    7,
+    4,
+    5
+   ],
+   [
+    13,
+    9,
+    10
+   ],
+   [
+    16,
+    0,
+    1
+   ],
+   [
+    16,
+    2,
+    4
+   ],
+   [
+    42,
+    4,
+    5
+   ],
+   [
+    45,
+    0,
+    1
+   ],
+   [
+    45,
+    2,
+    4
+   ],
+   [
+    50,
+    0,
+    1
+   ],
+   [
+    50,
+    2,
+    3
+   ],
+   [
+    50,
+    5,
+    9
+   ]
+  ],
+  "representative_text": "the capital of Ukraine",
+  "representative_index": 10
+ },
+ {
+  "index": 18,
+  "mentions": [
+   [
+    7,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "İstanbul and Ankara",
+  "representative_index": 0
+ },
+ {
+  "index": 19,
+  "mentions": [
+   [
+    7,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "Ankara",
+  "representative_index": 0
+ },
+ {
+  "index": 20,
+  "mentions": [
+   [
+    7,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "Türkiye",
+  "representative_index": 0
+ },
+ {
+  "index": 21,
+  "mentions": [
+   [
+    8,
+    0,
+    8
+   ],
+   [
+    8,
+    9,
+    10
+   ]
+  ],
+  "representative_text": "The Turkish word for \" thank you \"",
+  "representative_index": 0
+ },
+ {
+  "index": 22,
+  "mentions": [
+   [
+    8,
+    5,
+    7
+   ]
+  ],
+  "representative_text": "thank you",
+  "representative_index": 0
+ },
+ {
+  "index": 23,
+  "mentions": [
+   [
+    9,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "François",
+  "representative_index": 0
+ },
+ {
+  "index": 24,
+  "mentions": [
+   [
+    9,
+    0,
+    3
+   ],
+   [
+    10,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "François and Hélène",
+  "representative_index": 0
+ },
+ {
+  "index": 25,
+  "mentions": [
+   [
+    9,
+    2,
+    3
+   ],
+   [
+    13,
+    0,
+    1
+   ],
+   [
+    14,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Hélène",
+  "representative_index": 0
+ },
+ {
+  "index": 26,
+  "mentions": [
+   [
+    9,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "Montréal",
+  "representative_index": 0
+ },
+ {
+  "index": 27,
+  "mentions": [
+   [
+    9,
+    7,
+    8
+   ]
+  ],
+  "representative_text": "2015",
+  "representative_index": 0
+ },
+ {
+  "index": 28,
+  "mentions": [
+   [
+    10,
+    0,
+    2
+   ],
+   [
+    10,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "Their son",
+  "representative_index": 0
+ },
+ {
+  "index": 29,
+  "mentions": [
+   [
+    10,
+    7,
+    11
+   ]
+  ],
+  "representative_text": "École Saint - Exupéry",
+  "representative_index": 0
+ },
+ {
+  "index": 30,
+  "mentions": [
+   [
+    11,
+    0,
+    3
+   ],
+   [
+    11,
+    3,
+    4
+   ],
+   [
+    11,
+    6,
+    8
+   ]
+  ],
+  "representative_text": "The Japanese word",
+  "representative_index": 0
+ },
+ {
+  "index": 31,
+  "mentions": [
+   [
+    12,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "Chinese",
+  "representative_index": 0
+ },
+ {
+  "index": 32,
+  "mentions": [
+   [
+    12,
+    3,
+    4
+   ],
+   [
+    12,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "北京",
+  "representative_index": 0
+ },
+ {
+  "index": 33,
+  "mentions": [
+   [
+    12,
+    8,
+    9
+   ]
+  ],
+  "representative_text": "你好",
+  "representative_index": 0
+ },
+ {
+  "index": 34,
+  "mentions": [
+   [
+    12,
+    10,
+    11
+   ]
+  ],
+  "representative_text": "hello",
+  "representative_index": 0
+ },
+ {
+  "index": 35,
+  "mentions": [
+   [
+    13,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "한국어",
+  "representative_index": 0
+ },
+ {
+  "index": 36,
+  "mentions": [
+   [
+    13,
+    4,
+    6
+   ]
+  ],
+  "representative_text": "two years",
+  "representative_index": 0
+ },
+ {
+  "index": 37,
+  "mentions": [
+   [
+    14,
+    0,
+    3
+   ],
+   [
+    14,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "Her favorite dish",
+  "representative_index": 0
+ },
+ {
+  "index": 38,
+  "mentions": [
+   [
+    15,
+    0,
+    7
+   ],
+   [
+    15,
+    8,
+    9
+   ]
+  ],
+  "representative_text": "The Russian word for \" peace \"",
+  "representative_index": 0
+ },
+ {
+  "index": 39,
+  "mentions": [
+   [
+    15,
+    5,
+    6
+   ],
+   [
+    20,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "peace",
+  "representative_index": 0
+ },
+ {
+  "index": 40,
+  "mentions": [
+   [
+    16,
+    5,
+    8
+   ],
+   [
+    16,
+    9,
+    14
+   ]
+  ],
+  "representative_text": "the second - largest city",
+  "representative_index": 1
+ },
+ {
+  "index": 41,
+  "mentions": [
+   [
+    17,
+    0,
+    11
+   ]
+  ],
+  "representative_text": "Greek letters such as α , β , γ and Ω",
+  "representative_index": 0
+ },
+ {
+  "index": 42,
+  "mentions": [
+   [
+    17,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "α",
+  "representative_index": 0
+ },
+ {
+  "index": 43,
+  "mentions": [
+   [
+    17,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "β",
+  "representative_index": 0
+ },
+ {
+  "index": 44,
+  "mentions": [
+   [
+    17,
+    8,
+    9
+   ]
+  ],
+  "representative_text": "γ",
+  "representative_index": 0
+ },
+ {
+  "index": 45,
+  "mentions": [
+   [
+    17,
+    10,
+    11
+   ]
+  ],
+  "representative_text": "Ω",
+  "representative_index": 0
+ },
+ {
+  "index": 46,
+  "mentions": [
+   [
+    17,
+    13,
+    14
+   ]
+  ],
+  "representative_text": "physics",
+  "representative_index": 0
+ },
+ {
+  "index": 47,
+  "mentions": [
+   [
+    17,
+    13,
+    15
+   ]
+  ],
+  "representative_text": "physics formulas",
+  "representative_index": 0
+ },
+ {
+  "index": 48,
+  "mentions": [
+   [
+    18,
+    0,
+    2
+   ],
+   [
+    18,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "The word",
+  "representative_index": 0
+ },
+ {
+  "index": 49,
+  "mentions": [
+   [
+    18,
+    4,
+    7
+   ]
+  ],
+  "representative_text": "love of wisdom",
+  "representative_index": 0
+ },
+ {
+  "index": 50,
+  "mentions": [
+   [
+    18,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "wisdom",
+  "representative_index": 0
+ },
+ {
+  "index": 51,
+  "mentions": [
+   [
+    19,
+    0,
+    3
+   ],
+   [
+    19,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "The Arabic greeting",
+  "representative_index": 0
+ },
+ {
+  "index": 52,
+  "mentions": [
+   [
+    20,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Hebrew",
+  "representative_index": 0
+ },
+ {
+  "index": 53,
+  "mentions": [
+   [
+    20,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "שלום",
+  "representative_index": 0
+ },
+ {
+  "index": 54,
+  "mentions": [
+   [
+    21,
+    0,
+    2
+   ],
+   [
+    21,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "Dmitri Shostakovich",
+  "representative_index": 0
+ },
+ {
+  "index": 55,
+  "mentions": [
+   [
+    21,
+    7,
+    9
+   ]
+  ],
+  "representative_text": "fifteen symphonies",
+  "representative_index": 0
+ },
+ {
+  "index": 56,
+  "mentions": [
+   [
+    22,
+    0,
+    4
+   ]
+  ],
+  "representative_text": "Nguyễn Thị Minh Khai",
+  "representative_index": 0
+ },
+ {
+  "index": 57,
+  "mentions": [
+   [
+    22,
+    0,
+    5
+   ]
+  ],
+  "representative_text": "Nguyễn Thị Minh Khai Street",
+  "representative_index": 0
+ },
+ {
+  "index": 58,
+  "mentions": [
+   [
+    22,
+    7,
+    11
+   ]
+  ],
+  "representative_text": "Hồ Chí Minh City",
+  "representative_index": 0
+ },
+ {
+  "index": 59,
+  "mentions": [
+   [
+    23,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Phở",
+  "representative_index": 0
+ },
+ {
+  "index": 60,
+  "mentions": [
+   [
+    24,
+    0,
+    2
+   ],
+   [
+    24,
+    3,
+    6
+   ]
+  ],
+  "representative_text": "Chimamanda Ngozi Adichie",
+  "representative_index": 1
+ },
+ {
+  "index": 61,
+  "mentions": [
+   [
+    24,
+    9,
+    10
+   ]
+  ],
+  "representative_text": "Lagos",
+  "representative_index": 0
+ },
+ {
+  "index": 62,
+  "mentions": [
+   [
+    25,
+    0,
+    4
+   ]
+  ],
+  "representative_text": "Ngũgĩ wa Thiong'o",
+  "representative_index": 0
+ },
+ {
+  "index": 63,
+  "mentions": [
+   [
+    25,
+    6,
+    8
+   ]
+  ],
+  "representative_text": "the audience",
+  "representative_index": 0
+ },
+ {
+  "index": 64,
+  "mentions": [
+   [
+    26,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "São Paulo's",
+  "representative_index": 0
+ },
+ {
+  "index": 65,
+  "mentions": [
+   [
+    26,
+    0,
+    4
+   ]
+  ],
+  "representative_text": "São Paulo's population",
+  "representative_index": 0
+ },
+ {
+  "index": 66,
+  "mentions": [
+   [
+    26,
+    5,
+    7
+   ]
+  ],
+  "representative_text": "12 million",
+  "representative_index": 0
+ },
+ {
+  "index": 67,
+  "mentions": [
+   [
+    27,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Ação",
+  "representative_index": 0
+ },
+ {
+  "index": 68,
+  "mentions": [
+   [
+    27,
+    0,
+    3
+   ],
+   [
+    27,
+    4,
+    6
+   ]
+  ],
+  "representative_text": "Ação and coração",
+  "representative_index": 0
+ },
+ {
+  "index": 69,
+  "mentions": [
+   [
+    27,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "coração",
+  "representative_index": 0
+ },
+ {
+  "index": 70,
+  "mentions": [
+   [
+    28,
+    0,
+    6
+   ],
+   [
+    28,
+    7,
+    8
+   ]
+  ],
+  "representative_text": "The Māori name for New Zealand",
+  "representative_index": 0
+ },
+ {
+  "index": 71,
+  "mentions": [
+   [
+    28,
+    4,
+    6
+   ]
+  ],
+  "representative_text": "New Zealand",
+  "representative_index": 0
+ },
+ {
+  "index": 72,
+  "mentions": [
+   [
+    29,
+    0,
+    3
+   ],
+   [
+    29,
+    4,
+    7
+   ],
+   [
+    31,
+    0,
+    1
+   ],
+   [
+    31,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "Te reo Māori",
+  "representative_index": 0
+ },
+ {
+  "index": 73,
+  "mentions": [
+   [
+    30,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Hindi",
+  "representative_index": 0
+ },
+ {
+  "index": 74,
+  "mentions": [
+   [
+    30,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "Devanagari",
+  "representative_index": 0
+ },
+ {
+  "index": 75,
+  "mentions": [
+   [
+    30,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "नमस्ते",
+  "representative_index": 0
+ },
+ {
+  "index": 76,
+  "mentions": [
+   [
+    30,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "hello",
+  "representative_index": 0
+ },
+ {
+  "index": 77,
+  "mentions": [
+   [
+    31,
+    2,
+    5
+   ]
+  ],
+  "representative_text": "its own script",
+  "representative_index": 0
+ },
+ {
+  "index": 78,
+  "mentions": [
+   [
+    31,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "வணக்கம்",
+  "representative_index": 0
+ },
+ {
+  "index": 79,
+  "mentions": [
+   [
+    32,
+    0,
+    4
+   ]
+  ],
+  "representative_text": "Herr Müller from Düsseldorf",
+  "representative_index": 0
+ },
+ {
+  "index": 80,
+  "mentions": [
+   [
+    32,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "Düsseldorf",
+  "representative_index": 0
+ },
+ {
+  "index": 81,
+  "mentions": [
+   [
+    32,
+    5,
+    7
+   ]
+  ],
+  "representative_text": "a Weißbier",
+  "representative_index": 0
+ },
+ {
+  "index": 82,
+  "mentions": [
+   [
+    33,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Straße",
+  "representative_index": 0
+ },
+ {
+  "index": 83,
+  "mentions": [
+   [
+    33,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "street",
+  "representative_index": 0
+ },
+ {
+  "index": 84,
+  "mentions": [
+   [
+    34,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Ångström",
+  "representative_index": 0
+ },
+ {
+  "index": 85,
+  "mentions": [
+   [
+    34,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Ångström units",
+  "representative_index": 0
+ },
+ {
+  "index": 86,
+  "mentions": [
+   [
+    34,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "tiny distances",
+  "representative_index": 0
+ },
+ {
+  "index": 87,
+  "mentions": [
+   [
+    35,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "Øresund",
+  "representative_index": 0
+ },
+ {
+  "index": 88,
+  "mentions": [
+   [
+    35,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "The Øresund Bridge",
+  "representative_index": 0
+ },
+ {
+  "index": 89,
+  "mentions": [
+   [
+    35,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "Denmark",
+  "representative_index": 0
+ },
+ {
+  "index": 90,
+  "mentions": [
+   [
+    35,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "Sweden",
+  "representative_index": 0
+ },
+ {
+  "index": 91,
+  "mentions": [
+   [
+    36,
+    0,
+    2
+   ],
+   [
+    36,
+    2,
+    6
+   ],
+   [
+    36,
+    9,
+    14
+   ]
+  ],
+  "representative_text": "One Hundred Years of Solitude",
+  "representative_index": 2
+ },
+ {
+  "index": 92,
+  "mentions": [
+   [
+    37,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "español",
+  "representative_index": 0
+ },
+ {
+  "index": 93,
+  "mentions": [
+   [
+    37,
+    7,
+    8
+   ]
+  ],
+  "representative_text": "English",
+  "representative_index": 0
+ },
+ {
+  "index": 94,
+  "mentions": [
+   [
+    38,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "Janáček's",
+  "representative_index": 0
+ },
+ {
+  "index": 95,
+  "mentions": [
+   [
+    38,
+    0,
+    6
+   ]
+  ],
+  "representative_text": "Dvořák's and Janáček's works",
+  "representative_index": 0
+ },
+ {
+  "index": 96,
+  "mentions": [
+   [
+    39,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Zoë's",
+  "representative_index": 0
+ },
+ {
+  "index": 97,
+  "mentions": [
+   [
+    39,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "Zoë's café",
+  "representative_index": 0
+ },
+ {
+  "index": 98,
+  "mentions": [
+   [
+    39,
+    5,
+    7
+   ]
+  ],
+  "representative_text": "Château Frontenac",
+  "representative_index": 0
+ },
+ {
+  "index": 99,
+  "mentions": [
+   [
+    40,
+    0,
+    3
+   ],
+   [
+    40,
+    5,
+    7
+   ]
+  ],
+  "representative_text": "The Thai word",
+  "representative_index": 0
+ },
+ {
+  "index": 100,
+  "mentions": [
+   [
+    41,
+    0,
+    1
+   ],
+   [
+    41,
+    2,
+    3
+   ],
+   [
+    41,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "Georgian",
+  "representative_index": 0
+ },
+ {
+  "index": 101,
+  "mentions": [
+   [
+    41,
+    2,
+    5
+   ]
+  ],
+  "representative_text": "its own alphabet",
+  "representative_index": 0
+ },
+ {
+  "index": 102,
+  "mentions": [
+   [
+    42,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "Ålesund",
+  "representative_index": 0
+ },
+ {
+  "index": 103,
+  "mentions": [
+   [
+    43,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "the train",
+  "representative_index": 0
+ },
+ {
+  "index": 104,
+  "mentions": [
+   [
+    43,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "Köln",
+  "representative_index": 0
+ },
+ {
+  "index": 105,
+  "mentions": [
+   [
+    44,
+    0,
+    1
+   ],
+   [
+    44,
+    2,
+    7
+   ],
+   [
+    44,
+    6,
+    7
+   ],
+   [
+    45,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "the Greek name for Greece",
+  "representative_index": 1
+ },
+ {
+  "index": 106,
+  "mentions": [
+   [
+    46,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "The sign",
+  "representative_index": 0
+ },
+ {
+  "index": 107,
+  "mentions": [
+   [
+    46,
+    3,
+    12
+   ]
+  ],
+  "representative_text": "ДОБРО ПОЖАЛОВАТЬ , which means \" welcome . \"",
+  "representative_index": 0
+ },
+ {
+  "index": 108,
+  "mentions": [
+   [
+    48,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Ēriks Lūsis",
+  "representative_index": 0
+ },
+ {
+  "index": 109,
+  "mentions": [
+   [
+    48,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "Žydrūnas Ilgauskas",
+  "representative_index": 0
+ },
+ {
+  "index": 110,
+  "mentions": [
+   [
+    48,
+    0,
+    8
+   ],
+   [
+    48,
+    9,
+    11
+   ]
+  ],
+  "representative_text": "Ēriks Lūsis , Žydrūnas Ilgauskas and Ģirts Āboliņš",
+  "representative_index": 0
+ },
+ {
+  "index": 111,
+  "mentions": [
+   [
+    48,
+    6,
+    8
+   ],
+   [
+    49,
+    0,
+    1
+   ],
+   [
+    49,
+    2,
+    3
+   ],
+   [
+    49,
+    7,
+    8
+   ]
+  ],
+  "representative_text": "Ģirts Āboliņš",
+  "representative_index": 0
+ },
+ {
+  "index": 112,
+  "mentions": [
+   [
+    49,
+    2,
+    4
+   ],
+   [
+    49,
+    10,
+    11
+   ]
+  ],
+  "representative_text": "his name",
+  "representative_index": 0
+ },
+ {
+  "index": 113,
+  "mentions": [
+   [
+    49,
+    7,
+    9
+   ]
+  ],
+  "representative_text": "his passport",
+  "representative_index": 0
+ },
+ {
+  "index": 114,
+  "mentions": [
+   [
+    50,
+    8,
+    9
+   ]
+  ],
+  "representative_text": "Ukraine",
+  "representative_index": 0
+ },
+ {
+  "index": 115,
+  "mentions": [
+   [
+    51,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "The poet",
+  "representative_index": 0
+ },
+ {
+  "index": 116,
+  "mentions": [
+   [
+    51,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "haiku",
+  "representative_index": 0
+ },
+ {
+  "index": 117,
+  "mentions": [
+   [
+    52,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "The old sign",
+  "representative_index": 0
+ },
+ {
+  "index": 118,
+  "mentions": [
+   [
+    52,
+    4,
+    6
+   ],
+   [
+    52,
+    13,
+    14
+   ],
+   [
+    53,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "ΤΗΣ ΠΟΛΕΩΣ",
+  "representative_index": 0
+ },
+ {
+  "index": 119,
+  "mentions": [
+   [
+    52,
+    7,
+    8
+   ]
+  ],
+  "representative_text": "capitals",
+  "representative_index": 0
+ },
+ {
+  "index": 120,
+  "mentions": [
+   [
+    52,
+    10,
+    12
+   ]
+  ],
+  "representative_text": "the guide",
+  "representative_index": 0
+ }
+]
