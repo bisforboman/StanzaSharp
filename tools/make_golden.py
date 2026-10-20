@@ -500,7 +500,7 @@ class RecordContextual:
 
 def electra_locally(models):
     """
-    Has Stanza's load_bert read TRANSFORMER and ROBERTA (English) and GERMAN["TRANSFORMER"] and DBMDZ from <models>/<lang>/transformer/
+    Has Stanza's load_bert read TRANSFORMER, ROBERTA and XLMR (English) and GERMAN["TRANSFORMER"] and DBMDZ from <models>/<lang>/transformer/
     (the files ModelDownloader fetches at the pinned revision) instead of Hugging Face's cache.
     """
     from stanza.models.common import bert_embedding
@@ -508,7 +508,8 @@ def electra_locally(models):
     local = {TRANSFORMER: Path(models) / "en" / "transformer" / TRANSFORMER,
              ROBERTA: Path(models) / "en" / "transformer" / ROBERTA,
              GERMAN["TRANSFORMER"]: Path(models) / "de" / "transformer" / GERMAN["TRANSFORMER"],
-             DBMDZ: Path(models) / "de" / "transformer" / DBMDZ}
+             DBMDZ: Path(models) / "de" / "transformer" / DBMDZ,
+             XLMR: Path(models) / "en" / "transformer" / XLMR}
 
     def load_bert(model_name, *args, **kwargs):
         if model_name in local:
@@ -516,6 +517,11 @@ def electra_locally(models):
         return load(model_name, *args, **kwargs)
 
     bert_embedding.load_bert = load_bert
+
+    # coref's model loads its tokenizer apart, through its own import of load_tokenizer
+    from stanza.models.coref import model as coref_model
+    load_tokenizer = coref_model.load_tokenizer
+    coref_model.load_tokenizer = lambda name, *args, **kwargs: load_tokenizer(str(local[name]) if name in local else name, *args, **kwargs)
 
 
 # Models trained on another pretrain than resources.json lists (Pipeline.ListedPretrains,
@@ -1287,6 +1293,81 @@ def write_json_golden(models, out):
         print(f"json/{name}.json: {len(doc.sentences)} sentences, {doc.num_words} words")
 
 
+# Coref (docs/coref-plan.md, PR b): the tagger's package models (PROPN breaks the representative's ties) and coref's default model.
+COREF_PROCESSORS = {"tokenize": "combined_nocharlm", "mwt": "combined", "pos": "combined_charlm", "coref": "udcoref_xlm-roberta-lora"}
+COREF_JSON_FILE = "validation_dialogue"  # also written as str(doc)
+# The English model predicts no zero mentions, so crafted.* sets doc.coref by hand on this text, with empty words added:
+# nested mentions, mentions over part of a multi-word token and over all of one, a representative that is not the first
+# mention, zero mentions (inside a multi-word token, before the first word, after the last) and a chain of zeros only.
+COREF_CRAFTED_TEXT = "Barack Obama said he can't come. The Smiths didn't call them back. Rain fell."
+COREF_CRAFTED_EMPTY = {0: [5], 2: [0, 3]}  # sentence -> the word id each empty word follows, in order (numbered 1, 2, ...)
+# (mentions: (sentence, start, end) or (sentence, (word id, empty index)), representative index); in document order, as the
+# coref processor sorts each cluster's spans
+COREF_CRAFTED_CHAINS = [
+    ([(0, 0, 2), (0, 3, 4), (0, (5, 1))], 0),
+    ([(1, 0, 1), (1, 0, 2), (1, 5, 6)], 1),
+    ([(2, (0, 1)), (2, (3, 2))], None),
+    ([(0, 4, 5), (0, 4, 6), (1, 1, 3)], 2),
+    ([(2, 0, 1)], 0),
+]
+
+
+def coref_chains_json(doc):
+    """doc.coref as plain data: index, mentions ([sentence, start, end], a zero's start and end as [word id, empty index]), text, index."""
+    return [{"index": c.index, "mentions": [[m.sentence, m.start_word, m.end_word] for m in c.mentions],
+             "representative_text": c.representative_text, "representative_index": c.representative_index} for c in doc.coref]
+
+
+def write_coref_golden(models, out):
+    """
+    coref/: Stanza's coref (COREF_PROCESSORS) on corpus.txt and each validation*.txt: <name>.conllu ("{:C}"), <name>.chains.json
+    (doc.coref), and COREF_JSON_FILE's str(doc) as <name>.str.json; crafted.conllu / .chains.json / .str.json, chains set by hand
+    on COREF_CRAFTED_TEXT with empty words. Stanza's coref model reads XLMR from <models>/en/transformer/ (electra_locally).
+    """
+    from stanza.models.common.doc import Word
+    from stanza.models.coref.coref_chain import CorefChain, CorefMention
+    from stanza.pipeline.coref_processor import extract_text
+
+    electra_locally(models)
+    folder = out / "coref"
+    folder.mkdir(exist_ok=True)
+    nlp = stanza.Pipeline(LANG, dir=models, package=None, processors=COREF_PROCESSORS, download_method=None, use_gpu=False,
+                          logging_level="WARN")
+
+    def write(name, doc, as_str=False):
+        (folder / f"{name}.conllu").write_text("{:C}\n".format(doc), encoding="utf-8", newline="\n")
+        with open(folder / f"{name}.chains.json", "w", encoding="utf-8", newline="\n") as f:
+            json.dump(coref_chains_json(doc), f, indent=1, ensure_ascii=False)
+            f.write("\n")
+        if as_str:
+            (folder / f"{name}.str.json").write_text(str(doc), encoding="utf-8", newline="\n")
+        print(f"coref/{name}.conllu: {len(doc.sentences)} sentences, {len(doc.coref)} chains, "
+              f"{sum(len(c.mentions) for c in doc.coref)} mentions, {sum(len(s.empty_words) for s in doc.sentences)} empty words")
+
+    for path in [out / "corpus.txt"] + sorted(out.glob("validation*.txt")):
+        with torch.no_grad():
+            doc = nlp(path.read_bytes().decode("utf-8"))
+        name = "corpus" if path.name == "corpus.txt" else path.stem
+        write(name, doc, name == COREF_JSON_FILE)
+
+    tagger = stanza.Pipeline(LANG, dir=models, package=None, processors={p: COREF_PROCESSORS[p] for p in ("tokenize", "mwt", "pos")},
+                             download_method=None, use_gpu=False, logging_level="WARN")
+    with torch.no_grad():
+        doc = tagger(COREF_CRAFTED_TEXT)
+    for s, follows in COREF_CRAFTED_EMPTY.items():
+        sentence = doc.sentences[s]
+        for k, word_id in enumerate(follows, start=1):
+            sentence.empty_words.append(Word(sentence, {"text": "_", "lemma": "_", "id": (word_id, k)}))
+    chains = []
+    for index, (spans, representative) in enumerate(COREF_CRAFTED_CHAINS):
+        mentions = [CorefMention(m[0], m[1], m[1]) if isinstance(m[1], tuple) else CorefMention(*m) for m in spans]
+        text = "_" if representative is None else extract_text(doc, mentions[representative].sentence, mentions[representative].start_word,
+                                                               mentions[representative].end_word)
+        chains.append(CorefChain(index, mentions, text, representative))
+    doc.coref = chains
+    write("crafted", doc, True)
+
+
 HELPER_FILES = ["pipeline.conllu", "validation_contractions.conllu", "validation_multilingual.conllu", "validation_nonbmp.conllu"]
 
 # Word texts whose repr() is not just the text in single quotes: quotes of both kinds, a backslash, a no-break space and a
@@ -1810,6 +1891,7 @@ def main():
     p.add_argument("--packages", default=None, help="with --treebank-only: only these treebank packages (comma-separated)")
     p.add_argument("--models-only", action="store_true", help="only regenerate models/ (MODEL_CHOICES: single models chosen per processor)")
     p.add_argument("--transformer-only", action="store_true", help="only regenerate transformer/ (needs tools/requirements-transformer.txt)")
+    p.add_argument("--coref-only", action="store_true", help="only regenerate coref/ (needs tools/requirements-transformer.txt and the coref model)")
     p.add_argument("--options-only", action="store_true", help="only regenerate options/ (OPTION_CASES: Stanza options with a PipelineOptions property)")
     p.add_argument("--choices", default=None, help="with --models-only: only these MODEL_CHOICES names (comma-separated)")
     args = p.parse_args()
@@ -1825,6 +1907,9 @@ def main():
         write_transformer_golden(args.models, out, ROBERTA if LANG == "en" else DBMDZ)
         if LANG == "en":
             write_transformer_golden(args.models, out, XLMR)
+        return
+    if args.coref_only:
+        write_coref_golden(args.models, out)
         return
     if args.long_token_only:
         write_long_token_golden(args.models, out)

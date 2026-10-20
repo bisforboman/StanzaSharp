@@ -23,7 +23,7 @@ what this plan called new. Checked against `FacebookAI/xlm-roberta-large` at the
 | Unigram tokenizer | **Not started.** `tokenizer.json` is a `Unigram` model (250,002 pieces with scores, `unk_id`), normalizer `Precompiled` (its charsmap is a base64 double-array trie in the file, 316,720 characters, so no `.model` protobuf is needed), pre-tokenizer `WhitespaceSplit` + `Metaspace` (`▁`, `add_prefix_space`), `TemplateProcessing` `<s>` … `</s>`. It fits `ITransformerTokenizer` next to `WordPiece` and `ByteLevelBpe`, and the golden approach is theirs (transformers' ids on every golden word, plus hand-picked cases: NFKC-like folding `Ｆｕｌｌ` → `▁Full`, `n't` → `▁n` `'` `t`, blank words). | the charsmap trie walk (sentencepiece's `normalizer.cc`), Viterbi over piece scores, Metaspace. No package (`Microsoft.ML.Tokenizers` would be the main package's second dependency). | **M** |
 | Windowing | **Different from what exists.** `TransformerEmbedder` is extract_bert_embeddings (overlapping 512 windows per sentence); coref's `get_subwords_batches` cuts the whole document into 510-subword windows at sentence boundaries, without overlap, and batches them with a mask. The managed attention needs no mask (per sequence, no padding), so each window is one sequence. | a coref-only windowing function, with golden subword ids per window. | **S** |
 | Coref head | Not started; unchanged. `Gemm`, `Act` (ReLU, LeakyReLU) and the pooled-buffer rules cover it; Conv1d (kernel 3) is new but small, like sentiment's convolutions. | word encoder, rough scorer + topk, pairwise, anaphoricity, clusterize, span predictor, zeros predictor. | **M** |
-| Document model | Not started; unchanged. | `Document.Coref`, `Word.CorefChains`, empty words (`N.M`) in `Sentence`, `Conllu` and `Json`. | **M** |
+| Document model | **Done** (PR b, 2026-10-20; see "(b) done" below). | none. | – |
 | Golden data and tests | The transformer goldens' pattern exists (`make_golden.py --transformer-only`, `hidden*.safetensors`, `tests/golden/**/transformer/`, `Transformer*` tests in golden shard 4); the pinned `transformers`/`peft` live in `tools/requirements-transformer.txt`. | `--coref-only`, chains and mentions JSON, intermediates (subword ids, encoder output for one window, rough/anaphoricity/span scores), a margins test. | **M** |
 
 **Revised total: L**: the tokenizer, the head, the document model and the golden data, each M; the encoder side S. The risks have moved too:
@@ -71,6 +71,36 @@ unicode-segmentation on every case, Devanagari, Bengali and Tamil conjuncts, Han
 states within 2.8e-5 of Stanza on the golden sentences and 4.3e-5 on the 180-word one, on both backends, so about 11x
 inside coref's smallest golden margin (4.9e-4); a sentence's states have the same bits alone, batched and on any thread
 count. The encoder side of the plan is settled: (b) and (c) wait on Q3–Q5.
+
+**Owner's decisions (2026-10-20):** Q3, Stanza's API shape (`Document.Coref`, `CorefChain`, `CorefMention`,
+`Word.CorefChains` attachments, `Sentence.EmptyWords`); Q4, write `coref_chains=` byte for byte like Stanza and also read
+it back; Q5, reproduce the platform's unsorted topk order, libstdc++'s `nth_element` (golden data is made on Linux now).
+Q1, Q2, Q6, Q7 and Q8 are still open; they decide (c), not (b).
+
+**(b) done (2026-10-20):** the document model in Core, all public: `CorefChain(Index, Mentions, RepresentativeText,
+RepresentativeIndex)`, `CorefMention(Sentence, StartWord, EndWord, EmptyIndex)` (0-based like Stanza; a zero mention's
+start and end are its empty word's `Id`), `CorefAttachment(Chain, IsStart, IsEnd, IsRepresentative)`, `Word.CorefChains`
+(null until `Document.Coref` is set, then a list per word, empty words too), `Word.EmptyIndex`/`IsEmpty` and
+`Sentence.EmptyWords` (empty nodes `i.m`, written right after word `i`, inside a multi-word token too, `0.m` first).
+`Document.Coref`'s setter attaches like Stanza's (every word of the representative mention is marked `repr`, a zero
+mention's empty word start and end but never representative). `Conllu` and `Json` write both as Stanza does
+(`coref_chains=` last in MISC; JSON's `coref_chains` after `end_char`, `[]` for a word in no mention once coref ran) and
+read them back, rebuilding the chains from the marks: mentions from each mention's first and last word, in document
+order, the representative from its marks and its text as `extract_text` builds it. That text joins the pieces with
+single spaces whatever the spacing (`$ 4.50`, `HARBORVIEW , Ore.`): Stanza reads the spacing from `token.misc`, which is
+empty in its documents. Golden `tests/golden/coref/` (`make_golden.py --coref-only`, 1.3 MB): Stanza's coref
+(`COREF_PROCESSORS`: the default package's tokenize, mwt and pos, `udcoref_xlm-roberta-lora`) on corpus.txt and every
+validation text, 1,674 chains and 2,208 mentions (`<name>.conllu`, `<name>.chains.json`, `validation_dialogue.str.json`),
+and `crafted.*`, chains set by hand with empty words, since the English model predicts no zero mentions (nested mentions,
+part of and all of a multi-word token, a representative that isn't first, zeros in a multi-word token, before the first
+word and after the last, a chain of zeros only). `CorefDocumentTests` (no models, every CI job): each file round-trips byte
+for byte, `Read` rebuilds Stanza's chains exactly, `Json.Write` equals `str(doc)`.
+
+Known caveat for (c): reading back, a zero mention is placed in its chain by its empty word's position, `(sentence, Id)`.
+Stanza places it where its original word span sorted (the processor sorts the cluster's spans, then swaps a zero in for
+its span), whose start can lie left of the word the empty node precedes. No English golden has a zero mention, and
+crafted.* lists its mentions in the reader's order, so only (c)'s golden chains (the model is multilingual) can show a
+difference; (c) should check it and fix the order if it does.
 
 Research only (2026-10-14): nothing in `src/`, `tests/` or the workflows has changed. Stanza 1.15.0's English coref
 models are in `models/stanza/en/coref` (gitignored), from

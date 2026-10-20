@@ -6,7 +6,8 @@ namespace StanzaSharp;
 /// <summary>
 /// JSON in Stanza's format: <c>str(doc)</c>, a list of sentences, each a list of token and word objects with
 /// <c>id</c>, <c>text</c>, <c>lemma</c>, <c>upos</c>, <c>xpos</c>, <c>feats</c>, <c>head</c>, <c>deprel</c>,
-/// <c>start_char</c>, <c>end_char</c>, <c>ner</c>, <c>multi_ner</c> and <c>misc</c> (the spacing). Like Stanza's,
+/// <c>start_char</c>, <c>end_char</c>, <c>coref_chains</c>, <c>ner</c>, <c>multi_ner</c> and <c>misc</c> (the spacing), and
+/// the empty words (<c>"id": [i, m]</c>) after the word they follow. Like Stanza's,
 /// it holds no sentence-level results: no text, sentence id, constituency tree or sentiment (use <see cref="Conllu"/>).
 /// </summary>
 public static class Json
@@ -15,7 +16,8 @@ public static class Json
     /// Formats a document byte for byte as Python Stanza's <c>str(doc)</c> (<c>json.dumps(doc.to_dict(), indent=2,
     /// ensure_ascii=False)</c>): a field is left out when it has no value, a multi-word token comes before its words
     /// with its range as <c>"id": [first, last]</c>, and a token's NER tag goes on its line (a single word's for a
-    /// one-word token). No final newline.
+    /// one-word token). Once <see cref="Document.Coref"/> is set, every word has its <c>coref_chains</c> (an empty list
+    /// for a word in no mention), each attachment as Stanza's <c>to_json()</c>. No final newline.
     /// </summary>
     /// <example>
     /// <code>
@@ -32,10 +34,10 @@ public static class Json
 
     /// <summary>
     /// Parses Stanza's JSON (<see cref="Write"/>'s output, or Python's <c>str(doc)</c>) into a document, as Stanza's
-    /// <c>Document(json.loads(text))</c> does: tokens, multi-word tokens, words with their fields, and the spacing from
-    /// <c>misc</c>. Sentence ids are the sentences' indices, as Stanza numbers them; entities are rebuilt from the
-    /// <c>ner</c> tags, as <see cref="Conllu.Read"/> does. <see cref="Document.Text"/> and <see cref="Sentence.Text"/>
-    /// stay null. <c>Json.Write(Json.Read(json))</c> equals <c>json</c> for any <see cref="Write"/> output.
+    /// <c>Document(json.loads(text))</c> does: tokens, multi-word tokens, words with their fields, empty words, and the
+    /// spacing from <c>misc</c>. Sentence ids are the sentences' indices, as Stanza numbers them; entities are rebuilt from
+    /// the <c>ner</c> tags and <see cref="Document.Coref"/> from the <c>coref_chains</c> attachments, as
+    /// <see cref="Conllu.Read"/> does. <see cref="Document.Text"/> and <see cref="Sentence.Text"/> stay null. <c>Json.Write(Json.Read(json))</c> equals <c>json</c> for any <see cref="Write"/> output.
     /// </summary>
     /// <exception cref="JsonException">Not valid JSON, or not a list of lists of objects with <c>id</c> and
     /// <c>text</c>.</exception>
@@ -44,10 +46,11 @@ public static class Json
         ArgumentNullException.ThrowIfNull(json);
         using var parsed = JsonDocument.Parse(json);
         var doc = new Document();
+        var coref = new Dictionary<Word, List<(bool, bool, bool, int)>>(ReferenceEqualityComparer.Instance);
         try
         {
             foreach (var entries in parsed.RootElement.EnumerateArray())
-                doc.Sentences.Add(ReadSentence(entries, doc.Sentences.Count));
+                doc.Sentences.Add(ReadSentence(entries, doc.Sentences.Count, coref));
         }
         catch (Exception e) when (e is InvalidOperationException or KeyNotFoundException or FormatException)
         {
@@ -56,10 +59,20 @@ public static class Json
 
         foreach (var s in doc.Sentences.Where(s => s.Tokens.Any(t => t.Ner != null)))
             Entity.Build(s, doc.Text);
+        try
+        {
+            if (CorefLinks.Rebuild(doc, coref) is { } chains)
+                doc.Coref = chains;
+        }
+        catch (Exception e) when (e is FormatException or ArgumentException)
+        {
+            throw new JsonException("Not a Stanza document: " + e.Message, e);
+        }
+
         return doc;
     }
 
-    private static Sentence ReadSentence(JsonElement entries, int index)
+    private static Sentence ReadSentence(JsonElement entries, int index, Dictionary<Word, List<(bool, bool, bool, int)>> coref)
     {
         var sent = new Sentence { SentId = index.ToString(System.Globalization.CultureInfo.InvariantCulture) };
         Token? mwt = null;
@@ -73,26 +86,21 @@ public static class Json
             {
                 int first = id[0].GetInt32();
                 if (first <= lastWord)
-                    continue; // an empty node (enhanced UD), which our pipeline never makes
+                {
+                    // An empty word: a range starts past the words seen so far, and never at 0 (Sentence._process_tokens).
+                    var empty = NewWord(entry, first, coref);
+                    empty.EmptyIndex = id[1].GetInt32();
+                    sent.EmptyWords.Add(empty);
+                    continue;
+                }
+
                 mwt = NewToken(entry, misc, ner);
                 mwtEnd = id[id.GetArrayLength() - 1].GetInt32();
                 sent.Tokens.Add(mwt);
                 continue;
             }
 
-            var word = new Word
-            {
-                Id = lastWord = id.GetInt32(),
-                Text = entry.GetProperty("text").GetString()!,
-                Lemma = String(entry, "lemma"),
-                Upos = String(entry, "upos"),
-                Xpos = String(entry, "xpos"),
-                Feats = String(entry, "feats"),
-                Head = entry.TryGetProperty("head", out var head) ? head.GetInt32() : null,
-                Deprel = String(entry, "deprel"),
-                StartChar = Int(entry, "start_char"),
-                EndChar = Int(entry, "end_char"),
-            };
+            var word = NewWord(entry, lastWord = id.GetInt32(), coref);
             if (mwt != null && word.Id <= mwtEnd)
             {
                 mwt.Words.Add(word);
@@ -107,6 +115,34 @@ public static class Json
 
         return sent;
     }
+
+    private static Word NewWord(JsonElement entry, int id, Dictionary<Word, List<(bool, bool, bool, int)>> coref)
+    {
+        var word = new Word
+        {
+            Id = id,
+            Text = entry.GetProperty("text").GetString()!,
+            Lemma = String(entry, "lemma"),
+            Upos = String(entry, "upos"),
+            Xpos = String(entry, "xpos"),
+            Feats = String(entry, "feats"),
+            Head = entry.TryGetProperty("head", out var head) ? head.GetInt32() : null,
+            Deprel = String(entry, "deprel"),
+            StartChar = Int(entry, "start_char"),
+            EndChar = Int(entry, "end_char"),
+        };
+
+        // CorefAttachment.to_json: the chain's index and representative text, and each flag only when true.
+        if (entry.TryGetProperty("coref_chains", out var chains) && chains.ValueKind == JsonValueKind.Array)
+        {
+            coref[word] = [.. chains.EnumerateArray().Select(a => (Flag(a, "is_start"), Flag(a, "is_end"), Flag(a, "is_representative"),
+                a.GetProperty("index").GetInt32()))];
+        }
+
+        return word;
+    }
+
+    private static bool Flag(JsonElement attachment, string name) => attachment.TryGetProperty(name, out var value) && value.GetBoolean();
 
     private static Token NewToken(JsonElement entry, Conllu.MiscFields misc, string? ner) => new()
     {
@@ -128,6 +164,12 @@ public static class Json
     // DEFAULT_OUTPUT_FIELDS order, with a non-null value.
     private static IEnumerable<List<(string Key, object Value)>> Entries(Sentence sent)
     {
+        // Sentence._ordered_dicts: an empty word i.m right after word i (inside a multi-word token too), i = 0 first.
+        var empties = sent.EmptyWords.OrderBy(w => w.Id).ThenBy(w => w.EmptyIndex).ToList();
+        int e = 0;
+        while (e < empties.Count && empties[e].Id == 0)
+            yield return WordFields(empties[e], new[] { empties[e].Id, empties[e++].EmptyIndex!.Value });
+
         foreach (var token in sent.Tokens)
         {
             var misc = Conllu.Misc(token.SpaceAfter, token.SpacesBefore, null, null, null);
@@ -140,15 +182,7 @@ public static class Json
 
             foreach (var w in token.Words)
             {
-                var entry = new List<(string, object)> { ("id", w.Id), ("text", w.Text) };
-                Add(entry, "lemma", w.Lemma);
-                Add(entry, "upos", w.Upos);
-                Add(entry, "xpos", w.Xpos);
-                Add(entry, "feats", w.Feats);
-                Add(entry, "head", w.Head);
-                Add(entry, "deprel", w.Deprel);
-                Add(entry, "start_char", w.StartChar);
-                Add(entry, "end_char", w.EndChar);
+                var entry = WordFields(w, w.Id);
                 if (!token.IsMultiWord)
                 {
                     Add(entry, "ner", token.Ner);
@@ -157,8 +191,29 @@ public static class Json
                 }
 
                 yield return entry;
+                while (e < empties.Count && empties[e].Id == w.Id)
+                    yield return WordFields(empties[e], new[] { empties[e].Id, empties[e++].EmptyIndex!.Value });
             }
         }
+
+        while (e < empties.Count)
+            yield return WordFields(empties[e], new[] { empties[e].Id, empties[e++].EmptyIndex!.Value });
+    }
+
+    // Word.to_dict: its own fields, coref_chains last (the token's ner, multi_ner and misc follow, Token.to_dict).
+    private static List<(string Key, object Value)> WordFields(Word w, object id)
+    {
+        var entry = new List<(string, object)> { ("id", id), ("text", w.Text) };
+        Add(entry, "lemma", w.Lemma);
+        Add(entry, "upos", w.Upos);
+        Add(entry, "xpos", w.Xpos);
+        Add(entry, "feats", w.Feats);
+        Add(entry, "head", w.Head);
+        Add(entry, "deprel", w.Deprel);
+        Add(entry, "start_char", w.StartChar);
+        Add(entry, "end_char", w.EndChar);
+        Add(entry, "coref_chains", w.CorefChains);
+        return entry;
     }
 
     private static void AddTokenFields(List<(string, object)> entry, Token token, string misc)
@@ -176,6 +231,16 @@ public static class Json
     {
         if (value != null)
             entry.Add((key, value));
+    }
+
+    // CorefAttachment.to_json: index and representative_text, then each flag only when true.
+    private static List<(string Key, object Value)> Attachment(CorefAttachment a)
+    {
+        var fields = new List<(string, object)> { ("index", a.Chain.Index), ("representative_text", a.Chain.RepresentativeText) };
+        if (a.IsStart) fields.Add(("is_start", true));
+        if (a.IsEnd) fields.Add(("is_end", true));
+        if (a.IsRepresentative) fields.Add(("is_representative", true));
+        return fields;
     }
 
     // json.dumps with indent=2: "[]" when empty, else one item per line, indented two spaces per level.
@@ -221,6 +286,8 @@ public static class Json
             case int n: sb.Append(n); break;
             case int[] ids: List(sb, depth, ids, (n, _) => sb.Append(n)); break;
             case string[] tags: List(sb, depth, tags, (s, _) => String(sb, s)); break;
+            case bool b: sb.Append(b ? "true" : "false"); break;
+            case IReadOnlyList<CorefAttachment> attachments: List(sb, depth, attachments, (a, d) => Entry(sb, d, Attachment(a))); break;
             default: throw new InvalidOperationException(value.GetType().Name);
         }
     }

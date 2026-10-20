@@ -217,7 +217,19 @@ default from 0.5) or through TorchSharp (see "Managed backend").
     `xlm-roberta` (prefix `roberta.`, offset 2); `ModelDownloader.Transformers["FacebookAI/xlm-roberta-large"]` (legacy-format
     `pytorch_model.bin`, 2.24 GB). Goldens `transformer/tokenizer_FacebookAI_xlm-roberta-large.json` (1,095 cases,
     `XLMR_TOKENIZER_CASES`) and `hidden_FacebookAI_xlm-roberta-large.*`; tests `XlmRoberta_*` (`XlmRobertaFact`); golden
-    shard 4 downloads it (`tools/ci-models.sh transformer`).
+    shard 4 downloads it (`tools/ci-models.sh transformer`). Owner's decisions (2026-10-20): Q3 Stanza's API shape, Q4
+    write and read `coref_chains=`, Q5 reproduce libstdc++'s `nth_element` order for topk(sorted=False); Q1, Q2, Q6–Q8 open.
+    PR (b), the document model (Core, `Coref.cs`): `Document.Coref` (its setter attaches like `_attach_coref_mentions`:
+    every word gets a list, every word of the representative mention `repr`, a zero mention's empty word start + end,
+    never representative), `CorefChain`/`CorefMention` (0-based, a zero's start = end = its empty word's `Id`, plus
+    `EmptyIndex`)/`CorefAttachment`, `Word.CorefChains` (null until set), `Word.EmptyIndex`, `Sentence.EmptyWords` (not in
+    `Words`, `WordCount` or `Dependencies`). `Conllu`/`Json` write empty words after word `i` (inside an MWT too, `0.m`
+    first; no dummy head) and `coref_chains=` last in MISC / `coref_chains` after `end_char`, and read both back:
+    `CorefLinks.Rebuild` makes each chain's mentions from first/last-word marks (document order), the representative from
+    its last word's `repr` mark, its text as `extract_text` (pieces joined by single spaces: Stanza reads the spacing from
+    an empty `token.misc`). A word whose text is `_` keeps lemma `_` (Stanza's lemma setter). Golden `tests/golden/coref/`
+    (`make_golden.py --coref-only`; `electra_locally` also serves XLM-R and coref's own `load_tokenizer`): corpus +
+    validation texts and `crafted.*` (chains set by hand with empty words); `CorefDocumentTests`, no models.
   - CI: no cache (the model caches are near GitHub's 10 GB; owner's decision): golden shard 4 downloads the
     `default_accurate` package, the treebanks' transformer models (their packages' other files from the en-treebanks cache)
     and the transformer's files on every run (`tools/ci-models.sh transformer`: `download --package default_accurate`, ...,
@@ -1169,7 +1181,8 @@ What the English treebank packages' checkpoints add to the default package's pat
   - StanzaSharp.Cuda's `CudaBackend` (1.0);
   - Core's results: `Document`, `Sentence`, `Token`, `Word`, `Entity`, `Tree`, `Conllu`, `Json` (owner's decision,
     2026-10-14), `Dependency` (#174, 2026-10-18);
-  - the facade's `ModelPath`, `LanguageIdentifier`, `LanguageIdentifierOptions`, `MultilingualPipeline`, `MultilingualOptions` (#174, 2026-10-19).
+  - the facade's `ModelPath`, `LanguageIdentifier`, `LanguageIdentifierOptions`, `MultilingualPipeline`, `MultilingualOptions` (#174, 2026-10-19);
+  - Core's `CorefChain`, `CorefMention`, `CorefAttachment` (coref PR b, owner's decision 2026-10-20: Stanza's shape).
 
   Everything else is `internal`.
   - Directory.Build.props gives every `src/*` assembly `InternalsVisibleTo` for the other StanzaSharp

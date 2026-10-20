@@ -6,21 +6,28 @@ namespace StanzaSharp;
 /// <summary>
 /// CoNLL-U reading and writing in the dialect Stanza produces: token offsets as
 /// <c>start_char</c>/<c>end_char</c> in MISC, whitespace as <c>SpaceAfter=No</c> / <c>SpacesAfter=</c>
-/// on the token line, NER tags as <c>ner=</c> in MISC, and the parse as a <c># constituency =</c> comment.
+/// on the token line, NER tags as <c>ner=</c> in MISC, coreference as <c>coref_chains=</c> in MISC, empty nodes
+/// (<c>i.m</c>) as <see cref="Sentence.EmptyWords"/>, and the parse as a <c># constituency =</c> comment.
 /// </summary>
 public static class Conllu
 {
     /// <summary>
     /// Parses CoNLL-U text into a document: tokens, multi-word tokens, words with their columns, offsets and
-    /// spacing from MISC, and the <c>text</c>, <c>sent_id</c>, <c>constituency</c> and <c>sentiment</c>
-    /// comments. Entities are rebuilt from <c>ner=</c> tags. <see cref="Document.Text"/> stays null.
+    /// spacing from MISC, empty nodes (<c>i.m</c>), and the <c>text</c>, <c>sent_id</c>, <c>constituency</c> and
+    /// <c>sentiment</c> comments. Entities are rebuilt from <c>ner=</c> tags, and <see cref="Document.Coref"/> from the
+    /// <c>coref_chains=</c> marks (which Stanza writes but does not read): each chain's mentions from their first and last
+    /// words' marks, in document order, the representative one from its <c>repr</c> marks, its text from its words as Stanza
+    /// builds it (tokens and words joined by single spaces). <see cref="Document.Text"/> stays null.
     /// </summary>
+    /// <exception cref="FormatException">A line is not CoNLL-U, or a <c>coref_chains=</c> mark is malformed or ends a mention
+    /// no mark started.</exception>
     public static Document Read(string text)
     {
         var doc = new Document();
         Sentence? sent = null;
         Token? mwt = null;
         int mwtEnd = 0;
+        var coref = new Dictionary<Word, List<(bool, bool, bool, int)>>(ReferenceEqualityComparer.Instance);
 
         foreach (var raw in text.Split('\n'))
         {
@@ -58,14 +65,13 @@ public static class Conllu
                 continue;
             }
 
-            if (cols[0].Contains('.'))
-                continue; // empty nodes (enhanced UD) are not produced by our pipeline
-
+            int dot = cols[0].IndexOf('.');
             var word = new Word
             {
-                Id = int.Parse(cols[0]),
+                Id = int.Parse(dot > 0 ? cols[0][..dot] : cols[0]),
+                EmptyIndex = dot > 0 ? int.Parse(cols[0][(dot + 1)..]) : null,
                 Text = cols[1],
-                Lemma = Field(cols[2]),
+                Lemma = cols[1] == "_" ? cols[2] : Field(cols[2]), // Word.lemma keeps "_" for a word whose text is "_" (an empty word's)
                 Upos = Field(cols[3]),
                 Xpos = Field(cols[4]),
                 Feats = Field(cols[5]),
@@ -74,6 +80,14 @@ public static class Conllu
                 StartChar = misc.Start,
                 EndChar = misc.End,
             };
+            if (misc.Coref != null)
+                coref[word] = [.. misc.Coref.Split(',').Select(CorefLinks.ParseConllu)];
+            if (word.EmptyIndex != null)
+            {
+                sent.EmptyWords.Add(word);
+                continue;
+            }
+
             if (mwt != null && word.Id <= mwtEnd)
             {
                 mwt.Words.Add(word);
@@ -91,6 +105,8 @@ public static class Conllu
 
         foreach (var s in doc.Sentences.Where(s => s.Tokens.Any(t => t.Ner != null)))
             Entity.Build(s, doc.Text);
+        if (CorefLinks.Rebuild(doc, coref) is { } chains)
+            doc.Coref = chains;
         return doc;
     }
 
@@ -119,6 +135,12 @@ public static class Conllu
         // Stanza runs sentiment after constituency, and its comments keep the order they were set in.
         if (sent.Sentiment != null) sb.Append("# sentiment = ").Append(sent.Sentiment.Value).Append('\n');
 
+        // Sentence._ordered_dicts: an empty word i.m right after word i (inside a multi-word token too), i = 0 first.
+        var empties = sent.EmptyWords.OrderBy(w => w.Id).ThenBy(w => w.EmptyIndex).ToList();
+        int e = 0;
+        while (e < empties.Count && empties[e].Id == 0)
+            WriteEmpty(sb, empties[e++]);
+
         foreach (var token in sent.Tokens)
         {
             if (token.IsMultiWord)
@@ -126,7 +148,7 @@ public static class Conllu
                 sb.Append(token.Words[0].Id).Append('-').Append(token.Words[^1].Id).Append('\t')
                   .Append(token.Text)
                   .Append("\t_\t_\t_\t_\t_\t_\t_\t")
-                  .Append(Misc(token.SpaceAfter, token.SpacesBefore, token.StartChar, token.EndChar, token.Ner))
+                  .Append(Misc(token.SpaceAfter, token.SpacesBefore, token.StartChar, token.EndChar, token.Ner, null))
                   .Append('\n');
             }
 
@@ -150,11 +172,34 @@ public static class Conllu
                   .Append("\t_\t")
 
                   // The NER tag belongs to the token: on the range line of an MWT, on the word otherwise.
-                  .Append(Misc(after, before, w.StartChar, w.EndChar, token.IsMultiWord ? null : token.Ner))
+                  .Append(Misc(after, before, w.StartChar, w.EndChar, token.IsMultiWord ? null : token.Ner, w.CorefChains))
                   .Append('\n');
+                while (e < empties.Count && empties[e].Id == w.Id)
+                    WriteEmpty(sb, empties[e++]);
             }
         }
+
+        while (e < empties.Count)
+            WriteEmpty(sb, empties[e++]);
     }
+
+    // dict_to_conll_text for an empty word: "i.m", its fields, no dummy head, no spacing (it has no token).
+    private static void WriteEmpty(StringBuilder sb, Word w) =>
+        sb.Append(w.Id).Append('.').Append(w.EmptyIndex).Append('\t').Append(w.Text).Append('\t')
+          .Append(w.Lemma ?? "_")
+          .Append('\t')
+          .Append(w.Upos ?? "_")
+          .Append('\t')
+          .Append(w.Xpos ?? "_")
+          .Append('\t')
+          .Append(SortFeats(w.Feats) ?? "_")
+          .Append('\t')
+          .Append(w.Head?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "_")
+          .Append('\t')
+          .Append(w.Deprel ?? "_")
+          .Append("\t_\t")
+          .Append(Misc(" ", "", w.StartChar, w.EndChar, null, w.CorefChains))
+          .Append('\n');
 
     private static readonly Regex PyWhitespace = new(@"[\s\x1c-\x1f]+");
 
@@ -180,13 +225,13 @@ public static class Conllu
     private static string? SortFeats(string? feats) =>
         feats == null ? null : string.Join('|', feats.Split('|').OrderBy(p => p.ToLowerInvariant(), StringComparer.Ordinal));
 
-    internal readonly record struct MiscFields(string Space, string SpacesBefore, int? Start, int? End, string? Ner);
+    internal readonly record struct MiscFields(string Space, string SpacesBefore, int? Start, int? End, string? Ner, string? Coref = null);
 
     internal static MiscFields ParseMisc(string misc)
     {
         string space = " ", before = "";
         int? start = null, end = null;
-        string? ner = null;
+        string? ner = null, coref = null;
         if (misc == "_")
             return new(space, before, start, end, ner);
         foreach (var piece in misc.Split('|'))
@@ -203,10 +248,11 @@ public static class Conllu
                 case "start_char": start = int.Parse(value); break;
                 case "end_char": end = int.Parse(value); break;
                 case "ner": ner = value; break;
+                case "coref_chains": coref = value; break;
             }
         }
 
-        return new(space, before, start, end, ner);
+        return new(space, before, start, end, ner, coref);
     }
 
     private static void ApplyTokenMisc(Token token, MiscFields misc)
@@ -218,8 +264,9 @@ public static class Conllu
         token.Ner = misc.Ner;
     }
 
-    // Stanza sorts the space pieces (SpaceAfter/SpacesAfter sort before SpacesBefore), then adds the offsets.
-    internal static string Misc(string spaceAfter, string spacesBefore, int? start, int? end, string? ner)
+    // Stanza sorts the space pieces (SpaceAfter/SpacesAfter sort before SpacesBefore), then adds the offsets, the NER tag and
+    // the coref marks (none written for a word in no mention).
+    internal static string Misc(string spaceAfter, string spacesBefore, int? start, int? end, string? ner, IReadOnlyList<CorefAttachment>? coref = null)
     {
         var pieces = new List<string>(4);
         if (spaceAfter.Length == 0)
@@ -231,6 +278,7 @@ public static class Conllu
         if (start != null) pieces.Add($"start_char={start}");
         if (end != null) pieces.Add($"end_char={end}");
         if (ner != null) pieces.Add("ner=" + ner);
+        if (coref is { Count: > 0 }) pieces.Add("coref_chains=" + string.Join(',', coref.Select(a => a.ToConllu())));
         return pieces.Count == 0 ? "_" : string.Join('|', pieces);
     }
 
