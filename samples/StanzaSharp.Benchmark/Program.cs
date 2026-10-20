@@ -362,8 +362,8 @@ if (device?.type == DeviceType.CUDA)
     torch.cuda.synchronize();
 double load = clock.Elapsed.TotalSeconds;
 
-// Stanza's order (Pipeline.AllProcessors), without the stages the package lacks.
-string[] stages = Pipeline.AllProcessors.Split(',').Where(models.ContainsKey).Where(p => processors == null || processors.Split(',').Contains(p)).ToArray();
+// Stanza's order (Pipeline.StanzaOrder), without the stages the package lacks.
+string[] stages = Pipeline.StanzaOrder.Split(',').Where(models.ContainsKey).Where(p => processors == null || processors.Split(',').Contains(p)).ToArray();
 var times = stages.ToDictionary(s => s, _ => new List<double>());
 var peaks = new Dictionary<string, double> { ["load"] = PeakMB() }; // peak working set after each stage of the warm-up run
 Document doc = null!;

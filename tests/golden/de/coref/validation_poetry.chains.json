@@ -1,0 +1,185 @@
+[
+ {
+  "index": 0,
+  "mentions": [
+   [
+    0,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Der Nebel",
+  "representative_index": 0
+ },
+ {
+  "index": 1,
+  "mentions": [
+   [
+    0,
+    7,
+    9
+   ]
+  ],
+  "representative_text": "die Krähen",
+  "representative_index": 0
+ },
+ {
+  "index": 2,
+  "mentions": [
+   [
+    0,
+    10,
+    13
+   ]
+  ],
+  "representative_text": "übers Land",
+  "representative_index": 0
+ },
+ {
+  "index": 3,
+  "mentions": [
+   [
+    1,
+    7,
+    9
+   ],
+   [
+    1,
+    11,
+    12
+   ]
+  ],
+  "representative_text": "ein Fluss",
+  "representative_index": 0
+ },
+ {
+  "index": 4,
+  "mentions": [
+   [
+    1,
+    11,
+    13
+   ]
+  ],
+  "representative_text": "seinen Weg",
+  "representative_index": 0
+ },
+ {
+  "index": 5,
+  "mentions": [
+   [
+    2,
+    2,
+    4
+   ]
+  ],
+  "representative_text": "der Abend",
+  "representative_index": 0
+ },
+ {
+  "index": 6,
+  "mentions": [
+   [
+    2,
+    9,
+    11
+   ]
+  ],
+  "representative_text": "die Glocke",
+  "representative_index": 0
+ },
+ {
+  "index": 7,
+  "mentions": [
+   [
+    2,
+    16,
+    17
+   ],
+   [
+    5,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "ich",
+  "representative_index": 0
+ },
+ {
+  "index": 8,
+  "mentions": [
+   [
+    2,
+    18,
+    21
+   ]
+  ],
+  "representative_text": "durchs dunkle Tor",
+  "representative_index": 0
+ },
+ {
+  "index": 9,
+  "mentions": [
+   [
+    2,
+    23,
+    27
+   ]
+  ],
+  "representative_text": "dem alten Lied davor",
+  "representative_index": 0
+ },
+ {
+  "index": 10,
+  "mentions": [
+   [
+    4,
+    2,
+    4
+   ]
+  ],
+  "representative_text": "der Mohn",
+  "representative_index": 0
+ },
+ {
+  "index": 11,
+  "mentions": [
+   [
+    4,
+    7,
+    9
+   ],
+   [
+    4,
+    9,
+    10
+   ]
+  ],
+  "representative_text": "die Biene",
+  "representative_index": 0
+ },
+ {
+  "index": 12,
+  "mentions": [
+   [
+    6,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "Im Hafen",
+  "representative_index": 0
+ },
+ {
+  "index": 13,
+  "mentions": [
+   [
+    6,
+    7,
+    9
+   ]
+  ],
+  "representative_text": "der Wind",
+  "representative_index": 0
+ }
+]

@@ -192,7 +192,13 @@ public class ModelDownloaderTests : IDisposable
         Assert.Equal(11, all.Count);
         Assert.Equal(all, ModelDownloader.FilesFor(null).Order());
         Assert.DoesNotContain(all, f => f.Path.Contains("_nocharlm") && !f.Path.StartsWith("tokenize/") && !f.Path.StartsWith("lemma/"));
-        Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor("tokenize,coref"));
+        Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor("tokenize,morphseg"));
+
+        // coref is optional: never among a package's processors, its model only when named.
+        Assert.DoesNotContain(all, f => f.Path.StartsWith("coref/", StringComparison.Ordinal));
+        Assert.Contains(ModelDownloader.FilesFor("tokenize,coref"), f => f.Path == "coref/udcoref_xlm-roberta-lora.pt");
+        Assert.Contains(ModelDownloader.FilesFor("tokenize,coref", "default_fast"), f => f.Path == "coref/udcoref_xlm-roberta-lora.pt");
+        Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor("tokenize,coref", "ewt"));
         Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor(""));
     }
 

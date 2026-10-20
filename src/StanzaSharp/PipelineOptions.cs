@@ -43,6 +43,8 @@ public sealed class PipelineOptions
     /// Comma-separated subset of <see cref="Pipeline.AllProcessors"/>; each needs the ones before it. Null (the
     /// default) runs every processor of the <see cref="Package"/>. A processor the package lacks throws. Like Stanza,
     /// <c>tokenize</c> brings the package's <c>mwt</c> along, so <c>"tokenize,ner"</c> also expands multi-word tokens.
+    /// <see cref="Processor.Coref"/> is optional, as in Stanza: it runs only when listed here (or chosen in
+    /// <see cref="Models"/>), with the package's coref model.
     /// </summary>
     public string? Processors { get; init; }
 

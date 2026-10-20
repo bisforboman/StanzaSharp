@@ -192,7 +192,7 @@ internal static class CompareCommand
     internal static string ProcessorList(string package, string? processors, string language = Pipeline.English, IReadOnlyDictionary<string, string>? models = null)
     {
         var selected = Pipeline.SelectModels(package, processors, addRequired: true, "--processors", language, models);
-        return string.Join(",", Pipeline.AllProcessors.Split(',').Where(selected.ContainsKey));
+        return string.Join(",", Pipeline.StanzaOrder.Split(',').Where(selected.ContainsKey));
     }
 
     /// <summary>
@@ -204,7 +204,7 @@ internal static class CompareCommand
         models == null
             ? list
             : JsonSerializer.Serialize(Pipeline.SelectModels(package, list, addRequired: true, "--model", language, models)
-                .OrderBy(m => Array.IndexOf(Pipeline.AllProcessors.Split(','), m.Key))
+                .OrderBy(m => Array.IndexOf(Pipeline.StanzaOrder.Split(','), m.Key))
                 .ToDictionary(m => m.Key, m => m.Value));
 
     /// <summary>

@@ -1,0 +1,466 @@
+[
+ {
+  "index": 0,
+  "mentions": [
+   [
+    0,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "BERLIN",
+  "representative_index": 0
+ },
+ {
+  "index": 1,
+  "mentions": [
+   [
+    0,
+    5,
+    7
+   ]
+  ],
+  "representative_text": "Der Bundestag",
+  "representative_index": 0
+ },
+ {
+  "index": 2,
+  "mentions": [
+   [
+    0,
+    8,
+    11
+   ]
+  ],
+  "representative_text": "am Donnerstag",
+  "representative_index": 0
+ },
+ {
+  "index": 3,
+  "mentions": [
+   [
+    0,
+    14,
+    22
+   ],
+   [
+    2,
+    3,
+    5
+   ],
+   [
+    4,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "ein neues Gesetz zur Förderung erneuerbarer Energien",
+  "representative_index": 0
+ },
+ {
+  "index": 4,
+  "mentions": [
+   [
+    1,
+    2,
+    4
+   ]
+  ],
+  "representative_text": "des Wirtschaftsministeriums",
+  "representative_index": 0
+ },
+ {
+  "index": 5,
+  "mentions": [
+   [
+    2,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Die Opposition",
+  "representative_index": 0
+ },
+ {
+  "index": 6,
+  "mentions": [
+   [
+    3,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "Das",
+  "representative_index": 0
+ },
+ {
+  "index": 7,
+  "mentions": [
+   [
+    3,
+    9,
+    11
+   ]
+  ],
+  "representative_text": "die Fraktionsvorsitzende",
+  "representative_index": 0
+ },
+ {
+  "index": 8,
+  "mentions": [
+   [
+    3,
+    11,
+    16
+   ]
+  ],
+  "representative_text": "am Rande der Sitzung",
+  "representative_index": 0
+ },
+ {
+  "index": 9,
+  "mentions": [
+   [
+    4,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Der Bundesrat",
+  "representative_index": 0
+ },
+ {
+  "index": 10,
+  "mentions": [
+   [
+    5,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "FRANKFURT AM MAIN",
+  "representative_index": 0
+ },
+ {
+  "index": 11,
+  "mentions": [
+   [
+    5,
+    4,
+    10
+   ],
+   [
+    5,
+    8,
+    9
+   ]
+  ],
+  "representative_text": "Die Europäische Zentralbank ( EZB )",
+  "representative_index": 0
+ },
+ {
+  "index": 12,
+  "mentions": [
+   [
+    5,
+    11,
+    13
+   ]
+  ],
+  "representative_text": "den Leitzins",
+  "representative_index": 0
+ },
+ {
+  "index": 13,
+  "mentions": [
+   [
+    6,
+    2,
+    5
+   ]
+  ],
+  "representative_text": "mit diesem Schritt",
+  "representative_index": 0
+ },
+ {
+  "index": 14,
+  "mentions": [
+   [
+    7,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Der DAX",
+  "representative_index": 0
+ },
+ {
+  "index": 15,
+  "mentions": [
+   [
+    7,
+    3,
+    6
+   ]
+  ],
+  "representative_text": "am Nachmittag",
+  "representative_index": 0
+ },
+ {
+  "index": 16,
+  "mentions": [
+   [
+    8,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "In Hamburg",
+  "representative_index": 0
+ },
+ {
+  "index": 17,
+  "mentions": [
+   [
+    8,
+    3,
+    6
+   ]
+  ],
+  "representative_text": "am Mittwochabend",
+  "representative_index": 0
+ },
+ {
+  "index": 18,
+  "mentions": [
+   [
+    8,
+    8,
+    11
+   ]
+  ],
+  "representative_text": "auf der Elbe",
+  "representative_index": 0
+ },
+ {
+  "index": 19,
+  "mentions": [
+   [
+    10,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Der Schiffsverkehr",
+  "representative_index": 0
+ },
+ {
+  "index": 20,
+  "mentions": [
+   [
+    11,
+    0,
+    4
+   ]
+  ],
+  "representative_text": "Der FC Bayern München",
+  "representative_index": 0
+ },
+ {
+  "index": 21,
+  "mentions": [
+   [
+    12,
+    4,
+    8
+   ]
+  ],
+  "representative_text": "in der 89. Minute",
+  "representative_index": 0
+ },
+ {
+  "index": 22,
+  "mentions": [
+   [
+    13,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "WIEN",
+  "representative_index": 0
+ },
+ {
+  "index": 23,
+  "mentions": [
+   [
+    13,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "Österreichs",
+  "representative_index": 0
+ },
+ {
+  "index": 24,
+  "mentions": [
+   [
+    13,
+    2,
+    4
+   ]
+  ],
+  "representative_text": "Österreichs Regierung",
+  "representative_index": 0
+ },
+ {
+  "index": 25,
+  "mentions": [
+   [
+    13,
+    5,
+    7
+   ]
+  ],
+  "representative_text": "die Mietpreise",
+  "representative_index": 0
+ },
+ {
+  "index": 26,
+  "mentions": [
+   [
+    14,
+    4,
+    7
+   ]
+  ],
+  "representative_text": "im Herbst",
+  "representative_index": 0
+ },
+ {
+  "index": 27,
+  "mentions": [
+   [
+    14,
+    11,
+    13
+   ]
+  ],
+  "representative_text": "das Bundeskanzleramt",
+  "representative_index": 0
+ },
+ {
+  "index": 28,
+  "mentions": [
+   [
+    15,
+    0,
+    6
+   ]
+  ],
+  "representative_text": "Die Zahl der Arbeitslosen in Deutschland",
+  "representative_index": 0
+ },
+ {
+  "index": 29,
+  "mentions": [
+   [
+    15,
+    4,
+    6
+   ]
+  ],
+  "representative_text": "in Deutschland",
+  "representative_index": 0
+ },
+ {
+  "index": 30,
+  "mentions": [
+   [
+    15,
+    7,
+    10
+   ]
+  ],
+  "representative_text": "im Juli",
+  "representative_index": 0
+ },
+ {
+  "index": 31,
+  "mentions": [
+   [
+    16,
+    0,
+    6
+   ]
+  ],
+  "representative_text": "Die Bundesagentur für Arbeit in Nürnberg",
+  "representative_index": 0
+ },
+ {
+  "index": 32,
+  "mentions": [
+   [
+    16,
+    4,
+    6
+   ]
+  ],
+  "representative_text": "in Nürnberg",
+  "representative_index": 0
+ },
+ {
+  "index": 33,
+  "mentions": [
+   [
+    16,
+    17,
+    20
+   ]
+  ],
+  "representative_text": "im Vormonat",
+  "representative_index": 0
+ },
+ {
+  "index": 34,
+  "mentions": [
+   [
+    17,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "ZÜRICH",
+  "representative_index": 0
+ },
+ {
+  "index": 35,
+  "mentions": [
+   [
+    17,
+    2,
+    5
+   ],
+   [
+    18,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "Der Schweizer Pharmakonzern",
+  "representative_index": 0
+ },
+ {
+  "index": 36,
+  "mentions": [
+   [
+    18,
+    5,
+    11
+   ]
+  ],
+  "representative_text": "den starken Franken und auslaufende Patente",
+  "representative_index": 0
+ }
+]

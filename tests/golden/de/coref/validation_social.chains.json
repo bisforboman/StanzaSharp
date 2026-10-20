@@ -1,0 +1,283 @@
+[
+ {
+  "index": 0,
+  "mentions": [
+   [
+    1,
+    6,
+    9
+   ]
+  ],
+  "representative_text": "ins Kino",
+  "representative_index": 0
+ },
+ {
+  "index": 1,
+  "mentions": [
+   [
+    2,
+    1,
+    4
+   ]
+  ],
+  "representative_text": "der neue Film",
+  "representative_index": 0
+ },
+ {
+  "index": 2,
+  "mentions": [
+   [
+    3,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "@lisa_m",
+  "representative_index": 0
+ },
+ {
+  "index": 3,
+  "mentions": [
+   [
+    3,
+    2,
+    6
+   ]
+  ],
+  "representative_text": "für das tolle Geschenk",
+  "representative_index": 0
+ },
+ {
+  "index": 4,
+  "mentions": [
+   [
+    4,
+    5,
+    8
+   ]
+  ],
+  "representative_text": "bei der Bahn",
+  "representative_index": 0
+ },
+ {
+  "index": 5,
+  "mentions": [
+   [
+    4,
+    9,
+    10
+   ]
+  ],
+  "representative_text": "ich",
+  "representative_index": 0
+ },
+ {
+  "index": 6,
+  "mentions": [
+   [
+    4,
+    11,
+    12
+   ]
+  ],
+  "representative_text": "es",
+  "representative_index": 0
+ },
+ {
+  "index": 7,
+  "mentions": [
+   [
+    4,
+    14,
+    15
+   ]
+  ],
+  "representative_text": "Bahnchaos",
+  "representative_index": 0
+ },
+ {
+  "index": 8,
+  "mentions": [
+   [
+    5,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "mir",
+  "representative_index": 0
+ },
+ {
+  "index": 9,
+  "mentions": [
+   [
+    5,
+    6,
+    8
+   ]
+  ],
+  "representative_text": "in Köln",
+  "representative_index": 0
+ },
+ {
+  "index": 10,
+  "mentions": [
+   [
+    8,
+    5,
+    8
+   ],
+   [
+    10,
+    9,
+    12
+   ]
+  ],
+  "representative_text": "am sonntag",
+  "representative_index": 0
+ },
+ {
+  "index": 11,
+  "mentions": [
+   [
+    9,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "ich",
+  "representative_index": 0
+ },
+ {
+  "index": 12,
+  "mentions": [
+   [
+    9,
+    9,
+    12
+   ]
+  ],
+  "representative_text": "ums fleisch",
+  "representative_index": 0
+ },
+ {
+  "index": 13,
+  "mentions": [
+   [
+    10,
+    7,
+    9
+   ]
+  ],
+  "representative_text": "der Supermarkt",
+  "representative_index": 0
+ },
+ {
+  "index": 14,
+  "mentions": [
+   [
+    11,
+    1,
+    4
+   ]
+  ],
+  "representative_text": "im Voraus",
+  "representative_index": 0
+ },
+ {
+  "index": 15,
+  "mentions": [
+   [
+    12,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "@nachrichten",
+  "representative_index": 0
+ },
+ {
+  "index": 16,
+  "mentions": [
+   [
+    12,
+    5,
+    8
+   ]
+  ],
+  "representative_text": "im Nahverkehr",
+  "representative_index": 0
+ },
+ {
+  "index": 17,
+  "mentions": [
+   [
+    12,
+    8,
+    11
+   ]
+  ],
+  "representative_text": "am Montag",
+  "representative_index": 0
+ },
+ {
+  "index": 18,
+  "mentions": [
+   [
+    12,
+    12,
+    14
+   ]
+  ],
+  "representative_text": "alle Infos",
+  "representative_index": 0
+ },
+ {
+  "index": 19,
+  "mentions": [
+   [
+    13,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "meinen",
+  "representative_index": 0
+ },
+ {
+  "index": 20,
+  "mentions": [
+   [
+    13,
+    2,
+    4
+   ]
+  ],
+  "representative_text": "meinen Kaffee",
+  "representative_index": 0
+ },
+ {
+  "index": 21,
+  "mentions": [
+   [
+    13,
+    4,
+    7
+   ]
+  ],
+  "representative_text": "über die Tastatur",
+  "representative_index": 0
+ },
+ {
+  "index": 22,
+  "mentions": [
+   [
+    14,
+    2,
+    5
+   ]
+  ],
+  "representative_text": "in den Tag",
+  "representative_index": 0
+ }
+]

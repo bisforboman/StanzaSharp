@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using StanzaSharp.Constituency;
+using StanzaSharp.Coref;
 using StanzaSharp.Depparse;
 using StanzaSharp.Lemma;
 using StanzaSharp.Mwt;
@@ -61,6 +62,8 @@ internal sealed class TorchSharpModels(torch.Device? device, bool disableTf32) :
 
     public override SentimentClassifier Sentiment(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer) =>
         SentimentClassifier.Load(basePath, pretrain, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward), transformer: transformer);
+
+    public override CorefResolver Coref(string basePath, TransformerEmbedder transformer) => CorefResolver.Load(basePath, transformer);
 
     public override void Dispose()
     {
