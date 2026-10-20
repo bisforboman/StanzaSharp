@@ -1296,6 +1296,7 @@ def write_json_golden(models, out):
 # Coref (docs/coref-plan.md, PR b): the tagger's package models (PROPN breaks the representative's ties) and coref's default model.
 COREF_PROCESSORS = {"tokenize": "combined_nocharlm", "mwt": "combined", "pos": "combined_charlm", "coref": "udcoref_xlm-roberta-lora"}
 COREF_JSON_FILE = "validation_dialogue"  # also written as str(doc)
+COREF_INTERMEDIATE_FILES = ["corpus", "validation_dialogue"]  # CorefModel.run's steps in coref/intermediates.*
 # The English model predicts no zero mentions, so crafted.* sets doc.coref by hand on this text, with empty words added:
 # nested mentions, mentions over part of a multi-word token and over all of one, a representative that is not the first
 # mention, zero mentions (inside a multi-word token, before the first word, after the last) and a chain of zeros only.
@@ -1322,7 +1323,8 @@ def write_coref_golden(models, out):
     """
     coref/: Stanza's coref (COREF_PROCESSORS) on corpus.txt and each validation*.txt: <name>.conllu ("{:C}"), <name>.chains.json
     (doc.coref), and COREF_JSON_FILE's str(doc) as <name>.str.json; crafted.conllu / .chains.json / .str.json, chains set by hand
-    on COREF_CRAFTED_TEXT with empty words. Stanza's coref model reads XLMR from <models>/en/transformer/ (electra_locally).
+    on COREF_CRAFTED_TEXT with empty words; intermediates.* (CorefModel.run's steps on COREF_INTERMEDIATE_FILES). German
+    (de/coref/): the texts' .conllu and .chains.json only. Stanza's coref model reads XLMR from <models>/en/transformer/ (electra_locally).
     """
     from stanza.models.common.doc import Word
     from stanza.models.coref.coref_chain import CorefChain, CorefMention
@@ -1344,11 +1346,59 @@ def write_coref_golden(models, out):
         print(f"coref/{name}.conllu: {len(doc.sentences)} sentences, {len(doc.coref)} chains, "
               f"{sum(len(c.mentions) for c in doc.coref)} mentions, {sum(len(s.empty_words) for s in doc.sentences)} empty words")
 
+    from stanza.models.coref import bert as coref_bert
+    model = nlp.processors["coref"]._model
+    tensors, index = {}, {}
+
+    def capture(name, text):
+        """CorefModel.run's steps on one text: windows, word vectors, top-k candidates in topk's order, the scores, the clusters."""
+        seen = {}
+        batches, bertify, rough, run = coref_bert.get_subwords_batches, model._bertify, model.rough_scorer.forward, model.run
+
+        def get_batches(doc, config, tok):
+            seen["windows"] = batches(doc, config, tok)
+            return seen["windows"]
+
+        def rough_forward(mentions):
+            top_scores, top_indices, rough_scores = rough(mentions)
+            seen["words"], seen["top_indices"] = mentions, top_indices
+            return top_scores, top_indices, rough_scores
+
+        def model_run(doc, *args, **kwargs):
+            result = run(doc, *args, **kwargs)
+            seen["doc"], seen["result"] = doc, result
+            return result
+
+        coref_bert.get_subwords_batches, model.rough_scorer.forward, model.run = get_batches, rough_forward, model_run
+        try:
+            with torch.no_grad():
+                doc = nlp(text)
+        finally:
+            coref_bert.get_subwords_batches, model.rough_scorer.forward, model.run = batches, rough, run
+        result, cdoc = seen["result"], seen["doc"]
+        pad = model.tokenizer.pad_token_id
+        tensors[f"{name}.words8"] = seen["words"][:8].numpy()
+        tensors[f"{name}.top_indices"] = seen["top_indices"].to(torch.int32).numpy()
+        tensors[f"{name}.coref_scores"] = result.coref_scores.numpy()
+        tensors[f"{name}.zero_scores"] = result.zero_scores.reshape(-1).numpy()
+        index[name] = {"windows": [[int(i) for i in w if i != pad] for w in seen["windows"]], "word2subword": cdoc["word2subword"],
+                       "word_clusters": result.word_clusters, "span_clusters": [[list(s) for s in c] for c in result.span_clusters]}
+        return doc
+
     for path in [out / "corpus.txt"] + sorted(out.glob("validation*.txt")):
-        with torch.no_grad():
-            doc = nlp(path.read_bytes().decode("utf-8"))
         name = "corpus" if path.name == "corpus.txt" else path.stem
-        write(name, doc, name == COREF_JSON_FILE)
+        if LANG == "en" and name in COREF_INTERMEDIATE_FILES:
+            doc = capture(name, path.read_bytes().decode("utf-8"))
+        else:
+            with torch.no_grad():
+                doc = nlp(path.read_bytes().decode("utf-8"))
+        write(name, doc, LANG == "en" and name == COREF_JSON_FILE)
+    if LANG != "en":  # German: the texts only (the steps and the crafted document are language-independent)
+        return
+    write_safetensors(tensors, folder / "intermediates.safetensors", {"stanza": stanza.__version__})
+    with open(folder / "intermediates.json", "w", encoding="utf-8", newline="\n") as f:
+        json.dump({"stanza": stanza.__version__, "texts": index}, f)
+        f.write("\n")
 
     tagger = stanza.Pipeline(LANG, dir=models, package=None, processors={p: COREF_PROCESSORS[p] for p in ("tokenize", "mwt", "pos")},
                              download_method=None, use_gpu=False, logging_level="WARN")
@@ -1366,6 +1416,44 @@ def write_coref_golden(models, out):
         chains.append(CorefChain(index, mentions, text, representative))
     doc.coref = chains
     write("crafted", doc, True)
+
+
+def write_topk_golden(out):
+    """
+    coref/topk.json (no models): torch.topk(x, k, dim=1, sorted=False) on float32 rows, as coref's rough scorer calls it.
+    Its order is libstdc++'s nth_element (k * 64 > n) or partial_sort (k * 64 <= n) over (value, index) pairs, which the
+    coref head reads (start_map weighs the candidates in that order); the cases cover random rows, exact ties, the rough
+    scorer's mask (-inf for j >= i, so ties among the -inf entries decide which indices make the top k), k = n and the
+    partial_sort path.
+    """
+    gen = torch.Generator().manual_seed(1698)
+    cases = []
+
+    def randn(*shape):  # multiples of 1/1024, so the JSON stays short and exact
+        return torch.randint(-4096, 4096, shape, generator=gen).to(torch.float32) / 1024
+
+    def add(name, x, k):
+        values, indices = torch.topk(x, k, dim=1, sorted=False)
+        def plain(t):  # JSON has no -Infinity: null stands for it
+            return [[None if v == float("-inf") else v for v in row] for row in t.tolist()]
+        cases.append({"name": name, "k": k, "rows": plain(x), "indices": indices.tolist(), "values": plain(values)})
+
+    add("random", randn(8, 60), 50)
+    add("ties", torch.randint(0, 4, (8, 70), generator=gen).to(torch.float32), 50)
+    n = 80
+    mask = torch.log((torch.arange(n).unsqueeze(1) - torch.arange(n).unsqueeze(0) > 0).to(torch.float32))
+    add("rough_mask", randn(n, n) + mask, 50)
+    add("rough_mask_small", randn(12, 12) + mask[:12, :12], 12)
+    add("k_equals_n", randn(4, 9), 9)
+    add("tiny", randn(3, 3), 3)
+    add("one", randn(1, 1), 1)
+    big = randn(2, 3200)
+    big[1, ::7] = 0.5  # ties on the partial_sort path (k * 64 <= n)
+    add("partial_sort", big, 50)
+    with open(out / "coref" / "topk.json", "w", encoding="utf-8", newline="\n") as f:
+        json.dump(cases, f)
+        f.write("\n")
+    print(f"coref/topk.json: {len(cases)} cases, {sum(len(c['rows']) for c in cases)} rows")
 
 
 HELPER_FILES = ["pipeline.conllu", "validation_contractions.conllu", "validation_multilingual.conllu", "validation_nonbmp.conllu"]
@@ -1891,6 +1979,7 @@ def main():
     p.add_argument("--packages", default=None, help="with --treebank-only: only these treebank packages (comma-separated)")
     p.add_argument("--models-only", action="store_true", help="only regenerate models/ (MODEL_CHOICES: single models chosen per processor)")
     p.add_argument("--transformer-only", action="store_true", help="only regenerate transformer/ (needs tools/requirements-transformer.txt)")
+    p.add_argument("--topk-only", action="store_true", help="only regenerate coref/topk.json (torch.topk's order, no models)")
     p.add_argument("--coref-only", action="store_true", help="only regenerate coref/ (needs tools/requirements-transformer.txt and the coref model)")
     p.add_argument("--options-only", action="store_true", help="only regenerate options/ (OPTION_CASES: Stanza options with a PipelineOptions property)")
     p.add_argument("--choices", default=None, help="with --models-only: only these MODEL_CHOICES names (comma-separated)")
@@ -1909,7 +1998,12 @@ def main():
             write_transformer_golden(args.models, out, XLMR)
         return
     if args.coref_only:
+        if LANG == "en":
+            write_topk_golden(out)
         write_coref_golden(args.models, out)
+        return
+    if args.topk_only:
+        write_topk_golden(out)
         return
     if args.long_token_only:
         write_long_token_golden(args.models, out)

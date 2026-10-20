@@ -28,6 +28,7 @@
     <ProjectReference Include="..\StanzaSharp.Depparse\StanzaSharp.Depparse.csproj" PrivateAssets="all" />
     <ProjectReference Include="..\StanzaSharp.Ner\StanzaSharp.Ner.csproj" PrivateAssets="all" />
     <ProjectReference Include="..\StanzaSharp.Sentiment\StanzaSharp.Sentiment.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\StanzaSharp.Coref\StanzaSharp.Coref.csproj" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

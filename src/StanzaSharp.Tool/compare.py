@@ -50,6 +50,20 @@ def transformers_locally(models):
     load_bert.stanzasharp_original = load
     bert_embedding.load_bert = load_bert
 
+    # coref's model loads its tokenizer apart, through its own import of load_tokenizer
+    try:
+        from stanza.models.coref import model as coref_model
+    except ImportError:  # no transformers
+        return
+    load_tokenizer = getattr(coref_model.load_tokenizer, "stanzasharp_original", coref_model.load_tokenizer)
+
+    def coref_tokenizer(model_name, *args, **kwargs):
+        local = os.path.join(models, "transformer", *model_name.split("/")) if model_name else None
+        return load_tokenizer(local if local and os.path.isdir(local) else model_name, *args, **kwargs)
+
+    coref_tokenizer.stanzasharp_original = load_tokenizer
+    coref_model.load_tokenizer = coref_tokenizer
+
 
 # Models whose resources.json entry lists another pretrain than the one they were trained on (Pipeline.ListedPretrains):
 # Stanza gets the right file as {processor}_pretrain_path, else it fails its embedding check at load

@@ -1,0 +1,292 @@
+[
+ {
+  "index": 0,
+  "mentions": [
+   [
+    0,
+    2,
+    3
+   ],
+   [
+    1,
+    5,
+    6
+   ],
+   [
+    1,
+    8,
+    9
+   ],
+   [
+    2,
+    3,
+    4
+   ],
+   [
+    4,
+    1,
+    2
+   ],
+   [
+    7,
+    2,
+    3
+   ],
+   [
+    8,
+    8,
+    10
+   ],
+   [
+    16,
+    2,
+    3
+   ],
+   [
+    17,
+    3,
+    4
+   ],
+   [
+    19,
+    3,
+    4
+   ],
+   [
+    19,
+    4,
+    5
+   ],
+   [
+    20,
+    0,
+    1
+   ],
+   [
+    21,
+    0,
+    1
+   ],
+   [
+    21,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "das Mädchen",
+  "representative_index": 6
+ },
+ {
+  "index": 1,
+  "mentions": [
+   [
+    0,
+    8,
+    9
+   ]
+  ],
+  "representative_text": "Lena",
+  "representative_index": 0
+ },
+ {
+  "index": 2,
+  "mentions": [
+   [
+    4,
+    2,
+    4
+   ],
+   [
+    6,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "die Schlüssel",
+  "representative_index": 0
+ },
+ {
+  "index": 3,
+  "mentions": [
+   [
+    5,
+    3,
+    6
+   ]
+  ],
+  "representative_text": "die fürs Auto",
+  "representative_index": 0
+ },
+ {
+  "index": 4,
+  "mentions": [
+   [
+    5,
+    4,
+    6
+   ]
+  ],
+  "representative_text": "fürs Auto",
+  "representative_index": 0
+ },
+ {
+  "index": 5,
+  "mentions": [
+   [
+    6,
+    3,
+    6
+   ]
+  ],
+  "representative_text": "auf dem Küchentisch",
+  "representative_index": 0
+ },
+ {
+  "index": 6,
+  "mentions": [
+   [
+    7,
+    6,
+    7
+   ],
+   [
+    8,
+    1,
+    2
+   ],
+   [
+    9,
+    2,
+    3
+   ],
+   [
+    9,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "er",
+  "representative_index": 0
+ },
+ {
+  "index": 7,
+  "mentions": [
+   [
+    10,
+    0,
+    1
+   ],
+   [
+    12,
+    0,
+    1
+   ],
+   [
+    16,
+    7,
+    8
+   ]
+  ],
+  "representative_text": "Verkäufer",
+  "representative_index": 0
+ },
+ {
+  "index": 8,
+  "mentions": [
+   [
+    11,
+    0,
+    1
+   ],
+   [
+    14,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Kundin",
+  "representative_index": 0
+ },
+ {
+  "index": 9,
+  "mentions": [
+   [
+    15,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Das",
+  "representative_index": 0
+ },
+ {
+  "index": 10,
+  "mentions": [
+   [
+    16,
+    11,
+    12
+   ]
+  ],
+  "representative_text": "wir",
+  "representative_index": 0
+ },
+ {
+  "index": 11,
+  "mentions": [
+   [
+    16,
+    13,
+    16
+   ]
+  ],
+  "representative_text": "am See",
+  "representative_index": 0
+ },
+ {
+  "index": 12,
+  "mentions": [
+   [
+    17,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "das",
+  "representative_index": 0
+ },
+ {
+  "index": 13,
+  "mentions": [
+   [
+    19,
+    0,
+    1
+   ],
+   [
+    20,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "Mutter",
+  "representative_index": 0
+ },
+ {
+  "index": 14,
+  "mentions": [
+   [
+    19,
+    4,
+    6
+   ],
+   [
+    21,
+    5,
+    7
+   ]
+  ],
+  "representative_text": "deine Hausaufgaben",
+  "representative_index": 0
+ }
+]

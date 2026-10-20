@@ -104,7 +104,7 @@ case ${1:-} in
     # the default_accurate package: its five transformer models, the transformer, and its _charlm tokenizer and lemmatizer
     # (also in the treebank-choices cache; files that match are kept); the treebanks' and ontonotes' (#168: their packages'
     # other files are in the en-treebanks cache), constituency ptb3_electra-large (#171), roberta-base (#172)
-    # and coref's FacebookAI/xlm-roberta-large (2.24 GB; docs/coref-plan.md PR a: no model reads it yet)
+    # and coref's model with FacebookAI/xlm-roberta-large (2.24 GB; docs/coref-plan.md)
     # and German's (#170: four transformer models, german-nlp-group's ELECTRA; the rest is in the de caches; gsd's, hdt's and
     # germeval2014's on it, their packages' other files from the de cache; dbmdz/bert-base-german-cased's ner and sentiment)
     transformers() {
@@ -116,9 +116,12 @@ case ${1:-} in
       "${cli[@]}" download models/stanza/en --processors tokenize,mwt,pos,constituency --model constituency=ptb3_electra-large < /dev/null \
         || return 1
       "${cli[@]}" download models/stanza/en --processors tokenize,ner --model ner=conll03_electra-large < /dev/null || return 1
-      "${cli[@]}" download-transformer models/stanza/en FacebookAI/xlm-roberta-large < /dev/null || return 1
+      "${cli[@]}" download models/stanza/en --processors tokenize,coref < /dev/null || return 1
       "${cli[@]}" download models/stanza/en --processors tokenize,ner --model ner=ontonotes_electra-large < /dev/null || return 1
       "${cli[@]}" download models/stanza/de --lang de --package default_accurate < /dev/null || return 1
+      # German coref reads the same XLM-R: linked, so the download finds it in place instead of fetching 2.24 GB again
+      mkdir -p models/stanza/de/transformer && ln -sfn "$PWD/models/stanza/en/transformer/FacebookAI" models/stanza/de/transformer/FacebookAI
+      "${cli[@]}" download models/stanza/de --lang de --processors tokenize,coref < /dev/null || return 1
       for package in gsd hdt; do
         "${cli[@]}" download models/stanza/de --lang de --package "$package" \
           --model "pos=${package}_german-nlp-electra,depparse=${package}_german-nlp-electra" < /dev/null || return 1

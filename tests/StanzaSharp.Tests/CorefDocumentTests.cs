@@ -9,12 +9,12 @@ namespace StanzaSharp.Tests;
 /// </summary>
 public class CorefDocumentTests
 {
-    private static readonly string Folder = Path.Combine(Repo.Golden, "coref");
-
+    // Each file by its path under tests/golden without the extension: coref/<name> and de/coref/<name>.
     public static TheoryData<string> Names() =>
-        [.. Directory.GetFiles(Folder, "*.conllu").Select(f => Path.GetFileNameWithoutExtension(f)).Order(StringComparer.Ordinal)];
+        [.. new[] { "coref", Path.Combine("de", "coref") }.SelectMany(folder => Directory.GetFiles(Path.Combine(Repo.Golden, folder), "*.conllu")
+            .Select(f => Path.Combine(folder, Path.GetFileNameWithoutExtension(f)).Replace('\\', '/'))).Order(StringComparer.Ordinal)];
 
-    private static string Golden(string name, string extension) => File.ReadAllText(Path.Combine(Folder, name + extension));
+    private static string Golden(string name, string extension) => File.ReadAllText(Path.Combine(Repo.Golden, name + extension));
 
     [Theory]
     [MemberData(nameof(Names))]
@@ -61,8 +61,8 @@ public class CorefDocumentTests
 
     // str(doc) of the same documents: every word's coref_chains (an empty list when in no mention), empty words in place.
     [Theory]
-    [InlineData("validation_dialogue")]
-    [InlineData("crafted")]
+    [InlineData("coref/validation_dialogue")]
+    [InlineData("coref/crafted")]
     public void Json_MatchesStanzasStr(string name)
     {
         var golden = Golden(name, ".str.json");
@@ -81,7 +81,7 @@ public class CorefDocumentTests
     [Fact]
     public void Crafted_EmptyWordsAndAttachments()
     {
-        var doc = Conllu.Read(Golden("crafted", ".conllu"));
+        var doc = Conllu.Read(Golden("coref/crafted", ".conllu"));
         Assert.Equal([(5, 1)], doc.Sentences[0].EmptyWords.Select(w => (w.Id, w.EmptyIndex!.Value)));
         Assert.Equal([(0, 1), (3, 2)], doc.Sentences[2].EmptyWords.Select(w => (w.Id, w.EmptyIndex!.Value)));
         Assert.All(doc.Sentences.SelectMany(s => s.EmptyWords), w => Assert.Equal(("_", true), (w.Text, w.IsEmpty)));
@@ -104,7 +104,7 @@ public class CorefDocumentTests
     [Fact]
     public void Coref_Setter_ThrowsForAMentionOutsideTheDocument()
     {
-        var doc = Conllu.Read(Golden("crafted", ".conllu"));
+        var doc = Conllu.Read(Golden("coref/crafted", ".conllu"));
         var before = doc.Coref;
         Assert.Throws<ArgumentException>(() => doc.Coref = [new CorefChain(0, [new CorefMention(0, 7, 9)], "x", 0)]);
         Assert.Throws<ArgumentException>(() => doc.Coref = [new CorefChain(0, [new CorefMention(1, 2, 2, 1)], "_", null)]);

@@ -1,0 +1,175 @@
+# text = Angela Merkel wurde in Hamburg geboren.
+# sent_id = 0
+1	Angela	_	PROPN	NE	Case=Nom|Gender=Fem|Number=Sing	0	_	_	start_char=0|end_char=6|coref_chains=start-repr-id0
+2	Merkel	_	PROPN	NE	Case=Nom|Gender=Fem|Number=Sing	1	_	_	start_char=7|end_char=13|coref_chains=end-repr-id0
+3	wurde	_	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin|Voice=Pass	2	_	_	start_char=14|end_char=19
+4	in	_	ADP	APPR	_	3	_	_	start_char=20|end_char=22|coref_chains=start-repr-id1
+5	Hamburg	_	PROPN	NE	Case=Dat|Gender=Neut|Number=Sing	4	_	_	start_char=23|end_char=30|coref_chains=end-repr-id1
+6	geboren	_	VERB	VVPP	VerbForm=Part	5	_	_	SpaceAfter=No|start_char=31|end_char=38
+7	.	_	PUNCT	$.	_	6	_	_	start_char=38|end_char=39
+
+# text = Sie war von 2005 bis 2021 Bundeskanzlerin.
+# sent_id = 1
+1	Sie	_	PRON	PPER	Case=Nom|Gender=Fem|Number=Sing|Person=3|PronType=Prs	0	_	_	start_char=40|end_char=43|coref_chains=unit-id0
+2	war	_	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	1	_	_	start_char=44|end_char=47
+3	von	_	ADP	APPR	_	2	_	_	start_char=48|end_char=51
+4	2005	_	NUM	CARD	NumType=Card	3	_	_	start_char=52|end_char=56
+5	bis	_	ADP	APPR	_	4	_	_	start_char=57|end_char=60
+6	2021	_	NUM	CARD	NumType=Card	5	_	_	start_char=61|end_char=65
+7	Bundeskanzlerin	_	NOUN	NN	Case=Nom|Gender=Fem|Number=Sing	6	_	_	SpaceAfter=No|start_char=66|end_char=81
+8	.	_	PUNCT	$.	_	7	_	_	SpacesAfter=\n\n|start_char=81|end_char=82
+
+# text = Ich glaube nicht, dass es heute regnet, aber wir werden sehen.
+# sent_id = 2
+1	Ich	_	PRON	PPER	Case=Nom|Number=Sing|Person=1|PronType=Prs	0	_	_	start_char=84|end_char=87|coref_chains=unit-repr-id2
+2	glaube	_	VERB	VVFIN	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	1	_	_	start_char=88|end_char=94
+3	nicht	_	PART	PTKNEG	Polarity=Neg	2	_	_	SpaceAfter=No|start_char=95|end_char=100
+4	,	_	PUNCT	$,	_	3	_	_	start_char=100|end_char=101
+5	dass	_	SCONJ	KOUS	_	4	_	_	start_char=102|end_char=106
+6	es	_	PRON	PPER	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	5	_	_	start_char=107|end_char=109
+7	heute	_	ADV	ADV	_	6	_	_	start_char=110|end_char=115
+8	regnet	_	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	7	_	_	SpaceAfter=No|start_char=116|end_char=122
+9	,	_	PUNCT	$,	_	8	_	_	start_char=122|end_char=123
+10	aber	_	CCONJ	KON	_	9	_	_	start_char=124|end_char=128
+11	wir	_	PRON	PPER	Case=Nom|Number=Plur|Person=1|PronType=Prs	10	_	_	start_char=129|end_char=132
+12	werden	_	AUX	VAFIN	Mood=Ind|Number=Plur|Person=1|Tense=Pres|VerbForm=Fin	11	_	_	start_char=133|end_char=139
+13	sehen	_	VERB	VVINF	VerbForm=Inf	12	_	_	SpaceAfter=No|start_char=140|end_char=145
+14	.	_	PUNCT	$.	_	13	_	_	start_char=145|end_char=146
+
+# text = Hörst du den Donner nicht?
+# sent_id = 3
+1	Hörst	_	VERB	VVFIN	Mood=Ind|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin	0	_	_	start_char=147|end_char=152
+2	du	_	PRON	PPER	Case=Nom|Number=Sing|Person=2|PronType=Prs	1	_	_	start_char=153|end_char=155|coref_chains=unit-repr-id3
+3	den	_	DET	ART	Case=Acc|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	2	_	_	start_char=156|end_char=159|coref_chains=start-repr-id4
+4	Donner	_	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	3	_	_	start_char=160|end_char=166|coref_chains=end-repr-id4
+5	nicht	_	PART	PTKNEG	Polarity=Neg	4	_	_	SpaceAfter=No|start_char=167|end_char=172
+6	?	_	PUNCT	$.	_	5	_	_	SpacesAfter=\n|start_char=172|end_char=173
+
+# text = Dr. Müller zog im Jan.
+# sent_id = 4
+1	Dr.	_	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	0	_	_	start_char=174|end_char=177|coref_chains=start-repr-id5
+2	Müller	_	PROPN	NE	Case=Nom|Gender=Masc|Number=Sing	1	_	_	start_char=178|end_char=184|coref_chains=end-repr-id5
+3	zog	_	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	2	_	_	start_char=185|end_char=188
+4-5	im	_	_	_	_	_	_	_	start_char=189|end_char=191
+4	in	_	ADP	APPR	_	3	_	_	coref_chains=start-repr-id6
+5	dem	_	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	4	_	_	coref_chains=middle-repr-id6
+6	Jan	_	PROPN	NE	Case=Dat|Gender=Masc|Number=Sing	5	_	_	SpaceAfter=No|start_char=192|end_char=195|coref_chains=end-repr-id6
+7	.	_	PUNCT	$.	_	6	_	_	start_char=195|end_char=196
+
+# text = 1999 nach Berlin und zahlte 4,50 € für einen Kaffee um 7:30 Uhr.
+# sent_id = 5
+1	1999	_	NUM	CARD	NumType=Card	0	_	_	start_char=197|end_char=201
+2	nach	_	ADP	APPR	_	1	_	_	start_char=202|end_char=206|coref_chains=start-repr-id7
+3	Berlin	_	PROPN	NE	Case=Dat|Gender=Neut|Number=Sing	2	_	_	start_char=207|end_char=213|coref_chains=end-repr-id7
+4	und	_	CCONJ	KON	_	3	_	_	start_char=214|end_char=217
+5	zahlte	_	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	4	_	_	start_char=218|end_char=224
+6	4,50	_	NUM	CARD	NumType=Card	5	_	_	start_char=225|end_char=229
+7	€	_	NOUN	NN	Case=Acc|Gender=Masc|Number=Plur	6	_	_	start_char=230|end_char=231
+8	für	_	ADP	APPR	_	7	_	_	start_char=232|end_char=235
+9	einen	_	DET	ART	Case=Acc|Definite=Ind|Gender=Masc|Number=Sing|NumType=Card|PronType=Art	8	_	_	start_char=236|end_char=241
+10	Kaffee	_	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	9	_	_	start_char=242|end_char=248
+11	um	_	ADP	APPR	_	10	_	_	start_char=249|end_char=251
+12	7:30	_	NUM	CARD	NumType=Card	11	_	_	start_char=252|end_char=256
+13	Uhr	_	NOUN	NN	Case=Acc|Gender=Fem|Number=Sing	12	_	_	SpaceAfter=No|start_char=257|end_char=260
+14	.	_	PUNCT	$.	_	13	_	_	SpacesAfter=\n\n|start_char=260|end_char=261
+
+# text = „Wohin gehst du?“, fragte sie.
+# sent_id = 6
+1	„	_	PUNCT	$(	_	0	_	_	SpaceAfter=No|start_char=263|end_char=264
+2	Wohin	_	ADV	PWAV	PronType=Int	1	_	_	start_char=264|end_char=269
+3	gehst	_	VERB	VVFIN	Mood=Ind|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin	2	_	_	start_char=270|end_char=275
+4	du?	_	PRON	PPER	Case=Nom|Number=Sing|PronType=Prs	3	_	_	SpaceAfter=No|start_char=276|end_char=279
+5	“	_	PUNCT	$(	_	4	_	_	SpaceAfter=No|start_char=279|end_char=280
+6	,	_	PUNCT	$,	_	5	_	_	start_char=280|end_char=281
+7	fragte	_	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	6	_	_	start_char=282|end_char=288
+8	sie	_	PRON	PPER	Case=Nom|Gender=Fem|Number=Sing|Person=3|PronType=Prs	7	_	_	SpaceAfter=No|start_char=289|end_char=292|coref_chains=unit-id5
+9	.	_	PUNCT	$.	_	8	_	_	start_char=292|end_char=293
+
+# text = Die Spielsachen der Kinder (alle 23 Stück) lagen im ganzen Zimmer verstreut!
+# sent_id = 7
+1	Die	_	DET	ART	Case=Nom|Definite=Def|Number=Plur|PronType=Art	0	_	_	start_char=294|end_char=297|coref_chains=start-repr-id8
+2	Spielsachen	_	NOUN	NN	Case=Nom|Gender=Fem|Number=Plur	1	_	_	start_char=298|end_char=309|coref_chains=middle-repr-id8
+3	der	_	DET	ART	Case=Gen|Definite=Def|Number=Plur|PronType=Art	2	_	_	start_char=310|end_char=313|coref_chains=middle-repr-id8,start-repr-id9
+4	Kinder	_	NOUN	NN	Case=Gen|Gender=Neut|Number=Plur	3	_	_	start_char=314|end_char=320|coref_chains=end-repr-id8,end-repr-id9
+5	(	_	PUNCT	$(	_	4	_	_	SpaceAfter=No|start_char=321|end_char=322
+6	alle	_	DET	PIAT	Case=Nom|Gender=Neut|Number=Plur|PronType=Tot	5	_	_	start_char=322|end_char=326
+7	23	_	NUM	CARD	NumType=Card	6	_	_	start_char=327|end_char=329
+8	Stück	_	NOUN	NN	Case=Nom|Gender=Neut|Number=Plur	7	_	_	SpaceAfter=No|start_char=330|end_char=335
+9	)	_	PUNCT	$(	_	8	_	_	start_char=335|end_char=336
+10	lagen	_	VERB	VVFIN	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	9	_	_	start_char=337|end_char=342
+11-12	im	_	_	_	_	_	_	_	start_char=343|end_char=345
+11	in	_	ADP	APPR	_	10	_	_	coref_chains=start-repr-id10
+12	dem	_	DET	ART	Case=Dat|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	11	_	_	coref_chains=middle-repr-id10
+13	ganzen	_	ADJ	ADJA	Case=Dat|Degree=Pos|Gender=Neut|Number=Sing	12	_	_	start_char=346|end_char=352|coref_chains=middle-repr-id10
+14	Zimmer	_	NOUN	NN	Case=Dat|Gender=Neut|Number=Sing	13	_	_	start_char=353|end_char=359|coref_chains=end-repr-id10
+15	verstreut	_	ADJ	VVPP	Degree=Pos|VerbForm=Part	14	_	_	SpaceAfter=No|start_char=360|end_char=369
+16	!	_	PUNCT	$.	_	15	_	_	SpacesAfter=\n|start_char=369|end_char=370
+
+# text = Der bekannte Autor, der E-Mails an info@beispiel.de geschrieben hatte, besuchte gestern https://www.beispiel.de/ueber-uns.
+# sent_id = 8
+1	Der	_	DET	ART	Case=Nom|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	0	_	_	start_char=371|end_char=374|coref_chains=start-repr-id11
+2	bekannte	_	ADJ	ADJA	Case=Nom|Degree=Pos|Gender=Masc|Number=Sing	1	_	_	start_char=375|end_char=383|coref_chains=middle-repr-id11
+3	Autor	_	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	2	_	_	SpaceAfter=No|start_char=384|end_char=389|coref_chains=end-repr-id11
+4	,	_	PUNCT	$,	_	3	_	_	start_char=389|end_char=390
+5	der	_	PRON	PRELS	Case=Nom|Gender=Masc|Number=Sing|PronType=Dem,Rel	4	_	_	start_char=391|end_char=394
+6	E	_	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	5	_	_	SpaceAfter=No|start_char=395|end_char=396
+7	-	_	PUNCT	$(	_	6	_	_	SpaceAfter=No|start_char=396|end_char=397
+8	Mails	_	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	7	_	_	start_char=397|end_char=402
+9	an	_	ADP	APPR	_	8	_	_	start_char=403|end_char=405|coref_chains=start-repr-id12
+10	info@beispiel.de	_	PROPN	NE	Case=Dat|Number=Sing	9	_	_	start_char=406|end_char=422|coref_chains=end-repr-id12
+11	geschrieben	_	VERB	VVPP	VerbForm=Part	10	_	_	start_char=423|end_char=434
+12	hatte	_	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	11	_	_	SpaceAfter=No|start_char=435|end_char=440
+13	,	_	PUNCT	$,	_	12	_	_	start_char=440|end_char=441
+14	besuchte	_	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	13	_	_	start_char=442|end_char=450
+15	gestern	_	ADV	ADV	_	14	_	_	start_char=451|end_char=458
+16	https://www.beispiel.de/ueber-uns.	_	X	XY	_	15	_	_	SpacesAfter=\n\n|start_char=459|end_char=493|coref_chains=unit-repr-id13
+
+# text = Marias Schwester wäre nicht zum Treffen gegangen, wenn sie gewusst hätte, dass es am Freitag um 15 Uhr abgesagt worden war;
+# sent_id = 9
+1	Marias	_	PROPN	NE	Case=Gen|Gender=Masc|Number=Sing	0	_	_	start_char=495|end_char=501|coref_chains=unit-repr-id14,start-repr-id15
+2	Schwester	_	NOUN	NN	Case=Nom|Gender=Fem|Number=Sing	1	_	_	start_char=502|end_char=511|coref_chains=end-repr-id15
+3	wäre	_	AUX	VAFIN	Mood=Sub|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	2	_	_	start_char=512|end_char=516
+4	nicht	_	PART	PTKNEG	Polarity=Neg	3	_	_	start_char=517|end_char=522
+5-6	zum	_	_	_	_	_	_	_	start_char=523|end_char=526
+5	zu	_	ADP	APPR	_	4	_	_	coref_chains=start-repr-id16
+6	dem	_	DET	ART	Case=Dat|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	5	_	_	coref_chains=middle-repr-id16
+7	Treffen	_	NOUN	NN	Case=Dat|Gender=Neut|Number=Sing	6	_	_	start_char=527|end_char=534|coref_chains=end-repr-id16
+8	gegangen	_	VERB	VVPP	VerbForm=Part	7	_	_	SpaceAfter=No|start_char=535|end_char=543
+9	,	_	PUNCT	$,	_	8	_	_	start_char=543|end_char=544
+10	wenn	_	SCONJ	KOUS	_	9	_	_	start_char=545|end_char=549
+11	sie	_	PRON	PPER	Case=Nom|Number=Plur|Person=3|PronType=Prs	10	_	_	start_char=550|end_char=553|coref_chains=unit-id15
+12	gewusst	_	VERB	VVPP	VerbForm=Part	11	_	_	start_char=554|end_char=561
+13	hätte	_	AUX	VAFIN	Mood=Sub|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	12	_	_	SpaceAfter=No|start_char=562|end_char=567
+14	,	_	PUNCT	$,	_	13	_	_	start_char=567|end_char=568
+15	dass	_	SCONJ	KOUS	_	14	_	_	start_char=569|end_char=573
+16	es	_	PRON	PPER	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	15	_	_	start_char=574|end_char=576|coref_chains=unit-id16
+17-18	am	_	_	_	_	_	_	_	start_char=577|end_char=579
+17	an	_	ADP	APPR	_	16	_	_	coref_chains=start-repr-id17
+18	dem	_	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	17	_	_	coref_chains=middle-repr-id17
+19	Freitag	_	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	18	_	_	start_char=580|end_char=587|coref_chains=middle-repr-id17
+20	um	_	ADP	APPR	_	19	_	_	start_char=588|end_char=590|coref_chains=middle-repr-id17
+21	15	_	NUM	CARD	NumType=Card	20	_	_	start_char=591|end_char=593|coref_chains=middle-repr-id17
+22	Uhr	_	NOUN	NN	Case=Acc|Gender=Fem|Number=Sing	21	_	_	start_char=594|end_char=597|coref_chains=end-repr-id17
+23	abgesagt	_	VERB	VVPP	VerbForm=Part	22	_	_	start_char=598|end_char=606
+24	worden	_	AUX	VAPP	VerbForm=Part|Voice=Pass	23	_	_	start_char=607|end_char=613
+25	war	_	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	24	_	_	SpaceAfter=No|start_char=614|end_char=617
+26	;	_	PUNCT	$.	_	25	_	_	start_char=617|end_char=618
+
+# text = niemand sagte es ihr.
+# sent_id = 10
+1	niemand	_	PRON	PIS	Case=Nom|Number=Sing|PronType=Ind	0	_	_	start_char=619|end_char=626
+2	sagte	_	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	1	_	_	start_char=627|end_char=632
+3	es	_	PRON	PPER	Case=Acc|Gender=Neut|Number=Sing|Person=3|PronType=Prs	2	_	_	start_char=633|end_char=635|coref_chains=unit-repr-id18
+4	ihr	_	PRON	PPER	Case=Dat|Gender=Fem|Number=Sing|Person=3|PronType=Prs	3	_	_	SpaceAfter=No|start_char=636|end_char=639|coref_chains=unit-id15
+5	.	_	PUNCT	$.	_	4	_	_	SpacesAfter=\n|start_char=639|end_char=640
+
+# text = Wow... das ist ja großartig!!
+# sent_id = 11
+1	Wow	_	PROPN	NE	Case=Nom|Gender=Masc|Number=Sing	0	_	_	SpaceAfter=No|start_char=641|end_char=644
+2	...	_	PUNCT	$(	_	1	_	_	start_char=644|end_char=647
+3	das	_	PRON	PDS	Case=Nom|Gender=Neut|Number=Sing|PronType=Dem,Rel	2	_	_	start_char=648|end_char=651|coref_chains=unit-repr-id19
+4	ist	_	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	_	_	start_char=652|end_char=655
+5	ja	_	ADV	ADV	_	4	_	_	start_char=656|end_char=658
+6	großartig	_	ADJ	ADJD	Degree=Pos	5	_	_	SpaceAfter=No|start_char=659|end_char=668
+7	!	_	PUNCT	$.	_	6	_	_	SpaceAfter=No|start_char=668|end_char=669
+8	!	_	PUNCT	$.	_	7	_	_	SpacesAfter=\n|start_char=669|end_char=670

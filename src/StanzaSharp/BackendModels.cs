@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using StanzaSharp.Constituency;
+using StanzaSharp.Coref;
 using StanzaSharp.Depparse;
 using StanzaSharp.Lemma;
 using StanzaSharp.Mwt;
@@ -75,6 +76,9 @@ internal abstract class BackendModels : IDisposable
     /// <param name="transformer">The transformer a <c>_electra-large</c> model reads; null for the others.</param>
     public abstract SentimentClassifier Sentiment(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer);
 
+    /// <param name="transformer">The transformer the model reads (its LoRA adapters go onto a copy sharing its weights).</param>
+    public abstract CorefResolver Coref(string basePath, TransformerEmbedder transformer);
+
     /// <summary>The charlm loaded as <paramref name="path"/> into <paramref name="loaded"/>, or null for none.</summary>
     protected static T? Find<T>(Dictionary<string, T> loaded, string? path) where T : class
     {
@@ -144,6 +148,8 @@ internal sealed class ManagedModels : BackendModels
 
     public override DependencyParser Depparse(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer) =>
         DependencyParser.LoadManaged(basePath, pretrain, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward), transformer);
+
+    public override CorefResolver Coref(string basePath, TransformerEmbedder transformer) => CorefResolver.LoadManaged(basePath, transformer);
 
     public override NerTagger Ner(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer, int? tagSet) =>
         NerTagger.LoadManaged(basePath, pretrain, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward), transformer, tagSet);

@@ -39,6 +39,7 @@ public static class ModelDownloader
             ("depparse/combined_charlm.pt", "993a0eb712cefb881c684df8d9934f15"),
             ("ner/ontonotes-ww-multi_charlm.pt", "3cd5e98549640f448846389169a36812"),
             ("sentiment/sstplus_charlm.pt", "cf7e8e8f2a76c1dc236329dbc0e61cb4"),
+            ("coref/udcoref_xlm-roberta-lora.pt", "952f55dad09d2350249ed1e2a15a34f8"), // optional: only when coref is named
 
             // default_fast's own models
             ("pos/combined_nocharlm.pt", "005fab042873317838e692c650e8e5e9"),
@@ -185,6 +186,7 @@ public static class ModelDownloader
             ("depparse/combined_charlm.pt", "c07c3344d2635c789870b6627c6ad680"),
             ("ner/germeval2014.pt", "e2d33aecdfc079b18dbdbb06ec6d419a"),
             ("sentiment/sb10k_charlm.pt", "278b42bbd2c127d293a8197252dae1eb"),
+            ("coref/udcoref_xlm-roberta-lora.pt", "952f55dad09d2350249ed1e2a15a34f8"), // optional: only when coref is named
 
             // default_fast's own models
             ("pos/combined_nocharlm.pt", "e2ccaf6a99711487adfe8e016592556a"),
@@ -372,7 +374,7 @@ public static class ModelDownloader
             ("pytorch_model.bin", "e482d0e2a09cef20bed85c86d7df9d2f1f5d090e7e53c772ab94ced0e3eafee3"),
         ]),
 
-        // Coref's (docs/coref-plan.md, #176; no coref model reads it yet): XLM-RoBERTa with a SentencePiece Unigram tokenizer.json.
+        // Coref's (docs/coref-plan.md, #176; udcoref_xlm-roberta-lora reads it): XLM-RoBERTa with a SentencePiece Unigram tokenizer.json.
         // pytorch_model.bin is torch's legacy format, as Stanza's own checkpoints.
         ["FacebookAI/xlm-roberta-large"] = ("c23d21b0620b635a76227c604d44e43a9f0ee389",
         [

@@ -59,7 +59,7 @@ internal static class TextFuzz
             Backend = managed ? PipelineBackend.Managed : CudaBackend.Cpu,
             Threads = threads > 0 ? threads : null,
         });
-        var order = Pipeline.AllProcessors.Split(',');
+        var order = Pipeline.StanzaOrder.Split(',');
         var loaded = Pipeline.SelectModels(package, processors, addRequired: false, "--model", language, chosen, pretagged)
             .OrderBy(m => Array.IndexOf(order, m.Key))
             .ToDictionary(m => m.Key, m => m.Value);

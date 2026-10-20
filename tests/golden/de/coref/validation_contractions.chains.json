@@ -1,0 +1,447 @@
+[
+ {
+  "index": 0,
+  "mentions": [
+   [
+    0,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Ich",
+  "representative_index": 0
+ },
+ {
+  "index": 1,
+  "mentions": [
+   [
+    0,
+    2,
+    5
+   ]
+  ],
+  "representative_text": "zum Bäcker",
+  "representative_index": 0
+ },
+ {
+  "index": 2,
+  "mentions": [
+   [
+    0,
+    7,
+    10
+   ]
+  ],
+  "representative_text": "zur Post",
+  "representative_index": 0
+ },
+ {
+  "index": 3,
+  "mentions": [
+   [
+    1,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "Im Sommer",
+  "representative_index": 0
+ },
+ {
+  "index": 4,
+  "mentions": [
+   [
+    1,
+    4,
+    5
+   ],
+   [
+    2,
+    4,
+    5
+   ],
+   [
+    7,
+    5,
+    6
+   ],
+   [
+    13,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "wir",
+  "representative_index": 0
+ },
+ {
+  "index": 5,
+  "mentions": [
+   [
+    1,
+    5,
+    8
+   ]
+  ],
+  "representative_text": "ans Meer",
+  "representative_index": 0
+ },
+ {
+  "index": 6,
+  "mentions": [
+   [
+    2,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "Am Abend",
+  "representative_index": 0
+ },
+ {
+  "index": 7,
+  "mentions": [
+   [
+    2,
+    5,
+    8
+   ],
+   [
+    4,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "beim Italiener",
+  "representative_index": 0
+ },
+ {
+  "index": 8,
+  "mentions": [
+   [
+    3,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "Vom Fenster",
+  "representative_index": 0
+ },
+ {
+  "index": 9,
+  "mentions": [
+   [
+    3,
+    6,
+    9
+   ]
+  ],
+  "representative_text": "ins Tal",
+  "representative_index": 0
+ },
+ {
+  "index": 10,
+  "mentions": [
+   [
+    4,
+    2,
+    5
+   ]
+  ],
+  "representative_text": "übers Geländer",
+  "representative_index": 0
+ },
+ {
+  "index": 11,
+  "mentions": [
+   [
+    4,
+    7,
+    10
+   ]
+  ],
+  "representative_text": "ums Haus",
+  "representative_index": 0
+ },
+ {
+  "index": 12,
+  "mentions": [
+   [
+    5,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Sie",
+  "representative_index": 0
+ },
+ {
+  "index": 13,
+  "mentions": [
+   [
+    5,
+    2,
+    5
+   ]
+  ],
+  "representative_text": "aufs Dach",
+  "representative_index": 0
+ },
+ {
+  "index": 14,
+  "mentions": [
+   [
+    6,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "Zum Glück",
+  "representative_index": 0
+ },
+ {
+  "index": 15,
+  "mentions": [
+   [
+    6,
+    4,
+    7
+   ]
+  ],
+  "representative_text": "am Bahnhof",
+  "representative_index": 0
+ },
+ {
+  "index": 16,
+  "mentions": [
+   [
+    7,
+    0,
+    4
+   ]
+  ],
+  "representative_text": "Beim nächsten Mal",
+  "representative_index": 0
+ },
+ {
+  "index": 17,
+  "mentions": [
+   [
+    7,
+    6,
+    8
+   ]
+  ],
+  "representative_text": "den Bus",
+  "representative_index": 0
+ },
+ {
+  "index": 18,
+  "mentions": [
+   [
+    8,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "ZUM VERKAUF",
+  "representative_index": 0
+ },
+ {
+  "index": 19,
+  "mentions": [
+   [
+    9,
+    5,
+    7
+   ]
+  ],
+  "representative_text": "IM ANGEBOT",
+  "representative_index": 0
+ },
+ {
+  "index": 20,
+  "mentions": [
+   [
+    10,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "ich",
+  "representative_index": 0
+ },
+ {
+  "index": 21,
+  "mentions": [
+   [
+    11,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "Zur Not",
+  "representative_index": 0
+ },
+ {
+  "index": 22,
+  "mentions": [
+   [
+    12,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Hinters Haus",
+  "representative_index": 0
+ },
+ {
+  "index": 23,
+  "mentions": [
+   [
+    12,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "unterm Tisch",
+  "representative_index": 0
+ },
+ {
+  "index": 24,
+  "mentions": [
+   [
+    12,
+    6,
+    8
+   ]
+  ],
+  "representative_text": "vorm Kino",
+  "representative_index": 0
+ },
+ {
+  "index": 25,
+  "mentions": [
+   [
+    12,
+    9,
+    11
+   ]
+  ],
+  "representative_text": "fürs Protokoll",
+  "representative_index": 0
+ },
+ {
+  "index": 26,
+  "mentions": [
+   [
+    12,
+    12,
+    13
+   ]
+  ],
+  "representative_text": "das",
+  "representative_index": 0
+ },
+ {
+  "index": 27,
+  "mentions": [
+   [
+    13,
+    3,
+    7
+   ]
+  ],
+  "representative_text": "am 3. Mai",
+  "representative_index": 0
+ },
+ {
+  "index": 28,
+  "mentions": [
+   [
+    13,
+    7,
+    13
+   ]
+  ],
+  "representative_text": "im Café am Markt",
+  "representative_index": 0
+ },
+ {
+  "index": 29,
+  "mentions": [
+   [
+    13,
+    10,
+    13
+   ]
+  ],
+  "representative_text": "am Markt",
+  "representative_index": 0
+ },
+ {
+  "index": 30,
+  "mentions": [
+   [
+    13,
+    15,
+    18
+   ]
+  ],
+  "representative_text": "neben dem Rathaus",
+  "representative_index": 0
+ },
+ {
+  "index": 31,
+  "mentions": [
+   [
+    15,
+    3,
+    4
+   ],
+   [
+    16,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "dir",
+  "representative_index": 0
+ },
+ {
+  "index": 32,
+  "mentions": [
+   [
+    17,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Durchs Fenster",
+  "representative_index": 0
+ },
+ {
+  "index": 33,
+  "mentions": [
+   [
+    17,
+    4,
+    7
+   ]
+  ],
+  "representative_text": "ins Zimmer",
+  "representative_index": 0
+ },
+ {
+  "index": 34,
+  "mentions": [
+   [
+    17,
+    9,
+    11
+   ]
+  ],
+  "representative_text": "übers Wochenende",
+  "representative_index": 0
+ }
+]

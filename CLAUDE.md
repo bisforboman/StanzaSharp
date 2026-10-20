@@ -10,7 +10,7 @@ default from 0.5) or through TorchSharp (see "Managed backend").
   findings (German)"). German runs every processor of `default`, `default_fast`, `combined`, `gsd` and `hdt` byte for
   byte on both backends.
 - **Processors:** all eight of Stanza's English default, in Stanza's order (`PIPELINE_NAMES`): tokenize,
-  mwt, pos, lemma, constituency, depparse, sentiment, ner. This is `Pipeline.AllProcessors`, the default
+  mwt, pos, lemma, constituency, depparse, sentiment, ner; plus the optional coref (after constituency; see "Coref"). This is `Pipeline.AllProcessors`, the default
   (user's decision, 2026-10-06: like Stanza; it costs about 36% more time than without ner and sentiment).
   - `Pipeline.Process` runs them in that order whatever order they are listed in. Only the CoNLL-U
     comment order is observable (`# sentiment` after `# constituency`).
@@ -209,7 +209,7 @@ default from 0.5) or through TorchSharp (see "Managed backend").
     `germeval2014_dbmdz-bert-german-cased` (conll17, not the listed fasttextwiki: `ListedPretrains`, `PRETRAIN_FIXES`) and
     sentiment `sb10k_dbmdz-bert-german-cased` (LoRA; no charlms although listed: `Unread`). Golden rows
     `ner=germeval2014_dbmdz-bert-german-cased`, `sentiment=sb10k_dbmdz-bert-german-cased`.
-  - Coref's XLM-R (docs/coref-plan.md, PR a; owner's choice 2026-10-19; #176 stays parked for b and c): `Nn.Unigram`
+  - Coref's XLM-R (docs/coref-plan.md, PR a; owner's choice 2026-10-19; PRs b and c followed on 2026-10-20): `Nn.Unigram`
     (tokenizers' Precompiled normalizer: per extended grapheme cluster via `StringInfo`, a cluster under 6 UTF-8 bytes
     replaced whole by its *shortest* trie match, else per character; WhitespaceSplit + Metaspace prepend always + split;
     Unigram best path, unknown = min score − 10, a later start wins only when strictly better, adjacent unknowns fused),
@@ -230,6 +230,34 @@ default from 0.5) or through TorchSharp (see "Managed backend").
     an empty `token.misc`). A word whose text is `_` keeps lemma `_` (Stanza's lemma setter). Golden `tests/golden/coref/`
     (`make_golden.py --coref-only`; `electra_locally` also serves XLM-R and coref's own `load_tokenizer`): corpus +
     validation texts and `crafted.*` (chains set by hand with empty words); `CorefDocumentTests`, no models.
+  - Coref PR (c), the processor (owner's decisions 2026-10-20: Q1 main package, Q2 opt-in processor, Q6 the default
+    model only, Q8 float32; Q7 by the existing rule, a per-run download in golden shard 4): `Processor.Coref`
+    (`StanzaSharp.Coref`: `CorefResolver` + `ICorefNet`, `ManagedCorefNet` / TorchSharp `CorefNet`), Stanza's
+    `udcoref_xlm-roberta-lora` for en and de. Not in `AllProcessors` (eight, Stanza's default list); `Pipeline.StanzaOrder` has
+    all nine, coref after constituency. `Pipeline.Optional` = resources.json's packages' `optional` (default, default_fast,
+    default_accurate): `SelectModels` adds its model only when Processors names coref; `Models` may choose it (`Alternatives`)
+    on any package. `Requires` tokenize; UPOS only breaks representative ties (PROPN). `CorefResolver.Run` = CorefModel.run:
+    each word through the tokenizer (`Encode` of all words: Stanza's `tokenize(word)` per word gives the same pieces), windows
+    of 510 backed up to a sentence end, the LoRA net (`WithLora`, `LoraWeights` reads peft's `base_model.model.` keys and
+    skips a saved pooler) on each, the special ids dropped; WordEncoder; rough scores masked for j ≥ i and `Nn.TopK` (ATen's
+    topk_impl_loop: libstdc++ 13's nth_element when k·64 > n, else partial_sort, comparator NaN-first then >; ported from
+    stl_algo.h / stl_heap.h; `TopKTests` against torch on Linux, `coref/topk.json`, `make_golden.py --topk-only`, no models)
+    on both backends, so TorchSharp on Windows doesn't get MSVC's order; distance buckets; pair scores; start = start_map over
+    the k pair scores in topk's order (masked ones too); `_clusterize` (dummy wins its ties, start wins its tie with ε,
+    components sorted, lists ordered like Python's); SpanPredictor with every head padded to the longest of their sentences
+    (padding rows ffnn(0), then both convolutions); zeros predictor; then coref_processor.process (zeros before the word,
+    numbered per sentence; spans sorted, paired with the cluster's words by position). Managed: the anaphoricity and span
+    layers split by input part (per word, per bucket/distance, per pair). Measured: every golden text's CoNLL-U byte for byte on
+    both backends (en 13 texts, 1,674 chains; de 13, 272), clusters, spans and zero scores exact on the intermediates;
+    the top-k order differs from torch's in 2 of 549 rows of validation_dialogue (same candidates; near-ties between rough
+    scores closer than the float drift rearrange nth_element), on both backends, without changing a decision. Bulk: coref
+    runs once over the combined document, so the returned documents' `Coref` stays empty and their words keep the
+    attachments (Stanza's bulk_process). Empty document: `Coref` = [] (Stanza crashes). A word without subwords throws
+    (Stanza too). Tests `TransformerCorefTests` (golden shard 4; `Run_MatchesStanzasSteps`, `Pipeline_ReproducesStanzasCoref`
+    en + de); golden `coref/intermediates.*` (windows, words, top-k in topk's order, scores, clusters; corpus and
+    validation_dialogue) and `de/coref/` (texts only). CI: `tools/ci-models.sh transformer` downloads `--processors
+    tokenize,coref` (en) and, with XLM-R linked from en's folder, de. compare.py's `transformers_locally` also serves coref's
+    own `load_tokenizer`.
   - CI: no cache (the model caches are near GitHub's 10 GB; owner's decision): golden shard 4 downloads the
     `default_accurate` package, the treebanks' transformer models (their packages' other files from the en-treebanks cache)
     and the transformer's files on every run (`tools/ci-models.sh transformer`: `download --package default_accurate`, ...,
@@ -511,6 +539,7 @@ src/StanzaSharp.Constituency   Constituency parser.
 src/StanzaSharp.Depparse       Dependency parser (biaffine graph parser + Chu-Liu/Edmonds).
 src/StanzaSharp.Ner            Named-entity recognizer (biLSTM + CRF Viterbi).
 src/StanzaSharp.Sentiment      Sentence sentiment (CNN classifier over biLSTM states).
+src/StanzaSharp.Coref          Coreference (XLM-R + LoRA, the coref head, chains; opt-in processor).
 src/StanzaSharp                Pipeline facade wiring the processors together.
 src/StanzaSharp.Tool           The `stanzasharp` .NET tool: download, compare, benchmark (no native libtorch).
 samples/StanzaSharp.Cli        Console runner for quick experiments.
@@ -1275,7 +1304,7 @@ What the English treebank packages' checkpoints add to the default package's pat
     `Gemm.Detect()`. Report formatting is invariant-culture ASCII (`x` for ratios). `BenchmarkCommandTests`
     (`Run_PythonStanza_Quick` and `_GermanQuick` run in golden-shard 2); `verify-tool.ps1` runs `benchmark --quick`.
 - The `StanzaSharp` package, packed from `src/StanzaSharp` (user's decision, 2026-10-06).
-  - It carries all nine assemblies (facade, Core, Nn, the processors) plus their XML docs: the facade's
+  - It carries all ten assemblies (facade, Core, Nn, the processors) plus their XML docs: the facade's
     ProjectReferences are `PrivateAssets="all"`, and an `IncludeProjectReferences` target adds them.
   - Its only dependency is `Microsoft.Extensions.Logging.Abstractions`; no TorchSharp since 1.0.
 - `StanzaSharp.Cuda` (1.0), packed from `src/StanzaSharp.Cuda` (assembly `StanzaSharp.Cuda.dll`): depends on

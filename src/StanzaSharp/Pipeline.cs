@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Runtime.ExceptionServices;
 using Microsoft.Extensions.Logging;
 using StanzaSharp.Constituency;
+using StanzaSharp.Coref;
 using StanzaSharp.Depparse;
 using StanzaSharp.Lemma;
 using StanzaSharp.Mwt;
@@ -15,8 +16,8 @@ using StanzaSharp.Tokenize;
 namespace StanzaSharp;
 
 /// <summary>
-/// Runs Stanza's English pipeline in its order: tokenize → mwt → pos → lemma → constituency → depparse → sentiment → ner
-/// (by default all those of the selected package).
+/// Runs Stanza's English pipeline in its order: tokenize → mwt → pos → lemma → constituency → coref → depparse → sentiment →
+/// ner (by default all those of the selected package; coref only when named).
 /// </summary>
 /// <example>
 /// <code>
@@ -29,6 +30,30 @@ public sealed class Pipeline : IDisposable
 {
     /// <summary>Every processor, in the order Stanza runs them (PIPELINE_NAMES): Stanza's English default.</summary>
     public const string AllProcessors = $"{Processor.Tokenize},{Processor.Mwt},{Processor.Pos},{Processor.Lemma},{Processor.Constituency},{Processor.Depparse},{Processor.Sentiment},{Processor.Ner}";
+
+    // Every processor in Stanza's order, coref (optional, never in a package's default list) included.
+    internal const string StanzaOrder = $"{Processor.Tokenize},{Processor.Mwt},{Processor.Pos},{Processor.Lemma},{Processor.Constituency},{Processor.Coref},{Processor.Depparse},{Processor.Sentiment},{Processor.Ner}";
+
+    // Stanza's optional processors (resources.json's packages' "optional"): a package's model for them, run only when
+    // Processors or Models names the processor (owner's decision, 2026-10-20: coref is opt-in).
+    internal static readonly Dictionary<string, Dictionary<string, Dictionary<string, string>>> Optional = new()
+    {
+        [English] = new()
+        {
+            [DefaultPackage] = new() { ["coref"] = CorefModel },
+            ["default_fast"] = new() { ["coref"] = CorefModel },
+            ["default_accurate"] = new() { ["coref"] = CorefModel },
+        },
+        ["de"] = new()
+        {
+            [DefaultPackage] = new() { ["coref"] = CorefModel },
+            ["default_fast"] = new() { ["coref"] = CorefModel },
+            ["default_accurate"] = new() { ["coref"] = CorefModel },
+        },
+    };
+
+    // The multilingual coref model, English's and German's (docs/coref-plan.md).
+    internal const string CorefModel = "udcoref_xlm-roberta-lora";
 
     /// <summary>The package <see cref="PipelineOptions.Package"/> selects by default: Stanza's English <see langword="default"/>.</summary>
     public const string DefaultPackage = "default";
@@ -155,6 +180,7 @@ public sealed class Pipeline : IDisposable
         {
             ["constituency"] = ["ptb3_charlm", "ptb3-revised_electra-large", "ptb3_electra-large"],
             ["sentiment"] = ["sstplus_electra-large"],
+            ["coref"] = [CorefModel],
 
             // the treebanks' _charlm tokenizers and lemmatizers (per-character charlm states); lemma combined_charlm also has
             // contextual lemma classifiers ('s, her), which read the pretrain too
@@ -193,6 +219,7 @@ public sealed class Pipeline : IDisposable
             ["depparse"] = ["gsd_nocharlm", "hdt_nocharlm", "gsd_german-nlp-electra", "hdt_german-nlp-electra"],
             ["ner"] = ["conll03", "germeval2014_german-nlp-electra", "germeval2014_dbmdz-bert-german-cased"],
             ["sentiment"] = ["sb10k_dbmdz-bert-german-cased"],
+            ["coref"] = [CorefModel],
         },
     };
 
@@ -264,6 +291,7 @@ public sealed class Pipeline : IDisposable
             ["constituency/ptb3-revised_charlm"] = EnglishCharlm,
             ["depparse/combined_charlm"] = EnglishCharlm,
             ["sentiment/sstplus_charlm"] = EnglishCharlm,
+            ["coref/" + CorefModel] = [], // nothing but its transformer (Transformers)
             ["sentiment/sstplus_electra-large"] = EnglishCharlm, // resources.json lists the charlms, which the model doesn't read (Unread)
             ["ner/ontonotes-ww-multi_charlm"] = EnglishCharlm,
             ["pos/combined_nocharlm"] = Conll17,
@@ -364,6 +392,7 @@ public sealed class Pipeline : IDisposable
             ["constituency/spmrl_charlm"] = GermanCharlm,
             ["depparse/combined_charlm"] = GermanCharlm,
             ["sentiment/sb10k_charlm"] = GermanCharlm,
+            ["coref/" + CorefModel] = [], // nothing but its transformer (Transformers)
             ["ner/germeval2014"] = ["pretrain/fasttextwiki", "forward_charlm/newswiki", "backward_charlm/newswiki"],
             ["pos/combined_nocharlm"] = Conll17,
 
@@ -452,6 +481,7 @@ public sealed class Pipeline : IDisposable
             ["depparse/eslspok_electra-large"] = Electra,
             ["ner/ontonotes_electra-large"] = Electra,
             ["ner/conll03_electra-large"] = "roberta-base", // despite its name (#172)
+            ["coref/" + CorefModel] = XlmRoberta, // with its LoRA adapters
         },
         ["de"] = new()
         {
@@ -466,10 +496,12 @@ public sealed class Pipeline : IDisposable
             ["ner/germeval2014_german-nlp-electra"] = GermanElectra,
             ["ner/germeval2014_dbmdz-bert-german-cased"] = "dbmdz/bert-base-german-cased",
             ["sentiment/sb10k_dbmdz-bert-german-cased"] = "dbmdz/bert-base-german-cased", // LoRA adapters
+            ["coref/" + CorefModel] = XlmRoberta, // with its LoRA adapters
         },
     };
 
-    private const string Electra = "google/electra-large-discriminator", GermanElectra = "german-nlp-group/electra-base-german-uncased";
+    private const string Electra = "google/electra-large-discriminator", GermanElectra = "german-nlp-group/electra-base-german-uncased",
+        XlmRoberta = "FacebookAI/xlm-roberta-large";
 
     /// <summary>The transformers <paramref name="models"/> of <paramref name="language"/> read (<see cref="Transformers"/>), each once.</summary>
     internal static List<string> TransformersOf(IReadOnlyDictionary<string, string> models, string language) =>
@@ -486,6 +518,7 @@ public sealed class Pipeline : IDisposable
         ["ner"] = ["tokenize"], // reads only the tokens' text
         ["constituency"] = ["tokenize", "mwt", "pos"],
         ["sentiment"] = ["tokenize"], // the model reads only the tokens' text
+        ["coref"] = ["tokenize"], // the words' text (and UPOS, when the tagger ran, to choose a representative mention)
     };
 
     private readonly Tokenizer _tokenizer;
@@ -500,6 +533,7 @@ public sealed class Pipeline : IDisposable
     internal ConstituencyParser? Parser => _parser;
 
     private readonly SentimentClassifier? _sentiment;
+    private readonly CorefResolver? _coref;
     private readonly TransformerEmbedder[] _transformers = []; // every transformer the models read (Transformers), once each
     private readonly Pretrain[] _pretrains = [];
     private readonly BackendModels _models;
@@ -679,6 +713,10 @@ public sealed class Pipeline : IDisposable
             var sentiment = models.ContainsKey("sentiment")
                 ? Start(Name("sentiment"), () => backend.Sentiment(Model("sentiment"), PretrainOf("sentiment"), CharlmsOf("sentiment"), TransformerOf("sentiment")))
                 : null;
+            var coref = models.ContainsKey("coref")
+                ? Start(Name("coref"), () => backend.Coref(Model("coref"), TransformerOf("coref")
+                    ?? throw new ArgumentException($"The coref model {Model("coref")} reads a transformer StanzaSharp doesn't know", nameof(options))))
+                : null;
             Task.WaitAll(started);
 
             // The batch-size options: each a copy of its processor sharing the nets, made before any call.
@@ -695,6 +733,7 @@ public sealed class Pipeline : IDisposable
             _ner = options.NerBatchSize is int n ? ner?.Result.WithBatchSize(n) : ner?.Result;
             _parser = options.ConstituencyBatchSize is int cp ? parser?.Result.WithBatchSize(cp) : parser?.Result;
             _sentiment = options.SentimentBatchSize is int b ? sentiment?.Result.WithBatchSize(b) : sentiment?.Result;
+            _coref = coref?.Result;
             _pretrains = [.. pretrains.Values.Select(p => p.Result)];
             _transformers = [.. transformers.Values.Select(t => t.Result)];
         }
@@ -774,7 +813,7 @@ public sealed class Pipeline : IDisposable
         }
 
         logger?.LogInformation("Loaded the {Package} pipeline ({Processors}) in {Milliseconds:F0} ms", options.Package,
-            string.Join(",", AllProcessors.Split(',').Where(models.ContainsKey).Select(p => options.Models == null ? p : $"{p}={models[p]}")),
+            string.Join(",", StanzaOrder.Split(',').Where(models.ContainsKey).Select(p => options.Models == null ? p : $"{p}={models[p]}")),
             Stopwatch.GetElapsedTime(start).TotalMilliseconds);
         return pipeline;
     }
@@ -872,10 +911,12 @@ public sealed class Pipeline : IDisposable
         var custom = CustomPaths(paths, paramName);
         if (custom.Keys.FirstOrDefault(overrides.ContainsKey) is { } both)
             throw new ArgumentException($"Both Models and ModelPaths name {both}", paramName);
+
+        // An optional processor's path replaces the package's optional model (coref: its transformer stays XLM-R).
         foreach (var p in custom.Keys)
         {
             if (!models.ContainsKey(p) || models[p] == IdentityLemma)
-                models[p] = CustomModel;
+                models[p] = Optional.GetValueOrDefault(language!)?.GetValueOrDefault(package!)?.GetValueOrDefault(p) ?? CustomModel;
         }
 
         // Stanza's add_mwt: a replaced tokenizer brings the mwt of its own treebank, if there is one.
@@ -886,6 +927,14 @@ public sealed class Pipeline : IDisposable
         }
 
         var set = processors == null ? models.Keys.ToHashSet() : ParseProcessors(processors, paramName);
+
+        // An optional processor (coref) runs only when named, with the package's model unless Models chose another.
+        foreach (var (p, model) in Optional.GetValueOrDefault(language!)?.GetValueOrDefault(package!) ?? [])
+        {
+            if (set.Contains(p))
+                models.TryAdd(p, model);
+        }
+
         if (processors != null && overrides.Keys.FirstOrDefault(p => !set.Contains(p)) is { } unlisted)
             throw new ArgumentException($"Models names {unlisted}, which Processors ({processors}) doesn't list", paramName);
         if (processors != null && custom.Keys.FirstOrDefault(p => !set.Contains(p)) is { } unlistedPath)
@@ -915,7 +964,8 @@ public sealed class Pipeline : IDisposable
         {
             if (!models.ContainsKey(p))
             {
-                var others = packages.Where(kv => kv.Value.ContainsKey(p)).Select(kv => $"\"{kv.Key}\"");
+                var others = packages.Where(kv => kv.Value.ContainsKey(p) || Optional.GetValueOrDefault(language!)?.GetValueOrDefault(kv.Key)?.ContainsKey(p) == true)
+                    .Select(kv => $"\"{kv.Key}\"");
                 throw new ArgumentException($"Package '{package}' has no {p} model; use Package = {string.Join(" or ", others)} for {p}, "
                     + $"or choose one with Models: {string.Join(", ", ModelsOf(language!, p))}", paramName);
             }
@@ -936,7 +986,7 @@ public sealed class Pipeline : IDisposable
         {
             var p = key?.Trim().ToLowerInvariant() ?? "";
             if (!Requires.ContainsKey(p))
-                throw new ArgumentException($"Unknown processor '{key}' in Models. Available: {AllProcessors}", paramName);
+                throw new ArgumentException($"Unknown processor '{key}' in Models. Available: {StanzaOrder}", paramName);
             if (resolved.ContainsKey(p))
                 throw new ArgumentException($"Models names {p} twice", paramName);
             var name = value?.Trim().ToLowerInvariant() ?? "";
@@ -948,6 +998,10 @@ public sealed class Pipeline : IDisposable
             else if (Packages[language].TryGetValue(name, out var package) && package.TryGetValue(p, out var model))
             {
                 resolved[p] = model;
+            }
+            else if (Optional.GetValueOrDefault(language)?.GetValueOrDefault(name)?.TryGetValue(p, out var optional) == true)
+            {
+                resolved[p] = optional;
             }
             else
             {
@@ -1016,7 +1070,7 @@ public sealed class Pipeline : IDisposable
         {
             var p = key?.Trim().ToLowerInvariant() ?? "";
             if (!Requires.ContainsKey(p))
-                throw new ArgumentException($"Unknown processor '{key}' in ModelPaths. Available: {AllProcessors}", paramName);
+                throw new ArgumentException($"Unknown processor '{key}' in ModelPaths. Available: {StanzaOrder}", paramName);
             if (resolved.ContainsKey(p))
                 throw new ArgumentException($"ModelPaths names {p} twice", paramName);
             if (string.IsNullOrWhiteSpace(value?.Model))
@@ -1059,7 +1113,7 @@ public sealed class Pipeline : IDisposable
         foreach (var p in set)
         {
             if (!Requires.ContainsKey(p))
-                throw new ArgumentException($"Unknown processor '{p}'. Available: {AllProcessors}", paramName);
+                throw new ArgumentException($"Unknown processor '{p}'. Available: {StanzaOrder}", paramName);
         }
 
         if (set.Count == 0)
@@ -1358,6 +1412,8 @@ public sealed class Pipeline : IDisposable
         // Stanza's order (PIPELINE_NAMES). Only the CoNLL-U comment order shows it, and Conllu.Write fixes that.
         if (_parser != null)
             Step("constituency", () => _parser.Process(doc, cacheFor("constituency"), ct, transformersFor(readers[1])), ct);
+        if (_coref != null)
+            Step("coref", () => _coref.Process(doc, ct), ct);
 
         // Depparse runs the charlms with a ROOT word in front, so of the tagger's outputs only the backward ones apply, with
         // ROOT run on from the tagger's final state (managed; DependencyParser.Process).
@@ -1389,6 +1445,7 @@ public sealed class Pipeline : IDisposable
     {
         _parser?.Dispose();
         _sentiment?.Dispose();
+        _coref?.Dispose();
         _depparse?.Dispose();
         _ner?.Dispose();
         _pos?.Dispose();

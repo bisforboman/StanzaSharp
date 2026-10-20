@@ -1,0 +1,254 @@
+[
+ {
+  "index": 0,
+  "mentions": [
+   [
+    0,
+    0,
+    4
+   ]
+  ],
+  "representative_text": "Die Größe des Gefäßes",
+  "representative_index": 0
+ },
+ {
+  "index": 1,
+  "mentions": [
+   [
+    0,
+    2,
+    4
+   ]
+  ],
+  "representative_text": "des Gefäßes",
+  "representative_index": 0
+ },
+ {
+  "index": 2,
+  "mentions": [
+   [
+    0,
+    5,
+    8
+   ]
+  ],
+  "representative_text": "für die Flüssigkeit",
+  "representative_index": 0
+ },
+ {
+  "index": 3,
+  "mentions": [
+   [
+    2,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "Österreichs",
+  "representative_index": 0
+ },
+ {
+  "index": 4,
+  "mentions": [
+   [
+    2,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "Über Österreichs Gebirge",
+  "representative_index": 0
+ },
+ {
+  "index": 5,
+  "mentions": [
+   [
+    3,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Die Bäume",
+  "representative_index": 0
+ },
+ {
+  "index": 6,
+  "mentions": [
+   [
+    3,
+    6,
+    8
+   ]
+  ],
+  "representative_text": "die Bären",
+  "representative_index": 0
+ },
+ {
+  "index": 7,
+  "mentions": [
+   [
+    4,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Der Fußballweltmeisterschaftsqualifikationsspieltag",
+  "representative_index": 0
+ },
+ {
+  "index": 8,
+  "mentions": [
+   [
+    5,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Die Donaudampfschifffahrtsgesellschaft",
+  "representative_index": 0
+ },
+ {
+  "index": 9,
+  "mentions": [
+   [
+    6,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Das Rindfleischetikettierungsüberwachungsaufgabenübertragungsgesetz",
+  "representative_index": 0
+ },
+ {
+  "index": 10,
+  "mentions": [
+   [
+    8,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "Das große ẞ",
+  "representative_index": 0
+ },
+ {
+  "index": 11,
+  "mentions": [
+   [
+    9,
+    3,
+    10
+   ]
+  ],
+  "representative_text": "Bäcker , Mühle , Öl und Übermut",
+  "representative_index": 0
+ },
+ {
+  "index": 12,
+  "mentions": [
+   [
+    11,
+    0,
+    6
+   ]
+  ],
+  "representative_text": "Die Bürgermeisterin der Gemeinde Bad Säckingen",
+  "representative_index": 0
+ },
+ {
+  "index": 13,
+  "mentions": [
+   [
+    11,
+    2,
+    6
+   ]
+  ],
+  "representative_text": "der Gemeinde Bad Säckingen",
+  "representative_index": 0
+ },
+ {
+  "index": 14,
+  "mentions": [
+   [
+    11,
+    4,
+    6
+   ]
+  ],
+  "representative_text": "Bad Säckingen",
+  "representative_index": 0
+ },
+ {
+  "index": 15,
+  "mentions": [
+   [
+    11,
+    7,
+    11
+   ]
+  ],
+  "representative_text": "die Gäste aus Graubünden",
+  "representative_index": 0
+ },
+ {
+  "index": 16,
+  "mentions": [
+   [
+    11,
+    9,
+    11
+   ]
+  ],
+  "representative_text": "aus Graubünden",
+  "representative_index": 0
+ },
+ {
+  "index": 17,
+  "mentions": [
+   [
+    12,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Herr Weiß",
+  "representative_index": 0
+ },
+ {
+  "index": 18,
+  "mentions": [
+   [
+    13,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Frau Strauß",
+  "representative_index": 0
+ },
+ {
+  "index": 19,
+  "mentions": [
+   [
+    13,
+    3,
+    7
+   ]
+  ],
+  "representative_text": "die Länge des Floßes",
+  "representative_index": 0
+ },
+ {
+  "index": 20,
+  "mentions": [
+   [
+    13,
+    5,
+    7
+   ]
+  ],
+  "representative_text": "des Floßes",
+  "representative_index": 0
+ }
+]

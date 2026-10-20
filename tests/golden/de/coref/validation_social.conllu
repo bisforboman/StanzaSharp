@@ -1,0 +1,219 @@
+# text = Endlich Wochenende!!!
+# sent_id = 0
+1	Endlich	_	ADV	ADV	_	0	_	_	start_char=0|end_char=7
+2	Wochenende	_	NOUN	NN	Case=Nom|Gender=Neut|Number=Sing	1	_	_	SpaceAfter=No|start_char=8|end_char=18
+3	!	_	PUNCT	$.	_	2	_	_	SpaceAfter=No|start_char=18|end_char=19
+4	!	_	PUNCT	$.	_	3	_	_	SpaceAfter=No|start_char=19|end_char=20
+5	!	_	PUNCT	$.	_	4	_	_	start_char=20|end_char=21
+
+# text = 🎉 Wer kommt heute Abend mit ins Kino? #Freitag #Kino
+# sent_id = 1
+1	🎉	_	PUNCT	$(	_	0	_	_	start_char=22|end_char=23
+2	Wer	_	PRON	PWS	Case=Nom|Number=Sing|PronType=Int,Rel	1	_	_	start_char=24|end_char=27
+3	kommt	_	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	_	_	start_char=28|end_char=33
+4	heute	_	ADV	ADV	_	3	_	_	start_char=34|end_char=39
+5	Abend	_	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	4	_	_	start_char=40|end_char=45
+6	mit	_	ADP	ADV	_	5	_	_	start_char=46|end_char=49
+7-8	ins	_	_	_	_	_	_	_	start_char=50|end_char=53
+7	in	_	ADP	APPR	_	6	_	_	coref_chains=start-repr-id0
+8	das	_	DET	ART	Case=Acc|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	7	_	_	coref_chains=middle-repr-id0
+9	Kino	_	NOUN	NN	Case=Acc|Gender=Neut|Number=Sing	8	_	_	SpaceAfter=No|start_char=54|end_char=58|coref_chains=end-repr-id0
+10	?	_	PUNCT	$.	_	9	_	_	start_char=58|end_char=59
+11	#	_	PUNCT	$(	_	10	_	_	SpaceAfter=No|start_char=60|end_char=61
+12	Freitag	_	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	11	_	_	start_char=61|end_char=68
+13	#	_	PUNCT	$(	_	12	_	_	SpaceAfter=No|start_char=69|end_char=70
+14	Kino	_	PROPN	NN	Case=Nom|Gender=Neut|Number=Sing	13	_	_	SpacesAfter=\n\n|start_char=70|end_char=74
+
+# text = omg der neue Film ist sooo gut 😍😍 unbedingt anschauen!!!
+# sent_id = 2
+1	omg	_	ADV	ADV	_	0	_	_	start_char=76|end_char=79
+2	der	_	DET	ART	Case=Nom|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	1	_	_	start_char=80|end_char=83|coref_chains=start-repr-id1
+3	neue	_	ADJ	ADJA	Case=Nom|Degree=Pos|Gender=Masc|Number=Sing	2	_	_	start_char=84|end_char=88|coref_chains=middle-repr-id1
+4	Film	_	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	3	_	_	start_char=89|end_char=93|coref_chains=end-repr-id1
+5	ist	_	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	_	_	start_char=94|end_char=97
+6	sooo	_	ADV	ADV	_	5	_	_	start_char=98|end_char=102
+7	gut	_	ADJ	ADJD	Degree=Pos	6	_	_	start_char=103|end_char=106
+8	😍😍	_	PUNCT	$(	_	7	_	_	start_char=107|end_char=109
+9	unbedingt	_	ADV	ADV	_	8	_	_	start_char=110|end_char=119
+10	anschauen	_	VERB	VVINF	VerbForm=Inf	9	_	_	SpaceAfter=No|start_char=120|end_char=129
+11	!	_	PUNCT	$.	_	10	_	_	SpaceAfter=No|start_char=129|end_char=130
+12	!	_	PUNCT	$.	_	11	_	_	SpaceAfter=No|start_char=130|end_char=131
+13	!	_	PUNCT	$.	_	12	_	_	SpacesAfter=\n\n|start_char=131|end_char=132
+
+# text = @lisa_m danke für das tolle Geschenk, hab mich riesig gefreut :)
+# sent_id = 3
+1	@lisa_m	_	INTJ	ITJ	_	0	_	_	start_char=134|end_char=141|coref_chains=unit-repr-id2
+2	danke	_	INTJ	VVFIN	_	1	_	_	start_char=142|end_char=147
+3	für	_	ADP	APPR	_	2	_	_	start_char=148|end_char=151|coref_chains=start-repr-id3
+4	das	_	DET	ART	Case=Acc|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	3	_	_	start_char=152|end_char=155|coref_chains=middle-repr-id3
+5	tolle	_	ADJ	ADJA	Case=Acc|Degree=Pos|Gender=Neut|Number=Sing	4	_	_	start_char=156|end_char=161|coref_chains=middle-repr-id3
+6	Geschenk	_	NOUN	NN	Case=Acc|Gender=Neut|Number=Sing	5	_	_	SpaceAfter=No|start_char=162|end_char=170|coref_chains=end-repr-id3
+7	,	_	PUNCT	$,	_	6	_	_	start_char=170|end_char=171
+8	hab	_	AUX	VAFIN	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	7	_	_	start_char=172|end_char=175
+9	mich	_	PRON	PPER	Case=Acc|Number=Sing|Person=1|PronType=Prs	8	_	_	start_char=176|end_char=180
+10	riesig	_	ADJ	ADJD	Degree=Pos	9	_	_	start_char=181|end_char=187
+11	gefreut	_	VERB	VVPP	VerbForm=Part	10	_	_	start_char=188|end_char=195
+12	:	_	PUNCT	$.	_	11	_	_	SpaceAfter=No|start_char=196|end_char=197
+13	)	_	PUNCT	$(	_	12	_	_	SpacesAfter=\n\n|start_char=197|end_char=198
+
+# text = Wieder mal 20 Min. Verspätung bei der Bahn... ich liebe es 🙄 #Bahnchaos
+# sent_id = 4
+1	Wieder	_	ADV	ADV	_	0	_	_	start_char=200|end_char=206
+2	mal	_	ADV	ADV	_	1	_	_	start_char=207|end_char=210
+3	20	_	NUM	CARD	NumType=Card	2	_	_	start_char=211|end_char=213
+4	Min.	_	NOUN	NN	Case=Nom|Gender=Fem|Number=Plur	3	_	_	start_char=214|end_char=218
+5	Verspätung	_	NOUN	NN	Case=Nom|Gender=Fem|Number=Sing	4	_	_	start_char=219|end_char=229
+6	bei	_	ADP	APPR	_	5	_	_	start_char=230|end_char=233|coref_chains=start-repr-id4
+7	der	_	DET	ART	Case=Dat|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	6	_	_	start_char=234|end_char=237|coref_chains=middle-repr-id4
+8	Bahn	_	NOUN	NN	Case=Dat|Gender=Fem|Number=Sing	7	_	_	SpaceAfter=No|start_char=238|end_char=242|coref_chains=end-repr-id4
+9	...	_	PUNCT	$(	_	8	_	_	start_char=242|end_char=245
+10	ich	_	PRON	PPER	Case=Nom|Number=Sing|Person=1|PronType=Prs	9	_	_	start_char=246|end_char=249|coref_chains=unit-repr-id5
+11	liebe	_	VERB	VVFIN	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	10	_	_	start_char=250|end_char=255
+12	es	_	PRON	PPER	Case=Acc|Gender=Neut|Number=Sing|Person=3|PronType=Prs	11	_	_	start_char=256|end_char=258|coref_chains=unit-repr-id6
+13	🙄	_	PUNCT	$(	_	12	_	_	start_char=259|end_char=260
+14	#	_	PUNCT	$(	_	13	_	_	SpaceAfter=No|start_char=261|end_char=262
+15	Bahnchaos	_	NOUN	NN	Case=Nom|Gender=Neut|Number=Sing	14	_	_	SpacesAfter=\n\n|start_char=262|end_char=271|coref_chains=unit-repr-id7
+
+# text = Kann mir jemand ein gutes Café in Köln empfehlen?
+# sent_id = 5
+1	Kann	_	AUX	VMFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	_	_	start_char=273|end_char=277
+2	mir	_	PRON	PPER	Case=Dat|Number=Sing|Person=1|PronType=Prs	1	_	_	start_char=278|end_char=281|coref_chains=unit-repr-id8
+3	jemand	_	PRON	PIS	Case=Nom|Number=Sing|PronType=Ind	2	_	_	start_char=282|end_char=288
+4	ein	_	DET	ART	Case=Acc|Definite=Ind|Gender=Neut|Number=Sing|NumType=Card|PronType=Art	3	_	_	start_char=289|end_char=292
+5	gutes	_	ADJ	ADJA	Case=Acc|Degree=Pos|Gender=Neut|Number=Sing	4	_	_	start_char=293|end_char=298
+6	Café	_	NOUN	NN	Case=Acc|Gender=Neut|Number=Sing	5	_	_	start_char=299|end_char=303
+7	in	_	ADP	APPR	_	6	_	_	start_char=304|end_char=306|coref_chains=start-repr-id9
+8	Köln	_	PROPN	NE	Case=Dat|Gender=Neut|Number=Sing	7	_	_	start_char=307|end_char=311|coref_chains=end-repr-id9
+9	empfehlen	_	VERB	VVINF	VerbForm=Inf	8	_	_	SpaceAfter=No|start_char=312|end_char=321
+10	?	_	PUNCT	$.	_	9	_	_	start_char=321|end_char=322
+
+# text = Am besten mit WLAN und ohne Laptop-Verbot lol
+# sent_id = 6
+1-2	Am	_	_	_	_	_	_	_	start_char=323|end_char=325
+1	An	_	ADP	APPR	_	0	_	_	_
+2	dem	_	DET	ART	Case=Dat|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	1	_	_	_
+3	besten	_	ADJ	NN	Case=Dat|Degree=Sup|Gender=Neut|Number=Sing	2	_	_	start_char=326|end_char=332
+4	mit	_	ADP	APPR	_	3	_	_	start_char=333|end_char=336
+5	WLAN	_	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	4	_	_	start_char=337|end_char=341
+6	und	_	CCONJ	KON	_	5	_	_	start_char=342|end_char=345
+7	ohne	_	ADP	APPR	_	6	_	_	start_char=346|end_char=350
+8	Laptop	_	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	7	_	_	SpaceAfter=No|start_char=351|end_char=357
+9	-	_	PUNCT	$(	_	8	_	_	SpaceAfter=No|start_char=357|end_char=358
+10	Verbot	_	NOUN	NN	Case=Acc|Gender=Neut|Number=Sing	9	_	_	start_char=358|end_char=364
+11	lol	_	PROPN	NE	_	10	_	_	SpacesAfter=\n\n|start_char=365|end_char=368
+
+# text = Heute 10 km gelaufen, neuer Rekord!!! 💪🏃‍♀️
+# sent_id = 7
+1	Heute	_	ADV	ADV	_	0	_	_	start_char=370|end_char=375
+2	10	_	NUM	CARD	NumType=Card	1	_	_	start_char=376|end_char=378
+3	km	_	NOUN	NN	Case=Nom|Gender=Masc|Number=Plur	2	_	_	start_char=379|end_char=381
+4	gelaufen	_	VERB	VVPP	VerbForm=Part	3	_	_	SpaceAfter=No|start_char=382|end_char=390
+5	,	_	PUNCT	$,	_	4	_	_	start_char=390|end_char=391
+6	neuer	_	ADJ	ADJA	Case=Nom|Degree=Pos|Gender=Masc|Number=Sing	5	_	_	start_char=392|end_char=397
+7	Rekord	_	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	6	_	_	SpaceAfter=No|start_char=398|end_char=404
+8	!	_	PUNCT	$.	_	7	_	_	SpaceAfter=No|start_char=404|end_char=405
+9	!	_	PUNCT	$.	_	8	_	_	SpaceAfter=No|start_char=405|end_char=406
+10	!	_	PUNCT	$.	_	9	_	_	start_char=406|end_char=407
+11	💪🏃‍♀	_	PUNCT	$(	_	10	_	_	SpaceAfter=No|start_char=408|end_char=412
+12	️	_	PUNCT	$(	_	11	_	_	SpacesAfter=\n\n|start_char=412|end_char=413
+
+# text = wer hat lust auf grillen am sonntag?
+# sent_id = 8
+1	wer	_	PRON	PWS	Case=Nom|Number=Sing|PronType=Int,Rel	0	_	_	start_char=415|end_char=418
+2	hat	_	VERB	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	1	_	_	start_char=419|end_char=422
+3	lust	_	ADV	ADV	_	2	_	_	start_char=423|end_char=427
+4	auf	_	ADP	APPR	_	3	_	_	start_char=428|end_char=431
+5	grillen	_	NOUN	NN	Number=Sing	4	_	_	start_char=432|end_char=439
+6-7	am	_	_	_	_	_	_	_	start_char=440|end_char=442
+6	an	_	ADP	APPR	_	5	_	_	coref_chains=start-repr-id10
+7	dem	_	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	6	_	_	coref_chains=middle-repr-id10
+8	sonntag	_	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	7	_	_	SpaceAfter=No|start_char=443|end_char=450|coref_chains=end-repr-id10
+9	?	_	PUNCT	$.	_	8	_	_	start_char=450|end_char=451
+
+# text = bringt was zu trinken mit, ich kümmere mich ums fleisch
+# sent_id = 9
+1	bringt	_	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	_	_	start_char=452|end_char=458
+2	was	_	PRON	PIS	Case=Nom|Gender=Neut|Number=Sing|PronType=Int,Rel	1	_	_	start_char=459|end_char=462
+3	zu	_	PART	PTKZU	_	2	_	_	start_char=463|end_char=465
+4	trinken	_	VERB	VVINF	VerbForm=Inf	3	_	_	start_char=466|end_char=473
+5	mit	_	ADP	PTKVZ	_	4	_	_	SpaceAfter=No|start_char=474|end_char=477
+6	,	_	PUNCT	$,	_	5	_	_	start_char=477|end_char=478
+7	ich	_	PRON	PPER	Case=Nom|Number=Sing|Person=1|PronType=Prs	6	_	_	start_char=479|end_char=482|coref_chains=unit-repr-id11
+8	kümmere	_	VERB	VVFIN	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	7	_	_	start_char=483|end_char=490
+9	mich	_	PRON	PRF	Case=Acc|Number=Sing|Person=1|PronType=Prs|Reflex=Yes	8	_	_	start_char=491|end_char=495
+10-11	ums	_	_	_	_	_	_	_	start_char=496|end_char=499
+10	um	_	ADP	APPR	_	9	_	_	coref_chains=start-repr-id12
+11	das	_	DET	ART	Case=Acc|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	10	_	_	coref_chains=middle-repr-id12
+12	fleisch	_	ADJ	ADJD	Degree=Pos	11	_	_	SpacesAfter=\n\n|start_char=500|end_char=507|coref_chains=end-repr-id12
+
+# text = Kurze Frage: Weiß jemand, ob der Supermarkt am Feiertag aufhat??
+# sent_id = 10
+1	Kurze	_	ADJ	ADJA	Case=Nom|Degree=Pos|Gender=Fem|Number=Sing	0	_	_	start_char=509|end_char=514
+2	Frage	_	NOUN	NN	Case=Nom|Gender=Fem|Number=Sing	1	_	_	SpaceAfter=No|start_char=515|end_char=520
+3	:	_	PUNCT	$.	_	2	_	_	start_char=520|end_char=521
+4	Weiß	_	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	_	_	start_char=522|end_char=526
+5	jemand	_	PRON	PIS	Case=Nom|Number=Sing|PronType=Ind	4	_	_	SpaceAfter=No|start_char=527|end_char=533
+6	,	_	PUNCT	$,	_	5	_	_	start_char=533|end_char=534
+7	ob	_	SCONJ	KOUS	_	6	_	_	start_char=535|end_char=537
+8	der	_	DET	ART	Case=Nom|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	7	_	_	start_char=538|end_char=541|coref_chains=start-repr-id13
+9	Supermarkt	_	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	8	_	_	start_char=542|end_char=552|coref_chains=end-repr-id13
+10-11	am	_	_	_	_	_	_	_	start_char=553|end_char=555
+10	an	_	ADP	APPR	_	9	_	_	coref_chains=start-id10
+11	dem	_	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	10	_	_	coref_chains=middle-id10
+12	Feiertag	_	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	11	_	_	start_char=556|end_char=564|coref_chains=end-id10
+13	aufhat	_	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	12	_	_	SpaceAfter=No|start_char=565|end_char=571
+14	?	_	PUNCT	$.	_	13	_	_	SpaceAfter=No|start_char=571|end_char=572
+15	?	_	PUNCT	$.	_	14	_	_	start_char=572|end_char=573
+
+# text = Danke im Voraus!
+# sent_id = 11
+1	Danke	_	INTJ	ITJ	_	0	_	_	start_char=574|end_char=579
+2-3	im	_	_	_	_	_	_	_	start_char=580|end_char=582
+2	in	_	ADP	APPR	_	1	_	_	coref_chains=start-repr-id14
+3	dem	_	DET	ART	Case=Dat|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	2	_	_	coref_chains=middle-repr-id14
+4	Voraus	_	NOUN	NN	Case=Dat|Gender=Neut|Number=Sing	3	_	_	SpaceAfter=No|start_char=583|end_char=589|coref_chains=end-repr-id14
+5	!	_	PUNCT	$.	_	4	_	_	SpacesAfter=\n\n|start_char=589|end_char=590
+
+# text = RT @nachrichten: Bundesweiter Warnstreik im Nahverkehr am Montag – alle Infos hier: https://t.co/abc123
+# sent_id = 12
+1	RT	_	PROPN	NE	Case=Nom|Gender=Masc|Number=Sing	0	_	_	start_char=592|end_char=594
+2	@nachrichten	_	PROPN	NN	Case=Nom|Gender=Masc|Number=Sing	1	_	_	SpaceAfter=No|start_char=595|end_char=607|coref_chains=unit-repr-id15
+3	:	_	PUNCT	$.	_	2	_	_	start_char=607|end_char=608
+4	Bundesweiter	_	PROPN	ADJA	Case=Nom|Gender=Masc|Number=Sing	3	_	_	start_char=609|end_char=621
+5	Warnstreik	_	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	4	_	_	start_char=622|end_char=632
+6-7	im	_	_	_	_	_	_	_	start_char=633|end_char=635
+6	in	_	ADP	APPR	_	5	_	_	coref_chains=start-repr-id16
+7	dem	_	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	6	_	_	coref_chains=middle-repr-id16
+8	Nahverkehr	_	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	7	_	_	start_char=636|end_char=646|coref_chains=end-repr-id16
+9-10	am	_	_	_	_	_	_	_	start_char=647|end_char=649
+9	an	_	ADP	APPR	_	8	_	_	coref_chains=start-repr-id17
+10	dem	_	DET	ART	Case=Dat|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	9	_	_	coref_chains=middle-repr-id17
+11	Montag	_	NOUN	NN	Case=Dat|Gender=Masc|Number=Sing	10	_	_	start_char=650|end_char=656|coref_chains=end-repr-id17
+12	–	_	PUNCT	$(	_	11	_	_	start_char=657|end_char=658
+13	alle	_	DET	PIAT	Case=Nom|Gender=Fem|Number=Plur|PronType=Tot	12	_	_	start_char=659|end_char=663|coref_chains=start-repr-id18
+14	Infos	_	NOUN	NN	Case=Nom|Gender=Neut|Number=Plur	13	_	_	start_char=664|end_char=669|coref_chains=end-repr-id18
+15	hier	_	ADV	ADV	_	14	_	_	SpaceAfter=No|start_char=670|end_char=674
+16	:	_	PUNCT	$.	_	15	_	_	start_char=674|end_char=675
+17	https://t.co/abc123	_	PROPN	NE	Case=Nom|Number=Sing	16	_	_	SpacesAfter=\n\n|start_char=676|end_char=695
+
+# text = Hab grad meinen Kaffee über die Tastatur gekippt.
+# sent_id = 13
+1	Hab	_	AUX	VAFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	_	_	start_char=697|end_char=700
+2	grad	_	ADV	ADV	_	1	_	_	start_char=701|end_char=705
+3	meinen	_	DET	PPOSAT	Case=Acc|Gender=Masc|Number=Sing|Number[psor]=Sing|Person=1|Poss=Yes|PronType=Prs	2	_	_	start_char=706|end_char=712|coref_chains=unit-repr-id19,start-repr-id20
+4	Kaffee	_	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	3	_	_	start_char=713|end_char=719|coref_chains=end-repr-id20
+5	über	_	ADP	APPR	_	4	_	_	start_char=720|end_char=724|coref_chains=start-repr-id21
+6	die	_	DET	ART	Case=Acc|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	5	_	_	start_char=725|end_char=728|coref_chains=middle-repr-id21
+7	Tastatur	_	NOUN	NN	Case=Acc|Gender=Fem|Number=Sing	6	_	_	start_char=729|end_char=737|coref_chains=end-repr-id21
+8	gekippt	_	VERB	VVPP	VerbForm=Part	7	_	_	SpaceAfter=No|start_char=738|end_char=745
+9	.	_	PUNCT	$.	_	8	_	_	start_char=745|end_char=746
+
+# text = Großartiger Start in den Tag. 😂
+# sent_id = 14
+1	Großartiger	_	ADJ	ADJA	Case=Nom|Degree=Pos|Gender=Masc|Number=Sing	0	_	_	start_char=747|end_char=758
+2	Start	_	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	1	_	_	start_char=759|end_char=764
+3	in	_	ADP	APPR	_	2	_	_	start_char=765|end_char=767|coref_chains=start-repr-id22
+4	den	_	DET	ART	Case=Acc|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	3	_	_	start_char=768|end_char=771|coref_chains=middle-repr-id22
+5	Tag	_	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	4	_	_	SpaceAfter=No|start_char=772|end_char=775|coref_chains=end-repr-id22
+6	.	_	PUNCT	$.	_	5	_	_	start_char=775|end_char=776
+7	😂	_	PUNCT	$(	_	6	_	_	SpacesAfter=\n|start_char=777|end_char=778

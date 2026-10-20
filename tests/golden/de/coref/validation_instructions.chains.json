@@ -1,0 +1,226 @@
+[
+ {
+  "index": 0,
+  "mentions": [
+   [
+    0,
+    3,
+    6
+   ],
+   [
+    6,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "einen einfachen Apfelkuchen",
+  "representative_index": 0
+ },
+ {
+  "index": 1,
+  "mentions": [
+   [
+    2,
+    2,
+    4
+   ]
+  ],
+  "representative_text": "den Backofen",
+  "representative_index": 0
+ },
+ {
+  "index": 2,
+  "mentions": [
+   [
+    3,
+    3,
+    6
+   ],
+   [
+    3,
+    14,
+    15
+   ],
+   [
+    5,
+    17,
+    19
+   ]
+  ],
+  "representative_text": "vier mittelgroße Äpfel",
+  "representative_index": 0
+ },
+ {
+  "index": 3,
+  "mentions": [
+   [
+    3,
+    9,
+    11
+   ]
+  ],
+  "representative_text": "das Kerngehäuse",
+  "representative_index": 0
+ },
+ {
+  "index": 4,
+  "mentions": [
+   [
+    4,
+    22,
+    26
+   ],
+   [
+    5,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "zu einem glatten Teig",
+  "representative_index": 0
+ },
+ {
+  "index": 5,
+  "mentions": [
+   [
+    7,
+    2,
+    4
+   ]
+  ],
+  "representative_text": "die Stäbchenprobe",
+  "representative_index": 0
+ },
+ {
+  "index": 6,
+  "mentions": [
+   [
+    8,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "Sie",
+  "representative_index": 0
+ },
+ {
+  "index": 7,
+  "mentions": [
+   [
+    9,
+    1,
+    3
+   ]
+  ],
+  "representative_text": "der Software",
+  "representative_index": 0
+ },
+ {
+  "index": 8,
+  "mentions": [
+   [
+    10,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "das Installationsprogramm",
+  "representative_index": 0
+ },
+ {
+  "index": 9,
+  "mentions": [
+   [
+    11,
+    9,
+    14
+   ]
+  ],
+  "representative_text": "den Anweisungen auf dem Bildschirm",
+  "representative_index": 0
+ },
+ {
+  "index": 10,
+  "mentions": [
+   [
+    11,
+    11,
+    14
+   ]
+  ],
+  "representative_text": "auf dem Bildschirm",
+  "representative_index": 0
+ },
+ {
+  "index": 11,
+  "mentions": [
+   [
+    12,
+    2,
+    4
+   ]
+  ],
+  "representative_text": "den Computer",
+  "representative_index": 0
+ },
+ {
+  "index": 12,
+  "mentions": [
+   [
+    12,
+    7,
+    8
+   ]
+  ],
+  "representative_text": "Sie",
+  "representative_index": 0
+ },
+ {
+  "index": 13,
+  "mentions": [
+   [
+    12,
+    8,
+    9
+   ]
+  ],
+  "representative_text": "dazu",
+  "representative_index": 0
+ },
+ {
+  "index": 14,
+  "mentions": [
+   [
+    13,
+    4,
+    7
+   ]
+  ],
+  "representative_text": "vor der Reinigung",
+  "representative_index": 0
+ },
+ {
+  "index": 15,
+  "mentions": [
+   [
+    15,
+    7,
+    8
+   ]
+  ],
+  "representative_text": "unseren",
+  "representative_index": 0
+ },
+ {
+  "index": 16,
+  "mentions": [
+   [
+    15,
+    23,
+    25
+   ]
+  ],
+  "representative_text": "an support@beispiel.de",
+  "representative_index": 0
+ }
+]

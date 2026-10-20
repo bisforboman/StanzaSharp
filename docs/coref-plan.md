@@ -1,5 +1,8 @@
 # Coreference (`coref`): research and plan
 
+> **Done (2026-10-20):** coref landed in three PRs: (a) the XLM-R encoder and its tokenizer (2026-10-19), (b) the document
+> model, (c) the processor (`Processor.Coref`). See "(a) done", "(b) done" and "(c) done" below.
+>
 > **Owner's decision (2026-10-14): not now.** Coref needs a 24-layer transformer; the smaller gaps (JSON output,
 > processing pretagged CoNLL-U) come first. This report is kept as the record for a later decision.
 >
@@ -20,11 +23,11 @@ what this plan called new. Checked against `FacebookAI/xlm-roberta-large` at the
 | LoRA | **Done.** `Nn.LoraWeights`, `ITransformerNet.WithLora`: peft's eval forward on `query`, `value`, `attention.output.dense`, `intermediate.dense` and `output.dense`, coref's exact targets (sentiment's, German constituency's). The joint frozen + LoRA pass (#169) doesn't apply: coref is the only reader of XLM-R. | coref's `bert_lora` key layout (a top-level key of the `.pt`, like German constituency's). | **S** |
 | Files | **Pattern done.** `ModelDownloader.Transformers` (pinned revision, per-file sha256: Hugging Face's LFS hash for the weights), `DownloadAsync(dir, options)`, `VerifyChecksums`; `pytorch_model.bin` (2,244,861,551 bytes) is in the repository, so `Checkpoint.Load` reads it as it reads ELECTRA's. | the table entry (revision `c23d21b0620b635a76227c604d44e43a9f0ee389`); the coref `.pt` MD5s in `ModelDownloader.Files`. | **S** |
 | Several transformers per pipeline | **Done** (#199): every transformer the models read loads once by name. Coref next to `default_accurate` loads ELECTRA-large and XLM-R. | none. | – |
-| Unigram tokenizer | **Not started.** `tokenizer.json` is a `Unigram` model (250,002 pieces with scores, `unk_id`), normalizer `Precompiled` (its charsmap is a base64 double-array trie in the file, 316,720 characters, so no `.model` protobuf is needed), pre-tokenizer `WhitespaceSplit` + `Metaspace` (`▁`, `add_prefix_space`), `TemplateProcessing` `<s>` … `</s>`. It fits `ITransformerTokenizer` next to `WordPiece` and `ByteLevelBpe`, and the golden approach is theirs (transformers' ids on every golden word, plus hand-picked cases: NFKC-like folding `Ｆｕｌｌ` → `▁Full`, `n't` → `▁n` `'` `t`, blank words). | the charsmap trie walk (sentencepiece's `normalizer.cc`), Viterbi over piece scores, Metaspace. No package (`Microsoft.ML.Tokenizers` would be the main package's second dependency). | **M** |
-| Windowing | **Different from what exists.** `TransformerEmbedder` is extract_bert_embeddings (overlapping 512 windows per sentence); coref's `get_subwords_batches` cuts the whole document into 510-subword windows at sentence boundaries, without overlap, and batches them with a mask. The managed attention needs no mask (per sequence, no padding), so each window is one sequence. | a coref-only windowing function, with golden subword ids per window. | **S** |
-| Coref head | Not started; unchanged. `Gemm`, `Act` (ReLU, LeakyReLU) and the pooled-buffer rules cover it; Conv1d (kernel 3) is new but small, like sentiment's convolutions. | word encoder, rough scorer + topk, pairwise, anaphoricity, clusterize, span predictor, zeros predictor. | **M** |
+| Unigram tokenizer | **Done** (PR a, 2026-10-19). | none. | – |
+| Windowing | **Done** (PR c, 2026-10-20): `CorefResolver.Run`, 510-subword windows backed up to a sentence end. | none. | – |
+| Coref head | **Done** (PR c, 2026-10-20; see "(c) done" below). | none. | – |
 | Document model | **Done** (PR b, 2026-10-20; see "(b) done" below). | none. | – |
-| Golden data and tests | The transformer goldens' pattern exists (`make_golden.py --transformer-only`, `hidden*.safetensors`, `tests/golden/**/transformer/`, `Transformer*` tests in golden shard 4); the pinned `transformers`/`peft` live in `tools/requirements-transformer.txt`. | `--coref-only`, chains and mentions JSON, intermediates (subword ids, encoder output for one window, rough/anaphoricity/span scores), a margins test. | **M** |
+| Golden data and tests | **Done** (PRs a–c): `--transformer-only`, `--topk-only`, `--coref-only`; `TopKTests`, `CorefDocumentTests`, `TransformerCorefTests`. | none. | – |
 
 **Revised total: L**: the tokenizer, the head, the document model and the golden data, each M; the encoder side S. The risks have moved too:
 
@@ -95,6 +98,28 @@ and `crafted.*`, chains set by hand with empty words, since the English model pr
 part of and all of a multi-word token, a representative that isn't first, zeros in a multi-word token, before the first
 word and after the last, a chain of zeros only). `CorefDocumentTests` (no models, every CI job): each file round-trips byte
 for byte, `Read` rebuilds Stanza's chains exactly, `Json.Write` equals `str(doc)`.
+
+**Owner's decisions (2026-10-20, for c):** Q1, the main package (the transformer code already ships there); Q2, an opt-in
+processor (`Processor.Coref`, never in a package's default list); Q6, the default `udcoref_xlm-roberta-lora` only (English and
+German); Q8, float32 only. Q7 follows the existing rule: golden shard 4 downloads the model and XLM-R on every run.
+
+**(c) done (2026-10-20):** `StanzaSharp.Coref` (`CorefResolver`, `ICorefNet` with `ManagedCorefNet` and TorchSharp's `CorefNet`),
+`Processor.Coref`, `Pipeline.Optional` (resources.json's packages' `optional`: default, default_fast, default_accurate), and the
+model in `ModelDownloader.Files` with XLM-R in `Pipeline.Transformers`. torch.topk's order (Q5) is `Nn.TopK`, a port of ATen's
+topk_impl_loop over libstdc++ 13's nth_element / partial_sort (the torch wheels are built with GCC 13), used on both backends;
+`coref/topk.json` (torch on random, tied, masked and partial_sort rows) matches exactly. Measured:
+- Every golden text's CoNLL-U byte for byte on both backends: English corpus + 12 validation texts (1,674 chains), German 13
+  texts (272 chains).
+- `coref/intermediates.*` (CorefModel.run on corpus and validation_dialogue): the windows' subword ids exact; clusters, spans
+  and zero scores' signs exact; word vectors within 1.6e-5, anaphoricity scores within 4.3e-4, zero scores within 1.8e-5.
+  The smallest margins in Stanza's scores there: start vs the dummy 2.3e-3 (about 5x that drift), antecedent 6.3e-2.
+- The top-k candidates are torch's on every row; their order differs in 2 of 549 rows of validation_dialogue, on both
+  backends alike: two rough scores closer than the float drift (about 1e-5 relative) rearrange nth_element. The start score
+  of those rows moves (start_map weighs the candidates in that order), but no decision changed on any golden text. This is the
+  Q5 trade-off made concrete: on other texts such a row can flip a singleton.
+- Speed: on the session's 4-vCPU VM (its managed GEMM 10 GFLOP/s, .NET picking Vector256 where torch's MKL runs AVX-512), the
+  English golden texts took 19 min managed and 1.2 min on TorchSharp, nearly all of it XLM-R; the runners' CPUs run the
+  managed kernels several times faster.
 
 Known caveat for (c): reading back, a zero mention is placed in its chain by its empty word's position, `(sentence, Id)`.
 Stanza places it where its original word span sorted (the processor sorts the cluster's spans, then swaps a zero in for

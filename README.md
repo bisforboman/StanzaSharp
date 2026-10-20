@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/github/license/bisforboman/StanzaSharp)](LICENSE)
 
 C# port of Stanza's English and German inference pipelines (tokenize, mwt, pos, lemma, depparse, ner, sentiment,
-constituency).
+constituency, and the optional coref).
 It runs Stanza's own pretrained models in plain .NET code, with no native dependencies. On the golden test texts
 (845 English and 181 German sentences), the output is byte-identical to Python Stanza 1.15.0, on Linux, Windows and
 macOS, x64 and Arm64.
@@ -239,6 +239,28 @@ Sentiment gives `sentence.Sentiment`: 0 negative, 1 neutral, 2 positive.
 Stanza's `str(doc)` byte for byte: per sentence, a list of token and word objects (`id`, `text`, `lemma`, `upos`, `xpos`,
 `feats`, `head`, `deprel`, `start_char`, `end_char`, `ner`, `multi_ner`, `misc`); like Stanza's, it has no sentence text,
 tree or sentiment. `Json.Read` reads it back.
+
+### Coreference
+
+Coreference is optional, as in Stanza: name `coref` (`Processor.Coref`) and the pipeline adds Stanza's
+`udcoref_xlm-roberta-lora` model, which reads XLM-RoBERTa large (English and German `default`, `default_fast` and
+`default_accurate` packages; about 2.4 GB of downloads: `stanzasharp download --processors tokenize,coref`, or
+`ModelDownloader.DownloadAsync` with the same options). It runs over the whole document at once.
+
+```csharp
+using var nlp = Pipeline.Load("models/stanza/en", new PipelineOptions { Processors = "tokenize,mwt,pos,coref" });
+var doc = nlp.Process("Barack Obama was born in Hawaii. He was elected president in 2008.");
+foreach (var chain in doc.Coref)
+    Console.WriteLine($"{chain.RepresentativeText}: {chain.Mentions.Count} mentions");
+```
+
+`doc.Coref` holds the chains (`CorefChain`: `Index`, `Mentions`, `RepresentativeText`, `RepresentativeIndex`); a
+`CorefMention` is a sentence and a 0-based span of its words, as in Stanza. Every word gets its `CorefChains` (one
+`CorefAttachment` per mention covering it), and a zero mention (a dropped pronoun) sits on an empty word of
+`sentence.EmptyWords`. With pos in the pipeline, ties between representative mentions go to the one with more proper
+nouns. `Conllu.Write` writes Stanza's `coref_chains=` marks and empty nodes (`3.1`), and `Conllu.Read` and `Json.Read`
+rebuild the chains from them. Bulk processing runs coref once over all the texts, like Stanza's `bulk_process`: the
+returned documents' words carry the chains, but `doc.Coref` stays empty.
 
 ### German
 
