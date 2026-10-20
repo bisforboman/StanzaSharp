@@ -305,17 +305,12 @@ internal sealed unsafe class ManagedCorefNet : ICorefNet
                             row[q] = Math.Max(hp[q] + wp[q] + dp[q], 0);
                     }
                 });
-                fixed (float* p0 = x0, p3 = x3, p6 = x6, b3 = _span3Bias, b6 = _span6Bias)
-                {
+                fixed (float* p0 = x0, p3 = x3, b3 = _span3Bias)
                     Gemm.Run(p0, pairs, ld0, _span3, b3, p3, ld3, ct);
-                    for (int i = 0; i < pairs; i++)
-                    {
-                        for (int q = 0; q < _span3.N; q++)
-                            p3[((long)i * ld3) + q] = Math.Max(p3[((long)i * ld3) + q], 0);
-                    }
-
+                for (int i = 0; i < pairs; i++)
+                    Relu(x3.AsSpan(i * ld3, _span3.N));
+                fixed (float* p3 = x3, p6 = x6, b6 = _span6Bias)
                     Gemm.Run(p3, pairs, ld3, _span6, b6, p6, ld6, ct);
-                }
 
                 ManagedThreads.For(count, r => Convolve(x6, offsets[r], ld6, sentLength[first + r], width, start.AsSpan((first + r) * width, width),
                     end.AsSpan((first + r) * width, width)));
