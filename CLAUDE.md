@@ -255,7 +255,9 @@ default from 0.5) or through TorchSharp (see "Managed backend").
     attachments (Stanza's bulk_process). Empty document: `Coref` = [] (Stanza crashes). A word without subwords throws
     (Stanza too). Tests `TransformerCorefTests` (golden shard 4; `Run_MatchesStanzasSteps`, `Pipeline_ReproducesStanzasCoref`
     en + de); golden `coref/intermediates.*` (windows, words, top-k in topk's order, scores, clusters; corpus and
-    validation_dialogue) and `de/coref/` (texts only). CI: `tools/ci-models.sh transformer` downloads `--processors
+    validation_dialogue), `coref/zeros/` (zero mentions forced: `COREF_ZERO_SHIFT` added to the zero scores, #208;
+    `Process_WithZeroMentions_MatchesStanza`, a read-back exact on them; a zero differs on read-back only inside a chain's
+    overlapping mentions, which the model didn't predict in about 600 zeros) and `de/coref/` (texts only). CI: `tools/ci-models.sh transformer` downloads `--processors
     tokenize,coref` (en) and, with XLM-R linked from en's folder, de. compare.py's `transformers_locally` also serves coref's
     own `load_tokenizer`.
   - CI: no cache (the model caches are near GitHub's 10 GB; owner's decision): golden shard 4 downloads the
@@ -1339,9 +1341,12 @@ What the English treebank packages' checkpoints add to the default package's pat
     `CompareCommandTests.EmbeddedResources_MatchModelDownloader` checks all three against the tool's embedded
     `stanza_resources_<lang>.json`, and `FilesFor_AreEnoughToLoadThePipeline`, `FileTableCoversEveryModelThePipelineLoads`
     and `LanguageTests` the file sets. CI downloads the packages per `tools/ci-models.sh` group (see "Model cache keys").
-  - It fetches the `.pt` files from `huggingface.co/stanfordnlp/stanza-<lang>/resolve/v1.15.0/models/`
-    and checks each against the MD5 from Stanza 1.15.0's resources.json, kept in
-    `ModelDownloader.Files`.
+  - It fetches the `.pt` files from `huggingface.co/stanfordnlp/stanza-<lang>/resolve/<commit>/models/`
+    (`ModelDownloader.Revisions`: en `d7e0c740`, de `6b928a48`, multilingual `e9360ddf`; owner's decision 2026-10-22) and
+    checks each against the MD5 from Stanza 1.15.0's resources.json, kept in `ModelDownloader.Files`. Not the `v1.15.0`
+    tag: on 2026-10-20 Stanford re-uploaded English's conll03 NER models (now on conll17, stanza#1698) and German's NER
+    models (germeval2014 removed, germeval2014_charlm added, the dbmdz NER removed) and moved the tag, so the tag's files
+    failed our MD5s and German's default NER was a 404. Adopting the new models is a follow-up (new MD5s, resources and goldens).
   - It keeps files that already match. `Pipeline.Load` never downloads.
   - Changing the Stanza version means new MD5s, new golden data and a new cache key.
 - `tools/verify-package.ps1` packs a unique `0.0.0-verify.<time>` version and builds a fresh console app against it:

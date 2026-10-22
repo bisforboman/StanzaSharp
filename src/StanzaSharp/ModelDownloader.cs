@@ -21,7 +21,17 @@ public static class ModelDownloader
     /// <summary>The Stanza release whose models the golden tests verify.</summary>
     public const string StanzaVersion = "1.15.0";
 
-    private static string BaseUrl(string language) => $"https://huggingface.co/stanfordnlp/stanza-{language}/resolve/v{StanzaVersion}/models/";
+    // The commit of each stanfordnlp/stanza-<lang> repository holding the files Files lists. Not the v1.15.0 tag: on 2026-10-20
+    // Stanford re-uploaded English's conll03 NER models and German's NER models and moved the tag, so the tag's files no
+    // longer match Stanza 1.15.0's MD5s as we read them (and German's germeval2014 is gone there).
+    internal static readonly Dictionary<string, string> Revisions = new()
+    {
+        [Pipeline.English] = "d7e0c7400bdffe3acc9a71ebf118670dd9a47142",
+        ["de"] = "6b928a48d4c8d8096b9dc75c887da3652f8ef671",
+        [Multilingual] = "e9360ddf1796ec9c18a8260980153c7f269afd63",
+    };
+
+    private static string BaseUrl(string language) => $"https://huggingface.co/stanfordnlp/stanza-{language}/resolve/{Revisions[language]}/models/";
 
     // Every file of each language's packages in Pipeline.Packages and of Pipeline.Alternatives, and their MD5s, from Stanza 1.15.0's resources.json.
     internal static readonly Dictionary<string, (string Path, string Md5)[]> Files = new()

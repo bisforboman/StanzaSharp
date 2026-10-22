@@ -9,9 +9,9 @@ namespace StanzaSharp.Tests;
 /// </summary>
 public class CorefDocumentTests
 {
-    // Each file by its path under tests/golden without the extension: coref/<name> and de/coref/<name>.
+    // Each file by its path under tests/golden without the extension: coref/<name>, coref/zeros/<name> and de/coref/<name>.
     public static TheoryData<string> Names() =>
-        [.. new[] { "coref", Path.Combine("de", "coref") }.SelectMany(folder => Directory.GetFiles(Path.Combine(Repo.Golden, folder), "*.conllu")
+        [.. new[] { "coref", Path.Combine("coref", "zeros"), Path.Combine("de", "coref") }.SelectMany(folder => Directory.GetFiles(Path.Combine(Repo.Golden, folder), "*.conllu")
             .Select(f => Path.Combine(folder, Path.GetFileNameWithoutExtension(f)).Replace('\\', '/'))).Order(StringComparer.Ordinal)];
 
     private static string Golden(string name, string extension) => File.ReadAllText(Path.Combine(Repo.Golden, name + extension));
@@ -51,7 +51,7 @@ public class CorefDocumentTests
     }
 
     // [sentence, start, end], a zero mention's start and end being [word id, empty index].
-    private static CorefMention Mention(JsonNode? node)
+    internal static CorefMention Mention(JsonNode? node)
     {
         var m = node!.AsArray();
         return m[1] is JsonArray zero

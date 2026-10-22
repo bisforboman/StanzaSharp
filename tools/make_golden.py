@@ -1313,6 +1313,13 @@ COREF_CRAFTED_CHAINS = [
 ]
 
 
+# The English model predicts no zero mentions on these texts (its highest zero score is -2.47), so coref/zeros/ runs it with
+# COREF_ZERO_SHIFT added to the zeros predictor's output (its last layer's bias) on COREF_ZERO_FILES: zeros where the shifted
+# score is positive, the nearest of them 0.024 from 0.
+COREF_ZERO_SHIFT = 3.0
+COREF_ZERO_FILES = ["validation_dialogue", "validation_news"]
+
+
 def coref_chains_json(doc):
     """doc.coref as plain data: index, mentions ([sentence, start, end], a zero's start and end as [word id, empty index]), text, index."""
     return [{"index": c.index, "mentions": [[m.sentence, m.start_word, m.end_word] for m in c.mentions],
@@ -1323,7 +1330,8 @@ def write_coref_golden(models, out):
     """
     coref/: Stanza's coref (COREF_PROCESSORS) on corpus.txt and each validation*.txt: <name>.conllu ("{:C}"), <name>.chains.json
     (doc.coref), and COREF_JSON_FILE's str(doc) as <name>.str.json; crafted.conllu / .chains.json / .str.json, chains set by hand
-    on COREF_CRAFTED_TEXT with empty words; intermediates.* (CorefModel.run's steps on COREF_INTERMEDIATE_FILES). German
+    on COREF_CRAFTED_TEXT with empty words; zeros/<name>.* the same three for COREF_ZERO_FILES with COREF_ZERO_SHIFT added to the
+    zero scores; intermediates.* (CorefModel.run's steps on COREF_INTERMEDIATE_FILES). German
     (de/coref/): the texts' .conllu and .chains.json only. Stanza's coref model reads XLMR from <models>/en/transformer/ (electra_locally).
     """
     from stanza.models.common.doc import Word
@@ -1416,6 +1424,18 @@ def write_coref_golden(models, out):
         chains.append(CorefChain(index, mentions, text, representative))
     doc.coref = chains
     write("crafted", doc, True)
+
+    zeros = folder / "zeros"
+    zeros.mkdir(exist_ok=True)
+    folder = zeros
+    bias = model.zeros_predictor[2].bias
+    with torch.no_grad():
+        bias += COREF_ZERO_SHIFT
+        try:
+            for name in COREF_ZERO_FILES:
+                write(name, nlp((out / f"{name}.txt").read_bytes().decode("utf-8")), True)
+        finally:
+            bias -= COREF_ZERO_SHIFT
 
 
 def write_topk_golden(out):

@@ -43,7 +43,7 @@ public class ModelDownloaderTests : IDisposable
         Assert.Equal(a, File.ReadAllBytes(Path.Combine(_dir, "tokenize/a.pt")));
         Assert.Equal(b, File.ReadAllBytes(Path.Combine(_dir, "pos/b.pt")));
         Assert.Equal(2, server.Requested.Count);
-        Assert.All(server.Requested, p => Assert.StartsWith($"/stanfordnlp/stanza-en/resolve/v{ModelDownloader.StanzaVersion}/models/", p));
+        Assert.All(server.Requested, p => Assert.StartsWith($"/stanfordnlp/stanza-en/resolve/{ModelDownloader.Revisions["en"]}/models/", p));
 
         // A second run finds both files with the right checksum and downloads nothing.
         var progress = new List<string>();
