@@ -255,7 +255,9 @@ default from 0.5) or through TorchSharp (see "Managed backend").
     attachments (Stanza's bulk_process). Empty document: `Coref` = [] (Stanza crashes). A word without subwords throws
     (Stanza too). Tests `TransformerCorefTests` (golden shard 4; `Run_MatchesStanzasSteps`, `Pipeline_ReproducesStanzasCoref`
     en + de); golden `coref/intermediates.*` (windows, words, top-k in topk's order, scores, clusters; corpus and
-    validation_dialogue) and `de/coref/` (texts only). CI: `tools/ci-models.sh transformer` downloads `--processors
+    validation_dialogue), `coref/zeros/` (zero mentions forced: `COREF_ZERO_SHIFT` added to the zero scores, #208;
+    `Process_WithZeroMentions_MatchesStanza`, a read-back exact on them; a zero differs on read-back only inside a chain's
+    overlapping mentions, which the model didn't predict in about 600 zeros) and `de/coref/` (texts only). CI: `tools/ci-models.sh transformer` downloads `--processors
     tokenize,coref` (en) and, with XLM-R linked from en's folder, de. compare.py's `transformers_locally` also serves coref's
     own `load_tokenizer`.
   - CI: no cache (the model caches are near GitHub's 10 GB; owner's decision): golden shard 4 downloads the

@@ -121,11 +121,16 @@ topk_impl_loop over libstdc++ 13's nth_element / partial_sort (the torch wheels 
   English golden texts took 19 min managed and 1.2 min on TorchSharp, nearly all of it XLM-R; the runners' CPUs run the
   managed kernels several times faster.
 
-Known caveat for (c): reading back, a zero mention is placed in its chain by its empty word's position, `(sentence, Id)`.
-Stanza places it where its original word span sorted (the processor sorts the cluster's spans, then swaps a zero in for
-its span), whose start can lie left of the word the empty node precedes. No English golden has a zero mention, and
-crafted.* lists its mentions in the reader's order, so only (c)'s golden chains (the model is multilingual) can show a
-difference; (c) should check it and fix the order if it does.
+Zero mentions (#208, 2026-10-22): the English model predicts none on the golden texts (its highest zero score is -2.47), so
+`tests/golden/coref/zeros/` is Stanza's run on validation_dialogue and validation_news with 3.0 added to the zeros
+predictor's output (`COREF_ZERO_SHIFT`; 10 empty words, the nearest shifted score 0.024 from 0), and
+`Process_WithZeroMentions_MatchesStanza` (TransformerCorefTests) adds the same shift to our net's zero scores: the empty words
+(ids, per-sentence numbering, one before a sentence's first word), the zero mentions' places in their chains, the
+representatives, the CoNLL-U and the JSON match on both backends. `CorefDocumentTests` reads those files back and rebuilds
+Stanza's chains exactly. The read-back caveat stays in principle: a zero takes its original span's place in Stanza's sorted
+chain, and reading back places it by its empty word, so the two differ only when the same chain has another mention starting
+inside the zero's original span, which the CoNLL-U doesn't record. It didn't happen in about 600 zeros (shifts 3.0, 4.5 and
+6.0 on three texts): the model doesn't put overlapping mentions in one chain. Stanza can't read `coref_chains=` back at all.
 
 Research only (2026-10-14): nothing in `src/`, `tests/` or the workflows has changed. Stanza 1.15.0's English coref
 models are in `models/stanza/en/coref` (gitignored), from

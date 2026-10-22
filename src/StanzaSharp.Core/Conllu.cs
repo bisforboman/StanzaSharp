@@ -17,7 +17,9 @@ public static class Conllu
     /// <c>sentiment</c> comments. Entities are rebuilt from <c>ner=</c> tags, and <see cref="Document.Coref"/> from the
     /// <c>coref_chains=</c> marks (which Stanza writes but does not read): each chain's mentions from their first and last
     /// words' marks, in document order, the representative one from its <c>repr</c> marks, its text from its words as Stanza
-    /// builds it (tokens and words joined by single spaces). <see cref="Document.Text"/> stays null.
+    /// builds it (tokens and words joined by single spaces). A zero mention is placed by its empty word; the coref processor
+    /// places it by the span the model predicted, which the marks don't record, so the two orders differ only when a chain has
+    /// a mention starting inside that span. <see cref="Document.Text"/> stays null.
     /// </summary>
     /// <exception cref="FormatException">A line is not CoNLL-U, or a <c>coref_chains=</c> mark is malformed or ends a mention
     /// no mark started.</exception>
