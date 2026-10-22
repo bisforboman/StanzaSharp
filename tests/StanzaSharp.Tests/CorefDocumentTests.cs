@@ -51,7 +51,7 @@ public class CorefDocumentTests
     }
 
     // [sentence, start, end], a zero mention's start and end being [word id, empty index].
-    private static CorefMention Mention(JsonNode? node)
+    internal static CorefMention Mention(JsonNode? node)
     {
         var m = node!.AsArray();
         return m[1] is JsonArray zero

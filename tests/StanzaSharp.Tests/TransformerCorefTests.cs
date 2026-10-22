@@ -154,3 +154,57 @@ public sealed class CorefTheoryAttribute : TheoryAttribute
             : null;
     }
 }
+
+public partial class TransformerCorefTests
+{
+    // The English model predicts no zero mentions on the golden texts, so coref/zeros/ is Stanza's run with make_golden.py's
+    // COREF_ZERO_SHIFT added to the zeros predictor's output; here the same shift on our net's zero scores. Checks the empty
+    // words (ids, numbering, CoNLL-U and JSON lines), the zero mentions' place in their chains and the representatives.
+    private const float ZeroShift = 3.0f;
+
+    [CorefTheory]
+    [InlineData("validation_dialogue", true)]
+    [InlineData("validation_news", true)]
+    [InlineData("validation_dialogue", false)]
+    [InlineData("validation_news", false)]
+    public void Process_WithZeroMentions_MatchesStanza(string name, bool managed)
+    {
+        using var tagger = Pipeline.Load(Repo.StanzaModels, new PipelineOptions
+        {
+            Processors = $"{Processor.Tokenize},{Processor.Mwt},{Processor.Pos}",
+            Backend = Repo.PipelineBackendFor(managed),
+        });
+        using var transformer = TransformerEncoderTests.XlmRobertaEmbedder(managed);
+        using var resolver = new CorefResolver(Checkpoint.Load(ModelPath), transformer.Value,
+            ckpt => new ShiftedZeros(managed ? new ManagedCorefNet(ckpt) : new CorefNet(ckpt), ZeroShift));
+        var doc = tagger.Process(File.ReadAllText(Path.Combine(Repo.Golden, name + ".txt")));
+        resolver.Process(doc);
+
+        var folder = Path.Combine(Folder, "zeros");
+        var expected = JsonNode.Parse(File.ReadAllText(Path.Combine(folder, name + ".chains.json")))!.AsArray();
+        Assert.Equal(expected.Select(c => (
+            c!["index"]!.GetValue<int>(), c["representative_text"]!.GetValue<string>(), c["representative_index"]?.GetValue<int>(),
+            string.Join(" ", c["mentions"]!.AsArray().Select(CorefDocumentTests.Mention)))),
+            doc.Coref.Select(c => (c.Index, c.RepresentativeText, c.RepresentativeIndex, string.Join(" ", c.Mentions))));
+        Assert.True(doc.Sentences.Sum(s => s.EmptyWords.Count) > 0, "no zero mentions: the shift no longer makes any");
+        Assert.Equal(File.ReadAllText(Path.Combine(folder, name + ".conllu")), Conllu.Write(doc));
+        Assert.Equal(File.ReadAllText(Path.Combine(folder, name + ".str.json")), Json.Write(doc));
+    }
+
+    private sealed class ShiftedZeros(ICorefNet net, float shift) : ICorefNet
+    {
+        public float[] Words(float[] subwords, int count, int[] starts, int[] ends) => net.Words(subwords, count, starts, ends);
+
+        public void RoughScores(float[] words, int n, Action<int, int, float[], int> rows, CancellationToken ct) => net.RoughScores(words, n, rows, ct);
+
+        public float[] Anaphoricity(float[] words, int n, int[] top, int[] buckets, int k, CancellationToken ct) =>
+            net.Anaphoricity(words, n, top, buckets, k, ct);
+
+        public (float[] Start, float[] End) SpanScores(float[] words, int n, int[] heads, int[] sentStart, int[] sentLength, int width, CancellationToken ct) =>
+            net.SpanScores(words, n, heads, sentStart, sentLength, width, ct);
+
+        public float[] Zeros(float[] words, int[] rows) => [.. net.Zeros(words, rows).Select(z => z + shift)];
+
+        public void Dispose() => net.Dispose();
+    }
+}
