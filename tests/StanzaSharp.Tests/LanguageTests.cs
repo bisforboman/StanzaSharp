@@ -105,7 +105,7 @@ public class LanguageTests
         {
             await Assert.ThrowsAsync<HttpRequestException>(() => ModelDownloader.DownloadAsync(dir.FullName,
                 ModelDownloader.FilesFor("tokenize", "default", "options", "de"), new HttpClient(server), null, default, "de"));
-            Assert.Equal($"/stanfordnlp/stanza-de/resolve/v{ModelDownloader.StanzaVersion}/models/tokenize/combined_nocharlm.pt", Assert.Single(server.Requested));
+            Assert.Equal($"/stanfordnlp/stanza-de/resolve/{ModelDownloader.Revisions["de"]}/models/tokenize/combined_nocharlm.pt", Assert.Single(server.Requested));
         }
         finally
         {
