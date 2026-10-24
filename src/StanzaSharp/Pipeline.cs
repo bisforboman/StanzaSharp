@@ -912,11 +912,12 @@ public sealed class Pipeline : IDisposable
         if (custom.Keys.FirstOrDefault(overrides.ContainsKey) is { } both)
             throw new ArgumentException($"Both Models and ModelPaths name {both}", paramName);
 
-        // An optional processor's path replaces the package's optional model (coref: its transformer stays XLM-R).
+        // An optional processor's path replaces the package's optional model (coref: its transformer stays XLM-R), on a
+        // package without one too, as Models may choose coref on any package.
         foreach (var p in custom.Keys)
         {
             if (!models.ContainsKey(p) || models[p] == IdentityLemma)
-                models[p] = Optional.GetValueOrDefault(language!)?.GetValueOrDefault(package!)?.GetValueOrDefault(p) ?? CustomModel;
+                models[p] = Optional.GetValueOrDefault(language!)?.GetValueOrDefault(package!)?.GetValueOrDefault(p) ?? (p == "coref" ? CorefModel : CustomModel);
         }
 
         // Stanza's add_mwt: a replaced tokenizer brings the mwt of its own treebank, if there is one.

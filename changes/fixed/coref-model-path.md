@@ -1,0 +1,1 @@
+- `PipelineOptions.ModelPaths` for coref works on every package: on one without optional coref (the treebank packages, `combined`), a coref model path failed to load with "reads a transformer StanzaSharp doesn't know"; it now reads XLM-RoBERTa large as the default model does.

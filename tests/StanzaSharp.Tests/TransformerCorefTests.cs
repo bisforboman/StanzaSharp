@@ -208,3 +208,41 @@ public partial class TransformerCorefTests
         public void Dispose() => net.Dispose();
     }
 }
+
+public partial class TransformerCorefTests
+{
+    // ModelPaths for coref (#209): the model copied under a name no table knows, on the default package (whose optional coref
+    // model it replaces) and on combined (which lists none: the path still reads XLM-R, as Models may choose coref there).
+    // combined's tokenizer, mwt and tagger are the default package's, so both give Stanza's corpus.txt output.
+    [CorefTheory]
+    [InlineData("default", true)]
+    [InlineData("combined", true)]
+    [InlineData("default", false)]
+    public void CopiedCorefModel_UnderAnotherName_GivesStanzasChains(string package, bool managed)
+    {
+        var dir = Directory.CreateTempSubdirectory("stanzasharp-coref-path-").FullName;
+        try
+        {
+            var copy = Path.Combine(dir, "my-coref");
+            File.Copy(ModelPath + ".pt", copy + ".pt");
+            var paths = new Dictionary<string, ModelPath> { [Processor.Coref] = copy };
+            var processors = $"{Processor.Tokenize},{Processor.Mwt},{Processor.Pos},{Processor.Coref}";
+            Assert.DoesNotContain(ModelDownloader.FilesFor(processors, package, modelPaths: paths),
+                f => f.Path.StartsWith("coref/", StringComparison.Ordinal));
+
+            using var nlp = Pipeline.Load(Repo.StanzaModels, new PipelineOptions
+            {
+                Package = package,
+                Processors = processors,
+                ModelPaths = paths,
+                Backend = Repo.PipelineBackendFor(managed),
+            });
+            var expected = File.ReadAllText(Path.Combine(Folder, "corpus.conllu"));
+            Assert.Equal(expected, Conllu.Write(nlp.Process(File.ReadAllText(Path.Combine(Repo.Golden, "corpus.txt")))));
+        }
+        finally
+        {
+            Directory.Delete(dir, recursive: true);
+        }
+    }
+}
