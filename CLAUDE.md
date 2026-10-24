@@ -125,7 +125,8 @@ default from 0.5) or through TorchSharp (see "Managed backend").
   - The encoder (PR 1b): `Nn.ITransformerNet` (`Encode(ids, lastLayers)` → per sentence [lastLayers, pieces, hidden]),
     `TransformerConfig` from the transformer's `config.json` (ElectraModel only; anything else throws).
     `Nn.Managed.ManagedTransformer`: the dense layers as row-invariant `Gemm.Run` over every sentence's pieces, attention
-    per sentence and head without padding, attention/LayerNorm/GELU in double (round 45: lane-wise vectors, the same bits
+    per sentence and head without padding (round 49: four query rows at a time through register-blocked kernels over the
+    head's keys and values widened once, the row loop's bits; `BlockedAttention_GivesTheRowLoopsBits`), attention/LayerNorm/GELU in double (round 45: lane-wise vectors, the same bits
     on every path and width; GELU's erf from Numerical Recipes' erfc, 1.2e-7 relative, with its own mul/add-only `Exp`;
     LayerNorm's sums `Act.Dot`'s four accumulators), pooled buffers, rented outputs (round 47, `RentsOutputs`: the call's
     `TransformerCache` returns those it keeps when the call ends, `Embed` the others once mixed), a cancellation check per layer; so a sentence's

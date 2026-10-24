@@ -22,6 +22,10 @@ on:
         type: choice
         options: [default, default_fast, default_accurate, combined, gsd, hdt, ewt, gum, lines, partut, atis, childes, eslspok, craft, genia, mimic]
         default: default
+      processors:
+        description: "Only these processors (empty: the package's), e.g. tokenize,coref (coref adds XLM-R large, 2.24 GB, downloaded each run)"
+        type: string
+        default: ''
       quick:
         description: Smoke run (300 words, one run, 10 calls)
         type: boolean
@@ -51,6 +55,9 @@ on:
       package:
         type: string
         default: default
+      processors:
+        type: string
+        default: ''
       quick:
         type: boolean
         default: false
@@ -88,7 +95,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     # default_accurate: Python Stanza takes about 150 s a run on 4 cores (round 44), and the warm-up and timed runs are
     # up to 8 of them.
-    timeout-minutes: ${{ inputs.package == 'default_accurate' && 150 || 60 }}
+    timeout-minutes: ${{ (inputs.package == 'default_accurate' || contains(inputs.processors, 'coref')) && 150 || 60 }}
     defaults:
       run:
         shell: bash
@@ -132,13 +139,13 @@ jobs:
           version=$(git describe --tags --match 'v*')
           dotnet build src/StanzaSharp.Tool -c Release -p:Version="${version#v}" -p:IncludeSourceRevisionInInformationalVersion=false
 
-      # default_accurate's transformer models and google/electra-large-discriminator are in no cache (1.9 GB): always
-      # downloaded (files that already match are kept).
+      # default_accurate's transformer models and google/electra-large-discriminator are in no cache (1.9 GB), nor coref's
+      # model and FacebookAI/xlm-roberta-large: always downloaded (files that already match are kept).
       - name: Download the models
-        if: steps.models.outputs.cache-hit != 'true' || inputs.package == 'default_accurate'
+        if: steps.models.outputs.cache-hit != 'true' || inputs.package == 'default_accurate' || contains(inputs.processors, 'coref')
         run: >
           dotnet src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll download models/stanza/${{ inputs.lang }}
-          --lang ${{ inputs.lang }} --package ${{ inputs.package }}
+          --lang ${{ inputs.lang }} --package ${{ inputs.package }} ${{ inputs.processors && format('--processors {0}', inputs.processors) || '' }}
 
       # Python Stanza as golden installs it (the CPU-only torch wheel); German needs nothing more (its models, fastText
       # vectors included, are the .pt files above). If a runner has no wheel for it, the benchmark
@@ -165,8 +172,8 @@ jobs:
             sed 's/^numpy==.*/numpy==2.3.5/' tools/requirements.txt > "$requirements"
           fi
           python -m pip install -r "$requirements" --extra-index-url https://download.pytorch.org/whl/cpu
-          # default_accurate: Stanza's transformer models need transformers, tokenizers, safetensors and peft.
-          if [ "${{ inputs.package }}" = default_accurate ]; then
+          # default_accurate and coref: Stanza's transformer models need transformers, tokenizers, safetensors and peft.
+          if [ "${{ inputs.package }}" = default_accurate ] || [[ "${{ inputs.processors }}" == *coref* ]]; then
             python -m pip install -r tools/requirements-transformer.txt
           fi
           python -c "import platform, stanza, torch, numpy; print(platform.machine(), 'stanza', stanza.__version__, 'torch', torch.__version__, 'numpy', numpy.__version__)"
@@ -179,7 +186,8 @@ jobs:
             echo "::warning::Python Stanza could not be installed on ${{ matrix.os }}; StanzaSharp only."
           fi
           dotnet src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll benchmark --lang ${{ inputs.lang }} --package ${{ inputs.package }} \
-            --models models/stanza/${{ inputs.lang }} --python "$python" --json benchmark.json ${{ inputs.quick && '--quick' || '' }} > benchmark.md
+            --models models/stanza/${{ inputs.lang }} --python "$python" --json benchmark.json ${{ inputs.quick && '--quick' || '' }} \
+            ${{ inputs.processors && format('--processors {0}', inputs.processors) || '' }} > benchmark.md
           { echo "## ${{ matrix.os }}"; echo; cat benchmark.md; } >> "$GITHUB_STEP_SUMMARY"
           # Also in the log, which can be read where the summary and the artifacts can't (a cloud session).
           cat benchmark.md
@@ -209,7 +217,7 @@ jobs:
           - { os: windows-2025, attempt: 2 }
           - { os: windows-2025, attempt: 3 }
     runs-on: ${{ matrix.os }}
-    timeout-minutes: ${{ inputs.package == 'default_accurate' && 150 || 60 }}
+    timeout-minutes: ${{ (inputs.package == 'default_accurate' || contains(inputs.processors, 'coref')) && 150 || 60 }}
     defaults:
       run:
         shell: bash
@@ -259,12 +267,15 @@ jobs:
 
       # default_accurate's models are in no cache (see the benchmark job): always downloaded.
       - name: Download the models
-        if: steps.cpu.outputs.avx512 == 'yes' && (steps.models.outputs.cache-hit != 'true' || inputs.package == 'default_accurate')
+        if: steps.cpu.outputs.avx512 == 'yes' && (steps.models.outputs.cache-hit != 'true' || inputs.package == 'default_accurate' || contains(inputs.processors, 'coref'))
         run: |
           dotnet src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll download models/stanza/en
           dotnet src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll download models/stanza/en --package default_fast
           if [ "${{ inputs.package }}" = default_accurate ]; then
             dotnet src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll download models/stanza/en --package default_accurate
+          fi
+          if [ -n "${{ inputs.processors }}" ]; then
+            dotnet src/StanzaSharp.Tool/bin/Release/net10.0/StanzaSharp.Tool.dll download models/stanza/en --package ${{ inputs.package }} --processors ${{ inputs.processors }}
           fi
 
       - name: Benchmark Vector512 against Vector256
@@ -278,10 +289,11 @@ jobs:
                 name="avx512/threads-$threads.round-$round.vector$width"
                 args=(benchmark --package ${{ inputs.package }} --models models/stanza/en --python python-not-used --json "$name.json")
                 if [ $threads != 0 ]; then args+=(--threads $threads); fi
+                if [ -n "${{ inputs.processors }}" ]; then args+=(--processors "${{ inputs.processors }}"); fi
                 if [ $width = 256 ]; then export DOTNET_PreferredVectorBitWidth=256; else unset DOTNET_PreferredVectorBitWidth; fi
                 dotnet $tool "${args[@]}" ${{ inputs.quick && '--quick' || '' }} > "$name.md"
                 grep -q "SIMD Vector$width" "$name.md" || { echo "::error::$name did not run on Vector$width"; cat "$name.md"; exit 1; }
-                { echo "### $name"; echo; cat "$name.md"; echo; } >> "$GITHUB_STEP_SUMMARY"
+                { echo "### $name"; echo; cat "$name.md"; echo; } | tee -a "$GITHUB_STEP_SUMMARY"
               done
             done
           done
@@ -304,7 +316,7 @@ jobs:
         run: >
           dotnet test tests/StanzaSharp.Tests -c Release --no-build --blame-hang-timeout 30m --blame-hang-dump-type none
           --logger trx --logger "console;verbosity=detailed" --results-directory TestResults
-          --filter "FullyQualifiedName~ManagedBackendTests|FullyQualifiedName~PipelineTests"
+          --filter "FullyQualifiedName~ManagedBackendTests|FullyQualifiedName~PipelineTests|FullyQualifiedName~TransformerKernelTests.BlockedAttention"
 
       - name: Check that no test was skipped
         if: steps.cpu.outputs.avx512 == 'yes'

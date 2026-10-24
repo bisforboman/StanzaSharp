@@ -268,65 +268,318 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
         fixed (float* pl = low, pd = delta)
         {
             Gemm.Run(input, rows, k, adapter.A, null, pl, rank, ct, rowInvariant: true);
-            Gemm.Run(pl, rows, adapter.A.N, adapter.B, null, pd, ld, ct, rowInvariant: true);
+            Gemm.Run(pl, rows, rank, adapter.B, null, pd, ld, ct, rowInvariant: true);
             nint po = (nint)output, pdd = (nint)pd;
             ManagedThreads.For((rows + 63) / 64, block =>
             {
                 for (int r = block * 64; r < Math.Min(rows, (block * 64) + 64); r++)
-                {
-                    var o = (float*)po + ((long)r * ldOutput) + column;
-                    var d = (float*)pdd + ((long)r * ld);
-                    for (int j = 0; j < n; j++)
-                        o[j] += d[j] * scaling;
-                }
+                    AddScaled((float*)po + ((long)r * ldOutput) + column, (float*)pdd + ((long)r * ld), n, scaling);
             });
         }
     }
 
+    // o[j] += d[j]·scaling for j < n: a multiply then an add per lane (never fused), so every width gives the scalar
+    // loop's bits (round 49: vectorized).
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    internal static void AddScaled(float* o, float* d, int n, float scaling)
+    {
+        int j = 0;
+        if (Vector.IsHardwareAccelerated)
+        {
+            var s = new Vector<float>(scaling);
+            for (; j + Vector<float>.Count <= n; j += Vector<float>.Count)
+                (Vector.Load(o + j) + (Vector.Load(d + j) * s)).Store(o + j);
+        }
+
+        for (; j < n; j++)
+            o[j] += d[j] * scaling;
+    }
+
     // context = softmax(q·kᵀ / √d) · v per sentence and head; q, k, v are the thirds of each qkv row. Scores and sums in
-    // double; a task's arithmetic doesn't depend on how many threads run the tasks.
+    // double; a task's arithmetic doesn't depend on how many threads run the tasks. Blocked (round 49): a head's keys and
+    // values widened to double once, four query rows at a time through register-blocked kernels (ScoreBlock,
+    // WeightedBlock) that give every element Act.Dot's and WeightedAdd's own operations in their order, so the bits are
+    // the per-row loop's (kept for the Scalar path and a head width not a multiple of 8).
     private void Attention(float* qkv, float* context, int[] starts)
     {
         int h = Config.Hidden, heads = Config.Heads, d = h / heads, sentences = starts.Length - 1;
         nint pq = (nint)qkv, pc = (nint)context;
         double scale = 1 / Math.Sqrt(d);
+        bool blocked = d % 8 == 0 && Gemm.Path != KernelPath.Scalar;
         ManagedThreads.For(sentences * heads, task =>
         {
             int s = task / heads, head = task % heads, r0 = starts[s], n = starts[s + 1] - r0;
-            var q_ = (float*)pq;
-            var c_ = (float*)pc;
-            var p = ArrayPool<double>.Shared.Rent(n + d);
-            try
+            if (blocked)
+                AttentionBlocked((float*)pq + ((long)r0 * 3 * h) + (head * d), (float*)pc + ((long)r0 * h) + (head * d), n, h, d, scale);
+            else
+                AttentionRows((float*)pq + ((long)r0 * 3 * h) + (head * d), (float*)pc + ((long)r0 * h) + (head * d), n, h, d, scale);
+        });
+    }
+
+    // One sentence's head, a query row at a time: q at qkv, k at qkv + h, v at qkv + 2h (row stride 3h); context row
+    // stride h.
+    internal static void AttentionRows(float* qkv, float* context, int n, int h, int d, double scale)
+    {
+        var p = ArrayPool<double>.Shared.Rent(n + d);
+        try
+        {
+            var acc = p.AsSpan(n, d);
+            for (int i = 0; i < n; i++)
             {
-                var acc = p.AsSpan(n, d);
-                for (int i = 0; i < n; i++)
+                var qi = new ReadOnlySpan<float>(qkv + ((long)i * 3 * h), d);
+                double max = double.NegativeInfinity;
+                for (int j = 0; j < n; j++)
                 {
-                    var qi = new ReadOnlySpan<float>(q_ + ((long)(r0 + i) * 3 * h) + (head * d), d);
-                    double max = double.NegativeInfinity;
-                    for (int j = 0; j < n; j++)
+                    var kj = new ReadOnlySpan<float>(qkv + ((long)j * 3 * h) + h, d);
+                    p[j] = Act.Dot(qi, kj) * scale;
+                    max = Math.Max(max, p[j]);
+                }
+
+                double sum = 0;
+                for (int j = 0; j < n; j++)
+                    sum += p[j] = Math.Exp(p[j] - max);
+                acc.Clear();
+                for (int j = 0; j < n; j++)
+                    WeightedAdd(acc, p[j], qkv + ((long)j * 3 * h) + (2 * h));
+
+                var ci = context + ((long)i * h);
+                for (int e = 0; e < d; e++)
+                    ci[e] = (float)(acc[e] / sum);
+            }
+        }
+        finally
+        {
+            ArrayPool<double>.Shared.Return(p);
+        }
+    }
+
+    private const int QueryBlock = 4;
+
+    // AttentionRows' arithmetic, QueryBlock query rows at a time (the last block's missing rows are zeros, computed and
+    // dropped). Per row and key: the dot's four accumulators (lane q mod 4, as Act.Dot; a widened float product is exact
+    // in double, so a fused multiply-add rounds like Dot's add), then (s0 + s1) + (s2 + s3), times scale; the maximum and
+    // the sum of exponentials in key order; each context element summed over the keys in order, a multiply then an add
+    // (WeightedAdd's), then divided by the sum.
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    internal static void AttentionBlocked(float* qkv, float* context, int n, int h, int d, double scale)
+    {
+        var pool = ArrayPool<double>.Shared;
+        var buffer = pool.Rent((2 * n * d) + (QueryBlock * (n + d)));
+        try
+        {
+            // The rented buffer only through spans (no pointer arithmetic on it), each part pinned on its own.
+            Span<double> keys = buffer.AsSpan(0, n * d), values = buffer.AsSpan(n * d, n * d), queries = buffer.AsSpan(2 * n * d, QueryBlock * d),
+                scores = buffer.AsSpan((2 * n * d) + (QueryBlock * d), QueryBlock * n);
+            for (int j = 0; j < n; j++)
+            {
+                Widen(qkv + ((long)j * 3 * h) + h, keys.Slice(j * d, d));
+                Widen(qkv + ((long)j * 3 * h) + (2 * h), values.Slice(j * d, d));
+            }
+
+            Span<double> max = stackalloc double[QueryBlock], sum = stackalloc double[QueryBlock];
+            fixed (double* k = keys, v = values, q = queries, p = scores)
+            {
+                for (int i0 = 0; i0 < n; i0 += QueryBlock)
+                {
+                    int rows = Math.Min(QueryBlock, n - i0);
+                    for (int r = 0; r < QueryBlock; r++)
                     {
-                        var kj = new ReadOnlySpan<float>(q_ + ((long)(r0 + j) * 3 * h) + h + (head * d), d);
-                        p[j] = Act.Dot(qi, kj) * scale;
-                        max = Math.Max(max, p[j]);
+                        if (r < rows)
+                            Widen(qkv + ((long)(i0 + r) * 3 * h), queries.Slice(r * d, d));
+                        else
+                            queries.Slice(r * d, d).Clear();
                     }
 
-                    double sum = 0;
-                    for (int j = 0; j < n; j++)
-                        sum += p[j] = Math.Exp(p[j] - max);
-                    acc.Clear();
-                    for (int j = 0; j < n; j++)
-                        WeightedAdd(acc, p[j], q_ + ((long)(r0 + j) * 3 * h) + (2 * h) + (head * d));
+                    ScoreBlock(q, k, p, n, d, scale);
+                    for (int r = 0; r < QueryBlock; r++)
+                    {
+                        double m = double.NegativeInfinity;
+                        foreach (double x in scores.Slice(r * n, n))
+                            m = Math.Max(m, x);
+                        max[r] = m;
+                        sum[r] = 0;
+                    }
 
-                    var ci = c_ + ((long)(r0 + i) * h) + (head * d);
-                    for (int e = 0; e < d; e++)
-                        ci[e] = (float)(acc[e] / sum);
+                    for (int j = 0; j < n; j++)
+                    {
+                        for (int r = 0; r < QueryBlock; r++)
+                            sum[r] += scores[(r * n) + j] = Math.Exp(scores[(r * n) + j] - max[r]);
+                    }
+
+                    WeightedBlock(p, v, n, d, sum, context + ((long)i0 * h), h, rows);
                 }
             }
-            finally
+        }
+        finally
+        {
+            pool.Return(buffer);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void Widen(float* source, Span<double> target)
+    {
+        for (int e = 0; e < target.Length; e++)
+            target[e] = source[e];
+    }
+
+    // p[r·n + j] = dot(q_r, k_j)·scale for the QueryBlock rows of q [QueryBlock, d] and every key row of k [n, d].
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private static void ScoreBlock(double* q, double* k, double* p, int n, int d, double scale)
+    {
+        double* q0 = q, q1 = q + d, q2 = q + (2 * d), q3 = q + (3 * d);
+        if (Gemm.Path is KernelPath.Vector512 or KernelPath.Vector256)
+        {
+            int j = 0;
+            for (; j + 2 <= n; j += 2)
             {
-                ArrayPool<double>.Shared.Return(p);
+                double* kj = k + ((long)j * d), kl = kj + d;
+                Vector256<double> a0 = Vector256<double>.Zero, a1 = a0, a2 = a0, a3 = a0, b0 = a0, b1 = a0, b2 = a0, b3 = a0;
+                for (int c = 0; c < d; c += 4)
+                {
+                    var (x, y) = (Vector256.Load(kj + c), Vector256.Load(kl + c));
+                    var w = Vector256.Load(q0 + c);
+                    (a0, b0) = (Vector256.MultiplyAddEstimate(w, x, a0), Vector256.MultiplyAddEstimate(w, y, b0));
+                    w = Vector256.Load(q1 + c);
+                    (a1, b1) = (Vector256.MultiplyAddEstimate(w, x, a1), Vector256.MultiplyAddEstimate(w, y, b1));
+                    w = Vector256.Load(q2 + c);
+                    (a2, b2) = (Vector256.MultiplyAddEstimate(w, x, a2), Vector256.MultiplyAddEstimate(w, y, b2));
+                    w = Vector256.Load(q3 + c);
+                    (a3, b3) = (Vector256.MultiplyAddEstimate(w, x, a3), Vector256.MultiplyAddEstimate(w, y, b3));
+                }
+
+                (p[j], p[j + 1]) = (Sum(a0) * scale, Sum(b0) * scale);
+                (p[n + j], p[n + j + 1]) = (Sum(a1) * scale, Sum(b1) * scale);
+                (p[(2 * n) + j], p[(2 * n) + j + 1]) = (Sum(a2) * scale, Sum(b2) * scale);
+                (p[(3 * n) + j], p[(3 * n) + j + 1]) = (Sum(a3) * scale, Sum(b3) * scale);
             }
-        });
+
+            for (; j < n; j++)
+            {
+                var kj = k + ((long)j * d);
+                Vector256<double> a0 = Vector256<double>.Zero, a1 = a0, a2 = a0, a3 = a0;
+                for (int c = 0; c < d; c += 4)
+                {
+                    var x = Vector256.Load(kj + c);
+                    a0 = Vector256.MultiplyAddEstimate(Vector256.Load(q0 + c), x, a0);
+                    a1 = Vector256.MultiplyAddEstimate(Vector256.Load(q1 + c), x, a1);
+                    a2 = Vector256.MultiplyAddEstimate(Vector256.Load(q2 + c), x, a2);
+                    a3 = Vector256.MultiplyAddEstimate(Vector256.Load(q3 + c), x, a3);
+                }
+
+                p[j] = Sum(a0) * scale;
+                p[n + j] = Sum(a1) * scale;
+                p[(2 * n) + j] = Sum(a2) * scale;
+                p[(3 * n) + j] = Sum(a3) * scale;
+            }
+        }
+        else
+        {
+            for (int j = 0; j < n; j++)
+            {
+                var kj = k + ((long)j * d);
+                Vector128<double> a01 = Vector128<double>.Zero, a23 = a01, b01 = a01, b23 = a01, c01 = a01, c23 = a01, e01 = a01, e23 = a01;
+                for (int c = 0; c < d; c += 4)
+                {
+                    var (x01, x23) = (Vector128.Load(kj + c), Vector128.Load(kj + c + 2));
+                    a01 = Vector128.MultiplyAddEstimate(Vector128.Load(q0 + c), x01, a01);
+                    a23 = Vector128.MultiplyAddEstimate(Vector128.Load(q0 + c + 2), x23, a23);
+                    b01 = Vector128.MultiplyAddEstimate(Vector128.Load(q1 + c), x01, b01);
+                    b23 = Vector128.MultiplyAddEstimate(Vector128.Load(q1 + c + 2), x23, b23);
+                    c01 = Vector128.MultiplyAddEstimate(Vector128.Load(q2 + c), x01, c01);
+                    c23 = Vector128.MultiplyAddEstimate(Vector128.Load(q2 + c + 2), x23, c23);
+                    e01 = Vector128.MultiplyAddEstimate(Vector128.Load(q3 + c), x01, e01);
+                    e23 = Vector128.MultiplyAddEstimate(Vector128.Load(q3 + c + 2), x23, e23);
+                }
+
+                p[j] = ((a01[0] + a01[1]) + (a23[0] + a23[1])) * scale;
+                p[n + j] = ((b01[0] + b01[1]) + (b23[0] + b23[1])) * scale;
+                p[(2 * n) + j] = ((c01[0] + c01[1]) + (c23[0] + c23[1])) * scale;
+                p[(3 * n) + j] = ((e01[0] + e01[1]) + (e23[0] + e23[1])) * scale;
+            }
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static double Sum(Vector256<double> s) => (s[0] + s[1]) + (s[2] + s[3]);
+
+    // context row r (stride h), element e = (float)((Σ_j p[r·n + j]·v[j·d + e]) / sum[r]) for the first rows rows: the
+    // sum from 0 over j in order, each term multiplied, then added.
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private static void WeightedBlock(double* p, double* v, int n, int d, ReadOnlySpan<double> sum, float* context, int h, int rows)
+    {
+        double* p0 = p, p1 = p + n, p2 = p + (2 * n), p3 = p + (3 * n);
+        Span<double> acc = stackalloc double[QueryBlock * 8];
+        for (int e = 0; e < d; e += 8)
+        {
+            if (Gemm.Path is KernelPath.Vector512 or KernelPath.Vector256)
+            {
+                Vector256<double> a0 = Vector256<double>.Zero, b0 = a0, a1 = a0, b1 = a0, a2 = a0, b2 = a0, a3 = a0, b3 = a0;
+                for (int j = 0; j < n; j++)
+                {
+                    var vj = v + ((long)j * d) + e;
+                    var (x, y) = (Vector256.Load(vj), Vector256.Load(vj + 4));
+                    var w = Vector256.Create(p0[j]);
+                    (a0, b0) = (a0 + (w * x), b0 + (w * y));
+                    w = Vector256.Create(p1[j]);
+                    (a1, b1) = (a1 + (w * x), b1 + (w * y));
+                    w = Vector256.Create(p2[j]);
+                    (a2, b2) = (a2 + (w * x), b2 + (w * y));
+                    w = Vector256.Create(p3[j]);
+                    (a3, b3) = (a3 + (w * x), b3 + (w * y));
+                }
+
+                fixed (double* pa = acc)
+                {
+                    a0.Store(pa);
+                    b0.Store(pa + 4);
+                    a1.Store(pa + 8);
+                    b1.Store(pa + 12);
+                    a2.Store(pa + 16);
+                    b2.Store(pa + 20);
+                    a3.Store(pa + 24);
+                    b3.Store(pa + 28);
+                }
+            }
+            else
+            {
+                // Two rows at a time: eight accumulators of two lanes.
+                for (int r = 0; r < QueryBlock; r += 2)
+                {
+                    double* pr = p + ((long)r * n), ps = pr + n;
+                    Vector128<double> a0 = Vector128<double>.Zero, a1 = a0, a2 = a0, a3 = a0, b0 = a0, b1 = a0, b2 = a0, b3 = a0;
+                    for (int j = 0; j < n; j++)
+                    {
+                        var vj = v + ((long)j * d) + e;
+                        var (x0, x1, x2, x3) = (Vector128.Load(vj), Vector128.Load(vj + 2), Vector128.Load(vj + 4), Vector128.Load(vj + 6));
+                        var w = Vector128.Create(pr[j]);
+                        (a0, a1, a2, a3) = (a0 + (w * x0), a1 + (w * x1), a2 + (w * x2), a3 + (w * x3));
+                        w = Vector128.Create(ps[j]);
+                        (b0, b1, b2, b3) = (b0 + (w * x0), b1 + (w * x1), b2 + (w * x2), b3 + (w * x3));
+                    }
+
+                    fixed (double* pa = acc)
+                    {
+                        double* ra = pa + (r * 8), rb = ra + 8;
+                        a0.Store(ra);
+                        a1.Store(ra + 2);
+                        a2.Store(ra + 4);
+                        a3.Store(ra + 6);
+                        b0.Store(rb);
+                        b1.Store(rb + 2);
+                        b2.Store(rb + 4);
+                        b3.Store(rb + 6);
+                    }
+                }
+            }
+
+            for (int r = 0; r < rows; r++)
+            {
+                var ci = context + ((long)r * h) + e;
+                for (int t = 0; t < 8; t++)
+                    ci[t] = (float)(acc[(r * 8) + t] / sum[r]);
+            }
+        }
     }
 
     // acc[e] += weight · v[e] for e < acc.Length, in double: a multiply then an add per lane (never fused), so every
