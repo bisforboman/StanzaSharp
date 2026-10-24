@@ -55,7 +55,7 @@
 # sent_id = 4
 # constituency = (ROOT (VROOT (CS (S (PROPN @lisa_m) (NOUN danke) (PP (ADP für) (DET das) (ADJ tolle) (NOUN Geschenk)))) (PUNCT ,) (S (AUX hab) (VP (PRON mich) (ADJ riesig) (VERB gefreut))) (PUNCT :) (PUNCT -RRB-)))
 # sentiment = 2
-1	@lisa_m	@lisa_m	PROPN	NE	Case=Nom|Number=Sing	2	nsubj	_	start_char=134|end_char=141|ner=O
+1	@lisa_m	@lisa_m	PROPN	NE	Case=Nom|Number=Sing	2	nsubj	_	start_char=134|end_char=141|ner=S-PER
 2	danke	danken	NOUN	PTKANT	_	0	root	_	start_char=142|end_char=147|ner=O
 3	für	für	ADP	APPR	_	6	case	_	start_char=148|end_char=151|ner=O
 4	das	der	DET	ART	Case=Acc|Definite=Def|Gender=Neut|Number=Sing|PronType=Art	6	det	_	start_char=152|end_char=155|ner=O
@@ -208,9 +208,9 @@
 # sent_id = 13
 # constituency = (ROOT (VROOT (PROPN RT) (X @) (NOUN nachrichten) (PUNCT :) (NP (ADJ Bundesweiter) (NOUN Warnstreik) (PP (ADP in) (DET dem) (NOUN Nahverkehr)) (PP (ADP an) (DET dem) (NOUN Montag))) (PUNCT –) (S (NP (DET alle) (NOUN Infos)) (ADV hier)) (PUNCT :) (PROPN https://t.co/abc123)))
 # sentiment = 1
-1	RT	RT	PROPN	NE	Case=Nom|Gender=Masc|Number=Sing	0	root	_	start_char=592|end_char=594|ner=B-ORG
-2	@	@	X	NE	_	3	punct	_	SpaceAfter=No|start_char=595|end_char=596|ner=I-ORG
-3	nachrichten	nachrichten	NOUN	NN	Case=Nom|Gender=Fem|Number=Plur	1	flat	_	SpaceAfter=No|start_char=596|end_char=607|ner=E-ORG
+1	RT	RT	PROPN	NE	Case=Nom|Gender=Masc|Number=Sing	0	root	_	start_char=592|end_char=594|ner=S-ORG
+2	@	@	X	NE	_	3	punct	_	SpaceAfter=No|start_char=595|end_char=596|ner=O
+3	nachrichten	nachrichten	NOUN	NN	Case=Nom|Gender=Fem|Number=Plur	1	flat	_	SpaceAfter=No|start_char=596|end_char=607|ner=O
 4	:	:	PUNCT	$.	_	6	punct	_	start_char=607|end_char=608|ner=O
 5	Bundesweiter	bundesweit	ADJ	ADJA	Case=Nom|Degree=Pos|Gender=Masc|Number=Sing	6	amod	_	start_char=609|end_char=621|ner=O
 6	Warnstreik	Warnstreik	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	1	appos	_	start_char=622|end_char=632|ner=O
@@ -227,7 +227,7 @@
 15	Infos	Info	NOUN	NN	Case=Nom|Gender=Fem|Number=Plur	6	conj	_	start_char=664|end_char=669|ner=O
 16	hier	hier	ADV	ADV	_	15	advmod	_	SpaceAfter=No|start_char=670|end_char=674|ner=O
 17	:	:	PUNCT	$.	_	18	punct	_	start_char=674|end_char=675|ner=O
-18	https://t.co/abc123	lisdilg	PROPN	NE	Case=Nom|Number=Sing	15	appos	_	SpacesAfter=\n\n|start_char=676|end_char=695|ner=S-MISC
+18	https://t.co/abc123	lisdilg	PROPN	NE	Case=Nom|Number=Sing	15	appos	_	SpacesAfter=\n\n|start_char=676|end_char=695|ner=O
 
 # text = Hab grad meinen Kaffee über die Tastatur gekippt.
 # sent_id = 14

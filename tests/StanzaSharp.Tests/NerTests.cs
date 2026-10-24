@@ -93,7 +93,6 @@ public class NerTests(ITestOutputHelper output)
     [German(true)]
     public void Emissions_MatchGoldenIntermediates(bool managed, string lang)
     {
-        // German's germeval2014: the old checkpoint format, no delta embedding, fastText's 300-dimensional vectors.
         using var pretrain = Repo.LoadPretrainOf(managed, lang, "ner");
         using var forward = managed ? null : CharLanguageModel.Load(Repo.Charlm(lang, forward: true));
         using var backward = managed ? null : CharLanguageModel.Load(Repo.Charlm(lang, forward: false));

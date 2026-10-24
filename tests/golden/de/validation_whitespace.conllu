@@ -72,7 +72,7 @@
 2	Zeile	Zeile	NOUN	NN	Case=Nom|Gender=Fem|Number=Sing	3	nsubj	_	start_char=228|end_char=233|ner=O
 3	endet	enden	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=234|end_char=239|ner=O
 4	mit	mit	ADP	APPR	_	5	case	_	start_char=240|end_char=243|ner=O
-5	CRLF	CRLF	PROPN	NE	Case=Dat|Gender=Neut|Number=Sing	3	obl	_	SpaceAfter=No|start_char=244|end_char=248|ner=O
+5	CRLF	CRLF	PROPN	NE	Case=Dat|Gender=Neut|Number=Sing	3	obl	_	SpaceAfter=No|start_char=244|end_char=248|ner=S-ORG
 6	.	.	PUNCT	$.	_	3	punct	_	SpacesAfter=\r\n|start_char=248|end_char=249|ner=O
 
 # text = Diese auch.

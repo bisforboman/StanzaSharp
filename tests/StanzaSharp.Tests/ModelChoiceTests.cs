@@ -385,7 +385,7 @@ public class ModelChoiceTests
     [InlineData("en", "craft", null, "ner=anatem",
         "tokenize/craft_nocharlm.pt pos/craft_nocharlm.pt lemma/craft_nocharlm.pt depparse/craft_nocharlm.pt ner/anatem.pt pretrain/biomed.pt forward_charlm/pubmed.pt backward_charlm/pubmed.pt")]
     [InlineData("en", "default", "tokenize,ner", "ner=conll03_charlm",
-        "tokenize/combined_nocharlm.pt mwt/combined.pt ner/conll03_charlm.pt pretrain/glove.pt forward_charlm/1billion.pt backward_charlm/1billion.pt")]
+        "tokenize/combined_nocharlm.pt mwt/combined.pt ner/conll03_charlm.pt pretrain/conll17.pt forward_charlm/1billion.pt backward_charlm/1billion.pt")]
     [InlineData("de", "default", "tokenize,ner", "ner=conll03",
         "tokenize/combined_nocharlm.pt mwt/combined.pt ner/conll03.pt pretrain/fasttextwiki.pt forward_charlm/newswiki.pt backward_charlm/newswiki.pt")]
     public void FilesFor_IncludesTheChosenModelsAndTheirDependencies(string lang, string package, string? processors, string pair, string expected)

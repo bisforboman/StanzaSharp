@@ -154,34 +154,6 @@ public class CompareCommandTests
     }
 
     /// <summary>
-    /// compare.py's PRETRAIN_FIXES (and make_golden.py's) give Stanza the pretrain <see cref="Pipeline.Dependencies"/> names for
-    /// each model of <see cref="Pipeline.ListedPretrains"/>, and no other.
-    /// </summary>
-    [Fact]
-    public void PretrainFixes_MatchListedPretrains()
-    {
-        using var resource = typeof(CompareCommand).Assembly.GetManifestResourceStream("compare.py")!;
-        var compare = new StreamReader(resource).ReadToEnd();
-        var golden = File.ReadAllText(Path.Combine(Repo.Root, "tools", "make_golden.py"));
-        foreach (var (language, models) in Pipeline.ListedPretrains)
-        {
-            foreach (var model in models.Keys)
-            {
-                var pretrain = Pipeline.Dependencies[language][model].Single(p => p.StartsWith("pretrain/", StringComparison.Ordinal))["pretrain/".Length..];
-                var (processor, name) = (model.Split('/')[0], model.Split('/')[1]);
-                Assert.Contains($"\"{model}\": \"{pretrain}\"", compare);
-                Assert.Contains($"(\"{language}\", \"{processor}\", \"{name}\"): \"{pretrain}\"", golden);
-            }
-        }
-
-        // one entry per model: compare.py's are "processor/model": ..., make_golden.py's (lang, processor, model): ...
-        string Line(string text) => text.Split('\n').Single(l => l.StartsWith("PRETRAIN_FIXES = ", StringComparison.Ordinal));
-        int expected = Pipeline.ListedPretrains.Values.Sum(m => m.Count);
-        Assert.Equal(expected, Line(compare).Split("\": \"").Length - 1);
-        Assert.Equal(expected, Line(golden).Split("): \"").Length - 1);
-    }
-
-    /// <summary>
     /// compare.py's install hint for the transformer models names the versions tools/requirements-transformer.txt pins (the
     /// ones the golden data was made with).
     /// </summary>
@@ -244,14 +216,6 @@ public class CompareCommandTests
             var dependencies = model.TryGetProperty("dependencies", out var d)
                 ? d.EnumerateArray().Select(x => $"{x.GetProperty("model").GetString()}/{x.GetProperty("package").GetString()}").Order().ToList()
                 : [];
-            if (Pipeline.ListedPretrains[language].TryGetValue($"{processor}/{name}", out var listed))
-            {
-                // resources.json's pretrain is not the one the checkpoint was trained on: Dependencies names that one
-                var read = Pipeline.Dependencies[language][$"{processor}/{name}"].Single(p => p.StartsWith("pretrain/", StringComparison.Ordinal));
-                Assert.Contains(listed, dependencies);
-                dependencies = [.. dependencies.Select(p => p == listed ? read : p).Order()];
-            }
-
             Assert.Equal(dependencies, Pipeline.SharedModels(new Dictionary<string, string> { [processor] = name }, language).Order());
         }
     }

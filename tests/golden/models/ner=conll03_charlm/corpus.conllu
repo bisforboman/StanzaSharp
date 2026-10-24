@@ -42,7 +42,7 @@
 
 # text = Can't you hear the thunder?
 # sent_id = 3
-1-2	Can't	_	_	_	_	_	_	_	start_char=123|end_char=128|ner=O
+1-2	Can't	_	_	_	_	_	_	_	start_char=123|end_char=128|ner=S-PER
 1	Ca	_	_	_	_	0	_	_	start_char=123|end_char=125
 2	n't	_	_	_	_	1	_	_	start_char=125|end_char=128
 3	you	_	_	_	_	2	_	_	start_char=129|end_char=132|ner=O

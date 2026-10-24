@@ -228,7 +228,7 @@
 
 # text = We'll save you a seat."
 # sent_id = 13
-1-2	We'll	_	_	_	_	_	_	_	start_char=788|end_char=793|ner=S-PER
+1-2	We'll	_	_	_	_	_	_	_	start_char=788|end_char=793|ner=O
 1	We	_	_	_	_	0	_	_	start_char=788|end_char=790
 2	'll	_	_	_	_	1	_	_	start_char=790|end_char=793
 3	save	_	_	_	_	2	_	_	start_char=794|end_char=798|ner=O
@@ -308,7 +308,7 @@
 6	to	_	_	_	_	5	_	_	start_char=1019|end_char=1021|ner=O
 7	180	_	_	_	_	6	_	_	SpaceAfter=No|start_char=1022|end_char=1025|ner=O
 8	°	_	_	_	_	7	_	_	SpaceAfter=No|start_char=1025|end_char=1026|ner=O
-9	C	_	_	_	_	8	_	_	SpaceAfter=No|start_char=1026|end_char=1027|ner=O
+9	C	_	_	_	_	8	_	_	SpaceAfter=No|start_char=1026|end_char=1027|ner=S-MISC
 10	.	_	_	_	_	9	_	_	SpacesAfter=\n|start_char=1027|end_char=1028|ner=O
 11	2	_	_	_	_	10	_	_	SpaceAfter=No|start_char=1029|end_char=1030|ner=O
 12	.	_	_	_	_	11	_	_	start_char=1030|end_char=1031|ner=O
@@ -345,8 +345,8 @@
 2	NEWS	_	_	_	_	1	_	_	SpaceAfter=No|start_char=1127|end_char=1131|ner=O
 3	:	_	_	_	_	2	_	_	start_char=1131|end_char=1132|ner=O
 4	Storm	_	_	_	_	3	_	_	start_char=1133|end_char=1138|ner=O
-5	Hits	_	_	_	_	4	_	_	start_char=1139|end_char=1143|ner=B-LOC
-6	Coast	_	_	_	_	5	_	_	SpacesAfter=\n|start_char=1144|end_char=1149|ner=E-LOC
+5	Hits	_	_	_	_	4	_	_	start_char=1139|end_char=1143|ner=O
+6	Coast	_	_	_	_	5	_	_	SpacesAfter=\n|start_char=1144|end_char=1149|ner=O
 7	Thousands	_	_	_	_	6	_	_	start_char=1150|end_char=1159|ner=O
 8	without	_	_	_	_	7	_	_	start_char=1160|end_char=1167|ner=O
 9	power	_	_	_	_	8	_	_	start_char=1168|end_char=1173|ner=O
@@ -457,7 +457,7 @@
 
 # text = We'd've left earlier if we'd known.
 # sent_id = 26
-1-2	We'd've	_	_	_	_	_	_	_	start_char=1630|end_char=1637|ner=O
+1-2	We'd've	_	_	_	_	_	_	_	start_char=1630|end_char=1637|ner=S-PER
 1	We'd	_	_	_	_	0	_	_	start_char=1630|end_char=1634
 2	've	_	_	_	_	1	_	_	start_char=1634|end_char=1637
 3	left	_	_	_	_	2	_	_	start_char=1638|end_char=1642|ner=O
@@ -471,7 +471,7 @@
 
 # text = Y'all shouldn't worry; it ain't that bad.
 # sent_id = 27
-1	Y'all	_	_	_	_	0	_	_	start_char=1666|end_char=1671|ner=O
+1	Y'all	_	_	_	_	0	_	_	start_char=1666|end_char=1671|ner=S-PER
 2-3	shouldn't	_	_	_	_	_	_	_	start_char=1672|end_char=1681|ner=O
 2	should	_	_	_	_	1	_	_	start_char=1672|end_char=1678
 3	n't	_	_	_	_	2	_	_	start_char=1678|end_char=1681
@@ -553,8 +553,8 @@
 
 # text = Mrs. O'Neill's dog barked at the mailman's van.
 # sent_id = 34
-1	Mrs.	_	_	_	_	0	_	_	start_char=1903|end_char=1907|ner=O
-2-3	O'Neill's	_	_	_	_	_	_	_	start_char=1908|end_char=1917|ner=S-PER
+1	Mrs.	_	_	_	_	0	_	_	start_char=1903|end_char=1907|ner=B-PER
+2-3	O'Neill's	_	_	_	_	_	_	_	start_char=1908|end_char=1917|ner=E-PER
 2	O'Neill	_	_	_	_	1	_	_	start_char=1908|end_char=1915
 3	's	_	_	_	_	2	_	_	start_char=1915|end_char=1917
 4	dog	_	_	_	_	3	_	_	start_char=1918|end_char=1921|ner=O
@@ -570,7 +570,7 @@
 # text = The Joneses' house is next to the Smiths'.
 # sent_id = 35
 1	The	_	_	_	_	0	_	_	start_char=1951|end_char=1954|ner=O
-2-3	Joneses'	_	_	_	_	_	_	_	start_char=1955|end_char=1963|ner=S-LOC
+2-3	Joneses'	_	_	_	_	_	_	_	start_char=1955|end_char=1963|ner=S-MISC
 2	Joneses	_	_	_	_	1	_	_	start_char=1955|end_char=1962
 3	'	_	_	_	_	2	_	_	start_char=1962|end_char=1963
 4	house	_	_	_	_	3	_	_	start_char=1964|end_char=1969|ner=O
@@ -578,7 +578,7 @@
 6	next	_	_	_	_	5	_	_	start_char=1973|end_char=1977|ner=O
 7	to	_	_	_	_	6	_	_	start_char=1978|end_char=1980|ner=O
 8	the	_	_	_	_	7	_	_	start_char=1981|end_char=1984|ner=O
-9	Smiths	_	_	_	_	8	_	_	SpaceAfter=No|start_char=1985|end_char=1991|ner=S-PER
+9	Smiths	_	_	_	_	8	_	_	SpaceAfter=No|start_char=1985|end_char=1991|ner=S-ORG
 10	'	_	_	_	_	9	_	_	SpaceAfter=No|start_char=1991|end_char=1992|ner=O
 11	.	_	_	_	_	10	_	_	start_char=1992|end_char=1993|ner=O
 
@@ -1192,7 +1192,7 @@
 15	said	_	_	_	_	14	_	_	start_char=3824|end_char=3828|ner=O
 16	little	_	_	_	_	15	_	_	start_char=3829|end_char=3835|ner=O
 17	about	_	_	_	_	16	_	_	start_char=3836|end_char=3841|ner=O
-18	AI	_	_	_	_	17	_	_	SpaceAfter=No|start_char=3842|end_char=3844|ner=S-MISC
+18	AI	_	_	_	_	17	_	_	SpaceAfter=No|start_char=3842|end_char=3844|ner=S-ORG
 19	.	_	_	_	_	18	_	_	start_char=3844|end_char=3845|ner=O
 
 # text = Critics called it "vague," "evasive," and "disappointing."

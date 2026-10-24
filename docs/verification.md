@@ -40,7 +40,7 @@ compounds, every quote style, contractions, capitals, CRLF whitespace, character
 1,000 characters), made with `make_golden.py --lang de`, and every row of the table above is checked on it the same
 way (JSON on the same kind of short text, 4 sentences, 35 words; `Process(Document)` on its `corpus.txt`, 12 sentences): both packages and the treebank packages `combined` (whose models are the default package's), `gsd` and `hdt`
 (their own folders, with their MWT word lists), each processor
-(171 words through the lemmatizer's seq2seq model, 58 entities, 200 sentiment sentences), the input modes, the
+(171 words through the lemmatizer's seq2seq model, 55 entities, 200 sentiment sentences), the input modes, the
 tokenizer edge cases, and the MWT expansions of a German word list with and without the dictionary (German MWT is a
 seq2seq model; 68 multi-word tokens in the texts). German texts with characters outside the BMP
 (`validation_nonbmp`, `validation_social`) are compared without offsets, as in English. The sentiment golden also
@@ -76,7 +76,7 @@ processors dict). The texts are `corpus.txt`, `validation.txt` and a hand-writte
   and on the default package (all eight processors), where the pipeline loads two pairs of character language models
   (1billion, and mimic for ner): also with the cache off, and one-sentence calls against the uncached pipeline;
 - English ner `radiology` on the `mimic` package (its charlm reads lowercased characters, so it shares nothing with the
-  tagger) on a hand-written radiology report, `conll03_charlm` (GloVe vectors), and the eight biomedical models
+  tagger) on a hand-written radiology report, `conll03_charlm` (57 entities), and the eight biomedical models
   (`anatem`, `bc4chemd`, `bc5cdr`, `bionlp13cg`, `jnlpba`, `linnaeus`, `ncbi_disease`, `s800`: cased word vectors,
   PubMed charlms) with the `craft` package's tokenizer on a hand-written abstract (`models/biomedical.txt`), and
   `bc5cdr` on the default package (two charlm pairs);
@@ -137,10 +137,8 @@ contractions, social and tech texts and the long sentence: `models/default_accur
 The treebanks' transformer taggers and parsers (pos and depparse `ewt`, `gum`, `lines`, `partut`, `atis`, `childes`,
 `eslspok` + `_electra-large`, each on its package, corpus.txt) and ner `ontonotes_electra-large` (corpus.txt and
 validation.txt, 131 entities) match too: `models/pos+depparse=<treebank>_electra-large/`, `models/ner=ontonotes_electra-large/`.
-So does ner `conll03_electra-large` on `roberta-base` (corpus.txt, validation.txt and validation_social.txt, 55 entities;
-Stanza given conll17's vectors, which the model was trained on, as resources.json's GloVe fails Stanza's own load), alone and
-next to the other four ELECTRA-large models, a pipeline with two transformers: `models/ner=conll03_electra-large/`,
-`models/electra-large+ner=conll03_electra-large/`.
+So does ner `conll03_electra-large` (corpus.txt, validation.txt and validation_social.txt, 54 entities):
+`models/ner=conll03_electra-large/`.
 So does the LoRA-adapted parser `ptb3_electra-large`, the one with TOP_DOWN transitions (its trees differ from the IN_ORDER
 parser's in 45 of validation.txt's 104 sentences): `models/constituency=ptb3_electra-large/`, 274 sentences.
 On the managed backend a short call runs the frozen transformer and the LoRA adapters' nets in one sweep over the weights
@@ -155,11 +153,11 @@ the umlauts, social and contractions texts and `de/models/transformer_long.txt`,
 constituency parser `spmrl_german-nlp-electra` and the sentiment classifier `sb10k_german-nlp-electra`, each with its own
 LoRA adapters (46 and 47 sentences), and the package itself (80 sentences): three passes per sentence. So do the gsd and
 hdt taggers and parsers on that transformer, each on its package (`models/pos+depparse=<treebank>_german-nlp-electra/`,
-corpus.txt), and the NER model `germeval2014_german-nlp-electra` (corpus.txt, validation.txt and the long sentence, 12
+corpus.txt), and the NER model `germeval2014_german-nlp-electra`, the package's (corpus.txt, validation.txt and the long sentence, 12
 entities: `models/ner=germeval2014_german-nlp-electra/`).
-The two models on `dbmdz/bert-base-german-cased`, a cased BERT, match too: ner `germeval2014_dbmdz-bert-german-cased`
-(13 entities; Stanza given conll17's vectors, which it was trained on, as resources.json's fasttextwiki fails Stanza's own
-load) and sentiment `sb10k_dbmdz-bert-german-cased` with its LoRA adapters (47 sentences). Its tokenizer matches
+The sentiment classifier on `dbmdz/bert-base-german-cased`, a cased BERT, matches too: `sb10k_dbmdz-bert-german-cased` with
+its LoRA adapters (47 sentences), alone and in `default_accurate` instead of its sentiment model, a pipeline with two
+transformers (`models/default_accurate+sentiment=sb10k_dbmdz-bert-german-cased/`, 31 sentences). Its tokenizer matches
 transformers' ids on 243 cases (`de/transformer/tokenizer_dbmdz_bert-base-german-cased.json`: the German golden words and
 `DBMDZ_TOKENIZER_CASES`, cased words, accents, ligatures and composed and decomposed umlauts).
 

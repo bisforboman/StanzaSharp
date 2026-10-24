@@ -57,7 +57,7 @@
 # sentiment = 2
 1	Die	der	DET	ART	Case=Nom|Definite=Def|Gender=Fem|Number=Sing|PronType=Art	2	det	_	start_char=151|end_char=154|ner=O
 2	Familie	Familie	NOUN	NN	Case=Nom|Gender=Fem|Number=Sing	4	nsubj	_	start_char=155|end_char=162|ner=O
-3	👨‍👩‍👧	👨‍👩‍👧	PROPN	NE	Case=Nom|Gender=Fem|Number=Sing	2	appos	_	start_char=163|end_char=168|ner=S-PER
+3	👨‍👩‍👧	👨‍👩‍👧	PROPN	NE	Case=Nom|Gender=Fem|Number=Sing	2	appos	_	start_char=163|end_char=168|ner=O
 4	fuhr	fahren	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=169|end_char=173|ner=O
 5	in	in	ADP	APPR	_	7	case	_	start_char=174|end_char=176|ner=O
 6	den	der	DET	ART	Case=Acc|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	7	det	_	start_char=177|end_char=180|ner=O

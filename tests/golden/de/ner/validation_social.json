@@ -20,12 +20,6 @@
  [],
  [
   {
-   "text": "RT @nachrichten",
-   "type": "ORG",
-   "start_char": 592,
-   "end_char": 607
-  },
-  {
    "text": "https://t.co/abc123",
    "type": "MISC",
    "start_char": 676,

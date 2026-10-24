@@ -601,22 +601,6 @@
   ]
  },
  {
-  "name": "electra-large+ner=conll03_electra-large",
-  "package": "default",
-  "processors": "tokenize,mwt,pos,lemma,constituency,depparse,sentiment,ner",
-  "models": {
-   "pos": "combined_electra-large",
-   "constituency": "ptb3-revised_electra-large",
-   "depparse": "combined_electra-large",
-   "sentiment": "sstplus_electra-large",
-   "ner": "conll03_electra-large"
-  },
-  "texts": [
-   "corpus.txt",
-   "validation.txt"
-  ]
- },
- {
   "name": "default_accurate",
   "package": "default_accurate",
   "processors": "tokenize,mwt,pos,lemma,constituency,depparse,sentiment,ner",

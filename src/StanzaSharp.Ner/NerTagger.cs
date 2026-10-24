@@ -14,7 +14,7 @@ namespace StanzaSharp.Ner;
 ///   forward/backward charlm (<c>_charlm</c>) or the model's own bidirectional character LSTM's final
 ///   states (<c>_nocharlm</c>), through a linear <c>input_transform</c>
 /// - a biLSTM, then one linear layer per tag set and CRF Viterbi decoding (the old format, e.g. German
-///   <c>germeval2014</c>: one tag set, <c>tag_clf</c>/<c>crit</c>, which Stanza renames to <c>tag_clfs.0</c>/<c>crits.0</c>)
+///   <c>conll03</c>: one tag set, <c>tag_clf</c>/<c>crit</c>, which Stanza renames to <c>tag_clfs.0</c>/<c>crits.0</c>)
 /// - <c>fix_singleton_tags</c> on the decoded sequence
 /// NER reads tokens, not words, like Stanza: an MWT such as "don't" is tagged once.
 /// </summary>
@@ -96,7 +96,7 @@ internal sealed class NerTagger : IDisposable
         ? null
         : new TransformerReader(_transformer, _layerMix, [.. doc.Sentences.Where(s => s.Tokens.Count > 0).Select(s => (IReadOnlyList<string>)[.. s.Tokens.Select(t => t.Text)])]);
 
-    /// <summary>The delta vocabulary's size, or 0 for a model without a delta embedding (German <c>germeval2014</c>).</summary>
+    /// <summary>The delta vocabulary's size, or 0 for a model without a delta embedding (German <c>conll03</c>).</summary>
     internal static int DeltaCount(Checkpoint ckpt) => ckpt.Root["vocab"]!["delta"] is { } delta ? Checkpoint.UnitToId(delta).Count : 0;
 
     /// <summary>

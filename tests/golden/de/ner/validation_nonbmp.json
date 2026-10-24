@@ -5,12 +5,6 @@
  [],
  [
   {
-   "text": "👨‍👩‍👧",
-   "type": "PER",
-   "start_char": 163,
-   "end_char": 168
-  },
-  {
    "text": "Österreich",
    "type": "LOC",
    "start_char": 196,

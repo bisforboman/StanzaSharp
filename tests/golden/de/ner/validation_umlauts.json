@@ -22,22 +22,22 @@
  [],
  [
   {
-   "text": "STRASSE",
-   "type": "LOC",
-   "start_char": 421,
-   "end_char": 428
-  },
-  {
-   "text": "GRÖSSE",
+   "text": "GROSSBUCHSTABEN",
    "type": "ORG",
-   "start_char": 430,
-   "end_char": 436
+   "start_char": 404,
+   "end_char": 419
   },
   {
    "text": "ÄRGER",
    "type": "ORG",
    "start_char": 438,
    "end_char": 443
+  },
+  {
+   "text": "ÖFFNUNG",
+   "type": "ORG",
+   "start_char": 445,
+   "end_char": 452
   }
  ],
  [

@@ -262,7 +262,7 @@ Named entity types per language:
 | Language | Model | Entity types (`Entity.Type`; `Token.Ner` is BIOES, e.g. `B-PER`) |
 |---|---|---|
 | English (`en`) | OntoNotes (`ontonotes-ww-multi`) | 18: `PERSON`, `NORP`, `FAC`, `ORG`, `GPE`, `LOC`, `PRODUCT`, `EVENT`, `WORK_OF_ART`, `LAW`, `LANGUAGE`, `DATE`, `TIME`, `PERCENT`, `MONEY`, `QUANTITY`, `ORDINAL`, `CARDINAL` |
-| German (`de`) | GermEval 2014 (`germeval2014`) | 4: `PER`, `LOC`, `ORG`, `MISC` |
+| German (`de`) | GermEval 2014 (`germeval2014_charlm`) | 4: `PER`, `LOC`, `ORG`, `MISC` |
 
 ## GPU
 

@@ -58,12 +58,11 @@ public sealed class PipelineOptions
     /// <remarks>
     /// Models beyond the packages': English constituency <c>ptb3_charlm</c>; English ner <c>ontonotes_charlm</c>,
     /// <c>ontonotes_nocharlm</c>, <c>combined_charlm</c>, <c>conll03_charlm</c>, <c>conll03_electra-large</c> (on
-    /// roberta-base), the clinical <c>i2b2</c> and <c>radiology</c> (with the <c>mimic</c> package's character models) and the biomedical <c>anatem</c>,
+    /// ELECTRA-large), the clinical <c>i2b2</c> and <c>radiology</c> (with the <c>mimic</c> package's character models) and the biomedical <c>anatem</c>,
     /// <c>bc4chemd</c>, <c>bc5cdr</c>, <c>bionlp13cg</c>, <c>jnlpba</c>, <c>linnaeus</c>, <c>ncbi_disease</c> and
     /// <c>s800</c> (with the <c>pubmed</c> character models); German ner <c>conll03</c> and, on German's transformer,
     /// <c>germeval2014_german-nlp-electra</c>, with pos and depparse <c>gsd_german-nlp-electra</c> and
-    /// <c>hdt_german-nlp-electra</c>, and on dbmdz/bert-base-german-cased ner <c>germeval2014_dbmdz-bert-german-cased</c> and
-    /// sentiment <c>sb10k_dbmdz-bert-german-cased</c>; the treebanks' taggers and
+    /// <c>hdt_german-nlp-electra</c>, and on dbmdz/bert-base-german-cased sentiment <c>sb10k_dbmdz-bert-german-cased</c>; the treebanks' taggers and
     /// parsers without character models: English pos and depparse <c>ewt_nocharlm</c>, <c>gum_nocharlm</c>,
     /// <c>lines_nocharlm</c>, <c>partut_nocharlm</c>, <c>atis_nocharlm</c>, <c>childes_nocharlm</c>,
     /// <c>eslspok_nocharlm</c>, depparse <c>mimic_nocharlm</c>, German pos and depparse <c>gsd_nocharlm</c> and

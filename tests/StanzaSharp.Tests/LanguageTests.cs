@@ -16,21 +16,19 @@ public class LanguageTests
 
     [Theory]
     [InlineData("default", null, "tokenize/combined_nocharlm.pt mwt/combined.pt pos/combined_charlm.pt lemma/combined_nocharlm.pt constituency/spmrl_charlm.pt "
-        + "depparse/combined_charlm.pt sentiment/sb10k_charlm.pt ner/germeval2014.pt pretrain/fasttextwiki.pt " + GermanShared)]
-
-    // NER reads fastText's vectors and the charlms, not conll17.
-    [InlineData("default", "tokenize,ner", "tokenize/combined_nocharlm.pt mwt/combined.pt ner/germeval2014.pt pretrain/fasttextwiki.pt forward_charlm/newswiki.pt backward_charlm/newswiki.pt")]
+        + "depparse/combined_charlm.pt sentiment/sb10k_charlm.pt ner/germeval2014_charlm.pt " + GermanShared)]
+    [InlineData("default", "tokenize,ner", "tokenize/combined_nocharlm.pt mwt/combined.pt ner/germeval2014_charlm.pt " + GermanShared)]
     [InlineData("default", "tokenize,mwt", "tokenize/combined_nocharlm.pt mwt/combined.pt")]
 
-    // ner and sentiment keep their charlm models, so the fast package still needs both pretrains and the charlms.
+    // ner and sentiment keep their charlm models, so the fast package still needs the charlms.
     [InlineData("default_fast", null, "tokenize/combined_nocharlm.pt mwt/combined.pt pos/combined_nocharlm.pt lemma/combined_nocharlm.pt depparse/combined_nocharlm.pt "
-        + "sentiment/sb10k_charlm.pt ner/germeval2014.pt pretrain/fasttextwiki.pt " + GermanShared)]
+        + "sentiment/sb10k_charlm.pt ner/germeval2014_charlm.pt " + GermanShared)]
     [InlineData("default_fast", "depparse", "tokenize/combined_nocharlm.pt mwt/combined.pt pos/combined_nocharlm.pt lemma/combined_nocharlm.pt depparse/combined_nocharlm.pt pretrain/conll17.pt")]
 
     // default_accurate: the transformer models list conll17 and the charlms (the transformer itself comes from Hugging Face)
     [InlineData("default_accurate", null, "tokenize/combined_charlm.pt mwt/combined.pt pos/combined_german-nlp-electra.pt lemma/combined_charlm.pt "
         + "constituency/spmrl_german-nlp-electra.pt depparse/combined_german-nlp-electra.pt sentiment/sb10k_german-nlp-electra.pt "
-        + "ner/germeval2014.pt pretrain/fasttextwiki.pt " + GermanShared)]
+        + "ner/germeval2014_german-nlp-electra.pt " + GermanShared)]
     [InlineData("combined", null, "tokenize/combined_nocharlm.pt mwt/combined.pt pos/combined_charlm.pt lemma/combined_nocharlm.pt depparse/combined_charlm.pt " + GermanShared)]
     [InlineData("gsd", null, "tokenize/gsd_nocharlm.pt mwt/gsd.pt pos/gsd_charlm.pt lemma/gsd_nocharlm.pt depparse/gsd_charlm.pt " + GermanShared)]
     [InlineData("hdt", null, "tokenize/hdt_nocharlm.pt mwt/hdt.pt pos/hdt_charlm.pt lemma/hdt_nocharlm.pt depparse/hdt_charlm.pt " + GermanShared)]
@@ -41,7 +39,7 @@ public class LanguageTests
     [Fact]
     public void FileTable_IsEveryGermanPackagesFiles()
     {
-        Assert.Equal(47, ModelDownloader.Files["de"].Length);
+        Assert.Equal(46, ModelDownloader.Files["de"].Length);
         Assert.Equal(ModelDownloader.Files["de"].Select(f => f.Path).Order(),
             Pipeline.Packages["de"].Keys.SelectMany(p => ModelDownloader.FilesFor(null, p, "options", "de")).Select(f => f.Path)
                 .Concat(ModelDownloaderTests.AlternativesFiles("de")).Distinct().Order());
@@ -53,7 +51,7 @@ public class LanguageTests
     public void SharedModels_ArePretrainsThenCharlms()
     {
         var models = Pipeline.SelectModels("default", null, addRequired: false, "options", "de");
-        Assert.Equal(["pretrain/conll17", "pretrain/fasttextwiki", "forward_charlm/newswiki", "backward_charlm/newswiki"], Pipeline.SharedModels(models, "de"));
+        Assert.Equal(["pretrain/conll17", "forward_charlm/newswiki", "backward_charlm/newswiki"], Pipeline.SharedModels(models, "de"));
         Assert.Equal(Pipeline.AllProcessors.Split(',').Order(), models.Keys.Order());
         Assert.Equal("spmrl_charlm", models["constituency"]);
         Assert.Empty(Pipeline.SharedModels(Pipeline.SelectModels("default", "tokenize,mwt", addRequired: false, "options", "de"), "de"));
@@ -85,11 +83,19 @@ public class LanguageTests
         Assert.Throws<ArgumentException>(() => Pipeline.Load(Repo.Root, new PipelineOptions { Language = "de", Package = "gsd", Processors = "tokenize,ner" }));
     }
 
-    /// <summary>A German pipeline loads both pretrains (fastText for NER) and the newswiki charlms, each once.</summary>
+    /// <summary>
+    /// A German pipeline with ner conll03 loads both pretrains (fastText for NER) and the newswiki charlms, each once; the
+    /// default NER model reads conll17 like the tagger.
+    /// </summary>
     [GermanFact]
     public void Load_German_ReadsBothPretrains()
     {
-        using var nlp = Pipeline.Load(Repo.ModelsFor("de"), new PipelineOptions { Language = "de", Processors = "tokenize,mwt,pos,ner" });
+        using var nlp = Pipeline.Load(Repo.ModelsFor("de"), new PipelineOptions
+        {
+            Language = "de",
+            Processors = "tokenize,mwt,pos,ner",
+            Models = new Dictionary<string, string> { ["ner"] = "conll03" },
+        });
         var pretrains = (Nn.Pretrain[])typeof(Pipeline).GetField("_pretrains", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!.GetValue(nlp)!;
         Assert.Equal([100, 300], pretrains.Select(p => p.Dim).Order());
         var doc = nlp.Process("Angela Merkel wurde in Hamburg geboren.");

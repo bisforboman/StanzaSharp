@@ -247,6 +247,9 @@ on Vector512, Vector256 and Vector128 (the same bits) and 4.3e-5 on Scalar (`tra
 
 ## RoBERTa (#172, 2026-10-19)
 
+> Since #215 (2026-10-24) no model reads roberta-base: Stanford's re-upload of 2026-10-20 retrained `conll03_electra-large`
+> on ELECTRA-large. The tokenizer, the encoder and their tests stay as tested infrastructure (owner's decision).
+
 English ner `conll03_electra-large` reads `roberta-base`, not ELECTRA (its `bert_model`; Stanza 1.15.0). The tagger side
 is already ported (germeval2014's old checkpoint format, glove + 1billion, the legacy mix over token texts); what it adds:
 

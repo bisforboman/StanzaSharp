@@ -136,7 +136,7 @@ public sealed class Pipeline : IDisposable
                 ["constituency"] = "spmrl_charlm",
                 ["depparse"] = "combined_charlm",
                 ["sentiment"] = "sb10k_charlm",
-                ["ner"] = "germeval2014",
+                ["ner"] = "germeval2014_charlm",
             },
 
             // Like English's, but ner and sentiment keep their charlm models.
@@ -148,11 +148,11 @@ public sealed class Pipeline : IDisposable
                 ["lemma"] = "combined_nocharlm",
                 ["depparse"] = "combined_nocharlm",
                 ["sentiment"] = "sb10k_charlm",
-                ["ner"] = "germeval2014",
+                ["ner"] = "germeval2014_charlm",
             },
 
             // The most accurate: the _charlm tokenizer and lemmatizer, and german-nlp-group/electra-base-german-uncased under
-            // pos and depparse (frozen, one shared pass), constituency and sentiment (each with its LoRA adapters). ner as default.
+            // pos and depparse (frozen, one shared pass), constituency and sentiment (each with its LoRA adapters), ner.
             ["default_accurate"] = new()
             {
                 ["tokenize"] = "combined_charlm",
@@ -162,7 +162,7 @@ public sealed class Pipeline : IDisposable
                 ["constituency"] = "spmrl_german-nlp-electra",
                 ["depparse"] = "combined_german-nlp-electra",
                 ["sentiment"] = "sb10k_german-nlp-electra",
-                ["ner"] = "germeval2014",
+                ["ner"] = "germeval2014_german-nlp-electra",
             },
 
             // The treebank packages: tokenize to depparse only.
@@ -217,7 +217,7 @@ public sealed class Pipeline : IDisposable
             ["lemma"] = ["combined_charlm", "gsd_charlm", "hdt_charlm"],
             ["pos"] = ["gsd_nocharlm", "hdt_nocharlm", "gsd_german-nlp-electra", "hdt_german-nlp-electra"],
             ["depparse"] = ["gsd_nocharlm", "hdt_nocharlm", "gsd_german-nlp-electra", "hdt_german-nlp-electra"],
-            ["ner"] = ["conll03", "germeval2014_german-nlp-electra", "germeval2014_dbmdz-bert-german-cased"],
+            ["ner"] = ["conll03"],
             ["sentiment"] = ["sb10k_dbmdz-bert-german-cased"],
             ["coref"] = [CorefModel],
         },
@@ -256,21 +256,6 @@ public sealed class Pipeline : IDisposable
         ["depparse"] = $"{name}_{kind}",
     };
 
-    /// <summary>
-    /// Models whose resources.json entry lists another pretrain than the one they were trained on (Stanza 1.15.0), which
-    /// <see cref="Dependencies"/> names instead (owner's decision, 2026-10-19, #172): processor/model → the listed one.
-    /// ner conll03_electra-large's word vocabulary is conll17's 250,000 words, and Stanza with the listed glove (100,000)
-    /// fails its embedding check at load; so does German ner germeval2014_dbmdz-bert-german-cased (conll17's vocabulary,
-    /// fasttextwiki listed). tools/make_golden.py and the tool's compare.py pass Stanza the conll17 file
-    /// (<c>ner_pretrain_path</c>, their <c>PRETRAIN_FIXES</c>). Reported upstream as stanfordnlp/stanza#1698
-    /// (https://github.com/stanfordnlp/stanza/issues/1698): drop an entry once a Stanza version's resources.json lists conll17.
-    /// </summary>
-    internal static readonly Dictionary<string, Dictionary<string, string>> ListedPretrains = new()
-    {
-        ["en"] = new() { ["ner/conll03_electra-large"] = "pretrain/glove" },
-        ["de"] = new() { ["ner/germeval2014_dbmdz-bert-german-cased"] = "pretrain/fasttextwiki" },
-    };
-
     private static readonly string[] Conll17 = ["pretrain/conll17"],
         EnglishCharlm = ["pretrain/conll17", "forward_charlm/1billion", "backward_charlm/1billion"],
         Pubmed = ["pretrain/biomed", "forward_charlm/pubmed", "backward_charlm/pubmed"],
@@ -281,7 +266,7 @@ public sealed class Pipeline : IDisposable
         GermanPair = ["forward_charlm/newswiki", "backward_charlm/newswiki"];
 
     // The shared files (pretrains, charlms) each model reads, by "<processor>/<model>": resources.json's "dependencies",
-    // which the model's name doesn't tell (germeval2014 reads charlms and its own pretrain). Models without an entry
+    // which the model's name doesn't tell (German ner conll03 reads charlms and its own pretrain). Models without an entry
     // (mwt, the _nocharlm tokenizers and lemmatizers) read none; the _charlm tokenizers read only the forward charlm.
     internal static readonly Dictionary<string, Dictionary<string, string[]>> Dependencies = new()
     {
@@ -355,7 +340,7 @@ public sealed class Pipeline : IDisposable
             ["ner/combined_charlm"] = EnglishCharlm,
             ["ner/i2b2"] = ["pretrain/mimic", "forward_charlm/mimic", "backward_charlm/mimic"],
             ["ner/radiology"] = ["pretrain/mimic", "forward_charlm/mimic", "backward_charlm/mimic"],
-            ["ner/conll03_charlm"] = ["pretrain/glove", "forward_charlm/1billion", "backward_charlm/1billion"],
+            ["ner/conll03_charlm"] = EnglishCharlm,
             ["ner/anatem"] = Pubmed,
             ["ner/bc4chemd"] = Pubmed,
             ["ner/bc5cdr"] = Pubmed,
@@ -384,7 +369,7 @@ public sealed class Pipeline : IDisposable
             ["pos/eslspok_electra-large"] = EnglishCharlm,
             ["depparse/eslspok_electra-large"] = EnglishCharlm,
             ["ner/ontonotes_electra-large"] = ["pretrain/fasttextcrawl", "forward_charlm/1billion", "backward_charlm/1billion"],
-            ["ner/conll03_electra-large"] = EnglishCharlm, // not glove, which resources.json lists (ListedPretrains)
+            ["ner/conll03_electra-large"] = EnglishCharlm,
         },
         ["de"] = new()
         {
@@ -393,7 +378,7 @@ public sealed class Pipeline : IDisposable
             ["depparse/combined_charlm"] = GermanCharlm,
             ["sentiment/sb10k_charlm"] = GermanCharlm,
             ["coref/" + CorefModel] = [], // nothing but its transformer (Transformers)
-            ["ner/germeval2014"] = ["pretrain/fasttextwiki", "forward_charlm/newswiki", "backward_charlm/newswiki"],
+            ["ner/germeval2014_charlm"] = GermanCharlm,
             ["pos/combined_nocharlm"] = Conll17,
 
             // default_accurate's transformer models: resources.json lists conll17 and the charlms for each
@@ -401,17 +386,15 @@ public sealed class Pipeline : IDisposable
             ["depparse/combined_german-nlp-electra"] = GermanCharlm,
             ["constituency/spmrl_german-nlp-electra"] = GermanCharlm,
             ["sentiment/sb10k_german-nlp-electra"] = GermanCharlm,
+            ["ner/germeval2014_german-nlp-electra"] = GermanCharlm,
 
-            // the treebanks' and germeval2014's on the same transformer (Alternatives)
+            // the treebanks' on the same transformer (Alternatives)
             ["pos/gsd_german-nlp-electra"] = GermanCharlm,
             ["depparse/gsd_german-nlp-electra"] = GermanCharlm,
             ["pos/hdt_german-nlp-electra"] = GermanCharlm,
             ["depparse/hdt_german-nlp-electra"] = GermanCharlm,
-            ["ner/germeval2014_german-nlp-electra"] = ["pretrain/fasttextwiki", "forward_charlm/newswiki", "backward_charlm/newswiki"],
 
-            // on dbmdz/bert-base-german-cased: ner reads conll17, not the fasttextwiki resources.json lists (ListedPretrains);
-            // sentiment reads no charlms although resources.json lists them (Unread)
-            ["ner/germeval2014_dbmdz-bert-german-cased"] = GermanCharlm,
+            // on dbmdz/bert-base-german-cased: sentiment reads no charlms although resources.json lists them (Unread)
             ["sentiment/sb10k_dbmdz-bert-german-cased"] = GermanCharlm,
             ["depparse/combined_nocharlm"] = Conll17,
             ["pos/gsd_charlm"] = GermanCharlm,
@@ -480,7 +463,7 @@ public sealed class Pipeline : IDisposable
             ["pos/eslspok_electra-large"] = Electra,
             ["depparse/eslspok_electra-large"] = Electra,
             ["ner/ontonotes_electra-large"] = Electra,
-            ["ner/conll03_electra-large"] = "roberta-base", // despite its name (#172)
+            ["ner/conll03_electra-large"] = Electra,
             ["coref/" + CorefModel] = XlmRoberta, // with its LoRA adapters
         },
         ["de"] = new()
@@ -494,7 +477,6 @@ public sealed class Pipeline : IDisposable
             ["pos/hdt_german-nlp-electra"] = GermanElectra,
             ["depparse/hdt_german-nlp-electra"] = GermanElectra,
             ["ner/germeval2014_german-nlp-electra"] = GermanElectra,
-            ["ner/germeval2014_dbmdz-bert-german-cased"] = "dbmdz/bert-base-german-cased",
             ["sentiment/sb10k_dbmdz-bert-german-cased"] = "dbmdz/bert-base-german-cased", // LoRA adapters
             ["coref/" + CorefModel] = XlmRoberta, // with its LoRA adapters
         },
@@ -662,7 +644,7 @@ public sealed class Pipeline : IDisposable
             .ToList();
 
         // The transformers, with the shared models: their readers need them to load. Each one once, by name, like the pretrains
-        // (default_accurate's ELECTRA-large next to ner conll03_electra-large's roberta-base, #172).
+        // (German default_accurate's ELECTRA next to sentiment sb10k_dbmdz-bert-german-cased's BERT, #172).
         var transformers = TransformersOf(models, options.Language).ToDictionary(name => name,
             name => Start($"transformer/{name}", () => backend.Transformer(ModelDownloader.TransformerDirectory(modelDir, name), name)));
         TransformerEmbedder? TransformerOf(string processor) =>
