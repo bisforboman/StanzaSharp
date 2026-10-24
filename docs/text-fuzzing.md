@@ -43,6 +43,16 @@ candidate) while the first differing field (FORM, UPOS, `start_char`, a comment,
 gives a small repro next to the original. The kind is kept, not the exact lines, so a shrunk text can show the same
 bug at a different place.
 
+**Float64.** A difference in a model's decision (LEMMA, UPOS, XPOS, FEATS, HEAD, DEPREL, the constituency tree,
+sentiment, `ner`) is then judged by Stanza in float64. A second Stanza pipeline, loaded on the first such difference,
+runs every processor after tokenize and mwt in float64: its models, their plain tensors and the default dtype while
+the processor runs. Tokenize and mwt stay float32, as German's seq2seq MWT breaks under float64. If its CoNLL-U equals
+StanzaSharp's on the original or the shrunk text, the finding is a float32 near-tie: Stanza's own float32 result is on
+the other side of a tie that every float32 summation order can decide either way (findings 3 to 6). The report marks it
+(`near_tie`, and `near_ties` in its meta), and it doesn't set the exit code. Tokens, offsets, comments and errors are
+never judged that way; neither is `--pretagged`. Float64 Stanza gives the same CoNLL-U as float32 on corpus.txt and
+validation.txt (`default`, `default_fast`).
+
 ## Results (2026-10-16)
 
 Managed backend, after the fixes below (the first tokenizer run, before them, found finding 1 at its 314th text):
@@ -246,6 +256,7 @@ whole pipeline costs seconds a candidate). Speed on a Ryzen 7 5800X with another
 
 No run is in the pull-request CI: Python Stanza runs only in golden-shard 2, and a run long enough to find anything
 new costs minutes there. The nightly workflow (`.github/workflows/nightly.yml`) runs it on main with the run number as
-seed: 1,000 texts through tokenize and mwt, 60 through `default` and 60 through `default_fast`; a difference fails the
-night, and its reports are the `fuzz` artifact. A port bug's shrunk text goes into `fuzz.json`, which every golden run
-checks; a float32 near-tie is recorded above ("Results (nightly)") instead.
+seed: 1,000 texts through tokenize and mwt, 60 through `default` and 60 through `default_fast`. A difference fails the
+night unless float64 Stanza calls it a near-tie (above, "Float64"; owner's decision, 2026-10-24, after finding 6), and
+its reports are the `fuzz` artifact. A port bug's shrunk text goes into `fuzz.json`, which every golden run checks. A
+float32 near-tie stays out of it.

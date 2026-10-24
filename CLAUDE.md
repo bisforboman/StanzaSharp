@@ -1185,7 +1185,8 @@ What the English treebank packages' checkpoints add to the default package's pat
   - `nightly.yml` (owner's decision, 2026-10-18): 01:00 UTC on main, and `workflow_dispatch`. `transformer` calls ci.yml
     with `golden_shards: '[4]'` (every other ci.yml job skips on that input); `fuzz` runs `CheckpointFuzzTests` with
     `STANZASHARP_FUZZ_MODELS=all`, 3,000 iterations and the run number as seed, then `tools/text_fuzz.py run` (tokenize,mwt
-    1,000 texts; default and default_fast 60 each) with Python Stanza; `benchmark` calls benchmark.yml `quick` without
+    1,000 texts; default and default_fast 60 each) with Python Stanza (a decision that float64 Stanza makes as StanzaSharp
+    does is a float32 near-tie, reported but not failing, owner's decision 2026-10-24 after #213); `benchmark` calls benchmark.yml `quick` without
     the avx512 jobs (`no_avx512`). Any failure comments on the open issue "Nightly run failed" (`report`, created if
     missing; closed by a person). Never required; release.yml waits for main's push run only, so it never sees these.
   - `benchmark.yml` (owner's decision 2026-10-10): `workflow_dispatch` (inputs `lang`, `package`, `quick`) and

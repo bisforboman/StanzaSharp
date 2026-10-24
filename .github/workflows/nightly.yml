@@ -97,7 +97,8 @@ jobs:
         run: pip install -r tools/requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
 
       # Generated texts through Stanza and StanzaSharp (docs/text-fuzzing.md): exit 1 on any difference, each shrunk to
-      # a minimal text in the report. A finding's shrunk text then goes into make_golden.py's FUZZ_TEXTS.
+      # a minimal text in the report, except a decision float64 Stanza makes as StanzaSharp does (a float32 near-tie,
+      # marked in the report). A port bug's shrunk text then goes into make_golden.py's FUZZ_TEXTS.
       - name: Text fuzz
         if: ${{ !cancelled() }}
         run: |
