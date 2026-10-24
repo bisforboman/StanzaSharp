@@ -364,6 +364,49 @@ public class TransformerKernelTests(TransformerModels models, ITestOutputHelper 
         }
     }
 
+    [Theory]
+    [MemberData(nameof(Paths))]
+    public unsafe void BlockedAttention_GivesTheRowLoopsBits(string path)
+    {
+        const int d = 64, h = 2 * d;
+        foreach (int n in new[] { 1, 2, 3, 4, 5, 7, 13, 64, 131 })
+        {
+            // Two heads; the second one's q, k and v start d floats into each third (as in the encoder).
+            var qkv = Values(n * 3 * h, n);
+            for (int i = 0; i < qkv.Length; i++)
+                qkv[i] = Math.Clamp(qkv[i], -50, 50) / 4; // finite scores
+            float[] Run(KernelPath p, bool blocked) => With(p, 1, () =>
+            {
+                var context = new float[n * h];
+                fixed (float* q = qkv, c = context)
+                {
+                    if (blocked)
+                        ManagedTransformer.AttentionBlocked(q + d, c + d, n, h, d, 0.125);
+                    else
+                        ManagedTransformer.AttentionRows(q + d, c + d, n, h, d, 0.125);
+                }
+
+                return context;
+            });
+
+            var expected = Run(KernelPath.Scalar, false);
+            Assert.True(Run(Enum.Parse<KernelPath>(path), true).AsSpan().SequenceEqual(expected), $"{path}, n {n}");
+            Assert.True(Run(Enum.Parse<KernelPath>(path), false).AsSpan().SequenceEqual(expected), $"{path} rows, n {n}");
+        }
+    }
+
+    [Fact]
+    public unsafe void AddScaled_GivesTheScalarLoopsBits()
+    {
+        var d = Values(67, 8);
+        float[] o = Values(67, 9), expected = (float[])o.Clone();
+        for (int j = 0; j < expected.Length; j++)
+            expected[j] += d[j] * 2.5f;
+        fixed (float* po = o, pd = d)
+            ManagedTransformer.AddScaled(po, pd, o.Length, 2.5f);
+        Assert.Equal(expected, o);
+    }
+
     [Fact]
     public unsafe void WeightedAdd_GivesTheScalarLoopsBits()
     {
