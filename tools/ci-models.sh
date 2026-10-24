@@ -103,10 +103,11 @@ case ${1:-} in
   transformer)
     # the default_accurate package: its five transformer models, the transformer, and its _charlm tokenizer and lemmatizer
     # (also in the treebank-choices cache; files that match are kept); the treebanks' and ontonotes' (#168: their packages'
-    # other files are in the en-treebanks cache), constituency ptb3_electra-large (#171), roberta-base (#172)
+    # other files are in the en-treebanks cache), constituency ptb3_electra-large (#171), ner conll03_electra-large (with
+    # roberta-base, which no model reads since #215 but the RoBERTa tests do: ModelDownloader.Transformers)
     # and coref's model with FacebookAI/xlm-roberta-large (2.24 GB; docs/coref-plan.md)
     # and German's (#170: four transformer models, german-nlp-group's ELECTRA; the rest is in the de caches; gsd's, hdt's and
-    # germeval2014's on it, their packages' other files from the de cache; dbmdz/bert-base-german-cased's ner and sentiment)
+    # germeval2014's on it, their packages' other files from the de cache; dbmdz/bert-base-german-cased's sentiment)
     transformers() {
       "${cli[@]}" download models/stanza/en --package default_accurate < /dev/null || return 1
       for package in ewt gum lines partut atis childes eslspok; do
@@ -116,6 +117,7 @@ case ${1:-} in
       "${cli[@]}" download models/stanza/en --processors tokenize,mwt,pos,constituency --model constituency=ptb3_electra-large < /dev/null \
         || return 1
       "${cli[@]}" download models/stanza/en --processors tokenize,ner --model ner=conll03_electra-large < /dev/null || return 1
+      "${cli[@]}" download-transformer models/stanza/en roberta-base < /dev/null || return 1
       "${cli[@]}" download models/stanza/en --processors tokenize,coref < /dev/null || return 1
       "${cli[@]}" download models/stanza/en --processors tokenize,ner --model ner=ontonotes_electra-large < /dev/null || return 1
       "${cli[@]}" download models/stanza/de --lang de --package default_accurate < /dev/null || return 1
@@ -127,8 +129,7 @@ case ${1:-} in
           --model "pos=${package}_german-nlp-electra,depparse=${package}_german-nlp-electra" < /dev/null || return 1
       done
       "${cli[@]}" download models/stanza/de --lang de --processors tokenize,ner --model ner=germeval2014_german-nlp-electra < /dev/null || return 1
-      "${cli[@]}" download models/stanza/de --lang de --processors tokenize,ner,sentiment \
-        --model ner=germeval2014_dbmdz-bert-german-cased,sentiment=sb10k_dbmdz-bert-german-cased < /dev/null
+      "${cli[@]}" download models/stanza/de --lang de --processors tokenize,sentiment --model sentiment=sb10k_dbmdz-bert-german-cased < /dev/null
     }
     for attempt in 1 2 3; do
       transformers && exit 0

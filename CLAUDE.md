@@ -37,10 +37,12 @@ default from 0.5) or through TorchSharp (see "Managed backend").
   docs/german-accurate-plan.md): tokenize and lemma `combined_charlm`, mwt `combined`, pos and depparse
   `combined_german-nlp-electra` (frozen, one shared pass), constituency `spmrl_german-nlp-electra` and sentiment
   `sb10k_german-nlp-electra` (each with its LoRA adapters, a pass each; constituency's `bert_lora` is a top-level key of
-  the checkpoint, `ConstituencyParser` builds its `WithLora` net like the classifier), ner `germeval2014`; transformer
+  the checkpoint, `ConstituencyParser` builds its `WithLora` net like the classifier), ner `germeval2014_german-nlp-electra`
+  (since #215; it was default's `germeval2014`); transformer
   `german-nlp-group/electra-base-german-uncased`. Golden rows `pos+depparse=german-nlp-electra`,
-  `constituency=spmrl_german-nlp-electra`, `sentiment=sb10k_german-nlp-electra` and `default_accurate` in
-  `tests/golden/de/models/` (`de/models/transformer_long.txt`: one sentence of 558 pieces, two windows).
+  `constituency=spmrl_german-nlp-electra`, `sentiment=sb10k_german-nlp-electra`, `default_accurate` and
+  `default_accurate+sentiment=sb10k_dbmdz-bert-german-cased` (two transformers in one pipeline) in `tests/golden/de/models/`
+  (`de/models/transformer_long.txt`: one sentence of 558 pieces, two windows).
 - **English treebank packages** (owner's decision, 2026-10-15; no new API, `PipelineOptions.Package`): `combined` (the
   default package's models), `ewt`, `gum`, `lines`, `partut`, `atis`, `childes`, `eslspok` (no mwt; lemma `identity`)
   and the biomedical `craft`, `genia`, `mimic` (no mwt; own pretrains, mimic own charlms):
@@ -65,12 +67,13 @@ default from 0.5) or through TorchSharp (see "Managed backend").
   pass Stanza the resolved processor → model map as a JSON processors dict (package None). Alternatives (first PR):
   English constituency `ptb3_charlm`, ner `ontonotes_charlm`, `ontonotes_nocharlm` (fasttextcrawl pretrain, 300-d),
   `combined_charlm` (3 tag sets, predict_tagset 0), `i2b2` (old format with a `PretrainedWordVocab` delta: lowercased
-  word looked up as is, spaces as U+00A0; mimic pretrain and charlms); German ner `conll03` (germeval2014's format).
+  word looked up as is, spaces as U+00A0; mimic pretrain and charlms); German ner `conll03` (the old format: no delta, a
+  plain `TagVocab`, `tag_clf` heads; fasttextwiki, 300-d).
   Byte for byte on both backends (`ModelChoiceTests` against `tests/golden/models/<name>/`, `make_golden.py
   --models-only`, `MODEL_CHOICES`; i2b2 on the mimic package also on a hand-written `models/clinical.txt`). A new
   alternative needs `Alternatives`, `Dependencies` (a transformer model also `Transformers`), `ModelDownloader.Files`, a `MODEL_CHOICES` row and a
   `ModelChoiceTests` row (`EveryAlternative_HasItsFilesAndDependencies`, `EmbeddedResources_MatchModelDownloader`
-  check the tables). The domain NER models (owner's decision, 2026-10-16, part 2): `conll03_charlm` (glove pretrain),
+  check the tables). The domain NER models (owner's decision, 2026-10-16, part 2): `conll03_charlm` (conll17 since Stanford's re-upload, #215),
   `radiology` (mimic) and the biomedical anatem, bc4chemd, bc5cdr, bionlp13cg, jnlpba, linnaeus, ncbi_disease, s800
   (biomed pretrain, pubmed charlms; `lowercase: false`). `NerTagger` reads `lowercase` (the word as written for both
   vocabs when off) and `char_lowercase` (radiology: each character lowercased alone, `LowerChars`, a multi-character
@@ -184,32 +187,31 @@ default from 0.5) or through TorchSharp (see "Managed backend").
     scheduling as IN_ORDER. Golden row `constituency=ptb3_electra-large` (corpus, validation, contractions,
     transformer_long.txt; 45 of validation's 104 trees differ from ptb3-revised_electra-large's), downloaded by golden shard 4.
   - RoBERTa (#172, owner's decisions 2026-10-19: two PRs, two transformers per pipeline, download per run; docs/transformer-plan.md
-    "RoBERTa"): ner `conll03_electra-large` reads `roberta-base`. PR (a): `Nn.ByteLevelBpe` (GPT-2's byte-level BPE with Stanza's
+    "RoBERTa"): ner `conll03_electra-large` read `roberta-base` until Stanford's re-upload (#215, 2026-10-24: retrained on
+    ELECTRA-large, new format, conll17, input 100 + 1024 + 2048); no model reads roberta-base since, and the owner kept PR (a)
+    and the encoder tests as tested infrastructure (golden shard 4 still downloads it, `download-transformer`). PR (a): `Nn.ByteLevelBpe` (GPT-2's byte-level BPE with Stanza's
     `add_prefix_space=True`: added tokens first, `<mask>` lstrip; a space before every other piece not starting with U+0020;
     the split pattern scanned by code point; merges by rank) behind `ITransformerTokenizer` with `WordPiece`, picked when
     tokenizer.json's model is BPE (`type` may be absent); `TransformerConfig` reads roberta (`Prefix` `roberta.`,
     `PositionOffset` 2 = pad + 1, `MaxPositions` 512; the nets slice the position table at load, one token-type row);
     `ModelDownloader.Transformers["roberta-base"]`; goldens `transformer/tokenizer_roberta-base.json` (1,093 cases,
     `ROBERTA_TOKENIZER_CASES`) and `hidden_roberta-base.*` (`--transformer-only`); `TransformerTokenizerTests`,
-    `TransformerEncoderTests.Roberta_*`, `TransformerKernelTests.Roberta_*`. PR (b): the NER model (old checkpoint format like
-    germeval2014's, input word 100 | roberta 768 | charlm 2048, legacy mix over token texts) and every transformer the models
-    read loaded once by name (`Pipeline._transformers`; the shared pass per transformer, its readers found by tokenizer);
-    it reads conll17 although resources.json lists glove (owner's decision 2026-10-19: its word vocabulary is conll17's,
-    and Stanza fails its embedding check with glove): `Pipeline.ListedPretrains` (EmbeddedResources_MatchModelDownloader's
-    exception), make_golden's and compare.py's `PRETRAIN_FIXES` (Stanza's `ner_pretrain_path`; `PretrainFixes_MatchListedPretrains`);
-    reported upstream as stanfordnlp/stanza#1698 (owner, 2026-10-19): drop the entries once a Stanza version's resources.json is fixed.
-    Golden rows `ner=conll03_electra-large` (+ validation, validation_social) and `electra-large+ner=conll03_electra-large`
-    (two transformers), `TransformerModelTests`; golden shard 4 downloads it (`tools/ci-models.sh transformer`).
+    `TransformerEncoderTests.Roberta_*`, `TransformerKernelTests.Roberta_*`. PR (b): every transformer the models read loaded
+    once by name (`Pipeline._transformers`; the shared pass per transformer, its readers found by tokenizer). Its
+    `ListedPretrains`/`PRETRAIN_FIXES` workaround (resources.json listed glove/fasttextwiki for models trained on conll17,
+    stanfordnlp/stanza#1698) went with #215, which fixed resources.json. Golden row `ner=conll03_electra-large` (+ validation,
+    validation_social), `TransformerModelTests`; two transformers in one pipeline are German's
+    `default_accurate+sentiment=sb10k_dbmdz-bert-german-cased` row.
   - German's on the same transformer (owner's choice 2026-10-19): pos and depparse `{gsd,hdt}_german-nlp-electra` and ner
-    `germeval2014_german-nlp-electra` (fasttextwiki, word 300): `combined_german-nlp-electra`'s / germeval2014's configs on
+    `germeval2014_german-nlp-electra` (conll17 since #215, word 100): `combined_german-nlp-electra`'s / germeval2014_charlm's configs on
     their twins' vocabularies and heads (gsd/hdt legacy tag heads; depparse's 4-layer `bert_layer_mix`); no new code. Golden
     rows `pos+depparse=<tb>_german-nlp-electra` on their package (corpus.txt) and `ner=germeval2014_german-nlp-electra`
     (+ validation, transformer_long) in `tests/golden/de/models/`; golden shard 4 downloads them. On a third transformer,
     `dbmdz/bert-base-german-cased` (BERT: `TransformerConfig` reads `model_type` bert, `Prefix` `bert.`; a cased vocab.txt
-    WordPiece; `de/transformer/tokenizer_dbmdz_bert-base-german-cased.json`, `DBMDZ_TOKENIZER_CASES`, `DbmdzFact`): ner
-    `germeval2014_dbmdz-bert-german-cased` (conll17, not the listed fasttextwiki: `ListedPretrains`, `PRETRAIN_FIXES`) and
-    sentiment `sb10k_dbmdz-bert-german-cased` (LoRA; no charlms although listed: `Unread`). Golden rows
-    `ner=germeval2014_dbmdz-bert-german-cased`, `sentiment=sb10k_dbmdz-bert-german-cased`.
+    WordPiece; `de/transformer/tokenizer_dbmdz_bert-base-german-cased.json`, `DBMDZ_TOKENIZER_CASES`, `DbmdzFact`): sentiment
+    `sb10k_dbmdz-bert-german-cased` (LoRA; no charlms although listed: `Unread`); Stanford removed its ner
+    `germeval2014_dbmdz-bert-german-cased` on 2026-10-20 (#215). Golden rows `sentiment=sb10k_dbmdz-bert-german-cased` and
+    `default_accurate+sentiment=sb10k_dbmdz-bert-german-cased`.
   - Coref's XLM-R (docs/coref-plan.md, PR a; owner's choice 2026-10-19; PRs b and c followed on 2026-10-20): `Nn.Unigram`
     (tokenizers' Precompiled normalizer: per extended grapheme cluster via `StringInfo`, a cluster under 6 UTF-8 bytes
     replaced whole by its *shortest* trie match, else per character; WhitespaceSplit + Metaspace prepend always + split;
@@ -786,7 +788,7 @@ What the English checkpoints actually use (Stanza 1.15.0). Port only these paths
 ## Checkpoint findings (German)
 
 What the German `default`/`default_fast` checkpoints use (Stanza 1.15.0; docs/german-plan.md has the full diff). Every
-model but MWT and NER is English's architecture with other vocabularies and sizes, read from the checkpoint:
+model but MWT is English's architecture with other vocabularies and sizes, read from the checkpoint:
 - **tokenize** (`combined_nocharlm`): 5 `feat_funcs` (no `labeled_field`/`phone_id`/`date_pattern`/`currency`), so
   `rnn.weight_ih_l0` is [256, 37]; `max_seqlen` 400 (tokens over 400 code points become `<UNK>`, windows stay 1000).
 - **mwt** (`combined`): a `Seq2SeqModel` (`force_exact_pieces` null), not the classifier. `MwtExpander` runs it through
@@ -810,12 +812,13 @@ model but MWT and NER is English's architecture with other vocabularies and size
   (Conllu.Write sorts feats case-insensitively, like Stanza's writer: the tagger's raw order differs).
 - **constituency** (`spmrl_charlm`): `retag_method: upos` (the parser reads UPOS), `unary_limit` 8, SPMRL labels,
   trees `(ROOT (VROOT ...))`.
-- **ner** (`germeval2014`, also in `default_fast`): the old checkpoint format. No `delta` vocab or `delta_emb` (the word
-  vector is the pretrain row alone), one tag set as a plain `TagVocab` (21 BIOES tags over PER/LOC/ORG/MISC), heads named
-  `tag_clf.*`/`crit._transitions` (Stanza renames them to `tag_clfs.0`/`crits.0` on load; `NerTagger.HeadPrefix`).
-  Word vectors from its own pretrain, `fasttextwiki` [250000, 300]: input 2348 = 300 + 2048 → `input_transform`
-  2348→2348, biLSTM 256. The pipeline loads every pretrain `Pipeline.Dependencies` names (`_pretrains`), and each
-  processor gets its model's own.
+- **ner** (`germeval2014_charlm`, also in `default_fast`; since #215, 2026-10-24: Stanford's re-upload of 2026-10-20 replaced
+  the old-format `germeval2014` on fasttextwiki): English's format, conll17 [250000, 100] plus a lowercased delta (71,930
+  words), one tag set of 21 BIOES tags over PER/LOC/ORG/MISC (`tag_clfs.0`/`crits.0`), input 2148 = 100 + 2048. The old
+  format (no `delta` vocab or `delta_emb`, a plain `TagVocab`, heads `tag_clf.*`/`crit._transitions` that Stanza renames on
+  load, `NerTagger.HeadPrefix`) is still read for the alternative `conll03` (fasttextwiki [250000, 300], input 2348) and
+  English's `i2b2`. The pipeline loads every pretrain `Pipeline.Dependencies` names (`_pretrains`), and each processor gets
+  its model's own.
 - **sentiment** (`sb10k_charlm`): as English, `extra_vocab` 24,235.
 - **gsd / hdt** (treebank packages: tokenize, mwt, pos, lemma, depparse; `<pkg>_nocharlm` tokenizers with their own
   vocabularies, `gsd`/`hdt` seq2seq MWT, hdt's with `max_dec_len` 12 and 33 dictionary entries):
@@ -1338,18 +1341,19 @@ What the English treebank packages' checkpoints add to the default package's pat
     and packages (German `default_accurate`: another transformer) throw `ArgumentException` with the supported list.
   - `Pipeline.SelectModels` (language + package + processors → processor → model) and `Pipeline.SharedModels`
     (from `Pipeline.Dependencies`: each model's resources.json `dependencies`, since names don't tell them; German
-    NER reads `fasttextwiki` + the charlms) are what both `Pipeline`'s constructor and `ModelDownloader.FilesFor` use,
+    ner conll03 reads `fasttextwiki` + the charlms) are what both `Pipeline`'s constructor and `ModelDownloader.FilesFor` use,
     so they cannot drift apart. A new package needs an entry in `Pipeline.Packages[lang]`, its models'
     `Pipeline.Dependencies[lang]` and its files' MD5s in `ModelDownloader.Files[lang]`;
     `CompareCommandTests.EmbeddedResources_MatchModelDownloader` checks all three against the tool's embedded
     `stanza_resources_<lang>.json`, and `FilesFor_AreEnoughToLoadThePipeline`, `FileTableCoversEveryModelThePipelineLoads`
     and `LanguageTests` the file sets. CI downloads the packages per `tools/ci-models.sh` group (see "Model cache keys").
   - It fetches the `.pt` files from `huggingface.co/stanfordnlp/stanza-<lang>/resolve/<commit>/models/`
-    (`ModelDownloader.Revisions`: en `d7e0c740`, de `6b928a48`, multilingual `e9360ddf`; owner's decision 2026-10-22) and
-    checks each against the MD5 from Stanza 1.15.0's resources.json, kept in `ModelDownloader.Files`. Not the `v1.15.0`
-    tag: on 2026-10-20 Stanford re-uploaded English's conll03 NER models (now on conll17, stanza#1698) and German's NER
-    models (germeval2014 removed, germeval2014_charlm added, the dbmdz NER removed) and moved the tag, so the tag's files
-    failed our MD5s and German's default NER was a 404. Adopting the new models is a follow-up (new MD5s, resources and goldens).
+    (`ModelDownloader.Revisions`: en `810dca30`, de `a8ecd6c8`, multilingual `e9360ddf`) and checks each against the MD5
+    from Stanza 1.15.0's resources.json (stanza-resources' `resources_1.15.0.json`), kept in `ModelDownloader.Files`. A
+    commit, not the `v1.15.0` tag: on 2026-10-20 Stanford re-uploaded English's conll03 NER models (now on conll17,
+    stanza#1698) and German's NER models (germeval2014 removed, germeval2014_charlm added, the dbmdz NER removed) and moved
+    the tag. We pinned the old commits (`d7e0c740`, `6b928a48`; owner's decision 2026-10-22), then adopted the new models
+    (#215, owner's decision 2026-10-24: these commits, new MD5s, resources and goldens).
   - It keeps files that already match. `Pipeline.Load` never downloads.
   - Changing the Stanza version means new MD5s, new golden data and a new cache key.
 - `tools/verify-package.ps1` packs a unique `0.0.0-verify.<time>` version and builds a fresh console app against it:

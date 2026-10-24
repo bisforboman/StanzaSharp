@@ -239,7 +239,7 @@
 6	bis	bis	ADP	ADV	_	9	case	_	start_char=871|end_char=874|ner=O
 7	zu	zu	ADP	ADV	_	9	case	_	start_char=875|end_char=877|ner=O
 8	31	31	NUM	CARD	NumType=Card	9	nummod	_	start_char=878|end_char=880|ner=O
-9	°C	°C	NOUN	NN	Case=Acc|Gender=Masc|Number=Plur	10	nmod	_	start_char=881|end_char=883|ner=S-PER
+9	°C	°C	NOUN	NN	Case=Acc|Gender=Masc|Number=Plur	10	nmod	_	start_char=881|end_char=883|ner=O
 10	warm	warm	ADJ	ADJD	Degree=Pos	3	xcomp	_	SpaceAfter=No|start_char=884|end_char=888|ner=O
 11	.	.	PUNCT	$.	_	3	punct	_	start_char=888|end_char=889|ner=O
 

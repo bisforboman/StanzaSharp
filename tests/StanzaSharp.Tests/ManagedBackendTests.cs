@@ -837,7 +837,7 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
     }
 
     /// <summary>
-    /// German NER (germeval2014: the old checkpoint format, no delta embedding, fastText's 300-dimensional vectors, so
+    /// German NER (conll03: the old checkpoint format, no delta embedding, fastText's 300-dimensional vectors, so
     /// input_transform sums over 2348 inputs), both backends, on one padded batch of real sentences.
     /// </summary>
     [GermanTheory]
@@ -849,8 +849,9 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
         using var backward = CharLanguageModel.Load(Repo.Charlm("de", forward: false));
         var text = File.ReadAllText(Path.Combine(Repo.GoldenFor("de"), "validation_news.txt")).Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
         var sentences = new[] { 12, 3, 30, 1, 17 }.Select((n, i) => (IReadOnlyList<string>)Enumerable.Range(i * 31, n).Select(k => text[k % text.Length]).ToList()).ToList();
-        using var reference = Ner.NerTagger.Load(Repo.ModelOf("de", "ner"), pretrain, forward, backward);
-        using var managed = Ner.NerTagger.LoadManaged(Repo.ModelOf("de", "ner"), pretrain,
+        var model = Repo.Model("de", "ner/conll03");
+        using var reference = Ner.NerTagger.Load(model, pretrain, forward, backward);
+        using var managed = Ner.NerTagger.LoadManaged(model, pretrain,
             ManagedCharLanguageModel.Load(Repo.Charlm("de", forward: true)), ManagedCharLanguageModel.Load(Repo.Charlm("de", forward: false)));
         var expectedTags = reference.Predict(sentences, out var expected);
         var actualTags = With(path, 4, () => managed.Predict(sentences, out var e) is var t ? (t, e) : default);
@@ -861,7 +862,7 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
             Assert.Equal(expectedTags[i], actualTags.t[i]);
         }
 
-        output.WriteLine($"{path} germeval2014: max |diff| {diff:E2}");
+        output.WriteLine($"{path} conll03: max |diff| {diff:E2}");
     }
 
     /// <summary>

@@ -79,9 +79,9 @@
 8	sie	sie	PRON	PPER	Case=Nom|Gender=Fem|Number=Sing|Person=3|PronType=Prs	7	nsubj	_	SpaceAfter=No|start_char=289|end_char=292|ner=O
 9	.	.	PUNCT	$.	_	19	punct	_	start_char=292|end_char=293|ner=O
 10	Die	der	DET	ART	Case=Nom|Definite=Def|Number=Plur|PronType=Art	11	det	_	start_char=294|end_char=297|ner=O
-11	Spielsachen	Spielsache	NOUN	NN	Case=Nom|Gender=Fem|Number=Plur	19	nsubj	_	start_char=298|end_char=309|ner=B-MISC
-12	der	der	DET	ART	Case=Gen|Definite=Def|Number=Plur|PronType=Art	13	det	_	start_char=310|end_char=313|ner=I-MISC
-13	Kinder	Kind	NOUN	NN	Case=Gen|Gender=Neut|Number=Plur	11	nmod	_	start_char=314|end_char=320|ner=E-MISC
+11	Spielsachen	Spielsache	NOUN	NN	Case=Nom|Gender=Fem|Number=Plur	19	nsubj	_	start_char=298|end_char=309|ner=O
+12	der	der	DET	ART	Case=Gen|Definite=Def|Number=Plur|PronType=Art	13	det	_	start_char=310|end_char=313|ner=O
+13	Kinder	Kind	NOUN	NN	Case=Gen|Gender=Neut|Number=Plur	11	nmod	_	start_char=314|end_char=320|ner=O
 14	(	(	PUNCT	$(	_	17	punct	_	SpaceAfter=No|start_char=321|end_char=322|ner=O
 15	alle	alle	DET	PIAT	Case=Nom|Gender=Neut|Number=Plur|PronType=Tot	17	det	_	start_char=322|end_char=326|ner=O
 16	23	23	NUM	CARD	NumType=Card	17	nummod	_	start_char=327|end_char=329|ner=O
@@ -100,9 +100,9 @@
 28	Autor	Autor	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	39	nsubj	_	SpaceAfter=No|start_char=384|end_char=389|ner=O
 29	,	,	PUNCT	$,	_	36	punct	_	start_char=389|end_char=390|ner=O
 30	der	der	PRON	PRELS	Case=Nom|Gender=Masc|Number=Sing|PronType=Dem,Rel	36	nsubj	_	start_char=391|end_char=394|ner=O
-31	E	E	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	33	compound	_	SpaceAfter=No|start_char=395|end_char=396|ner=B-ORG
-32	-	-	PUNCT	$(	_	31	punct	_	SpaceAfter=No|start_char=396|end_char=397|ner=I-ORG
-33	Mails	Mails	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	36	obj	_	start_char=397|end_char=402|ner=E-ORG
+31	E	E	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	33	compound	_	SpaceAfter=No|start_char=395|end_char=396|ner=O
+32	-	-	PUNCT	$(	_	31	punct	_	SpaceAfter=No|start_char=396|end_char=397|ner=O
+33	Mails	Mails	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	36	obj	_	start_char=397|end_char=402|ner=O
 34	an	an	ADP	APPR	_	35	case	_	start_char=403|end_char=405|ner=O
 35	info@beispiel.de	info@beispiel.de	PROPN	NE	Case=Dat|Number=Sing	36	obl	_	start_char=406|end_char=422|ner=S-MISC
 36	geschrieben	schreiben	VERB	VVPP	VerbForm=Part	28	acl:relcl	_	start_char=423|end_char=434|ner=O

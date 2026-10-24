@@ -5,9 +5,10 @@ namespace StanzaSharp.Tests;
 /// <summary>
 /// default_accurate's frozen-transformer models as <see cref="PipelineOptions.Models"/> (docs/transformer-plan.md, PR 2):
 /// pos, depparse, ner, constituency and sentiment (LoRA) <c>_electra-large</c>, the treebanks' pos and depparse and ontonotes' ner
-/// <c>_electra-large</c> (#168), conll03's roberta-base ner (#172, also next to the other four: two transformers) and the
-/// <c>default_accurate</c> package against their tests/golden/models/ rows, byte for byte on both backends; German's (german-nlp-group/electra-base-german-uncased:
-/// pos and depparse frozen, constituency and sentiment with their LoRA adapters) against tests/golden/de/models/. Named
+/// <c>_electra-large</c> (#168), conll03's ner and the <c>default_accurate</c> package against their tests/golden/models/ rows,
+/// byte for byte on both backends; German's (german-nlp-group/electra-base-german-uncased: pos and depparse frozen, constituency
+/// and sentiment with their LoRA adapters; dbmdz/bert-base-german-cased's sentiment, also in default_accurate: two transformers)
+/// against tests/golden/de/models/. Named
 /// Transformer* so that only golden shard 4, which downloads the transformers, runs it in CI.
 /// </summary>
 public class TransformerModelTests
@@ -17,11 +18,11 @@ public class TransformerModelTests
     private const string TopDown = "constituency=ptb3_electra-large";
     private const string Sentiment = "sentiment=sstplus_electra-large";
     private const string AllFive = "electra-large";
-    private const string Roberta = "ner=conll03_electra-large";
-    private const string TwoTransformers = "electra-large+ner=conll03_electra-large";
+    private const string Conll03 = "ner=conll03_electra-large";
     private const string GermanFrozen = "pos+depparse=german-nlp-electra";
     private const string GermanConstituency = "constituency=spmrl_german-nlp-electra";
     private const string GermanSentiment = "sentiment=sb10k_german-nlp-electra";
+    private const string TwoTransformers = "default_accurate+sentiment=sb10k_dbmdz-bert-german-cased";
 
     [ModelTheory]
     [ModelChoice("en", Electra, false)]
@@ -52,10 +53,8 @@ public class TransformerModelTests
     [ModelChoice("en", "pos+depparse=eslspok_electra-large", true)]
     [ModelChoice("en", "ner=ontonotes_electra-large", false)]
     [ModelChoice("en", "ner=ontonotes_electra-large", true)]
-    [ModelChoice("en", Roberta, false)]
-    [ModelChoice("en", Roberta, true)]
-    [ModelChoice("en", TwoTransformers, false)]
-    [ModelChoice("en", TwoTransformers, true)]
+    [ModelChoice("en", Conll03, false)]
+    [ModelChoice("en", Conll03, true)]
     [ModelChoice("de", GermanFrozen, false)]
     [ModelChoice("de", GermanFrozen, true)]
     [ModelChoice("de", GermanConstituency, false)]
@@ -68,12 +67,12 @@ public class TransformerModelTests
     [ModelChoice("de", "pos+depparse=hdt_german-nlp-electra", true)]
     [ModelChoice("de", "ner=germeval2014_german-nlp-electra", false)]
     [ModelChoice("de", "ner=germeval2014_german-nlp-electra", true)]
-    [ModelChoice("de", "ner=germeval2014_dbmdz-bert-german-cased", false)]
-    [ModelChoice("de", "ner=germeval2014_dbmdz-bert-german-cased", true)]
     [ModelChoice("de", "sentiment=sb10k_dbmdz-bert-german-cased", false)]
     [ModelChoice("de", "sentiment=sb10k_dbmdz-bert-german-cased", true)]
     [ModelChoice("de", "default_accurate", false)]
     [ModelChoice("de", "default_accurate", true)]
+    [ModelChoice("de", TwoTransformers, false)]
+    [ModelChoice("de", TwoTransformers, true)]
     public void Process_MatchesGolden(string name, bool managed, string lang) => ModelChoiceTests.AssertGolden(name, managed, lang, cache: true);
 
     [Fact]
@@ -146,11 +145,11 @@ public class TransformerModelTests
         Assert.Contains("tokenize/combined_charlm.pt", files);
         Assert.DoesNotContain(files, f => f.StartsWith("transformer/", StringComparison.Ordinal));
 
-        // German's reads german-nlp-group's base ELECTRA under four processors (ner is default's germeval2014).
+        // German's reads german-nlp-group's base ELECTRA under five processors.
         var german = Pipeline.SelectModels("default_accurate", null, addRequired: true, "options", "de");
         Assert.Equal(Pipeline.AllProcessors.Split(',').Order(), german.Keys.Order());
         Assert.Equal([GermanTransformerFactAttribute.Electra], Pipeline.TransformersOf(german, "de"));
-        Assert.Equal("germeval2014", german["ner"]);
+        Assert.Equal("germeval2014_german-nlp-electra", german["ner"]);
         var germanFiles = ModelDownloader.FilesFor(null, "default_accurate", language: "de").Select(f => f.Path).ToList();
         Assert.Contains("constituency/spmrl_german-nlp-electra.pt", germanFiles);
         Assert.Contains("lemma/combined_charlm.pt", germanFiles);

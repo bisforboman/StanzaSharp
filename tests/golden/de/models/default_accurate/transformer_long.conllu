@@ -395,7 +395,7 @@
 377	Dunkelheit	Dunkelheit	NOUN	NN	Case=Gen|Gender=Fem|Number=Sing	375	nmod	_	SpaceAfter=No|start_char=2272|end_char=2282|ner=O
 378	,	,	PUNCT	$,	_	381	punct	_	start_char=2282|end_char=2283|ner=O
 379	der	der	DET	ART	Case=Nom|Definite=Def|Gender=Masc|Number=Sing|PronType=Art	380	det	_	start_char=2284|end_char=2287|ner=O
-380	Koch	Koch	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	381	nsubj	_	start_char=2288|end_char=2292|ner=S-PER
+380	Koch	Koch	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	381	nsubj	_	start_char=2288|end_char=2292|ner=O
 381	probierte	probieren	VERB	VVFIN	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	370	conj	_	start_char=2293|end_char=2302|ner=O
 382	ein	ein	DET	ART	Case=Acc|Definite=Ind|Gender=Neut|Number=Sing|NumType=Card|PronType=Art	383	det	_	start_char=2303|end_char=2306|ner=O
 383	Rezept	Rezept	NOUN	NN	Case=Acc|Gender=Neut|Number=Sing	381	obj	_	start_char=2307|end_char=2313|ner=O

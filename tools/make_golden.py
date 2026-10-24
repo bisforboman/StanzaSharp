@@ -310,13 +310,8 @@ MODEL_CHOICES = {
         ("pos+depparse=childes_electra-large", "childes", "tokenize,mwt,pos,lemma,depparse", {"pos": "childes_electra-large", "depparse": "childes_electra-large"}, []),
         ("pos+depparse=eslspok_electra-large", "eslspok", "tokenize,pos,lemma,depparse", {"pos": "eslspok_electra-large", "depparse": "eslspok_electra-large"}, []),
         ("ner=ontonotes_electra-large", "default", "tokenize,mwt,ner", {"ner": "ontonotes_electra-large"}, ["validation.txt"]),
-        # conll03's NER model reads roberta-base despite its name (#172: glove vectors | roberta-base | charlms), and with
-        # electra-large's other four models a pipeline holds two transformers
+        # conll03's NER model (conll17 vectors | transformer | charlms; it read roberta-base before Stanford's re-upload, #215)
         ("ner=conll03_electra-large", "default", "tokenize,mwt,ner", {"ner": "conll03_electra-large"}, ["validation.txt", "validation_social.txt"]),
-        ("electra-large+ner=conll03_electra-large", "default", PROCESSORS,
-         {"pos": "combined_electra-large", "constituency": "ptb3-revised_electra-large", "depparse": "combined_electra-large",
-          "sentiment": "sstplus_electra-large", "ner": "conll03_electra-large"},
-         ["validation.txt"]),
         # the default_accurate package itself (no models chosen: package=default_accurate), all eight processors
         ("default_accurate", "default_accurate", PROCESSORS, {},
          ["validation.txt", "validation_contractions.txt", "validation_social.txt", "validation_tech.txt", "models/transformer_long.txt"]),
@@ -343,18 +338,19 @@ MODEL_CHOICES = {
         ("default_accurate", "default_accurate", PROCESSORS, {},
          ["validation.txt", "validation_contractions.txt", "validation_umlauts.txt", "validation_social.txt", "models/transformer_long.txt"]),
         # the treebanks' frozen-transformer taggers and parsers on their package (corpus.txt only, like English's), and
-        # germeval2014's NER model on the same transformer (fasttextwiki vectors | transformer | charlms)
+        # germeval2014's NER model on the same transformer (default_accurate's: conll17 vectors | transformer | charlms)
         ("pos+depparse=gsd_german-nlp-electra", "gsd", "tokenize,mwt,pos,lemma,depparse",
          {"pos": "gsd_german-nlp-electra", "depparse": "gsd_german-nlp-electra"}, []),
         ("pos+depparse=hdt_german-nlp-electra", "hdt", "tokenize,mwt,pos,lemma,depparse",
          {"pos": "hdt_german-nlp-electra", "depparse": "hdt_german-nlp-electra"}, []),
         ("ner=germeval2014_german-nlp-electra", "default", "tokenize,mwt,ner", {"ner": "germeval2014_german-nlp-electra"},
          ["validation.txt", "models/transformer_long.txt"]),
-        # dbmdz/bert-base-german-cased's: ner (conll17's vectors, PRETRAIN_FIXES | BERT | charlms) and sentiment (LoRA, no charlms)
-        ("ner=germeval2014_dbmdz-bert-german-cased", "default", "tokenize,mwt,ner", {"ner": "germeval2014_dbmdz-bert-german-cased"},
-         ["validation.txt", "models/transformer_long.txt"]),
+        # dbmdz/bert-base-german-cased's sentiment model (LoRA, no charlms), and with default_accurate's other seven processors a
+        # pipeline holds two transformers (german-nlp-group's ELECTRA and dbmdz's BERT)
         ("sentiment=sb10k_dbmdz-bert-german-cased", "default", "tokenize,mwt,sentiment", {"sentiment": "sb10k_dbmdz-bert-german-cased"},
          ["validation.txt", "validation_social.txt", "models/transformer_long.txt"]),
+        ("default_accurate+sentiment=sb10k_dbmdz-bert-german-cased", "default_accurate", PROCESSORS, {"sentiment": "sb10k_dbmdz-bert-german-cased"},
+         ["validation.txt", "models/transformer_long.txt"]),
     ],
 }
 
@@ -524,11 +520,6 @@ def electra_locally(models):
     coref_model.load_tokenizer = lambda name, *args, **kwargs: load_tokenizer(str(local[name]) if name in local else name, *args, **kwargs)
 
 
-# Models trained on another pretrain than resources.json lists (Pipeline.ListedPretrains,
-# https://github.com/stanfordnlp/stanza/issues/1698): Stanza gets this one as {processor}_pretrain_path.
-PRETRAIN_FIXES = {("en", "ner", "conll03_electra-large"): "conll17", ("de", "ner", "germeval2014_dbmdz-bert-german-cased"): "conll17"}
-
-
 def write_models_golden(models, out, only=None):
     """
     models/<name>/ for each of MODEL_CHOICES (or only those named in `only`): Stanza with processors={p: model, other p:
@@ -547,11 +538,8 @@ def write_models_golden(models, out, only=None):
             continue
         if chosen:
             spec = {p: chosen.get(p, package) for p in processors.split(",")}
-            # a model trained on another pretrain than resources.json lists (Pipeline.ListedPretrains, compare.py's PRETRAIN_FIXES)
-            fixes = {f"{p}_pretrain_path": str(Path(models) / LANG / "pretrain" / f"{PRETRAIN_FIXES[(LANG, p, m)]}.pt")
-                     for p, m in chosen.items() if (LANG, p, m) in PRETRAIN_FIXES}
             nlp = stanza.Pipeline(LANG, dir=models, package=None, processors=spec, download_method=None, use_gpu=False,
-                                  logging_level="WARN", **fixes)
+                                  logging_level="WARN")
         else:  # a package as it is
             nlp = stanza.Pipeline(LANG, dir=models, package=package, processors=processors, download_method=None, use_gpu=False,
                                   logging_level="WARN")
@@ -1793,8 +1781,8 @@ TRANSFORMER_TOKENIZER_CASES = [
 ]
 
 
-# roberta-base's byte-level BPE (#172; ner conll03_electra-large reads it): Stanza's add_prefix_space=True before every
-# piece of a word that doesn't start with U+0020, GPT-2's split pattern (contractions in lowercase only, letter, number and
+# roberta-base's byte-level BPE (#172; no model reads it since #215, kept as tested infrastructure): Stanza's
+# add_prefix_space=True before every piece of a word that doesn't start with U+0020, GPT-2's split pattern (contractions in lowercase only, letter, number and
 # other runs, whitespace runs giving up their last character before a non-space), the added tokens (<mask> takes the
 # whitespace before it), and the whitespace classes: tab, NBSP, NEL, ideographic space, line separator, the C0 separators.
 ROBERTA_TOKENIZER_CASES = [
@@ -1889,7 +1877,7 @@ XLMR_TOKENIZER_CASES = [
     ["ǅ", "ẞ", "İstanbul", "ß", "ﬀ", "Å", "Å", "ｱｲｳ", "１２３", "\uff0e", "…", "\u2028", "\t"],
 ]
 
-# German's dbmdz/bert-base-german-cased (ner germeval2014_dbmdz-bert-german-cased, sentiment sb10k_dbmdz-bert-german-cased): a
+# German's dbmdz/bert-base-german-cased (sentiment sb10k_dbmdz-bert-german-cased): a
 # cased vocab.txt WordPiece (do_lower_case false, so strip_accents follows it: accents kept), on top of the German cases
 DBMDZ = "dbmdz/bert-base-german-cased"
 DBMDZ_TOKENIZER_CASES = [

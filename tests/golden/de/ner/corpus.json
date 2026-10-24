@@ -42,12 +42,6 @@
  [],
  [
   {
-   "text": "E-Mails",
-   "type": "ORG",
-   "start_char": 395,
-   "end_char": 402
-  },
-  {
    "text": "info@beispiel.de",
    "type": "MISC",
    "start_char": 406,

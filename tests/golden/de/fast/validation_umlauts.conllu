@@ -77,15 +77,15 @@
 # text = GROSSBUCHSTABEN: STRASSE, GRÖSSE, ÄRGER, ÖFFNUNG, ÜBUNG.
 # sent_id = 7
 # sentiment = 1
-1	GROSSBUCHSTABEN	GeOSSBUCHSTABEN	PROPN	NE	Case=Nom|Gender=Masc|Number=Sing	3	dep	_	SpaceAfter=No|start_char=404|end_char=419|ner=O
+1	GROSSBUCHSTABEN	GeOSSBUCHSTABEN	PROPN	NE	Case=Nom|Gender=Masc|Number=Sing	3	dep	_	SpaceAfter=No|start_char=404|end_char=419|ner=S-ORG
 2	:	:	PUNCT	$.	_	3	punct	_	start_char=419|end_char=420|ner=O
-3	STRASSE	STRASSE	PROPN	NE	Case=Nom|Gender=Fem|Number=Sing	0	root	_	SpaceAfter=No|start_char=421|end_char=428|ner=S-LOC
+3	STRASSE	STRASSE	PROPN	NE	Case=Nom|Gender=Fem|Number=Sing	0	root	_	SpaceAfter=No|start_char=421|end_char=428|ner=O
 4	,	,	PUNCT	$,	_	5	punct	_	start_char=428|end_char=429|ner=O
-5	GRÖSSE	GRÖs	NOUN	NN	Case=Nom|Gender=Fem|Number=Sing	3	conj	_	SpaceAfter=No|start_char=430|end_char=436|ner=S-ORG
+5	GRÖSSE	GRÖs	NOUN	NN	Case=Nom|Gender=Fem|Number=Sing	3	conj	_	SpaceAfter=No|start_char=430|end_char=436|ner=O
 6	,	,	PUNCT	$,	_	7	punct	_	start_char=436|end_char=437|ner=O
 7	ÄRGER	ÄRGER	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	3	conj	_	SpaceAfter=No|start_char=438|end_char=443|ner=S-ORG
 8	,	,	PUNCT	$,	_	9	punct	_	start_char=443|end_char=444|ner=O
-9	ÖFFNUNG	ÖFFNUNG	NOUN	NN	Case=Nom|Gender=Fem|Number=Sing	3	conj	_	SpaceAfter=No|start_char=445|end_char=452|ner=O
+9	ÖFFNUNG	ÖFFNUNG	NOUN	NN	Case=Nom|Gender=Fem|Number=Sing	3	conj	_	SpaceAfter=No|start_char=445|end_char=452|ner=S-ORG
 10	,	,	PUNCT	$,	_	11	punct	_	start_char=452|end_char=453|ner=O
 11	ÜBUNG	ÜBUNG	NOUN	NN	Case=Nom|Gender=Fem|Number=Sing	3	conj	_	SpaceAfter=No|start_char=454|end_char=459|ner=O
 12	.	.	PUNCT	$.	_	3	punct	_	start_char=459|end_char=460|ner=O

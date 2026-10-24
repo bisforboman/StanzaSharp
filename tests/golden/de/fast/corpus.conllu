@@ -121,9 +121,9 @@
 3	Autor	Autor	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	14	nsubj	_	SpaceAfter=No|start_char=384|end_char=389|ner=O
 4	,	,	PUNCT	$,	_	11	punct	_	start_char=389|end_char=390|ner=O
 5	der	der	PRON	PRELS	Case=Nom|Gender=Masc|Number=Sing|PronType=Dem,Rel	11	nsubj	_	start_char=391|end_char=394|ner=O
-6	E	E	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	8	compound	_	SpaceAfter=No|start_char=395|end_char=396|ner=B-ORG
-7	-	-	PUNCT	$(	_	6	punct	_	SpaceAfter=No|start_char=396|end_char=397|ner=I-ORG
-8	Mails	Mails	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	11	obj	_	start_char=397|end_char=402|ner=E-ORG
+6	E	E	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	8	compound	_	SpaceAfter=No|start_char=395|end_char=396|ner=O
+7	-	-	PUNCT	$(	_	6	punct	_	SpaceAfter=No|start_char=396|end_char=397|ner=O
+8	Mails	Mails	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	11	obj	_	start_char=397|end_char=402|ner=O
 9	an	an	ADP	APPR	_	10	case	_	start_char=403|end_char=405|ner=O
 10	info@beispiel.de	info@beispiel.d	ADJ	ADJD	Degree=Pos	11	advmod	_	start_char=406|end_char=422|ner=S-MISC
 11	geschrieben	schreiben	VERB	VVPP	VerbForm=Part	3	acl:relcl	_	start_char=423|end_char=434|ner=O

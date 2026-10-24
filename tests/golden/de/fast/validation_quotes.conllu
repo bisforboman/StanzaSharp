@@ -132,7 +132,7 @@
 6	,	,	PUNCT	$,	_	9	punct	_	start_char=409|end_char=410|ner=O
 7	andere	anderer	DET	ADJA	Case=Nom|Gender=Neut|Number=Plur|PronType=Ind	9	det	_	start_char=411|end_char=417|ner=O
 8	„	"	PUNCT	$(	_	9	punct	_	SpaceAfter=No|start_char=418|end_char=419|ner=O
-9	deutsche	deutsch	ADJ	ADJA	Case=Nom|Degree=Pos|Gender=Fem|Number=Plur	5	conj	_	SpaceAfter=No|start_char=419|end_char=427|ner=S-LOC
+9	deutsche	deutsch	ADJ	ADJA	Case=Nom|Degree=Pos|Gender=Fem|Number=Plur	5	conj	_	SpaceAfter=No|start_char=419|end_char=427|ner=S-MISC
 10	“	"	PUNCT	$(	_	9	punct	_	start_char=427|end_char=428|ner=O
 11	und	und	CCONJ	KON	_	15	cc	_	start_char=429|end_char=432|ner=O
 12	wieder	wieder	ADV	ADV	_	15	advmod	_	start_char=433|end_char=439|ner=O

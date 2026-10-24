@@ -285,7 +285,7 @@ from English in its models, not in the API:
 | Language | Model | Entity types (`Entity.Type`; `Token.Ner` is BIOES, e.g. `B-PER`) |
 |---|---|---|
 | English (`en`) | OntoNotes (`ontonotes-ww-multi`) | 18: `PERSON`, `NORP`, `FAC`, `ORG`, `GPE`, `LOC`, `PRODUCT`, `EVENT`, `WORK_OF_ART`, `LAW`, `LANGUAGE`, `DATE`, `TIME`, `PERCENT`, `MONEY`, `QUANTITY`, `ORDINAL`, `CARDINAL` |
-| German (`de`) | GermEval 2014 (`germeval2014`) | 4: `PER`, `LOC`, `ORG`, `MISC` |
+| German (`de`) | GermEval 2014 (`germeval2014_charlm`) | 4: `PER`, `LOC`, `ORG`, `MISC` |
 
 ### Many texts, pretokenized text, and annotating a document
 
@@ -374,7 +374,7 @@ using var fast = Pipeline.Load("models/stanza/en", options);
   slower than `default` and peaks at about 4.2 GB instead of 1.1 GB (4 cores;
   [round 43](docs/performance/round-43-default-accurate.md)). German's (`Language = "de"`) reads
   `german-nlp-group/electra-base-german-uncased` (445 MB): pos and depparse frozen, one shared pass; constituency and
-  sentiment each through their own LoRA adapters, a pass each; ner is `default`'s `germeval2014`.
+  sentiment each through their own LoRA adapters, a pass each, and ner `germeval2014_german-nlp-electra`.
 
 - The treebank packages, each trained on one English treebank: `"combined"` (the default package's models), `"ewt"`,
   `"gum"`, `"lines"`, `"partut"`, `"atis"`, `"childes"` and `"eslspok"`, and the biomedical `"craft"`, `"genia"` and
@@ -418,15 +418,14 @@ The models beyond the packages':
   and parsers on the same transformer: pos and depparse `ewt_electra-large`, `gum_electra-large`, `lines_electra-large`,
   `partut_electra-large`, `atis_electra-large`, `childes_electra-large`, `eslspok_electra-large`, and ner
   `ontonotes_electra-large` (18 OntoNotes types, FastText Crawl vectors).
-  And ner `conll03_electra-large` (PER, LOC, ORG, MISC), which despite its name reads `roberta-base` (about 500 MB); with
-  `default_accurate`'s models a pipeline loads both transformers.
+  And ner `conll03_electra-large` (PER, LOC, ORG, MISC).
   And constituency `ptb3_electra-large`, Stanza's top-down parser (the others build trees in order), with LoRA adapters
   like sentiment's.
 - German ner: `conll03` (PER, LOC, ORG, MISC).
 - German models on `default_accurate`'s transformer (`german-nlp-group/electra-base-german-uncased`): pos and depparse
-  `gsd_german-nlp-electra` and `hdt_german-nlp-electra` (with their treebank packages), ner `germeval2014_german-nlp-electra`.
-  And on `dbmdz/bert-base-german-cased` (about 440 MB): ner `germeval2014_dbmdz-bert-german-cased` and sentiment
-  `sb10k_dbmdz-bert-german-cased`.
+  `gsd_german-nlp-electra` and `hdt_german-nlp-electra` (with their treebank packages). And on `dbmdz/bert-base-german-cased`
+  (about 440 MB): sentiment `sb10k_dbmdz-bert-german-cased`; with `default_accurate`'s models a pipeline loads both
+  transformers.
 - The treebanks' taggers and parsers without character language models (their own character LSTM, like
   `default_fast`'s): English pos and depparse `ewt_nocharlm`, `gum_nocharlm`, `lines_nocharlm`, `partut_nocharlm`,
   `atis_nocharlm`, `childes_nocharlm`, `eslspok_nocharlm`, depparse `mimic_nocharlm`; German pos and depparse

@@ -45,7 +45,7 @@ public class FastPackageTests(ITestOutputHelper output, SharedPipelines pipeline
         Assert.True(failures.Count == 0, string.Join("\n\n", failures));
     }
 
-    /// <remarks>German's fast package keeps the charlm NER (germeval2014), with its own pretrain.</remarks>
+    /// <remarks>German's fast package keeps the charlm NER (germeval2014_charlm).</remarks>
     [ModelTheory]
     [InlineData("en")]
     [German]
@@ -55,10 +55,9 @@ public class FastPackageTests(ITestOutputHelper output, SharedPipelines pipeline
         using var pretrain = Pretrain.Load(Repo.Model(lang, "pretrain/conll17"));
         using var tagger = PosTagger.Load(Repo.ModelOf(lang, "pos", "default_fast"), pretrain, null, null);
         using var parser = DependencyParser.Load(Repo.ModelOf(lang, "depparse", "default_fast"), pretrain, null, null);
-        using var nerPretrain = lang == "en" ? null : Repo.LoadPretrainOf(managed: false, lang, "ner", "default_fast");
         using var forward = lang == "en" ? null : CharLanguageModel.Load(Repo.Charlm(lang, forward: true));
         using var backward = lang == "en" ? null : CharLanguageModel.Load(Repo.Charlm(lang, forward: false));
-        using var ner = NerTagger.Load(Repo.ModelOf(lang, "ner", "default_fast"), nerPretrain ?? pretrain, forward, backward);
+        using var ner = NerTagger.Load(Repo.ModelOf(lang, "ner", "default_fast"), pretrain, forward, backward);
         var golden = SafeTensorFile.Load(Path.Combine(GoldenDir(lang), "intermediates.safetensors"));
         var index = JsonNode.Parse(File.ReadAllText(Path.Combine(GoldenDir(lang), "intermediates.json")))!["sentences"]!.AsArray();
         var doc = Conllu.Read(File.ReadAllText(Path.Combine(GoldenDir(lang), "corpus.conllu")));
@@ -91,8 +90,7 @@ public class FastPackageTests(ITestOutputHelper output, SharedPipelines pipeline
     {
         using var pretrain = Pretrain.Load(Repo.Model(lang, "pretrain/conll17"));
         using var tagger = PosTagger.LoadManaged(Repo.ModelOf(lang, "pos", "default_fast"), pretrain, null, null);
-        using var nerPretrain = lang == "en" ? null : Repo.LoadPretrainOf(managed: true, lang, "ner", "default_fast");
-        using var ner = NerTagger.LoadManaged(Repo.ModelOf(lang, "ner", "default_fast"), nerPretrain ?? pretrain,
+        using var ner = NerTagger.LoadManaged(Repo.ModelOf(lang, "ner", "default_fast"), pretrain,
             lang == "en" ? null : ManagedCharLanguageModel.Load(Repo.Charlm(lang, forward: true)),
             lang == "en" ? null : ManagedCharLanguageModel.Load(Repo.Charlm(lang, forward: false)));
         using var parser = DependencyParser.LoadManaged(Repo.ModelOf(lang, "depparse", "default_fast"), pretrain, null, null);

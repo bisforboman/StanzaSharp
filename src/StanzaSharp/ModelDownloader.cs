@@ -21,13 +21,13 @@ public static class ModelDownloader
     /// <summary>The Stanza release whose models the golden tests verify.</summary>
     public const string StanzaVersion = "1.15.0";
 
-    // The commit of each stanfordnlp/stanza-<lang> repository holding the files Files lists. Not the v1.15.0 tag: on 2026-10-20
-    // Stanford re-uploaded English's conll03 NER models and German's NER models and moved the tag, so the tag's files no
-    // longer match Stanza 1.15.0's MD5s as we read them (and German's germeval2014 is gone there).
+    // The commit of each stanfordnlp/stanza-<lang> repository holding the files Files lists, pinned rather than the v1.15.0
+    // tag, which Stanford moved once already: on 2026-10-20 they re-uploaded English's conll03 NER models and German's NER
+    // models (germeval2014 replaced by germeval2014_charlm) and moved the tag to these commits (#215).
     internal static readonly Dictionary<string, string> Revisions = new()
     {
-        [Pipeline.English] = "d7e0c7400bdffe3acc9a71ebf118670dd9a47142",
-        ["de"] = "6b928a48d4c8d8096b9dc75c887da3652f8ef671",
+        [Pipeline.English] = "810dca30ddb25c30582c019dbaeb3a3e040fb958",
+        ["de"] = "a8ecd6c8b4f81298918eade263208fedccddd652",
         [Multilingual] = "e9360ddf1796ec9c18a8260980153c7f269afd63",
     };
 
@@ -132,7 +132,7 @@ public static class ModelDownloader
             ("pos/eslspok_electra-large.pt", "11b6e2b1104e1f9a6d6466b599278e92"),
             ("depparse/eslspok_electra-large.pt", "34610290258e888dc505ec6e16b2c750"),
             ("ner/ontonotes_electra-large.pt", "5b59497b9e76cb646690825bc4fed43f"),
-            ("ner/conll03_electra-large.pt", "892891610a5d66635904081fd6376178"),
+            ("ner/conll03_electra-large.pt", "76d2a81de8932838e2753cba0059d293"),
             ("tokenize/combined_charlm.pt", "1e2acd7f1340961385442a106c94950d"),
             ("tokenize/ewt_charlm.pt", "08e17410ba853cf519019d4ea17ec313"),
             ("tokenize/gum_charlm.pt", "5e797c73ecd132555f9769dddb694458"),
@@ -168,7 +168,7 @@ public static class ModelDownloader
             ("ner/combined_charlm.pt", "3f1017a2f0151b2556a105ddee17db49"),
             ("ner/i2b2.pt", "d860eeb99b2fd96e5e26fc1bb821eda5"),
             ("ner/radiology.pt", "043dd91c838e272dbde3d28f7bcc9ed2"),
-            ("ner/conll03_charlm.pt", "adc994f36ee4f8fcc5e5bceb3597f02e"),
+            ("ner/conll03_charlm.pt", "77c3c6145ed2efac8502b3aba4dfab9d"),
             ("ner/anatem.pt", "8b4b13670ba8cccde5645d9378071c19"),
             ("ner/bc4chemd.pt", "5cc779906b9e6fa1078b423c428b362c"),
             ("ner/bc5cdr.pt", "b0744897baf9d40165aca02f25e3f68d"),
@@ -179,7 +179,6 @@ public static class ModelDownloader
             ("ner/s800.pt", "1f8d6dc302e9237c8d5db17be22de5d5"),
             ("forward_charlm/pubmed.pt", "3f734806be2c2f62c82fbb01421f78ec"),
             ("backward_charlm/pubmed.pt", "f2c42f6b2f7205d2b254d6ab0fb13303"),
-            ("pretrain/glove.pt", "a44c27b595dd17c718d56b2c250f477a"),
             ("pretrain/fasttextcrawl.pt", "32e21612fdf3ea9b404ddbf663e9e438"),
         ],
         ["de"] =
@@ -190,11 +189,10 @@ public static class ModelDownloader
             ("lemma/combined_nocharlm.pt", "207e57ac2df6fee797b163df299e0fa0"),
             ("constituency/spmrl_charlm.pt", "a46f6e39f5f34dd0a8d06c26389dbf2b"),
             ("pretrain/conll17.pt", "c489a3bcc876b2e25f4460e00401c124"),
-            ("pretrain/fasttextwiki.pt", "29fe2ec4cf2d8b18c18b6aa9f5d48d78"),
             ("forward_charlm/newswiki.pt", "f2841fa3f1981a849d3ed08a723ccc22"),
             ("backward_charlm/newswiki.pt", "82f0d9a6a12c736648edbe28d87e9016"),
             ("depparse/combined_charlm.pt", "c07c3344d2635c789870b6627c6ad680"),
-            ("ner/germeval2014.pt", "e2d33aecdfc079b18dbdbb06ec6d419a"),
+            ("ner/germeval2014_charlm.pt", "2063eb4b3ce5acbc9ec7a3f601dee016"),
             ("sentiment/sb10k_charlm.pt", "278b42bbd2c127d293a8197252dae1eb"),
             ("coref/udcoref_xlm-roberta-lora.pt", "952f55dad09d2350249ed1e2a15a34f8"), // optional: only when coref is named
 
@@ -226,6 +224,7 @@ public static class ModelDownloader
             ("pos/hdt_nocharlm.pt", "30eebbd85b15369b9fd435397bb0ca94"),
             ("depparse/hdt_nocharlm.pt", "bb25421e576ecc48fffbfe01b8bf235b"),
             ("ner/conll03.pt", "9ff9b34529a43b72fabd71626795952a"),
+            ("pretrain/fasttextwiki.pt", "29fe2ec4cf2d8b18c18b6aa9f5d48d78"),
 
             // default_accurate's transformer models (Pipeline.Transformers: german-nlp-group/electra-base-german-uncased)
             ("pos/combined_german-nlp-electra.pt", "b63a58fe066df20895c218b3af8915a7"),
@@ -236,8 +235,7 @@ public static class ModelDownloader
             ("depparse/gsd_german-nlp-electra.pt", "29d6aad732f21eff57e6dcbe51a0a77f"),
             ("pos/hdt_german-nlp-electra.pt", "276a4063c1c4a00b7bd27a3dc9dd67ba"),
             ("depparse/hdt_german-nlp-electra.pt", "91ecaa874d4217dd1cac9c84e667f377"),
-            ("ner/germeval2014_german-nlp-electra.pt", "35be8dec3ab2dbed9b6faabe84d342c8"),
-            ("ner/germeval2014_dbmdz-bert-german-cased.pt", "d496675af4b1ee6ea610a97fcfce6caf"),
+            ("ner/germeval2014_german-nlp-electra.pt", "d40dad1b879c301e73ea23d5bc399423"),
             ("sentiment/sb10k_dbmdz-bert-german-cased.pt", "55ec000d9d899dbac0621536ffac27df"),
         ],
     };
@@ -374,7 +372,7 @@ public static class ModelDownloader
             ("pytorch_model.bin", "a13cf267dfad08dd5c889af59f2e7f74120ff28107619d6c81904c3250efe76e"),
         ]),
 
-        // German ner germeval2014_dbmdz-bert-german-cased's and sentiment sb10k_dbmdz-bert-german-cased's: BERT (cased) with a
+        // German sentiment sb10k_dbmdz-bert-german-cased's: BERT (cased) with a
         // vocab.txt WordPiece, like german-nlp-group's.
         ["dbmdz/bert-base-german-cased"] = ("43cce138f63f8bd34b42d8a77321e3262fd7bbba",
         [
@@ -394,8 +392,9 @@ public static class ModelDownloader
             ("pytorch_model.bin", "01e55aa45dbb9164fee19aef60007a1c91d175051c01be1fb15056cfa60f3e53"),
         ]),
 
-        // English ner conll03_electra-large's, despite the name (#172): RoBERTa with a byte-level BPE tokenizer.json. Stanza's
-        // bert_model names it by the old alias; Hugging Face serves FacebookAI/roberta-base under it.
+        // RoBERTa with a byte-level BPE tokenizer.json (#172), by the old alias Hugging Face serves FacebookAI/roberta-base under.
+        // No model reads it since English ner conll03_electra-large was retrained on ELECTRA-large (#215); kept as tested
+        // infrastructure for ByteLevelBpe and RoBERTa's config (owner's decision, 2026-10-24).
         ["roberta-base"] = ("e2da8e2f811d1448a5b465c236feacd80ffbac7b",
         [
             ("config.json", "ef0185e2aae6e06c5f105a285006952c340e20c7dbf43c86ec82601b13fc45e9"),

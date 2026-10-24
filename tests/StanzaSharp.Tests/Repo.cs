@@ -48,7 +48,7 @@ public static class Repo
     public static string Charlm(string lang, bool forward) =>
         Model(lang, (forward ? "forward_charlm/" : "backward_charlm/") + (lang == "en" ? "1billion" : "newswiki"));
 
-    /// <summary>The pretrain <paramref name="processor"/>'s model reads (German NER: fasttextwiki), loaded for the backend.</summary>
+    /// <summary>The pretrain <paramref name="processor"/>'s model reads (conll17 for most), loaded for the backend.</summary>
     internal static Pretrain LoadPretrainOf(bool managed, string lang, string processor, string package = Pipeline.DefaultPackage)
     {
         var name = Pipeline.Dependencies[lang][$"{processor}/{Pipeline.Packages[lang][package][processor]}"].Single(p => p.StartsWith("pretrain/"));
@@ -205,7 +205,7 @@ public sealed class TransformerFactAttribute : FactAttribute
 }
 
 /// <summary>
-/// A test of roberta-base (#172: ner conll03_electra-large reads it), skipped without its files in
+/// A test of roberta-base (#172; no model reads it since #215), skipped without its files in
 /// models/stanza/en/transformer/roberta-base/ (golden shard 4 downloads them; tools/ci-models.sh transformer).
 /// </summary>
 public sealed class RobertaFactAttribute : FactAttribute

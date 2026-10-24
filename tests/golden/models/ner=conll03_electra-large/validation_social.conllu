@@ -196,7 +196,7 @@
 
 # text = RT @newsdesk: Power outage reported across downtown; crews on scene.
 # sent_id = 18
-1	RT	_	_	_	_	0	_	_	start_char=675|end_char=677|ner=O
+1	RT	_	_	_	_	0	_	_	start_char=675|end_char=677|ner=S-ORG
 2	@newsdesk	_	_	_	_	1	_	_	SpaceAfter=No|start_char=678|end_char=687|ner=O
 3	:	_	_	_	_	2	_	_	start_char=687|end_char=688|ner=O
 4	Power	_	_	_	_	3	_	_	start_char=689|end_char=694|ner=O
@@ -280,7 +280,7 @@
 
 # text = Yesss we won 3-1!!!
 # sent_id = 28
-1	Yesss	_	_	_	_	0	_	_	start_char=922|end_char=927|ner=S-ORG
+1	Yesss	_	_	_	_	0	_	_	start_char=922|end_char=927|ner=O
 2	we	_	_	_	_	1	_	_	start_char=928|end_char=930|ner=O
 3	won	_	_	_	_	2	_	_	start_char=931|end_char=934|ner=O
 4	3	_	_	_	_	3	_	_	SpaceAfter=No|start_char=935|end_char=936|ner=O
@@ -327,7 +327,7 @@
 1	thanks	_	_	_	_	0	_	_	start_char=1060|end_char=1066|ner=O
 2	a	_	_	_	_	1	_	_	start_char=1067|end_char=1068|ner=O
 3	lot	_	_	_	_	2	_	_	start_char=1069|end_char=1072|ner=O
-4	@SkyJetAir	_	_	_	_	3	_	_	SpacesAfter=\n\n|start_char=1073|end_char=1083|ner=S-ORG
+4	@SkyJetAir	_	_	_	_	3	_	_	SpacesAfter=\n\n|start_char=1073|end_char=1083|ner=O
 
 # text = he said "see u at 8" and showed up at 9:30 smh
 # sent_id = 33
@@ -444,8 +444,8 @@
 4	went	_	_	_	_	3	_	_	start_char=1418|end_char=1422|ner=O
 5	missing	_	_	_	_	4	_	_	start_char=1423|end_char=1430|ner=O
 6	near	_	_	_	_	5	_	_	start_char=1431|end_char=1435|ner=O
-7	5th	_	_	_	_	6	_	_	start_char=1436|end_char=1439|ner=B-LOC
-8	&	_	_	_	_	7	_	_	start_char=1440|end_char=1441|ner=I-LOC
+7	5th	_	_	_	_	6	_	_	start_char=1436|end_char=1439|ner=O
+8	&	_	_	_	_	7	_	_	start_char=1440|end_char=1441|ner=B-LOC
 9	Main	_	_	_	_	8	_	_	SpaceAfter=No|start_char=1442|end_char=1446|ner=E-LOC
 10	.	_	_	_	_	9	_	_	start_char=1446|end_char=1447|ner=O
 
@@ -471,8 +471,8 @@
 2	n't	_	_	_	_	1	_	_	start_char=1494|end_char=1497
 3	stop	_	_	_	_	2	_	_	start_char=1498|end_char=1502|ner=O
 4	laughing	_	_	_	_	3	_	_	start_char=1503|end_char=1511|ner=O
-5	XD	_	_	_	_	4	_	_	start_char=1512|end_char=1514|ner=B-MISC
-6	XD	_	_	_	_	5	_	_	SpacesAfter=\n\n|start_char=1515|end_char=1517|ner=E-MISC
+5	XD	_	_	_	_	4	_	_	start_char=1512|end_char=1514|ner=O
+6	XD	_	_	_	_	5	_	_	SpacesAfter=\n\n|start_char=1515|end_char=1517|ner=O
 
 # text = Who else remembers dial-up internet??
 # sent_id = 46
@@ -707,9 +707,9 @@
 
 # text = @sam @alex @priya meeting moved to 3pm fyi
 # sent_id = 73
-1	@sam	_	_	_	_	0	_	_	start_char=2217|end_char=2221|ner=O
-2	@alex	_	_	_	_	1	_	_	start_char=2222|end_char=2227|ner=O
-3	@priya	_	_	_	_	2	_	_	start_char=2228|end_char=2234|ner=S-PER
+1	@sam	_	_	_	_	0	_	_	start_char=2217|end_char=2221|ner=B-ORG
+2	@alex	_	_	_	_	1	_	_	start_char=2222|end_char=2227|ner=I-ORG
+3	@priya	_	_	_	_	2	_	_	start_char=2228|end_char=2234|ner=E-ORG
 4	meeting	_	_	_	_	3	_	_	start_char=2235|end_char=2242|ner=O
 5	moved	_	_	_	_	4	_	_	start_char=2243|end_char=2248|ner=O
 6	to	_	_	_	_	5	_	_	start_char=2249|end_char=2251|ner=O
