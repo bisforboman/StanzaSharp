@@ -293,7 +293,7 @@ jobs:
                 if [ $width = 256 ]; then export DOTNET_PreferredVectorBitWidth=256; else unset DOTNET_PreferredVectorBitWidth; fi
                 dotnet $tool "${args[@]}" ${{ inputs.quick && '--quick' || '' }} > "$name.md"
                 grep -q "SIMD Vector$width" "$name.md" || { echo "::error::$name did not run on Vector$width"; cat "$name.md"; exit 1; }
-                { echo "### $name"; echo; cat "$name.md"; echo; } >> "$GITHUB_STEP_SUMMARY"
+                { echo "### $name"; echo; cat "$name.md"; echo; } | tee -a "$GITHUB_STEP_SUMMARY"
               done
             done
           done
