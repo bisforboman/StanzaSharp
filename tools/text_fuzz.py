@@ -3,7 +3,9 @@
 Differential text fuzzing against Python Stanza (docs/text-fuzzing.md): seeded adversarial texts go through one Stanza
 pipeline (in this process) and one StanzaSharp pipeline (samples/StanzaSharp.Benchmark text-fuzz, a JSON-lines child
 process), both loaded once; the CoNLL-U must be byte-identical (C#'s UTF-16 offsets converted to code points). Every
-difference or crash is shrunk (ddmin over code points, keeping the first differing field) and written to the report.
+difference or crash is shrunk (ddmin over code points, keeping the first differing field) and written to the report. A
+difference in a model's decision is then judged by Stanza in float64 (Stanza64): if that equals StanzaSharp's output on
+the original or the shrunk text, it is a float32 near-tie, marked in the report, and it doesn't set the exit code.
 
   python tools/text_fuzz.py run [--lang en] [--package default] [--processors LIST] [--seed 1] [--count 200]
                                 [--model P=NAME]... [--pretagged] [--models models/stanza] [--benchmark EXE]
@@ -248,6 +250,67 @@ class Stanza:
             return {"error": f"{type(e).__name__}: {e}"}
 
 
+class Stanza64(Stanza):
+    """Stanza with every processor after tokenize and mwt in float64 (models, their plain tensors and the default dtype
+    while each runs), the judge of a difference in a model's decision. Tokenize and mwt stay float32: tokens have to
+    match anyway, and German's seq2seq MWT makes float32-only tensors (make_golden's sentiment logits64 likewise)."""
+
+    FLOAT32 = ("tokenize", "mwt")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from stanza.pipeline.core import Pipeline
+        from stanza.pipeline.processor import Processor
+        torch = self.torch
+        seen = set()
+
+        def double(obj, depth):  # the processor's own objects: not its _pipeline, nor another processor
+            if id(obj) in seen or depth > 4 or isinstance(obj, Pipeline) or (depth and isinstance(obj, Processor)):
+                return
+            seen.add(id(obj))
+            if isinstance(obj, torch.nn.Module):
+                obj.double()
+                for m in obj.modules():  # tensors held as plain attributes, not parameters or buffers
+                    for k, v in list(vars(m).items()):
+                        if isinstance(v, torch.Tensor) and v.is_floating_point():
+                            setattr(m, k, v.double())
+                return
+            if isinstance(obj, (list, tuple)):
+                items = obj
+            elif isinstance(obj, dict):
+                items = obj.values()
+            elif hasattr(obj, "__dict__") and type(obj).__module__.startswith("stanza"):
+                items = vars(obj).values()
+            else:
+                return
+            for item in list(items):
+                double(item, depth + 1)
+
+        for name, processor in self.nlp.processors.items():
+            if name not in self.FLOAT32:
+                double(processor, 0)
+
+    def __call__(self, text):
+        from stanza.pipeline.core import PIPELINE_NAMES
+        torch = self.torch
+        try:
+            with torch.no_grad():
+                doc = text
+                for name in PIPELINE_NAMES:
+                    processor = self.nlp.processors.get(name)
+                    if not processor:
+                        continue
+                    torch.set_default_dtype(torch.float32 if name in self.FLOAT32 else torch.float64)
+                    try:
+                        doc = processor.process(doc)
+                    finally:
+                        torch.set_default_dtype(torch.float32)
+                conllu = "{:C}".format(doc)
+                return {"conllu": conllu + "\n" if conllu else ""}
+        except Exception as e:  # noqa: BLE001 - no verdict then
+            return {"error": f"{type(e).__name__}: {e}"}
+
+
 class Sharp:
     def __init__(self, exe, models, lang, package, processors, backend, threads, chosen=(), pretagged=False):
         self.cmd = ([str(exe), "text-fuzz", "--models", str(Path(models) / lang), "--lang", lang, "--package", package,
@@ -359,6 +422,28 @@ def check(stanza, sharp, text):
     return kind, {"stanza": x, "csharp": y}
 
 
+# A difference in one of these is a model's decision, which float64 can judge; tokens, offsets and errors it can't.
+DECISIONS = {"LEMMA", "UPOS", "XPOS", "FEATS", "HEAD", "DEPREL", "constituency", "sentiment", "MISC ner"}
+
+
+def near_tie(stanza64, sharp, texts):
+    """(which of texts, the original or the shrunk one, Stanza in float64 annotates exactly as StanzaSharp, else None;
+    what float64 said on each). Agreement means the difference is Stanza's float32 side of a near-tie
+    (docs/text-fuzzing.md, findings 3 to 6), not a port bug; an error means no verdict, not a disagreement."""
+    notes = []
+    for name, text in texts:
+        exact, ours = stanza64(text), sharp(text)
+        if "error" in exact or "error" in ours:
+            notes.append(f"{name}: error: {(exact.get('error') or ours.get('error'))[:500]}")
+            continue
+        ours = code_point_offsets(ours["conllu"], text)
+        if exact["conllu"] == ours:
+            notes.append(f"{name}: agrees")
+            return name, notes
+        notes.append(f"{name}: differs: {first_difference(exact['conllu'], ours)[0]}")
+    return None, notes
+
+
 def shrink(text, still_fails, budget):
     """ddmin over code points down to single ones: the smallest text for which still_fails holds, trying at most
     budget candidates (a long text through the whole pipeline takes seconds a candidate)."""
@@ -431,6 +516,7 @@ def run(args, texts):
         CONVERT_OFFSETS[0] = False
         tag, side_stanza, side_sharp = Pretagger(args.models, args.lang, "constituency" in processors.split(",")), stanza, sharp
         stanza, sharp = (lambda t: side_stanza(tag(t))), (lambda t: side_sharp(tag(t)))
+    stanza64 = []  # loaded on the first difference to judge
     clock, found = time.perf_counter(), []
     for i, t in enumerate(texts):
         if i and i % 50 == 0:
@@ -445,19 +531,28 @@ def run(args, texts):
             small = shrink(t, lambda c: (r := check(stanza, sharp, c)) is not None and r[0] == kind,
                            args.shrink_budget)
             print(f"  shrunk to {small!r}: {check(stanza, sharp, small)}", file=sys.stderr)
+        verdict, float64 = None, None
+        if kind in DECISIONS and not args.pretagged:
+            if not stanza64:
+                stanza64.append(Stanza64(args.models, args.lang, args.package, chosen if args.model else processors,
+                                         args.threads))
+            agrees, float64 = near_tie(stanza64[0], sharp, [("original", t), ("shrunk", small)])
+            verdict = f"float32 near-tie: float64 Stanza agrees with StanzaSharp on the {agrees} text" if agrees else None
+            print(f"  {verdict or 'no near-tie'} (float64: {'; '.join(float64)})", file=sys.stderr)
         found.append({"index": i, "kind": kind, "details": details, "text": t, "minimal": small,
-                      "minimal_details": check(stanza, sharp, small)})
+                      "minimal_details": check(stanza, sharp, small), "near_tie": verdict,
+                      "float64": float64})
     (side_sharp if args.pretagged else sharp).close()
     meta = {"lang": args.lang, "package": args.package, "processors": processors, "models": args.model,
             "pretagged": args.pretagged, "seed": args.seed,
             "texts": len(texts), "characters": sum(len(t) for t in texts), "seconds": time.perf_counter() - clock,
-            "differences": len(found), "backend": args.backend,
+            "differences": len(found), "near_ties": sum(1 for f in found if f["near_tie"]), "backend": args.backend,
             "stanza_seconds": SECONDS["stanza"], "csharp_seconds": SECONDS["csharp"]}
     print(json.dumps(meta))
     if args.report:
         Path(args.report).write_text(json.dumps({"meta": meta, "found": found}, ensure_ascii=False, indent=1),
                                      encoding="utf-8")
-    return 1 if found else 0
+    return 1 if any(not f["near_tie"] for f in found) else 0
 
 
 def main():
