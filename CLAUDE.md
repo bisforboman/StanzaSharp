@@ -256,7 +256,8 @@ default from 0.5) or through TorchSharp (see "Managed backend").
     (Stanza too). Tests `TransformerCorefTests` (golden shard 4; `Run_MatchesStanzasSteps`, `Pipeline_ReproducesStanzasCoref`
     en + de); golden `coref/intermediates.*` (windows, words, top-k in topk's order, scores, clusters; corpus and
     validation_dialogue), `coref/zeros/` (zero mentions forced: `COREF_ZERO_SHIFT` added to the zero scores, #208;
-    `Process_WithZeroMentions_MatchesStanza`, a read-back exact on them; a zero differs on read-back only inside a chain's
+    `Process_WithZeroMentions_MatchesStanza`, a read-back exact on them; `CopiedCorefModel_UnderAnotherName_GivesStanzasChains`:
+    a coref `ModelPath` keeps `CorefModel`'s name, so XLM-R, on a package without optional coref too, #209; a zero differs on read-back only inside a chain's
     overlapping mentions, which the model didn't predict in about 600 zeros) and `de/coref/` (texts only). CI: `tools/ci-models.sh transformer` downloads `--processors
     tokenize,coref` (en) and, with XLM-R linked from en's folder, de. compare.py's `transformers_locally` also serves coref's
     own `load_tokenizer`.
@@ -1283,7 +1284,8 @@ What the English treebank packages' checkpoints add to the default package's pat
     `transformers_locally` has Stanza's `load_bert` read `<DIR>/transformer/<name>/` (local_files_only, like make_golden's
     `electra_locally`); a missing transformers/tokenizers/safetensors/peft exits 3 with `TRANSFORMER_REQUIREMENTS` (the
     pins of tools/requirements-transformer.txt, `ComparePy_TransformerRequirements_MatchRequirementsTransformerTxt`). Local
-    only: CI's Python has none of them, so no test runs Stanza on these models. C# offsets are converted to code points when the text has non-BMP characters
+    only: CI's Python has none of them, so no test runs Stanza on these models (by hand, 2026-10-24, #209: `compare
+    --processors tokenize,mwt,pos,coref` on corpus.txt, en and de, byte for byte). C# offsets are converted to code points when the text has non-BMP characters
     (`ConlluDiff.ToCodePointOffsets`). Exit 0/1/2. `stanza_resources_en.json` is `{"stanza_version", "en": resources.json["en"]}`
     of Stanza 1.15.0 (`stanza_resources_de.json` likewise with `de`); `CompareCommandTests.EmbeddedResources_MatchModelDownloader` fails when its version or an MD5 of
     `ModelDownloader.Files` disagrees. Regenerate it after a Stanza version change (Stanza's own downloader, run from
