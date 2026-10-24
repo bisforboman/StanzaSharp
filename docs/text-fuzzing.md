@@ -189,6 +189,24 @@ Not a port difference, and not seen in these runs, but possible with random code
 is Unicode 13, .NET 10's is newer, so a character assigned since then is a letter (or upper case, or a space) on one
 side only. Such a difference would be the platform's, not the port's.
 
+## Results (nightly)
+
+Differences the nightly workflow found (see the end of "Run it yourself").
+
+6. **English `default`, constituency (2026-10-23 nightly; float32 noise, not a port bug, nothing changed; #213).** One
+   text of the 60 through `default`. Tokens and tags are identical. Stanza closes the `NP` late, `(NP ($ $) (CD 5.99)
+   (NNP Ångström) (CC n't) (SYM 🤦‍♀️) …)`, while both StanzaSharp backends close it after `Ångström`, then open a `QP`.
+   Shrunk (one sentence, 32 words): `"x́\n。über\n1½ ?.naïve̶ ‍$5.99Ångströmn't 🤦‍♀️\n\U000e0041
+   @@@@@@@@@@@@@@@@@ 12:30£££££££££ ± ¯\\_(ツ)_/¯\nI'm"`. The parsers part at step 11 of 44, between transitions 0
+   and 1:
+   - Stanza float32: margin 2.0e-4, its row 2.8e-4 from float64;
+   - Stanza float64: margin 2.2e-6, StanzaSharp's choice and tree;
+   - TorchSharp: 2.4e-4 from float64, managed 6.3e-4 (golden text: under 5e-5).
+
+   Every float32 run is further from float64 than that margin, so any summation order can decide it. The drift grows
+   over the sentence's run of symbols (steps 6 to 10), on both backends and in Stanza's own float32. The text isn't in
+   `fuzz.json`: that would freeze Stanza's float32 side of a tie.
+
 ## Run it yourself
 
 It needs `tools/.venv` (tools/requirements.txt) and Stanza's `.pt` files in `models/stanza/<lang>` (the same files
@@ -229,4 +247,5 @@ whole pipeline costs seconds a candidate). Speed on a Ryzen 7 5800X with another
 No run is in the pull-request CI: Python Stanza runs only in golden-shard 2, and a run long enough to find anything
 new costs minutes there. The nightly workflow (`.github/workflows/nightly.yml`) runs it on main with the run number as
 seed: 1,000 texts through tokenize and mwt, 60 through `default` and 60 through `default_fast`; a difference fails the
-night, and its reports are the `fuzz` artifact. Findings go into `fuzz.json`, which every golden run checks.
+night, and its reports are the `fuzz` artifact. A port bug's shrunk text goes into `fuzz.json`, which every golden run
+checks; a float32 near-tie is recorded above ("Results (nightly)") instead.
