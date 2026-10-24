@@ -131,8 +131,22 @@ rows on the same CPU are a before/after.
   (libc++) picks near-tied candidates in another order, so Stanza's own chains differ there, and a chain index that
   differs shifts every later sentence's `coref_chains=`. On Linux both sides are identical.
 
-The avx512 jobs (Vector512 against Vector256 on Intel AVX-512 runners) are in run
-[40087862482](https://github.com/bisforboman/StanzaSharp/actions/runs/40087862482).
+### Vector512 against Vector256
+
+The avx512 jobs of run [40087862482](https://github.com/bisforboman/StanzaSharp/actions/runs/40087862482) (after the
+change) ran the same benchmark on one machine, alternating `DOTNET_PreferredVectorBitWidth=256` and the default
+(Vector512), two rounds each. Five of the nine jobs drew an AVX-512 CPU. The table shows coref per run, the range over
+the jobs and rounds:
+
+| CPU | 4 threads, Vector256 | 4 threads, Vector512 | 1 thread, Vector256 | 1 thread, Vector512 |
+|---|---:|---:|---:|---:|
+| AMD EPYC 9V45 (Zen 5; 3 jobs) | 11.7–12.3 s | 7.6–8.2 s | 24.4–26.8 s | 15.3–17.3 s |
+| AMD EPYC 9V74 (Zen 4) | 15.95 s | 14.4–14.5 s | 30.5–30.6 s | 29.2–29.5 s |
+| Intel Xeon Platinum 8370C (Ice Lake) | 19.9–24.7 s | 19.5–19.7 s | 41.7–42.3 s | 39.6–40.1 s |
+
+Vector512 is faster on every CPU drawn: by 34–36% on Zen 5, 4–10% on Zen 4 and about 5% on Ice Lake (its 4-thread Vector256 runs were noisy). Round 19 measured the same
+pattern for the default package, because the GEMMs dominate here too. Attention runs Vector256's kernel on both paths,
+so these gains are the GEMMs'.
 
 ## Remaining ideas
 
