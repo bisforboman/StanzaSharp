@@ -367,34 +367,35 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
         var buffer = pool.Rent((2 * n * d) + (QueryBlock * (n + d)));
         try
         {
-            fixed (double* b = buffer)
+            // The rented buffer only through spans (no pointer arithmetic on it), each part pinned on its own.
+            Span<double> keys = buffer.AsSpan(0, n * d), values = buffer.AsSpan(n * d, n * d), queries = buffer.AsSpan(2 * n * d, QueryBlock * d),
+                scores = buffer.AsSpan((2 * n * d) + (QueryBlock * d), QueryBlock * n);
+            for (int j = 0; j < n; j++)
             {
-                double* k = b, v = b + ((long)n * d), q = v + ((long)n * d), p = q + (QueryBlock * d);
-                for (int j = 0; j < n; j++)
-                {
-                    Widen(qkv + ((long)j * 3 * h) + h, k + ((long)j * d), d);
-                    Widen(qkv + ((long)j * 3 * h) + (2 * h), v + ((long)j * d), d);
-                }
+                Widen(qkv + ((long)j * 3 * h) + h, keys.Slice(j * d, d));
+                Widen(qkv + ((long)j * 3 * h) + (2 * h), values.Slice(j * d, d));
+            }
 
-                Span<double> max = stackalloc double[QueryBlock], sum = stackalloc double[QueryBlock];
+            Span<double> max = stackalloc double[QueryBlock], sum = stackalloc double[QueryBlock];
+            fixed (double* k = keys, v = values, q = queries, p = scores)
+            {
                 for (int i0 = 0; i0 < n; i0 += QueryBlock)
                 {
                     int rows = Math.Min(QueryBlock, n - i0);
                     for (int r = 0; r < QueryBlock; r++)
                     {
                         if (r < rows)
-                            Widen(qkv + ((long)(i0 + r) * 3 * h), q + (r * d), d);
+                            Widen(qkv + ((long)(i0 + r) * 3 * h), queries.Slice(r * d, d));
                         else
-                            new Span<double>(q + (r * d), d).Clear();
+                            queries.Slice(r * d, d).Clear();
                     }
 
                     ScoreBlock(q, k, p, n, d, scale);
                     for (int r = 0; r < QueryBlock; r++)
                     {
                         double m = double.NegativeInfinity;
-                        var pr = p + ((long)r * n);
-                        for (int j = 0; j < n; j++)
-                            m = Math.Max(m, pr[j]);
+                        foreach (double x in scores.Slice(r * n, n))
+                            m = Math.Max(m, x);
                         max[r] = m;
                         sum[r] = 0;
                     }
@@ -402,7 +403,7 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
                     for (int j = 0; j < n; j++)
                     {
                         for (int r = 0; r < QueryBlock; r++)
-                            sum[r] += p[((long)r * n) + j] = Math.Exp(p[((long)r * n) + j] - max[r]);
+                            sum[r] += scores[(r * n) + j] = Math.Exp(scores[(r * n) + j] - max[r]);
                     }
 
                     WeightedBlock(p, v, n, d, sum, context + ((long)i0 * h), h, rows);
@@ -416,9 +417,9 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void Widen(float* source, double* target, int count)
+    private static void Widen(float* source, Span<double> target)
     {
-        for (int e = 0; e < count; e++)
+        for (int e = 0; e < target.Length; e++)
             target[e] = source[e];
     }
 
