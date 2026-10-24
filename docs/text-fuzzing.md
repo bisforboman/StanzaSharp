@@ -49,7 +49,10 @@ runs every processor after tokenize and mwt in float64: its models, their plain 
 the processor runs. Tokenize and mwt stay float32, as German's seq2seq MWT breaks under float64. If its CoNLL-U equals
 StanzaSharp's on the original or the shrunk text, the finding is a float32 near-tie: Stanza's own float32 result is on
 the other side of a tie that every float32 summation order can decide either way (findings 3 to 6). The report marks it
-(`near_tie`, and `near_ties` in its meta), and it doesn't set the exit code. Tokens, offsets, comments and errors are
+(`near_tie`, and `near_ties` in its meta), and it doesn't set the exit code. The report's `float64` says what float64
+gave on each text: `agrees`, `differs:` with the first differing field, or `error:` (no verdict, so the finding fails
+the run). Agreement on the shrunk text alone is weaker: shrinking keeps the kind, not the place, so look at the
+original's difference too. Tokens, offsets, comments and errors are
 never judged that way; neither is `--pretagged`. Float64 Stanza gives the same CoNLL-U as float32 on corpus.txt and
 validation.txt (`default`, `default_fast`).
 

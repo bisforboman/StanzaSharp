@@ -427,13 +427,21 @@ DECISIONS = {"LEMMA", "UPOS", "XPOS", "FEATS", "HEAD", "DEPREL", "constituency",
 
 
 def near_tie(stanza64, sharp, texts):
-    """Which of texts (the original, the shrunk one) Stanza in float64 annotates exactly as StanzaSharp, else None: then
-    the difference is Stanza's float32 side of a near-tie (docs/text-fuzzing.md, findings 3 to 6), not a port bug."""
+    """(which of texts, the original or the shrunk one, Stanza in float64 annotates exactly as StanzaSharp, else None;
+    what float64 said on each). Agreement means the difference is Stanza's float32 side of a near-tie
+    (docs/text-fuzzing.md, findings 3 to 6), not a port bug; an error means no verdict, not a disagreement."""
+    notes = []
     for name, text in texts:
         exact, ours = stanza64(text), sharp(text)
-        if "conllu" in exact and "conllu" in ours and exact["conllu"] == code_point_offsets(ours["conllu"], text):
-            return name
-    return None
+        if "error" in exact or "error" in ours:
+            notes.append(f"{name}: error: {(exact.get('error') or ours.get('error'))[:500]}")
+            continue
+        ours = code_point_offsets(ours["conllu"], text)
+        if exact["conllu"] == ours:
+            notes.append(f"{name}: agrees")
+            return name, notes
+        notes.append(f"{name}: differs: {first_difference(exact['conllu'], ours)[0]}")
+    return None, notes
 
 
 def shrink(text, still_fails, budget):
@@ -523,16 +531,17 @@ def run(args, texts):
             small = shrink(t, lambda c: (r := check(stanza, sharp, c)) is not None and r[0] == kind,
                            args.shrink_budget)
             print(f"  shrunk to {small!r}: {check(stanza, sharp, small)}", file=sys.stderr)
-        verdict = None
+        verdict, float64 = None, None
         if kind in DECISIONS and not args.pretagged:
             if not stanza64:
                 stanza64.append(Stanza64(args.models, args.lang, args.package, chosen if args.model else processors,
                                          args.threads))
-            agrees = near_tie(stanza64[0], sharp, [("original", t), ("shrunk", small)])
+            agrees, float64 = near_tie(stanza64[0], sharp, [("original", t), ("shrunk", small)])
             verdict = f"float32 near-tie: float64 Stanza agrees with StanzaSharp on the {agrees} text" if agrees else None
-            print(f"  {verdict or 'float64 Stanza does not agree with StanzaSharp'}", file=sys.stderr)
+            print(f"  {verdict or 'no near-tie'} (float64: {'; '.join(float64)})", file=sys.stderr)
         found.append({"index": i, "kind": kind, "details": details, "text": t, "minimal": small,
-                      "minimal_details": check(stanza, sharp, small), "near_tie": verdict})
+                      "minimal_details": check(stanza, sharp, small), "near_tie": verdict,
+                      "float64": float64})
     (side_sharp if args.pretagged else sharp).close()
     meta = {"lang": args.lang, "package": args.package, "processors": processors, "models": args.model,
             "pretagged": args.pretagged, "seed": args.seed,
