@@ -311,12 +311,14 @@ jobs:
             done
           done | tee -a "$GITHUB_STEP_SUMMARY" avx512/gemm.md
 
+      # `.PipelineTests.` with its dots, as ci.yml's shards match it: MultilingualPipelineTests needs the language
+      # identifier, which this job doesn't download (it skipped there and failed the no-skip check).
       - name: Test (Vector512 detected)
         if: steps.cpu.outputs.avx512 == 'yes'
         run: >
           dotnet test tests/StanzaSharp.Tests -c Release --no-build --blame-hang-timeout 30m --blame-hang-dump-type none
           --logger trx --logger "console;verbosity=detailed" --results-directory TestResults
-          --filter "FullyQualifiedName~ManagedBackendTests|FullyQualifiedName~PipelineTests|FullyQualifiedName~TransformerKernelTests.BlockedAttention"
+          --filter "FullyQualifiedName~ManagedBackendTests|FullyQualifiedName~.PipelineTests.|FullyQualifiedName~TransformerKernelTests.BlockedAttention"
 
       - name: Check that no test was skipped
         if: steps.cpu.outputs.avx512 == 'yes'
