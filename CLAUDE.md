@@ -1182,8 +1182,10 @@ What the English treebank packages' checkpoints add to the default package's pat
     the managed cases of the both-backend theories plus tests marked `[Trait("Backend", "Managed")]` (they must need
     no libtorch: check with that build and an empty `NUGET_PACKAGES` locally). Then the no-skip check and
     `verify-package.ps1 -Managed`. Models cached like cross-os (`models-pt-Linux-…`).
-  - `nightly.yml` (owner's decision, 2026-10-18): 01:00 UTC on main, and `workflow_dispatch`. `transformer` calls ci.yml
-    with `golden_shards: '[4]'` (every other ci.yml job skips on that input); `fuzz` runs `CheckpointFuzzTests` with
+  - `nightly.yml` (owner's decision, 2026-10-18): 01:00 UTC on main, and `workflow_dispatch`. `ci` calls ci.yml
+    with `golden_shards: '[4]'` (every other ci.yml job skips on that input), or with it empty, all of ci.yml, when
+    `main-ci` finds no ci.yml push run on the commit (an auto-merge's push starts none; owner's decision, 2026-10-29);
+    `fuzz` runs `CheckpointFuzzTests` with
     `STANZASHARP_FUZZ_MODELS=all`, 3,000 iterations and the run number as seed, then `tools/text_fuzz.py run` (tokenize,mwt
     1,000 texts; default and default_fast 60 each) with Python Stanza (a decision that float64 Stanza makes as StanzaSharp
     does is a float32 near-tie, reported but not failing, owner's decision 2026-10-24 after #213); `benchmark` calls benchmark.yml `quick` without
@@ -1210,7 +1212,9 @@ What the English treebank packages' checkpoints add to the default package's pat
   dotnet/TorchSharp#1583), StyleBro.* (prerelease, upgraded by hand with a reformat), StanzaSharp* (the docker
   sample); pip is not watched (tools/requirements.txt pins the golden data). Microsoft.Extensions.Logging.Abstractions
   is included (the owner chose auto-merge for it too), so a bump raises the package's minimum dependency.
-  A Dependabot merge to main runs main's full CI like any other (seen 2026-10-14, coverlet #115).
+  An auto-merge is made with `GITHUB_TOKEN`, whose push starts no workflow (#222, 2026-10-28; coverlet #115 had run
+  main's CI because the owner merged it by hand), so the nightly runs all of ci.yml on such a commit (below; owner's
+  decision, 2026-10-29). release.yml calls ci.yml itself when the commit has no push run.
 
 - Public API (user's decision for 0.1.0, 2026-10-06: "pipeline only"). It is:
   - the facade: `Pipeline`, `PipelineOptions`, `CharlmCacheOptions`, `ModelDownloader`, `Processor` (0.4),
