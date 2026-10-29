@@ -6,7 +6,8 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
   # release.yml waits for main's run of the commit; only without one does it call this (no inputs: everything runs).
-  # nightly.yml calls it with golden_shards '[4]': only golden shard 4 (the Transformer* classes) and the golden check.
+  # nightly.yml calls it with golden_shards '[4]': only golden shard 4 (the Transformer* classes) and the golden check;
+  # with it empty (main's commit had no push run) everything runs.
   workflow_call:
     inputs:
       golden_shards:
@@ -722,6 +723,6 @@ jobs:
           echo "cross-os-shard: ${{ needs.cross-os-shard.result }}"
           if [ "${{ needs.cross-os-shard.result }}" = success ]; then exit 0; fi
           gh api --paginate "repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs" \
-            --jq '.jobs[] | select(.name | startswith("cross-os-shard (${{ matrix.os }},")) | "\(.name): \(.conclusion)"' > shards.txt
+            --jq '.jobs[] | select(.name | test("(^| / )cross-os-shard [(]${{ matrix.os }},")) | "\(.name): \(.conclusion)"' > shards.txt
           cat shards.txt
           test -s shards.txt && ! grep -qv ': success$' shards.txt

@@ -243,7 +243,8 @@ files from Hugging Face and the transformer models from Stanza's repository on e
 near GitHub's 10 GB limit). A pull request runs that shard only when it changes what those tests read (the shared
 kernels, the TorchSharp backend, the downloader, CI, the transformer's golden data or tests); every push to main runs it.
 
-The [nightly workflow](../.github/workflows/nightly.yml) runs on main every night: golden shard 4, the checkpoint fuzz
+The [nightly workflow](../.github/workflows/nightly.yml) runs on main every night: golden shard 4 (all of CI instead when
+main's commit had no CI run of its own, as after a Dependabot auto-merge, whose push starts no workflow), the checkpoint fuzz
 over every Stanza checkpoint with ten times CI's iterations and a new seed, [text fuzzing](text-fuzzing.md) against
 Python Stanza (1,000 texts through tokenize and mwt, 60 through each default package), and the Benchmark workflow's
 quick run. A failed night comments on the open issue "Nightly run failed".
