@@ -10,20 +10,21 @@ namespace StanzaSharp.Depparse;
 /// <summary>stanza/models/depparse/model.py <c>GraphParser</c> on TorchSharp.</summary>
 internal sealed class DepparseNet : IDepparseNet
 {
-    private readonly Pretrain _pretrain;
+    private readonly Pretrain? _pretrain;
     private readonly CharLanguageModel? _charlmForward, _charlmBackward;
     private readonly CharacterModel? _charModel;
     private readonly Linear? _transChar;
     private readonly Embedding _wordEmb, _lemmaEmb, _uposEmb;
     private readonly Embedding[] _xposEmb; // one per part of a composite XPOS vocabulary
-    private readonly Linear _transPretrained;
+    private readonly Linear? _transPretrained;
     private readonly HighwayLstm _lstm;
     private readonly DeepBiaffine _unlabeled, _deprel;
     private readonly DeepBiaffine? _linearizationScorer, _distanceScorer;
     private readonly Device _device = Weights.Device; // the device the model was loaded on
 
+    /// <param name="pretrain">The word vectors, or null for a <c>_nopretrain</c> parser (no trans_pretrained columns).</param>
     /// <param name="transformerDim">The transformer's hidden size for a <c>_electra-large</c> parser (the last input columns), else 0.</param>
-    public DepparseNet(Checkpoint ckpt, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward, int transformerDim = 0)
+    public DepparseNet(Checkpoint ckpt, Pretrain? pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward, int transformerDim = 0)
     {
         _pretrain = pretrain;
         (_charlmForward, _charlmBackward) = (charlmForward, charlmBackward);
@@ -38,7 +39,7 @@ internal sealed class DepparseNet : IDepparseNet
 
         // Stanza appends the UPOS+XPOS embedding twice where it means to add the UFeats one, so the
         // UFeats embeddings are loaded by Stanza but never used.
-        int inputSize = transformed + 2 * wordEmb + 2 * tagEmb;
+        int inputSize = (pretrain == null ? 0 : transformed) + 2 * wordEmb + 2 * tagEmb;
         if (_charlmForward != null)
         {
             inputSize += _charlmForward.HiddenDim + _charlmBackward!.HiddenDim;
@@ -58,7 +59,7 @@ internal sealed class DepparseNet : IDepparseNet
         _xposEmb = xpos.IsComposite
             ? [.. xpos.Sizes.Select((n, i) => nn.Embedding(n, tagEmb, padding_idx: 0).LoadFrom(ckpt, model, $"xpos_emb.{i}."))]
             : [nn.Embedding(Count("xpos"), tagEmb, padding_idx: 0).LoadFrom(ckpt, model, "xpos_emb.")];
-        _transPretrained = nn.Linear(pretrain.Dim, transformed, hasBias: false).LoadFrom(ckpt, model, "trans_pretrained.");
+        _transPretrained = pretrain == null ? null : nn.Linear(pretrain.Dim, transformed, hasBias: false).LoadFrom(ckpt, model, "trans_pretrained.");
         inputSize += transformerDim;
         _lstm = new HighwayLstm(ckpt, model, "parserlstm", inputSize, hidden, config["num_layers"]!.GetValue<int>());
 
@@ -136,8 +137,9 @@ internal sealed class DepparseNet : IDepparseNet
         if (batch.Transformer != null)
             chars = [.. chars, Packed(TransformerRows.Tensor(batch.Transformer, batch.TransformerDim, _device))];
 
+        Tensor[] pretrained = _pretrain == null ? [] : [_transPretrained!.forward(_pretrain.Embeddings[Ids(batch.Pretrained)])];
         var input = cat([
-            _transPretrained.forward(_pretrain.Embeddings[Ids(batch.Pretrained)]),
+            .. pretrained,
             _wordEmb.forward(Ids(batch.Word)),
             _lemmaEmb.forward(Ids(batch.Lemma)),
             pos,
@@ -183,8 +185,9 @@ internal sealed class DepparseNet : IDepparseNet
 
     public void Dispose()
     {
-        foreach (var m in (nn.Module[])[_wordEmb, _lemmaEmb, _uposEmb, _transPretrained, .. _xposEmb])
+        foreach (var m in (nn.Module[])[_wordEmb, _lemmaEmb, _uposEmb, .. _xposEmb])
             m.Dispose();
+        _transPretrained?.Dispose();
         _lstm.Dispose();
         _charModel?.Dispose();
         _transChar?.Dispose();
@@ -278,7 +281,7 @@ internal static class DependencyParserLoad
         /// </summary>
         /// <param name="device">Where the model runs; CPU by default. Load the pretrain and charlms on the same device.</param>
         /// <param name="transformer">The transformer a <c>_electra-large</c> parser reads (shared, the caller owns it).</param>
-        public static DependencyParser Load(string basePath, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward, Device? device = null,
+        public static DependencyParser Load(string basePath, Pretrain? pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward, Device? device = null,
             TransformerEmbedder? transformer = null) =>
             Weights.On(device, () =>
             {
@@ -286,7 +289,7 @@ internal static class DependencyParserLoad
                 return new DependencyParser(ckpt, pretrain, charlm =>
                 {
                     DependencyParser.CheckCharlms(charlm, charlmForward?.IsForward, charlmBackward?.IsForward);
-                    return new DepparseNet(ckpt, pretrain, charlm ? charlmForward : null, charlm ? charlmBackward : null,
+                    return new DepparseNet(ckpt, DependencyParser.UsesPretrain(ckpt) ? pretrain : null, charlm ? charlmForward : null, charlm ? charlmBackward : null,
                         ckpt.Root["config"]!["bert_model"] == null ? 0 : transformer?.Net.Config.Hidden ?? 0);
                 }, transformer);
             });

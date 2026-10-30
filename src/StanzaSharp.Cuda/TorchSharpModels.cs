@@ -48,10 +48,10 @@ internal sealed class TorchSharpModels(torch.Device? device, bool disableTf32) :
     public override TransformerEmbedder Transformer(string directory, string name) =>
         TransformerEmbedder.Load(directory, name, (config, ckpt) => new TransformerNet(config, ckpt));
 
-    public override PosTagger Pos(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer) =>
+    public override PosTagger Pos(string basePath, Pretrain? pretrain, Charlms charlms, TransformerEmbedder? transformer) =>
         PosTagger.Load(basePath, pretrain, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward), transformer: transformer);
 
-    public override DependencyParser Depparse(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer) =>
+    public override DependencyParser Depparse(string basePath, Pretrain? pretrain, Charlms charlms, TransformerEmbedder? transformer) =>
         DependencyParser.Load(basePath, pretrain, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward), transformer: transformer);
 
     public override NerTagger Ner(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer, int? tagSet) =>

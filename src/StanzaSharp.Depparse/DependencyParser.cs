@@ -22,7 +22,7 @@ internal sealed class DependencyParser : IDisposable
     internal const int RootId = 3, VocabPrefixSize = 4; // vocab.ROOT_ID (in every vocab, the character model's too), VOCAB_PREFIX_SIZE
     private const int SeparateBatchLength = 150;       // depparse_processor.DEFAULT_SEPARATE_BATCH
 
-    private readonly Pretrain _pretrain;
+    private readonly Pretrain? _pretrain;
     private readonly Dictionary<string, int> _wordVocab, _lemmaVocab, _uposVocab;
     private readonly XposVocab _xposVocab;
     private readonly string[] _deprels;
@@ -32,12 +32,15 @@ internal sealed class DependencyParser : IDisposable
     private readonly TransformerEmbedder? _transformer;
     private readonly float[]? _layerMix;
 
+    /// <param name="pretrain">The word vectors; ignored by a parser without them (<c>_nopretrain</c>: config <c>pretrain</c> false).</param>
     /// <param name="transformer">The transformer a <c>_electra-large</c> parser reads (the pipeline's, shared); else ignored.</param>
-    internal DependencyParser(Checkpoint ckpt, Pretrain pretrain, Func<bool, IDepparseNet> net, TransformerEmbedder? transformer = null)
+    internal DependencyParser(Checkpoint ckpt, Pretrain? pretrain, Func<bool, IDepparseNet> net, TransformerEmbedder? transformer = null)
     {
-        _pretrain = pretrain;
         var config = ckpt.Root["config"]!;
         CheckSupported(ckpt.Root, config);
+        _pretrain = UsesPretrain(ckpt)
+            ? pretrain ?? throw new ArgumentException("This parser reads word vectors (pretrain), but none were given", nameof(pretrain))
+            : null;
         _layerMix = TransformerEmbedder.LayerMix(ckpt, transformer, "depparse");
         _transformer = config["bert_model"] == null ? null : transformer;
         var vocab = ckpt.Root["vocab"]!;
@@ -55,7 +58,7 @@ internal sealed class DependencyParser : IDisposable
     }
 
     /// <summary><c>Load</c> (StanzaSharp.Cuda) on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
-    public static DependencyParser LoadManaged(string basePath, Pretrain pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward,
+    public static DependencyParser LoadManaged(string basePath, Pretrain? pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward,
         TransformerEmbedder? transformer = null)
     {
         var ckpt = Checkpoint.Load(basePath);
@@ -63,9 +66,12 @@ internal sealed class DependencyParser : IDisposable
         return new DependencyParser(ckpt, pretrain, charlm =>
         {
             CheckCharlms(charlm, charlmForward?.IsForward, charlmBackward?.IsForward);
-            return new ManagedDepparseNet(ckpt, pretrain, charlm ? charlmForward : null, charlm ? charlmBackward : null, transformerDim);
+            return new ManagedDepparseNet(ckpt, UsesPretrain(ckpt) ? pretrain : null, charlm ? charlmForward : null, charlm ? charlmBackward : null, transformerDim);
         }, transformer);
     }
+
+    /// <summary>Whether the parser reads word vectors: config <c>pretrain</c> (false in the <c>_nopretrain</c> parsers).</summary>
+    internal static bool UsesPretrain(Checkpoint ckpt) => ckpt.Root["config"]!["pretrain"]?.GetValue<bool>() == true;
 
     /// <summary>Whether this parser reads a transformer (<c>_electra-large</c>).</summary>
     internal bool UsesTransformer => _transformer != null;
@@ -395,7 +401,7 @@ internal sealed class DependencyParser : IDisposable
                 input.Lemma[row + j + 1] = _lemmaVocab.GetValueOrDefault(PyString.Lower(w.Lemma ?? "_"), 1);
                 input.Upos[row + j + 1] = _uposVocab.GetValueOrDefault(w.Upos ?? "_", 1);
                 _xposVocab.Ids(w.Xpos ?? "_", input.Xpos.AsSpan((row + j + 1) * parts, parts));
-                input.Pretrained[row + j + 1] = _pretrain.UnitToId(lower);
+                input.Pretrained[row + j + 1] = _pretrain?.UnitToId(lower) ?? 0;
             }
         }
 
@@ -413,7 +419,6 @@ internal sealed class DependencyParser : IDisposable
         Require(root["model_type"]?.GetValue<string>() is null or "graph", "a transition or ensemble parser");
         Require(!Flag("use_arc_embedding", false), "use_arc_embedding");
         Require(Flag("char", false) && config["char_emb_dim"]!.GetValue<int>() > 0, "a configuration without character features");
-        Require(Flag("pretrain", false), "a configuration without pretrain");
         Require(config["word_emb_dim"]!.GetValue<int>() > 0 && config["tag_emb_dim"]!.GetValue<int>() > 0, "disabled word or tag embeddings");
         Require(Flag("use_upos", true) && Flag("use_xpos", true) && Flag("use_ufeats", true), "a subset of UPOS/XPOS/UFeats");
         Require(!Flag("reversed", false), "reversed sentences");

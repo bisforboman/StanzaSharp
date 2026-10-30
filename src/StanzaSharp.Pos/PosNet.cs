@@ -31,20 +31,22 @@ internal interface IPosNet : IDisposable
 /// </summary>
 internal sealed unsafe class ManagedPosNet : IPosNet
 {
-    private readonly Pretrain _pretrain;
+    private readonly Pretrain? _pretrain;
     private readonly ManagedCharLanguageModel? _charlmForward, _charlmBackward;
     private readonly ManagedCharacterModel? _charModel;
     private readonly PackedMatrix? _transChar;
     private readonly float[] _wordEmb; // [words, wordDim]
-    private readonly int _wordDim, _transformed, _inputSize, _transformerCol, _biaff, _xposHid, _upos;
+    private readonly int _wordDim, _transformed, _pretrainCols, _inputSize, _transformerCol, _biaff, _xposHid, _upos;
     private readonly int[] _xpos, _xposOffsets, _feats, _featOffsets;
-    private readonly PackedMatrix _transPretrained, _hid, _xposClf, _featsClf;
+    private readonly PackedMatrix? _transPretrained;
+    private readonly PackedMatrix _hid, _xposClf, _featsClf;
     private readonly float[] _hidBias, _xposBias, _featsBias;
     private readonly float[] _uposClf, _uposBias; // [upos, biaff], [upos]: dot products in double (see Heads)
     private readonly ManagedHighwayLstm _lstm;
 
+    /// <param name="pretrain">The word vectors, or null for a <c>_nopretrain</c> tagger (no trans_pretrained columns).</param>
     /// <param name="transformerDim">The transformer's hidden size for a <c>_electra-large</c> tagger (the last input columns), else 0.</param>
-    public ManagedPosNet(Checkpoint ckpt, int upos, XposVocab xpos, int[] feats, Pretrain pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward,
+    public ManagedPosNet(Checkpoint ckpt, int upos, XposVocab xpos, int[] feats, Pretrain? pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward,
         int transformerDim = 0)
     {
         var config = ckpt.Root["config"]!;
@@ -61,7 +63,8 @@ internal sealed unsafe class ManagedPosNet : IPosNet
         int tagEmb = config["tag_emb_dim"]!.GetValue<int>();
         _transformed = config["transformed_dim"]!.GetValue<int>();
         _wordDim = config["word_emb_dim"]!.GetValue<int>();
-        _inputSize = _wordDim + _transformed;
+        _pretrainCols = pretrain == null ? 0 : _transformed;
+        _inputSize = _wordDim + _pretrainCols;
         if (_charlmForward != null)
         {
             _inputSize += _charlmForward.HiddenDim + _charlmBackward!.HiddenDim;
@@ -77,7 +80,7 @@ internal sealed unsafe class ManagedPosNet : IPosNet
         _transformerCol = _inputSize;
         _inputSize += transformerDim;
         _wordEmb = T("word_emb.weight");
-        _transPretrained = new PackedMatrix(T("trans_pretrained.weight"), _transformed, pretrain.Dim);
+        _transPretrained = pretrain == null ? null : new PackedMatrix(T("trans_pretrained.weight"), _transformed, pretrain.Dim);
         _lstm = new ManagedHighwayLstm(ckpt, model, "taggerlstm", _inputSize, hidden, config["num_layers"]!.GetValue<int>());
 
         // upos_hid, tag_hid.xpos and tag_hid.feats all read the LSTM output: one GEMM.
@@ -171,25 +174,26 @@ internal sealed unsafe class ManagedPosNet : IPosNet
         var scratch = ArrayPool<float>.Shared.Rent(rows * Math.Max(Math.Max(ldHid, ldx), ldf));
 
         // The LSTM output; before that, scratch for the pretrain vectors and the character model's output.
-        var hidden = ArrayPool<float>.Shared.Rent(rows * Math.Max(_lstm.OutputSize, Math.Max(_pretrain.Dim, _charModel?.OutputDim ?? 0)));
+        var hidden = ArrayPool<float>.Shared.Rent(rows * Math.Max(_lstm.OutputSize, Math.Max(_pretrain?.Dim ?? 0, _charModel?.OutputDim ?? 0)));
         try
         {
-            // Word embedding and trans_pretrained(pretrain vector): columns [0, wordDim) and [wordDim, wordDim + transformed).
-            var vectors = _pretrain.CpuVectors();
-            int dim = _pretrain.Dim, ldt = _transPretrained.PaddedN;
+            // Word embedding and trans_pretrained(pretrain vector): columns [0, wordDim) and [wordDim, wordDim + transformed)
+            // (none without word vectors).
             for (int k = 0; k < rows; k++)
+                _wordEmb.AsSpan((int)wordIds[k] * _wordDim, _wordDim).CopyTo(x.AsSpan(packedRow[k] * inSize));
+            if (_pretrain != null)
             {
-                int r = packedRow[k];
-                _wordEmb.AsSpan((int)wordIds[k] * _wordDim, _wordDim).CopyTo(x.AsSpan(r * inSize));
-                vectors.Slice((int)pretrainIds[k] * dim, dim).CopyTo(hidden.AsSpan(r * dim)); // hidden as scratch
+                var vectors = _pretrain.CpuVectors();
+                int dim = _pretrain.Dim, ldt = _transPretrained!.PaddedN;
+                for (int k = 0; k < rows; k++)
+                    vectors.Slice((int)pretrainIds[k] * dim, dim).CopyTo(hidden.AsSpan(packedRow[k] * dim)); // hidden as scratch
+                fixed (float* ph = hidden, ps = scratch)
+                    Gemm.Run(ph, rows, dim, _transPretrained, null, ps, ldt, ct);
+                for (int r = 0; r < rows; r++)
+                    scratch.AsSpan(r * ldt, _transformed).CopyTo(x.AsSpan(r * inSize + _wordDim));
             }
 
-            fixed (float* ph = hidden, ps = scratch)
-                Gemm.Run(ph, rows, dim, _transPretrained, null, ps, ldt, ct);
-            for (int r = 0; r < rows; r++)
-                scratch.AsSpan(r * ldt, _transformed).CopyTo(x.AsSpan(r * inSize + _wordDim));
-
-            int charCol = _wordDim + _transformed;
+            int charCol = _wordDim + _pretrainCols;
             if (_charModel != null)
             {
                 // The character model's vector per word (packed row order), then trans_char.

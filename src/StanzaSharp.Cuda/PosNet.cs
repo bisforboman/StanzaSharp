@@ -10,12 +10,12 @@ namespace StanzaSharp.Pos;
 /// <summary>stanza/models/pos/model.py <c>Tagger.forward</c> on TorchSharp.</summary>
 internal sealed class PosNet : IPosNet
 {
-    private readonly Pretrain _pretrain;
+    private readonly Pretrain? _pretrain;
     private readonly CharLanguageModel? _charlmForward, _charlmBackward;
     private readonly CharacterModel? _charModel;
     private readonly Linear? _transChar;
     private readonly Embedding _wordEmb, _uposEmb;
-    private readonly Linear _transPretrained;
+    private readonly Linear? _transPretrained;
     private readonly HighwayLstm _lstm;
     private readonly Linear _uposHid, _xposHid, _featsHid;
     private readonly Tensor _uposClfWeight, _uposClfBias; // upos_clf in float64 (see Forward)
@@ -24,8 +24,9 @@ internal sealed class PosNet : IPosNet
     private readonly Device _device = Weights.Device; // the device the model was loaded on
     private readonly int _transformerDim;
 
+    /// <param name="pretrain">The word vectors, or null for a <c>_nopretrain</c> tagger (no trans_pretrained columns).</param>
     /// <param name="transformerDim">The transformer's hidden size for a <c>_electra-large</c> tagger (the last input columns), else 0.</param>
-    public PosNet(Checkpoint ckpt, int words, int upos, XposVocab xpos, int[] feats, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward,
+    public PosNet(Checkpoint ckpt, int words, int upos, XposVocab xpos, int[] feats, Pretrain? pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward,
         int transformerDim = 0)
     {
         var config = ckpt.Root["config"]!;
@@ -38,7 +39,7 @@ internal sealed class PosNet : IPosNet
         int tagEmb = config["tag_emb_dim"]!.GetValue<int>();
         int transformed = config["transformed_dim"]!.GetValue<int>();
         int wordEmb = config["word_emb_dim"]!.GetValue<int>();
-        int inputSize = wordEmb + transformed;
+        int inputSize = wordEmb + (pretrain == null ? 0 : transformed);
         if (_charlmForward != null)
         {
             inputSize += _charlmForward.HiddenDim + _charlmBackward!.HiddenDim;
@@ -53,7 +54,7 @@ internal sealed class PosNet : IPosNet
 
         _wordEmb = nn.Embedding(words, wordEmb, padding_idx: 0).LoadFrom(ckpt, model, "word_emb.");
         _uposEmb = nn.Embedding(upos, tagEmb, padding_idx: 0).LoadFrom(ckpt, model, "upos_emb.");
-        _transPretrained = nn.Linear(pretrain.Dim, transformed, hasBias: false).LoadFrom(ckpt, model, "trans_pretrained.");
+        _transPretrained = pretrain == null ? null : nn.Linear(pretrain.Dim, transformed, hasBias: false).LoadFrom(ckpt, model, "trans_pretrained.");
         _transformerDim = transformerDim;
         inputSize += transformerDim;
         _lstm = new HighwayLstm(ckpt, model, "taggerlstm", inputSize, hidden, config["num_layers"]!.GetValue<int>());
@@ -97,7 +98,9 @@ internal sealed class PosNet : IPosNet
         }
 
         var words = _wordEmb.forward(torch.tensor(wordOf.Select(k => wordIds[k]).ToArray(), device: _device));
-        var pretrained = _transPretrained.forward(_pretrain.Embeddings[torch.tensor(wordOf.Select(k => pretrainIds[k]).ToArray(), device: _device)]);
+        Tensor[] pretrained = _pretrain == null
+            ? []
+            : [_transPretrained!.forward(_pretrain.Embeddings[torch.tensor(wordOf.Select(k => pretrainIds[k]).ToArray(), device: _device)])];
         Tensor[] chars;
         if (_charModel != null)
         {
@@ -123,8 +126,8 @@ internal sealed class PosNet : IPosNet
         ct.ThrowIfCancellationRequested();
         if (transformer != null)
             chars = [.. chars, Packed(TransformerRows.Tensor(transformer, _transformerDim, _device))];
-        var input = cat([words, pretrained, .. chars], 1);
-        foreach (var t in (Tensor[])[words, pretrained, .. chars])
+        var input = cat([words, .. pretrained, .. chars], 1);
+        foreach (var t in (Tensor[])[words, .. pretrained, .. chars])
             t.Dispose();
         var packed = Rnn.Pack(input, lengths);
         input.Dispose();
@@ -149,8 +152,9 @@ internal sealed class PosNet : IPosNet
 
     public void Dispose()
     {
-        foreach (var m in new nn.Module[] { _wordEmb, _uposEmb, _transPretrained, _uposHid, _xposHid, _featsHid })
+        foreach (var m in new nn.Module[] { _wordEmb, _uposEmb, _uposHid, _xposHid, _featsHid })
             m.Dispose();
+        _transPretrained?.Dispose();
         _uposClfWeight.Dispose();
         _uposClfBias.Dispose();
         _lstm.Dispose();
@@ -172,7 +176,7 @@ internal static class PosTaggerLoad
         /// </summary>
         /// <param name="device">Where the model runs; CPU by default. Load the pretrain and charlms on the same device.</param>
         /// <param name="transformer">The transformer a <c>_electra-large</c> tagger reads (shared, the caller owns it).</param>
-        public static PosTagger Load(string basePath, Pretrain pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward, Device? device = null,
+        public static PosTagger Load(string basePath, Pretrain? pretrain, CharLanguageModel? charlmForward, CharLanguageModel? charlmBackward, Device? device = null,
             TransformerEmbedder? transformer = null) =>
             Weights.On(device, () =>
             {
@@ -182,7 +186,7 @@ internal static class PosTaggerLoad
                     if (charlm && (charlmForward == null || charlmBackward == null || !charlmForward.IsForward || charlmBackward.IsForward))
                         throw new ArgumentException("This tagger needs the forward charlm, then the backward one");
                     var (words, upos, xpos) = PosTagger.Counts(ckpt);
-                    return new PosNet(ckpt, words, upos, xpos, feats, pretrain, charlm ? charlmForward : null, charlm ? charlmBackward : null,
+                    return new PosNet(ckpt, words, upos, xpos, feats, PosTagger.UsesPretrain(ckpt) ? pretrain : null, charlm ? charlmForward : null, charlm ? charlmBackward : null,
                         ckpt.Root["config"]!["bert_model"] == null ? 0 : transformer?.Net.Config.Hidden ?? 0);
                 }, transformer);
             });

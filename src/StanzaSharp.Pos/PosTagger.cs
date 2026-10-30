@@ -19,7 +19,7 @@ internal sealed class PosTagger : IDisposable
     // pos_processor.py: batch_maximum_tokens, which the English model's config does not set.
     private const int MaximumTokens = 5000;
 
-    private readonly Pretrain _pretrain;
+    private readonly Pretrain? _pretrain;
     private readonly Dictionary<string, int> _wordVocab;
     private readonly string[] _upos;
     private readonly XposVocab _xpos;
@@ -31,11 +31,14 @@ internal sealed class PosTagger : IDisposable
     private readonly float[]? _layerMix;
 
     /// <param name="transformer">The transformer a <c>_electra-large</c> tagger reads (the pipeline's, shared); else ignored.</param>
-    internal PosTagger(Checkpoint ckpt, Pretrain pretrain, Func<bool, int[], IPosNet> net, TransformerEmbedder? transformer = null)
+    /// <param name="pretrain">The word vectors; ignored by a tagger without them (<c>_nopretrain</c>: config <c>pretrain</c> false).</param>
+    internal PosTagger(Checkpoint ckpt, Pretrain? pretrain, Func<bool, int[], IPosNet> net, TransformerEmbedder? transformer = null)
     {
-        _pretrain = pretrain;
         var config = ckpt.Root["config"]!;
         CheckSupported(config);
+        _pretrain = UsesPretrain(ckpt)
+            ? pretrain ?? throw new ArgumentException("This tagger reads word vectors (pretrain), but none were given", nameof(pretrain))
+            : null;
         _layerMix = TransformerEmbedder.LayerMix(ckpt, transformer, "pos");
         _transformer = config["bert_model"] == null ? null : transformer;
         RemapLegacyHeads(ckpt.Root["model"]!.AsObject());
@@ -51,7 +54,7 @@ internal sealed class PosTagger : IDisposable
     }
 
     /// <summary><c>Load</c> (StanzaSharp.Cuda) on the managed backend (<see cref="Backend.Managed"/>), with the managed charlms.</summary>
-    public static PosTagger LoadManaged(string basePath, Pretrain pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward,
+    public static PosTagger LoadManaged(string basePath, Pretrain? pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward,
         TransformerEmbedder? transformer = null)
     {
         var ckpt = Checkpoint.Load(basePath);
@@ -61,7 +64,7 @@ internal sealed class PosTagger : IDisposable
             if (charlm && (charlmForward == null || charlmBackward == null || !charlmForward.IsForward || charlmBackward.IsForward))
                 throw new ArgumentException("This tagger needs the forward charlm, then the backward one");
             var (_, upos, xpos) = Counts(ckpt);
-            return new ManagedPosNet(ckpt, upos, xpos, feats, pretrain, charlm ? charlmForward : null, charlm ? charlmBackward : null, transformerDim);
+            return new ManagedPosNet(ckpt, upos, xpos, feats, UsesPretrain(ckpt) ? pretrain : null, charlm ? charlmForward : null, charlm ? charlmBackward : null, transformerDim);
         }, transformer);
     }
 
@@ -72,6 +75,9 @@ internal sealed class PosTagger : IDisposable
     internal TransformerReader? TransformerReader(Document doc) => _transformer == null
         ? null
         : new TransformerReader(_transformer, _layerMix, [.. doc.Sentences.Where(s => s.Words.Any()).Select(s => (IReadOnlyList<string>)[.. s.Words.Select(w => Punct.Simplify(w.Text))])]);
+
+    /// <summary>Whether the tagger reads word vectors: config <c>pretrain</c> (false in the <c>_nopretrain</c> taggers).</summary>
+    internal static bool UsesPretrain(Checkpoint ckpt) => ckpt.Root["config"]!["pretrain"]?.GetValue<bool>() == true;
 
     /// <summary>The vocabularies' sizes: words, UPOS, and the XPOS vocabulary (a scorer per part if composite).</summary>
     internal static (int Words, int Upos, XposVocab Xpos) Counts(Checkpoint ckpt)
@@ -131,7 +137,7 @@ internal sealed class PosTagger : IDisposable
         {
             var lower = PyString.Lower(flat[k]);
             wordIds[k] = _wordVocab.GetValueOrDefault(lower, _wordUnk);
-            pretrainIds[k] = _pretrain.UnitToId(lower);
+            pretrainIds[k] = _pretrain?.UnitToId(lower) ?? 0;
         }
 
         // extract_bert_embeddings over the simplify_punct'ed words (data.py's text), without the endpoints.
@@ -206,7 +212,6 @@ internal sealed class PosTagger : IDisposable
 
         Require(config["char"]?.GetValue<bool>() == true && config["char_emb_dim"]?.GetValue<int>() > 0, "a configuration without character features");
         Require(config["charlm_transform_dim"] == null, "charlm_transform_dim");
-        Require(config["pretrain"]?.GetValue<bool>() == true, "a configuration without pretrain");
         Require(config["share_hid"]?.GetValue<bool>() != true, "share_hid");
 
         // Older taggers (German gsd/hdt) have neither entry: Stanza's defaults, tag_emb and the three native columns.
