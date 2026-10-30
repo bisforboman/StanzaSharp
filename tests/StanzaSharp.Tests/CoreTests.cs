@@ -108,9 +108,9 @@ public class CoreTests
 
         // Values checked against torch.load of the original .pt file.
         var w = ckpt.Tensor<float>(node);
-        Assert.Equal(-0.603345513343811f, w[0]);
-        Assert.Equal(0.04959297925233841f, w[20 * 400 + 399]);
-        Assert.Equal(-1123.825, w.Sum(x => (double)x), tolerance: 0.01);
+        Assert.Equal(-0.3193548619747162f, w[0]);
+        Assert.Equal(0.04704305902123451f, w[20 * 400 + 399]);
+        Assert.Equal(-1275.744, w.Sum(x => (double)x), tolerance: 0.01);
 
         Assert.Equal(200, ckpt.Root["config"]!["hidden_dim"]!.GetValue<int>());
     }

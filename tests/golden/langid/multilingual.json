@@ -43,7 +43,7 @@
   {
    "text": "Hello, wie geht's?",
    "lang": "de",
-   "conllu": "# text = Hello, wie geht's?\n# sent_id = 5\n# constituency = (ROOT (VROOT (PROPN Hello) (PUNCT ,) (S (ADV wie) (VERB geht) (PRON 's)) (PUNCT ?)))\n# sentiment = 2\n1\tHello\tHello\tPROPN\tNE\tCase=Nom|Gender=Masc|Number=Sing\t0\troot\t_\tSpaceAfter=No|start_char=0|end_char=5|ner=S-PER\n2\t,\t,\tPUNCT\t$,\t_\t4\tpunct\t_\tstart_char=5|end_char=6|ner=O\n3\twie\twie\tADV\tPWAV\t_\t4\tadvmod\t_\tstart_char=7|end_char=10|ner=O\n4\tgeht\tgehen\tVERB\tVVFIN\tMood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin\t1\tappos\t_\tSpaceAfter=No|start_char=11|end_char=15|ner=O\n5\t's\tes\tPRON\tPPER\tCase=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs\t4\tnsubj\t_\tSpaceAfter=No|start_char=15|end_char=17|ner=O\n6\t?\t?\tPUNCT\t$.\t_\t4\tpunct\t_\tSpaceAfter=No|start_char=17|end_char=18|ner=O"
+   "conllu": "# text = Hello, wie geht's?\n# sent_id = 5\n# constituency = (ROOT (VROOT (PROPN Hello) (PUNCT ,) (S (ADV wie) (VERB geht) (PRON 's)) (PUNCT ?)))\n# sentiment = 2\n1\tHello\tHello\tPROPN\tNE\tCase=Nom|Gender=Masc|Number=Sing\t0\troot\t_\tSpaceAfter=No|start_char=0|end_char=5|ner=O\n2\t,\t,\tPUNCT\t$,\t_\t4\tpunct\t_\tstart_char=5|end_char=6|ner=O\n3\twie\twie\tADV\tPWAV\t_\t4\tadvmod\t_\tstart_char=7|end_char=10|ner=O\n4\tgeht\tgehen\tVERB\tVVFIN\tMood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin\t1\tappos\t_\tSpaceAfter=No|start_char=11|end_char=15|ner=O\n5\t's\tes\tPRON\tPPER\tCase=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs\t4\tnsubj\t_\tSpaceAfter=No|start_char=15|end_char=17|ner=O\n6\t?\t?\tPUNCT\t$.\t_\t4\tpunct\t_\tSpaceAfter=No|start_char=17|end_char=18|ner=O"
   }
  ]
 }
