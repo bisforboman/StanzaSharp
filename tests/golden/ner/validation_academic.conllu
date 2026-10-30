@@ -4,7 +4,7 @@
 2	Hartwell	Hartwell	PROPN	NNP	Number=Sing	5	compound	_	start_char=4|end_char=12|ner=B-ORG
 3	v.	v.	PROPN	NNP	Number=Sing	2	flat	_	start_char=13|end_char=15|ner=I-ORG
 4	Dunmore	Dunmore	PROPN	NNP	Number=Sing	5	compound	_	start_char=16|end_char=23|ner=I-ORG
-5	Logistics	Logistic	PROPN	NNP	Number=Sing	1	obj	_	SpaceAfter=No|start_char=24|end_char=33|ner=I-ORG
+5	Logistics	Logistics	PROPN	NNP	Number=Sing	1	obj	_	SpaceAfter=No|start_char=24|end_char=33|ner=I-ORG
 6	,	,	PUNCT	,	_	7	punct	_	start_char=33|end_char=34|ner=I-ORG
 7	LLC	LLC	PROPN	NNP	Number=Sing	5	nmod:desc	_	SpaceAfter=No|start_char=35|end_char=38|ner=E-ORG
 8	,	,	PUNCT	,	_	9	punct	_	start_char=38|end_char=39|ner=O
@@ -15,11 +15,11 @@
 13	1049	1049	NUM	CD	NumForm=Digit|NumType=Card	5	list	_	start_char=55|end_char=59|ner=S-CARDINAL
 14	(	(	PUNCT	-LRB-	_	15	punct	_	SpaceAfter=No|start_char=60|end_char=61|ner=O
 15	9th	9th	NOUN	NN	Number=Sing|NumForm=Combi|NumType=Ord	5	appos	_	start_char=61|end_char=64|ner=S-ORDINAL
-16	Cir.	Cirober	PROPN	NNP	Abbr=Yes|Number=Sing	15	nmod:unmarked	_	start_char=65|end_char=69|ner=O
+16	Cir.	Cirson	PROPN	NNP	Number=Sing	15	nmod:unmarked	_	start_char=65|end_char=69|ner=O
 17	2008	2008	NUM	CD	NumForm=Digit|NumType=Card	15	nmod:unmarked	_	SpaceAfter=No|start_char=70|end_char=74|ner=S-DATE
 18	)	)	PUNCT	-RRB-	_	15	punct	_	start_char=74|end_char=75|ner=O
 19	(	(	PUNCT	-LRB-	_	20	punct	_	SpaceAfter=No|start_char=76|end_char=77|ner=O
-20	holding	hold	VERB	VBG	VerbForm=Ger	1	advcl	_	start_char=77|end_char=84|ner=O
+20	holding	hold	VERB	VBG	Tense=Pres|VerbForm=Part	1	advcl	_	start_char=77|end_char=84|ner=O
 21	that	that	SCONJ	IN	_	25	mark	_	start_char=85|end_char=89|ner=O
 22	the	the	DET	DT	Definite=Def|PronType=Art	23	det	_	start_char=90|end_char=93|ner=O
 23	clause	clause	NOUN	NN	Number=Sing	25	nsubj	_	start_char=94|end_char=100|ner=O
@@ -49,7 +49,7 @@
 11	Bankr	Bankr	PROPN	NNP	Number=Sing	7	appos	_	SpaceAfter=No|start_char=164|end_char=169|ner=O
 12	.	.	PUNCT	.	_	11	punct	_	start_char=169|end_char=170|ner=O
 13	D.	D.	PROPN	NNP	Abbr=Yes|Number=Sing	11	flat	_	start_char=171|end_char=173|ner=S-NORP
-14	Kan.	Kanuary	PROPN	NNP	Number=Sing	13	flat	_	start_char=174|end_char=178|ner=O
+14	Kan.	Kan.	PROPN	NNP	Number=Sing	13	flat	_	start_char=174|end_char=178|ner=O
 15	1987	1987	NUM	CD	NumForm=Digit|NumType=Card	13	nmod:unmarked	_	SpaceAfter=No|start_char=179|end_char=183|ner=S-DATE
 16	)	)	PUNCT	-RRB-	_	11	punct	_	SpaceAfter=No|start_char=183|end_char=184|ner=O
 17	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=184|end_char=185|ner=O
@@ -73,15 +73,15 @@
 15	except	except	ADP	IN	_	17	mark	_	start_char=256|end_char=262|ner=O
 16	as	as	SCONJ	IN	_	17	mark	_	start_char=263|end_char=265|ner=O
 17	set	set	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	10	advcl	_	start_char=266|end_char=269|ner=O
-18	forth	forth	ADV	RB	_	17	advmod	_	start_char=270|end_char=275|ner=O
-19	in	in	ADP	IN	_	21	case	_	start_char=276|end_char=278|ner=O
-20	§	§	SYM	SYM	_	21	nmod:unmarked	_	start_char=279|end_char=280|ner=O
-21	12	12	NUM	CD	NumForm=Digit|NumType=Card	17	obl	_	SpaceAfter=No|start_char=281|end_char=283|ner=S-CARDINAL
+18	forth	forth	ADV	RB	Degree=Pos	17	advmod	_	start_char=270|end_char=275|ner=O
+19	in	in	ADP	IN	_	20	case	_	start_char=276|end_char=278|ner=O
+20	§	§	PROPN	NNP	Number=Sing	17	obl	_	start_char=279|end_char=280|ner=O
+21	12	12	NUM	CD	NumForm=Digit|NumType=Card	20	flat	_	SpaceAfter=No|start_char=281|end_char=283|ner=S-CARDINAL
 22	(	(	PUNCT	-LRB-	_	23	punct	_	SpaceAfter=No|start_char=283|end_char=284|ner=O
-23	b	billion	NUM	LS	NumForm=Digit|NumType=Card	21	nmod:unmarked	_	SpaceAfter=No|start_char=284|end_char=285|ner=O
+23	b	b	NOUN	NN	Number=Sing	20	appos	_	SpaceAfter=No|start_char=284|end_char=285|ner=O
 24	)	)	PUNCT	-RRB-	_	23	punct	_	SpaceAfter=No|start_char=285|end_char=286|ner=O
 25	(	(	PUNCT	-LRB-	_	26	punct	_	SpaceAfter=No|start_char=286|end_char=287|ner=O
-26	3	3	NUM	CD	NumForm=Digit|NumType=Card	3	parataxis	_	SpaceAfter=No|start_char=287|end_char=288|ner=S-CARDINAL
+26	3	3	NUM	CD	NumForm=Digit|NumType=Card	23	conj	_	SpaceAfter=No|start_char=287|end_char=288|ner=S-CARDINAL
 27	)	)	PUNCT	-RRB-	_	26	punct	_	SpaceAfter=No|start_char=288|end_char=289|ner=O
 28	.	.	PUNCT	.	_	3	punct	_	start_char=289|end_char=290|ner=O
 
@@ -93,7 +93,7 @@
 4	a	a	NUM	LS	NumForm=Digit|NumType=Card	1	discourse	_	SpaceAfter=No|start_char=301|end_char=302|ner=O
 5	)	)	PUNCT	-RRB-	_	4	punct	_	SpaceAfter=No|start_char=302|end_char=303|ner=O
 6	(	(	PUNCT	-LRB-	_	7	punct	_	SpaceAfter=No|start_char=303|end_char=304|ner=O
-7	ii	ii	NUM	LS	NumForm=Roman|NumType=Card	10	discourse	_	SpaceAfter=No|start_char=304|end_char=306|ner=O
+7	ii	ii	NUM	LS	NumForm=Digit|NumType=Card	10	discourse	_	SpaceAfter=No|start_char=304|end_char=306|ner=O
 8	)	)	PUNCT	-RRB-	_	7	punct	_	start_char=306|end_char=307|ner=O
 9	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	10	aux:pass	_	start_char=308|end_char=311|ner=O
 10	repealed	repeal	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	start_char=312|end_char=320|ner=O
@@ -105,17 +105,17 @@
 # sent_id = 5
 1	See	see	VERB	VB	Mood=Imp|VerbForm=Fin	0	root	_	start_char=330|end_char=333|ner=O
 2	42	42	NUM	CD	NumForm=Digit|NumType=Card	1	obj	_	start_char=334|end_char=336|ner=S-CARDINAL
-3	U.S.C.	U.S.C.	PROPN	NNP	Number=Sing	2	nmod:unmarked	_	start_char=337|end_char=343|ner=B-LAW
-4	§	§	PROPN	NNP	Number=Sing	2	nmod:unmarked	_	start_char=344|end_char=345|ner=I-LAW
-5	1983	1983	NUM	CD	NumForm=Digit|NumType=Card	2	nmod:unmarked	_	start_char=346|end_char=350|ner=E-LAW
+3	U.S.C.	u.s.c.	NOUN	NN	Number=Sing	2	nmod:unmarked	_	start_char=337|end_char=343|ner=B-LAW
+4	§	§	PROPN	NNP	Number=Sing	3	flat	_	start_char=344|end_char=345|ner=I-LAW
+5	1983	1983	NUM	CD	NumForm=Digit|NumType=Card	3	nmod:unmarked	_	start_char=346|end_char=350|ner=E-LAW
 6	(	(	PUNCT	-LRB-	_	7	punct	_	SpaceAfter=No|start_char=351|end_char=352|ner=O
-7	2018	2018	NUM	CD	NumForm=Digit|NumType=Card	2	nmod:unmarked	_	SpaceAfter=No|start_char=352|end_char=356|ner=S-DATE
+7	2018	2018	NUM	CD	NumForm=Digit|NumType=Card	3	nmod:unmarked	_	SpaceAfter=No|start_char=352|end_char=356|ner=S-DATE
 8	)	)	PUNCT	-RRB-	_	7	punct	_	SpaceAfter=No|start_char=356|end_char=357|ner=O
 9	;	;	PUNCT	:	_	10	punct	_	start_char=357|end_char=358|ner=O
-10	Fed.	Fednuary	PROPN	NNP	Abbr=Yes|Number=Sing	1	parataxis	_	start_char=359|end_char=363|ner=O
+10	Fed.	Fedruary	PROPN	NNP	Abbr=Yes|Number=Sing	1	parataxis	_	start_char=359|end_char=363|ner=O
 11	R.	R.	PROPN	NNP	Abbr=Yes|Number=Sing	10	flat	_	start_char=364|end_char=366|ner=O
-12	Civ.	Civober	PROPN	NNP	Abbr=Yes|Number=Sing	10	flat	_	start_char=367|end_char=371|ner=O
-13	P.	P.	PROPN	NNP	Abbr=Yes|Number=Sing	10	flat	_	start_char=372|end_char=374|ner=O
+12	Civ.	Civurday	PROPN	NNP	Abbr=Yes|Number=Sing	10	flat	_	start_char=367|end_char=371|ner=O
+13	P.	P.	PROPN	NNP	Number=Sing	10	flat	_	start_char=372|end_char=374|ner=O
 14	12	12	NUM	CD	NumForm=Digit|NumType=Card	10	flat	_	SpaceAfter=No|start_char=375|end_char=377|ner=S-CARDINAL
 15	(	(	PUNCT	-LRB-	_	16	punct	_	SpaceAfter=No|start_char=377|end_char=378|ner=O
 16	b	billion	NUM	CD	NumForm=Digit|NumType=Card	10	parataxis	_	SpaceAfter=No|start_char=378|end_char=379|ner=O
@@ -132,11 +132,11 @@
 2	's	's	PART	POS	_	1	case	_	start_char=395|end_char=397
 3	motion	motion	NOUN	NN	Number=Sing	5	nsubj:pass	_	start_char=398|end_char=404|ner=O
 4	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	5	aux:pass	_	start_char=405|end_char=407|ner=O
-5	GRANTED	gran	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	start_char=408|end_char=415|ner=O
+5	GRANTED	grant	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	start_char=408|end_char=415|ner=O
 6	in	in	ADP	IN	_	7	case	_	start_char=416|end_char=418|ner=O
 7	part	part	NOUN	NN	Number=Sing	5	obl	_	start_char=419|end_char=423|ner=O
 8	and	and	CCONJ	CC	_	9	cc	_	start_char=424|end_char=427|ner=O
-9	DENIED	denied	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	5	conj	_	start_char=428|end_char=434|ner=O
+9	DENIED	denr	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	5	conj	_	start_char=428|end_char=434|ner=O
 10	in	in	ADP	IN	_	11	case	_	start_char=435|end_char=437|ner=O
 11	part	part	NOUN	NN	Number=Sing	9	obl	_	SpaceAfter=No|start_char=438|end_char=442|ner=O
 12	.	.	PUNCT	.	_	5	punct	_	start_char=442|end_char=443|ner=O
@@ -158,12 +158,12 @@
 # text = SO ORDERED.
 # sent_id = 8
 1	SO	so	ADV	RB	_	2	advmod	_	start_char=494|end_char=496|ner=O
-2	ORDERED	order	VERB	VBN	Tense=Past|VerbForm=Part	0	root	_	SpaceAfter=No|start_char=497|end_char=504|ner=O
+2	ORDERED	order	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	SpaceAfter=No|start_char=497|end_char=504|ner=O
 3	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=504|end_char=505|ner=O
 
 # text = Id. at 1051.
 # sent_id = 9
-1	Id	id	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=507|end_char=509|ner=O
+1	Id	Id	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=507|end_char=509|ner=O
 2	.	.	PUNCT	.	_	1	punct	_	start_char=509|end_char=510|ner=O
 3	at	at	ADP	IN	_	4	case	_	start_char=511|end_char=513|ner=O
 4	1051	1051	NUM	CD	NumForm=Digit|NumType=Card	1	nmod	_	SpaceAfter=No|start_char=514|end_char=518|ner=S-CARDINAL
@@ -199,7 +199,7 @@
 2	noted	note	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	13	advcl	_	start_char=611|end_char=616|ner=O
 3	by	by	ADP	IN	_	4	case	_	start_char=617|end_char=619|ner=O
 4	Kowalski	Kowalski	PROPN	NNP	Number=Sing	2	obl:agent	_	start_char=620|end_char=628|ner=B-ORG
-5	et	et	X	FW	Foreign=Yes	6	cc	_	start_char=629|end_char=631|ner=I-ORG
+5	et	et	X	FW	_	6	cc	_	start_char=629|end_char=631|ner=I-ORG
 6	al.	al.	X	FW	_	4	conj	_	start_char=632|end_char=635|ner=E-ORG
 7	(	(	PUNCT	-LRB-	_	8	punct	_	SpaceAfter=No|start_char=636|end_char=637|ner=O
 8	2019	2019	NUM	CD	NumForm=Digit|NumType=Card	4	nmod:unmarked	_	SpaceAfter=No|start_char=637|end_char=641|ner=S-DATE
@@ -215,7 +215,7 @@
 
 # text = Similar findings were reported elsewhere [3, 7–9].
 # sent_id = 13
-1	Similar	Similar	ADJ	JJ	Degree=Pos	2	amod	_	start_char=687|end_char=694|ner=O
+1	Similar	similar	ADJ	JJ	Degree=Pos	2	amod	_	start_char=687|end_char=694|ner=O
 2	findings	finding	NOUN	NNS	Number=Plur	4	nsubj:pass	_	start_char=695|end_char=703|ner=O
 3	were	be	AUX	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	4	aux:pass	_	start_char=704|end_char=708|ner=O
 4	reported	report	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	start_char=709|end_char=717|ner=O
@@ -287,12 +287,12 @@
 13	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	14	cop	_	start_char=949|end_char=951|ner=O
 14	non-linear	non-linear	ADJ	JJ	Degree=Pos	9	ccomp	_	start_char=952|end_char=962|ner=O
 15	(	(	PUNCT	-LRB-	_	17	punct	_	SpaceAfter=No|start_char=963|end_char=964|ner=O
-16	r	be	NOUN	NN	Number=Sing	17	nsubj	_	start_char=964|end_char=965|ner=O
+16	r	r	NOUN	NN	Number=Sing	17	nsubj	_	start_char=964|end_char=965|ner=O
 17	=	=	SYM	SYM	_	14	parataxis	_	start_char=966|end_char=967|ner=O
 18	0.42	0.42	NUM	CD	NumForm=Digit|NumType=Frac	17	obj	_	SpaceAfter=No|start_char=968|end_char=972|ner=O
 19	,	,	PUNCT	,	_	20	punct	_	start_char=972|end_char=973|ner=O
 20	p	p	NOUN	NN	Number=Sing	17	conj	_	start_char=974|end_char=975|ner=O
-21	<	<	PUNCT	NFP	_	22	punct	_	start_char=976|end_char=977|ner=O
+21	<	<	PUNCT	-LRB-	_	22	punct	_	start_char=976|end_char=977|ner=O
 22	.001	.001	NUM	CD	NumForm=Digit|NumType=Frac	17	conj	_	SpaceAfter=No|start_char=978|end_char=982|ner=O
 23	)	)	PUNCT	-RRB-	_	17	punct	_	SpaceAfter=No|start_char=982|end_char=983|ner=O
 24	.	.	PUNCT	.	_	9	punct	_	SpacesAfter=\n\n|start_char=983|end_char=984|ner=O
@@ -301,7 +301,7 @@
 # sent_id = 17
 1	Participants	participant	NOUN	NNS	Number=Plur	25	nsubj:pass	_	start_char=986|end_char=998|ner=O
 2	(	(	PUNCT	-LRB-	_	4	punct	_	SpaceAfter=No|start_char=999|end_char=1000|ner=O
-3	N	N	NOUN	NN	Number=Sing	4	nsubj	_	start_char=1000|end_char=1001|ner=O
+3	N	N	PROPN	NNP	Number=Sing	4	nsubj	_	start_char=1000|end_char=1001|ner=O
 4	=	=	SYM	SYM	_	1	parataxis	_	start_char=1002|end_char=1003|ner=O
 5	128	128	NUM	CD	NumForm=Digit|NumType=Card	4	obj	_	SpaceAfter=No|start_char=1004|end_char=1007|ner=O
 6	;	;	PUNCT	:	_	8	punct	_	start_char=1007|end_char=1008|ner=O
@@ -314,11 +314,11 @@
 13	2	2	NUM	CD	NumForm=Digit|NumType=Card	14	nummod	_	start_char=1029|end_char=1030|ner=S-CARDINAL
 14	non-binary	non-binary	NOUN	NN	Number=Sing	1	conj	_	SpaceAfter=No|start_char=1031|end_char=1041|ner=O
 15	;	;	PUNCT	:	_	17	punct	_	start_char=1041|end_char=1042|ner=O
-16	Mage	mage	NOUN	NN	Number=Sing	17	nsubj	_	start_char=1043|end_char=1047|ner=O
+16	Mage	Mage	PROPN	NNP	Number=Sing	17	nsubj	_	start_char=1043|end_char=1047|ner=O
 17	=	=	SYM	SYM	_	4	parataxis	_	start_char=1048|end_char=1049|ner=O
 18	24.6	24.6	NUM	CD	NumForm=Digit|NumType=Frac	17	obj	_	SpaceAfter=No|start_char=1050|end_char=1054|ner=S-CARDINAL
-19	,	,	PUNCT	,	_	21	punct	_	start_char=1054|end_char=1055|ner=O
-20	SD	SD	NOUN	NN	Number=Sing	21	nsubj	_	start_char=1056|end_char=1058|ner=O
+19	,	,	PUNCT	,	_	20	punct	_	start_char=1054|end_char=1055|ner=O
+20	SD	SD	PROPN	NNP	Number=Sing	21	nsubj	_	start_char=1056|end_char=1058|ner=O
 21	=	=	SYM	SYM	_	17	parataxis	_	start_char=1059|end_char=1060|ner=O
 22	3.1	3.1	NUM	CD	NumForm=Digit|NumType=Frac	21	obj	_	SpaceAfter=No|start_char=1061|end_char=1064|ner=S-CARDINAL
 23	)	)	PUNCT	-RRB-	_	4	punct	_	start_char=1064|end_char=1065|ner=O
@@ -361,7 +361,7 @@
 12	atm	atm	NOUN	NN	Number=Sing	8	conj	_	start_char=1201|end_char=1204|ner=O
 13	for	for	ADP	IN	_	15	case	_	start_char=1205|end_char=1208|ner=O
 14	3	3	NUM	CD	NumForm=Digit|NumType=Card	15	nummod	_	start_char=1209|end_char=1210|ner=O
-15	h	h	NOUN	NNS	Number=Sing	4	obl	_	SpaceAfter=No|start_char=1211|end_char=1212|ner=O
+15	h	h	NOUN	NN	Number=Sing	4	obl	_	SpaceAfter=No|start_char=1211|end_char=1212|ner=O
 16	.	.	PUNCT	.	_	4	punct	_	start_char=1212|end_char=1213|ner=O
 
 # text = The yield was 87% (0.62 g, 2.4 mmol).
@@ -411,13 +411,13 @@
 10	×	×	SYM	SYM	_	11	case	_	start_char=1373|end_char=1374|ner=I-QUANTITY
 11	10^8	10^8	NUM	CD	NumForm=Digit|NumType=Card	9	nmod	_	start_char=1375|end_char=1379|ner=I-QUANTITY
 12	m	M	NOUN	NNS	Number=Plur	0	root	_	SpaceAfter=No|start_char=1380|end_char=1381|ner=E-QUANTITY
-13	/s.	/s.	NOUN	NN	Number=Sing	18	cc	_	start_char=1381|end_char=1384|ner=O
+13	/s.	/s.	PROPN	NNP	Number=Sing	18	cc	_	start_char=1381|end_char=1384|ner=O
 14-15	Avogadro's	_	_	_	_	_	_	_	start_char=1385|end_char=1395|ner=O
 14	Avogadro	Avogadro	PROPN	NNP	Number=Sing	16	nmod:poss	_	start_char=1385|end_char=1393
 15	's	's	PART	POS	_	14	case	_	start_char=1393|end_char=1395
 16	number	number	NOUN	NN	Number=Sing	18	nsubj	_	start_char=1396|end_char=1402|ner=O
 17	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	18	cop	_	start_char=1403|end_char=1405|ner=O
-18	6.022e23	6022e23	NUM	CD	NumForm=Digit|NumType=Card	12	conj	_	start_char=1406|end_char=1414|ner=S-CARDINAL
+18	6.022e23	6.022e23	NUM	CD	NumForm=Digit|NumType=Card	12	conj	_	start_char=1406|end_char=1414|ner=S-CARDINAL
 19	mol^	mol^	NOUN	NN	Number=Sing	18	nmod:unmarked	_	SpaceAfter=No|start_char=1415|end_char=1419|ner=O
 20	-	-	SYM	SYM	ExtPos=ADP	21	case	_	SpaceAfter=No|start_char=1419|end_char=1420|ner=O
 21	1	1	NUM	CD	NumForm=Digit|NumType=Card	19	nmod	_	SpaceAfter=No|start_char=1420|end_char=1421|ner=O
@@ -430,13 +430,13 @@
 2	's	's	PART	POS	_	1	case	_	start_char=1429|end_char=1431
 3	constant	constant	ADJ	JJ	Degree=Pos	7	nsubj	_	SpaceAfter=No|start_char=1432|end_char=1440|ner=O
 4	,	,	PUNCT	,	_	3	punct	_	start_char=1440|end_char=1441|ner=O
-5	h	h	NOUN	NN	Number=Sing	3	appos	_	SpaceAfter=No|start_char=1442|end_char=1443|ner=O
+5	h	h	INTJ	UH	_	7	discourse	_	SpaceAfter=No|start_char=1442|end_char=1443|ner=O
 6	,	,	PUNCT	,	_	5	punct	_	start_char=1443|end_char=1444|ner=O
 7	equals	equal	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1445|end_char=1451|ner=O
-8	6.626	6.626	NUM	CD	NumForm=Digit|NumType=Frac	11	nummod	_	start_char=1452|end_char=1457|ner=S-CARDINAL
+8	6.626	6.626	NUM	CD	NumForm=Digit|NumType=Frac	7	obj	_	start_char=1452|end_char=1457|ner=S-CARDINAL
 9	×	×	SYM	SYM	_	10	case	_	start_char=1458|end_char=1459|ner=O
 10	10	10	NUM	CD	NumForm=Digit|NumType=Card	8	nmod	_	SpaceAfter=No|start_char=1460|end_char=1462|ner=O
-11	⁻³	⁻³	NOUN	NNS	Number=Sing	7	obj	_	SpaceAfter=No|start_char=1462|end_char=1464|ner=O
+11	⁻³	⁻³	SYM	SYM	_	7	obl:unmarked	_	SpaceAfter=No|start_char=1462|end_char=1464|ner=O
 12	⁴	⁴	PUNCT	.	_	7	punct	_	start_char=1464|end_char=1465|ner=O
 
 # text = J·s.
@@ -466,17 +466,17 @@
 4	diluted	dilute	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	start_char=1533|end_char=1540|ner=O
 5	to	to	ADP	IN	_	7	case	_	start_char=1541|end_char=1543|ner=O
 6	10	10	NUM	CD	NumForm=Digit|NumType=Card	7	nummod	_	start_char=1544|end_char=1546|ner=B-QUANTITY
-7	µg	µg	NOUN	NNS	Number=Plur	4	obl	_	SpaceAfter=No|start_char=1547|end_char=1549|ner=I-QUANTITY
-8	/	/	SYM	SYM	_	9	case	_	SpaceAfter=No|start_char=1549|end_char=1550|ner=I-QUANTITY
-9	mL	millileter	NOUN	NNS	Number=Plur	7	nmod	_	start_char=1550|end_char=1552|ner=E-QUANTITY
+7	µg	µg	NOUN	NN	Number=Sing	4	obl	_	SpaceAfter=No|start_char=1547|end_char=1549|ner=I-QUANTITY
+8	/	/	SYM	,	_	9	cc	_	SpaceAfter=No|start_char=1549|end_char=1550|ner=I-QUANTITY
+9	mL	millileter	NOUN	NNS	Number=Plur	7	conj	_	start_char=1550|end_char=1552|ner=E-QUANTITY
 10	and	and	CCONJ	CC	_	11	cc	_	start_char=1553|end_char=1556|ner=O
 11	stored	store	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	4	conj	_	start_char=1557|end_char=1563|ner=O
-12	at	at	ADP	IN	_	15	case	_	start_char=1564|end_char=1566|ner=O
-13	−	−	SYM	SYM	_	14	advmod	_	SpaceAfter=No|start_char=1567|end_char=1568|ner=O
+12	at	at	ADP	IN	_	13	case	_	start_char=1564|end_char=1566|ner=O
+13	−	−	SYM	$	_	11	obl	_	SpaceAfter=No|start_char=1567|end_char=1568|ner=O
 14	80	80	NUM	CD	NumForm=Digit|NumType=Card	15	nummod	_	start_char=1568|end_char=1570|ner=O
-15	°	°	NOUN	NNS	Number=Plur	11	obl	_	SpaceAfter=No|start_char=1571|end_char=1572|ner=O
-16	C.	C.	PROPN	NNP	Abbr=Yes|Number=Sing	15	nmod:unmarked	_	start_char=1572|end_char=1574|ner=O
-17	Centrifuge	centrifuge	NOUN	NN	Number=Sing	15	nmod:unmarked	_	start_char=1575|end_char=1585|ner=O
+15	°	°	NOUN	NNS	Number=Plur	13	nummod	_	SpaceAfter=No|start_char=1571|end_char=1572|ner=O
+16	C.	C.	PROPN	NNP	Number=Sing	15	nmod:unmarked	_	start_char=1572|end_char=1574|ner=O
+17	Centrifuge	Centrifuge	PROPN	NNP	Number=Sing	13	nmod:unmarked	_	start_char=1575|end_char=1585|ner=O
 18	at	at	ADP	IN	_	21	case	_	start_char=1586|end_char=1588|ner=O
 19	3,000	3000	NUM	CD	NumForm=Digit|NumType=Card	21	nummod	_	start_char=1589|end_char=1594|ner=B-QUANTITY
 20	×	×	SYM	SYM	_	21	nmod:unmarked	_	start_char=1595|end_char=1596|ner=I-QUANTITY
@@ -491,7 +491,7 @@
 1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=1612|end_char=1615|ner=O
 2	probe	probe	NOUN	NN	Number=Sing	3	nsubj	_	start_char=1616|end_char=1621|ner=O
 3	traveled	travel	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1622|end_char=1630|ner=O
-4	1.5×10	15×10	NUM	CD	NumForm=Digit|NumType=Card	3	obl:unmarked	_	SpaceAfter=No|start_char=1631|end_char=1637|ner=B-QUANTITY
+4	1.5×10	1.5×10	NUM	CD	NumForm=Digit|NumType=Frac	3	obl:unmarked	_	SpaceAfter=No|start_char=1631|end_char=1637|ner=B-QUANTITY
 5	^9	^9	NUM	CD	NumForm=Digit|NumType=Card	6	nummod	_	start_char=1637|end_char=1639|ner=I-QUANTITY
 6	km	kilometer	NOUN	NNS	Number=Plur	3	obl:unmarked	_	start_char=1640|end_char=1642|ner=E-QUANTITY
 7	in	in	ADP	IN	_	9	case	_	start_char=1643|end_char=1645|ner=O
@@ -502,8 +502,8 @@
 # text = Its power source produced 470 W at launch and roughly 240 W by 2015.
 # sent_id = 28
 1-2	Its	_	_	_	_	_	_	_	start_char=1653|end_char=1656|ner=O
-1	It	it	PRON	PRP	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	5	nsubj	_	start_char=1653|end_char=1655
-2	s	s	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|Typo=Yes|VerbForm=Fin	5	cop	_	start_char=1655|end_char=1656
+1	It	it	PRON	PRP	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	4	nmod:poss	_	start_char=1653|end_char=1655
+2	s	s	PART	POS	Typo=Yes	1	case	_	start_char=1655|end_char=1656
 3	power	power	NOUN	NN	Number=Sing	4	compound	_	start_char=1657|end_char=1662|ner=O
 4	source	source	NOUN	NN	Number=Sing	5	nsubj	_	start_char=1663|end_char=1669|ner=O
 5	produced	produce	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1670|end_char=1678|ner=O
@@ -557,7 +557,7 @@
 
 # text = Fig. 3 shows the distribution of residuals.
 # sent_id = 31
-1	Fig.	Figober	PROPN	NNP	Number=Sing	3	nsubj	_	start_char=1819|end_char=1823|ner=O
+1	Fig.	Figurday	PROPN	NNP	Number=Sing	3	nsubj	_	start_char=1819|end_char=1823|ner=O
 2	3	3	NUM	CD	NumForm=Digit|NumType=Card	1	flat	_	start_char=1824|end_char=1825|ner=S-CARDINAL
 3	shows	show	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1826|end_char=1831|ner=O
 4	the	the	DET	DT	Definite=Def|PronType=Art	5	det	_	start_char=1832|end_char=1835|ner=O
@@ -570,7 +570,7 @@
 # sent_id = 32
 1	Eq.	Eq.	PROPN	NNP	Number=Sing	7	nsubj:pass	_	start_char=1863|end_char=1866|ner=O
 2	(	(	PUNCT	-LRB-	_	3	punct	_	SpaceAfter=No|start_char=1867|end_char=1868|ner=O
-3	7	7	NUM	LS	NumForm=Digit|NumType=Card	7	discourse	_	SpaceAfter=No|start_char=1868|end_char=1869|ner=S-CARDINAL
+3	7	7	NUM	CD	NumForm=Digit|NumType=Card	1	parataxis	_	SpaceAfter=No|start_char=1868|end_char=1869|ner=S-CARDINAL
 4	)	)	PUNCT	-RRB-	_	3	punct	_	start_char=1869|end_char=1870|ner=O
 5	can	can	AUX	MD	VerbForm=Fin	7	aux	_	start_char=1871|end_char=1874|ner=O
 6	be	be	AUX	VB	VerbForm=Inf	7	aux:pass	_	start_char=1875|end_char=1877|ner=O
@@ -579,7 +579,7 @@
 9	y	y	NOUN	NN	Number=Sing	10	nsubj	_	start_char=1891|end_char=1892|ner=O
 10	=	=	SYM	SYM	_	7	advcl	_	start_char=1893|end_char=1894|ner=O
 11	ax	ax	NOUN	NN	Number=Sing	10	obj	_	SpaceAfter=No|start_char=1895|end_char=1897|ner=O
-12	²	²	X	FW	_	10	obj	_	start_char=1897|end_char=1898|ner=O
+12	²	²	NOUN	NN	Number=Sing	10	obj	_	start_char=1897|end_char=1898|ner=O
 13	+	+	SYM	SYM	_	14	cc	_	start_char=1899|end_char=1900|ner=O
 14	bx	bx	NOUN	NN	Number=Sing	12	conj	_	start_char=1901|end_char=1903|ner=O
 15	+	+	SYM	SYM	_	16	cc	_	start_char=1904|end_char=1905|ner=O
@@ -599,7 +599,7 @@
 4	4.2	4.2	NUM	CD	NumForm=Digit|NumType=Frac	7	nummod	_	start_char=1936|end_char=1939|ner=B-QUANTITY
 5	±	±	SYM	SYM	_	6	case	_	start_char=1940|end_char=1941|ner=I-QUANTITY
 6	0.3	0.3	NUM	CD	NumForm=Digit|NumType=Frac	4	nmod	_	start_char=1942|end_char=1945|ner=I-QUANTITY
-7	mm	mm	NOUN	NNS	Number=Plur	0	root	_	start_char=1946|end_char=1948|ner=E-QUANTITY
+7	mm	mm	NOUN	NN	Number=Sing	0	root	_	start_char=1946|end_char=1948|ner=E-QUANTITY
 8	(	(	PUNCT	-LRB-	_	11	punct	_	SpaceAfter=No|start_char=1949|end_char=1950|ner=O
 9	95	95	NUM	CD	NumForm=Digit|NumType=Card	10	nummod	_	SpaceAfter=No|start_char=1950|end_char=1952|ner=B-PERCENT
 10	%	%	SYM	NN	Number=Sing	11	compound	_	start_char=1952|end_char=1953|ner=E-PERCENT
@@ -613,7 +613,7 @@
 
 # text = Values below the detection limit (< 0.05 ppm) were excluded.
 # sent_id = 34
-1	Values	value	NOUN	NNS	Number=Plur	12	nsubj:pass	_	start_char=1968|end_char=1974|ner=O
+1	Values	Value	NOUN	NNS	Number=Plur	12	nsubj:pass	_	start_char=1968|end_char=1974|ner=O
 2	below	below	ADP	IN	_	5	case	_	start_char=1975|end_char=1980|ner=O
 3	the	the	DET	DT	Definite=Def|PronType=Art	5	det	_	start_char=1981|end_char=1984|ner=O
 4	detection	detection	NOUN	NN	Number=Sing	5	compound	_	start_char=1985|end_char=1994|ner=O
@@ -621,7 +621,7 @@
 6	(	(	PUNCT	-LRB-	_	9	punct	_	SpaceAfter=No|start_char=2001|end_char=2002|ner=O
 7	<	<	PUNCT	-LRB-	_	9	punct	_	start_char=2002|end_char=2003|ner=O
 8	0.05	0.05	NUM	CD	NumForm=Digit|NumType=Frac	9	nummod	_	start_char=2004|end_char=2008|ner=B-QUANTITY
-9	ppm	pom	NOUN	NN	Number=Sing	5	appos	_	SpaceAfter=No|start_char=2009|end_char=2012|ner=E-QUANTITY
+9	ppm	ppm	NOUN	NNS	Number=Plur	5	appos	_	SpaceAfter=No|start_char=2009|end_char=2012|ner=E-QUANTITY
 10	)	)	PUNCT	-RRB-	_	9	punct	_	start_char=2012|end_char=2013|ner=O
 11	were	be	AUX	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	12	aux:pass	_	start_char=2014|end_char=2018|ner=O
 12	excluded	exclude	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	SpaceAfter=No|start_char=2019|end_char=2027|ner=O
@@ -636,19 +636,19 @@
 5	at	at	ADP	IN	_	7	case	_	start_char=2052|end_char=2054|ner=O
 6	4.7	4.7	NUM	CD	NumForm=Digit|NumType=Frac	7	nummod	_	start_char=2055|end_char=2058|ner=B-QUANTITY
 7	kΩ	kΩ	NOUN	NNS	Number=Plur	4	obl	_	start_char=2059|end_char=2061|ner=E-QUANTITY
-8	and	and	CCONJ	CC	_	11	cc	_	start_char=2062|end_char=2065|ner=O
-9	0.25	0.25	NUM	CD	NumForm=Digit|NumType=Frac	11	nummod	_	start_char=2066|end_char=2070|ner=O
+8	and	and	CCONJ	CC	_	9	cc	_	start_char=2062|end_char=2065|ner=O
+9	0.25	0.25	NUM	CD	NumForm=Digit|NumType=Frac	7	conj	_	start_char=2066|end_char=2070|ner=O
 10	W.	W.	PROPN	NNP	Abbr=Yes|Number=Sing	9	nmod:unmarked	_	start_char=2071|end_char=2073|ner=O
-11	Apply	apply	NOUN	NN	Number=Sing	4	conj	_	start_char=2074|end_char=2079|ner=O
+11	Apply	apply	VERB	VB	VerbForm=Inf	4	conj	_	start_char=2074|end_char=2079|ner=O
 12	5	5	NUM	CD	NumForm=Digit|NumType=Card	13	nummod	_	start_char=2080|end_char=2081|ner=S-CARDINAL
-13	V	V	NOUN	NN	Number=Sing	11	appos	_	start_char=2082|end_char=2083|ner=O
+13	V	V	NOUN	NN	Number=Sing	11	obj	_	start_char=2082|end_char=2083|ner=O
 14	DC	DC	PROPN	NNP	Number=Sing	13	nmod:unmarked	_	start_char=2084|end_char=2086|ner=O
 15	and	and	CCONJ	CC	_	16	cc	_	start_char=2087|end_char=2090|ner=O
-16	measure	measure	VERB	VB	VerbForm=Inf	4	conj	_	start_char=2091|end_char=2098|ner=O
+16	measure	measure	VERB	VB	VerbForm=Fin	4	conj	_	start_char=2091|end_char=2098|ner=O
 17	the	the	DET	DT	Definite=Def|PronType=Art	18	det	_	start_char=2099|end_char=2102|ner=O
 18	current	current	ADJ	JJ	Degree=Pos	16	obj	_	start_char=2103|end_char=2110|ner=O
 19	in	in	ADP	IN	_	20	case	_	start_char=2111|end_char=2113|ner=O
-20	mA	ma	NOUN	NN	Number=Sing	16	obl	_	SpaceAfter=No|start_char=2114|end_char=2116|ner=O
+20	mA	mA	PROPN	NNP	Number=Sing	16	obl	_	SpaceAfter=No|start_char=2114|end_char=2116|ner=O
 21	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=2116|end_char=2117|ner=O
 
 # text = In Section 3.2, we describe the dataset.
@@ -671,19 +671,19 @@
 4	the	the	DET	DT	Definite=Def|PronType=Art	5	det	_	start_char=2179|end_char=2182|ner=O
 5	results	result	NOUN	NNS	Number=Plur	3	obj	_	SpaceAfter=No|start_char=2183|end_char=2190|ner=O
 6	;	;	PUNCT	:	_	3	punct	_	start_char=2190|end_char=2191|ner=O
-7	Sect.	Sectember	PROPN	NNP	Abbr=Yes|Number=Sing	9	nsubj	_	start_char=2192|end_char=2197|ner=B-LAW
+7	Sect.	Sectember	PROPN	NNP	Number=Sing	9	nsubj	_	start_char=2192|end_char=2197|ner=B-LAW
 8	5	5	NUM	CD	NumForm=Digit|NumType=Card	9	nsubj	_	start_char=2198|end_char=2199|ner=E-LAW
 9	concludes	conclude	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=2200|end_char=2209|ner=O
 10	.	.	PUNCT	.	_	9	punct	_	start_char=2209|end_char=2210|ner=O
 
 # text = Appendix A contains proofs of Lemmas 1–3.
 # sent_id = 38
-1	Appendix	Appendix	PROPN	NNP	Number=Sing	2	compound	_	start_char=2211|end_char=2219|ner=O
-2	A	A	PROPN	NNP	Number=Sing	3	nsubj	_	start_char=2220|end_char=2221|ner=O
+1	Appendix	appendix	NOUN	NN	Number=Sing	3	nsubj	_	start_char=2211|end_char=2219|ner=O
+2	A	A	PROPN	NNP	Number=Sing	1	flat	_	start_char=2220|end_char=2221|ner=O
 3	contains	contain	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2222|end_char=2230|ner=O
 4	proofs	proof	NOUN	NNS	Number=Plur	3	obj	_	start_char=2231|end_char=2237|ner=O
 5	of	of	ADP	IN	_	6	case	_	start_char=2238|end_char=2240|ner=O
-6	Lemmas	Lemmas	PROPN	NNPS	Number=Plur	4	nmod	_	start_char=2241|end_char=2247|ner=O
+6	Lemmas	Lemmas	PROPN	NNP	Number=Sing	4	nmod	_	start_char=2241|end_char=2247|ner=O
 7	1	1	NUM	CD	NumForm=Digit|NumType=Card	6	flat	_	SpaceAfter=No|start_char=2248|end_char=2249|ner=S-CARDINAL
 8	–	-	SYM	SYM	ExtPos=ADP	9	case	_	SpaceAfter=No|start_char=2249|end_char=2250|ner=O
 9	3	3	NUM	CD	NumForm=Digit|NumType=Card	7	nmod	_	SpaceAfter=No|start_char=2250|end_char=2251|ner=S-CARDINAL
@@ -702,7 +702,7 @@
 3	:	:	PUNCT	:	_	8	punct	_	start_char=2272|end_char=2273|ner=O
 4	ℝ	ℝ	PUNCT	``	_	8	punct	_	start_char=2274|end_char=2275|ner=O
 5	→	→	PUNCT	NFP	_	8	discourse	_	start_char=2276|end_char=2277|ner=O
-6	ℝ	ℝ	PUNCT	,	_	8	nsubj	_	start_char=2278|end_char=2279|ner=O
+6	ℝ	ℝ	INTJ	UH	_	8	discourse	_	start_char=2278|end_char=2279|ner=O
 7	be	be	AUX	VB	Mood=Imp|VerbForm=Fin	8	cop	_	start_char=2280|end_char=2282|ner=O
 8	continuous	continuous	ADJ	JJ	Degree=Pos	1	ccomp	_	SpaceAfter=No|start_char=2283|end_char=2293|ner=O
 9	.	.	PUNCT	.	_	1	punct	_	start_char=2293|end_char=2294|ner=O
@@ -710,15 +710,15 @@
 # text = Then f attains a maximum on [a, b].
 # sent_id = 41
 1	Then	then	ADV	RB	PronType=Dem	3	advmod	_	start_char=2295|end_char=2299|ner=O
-2	f	for	PROPN	NNP	Number=Sing	3	nsubj	_	start_char=2300|end_char=2301|ner=O
+2	f	for	INTJ	UH	_	3	discourse	_	start_char=2300|end_char=2301|ner=O
 3	attains	attain	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2302|end_char=2309|ner=O
 4	a	a	DET	DT	Definite=Ind|PronType=Art	5	det	_	start_char=2310|end_char=2311|ner=O
 5	maximum	maximum	NOUN	NN	Number=Sing	3	obj	_	start_char=2312|end_char=2319|ner=O
 6	on	on	ADP	IN	_	10	case	_	start_char=2320|end_char=2322|ner=O
 7	[	[	PUNCT	-LRB-	_	8	punct	_	SpaceAfter=No|start_char=2323|end_char=2324|ner=O
-8	a	a	DET	DT	Definite=Ind|PronType=Art	10	det	_	SpaceAfter=No|start_char=2324|end_char=2325|ner=O
+8	a	a	DET	DT	Definite=Ind|PronType=Art	3	obl	_	SpaceAfter=No|start_char=2324|end_char=2325|ner=O
 9	,	,	PUNCT	,	_	8	punct	_	start_char=2325|end_char=2326|ner=O
-10	b	benefit	NOUN	NN	Number=Sing	3	obl	_	SpaceAfter=No|start_char=2327|end_char=2328|ner=O
+10	b	b	NOUN	NN	Number=Sing	8	conj	_	SpaceAfter=No|start_char=2327|end_char=2328|ner=O
 11	]	]	PUNCT	-RRB-	_	10	punct	_	SpaceAfter=No|start_char=2328|end_char=2329|ner=O
 12	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=2329|end_char=2330|ner=O
 
@@ -729,7 +729,7 @@
 
 # text = Suppose not.
 # sent_id = 43
-1	Suppose	suppose	VERB	VB	Mood=Imp|VerbForm=Fin	0	root	_	start_char=2339|end_char=2346|ner=O
+1	Suppose	suppose	VERB	VB	Mood=Imp|Number=Sing|Person=2|VerbForm=Fin	0	root	_	start_char=2339|end_char=2346|ner=O
 2	not	not	PART	RB	Polarity=Neg	1	advmod	_	SpaceAfter=No|start_char=2347|end_char=2350|ner=O
 3	.	.	PUNCT	.	_	1	punct	_	start_char=2350|end_char=2351|ner=O
 
@@ -743,14 +743,14 @@
 6	(	(	PUNCT	-LRB-	_	7	punct	_	SpaceAfter=No|start_char=2381|end_char=2382|ner=O
 7	x_n	x_n	NOUN	NN	Number=Sing	5	appos	_	SpaceAfter=No|start_char=2382|end_char=2385|ner=O
 8	)	)	PUNCT	-RRB-	_	7	punct	_	start_char=2385|end_char=2386|ner=O
-9	such	such	ADJ	JJ	Degree=Pos	5	amod	_	start_char=2387|end_char=2391|ner=O
+9	such	such	ADJ	JJ	Degree=Pos|ExtPos=ADP	5	amod	_	start_char=2387|end_char=2391|ner=O
 10	that	that	SCONJ	IN	_	15	mark	_	start_char=2392|end_char=2396|ner=O
-11	f(	f(	NOUN	NN	Number=Sing	12	punct	_	SpaceAfter=No|start_char=2397|end_char=2399|ner=O
+11	f(	f(	PUNCT	-LRB-	_	12	punct	_	SpaceAfter=No|start_char=2397|end_char=2399|ner=O
 12	x_n	x_n	NOUN	NN	Number=Sing	15	compound	_	SpaceAfter=No|start_char=2399|end_char=2402|ner=O
 13	)	)	PUNCT	-RRB-	_	12	punct	_	start_char=2402|end_char=2403|ner=O
-14	→	→	PUNCT	NFP	_	15	punct	_	start_char=2404|end_char=2405|ner=O
+14	→	→	SYM	SYM	_	15	compound	_	start_char=2404|end_char=2405|ner=O
 15	sup	sup	NOUN	NN	Number=Sing	5	appos	_	start_char=2406|end_char=2409|ner=O
-16	f	f	NOUN	NN	Number=Sing	15	nmod:unmarked	_	SpaceAfter=No|start_char=2410|end_char=2411|ner=O
+16	f	for	ADP	IN	_	15	nmod	_	SpaceAfter=No|start_char=2410|end_char=2411|ner=O
 17	.	.	PUNCT	.	_	3	punct	_	start_char=2411|end_char=2412|ner=O
 
 # text = By compactness, a subsequence converges.
@@ -811,7 +811,7 @@
 11	of	of	ADP	IN	_	12	case	_	start_char=2654|end_char=2656|ner=O
 12	Psychology	Psychology	PROPN	NNP	Number=Sing	10	nmod	_	SpaceAfter=No|start_char=2657|end_char=2667|ner=O
 13	,	,	PUNCT	,	_	14	punct	_	start_char=2667|end_char=2668|ner=O
-14	Univ.	Unive	PROPN	NNP	Number=Sing	7	list	_	start_char=2669|end_char=2674|ner=O
+14	Univ.	Univ.	PROPN	NNP	Number=Sing	7	list	_	start_char=2669|end_char=2674|ner=O
 15	of	of	ADP	IN	_	16	case	_	start_char=2675|end_char=2677|ner=O
 16	Northbridge	Northbridge	PROPN	NNP	Number=Sing	14	nmod	_	SpaceAfter=No|start_char=2678|end_char=2689|ner=S-GPE
 17	,	,	PUNCT	,	_	18	punct	_	start_char=2689|end_char=2690|ner=O
@@ -821,7 +821,7 @@
 21	,	,	PUNCT	,	_	22	punct	_	start_char=2705|end_char=2706|ner=O
 22	Northbridge	Northbridge	PROPN	NNP	Number=Sing	7	list	_	start_char=2707|end_char=2718|ner=B-ORG
 23	NB4	NB4	PROPN	NNP	Number=Sing	24	compound	_	start_char=2719|end_char=2722|ner=I-ORG
-24	2XY	2xy	PROPN	NNP	Number=Sing	7	list	_	SpaceAfter=No|start_char=2723|end_char=2726|ner=E-ORG
+24	2XY	2XY	PROPN	NNP	Number=Sing	7	list	_	SpaceAfter=No|start_char=2723|end_char=2726|ner=E-ORG
 25	,	,	PUNCT	,	_	26	punct	_	start_char=2726|end_char=2727|ner=O
 26	U.K	U.K	PROPN	NNP	Number=Sing	7	list	_	SpaceAfter=No|start_char=2728|end_char=2731|ner=S-GPE
 27	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=2731|end_char=2732|ner=O
@@ -903,7 +903,7 @@
 # sent_id = 56
 1	Okonkwo	Okonkwo	PROPN	NNP	Number=Sing	0	root	_	SpaceAfter=No|start_char=2981|end_char=2988|ner=S-PERSON
 2	,	,	PUNCT	,	_	3	punct	_	start_char=2988|end_char=2989|ner=O
-3	C.	C.	PROPN	NNP	Number=Sing	1	flat	_	start_char=2990|end_char=2992|ner=S-NORP
+3	C.	C.	PROPN	NNP	Abbr=Yes|Number=Sing	1	flat	_	start_char=2990|end_char=2992|ner=S-NORP
 4	(	(	PUNCT	-LRB-	_	5	punct	_	SpaceAfter=No|start_char=2993|end_char=2994|ner=O
 5	2020	2020	NUM	CD	NumForm=Digit|NumType=Card	1	nmod:unmarked	_	SpaceAfter=No|start_char=2994|end_char=2998|ner=S-DATE
 6	)	)	PUNCT	-RRB-	_	5	punct	_	SpaceAfter=No|start_char=2998|end_char=2999|ner=O
@@ -919,7 +919,7 @@
 6	Words	Word	PROPN	NNPS	Number=Plur	3	nmod	_	start_char=3025|end_char=3030|ner=E-WORK_OF_ART
 7	(	(	PUNCT	-LRB-	_	9	punct	_	SpaceAfter=No|start_char=3031|end_char=3032|ner=O
 8	2nd	2nd	ADJ	JJ	Degree=Pos|NumForm=Combi|NumType=Ord	9	amod	_	start_char=3032|end_char=3035|ner=S-ORDINAL
-9	ed	ed	NOUN	NN	Number=Sing	3	appos	_	SpaceAfter=No|start_char=3036|end_char=3038|ner=O
+9	ed	ed	PROPN	NNP	Number=Sing	6	appos	_	SpaceAfter=No|start_char=3036|end_char=3038|ner=O
 10	.	.	PUNCT	.	_	9	punct	_	SpaceAfter=No|start_char=3038|end_char=3039|ner=O
 11	)	)	PUNCT	-RRB-	_	9	punct	_	SpaceAfter=No|start_char=3039|end_char=3040|ner=O
 12	.	.	PUNCT	.	_	3	punct	_	start_char=3040|end_char=3041|ner=O
@@ -957,19 +957,19 @@
 
 # text = cf. the discussion in ch. 4, pp. 112–19, n. 23.
 # sent_id = 61
-1	cf.	cf.	X	LS	_	3	discourse	_	start_char=3152|end_char=3155|ner=O
+1	cf.	cf.	PUNCT	NFP	_	3	punct	_	start_char=3152|end_char=3155|ner=O
 2	the	the	DET	DT	Definite=Def|PronType=Art	3	det	_	start_char=3156|end_char=3159|ner=O
 3	discussion	discussion	NOUN	NN	Number=Sing	0	root	_	start_char=3160|end_char=3170|ner=O
 4	in	in	ADP	IN	_	5	case	_	start_char=3171|end_char=3173|ner=O
 5	ch.	ch.	NOUN	NN	Number=Sing	3	nmod	_	start_char=3174|end_char=3177|ner=O
 6	4	4	NUM	CD	NumForm=Digit|NumType=Card	5	flat	_	SpaceAfter=No|start_char=3178|end_char=3179|ner=S-CARDINAL
 7	,	,	PUNCT	,	_	8	punct	_	start_char=3179|end_char=3180|ner=O
-8	pp.	ppop	NOUN	NN	Number=Sing	9	nsubj	_	start_char=3181|end_char=3184|ner=O
+8	pp.	pp.	NOUN	NN	Number=Sing	9	nsubj	_	start_char=3181|end_char=3184|ner=O
 9	112	112	NUM	CD	NumForm=Digit|NumType=Card	3	list	_	SpaceAfter=No|start_char=3185|end_char=3188|ner=S-CARDINAL
 10	–	-	SYM	SYM	ExtPos=ADP	11	case	_	SpaceAfter=No|start_char=3188|end_char=3189|ner=O
 11	19	19	NUM	CD	NumForm=Digit|NumType=Card	9	nmod	_	SpaceAfter=No|start_char=3189|end_char=3191|ner=S-CARDINAL
 12	,	,	PUNCT	,	_	13	punct	_	start_char=3191|end_char=3192|ner=O
-13	n.	nith	NOUN	NN	Number=Sing	9	nmod:unmarked	_	start_char=3193|end_char=3195|ner=O
+13	n.	n.	PROPN	NNP	Number=Sing	9	nmod:unmarked	_	start_char=3193|end_char=3195|ner=O
 14	23	23	NUM	CD	NumForm=Digit|NumType=Card	13	flat	_	SpaceAfter=No|start_char=3196|end_char=3198|ner=S-CARDINAL
 15	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=3198|end_char=3199|ner=O
 
@@ -1009,9 +1009,9 @@
 5	)	)	PUNCT	-RRB-	_	4	punct	_	start_char=3303|end_char=3304|ner=O
 6	of	of	ADP	IN	_	8	case	_	start_char=3305|end_char=3307|ner=O
 7	the	the	DET	DT	Definite=Def|PronType=Art	8	det	_	start_char=3308|end_char=3311|ner=O
-8	Act	Act	PROPN	NNP	Number=Sing	1	nmod	_	start_char=3312|end_char=3315|ner=S-LAW
+8	Act	act	NOUN	NN	Number=Sing	1	nmod	_	start_char=3312|end_char=3315|ner=S-LAW
 9	—	—	PUNCT	:	_	11	punct	_	start_char=3316|end_char=3317|ner=O
-10	sometimes	sometimes	ADV	RB	PronType=Tot	11	advmod	_	start_char=3318|end_char=3327|ner=O
+10	sometimes	sometimes	ADV	RB	PronType=Ind	11	advmod	_	start_char=3318|end_char=3327|ner=O
 11	called	call	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	8	acl	_	start_char=3328|end_char=3334|ner=O
 12	the	the	DET	DT	Definite=Def|PronType=Art	17	det	_	start_char=3335|end_char=3338|ner=B-LAW
 13	"	"	PUNCT	``	_	15	punct	_	SpaceAfter=No|start_char=3339|end_char=3340|ner=I-LAW
@@ -1024,7 +1024,7 @@
 20	amended	amend	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	start_char=3369|end_char=3376|ner=O
 21	in	in	ADP	IN	_	22	case	_	start_char=3377|end_char=3379|ner=O
 22	2011	2011	NUM	CD	NumForm=Digit|NumType=Card	20	obl	_	SpaceAfter=No|start_char=3380|end_char=3384|ner=S-DATE
-23	.	.	PUNCT	.	_	1	punct	_	start_char=3384|end_char=3385|ner=O
+23	.	.	PUNCT	.	_	20	punct	_	start_char=3384|end_char=3385|ner=O
 
 # text = Courts have disagreed about its scope ever since.
 # sent_id = 65
@@ -1091,7 +1091,7 @@
 4	molarity	molarity	NOUN	NN	Number=Sing	6	nsubj	_	start_char=3615|end_char=3623|ner=O
 5	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	6	cop	_	start_char=3624|end_char=3627|ner=O
 6	0.15	0.15	NUM	CD	NumForm=Digit|NumType=Frac	0	root	_	start_char=3628|end_char=3632|ner=S-CARDINAL
-7	M.	M.	NOUN	NN	Number=Sing	6	nmod:unmarked	_	SpacesAfter=\n\n|start_char=3633|end_char=3635|ner=O
+7	M.	M.	PROPN	NNP	Number=Sing	6	flat	_	SpacesAfter=\n\n|start_char=3633|end_char=3635|ner=O
 
 # text = The mass of the electron is 9.109 × 10^−31 kg, roughly 1/1836 that of the proton.
 # sent_id = 70
@@ -1109,10 +1109,10 @@
 12	,	,	PUNCT	,	_	14	punct	_	start_char=3682|end_char=3683|ner=O
 13	roughly	roughly	ADV	RB	_	14	advmod	_	start_char=3684|end_char=3691|ner=O
 14	1/1836	1/1836	NUM	CD	NumForm=Digit|NumType=Card	11	appos	_	start_char=3692|end_char=3698|ner=S-CARDINAL
-15	that	that	PRON	WDT	PronType=Rel	18	nsubj	_	start_char=3699|end_char=3703|ner=O
+15	that	that	PRON	DT	Number=Sing|PronType=Dem	11	appos	_	start_char=3699|end_char=3703|ner=O
 16	of	of	ADP	IN	_	18	case	_	start_char=3704|end_char=3706|ner=O
 17	the	the	DET	DT	Definite=Def|PronType=Art	18	det	_	start_char=3707|end_char=3710|ner=O
-18	proton	proton	NOUN	NN	Number=Sing	11	nmod	_	SpaceAfter=No|start_char=3711|end_char=3717|ner=O
+18	proton	proton	NOUN	NN	Number=Sing	15	nmod	_	SpaceAfter=No|start_char=3711|end_char=3717|ner=O
 19	.	.	PUNCT	.	_	11	punct	_	SpacesAfter=\n\n|start_char=3717|end_char=3718|ner=O
 
 # text = The filing deadline was 3/14/2023² and the hotline is 555-012-3456¹.

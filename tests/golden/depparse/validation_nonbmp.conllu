@@ -5,9 +5,9 @@
 3	my	my	PRON	PRP$	Case=Gen|Number=Sing|Person=1|Poss=Yes|PronType=Prs	5	nmod:poss	_	start_char=14|end_char=16
 4	first	first	ADJ	JJ	Degree=Pos|NumForm=Word|NumType=Ord	5	amod	_	start_char=17|end_char=22
 5	marathon	marathon	NOUN	NN	Number=Sing	2	obj	_	start_char=23|end_char=31
-6	🏃‍♀️🎉	🏃‍♀️🎉	CCONJ	CC	_	8	cc	_	start_char=32|end_char=37
+6	🏃‍♀️🎉	🏃‍♀️🎉	PUNCT	,	_	8	punct	_	start_char=32|end_char=37
 7	so	so	ADV	RB	_	8	advmod	_	start_char=38|end_char=40
-8	proud	proud	ADJ	JJ	Degree=Pos	2	conj	_	start_char=41|end_char=46
+8	proud	proud	ADJ	JJ	Degree=Pos	2	parataxis	_	start_char=41|end_char=46
 9	of	of	ADP	IN	_	10	case	_	start_char=47|end_char=49
 10	myself	myself	PRON	PRP	Case=Acc|Number=Sing|Person=1|PronType=Prs|Reflex=Yes	8	obl	_	SpaceAfter=No|start_char=50|end_char=56
 11	!!	!!	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=56|end_char=58
@@ -26,10 +26,10 @@
 # sent_id = 2
 1	Good	good	ADJ	JJ	Degree=Pos	2	amod	_	start_char=86|end_char=90
 2	morning	morning	NOUN	NN	Number=Sing	0	root	_	start_char=91|end_char=98
-3	☀️	☀️	PUNCT	HYPH	_	4	punct	_	start_char=99|end_char=101
+3	☀️	☀️	PUNCT	,	_	4	punct	_	start_char=99|end_char=101
 4	coffee	coffee	NOUN	NN	Number=Sing	2	parataxis	_	start_char=102|end_char=108
 5	first	first	ADV	RB	Degree=Pos|NumForm=Word|NumType=Ord	2	advmod	_	start_char=109|end_char=114
-6	☕	☕	PUNCT	HYPH	_	8	punct	_	start_char=115|end_char=116
+6	☕	☕	PUNCT	:	_	8	punct	_	start_char=115|end_char=116
 7	then	then	ADV	RB	PronType=Dem	8	advmod	_	start_char=117|end_char=121
 8	emails	email	NOUN	NNS	Number=Plur	2	parataxis	_	start_char=122|end_char=128
 9	📧	📧	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=129|end_char=130
@@ -42,7 +42,7 @@
 4	:	:	PUNCT	:	_	6	punct	_	start_char=149|end_char=150
 5	🌧️	🌧️	INTJ	UH	_	6	discourse	_	start_char=151|end_char=153
 6	then	then	ADV	RB	PronType=Dem	2	advmod	_	start_char=154|end_char=158
-7	🌈	🌈	PUNCT	''	_	6	punct	_	SpaceAfter=No|start_char=159|end_char=160
+7	🌈	🌈	PUNCT	.	_	2	punct	_	SpaceAfter=No|start_char=159|end_char=160
 8	.	.	PUNCT	.	_	2	punct	_	start_char=160|end_char=161
 
 # text = Not bad.
@@ -53,17 +53,17 @@
 
 # text = I ❤️ NY.
 # sent_id = 5
-1	I	I	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	0	root	_	start_char=172|end_char=173
-2	❤️	❤️	ADP	IN	_	3	case	_	start_char=174|end_char=176
-3	NY	NY	PROPN	NNP	Number=Sing	1	nmod	_	SpaceAfter=No|start_char=177|end_char=179
-4	.	.	PUNCT	.	_	1	punct	_	start_char=179|end_char=180
+1	I	I	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	3	nsubj	_	start_char=172|end_char=173
+2	❤️	❤️	AUX	VBP	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	3	cop	_	start_char=174|end_char=176
+3	NY	NY	PROPN	NNP	Number=Sing	0	root	_	SpaceAfter=No|start_char=177|end_char=179
+4	.	.	PUNCT	.	_	3	punct	_	start_char=179|end_char=180
 
 # text = You 💙 LA.
 # sent_id = 6
-1	You	you	PRON	PRP	Case=Nom|Person=2|PronType=Prs	0	root	_	start_char=181|end_char=184
-2	💙	💙	PUNCT	:	_	3	punct	_	start_char=185|end_char=186
-3	LA	LA	PROPN	NNP	Number=Sing	1	parataxis	_	SpaceAfter=No|start_char=187|end_char=189
-4	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=189|end_char=190
+1	You	you	PRON	PRP	Case=Nom|Person=2|PronType=Prs	3	nsubj	_	start_char=181|end_char=184
+2	💙	be	AUX	VBP	Mood=Ind|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin	3	cop	_	start_char=185|end_char=186
+3	LA	LA	PROPN	NNP	Number=Sing	0	root	_	SpaceAfter=No|start_char=187|end_char=189
+4	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=189|end_char=190
 
 # text = Congrats on the new job 👏👏 you deserve it 💯
 # sent_id = 7
@@ -81,25 +81,25 @@
 # text = my dog 🐶 ate my homework 📚 again smh 🤦‍♂️
 # sent_id = 8
 1	my	my	PRON	PRP$	Case=Gen|Number=Sing|Person=1|Poss=Yes|PronType=Prs	2	nmod:poss	_	start_char=237|end_char=239
-2	dog	dog	NOUN	NN	Number=Sing	4	vocative	_	start_char=240|end_char=243
-3	🐶	🐶	PUNCT	:	_	2	punct	_	start_char=244|end_char=245
+2	dog	dog	NOUN	NN	Number=Sing	4	nsubj	_	start_char=240|end_char=243
+3	🐶	🐶	PUNCT	,	_	2	punct	_	start_char=244|end_char=245
 4	ate	eat	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=246|end_char=249
 5	my	my	PRON	PRP$	Case=Gen|Number=Sing|Person=1|Poss=Yes|PronType=Prs	6	nmod:poss	_	start_char=250|end_char=252
 6	homework	homework	NOUN	NN	Number=Sing	4	obj	_	start_char=253|end_char=261
 7	📚	📚	PUNCT	,	_	9	punct	_	start_char=262|end_char=263
 8	again	again	ADV	RB	_	4	advmod	_	start_char=264|end_char=269
-9	smh	smh	INTJ	UH	_	4	discourse	_	start_char=270|end_char=273
+9	smh	smh	INTJ	UH	_	10	discourse	_	start_char=270|end_char=273
 10	🤦‍♂	🤦‍♂	INTJ	UH	_	4	discourse	_	SpaceAfter=No|start_char=274|end_char=277
-11	️	️	SYM	NFP	_	4	discourse	_	SpacesAfter=\n\n|start_char=277|end_char=278
+11	️	️	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=277|end_char=278
 
 # text = Pizza 🍕 or tacos 🌮?
 # sent_id = 9
-1	Pizza	pizza	NOUN	NN	Number=Sing	2	compound	_	start_char=280|end_char=285
-2	🍕	🍕	NOUN	NN	Number=Sing	0	root	_	start_char=286|end_char=287
+1	Pizza	pizza	NOUN	NN	Number=Sing	0	root	_	start_char=280|end_char=285
+2	🍕	🍕	PUNCT	-RRB-	_	4	punct	_	start_char=286|end_char=287
 3	or	or	CCONJ	CC	_	4	cc	_	start_char=288|end_char=290
-4	tacos	taco	NOUN	NNS	Number=Plur	2	conj	_	start_char=291|end_char=296
-5	🌮	🌮	PUNCT	.	_	2	punct	_	SpaceAfter=No|start_char=297|end_char=298
-6	?	?	PUNCT	.	_	2	punct	_	start_char=298|end_char=299
+4	tacos	taco	NOUN	NNS	Number=Plur	1	conj	_	start_char=291|end_char=296
+5	🌮	🌮	PUNCT	.	_	1	punct	_	SpaceAfter=No|start_char=297|end_char=298
+6	?	?	PUNCT	.	_	1	punct	_	start_char=298|end_char=299
 
 # text = Why not both 🤷
 # sent_id = 10
@@ -111,11 +111,11 @@
 # text = Flags: 🇺🇸 🇬🇧 🇯🇵 🇸🇪.
 # sent_id = 11
 1	Flags	flag	NOUN	NNS	Number=Plur	0	root	_	SpaceAfter=No|start_char=316|end_char=321
-2	:	:	PUNCT	:	_	4	punct	_	start_char=321|end_char=322
-3	🇺🇸	🇺🇸	PUNCT	``	_	4	punct	_	start_char=323|end_char=325
-4	🇬🇧	🇬🇧	INTJ	UH	_	5	discourse	_	start_char=326|end_char=328
-5	🇯🇵	🇯🇵	INTJ	UH	_	1	appos	_	start_char=329|end_char=331
-6	🇸🇪	🇸🇪	INTJ	UH	_	4	flat	_	SpaceAfter=No|start_char=332|end_char=334
+2	:	:	PUNCT	:	_	3	punct	_	start_char=321|end_char=322
+3	🇺🇸	🇺🇸	INTJ	UH	_	4	discourse	_	start_char=323|end_char=325
+4	🇬🇧	🇬🇧	INTJ	UH	_	5	reparandum	_	start_char=326|end_char=328
+5	🇯🇵	🇯🇵	INTJ	UH	_	6	reparandum	_	start_char=329|end_char=331
+6	🇸🇪	🇸🇪	INTJ	UH	_	1	discourse	_	SpaceAfter=No|start_char=332|end_char=334
 7	.	.	PUNCT	.	_	1	punct	_	start_char=334|end_char=335
 
 # text = Skin tones: 👍🏽 👋🏿.
@@ -123,8 +123,8 @@
 1	Skin	skin	NOUN	NN	Number=Sing	2	compound	_	start_char=336|end_char=340
 2	tones	tone	NOUN	NNS	Number=Plur	0	root	_	SpaceAfter=No|start_char=341|end_char=346
 3	:	:	PUNCT	:	_	5	punct	_	start_char=346|end_char=347
-4	👍🏽	👍🏽	PUNCT	``	_	5	punct	_	start_char=348|end_char=350
-5	👋🏿	👋🏿	INTJ	UH	_	2	dep	_	SpaceAfter=No|start_char=351|end_char=353
+4	👍🏽	👍🏽	INTJ	UH	_	5	reparandum	_	start_char=348|end_char=350
+5	👋🏿	👋🏿	INTJ	UH	_	2	discourse	_	SpaceAfter=No|start_char=351|end_char=353
 6	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=353|end_char=354
 
 # text = The math symbol 𝔸 and the musical symbol 𝄞 are outside the BMP.
@@ -132,7 +132,7 @@
 1	The	the	DET	DT	Definite=Def|PronType=Art	3	det	_	start_char=356|end_char=359
 2	math	math	NOUN	NN	Number=Sing	3	compound	_	start_char=360|end_char=364
 3	symbol	symbol	NOUN	NN	Number=Sing	13	nsubj	_	start_char=365|end_char=371
-4	𝔸	𝔸	PUNCT	:	_	8	punct	_	start_char=372|end_char=373
+4	𝔸	𝔸	PUNCT	''	_	3	punct	_	start_char=372|end_char=373
 5	and	and	CCONJ	CC	_	8	cc	_	start_char=374|end_char=377
 6	the	the	DET	DT	Definite=Def|PronType=Art	8	det	_	start_char=378|end_char=381
 7	musical	musical	ADJ	JJ	Degree=Pos	8	amod	_	start_char=382|end_char=389
@@ -157,12 +157,12 @@
 # text = Rare CJK characters like 𠀋 and 𪚥 need surrogate pairs in UTF-16.
 # sent_id = 15
 1	Rare	rare	ADJ	JJ	Degree=Pos	3	amod	_	start_char=448|end_char=452
-2	CJK	CJK	PROPN	NNP	Number=Sing	3	compound	_	start_char=453|end_char=456
+2	CJK	CJK	NOUN	NN	Number=Sing	3	compound	_	start_char=453|end_char=456
 3	characters	character	NOUN	NNS	Number=Plur	8	nsubj	_	start_char=457|end_char=467
-4	like	like	ADP	IN	_	3	nmod	_	start_char=468|end_char=472
-5	𠀋	𠀋	PUNCT	:	_	6	punct	_	start_char=473|end_char=474
+4	like	like	ADP	IN	_	8	mark	_	start_char=468|end_char=472
+5	𠀋	𠀋	PUNCT	``	_	6	punct	_	start_char=473|end_char=474
 6	and	and	CCONJ	CC	_	8	cc	_	start_char=475|end_char=478
-7	𪚥	𪚥	PUNCT	:	_	6	punct	_	start_char=479|end_char=480
+7	𪚥	𪚥	PUNCT	``	_	6	punct	_	start_char=479|end_char=480
 8	need	need	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=481|end_char=485
 9	surrogate	surrogate	ADJ	JJ	Degree=Pos	10	amod	_	start_char=486|end_char=495
 10	pairs	pair	NOUN	NNS	Number=Plur	8	obj	_	start_char=496|end_char=501
@@ -179,10 +179,10 @@
 3	"	"	PUNCT	``	_	4	punct	_	SpaceAfter=No|start_char=524|end_char=525
 4	thank	thank	VERB	VBP	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	2	ccomp	_	start_char=525|end_char=530
 5	you	you	PRON	PRP	Case=Acc|Person=2|PronType=Prs	4	obj	_	start_char=531|end_char=534
-6	🙏	🙏	PUNCT	''	_	4	punct	_	SpaceAfter=No|start_char=535|end_char=536
+6	🙏	🙏	PUNCT	.	_	4	punct	_	SpaceAfter=No|start_char=535|end_char=536
 7	"	"	PUNCT	''	_	4	punct	_	start_char=536|end_char=537
 8	and	and	CCONJ	CC	_	9	cc	_	start_char=538|end_char=541
-9	left	leave	VERB	VBD	Mood=Ind|Number=Sing|Person=1|Tense=Past|VerbForm=Fin	2	conj	_	SpaceAfter=No|start_char=542|end_char=546
+9	left	leave	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	2	conj	_	SpaceAfter=No|start_char=542|end_char=546
 10	.	.	PUNCT	.	_	2	punct	_	start_char=546|end_char=547
 
 # text = He replied 👍.
@@ -242,7 +242,7 @@
 # sent_id = 22
 1	Rocket	rocket	NOUN	NN	Number=Sing	2	compound	_	start_char=692|end_char=698
 2	launch	launch	NOUN	NN	Number=Sing	0	root	_	start_char=699|end_char=705
-3	🚀	🚀	PUNCT	:	_	5	punct	_	start_char=706|end_char=707
+3	🚀	🚀	NOUN	NN	Number=Sing	2	nmod:unmarked	_	start_char=706|end_char=707
 4	at	at	ADP	IN	_	5	case	_	start_char=708|end_char=710
 5	10:30	10:30	NUM	CD	NumForm=Digit|NumType=Card	2	nmod	_	start_char=711|end_char=716
 6	am	a.m.	NOUN	NN	Number=Sing	5	nmod:unmarked	_	SpaceAfter=No|start_char=717|end_char=719
@@ -291,17 +291,17 @@
 1	The	the	DET	DT	Definite=Def|PronType=Art	5	det	_	start_char=823|end_char=826
 2	mathematical	mathematical	ADJ	JJ	Degree=Pos	5	amod	_	start_char=827|end_char=839
 3	bold	bold	ADJ	JJ	Degree=Pos	5	amod	_	start_char=840|end_char=844
-4	𝐀𝐁𝐂	𝐀𝐁𝐂	PUNCT	''	_	3	punct	_	start_char=845|end_char=848
+4	𝐀𝐁𝐂	𝐀𝐁𝐂	PUNCT	HYPH	_	3	punct	_	start_char=845|end_char=848
 5	letters	letter	NOUN	NNS	Number=Plur	6	nsubj	_	start_char=849|end_char=856
 6	look	look	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=857|end_char=861
 7	like	like	ADP	IN	_	8	case	_	start_char=862|end_char=866
-8	ABC	ABC	PROPN	NNP	Number=Sing	6	obl	_	SpaceAfter=No|start_char=867|end_char=870
+8	ABC	ABC	PROPN	NNP	Abbr=Yes|Number=Sing	6	obl	_	SpaceAfter=No|start_char=867|end_char=870
 9	.	.	PUNCT	.	_	6	punct	_	start_char=870|end_char=871
 
 # text = Italic 𝑥 is x.
 # sent_id = 29
-1	Italic	Italic	ADJ	JJ	Degree=Pos	4	reparandum	_	start_char=872|end_char=878
-2	𝑥	𝑥	PUNCT	:	_	1	punct	_	start_char=879|end_char=880
+1	Italic	Italic	ADJ	JJ	Degree=Pos	4	nsubj	_	start_char=872|end_char=878
+2	𝑥	𝑥	PUNCT	''	_	1	punct	_	start_char=879|end_char=880
 3	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	cop	_	start_char=881|end_char=883
 4	x	x	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=884|end_char=885
 5	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=885|end_char=886
@@ -310,9 +310,9 @@
 # sent_id = 30
 1	Tea	Tea	NOUN	NN	Number=Sing	2	compound	_	start_char=888|end_char=891
 2	🍵	🍵	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=892|end_char=893
-3	,	,	PUNCT	,	_	5	punct	_	start_char=893|end_char=894
-4	cake	cake	NOUN	NN	Number=Sing	5	compound	_	start_char=895|end_char=899
-5	🍰	🍰	NOUN	NN	Number=Sing	2	conj	_	SpaceAfter=No|start_char=900|end_char=901
+3	,	,	PUNCT	,	_	4	punct	_	start_char=893|end_char=894
+4	cake	cake	NOUN	NN	Number=Sing	2	conj	_	start_char=895|end_char=899
+5	🍰	🍰	PUNCT	''	_	2	punct	_	SpaceAfter=No|start_char=900|end_char=901
 6	,	,	PUNCT	,	_	10	punct	_	start_char=901|end_char=902
 7	and	and	CCONJ	CC	_	10	cc	_	start_char=903|end_char=906
 8	a	a	DET	DT	Definite=Ind|PronType=Art	10	det	_	start_char=907|end_char=908

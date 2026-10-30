@@ -531,7 +531,7 @@
     "md5": "cfce17057c0053dd595fb5bb8010b244"
    },
    "combined_charlm": {
-    "md5": "a3efc57724b629fabf427ce59d410f7e",
+    "md5": "c7aec3fbdc496cfcdfcef02d0b722e27",
     "dependencies": [
      {
       "model": "pretrain",
@@ -545,10 +545,12 @@
       "model": "backward_charlm",
       "package": "1billion"
      }
-    ]
+    ],
+    "alternate_md5": "5a88306e7aaa0f736b87ab31631d5c1f"
    },
    "combined_nocharlm": {
-    "md5": "8d3742b3f507e78a9e605afd72b34c92"
+    "md5": "eebdb83761b26a2e4a713309684271e2",
+    "alternate_md5": "c1919a2fd49702ddb93338c3a06c8b18"
    },
    "craft_nocharlm": {
     "md5": "62758246109e9ed243f158ce9e4294c3"
@@ -1044,7 +1046,7 @@
     ]
    },
    "combined_charlm": {
-    "md5": "a31dbf7269152bc85c3c79c5318ae848",
+    "md5": "cefc83ef24c9ed0ed96e20d9c6e4374c",
     "dependencies": [
      {
       "model": "pretrain",
@@ -1058,10 +1060,11 @@
       "model": "backward_charlm",
       "package": "1billion"
      }
-    ]
+    ],
+    "alternate_md5": "a31dbf7269152bc85c3c79c5318ae848"
    },
    "combined_electra-large": {
-    "md5": "f7e65d440e6653ff3f5b4ae15655c154",
+    "md5": "0ebbe59434e2473dade2c395c0711363",
     "dependencies": [
      {
       "model": "pretrain",
@@ -1075,16 +1078,18 @@
       "model": "backward_charlm",
       "package": "1billion"
      }
-    ]
+    ],
+    "alternate_md5": "f7e65d440e6653ff3f5b4ae15655c154"
    },
    "combined_nocharlm": {
-    "md5": "005fab042873317838e692c650e8e5e9",
+    "md5": "6c744acbc30218b17805ee8ca5b1b234",
     "dependencies": [
      {
       "model": "pretrain",
       "package": "conll17"
      }
-    ]
+    ],
+    "alternate_md5": "005fab042873317838e692c650e8e5e9"
    },
    "craft_nocharlm": {
     "md5": "0bcb9b9712e81beb38a2ed4d7649b437",
@@ -1623,7 +1628,8 @@
     "depparse": "partut_charlm"
    }
   },
-  "default_md5": "d67a8cc6a4ac3131c2145cc5d8cd928b",
+  "default_md5": "ec38712d518017dddb0c614190fe058e",
+  "alternate_default_md5": "dc1b68c77799e724326bbc384638c8e6",
   "lang_name": "English"
  },
  "de": {

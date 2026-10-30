@@ -47,7 +47,7 @@
 
 # text = Windows line endings follow.
 # sent_id = 5
-1	Windows	window	PROPN	NNP	Number=Plur	2	compound	_	start_char=185|end_char=192
+1	Windows	window	PROPN	NNP	Number=Sing	2	compound	_	start_char=185|end_char=192
 2	line	line	NOUN	NN	Number=Sing	3	compound	_	start_char=193|end_char=197
 3	endings	ending	NOUN	NNS	Number=Plur	4	nsubj	_	start_char=198|end_char=205
 4	follow	follow	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=206|end_char=212
@@ -77,7 +77,7 @@
 3	paragraph	paragraph	NOUN	NN	Number=Sing	0	root	_	start_char=269|end_char=278
 4	after	after	ADP	IN	_	8	case	_	start_char=279|end_char=284
 5	a	a	DET	DT	Definite=Ind|PronType=Art	8	det	_	start_char=285|end_char=286
-6	CRLF	CRLF	PROPN	NNP	Number=Sing	8	compound	_	start_char=287|end_char=291
+6	CRLF	CRLF	NOUN	NN	Number=Sing	8	compound	_	start_char=287|end_char=291
 7	blank	blank	ADJ	JJ	Degree=Pos	8	amod	_	start_char=292|end_char=297
 8	line	line	NOUN	NN	Number=Sing	3	nmod	_	SpaceAfter=No|start_char=298|end_char=302
 9	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\r\n\r\n\t|start_char=302|end_char=303
@@ -104,7 +104,7 @@
 
 # text = Non-breaking spaces appear here: 10 kg and 5 km.
 # sent_id = 11
-1	Non-breaking	non-breaking	ADJ	JJ	Degree=Pos	2	amod	_	SpacesAfter=\u00A0|start_char=369|end_char=381
+1	Non-breaking	non-break	VERB	VBG	VerbForm=Ger	2	amod	_	SpacesAfter=\u00A0|start_char=369|end_char=381
 2	spaces	space	NOUN	NNS	Number=Plur	3	nsubj	_	SpacesAfter=\u00A0|start_char=382|end_char=388
 3	appear	appear	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=389|end_char=395
 4	here	here	ADV	RB	PronType=Dem	3	advmod	_	SpaceAfter=No|start_char=396|end_char=400
@@ -128,10 +128,10 @@
 1	Thin	thin	ADJ	JJ	Degree=Pos	2	amod	_	SpacesAfter= |start_char=437|end_char=441
 2	spaces	space	NOUN	NNS	Number=Plur	10	nsubj	_	start_char=442|end_char=448
 3	and	and	CCONJ	CC	_	5	cc	_	start_char=449|end_char=452
-4	en	en	X	FW	_	5	amod	_	SpacesAfter= |start_char=453|end_char=455
+4	en	en	PROPN	NNP	Number=Sing	5	compound	_	SpacesAfter= |start_char=453|end_char=455
 5	spaces	space	NOUN	NNS	Number=Plur	2	conj	_	start_char=456|end_char=462
 6	and	and	CCONJ	CC	_	8	cc	_	start_char=463|end_char=466
-7	em	they	PRON	PRP	Case=Acc|Number=Plur|Person=3|PronType=Prs|Style=Coll	8	compound	_	SpacesAfter= |start_char=467|end_char=469
+7	em	they	PRON	PRP	Case=Acc|Number=Plur|Person=3|PronType=Prs|Style=Coll|Typo=Yes	8	compound	_	SpacesAfter= |start_char=467|end_char=469
 8	spaces	space	NOUN	NNS	Number=Plur	2	conj	_	start_char=470|end_char=476
 9	are	be	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	10	cop	_	start_char=477|end_char=480
 10	rare	rare	ADJ	JJ	Degree=Pos	0	root	_	SpaceAfter=No|start_char=481|end_char=485
@@ -157,7 +157,7 @@
 # text = A zero​width space hides here.
 # sent_id = 16
 1	A	a	DET	DT	Definite=Ind|PronType=Art	3	det	_	start_char=545|end_char=546
-2	zero​width	uerovwidth	ADJ	JJ	Degree=Pos	3	amod	_	start_char=547|end_char=557
+2	zero​width	zero​width	ADJ	JJ	Degree=Pos	3	amod	_	start_char=547|end_char=557
 3	space	space	NOUN	NN	Number=Sing	4	nsubj	_	start_char=558|end_char=563
 4	hides	hide	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=564|end_char=569
 5	here	here	ADV	RB	PronType=Dem	4	advmod	_	SpaceAfter=No|start_char=570|end_char=574
@@ -244,7 +244,7 @@
 
 # text = Odd but possible.
 # sent_id = 26
-1	Odd	Odd	ADJ	JJ	Degree=Pos	0	root	_	start_char=849|end_char=852
+1	Odd	odd	ADJ	JJ	Degree=Pos	0	root	_	start_char=849|end_char=852
 2	but	but	CCONJ	CC	_	3	cc	_	start_char=853|end_char=856
 3	possible	possible	ADJ	JJ	Degree=Pos	1	conj	_	SpaceAfter=No|start_char=857|end_char=865
 4	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=865|end_char=866
@@ -298,21 +298,21 @@
 4	-	-	PUNCT	HYPH	_	5	punct	_	start_char=1043|end_char=1044
 5	en	en	X	FW	Foreign=Yes	1	flat	_	start_char=1045|end_char=1047
 6	dash	dash	X	FW	Foreign=Yes	1	flat	_	start_char=1048|end_char=1052
-7	–	-	PUNCT	HYPH	_	8	punct	_	start_char=1053|end_char=1054
-8	em	they	X	FW	_	1	flat	_	start_char=1055|end_char=1057
+7	–	-	PUNCT	:	_	8	punct	_	start_char=1053|end_char=1054
+8	em	they	PRON	PRP	Case=Acc|Number=Plur|Person=3|PronType=Prs|Style=Coll	1	flat	_	start_char=1055|end_char=1057
 9	dash	dash	X	FW	Foreign=Yes	1	flat	_	start_char=1058|end_char=1062
 10	—	—	PUNCT	:	_	11	punct	_	start_char=1063|end_char=1064
-11	figure	figure	X	FW	Foreign=Yes	1	flat	_	start_char=1065|end_char=1071
+11	figure	Figure	PROPN	NNP	Number=Sing	1	list	_	start_char=1065|end_char=1071
 12	dash	dash	X	FW	Foreign=Yes	11	flat	_	start_char=1072|end_char=1076
 13	‒	‒	X	FW	Foreign=Yes	11	flat	_	start_char=1077|end_char=1078
 14	minus	minus	X	FW	Foreign=Yes	11	flat	_	start_char=1079|end_char=1084
-15	−	−	X	FW	Foreign=Yes	1	flat	_	start_char=1085|end_char=1086
-16	and	and	CCONJ	CC	_	17	cc	_	start_char=1087|end_char=1090
-17	horizontal	horizontal	X	FW	Foreign=Yes	1	conj	_	start_char=1091|end_char=1101
-18	bar	bar	X	FW	Foreign=Yes	1	flat	_	start_char=1102|end_char=1105
+15	−	−	X	FW	Foreign=Yes	11	flat	_	start_char=1085|end_char=1086
+16	and	and	CCONJ	CC	_	18	cc	_	start_char=1087|end_char=1090
+17	horizontal	horizontal	X	FW	Foreign=Yes	18	compound	_	start_char=1091|end_char=1101
+18	bar	bar	NOUN	NN	Number=Sing	1	conj	_	start_char=1102|end_char=1105
 19	―	―	X	FW	Foreign=Yes	1	flat	_	start_char=1106|end_char=1107
-20	all	all	X	FW	_	21	advmod	_	start_char=1108|end_char=1111
-21	appear	appear	X	FW	_	0	root	_	SpaceAfter=No|start_char=1112|end_char=1118
+20	all	all	ADV	RB	_	21	advmod	_	start_char=1108|end_char=1111
+21	appear	appear	VERB	VB	VerbForm=Inf	0	root	_	SpaceAfter=No|start_char=1112|end_char=1118
 22	.	.	PUNCT	.	_	21	punct	_	SpacesAfter=\n\n|start_char=1118|end_char=1119
 
 # text = Ellipsis… three dots... spaced dots . . . and four dots.... end here.
@@ -345,7 +345,7 @@
 6	and	and	CCONJ	CC	_	7	cc	_	start_char=1206|end_char=1209
 7	guillemets	guillemet	NOUN	NNS	Number=Plur	1	conj	_	start_char=1210|end_char=1220
 8	«	"	PUNCT	``	_	9	punct	_	SpaceAfter=No|start_char=1221|end_char=1222
-9	bonjour	bonjour	X	FW	Foreign=Yes	7	appos	_	SpaceAfter=No|start_char=1222|end_char=1229
+9	bonjour	bonjour	X	FW	_	7	appos	_	SpaceAfter=No|start_char=1222|end_char=1229
 10	»	"	PUNCT	''	_	9	punct	_	start_char=1229|end_char=1230
 11	and	and	CCONJ	CC	_	15	cc	_	start_char=1231|end_char=1234
 12	‹hi›	‹hi›	ADJ	JJ	Degree=Pos	15	amod	_	start_char=1235|end_char=1239
@@ -353,16 +353,16 @@
 14	low	low	ADJ	JJ	Degree=Pos	12	conj	_	start_char=1244|end_char=1247
 15	quotes	quote	NOUN	NNS	Number=Plur	7	conj	_	start_char=1248|end_char=1254
 16	„	"	PUNCT	``	_	17	punct	_	SpaceAfter=No|start_char=1255|end_char=1256
-17	ja	ja	X	FW	_	15	appos	_	SpaceAfter=No|start_char=1256|end_char=1258
+17	ja	ja	INTJ	UH	_	15	appos	_	SpaceAfter=No|start_char=1256|end_char=1258
 18	“	"	PUNCT	''	_	17	punct	_	start_char=1258|end_char=1259
 19	appear	appear	VERB	VB	Mood=Imp|VerbForm=Fin	15	acl	_	SpaceAfter=No|start_char=1260|end_char=1266
 20	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=1266|end_char=1267
 
 # text = Fullwidth ＡＢＣ letters and １２３ digits.
 # sent_id = 35
-1	Fullwidth	fullwidth	NOUN	NN	Number=Sing	0	root	_	start_char=1269|end_char=1278
-2	ＡＢＣ	ａｂｃ	PUNCT	,	_	3	punct	_	start_char=1279|end_char=1282
-3	letters	letter	NOUN	NNS	Number=Plur	1	appos	_	start_char=1283|end_char=1290
+1	Fullwidth	fullwidth	VERB	VB	Mood=Imp|VerbForm=Fin	0	root	_	start_char=1269|end_char=1278
+2	ＡＢＣ	ＡＢＣ	NUM	CD	NumForm=Digit|NumType=Card	3	nummod	_	start_char=1279|end_char=1282
+3	letters	letter	NOUN	NNS	Number=Plur	1	obj	_	start_char=1283|end_char=1290
 4	and	and	CCONJ	CC	_	6	cc	_	start_char=1291|end_char=1294
 5	１２３	１２３	NUM	CD	NumForm=Digit|NumType=Card	6	nummod	_	start_char=1295|end_char=1298
 6	digits	digit	NOUN	NNS	Number=Plur	3	conj	_	SpaceAfter=No|start_char=1299|end_char=1305
@@ -370,31 +370,31 @@
 
 # text = Ligatures like ﬁne and ﬂow.
 # sent_id = 36
-1	Ligatures	ligature	NOUN	NNS	Number=Plur	0	root	_	start_char=1307|end_char=1316
+1	Ligatures	Ligature	NOUN	NNS	Number=Plur	0	root	_	start_char=1307|end_char=1316
 2	like	like	ADP	IN	_	3	case	_	start_char=1317|end_char=1321
 3	ﬁne	ﬁne	NOUN	NN	Number=Sing	1	nmod	_	start_char=1322|end_char=1325
 4	and	and	CCONJ	CC	_	5	cc	_	start_char=1326|end_char=1329
-5	ﬂow	ﬂow	ADJ	JJ	Degree=Pos	3	conj	_	SpaceAfter=No|start_char=1330|end_char=1333
+5	ﬂow	ﬂow	NOUN	NN	Number=Sing	3	conj	_	SpaceAfter=No|start_char=1330|end_char=1333
 6	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=1333|end_char=1334
 
 # text = Superscripts x² and y³ and subscripts H₂O.
 # sent_id = 37
-1	Superscripts	superscript	NOUN	NNS	Number=Plur	0	root	_	start_char=1336|end_char=1348
-2	x	x	SYM	SYM	_	3	case	_	SpaceAfter=No|start_char=1349|end_char=1350
-3	²	²	NOUN	NN	Number=Sing	1	nmod	_	start_char=1350|end_char=1351
+1	Superscripts	superscript	NOUN	NNS	Number=Plur	2	compound	_	start_char=1336|end_char=1348
+2	x	x	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=1349|end_char=1350
+3	²	²	NOUN	NN	Number=Sing	2	flat	_	start_char=1350|end_char=1351
 4	and	and	CCONJ	CC	_	5	cc	_	start_char=1352|end_char=1355
-5	y³	y³	INTJ	UH	_	3	conj	_	start_char=1356|end_char=1358
+5	y³	year	NOUN	NNS	Number=Plur	2	conj	_	start_char=1356|end_char=1358
 6	and	and	CCONJ	CC	_	7	cc	_	start_char=1359|end_char=1362
-7	subscripts	subscript	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	1	conj	_	start_char=1363|end_char=1373
-8	H₂O	H₂O	PROPN	NNP	Number=Sing	7	obj	_	SpaceAfter=No|start_char=1374|end_char=1377
-9	.	.	PUNCT	.	_	1	punct	_	start_char=1377|end_char=1378
+7	subscripts	subscript	NOUN	NNS	Number=Plur	2	conj	_	start_char=1363|end_char=1373
+8	H₂O	H₂O	PROPN	NNP	Number=Sing	7	flat	_	SpaceAfter=No|start_char=1374|end_char=1377
+9	.	.	PUNCT	.	_	2	punct	_	start_char=1377|end_char=1378
 
 # text = The degree sign ° and the micro sign µ.
 # sent_id = 38
 1	The	the	DET	DT	Definite=Def|PronType=Art	4	det	_	start_char=1379|end_char=1382
 2	degree	degree	NOUN	NN	Number=Sing	3	compound	_	start_char=1383|end_char=1389
 3	sign	sign	NOUN	NN	Number=Sing	4	compound	_	start_char=1390|end_char=1394
-4	°	°	NOUN	NNS	Number=Plur	0	root	_	start_char=1395|end_char=1396
+4	°	°	NOUN	NN	Number=Sing	0	root	_	start_char=1395|end_char=1396
 5	and	and	CCONJ	CC	_	9	cc	_	start_char=1397|end_char=1400
 6	the	the	DET	DT	Definite=Def|PronType=Art	9	det	_	start_char=1401|end_char=1404
 7	micro	micro	NOUN	NN	Number=Sing	8	compound	_	start_char=1405|end_char=1410
@@ -406,25 +406,25 @@
 # sent_id = 39
 1	Roman	Roman	ADJ	JJ	Degree=Pos	2	amod	_	start_char=1420|end_char=1425
 2	numerals	numeral	NOUN	NNS	Number=Plur	0	root	_	start_char=1426|end_char=1434
-3	Ⅰ	Ⅰ	PUNCT	,	_	7	punct	_	start_char=1435|end_char=1436
-4	Ⅱ	Ⅱ	PUNCT	``	_	7	punct	_	start_char=1437|end_char=1438
-5	Ⅲ	Ⅲ	PUNCT	:	_	7	punct	_	start_char=1439|end_char=1440
+3	Ⅰ	Ⅰ	PUNCT	,	_	4	punct	_	start_char=1435|end_char=1436
+4	Ⅱ	Ⅱ	X	FW	_	2	appos	_	start_char=1437|end_char=1438
+5	Ⅲ	Ⅲ	PUNCT	''	_	4	punct	_	start_char=1439|end_char=1440
 6	and	and	CCONJ	CC	_	7	cc	_	start_char=1441|end_char=1444
-7	circled	circle	VERB	VBN	Tense=Past|VerbForm=Part	2	conj	_	start_char=1445|end_char=1452
+7	circled	circle	VERB	VBD	Mood=Ind|Tense=Past|VerbForm=Fin|Voice=Pass	2	conj	_	start_char=1445|end_char=1452
 8	①	①	PUNCT	.	_	7	punct	_	start_char=1453|end_char=1454
 9	②.	②.	PUNCT	.	_	2	punct	_	start_char=1455|end_char=1457
 
 # text = Turkish İstanbul and dotless ı. German ẞ and ß.
 # sent_id = 40
 1	Turkish	Turkish	ADJ	JJ	Degree=Pos	2	amod	_	start_char=1458|end_char=1465
-2	İstanbul	i̇stanbul	NOUN	NN	Number=Sing	0	root	_	start_char=1466|end_char=1474
-3	and	and	CCONJ	CC	_	6	cc	_	start_char=1475|end_char=1478
+2	İstanbul	Sstanbul	PROPN	NNP	Number=Sing	0	root	_	start_char=1466|end_char=1474
+3	and	and	CCONJ	CC	_	4	cc	_	start_char=1475|end_char=1478
 4	dotless	dotless	ADJ	JJ	Degree=Pos	6	amod	_	start_char=1479|end_char=1486
-5	ı.	ı.	NOUN	NN	Number=Sing	6	compound	_	start_char=1487|end_char=1489
+5	ı.	ıilson	NOUN	NN	Number=Sing	6	compound	_	start_char=1487|end_char=1489
 6	German	German	ADJ	JJ	Degree=Pos	2	conj	_	start_char=1490|end_char=1496
-7	ẞ	ẞ	PUNCT	:	_	9	punct	_	start_char=1497|end_char=1498
+7	ẞ	ẞ	PUNCT	,	_	9	punct	_	start_char=1497|end_char=1498
 8	and	and	CCONJ	CC	_	9	cc	_	start_char=1499|end_char=1502
-9	ß	ß	INTJ	UH	_	2	conj	_	SpaceAfter=No|start_char=1503|end_char=1504
+9	ß	ß	X	FW	_	6	conj	_	SpaceAfter=No|start_char=1503|end_char=1504
 10	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=1504|end_char=1505
 
 # text = Combining accents: café and naïve.
@@ -449,13 +449,13 @@
 # text = DOTTED İ UPPER AND İSTANBUL'S BRIDGES.
 # sent_id = 43
 1	DOTTED	dotted	ADJ	JJ	Degree=Pos	0	root	_	start_char=1574|end_char=1580
-2	İ	İ	PUNCT	NFP	_	7	punct	_	start_char=1581|end_char=1582
+2	İ	İ	PUNCT	.	_	7	punct	_	start_char=1581|end_char=1582
 3	UPPER	upper	ADJ	JJ	Degree=Pos	7	amod	_	start_char=1583|end_char=1588
 4	AND	and	CCONJ	CC	_	5	cc	_	start_char=1589|end_char=1592
 5-6	İSTANBUL'S	_	_	_	_	_	_	_	start_char=1593|end_char=1603
-5	İSTANBUL	İstanbul	PROPN	NNP	Number=Sing	7	nmod:poss	_	start_char=1593|end_char=1601
+5	İSTANBUL	SSTANBUL	PROPN	NNP	Number=Sing	7	nmod:poss	_	start_char=1593|end_char=1601
 6	'S	's	PART	POS	_	5	case	_	start_char=1601|end_char=1603
-7	BRIDGES	bridges	NOUN	NNS	Number=Plur	1	obl	_	SpaceAfter=No|start_char=1604|end_char=1611
+7	BRIDGES	Bridges	PROPN	NNPS	Number=Plur	1	obl	_	SpaceAfter=No|start_char=1604|end_char=1611
 8	.	.	PUNCT	.	_	1	punct	_	start_char=1611|end_char=1612
 
 # text = THE STRASSE.

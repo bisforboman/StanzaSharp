@@ -68,7 +68,7 @@
 11	,	,	PUNCT	,	_	9	punct	_	SpaceAfter=No|start_char=168|end_char=169|ner=O
 12	'	'	PUNCT	''	_	9	punct	_	start_char=169|end_char=170|ner=O
 13	and	and	CCONJ	CC	_	14	cc	_	start_char=171|end_char=174|ner=O
-14	hung	hang	VERB	VBD	Mood=Ind|Number=Sing|Tense=Past|VerbForm=Fin	9	conj	_	start_char=175|end_char=179|ner=O
+14	hung	hang	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	9	conj	_	start_char=175|end_char=179|ner=O
 15	up	up	ADP	RP	_	14	compound:prt	_	SpaceAfter=No|start_char=180|end_char=182|ner=O
 16	,	,	PUNCT	,	_	3	punct	_	SpaceAfter=No|start_char=182|end_char=183|ner=O
 17	"	"	PUNCT	''	_	3	punct	_	start_char=183|end_char=184|ner=O
@@ -130,7 +130,7 @@
 10	“	"	PUNCT	``	_	20	punct	_	SpaceAfter=No|start_char=297|end_char=298|ner=O
 11	when	when	ADV	WRB	PronType=Int	15	advmod	_	start_char=298|end_char=302|ner=O
 12	I	I	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	15	nsubj	_	start_char=303|end_char=304|ner=O
-13	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	15	cop	_	start_char=305|end_char=308|ner=O
+13	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=1|Tense=Past|VerbForm=Fin	15	cop	_	start_char=305|end_char=308|ner=O
 14	your	your	PRON	PRP$	Case=Gen|Person=2|Poss=Yes|PronType=Prs	15	nmod:poss	_	start_char=309|end_char=313|ner=O
 15	age	age	NOUN	NN	Number=Sing	20	advcl	_	SpaceAfter=No|start_char=314|end_char=317|ner=O
 16	,	,	PUNCT	,	_	15	punct	_	start_char=317|end_char=318|ner=O
@@ -222,7 +222,7 @@
 # constituency = (ROOT (SBARQ (`` “) (NP (PRP You)) (VP (VBP know) (SBAR (WHNP (WP what)) (S (NP (PRP$ my) (NN grandfather)) (VP (VBD used) (S (VP (TO to) (VP (VB say)))))))) (. ?)))
 # sentiment = 1
 1	“	"	PUNCT	``	_	3	punct	_	SpaceAfter=No|start_char=502|end_char=503|ner=O
-2	You	you	PRON	PRP	Case=Nom|Person=2|PronType=Prs	3	nsubj	_	start_char=503|end_char=506|ner=O
+2	You	you	PRON	PRP	Case=Nom|Number=Sing|Person=2|PronType=Prs	3	nsubj	_	start_char=503|end_char=506|ner=O
 3	know	know	VERB	VBP	Mood=Ind|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin	0	root	_	start_char=507|end_char=511|ner=O
 4	what	what	PRON	WP	PronType=Rel	9	obj	_	start_char=512|end_char=516|ner=O
 5	my	my	PRON	PRP$	Case=Gen|Number=Sing|Person=1|Poss=Yes|PronType=Prs	6	nmod:poss	_	start_char=517|end_char=519|ner=O
@@ -362,7 +362,7 @@
 5	NO	no	DET	DT	PronType=Neg	6	det	_	start_char=759|end_char=761|ner=O
 6	ENTRY	entry	NOUN	NN	Number=Sing	3	obj	_	start_char=762|end_char=767|ner=O
 7	—	—	PUNCT	:	_	9	punct	_	start_char=768|end_char=769|ner=O
-8	AUTHORIZED	authory	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	9	amod	_	start_char=770|end_char=780|ner=O
+8	AUTHORIZED	author	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	9	amod	_	start_char=770|end_char=780|ner=O
 9	PERSONNEL	personnel	NOUN	NNS	Number=Plur	6	appos	_	start_char=781|end_char=790|ner=O
 10	ONLY	only	ADV	RB	_	9	advmod	_	SpaceAfter=No|start_char=791|end_char=795|ner=O
 11	.	.	PUNCT	.	_	6	punct	_	SpaceAfter=No|start_char=795|end_char=796|ner=O
@@ -475,7 +475,7 @@
 
 # text = The leaves come down in amber rain, and every road leads home again; the kettle hums, the window fogs, and somewhere far, a farmer's dogs
 # sent_id = 31
-# constituency = (ROOT (S (S (NP (DT The) (NNS leaves)) (VP (VBP come) (ADVP (RB down)) (PP (IN in) (NP (NN amber) (NN rain))))) (, ,) (CC and) (S (NP (DT every) (NN road)) (VP (VBZ leads) (ADVP (RB home)) (ADVP (RB again)))) (: ;) (S (NP (DT the) (NN kettle)) (VP (VP (VBZ hums)) (, ,) (NP (DT the) (NN window) (NNS fogs)) (, ,) (CC and) (ADVP (RB somewhere) (RB far)) (, ,) (NP (NP (DT a) (NN farmer) (POS 's)) (NNS dogs))))))
+# constituency = (ROOT (S (S (NP (DT The) (NNS leaves)) (VP (VBP come) (ADVP (RB down)) (PP (IN in) (NP (NN amber) (NN rain))))) (, ,) (CC and) (S (NP (DT every) (NN road)) (VP (VBZ leads) (ADVP (RB home)) (ADVP (RB again)))) (, ;) (S (NP (DT the) (NN kettle)) (VP (VP (VBZ hums)) (, ,) (NP (DT the) (NN window) (NNS fogs)) (, ,) (CC and) (ADVP (RB somewhere) (RB far)) (, ,) (NP (NP (DT a) (NN farmer) (POS 's)) (NNS dogs))))))
 # sentiment = 1
 1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=1059|end_char=1062|ner=O
 2	leaves	leaf	NOUN	NNS	Number=Plur	3	nsubj	_	start_char=1063|end_char=1069|ner=O
@@ -491,7 +491,7 @@
 12	leads	lead	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	conj	_	start_char=1110|end_char=1115|ner=O
 13	home	home	ADV	RB	_	12	advmod	_	start_char=1116|end_char=1120|ner=O
 14	again	again	ADV	RB	_	12	advmod	_	SpaceAfter=No|start_char=1121|end_char=1126|ner=O
-15	;	;	PUNCT	:	_	18	punct	_	SpacesAfter=\n|start_char=1126|end_char=1127|ner=O
+15	;	;	PUNCT	,	_	18	punct	_	SpacesAfter=\n|start_char=1126|end_char=1127|ner=O
 16	the	the	DET	DT	Definite=Def|PronType=Art	17	det	_	start_char=1128|end_char=1131|ner=O
 17	kettle	kettle	NOUN	NN	Number=Sing	18	nsubj	_	start_char=1132|end_char=1138|ner=O
 18	hums	hum	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	parataxis	_	SpaceAfter=No|start_char=1139|end_char=1143|ner=O
@@ -558,7 +558,7 @@
 14	counted	count	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	12	conj	_	start_char=1339|end_char=1346|ner=O
 15	stones	stone	NOUN	NNS	Number=Plur	14	obj	_	SpacesAfter=\n|start_char=1347|end_char=1353|ner=O
 16	and	and	CCONJ	CC	_	17	cc	_	start_char=1354|end_char=1357|ner=O
-17	counted	count	VERB	VBD	Tense=Past|VerbForm=Fin|Voice=Pass	12	conj	_	start_char=1358|end_char=1365|ner=O
+17	counted	count	VERB	VBD	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin|Voice=Pass	12	conj	_	start_char=1358|end_char=1365|ner=O
 18	bones	bone	NOUN	NNS	Number=Plur	17	obj	_	SpacesAfter=\n|start_char=1366|end_char=1371|ner=O
 19	of	of	ADP	IN	_	20	case	_	start_char=1372|end_char=1374|ner=O
 20	summers	summer	NOUN	NNS	Number=Plur	18	nmod	_	start_char=1375|end_char=1382|ner=O
@@ -573,7 +573,7 @@
 # constituency = (ROOT (S (NP (ADVP (RB so) (RB much))) (VP (VBZ depends) (PP (IN upon) (NP (NP (DT a) (VBN borrowed) (NN pen)) (VP (VBN left) (PRT (RP out)) (PP (IN in) (NP (NP (DT the) (NN rain)) (PP (IN beside) (NP (DT the) (NN gate)))))))))))
 # sentiment = 1
 1	so	so	ADV	RB	_	2	advmod	_	start_char=1408|end_char=1410|ner=O
-2	much	much	ADV	RB	Degree=Pos	3	advmod	_	start_char=1411|end_char=1415|ner=O
+2	much	much	ADV	RB	_	3	advmod	_	start_char=1411|end_char=1415|ner=O
 3	depends	depend	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	SpacesAfter=\n|start_char=1416|end_char=1423|ner=O
 4	upon	upon	ADP	IN	_	7	case	_	SpacesAfter=\n|start_char=1424|end_char=1428|ner=O
 5	a	a	DET	DT	Definite=Ind|PronType=Art	7	det	_	start_char=1429|end_char=1430|ner=O
@@ -592,7 +592,7 @@
 # sent_id = 36
 # constituency = (ROOT (S (S (NP (NNS Roses)) (VP (VBP are) (ADJP (JJ red)))) (, ,) (S (NP (NNS violets)) (VP (VBP are) (ADJP (JJ blue)))) (, ,) (S (NP (DT this) (NN poem)) (VP (VBZ is) (ADJP (JJ short)))) (, ,) (CC and) (SINV (ADVP (RB so)) (VP (VBP are)) (NP (PRP you))) (. .)))
 # sentiment = 1
-1	Roses	rose	NOUN	NNS	Number=Plur	3	nsubj	_	start_char=1482|end_char=1487|ner=O
+1	Roses	Rose	NOUN	NNS	Number=Plur	3	nsubj	_	start_char=1482|end_char=1487|ner=O
 2	are	be	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	3	cop	_	start_char=1488|end_char=1491|ner=O
 3	red	red	ADJ	JJ	Degree=Pos	0	root	_	SpaceAfter=No|start_char=1492|end_char=1495|ner=O
 4	,	,	PUNCT	,	_	7	punct	_	SpacesAfter=\n|start_char=1495|end_char=1496|ner=O
@@ -631,7 +631,7 @@
 
 # text = Then, slowly, the door creaked open… and in walked the cat.
 # sent_id = 39
-# constituency = (ROOT (S (ADVP (RB Then)) (, ,) (ADVP (RB slowly)) (, ,) (NP (DT the) (NN door)) (VP (VP (VBD creaked) (ADJP (JJ open) (: …))) (CC and) (RB in) (VP (VBD walked) (NP (DT the) (NN cat)))) (. .)))
+# constituency = (ROOT (S (ADVP (RB Then)) (, ,) (ADVP (RB slowly)) (, ,) (NP (DT the) (NN door)) (VP (VP (VBD creaked) (ADJP (JJ open) (: …))) (CC and) (PP (IN in) (VP (VP (VBD walked)) (NP (DT the) (NN cat))))) (. .)))
 # sentiment = 1
 1	Then	then	ADV	RB	PronType=Dem	7	advmod	_	SpaceAfter=No|start_char=1591|end_char=1595|ner=O
 2	,	,	PUNCT	,	_	1	punct	_	start_char=1595|end_char=1596|ner=O
@@ -639,11 +639,11 @@
 4	,	,	PUNCT	,	_	3	punct	_	start_char=1603|end_char=1604|ner=O
 5	the	the	DET	DT	Definite=Def|PronType=Art	6	det	_	start_char=1605|end_char=1608|ner=O
 6	door	door	NOUN	NN	Number=Sing	7	nsubj	_	start_char=1609|end_char=1613|ner=O
-7	creaked	creake	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1614|end_char=1621|ner=O
+7	creaked	creak	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1614|end_char=1621|ner=O
 8	open	open	ADJ	JJ	Degree=Pos	7	xcomp	_	SpaceAfter=No|start_char=1622|end_char=1626|ner=O
 9	…	…	PUNCT	:	_	12	punct	_	start_char=1626|end_char=1627|ner=O
 10	and	and	CCONJ	CC	_	12	cc	_	start_char=1628|end_char=1631|ner=O
-11	in	in	ADV	RB	_	12	advmod	_	start_char=1632|end_char=1634|ner=O
+11	in	in	ADP	IN	_	12	advmod	_	start_char=1632|end_char=1634|ner=O
 12	walked	walk	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	7	conj	_	start_char=1635|end_char=1641|ner=O
 13	the	the	DET	DT	Definite=Def|PronType=Art	14	det	_	start_char=1642|end_char=1645|ner=O
 14	cat	cat	NOUN	NN	Number=Sing	12	obj	_	SpaceAfter=No|start_char=1646|end_char=1649|ner=O
@@ -668,16 +668,16 @@
 
 # text = “Is that you, Grandpa?”
 # sent_id = 41
-# constituency = (ROOT (SBARQ (`` “) (VBZ Is) (NP (IN that)) (NP (PRP you) (, ,) (NNP Grandpa) (. ?)) ('' ”)))
+# constituency = (ROOT (SBARQ (`` “) (VBZ Is) (NP (DT that)) (NP (PRP you) (, ,) (NNP Grandpa) (. ?)) ('' ”)))
 # sentiment = 1
-1	“	"	PUNCT	``	_	2	punct	_	SpaceAfter=No|start_char=1691|end_char=1692|ner=O
-2	Is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1692|end_char=1694|ner=O
-3	that	that	SCONJ	IN	_	2	mark	_	start_char=1695|end_char=1699|ner=O
-4	you	you	PRON	PRP	Case=Nom|Person=2|PronType=Prs	2	nsubj	_	SpaceAfter=No|start_char=1700|end_char=1703|ner=O
+1	“	"	PUNCT	``	_	4	punct	_	SpaceAfter=No|start_char=1691|end_char=1692|ner=O
+2	Is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	cop	_	start_char=1692|end_char=1694|ner=O
+3	that	that	PRON	DT	Number=Sing|PronType=Dem	4	nsubj	_	start_char=1695|end_char=1699|ner=O
+4	you	you	PRON	PRP	Case=Nom|Person=2|PronType=Prs	0	root	_	SpaceAfter=No|start_char=1700|end_char=1703|ner=O
 5	,	,	PUNCT	,	_	6	punct	_	start_char=1703|end_char=1704|ner=O
 6	Grandpa	Grandpa	PROPN	NNP	Number=Sing	4	vocative	_	SpaceAfter=No|start_char=1705|end_char=1712|ner=S-PERSON
-7	?	?	PUNCT	.	_	2	punct	_	SpaceAfter=No|start_char=1712|end_char=1713|ner=O
-8	”	"	PUNCT	''	_	2	punct	_	start_char=1713|end_char=1714|ner=O
+7	?	?	PUNCT	.	_	4	punct	_	SpaceAfter=No|start_char=1712|end_char=1713|ner=O
+8	”	"	PUNCT	''	_	4	punct	_	start_char=1713|end_char=1714|ner=O
 
 # text = “Who else would it be?” “Sorry.
 # sent_id = 42
@@ -736,7 +736,7 @@
 # constituency = (ROOT (S (`` ‘) (S (VP (VB Twas) (NP (NP (DT the) (NN night)) (PP (IN before) (NP (DT the) (NN deadline)))))) (, ,) (CC and) (S (NP (NP (NP (DT all)) (PP (IN through) (NP (DT the) (NN lab)))) (, ,) (RB not) (NP (DT a) (NN printer))) (VP (VBD was) (VP (VBG working)))) (. .)))
 # sentiment = 0
 1	‘	'	PUNCT	``	_	2	punct	_	SpaceAfter=No|start_char=1847|end_char=1848|ner=O
-2	Twas	twa	VERB	VB	Mood=Imp|VerbForm=Fin	0	root	_	start_char=1848|end_char=1852|ner=O
+2	Twas	twas	VERB	VB	Mood=Imp|VerbForm=Fin	0	root	_	start_char=1848|end_char=1852|ner=O
 3	the	the	DET	DT	Definite=Def|PronType=Art	4	det	_	start_char=1853|end_char=1856|ner=O
 4	night	night	NOUN	NN	Number=Sing	2	obl:unmarked	_	start_char=1857|end_char=1862|ner=O
 5	before	before	ADP	IN	_	7	case	_	start_char=1863|end_char=1869|ner=O

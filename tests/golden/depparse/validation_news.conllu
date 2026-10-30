@@ -1,8 +1,8 @@
 # text = HARBORVIEW, Ore. —
 # sent_id = 0
-1	HARBORVIEW	Harborview	PROPN	NNP	Number=Sing	0	root	_	SpaceAfter=No|start_char=0|end_char=10
+1	HARBORVIEW	Harborvie	PROPN	NNP	Number=Sing	0	root	_	SpaceAfter=No|start_char=0|end_char=10
 2	,	,	PUNCT	,	_	3	punct	_	start_char=10|end_char=11
-3	Ore.	Orenber	PROPN	NNP	Number=Sing	1	nmod:unmarked	_	start_char=12|end_char=16
+3	Ore.	Ore.	PROPN	NNP	Number=Sing	1	nmod:unmarked	_	start_char=12|end_char=16
 4	—	—	PUNCT	:	_	1	punct	_	start_char=17|end_char=18
 
 # text = The Harborview Port Authority approved a $214 million expansion plan on Wednesday, ending a two-year dispute with local fishing cooperatives.
@@ -83,7 +83,7 @@
 7	will	will	AUX	MD	VerbForm=Fin	8	aux	_	start_char=335|end_char=339
 8	dredge	dredge	VERB	VB	VerbForm=Inf	0	root	_	start_char=340|end_char=346
 9	the	the	DET	DT	Definite=Def|PronType=Art	11	det	_	start_char=347|end_char=350
-10	north	north	NOUN	NN	Number=Sing	11	compound	_	start_char=351|end_char=356
+10	north	north	ADJ	JJ	Degree=Pos	11	amod	_	start_char=351|end_char=356
 11	channel	channel	NOUN	NN	Number=Sing	8	obj	_	start_char=357|end_char=364
 12	to	to	ADP	IN	_	14	case	_	start_char=365|end_char=367
 13	a	a	DET	DT	Definite=Ind|PronType=Art	14	det	_	start_char=368|end_char=369
@@ -94,7 +94,7 @@
 18	(	(	PUNCT	-LRB-	_	21	punct	_	SpaceAfter=No|start_char=384|end_char=385
 19	about	about	ADV	RB	_	20	advmod	_	start_char=385|end_char=390
 20	46	46	NUM	CD	NumForm=Digit|NumType=Card	21	nummod	_	start_char=391|end_char=393
-21	ft.	ft.	NOUN	NNS	Number=Plur	17	appos	_	SpaceAfter=No|start_char=394|end_char=397
+21	ft.	ft.	NOUN	NNS	Number=Sing	17	appos	_	SpaceAfter=No|start_char=394|end_char=397
 22	)	)	PUNCT	-RRB-	_	21	punct	_	start_char=397|end_char=398
 23	and	and	CCONJ	CC	_	24	cc	_	start_char=399|end_char=402
 24	build	build	VERB	VB	VerbForm=Inf	8	conj	_	start_char=403|end_char=408
@@ -113,7 +113,7 @@
 3	expected	expect	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	start_char=452|end_char=460
 4	to	to	PART	TO	_	5	mark	_	start_char=461|end_char=463
 5	create	create	VERB	VB	VerbForm=Inf	3	xcomp	_	start_char=464|end_char=470
-6	roughly	roughly	ADV	RB	_	7	advmod	_	start_char=471|end_char=478
+6	roughly	roughly	ADV	RB	Degree=Pos	7	advmod	_	start_char=471|end_char=478
 7	1,100	1100	NUM	CD	NumForm=Digit|NumType=Card	9	nummod	_	start_char=479|end_char=484
 8	temporary	temporary	ADJ	JJ	Degree=Pos	9	amod	_	start_char=485|end_char=494
 9	jobs	job	NOUN	NNS	Number=Plur	5	obj	_	SpaceAfter=No|start_char=495|end_char=499
@@ -123,7 +123,7 @@
 # sent_id = 6
 1	Critics	critic	NOUN	NNS	Number=Plur	2	nsubj	_	start_char=501|end_char=508
 2	say	say	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=509|end_char=512
-3	that	that	SCONJ	IN	_	6	mark	_	start_char=513|end_char=517
+3	that	that	DET	DT	Number=Sing|PronType=Dem	4	det	_	start_char=513|end_char=517
 4	number	number	NOUN	NN	Number=Sing	6	nsubj:pass	_	start_char=518|end_char=524
 5	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	6	aux:pass	_	start_char=525|end_char=527
 6	inflated	inflate	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	2	ccomp	_	SpaceAfter=No|start_char=528|end_char=536
@@ -234,7 +234,7 @@
 7	,	,	PUNCT	,	_	11	punct	_	start_char=939|end_char=940
 8	while	while	SCONJ	IN	_	11	mark	_	start_char=941|end_char=946
 9	the	the	DET	DT	Definite=Def|PronType=Art	10	det	_	start_char=947|end_char=950
-10	yen	yen	NOUN	NN	Number=Sing	11	nsubj	_	start_char=951|end_char=954
+10	yen	yen	PROPN	NNP	Number=Sing	11	nsubj	_	start_char=951|end_char=954
 11	weakened	weaken	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	3	advcl	_	start_char=955|end_char=963
 12	past	past	ADP	IN	_	13	case	_	start_char=964|end_char=968
 13	¥	¥	SYM	$	_	11	obl	_	SpaceAfter=No|start_char=969|end_char=970
@@ -262,7 +262,7 @@
 9	reported	report	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1060|end_char=1068
 10	second	second	ADJ	JJ	Degree=Pos|NumForm=Word|NumType=Ord	12	amod	_	SpaceAfter=No|start_char=1069|end_char=1075
 11	-	-	PUNCT	HYPH	_	10	punct	_	SpaceAfter=No|start_char=1075|end_char=1076
-12	quarter	quarter	NOUN	NN	Number=Sing|NumForm=Word|NumType=Frac	13	compound	_	start_char=1076|end_char=1083
+12	quarter	quarter	ADJ	JJ	Degree=Pos|NumForm=Word	13	amod	_	start_char=1076|end_char=1083
 13	earnings	earnings	NOUN	NNS	Number=Plur	9	obj	_	start_char=1084|end_char=1092
 14	of	of	ADP	IN	_	15	case	_	start_char=1093|end_char=1095
 15	$	$	SYM	$	_	13	nmod	_	SpaceAfter=No|start_char=1096|end_char=1097
@@ -340,9 +340,9 @@
 6	hold	hold	VERB	VB	VerbForm=Inf	4	xcomp	_	start_char=1342|end_char=1346
 7	up	up	ADP	RP	_	6	compound:prt	_	start_char=1347|end_char=1349
 8	better	good	ADJ	JJR	Degree=Cmp	6	xcomp	_	start_char=1350|end_char=1356
-9	than	than	ADP	IN	_	10	case	_	start_char=1357|end_char=1361
-10	anyone	anyone	PRON	NN	Number=Sing|PronType=Ind	11	nsubj	_	start_char=1362|end_char=1368
-11	expected	expect	VERB	VBD	Tense=Past|VerbForm=Part|Voice=Pass	8	advcl	_	SpaceAfter=No|start_char=1369|end_char=1377
+9	than	than	SCONJ	IN	_	11	mark	_	start_char=1357|end_char=1361
+10	anyone	anyone	PRON	NN	Number=Sing|PronType=Ind	11	nsubj:pass	_	start_char=1362|end_char=1368
+11	expected	expect	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	8	advcl	_	SpaceAfter=No|start_char=1369|end_char=1377
 12	,	,	PUNCT	,	_	4	punct	_	SpaceAfter=No|start_char=1377|end_char=1378
 13	"	"	PUNCT	''	_	4	punct	_	start_char=1378|end_char=1379
 14	Chief	Chief	ADJ	JJ	Degree=Pos	16	amod	_	start_char=1380|end_char=1385
@@ -360,9 +360,9 @@
 
 # text = "That said, we aren't assuming it'll last forever."
 # sent_id = 18
-1	"	"	PUNCT	``	_	3	punct	_	SpaceAfter=No|start_char=1456|end_char=1457
-2	That	that	PRON	DT	Number=Sing|PronType=Dem	3	nsubj	_	start_char=1457|end_char=1461
-3	said	say	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	8	parataxis	_	SpaceAfter=No|start_char=1462|end_char=1466
+1	"	"	PUNCT	``	_	8	punct	_	SpaceAfter=No|start_char=1456|end_char=1457
+2	That	that	PRON	DT	Number=Sing|PronType=Dem	3	nsubj:pass	_	start_char=1457|end_char=1461
+3	said	say	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	8	advcl	_	SpaceAfter=No|start_char=1462|end_char=1466
 4	,	,	PUNCT	,	_	3	punct	_	start_char=1466|end_char=1467
 5	we	we	PRON	PRP	Case=Nom|Number=Plur|Person=1|PronType=Prs	8	nsubj	_	start_char=1468|end_char=1470
 6-7	aren't	_	_	_	_	_	_	_	start_char=1471|end_char=1477
@@ -384,7 +384,7 @@
 3	bank	bank	NOUN	NN	Number=Sing	4	nsubj	_	start_char=1521|end_char=1525
 4	kept	keep	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1526|end_char=1530
 5	its	its	PRON	PRP$	Case=Gen|Gender=Neut|Number=Sing|Person=3|Poss=Yes|PronType=Prs	7	nmod:poss	_	start_char=1531|end_char=1534
-6	benchmark	benchmark	NOUN	NN	Number=Sing	7	compound	_	start_char=1535|end_char=1544
+6	benchmark	benchmark	ADJ	JJ	Degree=Pos	7	amod	_	start_char=1535|end_char=1544
 7	rate	rate	NOUN	NN	Number=Sing	4	obj	_	start_char=1545|end_char=1549
 8	unchanged	unchanged	ADJ	JJ	Degree=Pos	4	xcomp	_	start_char=1550|end_char=1559
 9	at	at	ADP	IN	_	11	case	_	start_char=1560|end_char=1562
@@ -402,7 +402,7 @@
 
 # text = Policymakers signaled that cuts could come later in the year, but only if price pressures continue to ease.
 # sent_id = 20
-1	Policymakers	policymaker	NOUN	NNS	Number=Plur	2	nsubj	_	start_char=1608|end_char=1620
+1	Policymakers	Policymaker	NOUN	NNS	Number=Plur	2	nsubj	_	start_char=1608|end_char=1620
 2	signaled	signal	VERB	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1621|end_char=1629
 3	that	that	SCONJ	IN	_	6	mark	_	start_char=1630|end_char=1634
 4	cuts	cut	NOUN	NNS	Number=Plur	6	nsubj	_	start_char=1635|end_char=1639
@@ -526,7 +526,7 @@
 
 # text = Shareholder groups have asked the board to explain the payout before the annual meeting on May 22.
 # sent_id = 27
-1	Shareholder	shareholder	NOUN	NN	Number=Sing	2	compound	_	start_char=2112|end_char=2123
+1	Shareholder	Shareholder	NOUN	NN	Number=Sing	2	compound	_	start_char=2112|end_char=2123
 2	groups	group	NOUN	NNS	Number=Plur	4	nsubj	_	start_char=2124|end_char=2130
 3	have	have	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	4	aux	_	start_char=2131|end_char=2135
 4	asked	ask	VERB	VBN	Tense=Past|VerbForm=Part	0	root	_	start_char=2136|end_char=2141
@@ -632,12 +632,12 @@
 # sent_id = 33
 1	S&P	S&P	PROPN	NNP	Number=Sing	3	compound	_	start_char=2533|end_char=2536
 2	Global	Global	ADJ	NNP	Degree=Pos	3	amod	_	start_char=2537|end_char=2543
-3	Ratings	Ratings	PROPN	NNP	Number=Plur	4	nsubj	_	start_char=2544|end_char=2551
+3	Ratings	Rating	PROPN	NNP	Number=Plur	4	nsubj	_	start_char=2544|end_char=2551
 4	has	have	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2552|end_char=2555
 5	the	the	DET	DT	Definite=Def|PronType=Art	6	det	_	start_char=2556|end_char=2559
 6	city	city	NOUN	NN	Number=Sing	4	obj	_	start_char=2560|end_char=2564
 7	at	at	ADP	IN	_	8	case	_	start_char=2565|end_char=2567
-8	AA	AA	PROPN	NNP	Number=Sing	6	nmod	_	SpaceAfter=No|start_char=2568|end_char=2570
+8	AA	AA	NOUN	NN	Number=Sing	6	nmod	_	SpaceAfter=No|start_char=2568|end_char=2570
 9	,	,	PUNCT	,	_	13	punct	_	start_char=2570|end_char=2571
 10	with	with	ADP	IN	_	13	case	_	start_char=2572|end_char=2576
 11	a	a	DET	DT	Definite=Ind|PronType=Art	13	det	_	start_char=2577|end_char=2578
@@ -650,7 +650,7 @@
 1	Residents	resident	NOUN	NNS	Number=Plur	8	nsubj:pass	_	start_char=2596|end_char=2605
 2	of	of	ADP	IN	_	6	case	_	start_char=2606|end_char=2608
 3	the	the	DET	DT	Definite=Def|PronType=Art	6	det	_	start_char=2609|end_char=2612
-4	Lower	Lower	ADJ	NNP	Degree=Pos	6	amod	_	start_char=2613|end_char=2618
+4	Lower	Lower	ADJ	NNP	Degree=Cmp	6	amod	_	start_char=2613|end_char=2618
 5	Fenwick	Fenwick	PROPN	NNP	Number=Sing	6	compound	_	start_char=2619|end_char=2626
 6	neighborhood	neighborhood	NOUN	NN	Number=Sing	1	nmod	_	start_char=2627|end_char=2639
 7	were	be	AUX	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	8	aux:pass	_	start_char=2640|end_char=2644
@@ -671,7 +671,7 @@
 
 # text = Crews worked through the night.
 # sent_id = 35
-1	Crews	crew	NOUN	NNS	Number=Plur	2	nsubj	_	start_char=2720|end_char=2725
+1	Crews	Crew	NOUN	NNS	Number=Plur	2	nsubj	_	start_char=2720|end_char=2725
 2	worked	work	VERB	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=2726|end_char=2732
 3	through	through	ADP	IN	_	5	case	_	start_char=2733|end_char=2740
 4	the	the	DET	DT	Definite=Def|PronType=Art	5	det	_	start_char=2741|end_char=2744
@@ -682,7 +682,7 @@
 # sent_id = 36
 1	By	by	ADP	IN	_	2	case	_	start_char=2752|end_char=2754
 2	6	6	NUM	CD	NumForm=Digit|NumType=Card	0	root	_	start_char=2755|end_char=2756
-3	a.m.	a.m.	NOUN	NN	Number=Sing	2	nmod:unmarked	_	start_char=2757|end_char=2761
+3	a.m.	a.m.	NOUN	NN	Abbr=Yes|Number=Sing	2	nmod:unmarked	_	start_char=2757|end_char=2761
 
 # text = Sunday, service had been restored to about two-thirds of the 4,800 affected homes.
 # sent_id = 37
@@ -792,7 +792,7 @@
 
 # text = Shares of regional banks rallied for a second day.
 # sent_id = 43
-1	Shares	share	NOUN	NNS	Number=Plur	5	nsubj	_	start_char=3203|end_char=3209
+1	Shares	Share	NOUN	NNS	Number=Plur	5	nsubj	_	start_char=3203|end_char=3209
 2	of	of	ADP	IN	_	4	case	_	start_char=3210|end_char=3212
 3	regional	regional	ADJ	JJ	Degree=Pos	4	amod	_	start_char=3213|end_char=3221
 4	banks	bank	NOUN	NNS	Number=Plur	1	nmod	_	start_char=3222|end_char=3227
@@ -818,7 +818,7 @@
 # text = Ferrisburg Savings, which had fallen 30% earlier in the month, rose 11 percent.
 # sent_id = 45
 1	Ferrisburg	Ferrisburg	PROPN	NNP	Number=Sing	2	compound	_	start_char=3293|end_char=3303
-2	Savings	Savings	PROPN	NNP	Number=Sing	14	nsubj	_	SpaceAfter=No|start_char=3304|end_char=3311
+2	Savings	Savings	PROPN	NNPS	Number=Plur	14	nsubj	_	SpaceAfter=No|start_char=3304|end_char=3311
 3	,	,	PUNCT	,	_	6	punct	_	start_char=3311|end_char=3312
 4	which	which	PRON	WDT	PronType=Rel	6	nsubj	_	start_char=3313|end_char=3318
 5	had	have	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	6	aux	_	start_char=3319|end_char=3322
@@ -986,7 +986,7 @@
 10	declined	decline	VERB	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=3951|end_char=3959
 11	for	for	ADP	IN	_	15	case	_	start_char=3960|end_char=3963
 12	the	the	DET	DT	Definite=Def|PronType=Art	15	det	_	start_char=3964|end_char=3967
-13	eighth	eighth	ADJ	JJ	Degree=Pos|NumForm=Word|NumType=Ord	15	amod	_	start_char=3968|end_char=3974
+13	eighth	eighth	ADJ	JJ	Degree=Pos|NumForm=Combi|NumType=Ord	15	amod	_	start_char=3968|end_char=3974
 14	straight	straight	ADJ	JJ	Degree=Pos	15	amod	_	start_char=3975|end_char=3983
 15	quarter	quarter	NOUN	NN	Number=Sing|NumForm=Word|NumType=Frac	10	obl	_	SpaceAfter=No|start_char=3984|end_char=3991
 16	.	.	PUNCT	.	_	10	punct	_	start_char=3991|end_char=3992
@@ -1038,7 +1038,7 @@
 
 # text = Jury selection begins Monday at the federal courthouse in Lancaster.
 # sent_id = 58
-1	Jury	jury	NOUN	NN	Number=Sing	2	compound	_	start_char=4165|end_char=4169
+1	Jury	Jury	PROPN	NNP	Number=Sing	2	compound	_	start_char=4165|end_char=4169
 2	selection	selection	NOUN	NN	Number=Sing	3	nsubj	_	start_char=4170|end_char=4179
 3	begins	begin	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=4180|end_char=4186
 4	Monday	Monday	PROPN	NNP	Number=Sing	3	obl:unmarked	_	start_char=4187|end_char=4193
@@ -1061,7 +1061,7 @@
 7	not	not	PART	RB	Polarity=Neg	8	advmod	_	start_char=4265|end_char=4268
 8	guilty	guilty	ADJ	JJ	Degree=Pos	6	xcomp	_	start_char=4269|end_char=4275
 9	to	to	ADP	IN	_	12	case	_	start_char=4276|end_char=4278
-10	all	all	DET	DT	PronType=Tot	12	det	_	start_char=4279|end_char=4282
+10	all	all	DET	PDT	PronType=Tot	12	det:predet	_	start_char=4279|end_char=4282
 11	14	14	NUM	CD	NumForm=Digit|NumType=Card	12	nummod	_	start_char=4283|end_char=4285
 12	counts	count	NOUN	NNS	Number=Plur	8	obl	_	SpaceAfter=No|start_char=4286|end_char=4292
 13	,	,	PUNCT	,	_	2	punct	_	start_char=4292|end_char=4293
@@ -1071,7 +1071,7 @@
 17	20	20	NUM	CD	NumForm=Digit|NumType=Card	18	nummod	_	start_char=4306|end_char=4308
 18	years	year	NOUN	NNS	Number=Plur	14	obj	_	start_char=4309|end_char=4314
 19	in	in	ADP	IN	_	20	case	_	start_char=4315|end_char=4317
-20	prison	prison	NOUN	NN	Number=Sing	14	obl	_	start_char=4318|end_char=4324
+20	prison	prison	NOUN	NN	Number=Sing	18	nmod	_	start_char=4318|end_char=4324
 21	if	if	SCONJ	IN	_	22	mark	_	start_char=4325|end_char=4327
 22	convicted	convict	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	14	advcl	_	SpaceAfter=No|start_char=4328|end_char=4337
 23	.	.	PUNCT	.	_	14	punct	_	SpacesAfter=\n\n|start_char=4337|end_char=4338
@@ -1107,7 +1107,7 @@
 
 # text = Organizers expect a sellout.
 # sent_id = 62
-1	Organizers	organizer	NOUN	NNS	Number=Plur	2	nsubj	_	start_char=4431|end_char=4441
+1	Organizers	Organizer	NOUN	NNS	Number=Plur	2	nsubj	_	start_char=4431|end_char=4441
 2	expect	expect	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=4442|end_char=4448
 3	a	a	DET	DT	Definite=Ind|PronType=Art	4	det	_	start_char=4449|end_char=4450
 4	sellout	sellout	NOUN	NN	Number=Sing	2	obj	_	SpaceAfter=No|start_char=4451|end_char=4458

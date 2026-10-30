@@ -26,7 +26,7 @@ public static class ModelDownloader
     // models (germeval2014 replaced by germeval2014_charlm) and moved the tag to these commits (#215).
     internal static readonly Dictionary<string, string> Revisions = new()
     {
-        [Pipeline.English] = "810dca30ddb25c30582c019dbaeb3a3e040fb958",
+        [Pipeline.English] = "d323be19452ac4058ea10fb0edba6ba77ea14874",
         ["de"] = "a8ecd6c8b4f81298918eade263208fedccddd652",
         ["es"] = "6c5cf2278847a76cd1efd05ee4fddd80594b569d",
         ["fr"] = "caeb7742148cb0368e4a0f2c68a0f7b09bc22880",
