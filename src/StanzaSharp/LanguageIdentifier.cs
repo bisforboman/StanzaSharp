@@ -33,7 +33,12 @@ public sealed class LanguageIdentifier : IDisposable
     /// <exception cref="ArgumentException">A code in <see cref="LanguageIdentifierOptions.Languages"/> the model doesn't know.</exception>
     /// <exception cref="FileNotFoundException">The model file is missing.</exception>
     /// <exception cref="InvalidDataException">With <see cref="LanguageIdentifierOptions.VerifyChecksums"/>: the file's checksum differs from Stanza's.</exception>
-    public static LanguageIdentifier Load(string modelDir, LanguageIdentifierOptions? options = null)
+    public static LanguageIdentifier Load(string modelDir, LanguageIdentifierOptions? options = null) => LoadCore(modelDir, options, knownOnly: false);
+
+    /// <summary>As <see cref="Load(string, LanguageIdentifierOptions?)"/>, but codes of the subset the model doesn't know are left out (at least one must be known).</summary>
+    internal static LanguageIdentifier LoadSubsetOfKnown(string modelDir, LanguageIdentifierOptions? options) => LoadCore(modelDir, options, knownOnly: true);
+
+    private static LanguageIdentifier LoadCore(string modelDir, LanguageIdentifierOptions? options, bool knownOnly)
     {
         options ??= new LanguageIdentifierOptions();
         if (options.Threads < 1)
@@ -51,7 +56,7 @@ public sealed class LanguageIdentifier : IDisposable
         try
         {
             backend.Configure(new PipelineOptions { Backend = options.Backend, Threads = options.Threads });
-            var model = backend.Load(() => new LangIdModel(Checkpoint.Load(basePath), backend.LangId, options.Languages));
+            var model = backend.Load(() => new LangIdModel(Checkpoint.Load(basePath), backend.LangId, options.Languages, knownOnly));
             return new LanguageIdentifier(model, backend);
         }
         catch
@@ -127,7 +132,7 @@ internal sealed class LangIdModel : IDisposable
     private readonly bool[]? _allowed;
     private readonly ILangIdNet _net;
 
-    public LangIdModel(Checkpoint ckpt, Func<Checkpoint, ILangIdNet> net, IReadOnlyCollection<string>? subset)
+    public LangIdModel(Checkpoint ckpt, Func<Checkpoint, ILangIdNet> net, IReadOnlyCollection<string>? subset, bool knownOnly = false)
     {
         var root = ckpt.Root;
         _charToId = Checkpoint.StringToId(root["char_to_idx"] ?? throw new InvalidDataException("No char_to_idx in the langid model"));
@@ -137,6 +142,8 @@ internal sealed class LangIdModel : IDisposable
         if (subset is { Count: > 0 })
         {
             var unknown = subset.Where(code => !tags.ContainsKey(code)).ToList();
+            if (knownOnly && unknown.Count < subset.Count)
+                unknown.Clear();
             if (unknown.Count > 0)
             {
                 throw new ArgumentException($"Unknown language {string.Join(", ", unknown)} for the language identifier. Known: "

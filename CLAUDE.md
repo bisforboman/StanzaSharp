@@ -1021,11 +1021,18 @@ What the English treebank packages' checkpoints add to the default package's pat
     langid`), and the other jobs' no-skip checks exempt `LanguageIdentifierTests`. `clean_text` is not ported.
   - `langid/multilingual.json` (`--langid-only` too, `MULTILINGUAL_TEXTS`): Stanza's `MultilingualPipeline(restrict=True)`
     with en and de (default packages, all processors), each document's lang and `"{:C}"`. `MultilingualPipeline` (public,
-    PR 2; owner's decisions 2026-10-19): `Load(modelRoot, MultilingualOptions)` loads the identifier from
-    `<root>/multilingual` and every configured language's `Pipeline` from `<root>/<lang>` up front
-    (`MultilingualOptions.Languages`: a list of `PipelineOptions`, each keyed by its `Language`, duplicates throw; null = en
-    and de; no shared default processors, unlike Stanza's `processors=`); `Restrict` (default false, as Stanza) sets the
-    identifier's subset to them unless `LanguageIdentifier.Languages` names one. `Process` identifies all texts, then one
+    PR 2; owner's decisions 2026-10-19, loading 2026-10-30: "Lazy LRU, like Stanza"): `Load(modelRoot, MultilingualOptions)`
+    loads the identifier from `<root>/multilingual`; each language's `Pipeline` loads from `<root>/<lang>` at its first
+    text, at most `MaxLoadedPipelines` (10, Stanza's `max_cache_size`) stay loaded, least recently used freed first, and a
+    lease count per pipeline frees an evicted one only when no call is using it (so the live count can briefly exceed the
+    bound; one lease per language group of a call, so a call may span more languages; a failed load isn't cached).
+    `MultilingualOptions.Languages`: a list of `PipelineOptions`, each keyed by its `Language`, duplicates throw, validated
+    at Load through `FilesFor` plus a folder check; null = every `SupportedPackages` language with a folder (default
+    package); unlike Stanza's `lang_configs` the list is also the set; no shared default processors, unlike Stanza's
+    `processors=`. The identifier's `no` routes to `nb` (`Document.Lang` stays `no`, as Stanza). `Restrict` (default false,
+    as Stanza) sets the identifier's subset to them (nb as `no`; with `Languages` null, codes the identifier lacks are left
+    out: `LanguageIdentifier.LoadSubsetOfKnown`) unless `LanguageIdentifier.Languages` names one. A lazy load sets
+    `ManagedThreads.Count` like any Load (null Threads: a no-op after the first). `Process` identifies all texts, then one
     bulk `Pipeline.Process` per language (a single text too: Stanza wraps it in a list), `Document.Lang` set (Core; not in
     CoNLL-U or JSON); a language without a pipeline gives a document with only `Text` and `Lang`. `MultilingualPipelineTests`
     (en, de and multilingual next to `Repo.StanzaModels`: golden shard 1; exempt from the other jobs' no-skip checks).
