@@ -1,17 +1,19 @@
 # StanzaSharp
 
-[Stanza](https://github.com/stanfordnlp/stanza)'s English and German NLP pipelines in .NET:
+[Stanza](https://github.com/stanfordnlp/stanza)'s English, German, Spanish, French, Italian, Portuguese and Dutch NLP pipelines in .NET:
 - tokenization and sentence splitting
 - multi-word token expansion ("don't" → "do" + "n't", "zum" → "zu" + "dem")
 - part-of-speech tags and morphological features
 - lemmas
 - dependency parsing
-- named entities (English: OntoNotes types, PERSON, ORG, GPE, DATE, ...; German: PER, LOC, ORG, MISC)
+- named entities (English: OntoNotes types, PERSON, ORG, GPE, DATE, ...; German, Spanish, French, Dutch: PER, LOC, ORG,
+  MISC; Italian: PER, LOC, ORG)
 - constituency parsing
 - sentence sentiment (negative, neutral, positive)
 
 It runs Stanza's own pretrained models in plain .NET code, with no Python and no native libraries. The output is
-identical to Python Stanza 1.15.0 on its golden test data (845 English and 181 German sentences), on Linux, Windows and
+identical to Python Stanza 1.15.0 on its golden test data (845 English and 181 German sentences, about 10 in each other
+language), on Linux, Windows and
 macOS, x64 and Arm64;
 [how that is checked](https://github.com/bisforboman/StanzaSharp/blob/main/docs/verification.md).
 
@@ -257,12 +259,26 @@ var doc = nlp.Process("Angela Merkel wurde in Hamburg geboren. Sie zog im Jahr 1
 // "im" is one token of two words, "in" + "dem"; doc.Entities: Angela Merkel/PER, Hamburg/LOC, DDR/LOC
 ```
 
+Spanish (`es`), French (`fr`), Italian (`it`), Portuguese (`pt`) and Dutch (`nl`) work the same way, with Stanza's
+`default` package of each language (and `default_fast`, but not in Spanish):
+
+```csharp
+var french = new PipelineOptions { Language = "fr" };
+await ModelDownloader.DownloadAsync("models/stanza/fr", french); // ~380 MB
+using var nlp = Pipeline.Load("models/stanza/fr", french);
+```
+
 Named entity types per language:
 
 | Language | Model | Entity types (`Entity.Type`; `Token.Ner` is BIOES, e.g. `B-PER`) |
 |---|---|---|
 | English (`en`) | OntoNotes (`ontonotes-ww-multi`) | 18: `PERSON`, `NORP`, `FAC`, `ORG`, `GPE`, `LOC`, `PRODUCT`, `EVENT`, `WORK_OF_ART`, `LAW`, `LANGUAGE`, `DATE`, `TIME`, `PERCENT`, `MONEY`, `QUANTITY`, `ORDINAL`, `CARDINAL` |
 | German (`de`) | GermEval 2014 (`germeval2014_charlm`) | 4: `PER`, `LOC`, `ORG`, `MISC` |
+| Spanish (`es`), Dutch (`nl`) | CoNLL 2002 (`conll02`) | 4: `PER`, `LOC`, `ORG`, `MISC` |
+| French (`fr`) | WikiNER (`wikinergold_charlm`) | 4: `PER`, `LOC`, `ORG`, `MISC` |
+| Italian (`it`) | FBK (`fbk`) | 3: `PER`, `LOC`, `ORG` |
+
+Portuguese has no NER model in Stanza.
 
 ## GPU
 

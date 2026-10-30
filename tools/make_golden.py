@@ -100,6 +100,10 @@ Reads <out>/corpus.txt and writes:
                         TRANSFORMER_ILL_CONDITIONED's, in one batch with a sentence of over 512 pieces, float32 and float64
                         (.f64, rounded to float32): s{i}.legacy (the legacy mix, no endpoints), s{i}.mix (depparse's
                         bert_layer_mix, with endpoints), long.legacy (every TRANSFORMER_LONG_STRIDE-th word)
+  languages/<lang>/<package>.conllu
+                        the smaller languages' golden data (owner's decision, 2026-10-30: one hand-written text each, CoNLL-U
+                        only): every package of LANGUAGES on languages/<lang>/text.txt, with the resources.json StanzaSharp
+                        embeds (src/StanzaSharp/stanza_resources.json; `--languages-only`, some of them with `--languages`)
   pt/tiny_{legacy,zip}.pt + their stanza_convert.py output (.json/.safetensors)
                         small checkpoints in both torch.save formats for the C# .pt loader tests;
                         `python tools/make_golden.py --pt-only` regenerates just these
@@ -1810,6 +1814,28 @@ TRANSFORMER_ILL_CONDITIONED = {"GO TEAM GO": 1e-2, "So does this one .": 1e-2, "
 TRANSFORMER_LONG_STRIDE = 10  # the long sentence keeps every 10th word's vector
 
 
+# The languages with only languages/<lang>/'s golden data, and their packages (Pipeline.SupportedPackages).
+LANGUAGES = {lang: ["default", "default_fast"] for lang in ["es", "fr", "it", "pt", "nl"]}
+LANGUAGES["es"] = ["default"]  # Spanish's default_fast parser (uploaded 2026-10-27) is truncated: neither Stanza nor StanzaSharp loads it
+
+
+def write_languages_golden(models, out, only=None):
+    """languages/<lang>/<package>.conllu: each package of LANGUAGES on the language's text.txt (models in <models>/<lang>)."""
+    resources = str(Path(__file__).resolve().parent.parent / "src" / "StanzaSharp" / "stanza_resources.json")
+    for lang, packages in LANGUAGES.items():
+        if only and lang not in only:
+            continue
+        folder = out / "languages" / lang
+        text = (folder / "text.txt").read_bytes().decode("utf-8")
+        for package in packages:
+            nlp = stanza.Pipeline(lang, dir=models, package=package, download_method=None, resources_filepath=resources,
+                                  use_gpu=False, logging_level="WARN")
+            with torch.no_grad():
+                doc = nlp(text)
+            (folder / f"{package}.conllu").write_text("{:C}\n".format(doc), encoding="utf-8", newline="\n")
+            print(f"languages/{lang}/{package}.conllu ({','.join(nlp.processors)}): {len(doc.sentences)} sentences, {doc.num_words} words")
+
+
 def write_transformer_hidden_golden(models, out, tokenizer, transformer=TRANSFORMER, file_suffix=""):
     """
     transformer/hidden<file_suffix>.safetensors + .json: Stanza's extract_bert_embeddings on a few sentences, float32 and
@@ -1990,6 +2016,8 @@ def main():
     p.add_argument("--topk-only", action="store_true", help="only regenerate coref/topk.json (torch.topk's order, no models)")
     p.add_argument("--coref-only", action="store_true", help="only regenerate coref/ (needs tools/requirements-transformer.txt and the coref model)")
     p.add_argument("--options-only", action="store_true", help="only regenerate options/ (OPTION_CASES: Stanza options with a PipelineOptions property)")
+    p.add_argument("--languages-only", action="store_true", help="only regenerate languages/ (LANGUAGES: one text per language, every package)")
+    p.add_argument("--languages", default=None, help="with --languages-only: only these languages (comma-separated)")
     p.add_argument("--choices", default=None, help="with --models-only: only these MODEL_CHOICES names (comma-separated)")
     args = p.parse_args()
     LANG = args.lang
@@ -1998,6 +2026,9 @@ def main():
         globals().update(GERMAN)
     if args.upos64_only:
         write_upos64_golden(args.models, out)
+        return
+    if args.languages_only:
+        write_languages_golden(args.models, Path(args.out or "tests/golden"), args.languages and args.languages.split(","))
         return
     if args.transformer_only:
         write_transformer_golden(args.models, out)

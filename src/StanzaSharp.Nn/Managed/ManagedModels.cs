@@ -29,13 +29,14 @@ internal sealed unsafe class ManagedCharLanguageModel : IPerCharLanguageModel
 
     public ManagedCharLanguageModel(Checkpoint ckpt)
     {
-        var args = ckpt.Root["args"]!;
-        var state = ckpt.Root["state_dict"]!;
+        var model = CharlmCheckpoint.Model(ckpt);
+        var args = model["args"]!;
+        var state = model["state_dict"]!;
         if (args["char_num_layers"]!.GetValue<int>() != 1)
             throw new NotSupportedException("Only 1-layer charlms");
-        IsForward = ckpt.Root["is_forward_lm"]!.GetValue<bool>();
+        IsForward = model["is_forward_lm"]!.GetValue<bool>();
         HiddenDim = args["char_hidden_dim"]!.GetValue<int>();
-        _vocab = Checkpoint.UnitToId(ckpt.Root["vocab"]);
+        _vocab = Checkpoint.UnitToId(model["vocab"]);
         _lookup = _vocab.GetAlternateLookup<ReadOnlySpan<char>>();
         _unkId = _vocab["<UNK>"];
         _endId = _vocab[End];

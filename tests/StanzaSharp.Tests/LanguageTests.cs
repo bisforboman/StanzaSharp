@@ -60,10 +60,17 @@ public class LanguageTests
     [Fact]
     public void UnknownLanguagesAndPackagesThrowWithTheSupportedList()
     {
-        var ex = Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor(null, "default", "options", "fr"));
-        Assert.Contains("en, de", ex.Message);
+        var ex = Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor(null, "default", "options", "ja"));
+        Assert.Contains("en, de, es, fr, it, pt, nl", ex.Message);
         Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor(null, "default", "options", "DE"));
         Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor(null, "default", "options", null!));
+
+        // Spanish's default_fast parser is broken upstream (truncated), so only its default package is supported.
+        Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor(null, "default_fast", "options", "es"));
+
+        // Spanish and French packages list coref as optional, but it isn't offered there (not in Alternatives: untested).
+        Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor("tokenize,coref", "default", "options", "es"));
+        Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor("tokenize,coref", "default", "options", "fr"));
 
         ex = Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor(null, "ewt", "options", "de"));
         Assert.Contains("default, default_fast, default_accurate, combined, gsd, hdt", ex.Message);
@@ -79,7 +86,7 @@ public class LanguageTests
     {
         // Options are checked before anything loads, as for English.
         Assert.Throws<ArgumentException>(() => Pipeline.Load(Repo.Root, new PipelineOptions { Language = "de", Package = "ewt" }));
-        Assert.Throws<ArgumentException>(() => Pipeline.Load(Repo.Root, new PipelineOptions { Language = "fr" }));
+        Assert.Throws<ArgumentException>(() => Pipeline.Load(Repo.Root, new PipelineOptions { Language = "ja" }));
         Assert.Throws<ArgumentException>(() => Pipeline.Load(Repo.Root, new PipelineOptions { Language = "de", Package = "gsd", Processors = "tokenize,ner" }));
     }
 

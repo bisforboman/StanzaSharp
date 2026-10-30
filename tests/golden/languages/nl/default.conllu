@@ -1,0 +1,159 @@
+# text = De minister-president van Nederland, Mark Rutte, kwam gisteren aan in Brussel voor een overleg met de Europese Commissie.
+# sent_id = 0
+1	De	de	DET	LID|bep|stan|rest	Definite=Def|PronType=Art	2	det	_	start_char=0|end_char=2|ner=O
+2	minister-president	minister_president	NOUN	N|soort|ev|basis|zijd|stan	Gender=Com|Number=Sing	9	nsubj	_	start_char=3|end_char=21|ner=O
+3	van	van	ADP	VZ|init	_	4	case	_	start_char=22|end_char=25|ner=O
+4	Nederland	Nederland	PROPN	N|eigen|ev|basis|onz|stan	Gender=Neut|Number=Sing	2	nmod	_	SpaceAfter=No|start_char=26|end_char=35|ner=S-LOC
+5	,	,	PUNCT	LET	_	6	punct	_	start_char=35|end_char=36|ner=O
+6	Mark	Mark	PROPN	SPEC|deeleigen	_	2	appos	_	start_char=37|end_char=41|ner=B-PER
+7	Rutte	Rutte	PROPN	SPEC|deeleigen	_	6	flat	_	SpaceAfter=No|start_char=42|end_char=47|ner=E-PER
+8	,	,	PUNCT	LET	_	2	punct	_	start_char=47|end_char=48|ner=O
+9	kwam	komen	VERB	WW|pv|verl|ev	Mood=Ind|Number=Sing|Tense=Past|VerbForm=Fin	0	root	_	start_char=49|end_char=53|ner=O
+10	gisteren	gisteren	ADV	BW	_	9	advmod	_	start_char=54|end_char=62|ner=O
+11	aan	aan	ADP	VZ|fin	_	9	compound:prt	_	start_char=63|end_char=66|ner=O
+12	in	in	ADP	VZ|init	_	13	case	_	start_char=67|end_char=69|ner=O
+13	Brussel	Brussel	PROPN	N|eigen|ev|basis|onz|stan	Gender=Neut|Number=Sing	9	obl	_	start_char=70|end_char=77|ner=S-LOC
+14	voor	voor	ADP	VZ|init	_	16	case	_	start_char=78|end_char=82|ner=O
+15	een	een	DET	LID|onbep|stan|agr	Definite=Ind|PronType=Art	16	det	_	start_char=83|end_char=86|ner=O
+16	overleg	overleg	NOUN	N|soort|ev|basis|onz|stan	Gender=Neut|Number=Sing	9	obl:arg	_	start_char=87|end_char=94|ner=O
+17	met	met	ADP	VZ|init	_	19	case	_	start_char=95|end_char=98|ner=O
+18	de	de	DET	LID|bep|stan|rest	Definite=Def|PronType=Art	19	det	_	start_char=99|end_char=101|ner=O
+19	Europese	Europese	PROPN	SPEC|deeleigen	_	16	nmod	_	start_char=102|end_char=110|ner=B-ORG
+20	Commissie	Commissie	PROPN	SPEC|deeleigen	_	19	flat	_	SpaceAfter=No|start_char=111|end_char=120|ner=E-ORG
+21	.	.	PUNCT	LET	_	9	punct	_	start_char=120|end_char=121|ner=O
+
+# text = Hij sprak met journalisten over het wetsvoorstel.
+# sent_id = 1
+1	Hij	hij	PRON	VNW|pers|pron|nomin|vol|3|ev|masc	Case=Nom|Person=3|PronType=Prs	2	nsubj	_	start_char=122|end_char=125|ner=O
+2	sprak	spreken	VERB	WW|pv|verl|ev	Mood=Ind|Number=Sing|Tense=Past|VerbForm=Fin	0	root	_	start_char=126|end_char=131|ner=O
+3	met	met	ADP	VZ|init	_	4	case	_	start_char=132|end_char=135|ner=O
+4	journalisten	journalist	NOUN	N|soort|mv|basis	Number=Plur	2	obl:arg	_	start_char=136|end_char=148|ner=O
+5	over	over	ADP	VZ|init	_	7	case	_	start_char=149|end_char=153|ner=O
+6	het	het	DET	LID|bep|stan|evon	Definite=Def|PronType=Art	7	det	_	start_char=154|end_char=157|ner=O
+7	wetsvoorstel	wet_voorstel	NOUN	N|soort|ev|basis|onz|stan	Gender=Neut|Number=Sing	2	obl:arg	_	SpaceAfter=No|start_char=158|end_char=170|ner=O
+8	.	.	PUNCT	LET	_	2	punct	_	SpacesAfter=\n\n|start_char=170|end_char=171|ner=O
+
+# text = 'We geven niet toe,' zei de minister van Financiën.
+# sent_id = 2
+1	'	'	PUNCT	LET	_	3	punct	_	SpaceAfter=No|start_char=173|end_char=174|ner=O
+2	We	we	PRON	VNW|pers|pron|nomin|red|1|mv	Case=Nom|Person=1|PronType=Prs	3	nsubj	_	start_char=174|end_char=176|ner=O
+3	geven	geven	VERB	WW|pv|tgw|mv	Mood=Ind|Number=Plur|Tense=Pres|VerbForm=Fin	0	root	_	start_char=177|end_char=182|ner=O
+4	niet	niet	ADV	BW	_	3	advmod	_	start_char=183|end_char=187|ner=O
+5	toe	toe	ADP	VZ|fin	_	3	compound:prt	_	SpaceAfter=No|start_char=188|end_char=191|ner=O
+6	,	,	PUNCT	LET	_	3	punct	_	SpaceAfter=No|start_char=191|end_char=192|ner=O
+7	'	'	PUNCT	LET	_	3	punct	_	start_char=192|end_char=193|ner=O
+8	zei	zeggen	VERB	WW|pv|verl|ev	Mood=Ind|Number=Sing|Tense=Past|VerbForm=Fin	3	parataxis	_	start_char=194|end_char=197|ner=O
+9	de	de	DET	LID|bep|stan|rest	Definite=Def|PronType=Art	10	det	_	start_char=198|end_char=200|ner=O
+10	minister	minister	NOUN	N|soort|ev|basis|zijd|stan	Gender=Com|Number=Sing	8	nsubj	_	start_char=201|end_char=209|ner=O
+11	van	van	ADP	VZ|init	_	12	case	_	start_char=210|end_char=213|ner=O
+12	Financiën	financiën	NOUN	N|soort|ev|basis|zijd|stan	Gender=Com|Number=Sing	10	nmod	_	SpaceAfter=No|start_char=214|end_char=223|ner=S-ORG
+13	.	.	PUNCT	LET	_	3	punct	_	start_char=223|end_char=224|ner=O
+
+# text = Volgens het CBS daalde de werkloosheid in maart 2024 met 2,5 procent.
+# sent_id = 3
+1	Volgens	volgens	ADP	VZ|init	_	3	case	_	start_char=225|end_char=232|ner=O
+2	het	het	DET	LID|bep|stan|evon	Definite=Def|PronType=Art	3	det	_	start_char=233|end_char=236|ner=O
+3	CBS	CBS	PROPN	N|eigen|ev|basis|onz|stan	Gender=Neut|Number=Sing	4	obl	_	start_char=237|end_char=240|ner=S-ORG
+4	daalde	dalen	VERB	WW|pv|verl|ev	Mood=Ind|Number=Sing|Tense=Past|VerbForm=Fin	0	root	_	start_char=241|end_char=247|ner=O
+5	de	de	DET	LID|bep|stan|rest	Definite=Def|PronType=Art	6	det	_	start_char=248|end_char=250|ner=O
+6	werkloosheid	werkloosheid	NOUN	N|soort|ev|basis|zijd|stan	Gender=Com|Number=Sing	4	nsubj	_	start_char=251|end_char=263|ner=O
+7	in	in	ADP	VZ|init	_	8	case	_	start_char=264|end_char=266|ner=O
+8	maart	maart	PROPN	N|eigen|ev|basis|zijd|stan	Gender=Com|Number=Sing	4	obl	_	start_char=267|end_char=272|ner=O
+9	2024	2024	NUM	TW|hoofd|vrij	_	8	nummod	_	start_char=273|end_char=277|ner=O
+10	met	met	ADP	VZ|init	_	12	case	_	start_char=278|end_char=281|ner=O
+11	2,5	2,5	NUM	TW|hoofd|prenom|stan	_	12	nummod	_	start_char=282|end_char=285|ner=O
+12	procent	procent	NOUN	N|soort|ev|basis|onz|stan	Gender=Neut|Number=Sing	4	obl	_	SpaceAfter=No|start_char=286|end_char=293|ner=O
+13	.	.	PUNCT	LET	_	4	punct	_	SpacesAfter=\n\n|start_char=293|end_char=294|ner=O
+
+# text = Ik heb Jan zaterdag op de markt in Utrecht gezien.
+# sent_id = 4
+1	Ik	ik	PRON	VNW|pers|pron|nomin|vol|1|ev	Case=Nom|Person=1|PronType=Prs	10	nsubj	_	start_char=296|end_char=298|ner=O
+2	heb	hebben	AUX	WW|pv|tgw|ev	Mood=Ind|Number=Sing|Tense=Pres|VerbForm=Fin	10	aux	_	start_char=299|end_char=302|ner=O
+3	Jan	Jan	PROPN	N|eigen|ev|basis|zijd|stan	Gender=Com|Number=Sing	10	obj	_	start_char=303|end_char=306|ner=S-PER
+4	zaterdag	zaterdag	PROPN	N|eigen|ev|basis|zijd|stan	Gender=Com|Number=Sing	10	obl	_	start_char=307|end_char=315|ner=O
+5	op	op	ADP	VZ|init	_	7	case	_	start_char=316|end_char=318|ner=O
+6	de	de	DET	LID|bep|stan|rest	Definite=Def|PronType=Art	7	det	_	start_char=319|end_char=321|ner=O
+7	markt	markt	NOUN	N|soort|ev|basis|zijd|stan	Gender=Com|Number=Sing	10	obl	_	start_char=322|end_char=327|ner=O
+8	in	in	ADP	VZ|init	_	9	case	_	start_char=328|end_char=330|ner=O
+9	Utrecht	Utrecht	PROPN	N|eigen|ev|basis|onz|stan	Gender=Neut|Number=Sing	7	nmod	_	start_char=331|end_char=338|ner=S-LOC
+10	gezien	zien	VERB	WW|vd|vrij|zonder	VerbForm=Part	0	root	_	SpaceAfter=No|start_char=339|end_char=345|ner=O
+11	.	.	PUNCT	LET	_	10	punct	_	start_char=345|end_char=346|ner=O
+
+# text = Kom je morgen naar het feest?
+# sent_id = 5
+1	Kom	komen	VERB	WW|pv|tgw|ev	Mood=Imp|Number=Sing|Tense=Pres|VerbForm=Fin	0	root	_	start_char=347|end_char=350|ner=O
+2	je	je	PRON	VNW|pers|pron|nomin|red|2v|ev	Case=Nom|Person=2|PronType=Prs	1	nsubj	_	start_char=351|end_char=353|ner=O
+3	morgen	morgen	ADV	BW	_	1	advmod	_	start_char=354|end_char=360|ner=O
+4	naar	naar	ADP	VZ|init	_	6	case	_	start_char=361|end_char=365|ner=O
+5	het	het	DET	LID|bep|stan|evon	Definite=Def|PronType=Art	6	det	_	start_char=366|end_char=369|ner=O
+6	feest	feest	NOUN	N|soort|ev|basis|onz|stan	Gender=Neut|Number=Sing	1	obl	_	SpaceAfter=No|start_char=370|end_char=375|ner=O
+7	?	?	PUNCT	LET	_	1	punct	_	start_char=375|end_char=376|ner=O
+
+# text = Mijn zus woont al tien jaar in Rotterdam en werkt bij Philips.
+# sent_id = 6
+1	Mijn	mijn	PRON	VNW|bez|det|stan|vol|1|ev|prenom|zonder|agr	Person=1|Poss=Yes|PronType=Prs	2	nmod:poss	_	start_char=377|end_char=381|ner=O
+2	zus	zus	NOUN	N|soort|ev|basis|zijd|stan	Gender=Com|Number=Sing	3	nsubj	_	start_char=382|end_char=385|ner=O
+3	woont	wonen	VERB	WW|pv|tgw|met-t	Mood=Ind|Number=Sing|Tense=Pres|VerbForm=Fin	0	root	_	start_char=386|end_char=391|ner=O
+4	al	al	ADV	BW	_	6	advmod	_	start_char=392|end_char=394|ner=O
+5	tien	tien	NUM	TW|hoofd|prenom|stan	_	6	nummod	_	start_char=395|end_char=399|ner=O
+6	jaar	jaar	NOUN	N|soort|ev|basis|onz|stan	Gender=Neut|Number=Sing	3	obl	_	start_char=400|end_char=404|ner=O
+7	in	in	ADP	VZ|init	_	8	case	_	start_char=405|end_char=407|ner=O
+8	Rotterdam	Rotterdam	PROPN	N|eigen|ev|basis|onz|stan	Gender=Neut|Number=Sing	3	obl	_	start_char=408|end_char=417|ner=S-LOC
+9	en	en	CCONJ	VG|neven	_	10	cc	_	start_char=418|end_char=420|ner=O
+10	werkt	werken	VERB	WW|pv|tgw|met-t	Mood=Ind|Number=Sing|Tense=Pres|VerbForm=Fin	3	conj	_	start_char=421|end_char=426|ner=O
+11	bij	bij	ADP	VZ|init	_	12	case	_	start_char=427|end_char=430|ner=O
+12	Philips	Philips	PROPN	N|eigen|ev|basis|onz|stan	Gender=Neut|Number=Sing	10	obl	_	SpaceAfter=No|start_char=431|end_char=438|ner=S-ORG
+13	.	.	PUNCT	LET	_	3	punct	_	SpacesAfter=\n\n|start_char=438|end_char=439|ner=O
+
+# text = De kinderen speelden in het park terwijl hun ouders de krant lazen.
+# sent_id = 7
+1	De	de	DET	LID|bep|stan|rest	Definite=Def|PronType=Art	2	det	_	start_char=441|end_char=443|ner=O
+2	kinderen	kind	NOUN	N|soort|mv|basis	Number=Plur	3	nsubj	_	start_char=444|end_char=452|ner=O
+3	speelden	spelen	VERB	WW|pv|verl|mv	Mood=Ind|Number=Plur|Tense=Past|VerbForm=Fin	0	root	_	start_char=453|end_char=461|ner=O
+4	in	in	ADP	VZ|init	_	6	case	_	start_char=462|end_char=464|ner=O
+5	het	het	DET	LID|bep|stan|evon	Definite=Def|PronType=Art	6	det	_	start_char=465|end_char=468|ner=O
+6	park	park	NOUN	N|soort|ev|basis|onz|stan	Gender=Neut|Number=Sing	3	obl	_	start_char=469|end_char=473|ner=O
+7	terwijl	terwijl	SCONJ	VG|onder	_	12	mark	_	start_char=474|end_char=481|ner=O
+8	hun	hun	PRON	VNW|bez|det|stan|vol|3|mv|prenom|zonder|agr	Person=3|Poss=Yes|PronType=Prs	9	nmod:poss	_	start_char=482|end_char=485|ner=O
+9	ouders	ouder	NOUN	N|soort|mv|basis	Number=Plur	12	nsubj	_	start_char=486|end_char=492|ner=O
+10	de	de	DET	LID|bep|stan|rest	Definite=Def|PronType=Art	11	det	_	start_char=493|end_char=495|ner=O
+11	krant	krant	NOUN	N|soort|ev|basis|zijd|stan	Gender=Com|Number=Sing	12	obj	_	start_char=496|end_char=501|ner=O
+12	lazen	lezen	VERB	WW|pv|verl|mv	Mood=Ind|Number=Plur|Tense=Past|VerbForm=Fin	3	advcl	_	SpaceAfter=No|start_char=502|end_char=507|ner=O
+13	.	.	PUNCT	LET	_	3	punct	_	start_char=507|end_char=508|ner=O
+
+# text = Je moet het hem vertellen voordat het te laat is.
+# sent_id = 8
+1	Je	je	PRON	VNW|pers|pron|nomin|red|2v|ev	Case=Nom|Person=2|PronType=Prs	5	nsubj	_	start_char=509|end_char=511|ner=O
+2	moet	moeten	AUX	WW|pv|tgw|ev	Mood=Ind|Number=Sing|Tense=Pres|VerbForm=Fin	5	aux	_	start_char=512|end_char=516|ner=O
+3	het	het	PRON	VNW|pers|pron|stan|red|3|ev|onz	Person=3|PronType=Prs	5	obj	_	start_char=517|end_char=520|ner=O
+4	hem	hem	PRON	VNW|pers|pron|obl|vol|3|ev|masc	Case=Acc|Person=3|PronType=Prs	5	iobj	_	start_char=521|end_char=524|ner=O
+5	vertellen	vertellen	VERB	WW|inf|vrij|zonder	VerbForm=Inf	0	root	_	start_char=525|end_char=534|ner=O
+6	voordat	voordat	SCONJ	VG|onder	_	9	mark	_	start_char=535|end_char=542|ner=O
+7	het	het	PRON	VNW|pers|pron|stan|red|3|ev|onz	Person=3|PronType=Prs	9	nsubj	_	start_char=543|end_char=546|ner=O
+8	te	te	ADV	BW	_	9	advmod	_	start_char=547|end_char=549|ner=O
+9	laat	laat	ADJ	ADJ|vrij|basis|zonder	Degree=Pos	5	advcl	_	start_char=550|end_char=554|ner=O
+10	is	zijn	AUX	WW|pv|tgw|ev	Mood=Ind|Number=Sing|Tense=Pres|VerbForm=Fin	9	cop	_	SpaceAfter=No|start_char=555|end_char=557|ner=O
+11	.	.	PUNCT	LET	_	5	punct	_	SpacesAfter=\n\n|start_char=557|end_char=558|ner=O
+
+# text = De film was prachtig, maar het restaurant ernaast viel tegen:
+# sent_id = 9
+1	De	de	DET	LID|bep|stan|rest	Definite=Def|PronType=Art	2	det	_	start_char=560|end_char=562|ner=O
+2	film	film	NOUN	N|soort|ev|basis|zijd|stan	Gender=Com|Number=Sing	4	nsubj	_	start_char=563|end_char=567|ner=O
+3	was	zijn	AUX	WW|pv|verl|ev	Mood=Ind|Number=Sing|Tense=Past|VerbForm=Fin	4	cop	_	start_char=568|end_char=571|ner=O
+4	prachtig	prachtig	ADJ	ADJ|vrij|basis|zonder	Degree=Pos	0	root	_	SpaceAfter=No|start_char=572|end_char=580|ner=O
+5	,	,	PUNCT	LET	_	10	punct	_	start_char=580|end_char=581|ner=O
+6	maar	maar	CCONJ	VG|neven	_	10	cc	_	start_char=582|end_char=586|ner=O
+7	het	het	DET	LID|bep|stan|evon	Definite=Def|PronType=Art	8	det	_	start_char=587|end_char=590|ner=O
+8	restaurant	restaurant	NOUN	N|soort|ev|basis|onz|stan	Gender=Neut|Number=Sing	10	nsubj	_	start_char=591|end_char=601|ner=O
+9	ernaast	ernaast	ADV	BW	_	8	advmod	_	start_char=602|end_char=609|ner=O
+10	viel	vallen	VERB	WW|pv|verl|ev	Mood=Ind|Number=Sing|Tense=Past|VerbForm=Fin	4	conj	_	start_char=610|end_char=614|ner=O
+11	tegen	tegen	ADP	VZ|fin	_	10	compound:prt	_	SpaceAfter=No|start_char=615|end_char=620|ner=O
+12	:	:	PUNCT	LET	_	4	punct	_	start_char=620|end_char=621|ner=O
+
+# text = het eten was koud.
+# sent_id = 10
+1	het	het	DET	LID|bep|stan|evon	Definite=Def|PronType=Art	2	det	_	start_char=622|end_char=625|ner=O
+2	eten	eten	VERB	WW|inf|nom|zonder|zonder-n	VerbForm=Inf	4	nsubj	_	start_char=626|end_char=630|ner=O
+3	was	zijn	AUX	WW|pv|verl|ev	Mood=Ind|Number=Sing|Tense=Past|VerbForm=Fin	4	cop	_	start_char=631|end_char=634|ner=O
+4	koud	koud	ADJ	ADJ|vrij|basis|zonder	Degree=Pos	0	root	_	SpaceAfter=No|start_char=635|end_char=639|ner=O
+5	.	.	PUNCT	LET	_	4	punct	_	SpacesAfter=\n|start_char=639|end_char=640|ner=O

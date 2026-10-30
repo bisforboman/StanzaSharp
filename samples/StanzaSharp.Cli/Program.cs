@@ -5,19 +5,19 @@ const string Usage = """
            StanzaSharp.Cli download [DIR] [--lang CODE] [--package NAME] [--processors LIST] [--model P=NAME]... [--list]
            StanzaSharp.Cli download-transformer DIR NAME [FILE]...
 
-    Runs the pipeline of --lang (en, the default, or de) on FILE (or standard input) and writes CoNLL-U to standard output.
-    "download" fetches Stanza's models of --lang (en, the default, or de) into DIR (default: models/stanza/<lang>):
+    Runs the pipeline of --lang (en, the default, de, es, fr, it, pt or nl) on FILE (or standard input) and writes CoNLL-U to standard output.
+    "download" fetches Stanza's models of --lang into DIR (default: models/stanza/<lang>):
     all of the package's, or only what LIST needs. "download-transformer" fetches a transformer's files (all, or the FILEs)
     from Hugging Face at their pinned revision into DIR/transformer/NAME (google/electra-large-discriminator: tokenizer.json,
     pytorch_model.bin; docs/transformer-plan.md), for tests and tools; "download" fetches them too for a model that reads them.
 
-      --lang CODE         the language: en (default) or de
+      --lang CODE         the language: en (default), de, es, fr, it, pt or nl
       --models DIR        models (default: models/converted/<lang> if present, else models/stanza/<lang>)
       --package NAME      Stanza's package: default, default_fast (faster, no constituency), default_accurate
                           (transformer models: slower, more accurate); the treebank
                           packages (tokenize to depparse): English combined, ewt, gum, lines, partut, atis, childes, eslspok,
                           craft, genia, mimic;
-                          German combined, gsd, hdt
+                          German combined, gsd, hdt (es, fr, it, pt, nl: default, default_fast; es: default only)
       --processors LIST   comma-separated, from tokenize,mwt,pos,lemma,constituency,depparse,sentiment,ner
                           (default: all of the package's)
       --model P=NAME      a model for processor P instead of the package's (repeatable, or P=NAME,P=NAME), as Stanza's
