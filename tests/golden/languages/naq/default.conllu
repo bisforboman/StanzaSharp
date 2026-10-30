@@ -1,0 +1,21 @@
+# text = ǁNā khoeb ge ǃoas ǃnâ ge go ǃgû.
+# sent_id = 0
+1	ǁNā	ǁnā	DET	DIST	Deixis=Remt|PronType=Dem	2	det	_	start_char=0|end_char=3
+2	khoeb	khoe	NOUN	_	Case=Nom|Gender=Masc|Number=Sing|Person=3	8	nsubj	_	start_char=4|end_char=9
+3	ge	ge	AUX	DECL	Mood=Ind	8	aux	_	start_char=10|end_char=12
+4	ǃoas	ǃoa	NOUN	_	Case=Nom|Gender=Fem|Number=Sing|Person=3	8	obl	_	start_char=13|end_char=17
+5	ǃnâ	ǃnâ	ADP	_	_	4	case	_	start_char=18|end_char=21
+6	ge	ge	AUX	_	Tense=Past	8	aux	_	start_char=22|end_char=24
+7	go	go	AUX	_	Tense=RecPast	8	aux	_	start_char=25|end_char=27
+8	ǃgû	ǃgû	VERB	_	Voice=Act	0	root	_	SpaceAfter=No|start_char=28|end_char=31
+9	.	.	PUNCT	_	_	8	punct	_	start_char=31|end_char=32
+
+# text = Sida ge ǁgoaxa ǃnâ ra ǃgû.
+# sent_id = 1
+1	Sida	si	PRON	_	Clusivity=Ex|Gender=Neut|Number=Plur|Person=1|PronType=Prs	6	nsubj	_	start_char=33|end_char=37
+2	ge	ge	AUX	DECL	Mood=Ind	6	aux	_	start_char=38|end_char=40
+3	ǁgoaxa	ǁgoaxa	ADJ	_	_	6	obl	_	start_char=41|end_char=47
+4	ǃnâ	ǃnâ	ADP	_	_	3	case	_	start_char=48|end_char=51
+5	ra	ra	AUX	IPFV	Aspect=Imp	6	aux	_	start_char=52|end_char=54
+6	ǃgû	ǃgû	VERB	_	Voice=Act	0	root	_	SpaceAfter=No|start_char=55|end_char=58
+7	.	.	PUNCT	_	_	6	punct	_	SpacesAfter=\n|start_char=58|end_char=59

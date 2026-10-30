@@ -1,0 +1,13 @@
+# text = Imedi jiwu bakuru.
+# sent_id = 0
+1	Imedi	medi	VERB	v	Number=Sing|Person=3	0	root	_	start_char=0|end_char=5
+2	jiwu	ji	ADP	posp	Number=Sing|Person=3|Subord=Yes	1	advmod	_	start_char=6|end_char=10
+3	bakuru.	bakuru.	PUNCT	punct	_	1	punct	_	start_char=11|end_char=18
+
+# text = Ure maragodu boe etore.
+# sent_id = 1
+1	Ure	u	PRON	bi	Mood=Ind|Number=Sing|Person=3	4	nsubj	_	start_char=19|end_char=22
+2	maragodu	maragodu	NOUN	n	_	3	nmod	_	start_char=23|end_char=31
+3	boe	boe	NOUN	n	_	4	nmod	_	start_char=32|end_char=35
+4	etore	onaregedu	NOUN	n	Number=Plur|Person=3	0	root	_	SpaceAfter=No|start_char=36|end_char=41
+5	.	.	PUNCT	punct	_	4	punct	_	SpacesAfter=\n|start_char=41|end_char=42

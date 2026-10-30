@@ -1,0 +1,11 @@
+# text = Mun ra ɗwal ɗaŋ. Ya tu kwa ɗin.
+# sent_id = 0
+1	Mun	Mun	PROPN	_	_	0	root	_	start_char=0|end_char=3
+2	ra	ra	PART	_	PartType=Disc	1	discourse	_	start_char=4|end_char=6
+3	ɗwal	ɗwal	ADV	_	_	1	advmod	_	start_char=7|end_char=11
+4	ɗaŋ.	ɗaŋ.	ADV	_	_	1	advmod	_	start_char=12|end_char=16
+5	Ya	Ya	PUNCT	_	_	7	punct	_	start_char=17|end_char=19
+6	tu	tu	SCONJ	_	_	7	discourse	_	start_char=20|end_char=22
+7	kwa	kwa	X	_	Foreign=Yes	1	parataxis	_	start_char=23|end_char=26
+8	ɗin	ɗin	X	_	Foreign=Yes	7	flat:foreign	_	SpaceAfter=No|start_char=27|end_char=30
+9	.	.	PUNCT	_	_	6	punct	_	SpacesAfter=\n|start_char=30|end_char=31

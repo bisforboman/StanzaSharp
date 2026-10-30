@@ -4,7 +4,7 @@
 [![NuGet](https://img.shields.io/nuget/v/StanzaSharp)](https://www.nuget.org/packages/StanzaSharp)
 [![License](https://img.shields.io/github/license/bisforboman/StanzaSharp)](LICENSE)
 
-C# port of Stanza's inference pipelines for 86 languages ([docs/languages.md](docs/languages.md); tokenize, mwt, pos, lemma, depparse, ner, sentiment,
+C# port of Stanza's inference pipelines for 101 languages ([docs/languages.md](docs/languages.md); tokenize, mwt, pos, lemma, depparse, ner, sentiment,
 constituency, and the optional coref).
 It runs Stanza's own pretrained models in plain .NET code, with no native dependencies. On the golden test texts
 (845 English and 181 German sentences, about 10 in each other language), the output is byte-identical to Python Stanza 1.15.0, on Linux, Windows and
@@ -289,7 +289,7 @@ from English in its models, not in the API:
 
 ### Other languages
 
-`Language` takes any of the 86 codes in [docs/languages.md](docs/languages.md) (`"fr"`, `"ru"`, `"hi"`, `"ar"`, `"vi"`,
+`Language` takes any of the 101 codes in [docs/languages.md](docs/languages.md) (`"fr"`, `"ru"`, `"hi"`, `"ar"`, `"vi"`,
 ...); each language's Stanza models are downloaded and loaded the same way:
 
 ```csharp

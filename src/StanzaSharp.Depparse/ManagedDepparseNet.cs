@@ -17,14 +17,14 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
     // at most this many floats (32 MB), or one sentence if it is longer.
     private const int ChunkFloats = 8 << 20;
 
-    private readonly Pretrain _pretrain;
+    private readonly Pretrain? _pretrain;
     private readonly ManagedCharLanguageModel? _charlmForward, _charlmBackward;
     private readonly ManagedCharacterModel? _charModel;
     private readonly PackedMatrix? _transChar;
     private readonly float[] _wordEmb, _lemmaEmb, _uposEmb;
     private readonly float[][] _xposEmb; // one table per part of a composite XPOS vocabulary
-    private readonly int _wordDim, _tagDim, _transformed, _inputSize, _transformerCol, _biaff;
-    private readonly PackedMatrix _transPretrained;
+    private readonly int _wordDim, _tagDim, _transformed, _pretrainCols, _inputSize, _transformerCol, _biaff;
+    private readonly PackedMatrix? _transPretrained;
     private readonly ManagedHighwayLstm _lstm;
     private readonly Scorer _unlabeled, _deprel;
     private readonly Scorer? _linearization, _distance;
@@ -49,9 +49,10 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
         public required float[] Pad2;        // in2 of a padding word: ReLU(W2's bias)
     }
 
+    /// <param name="pretrain">The word vectors, or null for a <c>_nopretrain</c> parser (no trans_pretrained columns).</param>
     /// <param name="transformerDim">The transformer's hidden size for a <c>_electra-large</c> parser (its vectors are the last
     /// input columns, <see cref="DepparseBatch.Transformer"/>), else 0.</param>
-    public ManagedDepparseNet(Checkpoint ckpt, Pretrain pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward,
+    public ManagedDepparseNet(Checkpoint ckpt, Pretrain? pretrain, ManagedCharLanguageModel? charlmForward, ManagedCharLanguageModel? charlmBackward,
         int transformerDim = 0)
     {
         var config = ckpt.Root["config"]!;
@@ -66,7 +67,8 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
         _transformed = config["transformed_dim"]!.GetValue<int>();
 
         // trans_pretrained, word, lemma, then the UPOS+XPOS embedding twice (see DepparseNet), then the characters.
-        _inputSize = _transformed + 2 * _wordDim + 2 * _tagDim;
+        _pretrainCols = pretrain == null ? 0 : _transformed;
+        _inputSize = _pretrainCols + 2 * _wordDim + 2 * _tagDim;
         if (_charlmForward != null)
         {
             _inputSize += _charlmForward.HiddenDim + _charlmBackward!.HiddenDim;
@@ -83,7 +85,7 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
         (_wordEmb, _lemmaEmb, _uposEmb) = (T("word_emb.weight"), T("lemma_emb.weight"), T("upos_emb.weight"));
         var xpos = XposVocab.Read(ckpt.Root["vocab"]!);
         _xposEmb = xpos.IsComposite ? [.. xpos.Sizes.Select((_, i) => T($"xpos_emb.{i}.weight"))] : [T("xpos_emb.weight")];
-        _transPretrained = new PackedMatrix(T("trans_pretrained.weight"), _transformed, pretrain.Dim);
+        _transPretrained = pretrain == null ? null : new PackedMatrix(T("trans_pretrained.weight"), _transformed, pretrain.Dim);
         _lstm = new ManagedHighwayLstm(ckpt, model, "parserlstm", _inputSize, hidden, config["num_layers"]!.GetValue<int>());
 
         var names = new List<string> { "unlabeled", "deprel" };
@@ -197,23 +199,23 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
     private void Encode(DepparseBatch batch, int[] offset, int[] packedRow, float[] output, CancellationToken ct)
     {
         int size = batch.Texts.Count, width = batch.Width, rows = packedRow.Length, inSize = _inputSize;
-        int dim = _pretrain.Dim, ldt = _transPretrained.PaddedN, charDim = _charModel?.OutputDim ?? 0;
-        int posCol = _transformed + 2 * _wordDim, charCol = posCol + 2 * _tagDim;
+        int dim = _pretrain?.Dim ?? 0, ldt = _transPretrained?.PaddedN ?? 0, charDim = _charModel?.OutputDim ?? 0;
+        int posCol = _pretrainCols + 2 * _wordDim, charCol = posCol + 2 * _tagDim;
         var x = ArrayPool<float>.Shared.Rent(rows * inSize);
         var a = ArrayPool<float>.Shared.Rent(rows * Math.Max(Math.Max(dim, charDim), _lstm.OutputSize));
         var c = ArrayPool<float>.Shared.Rent(rows * Math.Max(ldt, _transChar?.PaddedN ?? 0));
         try
         {
             // Embeddings at each word's packed row; the pretrain vectors (packed order) go through trans_pretrained.
-            var vectors = _pretrain.CpuVectors();
+            var vectors = _pretrain == null ? default : _pretrain.CpuVectors();
             for (int b = 0; b < size; b++)
             {
                 for (int t = 0, k = offset[b]; k < offset[b + 1]; t++, k++)
                 {
                     int id = b * width + t, r = packedRow[k];
                     var row = x.AsSpan(r * inSize, inSize);
-                    _wordEmb.AsSpan((int)batch.Word[id] * _wordDim, _wordDim).CopyTo(row[_transformed..]);
-                    _lemmaEmb.AsSpan((int)batch.Lemma[id] * _wordDim, _wordDim).CopyTo(row[(_transformed + _wordDim)..]);
+                    _wordEmb.AsSpan((int)batch.Word[id] * _wordDim, _wordDim).CopyTo(row[_pretrainCols..]);
+                    _lemmaEmb.AsSpan((int)batch.Lemma[id] * _wordDim, _wordDim).CopyTo(row[(_pretrainCols + _wordDim)..]);
 
                     // upos_emb + each XPOS part's embedding, added in order as Stanza's pos_emb += does.
                     var pos = row.Slice(posCol, _tagDim);
@@ -226,14 +228,18 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
                     }
 
                     pos.CopyTo(row[(posCol + _tagDim)..]);
-                    vectors.Slice((int)batch.Pretrained[id] * dim, dim).CopyTo(a.AsSpan(r * dim));
+                    if (_pretrain != null)
+                        vectors.Slice((int)batch.Pretrained[id] * dim, dim).CopyTo(a.AsSpan(r * dim));
                 }
             }
 
-            fixed (float* pa = a, pc = c)
-                Gemm.Run(pa, rows, dim, _transPretrained, null, pc, ldt, ct);
-            for (int r = 0; r < rows; r++)
-                c.AsSpan(r * ldt, _transformed).CopyTo(x.AsSpan(r * inSize));
+            if (_transPretrained != null)
+            {
+                fixed (float* pa = a, pc = c)
+                    Gemm.Run(pa, rows, dim, _transPretrained, null, pc, ldt, ct);
+                for (int r = 0; r < rows; r++)
+                    c.AsSpan(r * ldt, _transformed).CopyTo(x.AsSpan(r * inSize));
+            }
 
             if (_charModel != null)
             {

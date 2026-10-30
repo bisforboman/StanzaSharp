@@ -62,10 +62,10 @@ internal abstract class BackendModels : IDisposable
     public abstract TransformerEmbedder Transformer(string directory, string name);
 
     /// <param name="transformer">The transformer a <c>_electra-large</c> model reads; null for the others.</param>
-    public abstract PosTagger Pos(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer);
+    public abstract PosTagger Pos(string basePath, Pretrain? pretrain, Charlms charlms, TransformerEmbedder? transformer);
 
     /// <param name="transformer">The transformer a <c>_electra-large</c> model reads; null for the others.</param>
-    public abstract DependencyParser Depparse(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer);
+    public abstract DependencyParser Depparse(string basePath, Pretrain? pretrain, Charlms charlms, TransformerEmbedder? transformer);
 
     /// <param name="transformer">The transformer a <c>_electra-large</c> model reads; null for the others.</param>
     public abstract NerTagger Ner(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer, int? tagSet);
@@ -143,10 +143,10 @@ internal sealed class ManagedModels : BackendModels
     public override TransformerEmbedder Transformer(string directory, string name) =>
         TransformerEmbedder.Load(directory, name, (config, ckpt) => ManagedTransformer.Load(config, ckpt));
 
-    public override PosTagger Pos(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer) =>
+    public override PosTagger Pos(string basePath, Pretrain? pretrain, Charlms charlms, TransformerEmbedder? transformer) =>
         PosTagger.LoadManaged(basePath, pretrain, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward), transformer);
 
-    public override DependencyParser Depparse(string basePath, Pretrain pretrain, Charlms charlms, TransformerEmbedder? transformer) =>
+    public override DependencyParser Depparse(string basePath, Pretrain? pretrain, Charlms charlms, TransformerEmbedder? transformer) =>
         DependencyParser.LoadManaged(basePath, pretrain, Find(_charlms, charlms.Forward), Find(_charlms, charlms.Backward), transformer);
 
     public override CorefResolver Coref(string basePath, TransformerEmbedder transformer) => CorefResolver.LoadManaged(basePath, transformer);

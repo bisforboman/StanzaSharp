@@ -26,8 +26,11 @@ default from 0.5) or through TorchSharp (see "Managed backend").
   The sweep (2026-10-30; owner's decisions: the zero-code languages first, then a PR per fix group; nightly all of them,
   a batch at a time; the sweep's short texts as golden): every other Stanza language's `default` through `compare`. 79
   matched byte for byte and ship with `default` only (`Pipeline.DefaultOnly`; their text 2–3 sentences, the historical
-  ones public-domain passages). Not yet: the 15 `_nopretrain` taggers/parsers (bor, cop, egy, frm, naq, orv, pcm, pro,
-  qaf, qpm, qtd, say, sdh, wuu, yrl: Load asks for word vectors), tokenizers with extra features (ja, th, zh-hans,
+  ones public-domain passages). The 15 `_nopretrain` taggers/parsers followed (bor, cop, egy, frm, naq, orv, pcm, pro,
+  qaf, qpm, qtd, say, sdh, wuu, yrl; owner's choice 2026-10-30): config `pretrain` false, so no trans_pretrained columns
+  (Stanza's `if self.args['pretrain']`); `PosTagger`/`DependencyParser.UsesPretrain`, the nets take a null `Pretrain`, the
+  pipeline passes `PretrainIfAny` (resources.json lists no pretrain for them); identical in `compare`, 101 languages. Not
+  yet: tokenizers with extra features (ja, th, zh-hans,
   zh-hant: `feat_dim` over the 5 we build), a loader error on ko and lzh (`The node must be of type 'JsonArray'`), or
   (MuRIL transformer), and el (its lemmatizer's contextual classifiers load word vectors from a path on Stanford's
   machine: Python Stanza fails too). `LanguageGoldenTests` builds its rows from `SupportedPackages` (every language but en

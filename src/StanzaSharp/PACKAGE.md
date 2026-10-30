@@ -1,6 +1,6 @@
 # StanzaSharp
 
-[Stanza](https://github.com/stanfordnlp/stanza)'s NLP pipelines for 86 languages in .NET:
+[Stanza](https://github.com/stanfordnlp/stanza)'s NLP pipelines for 101 languages in .NET:
 - tokenization and sentence splitting
 - multi-word token expansion ("don't" → "do" + "n't", "zum" → "zu" + "dem")
 - part-of-speech tags and morphological features
@@ -260,7 +260,7 @@ var doc = nlp.Process("Angela Merkel wurde in Hamburg geboren. Sie zog im Jahr 1
 ```
 
 The other languages work the same way, with Stanza's `default` package of each (and `default_fast` for French, Italian,
-Portuguese and Dutch); the 86 codes are in
+Portuguese and Dutch); the 101 codes are in
 [docs/languages.md](https://github.com/bisforboman/StanzaSharp/blob/main/docs/languages.md):
 
 ```csharp

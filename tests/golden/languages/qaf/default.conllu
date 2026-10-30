@@ -1,0 +1,20 @@
+# text = L president ja l bare7 l Alger. Hdar m3a les journalistes 3la l9anoun jdid.
+# sent_id = 0
+1	L	pour	DET	DET	_	2	det	_	start_char=0|end_char=1
+2	president	president	NOUN	NC	_	3	nsubj	_	start_char=2|end_char=11
+3	ja	venu	VERB	V	_	0	root	_	start_char=12|end_char=14
+4	l	l'	DET	DET	_	5	det	_	start_char=15|end_char=16
+5	bare7	bare7	NOUN	NC	_	3	obj	_	start_char=17|end_char=22
+6	l	l'	DET	DET	_	7	det	_	start_char=23|end_char=24
+7	Alger.	Algerie	PROPN	NPP	_	5	nmod	_	start_char=25|end_char=31
+8	Hdar	parti	VERB	V	Gender=Fem|Number=Plur|Person=3	3	parataxis	_	start_char=32|end_char=36
+9	m3a	avec	ADP	P	AdpType=Prep	11	case	_	start_char=37|end_char=40
+10	les	les	DET	DET	_	11	det	_	start_char=41|end_char=44
+11	journalistes	journalistes	NOUN	NC	_	8	obl	_	start_char=45|end_char=57
+12	3la	sur	ADP	P	AdpType=Prep	14	case	_	start_char=58|end_char=61
+13-14	l9anoun	_	_	_	_	_	_	_	start_char=62|end_char=69
+13	l	l'	DET	DET	_	14	det	_	start_char=62|end_char=63
+14	9anoun	chants	NOUN	NC	_	8	obl	_	start_char=63|end_char=69
+15-16	jdid.	_	_	_	_	_	_	_	SpacesAfter=\n|start_char=70|end_char=75
+15	j	j'	PRON	CLS-SUJ	_	16	nsubj	_	start_char=70|end_char=71
+16	did.	did.	NOUN	NC	_	14	nmod	_	start_char=71|end_char=75

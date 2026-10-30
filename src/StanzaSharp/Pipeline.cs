@@ -68,11 +68,12 @@ public sealed class Pipeline : IDisposable
     // decision, 2026-10-30: the 79 whose default package matched Stanza byte for byte in the sweep).
     private static string[] DefaultOnly =>
     [
-        "ab", "af", "ang", "ar", "as", "be", "bg", "bxr", "ca", "ckb", "cs", "cu", "cy", "da", "et", "eu", "fa",
-        "fi", "fo", "fro", "ga", "gd", "gl", "got", "grc", "gv", "hbo", "he", "hi", "hr", "hsb", "ht", "hu",
-        "hy", "hyw", "id", "is", "ka", "kk", "kmr", "kpv", "ky", "la", "lij", "lt", "lv", "mr", "mt", "my",
-        "myv", "nb", "nds", "nn", "oc", "ota", "pa", "pl", "ro", "ru", "sa", "sd", "sk", "sl", "sme", "sq", "sr",
-        "sv", "ta", "te", "tr", "ug", "uk", "ur", "uz", "vi", "wo", "xcl", "yi", "zza",
+        "ab", "af", "ang", "ar", "as", "be", "bg", "bor", "bxr", "ca", "ckb", "cop", "cs", "cu", "cy", "da", "egy",
+        "et", "eu", "fa", "fi", "fo", "frm", "fro", "ga", "gd", "gl", "got", "grc", "gv", "hbo", "he", "hi", "hr",
+        "hsb", "ht", "hu", "hy", "hyw", "id", "is", "ka", "kk", "kmr", "kpv", "ky", "la", "lij", "lt", "lv", "mr",
+        "mt", "my", "myv", "naq", "nb", "nds", "nn", "oc", "orv", "ota", "pa", "pcm", "pl", "pro", "qaf", "qpm", "qtd",
+        "ro", "ru", "sa", "say", "sd", "sdh", "sk", "sl", "sme", "sq", "sr", "sv", "ta", "te", "tr", "ug", "uk", "ur",
+        "uz", "vi", "wo", "wuu", "xcl", "yi", "yrl", "zza",
     ];
 
     // Each supported package's models (processor → model), from resources.json.
@@ -439,9 +440,9 @@ public sealed class Pipeline : IDisposable
             foreach (var loading in transformers.Values)
                 loading.GetAwaiter().GetResult();
             StartReaders(ofCharlms: true);
-            var pos = models.ContainsKey("pos") ? Start(Name("pos"), () => backend.Pos(Model("pos"), PretrainOf("pos"), CharlmsOf("pos"), TransformerOf("pos"))) : null;
+            var pos = models.ContainsKey("pos") ? Start(Name("pos"), () => backend.Pos(Model("pos"), PretrainIfAny("pos"), CharlmsOf("pos"), TransformerOf("pos"))) : null;
             var depparse = models.ContainsKey("depparse")
-                ? Start(Name("depparse"), () => backend.Depparse(Model("depparse"), PretrainOf("depparse"), CharlmsOf("depparse"), TransformerOf("depparse")))
+                ? Start(Name("depparse"), () => backend.Depparse(Model("depparse"), PretrainIfAny("depparse"), CharlmsOf("depparse"), TransformerOf("depparse")))
                 : null;
             var ner = models.ContainsKey("ner") ? Start(Name("ner"), () => backend.Ner(Model("ner"), PretrainOf("ner"), CharlmsOf("ner"), TransformerOf("ner"), options.NerTagSet)) : null;
             var parser = models.ContainsKey("constituency")
