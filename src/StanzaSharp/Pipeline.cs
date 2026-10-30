@@ -34,24 +34,6 @@ public sealed class Pipeline : IDisposable
     // Every processor in Stanza's order, coref (optional, never in a package's default list) included.
     internal const string StanzaOrder = $"{Processor.Tokenize},{Processor.Mwt},{Processor.Pos},{Processor.Lemma},{Processor.Constituency},{Processor.Coref},{Processor.Depparse},{Processor.Sentiment},{Processor.Ner}";
 
-    // Stanza's optional processors (resources.json's packages' "optional"): a package's model for them, run only when
-    // Processors or Models names the processor (owner's decision, 2026-10-20: coref is opt-in).
-    internal static readonly Dictionary<string, Dictionary<string, Dictionary<string, string>>> Optional = new()
-    {
-        [English] = new()
-        {
-            [DefaultPackage] = new() { ["coref"] = CorefModel },
-            ["default_fast"] = new() { ["coref"] = CorefModel },
-            ["default_accurate"] = new() { ["coref"] = CorefModel },
-        },
-        ["de"] = new()
-        {
-            [DefaultPackage] = new() { ["coref"] = CorefModel },
-            ["default_fast"] = new() { ["coref"] = CorefModel },
-            ["default_accurate"] = new() { ["coref"] = CorefModel },
-        },
-    };
-
     // The multilingual coref model, English's and German's (docs/coref-plan.md).
     internal const string CorefModel = "udcoref_xlm-roberta-lora";
 
@@ -60,120 +42,37 @@ public sealed class Pipeline : IDisposable
 
     internal const string English = "en";
 
-    // Stanza 1.15.0's packages per language (resources.json): each processor's model. Their files need MD5s in
-    // ModelDownloader.Files, and the shared files they read an entry in Dependencies.
-    internal static readonly Dictionary<string, Dictionary<string, Dictionary<string, string>>> Packages = new()
+    // The packages StanzaSharp runs per language, by Stanza's names (ported and tested; any other package throws). Their
+    // models, and each model's dependencies and MD5, come from Stanza's resources.json (StanzaResources). English:
+    // default_fast has pos, depparse and ner with their own character LSTMs and no constituency; default_accurate the
+    // _charlm tokenizer and lemmatizer and google/electra-large-discriminator (Transformers); the treebank packages
+    // tokenize to depparse only (combined has default's models, eslspok no mwt and the identity lemmatizer, the biomedical
+    // craft, genia and mimic no mwt and their own word vectors). German: default_fast keeps ner and sentiment's charlm
+    // models; default_accurate is on german-nlp-group/electra-base-german-uncased.
+    internal static readonly Dictionary<string, string[]> SupportedPackages = new()
     {
-        [English] = new()
-        {
-            [DefaultPackage] = new()
-            {
-                ["tokenize"] = "combined_nocharlm",
-                ["mwt"] = "combined",
-                ["pos"] = "combined_charlm",
-                ["lemma"] = "combined_nocharlm",
-                ["constituency"] = "ptb3-revised_charlm",
-                ["depparse"] = "combined_charlm",
-                ["sentiment"] = "sstplus_charlm",
-                ["ner"] = "ontonotes-ww-multi_charlm",
-            },
-
-            // Smaller and faster: pos, depparse and ner have their own character LSTMs instead of the charlms. No constituency.
-            ["default_fast"] = new()
-            {
-                ["tokenize"] = "combined_nocharlm",
-                ["mwt"] = "combined",
-                ["pos"] = "combined_nocharlm",
-                ["lemma"] = "combined_nocharlm",
-                ["depparse"] = "combined_nocharlm",
-                ["sentiment"] = "sstplus_charlm",
-                ["ner"] = "ontonotes-ww-multi_nocharlm",
-            },
-
-            // The most accurate: the _charlm tokenizer and lemmatizer, and google/electra-large-discriminator (Transformers)
-            // under pos, constituency, depparse and ner (frozen, one shared pass) and sentiment (its LoRA adapters).
-            ["default_accurate"] = new()
-            {
-                ["tokenize"] = "combined_charlm",
-                ["mwt"] = "combined",
-                ["pos"] = "combined_electra-large",
-                ["lemma"] = "combined_charlm",
-                ["constituency"] = "ptb3-revised_electra-large",
-                ["depparse"] = "combined_electra-large",
-                ["sentiment"] = "sstplus_electra-large",
-                ["ner"] = "ontonotes-ww-multi_electra-large",
-            },
-
-            // The treebank packages: tokenize to depparse only. combined has default's models; eslspok has no mwt and
-            // Stanza's identity lemmatizer (no model); the biomedical craft, genia and mimic have no mwt and their own
-            // word vectors (mimic also its own charlms).
-            ["combined"] = Treebank("combined"),
-            ["ewt"] = Treebank("ewt"),
-            ["gum"] = Treebank("gum"),
-            ["lines"] = Treebank("lines"),
-            ["partut"] = Treebank("partut"),
-            ["atis"] = Treebank("atis"),
-            ["childes"] = Treebank("childes"),
-            ["eslspok"] = new()
-            {
-                ["tokenize"] = "eslspok_nocharlm",
-                ["pos"] = "eslspok_charlm",
-                ["lemma"] = IdentityLemma,
-                ["depparse"] = "eslspok_charlm",
-            },
-            ["craft"] = Biomedical("craft", "nocharlm"),
-            ["genia"] = Biomedical("genia", "nocharlm"),
-            ["mimic"] = Biomedical("mimic", "charlm"),
-        },
-        ["de"] = new()
-        {
-            [DefaultPackage] = new()
-            {
-                ["tokenize"] = "combined_nocharlm",
-                ["mwt"] = "combined",
-                ["pos"] = "combined_charlm",
-                ["lemma"] = "combined_nocharlm",
-                ["constituency"] = "spmrl_charlm",
-                ["depparse"] = "combined_charlm",
-                ["sentiment"] = "sb10k_charlm",
-                ["ner"] = "germeval2014_charlm",
-            },
-
-            // Like English's, but ner and sentiment keep their charlm models.
-            ["default_fast"] = new()
-            {
-                ["tokenize"] = "combined_nocharlm",
-                ["mwt"] = "combined",
-                ["pos"] = "combined_nocharlm",
-                ["lemma"] = "combined_nocharlm",
-                ["depparse"] = "combined_nocharlm",
-                ["sentiment"] = "sb10k_charlm",
-                ["ner"] = "germeval2014_charlm",
-            },
-
-            // The most accurate: the _charlm tokenizer and lemmatizer, and german-nlp-group/electra-base-german-uncased under
-            // pos and depparse (frozen, one shared pass), constituency and sentiment (each with its LoRA adapters), ner.
-            ["default_accurate"] = new()
-            {
-                ["tokenize"] = "combined_charlm",
-                ["mwt"] = "combined",
-                ["pos"] = "combined_german-nlp-electra",
-                ["lemma"] = "combined_charlm",
-                ["constituency"] = "spmrl_german-nlp-electra",
-                ["depparse"] = "combined_german-nlp-electra",
-                ["sentiment"] = "sb10k_german-nlp-electra",
-                ["ner"] = "germeval2014_german-nlp-electra",
-            },
-
-            // The treebank packages: tokenize to depparse only.
-            ["combined"] = Treebank("combined"),
-            ["gsd"] = Treebank("gsd"),
-            ["hdt"] = Treebank("hdt"),
-        },
+        [English] =
+        [
+            DefaultPackage, "default_fast", "default_accurate",
+            "combined", "ewt", "gum", "lines", "partut", "atis", "childes", "eslspok", "craft", "genia", "mimic",
+        ],
+        ["de"] = [DefaultPackage, "default_fast", "default_accurate", "combined", "gsd", "hdt"],
     };
 
+    // Each supported package's models (processor → model), from resources.json.
+    internal static readonly Dictionary<string, Dictionary<string, Dictionary<string, string>>> Packages =
+        SupportedPackages.ToDictionary(l => l.Key, l => l.Value.ToDictionary(p => p, p => StanzaResources.Package(l.Key, p)));
+
+    // Stanza's optional processors (resources.json's packages' "optional"): a package's model for them, run only when
+    // Processors or Models names the processor (owner's decision, 2026-10-20: coref is opt-in).
+    internal static readonly Dictionary<string, Dictionary<string, Dictionary<string, string>>> Optional =
+        SupportedPackages.ToDictionary(l => l.Key, l => l.Value
+            .Select(p => (Package: p, Models: StanzaResources.Optional(l.Key, p)))
+            .Where(p => p.Models.Count > 0)
+            .ToDictionary(p => p.Package, p => p.Models));
+
     // Models beyond the packages' that PipelineOptions.Models can choose, per language and processor (docs/per-processor-models-plan.md).
-    // Like the packages' models, each needs its MD5 in ModelDownloader.Files and its shared files in Dependencies.
+    // Each must be in resources.json, which has its MD5 and its shared files.
     internal static readonly Dictionary<string, Dictionary<string, string[]>> Alternatives = new()
     {
         [English] = new()
@@ -237,185 +136,22 @@ public sealed class Pipeline : IDisposable
     /// <summary>Stanza's lemma "model" that sets each word's lemma to its text (LemmaProcessor's use_identity); it has no file.</summary>
     internal const string IdentityLemma = "identity";
 
-    // A treebank package: <name>_nocharlm tokenizer and lemmatizer, <name> MWT, <name>_charlm tagger and parser.
-    private static Dictionary<string, string> Treebank(string name) => new()
-    {
-        ["tokenize"] = $"{name}_nocharlm",
-        ["mwt"] = name,
-        ["pos"] = $"{name}_charlm",
-        ["lemma"] = $"{name}_nocharlm",
-        ["depparse"] = $"{name}_charlm",
-    };
+    // The shared files (pretrains, charlms) each supported model reads, by "<processor>/<model>": resources.json's
+    // "dependencies", which the model's name doesn't tell (German ner conll03 reads charlms and its own pretrain). mwt, the
+    // _nocharlm tokenizers and lemmatizers read none; the _charlm tokenizers read only the forward charlm.
+    internal static readonly Dictionary<string, Dictionary<string, string[]>> Dependencies =
+        SupportedPackages.Keys.ToDictionary(l => l, l => SupportedModels(l).ToDictionary(m => m, m => StanzaResources.Dependencies(l, m)));
 
-    // A biomedical package: no mwt, a _nocharlm tokenizer and lemmatizer, the tagger and parser as <kind>.
-    private static Dictionary<string, string> Biomedical(string name, string kind) => new()
-    {
-        ["tokenize"] = $"{name}_nocharlm",
-        ["pos"] = $"{name}_{kind}",
-        ["lemma"] = $"{name}_nocharlm",
-        ["depparse"] = $"{name}_{kind}",
-    };
-
-    private static readonly string[] Conll17 = ["pretrain/conll17"],
-        EnglishCharlm = ["pretrain/conll17", "forward_charlm/1billion", "backward_charlm/1billion"],
-        Pubmed = ["pretrain/biomed", "forward_charlm/pubmed", "backward_charlm/pubmed"],
-        GermanCharlm = ["pretrain/conll17", "forward_charlm/newswiki", "backward_charlm/newswiki"],
-        EnglishForward = ["forward_charlm/1billion"],
-        EnglishPair = ["forward_charlm/1billion", "backward_charlm/1billion"],
-        GermanForward = ["forward_charlm/newswiki"],
-        GermanPair = ["forward_charlm/newswiki", "backward_charlm/newswiki"];
-
-    // The shared files (pretrains, charlms) each model reads, by "<processor>/<model>": resources.json's "dependencies",
-    // which the model's name doesn't tell (German ner conll03 reads charlms and its own pretrain). Models without an entry
-    // (mwt, the _nocharlm tokenizers and lemmatizers) read none; the _charlm tokenizers read only the forward charlm.
-    internal static readonly Dictionary<string, Dictionary<string, string[]>> Dependencies = new()
-    {
-        [English] = new()
-        {
-            ["pos/combined_charlm"] = EnglishCharlm,
-            ["constituency/ptb3-revised_charlm"] = EnglishCharlm,
-            ["depparse/combined_charlm"] = EnglishCharlm,
-            ["sentiment/sstplus_charlm"] = EnglishCharlm,
-            ["coref/" + CorefModel] = [], // nothing but its transformer (Transformers)
-            ["sentiment/sstplus_electra-large"] = EnglishCharlm, // resources.json lists the charlms, which the model doesn't read (Unread)
-            ["ner/ontonotes-ww-multi_charlm"] = EnglishCharlm,
-            ["pos/combined_nocharlm"] = Conll17,
-            ["depparse/combined_nocharlm"] = Conll17,
-            ["ner/ontonotes-ww-multi_nocharlm"] = Conll17,
-            ["pos/ewt_charlm"] = EnglishCharlm,
-            ["depparse/ewt_charlm"] = EnglishCharlm,
-            ["pos/gum_charlm"] = EnglishCharlm,
-            ["depparse/gum_charlm"] = EnglishCharlm,
-            ["pos/lines_charlm"] = EnglishCharlm,
-            ["depparse/lines_charlm"] = EnglishCharlm,
-            ["pos/partut_charlm"] = EnglishCharlm,
-            ["depparse/partut_charlm"] = EnglishCharlm,
-            ["pos/atis_charlm"] = EnglishCharlm,
-            ["depparse/atis_charlm"] = EnglishCharlm,
-            ["pos/childes_charlm"] = EnglishCharlm,
-            ["depparse/childes_charlm"] = EnglishCharlm,
-            ["pos/eslspok_charlm"] = EnglishCharlm,
-            ["depparse/eslspok_charlm"] = EnglishCharlm,
-            ["pos/craft_nocharlm"] = ["pretrain/biomed"],
-            ["depparse/craft_nocharlm"] = ["pretrain/biomed"],
-            ["pos/genia_nocharlm"] = ["pretrain/biomed"],
-            ["depparse/genia_nocharlm"] = ["pretrain/biomed"],
-            ["pos/mimic_charlm"] = ["pretrain/mimic", "forward_charlm/mimic", "backward_charlm/mimic"],
-            ["depparse/mimic_charlm"] = ["pretrain/mimic", "forward_charlm/mimic", "backward_charlm/mimic"],
-
-            // Alternatives
-            ["constituency/ptb3_charlm"] = EnglishCharlm,
-            ["tokenize/combined_charlm"] = EnglishForward,
-            ["tokenize/ewt_charlm"] = EnglishForward,
-            ["tokenize/gum_charlm"] = EnglishForward,
-            ["tokenize/lines_charlm"] = EnglishForward,
-            ["tokenize/partut_charlm"] = EnglishForward,
-            ["tokenize/atis_charlm"] = EnglishForward,
-            ["tokenize/childes_charlm"] = EnglishForward,
-            ["tokenize/eslspok_charlm"] = EnglishForward,
-            ["lemma/combined_charlm"] = EnglishCharlm,
-            ["lemma/ewt_charlm"] = EnglishPair,
-            ["lemma/gum_charlm"] = EnglishPair,
-            ["lemma/lines_charlm"] = EnglishPair,
-            ["lemma/partut_charlm"] = EnglishPair,
-            ["lemma/atis_charlm"] = EnglishPair,
-            ["lemma/childes_charlm"] = EnglishPair,
-            ["pos/ewt_nocharlm"] = Conll17,
-            ["depparse/ewt_nocharlm"] = Conll17,
-            ["pos/gum_nocharlm"] = Conll17,
-            ["depparse/gum_nocharlm"] = Conll17,
-            ["pos/lines_nocharlm"] = Conll17,
-            ["depparse/lines_nocharlm"] = Conll17,
-            ["pos/partut_nocharlm"] = Conll17,
-            ["depparse/partut_nocharlm"] = Conll17,
-            ["pos/atis_nocharlm"] = Conll17,
-            ["depparse/atis_nocharlm"] = Conll17,
-            ["pos/childes_nocharlm"] = Conll17,
-            ["depparse/childes_nocharlm"] = Conll17,
-            ["pos/eslspok_nocharlm"] = Conll17,
-            ["depparse/eslspok_nocharlm"] = Conll17,
-            ["depparse/mimic_nocharlm"] = ["pretrain/mimic"],
-            ["ner/ontonotes_charlm"] = ["pretrain/fasttextcrawl", "forward_charlm/1billion", "backward_charlm/1billion"],
-            ["ner/ontonotes_nocharlm"] = ["pretrain/fasttextcrawl"],
-            ["ner/combined_charlm"] = EnglishCharlm,
-            ["ner/i2b2"] = ["pretrain/mimic", "forward_charlm/mimic", "backward_charlm/mimic"],
-            ["ner/radiology"] = ["pretrain/mimic", "forward_charlm/mimic", "backward_charlm/mimic"],
-            ["ner/conll03_charlm"] = EnglishCharlm,
-            ["ner/anatem"] = Pubmed,
-            ["ner/bc4chemd"] = Pubmed,
-            ["ner/bc5cdr"] = Pubmed,
-            ["ner/bionlp13cg"] = Pubmed,
-            ["ner/jnlpba"] = Pubmed,
-            ["ner/linnaeus"] = Pubmed,
-            ["ner/ncbi_disease"] = Pubmed,
-            ["ner/s800"] = Pubmed,
-            ["pos/combined_electra-large"] = EnglishCharlm,
-            ["depparse/combined_electra-large"] = EnglishCharlm,
-            ["ner/ontonotes-ww-multi_electra-large"] = EnglishCharlm,
-            ["constituency/ptb3-revised_electra-large"] = EnglishCharlm,
-            ["constituency/ptb3_electra-large"] = EnglishCharlm,
-            ["pos/ewt_electra-large"] = EnglishCharlm,
-            ["depparse/ewt_electra-large"] = EnglishCharlm,
-            ["pos/gum_electra-large"] = EnglishCharlm,
-            ["depparse/gum_electra-large"] = EnglishCharlm,
-            ["pos/lines_electra-large"] = EnglishCharlm,
-            ["depparse/lines_electra-large"] = EnglishCharlm,
-            ["pos/partut_electra-large"] = EnglishCharlm,
-            ["depparse/partut_electra-large"] = EnglishCharlm,
-            ["pos/atis_electra-large"] = EnglishCharlm,
-            ["depparse/atis_electra-large"] = EnglishCharlm,
-            ["pos/childes_electra-large"] = EnglishCharlm,
-            ["depparse/childes_electra-large"] = EnglishCharlm,
-            ["pos/eslspok_electra-large"] = EnglishCharlm,
-            ["depparse/eslspok_electra-large"] = EnglishCharlm,
-            ["ner/ontonotes_electra-large"] = ["pretrain/fasttextcrawl", "forward_charlm/1billion", "backward_charlm/1billion"],
-            ["ner/conll03_electra-large"] = EnglishCharlm,
-        },
-        ["de"] = new()
-        {
-            ["pos/combined_charlm"] = GermanCharlm,
-            ["constituency/spmrl_charlm"] = GermanCharlm,
-            ["depparse/combined_charlm"] = GermanCharlm,
-            ["sentiment/sb10k_charlm"] = GermanCharlm,
-            ["coref/" + CorefModel] = [], // nothing but its transformer (Transformers)
-            ["ner/germeval2014_charlm"] = GermanCharlm,
-            ["pos/combined_nocharlm"] = Conll17,
-
-            // default_accurate's transformer models: resources.json lists conll17 and the charlms for each
-            ["pos/combined_german-nlp-electra"] = GermanCharlm,
-            ["depparse/combined_german-nlp-electra"] = GermanCharlm,
-            ["constituency/spmrl_german-nlp-electra"] = GermanCharlm,
-            ["sentiment/sb10k_german-nlp-electra"] = GermanCharlm,
-            ["ner/germeval2014_german-nlp-electra"] = GermanCharlm,
-
-            // the treebanks' on the same transformer (Alternatives)
-            ["pos/gsd_german-nlp-electra"] = GermanCharlm,
-            ["depparse/gsd_german-nlp-electra"] = GermanCharlm,
-            ["pos/hdt_german-nlp-electra"] = GermanCharlm,
-            ["depparse/hdt_german-nlp-electra"] = GermanCharlm,
-
-            // on dbmdz/bert-base-german-cased: sentiment reads no charlms although resources.json lists them (Unread)
-            ["sentiment/sb10k_dbmdz-bert-german-cased"] = GermanCharlm,
-            ["depparse/combined_nocharlm"] = Conll17,
-            ["pos/gsd_charlm"] = GermanCharlm,
-            ["depparse/gsd_charlm"] = GermanCharlm,
-            ["pos/hdt_charlm"] = GermanCharlm,
-            ["depparse/hdt_charlm"] = GermanCharlm,
-
-            // Alternatives
-            ["tokenize/combined_charlm"] = GermanForward,
-            ["lemma/combined_charlm"] = GermanPair,
-            ["tokenize/gsd_charlm"] = GermanForward,
-            ["lemma/gsd_charlm"] = GermanPair,
-            ["tokenize/hdt_charlm"] = GermanForward,
-            ["lemma/hdt_charlm"] = GermanPair,
-            ["pos/gsd_nocharlm"] = Conll17,
-            ["depparse/gsd_nocharlm"] = Conll17,
-            ["pos/hdt_nocharlm"] = Conll17,
-            ["depparse/hdt_nocharlm"] = Conll17,
-            ["ner/conll03"] = ["pretrain/fasttextwiki", "forward_charlm/newswiki", "backward_charlm/newswiki"],
-        },
-    };
+    /// <summary>
+    /// Every model of <paramref name="language"/> StanzaSharp runs, as <c>processor/model</c>: its supported packages'
+    /// (optional ones too) and <see cref="Alternatives"/>, but the identity lemmatizer, which has no file.
+    /// </summary>
+    internal static IEnumerable<string> SupportedModels(string language) =>
+        Packages[language].Values.Concat(Optional[language].Values).SelectMany(p => p)
+            .Concat(Alternatives[language].SelectMany(a => a.Value.Select(m => KeyValuePair.Create(a.Key, m))))
+            .Where(m => m.Value != IdentityLemma)
+            .Select(m => $"{m.Key}/{m.Value}")
+            .Distinct();
 
     // Dependencies resources.json lists but the model never reads (owner's decision, 2026-10-18, #173): downloaded like
     // Stanza (FilesFor), but Load neither needs nor loads them.

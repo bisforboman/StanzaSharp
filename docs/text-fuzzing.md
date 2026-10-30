@@ -238,8 +238,8 @@ tools/.venv/Scripts/python tools/text_fuzz.py run --pretagged --processors lemma
 ```
 
 On Linux and macOS the venv's Python is `tools/.venv/bin/python`. The Stanza side reads `resources.json` from the
-models folder when Stanza downloaded it, else the copy `stanzasharp compare` ships
-(`src/StanzaSharp.Tool/stanza_resources_<lang>.json`), so files fetched by `stanzasharp download` are enough.
+models folder when Stanza downloaded it, else the copy StanzaSharp embeds
+(`src/StanzaSharp/stanza_resources.json`), so files fetched by `stanzasharp download` are enough.
 
 - `--model P=NAME` (repeatable or comma-separated) replaces a processor's model, as `PipelineOptions.Models` and
   `stanzasharp compare --model` do: Stanza gets the processor → model map StanzaSharp loaded as its processors dict.

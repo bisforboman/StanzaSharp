@@ -1,4 +1,4 @@
-"""The Python half of "stanzasharp compare", written next to stanza_resources_<lang>.json in a temporary folder.
+"""The Python half of "stanzasharp compare", written next to stanza_resources.json in a temporary folder.
 
   python compare.py TEXT OUT MODELS LANG PACKAGE PROCESSORS VERSION
 
@@ -66,8 +66,8 @@ def transformers_locally(models):
 
 
 def load_stanza(models, lang, package, processors):
-    """stanza.Pipeline(lang) on the .pt files in MODELS, a folder of any name, with the language's entry of Stanza's
-    resources.json shipped with the tool (stanza_resources_<lang>.json); download_method=None: nothing is downloaded.
+    """stanza.Pipeline(lang) on the .pt files in MODELS, a folder of any name, with the Stanza resources.json shipped in
+    StanzaSharp (stanza_resources.json); download_method=None: nothing is downloaded.
     Stanza reads <dir>/<lang>/<processor>/<name>.pt, so a folder not named after the language is linked under that name
     in this script's (temporary) folder while Stanza loads. A transformer is read from MODELS/transformer/ (exit code 3 if
     its Python libraries are missing)."""
@@ -88,7 +88,7 @@ def load_stanza(models, lang, package, processors):
         try:
             transformers_locally(models)
             return stanza.Pipeline(lang, dir=os.path.dirname(link or models), package=package, processors=processors,
-                                   download_method=None, resources_filepath=os.path.join(here, f"stanza_resources_{lang}.json"),
+                                   download_method=None, resources_filepath=os.path.join(here, "stanza_resources.json"),
                                    use_gpu=False, logging_level="WARN")
         except ModuleNotFoundError as e:
             if e.name not in ("transformers", "tokenizers", "safetensors", "peft"):

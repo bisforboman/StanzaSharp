@@ -427,7 +427,7 @@ internal static class BenchmarkCommand
             }
 
             var dir = Directory.CreateTempSubdirectory("stanzasharp-benchmark-");
-            CompareCommand.WriteResources(dir.FullName, "benchmark.py", "compare.py", $"stanza_resources_{language}.json");
+            CompareCommand.WriteResources(dir.FullName, "benchmark.py", "compare.py", StanzaResources.ResourceName);
             var start = new ProcessStartInfo(python) { RedirectStandardInput = true, RedirectStandardOutput = true, StandardInputEncoding = new UTF8Encoding(false) };
             var stanzaProcessors = CompareCommand.StanzaProcessors(package, list, language, chosen);
             foreach (var arg in new[] { Path.Combine(dir.FullName, "benchmark.py"), models, language, package, stanzaProcessors, threads.ToString(CultureInfo.InvariantCulture), ModelDownloader.StanzaVersion })

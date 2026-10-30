@@ -42,7 +42,7 @@ def main():
                                       "lemma": "combined_nocharlm", "depparse": "combined_electra-large",
                                       "ner": "ontonotes-ww-multi_electra-large"},
                           tokenize_pretokenized=True, download_method=None,
-                          resources_filepath=os.path.join(root, "src", "StanzaSharp.Tool", "stanza_resources_en.json"))
+                          resources_filepath=os.path.join(root, "src", "StanzaSharp", "stanza_resources.json"))
     paths = [os.path.join(root, "tests", "golden", "pipeline.conllu")] + sorted(glob.glob(os.path.join(root, "tests", "golden", "validation*.conllu")))
     data = [s for p in paths for s in golden_sentences(p)]
     bert = nlp.processors["pos"].trainer.model.bert_model

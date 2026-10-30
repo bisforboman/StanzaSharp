@@ -138,7 +138,7 @@ internal static class CompareCommand
         var dir = Directory.CreateTempSubdirectory("stanzasharp-compare-");
         try
         {
-            WriteResources(dir.FullName, "compare.py", $"stanza_resources_{language}.json");
+            WriteResources(dir.FullName, "compare.py", StanzaResources.ResourceName);
             var input = Path.Combine(dir.FullName, "input.txt");
             var result = Path.Combine(dir.FullName, "result.json");
             File.WriteAllText(input, text, new UTF8Encoding(false));
@@ -230,7 +230,8 @@ internal static class CompareCommand
     {
         foreach (var name in names)
         {
-            using var resource = typeof(CompareCommand).Assembly.GetManifestResourceStream(name)!;
+            // Stanza's resources.json is the library's (StanzaResources), the rest the tool's own.
+            using var resource = name == StanzaResources.ResourceName ? StanzaResources.Open() : typeof(CompareCommand).Assembly.GetManifestResourceStream(name)!;
             using var target = File.Create(Path.Combine(dir, name));
             resource.CopyTo(target);
         }

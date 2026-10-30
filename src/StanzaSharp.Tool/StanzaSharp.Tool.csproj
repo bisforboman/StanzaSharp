@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <!-- The stanzasharp .NET tool: model downloads (ModelDownloader) without native libtorch. -->
   <PropertyGroup>
@@ -32,11 +32,8 @@
     <ProjectReference Include="..\StanzaSharp.Sentiment\StanzaSharp.Sentiment.csproj" />
     <None Include="..\..\NOTICE" Pack="true" PackagePath="/" />
     <None Include="README.md" Pack="true" PackagePath="/" />
-    <!-- compare: its Python half, and the English and German entries of Stanza 1.15.0's resources.json (Apache 2.0, see
-         NOTICE; compare and benchmark pass the selected language's to Stanza, the tests check ModelDownloader's tables against both). -->
+    <!-- compare: its Python half (Stanza's resources.json comes from the StanzaSharp assembly, StanzaResources). -->
     <EmbeddedResource Include="compare.py" LogicalName="compare.py" />
-    <EmbeddedResource Include="stanza_resources_en.json" LogicalName="stanza_resources_en.json" />
-    <EmbeddedResource Include="stanza_resources_de.json" LogicalName="stanza_resources_de.json" />
     <!-- benchmark: its Python half and its texts, the golden texts samples/StanzaSharp.Benchmark uses (our own, ~15 KB), and
          German's files of the same names (~12 KB). -->
     <EmbeddedResource Include="benchmark.py" LogicalName="benchmark.py" />

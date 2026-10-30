@@ -10,5 +10,6 @@ The tokenizer, multi-word token expander, part-of-speech tagger, constituency pa
 and shared layers were translated from Stanza's Python source to C# and TorchSharp,
 keeping their behavior.
 
-Stanza's pretrained models are not included. They are distributed by the Stanza
+Stanza's resources.json (model names, dependencies and checksums) is included for the
+supported languages. Stanza's pretrained models are not included. They are distributed by the Stanza
 project under licenses that vary with their training data.
