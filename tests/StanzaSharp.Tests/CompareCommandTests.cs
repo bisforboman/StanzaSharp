@@ -172,15 +172,16 @@ public class CompareCommandTests
     }
 
     /// <summary>
-    /// compare.py's resources.json entry must be the Stanza release whose models ModelDownloader pins. After a Stanza
-    /// version change, regenerate it as CLAUDE.md says (StanzaSharp.Tool, compare).
+    /// The tables built from the embedded stanza_resources.json (StanzaResources) agree with the file read on its own: the
+    /// Stanza release ModelDownloader pins, each package's models, each model's MD5 and dependencies. A language's entry
+    /// is regenerated as CLAUDE.md says (StanzaSharp.Tool, compare).
     /// </summary>
     [Theory]
     [InlineData("en")]
     [InlineData("de")]
-    public void EmbeddedResources_MatchModelDownloader(string language)
+    public void StanzaResources_MatchModelDownloader(string language)
     {
-        using var resource = typeof(CompareCommand).Assembly.GetManifestResourceStream($"stanza_resources_{language}.json")!;
+        using var resource = typeof(Pipeline).Assembly.GetManifestResourceStream("stanza_resources.json")!;
         using var json = JsonDocument.Parse(resource);
         Assert.Equal(ModelDownloader.StanzaVersion, json.RootElement.GetProperty("stanza_version").GetString());
         var resources = json.RootElement.GetProperty(language);
@@ -188,7 +189,7 @@ public class CompareCommandTests
         {
             var (processor, name) = (path.Split('/')[0], Path.GetFileNameWithoutExtension(path));
             var listed = resources.TryGetProperty(processor, out var models) && models.TryGetProperty(name, out var model) ? model.GetProperty("md5").GetString() : null;
-            Assert.True(md5 == listed, $"{path}: stanza_resources_{language}.json lists MD5 {listed ?? "(none)"}, ModelDownloader.Files {md5}");
+            Assert.True(md5 == listed, $"{path}: stanza_resources.json lists MD5 {listed ?? "(none)"}, ModelDownloader.Files {md5}");
         }
 
         // Each package's models are Stanza's, and each model's shared files (the alternatives' too) are its resources.json dependencies.
@@ -217,6 +218,28 @@ public class CompareCommandTests
                 ? d.EnumerateArray().Select(x => $"{x.GetProperty("model").GetString()}/{x.GetProperty("package").GetString()}").Order().ToList()
                 : [];
             Assert.Equal(dependencies, Pipeline.SharedModels(new Dictionary<string, string> { [processor] = name }, language).Order());
+        }
+    }
+
+    /// <summary>Every supported language has its resources.json entry and a pinned commit; compare and benchmark hand Stanza the library's file.</summary>
+    [Fact]
+    public void StanzaResources_CoverEverySupportedLanguage()
+    {
+        Assert.Equal(Pipeline.SupportedPackages.Keys.Order(), StanzaResources.Languages.Order());
+        Assert.All(Pipeline.SupportedPackages.Keys, l => Assert.True(ModelDownloader.Revisions.ContainsKey(l), $"{l}: no ModelDownloader.Revisions commit"));
+
+        var dir = Directory.CreateTempSubdirectory("stanzasharp-resources-");
+        try
+        {
+            CompareCommand.WriteResources(dir.FullName, "compare.py", StanzaResources.ResourceName);
+            using var embedded = StanzaResources.Open();
+            using var copy = new MemoryStream();
+            embedded.CopyTo(copy);
+            Assert.Equal(copy.ToArray(), File.ReadAllBytes(Path.Combine(dir.FullName, StanzaResources.ResourceName)));
+        }
+        finally
+        {
+            dir.Delete(recursive: true);
         }
     }
 }

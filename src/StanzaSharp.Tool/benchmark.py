@@ -1,4 +1,4 @@
-"""The Python half of "stanzasharp benchmark", written next to compare.py and stanza_resources_<lang>.json in a
+"""The Python half of "stanzasharp benchmark", written next to compare.py and stanza_resources.json in a
 temporary folder.
 
   python benchmark.py MODELS LANG PACKAGE PROCESSORS THREADS VERSION      (THREADS 0: torch's default)

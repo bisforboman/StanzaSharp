@@ -71,9 +71,9 @@ default from 0.5) or through TorchSharp (see "Managed backend").
   plain `TagVocab`, `tag_clf` heads; fasttextwiki, 300-d).
   Byte for byte on both backends (`ModelChoiceTests` against `tests/golden/models/<name>/`, `make_golden.py
   --models-only`, `MODEL_CHOICES`; i2b2 on the mimic package also on a hand-written `models/clinical.txt`). A new
-  alternative needs `Alternatives`, `Dependencies` (a transformer model also `Transformers`), `ModelDownloader.Files`, a `MODEL_CHOICES` row and a
-  `ModelChoiceTests` row (`EveryAlternative_HasItsFilesAndDependencies`, `EmbeddedResources_MatchModelDownloader`
-  check the tables). The domain NER models (owner's decision, 2026-10-16, part 2): `conll03_charlm` (conll17 since Stanford's re-upload, #215),
+  alternative needs `Alternatives` (its dependencies and MD5 come from `stanza_resources.json`; a transformer model also
+  `Transformers`), a `MODEL_CHOICES` row and a `ModelChoiceTests` row (`EveryAlternative_HasItsFilesAndDependencies`,
+  `StanzaResources_MatchModelDownloader` check the tables). The domain NER models (owner's decision, 2026-10-16, part 2): `conll03_charlm` (conll17 since Stanford's re-upload, #215),
   `radiology` (mimic) and the biomedical anatem, bc4chemd, bc5cdr, bionlp13cg, jnlpba, linnaeus, ncbi_disease, s800
   (biomed pretrain, pubmed charlms; `lowercase: false`). `NerTagger` reads `lowercase` (the word as written for both
   vocabs when off) and `char_lowercase` (radiology: each character lowercased alone, `LowerChars`, a multi-character
@@ -1281,7 +1281,7 @@ What the English treebank packages' checkpoints add to the default package's pat
   checks for natives and downloads `tokenize,mwt`. release.yml packs it.
   - `compare FILE [--lang CODE] [--package] [--processors] [--models DIR] [--python PATH]` (`CompareCommand.cs`, owner's
     "proof for new users"; `--lang` 2026-10-14): runs the embedded `compare.py` (make_golden's bytes→str and `"{:C}\n"`)
-    with `stanza.Pipeline(lang, dir=<parent of DIR>, resources_filepath=<embedded stanza_resources_<lang>.json>,
+    with `stanza.Pipeline(lang, dir=<parent of DIR>, resources_filepath=<the library's stanza_resources.json>,
     download_method=None)`, so no network and no resources.json in the model folder; C# loads with `Language`, DIR
     defaults to `models/stanza/<lang>`, and the processor list and files come from that language's package (a German
     treebank package runs tokenize to depparse). DIR may have any name: if it isn't
@@ -1295,11 +1295,8 @@ What the English treebank packages' checkpoints add to the default package's pat
     pins of tools/requirements-transformer.txt, `ComparePy_TransformerRequirements_MatchRequirementsTransformerTxt`). Local
     only: CI's Python has none of them, so no test runs Stanza on these models (by hand, 2026-10-24, #209: `compare
     --processors tokenize,mwt,pos,coref` on corpus.txt, en and de, byte for byte). C# offsets are converted to code points when the text has non-BMP characters
-    (`ConlluDiff.ToCodePointOffsets`). Exit 0/1/2. `stanza_resources_en.json` is `{"stanza_version", "en": resources.json["en"]}`
-    of Stanza 1.15.0 (`stanza_resources_de.json` likewise with `de`); `CompareCommandTests.EmbeddedResources_MatchModelDownloader` fails when its version or an MD5 of
-    `ModelDownloader.Files` disagrees. Regenerate it after a Stanza version change (Stanza's own downloader, run from
-    the repo root; `stanza.__version__` is the new version):
-    `tools/.venv/Scripts/python -c "import json, stanza; from stanza.resources.common import download_resources_json as d; d('models/stanza'); r = json.load(open('models/stanza/resources.json', encoding='utf-8')); open('src/StanzaSharp.Tool/stanza_resources_en.json', 'w', encoding='utf-8', newline='\n').write(json.dumps({'stanza_version': stanza.__version__, 'en': r['en']}, indent=1, ensure_ascii=False) + '\n')"`.
+    (`ConlluDiff.ToCodePointOffsets`). Exit 0/1/2. Stanza's resources come from the StanzaSharp assembly (`StanzaResources`,
+    see "Models are downloaded only explicitly"), written next to compare.py as `stanza_resources.json`.
     `Run_PythonStanza_*` (CompareCommandTests, BenchmarkCommandTests) need tools/.venv (or `STANZASHARP_PYTHON`) and
     models/stanza/en (the German ones, `[PythonStanzaFact("de")]`, models/stanza/de next to it); CI runs them in golden-shard 2, the only job with Python Stanza; the other jobs' no-skip checks
     exempt them by name.
@@ -1347,11 +1344,20 @@ What the English treebank packages' checkpoints add to the default package's pat
   - `Pipeline.SelectModels` (language + package + processors → processor → model) and `Pipeline.SharedModels`
     (from `Pipeline.Dependencies`: each model's resources.json `dependencies`, since names don't tell them; German
     ner conll03 reads `fasttextwiki` + the charlms) are what both `Pipeline`'s constructor and `ModelDownloader.FilesFor` use,
-    so they cannot drift apart. A new package needs an entry in `Pipeline.Packages[lang]`, its models'
-    `Pipeline.Dependencies[lang]` and its files' MD5s in `ModelDownloader.Files[lang]`;
-    `CompareCommandTests.EmbeddedResources_MatchModelDownloader` checks all three against the tool's embedded
-    `stanza_resources_<lang>.json`, and `FilesFor_AreEnoughToLoadThePipeline`, `FileTableCoversEveryModelThePipelineLoads`
-    and `LanguageTests` the file sets. CI downloads the packages per `tools/ci-models.sh` group (see "Model cache keys").
+    so they cannot drift apart.
+  - Tables from resources.json (owner's decision, 2026-10-30, for more languages): `src/StanzaSharp/stanza_resources.json`
+    (embedded, `StanzaResources`, read with `JsonNode` once) is Stanza 1.15.0's resources.json for the supported languages,
+    `{"stanza_version", "<lang>": resources.json["<lang>"], ...}`, the file compare and benchmark hand Stanza.
+    `Pipeline.Packages`, `Optional`, `Dependencies` and `ModelDownloader.Files` are built from it for the packages
+    `Pipeline.SupportedPackages` names (hand-written: what is ported and tested) and the models of `Alternatives`
+    (`Pipeline.SupportedModels`). Hand-written still: `SupportedPackages`, `Alternatives`, `Unread`, `Transformers`,
+    `ModelDownloader.Revisions` and `Transformers`, `IdentityLemma`, `Requires`. A language's entry is a snapshot of
+    its `Revisions` commit, never Stanford's latest resources.json (on 2026-10-30 that already listed newer English pos
+    and lemma models, with `alternate_md5`s, than en's commit has). A new language: its entry from stanza-resources'
+    `resources_1.15.0.json` of the day its `stanza-<lang>` commit is pinned, plus a `SupportedPackages` line and a
+    `Revisions` line. `CompareCommandTests.StanzaResources_MatchModelDownloader` reads the file on its own and checks
+    the derived tables against it, `StanzaResources_CoverEverySupportedLanguage` the languages and commits;
+    `FilesFor_AreEnoughToLoadThePipeline`, `FileTableCoversEveryModelThePipelineLoads` and `LanguageTests` the file sets. CI downloads the packages per `tools/ci-models.sh` group (see "Model cache keys").
   - It fetches the `.pt` files from `huggingface.co/stanfordnlp/stanza-<lang>/resolve/<commit>/models/`
     (`ModelDownloader.Revisions`: en `810dca30`, de `a8ecd6c8`, multilingual `e9360ddf`) and checks each against the MD5
     from Stanza 1.15.0's resources.json (stanza-resources' `resources_1.15.0.json`), kept in `ModelDownloader.Files`. A

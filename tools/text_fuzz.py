@@ -213,10 +213,10 @@ def processors_for(lang, package):
 
 
 def resources(models, lang):
-    """Stanza's resources.json in the models folder (Stanza's own download), else the one stanzasharp compare ships
+    """Stanza's resources.json in the models folder (Stanza's own download), else the one StanzaSharp embeds
     (the C# downloader writes none)."""
     path = Path(models) / "resources.json"
-    return str(path if path.exists() else ROOT / "src" / "StanzaSharp.Tool" / f"stanza_resources_{lang}.json")
+    return str(path if path.exists() else ROOT / "src" / "StanzaSharp" / "stanza_resources.json")
 
 
 def stanza_pipeline(models, lang, package, processors, **kwargs):

@@ -37,6 +37,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Stanza 1.15.0's resources.json for the supported languages (Apache 2.0, see NOTICE): packages, dependencies and MD5s
+         (StanzaResources), and what the tool's compare and benchmark pass to Stanza. -->
+    <EmbeddedResource Include="stanza_resources.json" LogicalName="stanza_resources.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="PACKAGE.md" Pack="true" PackagePath="/" />
     <None Include="..\..\NOTICE" Pack="true" PackagePath="/" />
   </ItemGroup>
