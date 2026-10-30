@@ -588,9 +588,12 @@ var languages = identifier.Identify(["Hello there.", "Ceci est une phrase franç
 text comes out as English or German. It reads characters only, so give it sentences or documents rather than single
 words; Stanza's `langid_clean_text` (stripping URLs, hashtags and emoji first) is not ported.
 
-`MultilingualPipeline` (Stanza's) routes each text to its language's pipeline. It loads the identifier and every
-configured language's pipeline at `Load` (English and German by default, from `en/`, `de/` and `multilingual/` under one
-folder), and each language's texts go through one bulk call:
+`MultilingualPipeline` (Stanza's) routes each text to its language's pipeline, and each language's texts go through one
+bulk call. As in Stanza, a language's pipeline is loaded at its first text, and at most `MaxLoadedPipelines` (10 by
+default, Stanza's `max_cache_size`) stay loaded: loading another frees the least recently used one, once no call is
+still using it (a default package's pipeline takes about 1 GB, so lower it on a small machine). By default it uses every
+supported language with a folder next to `multilingual/` (`en/`, `de/`, `fr/`, ...), each with its default package;
+`Languages` names the languages and their options instead:
 
 ```csharp
 using var nlp = MultilingualPipeline.Load("models/stanza", new MultilingualOptions
@@ -604,8 +607,11 @@ foreach (var doc in docs)
     Console.WriteLine($"{doc.Lang}: {doc.Sentences.Count} sentences"); // en: 2, de: 2, fr: 0
 ```
 
-A text in a language without a configured pipeline comes back with only `Text` and `Lang` set, so it can be routed
-elsewhere; `Restrict = true` (Stanza's `restrict`) lets the identifier answer only the configured languages instead.
+Nothing is downloaded: a text in a language without a folder (or, with `Languages`, not listed) comes back with only
+`Text` and `Lang` set, so it can be routed elsewhere; `Restrict = true` (Stanza's `restrict`) lets the identifier answer
+only those languages instead. A folder that lacks a model file throws `FileNotFoundException` at its language's first
+text. The identifier calls Norwegian Bokmål `no` (Stanza's alias), which is routed to `nb/`; `Document.Lang` stays `no`,
+as in Stanza.
 
 From the command line, this writes CoNLL-U for a file (or standard input):
 

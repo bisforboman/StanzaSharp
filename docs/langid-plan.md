@@ -56,3 +56,15 @@ plan; the owner's decisions are at the end. Done: PR 1 `LanguageIdentifier`, PR 
 3. `MultilingualPipeline.Load` loads every configured language's pipeline (English and German by default); `Process`
    changes nothing shared, like `Pipeline`.
 4. Two PRs: the identifier (nets, downloader, golden), then `MultilingualPipeline`.
+
+## The owner's decision (2026-10-30), with more languages
+
+With 86 languages, the owner chose to load like Stanza ("Lazy LRU, like Stanza"), replacing decision 3: a language's
+pipeline loads at its first text, and `MultilingualOptions.MaxLoadedPipelines` (Stanza's `max_cache_size`, 10) bounds
+how many stay loaded, the least recently used one freed first (once no call is using it: a lease count per pipeline, so
+calls may still run concurrently). `Languages` null means every supported language with a folder under the model root
+(default package), no longer English and German; explicit `Languages` are both the options and the set (Stanza's
+`lang_configs` only override). Still never a download: a language without a folder comes back with only `Lang` (decision 1);
+a missing model file throws at the language's first text, a missing folder of a listed language at `Load`. The
+identifier's `no` is routed to `nb` (Stanza's alias); with `Restrict` and no `Languages`, the folders the identifier has
+no label for stay out of the subset.

@@ -235,9 +235,10 @@ using var identifier = LanguageIdentifier.Load("models/stanza/multilingual");
 string language = identifier.Identify("Das ist ein deutscher Satz."); // "de"
 ```
 
-`MultilingualPipeline` routes each text to its language's pipeline (English and German by default, loaded at `Load` from
-`en/`, `de/` and `multilingual/` under one folder) and sets `Document.Lang`; a text in another language comes back with
-only `Text` and `Lang` (or, with `Restrict = true`, is processed as one of the configured languages):
+`MultilingualPipeline` routes each text to its language's pipeline and sets `Document.Lang`. As in Stanza, a language's
+pipeline loads at its first text, and at most `MaxLoadedPipelines` (10) stay loaded. By default it uses every language
+with a folder next to `multilingual/` (`en/`, `de/`, `fr/`, ...); nothing is downloaded, so a text in another language
+comes back with only `Text` and `Lang` (or, with `Restrict = true`, is processed as one of those languages):
 
 ```csharp
 using var nlp = MultilingualPipeline.Load("models/stanza");
