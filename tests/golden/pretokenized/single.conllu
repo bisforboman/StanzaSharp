@@ -2,4 +2,4 @@
 # sent_id = 0
 # constituency = (ROOT (X (VB Stop)))
 # sentiment = 1
-1	Stop	stop	VERB	VB	Mood=Imp|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=0|end_char=4|ner=O
+1	Stop	stop	VERB	VB	Mood=Imp|Number=Sing|Person=2|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=0|end_char=4|ner=O

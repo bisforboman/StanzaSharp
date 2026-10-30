@@ -2,8 +2,8 @@
 # sent_id = 0
 # sentiment = 1
 1	I	I	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	3	nsubj	_	start_char=0|end_char=1|ner=O
-2	don't	don't	AUX	MD	Mood=Ind|Number=Sing|Tense=Pres|VerbForm=Fin	3	aux	_	start_char=2|end_char=7|ner=O
-3	know	know	VERB	VB	Tense=Pres|VerbForm=Fin	0	root	_	start_char=8|end_char=12|ner=O
+2	don't	don't	AUX	MD	VerbForm=Fin	3	aux	_	start_char=2|end_char=7|ner=O
+3	know	know	VERB	VBP	Mood=Ind|Person=1|Tense=Pres|VerbForm=Fin	0	root	_	start_char=8|end_char=12|ner=O
 4	.	.	PUNCT	.	_	3	punct	_	start_char=13|end_char=14|ner=O
 
 # text = We ca n't go !
@@ -18,7 +18,7 @@
 # text = It's John's book .
 # sent_id = 2
 # sentiment = 1
-1	It's	its	PRON	PRP$	Case=Gen|Gender=Neut|Number=Sing|Person=3|Poss=Yes|PronType=Prs	3	nmod:poss	_	start_char=30|end_char=34|ner=O
-2	John's	John's	PROPN	NNP	Number=Sing	3	compound	_	start_char=35|end_char=41|ner=O
-3	book	book	NOUN	NN	Number=Sing	0	root	_	start_char=42|end_char=46|ner=O
+1	It's	its	PRON	PRP$	Case=Gen|Gender=Neut|Number=Sing|Person=3|Poss=Yes|PronType=Prs	2	nmod:poss	_	start_char=30|end_char=34|ner=O
+2	John's	John's	PROPN	NNP	Number=Sing	3	nsubj	_	start_char=35|end_char=41|ner=O
+3	book	book	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=42|end_char=46|ner=O
 4	.	.	PUNCT	.	_	3	punct	_	SpaceAfter=No|start_char=47|end_char=48|ner=O

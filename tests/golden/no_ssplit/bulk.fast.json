@@ -17,7 +17,7 @@
  },
  {
   "text": "Short one. Two sentences!",
-  "conllu": "# text = Short one. Two sentences!\n# sent_id = 1\n# sentiment = 1\n1\tShort\tshort\tADJ\tJJ\tDegree=Pos\t2\tamod\t_\tstart_char=0|end_char=5|ner=O\n2\tone\tone\tNUM\tCD\tNumForm=Word|NumType=Card\t0\troot\t_\tSpaceAfter=No|start_char=6|end_char=9|ner=S-CARDINAL\n3\t.\t.\tPUNCT\t.\t_\t2\tpunct\t_\tstart_char=9|end_char=10|ner=O\n4\tTwo\ttwo\tNUM\tCD\tNumForm=Word|NumType=Card\t5\tnummod\t_\tstart_char=11|end_char=14|ner=S-CARDINAL\n5\tsentences\tsentence\tNOUN\tNNS\tNumber=Plur\t2\tparataxis\t_\tSpaceAfter=No|start_char=15|end_char=24|ner=O\n6\t!\t!\tPUNCT\t.\t_\t2\tpunct\t_\tSpaceAfter=No|start_char=24|end_char=25|ner=O"
+  "conllu": "# text = Short one. Two sentences!\n# sent_id = 1\n# sentiment = 1\n1\tShort\tshort\tADJ\tJJ\tDegree=Pos\t2\tamod\t_\tstart_char=0|end_char=5|ner=O\n2\tone\tone\tNOUN\tNN\tNumber=Sing\t0\troot\t_\tSpaceAfter=No|start_char=6|end_char=9|ner=S-CARDINAL\n3\t.\t.\tPUNCT\t.\t_\t2\tpunct\t_\tstart_char=9|end_char=10|ner=O\n4\tTwo\ttwo\tNUM\tCD\tNumForm=Word|NumType=Card\t5\tnummod\t_\tstart_char=11|end_char=14|ner=S-CARDINAL\n5\tsentences\tsentence\tNOUN\tNNS\tNumber=Plur\t2\tparataxis\t_\tSpaceAfter=No|start_char=15|end_char=24|ner=O\n6\t!\t!\tPUNCT\t.\t_\t2\tpunct\t_\tSpaceAfter=No|start_char=24|end_char=25|ner=O"
  },
  {
   "text": " padded text \n",

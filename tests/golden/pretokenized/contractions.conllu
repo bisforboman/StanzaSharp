@@ -3,7 +3,7 @@
 # constituency = (ROOT (S (NP (PRP I)) (ADVP (RB don't)) (VP (VBP know)) (. .)))
 # sentiment = 1
 1	I	I	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	3	nsubj	_	start_char=0|end_char=1|ner=O
-2	don't	don't	ADV	RB	_	3	advmod	_	start_char=2|end_char=7|ner=O
+2	don't	dood	ADV	RB	_	3	advmod	_	start_char=2|end_char=7|ner=O
 3	know	know	VERB	VBP	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	0	root	_	start_char=8|end_char=12|ner=O
 4	.	.	PUNCT	.	_	3	punct	_	start_char=13|end_char=14|ner=O
 

@@ -25,16 +25,16 @@
 # sentiment = 1
 1	I	I	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	3	nsubj	_	start_char=69|end_char=70|ner=O
 2	don't	don't	AUX	MD	VerbForm=Fin	3	aux	_	start_char=71|end_char=76|ner=O
-3	think	think	VERB	VB	VerbForm=Inf	0	root	_	start_char=77|end_char=82|ner=O
+3	think	think	VERB	VB	VerbForm=Fin	0	root	_	start_char=77|end_char=82|ner=O
 4	it's	its	PRON	PRP$	Case=Gen|Gender=Neut|Number=Sing|Person=3|Poss=Yes|PronType=Prs	5	nsubj	_	start_char=83|end_char=87|ner=O
-5	going	go	VERB	VBG	Tense=Pres|VerbForm=Part	3	ccomp	_	start_char=88|end_char=93|ner=O
-6	to	to	PART	TO	_	7	mark	_	start_char=94|end_char=96|ner=O
-7	rain	rain	VERB	VB	VerbForm=Inf	5	xcomp	_	start_char=97|end_char=101|ner=O
-8	today	today	NOUN	NN	Number=Sing	7	obl:unmarked	_	start_char=102|end_char=107|ner=S-DATE
+5	going	go	VERB	VBG	VerbForm=Ger	3	ccomp	_	start_char=88|end_char=93|ner=O
+6	to	to	ADP	IN	_	7	case	_	start_char=94|end_char=96|ner=O
+7	rain	rain	NOUN	NN	Number=Sing	5	obl	_	start_char=97|end_char=101|ner=O
+8	today	today	NOUN	NN	Number=Sing	5	obl:unmarked	_	start_char=102|end_char=107|ner=S-DATE
 9	,	,	PUNCT	,	_	12	punct	_	start_char=108|end_char=109|ner=O
 10	but	but	CCONJ	CC	_	12	cc	_	start_char=110|end_char=113|ner=O
-11	we'll	we'll	ADV	RB	_	12	advmod	_	start_char=114|end_char=119|ner=O
-12	see	see	VERB	VB	Mood=Ind|VerbForm=Fin	3	conj	_	start_char=120|end_char=123|ner=O
+11	we'll	we'll	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	12	nsubj	_	start_char=114|end_char=119|ner=O
+12	see	see	VERB	VB	VerbForm=Inf	3	conj	_	start_char=120|end_char=123|ner=O
 13	.	.	PUNCT	.	_	3	punct	_	start_char=124|end_char=125|ner=O
 
 # text = Can't you hear the thunder ?
@@ -79,7 +79,7 @@
 1	"	"	PUNCT	``	_	5	punct	_	start_char=246|end_char=247|ner=O
 2	Where	where	ADV	WRB	PronType=Int	5	advmod	_	start_char=248|end_char=253|ner=O
 3	are	be	AUX	VBP	Mood=Ind|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin	5	aux	_	start_char=254|end_char=257|ner=O
-4	you	you	PRON	PRP	Case=Nom|Number=Sing|Person=2|PronType=Prs	5	nsubj	_	start_char=258|end_char=261|ner=O
+4	you	you	PRON	PRP	Case=Nom|Person=2|PronType=Prs	5	nsubj	_	start_char=258|end_char=261|ner=O
 5	going	go	VERB	VBG	Tense=Pres|VerbForm=Part	9	ccomp	_	start_char=262|end_char=267|ner=O
 6	?	?	PUNCT	.	_	5	punct	_	start_char=268|end_char=269|ner=O
 7	"	"	PUNCT	''	_	5	punct	_	start_char=270|end_char=271|ner=O
@@ -123,21 +123,21 @@
 12	info@example.com	info@example.com	PROPN	ADD	Number=Sing	9	obl	_	start_char=409|end_char=425|ner=O
 13	,	,	PUNCT	,	_	5	punct	_	start_char=426|end_char=427|ner=O
 14	visited	visit	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=428|end_char=435|ner=O
-15	https://www.example.org/about	https://www.example.org/about	PROPN	NNP	Number=Sing	14	obj	_	start_char=436|end_char=465|ner=O
+15	https://www.example.org/about	https://www.example.org/about	PROPN	ADD	Number=Sing	14	obj	_	start_char=436|end_char=465|ner=O
 16	yesterday	yesterday	NOUN	NN	Number=Sing	14	obl:unmarked	_	start_char=466|end_char=475|ner=S-DATE
 17	.	.	PUNCT	.	_	14	punct	_	start_char=476|end_char=477|ner=O
 
 # text = Mary's sister wouldn't have gone if she'd known that the meeting , which was scheduled for 3 p.m. on Friday , had been cancelled ; nobody told her .
 # sent_id = 8
 # sentiment = 0
-1	Mary's	Mary's	PROPN	NNP	Number=Sing	3	compound	_	start_char=478|end_char=484|ner=O
+1	Mary's	Mary	PROPN	NNP	Number=Sing	3	compound	_	start_char=478|end_char=484|ner=O
 2	sister	sister	NOUN	NN	Number=Sing	3	compound	_	start_char=485|end_char=491|ner=O
 3	wouldn't	wouldn't	NOUN	NN	Number=Sing	5	nsubj	_	start_char=492|end_char=500|ner=O
 4	have	have	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	5	aux	_	start_char=501|end_char=505|ner=O
 5	gone	go	VERB	VBN	Tense=Past|VerbForm=Part	0	root	_	start_char=506|end_char=510|ner=O
 6	if	if	SCONJ	IN	_	8	mark	_	start_char=511|end_char=513|ner=O
-7	she'd	she'd	ADV	RB	_	8	advmod	_	start_char=514|end_char=519|ner=O
-8	known	know	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	5	advcl	_	start_char=520|end_char=525|ner=O
+7	she'd	she'd	PRON	PRP	Case=Nom|Number=Sing|Person=3|PronType=Prs	8	nsubj	_	start_char=514|end_char=519|ner=O
+8	known	know	VERB	VBN	Tense=Past|VerbForm=Part	5	advcl	_	start_char=520|end_char=525|ner=O
 9	that	that	SCONJ	IN	_	24	mark	_	start_char=526|end_char=530|ner=O
 10	the	the	DET	DT	Definite=Def|PronType=Art	11	det	_	start_char=531|end_char=534|ner=O
 11	meeting	meeting	NOUN	NN	Number=Sing	24	nsubj:pass	_	start_char=535|end_char=542|ner=O
@@ -154,7 +154,7 @@
 22	had	have	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	24	aux	_	start_char=588|end_char=591|ner=O
 23	been	be	AUX	VBN	Tense=Past|VerbForm=Part	24	aux:pass	_	start_char=592|end_char=596|ner=O
 24	cancelled	cancel	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	8	ccomp	_	start_char=597|end_char=606|ner=O
-25	;	;	PUNCT	:	_	27	punct	_	start_char=607|end_char=608|ner=O
+25	;	;	PUNCT	,	_	27	punct	_	start_char=607|end_char=608|ner=O
 26	nobody	nobody	PRON	NN	Number=Sing|PronType=Neg	27	nsubj	_	start_char=609|end_char=615|ner=O
 27	told	tell	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	5	parataxis	_	start_char=616|end_char=620|ner=O
 28	her	her	PRON	PRP	Case=Acc|Gender=Fem|Number=Sing|Person=3|PronType=Prs	27	iobj	_	start_char=621|end_char=624|ner=O

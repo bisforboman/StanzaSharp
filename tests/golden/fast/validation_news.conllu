@@ -1,9 +1,9 @@
 # text = HARBORVIEW, Ore. —
 # sent_id = 0
 # sentiment = 1
-1	HARBORVIEW	Harborview	PROPN	NNP	Number=Sing	0	root	_	SpaceAfter=No|start_char=0|end_char=10|ner=S-ORG
+1	HARBORVIEW	Harborvie	PROPN	NNP	Number=Sing	0	root	_	SpaceAfter=No|start_char=0|end_char=10|ner=S-ORG
 2	,	,	PUNCT	,	_	3	punct	_	start_char=10|end_char=11|ner=O
-3	Ore.	Orenber	PROPN	NNP	Number=Sing	1	nmod:unmarked	_	start_char=12|end_char=16|ner=S-GPE
+3	Ore.	Ore.	PROPN	NNP	Number=Sing	1	nmod:unmarked	_	start_char=12|end_char=16|ner=S-GPE
 4	—	—	PUNCT	:	_	1	punct	_	start_char=17|end_char=18|ner=O
 
 # text = The Harborview Port Authority approved a $214 million expansion plan on Wednesday, ending a two-year dispute with local fishing cooperatives.
@@ -94,12 +94,12 @@
 13	a	a	DET	DT	Definite=Ind|PronType=Art	14	det	_	start_char=368|end_char=369|ner=O
 14	depth	depth	NOUN	NN	Number=Sing	8	obl	_	start_char=370|end_char=375|ner=O
 15	of	of	ADP	IN	_	17	case	_	start_char=376|end_char=378|ner=O
-16	14	14	NUM	CD	NumForm=Digit|NumType=Card	17	compound	_	start_char=379|end_char=381|ner=B-QUANTITY
-17	m	million	NUM	CD	Abbr=Yes|NumForm=Word|NumType=Card	14	nmod	_	start_char=382|end_char=383|ner=E-QUANTITY
+16	14	14	NUM	CD	NumForm=Digit|NumType=Card	17	nummod	_	start_char=379|end_char=381|ner=B-QUANTITY
+17	m	M	NOUN	NN	Number=Plur	14	nmod	_	start_char=382|end_char=383|ner=E-QUANTITY
 18	(	(	PUNCT	-LRB-	_	21	punct	_	SpaceAfter=No|start_char=384|end_char=385|ner=O
 19	about	about	ADV	RB	_	20	advmod	_	start_char=385|end_char=390|ner=O
 20	46	46	NUM	CD	NumForm=Digit|NumType=Card	21	nummod	_	start_char=391|end_char=393|ner=B-QUANTITY
-21	ft.	ft.	NOUN	NNS	Number=Plur	17	appos	_	SpaceAfter=No|start_char=394|end_char=397|ner=E-QUANTITY
+21	ft.	ft.	NOUN	NN	Number=Sing	17	appos	_	SpaceAfter=No|start_char=394|end_char=397|ner=E-QUANTITY
 22	)	)	PUNCT	-RRB-	_	21	punct	_	start_char=397|end_char=398|ner=O
 23	and	and	CCONJ	CC	_	24	cc	_	start_char=399|end_char=402|ner=O
 24	build	build	VERB	VB	VerbForm=Inf	8	conj	_	start_char=403|end_char=408|ner=O
@@ -130,7 +130,7 @@
 # sentiment = 1
 1	Critics	critic	NOUN	NNS	Number=Plur	2	nsubj	_	start_char=501|end_char=508|ner=O
 2	say	say	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=509|end_char=512|ner=O
-3	that	that	SCONJ	IN	_	6	mark	_	start_char=513|end_char=517|ner=O
+3	that	that	DET	DT	Number=Sing|PronType=Dem	4	det	_	start_char=513|end_char=517|ner=O
 4	number	number	NOUN	NN	Number=Sing	6	nsubj:pass	_	start_char=518|end_char=524|ner=O
 5	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	6	aux:pass	_	start_char=525|end_char=527|ner=O
 6	inflated	inflate	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	2	ccomp	_	SpaceAfter=No|start_char=528|end_char=536|ner=O
@@ -190,7 +190,7 @@
 2	10	10	NUM	CD	NumForm=Digit|NumType=Card	4	nummod	_	SpaceAfter=No|start_char=742|end_char=744|ner=B-DATE
 3	-	-	PUNCT	HYPH	_	2	punct	_	SpaceAfter=No|start_char=744|end_char=745|ner=I-DATE
 4	year	year	NOUN	NN	Number=Sing	6	compound	_	start_char=745|end_char=749|ner=E-DATE
-5	Treasury	treasury	NOUN	NN	Number=Sing	6	compound	_	start_char=750|end_char=758|ner=S-ORG
+5	Treasury	Treasury	PROPN	NNP	Number=Sing	6	compound	_	start_char=750|end_char=758|ner=S-ORG
 6	yield	yield	NOUN	NN	Number=Sing	7	nsubj	_	start_char=759|end_char=764|ner=O
 7	rose	rise	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=765|end_char=769|ner=O
 8	to	to	ADP	IN	_	10	case	_	start_char=770|end_char=772|ner=O
@@ -215,9 +215,9 @@
 7	a	a	DET	DT	Definite=Ind|PronType=Art	8	det	_	start_char=834|end_char=835|ner=O
 8	barrel	barrel	NOUN	NN	Number=Sing	5	nmod:unmarked	_	SpaceAfter=No|start_char=836|end_char=842|ner=O
 9	,	,	PUNCT	,	_	12	punct	_	start_char=842|end_char=843|ner=O
-10	up	up	ADP	RP	_	3	advmod	_	start_char=844|end_char=846|ner=O
+10	up	up	ADP	IN	_	12	case	_	start_char=844|end_char=846|ner=O
 11	41	41	NUM	CD	NumForm=Digit|NumType=Card	12	nummod	_	start_char=847|end_char=849|ner=B-MONEY
-12	cents	cent	NOUN	NNS	Number=Plur	5	appos	_	SpaceAfter=No|start_char=850|end_char=855|ner=E-MONEY
+12	cents	cent	NOUN	NNS	Number=Plur	3	obl	_	SpaceAfter=No|start_char=850|end_char=855|ner=E-MONEY
 13	.	.	PUNCT	.	_	3	punct	_	start_char=855|end_char=856|ner=O
 
 # text = Gold futures were little changed at $2,018.30 an ounce.
@@ -226,7 +226,7 @@
 1	Gold	gold	NOUN	NN	Number=Sing	2	compound	_	start_char=857|end_char=861|ner=O
 2	futures	future	NOUN	NNS	Number=Plur	5	nsubj:pass	_	start_char=862|end_char=869|ner=O
 3	were	be	AUX	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	5	aux:pass	_	start_char=870|end_char=874|ner=O
-4	little	little	ADV	RB	Degree=Pos	5	advmod	_	start_char=875|end_char=881|ner=O
+4	little	little	ADJ	JJ	Degree=Pos	5	advmod	_	start_char=875|end_char=881|ner=O
 5	changed	change	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	start_char=882|end_char=889|ner=O
 6	at	at	ADP	IN	_	7	case	_	start_char=890|end_char=892|ner=O
 7	$	$	SYM	$	_	5	obl	_	SpaceAfter=No|start_char=893|end_char=894|ner=O
@@ -240,7 +240,7 @@
 # sentiment = 0
 1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=913|end_char=916|ner=O
 2	euro	euro	NOUN	NN	Number=Sing	3	nsubj	_	start_char=917|end_char=921|ner=O
-3	traded	trade	VERB	VBD	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	start_char=922|end_char=928|ner=O
+3	traded	trade	VERB	VBD	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=922|end_char=928|ner=O
 4	at	at	ADP	IN	_	5	case	_	start_char=929|end_char=931|ner=O
 5	$	$	SYM	$	_	3	obl	_	SpaceAfter=No|start_char=932|end_char=933|ner=O
 6	1.0842	1.0842	NUM	CD	NumForm=Digit|NumType=Frac	5	nummod	_	SpaceAfter=No|start_char=933|end_char=939|ner=S-MONEY
@@ -266,17 +266,17 @@
 # sent_id = 13
 # sentiment = 1
 1	Mapleford	Mapleford	PROPN	NNP	Number=Sing	2	compound	_	start_char=1024|end_char=1033|ner=B-ORG
-2	Holdings	Holding	PROPN	NNP	Number=Plur	9	nsubj	_	start_char=1034|end_char=1042|ner=I-ORG
-3	Inc.	Inc.	PROPN	NNP	Number=Sing	2	flat	_	start_char=1043|end_char=1047|ner=E-ORG
+2	Holdings	Holding	PROPN	NNPS	Number=Plur	9	nsubj	_	start_char=1034|end_char=1042|ner=I-ORG
+3	Inc.	Inc.	PROPN	NNP	Number=Sing	2	appos	_	start_char=1043|end_char=1047|ner=E-ORG
 4	(	(	PUNCT	-LRB-	_	5	punct	_	SpaceAfter=No|start_char=1048|end_char=1049|ner=O
 5	NYSE	NYSE	PROPN	NNP	Number=Sing	2	appos	_	SpaceAfter=No|start_char=1049|end_char=1053|ner=S-ORG
 6	:	:	PUNCT	:	_	7	punct	_	start_char=1053|end_char=1054|ner=O
 7	MPF	MPF	PROPN	NNP	Number=Sing	5	dep	_	SpaceAfter=No|start_char=1055|end_char=1058|ner=S-ORG
 8	)	)	PUNCT	-RRB-	_	5	punct	_	start_char=1058|end_char=1059|ner=O
-9	reported	report	VERB	VBD	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1060|end_char=1068|ner=O
+9	reported	report	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1060|end_char=1068|ner=O
 10	second	second	ADJ	JJ	Degree=Pos|NumForm=Word|NumType=Ord	12	amod	_	SpaceAfter=No|start_char=1069|end_char=1075|ner=B-DATE
 11	-	-	PUNCT	HYPH	_	10	punct	_	SpaceAfter=No|start_char=1075|end_char=1076|ner=I-DATE
-12	quarter	quarter	ADJ	JJ	Degree=Pos|NumForm=Word|NumType=Ord	13	amod	_	start_char=1076|end_char=1083|ner=E-DATE
+12	quarter	quarter	NOUN	NN	Number=Sing|NumForm=Word|NumType=Frac	13	compound	_	start_char=1076|end_char=1083|ner=E-DATE
 13	earnings	earnings	NOUN	NNS	Number=Plur	9	obj	_	start_char=1084|end_char=1092|ner=O
 14	of	of	ADP	IN	_	15	case	_	start_char=1093|end_char=1095|ner=O
 15	$	$	SYM	$	_	13	nmod	_	SpaceAfter=No|start_char=1096|end_char=1097|ner=O
@@ -336,7 +336,7 @@
 1	It	it	PRON	PRP	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	4	nsubj:pass	_	start_char=1273|end_char=1275
 2	s	s	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|Typo=Yes|VerbForm=Fin	4	aux:pass	_	start_char=1275|end_char=1276
 3	shares	share	NOUN	NNS	Number=Plur	4	nsubj	_	start_char=1277|end_char=1283|ner=O
-4	jumped	jump	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	start_char=1284|end_char=1290|ner=O
+4	jumped	jump	VERB	VBN	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1284|end_char=1290|ner=O
 5	7.3	7.3	NUM	CD	NumForm=Digit|NumType=Frac	6	nummod	_	SpaceAfter=No|start_char=1291|end_char=1294|ner=B-PERCENT
 6	%	%	SYM	NN	Number=Sing	4	obj	_	start_char=1294|end_char=1295|ner=E-PERCENT
 7	in	in	ADP	IN	_	11	case	_	start_char=1296|end_char=1298|ner=O
@@ -354,10 +354,10 @@
 2	We	we	PRON	PRP	Case=Nom|Number=Plur|Person=1|PronType=Prs	4	nsubj	_	start_char=1322|end_char=1324
 3	're	be	AUX	VBP	Mood=Ind|Number=Plur|Person=1|Tense=Pres|VerbForm=Fin	4	aux	_	start_char=1324|end_char=1327
 4	seeing	see	VERB	VBG	Tense=Pres|VerbForm=Part	19	ccomp	_	start_char=1328|end_char=1334|ner=O
-5	demand	demand	NOUN	NN	Number=Sing	6	compound	_	start_char=1335|end_char=1341|ner=O
-6	hold	hold	NOUN	NN	Number=Sing	4	obj	_	start_char=1342|end_char=1346|ner=O
-7	up	up	ADP	RP	_	4	compound:prt	_	start_char=1347|end_char=1349|ner=O
-8	better	good	ADJ	JJR	Degree=Cmp	4	xcomp	_	start_char=1350|end_char=1356|ner=O
+5	demand	demand	NOUN	NN	Number=Sing	4	obj	_	start_char=1335|end_char=1341|ner=O
+6	hold	hold	VERB	VB	VerbForm=Inf	4	xcomp	_	start_char=1342|end_char=1346|ner=O
+7	up	up	ADP	RP	_	6	compound:prt	_	start_char=1347|end_char=1349|ner=O
+8	better	good	ADJ	JJR	Degree=Cmp	6	xcomp	_	start_char=1350|end_char=1356|ner=O
 9	than	than	ADP	IN	_	10	case	_	start_char=1357|end_char=1361|ner=O
 10	anyone	anyone	PRON	NN	Number=Sing|PronType=Ind	8	obl	_	start_char=1362|end_char=1368|ner=O
 11	expected	expect	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	8	advcl	_	SpaceAfter=No|start_char=1369|end_char=1377|ner=O
@@ -404,12 +404,12 @@
 3	bank	bank	NOUN	NN	Number=Sing	4	nsubj	_	start_char=1521|end_char=1525|ner=O
 4	kept	keep	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1526|end_char=1530|ner=O
 5	its	its	PRON	PRP$	Case=Gen|Gender=Neut|Number=Sing|Person=3|Poss=Yes|PronType=Prs	7	nmod:poss	_	start_char=1531|end_char=1534|ner=O
-6	benchmark	benchmark	ADJ	JJ	Degree=Pos	7	amod	_	start_char=1535|end_char=1544|ner=O
+6	benchmark	benchmark	NOUN	NN	Number=Sing	7	compound	_	start_char=1535|end_char=1544|ner=O
 7	rate	rate	NOUN	NN	Number=Sing	4	obj	_	start_char=1545|end_char=1549|ner=O
-8	unchanged	unchange	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	7	acl	_	start_char=1550|end_char=1559|ner=O
+8	unchanged	unchanged	ADJ	JJ	Degree=Pos	4	xcomp	_	start_char=1550|end_char=1559|ner=O
 9	at	at	ADP	IN	_	14	case	_	start_char=1560|end_char=1562|ner=O
 10	5.25	5.25	NUM	CD	NumForm=Digit|NumType=Frac	11	nummod	_	SpaceAfter=No|start_char=1563|end_char=1567|ner=B-PERCENT
-11	%	%	SYM	NN	Number=Sing	14	nmod:unmarked	_	SpaceAfter=No|start_char=1567|end_char=1568|ner=E-PERCENT
+11	%	%	SYM	NN	Number=Sing	14	compound	_	SpaceAfter=No|start_char=1567|end_char=1568|ner=E-PERCENT
 12	–	-	SYM	SYM	ExtPos=ADP	13	case	_	SpaceAfter=No|start_char=1568|end_char=1569|ner=O
 13	5.50	5.50	NUM	CD	NumForm=Digit|NumType=Frac	11	nmod	_	SpaceAfter=No|start_char=1569|end_char=1573|ner=B-PERCENT
 14	%	%	SYM	NN	Number=Sing	8	obl	_	start_char=1573|end_char=1574|ner=E-PERCENT
@@ -423,7 +423,7 @@
 # text = Policymakers signaled that cuts could come later in the year, but only if price pressures continue to ease.
 # sent_id = 20
 # sentiment = 1
-1	Policymakers	policymaker	NOUN	NNS	Number=Plur	2	nsubj	_	start_char=1608|end_char=1620|ner=O
+1	Policymakers	Policymaker	NOUN	NNS	Number=Plur	2	nsubj	_	start_char=1608|end_char=1620|ner=O
 2	signaled	signal	VERB	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1621|end_char=1629|ner=O
 3	that	that	SCONJ	IN	_	6	mark	_	start_char=1630|end_char=1634|ner=O
 4	cuts	cut	NOUN	NNS	Number=Plur	6	nsubj	_	start_char=1635|end_char=1639|ner=O
@@ -490,7 +490,7 @@
 3	236,000	236000	NUM	CD	NumForm=Digit|NumType=Card	4	nummod	_	start_char=1879|end_char=1886|ner=S-CARDINAL
 4	jobs	job	NOUN	NNS	Number=Plur	2	obj	_	SpaceAfter=No|start_char=1887|end_char=1891|ner=O
 5	,	,	PUNCT	,	_	8	punct	_	start_char=1891|end_char=1892|ner=O
-6	well	well	ADV	RB	Degree=Pos	8	advmod	_	start_char=1893|end_char=1897|ner=O
+6	well	well	INTJ	UH	_	8	discourse	_	start_char=1893|end_char=1897|ner=O
 7	above	above	ADP	IN	_	8	case	_	start_char=1898|end_char=1903|ner=O
 8	forecasts	forecast	NOUN	NNS	Number=Plur	4	conj	_	SpaceAfter=No|start_char=1904|end_char=1913|ner=O
 9	.	.	PUNCT	.	_	2	punct	_	start_char=1913|end_char=1914|ner=O
@@ -503,13 +503,13 @@
 3	earnings	earnings	NOUN	NNS	Number=Plur	4	nsubj	_	start_char=1930|end_char=1938|ner=O
 4	rose	rise	VERB	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1939|end_char=1943|ner=O
 5	0.3	0.3	NUM	CD	NumForm=Digit|NumType=Frac	6	nummod	_	SpaceAfter=No|start_char=1944|end_char=1947|ner=B-PERCENT
-6	%	%	SYM	NN	Number=Sing	4	obj	_	start_char=1947|end_char=1948|ner=E-PERCENT
-7	m/m	m/m	NUM	CD	NumForm=Digit|NumType=Card	6	nummod	_	start_char=1949|end_char=1952|ner=O
+6	%	%	SYM	NN	Number=Sing	7	compound	_	start_char=1947|end_char=1948|ner=E-PERCENT
+7	m/m	m/m	NOUN	NN	Number=Sing	4	obj	_	start_char=1949|end_char=1952|ner=O
 8	and	and	CCONJ	CC	_	12	cc	_	start_char=1953|end_char=1956|ner=O
 9	4.2	4.2	NUM	CD	NumForm=Digit|NumType=Frac	10	nummod	_	SpaceAfter=No|start_char=1957|end_char=1960|ner=B-PERCENT
 10	%	%	SYM	NN	Number=Sing	12	compound	_	start_char=1960|end_char=1961|ner=E-PERCENT
 11	y	y	NOUN	NN	Number=Sing	12	compound	_	SpaceAfter=No|start_char=1962|end_char=1963|ner=O
-12	/y	/y	NOUN	NN	Number=Sing	6	conj	_	SpaceAfter=No|start_char=1963|end_char=1965|ner=O
+12	/y	/y	NOUN	NN	Number=Sing	7	conj	_	SpaceAfter=No|start_char=1963|end_char=1965|ner=O
 13	.	.	PUNCT	.	_	4	punct	_	SpacesAfter=\n\n|start_char=1965|end_char=1966|ner=O
 
 # text = In a filing with the SEC, the firm disclosed that its former CEO, Mr. Hal Brandt Jr., received a severance package worth approx.
@@ -530,7 +530,7 @@
 13	former	former	ADJ	JJ	Degree=Pos	14	amod	_	start_char=2022|end_char=2028|ner=O
 14	CEO	ceo	NOUN	NN	Number=Sing	21	nsubj	_	SpaceAfter=No|start_char=2029|end_char=2032|ner=O
 15	,	,	PUNCT	,	_	17	punct	_	start_char=2032|end_char=2033|ner=O
-16	Mr.	Mr.	PROPN	NNP	Abbr=Yes|Number=Sing	17	nmod:desc	_	start_char=2034|end_char=2037|ner=O
+16	Mr.	Mr.	PROPN	NNP	Number=Sing	17	nmod:desc	_	start_char=2034|end_char=2037|ner=O
 17	Hal	Hal	PROPN	NNP	Number=Sing	14	appos	_	start_char=2038|end_char=2041|ner=B-PERSON
 18	Brandt	Brandt	PROPN	NNP	Number=Sing	17	flat	_	start_char=2042|end_char=2048|ner=I-PERSON
 19	Jr.	Jr.	PROPN	NNP	Number=Sing	17	flat	_	SpaceAfter=No|start_char=2049|end_char=2052|ner=E-PERSON
@@ -554,7 +554,7 @@
 # text = Shareholder groups have asked the board to explain the payout before the annual meeting on May 22.
 # sent_id = 27
 # sentiment = 1
-1	Shareholder	shareholder	NOUN	NN	Number=Sing	2	compound	_	start_char=2112|end_char=2123|ner=O
+1	Shareholder	Shareholder	NOUN	NN	Number=Sing	2	compound	_	start_char=2112|end_char=2123|ner=O
 2	groups	group	NOUN	NNS	Number=Plur	4	nsubj	_	start_char=2124|end_char=2130|ner=O
 3	have	have	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	4	aux	_	start_char=2131|end_char=2135|ner=O
 4	asked	ask	VERB	VBN	Tense=Past|VerbForm=Part	0	root	_	start_char=2136|end_char=2141|ner=O
@@ -653,9 +653,9 @@
 # sent_id = 32
 # sentiment = 1
 1-2	Moody's	_	_	_	_	_	_	_	start_char=2500|end_char=2507|ner=O
-1	Moody	Moody	PROPN	NNP	Number=Sing	3	nsubj	_	start_char=2500|end_char=2505
-2	's	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	aux	_	start_char=2505|end_char=2507
-3	affirmed	affirm	VERB	VBD	Tense=Past|VerbForm=Part	0	root	_	start_char=2508|end_char=2516|ner=O
+1	Moody	Moody	PROPN	NNP	Number=Sing	3	nsubj:pass	_	start_char=2500|end_char=2505
+2	's	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	aux:pass	_	start_char=2505|end_char=2507
+3	affirmed	affirm	VERB	VBN	Tense=Past|VerbForm=Part	0	root	_	start_char=2508|end_char=2516|ner=O
 4	its	its	PRON	PRP$	Case=Gen|Gender=Neut|Number=Sing|Person=3|Poss=Yes|PronType=Prs	6	nmod:poss	_	start_char=2517|end_char=2520|ner=O
 5	Aa2	Aa2	PROPN	NNP	Number=Sing	6	compound	_	start_char=2521|end_char=2524|ner=S-ORG
 6	rating	rating	NOUN	NN	Number=Sing	3	obj	_	SpaceAfter=No|start_char=2525|end_char=2531|ner=O
@@ -664,9 +664,9 @@
 # text = S&P Global Ratings has the city at AA, with a stable outlook.
 # sent_id = 33
 # sentiment = 2
-1	S&P	s&p	NOUN	NN	Number=Sing	3	compound	_	start_char=2533|end_char=2536|ner=B-ORG
-2	Global	Global	ADJ	JJ	Degree=Pos	3	amod	_	start_char=2537|end_char=2543|ner=I-ORG
-3	Ratings	rating	NOUN	NNS	Number=Plur	4	nsubj	_	start_char=2544|end_char=2551|ner=E-ORG
+1	S&P	S&P	PROPN	NNP	Number=Sing	3	compound	_	start_char=2533|end_char=2536|ner=B-ORG
+2	Global	Global	ADJ	NNP	Degree=Pos	3	amod	_	start_char=2537|end_char=2543|ner=I-ORG
+3	Ratings	Rating	PROPN	NNPS	Number=Plur	4	nsubj	_	start_char=2544|end_char=2551|ner=E-ORG
 4	has	have	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2552|end_char=2555|ner=O
 5	the	the	DET	DT	Definite=Def|PronType=Art	6	det	_	start_char=2556|end_char=2559|ner=O
 6	city	city	NOUN	NN	Number=Sing	4	obj	_	start_char=2560|end_char=2564|ner=O
@@ -685,7 +685,7 @@
 1	Residents	resident	NOUN	NNS	Number=Plur	8	nsubj:pass	_	start_char=2596|end_char=2605|ner=O
 2	of	of	ADP	IN	_	6	case	_	start_char=2606|end_char=2608|ner=O
 3	the	the	DET	DT	Definite=Def|PronType=Art	6	det	_	start_char=2609|end_char=2612|ner=O
-4	Lower	Lower	ADJ	JJ	Degree=Pos	6	amod	_	start_char=2613|end_char=2618|ner=B-LOC
+4	Lower	Lower	ADJ	NNP	Degree=Cmp	6	amod	_	start_char=2613|end_char=2618|ner=B-LOC
 5	Fenwick	Fenwick	PROPN	NNP	Number=Sing	6	compound	_	start_char=2619|end_char=2626|ner=E-LOC
 6	neighborhood	neighborhood	NOUN	NN	Number=Sing	1	nmod	_	start_char=2627|end_char=2639|ner=O
 7	were	be	AUX	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	8	aux:pass	_	start_char=2640|end_char=2644|ner=O
@@ -707,7 +707,7 @@
 # text = Crews worked through the night.
 # sent_id = 35
 # sentiment = 1
-1	Crews	crew	NOUN	NNS	Number=Plur	2	nsubj	_	start_char=2720|end_char=2725|ner=O
+1	Crews	Crew	NOUN	NNS	Number=Plur	2	nsubj	_	start_char=2720|end_char=2725|ner=O
 2	worked	work	VERB	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=2726|end_char=2732|ner=O
 3	through	through	ADP	IN	_	5	case	_	start_char=2733|end_char=2740|ner=O
 4	the	the	DET	DT	Definite=Def|PronType=Art	5	det	_	start_char=2741|end_char=2744|ner=B-TIME
@@ -836,7 +836,7 @@
 # text = Shares of regional banks rallied for a second day.
 # sent_id = 43
 # sentiment = 1
-1	Shares	share	NOUN	NNS	Number=Plur	5	nsubj	_	start_char=3203|end_char=3209|ner=O
+1	Shares	Share	NOUN	NNS	Number=Plur	5	nsubj	_	start_char=3203|end_char=3209|ner=O
 2	of	of	ADP	IN	_	4	case	_	start_char=3210|end_char=3212|ner=O
 3	regional	regional	ADJ	JJ	Degree=Pos	4	amod	_	start_char=3213|end_char=3221|ner=O
 4	banks	bank	NOUN	NNS	Number=Plur	1	nmod	_	start_char=3222|end_char=3227|ner=O
@@ -864,7 +864,7 @@
 # sent_id = 45
 # sentiment = 1
 1	Ferrisburg	Ferrisburg	PROPN	NNP	Number=Sing	2	compound	_	start_char=3293|end_char=3303|ner=B-ORG
-2	Savings	Savings	NOUN	NNS	Number=Plur	14	nsubj	_	SpaceAfter=No|start_char=3304|end_char=3311|ner=E-ORG
+2	Savings	Savings	PROPN	NNPS	Number=Plur	14	nsubj	_	SpaceAfter=No|start_char=3304|end_char=3311|ner=E-ORG
 3	,	,	PUNCT	,	_	6	punct	_	start_char=3311|end_char=3312|ner=O
 4	which	which	PRON	WDT	PronType=Rel	6	nsubj	_	start_char=3313|end_char=3318|ner=O
 5	had	have	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	6	aux	_	start_char=3319|end_char=3322|ner=O
@@ -917,7 +917,7 @@
 3	year	year	NOUN	NN	Number=Sing	5	compound	_	start_char=3462|end_char=3466|ner=E-DATE
 4	fixed	fix	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	5	amod	_	start_char=3467|end_char=3472|ner=O
 5	rates	rate	NOUN	NNS	Number=Plur	6	nsubj	_	start_char=3473|end_char=3478|ner=O
-6	averaged	average	VERB	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=3479|end_char=3487|ner=O
+6	averaged	average	VERB	VBD	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=3479|end_char=3487|ner=O
 7	6.94	6.94	NUM	CD	NumForm=Digit|NumType=Frac	8	nummod	_	SpaceAfter=No|start_char=3488|end_char=3492|ner=B-PERCENT
 8	%	%	SYM	NN	Number=Sing	6	obj	_	start_char=3492|end_char=3493|ner=E-PERCENT
 9	last	last	ADJ	JJ	Degree=Pos	10	amod	_	start_char=3494|end_char=3498|ner=B-DATE
@@ -1012,7 +1012,7 @@
 1	It	it	PRON	PRP	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	3	nsubj	_	start_char=3831|end_char=3833|ner=O
 2	later	late	ADV	RBR	Degree=Cmp	3	advmod	_	start_char=3834|end_char=3839|ner=O
 3	gave	give	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=3840|end_char=3844|ner=O
-4	back	back	ADV	RB	_	3	advmod	_	start_char=3845|end_char=3849|ner=O
+4	back	back	ADP	RP	_	3	compound:prt	_	start_char=3845|end_char=3849|ner=O
 5	some	some	DET	DT	PronType=Ind	6	det	_	start_char=3850|end_char=3854|ner=O
 6	gains	gain	NOUN	NNS	Number=Plur	3	obj	_	start_char=3855|end_char=3860|ner=O
 7	and	and	CCONJ	CC	_	8	cc	_	start_char=3861|end_char=3864|ner=O
@@ -1021,9 +1021,9 @@
 10	$	$	SYM	$	_	8	obl	_	SpaceAfter=No|start_char=3875|end_char=3876|ner=O
 11	412.88	412.88	NUM	CD	NumForm=Digit|NumType=Frac	10	nummod	_	SpaceAfter=No|start_char=3876|end_char=3882|ner=S-MONEY
 12	,	,	PUNCT	,	_	15	punct	_	start_char=3882|end_char=3883|ner=O
-13	up	up	ADP	RP	_	8	compound:prt	_	start_char=3884|end_char=3886|ner=O
+13	up	up	ADP	IN	_	15	case	_	start_char=3884|end_char=3886|ner=O
 14	3.9	3.9	NUM	CD	NumForm=Digit|NumType=Frac	15	nummod	_	SpaceAfter=No|start_char=3887|end_char=3890|ner=B-PERCENT
-15	%	%	SYM	NN	Number=Sing	10	appos	_	SpaceAfter=No|start_char=3890|end_char=3891|ner=E-PERCENT
+15	%	%	SYM	NN	Number=Sing	8	obl	_	SpaceAfter=No|start_char=3890|end_char=3891|ner=E-PERCENT
 16	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=3891|end_char=3892|ner=O
 
 # text = According to the report, global shipments of smartphones declined for the eighth straight quarter.
@@ -1055,9 +1055,9 @@
 4	million	million	NUM	CD	NumForm=Word|NumType=Card	5	nummod	_	start_char=4015|end_char=4022|ner=E-CARDINAL
 5	units	unit	NOUN	NNS	Number=Plur	2	obj	_	SpaceAfter=No|start_char=4023|end_char=4028|ner=O
 6	,	,	PUNCT	,	_	9	punct	_	start_char=4028|end_char=4029|ner=O
-7	down	down	ADV	RB	_	8	advmod	_	start_char=4030|end_char=4034|ner=O
+7	down	down	ADP	IN	_	9	case	_	start_char=4030|end_char=4034|ner=O
 8	4.7	4.7	NUM	CD	NumForm=Digit|NumType=Frac	9	nummod	_	SpaceAfter=No|start_char=4035|end_char=4038|ner=B-PERCENT
-9	%	%	SYM	NN	Number=Sing	5	appos	_	start_char=4038|end_char=4039|ner=E-PERCENT
+9	%	%	SYM	NN	Number=Sing	2	obl	_	start_char=4038|end_char=4039|ner=E-PERCENT
 10	from	from	ADP	IN	_	12	case	_	start_char=4040|end_char=4044|ner=O
 11	a	a	DET	DT	Definite=Ind|PronType=Art	12	det	_	start_char=4045|end_char=4046|ner=B-DATE
 12	year	year	NOUN	NN	Number=Sing	13	obl:unmarked	_	start_char=4047|end_char=4051|ner=I-DATE
@@ -1071,7 +1071,7 @@
 2	top	top	ADJ	JJ	Degree=Pos	4	amod	_	start_char=4065|end_char=4068|ner=O
 3	five	five	NUM	CD	NumForm=Word|NumType=Card	4	nummod	_	start_char=4069|end_char=4073|ner=S-CARDINAL
 4	vendors	vendor	NOUN	NNS	Number=Plur	5	nsubj	_	start_char=4074|end_char=4081|ner=O
-5	accounted	account	VERB	VBD	Mood=Ind|Number=Plur|Tense=Past|VerbForm=Fin	0	root	_	start_char=4082|end_char=4091|ner=O
+5	accounted	account	VERB	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=4082|end_char=4091|ner=O
 6	for	for	ADP	IN	_	9	case	_	start_char=4092|end_char=4095|ner=O
 7	roughly	roughly	ADV	RB	_	8	advmod	_	start_char=4096|end_char=4103|ner=B-PERCENT
 8	70	70	NUM	CD	NumForm=Digit|NumType=Card	9	nummod	_	SpaceAfter=No|start_char=4104|end_char=4106|ner=I-PERCENT
@@ -1088,10 +1088,10 @@
 2	trial	trial	NOUN	NN	Number=Sing	4	nsubj:pass	_	start_char=4128|end_char=4133|ner=O
 3	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	aux:pass	_	start_char=4134|end_char=4136|ner=O
 4	expected	expect	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	start_char=4137|end_char=4145|ner=O
-5	to	to	PART	TO	_	8	mark	_	start_char=4146|end_char=4148|ner=O
-6	last	last	ADJ	JJ	Degree=Pos	8	amod	_	start_char=4149|end_char=4153|ner=B-DATE
+5	to	to	PART	TO	_	6	mark	_	start_char=4146|end_char=4148|ner=O
+6	last	last	VERB	VB	VerbForm=Inf	4	xcomp	_	start_char=4149|end_char=4153|ner=B-DATE
 7	six	six	NUM	CD	NumForm=Word|NumType=Card	8	nummod	_	start_char=4154|end_char=4157|ner=I-DATE
-8	weeks	week	NOUN	NNS	Number=Plur	4	obl:unmarked	_	SpaceAfter=No|start_char=4158|end_char=4163|ner=E-DATE
+8	weeks	week	NOUN	NNS	Number=Plur	6	obj	_	SpaceAfter=No|start_char=4158|end_char=4163|ner=E-DATE
 9	.	.	PUNCT	.	_	4	punct	_	start_char=4163|end_char=4164|ner=O
 
 # text = Jury selection begins Monday at the federal courthouse in Lancaster.
@@ -1126,8 +1126,8 @@
 12	counts	count	NOUN	NNS	Number=Plur	8	obl	_	SpaceAfter=No|start_char=4286|end_char=4292|ner=O
 13	,	,	PUNCT	,	_	2	punct	_	start_char=4292|end_char=4293|ner=O
 14	faces	face	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=4294|end_char=4299|ner=O
-15	up	up	ADP	IN	_	17	advmod	_	start_char=4300|end_char=4302|ner=O
-16	to	to	ADP	IN	_	15	fixed	_	start_char=4303|end_char=4305|ner=O
+15	up	up	ADP	RP	_	14	compound:prt	_	start_char=4300|end_char=4302|ner=O
+16	to	to	ADP	IN	_	18	case	_	start_char=4303|end_char=4305|ner=O
 17	20	20	NUM	CD	NumForm=Digit|NumType=Card	18	nummod	_	start_char=4306|end_char=4308|ner=B-DATE
 18	years	year	NOUN	NNS	Number=Plur	14	obl	_	start_char=4309|end_char=4314|ner=E-DATE
 19	in	in	ADP	IN	_	20	case	_	start_char=4315|end_char=4317|ner=O
@@ -1170,7 +1170,7 @@
 # text = Organizers expect a sellout.
 # sent_id = 62
 # sentiment = 1
-1	Organizers	organizer	NOUN	NNS	Number=Plur	2	nsubj	_	start_char=4431|end_char=4441|ner=O
+1	Organizers	Organizer	NOUN	NNS	Number=Plur	2	nsubj	_	start_char=4431|end_char=4441|ner=O
 2	expect	expect	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=4442|end_char=4448|ner=O
 3	a	a	DET	DT	Definite=Ind|PronType=Art	4	det	_	start_char=4449|end_char=4450|ner=O
 4	sellout	sellout	NOUN	NN	Number=Sing	2	obj	_	SpaceAfter=No|start_char=4451|end_char=4458|ner=O

@@ -422,7 +422,7 @@
     {
       "id": 15,
       "text": "\\temp\\x",
-      "lemma": "ltemp\\x",
+      "lemma": "\\temp\\x",
       "upos": "NOUN",
       "xpos": "NN",
       "feats": "Number=Sing",
