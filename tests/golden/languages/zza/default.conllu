@@ -1,0 +1,19 @@
+# text = Serekê wezîran vizêr ame Dêrsim.
+# sent_id = 0
+1	Serekê	kerekêe	PRON	_	Case=Acc|Number=Plur|Person=3|PronType=Prs	3	obj	_	start_char=0|end_char=6
+2	wezîran	wezîrane	NOUN	_	Gender=Fem|Number=Sing	3	obj	_	start_char=7|end_char=14
+3	vizêr	kerdene	VERB	_	Mood=Ind|Number=Plur	0	root	_	start_char=15|end_char=20
+4	ame	ameyene	VERB	_	Mood=Ind|Number=Sing|Person=1|Tense=Past	3	conj	_	start_char=21|end_char=24
+5	Dêrsim	dêrsim	NOUN	_	Gender=Masc|Number=Sing	4	obl	_	SpaceAfter=No|start_char=25|end_char=31
+6	.	.	PUNCT	_	_	3	punct	_	start_char=31|end_char=32
+
+# text = Ey bi rojnamenusan reyde qisey kerdî.
+# sent_id = 1
+1	Ey	ey	PRON	_	Case=Acc|Number=Sing|Person=3|PronType=Prs	4	obl	_	start_char=33|end_char=35
+2	bi	bi	ADP	_	_	1	case	_	start_char=36|end_char=38
+3	ro	ro	ADP	_	_	2	case	_	SpaceAfter=No|start_char=39|end_char=41
+4	jnamenusan	jnameyene	VERB	_	Gender=Fem|Mood=Ind|Number=Sing|Person=3|Tense=Past	0	root	_	start_char=41|end_char=51
+5	reyde	reyde	NOUN	_	Gender=Masc|Number=Sing	7	obl	_	start_char=52|end_char=57
+6	qisey	qisey	NOUN	_	Gender=Masc|Number=Sing	7	compound:lvc	_	start_char=58|end_char=63
+7	kerdî	kerdene	VERB	_	Gender=Masc|Mood=Ind|Number=Sing|Person=3|Tense=Past	4	conj	_	SpaceAfter=No|start_char=64|end_char=69
+8	.	.	PUNCT	_	_	4	punct	_	SpacesAfter=\n|start_char=69|end_char=70

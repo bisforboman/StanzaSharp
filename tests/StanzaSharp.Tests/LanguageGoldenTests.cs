@@ -55,6 +55,9 @@ public sealed class LanguageGoldenDataAttribute : Xunit.Sdk.DataAttribute
             Skip = "No other language's models found (models/stanza/<lang>); run stanzasharp download --lang <lang>";
     }
 
+    // With none present, one row, which the Skip skips (a theory without rows fails).
     public override IEnumerable<object[]> GetData(MethodInfo testMethod) =>
-        _present.SelectMany(p => new[] { false, true }.Select(managed => new object[] { p.Lang, p.Package, managed }));
+        _present.Length == 0
+            ? [["none", Pipeline.DefaultPackage, true]]
+            : _present.SelectMany(p => new[] { false, true }.Select(managed => new object[] { p.Lang, p.Package, managed }));
 }

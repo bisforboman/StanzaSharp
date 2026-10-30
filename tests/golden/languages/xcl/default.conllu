@@ -1,0 +1,26 @@
+# text = Ի
+# sent_id = 0
+1	Ի	ի	ADP	_	_	0	root	_	start_char=0|end_char=1
+
+# text = սկզբանէ էր Բանն, և Բանն էր առ Աստուած։
+# sent_id = 1
+1	սկզբանէ	սկիզբն	NOUN	_	Case=Abl|Number=Sing	3	nsubj	_	start_char=2|end_char=9
+2	էր	եմ	AUX	_	Aspect=Imp|Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	3	cop	_	start_char=10|end_char=12
+3	Բան	բան	NOUN	_	Case=Nom|Number=Sing	0	root	_	SpaceAfter=No|start_char=13|end_char=16
+4	ն	ն	DET	_	Definite=Def|Deixis=Remt|PronType=Art	3	det	_	SpaceAfter=No|start_char=16|end_char=17
+5	,	,	PUNCT	_	_	7	punct	_	start_char=17|end_char=18
+6	և	և	CCONJ	_	_	7	cc	_	start_char=19|end_char=20
+7	Բան	բան	NOUN	_	Case=Nom|Number=Sing	3	conj	_	SpaceAfter=No|start_char=21|end_char=24
+8	ն	ն	DET	_	Definite=Def|Deixis=Remt|PronType=Art	7	det	_	start_char=24|end_char=25
+9	էր	եմ	AUX	_	Aspect=Imp|Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	7	cop	_	start_char=26|end_char=28
+10	առ	առ	ADP	_	_	11	case	_	start_char=29|end_char=31
+11	Աստուած	Աստուած	NOUN	_	Case=Acc|Number=Sing	7	obl	_	SpaceAfter=No|start_char=32|end_char=39
+12	։	։	PUNCT	_	_	3	punct	_	start_char=39|end_char=40
+
+# text = Սա էր ի սկզբանէ։
+# sent_id = 2
+1	Սա	սա	PRON	_	Case=Nom|Deixis=Prox|Number=Sing|PronType=Dem	4	nsubj	_	start_char=41|end_char=43
+2	էր	եմ	AUX	_	Aspect=Imp|Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	4	cop	_	start_char=44|end_char=46
+3	ի	ի	ADP	_	_	4	case	_	start_char=47|end_char=48
+4	սկզբանէ	սկիզբն	NOUN	_	Case=Abl|Number=Sing	0	root	_	SpaceAfter=No|start_char=49|end_char=56
+5	։	։	PUNCT	_	_	4	punct	_	SpacesAfter=\n|start_char=56|end_char=57

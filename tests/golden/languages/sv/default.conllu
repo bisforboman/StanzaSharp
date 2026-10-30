@@ -1,0 +1,30 @@
+# text = Statsministern kom till Stockholm i går.
+# sent_id = 0
+1	Statsministern	statsminister	NOUN	NN|UTR|SIN|DEF|NOM	Case=Nom|Definite=Def|Gender=Com|Number=Sing	2	nsubj	_	start_char=0|end_char=14|ner=O
+2	kom	komma	VERB	VB|PRT|AKT	Mood=Ind|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	start_char=15|end_char=18|ner=O
+3	till	till	ADP	PP	_	4	case	_	start_char=19|end_char=23|ner=O
+4	Stockholm	Stockholm	PROPN	PM|NOM	Case=Nom	2	obl	_	start_char=24|end_char=33|ner=S-LOC
+5	i	i	ADP	PP	_	6	case	_	start_char=34|end_char=35|ner=O
+6	går	går	NOUN	UO	Case=Nom|Definite=Ind	2	obl	_	SpaceAfter=No|start_char=36|end_char=39|ner=O
+7	.	.	PUNCT	MAD	_	2	punct	_	start_char=39|end_char=40|ner=O
+
+# text = Hon talade med journalisterna om den nya lagen.
+# sent_id = 1
+1	Hon	hon	PRON	PN|UTR|SIN|DEF|SUB	Case=Nom|Definite=Def|Gender=Com|Number=Sing|PronType=Prs	2	nsubj	_	start_char=41|end_char=44|ner=O
+2	talade	talad	VERB	VB|PRT|AKT	Mood=Ind|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	start_char=45|end_char=51|ner=O
+3	med	med	ADP	PP	_	4	case	_	start_char=52|end_char=55|ner=O
+4	journalisterna	journalist	NOUN	NN|UTR|PLU|DEF|NOM	Case=Nom|Definite=Def|Gender=Com|Number=Plur	2	obl	_	start_char=56|end_char=70|ner=O
+5	om	om	ADP	PP	_	8	case	_	start_char=71|end_char=73|ner=O
+6	den	den	DET	DT|UTR|SIN|DEF	Definite=Def|Gender=Com|Number=Sing|PronType=Art	8	det	_	start_char=74|end_char=77|ner=O
+7	nya	ny	ADJ	JJ|POS|UTR/NEU|SIN|DEF|NOM	Case=Nom|Definite=Def|Degree=Pos	8	amod	_	start_char=78|end_char=81|ner=O
+8	lagen	lag	NOUN	NN|UTR|SIN|DEF|NOM	Case=Nom|Definite=Def|Gender=Com|Number=Sing	4	nmod	_	SpaceAfter=No|start_char=82|end_char=87|ner=O
+9	.	.	PUNCT	MAD	_	2	punct	_	SpacesAfter=\n\n|start_char=87|end_char=88|ner=O
+
+# text = Jag såg Anna i Göteborg.
+# sent_id = 2
+1	Jag	jag	PRON	PN|UTR|SIN|DEF|SUB	Case=Nom|Definite=Def|Gender=Com|Number=Sing|PronType=Prs	2	nsubj	_	start_char=90|end_char=93|ner=O
+2	såg	se	VERB	VB|PRT|AKT	Mood=Ind|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	start_char=94|end_char=97|ner=O
+3	Anna	anna	PROPN	PM|NOM	Case=Nom	2	obj	_	start_char=98|end_char=102|ner=S-PER
+4	i	i	ADP	PP	_	5	case	_	start_char=103|end_char=104|ner=O
+5	Göteborg	Göteborg	PROPN	PM|NOM	Case=Nom	2	obl	_	SpaceAfter=No|start_char=105|end_char=113|ner=S-LOC
+6	.	.	PUNCT	MAD	_	2	punct	_	SpacesAfter=\n|start_char=113|end_char=114|ner=O

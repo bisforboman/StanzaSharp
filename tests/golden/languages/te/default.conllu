@@ -1,0 +1,17 @@
+# text = ముఖ్యమంత్రి నిన్న హైదరాబాద్ చేరుకున్నారు.
+# sent_id = 0
+1	ముఖ్యమంత్రి	ముఖ్యమంత్రి	NOUN	NOUN	_	4	nsubj	_	start_char=0|end_char=11|ner=O
+2	నిన్న	నిన్న	NOUN	NOUN	_	4	obl:tmod	_	start_char=12|end_char=17|ner=O
+3	హైదరాబాద్	హైదరాబాద్	PROPN	PROPN	_	4	obl	_	start_char=18|end_char=27|ner=S-NEL
+4	చేరుకున్నారు	చేరుకున్నారు	VERB	VERB	_	0	root	_	SpaceAfter=No|start_char=28|end_char=40|ner=O
+5	.	.	PUNCT	PUNCT	_	4	punct	_	start_char=40|end_char=41|ner=O
+
+# text = ఆయన విలేకరులతో కొత్త చట్టం గురించి మాట్లాడారు.
+# sent_id = 1
+1	ఆయన	ఆయన	PRON	PRON	_	2	nsubj	_	start_char=42|end_char=45|ner=O
+2	విలేకరులతో	విలేకరులతో	NOUN	NOUN	_	6	obl	_	start_char=46|end_char=56|ner=O
+3	కొత్త	కొత్త	ADJ	ADJ	_	4	amod	_	start_char=57|end_char=62|ner=O
+4	చట్టం	చట్టం	NOUN	NOUN	_	6	nsubj	_	start_char=63|end_char=68|ner=O
+5	గురించి	గురించి	ADP	ADP	_	4	case	_	start_char=69|end_char=76|ner=O
+6	మాట్లాడారు	మాట్లాడారు	VERB	VERB	_	0	root	_	SpaceAfter=No|start_char=77|end_char=87|ner=O
+7	.	.	PUNCT	PUNCT	_	6	punct	_	SpacesAfter=\n|start_char=87|end_char=88|ner=O

@@ -1,0 +1,35 @@
+# text = Thủ tướng đã đến Hà Nội hôm qua.
+# sent_id = 0
+# constituency = (ROOT (S (NP (N Thủ tướng)) (VP (Adv đã) (V đến) (NP (NNP Hà Nội)) (NP (. hôm qua.)))))
+# sentiment = 0
+1	Thủ tướng	Thủ tướng	NOUN	N	_	3	nsubj	_	start_char=0|end_char=9|ner=O
+2	đã	đã	ADV	Adv	_	3	advmod	_	start_char=10|end_char=12|ner=O
+3	đến	đến	VERB	V	_	0	root	_	start_char=13|end_char=16|ner=O
+4	Hà Nội	Hà Nội	PROPN	NNP	_	3	obj	_	start_char=17|end_char=23|ner=S-LOCATION
+5	hôm qua.	hôm qua.	PUNCT	.	_	3	punct	_	start_char=24|end_char=32|ner=O
+
+# text = Ông nói chuyện với các nhà báo về luật mới.
+# sent_id = 1
+# constituency = (ROOT (S (NP (N Ông)) (VP (V nói) (NP (N chuyện) (PP (Pre với) (NP (Det các) (N nhà báo))) (PP (V về) (NP (N luật) (Adj mới))))) (. .)))
+# sentiment = 0
+1	Ông	Ông	NOUN	N	_	2	nsubj	_	start_char=33|end_char=36|ner=O
+2	nói	nói	VERB	V	_	0	root	_	start_char=37|end_char=40|ner=O
+3	chuyện	chuyện	NOUN	N	_	2	obj	_	start_char=41|end_char=47|ner=O
+4	với	với	ADP	Pre	_	6	case	_	start_char=48|end_char=51|ner=O
+5	các	các	DET	Det	_	6	det	_	start_char=52|end_char=55|ner=O
+6	nhà báo	nhà báo	NOUN	N	_	2	obl:about	_	start_char=56|end_char=63|ner=O
+7	về	về	VERB	V	_	6	acl:subj	_	start_char=64|end_char=66|ner=O
+8	luật	luật	NOUN	N	_	7	obj	_	start_char=67|end_char=71|ner=O
+9	mới	mới	ADJ	Adj	_	8	amod	_	SpaceAfter=No|start_char=72|end_char=75|ner=O
+10	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=75|end_char=76|ner=O
+
+# text = Bộ phim này rất hay.
+# sent_id = 2
+# constituency = (ROOT (S (NP (N Bộ) (N phim) (Pro này)) (AP (Adv rất) (Adj hay)) (. .)))
+# sentiment = 2
+1	Bộ	Bộ	NOUN	N	_	5	nsubj	_	start_char=78|end_char=80|ner=O
+2	phim	phim	NOUN	N	_	1	compound	_	start_char=81|end_char=85|ner=O
+3	này	này	PRON	Pro	_	1	det:pmod	_	start_char=86|end_char=89|ner=O
+4	rất	rất	ADV	Adv	_	5	advmod	_	start_char=90|end_char=93|ner=O
+5	hay	hay	ADJ	Adj	_	0	root	_	SpaceAfter=No|start_char=94|end_char=97|ner=O
+6	.	.	PUNCT	.	_	5	punct	_	SpacesAfter=\n|start_char=97|end_char=98|ner=O

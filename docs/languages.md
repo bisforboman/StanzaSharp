@@ -12,87 +12,87 @@ those of the language's `default` package, in Stanza's order.
 |---|---|---|---|---|
 | Abkhazian | `ab` | default | tokenize, pos, lemma, depparse |  |
 | Afrikaans | `af` | default | tokenize, pos, lemma, depparse, ner | `nchlt` |
-| Albanian | `sq` |  | tokenize, mwt, pos, lemma, depparse |  |
-| Ancient Greek | `grc` |  | tokenize, pos, lemma, depparse |  |
-| Ancient Hebrew | `hbo` |  | tokenize, mwt, pos, lemma, depparse |  |
-| Arabic | `ar` |  | tokenize, mwt, pos, lemma, depparse, ner | `aqmar_charlm` |
-| Armenian | `hy` |  | tokenize, mwt, pos, lemma, depparse, ner | `armtdp` |
-| Assamese | `as` |  | tokenize, pos, lemma, depparse |  |
-| Basque | `eu` |  | tokenize, pos, lemma, depparse |  |
-| Belarusian | `be` |  | tokenize, pos, lemma, depparse |  |
-| Bulgarian | `bg` |  | tokenize, pos, lemma, depparse, ner | `bsnlp19` |
-| Buryat | `bxr` |  | tokenize, pos, lemma, depparse |  |
-| Catalan | `ca` |  | tokenize, mwt, pos, lemma, depparse |  |
-| Classical Armenian | `xcl` |  | tokenize, mwt, pos, lemma, depparse |  |
-| Croatian | `hr` |  | tokenize, pos, lemma, depparse |  |
-| Czech | `cs` |  | tokenize, mwt, pos, lemma, depparse |  |
-| Danish | `da` |  | tokenize, pos, lemma, depparse, ner, constituency | `ddt` |
+| Albanian | `sq` | default | tokenize, mwt, pos, lemma, depparse |  |
+| Ancient Greek | `grc` | default | tokenize, pos, lemma, depparse |  |
+| Ancient Hebrew | `hbo` | default | tokenize, mwt, pos, lemma, depparse |  |
+| Arabic | `ar` | default | tokenize, mwt, pos, lemma, depparse, ner | `aqmar_charlm` |
+| Armenian | `hy` | default | tokenize, mwt, pos, lemma, depparse, ner | `armtdp` |
+| Assamese | `as` | default | tokenize, pos, lemma, depparse |  |
+| Basque | `eu` | default | tokenize, pos, lemma, depparse |  |
+| Belarusian | `be` | default | tokenize, pos, lemma, depparse |  |
+| Bulgarian | `bg` | default | tokenize, pos, lemma, depparse, ner | `bsnlp19` |
+| Buryat | `bxr` | default | tokenize, pos, lemma, depparse |  |
+| Catalan | `ca` | default | tokenize, mwt, pos, lemma, depparse |  |
+| Classical Armenian | `xcl` | default | tokenize, mwt, pos, lemma, depparse |  |
+| Croatian | `hr` | default | tokenize, pos, lemma, depparse |  |
+| Czech | `cs` | default | tokenize, mwt, pos, lemma, depparse |  |
+| Danish | `da` | default | tokenize, pos, lemma, depparse, ner, constituency | `ddt` |
 | Dutch | `nl` | default, default_fast | tokenize, mwt, pos, lemma, depparse, ner | `conll02` |
 | English | `en` | default, default_fast, default_accurate, treebank packages | tokenize, mwt, pos, lemma, depparse, ner, sentiment, constituency | `ontonotes-ww-multi_charlm` |
-| Erzya | `myv` |  | tokenize, mwt, pos, lemma, depparse |  |
-| Estonian | `et` |  | tokenize, mwt, pos, lemma, depparse |  |
-| Faroese | `fo` |  | tokenize, mwt, pos, lemma, depparse |  |
-| Finnish | `fi` |  | tokenize, mwt, pos, lemma, depparse, ner | `turku` |
+| Erzya | `myv` | default | tokenize, mwt, pos, lemma, depparse |  |
+| Estonian | `et` | default | tokenize, mwt, pos, lemma, depparse |  |
+| Faroese | `fo` | default | tokenize, mwt, pos, lemma, depparse |  |
+| Finnish | `fi` | default | tokenize, mwt, pos, lemma, depparse, ner | `turku` |
 | French | `fr` | default, default_fast | tokenize, mwt, pos, lemma, depparse, ner | `wikinergold_charlm` |
-| Galician | `gl` |  | tokenize, mwt, pos, lemma, depparse |  |
-| Georgian | `ka` |  | tokenize, mwt, pos, lemma, depparse |  |
+| Galician | `gl` | default | tokenize, mwt, pos, lemma, depparse |  |
+| Georgian | `ka` | default | tokenize, mwt, pos, lemma, depparse |  |
 | German | `de` | default, default_fast, default_accurate, treebank packages | tokenize, mwt, pos, lemma, depparse, ner, sentiment, constituency | `germeval2014_charlm` |
-| Gothic | `got` |  | tokenize, pos, lemma, depparse |  |
-| Haitian | `ht` |  | tokenize, pos, lemma, depparse |  |
-| Hebrew | `he` |  | tokenize, mwt, pos, lemma, depparse, ner | `iahlt_charlm` |
-| Hindi | `hi` |  | tokenize, pos, lemma, depparse, ner | `ilner_charlm` |
-| Hungarian | `hu` |  | tokenize, pos, lemma, depparse, ner | `combined` |
-| Icelandic | `is` |  | tokenize, mwt, pos, lemma, depparse |  |
-| Indonesian | `id` |  | tokenize, mwt, pos, lemma, depparse, constituency |  |
-| Irish | `ga` |  | tokenize, pos, lemma, depparse |  |
+| Gothic | `got` | default | tokenize, pos, lemma, depparse |  |
+| Haitian | `ht` | default | tokenize, pos, lemma, depparse |  |
+| Hebrew | `he` | default | tokenize, mwt, pos, lemma, depparse, ner | `iahlt_charlm` |
+| Hindi | `hi` | default | tokenize, pos, lemma, depparse, ner | `ilner_charlm` |
+| Hungarian | `hu` | default | tokenize, pos, lemma, depparse, ner | `combined` |
+| Icelandic | `is` | default | tokenize, mwt, pos, lemma, depparse |  |
+| Indonesian | `id` | default | tokenize, mwt, pos, lemma, depparse, constituency |  |
+| Irish | `ga` | default | tokenize, pos, lemma, depparse |  |
 | Italian | `it` | default, default_fast | tokenize, mwt, pos, lemma, depparse, ner, constituency | `fbk` |
-| Kazakh | `kk` |  | tokenize, mwt, pos, lemma, depparse, ner | `kazNERD` |
-| Komi Zyrian | `kpv` |  | tokenize, mwt, pos, lemma, depparse |  |
-| Kyrgyz | `ky` |  | tokenize, pos, lemma, depparse |  |
-| Latin | `la` |  | tokenize, mwt, pos, lemma, depparse |  |
-| Latvian | `lv` |  | tokenize, pos, lemma, depparse |  |
-| Ligurian | `lij` |  | tokenize, mwt, pos, lemma, depparse |  |
-| Lithuanian | `lt` |  | tokenize, pos, lemma, depparse |  |
-| Low Saxon | `nds` |  | tokenize, pos, lemma, depparse |  |
-| Maltese | `mt` |  | tokenize, pos, lemma, depparse |  |
-| Manx | `gv` |  | tokenize, mwt, pos, lemma, depparse |  |
-| Marathi | `mr` |  | tokenize, mwt, pos, lemma, depparse, ner, sentiment | `l3cube` |
-| Myanmar | `my` |  | tokenize, ner | `ucsy` |
-| North Sami | `sme` |  | tokenize, pos, lemma, depparse |  |
-| Northern Kurdish | `kmr` |  | tokenize, mwt, pos, lemma, depparse |  |
-| Norwegian Nynorsk | `nn` |  | tokenize, pos, lemma, depparse, ner | `norne` |
-| Norwegian | `nb` |  | tokenize, pos, lemma, depparse, ner | `norne` |
-| Occitan | `oc` |  | tokenize, mwt, pos, lemma, depparse |  |
-| Old Church Slavonic | `cu` |  | tokenize, pos, lemma, depparse |  |
+| Kazakh | `kk` | default | tokenize, mwt, pos, lemma, depparse, ner | `kazNERD` |
+| Komi Zyrian | `kpv` | default | tokenize, mwt, pos, lemma, depparse |  |
+| Kyrgyz | `ky` | default | tokenize, pos, lemma, depparse |  |
+| Latin | `la` | default | tokenize, mwt, pos, lemma, depparse |  |
+| Latvian | `lv` | default | tokenize, pos, lemma, depparse |  |
+| Ligurian | `lij` | default | tokenize, mwt, pos, lemma, depparse |  |
+| Lithuanian | `lt` | default | tokenize, pos, lemma, depparse |  |
+| Low Saxon | `nds` | default | tokenize, pos, lemma, depparse |  |
+| Maltese | `mt` | default | tokenize, pos, lemma, depparse |  |
+| Manx | `gv` | default | tokenize, mwt, pos, lemma, depparse |  |
+| Marathi | `mr` | default | tokenize, mwt, pos, lemma, depparse, ner, sentiment | `l3cube` |
+| Myanmar | `my` | default | tokenize, ner | `ucsy` |
+| North Sami | `sme` | default | tokenize, pos, lemma, depparse |  |
+| Northern Kurdish | `kmr` | default | tokenize, mwt, pos, lemma, depparse |  |
+| Norwegian Nynorsk | `nn` | default | tokenize, pos, lemma, depparse, ner | `norne` |
+| Norwegian | `nb` | default | tokenize, pos, lemma, depparse, ner | `norne` |
+| Occitan | `oc` | default | tokenize, mwt, pos, lemma, depparse |  |
+| Old Church Slavonic | `cu` | default | tokenize, pos, lemma, depparse |  |
 | Old English | `ang` | default | tokenize, pos, lemma, depparse, ner | `oedt_charlm` |
-| Old French | `fro` |  | tokenize, mwt, pos, lemma, depparse |  |
-| Ottoman Turkish | `ota` |  | tokenize, mwt, pos, lemma, depparse |  |
-| Persian | `fa` |  | tokenize, mwt, pos, lemma, depparse, ner | `arman` |
-| Polish | `pl` |  | tokenize, mwt, pos, lemma, depparse, ner | `nkjp` |
+| Old French | `fro` | default | tokenize, mwt, pos, lemma, depparse |  |
+| Ottoman Turkish | `ota` | default | tokenize, mwt, pos, lemma, depparse |  |
+| Persian | `fa` | default | tokenize, mwt, pos, lemma, depparse, ner | `arman` |
+| Polish | `pl` | default | tokenize, mwt, pos, lemma, depparse, ner | `nkjp` |
 | Portuguese | `pt` | default, default_fast | tokenize, mwt, pos, lemma, depparse, constituency |  |
-| Punjabi | `pa` |  | tokenize, pos, lemma, depparse |  |
-| Romanian | `ro` |  | tokenize, pos, lemma, depparse |  |
-| Russian | `ru` |  | tokenize, pos, lemma, depparse, ner | `wikiner` |
-| Sanskrit | `sa` |  | tokenize, pos, lemma, depparse |  |
-| Scottish Gaelic | `gd` |  | tokenize, mwt, pos, lemma, depparse |  |
-| Serbian | `sr` |  | tokenize, pos, lemma, depparse |  |
-| Sindhi | `sd` |  | tokenize, pos, lemma, depparse, ner | `siner` |
-| Slovak | `sk` |  | tokenize, mwt, pos, lemma, depparse |  |
-| Slovenian | `sl` |  | tokenize, pos, lemma, depparse, ner | `uner-ssj_nocharlm` |
-| Sorani | `ckb` |  | tokenize, mwt, pos, lemma, depparse |  |
+| Punjabi | `pa` | default | tokenize, pos, lemma, depparse |  |
+| Romanian | `ro` | default | tokenize, pos, lemma, depparse |  |
+| Russian | `ru` | default | tokenize, pos, lemma, depparse, ner | `wikiner` |
+| Sanskrit | `sa` | default | tokenize, pos, lemma, depparse |  |
+| Scottish Gaelic | `gd` | default | tokenize, mwt, pos, lemma, depparse |  |
+| Serbian | `sr` | default | tokenize, pos, lemma, depparse |  |
+| Sindhi | `sd` | default | tokenize, pos, lemma, depparse, ner | `siner` |
+| Slovak | `sk` | default | tokenize, mwt, pos, lemma, depparse |  |
+| Slovenian | `sl` | default | tokenize, pos, lemma, depparse, ner | `uner-ssj_nocharlm` |
+| Sorani | `ckb` | default | tokenize, mwt, pos, lemma, depparse |  |
 | Spanish | `es` | default | tokenize, mwt, pos, lemma, depparse, ner, sentiment, constituency | `conll02` |
-| Swedish | `sv` |  | tokenize, pos, lemma, depparse, ner | `suc3shuffle` |
-| Tamil | `ta` |  | tokenize, mwt, pos, lemma, depparse |  |
-| Telugu | `te` |  | tokenize, pos, lemma, depparse, ner | `ilner_charlm` |
-| Turkish | `tr` |  | tokenize, mwt, pos, lemma, depparse, ner | `starlang` |
-| Ukrainian | `uk` |  | tokenize, mwt, pos, lemma, depparse, ner | `languk` |
-| Upper Sorbian | `hsb` |  | tokenize, pos, lemma, depparse |  |
-| Urdu | `ur` |  | tokenize, pos, lemma, depparse, ner | `ilner_nocharlm` |
-| Uyghur | `ug` |  | tokenize, pos, lemma, depparse |  |
-| Uzbek | `uz` |  | tokenize, pos, lemma, depparse |  |
-| Vietnamese | `vi` |  | tokenize, pos, lemma, depparse, ner, sentiment, constituency | `vlsp` |
-| Welsh | `cy` |  | tokenize, mwt, pos, lemma, depparse |  |
-| Western Armenian | `hyw` |  | tokenize, mwt, pos, lemma, depparse |  |
-| Wolof | `wo` |  | tokenize, mwt, pos, lemma, depparse |  |
-| Yiddish | `yi` |  | tokenize, mwt, pos, lemma, depparse |  |
-| Zazaki | `zza` |  | tokenize, mwt, pos, lemma, depparse |  |
+| Swedish | `sv` | default | tokenize, pos, lemma, depparse, ner | `suc3shuffle` |
+| Tamil | `ta` | default | tokenize, mwt, pos, lemma, depparse |  |
+| Telugu | `te` | default | tokenize, pos, lemma, depparse, ner | `ilner_charlm` |
+| Turkish | `tr` | default | tokenize, mwt, pos, lemma, depparse, ner | `starlang` |
+| Ukrainian | `uk` | default | tokenize, mwt, pos, lemma, depparse, ner | `languk` |
+| Upper Sorbian | `hsb` | default | tokenize, pos, lemma, depparse |  |
+| Urdu | `ur` | default | tokenize, pos, lemma, depparse, ner | `ilner_nocharlm` |
+| Uyghur | `ug` | default | tokenize, pos, lemma, depparse |  |
+| Uzbek | `uz` | default | tokenize, pos, lemma, depparse |  |
+| Vietnamese | `vi` | default | tokenize, pos, lemma, depparse, ner, sentiment, constituency | `vlsp` |
+| Welsh | `cy` | default | tokenize, mwt, pos, lemma, depparse |  |
+| Western Armenian | `hyw` | default | tokenize, mwt, pos, lemma, depparse |  |
+| Wolof | `wo` | default | tokenize, mwt, pos, lemma, depparse |  |
+| Yiddish | `yi` | default | tokenize, mwt, pos, lemma, depparse |  |
+| Zazaki | `zza` | default | tokenize, mwt, pos, lemma, depparse |  |

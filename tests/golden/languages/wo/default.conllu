@@ -1,0 +1,20 @@
+# text = Njiitu réew mi dikk na Ndakaaru démb.
+# sent_id = 0
+1	Njiitu	njiit	NOUN	NOUN	Case=Gen|Number=Sing	4	nsubj	_	start_char=0|end_char=6
+2	réew	réew	NOUN	NOUN	_	1	nmod	_	start_char=7|end_char=11
+3	mi	bi	DET	DET	Definite=Def|Deixis=Prox|NounClass=Wol6|Number=Sing|PronType=Art	2	det	_	start_char=12|end_char=14
+4	dikk	dikk	VERB	VERB	Mood=Ind|VerbForm=Fin	0	root	_	start_char=15|end_char=19
+5	na	na	AUX	INFL	Aspect=Perf|Mood=Ind|Number=Sing|Person=3	4	aux	_	start_char=20|end_char=22
+6	Ndakaaru	Ndakaaru	PROPN	NAME	_	4	obj	_	start_char=23|end_char=31
+7	démb	démb	VERB	VERB	Mood=Ind|VerbForm=Fin	4	xcomp	_	SpaceAfter=No|start_char=32|end_char=36
+8	.	.	PUNCT	PERIOD	_	4	punct	_	start_char=36|end_char=37
+
+# text = Mu waxtaan ak taskati xibaar yi.
+# sent_id = 1
+1	Mu	mu	PRON	PRON	Case=Nom|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=38|end_char=40
+2	waxtaan	waxtaan	NOUN	NOUN	_	0	root	_	start_char=41|end_char=48
+3	ak	ak	CCONJ	CONJ	_	4	cc	_	start_char=49|end_char=51
+4	taskati	taskati	NOUN	NOUN	Case=Gen|Number=Plur	2	conj	_	start_char=52|end_char=59
+5	xibaar	xibaar	NOUN	NOUN	_	4	nmod	_	start_char=60|end_char=66
+6	yi	bi	DET	DET	Definite=Def|Deixis=Prox|NounClass=Wol8|Number=Plur|PronType=Art	5	det	_	SpaceAfter=No|start_char=67|end_char=69
+7	.	.	PUNCT	PERIOD	_	2	punct	_	SpacesAfter=\n|start_char=69|end_char=70

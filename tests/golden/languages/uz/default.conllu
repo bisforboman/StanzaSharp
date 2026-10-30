@@ -1,0 +1,19 @@
+# text = Bosh vazir kecha Toshkentga keldi.
+# sent_id = 0
+1	Bosh	Bosh	ADJ	A	_	2	amod	_	start_char=0|end_char=4
+2	vazir	vazir	NOUN	N	Case=Nom	5	nsubj	_	start_char=5|end_char=10
+3	kecha	kecha	NOUN	N	Case=Nom	4	amod	_	start_char=11|end_char=16
+4	Toshkentga	Toshkenta	NOUN	N	Case=Dat	5	obl	_	start_char=17|end_char=27
+5	keldi	kel	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=28|end_char=33
+6	.	.	PUNCT	Y	_	5	punct	_	start_char=33|end_char=34
+
+# text = U jurnalistlar bilan yangi qonun haqida gaplashdi.
+# sent_id = 1
+1	U	U	PRON	P	Case=Nom|Number=Sing|Person=3|PronType=Prs	7	nsubj	_	start_char=35|end_char=36
+2	jurnalistlar	jurnal	NOUN	N	_	7	obl	_	start_char=37|end_char=49
+3	bilan	bilan	ADP	R	_	2	case	_	start_char=50|end_char=55
+4	yangi	yangi	ADJ	A	Number[psor]=Plur,Sing|Person[psor]=3	5	amod	_	start_char=56|end_char=61
+5	qonun	qonun	NOUN	N	Case=Nom	7	obj	_	start_char=62|end_char=67
+6	haqida	haqi	ADV	D	_	7	advmod	_	start_char=68|end_char=74
+7	gaplashdi	gapla	VERB	V	_	0	root	_	SpaceAfter=No|start_char=75|end_char=84
+8	.	.	PUNCT	Y	_	7	punct	_	SpacesAfter=\n|start_char=84|end_char=85

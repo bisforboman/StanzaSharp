@@ -1,0 +1,20 @@
+# text = דער פּרעמיער־מיניסטער איז נעכטן אָנגעקומען קיין ירושלים.
+# sent_id = 0
+1	דער	דער	DET	_	_	2	det	_	start_char=0|end_char=3
+2	פּרעמיער־מיניסטער	פּרעמיער־מיניסטער	NOUN	_	_	5	nsubj	_	start_char=4|end_char=21
+3	איז	זײַן	AUX	_	_	5	aux	_	start_char=22|end_char=25
+4	נעכטן	נעכטן	ADV	_	_	5	advmod	_	start_char=26|end_char=31
+5	אָנגעקומען	אָנקומען	VERB	_	_	0	root	_	start_char=32|end_char=42
+6	קיין	קיין	ADP	_	_	7	case	_	start_char=43|end_char=47
+7	ירושלים	ירושל	PROPN	_	_	5	obl	_	SpaceAfter=No|start_char=48|end_char=55
+8	.	.	PUNCT	_	_	5	punct	_	start_char=55|end_char=56
+
+# text = ער האָט גערעדט מיט די זשורנאַליסטן.
+# sent_id = 1
+1	ער	ער	PRON	_	_	3	nsubj	_	start_char=57|end_char=59
+2	האָט	האָבן	AUX	_	_	3	aux	_	start_char=60|end_char=64
+3	גערעדט	רעדן	VERB	_	_	0	root	_	start_char=65|end_char=71
+4	מיט	מיט	ADP	_	_	6	case	_	start_char=72|end_char=75
+5	די	דער	DET	_	_	6	det	_	start_char=76|end_char=78
+6	זשורנאַליסטן	זשורנאַליסט	NOUN	_	_	3	obl	_	SpaceAfter=No|start_char=79|end_char=91
+7	.	.	PUNCT	_	_	3	punct	_	SpacesAfter=\n|start_char=91|end_char=92

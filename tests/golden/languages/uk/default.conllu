@@ -1,0 +1,30 @@
+# text = Прем'єр-міністр учора прибув до Києва.
+# sent_id = 0
+1	Прем'єр	прем’єрний	ADJ	A	Hyph=Yes	3	compound	_	SpaceAfter=No|start_char=0|end_char=7|ner=O
+2	-	-	PUNCT	U	PunctType=Hyph	1	punct	_	SpaceAfter=No|start_char=7|end_char=8|ner=O
+3	міністр	міністр	NOUN	Ncmsny	Animacy=Anim|Case=Nom|Gender=Masc|Number=Sing	5	nsubj	_	start_char=8|end_char=15|ner=O
+4	учора	учора	ADV	R	_	5	advmod	_	start_char=16|end_char=21|ner=O
+5	прибув	прибути	VERB	Vmeis-sm	Aspect=Perf|Gender=Masc|Mood=Ind|Number=Sing|Tense=Past|VerbForm=Fin	0	root	_	start_char=22|end_char=28|ner=O
+6	до	до	ADP	Spsg	Case=Gen	7	case	_	start_char=29|end_char=31|ner=O
+7	Києва	Київ	PROPN	Npmsgn	Animacy=Inan|Case=Gen|Gender=Masc|Number=Sing	5	obl	_	SpaceAfter=No|start_char=32|end_char=37|ner=S-LOC
+8	.	.	PUNCT	U	_	5	punct	_	start_char=37|end_char=38|ner=O
+
+# text = Він говорив з журналістами про новий закон.
+# sent_id = 1
+1	Він	він	PRON	Pp-3m-snn	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=39|end_char=42|ner=O
+2	говорив	говорити	VERB	Vmpis-sm	Aspect=Imp|Gender=Masc|Mood=Ind|Number=Sing|Tense=Past|VerbForm=Fin	0	root	_	start_char=43|end_char=50|ner=O
+3	з	з	ADP	Spsi	Case=Ins	4	case	_	start_char=51|end_char=52|ner=O
+4	журналістами	журналіст	NOUN	Ncmpiy	Animacy=Anim|Case=Ins|Gender=Masc|Number=Plur	2	obl	_	start_char=53|end_char=65|ner=O
+5	про	про	ADP	Spsa	Case=Acc	7	case	_	start_char=66|end_char=69|ner=O
+6	новий	новий	ADJ	Afpmsafn	Animacy=Inan|Case=Acc|Degree=Pos|Gender=Masc|Number=Sing	7	amod	_	start_char=70|end_char=75|ner=O
+7	закон	закон	NOUN	Ncmsan	Animacy=Inan|Case=Acc|Gender=Masc|Number=Sing	2	obl	_	SpaceAfter=No|start_char=76|end_char=81|ner=O
+8	.	.	PUNCT	U	_	2	punct	_	SpacesAfter=\n\n|start_char=81|end_char=82|ner=O
+
+# text = Я бачив Марію у Львові.
+# sent_id = 2
+1	Я	я	PRON	Pp-1-ysnn	Animacy=Anim|Case=Nom|Number=Sing|Person=1|PronType=Prs	2	nsubj	_	start_char=84|end_char=85|ner=O
+2	бачив	бачити	VERB	Vmpis-sm	Aspect=Imp|Gender=Masc|Mood=Ind|Number=Sing|Tense=Past|VerbForm=Fin	0	root	_	start_char=86|end_char=91|ner=O
+3	Марію	Марія	PROPN	Npfsay	Animacy=Anim|Case=Acc|Gender=Fem|NameType=Giv|Number=Sing	2	obj	_	start_char=92|end_char=97|ner=S-PERS
+4	у	у	ADP	Spsl	Case=Loc	5	case	_	start_char=98|end_char=99|ner=O
+5	Львові	Львів	PROPN	Npmsln	Animacy=Inan|Case=Loc|Gender=Masc|Number=Sing	2	obl	_	SpaceAfter=No|start_char=100|end_char=106|ner=S-LOC
+6	.	.	PUNCT	U	_	2	punct	_	SpacesAfter=\n|start_char=106|end_char=107|ner=O
