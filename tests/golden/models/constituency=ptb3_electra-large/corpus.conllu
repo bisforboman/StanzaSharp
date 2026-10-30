@@ -118,7 +118,7 @@
 
 # text = The well-known author, who had written e-mails to info@example.com, visited https://www.example.org/about yesterday.
 # sent_id = 7
-# constituency = (ROOT (S (NP (NP (DT The) (ADJP (RB well) (HYPH -) (VBN known)) (NN author)) (, ,) (SBAR (WHNP (WP who)) (S (VP (VBD had) (VP (VBN written) (NP (NNS e-mails)) (PP (IN to) (NP (ADD info@example.com))))))) (, ,)) (VP (VBD visited) (NP (ADD https://www.example.org/about) (NN yesterday))) (. .)))
+# constituency = (ROOT (S (NP (NP (DT The) (ADJP (RB well) (HYPH -) (VBN known)) (NN author)) (, ,) (SBAR (WHNP (WP who)) (S (VP (VBD had) (VP (VBN written) (NP (NNS e-mails)) (PP (IN to) (NP (ADD info@example.com))))))) (, ,)) (VP (VBD visited) (NP (NNP https://www.example.org/about) (NN yesterday))) (. .)))
 1	The	_	DET	DT	Definite=Def|PronType=Art	0	_	_	start_char=344|end_char=347
 2	well	_	ADV	RB	Degree=Pos	1	_	_	SpaceAfter=No|start_char=348|end_char=352
 3	-	_	PUNCT	HYPH	_	2	_	_	SpaceAfter=No|start_char=352|end_char=353
@@ -132,8 +132,8 @@
 11	to	_	ADP	IN	_	10	_	_	start_char=391|end_char=393
 12	info@example.com	_	PROPN	ADD	Number=Sing	11	_	_	SpaceAfter=No|start_char=394|end_char=410
 13	,	_	PUNCT	,	_	12	_	_	start_char=410|end_char=411
-14	visited	_	VERB	VBD	Tense=Past|VerbForm=Fin	13	_	_	start_char=412|end_char=419
-15	https://www.example.org/about	_	PROPN	ADD	Number=Sing	14	_	_	start_char=420|end_char=449
+14	visited	_	VERB	VBD	Mood=Ind|Number=Sing|Tense=Past|VerbForm=Fin	13	_	_	start_char=412|end_char=419
+15	https://www.example.org/about	_	PROPN	NNP	Number=Sing	14	_	_	start_char=420|end_char=449
 16	yesterday	_	NOUN	NN	Number=Sing	15	_	_	SpaceAfter=No|start_char=450|end_char=459
 17	.	_	PUNCT	.	_	16	_	_	SpacesAfter=\n\n|start_char=459|end_char=460
 

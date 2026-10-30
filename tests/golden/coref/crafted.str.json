@@ -258,8 +258,8 @@
     {
       "id": 7,
       "text": "back",
-      "upos": "ADV",
-      "xpos": "RB",
+      "upos": "ADP",
+      "xpos": "RP",
       "start_char": 61,
       "end_char": 65,
       "coref_chains": [],

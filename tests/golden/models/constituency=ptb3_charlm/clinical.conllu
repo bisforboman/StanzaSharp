@@ -112,8 +112,8 @@
 
 # text = Gout.
 # sent_id = 6
-# constituency = (ROOT (FRAG (VP (VB Gout)) (. .)))
-1	Gout	_	VERB	VB	Mood=Imp|VerbForm=Fin	0	_	_	SpaceAfter=No|start_char=480|end_char=484
+# constituency = (ROOT (NP (NN Gout) (. .)))
+1	Gout	_	NOUN	NN	Number=Sing	0	_	_	SpaceAfter=No|start_char=480|end_char=484
 2	.	_	PUNCT	.	_	1	_	_	start_char=484|end_char=485
 
 # text = Mild depression treated with sertraline.
@@ -128,21 +128,21 @@
 
 # text = Medications on admission: metoprolol 25 mg twice daily, lisinopril 10 mg daily, metformin 500 mg twice daily, warfarin 5 mg daily, atorvastatin 40 mg at night and allopurinol 100 mg daily.
 # sent_id = 8
-# constituency = (ROOT (NP (NP (NP (NNS Medications)) (PP (IN on) (NP (NN admission)))) (: :) (NP (NP (NN metoprolol) (NP (CD 25) (NNS mg)) (ADJP (RB twice) (JJ daily))) (, ,) (NP (NN lisinopril) (NP (CD 10) (NNS mg) (RB daily))) (, ,) (NP (NP (NN metformin) (CD 500) (NNS mg)) (ADJP (RB twice) (JJ daily))) (, ,) (NP (NN warfarin) (CD 5) (NNS mg) (RB daily)) (, ,) (NP (NP (NN atorvastatin) (CD 40) (NNS mg)) (PP (IN at) (NP (NN night)))) (CC and) (NP (NP (NN allopurinol) (CD 100) (NNS mg)) (RB daily))) (. .)))
+# constituency = (ROOT (NP (NP (NP (NNS Medications)) (PP (IN on) (NP (NN admission)))) (: :) (NP (NP (NP (NNP metoprolol) (CD 25) (NNS mg)) (ADVP (RB twice) (RB daily))) (, ,) (NP (NN lisinopril) (NP (CD 10) (NNS mg) (RB daily))) (, ,) (NP (NP (NN metformin) (CD 500) (NNS mg)) (ADJP (RB twice) (JJ daily))) (, ,) (NP (NN warfarin) (CD 5) (NNS mg) (RB daily)) (, ,) (NP (NP (NN atorvastatin) (CD 40) (NNS mg)) (PP (IN at) (NP (NN night)))) (CC and) (NP (NP (NN allopurinol) (CD 100) (NNS mg)) (RB daily))) (. .)))
 1	Medications	_	NOUN	NNS	Number=Plur	0	_	_	start_char=528|end_char=539
 2	on	_	ADP	IN	_	1	_	_	start_char=540|end_char=542
 3	admission	_	NOUN	NN	Number=Sing	2	_	_	SpaceAfter=No|start_char=543|end_char=552
 4	:	_	PUNCT	:	_	3	_	_	start_char=552|end_char=553
-5	metoprolol	_	NOUN	NN	Number=Sing	4	_	_	start_char=554|end_char=564
+5	metoprolol	_	PROPN	NNP	Number=Sing	4	_	_	start_char=554|end_char=564
 6	25	_	NUM	CD	NumForm=Digit|NumType=Card	5	_	_	start_char=565|end_char=567
 7	mg	_	NOUN	NNS	Number=Plur	6	_	_	start_char=568|end_char=570
 8	twice	_	ADV	RB	NumForm=Word|NumType=Mult	7	_	_	start_char=571|end_char=576
-9	daily	_	ADJ	JJ	Degree=Pos	8	_	_	SpaceAfter=No|start_char=577|end_char=582
+9	daily	_	ADV	RB	Degree=Pos	8	_	_	SpaceAfter=No|start_char=577|end_char=582
 10	,	_	PUNCT	,	_	9	_	_	start_char=582|end_char=583
 11	lisinopril	_	NOUN	NN	Number=Sing	10	_	_	start_char=584|end_char=594
 12	10	_	NUM	CD	NumForm=Digit|NumType=Card	11	_	_	start_char=595|end_char=597
 13	mg	_	NOUN	NNS	Number=Plur	12	_	_	start_char=598|end_char=600
-14	daily	_	ADV	RB	_	13	_	_	SpaceAfter=No|start_char=601|end_char=606
+14	daily	_	ADV	RB	Degree=Pos	13	_	_	SpaceAfter=No|start_char=601|end_char=606
 15	,	_	PUNCT	,	_	14	_	_	start_char=606|end_char=607
 16	metformin	_	NOUN	NN	Number=Sing	15	_	_	start_char=608|end_char=617
 17	500	_	NUM	CD	NumForm=Digit|NumType=Card	16	_	_	start_char=618|end_char=621
@@ -153,7 +153,7 @@
 22	warfarin	_	NOUN	NN	Number=Sing	21	_	_	start_char=638|end_char=646
 23	5	_	NUM	CD	NumForm=Digit|NumType=Card	22	_	_	start_char=647|end_char=648
 24	mg	_	NOUN	NNS	Number=Plur	23	_	_	start_char=649|end_char=651
-25	daily	_	ADV	RB	_	24	_	_	SpaceAfter=No|start_char=652|end_char=657
+25	daily	_	ADV	RB	Degree=Pos	24	_	_	SpaceAfter=No|start_char=652|end_char=657
 26	,	_	PUNCT	,	_	25	_	_	start_char=657|end_char=658
 27	atorvastatin	_	NOUN	NN	Number=Sing	26	_	_	start_char=659|end_char=671
 28	40	_	NUM	CD	NumForm=Digit|NumType=Card	27	_	_	start_char=672|end_char=674
@@ -164,7 +164,7 @@
 33	allopurinol	_	NOUN	NN	Number=Sing	32	_	_	start_char=691|end_char=702
 34	100	_	NUM	CD	NumForm=Digit|NumType=Card	33	_	_	start_char=703|end_char=706
 35	mg	_	NOUN	NNS	Number=Plur	34	_	_	start_char=707|end_char=709
-36	daily	_	ADV	RB	_	35	_	_	SpaceAfter=No|start_char=710|end_char=715
+36	daily	_	ADV	RB	Degree=Pos	35	_	_	SpaceAfter=No|start_char=710|end_char=715
 37	.	_	PUNCT	.	_	36	_	_	SpacesAfter=\n\n|start_char=715|end_char=716
 
 # text = Physical examination: Temperature 37.8 C, heart rate 104, blood pressure 148/92, respiratory rate 24, oxygen saturation 89% on room air.
@@ -259,8 +259,8 @@
 
 # text = Sodium 134, potassium 5.1, creatinine 2.1 (baseline 1.6).
 # sent_id = 14
-# constituency = (ROOT (NP (NP (NN Sodium) (CD 134)) (, ,) (NP (NN potassium) (CD 5.1)) (, ,) (NP (NP (NN creatinine) (CD 2.1)) (PRN (-LRB- -LRB-) (NP (NN baseline) (CD 1.6)) (-RRB- -RRB-))) (. .)))
-1	Sodium	_	NOUN	NN	Number=Sing	0	_	_	start_char=1064|end_char=1070
+# constituency = (ROOT (NP (NP (NNP Sodium) (CD 134)) (, ,) (NP (NN potassium) (CD 5.1)) (, ,) (NP (NP (NN creatinine) (CD 2.1)) (PRN (-LRB- -LRB-) (NP (NN baseline) (CD 1.6)) (-RRB- -RRB-))) (. .)))
+1	Sodium	_	PROPN	NNP	Number=Sing	0	_	_	start_char=1064|end_char=1070
 2	134	_	NUM	CD	NumForm=Digit|NumType=Card	1	_	_	SpaceAfter=No|start_char=1071|end_char=1074
 3	,	_	PUNCT	,	_	2	_	_	start_char=1074|end_char=1075
 4	potassium	_	NOUN	NN	Number=Sing	3	_	_	start_char=1076|end_char=1085
@@ -376,7 +376,7 @@
 
 # text = We started intravenous furosemide 40 mg twice daily and ceftriaxone with azithromycin.
 # sent_id = 21
-# constituency = (ROOT (S (NP (PRP We)) (VP (VBD started) (NP (NP (JJ intravenous) (NN furosemide) (NP (CD 40) (NNS mg)) (ADJP (RB twice) (JJ daily))) (CC and) (NP (NP (NN ceftriaxone)) (PP (IN with) (NP (NN azithromycin)))))) (. .)))
+# constituency = (ROOT (S (NP (PRP We)) (VP (VBD started) (NP (NP (JJ intravenous) (NN furosemide) (NP (CD 40) (NNS mg)) (RB twice) (RB daily)) (CC and) (NP (NP (NN ceftriaxone)) (PP (IN with) (NP (NN azithromycin)))))) (. .)))
 1	We	_	PRON	PRP	Case=Nom|Number=Plur|Person=1|PronType=Prs	0	_	_	start_char=1531|end_char=1533
 2	started	_	VERB	VBD	Mood=Ind|Number=Plur|Person=1|Tense=Past|VerbForm=Fin	1	_	_	start_char=1534|end_char=1541
 3	intravenous	_	ADJ	JJ	Degree=Pos	2	_	_	start_char=1542|end_char=1553
@@ -384,7 +384,7 @@
 5	40	_	NUM	CD	NumForm=Digit|NumType=Card	4	_	_	start_char=1565|end_char=1567
 6	mg	_	NOUN	NNS	Number=Plur	5	_	_	start_char=1568|end_char=1570
 7	twice	_	ADV	RB	NumForm=Word|NumType=Mult	6	_	_	start_char=1571|end_char=1576
-8	daily	_	ADJ	JJ	Degree=Pos	7	_	_	start_char=1577|end_char=1582
+8	daily	_	ADV	RB	Degree=Pos	7	_	_	start_char=1577|end_char=1582
 9	and	_	CCONJ	CC	_	8	_	_	start_char=1583|end_char=1586
 10	ceftriaxone	_	NOUN	NN	Number=Sing	9	_	_	start_char=1587|end_char=1598
 11	with	_	ADP	IN	_	10	_	_	start_char=1599|end_char=1603
@@ -407,10 +407,10 @@
 
 # text = Repeat basic metabolic panel in the morning.
 # sent_id = 23
-# constituency = (ROOT (S (VP (VB Repeat) (NP (JJ basic) (NN metabolic) (NN panel)) (PP (IN in) (NP (DT the) (NN morning)))) (. .)))
+# constituency = (ROOT (S (VP (VB Repeat) (NP (JJ basic) (JJ metabolic) (NN panel)) (PP (IN in) (NP (DT the) (NN morning)))) (. .)))
 1	Repeat	_	VERB	VB	Mood=Imp|VerbForm=Fin	0	_	_	start_char=1673|end_char=1679
 2	basic	_	ADJ	JJ	Degree=Pos	1	_	_	start_char=1680|end_char=1685
-3	metabolic	_	NOUN	NN	Number=Sing	2	_	_	start_char=1686|end_char=1695
+3	metabolic	_	ADJ	JJ	Degree=Pos	2	_	_	start_char=1686|end_char=1695
 4	panel	_	NOUN	NN	Number=Sing	3	_	_	start_char=1696|end_char=1701
 5	in	_	ADP	IN	_	4	_	_	start_char=1702|end_char=1704
 6	the	_	DET	DT	Definite=Def|PronType=Art	5	_	_	start_char=1705|end_char=1708
@@ -453,9 +453,9 @@
 
 # text = The dyspnea improved after diuresis, and he was weaned to 2 liters of oxygen by nasal cannula on day three.
 # sent_id = 27
-# constituency = (ROOT (S (S (NP (DT The) (NNS dyspnea)) (VP (VBD improved) (PP (IN after) (NP (NN diuresis))))) (, ,) (CC and) (S (NP (PRP he)) (VP (VBD was) (VP (VBN weaned) (PP (IN to) (NP (NP (CD 2) (NNS liters)) (PP (IN of) (NP (NN oxygen))))) (PP (IN by) (NP (JJ nasal) (NN cannula))) (PP (IN on) (NP (NN day) (CD three)))))) (. .)))
+# constituency = (ROOT (S (S (NP (DT The) (NN dyspnea)) (VP (VBD improved) (PP (IN after) (NP (NN diuresis))))) (, ,) (CC and) (S (NP (PRP he)) (VP (VBD was) (VP (VBN weaned) (PP (IN to) (NP (NP (CD 2) (NNS liters)) (PP (IN of) (NP (NN oxygen))))) (PP (IN by) (NP (JJ nasal) (NN cannula))) (PP (IN on) (NP (NN day) (CD three)))))) (. .)))
 1	The	_	DET	DT	Definite=Def|PronType=Art	0	_	_	start_char=1849|end_char=1852
-2	dyspnea	_	NOUN	NNS	Number=Plur	1	_	_	start_char=1853|end_char=1860
+2	dyspnea	_	NOUN	NN	Number=Sing	1	_	_	start_char=1853|end_char=1860
 3	improved	_	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	2	_	_	start_char=1861|end_char=1869
 4	after	_	ADP	IN	_	3	_	_	start_char=1870|end_char=1875
 5	diuresis	_	NOUN	NN	Number=Sing	4	_	_	SpaceAfter=No|start_char=1876|end_char=1884
@@ -507,13 +507,13 @@
 7	furosemide	_	NOUN	NN	Number=Sing	6	_	_	start_char=2050|end_char=2060
 8	40	_	NUM	CD	NumForm=Digit|NumType=Card	7	_	_	start_char=2061|end_char=2063
 9	mg	_	NOUN	NNS	Number=Plur	8	_	_	start_char=2064|end_char=2066
-10	daily	_	ADV	RB	_	9	_	_	start_char=2067|end_char=2072
+10	daily	_	ADV	RB	Degree=Pos	9	_	_	start_char=2067|end_char=2072
 11	with	_	ADP	IN	_	10	_	_	start_char=2073|end_char=2077
 12	instructions	_	NOUN	NNS	Number=Plur	11	_	_	start_char=2078|end_char=2090
 13	to	_	PART	TO	_	12	_	_	start_char=2091|end_char=2093
 14	weigh	_	VERB	VB	VerbForm=Inf	13	_	_	start_char=2094|end_char=2099
 15	himself	_	PRON	PRP	Case=Acc|Gender=Masc|Number=Sing|Person=3|PronType=Prs|Reflex=Yes	14	_	_	start_char=2100|end_char=2107
-16	every	_	DET	DT	PronType=Ind	15	_	_	start_char=2108|end_char=2113
+16	every	_	DET	DT	PronType=Tot	15	_	_	start_char=2108|end_char=2113
 17	morning	_	NOUN	NN	Number=Sing	16	_	_	start_char=2114|end_char=2121
 18	and	_	CCONJ	CC	_	17	_	_	start_char=2122|end_char=2125
 19	to	_	PART	TO	_	18	_	_	start_char=2126|end_char=2128

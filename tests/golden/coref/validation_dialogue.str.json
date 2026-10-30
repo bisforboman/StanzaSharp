@@ -616,7 +616,7 @@
       "text": "hung",
       "upos": "VERB",
       "xpos": "VBD",
-      "feats": "Mood=Ind|Number=Sing|Tense=Past|VerbForm=Fin",
+      "feats": "Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin",
       "start_char": 175,
       "end_char": 179,
       "coref_chains": []
@@ -1106,7 +1106,7 @@
       "text": "was",
       "upos": "AUX",
       "xpos": "VBD",
-      "feats": "Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin",
+      "feats": "Mood=Ind|Number=Sing|Person=1|Tense=Past|VerbForm=Fin",
       "start_char": 305,
       "end_char": 308,
       "coref_chains": []
@@ -1876,7 +1876,7 @@
       "text": "You",
       "upos": "PRON",
       "xpos": "PRP",
-      "feats": "Case=Nom|Person=2|PronType=Prs",
+      "feats": "Case=Nom|Number=Sing|Person=2|PronType=Prs",
       "start_char": 503,
       "end_char": 506,
       "coref_chains": [
@@ -3909,7 +3909,7 @@
       "id": 15,
       "text": ";",
       "upos": "PUNCT",
-      "xpos": ":",
+      "xpos": ",",
       "start_char": 1126,
       "end_char": 1127,
       "coref_chains": [],
@@ -4502,7 +4502,7 @@
       "text": "counted",
       "upos": "VERB",
       "xpos": "VBD",
-      "feats": "Tense=Past|VerbForm=Fin|Voice=Pass",
+      "feats": "Mood=Ind|Person=3|Tense=Past|VerbForm=Fin|Voice=Pass",
       "start_char": 1358,
       "end_char": 1365,
       "coref_chains": []
@@ -4631,7 +4631,6 @@
       "text": "much",
       "upos": "ADV",
       "xpos": "RB",
-      "feats": "Degree=Pos",
       "start_char": 1411,
       "end_char": 1415,
       "coref_chains": []
@@ -5303,8 +5302,8 @@
     {
       "id": 11,
       "text": "in",
-      "upos": "ADV",
-      "xpos": "RB",
+      "upos": "ADP",
+      "xpos": "IN",
       "start_char": 1632,
       "end_char": 1634,
       "coref_chains": []
@@ -5526,8 +5525,9 @@
     {
       "id": 3,
       "text": "that",
-      "upos": "SCONJ",
-      "xpos": "IN",
+      "upos": "PRON",
+      "xpos": "DT",
+      "feats": "Number=Sing|PronType=Dem",
       "start_char": 1695,
       "end_char": 1699,
       "coref_chains": []

@@ -111,7 +111,7 @@
 7	you	you	PRON	PRP	Case=Acc|Person=2|PronType=Prs	6	_	_	SpaceAfter=No|start_char=470|end_char=473
 8	"	"	PUNCT	''	_	7	_	_	start_char=473|end_char=474
 9	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	8	_	_	start_char=475|end_char=477
-10	teşekkürler	tenekkürler	PROPN	NNP	Number=Sing	9	_	_	SpaceAfter=No|start_char=478|end_char=489
+10	teşekkürler	teşekkürler	PROPN	NNP	Number=Sing	9	_	_	SpaceAfter=No|start_char=478|end_char=489
 11	.	.	PUNCT	.	_	10	_	_	SpacesAfter=\n\n|start_char=489|end_char=490
 
 # text = François and Hélène moved to Montréal in 2015.
@@ -146,7 +146,7 @@
 1	The	the	DET	DT	Definite=Def|PronType=Art	0	_	_	start_char=590|end_char=593
 2	Japanese	Japanese	ADJ	JJ	Degree=Pos	1	_	_	start_char=594|end_char=602
 3	word	word	NOUN	NN	Number=Sing	2	_	_	start_char=603|end_char=607
-4	東京	東京	NOUN	NN	Number=Sing	3	_	_	start_char=608|end_char=610
+4	東京	東京	PROPN	NNP	Number=Sing	3	_	_	start_char=608|end_char=610
 5	means	mean	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	_	_	start_char=611|end_char=616
 6	"	"	PUNCT	``	_	5	_	_	SpaceAfter=No|start_char=617|end_char=618
 7	eastern	eastern	ADJ	JJ	Degree=Pos	6	_	_	start_char=618|end_char=625
@@ -173,7 +173,7 @@
 # sent_id = 13
 1	She	she	PRON	PRP	Case=Nom|Gender=Fem|Number=Sing|Person=3|PronType=Prs	0	_	_	start_char=684|end_char=687
 2	studied	study	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	1	_	_	start_char=688|end_char=695
-3	한국어	한국어	NOUN	NN	Number=Sing	2	_	_	start_char=696|end_char=699
+3	한국어	한국어	SYM	SYM	_	2	_	_	start_char=696|end_char=699
 4	for	for	ADP	IN	_	3	_	_	start_char=700|end_char=703
 5	two	two	NUM	CD	NumForm=Word|NumType=Card	4	_	_	start_char=704|end_char=707
 6	years	year	NOUN	NNS	Number=Plur	5	_	_	start_char=708|end_char=713
@@ -202,19 +202,19 @@
 6	peace	peace	NOUN	NN	Number=Sing	5	_	_	SpaceAfter=No|start_char=788|end_char=793
 7	"	"	PUNCT	''	_	6	_	_	start_char=793|end_char=794
 8	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	7	_	_	start_char=795|end_char=797
-9	мир	мир	ADJ	JJ	Degree=Pos	8	_	_	SpaceAfter=No|start_char=798|end_char=801
+9	мир	мир	ADV	RB	_	8	_	_	SpaceAfter=No|start_char=798|end_char=801
 10	.	.	PUNCT	.	_	9	_	_	start_char=801|end_char=802
 
 # text = Москва is the capital; Санкт-Петербург is the second-largest city.
 # sent_id = 16
-1	Москва	Москваа	PROPN	NNP	Number=Sing	0	_	_	start_char=803|end_char=809
+1	Москва	Москва	PROPN	NNP	Number=Sing	0	_	_	start_char=803|end_char=809
 2	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	1	_	_	start_char=810|end_char=812
 3	the	the	DET	DT	Definite=Def|PronType=Art	2	_	_	start_char=813|end_char=816
 4	capital	capital	NOUN	NN	Number=Sing	3	_	_	SpaceAfter=No|start_char=817|end_char=824
-5	;	;	PUNCT	:	_	4	_	_	start_char=824|end_char=825
+5	;	;	PUNCT	,	_	4	_	_	start_char=824|end_char=825
 6	Санкт	Санкт	PROPN	NNP	Number=Sing	5	_	_	SpaceAfter=No|start_char=826|end_char=831
 7	-	-	PUNCT	HYPH	_	6	_	_	SpaceAfter=No|start_char=831|end_char=832
-8	Петербург	iеurрббnicгusуsеnivjkninkraрnvjеiinkjiiеkrррivjjip	PROPN	NNP	Number=Sing	7	_	_	start_char=832|end_char=841
+8	Петербург	Петербург	PROPN	NNP	Number=Sing	7	_	_	start_char=832|end_char=841
 9	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	8	_	_	start_char=842|end_char=844
 10	the	the	DET	DT	Definite=Def|PronType=Art	9	_	_	start_char=845|end_char=848
 11	second	second	ADJ	JJ	Degree=Pos|NumForm=Word|NumType=Ord	10	_	_	SpaceAfter=No|start_char=849|end_char=855
@@ -227,13 +227,13 @@
 # sent_id = 17
 1	Greek	Greek	ADJ	JJ	Degree=Pos	0	_	_	start_char=871|end_char=876
 2	letters	letter	NOUN	NNS	Number=Plur	1	_	_	start_char=877|end_char=884
-3	such	such	ADJ	JJ	ExtPos=ADP	2	_	_	start_char=885|end_char=889
+3	such	such	ADJ	JJ	Degree=Pos|ExtPos=ADP	2	_	_	start_char=885|end_char=889
 4	as	as	ADP	IN	_	3	_	_	start_char=890|end_char=892
 5	α	α	NOUN	NN	Number=Sing	4	_	_	SpaceAfter=No|start_char=893|end_char=894
 6	,	,	PUNCT	,	_	5	_	_	start_char=894|end_char=895
-7	β	β	NOUN	NN	Number=Sing	6	_	_	SpaceAfter=No|start_char=896|end_char=897
+7	β	β	X	FW	_	6	_	_	SpaceAfter=No|start_char=896|end_char=897
 8	,	,	PUNCT	,	_	7	_	_	start_char=897|end_char=898
-9	γ	γ	PUNCT	:	_	8	_	_	start_char=899|end_char=900
+9	γ	γ	PUNCT	''	_	8	_	_	start_char=899|end_char=900
 10	and	and	CCONJ	CC	_	9	_	_	start_char=901|end_char=904
 11	Ω	Ω	NOUN	NN	Number=Sing	10	_	_	start_char=905|end_char=906
 12	appear	appear	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	11	_	_	start_char=907|end_char=913
@@ -246,7 +246,7 @@
 # sent_id = 18
 1	The	the	DET	DT	Definite=Def|PronType=Art	0	_	_	start_char=935|end_char=938
 2	word	word	NOUN	NN	Number=Sing	1	_	_	start_char=939|end_char=943
-3	φιλοσοφία	φιλklοφph	NOUN	NN	Number=Sing	2	_	_	start_char=944|end_char=953
+3	φιλοσοφία	y	NOUN	NN	Number=Sing	2	_	_	start_char=944|end_char=953
 4	means	mean	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	_	_	start_char=954|end_char=959
 5	love	love	NOUN	NN	Number=Sing	4	_	_	start_char=960|end_char=964
 6	of	of	ADP	IN	_	5	_	_	start_char=965|end_char=967
@@ -267,7 +267,7 @@
 # sent_id = 20
 1	Hebrew	Hebrew	PROPN	NNP	Number=Sing	0	_	_	start_char=1014|end_char=1020
 2	writes	write	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	1	_	_	start_char=1021|end_char=1027
-3	שלום	שלום	PUNCT	``	_	2	_	_	start_char=1028|end_char=1032
+3	שלום	שלום	PUNCT	:	_	2	_	_	start_char=1028|end_char=1032
 4	for	for	ADP	IN	_	3	_	_	start_char=1033|end_char=1036
 5	peace	peace	NOUN	NN	Number=Sing	4	_	_	SpaceAfter=No|start_char=1037|end_char=1042
 6	.	.	PUNCT	.	_	5	_	_	SpacesAfter=\n\n|start_char=1042|end_char=1043
@@ -277,7 +277,7 @@
 1	Dmitri	Dmitri	PROPN	NNP	Number=Sing	0	_	_	start_char=1045|end_char=1051
 2	Shostakovich	Shostakovich	PROPN	NNP	Number=Sing	1	_	_	start_char=1052|end_char=1064
 3	(	(	PUNCT	-LRB-	_	2	_	_	SpaceAfter=No|start_char=1065|end_char=1066
-4	Дмитрий	дмитрий	CCONJ	CC	_	3	_	_	start_char=1066|end_char=1073
+4	Дмитрий	Дмитрий	CCONJ	CC	_	3	_	_	start_char=1066|end_char=1073
 5	Шостакович	Шостакович	NOUN	NN	Number=Sing	4	_	_	SpaceAfter=No|start_char=1074|end_char=1084
 6	)	)	PUNCT	-RRB-	_	5	_	_	start_char=1084|end_char=1085
 7	wrote	write	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	6	_	_	start_char=1086|end_char=1091
@@ -319,7 +319,7 @@
 7	,	,	PUNCT	,	_	6	_	_	start_char=1228|end_char=1229
 8	spoke	speak	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	7	_	_	start_char=1230|end_char=1235
 9	in	in	ADP	IN	_	8	_	_	start_char=1236|end_char=1238
-10	Lagos	Lago	PROPN	NNP	Number=Sing	9	_	_	SpaceAfter=No|start_char=1239|end_char=1244
+10	Lagos	Lagos	PROPN	NNP	Number=Sing	9	_	_	SpaceAfter=No|start_char=1239|end_char=1244
 11	.	.	PUNCT	.	_	10	_	_	start_char=1244|end_char=1245
 
 # text = Ngũgĩ wa Thiong'o was in the audience.
@@ -386,7 +386,7 @@
 2	uses	use	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	1	_	_	start_char=1458|end_char=1462
 3	Devanagari	Devanagari	PROPN	NNP	Number=Sing	2	_	_	SpaceAfter=No|start_char=1463|end_char=1473
 4	:	:	PUNCT	:	_	3	_	_	start_char=1473|end_char=1474
-5	नमस्ते	नमस्ते	PUNCT	``	_	4	_	_	start_char=1475|end_char=1481
+5	नमस्ते	नमस्ते	INTJ	UH	_	4	_	_	start_char=1475|end_char=1481
 6	means	mean	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	5	_	_	start_char=1482|end_char=1487
 7	hello	hello	INTJ	UH	_	6	_	_	SpaceAfter=No|start_char=1488|end_char=1493
 8	.	.	PUNCT	.	_	7	_	_	start_char=1493|end_char=1494
@@ -399,7 +399,7 @@
 4	own	own	ADJ	JJ	Degree=Pos	3	_	_	start_char=1510|end_char=1513
 5	script	script	NOUN	NN	Number=Sing	4	_	_	SpaceAfter=No|start_char=1514|end_char=1520
 6	:	:	PUNCT	:	_	5	_	_	start_char=1520|end_char=1521
-7	வணக்கம்	வணக்கம	ADV	RB	_	6	_	_	SpaceAfter=No|start_char=1522|end_char=1529
+7	வணக்கம்	வணக்கம்	ADV	RB	_	6	_	_	SpaceAfter=No|start_char=1522|end_char=1529
 8	.	.	PUNCT	.	_	7	_	_	SpacesAfter=\n\n|start_char=1529|end_char=1530
 
 # text = Herr Müller from Düsseldorf ordered a Weißbier.
@@ -444,10 +444,10 @@
 # sent_id = 36
 1	The	the	DET	DT	Definite=Def|PronType=Art	0	_	_	start_char=1690|end_char=1693
 2	novel	novel	NOUN	NN	Number=Sing	1	_	_	start_char=1694|end_char=1699
-3	Cien	Cien	PROPN	NNP	Number=Sing	2	_	_	start_char=1700|end_char=1704
+3	Cien	Cien	X	FW	Foreign=Yes	2	_	_	start_char=1700|end_char=1704
 4	años	año	X	FW	Foreign=Yes	3	_	_	start_char=1705|end_char=1709
 5	de	de	X	FW	Foreign=Yes	4	_	_	start_char=1710|end_char=1712
-6	soledad	soledad	PROPN	NNP	Number=Sing	5	_	_	start_char=1713|end_char=1720
+6	soledad	soledad	X	FW	Foreign=Yes	5	_	_	start_char=1713|end_char=1720
 7	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	6	_	_	start_char=1721|end_char=1724
 8	translated	translate	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	7	_	_	start_char=1725|end_char=1735
 9	as	as	ADP	IN	_	8	_	_	start_char=1736|end_char=1738
@@ -519,7 +519,7 @@
 4	own	own	ADJ	JJ	Degree=Pos	3	_	_	start_char=1977|end_char=1980
 5	alphabet	alphabet	NOUN	NN	Number=Sing	4	_	_	SpaceAfter=No|start_char=1981|end_char=1989
 6	:	:	PUNCT	:	_	5	_	_	start_char=1989|end_char=1990
-7	ქართული	ქართულ	ADV	RB	_	6	_	_	SpaceAfter=No|start_char=1991|end_char=1998
+7	ქართული	ქართული	ADV	RB	_	6	_	_	SpaceAfter=No|start_char=1991|end_char=1998
 8	.	.	PUNCT	.	_	7	_	_	SpacesAfter=\n\n|start_char=1998|end_char=1999
 
 # text = Mr. Ødegaard flew from Oslo to Ålesund.
@@ -546,7 +546,7 @@
 
 # text = Ελλάδα is the Greek name for Greece.
 # sent_id = 44
-1	Ελλάδα	ελλάδα	SYM	SYM	_	0	_	_	start_char=2077|end_char=2083
+1	Ελλάδα	Ελλάδα	PROPN	NNP	Number=Sing	0	_	_	start_char=2077|end_char=2083
 2	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	1	_	_	start_char=2084|end_char=2086
 3	the	the	DET	DT	Definite=Def|PronType=Art	2	_	_	start_char=2087|end_char=2090
 4	Greek	Greek	ADJ	JJ	Degree=Pos	3	_	_	start_char=2091|end_char=2096
@@ -568,8 +568,8 @@
 1	The	the	DET	DT	Definite=Def|PronType=Art	0	_	_	start_char=2137|end_char=2140
 2	sign	sign	NOUN	NN	Number=Sing	1	_	_	start_char=2141|end_char=2145
 3	said	say	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	2	_	_	start_char=2146|end_char=2150
-4	ДОБРО	ДОБРО	PROPN	NNP	Number=Sing	3	_	_	start_char=2151|end_char=2156
-5	ПОЖАЛОВАТЬ	ПОАuОuВП	PROPN	NNP	Number=Sing	4	_	_	SpaceAfter=No|start_char=2157|end_char=2167
+4	ДОБРО	ДОБРО	NOUN	NN	Number=Sing	3	_	_	start_char=2151|end_char=2156
+5	ПОЖАЛОВАТЬ	ПОЖАЛОВАТЬ	PROPN	NNP	Number=Sing	4	_	_	SpaceAfter=No|start_char=2157|end_char=2167
 6	,	,	PUNCT	,	_	5	_	_	start_char=2167|end_char=2168
 7	which	which	PRON	WDT	PronType=Rel	6	_	_	start_char=2169|end_char=2174
 8	means	mean	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	7	_	_	start_char=2175|end_char=2180
@@ -584,11 +584,11 @@
 2	ordered	order	VERB	VBD	Mood=Ind|Number=Sing|Person=1|Tense=Past|VerbForm=Fin	1	_	_	start_char=2195|end_char=2202
 3	pão	pão	PROPN	NNP	Number=Sing	2	_	_	start_char=2203|end_char=2206
 4	de	de	PROPN	NNP	Number=Sing	3	_	_	start_char=2207|end_char=2209
-5	queijo	Buejjo	PROPN	NNP	Number=Sing	4	_	_	SpaceAfter=No|start_char=2210|end_char=2216
+5	queijo	queijo	PROPN	NNP	Number=Sing	4	_	_	SpaceAfter=No|start_char=2210|end_char=2216
 6	,	,	PUNCT	,	_	5	_	_	start_char=2216|end_char=2217
 7	dulce	dulce	X	FW	Foreign=Yes	6	_	_	start_char=2218|end_char=2223
 8	de	de	X	FW	Foreign=Yes	7	_	_	start_char=2224|end_char=2226
-9	leche	leche	PROPN	NNP	Number=Sing	8	_	_	start_char=2227|end_char=2232
+9	leche	leche	X	FW	Foreign=Yes	8	_	_	start_char=2227|end_char=2232
 10	and	and	CCONJ	CC	_	9	_	_	start_char=2233|end_char=2236
 11	a	a	DET	DT	Definite=Ind|PronType=Art	10	_	_	start_char=2237|end_char=2238
 12	café	café	NOUN	NN	Number=Sing	11	_	_	start_char=2239|end_char=2243
@@ -598,13 +598,13 @@
 
 # text = Ēriks Lūsis, Žydrūnas Ilgauskas and Ģirts Āboliņš are Baltic names.
 # sent_id = 48
-1	Ēriks	Ērik	PROPN	NNP	Number=Sing	0	_	_	start_char=2256|end_char=2261
+1	Ēriks	Orik	PROPN	NNP	Number=Sing	0	_	_	start_char=2256|end_char=2261
 2	Lūsis	Lūsis	PROPN	NNP	Number=Sing	1	_	_	SpaceAfter=No|start_char=2262|end_char=2267
 3	,	,	PUNCT	,	_	2	_	_	start_char=2267|end_char=2268
 4	Žydrūnas	Žydrūnas	PROPN	NNP	Number=Sing	3	_	_	start_char=2269|end_char=2277
-5	Ilgauskas	Ilgauskas	PROPN	NNP	Number=Sing	4	_	_	start_char=2278|end_char=2287
+5	Ilgauskas	Ilgauska	PROPN	NNP	Number=Sing	4	_	_	start_char=2278|end_char=2287
 6	and	and	CCONJ	CC	_	5	_	_	start_char=2288|end_char=2291
-7	Ģirts	Ģirt	NOUN	NNS	Number=Plur	6	_	_	start_char=2292|end_char=2297
+7	Ģirts	Kirt	PROPN	NNPS	Number=Plur	6	_	_	start_char=2292|end_char=2297
 8	Āboliņš	Āboliņš	PROPN	NNP	Number=Sing	7	_	_	start_char=2298|end_char=2305
 9	are	be	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	8	_	_	start_char=2306|end_char=2309
 10	Baltic	Baltic	ADJ	JJ	Degree=Pos	9	_	_	start_char=2310|end_char=2316
@@ -647,7 +647,7 @@
 4	haiku	haiku	NOUN	NN	Number=Sing	3	_	_	SpaceAfter=No|start_char=2439|end_char=2444
 5	:	:	PUNCT	:	_	4	_	_	start_char=2444|end_char=2445
 6	古池や	古池や	INTJ	UH	_	5	_	_	start_char=2446|end_char=2449
-7	蛙飛び込む	蛙飛び込む	PUNCT	,	_	6	_	_	start_char=2450|end_char=2455
+7	蛙飛び込む	'飛び込む	PUNCT	,	_	6	_	_	start_char=2450|end_char=2455
 8	水の音	水の音	INTJ	UH	_	7	_	_	SpaceAfter=No|start_char=2456|end_char=2459
 9	.	.	PUNCT	.	_	8	_	_	SpacesAfter=\n\n|start_char=2459|end_char=2460
 
@@ -657,8 +657,8 @@
 2	old	old	ADJ	JJ	Degree=Pos	1	_	_	start_char=2466|end_char=2469
 3	sign	sign	NOUN	NN	Number=Sing	2	_	_	start_char=2470|end_char=2474
 4	said	say	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	3	_	_	start_char=2475|end_char=2479
-5	ΤΗΣ	ΤΗΣ	ADJ	JJ	Degree=Pos	4	_	_	start_char=2480|end_char=2483
-6	ΠΟΛΕΩΣ	ΠΟlΕΩΣ	NOUN	NN	Number=Sing	5	_	_	start_char=2484|end_char=2490
+5	ΤΗΣ	ΤΗΣ	ADP	IN	_	4	_	_	start_char=2480|end_char=2483
+6	ΠΟΛΕΩΣ	o-ΛΕΩΣ	NOUN	NN	Number=Sing	5	_	_	start_char=2484|end_char=2490
 7	in	in	ADP	IN	_	6	_	_	start_char=2491|end_char=2493
 8	capitals	capital	NOUN	NNS	Number=Plur	7	_	_	SpaceAfter=No|start_char=2494|end_char=2502
 9	,	,	PUNCT	,	_	8	_	_	start_char=2502|end_char=2503
@@ -672,7 +672,7 @@
 
 # text = ΕΙΣ was carved below it.
 # sent_id = 53
-1	ΕΙΣ	ΕΙΣ	PROPN	NNP	Number=Sing	0	_	_	start_char=2533|end_char=2536
+1	ΕΙΣ	ho	PRON	PRP	Case=Nom|Number=Sing|PronType=Prs	0	_	_	start_char=2533|end_char=2536
 2	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	1	_	_	start_char=2537|end_char=2540
 3	carved	carve	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	2	_	_	start_char=2541|end_char=2547
 4	below	below	ADP	IN	_	3	_	_	start_char=2548|end_char=2553

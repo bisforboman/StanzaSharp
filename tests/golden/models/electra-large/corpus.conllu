@@ -147,7 +147,7 @@
 
 # text = Mary's sister wouldn't have gone if she'd known that the meeting, which was scheduled for 3 p.m. on Friday, had been cancelled; nobody told her.
 # sent_id = 8
-# constituency = (ROOT (S (S (NP (NP (NNP Mary) (POS 's)) (NN sister)) (VP (MD would) (RB n't) (VP (VB have) (VP (VBN gone) (SBAR (IN if) (S (NP (PRP she)) (VP (VBD 'd) (VP (VBN known) (SBAR (IN that) (S (NP (NP (DT the) (NN meeting)) (, ,) (SBAR (WHNP (WDT which)) (S (VP (VBD was) (VP (VBN scheduled) (PP (IN for) (NP (NP (CD 3) (NN p.m.)) (PP (IN on) (NP (NNP Friday))))))))) (, ,)) (VP (VBD had) (VP (VBN been) (VP (VBN cancelled)))))))))))))) (, ;) (S (NP (NN nobody)) (VP (VBD told) (NP (PRP her)))) (. .)))
+# constituency = (ROOT (S (S (NP (NP (NNP Mary) (POS 's)) (NN sister)) (VP (MD would) (RB n't) (VP (VB have) (VP (VBN gone) (SBAR (IN if) (S (NP (PRP she)) (VP (VBD 'd) (VP (VBN known) (SBAR (IN that) (S (NP (NP (DT the) (NN meeting)) (, ,) (SBAR (WHNP (WDT which)) (S (VP (VBD was) (VP (VBN scheduled) (PP (IN for) (NP (NP (CD 3) (NN p.m.)) (PP (IN on) (NP (NNP Friday))))))))) (, ,)) (VP (VBD had) (VP (VBN been) (VP (VBN cancelled)))))))))))))) (: ;) (S (NP (NN nobody)) (VP (VBD told) (NP (PRP her)))) (. .)))
 # sentiment = 0
 1-2	Mary's	_	_	_	_	_	_	_	start_char=462|end_char=468|ner=S-PERSON
 1	Mary	Mary	PROPN	NNP	Number=Sing	3	nmod:poss	_	start_char=462|end_char=466
@@ -179,7 +179,7 @@
 25	had	have	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	27	aux	_	start_char=570|end_char=573|ner=O
 26	been	be	AUX	VBN	Tense=Past|VerbForm=Part	27	aux:pass	_	start_char=574|end_char=578|ner=O
 27	cancelled	cancel	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	11	ccomp	_	SpaceAfter=No|start_char=579|end_char=588|ner=O
-28	;	;	PUNCT	,	_	30	punct	_	start_char=588|end_char=589|ner=O
+28	;	;	PUNCT	:	_	30	punct	_	start_char=588|end_char=589|ner=O
 29	nobody	nobody	PRON	NN	Number=Sing|PronType=Neg	30	nsubj	_	start_char=590|end_char=596|ner=O
 30	told	tell	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	7	parataxis	_	start_char=597|end_char=601|ner=O
 31	her	her	PRON	PRP	Case=Acc|Gender=Fem|Number=Sing|Person=3|PronType=Prs	30	iobj	_	SpaceAfter=No|start_char=602|end_char=605|ner=O

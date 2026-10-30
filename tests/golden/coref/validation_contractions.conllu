@@ -381,7 +381,7 @@
 # text = Aren't.
 # sent_id = 48
 1-2	Aren't	_	_	_	_	_	_	_	SpaceAfter=No|start_char=576|end_char=582
-1	Are	_	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	_	_	start_char=576|end_char=579
+1	Are	_	AUX	VBP	Mood=Ind|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin	0	_	_	start_char=576|end_char=579
 2	n't	_	PART	RB	Polarity=Neg	1	_	_	start_char=579|end_char=582
 3	.	_	PUNCT	.	_	2	_	_	start_char=582|end_char=583
 
@@ -416,7 +416,7 @@
 # text = Hadn't.
 # sent_id = 53
 1-2	Hadn't	_	_	_	_	_	_	_	SpaceAfter=No|start_char=618|end_char=624
-1	Had	_	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	_	_	start_char=618|end_char=621
+1	Had	_	AUX	VBD	Mood=Ind|Number=Sing|Person=1|Tense=Past|VerbForm=Fin	0	_	_	start_char=618|end_char=621
 2	n't	_	PART	RB	Polarity=Neg	1	_	_	start_char=621|end_char=624
 3	.	_	PUNCT	.	_	2	_	_	start_char=624|end_char=625
 
@@ -479,7 +479,7 @@
 # text = Don’t.
 # sent_id = 62
 1-2	Don’t	_	_	_	_	_	_	_	SpaceAfter=No|start_char=700|end_char=705
-1	Do	_	AUX	VB	Mood=Imp|Number=Sing|Person=2|VerbForm=Fin	0	_	_	start_char=700|end_char=702
+1	Do	_	AUX	VB	Mood=Imp|Number=Sing|VerbForm=Fin	0	_	_	start_char=700|end_char=702
 2	n’t	_	PART	RB	Polarity=Neg	1	_	_	start_char=702|end_char=705
 3	.	_	PUNCT	.	_	2	_	_	start_char=705|end_char=706
 
@@ -507,7 +507,7 @@
 # text = Aren’t.
 # sent_id = 66
 1-2	Aren’t	_	_	_	_	_	_	_	SpaceAfter=No|start_char=731|end_char=737
-1	Are	_	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	_	_	start_char=731|end_char=734
+1	Are	_	AUX	VBP	Mood=Ind|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin	0	_	_	start_char=731|end_char=734
 2	n’t	_	PART	RB	Polarity=Neg	1	_	_	start_char=734|end_char=737
 3	.	_	PUNCT	.	_	2	_	_	start_char=737|end_char=738
 
@@ -916,7 +916,7 @@
 4	report	_	NOUN	NN	Number=Sing	3	_	_	SpaceAfter=No|start_char=1603|end_char=1609|coref_chains=end-repr-id53
 5	,	_	PUNCT	,	_	4	_	_	start_char=1609|end_char=1610
 6-7	NASA's	_	_	_	_	_	_	_	start_char=1611|end_char=1617
-6	NASA	_	PROPN	NNP	Abbr=Yes|Number=Sing	5	_	_	start_char=1611|end_char=1615|coref_chains=start-repr-id54,start-repr-id55
+6	NASA	_	PROPN	NNP	Number=Sing	5	_	_	start_char=1611|end_char=1615|coref_chains=start-repr-id54,start-repr-id55
 7	's	_	PART	POS	_	6	_	_	start_char=1615|end_char=1617|coref_chains=end-repr-id54,middle-repr-id55
 8	rover	_	NOUN	NN	Number=Sing	7	_	_	SpaceAfter=No|start_char=1618|end_char=1623|coref_chains=end-repr-id55
 9	,	_	PUNCT	,	_	8	_	_	start_char=1623|end_char=1624
@@ -949,10 +949,10 @@
 # text = Ain't nobody got time for that.
 # sent_id = 106
 1-2	Ain't	_	_	_	_	_	_	_	start_char=1701|end_char=1706
-1	Ai	_	AUX	VB	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	_	_	start_char=1701|end_char=1703
+1	Ai	_	AUX	VBP	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	0	_	_	start_char=1701|end_char=1703
 2	n't	_	PART	RB	Polarity=Neg	1	_	_	start_char=1703|end_char=1706
 3	nobody	_	PRON	NN	Number=Sing|PronType=Neg	2	_	_	start_char=1707|end_char=1713|coref_chains=unit-repr-id63
-4	got	_	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	3	_	_	start_char=1714|end_char=1717
+4	got	_	VERB	VBD	Mood=Ind|Tense=Past|VerbForm=Fin	3	_	_	start_char=1714|end_char=1717
 5	time	_	NOUN	NN	Number=Sing	4	_	_	start_char=1718|end_char=1722
 6	for	_	ADP	IN	_	5	_	_	start_char=1723|end_char=1726
 7	that	_	PRON	DT	Number=Sing|PronType=Dem	6	_	_	SpaceAfter=No|start_char=1727|end_char=1731
@@ -960,7 +960,7 @@
 
 # text = Y'all better listen.
 # sent_id = 107
-1	Y'all	_	PRON	PRP	Case=Nom|Number=Sing|Person=2|PronType=Prs	0	_	_	start_char=1733|end_char=1738|coref_chains=unit-repr-id64
+1	Y'all	_	INTJ	UH	_	0	_	_	start_char=1733|end_char=1738|coref_chains=unit-repr-id64
 2	better	_	ADV	RBR	Degree=Cmp	1	_	_	start_char=1739|end_char=1745
 3	listen	_	VERB	VB	VerbForm=Inf	2	_	_	SpaceAfter=No|start_char=1746|end_char=1752
 4	.	_	PUNCT	.	_	3	_	_	start_char=1752|end_char=1753
@@ -977,15 +977,15 @@
 # text = Wanna come?
 # sent_id = 109
 1-2	Wanna	_	_	_	_	_	_	_	start_char=1769|end_char=1774
-1	Wan	_	VERB	VBG	Style=Vrnc|Tense=Pres|VerbForm=Fin	0	_	_	start_char=1769|end_char=1772
+1	Wan	_	VERB	VB	Tense=Pres|VerbForm=Fin	0	_	_	start_char=1769|end_char=1772
 2	na	_	PART	TO	_	1	_	_	start_char=1772|end_char=1774
 3	come	_	VERB	VB	VerbForm=Inf	2	_	_	SpaceAfter=No|start_char=1775|end_char=1779
 4	?	_	PUNCT	.	_	3	_	_	start_char=1779|end_char=1780
 
 # text = Gotta go.
 # sent_id = 110
-1	Gotta	_	AUX	MD	VerbForm=Fin	0	_	_	start_char=1781|end_char=1786
-2	go	_	VERB	VB	VerbForm=Fin	1	_	_	SpaceAfter=No|start_char=1787|end_char=1789
+1	Gotta	_	PROPN	NNP	Number=Sing	0	_	_	start_char=1781|end_char=1786
+2	go	_	VERB	VB	VerbForm=Inf	1	_	_	SpaceAfter=No|start_char=1787|end_char=1789
 3	.	_	PUNCT	.	_	2	_	_	SpacesAfter=\n\n|start_char=1789|end_char=1790
 
 # text = 'Cause I said so.
@@ -1000,7 +1000,7 @@
 # text = 'Tis the season.
 # sent_id = 112
 1	'	_	PUNCT	``	_	0	_	_	SpaceAfter=No|start_char=1810|end_char=1811
-2	Tis	_	VERB	VB	Mood=Imp|VerbForm=Fin	1	_	_	start_char=1811|end_char=1814
+2	Tis	_	VERB	VB	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	1	_	_	start_char=1811|end_char=1814
 3	the	_	DET	DT	Definite=Def|PronType=Art	2	_	_	start_char=1815|end_char=1818
 4	season	_	NOUN	NN	Number=Sing	3	_	_	SpaceAfter=No|start_char=1819|end_char=1825
 5	.	_	PUNCT	.	_	4	_	_	start_char=1825|end_char=1826
@@ -1020,7 +1020,7 @@
 # sent_id = 114
 1-2	I'd've	_	_	_	_	_	_	_	start_char=1847|end_char=1853
 1	I'd	_	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	0	_	_	start_char=1847|end_char=1850
-2	've	_	AUX	VBP	Mood=Ind|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin	1	_	_	start_char=1850|end_char=1853
+2	've	_	AUX	VBP	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	1	_	_	start_char=1850|end_char=1853
 3	done	_	VERB	VBN	Tense=Past|VerbForm=Part	2	_	_	start_char=1854|end_char=1858
 4	it	_	PRON	PRP	Case=Acc|Gender=Neut|Number=Sing|Person=3|PronType=Prs	3	_	_	start_char=1859|end_char=1861
 5	if	_	SCONJ	IN	_	4	_	_	start_char=1862|end_char=1864
@@ -1035,7 +1035,7 @@
 # sent_id = 115
 1-2	We'd	_	_	_	_	_	_	_	start_char=1879|end_char=1883
 1	We	_	PRON	PRP	Case=Nom|Number=Plur|Person=1|PronType=Prs	0	_	_	start_char=1879|end_char=1881|coref_chains=unit-id5
-2	'd	_	AUX	MD	VerbForm=Fin	1	_	_	start_char=1881|end_char=1883
+2	'd	_	AUX	VBD	Mood=Ind|Person=1|VerbForm=Fin	1	_	_	start_char=1881|end_char=1883
 3	better	_	ADV	RBR	Degree=Cmp	2	_	_	start_char=1884|end_char=1890
 4	leave	_	VERB	VB	VerbForm=Inf	3	_	_	SpaceAfter=No|start_char=1891|end_char=1896
 5	.	_	PUNCT	.	_	4	_	_	start_char=1896|end_char=1897
@@ -1082,7 +1082,7 @@
 2	's	_	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	1	_	_	start_char=1968|end_char=1970
 3	been	_	AUX	VBN	Tense=Past|VerbForm=Part	2	_	_	start_char=1971|end_char=1975
 4	here	_	ADV	RB	PronType=Dem	3	_	_	SpaceAfter=No|start_char=1976|end_char=1980
-5	;	_	PUNCT	:	_	4	_	_	start_char=1980|end_char=1981
+5	;	_	PUNCT	,	_	4	_	_	start_char=1980|end_char=1981
 6-7	he's	_	_	_	_	_	_	_	start_char=1982|end_char=1986
 6	he	_	PRON	PRP	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	5	_	_	start_char=1982|end_char=1984|coref_chains=unit-id2
 7	's	_	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	6	_	_	start_char=1984|end_char=1986
@@ -1096,11 +1096,11 @@
 1	She	_	PRON	PRP	Case=Nom|Gender=Fem|Number=Sing|Person=3|PronType=Prs	0	_	_	start_char=1995|end_char=1998|coref_chains=unit-id3
 2	's	_	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	1	_	_	start_char=1998|end_char=2000
 3	done	_	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	2	_	_	SpaceAfter=No|start_char=2001|end_char=2005
-4	;	_	PUNCT	:	_	3	_	_	start_char=2005|end_char=2006
+4	;	_	PUNCT	,	_	3	_	_	start_char=2005|end_char=2006
 5-6	she's	_	_	_	_	_	_	_	start_char=2007|end_char=2012
 5	she	_	PRON	PRP	Case=Nom|Gender=Fem|Number=Sing|Person=3|PronType=Prs	4	_	_	start_char=2007|end_char=2010|coref_chains=unit-id3
 6	's	_	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	5	_	_	start_char=2010|end_char=2012
-7	left	_	VERB	VBN	Tense=Past|VerbForm=Part	6	_	_	SpaceAfter=No|start_char=2013|end_char=2017
+7	left	_	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	6	_	_	SpaceAfter=No|start_char=2013|end_char=2017
 8	.	_	PUNCT	.	_	7	_	_	SpacesAfter=\n\n|start_char=2017|end_char=2018
 
 # text = O'Brien's pub is next to D'Angelo's pizzeria.
@@ -1141,7 +1141,7 @@
 
 # text = Whose is it?
 # sent_id = 125
-1	Whose	_	PRON	WP	PronType=Rel	0	_	_	start_char=2120|end_char=2125
+1	Whose	_	PRON	WP	PronType=Int	0	_	_	start_char=2120|end_char=2125
 2	is	_	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	1	_	_	start_char=2126|end_char=2128
 3	it	_	PRON	PRP	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	2	_	_	SpaceAfter=No|start_char=2129|end_char=2131|coref_chains=unit-id71
 4	?	_	PUNCT	.	_	3	_	_	start_char=2131|end_char=2132
@@ -1149,7 +1149,7 @@
 # text = Who's is wrong.
 # sent_id = 126
 1-2	Who's	_	_	_	_	_	_	_	start_char=2133|end_char=2138
-1	Who	_	PRON	WP	Case=Nom|PronType=Int	0	_	_	start_char=2133|end_char=2136
+1	Who	_	PRON	WP	PronType=Int	0	_	_	start_char=2133|end_char=2136
 2	's	_	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	1	_	_	start_char=2136|end_char=2138
 3	is	_	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	_	_	start_char=2139|end_char=2141
 4	wrong	_	ADJ	JJ	Degree=Pos	3	_	_	SpaceAfter=No|start_char=2142|end_char=2147
@@ -1233,7 +1233,7 @@
 # text = Didn't I?
 # sent_id = 135
 1-2	Didn't	_	_	_	_	_	_	_	start_char=2309|end_char=2315
-1	Did	_	AUX	VBD	Mood=Ind|Number=Sing|Person=2|Tense=Past|VerbForm=Fin	0	_	_	start_char=2309|end_char=2312
+1	Did	_	AUX	VBD	Mood=Ind|Number=Sing|Person=1|Tense=Past|VerbForm=Fin	0	_	_	start_char=2309|end_char=2312
 2	n't	_	PART	RB	Polarity=Neg	1	_	_	start_char=2312|end_char=2315
 3	I	_	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	2	_	_	SpaceAfter=No|start_char=2316|end_char=2317|coref_chains=unit-id0
 4	?	_	PUNCT	.	_	3	_	_	start_char=2317|end_char=2318
@@ -1249,7 +1249,7 @@
 # text = Hadn't they?
 # sent_id = 137
 1-2	Hadn't	_	_	_	_	_	_	_	start_char=2332|end_char=2338
-1	Had	_	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	_	_	start_char=2332|end_char=2335
+1	Had	_	AUX	VBD	Mood=Ind|Number=Plur|Person=1|Tense=Past|VerbForm=Fin	0	_	_	start_char=2332|end_char=2335
 2	n't	_	PART	RB	Polarity=Neg	1	_	_	start_char=2335|end_char=2338
 3	they	_	PRON	PRP	Case=Nom|Number=Plur|Person=3|PronType=Prs	2	_	_	SpaceAfter=No|start_char=2339|end_char=2343|coref_chains=unit-id6
 4	?	_	PUNCT	.	_	3	_	_	SpacesAfter=\n\n|start_char=2343|end_char=2344
@@ -1258,7 +1258,7 @@
 # sent_id = 138
 1	"	_	PUNCT	``	_	0	_	_	SpaceAfter=No|start_char=2346|end_char=2347
 2-3	Don't	_	_	_	_	_	_	_	SpaceAfter=No|start_char=2347|end_char=2352
-2	Do	_	AUX	VB	Mood=Imp|VerbForm=Fin	1	_	_	start_char=2347|end_char=2349
+2	Do	_	AUX	VB	Mood=Imp|Number=Sing|VerbForm=Fin	1	_	_	start_char=2347|end_char=2349
 3	n't	_	PART	RB	Polarity=Neg	2	_	_	start_char=2349|end_char=2352
 4	,	_	PUNCT	,	_	3	_	_	SpaceAfter=No|start_char=2352|end_char=2353
 5	"	_	PUNCT	''	_	4	_	_	start_char=2353|end_char=2354
@@ -1320,7 +1320,7 @@
 3	's	_	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	_	_	start_char=2453|end_char=2455
 4	fine	_	ADJ	JJ	Degree=Pos	3	_	_	SpaceAfter=No|start_char=2456|end_char=2460
 5	.	_	PUNCT	.	_	4	_	_	SpaceAfter=No|start_char=2460|end_char=2461
-6	}	_	PUNCT	NFP	_	5	_	_	SpacesAfter=\n\n|start_char=2461|end_char=2462
+6	}	_	SYM	NFP	_	5	_	_	SpacesAfter=\n\n|start_char=2461|end_char=2462
 
 # text = The result (see below) was unexpected.
 # sent_id = 144
@@ -1363,7 +1363,7 @@
 2	(	_	PUNCT	-LRB-	_	1	_	_	SpaceAfter=No|start_char=2568|end_char=2569
 3	nested	_	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	2	_	_	start_char=2569|end_char=2575
 4	(	_	PUNCT	-LRB-	_	3	_	_	SpaceAfter=No|start_char=2576|end_char=2577
-5	parentheses	_	NOUN	NNS	Number=Plur	4	_	_	SpaceAfter=No|start_char=2577|end_char=2588|coref_chains=unit-repr-id82
+5	parentheses	_	NOUN	NN	Number=Sing	4	_	_	SpaceAfter=No|start_char=2577|end_char=2588|coref_chains=unit-repr-id82
 6	)	_	PUNCT	-RRB-	_	5	_	_	start_char=2588|end_char=2589
 7	are	_	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	6	_	_	start_char=2590|end_char=2593
 8	fun	_	ADJ	JJ	Degree=Pos	7	_	_	SpaceAfter=No|start_char=2594|end_char=2597
@@ -1400,7 +1400,7 @@
 4	sentence	_	NOUN	NN	Number=Sing	3	_	_	start_char=2682|end_char=2690|coref_chains=end-repr-id83
 5	is	_	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	_	_	start_char=2691|end_char=2693
 6	in	_	ADP	IN	_	5	_	_	start_char=2694|end_char=2696
-7	parentheses	_	NOUN	NNS	Number=Plur	6	_	_	SpaceAfter=No|start_char=2697|end_char=2708|coref_chains=unit-id82
+7	parentheses	_	NOUN	NN	Number=Sing	6	_	_	SpaceAfter=No|start_char=2697|end_char=2708|coref_chains=unit-id82
 8	.	_	PUNCT	.	_	7	_	_	SpaceAfter=No|start_char=2708|end_char=2709
 9	)	_	PUNCT	-RRB-	_	8	_	_	start_char=2709|end_char=2710
 
@@ -1437,13 +1437,13 @@
 # text = Options i), ii) and iii) were rejected.
 # sent_id = 152
 1	Options	_	NOUN	NNS	Number=Plur	0	_	_	start_char=2774|end_char=2781|coref_chains=start-repr-id88
-2	i	_	NOUN	NN	Number=Sing	1	_	_	SpaceAfter=No|start_char=2782|end_char=2783|coref_chains=middle-repr-id88,start-repr-id89
+2	i	_	NUM	LS	NumForm=Roman|NumType=Card	1	_	_	SpaceAfter=No|start_char=2782|end_char=2783|coref_chains=middle-repr-id88,start-repr-id89
 3	)	_	PUNCT	-RRB-	_	2	_	_	SpaceAfter=No|start_char=2783|end_char=2784|coref_chains=middle-repr-id88,end-repr-id89
 4	,	_	PUNCT	,	_	3	_	_	start_char=2784|end_char=2785|coref_chains=middle-repr-id88
 5	ii	_	NUM	LS	NumForm=Roman|NumType=Card	4	_	_	SpaceAfter=No|start_char=2786|end_char=2788|coref_chains=middle-repr-id88,unit-repr-id90
 6	)	_	PUNCT	-RRB-	_	5	_	_	start_char=2788|end_char=2789|coref_chains=middle-repr-id88
 7	and	_	CCONJ	CC	_	6	_	_	start_char=2790|end_char=2793|coref_chains=middle-repr-id88
-8	iii	_	NUM	LS	NumForm=Roman|NumType=Card	7	_	_	SpaceAfter=No|start_char=2794|end_char=2797|coref_chains=middle-repr-id88,unit-id90
+8	iii	_	NOUN	NN	Number=Sing	7	_	_	SpaceAfter=No|start_char=2794|end_char=2797|coref_chains=middle-repr-id88,unit-id90
 9	)	_	PUNCT	-RRB-	_	8	_	_	start_char=2797|end_char=2798|coref_chains=end-repr-id88
 10	were	_	AUX	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	9	_	_	start_char=2799|end_char=2803
 11	rejected	_	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	10	_	_	SpaceAfter=No|start_char=2804|end_char=2812
@@ -1503,7 +1503,7 @@
 2	's	_	PART	POS	_	1	_	_	start_char=2952|end_char=2954|coref_chains=end-repr-id98,middle-repr-id100
 3	and	_	CCONJ	CC	_	2	_	_	start_char=2955|end_char=2958|coref_chains=middle-repr-id100
 4-5	Dad's	_	_	_	_	_	_	_	start_char=2959|end_char=2964
-4	Dad	_	PROPN	NNP	Number=Sing	3	_	_	start_char=2959|end_char=2962|coref_chains=start-repr-id99,middle-repr-id100
+4	Dad	_	NOUN	NN	Number=Sing	3	_	_	start_char=2959|end_char=2962|coref_chains=start-repr-id99,middle-repr-id100
 5	's	_	PART	POS	_	4	_	_	start_char=2962|end_char=2964|coref_chains=end-repr-id99,middle-repr-id100
 6	opinions	_	NOUN	NNS	Number=Plur	5	_	_	start_char=2965|end_char=2973|coref_chains=end-repr-id100
 7	differ	_	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	6	_	_	SpaceAfter=No|start_char=2974|end_char=2980

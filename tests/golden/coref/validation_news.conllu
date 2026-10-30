@@ -83,7 +83,7 @@
 7	will	_	AUX	MD	VerbForm=Fin	6	_	_	start_char=335|end_char=339
 8	dredge	_	VERB	VB	VerbForm=Inf	7	_	_	start_char=340|end_char=346
 9	the	_	DET	DT	Definite=Def|PronType=Art	8	_	_	start_char=347|end_char=350|coref_chains=start-repr-id13
-10	north	_	NOUN	NN	Number=Sing	9	_	_	start_char=351|end_char=356|coref_chains=middle-repr-id13
+10	north	_	ADJ	JJ	Degree=Pos	9	_	_	start_char=351|end_char=356|coref_chains=middle-repr-id13
 11	channel	_	NOUN	NN	Number=Sing	10	_	_	start_char=357|end_char=364|coref_chains=end-repr-id13
 12	to	_	ADP	IN	_	11	_	_	start_char=365|end_char=367
 13	a	_	DET	DT	Definite=Ind|PronType=Art	12	_	_	start_char=368|end_char=369|coref_chains=start-repr-id14
@@ -94,7 +94,7 @@
 18	(	_	PUNCT	-LRB-	_	17	_	_	SpaceAfter=No|start_char=384|end_char=385
 19	about	_	ADV	RB	_	18	_	_	start_char=385|end_char=390
 20	46	_	NUM	CD	NumForm=Digit|NumType=Card	19	_	_	start_char=391|end_char=393
-21	ft.	_	NOUN	NNS	Number=Plur	20	_	_	SpaceAfter=No|start_char=394|end_char=397
+21	ft.	_	NOUN	NNS	Number=Sing	20	_	_	SpaceAfter=No|start_char=394|end_char=397
 22	)	_	PUNCT	-RRB-	_	21	_	_	start_char=397|end_char=398
 23	and	_	CCONJ	CC	_	22	_	_	start_char=399|end_char=402
 24	build	_	VERB	VB	VerbForm=Inf	23	_	_	start_char=403|end_char=408
@@ -113,7 +113,7 @@
 3	expected	_	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	2	_	_	start_char=452|end_char=460
 4	to	_	PART	TO	_	3	_	_	start_char=461|end_char=463
 5	create	_	VERB	VB	VerbForm=Inf	4	_	_	start_char=464|end_char=470
-6	roughly	_	ADV	RB	_	5	_	_	start_char=471|end_char=478|coref_chains=start-repr-id19
+6	roughly	_	ADV	RB	Degree=Pos	5	_	_	start_char=471|end_char=478|coref_chains=start-repr-id19
 7	1,100	_	NUM	CD	NumForm=Digit|NumType=Card	6	_	_	start_char=479|end_char=484|coref_chains=middle-repr-id19
 8	temporary	_	ADJ	JJ	Degree=Pos	7	_	_	start_char=485|end_char=494|coref_chains=middle-repr-id19
 9	jobs	_	NOUN	NNS	Number=Plur	8	_	_	SpaceAfter=No|start_char=495|end_char=499|coref_chains=end-repr-id19
@@ -123,7 +123,7 @@
 # sent_id = 6
 1	Critics	_	NOUN	NNS	Number=Plur	0	_	_	start_char=501|end_char=508
 2	say	_	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	1	_	_	start_char=509|end_char=512
-3	that	_	SCONJ	IN	_	2	_	_	start_char=513|end_char=517|coref_chains=start-id19
+3	that	_	DET	DT	Number=Sing|PronType=Dem	2	_	_	start_char=513|end_char=517|coref_chains=start-id19
 4	number	_	NOUN	NN	Number=Sing	3	_	_	start_char=518|end_char=524|coref_chains=end-id19
 5	is	_	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	_	_	start_char=525|end_char=527
 6	inflated	_	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	5	_	_	SpaceAfter=No|start_char=528|end_char=536
@@ -234,7 +234,7 @@
 7	,	_	PUNCT	,	_	6	_	_	start_char=939|end_char=940
 8	while	_	SCONJ	IN	_	7	_	_	start_char=941|end_char=946
 9	the	_	DET	DT	Definite=Def|PronType=Art	8	_	_	start_char=947|end_char=950|coref_chains=start-repr-id40
-10	yen	_	NOUN	NN	Number=Sing	9	_	_	start_char=951|end_char=954|coref_chains=end-repr-id40
+10	yen	_	PROPN	NNP	Number=Sing	9	_	_	start_char=951|end_char=954|coref_chains=end-repr-id40
 11	weakened	_	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	10	_	_	start_char=955|end_char=963
 12	past	_	ADP	IN	_	11	_	_	start_char=964|end_char=968
 13	¥	_	SYM	$	_	12	_	_	SpaceAfter=No|start_char=969|end_char=970|coref_chains=start-repr-id41
@@ -262,7 +262,7 @@
 9	reported	_	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	8	_	_	start_char=1060|end_char=1068
 10	second	_	ADJ	JJ	Degree=Pos|NumForm=Word|NumType=Ord	9	_	_	SpaceAfter=No|start_char=1069|end_char=1075|coref_chains=start-repr-id48
 11	-	_	PUNCT	HYPH	_	10	_	_	SpaceAfter=No|start_char=1075|end_char=1076|coref_chains=middle-repr-id48
-12	quarter	_	NOUN	NN	Number=Sing|NumForm=Word|NumType=Frac	11	_	_	start_char=1076|end_char=1083|coref_chains=middle-repr-id48
+12	quarter	_	ADJ	JJ	Degree=Pos|NumForm=Word	11	_	_	start_char=1076|end_char=1083|coref_chains=middle-repr-id48
 13	earnings	_	NOUN	NNS	Number=Plur	12	_	_	start_char=1084|end_char=1092|coref_chains=middle-repr-id48
 14	of	_	ADP	IN	_	13	_	_	start_char=1093|end_char=1095|coref_chains=middle-repr-id48
 15	$	_	SYM	$	_	14	_	_	SpaceAfter=No|start_char=1096|end_char=1097|coref_chains=middle-repr-id48,start-repr-id49
@@ -340,9 +340,9 @@
 6	hold	_	VERB	VB	VerbForm=Inf	5	_	_	start_char=1342|end_char=1346
 7	up	_	ADP	RP	_	6	_	_	start_char=1347|end_char=1349
 8	better	_	ADJ	JJR	Degree=Cmp	7	_	_	start_char=1350|end_char=1356
-9	than	_	ADP	IN	_	8	_	_	start_char=1357|end_char=1361
+9	than	_	SCONJ	IN	_	8	_	_	start_char=1357|end_char=1361
 10	anyone	_	PRON	NN	Number=Sing|PronType=Ind	9	_	_	start_char=1362|end_char=1368|coref_chains=unit-repr-id60
-11	expected	_	VERB	VBD	Tense=Past|VerbForm=Part|Voice=Pass	10	_	_	SpaceAfter=No|start_char=1369|end_char=1377
+11	expected	_	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	10	_	_	SpaceAfter=No|start_char=1369|end_char=1377
 12	,	_	PUNCT	,	_	11	_	_	SpaceAfter=No|start_char=1377|end_char=1378
 13	"	_	PUNCT	''	_	12	_	_	start_char=1378|end_char=1379
 14	Chief	_	ADJ	JJ	Degree=Pos	13	_	_	start_char=1380|end_char=1385
@@ -362,7 +362,7 @@
 # sent_id = 18
 1	"	_	PUNCT	``	_	0	_	_	SpaceAfter=No|start_char=1456|end_char=1457
 2	That	_	PRON	DT	Number=Sing|PronType=Dem	1	_	_	start_char=1457|end_char=1461
-3	said	_	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	2	_	_	SpaceAfter=No|start_char=1462|end_char=1466
+3	said	_	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	2	_	_	SpaceAfter=No|start_char=1462|end_char=1466
 4	,	_	PUNCT	,	_	3	_	_	start_char=1466|end_char=1467
 5	we	_	PRON	PRP	Case=Nom|Number=Plur|Person=1|PronType=Prs	4	_	_	start_char=1468|end_char=1470|coref_chains=unit-id58
 6-7	aren't	_	_	_	_	_	_	_	start_char=1471|end_char=1477
@@ -384,7 +384,7 @@
 3	bank	_	NOUN	NN	Number=Sing	2	_	_	start_char=1521|end_char=1525|coref_chains=end-repr-id63
 4	kept	_	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	3	_	_	start_char=1526|end_char=1530
 5	its	_	PRON	PRP$	Case=Gen|Gender=Neut|Number=Sing|Person=3|Poss=Yes|PronType=Prs	4	_	_	start_char=1531|end_char=1534|coref_chains=unit-id63,start-repr-id64
-6	benchmark	_	NOUN	NN	Number=Sing	5	_	_	start_char=1535|end_char=1544|coref_chains=middle-repr-id64
+6	benchmark	_	ADJ	JJ	Degree=Pos	5	_	_	start_char=1535|end_char=1544|coref_chains=middle-repr-id64
 7	rate	_	NOUN	NN	Number=Sing	6	_	_	start_char=1545|end_char=1549|coref_chains=end-repr-id64
 8	unchanged	_	ADJ	JJ	Degree=Pos	7	_	_	start_char=1550|end_char=1559
 9	at	_	ADP	IN	_	8	_	_	start_char=1560|end_char=1562
@@ -637,7 +637,7 @@
 5	the	_	DET	DT	Definite=Def|PronType=Art	4	_	_	start_char=2556|end_char=2559|coref_chains=start-id98
 6	city	_	NOUN	NN	Number=Sing	5	_	_	start_char=2560|end_char=2564|coref_chains=end-id98
 7	at	_	ADP	IN	_	6	_	_	start_char=2565|end_char=2567
-8	AA	_	PROPN	NNP	Number=Sing	7	_	_	SpaceAfter=No|start_char=2568|end_char=2570|coref_chains=unit-repr-id102
+8	AA	_	NOUN	NN	Number=Sing	7	_	_	SpaceAfter=No|start_char=2568|end_char=2570|coref_chains=unit-repr-id102
 9	,	_	PUNCT	,	_	8	_	_	start_char=2570|end_char=2571
 10	with	_	ADP	IN	_	9	_	_	start_char=2572|end_char=2576
 11	a	_	DET	DT	Definite=Ind|PronType=Art	10	_	_	start_char=2577|end_char=2578|coref_chains=start-repr-id103
@@ -650,7 +650,7 @@
 1	Residents	_	NOUN	NNS	Number=Plur	0	_	_	start_char=2596|end_char=2605|coref_chains=start-repr-id104
 2	of	_	ADP	IN	_	1	_	_	start_char=2606|end_char=2608|coref_chains=middle-repr-id104
 3	the	_	DET	DT	Definite=Def|PronType=Art	2	_	_	start_char=2609|end_char=2612|coref_chains=middle-repr-id104,start-repr-id105
-4	Lower	_	ADJ	NNP	Degree=Pos	3	_	_	start_char=2613|end_char=2618|coref_chains=middle-repr-id104,middle-repr-id105
+4	Lower	_	ADJ	NNP	Degree=Cmp	3	_	_	start_char=2613|end_char=2618|coref_chains=middle-repr-id104,middle-repr-id105
 5	Fenwick	_	PROPN	NNP	Number=Sing	4	_	_	start_char=2619|end_char=2626|coref_chains=middle-repr-id104,middle-repr-id105
 6	neighborhood	_	NOUN	NN	Number=Sing	5	_	_	start_char=2627|end_char=2639|coref_chains=end-repr-id104,end-repr-id105
 7	were	_	AUX	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	6	_	_	start_char=2640|end_char=2644
@@ -682,7 +682,7 @@
 # sent_id = 36
 1	By	_	ADP	IN	_	0	_	_	start_char=2752|end_char=2754
 2	6	_	NUM	CD	NumForm=Digit|NumType=Card	1	_	_	start_char=2755|end_char=2756|coref_chains=start-repr-id111
-3	a.m.	_	NOUN	NN	Number=Sing	2	_	_	start_char=2757|end_char=2761|coref_chains=end-repr-id111
+3	a.m.	_	NOUN	NN	Abbr=Yes|Number=Sing	2	_	_	start_char=2757|end_char=2761|coref_chains=end-repr-id111
 
 # text = Sunday, service had been restored to about two-thirds of the 4,800 affected homes.
 # sent_id = 37
@@ -818,7 +818,7 @@
 # text = Ferrisburg Savings, which had fallen 30% earlier in the month, rose 11 percent.
 # sent_id = 45
 1	Ferrisburg	_	PROPN	NNP	Number=Sing	0	_	_	start_char=3293|end_char=3303|coref_chains=start-repr-id128
-2	Savings	_	PROPN	NNP	Number=Sing	1	_	_	SpaceAfter=No|start_char=3304|end_char=3311|coref_chains=middle-repr-id128
+2	Savings	_	PROPN	NNPS	Number=Plur	1	_	_	SpaceAfter=No|start_char=3304|end_char=3311|coref_chains=middle-repr-id128
 3	,	_	PUNCT	,	_	2	_	_	start_char=3311|end_char=3312|coref_chains=middle-repr-id128
 4	which	_	PRON	WDT	PronType=Rel	3	_	_	start_char=3313|end_char=3318|coref_chains=middle-repr-id128
 5	had	_	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	4	_	_	start_char=3319|end_char=3322|coref_chains=middle-repr-id128
@@ -986,7 +986,7 @@
 10	declined	_	VERB	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	9	_	_	start_char=3951|end_char=3959
 11	for	_	ADP	IN	_	10	_	_	start_char=3960|end_char=3963
 12	the	_	DET	DT	Definite=Def|PronType=Art	11	_	_	start_char=3964|end_char=3967|coref_chains=start-repr-id147
-13	eighth	_	ADJ	JJ	Degree=Pos|NumForm=Word|NumType=Ord	12	_	_	start_char=3968|end_char=3974|coref_chains=middle-repr-id147
+13	eighth	_	ADJ	JJ	Degree=Pos|NumForm=Combi|NumType=Ord	12	_	_	start_char=3968|end_char=3974|coref_chains=middle-repr-id147
 14	straight	_	ADJ	JJ	Degree=Pos	13	_	_	start_char=3975|end_char=3983|coref_chains=middle-repr-id147
 15	quarter	_	NOUN	NN	Number=Sing|NumForm=Word|NumType=Frac	14	_	_	SpaceAfter=No|start_char=3984|end_char=3991|coref_chains=end-repr-id147
 16	.	_	PUNCT	.	_	15	_	_	start_char=3991|end_char=3992
@@ -1038,7 +1038,7 @@
 
 # text = Jury selection begins Monday at the federal courthouse in Lancaster.
 # sent_id = 58
-1	Jury	_	NOUN	NN	Number=Sing	0	_	_	start_char=4165|end_char=4169|coref_chains=start-repr-id151
+1	Jury	_	PROPN	NNP	Number=Sing	0	_	_	start_char=4165|end_char=4169|coref_chains=start-repr-id151
 2	selection	_	NOUN	NN	Number=Sing	1	_	_	start_char=4170|end_char=4179|coref_chains=end-repr-id151
 3	begins	_	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	_	_	start_char=4180|end_char=4186
 4	Monday	_	PROPN	NNP	Number=Sing	3	_	_	start_char=4187|end_char=4193|coref_chains=unit-repr-id152
@@ -1061,7 +1061,7 @@
 7	not	_	PART	RB	Polarity=Neg	6	_	_	start_char=4265|end_char=4268|coref_chains=middle-repr-id155
 8	guilty	_	ADJ	JJ	Degree=Pos	7	_	_	start_char=4269|end_char=4275|coref_chains=middle-repr-id155
 9	to	_	ADP	IN	_	8	_	_	start_char=4276|end_char=4278|coref_chains=middle-repr-id155
-10	all	_	DET	DT	PronType=Tot	9	_	_	start_char=4279|end_char=4282|coref_chains=middle-repr-id155
+10	all	_	DET	PDT	PronType=Tot	9	_	_	start_char=4279|end_char=4282|coref_chains=middle-repr-id155
 11	14	_	NUM	CD	NumForm=Digit|NumType=Card	10	_	_	start_char=4283|end_char=4285|coref_chains=middle-repr-id155
 12	counts	_	NOUN	NNS	Number=Plur	11	_	_	SpaceAfter=No|start_char=4286|end_char=4292|coref_chains=end-repr-id155
 13	,	_	PUNCT	,	_	12	_	_	start_char=4292|end_char=4293
