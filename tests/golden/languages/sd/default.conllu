@@ -1,0 +1,18 @@
+# text = وزيراعظم ڪالهه ڪراچي پهتو.
+# sent_id = 0
+1	وزيراعظم	وزيراعظم	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing	4	nsubj	_	start_char=0|end_char=8|ner=S-TITLE
+2	ڪالهه	ڪالهه	ADV	ADT	_	4	advmod	_	start_char=9|end_char=14|ner=O
+3	ڪراچي	ڪراچي	PROPN	NNP	Case=Nom|Gender=Masc	4	obl	_	start_char=15|end_char=20|ner=S-GPE
+4	پهتو	پهتو	VERB	VM	Aspect=Perf|Gender=Masc|Number=Sing|Person=3	0	root	_	SpaceAfter=No|start_char=21|end_char=25|ner=O
+5	.	.	PUNCT	PUNCT	_	4	punct	_	start_char=25|end_char=26|ner=O
+
+# text = هن صحافين سان نئين قانون بابت ڳالهايو.
+# sent_id = 1
+1	هن	هن	DET	PRD	Case=Acc|Number=Sing	7	nsubj	_	start_char=27|end_char=29|ner=O
+2	صحافين	صحافي	NOUN	NN	Case=Acc|Gender=Masc|Number=Plur	7	obl	_	start_char=30|end_char=36|ner=O
+3	سان	سان	ADP	PSP	_	2	case	_	start_char=37|end_char=40|ner=O
+4	نئين	نئين	ADJ	JJ	Case=Nom|Degree=Pos|Gender=Masc|Number=Sing	5	amod	_	start_char=41|end_char=45|ner=O
+5	قانون	قانون	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing	7	obl	_	start_char=46|end_char=51|ner=O
+6	بابت	بابت	ADP	PSP	_	5	case	_	start_char=52|end_char=56|ner=O
+7	ڳالهايو	ڳالهاءِ	VERB	VM	Aspect=Perf|Gender=Masc|Number=Sing|Person=3	0	root	_	SpaceAfter=No|start_char=57|end_char=64|ner=O
+8	.	.	PUNCT	PUNCT	_	7	punct	_	SpacesAfter=\n|start_char=64|end_char=65|ner=O

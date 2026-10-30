@@ -1,0 +1,20 @@
+# text = Premijer je jučer stigao u Zagreb.
+# sent_id = 0
+1	Premijer	premijer	NOUN	Ncmsn	Case=Nom|Gender=Masc|Number=Sing	4	nsubj	_	start_char=0|end_char=8
+2	je	biti	AUX	Var3s	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	aux	_	start_char=9|end_char=11
+3	jučer	jučer	ADV	Rgp	Degree=Pos	4	advmod	_	start_char=12|end_char=17
+4	stigao	stići	VERB	Vmp-sm	Gender=Masc|Number=Sing|Tense=Past|VerbForm=Part|Voice=Act	0	root	_	start_char=18|end_char=24
+5	u	u	ADP	Sa	Case=Acc	6	case	_	start_char=25|end_char=26
+6	Zagreb	Zagreb	PROPN	Npmsan	Animacy=Inan|Case=Acc|Gender=Masc|Number=Sing	4	obl	_	SpaceAfter=No|start_char=27|end_char=33
+7	.	.	PUNCT	Z	_	4	punct	_	start_char=33|end_char=34
+
+# text = Razgovarao je s novinarima o novom zakonu.
+# sent_id = 1
+1	Razgovarao	razgovarati	VERB	Vmp-sm	Gender=Masc|Number=Sing|Tense=Past|VerbForm=Part|Voice=Act	0	root	_	start_char=35|end_char=45
+2	je	biti	AUX	Var3s	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	1	aux	_	start_char=46|end_char=48
+3	s	sa	ADP	Si	Case=Ins	4	case	_	start_char=49|end_char=50
+4	novinarima	novinar	NOUN	Ncmpi	Case=Ins|Gender=Masc|Number=Plur	1	obl	_	start_char=51|end_char=61
+5	o	o	ADP	Sl	Case=Loc	7	case	_	start_char=62|end_char=63
+6	novom	nov	ADJ	Agpmsly	Case=Loc|Definite=Def|Degree=Pos|Gender=Masc|Number=Sing	7	amod	_	start_char=64|end_char=69
+7	zakonu	zakon	NOUN	Ncmsl	Case=Loc|Gender=Masc|Number=Sing	1	obl	_	SpaceAfter=No|start_char=70|end_char=76
+8	.	.	PUNCT	Z	_	1	punct	_	SpacesAfter=\n|start_char=76|end_char=77

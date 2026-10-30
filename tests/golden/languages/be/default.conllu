@@ -1,0 +1,19 @@
+# text = Прэзідэнт прыехаў учора ў Мінск.
+# sent_id = 0
+1	Прэзідэнт	прэзідэнт	NOUN	NN	Animacy=Anim|Case=Nom|Gender=Masc|Number=Sing	2	nsubj	_	start_char=0|end_char=9
+2	прыехаў	прыехаць	VERB	VBC	Aspect=Perf|Gender=Masc|Mood=Ind|Number=Sing|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	start_char=10|end_char=17
+3	учора	учора	ADV	RB	Degree=Pos	2	advmod	_	start_char=18|end_char=23
+4	ў	у	ADP	IN	_	5	case	_	start_char=24|end_char=25
+5	Мінск	Мінск	PROPN	NNP	Animacy=Inan|Case=Acc|Gender=Masc|NameType=Geo|Number=Sing	2	obl	_	SpaceAfter=No|start_char=26|end_char=31
+6	.	.	PUNCT	PUNCT	_	2	punct	_	start_char=31|end_char=32
+
+# text = Ён гаварыў з журналістамі пра новы закон.
+# sent_id = 1
+1	Ён	ён	PRON	PRP	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=33|end_char=35
+2	гаварыў	гаварыць	VERB	VBC	Aspect=Imp|Gender=Masc|Mood=Ind|Number=Sing|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	start_char=36|end_char=43
+3	з	з	ADP	IN	_	4	case	_	start_char=44|end_char=45
+4	журналістамі	журналіст	NOUN	NN	Animacy=Anim|Case=Ins|Gender=Masc|Number=Plur	2	obl	_	start_char=46|end_char=58
+5	пра	пра	ADP	IN	_	7	case	_	start_char=59|end_char=62
+6	новы	новы	ADJ	JJL	Animacy=Inan|Case=Acc|Degree=Pos|Gender=Masc|Number=Sing	7	amod	_	start_char=63|end_char=67
+7	закон	закон	NOUN	NN	Animacy=Inan|Case=Acc|Gender=Masc|Number=Sing	2	obl	_	SpaceAfter=No|start_char=68|end_char=73
+8	.	.	PUNCT	PUNCT	_	2	punct	_	SpacesAfter=\n|start_char=73|end_char=74

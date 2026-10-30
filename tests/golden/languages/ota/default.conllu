@@ -1,0 +1,16 @@
+# text = Sadrazam dün İstanbul'a geldi.
+# sent_id = 0
+1	Sadrazam	sadraza	NOUN	_	Case=Nom|Number=Sing|Person=3	2	nmod:poss	_	start_char=0|end_char=8
+2	dün	dün	NOUN	_	Case=Nom|Number=Sing|Person=3	3	nmod:poss	_	start_char=9|end_char=12
+3	İstanbul'a	İstanbu	NOUN	_	Case=Loc|Number=Sing|Person=3	4	ccomp	_	start_char=13|end_char=23
+4	geldi	gel	VERB	_	Aspect=Perf|Evident=Fh|Number=Sing|Person=3|Polarity=Pos|Tense=Past	0	root	_	SpaceAfter=No|start_char=24|end_char=29
+5	.	.	PUNCT	Stop	_	4	punct	_	start_char=29|end_char=30
+
+# text = Gazetecilerle yeni kanun hakkında konuştu.
+# sent_id = 1
+1	Gazetecilerle	Gazeteci	NOUN	_	Case=Ins|Number=Plur|Number[psor]=Sing|Person=3|Person[psor]=3	5	nsubj	_	start_char=31|end_char=44
+2	yeni	yeni	ADJ	Adj	_	3	amod	_	start_char=45|end_char=49
+3	kanun	kanun	NOUN	_	Case=Nom|Number=Sing|Person=3	5	obj	_	start_char=50|end_char=55
+4	hakkında	hakkı	NOUN	_	Case=Loc|Number=Sing|Number[psor]=Sing|Person=3|Person[psor]=3	5	obj	_	start_char=56|end_char=64
+5	konuştu	konuş	VERB	_	Aspect=Perf|Evident=Fh|Number=Sing|Person=3|Polarity=Pos|Tense=Past	0	root	_	SpaceAfter=No|start_char=65|end_char=72
+6	.	.	PUNCT	Stop	_	5	punct	_	SpacesAfter=\n|start_char=72|end_char=73

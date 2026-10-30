@@ -1,0 +1,32 @@
+# text = Presiden tiba di Jakarta kemarin.
+# sent_id = 0
+# constituency = (ROOT (S (NP (PROPN Presiden)) (VP (VERB tiba) (PP (ADP di) (NP (PROPN Jakarta) (ADV kemarin)))) (PUNCT .)))
+1	Presiden	presiden	PROPN	NSD	_	2	nsubj	_	start_char=0|end_char=8
+2	tiba	tiba	VERB	NSD	_	0	root	_	start_char=9|end_char=13
+3	di	di	ADP	R--	_	4	case	_	start_char=14|end_char=16
+4	Jakarta	jakarta	PROPN	NSD	_	2	obl	_	start_char=17|end_char=24
+5	kemarin	kemarin	ADV	D--	_	2	advmod	_	SpaceAfter=No|start_char=25|end_char=32
+6	.	.	PUNCT	Z--	_	2	punct	_	start_char=32|end_char=33
+
+# text = Ia berbicara dengan para wartawan tentang undang-undang baru.
+# sent_id = 1
+# constituency = (ROOT (S (NP (PRON Ia)) (VP (VERB berbicara) (PP (ADP dengan) (NP (DET para) (NOUN wartawan))) (PP (ADP tentang) (NP (NOUN undang-undang) (ADJ baru)))) (PUNCT .)))
+1	Ia	dia	PRON	PS3	Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=34|end_char=36
+2	berbicara	bicara	VERB	VSA	Voice=Act	0	root	_	start_char=37|end_char=46
+3	dengan	dengan	ADP	R--	_	5	case	_	start_char=47|end_char=53
+4	para	para	DET	B--	Number=Plur|PronType=Ind	5	det	_	start_char=54|end_char=58
+5	wartawan	wartawan	NOUN	NSD	Number=Sing	2	obl	_	start_char=59|end_char=67
+6	tentang	tentang	ADP	VSA	_	7	case	_	start_char=68|end_char=75
+7	undang-undang	undang	NOUN	NSD	Number=Plur	5	nmod	_	start_char=76|end_char=89
+8	baru	baru	ADJ	ASP	_	7	amod	_	SpaceAfter=No|start_char=90|end_char=94
+9	.	.	PUNCT	Z--	_	2	punct	_	SpacesAfter=\n\n|start_char=94|end_char=95
+
+# text = Saya melihat Budi di Bandung.
+# sent_id = 2
+# constituency = (ROOT (S (NP (PRON Saya)) (VP (VERB melihat) (NP (PROPN Budi)) (PP (ADP di) (PROPN Bandung))) (PUNCT .)))
+1	Saya	saya	PRON	PS1	Number=Sing|Person=1|Polite=Form|PronType=Prs	2	nsubj	_	start_char=97|end_char=101
+2	melihat	lihat	VERB	VSA	Voice=Act	0	root	_	start_char=102|end_char=109
+3	Budi	budi	PROPN	NSD	_	2	obj	_	start_char=110|end_char=114
+4	di	di	ADP	R--	_	5	case	_	start_char=115|end_char=117
+5	Bandung	bandung	PROPN	NSD	_	2	obl	_	SpaceAfter=No|start_char=118|end_char=125
+6	.	.	PUNCT	Z--	_	2	punct	_	SpacesAfter=\n|start_char=125|end_char=126

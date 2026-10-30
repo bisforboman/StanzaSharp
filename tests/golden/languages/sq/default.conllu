@@ -1,0 +1,20 @@
+# text = Kryeministri mbërriti dje në Tiranë.
+# sent_id = 0
+1	Kryeministri	kryeminist	NOUN	_	Case=Nom|Definite=Def|Gender=Masc|Number=Sing	2	nsubj	_	start_char=0|end_char=12
+2	mbërriti	mbërrit	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	start_char=13|end_char=21
+3	dje	dje	ADV	_	AdvType=Tim	2	advmod	_	start_char=22|end_char=25
+4	në	në	ADP	_	_	5	case	_	start_char=26|end_char=28
+5	Tiranë	Tira	NOUN	_	Case=Acc|Definite=Ind|Gender=Masc|Number=Sing	2	obl	_	SpaceAfter=No|start_char=29|end_char=35
+6	.	.	PUNCT	_	_	2	punct	_	start_char=35|end_char=36
+
+# text = Ai foli me gazetarët për ligjin e ri.
+# sent_id = 1
+1	Ai	ai	PRON	_	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=37|end_char=39
+2	foli	fol	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	start_char=40|end_char=44
+3	me	me	ADP	_	_	4	case	_	start_char=45|end_char=47
+4	gazetarët	gazetar	NOUN	_	Case=Acc|Definite=Def|Gender=Fem|Number=Plur	2	obl	_	start_char=48|end_char=57
+5	për	për	ADP	_	_	6	case	_	start_char=58|end_char=61
+6	ligjin	ligj	NOUN	_	Case=Acc|Definite=Def|Gender=Masc|Number=Sing	2	obl	_	start_char=62|end_char=68
+7	e	e	DET	_	Case=Acc|Gender=Fem|Number=Sing|PronType=Art	8	det:adj	_	start_char=69|end_char=70
+8	ri	ri	ADJ	_	Case=Acc|Degree=Pos|Gender=Masc|Number=Sing	6	amod	_	SpaceAfter=No|start_char=71|end_char=73
+9	.	.	PUNCT	_	_	2	punct	_	SpacesAfter=\n|start_char=73|end_char=74

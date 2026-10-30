@@ -1,0 +1,28 @@
+# text = בְּרֵאשִׁית בָּרָא אֱלֹהִים אֵת הַשָּׁמַיִם וְאֵת הָאָרֶץ. וְהָאָרֶץ הָיְתָה תֹהוּ וָבֹהוּ.
+# sent_id = 0
+1-2	בְּרֵאשִׁית	_	_	_	_	_	_	_	start_char=0|end_char=11
+1	בְּ	ב	ADP	prep	_	2	case	_	start_char=0|end_char=3
+2	רֵאשִׁית	ראשׁית	NOUN	subs	Gender=Fem|Number=Sing	16	obl	_	start_char=3|end_char=11
+3	בָּרָא	ברא	NOUN	subs	Gender=Masc|Number=Sing	2	compound:smixut	_	start_char=12|end_char=18
+4	אֱלֹהִים	אלהים	NOUN	subs	Gender=Masc|Number=Plur	3	compound:smixut	_	start_char=19|end_char=27
+5	אֵת	את	ADP	prep	_	7	case	_	start_char=28|end_char=31
+6-7	הַשָּׁמַיִם	_	_	_	_	_	_	_	start_char=32|end_char=43
+6	הַ	ה	DET	art	PronType=Art	7	det	_	start_char=32|end_char=34
+7	שָּׁמַיִם	שׁמים	NOUN	subs	Gender=Masc|Number=Plur	2	obj	_	start_char=34|end_char=43
+8-9	וְאֵת	_	_	_	_	_	_	_	start_char=44|end_char=49
+8	וְ	ו	CCONJ	conj	_	11	cc	_	start_char=44|end_char=46
+9	אֵת	את	ADP	prep	_	11	case	_	start_char=46|end_char=49
+10-11	הָאָרֶץ.	_	_	_	_	_	_	_	start_char=50|end_char=58
+10	הָ	ה	DET	art	PronType=Art	11	det	_	start_char=50|end_char=52
+11	אָרֶץ.	ארץ	NOUN	subs	Gender=Fem|Number=Sing	7	conj	_	start_char=52|end_char=58
+12-14	וְהָאָרֶץ	_	_	_	_	_	_	_	start_char=59|end_char=68
+12	וְ	ו	CCONJ	conj	_	14	cc	_	start_char=59|end_char=61
+13	הָ	ה	DET	art	PronType=Art	14	det	_	start_char=61|end_char=63
+14	אָרֶץ	ארץ	NOUN	subs	Gender=Fem|Number=Sing	16	nsubj	_	start_char=63|end_char=68
+15	הָיְתָה	היה	AUX	verb	Aspect=Perf|Gender=Fem|HebBinyan=PAAL|Mood=Ind|Number=Sing|Person=3|VerbForm=Fin	16	cop	_	start_char=69|end_char=76
+16	תֹהוּ	תהו	NOUN	subs	Gender=Masc|Number=Sing	0	root	_	start_char=77|end_char=82
+17-19	וָבֹהוּ	_	_	_	_	_	_	_	SpaceAfter=No|start_char=83|end_char=90
+17	וָ	ו	CCONJ	conj	_	18	cc	_	start_char=83|end_char=85
+18	בֹ	ב	NOUN	subs	Gender=Masc|Number=Sing	16	conj	_	start_char=85|end_char=87
+19	הוּ	הוא	PRON	prn	Gender=Masc|Number=Sing|Person=3|PronType=Prs	18	nmod:poss	_	start_char=87|end_char=90
+20	.	.	PUNCT	punct	_	16	punct	_	SpacesAfter=\n|start_char=90|end_char=91

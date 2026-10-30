@@ -1,0 +1,25 @@
+# text = Pääministeri saapui eilen Helsinkiin.
+# sent_id = 0
+1	Pääministeri	pää#ministeri	NOUN	N	Case=Nom|Number=Sing	2	nsubj	_	start_char=0|end_char=12|ner=O
+2	saapui	saapua	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	start_char=13|end_char=19|ner=O
+3	eilen	eilen	ADV	Adv	_	2	advmod	_	start_char=20|end_char=25|ner=O
+4	Helsinkiin	Helsinki	PROPN	N	Case=Ill|Number=Sing	2	obl	_	SpaceAfter=No|start_char=26|end_char=36|ner=S-LOC
+5	.	.	PUNCT	Punct	_	2	punct	_	start_char=36|end_char=37|ner=O
+
+# text = Hän puhui toimittajille uudesta laista.
+# sent_id = 1
+1	Hän	hän	PRON	Pron	Case=Nom|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=38|end_char=41|ner=O
+2	puhui	puhua	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	start_char=42|end_char=47|ner=O
+3	toimittajille	toimittaja	NOUN	N	Case=All|Derivation=Ja|Number=Plur	2	obl	_	start_char=48|end_char=61|ner=O
+4	uudesta	uusi	ADJ	A	Case=Ela|Degree=Pos|Number=Sing	5	amod	_	start_char=62|end_char=69|ner=O
+5	laista	laki	NOUN	N	Case=Ela|Number=Sing	2	obl	_	SpaceAfter=No|start_char=70|end_char=76|ner=O
+6	.	.	PUNCT	Punct	_	2	punct	_	SpacesAfter=\n\n|start_char=76|end_char=77|ner=O
+
+# text = Näin Marian Tampereella vuonna 2024.
+# sent_id = 2
+1	Näin	näin	ADV	Adv	_	3	advmod	_	start_char=79|end_char=83|ner=O
+2	Marian	Maria	PROPN	N	Case=Gen|Number=Sing	3	nmod:poss	_	start_char=84|end_char=90|ner=S-LOC
+3	Tampereella	Tampere	PROPN	N	Case=Ade|Number=Sing	0	root	_	start_char=91|end_char=102|ner=S-LOC
+4	vuonna	vuosi	NOUN	N	Case=Ess|Number=Sing	3	nmod	_	start_char=103|end_char=109|ner=B-DATE
+5	2024	2024	NUM	Num	NumType=Card	4	nummod	_	SpaceAfter=No|start_char=110|end_char=114|ner=E-DATE
+6	.	.	PUNCT	Punct	_	3	punct	_	SpacesAfter=\n|start_char=114|end_char=115|ner=O

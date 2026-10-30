@@ -1,0 +1,17 @@
+# text = Stáhtaministtar bođii ikte Kárášjohkii.
+# sent_id = 0
+1	Stáhtaministtar	stáhtaministtar	NOUN	N	Case=Nom|Number=Sing	2	nsubj	_	start_char=0|end_char=15
+2	bođii	boahtit	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=16|end_char=21
+3	ikte	ikte	ADV	Adv	_	2	advmod	_	start_char=22|end_char=26
+4	Kárášjohkii	Kárášjohka	PROPN	N	Case=Ill|Number=Sing	2	obl	_	SpaceAfter=No|start_char=27|end_char=38
+5	.	.	PUNCT	CLB	_	2	punct	_	start_char=38|end_char=39
+
+# text = Son hálai journalisttaiguin ođđa lága birra.
+# sent_id = 1
+1	Son	son	PRON	Pron	Case=Nom|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=40|end_char=43
+2	hálai	hállat	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=44|end_char=49
+3	journalisttaiguin	journalista	NOUN	N	Case=Com|Number=Plur	2	obl	_	start_char=50|end_char=67
+4	ođđa	ođas	ADJ	A	_	5	amod	_	start_char=68|end_char=72
+5	lága	láhka	NOUN	N	Case=Gen|Number=Sing	2	obl	_	start_char=73|end_char=77
+6	birra	birra	ADP	Po	_	5	case	_	SpaceAfter=No|start_char=78|end_char=83
+7	.	.	PUNCT	CLB	_	2	punct	_	SpacesAfter=\n|start_char=83|end_char=84

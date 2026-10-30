@@ -1,0 +1,14 @@
+# text = Министр вчера локтіс Сыктывкарӧ.
+# sent_id = 0
+1	Министр	Министр	NOUN	N	Case=Nom|Number=Sing	3	nsubj	_	start_char=0|end_char=7
+2	вчера	вчера	ADV	Adv	_	3	advmod	_	start_char=8|end_char=13
+3	локтіс	локны	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=14|end_char=20
+4	Сыктывкарӧ	сыктывкар	NOUN	N	Case=Ill|Number=Sing	3	obl	_	SpaceAfter=No|start_char=21|end_char=31
+5	.	.	PUNCT	CLB	_	3	punct	_	start_char=31|end_char=32
+
+# text = Сійӧ сёрнитіс журналистъяскӧд.
+# sent_id = 1
+1	Сійӧ	сійӧ	PRON	Pron	Case=Nom|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=33|end_char=37
+2	сёрнитіс	сёрнитны	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=38|end_char=46
+3	журналистъяскӧд	журналистт	NOUN	N	Case=Com|Number=Plur	2	obl	_	SpaceAfter=No|start_char=47|end_char=62
+4	.	.	PUNCT	CLB	_	2	punct	_	SpacesAfter=\n|start_char=62|end_char=63

@@ -1,0 +1,31 @@
+# text = मुख्यमंत्री काल मुंबईत आले.
+# sent_id = 0
+# sentiment = 1
+1	मुख्यमंत्री	मुख्यमंत्री	NOUN	_	Case=Nom|Gender=Masc|Number=Plur	3	obl	_	start_char=0|end_char=11|ner=O
+2	काल	काल	ADV	_	_	3	advmod	_	start_char=12|end_char=15|ner=O
+3	मुंबईत	मुंबईत	ADV	_	_	0	root	_	start_char=16|end_char=22|ner=S-NEL
+4	आले	येणे	VERB	_	Aspect=Perf|Gender=Masc|Number=Plur|Person=3|VerbForm=Fin	3	compound:svc	_	SpaceAfter=No|start_char=23|end_char=26|ner=O
+5	.	.	PUNCT	_	_	3	punct	_	start_char=26|end_char=27|ner=O
+
+# text = त्यांनी पत्रकारांशी नव्या कायद्याबद्दल चर्चा केली.
+# sent_id = 1
+# sentiment = 1
+1	त्यांनी	तो	PRON	_	Case=Erg|Deixis=Remt|Gender=Masc|Number=Plur|Person=3|PronType=Dem	7	nsubj	_	start_char=28|end_char=35|ner=O
+2	पत्रकारांशी	पत्रकारी	NOUN	_	Case=Com|Gender=Masc|Number=Plur	7	iobj	_	start_char=36|end_char=47|ner=O
+3	नव्या	नवा	ADJ	_	Case=Abs	4	amod	_	start_char=48|end_char=53|ner=O
+4-5	कायद्याबद्दल	_	_	_	_	_	_	_	start_char=54|end_char=66|ner=O
+4	कायद्या	कायदा	NOUN	_	Case=Abs|Gender=Masc|Number=Sing	7	obl	_	start_char=54|end_char=61
+5	बद्दल	बद्दल	ADP	_	_	4	case	_	start_char=61|end_char=66
+6	चर्चा	चर्च	NOUN	_	Case=Acc|Gender=Fem|Number=Sing	7	compound:lvc	_	start_char=67|end_char=72|ner=O
+7	केली	करणे	VERB	_	Aspect=Perf|Gender=Fem|Number=Sing|Person=3|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=73|end_char=77|ner=O
+8	.	.	PUNCT	_	_	7	punct	_	SpacesAfter=\n\n|start_char=77|end_char=78|ner=O
+
+# text = हा चित्रपट खूप छान आहे.
+# sent_id = 2
+# sentiment = 2
+1	हा	हा	DET	_	Deixis=Prox|Gender=Masc|Number=Sing|PronType=Dem	2	det	_	start_char=80|end_char=82|ner=O
+2	चित्रपट	चित्रपट	NOUN	_	Case=Nom|Gender=Masc|Number=Sing	4	nsubj	_	start_char=83|end_char=90|ner=O
+3	खूप	खूप	ADV	_	_	4	advmod	_	start_char=91|end_char=94|ner=O
+4	छान	छान	ADJ	_	Case=Nom	0	root	_	start_char=95|end_char=98|ner=O
+5	आहे	असणे	AUX	_	Number=Sing|Person=3|Polarity=Pos|Tense=Pres|VerbForm=Fin	4	cop	_	SpaceAfter=No|start_char=99|end_char=102|ner=O
+6	.	.	PUNCT	_	_	4	punct	_	SpacesAfter=\n|start_char=102|end_char=103|ner=O

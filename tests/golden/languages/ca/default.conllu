@@ -1,0 +1,40 @@
+# text = El president de la Generalitat va arribar ahir a Barcelona.
+# sent_id = 0
+1	El	el	DET	da0ms0	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	2	det	_	start_char=0|end_char=2
+2	president	president	NOUN	ncms000	Gender=Masc|Number=Sing	7	nsubj	_	start_char=3|end_char=12
+3	de	de	ADP	sps00	_	5	case	_	start_char=13|end_char=15
+4	la	el	DET	da0fs0	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	5	det	_	start_char=16|end_char=18
+5	Generalitat	Generalitat	PROPN	np0000o	_	2	nmod	_	start_char=19|end_char=30
+6	va	anar	AUX	vaip3s0	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	7	aux	_	start_char=31|end_char=33
+7	arribar	arribar	VERB	vmn0000	VerbForm=Inf	0	root	_	start_char=34|end_char=41
+8	ahir	ahir	ADV	rg	_	7	advmod	_	start_char=42|end_char=46
+9	a	a	ADP	sps00	_	10	case	_	start_char=47|end_char=48
+10	Barcelona	Barcelona	PROPN	np0000l	_	7	obl	_	SpaceAfter=No|start_char=49|end_char=58
+11	.	.	PUNCT	fp	PunctType=Peri	7	punct	_	start_char=58|end_char=59
+
+# text = Va parlar amb els periodistes del projecte de llei.
+# sent_id = 1
+1	Va	anar	AUX	vaip3s0	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	aux	_	start_char=60|end_char=62
+2	parlar	parlar	VERB	vmn0000	VerbForm=Inf	0	root	_	start_char=63|end_char=69
+3	amb	amb	ADP	sps00	_	5	case	_	start_char=70|end_char=73
+4	els	el	DET	da0mp0	Definite=Def|Gender=Masc|Number=Plur|PronType=Art	5	det	_	start_char=74|end_char=77
+5	periodistes	periodista	NOUN	nccp000	Number=Plur	2	obl:arg	_	start_char=78|end_char=89
+6-7	del	_	_	_	_	_	_	_	start_char=90|end_char=93
+6	de	de	ADP	spcms	_	8	case	_	_
+7	el	el	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	8	det	_	_
+8	projecte	projecte	NOUN	ncms000	Gender=Masc|Number=Sing	5	nmod	_	start_char=94|end_char=102
+9	de	de	ADP	sps00	_	10	case	_	start_char=103|end_char=105
+10	llei	llei	NOUN	ncfs000	Gender=Fem|Number=Sing	8	nmod	_	SpaceAfter=No|start_char=106|end_char=110
+11	.	.	PUNCT	fp	PunctType=Peri	2	punct	_	SpacesAfter=\n\n|start_char=110|end_char=111
+
+# text = Vaig veure la Maria al mercat.
+# sent_id = 2
+1	Vaig	anar	AUX	vaip1s0	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	2	aux	_	start_char=113|end_char=117
+2	veure	veure	VERB	vmn0000	VerbForm=Inf	0	root	_	start_char=118|end_char=123
+3	la	el	DET	da0fs0	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	4	det	_	start_char=124|end_char=126
+4	Maria	Maria	PROPN	np0000p	_	2	obj	_	start_char=127|end_char=132
+5-6	al	_	_	_	_	_	_	_	start_char=133|end_char=135
+5	a	a	ADP	spcms	_	7	case	_	_
+6	el	el	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	7	det	_	_
+7	mercat	mercat	NOUN	ncms000	Gender=Masc|Number=Sing	2	obl	_	SpaceAfter=No|start_char=136|end_char=142
+8	.	.	PUNCT	fp	PunctType=Peri	2	punct	_	SpacesAfter=\n|start_char=142|end_char=143

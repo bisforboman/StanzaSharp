@@ -1,0 +1,19 @@
+# text = Li rois vint a Paris et parla as chevaliers. Il furent mout lié.
+# sent_id = 0
+1	Li	le	DET	DETdef	Definite=Def|PronType=Art	2	det	_	start_char=0|end_char=2
+2	rois	_	NOUN	NOMcom	_	3	nsubj	_	start_char=3|end_char=7
+3	vint	venir	VERB	VERcjg	VerbForm=Fin	0	root	_	start_char=8|end_char=12
+4	a	_	ADP	PRE	_	5	case	_	start_char=13|end_char=14
+5	Paris	_	PROPN	NOMpro	_	3	obl	_	start_char=15|end_char=20
+6	et	et	CCONJ	CONcoo	_	7	cc	_	start_char=21|end_char=23
+7	parla	_	VERB	VERcjg	VerbForm=Fin	3	conj	_	start_char=24|end_char=29
+8-9	as	_	_	_	_	_	_	_	start_char=30|end_char=32
+8	a	_	ADP	_	_	10	case	_	_
+9	les	_	DET	_	Definite=Def|PronType=Art	10	det	_	_
+10	chevaliers	chevalier	NOUN	NOMcom	_	7	obl	_	SpaceAfter=No|start_char=33|end_char=43
+11	.	.	PUNCT	PONfrt	_	15	punct	_	start_char=43|end_char=44
+12	Il	il	PRON	PROper	PronType=Prs	15	nsubj	_	start_char=45|end_char=47
+13	furent	_	AUX	VERcjg	VerbForm=Fin	15	cop	_	start_char=48|end_char=54
+14	mout	mout	ADV	ADVgen	_	15	advmod	_	start_char=55|end_char=59
+15	lié	_	ADJ	ADJqua	_	10	acl:relcl	_	SpaceAfter=No|start_char=60|end_char=63
+16	.	.	PUNCT	PONfrt	_	3	punct	_	SpacesAfter=\n|start_char=63|end_char=64

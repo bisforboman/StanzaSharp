@@ -1,0 +1,24 @@
+# text = O prescidente o l'é arrivou vëi a Zena.
+# sent_id = 0
+1	O	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	2	det	_	start_char=0|end_char=1
+2	prescidente	prescidente	NOUN	_	Gender=Masc|Number=Sing	6	nsubj	_	start_char=2|end_char=13
+3	o	o	PRON	_	Gender=Masc|Number=Sing|Person=3|PronType=Prs	6	expl	_	start_char=14|end_char=15
+4	l'	l'	PART	_	_	6	dep	_	SpaceAfter=No|start_char=16|end_char=18
+5	é	ëse	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	6	aux	_	start_char=18|end_char=19
+6	arrivou	arrivâ	VERB	_	Gender=Masc|Number=Sing|Tense=Past|VerbForm=Part	0	root	_	start_char=20|end_char=27
+7	vëi	vëi	ADV	_	_	9	advmod	_	start_char=28|end_char=31
+8	a	o	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	9	det	_	start_char=32|end_char=33
+9	Zena	Zena	PROPN	_	Gender=Fem|Number=Sing	6	obl	_	SpaceAfter=No|start_char=34|end_char=38
+10	.	.	PUNCT	_	_	6	punct	_	start_char=38|end_char=39
+
+# text = O l'à parlou co-i giornalisti.
+# sent_id = 1
+1	O	o	PRON	_	Gender=Masc|Number=Sing|Person=3|PronType=Prs	4	nsubj	_	start_char=40|end_char=41
+2	l'	l'	PART	_	_	4	dep	_	SpaceAfter=No|start_char=42|end_char=44
+3	à	avei	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	aux	_	start_char=44|end_char=45
+4	parlou	parlâ	VERB	_	Gender=Masc|Number=Sing|Tense=Past|VerbForm=Part	0	root	_	start_char=46|end_char=52
+5-6	co-i	_	_	_	_	_	_	_	start_char=53|end_char=57
+5	co	co	ADP	_	_	7	case	_	_
+6	i	o	DET	_	Definite=Def|Gender=Masc|Number=Plur|PronType=Art	7	det	_	_
+7	giornalisti	giornalisto	NOUN	_	Gender=Masc|Number=Plur	4	obl	_	SpaceAfter=No|start_char=58|end_char=69
+8	.	.	PUNCT	_	_	4	punct	_	SpacesAfter=\n|start_char=69|end_char=70

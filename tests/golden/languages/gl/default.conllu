@@ -1,0 +1,26 @@
+# text = O presidente da Xunta chegou onte a Santiago.
+# sent_id = 0
+1	O	o	DET	DA0MS0	Definite=Def|PronType=Art	2	det	_	start_char=0|end_char=1
+2	presidente	presidente	NOUN	NCMS000	_	6	nsubj	_	start_char=2|end_char=12
+3-4	da	_	_	_	_	_	_	_	start_char=13|end_char=15
+3	de	de	ADP	SPS00	_	5	case	_	_
+4	a	o	DET	DA0FS0	Definite=Def|PronType=Art	5	det	_	_
+5	Xunta	xunta	NOUN	NCFS000	_	2	nmod	_	start_char=16|end_char=21
+6	chegou	chegar	VERB	VMIS3S0	_	0	root	_	start_char=22|end_char=28
+7	onte	onte	ADV	RG	_	6	case	_	start_char=29|end_char=33
+8	a	a	ADP	SPS00	_	9	case	_	start_char=34|end_char=35
+9	Santiago	santiago	PROPN	NP00000	_	6	obj	_	SpaceAfter=No|start_char=36|end_char=44
+10	.	.	PUNCT	Fp	_	6	punct	_	start_char=44|end_char=45
+
+# text = Falou cos xornalistas do proxecto de lei.
+# sent_id = 1
+1	Falou	falou	VERB	VMIS3S0	_	0	root	_	start_char=46|end_char=51
+2	cos	cos	PRON	PP3CPO00	PronType=Prs	1	dep	_	start_char=52|end_char=55
+3	xornalistas	xornalista	NOUN	NCMP000	_	1	obj	_	start_char=56|end_char=67
+4-5	do	_	_	_	_	_	_	_	start_char=68|end_char=70
+4	de	de	ADP	SPS00	_	6	case	_	_
+5	o	o	DET	DA0MS0	Definite=Def|PronType=Art	6	det	_	_
+6	proxecto	proxecto	NOUN	NCMS000	_	3	nmod	_	start_char=71|end_char=79
+7	de	de	ADP	SPS00	_	8	case	_	start_char=80|end_char=82
+8	lei	lei	NOUN	NCFS000	_	6	nmod	_	SpaceAfter=No|start_char=83|end_char=86
+9	.	.	PUNCT	Fp	_	1	punct	_	SpacesAfter=\n|start_char=86|end_char=87

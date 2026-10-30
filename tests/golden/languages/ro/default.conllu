@@ -1,0 +1,21 @@
+# text = Prim-ministrul a sosit ieri la București.
+# sent_id = 0
+1	Prim-	prim	NUM	Moms-lny	Definite=Ind|Gender=Masc|Number=Sing|NumForm=Word|NumType=Ord|Variant=Short	2	nummod	_	SpaceAfter=No|start_char=0|end_char=5
+2	ministrul	ministru	NOUN	Ncmsry	Case=Acc,Nom|Definite=Def|Gender=Masc|Number=Sing	4	nsubj	_	start_char=5|end_char=14
+3	a	avea	AUX	Va--3s	Number=Sing|Person=3	4	aux	_	start_char=15|end_char=16
+4	sosit	sosi	VERB	Vmp--sm	Gender=Masc|Number=Sing|VerbForm=Part	0	root	_	start_char=17|end_char=22
+5	ieri	ieri	ADV	Rgp	Degree=Pos	4	advmod	_	start_char=23|end_char=27
+6	la	la	ADP	Spsa	AdpType=Prep|Case=Acc	7	case	_	start_char=28|end_char=30
+7	București	București	PROPN	Np	_	4	obl	_	SpaceAfter=No|start_char=31|end_char=40
+8	.	.	PUNCT	PERIOD	_	4	punct	_	start_char=40|end_char=41
+
+# text = A vorbit cu jurnaliștii despre noua lege.
+# sent_id = 1
+1	A	avea	AUX	Va--3s	Number=Sing|Person=3	2	aux	_	start_char=42|end_char=43
+2	vorbit	vorbi	VERB	Vmp--sm	Gender=Masc|Number=Sing|VerbForm=Part	0	root	_	start_char=44|end_char=50
+3	cu	cu	ADP	Spsa	AdpType=Prep|Case=Acc	4	case	_	start_char=51|end_char=53
+4	jurnaliștii	jurnalist	NOUN	Ncmpry	Case=Acc,Nom|Definite=Def|Gender=Masc|Number=Plur	2	obl	_	start_char=54|end_char=65
+5	despre	despre	ADP	Spsa	AdpType=Prep|Case=Acc	7	case	_	start_char=66|end_char=72
+6	noua	nou	ADJ	Afpfsry	Case=Acc,Nom|Definite=Def|Degree=Pos|Gender=Fem|Number=Sing	7	amod	_	start_char=73|end_char=77
+7	lege	lege	NOUN	Ncfsrn	Case=Acc,Nom|Definite=Ind|Gender=Fem|Number=Sing	4	nmod	_	SpaceAfter=No|start_char=78|end_char=82
+8	.	.	PUNCT	PERIOD	_	2	punct	_	SpacesAfter=\n|start_char=82|end_char=83

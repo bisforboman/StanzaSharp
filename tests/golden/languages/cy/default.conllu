@@ -1,0 +1,21 @@
+# text = Cyrhaeddodd y Prif Weinidog Gaerdydd ddoe.
+# sent_id = 0
+1	Cyrhaeddodd	cyrhaeddu	VERB	verb	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=0|end_char=11
+2	y	y	DET	art	PronType=Art	4	det	_	start_char=12|end_char=13
+3	Prif	prif	ADJ	pos	Degree=Pos	4	amod	_	start_char=14|end_char=18
+4	Weinidog	gweinidog	NOUN	noun	Gender=Masc|Mutation=SM|Number=Sing	1	obj	_	start_char=19|end_char=27
+5	Gaerdydd	Gaerdydd	PROPN	place	_	4	nmod	_	start_char=28|end_char=36
+6	ddoe	doe	ADV	adv	Mutation=SM	1	advmod	_	SpaceAfter=No|start_char=37|end_char=41
+7	.	.	PUNCT	punct	_	1	punct	_	start_char=41|end_char=42
+
+# text = Siaradodd â'r newyddiadurwyr am y gyfraith newydd.
+# sent_id = 1
+1	Siaradodd	siarad	VERB	verb	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=43|end_char=52
+2	â	â	ADP	prep	_	4	case	_	SpaceAfter=No|start_char=53|end_char=54
+3	'r	y	DET	art	PronType=Art	4	det	_	start_char=54|end_char=56
+4	newyddiadurwyr	newyddiadurwr	NOUN	noun	Gender=Masc|Number=Plur	1	obl	_	start_char=57|end_char=71
+5	am	am	ADP	prep	_	7	case	_	start_char=72|end_char=74
+6	y	y	DET	art	PronType=Art	7	det	_	start_char=75|end_char=76
+7	gyfraith	cyfraith	NOUN	noun	Gender=Fem|Mutation=SM|Number=Sing	1	obl	_	start_char=77|end_char=85
+8	newydd	newydd	ADJ	pos	Degree=Pos	7	amod	_	SpaceAfter=No|start_char=86|end_char=92
+9	.	.	PUNCT	punct	_	1	punct	_	SpacesAfter=\n|start_char=92|end_char=93

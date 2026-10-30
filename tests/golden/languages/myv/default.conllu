@@ -1,0 +1,15 @@
+# text = Министрэсь иляс сась Саранскойс.
+# sent_id = 0
+1	Министрэсь	министр	NOUN	N	Case=Nom|Definite=Def|Number=Sing	3	nsubj	_	start_char=0|end_char=10
+2	иляс	иляс	PROPN	N	Case=Nom|Definite=Ind|NameType=Giv|Number=Sing	3	nsubj	_	start_char=11|end_char=15
+3	сась	самс	VERB	V	Mood=Ind|Number[subj]=Sing|Person[subj]=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=16|end_char=20
+4	Саранскойс	саранской	NOUN	N	Case=Ill|Definite=Ind|Number=Plur,Sing	3	obl	_	SpaceAfter=No|start_char=21|end_char=31
+5	.	.	PUNCT	CLB	_	3	punct	_	start_char=31|end_char=32
+
+# text = Сон корты журналистнэнь марто.
+# sent_id = 1
+1	Сон	сон	PRON	Pron	Case=Nom|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=33|end_char=36
+2	корты	кортамс	VERB	V	Mood=Ind|Number[subj]=Sing|Person[subj]=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=37|end_char=42
+3	журналистнэнь	журнали	NOUN	N	Case=Gen|Definite=Def|Number=Plur	2	obl	_	start_char=43|end_char=56
+4	марто	марто	ADP	Po	AdpType=Post	3	case	_	SpaceAfter=No|start_char=57|end_char=62
+5	.	.	PUNCT	CLB	_	2	punct	_	SpacesAfter=\n|start_char=62|end_char=63

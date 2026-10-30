@@ -1,0 +1,26 @@
+# text = ဝန်ကြီးချုပ်သည် မနေ့က ရန်ကုန်သို့ ရောက်ရှိခဲ့သည်။
+# sent_id = 0
+1	ဝန်ကြီးချုပ်	_	_	_	_	0	_	_	SpaceAfter=No|start_char=0|end_char=12|ner=O
+2	သည်	_	_	_	_	1	_	_	start_char=12|end_char=15|ner=O
+3	မနေ့	_	_	_	_	2	_	_	SpaceAfter=No|start_char=16|end_char=20|ner=O
+4	က	_	_	_	_	3	_	_	start_char=20|end_char=21|ner=O
+5	ရန်ကုန်	_	_	_	_	4	_	_	SpaceAfter=No|start_char=22|end_char=29|ner=S-LOC
+6	သို့	_	_	_	_	5	_	_	start_char=29|end_char=33|ner=O
+7	ရောက်	_	_	_	_	6	_	_	SpaceAfter=No|start_char=34|end_char=39|ner=O
+8	ရှိ	_	_	_	_	7	_	_	SpaceAfter=No|start_char=39|end_char=42|ner=O
+9	ခဲ့	_	_	_	_	8	_	_	SpaceAfter=No|start_char=42|end_char=45|ner=O
+10	သည်	_	_	_	_	9	_	_	SpaceAfter=No|start_char=45|end_char=48|ner=O
+11	။	_	_	_	_	10	_	_	start_char=48|end_char=49|ner=O
+
+# text = သူသည် သတင်းထောက်များနှင့် စကားပြောခဲ့သည်။
+# sent_id = 1
+1	သူ	_	_	_	_	0	_	_	SpaceAfter=No|start_char=50|end_char=52|ner=O
+2	သည်	_	_	_	_	1	_	_	start_char=52|end_char=55|ner=O
+3	သတင်းထောက်	_	_	_	_	2	_	_	SpaceAfter=No|start_char=56|end_char=66|ner=O
+4	များ	_	_	_	_	3	_	_	SpaceAfter=No|start_char=66|end_char=70|ner=O
+5	နှင့်	_	_	_	_	4	_	_	start_char=70|end_char=75|ner=O
+6	စကား	_	_	_	_	5	_	_	SpaceAfter=No|start_char=76|end_char=80|ner=O
+7	ပြော	_	_	_	_	6	_	_	SpaceAfter=No|start_char=80|end_char=84|ner=O
+8	ခဲ့	_	_	_	_	7	_	_	SpaceAfter=No|start_char=84|end_char=87|ner=O
+9	သည်	_	_	_	_	8	_	_	SpaceAfter=No|start_char=87|end_char=90|ner=O
+10	။	_	_	_	_	9	_	_	SpacesAfter=\n|start_char=90|end_char=91|ner=O

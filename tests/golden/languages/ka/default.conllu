@@ -1,0 +1,20 @@
+# text = პრემიერ-მინისტრი გუშინ თბილისში ჩამოვიდა.
+# sent_id = 0
+1	პრემიერ-მინისტრი	პრემიერ-მინისტრი	NOUN	Noun	Animacy=Anim|Case=Nom|Number=Sing	5	nsubj	_	start_char=0|end_char=16
+2	გუშინ	გუშინ	ADV	Adv	AdvType=Tim	5	advmod	_	start_char=17|end_char=22
+3-4	თბილისში	_	_	_	_	_	_	_	start_char=23|end_char=31
+3	თბილის	თბილისი	PROPN	Prop	Case=Dat|NameType=Geo|Number=Sing	5	obl	_	start_char=23|end_char=29
+4	ში	ში	ADP	Post	AdpType=Post|Case=Dat	3	case	_	start_char=29|end_char=31
+5	ჩამოვიდა	ჩამოდის	VERB	Verb	Mood=Ind|Number[subj]=Sing|Person[subj]=3|Subcat=Intr|Tense=Past|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=32|end_char=40
+6	.	.	PUNCT	F	PunctType=Peri	5	punct	_	start_char=40|end_char=41
+
+# text = მან ჟურნალისტებს ახალ კანონზე ესაუბრა.
+# sent_id = 1
+1	მან	იგი	PRON	Pron	Case=Erg|Number=Sing|Person=3|PronType=Prs	6	nsubj	_	start_char=42|end_char=45
+2	ჟურნალისტებს	ჟურნალისტი	NOUN	Noun	Animacy=Anim|Case=Dat|Number=Plur	6	obj	_	start_char=46|end_char=58
+3	ახალ	ახალი	ADJ	Adj	Case=Dat|Degree=Pos|Number=Sing	4	amod	_	start_char=59|end_char=63
+4-5	კანონზე	_	_	_	_	_	_	_	start_char=64|end_char=71
+4	კანონ	კანონი	NOUN	Noun	Animacy=Inan|Case=Dat|Number=Sing	6	obl	_	start_char=64|end_char=69
+5	ზე	ზე	ADP	Post	AdpType=Post|Case=Dat	4	case	_	start_char=69|end_char=71
+6	ესაუბრა	საუბრავს	VERB	Verb	Aspect=Imp|Mood=Ind|Number[subj]=Sing|Person[obj]=3|Person[subj]=3|Subcat=Tran|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	SpaceAfter=No|start_char=72|end_char=79
+7	.	.	PUNCT	F	PunctType=Peri	6	punct	_	SpacesAfter=\n|start_char=79|end_char=80

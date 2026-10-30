@@ -1,0 +1,19 @@
+# text = Ministerski prezident je wčera do Budyšina přijěł.
+# sent_id = 0
+1	Ministerski	ministerski	ADJ	_	Case=Nom|Degree=Pos|Gender=Masc|Number=Sing	2	amod	_	start_char=0|end_char=11
+2	prezident	prezident	NOUN	_	Animacy=Anim|Case=Nom|Gender=Masc|Number=Sing	7	nsubj	_	start_char=12|end_char=21
+3	je	być	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	7	aux	_	start_char=22|end_char=24
+4	wčera	wčera	NOUN	_	Case=Nom|Gender=Fem|Number=Sing	2	nsubj	_	start_char=25|end_char=30
+5	do	do	ADP	_	_	6	case	_	start_char=31|end_char=33
+6	Budyšina	Budyšin	PROPN	_	Animacy=Inan|Case=Gen|Gender=Masc|Number=Sing	7	obl	_	start_char=34|end_char=42
+7	přijěł	přijěć	VERB	_	Gender=Masc|Number=Sing|Tense=Past|VerbForm=Part|Voice=Act	0	root	_	SpaceAfter=No|start_char=43|end_char=49
+8	.	.	PUNCT	_	_	7	punct	_	start_char=49|end_char=50
+
+# text = Wón je z žurnalistami rěčał.
+# sent_id = 1
+1	Wón	wón	PRON	_	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	5	nsubj	_	start_char=51|end_char=54
+2	je	być	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	5	cop	_	start_char=55|end_char=57
+3	z	z	ADP	_	_	4	case	_	start_char=58|end_char=59
+4	žurnalistami	žurnalisto	NOUN	_	Animacy=Anim|Case=Ins|Gender=Masc|Number=Plur	5	obl	_	start_char=60|end_char=72
+5	rěčał	rěčeć	VERB	_	Gender=Masc|Number=Sing|Tense=Past|VerbForm=Part|Voice=Act	0	root	_	SpaceAfter=No|start_char=73|end_char=78
+6	.	.	PUNCT	_	_	5	punct	_	SpacesAfter=\n|start_char=78|end_char=79

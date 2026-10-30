@@ -1,0 +1,19 @@
+# text = Ministru prezidents vakar ieradās Rīgā.
+# sent_id = 0
+1	Ministru	ministrs	NOUN	ncmpg1	Case=Gen|Gender=Masc|Number=Plur	2	nmod	_	start_char=0|end_char=8
+2	prezidents	prezidents	NOUN	ncmsn1	Case=Nom|Gender=Masc|Number=Sing	4	nsubj	_	start_char=9|end_char=19
+3	vakar	vakar	ADV	r0n	_	4	advmod	_	start_char=20|end_char=25
+4	ieradās	ierasties	VERB	vmyisi130an	Evident=Fh|Mood=Ind|Person=3|Polarity=Pos|Reflex=Yes|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	start_char=26|end_char=33
+5	Rīgā	Rīga	PROPN	npfsl4	Case=Loc|Gender=Fem|Number=Sing	4	obl	_	SpaceAfter=No|start_char=34|end_char=38
+6	.	.	PUNCT	zs	_	4	punct	_	start_char=38|end_char=39
+
+# text = Viņš runāja ar žurnālistiem par jauno likumu.
+# sent_id = 1
+1	Viņš	viņš	PRON	pp3msnn	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=40|end_char=44
+2	runāja	runāt	VERB	vmnisi230an	Evident=Fh|Mood=Ind|Person=3|Polarity=Pos|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	start_char=45|end_char=51
+3	ar	ar	ADP	sppd	_	4	case	_	start_char=52|end_char=54
+4	žurnālistiem	žurnālists	NOUN	ncmpd1	Case=Dat|Gender=Masc|Number=Plur	2	iobj	_	start_char=55|end_char=67
+5	par	par	ADP	spsa	_	7	case	_	start_char=68|end_char=71
+6	jauno	jauns	ADJ	afmsayp	Case=Acc|Definite=Def|Degree=Pos|Gender=Masc|Number=Sing	7	amod	_	start_char=72|end_char=77
+7	likumu	likums	NOUN	ncmsa1	Case=Acc|Gender=Masc|Number=Sing	4	nmod	_	SpaceAfter=No|start_char=78|end_char=84
+8	.	.	PUNCT	zs	_	2	punct	_	SpacesAfter=\n|start_char=84|end_char=85

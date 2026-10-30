@@ -1,0 +1,20 @@
+# text = Atta unsar þu in himinam, weihnai namo þein.
+# sent_id = 0
+1	Atta	atta	NOUN	Nb	Case=Nom|Gender=Masc|Number=Sing	6	nsubj	_	start_char=0|end_char=4
+2	unsar	unsar	DET	Ps	Case=Nom|Gender=Masc,Neut|Number=Sing|Person=1|Poss=Yes	1	det	_	start_char=5|end_char=10
+3	þu	þu	PRON	Pp	Case=Nom|Gender=Masc|Number=Sing|Person=2|PronType=Prs	6	nsubj	_	start_char=11|end_char=13
+4	in	in	ADP	R-	_	5	case	_	start_char=14|end_char=16
+5	himinam,	himins	NOUN	Nb	Case=Dat|Gender=Masc|Number=Plur	6	obl	_	start_char=17|end_char=25
+6	weihnai	weihnan	VERB	V-	Mood=Opt|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin|Voice=Act	0	root	_	start_char=26|end_char=33
+7	namo	namo	NOUN	Nb	Case=Nom|Gender=Neut|Number=Sing	6	obj	_	start_char=34|end_char=38
+8	þein.	þeins	DET	Ps	Case=Nom|Gender=Neut|Number=Sing|Person=2|Poss=Yes	7	det	_	start_char=39|end_char=44
+
+# text = Qimai þiudinassus þeins
+# sent_id = 1
+1	Qimai	wiman	VERB	V-	Mood=Opt|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin|Voice=Act	0	root	_	start_char=45|end_char=50
+2	þiudinassus	þiudinassus	NOUN	Nb	Case=Nom|Gender=Masc|Number=Sing	1	obj	_	start_char=51|end_char=62
+3	þeins	þeins	DET	Ps	Case=Nom|Gender=Masc|Number=Sing|Person=2|Poss=Yes	2	det	_	SpaceAfter=No|start_char=63|end_char=68
+
+# text = .
+# sent_id = 2
+1	.	-uh	ADV	Df	_	0	root	_	SpacesAfter=\n|start_char=68|end_char=69

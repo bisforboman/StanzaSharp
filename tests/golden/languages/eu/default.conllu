@@ -1,0 +1,19 @@
+# text = Lehendakaria atzo iritsi zen Bilbora.
+# sent_id = 0
+1	Lehendakaria	lehendakari	NOUN	_	Case=Abs|Definite=Def|Number=Sing	3	nsubj	_	start_char=0|end_char=12
+2	atzo	atzo	ADV	_	_	3	advmod	_	start_char=13|end_char=17
+3	iritsi	iritsi	VERB	_	Aspect=Perf|VerbForm=Part	0	root	_	start_char=18|end_char=24
+4	zen	izan	AUX	_	Mood=Ind|Number[abs]=Sing|Person[abs]=3|VerbForm=Fin	3	aux	_	start_char=25|end_char=28
+5	Bilbora	Bilbo	PROPN	_	Case=All|Definite=Def|Number=Sing	3	obl	_	SpaceAfter=No|start_char=29|end_char=36
+6	.	.	PUNCT	_	_	3	punct	_	start_char=36|end_char=37
+
+# text = Kazetariekin hitz egin zuen lege berriari buruz.
+# sent_id = 1
+1	Kazetariekin	kazetari	NOUN	_	Case=Com|Definite=Def|Number=Plur	3	obl	_	start_char=38|end_char=50
+2	hitz	hitz	NOUN	_	Animacy=Inan|Case=Abs|Definite=Ind	3	obj	_	start_char=51|end_char=55
+3	egin	egin	VERB	_	Aspect=Perf|VerbForm=Part	0	root	_	start_char=56|end_char=60
+4	zuen	edun	AUX	_	Mood=Ind|Number[abs]=Sing|Number[erg]=Sing|Person[abs]=3|Person[erg]=3|VerbForm=Fin	3	aux	_	start_char=61|end_char=65
+5	lege	lege	NOUN	_	_	3	obl	_	start_char=66|end_char=70
+6	berriari	berri	ADJ	_	Case=Dat	5	amod	_	start_char=71|end_char=79
+7	buruz	buruz	ADP	_	Definite=Def|Number=Sing	6	case	_	SpaceAfter=No|start_char=80|end_char=85
+8	.	.	PUNCT	_	_	3	punct	_	SpacesAfter=\n|start_char=85|end_char=86
