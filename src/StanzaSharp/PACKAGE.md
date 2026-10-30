@@ -1,13 +1,12 @@
 # StanzaSharp
 
-[Stanza](https://github.com/stanfordnlp/stanza)'s English, German, Spanish, French, Italian, Portuguese and Dutch NLP pipelines in .NET:
+[Stanza](https://github.com/stanfordnlp/stanza)'s NLP pipelines for 86 languages in .NET:
 - tokenization and sentence splitting
 - multi-word token expansion ("don't" → "do" + "n't", "zum" → "zu" + "dem")
 - part-of-speech tags and morphological features
 - lemmas
 - dependency parsing
-- named entities (English: OntoNotes types, PERSON, ORG, GPE, DATE, ...; German, Spanish, French, Dutch: PER, LOC, ORG,
-  MISC; Italian: PER, LOC, ORG)
+- named entities (English: OntoNotes types, PERSON, ORG, GPE, DATE, ...; German and many others: PER, LOC, ORG, MISC)
 - constituency parsing
 - sentence sentiment (negative, neutral, positive)
 
@@ -259,8 +258,9 @@ var doc = nlp.Process("Angela Merkel wurde in Hamburg geboren. Sie zog im Jahr 1
 // "im" is one token of two words, "in" + "dem"; doc.Entities: Angela Merkel/PER, Hamburg/LOC, DDR/LOC
 ```
 
-Spanish (`es`), French (`fr`), Italian (`it`), Portuguese (`pt`) and Dutch (`nl`) work the same way, with Stanza's
-`default` package of each language (and `default_fast`, but not in Spanish):
+The other languages work the same way, with Stanza's `default` package of each (and `default_fast` for French, Italian,
+Portuguese and Dutch); the 86 codes are in
+[docs/languages.md](https://github.com/bisforboman/StanzaSharp/blob/main/docs/languages.md):
 
 ```csharp
 var french = new PipelineOptions { Language = "fr" };
@@ -274,11 +274,9 @@ Named entity types per language:
 |---|---|---|
 | English (`en`) | OntoNotes (`ontonotes-ww-multi`) | 18: `PERSON`, `NORP`, `FAC`, `ORG`, `GPE`, `LOC`, `PRODUCT`, `EVENT`, `WORK_OF_ART`, `LAW`, `LANGUAGE`, `DATE`, `TIME`, `PERCENT`, `MONEY`, `QUANTITY`, `ORDINAL`, `CARDINAL` |
 | German (`de`) | GermEval 2014 (`germeval2014_charlm`) | 4: `PER`, `LOC`, `ORG`, `MISC` |
-| Spanish (`es`), Dutch (`nl`) | CoNLL 2002 (`conll02`) | 4: `PER`, `LOC`, `ORG`, `MISC` |
-| French (`fr`) | WikiNER (`wikinergold_charlm`) | 4: `PER`, `LOC`, `ORG`, `MISC` |
-| Italian (`it`) | FBK (`fbk`) | 3: `PER`, `LOC`, `ORG` |
 
-Portuguese has no NER model in Stanza.
+The other languages' NER models (where Stanza has one) are named in docs/languages.md; most use `PER`, `LOC`, `ORG`
+and often `MISC`.
 
 ## GPU
 

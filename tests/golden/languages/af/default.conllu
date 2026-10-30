@@ -1,0 +1,32 @@
+# text = Die president van Suid-Afrika het gister in Kaapstad aangekom.
+# sent_id = 0
+1	Die	die	DET	LB	Definite=Def|PronType=Art	2	det	_	start_char=0|end_char=3|ner=O
+2	president	president	NOUN	NSE	Number=Sing	9	nsubj	_	start_char=4|end_char=13|ner=O
+3	van	van	ADP	SVS	AdpType=Prep	4	case	_	start_char=14|end_char=17|ner=O
+4	Suid-Afrika	Suid-Afrika	PROPN	NEE	Number=Sing	2	nmod	_	start_char=18|end_char=29|ner=S-LOC
+5	het	het	AUX	VUOT	Tense=Pres|VerbForm=Fin,Inf|VerbType=Aux	9	aux	_	start_char=30|end_char=33|ner=O
+6	gister	gister	ADV	BS	Degree=Pos	9	advmod	_	start_char=34|end_char=40|ner=O
+7	in	in	ADP	SVS	AdpType=Prep	8	case	_	start_char=41|end_char=43|ner=O
+8	Kaapstad	Kaapstad	PROPN	NEE	Number=Sing	9	obl	_	start_char=44|end_char=52|ner=S-LOC
+9	aangekom	aankom	VERB	VVHOO	Subcat=Intr|Tense=Past|VerbForm=Part	0	root	_	SpaceAfter=No|start_char=53|end_char=61|ner=O
+10	.	.	PUNCT	ZE	_	9	punct	_	start_char=61|end_char=62|ner=O
+
+# text = Hy het met die joernaliste gepraat.
+# sent_id = 1
+1	Hy	hy	PRON	PDHENP	Case=Nom|Number=Sing|Person=3|PronType=Prs	6	nsubj	_	start_char=63|end_char=65|ner=O
+2	het	het	AUX	VUOT	Tense=Pres|VerbForm=Fin,Inf|VerbType=Aux	6	aux	_	start_char=66|end_char=69|ner=O
+3	met	met	ADP	SVS	AdpType=Prep	5	case	_	start_char=70|end_char=73|ner=O
+4	die	die	DET	LB	Definite=Def|PronType=Art	5	det	_	start_char=74|end_char=77|ner=O
+5	joernaliste	joernaliste	NOUN	NSM	Number=Plur	6	obl	_	start_char=78|end_char=89|ner=O
+6	gepraat	praat	VERB	VVHOG	Subcat=Tran|Tense=Past|VerbForm=Part	0	root	_	SpaceAfter=No|start_char=90|end_char=97|ner=O
+7	.	.	PUNCT	ZE	_	6	punct	_	SpacesAfter=\n\n|start_char=97|end_char=98|ner=O
+
+# text = Ek het Jan in Pretoria gesien.
+# sent_id = 2
+1	Ek	ek	PRON	PEENP	Case=Nom|Number=Sing|Person=1|PronType=Prs	6	nsubj	_	start_char=100|end_char=102|ner=O
+2	het	het	AUX	VUOT	Tense=Pres|VerbForm=Fin,Inf|VerbType=Aux	6	aux	_	start_char=103|end_char=106|ner=O
+3	Jan	Jan	PROPN	NEE	Number=Sing	6	obj	_	start_char=107|end_char=110|ner=S-PERS
+4	in	in	ADP	SVS	AdpType=Prep	5	case	_	start_char=111|end_char=113|ner=O
+5	Pretoria	Pretoria	PROPN	NEE	Number=Sing	6	obl	_	start_char=114|end_char=122|ner=S-LOC
+6	gesien	sien	VERB	VVHOG	Subcat=Tran|Tense=Past|VerbForm=Part	0	root	_	SpaceAfter=No|start_char=123|end_char=129|ner=O
+7	.	.	PUNCT	ZE	_	6	punct	_	SpacesAfter=\n|start_char=129|end_char=130|ner=O

@@ -1815,17 +1815,19 @@ TRANSFORMER_LONG_STRIDE = 10  # the long sentence keeps every 10th word's vector
 
 
 # The languages with only languages/<lang>/'s golden data, and their packages (Pipeline.SupportedPackages).
+# Every folder of languages/ is a language; its packages are these, else just "default".
 LANGUAGES = {lang: ["default", "default_fast"] for lang in ["es", "fr", "it", "pt", "nl"]}
 LANGUAGES["es"] = ["default"]  # Spanish's default_fast parser (uploaded 2026-10-27) is truncated: neither Stanza nor StanzaSharp loads it
 
 
 def write_languages_golden(models, out, only=None):
-    """languages/<lang>/<package>.conllu: each package of LANGUAGES on the language's text.txt (models in <models>/<lang>)."""
+    """languages/<lang>/<package>.conllu: each package of each languages/ folder (LANGUAGES) on its text.txt (models in <models>/<lang>)."""
     resources = str(Path(__file__).resolve().parent.parent / "src" / "StanzaSharp" / "stanza_resources.json")
-    for lang, packages in LANGUAGES.items():
+    for folder in sorted(p for p in (out / "languages").iterdir() if p.is_dir()):
+        lang = folder.name
+        packages = LANGUAGES.get(lang, ["default"])
         if only and lang not in only:
             continue
-        folder = out / "languages" / lang
         text = (folder / "text.txt").read_bytes().decode("utf-8")
         for package in packages:
             nlp = stanza.Pipeline(lang, dir=models, package=package, download_method=None, resources_filepath=resources,

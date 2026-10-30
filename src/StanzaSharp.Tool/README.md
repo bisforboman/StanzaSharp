@@ -1,7 +1,7 @@
 # StanzaSharp.Tool
 
 The `stanzasharp` command for [StanzaSharp](https://www.nuget.org/packages/StanzaSharp): it downloads Stanza's English,
-German, Spanish, French, Italian, Portuguese and Dutch models (for example in a Dockerfile or a CI job), compares StanzaSharp's output with Python Stanza's on your own text,
+German and 84 other languages' models (for example in a Dockerfile or a CI job), compares StanzaSharp's output with Python Stanza's on your own text,
 and benchmarks both on your machine. Each downloaded file is checked against its published MD5, and files already
 present are kept. It needs no native libtorch.
 
@@ -13,7 +13,8 @@ stanzasharp download --lang de                     # German, into models/stanza/
 ```
 
 - `DIR`: where to put the models (default `models/stanza/<lang>`), in the layout `Pipeline.Load(DIR)` reads.
-- `--lang CODE`: `en` (the default), `de` (German), `es`, `fr`, `it`, `pt` or `nl`, for `download` and `compare`;
+- `--lang CODE`: `en` (the default), `de` (German) or another code of
+  [docs/languages.md](https://github.com/bisforboman/StanzaSharp/blob/main/docs/languages.md), for `download` and `compare`;
   `benchmark` has texts for `en` and `de` only.
 - `--package NAME`: `default` (the default) or `default_fast`; or a treebank package (tokenize to depparse only):
   English `combined`, `ewt`, `gum`, `lines`, `partut`, `atis`, `childes`, `eslspok`, `craft`, `genia` and `mimic`, German `combined`, `gsd` and
@@ -52,7 +53,7 @@ Different: 1 of 68 sentences differ. The first difference, line 384 of the CoNLL
   StanzaSharp: 3	said	say	VERB	VBD	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin	8	parataxis	_	SpaceAfter=No|start_char=1462|end_char=1466|ner=O
 ```
 
-- `--lang CODE`: the language, `en` (default), `de`, `es`, `fr`, `it`, `pt` or `nl`. Stanza runs `stanza.Pipeline(CODE)` with
+- `--lang CODE`: the language, `en` (default), `de` or another supported code. Stanza runs `stanza.Pipeline(CODE)` with
   Stanza 1.15.0's resources.json (shipped with StanzaSharp, so nothing is downloaded), StanzaSharp loads with
   `Language = CODE`. A treebank package (e.g. `--package ewt`, or German `gsd`) runs only its processors.
 - `--models DIR`: Stanza's `.pt` files as `download` writes them (default `models/stanza/<lang>`), in a folder of any

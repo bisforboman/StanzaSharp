@@ -1,0 +1,17 @@
+# text = Аҧсны ахьыҵәҟьа ҭыԥуп.
+# sent_id = 0
+1	Аҧсны	Аҧсны́	PROPN	Noun_Prop_Place	NameType=Geo	3	obl	_	start_char=0|end_char=5
+2	ахьыҵәҟьа	а-хьы́	NOUN	Noun_NH_Sg_PP	Animacy=Nhum|Number=Sing	3	nsubj	_	start_char=6|end_char=15
+3	ҭыԥуп	а-ҭы́ԥ	VERB	V_Stat_Fin_Pres_Emph_S:3_S:Ad	Dyn=No|Mood=Ind|Number=Sing|Person[subj]=3|Tense=Pres|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=16|end_char=21
+4	.	.	PUNCT	Punct_Period	_	3	punct	_	start_char=21|end_char=22
+
+# text = Сара сыҩны ду ауп, 2024 шықәсазы.
+# sent_id = 1
+1	Сара	сара́	PRON	Pron_Pers_1Sg	Number=Sing|Person=1|PronType=Prs	2	nsubj	_	start_char=23|end_char=27
+2	сыҩны	а́-ҩра	VERB	V_Dyn_Intr_NonFin_Cnv_Abs_Aor_S:1Sg	Dyn=Yes|Number[subj]=Sing|Person[subj]=1|Subcat=Intr|Tense=Aor|VerbForm=NonFin	7	advcl	_	start_char=28|end_char=33
+3	ду	а-ду́	ADJ	Adj_Sg	Number=Sing	2	mark	_	start_char=34|end_char=36
+4	ауп	а́кәзаара	AUX	V_Stat_Fin_Pres_S:3_IO:3SgNH_Cop	Dyn=No|Gender[io]=Neut|Mood=Ind|Number[io]=Sing|Person[io]=3|Person[subj]=3|Tense=Pres|VerbForm=Fin	2	cop	_	SpaceAfter=No|start_char=37|end_char=40
+5	,	,	PUNCT	Punct_Comma	_	7	punct	_	start_char=40|end_char=41
+6	2024	а-б02ы́	NOUN	Noun_NH_Sg	Animacy=Nhum|Number=Sing	7	nsubj	_	start_char=42|end_char=46
+7	шықәсазы	а́-қәсара	VERB	Adj_Sg_Pred_NonFin_Cnv_Pres_How_S:3_S:Ad	Dyn=No|Number=Sing|Person[subj]=3|Tense=Pres|VerbForm=NonFin	0	root	_	SpaceAfter=No|start_char=47|end_char=55
+8	.	.	PUNCT	Punct_Period	_	1	punct	_	SpacesAfter=\n|start_char=55|end_char=56

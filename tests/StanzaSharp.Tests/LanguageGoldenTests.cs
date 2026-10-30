@@ -1,32 +1,17 @@
+using System.Reflection;
+
 namespace StanzaSharp.Tests;
 
 /// <summary>
-/// The languages with only tests/golden/languages/&lt;lang&gt;/ (make_golden.py --languages-only; owner's decision,
-/// 2026-10-30): each supported package on the language's hand-written text.txt, byte for byte on both backends. Their
-/// models are downloaded only by the nightly run (nightly.yml's languages job), so every other job skips these rows and
-/// its no-skip check exempts the class.
+/// The languages with only tests/golden/languages/&lt;lang&gt;/ (make_golden.py --languages-only; owner's decisions,
+/// 2026-10-30): each supported package on the language's text.txt, byte for byte on both backends. Their models are
+/// downloaded only by the nightly run (nightly.yml's languages job, a few languages at a time), so every other job skips
+/// these rows and its no-skip check exempts the class.
 /// </summary>
 public class LanguageGoldenTests
 {
     [Theory]
-    [Language("es", "default", false)]
-    [Language("es", "default", true)]
-    [Language("fr", "default", false)]
-    [Language("fr", "default", true)]
-    [Language("fr", "default_fast", false)]
-    [Language("fr", "default_fast", true)]
-    [Language("it", "default", false)]
-    [Language("it", "default", true)]
-    [Language("it", "default_fast", false)]
-    [Language("it", "default_fast", true)]
-    [Language("pt", "default", false)]
-    [Language("pt", "default", true)]
-    [Language("pt", "default_fast", false)]
-    [Language("pt", "default_fast", true)]
-    [Language("nl", "default", false)]
-    [Language("nl", "default", true)]
-    [Language("nl", "default_fast", false)]
-    [Language("nl", "default_fast", true)]
+    [LanguageGoldenData]
     public void Process_MatchesGolden(string lang, string package, bool managed)
     {
         using var nlp = Pipeline.Load(Repo.ModelsFor(lang), new PipelineOptions { Language = lang, Package = package, Backend = Repo.PipelineBackendFor(managed) });
@@ -35,38 +20,41 @@ public class LanguageGoldenTests
         Assert.Equal(File.ReadAllText(Path.Combine(dir, package + ".conllu")), actual);
     }
 
-    /// <summary>Every package of these languages has its golden file and a row above.</summary>
+    /// <summary>Every package of these languages has its text and golden file, and every golden folder a supported language.</summary>
     [Fact]
     public void EverySupportedPackage_HasGoldenData()
     {
-        var rows = typeof(LanguageGoldenTests).GetMethod(nameof(Process_MatchesGolden))!.GetCustomAttributes(typeof(LanguageAttribute), false)
-            .Cast<LanguageAttribute>().Select(a => $"{a.Lang}/{a.Package}").ToHashSet();
-        foreach (var (lang, packages) in Pipeline.SupportedPackages.Where(l => l.Key is not ("en" or "de")))
+        foreach (var (lang, package) in LanguageGoldenDataAttribute.Packages)
         {
-            foreach (var package in packages)
-            {
-                Assert.True(File.Exists(Path.Combine(Repo.Golden, "languages", lang, package + ".conllu")), $"{lang}/{package}: no golden file");
-                Assert.Contains($"{lang}/{package}", rows);
-            }
+            Assert.True(File.Exists(Path.Combine(Repo.Golden, "languages", lang, "text.txt")), $"{lang}: no text.txt");
+            Assert.True(File.Exists(Path.Combine(Repo.Golden, "languages", lang, package + ".conllu")), $"{lang}/{package}: no golden file");
         }
+
+        var folders = Directory.GetDirectories(Path.Combine(Repo.Golden, "languages")).Select(Path.GetFileName).Order();
+        Assert.Equal(LanguageGoldenDataAttribute.Packages.Select(p => p.Lang).Distinct().Order(), folders);
     }
 }
 
-/// <summary>A row of <see cref="LanguageGoldenTests"/>, skipped without the language's models (models/stanza/&lt;lang&gt;).</summary>
-public sealed class LanguageAttribute : Xunit.Sdk.DataAttribute
+/// <summary>
+/// The rows of <see cref="LanguageGoldenTests"/>: every package of every language but English and German
+/// (<see cref="Pipeline.SupportedPackages"/>) on both backends, for the languages whose models are present
+/// (models/stanza/&lt;lang&gt;) and, when STANZASHARP_LANGUAGES is set (comma-separated), only those. Skipped when none is.
+/// </summary>
+public sealed class LanguageGoldenDataAttribute : Xunit.Sdk.DataAttribute
 {
-    public LanguageAttribute(string lang, string package, bool managed)
+    internal static readonly (string Lang, string Package)[] Packages =
+        [.. Pipeline.SupportedPackages.Where(l => l.Key is not ("en" or "de")).SelectMany(l => l.Value.Select(p => (l.Key, p)))];
+
+    private readonly (string Lang, string Package)[] _present;
+
+    public LanguageGoldenDataAttribute()
     {
-        (Lang, Package, Managed) = (lang, package, managed);
-        if (!Directory.Exists(Repo.ModelsFor(lang)))
-            Skip = $"{Repo.ModelsFor(lang)} not found; run stanzasharp download --lang {lang} --package {package}";
+        var only = Environment.GetEnvironmentVariable("STANZASHARP_LANGUAGES") is { Length: > 0 } list ? list.Split(',') : null;
+        _present = [.. Packages.Where(p => (only == null || only.Contains(p.Lang)) && Directory.Exists(Repo.ModelsFor(p.Lang)))];
+        if (_present.Length == 0)
+            Skip = "No other language's models found (models/stanza/<lang>); run stanzasharp download --lang <lang>";
     }
 
-    public string Lang { get; }
-
-    public string Package { get; }
-
-    public bool Managed { get; }
-
-    public override IEnumerable<object[]> GetData(System.Reflection.MethodInfo testMethod) => [[Lang, Package, Managed]];
+    public override IEnumerable<object[]> GetData(MethodInfo testMethod) =>
+        _present.SelectMany(p => new[] { false, true }.Select(managed => new object[] { p.Lang, p.Package, managed }));
 }
