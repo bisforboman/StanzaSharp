@@ -1,0 +1,22 @@
+# text = Lo reis venc a Tolosa e parlet als cavaliers.
+# sent_id = 0
+1	Lo	Lo	DET	_	_	2	det	_	start_char=0|end_char=2
+2	reis	reis	NOUN	_	_	0	root	_	start_char=3|end_char=7
+3	venc	venc	NOUN	_	_	2	flat	_	start_char=8|end_char=12
+4	a	a	ADP	_	_	5	case	_	start_char=13|end_char=14
+5	Tolosa	Tolosa	PROPN	_	_	3	nmod	_	start_char=15|end_char=21
+6	e	e	CCONJ	_	_	7	cc	_	start_char=22|end_char=23
+7	parlet	parlet	NOUN	_	_	3	conj	_	start_char=24|end_char=30
+8-9	als	_	_	_	_	_	_	_	start_char=31|end_char=34
+8	a-	a-	ADP	_	_	10	case	_	_
+9	-los	-los	DET	_	_	10	det	_	_
+10	cavaliers	cavaliers	NOUN	_	_	7	nmod	_	SpaceAfter=No|start_char=35|end_char=44
+11	.	.	PUNCT	_	_	2	punct	_	start_char=44|end_char=45
+
+# text = Ilh foron mout alegre.
+# sent_id = 1
+1	Ilh	Ilh	NOUN	_	_	0	root	_	start_char=46|end_char=49
+2	foron	foron	NOUN	_	_	1	flat	_	start_char=50|end_char=55
+3	mout	mout	NOUN	_	_	2	conj	_	start_char=56|end_char=60
+4	alegre	alegre	NOUN	_	_	2	conj	_	SpaceAfter=No|start_char=61|end_char=67
+5	.	.	PUNCT	_	_	1	punct	_	SpacesAfter=\n|start_char=67|end_char=68

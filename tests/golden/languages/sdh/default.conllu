@@ -1,0 +1,17 @@
+# text = سەرۆک وەزیر دوینێ هات ئەرا کرماشان.
+# sent_id = 0
+1	سەرۆک	سەرۆک	NOUN	_	Number=Sing	4	obj	_	start_char=0|end_char=5
+2	وەزیر	وەزیر	ADJ	_	_	4	compound:lvc	_	start_char=6|end_char=11
+3	دوینێ	دوینێ	ADJ	_	_	4	compound:lvc	_	start_char=12|end_char=17
+4	هات	هatin	VERB	_	Mood=Ind|Tense=Pres|VerbForm=Fin|Voice=Act	0	root	_	start_char=18|end_char=21
+5	ئەرا	ئەرا	ADJ	_	_	4	obl	_	start_char=22|end_char=26
+6	کرماشا	کرماشا	PRON	_	Number=Sing|Person=3	4	obl	_	SpaceAfter=No|start_char=27|end_char=33
+7	ن.	ن.	PUNCT	_	_	4	punct	_	start_char=33|end_char=35
+
+# text = قسە کرد وەگەرد ڕۆژنامەنووسەیل.
+# sent_id = 1
+1	قسە	قسە	NOUN	_	Number=Sing	4	nsubj	_	start_char=36|end_char=39
+2	کرد	کرد	ADP	_	_	1	case	_	start_char=40|end_char=43
+3	وەگەرد	وەگەرد	ADJ	_	_	4	compound:lvc	_	start_char=44|end_char=50
+4	ڕۆژنامەنووسەیل	xۆastin	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin|Voice=Act	0	root	_	SpaceAfter=No|start_char=51|end_char=65
+5	.	.	PUNCT	_	_	4	punct	_	SpacesAfter=\n|start_char=65|end_char=66

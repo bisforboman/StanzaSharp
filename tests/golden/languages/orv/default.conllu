@@ -1,0 +1,18 @@
+# text = Се повѣсти времяньныхъ лѣтъ, откуду есть пошла Руская земля.
+# sent_id = 0
+1	Се	сии	PRON	Pd	Case=Nom|Gender=Neut|Number=Sing	2	nsubj	_	start_char=0|end_char=2
+2	повѣсти	повѣсть	NOUN	Nb	Case=Dat|Gender=Fem|Number=Sing	0	root	_	start_char=3|end_char=10
+3	времяньныхъ	времяньныхъ	ADJ	A-	Case=Gen|Degree=Pos|Gender=Neut|Number=Plur	4	amod	_	start_char=11|end_char=22
+4	лѣтъ,	лѣто	NOUN	Nb	Case=Gen|Gender=Neut|Number=Sing	5	obl	_	start_char=23|end_char=28
+5	откуду	отъкуду	ADV	Df	_	7	advmod	_	start_char=29|end_char=35
+6	есть	быти	AUX	V-	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin|Voice=Act	5	cop	_	start_char=36|end_char=40
+7	пошла	поити	VERB	V-	Case=Nom|Gender=Fem|Number=Sing|Tense=Past|Variant=Short|VerbForm=PartRes|Voice=Act	2	acl	_	start_char=41|end_char=46
+8	Руская	русьскыи	ADJ	A-	Case=Nom|Degree=Pos|Gender=Fem|Number=Sing	9	amod	_	start_char=47|end_char=53
+9	земля.	земля	NOUN	Nb	Case=Nom|Gender=Fem|Number=Sing	7	nsubj	_	start_char=54|end_char=60
+
+# text = Князь приде въ Кыевъ.
+# sent_id = 1
+1	Князь	кънязь	NOUN	Nb	Case=Nom|Gender=Masc|Number=Sing	2	nsubj	_	start_char=61|end_char=66
+2	приде	приити	VERB	V-	Aspect=Perf|Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	start_char=67|end_char=72
+3	въ	въ	ADP	R-	_	4	case	_	start_char=73|end_char=75
+4	Кыевъ.	кыевъ.	PROPN	Ne	Case=Acc|Gender=Masc|Number=Sing	2	obl	_	SpacesAfter=\n|start_char=76|end_char=82

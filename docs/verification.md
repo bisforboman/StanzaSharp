@@ -47,11 +47,11 @@ seq2seq model; 68 multi-word tokens in the texts). German texts with characters 
 classifies all 200 sentences as one document, a single batch, which Stanza labels almost all positive: a stress test
 of the batch padding.
 
-**The other 84 languages** ([languages.md](languages.md)). [`tests/golden/languages/`](../tests/golden/languages) holds
+**The other 99 languages** ([languages.md](languages.md)). [`tests/golden/languages/`](../tests/golden/languages) holds
 one text per language and Stanza's CoNLL-U of it for each supported package (`make_golden.py --languages-only`).
 Spanish, French, Italian, Portuguese and Dutch have hand-written texts of 10 to 11 sentences (news with names and
 numbers, quotes, a question, contractions such as `del`, `au`, `della`, `dá-mo`, an opinion), with `default` and (all but
-Spanish, whose `default_fast` parser file Stanford uploaded truncated on 2026-10-27) `default_fast`. The other 79 have 2
+Spanish, whose `default_fast` parser file Stanford uploaded truncated on 2026-10-27) `default_fast`. The other 94 have 2
 or 3 sentences each in the language's own script, `default` only; the historical languages use well-known public-domain
 passages (the Gothic Lord's Prayer, John 1:1 in Ancient Greek and Classical Armenian, Genesis 1:1 in Biblical Hebrew,
 Caesar, Beowulf's opening). `LanguageGoldenTests` checks each byte for byte on both backends; their models are downloaded

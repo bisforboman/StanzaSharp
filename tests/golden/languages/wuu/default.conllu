@@ -1,0 +1,17 @@
+# text = 伊昨日到上海来个。
+# sent_id = 0
+1	伊	伊	PRON	PRP	_	2	nsubj	_	SpaceAfter=No|start_char=0|end_char=1
+2	昨	昨	VERB	VV	_	0	root	_	SpaceAfter=No|start_char=1|end_char=2
+3	日到	日到	NOUN	NN	_	2	obj	_	SpaceAfter=No|start_char=2|end_char=4
+4	上海	上海	VERB	VV	_	2	xcomp	_	SpaceAfter=No|start_char=4|end_char=6
+5	来	来	VERB	VV	_	4	mark	_	SpaceAfter=No|start_char=6|end_char=7
+6	个	个	NOUN	NNB	_	5	obj	_	SpaceAfter=No|start_char=7|end_char=8
+7	。	。	PUNCT	.	_	2	punct	_	SpaceAfter=No|start_char=8|end_char=9
+
+# text = 阿拉一道去吃饭。
+# sent_id = 1
+1	阿拉	阿拉	PRON	PRP	_	4	nsubj	_	SpaceAfter=No|start_char=9|end_char=11
+2	一道	一道	NOUN	NN	_	4	nmod	_	SpaceAfter=No|start_char=11|end_char=13
+3	去	去	SCONJ	RB	_	4	mark	_	SpaceAfter=No|start_char=13|end_char=14
+4	吃饭	吃饭	VERB	VV	_	0	root	_	SpaceAfter=No|start_char=14|end_char=16
+5	。	。	PUNCT	.	_	4	punct	_	SpacesAfter=\n|start_char=16|end_char=17

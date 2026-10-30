@@ -18,7 +18,7 @@ public sealed class PipelineOptions
 {
     /// <summary>
     /// Stanza's code for the language of the models: <c>"en"</c> (English, the default), <c>"de"</c> (German) or any
-    /// of the other languages in docs/languages.md (<c>"fr"</c>, <c>"ru"</c>, <c>"hi"</c>, ...; 86 in all). Any
+    /// of the other languages in docs/languages.md (<c>"fr"</c>, <c>"ru"</c>, <c>"hi"</c>, ...; 101 in all). Any
     /// other code throws. <see cref="Pipeline.Load"/> still takes that language's folder (e.g. <c>models/stanza/de</c>).
     /// A language's models are downloaded with <see cref="ModelDownloader.DownloadAsync(string, PipelineOptions, IProgress{string}?, CancellationToken)"/>.
     /// </summary>

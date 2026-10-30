@@ -1,0 +1,9 @@
+# text = ḏd mdw jn Wsjr. jw=f m pr=f.
+# sent_id = 0
+1	ḏd	ḏ	PRON	_	Gender=Com|Number=Sing|Person=3|PronClass=Dep|PronType=Prs	2	nsubj	_	start_char=0|end_char=2
+2	mdw	mdwi̯	VERB	_	Gender=Masc|Nominal=Yes|Number=Sing|Tense=Pres|VerbClass=3lit|VerbForm=Part|Voice=Act	0	root	_	start_char=3|end_char=6
+3	jn	jn	DET	_	Gender=Masc|Number=Sing|PronType=Dem	2	det	_	start_char=7|end_char=9
+4	Wsjr.	Wsjr.	PROPN	_	Gender=Masc|NameType=God	2	nsubj	_	start_char=10|end_char=15
+5	jw=f	jw=f	VERB	_	Gender=Masc|Number=Sing|Tense=Pres|VerbClass=3lit|VerbForm=Part|Voice=Act	2	acl	_	start_char=16|end_char=20
+6	m	m	ADP	_	Case=Loc|StatPrep=Cons	7	case	_	start_char=21|end_char=22
+7	pr=f.	pr=f.	NOUN	_	Gender=Masc|Number=Sing	5	obl	_	SpacesAfter=\n|start_char=23|end_char=28

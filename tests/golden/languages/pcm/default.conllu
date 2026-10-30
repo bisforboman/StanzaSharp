@@ -1,0 +1,17 @@
+# text = Di president don land Abuja yesterday. Im tok to di journalists about di new law.
+# sent_id = 0
+1	Di	Di	DET	_	Definite=Def|PronType=Art	2	det	_	start_char=0|end_char=2
+2	president	president	NOUN	_	_	4	nsubj	_	start_char=3|end_char=12
+3	don	don	AUX	_	Aspect=Perf	4	aux	_	start_char=13|end_char=16
+4	land	land	VERB	_	_	0	root	_	start_char=17|end_char=21
+5	Abuja	Abuja	PROPN	_	_	6	compound	_	start_char=22|end_char=27
+6	yesterday.	yesterday.	NOUN	_	_	4	obj	_	start_char=28|end_char=38
+7	Im	Im	PRON	_	Case=Nom|Number=Sing|Person=3|PronType=Prs	8	nmod:poss	_	start_char=39|end_char=41
+8	tok	tok	NOUN	_	_	6	nmod	_	start_char=42|end_char=45
+9	to	to	ADP	_	_	11	case	_	start_char=46|end_char=48
+10	di	di	DET	_	Definite=Def|PronType=Art	11	det	_	start_char=49|end_char=51
+11	journalists	journalist	NOUN	_	Number=Plur	4	obl:arg	_	start_char=52|end_char=63
+12	about	about	ADP	_	_	15	case	_	start_char=64|end_char=69
+13	di	di	DET	_	Definite=Def|PronType=Art	15	det	_	start_char=70|end_char=72
+14	new	new	ADJ	_	_	15	amod	_	start_char=73|end_char=76
+15	law.	law.	NOUN	_	_	4	obl:arg	_	SpacesAfter=\n|start_char=77|end_char=81
