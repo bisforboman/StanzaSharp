@@ -17,8 +17,9 @@ namespace StanzaSharp;
 public sealed class PipelineOptions
 {
     /// <summary>
-    /// Stanza's code for the language of the models: <c>"en"</c> (English, the default) or <c>"de"</c> (German). Any
-    /// other code throws. <see cref="Pipeline.Load"/> still takes that language's folder (e.g. <c>models/stanza/de</c>).
+    /// Stanza's code for the language of the models: <c>"en"</c> (English, the default), <c>"de"</c> (German),
+    /// <c>"es"</c> (Spanish), <c>"fr"</c> (French), <c>"it"</c> (Italian), <c>"pt"</c> (Portuguese) or <c>"nl"</c>
+    /// (Dutch). Any other code throws. <see cref="Pipeline.Load"/> still takes that language's folder (e.g. <c>models/stanza/de</c>).
     /// A language's models are downloaded with <see cref="ModelDownloader.DownloadAsync(string, PipelineOptions, IProgress{string}?, CancellationToken)"/>.
     /// </summary>
     public string Language { get; init; } = Pipeline.English;
@@ -35,7 +36,8 @@ public sealed class PipelineOptions
     /// German: <c>"default"</c>, <c>"default_fast"</c> (pos and depparse as in English; ner and sentiment unchanged),
     /// <c>"default_accurate"</c> (pos, constituency, depparse and sentiment read the transformer
     /// <c>german-nlp-group/electra-base-german-uncased</c>, 445 MB, which the downloader fetches too) and the treebank
-    /// packages <c>"combined"</c>, <c>"gsd"</c> and <c>"hdt"</c> (tokenize to depparse only). Any other name throws.
+    /// packages <c>"combined"</c>, <c>"gsd"</c> and <c>"hdt"</c> (tokenize to depparse only). French, Italian,
+    /// Portuguese and Dutch: <c>"default"</c> and <c>"default_fast"</c>; Spanish: <c>"default"</c>. Any other name throws.
     /// </summary>
     public string Package { get; init; } = Pipeline.DefaultPackage;
 

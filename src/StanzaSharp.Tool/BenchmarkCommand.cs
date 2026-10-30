@@ -84,6 +84,10 @@ internal static class BenchmarkCommand
             return Fail(e.Message);
         }
 
+        // the built-in texts are English's and German's
+        if (language is not (Pipeline.English or "de"))
+            return Fail($"benchmark has texts for en and de only, not {language}");
+
         models ??= DownloadCommand.DirFor(language);
         if (!Directory.Exists(models))
             return Fail($"Model directory not found: {models}. Download the models with: stanzasharp download {models} --lang {language} --package {package}");

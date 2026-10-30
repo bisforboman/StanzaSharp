@@ -1,0 +1,180 @@
+# text = O presidente da República, Marcelo Rebelo de Sousa, chegou ontem a Bruxelas para se reunir com a Comissão Europeia.
+# sent_id = 0
+1	O	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	2	det	_	start_char=0|end_char=1
+2	presidente	presidente	NOUN	_	Gender=Masc|Number=Sing	12	nsubj	_	start_char=2|end_char=12
+3-4	da	_	_	_	_	_	_	_	start_char=13|end_char=15
+3	de	de	ADP	_	_	5	case	_	_
+4	a	o	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	5	det	_	_
+5	República	república	NOUN	_	Gender=Fem|Number=Sing	2	nmod	_	SpaceAfter=No|start_char=16|end_char=25
+6	,	,	PUNCT	_	_	7	punct	_	start_char=25|end_char=26
+7	Marcelo	Marcelo	PROPN	_	ExtPos=PROPN|Gender=Masc|Number=Sing	2	appos	_	start_char=27|end_char=34
+8	Rebelo	Rebelo	PROPN	_	Number=Sing	7	flat:name	_	start_char=35|end_char=41
+9	de	de	ADP	_	_	10	case	_	start_char=42|end_char=44
+10	Sousa	Sousa	PROPN	_	Number=Sing	7	nmod	_	SpaceAfter=No|start_char=45|end_char=50
+11	,	,	PUNCT	_	_	7	punct	_	start_char=50|end_char=51
+12	chegou	chegar	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=52|end_char=58
+13	ontem	ontem	ADV	_	_	12	advmod	_	start_char=59|end_char=64
+14	a	a	ADP	_	_	15	case	_	start_char=65|end_char=66
+15	Bruxelas	Bruxelas	PROPN	_	Gender=Fem|Number=Sing	12	obl	_	start_char=67|end_char=75
+16	para	para	SCONJ	_	_	18	mark	_	start_char=76|end_char=80
+17	se	se	PRON	_	Case=Acc|Gender=Masc|Number=Sing|Person=3|PronType=Prs	18	expl	_	start_char=81|end_char=83
+18	reunir	reunir	VERB	_	VerbForm=Inf	12	advcl	_	start_char=84|end_char=90
+19	com	com	ADP	_	_	21	case	_	start_char=91|end_char=94
+20	a	o	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	21	det	_	start_char=95|end_char=96
+21	Comissão	Comissão	PROPN	_	Gender=Fem|Number=Sing	18	obl	_	start_char=97|end_char=105
+22	Europeia	Europeia	PROPN	_	Number=Sing	21	flat:name	_	SpaceAfter=No|start_char=106|end_char=114
+23	.	.	PUNCT	_	_	12	punct	_	start_char=114|end_char=115
+
+# text = Falou aos jornalistas do projeto de lei.
+# sent_id = 1
+1	Falou	falar	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=116|end_char=121
+2-3	aos	_	_	_	_	_	_	_	start_char=122|end_char=125
+2	a	a	ADP	_	_	4	case	_	start_char=122|end_char=123
+3	os	o	DET	_	Definite=Def|Gender=Masc|Number=Plur|PronType=Art	4	det	_	start_char=123|end_char=125
+4	jornalistas	jornalista	NOUN	_	Gender=Masc|Number=Plur	1	obj	_	start_char=126|end_char=137
+5-6	do	_	_	_	_	_	_	_	start_char=138|end_char=140
+5	de	de	ADP	_	_	7	case	_	_
+6	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	7	det	_	_
+7	projeto	projeto	NOUN	_	Gender=Masc|Number=Sing	4	nmod	_	start_char=141|end_char=148
+8	de	de	ADP	_	_	9	case	_	start_char=149|end_char=151
+9	lei	lei	NOUN	_	Gender=Fem|Number=Sing	7	nmod	_	SpaceAfter=No|start_char=152|end_char=155
+10	.	.	PUNCT	_	_	1	punct	_	SpacesAfter=\n\n|start_char=155|end_char=156
+
+# text = «Não vamos ceder», disse a ministra das Finanças.
+# sent_id = 2
+1	«	«	PUNCT	_	_	4	punct	_	SpaceAfter=No|start_char=158|end_char=159
+2	Não	não	ADV	_	Polarity=Neg	4	advmod	_	start_char=159|end_char=162
+3	vamos	ir	AUX	_	Mood=Ind|Number=Plur|Person=1|Tense=Pres|VerbForm=Fin	4	aux	_	start_char=163|end_char=168
+4	ceder	ceder	VERB	_	VerbForm=Inf	7	parataxis	_	SpaceAfter=No|start_char=169|end_char=174
+5	»	»	PUNCT	_	_	4	punct	_	SpaceAfter=No|start_char=174|end_char=175
+6	,	,	PUNCT	_	_	4	punct	_	start_char=175|end_char=176
+7	disse	dizer	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=177|end_char=182
+8	a	o	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	9	det	_	start_char=183|end_char=184
+9	ministra	ministra	NOUN	_	Gender=Fem|Number=Sing	7	nsubj	_	start_char=185|end_char=193
+10-11	das	_	_	_	_	_	_	_	start_char=194|end_char=197
+10	de	de	ADP	_	_	12	case	_	_
+11	as	o	DET	_	Definite=Def|Gender=Fem|Number=Plur|PronType=Art	12	det	_	_
+12	Finanças	finanças	NOUN	_	Gender=Fem|Number=Plur	9	nmod	_	SpaceAfter=No|start_char=198|end_char=206
+13	.	.	PUNCT	_	_	7	punct	_	start_char=206|end_char=207
+
+# text = Segundo o Instituto Nacional de Estatística, o desemprego desceu 2,5% em março de 2024.
+# sent_id = 3
+1	Segundo	segundo	ADP	_	_	3	case	_	start_char=208|end_char=215
+2	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	3	det	_	start_char=216|end_char=217
+3	Instituto	Instituto	PROPN	_	ExtPos=PROPN|Gender=Masc|Number=Sing	10	obl	_	start_char=218|end_char=227
+4	Nacional	Nacional	PROPN	_	Number=Sing	3	flat:name	_	start_char=228|end_char=236
+5	de	de	ADP	_	_	6	case	_	start_char=237|end_char=239
+6	Estatística	Estatística	PROPN	_	Number=Sing	3	nmod	_	SpaceAfter=No|start_char=240|end_char=251
+7	,	,	PUNCT	_	_	3	punct	_	start_char=251|end_char=252
+8	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	9	det	_	start_char=253|end_char=254
+9	desemprego	desemprego	NOUN	_	Gender=Masc|Number=Sing	10	nsubj	_	start_char=255|end_char=265
+10	desceu	descer	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=266|end_char=272
+11	2,5	2,5	NUM	_	NumType=Card	12	nummod	_	SpaceAfter=No|start_char=273|end_char=276
+12	%	%	SYM	_	_	10	obj	_	start_char=276|end_char=277
+13	em	em	ADP	_	_	14	case	_	start_char=278|end_char=280
+14	março	março	NOUN	_	Gender=Masc|Number=Sing	10	obl	_	start_char=281|end_char=286
+15	de	de	ADP	_	_	16	case	_	start_char=287|end_char=289
+16	2024	2024	NUM	_	NumType=Card	14	nmod	_	SpaceAfter=No|start_char=290|end_char=294
+17	.	.	PUNCT	_	_	10	punct	_	SpacesAfter=\n\n|start_char=294|end_char=295
+
+# text = Dá-mo amanhã, por favor.
+# sent_id = 4
+1-2	Dá-mo	_	_	_	_	_	_	_	start_char=297|end_char=302
+1	Dá	dar	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	_
+2	mo	mo	PUNCT	_	_	1	punct	_	_
+3	amanhã	amanhã	ADV	_	_	1	advmod	_	SpaceAfter=No|start_char=303|end_char=309
+4	,	,	PUNCT	_	_	1	punct	_	start_char=309|end_char=310
+5	por	por	ADP	_	_	1	advmod	_	start_char=311|end_char=314
+6	favor	favor	NOUN	_	Gender=Masc|Number=Sing	5	fixed	_	SpaceAfter=No|start_char=315|end_char=320
+7	.	.	PUNCT	_	_	1	punct	_	start_char=320|end_char=321
+
+# text = Vens à festa de sábado?
+# sent_id = 5
+1	Vens	ver	VERB	_	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	0	root	_	start_char=322|end_char=326
+2-3	à	_	_	_	_	_	_	_	start_char=327|end_char=328
+2	a	a	ADP	_	_	4	case	_	_
+3	a	o	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	4	det	_	_
+4	festa	festa	NOUN	_	Gender=Fem|Number=Sing	1	obl	_	start_char=329|end_char=334
+5	de	de	ADP	_	_	6	case	_	start_char=335|end_char=337
+6	sábado	sábado	NOUN	_	Gender=Masc|Number=Sing	4	nmod	_	SpaceAfter=No|start_char=338|end_char=344
+7	?	?	PUNCT	_	_	1	punct	_	start_char=344|end_char=345
+
+# text = A minha irmã vive no Porto há dez anos e trabalha num hospital.
+# sent_id = 6
+1	A	o	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	3	det	_	start_char=346|end_char=347
+2	minha	meu	DET	_	Gender=Fem|Number=Sing|PronType=Prs	3	det	_	start_char=348|end_char=353
+3	irmã	irmã	NOUN	_	Gender=Fem|Number=Sing	4	nsubj	_	start_char=354|end_char=358
+4	vive	viver	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=359|end_char=363
+5-6	no	_	_	_	_	_	_	_	start_char=364|end_char=366
+5	em	em	ADP	_	_	7	case	_	_
+6	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	7	det	_	_
+7	Porto	Porto	PROPN	_	Gender=Masc|Number=Sing	4	obl	_	start_char=367|end_char=372
+8	há	há	ADP	_	_	10	case	_	start_char=373|end_char=375
+9	dez	dez	NUM	_	NumType=Card	10	nummod	_	start_char=376|end_char=379
+10	anos	ano	NOUN	_	Gender=Masc|Number=Plur	4	obl	_	start_char=380|end_char=384
+11	e	e	CCONJ	_	_	12	cc	_	start_char=385|end_char=386
+12	trabalha	trabalhar	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	conj	_	start_char=387|end_char=395
+13-14	num	_	_	_	_	_	_	_	start_char=396|end_char=399
+13	em	em	ADP	_	_	15	case	_	_
+14	um	um	DET	_	Definite=Ind|Gender=Masc|Number=Sing|PronType=Art	15	det	_	_
+15	hospital	hospital	NOUN	_	Gender=Masc|Number=Sing	12	obl	_	SpaceAfter=No|start_char=400|end_char=408
+16	.	.	PUNCT	_	_	4	punct	_	SpacesAfter=\n\n|start_char=408|end_char=409
+
+# text = As crianças brincavam no parque enquanto os pais liam o jornal nos bancos.
+# sent_id = 7
+1	As	o	DET	_	Definite=Def|Gender=Fem|Number=Plur|PronType=Art	2	det	_	start_char=411|end_char=413
+2	crianças	criança	NOUN	_	Gender=Fem|Number=Plur	3	nsubj	_	start_char=414|end_char=422
+3	brincavam	brincar	VERB	_	Mood=Ind|Number=Plur|Person=3|Tense=Imp|VerbForm=Fin	0	root	_	start_char=423|end_char=432
+4-5	no	_	_	_	_	_	_	_	start_char=433|end_char=435
+4	em	em	ADP	_	_	6	case	_	_
+5	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	6	det	_	_
+6	parque	parque	NOUN	_	Gender=Masc|Number=Sing	3	obl	_	start_char=436|end_char=442
+7	enquanto	enquanto	ADV	_	_	10	advmod	_	start_char=443|end_char=451
+8	os	o	DET	_	Definite=Def|Gender=Masc|Number=Plur|PronType=Art	9	det	_	start_char=452|end_char=454
+9	pais	pai	NOUN	_	Gender=Masc|Number=Plur	10	nsubj	_	start_char=455|end_char=459
+10	liam	ler	VERB	_	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	3	advcl	_	start_char=460|end_char=464
+11	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	12	det	_	start_char=465|end_char=466
+12	jornal	jornal	NOUN	_	Gender=Masc|Number=Sing	10	obj	_	start_char=467|end_char=473
+13-14	nos	_	_	_	_	_	_	_	start_char=474|end_char=477
+13	em	em	ADP	_	_	15	case	_	_
+14	os	o	DET	_	Definite=Def|Gender=Masc|Number=Plur|PronType=Art	15	det	_	_
+15	bancos	banco	NOUN	_	Gender=Masc|Number=Plur	10	obl	_	SpaceAfter=No|start_char=478|end_char=484
+16	.	.	PUNCT	_	_	3	punct	_	start_char=484|end_char=485
+
+# text = É preciso dizer-lho antes que seja tarde demais.
+# sent_id = 8
+1	É	ser	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	cop	_	start_char=486|end_char=487
+2	preciso	preciso	ADJ	_	Gender=Masc|Number=Sing	0	root	_	start_char=488|end_char=495
+3-4	dizer-lho	_	_	_	_	_	_	_	start_char=496|end_char=505
+3	dizer	dizer	VERB	_	VerbForm=Inf	2	csubj	_	_
+4	lho	ele	PRON	_	Case=Acc|Gender=Masc|Number=Sing|Person=1|PronType=Prs	3	obj	_	_
+5	antes	antes	ADV	_	_	3	advmod	_	start_char=506|end_char=511
+6	que	que	SCONJ	_	_	8	mark	_	start_char=512|end_char=515
+7	seja	ser	AUX	_	Mood=Sub|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	8	cop	_	start_char=516|end_char=520
+8	tarde	tarde	ADV	_	_	3	csubj	_	start_char=521|end_char=526
+9	demais	demais	ADV	_	_	8	advmod	_	SpaceAfter=No|start_char=527|end_char=533
+10	.	.	PUNCT	_	_	2	punct	_	SpacesAfter=\n\n|start_char=533|end_char=534
+
+# text = O filme foi maravilhoso, mas o restaurante ao lado foi uma desilusão: a comida chegou fria.
+# sent_id = 9
+1	O	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	2	det	_	start_char=536|end_char=537
+2	filme	filme	NOUN	_	Gender=Masc|Number=Sing	4	nsubj	_	start_char=538|end_char=543
+3	foi	ser	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	4	cop	_	start_char=544|end_char=547
+4	maravilhoso	maravilhoso	ADJ	_	Gender=Masc|Number=Sing	0	root	_	SpaceAfter=No|start_char=548|end_char=559
+5	,	,	PUNCT	_	_	14	punct	_	start_char=559|end_char=560
+6	mas	mas	CCONJ	_	_	14	cc	_	start_char=561|end_char=564
+7	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	8	det	_	start_char=565|end_char=566
+8	restaurante	restaurante	NOUN	_	Gender=Masc|Number=Sing	14	nsubj	_	start_char=567|end_char=578
+9-10	ao	_	_	_	_	_	_	_	start_char=579|end_char=581
+9	a	a	ADP	_	_	11	case	_	start_char=579|end_char=580
+10	o	o	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	11	det	_	start_char=580|end_char=581
+11	lado	lado	NOUN	_	Gender=Masc|Number=Sing	8	nmod	_	start_char=582|end_char=586
+12	foi	ser	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	14	cop	_	start_char=587|end_char=590
+13	uma	um	DET	_	Definite=Ind|Gender=Fem|Number=Sing|PronType=Art	14	det	_	start_char=591|end_char=594
+14	desilusão	desilusão	NOUN	_	Gender=Fem|Number=Sing	4	conj	_	SpaceAfter=No|start_char=595|end_char=604
+15	:	:	PUNCT	_	_	18	punct	_	start_char=604|end_char=605
+16	a	o	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	17	det	_	start_char=606|end_char=607
+17	comida	comida	NOUN	_	Gender=Fem|Number=Sing	18	nsubj	_	start_char=608|end_char=614
+18	chegou	chegar	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	14	acl:relcl	_	start_char=615|end_char=621
+19	fria	frio	ADJ	_	Gender=Fem|Number=Sing	18	xcomp	_	SpaceAfter=No|start_char=622|end_char=626
+20	.	.	PUNCT	_	_	4	punct	_	SpacesAfter=\n|start_char=626|end_char=627

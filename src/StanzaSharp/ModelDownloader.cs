@@ -28,6 +28,11 @@ public static class ModelDownloader
     {
         [Pipeline.English] = "810dca30ddb25c30582c019dbaeb3a3e040fb958",
         ["de"] = "a8ecd6c8b4f81298918eade263208fedccddd652",
+        ["es"] = "6c5cf2278847a76cd1efd05ee4fddd80594b569d",
+        ["fr"] = "caeb7742148cb0368e4a0f2c68a0f7b09bc22880",
+        ["it"] = "56584df8218c8db87a8941383cd3ab9741bc28d2",
+        ["pt"] = "8ca2d3f186cf37c33271c02fbd8663b328a2d0b5",
+        ["nl"] = "ec6376bd712626664e2c3bcfe5101eebe01d8f18",
         [Multilingual] = "e9360ddf1796ec9c18a8260980153c7f269afd63",
     };
 

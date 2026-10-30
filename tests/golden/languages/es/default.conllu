@@ -1,0 +1,221 @@
+# text = El presidente del Gobierno, Pedro Sánchez, viajó ayer a Bruselas para reunirse con la Comisión Europea.
+# sent_id = 0
+# constituency = (ROOT (sentence (sn (spec (DET El)) (grup.nom (NOUN presidente) (sp (prep (ADP de)) (sn (spec (DET el)) (grup.nom (NOUN Gobierno)))) (sn (PUNCT ,) (grup.nom (PROPN Pedro) (PROPN Sánchez)) (PUNCT ,)))) (grup.verb (VERB viajó)) (sadv (grup.adv (ADV ayer))) (sp (prep (ADP a)) (sn (grup.nom (PROPN Bruselas)))) (sp (prep (ADP para)) (S (infinitiu (VERB reunir)) (morfema.pronominal (PRON se)) (sp (prep (ADP con)) (sn (spec (DET la)) (grup.nom (PROPN Comisión) (PROPN Europea)))))) (PUNCT .)))
+# sentiment = 1
+1	El	el	DET	da0ms0	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	2	det	_	start_char=0|end_char=2|ner=O
+2	presidente	presidente	NOUN	ncms000	Gender=Masc|Number=Sing	10	nsubj	_	start_char=3|end_char=13|ner=O
+3-4	del	_	_	_	_	_	_	_	start_char=14|end_char=17|ner=O
+3	de	de	ADP	spcms	_	5	case	_	_
+4	el	el	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	5	det	_	_
+5	Gobierno	gobierno	NOUN	ncms000	Gender=Masc|Number=Sing	2	nmod	_	SpaceAfter=No|start_char=18|end_char=26|ner=S-ORG
+6	,	,	PUNCT	fc	PunctType=Comm	7	punct	_	start_char=26|end_char=27|ner=O
+7	Pedro	Pedro	PROPN	np00000	_	2	appos	_	start_char=28|end_char=33|ner=B-PER
+8	Sánchez	Sánchez	PROPN	_	_	7	flat	_	SpaceAfter=No|start_char=34|end_char=41|ner=E-PER
+9	,	,	PUNCT	fc	PunctType=Comm	7	punct	_	start_char=41|end_char=42|ner=O
+10	viajó	viajar	VERB	vmis3s0	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=43|end_char=48|ner=O
+11	ayer	ayer	ADV	rg	_	10	advmod	_	start_char=49|end_char=53|ner=O
+12	a	a	ADP	sps00	_	13	case	_	start_char=54|end_char=55|ner=O
+13	Bruselas	bruselas	PROPN	np00000	_	10	obl	_	start_char=56|end_char=64|ner=S-LOC
+14	para	para	ADP	sps00	_	15	mark	_	start_char=65|end_char=69|ner=O
+15-16	reunirse	_	_	_	_	_	_	_	start_char=70|end_char=78|ner=O
+15	reunir	reunir	VERB	vmn0000	VerbForm=Inf	10	advcl	_	start_char=70|end_char=76
+16	se	él	PRON	_	Case=Acc|Person=3|PrepCase=Npr|PronType=Prs|Reflex=Yes	15	expl:pv	_	start_char=76|end_char=78
+17	con	con	ADP	sps00	_	19	case	_	start_char=79|end_char=82|ner=O
+18	la	el	DET	da0fs0	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	19	det	_	start_char=83|end_char=85|ner=O
+19	Comisión	Comisión	PROPN	np00000	_	15	obl:arg	_	start_char=86|end_char=94|ner=B-ORG
+20	Europea	Europea	PROPN	_	_	19	flat	_	SpaceAfter=No|start_char=95|end_char=102|ner=E-ORG
+21	.	.	PUNCT	fp	PunctType=Peri	10	punct	_	start_char=102|end_char=103|ner=O
+
+# text = Llegó al aeropuerto a las 9:30 y habló con los periodistas.
+# sent_id = 1
+# constituency = (ROOT (sentence (S (grup.verb (VERB Llegó)) (sp (prep (ADP a)) (sn (spec (DET el)) (grup.nom (NOUN aeropuerto)))) (sp (prep (ADP a)) (sn (spec (DET las)) (grup.nom (NUM 9:30))))) (conj (CCONJ y)) (S (grup.verb (VERB habló)) (sp (prep (ADP con)) (sn (spec (DET los)) (grup.nom (NOUN periodistas))))) (PUNCT .)))
+# sentiment = 2
+1	Llegó	llegar	VERB	vmis3s0	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=104|end_char=109|ner=O
+2-3	al	_	_	_	_	_	_	_	start_char=110|end_char=112|ner=O
+2	a	a	ADP	spcms	_	4	case	_	_
+3	el	el	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	4	det	_	_
+4	aeropuerto	aeropuerto	NOUN	ncms000	Gender=Masc|Number=Sing	1	obl	_	start_char=113|end_char=123|ner=O
+5	a	a	ADP	sps00	_	7	case	_	start_char=124|end_char=125|ner=O
+6	las	el	DET	da0fp0	Definite=Def|Gender=Fem|Number=Plur|PronType=Art	7	det	_	start_char=126|end_char=129|ner=O
+7	9:30	9:30	NUM	_	NumForm=Digit|NumType=Card	1	obl	_	start_char=130|end_char=134|ner=O
+8	y	y	CCONJ	cc	_	9	cc	_	start_char=135|end_char=136|ner=O
+9	habló	hablar	VERB	vmis3s0	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	1	conj	_	start_char=137|end_char=142|ner=O
+10	con	con	ADP	sps00	_	12	case	_	start_char=143|end_char=146|ner=O
+11	los	el	DET	da0mp0	Definite=Def|Gender=Masc|Number=Plur|PronType=Art	12	det	_	start_char=147|end_char=150|ner=O
+12	periodistas	periodista	NOUN	nccp000	Number=Plur	9	obl	_	SpaceAfter=No|start_char=151|end_char=162|ner=O
+13	.	.	PUNCT	fp	PunctType=Peri	1	punct	_	SpacesAfter=\n\n|start_char=162|end_char=163|ner=O
+
+# text = «No vamos a ceder», dijo la ministra de Hacienda.
+# sent_id = 2
+# constituency = (ROOT (sentence (S (PUNCT «) (neg (ADV No)) (grup.verb (VERB vamos) (ADP a) (infinitiu (VERB ceder))) (PUNCT ») (PUNCT ,)) (grup.verb (VERB dijo)) (sn (spec (DET la)) (grup.nom (NOUN ministra) (sp (prep (ADP de)) (sn (grup.nom (PROPN Hacienda)))))) (PUNCT .)))
+# sentiment = 2
+1	«	«	PUNCT	fe	PunctType=Quot	3	punct	_	SpaceAfter=No|start_char=165|end_char=166|ner=O
+2	No	no	ADV	rn	Polarity=Neg	3	advmod	_	start_char=166|end_char=168|ner=O
+3	vamos	ir	VERB	vmip1p0	Mood=Ind|Number=Plur|Person=1|Tense=Pres|VerbForm=Fin	8	xcomp	_	start_char=169|end_char=174|ner=O
+4	a	a	ADP	sps00	_	5	mark	_	start_char=175|end_char=176|ner=O
+5	ceder	ceder	VERB	vmn0000	VerbForm=Inf	3	xcomp	_	SpaceAfter=No|start_char=177|end_char=182|ner=O
+6	»	»	PUNCT	fe	PunctType=Quot	3	punct	_	SpaceAfter=No|start_char=182|end_char=183|ner=O
+7	,	,	PUNCT	fc	PunctType=Comm	3	punct	_	start_char=183|end_char=184|ner=O
+8	dijo	decir	VERB	vmis3s0	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=185|end_char=189|ner=O
+9	la	el	DET	da0fs0	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	10	det	_	start_char=190|end_char=192|ner=O
+10	ministra	ministra	NOUN	ncfs000	Gender=Fem|Number=Sing	8	nsubj	_	start_char=193|end_char=201|ner=O
+11	de	de	ADP	sps00	_	12	case	_	start_char=202|end_char=204|ner=O
+12	Hacienda	Hacienda	PROPN	np00000	_	10	nmod	_	SpaceAfter=No|start_char=205|end_char=213|ner=S-MISC
+13	.	.	PUNCT	fp	PunctType=Peri	8	punct	_	start_char=213|end_char=214|ner=O
+
+# text = Según el Instituto Nacional de Estadística, el paro bajó un 2,5 % en marzo de 2024.
+# sent_id = 3
+# constituency = (ROOT (sentence (sp (prep (ADP Según)) (sn (spec (DET el)) (grup.nom (PROPN Instituto) (PROPN Nacional) (sp (prep (ADP de)) (sn (grup.nom (PROPN Estadística)))))) (PUNCT ,)) (sn (spec (DET el)) (grup.nom (NOUN paro))) (grup.verb (VERB bajó)) (sn (spec (DET un)) (grup.z (NUM 2,5) (SYM %))) (sp (prep (ADP en)) (sn (grup.w (NOUN marzo) (sp (prep (ADP de)) (sn (grup.nom (NUM 2024))))))) (PUNCT .)))
+# sentiment = 0
+1	Según	según	ADP	sps00	_	3	case	_	start_char=215|end_char=220|ner=O
+2	el	el	DET	da0ms0	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	3	det	_	start_char=221|end_char=223|ner=O
+3	Instituto	Instituto	PROPN	np00000	_	10	obl	_	start_char=224|end_char=233|ner=B-ORG
+4	Nacional	Nacional	PROPN	_	_	3	flat	_	start_char=234|end_char=242|ner=I-ORG
+5	de	de	ADP	_	_	6	case	_	start_char=243|end_char=245|ner=I-ORG
+6	Estadística	Estadística	PROPN	_	_	3	flat	_	SpaceAfter=No|start_char=246|end_char=257|ner=E-ORG
+7	,	,	PUNCT	fc	PunctType=Comm	3	punct	_	start_char=257|end_char=258|ner=O
+8	el	el	DET	da0ms0	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	9	det	_	start_char=259|end_char=261|ner=O
+9	paro	paro	NOUN	ncms000	Gender=Masc|Number=Sing	10	nsubj	_	start_char=262|end_char=266|ner=O
+10	bajó	bajar	VERB	vmis3s0	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=267|end_char=271|ner=O
+11	un	uno	DET	di0ms0	Definite=Ind|Gender=Masc|Number=Sing|PronType=Art	13	det	_	start_char=272|end_char=274|ner=O
+12	2,5	2,5	NUM	_	NumForm=Digit|NumType=Card	13	nummod	_	start_char=275|end_char=278|ner=O
+13	%	%	SYM	zp	_	10	obj	_	start_char=279|end_char=280|ner=O
+14	en	en	ADP	sps00	_	15	case	_	start_char=281|end_char=283|ner=O
+15	marzo	marzo	NOUN	_	_	10	obl	_	start_char=284|end_char=289|ner=O
+16	de	de	ADP	_	_	17	case	_	start_char=290|end_char=292|ner=O
+17	2024	2024	NUM	_	NumForm=Digit|NumType=Card	15	compound	_	SpaceAfter=No|start_char=293|end_char=297|ner=O
+18	.	.	PUNCT	fp	PunctType=Peri	10	punct	_	SpacesAfter=\n\n|start_char=297|end_char=298|ner=O
+
+# text = Dámelo, por favor.
+# sent_id = 4
+# constituency = (ROOT (sentence (grup.verb (VERB Da)) (sn (grup.nom (PRON me))) (sn (grup.nom (PRON lo))) (sadv (PUNCT ,) (grup.adv (sp (prep (ADP por)) (sn (grup.nom (NOUN favor)))))) (PUNCT .)))
+# sentiment = 2
+1-3	Dámelo	_	_	_	_	_	_	_	SpaceAfter=No|start_char=300|end_char=306|ner=S-PER
+1	Da	dar	VERB	vmm02s0	Mood=Imp|Number=Sing|Person=2|VerbForm=Fin	0	root	_	_
+2	me	yo	PRON	pp1cs000	Case=Dat|Number=Sing|Person=1|PrepCase=Npr|PronType=Prs	1	obl:arg	_	_
+3	lo	él	PRON	pp3ms000	Case=Acc|Gender=Masc|Number=Sing|Person=3|PrepCase=Npr|PronType=Prs	1	obj	_	_
+4	,	,	PUNCT	fc	PunctType=Comm	6	punct	_	start_char=306|end_char=307|ner=O
+5	por	por	ADP	sps00	_	6	case	_	start_char=308|end_char=311|ner=O
+6	favor	favor	NOUN	ncms000	Gender=Masc|Number=Sing	1	discourse	_	SpaceAfter=No|start_char=312|end_char=317|ner=O
+7	.	.	PUNCT	fp	PunctType=Peri	1	punct	_	start_char=317|end_char=318|ner=O
+
+# text = ¿Vas a venir a la fiesta del sábado?
+# sent_id = 5
+# constituency = (ROOT (sentence (PUNCT ¿) (grup.verb (VERB Vas) (ADP a) (infinitiu (VERB venir))) (sp (prep (ADP a)) (sn (spec (DET la)) (grup.nom (NOUN fiesta) (sp (prep (ADP de)) (sn (spec (DET el)) (grup.nom (NOUN sábado))))))) (PUNCT ?)))
+# sentiment = 0
+1	¿	¿	PUNCT	fia	PunctSide=Ini|PunctType=Qest	2	punct	_	SpaceAfter=No|start_char=319|end_char=320|ner=O
+2	Vas	Vas	VERB	vmip2s0	Mood=Ind|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin	0	root	_	start_char=320|end_char=323|ner=O
+3	a	a	ADP	sps00	_	4	mark	_	start_char=324|end_char=325|ner=O
+4	venir	venir	VERB	vmn0000	VerbForm=Inf	2	xcomp	_	start_char=326|end_char=331|ner=O
+5	a	a	ADP	sps00	_	7	case	_	start_char=332|end_char=333|ner=O
+6	la	el	DET	da0fs0	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	7	det	_	start_char=334|end_char=336|ner=O
+7	fiesta	fiesta	NOUN	ncfs000	Gender=Fem|Number=Sing	4	obl	_	start_char=337|end_char=343|ner=O
+8-9	del	_	_	_	_	_	_	_	start_char=344|end_char=347|ner=O
+8	de	de	ADP	spcms	_	10	case	_	_
+9	el	el	DET	da0ms0	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	10	det	_	_
+10	sábado	sábado	NOUN	ncms000	Gender=Masc|Number=Sing	7	nmod	_	SpaceAfter=No|start_char=348|end_char=354|ner=O
+11	?	?	PUNCT	fit	PunctSide=Fin|PunctType=Qest	2	punct	_	start_char=354|end_char=355|ner=O
+
+# text = Mi hermana vive en Valencia desde hace diez años y trabaja en el Hospital La Fe.
+# sent_id = 6
+# constituency = (ROOT (sentence (S (sn (spec (DET Mi)) (grup.nom (NOUN hermana))) (grup.verb (VERB vive)) (sp (prep (ADP en)) (sn (grup.nom (PROPN Valencia)))) (sp (prep (ADP desde)) (sn (VERB hace) (NUM diez) (NOUN años)))) (conj (CCONJ y)) (S (grup.verb (VERB trabaja)) (sp (prep (ADP en)) (sn (spec (DET el)) (grup.nom (PROPN Hospital) (DET La) (PROPN Fe))))) (PUNCT .)))
+# sentiment = 0
+1	Mi	mi	DET	dp1css	Number=Sing|Number[psor]=Sing|Person=1|Poss=Yes|PronType=Prs	2	det	_	start_char=356|end_char=358|ner=O
+2	hermana	hermana	NOUN	ncfs000	Gender=Fem|Number=Sing	3	nsubj	_	start_char=359|end_char=366|ner=O
+3	vive	vivir	VERB	vmip3s0	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=367|end_char=371|ner=O
+4	en	en	ADP	sps00	_	5	case	_	start_char=372|end_char=374|ner=O
+5	Valencia	Valencia	PROPN	np00000	_	3	obl	_	start_char=375|end_char=383|ner=S-LOC
+6	desde	desde	ADP	sps00	_	7	mark	_	start_char=384|end_char=389|ner=O
+7	hace	hacer	VERB	vmip3s0	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	advcl	_	start_char=390|end_char=394|ner=O
+8	diez	diez	NUM	dn0cp0	Number=Plur|NumForm=Word|NumType=Card	9	nummod	_	start_char=395|end_char=399|ner=O
+9	años	año	NOUN	ncmp000	Gender=Masc|Number=Plur	7	obj	_	start_char=400|end_char=404|ner=O
+10	y	y	CCONJ	cc	_	11	cc	_	start_char=405|end_char=406|ner=O
+11	trabaja	trabajar	VERB	vmip3s0	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	conj	_	start_char=407|end_char=414|ner=O
+12	en	en	ADP	sps00	_	14	case	_	start_char=415|end_char=417|ner=O
+13	el	el	DET	da0ms0	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	14	det	_	start_char=418|end_char=420|ner=O
+14	Hospital	Hospital	PROPN	np00000	_	11	obl	_	start_char=421|end_char=429|ner=B-LOC
+15	La	el	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	16	det	_	start_char=430|end_char=432|ner=I-LOC
+16	Fe	Fe	PROPN	_	_	14	appos	_	SpaceAfter=No|start_char=433|end_char=435|ner=E-LOC
+17	.	.	PUNCT	fp	PunctType=Peri	3	punct	_	SpacesAfter=\n\n|start_char=435|end_char=436|ner=O
+
+# text = Me encantó la película: los actores son brillantes y la música es preciosa.
+# sent_id = 7
+# constituency = (ROOT (sentence (S (sn (grup.nom (PRON Me))) (grup.verb (VERB encantó)) (sn (spec (DET la)) (grup.nom (NOUN película)))) (S (PUNCT :) (S (sn (spec (DET los)) (grup.nom (NOUN actores))) (grup.verb (AUX son)) (s.a (grup.a (ADJ brillantes)))) (conj (CCONJ y)) (S (sn (spec (DET la)) (grup.nom (NOUN música))) (grup.verb (AUX es)) (s.a (grup.a (ADJ preciosa))))) (PUNCT .)))
+# sentiment = 2
+1	Me	yo	PRON	pp1cs000	Case=Dat|Number=Sing|Person=1|PrepCase=Npr|PronType=Prs	2	obl:arg	_	start_char=438|end_char=440|ner=O
+2	encantó	encantar	VERB	vmis3s0	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=441|end_char=448|ner=O
+3	la	el	DET	da0fs0	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	4	det	_	start_char=449|end_char=451|ner=O
+4	película	película	NOUN	ncfs000	Gender=Fem|Number=Sing	2	nsubj	_	SpaceAfter=No|start_char=452|end_char=460|ner=O
+5	:	:	PUNCT	fd	PunctType=Colo	9	punct	_	start_char=460|end_char=461|ner=O
+6	los	el	DET	da0mp0	Definite=Def|Gender=Masc|Number=Plur|PronType=Art	7	det	_	start_char=462|end_char=465|ner=O
+7	actores	actor	NOUN	ncmp000	Gender=Masc|Number=Plur	9	nsubj	_	start_char=466|end_char=473|ner=O
+8	son	ser	AUX	vsip3p0	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	9	cop	_	start_char=474|end_char=477|ner=O
+9	brillantes	brillante	ADJ	aq0cp0	Number=Plur	2	parataxis	_	start_char=478|end_char=488|ner=O
+10	y	y	CCONJ	cc	_	14	cc	_	start_char=489|end_char=490|ner=O
+11	la	el	DET	da0fs0	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	12	det	_	start_char=491|end_char=493|ner=O
+12	música	música	NOUN	ncfs000	Gender=Fem|Number=Sing	14	nsubj	_	start_char=494|end_char=500|ner=O
+13	es	ser	AUX	vsip3s0	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	14	cop	_	start_char=501|end_char=503|ner=O
+14	preciosa	precioso	ADJ	aq0fs0	Gender=Fem|Number=Sing	9	conj	_	SpaceAfter=No|start_char=504|end_char=512|ner=O
+15	.	.	PUNCT	fp	PunctType=Peri	2	punct	_	start_char=512|end_char=513|ner=O
+
+# text = El restaurante, en cambio, fue un desastre; la comida llegó fría y el camarero ni se disculpó.
+# sent_id = 8
+# constituency = (ROOT (sentence (S (sn (spec (DET El)) (grup.nom (NOUN restaurante))) (sadv (PUNCT ,) (grup.adv (sp (prep (ADP en)) (sn (grup.nom (NOUN cambio))))) (PUNCT ,)) (grup.verb (AUX fue)) (sn (spec (DET un)) (grup.nom (NOUN desastre)))) (PUNCT ;) (S (S (sn (spec (DET la)) (grup.nom (NOUN comida))) (grup.verb (VERB llegó)) (sadv (grup.a (ADJ fría)))) (conj (CCONJ y)) (S (sn (spec (DET el)) (grup.nom (NOUN camarero))) (sadv (grup.adv (CCONJ ni))) (morfema.pronominal (PRON se)) (grup.verb (VERB disculpó)))) (PUNCT .)))
+# sentiment = 1
+1	El	el	DET	da0ms0	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	2	det	_	start_char=514|end_char=516|ner=O
+2	restaurante	restaurante	NOUN	nccs000	Number=Sing	9	nsubj	_	SpaceAfter=No|start_char=517|end_char=528|ner=O
+3	,	,	PUNCT	fc	PunctType=Comm	5	punct	_	start_char=528|end_char=529|ner=O
+4	en	en	ADP	rg	ExtPos=ADV	5	case	_	start_char=530|end_char=532|ner=O
+5	cambio	cambio	NOUN	_	_	9	obl	_	SpaceAfter=No|start_char=533|end_char=539|ner=O
+6	,	,	PUNCT	fc	PunctType=Comm	5	punct	_	start_char=539|end_char=540|ner=O
+7	fue	ser	AUX	vsis3s0	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	9	cop	_	start_char=541|end_char=544|ner=O
+8	un	uno	DET	di0ms0	Definite=Ind|Gender=Masc|Number=Sing|PronType=Art	9	det	_	start_char=545|end_char=547|ner=O
+9	desastre	desastre	NOUN	ncms000	Gender=Masc|Number=Sing	0	root	_	SpaceAfter=No|start_char=548|end_char=556|ner=O
+10	;	;	PUNCT	fx	PunctType=Semi	13	punct	_	start_char=556|end_char=557|ner=O
+11	la	el	DET	da0fs0	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	12	det	_	start_char=558|end_char=560|ner=O
+12	comida	comida	NOUN	ncfs000	Gender=Fem|Number=Sing	13	nsubj	_	start_char=561|end_char=567|ner=O
+13	llegó	llegar	VERB	vmis3s0	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	9	advcl	_	start_char=568|end_char=573|ner=O
+14	fría	frío	ADJ	aq0fs0	Gender=Fem|Number=Sing	13	obj	_	start_char=574|end_char=578|ner=O
+15	y	y	CCONJ	cc	_	20	cc	_	start_char=579|end_char=580|ner=O
+16	el	el	DET	da0ms0	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	17	det	_	start_char=581|end_char=583|ner=O
+17	camarero	camarero	NOUN	ncms000	Gender=Masc|Number=Sing	20	nsubj	_	start_char=584|end_char=592|ner=O
+18	ni	ni	CCONJ	cc	_	20	advmod	_	start_char=593|end_char=595|ner=O
+19	se	él	PRON	p0300000	Case=Acc|Person=3|PrepCase=Npr|PronType=Prs|Reflex=Yes	20	expl:pv	_	start_char=596|end_char=598|ner=O
+20	disculpó	disculpar	VERB	vmis3s0	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	9	conj	_	SpaceAfter=No|start_char=599|end_char=607|ner=O
+21	.	.	PUNCT	fp	PunctType=Peri	9	punct	_	SpacesAfter=\n\n|start_char=607|end_char=608|ner=O
+
+# text = Los niños jugaban en el parque mientras sus padres leían el periódico.
+# sent_id = 9
+# constituency = (ROOT (sentence (sn (spec (DET Los)) (grup.nom (NOUN niños))) (grup.verb (VERB jugaban)) (sp (prep (ADP en)) (sn (spec (DET el)) (grup.nom (NOUN parque)))) (S (conj (SCONJ mientras)) (sn (spec (DET sus)) (grup.nom (NOUN padres))) (grup.verb (VERB leían)) (sn (spec (DET el)) (grup.nom (NOUN periódico)))) (PUNCT .)))
+# sentiment = 1
+1	Los	el	DET	da0mp0	Definite=Def|Gender=Masc|Number=Plur|PronType=Art	2	det	_	start_char=610|end_char=613|ner=O
+2	niños	niño	NOUN	ncmp000	Gender=Masc|Number=Plur	3	nsubj	_	start_char=614|end_char=619|ner=O
+3	jugaban	jugar	VERB	vmii3p0	Mood=Ind|Number=Plur|Person=3|Tense=Imp|VerbForm=Fin	0	root	_	start_char=620|end_char=627|ner=O
+4	en	en	ADP	sps00	_	6	case	_	start_char=628|end_char=630|ner=O
+5	el	el	DET	da0ms0	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	6	det	_	start_char=631|end_char=633|ner=O
+6	parque	parque	NOUN	ncms000	Gender=Masc|Number=Sing	3	obl	_	start_char=634|end_char=640|ner=O
+7	mientras	mientras	SCONJ	cs	_	10	mark	_	start_char=641|end_char=649|ner=O
+8	sus	su	DET	dp3cp0	Number=Plur|Person=3|Poss=Yes|PronType=Prs	9	det	_	start_char=650|end_char=653|ner=O
+9	padres	padre	NOUN	ncmp000	Gender=Masc|Number=Plur	10	nsubj	_	start_char=654|end_char=660|ner=O
+10	leían	leír	VERB	vmii3p0	Mood=Ind|Number=Plur|Person=3|Tense=Imp|VerbForm=Fin	3	advcl	_	start_char=661|end_char=666|ner=O
+11	el	el	DET	da0ms0	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	12	det	_	start_char=667|end_char=669|ner=O
+12	periódico	periódico	NOUN	ncms000	Gender=Masc|Number=Sing	10	obj	_	SpaceAfter=No|start_char=670|end_char=679|ner=O
+13	.	.	PUNCT	fp	PunctType=Peri	3	punct	_	start_char=679|end_char=680|ner=O
+
+# text = Hay que decírselo antes de que sea demasiado tarde.
+# sent_id = 10
+# constituency = (ROOT (sentence (grup.verb (VERB Hay) (SCONJ que) (infinitiu (VERB decir)) (morfema.pronominal (PRON se)) (sn (grup.nom (PRON lo)))) (S (conj (grup.cs (ADV antes) (ADP de) (SCONJ que))) (grup.verb (AUX sea)) (sadv (spec (ADV demasiado)) (grup.adv (ADV tarde)))) (PUNCT .)))
+# sentiment = 2
+1	Hay	haber	VERB	vaip3s0	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=681|end_char=684|ner=O
+2	que	que	SCONJ	cs	_	3	mark	_	start_char=685|end_char=688|ner=O
+3-5	decírselo	_	_	_	_	_	_	_	start_char=689|end_char=698|ner=O
+3	decir	decir	VERB	vmn0000	VerbForm=Inf	1	xcomp	_	_
+4	se	él	PRON	pp2cs000	Case=Dat|Number=Sing|Person=3|PrepCase=Npr|PronType=Prs|Reflex=Yes	3	expl:pv	_	_
+5	lo	él	PRON	pp3ms000	Case=Acc|Gender=Masc|Number=Sing|Person=3|PrepCase=Npr|PronType=Prs	3	obj	_	_
+6	antes	antes	ADV	rg	_	3	advmod	_	start_char=699|end_char=704|ner=O
+7	de	de	ADP	sps00	_	11	mark	_	start_char=705|end_char=707|ner=O
+8	que	que	SCONJ	cs	_	11	mark	_	start_char=708|end_char=711|ner=O
+9	sea	ser	AUX	vssp3s0	Mood=Sub|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	11	cop	_	start_char=712|end_char=715|ner=O
+10	demasiado	demasiado	ADV	rg	_	11	advmod	_	start_char=716|end_char=725|ner=O
+11	tarde	tarde	ADV	rg	_	6	amod	_	SpaceAfter=No|start_char=726|end_char=731|ner=O
+12	.	.	PUNCT	fp	PunctType=Peri	1	punct	_	SpacesAfter=\n|start_char=731|end_char=732|ner=O

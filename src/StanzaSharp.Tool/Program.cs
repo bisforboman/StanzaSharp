@@ -22,12 +22,12 @@ const string Usage = $"""
     and threads, alternating runs. Prints a Markdown block with the machine (CPU, cores, RAM, OS, .NET, SIMD) to share.
     Takes about 2 minutes with Python on 4 cores; --quick runs a short smoke test.
 
-      --lang CODE         the language: en (default) or de (German)
+      --lang CODE         the language: en (default), de, es, fr, it, pt or nl (benchmark: en or de)
       --package NAME      Stanza's package: default, default_fast (faster, no constituency), default_accurate
                           (transformer models: slower, more accurate); the treebank
                           packages (tokenize to depparse only): English combined, ewt, gum, lines, partut, atis, childes, eslspok,
                           craft, genia, mimic;
-                          German combined, gsd, hdt
+                          German combined, gsd, hdt (es, fr, it, pt, nl: default, default_fast; es: default only)
       --processors LIST   comma-separated, from tokenize,mwt,pos,lemma,constituency,depparse,sentiment,ner
                           (default: all of the package's)
       --model P=NAME      a model for processor P instead of the package's (repeatable, or P=NAME,P=NAME), as Stanza's

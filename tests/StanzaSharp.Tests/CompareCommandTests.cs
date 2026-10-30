@@ -177,8 +177,7 @@ public class CompareCommandTests
     /// is regenerated as CLAUDE.md says (StanzaSharp.Tool, compare).
     /// </summary>
     [Theory]
-    [InlineData("en")]
-    [InlineData("de")]
+    [MemberData(nameof(SupportedLanguages))]
     public void StanzaResources_MatchModelDownloader(string language)
     {
         using var resource = typeof(Pipeline).Assembly.GetManifestResourceStream("stanza_resources.json")!;
@@ -205,7 +204,7 @@ public class CompareCommandTests
             }
         }
 
-        foreach (var (processor, names) in Pipeline.Alternatives[language])
+        foreach (var (processor, names) in Pipeline.Alternatives.GetValueOrDefault(language) ?? [])
         {
             foreach (var name in names)
                 AssertDependencies(processor, name);
@@ -220,6 +219,8 @@ public class CompareCommandTests
             Assert.Equal(dependencies, Pipeline.SharedModels(new Dictionary<string, string> { [processor] = name }, language).Order());
         }
     }
+
+    public static TheoryData<string> SupportedLanguages => [.. Pipeline.SupportedPackages.Keys];
 
     /// <summary>Every supported language has its resources.json entry and a pinned commit; compare and benchmark hand Stanza the library's file.</summary>
     [Fact]

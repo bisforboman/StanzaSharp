@@ -378,7 +378,8 @@ internal sealed class ConstituencyParser : IDisposable
     }
 
     // ----- loading -----
-    private static readonly Regex OpenRepr = new(@"^OpenConstituent\(\('([^']*)',\)\)$");
+    // Python's repr of the label tuple: in double quotes when the label has a ' (Portuguese cintil's A'), else in single ones
+    private static readonly Regex OpenRepr = new(@"^OpenConstituent\(\((?:'([^'\\]*)'|""([^""\\]*)""),\)\)$");
 
     private static Transition ParseTransition(string repr, int index, List<string> opens)
     {
@@ -389,7 +390,7 @@ internal sealed class ConstituencyParser : IDisposable
         var m = OpenRepr.Match(repr);
         if (!m.Success)
             throw new NotSupportedException($"Transition {repr} is not ported");
-        var label = m.Groups[1].Value;
+        var label = m.Groups[1].Success ? m.Groups[1].Value : m.Groups[2].Value;
         return new Transition(index, TransitionKind.Open, label, opens.IndexOf(label));
     }
 

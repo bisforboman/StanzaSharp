@@ -27,17 +27,18 @@ internal sealed class CharLanguageModel : IDisposable, IPerCharLanguageModel
 
     private CharLanguageModel(Checkpoint ckpt)
     {
-        var args = ckpt.Root["args"]!;
-        var state = ckpt.Root["state_dict"]!;
-        if (ckpt.Root["vocab"]!["lower"]?.GetValue<bool>() == true)
+        var model = CharlmCheckpoint.Model(ckpt);
+        var args = model["args"]!;
+        var state = model["state_dict"]!;
+        if (model["vocab"]!["lower"]?.GetValue<bool>() == true)
             throw new NotSupportedException("Lowercasing charlm vocabularies are not ported");
         if (args["char_rec_dropout"]?.GetValue<double>() is double rec && rec != 0)
             throw new NotSupportedException("charlm with recurrent dropout (LSTMwRecDropout) is not ported");
 
-        IsForward = ckpt.Root["is_forward_lm"]!.GetValue<bool>();
+        IsForward = model["is_forward_lm"]!.GetValue<bool>();
         HiddenDim = args["char_hidden_dim"]!.GetValue<int>();
         int layers = args["char_num_layers"]!.GetValue<int>();
-        _vocab = Checkpoint.UnitToId(ckpt.Root["vocab"]);
+        _vocab = Checkpoint.UnitToId(model["vocab"]);
         _lookup = _vocab.GetAlternateLookup<ReadOnlySpan<char>>();
         _unkId = _vocab["<UNK>"];
         _endId = _vocab[End];

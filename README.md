@@ -4,10 +4,10 @@
 [![NuGet](https://img.shields.io/nuget/v/StanzaSharp)](https://www.nuget.org/packages/StanzaSharp)
 [![License](https://img.shields.io/github/license/bisforboman/StanzaSharp)](LICENSE)
 
-C# port of Stanza's English and German inference pipelines (tokenize, mwt, pos, lemma, depparse, ner, sentiment,
+C# port of Stanza's English, German, Spanish, French, Italian, Portuguese and Dutch inference pipelines (tokenize, mwt, pos, lemma, depparse, ner, sentiment,
 constituency, and the optional coref).
 It runs Stanza's own pretrained models in plain .NET code, with no native dependencies. On the golden test texts
-(845 English and 181 German sentences), the output is byte-identical to Python Stanza 1.15.0, on Linux, Windows and
+(845 English and 181 German sentences, about 10 in each other language), the output is byte-identical to Python Stanza 1.15.0, on Linux, Windows and
 macOS, x64 and Arm64.
 [docs/verification.md](docs/verification.md) shows what is compared, how, and how to check it on your own text.
 
@@ -286,6 +286,33 @@ from English in its models, not in the API:
 |---|---|---|
 | English (`en`) | OntoNotes (`ontonotes-ww-multi`) | 18: `PERSON`, `NORP`, `FAC`, `ORG`, `GPE`, `LOC`, `PRODUCT`, `EVENT`, `WORK_OF_ART`, `LAW`, `LANGUAGE`, `DATE`, `TIME`, `PERCENT`, `MONEY`, `QUANTITY`, `ORDINAL`, `CARDINAL` |
 | German (`de`) | GermEval 2014 (`germeval2014_charlm`) | 4: `PER`, `LOC`, `ORG`, `MISC` |
+
+### Spanish, French, Italian, Portuguese and Dutch
+
+`Language = "es"`, `"fr"`, `"it"`, `"pt"` or `"nl"` selects that language's Stanza models, downloaded and loaded the same way:
+
+```csharp
+var french = new PipelineOptions { Language = "fr" };
+await ModelDownloader.DownloadAsync("models/stanza/fr", french); // ~380 MB
+using var nlp = Pipeline.Load("models/stanza/fr", french);
+var doc = nlp.Process("J'ai vu Marie au marché de Lyon.");
+// "au" is one token of two words, "à" + "le"; doc.Entities: Marie/PER, Lyon/LOC
+```
+
+Each runs the processors of Stanza's own `default` package for the language (all models are 1.15.0's, byte for byte
+against Python Stanza on a test text per language), and `default_fast` too except in Spanish, whose `default_fast` parser
+file is truncated on Stanford's side:
+
+| Language | `default` processors | NER types | Size (`default`) |
+|---|---|---|---|
+| Spanish (`es`) | all eight | `PER`, `LOC`, `ORG`, `MISC` (CoNLL 2002) | 673 MB |
+| French (`fr`) | tokenize, mwt, pos, lemma, depparse, ner | `PER`, `LOC`, `ORG`, `MISC` (WikiNER) | 380 MB |
+| Italian (`it`) | the same plus constituency | `PER`, `LOC`, `ORG` (FBK) | 483 MB |
+| Portuguese (`pt`) | tokenize, mwt, pos, lemma, constituency, depparse | none | 420 MB |
+| Dutch (`nl`) | tokenize, mwt, pos, lemma, depparse, ner | `PER`, `LOC`, `ORG`, `MISC` (CoNLL 2002) | 485 MB |
+
+These languages' `default_accurate` packages (each on its own transformer) and their treebank packages are not supported
+yet.
 
 ### Many texts, pretokenized text, and annotating a document
 

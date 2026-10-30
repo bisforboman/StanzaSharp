@@ -1,0 +1,183 @@
+# text = Le président de la République, Emmanuel Macron, est arrivé hier à Bruxelles pour rencontrer la Commission européenne.
+# sent_id = 0
+1	Le	le	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	2	det	_	start_char=0|end_char=2|ner=O
+2	président	président	NOUN	_	Gender=Masc|Number=Sing	11	nsubj	_	start_char=3|end_char=12|ner=O
+3	de	de	ADP	_	_	5	case	_	start_char=13|end_char=15|ner=O
+4	la	le	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	5	det	_	start_char=16|end_char=18|ner=O
+5	République	république	NOUN	_	Gender=Fem|Number=Sing	2	nmod	_	SpaceAfter=No|start_char=19|end_char=29|ner=S-LOC
+6	,	,	PUNCT	_	_	7	punct	_	start_char=29|end_char=30|ner=O
+7	Emmanuel	Emmanuel	PROPN	_	Number=Sing	2	appos	_	start_char=31|end_char=39|ner=B-PER
+8	Macron	Macron	PROPN	_	_	7	flat:name	_	SpaceAfter=No|start_char=40|end_char=46|ner=E-PER
+9	,	,	PUNCT	_	_	7	punct	_	start_char=46|end_char=47|ner=O
+10	est	être	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	11	aux:tense	_	start_char=48|end_char=51|ner=O
+11	arrivé	arriver	VERB	_	Gender=Masc|Number=Sing|VerbForm=Part|Voice=Act	0	root	_	start_char=52|end_char=58|ner=O
+12	hier	hier	ADV	_	_	11	advmod	_	start_char=59|end_char=63|ner=O
+13	à	à	ADP	_	_	14	case	_	start_char=64|end_char=65|ner=O
+14	Bruxelles	Bruxelles	PROPN	_	_	11	obl:arg	_	start_char=66|end_char=75|ner=S-LOC
+15	pour	pour	ADP	_	_	16	mark	_	start_char=76|end_char=80|ner=O
+16	rencontrer	rencontrer	VERB	_	VerbForm=Inf	11	advcl	_	start_char=81|end_char=91|ner=O
+17	la	le	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	18	det	_	start_char=92|end_char=94|ner=O
+18	Commission	commission	NOUN	_	Gender=Fem|Number=Sing	16	obj	_	start_char=95|end_char=105|ner=B-ORG
+19	européenne	européen	ADJ	_	Gender=Fem|Number=Sing	18	amod	_	SpaceAfter=No|start_char=106|end_char=116|ner=E-ORG
+20	.	.	PUNCT	_	_	11	punct	_	start_char=116|end_char=117|ner=O
+
+# text = Il a parlé aux journalistes du projet de loi.
+# sent_id = 1
+1	Il	lui	PRON	_	Case=Nom|Emph=No|Gender=Masc|Number=Sing|Person=3|PronType=Prs	3	nsubj	_	start_char=118|end_char=120|ner=O
+2	a	avoir	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	aux:tense	_	start_char=121|end_char=122|ner=O
+3	parlé	parler	VERB	_	Gender=Masc|Number=Sing|VerbForm=Part|Voice=Act	0	root	_	start_char=123|end_char=128|ner=O
+4-5	aux	_	_	_	_	_	_	_	start_char=129|end_char=132|ner=O
+4	à	à	ADP	_	_	6	case	_	_
+5	les	le	DET	_	Definite=Def|Number=Plur|PronType=Art	6	det	_	_
+6	journalistes	journaliste	NOUN	_	Gender=Masc|Number=Plur	3	obl:arg	_	start_char=133|end_char=145|ner=O
+7-8	du	_	_	_	_	_	_	_	start_char=146|end_char=148|ner=O
+7	de	de	ADP	_	_	9	case	_	_
+8	le	le	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	9	det	_	_
+9	projet	projet	NOUN	_	Gender=Masc|Number=Sing	6	nmod	_	start_char=149|end_char=155|ner=O
+10	de	de	ADP	_	_	11	case	_	start_char=156|end_char=158|ner=O
+11	loi	loi	NOUN	_	Gender=Fem|Number=Sing	9	nmod	_	SpaceAfter=No|start_char=159|end_char=162|ner=O
+12	.	.	PUNCT	_	_	3	punct	_	SpacesAfter=\n\n|start_char=162|end_char=163|ner=O
+
+# text = « Nous ne céderons pas », a déclaré la ministre des Finances.
+# sent_id = 2
+1	«	«	PUNCT	_	_	4	punct	_	start_char=165|end_char=166|ner=O
+2	Nous	nous	PRON	_	Case=Nom|Emph=No|Number=Plur|Person=1|PronType=Prs	4	nsubj	_	start_char=167|end_char=171|ner=O
+3	ne	ne	ADV	_	Polarity=Neg	4	advmod	_	start_char=172|end_char=174|ner=O
+4	céderons	céder	VERB	_	Mood=Ind|Number=Plur|Person=1|Tense=Fut|VerbForm=Fin	0	root	_	start_char=175|end_char=183|ner=O
+5	pas	pas	ADV	_	Polarity=Neg	4	advmod	_	start_char=184|end_char=187|ner=O
+6	»	»	PUNCT	_	_	4	punct	_	SpaceAfter=No|start_char=188|end_char=189|ner=O
+7	,	,	PUNCT	_	_	9	punct	_	start_char=189|end_char=190|ner=O
+8	a	avoir	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	9	aux:tense	_	start_char=191|end_char=192|ner=O
+9	déclaré	déclarer	VERB	_	Gender=Masc|Number=Sing|VerbForm=Part|Voice=Act	4	parataxis:insert	_	start_char=193|end_char=200|ner=O
+10	la	le	DET	_	Definite=Def|Gender=Fem|Number=Sing|PronType=Art	11	det	_	start_char=201|end_char=203|ner=O
+11	ministre	ministre	NOUN	_	Gender=Fem|Number=Sing	9	nsubj	_	start_char=204|end_char=212|ner=O
+12-13	des	_	_	_	_	_	_	_	start_char=213|end_char=216|ner=O
+12	de	de	ADP	_	_	14	case	_	_
+13	les	le	DET	_	Definite=Def|Number=Plur|PronType=Art	14	det	_	_
+14	Finances	finance	NOUN	_	Gender=Fem|Number=Plur	11	nmod	_	SpaceAfter=No|start_char=217|end_char=225|ner=S-ORG
+15	.	.	PUNCT	_	_	4	punct	_	start_char=225|end_char=226|ner=O
+
+# text = Selon l'Insee, le chômage a baissé de 2,5 % en mars 2024.
+# sent_id = 3
+1	Selon	selon	ADP	_	_	3	case	_	start_char=227|end_char=232|ner=O
+2	l'	le	DET	_	Definite=Def|Number=Sing|PronType=Art	3	det	_	SpaceAfter=No|start_char=233|end_char=235|ner=O
+3	Insee	Insee	PROPN	_	Number=Sing	8	obl:mod	_	SpaceAfter=No|start_char=235|end_char=240|ner=S-ORG
+4	,	,	PUNCT	_	_	3	punct	_	start_char=240|end_char=241|ner=O
+5	le	le	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	6	det	_	start_char=242|end_char=244|ner=O
+6	chômage	chômage	NOUN	_	Gender=Masc|Number=Sing	8	nsubj	_	start_char=245|end_char=252|ner=O
+7	a	avoir	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	8	aux:tense	_	start_char=253|end_char=254|ner=O
+8	baissé	baisser	VERB	_	Gender=Masc|Number=Sing|VerbForm=Part|Voice=Act	0	root	_	start_char=255|end_char=261|ner=O
+9	de	de	ADP	_	_	11	case	_	start_char=262|end_char=264|ner=O
+10	2,5	2,5	NUM	_	Number=Plur	11	nummod	_	start_char=265|end_char=268|ner=O
+11	%	%	SYM	_	ExtPos=NOUN|Number=Plur	8	obl:arg	_	start_char=269|end_char=270|ner=O
+12	en	en	ADP	_	_	13	case	_	start_char=271|end_char=273|ner=O
+13	mars	mars	NOUN	_	Gender=Masc|Number=Sing	8	obl:mod	_	start_char=274|end_char=278|ner=O
+14	2024	2024	NUM	_	Number=Sing	13	nmod	_	SpaceAfter=No|start_char=279|end_char=283|ner=O
+15	.	.	PUNCT	_	_	8	punct	_	SpacesAfter=\n\n|start_char=283|end_char=284|ner=O
+
+# text = J'ai vu Marie au marché de Lyon samedi dernier.
+# sent_id = 4
+1	J'	moi	PRON	_	Case=Nom|Emph=No|Number=Sing|Person=1|PronType=Prs	3	nsubj	_	SpaceAfter=No|start_char=286|end_char=288|ner=O
+2	ai	avoir	AUX	_	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	3	aux:tense	_	start_char=288|end_char=290|ner=O
+3	vu	voir	VERB	_	Gender=Masc|Number=Sing|VerbForm=Part|Voice=Act	0	root	_	start_char=291|end_char=293|ner=O
+4	Marie	Marie	PROPN	_	_	3	obj	_	start_char=294|end_char=299|ner=S-PER
+5-6	au	_	_	_	_	_	_	_	start_char=300|end_char=302|ner=O
+5	à	à	ADP	_	_	7	case	_	_
+6	le	le	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	7	det	_	_
+7	marché	marché	NOUN	_	Gender=Masc|Number=Sing	3	obl:mod	_	start_char=303|end_char=309|ner=O
+8	de	de	ADP	_	_	9	case	_	start_char=310|end_char=312|ner=O
+9	Lyon	Lyon	PROPN	_	_	7	nmod	_	start_char=313|end_char=317|ner=S-LOC
+10	samedi	samedi	NOUN	_	Gender=Masc|Number=Sing	3	obl:mod	_	start_char=318|end_char=324|ner=O
+11	dernier	dernier	ADJ	_	Gender=Masc|Number=Sing	10	amod	_	SpaceAfter=No|start_char=325|end_char=332|ner=O
+12	.	.	PUNCT	_	_	3	punct	_	start_char=332|end_char=333|ner=O
+
+# text = Qu'est-ce que tu fais demain ?
+# sent_id = 5
+1	Qu'	que	PRON	_	PronType=Int	0	root	_	SpaceAfter=No|start_char=334|end_char=337|ner=O
+2	est	être	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	1	cop	_	SpaceAfter=No|start_char=337|end_char=340|ner=O
+3	-ce	ce	PRON	_	Gender=Masc|Number=Sing|Person=3|PronType=Dem	1	nsubj	_	start_char=340|end_char=343|ner=O
+4	que	que	SCONJ	_	_	6	dep:comp	_	start_char=344|end_char=347|ner=O
+5	tu	toi	PRON	_	Case=Nom|Emph=No|Number=Sing|Person=2|PronType=Prs	6	nsubj	_	start_char=348|end_char=350|ner=O
+6	fais	faire	VERB	_	Mood=Ind|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin	1	advcl:cleft	_	start_char=351|end_char=355|ner=O
+7	demain	demain	ADV	_	_	6	advmod	_	start_char=356|end_char=362|ner=O
+8	?	?	PUNCT	_	_	1	punct	_	start_char=363|end_char=364|ner=O
+
+# text = Mon frère habite à Marseille depuis dix ans et travaille chez Airbus.
+# sent_id = 6
+1	Mon	son	DET	_	Gender=Masc|Number=Sing|Number[psor]=Sing|Person[psor]=1|Poss=Yes|PronType=Prs	2	det	_	start_char=365|end_char=368|ner=O
+2	frère	frère	NOUN	_	Gender=Masc|Number=Sing	3	nsubj	_	start_char=369|end_char=374|ner=O
+3	habite	habiter	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=375|end_char=381|ner=O
+4	à	à	ADP	_	_	5	case	_	start_char=382|end_char=383|ner=O
+5	Marseille	Marseille	PROPN	_	_	3	obl:arg	_	start_char=384|end_char=393|ner=S-LOC
+6	depuis	depuis	ADP	_	_	8	case	_	start_char=394|end_char=400|ner=O
+7	dix	dix	NUM	_	Number=Plur	8	nummod	_	start_char=401|end_char=404|ner=O
+8	ans	an	NOUN	_	Gender=Masc|Number=Plur	3	obl:mod	_	start_char=405|end_char=408|ner=O
+9	et	et	CCONJ	_	_	10	cc	_	start_char=409|end_char=411|ner=O
+10	travaille	travailler	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	conj	_	start_char=412|end_char=421|ner=O
+11	chez	chez	ADP	_	_	12	case	_	start_char=422|end_char=426|ner=O
+12	Airbus	Airbus	PROPN	_	_	10	obl:mod	_	SpaceAfter=No|start_char=427|end_char=433|ner=S-ORG
+13	.	.	PUNCT	_	_	3	punct	_	SpacesAfter=\n\n|start_char=433|end_char=434|ner=O
+
+# text = Les enfants des écoles du quartier jouaient dans le parc pendant que leurs parents lisaient le journal.
+# sent_id = 7
+1	Les	le	DET	_	Definite=Def|Number=Plur|PronType=Art	2	det	_	start_char=436|end_char=439|ner=O
+2	enfants	enfant	NOUN	_	Number=Plur	9	nsubj	_	start_char=440|end_char=447|ner=O
+3-4	des	_	_	_	_	_	_	_	start_char=448|end_char=451|ner=O
+3	de	de	ADP	_	_	5	case	_	_
+4	les	le	DET	_	Definite=Def|Number=Plur|PronType=Art	5	det	_	_
+5	écoles	école	NOUN	_	Gender=Fem|Number=Plur	2	nmod	_	start_char=452|end_char=458|ner=O
+6-7	du	_	_	_	_	_	_	_	start_char=459|end_char=461|ner=O
+6	de	de	ADP	_	_	8	case	_	_
+7	le	le	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	8	det	_	_
+8	quartier	quartier	NOUN	_	Gender=Masc|Number=Sing	5	nmod	_	start_char=462|end_char=470|ner=O
+9	jouaient	jouer	VERB	_	Mood=Ind|Number=Plur|Person=3|Tense=Imp|VerbForm=Fin	0	root	_	start_char=471|end_char=479|ner=O
+10	dans	dans	ADP	_	_	12	case	_	start_char=480|end_char=484|ner=O
+11	le	le	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	12	det	_	start_char=485|end_char=487|ner=O
+12	parc	parc	NOUN	_	Gender=Masc|Number=Sing	9	obl:arg	_	start_char=488|end_char=492|ner=O
+13	pendant	pendant	ADP	_	_	17	mark	_	start_char=493|end_char=500|ner=O
+14	que	que	SCONJ	_	_	17	mark	_	start_char=501|end_char=504|ner=O
+15	leurs	son	DET	_	Number=Plur|Number[psor]=Plur|Person[psor]=3|Poss=Yes|PronType=Prs	16	det	_	start_char=505|end_char=510|ner=O
+16	parents	parent	NOUN	_	Gender=Masc|Number=Plur	17	nsubj	_	start_char=511|end_char=518|ner=O
+17	lisaient	lire	VERB	_	Mood=Ind|Number=Plur|Person=3|Tense=Imp|VerbForm=Fin	9	advcl	_	start_char=519|end_char=527|ner=O
+18	le	le	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	19	det	_	start_char=528|end_char=530|ner=O
+19	journal	journal	NOUN	_	Gender=Masc|Number=Sing	17	obj	_	SpaceAfter=No|start_char=531|end_char=538|ner=O
+20	.	.	PUNCT	_	_	9	punct	_	start_char=538|end_char=539|ner=O
+
+# text = Il faut le lui dire avant qu'il ne soit trop tard.
+# sent_id = 8
+1	Il	lui	PRON	_	Case=Nom|Emph=No|Gender=Masc|Number=Sing|Person=3|PronType=Prs	2	expl:subj	_	start_char=540|end_char=542|ner=O
+2	faut	falloir	VERB	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=543|end_char=547|ner=O
+3	le	lui	PRON	_	Case=Acc|Emph=No|Gender=Masc|Number=Sing|Person=3|PronType=Prs	5	obj	_	start_char=548|end_char=550|ner=O
+4	lui	lui	PRON	_	Case=Dat|Emph=No|Number=Sing|Person=3|PronType=Prs	5	iobj	_	start_char=551|end_char=554|ner=O
+5	dire	dire	VERB	_	VerbForm=Inf	2	ccomp	_	start_char=555|end_char=559|ner=O
+6	avant	avant	ADP	_	_	12	mark	_	start_char=560|end_char=565|ner=O
+7	qu'	que	SCONJ	_	_	12	mark	_	SpaceAfter=No|start_char=566|end_char=569|ner=O
+8	il	lui	PRON	_	Case=Nom|Emph=No|Gender=Masc|Number=Sing|Person=3|PronType=Prs	12	nsubj	_	start_char=569|end_char=571|ner=O
+9	ne	ne	ADV	_	Polarity=Neg	12	advmod	_	start_char=572|end_char=574|ner=O
+10	soit	être	AUX	_	Mood=Sub|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	12	cop	_	start_char=575|end_char=579|ner=O
+11	trop	trop	ADV	_	_	12	advmod	_	start_char=580|end_char=584|ner=O
+12	tard	tard	ADV	_	_	5	advcl	_	SpaceAfter=No|start_char=585|end_char=589|ner=O
+13	.	.	PUNCT	_	_	2	punct	_	SpacesAfter=\n\n|start_char=589|end_char=590|ner=O
+
+# text = Ce film était magnifique, mais le restaurant d'à côté était décevant : le plat est arrivé froid.
+# sent_id = 9
+1	Ce	ce	DET	_	Gender=Masc|Number=Sing|PronType=Dem	2	det	_	start_char=592|end_char=594|ner=O
+2	film	film	NOUN	_	Gender=Masc|Number=Sing	4	nsubj	_	start_char=595|end_char=599|ner=O
+3	était	être	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Imp|VerbForm=Fin	4	cop	_	start_char=600|end_char=605|ner=O
+4	magnifique	magnifique	ADJ	_	Gender=Masc|Number=Sing	0	root	_	SpaceAfter=No|start_char=606|end_char=616|ner=O
+5	,	,	PUNCT	_	_	13	punct	_	start_char=616|end_char=617|ner=O
+6	mais	mais	CCONJ	_	_	13	cc	_	start_char=618|end_char=622|ner=O
+7	le	le	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	8	det	_	start_char=623|end_char=625|ner=O
+8	restaurant	restaurant	NOUN	_	Gender=Masc|Number=Sing	13	nsubj	_	start_char=626|end_char=636|ner=O
+9	d'	de	ADP	_	_	11	case	_	SpaceAfter=No|start_char=637|end_char=639|ner=O
+10	à	à	ADP	_	_	11	case	_	start_char=639|end_char=640|ner=O
+11	côté	côté	NOUN	_	Gender=Masc|Number=Sing	8	nmod	_	start_char=641|end_char=645|ner=O
+12	était	être	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Imp|VerbForm=Fin	13	cop	_	start_char=646|end_char=651|ner=O
+13	décevant	décevant	ADJ	_	Gender=Masc|Number=Sing	4	conj	_	start_char=652|end_char=660|ner=O
+14	:	:	PUNCT	_	_	18	punct	_	start_char=661|end_char=662|ner=O
+15	le	le	DET	_	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	16	det	_	start_char=663|end_char=665|ner=O
+16	plat	plat	NOUN	_	Gender=Masc|Number=Sing	18	nsubj	_	start_char=666|end_char=670|ner=O
+17	est	être	AUX	_	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	18	aux:tense	_	start_char=671|end_char=674|ner=O
+18	arrivé	arriver	VERB	_	Gender=Masc|Number=Sing|VerbForm=Part|Voice=Act	4	parataxis	_	start_char=675|end_char=681|ner=O
+19	froid	froid	ADJ	_	Gender=Masc|Number=Sing	18	xcomp	_	SpaceAfter=No|start_char=682|end_char=687|ner=O
+20	.	.	PUNCT	_	_	4	punct	_	SpacesAfter=\n|start_char=687|end_char=688|ner=O

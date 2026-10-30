@@ -47,6 +47,14 @@ seq2seq model; 68 multi-word tokens in the texts). German texts with characters 
 classifies all 200 sentences as one document, a single batch, which Stanza labels almost all positive: a stress test
 of the batch padding.
 
+**Spanish, French, Italian, Portuguese and Dutch.** [`tests/golden/languages/`](../tests/golden/languages) holds one
+hand-written text per language (10 to 11 sentences, 127 to 161 words: news with names and numbers, quotes, a question,
+contractions such as `del`, `au`, `della`, `dá-mo`, an opinion) and Stanza's CoNLL-U of it for each supported package
+(`make_golden.py --languages-only`): `default` (Spanish all eight processors; French and Dutch without constituency and
+sentiment; Italian and Portuguese with constituency; Portuguese without ner) and `default_fast` (all but Spanish, whose
+`default_fast` parser file Stanford uploaded truncated on 2026-10-27). `LanguageGoldenTests` checks each byte for byte on
+both backends; their models are downloaded only by the nightly run (below).
+
 **English treebank packages.** Stanza's English treebank packages (tokenize, mwt, pos, lemma, depparse) run on the same
 English texts (`corpus.txt` and every `validation*.txt`), each against its own folder of `tests/golden/<package>/`
 (`make_golden.py --treebank-only`): `ewt` (858 sentences, 8,393 words), `gum` (819, 8,395), `lines` (767, 8,111),
@@ -240,7 +248,8 @@ golden shard 2 installs and runs, and the German tests, the English treebank pac
 the golden shards have those models (Stanza's `.pt` files, cached), so `cross-os` and `linux-arm64` run the English
 default packages only. The transformer tests (`Transformer*`) run in golden shard 4, their own, which downloads the transformer's
 files from Hugging Face and the transformer models from Stanza's repository on every run (no cache: the model caches are
-near GitHub's 10 GB limit). A pull request runs that shard only when it changes what those tests read (the shared
+near GitHub's 10 GB limit). The other languages' tests (`LanguageGoldenTests`: Spanish, French, Italian, Portuguese,
+Dutch) run only in the nightly run, which downloads their models on every run; every other job skips them. A pull request runs that shard only when it changes what those tests read (the shared
 kernels, the TorchSharp backend, the downloader, CI, the transformer's golden data or tests); every push to main runs it.
 
 The [nightly workflow](../.github/workflows/nightly.yml) runs on main every night: golden shard 4 (all of CI instead when

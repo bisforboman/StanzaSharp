@@ -57,19 +57,16 @@ public sealed class Pipeline : IDisposable
             "combined", "ewt", "gum", "lines", "partut", "atis", "childes", "eslspok", "craft", "genia", "mimic",
         ],
         ["de"] = [DefaultPackage, "default_fast", "default_accurate", "combined", "gsd", "hdt"],
+        ["es"] = [DefaultPackage], // default_fast once Stanford fixes its truncated depparse/combined_nocharlm.pt (uploaded 2026-10-27)
+        ["fr"] = [DefaultPackage, "default_fast"],
+        ["it"] = [DefaultPackage, "default_fast"],
+        ["pt"] = [DefaultPackage, "default_fast"],
+        ["nl"] = [DefaultPackage, "default_fast"],
     };
 
     // Each supported package's models (processor → model), from resources.json.
     internal static readonly Dictionary<string, Dictionary<string, Dictionary<string, string>>> Packages =
         SupportedPackages.ToDictionary(l => l.Key, l => l.Value.ToDictionary(p => p, p => StanzaResources.Package(l.Key, p)));
-
-    // Stanza's optional processors (resources.json's packages' "optional"): a package's model for them, run only when
-    // Processors or Models names the processor (owner's decision, 2026-10-20: coref is opt-in).
-    internal static readonly Dictionary<string, Dictionary<string, Dictionary<string, string>>> Optional =
-        SupportedPackages.ToDictionary(l => l.Key, l => l.Value
-            .Select(p => (Package: p, Models: StanzaResources.Optional(l.Key, p)))
-            .Where(p => p.Models.Count > 0)
-            .ToDictionary(p => p.Package, p => p.Models));
 
     // Models beyond the packages' that PipelineOptions.Models can choose, per language and processor (docs/per-processor-models-plan.md).
     // Each must be in resources.json, which has its MD5 and its shared files.
@@ -130,11 +127,22 @@ public sealed class Pipeline : IDisposable
     /// <summary>Every model <paramref name="processor"/> of <paramref name="language"/> can run: its packages' and <see cref="Alternatives"/>.</summary>
     internal static IEnumerable<string> ModelsOf(string language, string processor) =>
         Packages[language].Values.Select(p => p.GetValueOrDefault(processor)).OfType<string>()
-            .Concat(Alternatives[language].GetValueOrDefault(processor, []))
+            .Concat(Alternatives.GetValueOrDefault(language)?.GetValueOrDefault(processor) ?? [])
             .Distinct();
 
     /// <summary>Stanza's lemma "model" that sets each word's lemma to its text (LemmaProcessor's use_identity); it has no file.</summary>
     internal const string IdentityLemma = "identity";
+
+    // Stanza's optional processors (resources.json's packages' "optional"): a package's model for them, run only when
+    // Processors or Models names the processor (owner's decision, 2026-10-20: coref is opt-in). Only those Alternatives
+    // lists (ported and tested for the language: Spanish and French packages list coref too).
+    internal static readonly Dictionary<string, Dictionary<string, Dictionary<string, string>>> Optional =
+        SupportedPackages.ToDictionary(l => l.Key, l => l.Value
+            .Select(p => (Package: p, Models: StanzaResources.Optional(l.Key, p)
+                .Where(m => Alternatives.GetValueOrDefault(l.Key)?.GetValueOrDefault(m.Key)?.Contains(m.Value) == true)
+                .ToDictionary(m => m.Key, m => m.Value)))
+            .Where(p => p.Models.Count > 0)
+            .ToDictionary(p => p.Package, p => p.Models));
 
     // The shared files (pretrains, charlms) each supported model reads, by "<processor>/<model>": resources.json's
     // "dependencies", which the model's name doesn't tell (German ner conll03 reads charlms and its own pretrain). mwt, the
@@ -148,7 +156,7 @@ public sealed class Pipeline : IDisposable
     /// </summary>
     internal static IEnumerable<string> SupportedModels(string language) =>
         Packages[language].Values.Concat(Optional[language].Values).SelectMany(p => p)
-            .Concat(Alternatives[language].SelectMany(a => a.Value.Select(m => KeyValuePair.Create(a.Key, m))))
+            .Concat((Alternatives.GetValueOrDefault(language) ?? []).SelectMany(a => a.Value.Select(m => KeyValuePair.Create(a.Key, m))))
             .Where(m => m.Value != IdentityLemma)
             .Select(m => $"{m.Key}/{m.Value}")
             .Distinct();
@@ -223,7 +231,7 @@ public sealed class Pipeline : IDisposable
 
     /// <summary>The transformers <paramref name="models"/> of <paramref name="language"/> read (<see cref="Transformers"/>), each once.</summary>
     internal static List<string> TransformersOf(IReadOnlyDictionary<string, string> models, string language) =>
-        [.. models.Select(m => Transformers[language].GetValueOrDefault($"{m.Key}/{m.Value}")).OfType<string>().Distinct()];
+        [.. models.Select(m => Transformers.GetValueOrDefault(language)?.GetValueOrDefault($"{m.Key}/{m.Value}")).OfType<string>().Distinct()];
 
     // Stanza's processor dependencies (REQUIRES_DEFAULT); English pos also needs mwt to have run.
     internal static readonly Dictionary<string, string[]> Requires = new()
@@ -384,7 +392,7 @@ public sealed class Pipeline : IDisposable
         var transformers = TransformersOf(models, options.Language).ToDictionary(name => name,
             name => Start($"transformer/{name}", () => backend.Transformer(ModelDownloader.TransformerDirectory(modelDir, name), name)));
         TransformerEmbedder? TransformerOf(string processor) =>
-            Transformers[options.Language].TryGetValue(Name(processor), out var name) ? transformers[name].Result : null;
+            Transformers.GetValueOrDefault(options.Language)?.TryGetValue(Name(processor), out var name) == true ? transformers[name!].Result : null;
 
         // The pretrain and the charlms a processor's model reads, once loaded.
         Pretrain? PretrainIfAny(string processor) => dependencies[processor].Where(d => d.Kind == "pretrain").Select(d => pretrains[d.Key].Result).SingleOrDefault();

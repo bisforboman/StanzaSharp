@@ -9,6 +9,20 @@ default from 0.5) or through TorchSharp (see "Managed backend").
 - **Language:** English and German (`PipelineOptions.Language = "de"`, 2026-10-13; docs/german-plan.md, "Checkpoint
   findings (German)"). German runs every processor of `default`, `default_fast`, `combined`, `gsd` and `hdt` byte for
   byte on both backends.
+- **More languages** (owner's decisions, 2026-10-30: a European batch first, tables generated from resources.json, small
+  golden + nightly): Spanish (`es`, `default` only: its `default_fast` parser `depparse/combined_nocharlm.pt`, uploaded
+  2026-10-27, is truncated, so neither Stanza nor StanzaSharp loads it), French, Italian, Portuguese and Dutch (`default`
+  and `default_fast`), each Stanza's own package with no new model code. What they needed: Portuguese's `oscar2023`
+  charlms are saved by the charlm trainer (`{model, epoch, global_step}`; `Nn.CharlmCheckpoint.Model` unwraps it as
+  char_model.py's load does), and its `cintil_charlm` parser has a label `A'`, whose transition repr Python writes in
+  double quotes (`OpenConstituent(("A'",))`, `ConstituencyParser.OpenRepr`). Spanish and French packages list coref as
+  optional; `Optional` keeps only models `Alternatives` lists, so it is not offered there (untested). Golden:
+  `tests/golden/languages/<lang>/` (a hand-written `text.txt` per language and `<package>.conllu`, `make_golden.py
+  --languages-only`, `LANGUAGES`), `LanguageGoldenTests` (both backends); the models only in nightly.yml's `languages` job
+  (`tools/ci-models.sh download languages`, about 2.4 GB, no cache); ci.yml's shards leave the class out (`SHARD_NIGHTLY`)
+  and the other no-skip checks exempt it. A new language: `python tools/stanza_resources.py add LANG` (its entry and the
+  `Revisions` commit, the same day), a `SupportedPackages` line, its text and golden row, the `languages` group line;
+  run `stanzasharp compare` against Python Stanza first (it finds what breaks). `benchmark` has texts for en and de only.
 - **Processors:** all eight of Stanza's English default, in Stanza's order (`PIPELINE_NAMES`): tokenize,
   mwt, pos, lemma, constituency, depparse, sentiment, ner; plus the optional coref (after constituency; see "Coref"). This is `Pipeline.AllProcessors`, the default
   (user's decision, 2026-10-06: like Stanza; it costs about 36% more time than without ner and sentiment).
