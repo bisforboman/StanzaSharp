@@ -1,0 +1,27 @@
+# text = Министър-председателят пристигна вчера в София.
+# sent_id = 0
+1	Министър-председателят	министър-председател	NOUN	Ncmsf	Definite=Def|Gender=Masc|Number=Sing	2	nsubj	_	start_char=0|end_char=22|ner=O
+2	пристигна	пристигна	VERB	Vppif-o3s	Aspect=Perf|Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	start_char=23|end_char=32|ner=O
+3	вчера	вчера	ADV	Dt	Degree=Pos	2	advmod	_	start_char=33|end_char=38|ner=O
+4	в	в	ADP	R	_	5	case	_	start_char=39|end_char=40|ner=O
+5	София	софия	PROPN	Npfsi	Definite=Ind|Gender=Fem|Number=Sing	2	obl	_	SpaceAfter=No|start_char=41|end_char=46|ner=S-LOC
+6	.	.	PUNCT	punct	_	2	punct	_	start_char=46|end_char=47|ner=O
+
+# text = Той говори с журналистите за новия закон.
+# sent_id = 1
+1	Той	аз	PRON	Ppe-os3m	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=48|end_char=51|ner=O
+2	говори	говоря	VERB	Vpitf-r3s	Aspect=Imp|Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin|Voice=Act	0	root	_	start_char=52|end_char=58|ner=O
+3	с	с	ADP	R	_	4	case	_	start_char=59|end_char=60|ner=O
+4	журналистите	журналист	NOUN	Ncmpd	Definite=Def|Gender=Masc|Number=Plur	2	iobj	_	start_char=61|end_char=73|ner=O
+5	за	за	ADP	R	_	7	case	_	start_char=74|end_char=76|ner=O
+6	новия	нов	ADJ	Amsh	Definite=Def|Degree=Pos|Gender=Masc|Number=Sing	7	amod	_	start_char=77|end_char=82|ner=O
+7	закон	закон	NOUN	Ncmsi	Definite=Ind|Gender=Masc	4	nmod	_	SpaceAfter=No|start_char=83|end_char=88|ner=O
+8	.	.	PUNCT	punct	_	2	punct	_	SpacesAfter=\n\n|start_char=88|end_char=89|ner=O
+
+# text = Видях Мария в Пловдив.
+# sent_id = 2
+1	Видях	видя-(се)	VERB	Vpptf-o1s	Aspect=Perf|Mood=Ind|Number=Sing|Person=1|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	start_char=91|end_char=96|ner=O
+2	Мария	мария	PROPN	Npfsi	Definite=Ind|Gender=Fem|Number=Sing	1	obj	_	start_char=97|end_char=102|ner=S-PER
+3	в	в	ADP	R	_	4	case	_	start_char=103|end_char=104|ner=O
+4	Пловдив	пловдив	PROPN	Npmsi	Definite=Ind|Gender=Masc|Number=Sing	1	obl	_	SpaceAfter=No|start_char=105|end_char=112|ner=S-LOC
+5	.	.	PUNCT	punct	_	1	punct	_	SpacesAfter=\n|start_char=112|end_char=113|ner=O

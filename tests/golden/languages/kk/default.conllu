@@ -1,0 +1,25 @@
+# text = Премьер-министр кеше Астанаға келді.
+# sent_id = 0
+1	Премьер-министр	премьер-министр	NOUN	n	Case=Nom	4	nsubj	_	start_char=0|end_char=15|ner=S-POSITION
+2	кеше	кеше	ADV	adv	_	4	advmod	_	start_char=16|end_char=20|ner=S-DATE
+3	Астанаға	Астана	PROPN	np	Case=Dat	4	obl	_	start_char=21|end_char=29|ner=S-GPE
+4	келді	кел	VERB	v	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=30|end_char=35|ner=O
+5	.	.	PUNCT	sent	_	4	punct	_	start_char=35|end_char=36|ner=O
+
+# text = Ол журналистермен жаңа заң туралы сөйлесті.
+# sent_id = 1
+1	Ол	ол	PRON	prn	Case=Nom|Number=Sing|Person=3|PronType=Prs	6	nsubj	_	start_char=37|end_char=39|ner=O
+2	журналистермен	журналис	NOUN	n	Case=Ins|Number=Plur	6	obl	_	start_char=40|end_char=54|ner=O
+3	жаңа	жаңа	ADJ	adj	_	4	amod	_	start_char=55|end_char=59|ner=O
+4	заң	заң	NOUN	n	Case=Nom	6	obl	_	start_char=60|end_char=63|ner=O
+5	туралы	туралы	ADP	post	_	4	case	_	start_char=64|end_char=70|ner=O
+6	сөйлесті	сөйлес	VERB	v	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=71|end_char=79|ner=O
+7	.	.	PUNCT	sent	_	6	punct	_	SpacesAfter=\n\n|start_char=79|end_char=80|ner=O
+
+# text = Мен Айгүлді Алматыда көрдім.
+# sent_id = 2
+1	Мен	мен	PRON	prn	Case=Nom|Number=Sing|Person=1|PronType=Prs	4	nsubj	_	start_char=82|end_char=85|ner=O
+2	Айгүлді	Айгүл	PROPN	np	Case=Acc|Gender=Fem	4	obj	_	start_char=86|end_char=93|ner=S-PERSON
+3	Алматыда	Алматы	PROPN	np	Case=Loc	4	obl	_	start_char=94|end_char=102|ner=S-GPE
+4	көрдім	көр	VERB	v	Mood=Ind|Number=Sing|Person=1|Tense=Past|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=103|end_char=109|ner=O
+5	.	.	PUNCT	sent	_	4	punct	_	SpacesAfter=\n|start_char=109|end_char=110|ner=O

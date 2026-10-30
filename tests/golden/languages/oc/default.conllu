@@ -1,0 +1,23 @@
+# text = Lo president es arribat ièr a Tolosa.
+# sent_id = 0
+1	Lo	lo	DET	Da	_	2	det	_	start_char=0|end_char=2
+2	president	president	NOUN	Nc	_	4	nsubj	_	start_char=3|end_char=12
+3	es	èsser	AUX	Vm	_	4	aux	_	start_char=13|end_char=15
+4	arribat	arribar	VERB	Vm	_	0	root	_	start_char=16|end_char=23
+5	ièr	ièr	VERB	Vm	_	4	xcomp	_	start_char=24|end_char=27
+6	a	a	ADP	Sp	_	7	case	_	start_char=28|end_char=29
+7	Tolosa	Tolosa	PROPN	Np	_	5	obl	_	SpaceAfter=No|start_char=30|end_char=36
+8	.	.	PUNCT	F	_	7	punct	_	start_char=36|end_char=37
+
+# text = A parlat amb los jornalistas de la lei novèla.
+# sent_id = 1
+1	A	a	AUX	Va	_	2	aux	_	start_char=38|end_char=39
+2	parlat	parlar	VERB	Vm	_	0	root	_	start_char=40|end_char=46
+3	amb	amb	ADP	Sp	_	5	case	_	start_char=47|end_char=50
+4	los	lo	DET	Da	_	5	det	_	start_char=51|end_char=54
+5	jornalistas	jornalista	NOUN	Nc	_	2	obl	_	start_char=55|end_char=66
+6	de	de	ADP	Sp	_	8	case	_	start_char=67|end_char=69
+7	la	lo	DET	Da	_	8	det	_	start_char=70|end_char=72
+8	lei	lo	NOUN	Nc	_	5	nmod	_	start_char=73|end_char=76
+9	novèla	novèl	ADJ	Af	_	8	amod	_	SpaceAfter=No|start_char=77|end_char=83
+10	.	.	PUNCT	F	_	9	punct	_	SpacesAfter=\n|start_char=83|end_char=84

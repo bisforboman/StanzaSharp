@@ -1,0 +1,20 @@
+# text = Thàinig am Prìomh Mhinistear a Dhùn Èideann an-dè.
+# sent_id = 0
+1	Thàinig	thig	VERB	V-s	Mood=Ind|Tense=Past|VerbForm=Fin	0	root	_	start_char=0|end_char=7
+2	am	an	DET	Tdsm	Definite=Def|Gender=Masc|Number=Sing|PronType=Art	4	det	_	start_char=8|end_char=10
+3	Prìomh	prìomh	ADJ	Ar	_	4	amod	_	start_char=11|end_char=17
+4	Mhinistear	ministear	NOUN	Ncsmn	Case=Nom|Gender=Masc|Number=Sing	1	nsubj	_	start_char=18|end_char=28
+5	a	a	ADP	Sp	_	6	case	_	start_char=29|end_char=30
+6	Dhùn	Dùn	PROPN	Nt	NounType=Top	4	nmod	_	start_char=31|end_char=35
+7	Èideann	Èideann	PROPN	Nt	NounType=Top	6	flat:name	_	start_char=36|end_char=43
+8	an-dè	an-dè	ADV	Rt	AdvType=Tim	1	advmod	_	SpaceAfter=No|start_char=44|end_char=49
+9	.	.	PUNCT	Fe	_	1	punct	_	start_char=49|end_char=50
+
+# text = Bhruidhinn e ris na naidheachdairean.
+# sent_id = 1
+1	Bhruidhinn	bruidhinn	VERB	V-s	Mood=Ind|Tense=Past|VerbForm=Fin	0	root	_	start_char=51|end_char=61
+2	e	e	PRON	Pp3sm	Gender=Masc|Number=Sing|Person=3|PronType=Prs	1	nsubj	_	start_char=62|end_char=63
+3	ris	ri	ADP	Sp	_	5	case	_	start_char=64|end_char=67
+4	na	an	DET	Tdpm	Definite=Def|Gender=Masc|Number=Plur|PronType=Art	5	det	_	start_char=68|end_char=70
+5	naidheachdairean	naidheachdair	NOUN	Ncpmd	Case=Dat|Gender=Masc|Number=Plur	1	obl	_	SpaceAfter=No|start_char=71|end_char=87
+6	.	.	PUNCT	Fe	_	1	punct	_	SpacesAfter=\n|start_char=87|end_char=88

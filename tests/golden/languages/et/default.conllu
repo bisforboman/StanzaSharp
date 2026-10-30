@@ -1,0 +1,16 @@
+# text = Peaminister saabus eile Tallinna.
+# sent_id = 0
+1	Peaminister	pea_minister	NOUN	S	Case=Nom|Number=Sing	2	nsubj	_	start_char=0|end_char=11
+2	saabus	saabuma	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	start_char=12|end_char=18
+3	eile	eile	ADV	D	_	2	advmod:tmod	_	start_char=19|end_char=23
+4	Tallinna	Tallinn	PROPN	S	Case=Add|Number=Sing	2	obl:lmod	_	SpaceAfter=No|start_char=24|end_char=32
+5	.	.	PUNCT	Z	_	2	punct	_	start_char=32|end_char=33
+
+# text = Ta rääkis ajakirjanikega uuest seadusest.
+# sent_id = 1
+1	Ta	tema	PRON	P	Case=Nom|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=34|end_char=36
+2	rääkis	rääkima	VERB	V	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	start_char=37|end_char=43
+3	ajakirjanikega	aja_kirjanik	NOUN	S	Case=Com|Number=Plur	2	obl	_	start_char=44|end_char=58
+4	uuest	uus	ADJ	A	Case=Ela|Degree=Pos|Number=Sing	5	amod	_	start_char=59|end_char=64
+5	seadusest	seadus	NOUN	S	Case=Ela|Number=Sing	2	obl:arg	_	SpaceAfter=No|start_char=65|end_char=74
+6	.	.	PUNCT	Z	_	2	punct	_	SpacesAfter=\n|start_char=74|end_char=75

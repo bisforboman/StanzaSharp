@@ -60,8 +60,11 @@ public class LanguageTests
     [Fact]
     public void UnknownLanguagesAndPackagesThrowWithTheSupportedList()
     {
-        var ex = Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor(null, "default", "options", "ja"));
+        var ex = Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor(null, "default", "options", "xx"));
         Assert.Contains("en, de, es, fr, it, pt, nl", ex.Message);
+
+        // a Stanza language whose models need code StanzaSharp doesn't have yet (its tokenizer's extra features)
+        Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor(null, "default", "options", "ja"));
         Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor(null, "default", "options", "DE"));
         Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor(null, "default", "options", null!));
 
@@ -86,7 +89,7 @@ public class LanguageTests
     {
         // Options are checked before anything loads, as for English.
         Assert.Throws<ArgumentException>(() => Pipeline.Load(Repo.Root, new PipelineOptions { Language = "de", Package = "ewt" }));
-        Assert.Throws<ArgumentException>(() => Pipeline.Load(Repo.Root, new PipelineOptions { Language = "ja" }));
+        Assert.Throws<ArgumentException>(() => Pipeline.Load(Repo.Root, new PipelineOptions { Language = "xx" }));
         Assert.Throws<ArgumentException>(() => Pipeline.Load(Repo.Root, new PipelineOptions { Language = "de", Package = "gsd", Processors = "tokenize,ner" }));
     }
 

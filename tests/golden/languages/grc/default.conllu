@@ -1,0 +1,24 @@
+# text = Ἐν ἀρχῇ ἦν ὁ λόγος, καὶ ὁ λόγος ἦν πρὸς τὸν θεόν.
+# sent_id = 0
+1	Ἐν	Ἐν	ADP	r--------	_	2	case	_	start_char=0|end_char=2
+2	ἀρχῇ	ἀρχή	NOUN	n-s---fd-	Case=Dat|Gender=Fem|Number=Sing	0	root	_	start_char=3|end_char=7
+3	ἦν	εἰμί	AUX	v3siia---	Aspect=Imp|Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin|Voice=Act	2	cop	_	start_char=8|end_char=10
+4	ὁ	ὁ	DET	l-s---mn-	Case=Nom|Gender=Masc|Number=Sing	5	det	_	start_char=11|end_char=12
+5	λόγος	λόγος	NOUN	n-s---mn-	Case=Nom|Gender=Masc|Number=Sing	2	nsubj	_	SpaceAfter=No|start_char=13|end_char=18
+6	,	,	PUNCT	u--------	_	7	punct	_	start_char=18|end_char=19
+7	καὶ	καί	CCONJ	c--------	_	2	cc	_	start_char=20|end_char=23
+8	ὁ	ὁ	DET	l-s---mn-	Case=Nom|Gender=Masc|Number=Sing	9	det	_	start_char=24|end_char=25
+9	λόγος	λόγος	NOUN	n-s---mn-	Case=Nom|Gender=Masc|Number=Sing	5	conj	_	start_char=26|end_char=31
+10	ἦν	εἰμί	AUX	v3siia---	Aspect=Imp|Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin|Voice=Act	2	cop	_	start_char=32|end_char=34
+11	πρὸς	πρός	ADP	r--------	_	13	case	_	start_char=35|end_char=39
+12	τὸν	ὁ	DET	l-s---ma-	Case=Acc|Gender=Masc|Number=Sing	13	det	_	start_char=40|end_char=43
+13	θεόν	θεός	NOUN	n-s---ma-	Case=Acc|Gender=Masc|Number=Sing	2	conj	_	SpaceAfter=No|start_char=44|end_char=48
+14	.	.	PUNCT	u--------	_	2	punct	_	start_char=48|end_char=49
+
+# text = Οὗτος ἦν ἐν ἀρχῇ.
+# sent_id = 1
+1	Οὗτος	Οὗτος	ADJ	a-s---mn-	Case=Nom|Gender=Masc|Number=Sing	4	nsubj	_	start_char=50|end_char=55
+2	ἦν	εἰμί	AUX	v3siia---	Aspect=Imp|Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin|Voice=Act	4	cop	_	start_char=56|end_char=58
+3	ἐν	ἐν	ADP	r--------	_	4	case	_	start_char=59|end_char=61
+4	ἀρχῇ	ἀρχή	NOUN	n-s---fd-	Case=Dat|Gender=Fem|Number=Sing	0	root	_	SpaceAfter=No|start_char=62|end_char=66
+5	.	.	PUNCT	u--------	_	4	punct	_	SpacesAfter=\n|start_char=66|end_char=67

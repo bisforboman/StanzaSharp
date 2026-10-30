@@ -1,0 +1,23 @@
+# text = Tháinig an Taoiseach go Baile Átha Cliath inné.
+# sent_id = 0
+1	Tháinig	tar	VERB	VI	Form=Len|Mood=Ind|Tense=Past	0	root	_	start_char=0|end_char=7
+2	an	an	DET	Art	Definite=Def|Number=Sing|PronType=Art	3	det	_	start_char=8|end_char=10
+3	Taoiseach	taoiseach	PROPN	Noun	Definite=Def|Gender=Masc|Number=Sing	1	nsubj	_	start_char=11|end_char=20
+4	go	go	ADP	Simp	_	5	case	_	start_char=21|end_char=23
+5	Baile	Baile	PROPN	Noun	Definite=Def|Gender=Masc|Number=Sing	1	obl	_	start_char=24|end_char=29
+6	Átha	áth	PROPN	Noun	Case=Gen|Definite=Def|Gender=Masc|Number=Sing	5	nmod	_	start_char=30|end_char=34
+7	Cliath	cliath	PROPN	Noun	Case=Gen|Definite=Def|Gender=Fem|NounType=Weak|Number=Plur	6	nmod	_	start_char=35|end_char=41
+8	inné	inné	ADV	Dir	_	1	advmod	_	SpaceAfter=No|start_char=42|end_char=46
+9	.	.	PUNCT	.	_	1	punct	_	start_char=46|end_char=47
+
+# text = Labhair sé leis na hiriseoirí faoin dlí nua.
+# sent_id = 1
+1	Labhair	labhair	VERB	VTI	Mood=Ind|Tense=Past	0	root	_	start_char=48|end_char=55
+2	sé	sé	PRON	Pers	Gender=Masc|Number=Sing|Person=3	1	nsubj	_	start_char=56|end_char=58
+3	leis	le	ADP	Simp	_	5	case	_	start_char=59|end_char=63
+4	na	an	DET	Art	Definite=Def|Number=Plur|PronType=Art	5	det	_	start_char=64|end_char=66
+5	hiriseoirí	iriseoir	NOUN	Noun	Case=Nom|Definite=Def|Form=HPref|Gender=Masc|Number=Plur	1	obl	_	start_char=67|end_char=77
+6	faoin	faoi	ADP	Art	Number=Sing|PronType=Art	7	case	_	start_char=78|end_char=83
+7	dlí	dlí	NOUN	Noun	Case=Nom|Definite=Def|Gender=Masc|Number=Sing	1	obl	_	start_char=84|end_char=87
+8	nua	nua	ADJ	Adj	Case=Nom|Gender=Masc|Number=Sing	7	amod	_	SpaceAfter=No|start_char=88|end_char=91
+9	.	.	PUNCT	.	_	1	punct	_	SpacesAfter=\n|start_char=91|end_char=92

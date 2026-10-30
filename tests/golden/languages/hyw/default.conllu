@@ -1,0 +1,18 @@
+# text = Վարչապետը երէկ հասաւ Պէյրութ։
+# sent_id = 0
+1	Վարչապետը	վարչապետ	NOUN	_	Animacy=Hum|Case=Nom|Definite=Def|Number=Sing	3	nsubj	_	start_char=0|end_char=9
+2	երէկ	երէկ	ADV	_	_	3	advmod	_	start_char=10|end_char=14
+3	հասաւ	հասնիլ	VERB	_	Aspect=Perf|Mood=Ind|Number=Sing|Person=3|Polarity=Pos|Subcat=Intr|Tense=Past|VerbForm=Fin|Voice=Mid	0	root	_	start_char=15|end_char=20
+4	Պէյրութ	Պէյրութ	PROPN	_	Animacy=Nhum|Case=Nom|Definite=Ind|NameType=Geo|Number=Sing	3	obl	_	SpaceAfter=No|start_char=21|end_char=28
+5	։	։	PUNCT	_	_	3	punct	_	start_char=28|end_char=29
+
+# text = Ան լրագրողներուն հետ խօսեցաւ նոր օրէնքին մասին։
+# sent_id = 1
+1	Ան	ան	PRON	_	Case=Nom|Number=Sing|Person=3|PronType=Prs	4	nsubj	_	start_char=30|end_char=32
+2	լրագրողներուն	լրագրող	NOUN	_	Animacy=Hum|Case=Dat|Definite=Def|Number=Plur	4	obl	_	start_char=33|end_char=46
+3	հետ	հետ	ADP	_	AdpType=Post	2	case	_	start_char=47|end_char=50
+4	խօսեցաւ	խօսիլ	VERB	_	Aspect=Perf|Mood=Ind|Number=Sing|Person=3|Polarity=Pos|Subcat=Intr|Tense=Past|VerbForm=Fin|Voice=Mid	0	root	_	start_char=51|end_char=58
+5	նոր	նոր	ADJ	_	Degree=Pos	6	amod	_	start_char=59|end_char=62
+6	օրէնքին	օրէնք	NOUN	_	Animacy=Nhum|Case=Dat|Definite=Def|Number=Sing	4	obl	_	start_char=63|end_char=70
+7	մասին	մասին	ADP	_	AdpType=Post	6	case	_	SpaceAfter=No|start_char=71|end_char=76
+8	։	։	PUNCT	_	_	4	punct	_	SpacesAfter=\n|start_char=76|end_char=77

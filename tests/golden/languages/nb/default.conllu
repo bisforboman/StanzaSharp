@@ -1,0 +1,30 @@
+# text = Statsministeren kom til Oslo i går.
+# sent_id = 0
+1	Statsministeren	statsminister	NOUN	subst	Definite=Def|Gender=Masc|Number=Sing	2	nsubj	_	start_char=0|end_char=15|ner=O
+2	kom	komme	VERB	verb	Mood=Ind|Tense=Past|VerbForm=Fin	0	root	_	start_char=16|end_char=19|ner=O
+3	til	til	ADP	prep	_	4	case	_	start_char=20|end_char=23|ner=O
+4	Oslo	Oslo	PROPN	subst	_	2	obl	_	start_char=24|end_char=28|ner=S-GPE
+5	i	i	ADP	prep	_	6	case	_	start_char=29|end_char=30|ner=O
+6	går	går	NOUN	subst	_	2	obl	_	SpaceAfter=No|start_char=31|end_char=34|ner=O
+7	.	$.	PUNCT	clb	_	2	punct	_	start_char=34|end_char=35|ner=O
+
+# text = Hun snakket med journalistene om den nye loven.
+# sent_id = 1
+1	Hun	hun	PRON	pron	Animacy=Hum|Case=Nom|Gender=Fem|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=36|end_char=39|ner=O
+2	snakket	snakke	VERB	verb	Mood=Ind|Tense=Past|VerbForm=Fin	0	root	_	start_char=40|end_char=47|ner=O
+3	med	med	ADP	prep	_	4	case	_	start_char=48|end_char=51|ner=O
+4	journalistene	journalist	NOUN	subst	Definite=Def|Gender=Masc|Number=Plur	2	obl	_	start_char=52|end_char=65|ner=O
+5	om	om	ADP	prep	_	8	case	_	start_char=66|end_char=68|ner=O
+6	den	den	DET	det	Gender=Masc|Number=Sing|PronType=Art	8	det	_	start_char=69|end_char=72|ner=O
+7	nye	ny	ADJ	adj	Definite=Def|Degree=Pos|Number=Sing	8	amod	_	start_char=73|end_char=76|ner=O
+8	loven	lov	NOUN	subst	Definite=Def|Gender=Masc|Number=Sing	4	nmod	_	SpaceAfter=No|start_char=77|end_char=82|ner=O
+9	.	$.	PUNCT	clb	_	2	punct	_	SpacesAfter=\n\n|start_char=82|end_char=83|ner=O
+
+# text = Jeg så Kari i Bergen.
+# sent_id = 2
+1	Jeg	jeg	PRON	pron	Animacy=Hum|Case=Nom|Number=Sing|Person=1|PronType=Prs	2	nsubj	_	start_char=85|end_char=88|ner=O
+2	så	se	VERB	verb	Mood=Ind|Tense=Past|VerbForm=Fin	0	root	_	start_char=89|end_char=91|ner=O
+3	Kari	Kari	PROPN	subst	Gender=Fem	2	obj	_	start_char=92|end_char=96|ner=S-PER
+4	i	i	ADP	prep	_	5	case	_	start_char=97|end_char=98|ner=O
+5	Bergen	Bergen	PROPN	subst	_	2	obl	_	SpaceAfter=No|start_char=99|end_char=105|ner=S-GPE
+6	.	$.	PUNCT	clb	_	2	punct	_	SpacesAfter=\n|start_char=105|end_char=106|ner=O

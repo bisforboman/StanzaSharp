@@ -1,0 +1,24 @@
+# text = Il-Prim Ministru wasal il-Belt Valletta lbieraħ.
+# sent_id = 0
+1	Il-	Il-	DET	DEF	_	3	det	_	SpaceAfter=No|start_char=0|end_char=3
+2	Prim	Prim	ADJ	ADJ	_	3	amod	_	start_char=3|end_char=7
+3	Ministru	Ministru	NOUN	NOUN	_	4	nsubj	_	start_char=8|end_char=16
+4	wasal	wasal	VERB	VERB	_	0	root	_	start_char=17|end_char=22
+5	il-	il-	DET	DEF	_	6	det	_	SpaceAfter=No|start_char=23|end_char=26
+6	Belt	Belt	NOUN	NOUN	_	7	compound	_	start_char=26|end_char=30
+7	Valletta	Valletta	PROPN	NOUN_PROP	_	4	obj	_	start_char=31|end_char=39
+8	lbieraħ	lbieraħ	ADV	ADV	_	4	advmod	_	SpaceAfter=No|start_char=40|end_char=47
+9	.	.	PUNCT	X_PUN	_	4	punct	_	start_char=47|end_char=48
+
+# text = Huwa tkellem mal-ġurnalisti dwar il-liġi l-ġdida.
+# sent_id = 1
+1	Huwa	Huwa	PRON	PRON_PERS	_	2	nsubj	_	start_char=49|end_char=53
+2	tkellem	tkellem	VERB	VERB	_	0	root	_	start_char=54|end_char=61
+3	mal-	mal-	ADP	PREP_DEF	_	4	case:det	_	SpaceAfter=No|start_char=62|end_char=66
+4	ġurnalisti	ġurnalisti	NOUN	NOUN	_	2	obl:arg	_	start_char=66|end_char=76
+5	dwar	dwar	ADP	PREP	_	7	case	_	start_char=77|end_char=81
+6	il-	il-	DET	DEF	_	7	det	_	SpaceAfter=No|start_char=82|end_char=85
+7	liġi	liġi	NOUN	NOUN	_	4	nmod	_	start_char=85|end_char=89
+8	l-	l-	DET	DEF	_	9	det	_	SpaceAfter=No|start_char=90|end_char=92
+9	ġdida	ġdida	ADJ	ADJ	_	7	amod	_	SpaceAfter=No|start_char=92|end_char=97
+10	.	.	PUNCT	X_PUN	_	2	punct	_	SpacesAfter=\n|start_char=97|end_char=98

@@ -7,8 +7,9 @@ name: Nightly
 #   auto-merged Dependabot update would otherwise reach main without the full suite (owner's decision, 2026-10-29);
 # - fuzz: the checkpoint fuzz over every Stanza checkpoint with ten times CI's iterations, and tools/text_fuzz.py
 #   (generated texts, Stanza against StanzaSharp; docs/text-fuzzing.md), each night with another seed;
-# - languages: the languages with only tests/golden/languages/ (es, fr, it, pt, nl; owner's decision, 2026-10-30), whose
-#   models no other job downloads: LanguageGoldenTests on both backends, the models downloaded on every run (no cache);
+# - languages: the languages with only tests/golden/languages/ (owner's decisions, 2026-10-30), whose models no other job
+#   downloads: LanguageGoldenTests on both backends, tools/test-languages.sh downloading, testing and deleting them a batch
+#   at a time (about 25 GB, no cache); a dispatch with languages_only runs just this job;
 # - benchmark: benchmark.yml's runner matrix in quick mode (no avx512 jobs), for the numbers' trend.
 # A failure comments on the open issue "Nightly run failed" (made if there is none); a person closes it once fixed.
 # Never a required check; it runs on main's latest commit, so release.yml (which waits for main's push run) never sees it.
@@ -17,6 +18,11 @@ on:
   schedule:
     - cron: '0 1 * * *' # 01:00 UTC: 02:00/03:00 in Stockholm
   workflow_dispatch:
+    inputs:
+      languages_only:
+        description: Run only the languages job (to check a language change without the whole nightly)
+        type: boolean
+        default: false
 
 concurrency:
   group: nightly
@@ -33,6 +39,7 @@ env:
 jobs:
   # Whether main's commit had its own ci.yml push run (a cancelled one doesn't count).
   main-ci:
+    if: ${{ !inputs.languages_only }}
     runs-on: ubuntu-26.04
     outputs:
       shards: ${{ steps.runs.outputs.shards }}
@@ -53,6 +60,7 @@ jobs:
       golden_shards: ${{ needs.main-ci.outputs.shards }}
 
   fuzz:
+    if: ${{ !inputs.languages_only }}
     timeout-minutes: 150
     runs-on: ubuntu-26.04
     steps:
@@ -139,7 +147,7 @@ jobs:
           if-no-files-found: ignore
 
   languages:
-    timeout-minutes: 60
+    timeout-minutes: 180
     runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
@@ -158,25 +166,21 @@ jobs:
           dotnet build StanzaSharp.slnx -c Release
           dotnet build samples/StanzaSharp.Cli -c Release
 
-      # About 2.4 GB from Hugging Face, with one retry.
-      - name: Download the models
-        run: tools/ci-models.sh download languages || { sleep 30; tools/ci-models.sh download languages; }
-
-      - name: Test
+      # Every language of tests/golden/languages, 8 at a time: download (with retries), test both backends, delete.
+      - name: Test every language
         run: |
           if [ "$RUNNER_ARCH" = X64 ]; then export ATEN_CPU_CAPABILITY=default MKL_CBWR=COMPATIBLE,STRICT; fi
-          dotnet test tests/StanzaSharp.Tests -c Release --no-build --blame-hang-timeout 30m --blame-hang-dump-type none --logger trx --results-directory TestResults --filter "FullyQualifiedName~LanguageGoldenTests"
-          if grep -q 'outcome="NotExecuted"' TestResults/*.trx; then echo "::error::Tests were skipped: a language's models were not found."; exit 1; fi
-          if ! grep -q '<UnitTestResult ' TestResults/*.trx; then echo "::error::No test ran."; exit 1; fi
+          tools/test-languages.sh
 
       - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: test-results-languages
-          path: TestResults/*.trx
+          path: TestResults/**/*.trx
           if-no-files-found: ignore
 
   benchmark:
+    if: ${{ !inputs.languages_only }}
     uses: ./.github/workflows/benchmark.yml
     with:
       quick: true

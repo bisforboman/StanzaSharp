@@ -1,0 +1,30 @@
+# text = प्रधानमंत्री कल दिल्ली पहुँचे।
+# sent_id = 0
+1	प्रधानमंत्री	प्रधानमंत्री	PROPN	NNP	Case=Nom|Gender=Masc|Number=Sing|Person=3	4	nsubj	_	start_char=0|end_char=12|ner=O
+2	कल	कल	NOUN	NN	Case=Nom|Gender=Masc|Number=Sing|Person=3	4	obl	_	start_char=13|end_char=15|ner=O
+3	दिल्ली	दिल्ली	PROPN	NNP	Case=Nom|Gender=Fem|Number=Sing|Person=3	4	obl	_	start_char=16|end_char=22|ner=S-NEL
+4	पहुँचे	पहुँचना	VERB	VM	Aspect=Perf|Gender=Masc|Number=Sing|Person=3|Polite=Form|VerbForm=Part|Voice=Act	0	root	_	SpaceAfter=No|start_char=23|end_char=29|ner=O
+5	।	।	PUNCT	SYM	_	4	punct	_	start_char=29|end_char=30|ner=O
+
+# text = उन्होंने पत्रकारों से नए कानून के बारे में बात की।
+# sent_id = 1
+1	उन्होंने	वह	PRON	PRP	Case=Acc,Erg|Number=Sing|Person=3|Polite=Form|PronType=Prs	10	nsubj	_	start_char=31|end_char=39|ner=O
+2	पत्रकारों	पत्रकार	NOUN	NN	Case=Acc|Gender=Masc|Number=Plur|Person=3	10	iobj	_	start_char=40|end_char=49|ner=O
+3	से	से	ADP	PSP	AdpType=Post	2	case	_	start_char=50|end_char=52|ner=O
+4	नए	नया	ADJ	JJ	Case=Acc|Gender=Masc|Number=Sing	5	amod	_	start_char=53|end_char=55|ner=O
+5	कानून	कानून	NOUN	NN	Case=Acc|Gender=Masc|Number=Sing|Person=3	10	obl	_	start_char=56|end_char=61|ner=O
+6	के	का	ADP	PSP	AdpType=Post	5	case	_	start_char=62|end_char=64|ner=O
+7	बारे	बारे	ADP	PSP	AdpType=Post	5	case	_	start_char=65|end_char=69|ner=O
+8	में	में	ADP	PSP	AdpType=Post	5	case	_	start_char=70|end_char=73|ner=O
+9	बात	बात	NOUN	NN	Case=Nom|Gender=Fem|Number=Sing|Person=3	10	compound	_	start_char=74|end_char=77|ner=O
+10	की	करना	VERB	VM	Aspect=Perf|Gender=Fem|Number=Sing|VerbForm=Part|Voice=Act	0	root	_	SpaceAfter=No|start_char=78|end_char=80|ner=O
+11	।	।	PUNCT	SYM	_	10	punct	_	SpacesAfter=\n\n|start_char=80|end_char=81|ner=O
+
+# text = मैंने राम को मुंबई में देखा।
+# sent_id = 2
+1	मैंने	मैं	PRON	PRP	Case=Acc,Erg|Number=Sing|Person=1|PronType=Prs	6	nsubj	_	start_char=83|end_char=88|ner=O
+2	राम	राम	PROPN	NNP	Case=Acc|Gender=Masc|Number=Sing|Person=3	6	obj	_	start_char=89|end_char=92|ner=S-NEP
+3	को	को	ADP	PSP	AdpType=Post	2	case	_	start_char=93|end_char=95|ner=O
+4	मुंबई	मुंबई	PROPN	NNP	Case=Acc|Gender=Fem|Number=Sing|Person=3	6	obl	_	start_char=96|end_char=101|ner=S-NEL
+5	में	में	ADP	PSP	AdpType=Post	4	case	_	start_char=102|end_char=105|ner=O
+6	देखा।	देखना	VERB	VM	Aspect=Perf|Gender=Masc|Number=Sing|VerbForm=Part|Voice=Act	0	root	_	SpacesAfter=\n|start_char=106|end_char=111|ner=O

@@ -1,0 +1,16 @@
+# text = ਮੁੱਖ ਮੰਤਰੀ ਕੱਲ੍ਹ ਚੰਡੀਗੜ੍ਹ ਪਹੁੰਚੇ। ਉਨ੍ਹਾਂ ਨੇ ਪੱਤਰਕਾਰਾਂ ਨਾਲ ਨਵੇਂ ਕਾਨੂੰਨ ਬਾਰੇ ਗੱਲ ਕੀਤੀ।
+# sent_id = 0
+1	ਮੁੱਖ	ਮੁੱਖ	NOUN	_	_	14	obl	_	start_char=0|end_char=4
+2	ਮੰਤਰੀ	ਮੰਤਰੀ	NOUN	_	_	14	obl	_	start_char=5|end_char=10
+3	ਕੱਲ੍ਹ	ਕੱਲ੍ਹ	NOUN	_	_	14	obl	_	start_char=11|end_char=16
+4	ਚੰਡੀਗੜ੍ਹ	ਚੰਡੀਗੜ੍ਹ	NOUN	_	_	7	obl	_	start_char=17|end_char=25
+5	ਪਹੁੰਚੇ।	ਪਹੁੰਚੇ।	NOUN	_	Gender=Fem	7	obl	_	start_char=26|end_char=33
+6	ਉਨ੍ਹਾਂ	ਉਨ੍ਹਾਂ	NOUN	_	Gender=Fem	7	obl	_	start_char=34|end_char=40
+7	ਨੇ	ਨੇ	VERB	_	Aspect=Perf|VerbForm=Part	14	advcl	_	start_char=41|end_char=43
+8	ਪੱਤਰਕਾਰਾਂ	ਪੱਤਰਕਾਰਾਂ	ADJ	_	Degree=Pos	12	amod	_	start_char=44|end_char=53
+9	ਨਾਲ	ਨਾਲ	ADJ	_	Degree=Pos	12	amod	_	start_char=54|end_char=57
+10	ਨਵੇਂ	ਨਵੇਂ	ADJ	_	Degree=Pos	12	amod	_	start_char=58|end_char=62
+11	ਕਾਨੂੰਨ	ਕਾਨੂੰਨ	ADJ	_	Degree=Pos	12	amod	_	start_char=63|end_char=69
+12	ਬਾਰੇ	ਬਾਰੇ	NOUN	_	Gender=Masc|Number=Sing	14	obj	_	start_char=70|end_char=74
+13	ਗੱਲ	ਗੱਲ	NOUN	_	Gender=Masc|Number=Sing	14	obj	_	start_char=75|end_char=78
+14	ਕੀਤੀ।	ਕੀਤੀ।	VERB	_	Aspect=Imp|VerbForm=Part	0	root	_	SpacesAfter=\n|start_char=79|end_char=84

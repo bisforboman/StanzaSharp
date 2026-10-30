@@ -1,0 +1,20 @@
+# text = Haink y Prish-Shirveishagh gys Doolish jea.
+# sent_id = 0
+1	Haink	tar	VERB	_	Form=Len|Mood=Ind|Tense=Past	0	root	_	start_char=0|end_char=5
+2	y	yn	DET	_	Definite=Def|Number=Sing|PronType=Art	3	det	_	start_char=6|end_char=7
+3	Prish-Shirveishagh	Prish-Shirveishagh	PROPN	_	_	1	nsubj	_	start_char=8|end_char=26
+4	gys	gys	ADP	_	_	5	case	_	start_char=27|end_char=30
+5	Doolish	Doolish	PROPN	_	_	1	obl	_	start_char=31|end_char=38
+6-7	jea	_	_	_	_	_	_	_	SpaceAfter=No|start_char=39|end_char=42
+6	jeh	jeh	ADP	_	_	7	case	_	_
+7	eh	eh	PRON	_	Gender=Masc|Number=Sing|Person=3	1	obl	_	_
+8	.	.	PUNCT	_	_	1	punct	_	start_char=42|end_char=43
+
+# text = Loayr eh rish ny naightyn.
+# sent_id = 1
+1	Loayr	loayr	VERB	_	Mood=Ind|Tense=Past	0	root	_	start_char=44|end_char=49
+2	eh	eh	PRON	_	Gender=Masc|Number=Sing|Person=3	1	nsubj	_	start_char=50|end_char=52
+3	rish	rish	ADP	_	_	5	case	_	start_char=53|end_char=57
+4	ny	yn	DET	_	Definite=Def|Number=Plur|PronType=Art	5	det	_	start_char=58|end_char=60
+5	naightyn	naightyn	NOUN	_	_	1	obl	_	SpaceAfter=No|start_char=61|end_char=69
+6	.	.	PUNCT	_	_	1	punct	_	SpacesAfter=\n|start_char=69|end_char=70

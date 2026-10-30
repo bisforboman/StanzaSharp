@@ -1,0 +1,16 @@
+# text = Отьче нашь иже еси на небесѣхъ.
+# sent_id = 0
+1	Отьче	отьць	NOUN	Nb	Case=Voc|Gender=Masc|Number=Sing	0	root	_	start_char=0|end_char=5
+2	нашь	нашь	DET	Ps	Case=Nom|Gender=Masc|Number=Sing|Person=1|Poss=Yes	1	det	_	start_char=6|end_char=10
+3	иже	иже	PRON	Pr	Case=Nom|Gender=Masc|Number=Sing|PronType=Rel	6	nsubj	_	start_char=11|end_char=14
+4	еси	бꙑти	AUX	V-	Mood=Ind|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin|Voice=Act	6	cop	_	start_char=15|end_char=18
+5	на	на	ADP	R-	_	6	case	_	start_char=19|end_char=21
+6	небесѣхъ.	небо	NOUN	Nb	Case=Loc|Gender=Neut|Number=Plur	1	acl	_	start_char=22|end_char=31
+
+# text = Да свѧтитъ сѧ имѧ твоѥ.
+# sent_id = 1
+1	Да	да	ADV	Df	_	2	advmod	_	start_char=32|end_char=34
+2	свѧтитъ	свѧтити	VERB	V-	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin|Voice=Act	0	root	_	start_char=35|end_char=42
+3	сѧ	себе	PRON	Pk	Case=Acc|Number=Sing|Person=3|PronType=Prs|Reflex=Yes	2	expl:pv	_	start_char=43|end_char=45
+4	имѧ	имѧ	NOUN	Nb	Case=Nom|Gender=Neut|Number=Sing	2	nsubj	_	start_char=46|end_char=49
+5	твоѥ.	твои	DET	Ps	Case=Dat|Gender=Neut|Number=Sing|Person=2|Poss=Yes	4	det	_	SpacesAfter=\n|start_char=50|end_char=55

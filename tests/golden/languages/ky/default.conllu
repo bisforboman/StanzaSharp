@@ -1,0 +1,20 @@
+# text = Премьер-министр кечээ Бишкекке келди.
+# sent_id = 0
+1	Премьер	Премьер	NOUN	NN	Case=Nom|Number=Plur|Person=3	3	nmod	_	SpaceAfter=No|start_char=0|end_char=7
+2	-	-	PUNCT	PCT	_	1	punct	_	SpaceAfter=No|start_char=7|end_char=8
+3	министр	министр	NOUN	NN	Case=Nom|Number=Sing|Person=3	6	nsubj	_	start_char=8|end_char=15
+4	кечээ	кечээ	ADV	ADV	_	3	advmod	_	start_char=16|end_char=21
+5	Бишкекке	Бишкек	PROPN	PROP	Case=Dat|Number=Sing|Person=3	6	obl	_	start_char=22|end_char=30
+6	келди	кел	VERB	VB	Aspect=Perf|Mood=Ind|Number=Sing|Person=3|Polarity=Pos|Tense=Past|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=31|end_char=36
+7	.	.	PUNCT	PCT	_	6	punct	_	start_char=36|end_char=37
+
+# text = Ал журналисттер менен жаңы мыйзам жөнүндө сүйлөштү.
+# sent_id = 1
+1	Ал	Ал	PRON	PRP	Case=Nom|Number=Sing|Person=3|PronType=Prs	7	nsubj	_	start_char=38|end_char=40
+2	журналисттер	журналист	NOUN	NN	Case=Nom|Number=Plur|Person=3	5	nmod	_	start_char=41|end_char=53
+3	менен	менен	CCONJ	CCONJ	_	2	case	_	start_char=54|end_char=59
+4	жаңы	жаңы	ADJ	ADJ	_	5	amod	_	start_char=60|end_char=64
+5	мыйзам	мыйзам	NOUN	NN	Case=Nom|Number=Sing|Person=3	6	nmod	_	start_char=65|end_char=71
+6	жөнүндө	жөн	NOUN	NN	Case=Loc|Number=Sing|Person=3	7	obl	_	start_char=72|end_char=79
+7	сүйлөштү	сүйлөш	VERB	VB	Aspect=Perf|Mood=Ind|Polarity=Pos|Tense=Past|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=80|end_char=88
+8	.	.	PUNCT	PCT	_	7	punct	_	SpacesAfter=\n|start_char=88|end_char=89

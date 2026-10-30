@@ -1,0 +1,30 @@
+# text = Statsministeren kom til Oslo i går.
+# sent_id = 0
+1	Statsministeren	statsminister	NOUN	subst	Gender=Masc	2	nsubj	_	start_char=0|end_char=15|ner=O
+2	kom	kome	VERB	verb	Mood=Ind|Tense=Past|VerbForm=Fin	0	root	_	start_char=16|end_char=19|ner=O
+3	til	til	ADP	prep	_	4	case	_	start_char=20|end_char=23|ner=O
+4	Oslo	Oslo	PROPN	subst	_	2	obl	_	start_char=24|end_char=28|ner=S-GPE
+5	i	i	ADP	prep	_	6	case	_	start_char=29|end_char=30|ner=O
+6	går	går	NOUN	subst	_	2	obl	_	SpaceAfter=No|start_char=31|end_char=34|ner=O
+7	.	$.	PUNCT	clb	_	2	punct	_	start_char=34|end_char=35|ner=O
+
+# text = Ho snakka med journalistane om den nye lova.
+# sent_id = 1
+1	Ho	ho	PRON	pron	Case=Nom|Gender=Fem|Person=3|PronType=Prs	2	nsubj	_	start_char=36|end_char=38|ner=O
+2	snakka	snakke	VERB	verb	Mood=Ind|Tense=Past|VerbForm=Fin	0	root	_	start_char=39|end_char=45|ner=O
+3	med	med	ADP	prep	_	4	case	_	start_char=46|end_char=49|ner=O
+4	journalistane	journalist	NOUN	subst	Gender=Masc|Number=Plur	2	obl	_	start_char=50|end_char=63|ner=O
+5	om	om	ADP	prep	_	8	case	_	start_char=64|end_char=66|ner=O
+6	den	den	DET	det	Gender=Fem|PronType=Art	8	det	_	start_char=67|end_char=70|ner=O
+7	nye	ny	ADJ	adj	Degree=Pos	8	amod	_	start_char=71|end_char=74|ner=O
+8	lova	lov	NOUN	subst	Gender=Fem	4	nmod	_	SpaceAfter=No|start_char=75|end_char=79|ner=O
+9	.	$.	PUNCT	clb	_	2	punct	_	SpacesAfter=\n\n|start_char=79|end_char=80|ner=O
+
+# text = Eg såg Kari i Bergen.
+# sent_id = 2
+1	Eg	eg	PRON	pron	Animacy=Hum|Case=Nom|Person=1|PronType=Prs	2	nsubj	_	start_char=82|end_char=84|ner=O
+2	såg	sjå	VERB	verb	Mood=Ind|Tense=Past|VerbForm=Fin	0	root	_	start_char=85|end_char=88|ner=O
+3	Kari	Kari	PROPN	subst	Gender=Fem	2	obj	_	start_char=89|end_char=93|ner=S-PER
+4	i	i	ADP	prep	_	5	case	_	start_char=94|end_char=95|ner=O
+5	Bergen	Bergen	PROPN	subst	_	3	nmod	_	SpaceAfter=No|start_char=96|end_char=102|ner=S-GPE
+6	.	$.	PUNCT	clb	_	2	punct	_	SpacesAfter=\n|start_char=102|end_char=103|ner=O

@@ -1,0 +1,25 @@
+# text = A miniszterelnök tegnap Budapestre érkezett.
+# sent_id = 0
+1	A	a	DET	_	Definite=Def|PronType=Art	2	det	_	start_char=0|end_char=1|ner=O
+2	miniszterelnök	miniszterelnök	NOUN	_	Case=Nom|Number=Sing	5	nsubj	_	start_char=2|end_char=16|ner=O
+3	tegnap	tegnap	ADV	_	_	5	advmod:tlocy	_	start_char=17|end_char=23|ner=O
+4	Budapestre	Budapest	PROPN	_	Case=Sbl|Number=Sing	5	obl	_	start_char=24|end_char=34|ner=S-LOC
+5	érkezett	érkezik	VERB	_	Definite=Ind|Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	SpaceAfter=No|start_char=35|end_char=43|ner=O
+6	.	.	PUNCT	_	_	5	punct	_	start_char=43|end_char=44|ner=O
+
+# text = Az újságírókkal az új törvényről beszélt.
+# sent_id = 1
+1	Az	az	DET	_	Definite=Def|PronType=Art	2	det	_	start_char=45|end_char=47|ner=O
+2	újságírókkal	újságíró	NOUN	_	Case=Ins|Number=Plur	6	obl	_	start_char=48|end_char=60|ner=O
+3	az	az	DET	_	Definite=Def|PronType=Art	5	det	_	start_char=61|end_char=63|ner=O
+4	új	új	ADJ	_	Case=Nom|Degree=Pos|Number=Sing	5	amod:att	_	start_char=64|end_char=66|ner=O
+5	törvényről	törvény	NOUN	_	Case=Del|Number=Sing	6	obl	_	start_char=67|end_char=77|ner=O
+6	beszélt	beszél	VERB	_	Definite=Ind|Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	SpaceAfter=No|start_char=78|end_char=85|ner=O
+7	.	.	PUNCT	_	_	6	punct	_	SpacesAfter=\n\n|start_char=85|end_char=86|ner=O
+
+# text = Láttam Máriát Debrecenben.
+# sent_id = 2
+1	Láttam	lát	VERB	_	Definite=Def|Mood=Ind|Number=Sing|Person=1|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	start_char=88|end_char=94|ner=O
+2	Máriát	Máriát	PROPN	_	Case=Acc|Number=Sing	1	obj	_	start_char=95|end_char=101|ner=S-PER
+3	Debrecenben	Debrecen	PROPN	_	Case=Ine|Number=Sing	2	flat:name	_	SpaceAfter=No|start_char=102|end_char=113|ner=S-LOC
+4	.	.	PUNCT	_	_	1	punct	_	SpacesAfter=\n|start_char=113|end_char=114|ner=O

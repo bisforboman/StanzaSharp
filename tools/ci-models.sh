@@ -18,8 +18,8 @@
 # Pipeline.Alternatives' models, without en's files: models-en-treebanks), de (everything German: models-de-treebanks),
 # en-treebank-choices and de-treebank-choices (Pipeline.Alternatives' treebank models: the _nocharlm taggers and parsers,
 # the _charlm tokenizers and lemmatizers; without the other groups' files: together models-treebank-choices, owner's
-# decision, 2026-10-16, so their 1.3 GB rotate no other cache), languages (es, fr, it, pt, nl: nightly.yml downloads it on
-# every run, no cache).
+# decision, 2026-10-16, so their 1.3 GB rotate no other cache). The other languages are no group: tools/test-languages.sh
+# downloads them a batch at a time.
 # A cache's key is a hash of its group's file list, so a new or changed MD5 rotates only the caches holding that file.
 # STANZASHARP_CLI is the command that runs samples/StanzaSharp.Cli (default: the Release build, without building).
 set -euo pipefail
@@ -62,16 +62,6 @@ group() {
       done
       for package in combined gsd hdt; do
         echo "models/stanza/de --lang de --package $package --model tokenize=${package}_charlm,lemma=${package}_charlm"
-      done
-      ;;
-    languages)
-      # the other languages (LanguageGoldenTests), downloaded by nightly.yml only, never cached; Spanish's default_fast parser
-      # is broken upstream
-      echo "models/stanza/es --lang es --package default"
-      for lang in fr it pt nl; do
-        for package in default default_fast; do
-          echo "models/stanza/$lang --lang $lang --package $package"
-        done
       done
       ;;
     de)

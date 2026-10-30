@@ -1,0 +1,20 @@
+# text = Ministras pirmininkas vakar atvyko į Vilnių.
+# sent_id = 0
+1	Ministras	ministras	NOUN	dkt.vyr.vns.V.	Case=Nom|Gender=Masc|Number=Sing	4	nsubj	_	start_char=0|end_char=9
+2	pirmininkas	pirmininkas	NOUN	dkt.vyr.vns.V.	Case=Nom|Gender=Masc|Number=Sing	4	nsubj	_	start_char=10|end_char=21
+3	vakar	vakar	PRON	įv.vns.V.	Case=Nom|Definite=Ind|Number=Sing|Person=2|PronType=Prs	4	advmod	_	start_char=22|end_char=27
+4	atvyko	atvykti	VERB	vksm.asm.tiesiog.būt-k.vns.3.	Aspect=Perf|Mood=Ind|Number=Sing|Person=3|Polarity=Pos|Tense=Past|VerbForm=Fin	0	root	_	start_char=28|end_char=34
+5	į	į	ADP	prl.G.	AdpType=Prep|Case=Acc	6	case	_	start_char=35|end_char=36
+6	Vilnių	vilnė	NOUN	dkt.vyr.dgs.K.	Case=Gen|Gender=Masc|Number=Plur	4	obl:arg	_	SpaceAfter=No|start_char=37|end_char=43
+7	.	.	PUNCT	skyr.	_	4	punct	_	start_char=43|end_char=44
+
+# text = Jis kalbėjo su žurnalistais apie naują įstatymą.
+# sent_id = 1
+1	Jis	jis	PRON	įv.vyr.vns.V.	Case=Nom|Definite=Ind|Gender=Masc|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=45|end_char=48
+2	kalbėjo	kalbėti	VERB	vksm.asm.tiesiog.būt-k.vns.3.	Aspect=Perf|Mood=Ind|Number=Sing|Person=3|Polarity=Pos|Tense=Past|VerbForm=Fin	0	root	_	start_char=49|end_char=56
+3	su	su	ADP	prl.Įn.	AdpType=Prep|Case=Ins	4	case	_	start_char=57|end_char=59
+4	žurnalistais	žurnalistas	NOUN	dkt.vyr.dgs.Įn.	Case=Ins|Gender=Masc|Number=Plur	2	obl:arg	_	start_char=60|end_char=72
+5	apie	apie	ADP	prl.G.	AdpType=Prep|Case=Acc	7	case	_	start_char=73|end_char=77
+6	naują	naujas	ADJ	bdv.nelygin.vyr.vns.G.	Case=Acc|Definite=Ind|Degree=Pos|Gender=Masc|Number=Sing	7	amod	_	start_char=78|end_char=83
+7	įstatymą	įstatymas	NOUN	dkt.vyr.vns.G.	Case=Acc|Gender=Masc|Number=Sing	4	nmod	_	SpaceAfter=No|start_char=84|end_char=92
+8	.	.	PUNCT	skyr.	_	2	punct	_	SpacesAfter=\n|start_char=92|end_char=93

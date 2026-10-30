@@ -1,0 +1,20 @@
+# text = Hwæt! We Gardena in geardagum þeodcyninga þrym gefrunon.
+# sent_id = 0
+1	Hwæt	hwæt (INT)	INTJ	interjection	Uninflected=Yes	9	dep	_	SpaceAfter=No|start_char=0|end_char=4|ner=O
+2	!	!	PUNCT	punctuation	Uninflected=Yes	1	punct	_	start_char=4|end_char=5|ner=O
+3	We	we (PRON)	PRON	pronoun	Case=Nom|Number=Plur|Person=1|PronType=Prs	9	nsubj	_	start_char=6|end_char=8|ner=O
+4	Gardena	Gardena	ADJ	proper adjective	Case=Gen|Number=Plur	3	aposs	_	start_char=9|end_char=16|ner=O
+5	in	in (PREP)	ADP	adposition	Uninflected=Yes	6	case	_	start_char=17|end_char=19|ner=O
+6	geardagum	geardæg 	NOUN	common noun	Case=Dat|Gender=Masc|Number=Plur	4	nmod	_	start_char=20|end_char=29|ner=O
+7	þeodcyninga	þēodcyning	NOUN	common noun	Case=Gen|Gender=Masc|Number=Plur	8	nmod	_	start_char=30|end_char=41|ner=O
+8	þrym	crym 	NOUN	common noun	Case=Acc|Gender=Masc|Number=Plur	9	obj	_	start_char=42|end_char=46|ner=O
+9	gefrunon	fringan(ge)	VERB	main verb	Mood=Ind|Number=Plur|Tense=Past|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=47|end_char=55|ner=O
+10	.	.	PUNCT	punctuation	Uninflected=Yes	9	punct	_	start_char=55|end_char=56|ner=O
+
+# text = Se cyning wæs god.
+# sent_id = 1
+1	Se	se-sēo-ðæt (DEM)	DET	demonstrative-article	Case=Nom|Gender=Masc|Number=Sing|PronType=DemArt	2	det	_	start_char=57|end_char=59|ner=O
+2	cyning	cyning 	NOUN	common noun	Case=Nom|Gender=Masc|Number=Sing	4	nsubj	_	start_char=60|end_char=66|ner=O
+3	wæs	bēon/wesan/sēon ‘to be’	AUX	auxiliary verb	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	4	cop	_	start_char=67|end_char=70|ner=O
+4	god	gōd ‘good’	ADJ	adjective	Case=Nom|Gender=Masc|Number=Sing	0	root	_	SpaceAfter=No|start_char=71|end_char=74|ner=S-RELIGIOUS
+5	.	.	PUNCT	punctuation	Uninflected=Yes	4	punct	_	SpacesAfter=\n|start_char=74|end_char=75|ner=O

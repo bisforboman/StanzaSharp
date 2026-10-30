@@ -49,7 +49,7 @@ public sealed class Pipeline : IDisposable
     // tokenize to depparse only (combined has default's models, eslspok no mwt and the identity lemmatizer, the biomedical
     // craft, genia and mimic no mwt and their own word vectors). German: default_fast keeps ner and sentiment's charlm
     // models; default_accurate is on german-nlp-group/electra-base-german-uncased.
-    internal static readonly Dictionary<string, string[]> SupportedPackages = new()
+    internal static readonly Dictionary<string, string[]> SupportedPackages = new Dictionary<string, string[]>
     {
         [English] =
         [
@@ -62,7 +62,18 @@ public sealed class Pipeline : IDisposable
         ["it"] = [DefaultPackage, "default_fast"],
         ["pt"] = [DefaultPackage, "default_fast"],
         ["nl"] = [DefaultPackage, "default_fast"],
-    };
+    }.Concat(DefaultOnly.Select(l => KeyValuePair.Create(l, new[] { DefaultPackage }))).ToDictionary();
+
+    // The languages StanzaSharp runs only Stanza's default package of, each with no model code of its own (owner's
+    // decision, 2026-10-30: the 79 whose default package matched Stanza byte for byte in the sweep).
+    private static string[] DefaultOnly =>
+    [
+        "ab", "af", "ang", "ar", "as", "be", "bg", "bxr", "ca", "ckb", "cs", "cu", "cy", "da", "et", "eu", "fa",
+        "fi", "fo", "fro", "ga", "gd", "gl", "got", "grc", "gv", "hbo", "he", "hi", "hr", "hsb", "ht", "hu",
+        "hy", "hyw", "id", "is", "ka", "kk", "kmr", "kpv", "ky", "la", "lij", "lt", "lv", "mr", "mt", "my",
+        "myv", "nb", "nds", "nn", "oc", "ota", "pa", "pl", "ro", "ru", "sa", "sd", "sk", "sl", "sme", "sq", "sr",
+        "sv", "ta", "te", "tr", "ug", "uk", "ur", "uz", "vi", "wo", "xcl", "yi", "zza",
+    ];
 
     // Each supported package's models (processor → model), from resources.json.
     internal static readonly Dictionary<string, Dictionary<string, Dictionary<string, string>>> Packages =

@@ -1,0 +1,23 @@
+# text = Gallia est omnis divisa in partes tres.
+# sent_id = 0
+1	Gallia	Gallia	NOUN	A1|grn1|casA|gen2	Case=Nom|Gender=Fem|InflClass=IndEurA|Number=Sing	4	nsubj	_	start_char=0|end_char=6
+2	est	sum	AUX	N3|modA|tem1|gen6	Aspect=Imp|InflClass=LatAnom|Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	cop	_	start_char=7|end_char=10
+3	omnis	omnis	DET	C1|grn1|casA|gen2	Case=Nom|Gender=Fem|InflClass=IndEurI|Number=Sing|PronType=Tot	4	det	_	start_char=11|end_char=16
+4	divisa	divisus	ADJ	A1|grn1|casA|gen2	Case=Nom|Gender=Fem|InflClass=IndEurA|Number=Sing	0	root	_	start_char=17|end_char=23
+5	in	in	ADP	S4	_	6	case	_	start_char=24|end_char=26
+6	partes	pars	NOUN	C1|grn1|casM|gen2	Case=Acc|Gender=Fem|InflClass=IndEurI|Number=Plur	4	obl:arg	_	start_char=27|end_char=33
+7	tres	tres	NUM	C1|grn1|casM|gen2|vgr1	Case=Acc|Gender=Fem|InflClass=IndEurI|Number=Plur|NumForm=Word|NumType=Card	6	nummod	_	SpaceAfter=No|start_char=34|end_char=38
+8	.	.	PUNCT	Punc	_	4	punct	_	start_char=38|end_char=39
+
+# text = Consul heri Romam venit et cum senatoribus locutus est.
+# sent_id = 1
+1	Consul	consulum	NOUN	C1|grn1|casA|gen1	Case=Nom|Gender=Masc|InflClass=IndEurX|Number=Sing	4	nsubj	_	start_char=40|end_char=46
+2	heri	hero	VERB	L3|modA|tem1|gen5	Aspect=Imp|InflClass=LatX|Mood=Ind|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin|Voice=Act	4	advmod:tmod	_	start_char=47|end_char=51
+3	Romam	roma	NOUN	C1|grn1|casA|gen2	Case=Nom|Gender=Fem|InflClass=IndEurO|Number=Sing	4	nsubj	_	start_char=52|end_char=57
+4	venit	vigno	VERB	L3|modA|tem4|gen6	Aspect=Perf|InflClass=LatX|Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	start_char=58|end_char=63
+5	et	et	CCONJ	O4	_	8	cc	_	start_char=64|end_char=66
+6	cum	cum	ADP	S4|vgr1	_	7	case	_	start_char=67|end_char=70
+7	senatoribus	senator	NOUN	C1|grn1|casO|gen1	Case=Abl|Gender=Masc|InflClass=IndEurX|Number=Plur	8	obl	_	start_char=71|end_char=82
+8	locutus	loquor	VERB	L2|modM|tem4|grp1|casA|gen1|vgr2	Aspect=Perf|Case=Nom|Gender=Masc|InflClass=LatX|InflClass[nominal]=IndEurO|Number=Sing|VerbForm=Part|Voice=Pass	4	conj	_	start_char=83|end_char=90
+9	est	sum	AUX	N3|modA|tem1|gen6	Aspect=Imp|InflClass=LatAnom|Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	8	aux:pass	_	SpaceAfter=No|start_char=91|end_char=94
+10	.	.	PUNCT	Punc	_	4	punct	_	SpacesAfter=\n|start_char=94|end_char=95

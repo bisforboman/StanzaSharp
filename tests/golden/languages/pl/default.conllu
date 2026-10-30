@@ -1,0 +1,28 @@
+# text = Premier przyjechał wczoraj do Warszawy.
+# sent_id = 0
+1	Premier	premier	NOUN	subst:sg:nom:m1	Animacy=Hum|Case=Nom|Gender=Masc|Number=Sing	2	nsubj	_	start_char=0|end_char=7|ner=O
+2	przyjechał	przyjechać	VERB	praet:sg:m1:perf	Animacy=Hum|Aspect=Perf|Gender=Masc|Mood=Ind|Number=Sing|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	start_char=8|end_char=18|ner=O
+3	wczoraj	wczoraj	ADV	adv	_	2	advmod	_	start_char=19|end_char=26|ner=O
+4	do	do	ADP	prep:gen	AdpType=Prep	5	case	_	start_char=27|end_char=29|ner=O
+5	Warszawy	Warszawa	PROPN	subst:sg:gen:f	Case=Gen|Gender=Fem|Number=Sing	2	obl	_	SpaceAfter=No|start_char=30|end_char=38|ner=S-placeName
+6	.	.	PUNCT	interp	PunctType=Peri	2	punct	_	start_char=38|end_char=39|ner=O
+
+# text = Rozmawiał z dziennikarzami o nowej ustawie.
+# sent_id = 1
+1	Rozmawiał	rozmawiać	VERB	praet:sg:m1:imperf	Animacy=Hum|Aspect=Imp|Gender=Masc|Mood=Ind|Number=Sing|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	start_char=40|end_char=49|ner=O
+2	z	z	ADP	prep:inst:nwok	AdpType=Prep|Variant=Short	3	case	_	start_char=50|end_char=51|ner=O
+3	dziennikarzami	dziennikarz	NOUN	subst:pl:inst:m1	Animacy=Hum|Case=Ins|Gender=Masc|Number=Plur	1	obl:arg	_	start_char=52|end_char=66|ner=O
+4	o	o	ADP	prep:loc	AdpType=Prep	6	case	_	start_char=67|end_char=68|ner=O
+5	nowej	nowy	ADJ	adj:sg:loc:f:pos	Case=Loc|Degree=Pos|Gender=Fem|Number=Sing	6	amod	_	start_char=69|end_char=74|ner=O
+6	ustawie	ustawa	NOUN	subst:sg:loc:f	Case=Loc|Gender=Fem|Number=Sing	3	nmod:arg	_	SpaceAfter=No|start_char=75|end_char=82|ner=O
+7	.	.	PUNCT	interp	PunctType=Peri	1	punct	_	SpacesAfter=\n\n|start_char=82|end_char=83|ner=O
+
+# text = Widziałem Marię w Krakowie.
+# sent_id = 2
+1-2	Widziałem	_	_	_	_	_	_	_	start_char=85|end_char=94|ner=O
+1	Widział	widzieć	VERB	praet:sg:m1:imperf	Animacy=Hum|Aspect=Imp|Gender=Masc|Mood=Ind|Number=Sing|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	start_char=85|end_char=92
+2	em	być	AUX	aglt:sg:pri:imperf:wok	Aspect=Imp|Number=Sing|Person=1|Variant=Long	1	aux:clitic	_	start_char=92|end_char=94
+3	Marię	Maria	PROPN	subst:sg:acc:f	Case=Acc|Gender=Fem|Number=Sing	1	obj	_	start_char=95|end_char=100|ner=S-persName
+4	w	w	ADP	prep:loc:nwok	AdpType=Prep|Variant=Short	5	case	_	start_char=101|end_char=102|ner=O
+5	Krakowie	Kraków	PROPN	subst:sg:loc:m3	Animacy=Inan|Case=Loc|Gender=Masc|Number=Sing	1	obl	_	SpaceAfter=No|start_char=103|end_char=111|ner=S-placeName
+6	.	.	PUNCT	interp	PunctType=Peri	1	punct	_	SpacesAfter=\n|start_char=111|end_char=112|ner=O

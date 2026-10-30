@@ -1,0 +1,20 @@
+# text = Forsætisráðherrann kom til Reykjavíkur í gær.
+# sent_id = 0
+1	Forsætisráðherrann	forsætisráðherra	NOUN	N-N	Case=Nom|Definite=Def|Gender=Masc|Number=Sing	2	nsubj	_	start_char=0|end_char=18
+2	kom	koma	VERB	VBDI	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	start_char=19|end_char=22
+3	til	til	ADP	P	_	4	case	_	start_char=23|end_char=26
+4	Reykjavíkur	reykjavík	PROPN	NPR-G	Case=Gen|Definite=Ind|Gender=Fem|Number=Sing	2	obl	_	start_char=27|end_char=38
+5	í	í	ADP	P	_	6	case	_	start_char=39|end_char=40
+6	gær	gær	NOUN	N-A	_	2	obl	_	SpaceAfter=No|start_char=41|end_char=44
+7	.	.	PUNCT	.	_	6	punct	_	start_char=44|end_char=45
+
+# text = Hann ræddi við blaðamenn um nýju lögin.
+# sent_id = 1
+1	Hann	hann	PRON	PRO-N	Case=Nom|Gender=Masc|Number=Sing|PronType=Prs	2	nsubj	_	start_char=46|end_char=50
+2	ræddi	ræða	VERB	VBDI	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	start_char=51|end_char=56
+3	við	við	ADP	P	_	4	case	_	start_char=57|end_char=60
+4	blaðamenn	blaðamaður	NOUN	NS-A	Case=Acc|Definite=Ind|Gender=Masc|Number=Plur	2	obl	_	start_char=61|end_char=70
+5	um	um	ADP	P	_	7	case	_	start_char=71|end_char=73
+6	nýju	nýr	ADJ	ADJ-A	Case=Acc|Definite=Def|Degree=Pos|Gender=Neut|Number=Plur	7	amod	_	start_char=74|end_char=78
+7	lögin	lög	NOUN	NS-A	Case=Acc|Definite=Def|Gender=Neut|Number=Plur	2	obl	_	SpaceAfter=No|start_char=79|end_char=84
+8	.	.	PUNCT	.	_	7	punct	_	SpacesAfter=\n|start_char=84|end_char=85

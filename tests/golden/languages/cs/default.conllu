@@ -1,0 +1,31 @@
+# text = Předseda vlády včera přijel do Prahy.
+# sent_id = 0
+1	Předseda	předseda	NOUN	NNMS1-----A----	Animacy=Anim|Case=Nom|Gender=Masc|Number=Sing	4	nsubj	_	start_char=0|end_char=8
+2	vlády	vláda	NOUN	NNFS2-----A----	Case=Gen|Gender=Fem|Number=Sing	1	nmod	_	start_char=9|end_char=14
+3	včera	včera	ADV	Db-------------	_	4	advmod	_	start_char=15|end_char=20
+4	přijel	přijet	VERB	VpYS----R-AAP--	Aspect=Perf|Gender=Masc|Number=Sing|Polarity=Pos|Tense=Past|VerbForm=Part|Voice=Act	0	root	_	start_char=21|end_char=27
+5	do	do	ADP	RR--2----------	AdpType=Prep|Case=Gen	6	case	_	start_char=28|end_char=30
+6	Prahy	Praha	PROPN	NNFS2-----A----	Case=Gen|Gender=Fem|NameType=Geo|Number=Sing	4	obl	_	SpaceAfter=No|start_char=31|end_char=36
+7	.	.	PUNCT	Z:-------------	_	4	punct	_	start_char=36|end_char=37
+
+# text = Mluvil s novináři o novém zákonu.
+# sent_id = 1
+1	Mluvil	mluvit	VERB	VpYS----R-AAI--	Aspect=Imp|Gender=Masc|Number=Sing|Polarity=Pos|Tense=Past|VerbForm=Part|Voice=Act	0	root	_	start_char=38|end_char=44
+2	s	s	ADP	RR--7----------	AdpType=Prep|Case=Ins	3	case	_	start_char=45|end_char=46
+3	novináři	novinář	NOUN	NNMP7-----A----	Animacy=Anim|Case=Ins|Gender=Masc|Number=Plur	1	obl:arg	_	start_char=47|end_char=55
+4	o	o	ADP	RR--6----------	AdpType=Prep|Case=Loc	6	case	_	start_char=56|end_char=57
+5	novém	nový	ADJ	AAIS6----1A----	Animacy=Inan|Case=Loc|Degree=Pos|Gender=Masc|Number=Sing|Polarity=Pos	6	amod	_	start_char=58|end_char=63
+6	zákonu	zákon	NOUN	NNIS6-----A----	Animacy=Inan|Case=Loc|Gender=Masc|Number=Sing	1	obl:arg	_	SpaceAfter=No|start_char=64|end_char=70
+7	.	.	PUNCT	Z:-------------	_	1	punct	_	SpacesAfter=\n\n|start_char=70|end_char=71
+
+# text = Viděl jsem Marii v Brně v roce 2024.
+# sent_id = 2
+1	Viděl	vidět	VERB	VpYS----R-AAI--	Aspect=Imp|Gender=Masc|Number=Sing|Polarity=Pos|Tense=Past|VerbForm=Part|Voice=Act	0	root	_	start_char=73|end_char=78
+2	jsem	být	AUX	VB-S---1P-AAI--	Aspect=Imp|Mood=Ind|Number=Sing|Person=1|Polarity=Pos|Tense=Pres|VerbForm=Fin|Voice=Act	1	aux	_	start_char=79|end_char=83
+3	Marii	Marie	PROPN	NNFS4-----A----	Case=Acc|Gender=Fem|NameType=Giv|Number=Sing	1	obj	_	start_char=84|end_char=89
+4	v	v	ADP	RR--6----------	AdpType=Prep|Case=Loc	5	case	_	start_char=90|end_char=91
+5	Brně	Brno	PROPN	NNNS6-----A----	Case=Loc|Gender=Neut|NameType=Geo|Number=Sing	1	obl	_	start_char=92|end_char=96
+6	v	v	ADP	RR--6----------	AdpType=Prep|Case=Loc	7	case	_	start_char=97|end_char=98
+7	roce	rok	NOUN	NNIS6-----A---1	Animacy=Inan|Case=Loc|Gender=Masc|Number=Sing	1	obl	_	start_char=99|end_char=103
+8	2024	2024	NUM	C=-------------	NumForm=Digit|NumType=Card	7	nummod	_	SpaceAfter=No|start_char=104|end_char=108
+9	.	.	PUNCT	Z:-------------	_	1	punct	_	SpacesAfter=\n|start_char=108|end_char=109

@@ -1,0 +1,10 @@
+# text = रामः वनं गच्छति। सीता अपि तेन सह गच्छति।
+# sent_id = 0
+1	रामः	रामः	NOUN	_	Compound=Yes	8	compound:coord	_	start_char=0|end_char=4
+2	वनं	वनं	ADV	_	_	1	conj	_	start_char=5|end_char=8
+3	गच्छति।	गच्छति।	NOUN	_	Compound=Yes	1	conj	_	start_char=9|end_char=16
+4	सीता	सीता	CCONJ	_	_	8	cc	_	start_char=17|end_char=21
+5	अपि	अपि	NOUN	_	Compound=Yes	8	compound:coord	_	start_char=22|end_char=25
+6	तेन	तेन	NOUN	_	Case=Acc|Gender=Masc|Number=Sing	8	compound:coord	_	start_char=26|end_char=29
+7	सह	सह	NOUN	_	Case=Acc|Gender=Neut|Number=Sing	8	compound:coord	_	start_char=30|end_char=32
+8	गच्छति।	गच्छति।	NOUN	_	Case=Voc|Gender=Masc|Number=Sing	0	root	_	SpacesAfter=\n|start_char=33|end_char=40

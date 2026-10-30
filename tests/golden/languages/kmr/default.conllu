@@ -1,0 +1,20 @@
+# text = Serokwezîr duh hat Amedê.
+# sent_id = 0
+1	Serokwezîr	serokwezîr	NOUN	n	Case=Nom|Definite=Def|Gender=Masc|Number=Sing	3	nsubj	_	start_char=0|end_char=10
+2	duh	duh	PROPN	np	Case=Nom|Definite=Def|Gender=Fem|Number=Sing	1	nmod:poss	_	start_char=11|end_char=14
+3	hat	hatin	VERB	vblex	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=15|end_char=18
+4	Amedê	Amed	PROPN	np	Case=Acc|Definite=Def|Gender=Fem|Number=Sing	3	obl:dat	_	SpaceAfter=No|start_char=19|end_char=24
+5	.	.	PUNCT	sent	_	3	punct	_	start_char=24|end_char=25
+
+# text = Wî bi rojnamevanan re li ser qanûna nû axivî.
+# sent_id = 1
+1	Wî	ew	PRON	prn	Case=Acc|Gender=Masc|Number=Sing|Person=3|PronType=Prs	9	nsubj	_	start_char=26|end_char=28
+2	bi	bi	ADP	pr	AdpType=Prep	3	case	_	start_char=29|end_char=31
+3	rojnamevanan	rojnamevan	NOUN	n	Case=Acc|Definite=Def|Gender=Fem|Number=Plur	9	nmod	_	start_char=32|end_char=44
+4	re	re	ADP	post	AdpType=Post	3	case	_	start_char=45|end_char=47
+5	li	li	ADP	x	_	7	case	_	start_char=48|end_char=50
+6	ser	ser	ADP	pr	AdpType=Prep	5	fixed	_	start_char=51|end_char=54
+7	qanûna	qanûn	NOUN	n	Case=Con|Definite=Def|Gender=Fem|Number=Sing	9	nmod	_	start_char=55|end_char=61
+8	nû	nû	ADJ	adj	Degree=Pos	7	amod	_	start_char=62|end_char=64
+9	axivî	axivîn	VERB	vblex	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=65|end_char=70
+10	.	.	PUNCT	sent	_	9	punct	_	SpacesAfter=\n|start_char=70|end_char=71

@@ -1,0 +1,19 @@
+# text = முதலமைச்சர் நேற்று சென்னை வந்தார்.
+# sent_id = 0
+1	முதலமைச்சர்	முதலமைச்சர்	NOUN	NNN-3SN--	Case=Nom|Gender=Neut|Number=Sing|Person=3	3	nmod	_	start_char=0|end_char=11
+2	நேற்று	நேற்று	ADV	AA-------	_	4	advmod	_	start_char=12|end_char=18
+3	சென்னை	சென்னை	PROPN	NEN-3SN--	Case=Nom|Gender=Neut|Number=Sing|Person=3	4	nmod	_	start_char=19|end_char=25
+4	வந்தார்	வா	VERB	Vr-D3SHAA	Gender=Com|Mood=Ind|Number=Sing|Person=3|Polarity=Pos|Polite=Form|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	SpaceAfter=No|start_char=26|end_char=33
+5	.	.	PUNCT	Z#-------	PunctType=Peri	4	punct	_	start_char=33|end_char=34
+
+# text = அவர் செய்தியாளர்களுடன் புதிய சட்டம் பற்றி பேசினார்.
+# sent_id = 1
+1	அவர்	அவர்	PRON	RpN-3SH--	Case=Nom|Gender=Com|Number=Sing|Person=3|Polite=Form|PronType=Prs	2	nsubj	_	start_char=35|end_char=39
+2-3	செய்தியாளர்களுடன்	_	_	_	_	_	_	_	start_char=40|end_char=57
+2	செய்த்திய்	செய்	VERB	Vt-T---AA	Polarity=Pos|VerbForm=Part|Voice=Act	3	advcl	_	_
+3	உள்களன்	உள்	ADJ	Jd-T----A	Polarity=Pos|VerbForm=Part	5	amod	_	_
+4	புதிய	புதிய	ADJ	JJ-------	_	5	amod	_	start_char=58|end_char=63
+5	சட்டம்	சட்டம்	NOUN	NNN-3SN--	Case=Nom|Gender=Neut|Number=Sing|Person=3	7	obl	_	start_char=64|end_char=70
+6	பற்றி	பற்றி	ADP	PP-------	AdpType=Post	5	case	_	start_char=71|end_char=76
+7	பேசினார்	பேசு	VERB	Vr-D3SHAA	Gender=Com|Mood=Ind|Number=Sing|Person=3|Polarity=Pos|Polite=Form|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	SpaceAfter=No|start_char=77|end_char=85
+8	.	.	PUNCT	Z#-------	PunctType=Peri	7	punct	_	SpacesAfter=\n|start_char=85|end_char=86

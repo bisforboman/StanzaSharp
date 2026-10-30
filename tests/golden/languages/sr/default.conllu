@@ -1,0 +1,19 @@
+# text = Премијер је јуче стигао у Београд.
+# sent_id = 0
+1	Премијер	Премијеti	VERB	Vmr3s	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=0|end_char=8
+2	је	је	X	Xf	Foreign=Yes	1	nsubj	_	start_char=9|end_char=11
+3	јуче	јуче	X	Xf	Foreign=Yes	2	flat	_	start_char=12|end_char=16
+4	стигао	стигао	NOUN	Ncmpn	Case=Nom|Gender=Masc|Number=Plur	2	flat	_	start_char=17|end_char=23
+5	у	у	PUNCT	Z	_	6	punct	_	start_char=24|end_char=25
+6	Београд.	Београд.	ADJ	Mdo	NumType=Ord	1	obl	_	start_char=26|end_char=34
+
+# text = Разговарао је са новинарима о новом закону.
+# sent_id = 1
+1	Разговарао	Разговарао	NOUN	Ncmpn	Case=Nom|Gender=Masc|Number=Plur	4	nsubj	_	start_char=35|end_char=45
+2	је	је	PUNCT	Z	_	4	punct	_	start_char=46|end_char=48
+3	са	са	X	Xf	Foreign=Yes	1	flat	_	start_char=49|end_char=51
+4	новинарима	новинаримti	VERB	Vmr3s	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=52|end_char=62
+5	о	о	X	Xf	Foreign=Yes	4	obl	_	start_char=63|end_char=64
+6	новом	новом	X	Xf	Foreign=Yes	5	flat	_	start_char=65|end_char=70
+7	закону	закону	NOUN	Ncmsn	Case=Voc|Gender=Masc|Number=Plur	5	flat	_	SpaceAfter=No|start_char=71|end_char=77
+8	.	.	PUNCT	Z	_	4	punct	_	SpacesAfter=\n|start_char=77|end_char=78

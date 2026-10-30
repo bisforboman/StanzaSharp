@@ -1,0 +1,35 @@
+# text = وصل رئيس الوزراء إلى القاهرة أمس للقاء وزير الخارجية. وقال للصحفيين إن المحادثات كانت مثمرة.
+# sent_id = 0
+1	وصل	وَصَل	VERB	VP-A-3MS--	Aspect=Perf|Gender=Masc|Number=Sing|Person=3|Voice=Act	0	root	_	start_char=0|end_char=3|ner=O
+2	رئيس	رَئِيس	NOUN	N------S1R	Case=Nom|Definite=Cons|Number=Sing	1	nsubj	_	start_char=4|end_char=8|ner=O
+3	الوزراء	وَزِير	NOUN	N------P2D	Case=Gen|Definite=Def|Number=Plur	2	nmod	_	start_char=9|end_char=16|ner=O
+4	إلى	إِلَى	ADP	P---------	AdpType=Prep	5	case	_	start_char=17|end_char=20|ner=O
+5	القاهرة	قَاهِرَة	NOUN	N------S2D	Case=Gen|Definite=Def|Number=Sing	1	obl	_	start_char=21|end_char=28|ner=S-LOC
+6	أمس	أَمسِ	ADV	D---------	_	1	advmod	_	start_char=29|end_char=32|ner=O
+7-8	للقاء	_	_	_	_	_	_	_	start_char=33|end_char=38|ner=O
+7	ل	لِ	ADP	P---------	AdpType=Prep	8	case	_	start_char=33|end_char=34
+8	لقاء	لِقَاء	NOUN	N------S2R	Case=Gen|Definite=Cons|Number=Sing	1	obl	_	start_char=34|end_char=38
+9	وزير	وَزِير	NOUN	N------S2R	Case=Gen|Definite=Cons|Number=Sing	8	nmod	_	start_char=39|end_char=43|ner=O
+10	الخارجية	خَارِجِيَّة	NOUN	N------S2D	Case=Gen|Definite=Def|Number=Sing	9	nmod	_	SpaceAfter=No|start_char=44|end_char=52|ner=O
+11	.	.	PUNCT	G---------	_	1	punct	_	start_char=52|end_char=53|ner=O
+12-13	وقال	_	_	_	_	_	_	_	start_char=54|end_char=58|ner=O
+12	و	وَ	CCONJ	C---------	_	1	cc	_	start_char=54|end_char=55
+13	قال	قَال	VERB	VP-A-3MS--	Aspect=Perf|Gender=Masc|Number=Sing|Person=3|Voice=Act	1	parataxis	_	start_char=55|end_char=58
+14-15	للصحفيين	_	_	_	_	_	_	_	start_char=59|end_char=67|ner=O
+14	ل	لِ	ADP	P---------	AdpType=Prep	15	case	_	_
+15	الصحفيين	صُحُفِيّ	NOUN	N------P2D	Case=Gen|Definite=Def|Number=Plur	13	obl:arg	_	_
+16	إن	إِنَّ	SCONJ	C---------	_	19	mark	_	start_char=68|end_char=70|ner=O
+17	المحادثات	مُحَادَثَة	NOUN	N------P4D	Case=Acc|Definite=Def|Number=Plur	19	nsubj	_	start_char=71|end_char=80|ner=O
+18	كانت	كَان	AUX	VP-A-3FS--	Aspect=Perf|Gender=Fem|Number=Sing|Person=3|Voice=Act	19	cop	_	start_char=81|end_char=85|ner=O
+19	مثمرة	مُثَمَّر	ADJ	A-----FS4I	Case=Acc|Definite=Ind|Gender=Fem|Number=Sing	13	ccomp	_	SpaceAfter=No|start_char=86|end_char=91|ner=O
+20	.	.	PUNCT	G---------	_	1	punct	_	SpacesAfter=\n\n|start_char=91|end_char=92|ner=O
+
+# text = ذهبت إلى السوق في عام 2024.
+# sent_id = 1
+1	ذهبت	ذَهَب	VERB	VP-A-3FS--	Aspect=Perf|Gender=Fem|Number=Sing|Person=3|Voice=Act	0	root	_	start_char=94|end_char=98|ner=O
+2	إلى	إِلَى	ADP	P---------	AdpType=Prep	3	case	_	start_char=99|end_char=102|ner=O
+3	السوق	سُوق	NOUN	N------S2D	Case=Gen|Definite=Def|Number=Sing	1	obl	_	start_char=103|end_char=108|ner=O
+4	في	فِي	ADP	P---------	AdpType=Prep	5	case	_	start_char=109|end_char=111|ner=O
+5	عام	عَام	NOUN	N------S2R	Case=Gen|Definite=Cons|Number=Sing	1	obl	_	start_char=112|end_char=115|ner=O
+6	2024	2024	NUM	Q---------	NumForm=Digit	5	nummod	_	SpaceAfter=No|start_char=116|end_char=120|ner=O
+7	.	.	PUNCT	G---------	_	1	punct	_	SpacesAfter=\n|start_char=120|end_char=121|ner=O
