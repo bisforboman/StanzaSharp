@@ -136,7 +136,7 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
 
         string Name(int j) => transitions[j].Kind == TransitionKind.Open ? $"Open({transitions[j].Label})" : transitions[j].Kind.ToString();
 
-        float drift = 0;
+        float drift = 0, marginDiff = 0;
         int total = 0, decisions = 0;
         var margins = new[] { new List<float>(), new List<float>() };
         var raw = new[] { new List<float>(), new List<float>() };
@@ -158,6 +158,7 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
                 if (dt.Second < 0)
                     continue;
                 decisions++;
+                marginDiff = Math.Max(marginDiff, Math.Abs(dt.Margin - dm.Margin));
                 margins[0].Add(dt.Margin);
                 margins[1].Add(dm.Margin);
                 calls.Add((Math.Min(dt.Margin, dm.Margin), $"{sentences[i].File} sentence {sentences[i].Index} step {k}: {Name(dt.Best)} over {Name(dt.Second)}, "
@@ -165,7 +166,7 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
             }
         }
 
-        output.WriteLine($"{lang}: {sentences.Count} sentences, {total} steps, {decisions} with two or more legal transitions; scores max |diff| between backends {drift:E2}");
+        output.WriteLine($"{lang}: {sentences.Count} sentences, {total} steps, {decisions} with two or more legal transitions; scores max |diff| between backends {drift:E2}, decision margins max |diff| {marginDiff:E2}");
         string Counts(List<float> m) => $"< 1e-2: {m.Count(x => x < 1e-2f)}, < 1e-3: {m.Count(x => x < 1e-3f)}, < 1e-4: {m.Count(x => x < 1e-4f)}, min {m.Min():E2}";
         output.WriteLine($"decision margins TorchSharp {Counts(margins[0])}");
         output.WriteLine($"decision margins managed    {Counts(margins[1])}");
