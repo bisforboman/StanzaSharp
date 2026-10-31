@@ -28,7 +28,6 @@ internal sealed class TokenizerNet : ITokenizerNet
         var config = ckpt.Root["config"]!;
         var model = ckpt.Root["model"]!;
         Require(config["conv_res"] == null, "conv_res");
-        Require(config["use_dictionary"]?.GetValue<bool>() != true, "use_dictionary");
         Require(config["hierarchical"]!.GetValue<bool>(), "non-hierarchical models");
 
         int vocab = config["vocab_size"]!.GetValue<int>();

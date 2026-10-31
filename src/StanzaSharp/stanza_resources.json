@@ -20116,5 +20116,1249 @@
   },
   "default_md5": "25b69c43e8b3709ba15de65bd2b448b1",
   "lang_name": "Nheengatu"
+ },
+ "ja": {
+  "backward_charlm": {
+   "conll17": {
+    "md5": "dd087f7c6229dc1513a54f37cf68ef6e"
+   }
+  },
+  "constituency": {
+   "alt_charlm": {
+    "md5": "e15ffeea7d4027a081735c63f9f4ee1c",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "conll17"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "conll17"
+     }
+    ]
+   },
+   "alt_rinna-roberta": {
+    "md5": "db03b08da813b15eb867d6e20f0a2e1f",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "conll17"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "conll17"
+     }
+    ]
+   }
+  },
+  "depparse": {
+   "combined_charlm": {
+    "md5": "5fb42652a2b93db3c7099ae511f4098e",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "conll17"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "conll17"
+     }
+    ]
+   },
+   "combined_nocharlm": {
+    "md5": "ac398ac469ce2bdea995b4f0658ad777",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   },
+   "combined_rinna-roberta": {
+    "md5": "014338b180b7829085a13878c1ca3588",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "conll17"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "conll17"
+     }
+    ]
+   },
+   "gsd_charlm": {
+    "md5": "6a1bab307823ebf30972e5703d979437",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "conll17"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "conll17"
+     }
+    ]
+   },
+   "gsd_nocharlm": {
+    "md5": "c6601b618ad74204362df09bcd7cf989",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   },
+   "gsd_rinna-roberta": {
+    "md5": "a6d3c8eccd791c17677e059a5e6c5d3d",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "conll17"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "conll17"
+     }
+    ]
+   },
+   "gsdluw_charlm": {
+    "md5": "ea1c590d00b793672c4949689b2fd99c",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "conll17"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "conll17"
+     }
+    ]
+   },
+   "gsdluw_nocharlm": {
+    "md5": "95868417d9a38cddebb0bb40ba757467",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   },
+   "gsdluw_rinna-roberta": {
+    "md5": "70b15ef7f7cb4661808f1114d2dfdb36",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "conll17"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "conll17"
+     }
+    ]
+   }
+  },
+  "forward_charlm": {
+   "conll17": {
+    "md5": "1a35abd8e848582adb9d6c9054aa1ee4"
+   }
+  },
+  "lemma": {
+   "combined_charlm": {
+    "md5": "70bab5124eb4ee27791706c24d69acd9",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "conll17"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "conll17"
+     }
+    ]
+   },
+   "combined_nocharlm": {
+    "md5": "125e25b3d16ed69168d5a2916b356bd3"
+   },
+   "gsd_charlm": {
+    "md5": "70b082e04c03d6818bc2a3b413b4f015",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "conll17"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "conll17"
+     }
+    ]
+   },
+   "gsd_nocharlm": {
+    "md5": "f8dcea14c0f7ee120c88b7970b75e5a8"
+   },
+   "gsdluw_charlm": {
+    "md5": "cbd2b38092a4cfbe4188887a6a16cbcc",
+    "dependencies": [
+     {
+      "model": "forward_charlm",
+      "package": "conll17"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "conll17"
+     }
+    ]
+   },
+   "gsdluw_nocharlm": {
+    "md5": "817ae1b9796e3eec414ccef709a0f658"
+   }
+  },
+  "ner": {
+   "gsd": {
+    "md5": "45e015a4107196aa4dacf29428f69fa8",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "conll17"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "conll17"
+     }
+    ]
+   }
+  },
+  "pos": {
+   "combined_charlm": {
+    "md5": "07c50a2bebd3f19803447c44ba2ba1f7",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "conll17"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "conll17"
+     }
+    ]
+   },
+   "combined_nocharlm": {
+    "md5": "3b69136126c01fd1db0dcfa8f8ebf4a5",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   },
+   "combined_rinna-roberta": {
+    "md5": "184b8ef7f23dfdeda6a9cbccf459b6b0",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "conll17"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "conll17"
+     }
+    ]
+   },
+   "gsd_charlm": {
+    "md5": "f031bf8d62d427a5cdf41c37ba755cb3",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "conll17"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "conll17"
+     }
+    ]
+   },
+   "gsd_nocharlm": {
+    "md5": "d1044421db4580fdd5187e51fb19b444",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   },
+   "gsd_rinna-roberta": {
+    "md5": "c6a7cf3380e41ec388db363d0932e562",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "conll17"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "conll17"
+     }
+    ]
+   },
+   "gsdluw_charlm": {
+    "md5": "2ed668813146b53a76245e60752a415b",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "conll17"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "conll17"
+     }
+    ]
+   },
+   "gsdluw_nocharlm": {
+    "md5": "5a6db62405ca186cdb2ff2ea50bb2bc6",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   },
+   "gsdluw_rinna-roberta": {
+    "md5": "2a97a3684b3cf77c0079fb44c5f3ee7c",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "conll17"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "conll17"
+     }
+    ]
+   }
+  },
+  "pretrain": {
+   "conll17": {
+    "md5": "5540a39e505a7686aea8c95cacd4f2bb"
+   }
+  },
+  "tokenize": {
+   "combined_charlm": {
+    "md5": "c2627d35ada89cd314b6259dd6493f6d",
+    "dependencies": [
+     {
+      "model": "forward_charlm",
+      "package": "conll17"
+     }
+    ]
+   },
+   "combined_nocharlm": {
+    "md5": "78300481703f4cbe0a9ba990eb2b42d2"
+   },
+   "gsd_charlm": {
+    "md5": "99ade255a695165e09de6584f810497e",
+    "dependencies": [
+     {
+      "model": "forward_charlm",
+      "package": "conll17"
+     }
+    ]
+   },
+   "gsd_nocharlm": {
+    "md5": "000168006b1049016efd9b3b0194315f"
+   },
+   "gsdluw_charlm": {
+    "md5": "5b94bb57d0456696e81f85c5b9beab6c",
+    "dependencies": [
+     {
+      "model": "forward_charlm",
+      "package": "conll17"
+     }
+    ]
+   },
+   "gsdluw_nocharlm": {
+    "md5": "c8e952b825500e336683230e39023214"
+   }
+  },
+  "default_processors": {
+   "tokenize": "combined_nocharlm",
+   "lemma": "combined_nocharlm",
+   "pos": "combined_charlm",
+   "depparse": "combined_charlm",
+   "ner": "gsd",
+   "constituency": "alt_charlm"
+  },
+  "packages": {
+   "default": {
+    "tokenize": "combined_nocharlm",
+    "lemma": "combined_nocharlm",
+    "pos": "combined_charlm",
+    "depparse": "combined_charlm",
+    "ner": "gsd",
+    "constituency": "alt_charlm"
+   },
+   "default_fast": {
+    "tokenize": "combined_nocharlm",
+    "lemma": "combined_nocharlm",
+    "pos": "combined_nocharlm",
+    "depparse": "combined_nocharlm",
+    "ner": "gsd"
+   },
+   "default_accurate": {
+    "tokenize": "combined_charlm",
+    "lemma": "combined_charlm",
+    "pos": "combined_rinna-roberta",
+    "depparse": "combined_rinna-roberta",
+    "ner": "gsd",
+    "constituency": "alt_rinna-roberta"
+   },
+   "combined": {
+    "tokenize": "combined_nocharlm",
+    "pos": "combined_charlm",
+    "lemma": "combined_nocharlm",
+    "depparse": "combined_charlm"
+   },
+   "gsd": {
+    "tokenize": "gsd_nocharlm",
+    "pos": "gsd_charlm",
+    "lemma": "gsd_nocharlm",
+    "depparse": "gsd_charlm"
+   },
+   "gsdluw": {
+    "tokenize": "gsdluw_nocharlm",
+    "pos": "gsdluw_charlm",
+    "lemma": "gsdluw_nocharlm",
+    "depparse": "gsdluw_charlm"
+   }
+  },
+  "default_md5": "93cf83d07545813090071c17ad5c5d70",
+  "lang_name": "Japanese"
+ },
+ "th": {
+  "backward_charlm": {
+   "oscar": {
+    "md5": "9fdf26a3480cc97e9e6564954c467f7f"
+   }
+  },
+  "depparse": {
+   "tud_charlm": {
+    "md5": "c52daf6f71a31b861118563f1cef8086",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttext157"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "oscar"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "oscar"
+     }
+    ]
+   },
+   "tud_nocharlm": {
+    "md5": "9b85aeefc25ac99c7180b7e4f5d1a07c",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttext157"
+     }
+    ]
+   },
+   "tud_wangchanberta": {
+    "md5": "cee34d3de564b1a3b0ec37ffa13e65b2",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttext157"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "oscar"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "oscar"
+     }
+    ]
+   }
+  },
+  "forward_charlm": {
+   "oscar": {
+    "md5": "e9188e8942a4d8dafa1e2339973915d7"
+   }
+  },
+  "ner": {
+   "lst20": {
+    "md5": "df126a7be4387557d56295af7761bb46",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttext157"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "oscar"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "oscar"
+     }
+    ]
+   }
+  },
+  "pos": {
+   "tud_charlm": {
+    "md5": "05f2603db0ba128437cb5db3c440ab77",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttext157"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "oscar"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "oscar"
+     }
+    ]
+   },
+   "tud_nocharlm": {
+    "md5": "24622d7e819ebc08a561b3cfa3b81d25",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttext157"
+     }
+    ]
+   },
+   "tud_wangchanberta": {
+    "md5": "463aa441ba29491f8a7e763bf82b0437",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttext157"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "oscar"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "oscar"
+     }
+    ]
+   }
+  },
+  "pretrain": {
+   "fasttext157": {
+    "md5": "5fbe6268d1d2f98daa0a4a6c447ff8f3"
+   }
+  },
+  "tokenize": {
+   "orchid": {
+    "md5": "ffa4b44a0ecb6035d0815cb6bf7e5717"
+   },
+   "tud_charlm": {
+    "md5": "87c2005f48890b79d052601354e0e7f4",
+    "dependencies": [
+     {
+      "model": "forward_charlm",
+      "package": "oscar"
+     }
+    ]
+   },
+   "tud_nocharlm": {
+    "md5": "c1e8d9775bdbbdab4bc90b3cf84024c7"
+   }
+  },
+  "default_processors": {
+   "tokenize": "tud_nocharlm",
+   "lemma": "identity",
+   "pos": "tud_charlm",
+   "depparse": "tud_charlm",
+   "ner": "lst20"
+  },
+  "packages": {
+   "default": {
+    "tokenize": "tud_nocharlm",
+    "lemma": "identity",
+    "pos": "tud_charlm",
+    "depparse": "tud_charlm",
+    "ner": "lst20"
+   },
+   "default_fast": {
+    "tokenize": "tud_nocharlm",
+    "lemma": "identity",
+    "pos": "tud_nocharlm",
+    "depparse": "tud_nocharlm",
+    "ner": "lst20"
+   },
+   "default_accurate": {
+    "tokenize": "tud_charlm",
+    "lemma": "identity",
+    "pos": "tud_wangchanberta",
+    "depparse": "tud_wangchanberta",
+    "ner": "lst20"
+   },
+   "orchid": {
+    "tokenize": "orchid"
+   },
+   "tud": {
+    "tokenize": "tud_nocharlm",
+    "pos": "tud_charlm",
+    "lemma": "identity",
+    "depparse": "tud_charlm"
+   }
+  },
+  "default_md5": "30d1e1712830678b3499d0b6127593db",
+  "lang_name": "Thai"
+ },
+ "zh-hans": {
+  "backward_charlm": {
+   "gigaword": {
+    "md5": "9efba48c365d8ad4dfd62587578fa132"
+   }
+  },
+  "constituency": {
+   "ctb-51_charlm": {
+    "md5": "6939b1ffe31e82ff09a035c698b98f50",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttext157"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "gigaword"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "gigaword"
+     }
+    ]
+   },
+   "ctb-51_electra-large": {
+    "md5": "d9a44db3c285c7e8673827cd75d9a1a1",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttext157"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "gigaword"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "gigaword"
+     }
+    ]
+   }
+  },
+  "depparse": {
+   "gsdsimp_charlm": {
+    "md5": "dddbfb43df333f46e795fee02fec4fa3",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttext157"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "gigaword"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "gigaword"
+     }
+    ]
+   },
+   "gsdsimp_electra-large": {
+    "md5": "44d8c0c09ba303c09e6e9609556c3e3f",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttext157"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "gigaword"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "gigaword"
+     }
+    ]
+   },
+   "gsdsimp_nocharlm": {
+    "md5": "5effd653a6cc59545cb229e7e8e7cdee",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttext157"
+     }
+    ]
+   }
+  },
+  "forward_charlm": {
+   "gigaword": {
+    "md5": "5e61ceea0d0672b02c3af723865d9d97"
+   }
+  },
+  "lemma": {
+   "gsdsimp_charlm": {
+    "md5": "a9ba8bc8a78f29f00a8a77130d21ab58",
+    "dependencies": [
+     {
+      "model": "forward_charlm",
+      "package": "gigaword"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "gigaword"
+     }
+    ]
+   },
+   "gsdsimp_nocharlm": {
+    "md5": "ba09bee43beaba2b95965af5a49aa951"
+   }
+  },
+  "ner": {
+   "ontonotes_electra-large": {
+    "md5": "37de2caebd2903d8709f3c9d78b4c0e2",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttext157"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "gigaword"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "gigaword"
+     }
+    ]
+   },
+   "ontonotes": {
+    "md5": "939a7ce435c2e6398703180f75cb652c",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttext157"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "gigaword"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "gigaword"
+     }
+    ]
+   }
+  },
+  "pos": {
+   "gsdsimp_charlm": {
+    "md5": "3ede191e3e3b68616fad8822edbe21eb",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttext157"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "gigaword"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "gigaword"
+     }
+    ]
+   },
+   "gsdsimp_electra-large": {
+    "md5": "be3895f4a3a1f53910aa273304e090d6",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttext157"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "gigaword"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "gigaword"
+     }
+    ]
+   },
+   "gsdsimp_nocharlm": {
+    "md5": "9f4052c5a3871064b732b2d29b6db702",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttext157"
+     }
+    ]
+   }
+  },
+  "pretrain": {
+   "fasttext157": {
+    "md5": "bc4c8895d62eb3e9028d16dfc2491bc9"
+   },
+   "fasttextwiki": {
+    "md5": "b3242d2588a026aa27589a892073bb2c"
+   },
+   "fasttextwikinotrad": {
+    "md5": "7858e6adadf464a4289e547f2685f231"
+   }
+  },
+  "sentiment": {
+   "ren_charlm": {
+    "md5": "def21e7ebe1af58d95959b97dc0ef0e8",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttext157"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "gigaword"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "gigaword"
+     }
+    ]
+   },
+   "ren_electra-large": {
+    "md5": "85461fc5ada930e1989e6ba7f787ee17",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttext157"
+     },
+     {
+      "model": "forward_charlm",
+      "package": "gigaword"
+     },
+     {
+      "model": "backward_charlm",
+      "package": "gigaword"
+     }
+    ]
+   }
+  },
+  "tokenize": {
+   "gsdsimp_charlm": {
+    "md5": "ec9837e7a0ee60eb9982a4cbd2bca564",
+    "dependencies": [
+     {
+      "model": "forward_charlm",
+      "package": "gigaword"
+     }
+    ]
+   },
+   "gsdsimp_nocharlm": {
+    "md5": "a47f8f71302c1460aed5b3606270eeab"
+   }
+  },
+  "default_processors": {
+   "tokenize": "gsdsimp_nocharlm",
+   "lemma": "gsdsimp_nocharlm",
+   "pos": "gsdsimp_charlm",
+   "depparse": "gsdsimp_charlm",
+   "ner": "ontonotes",
+   "sentiment": "ren_charlm",
+   "constituency": "ctb-51_charlm"
+  },
+  "packages": {
+   "default": {
+    "tokenize": "gsdsimp_nocharlm",
+    "lemma": "gsdsimp_nocharlm",
+    "pos": "gsdsimp_charlm",
+    "depparse": "gsdsimp_charlm",
+    "ner": "ontonotes",
+    "sentiment": "ren_charlm",
+    "constituency": "ctb-51_charlm"
+   },
+   "default_fast": {
+    "tokenize": "gsdsimp_nocharlm",
+    "lemma": "gsdsimp_nocharlm",
+    "pos": "gsdsimp_nocharlm",
+    "depparse": "gsdsimp_nocharlm",
+    "ner": "ontonotes",
+    "sentiment": "ren_charlm"
+   },
+   "default_accurate": {
+    "tokenize": "gsdsimp_charlm",
+    "lemma": "gsdsimp_charlm",
+    "pos": "gsdsimp_electra-large",
+    "depparse": "gsdsimp_electra-large",
+    "ner": "ontonotes",
+    "sentiment": "ren_electra-large",
+    "constituency": "ctb-51_electra-large"
+   },
+   "gsdsimp": {
+    "tokenize": "gsdsimp_nocharlm",
+    "pos": "gsdsimp_charlm",
+    "lemma": "gsdsimp_nocharlm",
+    "depparse": "gsdsimp_charlm"
+   }
+  },
+  "default_md5": "1defb798f1396f0b50a42b5854322d25",
+  "lang_name": "Simplified_Chinese"
+ },
+ "zh-hant": {
+  "depparse": {
+   "gsd_nocharlm": {
+    "md5": "1c12019e276698411aa7da22c7f22d95",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   }
+  },
+  "lemma": {
+   "gsd_nocharlm": {
+    "md5": "994efd133b6703378f7b34efc4cc5bf4"
+   }
+  },
+  "pos": {
+   "gsd_nocharlm": {
+    "md5": "b6baa6c4f9f3ec8fe07b20ae6e7ba72c",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   }
+  },
+  "pretrain": {
+   "conll17": {
+    "md5": "0dc45af5fda17db9464c171ff161dbea"
+   }
+  },
+  "tokenize": {
+   "gsd_nocharlm": {
+    "md5": "758644937244c8c169b93d528a6c4967"
+   }
+  },
+  "default_processors": {
+   "tokenize": "gsd_nocharlm",
+   "lemma": "gsd_nocharlm",
+   "pos": "gsd_nocharlm",
+   "depparse": "gsd_nocharlm"
+  },
+  "packages": {
+   "default": {
+    "tokenize": "gsd_nocharlm",
+    "lemma": "gsd_nocharlm",
+    "pos": "gsd_nocharlm",
+    "depparse": "gsd_nocharlm"
+   },
+   "default_fast": {
+    "tokenize": "gsd_nocharlm",
+    "lemma": "gsd_nocharlm",
+    "pos": "gsd_nocharlm",
+    "depparse": "gsd_nocharlm"
+   },
+   "default_accurate": {
+    "tokenize": "gsd_nocharlm",
+    "lemma": "gsd_nocharlm",
+    "pos": "gsd_nocharlm",
+    "depparse": "gsd_nocharlm"
+   },
+   "gsd": {
+    "tokenize": "gsd_nocharlm",
+    "pos": "gsd_nocharlm",
+    "lemma": "gsd_nocharlm",
+    "depparse": "gsd_nocharlm"
+   }
+  },
+  "default_md5": "516a7416d454e7c93bf125093e5692f7",
+  "lang_name": "Traditional_Chinese"
+ },
+ "ko": {
+  "depparse": {
+   "gsd_nocharlm": {
+    "md5": "cd1693859ebc704ae7dc315763c66e02",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   },
+   "kaist_nocharlm": {
+    "md5": "8665cc814dd8c4df1a00d5ff4325a8c1",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   },
+   "ksl_nocharlm": {
+    "md5": "d344be96c76ae6f5de64c9b596f2f9ce",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   }
+  },
+  "lemma": {
+   "gsd_nocharlm": {
+    "md5": "e6aa4889f363ad74a4e7bfb068c008a0"
+   },
+   "kaist_nocharlm": {
+    "md5": "7a284f2dd1f8f16b6cdc4c7257e86c51"
+   },
+   "ksl_nocharlm": {
+    "md5": "290e13db03fe2fc75f9fb775fd006bd5"
+   }
+  },
+  "pos": {
+   "gsd_nocharlm": {
+    "md5": "f178ca3ec0b7ab8baeb0121be67a9bd8",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   },
+   "kaist_nocharlm": {
+    "md5": "187cf63568208a5b9ec5470fc562d7a5",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   },
+   "ksl_nocharlm": {
+    "md5": "7f854b57c23d73ebe5138dc89b0fdd3f",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "conll17"
+     }
+    ]
+   }
+  },
+  "pretrain": {
+   "conll17": {
+    "md5": "3bc5ae2f0f6bf3cc9117ed3964c18c19"
+   }
+  },
+  "tokenize": {
+   "gsd_nocharlm": {
+    "md5": "61b3400282c7599ea91d45f226371d15"
+   },
+   "kaist_nocharlm": {
+    "md5": "c2433abff90a6d08c9d0816ef4ef1b9d"
+   },
+   "ksl_nocharlm": {
+    "md5": "cb1bd351fea534c376c08e225e5572a0"
+   }
+  },
+  "default_processors": {
+   "tokenize": "kaist_nocharlm",
+   "lemma": "kaist_nocharlm",
+   "pos": "kaist_nocharlm",
+   "depparse": "kaist_nocharlm"
+  },
+  "packages": {
+   "default": {
+    "tokenize": "kaist_nocharlm",
+    "lemma": "kaist_nocharlm",
+    "pos": "kaist_nocharlm",
+    "depparse": "kaist_nocharlm"
+   },
+   "default_fast": {
+    "tokenize": "kaist_nocharlm",
+    "lemma": "kaist_nocharlm",
+    "pos": "kaist_nocharlm",
+    "depparse": "kaist_nocharlm"
+   },
+   "default_accurate": {
+    "tokenize": "kaist_nocharlm",
+    "lemma": "kaist_nocharlm",
+    "pos": "kaist_nocharlm",
+    "depparse": "kaist_nocharlm"
+   },
+   "gsd": {
+    "tokenize": "gsd_nocharlm",
+    "pos": "gsd_nocharlm",
+    "lemma": "gsd_nocharlm",
+    "depparse": "gsd_nocharlm"
+   },
+   "kaist": {
+    "tokenize": "kaist_nocharlm",
+    "pos": "kaist_nocharlm",
+    "lemma": "kaist_nocharlm",
+    "depparse": "kaist_nocharlm"
+   },
+   "ksl": {
+    "tokenize": "ksl_nocharlm",
+    "pos": "ksl_nocharlm",
+    "lemma": "ksl_nocharlm",
+    "depparse": "ksl_nocharlm"
+   }
+  },
+  "default_md5": "251447272e764519fca57ce5675b72dd",
+  "lang_name": "Korean"
+ },
+ "lzh": {
+  "depparse": {
+   "kyoto_nocharlm": {
+    "md5": "b8ea56382ea79d7d77ff94de6a3771b1",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttextwiki"
+     }
+    ]
+   }
+  },
+  "lemma": {
+   "kyoto_nocharlm": {
+    "md5": "930c800ee8728d83b0c7153ee08dfa4f"
+   }
+  },
+  "pos": {
+   "kyoto_nocharlm": {
+    "md5": "231a24920b3b53bc347f97f3afb659ef",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttextwiki"
+     }
+    ]
+   }
+  },
+  "pretrain": {
+   "fasttextwiki": {
+    "md5": "ecdf73aa710453f1ea672bbd45c612d0"
+   }
+  },
+  "tokenize": {
+   "kyoto_nocharlm": {
+    "md5": "8bb728351ab0d69a93895221b703dd2f"
+   }
+  },
+  "default_processors": {
+   "tokenize": "kyoto_nocharlm",
+   "lemma": "kyoto_nocharlm",
+   "pos": "kyoto_nocharlm",
+   "depparse": "kyoto_nocharlm"
+  },
+  "packages": {
+   "default": {
+    "tokenize": "kyoto_nocharlm",
+    "lemma": "kyoto_nocharlm",
+    "pos": "kyoto_nocharlm",
+    "depparse": "kyoto_nocharlm"
+   },
+   "default_fast": {
+    "tokenize": "kyoto_nocharlm",
+    "lemma": "kyoto_nocharlm",
+    "pos": "kyoto_nocharlm",
+    "depparse": "kyoto_nocharlm"
+   },
+   "default_accurate": {
+    "tokenize": "kyoto_nocharlm",
+    "lemma": "kyoto_nocharlm",
+    "pos": "kyoto_nocharlm",
+    "depparse": "kyoto_nocharlm"
+   },
+   "kyoto": {
+    "tokenize": "kyoto_nocharlm",
+    "pos": "kyoto_nocharlm",
+    "lemma": "kyoto_nocharlm",
+    "depparse": "kyoto_nocharlm"
+   }
+  },
+  "default_md5": "6268ec63d10e7776bc784cee8f3d5a27",
+  "lang_name": "Classical_Chinese"
  }
 }

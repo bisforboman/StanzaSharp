@@ -83,6 +83,11 @@ internal sealed partial class Tokenizer : IDisposable
     private readonly Regex?[] _featRes; // per feature: its structural pattern, or null for a per-unit one
     private readonly IPerCharLanguageModel? _charlm; // a _charlm model's forward charlm, run over the raw units
     private readonly int _charlmPad;
+    private readonly int _numDictFeat;        // num_dict_feat with use_dictionary, else 0
+    private readonly LexiconDictionary? _dictionary;
+    private readonly bool _skipNewline;       // config skip_newline (zh): a newline inside a paragraph is no unit
+    private readonly bool _replacesSpaces;    // Vocab.lang_replaces_spaces (zh, ja, ko): a token's spaces are removed
+    private readonly bool _ittbShorthand;     // output_predictions' la_ittb hack: ':' and ';' end a sentence
 
     /// <param name="net">Builds the network from the checkpoint (a backend's, e.g. <see cref="ManagedTokenizerNet"/>).</param>
     /// <param name="charlm">The forward charlm a <c>_charlm</c> model reads (config <c>charlm</c>); else null.</param>
@@ -106,6 +111,19 @@ internal sealed partial class Tokenizer : IDisposable
         _featDim = config["feat_dim"]!.GetValue<int>();
         _maxSeqLen = config["max_seqlen"]?.GetValue<int>() ?? MaxSeqLenDefault;
         _window = Math.Max(MaxSeqLenDefault, _maxSeqLen);
+        _skipNewline = config["skip_newline"]?.GetValue<bool>() == true;
+        _ittbShorthand = config["shorthand"]?.GetValue<string>() == "la_ittb";
+        var lang = ckpt.Root["vocab"]?["lang"]?.GetValue<string>() ?? "";
+        _replacesSpaces = lang.StartsWith("zh", StringComparison.Ordinal) || lang.StartsWith("ja", StringComparison.Ordinal)
+            || lang.StartsWith("ko", StringComparison.Ordinal);
+
+        // trainer.load: a model with a lexicon builds create_dictionary from it; data.py reads it when use_dictionary.
+        if (config["use_dictionary"]?.GetValue<bool>() == true)
+        {
+            _numDictFeat = config["num_dict_feat"]!.GetValue<int>();
+            _dictionary = new LexiconDictionary(Checkpoint.Strings(ckpt.Root["lexicon"]
+                ?? throw new InvalidDataException("use_dictionary is set but the checkpoint has no lexicon")));
+        }
 
         // data.py para_to_sentences: per-character features in config order, then the
         // position features, then the structural features in STRUCTURAL_FEATURES order.
@@ -120,8 +138,8 @@ internal sealed partial class Tokenizer : IDisposable
         var unknown = funcs.Except(_featFuncs).ToList();
         if (unknown.Count > 0)
             throw new NotSupportedException($"Unknown tokenizer feature functions: {string.Join(", ", unknown)}");
-        if (_featFuncs.Length != _featDim)
-            throw new InvalidOperationException($"feat_dim is {_featDim} but {_featFuncs.Length} features are configured");
+        if (_featFuncs.Length + 2 * _numDictFeat != _featDim)
+            throw new InvalidOperationException($"feat_dim is {_featDim} but {_featFuncs.Length} features and {2 * _numDictFeat} dictionary features are configured");
         _featRes = [.. _featFuncs.Select(name => StructuralFeatures.FirstOrDefault(s => s.Name == name).Re)];
     }
 
@@ -374,7 +392,7 @@ internal sealed partial class Tokenizer : IDisposable
         private string? _codePoints;
     }
 
-    private static List<Paragraph> SplitParagraphs(string text)
+    private List<Paragraph> SplitParagraphs(string text)
     {
         var result = new List<Paragraph>();
         int pos = 0;
@@ -388,7 +406,7 @@ internal sealed partial class Tokenizer : IDisposable
         return result;
     }
 
-    private static void AddParagraph(string text, int start, int end, List<Paragraph> result)
+    private void AddParagraph(string text, int start, int end, List<Paragraph> result)
     {
         while (end > start && PyString.IsSpace(text[end - 1]))
             end--;
@@ -404,6 +422,13 @@ internal sealed partial class Tokenizer : IDisposable
             int n = 0, length = 0, pos = start;
             foreach (var rune in text.AsSpan(start, end - start).EnumerateRunes())
             {
+                // DataLoader: with skip_newline a newline inside the paragraph is dropped before anything else.
+                if (_skipNewline && rune.Value == '\n')
+                {
+                    pos++;
+                    continue;
+                }
+
                 bool space = rune.IsBmp && (PyString.IsSpace((char)rune.Value) || rune.Value is >= 0x80 and <= 0x9f);
 
                 // filter_consecutive_whitespaces: keep the first of a run of spaces.
@@ -469,7 +494,7 @@ internal sealed partial class Tokenizer : IDisposable
     {
         int n = para.Length;
         feats.Clear();
-        for (int k = 0; k < _featDim; k++)
+        for (int k = 0; k < _featFuncs.Length; k++)
         {
             if (_featRes[k] is { } structural)
             {
@@ -497,6 +522,94 @@ internal sealed partial class Tokenizer : IDisposable
                 };
                 if (on)
                     feats[i * _featDim + k] = 1;
+            }
+        }
+
+        if (_dictionary != null)
+            DictionaryFeatures(para, feats);
+    }
+
+    /// <summary>
+    /// data.py extract_dict_feat, appended after every other feature: for windows 1 to num_dict_feat, whether the unit
+    /// plus the next (forward) or previous (backward) units is a lexicon word, stopping a direction once the string is
+    /// no prefix (suffix) of one. The unit itself is taken as written, the others lowercased, as Stanza does.
+    /// </summary>
+    private void DictionaryFeatures(Paragraph para, Span<float> feats)
+    {
+        int n = para.Length, first = _featFuncs.Length;
+        var lower = new string[n];
+        for (int i = 0; i < n; i++)
+            lower[i] = PyString.Lower(para.Text[para.UnitStart[i]..para.UnitStart[i + 1]]);
+        var words = _dictionary!.Words;
+        var builder = new StringBuilder();
+        for (int i = 0; i < n; i++)
+        {
+            var unit = para.Text.AsSpan(para.UnitStart[i], para.UnitStart[i + 1] - para.UnitStart[i]);
+            var row = feats.Slice(i * _featDim + first, 2 * _numDictFeat);
+            bool prefix = true, suffix = true;
+            var forward = builder.Clear().Append(unit).ToString();
+            var backward = forward;
+            for (int window = 1; window <= _numDictFeat; window++)
+            {
+                if (i + window <= n - 1 && prefix)
+                {
+                    forward += lower[i + window];
+                    if (words.Contains(forward))
+                        row[window - 1] = 1;
+                    if (!_dictionary.Prefixes.Contains(forward))
+                        prefix = false;
+                }
+
+                if (i - window >= 0 && suffix)
+                {
+                    backward = lower[i - window] + backward;
+                    if (words.Contains(backward))
+                        row[_numDictFeat + window - 1] = 1;
+                    if (!_dictionary.Suffixes.Contains(backward))
+                        suffix = false;
+                }
+
+                if (!prefix && !suffix)
+                    break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// utils.create_dictionary: the lexicon's words of more than one code point, and every proper prefix and suffix of
+    /// them (per code point).
+    /// </summary>
+    private sealed class LexiconDictionary
+    {
+        public readonly HashSet<string> Words = new(StringComparer.Ordinal);
+        public readonly HashSet<string> Prefixes = new(StringComparer.Ordinal);
+        public readonly HashSet<string> Suffixes = new(StringComparer.Ordinal);
+
+        public LexiconDictionary(IEnumerable<string> lexicon)
+        {
+            foreach (var word in lexicon)
+            {
+                // Python's len and indexing: code points.
+                int length = 0;
+                foreach (var _ in word.EnumerateRunes())
+                    length++;
+                if (length <= 1 || !Words.Add(word))
+                    continue;
+                int start = 0;
+                var bounds = new int[length + 1];
+                int k = 0;
+                foreach (var rune in word.EnumerateRunes())
+                {
+                    bounds[k++] = start;
+                    start += rune.Utf16SequenceLength;
+                }
+
+                bounds[length] = word.Length;
+                for (int j = 1; j < length; j++)
+                {
+                    Prefixes.Add(word[..bounds[j]]);
+                    Suffixes.Add(word[bounds[length - j]..]);
+                }
             }
         }
     }
@@ -696,23 +809,35 @@ internal sealed partial class Tokenizer : IDisposable
         int tokStart = 0;
         for (int i = 0; i < para.Length; i++)
         {
-            if (pred[i] < 1)
+            int label = pred[i];
+
+            // decode_predictions' la_ittb hack: ':' and ';' end a sentence.
+            if (_ittbShorthand && para.Text.AsSpan(para.UnitStart[i], para.UnitStart[i + 1] - para.UnitStart[i]) is ":" or ";")
+                label = 2;
+            if (label < 1)
                 continue;
 
             // The token is units [tokStart, i] minus leading spaces; all-space tokens are dropped.
             int first = tokStart;
             while (first <= i && para.IsSpace(first))
                 first++;
-            int label = pred[i];
             tokStart = i + 1;
             if (first > i)
                 continue;
 
             var text = para.Text[para.UnitStart[first]..para.UnitStart[i + 1]];
+            int codePoints = i + 1 - first;
+
+            // Vocab.normalize_token: zh, ja and ko drop the spaces inside a token.
+            if (_replacesSpaces && text.Contains(' '))
+            {
+                codePoints -= text.Count(c => c == ' ');
+                text = text.Replace(" ", "", StringComparison.Ordinal);
+            }
 
             // TokenizeProcessor.process: len(token['text']) > max_seqlen, in code points (one per unit). Only the
             // text changes; offsets and the MWT flag stay.
-            if (i + 1 - first > _maxSeqLen && !keepLongTokens)
+            if (codePoints > _maxSeqLen && !keepLongTokens)
                 text = LongTokenReplacement;
             int start = para.Starts[first], end = para.End(i);
 

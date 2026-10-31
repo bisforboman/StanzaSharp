@@ -1,0 +1,49 @@
+# text = 東京は日本の首都です。
+# sent_id = 0
+# constituency = (ROOT (S (S (PP (BASENP (PROPN 東京)) (ADP は)) (VP (NP (PP (BASENP (PROPN 日本)) (ADP の)) (NOUN 首都)) (AUX です))) (PUNCT 。)))
+1	東京	東京	PROPN	名詞-固有名詞-地名-一般	_	5	nsubj	_	SpaceAfter=No|start_char=0|end_char=2|ner=S-GPE
+2	は	は	ADP	助詞-係助詞	_	1	case	_	SpaceAfter=No|start_char=2|end_char=3|ner=O
+3	日本	日本	PROPN	名詞-固有名詞-地名-国	_	5	nmod	_	SpaceAfter=No|start_char=3|end_char=5|ner=S-GPE
+4	の	の	ADP	助詞-格助詞	_	3	case	_	SpaceAfter=No|start_char=5|end_char=6|ner=O
+5	首都	首都	NOUN	名詞-普通名詞-一般	_	0	root	_	SpaceAfter=No|start_char=6|end_char=8|ner=O
+6	です	です	AUX	助動詞-助動詞-デス	_	5	cop	_	SpaceAfter=No|start_char=8|end_char=10|ner=O
+7	。	。	PUNCT	補助記号-句点	_	5	punct	_	SpaceAfter=No|start_char=10|end_char=11|ner=O
+
+# text = 昨日、私は友達と一緒に新しいレストランへ行きました。
+# sent_id = 1
+# constituency = (ROOT (S (S (BASENP (ADV 昨日)) (PUNCT 、) (S (PP (BASENP (PRON 私)) (ADP は)) (VP (PP (BASENP (NOUN 友達)) (ADP と)) (VP (ADVP (NOUN 一緒) (ADP に)) (VP (PP (BASENP (ADJ 新しい) (NOUN レストラン)) (ADP へ)) (VP (VERB 行き) (VP (AUX まし) (VP (AUX た))))))))) (PUNCT 。)))
+1	昨日	昨日	ADV	名詞-普通名詞-副詞可能	_	12	advmod	_	SpaceAfter=No|start_char=11|end_char=13|ner=O
+2	、	、	PUNCT	補助記号-読点	_	1	punct	_	SpaceAfter=No|start_char=13|end_char=14|ner=O
+3	私	私	PRON	代名詞	_	12	nsubj	_	SpaceAfter=No|start_char=14|end_char=15|ner=O
+4	は	は	ADP	助詞-係助詞	_	3	case	_	SpaceAfter=No|start_char=15|end_char=16|ner=O
+5	友達	友達	NOUN	名詞-普通名詞-一般	_	12	obl	_	SpaceAfter=No|start_char=16|end_char=18|ner=O
+6	と	と	ADP	助詞-格助詞	_	5	case	_	SpaceAfter=No|start_char=18|end_char=19|ner=O
+7	一緒	一緒	NOUN	名詞-普通名詞-サ変可能	_	5	conj	_	SpaceAfter=No|start_char=19|end_char=21|ner=O
+8	に	に	ADP	助詞-格助詞	_	7	case	_	SpaceAfter=No|start_char=21|end_char=22|ner=O
+9	新しい	新しい	ADJ	形容詞-一般-形容詞	_	10	acl	_	SpaceAfter=No|start_char=22|end_char=25|ner=O
+10	レストラン	レストラン	NOUN	名詞-普通名詞-一般	_	12	obl	_	SpaceAfter=No|start_char=25|end_char=30|ner=O
+11	へ	へ	ADP	助詞-格助詞	_	10	case	_	SpaceAfter=No|start_char=30|end_char=31|ner=O
+12	行き	行く	VERB	動詞-非自立可能-五段-カ行	_	0	root	_	SpaceAfter=No|start_char=31|end_char=33|ner=O
+13	まし	ます	AUX	助動詞-助動詞-マス	_	12	aux	_	SpaceAfter=No|start_char=33|end_char=35|ner=O
+14	た	た	AUX	助動詞-助動詞-タ	_	12	aux	_	SpaceAfter=No|start_char=35|end_char=36|ner=O
+15	。	。	PUNCT	補助記号-句点	_	12	punct	_	SpaceAfter=No|start_char=36|end_char=37|ner=O
+
+# text = 料理はとても美味しかったので、来週また行きたいと思います。
+# sent_id = 2
+# constituency = (ROOT (S (S (SBAR (NP (S (PP (BASENP (NOUN 料理)) (ADP は)) (ADJP (ADVP (ADV とても)) (ADJP (ADJ 美味しかっ) (VP (AUX た))))) (SCONJ の)) (AUX で)) (PUNCT 、) (S (BASENP (ADV 来週)) (VP (ADVP (ADV また)) (VP (SBAR (S (VP (VERB 行き) (VP (AUX たい)))) (ADP と)) (VP (VERB 思い) (VP (AUX ます))))))) (PUNCT 。)))
+1	料理	料理	NOUN	名詞-普通名詞-サ変可能	_	4	nsubj	_	SpaceAfter=No|start_char=37|end_char=39|ner=O
+2	は	は	ADP	助詞-係助詞	_	1	case	_	SpaceAfter=No|start_char=39|end_char=40|ner=O
+3	とても	迚も	ADV	副詞	_	4	advmod	_	SpaceAfter=No|start_char=40|end_char=43|ner=O
+4	美味しかっ	美味しい	ADJ	形容詞-一般-形容詞	_	11	advcl	_	SpaceAfter=No|start_char=43|end_char=48|ner=O
+5	た	た	AUX	助動詞-助動詞-タ	_	4	aux	_	SpaceAfter=No|start_char=48|end_char=49|ner=O
+6	の	の	SCONJ	助詞-準体助詞	_	4	mark	_	SpaceAfter=No|start_char=49|end_char=50|ner=O
+7	で	だ	AUX	助動詞-助動詞-ダ	_	6	fixed	_	SpaceAfter=No|start_char=50|end_char=51|ner=O
+8	、	、	PUNCT	補助記号-読点	_	4	punct	_	SpaceAfter=No|start_char=51|end_char=52|ner=O
+9	来週	来週	ADV	名詞-普通名詞-副詞可能	_	11	advmod	_	SpaceAfter=No|start_char=52|end_char=54|ner=O
+10	また	又	ADV	副詞	_	11	advmod	_	SpaceAfter=No|start_char=54|end_char=56|ner=O
+11	行き	行く	VERB	動詞-非自立可能-五段-カ行	_	14	ccomp	_	SpaceAfter=No|start_char=56|end_char=58|ner=O
+12	たい	たい	AUX	助動詞-助動詞-タイ	_	11	aux	_	SpaceAfter=No|start_char=58|end_char=60|ner=O
+13	と	と	ADP	助詞-格助詞	_	11	case	_	SpaceAfter=No|start_char=60|end_char=61|ner=O
+14	思い	思う	VERB	動詞-一般-五段-ワア行	_	0	root	_	SpaceAfter=No|start_char=61|end_char=63|ner=O
+15	ます	ます	AUX	助動詞-助動詞-マス	_	14	aux	_	SpaceAfter=No|start_char=63|end_char=65|ner=O
+16	。	。	PUNCT	補助記号-句点	_	14	punct	_	SpacesAfter=\n|start_char=65|end_char=66|ner=O

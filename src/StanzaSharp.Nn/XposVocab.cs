@@ -33,7 +33,7 @@ internal sealed class XposVocab
     public static XposVocab Read(JsonNode vocab)
     {
         var node = vocab["xpos"]!;
-        string[] Strings(JsonNode? array) => [.. array!.AsArray().Select(x => x!.GetValue<string>())];
+        string[] Strings(JsonNode? array) => Checkpoint.Strings(array);
         switch (vocab["_key2class"]!["xpos"]!.GetValue<string>())
         {
             case "WordVocab":

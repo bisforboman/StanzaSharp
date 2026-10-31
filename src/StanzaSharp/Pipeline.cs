@@ -70,10 +70,10 @@ public sealed class Pipeline : IDisposable
     [
         "ab", "af", "ang", "ar", "as", "be", "bg", "bor", "bxr", "ca", "ckb", "cop", "cs", "cu", "cy", "da", "egy",
         "et", "eu", "fa", "fi", "fo", "frm", "fro", "ga", "gd", "gl", "got", "grc", "gv", "hbo", "he", "hi", "hr",
-        "hsb", "ht", "hu", "hy", "hyw", "id", "is", "ka", "kk", "kmr", "kpv", "ky", "la", "lij", "lt", "lv", "mr",
-        "mt", "my", "myv", "naq", "nb", "nds", "nn", "oc", "orv", "ota", "pa", "pcm", "pl", "pro", "qaf", "qpm", "qtd",
-        "ro", "ru", "sa", "say", "sd", "sdh", "sk", "sl", "sme", "sq", "sr", "sv", "ta", "te", "tr", "ug", "uk", "ur",
-        "uz", "vi", "wo", "wuu", "xcl", "yi", "yrl", "zza",
+        "hsb", "ht", "hu", "hy", "hyw", "id", "is", "ja", "ka", "kk", "kmr", "ko", "kpv", "ky", "la", "lij", "lt",
+        "lv", "lzh", "mr", "mt", "my", "myv", "naq", "nb", "nds", "nn", "oc", "orv", "ota", "pa", "pcm", "pl", "pro",
+        "qaf", "qpm", "qtd", "ro", "ru", "sa", "say", "sd", "sdh", "sk", "sl", "sme", "sq", "sr", "sv", "ta", "te",
+        "th", "tr", "ug", "uk", "ur", "uz", "vi", "wo", "wuu", "xcl", "yi", "yrl", "zh-hans", "zh-hant", "zza",
     ];
 
     // Each supported package's models (processor → model), from resources.json.

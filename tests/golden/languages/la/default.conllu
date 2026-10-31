@@ -20,4 +20,25 @@
 7	senatoribus	senator	NOUN	C1|grn1|casO|gen1	Case=Abl|Gender=Masc|InflClass=IndEurX|Number=Plur	8	obl	_	start_char=71|end_char=82
 8	locutus	loquor	VERB	L2|modM|tem4|grp1|casA|gen1|vgr2	Aspect=Perf|Case=Nom|Gender=Masc|InflClass=LatX|InflClass[nominal]=IndEurO|Number=Sing|VerbForm=Part|Voice=Pass	4	conj	_	start_char=83|end_char=90
 9	est	sum	AUX	N3|modA|tem1|gen6	Aspect=Imp|InflClass=LatAnom|Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	8	aux:pass	_	SpaceAfter=No|start_char=91|end_char=94
-10	.	.	PUNCT	Punc	_	4	punct	_	SpacesAfter=\n|start_char=94|end_char=95
+10	.	.	PUNCT	Punc	_	4	punct	_	SpacesAfter=\n\n|start_char=94|end_char=95
+
+# text = Dixit autem Deus:
+# sent_id = 2
+1	Dixit	dico	VERB	N3|modA|tem4|gen6	Aspect=Perf|InflClass=LatX|Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	start_char=97|end_char=102
+2	autem	autem	PART	O4	_	1	discourse	_	start_char=103|end_char=108
+3	Deus	deus	NOUN	F1|grn1|casA|gen1	Case=Nom|Gender=Masc|InflClass=IndEurO|Number=Sing	1	nsubj	_	SpaceAfter=No|start_char=109|end_char=113
+4	:	:	PUNCT	Punc	_	1	punct	_	start_char=113|end_char=114
+
+# text = fiat lux;
+# sent_id = 3
+1	fiat	fio	VERB	N3|modK|tem1|gen6	Aspect=Imp|InflClass=LatI|Mood=Sub|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin|Voice=Act	0	root	_	start_char=115|end_char=119
+2	lux	lux	NOUN	C1|grn1|casA|gen2	Case=Nom|Gender=Fem|InflClass=IndEurX|Number=Sing	1	nsubj:pass	_	SpaceAfter=No|start_char=120|end_char=123
+3	;	;	PUNCT	Punc	_	1	punct	_	start_char=123|end_char=124
+
+# text = et facta est lux.
+# sent_id = 4
+1	et	et	CCONJ	O4	_	2	cc	_	start_char=125|end_char=127
+2	facta	facio	VERB	N2|modM|tem4|grp1|casA|gen2	Aspect=Perf|Case=Nom|Gender=Fem|InflClass=LatI2|InflClass[nominal]=IndEurA|Number=Sing|VerbForm=Part|Voice=Pass	0	root	_	start_char=128|end_char=133
+3	est	sum	AUX	N3|modA|tem1|gen6	Aspect=Imp|InflClass=LatAnom|Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	aux:pass	_	start_char=134|end_char=137
+4	lux	lux	NOUN	C1|grn1|casA|gen2	Case=Nom|Gender=Fem|InflClass=IndEurX|Number=Sing	2	nsubj:pass	_	SpaceAfter=No|start_char=138|end_char=141
+5	.	.	PUNCT	Punc	_	2	punct	_	SpacesAfter=\n|start_char=141|end_char=142
