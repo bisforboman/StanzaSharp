@@ -26,13 +26,14 @@ Where a pattern and an entity overlap, they become one span typed by the pattern
 
 ## How well Swedish NER finds names
 
-Measured on two fictional case-file texts (2026-10-31): a decision on social assistance written as running text, and
-`example.txt`, written to be hard (an all-caps surname-first header, form fields, genitives, an initial, non-Nordic
-names, names at the start of a sentence and alone).
+Measured on two fictional case-file texts (2026-10-31): a decision on social assistance written as running text (not
+included), and `example.txt`, written to be hard (an all-caps surname-first header, form fields, genitives, an initial,
+non-Nordic names, names at the start of a sentence and alone). Everything in `example.txt` is invented; its
+personnummer have years no one can be born in (2098, 2099) and its organisationsnummer is synthetic.
 
 | | running text | example.txt |
 |---|---|---|
-| person mentions found | 11 of 11 | 16 of 16 (one, `Mikaels`, typed ORG: masked anyway) |
+| person mentions found | 11 of 11 | 15 of 15 (the header `LINDQVIST, KARIN` as two spans; `Mikaels` typed ORG, masked anyway) |
 | boundary errors | `Uppsala kommun` split into LOC + ORG | `KARIN Personnummer`: the field's label masked with the name |
 | left to the patterns | street numbers, postal codes, phone, e-mail, personnummer | the same; NER tagged a personnummer as an amount |
 

@@ -9,18 +9,18 @@ namespace StanzaSharp.Tests;
 public class MaskingTests
 {
     [Theory]
-    [InlineData("7804122385", true)]
-    [InlineData("7804122384", false)]
-    [InlineData("5566778899", true)]
-    [InlineData("1203154594", true)]
+    [InlineData("9804122381", true)]
+    [InlineData("9804122385", false)]
+    [InlineData("5599001236", true)]
+    [InlineData("9903154590", true)]
     public void Luhn_ChecksTheLastDigit(string digits, bool valid) => Assert.Equal(valid, Masker.Luhn(digits));
 
     [Theory]
-    [InlineData("Personnummer 19780412-2385 enligt", "19780412-2385", "PNR")]
-    [InlineData("pnr 780412-2385.", "780412-2385", "PNR")]
-    [InlineData("född 7804122385", "7804122385", "PNR")]
-    [InlineData("samordningsnummer 780472-2382", "780472-2382", "PNR")]
-    [InlineData("organisationsnummer 556677-8899.", "556677-8899", "ORGNR")]
+    [InlineData("Personnummer 20980412-2381 enligt", "20980412-2381", "PNR")]
+    [InlineData("pnr 980412+2381.", "980412+2381", "PNR")]
+    [InlineData("född 209804122381", "209804122381", "PNR")]
+    [InlineData("samordningsnummer 20980472-2388", "20980472-2388", "PNR")]
+    [InlineData("organisationsnummer 559900-1236.", "559900-1236", "ORGNR")]
     [InlineData("ring 070-123 45 67 i dag", "070-123 45 67", "PHONE")]
     [InlineData("ring 08-555 123 45 i dag", "08-555 123 45", "PHONE")]
     [InlineData("ring +46 70 123 45 67 i dag", "+46 70 123 45 67", "PHONE")]
@@ -36,12 +36,20 @@ public class MaskingTests
     }
 
     [Theory]
-    [InlineData("personnummer 19780412-2384")]        // fails the Luhn check
-    [InlineData("ärende 781312-2384")]                // month 13
+    [InlineData("personnummer 20980412-2385")]        // fails the Luhn check
+    [InlineData("ärende 20981312-2380")]              // month 13
     [InlineData("beviljas 8 450 kronor för oktober")] // an amount
     [InlineData("4 kap. 1 § socialtjänstlagen")]
     [InlineData("år 2026, vecka 40")]
     public void Patterns_LeaveOtherNumbersAlone(string text) => Assert.Empty(Masker.FindPatterns(text));
+
+    // A 10-digit personnummer of the 2000s starts with 0, so the phone pattern matches it too; the personnummer wins.
+    [Fact]
+    public void Find_PrefersPersonnummerOverPhone()
+    {
+        var span = Assert.Single(Masker.Find("född 050101-1233.", null));
+        Assert.Equal(("050101-1233", "PNR"), (span.Text, span.Type));
+    }
 
     [Fact]
     public void Find_MergesOverlapsAndPrefersThePattern()
