@@ -271,6 +271,9 @@ public sealed class Pipeline : IDisposable
     /// <summary>The loaded parser, for studies (samples/StanzaSharp.Benchmark constituency-divergence).</summary>
     internal ConstituencyParser? Parser => _parser;
 
+    /// <summary>Whether the pipeline loaded the NER tagger (StanzaSharp.DataIngestion's EntityEnricher needs it).</summary>
+    internal bool HasNer => _ner != null;
+
     private readonly SentimentClassifier? _sentiment;
     private readonly CorefResolver? _coref;
     private readonly TransformerEmbedder[] _transformers = []; // every transformer the models read (Transformers), once each

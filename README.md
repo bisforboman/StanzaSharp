@@ -574,6 +574,28 @@ for `default_fast`), and each call in flight adds
 [samples/StanzaSharp.Masking](samples/StanzaSharp.Masking/README.md) suggests what to mask in Swedish documents
 (maskning): Swedish NER plus personnummer, organisationsnummer, phone, e-mail and address patterns.
 
+### RAG ingestion (Microsoft.Extensions.DataIngestion)
+
+The `StanzaSharp.DataIngestion` package (a prerelease while Microsoft.Extensions.DataIngestion is in preview) plugs
+StanzaSharp into .NET's RAG ingestion pipelines:
+
+- `SentenceChunker` is an `IngestionChunker<string>` that never cuts a sentence. Each chunk is at most
+  `MaxTokensPerChunk` tokens of your embedding model's tokenizer, and the overlap is made of whole sentences. Headers
+  become each chunk's context, as in `HeaderChunker`, and tables stay whole.
+- `EntityEnricher` writes each chunk's named entities under the metadata key `entities`, for filtered or hybrid search.
+  It runs offline and gives the same result every time.
+
+```csharp
+using var nlp = Pipeline.Load("models/stanza/en", new PipelineOptions { Processors = "tokenize,ner" });
+var chunker = new SentenceChunker(nlp, new IngestionChunkerOptions(TiktokenTokenizer.CreateForModel("gpt-4o"))
+{
+    MaxTokensPerChunk = 512,
+    OverlapTokens = 64,
+});
+using var ingestion = new IngestionPipeline<string>(reader, chunker, writer);
+ingestion.ChunkProcessors.Add(new EntityEnricher(nlp));
+```
+
 ### Language identification
 
 Stanza's language identifier tells which of 68 languages a text is in (UD codes: `en`, `de`, `fr`, `zh-hans`, ...). Its
