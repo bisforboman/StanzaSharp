@@ -337,8 +337,8 @@ public sealed class PipelineOptions
     public ILogger? Logger { get; init; }
 
     /// <summary>
-    /// Linux with glibc: return the native heap's free memory to the OS at the end of each Process call
-    /// (<c>malloc_trim(0)</c>, see <see cref="NativeHeap"/>). Always on for users (decided: no public API, its cost is
+    /// Linux with glibc, TorchSharp backend: return the native heap's free memory to the OS at the end of each Process call
+    /// (<c>malloc_trim(0)</c>, see <see cref="NativeHeap"/>; the managed backend has nothing there to return). Always on for users (decided: no public API, its cost is
     /// in the noise); internal so the benchmark can measure without it.
     /// </summary>
     internal bool TrimNativeHeap { get; init; } = true;

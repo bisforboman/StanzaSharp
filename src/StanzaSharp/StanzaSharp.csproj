@@ -33,7 +33,7 @@
 
   <ItemGroup>
     <!-- PipelineOptions.Logger. The lowest .NET 10 version, so apps on any later 10.0.x don't get a forced upgrade. -->
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.14" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
   </ItemGroup>
 
   <ItemGroup>
