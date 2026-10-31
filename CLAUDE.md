@@ -582,6 +582,7 @@ src/StanzaSharp.Sentiment      Sentence sentiment (CNN classifier over biLSTM st
 src/StanzaSharp.Coref          Coreference (XLM-R + LoRA, the coref head, chains; opt-in processor).
 src/StanzaSharp                Pipeline facade wiring the processors together.
 src/StanzaSharp.DataIngestion  Microsoft.Extensions.DataIngestion (#233): SentenceChunker, EntityEnricher; its own package.
+src/StanzaSharp.TasmanianDevil TasmanianDevil (PII, #234): NER recognizer, lemma normalizer, Swedish id numbers; own package.
 src/StanzaSharp.Tool           The `stanzasharp` .NET tool: download, compare, benchmark (no native libtorch).
 samples/StanzaSharp.Cli        Console runner for quick experiments.
 samples/StanzaSharp.Benchmark  Per-stage speed/memory benchmark; tools/benchmark.py is the Python twin.
@@ -1268,7 +1269,9 @@ What the English treebank packages' checkpoints add to the default package's pat
     2026-10-14), `Dependency` (#174, 2026-10-18);
   - the facade's `ModelPath`, `LanguageIdentifier`, `LanguageIdentifierOptions`, `MultilingualPipeline`, `MultilingualOptions` (#174, 2026-10-19);
   - Core's `CorefChain`, `CorefMention`, `CorefAttachment` (coref PR b, owner's decision 2026-10-20: Stanza's shape);
-  - StanzaSharp.DataIngestion's `SentenceChunker`, `EntityEnricher` (#233, owner's decision 2026-10-31: a package now).
+  - StanzaSharp.DataIngestion's `SentenceChunker`, `EntityEnricher` (#233, owner's decision 2026-10-31: a package now);
+  - StanzaSharp.TasmanianDevil's `StanzaNerRecognizer`, `StanzaTokenNormalizer`, `SePersonnummerRecognizer`,
+    `SeOrganisationsnummerRecognizer` (#234, owner's decisions 2026-10-31).
 
   Everything else is `internal`.
   - Directory.Build.props gives every `src/*` assembly `InternalsVisibleTo` for the other StanzaSharp
@@ -1293,8 +1296,24 @@ What the English treebank packages' checkpoints add to the default package's pat
     longer published from 0.5; their projects and `src/StanzaSharp.Cpu.props` are gone. TorchSharp-backend users add
     `TorchSharp-cpu` or one `libtorch-cpu-<rid>` 2.10.0 themselves (TorchSharp loads a single one fine; checked with
     `libtorch-cpu-win-x64` alone). Deprecating them on nuget.org is the owner's manual step.
-  - `release.yml` packs `StanzaSharp`, `StanzaSharp.Cuda` (from `src/StanzaSharp.Cuda`), `StanzaSharp.DataIngestion`
-    and `StanzaSharp.Tool`.
+  - `release.yml` packs `StanzaSharp`, `StanzaSharp.Cuda` (from `src/StanzaSharp.Cuda`), `StanzaSharp.DataIngestion`,
+    `StanzaSharp.TasmanianDevil` and `StanzaSharp.Tool`.
+  - `StanzaSharp.TasmanianDevil` (#234; owner's decisions 2026-10-31: TasmanianDevil adapters as a package, Deidentify.NET
+    only if asked, ManagedCode.Presidio deferred; kept after learning of TasmanianDevil.Onnx, its zero-shot GLiNER NER): depends
+    on StanzaSharp (same version) and TasmanianDevil 0.3.0 (stable, so no `-preview`). `StanzaNerRecognizer` = an
+    `EntityRecognizer` per language (`supportedLanguage`), `DefaultTypeMap` over both NER conventions (OntoNotes PERSON/ORG/
+    GPE/LOC/FAC/DATE/TIME, and PER/LOC/ORG/TME) to PERSON/ORGANIZATION/LOCATION/DATE_TIME, a fixed score (0.85, Presidio's
+    spaCy recognizer's), `stanzaType` metadata; throws without ner. `StanzaTokenNormalizer` = an `ITokenNormalizer` for
+    `LemmaContextAwareEnhancer`: Stanza's tokens; each word's lemma and UPOS from the word tagged alone (deterministic,
+    cached up to 100,000 words, warmed per `Tokenize` with one bulk call); stop words = function UPOS (DET, ADP, PRON, AUX,
+    CCONJ, SCONJ, PART), punctuation = PUNCT/SYM or no letter/digit; throws without lemma (`Pipeline.HasLemma`, internal).
+    `SePersonnummerRecognizer`/`SeOrganisationsnummerRecognizer` (owner's decision 2026-10-31: ship them here, not wait for
+    upstream): the Swedish country pack drafted for TasmanianDevil (`upstream-drafts/`, not in git), same entity names
+    (`SE_PERSONNUMMER`, `SE_ORGANISATIONSNUMMER`), default language `sv`; date + Luhn (personnummer, samordningsnummer day
+    61–91), third digit ≥ 2 + Luhn (organisationsnummer); a separated number promotes to full score, a bare one abstains and
+    needs a context word (like NL_BSN). `TasmanianDevilTests` (en models) and `SwedishIdRecognizerTests` (no models: valid,
+    invalid, odd input, PiiEngine before/after, 500 random ten-digit numbers unmasked). Swedish NER + both recognizers by hand
+    on the masking example: everything masked but street numbers and the postal code.
   - `StanzaSharp.DataIngestion` (#233; owner's decisions 2026-10-31: a package now, chunker + NER enricher first): depends
     on StanzaSharp (same version) and Microsoft.Extensions.DataIngestion, still preview-only, so its `PackageVersion` is
     `$(Version)-preview` (owner's decision 2026-10-31; a stable package can't depend on a prerelease, NU5104) until that

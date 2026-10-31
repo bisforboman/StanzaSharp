@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- StanzaSharp for TasmanianDevil, a .NET PII detection and de-identification library (#234): a named-entity recognizer
+       and a lemmatizing token normalizer. Packed as StanzaSharp.TasmanianDevil, which depends on StanzaSharp. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <Description>StanzaSharp for TasmanianDevil (PII detection and de-identification): StanzaNerRecognizer adds PERSON, LOCATION, ORGANIZATION and DATE_TIME from Stanza's supervised NER models (English, Swedish, German and many more languages; managed code, deterministic), and StanzaTokenNormalizer gives TasmanianDevil's context matching real lemmas in any Stanza language.</Description>
+    <PackageTags>nlp;stanza;pii;anonymization;de-identification;redaction;ner;named-entity-recognition;tasmaniandevil;presidio</PackageTags>
+    <PackageReadmeFile>PACKAGE.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The package dependency: StanzaSharp carries the other assemblies. -->
+    <ProjectReference Include="..\StanzaSharp\StanzaSharp.csproj" />
+    <!-- Compile-time only (the facade's references are private): Document and friends come with the StanzaSharp package. -->
+    <ProjectReference Include="..\StanzaSharp.Core\StanzaSharp.Core.csproj" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="TasmanianDevil" Version="0.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="PACKAGE.md" Pack="true" PackagePath="/" />
+    <None Include="..\..\NOTICE" Pack="true" PackagePath="/" />
+  </ItemGroup>
+</Project>

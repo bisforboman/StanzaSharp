@@ -574,6 +574,23 @@ for `default_fast`), and each call in flight adds
 [samples/StanzaSharp.Masking](samples/StanzaSharp.Masking/README.md) suggests what to mask in Swedish documents
 (maskning): Swedish NER plus personnummer, organisationsnummer, phone, e-mail and address patterns.
 
+### PII detection (TasmanianDevil)
+
+The `StanzaSharp.TasmanianDevil` package plugs StanzaSharp into [TasmanianDevil](https://github.com/filipw/tasmaniandevil),
+a .NET library for detecting and de-identifying PII.
+
+- `StanzaNerRecognizer` adds `PERSON`, `LOCATION`, `ORGANIZATION` and `DATE_TIME` from Stanza's NER model for each
+  language.
+- `StanzaTokenNormalizer` gives TasmanianDevil's context matching real lemmas in any Stanza language.
+- `SePersonnummerRecognizer` and `SeOrganisationsnummerRecognizer` find Swedish personnummer, samordningsnummer and
+  organisationsnummer, which TasmanianDevil has no country pack for.
+
+```csharp
+using var nlp = Pipeline.Load("models/stanza/en", new PipelineOptions { Processors = "tokenize,ner" });
+using var engine = new PiiEngine(new PiiOptions(), extraRecognizers: [new StanzaNerRecognizer(nlp)]);
+engine.Anonymize("Barack Obama met Angela Merkel in Berlin.").Text; // "<PERSON> met <PERSON> in <LOCATION>."
+```
+
 ### RAG ingestion (Microsoft.Extensions.DataIngestion)
 
 The `StanzaSharp.DataIngestion` package (a prerelease while Microsoft.Extensions.DataIngestion is in preview) plugs
