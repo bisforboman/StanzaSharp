@@ -1,0 +1,34 @@
+# text = กรุงเทพมหานครเป็นเมืองหลวงของประเทศไทย เมื่อวานนี้ฉันไปตลาดกับเพื่อนและซื้อผลไม้หลายอย่าง
+# sent_id = 0
+1	กรุงเทพมหานคร	กรุงเทพมหานคร	PROPN	_	_	3	nsubj	_	SpaceAfter=No|start_char=0|end_char=13|ner=S-LOC
+2	เป็น	เป็น	AUX	_	_	3	cop	_	SpaceAfter=No|start_char=13|end_char=17|ner=O
+3	เมือง	เมือง	NOUN	_	_	0	root	_	SpaceAfter=No|start_char=17|end_char=22|ner=O
+4	หลวง	หลวง	ADJ	_	_	3	amod	_	SpaceAfter=No|start_char=22|end_char=26|ner=O
+5	ของ	ของ	ADP	_	_	6	case	_	SpaceAfter=No|start_char=26|end_char=29|ner=O
+6	ประเทศ	ประเทศ	NOUN	_	_	3	nmod	_	SpaceAfter=No|start_char=29|end_char=35|ner=B-LOC
+7	ไทย	ไทย	PROPN	_	_	6	nmod	_	start_char=35|end_char=38|ner=E-LOC
+8	เมื่อ	เมื่อ	SCONJ	_	_	12	mark	_	SpaceAfter=No|start_char=39|end_char=44|ner=O
+9	วาน	วาน	NOUN	_	_	12	obl	_	SpaceAfter=No|start_char=44|end_char=47|ner=O
+10	นี้	นี้	DET	_	_	9	det	_	SpaceAfter=No|start_char=47|end_char=50|ner=O
+11	ฉัน	ฉัน	PRON	_	_	12	nsubj	_	SpaceAfter=No|start_char=50|end_char=53|ner=O
+12	ไป	ไป	VERB	_	_	3	advcl	_	SpaceAfter=No|start_char=53|end_char=55|ner=O
+13	ตลาด	ตลาด	NOUN	_	_	12	obj	_	SpaceAfter=No|start_char=55|end_char=59|ner=O
+14	กับ	กับ	ADP	_	_	15	case	_	SpaceAfter=No|start_char=59|end_char=62|ner=O
+15	เพื่อน	เพื่อน	NOUN	_	_	13	nmod	_	SpaceAfter=No|start_char=62|end_char=68|ner=O
+16	และ	และ	CCONJ	_	_	17	cc	_	SpaceAfter=No|start_char=68|end_char=71|ner=O
+17	ซื้อ	ซื้อ	VERB	_	_	12	conj	_	SpaceAfter=No|start_char=71|end_char=75|ner=O
+18	ผล	ผล	NOUN	_	_	17	obj	_	SpaceAfter=No|start_char=75|end_char=77|ner=O
+19	ไม้	ไม้	NOUN	_	_	18	nmod	_	SpaceAfter=No|start_char=77|end_char=80|ner=O
+20	หลาย	หลาย	ADV	_	_	18	advmod	_	SpaceAfter=No|start_char=80|end_char=84|ner=O
+21	อย่าง	อย่าง	NOUN	_	_	18	clf	_	SpacesAfter=\n\n|start_char=84|end_char=89|ner=O
+
+# text = อากาศร้อนมากแต่พวกเราสนุกกันมาก
+# sent_id = 1
+1	อากาศ	อากาศ	NOUN	_	_	6	nsubj	_	SpaceAfter=No|start_char=91|end_char=96|ner=O
+2	ร้อน	ร้อน	ADJ	_	_	1	amod	_	SpaceAfter=No|start_char=96|end_char=100|ner=O
+3	มาก	มาก	ADV	_	_	2	advmod	_	SpaceAfter=No|start_char=100|end_char=103|ner=O
+4	แต่	แต่	CCONJ	_	_	6	cc	_	SpaceAfter=No|start_char=103|end_char=106|ner=O
+5	พวกเรา	พวกเรา	PRON	_	_	6	nsubj	_	SpaceAfter=No|start_char=106|end_char=112|ner=O
+6	สนุก	สนุก	VERB	_	_	0	root	_	SpaceAfter=No|start_char=112|end_char=116|ner=O
+7	กัน	กัน	PRON	_	_	6	obl	_	SpaceAfter=No|start_char=116|end_char=119|ner=O
+8	มาก	มาก	ADV	_	_	6	advmod	_	SpacesAfter=\n|start_char=119|end_char=122|ner=O

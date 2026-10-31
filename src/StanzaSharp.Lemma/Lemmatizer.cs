@@ -70,7 +70,7 @@ internal sealed class Lemmatizer : IDisposable
         var vocab = root["vocab"]!;
         _charToId = Checkpoint.UnitToId(vocab["char"]);
         _posToId = Checkpoint.UnitToId(vocab["pos"]);
-        _idToChar = vocab["char"]!["_id2unit"]!.AsArray().Select(n => n!.GetValue<string>()).ToArray();
+        _idToChar = Checkpoint.Strings(vocab["char"]!["_id2unit"]);
         _batchSize = config["batch_size"]!.GetValue<int>();
         _beamSize = config["beam_size"]?.GetValue<int>() ?? 1;
         _maxDecLen = config["max_dec_len"]!.GetValue<int>();

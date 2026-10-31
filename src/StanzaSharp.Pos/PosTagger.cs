@@ -83,7 +83,7 @@ internal sealed class PosTagger : IDisposable
     internal static (int Words, int Upos, XposVocab Xpos) Counts(Checkpoint ckpt)
     {
         var vocab = ckpt.Root["vocab"]!;
-        return (Checkpoint.UnitToId(vocab["word"]).Count, vocab["upos"]!["_id2unit"]!.AsArray().Count, XposVocab.Read(vocab));
+        return (Checkpoint.UnitToId(vocab["word"]).Count, Strings(vocab["upos"]!["_id2unit"]).Length, XposVocab.Read(vocab));
     }
 
     /// <summary>Sets Upos, Xpos and Feats on every word of the document.</summary>
@@ -224,7 +224,7 @@ internal sealed class PosTagger : IDisposable
     /// <summary>Whether this tagger runs the shared charlms (<c>_charlm</c>), whose outputs it can then hand to a <see cref="CharlmCache"/>.</summary>
     internal bool UsesCharlm { get; }
 
-    private static string[] Strings(JsonNode? array) => array!.AsArray().Select(x => x!.GetValue<string>()).ToArray();
+    private static string[] Strings(JsonNode? array) => Checkpoint.Strings(array);
 
     /// <summary>
     /// A copy batching <paramref name="batchSize"/> sentences and at most <paramref name="maximumTokens"/> words per

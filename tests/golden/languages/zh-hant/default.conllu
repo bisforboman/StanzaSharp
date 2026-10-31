@@ -1,0 +1,53 @@
+# text = 台北是臺灣最大的城市。
+# sent_id = 0
+1	台北	台北	PROPN	NNP	_	6	nsubj	_	SpaceAfter=No|start_char=0|end_char=2
+2	是	是	AUX	VC	_	6	cop	_	SpaceAfter=No|start_char=2|end_char=3
+3	臺灣	臺灣	PROPN	NNP	_	4	nsubj	_	SpaceAfter=No|start_char=3|end_char=5
+4	最大	最大	ADJ	JJ	_	6	amod	_	SpaceAfter=No|start_char=5|end_char=7
+5	的	的	SCONJ	DEC	_	4	mark:rel	_	SpaceAfter=No|start_char=7|end_char=8
+6	城市	城市	NOUN	NN	_	0	root	_	SpaceAfter=No|start_char=8|end_char=10
+7	。	。	PUNCT	.	_	6	punct	_	SpaceAfter=No|start_char=10|end_char=11
+
+# text = 昨天我和朋友一起去了一家新開的餐廳。
+# sent_id = 1
+1	昨天	昨天	NOUN	NN	_	6	nmod:tmod	_	SpaceAfter=No|start_char=11|end_char=13
+2	我	我	PRON	PRP	Person=1	6	nsubj	_	SpaceAfter=No|start_char=13|end_char=14
+3	和	和	CCONJ	CC	_	4	cc	_	SpaceAfter=No|start_char=14|end_char=15
+4	朋友	朋友	NOUN	NN	_	2	conj	_	SpaceAfter=No|start_char=15|end_char=17
+5	一起	一起	NOUN	NN	_	6	obl	_	SpaceAfter=No|start_char=17|end_char=19
+6	去	去	VERB	VV	_	0	root	_	SpaceAfter=No|start_char=19|end_char=20
+7	了	了	AUX	AS	Aspect=Perf	6	aux	_	SpaceAfter=No|start_char=20|end_char=21
+8	一	一	NUM	CD	NumType=Card	12	nummod	_	SpaceAfter=No|start_char=21|end_char=22
+9	家	家	NOUN	NNB	_	8	clf	_	SpaceAfter=No|start_char=22|end_char=23
+10	新開	新開	VERB	VV	_	12	acl:relcl	_	SpaceAfter=No|start_char=23|end_char=25
+11	的	的	SCONJ	DEC	_	10	mark:rel	_	SpaceAfter=No|start_char=25|end_char=26
+12	餐廳	餐廳	NOUN	NN	_	6	obj	_	SpaceAfter=No|start_char=26|end_char=28
+13	。	。	PUNCT	.	_	6	punct	_	SpaceAfter=No|start_char=28|end_char=29
+
+# text = 那裡的菜非常好吃，我們打算下個 星期再去。
+# sent_id = 2
+1	那裡	那裡	PRON	PRD	_	3	det	_	SpaceAfter=No|start_char=29|end_char=31
+2	的	的	PART	DEC	Case=Gen	1	case	_	SpaceAfter=No|start_char=31|end_char=32
+3	菜	菜	NOUN	NN	_	5	nsubj	_	SpaceAfter=No|start_char=32|end_char=33
+4	非常	非常	ADV	RB	_	5	advmod	_	SpaceAfter=No|start_char=33|end_char=35
+5	好吃	好吃	ADJ	JJ	_	0	root	_	SpaceAfter=No|start_char=35|end_char=37
+6	，	，	PUNCT	,	_	8	punct	_	SpaceAfter=No|start_char=37|end_char=38
+7	我們	我	PRON	PRP	Number=Plur|Person=1	8	nsubj	_	SpaceAfter=No|start_char=38|end_char=40
+8	打算	打算	VERB	VV	_	5	parataxis	_	SpaceAfter=No|start_char=40|end_char=42
+9	下	下	DET	DT	_	11	det	_	SpaceAfter=No|start_char=42|end_char=43
+10	個	個	NOUN	NNB	_	9	clf	_	SpacesAfter=\n|start_char=43|end_char=44
+11	星期	星期	NOUN	NN	_	13	nsubj	_	SpaceAfter=No|start_char=45|end_char=47
+12	再	再	ADV	RB	_	13	advmod	_	SpaceAfter=No|start_char=47|end_char=48
+13	去。	去。	VERB	VV	_	8	ccomp	_	SpacesAfter=\n\n|start_char=48|end_char=50
+
+# text = 他說：「今天天氣很好。」
+# sent_id = 3
+1	他	他	PRON	PRP	Person=3	2	nsubj	_	SpaceAfter=No|start_char=52|end_char=53
+2	說	說	VERB	VV	_	0	root	_	SpaceAfter=No|start_char=53|end_char=54
+3	：	：	PUNCT	:	_	7	punct	_	SpaceAfter=No|start_char=54|end_char=55
+4	「	「	PUNCT	``	_	7	punct	_	SpaceAfter=No|start_char=55|end_char=56
+5	今天	今天	NOUN	NN	_	7	nmod:tmod	_	SpaceAfter=No|start_char=56|end_char=58
+6	天氣	天氣	NOUN	NN	_	7	nsubj	_	SpaceAfter=No|start_char=58|end_char=60
+7	很好	很好	ADJ	JJ	_	2	ccomp	_	SpaceAfter=No|start_char=60|end_char=62
+8	。	。	PUNCT	.	_	7	punct	_	SpaceAfter=No|start_char=62|end_char=63
+9	」	」	PUNCT	''	_	7	punct	_	SpacesAfter=\n|start_char=63|end_char=64
