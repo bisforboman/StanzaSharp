@@ -1675,7 +1675,7 @@ def write_process_document_golden(models, out):
 # fast/ has default_fast's tags and lemmas (another tagger's, as a user's would be), process_document/input.conllu
 # every annotation wrong. Run with Pipeline(processors=..., pretagged=True), which loads only those processors.
 # "sentiment" drops the `# sentiment` comments: Stanza keeps comments in input order, so a new `# constituency` would
-# follow them, while Conllu.Write always writes it first (CLAUDE.md, Process(Document)).
+# follow them, while Conllu.Write always writes it first (docs/decisions/status.md, Process(Document)).
 PRETAGGED_CASES = {
     "depparse": ("fast/corpus.conllu", "depparse", "default", ()),
     "constituency": ("fast/corpus.conllu", "constituency", "default", ("sentiment",)),

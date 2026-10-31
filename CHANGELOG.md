@@ -8,6 +8,57 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 Unreleased changes are one file each under [`changes/`](changes/README.md), so pull requests don't conflict here;
 a release folds them in (`python tools/changelog.py release X.Y.Z`).
 
+## [1.15.0] - 2026-10-31
+
+### Added
+- 79 more languages, each with its Stanza `default` package, byte for byte against Python Stanza (the list is
+  docs/languages.md): among them Russian, Polish, Czech, Swedish, Danish, Norwegian, Finnish, Hungarian, Romanian,
+  Ukrainian, Bulgarian, Turkish, Arabic, Hebrew, Persian, Hindi, Urdu, Tamil, Indonesian, Vietnamese, Myanmar, Catalan,
+  Basque, Irish, Latin and Ancient Greek.
+- Japanese, Thai, Simplified and Traditional Chinese, Korean and Classical Chinese (`ja`, `th`, `zh-hans`, `zh-hant`,
+  `ko`, `lzh`), `default` package, byte for byte against Python Stanza. Their tokenizers read Stanza's dictionary
+  features (whether the characters around each one form a word of the model's lexicon), Chinese drops a line break
+  inside a paragraph, and Chinese, Japanese and Korean tokens keep no spaces, as in Stanza. StanzaSharp now has 107
+  languages (docs/languages.md).
+- Coreference results in the document model, as Stanza has them: `Document.Coref` (`CorefChain`: index, mentions,
+  representative text and index; `CorefMention`: sentence, start and end word, or a zero mention's empty word),
+  `Word.CorefChains` (`CorefAttachment`: chain, start, end, representative) and empty words (`Sentence.EmptyWords`,
+  `Word.EmptyIndex`). `Conllu` and `Json` write them byte for byte like Stanza (`coref_chains=`, empty nodes `i.m`) and
+  read them back, rebuilding the chains. No processor sets them yet.
+- Coreference resolution: `Processor.Coref`, Stanza's `udcoref_xlm-roberta-lora` on XLM-RoBERTa large (English and
+  German). It is optional, as in Stanza: name it in `Processors` (e.g. `"tokenize,mwt,pos,coref"`; with pos, ties between
+  representative mentions go to proper nouns) and it fills `Document.Coref`, every word's `CorefChains`, and an empty word
+  for each zero mention. The model (136 MB) and the transformer (2.24 GB) download with `ModelDownloader` or `stanzasharp
+  download --processors tokenize,coref`. On both backends; torch.topk's own candidate order is reproduced.
+- Spanish, French, Italian, Portuguese and Dutch (`PipelineOptions.Language = "es"`, `"fr"`, `"it"`, `"pt"`, `"nl"`):
+  each language's Stanza `default` package, and `default_fast` except in Spanish (Stanford's Spanish `default_fast`
+  parser file is truncated), byte for byte against Python Stanza; `stanzasharp download` and `compare` take the new
+  `--lang` codes.
+- 15 more languages whose Stanza `default` tagger and parser read no word vectors (their `_nopretrain` models: Stanza
+  leaves out the pretrained input when a model's config says `pretrain` is false, and so does StanzaSharp now): Bororo,
+  Coptic, Egyptian, Middle French, Khoekhoe, Old East Slavic, Naija, Old Occitan, Maghrebi Arabic French, Pomak, Turkish
+  German, Zaar, Southern Kurdish, Shanghainese and Nheengatu (`bor`, `cop`, `egy`, `frm`, `naq`, `orv`, `pcm`, `pro`,
+  `qaf`, `qpm`, `qtd`, `say`, `sdh`, `wuu`, `yrl`), byte for byte against Python Stanza. StanzaSharp now has 101
+  languages (docs/languages.md).
+- `samples/StanzaSharp.Masking`: suggests what to mask in Swedish documents (maskning), from Swedish NER plus Luhn-checked
+  personnummer and organisationsnummer, phone, e-mail and address patterns, with consistent placeholders and a JSON
+  list of spans for review (#234).
+
+### Changed
+- English pos and lemma models: StanzaSharp now uses the tagger and lemmatizer models Stanford re-uploaded for Stanza 1.15.0 on 2026-10-30 (`combined_charlm` and `combined_nocharlm` taggers and lemmatizers, and the `default_accurate` tagger), which is what a fresh Stanza 1.15.0 install downloads, so its output matches that install again. On our test texts about 2% of `default`'s UPOS tags, 1.6% of its lemmas and 1.9% of its dependency heads change (`default_fast` about 3%), and constituency trees follow the new tags; sentiment, NER and coreference are unchanged. `stanzasharp download` (or `ModelDownloader.DownloadAsync`) replaces the five files, whose checksums no longer match.
+- The managed backend's transformer attention is faster on long inputs and gives the same results: coref (XLM-RoBERTa
+  large over windows of 510 subwords) takes about a third less time.
+- `MultilingualPipeline` now loads like Stanza's: a language's pipeline loads at its first text, and at most `MultilingualOptions.MaxLoadedPipelines` (new, 10 by default, Stanza's `max_cache_size`) stay loaded, the least recently used freed first once no call is using it. Without `Languages` it uses every supported language with a folder next to `multilingual/` (it was English and German, loaded at `Load`). Nothing is downloaded: a text in a language without a folder still comes back with only `Text` and `Lang`, and a folder lacking a model file throws `FileNotFoundException` at that language's first text. The identifier's `no` (Norwegian Bokmål) is routed to `nb/`, and `Restrict = true` with `Languages = [nb]` no longer throws.
+- The `StanzaSharp` package depends on `Microsoft.Extensions.Logging.Abstractions` 10.0.0 again, the lowest .NET 10 version (an automatic update had raised it to 10.0.14), so apps on any 10.0.x keep their own version.
+- NER models: StanzaSharp now uses the NER models Stanford re-uploaded for Stanza 1.15.0 on 2026-10-20, which are what a fresh Stanza 1.15.0 install downloads, so its output matches that install again. German `default` and `default_fast` tag with `germeval2014_charlm` (conll17 vectors, a third of the old fasttextwiki memory), and German `default_accurate` with `germeval2014_german-nlp-electra` (now on conll17). English `conll03_charlm` and `conll03_electra-large` are the retrained models (conll17 vectors; `conll03_electra-large` now reads ELECTRA-large instead of roberta-base). On our test texts about 0.6% of German and 1.3–1.7% of the conll03 tags change. `germeval2014` and `germeval2014_dbmdz-bert-german-cased` are gone, because Stanford removed them, and `PipelineOptions.Models` rejects them. Download the models again: an old German folder has no `ner/germeval2014_charlm.pt`.
+
+### Fixed
+- `PipelineOptions.ModelPaths` for coref works on every package: on one without optional coref (the treebank packages, `combined`), a coref model path failed to load with "reads a transformer StanzaSharp doesn't know"; it now reads XLM-RoBERTa large as the default model does.
+- Latin (`la`, whose default tokenizer is ITTB's): a `:` or `;` now ends a sentence, as Stanza's tokenizer forces for
+  that treebank; StanzaSharp had kept the sentence going.
+- On Linux the managed backend no longer runs glibc's `malloc_trim` after each call of 1,000 words or more. It returned nothing there (the managed models live on the GC heap) and cost 2–12 ms, taking each allocator arena's lock in turn while other calls ran. The TorchSharp backend still trims.
+- Model downloads work again: `ModelDownloader` (and `stanzasharp download`) fetch Stanza 1.15.0's files from fixed Hugging Face commits instead of the `v1.15.0` tag, which Stanford moved on 2026-10-20 to re-uploaded NER models. Through that tag, English's `conll03_charlm` and `conll03_electra-large` failed their checksums, and German's default NER model `germeval2014` was missing.
+
 ## [1.14.0] - 2026-10-19
 
 ### Added

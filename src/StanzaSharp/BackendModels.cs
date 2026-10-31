@@ -35,6 +35,13 @@ internal abstract class BackendModels : IDisposable
     /// <summary>Whether the dependency parser reads the tagger's backward charlm outputs (CharlmCache.TryGetBackward).</summary>
     public virtual bool DepparseReadsCache => false;
 
+    /// <summary>
+    /// Whether the models allocate on the native heap, so that <see cref="NativeHeap.Trim"/> after a large call gives memory
+    /// back (TorchSharp). The managed models allocate on the GC heap only: trimming there returns nothing
+    /// (docs/performance/round-06-memory-managed-backend.md) and would only take glibc's arena locks.
+    /// </summary>
+    public virtual bool UsesNativeHeap => false;
+
     public abstract Pretrain Pretrain(string basePath);
 
     /// <summary>The language identifier's network (<see cref="LanguageIdentifier"/>) from its checkpoint.</summary>

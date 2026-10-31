@@ -292,7 +292,7 @@ public sealed class Pipeline : IDisposable
         _splitSentences = options.SplitSentences;
         _postprocessor = options.TokenizePostprocessor;
         _depparseReadsCache = backend.DepparseReadsCache;
-        _trimNativeHeap = options.TrimNativeHeap && NativeHeap.CanTrim;
+        _trimNativeHeap = options.TrimNativeHeap && backend.UsesNativeHeap && NativeHeap.CanTrim;
         _logger = options.Logger;
         _gate = options.MaxConcurrentCalls is int max ? new SemaphoreSlim(max, max) : null;
         var custom = CustomPaths(options.ModelPaths, nameof(options));

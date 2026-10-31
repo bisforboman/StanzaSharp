@@ -32,6 +32,8 @@ internal sealed class TorchSharpModels(torch.Device? device, bool disableTf32) :
 
     public override T Load<T>(Func<T> load) => Weights.On(device, load);
 
+    public override bool UsesNativeHeap => true;
+
     public override Pretrain Pretrain(string basePath) => Nn.Pretrain.Load(basePath);
 
     public override ILangIdNet LangId(Checkpoint ckpt) => new LangIdNet(ckpt);

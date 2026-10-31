@@ -173,7 +173,7 @@ treebank's `_charlm` tokenizer too, and `lemma=combined_charlm` ran with `--word
 mwt-less packages (`eslspok`, `craft`, `genia`, `mimic`) got mwt in their default processor list, `--pretagged`
 converted the input document's offsets (already code points) as if they were UTF-16, and `--pretagged` dropped XPOS
 where the constituency parser reads it. StanzaSharp throws for a missing tag there where Stanza parses an empty one, a
-deliberate difference (CLAUDE.md, "Pretagged"); the generator now keeps XPOS when constituency runs.
+deliberate difference (docs/decisions/status.md, "Pretagged"); the generator now keeps XPOS when constituency runs.
 
 4. **German `gsd` + `pos=gsd_nocharlm` (float32 noise; not a port bug, nothing changed).** One text of 150: a
    sentence starting with a 97-letter random word (the long-token generator's letters). Its FEATS `Number` is `Plur`
