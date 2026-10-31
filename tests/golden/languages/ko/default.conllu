@@ -1,0 +1,29 @@
+# text = 서울은 대한민국의 수도이다.
+# sent_id = 0
+1	서울은	서울+은	PROPN	nq+jxt	_	3	dislocated	_	start_char=0|end_char=3
+2	대한민국의	대한민국+의	PROPN	nq+jcm	_	3	nmod	_	start_char=4|end_char=9
+3	수도이다	수도+이+다	VERB	ncn+jp+ef	_	0	root	_	SpaceAfter=No|start_char=10|end_char=14
+4	.	.	PUNCT	sf	_	3	punct	_	start_char=14|end_char=15
+
+# text = 어제 나는 친구와 함께 새로운 식당에 갔다.
+# sent_id = 1
+1	어제	어제	NOUN	ncn	_	2	compound	_	start_char=16|end_char=18
+2	나는	나+는	PRON	npp+jxt	_	7	dislocated	_	start_char=19|end_char=21
+3	친구와	친구+와	CCONJ	ncn+jct	_	7	advmod	_	start_char=22|end_char=25
+4	함께	함께	ADV	mag	_	3	conj	_	start_char=26|end_char=28
+5	새로운	새롭+ㄴ	ADJ	paa+etm	_	6	amod	_	start_char=29|end_char=32
+6	식당에	식당+에	ADV	ncn+jca	_	7	obl	_	start_char=33|end_char=36
+7	갔다	가+ㅆ+다	VERB	pvg+ep+ef	_	0	root	_	SpaceAfter=No|start_char=37|end_char=39
+8	.	.	PUNCT	sf	_	7	punct	_	SpacesAfter=\n\n|start_char=39|end_char=40
+
+# text = 음식이 정말 맛있어서 다음 주에 다시 가고 싶다.
+# sent_id = 2
+1	음식이	음식+이	NOUN	ncn+jcs	_	3	nsubj	_	start_char=42|end_char=45
+2	정말	정말	ADV	mag	_	3	advmod	_	start_char=46|end_char=48
+3	맛있어서	맛있+어서	SCONJ	pvg+ecs	_	7	ccomp	_	start_char=49|end_char=53
+4	다음	다음	NOUN	ncn	_	5	compound	_	start_char=54|end_char=56
+5	주에	주+에	ADV	ncn+jca	_	7	obl	_	start_char=57|end_char=59
+6	다시	다시	ADV	mag	_	7	advmod	_	start_char=60|end_char=62
+7	가고	가+고	VERB	pvg+ecx	_	0	root	_	start_char=63|end_char=65
+8	싶다	싶	AUX	px+ef	_	7	aux	_	SpaceAfter=No|start_char=66|end_char=68
+9	.	.	PUNCT	sf	_	8	punct	_	SpacesAfter=\n|start_char=68|end_char=69

@@ -83,8 +83,8 @@ language or model, run `stanzasharp compare` against Python Stanza: it finds wha
   managed comparison that misses: find the drift's source, try cheap fixes (double accumulation, reduction order),
   measure their cost, and report to the owner if none is cheap. Never a managed-only tolerance, never a skipped test.
 - **Near-ties**: `ConstituencyTests.NearTies_StayClearOfBackendDrift` holds every decision to 3 × the largest
-  difference between the backends' margins; reviewed exceptions go in `KnownNearTies` (2 × floor) with the owner's
-  sign-off. Add an entry; don't move the factor.
+  difference between the backends' margins; reviewed exceptions go in `KnownNearTies` (2 × floor, 1.5 × on Arm64, where libtorch
+  isn't pinned) with the owner's sign-off. Add an entry; don't move the factor.
 - **Deliberate differences from Stanza** are allowed only where Stanza warns and ignores, crashes or writes broken
   output, and are decided by the owner: we throw (unknown models, a processor the package lacks, empty pretokenized
   sentences). Document each in the area's doc.

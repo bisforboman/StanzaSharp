@@ -15,6 +15,11 @@ a release folds them in (`python tools/changelog.py release X.Y.Z`).
   docs/languages.md): among them Russian, Polish, Czech, Swedish, Danish, Norwegian, Finnish, Hungarian, Romanian,
   Ukrainian, Bulgarian, Turkish, Arabic, Hebrew, Persian, Hindi, Urdu, Tamil, Indonesian, Vietnamese, Myanmar, Catalan,
   Basque, Irish, Latin and Ancient Greek.
+- Japanese, Thai, Simplified and Traditional Chinese, Korean and Classical Chinese (`ja`, `th`, `zh-hans`, `zh-hant`,
+  `ko`, `lzh`), `default` package, byte for byte against Python Stanza. Their tokenizers read Stanza's dictionary
+  features (whether the characters around each one form a word of the model's lexicon), Chinese drops a line break
+  inside a paragraph, and Chinese, Japanese and Korean tokens keep no spaces, as in Stanza. StanzaSharp now has 107
+  languages (docs/languages.md).
 - Coreference results in the document model, as Stanza has them: `Document.Coref` (`CorefChain`: index, mentions,
   representative text and index; `CorefMention`: sentence, start and end word, or a zero mention's empty word),
   `Word.CorefChains` (`CorefAttachment`: chain, start, end, representative) and empty words (`Sentence.EmptyWords`,
@@ -46,6 +51,8 @@ a release folds them in (`python tools/changelog.py release X.Y.Z`).
 
 ### Fixed
 - `PipelineOptions.ModelPaths` for coref works on every package: on one without optional coref (the treebank packages, `combined`), a coref model path failed to load with "reads a transformer StanzaSharp doesn't know"; it now reads XLM-RoBERTa large as the default model does.
+- Latin (`la`, whose default tokenizer is ITTB's): a `:` or `;` now ends a sentence, as Stanza's tokenizer forces for
+  that treebank; StanzaSharp had kept the sentence going.
 - On Linux the managed backend no longer runs glibc's `malloc_trim` after each call of 1,000 words or more. It returned nothing there (the managed models live on the GC heap) and cost 2–12 ms, taking each allocator arena's lock in turn while other calls ran. The TorchSharp backend still trims.
 - Model downloads work again: `ModelDownloader` (and `stanzasharp download`) fetch Stanza 1.15.0's files from fixed Hugging Face commits instead of the `v1.15.0` tag, which Stanford moved on 2026-10-20 to re-uploaded NER models. Through that tag, English's `conll03_charlm` and `conll03_electra-large` failed their checksums, and German's default NER model `germeval2014` was missing.
 

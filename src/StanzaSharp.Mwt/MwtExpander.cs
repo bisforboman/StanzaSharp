@@ -39,7 +39,7 @@ internal sealed class MwtExpander : IDisposable
         _dict = ckpt.Root["dict"]!.AsObject().ToDictionary(kv => kv.Key, kv => kv.Value!.GetValue<string>());
         _vocab = Checkpoint.UnitToId(ckpt.Root["vocab"]);
         (_padId, _unkId, _sosId, _eosId) = (_vocab["<PAD>"], _vocab["<UNK>"], _vocab["<SOS>"], _vocab["<EOS>"]);
-        _idToChar = ckpt.Root["vocab"]!["_id2unit"]!.AsArray().Select(n => n!.GetValue<string>()).ToArray();
+        _idToChar = Checkpoint.Strings(ckpt.Root["vocab"]!["_id2unit"]);
         if (!_useModel)
             return;
         if (config["force_exact_pieces"]?.GetValue<bool>() == true)

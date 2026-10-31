@@ -63,7 +63,7 @@ internal sealed class DepparseNet : IDepparseNet
         inputSize += transformerDim;
         _lstm = new HighwayLstm(ckpt, model, "parserlstm", inputSize, hidden, config["num_layers"]!.GetValue<int>());
 
-        int relations = vocab["deprel"]!["_id2unit"]!.AsArray().Count - DependencyParser.VocabPrefixSize;
+        int relations = Checkpoint.Strings(vocab["deprel"]!["_id2unit"]).Length - DependencyParser.VocabPrefixSize;
         _unlabeled = new DeepBiaffine(ckpt, model, "unlabeled.", 2 * hidden, biaff, 1);
         _deprel = new DeepBiaffine(ckpt, model, "deprel.", 2 * hidden, biaff, relations);
         if (config["linearization"]!.GetValue<bool>())

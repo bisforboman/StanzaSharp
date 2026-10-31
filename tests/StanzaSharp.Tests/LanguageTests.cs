@@ -63,8 +63,8 @@ public class LanguageTests
         var ex = Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor(null, "default", "options", "xx"));
         Assert.Contains("en, de, es, fr, it, pt, nl", ex.Message);
 
-        // a Stanza language whose models need code StanzaSharp doesn't have yet (its tokenizer's extra features)
-        Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor(null, "default", "options", "ja"));
+        // a Stanza language whose models need code StanzaSharp doesn't have yet (Odia's MuRIL transformer)
+        Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor(null, "default", "options", "or"));
         Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor(null, "default", "options", "DE"));
         Assert.Throws<ArgumentException>(() => ModelDownloader.FilesFor(null, "default", "options", null!));
 

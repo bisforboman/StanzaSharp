@@ -118,7 +118,8 @@ The managed (C# SIMD) backend: the owner's decisions, the backend seam per proce
     from Python (TorchSharp 3.1e-5; every path ≤ 4.6e-5, tolerance 1e-3 as before); trees byte-identical. Near-ties over
     845 golden sentences (22,569 steps): smallest decision margin 3.6e-4 (both backends), backends 7.3e-5 apart;
     `ConstituencyTests.NearTies_StayClearOfBackendDrift` fails if decisions differ or the smallest margin drops under 2× the
-    largest difference between the backends' margins (owner's decision, 2026-10-31; it was 3× the score drift until the
+    largest difference between the backends' margins, 1.5× on Arm64, where Arm64 libtorch (the reference, not the managed
+    kernels) moves the margins (owner's decisions, 2026-10-31; it was 3× the score drift until the
     re-uploaded English tagger made validation_multilingual sentence 13 a near-tie at 9.8e-5, with 5.3e-5 drift and 3.8e-5
     margin difference; the drift is spread, ~1.5e-6 relative, so only double charlms would halve it). Since the decision
     review of the same day (owner's choice) every decision must clear 3× again, and only the reviewed near-ties listed in

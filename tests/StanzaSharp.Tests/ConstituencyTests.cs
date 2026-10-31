@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using System.Text.Json.Nodes;
 using StanzaSharp.Constituency;
 using StanzaSharp.Nn;
@@ -83,14 +84,15 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
 
     /// <summary>
     /// Reviewed near-ties of <see cref="NearTies_StayClearOfBackendDrift"/>: decisions whose margin is under 3 × the largest
-    /// difference between the backends' margins, accepted at 2 × after a review (golden file, sentence index, step). Add an
-    /// entry only after checking that both backends and Stanza make the same decision there; remove one that clears 3 ×.
+    /// difference between the backends' margins, accepted at 2 × (1.5 × on Arm64) after a review (golden file, sentence
+    /// index, step). Add an entry only after checking that both backends and Stanza make the same decision there; remove
+    /// one that clears 3 ×.
     /// </summary>
     private static readonly (string Lang, string File, int Sentence, int Step, string Review)[] KnownNearTies =
     [
         // Stanford's re-uploaded English tagger (2026-10-30): Open(NP) over Open(ADVP), margin 9.79e-5 on TorchSharp (CI's
-        // x64 settings), 1.03e-4 managed, against a largest margin difference of 3.81e-5 (2.6 ×). Same decision as Stanza;
-        // the owner accepted it on 2026-10-31.
+        // x64 settings), 1.03e-4 managed, against a largest margin difference of 3.81e-5 (2.6 ×; on the Arm64 runners 1.64 ×
+        // and 1.80 ×). Same decision as Stanza; the owner accepted it on 2026-10-31.
         ("en", "validation_multilingual.conllu", 13, 7, "2026-10-31"),
     ];
 
@@ -100,7 +102,8 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
     /// per backend, how close each decision was: the margin between the best legal transition and the next legal one
     /// (steps with one legal transition decide nothing), plus the raw top-2 margin of the whole row, and the closest calls.
     /// Guards that every margin stays at least 3 × the largest difference between the backends' margins, except the reviewed
-    /// near-ties in <see cref="KnownNearTies"/> (at least 2 ×), and reports where the largest score difference is. German's parser reads
+    /// near-ties in <see cref="KnownNearTies"/> (at least 2 ×, 1.5 × on Arm64), and reports where the largest score difference
+    /// is. German's parser reads
     /// UPOS (retag_method) and allows longer unary chains (unary_limit 8).
     /// </summary>
     [ModelTheory]
@@ -206,13 +209,19 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
         // between the backends' margins, the quantity that can flip a decision; a reviewed near-tie in KnownNearTies needs
         // KnownK × (the floor the owner accepted on 2026-10-31). A new model that makes another decision a near-tie fails
         // here until that decision is reviewed and listed, instead of the global factor moving to fit it.
-        const float K = 3, KnownK = 2;
+        // On Arm64 KnownK is 1.5 (owner's decision, 2026-10-31): there the reference itself moves. Arm64 libtorch's kernels
+        // aren't pinned like x64's (ATEN_CPU_CAPABILITY, MKL_CBWR), and TorchSharp's closest call was 1.06e-4 (macOS) and
+        // 1.03e-4 (Windows on Arm) where x64 gives 9.79e-5, while the managed margins equal x64 AVX2's to three digits at
+        // all ten closest calls; the margin differences were 6.29e-5 and 5.72e-5 (ratios 1.64 and 1.80). The next closest
+        // call there (3.6e-4) still clears K = 3 (5.8 ×).
+        const float K = 3;
+        float knownK = RuntimeInformation.ProcessArchitecture == Architecture.Arm64 ? 1.5f : 2;
         var listed = KnownNearTies.Where(n => n.Lang == lang).Select(n => (n.Lang, n.File, n.Sentence, n.Step)).ToHashSet();
-        var failures = calls.Where(c => c.Min < (listed.Contains(c.Where) ? KnownK : K) * marginDiff).OrderBy(c => c.Min).ToList();
+        var failures = calls.Where(c => c.Min < (listed.Contains(c.Where) ? knownK : K) * marginDiff).OrderBy(c => c.Min).ToList();
         foreach (var where in listed.Where(w => !calls.Any(c => c.Where == w && c.Min < K * marginDiff)))
             output.WriteLine($"KnownNearTies entry {where} is no longer under {K} × {marginDiff:E2} here: remove it if that holds on CI too");
         Assert.True(failures.Count == 0,
-            $"{failures.Count} decision(s) under the bound ({K} × the largest margin difference {marginDiff:E2}, {KnownK} × for KnownNearTies): "
+            $"{failures.Count} decision(s) under the bound ({K} × the largest margin difference {marginDiff:E2}, {knownK} × for KnownNearTies): "
             + string.Join("; ", failures.Select(f => f.What)) + ". If a new model made them near-ties, review each and add it to KnownNearTies.");
     }
 

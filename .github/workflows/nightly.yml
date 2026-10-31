@@ -9,7 +9,7 @@ name: Nightly
 #   (generated texts, Stanza against StanzaSharp; docs/text-fuzzing.md), each night with another seed;
 # - languages: the languages with only tests/golden/languages/ (owner's decisions, 2026-10-30), whose models no other job
 #   downloads: LanguageGoldenTests on both backends, tools/test-languages.sh downloading, testing and deleting them a batch
-#   at a time (about 25 GB, no cache); a dispatch with languages_only runs just this job;
+#   at a time (about 28 GB, no cache); a dispatch with languages_only runs just this job;
 # - benchmark: benchmark.yml's runner matrix in quick mode (no avx512 jobs), for the numbers' trend.
 # A failure comments on the open issue "Nightly run failed" (made if there is none); a person closes it once fixed.
 # Never a required check; it runs on main's latest commit, so release.yml (which waits for main's push run) never sees it.

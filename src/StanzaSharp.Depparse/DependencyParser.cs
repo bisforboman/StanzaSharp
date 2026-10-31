@@ -48,7 +48,7 @@ internal sealed class DependencyParser : IDisposable
         _lemmaVocab = Checkpoint.UnitToId(vocab["lemma"]);
         _uposVocab = Checkpoint.UnitToId(vocab["upos"]);
         _xposVocab = XposVocab.Read(vocab);
-        _deprels = vocab["deprel"]!["_id2unit"]!.AsArray().Select(x => x!.GetValue<string>()).ToArray();
+        _deprels = Checkpoint.Strings(vocab["deprel"]!["_id2unit"]);
         _batchSize = config["batch_size"]!.GetValue<int>();
 
         // depparse_processor: config.get('resolve_head_constraints', True), the checkpoint's config (English default's
