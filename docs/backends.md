@@ -503,6 +503,12 @@ reads the tagger's cached charlm outputs for sentences without MWTs.
     double-precision charlms on both backends would halve it (above). The margins themselves differ by at most 3.8e-5, so
     the closest call clears the new bound 2.7×. The report names where the largest score difference is and the five
     sentences with the most.
+    On Arm64 the bound is 1.5 × (owner's decision, 2026-10-31): main's first full run after the re-upload failed there,
+    with margin differences of 6.29e-5 (macos-26) and 5.72e-5 (windows-11-arm), ratios 1.64 and 1.80. The managed margins
+    on both Arm runners equal x64 AVX2's to three digits at all ten closest calls (1.03e-4, 3.67e-4, 8.63e-4, ...); the
+    reference moves instead: TorchSharp's closest call is 1.06e-4 (macOS) and 1.03e-4 (Windows on Arm) against x64's
+    9.79e-5, since Arm64 libtorch's kernels aren't pinned like x64's (`ATEN_CPU_CAPABILITY`, `MKL_CBWR`). (Managed's
+    Vector128 path on x64, SSE, gives 9.94e-5 there and a 3.43e-5 margin difference; no runner takes it.)
 - **Measured on UD EWT** (2026-10-09; `tools/constituency_divergence.py` + `StanzaSharp.Benchmark constituency-divergence`;
   the corpus is CC BY-SA and not in the repository). EWT's train/dev/test `# text` lines as 1,174 documents (the lemma
   study's `DOCS.json`), 15,901 sentences, 254,589 words, `tokenize,mwt,pos,constituency`; per step the best and second
