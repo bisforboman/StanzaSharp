@@ -11,6 +11,12 @@ a .NET library for detecting and de-identifying PII. It adds two components.
     like the regex matches.
 - `StanzaTokenNormalizer` gives TasmanianDevil's context matching (`LemmaContextAwareEnhancer`) real lemmas, in any
   language Stanza has a lemmatizer for, instead of English Porter stems.
+- `SePersonnummerRecognizer` and `SeOrganisationsnummerRecognizer` find Swedish identity numbers. TasmanianDevil has no
+  Swedish country pack yet.
+  - `SE_PERSONNUMMER` covers personnummer and samordningsnummer. A number must have a valid date and Luhn check digit.
+  - `SE_ORGANISATIONSNUMMER` must have a third digit of 2 or more and a valid Luhn check digit.
+  - Written with its separator, a valid number counts with full confidence. A bare run of digits also needs a context
+    word nearby, such as "personnummer".
 
 ## Use
 
@@ -24,6 +30,17 @@ using var nlp = Pipeline.Load("models/stanza/en", new PipelineOptions { Processo
 registry.AddRecognizer(new StanzaNerRecognizer(nlp));                    // English
 registry.AddRecognizer(new StanzaNerRecognizer(swedishNlp, "sv"));       // a pipeline per language
 ```
+
+For Swedish:
+
+```csharp
+using var sv = Pipeline.Load("models/stanza/sv", new PipelineOptions { Language = "sv", Processors = "tokenize,ner" });
+using var engine = new PiiEngine(new PiiOptions { Language = "sv" }, extraRecognizers:
+    [new StanzaNerRecognizer(sv, "sv"), new SePersonnummerRecognizer(), new SeOrganisationsnummerRecognizer()]);
+engine.Anonymize(text); // names, places, organisations, dates, personnummer, organisationsnummer, phone, e-mail
+```
+
+Street addresses and postal codes are not covered.
 
 `StanzaNerRecognizer` needs only `tokenize,ner`. `StanzaTokenNormalizer` needs `tokenize,mwt,pos,lemma`; pass it to
 `LemmaContextAwareEnhancer`'s `normalizer` parameter.

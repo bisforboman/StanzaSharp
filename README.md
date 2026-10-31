@@ -582,6 +582,8 @@ a .NET library for detecting and de-identifying PII.
 - `StanzaNerRecognizer` adds `PERSON`, `LOCATION`, `ORGANIZATION` and `DATE_TIME` from Stanza's NER model for each
   language.
 - `StanzaTokenNormalizer` gives TasmanianDevil's context matching real lemmas in any Stanza language.
+- `SePersonnummerRecognizer` and `SeOrganisationsnummerRecognizer` find Swedish personnummer, samordningsnummer and
+  organisationsnummer, which TasmanianDevil has no country pack for.
 
 ```csharp
 using var nlp = Pipeline.Load("models/stanza/en", new PipelineOptions { Processors = "tokenize,ner" });

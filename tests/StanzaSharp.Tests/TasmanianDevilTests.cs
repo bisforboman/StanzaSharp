@@ -76,3 +76,89 @@ public class TasmanianDevilTests(SharedPipelines pipelines) : IClassFixture<Shar
         Assert.Throws<ArgumentException>(() => new StanzaTokenNormalizer(pipelines.Get(processors: "tokenize,ner")));
     }
 }
+
+/// <summary>
+/// The Swedish id-number recognizers of StanzaSharp.TasmanianDevil, without models. Personnummer are Skatteverket's
+/// published test personnummer and the samordningsnummer one of its test samordningsnummer (open data, never issued);
+/// the organisationsnummer is synthetic.
+/// </summary>
+public class SwedishIdRecognizerTests
+{
+    [Theory]
+    [InlineData("19780401-2388")]
+    [InlineData("780401-2388")]
+    [InlineData("900101+9802")]
+    [InlineData("20260161-2381")]
+    public void Personnummer_WithSeparator_HasFullConfidence(string pnr)
+    {
+        var result = Assert.Single(new SePersonnummerRecognizer().Analyze($"Personnummer {pnr}.", []));
+        Assert.Equal((SePersonnummerRecognizer.EntityType, EntityRecognizer.MaxScore), (result.EntityType, result.Score));
+    }
+
+    [Theory]
+    [InlineData("19780401-2389")]
+    [InlineData("781301-2382")]
+    [InlineData("780400-2389")]
+    [InlineData("559900-1236")]
+    public void Personnummer_WithBadCheckDigitOrDate_IsDropped(string pnr) =>
+        Assert.Empty(new SePersonnummerRecognizer().Analyze($"Personnummer {pnr}.", []));
+
+    [Theory]
+    [InlineData("559900-1236")]
+    [InlineData("16559900-1236")]
+    public void Organisationsnummer_WithHyphen_HasFullConfidence(string orgnr)
+    {
+        var result = Assert.Single(new SeOrganisationsnummerRecognizer().Analyze($"Organisationsnummer {orgnr}.", []));
+        Assert.Equal((SeOrganisationsnummerRecognizer.EntityType, EntityRecognizer.MaxScore), (result.EntityType, result.Score));
+    }
+
+    [Theory]
+    [InlineData("559900-1237")]
+    [InlineData("780401-2388")]
+    [InlineData("19559900-1236")]
+    public void Organisationsnummer_WithBadThirdOrCheckDigit_IsDropped(string orgnr) =>
+        Assert.Empty(new SeOrganisationsnummerRecognizer().Analyze($"Organisationsnummer {orgnr}.", []));
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("1")]
+    [InlineData("-1234")]
+    [InlineData("12345-6789")]
+    [InlineData("123456789012345")]
+    public void Validate_ReturnsFalse_RatherThanThrow(string value)
+    {
+        Assert.False(new SePersonnummerRecognizer().ValidateResult(value));
+        Assert.False(new SeOrganisationsnummerRecognizer().ValidateResult(value));
+    }
+
+    // In TasmanianDevil's engine: the default engine leaves the personnummer and takes the organisationsnummer for a phone
+    // number; with the recognizers both are found, and a bare ten-digit number needs a context word.
+    [Fact]
+    public void PiiEngine_MasksSwedishIdNumbers()
+    {
+        const string text = "Sökande, personnummer 19780401-2388, är anställd hos bolaget med organisationsnummer 559900-1236.";
+        Assert.Contains("19780401-2388", new PiiEngine(new PiiOptions { Language = "sv" }).Anonymize(text).Text);
+
+        using var engine = Engine();
+        Assert.Equal(
+            "Sökande, personnummer <SE_PERSONNUMMER>, är anställd hos bolaget med organisationsnummer <SE_ORGANISATIONSNUMMER>.",
+            engine.Anonymize(text).Text);
+        Assert.DoesNotContain(engine.Analyze("Order 7804012388 skickad."), r => r.EntityType == SePersonnummerRecognizer.EntityType);
+        Assert.Contains(engine.Analyze("Personnummer 7804012388 enligt ansökan."), r => r.EntityType == SePersonnummerRecognizer.EntityType);
+    }
+
+    // The Luhn check passes for one number in ten: bare ten-digit order numbers must not be masked without context.
+    [Fact]
+    public void PiiEngine_LeavesArbitraryTenDigitNumbers()
+    {
+        using var engine = Engine();
+        var random = new Random(42);
+        var masked = Enumerable.Range(0, 500)
+            .Select(_ => random.NextInt64(1_000_000_000, 10_000_000_000).ToString(System.Globalization.CultureInfo.InvariantCulture))
+            .Count(n => engine.Analyze($"Order {n} skickad.").Any(r => r.EntityType.StartsWith("SE_", StringComparison.Ordinal)));
+        Assert.Equal(0, masked);
+    }
+
+    private static PiiEngine Engine() =>
+        new(new PiiOptions { Language = "sv" }, extraRecognizers: [new SePersonnummerRecognizer(), new SeOrganisationsnummerRecognizer()]);
+}
