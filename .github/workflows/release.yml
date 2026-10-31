@@ -116,11 +116,11 @@ jobs:
           dotnet-version: 10.0.x
 
       # StanzaSharp, StanzaSharp.Cuda (packed from src/StanzaSharp.Cuda), StanzaSharp.DataIngestion (VERSION-preview while
-      # Microsoft.Extensions.DataIngestion is a preview; its csproj) and the stanzasharp tool. (The StanzaSharp.Cpu.*
+      # Microsoft.Extensions.DataIngestion is a preview; its csproj), StanzaSharp.TasmanianDevil and the stanzasharp tool. (The StanzaSharp.Cpu.*
       # platform packages ended with 0.4.)
       - name: Pack
         run: |
-          for project in StanzaSharp StanzaSharp.Cuda StanzaSharp.DataIngestion StanzaSharp.Tool; do
+          for project in StanzaSharp StanzaSharp.Cuda StanzaSharp.DataIngestion StanzaSharp.TasmanianDevil StanzaSharp.Tool; do
             dotnet pack src/$project --configuration Release -p:Version=$VERSION --output artifacts
           done
 

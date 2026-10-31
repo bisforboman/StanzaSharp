@@ -271,8 +271,11 @@ public sealed class Pipeline : IDisposable
     /// <summary>The loaded parser, for studies (samples/StanzaSharp.Benchmark constituency-divergence).</summary>
     internal ConstituencyParser? Parser => _parser;
 
-    /// <summary>Whether the pipeline loaded the NER tagger (StanzaSharp.DataIngestion's EntityEnricher needs it).</summary>
+    /// <summary>Whether the pipeline loaded the NER tagger (the DataIngestion and TasmanianDevil adapters need it).</summary>
     internal bool HasNer => _ner != null;
+
+    /// <summary>Whether the pipeline sets lemmas (StanzaSharp.TasmanianDevil's StanzaTokenNormalizer needs them).</summary>
+    internal bool HasLemma => _lemma != null || _identityLemma;
 
     private readonly SentimentClassifier? _sentiment;
     private readonly CorefResolver? _coref;
