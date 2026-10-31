@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using System.Text.Json.Nodes;
 using StanzaSharp.Constituency;
 using StanzaSharp.Nn;
@@ -86,7 +87,7 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
     /// charlms computed) with identical decisions at every step. Reports the per-step score drift between the backends and,
     /// per backend, how close each decision was: the margin between the best legal transition and the next legal one
     /// (steps with one legal transition decide nothing), plus the raw top-2 margin of the whole row, and the closest calls.
-    /// Guards that the smallest margin stays at least 2 × the largest difference between the backends' margins, and reports
+    /// Guards that the smallest margin stays at least 2 × (1.5 × on Arm64) the largest difference between the backends' margins, and reports
     /// where the largest score difference is. German's parser reads
     /// UPOS (retag_method) and allows longer unary chains (unary_limit 8).
     /// </summary>
@@ -194,7 +195,11 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
         // 3 × the score drift until Stanford's re-uploaded English tagger (2026-10-30) made validation_multilingual sentence
         // 13 step 7 a near-tie (margin 9.8e-5 on CI's TorchSharp, under 3 × its 5.3e-5 drift): the drift is ~1.5e-6 relative
         // error spread over ordinary sentences, so no kernel change halves it short of double-precision charlms.
-        const float K = 2;
+        // On Arm64 K is 1.5 (owner's decision, 2026-10-31): there the reference itself moves. Arm64 libtorch's kernels
+        // aren't pinned like x64's (ATEN_CPU_CAPABILITY, MKL_CBWR), and TorchSharp's closest call was 1.06e-4 (macOS) and
+        // 1.03e-4 (Windows on Arm) where x64 gives 9.79e-5, while the managed margins equal x64 AVX2's to three digits at
+        // all ten closest calls; the margin differences were 6.29e-5 and 5.72e-5 (ratios 1.64 and 1.80).
+        float K = RuntimeInformation.ProcessArchitecture == Architecture.Arm64 ? 1.5f : 2;
         float smallest = Math.Min(margins[0].Min(), margins[1].Min());
         Assert.True(smallest >= K * marginDiff,
             $"smallest decision margin {smallest:E2} is under {K} × the largest difference between the backends' margins {marginDiff:E2}");
