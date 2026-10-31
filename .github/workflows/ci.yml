@@ -120,6 +120,15 @@ jobs:
           name: test-results-build-test
           path: TestResults/*.trx
 
+      # Package validation (Directory.Build.props): the public API against the last release's packages on nuget.org.
+      # After the tests, which run the Release build this rebuilds. A version of its own, since 0.x versions skip the
+      # check (an assembly version below the baseline's is an error).
+      - name: API compatibility
+        run: |
+          for project in StanzaSharp StanzaSharp.Cuda; do
+            dotnet pack src/$project -c Release -p:Version=999.0.0-apicheck -o "$RUNNER_TEMP/apicheck"
+          done
+
   # The full suite against Stanza's real English models, downloaded and converted with the pinned stanza version.
   # Split into three jobs by test class (owner's decision, 2026-10-10), balanced by the golden trx's class times (full
   # run, minutes summed over tests): 1 = ConcurrencyTests' cancellation cases (10.6, one at a time) and every class not

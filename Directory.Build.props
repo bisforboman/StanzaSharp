@@ -42,6 +42,17 @@
          the assemblies marked trimmable. Not StanzaSharp.Cuda (TorchSharp isn't AOT-safe) or the Tool (a .NET tool). -->
     <IsAotCompatible Condition="'$(MSBuildProjectName)' != 'StanzaSharp.Cuda' And '$(MSBuildProjectName)' != 'StanzaSharp.Tool'">true</IsAotCompatible>
   </PropertyGroup>
+  <!-- API compatibility: `dotnet pack` of the two library packages compares their public API with the last release's
+       package from nuget.org and fails on a binary-breaking change (CP0001, CP0002, ...). tools/changelog.py release moves
+       the baseline to the release before the one it writes, so every pack, the release's own included, is checked
+       against a published version. An intentional break (a major version, the owner's decision) is accepted by
+       regenerating the suppression file: `dotnet pack src/<project> -p:ApiCompatGenerateSuppressionFile=true`. Off for
+       0.x versions (the 0.1.0-dev default, verify-package.ps1's 0.0.0-verify.*): an assembly version below the
+       baseline's is itself an error (CP0003). CI's build-test packs with a version of its own to run the check. -->
+  <PropertyGroup Condition="('$(MSBuildProjectName)' == 'StanzaSharp' Or '$(MSBuildProjectName)' == 'StanzaSharp.Cuda') And !$(Version.StartsWith('0.'))">
+    <EnablePackageValidation>true</EnablePackageValidation>
+    <PackageValidationBaselineVersion>1.14.0</PackageValidationBaselineVersion>
+  </PropertyGroup>
   <ItemGroup Condition="'$([System.IO.Path]::GetFileName($([System.IO.Path]::GetDirectoryName($(MSBuildProjectDirectory)))))' == 'src'">
     <InternalsVisibleTo Include="StanzaSharp;StanzaSharp.Cuda;StanzaSharp.Nn;StanzaSharp.Tokenize;StanzaSharp.Mwt;StanzaSharp.Pos;StanzaSharp.Lemma;StanzaSharp.Constituency;StanzaSharp.Depparse;StanzaSharp.Ner;StanzaSharp.Sentiment;StanzaSharp.Coref;StanzaSharp.Tool"
                         Exclude="$(AssemblyName)" />
