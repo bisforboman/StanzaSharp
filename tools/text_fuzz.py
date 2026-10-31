@@ -470,7 +470,7 @@ class Pretagger:
     default package) tag it; then, seeded by the text, about one word in ten loses its lemma and one in twenty its XPOS
     (never UPOS: depparse needs one of the two), as PRETAGGED_CASES strips whole fields. XPOS stays when the
     constituency parser runs: it reads XPOS (English), and StanzaSharp throws for a word without its tag where Stanza
-    parses an empty one (a deliberate difference, CLAUDE.md "Pretagged")."""
+    parses an empty one (a deliberate difference, docs/decisions/status.md, "Pretagged")."""
 
     def __init__(self, models, lang, keep_xpos=False):
         self.keep_xpos = keep_xpos

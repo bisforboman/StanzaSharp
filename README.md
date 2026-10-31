@@ -11,7 +11,7 @@ It runs Stanza's own pretrained models in plain .NET code, with no native depend
 macOS, x64 and Arm64.
 [docs/verification.md](docs/verification.md) shows what is compared, how, and how to check it on your own text.
 
-Contributors: CLAUDE.md holds the scope, layout, decisions and conventions.
+Contributors: CLAUDE.md holds the rules and conventions; docs/decisions/ and the docs it links hold the scope, decisions and history.
 
 ## Install
 

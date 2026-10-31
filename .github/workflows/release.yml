@@ -5,7 +5,7 @@ name: Release
 # version: the newest version in CHANGELOG.md without a tag yet. Versions with a '-' are prereleases and use the
 # 'prerelease' environment; others use 'release' (approval required). The tag and the GitHub release are created only
 # after the packages are on nuget.org, so a tag always marks a published version.
-# Publishing uses NuGet Trusted Publishing: no stored API key (see the release notes in CLAUDE.md).
+# Publishing uses NuGet Trusted Publishing: no stored API key (see docs/decisions/packaging-and-releases.md).
 
 on:
   push:
