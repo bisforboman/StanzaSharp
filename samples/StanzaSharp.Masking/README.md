@@ -29,7 +29,8 @@ Where a pattern and an entity overlap, they become one span typed by the pattern
 Measured on two fictional case-file texts (2026-10-31): a decision on social assistance written as running text (not
 included), and `example.txt`, written to be hard (an all-caps surname-first header, form fields, genitives, an initial,
 non-Nordic names, names at the start of a sentence and alone). Everything in `example.txt` is invented; its
-personnummer have years no one can be born in (2098, 2099) and its organisationsnummer is synthetic.
+personnummer are Skatteverket's published test personnummer (open data, `testpersonnummer`), which are never issued
+to anyone, and its organisationsnummer is synthetic.
 
 | | running text | example.txt |
 |---|---|---|
