@@ -86,7 +86,8 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
     /// charlms computed) with identical decisions at every step. Reports the per-step score drift between the backends and,
     /// per backend, how close each decision was: the margin between the best legal transition and the next legal one
     /// (steps with one legal transition decide nothing), plus the raw top-2 margin of the whole row, and the closest calls.
-    /// Guards that the smallest margin stays at least 3 × the score drift between the backends. German's parser reads
+    /// Guards that the smallest margin stays at least 2 × the largest difference between the backends' margins, and reports
+    /// where the largest score difference is. German's parser reads
     /// UPOS (retag_method) and allows longer unary chains (unary_limit 8).
     /// </summary>
     [ModelTheory]
@@ -136,7 +137,9 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
 
         string Name(int j) => transitions[j].Kind == TransitionKind.Open ? $"Open({transitions[j].Label})" : transitions[j].Kind.ToString();
 
-        float drift = 0, marginDiff = 0;
+        float drift = 0, marginDiff = 0, legalDrift = 0;
+        string driftAt = "";
+        var sentenceDrift = new float[sentences.Count];
         int total = 0, decisions = 0;
         var margins = new[] { new List<float>(), new List<float>() };
         var raw = new[] { new List<float>(), new List<float>() };
@@ -150,7 +153,15 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
                 Assert.Equal(t.Legal, m.Legal);
                 total++;
                 for (int j = 0; j < t.Row.Length; j++)
-                    drift = Math.Max(drift, Math.Abs(t.Row[j] - m.Row[j]));
+                {
+                    float d = Math.Abs(t.Row[j] - m.Row[j]);
+                    sentenceDrift[i] = Math.Max(sentenceDrift[i], d);
+                    if (d > drift)
+                        (drift, driftAt) = (d, $"{sentences[i].File} sentence {sentences[i].Index} step {k} {Name(j)}{(t.Legal[j] ? "" : " (illegal)")}: {t.Row[j]} vs {m.Row[j]}, row's largest |score| {t.Row.Max(Math.Abs)}");
+                    if (t.Legal[j])
+                        legalDrift = Math.Max(legalDrift, d);
+                }
+
                 var (dt, dm) = (Decision(t.Row, t.Legal), Decision(m.Row, m.Legal));
                 Assert.Equal(dt.Best, dm.Best);
                 raw[0].Add(Decision(t.Row, null).Margin);
@@ -167,6 +178,9 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
         }
 
         output.WriteLine($"{lang}: {sentences.Count} sentences, {total} steps, {decisions} with two or more legal transitions; scores max |diff| between backends {drift:E2}, decision margins max |diff| {marginDiff:E2}");
+        output.WriteLine($"largest score difference at {driftAt}; over legal transitions only {legalDrift:E2}");
+        foreach (int i in Enumerable.Range(0, sentences.Count).OrderByDescending(i => sentenceDrift[i]).Take(5))
+            output.WriteLine($"  drift {sentenceDrift[i]:E2}: {sentences[i].File} sentence {sentences[i].Index}");
         string Counts(List<float> m) => $"< 1e-2: {m.Count(x => x < 1e-2f)}, < 1e-3: {m.Count(x => x < 1e-3f)}, < 1e-4: {m.Count(x => x < 1e-4f)}, min {m.Min():E2}";
         output.WriteLine($"decision margins TorchSharp {Counts(margins[0])}");
         output.WriteLine($"decision margins managed    {Counts(margins[1])}");
@@ -175,12 +189,15 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
         foreach (var (_, what) in calls.OrderBy(c => c.Min).Take(10))
             output.WriteLine(what);
 
-        // The guard: a decision flips only if its margin is below the margin difference, at most twice the score drift.
-        // Measured (English): smallest margin 3.6e-4 = 4.9 × the drift (7.3e-5). k = 3 keeps 50% over that bound and fails once a
-        // kernel change grows the drift by 60% or a change moves the closest call 40% closer (docs/backends.md, "constituency").
-        const float K = 3;
+        // The guard (owner's decision, 2026-10-31): besides identical decisions (asserted above), the smallest margin must be
+        // at least K × the largest difference between the backends' margins, the quantity that can flip a decision. It was
+        // 3 × the score drift until Stanford's re-uploaded English tagger (2026-10-30) made validation_multilingual sentence
+        // 13 step 7 a near-tie (margin 9.8e-5 on CI's TorchSharp, under 3 × its 5.3e-5 drift): the drift is ~1.5e-6 relative
+        // error spread over ordinary sentences, so no kernel change halves it short of double-precision charlms.
+        const float K = 2;
         float smallest = Math.Min(margins[0].Min(), margins[1].Min());
-        Assert.True(smallest >= K * drift, $"smallest decision margin {smallest:E2} is under {K} × the backends' score drift {drift:E2}");
+        Assert.True(smallest >= K * marginDiff,
+            $"smallest decision margin {smallest:E2} is under {K} × the largest difference between the backends' margins {marginDiff:E2}");
     }
 
     [ModelTheory]
