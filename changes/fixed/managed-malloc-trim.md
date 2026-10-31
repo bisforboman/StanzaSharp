@@ -1,1 +1,0 @@
-- On Linux the managed backend no longer runs glibc's `malloc_trim` after each call of 1,000 words or more. It returned nothing there (the managed models live on the GC heap) and cost 2–12 ms, taking each allocator arena's lock in turn while other calls ran. The TorchSharp backend still trims.
