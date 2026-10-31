@@ -4,6 +4,7 @@
     <Project Path="samples/StanzaSharp.Cli/StanzaSharp.Cli.csproj" />
     <Project Path="samples/StanzaSharp.Example/StanzaSharp.Example.csproj" />
     <Project Path="samples/StanzaSharp.Masking/StanzaSharp.Masking.csproj" />
+    <Project Path="samples/StanzaSharp.Rag/StanzaSharp.Rag.csproj" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/StanzaSharp.Constituency/StanzaSharp.Constituency.csproj" />

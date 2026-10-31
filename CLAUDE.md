@@ -586,6 +586,7 @@ src/StanzaSharp.Tool           The `stanzasharp` .NET tool: download, compare, b
 samples/StanzaSharp.Cli        Console runner for quick experiments.
 samples/StanzaSharp.Benchmark  Per-stage speed/memory benchmark; tools/benchmark.py is the Python twin.
 samples/StanzaSharp.Example    Commented tour of the public API (download, load, every result, CoNLL-U).
+samples/StanzaSharp.Rag        #233's RAG sample: Markdown → SentenceChunker → EntityEnricher → in-memory store (MiniLM ONNX).
 samples/StanzaSharp.Masking    Swedish masking (#234): NER + Luhn-checked id/phone/e-mail/address patterns; MaskingTests.
 tests/StanzaSharp.Tests        xUnit; golden tests against Python Stanza output.
 tests/StanzaSharp.ManagedCheck Console app without libtorch: proves the managed backend loads none (ManagedCheckTests).
@@ -1305,7 +1306,11 @@ What the English treebank packages' checkpoints add to the default package's pat
     `GetIndexByTokenCount`. `EntityEnricher` = distinct entity texts (`string[]`, `MetadataKey` "entities", like
     KeywordEnricher's; whitespace runs as one space), bulk `Process` per batch, a chunk starting with its `Context` tagged as
     two texts (one newline made "## Kessler Chemicals" and the body's first "Kessler Chemicals" one entity); throws at construction without ner (`Pipeline.HasNer`, internal).
-    `DataIngestionTests` (golden shard 1; o200k from `Microsoft.ML.Tokenizers.Data.O200kBase`, offline). Dependabot
+    `DataIngestionTests` (golden shard 1; o200k from `Microsoft.ML.Tokenizers.Data.O200kBase`, offline; the sample's whole
+    path through `VectorStoreWriter` and Semantic Kernel's `InMemoryVectorStore` with a hashing stub generator).
+    `samples/StanzaSharp.Rag` (owner's choice 2026-10-31: a local ONNX embedding model): sentence-transformers'
+    all-MiniLM-L6-v2 (pinned commit, sha256 per file, downloaded at first run) on ONNX Runtime with ML.Tokenizers'
+    `BertTokenizer`, mean pooling + L2 norm; build-only in CI (no model download there). Dependabot
     offers each new DataIngestion preview (auto-merged as a minor bump once build-test passes).
   - On a Windows Arm64 machine Directory.Build.props gives the runnable projects (tests/, samples/)
     `libtorch-cpu-win-arm64` (`TorchSharp-cpu` lacks it), except those setting `StanzaSharpNoLibTorch`.
