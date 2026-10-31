@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- StanzaSharp for Microsoft.Extensions.DataIngestion (#233): a sentence chunker and a named-entity enricher. Packed as
+       StanzaSharp.DataIngestion, which depends on StanzaSharp. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <Description>StanzaSharp for Microsoft.Extensions.DataIngestion (RAG ingestion): SentenceChunker never cuts a sentence (Stanza's sentence splitter, 100+ languages, sizes counted with your embedding model's tokenizer), and EntityEnricher adds each chunk's named entities as metadata, offline and deterministic.</Description>
+    <PackageTags>nlp;stanza;rag;chunking;sentence-splitting;ner;named-entity-recognition;dataingestion</PackageTags>
+    <PackageReadmeFile>PACKAGE.md</PackageReadmeFile>
+    <!-- Microsoft.Extensions.DataIngestion is preview-only, and a stable package can't depend on a prerelease (NU5104):
+         this package is a prerelease of StanzaSharp's version until DataIngestion ships a stable release. -->
+    <PackageVersion Condition="!$(Version.Contains('-'))">$(Version)-preview</PackageVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The package dependency: StanzaSharp carries the other assemblies. -->
+    <ProjectReference Include="..\StanzaSharp\StanzaSharp.csproj" />
+    <!-- Compile-time only (the facade's references are private): Document and friends come with the StanzaSharp package. -->
+    <ProjectReference Include="..\StanzaSharp.Core\StanzaSharp.Core.csproj" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DataIngestion" Version="10.11.0-preview.1.26513.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="PACKAGE.md" Pack="true" PackagePath="/" />
+    <None Include="..\..\NOTICE" Pack="true" PackagePath="/" />
+  </ItemGroup>
+</Project>

@@ -581,6 +581,7 @@ src/StanzaSharp.Ner            Named-entity recognizer (biLSTM + CRF Viterbi).
 src/StanzaSharp.Sentiment      Sentence sentiment (CNN classifier over biLSTM states).
 src/StanzaSharp.Coref          Coreference (XLM-R + LoRA, the coref head, chains; opt-in processor).
 src/StanzaSharp                Pipeline facade wiring the processors together.
+src/StanzaSharp.DataIngestion  Microsoft.Extensions.DataIngestion (#233): SentenceChunker, EntityEnricher; its own package.
 src/StanzaSharp.Tool           The `stanzasharp` .NET tool: download, compare, benchmark (no native libtorch).
 samples/StanzaSharp.Cli        Console runner for quick experiments.
 samples/StanzaSharp.Benchmark  Per-stage speed/memory benchmark; tools/benchmark.py is the Python twin.
@@ -1265,7 +1266,8 @@ What the English treebank packages' checkpoints add to the default package's pat
   - Core's results: `Document`, `Sentence`, `Token`, `Word`, `Entity`, `Tree`, `Conllu`, `Json` (owner's decision,
     2026-10-14), `Dependency` (#174, 2026-10-18);
   - the facade's `ModelPath`, `LanguageIdentifier`, `LanguageIdentifierOptions`, `MultilingualPipeline`, `MultilingualOptions` (#174, 2026-10-19);
-  - Core's `CorefChain`, `CorefMention`, `CorefAttachment` (coref PR b, owner's decision 2026-10-20: Stanza's shape).
+  - Core's `CorefChain`, `CorefMention`, `CorefAttachment` (coref PR b, owner's decision 2026-10-20: Stanza's shape);
+  - StanzaSharp.DataIngestion's `SentenceChunker`, `EntityEnricher` (#233, owner's decision 2026-10-31: a package now).
 
   Everything else is `internal`.
   - Directory.Build.props gives every `src/*` assembly `InternalsVisibleTo` for the other StanzaSharp
@@ -1290,7 +1292,20 @@ What the English treebank packages' checkpoints add to the default package's pat
     longer published from 0.5; their projects and `src/StanzaSharp.Cpu.props` are gone. TorchSharp-backend users add
     `TorchSharp-cpu` or one `libtorch-cpu-<rid>` 2.10.0 themselves (TorchSharp loads a single one fine; checked with
     `libtorch-cpu-win-x64` alone). Deprecating them on nuget.org is the owner's manual step.
-  - `release.yml` packs `StanzaSharp`, `StanzaSharp.Cuda` (from `src/StanzaSharp.Cuda`) and `StanzaSharp.Tool`.
+  - `release.yml` packs `StanzaSharp`, `StanzaSharp.Cuda` (from `src/StanzaSharp.Cuda`), `StanzaSharp.DataIngestion`
+    and `StanzaSharp.Tool`.
+  - `StanzaSharp.DataIngestion` (#233; owner's decisions 2026-10-31: a package now, chunker + NER enricher first): depends
+    on StanzaSharp (same version) and Microsoft.Extensions.DataIngestion, still preview-only, so its `PackageVersion` is
+    `$(Version)-preview` (owner's decision 2026-10-31; a stable package can't depend on a prerelease, NU5104) until that
+    ships stable. `SentenceChunker`
+    = HeaderChunker's sections (headers as context and prefix) cut into Stanza sentences (one bulk `Process` per document,
+    sentences sliced from the element's text by token offsets, elements joined by `Environment.NewLine`, so with room to
+    spare it gives HeaderChunker's chunks when each element's text starts and ends at a sentence), packed greedily against the caller's ML.Tokenizers tokenizer counted
+    on the whole candidate chunk, whole-sentence overlap, tables whole, an oversized unit cut by
+    `GetIndexByTokenCount`. `EntityEnricher` = distinct entity texts (`string[]`, `MetadataKey` "entities", like
+    KeywordEnricher's), bulk `Process` per batch; throws at construction without ner (`Pipeline.HasNer`, internal).
+    `DataIngestionTests` (golden shard 1; o200k from `Microsoft.ML.Tokenizers.Data.O200kBase`, offline). Dependabot
+    offers each new DataIngestion preview (auto-merged as a minor bump once build-test passes).
   - On a Windows Arm64 machine Directory.Build.props gives the runnable projects (tests/, samples/)
     `libtorch-cpu-win-arm64` (`TorchSharp-cpu` lacks it), except those setting `StanzaSharpNoLibTorch`.
   - Supported platforms (README, PACKAGE.md): managed backend wherever .NET 10 runs; CI covers linux-x64, win-x64,
