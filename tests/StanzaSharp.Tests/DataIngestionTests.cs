@@ -136,6 +136,23 @@ public class DataIngestionTests(SharedPipelines pipelines) : IClassFixture<Share
         Assert.All(enriched, c => Assert.IsType<string[]>(c.Metadata[EntityEnricher.MetadataKey]));
     }
 
+    // The headers are tagged apart from the body (one newline joins them, which the tagger reads as a space), and a line
+    // break inside a name becomes a space.
+    [ModelFact]
+    public async Task Enricher_TagsHeadersApart_AndJoinsWrappedNames()
+    {
+        var pipeline = pipelines.Get(processors: "tokenize,ner");
+        var document = new IngestionDocument("doc");
+        var section = new IngestionDocumentSection();
+        section.Elements.Add(new IngestionDocumentHeader("## Kessler Chemicals") { Level = 2 });
+        section.Elements.Add(new IngestionDocumentParagraph("Kessler Chemicals ships solvents from Hamburg every week. Their buyer, Paul\nMarchetti, called."));
+        document.Sections.Add(section);
+
+        var chunks = await Chunk(new SentenceChunker(pipeline, Options(1000, 0)), document);
+        var enriched = await Enrich(new EntityEnricher(pipeline, new HashSet<string> { "ORG", "GPE", "PERSON" }), chunks);
+        Assert.Equal(["Kessler Chemicals", "Hamburg", "Paul Marchetti"], (string[])enriched.Single().Metadata[EntityEnricher.MetadataKey]);
+    }
+
     [ModelFact]
     public void Enricher_NeedsNer() =>
         Assert.Throws<ArgumentException>(() => new EntityEnricher(pipelines.Get(processors: "tokenize")));

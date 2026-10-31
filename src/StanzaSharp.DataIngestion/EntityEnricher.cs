@@ -9,10 +9,13 @@ namespace StanzaSharp.DataIngestion;
 /// </summary>
 /// <remarks>
 /// <para>The value under <see cref="MetadataKey"/> is a <see cref="string"/> array of the chunk's distinct entity texts
-/// (ordinal, in order of first appearance; empty when it has none), for filtered or hybrid search.</para>
+/// (ordinal, in order of first appearance, whitespace runs such as a line break inside a name as one space; empty when
+/// it has none), for filtered or hybrid search.</para>
 /// <para>The entity types are the model's: English's default package tags OntoNotes' 18 (PERSON, ORG, GPE, DATE, ...),
 /// German's PER, LOC, ORG and MISC. <c>types</c> keeps only some of them.</para>
-/// <para>The whole chunk is tagged, headers included, so a header's entities are in every chunk under it.</para>
+/// <para>The whole chunk is tagged, headers included, so a header's entities are in every chunk under it. A chunk that
+/// starts with its <see cref="IngestionChunk{T}.Context"/> (the headers) is tagged as two texts, the headers and the
+/// rest, so a header never runs into the first sentence.</para>
 /// <para>Chunks are tagged a batch at a time in one bulk pipeline call. The pipeline needs <c>tokenize,ner</c> (NER
 /// requires nothing else).</para>
 /// </remarks>
@@ -65,14 +68,39 @@ public sealed class EntityEnricher : IngestionChunkProcessor<string>
         batch.Clear();
         if (done.Count == 0)
             return done;
-        var documents = _pipeline.Process(done.Select(c => c.Content), cancellationToken);
+
+        // A chunk that starts with its headers (SentenceChunker's and HeaderChunker's do) is tagged as two texts, the
+        // headers and the rest: joined by one newline, the tagger reads them as one sentence, so "## Kessler Chemicals"
+        // and a body starting "Kessler Chemicals ships" made one entity of both.
+        var texts = new List<string>();
+        var parts = new int[done.Count];
+        foreach (var (chunk, i) in done.Select((c, i) => (c, i)))
+        {
+            var context = chunk.Context;
+            if (!string.IsNullOrEmpty(context) && chunk.Content.Length > context.Length && chunk.Content.StartsWith(context, StringComparison.Ordinal))
+            {
+                texts.Add(context);
+                texts.Add(chunk.Content[context.Length..]);
+                parts[i] = 2;
+            }
+            else
+            {
+                texts.Add(chunk.Content);
+                parts[i] = 1;
+            }
+        }
+
+        var documents = _pipeline.Process(texts, cancellationToken);
+        var next = 0;
         for (var i = 0; i < done.Count; i++)
         {
-            done[i].Metadata[MetadataKey] = documents[i].Entities
+            done[i].Metadata[MetadataKey] = documents.Skip(next).Take(parts[i])
+                .SelectMany(d => d.Entities)
                 .Where(e => _types == null || _types.Contains(e.Type))
-                .Select(e => e.Text)
+                .Select(e => string.Join(' ', e.Text.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries)))
                 .Distinct(StringComparer.Ordinal)
                 .ToArray();
+            next += parts[i];
         }
 
         return done;

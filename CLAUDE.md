@@ -1303,7 +1303,8 @@ What the English treebank packages' checkpoints add to the default package's pat
     spare it gives HeaderChunker's chunks when each element's text starts and ends at a sentence), packed greedily against the caller's ML.Tokenizers tokenizer counted
     on the whole candidate chunk, whole-sentence overlap, tables whole, an oversized unit cut by
     `GetIndexByTokenCount`. `EntityEnricher` = distinct entity texts (`string[]`, `MetadataKey` "entities", like
-    KeywordEnricher's), bulk `Process` per batch; throws at construction without ner (`Pipeline.HasNer`, internal).
+    KeywordEnricher's; whitespace runs as one space), bulk `Process` per batch, a chunk starting with its `Context` tagged as
+    two texts (one newline made "## Kessler Chemicals" and the body's first "Kessler Chemicals" one entity); throws at construction without ner (`Pipeline.HasNer`, internal).
     `DataIngestionTests` (golden shard 1; o200k from `Microsoft.ML.Tokenizers.Data.O200kBase`, offline). Dependabot
     offers each new DataIngestion preview (auto-merged as a minor bump once build-test passes).
   - On a Windows Arm64 machine Directory.Build.props gives the runnable projects (tests/, samples/)
