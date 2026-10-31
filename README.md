@@ -571,6 +571,8 @@ for `default_fast`), and each call in flight adds
 - `Sentence.Text` is nullable because CoNLL-U read without `# text` has none, but `Process` always sets it.
 
 `samples/StanzaSharp.Example` is a commented tour of the whole API: `dotnet run --project samples/StanzaSharp.Example`.
+[samples/StanzaSharp.Masking](samples/StanzaSharp.Masking/README.md) suggests what to mask in Swedish documents
+(maskning): Swedish NER plus personnummer, organisationsnummer, phone, e-mail and address patterns.
 
 ### Language identification
 

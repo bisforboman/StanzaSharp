@@ -585,6 +585,7 @@ src/StanzaSharp.Tool           The `stanzasharp` .NET tool: download, compare, b
 samples/StanzaSharp.Cli        Console runner for quick experiments.
 samples/StanzaSharp.Benchmark  Per-stage speed/memory benchmark; tools/benchmark.py is the Python twin.
 samples/StanzaSharp.Example    Commented tour of the public API (download, load, every result, CoNLL-U).
+samples/StanzaSharp.Masking    Swedish masking (#234): NER + Luhn-checked id/phone/e-mail/address patterns; MaskingTests.
 tests/StanzaSharp.Tests        xUnit; golden tests against Python Stanza output.
 tests/StanzaSharp.ManagedCheck Console app without libtorch: proves the managed backend loads none (ManagedCheckTests).
 tests/golden/                  Golden data generated from Python Stanza (committed, keep it small).
