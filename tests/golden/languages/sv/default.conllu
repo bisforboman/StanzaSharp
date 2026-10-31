@@ -27,4 +27,39 @@
 3	Anna	anna	PROPN	PM|NOM	Case=Nom	2	obj	_	start_char=98|end_char=102|ner=S-PER
 4	i	i	ADP	PP	_	5	case	_	start_char=103|end_char=104|ner=O
 5	Göteborg	Göteborg	PROPN	PM|NOM	Case=Nom	2	obl	_	SpaceAfter=No|start_char=105|end_char=113|ner=S-LOC
-6	.	.	PUNCT	MAD	_	2	punct	_	SpacesAfter=\n|start_char=113|end_char=114|ner=O
+6	.	.	PUNCT	MAD	_	2	punct	_	SpacesAfter=\n\n|start_char=113|end_char=114|ner=O
+
+# text = LINDQVIST, KARIN Karins ansökan kom in den 3 september.
+# sent_id = 3
+1	LINDQVIST	LINDQVIST	PROPN	PM|NOM	Case=Nom	6	nsubj	_	SpaceAfter=No|start_char=116|end_char=125|ner=S-PER
+2	,	,	PUNCT	MID	_	3	punct	_	start_char=125|end_char=126|ner=O
+3	KARIN	KARIN	PROPN	PM|NOM	Case=Nom	1	conj	_	SpacesAfter=\n|start_char=127|end_char=132|ner=B-PER
+4	Karins	Karins	PROPN	PM|GEN	Case=Gen	3	flat:name	_	start_char=133|end_char=139|ner=E-PER
+5	ansökan	ansökan	NOUN	NN|UTR|SIN|IND|NOM	Case=Nom|Definite=Ind|Gender=Com|Number=Sing	1	nmod	_	start_char=140|end_char=147|ner=O
+6	kom	komma	VERB	VB|PRT|AKT	Mood=Ind|Tense=Past|VerbForm=Fin|Voice=Act	0	root	_	start_char=148|end_char=151|ner=O
+7	in	in	ADV	PL	_	6	compound:prt	_	start_char=152|end_char=154|ner=O
+8	den	den	DET	DT|UTR|SIN|DEF	Definite=Def|Gender=Com|Number=Sing|PronType=Art	10	det	_	start_char=155|end_char=158|ner=B-TME
+9	3	3	NUM	RG|NOM	Case=Nom|NumType=Card	10	nummod	_	start_char=159|end_char=160|ner=I-TME
+10	september	september	NOUN	NN|UTR|SIN|IND|NOM	Case=Nom|Definite=Ind|Gender=Com|Number=Sing	6	obl	_	SpaceAfter=No|start_char=161|end_char=170|ner=E-TME
+11	.	.	PUNCT	MAD	_	6	punct	_	start_char=170|end_char=171|ner=O
+
+# text = K. Lindqvist har tidigare haft kontakt med Hyresbolaget Solgården AB. Zeynep Yılmaz från Migrationsverket deltog per telefon.
+# sent_id = 4
+1	K.	K.	NOUN	NN|AN	Abbr=Yes	2	nmod	_	start_char=172|end_char=174|ner=B-PER
+2	Lindqvist	Lindqvist	PROPN	PM|NOM	Case=Nom	5	nsubj	_	start_char=175|end_char=184|ner=E-PER
+3	har	ha	AUX	VB|PRS|AKT	Mood=Ind|Tense=Pres|VerbForm=Fin|Voice=Act	5	aux	_	start_char=185|end_char=188|ner=O
+4	tidigare	tidigt	ADV	AB|KOM	Degree=Cmp	5	advmod	_	start_char=189|end_char=197|ner=O
+5	haft	ha	VERB	VB|SUP|AKT	VerbForm=Sup|Voice=Act	0	root	_	start_char=198|end_char=202|ner=O
+6	kontakt	kontakt	NOUN	NN|UTR|SIN|IND|NOM	Case=Nom|Definite=Ind|Gender=Com|Number=Sing	5	obj	_	start_char=203|end_char=210|ner=O
+7	med	med	ADP	PP	_	9	case	_	start_char=211|end_char=214|ner=O
+8	Hyresbolaget	hyresbolage	NOUN	NN|NEU|SIN|DEF|NOM	Case=Nom|Definite=Def|Gender=Neut|Number=Sing	9	nmod	_	start_char=215|end_char=227|ner=B-ORG
+9	Solgården	Solgården	PROPN	PM|NOM	Case=Nom	5	obl	_	start_char=228|end_char=237|ner=I-ORG
+10	AB.	AB.	NOUN	NN|AN	Abbr=Yes	11	nmod	_	start_char=238|end_char=241|ner=E-ORG
+11	Zeynep	Zeynep	PROPN	PM|NOM	Case=Nom	15	nsubj	_	start_char=242|end_char=248|ner=B-ORG
+12	Yılmaz	Yılmaz	PROPN	PM|NOM	Case=Nom	11	flat:name	_	start_char=249|end_char=255|ner=E-ORG
+13	från	från	ADP	PP	_	14	case	_	start_char=256|end_char=260|ner=O
+14	Migrationsverket	migrationsverket	NOUN	NN|NEU|SIN|DEF|NOM	Case=Nom|Definite=Def|Gender=Neut|Number=Sing	11	nmod	_	start_char=261|end_char=277|ner=S-ORG
+15	deltog	delta	VERB	VB|PRT|AKT	Mood=Ind|Tense=Past|VerbForm=Fin|Voice=Act	5	parataxis	_	start_char=278|end_char=284|ner=O
+16	per	per	ADP	PP	_	17	case	_	start_char=285|end_char=288|ner=O
+17	telefon	telefon	NOUN	NN|UTR|SIN|IND|NOM	Case=Nom|Definite=Ind|Gender=Com|Number=Sing	15	obl	_	SpaceAfter=No|start_char=289|end_char=296|ner=O
+18	.	.	PUNCT	MAD	_	5	punct	_	SpacesAfter=\n|start_char=296|end_char=297|ner=O

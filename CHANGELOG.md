@@ -40,6 +40,9 @@ a release folds them in (`python tools/changelog.py release X.Y.Z`).
   German, Zaar, Southern Kurdish, Shanghainese and Nheengatu (`bor`, `cop`, `egy`, `frm`, `naq`, `orv`, `pcm`, `pro`,
   `qaf`, `qpm`, `qtd`, `say`, `sdh`, `wuu`, `yrl`), byte for byte against Python Stanza. StanzaSharp now has 101
   languages (docs/languages.md).
+- `samples/StanzaSharp.Masking`: suggests what to mask in Swedish documents (maskning), from Swedish NER plus Luhn-checked
+  personnummer and organisationsnummer, phone, e-mail and address patterns, with consistent placeholders and a JSON
+  list of spans for review (#234).
 
 ### Changed
 - English pos and lemma models: StanzaSharp now uses the tagger and lemmatizer models Stanford re-uploaded for Stanza 1.15.0 on 2026-10-30 (`combined_charlm` and `combined_nocharlm` taggers and lemmatizers, and the `default_accurate` tagger), which is what a fresh Stanza 1.15.0 install downloads, so its output matches that install again. On our test texts about 2% of `default`'s UPOS tags, 1.6% of its lemmas and 1.9% of its dependency heads change (`default_fast` about 3%), and constituency trees follow the new tags; sentiment, NER and coreference are unchanged. `stanzasharp download` (or `ModelDownloader.DownloadAsync`) replaces the five files, whose checksums no longer match.

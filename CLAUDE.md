@@ -49,7 +49,8 @@ src/StanzaSharp.{Tokenize,Mwt,Pos,Lemma,Constituency,Depparse,Ner,Sentiment,Core
 src/StanzaSharp                Pipeline facade (Pipeline, PipelineOptions, ModelDownloader, LanguageIdentifier, ...).
 src/StanzaSharp.Tool           The `stanzasharp` .NET tool: download, compare, benchmark.
 samples/                       Cli (experiments), Benchmark (speed/memory; tools/benchmark.py is its Python twin),
-                               Example (API tour), docker (standalone app on the published package).
+                               Example (API tour), Masking (Swedish masking, #234: NER + Luhn-checked id/phone/e-mail/
+                               address patterns; MaskingTests), docker (standalone app on the published package).
 tests/StanzaSharp.Tests        xUnit; golden tests against Python Stanza output.
 tests/StanzaSharp.ManagedCheck Proves the managed backend loads no libtorch (ManagedCheckTests, verify-package, verify-aot).
 tests/golden/                  Golden data from Python Stanza (committed; keep it small).
