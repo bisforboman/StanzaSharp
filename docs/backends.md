@@ -503,6 +503,11 @@ reads the tagger's cached charlm outputs for sentences without MWTs.
     double-precision charlms on both backends would halve it (above). The margins themselves differ by at most 3.8e-5, so
     the closest call clears the new bound 2.7×. The report names where the largest score difference is and the five
     sentences with the most.
+  - **Reviewed near-ties** (2026-10-31, after the decision review): the bound is 3 × the largest margin difference again
+    for every decision, and 2 × only for the decisions listed in `ConstituencyTests.KnownNearTies` (file, sentence, step,
+    review date), today validation_multilingual sentence 13 step 7 alone (2.6×; German's closest call is 1.2e-2, about
+    400×). A model that makes another decision a near-tie fails the test, naming it, until it is reviewed and listed,
+    rather than the global factor moving to fit it; an entry that clears 3 × is reported for removal.
 - **Measured on UD EWT** (2026-10-09; `tools/constituency_divergence.py` + `StanzaSharp.Benchmark constituency-divergence`;
   the corpus is CC BY-SA and not in the repository). EWT's train/dev/test `# text` lines as 1,174 documents (the lemma
   study's `DOCS.json`), 15,901 sentences, 254,589 words, `tokenize,mwt,pos,constituency`; per step the best and second

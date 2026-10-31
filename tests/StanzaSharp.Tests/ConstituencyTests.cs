@@ -82,12 +82,25 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
     }
 
     /// <summary>
+    /// Reviewed near-ties of <see cref="NearTies_StayClearOfBackendDrift"/>: decisions whose margin is under 3 × the largest
+    /// difference between the backends' margins, accepted at 2 × after a review (golden file, sentence index, step). Add an
+    /// entry only after checking that both backends and Stanza make the same decision there; remove one that clears 3 ×.
+    /// </summary>
+    private static readonly (string Lang, string File, int Sentence, int Step, string Review)[] KnownNearTies =
+    [
+        // Stanford's re-uploaded English tagger (2026-10-30): Open(NP) over Open(ADVP), margin 9.79e-5 on TorchSharp (CI's
+        // x64 settings), 1.03e-4 managed, against a largest margin difference of 3.81e-5 (2.6 ×). Same decision as Stanza;
+        // the owner accepted it on 2026-10-31.
+        ("en", "validation_multilingual.conllu", 13, 7, "2026-10-31"),
+    ];
+
+    /// <summary>
     /// Near-ties: both backends parse every golden file (pipeline.conllu and validation*.conllu, Stanza's words and XPOS,
     /// charlms computed) with identical decisions at every step. Reports the per-step score drift between the backends and,
     /// per backend, how close each decision was: the margin between the best legal transition and the next legal one
     /// (steps with one legal transition decide nothing), plus the raw top-2 margin of the whole row, and the closest calls.
-    /// Guards that the smallest margin stays at least 2 × the largest difference between the backends' margins, and reports
-    /// where the largest score difference is. German's parser reads
+    /// Guards that every margin stays at least 3 × the largest difference between the backends' margins, except the reviewed
+    /// near-ties in <see cref="KnownNearTies"/> (at least 2 ×), and reports where the largest score difference is. German's parser reads
     /// UPOS (retag_method) and allows longer unary chains (unary_limit 8).
     /// </summary>
     [ModelTheory]
@@ -143,7 +156,7 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
         int total = 0, decisions = 0;
         var margins = new[] { new List<float>(), new List<float>() };
         var raw = new[] { new List<float>(), new List<float>() };
-        var calls = new List<(float Min, string What)>();
+        var calls = new List<(float Min, string What, (string, string, int, int) Where)>();
         for (int i = 0; i < sentences.Count; i++)
         {
             Assert.Equal(steps[0][i].Count, steps[1][i].Count);
@@ -173,7 +186,7 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
                 margins[0].Add(dt.Margin);
                 margins[1].Add(dm.Margin);
                 calls.Add((Math.Min(dt.Margin, dm.Margin), $"{sentences[i].File} sentence {sentences[i].Index} step {k}: {Name(dt.Best)} over {Name(dt.Second)}, "
-                    + $"margin TorchSharp {dt.Margin:E2}, managed {dm.Margin:E2}" + (dt.Second != dm.Second ? $" (managed's runner-up {Name(dm.Second)})" : "")));
+                    + $"margin TorchSharp {dt.Margin:E2}, managed {dm.Margin:E2}" + (dt.Second != dm.Second ? $" (managed's runner-up {Name(dm.Second)})" : ""), (lang, sentences[i].File, sentences[i].Index, k)));
             }
         }
 
@@ -186,18 +199,21 @@ public class ConstituencyTests(ITestOutputHelper output, ConstituencyTests.Fixtu
         output.WriteLine($"decision margins managed    {Counts(margins[1])}");
         output.WriteLine($"raw top-2 margins TorchSharp {Counts(raw[0])}");
         output.WriteLine($"raw top-2 margins managed    {Counts(raw[1])}");
-        foreach (var (_, what) in calls.OrderBy(c => c.Min).Take(10))
+        foreach (var (_, what, _) in calls.OrderBy(c => c.Min).Take(10))
             output.WriteLine(what);
 
-        // The guard (owner's decision, 2026-10-31): besides identical decisions (asserted above), the smallest margin must be
-        // at least K × the largest difference between the backends' margins, the quantity that can flip a decision. It was
-        // 3 × the score drift until Stanford's re-uploaded English tagger (2026-10-30) made validation_multilingual sentence
-        // 13 step 7 a near-tie (margin 9.8e-5 on CI's TorchSharp, under 3 × its 5.3e-5 drift): the drift is ~1.5e-6 relative
-        // error spread over ordinary sentences, so no kernel change halves it short of double-precision charlms.
-        const float K = 2;
-        float smallest = Math.Min(margins[0].Min(), margins[1].Min());
-        Assert.True(smallest >= K * marginDiff,
-            $"smallest decision margin {smallest:E2} is under {K} × the largest difference between the backends' margins {marginDiff:E2}");
+        // The guard: besides identical decisions (asserted above), every margin must be at least K × the largest difference
+        // between the backends' margins, the quantity that can flip a decision; a reviewed near-tie in KnownNearTies needs
+        // KnownK × (the floor the owner accepted on 2026-10-31). A new model that makes another decision a near-tie fails
+        // here until that decision is reviewed and listed, instead of the global factor moving to fit it.
+        const float K = 3, KnownK = 2;
+        var listed = KnownNearTies.Where(n => n.Lang == lang).Select(n => (n.Lang, n.File, n.Sentence, n.Step)).ToHashSet();
+        var failures = calls.Where(c => c.Min < (listed.Contains(c.Where) ? KnownK : K) * marginDiff).OrderBy(c => c.Min).ToList();
+        foreach (var where in listed.Where(w => !calls.Any(c => c.Where == w && c.Min < K * marginDiff)))
+            output.WriteLine($"KnownNearTies entry {where} is no longer under {K} × {marginDiff:E2} here: remove it if that holds on CI too");
+        Assert.True(failures.Count == 0,
+            $"{failures.Count} decision(s) under the bound ({K} × the largest margin difference {marginDiff:E2}, {KnownK} × for KnownNearTies): "
+            + string.Join("; ", failures.Select(f => f.What)) + ". If a new model made them near-ties, review each and add it to KnownNearTies.");
     }
 
     [ModelTheory]
