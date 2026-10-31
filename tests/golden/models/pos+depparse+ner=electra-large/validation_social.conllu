@@ -10,8 +10,8 @@
 8	weather	weather	NOUN	NN	Number=Sing	10	nsubj	_	start_char=34|end_char=41|ner=O
 9	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	10	cop	_	start_char=42|end_char=44|ner=O
 10	PERFECT	perfect	ADJ	JJ	Degree=Pos	3	conj	_	start_char=45|end_char=52|ner=O
-11	#travel	#travel	PROPN	NNP	Number=Sing	3	conj	_	start_char=53|end_char=60|ner=O
-12	#blessed	#blessed	PROPN	NNP	Number=Sing	3	parataxis	_	SpacesAfter=\n\n|start_char=61|end_char=69|ner=O
+11	#travel	#travel	PROPN	NNP	Number=Sing	12	compound	_	start_char=53|end_char=60|ner=O
+12	#blessed	#blessed	ADJ	JJ	Degree=Pos	3	parataxis	_	SpacesAfter=\n\n|start_char=61|end_char=69|ner=O
 
 # text = @jen_k99 lol no way that's real :P
 # sent_id = 1
@@ -91,27 +91,27 @@
 7	delay	delay	NOUN	NN	Number=Sing	1	nmod	_	start_char=337|end_char=342|ner=O
 8	this	this	DET	DT	Number=Sing|PronType=Dem	9	det	_	start_char=343|end_char=347|ner=O
 9	morning	morning	NOUN	NN	Number=Sing	1	nmod:unmarked	_	start_char=348|end_char=355|ner=O
-10	:(	:(	PUNCT	NFP	_	11	punct	_	start_char=356|end_char=358|ner=O
+10	:(	:(	SYM	SYM	_	11	punct	_	start_char=356|end_char=358|ner=O
 11	#commute	#commute	PROPN	NNP	Number=Sing	1	parataxis	_	start_char=359|end_char=367|ner=O
-12	#fail	#fail	PROPN	NNP	Number=Sing	11	flat	_	SpacesAfter=\n\n|start_char=368|end_char=373|ner=O
+12	#fail	#fail	PROPN	NNP	Number=Sing	1	parataxis	_	SpacesAfter=\n\n|start_char=368|end_char=373|ner=O
 
 # text = lmaooo did u see what he posted last nite
 # sent_id = 8
 1	lmaooo	lmaooo	INTJ	UH	_	4	discourse	_	start_char=375|end_char=381|ner=O
-2	did	do	AUX	VBD	Mood=Ind|Number=Sing|Person=2|Tense=Past|VerbForm=Fin	4	aux	_	start_char=382|end_char=385|ner=O
-3	u	u	PRON	PRP	Case=Nom|Number=Sing|Person=2|PronType=Prs	4	nsubj	_	start_char=386|end_char=387|ner=O
+2	did	do	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	4	aux	_	start_char=382|end_char=385|ner=O
+3	u	u	PRON	PRP	Case=Nom|Person=2|PronType=Prs	4	nsubj	_	start_char=386|end_char=387|ner=O
 4	see	see	VERB	VB	VerbForm=Inf	0	root	_	start_char=388|end_char=391|ner=O
 5	what	what	PRON	WP	PronType=Rel	4	obj	_	start_char=392|end_char=396|ner=O
 6	he	he	PRON	PRP	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	7	nsubj	_	start_char=397|end_char=399|ner=O
 7	posted	post	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	5	acl:relcl	_	start_char=400|end_char=406|ner=O
 8	last	last	ADJ	JJ	Degree=Pos	9	amod	_	start_char=407|end_char=411|ner=O
-9	nite	night	NOUN	NN	Number=Sing	7	obl:unmarked	_	SpacesAfter=\n\n|start_char=412|end_char=416|ner=O
+9	nite	night	NOUN	NN	Number=Sing|Typo=Yes	7	obl:unmarked	_	SpacesAfter=\n\n|start_char=412|end_char=416|ner=O
 
 # text = brb gotta walk the dog
 # sent_id = 9
 1	brb	brb	NOUN	NN	Number=Sing	2	nsubj	_	start_char=418|end_char=421|ner=O
 2-3	gotta	_	_	_	_	_	_	_	start_char=422|end_char=427|ner=O
-2	got	get	VERB	VBD	Mood=Ind|Number=Sing|Tense=Past|VerbForm=Fin	0	root	_	start_char=422|end_char=425
+2	got	get	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=422|end_char=425
 3	ta	to	PART	TO	Style=Coll	4	mark	_	start_char=425|end_char=427
 4	walk	walk	VERB	VB	VerbForm=Inf	2	xcomp	_	start_char=428|end_char=432|ner=O
 5	the	the	DET	DT	Definite=Def|PronType=Art	6	det	_	start_char=433|end_char=436|ner=O
@@ -133,7 +133,7 @@
 # sent_id = 11
 1	Happy	happy	ADJ	JJ	Degree=Pos	2	amod	_	start_char=484|end_char=489|ner=O
 2	bday	bday	NOUN	NN	Number=Sing	0	root	_	start_char=490|end_char=494|ner=O
-3	@marcus_t	@marcus_t	PROPN	NNP	Number=Sing	2	vocative	_	SpaceAfter=No|start_char=495|end_char=504|ner=O
+3	@marcus_t	Mmarcus_t	PROPN	NNP	Number=Sing	2	vocative	_	SpaceAfter=No|start_char=495|end_char=504|ner=O
 4	!!!	!!!	PUNCT	.	_	2	punct	_	start_char=504|end_char=507|ner=O
 
 # text = hope it's a great one :) :) :)
@@ -159,7 +159,7 @@
 6	much	much	ADV	RB	_	2	advmod	_	start_char=559|end_char=563|ner=O
 7	<	<	PUNCT	-LRB-	_	8	punct	_	SpaceAfter=No|start_char=564|end_char=565|ner=O
 8	3	3	NUM	CD	NumForm=Digit|NumType=Card	2	parataxis	_	start_char=565|end_char=566|ner=S-CARDINAL
-9	<3	<3	SYM	SYM	_	8	discourse	_	SpacesAfter=\n\n|start_char=567|end_char=569|ner=O
+9	<3	<3	SYM	NFP	_	2	discourse	_	SpacesAfter=\n\n|start_char=567|end_char=569|ner=O
 
 # text = anyone else having trouble logging in??
 # sent_id = 14
@@ -197,14 +197,14 @@
 # text = RT @newsdesk: Power outage reported across downtown; crews on scene.
 # sent_id = 18
 1	RT	RT	PROPN	NNP	Number=Sing	2	compound	_	start_char=675|end_char=677|ner=O
-2	@newsdesk	@newsdesk	PROPN	NNP	Number=Sing	0	root	_	SpaceAfter=No|start_char=678|end_char=687|ner=O
+2	@newsdesk	Lnewsdesk	PROPN	NNP	Number=Sing	0	root	_	SpaceAfter=No|start_char=678|end_char=687|ner=O
 3	:	:	PUNCT	:	_	6	punct	_	start_char=687|end_char=688|ner=O
 4	Power	power	NOUN	NN	Number=Sing	5	compound	_	start_char=689|end_char=694|ner=O
 5	outage	outage	NOUN	NN	Number=Sing	6	nsubj:pass	_	start_char=695|end_char=701|ner=O
 6	reported	report	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	2	parataxis	_	start_char=702|end_char=710|ner=O
 7	across	across	ADP	IN	_	8	case	_	start_char=711|end_char=717|ner=O
 8	downtown	downtown	NOUN	NN	Number=Sing	6	obl	_	SpaceAfter=No|start_char=718|end_char=726|ner=O
-9	;	;	PUNCT	,	_	12	punct	_	start_char=726|end_char=727|ner=O
+9	;	;	PUNCT	:	_	12	punct	_	start_char=726|end_char=727|ner=O
 10	crews	crew	NOUN	NNS	Number=Plur	12	nsubj	_	start_char=728|end_char=733|ner=O
 11	on	on	ADP	IN	_	12	case	_	start_char=734|end_char=736|ner=O
 12	scene	scene	NOUN	NN	Number=Sing	6	parataxis	_	SpaceAfter=No|start_char=737|end_char=742|ner=O
@@ -213,7 +213,7 @@
 # text = can u pick up milk on the way home thx
 # sent_id = 19
 1	can	can	AUX	MD	VerbForm=Fin	3	aux	_	start_char=745|end_char=748|ner=O
-2	u	u	PRON	PRP	Case=Nom|Number=Sing|Person=2|PronType=Prs	3	nsubj	_	start_char=749|end_char=750|ner=O
+2	u	u	PRON	PRP	Case=Nom|Person=2|PronType=Prs	3	nsubj	_	start_char=749|end_char=750|ner=O
 3	pick	pick	VERB	VB	VerbForm=Inf	0	root	_	start_char=751|end_char=755|ner=O
 4	up	up	ADP	RP	_	3	compound:prt	_	start_char=756|end_char=758|ner=O
 5	milk	milk	NOUN	NN	Number=Sing	3	obj	_	start_char=759|end_char=763|ner=O
@@ -270,7 +270,7 @@
 # text = wait what?!?!
 # sent_id = 26
 1	wait	wait	VERB	VB	Mood=Imp|VerbForm=Fin	0	root	_	start_char=896|end_char=900|ner=O
-2	what	what	PRON	WP	Case=Acc|PronType=Int	1	obj	_	SpaceAfter=No|start_char=901|end_char=905|ner=O
+2	what	what	PRON	WP	PronType=Int	1	obj	_	SpaceAfter=No|start_char=901|end_char=905|ner=O
 3	?!?!	?!?!	PUNCT	.	_	1	punct	_	start_char=905|end_char=909|ner=O
 
 # text = since WHEN
@@ -291,21 +291,21 @@
 # text = GO TEAM GO
 # sent_id = 29
 1	GO	go	VERB	VB	Mood=Imp|VerbForm=Fin	0	root	_	start_char=942|end_char=944|ner=O
-2	TEAM	team	NOUN	NN	Number=Sing	3	compound	_	start_char=945|end_char=949|ner=O
-3	GO	go	NOUN	NN	Number=Sing	1	obj	_	SpacesAfter=\n\n|start_char=950|end_char=952|ner=O
+2	TEAM	TEAM	NOUN	NN	Number=Sing	1	obj	_	start_char=945|end_char=949|ner=O
+3	GO	go	VERB	VB	Mood=Imp|VerbForm=Inf	1	xcomp	_	SpacesAfter=\n\n|start_char=950|end_char=952|ner=O
 
 # text = that moment when u realize ur phone was in ur hand the whole time ;-)
 # sent_id = 30
 1	that	that	DET	DT	Number=Sing|PronType=Dem	2	det	_	start_char=954|end_char=958|ner=O
 2	moment	moment	NOUN	NN	Number=Sing	0	root	_	start_char=959|end_char=965|ner=O
 3	when	when	ADV	WRB	PronType=Int	5	advmod	_	start_char=966|end_char=970|ner=O
-4	u	u	PRON	PRP	Case=Nom|Number=Sing|Person=2|PronType=Prs	5	nsubj	_	start_char=971|end_char=972|ner=O
+4	u	u	PRON	PRP	Case=Nom|Person=2|PronType=Prs	5	nsubj	_	start_char=971|end_char=972|ner=O
 5	realize	realize	VERB	VBP	Mood=Ind|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin	2	acl	_	start_char=973|end_char=980|ner=O
 6	ur	your	PRON	PRP$	Case=Gen|Person=2|Poss=Yes|PronType=Prs	7	nmod:poss	_	start_char=981|end_char=983|ner=O
 7	phone	phone	NOUN	NN	Number=Sing	11	nsubj	_	start_char=984|end_char=989|ner=O
 8	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	11	cop	_	start_char=990|end_char=993|ner=O
 9	in	in	ADP	IN	_	11	case	_	start_char=994|end_char=996|ner=O
-10	ur	your	PRON	PRP$	Case=Gen|Number=Sing|Person=2|Poss=Yes|PronType=Prs	11	nmod:poss	_	start_char=997|end_char=999|ner=O
+10	ur	your	PRON	PRP$	Case=Gen|Person=2|Poss=Yes|PronType=Prs	11	nmod:poss	_	start_char=997|end_char=999|ner=O
 11	hand	hand	NOUN	NN	Number=Sing	5	ccomp	_	start_char=1000|end_char=1004|ner=O
 12	the	the	DET	DT	Definite=Def|PronType=Art	14	det	_	start_char=1005|end_char=1008|ner=O
 13	whole	whole	ADJ	JJ	Degree=Pos	14	amod	_	start_char=1009|end_char=1014|ner=O
@@ -335,7 +335,7 @@
 2	said	say	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1088|end_char=1092|ner=O
 3	"	"	PUNCT	``	_	4	punct	_	SpaceAfter=No|start_char=1093|end_char=1094|ner=O
 4	see	see	VERB	VB	Mood=Imp|VerbForm=Fin	2	ccomp	_	start_char=1094|end_char=1097|ner=O
-5	u	u	PRON	PRP	Case=Acc|Number=Sing|Person=2|PronType=Prs	4	obj	_	start_char=1098|end_char=1099|ner=O
+5	u	u	PRON	PRP	Case=Acc|Person=2|PronType=Prs	4	obj	_	start_char=1098|end_char=1099|ner=O
 6	at	at	ADP	IN	_	7	case	_	start_char=1100|end_char=1102|ner=O
 7	8	8	NUM	CD	NumForm=Digit|NumType=Card	4	obl	_	SpaceAfter=No|start_char=1103|end_char=1104|ner=S-CARDINAL
 8	"	"	PUNCT	''	_	4	punct	_	start_char=1104|end_char=1105|ner=O
@@ -352,12 +352,12 @@
 2	tweet	tweet	NOUN	NN	Number=Sing	5	nsubj	_	start_char=1138|end_char=1143|ner=O
 3	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	5	cop	_	start_char=1144|end_char=1146|ner=O
 4	about	about	ADP	IN	_	5	case	_	start_char=1147|end_char=1152|ner=O
-5	u	u	PRON	PRP	Case=Acc|Number=Sing|Person=2|PronType=Prs	0	root	_	start_char=1153|end_char=1154|ner=O
+5	u	u	PRON	PRP	Case=Acc|Person=2|PronType=Prs	0	root	_	start_char=1153|end_char=1154|ner=O
 6	and	and	CCONJ	CC	_	8	cc	_	start_char=1155|end_char=1158|ner=O
-7	u	u	PRON	PRP	Case=Nom|Number=Sing|Person=2|PronType=Prs	8	nsubj	_	start_char=1159|end_char=1160|ner=O
+7	u	u	PRON	PRP	Case=Nom|Person=2|PronType=Prs	8	nsubj	_	start_char=1159|end_char=1160|ner=O
 8	know	know	VERB	VBP	Mood=Ind|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin	5	conj	_	start_char=1161|end_char=1165|ner=O
-9	who	who	PRON	WP	Case=Acc|PronType=Rel	8	ccomp	_	start_char=1166|end_char=1169|ner=O
-10	u	u	PRON	PRP	Case=Nom|Number=Sing|Person=2|PronType=Prs	9	nsubj	_	start_char=1170|end_char=1171|ner=O
+9	who	who	PRON	WP	PronType=Rel	8	ccomp	_	start_char=1166|end_char=1169|ner=O
+10	u	u	PRON	PRP	Case=Nom|Person=2|PronType=Prs	9	nsubj	_	start_char=1170|end_char=1171|ner=O
 11	r	be	AUX	VBP	Mood=Ind|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin	9	acl:relcl	_	SpacesAfter=\n\n|start_char=1172|end_char=1173|ner=O
 
 # text = who's coming to the bbq sat??
@@ -369,7 +369,7 @@
 4	to	to	ADP	IN	_	6	case	_	start_char=1188|end_char=1190|ner=O
 5	the	the	DET	DT	Definite=Def|PronType=Art	6	det	_	start_char=1191|end_char=1194|ner=O
 6	bbq	bbq	NOUN	NN	Number=Sing	3	obl	_	start_char=1195|end_char=1198|ner=O
-7	sat	sit	NOUN	NN	Number=Sing	3	obl:unmarked	_	SpaceAfter=No|start_char=1199|end_char=1202|ner=O
+7	sat	sit	PROPN	NNP	Number=Sing	3	obl:unmarked	_	SpaceAfter=No|start_char=1199|end_char=1202|ner=O
 8	??	??	PUNCT	.	_	3	punct	_	start_char=1202|end_char=1204|ner=O
 
 # text = bring chips n dip
@@ -381,10 +381,10 @@
 
 # text = 10/10 would recommend.
 # sent_id = 37
-1	10/	10/	NUM	CD	NumForm=Digit|NumType=Card	0	root	_	SpaceAfter=No|start_char=1224|end_char=1227|ner=O
-2	10	10	NUM	CD	NumForm=Digit|NumType=Card	1	nummod	_	start_char=1227|end_char=1229|ner=S-CARDINAL
+1	10/	10/	SYM	SYM	_	2	case	_	SpaceAfter=No|start_char=1224|end_char=1227|ner=O
+2	10	10	NUM	CD	NumForm=Digit|NumType=Card	4	obl	_	start_char=1227|end_char=1229|ner=S-CARDINAL
 3	would	would	AUX	MD	VerbForm=Fin	4	aux	_	start_char=1230|end_char=1235|ner=O
-4	recommend	recommend	VERB	VB	VerbForm=Inf	1	parataxis	_	SpaceAfter=No|start_char=1236|end_char=1245|ner=O
+4	recommend	recommend	VERB	VB	VerbForm=Inf	0	root	_	SpaceAfter=No|start_char=1236|end_char=1245|ner=O
 5	.	.	PUNCT	.	_	4	punct	_	start_char=1245|end_char=1246|ner=O
 
 # text = the pasta was amazing & the service was even better
@@ -427,14 +427,14 @@
 9	14	14	NUM	CD	NumForm=Digit|NumType=Card	10	nummod	_	start_char=1359|end_char=1361|ner=S-CARDINAL
 10	videos	video	NOUN	NNS	Number=Plur	8	obj	_	start_char=1362|end_char=1368|ner=O
 11	about	about	ADP	IN	_	12	case	_	start_char=1369|end_char=1374|ner=O
-12	octopuses	octopuse	NOUN	NNS	Number=Plur	10	nmod	_	SpaceAfter=No|start_char=1375|end_char=1384|ner=O
+12	octopuses	octopus	NOUN	NNS	Number=Plur	10	nmod	_	SpaceAfter=No|start_char=1375|end_char=1384|ner=O
 13	*	*	PUNCT	NFP	_	8	punct	_	SpacesAfter=\n\n|start_char=1384|end_char=1385|ner=O
 
 # text = pls retweet!!!
 # sent_id = 41
-1	pls	pls	VERB	VB	Mood=Imp|VerbForm=Fin	0	root	_	start_char=1387|end_char=1390|ner=O
-2	retweet	retweet	VERB	VB	Mood=Imp|VerbForm=Fin	1	xcomp	_	SpaceAfter=No|start_char=1391|end_char=1398|ner=O
-3	!!!	!!!	PUNCT	.	_	1	punct	_	start_char=1398|end_char=1401|ner=O
+1	pls	pls	INTJ	UH	_	2	discourse	_	start_char=1387|end_char=1390|ner=O
+2	retweet	retweet	VERB	VB	Mood=Imp|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=1391|end_char=1398|ner=O
+3	!!!	!!!	PUNCT	.	_	2	punct	_	start_char=1398|end_char=1401|ner=O
 
 # text = our dog Biscuit went missing near 5th & Main.
 # sent_id = 42
@@ -471,8 +471,8 @@
 2	n't	not	PART	RB	Polarity=Neg	3	advmod	_	start_char=1494|end_char=1497
 3	stop	stop	VERB	VB	VerbForm=Inf	0	root	_	start_char=1498|end_char=1502|ner=O
 4	laughing	laugh	VERB	VBG	VerbForm=Ger	3	xcomp	_	start_char=1503|end_char=1511|ner=O
-5	XD	xd	INTJ	UH	_	3	discourse	_	start_char=1512|end_char=1514|ner=O
-6	XD	xd	INTJ	UH	_	3	discourse	_	SpacesAfter=\n\n|start_char=1515|end_char=1517|ner=O
+5	XD	XD	INTJ	UH	_	3	discourse	_	start_char=1512|end_char=1514|ner=O
+6	XD	XD	INTJ	UH	_	3	discourse	_	SpacesAfter=\n\n|start_char=1515|end_char=1517|ner=O
 
 # text = Who else remembers dial-up internet??
 # sent_id = 46
@@ -482,7 +482,7 @@
 4	dial	dial	NOUN	NN	Number=Sing	7	compound	_	SpaceAfter=No|start_char=1538|end_char=1542|ner=O
 5	-	-	PUNCT	HYPH	_	6	punct	_	SpaceAfter=No|start_char=1542|end_char=1543|ner=O
 6	up	up	ADP	RP	_	4	compound:prt	_	start_char=1543|end_char=1545|ner=O
-7	internet	internet	NOUN	NN	Number=Sing	3	obj	_	SpaceAfter=No|start_char=1546|end_char=1554|ner=O
+7	internet	internet	PROPN	NNP	Number=Sing	3	obj	_	SpaceAfter=No|start_char=1546|end_char=1554|ner=O
 8	??	??	PUNCT	.	_	3	punct	_	start_char=1554|end_char=1556|ner=O
 
 # text = lol
@@ -491,7 +491,7 @@
 
 # text = gr8 news everyone, the shop reopens tmrw at 10
 # sent_id = 48
-1	gr8	gr8	NOUN	NN	Number=Sing	2	compound	_	start_char=1562|end_char=1565|ner=O
+1	gr8	gr8	ADJ	JJ	Degree=Pos	2	amod	_	start_char=1562|end_char=1565|ner=O
 2	news	news	NOUN	NN	Number=Sing	0	root	_	start_char=1566|end_char=1570|ner=O
 3	everyone	everyone	PRON	NN	Number=Sing|PronType=Tot	2	vocative	_	SpaceAfter=No|start_char=1571|end_char=1579|ner=O
 4	,	,	PUNCT	,	_	7	punct	_	start_char=1579|end_char=1580|ner=O
@@ -529,12 +529,12 @@
 
 # text = BREAKING: local man finally finds matching socks.
 # sent_id = 52
-1	BREAKING	breaking	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=1674|end_char=1682|ner=O
+1	BREAKING	break	VERB	VBG	Tense=Pres|VerbForm=Part	0	root	_	SpaceAfter=No|start_char=1674|end_char=1682|ner=O
 2	:	:	PUNCT	:	_	6	punct	_	start_char=1682|end_char=1683|ner=O
 3	local	local	ADJ	JJ	Degree=Pos	4	amod	_	start_char=1684|end_char=1689|ner=O
 4	man	man	NOUN	NN	Number=Sing	6	nsubj	_	start_char=1690|end_char=1693|ner=O
 5	finally	finally	ADV	RB	_	6	advmod	_	start_char=1694|end_char=1701|ner=O
-6	finds	find	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	1	appos	_	start_char=1702|end_char=1707|ner=O
+6	finds	find	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	1	parataxis	_	start_char=1702|end_char=1707|ner=O
 7	matching	match	VERB	VBG	VerbForm=Ger	8	amod	_	start_char=1708|end_char=1716|ner=O
 8	socks	sock	NOUN	NNS	Number=Plur	6	obj	_	SpaceAfter=No|start_char=1717|end_char=1722|ner=O
 9	.	.	PUNCT	.	_	1	punct	_	start_char=1722|end_char=1723|ner=O
@@ -557,7 +557,7 @@
 8	the	the	DET	DT	Definite=Def|PronType=Art	9	det	_	start_char=1770|end_char=1773|ner=O
 9	table	table	NOUN	NN	Number=Sing	4	obl	_	start_char=1774|end_char=1779|ner=O
 10	and	and	CCONJ	CC	_	11	cc	_	start_char=1780|end_char=1783|ner=O
-11	stared	stare	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	4	conj	_	start_char=1784|end_char=1790|ner=O
+11	stared	stare	VERB	VBD	Mood=Ind|Number=Sing|Person=1|Tense=Past|VerbForm=Fin	4	conj	_	start_char=1784|end_char=1790|ner=O
 12	at	at	ADP	IN	_	13	case	_	start_char=1791|end_char=1793|ner=O
 13	me	I	PRON	PRP	Case=Acc|Number=Sing|Person=1|PronType=Prs	11	obl	_	start_char=1794|end_char=1796|ner=O
 14	while	while	SCONJ	IN	_	15	mark	_	start_char=1797|end_char=1802|ner=O
@@ -582,8 +582,8 @@
 
 # text = #livemusic #summer2024
 # sent_id = 57
-1	#livemusic	#livemusic	PROPN	GW	Number=Sing	0	root	_	start_char=1859|end_char=1869|ner=O
-2	#summer2024	#summer2024	PROPN	NNP	Number=Sing	1	flat	_	SpacesAfter=\n\n|start_char=1870|end_char=1881|ner=O
+1	#livemusic	#livemusic	PROPN	NNP	Number=Sing	0	root	_	start_char=1859|end_char=1869|ner=O
+2	#summer2024	#summer2024	PROPN	NNP	Number=Sing	1	list	_	SpacesAfter=\n\n|start_char=1870|end_char=1881|ner=O
 
 # text = stop.
 # sent_id = 58
@@ -654,13 +654,13 @@
 
 # text = #ThrowbackThursday to that time we got lost in Prague for 6 hrs
 # sent_id = 69
-1	#ThrowbackThursday	#ThrowbackThursday	PROPN	NNP	Number=Sing	0	root	_	start_char=2024|end_char=2042|ner=O
+1	#ThrowbackThursday	#ThrowbackThursday	NOUN	NN	Number=Sing	0	root	_	start_char=2024|end_char=2042|ner=O
 2	to	to	ADP	IN	_	4	case	_	start_char=2043|end_char=2045|ner=O
 3	that	that	DET	DT	Number=Sing|PronType=Dem	4	det	_	start_char=2046|end_char=2050|ner=O
 4	time	time	NOUN	NN	Number=Sing	1	nmod	_	start_char=2051|end_char=2055|ner=O
-5	we	we	PRON	PRP	Case=Nom|Number=Plur|Person=1|PronType=Prs	6	nsubj	_	start_char=2056|end_char=2058|ner=O
-6	got	get	VERB	VBD	Mood=Ind|Number=Plur|Person=1|Tense=Past|VerbForm=Fin	4	acl:relcl	_	start_char=2059|end_char=2062|ner=O
-7	lost	lose	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	6	xcomp	_	start_char=2063|end_char=2067|ner=O
+5	we	we	PRON	PRP	Case=Nom|Number=Plur|Person=1|PronType=Prs	7	nsubj:pass	_	start_char=2056|end_char=2058|ner=O
+6	got	get	AUX	VBD	Mood=Ind|Number=Plur|Person=1|Tense=Past|VerbForm=Fin	7	aux:pass	_	start_char=2059|end_char=2062|ner=O
+7	lost	lose	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	4	acl:relcl	_	start_char=2063|end_char=2067|ner=O
 8	in	in	ADP	IN	_	9	case	_	start_char=2068|end_char=2070|ner=O
 9	Prague	Prague	PROPN	NNP	Number=Sing	7	obl	_	start_char=2071|end_char=2077|ner=S-GPE
 10	for	for	ADP	IN	_	12	case	_	start_char=2078|end_char=2081|ner=O
@@ -682,7 +682,7 @@
 
 # text = Ppl who don't use turn signals >:(
 # sent_id = 71
-1	Ppl	ppl	NOUN	NNS	Number=Plur	0	root	_	start_char=2134|end_char=2137|ner=O
+1	Ppl	Ppl	NOUN	NN	Number=Sing	0	root	_	start_char=2134|end_char=2137|ner=O
 2	who	who	PRON	WP	Case=Nom|PronType=Rel	5	nsubj	_	start_char=2138|end_char=2141|ner=O
 3-4	don't	_	_	_	_	_	_	_	start_char=2142|end_char=2147|ner=O
 3	do	do	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	5	aux	_	start_char=2142|end_char=2144
@@ -707,7 +707,7 @@
 
 # text = @sam @alex @priya meeting moved to 3pm fyi
 # sent_id = 73
-1	@sam	@sam	PROPN	NNP	Number=Sing	0	root	_	start_char=2217|end_char=2221|ner=O
+1	@sam	Msam	PROPN	NNP	Number=Sing	0	root	_	start_char=2217|end_char=2221|ner=O
 2	@alex	@alex	PROPN	NNP	Number=Sing	1	list	_	start_char=2222|end_char=2227|ner=O
 3	@priya	@priya	PROPN	NNP	Number=Sing	1	list	_	start_char=2228|end_char=2234|ner=O
 4	meeting	meeting	NOUN	NN	Number=Sing	5	nsubj:pass	_	start_char=2235|end_char=2242|ner=O

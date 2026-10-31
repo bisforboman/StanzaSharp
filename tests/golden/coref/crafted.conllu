@@ -20,7 +20,7 @@
 4	n't	_	PART	RB	Polarity=Neg	3	_	_	start_char=47|end_char=50
 5	call	_	VERB	VB	VerbForm=Inf	4	_	_	start_char=51|end_char=55
 6	them	_	PRON	PRP	Case=Acc|Number=Plur|Person=3|PronType=Prs	5	_	_	start_char=56|end_char=60|coref_chains=unit-id1
-7	back	_	ADV	RB	_	6	_	_	SpaceAfter=No|start_char=61|end_char=65
+7	back	_	ADP	RP	_	6	_	_	SpaceAfter=No|start_char=61|end_char=65
 8	.	_	PUNCT	.	_	7	_	_	start_char=65|end_char=66
 
 # text = Rain fell.

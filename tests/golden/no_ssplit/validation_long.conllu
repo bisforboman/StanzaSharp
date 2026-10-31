@@ -1,6 +1,6 @@
 # text = When the expedition finally reached the ridge after eleven days of slow progress through snow that was sometimes waist-deep, the leader, a soft-spoken geologist from Tromsø who had spent most of her career studying glaciers that no longer existed, sat down on a flat rock, unwrapped a chocolate bar that she had been saving since the first night, and announced, to nobody in particular and to everybody at once, that this was the most beautiful view she had ever seen, which, given everything she had seen, was saying quite a lot, though several members of the team later admitted that they had been too exhausted to notice anything other than the fact that, for once, the ground was not sloping upward.
 # sent_id = 0
-# constituency = (ROOT (S (SBAR (WHADVP (WRB When)) (S (NP (DT the) (NN expedition)) (ADVP (RB finally)) (VP (VBD reached) (NP (DT the) (NN ridge)) (PP (IN after) (NP (NP (NP (CD eleven) (NNS days)) (PP (IN of) (NP (JJ slow) (NN progress))) (PP (IN through) (NP (NN snow)))) (SBAR (WHNP (WDT that)) (S (VP (VBD was) (ADVP (RB sometimes)) (ADJP (NN waist) (HYPH -) (JJ deep)))))))))) (, ,) (NP (NP (DT the) (NN leader)) (, ,) (NP (NP (NP (DT a) (ADJP (JJ soft) (HYPH -) (VBN spoken)) (NN geologist)) (PP (IN from) (NP (NNP Tromsø)))) (SBAR (WHNP (WP who)) (S (VP (VBD had) (VP (VBN spent) (NP (NP (JJS most)) (PP (IN of) (NP (PRP$ her) (NN career)))) (S (VP (VBG studying) (NP (NP (NNS glaciers)) (SBAR (WHNP (WDT that)) (S (ADVP (RB no) (RBR longer)) (VP (VBD existed)))))))))))) (, ,)) (VP (VP (VBD sat) (ADVP (RP down)) (PP (IN on) (NP (DT a) (JJ flat) (NN rock)))) (, ,) (VP (VBD unwrapped) (NP (NP (DT a) (NN chocolate) (NN bar)) (SBAR (WHNP (WDT that)) (S (NP (PRP she)) (VP (VBD had) (VP (VP (VBN been) (VP (VBG saving) (PP (IN since) (NP (DT the) (JJ first) (NN night))))) (, ,) (CC and) (VP (VBD announced)) (, ,) (PP (PP (IN to) (NP (NP (NN nobody)) (PP (IN in) (ADJP (JJ particular))))) (CC and) (PP (IN to) (NP (NP (NN everybody)) (ADVP (IN at) (RB once))))) (, ,) (SBAR (IN that) (S (NP (DT this)) (VP (VBD was) (NP (NP (NP (DT the) (ADJP (RBS most) (JJ beautiful)) (NN view)) (SBAR (S (NP (PRP she)) (VP (VBD had) (ADVP (RB ever)) (VP (VBN seen)))))) (, ,) (SBAR (WHNP (WDT which)) (, ,) (S (PP (VBN given) (NP (NP (NN everything)) (SBAR (S (NP (PRP she)) (VP (VBD had) (VP (VBN seen)))))))) (, ,) (VP (VBD was) (VP (VBG saying) (NP (PDT quite) (DT a) (NN lot)) (, ,) (SBAR (IN though) (S (NP (NP (JJ several) (NNS members)) (PP (IN of) (NP (DT the) (NN team)))) (ADVP (RBR later)) (VP (VBD admitted) (SBAR (IN that) (S (NP (PRP they)) (VP (VBD had) (VP (VBN been) (ADJP (RB too) (JJ exhausted) (S (VP (TO to) (VP (VB notice) (NP (NP (NN anything)) (ADJP (ADJP (JJ other)) (PP (IN than) (NP (DT the) (NN fact) (SBAR (IN that) (, ,) (S (PP (IN for) (ADVP (RB once))) (, ,) (NP (DT the) (NN ground)) (VP (VBD was) (RB not) (VP (VBG sloping) (ADVP (RB upward))))))))))))))))))))))))))))))))))) (. .)))
+# constituency = (ROOT (S (SBAR (WHADVP (WRB When)) (S (NP (DT the) (NN expedition)) (ADVP (RB finally)) (VP (VBD reached) (NP (DT the) (NN ridge)) (PP (IN after) (NP (NP (NP (CD eleven) (NNS days)) (PP (IN of) (NP (JJ slow) (NN progress))) (PP (IN through) (NP (NN snow)))) (SBAR (WHNP (WDT that)) (S (VP (VBD was) (ADVP (RB sometimes)) (ADJP (NN waist) (HYPH -) (JJ deep)))))))))) (, ,) (NP (NP (DT the) (NN leader)) (, ,) (NP (NP (NP (DT a) (ADJP (JJ soft) (HYPH -) (VBN spoken)) (NN geologist)) (PP (IN from) (NP (NNP Tromsø)))) (SBAR (WHNP (WP who)) (S (VP (VBD had) (VP (VBN spent) (NP (NP (JJS most)) (PP (IN of) (NP (PRP$ her) (NN career)))) (S (VP (VBG studying) (NP (NP (NNS glaciers)) (SBAR (WHNP (WDT that)) (S (ADVP (RB no) (RBR longer)) (VP (VBD existed)))))))))))) (, ,)) (VP (VP (VBD sat) (ADVP (RP down)) (PP (IN on) (NP (DT a) (JJ flat) (NN rock)))) (, ,) (VP (VBD unwrapped) (NP (NP (DT a) (NN chocolate) (NN bar)) (SBAR (WHNP (WDT that)) (S (NP (PRP she)) (VP (VBD had) (VP (VP (VBN been) (VP (VBG saving) (PP (IN since) (NP (DT the) (JJ first) (NN night))))) (, ,) (CC and) (VP (VBD announced)) (, ,) (PP (PP (IN to) (NP (NP (NN nobody)) (PP (IN in) (ADJP (JJ particular))))) (CC and) (PP (IN to) (NP (NP (NN everybody)) (ADVP (IN at) (RB once))))) (, ,) (SBAR (IN that) (S (NP (DT this)) (VP (VBD was) (NP (NP (NP (DT the) (ADJP (RBS most) (JJ beautiful)) (NN view)) (SBAR (S (NP (PRP she)) (VP (VBD had) (ADVP (RB ever)) (VP (VBN seen)))))) (, ,) (SBAR (WHNP (WDT which)) (, ,) (S (PP (VBN given) (NP (NP (NN everything)) (SBAR (S (NP (PRP she)) (VP (VBD had) (VP (VBN seen)))))))) (, ,) (VP (VBD was) (VP (VBG saying) (NP (PDT quite) (DT a) (NN lot)) (, ,) (SBAR (IN though) (S (NP (NP (JJ several) (NNS members)) (PP (IN of) (NP (DT the) (NN team)))) (ADVP (RBR later)) (VP (VBD admitted) (SBAR (IN that) (S (NP (PRP they)) (VP (VBD had) (VP (VBN been) (ADJP (RB too) (VBN exhausted) (S (VP (TO to) (VP (VB notice) (NP (NP (NN anything)) (ADJP (ADJP (JJ other)) (PP (IN than) (NP (DT the) (NN fact) (SBAR (IN that) (, ,) (S (PP (IN for) (ADVP (RB once))) (, ,) (NP (DT the) (NN ground)) (VP (VBD was) (RB not) (VP (VBG sloping) (ADVP (RB upward))))))))))))))))))))))))))))))))))) (. .)))
 # sentiment = 0
 1	When	when	ADV	WRB	PronType=Int	5	advmod	_	start_char=0|end_char=4|ner=O
 2	the	the	DET	DT	Definite=Def|PronType=Art	3	det	_	start_char=5|end_char=8|ner=O
@@ -19,7 +19,7 @@
 15	snow	snow	NOUN	NN	Number=Sing	13	nmod	_	start_char=89|end_char=93|ner=O
 16	that	that	PRON	WDT	PronType=Rel	21	nsubj	_	start_char=94|end_char=98|ner=O
 17	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	21	cop	_	start_char=99|end_char=102|ner=O
-18	sometimes	sometimes	ADV	RB	PronType=Tot	21	advmod	_	start_char=103|end_char=112|ner=O
+18	sometimes	sometimes	ADV	RB	PronType=Ind	21	advmod	_	start_char=103|end_char=112|ner=O
 19	waist	waist	NOUN	NN	Number=Sing	21	compound	_	SpaceAfter=No|start_char=113|end_char=118|ner=O
 20	-	-	PUNCT	HYPH	_	19	punct	_	SpaceAfter=No|start_char=118|end_char=119|ner=O
 21	deep	deep	ADJ	JJ	Degree=Pos	15	acl:relcl	_	SpaceAfter=No|start_char=119|end_char=123|ner=O
@@ -41,7 +41,7 @@
 37	of	of	ADP	IN	_	39	case	_	start_char=192|end_char=194|ner=O
 38	her	her	PRON	PRP$	Case=Gen|Gender=Fem|Number=Sing|Person=3|Poss=Yes|PronType=Prs	39	nmod:poss	_	start_char=195|end_char=198|ner=O
 39	career	career	NOUN	NN	Number=Sing	36	nmod	_	start_char=199|end_char=205|ner=O
-40	studying	study	VERB	VBG	VerbForm=Ger	35	advcl	_	start_char=206|end_char=214|ner=O
+40	studying	study	VERB	VBG	Tense=Pres|VerbForm=Part	35	advcl	_	start_char=206|end_char=214|ner=O
 41	glaciers	glacier	NOUN	NNS	Number=Plur	40	obj	_	start_char=215|end_char=223|ner=O
 42	that	that	PRON	WDT	PronType=Rel	45	nsubj	_	start_char=224|end_char=228|ner=O
 43	no	no	ADV	RB	PronType=Neg	44	advmod	_	start_char=229|end_char=231|ner=O
@@ -117,11 +117,11 @@
 113	later	late	ADV	RBR	Degree=Cmp	114	advmod	_	start_char=566|end_char=571|ner=O
 114	admitted	admit	VERB	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	102	advcl	_	start_char=572|end_char=580|ner=O
 115	that	that	SCONJ	IN	_	120	mark	_	start_char=581|end_char=585|ner=O
-116	they	they	PRON	PRP	Case=Nom|Number=Plur|Person=3|PronType=Prs	120	nsubj	_	start_char=586|end_char=590|ner=O
+116	they	they	PRON	PRP	Case=Nom|Number=Plur|Person=3|PronType=Prs	120	nsubj:pass	_	start_char=586|end_char=590|ner=O
 117	had	have	AUX	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	120	aux	_	start_char=591|end_char=594|ner=O
-118	been	be	AUX	VBN	Tense=Past|VerbForm=Part	120	cop	_	start_char=595|end_char=599|ner=O
+118	been	be	AUX	VBN	Tense=Past|VerbForm=Part	120	aux:pass	_	start_char=595|end_char=599|ner=O
 119	too	too	ADV	RB	_	120	advmod	_	start_char=600|end_char=603|ner=O
-120	exhausted	exhausted	ADJ	JJ	Degree=Pos	114	ccomp	_	start_char=604|end_char=613|ner=O
+120	exhausted	exhaust	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	114	ccomp	_	start_char=604|end_char=613|ner=O
 121	to	to	PART	TO	_	122	mark	_	start_char=614|end_char=616|ner=O
 122	notice	notice	VERB	VB	VerbForm=Inf	120	xcomp	_	start_char=617|end_char=623|ner=O
 123	anything	anything	PRON	NN	Number=Sing|PronType=Ind	122	obj	_	start_char=624|end_char=632|ner=O
@@ -221,7 +221,7 @@
 73	commute	commute	NOUN	NN	Number=Sing	74	compound	_	start_char=1132|end_char=1139|ner=O
 74	times	time	NOUN	NNS	Number=Plur	71	obj	_	start_char=1140|end_char=1145|ner=O
 75	by	by	ADP	IN	_	78	case	_	start_char=1146|end_char=1148|ner=O
-76	roughly	roughly	ADV	RB	_	77	advmod	_	start_char=1149|end_char=1156|ner=B-TIME
+76	roughly	roughly	ADV	RB	Degree=Pos	77	advmod	_	start_char=1149|end_char=1156|ner=B-TIME
 77	eight	eight	NUM	CD	NumForm=Word|NumType=Card	78	nummod	_	start_char=1157|end_char=1162|ner=I-TIME
 78	minutes	minute	NOUN	NNS	Number=Plur	71	obl	_	SpaceAfter=No|start_char=1163|end_char=1170|ner=E-TIME
 79	,	,	PUNCT	,	_	80	punct	_	start_char=1170|end_char=1171|ner=O
@@ -239,7 +239,7 @@
 91	the	the	DET	DT	Definite=Def|PronType=Art	92	det	_	start_char=1240|end_char=1243|ner=O
 92	authors	author	NOUN	NNS	Number=Plur	94	obl	_	SpaceAfter=No|start_char=1244|end_char=1251|ner=O
 93	,	,	PUNCT	,	_	92	punct	_	start_char=1251|end_char=1252|ner=O
-94	provide	provide	VERB	VB	VerbForm=Inf	71	conj	_	start_char=1253|end_char=1260|ner=O
+94	provide	provide	VERB	VB	Mood=Imp|VerbForm=Fin	71	conj	_	start_char=1253|end_char=1260|ner=O
 95	long	long	ADJ	JJ	Degree=Pos	97	amod	_	SpaceAfter=No|start_char=1261|end_char=1265|ner=O
 96	-	-	PUNCT	HYPH	_	95	punct	_	SpaceAfter=No|start_char=1265|end_char=1266|ner=O
 97	term	term	NOUN	NN	Number=Sing	99	compound	_	start_char=1266|end_char=1270|ner=O
@@ -273,7 +273,7 @@
 
 # text = Ask anyone who grew up in the valley and they will tell you about the summer the river flooded, the summer the mill closed, the summer the fair came back, or the summer the old bridge finally collapsed, and every one of them will tell it differently, with different heroes and different villains and different weather, until you start to suspect that the past is less a place than a conversation that never quite ends.
 # sent_id = 2
-# constituency = (ROOT (S (S (VP (VB Ask) (NP (NP (NN anyone)) (SBAR (WHNP (WP who)) (S (VP (VBD grew) (PRT (RP up)) (PP (IN in) (NP (DT the) (NN valley))))))))) (CC and) (S (NP (PRP they)) (VP (MD will) (VP (VB tell) (NP (PRP you)) (SBAR (IN about) (NP (NP (NP (DT the) (NN summer)) (SBAR (S (NP (DT the) (NN river)) (VP (VBD flooded))))) (, ,) (NP (NP (DT the) (NN summer)) (SBAR (S (NP (DT the) (NN mill)) (VP (VBD closed))))) (, ,) (NP (NP (DT the) (NN summer)) (SBAR (S (NP (DT the) (NN fair)) (VP (VBD came) (ADVP (RB back)))))) (, ,) (CC or) (NP (NP (DT the) (NN summer)) (SBAR (S (NP (DT the) (JJ old) (NN bridge)) (ADVP (RB finally)) (VP (VBD collapsed)))))))))) (, ,) (CC and) (S (NP (NP (DT every) (NN one)) (PP (IN of) (NP (PRP them)))) (VP (MD will) (VP (VB tell) (NP (PRP it)) (ADVP (RB differently)) (, ,) (PP (IN with) (NP (NP (JJ different) (NNS heroes)) (CC and) (NP (NP (JJ different) (NNS villains)) (CC and) (NP (JJ different) (NN weather))))) (, ,) (SBAR (IN until) (S (NP (PRP you)) (VP (VBP start) (S (VP (TO to) (VP (VB suspect) (SBAR (IN that) (S (NP (DT the) (NN past)) (VP (VBZ is) (NP (NP (RBR less) (DT a) (NN place)) (PP (IN than) (NP (NP (DT a) (NN conversation)) (SBAR (WHNP (WDT that)) (S (ADVP (RB never)) (ADVP (RB quite)) (VP (VBZ ends))))))))))))))))))) (. .)))
+# constituency = (ROOT (S (S (VP (VB Ask) (NP (NP (NN anyone)) (SBAR (WHNP (WP who)) (S (VP (VBD grew) (PRT (RP up)) (PP (IN in) (NP (DT the) (NN valley))))))))) (CC and) (S (NP (PRP they)) (VP (MD will) (VP (VB tell) (NP (PRP you)) (SBAR (IN about) (NP (NP (NP (DT the) (NN summer)) (SBAR (S (NP (DT the) (NN river)) (VP (VBD flooded))))) (, ,) (NP (NP (DT the) (NN summer)) (SBAR (S (NP (DT the) (NN mill)) (VP (VBD closed))))) (, ,) (NP (NP (DT the) (NN summer)) (SBAR (S (NP (DT the) (NN fair)) (VP (VBD came) (ADVP (RB back)))))) (, ,) (CC or) (NP (NP (DT the) (NN summer)) (SBAR (S (NP (DT the) (JJ old) (NN bridge)) (ADVP (RB finally)) (VP (VBD collapsed)))))))))) (, ,) (CC and) (S (NP (NP (DT every) (CD one)) (PP (IN of) (NP (PRP them)))) (VP (MD will) (VP (VB tell) (NP (PRP it)) (ADVP (RB differently)) (, ,) (PP (IN with) (NP (NP (JJ different) (NNS heroes)) (CC and) (NP (NP (JJ different) (NNS villains)) (CC and) (NP (JJ different) (NN weather))))) (, ,) (SBAR (IN until) (S (NP (PRP you)) (VP (VBP start) (S (VP (TO to) (VP (VB suspect) (SBAR (IN that) (S (NP (DT the) (NN past)) (VP (VBZ is) (NP (NP (RBR less) (DT a) (NN place)) (PP (IN than) (NP (NP (DT a) (NN conversation)) (SBAR (WHNP (WDT that)) (S (ADVP (RB never)) (ADVP (RB quite)) (VP (VBZ ends))))))))))))))))))) (. .)))
 # sentiment = 0
 1	Ask	ask	VERB	VB	Mood=Imp|VerbForm=Fin	0	root	_	start_char=1429|end_char=1432|ner=O
 2	anyone	anyone	PRON	NN	Number=Sing|PronType=Ind	1	iobj	_	start_char=1433|end_char=1439|ner=O
@@ -319,7 +319,7 @@
 42	,	,	PUNCT	,	_	49	punct	_	start_char=1630|end_char=1631|ner=O
 43	and	and	CCONJ	CC	_	49	cc	_	start_char=1632|end_char=1635|ner=O
 44	every	every	DET	DT	PronType=Tot	45	det	_	start_char=1636|end_char=1641|ner=O
-45	one	one	NOUN	NN	Number=Sing	49	nsubj	_	start_char=1642|end_char=1645|ner=S-CARDINAL
+45	one	one	NUM	CD	NumForm=Word|NumType=Card	49	nsubj	_	start_char=1642|end_char=1645|ner=S-CARDINAL
 46	of	of	ADP	IN	_	47	case	_	start_char=1646|end_char=1648|ner=O
 47	them	they	PRON	PRP	Case=Acc|Number=Plur|Person=3|PronType=Prs	45	nmod	_	start_char=1649|end_char=1653|ner=O
 48	will	will	AUX	MD	VerbForm=Fin	49	aux	_	start_char=1654|end_char=1658|ner=O
@@ -478,12 +478,12 @@
 1	She	she	PRON	PRP	Case=Nom|Gender=Fem|Number=Sing|Person=3|PronType=Prs	2	nsubj	_	start_char=2223|end_char=2226|ner=O
 2	has	have	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=2227|end_char=2230|ner=O
 3	a	a	DET	DT	Definite=Ind|PronType=Art	4	det	_	start_char=2231|end_char=2232|ner=O
-4	Ph.D	ph.d	NOUN	NN	Number=Sing	2	obj	_	SpaceAfter=No|start_char=2233|end_char=2237|ner=O
+4	Ph.D	Ph.D	NOUN	NN	Number=Sing	2	obj	_	SpaceAfter=No|start_char=2233|end_char=2237|ner=O
 5	.	.	PUNCT	.	_	2	punct	_	start_char=2237|end_char=2238|ner=O
 6	He	he	PRON	PRP	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	7	nsubj	_	start_char=2239|end_char=2241|ner=O
 7	has	have	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	parataxis	_	start_char=2242|end_char=2245|ner=O
 8	an	a	DET	DT	Definite=Ind|PronType=Art	9	det	_	start_char=2246|end_char=2248|ner=O
-9	M.B.A.	m.b.a.	NOUN	NN	Number=Sing	7	obj	_	start_char=2249|end_char=2255|ner=O
+9	M.B.A.	M.B.A.	NOUN	NN	Number=Sing	7	obj	_	start_char=2249|end_char=2255|ner=O
 10	Neither	neither	CCONJ	CC	Polarity=Neg	11	cc	_	start_char=2256|end_char=2263|ner=O
 11	has	have	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	7	conj	_	start_char=2264|end_char=2267|ner=O
 12	a	a	DET	DT	Definite=Ind|PronType=Art	13	det	_	start_char=2268|end_char=2269|ner=O
@@ -535,7 +535,7 @@
 
 # text = The talk was given by Prof. Ramos, Jr. Questions were taken afterward.
 # sent_id = 11
-# constituency = (ROOT (S (NP (DT The) (NN talk)) (VP (VBD was) (VP (VBN given) (PP (IN by) (NP (NNP Prof) (. .) (NNP Ramos))) (, ,) (S (NP (NNP Jr.) (NNPS Questions)) (VP (VBD were) (VP (VBN taken) (ADVP (RB afterward))))))) (. .)))
+# constituency = (ROOT (S (NP (DT The) (NN talk)) (VP (VBD was) (VP (VBN given) (PP (IN by) (NP (NNP Prof) (. .) (NNP Ramos))) (, ,) (S (NP (NNP Jr.) (NNS Questions)) (VP (VBD were) (VP (VBN taken) (ADVP (RB afterward))))))) (. .)))
 # sentiment = 1
 1	The	the	DET	DT	Definite=Def|PronType=Art	2	det	_	start_char=2402|end_char=2405|ner=O
 2	talk	talk	NOUN	NN	Number=Sing	4	nsubj:pass	_	start_char=2406|end_char=2410|ner=O
@@ -546,8 +546,8 @@
 7	.	.	PUNCT	.	_	4	punct	_	start_char=2428|end_char=2429|ner=O
 8	Ramos	Ramos	PROPN	NNP	Number=Sing	13	nsubj:pass	_	SpaceAfter=No|start_char=2430|end_char=2435|ner=S-PERSON
 9	,	,	PUNCT	,	_	8	punct	_	start_char=2435|end_char=2436|ner=O
-10	Jr.	Jr.	PROPN	NNP	Number=Sing	11	compound	_	start_char=2437|end_char=2440|ner=S-PERSON
-11	Questions	Question	PROPN	NNPS	Number=Plur	13	nsubj:pass	_	start_char=2441|end_char=2450|ner=O
+10	Jr.	Jr.	PROPN	NNP	Number=Sing	8	nmod:desc	_	start_char=2437|end_char=2440|ner=S-PERSON
+11	Questions	question	NOUN	NNS	Number=Plur	13	nsubj:pass	_	start_char=2441|end_char=2450|ner=O
 12	were	be	AUX	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	13	aux:pass	_	start_char=2451|end_char=2455|ner=O
 13	taken	take	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	4	parataxis	_	start_char=2456|end_char=2461|ner=O
 14	afterward	afterward	ADV	RB	_	13	advmod	_	SpaceAfter=No|start_char=2462|end_char=2471|ner=O
@@ -807,7 +807,7 @@
 
 # text = If you had asked me ten years ago whether I would ever live in a city, own a car, work in an office, wear a tie, drink black coffee, or enjoy opera, I would have laughed at every single one of those suggestions — and yet here I am, in a city, driving a car to an office, in a tie, with black coffee in my cup and an opera ticket in my pocket, wondering when exactly all of that happened and whether the person I was then would recognize, let alone approve of, the person I am now.
 # sent_id = 34
-# constituency = (ROOT (S (SBAR (IN If) (S (NP (PRP you)) (VP (VBD had) (VP (VBN asked) (NP (PRP me)) (ADVP (NP (CD ten) (NNS years)) (RB ago)) (SBAR (IN whether) (S (NP (PRP I)) (VP (MD would) (ADVP (RB ever)) (VP (VP (VB live) (PP (IN in) (NP (DT a) (NN city)))) (, ,) (VP (VB own) (NP (DT a) (NN car))) (, ,) (VP (VB work) (PP (IN in) (NP (DT an) (NN office)))) (, ,) (VP (VB wear) (NP (DT a) (NN tie))) (, ,) (VP (VB drink) (NP (JJ black) (NN coffee))) (, ,) (CC or) (VP (VB enjoy) (NP (NN opera))))))))))) (, ,) (NP (PRP I)) (VP (MD would) (VP (VB have) (VP (VBN laughed) (PP (IN at) (NP (NP (DT every) (JJ single) (CD one)) (PP (IN of) (NP (DT those) (NNS suggestions))))) (SBAR (: —) (CC and) (ADVP (RB yet)) (ADVP (RB here)) (NP (PRP I)) (VP (VBP am) (, ,) (PP (IN in) (NP (DT a) (NN city))) (, ,) (VP (VBG driving) (NP (DT a) (NN car)) (PP (IN to) (NP (DT an) (NN office))) (, ,) (PP (IN in) (NP (DT a) (NN tie))) (, ,) (PP (IN with) (NP (NP (NP (JJ black) (NN coffee)) (PP (IN in) (NP (PRP$ my) (NN cup)))) (CC and) (NP (NP (DT an) (NN opera) (NN ticket)) (PP (IN in) (NP (PRP$ my) (NN pocket)))))) (, ,) (S (VP (VBG wondering) (SBAR (SBAR (WHADVP (WRB when)) (S (NP (NP (QP (RB exactly) (DT all))) (PP (IN of) (NP (DT that)))) (VP (VBD happened)))) (CC and) (SBAR (IN whether) (S (NP (NP (DT the) (NN person)) (SBAR (S (NP (PRP I)) (VP (VBD was) (ADVP (RB then)) (VP (MD would) (VP (VB recognize))))))) (, ,) (ADVP (VB let) (JJ alone)) (VP (VB approve) (PP (IN of))) (, ,) (NP (NP (DT the) (NN person)) (SBAR (S (NP (PRP I)) (VP (VBP am) (ADVP (RB now))))))))))))))))) (. .)))
+# constituency = (ROOT (S (SBAR (IN If) (S (NP (PRP you)) (VP (VBD had) (VP (VBN asked) (NP (PRP me)) (ADVP (NP (CD ten) (NNS years)) (RB ago)) (SBAR (IN whether) (S (NP (PRP I)) (VP (MD would) (ADVP (RB ever)) (VP (VP (VB live) (PP (IN in) (NP (DT a) (NN city)))) (, ,) (VP (VB own) (NP (DT a) (NN car))) (, ,) (VP (VB work) (PP (IN in) (NP (DT an) (NN office)))) (, ,) (VP (VB wear) (NP (DT a) (NN tie))) (, ,) (VP (VB drink) (NP (JJ black) (NN coffee))) (, ,) (CC or) (VP (VB enjoy) (NP (NN opera))))))))))) (, ,) (NP (PRP I)) (VP (MD would) (VP (VB have) (VP (VBN laughed) (PP (IN at) (NP (NP (DT every) (JJ single) (CD one)) (PP (IN of) (NP (DT those) (NNS suggestions))))) (SBAR (: —) (CC and) (ADVP (RB yet)) (ADVP (RB here)) (NP (PRP I)) (VP (VBP am) (, ,) (PP (IN in) (NP (DT a) (NN city))) (, ,) (VP (VBG driving) (NP (DT a) (NN car)) (PP (IN to) (NP (DT an) (NN office))) (, ,) (PP (IN in) (NP (DT a) (NN tie))) (, ,) (PP (IN with) (NP (NP (NP (JJ black) (NN coffee)) (PP (IN in) (NP (PRP$ my) (NN cup)))) (CC and) (NP (NP (DT an) (NN opera) (NN ticket)) (PP (IN in) (NP (PRP$ my) (NN pocket)))))) (, ,) (S (VP (VBG wondering) (SBAR (SBAR (WHADVP (WRB when)) (S (NP (NP (QP (RB exactly) (DT all))) (PP (IN of) (NP (DT that)))) (VP (VBD happened)))) (CC and) (SBAR (IN whether) (S (NP (NP (DT the) (NN person)) (SBAR (S (NP (PRP I)) (VP (VBD was) (ADVP (RB then)) (VP (MD would) (VP (VB recognize))))))) (, ,) (ADVP (VB let) (RB alone)) (VP (VB approve) (PP (IN of))) (, ,) (NP (NP (DT the) (NN person)) (SBAR (S (NP (PRP I)) (VP (VBP am) (ADVP (RB now))))))))))))))))) (. .)))
 # sentiment = 0
 1	If	if	SCONJ	IN	_	4	mark	_	start_char=3147|end_char=3149|ner=O
 2	you	you	PRON	PRP	Case=Nom|Person=2|PronType=Prs	4	nsubj	_	start_char=3150|end_char=3153|ner=O
@@ -835,16 +835,16 @@
 24	an	a	DET	DT	Definite=Ind|PronType=Art	25	det	_	start_char=3237|end_char=3239|ner=O
 25	office	office	NOUN	NN	Number=Sing	22	obl	_	SpaceAfter=No|start_char=3240|end_char=3246|ner=O
 26	,	,	PUNCT	,	_	27	punct	_	start_char=3246|end_char=3247|ner=O
-27	wear	wear	VERB	VB	VerbForm=Inf	13	conj	_	start_char=3248|end_char=3252|ner=O
+27	wear	wear	VERB	VB	Mood=Imp|VerbForm=Fin	13	conj	_	start_char=3248|end_char=3252|ner=O
 28	a	a	DET	DT	Definite=Ind|PronType=Art	29	det	_	start_char=3253|end_char=3254|ner=O
 29	tie	tie	NOUN	NN	Number=Sing	27	obj	_	SpaceAfter=No|start_char=3255|end_char=3258|ner=O
 30	,	,	PUNCT	,	_	31	punct	_	start_char=3258|end_char=3259|ner=O
-31	drink	drink	VERB	VB	VerbForm=Inf	27	conj	_	start_char=3260|end_char=3265|ner=O
+31	drink	drink	VERB	VB	Mood=Imp|VerbForm=Fin	27	conj	_	start_char=3260|end_char=3265|ner=O
 32	black	black	ADJ	JJ	Degree=Pos	33	amod	_	start_char=3266|end_char=3271|ner=O
 33	coffee	coffee	NOUN	NN	Number=Sing	31	obj	_	SpaceAfter=No|start_char=3272|end_char=3278|ner=O
 34	,	,	PUNCT	,	_	36	punct	_	start_char=3278|end_char=3279|ner=O
 35	or	or	CCONJ	CC	_	36	cc	_	start_char=3280|end_char=3282|ner=O
-36	enjoy	enjoy	VERB	VB	VerbForm=Inf	13	conj	_	start_char=3283|end_char=3288|ner=O
+36	enjoy	enjoy	VERB	VB	Mood=Imp|VerbForm=Fin	13	conj	_	start_char=3283|end_char=3288|ner=O
 37	opera	opera	NOUN	NN	Number=Sing	36	obj	_	SpaceAfter=No|start_char=3289|end_char=3294|ner=O
 38	,	,	PUNCT	,	_	4	punct	_	start_char=3294|end_char=3295|ner=O
 39	I	I	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	42	nsubj	_	start_char=3296|end_char=3297|ner=O
@@ -910,9 +910,9 @@
 99	then	then	ADV	RB	PronType=Dem	101	advmod	_	start_char=3563|end_char=3567|ner=O
 100	would	would	AUX	MD	VerbForm=Fin	101	aux	_	start_char=3568|end_char=3573|ner=O
 101	recognize	recognize	VERB	VB	VerbForm=Inf	92	conj	_	SpaceAfter=No|start_char=3574|end_char=3583|ner=O
-102	,	,	PUNCT	,	_	103	punct	_	start_char=3583|end_char=3584|ner=O
+102	,	,	PUNCT	,	_	105	punct	_	start_char=3583|end_char=3584|ner=O
 103	let	let	VERB	VB	Mood=Imp|VerbForm=Fin	105	cc	_	start_char=3585|end_char=3588|ner=O
-104	alone	alone	ADJ	JJ	Degree=Pos	103	fixed	_	start_char=3589|end_char=3594|ner=O
+104	alone	alone	ADV	RB	Degree=Pos	103	fixed	_	start_char=3589|end_char=3594|ner=O
 105	approve	approve	VERB	VB	VerbForm=Inf	101	conj	_	start_char=3595|end_char=3602|ner=O
 106	of	of	ADP	IN	_	105	obl	_	SpaceAfter=No|start_char=3603|end_char=3605|ner=O
 107	,	,	PUNCT	,	_	109	punct	_	start_char=3605|end_char=3606|ner=O
@@ -1004,7 +1004,7 @@
 
 # text = Among the items recovered from the site were: three bronze coins, a broken comb, two clay lamps, a bone needle, several iron nails of varying sizes, a fragment of painted plaster showing what may be a bird or possibly a leaf, and a small glass bead, blue with white swirls, that the excavators nicknamed "the marble."
 # sent_id = 36
-# constituency = (ROOT (SINV (PP (IN Among) (NP (NP (DT the) (NNS items)) (VP (VBN recovered) (PP (IN from) (NP (DT the) (NN site)))))) (VP (VBD were)) (: :) (NP (NP (CD three) (NN bronze) (NNS coins)) (, ,) (NP (DT a) (VBN broken) (NN comb)) (, ,) (NP (CD two) (NN clay) (NNS lamps)) (, ,) (NP (DT a) (NN bone) (NN needle)) (, ,) (NP (NP (JJ several) (NN iron) (NNS nails)) (PP (IN of) (NP (JJ varying) (NNS sizes)))) (, ,) (NP (NP (NP (DT a) (NN fragment)) (PP (IN of) (NP (VBN painted) (NN plaster)))) (VP (VBG showing) (SBAR (WHNP (WP what)) (S (VP (MD may) (VP (VB be) (NP (NP (DT a) (NN bird)) (CC or) (ADVP (RB possibly)) (NP (DT a) (NN leaf))))))))) (, ,) (CC and) (NP (NP (NP (DT a) (JJ small) (NN glass) (NN bead)) (, ,) (ADJP (JJ blue) (PP (IN with) (NP (JJ white) (NNS swirls))))) (, ,) (SBAR (WHNP (WDT that)) (S (NP (DT the) (NNS excavators)) (VP (VBD nicknamed) (NP (`` ") (NP (DT the) (NN marble)))))))) (. .) ('' ")))
+# constituency = (ROOT (SINV (PP (IN Among) (NP (NP (DT the) (NNS items)) (VP (VBN recovered) (PP (IN from) (NP (DT the) (NN site)))))) (VP (VBD were)) (: :) (NP (NP (CD three) (NN bronze) (NNS coins)) (, ,) (NP (DT a) (VBN broken) (NN comb)) (, ,) (NP (CD two) (NN clay) (NNS lamps)) (, ,) (NP (DT a) (NN bone) (NN needle)) (, ,) (NP (NP (JJ several) (NN iron) (NNS nails)) (PP (IN of) (NP (VBG varying) (NNS sizes)))) (, ,) (NP (NP (NP (DT a) (NN fragment)) (PP (IN of) (NP (VBN painted) (NN plaster)))) (VP (VBG showing) (SBAR (WHNP (WP what)) (S (VP (MD may) (VP (VB be) (NP (NP (DT a) (NN bird)) (CC or) (ADVP (RB possibly)) (NP (DT a) (NN leaf))))))))) (, ,) (CC and) (NP (NP (NP (DT a) (JJ small) (NN glass) (NN bead)) (, ,) (ADJP (JJ blue) (PP (IN with) (NP (JJ white) (NNS swirls))))) (, ,) (SBAR (WHNP (WDT that)) (S (NP (DT the) (NNS excavators)) (VP (VBD nicknamed) (NP (`` ") (NP (DT the) (NN marble)))))))) (. .) ('' ")))
 # sentiment = 1
 1	Among	among	ADP	IN	_	3	case	_	start_char=3998|end_char=4003|ner=O
 2	the	the	DET	DT	Definite=Def|PronType=Art	3	det	_	start_char=4004|end_char=4007|ner=O
@@ -1035,7 +1035,7 @@
 27	iron	iron	NOUN	NN	Number=Sing	28	compound	_	start_char=4118|end_char=4122|ner=O
 28	nails	nail	NOUN	NNS	Number=Plur	12	conj	_	start_char=4123|end_char=4128|ner=O
 29	of	of	ADP	IN	_	31	case	_	start_char=4129|end_char=4131|ner=O
-30	varying	vary	ADJ	JJ	Degree=Pos	31	amod	_	start_char=4132|end_char=4139|ner=O
+30	varying	vary	VERB	VBG	VerbForm=Ger	31	amod	_	start_char=4132|end_char=4139|ner=O
 31	sizes	size	NOUN	NNS	Number=Plur	28	nmod	_	SpaceAfter=No|start_char=4140|end_char=4145|ner=O
 32	,	,	PUNCT	,	_	34	punct	_	start_char=4145|end_char=4146|ner=O
 33	a	a	DET	DT	Definite=Ind|PronType=Art	34	det	_	start_char=4147|end_char=4148|ner=O

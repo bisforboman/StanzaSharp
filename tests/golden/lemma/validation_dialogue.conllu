@@ -60,7 +60,7 @@
 11	,	,	PUNCT	,	_	10	_	_	SpaceAfter=No|start_char=168|end_char=169
 12	'	'	PUNCT	''	_	11	_	_	start_char=169|end_char=170
 13	and	and	CCONJ	CC	_	12	_	_	start_char=171|end_char=174
-14	hung	hang	VERB	VBD	Mood=Ind|Number=Sing|Tense=Past|VerbForm=Fin	13	_	_	start_char=175|end_char=179
+14	hung	hang	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	13	_	_	start_char=175|end_char=179
 15	up	up	ADP	RP	_	14	_	_	SpaceAfter=No|start_char=180|end_char=182
 16	,	,	PUNCT	,	_	15	_	_	SpaceAfter=No|start_char=182|end_char=183
 17	"	"	PUNCT	''	_	16	_	_	start_char=183|end_char=184
@@ -114,7 +114,7 @@
 10	“	"	PUNCT	``	_	9	_	_	SpaceAfter=No|start_char=297|end_char=298
 11	when	when	ADV	WRB	PronType=Int	10	_	_	start_char=298|end_char=302
 12	I	I	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	11	_	_	start_char=303|end_char=304
-13	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	12	_	_	start_char=305|end_char=308
+13	was	be	AUX	VBD	Mood=Ind|Number=Sing|Person=1|Tense=Past|VerbForm=Fin	12	_	_	start_char=305|end_char=308
 14	your	your	PRON	PRP$	Case=Gen|Person=2|Poss=Yes|PronType=Prs	13	_	_	start_char=309|end_char=313
 15	age	age	NOUN	NN	Number=Sing	14	_	_	SpaceAfter=No|start_char=314|end_char=317
 16	,	,	PUNCT	,	_	15	_	_	start_char=317|end_char=318
@@ -194,7 +194,7 @@
 # text = “You know what my grandfather used to say?
 # sent_id = 13
 1	“	"	PUNCT	``	_	0	_	_	SpaceAfter=No|start_char=502|end_char=503
-2	You	you	PRON	PRP	Case=Nom|Person=2|PronType=Prs	1	_	_	start_char=503|end_char=506
+2	You	you	PRON	PRP	Case=Nom|Number=Sing|Person=2|PronType=Prs	1	_	_	start_char=503|end_char=506
 3	know	know	VERB	VBP	Mood=Ind|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin	2	_	_	start_char=507|end_char=511
 4	what	what	PRON	WP	PronType=Rel	3	_	_	start_char=512|end_char=516
 5	my	my	PRON	PRP$	Case=Gen|Number=Sing|Person=1|Poss=Yes|PronType=Prs	4	_	_	start_char=517|end_char=519
@@ -312,7 +312,7 @@
 5	NO	no	DET	DT	PronType=Neg	4	_	_	start_char=759|end_char=761
 6	ENTRY	entry	NOUN	NN	Number=Sing	5	_	_	start_char=762|end_char=767
 7	—	—	PUNCT	:	_	6	_	_	start_char=768|end_char=769
-8	AUTHORIZED	authory	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	7	_	_	start_char=770|end_char=780
+8	AUTHORIZED	author	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	7	_	_	start_char=770|end_char=780
 9	PERSONNEL	personnel	NOUN	NNS	Number=Plur	8	_	_	start_char=781|end_char=790
 10	ONLY	only	ADV	RB	_	9	_	_	SpaceAfter=No|start_char=791|end_char=795
 11	.	.	PUNCT	.	_	10	_	_	SpaceAfter=No|start_char=795|end_char=796
@@ -427,7 +427,7 @@
 12	leads	lead	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	11	_	_	start_char=1110|end_char=1115
 13	home	home	ADV	RB	_	12	_	_	start_char=1116|end_char=1120
 14	again	again	ADV	RB	_	13	_	_	SpaceAfter=No|start_char=1121|end_char=1126
-15	;	;	PUNCT	:	_	14	_	_	SpacesAfter=\n|start_char=1126|end_char=1127
+15	;	;	PUNCT	,	_	14	_	_	SpacesAfter=\n|start_char=1126|end_char=1127
 16	the	the	DET	DT	Definite=Def|PronType=Art	15	_	_	start_char=1128|end_char=1131
 17	kettle	kettle	NOUN	NN	Number=Sing	16	_	_	start_char=1132|end_char=1138
 18	hums	hum	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	17	_	_	SpaceAfter=No|start_char=1139|end_char=1143
@@ -488,7 +488,7 @@
 14	counted	count	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	13	_	_	start_char=1339|end_char=1346
 15	stones	stone	NOUN	NNS	Number=Plur	14	_	_	SpacesAfter=\n|start_char=1347|end_char=1353
 16	and	and	CCONJ	CC	_	15	_	_	start_char=1354|end_char=1357
-17	counted	count	VERB	VBD	Tense=Past|VerbForm=Fin|Voice=Pass	16	_	_	start_char=1358|end_char=1365
+17	counted	count	VERB	VBD	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin|Voice=Pass	16	_	_	start_char=1358|end_char=1365
 18	bones	bone	NOUN	NNS	Number=Plur	17	_	_	SpacesAfter=\n|start_char=1366|end_char=1371
 19	of	of	ADP	IN	_	18	_	_	start_char=1372|end_char=1374
 20	summers	summer	NOUN	NNS	Number=Plur	19	_	_	start_char=1375|end_char=1382
@@ -501,7 +501,7 @@
 # text = so much depends upon a borrowed pen left out in the rain beside the gate
 # sent_id = 35
 1	so	so	ADV	RB	_	0	_	_	start_char=1408|end_char=1410
-2	much	much	ADV	RB	Degree=Pos	1	_	_	start_char=1411|end_char=1415
+2	much	much	ADV	RB	_	1	_	_	start_char=1411|end_char=1415
 3	depends	depend	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	_	_	SpacesAfter=\n|start_char=1416|end_char=1423
 4	upon	upon	ADP	IN	_	3	_	_	SpacesAfter=\n|start_char=1424|end_char=1428
 5	a	a	DET	DT	Definite=Ind|PronType=Art	4	_	_	start_char=1429|end_char=1430
@@ -518,7 +518,7 @@
 
 # text = Roses are red, violets are blue, this poem is short, and so are you.
 # sent_id = 36
-1	Roses	rose	NOUN	NNS	Number=Plur	0	_	_	start_char=1482|end_char=1487
+1	Roses	Rose	NOUN	NNS	Number=Plur	0	_	_	start_char=1482|end_char=1487
 2	are	be	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	1	_	_	start_char=1488|end_char=1491
 3	red	red	ADJ	JJ	Degree=Pos	2	_	_	SpaceAfter=No|start_char=1492|end_char=1495
 4	,	,	PUNCT	,	_	3	_	_	SpacesAfter=\n|start_char=1495|end_char=1496
@@ -559,11 +559,11 @@
 4	,	,	PUNCT	,	_	3	_	_	start_char=1603|end_char=1604
 5	the	the	DET	DT	Definite=Def|PronType=Art	4	_	_	start_char=1605|end_char=1608
 6	door	door	NOUN	NN	Number=Sing	5	_	_	start_char=1609|end_char=1613
-7	creaked	creake	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	6	_	_	start_char=1614|end_char=1621
+7	creaked	creak	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	6	_	_	start_char=1614|end_char=1621
 8	open	open	ADJ	JJ	Degree=Pos	7	_	_	SpaceAfter=No|start_char=1622|end_char=1626
 9	…	…	PUNCT	:	_	8	_	_	start_char=1626|end_char=1627
 10	and	and	CCONJ	CC	_	9	_	_	start_char=1628|end_char=1631
-11	in	in	ADV	RB	_	10	_	_	start_char=1632|end_char=1634
+11	in	in	ADP	IN	_	10	_	_	start_char=1632|end_char=1634
 12	walked	walk	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	11	_	_	start_char=1635|end_char=1641
 13	the	the	DET	DT	Definite=Def|PronType=Art	12	_	_	start_char=1642|end_char=1645
 14	cat	cat	NOUN	NN	Number=Sing	13	_	_	SpaceAfter=No|start_char=1646|end_char=1649
@@ -588,7 +588,7 @@
 # sent_id = 41
 1	“	"	PUNCT	``	_	0	_	_	SpaceAfter=No|start_char=1691|end_char=1692
 2	Is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	1	_	_	start_char=1692|end_char=1694
-3	that	that	SCONJ	IN	_	2	_	_	start_char=1695|end_char=1699
+3	that	that	PRON	DT	Number=Sing|PronType=Dem	2	_	_	start_char=1695|end_char=1699
 4	you	you	PRON	PRP	Case=Nom|Person=2|PronType=Prs	3	_	_	SpaceAfter=No|start_char=1700|end_char=1703
 5	,	,	PUNCT	,	_	4	_	_	start_char=1703|end_char=1704
 6	Grandpa	Grandpa	PROPN	NNP	Number=Sing	5	_	_	SpaceAfter=No|start_char=1705|end_char=1712
@@ -644,7 +644,7 @@
 # text = ‘Twas the night before the deadline, and all through the lab, not a printer was working.
 # sent_id = 45
 1	‘	'	PUNCT	``	_	0	_	_	SpaceAfter=No|start_char=1847|end_char=1848
-2	Twas	twa	VERB	VB	Mood=Imp|VerbForm=Fin	1	_	_	start_char=1848|end_char=1852
+2	Twas	twas	VERB	VB	Mood=Imp|VerbForm=Fin	1	_	_	start_char=1848|end_char=1852
 3	the	the	DET	DT	Definite=Def|PronType=Art	2	_	_	start_char=1853|end_char=1856
 4	night	night	NOUN	NN	Number=Sing	3	_	_	start_char=1857|end_char=1862
 5	before	before	ADP	IN	_	4	_	_	start_char=1863|end_char=1869

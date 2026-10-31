@@ -422,7 +422,7 @@
     {
       "id": 15,
       "text": "\\temp\\x",
-      "lemma": "ltemp\\x",
+      "lemma": "\\temp\\x",
       "upos": "INTJ",
       "xpos": "UH",
       "head": 12,

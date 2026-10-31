@@ -183,7 +183,7 @@
 1-2	THEY'RE	_	_	_	_	_	_	_	start_char=224|end_char=231|ner=O
 1	THEY	they	PRON	PRP	Case=Nom|Number=Plur|Person=3|PronType=Prs	3	nsubj	_	start_char=224|end_char=228
 2	'RE	be	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	3	aux	_	start_char=228|end_char=231
-3	COMING	coming	VERB	VBG	Tense=Pres|VerbForm=Part	0	root	_	SpaceAfter=No|start_char=232|end_char=238|ner=O
+3	COMING	come	VERB	VBG	Tense=Pres|VerbForm=Part	0	root	_	SpaceAfter=No|start_char=232|end_char=238|ner=O
 4	.	.	PUNCT	.	_	3	punct	_	start_char=238|end_char=239|ner=O
 
 # text = DON'T GO.
@@ -211,7 +211,7 @@
 # constituency = (ROOT (S (NP (MD WO) (RB N'T)) (VP (VB STOP)) (. .)))
 # sentiment = 1
 1-2	WON'T	_	_	_	_	_	_	_	start_char=262|end_char=267|ner=O
-1	WO	wo	AUX	MD	VerbForm=Fin	3	aux	_	start_char=262|end_char=264
+1	WO	WO	AUX	MD	VerbForm=Fin	3	aux	_	start_char=262|end_char=264
 2	N'T	not	PART	RB	Polarity=Neg	3	advmod	_	start_char=264|end_char=267
 3	STOP	stop	VERB	VB	VerbForm=Inf	0	root	_	SpaceAfter=No|start_char=268|end_char=272|ner=O
 4	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=272|end_char=273|ner=O
@@ -479,7 +479,7 @@
 # constituency = (ROOT (S (VP (VBP Are) (RB n't)) (. .)))
 # sentiment = 1
 1-2	Aren't	_	_	_	_	_	_	_	SpaceAfter=No|start_char=576|end_char=582|ner=S-PERSON
-1	Are	be	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=576|end_char=579
+1	Are	be	AUX	VBP	Mood=Ind|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin	0	root	_	start_char=576|end_char=579
 2	n't	not	PART	RB	Polarity=Neg	1	advmod	_	start_char=579|end_char=582
 3	.	.	PUNCT	.	_	1	punct	_	start_char=582|end_char=583|ner=O
 
@@ -524,7 +524,7 @@
 # constituency = (ROOT (S (VP (VBD Had) (RB n't)) (. .)))
 # sentiment = 1
 1-2	Hadn't	_	_	_	_	_	_	_	SpaceAfter=No|start_char=618|end_char=624|ner=S-PERSON
-1	Had	have	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=618|end_char=621
+1	Had	have	AUX	VBD	Mood=Ind|Number=Sing|Person=1|Tense=Past|VerbForm=Fin	0	root	_	start_char=618|end_char=621
 2	n't	not	PART	RB	Polarity=Neg	1	advmod	_	start_char=621|end_char=624
 3	.	.	PUNCT	.	_	1	punct	_	start_char=624|end_char=625|ner=O
 
@@ -605,7 +605,7 @@
 # constituency = (ROOT (SQ (VB Do) (ADVP (RB n’t)) (. .)))
 # sentiment = 1
 1-2	Don’t	_	_	_	_	_	_	_	SpaceAfter=No|start_char=700|end_char=705|ner=S-PERSON
-1	Do	do	AUX	VB	Mood=Imp|Number=Sing|Person=2|VerbForm=Fin	0	root	_	start_char=700|end_char=702
+1	Do	do	AUX	VB	Mood=Imp|Number=Sing|VerbForm=Fin	0	root	_	start_char=700|end_char=702
 2	n’t	not	PART	RB	Polarity=Neg	1	advmod	_	start_char=702|end_char=705
 3	.	.	PUNCT	.	_	1	punct	_	start_char=705|end_char=706|ner=O
 
@@ -641,7 +641,7 @@
 # constituency = (ROOT (SQ (VBP Are) (ADVP (RB n’t)) (. .)))
 # sentiment = 1
 1-2	Aren’t	_	_	_	_	_	_	_	SpaceAfter=No|start_char=731|end_char=737|ner=S-PERSON
-1	Are	be	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=731|end_char=734
+1	Are	be	AUX	VBP	Mood=Ind|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin	0	root	_	start_char=731|end_char=734
 2	n’t	not	PART	RB	Polarity=Neg	1	advmod	_	start_char=734|end_char=737
 3	.	.	PUNCT	.	_	1	punct	_	start_char=737|end_char=738|ner=O
 
@@ -1128,7 +1128,7 @@
 4	report	report	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=1603|end_char=1609|ner=O
 5	,	,	PUNCT	,	_	8	punct	_	start_char=1609|end_char=1610|ner=O
 6-7	NASA's	_	_	_	_	_	_	_	start_char=1611|end_char=1617|ner=S-ORG
-6	NASA	NASA	PROPN	NNP	Abbr=Yes|Number=Sing	8	nmod:poss	_	start_char=1611|end_char=1615
+6	NASA	NASA	PROPN	NNP	Number=Sing	8	nmod:poss	_	start_char=1611|end_char=1615
 7	's	's	PART	POS	_	6	case	_	start_char=1615|end_char=1617
 8	rover	rover	NOUN	NN	Number=Sing	4	appos	_	SpaceAfter=No|start_char=1618|end_char=1623|ner=O
 9	,	,	PUNCT	,	_	13	punct	_	start_char=1623|end_char=1624|ner=O
@@ -1160,13 +1160,13 @@
 
 # text = Ain't nobody got time for that.
 # sent_id = 106
-# constituency = (ROOT (S (VP (VB Ai) (RB n't) (SBAR (S (NP (NN nobody)) (VP (VBD got) (NP (NP (NN time)) (PP (IN for) (NP (DT that)))))))) (. .)))
+# constituency = (ROOT (S (VP (VBP Ai) (RB n't) (SBAR (S (NP (NN nobody)) (VP (VBD got) (NP (NP (NN time)) (PP (IN for) (NP (DT that)))))))) (. .)))
 # sentiment = 1
 1-2	Ain't	_	_	_	_	_	_	_	start_char=1701|end_char=1706|ner=S-PERSON
-1	Ai	be	AUX	VB	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	reparandum	_	start_char=1701|end_char=1703
+1	Ai	be	AUX	VBP	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	4	aux	_	start_char=1701|end_char=1703
 2	n't	not	PART	RB	Polarity=Neg	4	advmod	_	start_char=1703|end_char=1706
 3	nobody	nobody	PRON	NN	Number=Sing|PronType=Neg	4	nsubj	_	start_char=1707|end_char=1713|ner=O
-4	got	get	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=1714|end_char=1717|ner=O
+4	got	get	VERB	VBD	Mood=Ind|Tense=Past|VerbForm=Fin	0	root	_	start_char=1714|end_char=1717|ner=O
 5	time	time	NOUN	NN	Number=Sing	4	obj	_	start_char=1718|end_char=1722|ner=O
 6	for	for	ADP	IN	_	7	case	_	start_char=1723|end_char=1726|ner=O
 7	that	that	PRON	DT	Number=Sing|PronType=Dem	5	nmod	_	SpaceAfter=No|start_char=1727|end_char=1731|ner=O
@@ -1174,9 +1174,9 @@
 
 # text = Y'all better listen.
 # sent_id = 107
-# constituency = (ROOT (S (NP (PRP Y'all)) (ADVP (RBR better)) (VP (VB listen)) (. .)))
+# constituency = (ROOT (S (NP (UH Y'all)) (ADVP (RBR better)) (VP (VB listen)) (. .)))
 # sentiment = 1
-1	Y'all	y'all	PRON	PRP	Case=Nom|Number=Sing|Person=2|PronType=Prs	3	nsubj	_	start_char=1733|end_char=1738|ner=O
+1	Y'all	y'all	INTJ	UH	_	3	discourse	_	start_char=1733|end_char=1738|ner=O
 2	better	well	ADV	RBR	Degree=Cmp	3	advmod	_	start_char=1739|end_char=1745|ner=O
 3	listen	listen	VERB	VB	VerbForm=Inf	0	root	_	SpaceAfter=No|start_char=1746|end_char=1752|ner=O
 4	.	.	PUNCT	.	_	3	punct	_	start_char=1752|end_char=1753|ner=O
@@ -1194,20 +1194,20 @@
 
 # text = Wanna come?
 # sent_id = 109
-# constituency = (ROOT (S (VP (VBG Wan) (S (VP (TO na) (VP (VB come))))) (. ?)))
+# constituency = (ROOT (S (VP (VB Wan) (S (VP (TO na) (VP (VB come))))) (. ?)))
 # sentiment = 1
 1-2	Wanna	_	_	_	_	_	_	_	start_char=1769|end_char=1774|ner=O
-1	Wan	Wan	VERB	VBG	Style=Vrnc|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1769|end_char=1772
+1	Wan	Wan	VERB	VB	Tense=Pres|VerbForm=Fin	0	root	_	start_char=1769|end_char=1772
 2	na	to	PART	TO	_	3	mark	_	start_char=1772|end_char=1774
 3	come	come	VERB	VB	VerbForm=Inf	1	xcomp	_	SpaceAfter=No|start_char=1775|end_char=1779|ner=O
 4	?	?	PUNCT	.	_	1	punct	_	start_char=1779|end_char=1780|ner=O
 
 # text = Gotta go.
 # sent_id = 110
-# constituency = (ROOT (INTJ (MD Gotta) (VP (VB go)) (. .)))
+# constituency = (ROOT (S (NP (NNP Gotta)) (VP (VB go)) (. .)))
 # sentiment = 1
-1	Gotta	gotta	AUX	MD	VerbForm=Fin	2	aux	_	start_char=1781|end_char=1786|ner=O
-2	go	go	VERB	VB	VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=1787|end_char=1789|ner=O
+1	Gotta	Gotta	PROPN	NNP	Number=Sing	2	discourse	_	start_char=1781|end_char=1786|ner=O
+2	go	go	VERB	VB	VerbForm=Inf	0	root	_	SpaceAfter=No|start_char=1787|end_char=1789|ner=O
 3	.	.	PUNCT	.	_	2	punct	_	SpacesAfter=\n\n|start_char=1789|end_char=1790|ner=O
 
 # text = 'Cause I said so.
@@ -1226,7 +1226,7 @@
 # constituency = (ROOT (S (`` ') (VP (VB Tis) (NP (DT the) (NN season))) (. .)))
 # sentiment = 1
 1	'	'	PUNCT	``	_	2	punct	_	SpaceAfter=No|start_char=1810|end_char=1811|ner=O
-2	Tis	tis	VERB	VB	Mood=Imp|VerbForm=Fin	0	root	_	start_char=1811|end_char=1814|ner=O
+2	Tis	tis	VERB	VB	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=1811|end_char=1814|ner=O
 3	the	the	DET	DT	Definite=Def|PronType=Art	4	det	_	start_char=1815|end_char=1818|ner=O
 4	season	season	NOUN	NN	Number=Sing	2	obj	_	SpaceAfter=No|start_char=1819|end_char=1825|ner=O
 5	.	.	PUNCT	.	_	2	punct	_	start_char=1825|end_char=1826|ner=O
@@ -1236,7 +1236,7 @@
 # constituency = (ROOT (S (`` ') (NP (PRP Em)) (PRN (, ,) (S (NP (PRP I)) (VP (VBP mean))) (, ,)) (NP (PRP them)) (. .)))
 # sentiment = 1
 1	'	'	PUNCT	``	_	2	punct	_	SpaceAfter=No|start_char=1827|end_char=1828|ner=O
-2	Em	they	PRON	PRP	Case=Acc|Number=Plur|Person=3|PronType=Prs|Style=Coll	7	reparandum	_	SpaceAfter=No|start_char=1828|end_char=1830|ner=O
+2	Em	Em	PRON	PRP	Case=Acc|Number=Plur|Person=3|PronType=Prs|Style=Coll	7	reparandum	_	SpaceAfter=No|start_char=1828|end_char=1830|ner=O
 3	,	,	PUNCT	,	_	2	punct	_	start_char=1830|end_char=1831|ner=O
 4	I	I	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	5	nsubj	_	start_char=1832|end_char=1833|ner=O
 5	mean	mean	VERB	VBP	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	2	parataxis	_	SpaceAfter=No|start_char=1834|end_char=1838|ner=O
@@ -1250,7 +1250,7 @@
 # sentiment = 1
 1-2	I'd've	_	_	_	_	_	_	_	start_char=1847|end_char=1853|ner=S-PERSON
 1	I'd	if	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	3	nsubj	_	start_char=1847|end_char=1850
-2	've	have	AUX	VBP	Mood=Ind|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin	3	aux	_	start_char=1850|end_char=1853
+2	've	have	AUX	VBP	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	3	aux	_	start_char=1850|end_char=1853
 3	done	do	VERB	VBN	Tense=Past|VerbForm=Part	0	root	_	start_char=1854|end_char=1858|ner=O
 4	it	it	PRON	PRP	Case=Acc|Gender=Neut|Number=Sing|Person=3|PronType=Prs	3	obj	_	start_char=1859|end_char=1861|ner=O
 5	if	if	SCONJ	IN	_	8	mark	_	start_char=1862|end_char=1864|ner=O
@@ -1263,11 +1263,11 @@
 
 # text = We'd better leave.
 # sent_id = 115
-# constituency = (ROOT (S (NP (PRP We)) (VP (MD 'd) (ADVP (RBR better)) (VP (VB leave))) (. .)))
+# constituency = (ROOT (S (NP (PRP We)) (VP (VBD 'd) (ADVP (RBR better)) (VP (VB leave))) (. .)))
 # sentiment = 0
 1-2	We'd	_	_	_	_	_	_	_	start_char=1879|end_char=1883|ner=O
 1	We	we	PRON	PRP	Case=Nom|Number=Plur|Person=1|PronType=Prs	4	nsubj	_	start_char=1879|end_char=1881
-2	'd	would	AUX	MD	VerbForm=Fin	4	aux	_	start_char=1881|end_char=1883
+2	'd	would	AUX	VBD	Mood=Ind|Person=1|VerbForm=Fin	4	aux	_	start_char=1881|end_char=1883
 3	better	well	ADV	RBR	Degree=Cmp	4	advmod	_	start_char=1884|end_char=1890|ner=O
 4	leave	leave	VERB	VB	VerbForm=Inf	0	root	_	SpaceAfter=No|start_char=1891|end_char=1896|ner=O
 5	.	.	PUNCT	.	_	4	punct	_	start_char=1896|end_char=1897|ner=O
@@ -1312,19 +1312,19 @@
 1	YOU	you	PRON	PRP	Case=Nom|Person=2|PronType=Prs	3	nsubj	_	start_char=1946|end_char=1949
 2	’LL	be	AUX	MD	VerbForm=Fin	3	aux	_	start_char=1949|end_char=1952
 3	GET	get	VERB	VB	VerbForm=Inf	0	root	_	start_char=1953|end_char=1956|ner=O
-4	BURNED	burn	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	3	xcomp	_	SpaceAfter=No|start_char=1957|end_char=1963|ner=O
+4	BURNED	burned	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	3	xcomp	_	SpaceAfter=No|start_char=1957|end_char=1963|ner=O
 5	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=1963|end_char=1964|ner=O
 
 # text = He's been here; he's got it.
 # sent_id = 120
-# constituency = (ROOT (S (S (NP (PRP He)) (VP (VBZ 's) (VP (VBN been) (ADVP (RB here))))) (: ;) (S (NP (PRP he)) (VP (VBZ 's) (VP (VBN got) (NP (PRP it))))) (. .)))
+# constituency = (ROOT (S (S (NP (PRP He)) (VP (VBZ 's) (VP (VBN been) (ADVP (RB here))))) (, ;) (S (NP (PRP he)) (VP (VBZ 's) (VP (VBN got) (NP (PRP it))))) (. .)))
 # sentiment = 1
 1-2	He's	_	_	_	_	_	_	_	start_char=1966|end_char=1970|ner=O
 1	He	he	PRON	PRP	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	4	nsubj	_	start_char=1966|end_char=1968
 2	's	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	aux	_	start_char=1968|end_char=1970
 3	been	be	AUX	VBN	Tense=Past|VerbForm=Part	4	cop	_	start_char=1971|end_char=1975|ner=O
 4	here	here	ADV	RB	PronType=Dem	0	root	_	SpaceAfter=No|start_char=1976|end_char=1980|ner=O
-5	;	;	PUNCT	:	_	8	punct	_	start_char=1980|end_char=1981|ner=O
+5	;	;	PUNCT	,	_	8	punct	_	start_char=1980|end_char=1981|ner=O
 6-7	he's	_	_	_	_	_	_	_	start_char=1982|end_char=1986|ner=O
 6	he	he	PRON	PRP	Case=Nom|Gender=Masc|Number=Sing|Person=3|PronType=Prs	8	nsubj	_	start_char=1982|end_char=1984
 7	's	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	8	aux	_	start_char=1984|end_char=1986
@@ -1334,17 +1334,17 @@
 
 # text = She's done; she's left.
 # sent_id = 121
-# constituency = (ROOT (S (S (NP (PRP She)) (VP (VBZ 's) (VP (VBN done)))) (: ;) (S (NP (PRP she)) (VP (VBZ 's) (VP (VBN left)))) (. .)))
+# constituency = (ROOT (S (S (NP (PRP She)) (VP (VBZ 's) (VP (VBN done)))) (, ;) (S (NP (PRP she)) (VP (VBZ 's) (VP (VBN left)))) (. .)))
 # sentiment = 1
 1-2	She's	_	_	_	_	_	_	_	start_char=1995|end_char=2000|ner=O
 1	She	she	PRON	PRP	Case=Nom|Gender=Fem|Number=Sing|Person=3|PronType=Prs	3	nsubj:pass	_	start_char=1995|end_char=1998
 2	's	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	3	aux:pass	_	start_char=1998|end_char=2000
 3	done	do	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	SpaceAfter=No|start_char=2001|end_char=2005|ner=O
-4	;	;	PUNCT	:	_	7	punct	_	start_char=2005|end_char=2006|ner=O
+4	;	;	PUNCT	,	_	7	punct	_	start_char=2005|end_char=2006|ner=O
 5-6	she's	_	_	_	_	_	_	_	start_char=2007|end_char=2012|ner=O
 5	she	she	PRON	PRP	Case=Nom|Gender=Fem|Number=Sing|Person=3|PronType=Prs	7	nsubj:pass	_	start_char=2007|end_char=2010
 6	's	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	7	aux:pass	_	start_char=2010|end_char=2012
-7	left	leave	VERB	VBN	Tense=Past|VerbForm=Part	3	parataxis	_	SpaceAfter=No|start_char=2013|end_char=2017|ner=O
+7	left	leave	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	3	parataxis	_	SpaceAfter=No|start_char=2013|end_char=2017|ner=O
 8	.	.	PUNCT	.	_	3	punct	_	SpacesAfter=\n\n|start_char=2017|end_char=2018|ner=O
 
 # text = O'Brien's pub is next to D'Angelo's pizzeria.
@@ -1393,7 +1393,7 @@
 # sent_id = 125
 # constituency = (ROOT (SBARQ (WHNP (WP Whose)) (SQ (VBZ is) (NP (PRP it))) (. ?)))
 # sentiment = 1
-1	Whose	whose	PRON	WP	PronType=Rel	0	root	_	start_char=2120|end_char=2125|ner=O
+1	Whose	whose	PRON	WP	PronType=Int	0	root	_	start_char=2120|end_char=2125|ner=O
 2	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	1	cop	_	start_char=2126|end_char=2128|ner=O
 3	it	it	PRON	PRP	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	1	nsubj	_	SpaceAfter=No|start_char=2129|end_char=2131|ner=O
 4	?	?	PUNCT	.	_	1	punct	_	start_char=2131|end_char=2132|ner=O
@@ -1403,7 +1403,7 @@
 # constituency = (ROOT (S (SBAR (WHNP (WP Who)) (S (VP (VBZ 's)))) (VP (VBZ is) (ADJP (JJ wrong))) (. .)))
 # sentiment = 1
 1-2	Who's	_	_	_	_	_	_	_	start_char=2133|end_char=2138|ner=O
-1	Who	who	PRON	WP	Case=Nom|PronType=Int	4	nsubj	_	start_char=2133|end_char=2136
+1	Who	who	PRON	WP	PronType=Int	4	nsubj	_	start_char=2133|end_char=2136
 2	's	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	aux	_	start_char=2136|end_char=2138
 3	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	cop	_	start_char=2139|end_char=2141|ner=O
 4	wrong	wrong	ADJ	JJ	Degree=Pos	0	root	_	SpaceAfter=No|start_char=2142|end_char=2147|ner=O
@@ -1505,7 +1505,7 @@
 # constituency = (ROOT (SQ (VBD Did) (RB n't) (NP (PRP I)) (. ?)))
 # sentiment = 1
 1-2	Didn't	_	_	_	_	_	_	_	start_char=2309|end_char=2315|ner=O
-1	Did	do	AUX	VBD	Mood=Ind|Number=Sing|Person=2|Tense=Past|VerbForm=Fin	0	root	_	start_char=2309|end_char=2312
+1	Did	do	AUX	VBD	Mood=Ind|Number=Sing|Person=1|Tense=Past|VerbForm=Fin	0	root	_	start_char=2309|end_char=2312
 2	n't	not	PART	RB	Polarity=Neg	1	advmod	_	start_char=2312|end_char=2315
 3	I	I	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	1	nsubj	_	SpaceAfter=No|start_char=2316|end_char=2317|ner=O
 4	?	?	PUNCT	.	_	1	punct	_	start_char=2317|end_char=2318|ner=O
@@ -1525,7 +1525,7 @@
 # constituency = (ROOT (SQ (VBD Had) (RB n't) (NP (PRP they)) (. ?)))
 # sentiment = 1
 1-2	Hadn't	_	_	_	_	_	_	_	start_char=2332|end_char=2338|ner=O
-1	Had	have	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=2332|end_char=2335
+1	Had	have	AUX	VBD	Mood=Ind|Number=Plur|Person=1|Tense=Past|VerbForm=Fin	0	root	_	start_char=2332|end_char=2335
 2	n't	not	PART	RB	Polarity=Neg	1	advmod	_	start_char=2335|end_char=2338
 3	they	they	PRON	PRP	Case=Nom|Number=Plur|Person=3|PronType=Prs	1	nsubj	_	SpaceAfter=No|start_char=2339|end_char=2343|ner=O
 4	?	?	PUNCT	.	_	1	punct	_	SpacesAfter=\n\n|start_char=2343|end_char=2344|ner=O
@@ -1536,7 +1536,7 @@
 # sentiment = 1
 1	"	"	PUNCT	``	_	2	punct	_	SpaceAfter=No|start_char=2346|end_char=2347|ner=O
 2-3	Don't	_	_	_	_	_	_	_	SpaceAfter=No|start_char=2347|end_char=2352|ner=S-PERSON
-2	Do	do	AUX	VB	Mood=Imp|VerbForm=Fin	7	ccomp	_	start_char=2347|end_char=2349
+2	Do	do	AUX	VB	Mood=Imp|Number=Sing|VerbForm=Fin	7	ccomp	_	start_char=2347|end_char=2349
 3	n't	not	PART	RB	Polarity=Neg	2	advmod	_	start_char=2349|end_char=2352
 4	,	,	PUNCT	,	_	2	punct	_	SpaceAfter=No|start_char=2352|end_char=2353|ner=O
 5	"	"	PUNCT	''	_	2	punct	_	start_char=2353|end_char=2354|ner=O
@@ -1608,7 +1608,7 @@
 3	's	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	cop	_	start_char=2453|end_char=2455
 4	fine	fine	ADJ	JJ	Degree=Pos	0	root	_	SpaceAfter=No|start_char=2456|end_char=2460|ner=O
 5	.	.	PUNCT	.	_	4	punct	_	SpaceAfter=No|start_char=2460|end_char=2461|ner=O
-6	}	}	PUNCT	NFP	_	4	punct	_	SpacesAfter=\n\n|start_char=2461|end_char=2462|ner=O
+6	}	}	SYM	NFP	_	4	discourse	_	SpacesAfter=\n\n|start_char=2461|end_char=2462|ner=O
 
 # text = The result (see below) was unexpected.
 # sent_id = 144
@@ -1653,13 +1653,13 @@
 
 # text = ((nested (parentheses) are fun)) and [brackets [inside] brackets] too.
 # sent_id = 147
-# constituency = (ROOT (S (-LRB- -LRB-) (-LRB- -LRB-) (S (NP (VBN nested) (-LRB- -LRB-) (NNS parentheses) (-RRB- -RRB-)) (VP (VBP are) (ADJP (JJ fun)))) (-RRB- -RRB-) (-RRB- -RRB-) (CC and) (NP (-LRB- [) (NP (NNS brackets)) (-LRB- [) (RB inside) (-RRB- ]) (NP (NNS brackets)) (-RRB- ]) (ADVP (RB too))) (. .)))
+# constituency = (ROOT (S (-LRB- -LRB-) (-LRB- -LRB-) (VP (VBN nested) (-LRB- -LRB-) (NP (NN parentheses)) (-RRB- -RRB-) (VP (VBP are) (ADJP (JJ fun)))) (-RRB- -RRB-) (-RRB- -RRB-) (CC and) (NP (-LRB- [) (NP (NNS brackets)) (-LRB- [) (RB inside) (-RRB- ]) (NP (NNS brackets)) (-RRB- ]) (ADVP (RB too))) (. .)))
 # sentiment = 1
 1	(	(	PUNCT	-LRB-	_	8	punct	_	SpaceAfter=No|start_char=2567|end_char=2568|ner=O
 2	(	(	PUNCT	-LRB-	_	3	punct	_	SpaceAfter=No|start_char=2568|end_char=2569|ner=O
 3	nested	nest	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	8	csubj	_	start_char=2569|end_char=2575|ner=O
 4	(	(	PUNCT	-LRB-	_	5	punct	_	SpaceAfter=No|start_char=2576|end_char=2577|ner=O
-5	parentheses	parenthesis	NOUN	NNS	Number=Plur	3	obj	_	SpaceAfter=No|start_char=2577|end_char=2588|ner=O
+5	parentheses	parenthesis	NOUN	NN	Number=Sing	3	obj	_	SpaceAfter=No|start_char=2577|end_char=2588|ner=O
 6	)	)	PUNCT	-RRB-	_	5	punct	_	start_char=2588|end_char=2589|ner=O
 7	are	be	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	8	cop	_	start_char=2590|end_char=2593|ner=O
 8	fun	fun	ADJ	JJ	Degree=Pos	0	root	_	SpaceAfter=No|start_char=2594|end_char=2597|ner=O
@@ -1692,7 +1692,7 @@
 
 # text = (This entire sentence is in parentheses.)
 # sent_id = 149
-# constituency = (ROOT (S (-LRB- -LRB-) (NP (DT This) (JJ entire) (NN sentence)) (VP (VBZ is) (PP (IN in) (NP (NNS parentheses)))) (. .) (-RRB- -RRB-)))
+# constituency = (ROOT (S (-LRB- -LRB-) (NP (DT This) (JJ entire) (NN sentence)) (VP (VBZ is) (PP (IN in) (NP (NN parentheses)))) (. .) (-RRB- -RRB-)))
 # sentiment = 1
 1	(	(	PUNCT	-LRB-	_	7	punct	_	SpaceAfter=No|start_char=2669|end_char=2670|ner=O
 2	This	this	DET	DT	Number=Sing|PronType=Dem	4	det	_	start_char=2670|end_char=2674|ner=O
@@ -1700,7 +1700,7 @@
 4	sentence	sentence	NOUN	NN	Number=Sing	7	nsubj	_	start_char=2682|end_char=2690|ner=O
 5	is	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	7	cop	_	start_char=2691|end_char=2693|ner=O
 6	in	in	ADP	IN	_	7	case	_	start_char=2694|end_char=2696|ner=O
-7	parentheses	parenthesis	NOUN	NNS	Number=Plur	0	root	_	SpaceAfter=No|start_char=2697|end_char=2708|ner=O
+7	parentheses	parenthesis	NOUN	NN	Number=Sing	0	root	_	SpaceAfter=No|start_char=2697|end_char=2708|ner=O
 8	.	.	PUNCT	.	_	7	punct	_	SpaceAfter=No|start_char=2708|end_char=2709|ner=O
 9	)	)	PUNCT	-RRB-	_	7	punct	_	start_char=2709|end_char=2710|ner=O
 
@@ -1740,17 +1740,17 @@
 
 # text = Options i), ii) and iii) were rejected.
 # sent_id = 152
-# constituency = (ROOT (S (NP (NP (NNS Options) (NN i)) (-RRB- -RRB-) (, ,) (LS ii) (-RRB- -RRB-) (CC and) (LS iii) (-RRB- -RRB-)) (VP (VBD were) (VP (VBN rejected))) (. .)))
+# constituency = (ROOT (S (NP (NNS Options) (LS i) (-RRB- -RRB-) (, ,) (LS ii) (-RRB- -RRB-) (CC and) (NN iii) (-RRB- -RRB-)) (VP (VBD were) (VP (VBN rejected))) (. .)))
 # sentiment = 0
 1	Options	option	NOUN	NNS	Number=Plur	11	nsubj:pass	_	start_char=2774|end_char=2781|ner=O
-2	i	i	NOUN	NN	Number=Sing	1	appos	_	SpaceAfter=No|start_char=2782|end_char=2783|ner=O
+2	i	i	NUM	LS	NumForm=Roman|NumType=Card	11	discourse	_	SpaceAfter=No|start_char=2782|end_char=2783|ner=O
 3	)	)	PUNCT	-RRB-	_	2	punct	_	SpaceAfter=No|start_char=2783|end_char=2784|ner=O
 4	,	,	PUNCT	,	_	5	punct	_	start_char=2784|end_char=2785|ner=O
 5	ii	ii	NUM	LS	NumForm=Roman|NumType=Card	1	discourse	_	SpaceAfter=No|start_char=2786|end_char=2788|ner=O
 6	)	)	PUNCT	-RRB-	_	5	punct	_	start_char=2788|end_char=2789|ner=O
 7	and	and	CCONJ	CC	_	8	cc	_	start_char=2790|end_char=2793|ner=O
-8	iii	iii	NUM	LS	NumForm=Roman|NumType=Card	11	discourse	_	SpaceAfter=No|start_char=2794|end_char=2797|ner=O
-9	)	)	PUNCT	-RRB-	_	8	punct	_	start_char=2797|end_char=2798|ner=O
+8	iii	iii	NOUN	NN	Number=Sing	1	conj	_	SpaceAfter=No|start_char=2794|end_char=2797|ner=O
+9	)	)	PUNCT	-RRB-	_	5	punct	_	start_char=2797|end_char=2798|ner=O
 10	were	be	AUX	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	11	aux:pass	_	start_char=2799|end_char=2803|ner=O
 11	rejected	reject	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	0	root	_	SpaceAfter=No|start_char=2804|end_char=2812|ner=O
 12	.	.	PUNCT	.	_	11	punct	_	SpacesAfter=\n\n|start_char=2812|end_char=2813|ner=O
@@ -1810,14 +1810,14 @@
 
 # text = Mom's and Dad's opinions differ.
 # sent_id = 156
-# constituency = (ROOT (S (NP (NP (NN Mom) (POS 's)) (CC and) (NP (NP (NNP Dad) (POS 's)) (NNS opinions))) (VP (VBP differ)) (. .)))
+# constituency = (ROOT (S (NP (NP (NN Mom) (POS 's)) (CC and) (NP (NP (NN Dad) (POS 's)) (NNS opinions))) (VP (VBP differ)) (. .)))
 # sentiment = 1
 1-2	Mom's	_	_	_	_	_	_	_	start_char=2949|end_char=2954|ner=S-PERSON
 1	Mom	mom	NOUN	NN	Number=Sing	6	nmod:poss	_	start_char=2949|end_char=2952
 2	's	's	PART	POS	_	1	case	_	start_char=2952|end_char=2954
 3	and	and	CCONJ	CC	_	4	cc	_	start_char=2955|end_char=2958|ner=O
 4-5	Dad's	_	_	_	_	_	_	_	start_char=2959|end_char=2964|ner=S-PERSON
-4	Dad	Dad	PROPN	NNP	Number=Sing	6	nmod:poss	_	start_char=2959|end_char=2962
+4	Dad	dad	NOUN	NN	Number=Sing	6	nmod:poss	_	start_char=2959|end_char=2962
 5	's	's	PART	POS	_	4	case	_	start_char=2962|end_char=2964
 6	opinions	opinion	NOUN	NNS	Number=Plur	7	nsubj	_	start_char=2965|end_char=2973|ner=O
 7	differ	differ	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=2974|end_char=2980|ner=O

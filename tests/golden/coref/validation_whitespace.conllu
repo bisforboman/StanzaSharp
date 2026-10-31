@@ -47,7 +47,7 @@
 
 # text = Windows line endings follow.
 # sent_id = 5
-1	Windows	_	PROPN	NNP	Number=Plur	0	_	_	start_char=185|end_char=192|coref_chains=start-repr-id6,start-repr-id7
+1	Windows	_	PROPN	NNP	Number=Sing	0	_	_	start_char=185|end_char=192|coref_chains=start-repr-id6,start-repr-id7
 2	line	_	NOUN	NN	Number=Sing	1	_	_	start_char=193|end_char=197|coref_chains=end-repr-id6,middle-repr-id7
 3	endings	_	NOUN	NNS	Number=Plur	2	_	_	start_char=198|end_char=205|coref_chains=end-repr-id7
 4	follow	_	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	3	_	_	SpaceAfter=No|start_char=206|end_char=212
@@ -77,7 +77,7 @@
 3	paragraph	_	NOUN	NN	Number=Sing	2	_	_	start_char=269|end_char=278|coref_chains=middle-repr-id3
 4	after	_	ADP	IN	_	3	_	_	start_char=279|end_char=284|coref_chains=middle-repr-id3
 5	a	_	DET	DT	Definite=Ind|PronType=Art	4	_	_	start_char=285|end_char=286|coref_chains=middle-repr-id3,start-repr-id9
-6	CRLF	_	PROPN	NNP	Number=Sing	5	_	_	start_char=287|end_char=291|coref_chains=middle-repr-id3,unit-id8,middle-repr-id9
+6	CRLF	_	NOUN	NN	Number=Sing	5	_	_	start_char=287|end_char=291|coref_chains=middle-repr-id3,unit-id8,middle-repr-id9
 7	blank	_	ADJ	JJ	Degree=Pos	6	_	_	start_char=292|end_char=297|coref_chains=middle-repr-id3,middle-repr-id9
 8	line	_	NOUN	NN	Number=Sing	7	_	_	SpaceAfter=No|start_char=298|end_char=302|coref_chains=end-repr-id3,end-repr-id9
 9	.	_	PUNCT	.	_	8	_	_	SpacesAfter=\r\n\r\n\t|start_char=302|end_char=303
@@ -104,7 +104,7 @@
 
 # text = Non-breaking spaces appear here: 10 kg and 5 km.
 # sent_id = 11
-1	Non-breaking	_	ADJ	JJ	Degree=Pos	0	_	_	SpacesAfter=\u00A0|start_char=369|end_char=381|coref_chains=start-repr-id12
+1	Non-breaking	_	VERB	VBG	VerbForm=Ger	0	_	_	SpacesAfter=\u00A0|start_char=369|end_char=381|coref_chains=start-repr-id12
 2	spaces	_	NOUN	NNS	Number=Plur	1	_	_	SpacesAfter=\u00A0|start_char=382|end_char=388|coref_chains=end-repr-id12
 3	appear	_	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	2	_	_	start_char=389|end_char=395
 4	here	_	ADV	RB	PronType=Dem	3	_	_	SpaceAfter=No|start_char=396|end_char=400
@@ -128,10 +128,10 @@
 1	Thin	_	ADJ	JJ	Degree=Pos	0	_	_	SpacesAfter= |start_char=437|end_char=441|coref_chains=start-repr-id15
 2	spaces	_	NOUN	NNS	Number=Plur	1	_	_	start_char=442|end_char=448|coref_chains=end-repr-id15
 3	and	_	CCONJ	CC	_	2	_	_	start_char=449|end_char=452
-4	en	_	X	FW	_	3	_	_	SpacesAfter= |start_char=453|end_char=455|coref_chains=start-repr-id16
+4	en	_	PROPN	NNP	Number=Sing	3	_	_	SpacesAfter= |start_char=453|end_char=455|coref_chains=start-repr-id16
 5	spaces	_	NOUN	NNS	Number=Plur	4	_	_	start_char=456|end_char=462|coref_chains=end-repr-id16
 6	and	_	CCONJ	CC	_	5	_	_	start_char=463|end_char=466
-7	em	_	PRON	PRP	Case=Acc|Number=Plur|Person=3|PronType=Prs|Style=Coll	6	_	_	SpacesAfter= |start_char=467|end_char=469|coref_chains=start-repr-id17
+7	em	_	PRON	PRP	Case=Acc|Number=Plur|Person=3|PronType=Prs|Style=Coll|Typo=Yes	6	_	_	SpacesAfter= |start_char=467|end_char=469|coref_chains=start-repr-id17
 8	spaces	_	NOUN	NNS	Number=Plur	7	_	_	start_char=470|end_char=476|coref_chains=end-repr-id17
 9	are	_	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	8	_	_	start_char=477|end_char=480
 10	rare	_	ADJ	JJ	Degree=Pos	9	_	_	SpaceAfter=No|start_char=481|end_char=485
@@ -140,7 +140,7 @@
 # text = The figure space too.
 # sent_id = 14
 1	The	_	DET	DT	Definite=Def|PronType=Art	0	_	_	start_char=487|end_char=490|coref_chains=start-repr-id19
-2	figure	_	NOUN	NN	Number=Sing	1	_	_	SpacesAfter= |start_char=491|end_char=497|coref_chains=unit-repr-id18,middle-repr-id19
+2	figure	_	NOUN	NN	Number=Sing	1	_	_	SpacesAfter= |start_char=491|end_char=497|coref_chains=unit-id18,middle-repr-id19
 3	space	_	NOUN	NN	Number=Sing	2	_	_	start_char=498|end_char=503|coref_chains=end-repr-id19
 4	too	_	ADV	RB	_	3	_	_	SpaceAfter=No|start_char=504|end_char=507
 5	.	_	PUNCT	.	_	4	_	_	SpacesAfter=\n\n|start_char=507|end_char=508
@@ -298,21 +298,21 @@
 4	-	_	PUNCT	HYPH	_	3	_	_	start_char=1043|end_char=1044|coref_chains=middle-repr-id52
 5	en	_	X	FW	Foreign=Yes	4	_	_	start_char=1045|end_char=1047|coref_chains=start-repr-id49,middle-repr-id52
 6	dash	_	X	FW	Foreign=Yes	5	_	_	start_char=1048|end_char=1052|coref_chains=end-repr-id49,middle-repr-id52
-7	–	_	PUNCT	HYPH	_	6	_	_	start_char=1053|end_char=1054|coref_chains=middle-repr-id52
-8	em	_	X	FW	_	7	_	_	start_char=1055|end_char=1057|coref_chains=start-repr-id50,middle-repr-id52
+7	–	_	PUNCT	:	_	6	_	_	start_char=1053|end_char=1054|coref_chains=middle-repr-id52
+8	em	_	PRON	PRP	Case=Acc|Number=Plur|Person=3|PronType=Prs|Style=Coll	7	_	_	start_char=1055|end_char=1057|coref_chains=start-repr-id50,middle-repr-id52
 9	dash	_	X	FW	Foreign=Yes	8	_	_	start_char=1058|end_char=1062|coref_chains=end-repr-id50,middle-repr-id52
 10	—	_	PUNCT	:	_	9	_	_	start_char=1063|end_char=1064|coref_chains=middle-repr-id52
-11	figure	_	X	FW	Foreign=Yes	10	_	_	start_char=1065|end_char=1071|coref_chains=unit-id18,start-repr-id51,middle-repr-id52
+11	figure	_	PROPN	NNP	Number=Sing	10	_	_	start_char=1065|end_char=1071|coref_chains=unit-repr-id18,start-repr-id51,middle-repr-id52
 12	dash	_	X	FW	Foreign=Yes	11	_	_	start_char=1072|end_char=1076|coref_chains=end-repr-id51,middle-repr-id52
 13	‒	_	X	FW	Foreign=Yes	12	_	_	start_char=1077|end_char=1078|coref_chains=middle-repr-id52
 14	minus	_	X	FW	Foreign=Yes	13	_	_	start_char=1079|end_char=1084|coref_chains=middle-repr-id52
 15	−	_	X	FW	Foreign=Yes	14	_	_	start_char=1085|end_char=1086|coref_chains=middle-repr-id52
 16	and	_	CCONJ	CC	_	15	_	_	start_char=1087|end_char=1090|coref_chains=middle-repr-id52
 17	horizontal	_	X	FW	Foreign=Yes	16	_	_	start_char=1091|end_char=1101|coref_chains=middle-repr-id52,start-repr-id53
-18	bar	_	X	FW	Foreign=Yes	17	_	_	start_char=1102|end_char=1105|coref_chains=end-repr-id52,end-repr-id53
+18	bar	_	NOUN	NN	Number=Sing	17	_	_	start_char=1102|end_char=1105|coref_chains=end-repr-id52,end-repr-id53
 19	―	_	X	FW	Foreign=Yes	18	_	_	start_char=1106|end_char=1107
-20	all	_	X	FW	_	19	_	_	start_char=1108|end_char=1111
-21	appear	_	X	FW	_	20	_	_	SpaceAfter=No|start_char=1112|end_char=1118
+20	all	_	ADV	RB	_	19	_	_	start_char=1108|end_char=1111
+21	appear	_	VERB	VB	VerbForm=Inf	20	_	_	SpaceAfter=No|start_char=1112|end_char=1118
 22	.	_	PUNCT	.	_	21	_	_	SpacesAfter=\n\n|start_char=1118|end_char=1119
 
 # text = Ellipsis… three dots... spaced dots . . . and four dots.... end here.
@@ -345,7 +345,7 @@
 6	and	_	CCONJ	CC	_	5	_	_	start_char=1206|end_char=1209
 7	guillemets	_	NOUN	NNS	Number=Plur	6	_	_	start_char=1210|end_char=1220|coref_chains=unit-repr-id59
 8	«	_	PUNCT	``	_	7	_	_	SpaceAfter=No|start_char=1221|end_char=1222
-9	bonjour	_	X	FW	Foreign=Yes	8	_	_	SpaceAfter=No|start_char=1222|end_char=1229|coref_chains=unit-repr-id60
+9	bonjour	_	X	FW	_	8	_	_	SpaceAfter=No|start_char=1222|end_char=1229|coref_chains=unit-repr-id60
 10	»	_	PUNCT	''	_	9	_	_	start_char=1229|end_char=1230
 11	and	_	CCONJ	CC	_	10	_	_	start_char=1231|end_char=1234
 12	‹hi›	_	ADJ	JJ	Degree=Pos	11	_	_	start_char=1235|end_char=1239
@@ -353,15 +353,15 @@
 14	low	_	ADJ	JJ	Degree=Pos	13	_	_	start_char=1244|end_char=1247|coref_chains=start-repr-id61
 15	quotes	_	NOUN	NNS	Number=Plur	14	_	_	start_char=1248|end_char=1254|coref_chains=end-repr-id61
 16	„	_	PUNCT	``	_	15	_	_	SpaceAfter=No|start_char=1255|end_char=1256
-17	ja	_	X	FW	_	16	_	_	SpaceAfter=No|start_char=1256|end_char=1258|coref_chains=unit-repr-id62
+17	ja	_	INTJ	UH	_	16	_	_	SpaceAfter=No|start_char=1256|end_char=1258|coref_chains=unit-repr-id62
 18	“	_	PUNCT	''	_	17	_	_	start_char=1258|end_char=1259
 19	appear	_	VERB	VB	Mood=Imp|VerbForm=Fin	18	_	_	SpaceAfter=No|start_char=1260|end_char=1266
 20	.	_	PUNCT	.	_	19	_	_	SpacesAfter=\n\n|start_char=1266|end_char=1267
 
 # text = Fullwidth ＡＢＣ letters and １２３ digits.
 # sent_id = 35
-1	Fullwidth	_	NOUN	NN	Number=Sing	0	_	_	start_char=1269|end_char=1278|coref_chains=start-repr-id64
-2	ＡＢＣ	_	PUNCT	,	_	1	_	_	start_char=1279|end_char=1282|coref_chains=unit-repr-id63,middle-repr-id64
+1	Fullwidth	_	VERB	VB	Mood=Imp|VerbForm=Fin	0	_	_	start_char=1269|end_char=1278|coref_chains=start-repr-id64
+2	ＡＢＣ	_	NUM	CD	NumForm=Digit|NumType=Card	1	_	_	start_char=1279|end_char=1282|coref_chains=unit-repr-id63,middle-repr-id64
 3	letters	_	NOUN	NNS	Number=Plur	2	_	_	start_char=1283|end_char=1290|coref_chains=end-repr-id64
 4	and	_	CCONJ	CC	_	3	_	_	start_char=1291|end_char=1294
 5	１２３	_	NUM	CD	NumForm=Digit|NumType=Card	4	_	_	start_char=1295|end_char=1298|coref_chains=start-repr-id65
@@ -374,18 +374,18 @@
 2	like	_	ADP	IN	_	1	_	_	start_char=1317|end_char=1321
 3	ﬁne	_	NOUN	NN	Number=Sing	2	_	_	start_char=1322|end_char=1325|coref_chains=unit-repr-id67
 4	and	_	CCONJ	CC	_	3	_	_	start_char=1326|end_char=1329
-5	ﬂow	_	ADJ	JJ	Degree=Pos	4	_	_	SpaceAfter=No|start_char=1330|end_char=1333|coref_chains=unit-repr-id68
+5	ﬂow	_	NOUN	NN	Number=Sing	4	_	_	SpaceAfter=No|start_char=1330|end_char=1333|coref_chains=unit-repr-id68
 6	.	_	PUNCT	.	_	5	_	_	SpacesAfter=\n\n|start_char=1333|end_char=1334
 
 # text = Superscripts x² and y³ and subscripts H₂O.
 # sent_id = 37
 1	Superscripts	_	NOUN	NNS	Number=Plur	0	_	_	start_char=1336|end_char=1348|coref_chains=unit-repr-id69
-2	x	_	SYM	SYM	_	1	_	_	SpaceAfter=No|start_char=1349|end_char=1350|coref_chains=start-repr-id70
+2	x	_	NOUN	NN	Number=Sing	1	_	_	SpaceAfter=No|start_char=1349|end_char=1350|coref_chains=start-repr-id70
 3	²	_	NOUN	NN	Number=Sing	2	_	_	start_char=1350|end_char=1351|coref_chains=end-repr-id70
 4	and	_	CCONJ	CC	_	3	_	_	start_char=1352|end_char=1355
-5	y³	_	INTJ	UH	_	4	_	_	start_char=1356|end_char=1358|coref_chains=unit-repr-id71
+5	y³	_	NOUN	NNS	Number=Plur	4	_	_	start_char=1356|end_char=1358|coref_chains=unit-repr-id71
 6	and	_	CCONJ	CC	_	5	_	_	start_char=1359|end_char=1362
-7	subscripts	_	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	6	_	_	start_char=1363|end_char=1373|coref_chains=unit-repr-id72
+7	subscripts	_	NOUN	NNS	Number=Plur	6	_	_	start_char=1363|end_char=1373|coref_chains=unit-repr-id72
 8	H₂O	_	PROPN	NNP	Number=Sing	7	_	_	SpaceAfter=No|start_char=1374|end_char=1377|coref_chains=unit-repr-id73
 9	.	_	PUNCT	.	_	8	_	_	start_char=1377|end_char=1378
 
@@ -394,7 +394,7 @@
 1	The	_	DET	DT	Definite=Def|PronType=Art	0	_	_	start_char=1379|end_char=1382|coref_chains=start-repr-id74
 2	degree	_	NOUN	NN	Number=Sing	1	_	_	start_char=1383|end_char=1389|coref_chains=middle-repr-id74
 3	sign	_	NOUN	NN	Number=Sing	2	_	_	start_char=1390|end_char=1394|coref_chains=end-repr-id74
-4	°	_	NOUN	NNS	Number=Plur	3	_	_	start_char=1395|end_char=1396|coref_chains=unit-id74
+4	°	_	NOUN	NN	Number=Sing	3	_	_	start_char=1395|end_char=1396|coref_chains=unit-id74
 5	and	_	CCONJ	CC	_	4	_	_	start_char=1397|end_char=1400
 6	the	_	DET	DT	Definite=Def|PronType=Art	5	_	_	start_char=1401|end_char=1404|coref_chains=start-repr-id75
 7	micro	_	NOUN	NN	Number=Sing	6	_	_	start_char=1405|end_char=1410|coref_chains=middle-repr-id75
@@ -407,24 +407,24 @@
 1	Roman	_	ADJ	JJ	Degree=Pos	0	_	_	start_char=1420|end_char=1425|coref_chains=start-repr-id77
 2	numerals	_	NOUN	NNS	Number=Plur	1	_	_	start_char=1426|end_char=1434|coref_chains=end-repr-id77
 3	Ⅰ	_	PUNCT	,	_	2	_	_	start_char=1435|end_char=1436|coref_chains=unit-repr-id78
-4	Ⅱ	_	PUNCT	``	_	3	_	_	start_char=1437|end_char=1438
-5	Ⅲ	_	PUNCT	:	_	4	_	_	start_char=1439|end_char=1440
+4	Ⅱ	_	X	FW	_	3	_	_	start_char=1437|end_char=1438
+5	Ⅲ	_	PUNCT	''	_	4	_	_	start_char=1439|end_char=1440
 6	and	_	CCONJ	CC	_	5	_	_	start_char=1441|end_char=1444
-7	circled	_	VERB	VBN	Tense=Past|VerbForm=Part	6	_	_	start_char=1445|end_char=1452
+7	circled	_	VERB	VBD	Mood=Ind|Tense=Past|VerbForm=Fin|Voice=Pass	6	_	_	start_char=1445|end_char=1452
 8	①	_	PUNCT	.	_	7	_	_	start_char=1453|end_char=1454|coref_chains=start-repr-id79
 9	②.	_	PUNCT	.	_	8	_	_	start_char=1455|end_char=1457|coref_chains=end-repr-id79
 
 # text = Turkish İstanbul and dotless ı. German ẞ and ß.
 # sent_id = 40
-1	Turkish	_	ADJ	JJ	Degree=Pos	0	_	_	start_char=1458|end_char=1465|coref_chains=start-id80
-2	İstanbul	_	NOUN	NN	Number=Sing	1	_	_	start_char=1466|end_char=1474|coref_chains=end-id80
+1	Turkish	_	ADJ	JJ	Degree=Pos	0	_	_	start_char=1458|end_char=1465|coref_chains=start-repr-id80
+2	İstanbul	_	PROPN	NNP	Number=Sing	1	_	_	start_char=1466|end_char=1474|coref_chains=end-repr-id80
 3	and	_	CCONJ	CC	_	2	_	_	start_char=1475|end_char=1478
 4	dotless	_	ADJ	JJ	Degree=Pos	3	_	_	start_char=1479|end_char=1486|coref_chains=start-repr-id81
 5	ı.	_	NOUN	NN	Number=Sing	4	_	_	start_char=1487|end_char=1489|coref_chains=end-repr-id81
 6	German	_	ADJ	JJ	Degree=Pos	5	_	_	start_char=1490|end_char=1496|coref_chains=unit-repr-id82,start-repr-id83
-7	ẞ	_	PUNCT	:	_	6	_	_	start_char=1497|end_char=1498|coref_chains=end-repr-id83
+7	ẞ	_	PUNCT	,	_	6	_	_	start_char=1497|end_char=1498|coref_chains=end-repr-id83
 8	and	_	CCONJ	CC	_	7	_	_	start_char=1499|end_char=1502
-9	ß	_	INTJ	UH	_	8	_	_	SpaceAfter=No|start_char=1503|end_char=1504|coref_chains=unit-repr-id84
+9	ß	_	X	FW	_	8	_	_	SpaceAfter=No|start_char=1503|end_char=1504|coref_chains=unit-repr-id84
 10	.	_	PUNCT	.	_	9	_	_	SpacesAfter=\n\n|start_char=1504|end_char=1505
 
 # text = Combining accents: café and naïve.
@@ -449,13 +449,13 @@
 # text = DOTTED İ UPPER AND İSTANBUL'S BRIDGES.
 # sent_id = 43
 1	DOTTED	_	ADJ	JJ	Degree=Pos	0	_	_	start_char=1574|end_char=1580|coref_chains=start-repr-id89
-2	İ	_	PUNCT	NFP	_	1	_	_	start_char=1581|end_char=1582|coref_chains=middle-repr-id89
+2	İ	_	PUNCT	.	_	1	_	_	start_char=1581|end_char=1582|coref_chains=middle-repr-id89
 3	UPPER	_	ADJ	JJ	Degree=Pos	2	_	_	start_char=1583|end_char=1588|coref_chains=end-repr-id89
 4	AND	_	CCONJ	CC	_	3	_	_	start_char=1589|end_char=1592
 5-6	İSTANBUL'S	_	_	_	_	_	_	_	start_char=1593|end_char=1603
-5	İSTANBUL	_	PROPN	NNP	Number=Sing	4	_	_	start_char=1593|end_char=1601|coref_chains=start-repr-id80,start-repr-id90
-6	'S	_	PART	POS	_	5	_	_	start_char=1601|end_char=1603|coref_chains=end-repr-id80,middle-repr-id90
-7	BRIDGES	_	NOUN	NNS	Number=Plur	6	_	_	SpaceAfter=No|start_char=1604|end_char=1611|coref_chains=end-repr-id90
+5	İSTANBUL	_	PROPN	NNP	Number=Sing	4	_	_	start_char=1593|end_char=1601|coref_chains=start-id80,start-repr-id90
+6	'S	_	PART	POS	_	5	_	_	start_char=1601|end_char=1603|coref_chains=end-id80,middle-repr-id90
+7	BRIDGES	_	PROPN	NNPS	Number=Plur	6	_	_	SpaceAfter=No|start_char=1604|end_char=1611|coref_chains=end-repr-id90
 8	.	_	PUNCT	.	_	7	_	_	start_char=1611|end_char=1612
 
 # text = THE STRASSE.

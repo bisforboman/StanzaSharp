@@ -24,12 +24,12 @@
 
 # text = I don't think it's going to rain today , but we'll see .
 # sent_id = 2
-# constituency = (ROOT (S (NP (PRP I)) (ADVP (RB don't)) (VP (VBP think) (SBAR (S (S (NP (PRP it's)) (VP (VBG going) (S (VP (TO to) (VP (VB rain) (NP (NN today))))))) (, ,) (CC but) (ADVP (RB we'll)) (VP (VB see))))) (. .)))
+# constituency = (ROOT (S (NP (PRP I)) (VP (VBP don't) (VP (VBP think) (S (S (NP (PRP$ it's)) (VP (VBG going) (S (VP (TO to) (VP (VB rain) (NP (NN today))))))) (, ,) (CC but) (ADVP (RB we'll)) (VP (VB see))))) (. .)))
 # sentiment = 1
 1	I	I	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	3	nsubj	_	start_char=69|end_char=70|ner=O
-2	don't	don't	ADV	RB	_	3	advmod	_	start_char=71|end_char=76|ner=O
+2	don't	don't	AUX	VBP	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	3	aux	_	start_char=71|end_char=76|ner=O
 3	think	think	VERB	VBP	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	0	root	_	start_char=77|end_char=82|ner=O
-4	it's	its	PRON	PRP	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	5	nsubj	_	start_char=83|end_char=87|ner=O
+4	it's	its	PRON	PRP$	Case=Acc|Gender=Neut|Number=Sing|Person=3|PronType=Prs	5	nsubj	_	start_char=83|end_char=87|ner=O
 5	going	go	VERB	VBG	VerbForm=Ger	3	ccomp	_	start_char=88|end_char=93|ner=O
 6	to	to	PART	TO	_	7	mark	_	start_char=94|end_char=96|ner=O
 7	rain	rain	VERB	VB	VerbForm=Inf	5	xcomp	_	start_char=97|end_char=101|ner=O
@@ -42,9 +42,9 @@
 
 # text = Can't you hear the thunder ?
 # sent_id = 3
-# constituency = (ROOT (SQ (MD Can't) (NP (PRP you)) (VP (VB hear) (NP (DT the) (NN thunder))) (. ?)))
+# constituency = (ROOT (SQ (VBP Can't) (NP (PRP you)) (VP (VB hear) (NP (DT the) (NN thunder))) (. ?)))
 # sentiment = 1
-1	Can't	can't	AUX	MD	VerbForm=Fin	3	aux	_	start_char=126|end_char=131|ner=O
+1	Can't	can't	AUX	VBP	Mood=Ind|Number=Sing|Person=2|VerbForm=Fin	3	aux	_	start_char=126|end_char=131|ner=O
 2	you	you	PRON	PRP	Case=Nom|Person=2|PronType=Prs	3	nsubj	_	start_char=132|end_char=135|ner=O
 3	hear	hear	VERB	VB	VerbForm=Inf	0	root	_	start_char=136|end_char=140|ner=O
 4	the	the	DET	DT	Definite=Def|PronType=Art	5	det	_	start_char=141|end_char=144|ner=O
@@ -115,7 +115,7 @@
 
 # text = The well - known author , who had written e-mails to info@example.com , visited https://www.example.org/about yesterday .
 # sent_id = 7
-# constituency = (ROOT (S (NP (NP (DT The) (ADJP (RB well) (HYPH -) (VBN known)) (NN author)) (, ,) (SBAR (WHNP (WP who)) (S (VP (VBD had) (VP (VBN written) (NP (NNS e-mails)) (PP (IN to) (NP (ADD info@example.com))))))) (, ,)) (VP (VBD visited) (NP (ADD https://www.example.org/about)) (NP (NN yesterday))) (. .)))
+# constituency = (ROOT (S (NP (NP (DT The) (ADJP (RB well) (HYPH -) (VBN known)) (NN author)) (, ,) (SBAR (WHNP (WP who)) (S (VP (VBD had) (VP (VBN written) (NP (NNS e-mails)) (PP (IN to) (NP (ADD info@example.com))))))) (, ,)) (VP (VBD visited) (NP (NNP https://www.example.org/about)) (NP (NN yesterday))) (. .)))
 # sentiment = 1
 1	The	the	DET	DT	Definite=Def|PronType=Art	5	det	_	start_char=356|end_char=359|ner=O
 2	well	well	ADV	RB	Degree=Pos	4	advmod	_	start_char=360|end_char=364|ner=O
@@ -130,22 +130,22 @@
 11	to	to	ADP	IN	_	12	case	_	start_char=406|end_char=408|ner=O
 12	info@example.com	info@example.com	PROPN	ADD	Number=Sing	9	obl	_	start_char=409|end_char=425|ner=O
 13	,	,	PUNCT	,	_	5	punct	_	start_char=426|end_char=427|ner=O
-14	visited	visit	VERB	VBD	Tense=Past|VerbForm=Fin	0	root	_	start_char=428|end_char=435|ner=O
-15	https://www.example.org/about	https://www.example.org/about	PROPN	ADD	Number=Sing	14	obj	_	start_char=436|end_char=465|ner=O
+14	visited	visit	VERB	VBD	Mood=Ind|Number=Sing|Tense=Past|VerbForm=Fin	0	root	_	start_char=428|end_char=435|ner=O
+15	https://www.example.org/about	https://www.example.org/about	PROPN	NNP	Number=Sing	14	obj	_	start_char=436|end_char=465|ner=O
 16	yesterday	yesterday	NOUN	NN	Number=Sing	14	obl:unmarked	_	start_char=466|end_char=475|ner=S-DATE
 17	.	.	PUNCT	.	_	14	punct	_	start_char=476|end_char=477|ner=O
 
 # text = Mary's sister wouldn't have gone if she'd known that the meeting , which was scheduled for 3 p.m. on Friday , had been cancelled ; nobody told her .
 # sent_id = 8
-# constituency = (ROOT (S (S (NP (NNP Mary's) (NN sister)) (VP (MD wouldn't) (VP (VB have) (VP (VBN gone) (SBAR (IN if) (S (ADJP (RB she'd) (VBN known)))) (SBAR (IN that) (S (NP (NP (DT the) (NN meeting)) (, ,) (SBAR (WHNP (WDT which)) (S (VP (VBD was) (VP (VBN scheduled) (PP (IN for) (NP (NP (CD 3) (NN p.m.)) (PP (IN on) (NP (NNP Friday))))))))) (, ,)) (VP (VBD had) (VP (VBN been) (VP (VBN cancelled)))))))))) (, ;) (S (NP (NN nobody)) (VP (VBD told) (NP (PRP her)))) (. .)))
+# constituency = (ROOT (S (S (NP (NNP Mary's) (NN sister)) (VP (MD wouldn't) (VP (VB have) (VP (VBN gone) (SBAR (IN if) (S (VP (NN she'd) (VP (VBN known) (SBAR (IN that) (S (NP (NP (DT the) (NN meeting)) (, ,) (SBAR (WHNP (WDT which)) (S (VP (VBD was) (VP (VBN scheduled) (PP (IN for) (NP (NP (CD 3) (NN p.m.)) (PP (IN on) (NP (NNP Friday))))))))) (, ,)) (VP (VBD had) (VP (VBN been) (VP (VBN cancelled)))))))))))))) (, ;) (S (NP (NN nobody)) (VP (VBD told) (NP (PRP her)))) (. .)))
 # sentiment = 0
-1	Mary's	Mary's	PROPN	NNP	Number=Sing	2	compound	_	start_char=478|end_char=484|ner=S-PERSON
+1	Mary's	Mary	PROPN	NNP	Number=Sing	2	compound	_	start_char=478|end_char=484|ner=S-PERSON
 2	sister	sister	NOUN	NN	Number=Sing	5	nsubj	_	start_char=485|end_char=491|ner=O
 3	wouldn't	wouldn't	AUX	MD	VerbForm=Fin	5	aux	_	start_char=492|end_char=500|ner=O
 4	have	have	AUX	VB	VerbForm=Inf	5	aux	_	start_char=501|end_char=505|ner=O
 5	gone	go	VERB	VBN	Tense=Past|VerbForm=Part	0	root	_	start_char=506|end_char=510|ner=O
 6	if	if	SCONJ	IN	_	8	mark	_	start_char=511|end_char=513|ner=O
-7	she'd	she'd	ADV	RB	_	8	advmod	_	start_char=514|end_char=519|ner=O
+7	she'd	she'd	NOUN	NN	Number=Sing	8	nsubj:pass	_	start_char=514|end_char=519|ner=O
 8	known	know	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	5	advcl	_	start_char=520|end_char=525|ner=O
 9	that	that	SCONJ	IN	_	24	mark	_	start_char=526|end_char=530|ner=O
 10	the	the	DET	DT	Definite=Def|PronType=Art	11	det	_	start_char=531|end_char=534|ner=O
@@ -175,6 +175,6 @@
 # sentiment = 2
 1	Wow	wow	INTJ	UH	_	4	discourse	_	start_char=627|end_char=630|ner=O
 2	...	...	PUNCT	,	_	1	punct	_	start_char=631|end_char=634|ner=O
-3	that's	thank	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	cop	_	start_char=635|end_char=641|ner=O
+3	that's	that	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	cop	_	start_char=635|end_char=641|ner=O
 4	amazing	amazing	ADJ	JJ	Degree=Pos	0	root	_	start_char=642|end_char=649|ner=O
 5	!!	!!	PUNCT	.	_	4	punct	_	SpaceAfter=No|start_char=650|end_char=652|ner=O

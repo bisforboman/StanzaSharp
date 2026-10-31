@@ -60,7 +60,7 @@
 11	,	_	PUNCT	,	_	10	_	_	SpaceAfter=No|start_char=168|end_char=169
 12	'	_	PUNCT	''	_	11	_	_	start_char=169|end_char=170
 13	and	_	CCONJ	CC	_	12	_	_	start_char=171|end_char=174
-14	hung	_	VERB	VBD	Mood=Ind|Number=Sing|Tense=Past|VerbForm=Fin	13	_	_	start_char=175|end_char=179
+14	hung	_	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	13	_	_	start_char=175|end_char=179
 15	up	_	ADP	RP	_	14	_	_	SpaceAfter=No|start_char=180|end_char=182
 16	,	_	PUNCT	,	_	15	_	_	SpaceAfter=No|start_char=182|end_char=183
 17	"	_	PUNCT	''	_	16	_	_	start_char=183|end_char=184
@@ -114,7 +114,7 @@
 10	“	_	PUNCT	``	_	9	_	_	SpaceAfter=No|start_char=297|end_char=298
 11	when	_	ADV	WRB	PronType=Int	10	_	_	start_char=298|end_char=302
 12	I	_	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	11	_	_	start_char=303|end_char=304|coref_chains=unit-id3
-13	was	_	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	12	_	_	start_char=305|end_char=308
+13	was	_	AUX	VBD	Mood=Ind|Number=Sing|Person=1|Tense=Past|VerbForm=Fin	12	_	_	start_char=305|end_char=308
 14	your	_	PRON	PRP$	Case=Gen|Person=2|Poss=Yes|PronType=Prs	13	_	_	start_char=309|end_char=313|coref_chains=unit-id5,start-repr-id7
 15	age	_	NOUN	NN	Number=Sing	14	_	_	SpaceAfter=No|start_char=314|end_char=317|coref_chains=end-repr-id7
 16	,	_	PUNCT	,	_	15	_	_	start_char=317|end_char=318
@@ -194,7 +194,7 @@
 # text = “You know what my grandfather used to say?
 # sent_id = 13
 1	“	_	PUNCT	``	_	0	_	_	SpaceAfter=No|start_char=502|end_char=503
-2	You	_	PRON	PRP	Case=Nom|Person=2|PronType=Prs	1	_	_	start_char=503|end_char=506|coref_chains=unit-id14
+2	You	_	PRON	PRP	Case=Nom|Number=Sing|Person=2|PronType=Prs	1	_	_	start_char=503|end_char=506|coref_chains=unit-id14
 3	know	_	VERB	VBP	Mood=Ind|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin	2	_	_	start_char=507|end_char=511
 4	what	_	PRON	WP	PronType=Rel	3	_	_	start_char=512|end_char=516
 5	my	_	PRON	PRP$	Case=Gen|Number=Sing|Person=1|Poss=Yes|PronType=Prs	4	_	_	start_char=517|end_char=519|coref_chains=unit-id14,start-repr-id15
@@ -427,7 +427,7 @@
 12	leads	_	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	11	_	_	start_char=1110|end_char=1115
 13	home	_	ADV	RB	_	12	_	_	start_char=1116|end_char=1120|coref_chains=unit-repr-id26
 14	again	_	ADV	RB	_	13	_	_	SpaceAfter=No|start_char=1121|end_char=1126
-15	;	_	PUNCT	:	_	14	_	_	SpacesAfter=\n|start_char=1126|end_char=1127
+15	;	_	PUNCT	,	_	14	_	_	SpacesAfter=\n|start_char=1126|end_char=1127
 16	the	_	DET	DT	Definite=Def|PronType=Art	15	_	_	start_char=1128|end_char=1131
 17	kettle	_	NOUN	NN	Number=Sing	16	_	_	start_char=1132|end_char=1138
 18	hums	_	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	17	_	_	SpaceAfter=No|start_char=1139|end_char=1143
@@ -488,7 +488,7 @@
 14	counted	_	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	13	_	_	start_char=1339|end_char=1346
 15	stones	_	NOUN	NNS	Number=Plur	14	_	_	SpacesAfter=\n|start_char=1347|end_char=1353|coref_chains=unit-repr-id30
 16	and	_	CCONJ	CC	_	15	_	_	start_char=1354|end_char=1357
-17	counted	_	VERB	VBD	Tense=Past|VerbForm=Fin|Voice=Pass	16	_	_	start_char=1358|end_char=1365
+17	counted	_	VERB	VBD	Mood=Ind|Person=3|Tense=Past|VerbForm=Fin|Voice=Pass	16	_	_	start_char=1358|end_char=1365
 18	bones	_	NOUN	NNS	Number=Plur	17	_	_	SpacesAfter=\n|start_char=1366|end_char=1371
 19	of	_	ADP	IN	_	18	_	_	start_char=1372|end_char=1374
 20	summers	_	NOUN	NNS	Number=Plur	19	_	_	start_char=1375|end_char=1382
@@ -501,7 +501,7 @@
 # text = so much depends upon a borrowed pen left out in the rain beside the gate
 # sent_id = 35
 1	so	_	ADV	RB	_	0	_	_	start_char=1408|end_char=1410
-2	much	_	ADV	RB	Degree=Pos	1	_	_	start_char=1411|end_char=1415
+2	much	_	ADV	RB	_	1	_	_	start_char=1411|end_char=1415
 3	depends	_	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	_	_	SpacesAfter=\n|start_char=1416|end_char=1423
 4	upon	_	ADP	IN	_	3	_	_	SpacesAfter=\n|start_char=1424|end_char=1428
 5	a	_	DET	DT	Definite=Ind|PronType=Art	4	_	_	start_char=1429|end_char=1430|coref_chains=start-repr-id32
@@ -563,7 +563,7 @@
 8	open	_	ADJ	JJ	Degree=Pos	7	_	_	SpaceAfter=No|start_char=1622|end_char=1626
 9	…	_	PUNCT	:	_	8	_	_	start_char=1626|end_char=1627
 10	and	_	CCONJ	CC	_	9	_	_	start_char=1628|end_char=1631
-11	in	_	ADV	RB	_	10	_	_	start_char=1632|end_char=1634
+11	in	_	ADP	IN	_	10	_	_	start_char=1632|end_char=1634
 12	walked	_	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	11	_	_	start_char=1635|end_char=1641
 13	the	_	DET	DT	Definite=Def|PronType=Art	12	_	_	start_char=1642|end_char=1645|coref_chains=start-repr-id41
 14	cat	_	NOUN	NN	Number=Sing	13	_	_	SpaceAfter=No|start_char=1646|end_char=1649|coref_chains=end-repr-id41
@@ -588,7 +588,7 @@
 # sent_id = 41
 1	“	_	PUNCT	``	_	0	_	_	SpaceAfter=No|start_char=1691|end_char=1692
 2	Is	_	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	1	_	_	start_char=1692|end_char=1694
-3	that	_	SCONJ	IN	_	2	_	_	start_char=1695|end_char=1699
+3	that	_	PRON	DT	Number=Sing|PronType=Dem	2	_	_	start_char=1695|end_char=1699
 4	you	_	PRON	PRP	Case=Nom|Person=2|PronType=Prs	3	_	_	SpaceAfter=No|start_char=1700|end_char=1703|coref_chains=unit-id42
 5	,	_	PUNCT	,	_	4	_	_	start_char=1703|end_char=1704
 6	Grandpa	_	PROPN	NNP	Number=Sing	5	_	_	SpaceAfter=No|start_char=1705|end_char=1712|coref_chains=unit-repr-id42

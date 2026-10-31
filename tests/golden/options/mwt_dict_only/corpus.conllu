@@ -124,8 +124,8 @@
 11	to	_	ADP	IN	_	10	_	_	start_char=391|end_char=393
 12	info@example.com	_	PROPN	ADD	Number=Sing	11	_	_	SpaceAfter=No|start_char=394|end_char=410
 13	,	_	PUNCT	,	_	12	_	_	start_char=410|end_char=411
-14	visited	_	VERB	VBD	Tense=Past|VerbForm=Fin	13	_	_	start_char=412|end_char=419
-15	https://www.example.org/about	_	PROPN	ADD	Number=Sing	14	_	_	start_char=420|end_char=449
+14	visited	_	VERB	VBD	Mood=Ind|Number=Sing|Tense=Past|VerbForm=Fin	13	_	_	start_char=412|end_char=419
+15	https://www.example.org/about	_	PROPN	NNP	Number=Sing	14	_	_	start_char=420|end_char=449
 16	yesterday	_	NOUN	NN	Number=Sing	15	_	_	SpaceAfter=No|start_char=450|end_char=459
 17	.	_	PUNCT	.	_	16	_	_	SpacesAfter=\n\n|start_char=459|end_char=460
 

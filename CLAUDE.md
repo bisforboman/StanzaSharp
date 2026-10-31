@@ -414,7 +414,7 @@ since 1.0, and every processor also has a managed net (see "Managed backend"), t
   - A missing lemma is read as `_`, as in Stanza, so without the lemmatizer the parses differ.
   - `Conllu.Write` needs no change: with heads set it matches Stanza (DEPS stays `_`).
 - `Lemma.Lemmatizer` (processor `lemma`, requires tokenize, mwt, pos) reproduces `tests/golden/lemma/`
-  byte for byte: 13 files, 8401 words, 868 of them through the seq2seq model. It mirrors
+  byte for byte: 13 files, 8401 words, 650 of them through the seq2seq model (868 before the re-upload of 2026-10-30). It mirrors
   LemmaProcessor: dictionary skip, DeltaVocab, `batch_size` 50 batches sorted like `sort_all`, greedy
   decoding, edits, `<UNK>` fallback, and the `Word.lemma` setter turning `_` into null.
 - `Ner.NerTagger` (processor `ner`, requires only tokenize: it reads token text, like Stanza) sets
@@ -1011,7 +1011,7 @@ What the English treebank packages' checkpoints add to the default package's pat
     the lemmatizer's `WithBeamSize` copy decodes with `Seq2SeqConfig.Beam` (MWT's beam search: the edit logits from the
     unrepeated encoding, only the first batch rows mixing in the copy distribution, as in Stanza); dictionary and contextual
     classifiers unchanged. Rows `lemma_beam_size=5` (English, with `options/lemma_rare.txt`, and German) and
-    `lemma=combined_charlm+lemma_beam_size=3`; the beam changes 4 lemmas, all in validation_multilingual.
+    `lemma=combined_charlm+lemma_beam_size=3`; with the models of 2026-10-30 the beam changes 1 lemma (`combined_charlm`, validation_contractions; before, 4 of `combined_nocharlm`, all in validation_multilingual).
   - `langid/langid.json` (`--langid-only`; #174, owner's decisions 2026-10-19, docs/langid-plan.md): `LANGID_TEXTS` (47
     texts, 36 languages, edges) + validation.txt's first paragraph through Stanza's langid processor (a minimal
     resources.json of its own), alone and in bulk, unrestricted and with `langid_lang_subset` en,de, with
@@ -1389,19 +1389,24 @@ What the English treebank packages' checkpoints add to the default package's pat
     `Pipeline.SupportedPackages` names (hand-written: what is ported and tested) and the models of `Alternatives`
     (`Pipeline.SupportedModels`). Hand-written still: `SupportedPackages`, `Alternatives`, `Unread`, `Transformers`,
     `ModelDownloader.Revisions` and `Transformers`, `IdentityLemma`, `Requires`. A language's entry is a snapshot of
-    its `Revisions` commit, never Stanford's latest resources.json (on 2026-10-30 that already listed newer English pos
-    and lemma models, with `alternate_md5`s, than en's commit has). A new language: its entry from stanza-resources'
+    its `Revisions` commit, never Stanford's latest resources.json (it follows their re-uploads; on 2026-10-30 it listed newer
+    English pos and lemma models, with `alternate_md5`s, than en's commit had, which we then adopted). A new language: its entry from stanza-resources'
     `resources_1.15.0.json` of the day its `stanza-<lang>` commit is pinned, plus a `SupportedPackages` line and a
     `Revisions` line. `CompareCommandTests.StanzaResources_MatchModelDownloader` reads the file on its own and checks
     the derived tables against it, `StanzaResources_CoverEverySupportedLanguage` the languages and commits;
     `FilesFor_AreEnoughToLoadThePipeline`, `FileTableCoversEveryModelThePipelineLoads` and `LanguageTests` the file sets. CI downloads the packages per `tools/ci-models.sh` group (see "Model cache keys").
   - It fetches the `.pt` files from `huggingface.co/stanfordnlp/stanza-<lang>/resolve/<commit>/models/`
-    (`ModelDownloader.Revisions`: en `810dca30`, de `a8ecd6c8`, multilingual `e9360ddf`) and checks each against the MD5
+    (`ModelDownloader.Revisions`: en `d323be19`, de `a8ecd6c8`, multilingual `e9360ddf`) and checks each against the MD5
     from Stanza 1.15.0's resources.json (stanza-resources' `resources_1.15.0.json`), kept in `ModelDownloader.Files`. A
     commit, not the `v1.15.0` tag: on 2026-10-20 Stanford re-uploaded English's conll03 NER models (now on conll17,
     stanza#1698) and German's NER models (germeval2014 removed, germeval2014_charlm added, the dbmdz NER removed) and moved
     the tag. We pinned the old commits (`d7e0c740`, `6b928a48`; owner's decision 2026-10-22), then adopted the new models
-    (#215, owner's decision 2026-10-24: these commits, new MD5s, resources and goldens).
+    (#215, owner's decision 2026-10-24: these commits, new MD5s, resources and goldens). On 2026-10-28 and 2026-10-30
+    Stanford re-uploaded English's pos (`combined_charlm`, `combined_nocharlm`, `combined_electra-large`) and lemma
+    (`combined_nocharlm`, `combined_charlm`) models and moved the tag to `d323be19`; owner's decision 2026-10-30: adopt
+    (en's entry from that day's resources_1.15.0.json, every English golden set reading pos or lemma regenerated; no code
+    change: StanzaSharp ran them byte for byte as they were). About 2% of default's UPOS, 1.6% of lemmas and 1.9% of heads
+    changed on the golden texts (default_fast about 3%); sentiment, NER, coref chains unchanged.
   - It keeps files that already match. `Pipeline.Load` never downloads.
   - Changing the Stanza version means new MD5s, new golden data and a new cache key.
 - `tools/verify-package.ps1` packs a unique `0.0.0-verify.<time>` version and builds a fresh console app against it:
@@ -1555,7 +1560,10 @@ What the English treebank packages' checkpoints add to the default package's pat
     differs from the 6-row one), so a state's arithmetic is bitwise the same in any batch (tested). All float: scores 3.4e-5
     from Python (TorchSharp 3.1e-5; every path ≤ 4.6e-5, tolerance 1e-3 as before); trees byte-identical. Near-ties over
     845 golden sentences (22,569 steps): smallest decision margin 3.6e-4 (both backends), backends 7.3e-5 apart;
-    `ConstituencyTests.NearTies_StayClearOfBackendDrift` fails if decisions differ or the margin drops under 3× that drift.
+    `ConstituencyTests.NearTies_StayClearOfBackendDrift` fails if decisions differ or the smallest margin drops under 2× the
+    largest difference between the backends' margins (owner's decision, 2026-10-31; it was 3× the score drift until the
+    re-uploaded English tagger made validation_multilingual sentence 13 a near-tie at 9.8e-5, with 5.3e-5 drift and 3.8e-5
+    margin difference; the drift is spread, ~1.5e-6 relative, so only double charlms would halve it).
     On UD EWT (`tools/constituency_divergence.py` + benchmark `constituency-divergence`; 254,589 words, 684,407 decisions)
     no tree differs among Stanza f32, TorchSharp and managed (nor Stanza f64 on a 38k-word subset); smallest margin
     4.7e-5, but backend margins differ by 4.4e-6 median / 5.3e-5 at the 99.99th percentile (smallest margin/difference

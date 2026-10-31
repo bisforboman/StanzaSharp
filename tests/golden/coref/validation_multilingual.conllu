@@ -146,7 +146,7 @@
 1	The	_	DET	DT	Definite=Def|PronType=Art	0	_	_	start_char=590|end_char=593|coref_chains=start-repr-id30
 2	Japanese	_	ADJ	JJ	Degree=Pos	1	_	_	start_char=594|end_char=602|coref_chains=middle-repr-id30
 3	word	_	NOUN	NN	Number=Sing	2	_	_	start_char=603|end_char=607|coref_chains=end-repr-id30
-4	東京	_	NOUN	NN	Number=Sing	3	_	_	start_char=608|end_char=610|coref_chains=unit-id30
+4	東京	_	PROPN	NNP	Number=Sing	3	_	_	start_char=608|end_char=610|coref_chains=unit-id30
 5	means	_	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	_	_	start_char=611|end_char=616
 6	"	_	PUNCT	``	_	5	_	_	SpaceAfter=No|start_char=617|end_char=618
 7	eastern	_	ADJ	JJ	Degree=Pos	6	_	_	start_char=618|end_char=625|coref_chains=start-id30
@@ -173,7 +173,7 @@
 # sent_id = 13
 1	She	_	PRON	PRP	Case=Nom|Gender=Fem|Number=Sing|Person=3|PronType=Prs	0	_	_	start_char=684|end_char=687|coref_chains=unit-id25
 2	studied	_	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	1	_	_	start_char=688|end_char=695
-3	한국어	_	NOUN	NN	Number=Sing	2	_	_	start_char=696|end_char=699|coref_chains=unit-repr-id35
+3	한국어	_	SYM	SYM	_	2	_	_	start_char=696|end_char=699|coref_chains=unit-repr-id35
 4	for	_	ADP	IN	_	3	_	_	start_char=700|end_char=703
 5	two	_	NUM	CD	NumForm=Word|NumType=Card	4	_	_	start_char=704|end_char=707|coref_chains=start-repr-id36
 6	years	_	NOUN	NNS	Number=Plur	5	_	_	start_char=708|end_char=713|coref_chains=end-repr-id36
@@ -202,7 +202,7 @@
 6	peace	_	NOUN	NN	Number=Sing	5	_	_	SpaceAfter=No|start_char=788|end_char=793|coref_chains=middle-repr-id38,unit-repr-id39
 7	"	_	PUNCT	''	_	6	_	_	start_char=793|end_char=794|coref_chains=end-repr-id38
 8	is	_	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	7	_	_	start_char=795|end_char=797
-9	мир	_	ADJ	JJ	Degree=Pos	8	_	_	SpaceAfter=No|start_char=798|end_char=801|coref_chains=unit-id38
+9	мир	_	ADV	RB	_	8	_	_	SpaceAfter=No|start_char=798|end_char=801|coref_chains=unit-id38
 10	.	_	PUNCT	.	_	9	_	_	start_char=801|end_char=802
 
 # text = Москва is the capital; Санкт-Петербург is the second-largest city.
@@ -211,7 +211,7 @@
 2	is	_	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	1	_	_	start_char=810|end_char=812
 3	the	_	DET	DT	Definite=Def|PronType=Art	2	_	_	start_char=813|end_char=816|coref_chains=start-id17
 4	capital	_	NOUN	NN	Number=Sing	3	_	_	SpaceAfter=No|start_char=817|end_char=824|coref_chains=end-id17
-5	;	_	PUNCT	:	_	4	_	_	start_char=824|end_char=825
+5	;	_	PUNCT	,	_	4	_	_	start_char=824|end_char=825
 6	Санкт	_	PROPN	NNP	Number=Sing	5	_	_	SpaceAfter=No|start_char=826|end_char=831|coref_chains=start-id40
 7	-	_	PUNCT	HYPH	_	6	_	_	SpaceAfter=No|start_char=831|end_char=832|coref_chains=middle-id40
 8	Петербург	_	PROPN	NNP	Number=Sing	7	_	_	start_char=832|end_char=841|coref_chains=end-id40
@@ -227,13 +227,13 @@
 # sent_id = 17
 1	Greek	_	ADJ	JJ	Degree=Pos	0	_	_	start_char=871|end_char=876|coref_chains=start-repr-id41
 2	letters	_	NOUN	NNS	Number=Plur	1	_	_	start_char=877|end_char=884|coref_chains=middle-repr-id41
-3	such	_	ADJ	JJ	ExtPos=ADP	2	_	_	start_char=885|end_char=889|coref_chains=middle-repr-id41
+3	such	_	ADJ	JJ	Degree=Pos|ExtPos=ADP	2	_	_	start_char=885|end_char=889|coref_chains=middle-repr-id41
 4	as	_	ADP	IN	_	3	_	_	start_char=890|end_char=892|coref_chains=middle-repr-id41
 5	α	_	NOUN	NN	Number=Sing	4	_	_	SpaceAfter=No|start_char=893|end_char=894|coref_chains=middle-repr-id41,unit-repr-id42
 6	,	_	PUNCT	,	_	5	_	_	start_char=894|end_char=895|coref_chains=middle-repr-id41
-7	β	_	NOUN	NN	Number=Sing	6	_	_	SpaceAfter=No|start_char=896|end_char=897|coref_chains=middle-repr-id41,unit-repr-id43
+7	β	_	X	FW	_	6	_	_	SpaceAfter=No|start_char=896|end_char=897|coref_chains=middle-repr-id41,unit-repr-id43
 8	,	_	PUNCT	,	_	7	_	_	start_char=897|end_char=898|coref_chains=middle-repr-id41
-9	γ	_	PUNCT	:	_	8	_	_	start_char=899|end_char=900|coref_chains=middle-repr-id41,unit-repr-id44
+9	γ	_	PUNCT	''	_	8	_	_	start_char=899|end_char=900|coref_chains=middle-repr-id41,unit-repr-id44
 10	and	_	CCONJ	CC	_	9	_	_	start_char=901|end_char=904|coref_chains=middle-repr-id41
 11	Ω	_	NOUN	NN	Number=Sing	10	_	_	start_char=905|end_char=906|coref_chains=end-repr-id41,unit-repr-id45
 12	appear	_	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	11	_	_	start_char=907|end_char=913
@@ -267,7 +267,7 @@
 # sent_id = 20
 1	Hebrew	_	PROPN	NNP	Number=Sing	0	_	_	start_char=1014|end_char=1020|coref_chains=unit-repr-id52
 2	writes	_	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	1	_	_	start_char=1021|end_char=1027
-3	שלום	_	PUNCT	``	_	2	_	_	start_char=1028|end_char=1032|coref_chains=unit-repr-id53
+3	שלום	_	PUNCT	:	_	2	_	_	start_char=1028|end_char=1032|coref_chains=unit-repr-id53
 4	for	_	ADP	IN	_	3	_	_	start_char=1033|end_char=1036
 5	peace	_	NOUN	NN	Number=Sing	4	_	_	SpaceAfter=No|start_char=1037|end_char=1042|coref_chains=unit-id39
 6	.	_	PUNCT	.	_	5	_	_	SpacesAfter=\n\n|start_char=1042|end_char=1043
@@ -386,7 +386,7 @@
 2	uses	_	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	1	_	_	start_char=1458|end_char=1462
 3	Devanagari	_	PROPN	NNP	Number=Sing	2	_	_	SpaceAfter=No|start_char=1463|end_char=1473|coref_chains=unit-repr-id74
 4	:	_	PUNCT	:	_	3	_	_	start_char=1473|end_char=1474
-5	नमस्ते	_	PUNCT	``	_	4	_	_	start_char=1475|end_char=1481|coref_chains=unit-repr-id75
+5	नमस्ते	_	INTJ	UH	_	4	_	_	start_char=1475|end_char=1481|coref_chains=unit-repr-id75
 6	means	_	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	5	_	_	start_char=1482|end_char=1487
 7	hello	_	INTJ	UH	_	6	_	_	SpaceAfter=No|start_char=1488|end_char=1493|coref_chains=unit-repr-id76
 8	.	_	PUNCT	.	_	7	_	_	start_char=1493|end_char=1494
@@ -444,10 +444,10 @@
 # sent_id = 36
 1	The	_	DET	DT	Definite=Def|PronType=Art	0	_	_	start_char=1690|end_char=1693|coref_chains=start-id91
 2	novel	_	NOUN	NN	Number=Sing	1	_	_	start_char=1694|end_char=1699|coref_chains=end-id91
-3	Cien	_	PROPN	NNP	Number=Sing	2	_	_	start_char=1700|end_char=1704|coref_chains=start-id91
+3	Cien	_	X	FW	Foreign=Yes	2	_	_	start_char=1700|end_char=1704|coref_chains=start-id91
 4	años	_	X	FW	Foreign=Yes	3	_	_	start_char=1705|end_char=1709|coref_chains=middle-id91
 5	de	_	X	FW	Foreign=Yes	4	_	_	start_char=1710|end_char=1712|coref_chains=middle-id91
-6	soledad	_	PROPN	NNP	Number=Sing	5	_	_	start_char=1713|end_char=1720|coref_chains=end-id91
+6	soledad	_	X	FW	Foreign=Yes	5	_	_	start_char=1713|end_char=1720|coref_chains=end-id91
 7	was	_	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	6	_	_	start_char=1721|end_char=1724
 8	translated	_	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	7	_	_	start_char=1725|end_char=1735
 9	as	_	ADP	IN	_	8	_	_	start_char=1736|end_char=1738
@@ -546,7 +546,7 @@
 
 # text = Ελλάδα is the Greek name for Greece.
 # sent_id = 44
-1	Ελλάδα	_	SYM	SYM	_	0	_	_	start_char=2077|end_char=2083|coref_chains=unit-id105
+1	Ελλάδα	_	PROPN	NNP	Number=Sing	0	_	_	start_char=2077|end_char=2083|coref_chains=unit-id105
 2	is	_	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	1	_	_	start_char=2084|end_char=2086
 3	the	_	DET	DT	Definite=Def|PronType=Art	2	_	_	start_char=2087|end_char=2090|coref_chains=start-repr-id105
 4	Greek	_	ADJ	JJ	Degree=Pos	3	_	_	start_char=2091|end_char=2096|coref_chains=middle-repr-id105
@@ -568,7 +568,7 @@
 1	The	_	DET	DT	Definite=Def|PronType=Art	0	_	_	start_char=2137|end_char=2140|coref_chains=start-repr-id106
 2	sign	_	NOUN	NN	Number=Sing	1	_	_	start_char=2141|end_char=2145|coref_chains=end-repr-id106
 3	said	_	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	2	_	_	start_char=2146|end_char=2150
-4	ДОБРО	_	PROPN	NNP	Number=Sing	3	_	_	start_char=2151|end_char=2156|coref_chains=start-repr-id107
+4	ДОБРО	_	NOUN	NN	Number=Sing	3	_	_	start_char=2151|end_char=2156|coref_chains=start-repr-id107
 5	ПОЖАЛОВАТЬ	_	PROPN	NNP	Number=Sing	4	_	_	SpaceAfter=No|start_char=2157|end_char=2167|coref_chains=middle-repr-id107
 6	,	_	PUNCT	,	_	5	_	_	start_char=2167|end_char=2168|coref_chains=middle-repr-id107
 7	which	_	PRON	WDT	PronType=Rel	6	_	_	start_char=2169|end_char=2174|coref_chains=middle-repr-id107
@@ -588,7 +588,7 @@
 6	,	_	PUNCT	,	_	5	_	_	start_char=2216|end_char=2217
 7	dulce	_	X	FW	Foreign=Yes	6	_	_	start_char=2218|end_char=2223
 8	de	_	X	FW	Foreign=Yes	7	_	_	start_char=2224|end_char=2226
-9	leche	_	PROPN	NNP	Number=Sing	8	_	_	start_char=2227|end_char=2232
+9	leche	_	X	FW	Foreign=Yes	8	_	_	start_char=2227|end_char=2232
 10	and	_	CCONJ	CC	_	9	_	_	start_char=2233|end_char=2236
 11	a	_	DET	DT	Definite=Ind|PronType=Art	10	_	_	start_char=2237|end_char=2238
 12	café	_	NOUN	NN	Number=Sing	11	_	_	start_char=2239|end_char=2243
@@ -604,7 +604,7 @@
 4	Žydrūnas	_	PROPN	NNP	Number=Sing	3	_	_	start_char=2269|end_char=2277|coref_chains=start-repr-id109,middle-repr-id110
 5	Ilgauskas	_	PROPN	NNP	Number=Sing	4	_	_	start_char=2278|end_char=2287|coref_chains=end-repr-id109,middle-repr-id110
 6	and	_	CCONJ	CC	_	5	_	_	start_char=2288|end_char=2291|coref_chains=middle-repr-id110
-7	Ģirts	_	NOUN	NNS	Number=Plur	6	_	_	start_char=2292|end_char=2297|coref_chains=middle-repr-id110,start-repr-id111
+7	Ģirts	_	PROPN	NNPS	Number=Plur	6	_	_	start_char=2292|end_char=2297|coref_chains=middle-repr-id110,start-repr-id111
 8	Āboliņš	_	PROPN	NNP	Number=Sing	7	_	_	start_char=2298|end_char=2305|coref_chains=end-repr-id110,end-repr-id111
 9	are	_	AUX	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	8	_	_	start_char=2306|end_char=2309
 10	Baltic	_	ADJ	JJ	Degree=Pos	9	_	_	start_char=2310|end_char=2316|coref_chains=start-id110
@@ -657,7 +657,7 @@
 2	old	_	ADJ	JJ	Degree=Pos	1	_	_	start_char=2466|end_char=2469|coref_chains=middle-repr-id117
 3	sign	_	NOUN	NN	Number=Sing	2	_	_	start_char=2470|end_char=2474|coref_chains=end-repr-id117
 4	said	_	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	3	_	_	start_char=2475|end_char=2479
-5	ΤΗΣ	_	ADJ	JJ	Degree=Pos	4	_	_	start_char=2480|end_char=2483|coref_chains=start-repr-id118
+5	ΤΗΣ	_	ADP	IN	_	4	_	_	start_char=2480|end_char=2483|coref_chains=start-repr-id118
 6	ΠΟΛΕΩΣ	_	NOUN	NN	Number=Sing	5	_	_	start_char=2484|end_char=2490|coref_chains=end-repr-id118
 7	in	_	ADP	IN	_	6	_	_	start_char=2491|end_char=2493
 8	capitals	_	NOUN	NNS	Number=Plur	7	_	_	SpaceAfter=No|start_char=2494|end_char=2502|coref_chains=unit-repr-id119
@@ -672,7 +672,7 @@
 
 # text = ΕΙΣ was carved below it.
 # sent_id = 53
-1	ΕΙΣ	_	PROPN	NNP	Number=Sing	0	_	_	start_char=2533|end_char=2536
+1	ΕΙΣ	_	PRON	PRP	Case=Nom|Number=Sing|PronType=Prs	0	_	_	start_char=2533|end_char=2536
 2	was	_	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	1	_	_	start_char=2537|end_char=2540
 3	carved	_	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	2	_	_	start_char=2541|end_char=2547
 4	below	_	ADP	IN	_	3	_	_	start_char=2548|end_char=2553

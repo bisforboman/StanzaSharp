@@ -1593,7 +1593,11 @@ def write_multilingual_golden(models, out):
     langid/multilingual.json: MULTILINGUAL_TEXTS through Stanza's MultilingualPipeline(restrict=True) with English and
     German (each language's default package, all processors): each document's language and "{:C}" CoNLL-U.
     """
-    nlp = stanza.MultilingualPipeline(model_dir=str(models), lang_configs={"en": {"logging_level": "WARN"}, "de": {"logging_level": "WARN"}},
+    # Each language's models as the library pins them (its stanza_resources.json), not whatever resources.json the model
+    # folder holds: a stale one named German's old NER model.
+    resources = str(Path(__file__).resolve().parent.parent / "src" / "StanzaSharp" / "stanza_resources.json")
+    configs = {lang: {"logging_level": "WARN", "resources_filepath": resources} for lang in ("en", "de")}
+    nlp = stanza.MultilingualPipeline(model_dir=str(models), lang_configs=configs,
                                       restrict=True, download_method=None, use_gpu=False,
                                       lang_id_config={"logging_level": "WARN", "resources_filepath": str(langid_resources())})
     with torch.no_grad():

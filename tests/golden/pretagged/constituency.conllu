@@ -22,7 +22,7 @@
 
 # text = I don't think it's going to rain today, but we'll see.
 # sent_id = 2
-# constituency = (ROOT (S (S (NP (PRP I)) (VP (VBP do) (RB n't) (VP (VB think) (SBAR (S (NP (PRP it)) (VP (VBZ 's) (VP (VBG going) (S (VP (TO to) (VP (VB rain) (NP (NN today)))))))))))) (, ,) (CC but) (S (NP (PRP we)) (VP (MD 'll) (VP (VB see)))) (. .)))
+# constituency = (ROOT (S (S (NP (PRP I)) (VP (VBP do) (RB n't) (VP (VB think) (SBAR (S (NP (PRP it)) (VP (VBZ 's) (VP (VBG going) (S (VP (IN to) (VP (NN rain) (NP (NN today)))))))))))) (, ,) (CC but) (S (NP (PRP we)) (VP (MD 'll) (VP (VB see)))) (. .)))
 1	I	I	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	4	nsubj	_	start_char=68|end_char=69|ner=O
 2-3	don't	_	_	_	_	_	_	_	start_char=70|end_char=75|ner=O
 2	do	do	AUX	VBP	Mood=Ind|Number=Sing|Person=1|Tense=Pres|VerbForm=Fin	4	aux	_	start_char=70|end_char=72
@@ -32,9 +32,9 @@
 5	it	it	PRON	PRP	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	7	nsubj	_	start_char=82|end_char=84
 6	's	be	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	7	aux	_	start_char=84|end_char=86
 7	going	go	VERB	VBG	Tense=Pres|VerbForm=Part	4	ccomp	_	start_char=87|end_char=92|ner=O
-8	to	to	PART	TO	_	9	mark	_	start_char=93|end_char=95|ner=O
-9	rain	rain	VERB	VB	VerbForm=Inf	7	xcomp	_	start_char=96|end_char=100|ner=O
-10	today	today	NOUN	NN	Number=Sing	9	obl:unmarked	_	SpaceAfter=No|start_char=101|end_char=106|ner=S-DATE
+8	to	to	ADP	IN	_	9	case	_	start_char=93|end_char=95|ner=O
+9	rain	rain	NOUN	NN	Number=Sing	7	obl	_	start_char=96|end_char=100|ner=O
+10	today	today	NOUN	NN	Number=Sing	7	obl:unmarked	_	SpaceAfter=No|start_char=101|end_char=106|ner=S-DATE
 11	,	,	PUNCT	,	_	15	punct	_	start_char=106|end_char=107|ner=O
 12	but	but	CCONJ	CC	_	15	cc	_	start_char=108|end_char=111|ner=O
 13-14	we'll	_	_	_	_	_	_	_	start_char=112|end_char=117|ner=O
@@ -87,7 +87,7 @@
 1	"	"	PUNCT	``	_	5	punct	_	SpaceAfter=No|start_char=241|end_char=242|ner=O
 2	Where	where	ADV	WRB	PronType=Int	5	advmod	_	start_char=242|end_char=247|ner=O
 3	are	be	AUX	VBP	Mood=Ind|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin	5	aux	_	start_char=248|end_char=251|ner=O
-4	you	you	PRON	PRP	Case=Nom|Number=Sing|Person=2|PronType=Prs	5	nsubj	_	start_char=252|end_char=255|ner=O
+4	you	you	PRON	PRP	Case=Nom|Person=2|PronType=Prs	5	nsubj	_	start_char=252|end_char=255|ner=O
 5	going	go	VERB	VBG	Tense=Pres|VerbForm=Part	9	ccomp	_	SpaceAfter=No|start_char=256|end_char=261|ner=O
 6	?	?	PUNCT	.	_	5	punct	_	SpaceAfter=No|start_char=261|end_char=262|ner=O
 7	"	"	PUNCT	''	_	5	punct	_	start_char=262|end_char=263|ner=O
@@ -118,7 +118,7 @@
 
 # text = The well-known author, who had written e-mails to info@example.com, visited https://www.example.org/about yesterday.
 # sent_id = 7
-# constituency = (ROOT (S (NP (NP (DT The) (ADJP (RB well) (HYPH -) (VBN known)) (NN author)) (, ,) (SBAR (WHNP (WP who)) (S (VP (VBD had) (VP (VBN written) (NP (NNS e-mails)) (PP (IN to) (NP (ADD info@example.com))))))) (, ,)) (VP (VBD visited) (NP (NNP https://www.example.org/about)) (NP (NN yesterday))) (. .)))
+# constituency = (ROOT (S (NP (NP (DT The) (ADJP (RB well) (HYPH -) (VBN known)) (NN author)) (, ,) (SBAR (WHNP (WP who)) (S (VP (VBD had) (VP (VBN written) (NP (NNS e-mails)) (PP (IN to) (NP (ADD info@example.com))))))) (, ,)) (VP (VBD visited) (NP (ADD https://www.example.org/about)) (NP (NN yesterday))) (. .)))
 1	The	the	DET	DT	Definite=Def|PronType=Art	5	det	_	start_char=344|end_char=347|ner=O
 2	well	well	ADV	RB	Degree=Pos	4	advmod	_	SpaceAfter=No|start_char=348|end_char=352|ner=O
 3	-	-	PUNCT	HYPH	_	2	punct	_	SpaceAfter=No|start_char=352|end_char=353|ner=O
@@ -133,13 +133,13 @@
 12	info@example.com	info@example.com	PROPN	ADD	Number=Sing	9	obl	_	SpaceAfter=No|start_char=394|end_char=410|ner=O
 13	,	,	PUNCT	,	_	5	punct	_	start_char=410|end_char=411|ner=O
 14	visited	visit	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	start_char=412|end_char=419|ner=O
-15	https://www.example.org/about	https://www.example.org/about	PROPN	NNP	Number=Sing	14	obj	_	start_char=420|end_char=449|ner=O
+15	https://www.example.org/about	https://www.example.org/about	PROPN	ADD	Number=Sing	14	obj	_	start_char=420|end_char=449|ner=O
 16	yesterday	yesterday	NOUN	NN	Number=Sing	14	obl:unmarked	_	SpaceAfter=No|start_char=450|end_char=459|ner=S-DATE
 17	.	.	PUNCT	.	_	14	punct	_	SpacesAfter=\n\n|start_char=459|end_char=460|ner=O
 
 # text = Mary's sister wouldn't have gone if she'd known that the meeting, which was scheduled for 3 p.m. on Friday, had been cancelled; nobody told her.
 # sent_id = 8
-# constituency = (ROOT (S (S (NP (NP (NNP Mary) (POS 's)) (NN sister)) (VP (MD would) (RB n't) (VP (VB have) (VP (VBN gone) (SBAR (IN if) (S (NP (PRP she)) (VP (VBD 'd) (VP (VBN known) (SBAR (IN that) (S (NP (NP (DT the) (NN meeting)) (, ,) (SBAR (WHNP (WDT which)) (S (VP (VBD was) (VP (VBN scheduled) (PP (IN for) (NP (NP (CD 3) (NN p.m.)) (PP (IN on) (NP (NNP Friday))))))))) (, ,)) (VP (VBD had) (VP (VBN been) (VP (VBN cancelled)))))))))))))) (: ;) (S (NP (NN nobody)) (VP (VBD told) (NP (PRP her)))) (. .)))
+# constituency = (ROOT (S (S (NP (NP (NNP Mary) (POS 's)) (NN sister)) (VP (MD would) (RB n't) (VP (VB have) (VP (VBN gone) (SBAR (IN if) (S (NP (PRP she)) (VP (VBD 'd) (VP (VBN known) (SBAR (IN that) (S (NP (NP (DT the) (NN meeting)) (, ,) (SBAR (WHNP (WDT which)) (S (VP (VBD was) (VP (VBN scheduled) (PP (IN for) (NP (NP (CD 3) (NN p.m.)) (PP (IN on) (NP (NNP Friday))))))))) (, ,)) (VP (VBD had) (VP (VBN been) (VP (VBN cancelled)))))))))))))) (, ;) (S (NP (NN nobody)) (VP (VBD told) (NP (PRP her)))) (. .)))
 1-2	Mary's	_	_	_	_	_	_	_	start_char=462|end_char=468|ner=O
 1	Mary	Mary	PROPN	NNP	Number=Sing	3	nmod:poss	_	start_char=462|end_char=466
 2	's	's	PART	POS	_	1	case	_	start_char=466|end_char=468
@@ -170,7 +170,7 @@
 25	had	have	AUX	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	27	aux	_	start_char=570|end_char=573|ner=O
 26	been	be	AUX	VBN	Tense=Past|VerbForm=Part	27	aux:pass	_	start_char=574|end_char=578|ner=O
 27	cancelled	cancel	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	11	ccomp	_	SpaceAfter=No|start_char=579|end_char=588|ner=O
-28	;	;	PUNCT	:	_	30	punct	_	start_char=588|end_char=589|ner=O
+28	;	;	PUNCT	,	_	30	punct	_	start_char=588|end_char=589|ner=O
 29	nobody	nobody	PRON	NN	Number=Sing|PronType=Neg	30	nsubj	_	start_char=590|end_char=596|ner=O
 30	told	tell	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	7	parataxis	_	start_char=597|end_char=601|ner=O
 31	her	her	PRON	PRP	Case=Acc|Gender=Fem|Number=Sing|Person=3|PronType=Prs	30	iobj	_	SpaceAfter=No|start_char=602|end_char=605|ner=O

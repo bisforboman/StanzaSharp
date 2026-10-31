@@ -1057,7 +1057,7 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
     }
 
     /// <summary>
-    /// The lemmatizer's seq2seq network, both backends, on every word the golden lemma files send to the model (868, each
+    /// The lemmatizer's seq2seq network, both backends, on every word the golden lemma files send to the model (650 since the re-upload of 2026-10-30, each
     /// file's misses as one Predict call, as the pipeline batches them) plus words.json: the same number of decoder steps,
     /// identical decoding and edits. Reports each step's log-prob drift (all entries, and those within 10 of the row's
     /// maximum) and the smallest top-2 margin of a row still decoding, on either backend: the room the greedy argmax has.
@@ -1082,7 +1082,7 @@ public class ManagedBackendTests(ITestOutputHelper output, ManagedBackendTests.F
         calls.Add(JsonNode.Parse(File.ReadAllText(Path.Combine(Repo.Golden, "lemma", "words.json")))!.AsArray()
             .Select(g => new Word { Text = (string)g!["word"]!, Upos = (string)g["upos"]! })
             .ToList());
-        Assert.Equal(868, calls.SkipLast(1).Sum(c => c.Count));
+        Assert.Equal(650, calls.SkipLast(1).Sum(c => c.Count));
 
         double diff = 0, nearTop = 0, margin = double.PositiveInfinity;
         int steps = 0;

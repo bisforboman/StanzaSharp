@@ -66,7 +66,7 @@
 9	,	_	PUNCT	,	_	8	_	_	start_char=240|end_char=241
 10	to	_	ADP	IN	_	9	_	_	start_char=242|end_char=244
 11	$	_	SYM	$	_	10	_	_	SpaceAfter=No|start_char=245|end_char=246
-12	1.2	_	NUM	CD	NumForm=Digit|NumType=Frac	11	_	_	start_char=246|end_char=249
+12	1.2	_	NUM	CD	NumForm=Digit|NumType=Card	11	_	_	start_char=246|end_char=249
 13	billion	_	NUM	CD	NumForm=Word|NumType=Card	12	_	_	SpaceAfter=No|start_char=250|end_char=257
 14	,	_	PUNCT	,	_	13	_	_	start_char=257|end_char=258
 15	while	_	SCONJ	IN	_	14	_	_	start_char=259|end_char=264
@@ -95,7 +95,7 @@
 
 # text = Shares of the company closed at $48.75 on Friday, up from $45.10 a week earlier.
 # sent_id = 5
-# constituency = (ROOT (S (NP (NP (NNS Shares)) (PP (IN of) (NP (DT the) (NN company)))) (VP (VBD closed) (PP (IN at) (NP ($ $) (CD 48.75))) (PP (IN on) (NP (NNP Friday))) (, ,) (ADVP (RB up) (PP (IN from) (NP ($ $) (CD 45.10)) (ADVP (NP (DT a) (NN week)) (RBR earlier))))) (. .)))
+# constituency = (ROOT (S (NP (NP (NNS Shares)) (PP (IN of) (NP (DT the) (NN company)))) (VP (VBD closed) (PP (IN at) (NP ($ $) (CD 48.75))) (PP (IN on) (NP (NNP Friday))) (, ,) (ADVP (IN up) (PP (IN from) (NP ($ $) (CD 45.10)) (ADVP (NP (DT a) (NN week)) (RBR earlier))))) (. .)))
 1	Shares	_	NOUN	NNS	Number=Plur	0	_	_	start_char=351|end_char=357
 2	of	_	ADP	IN	_	1	_	_	start_char=358|end_char=360
 3	the	_	DET	DT	Definite=Def|PronType=Art	2	_	_	start_char=361|end_char=364
@@ -107,7 +107,7 @@
 9	on	_	ADP	IN	_	8	_	_	start_char=390|end_char=392
 10	Friday	_	PROPN	NNP	Number=Sing	9	_	_	SpaceAfter=No|start_char=393|end_char=399
 11	,	_	PUNCT	,	_	10	_	_	start_char=399|end_char=400
-12	up	_	ADV	RB	_	11	_	_	start_char=401|end_char=403
+12	up	_	ADP	IN	_	11	_	_	start_char=401|end_char=403
 13	from	_	ADP	IN	_	12	_	_	start_char=404|end_char=408
 14	$	_	SYM	$	_	13	_	_	SpaceAfter=No|start_char=409|end_char=410
 15	45.10	_	NUM	CD	NumForm=Digit|NumType=Frac	14	_	_	start_char=410|end_char=415
@@ -148,8 +148,8 @@
 1	Her	_	PRON	PRP$	Case=Gen|Gender=Fem|Number=Sing|Person=3|Poss=Yes|PronType=Prs	0	_	_	start_char=529|end_char=532
 2	team	_	NOUN	NN	Number=Sing	1	_	_	start_char=533|end_char=537
 3	includes	_	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	_	_	start_char=538|end_char=546
-4	Prof.	_	PROPN	NNP	Abbr=Yes|Number=Sing	3	_	_	start_char=547|end_char=552
-5	J.	_	PROPN	NNP	Abbr=Yes|Number=Sing	4	_	_	start_char=553|end_char=555
+4	Prof.	_	PROPN	NNP	Number=Sing	3	_	_	start_char=547|end_char=552
+5	J.	_	PROPN	NNP	Number=Sing	4	_	_	start_char=553|end_char=555
 6	R.	_	PROPN	NNP	Abbr=Yes|Number=Sing	5	_	_	start_char=556|end_char=558
 7	Okafor	_	PROPN	NNP	Number=Sing	6	_	_	start_char=559|end_char=565
 8	and	_	CCONJ	CC	_	7	_	_	start_char=566|end_char=569
@@ -163,7 +163,7 @@
 
 # text = The unit opens Jan. 15 at 9 a.m. in Bldg. 4, Rm. 210.
 # sent_id = 8
-# constituency = (ROOT (S (NP (DT The) (NN unit)) (VP (VBZ opens) (NP (NNP Jan.) (CD 15)) (PP (IN at) (NP (CD 9) (NN a.m.))) (PP (IN in) (NP (NP (NNP Bldg.) (CD 4)) (, ,) (NP (NN Rm.) (CD 210))))) (. .)))
+# constituency = (ROOT (S (NP (DT The) (NN unit)) (VP (VBZ opens) (NP (NNP Jan.) (CD 15)) (PP (IN at) (NP (CD 9) (NN a.m.))) (PP (IN in) (NP (NP (NNP Bldg.) (CD 4)) (, ,) (NP (NNP Rm.) (CD 210))))) (. .)))
 1	The	_	DET	DT	Definite=Def|PronType=Art	0	_	_	start_char=606|end_char=609
 2	unit	_	NOUN	NN	Number=Sing	1	_	_	start_char=610|end_char=614
 3	opens	_	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	_	_	start_char=615|end_char=620
@@ -176,7 +176,7 @@
 10	Bldg.	_	PROPN	NNP	Abbr=Yes|Number=Sing	9	_	_	start_char=642|end_char=647
 11	4	_	NUM	CD	NumForm=Digit|NumType=Card	10	_	_	SpaceAfter=No|start_char=648|end_char=649
 12	,	_	PUNCT	,	_	11	_	_	start_char=649|end_char=650
-13	Rm.	_	NOUN	NN	Number=Sing	12	_	_	start_char=651|end_char=654
+13	Rm.	_	PROPN	NNP	Number=Sing	12	_	_	start_char=651|end_char=654
 14	210	_	NUM	CD	NumForm=Digit|NumType=Card	13	_	_	SpaceAfter=No|start_char=655|end_char=658
 15	.	_	PUNCT	.	_	14	_	_	SpacesAfter=\n\n|start_char=658|end_char=659
 
@@ -255,7 +255,7 @@
 # text = Wait — did you really mean that?
 # sent_id = 14
 # constituency = (ROOT (SQ (VP (VB Wait)) (: —) (VBD did) (NP (PRP you)) (ADVP (RB really)) (VP (VB mean) (NP (DT that))) (. ?)))
-1	Wait	_	VERB	VB	Mood=Imp|VerbForm=Fin	0	_	_	start_char=813|end_char=817
+1	Wait	_	VERB	VB	Mood=Imp|Number=Sing|VerbForm=Fin	0	_	_	start_char=813|end_char=817
 2	—	_	PUNCT	:	_	1	_	_	start_char=818|end_char=819
 3	did	_	AUX	VBD	Mood=Ind|Number=Sing|Person=2|Tense=Past|VerbForm=Fin	2	_	_	start_char=820|end_char=823
 4	you	_	PRON	PRP	Case=Nom|Person=2|PronType=Prs	3	_	_	start_char=824|end_char=827
@@ -292,7 +292,7 @@
 
 # text = Things to buy: - milk (2 liters) - eggs, bread, and butter - something for dinner?
 # sent_id = 17
-# constituency = (ROOT (NP (NP (NP (NNS Things)) (SBAR (S (VP (TO to) (VP (VB buy)))))) (: :) (HYPH -) (NP (NP (NP (NN milk)) (-LRB- -LRB-) (NP (CD 2) (NNS liters)) (-RRB- -RRB-)) (HYPH -) (NP (NP (NNS eggs)) (, ,) (NP (NN bread)) (, ,) (CC and) (NP (NN butter))) (, -) (NP (NP (NN something)) (PP (IN for) (NP (NN dinner))))) (. ?)))
+# constituency = (ROOT (NP (NP (NP (NNS Things)) (SBAR (S (VP (TO to) (VP (VB buy)))))) (: :) (HYPH -) (NP (NP (NP (NN milk)) (-LRB- -LRB-) (NP (CD 2) (NNS liters)) (-RRB- -RRB-)) (, -) (NP (NP (NNS eggs)) (, ,) (NP (NN bread)) (, ,) (CC and) (NP (NN butter))) (, -) (NP (NP (NN something)) (PP (IN for) (NP (NN dinner))))) (. ?)))
 1	Things	_	NOUN	NNS	Number=Plur	0	_	_	start_char=915|end_char=921
 2	to	_	PART	TO	_	1	_	_	start_char=922|end_char=924
 3	buy	_	VERB	VB	VerbForm=Inf	2	_	_	SpaceAfter=No|start_char=925|end_char=928
@@ -303,7 +303,7 @@
 8	2	_	NUM	CD	NumForm=Digit|NumType=Card	7	_	_	start_char=938|end_char=939
 9	liters	_	NOUN	NNS	Number=Plur	8	_	_	SpaceAfter=No|start_char=940|end_char=946
 10	)	_	PUNCT	-RRB-	_	9	_	_	SpacesAfter=\n|start_char=946|end_char=947
-11	-	_	PUNCT	HYPH	_	10	_	_	start_char=948|end_char=949
+11	-	_	PUNCT	,	_	10	_	_	start_char=948|end_char=949
 12	eggs	_	NOUN	NNS	Number=Plur	11	_	_	SpaceAfter=No|start_char=950|end_char=954
 13	,	_	PUNCT	,	_	12	_	_	start_char=954|end_char=955
 14	bread	_	NOUN	NN	Number=Sing	13	_	_	SpaceAfter=No|start_char=956|end_char=961
@@ -321,7 +321,7 @@
 # constituency = (ROOT (S (NP (S (LST (LS 1) (. .)) (VP (VB Preheat) (NP (DT the) (NN oven)) (PP (IN to) (QP (CD 180) (NNS °) (NNP C))))) (. .) (NP (CD 2)) (. .)) (VP (VB Mix) (NP (DT the) (NN flour) (CC and) (NN sugar)) (PP (IN in) (NP (DT a) (JJ large) (NN bowl)))) (. .)))
 1	1	_	NUM	LS	NumForm=Digit|NumType=Card	0	_	_	SpaceAfter=No|start_char=999|end_char=1000
 2	.	_	PUNCT	.	_	1	_	_	start_char=1000|end_char=1001
-3	Preheat	_	VERB	VB	Mood=Imp|VerbForm=Fin	2	_	_	start_char=1002|end_char=1009
+3	Preheat	_	VERB	VB	Mood=Imp|Person=2|VerbForm=Fin	2	_	_	start_char=1002|end_char=1009
 4	the	_	DET	DT	Definite=Def|PronType=Art	3	_	_	start_char=1010|end_char=1013
 5	oven	_	NOUN	NN	Number=Sing	4	_	_	start_char=1014|end_char=1018
 6	to	_	ADP	IN	_	5	_	_	start_char=1019|end_char=1021
@@ -347,7 +347,7 @@
 # constituency = (ROOT (S (LST (LS 3) (. .)) (VP (VB Bake) (PP (PP (IN for) (NP (QP (CD 25) (SYM –) (CD 30)) (NNS minutes))) (, ,) (CC or) (SBAR (IN until) (FRAG (ADJP (JJ golden)))))) (. .)))
 1	3	_	NUM	LS	NumForm=Digit|NumType=Card	0	_	_	SpaceAfter=No|start_char=1073|end_char=1074
 2	.	_	PUNCT	.	_	1	_	_	start_char=1074|end_char=1075
-3	Bake	_	VERB	VB	Mood=Imp|VerbForm=Fin	2	_	_	start_char=1076|end_char=1080
+3	Bake	_	VERB	VB	Mood=Imp|Person=2|VerbForm=Fin	2	_	_	start_char=1076|end_char=1080
 4	for	_	ADP	IN	_	3	_	_	start_char=1081|end_char=1084
 5	25	_	NUM	CD	NumForm=Digit|NumType=Card	4	_	_	SpaceAfter=No|start_char=1085|end_char=1087
 6	–	_	SYM	SYM	ExtPos=ADP	5	_	_	SpaceAfter=No|start_char=1087|end_char=1088
@@ -361,7 +361,7 @@
 
 # text = BREAKING NEWS: Storm Hits Coast Thousands without power as winds reach 120 km/h
 # sent_id = 20
-# constituency = (ROOT (NP (NP (VBG BREAKING) (NN NEWS)) (: :) (S (NP (NN Storm)) (VP (NNS Hits) (NP (NN Coast)) (NP (NP (NNS Thousands)) (PP (IN without) (NP (NN power)))) (SBAR (IN as) (S (NP (NNS winds)) (VP (VBP reach) (NP (CD 120) (NNS km) (HYPH /) (NN h)))))))))
+# constituency = (ROOT (NP (NP (VBG BREAKING) (NN NEWS)) (: :) (S (NP (NN Storm)) (VP (NNS Hits) (NP (NN Coast)) (NP (NP (NNS Thousands)) (PP (IN without) (NP (NN power)))) (SBAR (IN as) (S (NP (NNS winds)) (VP (VBP reach) (NP (CD 120) (NNS km) (, /) (NN h)))))))))
 1	BREAKING	_	VERB	VBG	VerbForm=Ger	0	_	_	start_char=1118|end_char=1126
 2	NEWS	_	NOUN	NN	Number=Sing	1	_	_	SpaceAfter=No|start_char=1127|end_char=1131
 3	:	_	PUNCT	:	_	2	_	_	start_char=1131|end_char=1132
@@ -376,7 +376,7 @@
 12	reach	_	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	11	_	_	start_char=1183|end_char=1188
 13	120	_	NUM	CD	NumForm=Digit|NumType=Card	12	_	_	start_char=1189|end_char=1192
 14	km	_	NOUN	NNS	Number=Plur	13	_	_	SpaceAfter=No|start_char=1193|end_char=1195
-15	/	_	PUNCT	HYPH	_	14	_	_	SpaceAfter=No|start_char=1195|end_char=1196
+15	/	_	SYM	,	_	14	_	_	SpaceAfter=No|start_char=1195|end_char=1196
 16	h	_	NOUN	NN	Number=Sing	15	_	_	SpacesAfter=\n\n|start_char=1196|end_char=1197
 
 # text = For more information, e-mail support@example.co.uk or call +1 (555) 012-3456 between 8:00 and 17:30.
@@ -390,9 +390,9 @@
 6	support@example.co.uk	_	PROPN	ADD	Number=Sing	5	_	_	start_char=1228|end_char=1249
 7	or	_	CCONJ	CC	_	6	_	_	start_char=1250|end_char=1252
 8	call	_	VERB	VB	Mood=Imp|VerbForm=Fin	7	_	_	start_char=1253|end_char=1257
-9	+1	_	NUM	CD	NumForm=Digit|NumType=Card	8	_	_	start_char=1258|end_char=1260
+9	+1	_	NUM	CD	ExtPos=PROPN|NumForm=Digit|NumType=Card	8	_	_	start_char=1258|end_char=1260
 10	(	_	PUNCT	-LRB-	_	9	_	_	SpaceAfter=No|start_char=1261|end_char=1262
-11	555	_	NUM	CD	NumForm=Digit|NumType=Card	10	_	_	SpaceAfter=No|start_char=1262|end_char=1265
+11	555	_	NUM	CD	ExtPos=PROPN|NumForm=Digit|NumType=Card	10	_	_	SpaceAfter=No|start_char=1262|end_char=1265
 12	)	_	PUNCT	-RRB-	_	11	_	_	start_char=1265|end_char=1266
 13	012-3456	_	NUM	CD	NumForm=Digit|NumType=Card	12	_	_	start_char=1267|end_char=1275
 14	between	_	ADP	IN	_	13	_	_	start_char=1276|end_char=1283
@@ -439,7 +439,7 @@
 
 # text = According to the report, the agency "failed to act" on at least 12 warnings; officials disputed that figure.
 # sent_id = 24
-# constituency = (ROOT (S (S (PP (VBG According) (PP (IN to) (NP (DT the) (NN report)))) (, ,) (NP (DT the) (NN agency)) (VP (`` ") (VBD failed) (S (VP (TO to) (VP (VB act)))) ('' ") (PP (IN on) (NP (QP (ADVP (IN at) (JJS least)) (CD 12)) (NNS warnings))))) (: ;) (S (NP (NNS officials)) (VP (VBD disputed) (NP (DT that) (NN figure)))) (. .)))
+# constituency = (ROOT (S (S (PP (VBG According) (PP (IN to) (NP (DT the) (NN report)))) (, ,) (NP (DT the) (NN agency)) (VP (`` ") (VBD failed) (S (VP (TO to) (VP (VB act)))) ('' ") (PP (IN on) (NP (QP (ADVP (IN at) (JJS least)) (CD 12)) (NNS warnings))))) (, ;) (S (NP (NNS officials)) (VP (VBD disputed) (NP (DT that) (NN figure)))) (. .)))
 1	According	_	VERB	VBG	ExtPos=ADP|Tense=Pres|VerbForm=Part	0	_	_	start_char=1467|end_char=1476
 2	to	_	ADP	IN	_	1	_	_	start_char=1477|end_char=1479
 3	the	_	DET	DT	Definite=Def|PronType=Art	2	_	_	start_char=1480|end_char=1483
@@ -457,7 +457,7 @@
 15	least	_	ADJ	JJS	Degree=Sup	14	_	_	start_char=1525|end_char=1530
 16	12	_	NUM	CD	NumForm=Digit|NumType=Card	15	_	_	start_char=1531|end_char=1533
 17	warnings	_	NOUN	NNS	Number=Plur	16	_	_	SpaceAfter=No|start_char=1534|end_char=1542
-18	;	_	PUNCT	:	_	17	_	_	start_char=1542|end_char=1543
+18	;	_	PUNCT	,	_	17	_	_	start_char=1542|end_char=1543
 19	officials	_	NOUN	NNS	Number=Plur	18	_	_	start_char=1544|end_char=1553
 20	disputed	_	VERB	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	19	_	_	start_char=1554|end_char=1562
 21	that	_	DET	DT	Number=Sing|PronType=Dem	20	_	_	start_char=1563|end_char=1567
@@ -498,13 +498,13 @@
 
 # text = Y'all shouldn't worry; it ain't that bad.
 # sent_id = 27
-# constituency = (ROOT (S (S (NP (PRP Y'all)) (VP (MD should) (RB n't) (VP (VB worry)))) (: ;) (S (NP (PRP it)) (VP (VBZ ai) (RB n't) (ADJP (RB that) (JJ bad)))) (. .)))
-1	Y'all	_	PRON	PRP	Case=Nom|Number=Sing|Person=2|PronType=Prs	0	_	_	start_char=1666|end_char=1671
+# constituency = (ROOT (S (S (NP (UH Y'all)) (VP (MD should) (RB n't) (VP (VB worry)))) (, ;) (S (NP (PRP it)) (VP (VBZ ai) (RB n't) (ADJP (RB that) (JJ bad)))) (. .)))
+1	Y'all	_	INTJ	UH	_	0	_	_	start_char=1666|end_char=1671
 2-3	shouldn't	_	_	_	_	_	_	_	start_char=1672|end_char=1681
 2	should	_	AUX	MD	VerbForm=Fin	1	_	_	start_char=1672|end_char=1678
 3	n't	_	PART	RB	Polarity=Neg	2	_	_	start_char=1678|end_char=1681
 4	worry	_	VERB	VB	VerbForm=Inf	3	_	_	SpaceAfter=No|start_char=1682|end_char=1687
-5	;	_	PUNCT	:	_	4	_	_	start_char=1687|end_char=1688
+5	;	_	PUNCT	,	_	4	_	_	start_char=1687|end_char=1688
 6	it	_	PRON	PRP	Case=Nom|Gender=Neut|Number=Sing|Person=3|PronType=Prs	5	_	_	start_char=1689|end_char=1691
 7-8	ain't	_	_	_	_	_	_	_	start_char=1692|end_char=1697
 7	ai	_	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	6	_	_	start_char=1692|end_char=1694
@@ -552,7 +552,7 @@
 1	Then	_	ADV	RB	PronType=Dem	0	_	_	start_char=1793|end_char=1797
 2	I	_	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	1	_	_	start_char=1798|end_char=1799
 3	went	_	VERB	VBD	Mood=Ind|Number=Sing|Person=1|Tense=Past|VerbForm=Fin	2	_	_	start_char=1800|end_char=1804
-4	home	_	ADV	RB	_	3	_	_	SpaceAfter=No|start_char=1805|end_char=1809
+4	home	_	ADV	RB	Degree=Pos	3	_	_	SpaceAfter=No|start_char=1805|end_char=1809
 5	.	_	PUNCT	.	_	4	_	_	SpacesAfter=\n|start_char=1809|end_char=1810
 
 # text = The tab above separates two sentences on one line.
@@ -634,7 +634,7 @@
 
 # text = The café on Rue de Rivoli serves crêpes, croissants and café au lait.
 # sent_id = 37
-# constituency = (ROOT (S (NP (NP (DT The) (NN café)) (PP (IN on) (NP (NNP Rue) (NNP de) (NNP Rivoli)))) (VP (VBZ serves) (NP (NP (NNS crêpes)) (, ,) (NP (NNS croissants)) (CC and) (NP (NN café) (NNP au) (FW lait)))) (. .)))
+# constituency = (ROOT (S (NP (NP (DT The) (NN café)) (PP (IN on) (NP (NNP Rue) (NNP de) (NNP Rivoli)))) (VP (VBZ serves) (NP (NP (NNS crêpes)) (, ,) (NP (NNS croissants)) (CC and) (NP (NN café) (NNP au) (NNP lait)))) (. .)))
 1	The	_	DET	DT	Definite=Def|PronType=Art	0	_	_	start_char=2030|end_char=2033
 2	café	_	NOUN	NN	Number=Sing	1	_	_	start_char=2034|end_char=2038
 3	on	_	ADP	IN	_	2	_	_	start_char=2039|end_char=2041
@@ -648,7 +648,7 @@
 11	and	_	CCONJ	CC	_	10	_	_	start_char=2082|end_char=2085
 12	café	_	NOUN	NN	Number=Sing	11	_	_	start_char=2086|end_char=2090
 13	au	_	PROPN	NNP	Number=Sing	12	_	_	start_char=2091|end_char=2093
-14	lait	_	X	FW	Foreign=Yes	13	_	_	SpaceAfter=No|start_char=2094|end_char=2098
+14	lait	_	PROPN	NNP	Number=Sing	13	_	_	SpaceAfter=No|start_char=2094|end_char=2098
 15	.	_	PUNCT	.	_	14	_	_	start_char=2098|end_char=2099
 
 # text = Zoë and Björn met in Zürich last spring.
@@ -657,7 +657,7 @@
 1	Zoë	_	PROPN	NNP	Number=Sing	0	_	_	start_char=2100|end_char=2103
 2	and	_	CCONJ	CC	_	1	_	_	start_char=2104|end_char=2107
 3	Björn	_	PROPN	NNP	Number=Sing	2	_	_	start_char=2108|end_char=2113
-4	met	_	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	3	_	_	start_char=2114|end_char=2117
+4	met	_	VERB	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	3	_	_	start_char=2114|end_char=2117
 5	in	_	ADP	IN	_	4	_	_	start_char=2118|end_char=2120
 6	Zürich	_	PROPN	NNP	Number=Sing	5	_	_	start_char=2121|end_char=2127
 7	last	_	ADJ	JJ	Degree=Pos	6	_	_	start_char=2128|end_char=2132
@@ -767,10 +767,10 @@
 
 # text = Version 2.0.1 fixed the bug reported in issue #4512.
 # sent_id = 45
-# constituency = (ROOT (S (NP (NN Version) (CD 2.0.1)) (VP (VBD fixed) (NP (NP (DT the) (NN bug)) (VP (VBN reported) (PP (IN in) (NP (NN issue) (NN #) (CD 4512)))))) (. .)))
+# constituency = (ROOT (S (NP (NN Version) (CD 2.0.1)) (VP (VBN fixed) (NP (NP (DT the) (NN bug)) (VP (VBN reported) (PP (IN in) (NP (NN issue) (NN #) (CD 4512)))))) (. .)))
 1	Version	_	NOUN	NN	Number=Sing	0	_	_	start_char=2456|end_char=2463
 2	2.0.1	_	NUM	CD	NumForm=Digit|NumType=Frac	1	_	_	start_char=2464|end_char=2469
-3	fixed	_	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	2	_	_	start_char=2470|end_char=2475
+3	fixed	_	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	2	_	_	start_char=2470|end_char=2475
 4	the	_	DET	DT	Definite=Def|PronType=Art	3	_	_	start_char=2476|end_char=2479
 5	bug	_	NOUN	NN	Number=Sing	4	_	_	start_char=2480|end_char=2483
 6	reported	_	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	5	_	_	start_char=2484|end_char=2492
@@ -843,7 +843,7 @@
 20	heard	_	VERB	VBN	Tense=Past|VerbForm=Part	19	_	_	start_char=2739|end_char=2744
 21	of	_	ADP	IN	_	20	_	_	SpaceAfter=No|start_char=2745|end_char=2747
 22	,	_	PUNCT	,	_	21	_	_	start_char=2747|end_char=2748
-23	seemed	_	VERB	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	22	_	_	start_char=2749|end_char=2755
+23	seemed	_	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	22	_	_	start_char=2749|end_char=2755
 24	promising	_	ADJ	JJ	Degree=Pos	23	_	_	start_char=2756|end_char=2765
 25	at	_	ADP	IN	_	24	_	_	start_char=2766|end_char=2768
 26	first	_	ADJ	JJ	Degree=Pos|NumForm=Word|NumType=Ord	25	_	_	start_char=2769|end_char=2774
@@ -1022,14 +1022,14 @@
 
 # text = Section 2(b)(iii) of the agreement applies only to non-U.S. persons.
 # sent_id = 62
-# constituency = (ROOT (S (NP (NP (NN Section) (CD 2) (-LRB- -LRB-) (LS b) (-RRB- -RRB-) (-LRB- -LRB-) (LS iii) (-RRB- -RRB-)) (PP (IN of) (NP (DT the) (NN agreement)))) (VP (VBZ applies) (PP (ADVP (RB only)) (IN to) (NP (JJ non-U.S.) (NNS persons)))) (. .)))
+# constituency = (ROOT (S (NP (NP (NN Section) (CD 2) (-LRB- -LRB-) (NN b) (-RRB- -RRB-) (-LRB- -LRB-) (LS iii) (-RRB- -RRB-)) (PP (IN of) (NP (DT the) (NN agreement)))) (VP (VBZ applies) (PP (ADVP (RB only)) (IN to) (NP (JJ non-U.S.) (NNS persons)))) (. .)))
 1	Section	_	NOUN	NN	Number=Sing	0	_	_	start_char=3308|end_char=3315
 2	2	_	NUM	CD	NumForm=Digit|NumType=Card	1	_	_	SpaceAfter=No|start_char=3316|end_char=3317
 3	(	_	PUNCT	-LRB-	_	2	_	_	SpaceAfter=No|start_char=3317|end_char=3318
-4	b	_	NUM	LS	NumForm=Digit|NumType=Card	3	_	_	SpaceAfter=No|start_char=3318|end_char=3319
+4	b	_	NOUN	NN	Number=Sing	3	_	_	SpaceAfter=No|start_char=3318|end_char=3319
 5	)	_	PUNCT	-RRB-	_	4	_	_	SpaceAfter=No|start_char=3319|end_char=3320
 6	(	_	PUNCT	-LRB-	_	5	_	_	SpaceAfter=No|start_char=3320|end_char=3321
-7	iii	_	NUM	LS	NumForm=Roman|NumType=Card	6	_	_	SpaceAfter=No|start_char=3321|end_char=3324
+7	iii	_	NUM	LS	NumForm=Digit|NumType=Card	6	_	_	SpaceAfter=No|start_char=3321|end_char=3324
 8	)	_	PUNCT	-RRB-	_	7	_	_	start_char=3324|end_char=3325
 9	of	_	ADP	IN	_	8	_	_	start_char=3326|end_char=3328
 10	the	_	DET	DT	Definite=Def|PronType=Art	9	_	_	start_char=3329|end_char=3332
@@ -1088,11 +1088,11 @@
 
 # text = Temperatures dropped to −40 °F overnight.
 # sent_id = 67
-# constituency = (ROOT (S (NP (NNS Temperatures)) (VP (VBD dropped) (PP (IN to) (NP (QP (SYM −) (CD 40)) (NNS °) (NNP F))) (ADVP (RB overnight))) (. .)))
+# constituency = (ROOT (S (NP (NNS Temperatures)) (VP (VBD dropped) (PP (IN to) (NP (QP ($ −) (CD 40)) (NNS °) (NNP F))) (ADVP (RB overnight))) (. .)))
 1	Temperatures	_	NOUN	NNS	Number=Plur	0	_	_	start_char=3482|end_char=3494
 2	dropped	_	VERB	VBD	Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin	1	_	_	start_char=3495|end_char=3502
 3	to	_	ADP	IN	_	2	_	_	start_char=3503|end_char=3505
-4	−	_	SYM	SYM	_	3	_	_	SpaceAfter=No|start_char=3506|end_char=3507
+4	−	_	SYM	$	_	3	_	_	SpaceAfter=No|start_char=3506|end_char=3507
 5	40	_	NUM	CD	NumForm=Digit|NumType=Card	4	_	_	start_char=3507|end_char=3509
 6	°	_	NOUN	NNS	Number=Plur	5	_	_	SpaceAfter=No|start_char=3510|end_char=3511
 7	F	_	PROPN	NNP	Number=Sing	6	_	_	start_char=3511|end_char=3512
@@ -1252,7 +1252,7 @@
 # sent_id = 84
 # constituency = (ROOT (S (VP (VB Need) (RB n't) (VP (VB worry))) (. .)))
 1-2	Needn't	_	_	_	_	_	_	_	start_char=3749|end_char=3756
-1	Need	_	VERB	VB	Mood=Imp|VerbForm=Fin	0	_	_	start_char=3749|end_char=3753
+1	Need	_	AUX	VB	Mood=Imp|VerbForm=Fin	0	_	_	start_char=3749|end_char=3753
 2	n't	_	PART	RB	Polarity=Neg	1	_	_	start_char=3753|end_char=3756
 3	worry	_	VERB	VB	VerbForm=Inf	2	_	_	SpaceAfter=No|start_char=3757|end_char=3762
 4	.	_	PUNCT	.	_	3	_	_	SpacesAfter=\n\n|start_char=3762|end_char=3763
@@ -1316,7 +1316,7 @@
 10	in	_	ADP	IN	_	9	_	_	start_char=3935|end_char=3937
 11	Philadelphia	_	PROPN	NNP	Number=Sing	10	_	_	SpaceAfter=No|start_char=3938|end_char=3950
 12	,	_	PUNCT	,	_	11	_	_	start_char=3950|end_char=3951
-13	Pa.	_	PROPN	NNP	Abbr=Yes|Number=Sing	12	_	_	SpaceAfter=No|start_char=3952|end_char=3955
+13	Pa.	_	PROPN	NNP	Number=Sing	12	_	_	SpaceAfter=No|start_char=3952|end_char=3955
 14	,	_	PUNCT	,	_	13	_	_	start_char=3955|end_char=3956
 15	and	_	CCONJ	CC	_	14	_	_	start_char=3957|end_char=3960
 16	moved	_	VERB	VBD	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	15	_	_	start_char=3961|end_char=3966
@@ -1332,8 +1332,8 @@
 
 # text = #throwback to the summer of '99 :) good times lol idk what ur talking about tbh
 # sent_id = 88
-# constituency = (ROOT (NP (NP (NP (NP (NNP #throwback)) (PP (IN to) (NP (NP (DT the) (NN summer)) (PP (IN of) (NP (`` ') (CD 99)))))) (NFP :-RRB-) (NP (JJ good) (NNS times))) (PRT (UH lol)) (S (VP (UH idk) (SBAR (WHNP (WP what)) (S (NP (PRP$ ur)) (VP (VBG talking) (PP (IN about)) (FRAG (ADVP (UH tbh))))))))))
-1	#throwback	_	PROPN	NNP	Number=Sing	0	_	_	start_char=4000|end_char=4010
+# constituency = (ROOT (NP (NP (NP (NP (NN #throwback)) (PP (IN to) (NP (NP (DT the) (NN summer)) (PP (IN of) (NP (`` ') (CD 99)))))) (NFP :-RRB-) (NP (JJ good) (NNS times))) (PRT (UH lol)) (S (VP (VBP idk) (SBAR (WHNP (WP what)) (S (NP (PRP$ ur)) (VP (VBG talking) (PP (IN about) (NP (NN tbh))))))))))
+1	#throwback	_	NOUN	NN	Number=Sing	0	_	_	start_char=4000|end_char=4010
 2	to	_	ADP	IN	_	1	_	_	start_char=4011|end_char=4013
 3	the	_	DET	DT	Definite=Def|PronType=Art	2	_	_	start_char=4014|end_char=4017
 4	summer	_	NOUN	NN	Number=Sing	3	_	_	start_char=4018|end_char=4024
@@ -1344,12 +1344,12 @@
 9	good	_	ADJ	JJ	Degree=Pos	8	_	_	start_char=4035|end_char=4039
 10	times	_	NOUN	NNS	Number=Plur	9	_	_	SpacesAfter=\n|start_char=4040|end_char=4045
 11	lol	_	INTJ	UH	_	10	_	_	start_char=4046|end_char=4049
-12	idk	_	INTJ	UH	_	11	_	_	start_char=4050|end_char=4053
-13	what	_	PRON	WP	PronType=Rel	12	_	_	start_char=4054|end_char=4058
+12	idk	_	VERB	VBP	Mood=Ind|Number=Sing|Tense=Pres|VerbForm=Fin	11	_	_	start_char=4050|end_char=4053
+13	what	_	PRON	WP	PronType=Int	12	_	_	start_char=4054|end_char=4058
 14	ur	_	PRON	PRP$	Case=Nom|Person=2|PronType=Prs	13	_	_	start_char=4059|end_char=4061
-15	talking	_	VERB	VBG	VerbForm=Ger	14	_	_	start_char=4062|end_char=4069
+15	talking	_	VERB	VBG	Tense=Pres|VerbForm=Part	14	_	_	start_char=4062|end_char=4069
 16	about	_	ADP	IN	_	15	_	_	start_char=4070|end_char=4075
-17	tbh	_	INTJ	UH	_	16	_	_	SpacesAfter=\n\n|start_char=4076|end_char=4079
+17	tbh	_	NOUN	NN	Number=Sing	16	_	_	SpacesAfter=\n\n|start_char=4076|end_char=4079
 
 # text = The data (n = 1,024; p < 0.05) suggest a moderate effect (r = 0.31).
 # sent_id = 89
@@ -1378,13 +1378,13 @@
 
 # text = Fig. 2 shows the distribution; Table 3 lists the outliers.
 # sent_id = 90
-# constituency = (ROOT (S (S (NP (NNP Fig.) (CD 2)) (VP (VBZ shows) (NP (DT the) (NN distribution)))) (: ;) (S (NP (NN Table) (CD 3)) (VP (VBZ lists) (NP (DT the) (NNS outliers)))) (. .)))
+# constituency = (ROOT (S (S (NP (NNP Fig.) (CD 2)) (VP (VBZ shows) (NP (DT the) (NN distribution)))) (, ;) (S (NP (NN Table) (CD 3)) (VP (VBZ lists) (NP (DT the) (NNS outliers)))) (. .)))
 1	Fig.	_	PROPN	NNP	Number=Sing	0	_	_	start_char=4150|end_char=4154
 2	2	_	NUM	CD	NumForm=Digit|NumType=Card	1	_	_	start_char=4155|end_char=4156
 3	shows	_	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	_	_	start_char=4157|end_char=4162
 4	the	_	DET	DT	Definite=Def|PronType=Art	3	_	_	start_char=4163|end_char=4166
 5	distribution	_	NOUN	NN	Number=Sing	4	_	_	SpaceAfter=No|start_char=4167|end_char=4179
-6	;	_	PUNCT	:	_	5	_	_	start_char=4179|end_char=4180
+6	;	_	PUNCT	,	_	5	_	_	start_char=4179|end_char=4180
 7	Table	_	NOUN	NN	Number=Sing	6	_	_	start_char=4181|end_char=4186
 8	3	_	NUM	CD	NumForm=Digit|NumType=Card	7	_	_	start_char=4187|end_char=4188
 9	lists	_	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	8	_	_	start_char=4189|end_char=4194
@@ -1428,8 +1428,8 @@
 
 # text = 日本 is the Japanese name for Japan.
 # sent_id = 94
-# constituency = (ROOT (S (NP (IN 日本)) (VP (VBZ is) (NP (NP (DT the) (JJ Japanese) (NN name)) (PP (IN for) (NP (NNP Japan))))) (. .)))
-1	日本	_	ADP	IN	_	0	_	_	start_char=4281|end_char=4283
+# constituency = (ROOT (S (NP (NN 日本)) (VP (VBZ is) (NP (NP (DT the) (JJ Japanese) (NN name)) (PP (IN for) (NP (NNP Japan))))) (. .)))
+1	日本	_	NOUN	NN	Number=Sing	0	_	_	start_char=4281|end_char=4283
 2	is	_	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	1	_	_	start_char=4284|end_char=4286
 3	the	_	DET	DT	Definite=Def|PronType=Art	2	_	_	start_char=4287|end_char=4290
 4	Japanese	_	ADJ	JJ	Degree=Pos	3	_	_	start_char=4291|end_char=4299
@@ -1440,11 +1440,11 @@
 
 # text = The word "Москва" means Moscow in Russian.
 # sent_id = 95
-# constituency = (ROOT (S (NP (DT The) (NN word) (`` ") (FW Москва) ('' ")) (VP (VBZ means) (NP (NNP Moscow)) (PP (IN in) (NP (NNP Russian)))) (. .)))
+# constituency = (ROOT (S (NP (DT The) (NN word) (`` ") (NNP Москва) ('' ")) (VP (VBZ means) (NP (NNP Moscow)) (PP (IN in) (NP (NNP Russian)))) (. .)))
 1	The	_	DET	DT	Definite=Def|PronType=Art	0	_	_	start_char=4316|end_char=4319
 2	word	_	NOUN	NN	Number=Sing	1	_	_	start_char=4320|end_char=4324
 3	"	_	PUNCT	``	_	2	_	_	SpaceAfter=No|start_char=4325|end_char=4326
-4	Москва	_	X	FW	Foreign=Yes	3	_	_	SpaceAfter=No|start_char=4326|end_char=4332
+4	Москва	_	PROPN	NNP	Number=Sing	3	_	_	SpaceAfter=No|start_char=4326|end_char=4332
 5	"	_	PUNCT	''	_	4	_	_	start_char=4332|end_char=4333
 6	means	_	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	5	_	_	start_char=4334|end_char=4339
 7	Moscow	_	PROPN	NNP	Number=Sing	6	_	_	start_char=4340|end_char=4346
@@ -1512,9 +1512,9 @@
 3	is	_	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	2	_	_	start_char=4530|end_char=4532
 4	at	_	ADP	IN	_	3	_	_	start_char=4533|end_char=4535
 5	10:30	_	NUM	CD	NumForm=Digit|NumType=Card	4	_	_	start_char=4536|end_char=4541
-6	a.m.	_	NOUN	NN	Number=Sing	5	_	_	start_char=4542|end_char=4546
+6	a.m.	_	NOUN	NN	Abbr=Yes|Number=Sing	5	_	_	start_char=4542|end_char=4546
 7	on	_	ADP	IN	_	6	_	_	start_char=4547|end_char=4549
-8	Mon.	_	PROPN	NNP	Number=Sing	7	_	_	SpaceAfter=No|start_char=4550|end_char=4554
+8	Mon.	_	PROPN	NNP	Abbr=Yes|Number=Sing	7	_	_	SpaceAfter=No|start_char=4550|end_char=4554
 9	,	_	PUNCT	,	_	8	_	_	start_char=4554|end_char=4555
 10	Feb	_	PROPN	NNP	Abbr=Yes|Number=Sing	9	_	_	SpaceAfter=No|start_char=4556|end_char=4559
 11	.	_	PUNCT	.	_	10	_	_	start_char=4559|end_char=4560

@@ -6,8 +6,7 @@ namespace StanzaSharp;
 /// Stanza's resources.json for the supported languages, embedded as <c>stanza_resources.json</c>: each package's models,
 /// each model's MD5 and its dependencies (the pretrains and charlms it reads). Pipeline.Packages, Pipeline.Dependencies
 /// and ModelDownloader.Files are built from it. A language's entry is a snapshot of the models at its
-/// ModelDownloader.Revisions commit, never Stanford's latest resources.json, which follows their re-uploads (it already
-/// lists newer English pos and lemma models than en's commit has).
+/// ModelDownloader.Revisions commit, never Stanford's latest resources.json, which follows their re-uploads.
 /// </summary>
 internal static class StanzaResources
 {

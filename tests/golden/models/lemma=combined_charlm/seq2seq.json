@@ -344,7 +344,7 @@
  {
   "word": "a.m",
   "upos": "NOUN",
-  "seq2seq": "a.m.",
+  "seq2seq": "a.m",
   "edit": 0
  },
  {
@@ -596,7 +596,7 @@
  {
   "word": "https://www.example.org/about",
   "upos": "PROPN",
-  "seq2seq": "https://www.example.org/about",
+  "seq2seq": "https://www.exampme.org/about",
   "edit": 1
  },
  {
@@ -872,7 +872,7 @@
  {
   "word": "Running",
   "upos": "VERB",
-  "seq2seq": "runn",
+  "seq2seq": "run",
   "edit": 0
  },
  {
@@ -890,7 +890,7 @@
  {
   "word": "GOOGLING",
   "upos": "VERB",
-  "seq2seq": "googly",
+  "seq2seq": "go",
   "edit": 0
  },
  {
@@ -902,7 +902,7 @@
  {
   "word": "ãntennae",
   "upos": "NOUN",
-  "seq2seq": "ãntennae",
+  "seq2seq": "ãntenna",
   "edit": 0
  },
  {
@@ -932,7 +932,7 @@
  {
   "word": "😀😀s",
   "upos": "SYM",
-  "seq2seq": "aS",
+  "seq2seq": "'",
   "edit": 0
  },
  {
@@ -944,13 +944,13 @@
  {
   "word": "supercalifragilisticexpialidociousnessesqwertyuiopasdfgh",
   "upos": "NOUN",
-  "seq2seq": "supercalifragilisteuisnesexpialidertyuisnesexpiali",
+  "seq2seq": "supercalifragilisticexpicexpicexpicexpicexpicexpic",
   "edit": 1
  },
  {
   "word": "_",
   "upos": "PUNCT",
-  "seq2seq": "_",
+  "seq2seq": "-",
   "edit": 0
  },
  {
@@ -974,7 +974,7 @@
  {
   "word": "ÉCOLES",
   "upos": "NOUN",
-  "seq2seq": "hcole",
+  "seq2seq": "acole",
   "edit": 0
  },
  {

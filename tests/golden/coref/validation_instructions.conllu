@@ -31,7 +31,7 @@
 2	:	_	PUNCT	:	_	1	_	_	SpacesAfter=\n|start_char=83|end_char=84
 3	•	_	PUNCT	SYM	_	2	_	_	start_char=85|end_char=86
 4	1	_	NUM	CD	NumForm=Digit|NumType=Card	3	_	_	start_char=87|end_char=88|coref_chains=start-repr-id5
-5	½	_	NUM	CD	NumForm=Word|NumType=Card	4	_	_	start_char=89|end_char=90|coref_chains=middle-repr-id5
+5	½	_	NUM	CD	NumForm=Digit|NumType=Card	4	_	_	start_char=89|end_char=90|coref_chains=middle-repr-id5
 6	cups	_	NOUN	NNS	Number=Plur	5	_	_	start_char=91|end_char=95|coref_chains=middle-repr-id5
 7	all	_	DET	DT	PronType=Tot	6	_	_	SpaceAfter=No|start_char=96|end_char=99|coref_chains=middle-repr-id5
 8	-	_	PUNCT	HYPH	_	7	_	_	SpaceAfter=No|start_char=99|end_char=100|coref_chains=middle-repr-id5
@@ -46,31 +46,31 @@
 17	tsp	_	NOUN	NN	Number=Sing	16	_	_	start_char=133|end_char=136|coref_chains=middle-repr-id7
 18	baking	_	NOUN	NN	Number=Sing	17	_	_	start_char=137|end_char=143|coref_chains=middle-repr-id7
 19	powder	_	NOUN	NN	Number=Sing	18	_	_	SpacesAfter=\n|start_char=144|end_char=150|coref_chains=end-repr-id7
-20	•	_	PUNCT	SYM	_	19	_	_	start_char=151|end_char=152
-21	½	_	NOUN	NN	Number=Sing	20	_	_	start_char=153|end_char=154|coref_chains=start-repr-id8
+20	•	_	SYM	SYM	_	19	_	_	start_char=151|end_char=152
+21	½	_	NUM	CD	NumForm=Digit|NumType=Card	20	_	_	start_char=153|end_char=154|coref_chains=start-repr-id8
 22	tsp	_	NOUN	NN	Number=Sing	21	_	_	start_char=155|end_char=158|coref_chains=middle-repr-id8
 23	baking	_	NOUN	NN	Number=Sing	22	_	_	start_char=159|end_char=165|coref_chains=middle-repr-id8
 24	soda	_	NOUN	NN	Number=Sing	23	_	_	SpacesAfter=\n|start_char=166|end_char=170|coref_chains=end-repr-id8
-25	•	_	PUNCT	SYM	_	24	_	_	start_char=171|end_char=172
-26	¼	_	PUNCT	NFP	_	25	_	_	start_char=173|end_char=174|coref_chains=start-repr-id9
+25	•	_	PUNCT	,	_	24	_	_	start_char=171|end_char=172
+26	¼	_	SYM	$	_	25	_	_	start_char=173|end_char=174|coref_chains=start-repr-id9
 27	tsp	_	NOUN	NN	Number=Sing	26	_	_	start_char=175|end_char=178|coref_chains=middle-repr-id9
 28	salt	_	NOUN	NN	Number=Sing	27	_	_	SpacesAfter=\n|start_char=179|end_char=183|coref_chains=end-repr-id9
-29	•	_	PUNCT	SYM	_	28	_	_	start_char=184|end_char=185
+29	•	_	SYM	SYM	_	28	_	_	start_char=184|end_char=185
 30	1	_	NUM	CD	NumForm=Digit|NumType=Card	29	_	_	start_char=186|end_char=187|coref_chains=start-repr-id10
 31	cup	_	NOUN	NN	Number=Sing	30	_	_	start_char=188|end_char=191|coref_chains=middle-repr-id10
 32	ricotta	_	NOUN	NN	Number=Sing	31	_	_	start_char=192|end_char=199|coref_chains=middle-repr-id10
 33	cheese	_	NOUN	NN	Number=Sing	32	_	_	SpacesAfter=\n|start_char=200|end_char=206|coref_chains=end-repr-id10
-34	•	_	PUNCT	SYM	_	33	_	_	start_char=207|end_char=208
-35	¾	_	SYM	SYM	_	34	_	_	start_char=209|end_char=210|coref_chains=start-repr-id11
+34	•	_	SYM	SYM	_	33	_	_	start_char=207|end_char=208
+35	¾	_	SYM	$	_	34	_	_	start_char=209|end_char=210|coref_chains=start-repr-id11
 36	cup	_	NOUN	NN	Number=Sing	35	_	_	start_char=211|end_char=214|coref_chains=middle-repr-id11
 37	milk	_	NOUN	NN	Number=Sing	36	_	_	SpacesAfter=\n|start_char=215|end_char=219|coref_chains=end-repr-id11
-38	•	_	PUNCT	SYM	_	37	_	_	start_char=220|end_char=221
+38	•	_	SYM	SYM	_	37	_	_	start_char=220|end_char=221
 39	2	_	NUM	CD	NumForm=Digit|NumType=Card	38	_	_	start_char=222|end_char=223|coref_chains=start-repr-id12
 40	large	_	ADJ	JJ	Degree=Pos	39	_	_	start_char=224|end_char=229|coref_chains=middle-repr-id12
 41	eggs	_	NOUN	NNS	Number=Plur	40	_	_	SpaceAfter=No|start_char=230|end_char=234|coref_chains=end-repr-id12
 42	,	_	PUNCT	,	_	41	_	_	start_char=234|end_char=235
 43	separated	_	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	42	_	_	SpacesAfter=\n|start_char=236|end_char=245
-44	•	_	PUNCT	,	_	43	_	_	start_char=246|end_char=247
+44	•	_	SYM	SYM	_	43	_	_	start_char=246|end_char=247
 45	zest	_	NOUN	NN	Number=Sing	44	_	_	start_char=248|end_char=252|coref_chains=start-repr-id13
 46	of	_	ADP	IN	_	45	_	_	start_char=253|end_char=255|coref_chains=middle-repr-id13
 47	1	_	NUM	CD	NumForm=Digit|NumType=Card	46	_	_	start_char=256|end_char=257|coref_chains=middle-repr-id13,start-repr-id14
@@ -147,7 +147,7 @@
 7	until	_	ADP	IN	_	6	_	_	start_char=492|end_char=497
 8	stiff	_	ADJ	JJ	Degree=Pos	7	_	_	start_char=498|end_char=503|coref_chains=start-repr-id27
 9	peaks	_	NOUN	NNS	Number=Plur	8	_	_	start_char=504|end_char=509|coref_chains=end-repr-id27
-10	form	_	VERB	VBP	Mood=Ind|Number=Sing|VerbForm=Fin	9	_	_	SpaceAfter=No|start_char=510|end_char=514
+10	form	_	VERB	VBP	Mood=Ind|Number=Plur|Person=3|Tense=Pres|VerbForm=Fin	9	_	_	SpaceAfter=No|start_char=510|end_char=514
 11	,	_	PUNCT	,	_	10	_	_	start_char=514|end_char=515
 12	about	_	ADV	RB	_	11	_	_	start_char=516|end_char=521|coref_chains=start-repr-id28
 13	2	_	NUM	CD	NumForm=Digit|NumType=Card	12	_	_	SpaceAfter=No|start_char=522|end_char=523|coref_chains=middle-repr-id28
@@ -178,7 +178,7 @@
 # sent_id = 11
 1	5	_	NUM	LS	NumForm=Digit|NumType=Card	0	_	_	SpaceAfter=No|start_char=586|end_char=587
 2	)	_	PUNCT	-RRB-	_	1	_	_	start_char=587|end_char=588
-3	Heat	_	VERB	VB	Mood=Imp|VerbForm=Fin	2	_	_	start_char=589|end_char=593
+3	Heat	_	VERB	VB	Mood=Imp|Number=Sing|Person=2|VerbForm=Fin	2	_	_	start_char=589|end_char=593
 4	a	_	DET	DT	Definite=Ind|PronType=Art	3	_	_	start_char=594|end_char=595|coref_chains=start-repr-id29
 5	skillet	_	NOUN	NN	Number=Sing	4	_	_	start_char=596|end_char=603|coref_chains=end-repr-id29
 6	over	_	ADP	IN	_	5	_	_	start_char=604|end_char=608
@@ -211,7 +211,7 @@
 7	too	_	ADV	RB	_	6	_	_	start_char=692|end_char=695
 8	thick	_	ADJ	JJ	Degree=Pos	7	_	_	SpaceAfter=No|start_char=696|end_char=701
 9	,	_	PUNCT	,	_	8	_	_	start_char=701|end_char=702
-10	add	_	VERB	VB	Mood=Imp|Person=2|VerbForm=Fin	9	_	_	start_char=703|end_char=706
+10	add	_	VERB	VB	Mood=Imp|Number=Sing|Person=2|VerbForm=Fin	9	_	_	start_char=703|end_char=706
 11	another	_	DET	DT	PronType=Ind	10	_	_	start_char=707|end_char=714|coref_chains=start-repr-id36
 12	tablespoon	_	NOUN	NN	Number=Sing	11	_	_	start_char=715|end_char=725|coref_chains=middle-repr-id36
 13	or	_	CCONJ	CC	_	12	_	_	start_char=726|end_char=728|coref_chains=middle-repr-id36
@@ -263,7 +263,7 @@
 
 # text = b.
 # sent_id = 17
-1	b.	_	X	LS	_	0	_	_	start_char=885|end_char=887
+1	b.	_	VERB	VBN	Tense=Past|VerbForm=Part	0	_	_	start_char=885|end_char=887
 
 # text = Attach side panel (A) to base (B) using four M6 × 30 mm screws.
 # sent_id = 18
@@ -271,7 +271,7 @@
 2	side	_	NOUN	NN	Number=Sing	1	_	_	start_char=895|end_char=899|coref_chains=start-repr-id45
 3	panel	_	NOUN	NN	Number=Sing	2	_	_	start_char=900|end_char=905|coref_chains=end-repr-id45
 4	(	_	PUNCT	-LRB-	_	3	_	_	SpaceAfter=No|start_char=906|end_char=907
-5	A	_	NUM	LS	NumForm=Digit|NumType=Card	4	_	_	SpaceAfter=No|start_char=907|end_char=908|coref_chains=unit-id45
+5	A	_	NOUN	NN	Number=Sing	4	_	_	SpaceAfter=No|start_char=907|end_char=908|coref_chains=unit-id45
 6	)	_	PUNCT	-RRB-	_	5	_	_	start_char=908|end_char=909
 7	to	_	PART	TO	_	6	_	_	start_char=910|end_char=912
 8	base	_	VERB	VB	VerbForm=Inf	7	_	_	start_char=913|end_char=917|coref_chains=unit-repr-id46
@@ -289,7 +289,7 @@
 
 # text = c.
 # sent_id = 19
-1	c.	_	NOUN	FW	Number=Sing	0	_	_	start_char=952|end_char=954
+1	c.	_	X	LS	_	0	_	_	start_char=952|end_char=954
 
 # text = Insert the shelf pins into holes 3 and 7. d.
 # sent_id = 20
@@ -317,7 +317,7 @@
 
 # text = e. Place the top panel (C) and secure with the remaining screws.
 # sent_id = 22
-1	e.	_	ADV	FW	_	0	_	_	start_char=1034|end_char=1036
+1	e.	_	X	LS	_	0	_	_	start_char=1034|end_char=1036
 2	Place	_	VERB	VB	Mood=Imp|VerbForm=Fin	1	_	_	start_char=1037|end_char=1042
 3	the	_	DET	DT	Definite=Def|PronType=Art	2	_	_	start_char=1043|end_char=1046|coref_chains=start-repr-id55
 4	top	_	ADJ	JJ	Degree=Pos	3	_	_	start_char=1047|end_char=1050|coref_chains=middle-repr-id55
@@ -326,7 +326,7 @@
 7	C	_	PROPN	NNP	Number=Sing	6	_	_	SpaceAfter=No|start_char=1058|end_char=1059|coref_chains=unit-id55
 8	)	_	PUNCT	-RRB-	_	7	_	_	start_char=1059|end_char=1060
 9	and	_	CCONJ	CC	_	8	_	_	start_char=1061|end_char=1064
-10	secure	_	ADJ	JJ	Degree=Pos	9	_	_	start_char=1065|end_char=1071
+10	secure	_	VERB	VB	Mood=Imp|VerbForm=Fin	9	_	_	start_char=1065|end_char=1071
 11	with	_	ADP	IN	_	10	_	_	start_char=1072|end_char=1076
 12	the	_	DET	DT	Definite=Def|PronType=Art	11	_	_	start_char=1077|end_char=1080|coref_chains=start-repr-id56
 13	remaining	_	VERB	VBG	VerbForm=Ger	12	_	_	start_char=1081|end_char=1090|coref_chains=middle-repr-id56
@@ -376,12 +376,12 @@
 
 # text = Step 3 — Plug it back in and wait for the light to turn green.
 # sent_id = 27
-1	Step	_	NOUN	NN	Number=Sing	0	_	_	start_char=1218|end_char=1222|coref_chains=start-id62
+1	Step	_	VERB	VB	Mood=Imp|VerbForm=Fin	0	_	_	start_char=1218|end_char=1222|coref_chains=start-id62
 2	3	_	NUM	CD	NumForm=Digit|NumType=Card	1	_	_	start_char=1223|end_char=1224|coref_chains=end-id62
 3	—	_	PUNCT	:	_	2	_	_	start_char=1225|end_char=1226
 4	Plug	_	VERB	VB	Mood=Imp|VerbForm=Fin	3	_	_	start_char=1227|end_char=1231
 5	it	_	PRON	PRP	Case=Acc|Gender=Neut|Number=Sing|Person=3|PronType=Prs	4	_	_	start_char=1232|end_char=1234|coref_chains=unit-id59
-6	back	_	ADV	RB	_	5	_	_	start_char=1235|end_char=1239
+6	back	_	ADP	RP	_	5	_	_	start_char=1235|end_char=1239
 7	in	_	ADP	RP	_	6	_	_	start_char=1240|end_char=1242
 8	and	_	CCONJ	CC	_	7	_	_	start_char=1243|end_char=1246
 9	wait	_	VERB	VB	Mood=Imp|VerbForm=Fin	8	_	_	start_char=1247|end_char=1251
@@ -421,7 +421,7 @@
 24	wrench	_	NOUN	NN	Number=Sing	23	_	_	SpacesAfter=\n|start_char=1365|end_char=1371|coref_chains=end-repr-id69
 25	-	_	PUNCT	HYPH	_	24	_	_	start_char=1372|end_char=1373
 26	safety	_	NOUN	NN	Number=Sing	25	_	_	start_char=1374|end_char=1380|coref_chains=start-repr-id70
-27	glasses	_	NOUN	NNS	Number=Plur	26	_	_	SpacesAfter=\n\n|start_char=1381|end_char=1388|coref_chains=end-repr-id70
+27	glasses	_	NOUN	NNS	Number=Ptan	26	_	_	SpacesAfter=\n\n|start_char=1381|end_char=1388|coref_chains=end-repr-id70
 
 # text = | Item | Qty | Price | |------|-----|-------| | Widget | 3 | $4.99 | | Gadget | 1 | $12.50 | | Total | 4 | $27.47 |
 # sent_id = 29
@@ -450,13 +450,13 @@
 23	12.50	_	NUM	CD	NumForm=Digit|NumType=Frac	22	_	_	start_char=1475|end_char=1480|coref_chains=end-repr-id78
 24	|	_	PUNCT	NFP	_	23	_	_	SpacesAfter=\n|start_char=1481|end_char=1482
 25	|	_	PUNCT	NFP	_	24	_	_	start_char=1483|end_char=1484
-26	Total	_	ADJ	JJ	Degree=Pos	25	_	_	start_char=1485|end_char=1490|coref_chains=unit-repr-id79
+26	Total	_	NOUN	NN	Number=Sing	25	_	_	start_char=1485|end_char=1490|coref_chains=unit-repr-id79
 27	|	_	PUNCT	NFP	_	26	_	_	start_char=1491|end_char=1492
 28	4	_	NUM	CD	NumForm=Digit|NumType=Card	27	_	_	start_char=1493|end_char=1494
 29	|	_	PUNCT	NFP	_	28	_	_	start_char=1495|end_char=1496
 30	$	_	SYM	$	_	29	_	_	SpaceAfter=No|start_char=1497|end_char=1498|coref_chains=start-repr-id80
 31	27.47	_	NUM	CD	NumForm=Digit|NumType=Frac	30	_	_	start_char=1498|end_char=1503|coref_chains=end-repr-id80
-32	|	_	PUNCT	:	_	31	_	_	SpacesAfter=\n\n|start_char=1504|end_char=1505
+32	|	_	PUNCT	NFP	_	31	_	_	SpacesAfter=\n\n|start_char=1504|end_char=1505
 
 # text = Name Age City Anna 34 Lisbon Ravi 29 Pune Kofi 41 Accra
 # sent_id = 30
@@ -475,7 +475,7 @@
 
 # text = Mix well.
 # sent_id = 31
-1	Mix	_	VERB	VB	Mood=Imp|VerbForm=Fin	0	_	_	start_char=1564|end_char=1567
+1	Mix	_	VERB	VB	Mood=Imp|Number=Sing|Person=2|VerbForm=Fin	0	_	_	start_char=1564|end_char=1567
 2	well	_	ADV	RB	Degree=Pos	1	_	_	SpaceAfter=No|start_char=1568|end_char=1572
 3	.	_	PUNCT	.	_	2	_	_	start_char=1572|end_char=1573
 
@@ -487,19 +487,19 @@
 
 # text = Serve warm.
 # sent_id = 33
-1	Serve	_	VERB	VB	Mood=Imp|VerbForm=Fin	0	_	_	start_char=1584|end_char=1589
+1	Serve	_	VERB	VB	Mood=Imp|Number=Sing|Person=2|VerbForm=Fin	0	_	_	start_char=1584|end_char=1589
 2	warm	_	ADJ	JJ	Degree=Pos	1	_	_	SpaceAfter=No|start_char=1590|end_char=1594
 3	.	_	PUNCT	.	_	2	_	_	SpacesAfter=\n\n|start_char=1594|end_char=1595
 
 # text = Preheat oven to 350°F / 175°C.
 # sent_id = 34
-1	Preheat	_	VERB	VB	Mood=Imp|VerbForm=Fin	0	_	_	start_char=1597|end_char=1604
+1	Preheat	_	VERB	VB	Mood=Imp|Person=2|VerbForm=Fin	0	_	_	start_char=1597|end_char=1604
 2	oven	_	NOUN	NN	Number=Sing	1	_	_	start_char=1605|end_char=1609|coref_chains=unit-repr-id90
 3	to	_	ADP	IN	_	2	_	_	start_char=1610|end_char=1612
 4	350	_	NUM	CD	NumForm=Digit|NumType=Card	3	_	_	SpaceAfter=No|start_char=1613|end_char=1616|coref_chains=start-repr-id91
 5	°	_	NOUN	NNS	Number=Plur	4	_	_	SpaceAfter=No|start_char=1616|end_char=1617|coref_chains=middle-repr-id91
 6	F	_	PROPN	NNP	Number=Sing	5	_	_	start_char=1617|end_char=1618|coref_chains=end-repr-id91
-7	/	_	SYM	SYM	_	6	_	_	start_char=1619|end_char=1620
+7	/	_	SYM	,	_	6	_	_	start_char=1619|end_char=1620
 8	175	_	NUM	CD	NumForm=Digit|NumType=Card	7	_	_	SpaceAfter=No|start_char=1621|end_char=1624|coref_chains=start-id91
 9	°	_	NOUN	NNS	Number=Plur	8	_	_	SpaceAfter=No|start_char=1624|end_char=1625|coref_chains=middle-id91
 10	C	_	PROPN	NNP	Number=Sing	9	_	_	SpaceAfter=No|start_char=1625|end_char=1626|coref_chains=end-id91
@@ -517,7 +517,7 @@
 
 # text = Bake 35–40 min or till a toothpick comes out clean
 # sent_id = 36
-1	Bake	_	VERB	VB	Mood=Imp|VerbForm=Fin	0	_	_	start_char=1652|end_char=1656
+1	Bake	_	VERB	VB	Mood=Imp|Person=2|VerbForm=Fin	0	_	_	start_char=1652|end_char=1656
 2	35	_	NUM	CD	NumForm=Digit|NumType=Card	1	_	_	SpaceAfter=No|start_char=1657|end_char=1659|coref_chains=start-repr-id93
 3	–	_	SYM	SYM	ExtPos=ADP	2	_	_	SpaceAfter=No|start_char=1659|end_char=1660|coref_chains=middle-repr-id93
 4	40	_	NUM	CD	NumForm=Digit|NumType=Card	3	_	_	start_char=1660|end_char=1662|coref_chains=middle-repr-id93
@@ -536,7 +536,7 @@
 2	from	_	ADP	IN	_	1	_	_	start_char=1711|end_char=1715
 3	heat	_	NOUN	NN	Number=Sing	2	_	_	start_char=1716|end_char=1720|coref_chains=unit-id90
 4	and	_	CCONJ	CC	_	3	_	_	start_char=1721|end_char=1724
-5	stir	_	VERB	VB	Mood=Imp|VerbForm=Fin	4	_	_	start_char=1725|end_char=1729
+5	stir	_	VERB	VB	Mood=Imp|Number=Sing|Person=2|VerbForm=Fin	4	_	_	start_char=1725|end_char=1729
 6	in	_	ADP	IN	_	5	_	_	start_char=1730|end_char=1732
 7	the	_	DET	DT	Definite=Def|PronType=Art	6	_	_	start_char=1733|end_char=1736|coref_chains=start-repr-id95
 8	vanilla	_	NOUN	NN	Number=Sing	7	_	_	start_char=1737|end_char=1744|coref_chains=end-repr-id95
@@ -553,18 +553,18 @@
 
 # text = Allow to cool completely before frosting.
 # sent_id = 38
-1	Allow	_	VERB	VB	Mood=Imp|VerbForm=Fin	0	_	_	start_char=1781|end_char=1786
+1	Allow	_	VERB	VB	Mood=Imp|Number=Sing|Person=2|VerbForm=Fin	0	_	_	start_char=1781|end_char=1786
 2	to	_	PART	TO	_	1	_	_	start_char=1787|end_char=1789
 3	cool	_	VERB	VB	VerbForm=Inf	2	_	_	start_char=1790|end_char=1794
 4	completely	_	ADV	RB	_	3	_	_	start_char=1795|end_char=1805
 5	before	_	SCONJ	IN	_	4	_	_	start_char=1806|end_char=1812
-6	frosting	_	VERB	VBG	Tense=Pres|VerbForm=Part	5	_	_	SpaceAfter=No|start_char=1813|end_char=1821|coref_chains=unit-repr-id98
+6	frosting	_	NOUN	NN	Number=Sing	5	_	_	SpaceAfter=No|start_char=1813|end_char=1821|coref_chains=unit-repr-id98
 7	.	_	PUNCT	.	_	6	_	_	SpacesAfter=\n\n|start_char=1821|end_char=1822
 
 # text = * Wash hands for at least 20 seconds.
 # sent_id = 39
 1	*	_	PUNCT	NFP	_	0	_	_	start_char=1824|end_char=1825
-2	Wash	_	VERB	VB	Mood=Imp|VerbForm=Fin	1	_	_	start_char=1826|end_char=1830
+2	Wash	_	VERB	VB	Mood=Imp|Number=Sing|Person=2|VerbForm=Fin	1	_	_	start_char=1826|end_char=1830
 3	hands	_	NOUN	NNS	Number=Plur	2	_	_	start_char=1831|end_char=1836|coref_chains=unit-repr-id99
 4	for	_	ADP	IN	_	3	_	_	start_char=1837|end_char=1840
 5	at	_	ADP	IN	_	4	_	_	start_char=1841|end_char=1843
@@ -604,8 +604,8 @@
 
 # text = FAQ Q. How long does shipping take?
 # sent_id = 44
-1	FAQ	_	NOUN	NN	Number=Sing	0	_	_	SpacesAfter=\n|start_char=1926|end_char=1929|coref_chains=unit-repr-id103
-2	Q.	_	NOUN	NN	Number=Sing	1	_	_	start_char=1930|end_char=1932
+1	FAQ	_	VERB	VB	VerbForm=Inf	0	_	_	SpacesAfter=\n|start_char=1926|end_char=1929|coref_chains=unit-repr-id103
+2	Q.	_	PROPN	NNP	Number=Sing	1	_	_	start_char=1930|end_char=1932
 3	How	_	ADV	WRB	PronType=Int	2	_	_	start_char=1933|end_char=1936
 4	long	_	ADV	RB	Degree=Pos	3	_	_	start_char=1937|end_char=1941
 5	does	_	AUX	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	4	_	_	start_char=1942|end_char=1946
@@ -615,7 +615,7 @@
 
 # text = A. Usually 3–5 business days.
 # sent_id = 45
-1	A.	_	PROPN	NNP	Number=Sing	0	_	_	start_char=1962|end_char=1964
+1	A.	_	X	LS	_	0	_	_	start_char=1962|end_char=1964
 2	Usually	_	ADV	RB	_	1	_	_	start_char=1965|end_char=1972
 3	3	_	NUM	CD	NumForm=Digit|NumType=Card	2	_	_	SpaceAfter=No|start_char=1973|end_char=1974|coref_chains=start-repr-id105
 4	–	_	SYM	SYM	ExtPos=ADP	3	_	_	SpaceAfter=No|start_char=1974|end_char=1975|coref_chains=middle-repr-id105
@@ -626,7 +626,7 @@
 
 # text = Q. Can I return an item?
 # sent_id = 46
-1	Q.	_	PUNCT	NFP	_	0	_	_	start_char=1992|end_char=1994
+1	Q.	_	PROPN	NNP	Number=Sing	0	_	_	start_char=1992|end_char=1994
 2	Can	_	AUX	MD	VerbForm=Fin	1	_	_	start_char=1995|end_char=1998
 3	I	_	PRON	PRP	Case=Nom|Number=Sing|Person=1|PronType=Prs	2	_	_	start_char=1999|end_char=2000|coref_chains=unit-id65
 4	return	_	VERB	VB	VerbForm=Inf	3	_	_	start_char=2001|end_char=2007
@@ -651,7 +651,7 @@
 1	Chapter	_	PROPN	NNP	Number=Sing	0	_	_	start_char=2054|end_char=2061|coref_chains=start-repr-id109
 2	1	_	NUM	CD	NumForm=Digit|NumType=Card	1	_	_	SpaceAfter=No|start_char=2062|end_char=2063|coref_chains=end-repr-id109
 3	:	_	PUNCT	:	_	2	_	_	start_char=2063|end_char=2064
-4	Getting	_	VERB	VBG	VerbForm=Ger	3	_	_	start_char=2065|end_char=2072
+4	Getting	_	AUX	VBG	Tense=Pres|VerbForm=Part	3	_	_	start_char=2065|end_char=2072
 5	Started	_	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	4	_	_	SpacesAfter=\n|start_char=2073|end_char=2080
 6	1.1	_	NUM	CD	NumForm=Digit|NumType=Frac	5	_	_	start_char=2081|end_char=2084
 7	Installation	_	NOUN	NN	Number=Sing	6	_	_	SpacesAfter=\n|start_char=2085|end_char=2097|coref_chains=unit-repr-id110
@@ -682,7 +682,7 @@
 
 # text = Simmer for 5-7 min.
 # sent_id = 51
-1	Simmer	_	VERB	VB	Mood=Imp|VerbForm=Fin	0	_	_	start_char=2190|end_char=2196
+1	Simmer	_	VERB	VB	Mood=Imp|Number=Sing|Person=2|VerbForm=Fin	0	_	_	start_char=2190|end_char=2196
 2	for	_	ADP	IN	_	1	_	_	start_char=2197|end_char=2200
 3	5	_	NUM	CD	NumForm=Digit|NumType=Card	2	_	_	SpaceAfter=No|start_char=2201|end_char=2202|coref_chains=start-repr-id116
 4	-	_	SYM	SYM	ExtPos=ADP	3	_	_	SpaceAfter=No|start_char=2202|end_char=2203|coref_chains=middle-repr-id116
@@ -695,7 +695,7 @@
 1	Season	_	NOUN	NN	Number=Sing	0	_	_	start_char=2210|end_char=2216
 2	to	_	ADP	IN	_	1	_	_	start_char=2217|end_char=2219
 3	taste	_	NOUN	NN	Number=Sing	2	_	_	start_char=2220|end_char=2225
-4	w/	_	ADP	IN	_	3	_	_	start_char=2226|end_char=2228
+4	w/	_	SYM	SYM	_	3	_	_	start_char=2226|end_char=2228
 5	salt	_	NOUN	NN	Number=Sing	4	_	_	start_char=2229|end_char=2233|coref_chains=unit-repr-id117
 6	&	_	CCONJ	CC	_	5	_	_	start_char=2234|end_char=2235
 7	pepper	_	NOUN	NN	Number=Sing	6	_	_	SpaceAfter=No|start_char=2236|end_char=2242|coref_chains=unit-repr-id118
@@ -703,7 +703,7 @@
 
 # text = Turn left at the light, then right onto Elm St. Our office is the 2nd building on the left (No. 48).
 # sent_id = 53
-1	Turn	_	VERB	VB	Mood=Imp|VerbForm=Fin	0	_	_	start_char=2245|end_char=2249
+1	Turn	_	VERB	VB	VerbForm=Inf	0	_	_	start_char=2245|end_char=2249
 2	left	_	VERB	VBN	Tense=Past|VerbForm=Part|Voice=Pass	1	_	_	start_char=2250|end_char=2254|coref_chains=unit-repr-id119
 3	at	_	ADP	IN	_	2	_	_	start_char=2255|end_char=2257
 4	the	_	DET	DT	Definite=Def|PronType=Art	3	_	_	start_char=2258|end_char=2261|coref_chains=start-repr-id120
@@ -741,7 +741,7 @@
 
 # text = Note: this recipe was tested at sea level.
 # sent_id = 55
-1	Note	_	VERB	VB	Mood=Imp|VerbForm=Fin	0	_	_	SpaceAfter=No|start_char=2371|end_char=2375
+1	Note	_	VERB	VB	Mood=Imp|Person=2|VerbForm=Fin	0	_	_	SpaceAfter=No|start_char=2371|end_char=2375
 2	:	_	PUNCT	:	_	1	_	_	start_char=2375|end_char=2376
 3	this	_	DET	DT	Number=Sing|PronType=Dem	2	_	_	start_char=2377|end_char=2381|coref_chains=start-repr-id128
 4	recipe	_	NOUN	NN	Number=Sing	3	_	_	start_char=2382|end_char=2388|coref_chains=end-repr-id128
@@ -758,12 +758,12 @@
 2	high	_	ADJ	JJ	Degree=Pos	1	_	_	start_char=2417|end_char=2421|coref_chains=start-repr-id130
 3	altitude	_	NOUN	NN	Number=Sing	2	_	_	SpaceAfter=No|start_char=2422|end_char=2430|coref_chains=end-repr-id130
 4	,	_	PUNCT	,	_	3	_	_	start_char=2430|end_char=2431
-5	reduce	_	VERB	VB	Mood=Imp|VerbForm=Fin	4	_	_	start_char=2432|end_char=2438
+5	reduce	_	VERB	VB	Mood=Imp|Number=Sing|Person=2|VerbForm=Fin	4	_	_	start_char=2432|end_char=2438
 6	the	_	DET	DT	Definite=Def|PronType=Art	5	_	_	start_char=2439|end_char=2442|coref_chains=start-repr-id131
 7	baking	_	NOUN	NN	Number=Sing	6	_	_	start_char=2443|end_char=2449|coref_chains=middle-repr-id131
 8	powder	_	NOUN	NN	Number=Sing	7	_	_	start_char=2450|end_char=2456|coref_chains=end-repr-id131
 9	by	_	ADP	IN	_	8	_	_	start_char=2457|end_char=2459
-10	⅛	_	NOUN	NN	Number=Sing	9	_	_	start_char=2460|end_char=2461|coref_chains=start-repr-id132
+10	⅛	_	DET	DT	Definite=Ind|PronType=Art	9	_	_	start_char=2460|end_char=2461|coref_chains=start-repr-id132
 11	tsp	_	NOUN	NN	Number=Sing	10	_	_	SpaceAfter=No|start_char=2462|end_char=2465|coref_chains=end-repr-id132
 12	.	_	PUNCT	.	_	11	_	_	SpacesAfter=\n\n|start_char=2465|end_char=2466
 

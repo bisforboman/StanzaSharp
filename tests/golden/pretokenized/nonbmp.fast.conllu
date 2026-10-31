@@ -9,7 +9,7 @@
 # text = 𝒳 marks the spot .
 # sent_id = 1
 # sentiment = 2
-1	𝒳	𝒳	PROPN	NNP	Number=Sing	2	nsubj	_	start_char=11|end_char=12|ner=O
+1	𝒳	𝒳	PRON	PRP	Case=Nom|Number=Sing|PronType=Prs	2	nsubj	_	start_char=11|end_char=12|ner=O
 2	marks	mark	VERB	VBZ	Mood=Ind|Number=Sing|Person=3|Tense=Pres|VerbForm=Fin	0	root	_	start_char=13|end_char=18|ner=O
 3	the	the	DET	DT	Definite=Def|PronType=Art	4	det	_	start_char=19|end_char=22|ner=O
 4	spot	spot	NOUN	NN	Number=Sing	2	obj	_	start_char=23|end_char=27|ner=O

@@ -494,9 +494,15 @@ reads the tagger's cached charlm outputs for sentences without MWTs.
   The smallest margin is 5× the largest score difference between the backends (7.3e-5) and 10× the drift from Python
   (3.4e-5); the two backends' margins differ by at most 2e-6 there.
   - **Guard** (`NearTies_StayClearOfBackendDrift`, ~3 min): besides identical decisions and trees, the smallest margin
-    must stay ≥ 3 × the score drift between the backends. A decision can only flip when its margin is below the margin
-    difference, which is at most twice the drift, so k = 3 keeps 50% over that bound; with today's 4.9 the test fails once
-    a kernel or model change grows the drift by 60% or brings the closest call 40% closer.
+    must stay ≥ 2 × the largest difference between the backends' margins (owner's decision, 2026-10-31). Until then it was
+    ≥ 3 × the score drift between the backends (a decision can only flip when its margin is below the margin difference,
+    which is at most twice the drift). Stanford's re-uploaded English tagger (2026-10-30) made validation_multilingual
+    sentence 13 step 7 (Open(NP) over Open(ADVP)) a near-tie: margin 1.02e-4 / 1.03e-4 locally, 9.79e-5 on CI's Intel
+    TorchSharp, under 3 × the drift (6.1e-5 locally, 5.3e-5 on CI). The drift is not an outlier: over legal transitions
+    5.7e-5, spread over ordinary sentences of four files, on scores of about 40–65 (~1.5e-6 relative), so only
+    double-precision charlms on both backends would halve it (above). The margins themselves differ by at most 3.8e-5, so
+    the closest call clears the new bound 2.7×. The report names where the largest score difference is and the five
+    sentences with the most.
 - **Measured on UD EWT** (2026-10-09; `tools/constituency_divergence.py` + `StanzaSharp.Benchmark constituency-divergence`;
   the corpus is CC BY-SA and not in the repository). EWT's train/dev/test `# text` lines as 1,174 documents (the lemma
   study's `DOCS.json`), 15,901 sentences, 254,589 words, `tokenize,mwt,pos,constituency`; per step the best and second
