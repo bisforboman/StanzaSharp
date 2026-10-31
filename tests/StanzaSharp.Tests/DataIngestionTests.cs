@@ -1,5 +1,8 @@
+using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DataIngestion;
+using Microsoft.Extensions.VectorData;
 using Microsoft.ML.Tokenizers;
+using Microsoft.SemanticKernel.Connectors.InMemory;
 using StanzaSharp.DataIngestion;
 
 namespace StanzaSharp.Tests;
@@ -153,6 +156,37 @@ public class DataIngestionTests(SharedPipelines pipelines) : IClassFixture<Share
         Assert.Equal(["Kessler Chemicals", "Hamburg", "Paul Marchetti"], (string[])enriched.Single().Metadata[EntityEnricher.MetadataKey]);
     }
 
+    // The whole ingestion path of samples/StanzaSharp.Rag, offline: the chunks and their entities go through DataIngestion's
+    // VectorStoreWriter into the in-memory store, and a search filtered by entity returns exactly the chunks naming it.
+    [ModelFact]
+    public async Task VectorStore_FiltersChunksByEntity()
+    {
+        var pipeline = pipelines.Get(processors: "tokenize,ner");
+        var store = new InMemoryVectorStore(new InMemoryVectorStoreOptions { EmbeddingGenerator = new HashingEmbeddings() });
+        var writer = new VectorStoreWriter<string>(store, HashingEmbeddings.Dimensions, new VectorStoreWriterOptions { CollectionName = "test" });
+        using var ingestion = new IngestionPipeline<string>(new ParagraphReader(), new SentenceChunker(pipeline, Options(30, 0)), writer);
+        ingestion.ChunkProcessors.Add(new EntityEnricher(pipeline));
+        var file = Path.Combine(Repo.Golden, "corpus.txt");
+        await foreach (var result in ingestion.ProcessAsync([new FileInfo(file)]))
+            Assert.True(result.Succeeded, result.Exception?.ToString());
+
+        var all = new List<Dictionary<string, object?>>();
+        await foreach (var record in writer.VectorStoreCollection.GetAsync(_ => true, 1000))
+            all.Add(record);
+        var naming = all.Where(r => ((string[])r[EntityEnricher.MetadataKey]!).Contains("Barack Obama")).Select(r => (string)r["content"]!).ToList();
+        Assert.NotEmpty(naming);
+        Assert.True(all.Count > naming.Count, $"{all.Count} chunks, {naming.Count} naming Barack Obama");
+
+        var hits = new List<string>();
+        await foreach (var hit in writer.VectorStoreCollection.SearchAsync("president", all.Count,
+            new VectorSearchOptions<Dictionary<string, object?>> { Filter = r => ((string[])r[EntityEnricher.MetadataKey]!).Contains("Barack Obama") }))
+        {
+            hits.Add((string)hit.Record["content"]!);
+        }
+
+        Assert.Equal(naming.Order(), hits.Order());
+    }
+
     [ModelFact]
     public void Enricher_NeedsNer() =>
         Assert.Throws<ArgumentException>(() => new EntityEnricher(pipelines.Get(processors: "tokenize")));
@@ -163,9 +197,9 @@ public class DataIngestionTests(SharedPipelines pipelines) : IClassFixture<Share
     private static List<string> Paragraphs(string lang) =>
         [.. File.ReadAllText(Path.Combine(Repo.GoldenFor(lang), "corpus.txt")).Split("\n\n").Select(p => p.Trim()).Where(p => p.Length > 0)];
 
-    private static IngestionDocument Document(IEnumerable<string> paragraphs)
+    private static IngestionDocument Document(IEnumerable<string> paragraphs, string identifier = "doc")
     {
-        var document = new IngestionDocument("doc");
+        var document = new IngestionDocument(identifier);
         var section = new IngestionDocumentSection();
         foreach (var paragraph in paragraphs)
             section.Elements.Add(new IngestionDocumentParagraph(paragraph));
@@ -187,6 +221,51 @@ public class DataIngestionTests(SharedPipelines pipelines) : IClassFixture<Share
         await foreach (var chunk in enricher.ProcessAsync(chunks.ToAsyncEnumerable()))
             enriched.Add(chunk);
         return enriched;
+    }
+
+    // A document of one paragraph per blank-line-separated block of a text file.
+    private sealed class ParagraphReader : IngestionDocumentReader
+    {
+        public override async Task<IngestionDocument> ReadAsync(Stream source, string identifier, string mediaType, CancellationToken cancellationToken = default)
+        {
+            using var reader = new StreamReader(source);
+            var text = await reader.ReadToEndAsync(cancellationToken);
+            return Document(text.Split("\n\n").Select(p => p.Trim()).Where(p => p.Length > 0), identifier);
+        }
+    }
+
+    // Deterministic, dependency-free embeddings (hashed lowercase words): enough to exercise the store, not to rank well.
+    private sealed class HashingEmbeddings : IEmbeddingGenerator<string, Embedding<float>>
+    {
+        public const int Dimensions = 64;
+
+        public Task<GeneratedEmbeddings<Embedding<float>>> GenerateAsync(IEnumerable<string> values,
+            EmbeddingGenerationOptions? options = null, CancellationToken cancellationToken = default)
+        {
+            var embeddings = new GeneratedEmbeddings<Embedding<float>>();
+            foreach (var value in values)
+            {
+                var vector = new float[Dimensions];
+                foreach (var word in value.ToLowerInvariant().Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    var hash = 2166136261U; // FNV-1a: string.GetHashCode changes per process
+                    foreach (var c in word)
+                        hash = (hash ^ c) * 16777619U;
+                    vector[hash % Dimensions] += 1;
+                }
+
+                vector[0] += 1e-3f; // never all zeros
+                embeddings.Add(new Embedding<float>(vector));
+            }
+
+            return Task.FromResult(embeddings);
+        }
+
+        public object? GetService(Type serviceType, object? serviceKey = null) => null;
+
+        public void Dispose()
+        {
+        }
     }
 
     private static string Text(Sentence sentence) => sentence.Text ?? string.Join(" ", sentence.Tokens.Select(t => t.Text));
