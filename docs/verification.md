@@ -251,7 +251,7 @@ the golden shards have those models (Stanza's `.pt` files, cached), so `cross-os
 default packages only. The transformer tests (`Transformer*`) run in golden shard 4, their own, which downloads the transformer's
 files from Hugging Face and the transformer models from Stanza's repository on every run (no cache: the model caches are
 near GitHub's 10 GB limit). The other languages' tests (`LanguageGoldenTests`) run only in the nightly run,
-which downloads their models (about 25 GB) eight languages at a time, tests and deletes them; every other job skips them. A pull request runs that shard only when it changes what those tests read (the shared
+which downloads their models (about 28 GB) eight languages at a time, tests and deletes them; every other job skips them. A pull request runs that shard only when it changes what those tests read (the shared
 kernels, the TorchSharp backend, the downloader, CI, the transformer's golden data or tests); every push to main runs it.
 
 The [nightly workflow](../.github/workflows/nightly.yml) runs on main every night: golden shard 4 (all of CI instead when

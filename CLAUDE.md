@@ -39,7 +39,7 @@ default from 0.5) or through TorchSharp (see "Managed backend").
   (MuRIL transformer), and el (its lemmatizer's contextual classifiers load word vectors from a path on Stanford's
   machine: Python Stanza fails too). `LanguageGoldenTests` builds its rows from `SupportedPackages` (every language but en
   and de), only those whose models are present, and `STANZASHARP_LANGUAGES` narrows them; `tools/test-languages.sh` is
-  the nightly loop (download 8 languages' packages, test, fail on a skip, delete; about 25 GB a night); `make_golden.py
+  the nightly loop (download 8 languages' packages, test, fail on a skip, delete; about 28 GB a night); `make_golden.py
   --languages-only` takes every folder of tests/golden/languages (`LANGUAGES` names packages beyond `default`);
   `python tools/stanza_resources.py docs` regenerates docs/languages.md. A `languages_only` dispatch of nightly.yml runs
   just that job.

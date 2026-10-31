@@ -64,8 +64,9 @@ public sealed class Pipeline : IDisposable
         ["nl"] = [DefaultPackage, "default_fast"],
     }.Concat(DefaultOnly.Select(l => KeyValuePair.Create(l, new[] { DefaultPackage }))).ToDictionary();
 
-    // The languages StanzaSharp runs only Stanza's default package of, each with no model code of its own (owner's
-    // decision, 2026-10-30: the 79 whose default package matched Stanza byte for byte in the sweep).
+    // The languages StanzaSharp runs only Stanza's default package of (owner's decisions, 2026-10-30: the 79 whose
+    // default package matched Stanza byte for byte in the sweep, then the _nopretrain ones; 2026-10-31: the tokenizers
+    // with dictionary features).
     private static string[] DefaultOnly =>
     [
         "ab", "af", "ang", "ar", "as", "be", "bg", "bor", "bxr", "ca", "ckb", "cop", "cs", "cu", "cy", "da", "egy",

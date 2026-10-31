@@ -2,7 +2,7 @@
 # The other languages' golden tests (LanguageGoldenTests) a batch at a time, as nightly.yml's languages job runs them:
 # download a batch's models (every package with a tests/golden/languages/<lang>/<package>.conllu), run the tests on just
 # those languages (STANZASHARP_LANGUAGES), fail on a skipped test, delete the models, next batch. The languages' models
-# come to about 25 GB, more than a runner holds at once (owner's decision, 2026-10-30: all of them every night).
+# come to about 28 GB, more than a runner holds at once (owner's decision, 2026-10-30: all of them every night).
 #
 #   tools/test-languages.sh [LANG...]   (default: every folder of tests/golden/languages)
 #
