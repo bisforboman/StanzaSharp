@@ -8,8 +8,8 @@ namespace StanzaSharp.Tests;
 /// </summary>
 public class MaskingTests
 {
-    // Personnummer here are Skatteverket's test personnummer (open data, never issued); the samordningsnummer, the
-    // month-13 number and the organisationsnummer are synthetic, the first two with a year no one is born in.
+    // Personnummer and the samordningsnummer here are Skatteverket's test numbers (open data, blocked so they are never
+    // issued); the month-13 number (a year no one is born in) and the organisationsnummer are synthetic.
     [Theory]
     [InlineData("7804012388", true)]
     [InlineData("7804012389", false)]
@@ -21,7 +21,7 @@ public class MaskingTests
     [InlineData("Personnummer 19780401-2388 enligt", "19780401-2388", "PNR")]
     [InlineData("pnr 900101+9802.", "900101+9802", "PNR")]
     [InlineData("född 197804012388", "197804012388", "PNR")]
-    [InlineData("samordningsnummer 20980472-2388", "20980472-2388", "PNR")]
+    [InlineData("samordningsnummer 20260161-2381", "20260161-2381", "PNR")]
     [InlineData("organisationsnummer 559900-1236.", "559900-1236", "ORGNR")]
     [InlineData("ring 070-123 45 67 i dag", "070-123 45 67", "PHONE")]
     [InlineData("ring 08-555 123 45 i dag", "08-555 123 45", "PHONE")]
