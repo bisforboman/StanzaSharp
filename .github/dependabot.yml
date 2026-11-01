@@ -4,6 +4,9 @@
 # - TorchSharp, TorchSharp-*, libtorch-*: TorchSharpVersion and LibTorchVersion must move together
 #   (Directory.Build.props, STANZA001), and an upgrade means checking dotnet/TorchSharp#1583 (CLAUDE.md).
 # - StyleBro.*: a prerelease, upgraded by hand with `stylebro-migrate init` and a reformat commit.
+# - Microsoft.Extensions.Logging.Abstractions: the StanzaSharp package's only dependency, kept at the lowest .NET 10
+#   version (10.0.0) so apps on any 10.0.x don't get a forced upgrade; an auto-merged bump had raised every user's
+#   minimum to 10.0.14. Raise it by hand only when the library needs a newer API.
 # - tools/requirements.txt (pip): Stanza, torch and numpy are pinned because the golden data depends on them.
 version: 2
 updates:
@@ -20,3 +23,4 @@ updates:
       - dependency-name: "libtorch-*"
       - dependency-name: "StyleBro.*"
       - dependency-name: "StanzaSharp*"
+      - dependency-name: "Microsoft.Extensions.Logging.Abstractions"

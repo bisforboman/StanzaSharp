@@ -174,7 +174,7 @@ public class CompareCommandTests
     /// <summary>
     /// The tables built from the embedded stanza_resources.json (StanzaResources) agree with the file read on its own: the
     /// Stanza release ModelDownloader pins, each package's models, each model's MD5 and dependencies. A language's entry
-    /// is regenerated as CLAUDE.md says (StanzaSharp.Tool, compare).
+    /// is regenerated as docs/decisions/packaging-and-releases.md says (tables from resources.json).
     /// </summary>
     [Theory]
     [MemberData(nameof(SupportedLanguages))]

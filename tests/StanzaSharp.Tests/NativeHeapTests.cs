@@ -10,4 +10,24 @@ public class NativeHeapTests
         Assert.Equal(OperatingSystem.IsLinux(), NativeHeap.CanTrim);
         NativeHeap.Trim();
     }
+
+    // The managed models live on the GC heap: a managed pipeline never trims (it would only take glibc's arena locks).
+    [Fact]
+    public void ManagedModels_DontTrimTheNativeHeap()
+    {
+        using var models = PipelineBackend.Managed.Models();
+        Assert.False(models.UsesNativeHeap);
+    }
+}
+
+[Trait("Backend", "TorchSharp")]
+public class NativeHeapTorchSharpTests
+{
+    // libtorch allocates tensors with malloc, so a TorchSharp pipeline trims after large calls.
+    [Fact]
+    public void TorchSharpModels_TrimTheNativeHeap()
+    {
+        using var models = CudaBackend.Cpu.Models();
+        Assert.True(models.UsesNativeHeap);
+    }
 }
