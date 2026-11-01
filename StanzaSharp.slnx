@@ -4,10 +4,12 @@
     <Project Path="samples/StanzaSharp.Cli/StanzaSharp.Cli.csproj" />
     <Project Path="samples/StanzaSharp.Example/StanzaSharp.Example.csproj" />
     <Project Path="samples/StanzaSharp.Masking/StanzaSharp.Masking.csproj" />
+    <Project Path="samples/StanzaSharp.Rag/StanzaSharp.Rag.csproj" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/StanzaSharp.Constituency/StanzaSharp.Constituency.csproj" />
     <Project Path="src/StanzaSharp.Core/StanzaSharp.Core.csproj" />
+    <Project Path="src/StanzaSharp.DataIngestion/StanzaSharp.DataIngestion.csproj" />
     <Project Path="src/StanzaSharp.Depparse/StanzaSharp.Depparse.csproj" />
     <Project Path="src/StanzaSharp.Lemma/StanzaSharp.Lemma.csproj" />
     <Project Path="src/StanzaSharp.Mwt/StanzaSharp.Mwt.csproj" />
@@ -17,6 +19,7 @@
     <Project Path="src/StanzaSharp.Pos/StanzaSharp.Pos.csproj" />
     <Project Path="src/StanzaSharp.Sentiment/StanzaSharp.Sentiment.csproj" />
     <Project Path="src/StanzaSharp.Coref/StanzaSharp.Coref.csproj" />
+    <Project Path="src/StanzaSharp.TasmanianDevil/StanzaSharp.TasmanianDevil.csproj" />
     <Project Path="src/StanzaSharp.Tokenize/StanzaSharp.Tokenize.csproj" />
     <Project Path="src/StanzaSharp.Tool/StanzaSharp.Tool.csproj" />
     <Project Path="src/StanzaSharp/StanzaSharp.csproj" />

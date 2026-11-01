@@ -51,10 +51,10 @@
        baseline's is itself an error (CP0003). CI's build-test packs with a version of its own to run the check. -->
   <PropertyGroup Condition="('$(MSBuildProjectName)' == 'StanzaSharp' Or '$(MSBuildProjectName)' == 'StanzaSharp.Cuda') And !$(Version.StartsWith('0.'))">
     <EnablePackageValidation>true</EnablePackageValidation>
-    <PackageValidationBaselineVersion>1.14.0</PackageValidationBaselineVersion>
+    <PackageValidationBaselineVersion>1.15.0</PackageValidationBaselineVersion>
   </PropertyGroup>
   <ItemGroup Condition="'$([System.IO.Path]::GetFileName($([System.IO.Path]::GetDirectoryName($(MSBuildProjectDirectory)))))' == 'src'">
-    <InternalsVisibleTo Include="StanzaSharp;StanzaSharp.Cuda;StanzaSharp.Nn;StanzaSharp.Tokenize;StanzaSharp.Mwt;StanzaSharp.Pos;StanzaSharp.Lemma;StanzaSharp.Constituency;StanzaSharp.Depparse;StanzaSharp.Ner;StanzaSharp.Sentiment;StanzaSharp.Coref;StanzaSharp.Tool"
+    <InternalsVisibleTo Include="StanzaSharp;StanzaSharp.Cuda;StanzaSharp.Nn;StanzaSharp.Tokenize;StanzaSharp.Mwt;StanzaSharp.Pos;StanzaSharp.Lemma;StanzaSharp.Constituency;StanzaSharp.Depparse;StanzaSharp.Ner;StanzaSharp.Sentiment;StanzaSharp.Coref;StanzaSharp.Tool;StanzaSharp.DataIngestion;StanzaSharp.TasmanianDevil"
                         Exclude="$(AssemblyName)" />
     <!-- The Cli sample compiles the Tool's DownloadCommand.cs, so it gets the Tool's access. -->
     <InternalsVisibleTo Include="StanzaSharp.Tests;StanzaSharp.Benchmark;StanzaSharp.Cli" />

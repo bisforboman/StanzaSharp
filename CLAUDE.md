@@ -47,9 +47,12 @@ src/StanzaSharp.Cuda           The TorchSharp backend (package StanzaSharp.Cuda,
                                processors' TorchSharp `Load` extensions. The only project referencing TorchSharp.
 src/StanzaSharp.{Tokenize,Mwt,Pos,Lemma,Constituency,Depparse,Ner,Sentiment,Coref}   One processor each.
 src/StanzaSharp                Pipeline facade (Pipeline, PipelineOptions, ModelDownloader, LanguageIdentifier, ...).
+src/StanzaSharp.DataIngestion  Microsoft.Extensions.DataIngestion (#233): SentenceChunker, EntityEnricher; own package.
+src/StanzaSharp.TasmanianDevil TasmanianDevil (PII, #234): NER recognizer, lemma normalizer, Swedish id numbers; own package.
 src/StanzaSharp.Tool           The `stanzasharp` .NET tool: download, compare, benchmark.
 samples/                       Cli (experiments), Benchmark (speed/memory; tools/benchmark.py is its Python twin),
-                               Example (API tour), Masking (Swedish masking, #234: NER + Luhn-checked id/phone/e-mail/
+                               Example (API tour), Rag (#233: Markdown → SentenceChunker → EntityEnricher →
+                               in-memory store, MiniLM ONNX), Masking (Swedish masking, #234: NER + Luhn-checked id/phone/e-mail/
                                address patterns; MaskingTests), docker (standalone app on the published package).
 tests/StanzaSharp.Tests        xUnit; golden tests against Python Stanza output.
 tests/StanzaSharp.ManagedCheck Proves the managed backend loads no libtorch (ManagedCheckTests, verify-package, verify-aot).
@@ -140,7 +143,9 @@ language or model, run `stanzasharp compare` against Python Stanza: it finds wha
 - The public API is the facade (`Pipeline`, `PipelineOptions`, `PipelineBackend`, `CharlmCacheOptions`,
   `ModelDownloader`, `Processor`, `ModelPath`, `LanguageIdentifier(Options)`, `MultilingualPipeline`,
   `MultilingualOptions`), `CudaBackend`, and Core's results (`Document`, `Sentence`, `Token`, `Word`, `Entity`, `Tree`,
-  `Dependency`, `Conllu`, `Json`, `CorefChain`, `CorefMention`, `CorefAttachment`). New types default to `internal`;
+  `Dependency`, `Conllu`, `Json`, `CorefChain`, `CorefMention`, `CorefAttachment`), plus the add-on packages' adapters
+  (DataIngestion's `SentenceChunker`, `EntityEnricher`; TasmanianDevil's `StanzaNerRecognizer`, `StanzaTokenNormalizer`,
+  `SePersonnummerRecognizer`, `SeOrganisationsnummerRecognizer`). New types default to `internal`;
   making one public is the owner's decision. Every public member needs an XML doc (CS1591 is an error in src/).
 - **API compatibility**: packing StanzaSharp or StanzaSharp.Cuda checks the public API against the last release
   (package validation; build-test runs it). A binary break needs the owner's decision and a major version.

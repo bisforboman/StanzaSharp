@@ -1,0 +1,1 @@
+- The `StanzaSharp` package depends on `Microsoft.Extensions.Logging.Abstractions` 10.0.0 again, the lowest .NET 10 version (1.15.0 required 10.0.14, from an automatic update), so apps on any 10.0.x keep their own version.

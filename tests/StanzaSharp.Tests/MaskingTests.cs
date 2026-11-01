@@ -8,18 +8,20 @@ namespace StanzaSharp.Tests;
 /// </summary>
 public class MaskingTests
 {
+    // Personnummer and the samordningsnummer here are Skatteverket's test numbers (open data, blocked so they are never
+    // issued); the month-13 number (a year no one is born in) and the organisationsnummer are synthetic.
     [Theory]
-    [InlineData("9804122381", true)]
-    [InlineData("9804122385", false)]
+    [InlineData("7804012388", true)]
+    [InlineData("7804012389", false)]
     [InlineData("5599001236", true)]
-    [InlineData("9903154590", true)]
+    [InlineData("1203102395", true)]
     public void Luhn_ChecksTheLastDigit(string digits, bool valid) => Assert.Equal(valid, Masker.Luhn(digits));
 
     [Theory]
-    [InlineData("Personnummer 20980412-2381 enligt", "20980412-2381", "PNR")]
-    [InlineData("pnr 980412+2381.", "980412+2381", "PNR")]
-    [InlineData("född 209804122381", "209804122381", "PNR")]
-    [InlineData("samordningsnummer 20980472-2388", "20980472-2388", "PNR")]
+    [InlineData("Personnummer 19780401-2388 enligt", "19780401-2388", "PNR")]
+    [InlineData("pnr 900101+9802.", "900101+9802", "PNR")]
+    [InlineData("född 197804012388", "197804012388", "PNR")]
+    [InlineData("samordningsnummer 20260161-2381", "20260161-2381", "PNR")]
     [InlineData("organisationsnummer 559900-1236.", "559900-1236", "ORGNR")]
     [InlineData("ring 070-123 45 67 i dag", "070-123 45 67", "PHONE")]
     [InlineData("ring 08-555 123 45 i dag", "08-555 123 45", "PHONE")]
@@ -36,7 +38,7 @@ public class MaskingTests
     }
 
     [Theory]
-    [InlineData("personnummer 20980412-2385")]        // fails the Luhn check
+    [InlineData("personnummer 19780401-2389")]        // fails the Luhn check
     [InlineData("ärende 20981312-2380")]              // month 13
     [InlineData("beviljas 8 450 kronor för oktober")] // an amount
     [InlineData("4 kap. 1 § socialtjänstlagen")]
@@ -47,8 +49,8 @@ public class MaskingTests
     [Fact]
     public void Find_PrefersPersonnummerOverPhone()
     {
-        var span = Assert.Single(Masker.Find("född 050101-1233.", null));
-        Assert.Equal(("050101-1233", "PNR"), (span.Text, span.Type));
+        var span = Assert.Single(Masker.Find("född 050101-2397.", null));
+        Assert.Equal(("050101-2397", "PNR"), (span.Text, span.Type));
     }
 
     [Fact]

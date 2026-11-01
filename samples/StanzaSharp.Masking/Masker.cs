@@ -115,7 +115,7 @@ public static partial class Masker
 
     // Sorted by start; overlapping spans become one, typed by the pattern if one is in it (a pattern is more
     // specific than NER: "Storgatan 14 B" is an ADDRESS, not the LOC "Storgatan"), an id number before any other
-    // pattern (a personnummer born in the 2000s, 050101-1233, also looks like a phone number), else the longest span.
+    // pattern (a personnummer born in the 2000s, 050101-2397, also looks like a phone number), else the longest span.
     private static List<MaskSpan> Merge(string text, List<MaskSpan> spans)
     {
         var merged = new List<MaskSpan>();

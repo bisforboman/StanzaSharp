@@ -27,7 +27,10 @@ Packages, the public API, downloads, versions and the release process, with the 
   - Core's results: `Document`, `Sentence`, `Token`, `Word`, `Entity`, `Tree`, `Conllu`, `Json` (owner's decision,
     2026-10-14), `Dependency` (#174, 2026-10-18);
   - the facade's `ModelPath`, `LanguageIdentifier`, `LanguageIdentifierOptions`, `MultilingualPipeline`, `MultilingualOptions` (#174, 2026-10-19);
-  - Core's `CorefChain`, `CorefMention`, `CorefAttachment` (coref PR b, owner's decision 2026-10-20: Stanza's shape).
+  - Core's `CorefChain`, `CorefMention`, `CorefAttachment` (coref PR b, owner's decision 2026-10-20: Stanza's shape);
+  - StanzaSharp.DataIngestion's `SentenceChunker`, `EntityEnricher` (#233, owner's decision 2026-10-31: a package now);
+  - StanzaSharp.TasmanianDevil's `StanzaNerRecognizer`, `StanzaTokenNormalizer`, `SePersonnummerRecognizer`,
+    `SeOrganisationsnummerRecognizer` (#234, owner's decisions 2026-10-31).
 
   Everything else is `internal`.
   - Directory.Build.props gives every `src/*` assembly `InternalsVisibleTo` for the other StanzaSharp
@@ -52,7 +55,41 @@ Packages, the public API, downloads, versions and the release process, with the 
     longer published from 0.5; their projects and `src/StanzaSharp.Cpu.props` are gone. TorchSharp-backend users add
     `TorchSharp-cpu` or one `libtorch-cpu-<rid>` 2.10.0 themselves (TorchSharp loads a single one fine; checked with
     `libtorch-cpu-win-x64` alone). Deprecating them on nuget.org is the owner's manual step.
-  - `release.yml` packs `StanzaSharp`, `StanzaSharp.Cuda` (from `src/StanzaSharp.Cuda`) and `StanzaSharp.Tool`.
+  - `release.yml` packs `StanzaSharp`, `StanzaSharp.Cuda` (from `src/StanzaSharp.Cuda`), `StanzaSharp.DataIngestion`,
+    `StanzaSharp.TasmanianDevil` and `StanzaSharp.Tool`.
+  - `StanzaSharp.TasmanianDevil` (#234; owner's decisions 2026-10-31: TasmanianDevil adapters as a package, Deidentify.NET
+    only if asked, ManagedCode.Presidio deferred; kept after learning of TasmanianDevil.Onnx, its zero-shot GLiNER NER): depends
+    on StanzaSharp (same version) and TasmanianDevil 0.3.0 (stable, so no `-preview`). `StanzaNerRecognizer` = an
+    `EntityRecognizer` per language (`supportedLanguage`), `DefaultTypeMap` over both NER conventions (OntoNotes PERSON/ORG/
+    GPE/LOC/FAC/DATE/TIME, and PER/LOC/ORG/TME) to PERSON/ORGANIZATION/LOCATION/DATE_TIME, a fixed score (0.85, Presidio's
+    spaCy recognizer's), `stanzaType` metadata; throws without ner. `StanzaTokenNormalizer` = an `ITokenNormalizer` for
+    `LemmaContextAwareEnhancer`: Stanza's tokens; each word's lemma and UPOS from the word tagged alone (deterministic,
+    cached up to 100,000 words, warmed per `Tokenize` with one bulk call); stop words = function UPOS (DET, ADP, PRON, AUX,
+    CCONJ, SCONJ, PART), punctuation = PUNCT/SYM or no letter/digit; throws without lemma (`Pipeline.HasLemma`, internal).
+    `SePersonnummerRecognizer`/`SeOrganisationsnummerRecognizer` (owner's decision 2026-10-31: ship them here, not wait for
+    upstream): the Swedish country pack drafted for TasmanianDevil (`upstream-drafts/`, not in git), same entity names
+    (`SE_PERSONNUMMER`, `SE_ORGANISATIONSNUMMER`), default language `sv`; date + Luhn (personnummer, samordningsnummer day
+    61–91), third digit ≥ 2 + Luhn (organisationsnummer); a separated number promotes to full score, a bare one abstains and
+    needs a context word (like NL_BSN). `TasmanianDevilTests` (en models) and `SwedishIdRecognizerTests` (no models: valid,
+    invalid, odd input, PiiEngine before/after, 500 random ten-digit numbers unmasked). Swedish NER + both recognizers by hand
+    on the masking example: everything masked but street numbers and the postal code.
+  - `StanzaSharp.DataIngestion` (#233; owner's decisions 2026-10-31: a package now, chunker + NER enricher first): depends
+    on StanzaSharp (same version) and Microsoft.Extensions.DataIngestion, still preview-only, so its `PackageVersion` is
+    `$(Version)-preview` (owner's decision 2026-10-31; a stable package can't depend on a prerelease, NU5104) until that
+    ships stable. `SentenceChunker`
+    = HeaderChunker's sections (headers as context and prefix) cut into Stanza sentences (one bulk `Process` per document,
+    sentences sliced from the element's text by token offsets, elements joined by `Environment.NewLine`, so with room to
+    spare it gives HeaderChunker's chunks when each element's text starts and ends at a sentence), packed greedily against the caller's ML.Tokenizers tokenizer counted
+    on the whole candidate chunk, whole-sentence overlap, tables whole, an oversized unit cut by
+    `GetIndexByTokenCount`. `EntityEnricher` = distinct entity texts (`string[]`, `MetadataKey` "entities", like
+    KeywordEnricher's; whitespace runs as one space), bulk `Process` per batch, a chunk starting with its `Context` tagged as
+    two texts (one newline made "## Kessler Chemicals" and the body's first "Kessler Chemicals" one entity); throws at construction without ner (`Pipeline.HasNer`, internal).
+    `DataIngestionTests` (golden shard 1; o200k from `Microsoft.ML.Tokenizers.Data.O200kBase`, offline; the sample's whole
+    path through `VectorStoreWriter` and Semantic Kernel's `InMemoryVectorStore` with a hashing stub generator).
+    `samples/StanzaSharp.Rag` (owner's choice 2026-10-31: a local ONNX embedding model): sentence-transformers'
+    all-MiniLM-L6-v2 (pinned commit, sha256 per file, downloaded at first run) on ONNX Runtime with ML.Tokenizers'
+    `BertTokenizer`, mean pooling + L2 norm; build-only in CI (no model download there). Dependabot
+    offers each new DataIngestion preview (auto-merged as a minor bump once build-test passes).
   - On a Windows Arm64 machine Directory.Build.props gives the runnable projects (tests/, samples/)
     `libtorch-cpu-win-arm64` (`TorchSharp-cpu` lacks it), except those setting `StanzaSharpNoLibTorch`.
   - Supported platforms (README, PACKAGE.md): managed backend wherever .NET 10 runs; CI covers linux-x64, win-x64,

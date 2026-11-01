@@ -10,6 +10,8 @@
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="10.1.0" />
+    <PackageReference Include="Microsoft.ML.Tokenizers.Data.O200kBase" Version="1.0.1" />
+    <PackageReference Include="Microsoft.SemanticKernel.Connectors.InMemory" Version="1.74.0-preview" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
     <!-- StanzaSharpNoLibTorch=true (the linux-arm64 CI job, which has no libtorch): only the tests that need none can pass. -->
     <PackageReference Include="$(TorchSharpNative)" Version="$(TorchSharpVersion)" Condition="'$(StanzaSharpNoLibTorch)' != 'true'" />
@@ -42,6 +44,8 @@
     <ProjectReference Include="..\..\src\StanzaSharp.Coref\StanzaSharp.Coref.csproj" />
     <ProjectReference Include="..\..\src\StanzaSharp.Tool\StanzaSharp.Tool.csproj" />
     <ProjectReference Include="..\..\samples\StanzaSharp.Masking\StanzaSharp.Masking.csproj" />
+    <ProjectReference Include="..\..\src\StanzaSharp.DataIngestion\StanzaSharp.DataIngestion.csproj" />
+    <ProjectReference Include="..\..\src\StanzaSharp.TasmanianDevil\StanzaSharp.TasmanianDevil.csproj" />
     <!-- Built first, run by ManagedCheckTests in a process of its own (no libtorch); not referenced as an assembly. -->
     <ProjectReference Include="..\StanzaSharp.ManagedCheck\StanzaSharp.ManagedCheck.csproj" ReferenceOutputAssembly="false" />
   </ItemGroup>
