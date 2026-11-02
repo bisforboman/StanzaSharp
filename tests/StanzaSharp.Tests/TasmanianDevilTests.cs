@@ -162,3 +162,86 @@ public class SwedishIdRecognizerTests
     private static PiiEngine Engine() =>
         new(new PiiOptions { Language = "sv" }, extraRecognizers: [new SePersonnummerRecognizer(), new SeOrganisationsnummerRecognizer()]);
 }
+
+/// <summary>The Swedish address recognizers of StanzaSharp.TasmanianDevil, without models. The addresses are invented.</summary>
+public class SwedishAddressRecognizerTests
+{
+    [Theory]
+    [InlineData("Hon bor på Storgatan 14 B i Uppsala.", "Storgatan 14 B")]
+    [InlineData("Adress: Storgatan 14B, 753 20 Uppsala", "Storgatan 14B")]
+    [InlineData("Ny adress Västra Ringvägen 7, lgh 1102.", "Västra Ringvägen 7, lgh 1102")]
+    [InlineData("Besök oss på S:t Eriksgatan 112.", "S:t Eriksgatan 112")]
+    [InlineData("STORGATAN 3\n753 20 UPPSALA", "STORGATAN 3")]
+    [InlineData("Kontoret ligger på Hamngatan 10-12 sedan maj.", "Hamngatan 10-12")]
+    [InlineData("Han flyttade till Storgatan 4 i Uppsala.", "Storgatan 4")]
+    [InlineData("Karin Lindqvist, Kungsvägen 3", "Kungsvägen 3")]
+    public void Street_IsFound(string text, string expected)
+    {
+        var result = Assert.Single(new SeStreetAddressRecognizer().Analyze(text, []));
+        Assert.Equal((SeStreetAddressRecognizer.EntityType, expected), (result.EntityType, text[result.Start..result.End]));
+    }
+
+    [Theory]
+    [InlineData("Handlingsplan 2026 antogs i maj.")]
+    [InlineData("Arbetsplats 3 är stängd.")]
+    [InlineData("Förändringen 2025 gällde alla.")]
+    [InlineData("Avdelningen 4 har möte.")]
+    [InlineData("Han bor på Storgatan.")]
+    [InlineData("storgatan 14 är ett exempel i gemener.")]
+    public void NotAStreetAddress_IsNotFound(string text) => Assert.Empty(new SeStreetAddressRecognizer().Analyze(text, []));
+
+    [Theory]
+    [InlineData("753 20 Uppsala", "753 20")]
+    [InlineData("SE-753 20 Uppsala", "SE-753 20")]
+    [InlineData("Postadress: Box 123, 75320 UPPSALA", "75320")]
+    [InlineData("Storgatan 14 B\n753 20 Uppsala", "753 20")]
+    public void Postnummer_WithTownOrPrefix_IsMasked(string text, string expected)
+    {
+        using var engine = Engine();
+        var result = Assert.Single(engine.Analyze(text), r => r.EntityType == SePostnummerRecognizer.EntityType);
+        Assert.Equal(expected, text[result.Start..result.End]);
+    }
+
+    [Theory]
+    [InlineData("Ordernummer 753 20 skickades.")]
+    [InlineData("Det kostade 125 000 kronor.")]
+    [InlineData("Ring 08-123 45 67 i dag.")]
+    [InlineData("Talet 1 234 567 är stort.")]
+    [InlineData("Koden 99999 Uppsala finns inte.")]
+    public void Postnummer_WithoutTownOrContext_IsNotMasked(string text)
+    {
+        using var engine = Engine();
+        Assert.DoesNotContain(engine.Analyze(text), r => r.EntityType == SePostnummerRecognizer.EntityType);
+    }
+
+    [Fact]
+    public void Postnummer_BareWithContextWord_IsMasked()
+    {
+        using var engine = Engine();
+        Assert.Contains(engine.Analyze("Postnummer 75320 enligt blanketten."), r => r.EntityType == SePostnummerRecognizer.EntityType);
+    }
+
+    // Five-digit order numbers in ordinary text stay unmasked without a context word or town.
+    [Fact]
+    public void Postnummer_LeavesArbitraryFiveDigitNumbers()
+    {
+        using var engine = Engine();
+        var random = new Random(42);
+        var masked = Enumerable.Range(0, 500)
+            .Select(_ => random.Next(10_000, 100_000).ToString(System.Globalization.CultureInfo.InvariantCulture))
+            .Count(n => engine.Analyze($"Order {n} skickad.").Any(r => r.EntityType == SePostnummerRecognizer.EntityType));
+        Assert.Equal(0, masked);
+    }
+
+    [Fact]
+    public void PiiEngine_MasksTheWholeAddress()
+    {
+        using var engine = Engine();
+        Assert.Equal(
+            "Sökanden bor på <ADDRESS>, <SE_POSTNUMMER> Uppsala.",
+            engine.Anonymize("Sökanden bor på Storgatan 14 B, 753 20 Uppsala.").Text);
+    }
+
+    private static PiiEngine Engine() =>
+        new(new PiiOptions { Language = "sv" }, extraRecognizers: [new SeStreetAddressRecognizer(), new SePostnummerRecognizer()]);
+}
