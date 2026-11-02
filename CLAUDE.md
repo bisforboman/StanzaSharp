@@ -145,8 +145,9 @@ language or model, run `stanzasharp compare` against Python Stanza: it finds wha
   `MultilingualOptions`), `CudaBackend`, and Core's results (`Document`, `Sentence`, `Token`, `Word`, `Entity`, `Tree`,
   `Dependency`, `Conllu`, `Json`, `CorefChain`, `CorefMention`, `CorefAttachment`), plus the add-on packages' adapters
   (DataIngestion's `SentenceChunker`, `EntityEnricher`; TasmanianDevil's `StanzaNerRecognizer`, `StanzaTokenNormalizer`,
-  `SePersonnummerRecognizer`, `SeOrganisationsnummerRecognizer`). New types default to `internal`;
-  making one public is the owner's decision. Every public member needs an XML doc (CS1591 is an error in src/).
+  `SePersonnummerRecognizer`, `SeOrganisationsnummerRecognizer`, `SeStreetAddressRecognizer`, `SePostnummerRecognizer`).
+  New types default to `internal`; making one public is the owner's decision. Every public member needs an XML doc
+  (CS1591 is an error in src/).
 - **API compatibility**: packing StanzaSharp or StanzaSharp.Cuda checks the public API against the last release
   (package validation; build-test runs it). A binary break needs the owner's decision and a major version.
 - Options go into `PipelineOptions` (no new optional parameters on `Load`); one options object downloads and loads the

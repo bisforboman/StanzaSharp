@@ -30,7 +30,8 @@ Packages, the public API, downloads, versions and the release process, with the 
   - Core's `CorefChain`, `CorefMention`, `CorefAttachment` (coref PR b, owner's decision 2026-10-20: Stanza's shape);
   - StanzaSharp.DataIngestion's `SentenceChunker`, `EntityEnricher` (#233, owner's decision 2026-10-31: a package now);
   - StanzaSharp.TasmanianDevil's `StanzaNerRecognizer`, `StanzaTokenNormalizer`, `SePersonnummerRecognizer`,
-    `SeOrganisationsnummerRecognizer` (#234, owner's decisions 2026-10-31).
+    `SeOrganisationsnummerRecognizer` (#234, owner's decisions 2026-10-31), `SeStreetAddressRecognizer`,
+    `SePostnummerRecognizer` (owner's decisions 2026-11-02).
 
   Everything else is `internal`.
   - Directory.Build.props gives every `src/*` assembly `InternalsVisibleTo` for the other StanzaSharp
@@ -73,6 +74,19 @@ Packages, the public API, downloads, versions and the release process, with the 
     needs a context word (like NL_BSN). `TasmanianDevilTests` (en models) and `SwedishIdRecognizerTests` (no models: valid,
     invalid, odd input, PiiEngine before/after, 500 random ten-digit numbers unmasked). Swedish NER + both recognizers by hand
     on the masking example: everything masked but street numbers and the postal code.
+    `SeStreetAddressRecognizer`/`SePostnummerRecognizer` (owner's decisions 2026-11-02: Swedish address patterns next,
+    entity types `ADDRESS` (TasmanianDevil's `PiiEntities.Address`, which its remote detectors report) and `SE_POSTNUMMER`
+    (country-prefixed like NL_POSTCODE/DE_PLZ); the Masking sample keeps its own regexes). Patterns case-sensitive
+    (`DefaultRegexOptions` without IgnoreCase: capitals tell a street name from a word). Street: a name with a definite street
+    suffix (`-gatan`, `-vägen`, `-torget`, ...; no indefinite ones, which ordinary words end in: Handlingsplan 2026,
+    Arbetsplats 3; no `-ringen`: Förändringen 2025), capitalized or all caps, an optional prefix word from a list (Västra,
+    Stora, Gamla, S:t, ...), house number (range allowed), an entrance letter (after a space only uppercase, so "4 i Uppsala"
+    keeps its "i") and `lgh NNNN`; score 0.6. The whole address is one span, so the anonymizer drops NER's LOC for the street
+    name alone (contained spans lose, `RecognizerResult.HasConflict`). Postnummer: 100 00–984 99 (`ValidateResult`), 0.6 with
+    `SE-` or a following capitalized or all-caps town (the span is the code; the town is NER's), else 0.05 and a context word
+    (+0.35); never inside longer digit groups or phone numbers. `SwedishAddressRecognizerTests` (no models: forms, near-misses,
+    500 random five-digit numbers unmasked, the anonymized address). By hand with Swedish NER on the masking example:
+    everything masked.
   - `StanzaSharp.DataIngestion` (#233; owner's decisions 2026-10-31: a package now, chunker + NER enricher first): depends
     on StanzaSharp (same version) and Microsoft.Extensions.DataIngestion, still preview-only, so its `PackageVersion` is
     `$(Version)-preview` (owner's decision 2026-10-31; a stable package can't depend on a prerelease, NU5104) until that

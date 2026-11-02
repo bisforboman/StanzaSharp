@@ -583,7 +583,8 @@ a .NET library for detecting and de-identifying PII.
   language.
 - `StanzaTokenNormalizer` gives TasmanianDevil's context matching real lemmas in any Stanza language.
 - `SePersonnummerRecognizer` and `SeOrganisationsnummerRecognizer` find Swedish personnummer, samordningsnummer and
-  organisationsnummer, which TasmanianDevil has no country pack for.
+  organisationsnummer, which TasmanianDevil has no country pack for, and `SeStreetAddressRecognizer` and
+  `SePostnummerRecognizer` find Swedish street addresses and postal codes.
 
 ```csharp
 using var nlp = Pipeline.Load("models/stanza/en", new PipelineOptions { Processors = "tokenize,ner" });

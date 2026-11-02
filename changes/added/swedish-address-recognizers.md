@@ -1,0 +1,1 @@
+- StanzaSharp.TasmanianDevil: `SeStreetAddressRecognizer` finds Swedish street addresses (`Storgatan 14 B, lgh 1102`) as TasmanianDevil's `ADDRESS`, and `SePostnummerRecognizer` finds Swedish postal codes (`753 20`) as `SE_POSTNUMMER`. A postal code counts on its own with its town or an `SE-` prefix; a bare five-digit number also needs a context word nearby.

@@ -17,6 +17,11 @@ a .NET library for detecting and de-identifying PII. It adds two components.
   - `SE_ORGANISATIONSNUMMER` must have a third digit of 2 or more and a valid Luhn check digit.
   - Written with its separator, a valid number counts with full confidence. A bare run of digits also needs a context
     word nearby, such as "personnummer".
+- `SeStreetAddressRecognizer` and `SePostnummerRecognizer` find Swedish addresses.
+  - `ADDRESS` (TasmanianDevil's own type) is a street name with a definite street suffix (`Storgatan`, `Västra
+    Ringvägen`, `S:t Eriksgatan`), its number, an entrance letter and an apartment number: `Storgatan 14 B, lgh 1102`.
+  - `SE_POSTNUMMER` is a postal code from 100 00 to 984 99. With `SE-` or followed by its town (`753 20 Uppsala`) it
+    counts on its own; a bare five-digit number also needs a context word nearby, such as "postnummer" or "adress".
 
 ## Use
 
@@ -36,11 +41,13 @@ For Swedish:
 ```csharp
 using var sv = Pipeline.Load("models/stanza/sv", new PipelineOptions { Language = "sv", Processors = "tokenize,ner" });
 using var engine = new PiiEngine(new PiiOptions { Language = "sv" }, extraRecognizers:
-    [new StanzaNerRecognizer(sv, "sv"), new SePersonnummerRecognizer(), new SeOrganisationsnummerRecognizer()]);
-engine.Anonymize(text); // names, places, organisations, dates, personnummer, organisationsnummer, phone, e-mail
+    [new StanzaNerRecognizer(sv, "sv"), new SePersonnummerRecognizer(), new SeOrganisationsnummerRecognizer(),
+     new SeStreetAddressRecognizer(), new SePostnummerRecognizer()]);
+engine.Anonymize(text); // names, places, organisations, dates, id numbers, addresses, postal codes, phone, e-mail
 ```
 
-Street addresses and postal codes are not covered.
+Addresses are matched by their shape: a street name without a definite suffix (`Drottning Kristinas väg`) or a P.O. box
+number isn't found.
 
 `StanzaNerRecognizer` needs only `tokenize,ner`. `StanzaTokenNormalizer` needs `tokenize,mwt,pos,lemma`; pass it to
 `LemmaContextAwareEnhancer`'s `normalizer` parameter.
