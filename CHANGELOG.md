@@ -8,6 +8,14 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 Unreleased changes are one file each under [`changes/`](changes/README.md), so pull requests don't conflict here;
 a release folds them in (`python tools/changelog.py release X.Y.Z`).
 
+## [1.15.1] - 2026-11-02
+
+### Changed
+- The `StanzaSharp` package depends on `Microsoft.Extensions.Logging.Abstractions` 10.0.0 again, the lowest .NET 10 version (1.15.0 required 10.0.14, from an automatic update), so apps on any 10.0.x keep their own version.
+
+### Fixed
+- On Linux the managed backend no longer runs glibc's `malloc_trim` after each call of 1,000 words or more. It returned nothing there (the managed models live on the GC heap) and cost 2–12 ms, taking each allocator arena's lock in turn while other calls ran. The TorchSharp backend still trims.
+
 ## [1.15.0] - 2026-10-31
 
 ### Added
