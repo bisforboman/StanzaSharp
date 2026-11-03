@@ -251,7 +251,9 @@ What StanzaSharp ports and supports, with the owner's decisions behind each part
     `pytorch_model.bin`, 2.24 GB). Goldens `transformer/tokenizer_FacebookAI_xlm-roberta-large.json` (1,095 cases,
     `XLMR_TOKENIZER_CASES`) and `hidden_FacebookAI_xlm-roberta-large.*`; tests `XlmRoberta_*` (`XlmRobertaFact`); golden
     shard 4 downloads it (`tools/ci-models.sh transformer`). Owner's decisions (2026-10-20): Q3 Stanza's API shape, Q4
-    write and read `coref_chains=`, Q5 reproduce libstdc++'s `nth_element` order for topk(sorted=False); Q1, Q2, Q6–Q8 open.
+    write and read `coref_chains=`, Q5 reproduce libstdc++'s `nth_element` order for topk(sorted=False); and, for PR (c),
+    Q1 the main package, Q2 an opt-in processor, Q6 the default `udcoref_xlm-roberta-lora` only (the others: #210,
+    parked), Q7 golden shard 4 downloads the model and XLM-R, Q8 float32 only.
     PR (b), the document model (Core, `Coref.cs`): `Document.Coref` (its setter attaches like `_attach_coref_mentions`:
     every word gets a list, every word of the representative mention `repr`, a zero mention's empty word start + end,
     never representative), `CorefChain`/`CorefMention` (0-based, a zero's start = end = its empty word's `Id`, plus

@@ -1,7 +1,8 @@
 # Coreference (`coref`): research and plan
 
 > **Done (2026-10-20):** coref landed in three PRs: (a) the XLM-R encoder and its tokenizer (2026-10-19), (b) the document
-> model, (c) the processor (`Processor.Coref`). See "(a) done", "(b) done" and "(c) done" below.
+> model, (c) the processor (`Processor.Coref`). See "(a) done", "(b) done" and "(c) done" below. Every owner's question
+> (Q1–Q8) is decided (2026-10-20); the English-only models Q6 left out are #210 (parked).
 >
 > **Owner's decision (2026-10-14): not now.** Coref needs a 24-layer transformer; the smaller gaps (JSON output,
 > processing pretagged CoNLL-U) come first. This report is kept as the record for a later decision.
@@ -78,7 +79,7 @@ count. The encoder side of the plan is settled: (b) and (c) wait on Q3–Q5.
 **Owner's decisions (2026-10-20):** Q3, Stanza's API shape (`Document.Coref`, `CorefChain`, `CorefMention`,
 `Word.CorefChains` attachments, `Sentence.EmptyWords`); Q4, write `coref_chains=` byte for byte like Stanza and also read
 it back; Q5, reproduce the platform's unsorted topk order, libstdc++'s `nth_element` (golden data is made on Linux now).
-Q1, Q2, Q6, Q7 and Q8 are still open; they decide (c), not (b).
+Q1, Q2, Q6, Q7 and Q8 were still open then; they decided (c), not (b), and were decided before it (below).
 
 **(b) done (2026-10-20):** the document model in Core, all public: `CorefChain(Index, Mentions, RepresentativeText,
 RepresentativeIndex)`, `CorefMention(Sentence, StartWord, EndWord, EmptyIndex)` (0-based like Stanza; a zero mention's
