@@ -261,3 +261,7 @@ Packages, the public API, downloads, versions and the release process, with the 
   enforced for admins, auto-merge allowed,
   merged branches deleted. Every change goes through a PR. A new required CI job must also be added to the
   protection's required checks.
+- Who merges agents' PRs (owner's decision, 2026-11-03, asked when #245 was green and CLAUDE.md didn't say): Claude
+  merges its own PR with a merge commit once CI is green on the current head, it is mergeable and no review thread is
+  open, as in Svärta. The other choices were auto-merge at once (shotdetector, ManagedCodecs) and the owner merging
+  every PR. Not when the owner asked to review first or a question to them is open.
