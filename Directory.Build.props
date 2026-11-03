@@ -25,10 +25,10 @@
     <NoWarn Condition="'$([System.IO.Path]::GetFileName($([System.IO.Path]::GetDirectoryName($(MSBuildProjectDirectory)))))' != 'src'">$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 
-  <!-- StyleBro: analyzers whose findings `stylebro-migrate format` fixes (CLAUDE.md, "Code style"). A build-time
+  <!-- StyleBro: analyzers whose findings `bro format` fixes (CLAUDE.md, "Code style"). A build-time
        dependency only: PrivateAssets keeps it out of the packages' dependencies. -->
   <ItemGroup>
-    <PackageReference Include="StyleBro.Analyzers" Version="0.7.0-alpha.1" PrivateAssets="all" />
+    <PackageReference Include="StyleBro.Analyzers" Version="0.8.0-alpha.1" PrivateAssets="all" />
   </ItemGroup>
 
   <!-- Library projects (src/*): XML docs, and every public member must have them. The public API is the

@@ -108,8 +108,8 @@ jobs:
       # Whitespace and every fix StyleBro's rules have; the version matches StyleBro.Analyzers in Directory.Build.props.
       - name: Code style
         run: |
-          dotnet tool install --tool-path "$RUNNER_TEMP/stylebro" StyleBro.Migrate --version 0.7.0-alpha.1
-          "$RUNNER_TEMP/stylebro/stylebro-migrate" format StanzaSharp.slnx --verify-no-changes --severity warn --no-restore
+          dotnet tool install --tool-path "$RUNNER_TEMP/stylebro" StyleBro.Tool --version 0.8.0-alpha.1
+          "$RUNNER_TEMP/stylebro/bro" format StanzaSharp.slnx --verify-no-changes --severity warn --no-restore
 
       - name: Test
         run: dotnet test StanzaSharp.slnx -c Release --no-build --blame-hang-timeout 30m --blame-hang-dump-type none --logger trx --results-directory TestResults

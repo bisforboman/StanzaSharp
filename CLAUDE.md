@@ -28,7 +28,7 @@ not here. Change this file only when a rule changes.
   with the question prompt (`AskUserQuestion`: options, the recommended one first), not only in the reply text. New
   public API, a new required CI job, a loosened test bound, a new package/language/model family and anything that
   changes outputs are the owner's decisions.
-- **Cloud sessions**: `.claude/hooks/session-start.sh` installs `dotnet-sdk-10.0` and `stylebro-migrate`, restores,
+- **Cloud sessions**: `.claude/hooks/session-start.sh` installs `dotnet-sdk-10.0` and `bro` (StyleBro.Tool), restores,
   builds the Cli and downloads `tools/ci-models.sh en` into `models/stanza/en` (`STANZASHARP_MODELS` points there). No
   Python, German or treebank models: fetch those with `tools/ci-models.sh download GROUP` (or the Cli's `download DIR
   --lang de --processors ...`) when a task needs them.
@@ -194,12 +194,12 @@ context), no `Type.GetType`/`Activator`/`MakeGenericType`/`Assembly.Load`/member
 
 ## Code style
 
-StyleBro (`StyleBro.Analyzers` 0.7.0-alpha.1, preset 1.0) with `EnforceCodeStyleInBuild`; build-test fails on warnings
-and on `stylebro-migrate format StanzaSharp.slnx --verify-no-changes`. Fix findings with `stylebro-migrate format`
-(not plain `dotnet format`). Turned-off rules are explained in `.editorconfig`'s own section. Wrapped expressions put
-the operator at the start of the continuation line (BRO1520). `stylebro-migrate init --write` breaks
-`samples/docker/Directory.Build.props` (stylebro#177): revert that file after each run. Reformat commits go in
-`.git-blame-ignore-revs`.
+StyleBro (`StyleBro.Analyzers` 0.8.0-alpha.1, preset 1.0) with `EnforceCodeStyleInBuild`; build-test fails on warnings
+and on `bro format StanzaSharp.slnx --verify-no-changes` (the `bro` tool, package StyleBro.Tool, at the analyzers'
+version). Fix findings with `bro format` (not plain `dotnet format`). Turned-off rules are explained in `.editorconfig`'s
+own section. Wrapped expressions put the operator at the start of the continuation line (BRO1520). `init --write` has
+broken `samples/docker/Directory.Build.props` (stylebro#177): check that file after each run and revert it if broken.
+Reformat commits go in `.git-blame-ignore-revs`.
 
 ## Design
 
