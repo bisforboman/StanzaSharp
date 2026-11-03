@@ -746,7 +746,7 @@ To regenerate the golden data, run `tools\.venv\Scripts\python tools\make_golden
 ## Code style
 
 [StyleBro](https://github.com/bisforboman/stylebro) and the .NET code-style rules in `.editorconfig` run on every
-build; `dotnet tool install --global StyleBro.Migrate --version 0.5.0-alpha.1`, then `stylebro-migrate format
+build; `dotnet tool install --global StyleBro.Tool --version 0.8.0-alpha.1`, then `bro format
 StanzaSharp.slnx` fixes what they report.
 
 ## CI
@@ -755,7 +755,7 @@ StanzaSharp.slnx` fixes what they report.
 x64 and Arm64, Windows x64 and Arm64, macOS 26 on Apple Silicon). [docs/verification.md](docs/verification.md#where-it-is-checked)
 summarizes what each job proves.
 
-- `build-test` builds the solution with warnings as errors, checks the code style (`stylebro-migrate format
+- `build-test` builds the solution with warnings as errors, checks the code style (`bro format
   --verify-no-changes`, see above) and runs the tests without models (the model tests skip).
 - `golden` downloads the English models with `ModelDownloader` (through the CLI), converts them with
   `tools/stanza_convert.py` (CPU-only torch wheel), and runs the full suite (both backends) in three shards
