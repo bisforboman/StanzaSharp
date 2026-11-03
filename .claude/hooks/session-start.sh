@@ -1,5 +1,5 @@
 #!/bin/bash
-# Cloud sessions only: the .NET 10 SDK, the restored solution, stylebro-migrate (the formatter CI's build-test runs) and
+# Cloud sessions only: the .NET 10 SDK, the restored solution, bro (StyleBro.Tool, the formatter CI's build-test runs) and
 # the English default + default_fast .pt models (tools/ci-models.sh en). Idempotent: the container is cached after it
 # runs, so a later start finds everything in place and only checks. STANZASHARP_MODELS points the tests at the .pt files,
 # as on cross-os (no conversion, no Python).
@@ -29,8 +29,8 @@ if [ -n "${CLAUDE_ENV_FILE:-}" ]; then
 fi
 
 # The version matches StyleBro.Analyzers in Directory.Build.props (ci.yml's build-test).
-if ! dotnet tool list --global | grep -q 'stylebro.migrate *0\.7\.0-alpha\.1'; then
-  dotnet tool update --global StyleBro.Migrate --version 0.7.0-alpha.1
+if ! dotnet tool list --global | grep -q 'stylebro.tool *0\.8\.0-alpha\.1'; then
+  dotnet tool update --global StyleBro.Tool --version 0.8.0-alpha.1
 fi
 
 dotnet restore StanzaSharp.slnx
