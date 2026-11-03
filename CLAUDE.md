@@ -37,6 +37,9 @@ not here. Change this file only when a rule changes.
   a PR that needs such a step says so.
 - Every change goes through a PR (`main` is protected). Agents open stacked PRs as drafts (drafts skip the heavy CI)
   and mark them ready once their base merges.
+- **Merging** (owner's decision, 2026-11-03): Claude merges its own PR, with a merge commit, once CI is green on the
+  current head, it is mergeable and no review thread is open. Not when the owner asked to review it first, nor while
+  a question to the owner is unanswered (docs/decisions/packaging-and-releases.md).
 
 ## Layout
 
