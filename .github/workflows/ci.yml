@@ -150,6 +150,16 @@ jobs:
     timeout-minutes: 90
     runs-on: ubuntu-26.04
     steps:
+      # Shard 4 restores every model cache and then downloads the transformer files: on runner image 20261018 the disk
+      # ran out during the downloads (30 MB left, main's run of 2026-11-03); on 20261025 they fit. The image's Android
+      # SDK, GHC and Swift (none used here) give back several GB.
+      - name: Free disk space
+        if: needs.changes.outputs.code != 'false' && matrix.shard == 4
+        run: |
+          df -h /
+          sudo rm -rf /usr/local/lib/android /opt/ghc /usr/local/.ghcup /usr/share/swift
+          df -h /
+
       - uses: actions/checkout@v7
         if: needs.changes.outputs.code != 'false'
 
