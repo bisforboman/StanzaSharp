@@ -31,7 +31,8 @@ Packages, the public API, downloads, versions and the release process, with the 
   - StanzaSharp.DataIngestion's `SentenceChunker`, `EntityEnricher` (#233, owner's decision 2026-10-31: a package now);
   - StanzaSharp.TasmanianDevil's `StanzaNerRecognizer`, `StanzaTokenNormalizer`, `SePersonnummerRecognizer`,
     `SeOrganisationsnummerRecognizer` (#234, owner's decisions 2026-10-31), `SeStreetAddressRecognizer`,
-    `SePostnummerRecognizer` (owner's decisions 2026-11-02).
+    `SePostnummerRecognizer` (owner's decisions 2026-11-02), `SeBankgiroRecognizer`, `SePlusgiroRecognizer`,
+    `SeBankAccountRecognizer`, `SeVehicleRegistrationRecognizer`, `SeDateOfBirthRecognizer` (owner's decisions 2026-11-04).
 
   Everything else is `internal`.
   - Directory.Build.props gives every `src/*` assembly `InternalsVisibleTo` for the other StanzaSharp
@@ -87,6 +88,24 @@ Packages, the public API, downloads, versions and the release process, with the 
     (+0.35); never inside longer digit groups or phone numbers. `SwedishAddressRecognizerTests` (no models: forms, near-misses,
     500 random five-digit numbers unmasked, the anonymized address). By hand with Swedish NER on the masking example:
     everything masked.
+    `SeBankgiroRecognizer`/`SePlusgiroRecognizer`/`SeBankAccountRecognizer`/`SeVehicleRegistrationRecognizer`/
+    `SeDateOfBirthRecognizer` (owner's decisions 2026-11-04: all four candidates offered; phone, e-mail and IBAN stay
+    TasmanianDevil's generic recognizers, so the Masking sample's phone/e-mail regexes were not moved into the library).
+    Types `SE_BANKGIRO`, `SE_PLUSGIRO`, `SE_BANK_ACCOUNT`, `SE_VEHICLE_REGISTRATION` (like UK_VEHICLE_REGISTRATION) and
+    `DATE_OF_BIRTH` (no TasmanianDevil type; separate from DATE_TIME so dates of birth can be masked and other dates kept).
+    The payment numbers always need a context word (valid numbers abstain): Luhn (bankgiro 7–8 digits, plusgiro 4–8 with
+    the hyphen before the check digit or bare) passes one number in ten, and so do the account rules. Bank account =
+    clearing (4 digits; Swedbank 8NNN-N, 5, own Luhn) + account, bank and rule from Bankgirot's "Bankernas
+    kontonummeruppbyggnad" (2024-02-22, as tabulated by the MIT `kontonummer` npm package 6.0.1): type 1 = 7 digits,
+    mod 11 over the clearing's last three (comment 1) or all four (comment 2) and the account; type 2 = mod 10 (comments
+    1, 3) or mod 11 (Handelsbanken, 8–9 digits) over the account; unknown clearing numbers dropped, Swedbank accounts
+    without a working check digit missed. Plates: three letters without I/Q/V (last place also not O), two digits, a digit
+    or letter; case-sensitive, 0.3 + context, ISO currency codes invalidated (`EUR 100`). Date of birth: the trigger word
+    (`född`, `föddes`, `f.`, `födelsedatum`, `födelsedag`, optional `den`/`:`) is a lookbehind, `den` joins the span (so
+    NER's "den 12 mars 1985" doesn't contain it); ISO, 8 digits, `12 mars 1985`, `12:e`, `12/3 1985`, `12.3.1985`,
+    `12/3-85`; a real date not in the future promotes to full score (a two-digit year: either century). Tests
+    `SwedishPaymentRecognizerTests` (500 random numbers per shape unmasked, all nine Swedish recognizers in one engine) and
+    `SwedishVehicleAndBirthDateRecognizerTests` (no models).
   - `StanzaSharp.DataIngestion` (#233; owner's decisions 2026-10-31: a package now, chunker + NER enricher first): depends
     on StanzaSharp (same version) and Microsoft.Extensions.DataIngestion, still preview-only, so its `PackageVersion` is
     `$(Version)-preview` (owner's decision 2026-10-31; a stable package can't depend on a prerelease, NU5104) until that

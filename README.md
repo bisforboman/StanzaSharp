@@ -585,6 +585,9 @@ a .NET library for detecting and de-identifying PII.
 - `SePersonnummerRecognizer` and `SeOrganisationsnummerRecognizer` find Swedish personnummer, samordningsnummer and
   organisationsnummer, which TasmanianDevil has no country pack for, and `SeStreetAddressRecognizer` and
   `SePostnummerRecognizer` find Swedish street addresses and postal codes.
+- `SeBankgiroRecognizer`, `SePlusgiroRecognizer` and `SeBankAccountRecognizer` find Swedish bankgiro, plusgiro and bank
+  account numbers (each checked by its check digits, and only next to a context word), `SeVehicleRegistrationRecognizer`
+  Swedish registration plates and `SeDateOfBirthRecognizer` dates of birth (`född 1985-03-12`).
 
 ```csharp
 using var nlp = Pipeline.Load("models/stanza/en", new PipelineOptions { Processors = "tokenize,ner" });

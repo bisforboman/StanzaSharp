@@ -22,6 +22,18 @@ a .NET library for detecting and de-identifying PII. It adds two components.
     Ringvägen`, `S:t Eriksgatan`), its number, an entrance letter and an apartment number: `Storgatan 14 B, lgh 1102`.
   - `SE_POSTNUMMER` is a postal code from 100 00 to 984 99. With `SE-` or followed by its town (`753 20 Uppsala`) it
     counts on its own; a bare five-digit number also needs a context word nearby, such as "postnummer" or "adress".
+- `SeBankgiroRecognizer`, `SePlusgiroRecognizer` and `SeBankAccountRecognizer` find Swedish payment numbers. Each
+  number must pass its check digits, and it also needs a context word nearby: the checks pass for one number in ten.
+  - `SE_BANKGIRO` is `NNN-NNNN` or `NNNN-NNNN` (context: "bankgiro", "bg"); `SE_PLUSGIRO` is up to eight digits with a
+    hyphen before the last, `12 34 56-6` (context: "plusgiro", "pg").
+  - `SE_BANK_ACCOUNT` is a clearing number and an account number, `5000-1234560` or `8327-9, 914 123 456-8`, checked by
+    the bank's rules in Bankgirot's table (context: "konto", "kontonummer", "clearingnummer"). TasmanianDevil's own
+    `IBAN_CODE` covers the IBAN form.
+- `SeVehicleRegistrationRecognizer` finds `SE_VEHICLE_REGISTRATION`, Swedish registration plates (`ABC 123`, `ABC 12D`),
+  next to a context word such as "registreringsnummer", "regnr" or "bilen". Currency amounts (`EUR 100`) aren't taken.
+- `SeDateOfBirthRecognizer` finds `DATE_OF_BIRTH`: a date right after "född", "föddes", "f.", "födelsedatum" or
+  "födelsedag" (`född 1985-03-12`, `föddes den 12 mars 1985`, `f. 12/3-85`). Other dates stay `StanzaNerRecognizer`'s
+  `DATE_TIME`, so dates of birth can be masked while other dates are kept.
 
 ## Use
 
@@ -42,8 +54,10 @@ For Swedish:
 using var sv = Pipeline.Load("models/stanza/sv", new PipelineOptions { Language = "sv", Processors = "tokenize,ner" });
 using var engine = new PiiEngine(new PiiOptions { Language = "sv" }, extraRecognizers:
     [new StanzaNerRecognizer(sv, "sv"), new SePersonnummerRecognizer(), new SeOrganisationsnummerRecognizer(),
-     new SeStreetAddressRecognizer(), new SePostnummerRecognizer()]);
-engine.Anonymize(text); // names, places, organisations, dates, id numbers, addresses, postal codes, phone, e-mail
+     new SeStreetAddressRecognizer(), new SePostnummerRecognizer(), new SeBankgiroRecognizer(), new SePlusgiroRecognizer(),
+     new SeBankAccountRecognizer(), new SeVehicleRegistrationRecognizer(), new SeDateOfBirthRecognizer()]);
+engine.Anonymize(text); // names, places, organisations, dates, id numbers, addresses, postal codes, payment numbers,
+                        // plates, dates of birth, phone, e-mail
 ```
 
 Addresses are matched by their shape: a street name without a definite suffix (`Drottning Kristinas väg`) or a P.O. box
