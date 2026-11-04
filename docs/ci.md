@@ -57,6 +57,8 @@ How `.github/workflows/` test and publish StanzaSharp, and the decisions behind 
     - 4 (2026-10-18): the `Transformer*` classes (`SHARD_FOUR`), the only shard that downloads the transformer. On a
       pull request only with the transformer's paths (above); the matrix is `fromJSON(needs.changes.outputs.shards)`, so
       a shard left out is absent, not skipped (a skipped shard would fail `golden`).
+      Its first step frees disk (the image's Android SDK, GHC, Swift): with every model cache restored, the downloads
+      filled an older runner image's disk (2026-11-03, 30 MB left).
     - 1: the complement of 2, 3 and 4 (ConcurrencyTests' cancellation cases and every other class, new ones too):
       123 tests, 14.6 min. So the union is always the whole suite, each test once (checked with `--list-tests`).
     - Expected wall per shard on full: ~12–15 min (was 38–44 for one job); light: ~4–6 min.
