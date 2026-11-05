@@ -1,0 +1,836 @@
+[
+ {
+  "index": 0,
+  "mentions": [
+   [
+    0,
+    0,
+    5
+   ]
+  ],
+  "representative_text": "Leading blank lines and spaces",
+  "representative_index": 0
+ },
+ {
+  "index": 1,
+  "mentions": [
+   [
+    0,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "spaces",
+  "representative_index": 0
+ },
+ {
+  "index": 2,
+  "mentions": [
+   [
+    1,
+    1,
+    4
+   ]
+  ],
+  "representative_text": "a normal sentence",
+  "representative_index": 0
+ },
+ {
+  "index": 3,
+  "mentions": [
+   [
+    2,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "Many blank lines",
+  "representative_index": 0
+ },
+ {
+  "index": 4,
+  "mentions": [
+   [
+    2,
+    4,
+    6
+   ],
+   [
+    3,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "this paragraph",
+  "representative_index": 0
+ },
+ {
+  "index": 5,
+  "mentions": [
+   [
+    3,
+    2,
+    4
+   ]
+  ],
+  "representative_text": "two sentences",
+  "representative_index": 0
+ },
+ {
+  "index": 6,
+  "mentions": [
+   [
+    4,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Trailing spaces",
+  "representative_index": 0
+ },
+ {
+  "index": 7,
+  "mentions": [
+   [
+    4,
+    3,
+    6
+   ]
+  ],
+  "representative_text": "the line above",
+  "representative_index": 0
+ },
+ {
+  "index": 8,
+  "mentions": [
+   [
+    5,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Windows",
+  "representative_index": 0
+ },
+ {
+  "index": 9,
+  "mentions": [
+   [
+    5,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "Windows line endings",
+  "representative_index": 0
+ },
+ {
+  "index": 10,
+  "mentions": [
+   [
+    6,
+    0,
+    2
+   ],
+   [
+    7,
+    2,
+    4
+   ]
+  ],
+  "representative_text": "This line",
+  "representative_index": 0
+ },
+ {
+  "index": 11,
+  "mentions": [
+   [
+    6,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "CRLF",
+  "representative_index": 0
+ },
+ {
+  "index": 12,
+  "mentions": [
+   [
+    8,
+    0,
+    3
+   ],
+   [
+    9,
+    0,
+    8
+   ],
+   [
+    10,
+    4,
+    5
+   ],
+   [
+    29,
+    5,
+    7
+   ],
+   [
+    31,
+    4,
+    6
+   ]
+  ],
+  "representative_text": "A paragraph that starts with a tab .",
+  "representative_index": 1
+ },
+ {
+  "index": 13,
+  "mentions": [
+   [
+    8,
+    4,
+    8
+   ]
+  ],
+  "representative_text": "a CRLF blank line",
+  "representative_index": 0
+ },
+ {
+  "index": 14,
+  "mentions": [
+   [
+    9,
+    5,
+    7
+   ]
+  ],
+  "representative_text": "a tab",
+  "representative_index": 0
+ },
+ {
+  "index": 15,
+  "mentions": [
+   [
+    10,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "tabs",
+  "representative_index": 0
+ },
+ {
+  "index": 16,
+  "mentions": [
+   [
+    11,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Non-breaking spaces",
+  "representative_index": 0
+ },
+ {
+  "index": 17,
+  "mentions": [
+   [
+    11,
+    5,
+    7
+   ]
+  ],
+  "representative_text": "10 kg",
+  "representative_index": 0
+ },
+ {
+  "index": 18,
+  "mentions": [
+   [
+    11,
+    8,
+    10
+   ]
+  ],
+  "representative_text": "5 km",
+  "representative_index": 0
+ },
+ {
+  "index": 19,
+  "mentions": [
+   [
+    12,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Mr. Smith",
+  "representative_index": 0
+ },
+ {
+  "index": 20,
+  "mentions": [
+   [
+    13,
+    0,
+    8
+   ]
+  ],
+  "representative_text": "Thin spaces and en spaces and em spaces",
+  "representative_index": 0
+ },
+ {
+  "index": 21,
+  "mentions": [
+   [
+    13,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "en spaces",
+  "representative_index": 0
+ },
+ {
+  "index": 22,
+  "mentions": [
+   [
+    13,
+    6,
+    8
+   ]
+  ],
+  "representative_text": "em spaces",
+  "representative_index": 0
+ },
+ {
+  "index": 23,
+  "mentions": [
+   [
+    14,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "The figure space",
+  "representative_index": 0
+ },
+ {
+  "index": 24,
+  "mentions": [
+   [
+    15,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "An ideographic space",
+  "representative_index": 0
+ },
+ {
+  "index": 25,
+  "mentions": [
+   [
+    16,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "A zero​width space",
+  "representative_index": 0
+ },
+ {
+  "index": 26,
+  "mentions": [
+   [
+    17,
+    2,
+    7
+   ]
+  ],
+  "representative_text": "the middle of a word",
+  "representative_index": 0
+ },
+ {
+  "index": 27,
+  "mentions": [
+   [
+    17,
+    5,
+    7
+   ]
+  ],
+  "representative_text": "a word",
+  "representative_index": 0
+ },
+ {
+  "index": 28,
+  "mentions": [
+   [
+    18,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "paragraph separator",
+  "representative_index": 0
+ },
+ {
+  "index": 29,
+  "mentions": [
+   [
+    19,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "A form feed",
+  "representative_index": 0
+ },
+ {
+  "index": 30,
+  "mentions": [
+   [
+    20,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "A vertical tab",
+  "representative_index": 0
+ },
+ {
+  "index": 31,
+  "mentions": [
+   [
+    21,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "Next line character",
+  "representative_index": 0
+ },
+ {
+  "index": 32,
+  "mentions": [
+   [
+    23,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Unit separator",
+  "representative_index": 0
+ },
+ {
+  "index": 33,
+  "mentions": [
+   [
+    23,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "group separator",
+  "representative_index": 0
+ },
+ {
+  "index": 34,
+  "mentions": [
+   [
+    23,
+    6,
+    8
+   ]
+  ],
+  "representative_text": "record separator",
+  "representative_index": 0
+ },
+ {
+  "index": 35,
+  "mentions": [
+   [
+    25,
+    0,
+    4
+   ]
+  ],
+  "representative_text": "A lone carriage return",
+  "representative_index": 0
+ },
+ {
+  "index": 36,
+  "mentions": [
+   [
+    25,
+    5,
+    7
+   ]
+  ],
+  "representative_text": "this line",
+  "representative_index": 0
+ },
+ {
+  "index": 37,
+  "mentions": [
+   [
+    27,
+    0,
+    4
+   ]
+  ],
+  "representative_text": "Spaces and more spaces",
+  "representative_index": 0
+ },
+ {
+  "index": 38,
+  "mentions": [
+   [
+    27,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "words",
+  "representative_index": 0
+ },
+ {
+  "index": 39,
+  "mentions": [
+   [
+    28,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "two",
+  "representative_index": 0
+ },
+ {
+  "index": 40,
+  "mentions": [
+   [
+    29,
+    0,
+    4
+   ]
+  ],
+  "representative_text": "Whitespace - only lines",
+  "representative_index": 0
+ },
+ {
+  "index": 41,
+  "mentions": [
+   [
+    32,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Hyphen",
+  "representative_index": 0
+ },
+ {
+  "index": 42,
+  "mentions": [
+   [
+    32,
+    10,
+    15
+   ]
+  ],
+  "representative_text": "figure dash ‒ minus −",
+  "representative_index": 0
+ },
+ {
+  "index": 43,
+  "mentions": [
+   [
+    32,
+    10,
+    15
+   ]
+  ],
+  "representative_text": "figure dash ‒ minus −",
+  "representative_index": 0
+ },
+ {
+  "index": 44,
+  "mentions": [
+   [
+    32,
+    16,
+    18
+   ]
+  ],
+  "representative_text": "horizontal bar",
+  "representative_index": 0
+ },
+ {
+  "index": 45,
+  "mentions": [
+   [
+    32,
+    19,
+    20
+   ]
+  ],
+  "representative_text": "all",
+  "representative_index": 0
+ },
+ {
+  "index": 46,
+  "mentions": [
+   [
+    33,
+    5,
+    7
+   ]
+  ],
+  "representative_text": "spaced dots",
+  "representative_index": 0
+ },
+ {
+  "index": 47,
+  "mentions": [
+   [
+    33,
+    0,
+    13
+   ]
+  ],
+  "representative_text": "Ellipsis … three dots ... spaced dots . . . and four dots",
+  "representative_index": 0
+ },
+ {
+  "index": 48,
+  "mentions": [
+   [
+    33,
+    11,
+    13
+   ]
+  ],
+  "representative_text": "four dots",
+  "representative_index": 0
+ },
+ {
+  "index": 49,
+  "mentions": [
+   [
+    34,
+    0,
+    5
+   ]
+  ],
+  "representative_text": "Primes 5 ′ 11 ″",
+  "representative_index": 0
+ },
+ {
+  "index": 50,
+  "mentions": [
+   [
+    34,
+    6,
+    12
+   ]
+  ],
+  "representative_text": "guillemets « bonjour » and ‹hi›",
+  "representative_index": 0
+ },
+ {
+  "index": 51,
+  "mentions": [
+   [
+    34,
+    13,
+    18
+   ]
+  ],
+  "representative_text": "low quotes „ ja “",
+  "representative_index": 0
+ },
+ {
+  "index": 52,
+  "mentions": [
+   [
+    37,
+    6,
+    8
+   ]
+  ],
+  "representative_text": "subscripts H₂O",
+  "representative_index": 0
+ },
+ {
+  "index": 53,
+  "mentions": [
+   [
+    38,
+    0,
+    4
+   ]
+  ],
+  "representative_text": "The degree sign °",
+  "representative_index": 0
+ },
+ {
+  "index": 54,
+  "mentions": [
+   [
+    38,
+    5,
+    9
+   ]
+  ],
+  "representative_text": "the micro sign µ",
+  "representative_index": 0
+ },
+ {
+  "index": 55,
+  "mentions": [
+   [
+    38,
+    8,
+    9
+   ]
+  ],
+  "representative_text": "µ",
+  "representative_index": 0
+ },
+ {
+  "index": 56,
+  "mentions": [
+   [
+    40,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "İstanbul",
+  "representative_index": 0
+ },
+ {
+  "index": 57,
+  "mentions": [
+   [
+    40,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "dotless ı.",
+  "representative_index": 0
+ },
+ {
+  "index": 58,
+  "mentions": [
+   [
+    43,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "DOTTED İ UPPER",
+  "representative_index": 0
+ },
+ {
+  "index": 59,
+  "mentions": [
+   [
+    43,
+    0,
+    6
+   ]
+  ],
+  "representative_text": "DOTTED İ UPPER AND İSTANBUL'S",
+  "representative_index": 0
+ },
+ {
+  "index": 60,
+  "mentions": [
+   [
+    43,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "İSTANBUL",
+  "representative_index": 0
+ },
+ {
+  "index": 61,
+  "mentions": [
+   [
+    43,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "BRIDGES",
+  "representative_index": 0
+ },
+ {
+  "index": 62,
+  "mentions": [
+   [
+    44,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "THE STRASSE .",
+  "representative_index": 0
+ },
+ {
+  "index": 63,
+  "mentions": [
+   [
+    45,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "BOOK",
+  "representative_index": 0
+ },
+ {
+  "index": 64,
+  "mentions": [
+   [
+    46,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "The final paragraph",
+  "representative_index": 0
+ },
+ {
+  "index": 65,
+  "mentions": [
+   [
+    46,
+    4,
+    9
+   ]
+  ],
+  "representative_text": "no newline at the end",
+  "representative_index": 0
+ },
+ {
+  "index": 66,
+  "mentions": [
+   [
+    46,
+    7,
+    9
+   ]
+  ],
+  "representative_text": "the end",
+  "representative_index": 0
+ }
+]
