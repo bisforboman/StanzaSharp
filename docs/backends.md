@@ -268,6 +268,10 @@ So no change was made. Splitting by rows as well isn't needed yet: every recurre
 26 panels to share out (MWT: 2 directions × 13), more than the 8 threads. A unidirectional layer with a small hidden
 size would need it; none is ported.
 
+A one-row charlm step reads W_hh (16 MB) at the memory's speed, and 2 or 3 rows cost what one does, so on batches of
+up to 4 sentences the tagger's charlm steps also carry the parser's forward pass and the token passes of sentences
+with multi-word tokens as extra rows, the same bits (round 50: one short sentence 15% faster per call).
+
 ## Phase 2 progress
 
 | processor | ported | exactness on the managed backend | ner stage, 8 threads (TorchSharp → managed) | 1 thread |

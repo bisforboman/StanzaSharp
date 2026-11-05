@@ -304,6 +304,43 @@ public class DepparseTests(ITestOutputHelper output, DepparseTests.Fixture fixtu
         Assert.True(reused > total * 3 / 4, $"only {reused} of {total} sentences reused the tagger's state");
     }
 
+    /// <summary>
+    /// Small documents (1 to 4 sentences, a service's per-call case): the tagger's forward pass also runs ROOT + each
+    /// sentence as extra rows of its steps (CharlmCache.RootedForward), and the managed parser takes those rows instead of
+    /// its own forward pass. A charlm step gives a row the same arithmetic in any batch, so every score must stay bit for bit.
+    /// </summary>
+    [ModelTheory]
+    [InlineData("en")]
+    [German]
+    [Trait("Backend", "Managed")]
+    public void SmallDocuments_TakeTheTaggersRootedForwardCharlm_BitForBit(string lang)
+    {
+        var models = fixture.Get(managed: true, lang);
+        var (forward, backward) = (ManagedCharLanguageModel.Load(Repo.Charlm(lang, forward: true)), ManagedCharLanguageModel.Load(Repo.Charlm(lang, forward: false)));
+        using var tagger = Pos.PosTagger.LoadManaged(Repo.ModelOf(lang, "pos"), models.Pretrain, forward, backward);
+        var sentences = Directory.GetFiles(GoldenDir(lang), "*.conllu").Order().SelectMany(f => Conllu.Read(File.ReadAllText(f)).Sentences.Take(12))
+            .Where(s => s.Words.Any())
+            .ToList();
+        int reused = 0, total = 0;
+        for (int at = 0, size = 1; at < sentences.Count; at += size, size = size % ManagedCharLanguageModel.SmallBatch + 1)
+        {
+            var doc = new Document();
+            var keys = sentences.Skip(at).Take(size).ToList();
+            doc.Sentences.AddRange(keys);
+            using var cache = new CharlmCache { RootedForward = true };
+            tagger.Process(doc, cache);
+            var words = keys.Select(s => (IReadOnlyList<Word>)s.Words.ToList()).ToList();
+            var fresh = models.Parser.Scores(words, labelScores: true);
+            var taken = models.Parser.Scores(words, labelScores: true, charlms: cache, keys: keys.Select(s => (Sentence?)s).ToList());
+            Assert.Equal(fresh.ArcLogProbs, taken.ArcLogProbs);
+            Assert.Equal(fresh.LabelScores, taken.LabelScores);
+            reused += words.Count(w => cache.TryGetRootedForward(w.Select(x => Punct.Simplify(x.Text)).ToList(), out _));
+            total += words.Count;
+        }
+
+        Assert.True(reused > total * 3 / 4, $"only {reused} of {total} sentences took the tagger's rooted forward pass");
+    }
+
     /// <summary>Records the first sentence where <paramref name="actual"/> differs from <paramref name="golden"/>.</summary>
     private static void Compare(string name, string golden, string actual, List<string> failures)
     {

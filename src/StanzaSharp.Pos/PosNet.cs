@@ -257,7 +257,13 @@ internal sealed unsafe class ManagedPosNet : IPosNet
         try
         {
             // A sentence alone (a one-sentence document) is also kept for the dependency parser (DependencyParser.Process).
-            ManagedCharLanguageModel.BuildBoth(_charlmForward, _charlmBackward!, sentences, forward, backward, charlms, ct, finalC);
+            // A small batch's passes also run ROOT + each sentence for it (CharlmCache.RootedForward) and the tokens of
+            // sentences with multi-word tokens for sentiment and NER (CharlmCache.ReadsTokens), as extra rows of the same steps.
+            var tokens = cacheKeys?.OfType<Sentence>()
+                .Where(s => s.Tokens.Any(t => t.Words.Count != 1 || t.Words[0].Text != t.Text))
+                .Select(s => (IReadOnlyList<string>)[.. s.Tokens.Select(t => t.Text)])
+                .ToList();
+            ManagedCharLanguageModel.BuildBoth(_charlmForward, _charlmBackward!, sentences, forward, backward, charlms, ct, finalC, tagger: true, alsoKeep: tokens);
             for (int k = 0; k < words; k++)
             {
                 int r = packedRow[k] * _inputSize + col;
