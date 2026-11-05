@@ -27,6 +27,14 @@ internal sealed class CorefResolver : IDisposable
     private readonly int _k, _window;
     private readonly float[] _startMap;
     private readonly HashSet<int> _special; // ids _bertify drops: cls, sep, pad (eos is sep for XLM-R)
+    private readonly Dictionary<string, int>? _tokenMap; // TOKENIZER_MAPS: words that become one token without the tokenizer
+
+    // stanza/models/coref/tokenizer_customization.py's TOKENIZER_MAPS, by the config's bert_model (no prefix space: "." is
+    // the token ".", not "Ġ."). Its TOKENIZER_FILTERS are only albert's.
+    private static readonly Dictionary<string, string[]> TokenizerMaps = new()
+    {
+        ["roberta-large"] = [".", ",", "!", "?", ":", ";", "'s"],
+    };
 
     /// <param name="transformer">The pipeline's transformer (the checkpoint's <c>bert_model</c>); the model's LoRA adapters go
     /// onto a copy that shares its weights.</param>
@@ -42,6 +50,12 @@ internal sealed class CorefResolver : IDisposable
         _transformer = transformer;
         var (ids, _) = transformer.Tokenizer.Encode([]);
         _special = [ids[0], ids[^1], transformer.Net.Config.PositionOffset - 1];
+        if (TokenizerMaps.TryGetValue(transformer.Name, out var mapped))
+        {
+            var bpe = transformer.Tokenizer as ByteLevelBpe ?? throw new NotSupportedException($"{transformer.Name}'s coref token map needs its byte-level BPE tokenizer");
+            _tokenMap = mapped.ToDictionary(w => w, w => bpe.TokenId(w) ?? throw new InvalidDataException($"{transformer.Name}'s vocabulary has no token {PyString.Repr(w)}"));
+        }
+
         _encoder = transformer.Net.WithLora(LoraWeights.Read(ckpt, ckpt.Root["bert_lora"] ?? throw new InvalidDataException("A coref model without bert_lora"), config));
         _net = net(ckpt);
     }
@@ -53,10 +67,13 @@ internal sealed class CorefResolver : IDisposable
         int Int(string key) => config[key]?.GetValue<int>() ?? throw new InvalidDataException($"No {key} in the coref config");
         if (config["bert_model"]?.GetValue<string>() != transformer.Name)
             throw new ArgumentException($"The coref model reads {config["bert_model"]}, not {transformer.Name}");
-        if (!Flag("lora") || Flag("full_pairwise") || !Flag("singletons") || Int("n_hidden_layers") != 1 || Int("embedding_size") != 20
+
+        // full_pairwise (gum-speakers) adds a same-speaker embedding to each pair; without speakers (StanzaSharp has none, and
+        // Stanza's are "_" unless the tokenizer's speaker_delim sets them) every pair has the same speaker: the nets read it.
+        if (!Flag("lora") || !Flag("singletons") || Int("n_hidden_layers") != 1 || Int("embedding_size") != 20
             || Int("sp_embedding_size") != 64)
         {
-            throw new NotSupportedException("A coref configuration StanzaSharp doesn't port (it ports LoRA, no speakers, singletons, one hidden layer)");
+            throw new NotSupportedException("A coref configuration StanzaSharp doesn't port (it ports LoRA, singletons, one hidden layer)");
         }
     }
 
@@ -102,11 +119,39 @@ internal sealed class CorefResolver : IDisposable
     internal sealed record Result(List<List<int>> WordClusters, List<List<(int Start, int End)>> SpanClusters, float[] ZeroScores, int[] TopIndices, float[] Scores,
         int[] Windows, float[] WordsHead);
 
+    // build_doc's TOKENIZER_MAPS: each mapped word's subwords replaced by its one token (words are tokenized one at a time,
+    // so the others' subwords don't change).
+    private (int[] Ids, int[] Owners) MapTokens((int[] Ids, int[] Owners) encoded, IReadOnlyList<Word> words)
+    {
+        if (_tokenMap == null || !words.Any(w => _tokenMap.ContainsKey(w.Text)))
+            return encoded;
+        var (ids, owners) = encoded;
+        var newIds = new List<int>(ids.Length);
+        var newOwners = new List<int>(ids.Length);
+        for (int t = 0; t < ids.Length; t++)
+        {
+            int w = owners[t];
+            if (w >= 0 && _tokenMap.TryGetValue(words[w].Text, out int id))
+            {
+                if (t > 0 && owners[t - 1] == w)
+                    continue;
+                newIds.Add(id);
+                newOwners.Add(w);
+                continue;
+            }
+
+            newIds.Add(ids[t]);
+            newOwners.Add(w);
+        }
+
+        return ([.. newIds], [.. newOwners]);
+    }
+
     /// <summary>CorefModel.build_doc, _bertify and run, for the words of a whole document.</summary>
     internal Result Run(IReadOnlyList<Word> words, IReadOnlyList<int> sentOf, CancellationToken ct = default)
     {
         int n = words.Count;
-        var (ids, owners) = _transformer.Tokenizer.Encode([.. words.Select(w => w.Text)]);
+        var (ids, owners) = MapTokens(_transformer.Tokenizer.Encode([.. words.Select(w => w.Text)]), words);
         int subwords = ids.Length - 2;
         var starts = new int[n];
         var ends = new int[n];

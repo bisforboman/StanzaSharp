@@ -40,7 +40,8 @@ public static class Processor
     /// <summary>
     /// Coreference chains (<see cref="Document.Coref"/>), with XLM-RoBERTa large: optional, never among a package's
     /// processors, so name it (English and German <see langword="default"/>, <c>default_fast</c> and <c>default_accurate</c>
-    /// packages). Needs tokenize; runs after constituency, as in Stanza.
+    /// packages). English also has three models on roberta-large (<see cref="PipelineOptions.Models"/>). Needs tokenize;
+    /// runs after constituency, as in Stanza.
     /// </summary>
     public const string Coref = "coref";
 }

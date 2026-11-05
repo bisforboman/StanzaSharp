@@ -309,6 +309,17 @@ public static class ModelDownloader
             ("tokenizer_config.json", "994f46754c5bf4014f1aa92d34b1374319c3a6b3f702105cd5b742beaecd18ce"),
             ("pytorch_model.bin", "278b7a95739c4392fae9b818bb5343dde20be1b89318f37a6d939e1e1b9e461b"),
         ]),
+
+        // English coref gum-nospeakers, gum-speakers and ontonotes-singletons_roberta-large-lora's (#210): RoBERTa large,
+        // by the old alias Hugging Face serves FacebookAI/roberta-large under (the coref configs' bert_model); its
+        // tokenizer.json is roberta-base's.
+        ["roberta-large"] = ("722cf37b1afa9454edce342e7895e588b6ff1d59",
+        [
+            ("config.json", "82ba49810e6441735e696033ac2512ee09da555507b2917ac3865b202d592cc3"),
+            ("tokenizer.json", "847bbeab6174d66a88898f729d52fa8d355fafe1bea101cf960dd404581df70e"),
+            ("tokenizer_config.json", "994f46754c5bf4014f1aa92d34b1374319c3a6b3f702105cd5b742beaecd18ce"),
+            ("pytorch_model.bin", "36a10a8b694fadf9bf4f9049d14e257e88be45313ae02d882af9e60f39b8b2e8"),
+        ]),
     };
 
     /// <summary>

@@ -9,11 +9,13 @@ namespace StanzaSharp.Coref;
 /// <summary>The coref head (stanza/models/coref) on TorchSharp, op for op as Stanza runs it; only the work is split in blocks.</summary>
 internal sealed class CorefNet : ICorefNet
 {
-    private const int WordChunk = 512, RoughChunk = 256, PairChunk = 128, HeadChunk = 32;
+    private const int WordChunk = 512, RoughChunk = 256, HeadChunk = 32;
     private static readonly Scalar LeakySlope = 0.01; // torch.nn.LeakyReLU's default
 
     private readonly Linear _attn, _bilinear, _hidden, _out, _span0, _span3, _span6, _zeros0, _zeros2;
-    private readonly Embedding _distance, _spanEmb;
+    private readonly Embedding _spanEmb;
+    private readonly Tensor _pairFeatures; // [buckets, width]: ManagedCorefNet.PairFeatures (distance_emb, after speaker_emb[1] if full_pairwise)
+    private readonly int _pairChunk; // the config's a_scoring_batch_size, as CorefModel.run batches the anaphoricity scores
     private readonly Conv1d _conv0, _conv1;
     private readonly int _hidden_;
     private readonly Device _device = Weights.Device;
@@ -42,7 +44,9 @@ internal sealed class CorefNet : ICorefNet
         _attn = Lin("we", "attn.");
         _hidden_ = (int)ckpt.Shape(root["we"]!["attn.weight"])[1];
         _bilinear = Lin("rough_scorer", "bilinear.");
-        _distance = Emb("pw", "distance_emb.");
+        var features = ManagedCorefNet.PairFeatures(ckpt, out int width, out int buckets);
+        _pairFeatures = torch.tensor(features, [buckets, width], device: _device);
+        _pairChunk = root["config"]?["a_scoring_batch_size"]?.GetValue<int>() ?? throw new InvalidDataException("No a_scoring_batch_size in the coref config");
         _hidden = Lin("a_scorer", "hidden.0.");
         _out = Lin("a_scorer", "out.");
         _span0 = Lin("sp", "ffnn.0.");
@@ -106,12 +110,12 @@ internal sealed class CorefNet : ICorefNet
         using var _ = no_grad();
         var mentions = Rows(words, n, _hidden_);
         var topIndices = torch.tensor(top.Select(i => (long)i).ToArray(), [n, k], device: _device);
-        var distances = _distance.forward(torch.tensor(buckets.Select(i => (long)i).ToArray(), [n, k], device: _device));
+        var distances = _pairFeatures[torch.tensor(buckets.Select(i => (long)i).ToArray(), [n, k], device: _device)];
         var result = new List<Tensor>();
-        for (int first = 0; first < n; first += PairChunk)
+        for (int first = 0; first < n; first += _pairChunk)
         {
             ct.ThrowIfCancellationRequested();
-            int count = Math.Min(PairChunk, n - first);
+            int count = Math.Min(_pairChunk, n - first);
 
             // AnaphoricityScorer._get_pair_matrix and _ffnn.
             var a = mentions.narrow(0, first, count).unsqueeze(1).expand(-1, k, _hidden_);
@@ -185,9 +189,10 @@ internal sealed class CorefNet : ICorefNet
 
     public void Dispose()
     {
-        nn.Module[] modules = [_attn, _bilinear, _hidden, _out, _span0, _span3, _span6, _zeros0, _zeros2, _distance, _spanEmb, _conv0, _conv1];
+        nn.Module[] modules = [_attn, _bilinear, _hidden, _out, _span0, _span3, _span6, _zeros0, _zeros2, _spanEmb, _conv0, _conv1];
         foreach (var m in modules)
             m.Dispose();
+        _pairFeatures.Dispose();
     }
 }
 

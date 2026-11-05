@@ -89,7 +89,7 @@ public sealed class Pipeline : IDisposable
         {
             ["constituency"] = ["ptb3_charlm", "ptb3-revised_electra-large", "ptb3_electra-large"],
             ["sentiment"] = ["sstplus_electra-large"],
-            ["coref"] = [CorefModel],
+            ["coref"] = [CorefModel, .. RobertaCoref],
 
             // the treebanks' _charlm tokenizers and lemmatizers (per-character charlm states); lemma combined_charlm also has
             // contextual lemma classifiers ('s, her), which read the pretrain too
@@ -131,6 +131,11 @@ public sealed class Pipeline : IDisposable
             ["coref"] = [CorefModel],
         },
     };
+
+    // The English-only coref models (#210): roberta-large with LoRA adapters; gum-speakers also reads a same-speaker feature,
+    // which is the same for every pair without speakers (StanzaSharp's input never has any, nor Stanza's without speaker_delim).
+    private static string[] RobertaCoref =>
+        ["gum-nospeakers_roberta-large-lora", "gum-speakers_roberta-large-lora", "ontonotes-singletons_roberta-large-lora"];
 
     // The treebanks' frozen-transformer taggers and parsers (#168): combined_electra-large's architecture on each treebank's
     // vocabularies and heads (legacy tag heads; lines and partut composite XPOS), as their _charlm twins.
@@ -222,6 +227,9 @@ public sealed class Pipeline : IDisposable
             ["ner/ontonotes_electra-large"] = Electra,
             ["ner/conll03_electra-large"] = Electra,
             ["coref/" + CorefModel] = XlmRoberta, // with its LoRA adapters
+            ["coref/gum-nospeakers_roberta-large-lora"] = RobertaLarge,
+            ["coref/gum-speakers_roberta-large-lora"] = RobertaLarge,
+            ["coref/ontonotes-singletons_roberta-large-lora"] = RobertaLarge,
         },
         ["de"] = new()
         {
@@ -240,7 +248,7 @@ public sealed class Pipeline : IDisposable
     };
 
     private const string Electra = "google/electra-large-discriminator", GermanElectra = "german-nlp-group/electra-base-german-uncased",
-        XlmRoberta = "FacebookAI/xlm-roberta-large";
+        XlmRoberta = "FacebookAI/xlm-roberta-large", RobertaLarge = "roberta-large";
 
     /// <summary>The transformers <paramref name="models"/> of <paramref name="language"/> read (<see cref="Transformers"/>), each once.</summary>
     internal static List<string> TransformersOf(IReadOnlyDictionary<string, string> models, string language) =>

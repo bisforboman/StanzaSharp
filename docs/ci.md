@@ -142,7 +142,10 @@ How `.github/workflows/` test and publish StanzaSharp, and the decisions behind 
     `fuzz` runs `CheckpointFuzzTests` with
     `STANZASHARP_FUZZ_MODELS=all`, 3,000 iterations and the run number as seed, then `tools/text_fuzz.py run` (tokenize,mwt
     1,000 texts; default and default_fast 60 each) with Python Stanza (a decision that float64 Stanza makes as StanzaSharp
-    does is a float32 near-tie, reported but not failing, owner's decision 2026-10-24 after #213); `benchmark` calls benchmark.yml `quick` without
+    does is a float32 near-tie, reported but not failing, owner's decision 2026-10-24 after #213); `coref-models` (#210; owner's decision 2026-11-05: nightly only, as
+    roberta-large's 1.4 GB and the three models' 0.4 GB would not fit golden shard 4's disk) downloads `tools/ci-models.sh
+    coref-models` each night (no cache; en from the models-en cache) and runs `RobertaCorefTests` on both backends; ci.yml's
+    shards leave the class out (`SHARD_NIGHTLY`) and the no-skip checks exempt it; `benchmark` calls benchmark.yml `quick` without
     the avx512 jobs (`no_avx512`). Any failure comments on the open issue "Nightly run failed" (`report`, created if
     missing; closed by a person). Never required; release.yml waits for main's push run only, so it never sees these.
   - `benchmark.yml` (owner's decision 2026-10-10): `workflow_dispatch` (inputs `lang`, `package`, `quick`) and

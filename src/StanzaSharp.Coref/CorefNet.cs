@@ -81,8 +81,7 @@ internal sealed unsafe class ManagedCorefNet : ICorefNet
         int h = _hidden;
         var hidden = T("a_scorer", "hidden.0.weight");
         int inputs = Shape("a_scorer", "hidden.0.weight")[1], outputs = Shape("a_scorer", "hidden.0.weight")[0];
-        var distance = T("pw", "distance_emb.weight");
-        int emb = Shape("pw", "distance_emb.weight")[1], buckets = Shape("pw", "distance_emb.weight")[0];
+        var distance = PairFeatures(ckpt, out int emb, out int buckets);
         if (inputs != (3 * h) + emb)
             throw new InvalidDataException($"The anaphoricity layer reads {inputs} inputs, not 3 x {h} + {emb}");
         _pairA = Columns(hidden, outputs, inputs, 0, h);
@@ -128,6 +127,38 @@ internal sealed unsafe class ManagedCorefNet : ICorefNet
         _zeros0Bias = Pad(T("zeros_predictor", "0.bias"), _zeros0.PaddedN);
         _zerosOut = T("zeros_predictor", "2.weight");
         _zerosOutBias = T("zeros_predictor", "2.bias")[0];
+    }
+
+    /// <summary>
+    /// PairwiseEncoder's features per distance bucket, [buckets, width]: distance_emb, or with <c>full_pairwise</c>
+    /// (gum-speakers) [speaker_emb[1], distance_emb] (cat((same_speaker, distance))), since without speakers every pair has
+    /// the same one.
+    /// </summary>
+    internal static float[] PairFeatures(Checkpoint ckpt, out int width, out int buckets)
+    {
+        var pw = ckpt.Root["pw"] ?? throw new InvalidDataException("No pw");
+        var shape = ckpt.Shape(pw["distance_emb.weight"]);
+        buckets = (int)shape[0];
+        int emb = (int)shape[1];
+        var distance = ckpt.Tensor<float>(pw["distance_emb.weight"]);
+        if (ckpt.Root["config"]?["full_pairwise"]?.GetValue<bool>() != true)
+        {
+            width = emb;
+            return distance;
+        }
+
+        var speaker = ckpt.Tensor<float>(pw["speaker_emb.weight"] ?? throw new InvalidDataException("A full_pairwise coref model without pw.speaker_emb"));
+        if (speaker.Length != 2 * emb)
+            throw new InvalidDataException($"pw.speaker_emb has {speaker.Length} weights, not 2 x {emb}");
+        width = 2 * emb;
+        var features = new float[buckets * width];
+        for (int b = 0; b < buckets; b++)
+        {
+            Array.Copy(speaker, emb, features, b * width, emb);
+            Array.Copy(distance, b * emb, features, (b * width) + emb, emb);
+        }
+
+        return features;
     }
 
     // Columns [first, first + count) of W [rows, cols], packed.

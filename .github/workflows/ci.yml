@@ -35,8 +35,9 @@ env:
   SHARD_THREE: .PipelineTests. .NerTests. .SentimentTests. .InputModeTests. .DepparseTests. .NoSsplitTests.
   # The Transformer* classes (TransformerModelTests, ...): only golden-shard 4 downloads the transformer they read.
   SHARD_FOUR: .Transformer
-  # Run by no shard: the languages whose models only nightly.yml's languages job downloads (LanguageGoldenTests).
-  SHARD_NIGHTLY: .LanguageGoldenTests.
+  # Run by no shard: the languages whose models only nightly.yml's languages job downloads (LanguageGoldenTests), and the
+  # roberta-large coref models only its coref-models job downloads (RobertaCorefTests, #210).
+  SHARD_NIGHTLY: .LanguageGoldenTests. .RobertaCorefTests.
 
 jobs:
   # Everything builds and tests in Release: the managed backend's kernels are many times slower in Debug, which once
@@ -572,8 +573,8 @@ jobs:
           # (rows with lang "de", names with German) need the German models, and TreebankPackageTests', ModelChoiceTests' and OptionTests' English rows and CharlmInputTests the
           # English treebank and alternative models, which only golden-shard has, and the Transformer* classes the transformer files
           # golden-shard 4 downloads, and LanguageIdentifierTests and MultilingualPipelineTests the language identifier golden-shard 1 downloads;
-          # LanguageGoldenTests the other languages' models, which only nightly.yml downloads.
-          if grep -h 'outcome="NotExecuted"' TestResults/*.trx | grep -v 'Run_PythonStanza_' | grep -qvE 'lang: (&quot;|")de|German|TreebankPackageTests|ModelChoiceTests|OptionTests|CharlmInputTests|Transformer|LanguageIdentifierTests|MultilingualPipelineTests|LanguageGoldenTests'; then
+          # LanguageGoldenTests the other languages' models and RobertaCorefTests roberta-large's, which only nightly.yml downloads.
+          if grep -h 'outcome="NotExecuted"' TestResults/*.trx | grep -v 'Run_PythonStanza_' | grep -qvE 'lang: (&quot;|")de|German|TreebankPackageTests|ModelChoiceTests|OptionTests|CharlmInputTests|Transformer|LanguageIdentifierTests|MultilingualPipelineTests|LanguageGoldenTests|RobertaCorefTests'; then
             echo "::error::Tests were skipped; the models in models/stanza/en were not found."
             exit 1
           fi
@@ -696,8 +697,8 @@ jobs:
           # (rows with lang "de", names with German) need the German models, and TreebankPackageTests', ModelChoiceTests' and OptionTests' English rows and CharlmInputTests the
           # English treebank and alternative models, which only golden-shard has, and the Transformer* classes the transformer files
           # golden-shard 4 downloads, and LanguageIdentifierTests and MultilingualPipelineTests the language identifier golden-shard 1 downloads;
-          # LanguageGoldenTests the other languages' models, which only nightly.yml downloads.
-          if grep -h 'outcome="NotExecuted"' TestResults/*.trx | grep -v 'Run_PythonStanza_' | grep -qvE 'lang: (&quot;|")de|German|TreebankPackageTests|ModelChoiceTests|OptionTests|CharlmInputTests|Transformer|LanguageIdentifierTests|MultilingualPipelineTests|LanguageGoldenTests'; then
+          # LanguageGoldenTests the other languages' models and RobertaCorefTests roberta-large's, which only nightly.yml downloads.
+          if grep -h 'outcome="NotExecuted"' TestResults/*.trx | grep -v 'Run_PythonStanza_' | grep -qvE 'lang: (&quot;|")de|German|TreebankPackageTests|ModelChoiceTests|OptionTests|CharlmInputTests|Transformer|LanguageIdentifierTests|MultilingualPipelineTests|LanguageGoldenTests|RobertaCorefTests'; then
             echo "::error::Tests were skipped; the models in models/stanza/en were not found."
             exit 1
           fi
