@@ -299,7 +299,7 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
         var reps = ArrayPool<float>.Shared.Rent(rows * dim);
         try
         {
-            _charlmForward.BuildCharRepresentation(sentences, reps, dim, ct);
+            ForwardCharlm(batch, sentences, reps, ct);
             for (int k = 0; k < rows; k++)
                 reps.AsSpan(k * dim, dim).CopyTo(x.AsSpan(packedRow[k] * _inputSize + col));
             ct.ThrowIfCancellationRequested();
@@ -310,6 +310,47 @@ internal sealed unsafe class ManagedDepparseNet : IDepparseNet
         finally
         {
             ArrayPool<float>.Shared.Return(reps);
+        }
+    }
+
+    /// <summary>
+    /// The forward charlm's rows for <see cref="CharlmFeatures"/>, ROOT then the words of each sentence in order: the
+    /// tagger's where it ran them (<see cref="CharlmCache.TryGetRootedForward"/>, the same bits), the rest computed.
+    /// </summary>
+    private void ForwardCharlm(DepparseBatch batch, List<IReadOnlyList<string>> sentences, float[] reps, CancellationToken ct)
+    {
+        int dim = _charlmForward!.HiddenDim, n = sentences.Count;
+        var rest = new List<int>();
+        for (int i = 0, row = 0; i < n; row += sentences[i].Count, i++)
+        {
+            if (batch.Charlms != null && batch.Charlms.TryGetRootedForward(batch.Texts[i], out var rooted))
+                rooted.CopyTo(reps.AsSpan(row * dim));
+            else
+                rest.Add(i);
+        }
+
+        if (rest.Count == n)
+        {
+            _charlmForward.BuildCharRepresentation(sentences, reps, dim, ct);
+            return;
+        }
+
+        if (rest.Count == 0)
+            return;
+        var first = new int[n];
+        for (int i = 1; i < n; i++)
+            first[i] = first[i - 1] + sentences[i - 1].Count;
+        int restRows = rest.Sum(i => sentences[i].Count);
+        var scratch = ArrayPool<float>.Shared.Rent(restRows * dim);
+        try
+        {
+            _charlmForward.BuildCharRepresentation(rest.Select(i => sentences[i]).ToList(), scratch, dim, ct);
+            for (int j = 0, k = 0; j < rest.Count; k += sentences[rest[j]].Count, j++)
+                scratch.AsSpan(k * dim, sentences[rest[j]].Count * dim).CopyTo(reps.AsSpan(first[rest[j]] * dim));
+        }
+        finally
+        {
+            ArrayPool<float>.Shared.Return(scratch);
         }
     }
 

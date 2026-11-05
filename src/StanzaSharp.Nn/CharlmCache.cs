@@ -112,6 +112,42 @@ internal sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords) : 
         return false;
     }
 
+    // The forward charlm over ROOT + a sentence's texts, by the texts (without ROOT): what the managed parser's forward
+    // pass computes for that sentence, made by the tagger's pass as extra rows of the same steps (RootedForward).
+    private readonly Dictionary<string, float[]> _rooted = [];
+
+    /// <summary>
+    /// Whether a managed dependency parser reading this cache comes later with the tagger's forward charlm: the tagger
+    /// then also runs that charlm over ROOT + the words of a small batch (<see cref="AddRootedForward"/>), as extra rows of
+    /// the steps it takes anyway.
+    /// </summary>
+    public bool RootedForward { get; init; }
+
+    /// <summary>
+    /// Whether sentiment or NER, which read tokens, comes later with the tagger's charlms: the tagger then also runs them
+    /// over the tokens of a small batch's sentences with multi-word tokens (single-sentence entries, <see cref="TryGetAlone"/>),
+    /// as extra rows of the steps it takes anyway.
+    /// </summary>
+    public bool ReadsTokens { get; init; }
+
+    /// <summary>
+    /// Keeps the forward charlm's [texts + 1, dim] outputs over ROOT (<c>"\n"</c>) followed by <paramref name="texts"/>
+    /// (<see cref="TryGetRootedForward"/>) if they fit under <see cref="MaxWords"/>.
+    /// </summary>
+    public void AddRootedForward(IReadOnlyList<string> texts, float[] outputs)
+    {
+        if (!HasRoom(texts.Count + 1) || !_rooted.TryAdd(AloneKey(texts), outputs))
+            return;
+        _words += texts.Count + 1;
+    }
+
+    /// <summary>
+    /// The forward charlm's outputs over ROOT followed by <paramref name="texts"/>, from a managed producer: exactly what a
+    /// managed charlm call on those texts computes, in any batch.
+    /// </summary>
+    public bool TryGetRootedForward(IReadOnlyList<string> texts, [System.Diagnostics.CodeAnalysis.MaybeNullWhen(false)] out float[] outputs) =>
+        _rooted.TryGetValue(AloneKey(texts), out outputs);
+
     private static string AloneKey(IReadOnlyList<string> texts) => string.Concat(texts.Select(t => $"{t.Length}:{t}"));
 
     /// <summary>Whether a new sentence of <paramref name="words"/> words would fit, so a producer can skip making copies that won't be kept.</summary>
@@ -166,6 +202,7 @@ internal sealed class CharlmCache(int maxWords = CharlmCache.DefaultMaxWords) : 
             Dispose(e);
         _reps.Clear();
         _alone.Clear();
+        _rooted.Clear();
         _words = 0;
     }
 }

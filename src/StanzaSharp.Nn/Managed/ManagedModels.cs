@@ -99,38 +99,129 @@ internal sealed unsafe class ManagedCharLanguageModel : IPerCharLanguageModel
     /// <summary>
     /// Both charlms over <paramref name="sentences"/> into <paramref name="forward"/> and <paramref name="backward"/>
     /// ([words, HiddenDim] each, rows as in <see cref="BuildCharRepresentation(IReadOnlyList{IReadOnlyList{string}}, float*, int, CancellationToken, float*)"/>).
-    /// A single sentence goes through <paramref name="cache"/>'s single-sentence entries (<see cref="CharlmCache.TryGetAlone"/>):
-    /// copied if an earlier call ran the same texts alone, else computed and kept for the next one.
+    /// A sentence whose texts <paramref name="cache"/> holds (<see cref="CharlmCache.TryGetAlone"/>) is copied from there;
+    /// the rest run as one batch. A single sentence computed here is kept there for the next caller.
     /// </summary>
     /// <param name="backwardFinalC">Optional: gets each sentence's backward final cell state, [sentences, HiddenDim].</param>
+    /// <param name="tagger">
+    /// The tagger's call. If at most <see cref="SmallBatch"/> sentences are computed, the same steps also run, as extra rows:
+    /// ROOT + each sentence forward if <paramref name="cache"/> wants them (<see cref="CharlmCache.RootedForward"/>, for the
+    /// parser), and both passes over <paramref name="alsoKeep"/>'s texts if it wants those (<see cref="CharlmCache.ReadsTokens"/>;
+    /// kept as <see cref="CharlmCache.AddAlone"/> entries: multi-word-token sentences' tokens, for sentiment and NER).
+    /// </param>
+    /// <param name="alsoKeep">See <paramref name="tagger"/>.</param>
     public static void BuildBoth(ManagedCharLanguageModel forwardLm, ManagedCharLanguageModel backwardLm, IReadOnlyList<IReadOnlyList<string>> sentences,
-        float[] forward, float[] backward, CharlmCache? cache, CancellationToken ct, float[]? backwardFinalC = null)
+        float[] forward, float[] backward, CharlmCache? cache, CancellationToken ct, float[]? backwardFinalC = null, bool tagger = false,
+        IReadOnlyList<IReadOnlyList<string>>? alsoKeep = null)
     {
-        int dim = forwardLm.HiddenDim;
-        if (cache == null || sentences.Count != 1)
+        int dim = forwardLm.HiddenDim, n = sentences.Count;
+        var first = new int[n + 1]; // each sentence's first row
+        for (int i = 0; i < n; i++)
+            first[i + 1] = first[i] + sentences[i].Count;
+        var rest = new List<int>();
+        for (int i = 0; i < n; i++)
         {
-            forwardLm.BuildCharRepresentation(sentences, forward, dim, ct);
-            ct.ThrowIfCancellationRequested();
-            fixed (float* pb = backward, pc = backwardFinalC)
-                backwardLm.BuildCharRepresentation(sentences, pb, dim, ct, pc);
+            if (cache != null && cache.TryGetAlone(sentences[i], out var alone))
+            {
+                alone.Forward.CopyTo(forward, first[i] * dim);
+                alone.Backward.CopyTo(backward, first[i] * dim);
+                if (backwardFinalC != null)
+                    alone.BackwardFinalC.CopyTo(backwardFinalC, i * dim);
+            }
+            else
+            {
+                rest.Add(i);
+            }
+        }
+
+        if (rest.Count == 0)
             return;
-        }
 
-        if (!cache.TryGetAlone(sentences[0], out var alone))
+        // The extra rows: only where a step costs about what it would without them (SmallBatch).
+        bool small = tagger && cache != null && rest.Count <= SmallBatch;
+        bool rooted = small && cache!.RootedForward;
+        List<IReadOnlyList<string>> keep = small && alsoKeep != null && cache!.ReadsTokens
+            ? [.. alsoKeep.Where(t => t.Count > 0 && !cache.TryGetAlone(t, out _)).Distinct(TextsComparer.Instance)]
+            : [];
+        IReadOnlyList<IReadOnlyList<string>> computed = rest.Count == n ? sentences : [.. rest.Select(i => sentences[i])];
+        IReadOnlyList<IReadOnlyList<string>> both = keep.Count == 0 ? computed : [.. computed, .. keep];
+        IReadOnlyList<IReadOnlyList<string>> forwardRuns = rooted ? [.. both, .. computed.Select(s => (IReadOnlyList<string>)[Root, .. s])] : both;
+        int restWords = computed.Sum(s => s.Count), keepWords = keep.Sum(s => s.Count);
+        int forwardRows = restWords + keepWords + (rooted ? restWords + computed.Count : 0), backwardRows = restWords + keepWords;
+        bool direct = forwardRuns.Count == n; // nothing extra and nothing copied: straight into the caller's arrays
+        var forwardOut = direct ? forward : ArrayPool<float>.Shared.Rent(forwardRows * dim);
+        var backwardOut = direct ? backward : ArrayPool<float>.Shared.Rent(backwardRows * dim);
+        var finalC = direct && backwardFinalC != null ? backwardFinalC : ArrayPool<float>.Shared.Rent(both.Count * dim);
+        try
         {
-            int n = sentences[0].Count * dim;
-            alone = new(new float[n], new float[n], new float[dim]);
-            forwardLm.BuildCharRepresentation(sentences, alone.Forward, dim, ct);
+            forwardLm.BuildCharRepresentation(forwardRuns, forwardOut, dim, ct);
             ct.ThrowIfCancellationRequested();
-            fixed (float* pb = alone.Backward, pc = alone.BackwardFinalC)
-                backwardLm.BuildCharRepresentation(sentences, pb, dim, ct, pc);
-            cache.AddAlone(sentences[0], alone);
-        }
+            fixed (float* pb = backwardOut, pc = finalC)
+                backwardLm.BuildCharRepresentation(both, pb, dim, ct, pc);
+            if (!direct)
+            {
+                for (int j = 0, row = 0; j < rest.Count; row += sentences[rest[j]].Count, j++)
+                {
+                    int i = rest[j], len = sentences[i].Count * dim;
+                    forwardOut.AsSpan(row * dim, len).CopyTo(forward.AsSpan(first[i] * dim));
+                    backwardOut.AsSpan(row * dim, len).CopyTo(backward.AsSpan(first[i] * dim));
+                    if (backwardFinalC != null)
+                        finalC.AsSpan(j * dim, dim).CopyTo(backwardFinalC.AsSpan(i * dim));
+                }
+            }
 
-        alone.Forward.CopyTo(forward, 0);
-        alone.Backward.CopyTo(backward, 0);
-        if (backwardFinalC != null)
-            alone.BackwardFinalC.CopyTo(backwardFinalC, 0);
+            // Kept: a single sentence (for the next caller on the same texts), the extra texts, the ROOT runs.
+            if (cache != null && n == 1)
+                cache.AddAlone(sentences[0], Alone(forwardOut, backwardOut, finalC, 0, 0, sentences[0].Count, dim));
+            for (int j = 0, row = restWords; j < keep.Count; row += keep[j].Count, j++)
+                cache!.AddAlone(keep[j], Alone(forwardOut, backwardOut, finalC, row, computed.Count + j, keep[j].Count, dim));
+            if (rooted)
+            {
+                for (int j = 0, row = restWords + keepWords; j < computed.Count; row += computed[j].Count + 1, j++)
+                    cache!.AddRootedForward(computed[j], forwardOut.AsSpan(row * dim, (computed[j].Count + 1) * dim).ToArray());
+            }
+        }
+        finally
+        {
+            if (!direct)
+            {
+                ArrayPool<float>.Shared.Return(forwardOut);
+                ArrayPool<float>.Shared.Return(backwardOut);
+            }
+
+            if (finalC != backwardFinalC)
+                ArrayPool<float>.Shared.Return(finalC);
+        }
+    }
+
+    private static CharlmCache.Alone Alone(float[] forward, float[] backward, float[] finalC, int row, int sequence, int words, int dim) =>
+        new(forward.AsSpan(row * dim, words * dim).ToArray(), backward.AsSpan(row * dim, words * dim).ToArray(), finalC.AsSpan(sequence * dim, dim).ToArray());
+
+    /// <summary>ROOT's text in the parser's charlm input (<c>"\n"</c>).</summary>
+    private const string Root = "\n";
+
+    /// <summary>
+    /// The most sentences a tagger's call computes for which it adds extra rows (<see cref="BuildBoth"/>): a step reads
+    /// W_hh (16 MB for the English charlm) from memory, and up to 3 rows cost one row's time (the 3-row kernel), up to
+    /// about 12 less than two separate passes (docs/performance/round-50-small-batch-charlm-rows.md). Larger batches are
+    /// compute-bound, where extra rows would only cost memory.
+    /// </summary>
+    internal const int SmallBatch = 4;
+
+    /// <summary>Compares sentences by their texts.</summary>
+    private sealed class TextsComparer : IEqualityComparer<IReadOnlyList<string>>
+    {
+        public static readonly TextsComparer Instance = new();
+
+        public bool Equals(IReadOnlyList<string>? x, IReadOnlyList<string>? y) => x == null ? y == null : y != null && x.SequenceEqual(y);
+
+        public int GetHashCode(IReadOnlyList<string> obj)
+        {
+            var hash = default(HashCode);
+            foreach (var t in obj)
+                hash.Add(t);
+            return hash.ToHashCode();
+        }
     }
 
     /// <summary>

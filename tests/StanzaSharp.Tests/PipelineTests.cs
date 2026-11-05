@@ -62,6 +62,36 @@ public class PipelineTests(SharedPipelines pipelines) : IClassFixture<SharedPipe
         Assert.True(mwt >= 5, $"only {mwt} of {texts.Count} texts have multi-word tokens");
     }
 
+    /// <summary>
+    /// Small documents (2 to 4 sentences): the managed tagger's charlm passes also run, as extra rows of the same steps,
+    /// ROOT + each sentence for the parser (CharlmCache.RootedForward) and the tokens of sentences with multi-word tokens
+    /// for sentiment and NER (CharlmCache.ReadsTokens). A step gives a row the same arithmetic in any batch, so the output
+    /// equals the uncached pipeline's exactly.
+    /// </summary>
+    [ModelTheory]
+    [InlineData("en")]
+    [German]
+    [Trait("Backend", "Managed")]
+    public void SmallDocuments_EqualTheUncachedPipeline(string lang)
+    {
+        var cached = pipelines.Get(lang: lang);
+        using var uncached = Pipeline.Load(Repo.ModelsFor(lang), new PipelineOptions { Language = lang, CharlmCache = new CharlmCacheOptions { IsEnabled = false } });
+        var sentences = Directory.GetFiles(Repo.GoldenFor(lang), "validation*.conllu").Order().SelectMany(f => File.ReadLines(f).Where(l => l.StartsWith("# text = ")).Take(9))
+            .Select(l => l["# text = ".Length..])
+            .ToList();
+        int mwt = 0, documents = 0;
+        for (int at = 0, size = 2; at < sentences.Count; at += size, size = size % 4 + 2)
+        {
+            var text = string.Join(" ", sentences.Skip(at).Take(size));
+            var doc = cached.Process(text);
+            mwt += doc.Sentences.Count(s => s.Tokens.Any(t => t.Words.Count > 1));
+            documents++;
+            Assert.Equal(Conllu.Write(uncached.Process(text)), Conllu.Write(doc));
+        }
+
+        Assert.True(mwt >= 5, $"only {mwt} sentences of {documents} documents have multi-word tokens");
+    }
+
     [ModelTheory]
     [InlineData(false, "en")]
     [InlineData(true, "en")]

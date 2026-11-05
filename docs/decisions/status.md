@@ -110,6 +110,13 @@ since 1.0, and every processor also has a managed net (see "Managed backend"), t
     sentence depends on its texts only, so `ManagedCharLanguageModel.BuildBoth` (pos, sentiment, ner) reuses any earlier
     one on the same texts exactly. Besides depparse, NER takes a multi-word-token sentence's token charlms from sentiment.
     `PipelineTests.OneSentenceDocuments_EqualTheUncachedPipeline` checks the whole pipeline against the cache turned off.
+    Since round 50 `BuildBoth` copies any sentence of a batch the table holds, not only a single one.
+  - Extra rows in the tagger's steps (round 50): a step reads all of W_hh (16 MB) for 1 to 3 rows alike, so on a batch
+    of at most `ManagedCharLanguageModel.SmallBatch` (4) sentences the managed tagger's forward pass also runs ROOT +
+    each sentence (`CharlmCache.RootedForward`, kept by texts; the parser's forward pass takes it,
+    `TryGetRootedForward`), and both passes run the tokens of each multi-word-token sentence (`CharlmCache.ReadsTokens`,
+    kept in the single-sentence table for sentiment and NER). Bit for bit (`SmallDocuments_TakeTheTaggersRootedForward...`,
+    `PipelineTests.SmallDocuments_EqualTheUncachedPipeline`).
   - A missing lemma is read as `_`, as in Stanza, so without the lemmatizer the parses differ.
   - `Conllu.Write` needs no change: with heads set it matches Stanza (DEPS stays `_`).
 - `Lemma.Lemmatizer` (processor `lemma`, requires tokenize, mwt, pos) reproduces `tests/golden/lemma/`

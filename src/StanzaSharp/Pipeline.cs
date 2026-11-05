@@ -1111,7 +1111,7 @@ public sealed class Pipeline : IDisposable
         string? tagger = _pos is { UsesCharlm: true } ? _charlmOf["pos"] : null;
         bool Shares(string processor) => tagger != null && _charlmOf.GetValueOrDefault(processor) == tagger;
         using var charlms = tagger != null && (Shares("ner") || Shares("constituency") || Shares("sentiment") || (Shares("depparse") && _depparseReadsCache))
-            && _cacheOptions.IsEnabled ? new CharlmCache(_cacheOptions.MaxWords) : null;
+            && _cacheOptions.IsEnabled ? new CharlmCache(_cacheOptions.MaxWords) { RootedForward = Shares("depparse") && _depparseReadsCache, ReadsTokens = Shares("sentiment") || Shares("ner") } : null;
         CharlmCache? CacheFor(string processor) => Shares(processor) ? charlms : null;
 
         // The transformer states, for the processors after the first that reads them (Stanza runs it once per processor):
