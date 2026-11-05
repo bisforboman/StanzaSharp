@@ -2,7 +2,8 @@
 
 > **Done (2026-10-20):** coref landed in three PRs: (a) the XLM-R encoder and its tokenizer (2026-10-19), (b) the document
 > model, (c) the processor (`Processor.Coref`). See "(a) done", "(b) done" and "(c) done" below. Every owner's question
-> (Q1–Q8) is decided (2026-10-20); the English-only models Q6 left out are #210 (parked).
+> (Q1–Q8) is decided (2026-10-20); the English-only models Q6 left out are #210, done 2026-11-05 (docs/decisions/scope.md,
+> "The English roberta-large coref models").
 >
 > **Owner's decision (2026-10-14): not now.** Coref needs a 24-layer transformer; the smaller gaps (JSON output,
 > processing pretagged CoNLL-U) come first. This report is kept as the record for a later decision.

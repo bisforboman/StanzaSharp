@@ -39,8 +39,23 @@ public class RobertaCorefTests(ITestOutputHelper output)
         TransformerCorefTests.AssertSteps(Folder(model), Path.Combine(Repo.Golden, "coref", "corpus.conllu"), "corpus", resolver, output);
     }
 
+    /// <summary>
+    /// Reviewed near-ties (owner's sign-off, 2026-11-05): a (model, text, backend) whose chains through the listed sentences
+    /// may differ from Stanza's; every other chain of the text must still be Stanza's. roberta-large gives the token "."
+    /// (TOKENIZER_MAPS) almost the same vector everywhere (to about 1e-7), so which "." words reach a word's top 50 candidates,
+    /// and in what order, is float32 noise, and start_map reads the candidates in that order: a start score moves by up to
+    /// about 0.1 between backends. Measured in Stanza's scores: gum-nospeakers on validation_tech, sentence 46's "int" (start
+    /// vs dummy 0.0299; TorchSharp +0.0796, managed −0.0092 against Stanza's −0.0299); gum-speakers on
+    /// validation_contractions, sentences 118 and 120 ("IT": start 0.205; "He": antecedent 0.125). docs/decisions/scope.md.
+    /// </summary>
+    internal static readonly (string Model, string Text, bool Managed, int[] Sentences)[] KnownNearTies =
+    [
+        (GumNoSpeakers, "validation_tech", false, [46]),
+        (GumSpeakers, "validation_contractions", false, [118, 120]),
+    ];
+
     // tokenize,mwt,pos,coref with Models[coref] = model on the default package (make_golden.py's COREF_PROCESSORS): the
-    // chains of corpus.txt and every validation text.
+    // chains of corpus.txt and every validation text, but KnownNearTies' chains.
     [RobertaCorefTheory]
     [InlineData(GumNoSpeakers, true)]
     [InlineData(GumSpeakers, true)]
@@ -63,16 +78,27 @@ public class RobertaCorefTests(ITestOutputHelper output)
             var name = Path.GetFileNameWithoutExtension(txt);
             var doc = nlp.Process(File.ReadAllText(txt));
             var expected = JsonNode.Parse(File.ReadAllText(Path.Combine(Folder(model), name + ".chains.json")))!.AsArray()
-                .Select(c => $"{c!["index"]} {c["representative_text"]} {c["representative_index"]}: {string.Join(" ", c["mentions"]!.AsArray().Select(CorefDocumentTests.Mention))}")
+                .Select(c => (Mentions: c!["mentions"]!.AsArray().Select(CorefDocumentTests.Mention).ToList(),
+                    Text: $"{c["index"]} {c["representative_text"]} {c["representative_index"]}"))
                 .ToList();
-            var actual = doc.Coref.Select(c => $"{c.Index} {c.RepresentativeText} {c.RepresentativeIndex}: {string.Join(" ", c.Mentions)}").ToList();
+            var actual = doc.Coref.Select(c => (Mentions: c.Mentions.ToList(), Text: $"{c.Index} {c.RepresentativeText} {c.RepresentativeIndex}")).ToList();
+            var tie = KnownNearTies.FirstOrDefault(t => t.Model == model && t.Text == name && t.Managed == managed).Sentences;
+
+            // Without a near-tie, the chains as they are; with one, those through none of its sentences, unnumbered.
+            List<string> Lines(IEnumerable<(List<CorefMention> Mentions, string Text)> chains) => tie == null
+                ? [.. chains.Select(c => $"{c.Text}: {string.Join(" ", c.Mentions)}")]
+                : [.. chains.Where(c => !c.Mentions.Any(m => tie.Contains(m.Sentence)))
+                    .Select(c => $"{c.Text[(c.Text.IndexOf(' ') + 1)..]}: {string.Join(" ", c.Mentions)}")];
+            var e = Lines(expected);
+            var a = Lines(actual);
             int i = 0;
-            while (i < Math.Min(expected.Count, actual.Count) && expected[i] == actual[i])
+            while (i < Math.Min(e.Count, a.Count) && e[i] == a[i])
                 i++;
-            bool same = i == expected.Count && i == actual.Count;
+            bool same = i == e.Count && i == a.Count;
             if (!same)
-                failures.Add($"{name}, chain {i}:\n--- expected\n{expected.ElementAtOrDefault(i)}\n--- actual\n{actual.ElementAtOrDefault(i)}");
-            output.WriteLine($"{name}: {expected.Count} chains, {(same ? "identical" : "differ")}");
+                failures.Add($"{name}, chain {i}:\n--- expected\n{e.ElementAtOrDefault(i)}\n--- actual\n{a.ElementAtOrDefault(i)}");
+            string near = tie == null ? "" : $" without the chains through sentences {string.Join(", ", tie)} (a known near-tie)";
+            output.WriteLine($"{name}: {expected.Count} chains, {(same ? "identical" : "differ")}{near}");
         }
 
         Assert.True(failures.Count == 0, string.Join("\n\n", failures));
