@@ -1,0 +1,1097 @@
+[
+ {
+  "index": 0,
+  "mentions": [
+   [
+    0,
+    2,
+    3
+   ],
+   [
+    0,
+    9,
+    10
+   ],
+   [
+    5,
+    0,
+    1
+   ],
+   [
+    8,
+    0,
+    1
+   ],
+   [
+    8,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "my",
+  "representative_index": 0
+ },
+ {
+  "index": 1,
+  "mentions": [
+   [
+    0,
+    2,
+    5
+   ]
+  ],
+  "representative_text": "my first marathon",
+  "representative_index": 0
+ },
+ {
+  "index": 2,
+  "mentions": [
+   [
+    0,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "🏃‍♀️🎉",
+  "representative_index": 0
+ },
+ {
+  "index": 3,
+  "mentions": [
+   [
+    1,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "that",
+  "representative_index": 0
+ },
+ {
+  "index": 4,
+  "mentions": [
+   [
+    2,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Good morning",
+  "representative_index": 0
+ },
+ {
+  "index": 5,
+  "mentions": [
+   [
+    2,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "☀️",
+  "representative_index": 0
+ },
+ {
+  "index": 6,
+  "mentions": [
+   [
+    2,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "coffee",
+  "representative_index": 0
+ },
+ {
+  "index": 7,
+  "mentions": [
+   [
+    2,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "☕",
+  "representative_index": 0
+ },
+ {
+  "index": 8,
+  "mentions": [
+   [
+    2,
+    7,
+    8
+   ]
+  ],
+  "representative_text": "emails",
+  "representative_index": 0
+ },
+ {
+  "index": 9,
+  "mentions": [
+   [
+    2,
+    8,
+    9
+   ]
+  ],
+  "representative_text": "📧",
+  "representative_index": 0
+ },
+ {
+  "index": 10,
+  "mentions": [
+   [
+    3,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "The weather",
+  "representative_index": 0
+ },
+ {
+  "index": 11,
+  "mentions": [
+   [
+    3,
+    2,
+    3
+   ],
+   [
+    24,
+    4,
+    5
+   ],
+   [
+    30,
+    11,
+    13
+   ]
+  ],
+  "representative_text": "Perfect Sunday",
+  "representative_index": 2
+ },
+ {
+  "index": 12,
+  "mentions": [
+   [
+    3,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "🌧️",
+  "representative_index": 0
+ },
+ {
+  "index": 13,
+  "mentions": [
+   [
+    3,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "🌈",
+  "representative_index": 0
+ },
+ {
+  "index": 14,
+  "mentions": [
+   [
+    5,
+    2,
+    3
+   ],
+   [
+    6,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "NY",
+  "representative_index": 0
+ },
+ {
+  "index": 15,
+  "mentions": [
+   [
+    6,
+    0,
+    1
+   ],
+   [
+    7,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "You",
+  "representative_index": 0
+ },
+ {
+  "index": 16,
+  "mentions": [
+   [
+    7,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Congrats",
+  "representative_index": 0
+ },
+ {
+  "index": 17,
+  "mentions": [
+   [
+    7,
+    2,
+    5
+   ],
+   [
+    7,
+    8,
+    9
+   ]
+  ],
+  "representative_text": "the new job",
+  "representative_index": 0
+ },
+ {
+  "index": 18,
+  "mentions": [
+   [
+    7,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "👏👏",
+  "representative_index": 0
+ },
+ {
+  "index": 19,
+  "mentions": [
+   [
+    7,
+    9,
+    10
+   ]
+  ],
+  "representative_text": "💯",
+  "representative_index": 0
+ },
+ {
+  "index": 20,
+  "mentions": [
+   [
+    8,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "my dog 🐶",
+  "representative_index": 0
+ },
+ {
+  "index": 21,
+  "mentions": [
+   [
+    8,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "🐶",
+  "representative_index": 0
+ },
+ {
+  "index": 22,
+  "mentions": [
+   [
+    8,
+    4,
+    6
+   ]
+  ],
+  "representative_text": "my homework",
+  "representative_index": 0
+ },
+ {
+  "index": 23,
+  "mentions": [
+   [
+    8,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "📚",
+  "representative_index": 0
+ },
+ {
+  "index": 24,
+  "mentions": [
+   [
+    8,
+    9,
+    10
+   ]
+  ],
+  "representative_text": "🤦‍♂",
+  "representative_index": 0
+ },
+ {
+  "index": 25,
+  "mentions": [
+   [
+    8,
+    10,
+    11
+   ]
+  ],
+  "representative_text": "️",
+  "representative_index": 0
+ },
+ {
+  "index": 26,
+  "mentions": [
+   [
+    9,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Pizza",
+  "representative_index": 0
+ },
+ {
+  "index": 27,
+  "mentions": [
+   [
+    9,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "🍕",
+  "representative_index": 0
+ },
+ {
+  "index": 28,
+  "mentions": [
+   [
+    9,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "tacos",
+  "representative_index": 0
+ },
+ {
+  "index": 29,
+  "mentions": [
+   [
+    9,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "🌮",
+  "representative_index": 0
+ },
+ {
+  "index": 30,
+  "mentions": [
+   [
+    10,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "both",
+  "representative_index": 0
+ },
+ {
+  "index": 31,
+  "mentions": [
+   [
+    10,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "🤷",
+  "representative_index": 0
+ },
+ {
+  "index": 32,
+  "mentions": [
+   [
+    11,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Flags",
+  "representative_index": 0
+ },
+ {
+  "index": 33,
+  "mentions": [
+   [
+    11,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "🇺🇸",
+  "representative_index": 0
+ },
+ {
+  "index": 34,
+  "mentions": [
+   [
+    11,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "🇬🇧",
+  "representative_index": 0
+ },
+ {
+  "index": 35,
+  "mentions": [
+   [
+    11,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "🇯🇵",
+  "representative_index": 0
+ },
+ {
+  "index": 36,
+  "mentions": [
+   [
+    11,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "🇸🇪",
+  "representative_index": 0
+ },
+ {
+  "index": 37,
+  "mentions": [
+   [
+    12,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Skin tones",
+  "representative_index": 0
+ },
+ {
+  "index": 38,
+  "mentions": [
+   [
+    12,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "👍🏽",
+  "representative_index": 0
+ },
+ {
+  "index": 39,
+  "mentions": [
+   [
+    12,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "👋🏿",
+  "representative_index": 0
+ },
+ {
+  "index": 40,
+  "mentions": [
+   [
+    13,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "The math symbol",
+  "representative_index": 0
+ },
+ {
+  "index": 41,
+  "mentions": [
+   [
+    13,
+    5,
+    8
+   ],
+   [
+    13,
+    8,
+    9
+   ]
+  ],
+  "representative_text": "the musical symbol",
+  "representative_index": 0
+ },
+ {
+  "index": 42,
+  "mentions": [
+   [
+    13,
+    11,
+    13
+   ]
+  ],
+  "representative_text": "the BMP",
+  "representative_index": 0
+ },
+ {
+  "index": 43,
+  "mentions": [
+   [
+    14,
+    2,
+    5
+   ],
+   [
+    14,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "the Gothic letter",
+  "representative_index": 0
+ },
+ {
+  "index": 44,
+  "mentions": [
+   [
+    15,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "CJK",
+  "representative_index": 0
+ },
+ {
+  "index": 45,
+  "mentions": [
+   [
+    15,
+    0,
+    7
+   ]
+  ],
+  "representative_text": "Rare CJK characters like 𠀋 and 𪚥",
+  "representative_index": 0
+ },
+ {
+  "index": 46,
+  "mentions": [
+   [
+    15,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "𠀋",
+  "representative_index": 0
+ },
+ {
+  "index": 47,
+  "mentions": [
+   [
+    15,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "𪚥",
+  "representative_index": 0
+ },
+ {
+  "index": 48,
+  "mentions": [
+   [
+    15,
+    8,
+    10
+   ]
+  ],
+  "representative_text": "surrogate pairs",
+  "representative_index": 0
+ },
+ {
+  "index": 49,
+  "mentions": [
+   [
+    15,
+    11,
+    14
+   ]
+  ],
+  "representative_text": "UTF - 16",
+  "representative_index": 0
+ },
+ {
+  "index": 50,
+  "mentions": [
+   [
+    16,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "She",
+  "representative_index": 0
+ },
+ {
+  "index": 51,
+  "mentions": [
+   [
+    16,
+    4,
+    5
+   ],
+   [
+    17,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "you",
+  "representative_index": 0
+ },
+ {
+  "index": 52,
+  "mentions": [
+   [
+    16,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "🙏",
+  "representative_index": 0
+ },
+ {
+  "index": 53,
+  "mentions": [
+   [
+    17,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "👍.",
+  "representative_index": 0
+ },
+ {
+  "index": 54,
+  "mentions": [
+   [
+    18,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Score",
+  "representative_index": 0
+ },
+ {
+  "index": 55,
+  "mentions": [
+   [
+    18,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "🏆",
+  "representative_index": 0
+ },
+ {
+  "index": 56,
+  "mentions": [
+   [
+    18,
+    3,
+    5
+   ],
+   [
+    18,
+    8,
+    10
+   ]
+  ],
+  "representative_text": "Team A",
+  "representative_index": 0
+ },
+ {
+  "index": 57,
+  "mentions": [
+   [
+    19,
+    2,
+    4
+   ]
+  ],
+  "representative_text": "the beach",
+  "representative_index": 0
+ },
+ {
+  "index": 58,
+  "mentions": [
+   [
+    19,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "🏖️🌊",
+  "representative_index": 0
+ },
+ {
+  "index": 59,
+  "mentions": [
+   [
+    19,
+    5,
+    7
+   ]
+  ],
+  "representative_text": "this weekend",
+  "representative_index": 0
+ },
+ {
+  "index": 60,
+  "mentions": [
+   [
+    19,
+    12,
+    13
+   ]
+  ],
+  "representative_text": "😎",
+  "representative_index": 0
+ },
+ {
+  "index": 61,
+  "mentions": [
+   [
+    20,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "😀",
+  "representative_index": 0
+ },
+ {
+  "index": 62,
+  "mentions": [
+   [
+    20,
+    2,
+    4
+   ],
+   [
+    21,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "this sentence",
+  "representative_index": 0
+ },
+ {
+  "index": 63,
+  "mentions": [
+   [
+    21,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "🎈",
+  "representative_index": 0
+ },
+ {
+  "index": 64,
+  "mentions": [
+   [
+    22,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Rocket",
+  "representative_index": 0
+ },
+ {
+  "index": 65,
+  "mentions": [
+   [
+    22,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "Rocket launch 🚀",
+  "representative_index": 0
+ },
+ {
+  "index": 66,
+  "mentions": [
+   [
+    22,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "🚀",
+  "representative_index": 0
+ },
+ {
+  "index": 67,
+  "mentions": [
+   [
+    22,
+    4,
+    6
+   ]
+  ],
+  "representative_text": "10:30 am",
+  "representative_index": 0
+ },
+ {
+  "index": 68,
+  "mentions": [
+   [
+    23,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Countdown",
+  "representative_index": 0
+ },
+ {
+  "index": 69,
+  "mentions": [
+   [
+    23,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "⏱️",
+  "representative_index": 0
+ },
+ {
+  "index": 70,
+  "mentions": [
+   [
+    24,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "🔥🔥🔥",
+  "representative_index": 0
+ },
+ {
+  "index": 71,
+  "mentions": [
+   [
+    25,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "💧.",
+  "representative_index": 0
+ },
+ {
+  "index": 72,
+  "mentions": [
+   [
+    26,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Family",
+  "representative_index": 0
+ },
+ {
+  "index": 73,
+  "mentions": [
+   [
+    26,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "👨‍👩‍👧‍👦",
+  "representative_index": 0
+ },
+ {
+  "index": 74,
+  "mentions": [
+   [
+    27,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Couple",
+  "representative_index": 0
+ },
+ {
+  "index": 75,
+  "mentions": [
+   [
+    27,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "👩‍❤️‍👨",
+  "representative_index": 0
+ },
+ {
+  "index": 76,
+  "mentions": [
+   [
+    28,
+    0,
+    5
+   ]
+  ],
+  "representative_text": "The mathematical bold 𝐀𝐁𝐂 letters",
+  "representative_index": 0
+ },
+ {
+  "index": 77,
+  "mentions": [
+   [
+    28,
+    7,
+    8
+   ]
+  ],
+  "representative_text": "ABC",
+  "representative_index": 0
+ },
+ {
+  "index": 78,
+  "mentions": [
+   [
+    29,
+    0,
+    2
+   ],
+   [
+    29,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "Italic 𝑥",
+  "representative_index": 0
+ },
+ {
+  "index": 79,
+  "mentions": [
+   [
+    30,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Tea",
+  "representative_index": 0
+ },
+ {
+  "index": 80,
+  "mentions": [
+   [
+    30,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "🍵",
+  "representative_index": 0
+ },
+ {
+  "index": 81,
+  "mentions": [
+   [
+    30,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "cake",
+  "representative_index": 0
+ },
+ {
+  "index": 82,
+  "mentions": [
+   [
+    30,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "🍰",
+  "representative_index": 0
+ },
+ {
+  "index": 83,
+  "mentions": [
+   [
+    30,
+    7,
+    10
+   ]
+  ],
+  "representative_text": "a good book",
+  "representative_index": 0
+ },
+ {
+  "index": 84,
+  "mentions": [
+   [
+    30,
+    10,
+    11
+   ]
+  ],
+  "representative_text": "📖.",
+  "representative_index": 0
+ }
+]

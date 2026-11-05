@@ -1,0 +1,1056 @@
+[
+ {
+  "index": 0,
+  "mentions": [
+   [
+    0,
+    2,
+    3
+   ],
+   [
+    0,
+    6,
+    7
+   ],
+   [
+    1,
+    3,
+    4
+   ],
+   [
+    2,
+    2,
+    3
+   ],
+   [
+    3,
+    3,
+    4
+   ],
+   [
+    3,
+    18,
+    19
+   ],
+   [
+    4,
+    2,
+    3
+   ],
+   [
+    5,
+    1,
+    2
+   ],
+   [
+    5,
+    7,
+    8
+   ],
+   [
+    7,
+    13,
+    14
+   ],
+   [
+    11,
+    6,
+    7
+   ],
+   [
+    11,
+    9,
+    10
+   ],
+   [
+    11,
+    22,
+    23
+   ],
+   [
+    27,
+    1,
+    2
+   ],
+   [
+    27,
+    3,
+    4
+   ],
+   [
+    27,
+    12,
+    13
+   ],
+   [
+    29,
+    8,
+    13
+   ]
+  ],
+  "representative_text": "The Lighthouse Keeper's Daughter",
+  "representative_index": 16
+ },
+ {
+  "index": 1,
+  "mentions": [
+   [
+    0,
+    15,
+    16
+   ],
+   [
+    13,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "Ellen",
+  "representative_index": 0
+ },
+ {
+  "index": 2,
+  "mentions": [
+   [
+    1,
+    1,
+    2
+   ],
+   [
+    1,
+    3,
+    6
+   ]
+  ],
+  "representative_text": "her exact words",
+  "representative_index": 1
+ },
+ {
+  "index": 3,
+  "mentions": [
+   [
+    1,
+    8,
+    9
+   ],
+   [
+    3,
+    1,
+    2
+   ],
+   [
+    7,
+    5,
+    8
+   ],
+   [
+    7,
+    11,
+    12
+   ],
+   [
+    8,
+    0,
+    1
+   ],
+   [
+    40,
+    0,
+    1
+   ],
+   [
+    41,
+    3,
+    4
+   ],
+   [
+    41,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "the old man",
+  "representative_index": 2
+ },
+ {
+  "index": 4,
+  "mentions": [
+   [
+    2,
+    4,
+    6
+   ],
+   [
+    39,
+    4,
+    6
+   ]
+  ],
+  "representative_text": "the door",
+  "representative_index": 0
+ },
+ {
+  "index": 5,
+  "mentions": [
+   [
+    4,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "that",
+  "representative_index": 0
+ },
+ {
+  "index": 6,
+  "mentions": [
+   [
+    6,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "tomorrow",
+  "representative_index": 0
+ },
+ {
+  "index": 7,
+  "mentions": [
+   [
+    7,
+    13,
+    15
+   ]
+  ],
+  "representative_text": "your age",
+  "representative_index": 0
+ },
+ {
+  "index": 8,
+  "mentions": [
+   [
+    7,
+    16,
+    17
+   ],
+   [
+    9,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "we",
+  "representative_index": 0
+ },
+ {
+  "index": 9,
+  "mentions": [
+   [
+    8,
+    2,
+    4
+   ]
+  ],
+  "representative_text": "a hand",
+  "representative_index": 0
+ },
+ {
+  "index": 10,
+  "mentions": [
+   [
+    8,
+    5,
+    7
+   ]
+  ],
+  "representative_text": "the screens",
+  "representative_index": 0
+ },
+ {
+  "index": 11,
+  "mentions": [
+   [
+    9,
+    3,
+    4
+   ],
+   [
+    10,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Real ones",
+  "representative_index": 1
+ },
+ {
+  "index": 12,
+  "mentions": [
+   [
+    11,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "Mom",
+  "representative_index": 0
+ },
+ {
+  "index": 13,
+  "mentions": [
+   [
+    11,
+    6,
+    8
+   ],
+   [
+    12,
+    0,
+    1
+   ],
+   [
+    13,
+    4,
+    5
+   ],
+   [
+    15,
+    0,
+    1
+   ],
+   [
+    17,
+    1,
+    2
+   ],
+   [
+    18,
+    3,
+    4
+   ],
+   [
+    26,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "your brother",
+  "representative_index": 0
+ },
+ {
+  "index": 14,
+  "mentions": [
+   [
+    11,
+    11,
+    12
+   ],
+   [
+    11,
+    16,
+    17
+   ]
+  ],
+  "representative_text": "it",
+  "representative_index": 0
+ },
+ {
+  "index": 15,
+  "mentions": [
+   [
+    13,
+    3,
+    9
+   ],
+   [
+    15,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "what my grandfather used to say",
+  "representative_index": 0
+ },
+ {
+  "index": 16,
+  "mentions": [
+   [
+    13,
+    4,
+    6
+   ]
+  ],
+  "representative_text": "my grandfather",
+  "representative_index": 0
+ },
+ {
+  "index": 17,
+  "mentions": [
+   [
+    13,
+    4,
+    9
+   ]
+  ],
+  "representative_text": "my grandfather used to say",
+  "representative_index": 0
+ },
+ {
+  "index": 18,
+  "mentions": [
+   [
+    14,
+    1,
+    6
+   ]
+  ],
+  "representative_text": "Measure twice , cut once",
+  "representative_index": 0
+ },
+ {
+  "index": 19,
+  "mentions": [
+   [
+    17,
+    3,
+    4
+   ],
+   [
+    23,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "me",
+  "representative_index": 0
+ },
+ {
+  "index": 20,
+  "mentions": [
+   [
+    17,
+    11,
+    13
+   ]
+  ],
+  "representative_text": "No buts",
+  "representative_index": 0
+ },
+ {
+  "index": 21,
+  "mentions": [
+   [
+    24,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "The sign",
+  "representative_index": 0
+ },
+ {
+  "index": 22,
+  "mentions": [
+   [
+    24,
+    4,
+    6
+   ]
+  ],
+  "representative_text": "NO ENTRY",
+  "representative_index": 0
+ },
+ {
+  "index": 23,
+  "mentions": [
+   [
+    24,
+    7,
+    9
+   ]
+  ],
+  "representative_text": "AUTHORIZED PERSONNEL",
+  "representative_index": 0
+ },
+ {
+  "index": 24,
+  "mentions": [
+   [
+    25,
+    0,
+    1
+   ],
+   [
+    50,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "We",
+  "representative_index": 0
+ },
+ {
+  "index": 25,
+  "mentions": [
+   [
+    26,
+    2,
+    8
+   ]
+  ],
+  "representative_text": "something like “ whatever … ”",
+  "representative_index": 0
+ },
+ {
+  "index": 26,
+  "mentions": [
+   [
+    28,
+    1,
+    2
+   ],
+   [
+    28,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "It",
+  "representative_index": 0
+ },
+ {
+  "index": 27,
+  "mentions": [
+   [
+    28,
+    9,
+    10
+   ]
+  ],
+  "representative_text": "effect",
+  "representative_index": 0
+ },
+ {
+  "index": 28,
+  "mentions": [
+   [
+    28,
+    13,
+    15
+   ],
+   [
+    29,
+    0,
+    1
+   ],
+   [
+    46,
+    4,
+    5
+   ],
+   [
+    49,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "the editor",
+  "representative_index": 0
+ },
+ {
+  "index": 29,
+  "mentions": [
+   [
+    28,
+    17,
+    19
+   ]
+  ],
+  "representative_text": "the margin",
+  "representative_index": 0
+ },
+ {
+  "index": 30,
+  "mentions": [
+   [
+    29,
+    5,
+    6
+   ],
+   [
+    30,
+    0,
+    1
+   ],
+   [
+    34,
+    0,
+    1
+   ],
+   [
+    34,
+    20,
+    21
+   ],
+   [
+    34,
+    23,
+    24
+   ],
+   [
+    40,
+    4,
+    5
+   ],
+   [
+    44,
+    1,
+    2
+   ],
+   [
+    48,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "you",
+  "representative_index": 0
+ },
+ {
+  "index": 31,
+  "mentions": [
+   [
+    29,
+    8,
+    12
+   ]
+  ],
+  "representative_text": "The Lighthouse Keeper's",
+  "representative_index": 0
+ },
+ {
+  "index": 32,
+  "mentions": [
+   [
+    31,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "The leaves",
+  "representative_index": 0
+ },
+ {
+  "index": 33,
+  "mentions": [
+   [
+    31,
+    5,
+    7
+   ],
+   [
+    35,
+    10,
+    12
+   ]
+  ],
+  "representative_text": "amber rain",
+  "representative_index": 0
+ },
+ {
+  "index": 34,
+  "mentions": [
+   [
+    31,
+    9,
+    11
+   ]
+  ],
+  "representative_text": "every road",
+  "representative_index": 0
+ },
+ {
+  "index": 35,
+  "mentions": [
+   [
+    31,
+    12,
+    13
+   ]
+  ],
+  "representative_text": "home",
+  "representative_index": 0
+ },
+ {
+  "index": 36,
+  "mentions": [
+   [
+    31,
+    15,
+    17
+   ]
+  ],
+  "representative_text": "the kettle",
+  "representative_index": 0
+ },
+ {
+  "index": 37,
+  "mentions": [
+   [
+    31,
+    19,
+    21
+   ]
+  ],
+  "representative_text": "the window",
+  "representative_index": 0
+ },
+ {
+  "index": 38,
+  "mentions": [
+   [
+    31,
+    27,
+    30
+   ]
+  ],
+  "representative_text": "a farmer's",
+  "representative_index": 0
+ },
+ {
+  "index": 39,
+  "mentions": [
+   [
+    31,
+    27,
+    31
+   ]
+  ],
+  "representative_text": "a farmer's dogs",
+  "representative_index": 0
+ },
+ {
+  "index": 40,
+  "mentions": [
+   [
+    33,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "The evening",
+  "representative_index": 0
+ },
+ {
+  "index": 41,
+  "mentions": [
+   [
+    33,
+    4,
+    6
+   ]
+  ],
+  "representative_text": "the wall",
+  "representative_index": 0
+ },
+ {
+  "index": 42,
+  "mentions": [
+   [
+    34,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "the river",
+  "representative_index": 0
+ },
+ {
+  "index": 43,
+  "mentions": [
+   [
+    34,
+    7,
+    12
+   ]
+  ],
+  "representative_text": "a sky that never ends",
+  "representative_index": 0
+ },
+ {
+  "index": 44,
+  "mentions": [
+   [
+    34,
+    14,
+    15
+   ]
+  ],
+  "representative_text": "stones",
+  "representative_index": 0
+ },
+ {
+  "index": 45,
+  "mentions": [
+   [
+    34,
+    17,
+    25
+   ]
+  ],
+  "representative_text": "bones of summers I had called my friends",
+  "representative_index": 0
+ },
+ {
+  "index": 46,
+  "mentions": [
+   [
+    34,
+    19,
+    25
+   ]
+  ],
+  "representative_text": "summers I had called my friends",
+  "representative_index": 0
+ },
+ {
+  "index": 47,
+  "mentions": [
+   [
+    34,
+    23,
+    25
+   ]
+  ],
+  "representative_text": "my friends",
+  "representative_index": 0
+ },
+ {
+  "index": 48,
+  "mentions": [
+   [
+    35,
+    4,
+    15
+   ]
+  ],
+  "representative_text": "a borrowed pen left out in the rain beside the gate",
+  "representative_index": 0
+ },
+ {
+  "index": 49,
+  "mentions": [
+   [
+    35,
+    13,
+    15
+   ]
+  ],
+  "representative_text": "the gate",
+  "representative_index": 0
+ },
+ {
+  "index": 50,
+  "mentions": [
+   [
+    36,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Roses",
+  "representative_index": 0
+ },
+ {
+  "index": 51,
+  "mentions": [
+   [
+    36,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "violets",
+  "representative_index": 0
+ },
+ {
+  "index": 52,
+  "mentions": [
+   [
+    36,
+    8,
+    10
+   ]
+  ],
+  "representative_text": "this poem",
+  "representative_index": 0
+ },
+ {
+  "index": 53,
+  "mentions": [
+   [
+    36,
+    16,
+    17
+   ]
+  ],
+  "representative_text": "you",
+  "representative_index": 0
+ },
+ {
+  "index": 54,
+  "mentions": [
+   [
+    37,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "The clock",
+  "representative_index": 0
+ },
+ {
+  "index": 55,
+  "mentions": [
+   [
+    37,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "twelve",
+  "representative_index": 0
+ },
+ {
+  "index": 56,
+  "mentions": [
+   [
+    38,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Nobody",
+  "representative_index": 0
+ },
+ {
+  "index": 57,
+  "mentions": [
+   [
+    39,
+    12,
+    14
+   ]
+  ],
+  "representative_text": "the cat",
+  "representative_index": 0
+ },
+ {
+  "index": 58,
+  "mentions": [
+   [
+    44,
+    1,
+    3
+   ]
+  ],
+  "representative_text": "my teacher",
+  "representative_index": 0
+ },
+ {
+  "index": 59,
+  "mentions": [
+   [
+    44,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "it",
+  "representative_index": 0
+ },
+ {
+  "index": 60,
+  "mentions": [
+   [
+    44,
+    12,
+    14
+   ]
+  ],
+  "representative_text": "stupid questions",
+  "representative_index": 0
+ },
+ {
+  "index": 61,
+  "mentions": [
+   [
+    44,
+    16,
+    18
+   ]
+  ],
+  "representative_text": "stupid answers",
+  "representative_index": 0
+ },
+ {
+  "index": 62,
+  "mentions": [
+   [
+    45,
+    5,
+    7
+   ]
+  ],
+  "representative_text": "the deadline",
+  "representative_index": 0
+ },
+ {
+  "index": 63,
+  "mentions": [
+   [
+    45,
+    11,
+    13
+   ]
+  ],
+  "representative_text": "the lab",
+  "representative_index": 0
+ },
+ {
+  "index": 64,
+  "mentions": [
+   [
+    45,
+    15,
+    17
+   ]
+  ],
+  "representative_text": "a printer",
+  "representative_index": 0
+ },
+ {
+  "index": 65,
+  "mentions": [
+   [
+    47,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "Silence",
+  "representative_index": 0
+ },
+ {
+  "index": 66,
+  "mentions": [
+   [
+    50,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "maybe",
+  "representative_index": 0
+ }
+]
