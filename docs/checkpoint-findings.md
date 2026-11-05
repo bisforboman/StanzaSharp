@@ -230,3 +230,25 @@ What the English treebank packages' checkpoints add to the default package's pat
   (`speaker_emb[1]`), folded into the per-bucket features (`ManagedCorefNet.PairFeatures`, both backends).
 - `a_scoring_batch_size` 64 (gum-speakers; 128 otherwise): the TorchSharp net's pair blocks follow it, as `run` does.
 - `train_epochs`, `bert_learning_rate`, data paths: training only.
+
+## Checkpoint findings (Odia, `or`)
+
+Odia's `default` package (2026-11-05, read from its configs and Stanza 1.15.0's `models/common/bert_embedding.py`):
+tokenize and lemma `odtb_nocharlm`, ner `ilner_nocharlm` (paths the other languages already use), and pos and depparse
+`odtb_muril-large-cased`, on `google/muril-large-cased` (BertModel: 24 layers, hidden 1024, 16 heads, FFN 4096, 512
+positions, two token types; `bert.` weights in a zip `pytorch_model.bin`, 2.0 GB):
+
+- Both frozen (`bert_finetune` false, `use_peft` false, no LoRA keys); `pretrain` false, so no word vectors though
+  resources.json lists `fasttext157` (`PretrainIfAny`, as for the `_nopretrain` languages); no charlm.
+- pos: `bert_hidden_layers` null, so the legacy mix (no `bert_layer_mix` weights); depparse: `bert_hidden_layers` 4
+  with its `bert_layer_mix.weight`. Both paths already ported for ELECTRA.
+- config.json has no `layer_norm_eps`: transformers' BertConfig default, 1e-12 (`TransformerConfig`).
+- tokenizer_config.json has no `model_max_length`: Stanza's `update_max_length` sets 512 for this name
+  (`TransformerEmbedder.ReadMaxLength`). It goes by the name, so make_golden.py and the tool's compare.py, which load
+  the transformer from a local path, apply it themselves.
+- vocab.txt (197,285 lines) is read by the tokenizers library's `WordPiece::read_file`, which trims each line's trailing
+  white space: 27 lines end in U+00A0 or U+202F (`ମନ୍ଦିର `), and the trimmed word takes that later line's id, 169822
+  instead of 3643 (`WordPiece.LoadDirectory`; `compare` found it as one changed head). The whitespace-only lines become
+  the empty key, which no piece reaches. `tests/golden/languages/or/tokenizer_google_muril-large-cased.json` holds the
+  cases (`LanguageGoldenTests` checks it in Odia's rows).
+- Not in `BAD_TOKENIZERS` (only `google/muril-base-cased` is), so fix_blank_tokens behaves as for ELECTRA.

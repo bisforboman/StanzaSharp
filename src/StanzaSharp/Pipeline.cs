@@ -72,7 +72,7 @@ public sealed class Pipeline : IDisposable
         "ab", "af", "ang", "ar", "as", "be", "bg", "bor", "bxr", "ca", "ckb", "cop", "cs", "cu", "cy", "da", "egy",
         "et", "eu", "fa", "fi", "fo", "frm", "fro", "ga", "gd", "gl", "got", "grc", "gv", "hbo", "he", "hi", "hr",
         "hsb", "ht", "hu", "hy", "hyw", "id", "is", "ja", "ka", "kk", "kmr", "ko", "kpv", "ky", "la", "lij", "lt",
-        "lv", "lzh", "mr", "mt", "my", "myv", "naq", "nb", "nds", "nn", "oc", "orv", "ota", "pa", "pcm", "pl", "pro",
+        "lv", "lzh", "mr", "mt", "my", "myv", "naq", "nb", "nds", "nn", "oc", "or", "orv", "ota", "pa", "pcm", "pl", "pro",
         "qaf", "qpm", "qtd", "ro", "ru", "sa", "say", "sd", "sdh", "sk", "sl", "sme", "sq", "sr", "sv", "ta", "te",
         "th", "tr", "ug", "uk", "ur", "uz", "vi", "wo", "wuu", "xcl", "yi", "yrl", "zh-hans", "zh-hant", "zza",
     ];
@@ -245,10 +245,15 @@ public sealed class Pipeline : IDisposable
             ["sentiment/sb10k_dbmdz-bert-german-cased"] = "dbmdz/bert-base-german-cased", // LoRA adapters
             ["coref/" + CorefModel] = XlmRoberta, // with its LoRA adapters
         },
+        ["or"] = new()
+        {
+            ["pos/odtb_muril-large-cased"] = Muril,
+            ["depparse/odtb_muril-large-cased"] = Muril,
+        },
     };
 
     private const string Electra = "google/electra-large-discriminator", GermanElectra = "german-nlp-group/electra-base-german-uncased",
-        XlmRoberta = "FacebookAI/xlm-roberta-large", RobertaLarge = "roberta-large";
+        XlmRoberta = "FacebookAI/xlm-roberta-large", RobertaLarge = "roberta-large", Muril = "google/muril-large-cased";
 
     /// <summary>The transformers <paramref name="models"/> of <paramref name="language"/> read (<see cref="Transformers"/>), each once.</summary>
     internal static List<string> TransformersOf(IReadOnlyDictionary<string, string> models, string language) =>

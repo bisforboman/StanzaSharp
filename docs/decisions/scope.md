@@ -31,11 +31,13 @@ What StanzaSharp ports and supports, with the owner's decisions behind each part
   `num_dict_feat` forward then backward columns after every other feature, the unit as written, the others lowercased),
   zh's `skip_newline` (a newline inside a paragraph is no unit), Vocab.normalize_token's space removal for zh/ja/ko, and
   long vocabularies read with `Checkpoint.Strings` (the ko/lzh/ja/zh lemmatizers' char `_id2unit` is a `PyContainer`);
-  also Latin's la_ittb hack (decode_predictions: `:` and `;` end a sentence; la's golden text has one). Not yet: or
-  (MuRIL transformer), and el (its lemmatizer's contextual classifiers load word vectors from a path on Stanford's
-  machine: Python Stanza fails too). `LanguageGoldenTests` builds its rows from `SupportedPackages` (every language but en
+  also Latin's la_ittb hack (decode_predictions: `:` and `;` end a sentence; la's golden text has one). Then
+  (owner's choice 2026-11-05) or, 108 languages: its tagger and parser read google/muril-large-cased, a BERT already
+  ported (docs/checkpoint-findings.md, "Odia"); new were Stanza's `update_max_length` (512 pieces) and vocab.txt lines
+  trimmed of trailing white space as the tokenizers library reads them. Not yet: el (its lemmatizer's contextual
+  classifiers load word vectors from a path on Stanford's machine: Python Stanza fails too). `LanguageGoldenTests` builds its rows from `SupportedPackages` (every language but en
   and de), only those whose models are present, and `STANZASHARP_LANGUAGES` narrows them; `tools/test-languages.sh` is
-  the nightly loop (download 8 languages' packages, test, fail on a skip, delete; about 28 GB a night); `make_golden.py
+  the nightly loop (download 8 languages' packages, test, fail on a skip, delete; about 30 GB a night); `make_golden.py
   --languages-only` takes every folder of tests/golden/languages (`LANGUAGES` names packages beyond `default`);
   `python tools/stanza_resources.py docs` regenerates docs/languages.md. A `languages_only` dispatch of nightly.yml runs
   just that job.

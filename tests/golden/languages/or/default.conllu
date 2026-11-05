@@ -1,0 +1,40 @@
+# text = ମୁଖ୍ୟମନ୍ତ୍ରୀ ଗତକାଲି ଭୁବନେଶ୍ୱର ପହଞ୍ଚିଲେ।
+# sent_id = 0
+1	ମୁଖ୍ୟମନ୍ତ୍ରୀ	_	NOUN	N_NN	Case=Nom|Number=Sing	4	nsubj	_	start_char=0|end_char=12|ner=O
+2	ଗତକାଲି	ଗତକାଲି	NOUN	N_NN	Number=Sing	4	obj	_	start_char=13|end_char=19|ner=O
+3	ଭୁବନେଶ୍ୱର	_	PROPN	N_NNP	Number=Sing	4	obl	_	start_char=20|end_char=29|ner=S-NEL
+4	ପହଞ୍ଚିଲେ	_	VERB	V_VM_VF	Aspect=Perf|Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=30|end_char=38|ner=O
+5	।	_	PUNCT	RD_PUNC	_	4	punct	_	start_char=38|end_char=39|ner=O
+
+# text = ସେ ସାମ୍ବାଦିକମାନଙ୍କ ସହ ନୂଆ ଆଇନ ବିଷୟରେ କଥା ହେଲେ।
+# sent_id = 1
+1	ସେ	_	PRON	PR_PRP	Case=Nom|Number=Sing|Person=3|PronType=Prs	8	nsubj	_	start_char=40|end_char=42|ner=O
+2	ସାମ୍ବାଦିକମାନଙ୍କ	_	NOUN	N_NN	Case=Gen|Number=Plur	8	obl	_	start_char=43|end_char=58|ner=O
+3	ସହ	_	ADP	PSP	_	2	case	_	start_char=59|end_char=61|ner=O
+4	ନୂଆ	_	ADJ	JJ	Degree=Pos	5	amod	_	start_char=62|end_char=65|ner=O
+5	ଆଇନ	_	NOUN	N_NN	Case=Nom|Number=Sing	6	nmod	_	start_char=66|end_char=69|ner=O
+6	ବିଷୟରେ	_	NOUN	N_NST	Case=Loc|Number=Sing	8	obl	_	start_char=70|end_char=76|ner=O
+7	କଥା	_	NOUN	N_NN	Number=Sing	8	obj	_	start_char=77|end_char=80|ner=O
+8	ହେଲେ	ହେଲେ	VERB	V_VM_VF	Aspect=Perf|Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=81|end_char=85|ner=O
+9	।	_	PUNCT	RD_PUNC	_	8	punct	_	SpacesAfter=\n\n|start_char=85|end_char=86|ner=O
+
+# text = ମୁଁ କଟକରେ ରାମକୁ ଦେଖିଲି।
+# sent_id = 2
+1	ମୁଁ	_	PRON	PR_PRP	Case=Nom|Gender=Masc|Number=Sing|Person=1|PronType=Prs	4	nsubj	_	start_char=88|end_char=91|ner=O
+2	କଟକରେ	କଟକ	PROPN	N_NNP	Case=Loc|Number=Sing	4	obl	_	start_char=92|end_char=97|ner=S-NEL
+3	ରାମକୁ	_	NOUN	N_NN	Case=Acc|Number=Sing	4	obj	_	start_char=98|end_char=103|ner=O
+4	ଦେଖିଲି	_	VERB	V_VM_VF	Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin	0	root	_	SpaceAfter=No|start_char=104|end_char=110|ner=O
+5	।	_	PUNCT	RD_PUNC	_	4	punct	_	start_char=110|end_char=111|ner=O
+
+# text = ପୁରୀର ଜଗନ୍ନାଥ ମନ୍ଦିର ଏବଂ କୋଣାର୍କର ସୂର୍ଯ୍ୟ ମନ୍ଦିର ବିଶ୍ୱ ପ୍ରସିଦ୍ଧ।
+# sent_id = 3
+1	ପୁରୀର	_	PROPN	N_NNP	Case=Gen|Number=Sing	3	nmod	_	start_char=112|end_char=117|ner=S-NEL
+2	ଜଗନ୍ନାଥ	_	PROPN	N_NNP	Case=Nom|Number=Sing	3	compound	_	start_char=118|end_char=125|ner=B-NEAR
+3	ମନ୍ଦିର	_	PROPN	N_NNP	Case=Nom|Number=Sing	9	nsubj	_	start_char=126|end_char=132|ner=E-NEAR
+4	ଏବଂ	_	CCONJ	CC_CCD	_	7	cc	_	start_char=133|end_char=136|ner=O
+5	କୋଣାର୍କର	_	PROPN	N_NNP	Case=Gen|Number=Sing	7	nmod	_	start_char=137|end_char=145|ner=S-NEL
+6	ସୂର୍ଯ୍ୟ	_	PROPN	N_NNP	Case=Nom|Gender=Fem|Number=Sing	7	compound	_	start_char=146|end_char=153|ner=B-NEAR
+7	ମନ୍ଦିର	_	NOUN	N_NN	Case=Nom|Number=Sing	3	conj	_	start_char=154|end_char=160|ner=E-NEAR
+8	ବିଶ୍ୱ	_	NOUN	N_NN	Case=Nom|Number=Sing	9	nmod	_	start_char=161|end_char=166|ner=O
+9	ପ୍ରସିଦ୍ଧ	ପ୍ରସିଦ୍ଧ	ADJ	JJ	Degree=Pos	0	root	_	SpaceAfter=No|start_char=167|end_char=175|ner=O
+10	।	_	PUNCT	RD_PUNC	_	9	punct	_	SpacesAfter=\n|start_char=175|end_char=176|ner=O

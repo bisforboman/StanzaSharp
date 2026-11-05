@@ -84,7 +84,13 @@ public class TransformerTokenizerTests(ITestOutputHelper output)
         Assert.Equal(512, TransformerEmbedder.ReadMaxLength(GermanTransformerFactAttribute.Directory));
     }
 
-    private void AssertGolden(ITransformerTokenizer tokenizer, string goldenPath, int minCases)
+    private void AssertGolden(ITransformerTokenizer tokenizer, string goldenPath, int minCases) => AssertGolden(tokenizer, goldenPath, minCases, output);
+
+    /// <summary>
+    /// <paramref name="tokenizer"/> against a golden file in make_golden.py's transformer/tokenizer.json format: more than
+    /// <paramref name="minCases"/> cases, one of more than 512 ids, every one's ids, word ids, positions and fixed words.
+    /// </summary>
+    internal static void AssertGolden(ITransformerTokenizer tokenizer, string goldenPath, int minCases, ITestOutputHelper output)
     {
         using var golden = JsonDocument.Parse(File.ReadAllBytes(goldenPath));
         int cases = 0, failures = 0;
