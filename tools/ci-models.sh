@@ -9,6 +9,9 @@
 #                                       models/stanza/en/transformer/), and German default_accurate's (its four transformer models
 #                                       and german-nlp-group/electra-base-german-uncased, models/stanza/de/transformer/), with
 #                                       retries; never cached (owner's decisions, 2026-10-17 and 2026-10-18)
+#   tools/ci-models.sh coref-models     downloads the English-only coref models (#210: gum-nospeakers, gum-speakers and
+#                                       ontonotes-singletons_roberta-large-lora) and roberta-large (1.4 GB) for RobertaCorefTests,
+#                                       with retries; never cached, run only by nightly.yml (owner's decision, 2026-11-05)
 #   tools/ci-models.sh langid           downloads the language identifier (models/stanza/multilingual/langid/ud.pt, 9 MB), with
 #                                       retries; never cached
 #   tools/ci-models.sh keys             writes en, en_treebanks, de, treebank_choices, en_treebanks_paths and treebank_choices_paths
@@ -100,6 +103,19 @@ case ${1:-} in
     ;;
   files)
     files "$2"
+    ;;
+  coref-models)
+    corefs() {
+      for model in gum-nospeakers gum-speakers ontonotes-singletons; do
+        "${cli[@]}" download models/stanza/en --processors tokenize,mwt,pos,coref --model "coref=${model}_roberta-large-lora" < /dev/null || return 1
+      done
+    }
+    for attempt in 1 2 3; do
+      corefs && exit 0
+      echo "download failed (attempt $attempt)" >&2
+      sleep $((attempt * 15))
+    done
+    exit 1
     ;;
   transformer)
     # the default_accurate package: its five transformer models, the transformer, and its _charlm tokenizer and lemmatizer

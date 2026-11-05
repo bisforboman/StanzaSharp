@@ -211,3 +211,22 @@ What the English treebank packages' checkpoints add to the default package's pat
 - `tests/golden/<package>/` (`make_golden.py --treebank-only [--packages ...]`): corpus + validation (13 files) and
   `mwt.json` where the package has mwt; `combined` is checked against `depparse/` (same models). The tests read the .pt
   files from `Repo.StanzaModels` (`Repo.ModelsFor(lang, package)`); rows skip when a package's files are missing.
+
+## Checkpoint findings (English coref on roberta-large, #210)
+
+`gum-nospeakers_roberta-large-lora`, `gum-speakers_roberta-large-lora` and `ontonotes-singletons_roberta-large-lora`
+(2026-11-05, read from their configs and Stanza 1.15.0's `models/coref`). Same keys, shapes and head as
+`udcoref_xlm-roberta-lora` (docs/coref-plan.md); their configs differ from it only in:
+
+- `bert_model` `roberta-large` (byte-level BPE, `add_prefix_space` from `tokenizer_kwargs`; tokenizer.json is
+  roberta-base's). `build_doc` applies `TOKENIZER_MAPS["roberta-large"]`: the words `.` `,` `!` `?` `:` `;` `'s` become
+  that one token, without the `Ġ` the tokenizer would add (`CorefResolver.MapTokens`). `TOKENIZER_FILTERS` is albert's only.
+- `use_zeros` false (gum-nospeakers, ontonotes-singletons): `CorefModel.__init__` zeroes the zeros predictor's last
+  layer, then `load_state_dicts` loads the saved one, which is zero too (trained without zeros). Its score is exactly 0,
+  never `> 0`, so no zero mention; no code path of its own.
+- `full_pairwise` true (gum-speakers): `PairwiseEncoder` returns `cat((speaker_emb[same_speaker], distance_emb))`, so
+  the anaphoricity layer reads 3 × 1024 + 40. `sentence.speaker` comes only from the tokenizer's `speaker_delim` or a
+  `# speaker` comment, which StanzaSharp has neither of: every word's speaker is `_`, every pair the same speaker
+  (`speaker_emb[1]`), folded into the per-bucket features (`ManagedCorefNet.PairFeatures`, both backends).
+- `a_scoring_batch_size` 64 (gum-speakers; 128 otherwise): the TorchSharp net's pair blocks follow it, as `run` does.
+- `train_epochs`, `bert_learning_rate`, data paths: training only.

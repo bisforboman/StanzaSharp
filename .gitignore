@@ -10,6 +10,8 @@ models/
 # ...but not the golden data of the models chosen per processor (make_golden.py --models-only)
 !tests/golden/models/
 !tests/golden/de/models/
+# ...and the roberta-large coref models' (make_golden.py --coref-models-only)
+!tests/golden/coref/models/
 
 # Python
 tools/.venv/

@@ -27,14 +27,22 @@ public partial class TransformerCorefTests(ITestOutputHelper output)
     [InlineData("validation_dialogue", false)]
     public void Run_MatchesStanzasSteps(string name, bool managed)
     {
-        var golden = JsonNode.Parse(File.ReadAllText(Path.Combine(Folder, "intermediates.json")))!["texts"]![name]!;
-        var tensors = SafeTensorFile.Load(Path.Combine(Folder, "intermediates.safetensors"));
-        var doc = Conllu.Read(File.ReadAllText(Path.Combine(Folder, name + ".conllu")));
-        var words = doc.Sentences.SelectMany(s => s.Words).ToList();
-        var sentOf = doc.Sentences.SelectMany((s, i) => s.Words.Select(_ => i)).ToList();
-
         using var transformer = TransformerEncoderTests.XlmRobertaEmbedder(managed);
         using var resolver = Load(transformer.Value, managed);
+        AssertSteps(Folder, Path.Combine(Folder, name + ".conllu"), name, resolver, output);
+    }
+
+    /// <summary>
+    /// <paramref name="resolver"/>'s CorefModel.run on the words of <paramref name="conllu"/> (Stanza's run, read back) against
+    /// <paramref name="folder"/>'s intermediates.* for <paramref name="name"/>.
+    /// </summary>
+    internal static void AssertSteps(string folder, string conllu, string name, CorefResolver resolver, ITestOutputHelper output)
+    {
+        var golden = JsonNode.Parse(File.ReadAllText(Path.Combine(folder, "intermediates.json")))!["texts"]![name]!;
+        var tensors = SafeTensorFile.Load(Path.Combine(folder, "intermediates.safetensors"));
+        var doc = Conllu.Read(File.ReadAllText(conllu));
+        var words = doc.Sentences.SelectMany(s => s.Words).ToList();
+        var sentOf = doc.Sentences.SelectMany((s, i) => s.Words.Select(_ => i)).ToList();
         var result = resolver.Run(words, sentOf);
 
         Assert.Equal(golden["windows"]!.AsArray().SelectMany(w => w!.AsArray().Select(i => i!.GetValue<int>())), result.Windows);

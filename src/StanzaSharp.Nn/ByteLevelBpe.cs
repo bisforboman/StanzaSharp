@@ -99,6 +99,9 @@ internal sealed class ByteLevelBpe : ITransformerTokenizer
         return new ByteLevelBpe(vocab, ranks, [.. added], Special("cls"), Special("sep"));
     }
 
+    /// <summary>The id of the vocabulary entry <paramref name="token"/> (in the byte-to-unicode alphabet), or null.</summary>
+    public int? TokenId(string token) => _vocab.TryGetValue(token, out int id) ? id : null;
+
     public (int[] Ids, int[] Words) Encode(IReadOnlyList<string> words)
     {
         var ids = new List<int> { _start };

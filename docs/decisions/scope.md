@@ -296,6 +296,26 @@ What StanzaSharp ports and supports, with the owner's decisions behind each part
     overlapping mentions, which the model didn't predict in about 600 zeros) and `de/coref/` (texts only). CI: `tools/ci-models.sh transformer` downloads `--processors
     tokenize,coref` (en) and, with XLM-R linked from en's folder, de. compare.py's `transformers_locally` also serves coref's
     own `load_tokenizer`.
+  - The English roberta-large coref models (#210; owner's decisions 2026-11-05: all three, no speaker API, tests nightly
+    only, the two near-ties below as reviewed exceptions): `gum-nospeakers_roberta-large-lora`,
+    `gum-speakers_roberta-large-lora` and `ontonotes-singletons_roberta-large-lora` in `Alternatives` (`Models[coref]`), on
+    `roberta-large` (`ModelDownloader.Transformers`, revision 722cf37b, `pytorch_model.bin` 1.43 GB; its tokenizer.json is
+    roberta-base's). Their configs differ from udcoref's in `bert_model`, `use_zeros`, `full_pairwise` and
+    `a_scoring_batch_size` (docs/checkpoint-findings.md): `TOKENIZER_MAPS` (`CorefResolver.MapTokens`), gum-speakers'
+    same-speaker embedding (`ManagedCorefNet.PairFeatures`: StanzaSharp has no speakers, so every pair is the same
+    speaker, as in Stanza without `speaker_delim` or `# speaker` comments; `Sentence.Speaker` would be new API), the
+    TorchSharp pair blocks of `a_scoring_batch_size`. Golden `coref/models/<model>/` (`make_golden.py --coref-models-only`,
+    `COREF_MODELS`: corpus.txt and the 12 validation texts' chains, corpus.txt's run steps; 1.2 MB). `RobertaCorefTests`
+    runs only in nightly.yml's `coref-models` job (`tools/ci-models.sh coref-models`, no cache; `SHARD_NIGHTLY`). Measured
+    (2026-11-05): word vectors within 1.1e-5 of Stanza's, scores within 5.7e-4; managed gives Stanza's chains on all 39
+    model × text pairs, TorchSharp on 37. The other two are near-ties of the model's own: roberta-large gives the token
+    `.` (no `Ġ`, from `TOKENIZER_MAPS`) almost the same vector everywhere (four `.` words agree to about 1e-7), so the
+    rough scores of the `.` candidates tie to float32 noise and decide which of them reach a word's top 50 and in what order;
+    start_map reads the candidates in that order, so a start score moves by up to about 0.1 between backends. gum-nospeakers
+    on validation_tech ("int", sentence 46: start vs dummy −0.0299 in Stanza, −0.0092 managed, +0.0796 TorchSharp) and
+    gum-speakers on validation_contractions (sentences 118 and 120: "IT" start 0.205, "He" antecedent 0.125) are
+    `RobertaCorefTests.KnownNearTies`: those chains are left out of that text's comparison on that backend, every other chain
+    must be Stanza's. A new difference fails; a new entry is the owner's decision.
   - CI: no cache (the model caches are near GitHub's 10 GB; owner's decision): golden shard 4 downloads the
     `default_accurate` package, the treebanks' transformer models (their packages' other files from the en-treebanks cache)
     and the transformer's files on every run (`tools/ci-models.sh transformer`: `download --package default_accurate`, ...,

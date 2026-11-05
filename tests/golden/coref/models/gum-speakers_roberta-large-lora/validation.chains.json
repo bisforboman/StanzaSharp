@@ -1,0 +1,2966 @@
+[
+ {
+  "index": 0,
+  "mentions": [
+   [
+    0,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "city",
+  "representative_index": 0
+ },
+ {
+  "index": 1,
+  "mentions": [
+   [
+    0,
+    0,
+    3
+   ],
+   [
+    1,
+    6,
+    8
+   ]
+  ],
+  "representative_text": "The city council",
+  "representative_index": 0
+ },
+ {
+  "index": 2,
+  "mentions": [
+   [
+    0,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "Tuesday",
+  "representative_index": 0
+ },
+ {
+  "index": 3,
+  "mentions": [
+   [
+    0,
+    5,
+    7
+   ]
+  ],
+  "representative_text": "Tuesday evening",
+  "representative_index": 0
+ },
+ {
+  "index": 4,
+  "mentions": [
+   [
+    0,
+    9,
+    12
+   ],
+   [
+    1,
+    14,
+    15
+   ]
+  ],
+  "representative_text": "the new budget",
+  "representative_index": 0
+ },
+ {
+  "index": 5,
+  "mentions": [
+   [
+    1,
+    1,
+    5
+   ]
+  ],
+  "representative_text": "three hours of debate",
+  "representative_index": 0
+ },
+ {
+  "index": 6,
+  "mentions": [
+   [
+    2,
+    0,
+    2
+   ],
+   [
+    2,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "The mayor",
+  "representative_index": 0
+ },
+ {
+  "index": 7,
+  "mentions": [
+   [
+    2,
+    10,
+    12
+   ]
+  ],
+  "representative_text": "the outcome",
+  "representative_index": 0
+ },
+ {
+  "index": 8,
+  "mentions": [
+   [
+    3,
+    0,
+    1
+   ],
+   [
+    3,
+    10,
+    13
+   ]
+  ],
+  "representative_text": "$ 1.2 billion",
+  "representative_index": 1
+ },
+ {
+  "index": 9,
+  "mentions": [
+   [
+    3,
+    2,
+    4
+   ]
+  ],
+  "representative_text": "4.3 %",
+  "representative_index": 0
+ },
+ {
+  "index": 10,
+  "mentions": [
+   [
+    3,
+    5,
+    8
+   ]
+  ],
+  "representative_text": "the third quarter",
+  "representative_index": 0
+ },
+ {
+  "index": 11,
+  "mentions": [
+   [
+    3,
+    15,
+    16
+   ]
+  ],
+  "representative_text": "costs",
+  "representative_index": 0
+ },
+ {
+  "index": 12,
+  "mentions": [
+   [
+    3,
+    18,
+    21
+   ]
+  ],
+  "representative_text": "roughly 2 percent",
+  "representative_index": 0
+ },
+ {
+  "index": 13,
+  "mentions": [
+   [
+    4,
+    0,
+    5
+   ]
+  ],
+  "representative_text": "Analysts at Smith & Co.",
+  "representative_index": 0
+ },
+ {
+  "index": 14,
+  "mentions": [
+   [
+    4,
+    2,
+    5
+   ]
+  ],
+  "representative_text": "Smith & Co.",
+  "representative_index": 0
+ },
+ {
+  "index": 15,
+  "mentions": [
+   [
+    4,
+    7,
+    10
+   ]
+  ],
+  "representative_text": "a smaller gain",
+  "representative_index": 0
+ },
+ {
+  "index": 16,
+  "mentions": [
+   [
+    5,
+    0,
+    4
+   ]
+  ],
+  "representative_text": "Shares of the company",
+  "representative_index": 0
+ },
+ {
+  "index": 17,
+  "mentions": [
+   [
+    5,
+    2,
+    4
+   ]
+  ],
+  "representative_text": "the company",
+  "representative_index": 0
+ },
+ {
+  "index": 18,
+  "mentions": [
+   [
+    5,
+    6,
+    8
+   ]
+  ],
+  "representative_text": "$ 48.75",
+  "representative_index": 0
+ },
+ {
+  "index": 19,
+  "mentions": [
+   [
+    5,
+    9,
+    10
+   ]
+  ],
+  "representative_text": "Friday",
+  "representative_index": 0
+ },
+ {
+  "index": 20,
+  "mentions": [
+   [
+    5,
+    13,
+    15
+   ]
+  ],
+  "representative_text": "$ 45.10",
+  "representative_index": 0
+ },
+ {
+  "index": 21,
+  "mentions": [
+   [
+    5,
+    15,
+    18
+   ]
+  ],
+  "representative_text": "a week earlier",
+  "representative_index": 0
+ },
+ {
+  "index": 22,
+  "mentions": [
+   [
+    6,
+    0,
+    13
+   ],
+   [
+    7,
+    0,
+    1
+   ],
+   [
+    9,
+    2,
+    3
+   ],
+   [
+    10,
+    1,
+    2
+   ],
+   [
+    10,
+    7,
+    8
+   ],
+   [
+    11,
+    1,
+    2
+   ],
+   [
+    11,
+    12,
+    13
+   ],
+   [
+    11,
+    16,
+    17
+   ],
+   [
+    13,
+    3,
+    4
+   ],
+   [
+    14,
+    3,
+    4
+   ],
+   [
+    15,
+    2,
+    3
+   ],
+   [
+    25,
+    0,
+    1
+   ],
+   [
+    29,
+    0,
+    1
+   ],
+   [
+    30,
+    1,
+    2
+   ],
+   [
+    47,
+    1,
+    2
+   ],
+   [
+    68,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Dr. Alvarez , who has worked at St. Mary's Hospital since 2011",
+  "representative_index": 0
+ },
+ {
+  "index": 23,
+  "mentions": [
+   [
+    6,
+    7,
+    10
+   ]
+  ],
+  "representative_text": "St. Mary's",
+  "representative_index": 0
+ },
+ {
+  "index": 24,
+  "mentions": [
+   [
+    6,
+    7,
+    11
+   ]
+  ],
+  "representative_text": "St. Mary's Hospital",
+  "representative_index": 0
+ },
+ {
+  "index": 25,
+  "mentions": [
+   [
+    6,
+    12,
+    13
+   ]
+  ],
+  "representative_text": "2011",
+  "representative_index": 0
+ },
+ {
+  "index": 26,
+  "mentions": [
+   [
+    6,
+    16,
+    20
+   ],
+   [
+    8,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "the new research unit",
+  "representative_index": 0
+ },
+ {
+  "index": 27,
+  "mentions": [
+   [
+    7,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Her team",
+  "representative_index": 0
+ },
+ {
+  "index": 28,
+  "mentions": [
+   [
+    7,
+    3,
+    7
+   ]
+  ],
+  "representative_text": "Prof. J. R. Okafor",
+  "representative_index": 0
+ },
+ {
+  "index": 29,
+  "mentions": [
+   [
+    7,
+    8,
+    14
+   ],
+   [
+    38,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "Mr. Lindqvist from the U.K. office",
+  "representative_index": 0
+ },
+ {
+  "index": 30,
+  "mentions": [
+   [
+    7,
+    11,
+    14
+   ]
+  ],
+  "representative_text": "the U.K. office",
+  "representative_index": 0
+ },
+ {
+  "index": 31,
+  "mentions": [
+   [
+    8,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "Jan.",
+  "representative_index": 0
+ },
+ {
+  "index": 32,
+  "mentions": [
+   [
+    8,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "Jan. 15",
+  "representative_index": 0
+ },
+ {
+  "index": 33,
+  "mentions": [
+   [
+    8,
+    6,
+    8
+   ]
+  ],
+  "representative_text": "9 a.m.",
+  "representative_index": 0
+ },
+ {
+  "index": 34,
+  "mentions": [
+   [
+    8,
+    9,
+    11
+   ]
+  ],
+  "representative_text": "Bldg. 4",
+  "representative_index": 0
+ },
+ {
+  "index": 35,
+  "mentions": [
+   [
+    9,
+    7,
+    8
+   ],
+   [
+    15,
+    0,
+    1
+   ],
+   [
+    57,
+    0,
+    1
+   ],
+   [
+    70,
+    0,
+    1
+   ],
+   [
+    76,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "Tom",
+  "representative_index": 0
+ },
+ {
+  "index": 36,
+  "mentions": [
+   [
+    11,
+    6,
+    8
+   ]
+  ],
+  "representative_text": "this report",
+  "representative_index": 0
+ },
+ {
+  "index": 37,
+  "mentions": [
+   [
+    11,
+    9,
+    10
+   ]
+  ],
+  "representative_text": "tonight",
+  "representative_index": 0
+ },
+ {
+  "index": 38,
+  "mentions": [
+   [
+    11,
+    12,
+    14
+   ]
+  ],
+  "representative_text": "my boss",
+  "representative_index": 0
+ },
+ {
+  "index": 39,
+  "mentions": [
+   [
+    13,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "We",
+  "representative_index": 0
+ },
+ {
+  "index": 40,
+  "mentions": [
+   [
+    13,
+    4,
+    6
+   ]
+  ],
+  "representative_text": "a seat",
+  "representative_index": 0
+ },
+ {
+  "index": 41,
+  "mentions": [
+   [
+    14,
+    6,
+    7
+   ],
+   [
+    16,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "that",
+  "representative_index": 0
+ },
+ {
+  "index": 42,
+  "mentions": [
+   [
+    15,
+    5,
+    7
+   ]
+  ],
+  "representative_text": "the opposite",
+  "representative_index": 0
+ },
+ {
+  "index": 43,
+  "mentions": [
+   [
+    17,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "Things to buy",
+  "representative_index": 0
+ },
+ {
+  "index": 44,
+  "mentions": [
+   [
+    17,
+    5,
+    6
+   ],
+   [
+    17,
+    7,
+    9
+   ]
+  ],
+  "representative_text": "2 liters",
+  "representative_index": 1
+ },
+ {
+  "index": 45,
+  "mentions": [
+   [
+    17,
+    11,
+    12
+   ]
+  ],
+  "representative_text": "eggs",
+  "representative_index": 0
+ },
+ {
+  "index": 46,
+  "mentions": [
+   [
+    17,
+    13,
+    14
+   ]
+  ],
+  "representative_text": "bread",
+  "representative_index": 0
+ },
+ {
+  "index": 47,
+  "mentions": [
+   [
+    17,
+    16,
+    17
+   ]
+  ],
+  "representative_text": "butter",
+  "representative_index": 0
+ },
+ {
+  "index": 48,
+  "mentions": [
+   [
+    17,
+    18,
+    21
+   ]
+  ],
+  "representative_text": "something for dinner",
+  "representative_index": 0
+ },
+ {
+  "index": 49,
+  "mentions": [
+   [
+    17,
+    20,
+    21
+   ]
+  ],
+  "representative_text": "dinner",
+  "representative_index": 0
+ },
+ {
+  "index": 50,
+  "mentions": [
+   [
+    18,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "the oven",
+  "representative_index": 0
+ },
+ {
+  "index": 51,
+  "mentions": [
+   [
+    18,
+    6,
+    9
+   ]
+  ],
+  "representative_text": "180 ° C",
+  "representative_index": 0
+ },
+ {
+  "index": 52,
+  "mentions": [
+   [
+    18,
+    13,
+    17
+   ]
+  ],
+  "representative_text": "the flour and sugar",
+  "representative_index": 0
+ },
+ {
+  "index": 53,
+  "mentions": [
+   [
+    18,
+    18,
+    21
+   ]
+  ],
+  "representative_text": "a large bowl",
+  "representative_index": 0
+ },
+ {
+  "index": 54,
+  "mentions": [
+   [
+    19,
+    4,
+    8
+   ]
+  ],
+  "representative_text": "25 – 30 minutes",
+  "representative_index": 0
+ },
+ {
+  "index": 55,
+  "mentions": [
+   [
+    20,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "BREAKING NEWS",
+  "representative_index": 0
+ },
+ {
+  "index": 56,
+  "mentions": [
+   [
+    20,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "Storm",
+  "representative_index": 0
+ },
+ {
+  "index": 57,
+  "mentions": [
+   [
+    20,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "Coast",
+  "representative_index": 0
+ },
+ {
+  "index": 58,
+  "mentions": [
+   [
+    20,
+    6,
+    9
+   ]
+  ],
+  "representative_text": "Thousands without power",
+  "representative_index": 0
+ },
+ {
+  "index": 59,
+  "mentions": [
+   [
+    20,
+    8,
+    9
+   ]
+  ],
+  "representative_text": "power",
+  "representative_index": 0
+ },
+ {
+  "index": 60,
+  "mentions": [
+   [
+    20,
+    10,
+    11
+   ]
+  ],
+  "representative_text": "winds",
+  "representative_index": 0
+ },
+ {
+  "index": 61,
+  "mentions": [
+   [
+    20,
+    12,
+    16
+   ]
+  ],
+  "representative_text": "120 km / h",
+  "representative_index": 0
+ },
+ {
+  "index": 62,
+  "mentions": [
+   [
+    21,
+    1,
+    3
+   ]
+  ],
+  "representative_text": "more information",
+  "representative_index": 0
+ },
+ {
+  "index": 63,
+  "mentions": [
+   [
+    21,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "support@example.co.uk",
+  "representative_index": 0
+ },
+ {
+  "index": 64,
+  "mentions": [
+   [
+    21,
+    8,
+    13
+   ]
+  ],
+  "representative_text": "+1 ( 555 ) 012-3456",
+  "representative_index": 0
+ },
+ {
+  "index": 65,
+  "mentions": [
+   [
+    21,
+    14,
+    15
+   ]
+  ],
+  "representative_text": "8:00",
+  "representative_index": 0
+ },
+ {
+  "index": 66,
+  "mentions": [
+   [
+    21,
+    16,
+    17
+   ]
+  ],
+  "representative_text": "17:30",
+  "representative_index": 0
+ },
+ {
+  "index": 67,
+  "mentions": [
+   [
+    22,
+    0,
+    1
+   ],
+   [
+    27,
+    0,
+    1
+   ],
+   [
+    80,
+    2,
+    3
+   ],
+   [
+    82,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "You",
+  "representative_index": 0
+ },
+ {
+  "index": 68,
+  "mentions": [
+   [
+    22,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "http://example.com/help?topic=billing&lang=en",
+  "representative_index": 0
+ },
+ {
+  "index": 69,
+  "mentions": [
+   [
+    22,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "answers",
+  "representative_index": 0
+ },
+ {
+  "index": 70,
+  "mentions": [
+   [
+    23,
+    0,
+    2
+   ],
+   [
+    23,
+    15,
+    16
+   ]
+  ],
+  "representative_text": "The committee",
+  "representative_index": 0
+ },
+ {
+  "index": 71,
+  "mentions": [
+   [
+    23,
+    5,
+    7
+   ]
+  ],
+  "representative_text": "Sen. Harris",
+  "representative_index": 0
+ },
+ {
+  "index": 72,
+  "mentions": [
+   [
+    23,
+    10,
+    11
+   ]
+  ],
+  "representative_text": "Calif",
+  "representative_index": 0
+ },
+ {
+  "index": 73,
+  "mentions": [
+   [
+    23,
+    15,
+    17
+   ],
+   [
+    24,
+    2,
+    4
+   ]
+  ],
+  "representative_text": "its findings",
+  "representative_index": 0
+ },
+ {
+  "index": 74,
+  "mentions": [
+   [
+    23,
+    18,
+    19
+   ]
+  ],
+  "representative_text": "3/14/2023",
+  "representative_index": 0
+ },
+ {
+  "index": 75,
+  "mentions": [
+   [
+    24,
+    5,
+    7
+   ]
+  ],
+  "representative_text": "the agency",
+  "representative_index": 0
+ },
+ {
+  "index": 76,
+  "mentions": [
+   [
+    24,
+    5,
+    17
+   ]
+  ],
+  "representative_text": "the agency \" failed to act \" on at least 12 warnings",
+  "representative_index": 0
+ },
+ {
+  "index": 77,
+  "mentions": [
+   [
+    24,
+    13,
+    17
+   ]
+  ],
+  "representative_text": "at least 12 warnings",
+  "representative_index": 0
+ },
+ {
+  "index": 78,
+  "mentions": [
+   [
+    24,
+    18,
+    19
+   ]
+  ],
+  "representative_text": "officials",
+  "representative_index": 0
+ },
+ {
+  "index": 79,
+  "mentions": [
+   [
+    24,
+    20,
+    22
+   ]
+  ],
+  "representative_text": "that figure",
+  "representative_index": 0
+ },
+ {
+  "index": 80,
+  "mentions": [
+   [
+    25,
+    5,
+    6
+   ],
+   [
+    28,
+    0,
+    1
+   ],
+   [
+    28,
+    11,
+    12
+   ],
+   [
+    73,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "they",
+  "representative_index": 0
+ },
+ {
+  "index": 81,
+  "mentions": [
+   [
+    25,
+    9,
+    10
+   ]
+  ],
+  "representative_text": "noon",
+  "representative_index": 0
+ },
+ {
+  "index": 82,
+  "mentions": [
+   [
+    26,
+    5,
+    6
+   ],
+   [
+    72,
+    0,
+    1
+   ],
+   [
+    78,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "we",
+  "representative_index": 0
+ },
+ {
+  "index": 83,
+  "mentions": [
+   [
+    28,
+    5,
+    8
+   ]
+  ],
+  "representative_text": "a bigger boat",
+  "representative_index": 0
+ },
+ {
+  "index": 84,
+  "mentions": [
+   [
+    29,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "apples",
+  "representative_index": 0
+ },
+ {
+  "index": 85,
+  "mentions": [
+   [
+    29,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "oranges",
+  "representative_index": 0
+ },
+ {
+  "index": 86,
+  "mentions": [
+   [
+    29,
+    7,
+    8
+   ]
+  ],
+  "representative_text": "pears",
+  "representative_index": 0
+ },
+ {
+  "index": 87,
+  "mentions": [
+   [
+    30,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "home",
+  "representative_index": 0
+ },
+ {
+  "index": 88,
+  "mentions": [
+   [
+    31,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "The tab above",
+  "representative_index": 0
+ },
+ {
+  "index": 89,
+  "mentions": [
+   [
+    31,
+    4,
+    6
+   ]
+  ],
+  "representative_text": "two sentences",
+  "representative_index": 0
+ },
+ {
+  "index": 90,
+  "mentions": [
+   [
+    31,
+    7,
+    9
+   ]
+  ],
+  "representative_text": "one line",
+  "representative_index": 0
+ },
+ {
+  "index": 91,
+  "mentions": [
+   [
+    32,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Two spaces",
+  "representative_index": 0
+ },
+ {
+  "index": 92,
+  "mentions": [
+   [
+    33,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Three spaces",
+  "representative_index": 0
+ },
+ {
+  "index": 93,
+  "mentions": [
+   [
+    34,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "Mrs. O'Neill's",
+  "representative_index": 0
+ },
+ {
+  "index": 94,
+  "mentions": [
+   [
+    34,
+    0,
+    4
+   ]
+  ],
+  "representative_text": "Mrs. O'Neill's dog",
+  "representative_index": 0
+ },
+ {
+  "index": 95,
+  "mentions": [
+   [
+    34,
+    6,
+    9
+   ]
+  ],
+  "representative_text": "the mailman's",
+  "representative_index": 0
+ },
+ {
+  "index": 96,
+  "mentions": [
+   [
+    34,
+    6,
+    10
+   ]
+  ],
+  "representative_text": "the mailman's van",
+  "representative_index": 0
+ },
+ {
+  "index": 97,
+  "mentions": [
+   [
+    35,
+    0,
+    3
+   ],
+   [
+    35,
+    7,
+    10
+   ]
+  ],
+  "representative_text": "The Joneses'",
+  "representative_index": 0
+ },
+ {
+  "index": 98,
+  "mentions": [
+   [
+    35,
+    0,
+    4
+   ]
+  ],
+  "representative_text": "The Joneses' house",
+  "representative_index": 0
+ },
+ {
+  "index": 99,
+  "mentions": [
+   [
+    36,
+    0,
+    1
+   ],
+   [
+    36,
+    2,
+    7
+   ]
+  ],
+  "representative_text": "the children's favorite park",
+  "representative_index": 1
+ },
+ {
+  "index": 100,
+  "mentions": [
+   [
+    36,
+    2,
+    5
+   ]
+  ],
+  "representative_text": "the children's",
+  "representative_index": 0
+ },
+ {
+  "index": 101,
+  "mentions": [
+   [
+    37,
+    0,
+    6
+   ]
+  ],
+  "representative_text": "The café on Rue de Rivoli",
+  "representative_index": 0
+ },
+ {
+  "index": 102,
+  "mentions": [
+   [
+    37,
+    3,
+    6
+   ]
+  ],
+  "representative_text": "Rue de Rivoli",
+  "representative_index": 0
+ },
+ {
+  "index": 103,
+  "mentions": [
+   [
+    37,
+    7,
+    8
+   ]
+  ],
+  "representative_text": "crêpes",
+  "representative_index": 0
+ },
+ {
+  "index": 104,
+  "mentions": [
+   [
+    37,
+    9,
+    10
+   ]
+  ],
+  "representative_text": "croissants",
+  "representative_index": 0
+ },
+ {
+  "index": 105,
+  "mentions": [
+   [
+    37,
+    11,
+    14
+   ]
+  ],
+  "representative_text": "café au lait",
+  "representative_index": 0
+ },
+ {
+  "index": 106,
+  "mentions": [
+   [
+    38,
+    0,
+    1
+   ],
+   [
+    59,
+    0,
+    1
+   ],
+   [
+    59,
+    4,
+    5
+   ],
+   [
+    98,
+    9,
+    10
+   ]
+  ],
+  "representative_text": "Zoë",
+  "representative_index": 0
+ },
+ {
+  "index": 107,
+  "mentions": [
+   [
+    38,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "Zürich",
+  "representative_index": 0
+ },
+ {
+  "index": 108,
+  "mentions": [
+   [
+    38,
+    6,
+    8
+   ]
+  ],
+  "representative_text": "last spring",
+  "representative_index": 0
+ },
+ {
+  "index": 109,
+  "mentions": [
+   [
+    39,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "The naïve résumé",
+  "representative_index": 0
+ },
+ {
+  "index": 110,
+  "mentions": [
+   [
+    39,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "nobody",
+  "representative_index": 0
+ },
+ {
+  "index": 111,
+  "mentions": [
+   [
+    40,
+    1,
+    2
+   ]
+  ],
+  "representative_text": "1969",
+  "representative_index": 0
+ },
+ {
+  "index": 112,
+  "mentions": [
+   [
+    40,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "Apollo 11",
+  "representative_index": 0
+ },
+ {
+  "index": 113,
+  "mentions": [
+   [
+    40,
+    3,
+    9
+   ],
+   [
+    42,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Apollo 11 landed on the Moon",
+  "representative_index": 0
+ },
+ {
+  "index": 114,
+  "mentions": [
+   [
+    40,
+    7,
+    9
+   ]
+  ],
+  "representative_text": "the Moon",
+  "representative_index": 0
+ },
+ {
+  "index": 115,
+  "mentions": [
+   [
+    41,
+    0,
+    3
+   ],
+   [
+    85,
+    0,
+    3
+   ],
+   [
+    87,
+    0,
+    1
+   ],
+   [
+    97,
+    0,
+    1
+   ],
+   [
+    98,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "Neil Armstrong's",
+  "representative_index": 0
+ },
+ {
+  "index": 116,
+  "mentions": [
+   [
+    41,
+    0,
+    4
+   ],
+   [
+    41,
+    6,
+    7
+   ],
+   [
+    41,
+    8,
+    13
+   ]
+  ],
+  "representative_text": "one small step for man",
+  "representative_index": 2
+ },
+ {
+  "index": 117,
+  "mentions": [
+   [
+    41,
+    12,
+    13
+   ]
+  ],
+  "representative_text": "man",
+  "representative_index": 0
+ },
+ {
+  "index": 118,
+  "mentions": [
+   [
+    41,
+    18,
+    19
+   ]
+  ],
+  "representative_text": "millions",
+  "representative_index": 0
+ },
+ {
+  "index": 119,
+  "mentions": [
+   [
+    42,
+    3,
+    14
+   ]
+  ],
+  "representative_text": "8 days , 3 hours , 18 minutes and 35 seconds",
+  "representative_index": 0
+ },
+ {
+  "index": 120,
+  "mentions": [
+   [
+    42,
+    6,
+    14
+   ]
+  ],
+  "representative_text": "3 hours , 18 minutes and 35 seconds",
+  "representative_index": 0
+ },
+ {
+  "index": 121,
+  "mentions": [
+   [
+    43,
+    1,
+    2
+   ],
+   [
+    43,
+    2,
+    3
+   ],
+   [
+    43,
+    4,
+    5
+   ],
+   [
+    44,
+    13,
+    14
+   ]
+  ],
+  "representative_text": "it",
+  "representative_index": 0
+ },
+ {
+  "index": 122,
+  "mentions": [
+   [
+    44,
+    1,
+    3
+   ]
+  ],
+  "representative_text": "the U.S.",
+  "representative_index": 0
+ },
+ {
+  "index": 123,
+  "mentions": [
+   [
+    44,
+    4,
+    5
+   ]
+  ],
+  "representative_text": "people",
+  "representative_index": 0
+ },
+ {
+  "index": 124,
+  "mentions": [
+   [
+    44,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "1,000.50",
+  "representative_index": 0
+ },
+ {
+  "index": 125,
+  "mentions": [
+   [
+    44,
+    12,
+    13
+   ],
+   [
+    96,
+    9,
+    10
+   ]
+  ],
+  "representative_text": "Europe",
+  "representative_index": 0
+ },
+ {
+  "index": 126,
+  "mentions": [
+   [
+    44,
+    15,
+    16
+   ]
+  ],
+  "representative_text": "1.000,50",
+  "representative_index": 0
+ },
+ {
+  "index": 127,
+  "mentions": [
+   [
+    45,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Version 2.0.1",
+  "representative_index": 0
+ },
+ {
+  "index": 128,
+  "mentions": [
+   [
+    45,
+    3,
+    10
+   ]
+  ],
+  "representative_text": "the bug reported in issue # 4512",
+  "representative_index": 0
+ },
+ {
+  "index": 129,
+  "mentions": [
+   [
+    45,
+    7,
+    10
+   ]
+  ],
+  "representative_text": "issue # 4512",
+  "representative_index": 0
+ },
+ {
+  "index": 130,
+  "mentions": [
+   [
+    46,
+    0,
+    4
+   ]
+  ],
+  "representative_text": "The quick brown fox",
+  "representative_index": 0
+ },
+ {
+  "index": 131,
+  "mentions": [
+   [
+    46,
+    6,
+    9
+   ]
+  ],
+  "representative_text": "the lazy dog",
+  "representative_index": 0
+ },
+ {
+  "index": 132,
+  "mentions": [
+   [
+    47,
+    1,
+    3
+   ]
+  ],
+  "representative_text": "my box",
+  "representative_index": 0
+ },
+ {
+  "index": 133,
+  "mentions": [
+   [
+    47,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "liquor",
+  "representative_index": 0
+ },
+ {
+  "index": 134,
+  "mentions": [
+   [
+    47,
+    4,
+    8
+   ]
+  ],
+  "representative_text": "five dozen liquor jugs",
+  "representative_index": 0
+ },
+ {
+  "index": 135,
+  "mentions": [
+   [
+    48,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "daft zebras",
+  "representative_index": 0
+ },
+ {
+  "index": 136,
+  "mentions": [
+   [
+    49,
+    1,
+    21
+   ]
+  ],
+  "representative_text": "the results , which were published last week in a journal that most of the researchers had never heard of",
+  "representative_index": 0
+ },
+ {
+  "index": 137,
+  "mentions": [
+   [
+    49,
+    7,
+    9
+   ]
+  ],
+  "representative_text": "last week",
+  "representative_index": 0
+ },
+ {
+  "index": 138,
+  "mentions": [
+   [
+    49,
+    10,
+    21
+   ]
+  ],
+  "representative_text": "a journal that most of the researchers had never heard of",
+  "representative_index": 0
+ },
+ {
+  "index": 139,
+  "mentions": [
+   [
+    49,
+    13,
+    17
+   ]
+  ],
+  "representative_text": "most of the researchers",
+  "representative_index": 0
+ },
+ {
+  "index": 140,
+  "mentions": [
+   [
+    49,
+    15,
+    17
+   ]
+  ],
+  "representative_text": "the researchers",
+  "representative_index": 0
+ },
+ {
+  "index": 141,
+  "mentions": [
+   [
+    49,
+    28,
+    41
+   ],
+   [
+    49,
+    43,
+    44
+   ]
+  ],
+  "representative_text": "several independent groups that tried to replicate the experiment under slightly different conditions",
+  "representative_index": 0
+ },
+ {
+  "index": 142,
+  "mentions": [
+   [
+    49,
+    35,
+    37
+   ]
+  ],
+  "representative_text": "the experiment",
+  "representative_index": 0
+ },
+ {
+  "index": 143,
+  "mentions": [
+   [
+    49,
+    38,
+    41
+   ]
+  ],
+  "representative_text": "slightly different conditions",
+  "representative_index": 0
+ },
+ {
+  "index": 144,
+  "mentions": [
+   [
+    49,
+    47,
+    49
+   ]
+  ],
+  "representative_text": "the effect",
+  "representative_index": 0
+ },
+ {
+  "index": 145,
+  "mentions": [
+   [
+    49,
+    51,
+    54
+   ],
+   [
+    49,
+    64,
+    65
+   ]
+  ],
+  "representative_text": "the original authors",
+  "representative_index": 0
+ },
+ {
+  "index": 146,
+  "mentions": [
+   [
+    49,
+    58,
+    66
+   ]
+  ],
+  "representative_text": "a calibration error in one of their instruments",
+  "representative_index": 0
+ },
+ {
+  "index": 147,
+  "mentions": [
+   [
+    49,
+    62,
+    66
+   ]
+  ],
+  "representative_text": "one of their instruments",
+  "representative_index": 0
+ },
+ {
+  "index": 148,
+  "mentions": [
+   [
+    49,
+    64,
+    66
+   ]
+  ],
+  "representative_text": "their instruments",
+  "representative_index": 0
+ },
+ {
+  "index": 149,
+  "mentions": [
+   [
+    56,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "The price",
+  "representative_index": 0
+ },
+ {
+  "index": 150,
+  "mentions": [
+   [
+    56,
+    3,
+    5
+   ],
+   [
+    56,
+    6,
+    9
+   ],
+   [
+    56,
+    10,
+    12
+   ]
+  ],
+  "representative_text": "about £ 21",
+  "representative_index": 1
+ },
+ {
+  "index": 151,
+  "mentions": [
+   [
+    57,
+    3,
+    7
+   ]
+  ],
+  "representative_text": "a $ 20 bill",
+  "representative_index": 0
+ },
+ {
+  "index": 152,
+  "mentions": [
+   [
+    57,
+    8,
+    12
+   ]
+  ],
+  "representative_text": "five $ 1 coins",
+  "representative_index": 0
+ },
+ {
+  "index": 153,
+  "mentions": [
+   [
+    58,
+    0,
+    7
+   ],
+   [
+    60,
+    0,
+    1
+   ],
+   [
+    60,
+    6,
+    7
+   ],
+   [
+    69,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "The 10 - year - old boy",
+  "representative_index": 0
+ },
+ {
+  "index": 154,
+  "mentions": [
+   [
+    58,
+    8,
+    13
+   ]
+  ],
+  "representative_text": "a size - 8 shoe",
+  "representative_index": 0
+ },
+ {
+  "index": 155,
+  "mentions": [
+   [
+    61,
+    0,
+    2
+   ],
+   [
+    101,
+    4,
+    5
+   ],
+   [
+    103,
+    4,
+    5
+   ],
+   [
+    103,
+    11,
+    12
+   ]
+  ],
+  "representative_text": "They both",
+  "representative_index": 0
+ },
+ {
+  "index": 156,
+  "mentions": [
+   [
+    62,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Section 2",
+  "representative_index": 0
+ },
+ {
+  "index": 157,
+  "mentions": [
+   [
+    62,
+    9,
+    11
+   ]
+  ],
+  "representative_text": "the agreement",
+  "representative_index": 0
+ },
+ {
+  "index": 158,
+  "mentions": [
+   [
+    62,
+    14,
+    16
+   ]
+  ],
+  "representative_text": "non-U.S. persons",
+  "representative_index": 0
+ },
+ {
+  "index": 159,
+  "mentions": [
+   [
+    63,
+    2,
+    4
+   ]
+  ],
+  "representative_text": "Art. 5",
+  "representative_index": 0
+ },
+ {
+  "index": 160,
+  "mentions": [
+   [
+    63,
+    5,
+    8
+   ]
+  ],
+  "representative_text": "para . 3",
+  "representative_index": 0
+ },
+ {
+  "index": 161,
+  "mentions": [
+   [
+    63,
+    10,
+    12
+   ]
+  ],
+  "representative_text": "Annex IV",
+  "representative_index": 0
+ },
+ {
+  "index": 162,
+  "mentions": [
+   [
+    64,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "8,849 m",
+  "representative_index": 0
+ },
+ {
+  "index": 163,
+  "mentions": [
+   [
+    65,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "The Nile",
+  "representative_index": 0
+ },
+ {
+  "index": 164,
+  "mentions": [
+   [
+    66,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "6,650 km",
+  "representative_index": 0
+ },
+ {
+  "index": 165,
+  "mentions": [
+   [
+    67,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Temperatures",
+  "representative_index": 0
+ },
+ {
+  "index": 166,
+  "mentions": [
+   [
+    67,
+    3,
+    7
+   ]
+  ],
+  "representative_text": "− 40 ° F",
+  "representative_index": 0
+ },
+ {
+  "index": 167,
+  "mentions": [
+   [
+    72,
+    0,
+    4
+   ],
+   [
+    77,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "We've won .",
+  "representative_index": 0
+ },
+ {
+  "index": 168,
+  "mentions": [
+   [
+    75,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "that",
+  "representative_index": 0
+ },
+ {
+  "index": 169,
+  "mentions": [
+   [
+    85,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "2024",
+  "representative_index": 0
+ },
+ {
+  "index": 170,
+  "mentions": [
+   [
+    85,
+    0,
+    7
+   ],
+   [
+    85,
+    12,
+    13
+   ],
+   [
+    86,
+    2,
+    3
+   ]
+  ],
+  "representative_text": "The CEO's 2024 letter to shareholders",
+  "representative_index": 0
+ },
+ {
+  "index": 171,
+  "mentions": [
+   [
+    85,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "shareholders",
+  "representative_index": 0
+ },
+ {
+  "index": 172,
+  "mentions": [
+   [
+    85,
+    8,
+    13
+   ]
+  ],
+  "representative_text": "all 14 pages of it",
+  "representative_index": 0
+ },
+ {
+  "index": 173,
+  "mentions": [
+   [
+    86,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Critics",
+  "representative_index": 0
+ },
+ {
+  "index": 174,
+  "mentions": [
+   [
+    87,
+    4,
+    8
+   ]
+  ],
+  "representative_text": "July 4 , 1976",
+  "representative_index": 0
+ },
+ {
+  "index": 175,
+  "mentions": [
+   [
+    87,
+    7,
+    8
+   ]
+  ],
+  "representative_text": "1976",
+  "representative_index": 0
+ },
+ {
+  "index": 176,
+  "mentions": [
+   [
+    87,
+    10,
+    13
+   ]
+  ],
+  "representative_text": "Philadelphia , Pa.",
+  "representative_index": 0
+ },
+ {
+  "index": 177,
+  "mentions": [
+   [
+    87,
+    12,
+    13
+   ]
+  ],
+  "representative_text": "Pa.",
+  "representative_index": 0
+ },
+ {
+  "index": 178,
+  "mentions": [
+   [
+    87,
+    17,
+    20
+   ]
+  ],
+  "representative_text": "Washington , D.C.",
+  "representative_index": 0
+ },
+ {
+  "index": 179,
+  "mentions": [
+   [
+    87,
+    22,
+    24
+   ]
+  ],
+  "representative_text": "age 12",
+  "representative_index": 0
+ },
+ {
+  "index": 180,
+  "mentions": [
+   [
+    88,
+    0,
+    7
+   ]
+  ],
+  "representative_text": "#throwback to the summer of ' 99",
+  "representative_index": 0
+ },
+ {
+  "index": 181,
+  "mentions": [
+   [
+    88,
+    2,
+    7
+   ]
+  ],
+  "representative_text": "the summer of ' 99",
+  "representative_index": 0
+ },
+ {
+  "index": 182,
+  "mentions": [
+   [
+    88,
+    5,
+    7
+   ]
+  ],
+  "representative_text": "' 99",
+  "representative_index": 0
+ },
+ {
+  "index": 183,
+  "mentions": [
+   [
+    88,
+    8,
+    10
+   ]
+  ],
+  "representative_text": "good times",
+  "representative_index": 0
+ },
+ {
+  "index": 184,
+  "mentions": [
+   [
+    88,
+    13,
+    14
+   ]
+  ],
+  "representative_text": "ur",
+  "representative_index": 0
+ },
+ {
+  "index": 185,
+  "mentions": [
+   [
+    89,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "The data",
+  "representative_index": 0
+ },
+ {
+  "index": 186,
+  "mentions": [
+   [
+    89,
+    3,
+    4
+   ],
+   [
+    89,
+    5,
+    6
+   ]
+  ],
+  "representative_text": "n",
+  "representative_index": 0
+ },
+ {
+  "index": 187,
+  "mentions": [
+   [
+    89,
+    7,
+    8
+   ],
+   [
+    89,
+    9,
+    10
+   ],
+   [
+    89,
+    16,
+    17
+   ],
+   [
+    89,
+    18,
+    19
+   ]
+  ],
+  "representative_text": "p",
+  "representative_index": 0
+ },
+ {
+  "index": 188,
+  "mentions": [
+   [
+    89,
+    12,
+    15
+   ]
+  ],
+  "representative_text": "a moderate effect",
+  "representative_index": 0
+ },
+ {
+  "index": 189,
+  "mentions": [
+   [
+    90,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Fig. 2",
+  "representative_index": 0
+ },
+ {
+  "index": 190,
+  "mentions": [
+   [
+    90,
+    3,
+    5
+   ]
+  ],
+  "representative_text": "the distribution",
+  "representative_index": 0
+ },
+ {
+  "index": 191,
+  "mentions": [
+   [
+    90,
+    6,
+    8
+   ]
+  ],
+  "representative_text": "Table 3",
+  "representative_index": 0
+ },
+ {
+  "index": 192,
+  "mentions": [
+   [
+    90,
+    9,
+    11
+   ]
+  ],
+  "representative_text": "the outliers",
+  "representative_index": 0
+ },
+ {
+  "index": 193,
+  "mentions": [
+   [
+    92,
+    0,
+    3
+   ]
+  ],
+  "representative_text": "The ' 80s",
+  "representative_index": 0
+ },
+ {
+  "index": 194,
+  "mentions": [
+   [
+    93,
+    0,
+    5
+   ]
+  ],
+  "representative_text": "Fish ' n ' chips",
+  "representative_index": 0
+ },
+ {
+  "index": 195,
+  "mentions": [
+   [
+    94,
+    0,
+    1
+   ],
+   [
+    94,
+    2,
+    7
+   ]
+  ],
+  "representative_text": "the Japanese name for Japan",
+  "representative_index": 1
+ },
+ {
+  "index": 196,
+  "mentions": [
+   [
+    94,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "Japan",
+  "representative_index": 0
+ },
+ {
+  "index": 197,
+  "mentions": [
+   [
+    95,
+    0,
+    2
+   ],
+   [
+    95,
+    3,
+    4
+   ]
+  ],
+  "representative_text": "The word",
+  "representative_index": 0
+ },
+ {
+  "index": 198,
+  "mentions": [
+   [
+    95,
+    6,
+    7
+   ]
+  ],
+  "representative_text": "Moscow",
+  "representative_index": 0
+ },
+ {
+  "index": 199,
+  "mentions": [
+   [
+    95,
+    8,
+    9
+   ]
+  ],
+  "representative_text": "Russian",
+  "representative_index": 0
+ },
+ {
+  "index": 200,
+  "mentions": [
+   [
+    96,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Arabic numerals",
+  "representative_index": 0
+ },
+ {
+  "index": 201,
+  "mentions": [
+   [
+    96,
+    3,
+    6
+   ]
+  ],
+  "representative_text": "0 – 9",
+  "representative_index": 0
+ },
+ {
+  "index": 202,
+  "mentions": [
+   [
+    96,
+    11,
+    14
+   ]
+  ],
+  "representative_text": "the Islamic world",
+  "representative_index": 0
+ },
+ {
+  "index": 203,
+  "mentions": [
+   [
+    99,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "The meeting",
+  "representative_index": 0
+ },
+ {
+  "index": 204,
+  "mentions": [
+   [
+    99,
+    4,
+    6
+   ]
+  ],
+  "representative_text": "10:30 a.m.",
+  "representative_index": 0
+ },
+ {
+  "index": 205,
+  "mentions": [
+   [
+    99,
+    7,
+    8
+   ]
+  ],
+  "representative_text": "Mon.",
+  "representative_index": 0
+ },
+ {
+  "index": 206,
+  "mentions": [
+   [
+    99,
+    16,
+    17
+   ]
+  ],
+  "representative_text": "Fri.",
+  "representative_index": 0
+ },
+ {
+  "index": 207,
+  "mentions": [
+   [
+    99,
+    17,
+    19
+   ]
+  ],
+  "representative_text": "Late arrivals",
+  "representative_index": 0
+ },
+ {
+  "index": 208,
+  "mentions": [
+   [
+    99,
+    25,
+    27
+   ]
+  ],
+  "representative_text": "the doors",
+  "representative_index": 0
+ },
+ {
+  "index": 209,
+  "mentions": [
+   [
+    99,
+    29,
+    31
+   ]
+  ],
+  "representative_text": "10:35 sharp",
+  "representative_index": 0
+ },
+ {
+  "index": 210,
+  "mentions": [
+   [
+    99,
+    34,
+    35
+   ]
+  ],
+  "representative_text": "exceptions",
+  "representative_index": 0
+ },
+ {
+  "index": 211,
+  "mentions": [
+   [
+    100,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "Chapter 7",
+  "representative_index": 0
+ },
+ {
+  "index": 212,
+  "mentions": [
+   [
+    100,
+    2,
+    6
+   ]
+  ],
+  "representative_text": "The Long Road Home",
+  "representative_index": 0
+ },
+ {
+  "index": 213,
+  "mentions": [
+   [
+    101,
+    6,
+    8
+   ]
+  ],
+  "representative_text": "the border",
+  "representative_index": 0
+ },
+ {
+  "index": 214,
+  "mentions": [
+   [
+    102,
+    0,
+    1
+   ]
+  ],
+  "representative_text": "Nobody",
+  "representative_index": 0
+ },
+ {
+  "index": 215,
+  "mentions": [
+   [
+    103,
+    0,
+    2
+   ]
+  ],
+  "representative_text": "The guard",
+  "representative_index": 0
+ },
+ {
+  "index": 216,
+  "mentions": [
+   [
+    103,
+    4,
+    6
+   ]
+  ],
+  "representative_text": "their papers",
+  "representative_index": 0
+ }
+]

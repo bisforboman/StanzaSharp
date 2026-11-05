@@ -73,7 +73,9 @@ public sealed class PipelineOptions
     /// <c>combined_charlm</c>, <c>ewt_charlm</c>, <c>gum_charlm</c>, <c>lines_charlm</c>, <c>partut_charlm</c>,
     /// <c>atis_charlm</c>, <c>childes_charlm</c>, <c>eslspok_charlm</c>, lemma <c>ewt_charlm</c>, <c>gum_charlm</c>,
     /// <c>lines_charlm</c>, <c>partut_charlm</c>, <c>atis_charlm</c>, <c>childes_charlm</c>, German tokenize and lemma
-    /// <c>combined_charlm</c>, <c>gsd_charlm</c>, <c>hdt_charlm</c>. Character models a chosen
+    /// <c>combined_charlm</c>, <c>gsd_charlm</c>, <c>hdt_charlm</c>; English coref <c>gum-nospeakers_roberta-large-lora</c>,
+    /// <c>gum-speakers_roberta-large-lora</c> and <c>ontonotes-singletons_roberta-large-lora</c> (on roberta-large;
+    /// gum-speakers' speaker feature sees one speaker, as Stanza does without speaker tags). Character models a chosen
     /// model reads are loaded next to the package's when they differ. <see cref="Pipeline.Load"/> and <see cref="ModelDownloader"/> throw
     /// <see cref="ArgumentException"/> for an unknown processor and for an unknown, transformer or unported model.
     /// </remarks>

@@ -500,7 +500,7 @@ class RecordContextual:
 
 def electra_locally(models):
     """
-    Has Stanza's load_bert read TRANSFORMER, ROBERTA and XLMR (English) and GERMAN["TRANSFORMER"] and DBMDZ from <models>/<lang>/transformer/
+    Has Stanza's load_bert read TRANSFORMER, ROBERTA, XLMR and ROBERTA_LARGE (English) and GERMAN["TRANSFORMER"] and DBMDZ from <models>/<lang>/transformer/
     (the files ModelDownloader fetches at the pinned revision) instead of Hugging Face's cache.
     """
     from stanza.models.common import bert_embedding
@@ -509,7 +509,8 @@ def electra_locally(models):
              ROBERTA: Path(models) / "en" / "transformer" / ROBERTA,
              GERMAN["TRANSFORMER"]: Path(models) / "de" / "transformer" / GERMAN["TRANSFORMER"],
              DBMDZ: Path(models) / "de" / "transformer" / DBMDZ,
-             XLMR: Path(models) / "en" / "transformer" / XLMR}
+             XLMR: Path(models) / "en" / "transformer" / XLMR,
+             ROBERTA_LARGE: Path(models) / "en" / "transformer" / ROBERTA_LARGE}
 
     def load_bert(model_name, *args, **kwargs):
         if model_name in local:
@@ -1318,6 +1319,47 @@ def coref_chains_json(doc):
              "representative_text": c.representative_text, "representative_index": c.representative_index} for c in doc.coref]
 
 
+def coref_capture(nlp, name, text, tensors, index):
+    """
+    CorefModel.run's steps on one text through nlp's coref model: windows, word vectors, top-k candidates in topk's order,
+    the scores, the clusters, into tensors[name.*] and index[name]; returns the document.
+    """
+    from stanza.models.coref import bert as coref_bert
+    model = nlp.processors["coref"]._model
+    seen = {}
+    batches, bertify, rough, run = coref_bert.get_subwords_batches, model._bertify, model.rough_scorer.forward, model.run
+
+    def get_batches(doc, config, tok):
+        seen["windows"] = batches(doc, config, tok)
+        return seen["windows"]
+
+    def rough_forward(mentions):
+        top_scores, top_indices, rough_scores = rough(mentions)
+        seen["words"], seen["top_indices"] = mentions, top_indices
+        return top_scores, top_indices, rough_scores
+
+    def model_run(doc, *args, **kwargs):
+        result = run(doc, *args, **kwargs)
+        seen["doc"], seen["result"] = doc, result
+        return result
+
+    coref_bert.get_subwords_batches, model.rough_scorer.forward, model.run = get_batches, rough_forward, model_run
+    try:
+        with torch.no_grad():
+            doc = nlp(text)
+    finally:
+        coref_bert.get_subwords_batches, model.rough_scorer.forward, model.run = batches, rough, run
+    result, cdoc = seen["result"], seen["doc"]
+    pad = model.tokenizer.pad_token_id
+    tensors[f"{name}.words8"] = seen["words"][:8].numpy()
+    tensors[f"{name}.top_indices"] = seen["top_indices"].to(torch.int32).numpy()
+    tensors[f"{name}.coref_scores"] = result.coref_scores.numpy()
+    tensors[f"{name}.zero_scores"] = result.zero_scores.reshape(-1).numpy()
+    index[name] = {"windows": [[int(i) for i in w if i != pad] for w in seen["windows"]], "word2subword": cdoc["word2subword"],
+                   "word_clusters": result.word_clusters, "span_clusters": [[list(s) for s in c] for c in result.span_clusters]}
+    return doc
+
+
 def write_coref_golden(models, out):
     """
     coref/: Stanza's coref (COREF_PROCESSORS) on corpus.txt and each validation*.txt: <name>.conllu ("{:C}"), <name>.chains.json
@@ -1346,44 +1388,11 @@ def write_coref_golden(models, out):
         print(f"coref/{name}.conllu: {len(doc.sentences)} sentences, {len(doc.coref)} chains, "
               f"{sum(len(c.mentions) for c in doc.coref)} mentions, {sum(len(s.empty_words) for s in doc.sentences)} empty words")
 
-    from stanza.models.coref import bert as coref_bert
     model = nlp.processors["coref"]._model
     tensors, index = {}, {}
 
     def capture(name, text):
-        """CorefModel.run's steps on one text: windows, word vectors, top-k candidates in topk's order, the scores, the clusters."""
-        seen = {}
-        batches, bertify, rough, run = coref_bert.get_subwords_batches, model._bertify, model.rough_scorer.forward, model.run
-
-        def get_batches(doc, config, tok):
-            seen["windows"] = batches(doc, config, tok)
-            return seen["windows"]
-
-        def rough_forward(mentions):
-            top_scores, top_indices, rough_scores = rough(mentions)
-            seen["words"], seen["top_indices"] = mentions, top_indices
-            return top_scores, top_indices, rough_scores
-
-        def model_run(doc, *args, **kwargs):
-            result = run(doc, *args, **kwargs)
-            seen["doc"], seen["result"] = doc, result
-            return result
-
-        coref_bert.get_subwords_batches, model.rough_scorer.forward, model.run = get_batches, rough_forward, model_run
-        try:
-            with torch.no_grad():
-                doc = nlp(text)
-        finally:
-            coref_bert.get_subwords_batches, model.rough_scorer.forward, model.run = batches, rough, run
-        result, cdoc = seen["result"], seen["doc"]
-        pad = model.tokenizer.pad_token_id
-        tensors[f"{name}.words8"] = seen["words"][:8].numpy()
-        tensors[f"{name}.top_indices"] = seen["top_indices"].to(torch.int32).numpy()
-        tensors[f"{name}.coref_scores"] = result.coref_scores.numpy()
-        tensors[f"{name}.zero_scores"] = result.zero_scores.reshape(-1).numpy()
-        index[name] = {"windows": [[int(i) for i in w if i != pad] for w in seen["windows"]], "word2subword": cdoc["word2subword"],
-                       "word_clusters": result.word_clusters, "span_clusters": [[list(s) for s in c] for c in result.span_clusters]}
-        return doc
+        return coref_capture(nlp, name, text, tensors, index)
 
     for path in [out / "corpus.txt"] + sorted(out.glob("validation*.txt")):
         name = "corpus" if path.name == "corpus.txt" else path.stem
@@ -1429,6 +1438,44 @@ def write_coref_golden(models, out):
         finally:
             bias -= COREF_ZERO_SHIFT
 
+
+
+# The English-only coref models (#210), with roberta-large: coref/models/<model>/ (`--coref-models-only`).
+COREF_MODELS = ["gum-nospeakers_roberta-large-lora", "gum-speakers_roberta-large-lora", "ontonotes-singletons_roberta-large-lora"]
+ROBERTA_LARGE = "roberta-large"
+
+
+def write_coref_models_golden(models, out, only=None):
+    """
+    coref/models/<model>/ for each of COREF_MODELS (or only those named in `only`): Stanza's coref with that model after
+    COREF_PROCESSORS' tagger, on corpus.txt and each validation*.txt: <name>.chains.json (doc.coref) only, the tagger's columns
+    being coref/'s; intermediates.* (CorefModel.run's steps) on corpus.txt. Reads ROBERTA_LARGE from <models>/en/transformer/.
+    """
+    electra_locally(models)
+    for coref in COREF_MODELS:
+        if only and coref not in only:
+            continue
+        folder = out / "coref" / "models" / coref
+        folder.mkdir(parents=True, exist_ok=True)
+        nlp = stanza.Pipeline(LANG, dir=models, package=None, processors={**COREF_PROCESSORS, "coref": coref}, download_method=None,
+                              use_gpu=False, logging_level="WARN")
+        tensors, index = {}, {}
+        for path in [out / "corpus.txt"] + sorted(out.glob("validation*.txt")):
+            name = "corpus" if path.name == "corpus.txt" else path.stem
+            text = path.read_bytes().decode("utf-8")
+            if name == "corpus":
+                doc = coref_capture(nlp, name, text, tensors, index)
+            else:
+                with torch.no_grad():
+                    doc = nlp(text)
+            with open(folder / f"{name}.chains.json", "w", encoding="utf-8", newline="\n") as f:
+                json.dump(coref_chains_json(doc), f, indent=1, ensure_ascii=False)
+                f.write("\n")
+            print(f"coref/models/{coref}/{name}: {len(doc.coref)} chains, {sum(len(c.mentions) for c in doc.coref)} mentions, "
+                  f"{sum(len(s.empty_words) for s in doc.sentences)} empty words")
+        write_safetensors(tensors, folder / "intermediates.safetensors", {"stanza": stanza.__version__})
+        with open(folder / "intermediates.json", "w", encoding="utf-8", newline="\n") as f:
+            json.dump({"stanza": stanza.__version__, "texts": index}, f)
 
 def write_topk_golden(out):
     """
@@ -2021,6 +2068,8 @@ def main():
     p.add_argument("--transformer-only", action="store_true", help="only regenerate transformer/ (needs tools/requirements-transformer.txt)")
     p.add_argument("--topk-only", action="store_true", help="only regenerate coref/topk.json (torch.topk's order, no models)")
     p.add_argument("--coref-only", action="store_true", help="only regenerate coref/ (needs tools/requirements-transformer.txt and the coref model)")
+    p.add_argument("--coref-models-only", action="store_true", help="only regenerate coref/models/ (COREF_MODELS: the roberta-large coref models)")
+    p.add_argument("--coref-models", default=None, help="with --coref-models-only: only these COREF_MODELS (comma-separated)")
     p.add_argument("--options-only", action="store_true", help="only regenerate options/ (OPTION_CASES: Stanza options with a PipelineOptions property)")
     p.add_argument("--languages-only", action="store_true", help="only regenerate languages/ (LANGUAGES: one text per language, every package)")
     p.add_argument("--languages", default=None, help="with --languages-only: only these languages (comma-separated)")
@@ -2041,6 +2090,9 @@ def main():
         write_transformer_golden(args.models, out, ROBERTA if LANG == "en" else DBMDZ)
         if LANG == "en":
             write_transformer_golden(args.models, out, XLMR)
+        return
+    if args.coref_models_only:
+        write_coref_models_golden(args.models, out, args.coref_models and args.coref_models.split(","))
         return
     if args.coref_only:
         if LANG == "en":
