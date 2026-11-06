@@ -205,6 +205,9 @@ version). Fix findings with `bro format` (not plain `dotnet format`). Turned-off
 own section. Wrapped expressions put the operator at the start of the continuation line (BRO1520). `init --write` has
 broken `samples/docker/Directory.Build.props` (stylebro#177): check that file after each run and revert it if broken.
 Reformat commits go in `.git-blame-ignore-revs`.
+The SDK's security analyzers (category Security) run on every build as errors (Directory.Build.props, guarded by
+Directory.Build.targets): fix a real finding, suppress a false positive where it is with a justification
+(docs/decisions/packaging-and-releases.md).
 
 ## Design
 

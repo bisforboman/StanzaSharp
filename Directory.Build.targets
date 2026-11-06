@@ -1,0 +1,10 @@
+<Project>
+  <!-- The security analyzers' global config must be the SDK's all-rules-at-error one (Directory.Build.props; owner's
+       decision, 2026-11-06, docs/decisions/packaging-and-releases.md). Runs after the SDK's target that picks it, or
+       after CoreCompile in a project where that target isn't imported (analyzers off), so a project or an SDK that
+       stops honouring the setting fails the build instead of quietly turning the rules back into warnings. -->
+  <Target Name="CheckSecurityAnalyzers" AfterTargets="AddGlobalAnalyzerConfigForPackage_MicrosoftCodeAnalysisNetAnalyzersSecurity;CoreCompile">
+    <Error Condition="!$([System.String]::Copy('$(_GlobalAnalyzerConfigFile_MicrosoftCodeAnalysisNetAnalyzersSecurity)').EndsWith('_all_warnaserror.globalconfig')) or !Exists('$(_GlobalAnalyzerConfigFile_MicrosoftCodeAnalysisNetAnalyzersSecurity)')"
+           Text="The security analyzers aren't all errors: this SDK's global config is '$(_GlobalAnalyzerConfigFile_MicrosoftCodeAnalysisNetAnalyzersSecurity)'. See docs/decisions/packaging-and-releases.md (security analyzers)." />
+  </Target>
+</Project>

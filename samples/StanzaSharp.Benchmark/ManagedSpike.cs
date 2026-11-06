@@ -288,6 +288,7 @@ internal static class ManagedSpike
     }
 
     /// <summary>GEMM alone, managed vs torch.nn.functional.linear, on the charlm's and the highway's shapes.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5394:Do not use insecure randomness", Justification = "Seeded random matrices for a GEMM timing; nothing secret is drawn.")]
     private static int GemmSpeed()
     {
         var rng = new Random(1);

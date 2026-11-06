@@ -1,0 +1,9 @@
+<!-- Stops MSBuild from importing the repository's Directory.Build.targets: the image's build context is this folder
+     only, so the check that the security analyzers are errors (Directory.Build.props beside this file) is repeated here.
+     The same target as the repository's. -->
+<Project>
+  <Target Name="CheckSecurityAnalyzers" AfterTargets="AddGlobalAnalyzerConfigForPackage_MicrosoftCodeAnalysisNetAnalyzersSecurity;CoreCompile">
+    <Error Condition="!$([System.String]::Copy('$(_GlobalAnalyzerConfigFile_MicrosoftCodeAnalysisNetAnalyzersSecurity)').EndsWith('_all_warnaserror.globalconfig')) or !Exists('$(_GlobalAnalyzerConfigFile_MicrosoftCodeAnalysisNetAnalyzersSecurity)')"
+           Text="The security analyzers aren't all errors: this SDK's global config is '$(_GlobalAnalyzerConfigFile_MicrosoftCodeAnalysisNetAnalyzersSecurity)'." />
+  </Target>
+</Project>

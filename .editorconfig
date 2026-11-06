@@ -89,3 +89,9 @@ dotnet_diagnostic.BRO1604.severity = none
 dotnet_diagnostic.IDE0005.severity = warning
 dotnet_diagnostic.IDE0051.severity = warning
 dotnet_diagnostic.IDE0052.severity = warning
+
+# The tests' random inputs (CA5394, insecure randomness): seeded System.Random makes the fuzzed checkpoints, random
+# weights and texts that compare the backends and kernels repeatable; nothing secret is drawn. The security analyzers
+# are otherwise all errors (docs/decisions/packaging-and-releases.md, security analyzers).
+[tests/**.cs]
+dotnet_diagnostic.CA5394.severity = none

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 
 namespace StanzaSharp;
@@ -166,6 +167,16 @@ public static class ModelDownloader
         return files;
     }
 
+    // CA5351 (MD5): MD5 is the only checksum Stanza's resources.json publishes for its models, and here it is an integrity
+    // check (a truncated or corrupted download, a file of another Stanza version), not a security boundary. Authenticity
+    // comes from HTTPS to huggingface.co at a pinned commit (Revisions), whose LFS pointers fix each file's content; and
+    // every model file is read as untrusted input anyway (Checkpoint.Load succeeds or throws InvalidDataException, the
+    // pickle reader instantiates nothing by name). Matching a fixed published MD5 needs a second preimage, which is not
+    // practical; a collision needs Stanford to publish the attacker's file. Why the analyzers run: the security analyzers
+    // bullet of docs/decisions/packaging-and-releases.md.
+    private const string Md5Justification = "MD5 checks downloads and VerifyChecksums against Stanza's published MD5s for integrity, not "
+        + "authenticity: HTTPS at a pinned commit and Checkpoint.Load's untrusted-input contract are the security boundaries.";
+
     private static readonly HttpClient Http = new() { DefaultRequestHeaders = { { "User-Agent", "StanzaSharp" } } };
 
     /// <summary>
@@ -237,6 +248,7 @@ public static class ModelDownloader
     internal const string Multilingual = "multilingual";
 
     /// <summary><see cref="LanguageIdentifierOptions.VerifyChecksums"/>: the model file against its MD5, as <see cref="Verify"/>.</summary>
+    [SuppressMessage("Security", "CA5351:Do Not Use Broken Cryptographic Algorithms", Justification = Md5Justification)]
     internal static void VerifyLanguageIdentifier(string modelDir)
     {
         var basePath = Path.Combine(modelDir, LanguageIdentifier.ModelPath);
@@ -407,6 +419,7 @@ public static class ModelDownloader
     /// sha256 (<see cref="Transformers"/>). Converted models, which have no published checksum, throw; the caller's own
     /// files (<paramref name="custom"/>) are left out.
     /// </summary>
+    [SuppressMessage("Security", "CA5351:Do Not Use Broken Cryptographic Algorithms", Justification = Md5Justification)]
     internal static void Verify(string modelDir, IReadOnlyDictionary<string, string> models, string language, IReadOnlyDictionary<string, ModelPath>? custom = null)
     {
         foreach (var path in Pipeline.ModelFiles(models, language, readOnly: true, custom))
@@ -449,6 +462,7 @@ public static class ModelDownloader
         }
     }
 
+    [SuppressMessage("Security", "CA5351:Do Not Use Broken Cryptographic Algorithms", Justification = Md5Justification)]
     private static async Task<string> Md5Async(string path, CancellationToken cancellationToken)
     {
         await using var file = File.OpenRead(path);

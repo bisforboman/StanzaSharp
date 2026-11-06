@@ -26,6 +26,17 @@
     <NuGetAuditMode>all</NuGetAuditMode>
     <NuGetAuditLevel>low</NuGetAuditLevel>
     <WarningsAsErrors>$(WarningsAsErrors);NU1901;NU1902;NU1903;NU1904</WarningsAsErrors>
+    <!-- The .NET SDK's security analyzers (category Security: CA2xxx, CA3xxx, CA5xxx) all run on every build of every
+         project, and each finding is an error there, not only under CI's TreatWarningsAsErrors (owner's decision,
+         2026-11-06; docs/decisions/packaging-and-releases.md). AnalysisModeSecurity=All makes the SDK add its global
+         config enabling every Security rule; the suffix, a private SDK property, picks that config's variant with each
+         rule at error (what CodeAnalysisTreatWarningsAsErrors would pick, but for Security only). A category line in
+         .editorconfig can't do it: the global config's per-rule severities win over a category's. Every project targets
+         net10.0, where the SDK's analyzers are on by default. CheckSecurityAnalyzers (Directory.Build.targets) fails the
+         build if a project or an SDK stops honouring this. A false positive is suppressed where it is, with a
+         justification. -->
+    <AnalysisModeSecurity>All</AnalysisModeSecurity>
+    <_GlobalAnalyzerConfigFileName_MicrosoftCodeAnalysisNetAnalyzersSecurity_WarnAsErrorSuffix>_warnaserror</_GlobalAnalyzerConfigFileName_MicrosoftCodeAnalysisNetAnalyzersSecurity_WarnAsErrorSuffix>
     <!-- Report the built-in .NET rules .editorconfig turns on (IDE0055, IDE0005, ...) on build too, not only in
          dotnet format. -->
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>

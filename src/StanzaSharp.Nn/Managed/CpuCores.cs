@@ -36,6 +36,7 @@ internal static class CpuCores
             .Count();
 
     [DllImport("kernel32")]
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
     private static extern bool GetLogicalProcessorInformationEx(int relationship, IntPtr buffer, ref uint length);
 
     /// <summary>The RelationProcessorCore (0) records of GetLogicalProcessorInformationEx, one per core.</summary>
@@ -67,6 +68,7 @@ internal static class CpuCores
     }
 
     [DllImport("libc")]
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
     private static extern int sysctlbyname(byte[] name, ref int value, ref nuint length, IntPtr newValue, nuint newLength);
 
     private static int? MacOS()

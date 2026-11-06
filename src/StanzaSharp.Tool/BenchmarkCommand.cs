@@ -381,6 +381,7 @@ internal static class BenchmarkCommand
             : null;
 
     [DllImport("libc", EntryPoint = "getrusage")]
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
     private static extern int GetRusage(int who, long[] usage);
 
     /// <summary>The process's peak working set; on macOS, where .NET doesn't report it, getrusage's ru_maxrss (bytes).</summary>
