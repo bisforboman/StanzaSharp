@@ -30,6 +30,7 @@ public class ModelDownloaderTests : IDisposable
         }
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5351:Do Not Use Broken Cryptographic Algorithms", Justification = "The test computes the MD5s ModelDownloader checks, as Stanza publishes them.")]
     private static string Md5(byte[] data) => Convert.ToHexStringLower(MD5.HashData(data));
 
     [Fact]
