@@ -75,7 +75,9 @@ internal sealed class WordPiece : ITransformerTokenizer
 
     /// <summary>
     /// The tokenizer of a transformer directory: its <c>tokenizer.json</c>, else what transformers' BertTokenizer converter
-    /// builds from <c>vocab.txt</c> (line i is id i, a repeated line keeping the last) and <c>tokenizer_config.json</c>
+    /// builds from <c>vocab.txt</c> (line i is id i; as the tokenizers library's WordPiece::read_file reads it, lines end at
+    /// <c>\n</c> and lose their trailing white space, Unicode's White_Space as <see cref="string.TrimEnd()"/> has it, and a
+    /// repeated line keeps the last id: google/muril-large-cased's <c>"ମନ୍ଦିର\u00a0"</c> is <c>ମନ୍ଦିର</c>'s id) and <c>tokenizer_config.json</c>
     /// (<c>do_lower_case</c> and <c>tokenize_chinese_chars</c> true unless set, <c>strip_accents</c> following the
     /// lowercasing unless set), with the special tokens [PAD], [UNK], [CLS], [SEP] and [MASK] as added tokens and at most
     /// 100 characters per word.
@@ -87,9 +89,10 @@ internal sealed class WordPiece : ITransformerTokenizer
             return Load(json);
         var vocabTxt = Path.Combine(directory, "vocab.txt");
         var vocab = new Dictionary<string, int>();
-        int id = 0;
-        foreach (var line in File.ReadLines(vocabTxt))
-            vocab[line] = id++;
+        var lines = Encoding.UTF8.GetString(File.ReadAllBytes(vocabTxt)).Split('\n');
+        int count = lines.Length > 0 && lines[^1].Length == 0 ? lines.Length - 1 : lines.Length; // no line after the last newline
+        for (int id = 0; id < count; id++)
+            vocab[lines[id].TrimEnd()] = id;
         var configPath = Path.Combine(directory, "tokenizer_config.json");
         using var config = JsonDocument.Parse(File.ReadAllBytes(configPath));
         bool? Flag(string key) => config.RootElement.TryGetProperty(key, out var v) && v.ValueKind != JsonValueKind.Null ? v.GetBoolean() : null;

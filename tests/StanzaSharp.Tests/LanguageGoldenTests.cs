@@ -1,4 +1,7 @@
 using System.Reflection;
+using System.Text.Json;
+using StanzaSharp.Nn;
+using Xunit.Abstractions;
 
 namespace StanzaSharp.Tests;
 
@@ -8,14 +11,27 @@ namespace StanzaSharp.Tests;
 /// downloaded only by the nightly run (nightly.yml's languages job, a few languages at a time), so every other job skips
 /// these rows and its no-skip check exempts the class.
 /// </summary>
-public class LanguageGoldenTests
+public class LanguageGoldenTests(ITestOutputHelper output)
 {
+    /// <summary>
+    /// A package on its language's text.txt; first, every transformer tokenizer golden file of the language
+    /// (<c>tokenizer_&lt;transformer&gt;.json</c>: Odia's MuRIL) against that transformer's tokenizer, so the check runs
+    /// where the nightly job has the transformer, adding no row that skips elsewhere.
+    /// </summary>
     [Theory]
     [LanguageGoldenData]
     public void Process_MatchesGolden(string lang, string package, bool managed)
     {
-        using var nlp = Pipeline.Load(Repo.ModelsFor(lang), new PipelineOptions { Language = lang, Package = package, Backend = Repo.PipelineBackendFor(managed) });
         var dir = Path.Combine(Repo.Golden, "languages", lang);
+        foreach (var golden in Directory.GetFiles(dir, "tokenizer_*.json"))
+        {
+            using var meta = JsonDocument.Parse(File.ReadAllBytes(golden));
+            var name = meta.RootElement.GetProperty("transformer").GetString()!;
+            TransformerTokenizerTests.AssertGolden(TransformerEmbedder.LoadTokenizer(ModelDownloader.TransformerDirectory(Repo.ModelsFor(lang), name)),
+                golden, minCases: 10, output);
+        }
+
+        using var nlp = Pipeline.Load(Repo.ModelsFor(lang), new PipelineOptions { Language = lang, Package = package, Backend = Repo.PipelineBackendFor(managed) });
         var actual = Conllu.Write(nlp.Process(File.ReadAllText(Path.Combine(dir, "text.txt"))));
         Assert.Equal(File.ReadAllText(Path.Combine(dir, package + ".conllu")), actual);
     }

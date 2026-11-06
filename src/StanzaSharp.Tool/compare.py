@@ -44,7 +44,10 @@ def transformers_locally(models):
     def load_bert(model_name, *args, **kwargs):
         local = os.path.join(models, "transformer", *model_name.split("/")) if model_name else None
         if local and os.path.isdir(local):
-            return load(local, *args, **{**kwargs, "local_files_only": True})
+            model, tokenizer = load(local, *args, **{**kwargs, "local_files_only": True})
+            # Stanza's update_max_length goes by the name, which a local path isn't (google/muril-large-cased: 512)
+            bert_embedding.update_max_length(model_name, tokenizer)
+            return model, tokenizer
         return load(model_name, *args, **kwargs)
 
     load_bert.stanzasharp_original = load
@@ -59,7 +62,9 @@ def transformers_locally(models):
 
     def coref_tokenizer(model_name, *args, **kwargs):
         local = os.path.join(models, "transformer", *model_name.split("/")) if model_name else None
-        return load_tokenizer(local if local and os.path.isdir(local) else model_name, *args, **kwargs)
+        tokenizer = load_tokenizer(local if local and os.path.isdir(local) else model_name, *args, **kwargs)
+        bert_embedding.update_max_length(model_name, tokenizer)
+        return tokenizer
 
     coref_tokenizer.stanzasharp_original = load_tokenizer
     coref_model.load_tokenizer = coref_tokenizer

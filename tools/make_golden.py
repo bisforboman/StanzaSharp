@@ -500,7 +500,7 @@ class RecordContextual:
 
 def electra_locally(models):
     """
-    Has Stanza's load_bert read TRANSFORMER, ROBERTA, XLMR and ROBERTA_LARGE (English) and GERMAN["TRANSFORMER"] and DBMDZ from <models>/<lang>/transformer/
+    Has Stanza's load_bert read TRANSFORMER, ROBERTA, XLMR and ROBERTA_LARGE (English), GERMAN["TRANSFORMER"] and DBMDZ and MURIL (Odia) from <models>/<lang>/transformer/
     (the files ModelDownloader fetches at the pinned revision) instead of Hugging Face's cache.
     """
     from stanza.models.common import bert_embedding
@@ -510,11 +510,16 @@ def electra_locally(models):
              GERMAN["TRANSFORMER"]: Path(models) / "de" / "transformer" / GERMAN["TRANSFORMER"],
              DBMDZ: Path(models) / "de" / "transformer" / DBMDZ,
              XLMR: Path(models) / "en" / "transformer" / XLMR,
-             ROBERTA_LARGE: Path(models) / "en" / "transformer" / ROBERTA_LARGE}
+             ROBERTA_LARGE: Path(models) / "en" / "transformer" / ROBERTA_LARGE,
+             MURIL: Path(models) / "or" / "transformer" / MURIL}
 
     def load_bert(model_name, *args, **kwargs):
         if model_name in local:
-            return load(str(local[model_name]), *args, **{**kwargs, "local_files_only": True})
+            model, tokenizer = load(str(local[model_name]), *args, **{**kwargs, "local_files_only": True})
+            # Stanza's update_max_length goes by the name, which a local path isn't (MURIL's tokenizer_config.json has no
+            # model_max_length; Stanza sets 512)
+            bert_embedding.update_max_length(model_name, tokenizer)
+            return model, tokenizer
         return load(model_name, *args, **kwargs)
 
     bert_embedding.load_bert = load_bert
@@ -1865,6 +1870,9 @@ TRANSFORMER_ILL_CONDITIONED = {"GO TEAM GO": 1e-2, "So does this one .": 1e-2, "
 TRANSFORMER_LONG_STRIDE = 10  # the long sentence keeps every 10th word's vector
 
 
+# Odia's default tagger and parser (pos, depparse odtb_muril-large-cased) read MuRIL.
+MURIL = "google/muril-large-cased"
+
 # The languages with only languages/<lang>/'s golden data, and their packages (Pipeline.SupportedPackages).
 # Every folder of languages/ is a language; its packages are these, else just "default".
 LANGUAGES = {lang: ["default", "default_fast"] for lang in ["es", "fr", "it", "pt", "nl"]}
@@ -1872,7 +1880,11 @@ LANGUAGES["es"] = ["default"]  # Spanish's default_fast parser (uploaded 2026-10
 
 
 def write_languages_golden(models, out, only=None):
-    """languages/<lang>/<package>.conllu: each package of each languages/ folder (LANGUAGES) on its text.txt (models in <models>/<lang>)."""
+    """
+    languages/<lang>/<package>.conllu: each package of each languages/ folder (LANGUAGES) on its text.txt (models in
+    <models>/<lang>; Odia's tagger and parser read MURIL from <models>/or/transformer/, electra_locally).
+    """
+    electra_locally(models)
     resources = str(Path(__file__).resolve().parent.parent / "src" / "StanzaSharp" / "stanza_resources.json")
     for folder in sorted(p for p in (out / "languages").iterdir() if p.is_dir()):
         lang = folder.name
@@ -1887,6 +1899,80 @@ def write_languages_golden(models, out, only=None):
                 doc = nlp(text)
             (folder / f"{package}.conllu").write_text("{:C}\n".format(doc), encoding="utf-8", newline="\n")
             print(f"languages/{lang}/{package}.conllu ({','.join(nlp.processors)}): {len(doc.sentences)} sentences, {doc.num_words} words")
+            if lang == "or" and package == "default":
+                write_muril_tokenizer_golden(models, folder, doc)
+
+
+# MURIL's tokenizer on top of the Odia golden words: Indic edges (virama, ZWJ/ZWNJ, nukta precomposed or not, digits,
+# danda, no-break spaces inside a word)
+MURIL_TOKENIZER_CASES = [
+    ["\u0b15\u0b4d\u200d", "\u0b15\u0b4d\u200c", "\u0b30\u0b4d\u200d\u0b5f", "\u0b5c", "\u0b21\u0b3c", "\u0b5d\u0b3f\u0b06", "\u0b5f", "\u0b2f\u0b3c"],
+    ["୧୨୩", "୪.୫", "୧୦,୦୦୦", "।", "॥", "ଓଁ", "ଁ", "୰"],
+    ["ମନ୍ଦିର\u00a0", "ମନ୍ଦିର\u202f", "\u00a0ମନ୍ଦିର", "ଓଡ଼ିଆ\u00a0ଭାଷା", "Odisha", "ODISHA", "café", "naïve"],
+]
+
+
+def write_muril_tokenizer_golden(models, folder, doc):
+    """
+    languages/or/tokenizer_google_muril-large-cased.json: MURIL's tokenizer (Stanza's load_tokenizer, from
+    <models>/or/transformer/) in tools/make_golden.py's transformer/tokenizer.json format, on the golden sentences' words and
+    tokens, MURIL_TOKENIZER_CASES, every word of vocab.txt whose line ends in white space (transformers drops it, so the
+    later line wins: "ମନ୍ଦିର\u00a0" is ମନ୍ଦିର), and one case of more than 512 pieces.
+    """
+    from stanza.models.common.bert_embedding import convert_to_position_list, fix_blank_tokens, load_tokenizer, update_max_length
+    import tokenizers
+    import transformers
+
+    directory = Path(models) / "or" / "transformer" / MURIL
+    tokenizer = load_tokenizer(str(directory), local_files_only=True)
+    update_max_length(MURIL, tokenizer)
+    cases, seen = [], set()
+
+    def add(words, source):
+        key = tuple(words)
+        if not words or key in seen:
+            return
+        seen.add(key)
+        data = [list(words)]
+        tok = tokenizer(data, is_split_into_words=True)
+        positions = convert_to_position_list(data[0], tok.word_ids(batch_index=0))
+        fixed = None
+        if any(x is None for x in positions):
+            data = fix_blank_tokens(tokenizer, data)
+            fixed = data[0]
+            tok = tokenizer(data, is_split_into_words=True)
+            positions = convert_to_position_list(data[0], tok.word_ids(batch_index=0))
+        case = {"words": list(words), "ids": tok["input_ids"][0], "word_ids": [-1 if w is None else w for w in tok.word_ids(batch_index=0)]}
+        if positions != list(range(len(words) + 2)):
+            case["positions"] = positions
+        if fixed is not None:
+            case["fixed"] = fixed
+        if source:
+            case["source"] = source
+        cases.append(case)
+
+    every = []
+    for sent in doc.sentences:
+        words = [w.text for w in sent.words]
+        every += words
+        add(words, None)
+        add([t.text for t in sent.tokens], None)
+    for words in MURIL_TOKENIZER_CASES:
+        add(words, "MURIL_TOKENIZER_CASES")
+    lines = (directory / "vocab.txt").read_text(encoding="utf-8").split("\n")
+    trimmed = [line.rstrip() for line in lines if line != line.rstrip() and line.rstrip() and not line.startswith("##")]
+    for i in range(0, len(trimmed), 8):
+        add(trimmed[i:i + 8], "vocab.txt lines ending in white space")
+    while len(tokenizer([every], is_split_into_words=True)["input_ids"][0]) <= 512:
+        every = every + every
+    add(every, "the golden words, repeated past 512 pieces")
+
+    with open(folder / "tokenizer_google_muril-large-cased.json", "w", encoding="utf-8", newline="\n") as f:
+        meta = {"transformer": MURIL, "transformers": transformers.__version__, "tokenizers": tokenizers.__version__, "stanza": stanza.__version__}
+        f.write(json.dumps(meta, ensure_ascii=False)[:-1] + ', "cases": [\n')
+        f.write(",\n".join(json.dumps(c, ensure_ascii=False, separators=(",", ":")) for c in cases))
+        f.write("\n]}\n")
+    print(f"languages/or/tokenizer_google_muril-large-cased.json: {len(cases)} cases, {sum(len(c['ids']) for c in cases)} ids")
 
 
 def write_transformer_hidden_golden(models, out, tokenizer, transformer=TRANSFORMER, file_suffix=""):

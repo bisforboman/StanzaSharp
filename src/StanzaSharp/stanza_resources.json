@@ -21360,5 +21360,99 @@
   },
   "default_md5": "6268ec63d10e7776bc784cee8f3d5a27",
   "lang_name": "Classical_Chinese"
+ },
+ "or": {
+  "depparse": {
+   "odtb_muril-large-cased": {
+    "md5": "196df7a3a82ac240baa6e24170473270",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttext157"
+     }
+    ]
+   }
+  },
+  "lemma": {
+   "odtb_nocharlm": {
+    "md5": "4867618e0fa93965f276947fa781a896"
+   }
+  },
+  "ner": {
+   "ilner_muril-large-cased": {
+    "md5": "57a36a79f2cc97a73ece2d417c85510d",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttext157"
+     }
+    ]
+   },
+   "ilner_nocharlm": {
+    "md5": "7135487769dcb175d07a9d2c3ace8603",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttext157"
+     }
+    ]
+   }
+  },
+  "pos": {
+   "odtb_muril-large-cased": {
+    "md5": "d20859ba287d7c71f7569a7b1a1f8682",
+    "dependencies": [
+     {
+      "model": "pretrain",
+      "package": "fasttext157"
+     }
+    ]
+   }
+  },
+  "pretrain": {
+   "fasttext157": {
+    "md5": "e8dcbab739c47326fe90b16863c79eaf"
+   }
+  },
+  "tokenize": {
+   "odtb_nocharlm": {
+    "md5": "2dfb9f588b52e2dbd5df872d625a5b81"
+   }
+  },
+  "default_processors": {
+   "tokenize": "odtb_nocharlm",
+   "lemma": "odtb_nocharlm",
+   "pos": "odtb_muril-large-cased",
+   "depparse": "odtb_muril-large-cased",
+   "ner": "ilner_nocharlm"
+  },
+  "packages": {
+   "default": {
+    "tokenize": "odtb_nocharlm",
+    "lemma": "odtb_nocharlm",
+    "pos": "odtb_muril-large-cased",
+    "depparse": "odtb_muril-large-cased",
+    "ner": "ilner_nocharlm"
+   },
+   "default_fast": {
+    "tokenize": "odtb_nocharlm",
+    "lemma": "odtb_nocharlm",
+    "pos": "odtb_muril-large-cased",
+    "depparse": "odtb_muril-large-cased",
+    "ner": "ilner_nocharlm"
+   },
+   "default_accurate": {
+    "tokenize": "odtb_nocharlm",
+    "lemma": "odtb_nocharlm",
+    "pos": "odtb_muril-large-cased",
+    "depparse": "odtb_muril-large-cased",
+    "ner": "ilner_muril-large-cased"
+   },
+   "odtb": {
+    "tokenize": "odtb_nocharlm"
+   }
+  },
+  "default_md5": "274ed20a5fbcd11dc966438f109d3e9b",
+  "lang_name": "Odia"
  }
 }

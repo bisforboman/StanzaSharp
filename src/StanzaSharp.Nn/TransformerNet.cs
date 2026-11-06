@@ -5,7 +5,7 @@ namespace StanzaSharp.Nn;
 /// <summary>
 /// A BERT-style transformer encoder's settings from its Hugging Face <c>config.json</c>: transformers' ElectraModel with
 /// embedding_size = hidden_size (google/electra-large-discriminator, german-nlp-group's ELECTRA), BertModel
-/// (dbmdz/bert-base-german-cased), RobertaModel (roberta-base) or XLMRobertaModel (FacebookAI/xlm-roberta-large, coref's), all
+/// (dbmdz/bert-base-german-cased, google/muril-large-cased), RobertaModel (roberta-base) or XLMRobertaModel (FacebookAI/xlm-roberta-large, coref's), all
 /// with absolute positions, exact GELU and post-LayerNorm. Anything else throws, so a new transformer
 /// can't load into the wrong maths.
 /// </summary>
@@ -17,13 +17,17 @@ namespace StanzaSharp.Nn;
 internal sealed record TransformerConfig(int Hidden, int Heads, int Layers, int Intermediate, int MaxPositions, double LayerNormEps, string Prefix = "electra.",
     int PositionOffset = 0)
 {
+    // BertConfig's, ElectraConfig's, RobertaConfig's and XLMRobertaConfig's default layer_norm_eps.
+    private const double DefaultLayerNormEps = 1e-12;
+
     public static TransformerConfig Load(string configJson)
     {
         var c = JsonNode.Parse(File.ReadAllText(configJson)) ?? throw new InvalidDataException($"{configJson} is empty");
         string Text(string key) => c[key]?.GetValue<string>() ?? throw new InvalidDataException($"{configJson}: no {key}");
         int Int(string key) => c[key]?.GetValue<int>() ?? throw new InvalidDataException($"{configJson}: no {key}");
 
-        // transformers' configs default position_embedding_type to absolute (german-nlp-group's and dbmdz's have none);
+        // transformers' configs default position_embedding_type to absolute (german-nlp-group's and dbmdz's have none) and
+        // layer_norm_eps to 1e-12 (google/muril-large-cased's has none);
         // only ElectraConfig has an embedding_size (BERT's and RoBERTa's embeddings are hidden_size wide).
         var type = Text("model_type");
         bool roberta = type is "roberta" or "xlm-roberta"; // XLMRobertaModel is RobertaModel with another vocabulary
@@ -40,7 +44,7 @@ internal sealed record TransformerConfig(int Hidden, int Heads, int Layers, int 
             throw new InvalidDataException($"{configJson}: hidden_size {hidden} is not a multiple of num_attention_heads {heads}");
         int offset = roberta ? Int("pad_token_id") + 1 : 0;
         return new TransformerConfig(hidden, heads, Int("num_hidden_layers"), Int("intermediate_size"), Int("max_position_embeddings") - offset,
-            c["layer_norm_eps"]?.GetValue<double>() ?? throw new InvalidDataException($"{configJson}: no layer_norm_eps"), roberta ? "roberta." : type + ".", offset);
+            c["layer_norm_eps"]?.GetValue<double>() ?? DefaultLayerNormEps, roberta ? "roberta." : type + ".", offset);
     }
 }
 

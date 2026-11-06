@@ -25,14 +25,23 @@ internal sealed class TransformerEmbedder(ITransformerNet net, ITransformerToken
     public static TransformerEmbedder Load(string directory, string name, Func<TransformerConfig, Checkpoint, ITransformerNet> net)
     {
         var config = TransformerConfig.Load(Path.Combine(directory, "config.json"));
+        var tokenizer = LoadTokenizer(directory);
+        int maxLength = ReadMaxLength(directory, name);
+        var encoder = net(config, Checkpoint.Load(Path.Combine(directory, "pytorch_model.bin")));
+        return new TransformerEmbedder(encoder, tokenizer, maxLength, name);
+    }
+
+    /// <summary>
+    /// A transformer directory's tokenizer: a <see cref="Unigram"/> when its tokenizer.json holds a Unigram model, a
+    /// <see cref="ByteLevelBpe"/> when a BPE one, else a <see cref="WordPiece"/> (from tokenizer.json or vocab.txt).
+    /// </summary>
+    public static ITransformerTokenizer LoadTokenizer(string directory)
+    {
         var json = Path.Combine(directory, "tokenizer.json");
-        ITransformerTokenizer tokenizer = !File.Exists(json) ? WordPiece.LoadDirectory(directory)
+        return !File.Exists(json) ? WordPiece.LoadDirectory(directory)
             : Unigram.IsUnigram(json) ? Unigram.Load(json)
             : ByteLevelBpe.IsBpe(json) ? ByteLevelBpe.Load(json)
             : WordPiece.LoadDirectory(directory);
-        int maxLength = ReadMaxLength(directory);
-        var encoder = net(config, Checkpoint.Load(Path.Combine(directory, "pytorch_model.bin")));
-        return new TransformerEmbedder(encoder, tokenizer, maxLength, name);
     }
 
     /// <summary>
@@ -88,12 +97,19 @@ internal sealed class TransformerEmbedder(ITransformerNet net, ITransformerToken
         ? maxLength
         : throw new ArgumentException($"model_max_length {maxLength} is over the model's {net.Config.MaxPositions} positions", nameof(maxLength));
 
+    // The transformers whose tokenizer Stanza sets to 512 pieces whatever tokenizer_config.json says (bert_embedding.py's
+    // update_max_length; huggingface/transformers#14561): google/muril-large-cased's has no model_max_length at all.
+    private static readonly HashSet<string> MaxLength512 = ["google/muril-large-cased"];
+
     /// <summary>
     /// Reads <c>model_max_length</c> from a transformer directory's <c>tokenizer_config.json</c>, or the older <c>max_len</c>
-    /// (german-nlp-group's ELECTRA), which transformers reads the same way.
+    /// (german-nlp-group's ELECTRA), which transformers reads the same way; 512 for the transformers Stanza sets to 512
+    /// (<see cref="MaxLength512"/>).
     /// </summary>
-    public static int ReadMaxLength(string directory)
+    public static int ReadMaxLength(string directory, string? name = null)
     {
+        if (name != null && MaxLength512.Contains(name))
+            return 512;
         var path = Path.Combine(directory, "tokenizer_config.json");
         var config = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(path));
         var node = config?["model_max_length"] ?? config?["max_len"];

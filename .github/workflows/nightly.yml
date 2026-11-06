@@ -9,7 +9,7 @@ name: Nightly
 #   (generated texts, Stanza against StanzaSharp; docs/text-fuzzing.md), each night with another seed;
 # - languages: the languages with only tests/golden/languages/ (owner's decisions, 2026-10-30), whose models no other job
 #   downloads: LanguageGoldenTests on both backends, tools/test-languages.sh downloading, testing and deleting them a batch
-#   at a time (about 28 GB, no cache); a dispatch with languages_only runs just this job;
+#   at a time (about 30 GB, no cache; Odia's 2.3 GB with its transformer the largest); a dispatch with languages_only runs just this job;
 # - coref-models: the English-only coref models with roberta-large (#210; owner's decision, 2026-11-05: nightly only, as
 #   their 1.8 GB would not fit golden shard 4's disk): RobertaCorefTests on both backends, downloaded each night (no cache);
 # - benchmark: benchmark.yml's runner matrix in quick mode (no avx512 jobs), for the numbers' trend.

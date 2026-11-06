@@ -4,7 +4,7 @@
 [![NuGet](https://img.shields.io/nuget/v/StanzaSharp)](https://www.nuget.org/packages/StanzaSharp)
 [![License](https://img.shields.io/github/license/bisforboman/StanzaSharp)](LICENSE)
 
-C# port of Stanza's inference pipelines for 107 languages ([docs/languages.md](docs/languages.md); tokenize, mwt, pos, lemma, depparse, ner, sentiment,
+C# port of Stanza's inference pipelines for 108 languages ([docs/languages.md](docs/languages.md); tokenize, mwt, pos, lemma, depparse, ner, sentiment,
 constituency, and the optional coref).
 It runs Stanza's own pretrained models in plain .NET code, with no native dependencies. On the golden test texts
 (845 English and 181 German sentences, about 10 in each other language), the output is byte-identical to Python Stanza 1.15.0, on Linux, Windows and
@@ -289,7 +289,7 @@ from English in its models, not in the API:
 
 ### Other languages
 
-`Language` takes any of the 107 codes in [docs/languages.md](docs/languages.md) (`"fr"`, `"ru"`, `"hi"`, `"ar"`, `"vi"`,
+`Language` takes any of the 108 codes in [docs/languages.md](docs/languages.md) (`"fr"`, `"ru"`, `"hi"`, `"ar"`, `"vi"`,
 ...); each language's Stanza models are downloaded and loaded the same way:
 
 ```csharp
@@ -302,10 +302,9 @@ var doc = nlp.Process("J'ai vu Marie au marché de Lyon.");
 
 Each runs the processors of Stanza's own `default` package for the language (all models are 1.15.0's, byte for byte
 against Python Stanza on a test text per language; the table lists them). French, Italian, Portuguese and Dutch also have
-`default_fast`. A language's `default` package is 100 to 900 MB. Not supported yet: these languages' `default_accurate`
-and treebank packages, and the Stanza languages whose models need code StanzaSharp doesn't have (Chinese, Japanese,
-Korean, Thai, Odia, and the 15 whose taggers have no word vectors, such as Coptic or Naija). Greek waits for Stanford:
-its default lemmatizer fails in Python Stanza too.
+`default_fast`. A language's `default` package is 100 to 900 MB (Odia's 2.3 GB: its tagger and parser read the 2 GB
+google/muril-large-cased transformer, which the download fetches too). Not supported yet: these languages'
+`default_accurate` and treebank packages. Greek waits for Stanford: its default lemmatizer fails in Python Stanza too.
 
 ### Many texts, pretokenized text, and annotating a document
 

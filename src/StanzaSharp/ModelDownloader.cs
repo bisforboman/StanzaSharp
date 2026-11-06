@@ -95,6 +95,7 @@ public static class ModelDownloader
         ["nds"] = "689a45c9087815c717be8acaaa92f48bd87e784d",
         ["nn"] = "19b9e6d03b6e8cbbee0408a61e791ab472ed05f6",
         ["oc"] = "80c8b2e533532b02c88e83addb64690b040b9c33",
+        ["or"] = "69ee9772c315c37dbbad9c29ed12ee09b88e7a8d",
         ["orv"] = "e9ab0c72caa1a65d1a8669a20d18e316ffa93fc3",
         ["ota"] = "71fd97d54afc362bc85c7715faf5025df7f1b755",
         ["pa"] = "42adc55d0dc484f393a141ea0fc85fc66c5271d3",
@@ -297,6 +298,16 @@ public static class ModelDownloader
             ("tokenizer.json", "a898ea75433890f6610f4e470b8ebeb0c21dce5c8dd61f892eb09eb5919d2e2c"),
             ("tokenizer_config.json", "994f46754c5bf4014f1aa92d34b1374319c3a6b3f702105cd5b742beaecd18ce"),
             ("pytorch_model.bin", "01e55aa45dbb9164fee19aef60007a1c91d175051c01be1fb15056cfa60f3e53"),
+        ]),
+
+        // Odia's default tagger and parser (odtb_muril-large-cased): BERT (cased) with a vocab.txt WordPiece and no
+        // model_max_length in tokenizer_config.json (Stanza's update_max_length sets 512).
+        ["google/muril-large-cased"] = ("ace319f0d17524297957e249aff028b0b7357ab5",
+        [
+            ("config.json", "1189224face62806af20c4d7e6b9c0b193583611c4474a6e7bb62cd01a41241e"),
+            ("vocab.txt", "b96cc938b4009d063a605930cb82aef2c91ee52a94e94e6fcb78510d4ee5310b"),
+            ("tokenizer_config.json", "4f0e62ce031e6015ffd59a8e11ec0c0c9e1958f7d0f1ba3b9d904679589313f2"),
+            ("pytorch_model.bin", "1a3bb993f09d053d285b7f301ddeef32934db4038593c7fc9eaa02c6057b27d0"),
         ]),
 
         // RoBERTa with a byte-level BPE tokenizer.json (#172), by the old alias Hugging Face serves FacebookAI/roberta-base under.
