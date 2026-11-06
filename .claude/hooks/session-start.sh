@@ -36,5 +36,5 @@ fi
 dotnet restore StanzaSharp.slnx
 dotnet build samples/StanzaSharp.Cli -c Release --no-restore -v q
 
-# The download keeps files whose MD5 already matches, so this is a check after the first run.
+# The download keeps files whose SHA-256 already matches, so this is a check after the first run.
 tools/ci-models.sh download en

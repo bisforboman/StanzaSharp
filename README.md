@@ -135,7 +135,7 @@ measurements: [docs/aot.md](docs/aot.md).
 ## Models
 
 Download Stanza's English models (about 600 MB, from Stanza's Hugging Face repository) once. Every file is
-checked against its published MD5; `Pipeline.Load` itself never touches the network.
+checked against its SHA-256 at the pinned commit; `Pipeline.Load` itself never touches the network.
 
 ```csharp
 await ModelDownloader.DownloadAsync("models/stanza/en");                            // all, ~600 MB
@@ -161,7 +161,7 @@ runs in CI.
 ### Check it yourself
 
 `stanzasharp compare FILE` runs Python Stanza 1.15.0 and StanzaSharp on your own text, with the same model files
-(MD5-checked), and tells you whether the CoNLL-U output is identical or shows the first difference. It needs Python
+(checksum-checked), and tells you whether the CoNLL-U output is identical or shows the first difference. It needs Python
 with `pip install stanza==1.15.0`:
 
 ```
@@ -172,7 +172,7 @@ stanzasharp compare my-text.txt                   # --lang de, --package, --proc
 Stanza 1.15.0 (Python) and StanzaSharp on my-text.txt
   language:    en
   package:     default (tokenize,mwt,pos,lemma,constituency,depparse,sentiment,ner)
-  models:      /home/me/models/stanza/en: the same 11 files on both sides, MD5s match Stanza 1.15.0's
+  models:      /home/me/models/stanza/en: the same 11 files on both sides, checksums match Stanza 1.15.0's
   text:        10 sentences, 140 words
   Stanza:      loaded in 10.4 s, processed in 25.3 s
   StanzaSharp: loaded in 5.8 s, processed in 14.4 s
@@ -472,7 +472,7 @@ using var nlp = Pipeline.Load("models/stanza/en", new PipelineOptions
 {
     Processors = $"{Processor.Tokenize},{Processor.Mwt},{Processor.Pos}", // or "tokenize,mwt,pos"
     Threads = 2,              // threads per operation; null: physical cores (from 4 up) or logical processors
-    VerifyChecksums = true,   // check the .pt files against Stanza's MD5s first
+    VerifyChecksums = true,   // check the .pt files' SHA-256s first
     Logger = loggerFactory.CreateLogger("StanzaSharp"), // load and processing times
 });
 var doc = nlp.Process(text, cancellationToken); // OperationCanceledException within about one batch

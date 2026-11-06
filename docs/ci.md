@@ -76,12 +76,12 @@ How `.github/workflows/` test and publish StanzaSharp, and the decisions behind 
     (`download models/stanza/de --lang de --package ...`) on a miss. Only the golden shards run German, so their no-skip
     check covers it. cross-os and linux-arm64 stay English: there the German rows skip, and their no-skip checks exempt
     test names matching `lang: "de"` or `German` (trx-escaped `lang: &quot;de&quot;`).
-  - Model cache keys (owner's decision, 2026-10-16): each model cache's key hashes exactly the files and MD5s it holds,
-    not `ModelDownloader.cs`, so a new or changed MD5 rotates only the caches holding that file. `tools/ci-models.sh` defines
+  - Model cache keys (owner's decision, 2026-10-16): each model cache's key hashes exactly the files and checksums it holds,
+    not `ModelDownloader.cs`, so a new or changed file rotates only the caches holding that file. `tools/ci-models.sh` defines
     each group once as lines of `download` arguments: `en` (default + default_fast: `models-en-<hash>-<hash of
     requirements.txt and stanza_convert.py>` and `models-pt-<os>-<hash>`), `en-treebanks` (the treebank packages and
     `Pipeline.Alternatives`' English models, minus en's files) and `de` (all German). Each job's "Model cache keys" step
-    builds the Cli and runs `tools/ci-models.sh keys`, which hashes the Cli's `download ... --list` output (`path md5`
+    builds the Cli and runs `tools/ci-models.sh keys`, which hashes the Cli's `download ... --list` output (`path sha256`
     lines, no network) per group; the downloads on a miss are `tools/ci-models.sh download GROUP`, and the treebank
     cache's paths are the group's file list. A new model goes into a group line there, nowhere else in ci.yml.
   - English treebank packages (owner's decision, 2026-10-15): one `models-en-treebanks-<hash>` cache

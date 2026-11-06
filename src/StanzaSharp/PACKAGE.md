@@ -86,7 +86,7 @@ await ModelDownloader.DownloadAsync("models/stanza/en");                        
 await ModelDownloader.DownloadAsync("models/stanza/en", "tokenize,mwt,pos,lemma");  // only what these need
 ```
 
-Each file is checked against its published MD5, and files already present are kept. `Pipeline.Load` itself
+Each file is checked against its SHA-256 at the pinned commit, and files already present are kept. `Pipeline.Load` itself
 never touches the network.
 
 **Command line:** the `stanzasharp` .NET tool (package `StanzaSharp.Tool`, about 0.5 MB, no native libraries) downloads
@@ -170,7 +170,7 @@ foreach (var sentence in doc.Sentences)
     `{processor}_batch_size` options. Sentiment's (and in principle depparse's) changes results, as in Stanza.
   - `ModelPaths`: models of your own by file (`ModelPath`: the model, and optionally the word vectors and character
     models it reads), Stanza's `{processor}_model_path`.
-  - `VerifyChecksums`: checks the `.pt` model files against Stanza's MD5s before loading.
+  - `VerifyChecksums`: checks the `.pt` model files' SHA-256s before loading.
   - `Logger`: an `ILogger` for load and processing times.
 - `Processor.Tokenize`, ..., `Processor.Ner` are constants for the processor list.
 

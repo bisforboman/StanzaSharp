@@ -43,7 +43,7 @@ public sealed class Pipeline : IDisposable
     internal const string English = "en";
 
     // The packages StanzaSharp runs per language, by Stanza's names (ported and tested; any other package throws). Their
-    // models, and each model's dependencies and MD5, come from Stanza's resources.json (StanzaResources). English:
+    // models, and each model's dependencies, come from Stanza's resources.json (StanzaResources). English:
     // default_fast has pos, depparse and ner with their own character LSTMs and no constituency; default_accurate the
     // _charlm tokenizer and lemmatizer and google/electra-large-discriminator (Transformers); the treebank packages
     // tokenize to depparse only (combined has default's models, eslspok no mwt and the identity lemmatizer, the biomedical
@@ -82,7 +82,7 @@ public sealed class Pipeline : IDisposable
         SupportedPackages.ToDictionary(l => l.Key, l => l.Value.ToDictionary(p => p, p => StanzaResources.Package(l.Key, p)));
 
     // Models beyond the packages' that PipelineOptions.Models can choose, per language and processor (docs/per-processor-models-plan.md).
-    // Each must be in resources.json, which has its MD5 and its shared files.
+    // Each must be in resources.json, which has its shared files (and model_sha256.json its SHA-256).
     internal static readonly Dictionary<string, Dictionary<string, string[]>> Alternatives = new()
     {
         [English] = new()

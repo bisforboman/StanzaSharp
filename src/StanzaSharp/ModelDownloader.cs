@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 
 namespace StanzaSharp;
@@ -141,12 +140,12 @@ public static class ModelDownloader
     private static string BaseUrl(string language) => $"https://huggingface.co/stanfordnlp/stanza-{language}/resolve/{Revisions[language]}/models/";
 
     // Every file of each language's supported models (Pipeline.SupportedModels) and of the shared files they read, with its
-    // MD5 from Stanza's resources.json (StanzaResources).
-    internal static readonly Dictionary<string, (string Path, string Md5)[]> Files =
+    // SHA-256 at the language's pinned commit (StanzaResources.Sha256, from Hugging Face's LFS pointers; #256).
+    internal static readonly Dictionary<string, (string Path, string Sha256)[]> Files =
         Pipeline.SupportedPackages.Keys.ToDictionary(l => l, l => Pipeline.SupportedModels(l)
             .SelectMany(m => Pipeline.Dependencies[l][m].Prepend(m))
             .Distinct()
-            .Select(f => (f + ".pt", StanzaResources.Md5(l, f)))
+            .Select(f => (f + ".pt", StanzaResources.Sha256(l, f)))
             .ToArray());
 
     /// <summary>
@@ -155,7 +154,7 @@ public static class ModelDownloader
     /// pretrains and charlms they read. Exactly what <see cref="Pipeline.Load"/> reads for the same options, but the
     /// transformers (<see cref="Pipeline.TransformersOf"/>), which come from Hugging Face.
     /// </summary>
-    internal static IEnumerable<(string Path, string Md5)> FilesFor(string? processors, string package = Pipeline.DefaultPackage, string paramName = "processors",
+    internal static IEnumerable<(string Path, string Sha256)> FilesFor(string? processors, string package = Pipeline.DefaultPackage, string paramName = "processors",
         string language = Pipeline.English, IReadOnlyDictionary<string, string>? models = null, bool pretagged = false,
         IReadOnlyDictionary<string, ModelPath>? modelPaths = null)
     {
@@ -167,22 +166,16 @@ public static class ModelDownloader
         return files;
     }
 
-    // CA5351 (MD5): MD5 is the only checksum Stanza's resources.json publishes for its models, and here it is an integrity
-    // check (a truncated or corrupted download, a file of another Stanza version), not a security boundary. Authenticity
-    // comes from HTTPS to huggingface.co at a pinned commit (Revisions), whose LFS pointers fix each file's content; and
-    // every model file is read as untrusted input anyway (Checkpoint.Load succeeds or throws InvalidDataException, the
-    // pickle reader instantiates nothing by name). Matching a fixed published MD5 needs a second preimage, which is not
-    // practical; a collision needs Stanford to publish the attacker's file. Why the analyzers run: the security analyzers
-    // bullet of docs/decisions/packaging-and-releases.md.
-    private const string Md5Justification = "MD5 checks downloads and VerifyChecksums against Stanza's published MD5s for integrity, not "
-        + "authenticity: HTTPS at a pinned commit and Checkpoint.Load's untrusted-input contract are the security boundaries.";
-
+    // Each file is checked against its SHA-256 at the pinned commit (Files, Transformers): Hugging Face's own checksum,
+    // which its LFS pointer at that commit fixes. Stanza publishes only MD5s; the tests cross-check the downloaded models
+    // against them (#256, owner's decision 2026-11-06). Authenticity comes from HTTPS to huggingface.co at a pinned
+    // commit, and every model file is read as untrusted input anyway (Checkpoint.Load).
     private static readonly HttpClient Http = new() { DefaultRequestHeaders = { { "User-Agent", "StanzaSharp" } } };
 
     /// <summary>
     /// Downloads the English <see langword="default"/> package's models (about 600 MB) into <paramref name="modelDir"/>, laid
     /// out as <c>&lt;processor&gt;/&lt;name&gt;.pt</c>. Files already there with the right checksum are kept;
-    /// every new file is checked against its MD5 before it is put in place.
+    /// every new file is checked against its SHA-256 at the pinned commit before it is put in place.
     /// </summary>
     /// <param name="progress">Receives one line per file, e.g. for a console.</param>
     public static Task DownloadAsync(string modelDir, IProgress<string>? progress = null, CancellationToken cancellationToken = default) =>
@@ -225,20 +218,21 @@ public static class ModelDownloader
             await DownloadTransformerAsync(modelDir, name, progress: progress, cancellationToken: cancellationToken);
     }
 
-    internal static async Task DownloadAsync(string modelDir, IEnumerable<(string Path, string Md5)> files, HttpClient http,
+    internal static async Task DownloadAsync(string modelDir, IEnumerable<(string Path, string Sha256)> files, HttpClient http,
         IProgress<string>? progress, CancellationToken cancellationToken, string language = Pipeline.English)
     {
-        foreach (var (path, md5) in files)
-            await FetchAsync(Path.Combine(modelDir, path), path, BaseUrl(language) + path, md5, Md5Async, http, progress, cancellationToken);
+        foreach (var (path, sha256) in files)
+            await FetchAsync(Path.Combine(modelDir, path), path, BaseUrl(language) + path, sha256, http, progress, cancellationToken);
     }
 
-    /// <summary>The language identifier's file in Stanza's <c>multilingual</c> folder (<see cref="LanguageIdentifier"/>) and its MD5 (Stanza 1.15.0's resources.json).</summary>
-    internal static readonly (string Path, string Md5) LanguageIdentifierFile = (LanguageIdentifier.ModelPath + ".pt", "84cd508b9702b31cc236ba2b6d94e41a");
+    /// <summary>The language identifier's file in Stanza's <c>multilingual</c> folder (<see cref="LanguageIdentifier"/>) and its SHA-256 at the pinned commit.</summary>
+    internal static readonly (string Path, string Sha256) LanguageIdentifierFile =
+        (LanguageIdentifier.ModelPath + ".pt", StanzaResources.Sha256(Multilingual, LanguageIdentifier.ModelPath));
 
     /// <summary>
     /// Downloads the language identifier's model (9 MB) into <paramref name="modelDir"/>, Stanza's <c>multilingual</c>
     /// folder (e.g. <c>models/stanza/multilingual</c>), as <c>langid/ud.pt</c>, for <see cref="LanguageIdentifier.Load"/>.
-    /// A file already there with the right checksum is kept; a new one is checked against its MD5.
+    /// A file already there with the right checksum is kept; a new one is checked against its SHA-256.
     /// </summary>
     /// <param name="progress">Receives one line per file, e.g. for a console.</param>
     public static Task DownloadLanguageIdentifierAsync(string modelDir, IProgress<string>? progress = null, CancellationToken cancellationToken = default) =>
@@ -247,8 +241,7 @@ public static class ModelDownloader
     // Stanza's code for the language identifier's resources (stanza-multilingual on Hugging Face).
     internal const string Multilingual = "multilingual";
 
-    /// <summary><see cref="LanguageIdentifierOptions.VerifyChecksums"/>: the model file against its MD5, as <see cref="Verify"/>.</summary>
-    [SuppressMessage("Security", "CA5351:Do Not Use Broken Cryptographic Algorithms", Justification = Md5Justification)]
+    /// <summary><see cref="LanguageIdentifierOptions.VerifyChecksums"/>: the model file against its SHA-256, as <see cref="Verify"/>.</summary>
     internal static void VerifyLanguageIdentifier(string modelDir)
     {
         var basePath = Path.Combine(modelDir, LanguageIdentifier.ModelPath);
@@ -258,12 +251,10 @@ public static class ModelDownloader
                 + "Load Stanza's .pt file or turn VerifyChecksums off.");
         }
 
-        string actual;
-        using (var stream = File.OpenRead(basePath + ".pt"))
-            actual = Convert.ToHexStringLower(MD5.HashData(stream));
-        if (actual != LanguageIdentifierFile.Md5)
+        var actual = Sha256(basePath + ".pt");
+        if (actual != LanguageIdentifierFile.Sha256)
         {
-            throw new InvalidDataException($"{basePath}.pt: checksum {actual} does not match Stanza {StanzaVersion}'s {LanguageIdentifierFile.Md5}. "
+            throw new InvalidDataException($"{basePath}.pt: sha256 {actual} does not match Stanza {StanzaVersion}'s {LanguageIdentifierFile.Sha256}. "
                 + "The file is corrupted or from another Stanza version; download it again with ModelDownloader.DownloadLanguageIdentifierAsync.");
         }
     }
@@ -375,16 +366,16 @@ public static class ModelDownloader
         foreach (var (file, sha256) in files)
         {
             await FetchAsync(Path.Combine(directory, file), $"{name}/{file}", $"https://huggingface.co/{name}/resolve/{revision}/{file}", sha256,
-                Sha256Async, http, progress, cancellationToken);
+                http, progress, cancellationToken);
         }
     }
 
-    // Downloads url to target unless target already has the expected checksum; a new file is checked before it is put
+    // Downloads url to target unless target already has the expected SHA-256; a new file is checked before it is put
     // in place, so a failed or wrong download never replaces a good one.
-    private static async Task FetchAsync(string target, string name, string url, string expected, Func<string, CancellationToken, Task<string>> checksum,
-        HttpClient http, IProgress<string>? progress, CancellationToken cancellationToken)
+    private static async Task FetchAsync(string target, string name, string url, string expected, HttpClient http, IProgress<string>? progress,
+        CancellationToken cancellationToken)
     {
-        if (File.Exists(target) && await checksum(target, cancellationToken) == expected)
+        if (File.Exists(target) && await Sha256Async(target, cancellationToken) == expected)
         {
             progress?.Report($"{name}: up to date");
             return;
@@ -402,9 +393,9 @@ public static class ModelDownloader
                 await response.Content.CopyToAsync(file, cancellationToken);
             }
 
-            var actual = await checksum(partial, cancellationToken);
+            var actual = await Sha256Async(partial, cancellationToken);
             if (actual != expected)
-                throw new InvalidDataException($"{name}: checksum {actual} does not match the expected {expected}");
+                throw new InvalidDataException($"{name}: sha256 {actual} does not match the expected {expected}");
             File.Move(partial, target, overwrite: true);
         }
         finally
@@ -415,11 +406,10 @@ public static class ModelDownloader
 
     /// <summary>
     /// <see cref="PipelineOptions.VerifyChecksums"/>: checks each file <see cref="Pipeline.Load"/> reads for
-    /// <paramref name="models"/> of <paramref name="language"/> against its MD5, and each transformer file against its
-    /// sha256 (<see cref="Transformers"/>). Converted models, which have no published checksum, throw; the caller's own
+    /// <paramref name="models"/> of <paramref name="language"/> against its SHA-256 at the pinned commit (<see cref="Files"/>),
+    /// and each transformer file against its own (<see cref="Transformers"/>). Converted models, which have no published checksum, throw; the caller's own
     /// files (<paramref name="custom"/>) are left out.
     /// </summary>
-    [SuppressMessage("Security", "CA5351:Do Not Use Broken Cryptographic Algorithms", Justification = Md5Justification)]
     internal static void Verify(string modelDir, IReadOnlyDictionary<string, string> models, string language, IReadOnlyDictionary<string, ModelPath>? custom = null)
     {
         foreach (var path in Pipeline.ModelFiles(models, language, readOnly: true, custom))
@@ -434,13 +424,11 @@ public static class ModelDownloader
             }
 
             var file = basePath + ".pt"; // Load checked that it exists
-            var expected = Files[language].Single(f => f.Path == path + ".pt").Md5;
-            string actual;
-            using (var stream = File.OpenRead(file))
-                actual = Convert.ToHexStringLower(MD5.HashData(stream));
+            var expected = Files[language].Single(f => f.Path == path + ".pt").Sha256;
+            var actual = Sha256(file);
             if (actual != expected)
             {
-                throw new InvalidDataException($"{file}: checksum {actual} does not match Stanza {StanzaVersion}'s {expected}. "
+                throw new InvalidDataException($"{file}: sha256 {actual} does not match Stanza {StanzaVersion}'s {expected}. "
                     + "The file is corrupted or from another Stanza version; download it again with ModelDownloader.DownloadAsync.");
             }
         }
@@ -450,9 +438,7 @@ public static class ModelDownloader
             foreach (var (fileName, expected) in Transformers[name].Files)
             {
                 var file = Path.Combine(TransformerDirectory(modelDir, name), fileName); // Load checked that it exists
-                string actual;
-                using (var stream = File.OpenRead(file))
-                    actual = Convert.ToHexStringLower(SHA256.HashData(stream));
+                var actual = Sha256(file);
                 if (actual != expected)
                 {
                     throw new InvalidDataException($"{file}: sha256 {actual} does not match {name}@{Transformers[name].Revision}'s {expected}. "
@@ -462,11 +448,10 @@ public static class ModelDownloader
         }
     }
 
-    [SuppressMessage("Security", "CA5351:Do Not Use Broken Cryptographic Algorithms", Justification = Md5Justification)]
-    private static async Task<string> Md5Async(string path, CancellationToken cancellationToken)
+    private static string Sha256(string path)
     {
-        await using var file = File.OpenRead(path);
-        return Convert.ToHexStringLower(await MD5.HashDataAsync(file, cancellationToken));
+        using var file = File.OpenRead(path);
+        return Convert.ToHexStringLower(SHA256.HashData(file));
     }
 
     private static async Task<string> Sha256Async(string path, CancellationToken cancellationToken)

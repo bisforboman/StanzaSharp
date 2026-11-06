@@ -96,7 +96,7 @@ internal static class CompareCommand
         output.WriteLine($"Stanza {ModelDownloader.StanzaVersion} (Python) and StanzaSharp on {file}");
         output.WriteLine($"  language:    {language}");
         output.WriteLine($"  package:     {package} ({list})" + (chosen == null ? "" : $"; models {string.Join(", ", chosen.Select(m => $"{m.Key}={m.Value}"))}"));
-        output.WriteLine($"  models:      {models}: the same {expectedFiles.Count} files on both sides, MD5s match Stanza {ModelDownloader.StanzaVersion}'s");
+        output.WriteLine($"  models:      {models}: the same {expectedFiles.Count} files on both sides, checksums match Stanza {ModelDownloader.StanzaVersion}'s");
         output.WriteLine($"  text:        {doc.Sentences.Count:N0} sentences, {doc.Sentences.Sum(s => s.Words.Count()):N0} words");
         output.WriteLine($"  Stanza:      loaded in {stanza.Load:F1} s, processed in {stanza.Process:F1} s");
         output.WriteLine($"  StanzaSharp: loaded in {load:F1} s, processed in {process:F1} s");

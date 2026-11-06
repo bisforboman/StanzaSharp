@@ -7,7 +7,7 @@ shows how that is checked, on which platforms, and how you can check it on your 
 
 The reference output in [`tests/golden/`](../tests/golden) was made by Python Stanza 1.15.0 (torch 2.14.1, CPU;
 versions pinned in `tools/requirements.txt`) with `tools/make_golden.py`, from the same model files that
-`stanzasharp download` fetches. The downloader checks each file against the MD5 in Stanza 1.15.0's `resources.json`.
+`stanzasharp download` fetches. The downloader checks each file against its SHA-256 at the pinned commit (and the tests check the downloaded files against the MD5s in Stanza 1.15.0's `resources.json`).
 
 The tests compare StanzaSharp's output with it **byte for byte**, with no tolerance:
 
@@ -283,7 +283,7 @@ stanzasharp download --lang de           # German, into models/stanza/de
 stanzasharp compare my-text.txt --lang de
 ```
 
-It checks the model files' MD5s on both sides and converts the offsets after non-BMP characters before comparing.
+It checks the model files' SHA-256s on both sides and converts the offsets after non-BMP characters before comparing.
 Exit code 0 means identical. More: [the tool's README](../src/StanzaSharp.Tool/README.md#check-it-yourself).
 
 Before 1.9.0 (2026-10-16, main d5deefe, managed backend), `compare` ran on five short texts written for it, none in

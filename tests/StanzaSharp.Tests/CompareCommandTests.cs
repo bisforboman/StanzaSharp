@@ -173,7 +173,7 @@ public class CompareCommandTests
 
     /// <summary>
     /// The tables built from the embedded stanza_resources.json (StanzaResources) agree with the file read on its own: the
-    /// Stanza release ModelDownloader pins, each package's models, each model's MD5 and dependencies. A language's entry
+    /// Stanza release ModelDownloader pins, each package's models, each model and its dependencies, and each file's pinned SHA-256 (model_sha256.json). A language's entry
     /// is regenerated as docs/decisions/packaging-and-releases.md says (tables from resources.json).
     /// </summary>
     [Theory]
@@ -184,11 +184,16 @@ public class CompareCommandTests
         using var json = JsonDocument.Parse(resource);
         Assert.Equal(ModelDownloader.StanzaVersion, json.RootElement.GetProperty("stanza_version").GetString());
         var resources = json.RootElement.GetProperty(language);
-        foreach (var (path, md5) in ModelDownloader.Files[language])
+        using var sha256Resource = typeof(Pipeline).Assembly.GetManifestResourceStream("model_sha256.json")!;
+        using var sha256Json = JsonDocument.Parse(sha256Resource);
+        var pinned = sha256Json.RootElement.GetProperty(language);
+        foreach (var (path, sha256) in ModelDownloader.Files[language])
         {
             var (processor, name) = (path.Split('/')[0], Path.GetFileNameWithoutExtension(path));
-            var listed = resources.TryGetProperty(processor, out var models) && models.TryGetProperty(name, out var model) ? model.GetProperty("md5").GetString() : null;
-            Assert.True(md5 == listed, $"{path}: stanza_resources.json lists MD5 {listed ?? "(none)"}, ModelDownloader.Files {md5}");
+            Assert.True(resources.TryGetProperty(processor, out var models) && models.TryGetProperty(name, out _), $"{path}: not in stanza_resources.json");
+            var listed = pinned.TryGetProperty($"{processor}/{name}", out var hash) ? hash.GetString() : null;
+            Assert.True(sha256 == listed, $"{path}: model_sha256.json lists {listed ?? "(none)"}, ModelDownloader.Files {sha256}");
+            Assert.Matches("^[0-9a-f]{64}$", sha256);
         }
 
         // Each package's models are Stanza's, and each model's shared files (the alternatives' too) are its resources.json dependencies.

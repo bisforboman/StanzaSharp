@@ -3,7 +3,7 @@
 # paths and its download on a miss can't drift apart (owner's decision, 2026-10-16):
 #
 #   tools/ci-models.sh download GROUP   download the group's models (on a cache miss)
-#   tools/ci-models.sh files GROUP      the group's files and MD5s (`download --list`), sorted
+#   tools/ci-models.sh files GROUP      the group's files and SHA-256s (`download --list`), sorted
 #   tools/ci-models.sh transformer      downloads the transformer models (Pipeline.Transformers: default_accurate's, PR 2 of
 #                                       docs/transformer-plan.md) and google/electra-large-discriminator's files (into
 #                                       models/stanza/en/transformer/), and German default_accurate's (its four transformer models
@@ -23,7 +23,7 @@
 # the _charlm tokenizers and lemmatizers; without the other groups' files: together models-treebank-choices, owner's
 # decision, 2026-10-16, so their 1.3 GB rotate no other cache). The other languages are no group: tools/test-languages.sh
 # downloads them a batch at a time.
-# A cache's key is a hash of its group's file list, so a new or changed MD5 rotates only the caches holding that file.
+# A cache's key is a hash of its group's file list, so a new or changed file rotates only the caches holding that file.
 # STANZASHARP_CLI is the command that runs samples/StanzaSharp.Cli (default: the Release build, without building).
 set -euo pipefail
 

@@ -10,7 +10,7 @@ const string Usage = $"""
 
     download: downloads Stanza {ModelDownloader.StanzaVersion}'s models of a language into DIR (default:
     models/stanza/CODE), the layout Pipeline.Load reads: all of the package's, or only what LIST needs. Each file is
-    checked against its MD5; files already there and correct are kept.
+    checked against its SHA-256 at the pinned commit; files already there and correct are kept.
 
     compare: runs Python Stanza {ModelDownloader.StanzaVersion} and StanzaSharp on FILE with the same models (DIR, default
     models/stanza/CODE, as download writes them) and reports whether their CoNLL-U output is identical, or the first
@@ -39,7 +39,7 @@ const string Usage = $"""
                           constituency=ptb3-revised_electra-large, ptb3_electra-large; sentiment=sstplus_electra-large (these read the
                           1.3 GB google/electra-large-discriminator, which download fetches too); German ner=conll03.
                           Its processor is added if needed
-      --list              download: print each file and its MD5 instead of downloading
+      --list              download: print each file and its SHA-256 instead of downloading
       --models DIR        compare, benchmark: the models (default: models/stanza/CODE)
       --python PATH       compare, benchmark: the Python with Stanza installed (default: python)
       --threads N         benchmark: threads on both sides (default: each side's own default, StanzaSharp the

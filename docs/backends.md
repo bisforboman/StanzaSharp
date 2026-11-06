@@ -84,7 +84,7 @@ Checked and already clean: every processor's `LoadManaged`/managed net reads its
 (Core: `SafeTensorFile`, `TorchCheckpoint`) into arrays; the shared processor code (batching, decoding) has no torch
 call; `CharlmCache` makes tensors only in `TryGet` (TorchSharp readers) and disposes only tensors it holds; `Weights.On`
 (tokenizer, mwt, lemma `Load`) only sets an `AsyncLocal` when no device is given; `Scalars`' static fields are never
-touched on the managed path; `ModelDownloader`/`VerifyChecksums` (MD5), `Conllu`, the `Logger`, cancellation and
+touched on the managed path; `ModelDownloader`/`VerifyChecksums` (SHA-256), `Conllu`, the `Logger`, cancellation and
 `NativeHeap` (glibc `malloc_trim`) don't use TorchSharp.
 
 **Proof:**

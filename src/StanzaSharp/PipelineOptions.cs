@@ -320,8 +320,8 @@ public sealed class PipelineOptions
     public int? NerBatchSize { get; init; }
 
     /// <summary>
-    /// Checks every model file <see cref="Pipeline.Load"/> reads against the MD5 that Stanza publishes for it (the
-    /// checksums <see cref="ModelDownloader"/> verifies downloads with) before loading, which catches corrupted files
+    /// Checks every model file <see cref="Pipeline.Load"/> reads against its SHA-256 at the commit of Stanza's Hugging
+    /// Face repository that <see cref="ModelDownloader"/> downloads from (the checksums it verifies downloads with) before loading, which catches corrupted files
     /// or files from another Stanza version. It reads every file once more, which takes a second or two for the
     /// <see langword="default"/> package. Off by default.
     /// </summary>

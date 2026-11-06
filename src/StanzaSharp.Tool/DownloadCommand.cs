@@ -84,7 +84,7 @@ internal static class DownloadCommand
 
                 if (list)
                 {
-                    Console.WriteLine($"{ModelDownloader.LanguageIdentifierFile.Path} {ModelDownloader.LanguageIdentifierFile.Md5}");
+                    Console.WriteLine($"{ModelDownloader.LanguageIdentifierFile.Path} {ModelDownloader.LanguageIdentifierFile.Sha256}");
                     return 0;
                 }
 
@@ -93,11 +93,11 @@ internal static class DownloadCommand
                 return 0;
             }
 
-            // --list (for CI's cache keys, tools/ci-models.sh): each file and its MD5, what a download would fetch; no network.
+            // --list (for CI's cache keys, tools/ci-models.sh): each file and its SHA-256, what a download would fetch; no network.
             if (list)
             {
-                foreach (var (path, md5) in ModelDownloader.FilesFor(only, package, "--processors", language, ModelsOrNull(models)).OrderBy(f => f.Path, StringComparer.Ordinal))
-                    Console.WriteLine($"{path} {md5}");
+                foreach (var (path, sha256) in ModelDownloader.FilesFor(only, package, "--processors", language, ModelsOrNull(models)).OrderBy(f => f.Path, StringComparer.Ordinal))
+                    Console.WriteLine($"{path} {sha256}");
                 return 0;
             }
 
