@@ -1,0 +1,82 @@
+name: Vulnerable packages
+
+# Weekly on main (owner's decision, 2026-11-06; docs/decisions/packaging-and-releases.md): every build already fails on a
+# vulnerable package (Directory.Build.props: NuGetAudit, NU1901-NU1904 as errors), but only when it restores. An advisory
+# published after the last merge would go unnoticed until the next pull request; this run finds it, restoring without
+# those errors and listing every vulnerable package, direct or transitive, of what the repository builds or ships:
+# StanzaSharp.slnx (the libraries, the tool, tests and samples) and samples/docker, which restores the latest StanzaSharp
+# release from nuget.org (what users get). Not the STANZASHARP_CUDA=1 variant: it only swaps TorchSharp-cpu for
+# TorchSharp-cuda-windows and its libtorch parts (about 7 GB), which the restore audit checks whenever it is built.
+# A finding fails the run and comments on the open issue "Vulnerable packages found" (made if there is none; one issue
+# per streak, closed by a person once fixed). Never a required check.
+
+on:
+  schedule:
+    - cron: '17 4 * * 1' # Mondays 04:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  list:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          dotnet-version: 10.0.x
+
+      # WarningsAsErrors emptied as a global property, so a vulnerable package lets the restore finish and the listing
+      # below names it. --force-evaluate, or restore would keep the assets a failed restore wrote.
+      - name: Restore
+        run: |
+          dotnet restore StanzaSharp.slnx --force-evaluate -p:WarningsAsErrors=
+          dotnet restore samples/docker --force-evaluate -p:WarningsAsErrors=
+
+      - name: List vulnerable packages
+        id: list
+        run: |
+          mkdir -p vulnerable
+          dotnet list StanzaSharp.slnx package --vulnerable --include-transitive --format json --no-restore > vulnerable/solution.json
+          dotnet list samples/docker/StanzaSharpDocker.csproj package --vulnerable --include-transitive --format json --no-restore > vulnerable/docker.json
+          status=0
+          python3 tools/vulnerable_packages.py vulnerable/solution.json vulnerable/docker.json > vulnerable/report.md || status=$?
+          cat vulnerable/report.md
+          cat vulnerable/report.md >> "$GITHUB_STEP_SUMMARY"
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          if [ "$status" -ne 0 ]; then echo "::error::Vulnerable packages found (or a report could not be read): see the summary."; fi
+          exit $status
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: vulnerable-packages
+          path: vulnerable/
+          if-no-files-found: ignore
+
+      - name: Report
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          title="Vulnerable packages found"
+          report=$(cat vulnerable/report.md 2>/dev/null || echo "No report: an earlier step failed.")
+          body=$(printf 'The weekly check of %s (%s) found:\n\n%s\n\n%s\n' "${GITHUB_SHA::7}" "$(date -u +%F)" "$report" "$RUN")
+          number=$(gh issue list --state open --search "\"$title\" in:title" --json number,title --jq "map(select(.title == \"$title\")) | .[0].number // empty")
+          if [ -n "$number" ]; then
+            gh issue comment "$number" --body "$body"
+          else
+            gh issue create --title "$title" --body "$(printf '%s\n\nFix by moving to a patched version (a transitive package pinned where it comes in, with a comment naming the advisory), never by suppressing NU1901-NU1904. Each later failed week comments here. Close this once the check is green again.\n' "$body")"
+          fi
