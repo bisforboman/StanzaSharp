@@ -4,7 +4,7 @@ namespace StanzaSharp;
 
 /// <summary>
 /// Stanza's resources.json for the supported languages, embedded as <c>stanza_resources.json</c>: each package's models,
-/// each model's MD5 and its dependencies (the pretrains and charlms it reads). Pipeline.Packages, Pipeline.Dependencies
+/// each model's MD5 and its dependencies (each file's SHA-256 is in model_sha256.json) (the pretrains and charlms it reads). Pipeline.Packages, Pipeline.Dependencies
 /// and ModelDownloader.Files are built from it. A language's entry is a snapshot of the models at its
 /// ModelDownloader.Revisions commit, never Stanford's latest resources.json, which follows their re-uploads.
 /// </summary>
@@ -42,8 +42,30 @@ internal static class StanzaResources
             ? [.. dependencies.Select(d => $"{(string)d!["model"]!}/{(string)d["package"]!}")]
             : [];
 
-    /// <summary>The MD5 of the file of <paramref name="name"/> (<c>processor/model</c>, also a pretrain or a charlm).</summary>
+    /// <summary>
+    /// The MD5 Stanza publishes for the file of <paramref name="name"/> (<c>processor/model</c>, also a pretrain or a
+    /// charlm). Nothing checks files against it at run time (<see cref="Sha256"/> does that); the tests cross-check the
+    /// downloaded models against it, so a pinned commit that drifts from resources.json is caught.
+    /// </summary>
     internal static string Md5(string language, string name) => (string)Model(language, name)["md5"]!;
+
+    /// <summary>
+    /// The SHA-256 of the file of <paramref name="name"/> (<c>processor/model</c>) of <paramref name="language"/> (also
+    /// <c>multilingual</c>) at its pinned commit (ModelDownloader.Revisions), from Hugging Face's LFS pointer, as
+    /// <c>tools/stanza_resources.py sha256</c> writes it into the embedded <c>model_sha256.json</c> (#256).
+    /// </summary>
+    internal static string Sha256(string language, string name) =>
+        (string?)(Sha256Root.Value[language] as JsonObject ?? throw new KeyNotFoundException($"{Sha256ResourceName} has no language '{language}'"))[name]
+        ?? throw new KeyNotFoundException($"{Sha256ResourceName} has no file {language} {name}");
+
+    internal const string Sha256ResourceName = "model_sha256.json";
+
+    private static readonly Lazy<JsonObject> Sha256Root = new(() =>
+    {
+        using var stream = typeof(StanzaResources).Assembly.GetManifestResourceStream(Sha256ResourceName)
+            ?? throw new InvalidOperationException($"{Sha256ResourceName} is not embedded");
+        return JsonNode.Parse(stream)!.AsObject();
+    });
 
     private static JsonObject Language(string language) =>
         Root.Value[language] as JsonObject ?? throw new KeyNotFoundException($"{ResourceName} has no language '{language}'");

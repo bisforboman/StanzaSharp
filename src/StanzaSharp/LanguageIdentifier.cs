@@ -108,7 +108,7 @@ public sealed class LanguageIdentifierOptions
     /// <summary>The threads the model's math runs on, as <see cref="PipelineOptions.Threads"/>; null for the default.</summary>
     public int? Threads { get; init; }
 
-    /// <summary>Checks the model file against Stanza's MD5 before loading, as <see cref="PipelineOptions.VerifyChecksums"/> does.</summary>
+    /// <summary>Checks the model file against its SHA-256 at the pinned commit before loading, as <see cref="PipelineOptions.VerifyChecksums"/> does.</summary>
     public bool VerifyChecksums { get; init; }
 }
 

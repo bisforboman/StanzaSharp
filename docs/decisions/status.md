@@ -221,7 +221,7 @@ since 1.0, and every processor also has a managed net (see "Managed backend"), t
   - `MaxConcurrentCalls` (int?, owner's decision 2026-10-09: opt-in, null = no limit): a `SemaphoreSlim` in `Pipeline`
     around each Process overload's work (`Gated`); the wait honours the call's token. Managed throughput peaks at ~2 calls
     in flight (cache eviction of the charlm weights; docs/performance/round-07-per-call-short-texts.md).
-  - `Processor` constants; `VerifyChecksums` (MD5 of each `.pt` Load reads, `ModelDownloader.Verify`, and the sha256 of each
+  - `Processor` constants; `VerifyChecksums` (SHA-256 of each `.pt` Load reads since #256, MD5 before, `ModelDownloader.Verify`, and the sha256 of each
     transformer file, 2026-10-18; throws for converted models, which have no published MD5); `Logger` (`Microsoft.Extensions.Logging.Abstractions` 10.0.0,
     since 1.0 the StanzaSharp package's only dependency): load times at Information, per-processor times at Debug, nothing measured
     without a logger.

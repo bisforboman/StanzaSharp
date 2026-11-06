@@ -52,15 +52,13 @@ Packages, the public API, downloads, versions and the release process, with the 
     `getrusage` and the Benchmark's `mallinfo2`: fixed with `[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]`,
     so the loader no longer looks in the application's folder first. kernel32 is a KnownDLL and the others are
     system libraries found by the OS loader, so nothing loads differently.
-  - CA5351 (MD5) in `ModelDownloader` (`VerifyLanguageIdentifier`, `Verify`, `Md5Async`): suppressed on the three
-    methods. MD5 is the only checksum Stanza's resources.json publishes, and it is an integrity check (a truncated or
-    corrupted download, a file of another Stanza version), not a security boundary: authenticity comes from HTTPS to
-    huggingface.co at a pinned commit (`Revisions`), whose LFS pointers fix each file's content, and every model file
-    is read as untrusted input anyway (`Checkpoint.Load` succeeds or throws `InvalidDataException`; the pickle reader
-    instantiates nothing by name). A file passing a fixed published MD5 would need a second preimage; a collision
-    attack would need Stanford to publish the attacker's file. A possible hardening, not done (it would be the
-    owner's decision): pin each model's sha256 too, from Hugging Face's LFS pointers, as `Transformers` already does.
-    The test's own MD5 helper (ModelDownloaderTests) is suppressed likewise.
+  - CA5351 (MD5) in `ModelDownloader` (`VerifyLanguageIdentifier`, `Verify`, `Md5Async`): first suppressed on the
+    three methods as an integrity check, not a security boundary (MD5 is the only checksum Stanza's resources.json
+    publishes; authenticity comes from HTTPS to huggingface.co at a pinned commit, and `Checkpoint.Load` reads every
+    model file as untrusted input). Then (#256; owner's decisions 2026-11-06: harden it, and check SHA-256 only)
+    downloads and `VerifyChecksums` check each file's SHA-256 at its pinned commit instead, from Hugging Face's LFS
+    pointers as `Transformers` already did, and the suppressions are gone: see "Model checksums" below. Only the
+    tests still compute MD5 (`ModelDownloaderTests`' cross-check, suppressed there).
   - CA5394 (insecure randomness): the tests' seeded `Random` (fuzzed checkpoints, random weights and texts),
     off for `tests/**.cs` in .editorconfig, and the Benchmark's GEMM timing (`ManagedSpike.GemmSpeed`), suppressed there.
   CodeQL: code scanning's default setup (Settings → Code security; workflow `dynamic/github-code-scanning/codeql`)
@@ -286,8 +284,8 @@ Packages, the public API, downloads, versions and the release process, with the 
     the derived tables against it, `StanzaResources_CoverEverySupportedLanguage` the languages and commits;
     `FilesFor_AreEnoughToLoadThePipeline`, `FileTableCoversEveryModelThePipelineLoads` and `LanguageTests` the file sets. CI downloads the packages per `tools/ci-models.sh` group (see "Model cache keys").
   - It fetches the `.pt` files from `huggingface.co/stanfordnlp/stanza-<lang>/resolve/<commit>/models/`
-    (`ModelDownloader.Revisions`: en `d323be19`, de `a8ecd6c8`, multilingual `e9360ddf`) and checks each against the MD5
-    from Stanza 1.15.0's resources.json (stanza-resources' `resources_1.15.0.json`), kept in `ModelDownloader.Files`. A
+    (`ModelDownloader.Revisions`: en `d323be19`, de `a8ecd6c8`, multilingual `e9360ddf`) and checks each against its
+    SHA-256 at that commit (`ModelDownloader.Files`; see "Model checksums"). A
     commit, not the `v1.15.0` tag: on 2026-10-20 Stanford re-uploaded English's conll03 NER models (now on conll17,
     stanza#1698) and German's NER models (germeval2014 removed, germeval2014_charlm added, the dbmdz NER removed) and moved
     the tag. We pinned the old commits (`d7e0c740`, `6b928a48`; owner's decision 2026-10-22), then adopted the new models
@@ -298,7 +296,18 @@ Packages, the public API, downloads, versions and the release process, with the 
     change: StanzaSharp ran them byte for byte as they were). About 2% of default's UPOS, 1.6% of lemmas and 1.9% of heads
     changed on the golden texts (default_fast about 3%); sentiment, NER, coref chains unchanged.
   - It keeps files that already match. `Pipeline.Load` never downloads.
-  - Changing the Stanza version means new MD5s, new golden data and a new cache key.
+  - Model checksums (#256; owner's decisions 2026-11-06: pin SHA-256s, and check only them): downloads,
+    `PipelineOptions.VerifyChecksums` and `LanguageIdentifierOptions.VerifyChecksums` check each `.pt` file against its
+    SHA-256 at the language's pinned commit, the oid of the file's LFS pointer there, which Hugging Face lists in its
+    tree API. `python tools/stanza_resources.py sha256 [LANG...]` writes them, for every model in each language's
+    resources.json entry and multilingual's `langid/ud`, into the embedded `src/StanzaSharp/model_sha256.json`
+    (`StanzaResources.Sha256`), from the commits in `ModelDownloader.Revisions`; run it whenever a commit moves or a
+    language is added (`add` says so). The resources.json MD5s stay, unchecked at run time: Stanza's own metadata, and
+    `ModelDownloaderTests.DownloadedModels_HaveStanzasMd5AndThePinnedSha256` checks every downloaded model (each CI job's,
+    the nightly's languages) against both, so a commit whose files drift from its resources.json entry fails in CI.
+    `CompareCommandTests.StanzaResources_MatchModelDownloader` checks that every file in `Files` has a SHA-256.
+    `download --list` prints `path sha256`, so CI's cache keys hash SHA-256s (they rotated once with this change).
+  - Changing the Stanza version means new resources, new SHA-256s, new golden data and a new cache key.
 - `tools/verify-package.ps1` packs a unique `0.0.0-verify.<time>` version and builds a fresh console app against it:
   plain, StanzaSharp.Cuda + `TorchSharp-cpu` and `StanzaSharpTrimNative`, running the README example with `Backend =
   CudaBackend.Cpu` and checking the parse; `-Managed`, only StanzaSharp, running ManagedCheck's Program.cs and failing

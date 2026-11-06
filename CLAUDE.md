@@ -160,7 +160,7 @@ language or model, run `stanzasharp compare` against Python Stanza: it finds wha
 - Model files may come from anywhere: `Checkpoint.Load` and every later read succeed or throw `InvalidDataException`,
   bounded in time, memory and stack by the file's size (docs/model-files.md has the limits). Keep `CheckpointFuzzTests`
   passing and add a crafted input for each bug.
-- `Pipeline.Load` never downloads; downloads are explicit and checked against pinned commits and MD5s
+- `Pipeline.Load` never downloads; downloads are explicit and checked against pinned commits and SHA-256s
   (`ModelDownloader.Revisions`, `stanza_resources.json`). Adopting Stanford's re-uploaded models is the owner's decision
   and an output change: regenerate the golden sets that read them and say so in the changelog.
 

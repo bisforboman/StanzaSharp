@@ -30,15 +30,53 @@ public class ModelDownloaderTests : IDisposable
         }
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5351:Do Not Use Broken Cryptographic Algorithms", Justification = "The test computes the MD5s ModelDownloader checks, as Stanza publishes them.")]
-    private static string Md5(byte[] data) => Convert.ToHexStringLower(MD5.HashData(data));
+    private static string Sha256(byte[] data) => Convert.ToHexStringLower(SHA256.HashData(data));
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5351:Do Not Use Broken Cryptographic Algorithms",
+        Justification = "Cross-checks the downloaded models against the MD5s Stanza publishes; nothing is trusted on it (#256).")]
+    private static string Md5(Stream data) => Convert.ToHexStringLower(MD5.HashData(data));
+
+    // Stanza 1.15.0's resources.json MD5 of multilingual's langid/ud.pt (multilingual is not in the embedded file).
+    private const string LanguageIdentifierMd5 = "84cd508b9702b31cc236ba2b6d94e41a";
+
+    /// <summary>
+    /// Every downloaded model file next to models/stanza/en (each supported language's folder and multilingual's, as far
+    /// as they are there) has both its pinned SHA-256, which downloads and VerifyChecksums check, and the MD5 Stanza's
+    /// resources.json publishes: a pinned commit whose files drifted from the resources.json entry fails here, in CI,
+    /// rather than unnoticed (#256).
+    /// </summary>
+    [PtModelFact]
+    public void DownloadedModels_HaveStanzasMd5AndThePinnedSha256()
+    {
+        var root = Path.GetFullPath(Path.Combine(Repo.StanzaModels, ".."));
+        var languages = ModelDownloader.Files.Select(l => (l.Key, l.Value.Select(f => (f.Path, f.Sha256, Md5: StanzaResources.Md5(l.Key, f.Path[..^".pt".Length])))))
+            .Append((ModelDownloader.Multilingual, [(ModelDownloader.LanguageIdentifierFile.Path, ModelDownloader.LanguageIdentifierFile.Sha256, LanguageIdentifierMd5)]));
+        var checkedEnglish = 0;
+        foreach (var (language, files) in languages)
+        {
+            foreach (var (path, sha256, md5) in files)
+            {
+                var file = Path.Combine(root, language, path);
+                if (!File.Exists(file))
+                    continue;
+                using (var stream = File.OpenRead(file))
+                    Assert.True(Md5(stream) == md5, $"{file}: not Stanza's MD5 {md5}");
+                using (var stream = File.OpenRead(file))
+                    Assert.True(Convert.ToHexStringLower(SHA256.HashData(stream)) == sha256, $"{file}: not the pinned SHA-256 {sha256}");
+                if (language == Pipeline.English)
+                    checkedEnglish++;
+            }
+        }
+
+        Assert.True(checkedEnglish > 0, $"No model of ModelDownloader.Files[\"en\"] in {Repo.StanzaModels}");
+    }
 
     [Fact]
     public async Task DownloadsVerifiesAndSkipsUpToDateFiles()
     {
         byte[] a = [1, 2, 3], b = [4, 5];
         var server = new FakeServer(new() { ["tokenize/a.pt"] = a, ["pos/b.pt"] = b });
-        (string, string)[] files = [("tokenize/a.pt", Md5(a)), ("pos/b.pt", Md5(b))];
+        (string, string)[] files = [("tokenize/a.pt", Sha256(a)), ("pos/b.pt", Sha256(b))];
 
         await ModelDownloader.DownloadAsync(_dir, files, new HttpClient(server), null, default);
         Assert.Equal(a, File.ReadAllBytes(Path.Combine(_dir, "tokenize/a.pt")));
@@ -58,7 +96,7 @@ public class ModelDownloaderTests : IDisposable
     {
         var server = new FakeServer(new() { ["mwt/c.pt"] = [9, 9, 9] });
         var ex = await Assert.ThrowsAsync<InvalidDataException>(() =>
-            ModelDownloader.DownloadAsync(_dir, [("mwt/c.pt", Md5([1]))], new HttpClient(server), null, default));
+            ModelDownloader.DownloadAsync(_dir, [("mwt/c.pt", Sha256([1]))], new HttpClient(server), null, default));
         Assert.Contains("mwt/c.pt", ex.Message);
         Assert.Empty(Directory.GetFiles(_dir, "*", SearchOption.AllDirectories));
     }
@@ -72,7 +110,7 @@ public class ModelDownloaderTests : IDisposable
         File.WriteAllBytes(target, [0]);
         var server = new FakeServer(new() { ["pretrain/d.pt"] = good });
 
-        await ModelDownloader.DownloadAsync(_dir, [("pretrain/d.pt", Md5(good))], new HttpClient(server), null, default);
+        await ModelDownloader.DownloadAsync(_dir, [("pretrain/d.pt", Sha256(good))], new HttpClient(server), null, default);
         Assert.Equal(good, File.ReadAllBytes(target));
         Assert.Single(Directory.GetFiles(_dir, "*", SearchOption.AllDirectories));
     }

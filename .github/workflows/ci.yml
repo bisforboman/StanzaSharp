@@ -175,8 +175,8 @@ jobs:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Build.props') }}
 
-      # Each model cache's key hashes exactly the files and MD5s it holds (tools/ci-models.sh, from the Cli's
-      # `download --list`), so a new or changed MD5 rotates only the caches holding that file (owner's decision, 2026-10-16).
+      # Each model cache's key hashes exactly the files and SHA-256s it holds (tools/ci-models.sh, from the Cli's
+      # `download --list`), so a new or changed file rotates only the caches holding that file (owner's decision, 2026-10-16).
       - name: Model cache keys
         if: needs.changes.outputs.code != 'false'
         id: keys
@@ -442,8 +442,8 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
-      # Each model cache's key hashes exactly the files and MD5s it holds (tools/ci-models.sh, from the Cli's
-      # `download --list`), so a new or changed MD5 rotates only the caches holding that file (owner's decision, 2026-10-16).
+      # Each model cache's key hashes exactly the files and SHA-256s it holds (tools/ci-models.sh, from the Cli's
+      # `download --list`), so a new or changed file rotates only the caches holding that file (owner's decision, 2026-10-16).
       - name: Model cache keys
         if: needs.changes.outputs.code != 'false'
         id: keys
@@ -487,8 +487,8 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
-      # Each model cache's key hashes exactly the files and MD5s it holds (tools/ci-models.sh, from the Cli's
-      # `download --list`), so a new or changed MD5 rotates only the caches holding that file (owner's decision, 2026-10-16).
+      # Each model cache's key hashes exactly the files and SHA-256s it holds (tools/ci-models.sh, from the Cli's
+      # `download --list`), so a new or changed file rotates only the caches holding that file (owner's decision, 2026-10-16).
       - name: Model cache keys
         if: needs.changes.outputs.code != 'false'
         id: keys
@@ -534,8 +534,8 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
-      # Each model cache's key hashes exactly the files and MD5s it holds (tools/ci-models.sh, from the Cli's
-      # `download --list`), so a new or changed MD5 rotates only the caches holding that file (owner's decision, 2026-10-16).
+      # Each model cache's key hashes exactly the files and SHA-256s it holds (tools/ci-models.sh, from the Cli's
+      # `download --list`), so a new or changed file rotates only the caches holding that file (owner's decision, 2026-10-16).
       - name: Model cache keys
         if: needs.changes.outputs.code != 'false'
         id: keys
@@ -626,8 +626,8 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
-      # Each model cache's key hashes exactly the files and MD5s it holds (tools/ci-models.sh, from the Cli's
-      # `download --list`), so a new or changed MD5 rotates only the caches holding that file (owner's decision, 2026-10-16).
+      # Each model cache's key hashes exactly the files and SHA-256s it holds (tools/ci-models.sh, from the Cli's
+      # `download --list`), so a new or changed file rotates only the caches holding that file (owner's decision, 2026-10-16).
       - name: Model cache keys
         if: needs.changes.outputs.code != 'false'
         id: keys

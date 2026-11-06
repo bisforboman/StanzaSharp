@@ -40,7 +40,7 @@ public class OptionsTests
         }
 
         // A copy of the two files with one byte of mwt changed.
-        var dir = Directory.CreateTempSubdirectory("stanzasharp-md5-").FullName;
+        var dir = Directory.CreateTempSubdirectory("stanzasharp-sha256-").FullName;
         try
         {
             foreach (var file in new[] { "tokenize/combined_nocharlm.pt", "mwt/combined.pt" })
@@ -54,7 +54,7 @@ public class OptionsTests
             File.WriteAllBytes(Path.Combine(dir, "mwt/combined.pt"), bytes);
             var e = Assert.Throws<InvalidDataException>(() => Pipeline.Load(dir, options));
             Assert.Contains("combined.pt", e.Message);
-            Assert.Contains("dc569dbb26cc72b71847f9d0b8775d43", e.Message);
+            Assert.Contains("daa12616ba687534ce00cca11835b0fb9c3e15a2d2d48586a50d8de14e02a997", e.Message);
         }
         finally
         {
