@@ -8,6 +8,31 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 Unreleased changes are one file each under [`changes/`](changes/README.md), so pull requests don't conflict here;
 a release folds them in (`python tools/changelog.py release X.Y.Z`).
 
+## [1.16.0] - 2026-11-06
+
+### Added
+- English coreference: Stanza's three other English coref models on roberta-large, chosen with `PipelineOptions.Models`
+  (`[Processor.Coref] = "gum-nospeakers_roberta-large-lora"`, `"gum-speakers_roberta-large-lora"` or
+  `"ontonotes-singletons_roberta-large-lora"`; the tool's `--model coref=...`). Downloads fetch roberta-large (1.4 GB) with
+  them. StanzaSharp has no speakers, so gum-speakers sees one speaker throughout, as Stanza does without its tokenizer's
+  `speaker_delim`. On the TorchSharp backend two decisions in the golden texts differ from Stanza's, both near-ties of the
+  model's own (roberta-large's near-identical vectors for "."; docs/verification.md).
+- Odia (`PipelineOptions.Language = "or"`): Stanza's `default` package, byte for byte against Python Stanza. Its tagger and parser read the 2 GB `google/muril-large-cased` transformer, which `ModelDownloader` and `stanzasharp download --lang or` fetch with the models.
+- StanzaSharp.TasmanianDevil: `SeStreetAddressRecognizer` finds Swedish street addresses (`Storgatan 14 B, lgh 1102`) as TasmanianDevil's `ADDRESS`, and `SePostnummerRecognizer` finds Swedish postal codes (`753 20`) as `SE_POSTNUMMER`. A postal code counts on its own with its town or an `SE-` prefix; a bare five-digit number also needs a context word nearby.
+- StanzaSharp.TasmanianDevil: `SeBankgiroRecognizer` (`SE_BANKGIRO`), `SePlusgiroRecognizer` (`SE_PLUSGIRO`) and `SeBankAccountRecognizer` (`SE_BANK_ACCOUNT`, clearing and account number checked by the bank's rules) find Swedish payment numbers next to a context word; `SeVehicleRegistrationRecognizer` finds Swedish registration plates (`SE_VEHICLE_REGISTRATION`, `ABC 123`, `ABC 12D`) and `SeDateOfBirthRecognizer` dates of birth after "född" (`DATE_OF_BIRTH`).
+
+### Changed
+- Managed backend: short texts (up to 4 sentences per tagger batch) are about 15% faster with the `default` package
+  (one 5–25-word sentence: 83 → 70 ms median, 143 → 117 ms p90 on a 4-core cloud Xeon). The tagger's charlm passes
+  now also compute, as extra rows of the same steps, the dependency parser's forward pass and the token passes that
+  sentiment and NER need for sentences with multi-word tokens. Output is unchanged, bit for bit.
+
+### Security
+- Model downloads, `PipelineOptions.VerifyChecksums` and `LanguageIdentifierOptions.VerifyChecksums` check each Stanza
+  model file against its SHA-256 at the pinned commit of Stanza's Hugging Face repository (from its LFS pointer), as
+  transformer files already were, instead of the MD5 in Stanza's `resources.json`. The tool's `download --list` prints
+  SHA-256s. Files already downloaded stay valid: they are the same files.
+
 ## [1.15.1] - 2026-11-02
 
 ### Changed
