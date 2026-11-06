@@ -573,6 +573,7 @@ internal sealed class MemoryLogger(bool live) : Microsoft.Extensions.Logging.ILo
 internal static class HeapStats
 {
     [System.Runtime.InteropServices.DllImport("libc.so.6", EntryPoint = "mallinfo2")]
+    [System.Runtime.InteropServices.DefaultDllImportSearchPaths(System.Runtime.InteropServices.DllImportSearchPath.System32)]
     private static extern MallInfo2 MallInfo();
 
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
