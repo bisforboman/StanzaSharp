@@ -168,6 +168,13 @@ How `.github/workflows/` test and publish StanzaSharp, and the decisions behind 
     nightly job: advisories change slowly, and a nightly failure would mix it into "Nightly run failed". The
     `STANZASHARP_CUDA=1` variant is left out (its TorchSharp-cuda-windows/libtorch parts are about 7 GB, and nothing
     else changes); its restore audits it whenever it is built. Its actions are pinned by commit SHA.
+  - Security analyzers (owner's decision, 2026-11-06; docs/decisions/packaging-and-releases.md): no job of their own.
+    Every build of every project, in every job and locally, runs the SDK's Security rules (CA2xxx, CA3xxx, CA5xxx) as
+    errors (Directory.Build.props), and `CheckSecurityAnalyzers` (Directory.Build.targets) fails a build whose
+    Security config isn't the all-rules-at-error one.
+  - CodeQL: code scanning's default setup (repository settings, not a workflow file here) runs `Analyze (csharp)`,
+    `Analyze (python)` and `Analyze (actions)` on every PR and push to main and reports the check `CodeQL`. Never
+    required.
   - Keep paths forward-slash and file names case-exact (Linux). The root `.gitattributes` keeps sources
     LF; `tests/golden/.gitattributes` pins golden files (`eol=lf`, `binary`, `validation_whitespace.txt`
     `-text`), so Windows checkouts with `core.autocrlf=true` stay byte-exact. Bash steps run under

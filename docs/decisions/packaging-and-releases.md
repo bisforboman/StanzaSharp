@@ -15,9 +15,10 @@ Packages, the public API, downloads, versions and the release process, with the 
   main's CI because the owner merged it by hand), so the nightly runs all of ci.yml on such a commit (below; owner's
   decision, 2026-10-29). release.yml calls ci.yml itself when the commit has no push run.
 
-- Vulnerable packages (owner's decision, 2026-11-06, asked with the question prompt how strictly known vulnerabilities in
-  NuGet packages are kept out; the answer: fail every build on any vulnerable package, direct or transitive, and check
-  weekly for new advisories, reported in an issue). No
+- Vulnerable packages (owner's decision, 2026-11-06, asked with the question prompt, for all of the owner's repositories.
+  Q1 "A vulnerable NuGet package (direct or transitive) should fail which builds?", options "Every build (Recommended)",
+  "CI and release only", "Release only"; answer "Every build". Q2 "Add the weekly check that opens an issue when main
+  has a vulnerable package?", options "Yes, weekly issue (Recommended)", "No"; answer "Yes, weekly issue"). No
   vulnerable package, direct or transitive, may get into what the repository builds or ships. Directory.Build.props sets
   `NuGetAudit` true, `NuGetAuditMode` all, `NuGetAuditLevel` low and adds NU1901-NU1904 to `WarningsAsErrors`, so every
   restore (local, CI, pack, release) fails on an advisory of any severity, not only CI's `TreatWarningsAsErrors` build;
@@ -28,6 +29,43 @@ Packages, the public API, downloads, versions and the release process, with the 
   were clean on 2026-11-06. Advisories published after a merge: `vulnerable-packages.yml` (weekly, docs/ci.md) lists
   them and comments on one issue per streak. The owner should also turn on Dependabot alerts and Dependabot security
   updates (Settings → Code security), which watch the dependency graph between those runs and open fix PRs.
+
+- Security analyzers and CodeQL (owner's decision, 2026-11-06, asked with the question prompt after Q1 and Q2 above.
+  Q3 "Should I also add scanning of your own code?", options "Security analyzers, all 5 (Recommended)", "CodeQL on
+  StanzaSharp, stylebro", "CodeQL on Svarta" (it needs the paid GitHub Code Security), "Not now"; answer: the security
+  analyzers in all five repositories, and CodeQL on StanzaSharp and stylebro). The .NET SDK's security analyzers
+  (category Security: CA2xxx, CA3xxx, CA5xxx) run on every build of every project, each finding an error, not only
+  under CI's `TreatWarningsAsErrors`. Directory.Build.props sets `AnalysisModeSecurity` All (the SDK's global config
+  enabling every Security rule) and the SDK's private property
+  `_GlobalAnalyzerConfigFileName_MicrosoftCodeAnalysisNetAnalyzersSecurity_WarnAsErrorSuffix` to `_warnaserror`, which
+  picks that config's variant with every rule at error (Svarta and ManagedCodecs found the way first: a
+  `dotnet_analyzer_diagnostic.category-Security.severity = error` line in .editorconfig doesn't work, as the global
+  config's per-rule severities win over a category's, and `CodeAnalysisTreatWarningsAsErrors` would make the other
+  categories' default rules errors too). Every project targets net10.0, where the SDK's analyzers are on by default, so
+  neither `EnableNETAnalyzers` nor `AnalysisLevelSecurity` is needed. Because the property is private, the
+  `CheckSecurityAnalyzers` target (Directory.Build.targets) fails the build when the Security global config a project
+  uses doesn't exist or isn't an `_all_warnaserror` one (checked: it fires with the suffix cleared, and a temporary
+  `MD5.HashData` call in StanzaSharp.Core failed a plain Debug build with CA5351). samples/docker, which imports neither
+  root file, repeats both properties and the target. A false positive is suppressed where it is, as narrowly as
+  possible, with a justification; a real finding is fixed. The first run (2026-11-06) found:
+  - CA5392 (P/Invoke without `DefaultDllImportSearchPaths`) on `CpuCores`' kernel32 and libc calls, the Tool's
+    `getrusage` and the Benchmark's `mallinfo2`: fixed with `[DefaultDllImportSearchPaths(DllImportSearchPath.System32)]`,
+    so the loader no longer looks in the application's folder first. kernel32 is a KnownDLL and the others are
+    system libraries found by the OS loader, so nothing loads differently.
+  - CA5351 (MD5) in `ModelDownloader` (`VerifyLanguageIdentifier`, `Verify`, `Md5Async`): suppressed on the three
+    methods. MD5 is the only checksum Stanza's resources.json publishes, and it is an integrity check (a truncated or
+    corrupted download, a file of another Stanza version), not a security boundary: authenticity comes from HTTPS to
+    huggingface.co at a pinned commit (`Revisions`), whose LFS pointers fix each file's content, and every model file
+    is read as untrusted input anyway (`Checkpoint.Load` succeeds or throws `InvalidDataException`; the pickle reader
+    instantiates nothing by name). A file passing a fixed published MD5 would need a second preimage; a collision
+    attack would need Stanford to publish the attacker's file. A possible hardening, not done (it would be the
+    owner's decision): pin each model's sha256 too, from Hugging Face's LFS pointers, as `Transformers` already does.
+    The test's own MD5 helper (ModelDownloaderTests) is suppressed likewise.
+  - CA5394 (insecure randomness): the tests' seeded `Random` (fuzzed checkpoints, random weights and texts),
+    off for `tests/**.cs` in .editorconfig, and the Benchmark's GEMM timing (`ManagedSpike.GemmSpeed`), suppressed there.
+  CodeQL: code scanning's default setup (Settings → Code security; workflow `dynamic/github-code-scanning/codeql`)
+  already analyzes C#, Python and Actions on every PR and every push to main (the check runs `Analyze (csharp)`,
+  `Analyze (python)`, `Analyze (actions)` and `CodeQL`), so no workflow file is added. It is not a required check.
 
 - API compatibility (owner's choice, decision review 2026-10-31): `EnablePackageValidation` on StanzaSharp and
   StanzaSharp.Cuda (Directory.Build.props) compares each pack's public API with `PackageValidationBaselineVersion` on
