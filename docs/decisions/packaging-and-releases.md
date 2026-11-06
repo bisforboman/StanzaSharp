@@ -15,6 +15,20 @@ Packages, the public API, downloads, versions and the release process, with the 
   main's CI because the owner merged it by hand), so the nightly runs all of ci.yml on such a commit (below; owner's
   decision, 2026-10-29). release.yml calls ci.yml itself when the commit has no push run.
 
+- Vulnerable packages (owner's decision, 2026-11-06, asked with the question prompt how strictly known vulnerabilities in
+  NuGet packages are kept out; the answer: fail every build on any vulnerable package, direct or transitive, and check
+  weekly for new advisories, reported in an issue). No
+  vulnerable package, direct or transitive, may get into what the repository builds or ships. Directory.Build.props sets
+  `NuGetAudit` true, `NuGetAuditMode` all, `NuGetAuditLevel` low and adds NU1901-NU1904 to `WarningsAsErrors`, so every
+  restore (local, CI, pack, release) fails on an advisory of any severity, not only CI's `TreatWarningsAsErrors` build;
+  NU1905 (the audit source unreadable) stays a warning. samples/docker's own Directory.Build.props repeats the four
+  properties, so the image's build fails too. A finding is fixed by moving to a patched version (a transitive package
+  pinned with a direct reference where it comes in, with a comment naming the advisory), never by suppressing the
+  warning. Restores of StanzaSharp.slnx, the `StanzaSharpNoLibTorch` build, `STANZASHARP_CUDA=1` and samples/docker
+  were clean on 2026-11-06. Advisories published after a merge: `vulnerable-packages.yml` (weekly, docs/ci.md) lists
+  them and comments on one issue per streak. The owner should also turn on Dependabot alerts and Dependabot security
+  updates (Settings → Code security), which watch the dependency graph between those runs and open fix PRs.
+
 - API compatibility (owner's choice, decision review 2026-10-31): `EnablePackageValidation` on StanzaSharp and
   StanzaSharp.Cuda (Directory.Build.props) compares each pack's public API with `PackageValidationBaselineVersion` on
   nuget.org and fails on a binary break. `tools/changelog.py release` sets the baseline to the newest version already

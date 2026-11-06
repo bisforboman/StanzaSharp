@@ -156,6 +156,18 @@ How `.github/workflows/` test and publish StanzaSharp, and the decisions behind 
     `benchmark-<os>`. `summary` combines them with `tools/benchmark_table.py` into `benchmarks.md` (summary + artifact).
     The tool is built with `-p:Version=<git describe>` (full-history checkout), so the block names e.g.
     `1.0.0-67-g97089bb` instead of Directory.Build.props' `0.1.0-dev`. First run: docs/performance.md "Run it yourself".
+  - `vulnerable-packages.yml` (owner's decision, 2026-11-06; docs/decisions/packaging-and-releases.md): Mondays 04:17
+    UTC on main, and `workflow_dispatch`; never required. Every restore already fails on a vulnerable package (NU1901-NU1904
+    are errors in Directory.Build.props); this run catches advisories published after the last merge. It restores
+    StanzaSharp.slnx and samples/docker (the latest StanzaSharp release from nuget.org) with `-p:WarningsAsErrors=` and
+    `--force-evaluate`, runs `dotnet list ... package --vulnerable --include-transitive --format json --no-restore`
+    (without `--no-restore` the listing restores again, with the errors), and `tools/vulnerable_packages.py` turns the
+    reports into a table (package, version, severity, advisory, direct or transitive, projects) in the summary and
+    artifact `vulnerable-packages`. A finding (or an unreadable report) fails the job and comments on the open issue
+    "Vulnerable packages found", created if missing and closed by a person, like the nightly's. A separate workflow, not a
+    nightly job: advisories change slowly, and a nightly failure would mix it into "Nightly run failed". The
+    `STANZASHARP_CUDA=1` variant is left out (its TorchSharp-cuda-windows/libtorch parts are about 7 GB, and nothing
+    else changes); its restore audits it whenever it is built. Its actions are pinned by commit SHA.
   - Keep paths forward-slash and file names case-exact (Linux). The root `.gitattributes` keeps sources
     LF; `tests/golden/.gitattributes` pins golden files (`eol=lf`, `binary`, `validation_whitespace.txt`
     `-text`), so Windows checkouts with `core.autocrlf=true` stay byte-exact. Bash steps run under

@@ -1,2 +1,11 @@
-<!-- Stops MSBuild from importing the repository's Directory.Build.props: this sample builds like a user's project. -->
-<Project />
+<!-- Stops MSBuild from importing the repository's Directory.Build.props: this sample builds like a user's project. Only
+     the package audit is repeated (owner's decision, 2026-11-06; docs/decisions/packaging-and-releases.md): a vulnerable
+     package, direct or transitive, fails the image's build too. -->
+<Project>
+  <PropertyGroup>
+    <NuGetAudit>true</NuGetAudit>
+    <NuGetAuditMode>all</NuGetAuditMode>
+    <NuGetAuditLevel>low</NuGetAuditLevel>
+    <WarningsAsErrors>$(WarningsAsErrors);NU1901;NU1902;NU1903;NU1904</WarningsAsErrors>
+  </PropertyGroup>
+</Project>

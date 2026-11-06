@@ -16,6 +16,16 @@
     <RepositoryUrl>https://github.com/bisforboman/StanzaSharp</RepositoryUrl>
     <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
     <NoWarn>$(NoWarn);CS1573</NoWarn>
+    <!-- No vulnerable package, direct or transitive, in anything the repository builds or ships (owner's decision,
+         2026-11-06; docs/decisions/packaging-and-releases.md): restore audits every package against nuget.org's
+         advisories and fails on any severity, in every build (local, CI, pack, release), not only under CI's
+         TreatWarningsAsErrors. NU1905 (the audit source couldn't be read) stays a warning. A vulnerable package is
+         fixed by moving to a patched version (a transitive one pinned where it comes in, with a comment naming the
+         advisory), never by suppressing the warning. vulnerable-packages.yml checks main weekly for new advisories. -->
+    <NuGetAudit>true</NuGetAudit>
+    <NuGetAuditMode>all</NuGetAuditMode>
+    <NuGetAuditLevel>low</NuGetAuditLevel>
+    <WarningsAsErrors>$(WarningsAsErrors);NU1901;NU1902;NU1903;NU1904</WarningsAsErrors>
     <!-- Report the built-in .NET rules .editorconfig turns on (IDE0055, IDE0005, ...) on build too, not only in
          dotnet format. -->
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
