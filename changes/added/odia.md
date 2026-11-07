@@ -1,1 +1,0 @@
-- Odia (`PipelineOptions.Language = "or"`): Stanza's `default` package, byte for byte against Python Stanza. Its tagger and parser read the 2 GB `google/muril-large-cased` transformer, which `ModelDownloader` and `stanzasharp download --lang or` fetch with the models.
