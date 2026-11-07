@@ -306,6 +306,9 @@ against Python Stanza on a test text per language; the table lists them). French
 google/muril-large-cased transformer, which the download fetches too). Not supported yet: these languages'
 `default_accurate` and treebank packages. Greek waits for Stanford: its default lemmatizer fails in Python Stanza too.
 
+**Swedish:** [docs/swedish.md](docs/swedish.md) has a quick start, the Swedish models, their licences (the tagger,
+parser and NER read CC BY-NC-SA 4.0 word vectors) and a measured comparison with Catalyst.
+
 ### Many texts, pretokenized text, and annotating a document
 
 ```csharp
