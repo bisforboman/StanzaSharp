@@ -1,0 +1,17 @@
+{PER#karin:LINDQVIST}, {PER#karin:KARIN}
+Personnummer: {PNR:19780401-2388}
+Adress: {ADDRESS:Storgatan 14 B}, {ADDRESS:753 20 Uppsala}
+Vårdnadshavare: {PER#mikael:Mikael Lindqvist}
+Barn: {PER#elin:Elin Lindqvist}, {PNR:20120310-2395}
+
+{PER#karin:Karins} ansökan kom in den 3 september. {PER#karin:Lindqvists} make har varit sjukskriven sedan juni.
+{PER#elin:Elin} trivs i skolan enligt mentorn {PER#sofia:Sofia Nilsson}.
+{PER#karin:K. Lindqvist} har tidigare haft kontakt med {ORG:Hyresbolaget Solgården AB}, organisationsnummer {ORGNR:559900-1236}.
+{PER#mikael:Mikaels} arbetsgivare, {ORG:Bergs Bygg & Måleri}, har intygat anställningen.
+{PER#nguyen:Nguyen Van Thanh}, granne till familjen, har lämnat ett yttrande.
+Familjen flyttade 2024 från {ADDRESS:Västra Ringvägen 7} i {LOC:Örebro}.
+{PER#oskar:Oskar} ringde från {PHONE:08-555 123 45} och frågade efter handläggaren.
+Mejla {EMAIL:kristina.oberg@uppsala.example.se} vid frågor.
+Ärendet har diskuterats med {PER#bo:Bo Åström} och {PER#ida:Ida Lööf} på enheten.
+{PER#zeynep:Zeynep Yılmaz} från Migrationsverket deltog per telefon.
+Mormor {PER#britt:Britt-Marie} bor kvar i {LOC:Sala}.

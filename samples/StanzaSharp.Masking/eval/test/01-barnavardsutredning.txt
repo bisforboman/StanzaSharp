@@ -1,0 +1,41 @@
+SOCIALTJÄNSTEN
+Individ- och familjeomsorgen, Barn och familj
+Dnr IFO 2026/1184
+
+BARNAVÅRDSUTREDNING ENLIGT 11 KAP. 1 § SOL
+
+{PER#elias:HASSAN, ELIAS MOHAMMED}
+Personnummer: {PNR:20100406-2392}
+Adress: {ADDRESS:Hasselstigen 4, lgh 1203}, {ADDRESS:424 37 Angered}
+Vårdnadshavare: {PER#sahra:Sahra Abdi Warsame} ({PNR:810822-2384}), mobil {PHONE:070-174 06 31}
+Vårdnadshavare: {PER#mohammed:Mohammed Hassan Ali} ({PNR:197805222390}), {ADDRESS:Ringvägen 88}, {ADDRESS:415 05 Göteborg}, mobil {PHONE:0701740647}
+Syskon i hushållet: halvbror {PER#yusuf:Yusuf Abdirahman Nur}, {PNR:20250425-2392}
+Handläggare: {PER#ahmed:Ahmed Yusuf}, socialsekreterare, tel {PHONE:031-390 06 27}
+Medhandläggare: {PER#karin:Karin Lind-Sjöberg}
+
+Anledning till utredning
+Den 12 augusti 2026 inkom en orosanmälan från {ORG:Kvarnbyns gymnasium}, där {PER#elias:Elias} går första året på el- och energiprogrammet. Mentorn {PER#sten:Sten Berg} uppgav att {PER#elias:Elias} haft omfattande frånvaro sedan skolstarten, vid två tillfällen luktat cannabis och sagt till en kamrat att han "inte kan sova hemma". Den 19 augusti beslutades att inleda utredning.
+
+Genomförda kontakter
+– Enskilda samtal med {PER#elias:Elias} 2026-08-26 och 2026-09-09.
+– Samtal med mamma {PER#sahra:Sahra} och hennes sambo {PER#abdirahman:Abdirahman Nur} 2026-09-02, med tolk på somaliska.
+– Samtal med pappa {PER#mohammed:Mohammed} 2026-09-15.
+– Telefonsamtal med {PER#sten:Sten} på skolan samt med skolsköterskan {PER#linnea:Linnea Ek}.
+– Kontakt med moster {PER#hodan:Hodan Warsame} i {LOC:Kungälv}, med {PER#elias:Elias} samtycke.
+
+Barnets berättelse
+{PER#elias:Elias} beskriver att det blivit trångt hemma sedan {PER#yusuf:Yusuf} föddes och att han och {PER#abdirahman:Abdirahman} ofta bråkar. Han har periodvis sovit hos en äldre kompis i {LOC:Hammarkullen}, som han inte vill namnge, och ibland hos pappa i {LOC:Kortedala}. {PER#mohammed:Mohammeds} lägenhet är en etta och han arbetar natt på {ORG:Västkust Bageri AB}, vilket gör att {PER#elias:Elias} ofta är ensam där på kvällarna. Han säger själv att han helst vill bo hos {PER#hodan:Hodan} och gå kvar i skolan.
+
+Vårdnadshavarnas syn
+{PER#sahra:Sahra} är orolig och bekräftar att hon inte alltid vet var sonen sover. Hon har på egen hand sökt stöd hos {ORG:Föreningen Hooyo Göteborg}. {PER#mohammed:Mohammed} anser att problemen "började i skolan" men är positiv till insatser. Båda samtycker till att {PER#elias:Elias} bor hos mostern under en period.
+
+Bedömning
+Utredningen visar att {PER#elias:Elias} saknar en stabil boendesituation och att föräldrarna i nuläget inte förmår tillgodose hans behov av tillsyn. Det finns inget som tyder på våld i hemmet. {PER#hodan:Hodans} familj bedöms kunna erbjuda en trygg miljö, och avståndet till skolan är hanterbart med pendeltåg.
+
+Förslag till beslut
+Kontaktperson enligt 4 kap. 1 § SoL samt fortsatt samverkan med skolan och elevhälsan. Uppföljning om tre månader.
+
+{LOC:Göteborg} 2026-10-28
+
+{PER#ahmed:Ahmed Yusuf}                    {PER#karin:K. Lind-Sjöberg}
+Socialsekreterare                 Socialsekreterare

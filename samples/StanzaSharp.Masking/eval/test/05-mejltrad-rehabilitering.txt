@@ -1,0 +1,43 @@
+Från: {PER#annika:Annika Lind} <{EMAIL:annika.lind@example.se}>
+Skickat: den 4 november 2026 07:58
+Till: {PER#stenake:Sten-Åke Berglund} <{EMAIL:sten-ake.berglund@example.se}>
+Kopia: {PER#tesfay:Tesfay Gebremedhin} <{EMAIL:tesfay.g@example.com}>
+Ämne: SV: SV: {PER#tesfay:Tesfay} – rehabmöte
+
+Hej {PER#stenake:Sten-Åke},
+
+Bra, då bokar jag torsdag 12/11 kl. 10 i konferensrummet på kontoret. Jag har pratat med {PER#hanna:Hanna Mäkinen} på {ORG:Friskvägen Företagshälsa}, hon är med på länk. {PER#tesfay:Tesfay} har bett att {PER#rahel:Rahel Tesfamariam} från {ORG:Byggnads} får delta som stöd och det är helt ok.
+
+Inför mötet behöver vi få klart vilka arbetsuppgifter som fungerar med lyftbegränsningen. Kan du kolla med {PER#jocke:Jocke} om det finns plats i förrådsgruppen i {LOC:Ulvsunda} redan i december? Försäkringskassan har skickat brev om avstämningsmöte, jag svarar att vi har en plan för återgång i arbete. Uppge pnr {PNR:199308112391} om du ringer dem.
+
+Mvh
+{PER#annika:Annika}
+
+{PER#annika:Annika Lind}
+HR-specialist
+{ORG:Hasselgrens Bygg & Montage AB} | Org.nr {ORGNR:559900-1251}
+{ADDRESS:Industrivägen 14}, {ADDRESS:171 48 Solna}
+Tel {PHONE:08-465 004 37} | Mobil {PHONE:070-174 06 19}
+
+-----Ursprungligt meddelande-----
+Från: {PER#stenake:Sten-Åke Berglund} <{EMAIL:sten-ake.berglund@example.se}>
+Skickat: den 3 november 2026 16:41
+Till: {PER#annika:Annika Lind} <{EMAIL:annika.lind@example.se}>
+Ämne: SV: {PER#tesfay:Tesfay} – rehabmöte
+
+hej {PER#annika:annika}
+torsdag funkar för mig. {PER#tesfay:tesfay} ringde i morse, han låter bättre men säger att ryggen fortfarande låser sig om han står still länge. han ville veta om han får ha med nån från facket, sa att det nog var ok men du får bekräfta.
+{PER#jocke:jocke} säger att det finns grejer att göra i förrådet i {LOC:ulvsunda} men inte förrän i jan.
+/{PER#stenake:sten-åke}
+
+Skickat från min iPhone
+
+-----Ursprungligt meddelande-----
+Från: {PER#tesfay:Tesfay Gebremedhin} <{EMAIL:tesfay.g@example.com}>
+Skickat: den 2 november 2026 21:07
+Till: {PER#stenake:Sten-Åke Berglund} <{EMAIL:sten-ake.berglund@example.se}>
+Ämne: rehabmöte
+
+Hej {PER#stenake:Sten-Åke}. Läkaren på vårdcentralen har ändrat sjukskrivningen till 50 % från 16 november. Jag vill gärna börja jobba igen men inte på bygget i {LOC:Sundbyberg} med ställningarna. Min fru {PER#selam:Selam} kan skjutsa mig till jobbet fram till jul. Kan vi träffas med {PER#annika:Annika} nästa vecka?
+Hälsningar {PER#tesfay:Tesfay}
+{PHONE:070 174 06 83}

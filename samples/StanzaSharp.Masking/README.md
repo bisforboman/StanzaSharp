@@ -41,7 +41,29 @@ to anyone, and its organisationsnummer is synthetic.
 Two texts are not a recall study: test it on real documents before relying on it. Known limits:
 
 - Indirect identifiers ("hans syster, rektor på X-skolan") are beyond NER and patterns.
-- The same person written differently (`Karin Lindqvist`, `K. Lindqvist`, `Karins`) gets different placeholders.
+- The same person written differently (`Karin Lindqvist`, `K. Lindqvist`, `Karins`) gets different placeholders,
+  unless `--link` is given (below).
 - Public bodies (`Socialförvaltningen`, `Försäkringskassan`) are organisations to NER and are masked too; unmask them in
   review if they may stay.
 - The model was trained on general text (SUC 3), not case files.
+
+## Linking names (`--link`)
+
+```
+dotnet run --project samples/StanzaSharp.Masking -- samples/StanzaSharp.Masking/example.txt --link
+```
+
+`--link` (`NameLinker.cs`) treats the names NER found as the document's people:
+
+- every other capitalized or all-caps occurrence of a name part is masked too, with its genitive and an initial in
+  front (`Karins`, `K. Lindqvist`); lowercase words never are (`sten`, `ek`, `rosa` are words), nor all-caps ones unless
+  NER saw the name in capitals (`SOL` is the act, not Petra Sol);
+- each person gets one placeholder: a full name is a person, a shorter mention joins the one full name it fits
+  (`Karins` → Karin Lindqvist), and a surname shared by two people (`Holm` next to Ingrid and Björn Holm) keeps its own;
+- NER's spans are cut at line breaks, column gaps and pattern matches (`KARIN\nPersonnummer:`, `Jonas Ek <jonas.ek@…`),
+  and a one-word ORG or LOC that is a person's name in the text becomes that person (`Mikaels arbetsgivare`);
+- places and organisations are masked again wherever their exact text recurs.
+
+`--eval DIR` scores both runs on labelled texts ([eval/README.md](eval/README.md)). On the held-out set, linking gives
+one placeholder to 92–95% of the pairs of one person's mentions (35% without), leaks 11 spans of 225 instead of 12,
+and suggests 3 more masks a reviewer removes (21 instead of 18).

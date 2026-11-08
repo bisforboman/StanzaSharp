@@ -1,0 +1,39 @@
+ANMÄLAN TILL REKTOR OM KRÄNKANDE BEHANDLING
+Enligt 6 kap. 10 § skollagen
+
+Skolenhet: {ORG:Rönnbackagymnasiet}
+Besöksadress: {ADDRESS:Ekebergsgatan 15}, {ADDRESS:214 45 Malmö}
+Anmälan gjord av: {PER#rosa:Rosa Nyström Ilunga}, mentor NA1b
+Datum för anmälan: 2026-09-24
+
+UPPGIFTER OM DEN UTSATTA ELEVEN
+Namn: {PER#viking:Viking Holm}
+Personnummer: {PNR:201004062392}
+Klass: NA1b
+Vårdnadshavare: {PER#bjorn:Björn Holm}, tel {PHONE:070-174 06 72}
+Vårdnadshavare: {PER#tuula:Tuula Saarinen}, e-post {EMAIL:tuula.saarinen@example.com}
+
+ELEV/ER SOM UTÖVAT KRÄNKNINGEN
+{PER#kacper:Kacper Wiśniewski}, NA1a
+{PER#noah:Noah Lind}, NA1a
+En tredje elev som {PER#viking:Viking} inte vet namnet på (troligen från ES-programmet)
+
+BESKRIVNING AV HÄNDELSEN
+Onsdagen den 23 september vid lunch blev {PER#viking:Viking} omringad vid cykelstället av {PER#kacper:Kacper}, {PER#noah:Noah} och en tredje kille. Enligt {PER#viking:Vikings} egen berättelse tog {PER#kacper:Kacper} hans mobil och filmade när {PER#noah:Noah} knuffade ner honom i gruset och sa saker som anspelade på hans mammas finska bakgrund. Filmen har enligt klasskamraten {PER#linnea:Linnea Sjöström} spridits i en Snapchatgrupp för ettorna. Rastvärden {PER#hassan:Hassan Tavakoli} kom till platsen och avbröt. {PER#viking:Viking} hade skrapsår på båda handflatorna som skolsköterskan tittade på.
+
+Har liknande hänt tidigare? Ja. Enligt pappa {PER#bjorn:Björn} har {PER#viking:Viking} kommit hem ledsen flera gånger sedan skolstarten och inte velat åka till skolan på måndagar.
+
+ÅTGÄRDER SOM VIDTAGITS
+- 2026-09-23 Rastvärd och mentor pratade med {PER#viking:Viking}. Hemmet kontaktat samma dag (mamma {PER#tuula:Tuula}).
+- 2026-09-24 Samtal med {PER#kacper:Kacper} och hans pappa {PER#tomasz:Tomasz Wiśniewski}. {PER#kacper:Kacper} medger att han filmade men förnekar att han delat filmen.
+- 2026-09-25 Samtal med {PER#noah:Noah} och mamma {PER#therese:Therese Lind}.
+- Ärendet lämnat till elevhälsan. Kurator {PER#sol:Sol Bergqvist} bokar uppföljande samtal med {PER#viking:Viking} vecka 41, och {PER#sol:Sol} kontaktar även {PER#noah:Noahs} mamma igen.
+
+Anmälan mottagen av rektor 2026-09-24. Utredning inleds. Ansvarig: biträdande rektor {PER#ingrid:Ingrid Berg}.
+
+{PER#rosa:R. Nyström Ilunga}
+Mentor NA1b
+
+{PER#ingrid:Ingrid Berg}
+Biträdande rektor, {ORG:Rönnbackagymnasiet}
+{PHONE:040-628 04 17} | {EMAIL:ingrid.berg@example.se}

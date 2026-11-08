@@ -1,0 +1,23 @@
+Från: {PER#jonas:Jonas Ek} <{EMAIL:jonas.ek@example.se}>
+Till: {PER#maria:Maria Sten} <{EMAIL:maria.sten@example.se}>
+Ämne: SV: Hemtjänst för {PER#ingrid:Ingrid Holm}, {PNR:193201149121}
+
+Hej {PER#maria:Maria}!
+
+Tack för senast. Jag pratade med {PER#ingrid:Ingrid} i går och hon vill gärna fortsätta med hemtjänsten två gånger om dagen. Hennes son {PER#bjorn:Björn} bor i {LOC:Västerås} och kan inte hjälpa till med inköpen längre. {PER#ingrid:Holm} har också fallit två gånger i köket sedan i somras.
+
+Kan du boka in ett hembesök på {ADDRESS:Rosenvägen 4}, {ADDRESS:722 14 Västerås} nästa vecka? {PER#bjorn:Björn Holm} vill vara med, han nås på {PHONE:070-174 06 12}.
+
+Mvh
+{PER#jonas:Jonas}
+Biståndshandläggare, äldreomsorgen
+
+---
+
+Hej {PER#jonas:jonas},
+torsdag kl 10 funkar. jag tar med {PER#linnea:Linnea} från {ORG:Omsorgshuset Lind AB} som har hand om hennes insatser idag. {PER#ingrid:Ingrids} dotter {PER#rosa:Rosa} ringde också och undrade om trygghetslarm, hon bor i {LOC:Norge} så hon kan inte komma.
+/{PER#maria:maria}
+
+{PER#maria:Maria Sten}
+Samordnare
+{PHONE:08-465 004 17}

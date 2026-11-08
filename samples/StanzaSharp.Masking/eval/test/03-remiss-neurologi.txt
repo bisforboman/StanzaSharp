@@ -1,0 +1,39 @@
+REMISS
+Till: Neurologiska kliniken, mottagningen för MS och neuroimmunologi
+Från: {ORG:Kvarnbackens Husläkarmottagning}, {ADDRESS:Kvarnbacksvägen 30}, {ADDRESS:168 74 Bromma}
+Remitterande läkare: {PER#mikael:Mikael Holm}, specialist i allmänmedicin
+Tel. till remittent: {PHONE:08-465 004 52} (direkt), fax {PHONE:08-465 004 59}
+Prioritet: Inom 4 veckor
+
+PATIENT
+{PER#leila:RAHIMI, LEILA}
+Pnr: {PNR:19861209-2380}
+Adress: {ADDRESS:Bergsgatan 21, 3 tr}, {ADDRESS:112 23 Stockholm}
+Mobil: {PHONE:+46 70 174 06 58}
+Närmast anhörig: make {PER#dariush:Dariush Rahimi}, {PHONE:070-174 06 66}
+Tolkbehov: Nej
+
+Frågeställning
+MS? Önskar neurologisk bedömning och ställningstagande till MR hjärna och ryggmärg samt LP.
+
+Anamnes
+39-årig kvinna, tidigare väsentligen frisk. Född i {LOC:Shiraz}, {LOC:Iran}, i Sverige sedan 2009. Gift, två barn 6 och 9 år. Arbetar heltid som undersköterska på {ORG:Solrosens vård- och omsorgsboende} i {LOC:Hässelby}. Röker ej, ingen alkohol.
+Söker 2026-10-19 pga domning i vänster ben sedan ca tre veckor, tilltagande, nu även stickningar i vänster hand. Hade i maj en episod med dimsyn och smärta bakom höger öga som gick över spontant på drygt en vecka, bedömdes då på ögonakuten (journalkopia bifogas). Pat:s mor, som bor kvar i {LOC:Shiraz}, har enligt pat. "någon nervsjukdom". Maken {PER#dariush:Dariush} berättar, med pat:s medgivande, att hon snubblat flera gånger senaste månaden.
+
+Status
+AT gott. Neurologiskt: lätt nedsatt kraft vä ben distalt, stegrade reflexer vä, Babinski positiv vä. Nedsatt vibrationssinne vä fot. Visus ua vid snabbtest.
+
+Lab
+Hb, CRP, B12, folat, TSH ua. Borreliaserologi negativ.
+
+Bedömning
+Misstänkt demyeliniserande sjukdom med två skilda episoder. Remitteras för vidare utredning.
+
+Övrigt
+Pat. sjukskriven 100 % t.o.m. 2026-11-15. Kontaktperson hos arbetsgivaren är enhetschef {PER#marie:Marie Bergström Haddad}. Pat. önskar helst tider före kl. 14 då hon hämtar barnen på {ORG:Förskolan Linnean}.
+Kopia för kännedom till distriktssköterska {PER#linnea:Linnea Sten}.
+
+{PER#mikael:Mikael Holm}
+Leg. läkare, specialist i allmänmedicin
+{ORG:Kvarnbackens Husläkarmottagning}
+Dikterat och signerat 2026-10-20
