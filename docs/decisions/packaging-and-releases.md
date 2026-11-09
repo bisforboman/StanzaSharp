@@ -164,6 +164,13 @@ Packages, the public API, downloads, versions and the release process, with the 
     texts in `samples/StanzaSharp.Masking/eval/` (dev, and a held-out set written by another agent). Result: one
     placeholder per person (35% → 92% of a person's mention pairs held-out), leaks 12 → 11 of 225, over-masks 18 → 21;
     where it goes (sample, this package, an own package) is the owner's next decision.
+    Owner's decisions 2026-11-09: no own engine; linking goes into this package as `StanzaNerRecognizer.LinkNames`
+    (an init property, off by default; `PersonKey`/`LinkedKey` metadata) plus `PersonPlaceholders(text, results,
+    operators)`, numbered `<PERSON_n>` operators, because TasmanianDevil's operators see only a span's text and type and
+    its default `<PERSON>` shows no one apart. The linker is the sample's, ported (internal `NameLinker`): without
+    other recognizers' matches it cuts person spans at characters no name has (`<>()[]{}@|/\`, digits) and skips
+    occurrences inside e-mail addresses; places and organisations are repeated, dates not. Same scores as the sample's
+    on both labelled sets (test: 95% one placeholder per person, no wrong merges, 11 leaks, 20 over-masks).
   - `StanzaSharp.DataIngestion` (#233; owner's decisions 2026-10-31: a package now, chunker + NER enricher first): depends
     on StanzaSharp (same version) and Microsoft.Extensions.DataIngestion, still preview-only, so its `PackageVersion` is
     `$(Version)-preview` (owner's decision 2026-10-31; a stable package can't depend on a prerelease, NU5104) until that
