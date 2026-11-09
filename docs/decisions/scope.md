@@ -326,7 +326,16 @@ What StanzaSharp ports and supports, with the owner's decisions behind each part
     on validation_tech ("int", sentence 46: start vs dummy −0.0299 in Stanza, −0.0092 managed, +0.0796 TorchSharp) and
     gum-speakers on validation_contractions (sentences 118 and 120: "IT" start 0.205, "He" antecedent 0.125) are
     `RobertaCorefTests.KnownNearTies`: those chains are left out of that text's comparison on that backend, every other chain
-    must be Stanza's. A new difference fails; a new entry is the owner's decision.
+    must be Stanza's. A new difference fails; a new entry is the owner's decision. A third entry (owner's sign-off,
+    2026-11-09, #263): ontonotes-singletons on validation_whitespace, sentence 33 ("Ellipsis… three dots... spaced dots . . .
+    and four dots...."), TorchSharp. "dots" (word 3) starts no mention in Stanza by a start vs dummy margin of −0.0059; on one
+    x64 machine TorchSharp gives −0.0242 and managed −0.0210, with 207 of the text's 343 rows in another top-k order than
+    torch's and start scores up to 0.36 from Stanza's. The nightly of 2026-11-09 went positive there on TorchSharp, adding a
+    singleton "three dots", where the same commit had passed the night before, so the x64 runners' libtorch bits evidently
+    still differ here despite `ATEN_CPU_CAPABILITY=default`, and a TorchSharp near-tie can show on some nights only. Stanza's
+    own decisions with a margin below 0.05 over the 13 texts: 11 for gum-nospeakers, 18 for gum-speakers and over 20 for
+    ontonotes-singletons, some under 0.001, and they hold on both backends. A small margin alone doesn't make a flip; a large
+    drift in that word's start score does, as here (a sentence of many "." words).
   - CI: no cache (the model caches are near GitHub's 10 GB; owner's decision): golden shard 4 downloads the
     `default_accurate` package, the treebanks' transformer models (their packages' other files from the en-treebanks cache)
     and the transformer's files on every run (`tools/ci-models.sh transformer`: `download --package default_accurate`, ...,
