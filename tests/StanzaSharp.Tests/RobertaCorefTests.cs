@@ -46,12 +46,16 @@ public class RobertaCorefTests(ITestOutputHelper output)
     /// and in what order, is float32 noise, and start_map reads the candidates in that order: a start score moves by up to
     /// about 0.1 between backends. Measured in Stanza's scores: gum-nospeakers on validation_tech, sentence 46's "int" (start
     /// vs dummy 0.0299; TorchSharp +0.0796, managed −0.0092 against Stanza's −0.0299); gum-speakers on
-    /// validation_contractions, sentences 118 and 120 ("IT": start 0.205; "He": antecedent 0.125). docs/decisions/scope.md.
+    /// validation_contractions, sentences 118 and 120 ("IT": start 0.205; "He": antecedent 0.125). ontonotes-singletons on
+    /// validation_whitespace, sentence 33 (owner's sign-off, 2026-11-09, #263): "dots" of "three dots..." (start vs dummy
+    /// −0.0059 in Stanza; −0.0242 TorchSharp, −0.0210 managed on one x64 machine) went positive on one nightly runner and not
+    /// on the night before, adding a singleton "three dots" (a sentence of many "." words). docs/decisions/scope.md.
     /// </summary>
     internal static readonly (string Model, string Text, bool Managed, int[] Sentences)[] KnownNearTies =
     [
         (GumNoSpeakers, "validation_tech", false, [46]),
         (GumSpeakers, "validation_contractions", false, [118, 120]),
+        (OntonotesSingletons, "validation_whitespace", false, [33]),
     ];
 
     // tokenize,mwt,pos,coref with Models[coref] = model on the default package (make_golden.py's COREF_PROCESSORS): the
