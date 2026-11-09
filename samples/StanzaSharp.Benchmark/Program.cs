@@ -57,6 +57,8 @@ if (args is ["encoder-scaling", ..])
     return EncoderScaling.Run(args[1..]); // #169: docs/performance/round-48-joint-encoder-pass.md
 if (args is ["transformer-spike", ..])
     return TransformerSpike.Run(args[1..], FindRepoRoot()); // tools/transformer_spike.py; docs/transformer-plan.md
+if (args is ["embedding-spike", ..])
+    return EmbeddingSpike.Run(args[1..]); // issue #268: tools/embedding_spike.py; docs/embedding-spike.md
 if (args is ["managed-spike", ..])
     return ManagedSpike.Run(args[1..], FindRepoRoot(), BuildText); // issue #29: docs/managed-backend-spike.md
 

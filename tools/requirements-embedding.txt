@@ -1,0 +1,3 @@
+# The sentence-embedding spike only (issue #268, tools/embedding_spike.py, docs/embedding-spike.md), on top of
+# requirements.txt and requirements-transformer.txt. Not installed by CI.
+sentence-transformers==6.2.0
