@@ -576,6 +576,8 @@ for `default_fast`), and each call in flight adds
 `samples/StanzaSharp.Example` is a commented tour of the whole API: `dotnet run --project samples/StanzaSharp.Example`.
 [samples/StanzaSharp.Masking](samples/StanzaSharp.Masking/README.md) suggests what to mask in Swedish documents
 (maskning): Swedish NER plus personnummer, organisationsnummer, phone, e-mail and address patterns.
+[samples/StanzaSharp.Subtitles](samples/StanzaSharp.Subtitles/README.md) checks where subtitles break into lines
+against the dependency parse (English and Swedish SRT) and suggests better breaks.
 
 ### PII detection (TasmanianDevil)
 

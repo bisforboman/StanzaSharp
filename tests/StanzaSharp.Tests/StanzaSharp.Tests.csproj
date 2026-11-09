@@ -44,6 +44,7 @@
     <ProjectReference Include="..\..\src\StanzaSharp.Coref\StanzaSharp.Coref.csproj" />
     <ProjectReference Include="..\..\src\StanzaSharp.Tool\StanzaSharp.Tool.csproj" />
     <ProjectReference Include="..\..\samples\StanzaSharp.Masking\StanzaSharp.Masking.csproj" />
+    <ProjectReference Include="..\..\samples\StanzaSharp.Subtitles\StanzaSharp.Subtitles.csproj" />
     <ProjectReference Include="..\..\src\StanzaSharp.DataIngestion\StanzaSharp.DataIngestion.csproj" />
     <ProjectReference Include="..\..\src\StanzaSharp.TasmanianDevil\StanzaSharp.TasmanianDevil.csproj" />
     <!-- Built first, run by ManagedCheckTests in a process of its own (no libtorch); not referenced as an assembly. -->
