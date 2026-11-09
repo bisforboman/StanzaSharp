@@ -62,6 +62,7 @@ public sealed class Pipeline : IDisposable
         ["it"] = [DefaultPackage, "default_fast"],
         ["pt"] = [DefaultPackage, "default_fast"],
         ["nl"] = [DefaultPackage, "default_fast"],
+        ["sv"] = [DefaultPackage, "default_fast", "default_accurate", "lines", "talbanken"],
     }.Concat(DefaultOnly.Select(l => KeyValuePair.Create(l, new[] { DefaultPackage }))).ToDictionary();
 
     // The languages StanzaSharp runs only Stanza's default package of (owner's decisions, 2026-10-30: the 79 whose
@@ -73,7 +74,7 @@ public sealed class Pipeline : IDisposable
         "et", "eu", "fa", "fi", "fo", "frm", "fro", "ga", "gd", "gl", "got", "grc", "gv", "hbo", "he", "hi", "hr",
         "hsb", "ht", "hu", "hy", "hyw", "id", "is", "ja", "ka", "kk", "kmr", "ko", "kpv", "ky", "la", "lij", "lt",
         "lv", "lzh", "mr", "mt", "my", "myv", "naq", "nb", "nds", "nn", "oc", "or", "orv", "ota", "pa", "pcm", "pl", "pro",
-        "qaf", "qpm", "qtd", "ro", "ru", "sa", "say", "sd", "sdh", "sk", "sl", "sme", "sq", "sr", "sv", "ta", "te",
+        "qaf", "qpm", "qtd", "ro", "ru", "sa", "say", "sd", "sdh", "sk", "sl", "sme", "sq", "sr", "ta", "te",
         "th", "tr", "ug", "uk", "ur", "uz", "vi", "wo", "wuu", "xcl", "yi", "yrl", "zh-hans", "zh-hant", "zza",
     ];
 
@@ -129,6 +130,13 @@ public sealed class Pipeline : IDisposable
             ["ner"] = ["conll03"],
             ["sentiment"] = ["sb10k_dbmdz-bert-german-cased"],
             ["coref"] = [CorefModel],
+        },
+        ["sv"] = new()
+        {
+            ["tokenize"] = ["lines_charlm", "talbanken_charlm"],
+            ["lemma"] = ["lines_charlm", "talbanken_charlm"],
+            ["pos"] = ["lines_nocharlm", "lines_kb-swedish-bert"],
+            ["depparse"] = ["lines_nocharlm", "lines_kb-swedish-bert"],
         },
     };
 
@@ -245,6 +253,13 @@ public sealed class Pipeline : IDisposable
             ["sentiment/sb10k_dbmdz-bert-german-cased"] = "dbmdz/bert-base-german-cased", // LoRA adapters
             ["coref/" + CorefModel] = XlmRoberta, // with its LoRA adapters
         },
+        ["sv"] = new()
+        {
+            ["pos/talbanken_kb-swedish-bert"] = KbBert,
+            ["depparse/talbanken_kb-swedish-bert"] = KbBert,
+            ["pos/lines_kb-swedish-bert"] = KbBert,
+            ["depparse/lines_kb-swedish-bert"] = KbBert,
+        },
         ["or"] = new()
         {
             ["pos/odtb_muril-large-cased"] = Muril,
@@ -253,7 +268,8 @@ public sealed class Pipeline : IDisposable
     };
 
     private const string Electra = "google/electra-large-discriminator", GermanElectra = "german-nlp-group/electra-base-german-uncased",
-        XlmRoberta = "FacebookAI/xlm-roberta-large", RobertaLarge = "roberta-large", Muril = "google/muril-large-cased";
+        XlmRoberta = "FacebookAI/xlm-roberta-large", RobertaLarge = "roberta-large", Muril = "google/muril-large-cased",
+        KbBert = "KBLab/bert-base-swedish-cased";
 
     /// <summary>The transformers <paramref name="models"/> of <paramref name="language"/> read (<see cref="Transformers"/>), each once.</summary>
     internal static List<string> TransformersOf(IReadOnlyDictionary<string, string> models, string language) =>

@@ -36,9 +36,12 @@ public sealed class PipelineOptions
     /// German: <c>"default"</c>, <c>"default_fast"</c> (pos and depparse as in English; ner and sentiment unchanged),
     /// <c>"default_accurate"</c> (pos, constituency, depparse and sentiment read the transformer
     /// <c>german-nlp-group/electra-base-german-uncased</c>, 445 MB, which the downloader fetches too) and the treebank
-    /// packages <c>"combined"</c>, <c>"gsd"</c> and <c>"hdt"</c> (tokenize to depparse only). French, Italian,
-    /// Portuguese and Dutch: <c>"default"</c> and <c>"default_fast"</c>; the other languages: <c>"default"</c>. Any other
-    /// name throws.
+    /// packages <c>"combined"</c>, <c>"gsd"</c> and <c>"hdt"</c> (tokenize to depparse only). Swedish: <c>"default"</c>,
+    /// <c>"default_fast"</c>, <c>"default_accurate"</c> (pos and depparse read the transformer
+    /// <c>KBLab/bert-base-swedish-cased</c>, 501 MB, which the downloader fetches too; a sentence of more than 512 of its
+    /// pieces throws, where Stanza crashes) and the treebank packages <c>"lines"</c> and <c>"talbanken"</c>. French,
+    /// Italian, Portuguese and Dutch: <c>"default"</c> and <c>"default_fast"</c>; the other languages: <c>"default"</c>.
+    /// Any other name throws.
     /// </summary>
     public string Package { get; init; } = Pipeline.DefaultPackage;
 
@@ -73,7 +76,9 @@ public sealed class PipelineOptions
     /// <c>combined_charlm</c>, <c>ewt_charlm</c>, <c>gum_charlm</c>, <c>lines_charlm</c>, <c>partut_charlm</c>,
     /// <c>atis_charlm</c>, <c>childes_charlm</c>, <c>eslspok_charlm</c>, lemma <c>ewt_charlm</c>, <c>gum_charlm</c>,
     /// <c>lines_charlm</c>, <c>partut_charlm</c>, <c>atis_charlm</c>, <c>childes_charlm</c>, German tokenize and lemma
-    /// <c>combined_charlm</c>, <c>gsd_charlm</c>, <c>hdt_charlm</c>; English coref <c>gum-nospeakers_roberta-large-lora</c>,
+    /// <c>combined_charlm</c>, <c>gsd_charlm</c>, <c>hdt_charlm</c>; Swedish tokenize and lemma <c>lines_charlm</c> and
+    /// <c>talbanken_charlm</c>, pos and depparse <c>lines_nocharlm</c> and, on KBLab/bert-base-swedish-cased,
+    /// <c>lines_kb-swedish-bert</c>; English coref <c>gum-nospeakers_roberta-large-lora</c>,
     /// <c>gum-speakers_roberta-large-lora</c> and <c>ontonotes-singletons_roberta-large-lora</c> (on roberta-large;
     /// gum-speakers' speaker feature sees one speaker, as Stanza does without speaker tags). Character models a chosen
     /// model reads are loaded next to the package's when they differ. <see cref="Pipeline.Load"/> and <see cref="ModelDownloader"/> throw

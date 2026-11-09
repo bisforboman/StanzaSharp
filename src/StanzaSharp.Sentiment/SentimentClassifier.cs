@@ -45,7 +45,7 @@ internal sealed class SentimentClassifier : IDisposable
             _loraNet = lora
                 ? transformer!.Net.WithLora(LoraWeights.Read(ckpt, p["bert_lora"] ?? throw new InvalidDataException("A LoRA classifier without bert_lora"), config))
                 : null;
-            _transformer = _loraNet == null ? transformer : new TransformerEmbedder(_loraNet, transformer!.Tokenizer, transformer.MaxLength, transformer.Name);
+            _transformer = _loraNet == null ? transformer : new TransformerEmbedder(_loraNet, transformer!.Tokenizer, transformer.TokenizerMaxLength, transformer.Name);
         }
 
         // { word: i for i, word in enumerate(extra_vocab) }: a repeated word keeps its last index.

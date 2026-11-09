@@ -57,7 +57,7 @@ internal sealed class ConstituencyParser : IDisposable
             _loraNet = lora
                 ? transformer!.Net.WithLora(LoraWeights.Read(ckpt, ckpt.Root["bert_lora"] ?? throw new InvalidDataException("A LoRA parser without bert_lora"), config))
                 : null;
-            _transformer = _loraNet == null ? transformer : new TransformerEmbedder(_loraNet, transformer!.Tokenizer, transformer.MaxLength, transformer.Name);
+            _transformer = _loraNet == null ? transformer : new TransformerEmbedder(_loraNet, transformer!.Tokenizer, transformer.TokenizerMaxLength, transformer.Name);
         }
 
         // LSTMModel maps words and tags to i + 2 (0 = PAD, 1 = UNK) over sorted lists; the saved lists are sorted.

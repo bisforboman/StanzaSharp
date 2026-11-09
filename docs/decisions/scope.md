@@ -34,7 +34,16 @@ What StanzaSharp ports and supports, with the owner's decisions behind each part
   also Latin's la_ittb hack (decode_predictions: `:` and `;` end a sentence; la's golden text has one). Then
   (owner's choice 2026-11-05) or, 108 languages: its tagger and parser read google/muril-large-cased, a BERT already
   ported (docs/checkpoint-findings.md, "Odia"); new were Stanza's `update_max_length` (512 pieces) and vocab.txt lines
-  trimmed of trailing white space as the tokenizers library reads them. Not yet: el (its lemmatizer's contextual
+  trimmed of trailing white space as the tokenizers library reads them. Then (owner's choice 2026-11-09) Swedish's other
+  packages: `default_fast`, `lines`, `talbanken` and `default_accurate` on KB-BERT (`KBLab/bert-base-swedish-cased`), and
+  `Alternatives` for sv (the `lines_charlm` tokenizer and lemmatizer, the `lines_nocharlm` and `lines_kb-swedish-bert`
+  tagger and parser; not ner `suc3licensed`, owner's decision 2026-11-09, until its licence is checked), byte for byte
+  with no new model code (docs/checkpoint-findings.md, "Swedish"). A deliberate difference (owner's decision,
+  2026-11-09): KB-BERT's tokenizer has no `model_max_length` and Stanza doesn't set one, so Stanza never windows it and
+  crashes on a sentence over 512 pieces; StanzaSharp throws an `ArgumentException` there. Golden: the packages as for every
+  language, plus a `<package>+<processor>=<model>,....conllu` file per `PipelineOptions.Models` choice no package runs
+  (make_golden.py `LANGUAGE_MODEL_CHOICES`; `LanguageGoldenTests.Models_MatchGolden` and `tools/test-languages.sh` read
+  the choice from the name). Not yet: el (its lemmatizer's contextual
   classifiers load word vectors from a path on Stanford's machine: Python Stanza fails too). `LanguageGoldenTests` builds its rows from `SupportedPackages` (every language but en
   and de), only those whose models are present, and `STANZASHARP_LANGUAGES` narrows them; `tools/test-languages.sh` is
   the nightly loop (download 8 languages' packages, test, fail on a skip, delete; about 30 GB a night); `make_golden.py

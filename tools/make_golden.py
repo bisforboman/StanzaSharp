@@ -500,7 +500,7 @@ class RecordContextual:
 
 def electra_locally(models):
     """
-    Has Stanza's load_bert read TRANSFORMER, ROBERTA, XLMR and ROBERTA_LARGE (English), GERMAN["TRANSFORMER"] and DBMDZ and MURIL (Odia) from <models>/<lang>/transformer/
+    Has Stanza's load_bert read TRANSFORMER, ROBERTA, XLMR and ROBERTA_LARGE (English), GERMAN["TRANSFORMER"] and DBMDZ, MURIL (Odia) and KB_BERT (Swedish) from <models>/<lang>/transformer/
     (the files ModelDownloader fetches at the pinned revision) instead of Hugging Face's cache.
     """
     from stanza.models.common import bert_embedding
@@ -511,7 +511,8 @@ def electra_locally(models):
              DBMDZ: Path(models) / "de" / "transformer" / DBMDZ,
              XLMR: Path(models) / "en" / "transformer" / XLMR,
              ROBERTA_LARGE: Path(models) / "en" / "transformer" / ROBERTA_LARGE,
-             MURIL: Path(models) / "or" / "transformer" / MURIL}
+             MURIL: Path(models) / "or" / "transformer" / MURIL,
+             KB_BERT: Path(models) / "sv" / "transformer" / KB_BERT}
 
     def load_bert(model_name, *args, **kwargs):
         if model_name in local:
@@ -1873,16 +1874,37 @@ TRANSFORMER_LONG_STRIDE = 10  # the long sentence keeps every 10th word's vector
 # Odia's default tagger and parser (pos, depparse odtb_muril-large-cased) read MuRIL.
 MURIL = "google/muril-large-cased"
 
+# Swedish default_accurate's tagger and parser (pos, depparse talbanken_kb-swedish-bert; lines_kb-swedish-bert) read KB-BERT,
+# whose tokenizer has no model_max_length: transformers' limit is then none, so Stanza never windows it.
+KB_BERT = "KBLab/bert-base-swedish-cased"
+
+# Per language, the PipelineOptions.Models choices (Pipeline.Alternatives) no package of LANGUAGES runs, each on text.txt:
+# (package, models), written as languages/<lang>/<package>+<processor>=<model>,....conllu (choice_name), the name
+# LanguageGoldenTests and tools/test-languages.sh read the choice from.
+LANGUAGE_MODEL_CHOICES = {
+    "sv": [
+        ("lines", {"tokenize": "lines_charlm", "lemma": "lines_charlm", "pos": "lines_kb-swedish-bert", "depparse": "lines_kb-swedish-bert"}),
+        ("lines", {"pos": "lines_nocharlm", "depparse": "lines_nocharlm"}),
+    ],
+}
+
+
+def choice_name(package, models):
+    """A LANGUAGE_MODEL_CHOICES row's golden file name (no extension): lines+pos=lines_nocharlm,depparse=lines_nocharlm."""
+    return package + "+" + ",".join(f"{p}={m}" for p, m in models.items())
+
 # The languages with only languages/<lang>/'s golden data, and their packages (Pipeline.SupportedPackages).
 # Every folder of languages/ is a language; its packages are these, else just "default".
 LANGUAGES = {lang: ["default", "default_fast"] for lang in ["es", "fr", "it", "pt", "nl"]}
+LANGUAGES["sv"] = ["default", "default_fast", "default_accurate", "lines", "talbanken"]
 LANGUAGES["es"] = ["default"]  # Spanish's default_fast parser (uploaded 2026-10-27) is truncated: neither Stanza nor StanzaSharp loads it
 
 
 def write_languages_golden(models, out, only=None):
     """
     languages/<lang>/<package>.conllu: each package of each languages/ folder (LANGUAGES) on its text.txt (models in
-    <models>/<lang>; Odia's tagger and parser read MURIL from <models>/or/transformer/, electra_locally).
+    <models>/<lang>; Odia's tagger and parser read MURIL from <models>/or/transformer/, Swedish default_accurate's KB_BERT
+    from <models>/sv/transformer/, electra_locally), then languages/<lang>/<name>.conllu for each LANGUAGE_MODEL_CHOICES row.
     """
     electra_locally(models)
     resources = str(Path(__file__).resolve().parent.parent / "src" / "StanzaSharp" / "stanza_resources.json")
@@ -1900,7 +1922,27 @@ def write_languages_golden(models, out, only=None):
             (folder / f"{package}.conllu").write_text("{:C}\n".format(doc), encoding="utf-8", newline="\n")
             print(f"languages/{lang}/{package}.conllu ({','.join(nlp.processors)}): {len(doc.sentences)} sentences, {doc.num_words} words")
             if lang == "or" and package == "default":
-                write_muril_tokenizer_golden(models, folder, doc)
+                write_tokenizer_golden(models, folder, doc, "or", MURIL, MURIL_TOKENIZER_CASES, "MURIL_TOKENIZER_CASES")
+            if lang == "sv" and package == "default_accurate":
+                write_tokenizer_golden(models, folder, doc, "sv", KB_BERT, KB_BERT_TOKENIZER_CASES, "KB_BERT_TOKENIZER_CASES")
+        for package, choice in LANGUAGE_MODEL_CHOICES.get(lang, []):
+            name = choice_name(package, choice)
+            # Stanza's processors dict (as write_models_golden): each chosen model with its own dependencies, the package's others
+            spec = {p: choice.get(p, package) for p in stanza_package_processors(resources, lang, package)}
+            nlp = stanza.Pipeline(lang, dir=models, package=None, processors=spec, download_method=None, resources_filepath=resources,
+                                  use_gpu=False, logging_level="WARN")
+            loaded = {p: Path(nlp.processors[p].config["model_path"]).stem for p in choice}
+            assert loaded == choice, (name, loaded)
+            with torch.no_grad():
+                doc = nlp(text)
+            (folder / f"{name}.conllu").write_text("{:C}\n".format(doc), encoding="utf-8", newline="\n")
+            print(f"languages/{lang}/{name}.conllu ({','.join(nlp.processors)}): {len(doc.sentences)} sentences, {doc.num_words} words")
+
+
+def stanza_package_processors(resources, lang, package):
+    """The processors resources.json's package of lang has."""
+    with open(resources, encoding="utf-8") as f:
+        return json.load(f)[lang]["packages"][package].keys()
 
 
 # MURIL's tokenizer on top of the Odia golden words: Indic edges (virama, ZWJ/ZWNJ, nukta precomposed or not, digits,
@@ -1912,20 +1954,31 @@ MURIL_TOKENIZER_CASES = [
 ]
 
 
-def write_muril_tokenizer_golden(models, folder, doc):
+# KB_BERT's tokenizer on top of the Swedish golden words: å, ä, ö, accents (cased, strip_accents false), Unicode composed
+# or not, abbreviations, numbers, units, e-mail, hyphenated compounds, punctuation Swedish uses
+KB_BERT_TOKENIZER_CASES = [
+    ["Åsa", "ÅÄÖ", "åäö", "ÉTUDE", "café", "cafe\u0301", "A\u030asa", "naïve", "Müller", "Øresund"],
+    ["bl.a.", "t.ex.", "kl.", "14.30", "070-123", "45", "67", "12", "%", "5,2", "30", "m/s", "E4:an", "2029"],
+    ["sara.berg@exempel.se", "Karolinska", "institutet", "kommunfullmäktige", "Norrlandskusten", "EU-kommissionen", "–", "”", "»", "…"],
+    ["Sveriges", "SVERIGES", "sveriges", "Göteborgs-Posten", "Väst-", "och", "Östergötland", "kronor", "kr", "§", "3", "st.", "fr.o.m."],
+    ["Malmö", "Malmo\u0308", "IKEA", "iPhone", "co2-utsläpp", "CO₂", "½", "3:e", "1:a", "100-årsjubileum", "(S)", "'", "\u00a0"],
+]
+
+
+def write_tokenizer_golden(models, folder, doc, lang, name, extra_cases, extra_source):
     """
-    languages/or/tokenizer_google_muril-large-cased.json: MURIL's tokenizer (Stanza's load_tokenizer, from
-    <models>/or/transformer/) in tools/make_golden.py's transformer/tokenizer.json format, on the golden sentences' words and
-    tokens, MURIL_TOKENIZER_CASES, every word of vocab.txt whose line ends in white space (transformers drops it, so the
-    later line wins: "ମନ୍ଦିର\u00a0" is ମନ୍ଦିର), and one case of more than 512 pieces.
+    languages/<lang>/tokenizer_<name, / as _>.json: the transformer name's tokenizer (Stanza's load_tokenizer, from
+    <models>/<lang>/transformer/, with update_max_length) in tools/make_golden.py's transformer/tokenizer.json format, on the
+    golden sentences' words and tokens, extra_cases, every word of vocab.txt whose line ends in white space (transformers
+    drops it, so the later line wins: MURIL's "ମନ୍ଦିର\u00a0" is ମନ୍ଦିର), and one case of more than 512 pieces.
     """
     from stanza.models.common.bert_embedding import convert_to_position_list, fix_blank_tokens, load_tokenizer, update_max_length
     import tokenizers
     import transformers
 
-    directory = Path(models) / "or" / "transformer" / MURIL
+    directory = Path(models) / lang / "transformer" / name
     tokenizer = load_tokenizer(str(directory), local_files_only=True)
-    update_max_length(MURIL, tokenizer)
+    update_max_length(name, tokenizer)
     cases, seen = [], set()
 
     def add(words, source):
@@ -1957,8 +2010,8 @@ def write_muril_tokenizer_golden(models, folder, doc):
         every += words
         add(words, None)
         add([t.text for t in sent.tokens], None)
-    for words in MURIL_TOKENIZER_CASES:
-        add(words, "MURIL_TOKENIZER_CASES")
+    for words in extra_cases:
+        add(words, extra_source)
     lines = (directory / "vocab.txt").read_text(encoding="utf-8").split("\n")
     trimmed = [line.rstrip() for line in lines if line != line.rstrip() and line.rstrip() and not line.startswith("##")]
     for i in range(0, len(trimmed), 8):
@@ -1967,12 +2020,13 @@ def write_muril_tokenizer_golden(models, folder, doc):
         every = every + every
     add(every, "the golden words, repeated past 512 pieces")
 
-    with open(folder / "tokenizer_google_muril-large-cased.json", "w", encoding="utf-8", newline="\n") as f:
-        meta = {"transformer": MURIL, "transformers": transformers.__version__, "tokenizers": tokenizers.__version__, "stanza": stanza.__version__}
+    file = f"tokenizer_{name.replace('/', '_')}.json"
+    with open(folder / file, "w", encoding="utf-8", newline="\n") as f:
+        meta = {"transformer": name, "transformers": transformers.__version__, "tokenizers": tokenizers.__version__, "stanza": stanza.__version__}
         f.write(json.dumps(meta, ensure_ascii=False)[:-1] + ', "cases": [\n')
         f.write(",\n".join(json.dumps(c, ensure_ascii=False, separators=(",", ":")) for c in cases))
         f.write("\n]}\n")
-    print(f"languages/or/tokenizer_google_muril-large-cased.json: {len(cases)} cases, {sum(len(c['ids']) for c in cases)} ids")
+    print(f"languages/{lang}/{file}: {len(cases)} cases, {sum(len(c['ids']) for c in cases)} ids")
 
 
 def write_transformer_hidden_golden(models, out, tokenizer, transformer=TRANSFORMER, file_suffix=""):
