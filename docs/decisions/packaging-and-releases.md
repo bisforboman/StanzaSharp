@@ -109,6 +109,10 @@ Packages, the public API, downloads, versions and the release process, with the 
     `libtorch-cpu-win-x64` alone). Deprecating them on nuget.org is the owner's manual step.
   - `release.yml` packs `StanzaSharp`, `StanzaSharp.Cuda` (from `src/StanzaSharp.Cuda`), `StanzaSharp.DataIngestion`,
     `StanzaSharp.TasmanianDevil` and `StanzaSharp.Tool`.
+  - Subtitle line breaks (#267; owner's decisions 2026-11-09, asked on PR #269): `samples/StanzaSharp.Subtitles` stays a
+    sample for now, with no package, until its rules have been measured on professionally made subtitles. It is offered
+    to Subtitle Edit only after that measurement, and once the shot-change proposal (shotdetector#633) has gone
+    somewhere.
   - `StanzaSharp.TasmanianDevil` (#234; owner's decisions 2026-10-31: TasmanianDevil adapters as a package, Deidentify.NET
     only if asked, ManagedCode.Presidio deferred; kept after learning of TasmanianDevil.Onnx, its zero-shot GLiNER NER): depends
     on StanzaSharp (same version) and TasmanianDevil 0.3.0 (stable, so no `-preview`). `StanzaNerRecognizer` = an
