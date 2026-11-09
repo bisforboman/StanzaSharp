@@ -55,8 +55,8 @@ morphological features (`Case=Nom|Definite=Def|Gender=Neut|Number=Sing` for `år
 
 ## Models
 
-StanzaSharp runs Stanza's `default` Swedish package. Swedish has no multi-word tokens, sentiment or constituency models
-in Stanza.
+StanzaSharp runs all five of Stanza's Swedish packages: `default` (below), `default_fast`, `default_accurate`, `lines`
+and `talbanken`. Swedish has no multi-word tokens, sentiment or constituency models in Stanza.
 
 | Processor | Model | Trained on | Reads |
 |---|---|---|---|
@@ -70,12 +70,28 @@ The download is 386 MB: the parser 135 MB, the word vectors (`pretrain/conll17`)
 the two character language models 21 MB each. `--processors tokenize,pos,lemma` (or `PipelineOptions.Processors`)
 downloads and loads only those models (186 MB).
 
+The other packages (`PipelineOptions.Package`, `--package`):
+
+- `default_fast`: the tagger and parser `talbanken_nocharlm` (word vectors, no character language models), the rest as
+  `default`; 333 MB.
+- `default_accurate`: the tagger and parser `talbanken_kb-swedish-bert` on KB-BERT (`KBLab/bert-base-swedish-cased`, 501
+  MB, frozen, which the download fetches from Hugging Face at a pinned revision), the tokenizer and lemmatizer
+  `talbanken_charlm`, NER `suc3shuffle`; 913 MB in all. A sentence over 512 KB-BERT word pieces (about 400 words) throws an
+  `ArgumentException`: Stanza never splits KB-BERT's input into windows, as it does for the other transformers, and
+  crashes on such a sentence.
+- `talbanken` and `lines`: tokenize, pos, lemma and depparse trained on one treebank each (UD Swedish-Talbanken, or UD
+  Swedish-LinES), no NER.
+
+`PipelineOptions.Models` (`--model PROCESSOR=NAME`) picks single models instead: the tokenizers and lemmatizers
+`lines_charlm` and `talbanken_charlm`, and the taggers and parsers `lines_nocharlm` and `lines_kb-swedish-bert` (with
+`talbanken_nocharlm` and `talbanken_kb-swedish-bert`, the packages' own). For example, `--package lines --model
+pos=lines_kb-swedish-bert,depparse=lines_kb-swedish-bert`.
+
 NER has the eight SUC types: `PER`, `LOC`, `ORG`, `TME` (time expressions), `MSR` (measures), `WRK` (works),
 `EVN` (events) and `OBJ` (objects).
 
-Stanza also has Swedish models trained on UD Swedish-LinES, models on the KB-BERT transformer and an NER model on the
-officially licensed SUC 3.0 (`suc3licensed`). StanzaSharp doesn't run these yet. `PipelineOptions.Models` and other
-packages throw for Swedish.
+Stanza also has an NER model trained on the officially licensed SUC 3.0 (`suc3licensed`). StanzaSharp doesn't offer it
+(its licence terms aren't checked yet).
 
 For masking personal data in Swedish documents (personnummer, organisationsnummer, addresses, bank and plate numbers
 next to NER), see the `StanzaSharp.TasmanianDevil` package and [samples/StanzaSharp.Masking](../samples/StanzaSharp.Masking/README.md).
@@ -90,6 +106,8 @@ its own terms:
 |---|---|---|
 | CoNLL 2017 shared task word embeddings and raw texts ([LINDAT 11234/1-1989](http://hdl.handle.net/11234/1-1989)) | **CC BY-NC-SA 4.0** | `pretrain/conll17` (the word vectors) and the `conll17` character language models; through them pos, depparse and ner |
 | [UD Swedish-Talbanken](https://github.com/UniversalDependencies/UD_Swedish-Talbanken) | CC BY-SA 4.0 | tokenize, pos, lemma, depparse |
+| [UD Swedish-LinES](https://github.com/UniversalDependencies/UD_Swedish-LinES) | CC BY-SA 4.0 | the `lines_*` models |
+| [KB-BERT](https://huggingface.co/KBLab/bert-base-swedish-cased) (`KBLab/bert-base-swedish-cased`, the National Library of Sweden) | CC0 1.0 (its model card) | the `_kb-swedish-bert` taggers and parsers (`default_accurate`) |
 | [SUC 3.0](https://spraakbanken.gu.se/en/resources/suc3), the shuffled release | CC BY 4.0 on the SUC 3.0 page; CC BY-SA 4.0 on the SUCX 3.0 page for the same file | ner |
 
 What this means in practice:

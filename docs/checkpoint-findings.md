@@ -252,3 +252,27 @@ positions, two token types; `bert.` weights in a zip `pytorch_model.bin`, 2.0 GB
   the empty key, which no piece reaches. `tests/golden/languages/or/tokenizer_google_muril-large-cased.json` holds the
   cases (`LanguageGoldenTests` checks it in Odia's rows).
 - Not in `BAD_TOKENIZERS` (only `google/muril-base-cased` is), so fix_blank_tokens behaves as for ELECTRA.
+
+## Checkpoint findings (Swedish, `sv`)
+
+Swedish's packages beyond `default` (2026-11-09, read from their configs and Stanza 1.15.0's
+`models/common/bert_embedding.py`): `default_fast` (pos, depparse `talbanken_nocharlm`), `lines` and `talbanken`
+(tokenize, pos, lemma, depparse), and `default_accurate` (tokenize, lemma `talbanken_charlm`; pos, depparse
+`talbanken_kb-swedish-bert`; ner `suc3shuffle`). Every model's dependencies are `pretrain/conll17` and the `conll17`
+charlms, as `default`'s. All of them, and the alternatives `lines_charlm` (tokenize, lemma), `lines_nocharlm` and
+`lines_kb-swedish-bert` (pos, depparse), matched Python Stanza byte for byte in `compare` on a 25-sentence text with no
+code change, except KB-BERT's maximum length:
+
+- pos and depparse `*_kb-swedish-bert` read `KBLab/bert-base-swedish-cased` (BertModel: 12 layers, hidden 768, 12
+  heads, FFN 3072, 512 positions, two token types; `bert.` weights and an MLM head in a zip `pytorch_model.bin`, 501 MB;
+  CC0 1.0). Both frozen (`bert_finetune` false, `use_peft` false, no LoRA keys); `pretrain` and `charlm` true. pos:
+  `bert_hidden_layers` null (the legacy mix); depparse: 4 with its `bert_layer_mix.weight`. Paths already ported.
+- vocab.txt WordPiece, cased: tokenizer_config.json is `{"do_lower_case": false, "strip_accents": false}`, and
+  added_tokens.json is empty. No vocab.txt line ends in white space.
+- tokenizer_config.json has no `model_max_length`, and `update_max_length` doesn't list this name, so transformers'
+  limit is its VERY_LARGE_INTEGER: Stanza never runs a sentence in windows and crashes (`RuntimeError: The expanded size
+  of the tensor (603) must match the existing size (512)`) on one of more than 512 pieces. StanzaSharp throws an
+  `ArgumentException` there instead (owner's decision, 2026-11-09; `TransformerEmbedder.TokenizerMaxLength` null).
+- `tests/golden/languages/sv/tokenizer_KBLab_bert-base-swedish-cased.json` holds the tokenizer cases (å, ä, ö, combining
+  accents, abbreviations, numbers and units; `LanguageGoldenTests` checks it in Swedish's rows).
+- Not offered: ner `suc3licensed` (owner's decision, 2026-11-09, until its licence is checked).

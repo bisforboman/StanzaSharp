@@ -56,7 +56,10 @@ Spanish, whose `default_fast` parser file Stanford uploaded truncated on 2026-10
 to 4 sentences each in the language's own script, `default` only (Odia's also come with
 `tokenizer_google_muril-large-cased.json`, its transformer's tokenizer on them and on edge cases, checked in its rows); the historical languages use well-known public-domain
 passages (the Gothic Lord's Prayer, John 1:1 in Ancient Greek and Classical Armenian, Genesis 1:1 in Biblical Hebrew,
-Caesar, Beowulf's opening). `LanguageGoldenTests` checks each byte for byte on both backends; their models are downloaded
+Caesar, Beowulf's opening). Swedish has all five of its packages (`default`, `default_fast`, `default_accurate` on
+KB-BERT, `lines`, `talbanken`) on its text, `tokenizer_KBLab_bert-base-swedish-cased.json` (KB-BERT's tokenizer, as
+Odia's), and a golden file per `PipelineOptions.Models` choice no package runs, named by the choice
+(`lines+pos=lines_nocharlm,depparse=lines_nocharlm.conllu`; `LanguageGoldenTests.Models_MatchGolden`). `LanguageGoldenTests` checks each byte for byte on both backends; their models are downloaded
 only by the nightly run (below).
 
 **English treebank packages.** Stanza's English treebank packages (tokenize, mwt, pos, lemma, depparse) run on the same
@@ -253,7 +256,7 @@ the golden shards have those models (Stanza's `.pt` files, cached), so `cross-os
 default packages only. The transformer tests (`Transformer*`) run in golden shard 4, their own, which downloads the transformer's
 files from Hugging Face and the transformer models from Stanza's repository on every run (no cache: the model caches are
 near GitHub's 10 GB limit). The other languages' tests (`LanguageGoldenTests`) run only in the nightly run,
-which downloads their models (about 30 GB, Odia's with its 2 GB transformer) eight languages at a time, tests and deletes them; every other job skips them. A pull request runs that shard only when it changes what those tests read (the shared
+which downloads their models (about 31 GB, Odia's with its 2 GB transformer, Swedish's with its 0.5 GB one) eight languages at a time, tests and deletes them; every other job skips them. A pull request runs that shard only when it changes what those tests read (the shared
 kernels, the TorchSharp backend, the downloader, CI, the transformer's golden data or tests); every push to main runs it.
 
 The [nightly workflow](../.github/workflows/nightly.yml) runs on main every night: golden shard 4 (all of CI instead when

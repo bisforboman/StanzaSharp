@@ -303,6 +303,17 @@ public static class ModelDownloader
             ("pytorch_model.bin", "01e55aa45dbb9164fee19aef60007a1c91d175051c01be1fb15056cfa60f3e53"),
         ]),
 
+        // Swedish default_accurate's tagger and parser (talbanken_kb-swedish-bert, frozen): BERT (cased) with a vocab.txt
+        // WordPiece, an empty added_tokens.json and no model_max_length, which Stanza's update_max_length doesn't set either:
+        // Stanza never windows it, and StanzaSharp throws on a sentence over its 512 positions (TransformerEmbedder.Embed).
+        ["KBLab/bert-base-swedish-cased"] = ("ce7c3424687f042f1320e0528293d492c82918c4",
+        [
+            ("config.json", "d8ebacf1ccc2d77356e4e2de609084610e1fd20f84de304f90f2aeac0e6feda9"),
+            ("vocab.txt", "cf103a3207ce9ce64c4d9e306c2cb433e5987b6050a9d869914e1a8e2c781ad6"),
+            ("tokenizer_config.json", "f26d9181623aa8603033b91904594deb84c23acaa3fe71b3b6adc3e5b9929677"),
+            ("pytorch_model.bin", "47169398946aa3e4652b78f790f68e00c12ed184e7de3d7d42e655a658e6987e"),
+        ]),
+
         // Odia's default tagger and parser (odtb_muril-large-cased): BERT (cased) with a vocab.txt WordPiece and no
         // model_max_length in tokenizer_config.json (Stanza's update_max_length sets 512).
         ["google/muril-large-cased"] = ("ace319f0d17524297957e249aff028b0b7357ab5",

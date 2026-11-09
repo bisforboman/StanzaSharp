@@ -302,9 +302,10 @@ var doc = nlp.Process("J'ai vu Marie au marché de Lyon.");
 
 Each runs the processors of Stanza's own `default` package for the language (all models are 1.15.0's, byte for byte
 against Python Stanza on a test text per language; the table lists them). French, Italian, Portuguese and Dutch also have
-`default_fast`. A language's `default` package is 100 to 900 MB (Odia's 2.3 GB: its tagger and parser read the 2 GB
-google/muril-large-cased transformer, which the download fetches too). Not supported yet: these languages'
-`default_accurate` and treebank packages. Greek waits for Stanford: its default lemmatizer fails in Python Stanza too.
+`default_fast`; Swedish has all its packages (`default_fast`, `default_accurate` on KB-BERT, `lines`, `talbanken`; see
+[docs/swedish.md](docs/swedish.md)). A language's `default` package is 100 to 900 MB (Odia's 2.3 GB: its tagger and
+parser read the 2 GB google/muril-large-cased transformer, which the download fetches too). Not supported yet: the other
+languages' `default_accurate` and treebank packages. Greek waits for Stanford: its default lemmatizer fails in Python Stanza too.
 
 **Swedish:** [docs/swedish.md](docs/swedish.md) has a quick start, the Swedish models, their licences (the tagger,
 parser and NER read CC BY-NC-SA 4.0 word vectors) and a measured comparison with Catalyst.

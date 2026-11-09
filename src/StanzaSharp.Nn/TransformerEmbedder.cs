@@ -9,10 +9,12 @@ namespace StanzaSharp.Nn;
 /// positions around them.
 /// </summary>
 /// <param name="maxLength">The tokenizer's <c>model_max_length</c> (tokenizer_config.json, 512 for ELECTRA): longer inputs
-/// run in windows, as Stanza's build_cloned_features does.</param>
+/// run in windows, as Stanza's build_cloned_features does. Null when the tokenizer has none and Stanza doesn't set one
+/// (KBLab/bert-base-swedish-cased): transformers then has no limit, Stanza never windows and crashes on an input over the
+/// model's positions, and <see cref="Embed"/> throws for one.</param>
 /// <param name="name">The Hugging Face repository, e.g. <c>google/electra-large-discriminator</c>: what a model's
 /// <c>bert_model</c> names.</param>
-internal sealed class TransformerEmbedder(ITransformerNet net, ITransformerTokenizer tokenizer, int maxLength, string name)
+internal sealed class TransformerEmbedder(ITransformerNet net, ITransformerTokenizer tokenizer, int? maxLength, string name)
 {
     public string Name { get; } = name;
 
@@ -26,7 +28,7 @@ internal sealed class TransformerEmbedder(ITransformerNet net, ITransformerToken
     {
         var config = TransformerConfig.Load(Path.Combine(directory, "config.json"));
         var tokenizer = LoadTokenizer(directory);
-        int maxLength = ReadMaxLength(directory, name);
+        int? maxLength = ReadMaxLength(directory, name);
         var encoder = net(config, Checkpoint.Load(Path.Combine(directory, "pytorch_model.bin")));
         return new TransformerEmbedder(encoder, tokenizer, maxLength, name);
     }
@@ -93,8 +95,12 @@ internal sealed class TransformerEmbedder(ITransformerNet net, ITransformerToken
 
     public ITransformerTokenizer Tokenizer { get; } = tokenizer;
 
-    public int MaxLength { get; } = maxLength <= net.Config.MaxPositions
-        ? maxLength
+    /// <summary>The tokenizer's <c>model_max_length</c>, as given (null: none, so no windows).</summary>
+    public int? TokenizerMaxLength { get; } = maxLength;
+
+    /// <summary>Pieces per window: <see cref="TokenizerMaxLength"/>, or the model's positions when there is none.</summary>
+    public int MaxLength { get; } = maxLength == null ? net.Config.MaxPositions
+        : maxLength <= net.Config.MaxPositions ? maxLength.Value
         : throw new ArgumentException($"model_max_length {maxLength} is over the model's {net.Config.MaxPositions} positions", nameof(maxLength));
 
     // The transformers whose tokenizer Stanza sets to 512 pieces whatever tokenizer_config.json says (bert_embedding.py's
@@ -104,16 +110,16 @@ internal sealed class TransformerEmbedder(ITransformerNet net, ITransformerToken
     /// <summary>
     /// Reads <c>model_max_length</c> from a transformer directory's <c>tokenizer_config.json</c>, or the older <c>max_len</c>
     /// (german-nlp-group's ELECTRA), which transformers reads the same way; 512 for the transformers Stanza sets to 512
-    /// (<see cref="MaxLength512"/>).
+    /// (<see cref="MaxLength512"/>); null when there is neither (KBLab/bert-base-swedish-cased: no limit in transformers).
     /// </summary>
-    public static int ReadMaxLength(string directory, string? name = null)
+    public static int? ReadMaxLength(string directory, string? name = null)
     {
         if (name != null && MaxLength512.Contains(name))
             return 512;
         var path = Path.Combine(directory, "tokenizer_config.json");
         var config = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(path));
         var node = config?["model_max_length"] ?? config?["max_len"];
-        return node?.GetValue<int>() ?? throw new InvalidDataException($"{path}: no model_max_length");
+        return node?.GetValue<int>();
     }
 
     /// <summary>
@@ -136,6 +142,13 @@ internal sealed class TransformerEmbedder(ITransformerNet net, ITransformerToken
         bool rents = Net.RentsOutputs;
         for (int s = 0; s < inputs.Length && cache != null; s++)
             states[s] = cache.TryGet(inputs[s].Ids, out var cached) ? cached : null!;
+        if (TokenizerMaxLength == null && inputs.FirstOrDefault(i => i.Ids.Length > MaxLength) is { } tooLong)
+        {
+            // Stanza crashes here (the position embeddings end at MaxLength): a deliberate difference, we throw instead
+            throw new ArgumentException($"A sentence of {tooLong.Ids.Length} pieces is over {Name}'s {MaxLength} positions;"
+                + " Stanza doesn't run it in windows either (its tokenizer has no model_max_length)");
+        }
+
         var short_ = Enumerable.Range(0, inputs.Length).Where(s => states[s] == null && inputs[s].Ids.Length <= MaxLength).ToList();
         for (int b = 0; b < short_.Count;)
         {

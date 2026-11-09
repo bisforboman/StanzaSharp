@@ -6,7 +6,7 @@ and pins their files' SHA-256s in src/StanzaSharp/model_sha256.json.
     python tools/stanza_resources.py docs
 
 docs writes docs/languages.md, the table of supported languages, from the file and tests/golden/languages/ (each
-folder's <package>.conllu files are its packages); run it after adding a language.
+folder's <package>.conllu files are its packages; <package>+<models>.conllu files are model choices, not packages); run it after adding a language.
 
 Each language's entry comes from stanza-resources' resources_<version>.json as it is today, and the script prints the
 commit stanfordnlp/stanza-<lang> is at now, for ModelDownloader.Revisions: the entry and the commit must be taken the
@@ -90,7 +90,7 @@ def write_docs(resources):
         if not isinstance(entry, dict):
             continue
         golden = ROOT / "tests" / "golden" / "languages" / lang
-        packages = MAIN.get(lang) or ", ".join(sorted(p.stem for p in golden.glob("*.conllu")))
+        packages = MAIN.get(lang) or ", ".join(sorted(p.stem for p in golden.glob("*.conllu") if "+" not in p.stem))  # <package>+<models>: a Models choice
         processors = ", ".join(p for p in PROCESSORS if p in entry["default_processors"])
         name = entry.get("lang_name", lang).replace("_", " ")
         ner = entry["default_processors"].get("ner")

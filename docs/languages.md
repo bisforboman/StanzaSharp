@@ -99,7 +99,7 @@ those of the language's `default` package, in Stanza's order.
 | Sorani | `ckb` | default | tokenize, mwt, pos, lemma, depparse |  |
 | Southern Kurdish | `sdh` | default | tokenize, mwt, pos, lemma, depparse |  |
 | Spanish | `es` | default | tokenize, mwt, pos, lemma, depparse, ner, sentiment, constituency | `conll02` |
-| Swedish | `sv` | default | tokenize, pos, lemma, depparse, ner | `suc3shuffle` |
+| Swedish | `sv` | default, default_accurate, default_fast, lines, talbanken | tokenize, pos, lemma, depparse, ner | `suc3shuffle` |
 | Tamil | `ta` | default | tokenize, mwt, pos, lemma, depparse |  |
 | Telugu | `te` | default | tokenize, pos, lemma, depparse, ner | `ilner_charlm` |
 | Thai | `th` | default | tokenize, pos, lemma, depparse, ner | `lst20` |

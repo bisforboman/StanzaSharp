@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # The other languages' golden tests (LanguageGoldenTests) a batch at a time, as nightly.yml's languages job runs them:
-# download a batch's models (every package with a tests/golden/languages/<lang>/<package>.conllu), run the tests on just
+# download a batch's models (every package with a tests/golden/languages/<lang>/<package>.conllu, and the models of each
+# <package>+<processor>=<model>,....conllu, a PipelineOptions.Models choice), run the tests on just
 # those languages (STANZASHARP_LANGUAGES), fail on a skipped test, delete the models, next batch. The languages' models
-# come to about 30 GB (Odia's 2.3 GB with its transformer, google/muril-large-cased), more than a runner holds at once
+# come to about 31 GB (Odia's 2.3 GB with its transformer, google/muril-large-cased; Swedish's 1.2 GB with KBLab/bert-base-swedish-cased), more than a runner holds at once
 # (owner's decision, 2026-10-30: all of them every night).
 #
 #   tools/test-languages.sh [LANG...]   (default: every folder of tests/golden/languages)
@@ -19,10 +20,13 @@ failed=()
 download() {
   local lang=$1
   for golden in tests/golden/languages/"$lang"/*.conllu; do
-    local package
-    package=$(basename "$golden" .conllu)
+    local name package
+    local -a models=()
+    name=$(basename "$golden" .conllu)
+    package=${name%%+*}
+    [ "$name" = "$package" ] || models=(--model "${name#*+}")
     for attempt in 1 2 3; do
-      "${cli[@]}" download "models/stanza/$lang" --lang "$lang" --package "$package" < /dev/null > /dev/null && continue 2
+      "${cli[@]}" download "models/stanza/$lang" --lang "$lang" --package "$package" "${models[@]}" < /dev/null > /dev/null && continue 2
       echo "$lang $package: download failed (attempt $attempt)" >&2
       sleep $((attempt * 15))
     done
@@ -33,10 +37,16 @@ download() {
 run() {
   local -a batch=("$@")
   local results="TestResults/languages-${batch[0]}"
+  # the model choices' rows and Swedish KB-BERT's long-sentence test only where their language is in the batch (else they skip)
+  local filter="FullyQualifiedName~LanguageGoldenTests.Process_MatchesGolden"
+  for lang in "${batch[@]}"; do
+    compgen -G "tests/golden/languages/$lang/*+*.conllu" > /dev/null && filter+="|FullyQualifiedName~LanguageGoldenTests.Models_MatchGolden"
+    [ "$lang" = sv ] && filter+="|FullyQualifiedName~LanguageGoldenTests.SwedishKbBert_"
+  done
   echo "::group::${batch[*]}"
   STANZASHARP_LANGUAGES=$(IFS=,; echo "${batch[*]}") dotnet test tests/StanzaSharp.Tests -c Release --no-build \
     --blame-hang-timeout 30m --blame-hang-dump-type none --logger trx --results-directory "$results" \
-    --filter "FullyQualifiedName~LanguageGoldenTests.Process_MatchesGolden" || failed+=("${batch[@]}")
+    --filter "$filter" || failed+=("${batch[@]}")
   if grep -q 'outcome="NotExecuted"' "$results"/*.trx || ! grep -q '<UnitTestResult ' "$results"/*.trx; then
     echo "::error::${batch[*]}: tests were skipped or none ran"
     failed+=("${batch[@]}")
