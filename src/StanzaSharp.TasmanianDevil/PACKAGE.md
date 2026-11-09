@@ -63,6 +63,32 @@ engine.Anonymize(text); // names, places, organisations, dates, id numbers, addr
 Addresses are matched by their shape: a street name without a definite suffix (`Drottning Kristinas väg`) or a P.O. box
 number isn't found.
 
+### One placeholder per person
+
+TasmanianDevil replaces every person with the same `<PERSON>`. With `LinkNames`, `StanzaNerRecognizer` links each
+person's mentions across the text, and `PersonPlaceholders` numbers them, so a reader can still follow who is who:
+
+```csharp
+using TasmanianDevil.Anonymizer;
+
+var recognizer = new StanzaNerRecognizer(sv, "sv") { LinkNames = true };
+using var engine = new PiiEngine(new PiiOptions { Language = "sv" }, extraRecognizers: [recognizer, /* ... */]);
+var results = engine.Analyze(text);
+var anonymized = new AnonymizerEngine().Anonymize(text, results, StanzaNerRecognizer.PersonPlaceholders(text, results),
+    ConflictResolutionStrategy.MergeSimilarOrContained, false);
+// "LINDQVIST, KARIN … Karins ansökan … K. Lindqvist" → "<PERSON_1>, <PERSON_1> … <PERSON_1> ansökan … <PERSON_1>"
+```
+
+- Every capitalized or all-caps occurrence of a name NER tagged somewhere in the text is found too, with its genitive
+  and an initial in front (`Karins`, `K. Lindqvist`); lowercase words aren't (`sten`, `ek` and `rosa` are also words).
+- A full name is a person; a shorter mention joins the one full name it fits. A surname alone shared by two people in
+  the text (`Holm` next to Ingrid and Björn Holm) gets a placeholder of its own rather than a guess.
+- Each `PERSON` result carries its person in `RecognitionMetadata[StanzaNerRecognizer.PersonKey]`; added results carry
+  `LinkedKey`. Organisations and places are also found again wherever their exact text recurs.
+- Measured on labelled Swedish texts: one placeholder for 92% of the pairs of one person's mentions held-out (35%
+  without), about as many spans missed, and a few more masks a reviewer removes
+  ([samples/StanzaSharp.Masking/eval](https://github.com/bisforboman/StanzaSharp/tree/main/samples/StanzaSharp.Masking/eval)).
+
 `StanzaNerRecognizer` needs only `tokenize,ner`. `StanzaTokenNormalizer` needs `tokenize,mwt,pos,lemma`; pass it to
 `LemmaContextAwareEnhancer`'s `normalizer` parameter.
 
