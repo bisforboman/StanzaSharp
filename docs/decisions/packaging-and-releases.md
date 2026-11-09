@@ -156,6 +156,14 @@ Packages, the public API, downloads, versions and the release process, with the 
     `12/3-85`; a real date not in the future promotes to full score (a two-digit year: either century). Tests
     `SwedishPaymentRecognizerTests` (500 random numbers per shape unmasked, all nine Swedish recognizers in one engine) and
     `SwedishVehicleAndBirthDateRecognizerTests` (no models).
+    Own engine instead of TasmanianDevil? (owner's question, 2026-11-08): estimated at 1–2 weeks (4–6 PRs: core with
+    context scoring and overlap rules, operators, generic e-mail/IBAN/card/phone recognizers, moving the Swedish ones),
+    a new package next to this one since the released recognizers subclass TasmanianDevil's types. The gains that
+    would be noticeable (one Stanza pass per document, every mention of a name masked, one placeholder per person)
+    don't need one, so the owner chose to prototype and measure first: `--link` in the Masking sample and labelled
+    texts in `samples/StanzaSharp.Masking/eval/` (dev, and a held-out set written by another agent). Result: one
+    placeholder per person (35% → 92% of a person's mention pairs held-out), leaks 12 → 11 of 225, over-masks 18 → 21;
+    where it goes (sample, this package, an own package) is the owner's next decision.
   - `StanzaSharp.DataIngestion` (#233; owner's decisions 2026-10-31: a package now, chunker + NER enricher first): depends
     on StanzaSharp (same version) and Microsoft.Extensions.DataIngestion, still preview-only, so its `PackageVersion` is
     `$(Version)-preview` (owner's decision 2026-10-31; a stable package can't depend on a prerelease, NU5104) until that

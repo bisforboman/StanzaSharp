@@ -1,0 +1,20 @@
+PROTOKOLL
+Elevhälsoteamet, {ORG:Ekbackens skola}
+Datum: 2026-10-14
+
+Närvarande: {PER#sara:Sara Berg} (rektor), {PER#ahmed:Ahmed Yusuf} (kurator), {PER#vik:Viking Svensson} (skolsköterska), {PER#lena:Lena Hassel} (specialpedagog)
+Frånvarande: {PER#tomas:Tomas Hägg}
+
+§ 1 Elev: {PER#noah:Noah Andersson Korhonen}, klass 7B, {PNR:20110101-2381}
+
+{PER#lena:Hassel} redovisade kartläggningen. {PER#noah:Noah} har haft hög frånvaro sedan augusti, främst måndagar. Mentor {PER#tomas:Tomas} har haft kontakt med vårdnadshavarna {PER#anna:Anna Korhonen} och {PER#leo:Leo Andersson}. {PER#anna:Annas} uppfattning är att {PER#noah:Noahs} frånvaro har att göra med en konflikt med en klasskamrat, {PER#omar:Omar}, på fritidsgården {ORG:Gnistan}.
+
+{PER#vik:Viking} har träffat {PER#noah:Noah} två gånger. {PER#ahmed:Ahmed} föreslår samtal med {PER#noah:Noah} och {PER#omar:Omar} tillsammans.
+
+Beslut: {PER#sara:Sara Berg} gör en kränkningsanmälan till huvudmannen. {PER#ahmed:A. Yusuf} bokar möte med familjen. Uppföljning 2026-11-11.
+
+Vid protokollet
+{PER#lena:Lena Hassel}
+
+Justeras
+{PER#sara:Sara Berg}

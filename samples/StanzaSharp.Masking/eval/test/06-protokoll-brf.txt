@@ -1,0 +1,24 @@
+PROTOKOLL fört vid styrelsemöte i {ORG:Bostadsrättsföreningen Linblomman 3}, org.nr {ORGNR:559900-1236}
+Datum: 2026-10-06, kl. 18.30–20.45
+Plats: Föreningslokalen, {ADDRESS:Björkgatan 5 A}, {ADDRESS:754 23 Uppsala}
+
+Närvarande: {PER#gunilla:Gunilla Ek-Johansson} (ordf.), {PER#arash:Arash Karimi} (sekr.), {PER#linnea:Linnea Berg} (kassör), {PER#jussi:Jussi Heikkinen}, {PER#rosa:Rosa Lindholm} (suppl.)
+Adjungerad: {PER#magnus:Magnus Hassel}, förvaltare, {ORG:Kvarngärdets Fastighetsservice AB}
+Frånvarande: {PER#holger:Holger Bäck}
+
+§ 1 Mötets öppnande. Ordföranden förklarade mötet öppnat.
+§ 2 Val av justerare. {PER#linnea:Linnea} valdes att jämte ordföranden justera dagens protokoll.
+§ 3 Föregående protokoll. Lades till handlingarna.
+§ 4 Ekonomi. {PER#linnea:Linnea} redovisade utfallet t.o.m. september. Räntekostnaderna har ökat mer än budgeterat. Styrelsen föreslår stämman en avgiftshöjning med 4 % från 1 januari.
+§ 5 Andrahandsupplåtelse, lgh 1203. {PER#dawit:Dawit Haile} har ansökt om att upplåta sin lägenhet i andra hand till {PER#sara:Sara Nilsson} ({PNR:960423-2380}) under perioden 2026-11-01–2027-10-31 på grund av arbete i {LOC:Trondheim}. Styrelsen beslutade att bevilja ansökan. {PER#arash:Arash} meddelar {PER#dawit:Dawit} skriftligen.
+§ 6 Störningar, lgh 1001. Klagomål har inkommit från flera grannar, bl.a. {PER#jussi:Jussi}, om en hund som skäller dagtid. {PER#magnus:Magnus Hassel} har skickat ett första brev till {PER#karl:Karl-Erik Dahlberg}. Om störningarna fortsätter skickas en formell rättelseanmaning; {PER#magnus:Hassel} återkommer med förslag till skrivelse. {PER#jussi:Jussi} deltog inte i beslutet.
+§ 7 Dödsbo, lgh 1302. {PER#ingegerd:Ingegerd Lind} avled i augusti. Kontaktperson för dödsboet är sonen {PER#per:Per Lind}, {PHONE:070-174 06 95}, {EMAIL:per.lind@example.org}. Avgiften på 4 812 kr per månad betalas av dödsboet tills vidare. {PER#ingegerd:Ingegerds} förråd i källaren ska vara tömt senast 30 november, vilket {PER#per:Per} har informerats om.
+§ 8 Balkonginglasning. Offerter har inkommit från {ORG:Glasbyggarna i Uppland AB} och {ORG:Balkongteknik Mälardalen}. {PER#rosa:Rosa} och {PER#gunilla:Gunilla} tar referenser. Ansökan om bygglov lämnas in när leverantör valts; {PER#magnus:Magnus} har haft kontakt med handläggaren {PER#hamid:Hamid Rezaei} på bygglovsenheten, som tror att ansökan kan prövas utan grannehörande.
+§ 9 Nästa möte. 2026-11-10 kl. 18.30 i föreningslokalen.
+§ 10 Mötets avslutande. Ordföranden tackade och avslutade mötet.
+
+Vid protokollet:
+{PER#arash:Arash Karimi}
+
+Justeras:
+{PER#gunilla:Gunilla Ek-Johansson}          {PER#linnea:Linnea Berg}

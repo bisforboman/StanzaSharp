@@ -1,0 +1,21 @@
+UTREDNING ENLIGT 11 KAP. 1 § SOL
+Barn: {PER#mira:SALEH, MIRA} {PNR:201601042383}
+Vårdnadshavare: {PER#fatima:Fatima Saleh}, {PER#hussein:Hussein Saleh}
+Adress: {ADDRESS:Kungsgatan 22, lgh 1203}, {ADDRESS:582 25 Linköping}
+Handläggare: {PER#eva:Eva Strand}, tfn {PHONE:040-628 04 22}
+
+Bakgrund
+En orosanmälan kom in den 2 oktober från {ORG:Förskolan Solrosen} där {PER#mira:Mira} går. Pedagogen {PER#petra:Petra Sol} uppger att {PER#mira:Mira} vid flera tillfällen sagt att pappa är arg och att hon är rädd när han kommer hem. {PER#hussein:Hussein} arbetar som chaufför på {ORG:Linköpings Taxi AB} och har oregelbundna arbetstider.
+
+Samtal med vårdnadshavare
+{PER#fatima:Fatima} och {PER#hussein:Hussein} kom på möte den 9 oktober tillsammans med tolk. {PER#fatima:Fatima Saleh} berättade att familjen kom till {LOC:Sverige} från {LOC:Syrien} 2015 och bodde först i {LOC:Norrköping}. {PER#hussein:Husseins} bror {PER#karim:Karim} bor hos familjen sedan i somras. {PER#hussein:H. Saleh} förnekar att han har varit våldsam men medger att det har varit bråk hemma.
+
+Samtal med barnet
+Undertecknad och {PER#jan:Jan Lundgren} träffade {PER#mira:Mira} på förskolan den 16 oktober. {PER#mira:Mira} berättade om sin katt och om kompisen {PER#alva:Alva}. Om pappa sa hon att han ibland skriker.
+
+Bedömning
+Socialtjänsten bedömer att {PER#mira:Miras} behov av stöd behöver utredas vidare. Familjen erbjuds stöd genom familjebehandlare {PER#jan:Lundgren}.
+
+{PER#eva:Eva Strand}
+Socialsekreterare
+{EMAIL:eva.strand@linkoping.example.se}

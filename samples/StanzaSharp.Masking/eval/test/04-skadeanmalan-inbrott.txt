@@ -1,0 +1,33 @@
+{ORG:Trygga Hem Försäkring AB} · Org.nr {ORGNR:559900-1244}
+SKADEANMÄLAN – HEMFÖRSÄKRING
+Skadenummer: H-2026-0418833
+
+Försäkringstagare: {PER#marta:Marta Kowalczyk-Berg}
+Personnummer: {PNR:197806032384}
+Adress: {ADDRESS:Tallvägen 7}, {ADDRESS:433 31 Partille}
+Telefon: {PHONE:031-390 06 44}   E-post: {EMAIL:marta.kb@example.com}
+Medförsäkrad: {PER#anders:Anders Berg}, {PNR:780522-2390}
+Skadedatum: 2026-10-11 eller 2026-10-12
+Typ av skada: Inbrott i bostad
+Polisanmälan gjord: Ja, 2026-10-12, ärendenr 5000-K1284551-26
+
+Beskriv händelsen med egna ord:
+Vi åkte till vår stuga i {LOC:Grebbestad} fredag eftermiddag och kom hem söndag ca 21.30. Altandörren på baksidan var uppbruten och det var helt kaos i sovrummet och i {PER#ella:Ellas} rum (vår dotter, hon var med oss). Grannen {PER#gunvor:Gunvor Ek} på nr 9 såg en vit skåpbil på vändplanen på lördagen runt lunch och tyckte att det var konstigt, hennes barnbarn {PER#oskar:Oskar} tog en bild på bilen med mobilen och den har vi lämnat till polisen.
+
+Det som saknas (så långt vi vet nu):
+- Bärbar dator, privat, ca 2 år gammal
+- Min jobbdator från {ORG:Nordkust Logistik AB}, arbetsgivaren har anmält den separat
+- Guldarmband och en ring med granater som jag ärvt efter min mormor {PER#halina:Halina Nowak}, mest affektionsvärde, går inte att ersätta
+- {PER#anders:Anders} armbandsur (köpt 2019, kvitto finns)
+- {PER#ella:Ellas} hörlurar
+- Kontanter ca 2 000 kr
+
+Altandörren lagades provisoriskt av {ORG:Partille Lås & Larm} på måndagen, faktura bifogas.
+Har du andra försäkringar som kan gälla? Nej.
+
+Underskrift: {PER#marta:Marta Kowalczyk-Berg}, {LOC:Partille} 2026-10-13
+
+--- Internt, skadereglering ---
+2026-10-14 Ringt {PER#marta:Marta K-B}. Kompletterar med kvitto på privata datorn. Jobbdatorn regleras via arbetsgivarens företagsförsäkring, ej hos oss. Smyckena saknar kvitton men det finns foton från ett bröllop där {PER#marta:Marta} bär armbandet; begärt värdering hos {ORG:Guldsmeden Holm & Dotter}.
+2026-10-20 Samtal med grannen {PER#gunvor:G. Ek}, bekräftar skåpbilen. {PER#anders:Berg} ringde samma dag och frågade om självrisken.
+/{PER#fredrik:Fredrik Sol}, skadereglerare, {PHONE:031-390 06 81}

@@ -9,7 +9,9 @@ namespace StanzaSharp.Masking;
 /// <param name="Type">An NER type (PER, LOC, ORG, TME) or a pattern's type (PNR, ORGNR, PHONE, EMAIL, ADDRESS).</param>
 /// <param name="Source">"ner", or the name of the pattern that found it.</param>
 /// <param name="Text">The masked text.</param>
-public sealed record MaskSpan(int Start, int Length, string Type, string Source, string Text)
+/// <param name="Entity">With name linking, the entity the span is a mention of: spans of one entity share a
+/// placeholder. Null otherwise (spans with the same text share one).</param>
+public sealed record MaskSpan(int Start, int Length, string Type, string Source, string Text, string? Entity = null)
 {
     /// <summary>The offset just past the span.</summary>
     public int End => Start + Length;
@@ -30,20 +32,28 @@ public static partial class Masker
     /// Finds the spans of <paramref name="text"/> to mask: the pattern matches plus the document's entities of
     /// <paramref name="nerTypes"/>, overlapping spans merged.
     /// </summary>
-    public static IReadOnlyList<MaskSpan> Find(string text, Document? document, IReadOnlySet<string>? nerTypes = null)
+    /// <param name="text">The document's text.</param>
+    /// <param name="document">The pipeline's analysis of <paramref name="text"/>, or null for the patterns alone.</param>
+    /// <param name="nerTypes">The NER types to mask; null is <see cref="DefaultNerTypes"/>.</param>
+    /// <param name="linkNames">Also mask every other capitalized occurrence of the names NER found (see
+    /// <see cref="NameLinker"/>), and give each person one placeholder.</param>
+    public static IReadOnlyList<MaskSpan> Find(string text, Document? document, IReadOnlySet<string>? nerTypes = null,
+        bool linkNames = false)
     {
         nerTypes ??= DefaultNerTypes;
         var spans = new List<MaskSpan>(FindPatterns(text));
+        var ner = new List<MaskSpan>();
         if (document != null)
         {
             foreach (var entity in document.Entities)
             {
                 if (!nerTypes.Contains(entity.Type) || entity.StartChar is not int start || entity.EndChar is not int end)
                     continue;
-                spans.Add(new MaskSpan(start, end - start, entity.Type, "ner", text[start..end]));
+                ner.Add(new MaskSpan(start, end - start, entity.Type, "ner", text[start..end]));
             }
         }
 
+        spans.AddRange(linkNames ? NameLinker.Link(text, ner, spans) : ner);
         return Merge(text, spans);
     }
 
@@ -80,24 +90,40 @@ public static partial class Masker
     /// </summary>
     public static string Apply(string text, IReadOnlyList<MaskSpan> spans)
     {
-        var numbers = new Dictionary<(string Type, string Text), int>();
-        var counts = new Dictionary<string, int>();
+        var placeholders = Placeholders(spans);
         var result = new StringBuilder(text.Length);
         var at = 0;
-        foreach (var span in spans)
+        for (var i = 0; i < spans.Count; i++)
         {
-            result.Append(text, at, span.Start - at);
-            if (!numbers.TryGetValue((span.Type, span.Text), out var n))
-            {
-                n = counts[span.Type] = counts.GetValueOrDefault(span.Type) + 1;
-                numbers[(span.Type, span.Text)] = n;
-            }
-
-            result.Append('[').Append(span.Type).Append('-').Append(n).Append(']');
-            at = span.End;
+            result.Append(text, at, spans[i].Start - at).Append(placeholders[i]);
+            at = spans[i].End;
         }
 
         return result.Append(text, at, text.Length - at).ToString();
+    }
+
+    /// <summary>
+    /// Each span's placeholder, <c>[TYPE-n]</c>: one number per distinct text of a type, or per entity where the spans
+    /// are linked.
+    /// </summary>
+    public static IReadOnlyList<string> Placeholders(IReadOnlyList<MaskSpan> spans)
+    {
+        var numbers = new Dictionary<(string Type, string Key), int>();
+        var counts = new Dictionary<string, int>();
+        var placeholders = new string[spans.Count];
+        for (var i = 0; i < spans.Count; i++)
+        {
+            var key = (spans[i].Type, spans[i].Entity ?? spans[i].Text);
+            if (!numbers.TryGetValue(key, out var n))
+            {
+                n = counts[key.Type] = counts.GetValueOrDefault(key.Type) + 1;
+                numbers[key] = n;
+            }
+
+            placeholders[i] = $"[{key.Type}-{n}]";
+        }
+
+        return placeholders;
     }
 
     /// <summary>The Luhn check of Swedish personnummer and organisationsnummer, over their last ten digits.</summary>
@@ -126,7 +152,7 @@ public static partial class Masker
                 var last = merged[^1];
                 var end = Math.Max(last.End, span.End);
                 var winner = Rank(span) > Rank(last) ? span : last;
-                merged[^1] = new MaskSpan(last.Start, end - last.Start, winner.Type, winner.Source, text[last.Start..end]);
+                merged[^1] = new MaskSpan(last.Start, end - last.Start, winner.Type, winner.Source, text[last.Start..end], winner.Entity);
             }
             else
             {
