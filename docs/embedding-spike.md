@@ -72,8 +72,11 @@ What the numbers say:
 
 Not measured: Native AOT, Arm64, other models (E5, a Swedish model), the Vector256 path, and Windows timings.
 
-## Open questions (the owner's, on #268)
+## Decisions (the owner, 2026-11-10)
 
-- Go past the spike only within some factor of ONNX Runtime's speed? Which factor?
-- Which models next: MiniLM (English), multilingual E5, a Swedish sentence model?
-- Scope: an add-on package here, a project of its own on StanzaSharp.Nn, or a sample only?
+- **Speed gate**: go past the spike if the managed encoder is within 1.5× of ONNX Runtime's time at 4 threads. The
+  spike's 1.24× (batch 32) and 1.45× (batch 1) pass. Closing the per-core gap (1.65× on one thread) is later kernel
+  tuning.
+- **Models**: MiniLM (English) first, then multilingual E5 and a Swedish sentence model.
+- **Scope**: a sample only for now. The managed encoder replaces ONNX Runtime in samples/StanzaSharp.Rag, and nothing
+  becomes public until the models are settled.
