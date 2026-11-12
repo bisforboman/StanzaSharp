@@ -1,14 +1,14 @@
 // RAG ingestion with StanzaSharp.DataIngestion (#233): Markdown files → SentenceChunker (whole sentences, sized with the
 // embedding model's tokenizer) → EntityEnricher (named entities as metadata) → an in-memory vector store, embedded with
-// all-MiniLM-L6-v2 on ONNX Runtime. Then a semantic search, unfiltered and filtered to chunks naming an entity. Everything
-// runs locally: no service and no API key.
+// all-MiniLM-L6-v2 on StanzaSharp's managed transformer encoder. Then a semantic search, unfiltered and filtered to chunks
+// naming an entity. Everything runs locally: no service, no API key and no native library.
 //
 //   dotnet run --project samples/StanzaSharp.Rag -- [DOCS] [--query TEXT] [--entity NAME] [--models DIR]
 //
 // --entity "" skips the filtered search.
 //
 // DOCS defaults to the sample's own docs/ (fictional notes). DIR defaults to models; the first run downloads English
-// tokenize and ner (about 210 MB) to DIR/stanza/en and the embedding model (90 MB) to DIR/all-MiniLM-L6-v2.
+// tokenize and ner (about 210 MB) to DIR/stanza/en and the embedding model (91 MB) to DIR/all-MiniLM-L6-v2.
 
 using Microsoft.Extensions.DataIngestion;
 using Microsoft.Extensions.VectorData;

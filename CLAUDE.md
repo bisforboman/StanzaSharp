@@ -55,7 +55,7 @@ src/StanzaSharp.TasmanianDevil TasmanianDevil (PII, #234): NER recognizer, lemma
 src/StanzaSharp.Tool           The `stanzasharp` .NET tool: download, compare, benchmark.
 samples/                       Cli (experiments), Benchmark (speed/memory; tools/benchmark.py is its Python twin),
                                Example (API tour), Rag (#233: Markdown → SentenceChunker → EntityEnricher →
-                               in-memory store, MiniLM ONNX), Masking (Swedish masking, #234: NER + Luhn-checked id/phone/e-mail/
+                               in-memory store, MiniLM on the managed encoder, #268), Masking (Swedish masking, #234: NER + Luhn-checked id/phone/e-mail/
                                address patterns; MaskingTests), Subtitles (#267: SRT line breaks checked against
                                the dependency parse; SubtitlesTests), docker (standalone app on the published package).
 tests/StanzaSharp.Tests        xUnit; golden tests against Python Stanza output.

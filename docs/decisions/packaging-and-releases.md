@@ -190,7 +190,10 @@ Packages, the public API, downloads, versions and the release process, with the 
     path through `VectorStoreWriter` and Semantic Kernel's `InMemoryVectorStore` with a hashing stub generator).
     `samples/StanzaSharp.Rag` (owner's choice 2026-10-31: a local ONNX embedding model): sentence-transformers'
     all-MiniLM-L6-v2 (pinned commit, sha256 per file, downloaded at first run) on ONNX Runtime with ML.Tokenizers'
-    `BertTokenizer`, mean pooling + L2 norm; build-only in CI (no model download there). Dependabot
+    `BertTokenizer`, mean pooling + L2 norm; build-only in CI (no model download there). Since 2026-11-12 (#268; owner's
+    decision 2026-11-10, docs/embedding-spike.md) the model runs on `ManagedTransformer` instead of ONNX Runtime, from
+    `config.json` and `pytorch_model.bin` of the same commit: the sample has no native library, and reaches the
+    internal encoder through `InternalsVisibleTo` (Directory.Build.props), so it is not yet code a package user can copy. Dependabot
     offers each new DataIngestion preview (auto-merged as a minor bump once build-test passes).
   - On a Windows Arm64 machine Directory.Build.props gives the runnable projects (tests/, samples/)
     `libtorch-cpu-win-arm64` (`TorchSharp-cpu` lacks it), except those setting `StanzaSharpNoLibTorch`.
