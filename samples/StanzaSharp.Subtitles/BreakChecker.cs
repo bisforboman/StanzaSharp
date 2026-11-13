@@ -82,7 +82,7 @@ public static class BreakChecker
             var lines = transcript.Lines[c];
             if (lines.Count < 2)
                 continue;
-            var cue = tokens.Where(t => t.Token.StartChar >= lines[0].Start && t.Token.EndChar <= lines[^1].End).ToList();
+            var cue = CueTokens(tokens, lines);
             var text = transcript.Text[lines[0].Start..lines[^1].End];
             for (var l = 1; l < lines.Count; l++)
             {
@@ -107,6 +107,10 @@ public static class BreakChecker
 
         return findings;
     }
+
+    /// <summary>The tokens that lie within a cue's lines, in order.</summary>
+    public static List<PlacedToken> CueTokens(IReadOnlyList<PlacedToken> tokens, IReadOnlyList<CueLine> lines) =>
+        [.. tokens.Where(t => t.Token.StartChar >= lines[0].Start && t.Token.EndChar <= lines[^1].End)];
 
     /// <summary>Every place the cue's text can break into two lines, scored.</summary>
     public static IEnumerable<BreakOption> Options(IReadOnlyList<PlacedToken> cue, string text, int start, int end, int maxChars)
