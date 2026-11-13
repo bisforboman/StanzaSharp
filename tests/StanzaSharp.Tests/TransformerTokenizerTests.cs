@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using StanzaSharp.Nn;
 using Xunit.Abstractions;
 
@@ -48,6 +49,46 @@ public class TransformerTokenizerTests(ITestOutputHelper output)
     public void XlmRoberta_MatchesTransformersAndStanzaOnEveryGoldenCase() =>
         AssertGolden(Unigram.Load(Path.Combine(XlmRobertaFactAttribute.Directory, "tokenizer.json")),
             Path.Combine(Repo.Golden, "transformer", "tokenizer_FacebookAI_xlm-roberta-large.json"), minCases: 1000);
+
+    /// <summary>
+    /// The layout older conversions of the slow tokenizer wrote (intfloat/multilingual-e5-small's file, #268): Precompiled then
+    /// Replace(" {2,}" -> " "), and Metaspace without WhitespaceSplit. transformers' XLMRobertaTokenizer builds its own steps
+    /// whatever the file says, so the file gives the ids of the usual layout (a space at the end is no piece ▁); any
+    /// other normalizer or pre-tokenizer is still refused.
+    /// </summary>
+    [XlmRobertaFact("tokenizer.json")]
+    public void XlmRoberta_OlderConvertedLayoutRunsAsTheUsualOne()
+    {
+        string path = Path.Combine(XlmRobertaFactAttribute.Directory, "tokenizer.json");
+        var usual = Unigram.Load(path);
+        string temp = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".json");
+        try
+        {
+            var json = JsonNode.Parse(File.ReadAllBytes(path))!;
+            var replace = new JsonObject { ["type"] = "Replace", ["pattern"] = new JsonObject { ["Regex"] = " {2,}" }, ["content"] = " " };
+            var precompiled = json["normalizer"]!.DeepClone();
+            var metaspace = new JsonObject { ["type"] = "Metaspace", ["replacement"] = "\u2581", ["add_prefix_space"] = true };
+            json["normalizer"] = new JsonObject { ["type"] = "Sequence", ["normalizers"] = new JsonArray(precompiled, replace) };
+            json["pre_tokenizer"] = metaspace;
+            File.WriteAllText(temp, json.ToJsonString());
+            var converted = Unigram.Load(temp);
+            foreach (string text in new[] { "trailing space ", " leading", "two  spaces   three", " ", "\u2581", "with <mask> in it", "tab\there", "Ｆｕｌｌ naïve ½" })
+                Assert.Equal(usual.Encode([text]).Ids, converted.Encode([text]).Ids);
+
+            // Metaspace alone under the usual normalizer, and another Replace, are not that layout.
+            json["normalizer"] = precompiled.DeepClone();
+            File.WriteAllText(temp, json.ToJsonString());
+            Assert.Throws<InvalidDataException>(() => Unigram.Load(temp));
+            replace["content"] = "";
+            json["normalizer"] = new JsonObject { ["type"] = "Sequence", ["normalizers"] = new JsonArray(precompiled.DeepClone(), replace.DeepClone()) };
+            File.WriteAllText(temp, json.ToJsonString());
+            Assert.Throws<InvalidDataException>(() => Unigram.Load(temp));
+        }
+        finally
+        {
+            File.Delete(temp);
+        }
+    }
 
     [XlmRobertaFact("config.json", "tokenizer_config.json")]
     public void XlmRoberta_ConfigReadsRobertasPositions()

@@ -7,8 +7,9 @@ using StanzaSharp.Nn;
 using StanzaSharp.Nn.Managed;
 
 /// <summary>
-/// The sentence-embedding spike (issue #268, docs/embedding-spike.md): sentence-transformers/all-MiniLM-L6-v2 on the
-/// managed encoder (<see cref="ManagedTransformer"/>) with mean pooling, L2 normalisation and truncation at the model's
+/// The sentence-embedding spike (issue #268, docs/embedding-spike.md): a sentence-transformers model (all-MiniLM-L6-v2,
+/// multilingual-e5-small/-base, KBLab/sentence-bert-swedish-cased) on the managed encoder
+/// (<see cref="ManagedTransformer"/>) with mean pooling, L2 normalisation where the model has it and truncation at the model's
 /// max_seq_length, against tools/embedding_spike.py's sentence-transformers vectors and against ONNX Runtime running the
 /// model's ONNX export on the same ids (as samples/StanzaSharp.Rag's MiniLmEmbeddingGenerator did before it moved to the managed encoder), and both timed.
 /// </summary>
@@ -16,10 +17,10 @@ internal static class EmbeddingSpike
 {
     private const string Usage = """
         Usage: StanzaSharp.Benchmark embedding-spike MODEL_DIR REFERENCE [--backend managed|onnx|both] [--batch N] [--runs N]
-                                                     [--threads N] [--path P] [--limit N]
+                                                     [--threads N] [--path P] [--limit N] [--onnx FILE]
 
-          MODEL_DIR   sentence-transformers/all-MiniLM-L6-v2 at 1110a243 (config.json, pytorch_model.bin, tokenizer.json,
-                      sentence_bert_config.json, 1_Pooling/config.json, onnx/model.onnx)
+          MODEL_DIR   a sentence-transformers model at a pinned commit (config.json, pytorch_model.bin, tokenizer.json,
+                      sentence_bert_config.json, modules.json, 1_Pooling/config.json, onnx/model.onnx)
           REFERENCE   tools/embedding_spike.py's output, without .safetensors/.json
           --backend B managed, onnx or both (default); for memory figures run one backend per process
           --batch N   texts per forward call (default: 32, sentence-transformers' encode default), longest first in both
@@ -27,6 +28,7 @@ internal static class EmbeddingSpike
           --threads N the managed pool's size and ONNX Runtime's intra-op threads (default: ManagedThreads.Default)
           --path P    Gemm.Path: Vector512, Vector256, Vector128 or Scalar (default: the CPU's)
           --limit N   only the first N texts
+          --onnx FILE the ONNX export (default: MODEL_DIR/onnx/model.onnx)
         """;
 
     private const double Tolerance = 1e-4;
@@ -40,6 +42,7 @@ internal static class EmbeddingSpike
         }
 
         string modelDir = args[0], reference = args[1], backend = "both";
+        string onnxPath = Path.Combine(modelDir, "onnx", "model.onnx");
         int batch = 32, runs = 3, limit = int.MaxValue;
         ManagedThreads.Count = ManagedThreads.Default;
         for (int i = 2; i < args.Length; i++)
@@ -52,6 +55,7 @@ internal static class EmbeddingSpike
                 case "--threads" when i + 1 < args.Length: ManagedThreads.Count = int.Parse(args[++i]); break;
                 case "--path" when i + 1 < args.Length: Gemm.Path = Enum.Parse<KernelPath>(args[++i]); break;
                 case "--limit" when i + 1 < args.Length: limit = int.Parse(args[++i]); break;
+                case "--onnx" when i + 1 < args.Length: onnxPath = args[++i]; break;
                 default: Console.Error.WriteLine(Usage); return 2;
             }
         }
@@ -62,16 +66,22 @@ internal static class EmbeddingSpike
         if (!pooling["pooling_mode_mean_tokens"]!.GetValue<bool>() || pooling["pooling_mode_cls_token"]!.GetValue<bool>())
             throw new InvalidDataException("The spike runs mean pooling only");
 
+        // L2 normalisation only where the model has sentence-transformers' Normalize module (KBLab's Swedish model has none).
+        bool normalize = JsonNode.Parse(File.ReadAllText(Path.Combine(modelDir, "modules.json")))!.AsArray()
+            .Any(m => m!["type"]!.GetValue<string>() == "sentence_transformers.models.Normalize");
+
         var texts = JsonNode.Parse(File.ReadAllText(reference + ".json"))!["texts"]!.AsArray().Select(t => t!.GetValue<string>()).Take(limit).ToList();
         var refFile = SafeTensorFile.Load(reference + ".safetensors");
 
         // Tokenize: the whole text is one "word" (BertPreTokenizer splits it at white space and punctuation as it would
-        // the text), then sentence-transformers' truncation (longest_first on one sequence: the last pieces go, [SEP] stays).
-        var tokenizer = WordPiece.Load(Path.Combine(modelDir, "tokenizer.json"));
+        // the text; XLM-RoBERTa's Unigram splits it at white space itself), then sentence-transformers' truncation
+        // (longest_first on one sequence: the last pieces go, the closing [SEP] or </s> stays).
+        string tokenizerJson = Path.Combine(modelDir, "tokenizer.json");
+        ITransformerTokenizer tokenizer = Unigram.IsUnigram(tokenizerJson) ? Unigram.Load(tokenizerJson) : WordPiece.Load(tokenizerJson);
         var ids = texts.Select(t =>
         {
             var all = tokenizer.Encode([t]).Ids;
-            return all.Length <= maxLength ? all : [.. all.AsSpan(0, maxLength - 1), tokenizer.Sep];
+            return all.Length <= maxLength ? all : [.. all.AsSpan(0, maxLength - 1), all[^1]];
         }).ToList();
         int idMismatches = 0;
         for (int s = 0; s < texts.Count; s++)
@@ -83,7 +93,7 @@ internal static class EmbeddingSpike
 
         int pieces = ids.Sum(i => i.Length);
         Console.WriteLine($"Tokenizer: {texts.Count} texts, {pieces} pieces (max {ids.Max(i => i.Length)}, {ids.Count(i => i.Length == maxLength)} truncated "
-            + $"to {maxLength}); {idMismatches} differ from sentence-transformers'");
+            + $"to {maxLength}); {idMismatches} differ from sentence-transformers'; {tokenizer.GetType().Name}, {(normalize ? "normalised" : "not normalised")}");
         Console.WriteLine($"Threads {ManagedThreads.Count} (cores: {Environment.ProcessorCount} logical), {Gemm.Path}, batch {batch}, {runs} timed runs");
 
         // Longest first, as sentence-transformers' encode orders its batches; the same batches for both backends.
@@ -97,18 +107,18 @@ internal static class EmbeddingSpike
             GC.Collect();
             Console.WriteLine($"managed: load {load.Elapsed.TotalMilliseconds:F0} ms, {config.Layers} layers, hidden {config.Hidden}, "
                 + $"working set {Environment.WorkingSet / 1e6:F0} MB");
-            managed = Time("managed", runs, pieces, texts.Count, () => Batches(order, batch, ids, b => EncodeManaged(encoder, b)));
+            managed = Time("managed", runs, pieces, texts.Count, () => Batches(order, batch, ids, b => EncodeManaged(encoder, b, normalize)));
         }
 
         if (backend is "onnx" or "both")
         {
             var load = Stopwatch.StartNew();
             using var options = new SessionOptions { IntraOpNumThreads = ManagedThreads.Count, InterOpNumThreads = 1 };
-            using var session = new InferenceSession(Path.Combine(modelDir, "onnx", "model.onnx"), options);
+            using var session = new InferenceSession(onnxPath, options);
             GC.Collect();
             Console.WriteLine($"onnx:    load {load.Elapsed.TotalMilliseconds:F0} ms, ONNX Runtime {OrtEnv.Instance().GetVersionString()}, "
                 + $"working set {Environment.WorkingSet / 1e6:F0} MB");
-            onnx = Time("onnx", runs, pieces, texts.Count, () => Batches(order, batch, ids, b => EncodeOnnx(session, b)));
+            onnx = Time("onnx", runs, pieces, texts.Count, () => Batches(order, batch, ids, b => EncodeOnnx(session, b, normalize)));
         }
 
         bool ok = idMismatches == 0;
@@ -171,13 +181,13 @@ internal static class EmbeddingSpike
     }
 
     // The last hidden state of every piece (no padding: each text runs alone in attention), mean-pooled and normalised.
-    private static float[][] EncodeManaged(ManagedTransformer encoder, List<int[]> batch)
+    private static float[][] EncodeManaged(ManagedTransformer encoder, List<int[]> batch, bool normalize)
     {
         int h = encoder.Config.Hidden;
         var states = encoder.Encode(batch, 1);
         try
         {
-            return [.. batch.Select((ids, s) => Pool(states[s].AsSpan(0, ids.Length * h), ids.Length, h))];
+            return [.. batch.Select((ids, s) => Pool(states[s].AsSpan(0, ids.Length * h), ids.Length, h, normalize))];
         }
         finally
         {
@@ -189,8 +199,9 @@ internal static class EmbeddingSpike
         }
     }
 
-    // ONNX Runtime on one padded batch with its attention mask, as samples/StanzaSharp.Rag ran it.
-    private static float[][] EncodeOnnx(InferenceSession session, List<int[]> batch)
+    // ONNX Runtime on one padded batch with its attention mask, as samples/StanzaSharp.Rag ran it (token_type_ids only
+    // where the export takes them: XLM-RoBERTa's doesn't).
+    private static float[][] EncodeOnnx(InferenceSession session, List<int[]> batch, bool normalize)
     {
         int width = batch.Max(i => i.Length);
         var inputIds = new long[batch.Count * width];
@@ -209,19 +220,20 @@ internal static class EmbeddingSpike
         using var maskValue = OrtValue.CreateTensorValueFromMemory(mask, shape);
         using var typesValue = OrtValue.CreateTensorValueFromMemory(new long[batch.Count * width], shape);
         using var runOptions = new RunOptions();
-        using var outputs = session.Run(runOptions,
-            new Dictionary<string, OrtValue> { ["input_ids"] = idsValue, ["attention_mask"] = maskValue, ["token_type_ids"] = typesValue },
-            ["last_hidden_state"]);
+        var inputs = new Dictionary<string, OrtValue> { ["input_ids"] = idsValue, ["attention_mask"] = maskValue };
+        if (session.InputMetadata.ContainsKey("token_type_ids"))
+            inputs["token_type_ids"] = typesValue;
+        using var outputs = session.Run(runOptions, inputs, ["last_hidden_state"]);
         var hidden = outputs[0].GetTensorDataAsSpan<float>();
         int h = (int)(hidden.Length / ((long)batch.Count * width));
         var result = new float[batch.Count][];
         for (int b = 0; b < batch.Count; b++)
-            result[b] = Pool(hidden.Slice(b * width * h, batch[b].Length * h), batch[b].Length, h);
+            result[b] = Pool(hidden.Slice(b * width * h, batch[b].Length * h), batch[b].Length, h, normalize);
         return result;
     }
 
     // sentence-transformers' Pooling (mean over the unmasked pieces) and Normalize (x / max(‖x‖, 1e-12)), in double.
-    private static float[] Pool(ReadOnlySpan<float> states, int n, int h)
+    private static float[] Pool(ReadOnlySpan<float> states, int n, int h, bool normalize)
     {
         var sum = new double[h];
         for (int t = 0; t < n; t++)
@@ -238,7 +250,7 @@ internal static class EmbeddingSpike
             norm += sum[d] * sum[d];
         }
 
-        double scale = 1 / Math.Max(Math.Sqrt(norm), 1e-12);
+        double scale = normalize ? 1 / Math.Max(Math.Sqrt(norm), 1e-12) : 1;
         return [.. sum.Select(v => (float)(v * scale))];
     }
 

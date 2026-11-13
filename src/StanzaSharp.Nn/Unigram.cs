@@ -19,6 +19,11 @@ namespace StanzaSharp.Nn;
 /// lowest score − 10; a later start replaces an earlier one only with a strictly higher score), adjacent unknowns fused
 /// into one <c>&lt;unk&gt;</c>.</item>
 /// </list>
+/// A file converted from the slow tokenizer by an older version (intfloat/multilingual-e5-small's) says otherwise:
+/// <c>Precompiled</c> then a <c>Replace</c> of two or more spaces with one, and <c>Metaspace</c> without
+/// <c>WhitespaceSplit</c>. transformers' XLMRobertaTokenizer (5.20.1) takes only the vocabulary and the charsmap from the
+/// file and builds the steps above itself, so such a file runs through them too (run as written, it would give a
+/// <c>▁</c> piece for a space at the end of a text or before an added token).
 /// </summary>
 internal sealed class Unigram : ITransformerTokenizer
 {
@@ -66,18 +71,26 @@ internal sealed class Unigram : ITransformerTokenizer
         if (!IsUnigram(model) || Flag(model, "byte_fallback") || !model.TryGetProperty("unk_id", out var unkId) || unkId.ValueKind != JsonValueKind.Number)
             throw new InvalidDataException($"{tokenizerJson}: a Unigram model with options StanzaSharp doesn't support (byte fallback, no unk_id)");
 
+        // Precompiled, or the older conversion's Precompiled + Replace(" {2,}" -> " "), of which only the charsmap is used
         Precompiled? normalizer = null;
+        bool converted = false;
         if (root.TryGetProperty("normalizer", out var norm) && norm.ValueKind != JsonValueKind.Null)
         {
-            normalizer = Text(norm, "type") == "Precompiled"
-                ? Precompiled.Load(Convert.FromBase64String(Text(norm, "precompiled_charsmap") ?? ""), tokenizerJson)
-                : throw new InvalidDataException($"{tokenizerJson}: normalizer {Text(norm, "type")}; StanzaSharp's Unigram supports Precompiled only");
+            var parts = Text(norm, "type") == "Sequence" ? [.. norm.GetProperty("normalizers").EnumerateArray()] : new[] { norm };
+            converted = parts.Length == 2 && Text(parts[1], "type") == "Replace" && Text(parts[1], "content") == " "
+                && parts[1].TryGetProperty("pattern", out var pattern) && Text(pattern, "Regex") == " {2,}";
+            normalizer = Text(parts[0], "type") == "Precompiled" && (parts.Length == 1 || converted)
+                ? Precompiled.Load(Convert.FromBase64String(Text(parts[0], "precompiled_charsmap") ?? ""), tokenizerJson)
+                : throw new InvalidDataException($"{tokenizerJson}: normalizer {Text(norm, "type")}; StanzaSharp's Unigram supports Precompiled, alone or "
+                    + "followed by a Replace of two or more spaces with one");
         }
 
-        // WhitespaceSplit + Metaspace(▁, prepend always, split), as xlm-roberta-large's file has them
+        // WhitespaceSplit + Metaspace(▁, prepend always, split), as xlm-roberta-large's file has them; the older
+        // conversion's file has that Metaspace alone
         var pre = root.GetProperty("pre_tokenizer");
         var steps = Text(pre, "type") == "Sequence" ? [.. pre.GetProperty("pretokenizers").EnumerateArray()] : new[] { pre };
-        var meta = steps.Length == 2 && Text(steps[0], "type") == "WhitespaceSplit" && Text(steps[1], "type") == "Metaspace" ? steps[1] : default;
+        var meta = steps.Length == 2 && Text(steps[0], "type") == "WhitespaceSplit" && Text(steps[1], "type") == "Metaspace" ? steps[1]
+            : converted && steps.Length == 1 && Text(steps[0], "type") == "Metaspace" ? steps[0] : default;
         if (meta.ValueKind != JsonValueKind.Object || Text(meta, "replacement") != Meta.ToString()
             || (Text(meta, "prepend_scheme") ?? "always") != "always" || (meta.TryGetProperty("add_prefix_space", out var aps) && aps.ValueKind == JsonValueKind.False)
             || (meta.TryGetProperty("split", out var split) && split.ValueKind == JsonValueKind.False))
