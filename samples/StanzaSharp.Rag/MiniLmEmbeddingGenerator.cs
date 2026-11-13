@@ -1,15 +1,23 @@
+using System.Buffers;
 using System.Security.Cryptography;
 using Microsoft.Extensions.AI;
-using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.Tokenizers;
+using StanzaSharp.Nn;
+using StanzaSharp.Nn.Managed;
 
 namespace StanzaSharp.Rag;
 
 /// <summary>
-/// Sentence embeddings from sentence-transformers' all-MiniLM-L6-v2 (Apache 2.0) on ONNX Runtime, offline: the model's
-/// ONNX export and its WordPiece vocabulary, mean pooling over the tokens, then L2 normalization, as sentence-transformers
-/// runs it. 384 dimensions; texts longer than <see cref="MaxTokens"/> are truncated, as the model was trained.
+/// Sentence embeddings from sentence-transformers' all-MiniLM-L6-v2 (Apache 2.0) on StanzaSharp's managed transformer
+/// encoder, offline and with no native library: the model's weights and its WordPiece vocabulary, mean pooling over the
+/// tokens, then L2 normalization, as sentence-transformers runs it. 384 dimensions; texts longer than
+/// <see cref="MaxTokens"/> are truncated, as the model was trained.
 /// </summary>
+/// <remarks>
+/// The encoder (<see cref="ManagedTransformer"/>) is internal to StanzaSharp and not in the package's public API (#268):
+/// this sample reaches it through the repository's InternalsVisibleTo. Load a <see cref="Pipeline"/> first: it sets the
+/// managed backend's threads and kernel path.
+/// </remarks>
 internal sealed class MiniLmEmbeddingGenerator : IEmbeddingGenerator<string, Embedding<float>>
 {
     public const int Dimensions = 384;
@@ -20,16 +28,20 @@ internal sealed class MiniLmEmbeddingGenerator : IEmbeddingGenerator<string, Emb
     private const string Revision = "1110a243fdf4706b3f48f1d95db1a4f5529b4d41";
     private static readonly (string File, string Sha256)[] Files =
     [
-        ("onnx/model.onnx", "6fd5d72fe4589f189f8ebc006442dbb529bb7ce38f8082112682524616046452"),
+        ("config.json", "953f9c0d463486b10a6871cc2fd59f223b2c70184f49815e7efbcab5d8908b41"),
+        ("pytorch_model.bin", "c3a85f238711653950f6a79ece63eb0ea93d76f6a6284be04019c53733baf256"),
         ("vocab.txt", "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3"),
     ];
 
-    private readonly InferenceSession _session;
+    private readonly ManagedTransformer _encoder;
 
     private MiniLmEmbeddingGenerator(string directory)
     {
         Tokenizer = BertTokenizer.Create(Path.Combine(directory, "vocab.txt"), new BertOptions { LowerCaseBeforeTokenization = true });
-        _session = new InferenceSession(Path.Combine(directory, "onnx", "model.onnx"));
+
+        // The checkpoint is a bare BertModel's state dict: no prefix before its tensors' names.
+        var config = TransformerConfig.Load(Path.Combine(directory, "config.json")) with { Prefix = "" };
+        _encoder = ManagedTransformer.Load(config, Checkpoint.Load(Path.Combine(directory, "pytorch_model.bin")));
     }
 
     /// <summary>The model's own tokenizer, also the right one to size chunks with.</summary>
@@ -66,51 +78,21 @@ internal sealed class MiniLmEmbeddingGenerator : IEmbeddingGenerator<string, Emb
         if (texts.Count == 0)
             return Task.FromResult(embeddings);
 
-        // One padded batch: [CLS] pieces [SEP], cut to MaxTokens.
+        // [CLS] pieces [SEP], cut to MaxTokens. No padding: the encoder runs each text at its own length.
         var ids = texts.Select(Encode).ToList();
-        int batch = ids.Count, width = ids.Max(i => i.Count);
-        var inputIds = new long[batch * width];
-        var mask = new long[batch * width];
-        for (var b = 0; b < batch; b++)
+        var hidden = _encoder.Encode(ids, 1, cancellationToken); // per text: [pieces, Dimensions], the last layer
+        try
         {
-            for (var t = 0; t < ids[b].Count; t++)
-            {
-                inputIds[(b * width) + t] = ids[b][t];
-                mask[(b * width) + t] = 1;
-            }
+            for (var b = 0; b < ids.Count; b++)
+                embeddings.Add(new Embedding<float>(Pool(hidden[b].AsSpan(0, ids[b].Length * Dimensions), ids[b].Length)));
         }
-
-        long[] shape = [batch, width];
-        using var idsValue = OrtValue.CreateTensorValueFromMemory(inputIds, shape);
-        using var maskValue = OrtValue.CreateTensorValueFromMemory(mask, shape);
-        using var typesValue = OrtValue.CreateTensorValueFromMemory(new long[batch * width], shape);
-        using var runOptions = new RunOptions();
-        using var outputs = _session.Run(runOptions,
-            new Dictionary<string, OrtValue> { ["input_ids"] = idsValue, ["attention_mask"] = maskValue, ["token_type_ids"] = typesValue },
-            ["last_hidden_state"]);
-        var hidden = outputs[0].GetTensorDataAsSpan<float>(); // [batch, width, Dimensions]
-
-        for (var b = 0; b < batch; b++)
+        finally
         {
-            var vector = new float[Dimensions];
-            for (var t = 0; t < ids[b].Count; t++)
+            if (_encoder.RentsOutputs)
             {
-                var row = hidden.Slice(((b * width) + t) * Dimensions, Dimensions);
-                for (var d = 0; d < Dimensions; d++)
-                    vector[d] += row[d];
+                foreach (var array in hidden)
+                    ArrayPool<float>.Shared.Return(array);
             }
-
-            var norm = 0.0;
-            for (var d = 0; d < Dimensions; d++)
-            {
-                vector[d] /= ids[b].Count;
-                norm += vector[d] * vector[d];
-            }
-
-            var scale = (float)(1 / Math.Max(Math.Sqrt(norm), 1e-12));
-            for (var d = 0; d < Dimensions; d++)
-                vector[d] *= scale;
-            embeddings.Add(new Embedding<float>(vector));
         }
 
         return Task.FromResult(embeddings);
@@ -119,14 +101,37 @@ internal sealed class MiniLmEmbeddingGenerator : IEmbeddingGenerator<string, Emb
     public object? GetService(Type serviceType, object? serviceKey = null) =>
         serviceKey == null && serviceType.IsInstanceOfType(this) ? this : null;
 
-    public void Dispose() => _session.Dispose();
+    public void Dispose() => _encoder.Dispose();
 
-    private List<int> Encode(string text)
+    private int[] Encode(string text)
     {
-        var ids = Tokenizer.EncodeToIds(text, addSpecialTokens: true, considerPreTokenization: true, considerNormalization: true).ToList();
-        if (ids.Count > MaxTokens)
-            ids = [.. ids.Take(MaxTokens - 1), Tokenizer.SeparatorTokenId];
-        return ids;
+        var ids = Tokenizer.EncodeToIds(text, addSpecialTokens: true, considerPreTokenization: true, considerNormalization: true);
+        return ids.Count > MaxTokens ? [.. ids.Take(MaxTokens - 1), Tokenizer.SeparatorTokenId] : [.. ids];
+    }
+
+    // The mean of the pieces' states, then x / max(‖x‖, 1e-12), both in double.
+    private static float[] Pool(ReadOnlySpan<float> states, int pieces)
+    {
+        var sum = new double[Dimensions];
+        for (var t = 0; t < pieces; t++)
+        {
+            var row = states.Slice(t * Dimensions, Dimensions);
+            for (var d = 0; d < Dimensions; d++)
+                sum[d] += row[d];
+        }
+
+        var norm = 0.0;
+        for (var d = 0; d < Dimensions; d++)
+        {
+            sum[d] /= pieces;
+            norm += sum[d] * sum[d];
+        }
+
+        var scale = 1 / Math.Max(Math.Sqrt(norm), 1e-12);
+        var vector = new float[Dimensions];
+        for (var d = 0; d < Dimensions; d++)
+            vector[d] = (float)(sum[d] * scale);
+        return vector;
     }
 
     private static async Task<string> Sha256(string path, CancellationToken cancellationToken)

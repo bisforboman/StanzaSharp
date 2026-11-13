@@ -141,8 +141,14 @@ def fragment(rng, lang):
     if kind == 19:
         return rng.choice(PUNCT) * rng.randint(2, 30)
     if kind == 20:
-        return chr(rng.choice([rng.randint(0x20, 0x2FFF), rng.randint(0xA000, 0xD7FF), rng.randint(0xE000, 0xFFFF),
-                               rng.randint(0x10000, 0x1FFFF), rng.randint(0x20000, 0x10FFFF)]))
+        # Only code points this Python's Unicode version has assigned: one assigned since then has a class (digit,
+        # letter, upper case, space) in .NET's newer tables only, which is the platforms' difference, not the port's
+        # (docs/text-fuzzing.md, finding 7).
+        while True:
+            c = chr(rng.choice([rng.randint(0x20, 0x2FFF), rng.randint(0xA000, 0xD7FF), rng.randint(0xE000, 0xFFFF),
+                                rng.randint(0x10000, 0x1FFFF), rng.randint(0x20000, 0x10FFFF)]))
+            if unicodedata.category(c) != "Cn":
+                return c
     return rng.choice(["a", "I", "x"]) + rng.choice(NO_NL + COMBINING + ZERO_WIDTH)
 
 

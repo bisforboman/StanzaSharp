@@ -22,7 +22,8 @@ German) and splices fragments into them, at word boundaries mostly and inside wo
   abbreviations (`e.g.`, `U.S.A.`, `z.B.`);
 - punctuation runs for `simplify_punct` (`?!?!?!`, 2 to 30 repeats of any punctuation), quotes of every style,
   contractions and MWT candidates (English, or German `zum`/`im`/`geht's`), numbers, dates, times, currencies;
-- one random code point from any plane (assigned or not; no lone surrogates, which UTF-8 text can't hold).
+- one random code point from any plane that Python's `unicodedata` has assigned (finding 7; no lone surrogates,
+  which UTF-8 text can't hold).
 
 A text is then one of: spliced sentences in 1 to 5 paragraphs (with `\n\n`, or any of the newline variants between
 them); real sentences around a token of `max_seqlen` ± 2 code points (100 for most treebank tokenizers, 200 English,
@@ -200,7 +201,7 @@ empty sentences) are not generated.
 
 Not a port difference, and not seen in these runs, but possible with random code points: Python 3.10's `unicodedata`
 is Unicode 13, .NET 10's is newer, so a character assigned since then is a letter (or upper case, or a space) on one
-side only. Such a difference would be the platform's, not the port's.
+side only. Such a difference would be the platform's, not the port's. (The nightly of 2026-11-10 found one: finding 7.)
 
 ## Results (nightly)
 
@@ -219,6 +220,19 @@ Differences the nightly workflow found (see the end of "Run it yourself").
    Every float32 run is further from float64 than that margin, so any summation order can decide it. The drift grows
    over the sentence's run of symbols (steps 6 to 10), on both backends and in Stanza's own float32. The text isn't in
    `fuzz.json`: that would freeze Stanza's float32 side of a tie.
+
+7. **A code point newer than Python's Unicode version (2026-11-10 nightly; the platforms' difference, not a port bug;
+   the generator changed; #263).** One text of the 1,000 through `tokenize,mwt` (seed 29). Shrunk: `"ng\U0001e5f4"`,
+   which Stanza splits into `ng` and the last character and StanzaSharp keeps as one token. U+1E5F4 is an Ol Onal
+   digit, added in Unicode 16.0. The nightly's Python 3.12 has Unicode 15.0, where it is unassigned (`Cn`); .NET 10 has
+   it as a decimal digit (`Nd`), so the tokenizer's `numeric` feature is on for it in StanzaSharp only. The port's
+   code is the same on both sides; the character tables are not.
+
+   The owner's decision (2026-11-12): the generator's random code point is drawn only from those Python's
+   `unicodedata` has assigned (`category != "Cn"`), so characters unassigned on both sides are no longer fuzzed
+   (but for the noncharacters U+FFFE and U+FFFF in the fixed list, unassigned in every version).
+   Pinning StanzaSharp's character classes to one Unicode version was not chosen. The text isn't in `fuzz.json`: that
+   would freeze one Python version's tables.
 
 ## Run it yourself
 

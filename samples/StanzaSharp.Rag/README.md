@@ -1,7 +1,7 @@
 # RAG ingestion sample
 
 Markdown files go through StanzaSharp.DataIngestion into an in-memory vector store, then the sample runs a semantic
-search filtered by a named entity. Everything runs locally; there is no service and no API key.
+search filtered by a named entity. Everything runs locally; there is no service, no API key and no native library.
 
 1. `MarkdownReader` (Microsoft.Extensions.DataIngestion.Markdig) reads each `.md` file.
 2. `SentenceChunker` cuts it into chunks of whole sentences. Each chunk is at most 200 tokens of the embedding model's own
@@ -10,7 +10,8 @@ search filtered by a named entity. Everything runs locally; there is no service 
    metadata key `entities`.
 4. DataIngestion's `VectorStoreWriter` stores the chunks in Semantic Kernel's `InMemoryVectorStore`.
    [all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) embeds them. It is Apache 2.0 and runs
-   on ONNX Runtime with mean pooling, as sentence-transformers does (`MiniLmEmbeddingGenerator.cs`).
+   on StanzaSharp's managed transformer encoder with mean pooling, as sentence-transformers does
+   (`MiniLmEmbeddingGenerator.cs`).
 5. The sample prints the most frequent entities, then the top 3 chunks for a query, first unfiltered, then only those whose
    `entities` contain the chosen name.
 
@@ -22,7 +23,7 @@ dotnet run --project samples/StanzaSharp.Rag -- [DOCS] [--query TEXT] [--entity 
 - `--entity ""` skips the filtered search.
 - `DIR` defaults to `models`. The first run downloads two sets of models there:
   - English `tokenize` and `ner` (about 210 MB) to `DIR/stanza/en`;
-  - the embedding model (90 MB, a pinned revision checked by sha256) to `DIR/all-MiniLM-L6-v2`.
+  - the embedding model (91 MB, a pinned revision checked by sha256) to `DIR/all-MiniLM-L6-v2`.
 
 ## What it shows
 
@@ -47,4 +48,7 @@ finds.
   that scope.
 - Swap in another store (Qdrant, Postgres, Azure AI Search, ...) or another `IEmbeddingGenerator`. Keep the chunker's
   tokenizer the embedding model's, so chunks stay under the model's input limit (256 tokens here).
+- The embedding model runs on the encoder StanzaSharp uses for Stanza's transformer models, in place of ONNX Runtime
+  (#268). That encoder is not in the package's public API yet: `MiniLmEmbeddingGenerator.cs` builds only inside this
+  repository, which gives the sample access to StanzaSharp's internals.
 - Microsoft.Extensions.DataIngestion and the Semantic Kernel connector are previews, so their APIs may still change.

@@ -17,7 +17,7 @@ questions on the issue).
   - Mean pooling over the pieces (`1_Pooling/config.json`; the spike refuses other modes) and L2 normalisation
     (x / max(‖x‖, 1e-12)), both in double.
   - Runs ONNX Runtime 1.31.1 on the model's `onnx/model.onnx` with the same ids, padded per batch with an attention mask
-    as `MiniLmEmbeddingGenerator` does, with as many intra-op threads as the managed pool.
+    as samples/StanzaSharp.Rag's `MiniLmEmbeddingGenerator` did then, with as many intra-op threads as the managed pool.
   - Both backends get the same batches, longest text first (sentence-transformers' `encode` order).
 - `tools/embedding_spike.py`: the reference, sentence-transformers' `encode` in float32 and in float64, at the pinned
   versions (`tools/requirements*.txt` plus `tools/requirements-embedding.txt`: sentence-transformers 6.2.0,
@@ -80,3 +80,18 @@ Not measured: Native AOT, Arm64, other models (E5, a Swedish model), the Vector2
 - **Models**: MiniLM (English) first, then multilingual E5 and a Swedish sentence model.
 - **Scope**: a sample only for now. The managed encoder replaces ONNX Runtime in samples/StanzaSharp.Rag, and nothing
   becomes public until the models are settled.
+
+## The Rag sample (2026-11-12)
+
+`samples/StanzaSharp.Rag/MiniLmEmbeddingGenerator.cs` now runs the model on `ManagedTransformer`, and the sample no
+longer references ONNX Runtime: its output folder holds no native library.
+
+- Files: `config.json`, `pytorch_model.bin` and `vocab.txt` of the same commit, each checked by sha256 (91 MB; the ONNX
+  export was 90 MB).
+- The ids still come from ML.Tokenizers' `BertTokenizer`, which also sizes the chunks. The spike's `WordPiece` is not
+  used there, so one tokenizer both sizes and encodes.
+- Each `GenerateAsync` call is one `Encode` call, with no padding; pooling and normalisation are the spike's, in double.
+- The encoder is internal, so the sample is in Directory.Build.props's `InternalsVisibleTo`. A user of the package
+  cannot copy this file yet; that waits for the decision on what becomes public.
+- Check: on the sample's own notes and default query, the printed output (entities, the six hits and their scores to
+  three decimals) is the same as on ONNX Runtime. Not measured there: speed and memory (the spike's figures stand).

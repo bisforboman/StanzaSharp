@@ -10,7 +10,7 @@ using StanzaSharp.Nn.Managed;
 /// The sentence-embedding spike (issue #268, docs/embedding-spike.md): sentence-transformers/all-MiniLM-L6-v2 on the
 /// managed encoder (<see cref="ManagedTransformer"/>) with mean pooling, L2 normalisation and truncation at the model's
 /// max_seq_length, against tools/embedding_spike.py's sentence-transformers vectors and against ONNX Runtime running the
-/// model's ONNX export on the same ids (as samples/StanzaSharp.Rag's MiniLmEmbeddingGenerator does), and both timed.
+/// model's ONNX export on the same ids (as samples/StanzaSharp.Rag's MiniLmEmbeddingGenerator did before it moved to the managed encoder), and both timed.
 /// </summary>
 internal static class EmbeddingSpike
 {
@@ -189,7 +189,7 @@ internal static class EmbeddingSpike
         }
     }
 
-    // ONNX Runtime on one padded batch with its attention mask, as MiniLmEmbeddingGenerator runs it.
+    // ONNX Runtime on one padded batch with its attention mask, as samples/StanzaSharp.Rag ran it.
     private static float[][] EncodeOnnx(InferenceSession session, List<int[]> batch)
     {
         int width = batch.Max(i => i.Length);
