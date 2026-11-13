@@ -8,6 +8,23 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 Unreleased changes are one file each under [`changes/`](changes/README.md), so pull requests don't conflict here;
 a release folds them in (`python tools/changelog.py release X.Y.Z`).
 
+## [1.17.0] - 2026-11-13
+
+### Added
+- `samples/StanzaSharp.Subtitles`: checks where an SRT file's two-line subtitles break against the dependency parse
+  (English and Swedish), printing each break that splits an article, preposition, name, particle or subject pronoun
+  from its word, with a suggested break (#267).
+- Swedish: Stanza's other four packages, `default_fast`, `lines`, `talbanken` and `default_accurate`, whose tagger and parser read KB-BERT (`KBLab/bert-base-swedish-cased`, 501 MB, which the download fetches), and `PipelineOptions.Models` for Swedish (`lines_charlm` tokenizer and lemmatizer, `lines_nocharlm` and `lines_kb-swedish-bert` tagger and parser). Output matches Python Stanza's byte for byte. A sentence of more than 512 KB-BERT word pieces throws an `ArgumentException`, where Stanza crashes.
+- StanzaSharp.TasmanianDevil: `StanzaNerRecognizer.LinkNames` links each person's mentions across a text (`Karin
+  Lindqvist`, `Karins`, `K. Lindqvist`, `LINDQVIST, KARIN`) and finds the capitalized mentions NER missed;
+  `StanzaNerRecognizer.PersonPlaceholders` turns that into numbered placeholders (`<PERSON_1>`, `<PERSON_2>`) for
+  TasmanianDevil's anonymizer instead of one `<PERSON>` for everyone. Off by default.
+
+### Changed
+- `samples/StanzaSharp.Rag` embeds with all-MiniLM-L6-v2 on StanzaSharp's managed transformer encoder instead of ONNX
+  Runtime, so the sample has no native library (#268). The encoder is not public yet: the sample builds only inside the
+  repository.
+
 ## [1.16.0] - 2026-11-06
 
 ### Added
