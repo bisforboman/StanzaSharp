@@ -99,6 +99,33 @@ public class TransformerEncoderTests(TransformerModels models, ITestOutputHelper
         AssertEmbeddings(embedder.Value, ReadGolden("hidden_FacebookAI_xlm-roberta-large"), output);
     }
 
+    /// <summary>
+    /// A pad piece inside a sentence (the text &lt;pad&gt;) on roberta-base: both backends give it position row 1 and don't count
+    /// it (transformers' create_position_ids_from_input_ids), so they agree, and the pieces after it have other states than
+    /// with rows counted through it (what both did before; found on multilingual-e5-base, docs/embedding-spike.md).
+    /// </summary>
+    [RobertaFact("config.json", "tokenizer.json", "tokenizer_config.json", "pytorch_model.bin")]
+    [Trait("Backend", "TorchSharp")]
+    public void Roberta_APadPieceKeepsItsOwnPositionRow_OnBothBackends()
+    {
+        using var managed = RobertaEmbedder(managed: true);
+        using var torch = RobertaEmbedder(managed: false);
+        int h = managed.Value.Net.Config.Hidden;
+        int[][] ids = [[0, 100, 1, 200, 300, 2], [0, 100, 200, 300, 2]];
+        var m = managed.Value.Net.Encode(ids, 1);
+        var t = torch.Value.Net.Encode(ids, 1);
+        for (int s = 0; s < ids.Length; s++)
+        {
+            for (int i = 0; i < ids[s].Length * h; i++)
+                Assert.True(Math.Abs(m[s][i] - t[s][i]) <= 1e-4, $"sentence {s}, value {i}: managed {m[s][i]}, TorchSharp {t[s][i]}");
+        }
+
+        // Without the pad piece, the first piece's rows are the same (0, 2 then 3), so its input row is; with rows counted
+        // through the pad, piece 200 would sit on row 5, not 4: its embedding-layer input differs from the second sentence's
+        // only through attention to the pad piece. Check the model sees the pad at all: the states differ.
+        Assert.Contains(Enumerable.Range(0, h), d => Math.Abs(m[0][(3 * h) + d] - m[1][(2 * h) + d]) > 1e-3);
+    }
+
     internal static Owned XlmRobertaEmbedder(bool managed) => new(TransformerEmbedder.Load(XlmRobertaFactAttribute.Directory,
         XlmRobertaFactAttribute.XlmRoberta, managed ? (config, ckpt) => ManagedTransformer.Load(config, ckpt) : (config, ckpt) => new TransformerNet(config, ckpt)));
 

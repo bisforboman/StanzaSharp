@@ -90,6 +90,25 @@ public class TransformerTokenizerTests(ITestOutputHelper output)
         }
     }
 
+    /// <summary>
+    /// transformers' create_position_ids_from_input_ids: RoBERTa's pieces count from pad_token_id + 1, and a piece that is the
+    /// pad token (the text &lt;pad&gt;) has row pad_token_id and isn't counted; BERT's rows are the indices, whatever the ids.
+    /// Found by the embedding spike's edge texts on multilingual-e5-base (#268, docs/embedding-spike.md).
+    /// </summary>
+    [Fact]
+    public void PositionRows_SkipRobertasPadPiece()
+    {
+        static int[] Rows(TransformerConfig config, int[] ids)
+        {
+            int next = 0;
+            return [.. ids.Select(id => config.PositionRow(id, ref next))];
+        }
+
+        var roberta = new TransformerConfig(8, 2, 1, 16, 512, 1e-5, "roberta.", PositionOffset: 2);
+        Assert.Equal([2, 3, 1, 4, 1, 1, 5, 6], Rows(roberta, [0, 9, 1, 9, 1, 1, 0, 2]));
+        Assert.Equal([0, 1, 2, 3, 4], Rows(roberta with { Prefix = "bert.", PositionOffset = 0 }, [101, 0, 1, 0, 102]));
+    }
+
     [XlmRobertaFact("config.json", "tokenizer_config.json")]
     public void XlmRoberta_ConfigReadsRobertasPositions()
     {
