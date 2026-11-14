@@ -105,8 +105,8 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
 
         long Rows(string name) => checkpoint.Shape(root[prefix + name] ?? throw new InvalidDataException($"No tensor {prefix}{name}"))[0];
 
-        // Position rows from PositionOffset on (RoBERTa numbers a sentence's pieces from 2), token type 0 only.
-        var positions = T("embeddings.position_embeddings.weight", config.MaxPositions + config.PositionOffset, h)[(config.PositionOffset * h)..];
+        // Every position row (RoBERTa numbers a sentence's pieces from 2 and gives a pad piece row 1: PositionRow), token type 0 only.
+        var positions = T("embeddings.position_embeddings.weight", config.MaxPositions + config.PositionOffset, h);
         return new ManagedTransformer(config, T("embeddings.word_embeddings.weight", Rows("embeddings.word_embeddings.weight"), h), positions,
             T("embeddings.token_type_embeddings.weight", Rows("embeddings.token_type_embeddings.weight"), h)[..h], T("embeddings.LayerNorm.weight", h),
             T("embeddings.LayerNorm.bias", h), layers);
@@ -179,11 +179,11 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
             for (int s = 0; s < sentences.Count; s++)
             {
                 var ids = sentences[s];
-                for (int i = 0; i < ids.Length; i++)
+                for (int i = 0, next = 0; i < ids.Length; i++)
                 {
                     var row = x.AsSpan((starts[s] + i) * h, h);
                     var word = _words.AsSpan(ids[i] * h, h);
-                    var position = _positions.AsSpan(i * h, h);
+                    var position = _positions.AsSpan(Config.PositionRow(ids[i], ref next) * h, h);
                     for (int j = 0; j < h; j++)
                         row[j] = word[j] + _type0[j] + position[j];
                 }

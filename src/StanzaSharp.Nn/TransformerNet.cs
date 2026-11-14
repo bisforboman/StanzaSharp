@@ -13,10 +13,20 @@ namespace StanzaSharp.Nn;
 /// <param name="Prefix">The encoder's prefix in <c>pytorch_model.bin</c>'s state dict: <c>electra.</c> (ElectraForPreTraining),
 /// <c>bert.</c> (BertForMaskedLM) or <c>roberta.</c> (RobertaForMaskedLM and XLMRobertaForMaskedLM).</param>
 /// <param name="PositionOffset">The first position row a sentence uses: 0, or RoBERTa's <c>pad_token_id</c> + 1 (2), since
-/// its create_position_ids_from_input_ids numbers the pieces from there.</param>
+/// its create_position_ids_from_input_ids numbers the pieces from there. It skips a piece that is the pad token itself
+/// (the text <c>&lt;pad&gt;</c>): that piece gets row <c>pad_token_id</c> and the count doesn't advance
+/// (<see cref="PositionRow"/>).</param>
 internal sealed record TransformerConfig(int Hidden, int Heads, int Layers, int Intermediate, int MaxPositions, double LayerNormEps, string Prefix = "electra.",
     int PositionOffset = 0)
 {
+    /// <summary>
+    /// The position row of a piece, and the count for the next: transformers' create_position_ids_from_input_ids
+    /// (cumsum of id != pad, plus pad) for RoBERTa, the piece's index otherwise.
+    /// </summary>
+    /// <param name="id">The piece's id.</param>
+    /// <param name="next">The pieces counted so far in this sentence (0 before the first); advanced unless the piece is RoBERTa's pad token.</param>
+    public int PositionRow(int id, ref int next) => PositionOffset > 0 && id == PositionOffset - 1 ? id : PositionOffset + next++;
+
     // BertConfig's, ElectraConfig's, RobertaConfig's and XLMRobertaConfig's default layer_norm_eps.
     private const double DefaultLayerNormEps = 1e-12;
 

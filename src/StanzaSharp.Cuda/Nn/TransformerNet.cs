@@ -37,8 +37,7 @@ internal sealed class TransformerNet : ITransformerNet
         var prefix = config.Prefix;
         Tensor T(string name) => ckpt.ToTensor(root[prefix + name] ?? throw new InvalidDataException($"No tensor {prefix}{name}"));
         _words = T("embeddings.word_embeddings.weight");
-        using (var positions = T("embeddings.position_embeddings.weight"))
-            _positions = positions[config.PositionOffset..].clone(); // RoBERTa numbers a sentence's pieces from 2
+        _positions = T("embeddings.position_embeddings.weight"); // every row: RoBERTa's pieces count from 2, a pad piece has row 1 (PositionRow)
         using (var types = T("embeddings.token_type_embeddings.weight"))
             _type0 = types[0].clone();
         _embG = T("embeddings.LayerNorm.weight");
@@ -108,12 +107,14 @@ internal sealed class TransformerNet : ITransformerNet
         }
 
         var ids = new long[batch * width];
+        var rows = new long[batch * width]; // position rows; padding's (masked) take the first
         var mask = new float[batch * width]; // transformers' additive mask: 0 for real pieces, the dtype's minimum for padding
         for (int s = 0; s < batch; s++)
         {
-            for (int i = 0; i < width; i++)
+            for (int i = 0, next = 0; i < width; i++)
             {
                 ids[(s * width) + i] = i < sentences[s].Length ? sentences[s][i] : 0;
+                rows[(s * width) + i] = i < sentences[s].Length ? Config.PositionRow(sentences[s][i], ref next) : 0;
                 mask[(s * width) + i] = i < sentences[s].Length ? 0 : float.MinValue;
             }
         }
@@ -122,7 +123,7 @@ internal sealed class TransformerNet : ITransformerNet
         using var scope = NewDisposeScope();
         var input = torch.tensor(ids, [batch, width], device: _device);
         var additive = torch.tensor(mask, [batch, 1, 1, width], device: _device);
-        var x = _words[input].add(_positions[..width].unsqueeze(0), Scalars.One).add(_type0, Scalars.One);
+        var x = _words[input].add(_positions[torch.tensor(rows, [batch, width], device: _device)], Scalars.One).add(_type0, Scalars.One);
         x = F.layer_norm(x, [h], _embG, _embB, Config.LayerNormEps);
         var kept = new List<Tensor>();
         if (_layers.Length + 1 - lastLayers <= 0)

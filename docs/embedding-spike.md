@@ -29,7 +29,7 @@ are truncated to 256.
 
 ```
 tools/.venv/bin/pip install -r tools/requirements.txt -r tools/requirements-transformer.txt -r tools/requirements-embedding.txt
-tools/.venv/bin/python tools/embedding_spike.py models/hf/all-MiniLM-L6-v2 OUT
+tools/.venv/bin/python tools/embedding_spike.py models/hf/all-MiniLM-L6-v2 OUT   # --languages [--prefix "query: "] for the later models
 dotnet run -c Release --project samples/StanzaSharp.Benchmark -- embedding-spike models/hf/all-MiniLM-L6-v2 OUT --backend managed
 ```
 
@@ -95,3 +95,90 @@ longer references ONNX Runtime: its output folder holds no native library.
   cannot copy this file yet; that waits for the decision on what becomes public.
 - Check: on the sample's own notes and default query, the printed output (entities, the six hits and their scores to
   three decimals) is the same as on ONNX Runtime. Not measured there: speed and memory (the spike's figures stand).
+
+## Multilingual E5 and a Swedish model (2026-11-14)
+
+The next models of the owner's list, through the same spike (`embedding-spike MODEL_DIR REFERENCE`, now for any
+sentence-transformers model with mean pooling):
+
+| Model | Commit | Encoder | Tokenizer | max_seq_length | Normalize | Licence |
+|---|---|---|---|---|---|---|
+| intfloat/multilingual-e5-small | `614241f6` | BertModel, 12 layers, hidden 384, 250,037 pieces | XLM-R Unigram | 512 | yes | MIT |
+| intfloat/multilingual-e5-base | `d1287505` | XLMRobertaModel, 12 layers, hidden 768 | XLM-R Unigram | 512 | yes | MIT |
+| KBLab/sentence-bert-swedish-cased | `6b5e83cd` | BertModel (KB-BERT), 12 layers, hidden 768 | WordPiece, cased | 384 | no | Apache 2.0 |
+
+The licences are the model cards'; they are not checked further here.
+
+Texts (1,345, `tools/embedding_spike.py --languages`): the 935 above, the sentences of every language's
+`tests/golden/languages/*/default.conllu` (285, 106 languages), those joined per language (106) and 19 edge texts
+(`EDGE_TEXTS`: an empty text, spaces at either end, tabs, a no-break space, a literal `▁`, the special tokens' texts).
+E5 ran with its `query: ` prefix (`--prefix`). 41,291 pieces on E5 (10 texts cut to 512), 41,490 on the Swedish model
+(12 cut to 384).
+
+### Values
+
+| | ids equal sentence-transformers' | max \|diff\| vs float32 | vs float64 |
+|---|---|---|---|
+| multilingual-e5-small, managed | 1,345 of 1,345 | 2.4e-7 | 2.4e-7 |
+| multilingual-e5-small, ONNX Runtime | | 1.5e-7 | 8.6e-8 |
+| multilingual-e5-base, managed | 1,345 of 1,345 | 5.3e-7 | 3.4e-7 |
+| multilingual-e5-base, ONNX Runtime | | 4.9e-7 | 3.3e-7 |
+| sentence-bert-swedish-cased, managed | 1,345 of 1,345 | 4.6e-7 | 4.2e-7 |
+| all-MiniLM-L6-v2, managed (these texts) | 1,345 of 1,345 | 5.2e-7 | 4.8e-7 |
+
+Two things had to change in `src/` first, both found by the edge texts:
+
+- **E5-small's `tokenizer.json`** has the layout older conversions of the slow tokenizer wrote (`Precompiled` then
+  `Replace(" {2,}" → " ")`; `Metaspace` without `WhitespaceSplit`), which `Unigram.Load` refused. transformers 5.20.1's
+  `XLMRobertaTokenizer` takes only the vocabulary and the charsmap from the file and builds the usual steps itself, so
+  `Unigram.Load` now accepts that layout and runs it as the usual one. Run as written (`tokenizers.Tokenizer.from_file`),
+  the file gives an extra `▁` piece for a space at the end of a text or before `<mask>`: 5 of the 19 edge texts.
+  `TransformerTokenizerTests.XlmRoberta_OlderConvertedLayoutRunsAsTheUsualOne`.
+- **A `<pad>` piece inside a text, on RoBERTa and XLM-RoBERTa** (a bug in both backends, not only in the spike):
+  transformers' `create_position_ids_from_input_ids` gives a piece whose id is `pad_token_id` the position row
+  `pad_token_id` and doesn't count it; both encoders counted through it. The edge text `<s> and </s> and <pad> and <unk>`
+  was off by 7.0e-2 on E5-base (ONNX Runtime was not). Fixed in `TransformerConfig.PositionRow`, used by
+  `ManagedTransformer` and the TorchSharp `TransformerNet`; this also changes roberta-base's and xlm-roberta-large's
+  states in a pipeline for a sentence with that word, towards Stanza's (it calls the same transformers code). Tests:
+  `TransformerTokenizerTests.PositionRows_SkipRobertasPadPiece`,
+  `TransformerEncoderTests.Roberta_APadPieceKeepsItsOwnPositionRow_OnBothBackends`. No golden file has such a sentence yet:
+  add one to `make_golden.py`'s transformer cases at the next regeneration of the roberta-base goldens.
+
+### Speed and memory
+
+The same VM and method as above (4 threads unless said, one backend per process, median of 3 runs, 5 for E5-small at
+batch 32, after a warm-up). E5-base's timings are from before the position fix, which changes one row lookup per piece.
+
+| Model, setting | managed | ONNX Runtime | managed / ORT time | peak working set, managed | ORT |
+|---|---|---|---|---|---|
+| E5-small, batch 32 | 7.49 s (5,510 pieces/s) | 6.38 s | **1.17×** | 950 MB | 2,720 MB |
+| E5-small, batch 1 | 9.83 s | 7.77 s | **1.26×** | 767 MB | 1,033 MB |
+| E5-small, batch 32, 1 thread | 25.5 s | 20.8 s | **1.23×** | 932 MB | 2,700 MB |
+| E5-small, batch 128 | 9.19 s | 19.3 s | 0.48× | 1,082 MB | 8,567 MB |
+| E5-base, batch 32 | 26.0 s (1,590 pieces/s) | 22.9 s | **1.13×** | 2,059 MB | 3,677 MB |
+| E5-base, batch 1 | 39.0 s | 28.7 s | **1.36×** | 1,502 MB | 2,055 MB |
+| E5-base, batch 32, 1 thread | 92.4 s | 81.2 s | **1.14×** | 2,008 MB | 3,674 MB |
+| E5-base, batch 128 | 24.9 s | 47.8 s | 0.52× | 2,368 MB | 10,048 MB |
+| Swedish, batch 32 | 24.7 s (1,680 pieces/s) | not run | | 1,296 MB | |
+
+- **Every setting passes the owner's gate** (within 1.5× of ONNX Runtime at 4 threads), with more room than MiniLM had:
+  1.13–1.17× at batch 32 and 1.26–1.36× one text at a time. The per-core gap is smaller at these sizes too (1.14–1.23× on
+  one thread, against MiniLM's 1.65×).
+- **Batch 128** is twice as fast on the managed encoder and takes a quarter of the memory or less: with texts up to 512
+  pieces, ONNX Runtime's padding to the batch's longest text costs more than at MiniLM's 256.
+- **Memory**: the managed peak is lower in every setting. Most of what stays loaded is the 250,000-row piece table
+  (384 MB on E5-small, 768 MB on E5-base); after load the working set is 650 MB (E5-small), 1,380 MB (E5-base) and
+  700 MB (Swedish).
+- **Load** (files in the page cache): managed 370 ms (E5-small), 1.2 s (E5-base), 0.5 s (Swedish); ONNX Runtime 0.95 s and
+  2.4 s.
+- **The Swedish model has no ONNX Runtime figure.** It ships no ONNX export, and torch 2.14.1's `torch.onnx.export`
+  (the TorchScript exporter) failed on it with transformers 5.20.1. Its encoder has E5-base's shape (12 layers, hidden
+  768), so E5-base's ratios are the nearest measure. For scale, sentence-transformers on torch (4 threads, batch 32,
+  padded) took 21.1 s on the Swedish model, 7.1 s on E5-small and 23.2 s on E5-base.
+
+Not measured: Native AOT, Arm64, the Vector256 path, Windows, multilingual-e5-large, and retrieval quality (the vectors
+equal sentence-transformers', so quality is the models' own).
+
+Open, for the owner: which of these the Rag sample (or a public API) should offer. The sample sizes its chunks with
+ML.Tokenizers' `BertTokenizer`; an E5 model there needs the Unigram tokenizer for sizing too, and its `query: ` /
+`passage: ` prefixes.
