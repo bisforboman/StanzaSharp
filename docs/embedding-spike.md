@@ -83,7 +83,7 @@ Not measured: Native AOT, Arm64, other models (E5, a Swedish model), the Vector2
 
 ## The Rag sample (2026-11-12)
 
-`samples/StanzaSharp.Rag/MiniLmEmbeddingGenerator.cs` now runs the model on `ManagedTransformer`, and the sample no
+`samples/StanzaSharp.Rag/MiniLmEmbeddingGenerator.cs` (since replaced, see the last section) now ran the model on `ManagedTransformer`, and the sample no
 longer references ONNX Runtime: its output folder holds no native library.
 
 - Files: `config.json`, `pytorch_model.bin` and `vocab.txt` of the same commit, each checked by sha256 (91 MB; the ONNX
@@ -182,3 +182,29 @@ equal sentence-transformers', so quality is the models' own).
 Open, for the owner: which of these the Rag sample (or a public API) should offer. The sample sizes its chunks with
 ML.Tokenizers' `BertTokenizer`; an E5 model there needs the Unigram tokenizer for sizing too, and its `query: ` /
 `passage: ` prefixes.
+
+## The Rag sample's `--model` (2026-11-14)
+
+The owner's decision (2026-11-14): after the measurements above, the next step is a model choice in
+samples/StanzaSharp.Rag, still a sample and nothing public.
+
+- `--model minilm|e5-small|e5-base|swedish` (`EmbeddingModel.All` in `SentenceEmbeddingGenerator.cs`, which replaces
+  `MiniLmEmbeddingGenerator.cs`): each model's commit and the sha256 of its `config.json`, `pytorch_model.bin` and
+  `tokenizer.json`, its `max_seq_length`, whether it normalises, and E5's prefixes.
+- **One tokenizer sizes and encodes, and it is now StanzaSharp's** (`WordPiece` or `Unigram` from `tokenizer.json`), as
+  in the spike. The chunker gets it as a `Microsoft.ML.Tokenizers.Tokenizer` that only counts (`PieceCounter`: the
+  pieces and the two special tokens, what the encoder is given).
+- **ML.Tokenizers' `BertTokenizer` did not give transformers' ids**, which the sample (and its ONNX Runtime version)
+  used until now: on the sample's own notes "Tomas" was `20389, 3022` where transformers and `WordPiece` give `12675`,
+  and accented words ("café", "naïve") were `[UNK]`. Its `CountTokens(text, considerNormalization: false)`, which
+  `SentenceChunker` calls, also counted without lowercasing. MiniLM's printed scores therefore moved (the filtered hit
+  0.149 → 0.141, and the first two unfiltered hits changed places at 0.359 and 0.355); the hits are the same four chunks.
+- **E5's prefixes**: `GenerateAsync` (what the vector store calls for a chunk) adds `passage: `; the sample embeds the
+  question with `EmbedQueryAsync` (`query: `) and searches by vector. `IEmbeddingGenerator` has no notion of the two
+  roles, which a public API would have to settle.
+- Checked: all four models run the sample's notes and default query, and the filtered search puts the Nordlys Seafood
+  chunk first in each; a first run downloads and verifies the three files. Not checked: Swedish documents (the notes
+  and the NER stay English), speed in the sample.
+
+For a public API this leaves: which package holds it, the query/passage roles, whether `PieceCounter` (or a full
+`Tokenizer`) becomes public for `SentenceChunker`'s users, and where models download from.

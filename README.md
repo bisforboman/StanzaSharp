@@ -623,8 +623,9 @@ ingestion.ChunkProcessors.Add(new EntityEnricher(nlp));
 ```
 
 [samples/StanzaSharp.Rag](samples/StanzaSharp.Rag/README.md) runs the whole path locally. It reads Markdown, stores the
-chunks in an in-memory vector store with all-MiniLM-L6-v2 embeddings, and then searches, filtered to the chunks that name
-an entity. The embedding model runs on StanzaSharp's managed transformer encoder, so the sample has no native library.
+chunks in an in-memory vector store with all-MiniLM-L6-v2 embeddings (or multilingual E5 or KBLab's Swedish model, with
+`--model`), and then searches, filtered to the chunks that name an entity. The embedding model runs on StanzaSharp's
+managed transformer encoder, so the sample has no native library.
 
 ### Language identification
 
