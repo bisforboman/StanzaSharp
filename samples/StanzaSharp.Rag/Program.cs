@@ -1,14 +1,15 @@
 // RAG ingestion with StanzaSharp.DataIngestion (#233): Markdown files → SentenceChunker (whole sentences, sized with the
 // embedding model's tokenizer) → EntityEnricher (named entities as metadata) → an in-memory vector store, embedded with
-// all-MiniLM-L6-v2 on StanzaSharp's managed transformer encoder. Then a semantic search, unfiltered and filtered to chunks
-// naming an entity. Everything runs locally: no service, no API key and no native library.
+// a sentence-transformers model on StanzaSharp's managed transformer encoder. Then a semantic search, unfiltered and
+// filtered to chunks naming an entity. Everything runs locally: no service, no API key and no native library.
 //
-//   dotnet run --project samples/StanzaSharp.Rag -- [DOCS] [--query TEXT] [--entity NAME] [--models DIR]
+//   dotnet run --project samples/StanzaSharp.Rag -- [DOCS] [--query TEXT] [--entity NAME] [--model NAME] [--models DIR]
 //
-// --entity "" skips the filtered search.
+// --entity "" skips the filtered search. --model is minilm (the default: all-MiniLM-L6-v2, English), e5-small or e5-base
+// (multilingual E5) or swedish (KBLab's sentence-bert-swedish-cased).
 //
 // DOCS defaults to the sample's own docs/ (fictional notes). DIR defaults to models; the first run downloads English
-// tokenize and ner (about 210 MB) to DIR/stanza/en and the embedding model (91 MB) to DIR/all-MiniLM-L6-v2.
+// tokenize and ner (about 210 MB) to DIR/stanza/en and the embedding model (91 MB for minilm) to its folder in DIR.
 
 using Microsoft.Extensions.DataIngestion;
 using Microsoft.Extensions.VectorData;
@@ -23,6 +24,7 @@ var models = "models";
 // Similarity alone ranks the notes about the building first and misses the customer's request; the entity filter finds it.
 var query = "What does the customer want in the new building?";
 var entity = "Nordlys Seafood";
+var model = EmbeddingModel.All[0];
 for (var i = 0; i < args.Length; i++)
 {
     switch (args[i])
@@ -30,6 +32,11 @@ for (var i = 0; i < args.Length; i++)
         case "--query": query = args[++i]; break;
         case "--entity": entity = args[++i]; break;
         case "--models": models = args[++i]; break;
+        case "--model":
+            var name = args[++i];
+            model = EmbeddingModel.All.FirstOrDefault(m => m.Name == name)
+                ?? throw new ArgumentException($"--model {name}: expected one of {string.Join(", ", EmbeddingModel.All.Select(m => m.Name))}");
+            break;
         default: docs = args[i]; break;
     }
 }
@@ -39,12 +46,12 @@ var stanzaDir = Path.Combine(models, "stanza", "en");
 var options = new PipelineOptions { Processors = "tokenize,ner" };
 await ModelDownloader.DownloadAsync(stanzaDir, options, new Progress<string>(line => Console.Error.WriteLine(line)));
 using var nlp = Pipeline.Load(stanzaDir, options);
-using var embedder = await MiniLmEmbeddingGenerator.LoadAsync(Path.Combine(models, "all-MiniLM-L6-v2"));
+using var embedder = await SentenceEmbeddingGenerator.LoadAsync(model, Path.Combine(models, model.Folder));
 
-// Chunks are sized with the embedding model's own tokenizer, under its 256-token limit.
+// Chunks are sized with the embedding model's own tokenizer, under its limit (256 tokens for minilm, the lowest).
 var chunker = new SentenceChunker(nlp, new IngestionChunkerOptions(embedder.Tokenizer) { MaxTokensPerChunk = 200, OverlapTokens = 40 });
 var store = new InMemoryVectorStore(new InMemoryVectorStoreOptions { EmbeddingGenerator = embedder });
-var writer = new VectorStoreWriter<string>(store, MiniLmEmbeddingGenerator.Dimensions, new VectorStoreWriterOptions { CollectionName = "docs" });
+var writer = new VectorStoreWriter<string>(store, embedder.Dimensions, new VectorStoreWriterOptions { CollectionName = "docs" });
 using var ingestion = new IngestionPipeline<string>(new MarkdownReader(), chunker, writer);
 ingestion.ChunkProcessors.Add(new EntityEnricher(nlp, new HashSet<string> { "PERSON", "ORG", "GPE", "LOC", "FAC" }));
 
@@ -72,7 +79,10 @@ async Task Search(string title, System.Linq.Expressions.Expression<Func<Dictiona
 {
     Console.WriteLine();
     Console.WriteLine(title);
-    await foreach (var hit in collection.SearchAsync(query, 3, new VectorSearchOptions<Dictionary<string, object?>> { Filter = filter }))
+
+    // The question is embedded here, not by the store: E5 wants another prefix on a question than on a stored text.
+    var vector = await embedder.EmbedQueryAsync(query);
+    await foreach (var hit in collection.SearchAsync(vector, 3, new VectorSearchOptions<Dictionary<string, object?>> { Filter = filter }))
     {
         var content = ((string)hit.Record["content"]!).ReplaceLineEndings(" ");
         Console.WriteLine($"  {hit.Score:F3}  [{Path.GetFileName((string)hit.Record["documentid"]!)}] {(content.Length > 160 ? content[..160] + "..." : content)}");
