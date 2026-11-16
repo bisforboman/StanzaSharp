@@ -90,8 +90,27 @@ pos=lines_kb-swedish-bert,depparse=lines_kb-swedish-bert`.
 NER has the eight SUC types: `PER`, `LOC`, `ORG`, `TME` (time expressions), `MSR` (measures), `WRK` (works),
 `EVN` (events) and `OBJ` (objects).
 
-Stanza also has an NER model trained on the officially licensed SUC 3.0 (`suc3licensed`). StanzaSharp doesn't offer it
-(its licence terms aren't checked yet).
+Stanza also has an NER model trained on the officially licensed SUC 3.0 (`suc3licensed`). StanzaSharp doesn't offer it;
+whether to is the owner's decision ([#280](https://github.com/bisforboman/StanzaSharp/issues/280)). What was found
+(2026-11-16):
+
+- **Licence.** Stanford publishes `models/ner/suc3licensed.pt` in the same public, ungated repository as the other
+  Swedish models, under the same `license: apache-2.0` model card. The training data is SUC 3.0 in its original order,
+  which Språkbanken gives out only under a signed SUC licence ("freely available for research; requires a signed
+  licence"). Its splits come from that licensed zip (Stanza's `prepare_ner_dataset.py`, `sv_suc3licensed`). Stanford
+  doesn't say what that licence allows for the model. The one statement found from Språkbanken is a 2020 e-mail, quoted
+  in [suc_to_iob's README](https://github.com/EmilStenstrom/suc_to_iob#clarification-on-the-suc-30-license): a model
+  trained on the original SUC needs no licence to be distributed if the training data can't be recreated from it. The
+  SUC licence's own text wasn't read. The model reads `pretrain/conll17` and the conll17 character language models, as
+  `suc3shuffle` does, so the CC BY-NC-SA 4.0 terms in [Licences](#licences) apply to it as well.
+- **Labels.** It tags SUC's manual name types, not `suc3shuffle`'s eight: `person`, `place`, `inst`, `work`, `product`,
+  `event`, `animal`, `myth` and `other`, in lower case. It has no time expressions or measures. Code written for `PER`,
+  `LOC` and `ORG` has to map `person`, `place` and `inst` to them.
+- **Output.** With a local build that allowed it, `stanzasharp compare --model ner=suc3licensed` matched Python Stanza
+  byte for byte on 12 texts (2,531 words; the managed backend). On the masking sample's labelled texts
+  (`samples/StanzaSharp.Masking/eval`), it leaked more names than `suc3shuffle`: 11 of 136 people on the test set
+  instead of 5, and 8 instead of 5 with `--link`. It suggested fewer masks that overlap no label (12 instead of 18).
+  Stanza reports F1 82.54 for it and 85.66 for `suc3shuffle`, each on its own test split.
 
 For masking personal data in Swedish documents (personnummer, organisationsnummer, addresses, bank and plate numbers
 next to NER), see the `StanzaSharp.TasmanianDevil` package and [samples/StanzaSharp.Masking](../samples/StanzaSharp.Masking/README.md).

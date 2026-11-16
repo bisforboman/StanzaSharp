@@ -275,4 +275,9 @@ code change, except KB-BERT's maximum length:
   `ArgumentException` there instead (owner's decision, 2026-11-09; `TransformerEmbedder.TokenizerMaxLength` null).
 - `tests/golden/languages/sv/tokenizer_KBLab_bert-base-swedish-cased.json` holds the tokenizer cases (å, ä, ö, combining
   accents, abbreviations, numbers and units; `LanguageGoldenTests` checks it in Swedish's rows).
-- Not offered: ner `suc3licensed` (owner's decision, 2026-11-09, until its licence is checked).
+- Not offered: ner `suc3licensed` (owner's decision, 2026-11-09, until its licence is checked; licence findings
+  2026-11-16 in docs/swedish.md, #280). Same architecture and config as `suc3shuffle` (charlm, word_emb_dim 100,
+  hidden_dim 256, one layer, BIOES; only `shorthand` `sv_suc3` and the train/dev files differ). Its tag vocabulary holds
+  SUC's manual name types in lower case (`person`, `place`, `inst`, `work`, `product`, `event`, `animal`, `myth`,
+  `other`; no TME or MSR), so its output layer is wider. It ran with no new code: `stanzasharp compare` was byte for
+  byte on 12 texts.
