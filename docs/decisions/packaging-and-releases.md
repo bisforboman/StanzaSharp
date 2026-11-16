@@ -15,6 +15,18 @@ Packages, the public API, downloads, versions and the release process, with the 
   main's CI because the owner merged it by hand), so the nightly runs all of ci.yml on such a commit (below; owner's
   decision, 2026-10-29). release.yml calls ci.yml itself when the commit has no push run.
 
+- Dependency re-check (#279, 2026-11-16; a probe, nothing adopted: adopting is the owner's decision). Stanza 1.15.1
+  (2026-11-14) is out, still on resources 1.15.0; `stanzasharp compare` under it with the pinned models was identical on
+  English default and default_fast, Swedish and German default, but it changes two outputs we reproduce: the lemmatizer
+  falls back to the word when the seq2seq runs to `max_dec_len` (English `lemma=combined_charlm`: `19,250,000` instead
+  of `1925` and 46 zeros) and coref's representative text joins its pieces by `spaces_after` (we join by single spaces,
+  as 1.15.0 did). Its lemma result cache (on by default, per Pipeline) is mutable processor state, which our thread-safety
+  rule forbids. Stanford re-uploaded models after our pins in en (pos, lemma), de (lemma), es, nl (a new `combined`
+  default, no MWT), ja, ar, fa, hi and sl, and moved every language's `v1.15.0` tag; the trees of the other pinned
+  languages, sv and multilingual included, are unchanged. StanzaSharp ran the new en pos/lemma (lemma's new classifiers
+  included) and de lemma models byte for byte like Stanza 1.15.1. TorchSharp 0.107.0 / libtorch 2.10.0 are still the
+  latest and dotnet/TorchSharp#1583 is still open, so the `Scalars` workaround stays. The report is on #279.
+
 - Vulnerable packages (owner's decision, 2026-11-06, asked with the question prompt, for all of the owner's repositories.
   Q1 "A vulnerable NuGet package (direct or transitive) should fail which builds?", options "Every build (Recommended)",
   "CI and release only", "Release only"; answer "Every build". Q2 "Add the weekly check that opens an issue when main
