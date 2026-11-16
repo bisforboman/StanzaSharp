@@ -6,7 +6,7 @@ Barn: {PER#elin:Elin Lindqvist}, {PNR:20120310-2395}
 
 {PER#karin:Karins} ansökan kom in den 3 september. {PER#karin:Lindqvists} make har varit sjukskriven sedan juni.
 {PER#elin:Elin} trivs i skolan enligt mentorn {PER#sofia:Sofia Nilsson}.
-{PER#karin:K. Lindqvist} har tidigare haft kontakt med {ORG:Hyresbolaget Solgården AB}, organisationsnummer {ORGNR:559900-1236}.
+{PER#karin:K. Lindqvist} har tidigare haft kontakt med {ORG:Hyresbolaget Solgården AB}, organisationsnummer {ORGNR:578100-6753}.
 {PER#mikael:Mikaels} arbetsgivare, {ORG:Bergs Bygg & Måleri}, har intygat anställningen.
 {PER#nguyen:Nguyen Van Thanh}, granne till familjen, har lämnat ett yttrande.
 Familjen flyttade 2024 från {ADDRESS:Västra Ringvägen 7} i {LOC:Örebro}.

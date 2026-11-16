@@ -9,11 +9,12 @@ namespace StanzaSharp.Tests;
 public class MaskingTests
 {
     // Personnummer and the samordningsnummer here are Skatteverket's test numbers (open data, blocked so they are never
-    // issued); the month-13 number (a year no one is born in) and the organisationsnummer are synthetic.
+    // issued); the month-13 number (a year no one is born in) is synthetic, and the organisationsnummer are ones Skatteverket
+    // publishes for its test environments.
     [Theory]
     [InlineData("7804012388", true)]
     [InlineData("7804012389", false)]
-    [InlineData("5599001236", true)]
+    [InlineData("5781006753", true)]
     [InlineData("1203102395", true)]
     public void Luhn_ChecksTheLastDigit(string digits, bool valid) => Assert.Equal(valid, Masker.Luhn(digits));
 
@@ -22,7 +23,7 @@ public class MaskingTests
     [InlineData("pnr 900101+9802.", "900101+9802", "PNR")]
     [InlineData("född 197804012388", "197804012388", "PNR")]
     [InlineData("samordningsnummer 20260161-2381", "20260161-2381", "PNR")]
-    [InlineData("organisationsnummer 559900-1236.", "559900-1236", "ORGNR")]
+    [InlineData("organisationsnummer 578100-6753.", "578100-6753", "ORGNR")]
     [InlineData("ring 070-123 45 67 i dag", "070-123 45 67", "PHONE")]
     [InlineData("ring 08-555 123 45 i dag", "08-555 123 45", "PHONE")]
     [InlineData("ring +46 70 123 45 67 i dag", "+46 70 123 45 67", "PHONE")]

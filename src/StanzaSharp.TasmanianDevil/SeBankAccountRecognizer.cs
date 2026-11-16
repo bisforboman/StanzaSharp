@@ -8,11 +8,16 @@ namespace StanzaSharp.TasmanianDevil;
 /// (Swedbank).
 /// </summary>
 /// <remarks>
-/// <para>The clearing number picks the bank and its rule from Bankgirot's table "Bankernas kontonummeruppbyggnad" (the
-/// 2024-02-22 edition; a clearing number outside it is dropped): the account's length, and a modulus 11 check over the
-/// clearing and account numbers (type 1) or a modulus 10 or 11 check over the account number alone (type 2). Swedbank's
-/// five-digit clearing numbers must also pass their own Luhn check. The few Swedbank accounts whose check digit doesn't
-/// work are missed.</para>
+/// <para>The clearing number picks the bank and its rule from Bankgirot's "Bankernas kontonummer" (the 2024-02-22 edition
+/// of its table of the banks' account numbers; a clearing number outside it is dropped). Type 1: seven account digits,
+/// a modulus 11 check (weights 1, 2, ..., 10 from the right) over the clearing number but its first digit (comment 1)
+/// or the whole clearing number (comment 2) and the account. Type 2: the clearing number is not part of the account
+/// number; a modulus 10 check over the account (ten digits, comment 1; up to ten, comment 3: Plusgirot and Swedbank's
+/// 8000-8999) or a modulus 11 check (nine digits, comment 2: Handelsbanken; eight are accepted too, since the table
+/// takes the field's significant digits as the number). Swedbank's clearing numbers that start with 8 have five digits
+/// (Swedbank's page on them), so a match starting with 8 is read with a five-digit clearing number, written
+/// <c>8NNN-N</c>. The table's comment 3 checks Swedbank's accounts "as a rule", so the few whose check digit doesn't
+/// work are missed, and so are Swedbank numbers written without their fifth clearing digit.</para>
 /// <para>Even valid, a number abstains and keeps a low base score: the checks pass for about one number in ten, and most
 /// four-digit prefixes are some bank's clearing number. A context word (<c>konto</c>, <c>kontonummer</c>,
 /// <c>clearingnummer</c>, ...) is needed. The international form is TasmanianDevil's own <c>IBAN_CODE</c>.</para>
@@ -39,7 +44,7 @@ public sealed class SeBankAccountRecognizer : PatternRecognizer
         "personkonto", "clearingnummer", "clearingnr", "clearing", "clnr", "bank account", "account number",
     ];
 
-    // (first clearing number, last, type, comment, shortest account, longest account); type 1 accounts are 7 digits.
+    // Bankgirot's table: (first clearing number, last, type, comment, shortest account, longest account).
     private static readonly (int From, int To, int Type, int Comment, int MinLength, int MaxLength)[] Banks =
     [
         (1100, 1199, 1, 1, 7, 7), // Nordea
@@ -58,7 +63,7 @@ public sealed class SeBankAccountRecognizer : PatternRecognizer
         (5000, 5999, 1, 1, 7, 7), // SEB
         (6000, 6999, 2, 2, 8, 9), // Handelsbanken
         (7000, 7999, 1, 1, 7, 7), // Swedbank
-        (8000, 8999, 2, 3, 6, 10), // Swedbank (five-digit clearing number)
+        (8000, 8999, 2, 3, 2, 10), // Swedbank (five-digit clearing number)
         (9020, 9029, 1, 2, 7, 7), // Länsförsäkringar Bank
         (9040, 9049, 1, 2, 7, 7), // Citibank
         (9060, 9069, 1, 1, 7, 7), // Länsförsäkringar Bank
@@ -79,7 +84,7 @@ public sealed class SeBankAccountRecognizer : PatternRecognizer
         (9390, 9399, 1, 2, 7, 7), // Landshypotek
         (9460, 9469, 1, 1, 7, 7), // Santander Consumer Bank
         (9470, 9479, 1, 2, 7, 7), // BNP Paribas
-        (9500, 9549, 2, 3, 2, 8), // Nordea (Plusgirot)
+        (9500, 9549, 2, 3, 2, 10), // Nordea (Plusgirot)
         (9550, 9569, 1, 2, 7, 7), // Avanza Bank
         (9570, 9579, 2, 1, 10, 10), // Sparbanken Syd
         (9580, 9589, 1, 1, 7, 7), // Aion Bank
@@ -95,7 +100,7 @@ public sealed class SeBankAccountRecognizer : PatternRecognizer
         (9780, 9789, 1, 2, 7, 7), // Klarna Bank
         (9880, 9889, 1, 2, 7, 7), // Riksgälden
         (9890, 9899, 2, 1, 10, 10), // Riksgälden
-        (9960, 9969, 2, 3, 2, 8), // Nordea (Plusgirot)
+        (9960, 9969, 2, 3, 2, 10), // Nordea (Plusgirot)
     ];
 
     /// <summary>The entity type it detects, <c>SE_BANK_ACCOUNT</c>.</summary>
@@ -130,8 +135,7 @@ public sealed class SeBankAccountRecognizer : PatternRecognizer
                 continue;
             }
 
-            if (account.Length < bank.MinLength || account.Length > bank.MaxLength
-                || (clearingLength == 5 && !SwedishCheckDigits.Mod10(digits.AsSpan(0, 5))))
+            if (account.Length < bank.MinLength || account.Length > bank.MaxLength)
             {
                 return false;
             }

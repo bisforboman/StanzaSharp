@@ -1,8 +1,9 @@
 namespace StanzaSharp.TasmanianDevil;
 
 /// <summary>
-/// The check-digit schemes of Swedish payment numbers (Bankgirot's "Bankernas kontonummeruppbyggnad"): modulus 10 (Luhn)
-/// for bankgiro, plusgiro and type 2 bank accounts, modulus 11 for type 1 accounts and Handelsbanken.
+/// The check-digit schemes of Swedish payment numbers, as Bankgirot's "Bankernas kontonummer" (2024-02-22) describes them
+/// (its sections 1.1 and 1.2): modulus 10 (Luhn) for bankgiro, plusgiro and type 2 bank accounts, modulus 11 for type 1
+/// accounts and Handelsbanken.
 /// </summary>
 internal static class SwedishCheckDigits
 {

@@ -11,9 +11,11 @@ a .NET library for detecting and de-identifying PII. It adds two components.
     like the regex matches.
 - `StanzaTokenNormalizer` gives TasmanianDevil's context matching (`LemmaContextAwareEnhancer`) real lemmas, in any
   language Stanza has a lemmatizer for, instead of English Porter stems.
-- `SePersonnummerRecognizer` and `SeOrganisationsnummerRecognizer` find Swedish identity numbers. TasmanianDevil has no
-  Swedish country pack yet.
-  - `SE_PERSONNUMMER` covers personnummer and samordningsnummer. A number must have a valid date and Luhn check digit.
+- `SePersonnummerRecognizer` and `SeOrganisationsnummerRecognizer` find Swedish identity numbers. All the Swedish
+  recognizers are written from the public specifications: Skatteverket's and the statutes' for the identity numbers,
+  Bankgirot's table of the banks' account numbers for bank accounts.
+  - `SE_PERSONNUMMER` covers personnummer and samordningsnummer (day + 60). A number must have a real date and a valid
+    Luhn check digit.
   - `SE_ORGANISATIONSNUMMER` must have a third digit of 2 or more and a valid Luhn check digit.
   - Written with its separator, a valid number counts with full confidence. A bare run of digits also needs a context
     word nearby, such as "personnummer".

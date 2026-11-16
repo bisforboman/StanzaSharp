@@ -149,11 +149,10 @@ Packages, the public API, downloads, versions and the release process, with the 
     `DATE_OF_BIRTH` (no TasmanianDevil type; separate from DATE_TIME so dates of birth can be masked and other dates kept).
     The payment numbers always need a context word (valid numbers abstain): Luhn (bankgiro 7–8 digits, plusgiro 4–8 with
     the hyphen before the check digit or bare) passes one number in ten, and so do the account rules. Bank account =
-    clearing (4 digits; Swedbank 8NNN-N, 5, own Luhn) + account, bank and rule from Bankgirot's "Bankernas
-    kontonummeruppbyggnad" (2024-02-22, as tabulated by the MIT `kontonummer` npm package 6.0.1): type 1 = 7 digits,
-    mod 11 over the clearing's last three (comment 1) or all four (comment 2) and the account; type 2 = mod 10 (comments
-    1, 3) or mod 11 (Handelsbanken, 8–9 digits) over the account; unknown clearing numbers dropped, Swedbank accounts
-    without a working check digit missed. Plates: three letters without I/Q/V (last place also not O), two digits, a digit
+    clearing (4 digits; Swedbank 8NNN-N, 5) + account, bank and rule from Bankgirot's "Bankernas kontonummer"
+    (2024-02-22): type 1 = 7 digits, mod 11 over the clearing's last three (comment 1) or all four (comment 2) and the
+    account; type 2 = mod 10 (comments 1, 3) or mod 11 (Handelsbanken, 8–9 digits) over the account; unknown clearing
+    numbers dropped, Swedbank accounts without a working check digit missed. Plates: three letters without I/Q/V (last place also not O), two digits, a digit
     or letter; case-sensitive, 0.3 + context, ISO currency codes invalidated (`EUR 100`). Date of birth: the trigger word
     (`född`, `föddes`, `f.`, `födelsedatum`, `födelsedag`, optional `den`/`:`) is a lookbehind, `den` joins the span (so
     NER's "den 12 mars 1985" doesn't contain it); ISO, 8 digits, `12 mars 1985`, `12:e`, `12/3 1985`, `12.3.1985`,
@@ -175,6 +174,22 @@ Packages, the public API, downloads, versions and the release process, with the 
     other recognizers' matches it cuts person spans at characters no name has (`<>()[]{}@|/\`, digits) and skips
     occurrences inside e-mail addresses; places and organisations are repeated, dates not. Same scores as the sample's
     on both labelled sets (test: 95% one placeholder per person, no wrong merges, 11 leaks, 20 over-masks).
+    Public specifications (owner's decisions 2026-11-15/16): the Swedish identifier recognizers stay in this package,
+    not upstream as a TasmanianDevil `se` country pack, and are written from the public specifications only, each rule
+    cited in its doc comment: folkbokföringslagen (1991:481) 18 § and lagen (2022:1697) om samordningsnummer 8 § (date,
+    birth number, check digit, `-`/`+`, a full day gets a nearby day of the same month), SKV 704 (modulus 10, weights
+    2, 1), SKV 709 and Skatteverket's Pisa field list (organisationsnummer: third digit ≥ 2, `16` prefix; neither names
+    the check method: modulus 10, which Skatteverket's published test-environment organisation numbers pass), and
+    Bankgirot's "Bankernas kontonummer" 2024-02-22 (every row and rule checked against the PDF; it replaces the npm
+    tabulation as the source) with Swedbank's page on five-digit clearing numbers. Changes: dates must be real (30
+    February fails; 29 February in a leap year, either possible century for a ten-digit number); the Luhn check on
+    Swedbank's fifth clearing digit dropped (no public source states it); Plusgirot and Swedbank 8xxx accounts 2–10
+    digits, as the PDF's "up to 10" (were 2–8 and 6–10). All 43,895 test personnummer and 730 test samordningsnummer
+    of Skatteverket's open data validate in all four written forms. Test numbers: personnummer and samordningsnummer
+    are Skatteverket's test numbers (already so); organisationsnummer replaced by the three Skatteverket publishes for
+    its open API's test environment (578100-6753, 559999-0743, 556000-0324; published for testing, not stated as never
+    issued); the Nordea personkonto is built on a test personnummer; other bank, bankgiro and plusgiro test numbers are
+    made up to pass their checks and can't be shown to be unassigned (owner to decide).
   - `StanzaSharp.DataIngestion` (#233; owner's decisions 2026-10-31: a package now, chunker + NER enricher first): depends
     on StanzaSharp (same version) and Microsoft.Extensions.DataIngestion, still preview-only, so its `PackageVersion` is
     `$(Version)-preview` (owner's decision 2026-10-31; a stable package can't depend on a prerelease, NU5104) until that

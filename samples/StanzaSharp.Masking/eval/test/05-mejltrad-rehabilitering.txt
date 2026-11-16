@@ -15,7 +15,7 @@ Mvh
 
 {PER#annika:Annika Lind}
 HR-specialist
-{ORG:Hasselgrens Bygg & Montage AB} | Org.nr {ORGNR:559900-1251}
+{ORG:Hasselgrens Bygg & Montage AB} | Org.nr {ORGNR:556000-0324}
 {ADDRESS:Industrivägen 14}, {ADDRESS:171 48 Solna}
 Tel {PHONE:08-465 004 37} | Mobil {PHONE:070-174 06 19}
 
