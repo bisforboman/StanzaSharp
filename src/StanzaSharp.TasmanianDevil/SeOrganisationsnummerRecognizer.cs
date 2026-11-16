@@ -7,13 +7,16 @@ namespace StanzaSharp.TasmanianDevil;
 /// <c>NNNNNN-NNNN</c>, optionally prefixed <c>16</c>, whose third digit is 2 or more and whose last is a Luhn check digit.
 /// </summary>
 /// <remarks>
-/// <para>Validation drops a match whose third digit or check digit fails. The third digit keeps it apart from
-/// personnummer, whose third digit starts the month.</para>
+/// <para>Validation drops a match whose third digit or check digit fails. The rules come from the public specifications:
+/// lagen (1974:174) om identitetsbeteckning för juridiska personer m.fl. 4 § (ten digits, the last a check digit),
+/// Skatteverket's brochure SKV 709 (the third digit is at least 2, so that no organisation number looks like a
+/// personnummer) and its field list for the Pisa XML files (the twelve-digit form adds two fictitious century digits,
+/// <c>16</c>). Neither names the check digit's method; it is checked with the personnummer's modulus 10 (SKV 704), which
+/// the organisation numbers Skatteverket publishes for its test environments all pass.</para>
 /// <para>Written with its hyphen, a valid number is promoted to full confidence; a bare run of ten digits abstains and keeps
 /// its low base score, so a context word (<c>organisationsnummer</c>, <c>orgnr</c>, ...) is needed.</para>
-/// <para>TasmanianDevil has no Swedish country pack yet; this recognizer is the one drafted for it, with the same entity
-/// type name, so code written against it keeps working if TasmanianDevil adds the pack. Register it next to
-/// <see cref="StanzaNerRecognizer"/> (for <c>sv</c> by default: pass the analysis language).</para>
+/// <para>Register it next to <see cref="StanzaNerRecognizer"/> (for <c>sv</c> by default: pass the analysis
+/// language).</para>
 /// </remarks>
 public sealed class SeOrganisationsnummerRecognizer : PatternRecognizer
 {

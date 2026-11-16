@@ -7,7 +7,9 @@ namespace StanzaSharp.Tests;
 
 /// <summary>
 /// The Swedish payment-number recognizers of StanzaSharp.TasmanianDevil (bankgiro, plusgiro, bank accounts), without
-/// models. The numbers are synthetic: made to pass their check digits, not looked up.
+/// models. The Nordea personkonto is built on one of Skatteverket's test personnummer, the organisationsnummer is one
+/// Skatteverket publishes for its test environments; the other numbers are synthetic: made to pass their check digits,
+/// not looked up.
 /// </summary>
 public class SwedishPaymentRecognizerTests
 {
@@ -47,6 +49,8 @@ public class SwedishPaymentRecognizerTests
     [InlineData("Personkonto 3300-7804012388 i Nordea.", "3300-7804012388")]
     [InlineData("Konto 9180-1234567897.", "9180-1234567897")]
     [InlineData("Bankkonto 50001234560.", "50001234560")]
+    [InlineData("Konto 8327-8, 914 123 456-8.", "8327-8, 914 123 456-8")]
+    [InlineData("Konto 9500-1234567897 hos Plusgirot.", "9500-1234567897")]
     public void BankAccount_WithContext_IsMasked(string text, string expected) =>
         Assert.Equal(expected, Single(text, SeBankAccountRecognizer.EntityType));
 
@@ -54,7 +58,7 @@ public class SwedishPaymentRecognizerTests
     [InlineData("Lönekonto: 5000-1234561.")]
     [InlineData("Konto 1000-1234567.")]
     [InlineData("Konto 6000-1234567.")]
-    [InlineData("Konto 8327-8, 914 123 456-8.")]
+    [InlineData("Konto 8327-9, 914 123 456-7.")]
     [InlineData("Ordernummer 5000-1234560 skickades.")]
     [InlineData("Konto: ring 0701-23 45 67.")]
     public void BankAccount_WithBadNumberOrNoContext_IsNotMasked(string text) => None(text, SeBankAccountRecognizer.EntityType);
@@ -115,7 +119,7 @@ public class SwedishPaymentRecognizerTests
             engine.Anonymize(
                 "Sökande, personnummer 19780401-2388, född 1978-04-01, bor på Storgatan 14 B, 753 20 Uppsala och äger "
                 + "bilen ABC 123. Lönen betalas till konto 8327-9, 914 123 456-8 av bolaget (organisationsnummer "
-                + "559900-1236, bankgiro 5050-1055).").Text);
+                + "578100-6753, bankgiro 5050-1055).").Text);
     }
 
     private static string Single(string text, string entityType)

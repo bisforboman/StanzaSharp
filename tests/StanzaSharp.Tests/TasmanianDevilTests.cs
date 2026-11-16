@@ -79,8 +79,9 @@ public class TasmanianDevilTests(SharedPipelines pipelines) : IClassFixture<Shar
 
 /// <summary>
 /// The Swedish id-number recognizers of StanzaSharp.TasmanianDevil, without models. Personnummer are Skatteverket's
-/// published test personnummer and the samordningsnummer one of its test samordningsnummer (open data, never issued);
-/// the organisationsnummer is synthetic.
+/// published test personnummer and the samordningsnummer one of its test samordningsnummer (open data, blocked so they
+/// are never issued); the organisationsnummer are ones Skatteverket publishes for its test environments (the test cases
+/// of its open API for tax deductions). Numbers that must fail carry a wrong check digit or an impossible date.
 /// </summary>
 public class SwedishIdRecognizerTests
 {
@@ -89,6 +90,8 @@ public class SwedishIdRecognizerTests
     [InlineData("780401-2388")]
     [InlineData("900101+9802")]
     [InlineData("20260161-2381")]
+    [InlineData("20000229-2399")]
+    [InlineData("000229-2399")]
     public void Personnummer_WithSeparator_HasFullConfidence(string pnr)
     {
         var result = Assert.Single(new SePersonnummerRecognizer().Analyze($"Personnummer {pnr}.", []));
@@ -99,13 +102,17 @@ public class SwedishIdRecognizerTests
     [InlineData("19780401-2389")]
     [InlineData("781301-2382")]
     [InlineData("780400-2389")]
-    [InlineData("559900-1236")]
+    [InlineData("780229-2388")]
+    [InlineData("19780229-2388")]
+    [InlineData("780431-2382")]
+    [InlineData("780491-2389")]
+    [InlineData("578100-6753")]
     public void Personnummer_WithBadCheckDigitOrDate_IsDropped(string pnr) =>
         Assert.Empty(new SePersonnummerRecognizer().Analyze($"Personnummer {pnr}.", []));
 
     [Theory]
-    [InlineData("559900-1236")]
-    [InlineData("16559900-1236")]
+    [InlineData("578100-6753")]
+    [InlineData("16578100-6753")]
     public void Organisationsnummer_WithHyphen_HasFullConfidence(string orgnr)
     {
         var result = Assert.Single(new SeOrganisationsnummerRecognizer().Analyze($"Organisationsnummer {orgnr}.", []));
@@ -113,9 +120,9 @@ public class SwedishIdRecognizerTests
     }
 
     [Theory]
-    [InlineData("559900-1237")]
+    [InlineData("578100-6754")]
     [InlineData("780401-2388")]
-    [InlineData("19559900-1236")]
+    [InlineData("19578100-6753")]
     public void Organisationsnummer_WithBadThirdOrCheckDigit_IsDropped(string orgnr) =>
         Assert.Empty(new SeOrganisationsnummerRecognizer().Analyze($"Organisationsnummer {orgnr}.", []));
 
@@ -136,7 +143,7 @@ public class SwedishIdRecognizerTests
     [Fact]
     public void PiiEngine_MasksSwedishIdNumbers()
     {
-        const string text = "Sökande, personnummer 19780401-2388, är anställd hos bolaget med organisationsnummer 559900-1236.";
+        const string text = "Sökande, personnummer 19780401-2388, är anställd hos bolaget med organisationsnummer 578100-6753.";
         Assert.Contains("19780401-2388", new PiiEngine(new PiiOptions { Language = "sv" }).Anonymize(text).Text);
 
         using var engine = Engine();

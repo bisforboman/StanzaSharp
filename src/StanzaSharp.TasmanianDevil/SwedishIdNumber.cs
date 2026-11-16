@@ -22,7 +22,10 @@ internal static class SwedishIdNumber
         return digits[^10..];
     }
 
-    /// <summary>The Luhn check over ten digits (weights 2, 1, 2, 1, ... from the first).</summary>
+    /// <summary>
+    /// The Luhn check over ten digits (weights 2, 1, 2, 1, ... from the first; two-digit products add their digits): Skatteverket's
+    /// "modulus-10-metoden med vikterna 1 och 2" (SKV 704).
+    /// </summary>
     public static bool Luhn(string tenDigits)
     {
         var sum = 0;
@@ -34,4 +37,8 @@ internal static class SwedishIdNumber
 
         return sum % 10 == 0;
     }
+
+    /// <summary>The century (19 or 20, say) of a twelve-digit match, or <see langword="null"/> for a ten-digit one.</summary>
+    public static int? Century(string text) =>
+        text.Length - (text.Length >= 5 && text[^5] is '-' or '+' ? 1 : 0) == 12 ? ((text[0] - '0') * 10) + (text[1] - '0') : null;
 }

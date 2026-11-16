@@ -8,17 +8,21 @@ namespace StanzaSharp.TasmanianDevil;
 /// <c>-</c> (or <c>+</c> from the year someone turns 100) or without a separator.
 /// </summary>
 /// <remarks>
-/// <para>Validation drops a match whose check digit or date fails: month 01-12, day 01-31, or 61-91 for a samordningsnummer
-/// (day + 60).</para>
+/// <para>Validation drops a match whose check digit or date fails. The rules come from the public specifications:
+/// folkbokföringslagen (1991:481) 18 § (birth date <c>YYMMDD</c>, a three-digit birth number, a check digit, the
+/// <c>-</c> that becomes <c>+</c> the year someone turns 100, and, when a date's numbers run out, a nearby day of the
+/// same month, so the date is always a real one), lagen (2022:1697) om samordningsnummer 8 § (the same, with 60 added to
+/// the day), and Skatteverket's brochure SKV 704 (the check digit: modulus 10 with weights 2, 1, 2, ... over the nine
+/// digits before it). The date must exist: 29 February only in a leap year (a ten-digit number: if either century it
+/// could have makes it one).</para>
 /// <para>Written with its separator, a valid number is distinctive enough to promote to full confidence. A bare run of ten
 /// or twelve digits is not: the Luhn check passes for one in ten numbers and phone numbers such as <c>0701234567</c>
 /// look like dates, so a passing bare number abstains and keeps its low base score, and a context word
 /// (<c>personnummer</c>, <c>pnr</c>, <c>född</c>, ...) is needed to clear the threshold, as for <c>NL_BSN</c>.</para>
 /// <para>Organisation numbers have a third digit of 2 or more (no month can), so they never validate here; see
 /// <see cref="SeOrganisationsnummerRecognizer"/>.</para>
-/// <para>TasmanianDevil has no Swedish country pack yet; this recognizer is the one drafted for it, with the same entity
-/// type name, so code written against it keeps working if TasmanianDevil adds the pack. Register it next to
-/// <see cref="StanzaNerRecognizer"/> (for <c>sv</c> by default: pass the analysis language).</para>
+/// <para>Register it next to <see cref="StanzaNerRecognizer"/> (for <c>sv</c> by default: pass the analysis
+/// language).</para>
 /// </remarks>
 public sealed class SePersonnummerRecognizer : PatternRecognizer
 {
@@ -51,7 +55,7 @@ public sealed class SePersonnummerRecognizer : PatternRecognizer
     public override bool? ValidateResult(string patternText)
     {
         var digits = SwedishIdNumber.LastTenDigits(patternText, out var hasSeparator);
-        if (digits == null || !IsDate(digits) || !SwedishIdNumber.Luhn(digits))
+        if (digits == null || !IsDate(patternText, digits) || !SwedishIdNumber.Luhn(digits))
         {
             return false;
         }
@@ -59,8 +63,8 @@ public sealed class SePersonnummerRecognizer : PatternRecognizer
         return hasSeparator ? true : null;
     }
 
-    // YYMMDD: month 01-12, day 01-31, or 61-91 for a samordningsnummer
-    private static bool IsDate(string digits)
+    // YYMMDD (YYYYMMDD in the twelve-digit form): a real date, the day + 60 for a samordningsnummer
+    private static bool IsDate(string patternText, string digits)
     {
         var month = ((digits[2] - '0') * 10) + (digits[3] - '0');
         var day = ((digits[4] - '0') * 10) + (digits[5] - '0');
@@ -69,6 +73,14 @@ public sealed class SePersonnummerRecognizer : PatternRecognizer
             day -= 60;
         }
 
-        return month is >= 1 and <= 12 && day is >= 1 and <= 31;
+        if (month is < 1 or > 12 || day < 1)
+        {
+            return false;
+        }
+
+        var yy = ((digits[0] - '0') * 10) + (digits[1] - '0');
+        var leap = SwedishIdNumber.Century(patternText) is { } century ? DateTime.IsLeapYear((century * 100) + yy) : yy % 4 == 0;
+        var days = month == 2 ? (leap ? 29 : 28) : DateTime.DaysInMonth(2001, month);
+        return day <= days;
     }
 }
