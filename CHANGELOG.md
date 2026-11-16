@@ -8,6 +8,24 @@ Output is verified against Python Stanza 1.15.0 and its English models (`ModelDo
 Unreleased changes are one file each under [`changes/`](changes/README.md), so pull requests don't conflict here;
 a release folds them in (`python tools/changelog.py release X.Y.Z`).
 
+## [1.17.1] - 2026-11-16
+
+### Added
+- `samples/StanzaSharp.Subtitles`: reads tagged text (MuST-Cinema's `<eol>`/`<eob>`) besides SRT, and `--measure`
+  compares a file's own line breaks with midpoint breaks; on MuST-Cinema's English Amara test set (`measure.sh`) it
+  flags 10.4% of the human breaks and 41.4% of the midpoint ones (#267).
+
+### Changed
+- `samples/StanzaSharp.Rag` takes `--model`: all-MiniLM-L6-v2 (the default), multilingual-e5-small, multilingual-e5-base
+  or KBLab's sentence-bert-swedish-cased, each on the managed encoder with sentence-transformers' vectors. It now sizes
+  and encodes with StanzaSharp's own tokenizers, whose ids are transformers'; Microsoft.ML.Tokenizers' `BertTokenizer`
+  differed on some words, so the sample's scores moved slightly.
+
+### Fixed
+- RoBERTa and XLM-RoBERTa transformers (both backends): a sentence holding the text `<pad>` gave every later piece the
+  wrong position row, so its hidden states differed from transformers'. The pad piece now has row `pad_token_id` and is
+  not counted, as in transformers' `create_position_ids_from_input_ids`.
+
 ## [1.17.0] - 2026-11-13
 
 ### Added
