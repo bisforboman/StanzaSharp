@@ -12,7 +12,9 @@ What StanzaSharp ports and supports, with the owner's decisions behind each part
   charlms are saved by the charlm trainer (`{model, epoch, global_step}`; `Nn.CharlmCheckpoint.Model` unwraps it as
   char_model.py's load does), and its `cintil_charlm` parser has a label `A'`, whose transition repr Python writes in
   double quotes (`OpenConstituent(("A'",))`, `ConstituencyParser.OpenRepr`). Spanish and French packages list coref as
-  optional; `Optional` keeps only models `Alternatives` lists, so it is not offered there (untested). Golden:
+  optional; `Optional` keeps only models `Alternatives` lists, so it is not offered there (it is English's and German's
+  very model; `compare` matched Stanza byte for byte, both backends, 2026-11-16, docs/checkpoint-findings.md; offering it waits for the
+  owner, #282). Golden:
   `tests/golden/languages/<lang>/` (a hand-written `text.txt` per language and `<package>.conllu`, `make_golden.py
   --languages-only`, `LANGUAGES`), `LanguageGoldenTests` (both backends); the models only in nightly.yml's `languages` job
   (no cache); ci.yml's shards leave the class out (`SHARD_NIGHTLY`) and the other no-skip checks exempt it. A new

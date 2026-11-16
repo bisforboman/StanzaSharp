@@ -231,6 +231,28 @@ What the English treebank packages' checkpoints add to the default package's pat
 - `a_scoring_batch_size` 64 (gum-speakers; 128 otherwise): the TorchSharp net's pair blocks follow it, as `run` does.
 - `train_epochs`, `bert_learning_rate`, data paths: training only.
 
+## Checkpoint findings (Spanish and French coref, #282)
+
+Spanish's and French's packages (`default`, `default_fast`, `default_accurate`) list the optional coref model
+`udcoref_xlm-roberta-lora` (2026-11-16, read from resources.json, the checkpoint's config and Stanza 1.15.0's
+`models/coref`). It is the **same file** as English's and German's: resources.json gives all four languages MD5
+`952f55dad09d2350249ed1e2a15a34f8`, and the downloaded `es/coref/` and `fr/coref/` files hash alike (135,847,428 bytes).
+One multilingual model, trained on `gerrom_udcoref` (CorefUD's Germanic and Romance treebanks together):
+
+- `bert_model` `FacebookAI/xlm-roberta-large` (the same 2.24 GB `pytorch_model.bin` and Unigram tokenizer.json),
+  `lora` true (rank 64, alpha 128), `bert_finetune` true, `use_zeros` true, `full_pairwise` false,
+  `a_scoring_batch_size` 128, `rough_k` 50, `max_span_len` 64, `singletons` true; no `lang`/`langs`, so nothing
+  language-specific in the net. `TOKENIZER_MAPS` and `TOKENIZER_FILTERS` have no entry for XLM-R.
+- **No code path the English port lacks.** What differs is the input: Spanish and French MWT expansion (`del`, `al`,
+  `du`, `au`, clitics such as `Dámelo`) gives coref more words than tokens, which German's `zum`/`im` already covers.
+- `stanzasharp compare` (Python Stanza 1.15.0; es and fr enabled locally in `Alternatives` and `Transformers`, not
+  committed) on `tests/golden/languages/{es,fr}/text.txt` and a coref text per language (pronouns, possessives, dialogue,
+  MWTs; 16–17 sentences, about 250 words): **byte-identical CoNLL-U** with every processor of es `default` (with
+  constituency and sentiment), fr `default` and fr `default_fast`, all with coref; the TorchSharp backend's CoNLL-U equals
+  the managed one's on every run. About 35 chains per text; no zero mention predicted on these texts (the zero path is
+  language-independent and covered by `coref/zeros/`).
+- Offering them (an `Alternatives` and `Transformers` entry each, golden data, a CI group) is the owner's decision (#282).
+
 ## Checkpoint findings (Odia, `or`)
 
 Odia's `default` package (2026-11-05, read from its configs and Stanza 1.15.0's `models/common/bert_embedding.py`):
