@@ -38,7 +38,8 @@ What StanzaSharp ports and supports, with the owner's decisions behind each part
   packages: `default_fast`, `lines`, `talbanken` and `default_accurate` on KB-BERT (`KBLab/bert-base-swedish-cased`), and
   `Alternatives` for sv (the `lines_charlm` tokenizer and lemmatizer, the `lines_nocharlm` and `lines_kb-swedish-bert`
   tagger and parser; not ner `suc3licensed`, owner's decision 2026-11-09, until its licence is checked; checked
-  2026-11-16, #280: docs/swedish.md, and offering it is still the owner's decision), byte for byte with no new model code (docs/checkpoint-findings.md, "Swedish"). A deliberate difference (owner's decision,
+  2026-11-16, #280: docs/swedish.md, and offering it is still the owner's decision), byte for byte with no new model code
+  (docs/checkpoint-findings.md, "Swedish"). A deliberate difference (owner's decision,
   2026-11-09): KB-BERT's tokenizer has no `model_max_length` and Stanza doesn't set one, so Stanza never windows it and
   crashes on a sentence over 512 pieces; StanzaSharp throws an `ArgumentException` there. Golden: the packages as for every
   language, plus a `<package>+<processor>=<model>,....conllu` file per `PipelineOptions.Models` choice no package runs
