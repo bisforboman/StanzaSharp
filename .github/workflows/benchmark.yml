@@ -504,7 +504,8 @@ jobs:
             "${spike[@]}" --backend onnx --batch 1
             "${spike[@]}" --backend managed --threads 1
             "${spike[@]}" --backend onnx --threads 1
-            echo '```'
+            echo '```'; echo
+            echo "Managed vectors' sha256: $(shasum -a 256 embedding/vectors.f32 | cut -d' ' -f1)"
           } > embedding/spike.md
           cat embedding/spike.md | tee -a "$GITHUB_STEP_SUMMARY"
 
