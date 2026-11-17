@@ -18,6 +18,7 @@ internal static class EmbeddingSpike
     private const string Usage = """
         Usage: StanzaSharp.Benchmark embedding-spike MODEL_DIR REFERENCE [--backend managed|onnx|both] [--batch N] [--runs N]
                                                      [--threads N] [--path P] [--limit N] [--onnx FILE]
+                                                     [--save FILE]
 
           MODEL_DIR   a sentence-transformers model at a pinned commit (config.json, pytorch_model.bin, tokenizer.json,
                       sentence_bert_config.json, modules.json, 1_Pooling/config.json, onnx/model.onnx)
@@ -29,6 +30,8 @@ internal static class EmbeddingSpike
           --path P    Gemm.Path: Vector512, Vector256, Vector128 or Scalar (default: the CPU's)
           --limit N   only the first N texts
           --onnx FILE the ONNX export (default: MODEL_DIR/onnx/model.onnx)
+          --save FILE the managed vectors, float32 little-endian in text order, to compare bits across paths, builds and
+                      machines (cmp)
         """;
 
     private const double Tolerance = 1e-4;
@@ -43,6 +46,7 @@ internal static class EmbeddingSpike
 
         string modelDir = args[0], reference = args[1], backend = "both";
         string onnxPath = Path.Combine(modelDir, "onnx", "model.onnx");
+        string? save = null;
         int batch = 32, runs = 3, limit = int.MaxValue;
         ManagedThreads.Count = ManagedThreads.Default;
         for (int i = 2; i < args.Length; i++)
@@ -56,6 +60,7 @@ internal static class EmbeddingSpike
                 case "--path" when i + 1 < args.Length: Gemm.Path = Enum.Parse<KernelPath>(args[++i]); break;
                 case "--limit" when i + 1 < args.Length: limit = int.Parse(args[++i]); break;
                 case "--onnx" when i + 1 < args.Length: onnxPath = args[++i]; break;
+                case "--save" when i + 1 < args.Length: save = args[++i]; break;
                 default: Console.Error.WriteLine(Usage); return 2;
             }
         }
@@ -108,6 +113,12 @@ internal static class EmbeddingSpike
             Console.WriteLine($"managed: load {load.Elapsed.TotalMilliseconds:F0} ms, {config.Layers} layers, hidden {config.Hidden}, "
                 + $"working set {Environment.WorkingSet / 1e6:F0} MB");
             managed = Time("managed", runs, pieces, texts.Count, () => Batches(order, batch, ids, b => EncodeManaged(encoder, b, normalize)));
+            if (save != null)
+            {
+                using var file = File.Create(save);
+                foreach (var vector in managed)
+                    file.Write(System.Runtime.InteropServices.MemoryMarshal.AsBytes(vector.AsSpan()));
+            }
         }
 
         if (backend is "onnx" or "both")

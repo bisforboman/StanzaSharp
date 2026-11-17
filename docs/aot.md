@@ -117,7 +117,9 @@ time by the target instruction set, not detected on the user's CPU. The default 
 | AOT, `IlcInstructionSet=x86-64-v3` | false | true | Vector256 |
 
 Output stays byte-identical on Vector128 (the golden tests already pass on every path), but the kernels are about 2x
-slower (table below). An app chooses:
+slower (table below). The scores are not bit for bit the JIT's there: x86-64-v2 has no FMA3, so `Gemm`'s
+`MultiplyAddEstimate` multiplies and adds in two roundings (sentence embeddings moved by up to 3.8e-7,
+docs/embedding-spike.md); with `x86-64-v3` or `-v4` they are the JIT's bits. An app chooses:
 
 - `x86-64-v3` (AVX2/FMA, every x64 CPU since ~2015): Vector256, the JIT's speed on AVX2 machines; the binary refuses to
   start on older CPUs.

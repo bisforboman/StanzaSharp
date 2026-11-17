@@ -46,6 +46,10 @@ on:
         description: "startup: instead of the default settings, NAME=out/jit|out/r2r[@VAR=VALUE,...] separated by ;"
         type: string
         default: ''
+      embedding_only:
+        description: Only the sentence-embedding jobs (#268, MiniLM on x64 and Arm64), not the runner matrix
+        type: boolean
+        default: false
   # nightly.yml: the runner matrix in quick mode, without the avx512 jobs.
   workflow_call:
     inputs:
@@ -73,6 +77,9 @@ on:
       startup_settings:
         type: string
         default: ''
+      embedding_only:
+        type: boolean
+        default: false
       no_avx512:
         description: Leave out the avx512 jobs
         type: boolean
@@ -87,7 +94,7 @@ env:
 
 jobs:
   benchmark:
-    if: ${{ !inputs.avx512_only && !inputs.startup_only }}
+    if: ${{ !inputs.avx512_only && !inputs.startup_only && !inputs.embedding_only }}
     strategy:
       fail-fast: false
       matrix:
@@ -206,7 +213,7 @@ jobs:
   # `stanzasharp benchmark` without Python, alternating DOTNET_PreferredVectorBitWidth=256 (Vector256) and the default
   # (Vector512), at the default threads and at 1. Its blocks go to the summary and the artifact avx512-<os>-<attempt>.
   avx512:
-    if: ${{ !inputs.startup_only && !inputs.no_avx512 }}
+    if: ${{ !inputs.startup_only && !inputs.embedding_only && !inputs.no_avx512 }}
     strategy:
       fail-fast: false
       matrix:
@@ -429,10 +436,119 @@ jobs:
           name: startup-${{ matrix.os }}
           path: startup.md
 
+  # Sentence embeddings on Arm64 (#268, docs/embedding-spike.md): `StanzaSharp.Benchmark embedding-spike` on
+  # all-MiniLM-L6-v2 (the commit samples/StanzaSharp.Rag pins) against sentence-transformers' vectors
+  # (tools/embedding_spike.py, the pinned versions) and ONNX Runtime, on one x64 and two Arm64 runners: batch 32 and 1 at
+  # the runner's threads, batch 32 at one thread. Each job fails if a vector is off by more than 1e-4; embedding-compare
+  # then compares the managed vectors' bits across the runners. Blocks in the summary and the artifact embedding-<os>.
+  embedding:
+    if: ${{ inputs.embedding_only }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-26.04, ubuntu-26.04-arm, macos-26]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash
+    env:
+      MODEL: sentence-transformers/all-MiniLM-L6-v2
+      REVISION: 1110a243fdf4706b3f48f1d95db1a4f5529b4d41
+    steps:
+      - name: Turn off Spotlight indexing
+        if: runner.os == 'macOS'
+        run: sudo mdutil -a -i off
+
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: Install sentence-transformers
+        timeout-minutes: 20
+        run: >
+          python -m pip install -r tools/requirements.txt -r tools/requirements-transformer.txt -r tools/requirements-embedding.txt
+          --extra-index-url https://download.pytorch.org/whl/cpu
+
+      - name: Download the model
+        run: |
+          for file in config.json pytorch_model.bin tokenizer.json tokenizer_config.json special_tokens_map.json vocab.txt \
+            sentence_bert_config.json modules.json 1_Pooling/config.json config_sentence_transformers.json onnx/model.onnx; do
+            mkdir -p "models/hf/all-MiniLM-L6-v2/$(dirname $file)"
+            curl -fsSL --retry 3 -o "models/hf/all-MiniLM-L6-v2/$file" "https://huggingface.co/$MODEL/resolve/$REVISION/$file"
+          done
+          echo "c3a85f238711653950f6a79ece63eb0ea93d76f6a6284be04019c53733baf256  models/hf/all-MiniLM-L6-v2/pytorch_model.bin" | shasum -a 256 -c
+
+      - name: Reference vectors
+        run: python tools/embedding_spike.py models/hf/all-MiniLM-L6-v2 reference
+
+      - name: Build
+        run: dotnet build samples/StanzaSharp.Benchmark -c Release -p:StanzaSharpNoLibTorch=true
+
+      - name: Measure
+        run: |
+          if [ "$RUNNER_OS" = macOS ]; then cpu=$(sysctl -n machdep.cpu.brand_string); else cpu=$(lscpu | grep -m1 'Model name' | cut -d: -f2- | xargs); fi
+          spike=(dotnet samples/StanzaSharp.Benchmark/bin/Release/net10.0/StanzaSharp.Benchmark.dll embedding-spike models/hf/all-MiniLM-L6-v2 reference --runs 5)
+          mkdir -p embedding
+          {
+            echo "## ${{ matrix.os }}"; echo; echo "$cpu, $(uname -m)"; echo; echo '```'
+            "${spike[@]}" --backend managed --save embedding/vectors.f32
+            "${spike[@]}" --backend onnx
+            "${spike[@]}" --backend managed --batch 1
+            "${spike[@]}" --backend onnx --batch 1
+            "${spike[@]}" --backend managed --threads 1
+            "${spike[@]}" --backend onnx --threads 1
+            echo '```'; echo
+            echo "Managed vectors' sha256: $(shasum -a 256 embedding/vectors.f32 | cut -d' ' -f1)"
+          } > embedding/spike.md
+          cat embedding/spike.md | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: embedding-${{ matrix.os }}
+          path: embedding/
+
+  # The managed vectors of every embedding job against ubuntu-26.04's (x64): equal bits, or the largest difference.
+  embedding-compare:
+    needs: embedding
+    if: ${{ !cancelled() && inputs.embedding_only }}
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: embedding-*
+          path: results
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: Compare
+        run: |
+          python -m pip install numpy==2.2.6
+          cat > compare.py <<'PY'
+          import pathlib, numpy as np
+          base = np.fromfile("results/embedding-ubuntu-26.04/vectors.f32", dtype="<f4")
+          print("## Managed vectors against ubuntu-26.04's\n")
+          for path in sorted(pathlib.Path("results").glob("embedding-*/vectors.f32")):
+              other = np.fromfile(path, dtype="<f4")
+              diff = np.abs(base - other)
+              same = base.tobytes() == other.tobytes()
+              print(f"- {path.parent.name}: " + ("equal bits" if same else f"{(diff > 0).sum()} of {diff.size} values differ, max |diff| {diff.max():.2e}"))
+          PY
+          python compare.py | tee -a "$GITHUB_STEP_SUMMARY"
+
   # One table over every runner that finished, then each runner's block.
   summary:
     needs: benchmark
-    if: ${{ !cancelled() && !inputs.avx512_only && !inputs.startup_only }}
+    if: ${{ !cancelled() && !inputs.avx512_only && !inputs.startup_only && !inputs.embedding_only }}
     runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
