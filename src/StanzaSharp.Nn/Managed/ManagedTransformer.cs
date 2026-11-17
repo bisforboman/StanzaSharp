@@ -337,7 +337,7 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
 
                 double sum = 0;
                 for (int j = 0; j < n; j++)
-                    sum += p[j] = Math.Exp(p[j] - max);
+                    sum += p[j] = Exp(p[j] - max);
                 acc.Clear();
                 for (int j = 0; j < n; j++)
                     WeightedAdd(acc, p[j], qkv + ((long)j * 3 * h) + (2 * h));
@@ -428,16 +428,7 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
                     for (int r = 0; r < QueryBlock; r++)
                     {
                         max[r] = Max(p + (r * n4), n);
-                        sum[r] = 0;
-                    }
-
-                    for (int j = 0; j < n; j++)
-                    {
-                        for (int r = 0; r < QueryBlock; r++)
-                        {
-                            double* x = p + (r * n4) + j;
-                            sum[r] += *x = Math.Exp(*x - max[r]);
-                        }
+                        sum[r] = SoftmaxNumerators(p + (r * n4), n, max[r]);
                     }
 
                     if (wide)
@@ -458,6 +449,58 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
     {
         for (int e = 0; e < target.Length; e++)
             target[e] = source[e];
+    }
+
+    // x[j] = Exp(x[j] − max) for j < n, the managed exponential (not Math.Exp: the C runtime's exp, a call per score), on
+    // four lane groups at a time; returns their sum, from 0 in key order (AttentionRows' sum).
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private static double SoftmaxNumerators(double* x, int n, double max)
+    {
+        int j = Gemm.Path == KernelPath.Vector512 && Vector512.IsHardwareAccelerated ? Exp512(x, n, max)
+            : Vector.IsHardwareAccelerated ? ExpVector(x, n, max)
+            : 0;
+        for (; j < n; j++)
+            x[j] = Exp(x[j] - max);
+        double sum = 0;
+        for (j = 0; j < n; j++)
+            sum += x[j];
+        return sum;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.NoInlining)]
+    private static int Exp512(double* x, int n, double max)
+    {
+        int j = 0, w = Vector512<double>.Count;
+        var m = Vector512.Create(max);
+        for (; j + (4 * w) <= n; j += 4 * w)
+        {
+            var e = Exp(new Lanes512(Vector512.Load(x + j) - m, Vector512.Load(x + j + w) - m, Vector512.Load(x + j + (2 * w)) - m,
+                Vector512.Load(x + j + (3 * w)) - m));
+            e.A.Store(x + j);
+            e.B.Store(x + j + w);
+            e.C.Store(x + j + (2 * w));
+            e.D.Store(x + j + (3 * w));
+        }
+
+        return j;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.NoInlining)]
+    private static int ExpVector(double* x, int n, double max)
+    {
+        int j = 0, w = Vector<double>.Count;
+        var m = new Vector<double>(max);
+        for (; j + (4 * w) <= n; j += 4 * w)
+        {
+            var e = Exp(new LanesVector(Vector.Load(x + j) - m, Vector.Load(x + j + w) - m, Vector.Load(x + j + (2 * w)) - m,
+                Vector.Load(x + j + (3 * w)) - m));
+            e.A.Store(x + j);
+            e.B.Store(x + j + w);
+            e.C.Store(x + j + (2 * w));
+            e.D.Store(x + j + (3 * w));
+        }
+
+        return j;
     }
 
     // The largest of x[0..n): Math.Max's result (vector maximums propagate NaN and order -0 below +0 as it does, and the
@@ -1006,9 +1049,10 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
         return 1.00002368 + (t * poly);
     }
 
-    // e^x for x ≤ 0 (the erfc argument; below -708 it is clamped, giving about 1e-308): x = n·ln 2 + r with n rounded to
-    // nearest by adding and subtracting 1.5·2^52, then a degree-12 Taylor polynomial in |r| ≤ ln 2 / 2 (truncation under
-    // 1e-16) times 2^n. Only multiplies and adds, never fused, so the scalar and every vector width give the same bits.
+    // e^x for x ≤ 0 (the erfc argument, and attention's score minus its row maximum; below -708 it is clamped, giving
+    // about 1e-308): x = n·ln 2 + r with n rounded to nearest by adding and subtracting 1.5·2^52, then a degree-12 Taylor
+    // polynomial in |r| ≤ ln 2 / 2 (truncation under 1e-16) times 2^n. Only multiplies and adds, never fused, so the
+    // scalar and every vector width give the same bits.
     private const double Log2E = 1.4426950408889634, Ln2Hi = 0.693147180369123816490, Ln2Lo = 1.90821492927058770002e-10,
         RoundMagic = 6755399441055744.0;
 
