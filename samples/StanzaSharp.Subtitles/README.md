@@ -104,7 +104,45 @@ Split relations, counted once per break: `case` 22 own / 83 midpoint, `det` 27 /
 - Blender's open films are CC BY but too small: Tears of Steel's English subtitles have 7 two-line cues. No openly
   licensed Swedish subtitles were found, so Swedish is unmeasured; MuST-Cinema has no Swedish.
 
+### Professionally made subtitles (#283)
+
+Amara's subtitles are made by volunteers, so the measurement was repeated on broadcast subtitles: the English SRT files
+of the ITV dev set of the IWSLT 2023 subtitling track, 7 episodes of 3 television series (about 7 hours) that ITV Studios
+gave IWSLT, with subtitles made for broadcast (closed captions: speaker labels, sound descriptions, some three-line
+cues). The data's README allows research use only and forbids redistribution, partial or full, so `measure-itv.sh`
+downloads it from the organizers' link (fbk.sharepoint.com, pinned SHA-256) into `models/subtitles/itv/`, and only the
+counts below are kept here, no subtitle text. The track's page warns that these English files follow other guidelines
+than the track's (German and Spanish) ones; they were not made to Netflix's guides either.
+
+```
+samples/StanzaSharp.Subtitles/measure-itv.sh
+```
+
+Results (2026-11-17, English default package, managed backend, the 7 episodes as one file, `--max-chars 42`; no line
+is longer: the longest are 30, 42 and 36 characters in the three series):
+
+| | own breaks | midpoint breaks | Amara: own | midpoint |
+|---|---|---|---|---|
+| flagged, all two-line subtitles (ITV 2,266, Amara 584) | 228 (10.1%) | 871 (38.4%) | 10.4% | 41.4% |
+| flagged, where the two breaks differ (ITV 1,271, Amara 304) | 84 (6.6%) | 727 (57.2%) | 7.2% | 66.8% |
+| the checker's best-scoring break is this one | 1,480 (65.3%) | 995 (43.9%) | 71.4% | 47.9% |
+
+Split relations, own / midpoint: `case` 84 / 273, `det` 62 / 251, `mark` 42 / 117, `amod` 39 / 82, `compound` 32 / 69,
+`nsubj` 20 / 117, `nmod:poss` 17 / 57, `compound:prt` 8 / 38, `cc` 4 / 39, `nummod` 3 / 20, `expl` 1 / 5, `fixed` 1 / 4,
+`flat` 1 / 10, `nsubj:pass` 1 / 1, `det:predet` 0 / 2.
+
+- The figures are close to Amara's: the professional subtitlers' breaks are flagged as often as the volunteers', and the
+  rules separate them from midpoint breaks about as well (one in ten against four in ten).
+- Per series the own-break rate is 14.2%, 6.9% and 8.8% (three-line closed captions with lines of up to 30 characters;
+  up to 42; up to 36), with the midpoint rate 37 to 39% in each.
+- What these subtitlers break that the rules keep together differs from Amara's: `case` (a break after a preposition)
+  and `det` lead, and `mark` is third, mostly an infinitive's "to" (or "gonna") ending the top line; Amara's leader,
+  `amod`, comes fourth. In a sample of the flagged breaks read by hand nearly all parses were right, so these are breaks
+  the guides advise against, not parser errors.
+- Removing the speaker labels and the sound descriptions in brackets changes little: 10.2% own, 38.4% midpoint.
+
 ## Not yet
 
 - WebVTT, cue boundaries (a sentence split between cues at a bad place), NER for names the parser misses.
-- A measurement on subtitles made to Netflix's guides, and on Swedish ones: neither found openly licensed.
+- A measurement on subtitles made to Netflix's guides, and on Swedish ones: neither found with a licence that allows
+  research use (#283 lists what was searched).
