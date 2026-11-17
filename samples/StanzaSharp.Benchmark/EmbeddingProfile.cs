@@ -70,6 +70,7 @@ internal static unsafe class EmbeddingProfile
             return AttentionShape(int.Parse(args[1]), int.Parse(args[2]), runs);
 
         string modelDir = args[1];
+
         // A sentence-transformers model is a bare BertModel state dict cut at max_seq_length; any other transformer folder
         // (ModelDownloader's, e.g. ELECTRA-large) keeps its config's weight prefix and is cut at its positions.
         string sentenceConfig = Path.Combine(modelDir, "sentence_bert_config.json");
