@@ -86,14 +86,21 @@ MiniLM, `embedding-profile run`, two alternating rounds each:
 
 (The spike's 1.65× was 11.0 s against 6.66 s on a busier VM; on this one the same code took 10.1 s.)
 
+The session's container then moved to a faster host of the same CPU model; there, batch 32 on 1 thread took 7.82–8.30 s
+before, 6.74–7.16 s after and 5.20 s on ONNX Runtime: 1.57× → **1.33×**.
+
+**ELECTRA-large** (the transformer packages' encoder: 24 layers, hidden 1024, 16 heads of 64, intermediate 4096), the same
+texts through `embedding-profile run models/stanza/en/transformer/google/electra-large-discriminator` (cut at 512), 4
+threads, on that host: 49.6–50.8 s before, 44.9 s after (about 11 % less), the states' hash `3E61FA2C729701A4` both.
+
 - **About 14 % less time on Vector512, 5 % on Vector256**, where the GEMMs (no AVX-512) are a larger share and attention
   keeps its 256-bit kernels.
 - **The processors:** the GEMM is unchanged, so the `default` package's processors (all GEMM, LSTM and charlm work) run
   as before (`StanzaSharp.Benchmark --package default --copies 1`, 4 threads: 7.33–7.35 s against 7.46–7.50 s, within the
   noise). The transformer packages run the same encoder, whose attention and GELU changed, but ELECTRA-large's time is in
-  its GEMMs (hidden 1024, 24 layers): `stanzasharp benchmark --package default_accurate`, 4 threads, the transformer
-  stage took 7.45 and 7.26 s before, 6.82 and 7.21 s after (totals 13.42 / 13.29 s against 12.60 / 13.35 s), within the
-  noise.
+  its GEMMs (hidden 1024, 24 layers): the encoder alone is about 11 % faster (above), but in `stanzasharp benchmark
+  --package default_accurate` (4 threads, short sentences) the transformer stage took 7.45 and 7.26 s before, 6.82 and
+  7.21 s after (totals 13.42 / 13.29 s against 12.60 / 13.35 s), within that benchmark's noise.
 
 ## Tried, not kept
 
@@ -102,14 +109,15 @@ MiniLM, `embedding-profile run`, two alternating rounds each:
   124–134) nor at the processors' small ones (6 × 384 → 1536: 86–93 against 86; 30 × 400 → 1600: 118–123 against
   92–121): the kernel is already at the FMA units' limit, and runs vary by more than the difference.
 - **A vectorized exp in attention** (`Exp<T>` above, the polynomial GELU already uses, within 1e-15 relative of
-  `Math.Exp`): `attention 256 32` 14.9 → 7.8 ns per pair, the whole encoder 8.66 → 8.0 s (1 thread; about 1.19× ONNX
-  Runtime). It changes the arithmetic: on random arguments 16 % of its results are one double ulp from `Math.Exp`'s. On
-  this corpus no output state changed (the hash stays `5DB9D5712A129655`), but nothing guarantees that for other inputs,
-  so it is the owner's decision (draft PR, question on #281). It would also make attention independent of the C runtime's
+  `Math.Exp`): `attention 256 32` 14.9 → 7.0–7.8 ns per pair; the whole encoder, on the faster host, 6.74–7.16 →
+  6.07–6.35 s (1 thread; 1.19× ONNX Runtime), ELECTRA-large 44.9 → 42.3 s (4 threads). It changes the arithmetic: on
+  random arguments 16 % of its results are one double ulp from `Math.Exp`'s. On these texts no output state changed, on
+  MiniLM or ELECTRA-large (the hashes stay `5DB9D5712A129655` and `3E61FA2C729701A4`), but nothing guarantees that for
+  other inputs, so it is the owner's decision (draft PR, question on #281). It would also make attention independent of the C runtime's
   `exp`, which the encoder now calls through `Math.Exp` and which differs between libm versions.
 
 ## What is left
 
-On one thread the managed encoder is now 1.29× ONNX Runtime's time. The rest is mostly attention in double
+On one thread the managed encoder is now 1.29–1.33× ONNX Runtime's time. The rest is mostly attention in double
 (round 45 chose double for exactness across paths; ONNX Runtime runs it in float) and `Math.Exp`. A float attention,
 or the vectorized exp above, would change output bits.
