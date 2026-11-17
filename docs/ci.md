@@ -156,6 +156,11 @@ How `.github/workflows/` test and publish StanzaSharp, and the decisions behind 
     `benchmark-<os>`. `summary` combines them with `tools/benchmark_table.py` into `benchmarks.md` (summary + artifact).
     The tool is built with `-p:Version=<git describe>` (full-history checkout), so the block names e.g.
     `1.0.0-67-g97089bb` instead of Directory.Build.props' `0.1.0-dev`. First run: docs/performance.md "Run it yourself".
+    `embedding_only` (#268, 2026-11-16; manual only, the other jobs skip): `embedding` on ubuntu-26.04, ubuntu-26.04-arm
+    and macos-26 downloads all-MiniLM-L6-v2 at its pinned commit, installs `tools/requirements*.txt` (with
+    `requirements-embedding.txt`), runs `tools/embedding_spike.py` and `StanzaSharp.Benchmark embedding-spike` (managed
+    and ONNX Runtime; batch 32, batch 1, one thread), and prints the managed vectors' sha256; `embedding-compare`
+    compares those vectors' bits across the runners. Results: docs/embedding-spike.md.
   - `vulnerable-packages.yml` (owner's decision, 2026-11-06; docs/decisions/packaging-and-releases.md): Mondays 04:17
     UTC on main, and `workflow_dispatch`; never required. Every restore already fails on a vulnerable package (NU1901-NU1904
     are errors in Directory.Build.props); this run catches advisories published after the last merge. It restores

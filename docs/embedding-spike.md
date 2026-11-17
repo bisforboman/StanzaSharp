@@ -70,7 +70,8 @@ What the numbers say:
   managed side only when lengths in a batch vary; sorting by length, as both did here, already limits the padding.
 - **Memory**: the managed encoder's peak is lower in every setting (half of ONNX Runtime's at batch 32).
 
-Not measured: Native AOT, Arm64, other models (E5, a Swedish model), the Vector256 path, and Windows timings.
+Not measured in this first slice: Native AOT, Arm64, other models, the Vector256 path and Windows timings. The later
+sections measure the other models (E5 and the Swedish model, 2026-11-14) and all the rest but Windows (2026-11-16).
 
 ## Decisions (the owner, 2026-11-10)
 
@@ -176,8 +177,9 @@ batch 32, after a warm-up). E5-base's timings are from before the position fix, 
   768), so E5-base's ratios are the nearest measure. For scale, sentence-transformers on torch (4 threads, batch 32,
   padded) took 21.1 s on the Swedish model, 7.1 s on E5-small and 23.2 s on E5-base.
 
-Not measured: Native AOT, Arm64, the Vector256 path, Windows, multilingual-e5-large, and retrieval quality (the vectors
-equal sentence-transformers', so quality is the models' own).
+Not measured here: Native AOT, Arm64, the Vector256 path and multilingual-e5-large (all in "Native AOT, Arm64, Vector256
+and multilingual-e5-large" below), Windows, and retrieval quality (the vectors equal sentence-transformers', so quality
+is the models' own).
 
 Open, for the owner: which of these the Rag sample (or a public API) should offer. The sample sizes its chunks with
 ML.Tokenizers' `BertTokenizer`; an E5 model there needs the Unigram tokenizer for sizing too, and its `query: ` /
@@ -208,3 +210,161 @@ samples/StanzaSharp.Rag, still a sample and nothing public.
 
 For a public API this leaves: which package holds it, the query/passage roles, whether `PieceCounter` (or a full
 `Tokenizer`) becomes public for `SentenceChunker`'s users, and where models download from.
+
+## Native AOT, Arm64, Vector256 and multilingual-e5-large (2026-11-16)
+
+The owner's decision (2026-11-16, on #268): measure the remaining gaps before designing a public API. Windows timings
+stay out (they need the owner's computer). Nothing here changes `src/` or adds public API.
+
+### What was run
+
+- **The spike**, `embedding-spike` as above, now with `--save FILE` (the managed vectors as raw float32 in text order),
+  so that kernel paths, builds and machines can be compared bit for bit (`cmp`, or a sha256).
+- **A scratch AOT harness** (not committed, like docs/aot.md's): a console app compiled with the Rag sample's own
+  `SentenceEmbeddingGenerator.cs` (assembly named `StanzaSharp.Rag` for the InternalsVisibleTo), referencing
+  StanzaSharp.Nn, Core and DataIngestion. It times `SentenceEmbeddingGenerator.LoadAsync` (which checks the three
+  files' sha256 before loading; the harness times that hash separately), the first one-text call, and `GenerateAsync`
+  over the spike's texts in batches of 32 (longest first), then saves the vectors. Published with
+  `dotnet publish -c Release -r linux-x64 -p:PublishAot=true [-p:IlcInstructionSet=x86-64-v3|x86-64-v4]` and run
+  next to the same app on the JIT.
+- **The Rag sample itself**, `dotnet publish samples/StanzaSharp.Rag -c Release -r linux-x64 -p:PublishAot=true
+  -p:IlcInstructionSet=x86-64-v4`, run on its own notes and default query and compared with the JIT build's output.
+- **Arm64 in CI**: no Arm64 machine is reachable from the cloud container, so benchmark.yml got a manual mode,
+  `embedding_only` (never on pushes or pull requests, never required, like `avx512_only` and `startup_only`; docs/ci.md).
+  Its `embedding` jobs run MiniLM through tools/embedding_spike.py and the spike on ubuntu-26.04 (x64),
+  ubuntu-26.04-arm and macos-26 (Apple Silicon): batch 32 and batch 1 at the runner's threads and batch 32 on one
+  thread, each backend in its own process, median of 5 runs. `embedding-compare` compares the managed vectors' bits
+  across the three. Run twice on this branch (runs 70 and 71 of Benchmark); the numbers below are run 71's; run 70's
+  agree within 3 % on Linux (macOS: see below).
+
+Local measurements are on the same 4-core VM as the sections above (Intel Xeon @ 2.10 GHz, AVX-512), 4 threads.
+
+### Identical vectors
+
+The managed vectors of MiniLM on the 935 texts, sha256 `78ef002e…`, are **the same bits** in every one of these:
+
+| Build or machine | Kernel path |
+|---|---|
+| local Xeon, JIT (the spike) | Vector512, Vector256 (forced), Vector128 (forced) |
+| local Xeon, JIT (the AOT harness: other batches, through `GenerateAsync`) | Vector512 |
+| local Xeon, Native AOT `x86-64-v4` / `x86-64-v3` | Vector512 / Vector256 |
+| ubuntu-26.04 (AMD EPYC 9V74, AVX-512), JIT | Vector512 |
+| ubuntu-26.04-arm (Neoverse-N2), JIT | Vector128 (NEON) |
+| macos-26 (Apple M1, virtual), JIT | Vector128 (NEON) |
+
+multilingual-e5-large's vectors on the 1,345 texts are likewise the same bits on Vector512 and Vector256 (forced), on
+the JIT and under Native AOT `x86-64-v4`.
+
+One build differs: **Native AOT for the default x64 target (`x86-64-v2`)**. That target has no FMA3, so `Gemm`'s `Fma`
+(`MultiplyAddEstimate`, by design: one fused instruction where the CPU has one, else a·b + c) rounds twice. 344,763 of
+359,040 values differ, by at most 3.8e-7; the vectors stay within 4.3e-7 of sentence-transformers' float32, far inside
+1e-4. The same would happen on the JIT on an x64 CPU without FMA3 (before Haswell). It also costs speed (below). The
+JIT's forced Vector128 path on this machine still fuses, so it keeps the bits. docs/aot.md already recommends
+`x86-64-v3`; with it the bits are the JIT's.
+
+### Native AOT
+
+The Rag sample publishes with Native AOT in 47 s into one 12.6 MB file (plus its docs folder). The publish gives 7 trim
+and AOT warnings, **all in Microsoft.SemanticKernel.Connectors.InMemory** (IL2026, IL2046, IL3050, IL3051: its
+`IQueryable` filters and `GetDynamicCollection`); none in StanzaSharp, StanzaSharp.DataIngestion, Microsoft.ML.Tokenizers,
+Microsoft.Extensions.AI or DataIngestion. Run: the download check, the pipeline, chunking, entity enrichment, embedding
+and the unfiltered search print exactly what the JIT build prints; the filtered search then throws inside the InMemory
+connector (`InMemoryCollection.ConvertFilter`: "Instance property 'Record' is not defined", the code its IL2026 warning
+names). So the encoder runs under AOT; the sample as a whole needs another vector store, or no filter, to run AOT.
+
+The harness (the generator alone, 935 MiniLM texts, batch 32; median of 5 after a warm-up):
+
+| Build | Gemm.Path | `LoadAsync` (of it, sha256) | first call | batch 32 | peak working set |
+|---|---|---|---|---|---|
+| JIT | Vector512 | 354 ms (83 ms) | 60 ms | 2.78 s | 510 MB |
+| AOT `x86-64-v4` | Vector512 | 212 ms (68 ms) | 3.5 ms | 2.77 s | 463 MB |
+| AOT `x86-64-v3` | Vector256 | 197 ms (78 ms) | 4.0 ms | 3.51 s | 463 MB |
+| AOT default (`x86-64-v2`) | Vector128, no FMA | 202 ms (71 ms) | 10 ms | 7.87 s | 462 MB |
+
+- **AOT starts faster**: the model loads in about 130 ms instead of 270 ms (without the hash), the first text takes
+  4 ms instead of 60, and process start to the first vector is 222–236 ms instead of 478 ms.
+- **Steady speed equals the JIT's on the same path** (2.77 s against 2.78 s on Vector512). Vector256 is 1.26× slower
+  than Vector512 on this machine (as in the spike, below); the default target is 2.8× slower than the JIT, twice what
+  Vector128 alone costs (the forced JIT Vector128 path takes 4.47 s), because it also has no FMA. As docs/aot.md says,
+  an AOT app should set `IlcInstructionSet=x86-64-v3` (or `x86-64-v4` where AVX-512 is certain).
+- The harness binary is one 7.5 MB file.
+
+multilingual-e5-large (1,345 texts), AOT `x86-64-v4` against the JIT: `LoadAsync` 4.65 s against 4.82 s (of it 1.8 s
+hashing the 2.24 GB of weights, so the load itself is 2.8 s against 3.0 s: reading the weights dominates), first call
+62 ms against 112 ms, batch 32 88.2 s against 87.2 s (median of 3), peak working set 3,259 MB against 3,356 MB, and the
+same bits. AOT's start-up gain is small next to a large model's load.
+
+### Arm64
+
+MiniLM, 935 texts, the runners' threads (4 on Linux, 3 on macOS), one backend per process, median of 5:
+
+| Runner | Setting | managed | ONNX Runtime | managed / ORT time | peak working set, managed | ORT |
+|---|---|---|---|---|---|---|
+| ubuntu-26.04-arm (Neoverse-N2) | batch 32 | 4.81 s | 3.82 s | **1.26×** | 435 MB | 832 MB |
+| | batch 1 | 5.95 s | 4.13 s | **1.44×** | 258 MB | 301 MB |
+| | batch 32, 1 thread | 18.3 s | 14.5 s | **1.27×** | 428 MB | 815 MB |
+| ubuntu-26.04 (AMD EPYC 9V74, x64) | batch 32 | 4.19 s | 3.53 s | **1.19×** | 411 MB | 782 MB |
+| | batch 1 | 5.05 s | 3.76 s | **1.34×** | 199 MB | 259 MB |
+| | batch 32, 1 thread | 8.90 s | 6.99 s | **1.27×** | 401 MB | 789 MB |
+| macos-26 (Apple M1, virtual, 3 cores) | batch 32 | 5.41 s | 3.76 s | 1.44× (run 70: 1.62×) | | |
+| | batch 1 | 4.58 s | 3.67 s | 1.25× (run 70: 1.33×) | | |
+| | batch 32, 1 thread | 10.9 s | 9.16 s | 1.19× (run 70: 1.43×) | | |
+
+- **Linux Arm64 passes the owner's gate** (within 1.5× of ONNX Runtime at the runner's threads): 1.26× at batch 32 in
+  both runs, 1.38× and 1.44× one text at a time. Per core (one thread) it is 1.27×, as on the x64 runner, and closer than
+  MiniLM's 1.65× on the local Xeon.
+- **macOS is too noisy to judge**: on the virtual M1 the runs of one setting spread by up to 70 % in run 70 (managed
+  batch 32: 4.67–8.24 s) and 50 % in run 71, and the two runs' ratios differ by up to 0.24; both stay within the gate
+  only in run 71. Its peak working set reads 0 on macOS. Its bits are right.
+- The managed encoder's memory is lower everywhere, as on x64.
+- The values: within 4.4e-7 (Arm64) and 4.7e-7 (macOS) of sentence-transformers' float32, run on the same runner.
+
+Not measured on Arm64: Native AOT (linux-arm64 needs nothing like `IlcInstructionSet`, since NEON is its baseline;
+docs/aot.md), Windows on Arm, and the larger models.
+
+### The Vector256 path
+
+Forced with `--path Vector256` on the local AVX-512 machine (JIT, 4 threads, batch 32): the same bits as Vector512
+(above), and slower:
+
+| Model | Vector512 | Vector256 | Vector256 / Vector512 |
+|---|---|---|---|
+| all-MiniLM-L6-v2 | 2.75 s | 3.23 s | 1.18× |
+| multilingual-e5-large | 89.8 s | 115.8 s | 1.29× |
+
+(MiniLM's forced Vector128 path: 4.47 s, 1.63×, same bits.) An AVX2 machine without AVX-512 runs this path; its
+ratio to ONNX Runtime there is not measured (ONNX Runtime also picks its kernels by CPU), and the cloud runners' CPUs
+either have AVX-512 or are drawn at random.
+
+### multilingual-e5-large
+
+intfloat/multilingual-e5-large at commit `3d7cfbda` (MIT): XLMRobertaModel, 24 layers, hidden 1024, 16 heads, the
+same XLM-R Unigram `tokenizer.json` as E5-base (the same sha256), `max_seq_length` 512, mean pooling, normalised;
+`pytorch_model.bin` is 2.24 GB. It loads into `ManagedTransformer` as E5-base does, with no change. Texts: the 1,345 of
+`--languages` with the `query: ` prefix, 41,291 pieces (10 cut to 512).
+
+| | ids equal sentence-transformers' | max \|diff\| vs float32 | vs float64 |
+|---|---|---|---|
+| managed | 1,345 of 1,345 | 3.5e-7 | 2.5e-7 |
+| ONNX Runtime (`onnx/model.onnx` + `model.onnx_data`) | | 5.4e-7 | 4.4e-7 |
+
+sentence-transformers' own float32 and float64 differ by 2.4e-7.
+
+Speed and memory (local VM, 4 threads unless said, one backend per process, median of 3 runs after a warm-up, 1 run on
+one thread):
+
+| Setting | managed | ONNX Runtime | managed / ORT time | peak working set, managed | ORT |
+|---|---|---|---|---|---|
+| batch 32 | 89.8 s (460 pieces/s) | 83.7 s | **1.07×** | 3,356 MB | 4,385 MB |
+| batch 1 | 131.2 s | 103.0 s | **1.27×** | 2,790 MB | 1,776 MB |
+| batch 32, 1 thread | 338.6 s | 286.3 s | **1.18×** | 3,367 MB | 4,350 MB |
+| batch 128 | 86.3 s | not run | | 3,837 MB | |
+
+- **It passes the gate with the most room of any model**: 1.07× at batch 32, 1.27× one text at a time.
+- **Load**: managed 2.3–2.8 s (working set after load 2.6 GB), ONNX Runtime 1.7–2.0 s (1.4 GB). One text at a time
+  ONNX Runtime's peak is lower here, the only setting so far where it is: the managed encoder keeps its weights as
+  float32 arrays (2.24 GB), which ONNX Runtime seems to map from `model.onnx_data` without counting all of it.
+- **Batch 128 on ONNX Runtime was not run**: E5-base already peaked at 10 GB there, and large's activations are 4/3
+  wider with twice the layers, past this VM's 15 GB.
+- At 2.24 GB of weights and about 460 pieces/s on four cores, this model suits batch ingestion more than per-query
+  latency; a query of 20 pieces takes about 0.1 s.
