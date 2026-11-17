@@ -63,7 +63,10 @@ backend per process, median of 5 runs over all 935 texts after a warm-up. The VM
 What the numbers say:
 
 - **Per core, ONNX Runtime is about 1.65× faster** (the 1-thread row): its kernels are better tuned than the managed
-  GEMM and attention at MiniLM's small width (hidden 384, 12 heads of 32). With 4 threads the gap narrows to 1.24×
+  GEMM and attention at MiniLM's small width (hidden 384, 12 heads of 32). Round 51
+  ([performance/round-51-small-width-encoder.md](performance/round-51-small-width-encoder.md), #281) found the GEMMs near
+  the core's limit and the gap in attention and GELU (in double); after it the managed encoder takes 1.29× ONNX
+  Runtime's time on one thread and 1.19× on four (batch 32), with the same bits. With 4 threads the gap narrows to 1.24×
   at batch 32 and 1.45× one text at a time.
 - **At batch 128 the managed encoder is faster and much smaller**, because it runs every text unpadded while ONNX
   Runtime pads each batch to its longest text (here a 256-piece paragraph next to short sentences). This favours the

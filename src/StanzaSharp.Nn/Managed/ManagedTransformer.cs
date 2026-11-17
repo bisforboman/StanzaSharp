@@ -359,20 +359,37 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
     // dropped). Per row and key: the dot's four accumulators (lane q mod 4, as Act.Dot; a widened float product is exact
     // in double, so a fused multiply-add rounds like Dot's add), then (s0 + s1) + (s2 + s3), times scale; the maximum and
     // the sum of exponentials in key order; each context element summed over the keys in order, a multiply then an add
-    // (WeightedAdd's), then divided by the sum.
+    // (WeightedAdd's), then divided by the sum. Round 51: the keys are padded with zero rows to a multiple of four (their
+    // scores are computed and never read), and on Vector512 stored a pair of keys at a time, four doubles of one then four
+    // of the other, so one register holds two keys' accumulators (ScoreBlock512).
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     internal static void AttentionBlocked(float* qkv, float* context, int n, int h, int d, double scale)
     {
+        bool wide = Gemm.Path == KernelPath.Vector512 && Vector512.IsHardwareAccelerated;
+        int n4 = (n + 3) & ~3;
         var pool = ArrayPool<double>.Shared;
-        var buffer = pool.Rent((2 * n * d) + (QueryBlock * (n + d)));
+        var buffer = pool.Rent((n4 * d) + (n * d) + (QueryBlock * ((2 * d) + n4)));
         try
         {
             // The rented buffer only through spans (no pointer arithmetic on it), each part pinned on its own.
-            Span<double> keys = buffer.AsSpan(0, n * d), values = buffer.AsSpan(n * d, n * d), queries = buffer.AsSpan(2 * n * d, QueryBlock * d),
-                scores = buffer.AsSpan((2 * n * d) + (QueryBlock * d), QueryBlock * n);
+            Span<double> keys = buffer.AsSpan(0, n4 * d), values = buffer.AsSpan(n4 * d, n * d), queries = buffer.AsSpan((n4 + n) * d, QueryBlock * 2 * d),
+                scores = buffer.AsSpan(((n4 + n) * d) + (QueryBlock * 2 * d), QueryBlock * n4);
+            keys[(n * d)..].Clear();
             for (int j = 0; j < n; j++)
             {
-                Widen(qkv + ((long)j * 3 * h) + h, keys.Slice(j * d, d));
+                var key = qkv + ((long)j * 3 * h) + h;
+                if (wide)
+                {
+                    // Pair j / 2, half j % 2: elements c..c+3 at 8·(c / 4) + 4·half.
+                    var pair = keys.Slice(j / 2 * 2 * d, 2 * d);
+                    for (int c = 0; c < d; c += 4)
+                        Widen(key + c, pair.Slice((2 * c) + (4 * (j % 2)), 4));
+                }
+                else
+                {
+                    Widen(key, keys.Slice(j * d, d));
+                }
+
                 Widen(qkv + ((long)j * 3 * h) + (2 * h), values.Slice(j * d, d));
             }
 
@@ -384,29 +401,49 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
                     int rows = Math.Min(QueryBlock, n - i0);
                     for (int r = 0; r < QueryBlock; r++)
                     {
-                        if (r < rows)
-                            Widen(qkv + ((long)(i0 + r) * 3 * h), queries.Slice(r * d, d));
+                        // Each query twice on Vector512 (four doubles, then the same four again), for both keys of a pair.
+                        var query = queries.Slice(r * 2 * d, 2 * d);
+                        if (r >= rows)
+                        {
+                            query.Clear();
+                        }
+                        else if (wide)
+                        {
+                            for (int c = 0; c < d; c += 4)
+                            {
+                                Widen(qkv + ((long)(i0 + r) * 3 * h) + c, query.Slice(2 * c, 4));
+                                query.Slice(2 * c, 4).CopyTo(query.Slice((2 * c) + 4, 4));
+                            }
+                        }
                         else
-                            queries.Slice(r * d, d).Clear();
+                        {
+                            Widen(qkv + ((long)(i0 + r) * 3 * h), query[..d]);
+                        }
                     }
 
-                    ScoreBlock(q, k, p, n, d, scale);
+                    if (wide)
+                        ScoreBlock512(q, k, p, n4, d, scale);
+                    else
+                        ScoreBlock(q, k, p, n4, d, scale);
                     for (int r = 0; r < QueryBlock; r++)
                     {
-                        double m = double.NegativeInfinity;
-                        foreach (double x in scores.Slice(r * n, n))
-                            m = Math.Max(m, x);
-                        max[r] = m;
+                        max[r] = Max(p + (r * n4), n);
                         sum[r] = 0;
                     }
 
                     for (int j = 0; j < n; j++)
                     {
                         for (int r = 0; r < QueryBlock; r++)
-                            sum[r] += scores[(r * n) + j] = Math.Exp(scores[(r * n) + j] - max[r]);
+                        {
+                            double* x = p + (r * n4) + j;
+                            sum[r] += *x = Math.Exp(*x - max[r]);
+                        }
                     }
 
-                    WeightedBlock(p, v, n, d, sum, context + ((long)i0 * h), h, rows);
+                    if (wide)
+                        WeightedBlock512(p, n4, v, n, d, sum, context + ((long)i0 * h), h, rows);
+                    else
+                        WeightedBlock(p, n4, v, n, d, sum, context + ((long)i0 * h), h, rows);
                 }
             }
         }
@@ -423,15 +460,36 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
             target[e] = source[e];
     }
 
-    // p[r·n + j] = dot(q_r, k_j)·scale for the QueryBlock rows of q [QueryBlock, d] and every key row of k [n, d].
+    // The largest of x[0..n): Math.Max's result (vector maximums propagate NaN and order -0 below +0 as it does, and the
+    // maximum doesn't depend on the order).
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static double Max(double* x, int n)
+    {
+        int j = 0;
+        double m = double.NegativeInfinity;
+        if (Vector256.IsHardwareAccelerated && n >= 4)
+        {
+            var mv = Vector256.Load(x);
+            for (j = 4; j + 4 <= n; j += 4)
+                mv = Vector256.Max(mv, Vector256.Load(x + j));
+            m = Math.Max(Math.Max(mv[0], mv[1]), Math.Max(mv[2], mv[3]));
+        }
+
+        for (; j < n; j++)
+            m = Math.Max(m, x[j]);
+        return m;
+    }
+
+    // p[r·ldp + j] = dot(q_r, k_j)·scale for the QueryBlock rows of q (row stride 2d) and the key rows of k [n, d], n even.
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     private static void ScoreBlock(double* q, double* k, double* p, int n, int d, double scale)
     {
-        double* q0 = q, q1 = q + d, q2 = q + (2 * d), q3 = q + (3 * d);
+        int ldp = n;
+        double* q0 = q, q1 = q + (2 * d), q2 = q + (4 * d), q3 = q + (6 * d);
         if (Gemm.Path is KernelPath.Vector512 or KernelPath.Vector256)
         {
-            int j = 0;
-            for (; j + 2 <= n; j += 2)
+            var s = Vector256.Create(scale);
+            for (int j = 0; j < n; j += 2)
             {
                 double* kj = k + ((long)j * d), kl = kj + d;
                 Vector256<double> a0 = Vector256<double>.Zero, a1 = a0, a2 = a0, a3 = a0, b0 = a0, b1 = a0, b2 = a0, b3 = a0;
@@ -448,29 +506,13 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
                     (a3, b3) = (Vector256.MultiplyAddEstimate(w, x, a3), Vector256.MultiplyAddEstimate(w, y, b3));
                 }
 
-                (p[j], p[j + 1]) = (Sum(a0) * scale, Sum(b0) * scale);
-                (p[n + j], p[n + j + 1]) = (Sum(a1) * scale, Sum(b1) * scale);
-                (p[(2 * n) + j], p[(2 * n) + j + 1]) = (Sum(a2) * scale, Sum(b2) * scale);
-                (p[(3 * n) + j], p[(3 * n) + j + 1]) = (Sum(a3) * scale, Sum(b3) * scale);
-            }
-
-            for (; j < n; j++)
-            {
-                var kj = k + ((long)j * d);
-                Vector256<double> a0 = Vector256<double>.Zero, a1 = a0, a2 = a0, a3 = a0;
-                for (int c = 0; c < d; c += 4)
-                {
-                    var x = Vector256.Load(kj + c);
-                    a0 = Vector256.MultiplyAddEstimate(Vector256.Load(q0 + c), x, a0);
-                    a1 = Vector256.MultiplyAddEstimate(Vector256.Load(q1 + c), x, a1);
-                    a2 = Vector256.MultiplyAddEstimate(Vector256.Load(q2 + c), x, a2);
-                    a3 = Vector256.MultiplyAddEstimate(Vector256.Load(q3 + c), x, a3);
-                }
-
-                p[j] = Sum(a0) * scale;
-                p[n + j] = Sum(a1) * scale;
-                p[(2 * n) + j] = Sum(a2) * scale;
-                p[(3 * n) + j] = Sum(a3) * scale;
+                // Rows 0 and 1, then 2 and 3: [s(r, j), s(r, j + 1), s(r + 1, j), s(r + 1, j + 1)].
+                var r01 = Sums(a0, b0, a1, b1) * s;
+                r01.GetLower().Store(p + j);
+                r01.GetUpper().Store(p + ldp + j);
+                var r23 = Sums(a2, b2, a3, b3) * s;
+                r23.GetLower().Store(p + (2 * ldp) + j);
+                r23.GetUpper().Store(p + (3 * ldp) + j);
             }
         }
         else
@@ -493,22 +535,80 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
                 }
 
                 p[j] = ((a01[0] + a01[1]) + (a23[0] + a23[1])) * scale;
-                p[n + j] = ((b01[0] + b01[1]) + (b23[0] + b23[1])) * scale;
-                p[(2 * n) + j] = ((c01[0] + c01[1]) + (c23[0] + c23[1])) * scale;
-                p[(3 * n) + j] = ((e01[0] + e01[1]) + (e23[0] + e23[1])) * scale;
+                p[ldp + j] = ((b01[0] + b01[1]) + (b23[0] + b23[1])) * scale;
+                p[(2 * ldp) + j] = ((c01[0] + c01[1]) + (c23[0] + c23[1])) * scale;
+                p[(3 * ldp) + j] = ((e01[0] + e01[1]) + (e23[0] + e23[1])) * scale;
             }
         }
+    }
+
+    // [(a0 + a1) + (a2 + a3), (b0 + b1) + (b2 + b3), (c0 + c1) + (c2 + c3), (e0 + e1) + (e2 + e3)], the four dots' sums.
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static Vector256<double> Sums(Vector256<double> a, Vector256<double> b, Vector256<double> c, Vector256<double> e)
+    {
+        if (System.Runtime.Intrinsics.X86.Avx.IsSupported)
+        {
+            // [a01, b01, a23, b23] and [c01, e01, c23, e23], then their low halves plus their high halves.
+            var (x, y) = (System.Runtime.Intrinsics.X86.Avx.HorizontalAdd(a, b), System.Runtime.Intrinsics.X86.Avx.HorizontalAdd(c, e));
+            return System.Runtime.Intrinsics.X86.Avx.Permute2x128(x, y, 0x20) + System.Runtime.Intrinsics.X86.Avx.Permute2x128(x, y, 0x31);
+        }
+
+        return Vector256.Create(Sum(a), Sum(b), Sum(c), Sum(e));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static double Sum(Vector256<double> s) => (s[0] + s[1]) + (s[2] + s[3]);
 
-    // context row r (stride h), element e = (float)((Σ_j p[r·n + j]·v[j·d + e]) / sum[r]) for the first rows rows: the
-    // sum from 0 over j in order, each term multiplied, then added.
+    // ScoreBlock on Vector512, four keys at a time: q holds each row's four doubles twice ([QueryBlock][d / 4][8]), k a pair
+    // of keys per 2d doubles ([n / 2][d / 4][8]), so one fused multiply-add serves the same four lanes of two keys. n is a
+    // multiple of four.
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-    private static void WeightedBlock(double* p, double* v, int n, int d, ReadOnlySpan<double> sum, float* context, int h, int rows)
+    private static void ScoreBlock512(double* q, double* k, double* p, int n, int d, double scale)
     {
-        double* p0 = p, p1 = p + n, p2 = p + (2 * n), p3 = p + (3 * n);
+        int ldp = n;
+        double* q0 = q, q1 = q + (2 * d), q2 = q + (4 * d), q3 = q + (6 * d);
+        var s = Vector256.Create(scale);
+        for (int j = 0; j < n; j += 4)
+        {
+            double* kj = k + ((long)j * d), kl = kj + (2 * d);
+            Vector512<double> a0 = Vector512<double>.Zero, a1 = a0, a2 = a0, a3 = a0, b0 = a0, b1 = a0, b2 = a0, b3 = a0;
+            for (int c = 0; c < 2 * d; c += 8)
+            {
+                var (x, y) = (Vector512.Load(kj + c), Vector512.Load(kl + c));
+                var w = Vector512.Load(q0 + c);
+                (a0, b0) = (Vector512.MultiplyAddEstimate(w, x, a0), Vector512.MultiplyAddEstimate(w, y, b0));
+                w = Vector512.Load(q1 + c);
+                (a1, b1) = (Vector512.MultiplyAddEstimate(w, x, a1), Vector512.MultiplyAddEstimate(w, y, b1));
+                w = Vector512.Load(q2 + c);
+                (a2, b2) = (Vector512.MultiplyAddEstimate(w, x, a2), Vector512.MultiplyAddEstimate(w, y, b2));
+                w = Vector512.Load(q3 + c);
+                (a3, b3) = (Vector512.MultiplyAddEstimate(w, x, a3), Vector512.MultiplyAddEstimate(w, y, b3));
+            }
+
+            (Sums(a0, b0) * s).Store(p + j);
+            (Sums(a1, b1) * s).Store(p + ldp + j);
+            (Sums(a2, b2) * s).Store(p + (2 * ldp) + j);
+            (Sums(a3, b3) * s).Store(p + (3 * ldp) + j);
+        }
+    }
+
+    // One row's four dots with keys j..j+3 from a = [j's four lanes, j+1's] and b = [j+2's, j+3's]: per key
+    // (s0 + s1) + (s2 + s3). Lane pairs first ([j01, j+2 01, j23, j+2 23, j+1 01, j+3 01, j+1 23, j+3 23]), then the
+    // 01 sums of the four keys plus their 23 sums.
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static Vector256<double> Sums(Vector512<double> a, Vector512<double> b)
+    {
+        var pairs = System.Runtime.Intrinsics.X86.Avx512F.UnpackLow(a, b) + System.Runtime.Intrinsics.X86.Avx512F.UnpackHigh(a, b);
+        var ordered = Vector512.Shuffle(pairs, Vector512.Create(0L, 4, 1, 5, 2, 6, 3, 7));
+        return ordered.GetLower() + ordered.GetUpper();
+    }
+
+    // context row r (stride h), element e = (float)((Σ_j p[r·ldp + j]·v[j·d + e]) / sum[r]) for the first rows rows: the
+    // sum from 0 over j < n in order, each term multiplied, then added.
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private static void WeightedBlock(double* p, int ldp, double* v, int n, int d, ReadOnlySpan<double> sum, float* context, int h, int rows)
+    {
+        double* p0 = p, p1 = p + ldp, p2 = p + (2 * ldp), p3 = p + (3 * ldp);
         Span<double> acc = stackalloc double[QueryBlock * 8];
         for (int e = 0; e < d; e += 8)
         {
@@ -546,7 +646,7 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
                 // Two rows at a time: eight accumulators of two lanes.
                 for (int r = 0; r < QueryBlock; r += 2)
                 {
-                    double* pr = p + ((long)r * n), ps = pr + n;
+                    double* pr = p + ((long)r * ldp), ps = pr + ldp;
                     Vector128<double> a0 = Vector128<double>.Zero, a1 = a0, a2 = a0, a3 = a0, b0 = a0, b1 = a0, b2 = a0, b3 = a0;
                     for (int j = 0; j < n; j++)
                     {
@@ -578,6 +678,72 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
                 var ci = context + ((long)r * h) + e;
                 for (int t = 0; t < 8; t++)
                     ci[t] = (float)(acc[(r * 8) + t] / sum[r]);
+            }
+        }
+    }
+
+    // WeightedBlock on Vector512: sixteen elements of the four rows (eight registers of eight doubles) per pass over the
+    // keys where d allows, else eight.
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private static void WeightedBlock512(double* p, int ldp, double* v, int n, int d, ReadOnlySpan<double> sum, float* context, int h, int rows)
+    {
+        double* p0 = p, p1 = p + ldp, p2 = p + (2 * ldp), p3 = p + (3 * ldp);
+        Span<double> acc = stackalloc double[QueryBlock * 16];
+        int width = d % 16 == 0 ? 16 : 8;
+        fixed (double* pa = acc)
+        {
+            for (int e = 0; e < d; e += width)
+            {
+                if (width == 16)
+                {
+                    Vector512<double> a0 = Vector512<double>.Zero, b0 = a0, a1 = a0, b1 = a0, a2 = a0, b2 = a0, a3 = a0, b3 = a0;
+                    for (int j = 0; j < n; j++)
+                    {
+                        var vj = v + ((long)j * d) + e;
+                        var (x, y) = (Vector512.Load(vj), Vector512.Load(vj + 8));
+                        var w = Vector512.Create(p0[j]);
+                        (a0, b0) = (a0 + (w * x), b0 + (w * y));
+                        w = Vector512.Create(p1[j]);
+                        (a1, b1) = (a1 + (w * x), b1 + (w * y));
+                        w = Vector512.Create(p2[j]);
+                        (a2, b2) = (a2 + (w * x), b2 + (w * y));
+                        w = Vector512.Create(p3[j]);
+                        (a3, b3) = (a3 + (w * x), b3 + (w * y));
+                    }
+
+                    a0.Store(pa);
+                    b0.Store(pa + 8);
+                    a1.Store(pa + 16);
+                    b1.Store(pa + 24);
+                    a2.Store(pa + 32);
+                    b2.Store(pa + 40);
+                    a3.Store(pa + 48);
+                    b3.Store(pa + 56);
+                }
+                else
+                {
+                    Vector512<double> a0 = Vector512<double>.Zero, a1 = a0, a2 = a0, a3 = a0;
+                    for (int j = 0; j < n; j++)
+                    {
+                        var x = Vector512.Load(v + ((long)j * d) + e);
+                        a0 += Vector512.Create(p0[j]) * x;
+                        a1 += Vector512.Create(p1[j]) * x;
+                        a2 += Vector512.Create(p2[j]) * x;
+                        a3 += Vector512.Create(p3[j]) * x;
+                    }
+
+                    a0.Store(pa);
+                    a1.Store(pa + 16);
+                    a2.Store(pa + 32);
+                    a3.Store(pa + 48);
+                }
+
+                for (int r = 0; r < rows; r++)
+                {
+                    var ci = context + ((long)r * h) + e;
+                    for (int t = 0; t < width; t++)
+                        ci[t] = (float)(pa[(r * 16) + t] / sum[r]);
+                }
             }
         }
     }
@@ -747,24 +913,54 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
         ManagedThreads.For((n + 4095) / 4096, block => GeluBlock((float*)px + (block * 4096), Math.Min(4096, n - (block * 4096))));
     }
 
+    // Four lane groups at a time (round 51): GELU's dependency chains are long (two polynomials, a division), and four
+    // independent ones, interleaved operation by operation (DoubleLanes), keep the vector units busy. On Vector512 a
+    // group is eight doubles, otherwise Vector<double>'s width.
+    // Each width in its own method: inlined into one, the two lane types' code ran out of the JIT's tracked locals.
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
     internal static void GeluBlock(float* v, int n)
     {
-        int i = 0;
-        if (Vector.IsHardwareAccelerated)
-        {
-            for (; i + Vector<float>.Count <= n; i += Vector<float>.Count)
-            {
-                Vector.Widen(Vector.Load(v + i), out var lo, out var hi);
-                Vector.Narrow(GeluLanes(lo), GeluLanes(hi)).Store(v + i);
-            }
-        }
-
+        int i = Gemm.Path == KernelPath.Vector512 && Vector512.IsHardwareAccelerated ? Gelu512(v, n)
+            : Vector.IsHardwareAccelerated ? GeluVector(v, n)
+            : 0;
         for (; i < n; i++)
             v[i] = (float)Gelu((double)v[i]);
     }
 
-    /// <summary>GELU of one value: <see cref="GeluLanes"/>'s operations on a scalar.</summary>
+    // The first values of v, a multiple of 32, on Vector512; returns how many.
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.NoInlining)]
+    private static int Gelu512(float* v, int n)
+    {
+        int i = 0, w = Vector512<float>.Count;
+        for (; i + (2 * w) <= n; i += 2 * w)
+        {
+            var (x, y) = (Vector512.Load(v + i), Vector512.Load(v + i + w));
+            var g = GeluLanes(new Lanes512(Vector512.WidenLower(x), Vector512.WidenUpper(x), Vector512.WidenLower(y), Vector512.WidenUpper(y)));
+            Vector512.Narrow(g.A, g.B).Store(v + i);
+            Vector512.Narrow(g.C, g.D).Store(v + i + w);
+        }
+
+        return i;
+    }
+
+    // The first values of v, a multiple of 2·Vector<float>.Count, on Vector<double>; returns how many.
+    [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.NoInlining)]
+    private static int GeluVector(float* v, int n)
+    {
+        int i = 0, w = Vector<float>.Count;
+        for (; i + (2 * w) <= n; i += 2 * w)
+        {
+            Vector.Widen(Vector.Load(v + i), out var a, out var b);
+            Vector.Widen(Vector.Load(v + i + w), out var c, out var d);
+            var g = GeluLanes(new LanesVector(a, b, c, d));
+            Vector.Narrow(g.A, g.B).Store(v + i);
+            Vector.Narrow(g.C, g.D).Store(v + i + w);
+        }
+
+        return i;
+    }
+
+    /// <summary>GELU of one value: <see cref="GeluLanes{T}"/>'s operations on a scalar.</summary>
     internal static double Gelu(double x)
     {
         double z = Math.Abs(x * 0.70710678118654752), t = 1 / (1 + (0.5 * z));
@@ -774,13 +970,13 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static Vector<double> GeluLanes(Vector<double> x)
+    private static T GeluLanes<T>(T x) where T : struct, IDoubleLanes<T>
     {
-        var z = Vector.Abs(x * new Vector<double>(0.70710678118654752));
-        var t = Vector<double>.One / (Vector<double>.One + (new Vector<double>(0.5) * z));
-        var erfc = t * Exp((-z * z) - new Vector<double>(1.26551223) + (t * ErfPoly(t)));
-        var erf = Vector.ConditionalSelect(Vector.GreaterThanOrEqual(x, Vector<double>.Zero), Vector<double>.One - erfc, erfc - Vector<double>.One);
-        return new Vector<double>(0.5) * x * (Vector<double>.One + erf);
+        var z = T.Abs(x * 0.70710678118654752);
+        var t = T.Divide(1.0, 1.0 + (0.5 * z));
+        var erfc = t * Exp((-z * z) - 1.26551223 + (t * ErfPoly(t)));
+        var erf = T.SelectNonNegative(x, 1.0 - erfc, erfc - 1.0);
+        return 0.5 * x * (1.0 + erf);
     }
 
     // Numerical Recipes' erfc polynomial (relative error under 1.2e-7, the order of a float ulp), Horner in t.
@@ -798,16 +994,16 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static Vector<double> ErfPoly(Vector<double> t)
+    private static T ErfPoly<T>(T t) where T : struct, IDoubleLanes<T>
     {
-        var poly = new Vector<double>(-0.82215223) + (t * new Vector<double>(0.17087277));
-        poly = new Vector<double>(1.48851587) + (t * poly);
-        poly = new Vector<double>(-1.13520398) + (t * poly);
-        poly = new Vector<double>(0.27886807) + (t * poly);
-        poly = new Vector<double>(-0.18628806) + (t * poly);
-        poly = new Vector<double>(0.09678418) + (t * poly);
-        poly = new Vector<double>(0.37409196) + (t * poly);
-        return new Vector<double>(1.00002368) + (t * poly);
+        var poly = -0.82215223 + (t * 0.17087277);
+        poly = 1.48851587 + (t * poly);
+        poly = -1.13520398 + (t * poly);
+        poly = 0.27886807 + (t * poly);
+        poly = -0.18628806 + (t * poly);
+        poly = 0.09678418 + (t * poly);
+        poly = 0.37409196 + (t * poly);
+        return 1.00002368 + (t * poly);
     }
 
     // e^x for x ≤ 0 (the erfc argument; below -708 it is clamped, giving about 1e-308): x = n·ln 2 + r with n rounded to
@@ -830,17 +1026,26 @@ internal sealed unsafe class ManagedTransformer : ITransformerNet
         return p * BitConverter.Int64BitsToDouble(((long)n + 1023) << 52);
     }
 
+    // Exp's steps on lanes, ExpCoefficients' Horner steps written out (a loop over the array kept them apart).
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static Vector<double> Exp(Vector<double> x)
+    private static T Exp<T>(T x) where T : struct, IDoubleLanes<T>
     {
-        x = Vector.Max(x, new Vector<double>(-708.0));
-        var n = ((x * new Vector<double>(Log2E)) + new Vector<double>(RoundMagic)) - new Vector<double>(RoundMagic);
-        var r = (x - (n * new Vector<double>(Ln2Hi))) - (n * new Vector<double>(Ln2Lo));
-        var p = new Vector<double>(ExpCoefficients[12]);
-        for (int i = 11; i >= 0; i--)
-            p = new Vector<double>(ExpCoefficients[i]) + (r * p);
-        var scale = Vector.ShiftLeft(Vector.ConvertToInt64(n) + new Vector<long>(1023), 52);
-        return p * Vector.AsVectorDouble(scale);
+        x = T.Max(x, -708.0);
+        var n = ((x * Log2E) + RoundMagic) - RoundMagic;
+        var r = (x - (n * Ln2Hi)) - (n * Ln2Lo);
+        var p = 2.505210838544172e-08 + (r * 2.08767569878681e-09);
+        p = 2.755731922398589e-07 + (r * p);
+        p = 2.7557319223985893e-06 + (r * p);
+        p = 2.48015873015873e-05 + (r * p);
+        p = 0.0001984126984126984 + (r * p);
+        p = 0.001388888888888889 + (r * p);
+        p = 0.008333333333333333 + (r * p);
+        p = 0.041666666666666664 + (r * p);
+        p = 0.16666666666666666 + (r * p);
+        p = 0.5 + (r * p);
+        p = 1.0 + (r * p);
+        p = 1.0 + (r * p);
+        return p * T.TwoToThe(n);
     }
 
     public void Dispose()

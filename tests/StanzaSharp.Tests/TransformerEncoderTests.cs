@@ -322,13 +322,18 @@ public class TransformerKernelTests(TransformerModels models, ITestOutputHelper 
         return values;
     }
 
-    [Fact]
-    public unsafe void Gelu_EveryVectorWidthGivesTheScalarsBits_AndStaysWithinAFloatUlpOfTheReference()
+    [Theory]
+    [MemberData(nameof(Paths))]
+    public unsafe void Gelu_EveryVectorWidthGivesTheScalarsBits_AndStaysWithinAFloatUlpOfTheReference(string path)
     {
         var values = Values(4096 + 7, 1);
         var blocked = (float[])values.Clone();
-        fixed (float* p = blocked)
-            ManagedTransformer.GeluBlock(p, blocked.Length);
+        With(Enum.Parse<KernelPath>(path), 1, () =>
+        {
+            fixed (float* p = blocked)
+                ManagedTransformer.GeluBlock(p, blocked.Length);
+            return 0;
+        });
         int differ = 0;
         for (int i = 0; i < values.Length; i++)
         {
@@ -395,31 +400,39 @@ public class TransformerKernelTests(TransformerModels models, ITestOutputHelper 
     [MemberData(nameof(Paths))]
     public unsafe void BlockedAttention_GivesTheRowLoopsBits(string path)
     {
-        const int d = 64, h = 2 * d;
-        foreach (int n in new[] { 1, 2, 3, 4, 5, 7, 13, 64, 131 })
+        // Head widths: 64 (ELECTRA, BERT-base), 32 (MiniLM) and 40, which Vector512's weighted sum runs eight at a time.
+        foreach (int d in new[] { 64, 32, 40 })
         {
-            // Two heads; the second one's q, k and v start d floats into each third (as in the encoder).
-            var qkv = Values(n * 3 * h, n);
-            for (int i = 0; i < qkv.Length; i++)
-                qkv[i] = Math.Clamp(qkv[i], -50, 50) / 4; // finite scores
-            float[] Run(KernelPath p, bool blocked) => With(p, 1, () =>
-            {
-                var context = new float[n * h];
-                fixed (float* q = qkv, c = context)
-                {
-                    if (blocked)
-                        ManagedTransformer.AttentionBlocked(q + d, c + d, n, h, d, 0.125);
-                    else
-                        ManagedTransformer.AttentionRows(q + d, c + d, n, h, d, 0.125);
-                }
-
-                return context;
-            });
-
-            var expected = Run(KernelPath.Scalar, false);
-            Assert.True(Run(Enum.Parse<KernelPath>(path), true).AsSpan().SequenceEqual(expected), $"{path}, n {n}");
-            Assert.True(Run(Enum.Parse<KernelPath>(path), false).AsSpan().SequenceEqual(expected), $"{path} rows, n {n}");
+            foreach (int n in new[] { 1, 2, 3, 4, 5, 7, 13, 64, 131 })
+                AssertBlockedAttention(path, d, n);
         }
+    }
+
+    private static unsafe void AssertBlockedAttention(string path, int d, int n)
+    {
+        int h = 2 * d;
+
+        // Two heads; the second one's q, k and v start d floats into each third (as in the encoder).
+        var qkv = Values(n * 3 * h, n);
+        for (int i = 0; i < qkv.Length; i++)
+            qkv[i] = Math.Clamp(qkv[i], -50, 50) / 4; // finite scores
+        float[] Run(KernelPath p, bool blocked) => With(p, 1, () =>
+        {
+            var context = new float[n * h];
+            fixed (float* q = qkv, c = context)
+            {
+                if (blocked)
+                    ManagedTransformer.AttentionBlocked(q + d, c + d, n, h, d, 0.125);
+                else
+                    ManagedTransformer.AttentionRows(q + d, c + d, n, h, d, 0.125);
+            }
+
+            return context;
+        });
+
+        var expected = Run(KernelPath.Scalar, false);
+        Assert.True(Run(Enum.Parse<KernelPath>(path), true).AsSpan().SequenceEqual(expected), $"{path}, d {d}, n {n}");
+        Assert.True(Run(Enum.Parse<KernelPath>(path), false).AsSpan().SequenceEqual(expected), $"{path} rows, d {d}, n {n}");
     }
 
     [Fact]
