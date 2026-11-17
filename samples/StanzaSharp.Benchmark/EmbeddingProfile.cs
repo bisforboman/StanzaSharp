@@ -28,7 +28,7 @@ internal static unsafe class EmbeddingProfile
                StanzaSharp.Benchmark embedding-profile attention N D [--runs N] [--path P]
 
           MODEL_DIR   a sentence-transformers model (config.json, pytorch_model.bin, tokenizer.json, sentence_bert_config.json;
-                      onnx/model.onnx for --onnx)
+                      onnx/model.onnx for --onnx), or a WordPiece transformer folder as ModelDownloader writes it
           --batch N   texts per forward call (default 32), longest first
           --runs N    timed runs after one warm-up (default 5; the median is reported)
           --threads N the managed pool's size and ONNX Runtime's intra-op threads (default 1)
@@ -70,9 +70,17 @@ internal static unsafe class EmbeddingProfile
             return AttentionShape(int.Parse(args[1]), int.Parse(args[2]), runs);
 
         string modelDir = args[1];
-        var config = TransformerConfig.Load(Path.Combine(modelDir, "config.json")) with { Prefix = "" };
-        int maxLength = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(Path.Combine(modelDir, "sentence_bert_config.json")))!["max_seq_length"]!
-            .GetValue<int>();
+        // A sentence-transformers model is a bare BertModel state dict cut at max_seq_length; any other transformer folder
+        // (ModelDownloader's, e.g. ELECTRA-large) keeps its config's weight prefix and is cut at its positions.
+        string sentenceConfig = Path.Combine(modelDir, "sentence_bert_config.json");
+        var config = TransformerConfig.Load(Path.Combine(modelDir, "config.json"));
+        int maxLength = config.MaxPositions;
+        if (File.Exists(sentenceConfig))
+        {
+            config = config with { Prefix = "" };
+            maxLength = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(sentenceConfig))!["max_seq_length"]!.GetValue<int>();
+        }
+
         var tokenizer = WordPiece.Load(Path.Combine(modelDir, "tokenizer.json"));
         var ids = Texts().Select(t =>
         {
