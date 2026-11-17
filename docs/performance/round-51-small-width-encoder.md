@@ -113,7 +113,8 @@ threads, on that host: 49.6–50.8 s before, 44.9 s after (about 11 % less), the
   6.07–6.35 s (1 thread; 1.19× ONNX Runtime), ELECTRA-large 44.9 → 42.3 s (4 threads). It changes the arithmetic: on
   random arguments 16 % of its results are one double ulp from `Math.Exp`'s. On these texts no output state changed, on
   MiniLM or ELECTRA-large (the hashes stay `5DB9D5712A129655` and `3E61FA2C729701A4`), but nothing guarantees that for
-  other inputs, so it is the owner's decision (draft PR, question on #281). It would also make attention independent of the C runtime's
+  other inputs, so it is the owner's decision (draft PR, question on #281). The draft runs it in `AttentionRows` too (the scalar
+  `Exp`), so every path still gives the same bits. It would also make attention independent of the C runtime's
   `exp`, which the encoder now calls through `Math.Exp` and which differs between libm versions.
 
 ## What is left
