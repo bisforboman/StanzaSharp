@@ -23,7 +23,7 @@
 
   <ItemGroup>
     <!-- embedding-spike (issue #268): ONNX Runtime as the speed and value baseline, as samples/StanzaSharp.Rag ran it before. -->
-    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.31.1" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.32.0" />
   </ItemGroup>
 
   <PropertyGroup>
